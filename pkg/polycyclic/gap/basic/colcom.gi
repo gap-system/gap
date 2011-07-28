@@ -24,10 +24,65 @@
 ##     the exponent array:
 ##     the power array:
 ##
+##  For this collector we need normed right hand sides in the presentation.
 
-ngens := "global variable for the combinatorial collector";
-pow  :=  "global variable for the combinatorial collector";
-exp  :=  "global variable for the combinatorial collector";
+
+# Collect various statistics about the combinatorial collection process
+# for debugging purposes.
+Counter         := 0;
+CompleteCommGen := 0;
+WholeCommWord   := 0;
+CommRestWord    := 0;
+CommGen         := 0;
+CombColl        := 0;
+CombCollStack   := 0;
+OrdColl         := 0;
+StepByStep      := 0;
+ThreeWtGen      := 0;
+ThreeWtGenStack := 0;
+
+Count_Length := 0;
+Count_Weight := 0;
+
+DisplayCombCollStats := function()
+    
+    Print( "Calls to combinatorial collector: ", Counter,         "\n" );
+    Print( "Completely collected generators:  ", CompleteCommGen, "\n" );
+    Print( "Whole words collected:            ", WholeCommWord,   "\n" );
+    Print( "Rest of word collected:           ", CommRestWord,    "\n" );
+    Print( "Commuting generator collected:    ", CommGen,         "\n" );
+    Print( "Triple weight generators:         ", ThreeWtGen,      "\n" );
+    Print( "    of those had to be stacked:   ", ThreeWtGenStack, "\n" );
+    Print( "Step by step collection:          ", StepByStep,      "\n" );
+    Print( "Combinatorial collection:         ", CombColl,        "\n" );
+    Print( "    of those had to be stacked:   ", CombCollStack,   "\n" );
+    Print( "Ordinary collection:              ", OrdColl,         "\n" );
+end;
+
+ClearCombCollStats := function()
+
+    Counter         := 0;
+    CompleteCommGen := 0;
+    WholeCommWord   := 0;
+    CommRestWord    := 0;
+    CommGen         := 0;
+    CombColl        := 0;
+    CombCollStack   := 0;
+    OrdColl         := 0;
+    StepByStep      := 0;
+    ThreeWtGen      := 0;
+    ThreeWtGenStack := 0;
+end;
+
+ 
+
+CombinatorialCollectPolycyclicGap := function( coc, ev, w )
+    local   com,  com2,  wt,  class,  wst,  west,  
+            sst,  est,  bottom,  stp,  g,  cnj,  icnj,  h,  m,  i,  j,
+            astart,  IsNormed,  InfoCombi,
+            ngens, pow, exp,
+            ReduceExponentVector,
+            AddIntoExponentVector;
 
 ##   The following is more elegant since it avoids the if-statment but it
 ##   uses two divisions.
@@ -65,8 +120,6 @@ end;
 
 ##  ev := ev * word^exp
 ##  We assume that all generators after g commute with g.
-Count_Length := 0;
-Count_Weight := 0;
 AddIntoExponentVector := function( ev, word, start, e )
     local   i,  h;
     Info( InfoCombinatorialFromTheLeftCollector, 5,
@@ -86,55 +139,7 @@ AddIntoExponentVector := function( ev, word, start, e )
     od;
 end;
 
-##  For this collector we need normed right hand sides in the presentation.
-Counter         := 0;
-CompleteCommGen := 0;
-WholeCommWord   := 0;
-CommRestWord    := 0;
-CommGen         := 0;
-CombColl        := 0;
-CombCollStack   := 0;
-OrdColl         := 0;
-StepByStep      := 0;
-ThreeWtGen      := 0;
-ThreeWtGenStack := 0;
-
-DisplayCombCollStats := function()
-    
-    Print( "Calls to combinatorial collector: ", Counter,         "\n" );
-    Print( "Completely collected generators:  ", CompleteCommGen, "\n" );
-    Print( "Whole words collected:            ", WholeCommWord,   "\n" );
-    Print( "Rest of word collected:           ", CommRestWord,    "\n" );
-    Print( "Commuting generator collected:    ", CommGen,         "\n" );
-    Print( "Triple weight generators:         ", ThreeWtGen,      "\n" );
-    Print( "    of those had to be stacked:   ", ThreeWtGenStack, "\n" );
-    Print( "Step by step collection:          ", StepByStep,      "\n" );
-    Print( "Combinatorial collection:         ", CombColl,        "\n" );
-    Print( "    of those had to be stacked:   ", CombCollStack,   "\n" );
-    Print( "Ordinary collection:              ", OrdColl,         "\n" );
-end;
-
-ClearCombCollStats := function()
-
-    Counter         := 0;
-    CompleteCommGen := 0;
-    WholeCommWord   := 0;
-    CommRestWord    := 0;
-    CommGen         := 0;
-    CombColl        := 0;
-    CombCollStack   := 0;
-    OrdColl         := 0;
-    StepByStep      := 0;
-    ThreeWtGen      := 0;
-    ThreeWtGenStack := 0;
-end;
-
-CombinatorialCollectPolycyclicGap := function( coc, ev, w )
-    local   com,  com2,  wt,  class,  wst,  west,  
-            sst,  est,  bottom,  stp,  g,  cnj,  icnj,  h,  m,  i,  j,
-            astart,  IsNormed,  InfoCombi;
-
-    if Length(w) = 0 then return true; fi;
+   if Length(w) = 0 then return true; fi;
 
     InfoCombi := InfoCombinatorialFromTheLeftCollector;
 

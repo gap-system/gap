@@ -33,8 +33,6 @@ DeclareGlobalFunction( "RootSet" );
 DeclareGlobalFunction("CompleteConjugatesInCentralCover");
 DeclareGlobalFunction("EvalConsistency");
 DeclareGlobalFunction("QuotientBySystem");
-
-DeclareAttribute( "SchurMultiplicator", IsGroup );
 DeclareAttribute( "NonAbelianTensorSquare", IsGroup );
 DeclareAttribute( "NonAbelianExteriorSquare", IsGroup );
 

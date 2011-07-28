@@ -1,12 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%  access.tex            IRREDSOL documentation           Burkhard Hoefling
+%%  access.tex            IRREDSOL documentation            Burkhard Höfling
 %%
-%%  @(#)$Id: access.tex,v 1.6 2005/07/06 10:06:57 gap Exp $
+%%  @(#)$Id: access.tex,v 1.8 2011/05/18 16:22:45 gap Exp $
 %%
-%%  Copyright (C) 2003-2005 by Burkhard Hoefling, 
-%%  Institut fuer Geometrie, Algebra und Diskrete Mathematik
-%%  Technische Universitaet Braunschweig, Germany
+%%  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 %%
 
 
@@ -61,7 +59,7 @@ union of the ${\cal A}_{n, q_0}$, where $\F_{q_0}$ runs over all subfields of $\
 
 The lists ${\cal A}_{n, q}$ are also sufficient to reconstruct lists of all irreducible solvable subgroups of $GL(n, q)$. Let $d$ be a divisor of $n$, and let $G$ be an absolutely irreducible subgroup of $GL(n/d, q^d)$. By regarding the underlying $\F_{q^d}$-vector space of~$G$ as an $\F_q$-vector
 space, we obtain an irreducible subgroup $G^\*$ of $GL(n, q)$ with splitting field $\F_{q^d}$. Up to conjugacy, all irreducible subgroups of $GL(n, q)$ arise in that way. If two subgroups $G_1$ and $G_2$ of $GL(n, q)$ are constructed from subgroups
-$G_1^\*$ and $G_2^\*$of $GL(n/d, q^d)$, then $G_1$ and $G_2$ are conjugate if, and only if, there exists a Galois automophism $\sigma$ of $\F_{q^d}/\F_q$ such that $(G_1^\*)^\sigma$ and $G_2^\*$ are conjugate in $GL(n/d, q^d)$. See, e.~g., \cite{DH}, Theorem B~5.15. The latter information has been precomputed and is also part of the {\IRREDSOL} library.
+$G_1^\*$ and $G_2^\*$ of $GL(n/d, q^d)$, then $G_1$ and $G_2$ are conjugate if, and only if, there exists a Galois automophism $\sigma$ of $\F_{q^d}/\F_q$ such that $(G_1^\*)^\sigma$ and $G_2^\*$ are conjugate in $GL(n/d, q^d)$. See, e.~g., \cite{DH}, Theorem B~5.15. The latter information has been precomputed and is also part of the {\IRREDSOL} library.
 
 Note that all of the arguments above apply to nonsolvable groups as well.
 
@@ -80,6 +78,7 @@ This function tests whether the irreducible solvable subgroups of $GL(n,q)$ with
 field $\F_q$ are part of the {\IRREDSOL} library.
 
 \>IndicesIrreducibleSolvableMatrixGroups(<n>, <q>, <d>) F
+\>IndicesIrreducibleSolubleMatrixGroups(<n>, <q>, <d>) F
 
 Let <n> and  <d> be positive integers and <q> a prime power. This
 function returns a set of integers parametrising the groups in the {\IRREDSOL} library
@@ -94,6 +93,7 @@ gap> IndicesIrreducibleSolvableMatrixGroups (6, 2, 2);
 \endexample
 
 \>IrreducibleSolvableMatrixGroup(<n>, <q>, <d>, <k>) F
+\>IrreducibleSolubleMatrixGroup(<n>, <q>, <d>, <k>) F
 
 Let <n>, <d> and <k> be  positive integers and <q> a prime power. This
 function returns the irreducible solvable subgroup of $GL(n,q)$ with trace field $\F_q$, 
@@ -130,11 +130,7 @@ how to check this first). An integer <k> in the list return corresponds to `Irre
 \beginexample
 gap> inds := IndicesMaximalAbsolutelyIrreducibleSolvableMatrixGroups (2,3);
 [ 2 ] 
-gap> max := IrreducibleSolvableMatrixGroup (2,3,1,2);
-Group([ [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ], [ [ Z(3)^0, Z(3) ], [ 0*Z(3), Z(3)^0 ] ], 
-  [ [ Z(3), Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], [ [ 0*Z(3), Z(3)^0 ], [ Z(3), 0*Z(3) ] ], 
-  [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ] ])
-gap> max = GL(2,3); # it is the whole GL
+gap> IrreducibleSolvableMatrixGroup (2,3,1,2) = GL(2,3); # it is the whole GL
 true
 \endexample
 
@@ -144,7 +140,7 @@ true
 @{`IndicesAbsolutelyIrreducible\\Solvable\\MatrixGroups'} F
 \>AbsolutelyIrreducibleSolvableMatrixGroup(<n>, <q>,  <k>) F
 
-These functions are not available any longer.  Please use `IndicesIrreducibleSolvableMatrixGroups(<n>, <q>, 1)' and `IrreducibleSolvableMatrixGroup(<n>, <q>, 1, <k>)' instead.
+These functions are deprecated.  Please use `IndicesIrreducibleSolvableMatrixGroups(<n>, <q>, 1)' and `IrreducibleSolvableMatrixGroup(<n>, <q>, 1, <k>)' instead.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -162,6 +158,8 @@ See the discussion following the description of
 `AllIrreducibleSolvableMatrixGroups' for details. 
 
 \>AllIrreducibleSolvableMatrixGroups(<func_1>, <arg_1>, <func_2>, <arg_2>, \dots) F
+\>AllIrreducibleSolubleMatrixGroups(<func_1>, <arg_1>, <func_2>, <arg_2>, \dots) F
+\>AllIrredSolMatGroups(<func_1>, <arg_1>, <func_2>, <arg_2>, \dots) F
 
 This function returns a list of all irreducible solvable matrix
 groups <G> in the {\IRREDSOL} library for which the return value of $<func_i>(G)$ lies in
@@ -233,6 +231,8 @@ gap> Collected (List (l, Order));
 \endexample
 
 \>OneIrreducibleSolvableMatrixGroup(<func_1>, <arg_1>, <func_2>, <arg_2>, \dots) F
+\>OneIrreducibleSolubleMatrixGroup(<func_1>, <arg_1>, <func_2>, <arg_2>, \dots) F
+\>OneIrredSolMatGroup(<func_1>, <arg_1>, <func_2>, <arg_2>, \dots) F
 
 This function returns a matrix group <G> from the {\IRREDSOL} library such that
 $<func_i>(G)$ lies in <arg_i>, or `fail' if no such group exists. The arguments <func_1>,
@@ -250,6 +250,8 @@ To use this function efficiently, please see the comments in
 
 
 \>IteratorIrreducibleSolvableMatrixGroups(<func_1>, <arg_1>, <func_2>, <arg_2>, \dots) F
+\>IteratorIrreducibleSolubleMatrixGroups(<func_1>, <arg_1>, <func_2>, <arg_2>, \dots) F
+\>IteratorIrredSolMatGroups(<func_1>, <arg_1>, <func_2>, <arg_2>, \dots) F
 
 This function returns an iterator which runs through the list of all matrix groups <G>
 in the  {\IRREDSOL} library such that
@@ -283,6 +285,8 @@ They are only relevant if timing or conservation of memory is an issue.
 \index{workspace!running out of}
 
 \>LoadAbsolutelyIrreducibleSolvableGroupData(<n>, <q>) F
+\>LoadAbsolutelyIrreducibleSolubleGroupData(<n>, <q>) F
+\>LoadAbsoIrredSolGroupData(<n>, <q>) F
 
 This function loads the data for $GL(<n>, <q>)$ into the {\GAP} workspace and does 
 some pre-processing. If the data is already loaded, the function does nothing. This 
@@ -292,13 +296,21 @@ function is called automatically when you access the
 \>`LoadedAbsolutelyIrreducibleSolvableGroupData()'%
 {LoadedAbsolutelyIrreducibleSolvableGroupData}%
 @{`LoadedAbsolutelyIrreducibleSolvable\\GroupData'} F
+\>`LoadedAbsolutelyIrreducibleSolubleGroupData()'%
+{LoadedAbsolutelyIrreducibleSolubleGroupData}%
+@{`LoadedAbsolutelyIrreducibleSoluble\\GroupData'} F
+\>LoadedAbsoIrredSolGroupData(<n>, <q>) F
 
 This function returns a list. Each entry consists of an integer <n> and a set <l>. The set
 <l> contains all prime powers <q> such that the group data for $GL(<n>, <q>)$ is currently in memory.
 
-\>`UnloadAbsolutelydIrreducibleSolvableGroupData([<n> [, <q>]])'%
-{UnloadAbsolutelydIrreducibleSolvableGroupData}%
-@{`UnloadAbsolutelydIrreducibleSolvable\\GroupData'} F
+\>`UnloadAbsolutelyIrreducibleSolvableGroupData([<n> [, <q>]])'%
+{UnloadAbsolutelyIrreducibleSolvableGroupData}%
+@{`UnloadAbsolutelyIrreducibleSolvable\\GroupData'} F
+\>`UnloadAbsolutelyIrreducibleSolubleGroupData([<n> [, <q>]])'%
+{UnloadAbsolutelyIrreducibleSolubleGroupData}%
+@{`UnloadAbsolutelyIrreducibleSoluble\\GroupData'} F
+\>UnloadAbsoIrredSolGroupData(<n>, <q>) F
 
 This function can be used to delete data for $GL(<n>, <q>)$ from the {\GAP} workspace. If no argument
 is given, all data will be deleted. If only <n> is given, all data for degree <n> (and any <q>) will

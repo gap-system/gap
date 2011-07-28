@@ -2,16 +2,14 @@
 <!-- ##                                                                ## -->
 <!-- ##  abstract.xml         RCWA documentation          Stefan Kohl  ## -->
 <!-- ##                                                                ## -->
-<!-- ##  $Id: abstract.xml,v 1.48 2009/09/18 21:31:39 stefan Exp $     ## -->
-<!-- ##                                                                ## -->
 <!-- #################################################################### -->
 
 <Abstract>
 
 &RCWA; is a package for &GAP;&nbsp;4. It provides implementations of
-algorithms and methods for computing in certain infinite permutation groups.
-In principle, this package can deal at least with the following types of
-groups and their subgroups:
+algorithms and methods for computing in certain infinite permutation groups
+acting on the set of integers. In principle, this package can deal at least
+with the following types of groups and their subgroups:
 
 <List>
 
@@ -41,7 +39,7 @@ groups and their subgroups:
 </List>
 
 With substancial help of this package, the author has found the results
-in&nbsp;<Cite Key="Kohl09"/>. <P/>
+published in&nbsp;<Cite Key="Kohl09"/>. <P/>
 
 </Abstract>
 

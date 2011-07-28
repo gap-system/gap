@@ -1,28 +1,27 @@
 ####################################################################################################
 ##
 ##  PackageInfo.g                         GAP4 Package `RCWA'                            Stefan Kohl
-##  
-#H  @(#)$Id: PackageInfo.g,v 1.112 2009/05/28 22:18:44 stefan Exp $
 ##
+####################################################################################################
 
 SetPackageInfo( rec(
 
 PackageName      := "RCWA",
 Subtitle         := "Residue-Class-Wise Affine Groups",
-Version          := "3.dev",
-Date             := "15/02/2009",
-ArchiveURL       := "http://univlora.edu.al/personel/kohl/rcwa/rcwa-3.0.0",
-ArchiveFormats   := ".tar.gz",
+Version          := "3.0.4",
+Date             := "04/06/2011",
+ArchiveURL       := "http://www.gap-system.org/DevelopersPages/StefanKohl/rcwa/rcwa-3.0.4",
+ArchiveFormats   := "-win.zip", # ".tar.gz" when providing text files with UNIX-style line breaks
 Persons          := [
                       rec( LastName      := "Kohl",
                            FirstNames    := "Stefan",
                            IsAuthor      := true,
                            IsMaintainer  := true,
-                           Email         := "kohl@univlora.edu.al",
-                           WWWHome       := "http://univlora.edu.al/personel/kohl/",
-                           PostalAddress := Concatenation("Departamenti i Matematikes\n",
-                                                          "Universiteti \"Ismail Qemali\" ",
-                                                          "Vlore\nLagja: Pavaresia\n",
+                           Email         := "stefan@mcs.st-and.ac.uk",
+                           WWWHome       := "http://www.gap-system.org/DevelopersPages/StefanKohl/",
+                           PostalAddress := Concatenation("Department of Mathematics\n",
+                                                          "University of Vlora\n",
+                                                          "Lagjja: Pavaresia\n",
                                                           "Vlore / Albania"),
                            Place         := "Vlore / Albania",
                            Institution   := "University of Vlora"
@@ -31,9 +30,9 @@ Persons          := [
 Status           := "accepted",
 CommunicatedBy   := "Bettina Eick (Braunschweig)",
 AcceptDate       := "04/2005",
-PackageWWWHome   := "http://univlora.edu.al/personel/kohl/rcwa.html",
-README_URL       := "http://univlora.edu.al/personel/kohl/rcwa/README.rcwa",
-PackageInfoURL   := "http://univlora.edu.al/personel/kohl/rcwa/PackageInfo.g",
+PackageWWWHome   := "http://www.gap-system.org/DevelopersPages/StefanKohl/rcwa.html",
+README_URL       := "http://www.gap-system.org/DevelopersPages/StefanKohl/rcwa/README.rcwa",
+PackageInfoURL   := "http://www.gap-system.org/DevelopersPages/StefanKohl/rcwa/PackageInfo.g",
 AbstractHTML     := Concatenation("This package provides implementations of algorithms and ",
                                   "methods for computing in certain infinite permutation groups. ",
                                   "For an abstract, see ",
@@ -49,20 +48,20 @@ PackageDoc       := rec(
                        ),
 Dependencies     := rec(
                          GAP                    := ">=4.4.12",
-                         NeededOtherPackages    := [ ["ResClasses",">=3.0.0"], ["GRAPE",">=4.0"],
-                                                     ["Polycyclic",">=2.4"], ["GAPDoc",">=1.1"] ],
-                         SuggestedOtherPackages := [ ], #[ ["FR",">=0.714285"] ],
+                         NeededOtherPackages    := [ ["ResClasses",">=3.0.0"], ["GRAPE",">=4.3"],
+                                                     ["Polycyclic",">=2.6"], ["GAPDoc",">=1.1"] ],
+                         SuggestedOtherPackages := [ ["FR",">=1.1.3"] ],
                          ExternalConditions     := [ ]
                        ),
 AvailabilityTest := ReturnTrue,
 BannerString     := Concatenation( "\nLoading RCWA ", ~.Version,
                                    " ([R]esidue-[C]lass-[W]ise [A]ffine groups)",
-                                   "\nby Stefan Kohl, kohl@univlora.edu.al\n\n" ),
+                                   "\nby Stefan Kohl, stefan@mcs.st-and.ac.uk\n\n" ),
 Autoload         := false,
-TestFile         := "tst/testall.g",
-Keywords         := [ "infinite permutation groups", "geometric group theory",
-                      "combinatorial group theory", "permutation groups over rings",
-                      "residue-class-wise affine groups", "residue-class-wise affine mappings",
+TestFile         := "tst/testinstall.tst",
+Keywords         := [ "infinite permutation groups", "permutation groups over rings",
+                      "combinatorial group theory", "residue-class-wise affine groups",
+                      "residue-class-wise affine mappings",
                       "Collatz conjecture", "3n+1 conjecture" ]
 
 ) );

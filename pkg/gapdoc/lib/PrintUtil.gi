@@ -2,7 +2,7 @@
 ##
 #W  PrintUtil.gi                 GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: PrintUtil.gi,v 1.5 2007/05/24 16:06:36 gap Exp $
+#H  @(#)$Id: PrintUtil.gi,v 1.6 2010/09/22 22:21:17 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -202,7 +202,7 @@ InstallMethod(ViewObj, [IsRecord], function(r)
 end);
 
 InstallMethod(PrintObj, [IsRecord], function(r)
-  if IsBound(r.operations) and IsBound(r.operations.ViewObj) then
+  if IsBound(r.operations) and IsBound(r.operations.PrintObj) then
     r.operations.PrintObj(r);
   else
     TryNextMethod();

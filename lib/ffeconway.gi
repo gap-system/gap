@@ -2,7 +2,7 @@
 ##
 #W  ffeconway.gi               GAP library                       Steve Linton
 ##
-#H  @(#)$Id: ffeconway.gi,v 4.20 2008/08/13 08:43:38 sal Exp $
+#H  @(#)$Id: ffeconway.gi,v 4.21 2011/03/25 12:14:03 gap Exp $
 ##
 #Y  Copyright (C) 2005 The GAP Group
 ##
@@ -10,7 +10,7 @@
 ##  coefficients of polynomials modulo the Conway polynomial.
 ##
 Revision.ffeconway_gi :=
-    "@(#)$Id: ffeconway.gi,v 4.20 2008/08/13 08:43:38 sal Exp $";
+    "@(#)$Id: ffeconway.gi,v 4.21 2011/03/25 12:14:03 gap Exp $";
 
 #############################################################################
 ##
@@ -241,9 +241,8 @@ InstallMethod(PrintObj, "for large finite field elements (use String)",
     Print(String(x));
 end);
 
-InstallMethod(DisplayString,"For large finite field elements",
-        [IsFFE and IsCoeffsModConwayPolRep], 
-        function(x)
+BindGlobal( "DisplayStringForLargeFiniteFieldElements",
+  function(x)
     local   s,  j,  a;
     if IsZero(x) then
         return "0z\n";
@@ -270,7 +269,11 @@ InstallMethod(DisplayString,"For large finite field elements",
     od;
     Add(s,'\n');
     return s;
-end);
+  end );
+
+InstallMethod(DisplayString,"For large finite field elements",
+        [IsFFE and IsCoeffsModConwayPolRep], 
+        DisplayStringForLargeFiniteFieldElements );
 
 InstallMethod(Display,"For large finite field elements",
         [IsFFE and IsCoeffsModConwayPolRep], 
@@ -282,7 +285,7 @@ InstallMethod(ViewString,"For large finite field elements",
         [IsFFE and IsCoeffsModConwayPolRep], 
         function(x)
     local   s;
-    s := DisplayString(x);
+    s := DisplayStringForLargeFiniteFieldElements(x);
     if Length(s) > ViewLength()*SizeScreen()[1] then
         return Concatenation("<<an element of GF(",
                        String(Characteristic(x)), ", ",

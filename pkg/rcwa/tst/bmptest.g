@@ -2,12 +2,12 @@
 ##
 #W  bmptest.g                 GAP4 Package `RCWA'                 Stefan Kohl
 ##
-#H  @(#)$Id: bmptest.g,v 1.1 2006/12/05 16:14:34 stefan Exp $
-##
 ##  This file contains a function which tests RCWA's functionality for
 ##  bitmap graphics files in general and for drawing orbit pictures in
 ##  particular.
 ##
+#############################################################################
+
 RCWABitmapGraphicsTest := function ( directory )
 
   local  PSL2Z, fname, outname, examples, i;

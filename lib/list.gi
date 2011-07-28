@@ -2,7 +2,7 @@
 ##
 #W  list.gi                     GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: list.gi,v 4.229 2010/06/04 12:00:50 alexk Exp $
+#H  @(#)$Id: list.gi,v 4.233 2011/05/11 12:05:00 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains methods for lists in general.
 ##
 Revision.list_gi :=
-    "@(#)$Id: list.gi,v 4.229 2010/06/04 12:00:50 alexk Exp $";
+    "@(#)$Id: list.gi,v 4.233 2011/05/11 12:05:00 alexk Exp $";
 
 
 #############################################################################
@@ -1498,6 +1498,41 @@ InstallGlobalFunction( PositionSet, function( arg )
 #M  PositionProperty(<list>,<func>) .  position of an element with a property
 #M  PositionProperty( <list>, <func>, <from> )
 ##
+
+InstallMethod( PositionProperty,
+    "for list and function",
+    [ IsList, IsFunction ],
+    function ( list, func )
+    local i;
+    for i in [ 1 .. Length( list ) ] do
+        if IsBound( list[i] ) then
+        	if func( list[ i ] ) then
+            	return i;
+            fi;	
+        fi;
+    od;
+    return fail;
+    end );
+
+InstallMethod( PositionProperty,
+    "for list, function, and integer",
+    [ IsList, IsFunction, IsInt ],
+    function( list, func, from )
+    local i;
+
+    if from < 1 then
+      from:= 1;
+    fi;
+    for i in [ from+1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        if func( list[i] ) then
+          return i;
+        fi;  
+      fi;
+    od;
+    return fail;
+    end );
+    
 InstallMethod( PositionProperty,
     "for dense list and function",
     [ IsDenseList, IsFunction ],
@@ -1526,6 +1561,27 @@ InstallMethod( PositionProperty,
       fi;
     od;
     return fail;
+    end );
+
+
+#############################################################################
+##
+#M  PositionsProperty(<list>,<func>)  . positions of elements with a property
+##
+InstallMethod( PositionsProperty,
+    "for dense list and function",
+    [ IsDenseList, IsFunction ],
+    function( list, func )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if func( list[i] ) then
+        Add( result, i );
+      fi;
+    od;
+
+    return result;
     end );
 
 
@@ -1691,7 +1747,7 @@ InstallMethod( Add, "three arguments fast version",
     local len;
     len := Length(l);
     if p <= len then
-        COPY_LIST_ENTRIES(l,p,1,l,p+1,1,len-p+1);
+        CopyListEntries(l,p,1,l,p+1,1,len-p+1);
     fi;
     l[p] := o;
     return;
@@ -1703,7 +1759,7 @@ InstallMethod( Add, "three arguments fast version sorted",
     local len;
     len := Length(l);
     if p <= len then
-        COPY_LIST_ENTRIES(l,p,1,l,p+1,1,len-p+1);
+        CopyListEntries(l,p,1,l,p+1,1,len-p+1);
     fi;
     l[p] := o;
     if IS_DENSE_LIST(l) and (p = 1 or l[p-1] < o) and (p = len+1 or o < l[p+1]) then
@@ -1748,7 +1804,7 @@ InstallMethod(Remove, "two arguments, fast", [IsList and IsPlistRep and IsMutabl
         x := l[p];
     fi;
     if p <= len then
-        COPY_LIST_ENTRIES(l,p+1,1,l,p,1,len-p);
+        CopyListEntries(l,p+1,1,l,p,1,len-p);
         Unbind(l[len]);
     fi;
     if ret then
@@ -2007,6 +2063,22 @@ InstallMethod( ReversedOp,
     fi;
     end );
 
+#############################################################################
+##
+#M  Shuffle( <list> ) . . . . . . . . . . . . . . . . permute entries randomly
+InstallMethod(Shuffle, [IsDenseList and IsMutable], function(l)
+  local len, j, tmp, i;
+  len := Length(l);
+  for i in [1..len-1] do
+    j := Random([i..len]);
+    if i <> j then
+      tmp := l[i];
+      l[i] := l[j];
+      l[j] := tmp;
+    fi;
+  od;
+  return l;
+end);
 
 #############################################################################
 ##

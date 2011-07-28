@@ -2,7 +2,7 @@
 ##
 #W  ctosylno.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctosylno.tbl,v 4.47 2009/07/29 14:00:54 gap Exp $
+#H  @(#)$Id: ctosylno.tbl,v 4.51 2011/02/09 15:56:57 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -28,6 +28,33 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctosylno.tbl,v $
+#H  Revision 4.51  2011/02/09 15:56:57  gap
+#H  name 11^2:(5x2A5) (used in AtlasRep) for 11^2:(5x2.A5)
+#H      TB
+#H
+#H  Revision 4.50  2010/12/01 17:47:57  gap
+#H  renamed "Sym(4)" to "Symm(4)";
+#H  note that the table constructed with `CharacterTable( "Symmetric", 4 )'
+#H  gets the identifier `"Sym(4)"', and this table is sorted differently
+#H      TB
+#H
+#H  Revision 4.49  2010/05/05 13:20:08  gap
+#H  - added many class fusions,
+#H  - changed several class fusions according to consistency conditions,
+#H    after systematic checks of consistency
+#H    - with Brauer tables w.r.t. the restriction of characters,
+#H    - of subgroup fusions with the corresponding subgroup fusions between
+#H      proper factors where the factor fusions are stored,
+#H    - of subgroup fusions from maximal subgroups with subgroup fusions of
+#H      extensions inside automorphic extensions
+#H
+#H      TB
+#H
+#H  Revision 4.48  2010/01/19 17:05:35  gap
+#H  added several tables of maximal subgroups of central extensions of
+#H  simple groups (many of them were contributed by S. Dany)
+#H      TB
+#H
 #H  Revision 4.47  2009/07/29 14:00:54  gap
 #H  added fusions 13:12 -> 2F4(2)'.2, 13:12 -> A13.2
 #H      TB
@@ -354,7 +381,7 @@
 #H  ==========================================================================
 ##
 Revision.ctosylno_tbl :=
-    "@(#)$Id: ctosylno.tbl,v 4.47 2009/07/29 14:00:54 gap Exp $";
+    "@(#)$Id: ctosylno.tbl,v 4.51 2011/02/09 15:56:57 gap Exp $";
 
 SET_TABLEFILENAME("ctosylno");
 ALN:= Ignore;
@@ -650,7 +677,8 @@ ALF("2.HS.2N5","HS.2N5",[1,1,2,2,3,3,4,4,5,5,6,6,7,8,9,9,10,10,11,12,12,
 13,13,14,14,15,16,16,17,18,18,19,20,20,21,21,22,23,23,24,25]);
 ALF("2.HS.2N5","2.HS.2",[1,2,11,12,13,14,15,16,4,3,25,24,10,10,23,23,23,
 23,8,33,32,5,5,26,26,35,45,46,38,50,51,38,51,50,52,53,36,54,55,38,38],[
-"fusion map is unique up to table automorphisms"
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
 ]);
 ALF("2.HS.2N5","5^(1+4):2^(1+4).5.4",[1,10,2,12,3,13,4,14,8,10,9,12,31,30,
 45,43,44,42,11,15,16,31,30,39,38,29,34,33,42,52,50,43,51,53,16,16,11,15,
@@ -1268,7 +1296,8 @@ ARC("5^(1+2):(24:2)","tomfusion",rec(name:="5^(1+2)+:3:8.2",map:=[1,2,3,4,
 ]));
 ALF("5^(1+2):(24:2)","Co3",[1,2,3,4,8,8,7,9,10,11,17,17,19,19,22,23,27,27,30,
 33,34,40,40,40,40,42],[
-"fusion map determined by factorization through McL.2"
+"fusion map determined up to table autom. by Brauer tables,\n",
+"the representative factors through McL.2"
 ]);
 ALF("5^(1+2):(24:2)","McL.2",[1,2,20,3,5,5,21,6,7,8,23,23,11,11,13,25,16,16,
 18,28,29,32,32,33,33,19],[
@@ -1767,8 +1796,11 @@ ALF("7^2:(3x2A4)","7^2:(3x2S4)",[1,5,11,12,12,11,4,3,13,13,8,6,7,16,15,14,
 14,16,15,2,2,10,9,17,18,18,17],[
 "fusion map is unique up to table automorphisms"
 ]);
-ALF("7^2:(3x2A4)","(7^2:(3x2A4)xL2(7)).2",[1,22,52,58,58,52,17,12,64,64,
-37,27,32,82,76,70,70,82,76,6,6,47,42,88,94,94,88]);
+ALF("7^2:(3x2A4)","(7^2:(3x2A4)xL2(7)).2",[1,3,9,10,10,9,8,7,5,5,4,11,12,
+14,13,6,6,14,13,2,2,16,15,17,18,18,17],[
+"fusion map determined up to table automorphisms using that the subgroup\n",
+"is normal"
+]);
 ALF("7^2:(3x2A4)","Co1",[1,4,6,6,8,8,8,8,8,8,14,26,26,24,24,26,26,26,26,
 27,28,57,57,75,75,76,76],[
 "fusion map is unique up to table automorphisms"
@@ -3361,7 +3393,7 @@ E(13)-E(13)^2-E(13)^3-E(13)^4+E(13)^5-E(13)^6-E(13)^7+E(13)^8-E(13)^9-E(13)^10
 [( 4, 5, 6),(13,14)(15,16)(17,18)(19,20),( 9,12)(10,11)(17,19)(18,20)]);
 ALF("(2^2x13:4):3","Ru",[1,3,20,32,33,34,3,2,8,6,6,8,4,4,11,11,19,19,19,
 19],[
-"fusion map determined by factoring through (2^2xSz(8)):3"
+"fusion map determined by factorization through (2^2xSz(8)):3"
 ]);
 ALN("(2^2x13:4):3",["RuN13"]);
 
@@ -3719,7 +3751,8 @@ ALF("2.HSN3","2x(3^2.QD16)",[1,1,2,7,7,12,12,3,3,4,9,9,8,10,11,5,5,6,6,14,
 ]);
 ALF("2.HSN3","2.HS",[1,2,5,6,7,18,19,3,4,5,11,11,10,11,11,3,4,5,5,21,20,
 26,26,27,27,19,18],[
-"fusion map is unique up to table automorphisms"
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
 ]);
 
 MOT("5:4",
@@ -3760,6 +3793,10 @@ MOT("2x5:4",
 ["ConstructDirectProduct",[["Cyclic",2],["5:4"]]]);
 ALF("2x5:4","M12",[1,8,6,3,6,2,13,7,2,7],[
 "fusion map is unique up to table automorphisms"
+]);
+ALF("2x5:4","2.Sz(8)",[1,6,4,3,5,2,7,4,3,5],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
 ]);
 ALN("2x5:4",["M12N5"]);
 
@@ -3814,7 +3851,10 @@ MOT("2x11:5",
 0,
 [(2,3)(9,10),(4,5,7,6)(11,12,14,13)],
 ["ConstructDirectProduct",[["Cyclic",2],["P:Q",[11,5]]]]);
-ALF("2x11:5","2.L2(11)",[1,12,14,6,8,8,6,2,13,15,7,9,9,7]);
+ALF("2x11:5","2.L2(11)",[1,12,14,6,8,8,6,2,13,15,7,9,9,7],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
 ALF("2x11:5","Co3",[1,24,25,10,10,10,10,3,36,37,23,23,23,23],[
 "fusion map is unique up to table automorphisms"
 ]);
@@ -3827,6 +3867,7 @@ MOT("17:8",
 0,
 [(2,3),(4,6)(5,9)(8,10),(4,8)(6,10)],
 ["ConstructPermuted",["P:Q",[17,8]]]);
+ALF("17:8","L2(17)",[1,11,10,5,4,6,2,6,4,5]);
 ALF("17:8","J3",[1,18,19,9,5,9,2,9,5,9],[
 "fusion map is unique up to table automorphisms"
 ]);
@@ -3933,9 +3974,9 @@ MOT("(A4xD10).2",
 3,3,8,9,10,11,12,13,14]],
 0,
 [(6,7),(11,12)(13,14)],
-["ConstructIndexTwoSubdirectProduct","a4","Sym4","D10","5:4",[18,20,23,25],
+["ConstructIndexTwoSubdirectProduct","a4","Symm(4)","D10","5:4",[18,20,23,25],
 (2,4)(3,8,6,9,7),(5,11,7)(8,13,9,12,10)]);
-ALF("(A4xD10).2","Sym4",[1,2,3,1,2,3,3,1,2,3,4,4,5,5]);
+ALF("(A4xD10).2","Symm(4)",[1,2,3,1,2,3,3,1,2,3,4,4,5,5]);
 ALF("(A4xD10).2","5:4",[1,1,1,2,2,2,2,4,4,4,3,5,3,5]);
 ALF("(A4xD10).2","M24",[1,3,4,9,15,21,22,2,3,10,7,7,8,8],[
 "fusion map is unique up to table automorphisms"
@@ -5484,7 +5525,7 @@ ALF("F3+N5","(A4xO8+(2).3).2",[1,69,110,12,80,121,4,72,113,11,11,79,79,
 189,189],[
 "fusion map is unique up to table automorphims"
 ]);
-ALF("F3+N5","Sym4",[1,2,3,1,2,3,1,2,3,1,1,2,2,3,3,1,2,1,2,1,2,3,3,3,1,1,2,
+ALF("F3+N5","Symm(4)",[1,2,3,1,2,3,1,2,3,1,1,2,2,3,3,1,2,1,2,1,2,3,3,3,1,1,2,
 2,1,1,2,2,3,3,3,3,3,3,3,3,4,4,5,5,4,4,5,5,4,4,5,5,4,4,5,5]);
 ALF("F3+N5","Fi22N5",[1,1,1,12,12,12,2,2,2,5,6,5,6,5,6,3,3,11,11,16,16,3,
 11,16,4,13,4,13,18,17,18,17,4,4,13,13,18,17,17,18,7,8,7,8,9,10,9,10,15,14,
@@ -5628,7 +5669,7 @@ E(5)^2,1,1,E(5)^4,E(5)^4,E(5)^3,E(5)^3,E(5)^3,E(5),E(5),E(5)^2,E(5)^2,E(5)^2,1
 31)(29,35)(30,34)(36,39)(37,40)(43,48)(44,47)(45,50)(46,49),(4,10,9,7)(5,11,8,
 6)(12,25)(13,24)(14,35,20,29)(15,34,19,30)(16,26,22,32)(17,27,23,33)(18,28,21,
 31)(36,37,39,40)(43,49,48,46)(44,50,47,45)]);
-ALN("11^2:(5x2.A5)",["MN11","MM39"]);
+ALN("11^2:(5x2.A5)",["11^2:(5x2A5)","MN11","MM39"]);
 
 MOT("13^(1+2):(3x4S4)",
 [

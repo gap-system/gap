@@ -2,10 +2,10 @@
 ##
 #W storing.gi			NQL				René Hartung
 ##
-#H   @(#)$Id: storing.gi,v 1.1 2009/07/02 12:37:14 gap Exp $
+#H   @(#)$Id: storing.gi,v 1.2 2010/03/17 12:47:34 gap Exp $
 ##
 Revision.("nql/gap/pargap/storing_gi"):=
-  "@(#)$Id: storing.gi,v 1.1 2009/07/02 12:37:14 gap Exp $";
+  "@(#)$Id: storing.gi,v 1.2 2010/03/17 12:47:34 gap Exp $";
 
 ############################################################################
 ##
@@ -38,8 +38,8 @@ InstallMethod( ExtendQuotientSystem,
 	dir,file,	# for storing the results
 	time;
 
-  if not NQLPar_StoreResults then
-    TRY_NEXT_METHOD();
+  if not NQLPar_StoreResults or not IsMaster() then
+    TryNextMethod();
   fi;
 
   # storing the result
@@ -231,6 +231,10 @@ InstallOtherMethod( ExtendQuotientSystem,
 	Defects,defects,# defects in <Rels>
    	dir,file,	# for storing the results
 	time;
+
+  if not IsMaster() then 
+    TryNextMethod();
+  fi;
  
   Info( InfoNQL, 1, "Continue calculations..." );
 

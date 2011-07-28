@@ -3,7 +3,7 @@
 #W  function.g                   GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: function.g,v 4.23 2010/08/04 09:17:14 gap Exp $
+#H  @(#)$Id: function.g,v 4.29 2011/02/09 15:41:34 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file deals with functions.
 ##
 Revision.function_g :=
-    "@(#)$Id: function.g,v 4.23 2010/08/04 09:17:14 gap Exp $";
+    "@(#)$Id: function.g,v 4.29 2011/02/09 15:41:34 gap Exp $";
 
 
 #############################################################################
@@ -104,7 +104,7 @@ BIND_GLOBAL( "TYPE_OPERATION",
 
 #############################################################################
 ##
-#F  NameFunction( <func> )  . . . . . . . . . . . . . . .  name of a function
+#O  NameFunction( <func> )  . . . . . . . . . . . . . . .  name of a function
 ##
 ##  <#GAPDoc Label="NameFunction">
 ##  <ManSection>
@@ -129,15 +129,14 @@ BIND_GLOBAL( "TYPE_OPERATION",
 ##  gap> NameFunction(x->x);
 ##  "unknown"
 ##  gap> NameFunction(NameFunction);
-##  "NAME_FUNC"
+##  "NameFunction"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-#T  If objects simulate functions this must become an operation.
 ##
-BIND_GLOBAL( "NameFunction", NAME_FUNC );
+DeclareOperationKernel("NameFunction", [IS_OBJECT], NAME_FUNC);
 
 
 #############################################################################
@@ -157,7 +156,7 @@ BIND_GLOBAL( "NameFunction", NAME_FUNC );
 #T  If objects simulate functions this must become an operation, or an attribute
 #T  with the above
 ##
-BIND_GLOBAL( "SetNameFunction", SET_NAME_FUNC );
+DeclareOperationKernel( "SetNameFunction", [IS_OBJECT, IS_STRING], SET_NAME_FUNC );
 
 
 #############################################################################
@@ -188,7 +187,7 @@ BIND_GLOBAL( "SetNameFunction", SET_NAME_FUNC );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL( "NumberArgumentsFunction", NARG_FUNC );
+DeclareOperationKernel( "NumberArgumentsFunction", [IS_OBJECT], NARG_FUNC );
 
 
 #############################################################################
@@ -236,7 +235,7 @@ BIND_GLOBAL( "NamesLocalVariablesFunction", NAMS_FUNC );
 ##  The return value <K>fail</K> occurs if <A>func</A> is
 ##  a compiled function or an operation.
 ##  For functions that have been entered interactively,
-##  the string <C>"*stdin*</C> is returned,
+##  the string <C>"*stdin*"</C> is returned,
 ##  see Section <Ref Sect="Special Filenames"/>.
 ##  <P/>
 ##  <Log><![CDATA[
@@ -343,7 +342,7 @@ BIND_GLOBAL( "StartlineFunc", STARTLINE_FUNC );
 #T  If objects simulate functions this must become an operation.
 ##
 UNBIND_GLOBAL("CallFuncList"); # was declared 2b defined
-BIND_GLOBAL( "CallFuncList", CALL_FUNC_LIST );
+DeclareOperationKernel( "CallFuncList", [IS_OBJECT, IS_LIST], CALL_FUNC_LIST );
 
 
 #############################################################################
@@ -442,8 +441,48 @@ end);
 
     
 BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
-    Print("<Operation \"",NAME_FUNC(op),"\">");
-         end);  
+    local   class,  flags,  types,  catok,  repok,  propok,  seenprop,  
+            t;
+    class := "Operation";
+    if IS_IDENTICAL_OBJ(op,IS_OBJECT) then
+        class := "Filter";
+    elif op in CONSTRUCTORS then
+        class := "Constructor";
+    elif IsFilter(op) then
+        class := "Filter";
+        flags := TRUES_FLAGS(FLAGS_FILTER(op));
+        types := INFO_FILTERS{flags};
+        catok := true;
+        repok := true;
+        propok := true;
+        seenprop := false;
+        for t in types do
+            if not t in FNUM_REPS then
+                repok := false;
+            fi;
+            if not t in FNUM_CATS then
+                catok := false;
+            fi;
+            if not t in FNUM_PROS and not t in FNUM_TPRS then
+                propok := false;
+            fi;
+            if t in FNUM_PROS then
+                seenprop := true;
+            fi;
+        od;
+        if seenprop and propok then
+            class := "Property";
+        elif catok then
+            class := "Category";
+        elif repok then
+            class := "Representation";
+        fi;
+    elif Tester(op) <> false  then
+        # op is an attribute
+        class := "Attribute";
+    fi;
+    Print("<",class," \"",NAME_FUNC(op),"\">");
+          end);  
     
 InstallMethod( ViewObj,
     "for an operation",

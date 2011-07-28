@@ -215,7 +215,7 @@ Changes between version 2.5.2 and version 2.5.3:
  - The line length used in the examples has been reduced to 75 in order to
    improve their appearance in the online help with standard settings.
 
-Changes between version 2.5.3 and version 3.0.0 (??? ??, 200?):
+Changes between version 2.5.3 and version 3.0.0 (May 8, 2011):
 
 The main change is that ResClasses now supports computations with
 unions of residue classes of Z^2.
@@ -225,6 +225,10 @@ Further changes are:
  - A function `ResidueClassesIntersectionType' has been added.
 
  - The required versions of GAP, GAPDoc and Polycyclic have been incremented
-   to 4.4.10, 1.1 and 2.2, respectively.
+   to 4.4.12, 1.1 and 2.6, respectively.
+
+Changes between version 3.0.0 and version 3.0.1:
+
+ - The CVS revision entries have been removed from the source files.
 
 

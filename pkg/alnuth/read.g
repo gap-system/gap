@@ -1,26 +1,35 @@
 #############################################################################
 ##
 #W    read.g         Alnuth - Kant Interface                     Bettina Eick
+##                                                            Andreas Distler
 ##
+##  The files with GAP code are read here and global variables are defined.
+##  Note that in Alnuth we cannot do this in completely arbitrary order.
+##  Globals used in code should be known to avoid warnings. The function
+##  'SetExternalExecutableAlnuthNC' has to be installed before use.
+##    
 
 #############################################################################
 ##
 #R alnuth global variables
 ##
-if not IsBound( KANTOUTPUT ) then 
-    KANTOUTPUT := "/tmp/"; 
+
+# the directory path to the code files for the external program
+if not IsBound( AL_PATH ) then 
+    BindGlobal( "AL_PATH", DirectoriesPackageLibrary("alnuth", "gp"));
 fi;
 
-if not IsBound( ALNUTHPATH ) then 
-    if CompareVersionNumbers( VERSION, "4.4" ) then
-        ALNUTHPATH := PackageInfo("alnuth")[1].InstallationPath;
-    else
-        ALNUTHPATH := LOADED_PACKAGES.alnuth[1]![1];
-        ReadPkg( "alnuth/gap/compat.g" );
-    fi;
-    ALNUTHPATH := Concatenation( ALNUTHPATH, "/lib/" );
+# options for execution of the external program
+if not IsBound( AL_OPTIONS ) then
+    BindGlobal( "AL_OPTIONS", ["-f", "-q"] );
 fi;
 
+# extra option to specify stack size for execution of PARI/GP
+if not IsBound( AL_STACKSIZE ) then
+    BindGlobal( "AL_STACKSIZE", "-s128M" );
+fi;
+
+# number of trials to find a primitve element with small minimal polynomial
 if not IsBound( PRIM_TEST )  then   
     PRIM_TEST := 20;
 fi; 
@@ -29,20 +38,25 @@ fi;
 ##
 #R read files
 ##
-ReadPkg("alnuth/defs.g");
+ReadPackage("alnuth", "defs.g");
 
-ReadPkg("alnuth/gap/factors.gi");
-ReadPkg("alnuth/gap/kantin.gi");
-ReadPkg("alnuth/gap/matfield.gi");
-ReadPkg("alnuth/gap/polfield.gi");
-ReadPkg("alnuth/gap/field.gi");
-ReadPkg("alnuth/gap/unithom.gi");
-ReadPkg("alnuth/gap/matunits.gi");
-ReadPkg("alnuth/gap/rels.gi");
-ReadPkg("alnuth/gap/present.gi");
-ReadPkg("alnuth/gap/isom.gi");
-ReadPkg("alnuth/gap/rationals.gi");
+ReadPackage("alnuth", "gap/setup.gi");
+ReadPackage("alnuth", "gap/factors.gi");
+ReadPackage("alnuth", "gap/kantin.gi");
+ReadPackage("alnuth", "gap/matfield.gi");
+ReadPackage("alnuth", "gap/polfield.gi");
+ReadPackage("alnuth", "gap/field.gi");
+ReadPackage("alnuth", "gap/unithom.gi");
+ReadPackage("alnuth", "gap/matunits.gi");
+ReadPackage("alnuth", "gap/rels.gi");
+ReadPackage("alnuth", "gap/present.gi");
+ReadPackage("alnuth", "gap/isom.gi");
+ReadPackage("alnuth", "gap/rationals.gi");
 
-ReadPkg("alnuth/exam/unimod.gi");
-ReadPkg("alnuth/exam/rationals.gi");
-ReadPkg("alnuth/exam/fields.gi");
+ReadPackage("alnuth", "exam/unimod.gi");
+ReadPackage("alnuth", "exam/rationals.gi");
+ReadPackage("alnuth", "exam/fields.gi");
+
+#############################################################################
+##
+#E

@@ -5,7 +5,7 @@
 ## Methods for the calculation of 
 ## constructive pc-sequences for rational matrix groups
 ##
-#H  @(#)$Id: cpcs.gi,v 1.9 2005/11/26 12:59:55 gap Exp $
+#H  @(#)$Id: cpcs.gi,v 1.10 2011/05/31 13:10:57 gap Exp $
 ##
 #Y 2003
 ##
@@ -604,4 +604,3 @@ end );
 #############################################################################
 ##
 #E
-

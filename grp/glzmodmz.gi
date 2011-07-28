@@ -1,13 +1,17 @@
 #############################################################################
 ##
 #W  glzmodmz.gi                    GAP library                    Stefan Kohl
+#W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: glzmodmz.gi,v 1.3 2010/02/23 15:12:40 gap Exp $
+#H  @(#)$Id: glzmodmz.gi,v 1.6 2011/06/21 16:52:49 gap Exp $
 ##
-#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
+#Y  Copyright (C) 2011 The GAP Group
+##
+##  This file contains the functionality for constructing clasical groups over
+##  residue class rings.
 ##
 Revision.glzmodmz_gi :=
-    "@(#)$Id: glzmodmz.gi,v 1.3 2010/02/23 15:12:40 gap Exp $";
+    "@(#)$Id: glzmodmz.gi,v 1.6 2011/06/21 16:52:49 gap Exp $";
 
 #############################################################################
 ##
@@ -101,6 +105,316 @@ InstallMethod( GeneralLinearGroupCons,
     SetSize(G,SizeOfGLdZmodmZ(d,m));
     return G;
   end );
+
+InstallGlobalFunction("ConstructFormPreservingGroup",function(arg)
+local oper,n,R,
+  q,p,field,zero,one,oner,a,f,pp,b,d,fb,btf,eq,r,i,j,e,k,ogens,gens,bp,sol,
+  g,prev,proper,fp,ho,evrels,hom,bas,basm,em,ngens,addmat,sub,transpose;
+
+  oper:=arg[1];
+  R:=arg[Length(arg)];
+  n:=arg[Length(arg)-1];
+  q:=Size(R);
+  if not IsPrimePowerInt(q) then
+    TryNextMethod();
+  fi;
+  p:=Factors(q)[1];
+  if p=2 then return fail;fi;
+  field:=GF(p);
+  zero:=Zero(field);
+  one:=One(field);
+  if Length(arg)=3 then
+    g:=oper(n,p);
+  else
+    g:=oper(arg[2],n,p);
+  fi;
+    
+  # get the form and get the correct -1's
+  f:=InvariantBilinearForm(g).matrix;
+
+  transpose:=not ForAll(GeneratorsOfGroup(g),
+    x->TransposedMat(x)*f*x=f);
+  if transpose then
+    Info(InfoGroup,1,"transpose!");
+    if HasSize(g) then
+      e:=Size(g);
+    else
+      e:=fail;
+    fi;
+    g:=Group(List(GeneratorsOfGroup(g),TransposedMat));
+    if e<>fail then
+      SetSize(g,e);
+    fi;
+  fi;
+  #IsomorphismFpGroup(g); # force hom for next steps
+  f:=List(f,r->List(r,Int));
+  for i in [1..n] do
+
+    for j in [1..n] do
+      if f[i][j]=p-1 then
+	f[i][j]:=-1;
+      fi;
+    od;
+  od;
+
+  pp:=p; # previous p
+  while pp<q do
+
+    prev:=g;
+
+    if HasIsomorphismFpGroup(prev) then
+      hom:=IsomorphismFpGroup(prev);
+      fp:=Range(hom);
+      ogens:=List(GeneratorsOfGroup(fp),
+	      x->List(PreImagesRepresentative(hom,x)));
+    else
+      fp:=fail;
+      ogens:=GeneratorsOfGroup(prev);
+    fi;
+    ogens:=List(ogens,x->List(x,r->List(r,Int)));
+    gens:=[];
+
+    for bp in [1..Length(ogens)+1] do
+      if bp<=Length(ogens) then
+	b:=ogens[bp];
+      else
+	b:=One(ogens[1]);
+      fi;
+      d:=(TransposedMat(b)*f*b-f)*1/pp;
+      # solve  D+E^T*F*B+B^T*F*E=0
+      fb:=f*b;
+      btf:=TransposedMat(b)*f;
+      eq:=[];
+      r:=[];
+      for i in [1..n] do
+	for j in [1..n] do
+	  # eq for entry i,j
+	  e:=ListWithIdenticalEntries(n^2,zero);
+	  for k in [1..n] do
+	    e[(k-1)*n+i]:=e[(k-1)*n+i]+fb[k][j];
+	    e[(k-1)*n+j]:=e[(k-1)*n+j]+btf[i][k];
+	  od;
+	  Add(eq,e);
+
+	  #RHS is -d entry
+	  Add(r,-d[i][j]*one);
+	od;
+      od;
+      eq:=TransposedMat(eq); # columns were corresponding to variables
+
+      if bp<=Length(ogens) then
+	# lift generator
+	sol:=SolutionMat(eq,r);
+
+	# matrix from it
+	sol:=List([1..n],x->sol{[(x-1)*n+1..x*n]});
+	sol:=List(sol,x->List(x,Int));
+	Add(gens,b+pp*sol);
+      else
+	# we know all gens
+
+	oner:=One(Integers mod (pp*p));
+	gens:=List(gens,x->x*oner);
+
+	g:=Group(gens);
+
+	# d will be zero, so homogeneous
+
+	sol:=NullspaceMat(eq);
+	#Info(InfoGroup,1,"extend by dim",Length(sol));
+
+	proper:=p^Length(sol)*Size(prev); # proper order of group
+
+	# vector space in kernel that is generated
+	bas:=[];
+	basm:=[];
+	sub:=VectorSpace(field,bas,Zero(e));
+
+	addmat:=function(em)
+	local c;
+	  e:=List(em,r->List(r,Int))-b;
+	  e:=1/pp*e;
+	  e:=Concatenation(e)*one;
+	  if not e in sub then
+	    Add(bas,e);
+	    Add(basm,em);
+	    sub:=VectorSpace(field,bas);
+	  fi;
+	end;
+
+	if fp<>fail then
+	  # evaluate relators
+	  evrels:=RelatorsOfFpGroup(fp);
+
+	  i:=1;
+	  while i<=Length(evrels) and Length(bas)<Length(sol) do
+	    em:=MappedWord(evrels[i],FreeGeneratorsOfFpGroup(fp),gens);
+	    addmat(em);
+	    i:=i+1;
+	  od;
+	else
+	  evrels:=Source(EpimorphismFromFreeGroup(prev));
+	  repeat
+	    j:=PseudoRandom(evrels:radius:=10);
+	    k:=MappedWord(j,GeneratorsOfGroup(evrels),GeneratorsOfGroup(prev));
+	    k:=MappedWord(j,GeneratorsOfGroup(evrels),gens)^Order(k);
+	  until not IsOne(k);
+	  addmat(k);
+	    
+	fi;
+
+	# close under action
+	i:=1;
+	while i<=Length(basm) and Length(bas)<Length(sol) do
+	  for j in gens do
+	    em:=basm[i]^j;
+	    addmat(em);
+	  od;
+	  i:=i+1;
+	od;
+
+	if Length(bas)=Length(sol) then
+	  Info(InfoGroup,1,"kernel generated ",Length(bas));
+	else
+	  Info(InfoGroup,1,"kernel partially generated ",Length(bas));
+	  ngens:=ShallowCopy(gens);
+	  i:=Iterator(sol); # just jun through basis as linear
+	  while Length(bas)<Length(sol) do
+	    e:=NextIterator(i);
+	    e:=List(e,Int);
+	    e:=b+pp*List([1..n],x->e{[(x-1)*n+1..x*n]});
+	    addmat(e);
+	    if e=basm[Length(basm)] then
+	      # was added
+	      Add(ngens,e);
+	      g:=Group(ngens);
+	      Info(InfoGroup,1,"added generator");
+	    fi;
+	  od;
+	fi;
+
+	if fp <>fail then
+	  # extend presentation
+	  bas:=Basis(sub,bas);
+	  RUN_IN_GGMBI:=true;
+	  hom:=GroupGeneralMappingByImages(g,fp,gens,GeneratorsOfGroup(fp));
+	  hom:=LiftFactorFpHom(hom,g,"M",SubgroupNC(g,basm),rec(
+		pcgs:=basm,
+		prime:=p,
+		decomp:=function(em)
+		local e;
+		  e:=List(em,r->List(r,Int))-b;
+		  e:=1/pp*e;
+		  e:=Concatenation(e)*one;
+		  return List(Coefficients(bas,e),Int);
+		end
+		));
+	  RUN_IN_GGMBI:=false;
+	  #simplify Image to avoid explosion of generator number
+	  fp:=Range(hom);
+	  if true then
+	    # remove redundant generators
+	    e:=PresentationFpGroup(fp);
+	    TzOptions(e).printLevel:=0;
+	    j:=Filtered(Reversed([1..Length(e!.generators)]),
+	      x->not MappingGeneratorsImages(hom)[1][x] in ngens);
+            j:=e!.generators{j};
+
+	    TzInitGeneratorImages(e);
+	    for i in j do
+	      TzEliminate(e,i);
+	    od;
+	    fp:=FpGroupPresentation(e);
+	    j:=MappingGeneratorsImages(hom);
+	    k:=TzPreImagesNewGens(e);
+	    k:=List(k,x->j[1][Position(OldGeneratorsOfPresentation(e),x)]);
+
+	    RUN_IN_GGMBI:=true;
+	    hom:=GroupHomomorphismByImagesNC(g,fp,
+		  k,
+		  GeneratorsOfGroup(fp));
+	    RUN_IN_GGMBI:=false;
+	  fi;
+
+	  SetIsomorphismFpGroup(g,hom);
+	fi;
+
+	SetSize(g,Size(prev)*Size(field)^Length(sol));
+      fi;
+
+    od;
+
+    pp:=pp*p;
+  od;
+
+  if transpose then
+    e:=Size(g);
+    g:=Group(List(GeneratorsOfGroup(g),TransposedMat));
+    SetSize(g,e);
+  fi;
+  SetInvariantBilinearForm(g,rec(matrix:=f*oner));
+  
+  return g;
+end);
+
+#############################################################################
+##
+#M  SymplecticGroupCons( <IsMatrixGroup>, <d>, Integers mod <q> )
+##
+InstallOtherMethod( SymplecticGroupCons,
+  "symplectic group for dimension and residue class ring for prime powers",
+  [ IsMatrixGroup and IsFinite, IsPosInt,
+    IsRing and IsFinite and IsZmodnZObjNonprimeCollection ],
+function ( filter, n, R )
+local g;
+  g:=ConstructFormPreservingGroup(SP,n,R);
+  SetName(g,Concatenation("SP(",String(n),",Z/",String(Size(R)),"Z)"));
+  return g;
+end);
+
+#############################################################################
+##
+#M  GeneralOrthogonalGroupCons ( <IsMatrixGroup>, <d>, Integers mod <q> )
+##
+InstallOtherMethod( GeneralOrthogonalGroupCons,
+  "GO for dimension and residue class ring for prime powers",
+  [ IsMatrixGroup and IsFinite, IsInt,IsPosInt,
+    IsRing and IsFinite and IsZmodnZObjNonprimeCollection ],
+function ( filter, sign,n, R )
+local g;
+  if sign=0 then
+    g:=ConstructFormPreservingGroup(GO,n,R);
+    SetName(g,Concatenation("GO(",String(n),",Z/",String(Size(R)),"Z)"));
+  else
+    g:=ConstructFormPreservingGroup(GO,sign,n,R);
+    SetName(g,Concatenation("GO(",String(sign),",",String(n),
+      ",Z/",String(Size(R)),"Z)"));
+  fi;
+  return g;
+end);
+
+#############################################################################
+##
+#M  SpecialOrthogonalGroupCons( <IsMatrixGroup>, <d>, Integers mod <q> )
+##
+InstallOtherMethod( SpecialOrthogonalGroupCons,
+  "GO for dimension and residue class ring for prime powers",
+  [ IsMatrixGroup and IsFinite, IsInt,IsPosInt,
+    IsRing and IsFinite and IsZmodnZObjNonprimeCollection ],
+function ( filter, sign,n, R )
+local g;
+  if sign=0 then
+    g:=ConstructFormPreservingGroup(SO,n,R);
+    if g=fail then TryNextMethod();fi;
+    SetName(g,Concatenation("SO(",String(n),",Z/",String(Size(R)),"Z)"));
+  else
+    g:=ConstructFormPreservingGroup(SO,sign,n,R);
+    if g=fail then TryNextMethod();fi;
+    SetName(g,Concatenation("SO(",String(sign),",",String(n),
+      ",Z/",String(Size(R)),"Z)"));
+  fi;
+  return g;
+end);
 
 #############################################################################
 ##

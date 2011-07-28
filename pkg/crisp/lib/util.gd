@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  util.gd                         CRISP                 Burkhard H\"ofling
+##  util.gd                         CRISP                   Burkhard Höfling
 ##
-##  @(#)$Id: util.gd,v 1.8 2005/12/21 17:01:40 gap Exp $
+##  @(#)$Id: util.gd,v 1.9 2011/05/15 19:18:07 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000-2002, 2005 Burkhard Höfling
 ##
 Revision.util_gd :=
-    "@(#)$Id: util.gd,v 1.8 2005/12/21 17:01:40 gap Exp $";
+    "@(#)$Id: util.gd,v 1.9 2011/05/15 19:18:07 gap Exp $";
 
 
 #############################################################################
@@ -77,13 +76,6 @@ DeclareOperation ("CompositionSeriesUnderAction",
 ##  pcgs if it has the required property
 ##
 DeclareGlobalFunction ("PcgsElementaryAbelianSeriesFromGenericPcgs");
-
-
-#############################################################################
-##
-#P  IsPrimitiveSolvable (<grp>)
-##
-DeclareProperty ("IsPrimitiveSolvable", IsGroup);
 
 
 #############################################################################

@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  projector.gd                     CRISP                 Burkhard H\"ofling
+##  projector.gd                     CRISP                   Burkhard Höfling
 ##
-##  @(#)$Id: projector.gd,v 1.4 2000/11/02 11:56:58 gap Exp $
+##  @(#)$Id: projector.gd,v 1.5 2011/05/15 19:17:57 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000 Burkhard Höfling
 ##
 Revision.projector_gd :=
-    "@(#)$Id: projector.gd,v 1.4 2000/11/02 11:56:58 gap Exp $";
+    "@(#)$Id: projector.gd,v 1.5 2011/05/15 19:17:57 gap Exp $";
 
 
 #############################################################################

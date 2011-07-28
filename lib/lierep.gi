@@ -3,7 +3,7 @@
 #W  lierep.gi                   GAP library                Willem de Graaf
 #W                                                     and Craig A. Struble
 ##
-#H  @(#)$Id: lierep.gi,v 4.38 2010/02/23 15:13:11 gap Exp $
+#H  @(#)$Id: lierep.gi,v 4.40 2011/05/15 15:26:49 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains methods for modules over Lie algebras.
 ##
 Revision.lierep_gi :=
-    "@(#)$Id: lierep.gi,v 4.38 2010/02/23 15:13:11 gap Exp $";
+    "@(#)$Id: lierep.gi,v 4.40 2011/05/15 15:26:49 gap Exp $";
 
 
 ###########################################################################
@@ -2774,7 +2774,7 @@ InstallMethod(\+,
         [ IsWeightRepElement and IsPackedElementDefaultRep,
           IsWeightRepElement and IsPackedElementDefaultRep], 0,
         function( u, v )
-    local lu,lv,k,p,cf, vecs;
+    local lu,lv,k,p,cf, vecs, lu0;
 
     lu:= ShallowCopy( u![1] );
     vecs:= lu{ [ 1, 3 ..Length(lu)-1 ] };
@@ -2784,13 +2784,16 @@ InstallMethod(\+,
         # See whether in `lu' there is a vector with the same number as
         # `lv[k]'. If not, then insert...
         
-        p := PositionFirstComponent(vecs, lv[k]);
-#        p:= PositionSorted( vecs, lv[k], function( a, b ) return a[1] < b[1];
- #                                                               end );
+#        p := PositionFirstComponent(vecs, lv[k]);
+        p:= PositionSorted( vecs, lv[k], function( a, b ) return a[1] < b[1];
+                                                                end );
         if p > Length( vecs ) or vecs[p][1] <> lv[k][1] then
             Add(vecs, lv[k],p);
-            Add(lu, lv[k], 2*p-1);
-            Add(lu, lv[k+1], 2*p);
+            lu0:= lu{[1..2*p-2]};
+            Add( lu0, lv[k] );
+            Add( lu0, lv[k+1] );
+            Append( lu0, lu{[2*p-1..Length(lu)]} );
+            lu:= lu0;
         else
             cf:= lu[2*p]+lv[k+1];
             if cf = 0*cf then

@@ -4,7 +4,7 @@
 ##                                                             Markus Püschel
 ##                                                            Sebastian Egner
 ##
-#H  @(#)$Id: grpnames.gd,v 4.16 2010/02/23 15:13:05 gap Exp $
+#H  @(#)$Id: grpnames.gd,v 4.17 2010/12/22 22:28:38 alexk Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -15,7 +15,7 @@
 ##  Markus Püschel and Sebastian Egner.
 ##
 Revision.grpnames_gd :=
-  "@(#)$Id: grpnames.gd,v 4.16 2010/02/23 15:13:05 gap Exp $";
+  "@(#)$Id: grpnames.gd,v 4.17 2010/12/22 22:28:38 alexk Exp $";
 
 #############################################################################
 ##
@@ -281,7 +281,7 @@ DeclareAttribute( "QuasiDihedralGenerators", IsGroup );
 ##    Indicates whether the group <A>G</A> is isomorphic to the projective
 ##    special linear group PSL(<A>n</A>,<A>q</A>) for some integer <A>n</A>
 ##    and some prime power <A>q</A>. If it is, methods may set the attribute
-##    <C>npePSL</C>.
+##    <C>ParametersOfGroupViewedAsPSL</C>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -289,22 +289,25 @@ DeclareProperty( "IsPSL", IsGroup );
 
 #############################################################################
 ##
-#A  npePSL .  triples (n,p,e) such that the group is isomorphic to PSL(n,p^e)
-#A  npeSL  .  triples (n,p,e) such that the group is isomorphic to  SL(n,p^e)
-#A  npeGL  .  triples (n,p,e) such that the group is isomorphic to  GL(n,p^e)
+#A  ParametersOfGroupViewedAsPSL 
+#A  ParametersOfGroupViewedAsSL  
+#A  ParametersOfGroupViewedAsGL
+##
+##  triples (n,p,e) such that the group is isomorphic to PSL(n,p^e), SL(n,p^e) 
+##  and GL(n,p^e) respectively
 ##
 ##  <ManSection>
-##  <Attr Name="npePSL" Arg="G"/>
-##  <Attr Name="npeSL" Arg="G"/>
-##  <Attr Name="npeGL" Arg="G"/>
+##  <Attr Name="ParametersOfGroupViewedAsPSL" Arg="G"/>
+##  <Attr Name="ParametersOfGroupViewedAsSL" Arg="G"/>
+##  <Attr Name="ParametersOfGroupViewedAsGL" Arg="G"/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareAttribute( "npePSL", IsGroup );
-DeclareAttribute( "npeSL", IsGroup );
-DeclareAttribute( "npeGL", IsGroup );
+DeclareAttribute( "ParametersOfGroupViewedAsPSL", IsGroup );
+DeclareAttribute( "ParametersOfGroupViewedAsSL", IsGroup );
+DeclareAttribute( "ParametersOfGroupViewedAsGL", IsGroup );
 
 #############################################################################
 ##

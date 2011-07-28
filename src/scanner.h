@@ -2,7 +2,7 @@
 **
 *W  scanner.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: scanner.h,v 4.35 2010/02/23 15:13:48 gap Exp $
+*H  @(#)$Id: scanner.h,v 4.37 2011/05/23 11:03:15 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -31,7 +31,7 @@
 
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_scanner_h =
-   "@(#)$Id: scanner.h,v 4.35 2010/02/23 15:13:48 gap Exp $";
+   "@(#)$Id: scanner.h,v 4.37 2011/05/23 11:03:15 sal Exp $";
 #endif
 
 
@@ -70,8 +70,17 @@ const char * Revision_scanner_h =
 #define S_READWRITE     ((1UL<< 9)+3)
 #define S_READONLY      ((1UL<< 9)+4)
 
-#define S_PARTIALINT    ((1UL<<10)+0)
+#define S_PARTIALINT    ((1UL<<10)+0) /* Some digits */
 #define S_INT           ((1UL<<10)+1)
+#define S_FLOAT         ((1UL<<10)+2)
+#define S_PARTIALFLOAT1  ((1UL<<10)+3) /* A decimal point only, but in a context where
+					we know it's the start of a number */
+#define S_PARTIALFLOAT2  ((1UL<<10)+4) /* Some digits and a decimal point */
+#define S_PARTIALFLOAT3  ((1UL<<10)+5) /* Some digits and a decimal point  and an 
+					  exponent indicator and maybe a sign, but no digits*/
+#define S_PARTIALFLOAT4  ((1UL<<10)+6) /* Some digits and a decimal point  and an 
+					  exponent indicator and maybe a sign, and at 
+					  least one digit*/
 
 #define S_TRUE          ((1UL<<11)+0)
 #define S_FALSE         ((1UL<<11)+1)
@@ -216,7 +225,7 @@ typedef UInt            TypSymbolSet;
 **  maximal length of a  string.   'GetIdent', 'GetInt' and 'GetStr' truncate
 **  identifier, integers or strings after that many characters.
 */
-/* TL: extern  Char            Value [1025]; */
+/* TL: extern  Char            Value [1030]; */
 /* TL: extern  UInt            ValueLen; */
 
 #define MAX_VALUE_LEN 1025
@@ -858,11 +867,12 @@ typedef struct {
 **  'Output' is a pointer to the current output file.  It points to  the  top
 **  of the stack 'OutputFiles'.
 */
+#define MAXLENOUTPUTLINE  4096
 typedef struct {
     UInt        isstream;
     UInt        isstringstream;
     Int         file;
-    Char        line [256];
+    Char        line [MAXLENOUTPUTLINE];
     Int         pos;
     Int         format;
     Int         indent;

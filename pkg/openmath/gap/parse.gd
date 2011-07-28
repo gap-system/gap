@@ -3,7 +3,7 @@
 #W  parse.gd           OpenMath Package         Andrew Solomon
 #W                                                     Marco Costantini
 ##
-#H  @(#)$Id: parse.gd,v 1.6 2006/08/03 17:38:25 gap Exp $
+#H  @(#)$Id: parse.gd,v 1.7 2010/09/02 15:30:28 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  
 
 Revision.("openmath/gap/parse.gd") :=
-    "@(#)$Id: parse.gd,v 1.6 2006/08/03 17:38:25 gap Exp $";
+    "@(#)$Id: parse.gd,v 1.7 2010/09/02 15:30:28 alexk Exp $";
 
 
 #############################################################################
@@ -32,7 +32,6 @@ Revision.("openmath/gap/parse.gd") :=
 
 
 DeclareGlobalFunction("OMgetObjectByteStream");
-DeclareGlobalFunction("OMpipeObject");
 DeclareGlobalFunction("OMparseApplication");
 DeclareGlobalFunction("OMparseAttribution");
 DeclareGlobalFunction("OMparseBind");

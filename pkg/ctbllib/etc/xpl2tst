@@ -3,7 +3,7 @@
 ##
 #W  xpl2tst                    GAP utilities                    Thomas Breuer
 ##
-#H  @(#)$Id: xpl2tst,v 1.4 2005/09/07 16:06:58 gap Exp $
+#H  @(#)$Id: xpl2tst,v 1.5 2010/12/01 17:33:43 gap Exp $
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -48,7 +48,7 @@ gawk --traditional \
          line = $0;
          gsub( "%", "#", line );
          print( line );
-         printf( "##  In order to run the tests, one starts {\\GAP} from the `tst` subdirectory\n" )
+         printf( "##  In order to run the tests, one starts GAP from the `tst` subdirectory\n" )
          printf( "##  of the `pkg/%s` directory, and calls `ReadTest( \"%s.tst\" );`.\n",
                  PKGNAME, name )
          printf( "##\n" );

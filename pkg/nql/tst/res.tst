@@ -2,7 +2,7 @@
 ##
 #W  res.gi 			The NQL-package			 René Hartung
 ##
-##   @(#)$Id: res.tst,v 1.1 2008/08/28 07:44:41 gap Exp $
+##   @(#)$Id: res.tst,v 1.2 2010/04/01 11:42:56 gap Exp $
 ##
 
 gap> START_TEST("Checking some self-similar groups");
@@ -10,8 +10,8 @@ gap> START_TEST("Checking some self-similar groups");
 gap> IL:=InfoLevel(InfoNQL);;
 gap> SetInfoLevel(InfoNQL,1);
 gap> G:=ExamplesOfLPresentations(1);
-#I  The Grigorchuk group on 4 generators
-<L-presented group on the generators [ a, b, c, d ]>
+#I  The Grigorchuk group on 4 generators from [Lys85]
+<invariant LpGroup of size infinity on the generators [ a, b, c, d ]>
 gap> H:=NilpotentQuotient(G,20);;
 #I  Class 1: 3 generators with relative orders: [ 2, 2, 2 ]
 #I  Class 2: 2 generators with relative orders: [ 2, 2 ]
@@ -38,7 +38,7 @@ gap> List([1..Length(lcs)-1], i -> RankPGroup(lcs[i]/lcs[i+1]) );
 [ 3, 2, 2, 1, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2 ]
 gap> G:= ExamplesOfLPresentations(3);
 #I  The lamplighter group on two lamp states
-<L-presented group on the generators [ a, t, u ]>
+<LpGroup of size infinity on the generators [ a, t, u ]>
 gap> H:=NilpotentQuotient(G,7);;
 #I  Class InvLpGroup 1: 3 generators with relative orders: [ 2, 0, 0 ]
 #I  Class InvLpGroup 2: 2 generators with relative orders: [ 2, 0 ]
@@ -54,7 +54,7 @@ gap> List([1..Length(lcs)-1], i -> AbelianInvariants( lcs[i]/lcs[i+1] ) );
 
 gap> G:=ExamplesOfLPresentations(4);
 #I  The Brunner-Sidki-Vieira group
-<L-presented group on the generators [ a, b ]>
+<invariant LpGroup of size infinity on the generators [ a, b ]>
 gap> H:=NilpotentQuotient(G,15);;
 #I  Class 1: 2 generators with relative orders: [ 0, 0 ]
 #I  Class 2: 1 generators with relative orders: [ 0 ]
@@ -80,7 +80,7 @@ gap> List([1..Length(lcs)-1], i -> AbelianInvariants( lcs[i]/lcs[i+1] ) );
 
 gap> G:=ExamplesOfLPresentations(5);
 #I  The Grigorchuk supergroup
-<L-presented group on the generators [ a, b, c, d ]>
+<invariant LpGroup of size infinity on the generators [ a, b, c, d ]>
 gap> H:=NilpotentQuotient(G,15);;
 #I  Class 1: 4 generators with relative orders: [ 2, 2, 2, 2 ]
 #I  Class 2: 3 generators with relative orders: [ 2, 2, 2 ]
@@ -103,7 +103,7 @@ gap> List([1..Length(lcs)-1], i -> RankPGroup( lcs[i]/lcs[i+1] ) );
 
 gap> G:=ExamplesOfLPresentations( 6 );
 #I  The Fabrykowski-Gupta group
-<L-presented group on the generators [ a, r ]>
+<invariant LpGroup of size infinity on the generators [ a, r ]>
 gap> H:=NilpotentQuotient(G,20);;
 #I  Class 1: 2 generators with relative orders: [ 3, 3 ]
 #I  Class 2: 1 generators with relative orders: [ 3 ]
@@ -131,7 +131,7 @@ gap> List([1..Length(lcs)-1], i -> RankPGroup( lcs[i]/lcs[i+1] ) );
 
 gap> G:=ExamplesOfLPresentations( 7 );
 #I  The Gupta-Sidki group
-<L-presented group on the generators [ a, t, u, v ]>
+<LpGroup of size infinity on the generators [ a, t, u, v ]>
 gap> H:=NilpotentQuotient(G,4);;
 #I  Class InvLpGroup 1: 4 generators with relative orders: [ 3, 3, 3, 3 ]
 #I  Class InvLpGroup 2: 6 generators with relative orders: [ 3, 3, 3, 3, 3, 3 
@@ -144,7 +144,7 @@ gap> List([1..Length(lcs)-1], i -> RankPGroup( lcs[i]/lcs[i+1] ) );
 
 gap> G:=ExamplesOfLPresentations( 8 );
 #I  An index-3 subgroup of the Gupta-Sidki group
-<L-presented group on the generators [ t, u, v ]>
+<invariant LpGroup of size infinity on the generators [ t, u, v ]>
 gap> H:=NilpotentQuotient(G,10);;
 #I  Class 1: 3 generators with relative orders: [ 3, 3, 3 ]
 #I  Class 2: 3 generators with relative orders: [ 3, 3, 3 ]
@@ -162,7 +162,7 @@ gap> List([1..Length(lcs)-1], i -> RankPGroup( lcs[i]/lcs[i+1] ) );
 
 gap> G:=ExamplesOfLPresentations( 9 );
 #I  The Basilica group
-<L-presented group on the generators [ a, b ]>
+<invariant LpGroup of size infinity on the generators [ a, b ]>
 gap> H:=NilpotentQuotient(G,15);;
 #I  Class 1: 2 generators with relative orders: [ 0, 0 ]
 #I  Class 2: 1 generators with relative orders: [ 0 ]
@@ -187,7 +187,7 @@ gap> List([1..Length(lcs)-1], i -> AbelianInvariants( lcs[i]/lcs[i+1] ));
 
 gap> G:=ExamplesOfLPresentations( 10 );
 #I  Baumslag's group
-<L-presented group on the generators [ a, b, t, u ]>
+<non-invariant LpGroup of size infinity on the generators [ a, b, t, u ]>
 gap> H:=NilpotentQuotient(G,6);;
 #I  Class InvLpGroup 1: 3 generators with relative orders: [ 3, 0, 0 ]
 #I  Class InvLpGroup 2: 2 generators with relative orders: [ 3, 0 ]
@@ -203,7 +203,8 @@ gap> List([1..Length(lcs)-1], i -> AbelianInvariants( lcs[i]/lcs[i+1] ));
 
 gap> G:=ExamplesOfLPresentations( 10 );
 #I  Baumslag's group
-<L-presented group on the generators [ a, b, t, u ]>
+<non-invariant LpGroup of size infinity on the generators [ a, b, t, u ]>
+gap> ResetFilterObj( G, IsInvariantLPresentation );
 gap> SetIsInvariantLPresentation(G,true);
 gap> H:=NilpotentQuotient(G,20);;
 #I  Class 1: 2 generators with relative orders: [ 3, 0 ]

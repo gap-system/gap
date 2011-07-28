@@ -9,7 +9,7 @@
 ##     ANSI_COLORS := false;
 ##  
 Revision.colorprompt_g := 
-    "$Id: colorprompt.g,v 4.10 2010/07/28 15:45:20 gap Exp $";
+    "$Id: colorprompt.g,v 4.11 2010/10/27 14:06:42 gap Exp $";
 
 # see comment below
 if not IsBound(STDOut) then
@@ -53,7 +53,7 @@ EndLineHook := function() end;
 ##  <P/>
 ##  If it works for you and you like it, set the <C>UseColorPrompt</C>
 ##  component in your <F>gap.ini</F> file to <K>true</K> or to a
-##  record as described below (see&nbsp;<Ref Sect="The .gaprc file"/>).
+##  record as described below (see&nbsp;<Ref Sect="sect:gap.ini"/>).
 ##  <P/>
 ##  The optional second argument <A>optrec</A> allows one to further
 ##  customize the behaviour.

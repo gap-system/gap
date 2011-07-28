@@ -2,7 +2,7 @@
 **
 *W  gasman.h                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gasman.h,v 4.27 2010/02/23 15:13:42 gap Exp $
+*H  @(#)$Id: gasman.h,v 4.28 2011/05/11 11:40:07 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -35,7 +35,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_gasman_h =
-   "@(#)$Id: gasman.h,v 4.27 2010/02/23 15:13:42 gap Exp $";
+   "@(#)$Id: gasman.h,v 4.28 2011/05/11 11:40:07 sal Exp $";
 #endif
 extern const char * Revision_gasman_h;  /* gap.c uses this. */
 extern const char * Revision_gasman_c;
@@ -706,6 +706,8 @@ extern  void            InitMsgsFuncBags (
 **  bag identifiers for the elements  of the  list or 0   if an entry has  no
 **  assigned value.
 ** */
+
+
 typedef void            (* TNumMarkFuncBags ) (
             Bag                 bag );
 
@@ -765,6 +767,9 @@ extern  Bag                     MarkedBags;
 #define MARK_BAG(bag)
 
 #endif
+
+extern void MarkAllSubBagsDefault ( Bag );
+
 
 /****************************************************************************
 **

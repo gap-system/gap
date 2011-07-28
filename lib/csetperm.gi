@@ -3,7 +3,7 @@
 #W  csetperm.gi                     GAP library              Alexander Hulpke
 #W                                                             Heiko Theißen
 ##
-#H  @(#)$Id: csetperm.gi,v 4.17 2010/02/23 15:12:50 gap Exp $
+#H  @(#)$Id: csetperm.gi,v 4.18 2011/04/11 22:39:57 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains the operations for cosets of permutation groups
 ##
 Revision.csetperm_gi:=
-  "@(#)$Id: csetperm.gi,v 4.17 2010/02/23 15:12:50 gap Exp $";
+  "@(#)$Id: csetperm.gi,v 4.18 2011/04/11 22:39:57 gap Exp $";
 
 #############################################################################
 ##
@@ -52,7 +52,7 @@ BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
 
     GC := CopyStabChain( StabChainMutable( G ) );
     UC := CopyStabChain( StabChainMutable( U ) );
-    noyet:=ValueOption("yet")<>true;
+    noyet:=ValueOption("noascendingchain")<>true;
     if not IsTrivial( G )  then
         orbs := ShallowCopy( OrbitsDomain( U, MovedPoints( G ) ) );
         Sort( orbs, function( o1, o2 )
@@ -85,7 +85,7 @@ BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
 		Info(InfoCoset,4,"Recursive [",Size(nc[i]),",",Size(nc[i-1]));
 		Add(ac,RightTransversal(nc[i],nc[i-1]
 		      # do not try to factor again
-		      :yet));
+		      :noascendingchain));
 	      od;
 	      return FactoredTransversal(G,U,ac);
 	    fi;

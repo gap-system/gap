@@ -7,7 +7,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.twocohom_gd :=
-    "@(#)$Id: twocohom.gd,v 4.19 2010/02/23 15:13:34 gap Exp $";
+    "@(#)$Id: twocohom.gd,v 4.21 2011/01/21 17:05:39 alexk Exp $";
 
 
 #############################################################################
@@ -164,11 +164,11 @@ DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 ##  gap> G := SmallGroup( 4, 2 );
 ##  <pc group of size 4 with 2 generators>
 ##  gap> mats := List( Pcgs( G ), x -> IdentityMat( 1, GF(2) ) );
-##  [ [ <a GF2 vector of length 1> ], [ <a GF2 vector of length 1> ] ]
+##  [ <a 1x1 matrix over GF2>, <a 1x1 matrix over GF2> ]
 ##  gap> M := GModuleByMats( mats, GF(2) );
-##  rec( 
-##    generators := [ <an immutable 1x1 matrix over GF2>, <an immutable 1x1 matrix\
-##   over GF2> ], dimension := 1, field := GF(2), isMTXModule := true )
+##  rec( dimension := 1, field := GF(2), 
+##    generators := [ <an immutable 1x1 matrix over GF2>, 
+##        <an immutable 1x1 matrix over GF2> ], isMTXModule := true )
 ##  gap> TwoCoboundaries( G, M );
 ##  [  ]
 ##  gap> TwoCocycles( G, M );

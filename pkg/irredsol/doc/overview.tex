@@ -1,13 +1,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%  overview.tex           IRREDSOL documentation           Burkhard Hoefling
+%%  overview.tex           IRREDSOL documentation            Burkhard Höfling
 %%
-%%  @(#)$Id: overview.tex,v 1.5 2005/07/06 10:08:55 gap Exp $
+%%  @(#)$Id: overview.tex,v 1.7 2011/05/07 18:50:05 gap Exp $
 %%
-%%  Copyright (C) 2003-2005 by Burkhard Hoefling, 
-%%  Institut fuer Geometrie, Algebra und Diskrete Mathematik
-%%  Technische Universitaet Braunschweig, Germany
+%%  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 %%
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Overview}
 
@@ -18,8 +18,8 @@ solvable subgroups of matrix groups over finite fields and a corresponding libra
 
 Currently, {\IRREDSOL} contains all subgroups, up to conjugacy, of $GL(n, q)$, 
 where $n$ is a positive integer and $q$
-is a prime power satisfying  $q^n \< 2^{16}$. The underlying data base lists 
-$28095$ absolutely irreducible groups of degree~$> 1$ and some additional information
+is a prime power satisfying  $q^n \< 1000000$. The underlying data base contains 
+$308038$ absolutely irreducible groups of degree~$> 1$ and some additional information
 needed for constructing all irreducible groups. See Section~"Design of the group library"
 for details.
 
@@ -29,7 +29,7 @@ level access functions"). In addition, there are functions which allow to
 search the library for groups with given properties (see Section "Finding
 matrix groups with given properties"). Moreover, given an irreducible solvable matrix group
 <G>, it is possible to identify the group in the library to which <G> is conjugate,
-including a conjugating matrix, if desired. See Section~"identification of irreducible
+including a conjugating matrix, if desired. See Section~"Identification of irreducible
 groups".
 
 Apart from this, the {\IRREDSOL} package provides additional functionality

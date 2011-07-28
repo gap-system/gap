@@ -2,7 +2,7 @@
 ##
 #W    PackageInfo.g       OpenMath Package             Marco Costantini
 ##
-#H    @(#)$Id: PackageInfo.g,v 1.43 2009/05/26 16:42:07 alexk Exp $
+#H    @(#)$Id: PackageInfo.g,v 1.45 2010/05/20 14:27:27 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,7 +12,7 @@
 ##
 
 Revision.("openmath/PackageInfo.g") :=
-    "@(#)$Id: PackageInfo.g,v 1.43 2009/05/26 16:42:07 alexk Exp $";
+    "@(#)$Id: PackageInfo.g,v 1.45 2010/05/20 14:27:27 alexk Exp $";
 
 
 SetPackageInfo( rec(
@@ -20,8 +20,8 @@ PackageName := "OpenMath",
 Subtitle := "OpenMath functionality in GAP",
 
 
-Version := "10.0.4",
-Date := "26/05/2009",
+Version := "10.1.0",
+Date := "30/03/2010",
 
 
 ArchiveURL := Concatenation([
@@ -105,10 +105,13 @@ PackageDoc := rec(
 
 Dependencies := rec(
   GAP := ">=4.4",
-  NeededOtherPackages := [ [ "GapDoc", ">= 1.2" ], [ "IO", ">= 3.0"] ],
+  NeededOtherPackages := [ [ "GapDoc", ">= 1.2" ], 
+                           [ "IO", ">= 3.0"],  
+                           [ "MONOID", ">=3.0" ], 
+                         ],
   # GapDoc provides the function ParseTreeXMLString
   # IO is needed to generate random string from really random source 
-  SuggestedOtherPackages := [ [ "MONOID", ">=3.0" ] ],
+  SuggestedOtherPackages := [ ],
   ExternalConditions := [ ]
 ),
 

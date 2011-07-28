@@ -1,5 +1,5 @@
 
-<!--  @(#)$Id: ctbllibr.xml,v 1.2 2008/11/14 17:02:55 gap Exp $ -->
+<!--  @(#)$Id: ctbllibr.xml,v 1.3 2011/02/09 16:12:07 gap Exp $ -->
 
 <Chapter Label="ch:ctbllibr">
 <Heading>The &GAP; Character Table Library</Heading>
@@ -279,6 +279,12 @@ BrauerTable( "A5", 2 )
 <#Include Label="AllCharacterTableNames">
 
 <#Include Label="OneCharacterTableName">
+
+<#Include Label="GroupInfoForCharacterTable">
+
+<#Include Label="CharacterTableForGroupInfo">
+
+<#Include Label="BrowseCTblLibInfo">
 
 <#Include Label="CTblLibSetUnload">
 
@@ -2146,9 +2152,9 @@ So the private table is treated as a library table.
 Note that the table can be accessed only if it has been notified in the
 current &GAP; session.
 For frequently used private tables, it may be reasonable to put the
-<Ref Func="NotifyCharacterTable"/> statements into your <F>.gaprc</F> file
-(see&nbsp;<Ref Sect="The .gaprc File" BookName="ref"/>),
-or into a file that is read via the <F>.gaprc</F> file.
+<Ref Func="NotifyCharacterTable"/> statements into your <F>gaprc</F> file
+(see&nbsp;<Ref Sect="The gap.ini and gaprc files" BookName="ref"/>),
+or into a file that is read via the <F>gaprc</F> file.
 For adding interesting character tables to the &GAP; distribution,
 please send the tables to the e-mail address mentioned in the first paragraph
 of this chapter.

@@ -12,6 +12,7 @@ files:= [
     "../gap4/construc.gd",
     "../gap4/ctadmin.tbd",
     "../gap4/ctblothe.gd",
+    "../gap4/ctdbattr.g",
     "../tst/testinst.g",
     "../dlnames/dlnames.gd",
   ];;

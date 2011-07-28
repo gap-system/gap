@@ -2,8 +2,6 @@
 <!-- ##                                                                ## -->
 <!-- ##  rcwamap.xml          RCWA documentation          Stefan Kohl  ## -->
 <!-- ##                                                                ## -->
-<!-- ##  $Id: rcwamap.xml,v 1.211 2009/09/18 21:35:15 stefan Exp $     ## -->
-<!-- ##                                                                ## -->
 <!-- #################################################################### -->
 
 <Chapter Label="ch:RcwaMappings">
@@ -595,11 +593,13 @@ in full. The <C>Print</C>ed representation of an rcwa mapping is &GAP; -
 readable if and only if the <C>Print</C>ed representation of the elements
 of the underlying ring is so. <P/>
 
-<Index Key="LaTeX" Subkey="for an rcwa mapping"><C>LaTeX</C></Index>
-<Index Key="LaTeXObj" Subkey="for an rcwa mapping"><C>LaTeXObj</C></Index>
+<Index Key="RcwaMappingToLaTeX" Subkey="for an rcwa mapping">
+  <C>RcwaMappingToLaTeX</C>
+</Index>
 
-There is also a method for <C>LaTeX</C>, respectively <C>LaTeXObj</C>.
-The output of this method makes use of the &LaTeX; macro package
+There is also an operation <C>RcwaMappingToLaTeX</C>, which takes
+as argument an rcwa mapping and returns a corresponding
+&LaTeX; string. The output makes use of the &LaTeX; macro package
 <Package>amsmath</Package>. If the option <A>Factorization</A> is set
 and the argument is bijective, a factorization into class shifts,
 class reflections, class transpositions and prime switches is printed
@@ -607,11 +607,11 @@ class reflections, class transpositions and prime switches is printed
           Label="for an rcwa permutation of Z"/>).
 For rcwa mappings with modulus greater than&nbsp;1, an indentation by
 <A>Indentation</A> characters can be obtained by setting this option
-value accor\-dingly.
+value accordingly.
 
 <Example>
 <![CDATA[
-gap> Print(LaTeXObj(T));
+gap> Print(RcwaMappingToLaTeX(T));
 n \ \mapsto \
 \begin{cases}
   n/2      & \text{if} \ n \in 0(2), \\
@@ -626,9 +626,9 @@ n \ \mapsto \
 
 There is an operation <C>LaTeXAndXDVI</C> which displays an rcwa mapping
 in an <Package>xdvi</Package> window.
-This works as follows: The string returned by the <C>LaTeXObj</C> - method
-described above is inserted into a &LaTeX; template file. This file is
-&LaTeX;'ed, and the result is shown with <Package>xdvi</Package>.
+This works as follows: The string returned by <C>RcwaMappingToLaTeX</C>
+is inserted into a &LaTeX; template file. This file is &LaTeX;'ed, and the
+result is shown with <Package>xdvi</Package>.
 Calling <C>Display</C> with option <A>xdvi</A> has the same effect.
 The operation <C>LaTeXAndXDVI</C> is only available on UNIX systems,
 and requires suitable installations of &LaTeX; and <Package>xdvi</Package>.

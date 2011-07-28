@@ -2,15 +2,12 @@
 ##
 #W  rcwagrp.gd                GAP4 Package `RCWA'                 Stefan Kohl
 ##
-#H  @(#)$Id: rcwagrp.gd,v 1.70 2009/05/20 08:17:27 stefan Exp $
-##
 ##  This file contains declarations of functions, operations etc. for
 ##  computing with rcwa groups.
 ##
 ##  See the definitions given in the file rcwamap.gd.
 ##
-Revision.rcwagrp_gd :=
-  "@(#)$Id: rcwagrp.gd,v 1.70 2009/05/20 08:17:27 stefan Exp $";
+#############################################################################
 
 #############################################################################
 ##
@@ -98,11 +95,14 @@ DeclareProperty( "IsNaturalRCWA_GFqx", IsRcwaGroup );
 #############################################################################
 ##
 #F  NrConjugacyClassesOfRCWAZOfOrder( <ord> ) . #Ccl of RCWA(Z) / order <ord>
+#F  NrConjugacyClassesOfCTZOfOrder( <ord> ) . . . #Ccl of CT(Z) / order <ord>
 ##
-##  Returns the number of conjugacy classes of the whole group RCWA(Z) of
-##  elements of order <ord>.
+##  Returns the number of conjugacy classes of the whole group RCWA(Z),
+##  respectively CT(Z), of elements of order <ord>. The latter assumes the
+##  conjecture that CT(Z) is the setwise stabilizer of N_0 in RCWA(Z).
 ##
 DeclareGlobalFunction( "NrConjugacyClassesOfRCWAZOfOrder" );
+DeclareGlobalFunction( "NrConjugacyClassesOfCTZOfOrder" );
 
 #############################################################################
 ##
@@ -135,6 +135,16 @@ DeclareProperty( "IsNaturalCT_Z", IsRcwaGroup );
 DeclareProperty( "IsNaturalCT_ZxZ", IsRcwaGroup );
 DeclareProperty( "IsNaturalCT_Z_pi", IsRcwaGroup );
 DeclareProperty( "IsNaturalCT_GFqx", IsRcwaGroup );
+
+#############################################################################
+## 
+#F  AllElementsOfCTZWithGivenModulus( m ) .  elements of CT(Z) with modulus m
+##
+##  Returns a list of all elements of CT(Z) with modulus m, under the
+##  assumption of the conjecture that CT(Z) is the setwise stabilizer of the
+##  nonnegative integers in RCWA(Z).
+##
+DeclareGlobalFunction( "AllElementsOfCTZWithGivenModulus" );
 
 #############################################################################
 ##
@@ -223,30 +233,32 @@ DeclareGlobalFunction( "GroupByResidueClasses" );
 
 #############################################################################
 ##
-#C  IsOrbit . . . . . . . . . . . . all orbits which are not written as lists
+#C  IsRcwaGroupOrbit . . . category of orbits under the action of rcwa groups
 ##
-if not IsBoundGlobal( "IsOrbit" )
-then DeclareCategory( "IsOrbit", IsListOrCollection ); fi;
+##  The category of all orbits under the action of rcwa groups which are
+##  neither represented as lists nor as residue class unions.
+##
+DeclareCategory( "IsRcwaGroupOrbit", IsListOrCollection );
 
 #############################################################################
 ##
 #A  UnderlyingGroup( <orbit> ) . . . . . . . . . underlying group of an orbit
 ##
-DeclareAttribute( "UnderlyingGroup", IsOrbit );
+DeclareAttribute( "UnderlyingGroup", IsRcwaGroupOrbit );
 
 #############################################################################
 ##
-#R  IsOrbitStandardRep . . . . . . . . .  "standard" representation of orbits
+#R  IsRcwaGroupOrbitStandardRep . . . . . "standard" representation of orbits
 ##
-DeclareRepresentation( "IsOrbitStandardRep",
+DeclareRepresentation( "IsRcwaGroupOrbitStandardRep",
                        IsComponentObjectRep and IsAttributeStoringRep,
                        [ "group", "representative", "action" ] );
 
 #############################################################################
 ##
-#R  IsOrbitsIteratorRep . . . . . . . . . . . . . . . iterator representation
+#R  IsRcwaGroupOrbitsIteratorRep . .  repr. of iterators of rcwa group orbits
 ##
-DeclareRepresentation( "IsOrbitsIteratorRep",
+DeclareRepresentation( "IsRcwaGroupOrbitsIteratorRep",
                        IsComponentObjectRep,
                        [ "orbit", "sphere", "oldsphere", "pos" ] );
 
@@ -289,22 +301,6 @@ DeclareOperation( "RepresentativesActionPreImage",
 
 #############################################################################
 ##
-#O  Ball( <G>, <g>, <d> )  ball of diameter <d> around the element <g> of <G>
-#O  Ball( <G>, <p>, <d>, <act> )   "    the point <p> under the action of <G>
-##
-##  Returns the ball of diameter <d> around the element <g> of <G>, or the
-##  ball of diameter <d> around the point <p> under the action of <G>,
-##  respectively.
-##
-##  All balls are understood w.r.t. the stored generators of the group <G>.
-##  An option `Spheres' is recognized. If set, the returned ball is splitted
-##  into a list of spheres.
-##
-DeclareOperation( "Ball", [ IsMonoid, IsObject, IsInt ] );
-DeclareOperation( "Ball", [ IsMonoid, IsObject, IsInt, IsFunction ] );
-
-#############################################################################
-##
 #O  OrbitUnion( <G>, <S> ) . . . . . . .  union of the orbit of <S> under <G>
 ##
 ##  Returns the union of the elements of the orbit of the set <S> under the
@@ -344,10 +340,6 @@ DeclareGlobalFunction( "DrawOrbitPicture" );
 ##
 #A  RespectedPartition( <G> ) . . . . . . . . . . . . . . respected partition
 #A  RespectedPartition( <sigma> )
-#A  RespectedPartitionShort( <G> )
-#A  RespectedPartitionShort( <sigma> )
-#A  RespectedPartitionLong( <G> )
-#A  RespectedPartitionLong( <sigma> )
 ##
 ##  A partition of the base ring R into a finite number of residue classes
 ##  on which the rcwa group <G> acts as a permutation group, and on whose
@@ -355,15 +347,10 @@ DeclareGlobalFunction( "DrawOrbitPicture" );
 ##  class ring of cardinality 2, such a partition exists if and only if <G>
 ##  is tame. The respected partition of a bijective rcwa mapping <sigma> is
 ##  defined as the respected partition of the cyclic group generated by
-##  <sigma>. `RespectedPartitionShort' is a respected partition whose ele-
-##  ments have at most modulus Mod(<G>), and `RespectedPartitionLong' is a
-##  respected partition whose elements have at least modulus Mod(<G>).
+##  <sigma>.
 ##
-DeclareAttribute( "RespectedPartitionShort", IsObject );
-DeclareAttribute( "RespectedPartitionLong", IsObject );
-DeclareSynonym( "RespectedPartition", RespectedPartitionShort );
-DeclareSynonym( "SetRespectedPartition", SetRespectedPartitionShort );
-DeclareSynonym( "HasRespectedPartition", HasRespectedPartitionShort );
+DeclareAttribute( "RespectedPartition", IsRcwaGroup );
+DeclareAttribute( "RespectedPartition", IsRcwaMapping );
 
 #############################################################################
 ##
@@ -500,9 +487,13 @@ DeclareOperation( "EpimorphismFromFpGroup",
 
 #############################################################################
 ##
-#O  Projections( <G>, <m> )  projections to unions of residue classes (mod m)
+#O  ProjectionsToInvariantUnionsOfResidueClasses( <G>, <m> )
 ##
-DeclareOperation( "Projections", [ IsRcwaGroup, IsRingElement ] );
+##  Projections of the rcwa group <G> to unions of residue classes (mod m)
+##  which it fixes setwise.
+##
+DeclareOperation( "ProjectionsToInvariantUnionsOfResidueClasses",
+                  [ IsRcwaGroup, IsRingElement ] );
 
 #############################################################################
 ##

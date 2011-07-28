@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  util.gi                         CRISP                 Burkhard H\"ofling
+##  util.gi                         CRISP                   Burkhard Höfling
 ##
-##  @(#)$Id: util.gi,v 1.18 2005/12/21 16:50:39 gap Exp $
+##  @(#)$Id: util.gi,v 1.19 2011/05/15 19:18:07 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000-2003, 2005 Burkhard Höfling
 ##
 Revision.util_gi :=
-    "@(#)$Id: util.gi,v 1.18 2005/12/21 16:50:39 gap Exp $";
+    "@(#)$Id: util.gi,v 1.19 2011/05/15 19:18:07 gap Exp $";
 
 
 #############################################################################
@@ -185,171 +184,6 @@ InstallMethod (NormalGeneratorsOfNilpotentResidual,
    end);
 
       
-###################################################################################
-##
-#M  IsPrimitiveSolvable
-##
-InstallMethod (IsPrimitiveSolvable, "for generic group", true,
-   [IsGroup], 0,
-   function (G)
-   
-      local N, ds, p, pcgs, mats, R, Q, M, m, k, q, c, i;
-      
-      if IsTrivial (G) then
-         return false;
-      fi;
-      
-      ds := DerivedSeries (G);
-      
-      if not IsTrivial (ds[Length (ds)]) then
-         return false;
-      fi; 
-      
-      N := ds[Length (ds)-1];
-      
-      pcgs := Pcgs (N);
-      if Length (ds) = 2 then # abelian case
-         if Length (pcgs) = 1 then
-            SetSocle (G, G);
-            SetSocleComplement (G, TrivialSubgroup (G));
-            return true;
-         else
-            return false;
-         fi;
-      fi;
-      
-      p := RelativeOrderOfPcElement (pcgs, pcgs[1]);
-      
-      if ForAny (pcgs, x -> x^p <> One(G)) then
-         return false;
-      fi;
-      
-      R := ds[Length (ds)-2];
-      m := ModuloPcgs (R, N);
-      
-      if p in RelativeOrders (m) then # N is not the Fitting subgroup of G
-         return false;
-      fi;
-      
-      # find out if N is a minimal normal subgroup of G
-      mats := LinearActionLayer (G, GeneratorsOfGroup (G), pcgs);
-
-      if not MTX.IsIrreducible (GModuleByMats (mats, GF(p))) then
-         return false;
-      fi;
-      
-      # now test if N is complemented
-      
-      # find small Sylow subgroup of R 
-      c := Collected (RelativeOrders (m));
-      k := c[1][2];
-      q := c[1][1];
-      
-      for i in [2..Length (c)] do
-         if c[i][2] < k then
-            k := c[i][2];
-            q := c[i][1];
-         fi;
-      od;
-      
-      Q := SylowSubgroup (R, q);
-      
-      if IsNormal (G, Q) then
-         return false;
-      fi;
-      
-      M := NormalizerOfPronormalSubgroup (G, Q);
-      
-      if not IsTrivial (Core (N, M)) then
-         return false;
-      fi;
-      
-      # save some information about G
-      SetSocle (G, N);
-      SetFittingSubgroup (G, N);
-      
-      # if Q is not normal, its normalizer is a complement of N in G
-      SetSocleComplement (G, M);
-      return true;
-   end);
-
-
-###################################################################################
-##
-#M  SocleComplement
-##
-InstallMethod (SocleComplement, "for primitive solvable group", true,
-   [IsGroup and IsPrimitiveSolvable], 0,
-   function (G)
-   
-      local N, ds, p, pcgs, mats, R, Q, M, m, k, q, c, i;
-      
-      if IsTrivial (G) then
-         Error ("G must be primitive and solvable");
-      fi;
-      
-      ds := DerivedSeries (G);
-      
-      if not IsTrivial (ds[Length (ds)]) then
-          Error ("G must be primitive and solvable");
-      fi; 
-      
-      N := ds[Length (ds)-1];
-      
-      pcgs := Pcgs (N);
-      if Length (ds) = 2 then # abelian case
-         if Length (pcgs) = 1 then
-            SetSocle (G, G);
-            SetSocleComplement (G, TrivialSubgroup (G));
-            return true;
-         else
-            return false;
-         fi;
-      fi;
-      
-      p := RelativeOrderOfPcElement (pcgs, pcgs[1]);
-      
-      if ForAny (pcgs, x -> x^p <> One(G)) then
-          Error ("G must be primitive and solvable");
-      fi;
-      
-      R := ds[Length (ds)-2];
-      
-      # now test if N is complemented
-      
-      # find small Sylow subgroup of R 
-      c := Collected (RelativeOrders (m));
-      k := c[1][2];
-      q := c[1][1];
-      
-      for i in [2..Length (c)] do
-         if c[i][2] < k then
-            k := c[i][2];
-            q := c[i][1];
-         fi;
-      od;
-      
-      Q := SylowSubgroup (R, q);
-      
-      if IsNormal (G, Q) then
-         return false;
-      fi;
-      
-      M := NormalizerOfPronormalSubgroup (G, Q);
-      
-      if not IsTrivial (Core (N, M)) then
-         return false;
-      fi;
-      
-      # save some information about G
-      SetSocle (G, N);
-      SetFittingSubgroup (G, N);
-      
-      # if Q is not normal, its normalizer is a complement of N in G
-      return M;
-   end);
-
-
 ###################################################################################
 ##
 #F  CompositionSeriesElAbFactorUnderAction (<act>, <M>, <N>)

@@ -3,7 +3,7 @@
 #W  lierep.gd                   GAP library               Willem de Graaf
 #W                                                    and Craig A. Struble
 ##
-#H  @(#)$Id: lierep.gd,v 4.34 2010/02/23 15:13:11 gap Exp $
+#H  @(#)$Id: lierep.gd,v 4.37 2011/04/13 23:25:07 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  operations for modules over Lie algebras.
 ##
 Revision.lierep_gd :=
-    "@(#)$Id: lierep.gd,v 4.34 2010/02/23 15:13:11 gap Exp $";
+    "@(#)$Id: lierep.gd,v 4.37 2011/04/13 23:25:07 alexk Exp $";
 
 
 #############################################################################
@@ -48,7 +48,7 @@ Revision.lierep_gd :=
 ##  to <M>r</M>  basis elements.
 ##  <P/>
 ##  So the zero cochain is represented by a list of the form
-##  <M>[ [ ], [ ], \ldots, [ ] ]</M>. Furthermore, if <M>V</M> is, e.g., 
+##  <C>[ [ ], [ ], \ldots, [ ] ]</C>. Furthermore, if <M>V</M> is, e.g., 
 ##  <M>4</M>-dimensional, then the <M>2</M>-cochain represented by
 ##  <P/>
 ##  <Log><![CDATA[
@@ -62,7 +62,7 @@ Revision.lierep_gd :=
 ##  By definition, <M>0</M>-cochains are constant maps
 ##  <M>c( x ) = v_c \in V</M> for all <M>x \in L</M>.
 ##  So <M>0</M>-cochains have a different representation: they are just
-##  represented by the list <M>[ v_c ]</M>.
+##  represented by the list <C>[ v_c ]</C>.
 ##  <P/>
 ##  Cochains are constructed using the function <Ref Func="Cochain"/>,
 ##  if <A>c</A> is a cochain, then its corresponding list is returned by
@@ -99,9 +99,9 @@ DeclareCategoryCollections( "IsCochain" );
 ##  <Oper Name="Cochain" Arg='V, s, obj'/>
 ##
 ##  <Description>
-##  Constructs a <A>s</A>-cochain given by the data in <A>obj</A>, with respect to
-##  the Lie algebra module <A>V</A>. If <A>s</A> is non-zero, then <A>obj</A> must be
-##  a list.
+##  Constructs a <A>s</A>-cochain given by the data in <A>obj</A>, with 
+##  respect to the Lie algebra module <A>V</A>. If <A>s</A> is non-zero, 
+##  then <A>obj</A> must be a list.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
 ##  gap> V:= AdjointModule( L );
@@ -159,11 +159,11 @@ DeclareOperation( "CochainSpace", [ IsAlgebraModule, IS_INT ] );
 ##  <Func Name="ValueCochain" Arg='c, y1, y2,...,ys'/>
 ##
 ##  <Description>
-##  Here <A>c</A> is an <A>s</A>-cochain. This function returns the value of
-##  <A>c</A> when applied to the <A>s</A> elements <A>y1</A> to <A>ys</A> (that lie in the
-##  Lie algebra acting on the module corresponding to <A>c</A>). It is also
-##  possible to call this function with two arguments: first <A>c</A> and then
-##  the list containing <C><A>y1</A>,...,<A>ys</A></C>.
+##  Here <A>c</A> is an <C>s</C>-cochain. This function returns the value of
+##  <A>c</A> when applied to the <C>s</C> elements <A>y1</A> to <A>ys</A> 
+##  (that lie in the Lie algebra acting on the module corresponding to 
+##  <A>c</A>). It is also possible to call this function with two arguments: 
+##  first <A>c</A> and then the list containing <C><A>y1</A>,...,<A>ys</A></C>.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
 ##  gap> V:= AdjointModule( L );;
@@ -188,8 +188,8 @@ DeclareGlobalFunction( "ValueCochain" );
 ##  <Func Name="LieCoboundaryOperator" Arg='c'/>
 ##
 ##  <Description>
-##  This is a function that takes an <A>s</A>-cochain, and returns an <A>s+1</A>-cochain.
-##  The coboundary operator is applied.
+##  This is a function that takes an <C>s</C>-cochain <A>c</A>, 
+##  and returns an <C>s+1</C>-cochain. The coboundary operator is applied.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
 ##  gap> V:= AdjointModule( L );;
@@ -212,12 +212,12 @@ DeclareGlobalFunction( "LieCoboundaryOperator", "Lie coboundary operator" );
 ##
 ##  <#GAPDoc Label="Cocycles">
 ##  <ManSection>
-##  <Oper Name="Cocycles" Arg='V, s'/>
+##  <Oper Name="Cocycles" Arg='V, s' Label="for Lie algebra module"/>
 ##
 ##  <Description>
-##  is the space of all <A>s</A>-cocycles with respect to the Lie algebra module
-##  <A>V</A>. That is the kernel of the coboundary operator when  restricted to
-##  the space of <A>s</A>-cochains.
+##  is the space of all <A>s</A>-cocycles with respect to the Lie algebra 
+##  module <A>V</A>. That is the kernel of the coboundary operator when 
+##  restricted to the space of <A>s</A>-cochains.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -235,7 +235,7 @@ DeclareOperation( "Cocycles", [ IsAlgebraModule, IS_INT  ] );
 ##  <Description>
 ##  is the space of all <A>s</A>-coboundaries with respect to the Lie algebra
 ##  module <A>V</A>. That is the image of the coboundary operator, when applied
-##  to the space of <A>s-1</A>-cochains. By definition the space of all
+##  to the space of <A>s</A>-1-cochains. By definition the space of all
 ##  0-coboundaries is zero.
 ##  <Example><![CDATA[
 ##  gap> T:= EmptySCTable( 3, 0, "antisymmetric" );;
@@ -267,7 +267,7 @@ DeclareOperation( "Coboundaries", [ IsAlgebraModule, IS_INT ] );
 ##
 ##  <Description>
 ##  A Weyl group is a group generated by reflections, with the attribute
-##  <C>SparseCartanMatrix</C> set.
+##  <Ref Attr="SparseCartanMatrix"/> set.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -285,8 +285,8 @@ DeclareProperty( "IsWeylGroup", IsGroup );
 ##  <Description>
 ##  The Weyl group of the root system <A>R</A>. It is generated by the simple
 ##  reflections. A simple reflection is represented by a matrix, and the
-##  result of letting a simple reflection <C>m</C> act on a weight <C>w</C> is obtained
-##  by <C>w*m</C>.
+##  result of letting a simple reflection <C>m</C> act on a weight <C>w</C> 
+##  is obtained by <C>w*m</C>.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "F", 4, Rationals );;
 ##  gap> R:= RootSystem( L );;
@@ -316,11 +316,11 @@ DeclareAttribute( "WeylGroup", IsRootSystem );
 ##  <Attr Name="SparseCartanMatrix" Arg='W'/>
 ##
 ##  <Description>
-##  This is a sparse form of the Cartan matrix of the
-##  corresponding root system. If we denote the Cartan matrix by <C>C</C>,
-##  then the sparse Cartan matrix of <A>W</A> is a list (of length equal to the
-##  length of the Cartan matrix), where the <C>i</C>-th entry is a list
-##  consisting of elements <C>[ j, C[i][j] ]</C>, where <C>j</C> is such that
+##  This is a sparse form of the Cartan matrix of the corresponding root 
+##  system. If we denote the Cartan matrix by <C>C</C>, then the sparse 
+##  Cartan matrix of <A>W</A> is a list (of length equal to the length of 
+##  the Cartan matrix), where the <C>i</C>-th entry is a list consisting 
+##  of elements <C>[ j, C[i][j] ]</C>, where <C>j</C> is such that
 ##  <C>C[i][j]</C> is non-zero.
 ##  </Description>
 ##  </ManSection>
@@ -365,8 +365,8 @@ DeclareOperation( "ApplySimpleReflection", [ IsList, IS_INT, IsList ] );
 ##
 ##  <Description>
 ##  Let <M>g_0</M> be the longest element in the Weyl group <A>W</A>,
-##  and let <M>\{ \alpha_1, \ldots, \alpha_l \}</M> be a simple system of the
-##  corresponding root system.
+##  and let <M>\{ \alpha_1, \ldots, \alpha_l \}</M> be a simple system 
+##  of the corresponding root system.
 ##  Then <M>g_0</M> maps <M>\alpha_i</M> to <M>-\alpha_{{\sigma(i)}}</M>,
 ##  where <M>\sigma</M> is a permutation of <M>(1, \ldots, l)</M>.
 ##  This function returns that permutation.
@@ -393,15 +393,14 @@ DeclareAttribute( "LongestWeylWordPerm", IsWeylGroup );
 ##  <Oper Name="ConjugateDominantWeightWithWord" Arg='W, wt'/>
 ##
 ##  <Description>
-##  Here <A>W</A> is a Weyl group and <A>wt</A> a weight (i.e., a list of integers).
-##  This function returns the unique dominant weight conjugate to <A>wt</A>
-##  under <A>W</A>.
+##  Here <A>W</A> is a Weyl group and <A>wt</A> a weight (i.e., a list of 
+##  integers). <Ref Oper="ConjugateDominantWeight"/> returns the unique 
+##  dominant weight conjugate to <A>wt</A> under <A>W</A>.
 ##  <P/>
-##  <C>ConjugateDominantWegihtWithWord( <A>W</A>, <A>wt</A> )</C> returns a list of two
-##  elements. The first of these is the dominant weight conjugate do <A>wt</A>.
-##  The second element is a list of indices of simple reflections that
-##  have to be applied to <A>wt</A> in order to get the dominant weight conjugate
-##  to it.
+##  <Ref Oper="ConjugateDominantWeightWithWord"/> returns a list of two 
+##  elements. The first of these is the dominant weight conjugate to <A>wt</A>.
+##  The second element is a list of indices of simple reflections that have to
+##  be applied to <A>wt</A> in order to get the dominant weight conjugate to it.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "E", 6, Rationals );;
 ##  gap> W:= WeylGroup( RootSystem( L ) );;
@@ -487,8 +486,8 @@ DeclareAttribute( "PositiveRootsAsWeights", IsRootSystem );
 ##  <Description>
 ##  Returns a list consisting of two lists. The first of these contains
 ##  the dominant weights (written on the basis of fundamental weights)
-##  of the irreducible highest-weight module over the Lie algebra with
-##  root system <A>R</A>.
+##  of the irreducible highest-weight module, with highest weight <A>maxw</A>, 
+##  over the Lie algebra with the root system <A>R</A>.
 ##  The <M>i</M>-th element of the second list is the level of the
 ##  <M>i</M>-th dominant weight.
 ##  (Where the level is defined as follows.
@@ -554,8 +553,9 @@ DeclareOperation( "DominantCharacter", [ IsRootSystem, IsList ] );
 ##  <M>W</M> as a direct sum of irreducible modules. The second list contains
 ##  the multiplicities of these weights (i.e., the number of copies of
 ##  the irreducible module with the corresponding highest weight that occur
-##  in <M>W</M>). The algorithm uses Klimyk's formula (see&nbsp;<Cite Key="Klimyk68"/> or
-##  <Cite Key="Klimyk66"/> for the original Russian version).
+##  in <M>W</M>). The algorithm uses Klimyk's formula 
+##  (see&nbsp;<Cite Key="Klimyk68"/> or <Cite Key="Klimyk66"/> 
+##  for the original Russian version).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -689,10 +689,10 @@ DeclareCategoryFamily( "IsUEALatticeElement" );
 ##  <Description>
 ##  Here <A>L</A> must be a semisimple Lie algebra of characteristic <M>0</M>.
 ##  This function returns a list of generators of an admissible lattice
-##  in the universal enveloping algebra of <A>L</A>, relative to
-##  the Chevalley basis contained in <C>ChevalleyBasis( <A>L</A> )</C>.
-##  First are listed the negative root vectors
-##  (denoted by <M>y_1, \ldots, y_s</M>),
+##  in the universal enveloping algebra of <A>L</A>, relative to the 
+##  Chevalley basis contained in <C>ChevalleyBasis( <A>L</A> )</C>
+##  (see&nbsp;<Ref Attr="ChevalleyBasis"/>). First are listed the negative 
+##  root vectors (denoted by <M>y_1, \ldots, y_s</M>),
 ##  then the positive root vectors (denoted by <M>x_1, \ldots, x_s</M>).
 ##  At the end of the list there are the Cartan elements. They are printed as
 ##  <C>( hi/1 )</C>, which means
@@ -748,23 +748,25 @@ DeclareGlobalFunction( "CollectUEALatticeElement" );
 ##
 ##  <Description>
 ##  Is a category of vectors, that is used to construct elements of
-##  highest-weight modules (by <C>HighestWeightModule</C>).
+##  highest-weight modules (by <Ref Oper="HighestWeightModule"/>).
 ##  <P/>
-##  WeightRepElements are represented by a list of the form
-##  <C>[ v1, c1, v2, c2, ....]</C>, where the <C>v<A>i</A></C> are basis vectors, and
-##  the <C>c<A>i</A></C> coefficients. Furthermore a basis vector <C>v</C> is a weight vector.
-##  It is represented by a list of
-##  form <C>[ <A>k</A>, <A>mon</A>, <A>wt</A> ]</C>, where <A>k</A> is an integer (the basis vectors
-##  are numbered from <M>1</M> to <M>\dim V</M>, where <M>V</M> is the highest weight
-##  module), <A>mon</A> is an UEALatticeElement (which means that the result of
-##  applying <A>mon</A> to a highest weight vector is <C>v</C>) and <A>wt</A> is the weight
-##  of <A>v</A>. A WeightRepElement is printed as <C><A>mon</A>*v0</C>, where <C>v0</C>
-##  denotes a fixed highest weight vector.
+##  <C>WeightRepElement</C>s are represented by a list of the form
+##  <C>[ v1, c1, v2, c2, ....]</C>, where the <C>vi</C> are basis vectors, 
+##  and the <C>ci</C> are coefficients. Furthermore a basis vector <C>v</C> 
+##  is a weight vector. It is represented by a list of the form 
+##  <C>[ k, mon, wt ]</C>, where <C>k</C> is an integer (the basis vectors
+##  are numbered from <M>1</M> to <M>\dim V</M>, where <M>V</M> is the highest 
+##  weight module), <C>mon</C> is an <C>UEALatticeElement</C> (which means 
+##  that the result of applying <C>mon</C> to a highest weight vector is <C>v</C>; 
+##  see&nbsp;<Ref Filt="IsUEALatticeElement"/>) and <C>wt</C> is the weight
+##  of <C>v</C>. A <C>WeightRepElement</C> is printed as <C>mon*v0</C>, 
+##  where <C>v0</C> denotes a fixed highest weight vector.
 ##  <P/>
-##  If <A>v</A> is a WeightRepElement, then <C>ExtRepOfObj( <A>v</A> )</C> returns
-##  the corresponding list, and if <A>list</A> is such a list and <A>fam</A> a
-##  WeightRepElementFamily, then <C>ObjByExtRep( <A>list</A>, <A>fam</A> )</C> returns
-##  the corresponding WeightRepElement.
+##  If <C>v</C> is a <C>WeightRepElement</C>, then <C>ExtRepOfObj( v )</C> 
+##  returns the corresponding list, and if <C>list</C> is such a list and 
+##  <A>fam</A> a <C>WeightRepElementFamily</C>, then 
+##  <C>ObjByExtRep( <A>list</A>, <A>fam</A> )</C> returns the corresponding 
+##  <C>WeightRepElement</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -810,9 +812,10 @@ DeclareCategory( "IsBasisOfWeightRepElementSpace", IsBasis );
 ##  semisimple Lie algebra <A>L</A> of characteristic <M>0</M>.
 ##  <P/>
 ##  Note that the elements of such a module lie in the category
-##  <C>IsLeftAlgebraModuleElement</C> (and in particular they do not lie
-##  in the category <C>IsWeightRepElement</C>). However, if <C>v</C> is an element
-##  of such a module, then <C>ExtRepOfObj( v )</C> is a WeightRepElement.
+##  <Ref Filt="IsLeftAlgebraModuleElement"/> (and in particular they do not 
+##  lie in the category <Ref Filt="IsWeightRepElement"/>). However, if 
+##  <C>v</C> is an element of such a module, then <C>ExtRepOfObj( v )</C> 
+##  is a <C>WeightRepElement</C>.
 ##  <P/>
 ##  Note that for the following examples of this chapter we increase the line
 ##  length limit from its default value 80 to 81 in order to make some long

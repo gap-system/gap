@@ -2,16 +2,16 @@
 ##
 ##  PackageInfo.g for the package `FR'                    Laurent Bartholdi
 ##
-## $Id: PackageInfo.g,v 1.32 2009/10/13 09:37:05 gap Exp $
+## $Id: PackageInfo.g,v 1.49 2011/06/20 14:14:29 gap Exp $
 ##
 SetPackageInfo( rec(
 PackageName := "FR",
 Subtitle := "Computations with functionally recursive groups",
-Version := "1.0.0",
+Version := "1.2.2",
 ## <#GAPDoc Label="Version">
-## 1.0.0
+## 1.2.2
 ## <#/GAPDoc>
-Date := "05/09/2009",
+Date := "20.06.2011",
 ArchiveURL := Concatenation("http://www.uni-math.gwdg.de/laurent/FR/fr-",~.Version),
 ArchiveFormats := ".tar.gz",
 Persons := [
@@ -25,16 +25,16 @@ Persons := [
     PostalAddress := Concatenation( [
                        "Mathematisches Institut\n",
                        "Bunsenstrasse 3-5\n",
-                       "D-37073 Goettingen\n",
+                       "D-37073 Göttingen\n",
                        "Germany" ] ),
-    Place         := "Goettingen",
-    Institution   := "Georg-August Universitaet zu Goettingen"
+    Place         := "Göttingen",
+    Institution   := "Georg-August Universität zu Göttingen"
   )
 ],
 
-Status := "deposited",
-# CommunicatedBy := "Mike Atkinson (St. Andrews)",
-# AcceptDate := "08/1999",
+Status := "submitted",
+CommunicatedBy := "Götz Pfeiffer (NUI Galway)",
+AcceptDate := "",
 
 README_URL := "http://www.uni-math.gwdg.de/laurent/FR/README.fr",
 PackageInfoURL := "http://www.uni-math.gwdg.de/laurent/FR/PackageInfo.g",
@@ -54,12 +54,12 @@ PackageDoc := rec(
 ),
 
 Dependencies := rec(
-  GAP := ">=4.4.10",
+  GAP := ">=4.5.0",
   NeededOtherPackages := [["FGA",">=1.1"],
                       ["Polycyclic",">=2.2"],
                       ["GAPDoc",">=1.0"]],
   SuggestedOtherPackages := [["GBNP",">=0.9"],
-                      ["NQL",">=0.07"]],
+                      ["NQL",">=0.10"]],
   # additional desired packages: graphviz, display
 
   # for compilation of the external module, one needs:

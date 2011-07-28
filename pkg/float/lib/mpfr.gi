@@ -2,35 +2,21 @@
 ##
 #W  mpfr.gi                        GAP library              Laurent Bartholdi
 ##
-#H  @(#)$Id: mpfr.gi,v 1.1 2008/06/14 15:45:40 gap Exp $
+#H  @(#)$Id: mpfr.gi,v 1.4 2011/04/14 21:45:21 gap Exp $
 ##
 #Y  Copyright (C) 2008 Laurent Bartholdi
 ##
 ##  This file deals with floats
 ##
 Revision.mpfr_gi :=
-  "@(#)$Id: mpfr.gi,v 1.1 2008/06/14 15:45:40 gap Exp $";
+  "@(#)$Id: mpfr.gi,v 1.4 2011/04/14 21:45:21 gap Exp $";
 
 ################################################################
 # viewers
 ################################################################
-InstallMethod(ViewObj, "float", [IsMPFRFloat],
+InstallMethod(ViewString, "float", [IsMPFRFloat],
         function(obj)
-    if IsInt(ValueOption("FloatViewLength")) then
-        Print(STRING_MPFR(obj,ValueOption("FloatViewLength")));
-    else
-        Print(STRING_MPFR(obj,0));
-    fi;
-end);
-
-InstallMethod(PrintObj, "float", [IsMPFRFloat],
-        function(obj)
-    Print(String(obj));
-end);
-
-InstallMethod(Display, "float", [IsMPFRFloat],
-        function(obj)
-    Display(String(obj));
+    return STRING_MPFR(obj,FLOAT_VIEW_PRECISION);
 end);
 
 InstallMethod(String, "float, int", [IsMPFRFloat, IsInt],
@@ -40,6 +26,8 @@ end);
         
 InstallMethod(String, "float", [IsMPFRFloat],
         obj->STRING_MPFR(obj,0));
+
+BindGlobal("MPFRFLOAT_STRING", s->MPFR_STRING(s,Maximum(64,Int(Length(s)*100000/30103)))); # fast
 
 ################################################################
 # constants
@@ -53,14 +41,20 @@ InstallValue(MPFR, rec(0 := MPFR_INT(0),
     _infinity := MPFR_MAKEINFINITY(-1),
     NaN := MPFR_MAKENAN(1),
     makePi := MPFR_PI,
-    New := MPFRFloat
+    creator := MPFRFLOAT_STRING,
+    filter := IsMPFRFloat
 ));
 MPFR.make2Pi := prec->MPFR.2*MPFR_PI(prec);
 
 ################################################################
 # unary operations
 ################################################################
-for __i in [["AINV",AINV_MPFR],
+CallFuncList(function(arg)
+    local i;
+    for i in arg do
+        InstallOtherMethod(VALUE_GLOBAL(i[1]), "float", [IsMPFRFloat], i[2]);
+    od;
+end,   [["AINV",AINV_MPFR],
         ["INV",INV_MPFR],
         ["Int",INT_MPFR],
         ["AbsoluteValue",ABS_MPFR],
@@ -97,29 +91,18 @@ for __i in [["AINV",AINV_MPFR],
         ["Floor",FLOOR_MPFR],
         ["Round",ROUND_MPFR],
         ["Trunc",TRUNC_MPFR],
-        ["PrecisionFloat",PREC_MPFR]] do
-    InstallOtherMethod(VALUE_GLOBAL(__i[1]), "float", [IsMPFRFloat], __i[2]);
-od;
-Unbind(__i);
-
-InstallMethod(SignFloat, "float", [IsMPFRFloat], function(x)
-    if x>MPFR.0 then
-        return 1;
-    elif x < MPFR.0 then
-        return -1;
-    else
-        return 0;
-    fi;
-end);
+        ["PrecisionFloat",PREC_MPFR]]);
 
 ################################################################
 # binary operations
 ################################################################
-for __i in ["SUM","DIFF","QUO","PROD","LQUO","MOD","POW","EQ","LT"] do
-    InstallMethod(VALUE_GLOBAL(__i), "float",
-            [IsMPFRFloat, IsMPFRFloat], VALUE_GLOBAL(Concatenation(__i,"_MPFR")));
-od;
-Unbind(__i);
+CallFuncList(function(arg)
+    local i;
+    for i in arg do
+        InstallMethod(VALUE_GLOBAL(i), "float", [IsMPFRFloat, IsMPFRFloat],
+                VALUE_GLOBAL(Concatenation(i,"_MPFR")));
+    od;
+end, ["SUM","DIFF","QUO","PROD","LQUO","MOD","POW","EQ","LT"]);
 
 InstallMethod(POW, "float, rat", [IsMPFRFloat, IsRat], 
         function(f,r)
@@ -134,56 +117,22 @@ end);
 
 InstallMethod(Atan2, "float", [IsMPFRFloat, IsMPFRFloat], ATAN2_MPFR);
 
-InstallMethod(SUM, "float, scalar", [IsMPFRFloat,IsScalar],
-        function(x,y) return SUM(x,MPFRFloat(y)); end);
-InstallMethod(SUM, "scalar, float", [IsScalar,IsMPFRFloat],
-        function(x,y) return SUM(MPFRFloat(x),y); end);
-InstallMethod(DIFF, "float, scalar", [IsMPFRFloat,IsScalar],
-        function(x,y) return DIFF(x,MPFRFloat(y)); end);
-InstallMethod(DIFF, "scalar, float", [IsScalar,IsMPFRFloat],
-        function(x,y) return DIFF(MPFRFloat(x),y); end);
-InstallMethod(PROD, "float, scalar", [IsMPFRFloat,IsScalar],
-        function(x,y) return PROD(x,MPFRFloat(y)); end);
-InstallMethod(PROD, "scalar, float", [IsScalar,IsMPFRFloat],
-        function(x,y) return PROD(MPFRFloat(x),y); end);
-InstallMethod(QUO, "float, scalar", [IsMPFRFloat,IsScalar],
-        function(x,y) return QUO(x,MPFRFloat(y)); end);
-InstallMethod(QUO, "scalar, float", [IsScalar,IsMPFRFloat],
-        function(x,y) return QUO(MPFRFloat(x),y); end);
-InstallMethod(POW, "float, scalar", [IsMPFRFloat,IsScalar],
-        function(x,y) return POW(x,MPFRFloat(y)); end);
-InstallMethod(POW, "scalar, float", [IsScalar,IsMPFRFloat],
-        function(x,y) return POW(MPFRFloat(x),y); end);
-InstallMethod(LQUO, "float, scalar", [IsMPFRFloat,IsScalar],
-        function(x,y) return LQUO(x,MPFRFloat(y)); end);
-InstallMethod(LQUO, "scalar, float", [IsScalar,IsMPFRFloat],
-        function(x,y) return LQUO(MPFRFloat(x),y); end);
-InstallMethod(MOD, "float, scalar", [IsMPFRFloat,IsScalar],
-        function(x,y) return MOD(x,MPFRFloat(y)); end);
-InstallMethod(MOD, "scalar, float", [IsScalar,IsMPFRFloat],
-        function(x,y) return MOD(MPFRFloat(x),y); end);
-InstallMethod(EQ, "float, scalar", [IsMPFRFloat,IsScalar],
-        function(x,y) return EQ(x,MPFRFloat(y)); end);
-InstallMethod(EQ, "scalar, float", [IsScalar,IsMPFRFloat],
-        function(x,y) return EQ(MPFRFloat(x),y); end);
-InstallMethod(LT, "float, scalar", [IsMPFRFloat,IsScalar],
-        function(x,y) return LT(x,MPFRFloat(y)); end);
-InstallMethod(LT, "scalar, float", [IsScalar,IsMPFRFloat],
-        function(x,y) return LT(MPFRFloat(x),y); end);
-        
 ################################################################
 # constructor
 ################################################################
-InstallMethod(MPFRFloat, "for integers", [IsInt],
-        function(int)
+InstallFloatsConstructors(IsMPFRFloat);
+
+InstallMethod(NewFloat, "for integers", [IsMPFRFloat,IsInt],
+        function(filter,int)
     if IsInt(ValueOption("PrecisionFloat")) then
         return MPFR_INTPREC(int,ValueOption("PrecisionFloat"));
     else
         return MPFR_INT(int);
     fi;
 end);
-InstallMethod(MPFRFloat, "for rationals", [IsRat],
-        function(rat)
+
+InstallMethod(NewFloat, "for rationals", [IsMPFRFloat,IsRat],
+        function(filter,rat)
     local n, d, prec;
     n := NumeratorRat(rat);
     d := DenominatorRat(rat);
@@ -196,20 +145,18 @@ InstallMethod(MPFRFloat, "for rationals", [IsRat],
     fi;
     return MPFR_INTPREC(n,prec)/MPFR_INTPREC(d,prec);
 end);
-InstallMethod(MPFRFloat, "for lists", [IsList],
-        l->List(l,MPFRFloat));
-InstallMethod(MPFRFloat, "for macfloats", [IsMacFloat],
-        x->MPFRFloat(String(x)));
-InstallMethod(MPFRFloat, "for strings", [IsString],
-        function(s)
+
+InstallMethod(NewFloat, "for strings", [IsMPFRFloat,IsString],
+        function(filter,s)
     if IsInt(ValueOption("PrecisionFloat")) then
         return MPFR_STRING(s,ValueOption("PrecisionFloat"));
     else
-        return MPFR_STRING(s,Maximum(64,Int(Length(s)*100000/30103)));
+        return MPFRFLOAT_STRING(s);
     fi;
 end);
-InstallMethod(MPFRFloat, "for float", [IsMPFRFloat],
-        function(obj)
+
+InstallMethod(NewFloat, "for float", [IsMPFRFloat,IsMPFRFloat],
+        function(filter,obj)
     if IsInt(ValueOption("PrecisionFloat")) then
         return MPFR_MPFRPREC(obj,ValueOption("PrecisionFloat"));
     else
@@ -234,7 +181,6 @@ InstallMethod(Rat, "float", [IsMPFRFloat],
     until AbsoluteValue(M[1][1]-x*M[2][1]) < M[2][1]*bound;
     return M[1][1]/M[2][1];
 end);
-
 #############################################################################
 ##
 #E

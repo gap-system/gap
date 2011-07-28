@@ -2,7 +2,7 @@
 **
 *W  csxc_float.h                  GAP source                Laurent Bartholdi
 **
-*H  @(#)$Id: cxsc_float.h,v 1.1 2008/06/14 15:45:40 gap Exp $
+*H  @(#)$Id: cxsc_float.h,v 1.2 2010/02/22 19:25:24 gap Exp $
 **
 *Y  Copyright (C) 2008 Laurent Bartholdi
 **
@@ -10,25 +10,21 @@
 */
 #ifdef BANNER_CXSC_FLOAT_H
 static const char *Revision_cxsc_float_h =
-   "@(#)$Id: cxsc_float.h,v 1.1 2008/06/14 15:45:40 gap Exp $";
+   "@(#)$Id: cxsc_float.h,v 1.2 2010/02/22 19:25:24 gap Exp $";
 #endif
 
 #define ERROR_CXSC(gap_name,obj)				      \
   ErrorQuit(#gap_name ": argument must be a CXSC float, not a %s",    \
 	    (Int)(InfoBags[TNUM_OBJ(obj)].name),0)
 
-#define RETURNERROR_CXSC(gap_name,obj)				      \
-  ErrorQuit(#gap_name ": argument must be a CXSC float, not a %s",    \
-	    (Int)(InfoBags[TNUM_OBJ(obj)].name),0); return Fail;
-
-#define TEST_IS_INTOBJ(mp_name,obj)				\
+#define TEST_IS_INTOBJ(gap_name,obj)				\
   if (!IS_INTOBJ(obj))						\
-    ErrorQuit(mp_name ": expected a small integer, not a %s",	\
+    ErrorQuit(#gap_name ": expected a small integer, not a %s",	\
 	      (Int)(InfoBags[TNUM_OBJ(obj)].name),0)
 
-#define TEST_IS_STRING(mp_name,obj)				\
+#define TEST_IS_STRING(gap_name,obj)				\
   if (!IsStringConv(obj))					\
-    ErrorQuit(mp_name ": expected a string, not a %s",		\
+    ErrorQuit(#gap_name ": expected a string, not a %s",	\
 	      (Int)(InfoBags[TNUM_OBJ(obj)].name),0)
 
 inline bool HAS_TYPE(Obj obj, Obj type, Obj family)
@@ -41,28 +37,28 @@ inline bool HAS_TYPE(Obj obj, Obj type, Obj family)
   }
   return false;
 }
-#define IS_REAL(obj) HAS_TYPE(obj,TYPE_CXSC_REAL,FAMILY_CXSC_REAL)
-#define TEST_IS_REAL(mp_name,obj)				\
-  if (!IS_REAL(obj))						\
-    ErrorQuit(mp_name ": expected a real, not a %s",		\
+#define IS_RP(obj) HAS_TYPE(obj,TYPE_CXSC_RP,FAMILY_CXSC_RP)
+#define TEST_IS_RP(gap_name,obj)				\
+  if (!IS_RP(obj))						\
+    ErrorQuit(#gap_name ": expected a real, not a %s",		\
 	       (Int)(InfoBags[TNUM_OBJ(obj)].name),0)
 
-#define IS_COMPLEX(obj) HAS_TYPE(obj,TYPE_CXSC_COMPLEX,FAMILY_CXSC_COMPLEX)
-#define TEST_IS_COMPLEX(mp_name,obj)		       		\
-  if (!IS_COMPLEX(obj))						\
-    ErrorQuit(mp_name ": expected a complex, not a %s",		\
+#define IS_CP(obj) HAS_TYPE(obj,TYPE_CXSC_CP,FAMILY_CXSC_CP)
+#define TEST_IS_CP(gap_name,obj)				\
+  if (!IS_CP(obj))						\
+    ErrorQuit(#gap_name ": expected a complex, not a %s",	\
 	       (Int)(InfoBags[TNUM_OBJ(obj)].name),0)
 
-#define IS_INTERVAL(obj) HAS_TYPE(obj,TYPE_CXSC_INTERVAL,FAMILY_CXSC_INTERVAL)
-#define TEST_IS_INTERVAL(mp_name,obj)		       		\
-  if (!IS_INTERVAL(obj))			       		\
-    ErrorQuit(mp_name ": expected an interval, not a %s",	\
+#define IS_RI(obj) HAS_TYPE(obj,TYPE_CXSC_RI,FAMILY_CXSC_RI)
+#define TEST_IS_RI(gap_name,obj)			       	\
+  if (!IS_RI(obj))						\
+    ErrorQuit(#gap_name ": expected an interval, not a %s",	\
 	       (Int)(InfoBags[TNUM_OBJ(obj)].name),0)
 
-#define IS_CINTERVAL(obj) HAS_TYPE(obj,TYPE_CXSC_CINTERVAL,FAMILY_CXSC_CINTERVAL)
-#define TEST_IS_CINTERVAL(mp_name,obj)				\
-  if (!IS_CINTERVAL(obj))					\
-    ErrorQuit(mp_name ": expected a complex interval, not a %s",\
+#define IS_CI(obj) HAS_TYPE(obj,TYPE_CXSC_CI,FAMILY_CXSC_CI)
+#define TEST_IS_CI(gap_name,obj)			       	\
+  if (!IS_CI(obj))					       	\
+    ErrorQuit(#gap_name ": expected a complex interval, not a %s",\
 	       (Int)(InfoBags[TNUM_OBJ(obj)].name),0)
 
 #include "except.hpp"
@@ -74,13 +70,13 @@ inline bool HAS_TYPE(Obj obj, Obj type, Obj family)
 /****************************************************************
  * cxsc data are stored as follows:
  * +--------------------+----------+
- * | TYPE_CXSC_INTERVAL | interval |
+ * | TYPE_CXSC_RI       | interval |
  * +--------------------+----------+
  ****************************************************************/
-#define REAL_OBJ(obj) (*(cxsc::real *) (ADDR_OBJ(obj)+1))
-#define INTERVAL_OBJ(obj) (*(cxsc::interval *) (ADDR_OBJ(obj)+1))
-#define COMPLEX_OBJ(obj) (*(cxsc::complex *) (ADDR_OBJ(obj)+1))
-#define CINTERVAL_OBJ(obj) (*(cxsc::cinterval *) (ADDR_OBJ(obj)+1))
+#define RP_OBJ(obj) (*(cxsc::real *) (ADDR_OBJ(obj)+1))
+#define RI_OBJ(obj) (*(cxsc::interval *) (ADDR_OBJ(obj)+1))
+#define CP_OBJ(obj) (*(cxsc::complex *) (ADDR_OBJ(obj)+1))
+#define CI_OBJ(obj) (*(cxsc::cinterval *) (ADDR_OBJ(obj)+1))
 
 int cpoly(const double *opr, const double *opi, int degree, double *zeror, double *zeroi, double *heap);
 

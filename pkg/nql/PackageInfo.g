@@ -2,7 +2,7 @@
 ##  
 ##  PackageInfo.g                  NQL                          René Hartung 
 ##  
-#H   @(#)$Id: PackageInfo.g,v 1.21 2009/08/31 07:55:22 gap Exp $ 
+#H   @(#)$Id: PackageInfo.g,v 1.24 2010/09/04 12:54:32 gap Exp $ 
 ##
 ##  Based on Frank Luebeck's template for PackageInfo.g.
 ##  
@@ -11,8 +11,8 @@ SetPackageInfo( rec(
 
 PackageName := "NQL",
 Subtitle := "Nilpotent Quotients of L-Presented Groups",
-Version := "0.08",
-Date    := "31/08/2009",
+Version := "0.10",
+Date    := "04/09/2010",
 
 Persons := [
   rec(
@@ -20,15 +20,15 @@ Persons := [
   FirstNames    := "René",
   IsAuthor      := true,
   IsMaintainer  := true,
-  Email         := "r.hartung [ed] tu-braunschweig.de",
-  WWWHome       := "http://www-public.tu-bs.de:8080/~y0019492/",
-  PostalAddress := Concatenation( "University of Braunschweig\n",
-                                  "Institute of Computational Mathematics \n",
-                                  "Pockelstrasse 14\n",
-                                  "38106 Braunschweig\n",
+  Email         := "rhartung [ed] uni-math.gwdg.de",
+  WWWHome       := "http://www.uni-math.gwdg.de/rhartung",
+  PostalAddress := Concatenation( "Georg-August Universität zu Göttingen\n",
+                                  "Mathematisches Institut\n",
+                                  "Bunsenstraße 3-5\n",
+                                  "D-37073 Göttingen\n",
                                   "Germany" ),
-  Place         := "Braunschweig, Germany",
-  Institution   := "Institute of Computational Mathematics, University of Braunschweig"
+  Place         := "Göttingen, Germany",
+  Institution   := "Georg-August Universität zu Göttingen"
   )
 ],
 
@@ -36,7 +36,7 @@ Status         := "accepted",
 CommunicatedBy := "Alexander Konovalov (St Andrews)",
 AcceptDate     := "02/2009",
 
-PackageWWWHome := "http://www-public.tu-bs.de:8080/~y0019492/pub/nql/",
+PackageWWWHome := "http://www.uni-math.gwdg.de/rhartung/pub/nql/",
 
 ArchiveFormats := ".tar.gz",
 ArchiveURL     := Concatenation( ~.PackageWWWHome, "nql-",~.Version),
@@ -70,10 +70,10 @@ end,
 Dependencies := rec(
   GAP                    := ">= 4.4",
   NeededOtherPackages    := [ ["polycyclic", ">= 2.5"], 
-                              ["FGA", ">= 1.1.0.1"],
-                              ["AutPGrp", ">= 1.4"] ],
-  SuggestedOtherPackages := [ ["ParGAP", ">= 1.1.2" ] ],
-# SuggestedOtherPackages := [ ["FR", ">= 0.90" ] ],
+                              ["FGA", ">= 1.1.0.1"] ], 
+  SuggestedOtherPackages := [ ["ParGAP", ">= 1.1.2" ],
+                              ["AutPGrp", ">= 1.4"],
+                              ["ACE", ">= 5.0" ] ],
   ExternalConditions     := [ ]
 ),
 
@@ -83,7 +83,10 @@ Keywords := [ "nilpotent quotient algorithm",
               "nilpotent presentations",
               "finitely generated groups",
               "Grigorchuk group",
+              "Gupta-Sidki group",
               "L-presented groups",
+              "finite index subgroup of L-presented groups", 
+              "coset enumeration",
               "recursively presented groups",
               "infinite presentations",
               "commutators",

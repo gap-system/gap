@@ -45,14 +45,15 @@ const char * Revision_vars_c =
 
 #include        "code.h"                /* coder                           */
 
-#define INCLUDE_DECLARATION_PART
-#include        "vars.h"                /* variables                       */
-#undef  INCLUDE_DECLARATION_PART
-
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
 #include        "tls.h"                 /* thread-local storage            */
+
+#define INCLUDE_DECLARATION_PART
+#include        "vars.h"                /* variables                       */
+#undef  INCLUDE_DECLARATION_PART
+
 
 #include        "saveload.h"            /* saving and loading              */
 

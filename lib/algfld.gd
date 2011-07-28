@@ -2,7 +2,7 @@
 ##
 #W  algfld.gd                   GAP Library                  Alexander Hulpke
 ##
-#H  @(#)$Id: algfld.gd,v 4.26 2010/02/23 15:12:45 gap Exp $
+#H  @(#)$Id: algfld.gd,v 4.27 2010/10/02 16:40:58 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St  Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the categories,  attributes, properties and operations
 ##  for algebraic extensions of fields and their elements
 Revision.algfld_gd:=
-  "@(#)$Id: algfld.gd,v 4.26 2010/02/23 15:12:45 gap Exp $";
+  "@(#)$Id: algfld.gd,v 4.27 2010/10/02 16:40:58 alexk Exp $";
 
 #############################################################################
 ##
@@ -121,7 +121,7 @@ DeclareOperation( "AlgebraicElementsFamily",
 ##  gap> IsField(e);
 ##  true
 ##  gap> a:=RootOfDefiningPolynomial(e);
-##  (a)
+##  a
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

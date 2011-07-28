@@ -5,7 +5,7 @@
 ## Methods for the calculation of 
 ## constructive pc-sequences for polycyclic rational matrix groups
 ##
-#H  @(#)$Id: basic.gd,v 1.2 2004/10/22 18:12:57 gap Exp $
+#H  @(#)$Id: basic.gd,v 1.3 2011/05/31 13:10:57 gap Exp $
 ##
 #Y 2003
 ##
@@ -64,9 +64,3 @@ DeclareGlobalFunction( "POL_NormalSubgroupGeneratorsU_p" );
 #############################################################################
 ##
 #E
-
-
-
-
-
-

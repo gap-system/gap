@@ -2,7 +2,7 @@
 **
 *W  gasman.c                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gasman.c,v 4.73 2010/02/28 10:26:05 gap Exp $
+*H  @(#)$Id: gasman.c,v 4.78 2011/05/20 13:33:31 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -115,7 +115,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_gasman_c =
-   "@(#)$Id: gasman.c,v 4.73 2010/02/28 10:26:05 gap Exp $";
+   "@(#)$Id: gasman.c,v 4.78 2011/05/20 13:33:31 sal Exp $";
 
 
 #define INCLUDE_DECLARATION_PART
@@ -441,6 +441,17 @@ UInt                    NrDeadBags;
 UInt                    SizeDeadBags;
 UInt                    NrHalfDeadBags;
 
+/****************************************************************************
+**
+*F  IS_BAG -- check if a value looks like a masterpointer reference.
+*/
+static inline UInt IS_BAG (
+    UInt                bid )
+{
+    return (((UInt)MptrBags <= bid)
+         && (bid < (UInt)OldBags)
+         && (bid & (sizeof(Bag)-1)) == 0);
+}
 
 /****************************************************************************
 **
@@ -576,7 +587,6 @@ static void ItaniumSpecialMarkingInit() {
 */
 TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
 
-extern void MarkAllSubBagsDefault ( Bag );
 
 void InitMarkFuncBags (
     UInt                type,
@@ -1329,10 +1339,6 @@ void            RetypeBag (
     Bag                 bag,
     UInt                new_type )
 {
-    UInt                size;           /* size of the bag                 */
-
-    /* get old type and size of the bag                                    */
-    size     = SIZE_BAG(bag);
 
 #ifdef  COUNT_BAGS
     /* update the statistics      */
@@ -1832,9 +1838,8 @@ void            RetypeBag (
 **  identifiers can exist, and so 'CollectBags' frees these masterpointers.  
 */
 #ifndef BOEHM_GC
-#include <setjmp.h>
 
-jmp_buf RegsBags;
+syJmp_buf RegsBags;
 
 /* solaris */
 #ifdef __GNUC__
@@ -1925,6 +1930,7 @@ Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1L);
 #endif /* !BOEHM_GC */
 
 
+
 UInt CollectBags (
     UInt                size,
     UInt                full )
@@ -1942,8 +1948,9 @@ UInt CollectBags (
     UInt                sizeDeadBags;   /* total size of dead new bags     */
     UInt                done;           /* do we have to make a full gc    */
     UInt                i;              /* loop variable                   */
-    Bag *               last;
-    Char                type;
+
+    /*     Bag *               last;
+	   Char                type; */
 #ifdef DEBUG_DEADSONS_BAGS
     UInt                pos;
 #endif
@@ -2007,7 +2014,7 @@ again:
         (*StackFuncBags)();
     }
     else {
-        setjmp( RegsBags );
+      sySetjmp( RegsBags );
 #ifdef  SPARC
 #if SPARC
         SparcStackFuncBags();
@@ -2087,6 +2094,7 @@ again:
 
     /* * * * * * * * * * * * * * * sweep phase * * * * * * * * * * * * * * */
 
+#if 0
     /* call freeing function for all dead bags                             */
     if ( NrTabFreeFuncBags ) {
 
@@ -2167,7 +2175,7 @@ again:
         }
 
     }
-
+#endif
     /* sweep through the young generation                                  */
     nrDeadBags = 0;
     nrHalfDeadBags = 0;
@@ -2177,8 +2185,7 @@ again:
     while ( src < AllocBags ) {
 
         /* leftover of a resize of <n> bytes                               */
-        if ( (*(UInt*)src & 0xFFL) == 255 ) {
-            last = src;  type = 'r';
+        if ( (*(UInt*)src & 0xFFL) == 255 ) {	  
 
             /* advance src                                                 */
 	    if ((*(UInt *) src) >> 8 == 1)
@@ -2202,9 +2209,11 @@ again:
                 (*AbortFuncBags)("incorrectly marked bag");
               }
 #endif
-            last = src;  type = 'd';
+
 
             /* update count                                                */
+	    if (TabFreeFuncBags[ *(UInt *)src & 0xFFL] != 0)
+	      (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[HEADER_SIZE-1] );
             nrDeadBags += 1;
 #ifdef      USE_NEWSHAPE
 	    sizeDeadBags +=  ((UInt *)src)[0] >> 16;
@@ -2248,7 +2257,7 @@ again:
                 (*AbortFuncBags)("incorrectly marked bag");
               }
 #endif
-            last = src;  type = 'h';
+
 
             /* update count                                                */
             nrDeadBags += 1;
@@ -2297,7 +2306,7 @@ again:
                 (*AbortFuncBags)("incorrectly marked bag");
               }
 #endif
-            last = src;  type = 'l';
+
 
             /* update identifier, copy size-type and link field            */
             PTR_BAG( UNMARKED_ALIVE(src[HEADER_SIZE-1])) = dst+HEADER_SIZE;
@@ -2382,6 +2391,8 @@ again:
     /* temporarily store in 'StopBags' where this allocation takes us      */
     StopBags = AllocBags + HEADER_SIZE + WORDS_BAG(size);
 
+
+
     /* if we only performed a partial garbage collection                   */
     if ( ! FullBags ) {
 
@@ -2389,8 +2400,8 @@ again:
         if ( ! CacheSizeBags ) {
             if ( nrLiveBags+nrDeadBags +nrHalfDeadBags < 512
 		 
-		 /* The test below should stop AllocSizeBags growing uncontrollably when
-		    all bags are big */
+		 /* The test below should stop AllocSizeBags 
+		    growing uncontrollably when all bags are big */
 		 && StopBags > OldBags + 4*1024*WORDS_BAG(AllocSizeBags))
                 AllocSizeBags += 256L;
             else if ( 4096 < nrLiveBags+nrDeadBags+nrHalfDeadBags
@@ -2431,14 +2442,22 @@ again:
     /* if we already performed a full garbage collection                   */
     else {
 
-      /* Clean up old half-dead bags                                       */
+      /* Clean up old half-dead bags                                      
+	 also reorder the free masterpointer linked list
+	 to get more locality */
+      FreeMptrBags = (Bag)0L;
       for (p = MptrBags; p < OldBags; p+= SIZE_MPTR_BAGS)
-        if ((Bag *)*p == OldWeakDeadBagMarker)
-          {
-            *p = (Bag)FreeMptrBags;
-            FreeMptrBags = (Bag)p;
-            NrHalfDeadBags --;
-          }
+	{
+	  Bag *mptr = (Bag *)*p;
+	  if ( mptr == OldWeakDeadBagMarker)
+	    NrHalfDeadBags--;
+	  if ( mptr == OldWeakDeadBagMarker || IS_BAG((UInt)mptr))
+	    {
+	      *p = FreeMptrBags;
+	      FreeMptrBags = (Bag)p;
+	    }
+	}
+
 
         /* get the storage we absolutly need                               */
         while ( EndBags < StopBags
@@ -2629,6 +2648,7 @@ void SwapMasterPoint (
 **  'TNUM_BAG', 'SIZE_BAG', and 'PTR_BAG' shadow the macros of the same name,
 **  which are usually not available in a debugger.
 */
+
 #ifdef  DEBUG_FUNCTIONS_BAGS
 
 #undef  TNUM_BAG
@@ -2641,13 +2661,6 @@ UInt BID (
     return (UInt) bag;
 }
 
-UInt IS_BAG (
-    UInt                bid )
-{
-    return (((UInt)MptrBags <= bid)
-         && (bid < (UInt)OldBags)
-         && (bid & (sizeof(Bag)-1)) == 0);
-}
 
 Bag BAG (
     UInt                bid )

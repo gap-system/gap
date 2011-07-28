@@ -1,12 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%  recognition.tex        IRREDSOL documentation          Burkhard Hoefling
+%%  recognition.tex        IRREDSOL documentation           Burkhard Höfling
 %%
-%%  @(#)$Id: recognition.tex,v 1.4 2005/07/06 10:08:23 gap Exp $
+%%  @(#)$Id: recognition.tex,v 1.6 2011/05/18 16:24:30 gap Exp $
 %%
-%%  Copyright (C) 2003-2005 by Burkhard Hoefling, 
-%%  Institut fuer Geometrie, Algebra und Diskrete Mathematik
-%%  Technische Universitaet Braunschweig, Germany
+%%  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 %%
 
 
@@ -28,14 +26,14 @@ functions which allow to load and unload the recognition data in the
 
 \>`IsAvailableIdIrreducibleSolvableMatrixGroup(<G>)'%
 {IsAvailableIdIrreducibleSolvableMatrixGroup}%
-@{`IsAvailableIdIrreducible\\SolvableMatrixGroup'} F
+@{`IsAvailable\\Id\\Irreducible\\Solvable\\MatrixGroup'} F
 
 This function returns `true' if `IdIrreducibleSolvableMatrixGroup' (see
 "IdIrreducibleSolvableMatrixGroup") will work for the irreducible matrix group <G>, and `false' otherwise.
 
 \>`IsAvailableIdAbsolutelyIrreducibleSolvableMatrixGroup(<G>)'%
 {IsAvailableIdAbsolutelyIrreducibleSolvableMatrixGroup}%
-@{`IsAvailableIdAbsolutelyIrreducible\\SolvableMatrixGroup'} F
+@{`IsAvailable\\Id\\Absolutely\\Irreducible\\Solvable\\MatrixGroup'} F
 
 This function returns `true' if `IdIrreducibleSolvableMatrixGroup' (see
 "IdIrreducibleSolvableMatrixGroup") will work for the absolutely irreducible matrix group <G>, and `false' otherwise.
@@ -51,19 +49,19 @@ conjugate to  `IrreducibleSolvableMatrixGroup'(<n>, <q>, <d>, <k>) (see
 "IrreducibleSolvableMatrixGroup").
 
 \beginexample
-gap> G := IrreducibleSolvableMatrixGroup (12, 2, 3, 52)^RandomInvertibleMat (12, GF(8));
-<matrix group of size 2340 with 6 generators>
+gap> G := IrreducibleSolvableMatrixGroup (12, 2, 3, 52)^RandomInvertibleMat (12, GF(2));;
+# <matrix group of size 2340 with 6 generators>
 gap> IdIrreducibleSolvableMatrixGroup (G);
 [ 12, 2, 3, 52 ]
 \endexample
 
 
 \>`RecognitionIrreducibleSolvableMatrixGroup(%
-   <G>, <wantmat>, <wantgroup>)'%
+   <G>[, <wantmat>[, <wantgroup>[,<wantiso>]]])'%
 {RecognitionIrreducibleSolvableMatrixGroup}%
 @{`RecognitionIrreducibleSolvable\\MatrixGroup'} F
 \>`RecognitionIrreducibleSolvableMatrixGroupNC(%
-   <G>, <wantmat>,<wantgroup>)'%
+   <G>[, <wantmat>[, <wantgroup>[,<wantiso>]]])'%
 {RecognitionIrreducibleSolvableMatrixGroupNC}%
 @{`RecognitionIrreducibleSolvable\\MatrixGroupNC'} F
 
@@ -72,16 +70,17 @@ Let <G> be an irreducible solvable matrix group over a finite field, and let
 These functions identify a conjugate <H> of <G> group in the library. 
 They return a record which has the following entries:
 \beginitems
-`id' &  contains the id of <H> (and thus of
-<G>); cf. `IdIrreducibleSolvableMatrixGroup'
-("IdIrreducibleSolvableMatrixGroup")
+`id' &  contains the id of <H> (and thus of <G>); 
+    cf. `IdIrreducibleSolvableMatrixGroup'  ("IdIrreducibleSolvableMatrixGroup")
 
 `mat' (present if `wantmat' is `true') &
-a
-matrix <x> such that $G^x = H$
+    a matrix <x> such that $G^x = H$
 
-`group' (present if `wantmat' is `true') & the group <H> 
+`group' (present if `wantgroup' is `true') & the group <H> 
 
+`iso' (present if `wantiso' is `true') & a group isomorphism from the source of
+    `RepresentationIsomorphism(<G>)' to the source of `RepresentationIsomorphism(<H>)'.
+    
 \enditems
 Note that in most cases, `RecognitionIrreducibleSolvableMatrixGroup' and `RecognitionIrreducibleSolvableMatrixGroupNC' are 
 much slower if <wantmat> is set to true.   
@@ -141,7 +140,8 @@ gap> G := IrreducibleSolvableGroupMS (6,2,5);
 gap> H := IrreducibleSolvableMatrixGroup (6, 2, 2, 4);
 <matrix group of size 27 with 3 generators>
 gap> G = H;
-false # groups in the libraries need not be the same
+false 
+# groups in the libraries need not be the same
 gap> r := RecognitionIrreducibleSolvableMatrixGroup (G, true, false);;
 gap> G^r.mat = H;
 true
@@ -157,11 +157,11 @@ This function returns a triple [<n>, <p>, <l>] such that
 gap> IndexMSIdIrreducibleSolvableMatrixGroup (6, 2, 2, 7);
 [ 6, 2, 13 ]
 gap> G := IrreducibleSolvableGroupMS (6,2,13);
-<matrix group of size 27 with 2 generators>
+<matrix group of size 63 with 3 generators>
 gap> H := IrreducibleSolvableMatrixGroup (6, 2, 2, 7);
-<matrix group of size 27 with 3 generators>
+<matrix group of size 63 with 3 generators>
 gap> G = H;
-false # groups in the libraries need not be the same
+false 
 gap> r := RecognitionIrreducibleSolvableMatrixGroup (G, true, false);;
 gap> G^r.mat = H;
 true

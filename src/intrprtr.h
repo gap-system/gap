@@ -2,7 +2,7 @@
 **
 *W  intrprtr.h                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: intrprtr.h,v 4.24 2010/02/23 15:13:43 gap Exp $
+*H  @(#)$Id: intrprtr.h,v 4.26 2011/05/23 10:58:39 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,7 +18,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_intrprtr_h =
-   "@(#)$Id: intrprtr.h,v 4.24 2010/02/23 15:13:43 gap Exp $";
+   "@(#)$Id: intrprtr.h,v 4.26 2011/05/23 10:58:39 sal Exp $";
 #endif
 
 
@@ -132,7 +132,7 @@ extern void            IntrFuncCallOptionsEnd ( UInt nr );
 
 /****************************************************************************
 **
-*F  IntrFuncExprBegin(<narg>,<nloc>,<nams>) .  interpret function expr, begin
+*F  IntrFuncExprBegin(<narg>,<nloc>,<nams>,<startline>) .  interpret function expr, begin
 *F  IntrFuncExprEnd(<nr>) . . . . . . . . . . .  interpret function expr, end
 **
 **  'IntrFuncExprBegin' is an action to interpret  a function expression.  It
@@ -148,7 +148,8 @@ extern void            IntrFuncCallOptionsEnd ( UInt nr );
 extern  void            IntrFuncExprBegin (
             Int                 narg,
             Int                 nloc,
-            Obj                 nams );
+            Obj                 nams,
+	    Int                 startLine);
 
 extern  void            IntrFuncExprEnd (
             UInt                nr,
@@ -320,7 +321,7 @@ extern  void            IntrAtomicBegin ( void );
 extern  void            IntrAtomicBeginBody ( UInt nrexprs );
 
 extern  void            IntrAtomicEndBody (
-            UInt                nrstats );
+            Int                nrstats );
 
 extern  void            IntrAtomicEnd ( void );
 
@@ -538,6 +539,18 @@ extern  void            IntrPow ( void );
 extern  void            IntrIntExpr (
             Char *              str );
 extern  void            IntrLongIntExpr (
+            Obj                 string );
+
+/****************************************************************************
+**
+*F  IntrFloatExpr(<str>)  . . . . . . . .  interpret literal float expression
+**
+**  'IntrFloatExpr' is the action  to  interpret a literal  float expression.
+**  <str> is the float as a (null terminated) C character string.
+*/
+extern  void            IntrFloatExpr (
+            Char *              str );
+extern  void            IntrLongFloatExpr (
             Obj                 string );
 
 /****************************************************************************

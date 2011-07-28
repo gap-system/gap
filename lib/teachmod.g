@@ -2,7 +2,7 @@
 ##
 #W  teachmod.g                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: teachmod.g,v 4.4 2009/12/28 22:57:22 gap Exp $
+#H  @(#)$Id: teachmod.g,v 4.5 2010/12/22 18:15:24 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -12,7 +12,7 @@
 ##  always installed with GAP.
 ##
 Revision.teachmod_g:=
-  "@(#)$Id: teachmod.g,v 4.4 2009/12/28 22:57:22 gap Exp $";
+  "@(#)$Id: teachmod.g,v 4.5 2010/12/22 18:15:24 gap Exp $";
 
 
 ## FFE Display
@@ -26,7 +26,7 @@ function(x)
   d:=DegreeFFE(x);
   p:=Characteristic(x);
   if d=1 then
-    Print("ZmodnZObj( ",Int(x),", ",p," )");
+    Print("ZmodnZObj(",Int(x),",",p,")");
   else
     Print("Z(",p^d,")^",LogFFE(x,Z(p^d)));
   fi;
@@ -41,7 +41,7 @@ function(x)
   d:=DegreeFFE(x);
   p:=Characteristic(x);
   if d=1 then
-    return Concatenation("ZmodnZObj( ",String(Int(x)),", ",String(p)," )");
+    return Concatenation("ZmodnZObj(",String(Int(x)),",",String(p),")");
   else
     return Concatenation("Z(",String(p^d),")^",String(LogFFE(x,Z(p^d))));
   fi;

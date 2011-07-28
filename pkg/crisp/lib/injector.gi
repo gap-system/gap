@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  injector.gi                      CRISP                 Burkhard H\"ofling
+##  injector.gi                      CRISP                 Burkhard Höfling
 ##
-##  @(#)$Id: injector.gi,v 1.3 2005/12/21 17:00:58 gap Exp $
+##  @(#)$Id: injector.gi,v 1.4 2011/05/15 19:17:55 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000, 2005 Burkhard Höfling
 ##
 Revision.injector_gi :=
-    "@(#)$Id: injector.gi,v 1.3 2005/12/21 17:00:58 gap Exp $";
+    "@(#)$Id: injector.gi,v 1.4 2011/05/15 19:17:55 gap Exp $";
 
 
 #############################################################################

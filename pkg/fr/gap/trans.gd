@@ -2,7 +2,7 @@
 ##
 #W trans.gd                                                 Laurent Bartholdi
 ##
-#H   @(#)$Id: trans.gd,v 1.13 2009/03/27 19:28:53 gap Exp $
+#H   @(#)$Id: trans.gd,v 1.16 2011/06/20 14:14:31 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -27,7 +27,18 @@ BindGlobal("TYPE_TRANS",
 ##
 ## <#GAPDoc Label="Trans">
 ## <ManSection>
+##   <Fam Name="TRANS_FAMILY"/>
+##   <Filt Name="IsTrans"/>
+##   <Description>
+##     The family and filter of transformations of the FR's implementation
+##     of transformations on the positive integers, see <Ref Func="Trans"/>.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
 ##   <Func Name="Trans" Arg="list,..."/>
+##   <Func Name="TransList" Arg="list,..."/>
+##   <Func Name="TransNC" Arg="list"/>
 ##   <Description>
 ##     This function creates a new transformation, in the family
 ##     <C>TRANS_FAMILY</C>. These objects behave quite as usual
@@ -64,6 +75,80 @@ BindGlobal("TYPE_TRANS",
 ## ]]></Example>
 ##   </Description>
 ## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="AsTrans" Arg="perm"/>
+##   <Returns>An FR transformation equivalent to <A>perm</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="Cycle" Arg="trans, point"/>
+##   <Returns>The cycle of integers that <A>point</A> eventually reaches under <A>trans</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="Cycles" Arg="trans, domain, [act]"/>
+##   <Returns>The cycles that <A>domain</A> eventually reaches under <A>trans</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="FullTransMonoid" Arg="n"/>
+##   <Returns>The monoid of transformations of <C>[1..n]</C> (if <A>n</A> is an integer)
+##   or of <A>n</A> (if <A>n</A> is a collection).</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="ImageSetOfTrans" Arg="trans, coll"/>
+##   <Returns>The images of <A>coll</A> under <A>trans</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="KernelOfTrans" Arg="trans"/>
+##   <Returns>The non-trivial equivalence classes of integers identified under <A>trans</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="ListTrans" Arg="trans"/>
+##   <Returns>A list of images describing <A>trans</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Var Name="OneTrans"/>
+##   <Description>The identity FR transformation.</Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="PreImagesOfTrans" Arg="trans, i"/>
+##   <Returns>The preimages of <A>i</A> under <A>trans</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="RandomTrans" Arg="n"/>
+##   <Returns>A random FR transformation on the fist <A>n</A> positive integers.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="RankOfTrans" Arg="trans [list]"/>
+##   <Returns>The (normalized) rank of the FR transformation <A>trans</A>.</Returns>
+##   <Description>
+##     If <A>list</A> is present, this computes the size of the image of
+##     <A>list</A> under <A>trans</A>. Otherwise, this computes the limit,
+##     as <M>n\to\infty</M>, of <C>RankOfTrans(trans,[1..n])-n</C>.
+## <Example><![CDATA[
+## gap> RankOfTrans(Trans([1,1]));
+## gap> RankOfTrans(Trans([1,1]),[1..10]);
+## 9
+## -1
+## gap> RankOfTrans(Trans());
+## 0
+## ]]></Example>
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="RestrictedTrans" Arg="trans, coll"/>
+##   <Returns>The FR transformation that agrees with <A>trans</A> on <A>coll</A>, and is the identity elsewhere.</Returns>
+## </ManSection>
 ## <#/GAPDoc>
 ##
 DeclareGlobalFunction("Trans");
@@ -76,9 +161,9 @@ DeclareAttribute("NrMovedPoints", IsTrans);
 DeclareAttribute("MovedPoints", IsTrans);
 DeclareAttribute("RankOfTrans", IsTrans);
 DeclareOperation("RankOfTrans", [IsTrans, IsList]);
-DeclareAttribute("ImageSetOfTrans", IsTrans);
+DeclareOperation("ImageSetOfTrans", [IsTrans, IsList]);
 DeclareAttribute("KernelOfTrans", IsTrans);
-DeclareOperation("PreimagesOfTrans",[IsTrans, IsInt]);
+DeclareOperation("PreImagesOfTrans",[IsTrans, IsInt]);
 DeclareOperation("RestrictedTrans", [IsTrans, IsListOrCollection]);
 DeclareAttribute("ListTrans", IsTrans);
 DeclareAttribute("ListTrans", IsTransformation);
@@ -89,7 +174,6 @@ DeclareOperation("ListTrans", [IsPerm, IsInt]);
 DeclareAttribute("TransList", IsList);
 DeclareOperation("AsTrans", [IsObject]);
 DeclareOperation("AsTransformation",[IsTrans,IsPosInt]);
-DeclareOperation("PermLeftQuoTrans", [IsTrans, IsTrans]);
 DeclareOperation("FullTransMonoid",[IsInt]);
 DeclareOperation("FullTransMonoid",[IsList]);
 DeclareProperty("IsFullTransMonoid",IsSemigroup);

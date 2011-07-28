@@ -2,7 +2,7 @@
 ##
 #W  GAPDoc2HTML.gi                 GAPDoc                        Frank Lübeck
 ##
-#H  @(#)$Id: GAPDoc2HTML.gi,v 1.54 2008/09/03 09:19:38 gap Exp $
+#H  @(#)$Id: GAPDoc2HTML.gi,v 1.61 2011/05/30 15:24:33 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -111,6 +111,23 @@ GAPDoc2HTMLProcs.Head1 := "\
 <head>\n\
 <title>GAP (";
 
+GAPDoc2HTMLProcs.MathJaxURL := "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+
+GAPDoc2HTMLProcs.Head1MathJax := "\
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+\n\
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n\
+         \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n\
+\n\
+<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n\
+<head>\n\
+<script type=\"text/javascript\"\n\
+  src=\"MATHJAXURL\">\n\
+</script>\n\
+<title>GAP (";
+GAPDoc2HTMLProcs.Head1MathJax := SubstitutionSublist(
+  GAPDoc2HTMLProcs.Head1MathJax, "MATHJAXURL", GAPDoc2HTMLProcs.MathJaxURL);
+
 GAPDoc2HTMLProcs.Head1Trans := "\
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
 \n\
@@ -170,7 +187,9 @@ GAPDoc2HTMLProcs.PutFilesTogether := function(l, r)
   Append(chlink, "</div>\n");
   
   toplink := Concatenation( "&nbsp;<a href=\"chap0", GAPDoc2HTMLProcs.ext, 
-             "\">", GAPDocTexts.d.TopofBook, "</a>&nbsp;  " );
+             "\">", GAPDocTexts.d.TopofBook, "</a>&nbsp;  ",
+             "<a href=\"chap0", GAPDoc2HTMLProcs.ext, "#contents",
+             "\">", GAPDocTexts.d.Contents, "</a>&nbsp;  " );
   prev := [];
   next := [];
   for i in [1..Length(chnrs)] do
@@ -199,6 +218,9 @@ GAPDoc2HTMLProcs.PutFilesTogether := function(l, r)
     elif r.root.mathmode = "Tth" then
       files.(n) := rec(text :=
                    ShallowCopy(GAPDoc2HTMLProcs.Head1Trans), ssnr := []);
+    elif r.root.mathmode = "MathJax" then
+      files.(n) := rec(text :=
+                   ShallowCopy(GAPDoc2HTMLProcs.Head1MathJax), ssnr := []);
     else
       files.(n) := rec(text := ShallowCopy(GAPDoc2HTMLProcs.Head1), ssnr := []);
     fi;
@@ -222,6 +244,17 @@ GAPDoc2HTMLProcs.PutFilesTogether := function(l, r)
     Append(files.(n).text, Concatenation(
            "\n<div class=\"chlinkprevnexttop\">",
            toplink, prev[i], next[i], "</div>\n\n"));
+    if IsBound(r.root.LinkToMathJax) then
+      # cross link to same chapter with MathJax enabled
+      Append(files.(n).text,
+                Concatenation("<p class=\"pcenter\"><a href=\"chap",
+                String(n), "_mj.html\">[MathJax on]</a></p>\n"));
+    elif r.root.mathmode = "MathJax" then
+      # cross link to non-MathJax version
+      Append(files.(n).text,
+                Concatenation("<p class=\"pcenter\"><a href=\"chap",
+                String(n), ".html\">[MathJax off]</a></p>\n"));
+    fi;
   od;
   for i in [2,4..Length(l)] do
     n := files.(l[i-1][1]);
@@ -256,6 +289,7 @@ end;
 ##  <Returns>record  containing  HTML  files  as  strings  and  other
 ##  information</Returns>
 ##  <Description>
+##  <Index Key="MathJax"><Package>MathJax</Package></Index>
 ##  The   argument  <A>tree</A>   for   this  function   is  a   tree
 ##  describing  a   &GAPDoc;  XML   document  as  returned   by  <Ref
 ##  Func="ParseTreeXMLString"  /> (probably  also  checked with  <Ref
@@ -325,21 +359,39 @@ end;
 ##  <Label Name="mtransarg"/>
 ##  <Emph>Output format with</Emph> <A>mtrans</A> argument <P/>
 ##  
-##  Currently, there are two  experimental variants of this converter
-##  available  which  handle mathematical formulae  differently. They
-##  are accessed via the optional last <A>mtrans</A> argument.<P/>
+##  Currently, there  are three variants of  this converter available
+##  which handle mathematical formulae differently. They are accessed
+##  via the optional last <A>mtrans</A> argument.<P/>
 ##  
-##  If  this argument  is  set  to <C>"Tth"</C>  it  is assumed  that
-##  you  have  installed  the  &LaTeX; to  HTML  translation  program
-##  <C>tth</C>.  This  is  used  to translate  the  contents  of  the
+##  If  <A>mtrans</A>   is  set  to  <C>"MathJax"</C>   the  formulae
+##  are  essentially  translated  as  for  &LaTeX;  documents  (there
+##  is  no  processing  of   <C>&lt;M&gt;</C>  elements  as  decribed
+##  in  <Ref   Subsect="M"/>).  Inline  formulae  are   delimited  by
+##  <C>\(</C>  and  <C>\)</C>  and displayed  formulae  by  <C>\[</C>
+##  and    <C>\]</C>.   With    <Package>MathJax</Package>   webpages
+##  can   contain   nicely    formatted   scalable   and   searchable
+##  formulae.   The  resulting   files  link   by  default   to  <URL
+##  Text="http://cdn.mathjax.org">http://cdn.mathjax.org</URL> to get
+##  the  <Package>MathJax</Package>  script  and  fonts.  This  means
+##  that  they   can  only  be   used  on  computers   with  internet
+##  access.   An  alternative   URL   can  be   set  by   overwriting
+##  <C>GAPDoc2LaTeXProcs.MathJaxURL</C>  before   building  the  HTML
+##  version   of   a   manual.   This  way   a   local   installation
+##  of   <Package>MathJax</Package>   could   be   used.   See   <URL
+##  Text="http://www.mathjax.org/">http://www.mathjax.org/</URL>  for
+##  more details.<P/>
+##  
+##  If  the  argument <A>mtrans</A>  is  set  to <C>"Tth"</C>  it  is
+##  assumed that you  have installed the &LaTeX;  to HTML translation
+##  program <C>tth</C>. This is used to translate the contents of the
 ##  <C>M</C>,  <C>Math</C>  and  <C>Display</C>  elements  into  HTML
 ##  code.  Note that  the resulting  code is  not compliant  with any
 ##  standard.  Formally  it  is  <Q>XHTML  1.0  Transitional</Q>,  it
 ##  contains  explicit  font  specifications and  the  characters  of
 ##  mathematical  symbols  are  included  via  their  position  in  a
-##  <Q>Symbol</Q> font. Some graphical  browsers can be configured to
-##  display  this  in  a  useful manner,  check  <URL  Text="the  Tth
-##  homepage">http://hutchinson.belmont.ma.us/tth/</URL>   for   more
+##  <Q>Symbol</Q>  font. Some  graphical browsers  can be  configured
+##  to  display  this  in  a  useful  manner,  check  <URL  Text="the
+##  Tth homepage">http://hutchinson.belmont.ma.us/tth/</URL> for more
 ##  details.<P/>
 ##  
 ##  If  the   <A>mtrans</A>  argument   is  set   to  <C>"MathML"</C>
@@ -358,7 +410,7 @@ end;
 ##  the directory  containing the output files.  The translation with
 ##  <C>ttm</C> is  still experimental.  The output of  this converter
 ##  variant is garbage for browsers which don't support MathML.<P/>
-## 
+##  
 ##  This  function works  by  running recursively  through the  document
 ##  tree   and   calling   a   handler  function   for   each   &GAPDoc;
 ##  XML   element.  Many   of  these   handler  functions   (usually  in
@@ -383,7 +435,7 @@ InstallGlobalFunction(GAPDoc2HTML, function(arg)
   local   r,  str,  linelength,  name;
   r := arg[1];
   # first check for the mode
-  if arg[Length(arg)] in ["MathML", "Tth"] then
+  if arg[Length(arg)] in ["MathML", "Tth", "MathJax"] then
     r.mathmode := arg[Length(arg)];
     arg := arg{[1..Length(arg)-1]};
   else
@@ -402,6 +454,8 @@ InstallGlobalFunction(GAPDoc2HTML, function(arg)
       GAPDoc2HTMLProcs.ext := "_mml.xml";
     elif r.mathmode = "Tth" then
       GAPDoc2HTMLProcs.ext := "_sym.html";
+    elif r.mathmode = "MathJax" then
+      GAPDoc2HTMLProcs.ext := "_mj.html";
     else
       GAPDoc2HTMLProcs.ext := ".html";
     fi;
@@ -969,6 +1023,9 @@ GAPDoc2HTMLProcs.ChapSect := function(r, par, sect)
     fi;
     Append(r.root.toc, Concatenation(ind, "<a href=\"", 
                                         lab, "\">", s, "</a>\n"));
+    if sect="Section" then
+      Append(r.root.toc, "<div class=\"ContSSBlock\">\n");
+    fi;
   fi;
   
   # the actual content
@@ -976,8 +1033,10 @@ GAPDoc2HTMLProcs.ChapSect := function(r, par, sect)
 
   # possibly close <div> or <span> in content
   if posh <> fail then      
-    if sect in ["Chapter", "Appendix", "Section" ] then
+    if sect in ["Chapter", "Appendix" ] then
       Append(r.root.toc, "</div>\n");
+    elif sect="Section" then
+      Append(r.root.toc, "</div></div>\n");
     elif sect="Subsection" then
       Append(r.root.toc, "</span>\n");
     fi;
@@ -988,7 +1047,7 @@ GAPDoc2HTMLProcs.ChapSect := function(r, par, sect)
     pos := PositionSublist(a, Reversed("<div class=\"ContChap\">"));
     a := Reversed(a{[1..pos-1]});
     r.root.chapsectlinks.(r.count[1]) := Concatenation(
-                                             "<div class=\"ChapSects\">", a);
+                                         "<div class=\"ChapSects\">", a);
   fi;
 end;
 
@@ -1022,7 +1081,8 @@ GAPDoc2HTMLProcs.TableOfContents := function(r, par)
   Add(par, r.count);
   if IsBound(r.root.toctext) then
     Add(par, Concatenation("\n<div class=\"contents\">\n<h3>",
-          GAPDocTexts.d.Contents, "</h3>\n\n",
+          GAPDocTexts.d.Contents, 
+          "<a id=\"contents\" name=\"contents\"></a></h3>\n\n",
           r.root.toctext, "<br />\n</div>\n"));
   else
     Add(par,"<p>TOC\n-----------</p>\n\n");
@@ -1155,18 +1215,32 @@ GAPDoc2HTMLProcs.M := function(r, str)
   GAPDoc2HTMLContent(r, s);
   GAPDoc2HTMLProcs.TextAttr.Arg := save;
   GAPDoc2HTMLProcs.PCDATA := GAPDoc2HTMLProcs.PCDATAFILTER;
-  s := TextM(s);
   ss := "";
-  GAPDoc2HTMLProcs.PCDATAFILTER(rec(content := s), ss);
-  ss := SubstitutionSublist(ss, "TEXTaTTRvARBEGIN", save[1]);
-  ss := SubstitutionSublist(ss, "TEXTaTTRvAREND", save[2]);
+  if r.root.mathmode = "MathJax" then
+    s := Concatenation("\\(",s,"\\)");
+    GAPDoc2HTMLProcs.PCDATAFILTER(rec(content := s), ss);
+    ss := SubstitutionSublist(ss, "TEXTaTTRvARBEGIN", "\\textit{");
+    ss := SubstitutionSublist(ss, "TEXTaTTRvAREND", "}");
+  else
+    s := TextM(s);
+    GAPDoc2HTMLProcs.PCDATAFILTER(rec(content := s), ss);
+    ss := SubstitutionSublist(ss, "TEXTaTTRvARBEGIN", save[1]);
+    ss := SubstitutionSublist(ss, "TEXTaTTRvAREND", save[2]);
+  fi;
   Append(str, ss);
 end;
 
 ##  in HTML this is shown in TeX format
 GAPDoc2HTMLProcs.Math := function(r, str)
+  local s;
   if r.root.mathmode in ["MathML", "Tth"] then
     GAPDoc2HTMLProcs.MathConvHelper(r, str, "$", "$");
+    return;
+  fi;
+  if r.root.mathmode = "MathJax" then
+    s := "";
+    GAPDoc2HTMLProcs.M(r, s);
+    Append(str, s);
     return;
   fi;
   Add(str, '$');
@@ -1192,6 +1266,12 @@ GAPDoc2HTMLProcs.Display := function(r, par)
   for a in r.content do
     GAPDoc2HTML(a, s);
   od;
+  if r.root.mathmode = "MathJax" then
+    Add(par, r.count);
+    Add(par, Concatenation("<p class=\"center\">\\[", 
+                            s, "\\]</p>\n\n"));
+    return;
+  fi;
   if IsBound(r.attributes.Mode) and r.attributes.Mode = "M" then
     s := TextM(s);
   fi;

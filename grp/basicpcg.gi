@@ -2,7 +2,7 @@
 ##
 #W  basicpcg.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basicpcg.gi,v 4.19 2010/02/23 15:12:39 gap Exp $
+#H  @(#)$Id: basicpcg.gi,v 4.20 2011/04/05 02:30:34 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,7 +10,7 @@
 ##  types.
 ##
 Revision.basicpcg_gi :=
-    "@(#)$Id: basicpcg.gi,v 4.19 2010/02/23 15:12:39 gap Exp $";
+    "@(#)$Id: basicpcg.gi,v 4.20 2011/04/05 02:30:34 gap Exp $";
 
 
 #############################################################################
@@ -232,6 +232,49 @@ function( filter, n )
         SetPrimePGroup( f, 2 );
     fi;
     return f;
+end );
+
+
+#############################################################################
+##
+#M  QuaternionGroupCons( <IsPcGroup and IsFinite>, <n> )
+##
+InstallMethod( QuaternionGroupCons,
+    "pc group",
+    true,
+    [ IsPcGroup and IsFinite,
+      IsInt and IsPosRat ],
+    0,
+
+function( filter, n )
+  local k, d, relords, powers, gens, f, rels, pow;
+  if 0 <> n mod 4 then TryNextMethod(); fi;
+  # Hard to get a confluent RWS for a cyclic group on 2 independent generators
+  if n = 4 then return CyclicGroup( filter, n ); fi;
+  k := n/4;
+  d := Factors( k );
+  relords := [2]; 
+  Append(relords, d);
+  Add( relords, 2 );
+  powers := [0];
+  Append( powers, List( [0..Size(d)], i -> Product( d{[1..i]} ) ) );
+  gens := Concatenation( [ "x", "y" ], List( powers{[3..Size(powers)]}, d -> Concatenation( "y", String(d) ) ) );
+  f := FreeGroup( IsSyllableWordsFamily, gens );
+  pow := function( i )
+    local e, j;
+    i := i mod (n/2);
+    e := [0];
+    for j in [2..Size(relords)] do
+      e[j] := i mod relords[j];
+      i := Int( i / relords[j] );
+    od;
+    return Product([1..Size(e)],i->f.(i)^e[i]);
+  end;
+  rels := [ [ f.1^2, f.(Size(gens)) ], [ f.(Size(gens))^2, One(f) ] ];
+  Append( rels, List( [2..Size(gens)-1], i -> [ f.(i)^relords[i], f.(i+1) ] ) );
+  Append( rels, List( [2..Size(gens)-1], i -> [ f.(i)^f.1, pow(-powers[i]) ] ) );
+  Append( rels, List( Combinations( [2..Size(gens)], 2 ), ij -> [ f.(ij[2])^f.(ij[1]), f.(ij[2]) ] ) );
+  return PcGroupFpGroupNC( f / List( rels, rel -> rel[1]/rel[2] ) );
 end );
 
 

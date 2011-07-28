@@ -4,12 +4,12 @@
 ##
 ##  Methods for computing RepresentativeAction
 ##
-#H  @(#)$Id: ReprAct.gi,v 1.4 2003/09/08 16:42:10 gap Exp $
+#H  @(#)$Id: ReprAct.gi,v 1.5 2010/04/13 09:41:43 gap Exp $
 ##
-#Y  2003
+#Y  2003 - 2010
 ##
 Revision.("fga/lib/ReprAct_gi") :=
-    "@(#)$Id: ReprAct.gi,v 1.4 2003/09/08 16:42:10 gap Exp $";
+    "@(#)$Id: ReprAct.gi,v 1.5 2010/04/13 09:41:43 gap Exp $";
 
 
 InstallOtherMethod( RepresentativeActionOp,
@@ -98,7 +98,7 @@ InstallMethod( FindPowLetterRep,
         n := 0;
         wp := -Reversed(wp);
         repeat
-            state := FGA_deltas(state ,wp);
+            state := FGA_deltas(state, wp);
             n := n+1;
         until state=fail or IsIdenticalObj(state, finalstate);
     fi;
@@ -124,7 +124,7 @@ InstallOtherMethod( RepresentativeActionOp,
       CanComputeWithInverseAutomaton,
       IsFunction ],1,
     function(F, G, H, act)
-        local AG, AH, AF, rdG, rdH, rdNst, statesH, redgens, i, AN, tmp, conj;
+        local AG, AH, AF, rdG, rdH, statesH, redgens, i, AN, tmp, conj;
 
         if act <> OnPoints then
             TryNextMethod();
@@ -145,14 +145,12 @@ InstallOtherMethod( RepresentativeActionOp,
             return fail;
         fi;
 
-        redgens := List(FreeGeneratorsOfGroup(G), LetterRepAssocWord);
-        redgens := List(redgens,
-                        w -> w{[rdG .. Length(w)-rdG+1]});
+        redgens := List( List(FreeGeneratorsOfGroup(G), LetterRepAssocWord),
+                         w -> w{[rdG .. Length(w)-rdG+1]} );
 
         for i in [rdH .. Size(statesH)] do
             if ForAll(redgens, w -> FGA_Check(statesH[i], w)) then
                 AN := FreeGroupAutomaton( NormalizerInWholeGroup( G ) );
-                rdNst := FGA_States( AN );
                 tmp := FGA_TmpState( 
                           AN!.initial, 
                           Concatenation(

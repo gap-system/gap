@@ -2,7 +2,7 @@
 ##
 #W  algfld.gi                   GAP Library                  Alexander Hulpke
 ##
-#H  @(#)$Id: algfld.gi,v 4.66 2010/06/16 16:31:37 gap Exp $
+#H  @(#)$Id: algfld.gi,v 4.68 2011/05/14 20:44:11 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the methods for algebraic elements and their families
 ##
 Revision.algfld_gi:=
-  "@(#)$Id: algfld.gi,v 4.66 2010/06/16 16:31:37 gap Exp $";
+  "@(#)$Id: algfld.gi,v 4.68 2011/05/14 20:44:11 alexk Exp $";
 
 #############################################################################
 ##
@@ -408,7 +408,7 @@ local fam;
   fam:=FamilyObj(a);
   a:=ShallowCopy(a![1]);
   a[1]:=a[1]+(b*fam!.oneCoefficient);
-  return Objectify(fam!.baseType,[a]);
+  return Objectify(fam!.extType,[a]);
   #return ObjByExtRep(fam,a);
 end);
 
@@ -418,7 +418,7 @@ local fam;
   fam:=FamilyObj(b);
   b:=ShallowCopy(b![1]);
   b[1]:=b[1]+(a*fam!.oneCoefficient);
-  return Objectify(fam!.baseType,[b]);
+  return Objectify(fam!.extType,[b]);
   #return ObjByExtRep(fam,b);
 end);
 
@@ -1353,7 +1353,7 @@ local K, inum, fact, degf, m, degm, dis, def, cf, d, avoid, bw, zaehl, p,
 
   m:=DefiningPolynomial(K);
   if IndeterminateNumberOfUnivariateLaurentPolynomial(m)<>inum then
-    m:=Value(m,X(LeftActingDomain(K),inum));
+    m:=Value(m,Indeterminate(LeftActingDomain(K),inum));
   fi;
   degm:=DegreeOfLaurentPolynomial(m);
 
@@ -1643,7 +1643,7 @@ local K, inum, fact, degf, m, degm, dis, def, cf, d, avoid, bw, zaehl, p,
         for k in actli do
           ext[k]:=AlgebraicExtension(Rationals,mmf[k]);
           # also to provoke the binding of the Ring
-          w:=X(ext[k],"X");
+          w:=Indeterminate(ext[k],"X");
 
           for j in [1..Length(fff[k])] do
             fff[k][j]:=TransferedExtensionPol(ext[k],fff[k][j],inum);
@@ -1748,7 +1748,7 @@ local K, inum, fact, degf, m, degm, dis, def, cf, d, avoid, bw, zaehl, p,
 #Assert(1,ForAll(U,i->IndeterminateNumberOfUnivariateLaurentPolynomial(i)=inum));
         od;
       else
-        U:=[X(Rationals,inum)^0];
+        U:=[Indeterminate(Rationals,inum)^0];
       fi;
       # sort according to the number of factors:
       # Our 'starting' factorisation is the one with the fewest factors,

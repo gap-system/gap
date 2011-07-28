@@ -2,7 +2,7 @@
 ##
 #W  UnicodeTools.gi                GAPDoc                     Frank Lübeck
 ##
-#H  @(#)$Id: UnicodeTools.gi,v 1.17 2008/05/26 16:53:15 gap Exp $
+#H  @(#)$Id: UnicodeTools.gi,v 1.18 2011/03/03 09:42:30 gap Exp $
 ##
 #Y  Copyright (C)  2007,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -468,7 +468,7 @@ end);
 ##  a &GAP; object lying in the filter <Ref Filt="IsUnicodeCharacter"/>.
 ##  Use <C>Int</C> to get the codepoint back. The argument <A>num</A> can
 ##  also be a &GAP; character which is then translated to an integer via 
-##  <Ref BookName="Reference" Func="INT_CHAR"/>. <P/>
+##  <Ref BookName="Reference" Func="IntChar"/>. <P/>
 ##  
 ##  <Ref Oper="Unicode" /> produces a &GAP; object in the filter
 ##  <Ref Filt="IsUnicodeString"/>. This is a wrapped list of integers 

@@ -3,7 +3,7 @@
 #W  ratfun.gd                   GAP Library                      Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: ratfun.gd,v 4.82 2010/02/23 15:13:25 gap Exp $
+#H  @(#)$Id: ratfun.gd,v 4.85 2011/05/14 20:44:13 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci.,  University of St  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  for  rational functions, Laurent polynomials   and polynomials and  their
 ##  families.
 Revision.ratfun_gd :=
-    "@(#)$Id: ratfun.gd,v 4.82 2010/02/23 15:13:25 gap Exp $";
+    "@(#)$Id: ratfun.gd,v 4.85 2011/05/14 20:44:13 alexk Exp $";
 
 ##  Warning:
 ##  If the mechanism for storing attributes is changed,
@@ -174,7 +174,7 @@ DeclareAttribute( "RationalFunctionsFamily", IsFamily );
 ##  return the expected results, polynomials and rational functions are not
 ##  equal.
 ##  <Example><![CDATA[
-##  gap> 1=X(Rationals)^0;
+##  gap> 1=Indeterminate(Rationals)^0;
 ##  false
 ##  ]]></Example>
 ##  </Description>
@@ -216,7 +216,7 @@ DeclareAttribute( "NumeratorOfRationalFunction", IsPolynomialFunction);
 ##  As no proper multivariate gcd has been implemented yet, numerators and
 ##  denominators are not guaranteed to be reduced!
 ##  <Example><![CDATA[
-##  gap> x:=X(Rationals,1);;y:=X(Rationals,2);;
+##  gap> x:=Indeterminate(Rationals,1);;y:=Indeterminate(Rationals,2);;
 ##  gap> DenominatorOfRationalFunction((x*y+x^2)/y);
 ##  y
 ##  gap> NumeratorOfRationalFunction((x*y+x^2)/y);
@@ -876,7 +876,7 @@ DeclareSynonymAttr("IndeterminateNumberOfUnivariateLaurentPolynomial",
 ##  gap> HasIndeterminateName(FamilyObj(x),4);
 ##  false
 ##  gap> SetIndeterminateName(FamilyObj(x),10,"bla");
-##  gap> X(GF(3),10);
+##  gap> Indeterminate(GF(3),10);
 ##  bla
 ##  ]]></Example>
 ##  <P/>
@@ -884,7 +884,7 @@ DeclareSynonymAttr("IndeterminateNumberOfUnivariateLaurentPolynomial",
 ##  that will assign a name to an indeterminate.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> a:=X(GF(3),5);
+##  gap> a:=Indeterminate(GF(3),5);
 ##  x_5
 ##  gap> SetName(a,"ah");
 ##  gap> a^5+a;
@@ -914,7 +914,7 @@ DeclareOperation( "SetIndeterminateName",
 ##  <Description>
 ##  <Ref Func="CoefficientsOfUnivariatePolynomial"/> returns the coefficient
 ##  list of the polynomial <A>pol</A>, sorted in ascending order.
-##  (It returns the empty string if <A>pol</A> is 0.)
+##  (It returns the empty list if <A>pol</A> is 0.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1531,8 +1531,6 @@ DeclareGlobalFunction("QuotRemLaurpols");
 ##
 ##  <Description>
 ##  computes the univariate gcd coefficient list from coefficient lists.
-##  This should eventually become an operation and dispatch specially for
-##  rationals.
 ##  </Description>
 ##  </ManSection>
 ##

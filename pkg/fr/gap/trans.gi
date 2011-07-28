@@ -2,7 +2,7 @@
 ##
 #W trans.gi                                                 Laurent Bartholdi
 ##
-#H   @(#)$Id: trans.gi,v 1.15 2009/03/27 19:28:53 gap Exp $
+#H   @(#)$Id: trans.gi,v 1.19 2011/06/13 22:54:35 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -18,7 +18,7 @@ InstallGlobalFunction(Trans,
     if Length(arg)=0 then
         return OneTrans;
     elif Length(arg)=1 then
-        if IsEmpty(arg[1]) then
+        if arg[1]=[] then
             return OneTrans;
         fi;
         copy := true;
@@ -66,7 +66,7 @@ InstallMethod(RandomTrans, [IsPosInt],
 InstallMethod(LargestMovedPoint, [IsTrans],
         function(t)
     local n;
-    if IsEmpty(t![1]) then
+    if t![1]=[] then
         return 0;
     fi;
     n := Length(t![1]);
@@ -77,7 +77,7 @@ end);
 InstallMethod(SmallestMovedPoint, [IsTrans],
         function(t)
     local n;
-    if IsEmpty(t![1]) then
+    if t![1]=[] then
         return infinity;
     fi;
     n := 1;
@@ -126,9 +126,19 @@ InstallMethod(KernelOfTrans, [IsTrans],
     return Set(Filtered(ker, l->Length(l)>1));
 end);
 
-InstallMethod(PreimagesOfTrans, [IsTrans, IsPosInt],
+InstallMethod(ImageSetOfTrans, [IsTrans,IsList],
+        function(t,a)
+    return Set(a,i->i^t);
+end);
+
+InstallMethod(PreImagesOfTrans, [IsTrans, IsPosInt],
         function(t,i)
-    return Filtered([1..Length(t![1])],j->t![1][j]=i);
+    local l;
+    l := Filtered([1..Length(t![1])],j->t![1][j]=i);
+    if i>Length(t![1]) then
+        Add(l,i);
+    fi;
+    return l;
 end);
 
 InstallMethod(RestrictedTrans, [IsTrans, IsListOrCollection],
@@ -190,7 +200,7 @@ InstallMethod(AsTransformation, [IsTrans, IsPosInt],
     return Transformation(ListTrans(t,n));
 end);
 
-InstallMethod(PermLeftQuoTrans, [IsTrans, IsTrans],
+InstallMethod(LeftQuotient, [IsTrans, IsTrans],
         function(t,u)
     local p, i;
 
@@ -222,20 +232,17 @@ end);
 ##
 ##  Just print the list of images.
 ##
-InstallMethod(PrintObj, [IsTrans],
+InstallMethod(String, [IsTrans],
         function(t)
-    Print("Trans(",t![1],")");
+    return Concatenation("Trans([",JoinStringsWithSeparator(List(ListTrans(t),String),","),"])");
 end);
 
-InstallMethod(String, [IsTrans],
+InstallMethod(ViewString, [IsTrans],
         function(t)
     return Concatenation("<",JoinStringsWithSeparator(List(ListTrans(t),String),","),">");
 end);
 
-InstallMethod(ViewObj, [IsTrans],
-        function(t)
-    Print(String(t));
-end);
+INSTALLPRINTERS@(IsTrans);
 
 ###########################################################################
 ##

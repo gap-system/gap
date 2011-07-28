@@ -2,7 +2,7 @@
 ##
 #W  read.g              GAP 4 package `atlasrep'                Thomas Breuer
 ##
-#H  @(#)$Id: read.g,v 1.17 2008/06/25 12:41:46 gap Exp $
+#H  @(#)$Id: read.g,v 1.18 2010/05/19 16:50:54 gap Exp $
 ##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -16,9 +16,9 @@ ReadPackage( "atlasrep", "gap/mindeg.gi"   );
 ReadPackage( "atlasrep", "gap/utils.gi"    );
 ReadPackage( "atlasrep", "gap/test.gi"     );
 
-if LoadPackage( "Browse", "1.2" ) = true then
+if IsPackageMarkedForLoading( "Browse", "1.2" ) then
   ReadPackage( "atlasrep", "gap/brmindeg.g" );
-  if LoadPackage( "ctbllib" ) = true then
+  if IsPackageMarkedForLoading( "ctbllib", "" ) then
     ReadPackage( "atlasrep", "gap/brspor.g"   );
   fi;
 fi;

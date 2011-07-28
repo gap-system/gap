@@ -2,14 +2,14 @@
 ##
 #W  groebner.gd                   GAP Library               Alexander Hulpke   
 ##
-#H  @(#)$Id: groebner.gd,v 4.11 2010/02/23 15:13:03 gap Exp $
+#H  @(#)$Id: groebner.gd,v 4.12 2011/05/14 20:44:12 alexk Exp $
 ##
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for monomial orderings and Groebner
 ##  bases.
 Revision.groebner_gd :=
-    "@(#)$Id: groebner.gd,v 4.11 2010/02/23 15:13:03 gap Exp $";
+    "@(#)$Id: groebner.gd,v 4.12 2011/05/14 20:44:12 alexk Exp $";
 
 #############################################################################
 ##
@@ -158,7 +158,9 @@ DeclareAttribute("OccuringVariableIndices",IsMonomialOrdering);
 ##  returns the leading monomial (with respect to the ordering <A>ord</A>)
 ##  of the polynomial <A>pol</A>.
 ##  <Example><![CDATA[
-##  gap> x:=X(Rationals,"x":old);;y:=X(Rationals,"y":old);;z:=X(Rationals,"z");;
+##  gap> x:=Indeterminate(Rationals,"x":old);;
+##  gap> y:=Indeterminate(Rationals,"y":old);;
+##  gap> z:=Indeterminate(Rationals,"z");;
 ##  gap> lexord:=MonomialLexOrdering();grlexord:=MonomialGrlexOrdering();
 ##  MonomialLexOrdering()
 ##  MonomialGrlexOrdering()

@@ -2,6 +2,7 @@
 ##
 #W    read.g            GAP 4 package 'polycyclic'               Bettina Eick 
 #W                                                              Werner Nickel
+#W                                                                   Max Horn
 ##
 
 ##
@@ -36,6 +37,8 @@ ReadPkg( PolycyclicPkgName, "gap/basic/pcpfact.gi");
 ReadPkg( PolycyclicPkgName, "gap/basic/chngpcp.gi");  
 ReadPkg( PolycyclicPkgName, "gap/basic/convert.gi");
 ReadPkg( PolycyclicPkgName, "gap/basic/orbstab.gi");   
+
+ReadPkg( PolycyclicPkgName, "gap/basic/construct.gi");
 
 ##
 ## cohomology  - extensions and complements

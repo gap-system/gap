@@ -2,7 +2,7 @@
 ##
 #W  make.gi                                                      Thomas Breuer
 ##
-#H  @(#)$Id: make.gi,v 1.3 2007/08/01 11:14:39 gap Exp $
+#H  @(#)$Id: make.gi,v 1.4 2010/01/27 15:43:41 gap Exp $
 ##
 #Y  Copyright  (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -1408,7 +1408,7 @@ end );
 ##
 InstallGlobalFunction( DecMatMakeGroup, function( entrylist )
     local dirname, groupdirname, entry, p, issymm, primes, str, output, table,
-          row, filename;
+          row, found, filename;
 
     # The directory is named after the simple group.
     dirname:= DirectoriesPackageLibrary( "ctbllib", "dec" );
@@ -1445,8 +1445,9 @@ InstallGlobalFunction( DecMatMakeGroup, function( entrylist )
                         DecMatName( entrylist[1][1], "HTML" ) );
       primes:= [];
       for p in Set( Factors( entrylist[1][2] ) ) do
-        if IsExistingFile( Concatenation( dirname, entrylist[1][1],
-                                      "mod", String( p ), ".pdf" ) ) then
+        if ForAny( entrylist, entry -> 
+                     IsExistingFile( Concatenation( dirname, entry[1],
+                                       "mod", String( p ), ".pdf" ) ) ) then
           Add( primes, p );
         else
           Print( "#E  files for ", entrylist[1][1], "mod", String( p ),
@@ -1463,6 +1464,7 @@ InstallGlobalFunction( DecMatMakeGroup, function( entrylist )
           # show available PDF files
 #T add also HTML files??
           row:= [ DecMatName( entry[1], "HTML" ) ];
+          found:= false;
           for p in primes do
             filename:= Concatenation( dirname, entry[1], "mod", String( p ),
                                       ".pdf" );
@@ -1471,16 +1473,20 @@ InstallGlobalFunction( DecMatMakeGroup, function( entrylist )
                 "<a href=\"", String( entry[1] ), "mod", String( p ), ".pdf",
                 "\">", DecMatName( entry[1], "HTML" ), "mod", String( p ),
                 ".pdf", "</a>" ) );
+              found:= true;
             else
               Print( "#I  missing link for ", entry[1], " mod ", p, "\n" );
               Add( row, "" );
             fi;
           od;
-          Add( table, row );
+          if found then
+            Add( table, row );
+          fi;
         od;
         if issymm then
           entry:= entrylist[2];
           row:= [ DecMatName( entry[1], "HTML" ) ];
+          found:= false;
           for p in primes do
             filename:= Concatenation( dirname, entry[1], "partmod",
                                       String( p ), ".pdf" );
@@ -1490,14 +1496,17 @@ InstallGlobalFunction( DecMatMakeGroup, function( entrylist )
                 ".pdf",
                 "\">", DecMatName( entry[1], "HTML" ), "partmod", String( p ),
                 ".pdf", "</a>" ) );
+              found:= true;
             else
               Add( row, "" );
               Print( "#I  missing link for ", entry[1], " mod ", p, "\n" );
             fi;
           od;
-          Add( table, row );
+          if found then
+            Add( table, row );
+          fi;
         fi;
-        Append( str, HTMLStandardTable( table, "datatable",
+        Append( str, HTMLStandardTable( fail, table, "datatable",
                          List( table[1], x -> "pleft" ) ) );
       fi;
 
@@ -1541,35 +1550,15 @@ end );
 #F  DecMatHTMLTableString( <names> )
 ##
 InstallGlobalFunction( DecMatHTMLTableString, function( names )
-    local tosort, i, name, entry, pos, n, k, rowportions, str, r;
+    local n, k, rowportions;
 
-    names:= List( names, x -> x[1][1] );
-    names:= Filtered( names,
+    names:= Filtered( List( names, x -> x[1][1] ),
                 x -> IsExistingFile( Concatenation( "tex/", x ) ) );
 
     # Sort the names in such a way that names differing by number substrings
     # are ordered according to the numbers;
     # e.g., `A5' shall precede `A10'.
-    tosort:= [];
-    for i in [ 1 .. Length( names ) ] do
-      name:= ShallowCopy( names[i] );
-      entry:= [];
-      pos:= PositionProperty( name, IsDigitChar );
-      while pos <> fail do
-        Add( entry, name{ [ 1 .. pos-1 ] } );
-        name:= name{ [ pos .. Length( name ) ] };
-        pos:= PositionProperty( name, x -> not IsDigitChar( x ) );
-        if pos = fail then
-          pos:= Length( name ) + 1;
-        fi;
-        Add( entry, Int( name{ [ 1 .. pos-1 ] } ) );
-        name:= name{ [ pos .. Length( name ) ] };
-        pos:= PositionProperty( name, IsDigitChar );
-      od;
-      Add( entry, name );
-      Add( tosort, entry );
-    od;
-    SortParallel( tosort, names );
+    Sort( names, BrowseData.CompareAsNumbersAndNonnumbers );
 
     n:= Length( names );
     Print( "#I  There are ", n, " groups in the database\n" );
@@ -1580,7 +1569,7 @@ InstallGlobalFunction( DecMatHTMLTableString, function( names )
       Add( rowportions, [ k*10+1 .. n ] );
     fi;
 
-    return HTMLStandardTable( List( rowportions,
+    return HTMLStandardTable( fail, List( rowportions,
                r -> List( r, i -> Concatenation( "<a href=\"tex/",
                                     String( names[i] ), "\">",
                                     DecMatName( names[i], "HTML" ),

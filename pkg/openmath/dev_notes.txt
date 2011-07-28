@@ -1,4 +1,6 @@
-Development notes file, by Marco Costantini with updated by Alexander Konovalov
+Development notes file:
+* started by Marco Costantini
+* updated by Alexander Konovalov
 
 This file contains notes for development and for releasing a new version; 
 it is not intended to be a part of the release.
@@ -26,7 +28,7 @@ ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" )
 
 * if a new file is added, add lines like
 Revision.("openmath/dev_notes.txt") :=
-    "@(#)$Id: dev_notes.txt,v 1.44 2009/05/26 16:42:07 alexk Exp $"; see
+    "@(#)$Id: dev_notes.txt,v 1.48 2010/09/22 11:03:47 alexk Exp $"; see
 also the file structure at
 /usr/local/gap_dev/4.0/doc/htm/ext/CHAP003.htm#SECT002
 
@@ -37,8 +39,10 @@ cd /usr/local/gap_dev/4.0/pkg/openmath/tst
 nano test_new.src
 
 mv test_new test_new.bak
-gap_dev -T -A -b < test_new.src
+gap -T -r -A -b < test_new.src
 nano +30000 test_new
+
+(to remove lines after STOP_TEST)
 
 diff test_new test_new.bak
 
@@ -48,14 +52,19 @@ ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" )
 
 * check that the README files and the manual contain the changes.
 
-* test that the manual still compiles, and that the content is OK:
+* test that the manual still compiles, and that the content is OK, using
 
-cd /usr/local/gap_dev/4.0/pkg/openmath/doc
-./make_doc
-xpdf manual.pdf &
+ReadPackage("openmath/gap/buildman.g");
+
+and
+
+OPENMATHBuildManual();
+
+or 
+
+OPENMATHBuildManualHTML();
 
 * commit the various changes to the CVS repository.
-
 
 
 PREPARING A NEW RELEASE:
@@ -63,8 +72,8 @@ PREPARING A NEW RELEASE:
 * check the functionality, also with gpipe method, and with an older
 version of Gap.
 
-* modify date and version number in file PackageInfo.g and version 
-number in files doc/manual.xml, doc/openmath.xml and init.g
+* modify date and version number in PackageInfo.g and doc/manual.xml,
+  and version number in doc/openmath.xml and init.g
 
 * test the PackageInfo.g, and that the documentation is available in Gap:
 
@@ -75,9 +84,13 @@ ValidatePackageInfo( Filename( DirectoriesPackageLibrary( "openmath", "" ), "Pac
 
 * copy the package directory to some place to create the tarball
 
-* remove "phantom" directories:
+* remove "phantom" and obsolete directories:
 
-rm -rf OMlib bin protos
+rm -rf OMCv1.3c OMlib bin htm include protos src
+
+* remove obsolete files:
+
+rm Makefile.in configure
 
 * remove the various *.bak, *~ and files from compilation doing make clean in both
 locations, otherwise get a fresh copy from CVS repository
@@ -100,41 +113,23 @@ rm -r CVS/ */CVS/ */*/CVS/
 
 * prepare the archive, with the right version number:
 cd ..
-tar cfvz openmath-06.01.03.tar.gz openmath/
-
-* note the archive size:
-ls -l openmath-*.tar.gz
+tar cfvz openmath-10.1.0.tar.gz openmath/
+tar cjvf openmath-10.1.0.tar.bz2 openmath/
 
 * copy archive, PackageInfo.g, README to web page:
-scp openmath-*.tar.gz openmath/PackageInfo.g openmath/README gate.science.unitn.it:
+scp openmath-* openmath/PackageInfo.g openmath/README alexk@shell.cs.st-and.ac.uk:~/public_html/openmath/
 
-scp openmath-*.tar.gz PackageInfo.g README  degiorgi:public_html/gap_code/openmath/
-rm openmath-*.tar.gz PackageInfo.g README
+* copy manual to the web page:
+scp openmath/doc/*.html openmath/doc/*.css openmath/doc/*.pdf alexk@shell.cs.st-and.ac.uk:~/public_html/openmath/
 
-* check the PackageInfo.g online:
+* check the PackageInfo.g, README, archive and the manual online:
+http://www.cs.st-andrews.ac.uk/~alexk/openmath.htm
 
-konqueror http://www.gap-system.org/Packages/Authors/authors.html &
-http://www-math.science.unitn.it/~costanti/gap_code/openmath/PackageInfo.g
-
-* update the web-page: modify version, link and size:
-pico public_html/index.html
+* update the web-page: modify version and links.
 
 * get a fresh copy of CVS repository, with CVS directories.
 
-* recompile, reconfigure, etc... :
-
-cd openmath
-
-cd doc
-./make_doc
-cd ..
-
-cd OMCv1.3c/src/
-./configure
-make
-cd ../../
-./configure ../../
-make
+* do chmod -x:
 
 chmod -x tst/test5.omt
 
@@ -153,7 +148,7 @@ ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" )
 
 ######################################################################
 
-ENCODING AND CONVERSIONS:
+ENCODING AND CONVERSIONS (OUTDATED):
 
 OpenMath objects can be encoded into various formats:
 
@@ -189,8 +184,6 @@ This package includes the external program 'tpipe' (OMCv1.3c/src/tpipe)
 that converts an OpenMath object with unknown/binary/XML encoding to
 binary or XML encoding, and 'gpipe' (bin/*/gpipe), that converts an
 OpenMath object with unknown/binary/XML encoding to gpipe.
-
-
 
 
 ######################################################################
@@ -293,7 +286,6 @@ different architectures is not supported.
 
 TODO:
 
-
 * Include experimental, or updated CDs
 http://www.openmath.org/cdnames.html
 
@@ -314,7 +306,6 @@ removed by AK in April 2009, now all is done by OMsymLookup function).
 
 TODO:
 
-
 * Convert OMsymTable and related stuff from list to record
 (Remark: done by AK in April 2009 with renaming to OMsymRecord).
 
@@ -323,15 +314,12 @@ OpenMath roles instead, see the OpenMath Standard, version 2.0, section
 "2.1.4 OpenMath Symbol Roles". (Remark: OMnullarySymbolToGAP
 removed by AK in April 2009, now all is done by OMsymLookup function).
 
-
 ######################################################################
 
 TODO:
 
-
 * Check the file permissions: in some case -rw-rw-r-- should be replaced
 with -rw-r--r-- .
-
 
 ######################################################################
 
@@ -352,7 +340,6 @@ Is Gap is started with -A, openmath is loaded, and thereafter GapDoc is
 loaded, then an error occurs, because IsObjToBePrinted is defined in
 both.
 
-
 ######################################################################
 
 TODO:
@@ -372,17 +359,13 @@ DeclareProperty("IsHasseDiagram", IsBinaryRelation);
 
 Something from hasse/hasse.g could be removed.
 
-
-
 ######################################################################
-
 
 TODO:
 
 Maybe the top-level makefile can be changed, in order to automatically
 compile the OMCv1.3c library. Maybe not, in order to point that the Gap
 code and the OMCv1.3c library are two different products.
-
 
 TODO:
 
@@ -610,18 +593,6 @@ How to produce binary test files:
 
 ######################################################################
 
-GAPDoc manual HOW-TO:
-
-ReadPackage("openmath/gap/buildman.g");
-
-then
-
-OPENMATHBuildManual();
-
-or 
-
-OPENMATHBuildManualHTML();
-
 ######################################################################
 
 TODO:
@@ -630,3 +601,152 @@ TODO:
 * fill placeholders in OMsymRecord with more symbols where appropriate
 * test and move entries from OMsymRecord_new in new.g to gap.g
 * implement more private CDs from the SCIEnce project
+
+######################################################################
+
+HISTORICAL NOTES:
+
+Some historical notes from previous releases are collected below.
+
+######################################################################
+
+Readme of the last release containing INRIA library:
+
+                           The OpenMath Package
+                           --------------------
+
+The package provides an OpenMath phrasebook for GAP: it allows GAP 
+users to import and export mathematical objects encoded in OpenMath, 
+for the purpose of exchanging them with other OpenMath-enabled 
+applications. 
+
+Copyright:
+==========
+
+The OpenMath package is free software; you can redistribute it and/or 
+modify it under the terms of the GNU General Public License as published 
+by the Free Software Foundation; either version 2 of the License, or 
+(at your option) any later version. For details, see the FSF's own site
+http://www.gnu.org/licenses/gpl.html.
+
+Additionally, it contains code developed at INRIA (copyright INRIA), 
+under the ESPRIT project number 24969 (OpenMath). The user may not use 
+the library in commercial products without seeking permission from the 
+GAP group (support@gap-system.org) and the CAFE team at INRIA SA 
+(stephane.dalmas@sophia.inria.fr).
+
+Installation:
+=============
+
+This package is installed as a normal Gap package: see Gap reference
+manual, chapter "74 GAP Packages" (and if you don't have write access to
+the Gap installation see also section "9.2 GAP Root Directory"), for
+details.
+
+The binaries should be compiled in two stages:
+- compilation of the OpenMath C library from INRIA
+- compilation of the 'gpipe' program
+
+To do this, change to the package directory gap4r4/pkg/openmath
+and perform the following commands:
+
+cd OMCv1.3c/src/
+./configure
+make
+cd ../../
+./configure ../../
+make
+
+
+The part in C language compiles and runs also on Windows with Cygwin 
+(see http://www.cygwin.com/).
+A Windows user may also try to get a precompiled OMC binary from
+ftp://ftp-sop.inria.fr/safir/OM (I didn't try), and thereafter
+
+cd pkg/openmath
+
+./configure ../../
+make
+
+Some historical notes from previous releases and changelogs
+are collected below.
+
+To contact developers, please write to:
+alexk at mcs dot st-andrews dot ac dot uk
+
+
+Alexander Konovalov
+
+April 2009
+
+
+##############################################################################
+
+       * * * Readme of the first release of the package (2000) * * * 
+
+The compilation is non-standard! See below.
+
+This package has been developed to allow GAP users to
+import and export mathematical objects encoded in OpenMath,
+for the purpose of exchanging them with other applications that
+are OpenMath enabled.
+
+
+1. Copyright
+
+This package is distributed under GPL license and the terms of the GAP
+copyright. Additionally, it contains code developed at INRIA
+(copyright INRIA), under the ESPRIT project number 24969 (OpenMath).
+The user may not use the library in commercial products without seeking
+permission from the GAP group (support@gap-system.org) and the 
+CAFE team at  INRIA SA (stephane.dalmas@sophia.inria.fr).
+
+It may be redistributed ``as is'' together with this notice.
+
+
+2. Technicalities and installation
+
+This package includes a C program, and works with full functionality
+only if this program has been compiled.
+
+To install this package (after extracting the packages archive
+file to the GAP pkg directory):
+
+a) go to the directory `pkg/openmath/OMCv1.3c/src' and call 
+
+/bin/sh ./configure
+
+and then call `make' to compile the INRIA library (producing libOM.a).
+
+
+b) go to the directory `pkg/openmath' (the
+directory containing this README file) and call
+
+/bin/sh ./configure <path>
+
+where <path> is a path to the main GAP root directory (so normally you would
+call /bin/sh ./configure ../..).
+
+afterwards call `make' to compile the binary. See file examples for usage examples.
+
+c) you also need to modify the file hasse/config.g
+to make the Hasse diagram stuff work.
+
+
+3. The INRIA library
+
+The files in the directory `openmath/OMCv1.3c' are the OpenMath C library
+version 1.3c developed by the CAFE group at INRIA SA. For the latest 
+version, contact: stephane.dalmas@sophia.inria.fr , or try
+ftp://ftp-sop.inria.fr/safir/OM .
+
+
+Andrew Solomon (andrew@illywhacker.net),
+Department of Computer Science,
+University of St. Andrews.
+
+9 March 2000.
+
+##############################################################################
+
+

@@ -2,7 +2,7 @@
 %%
 %W  manual.tex             ParGAP documentation            Gene Cooperman
 %%
-%H  $Id: manual.tex,v 1.9 2001/11/16 15:57:00 gap Exp $
+%H  $Id: manual.tex,v 1.11 2011/04/13 17:19:13 alexk Exp $
 %%
 %Y  Copyright (C) 1999-2001  Gene Cooperman
 %Y    See included file, COPYING, for conditions for copying
@@ -28,8 +28,7 @@
 %%
 %F  UseReferences . . . . . . . . . . . . . . . . . .  specify references
 %%
-\UseReferences{../../../doc/ext}
-\UseReferences{../../../doc/ref}
+\UseGapDocReferences{../../../doc/ref}
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,7 +49,7 @@
   \centerline{Boston, MA, U.S.A.}\medskip
   \centerline{\secfont email: gene@ccs.neu.edu}
   \vfill
-  \centerline{\secfont {\Month} 2001}
+  \centerline{\secfont {\Month} 2005}
 }
 %
 %
@@ -66,7 +65,8 @@
 %F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  
 %%
 \FrontMatter
-\immediate\write\citeout{\bs bibdata{./manual,../../../doc/mrabbrev}}
+% \immediate\write\citeout{\bs bibdata{./manual,../../../doc/mrabbrev}}
+\immediate\write\citeout{\bs bibdata{./manual}}
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -88,8 +88,7 @@
 %%
 %F  Appendices  . . . . . . . . . . . .  
 %%
-%\Appendices
-\EndMatter
+\Appendices
 \Bibliography
 \Index
 %

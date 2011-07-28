@@ -2,7 +2,7 @@
 ##  
 #W  helpbase.gd                 GAP Library                      Frank Lübeck
 ##  
-#H  @(#)$Id: helpbase.gd,v 1.5 2010/02/23 15:13:09 gap Exp $
+#H  @(#)$Id: helpbase.gd,v 1.6 2011/06/10 09:26:55 gap Exp $
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ## and the actual help books.
 ##  
 Revision.helpbase_gd := 
-  "@(#)$Id: helpbase.gd,v 1.5 2010/02/23 15:13:09 gap Exp $";
+  "@(#)$Id: helpbase.gd,v 1.6 2011/06/10 09:26:55 gap Exp $";
   
 DeclareGlobalFunction("StringStreamInputTextFile");
 DeclareGlobalFunction("MATCH_BEGIN");
@@ -21,6 +21,7 @@ DeclareGlobalFunction("FILLED_LINE");
 DeclareGlobalFunction("SIMPLE_STRING");
 DeclareGlobalVariable("HELP_KNOWN_BOOKS");
 DeclareGlobalFunction("HELP_ADD_BOOK");
+DeclareGlobalFunction("HELP_REMOVE_BOOK");
 DeclareGlobalVariable("HELP_BOOK_HANDLER");
 DeclareGlobalVariable("HELP_BOOKS_INFO");
 DeclareGlobalFunction("HELP_BOOK_INFO");

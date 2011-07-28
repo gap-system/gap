@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  grpclass.gd                      CRISP                 Burkhard H\"ofling
+##  grpclass.gd                      CRISP                   Burkhard Höfling
 ##
-##  @(#)$Id: grpclass.gd,v 1.2 2000/10/11 13:24:30 gap Exp $
+##  @(#)$Id: grpclass.gd,v 1.3 2011/05/15 19:17:54 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000 Burkhard Höfling
 ##
 Revision.grpclass_gd :=
-    "@(#)$Id: grpclass.gd,v 1.2 2000/10/11 13:24:30 gap Exp $";
+    "@(#)$Id: grpclass.gd,v 1.3 2011/05/15 19:17:54 gap Exp $";
 
 
 #############################################################################

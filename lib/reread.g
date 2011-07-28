@@ -2,7 +2,7 @@
 ##
 #W  reread.g                   GAP Library                       Steve Linton
 ##
-#H  @(#)$Id: reread.g,v 4.11 2010/02/23 15:13:26 gap Exp $
+#H  @(#)$Id: reread.g,v 4.12 2011/01/13 17:28:36 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,7 +15,7 @@
 ##  natural home
 ##
 Revision.reread_g :=
-    "@(#)$Id: reread.g,v 4.11 2010/02/23 15:13:26 gap Exp $";
+    "@(#)$Id: reread.g,v 4.12 2011/01/13 17:28:36 alexk Exp $";
 
 
 #############################################################################
@@ -57,7 +57,7 @@ Revision.reread_g :=
 ##  An additional use of <Ref Func="Reread"/> is to load the compiled version
 ##  of a file for which the &GAP; language version had previously been read
 ##  (or perhaps was included in a saved workspace).
-##  See <Ref Sect="The Compiler"/> and
+##  See <Ref Label="Kernel modules"/> and
 ##  <Ref Sect="Saving and Loading a Workspace"/> for more information.
 ##  <P/>
 ##  It is not advisable to use <Ref Func="Reread"/> programmatically.

@@ -1,4 +1,4 @@
-<!-- $Id: manual.xml,v 1.10 2009/05/26 16:42:08 alexk Exp $ -->
+<!-- $Id: manual.xml,v 1.11 2010/03/30 11:32:30 alexk Exp $ -->
 
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
@@ -14,7 +14,7 @@
 <TitlePage>
   <Title>&OpenMath;</Title>
   <Subtitle>&OpenMath; functionality in GAP</Subtitle>
-  <Version>Version 10.0.4</Version>
+  <Version>Version 10.1.0</Version>
 
   <Author>Marco Costantini
           <Email>costanti at science dot unitn dot it</Email>
@@ -47,7 +47,7 @@
           </Address> 
   </Author>
   
-  <Date>26 May 2009</Date>
+  <Date>30 March 2010</Date>
 
 <Abstract>
 

@@ -2,13 +2,10 @@
 ##
 #W  resclass.gd             GAP4 Package `ResClasses'             Stefan Kohl
 ##
-#H  @(#)$Id: resclass.gd,v 1.52 2008/07/23 13:06:59 stefan Exp $
-##
 ##  This file contains declarations needed for computing with unions of
 ##  residue classes +/- finite sets ("residue class unions").
 ##
-Revision.resclass_gd :=
-  "@(#)$Id: resclass.gd,v 1.52 2008/07/23 13:06:59 stefan Exp $";
+#############################################################################
 
 #############################################################################
 ##

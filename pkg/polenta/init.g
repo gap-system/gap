@@ -3,7 +3,7 @@
 #W init.g                  POLENTA package                     Bjoern Assmann
 ##
 ##
-#H  @(#)$Id: init.g,v 1.3 2006/03/14 16:45:30 gap Exp $
+#H  @(#)$Id: init.g,v 1.4 2011/05/31 13:10:57 gap Exp $
 ##
 #Y 2003
 ##
@@ -37,5 +37,3 @@ RequirePackage( "aclib" );
 #############################################################################
 ##
 #E
-
-

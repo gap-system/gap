@@ -3,8 +3,6 @@
 <!-- ##                                                                                       ## -->
 <!-- ##  factintbib.xml                 FactInt documentation                    Stefan Kohl  ## -->
 <!-- ##                                                                                       ## -->
-<!-- ##  $Id: factintbib.xml,v 1.3 2007/09/19 09:37:12 stefan Exp $                           ## -->
-<!-- ##                                                                                       ## -->
 <!-- ########################################################################################### -->
 
 <!DOCTYPE file SYSTEM "../../gapdoc/bibxmlext.dtd" []>

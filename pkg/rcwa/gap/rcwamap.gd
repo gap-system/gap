@@ -2,8 +2,6 @@
 ##
 #W  rcwamap.gd                GAP4 Package `RCWA'                 Stefan Kohl
 ##
-#H  @(#)$Id: rcwamap.gd,v 1.110 2009/09/30 20:45:39 stefan Exp $
-##
 ##  This file contains declarations of functions, operations etc. for
 ##  computing with rcwa mappings.
 ##
@@ -77,10 +75,9 @@
 ##  described in the author's article
 ##
 ##  Algorithms for a Class of Infinite Permutation Groups.
-##  J. Symb. Comput. 2008+, 43+, 37 pages. DOI: 10.1016/j.jsc.2007.12.001. 
+##  J. Symb. Comput. 43(2008), no. 8, 545-581, DOI: 10.1016/j.jsc.2007.12.001
 ##
-Revision.rcwamap_gd :=
-  "@(#)$Id: rcwamap.gd,v 1.110 2009/09/30 20:45:39 stefan Exp $";
+#############################################################################
 
 #############################################################################
 ##
@@ -264,9 +261,11 @@ DeclareGlobalFunction( "SemilocalizedRcwaMapping" );
 
 #############################################################################
 ##
-#O  Projections( <f> ) . . proj. of an rcwa mapping of Z^2 to the coordinates
+#A  ProjectionsToCoordinates( <f> )
 ##
-DeclareOperation( "Projections", [ IsRcwaMappingOfZxZ ] );
+##  Projections of an rcwa mapping of Z^2 to the coordinates.
+##
+DeclareAttribute( "ProjectionsToCoordinates", IsRcwaMappingOfZxZ );
 
 #############################################################################
 ##
@@ -649,6 +648,12 @@ DeclareOperation( "Multpk", [ IsRcwaMapping, IsInt, IsInt ] );
 
 #############################################################################
 ##
+#A  MultDivType( <f> ) . distribution of coeff's in numerators & denominators
+##
+DeclareAttribute( "MultDivType", IsRcwaMapping );
+
+#############################################################################
+##
 #A  FixedPointsOfAffinePartialMappings( <f> )
 ##
 ##  The fixed points of the affine partial mappings of the rcwa mapping <f>
@@ -751,15 +756,20 @@ DeclareGlobalFunction( "InjectiveAsMappingFrom" );
 #############################################################################
 ##
 #O  ShortCycles( <f>, <S>, <maxlng> ) .  short cycles of the rcwa mapping <f>
+#O  ShortCycles( <f>, <S>, <maxlng>, <maxn> )
 #O  ShortCycles( <f>, <maxlng> )
 ##
 ##  In the 3-argument case, `ShortCycles' returns a list of all finite cycles
 ##  of the rcwa mapping <f> of length <= <maxlng> which intersect nontri-
-##  vially with the set <S>. In the 2-argument case, it returns a list of all
-##  "single" finite cycles of the rcwa mapping <f> of length <= <maxlng>.
+##  vially with the set <S>. In the 4-argument case, it does the same except
+##  that <f> must be an rcwa mapping of Z and that cycles exceeding <maxn>
+##  are dropped. In the 2-argument case, it returns a list of all "single"
+##  finite cycles of the rcwa mapping <f> of length <= <maxlng>.
 ##
-DeclareOperation( "ShortCycles",
-                  [ IsRcwaMapping, IsListOrCollection, IsPosInt ] );
+DeclareOperation( "ShortCycles", [ IsRcwaMapping, IsListOrCollection,
+                                   IsPosInt ] );
+DeclareOperation( "ShortCycles", [ IsRcwaMapping, IsListOrCollection,
+                                   IsPosInt, IsPosInt ] );
 DeclareOperation( "ShortCycles", [ IsRcwaMapping, IsPosInt ] );
 
 #############################################################################
@@ -861,15 +871,45 @@ DeclareAttribute( "Loops", IsRcwaMapping );
 
 #############################################################################
 ##
-#O  OrbitsModulo( <f>, <m> ) . . . orbit partition of R/mR under `Group(<f>)'
-#O  OrbitsModulo( <M>, <m> ) . . . . . . .  orbit partition of R/mR under <M>
+#O  OrbitsModulo( <M>, <m>, <d> ) "orbit" partition of (R/<m>R)^<d> under <M>
+#O  OrbitsModulo( <M>, <m> ) . . . . . . . . . . . . . . . . . . case <d> = 1
+#O  OrbitsModulo( <f>, <m>, <d> )  .  case <M> = Group(<f>) resp. Monoid(<f>)
+#O  OrbitsModulo( <f>, <m> ) . . . . . . . . . . . . . . . dito, case <d> = 1
 ##
-##  Returns the set of the sets of vertices of the weakly-connected
-##  components of the transition graph Gamma_(<f>,<m>), respectively
-##  a partition of R/<m>R into orbits under the action of <M>.
+##  The definition given below is a generalization of the one given in the
+##  manual, and it should be taken with notable caution: it is not clear yet
+##  whether it makes sense in the given form, and it is likely to be changed
+##  or withdrawn.
 ##
-DeclareOperation( "OrbitsModulo", [ IsRcwaMapping, IsRingElement ] );
+##  The operation `OrbitsModulo' returns a partition of (R/<m>R)^<d> into
+##  "orbits" under the action of the rcwa monoid <M>, in the sense that two
+##  tuples (a_1,...,a_<d>) and (b_1,...,b_<d>) of residues (mod <m>) lie in
+##  the same "orbit" if and only if there is an f in <M> such that one of the
+##  following hold:
+##
+##    1.   ((a_1)^f mod <m>,...,(a_<d>)^f mod <m>)
+##       = ((b_1)^f mod <m>,...,(b_<d>)^f mod <m>).
+##    2.   ((b_1)^f mod <m>,...,(b_<d>)^f mod <m>)
+##       = ((a_1)^f mod <m>,...,(a_<d>)^f mod <m>).
+##
+##  In case R = Z, the residues (mod <m>) are the integers 0,...,<m>-1.
+##  1-tuples are represented by the ring element they contain.
+##
+##  If the first argument is an rcwa mapping <f>, then <M> is the group
+##  generated by <f> if <f> is bijective, and the monoid generated by <f>
+##  otherwise. If <d> is not given, it defaults to 1.
+##
+##  If the first argument is an rcwa mapping <f> and <d> = 1, then the
+##  return value as described above equals the set of the sets of vertices
+##  of the weakly-connected components of the transition graph
+##  Gamma_(<f>,<m>).
+##
 DeclareOperation( "OrbitsModulo", [ IsRcwaMonoid, IsRingElement ] );
+DeclareOperation( "OrbitsModulo", [ IsRcwaMonoid, IsRingElement,
+                                    IsPosInt ] );
+DeclareOperation( "OrbitsModulo", [ IsRcwaMapping, IsRingElement ] );
+DeclareOperation( "OrbitsModulo", [ IsRcwaMapping, IsRingElement,
+                                    IsPosInt ] );
 
 #############################################################################
 ##
@@ -1048,6 +1088,16 @@ DeclareAttribute( "LaTeXString", IsObject );
 #O  LaTeXAndXDVI( <obj> ) .  write LaTeX string to file, LaTeX & show by xdvi
 ##
 DeclareOperation( "LaTeXAndXDVI", [ IsObject ] );
+
+#############################################################################
+##
+#O  RcwaMappingToLaTeX( <f> )
+##
+##  Returns a LaTeX string for an rcwa mapping <f>.
+##  Methods recognize options "Factorization", "Indentation", "German" and
+##  "VarName" / "VarNames".
+##
+DeclareOperation( "RcwaMappingToLaTeX", [ IsRcwaMapping ] );
 
 #############################################################################
 ##

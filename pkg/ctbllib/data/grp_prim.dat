@@ -2,7 +2,7 @@
 ##
 #W  grp_prim.dat                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: grp_prim.dat,v 1.1 2008/06/24 16:27:06 gap Exp $
+#H  @(#)$Id: grp_prim.dat,v 1.3 2010/12/01 17:47:57 gap Exp $
 ##
 #Y  Copyright (C)  2007,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,7 +10,7 @@
 ##  and the GAP Library of Primitive Groups.
 ##
 Revision.grp_prim_dat :=
-    "@(#)$Id: grp_prim.dat,v 1.1 2008/06/24 16:27:06 gap Exp $";
+    "@(#)$Id: grp_prim.dat,v 1.3 2010/12/01 17:47:57 gap Exp $";
 
 
 DatabaseAttributeSetData( CTblLibData.IdEnumerator, "prim",
@@ -630,10 +630,7 @@ automatic:=[
 ["Suz",["simple group",[[1782,1]]]],
 ["Suz.2",["unique almost simple group with the given socle and socle factor",[
   [1782,2]]]],
-["SuzM15",[
-  "unique almost simple group with the given socle and socle factor",[
-  [52,1],[117,1],[144,2],[234,2]]]],
-["Sym4",["hard test",[[4,2]]]],
+["Symm(4)",["hard test",[[4,2]]]],
 ["Sz(32)",["simple group",[[1025,1]]]],
 ["Sz(32).5",[
   "unique almost simple group with the given socle and socle factor",[

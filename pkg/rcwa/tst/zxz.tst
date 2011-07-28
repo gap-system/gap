@@ -2,12 +2,12 @@
 ##
 #W  zxz.tst                  GAP4 Package `RCWA'                  Stefan Kohl
 ##
-#H  @(#)$Id: zxz.tst,v 1.22 2008/02/26 16:19:47 stefan Exp $
-##
 ##  This file contains automated tests of RCWA's functionality for
 ##  rcwa mappings of and rcwa groups over Z^2.
 ##
-gap> START_TEST("$Id: zxz.tst,v 1.22 2008/02/26 16:19:47 stefan Exp $");
+#############################################################################
+
+gap> START_TEST( "zxz.tst" );
 gap> RCWADoThingsToBeDoneBeforeTest();
 gap> L1 := [ [ 2, 1 ], [ -1, 2 ] ];;
 gap> L2 := [ [ 6, 2 ], [ 0, 6 ] ];;
@@ -234,7 +234,7 @@ Rcwa mapping of Z^2 with modulus (2,0)Z+(0,3)Z
  [1,0]                         | [m-1,n+3]
  [1,1] [1,2]                   | [m-1,n]
 
-gap> Projections(g);
+gap> ProjectionsToCoordinates(g);
 [ <rcwa mapping of Z with modulus 2>, <rcwa mapping of Z with modulus 3> ]
 gap> List(last,Factorization);
 [ [ ClassTransposition(0,2,1,2) ], [ ClassShift(0,3) ] ]
@@ -380,7 +380,7 @@ true
 gap> IsClassWiseTranslating(ClassShift([0,0],[[2,0],[0,2]],1));
 true
 gap> RCWADoThingsToBeDoneAfterTest();
-gap> STOP_TEST( "zxz.tst", 2000000000 );
+gap> STOP_TEST( "zxz.tst", 2300000000 );
 
 #############################################################################
 ##

@@ -2,12 +2,12 @@
 ##
 #W  z_pi.tst              GAP4 Package `ResClasses'               Stefan Kohl
 ##
-#H  @(#)$Id: z_pi.tst,v 1.9 2007/10/22 08:37:34 stefan Exp $
-##
 ##  This file contains automated tests of ResClasses' functionality for
 ##  computing with semilocalizations Z_(pi) of the ring of integers.
 ##
-gap> START_TEST("$Id: z_pi.tst,v 1.9 2007/10/22 08:37:34 stefan Exp $");
+#############################################################################
+
+gap> START_TEST( "z_pi.tst" );
 gap> ResClassesDoThingsToBeDoneBeforeTest();
 gap> R := Z_pi([2]);
 Z_( 2 )

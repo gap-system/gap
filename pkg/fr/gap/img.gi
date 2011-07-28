@@ -2,7 +2,7 @@
 ##
 #W img.gi                                                   Laurent Bartholdi
 ##
-#H   @(#)$Id: img.gi,v 1.40 2009/10/13 09:37:06 gap Exp $
+#H   @(#)$Id: img.gi,v 1.90 2011/06/20 14:14:31 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -11,6 +11,8 @@
 ##  Iterated monodromy groups
 ##
 #############################################################################
+
+ReadPackage("fr", "gap/spider.g");
 
 #############################################################################
 ##
@@ -40,15 +42,18 @@ InstallMethod(FRElement, "(FR) for an IMG machine and an integer",
                    [M,M!.pack([init])]);
 end);
 
-InstallMethod(ViewObj, "(FR) for an IMG element",
+InstallMethod(ViewString, "(FR) for an IMG element",
         [IsIMGElement and IsFRElementStdRep],
         function(E)
-    Print("<", Size(AlphabetOfFRObject(E)), "#");
+    local s;
+    s := CONCAT@("<", Size(AlphabetOfFRObject(E)), "#");
     if IsOne(E![2]) then
-        Print("identity ...>");
+        Append(s,"identity ...");
     else
-        Print(E![2], ">");
+        APPEND@FR(s,InitialState(E));
     fi;
+    Append(s,">");
+    return s;
 end);
 
 BindGlobal("IMGISONE@", function(m,relator,w,skip)
@@ -56,7 +61,7 @@ BindGlobal("IMGISONE@", function(m,relator,w,skip)
 
     rws := NewFRMachineRWS(m);
     if not IsBound(rws.relator) then
-        rws.addgprule(rws.letterrep(relator));
+        rws.addgprule(rws.letterrep(relator),false);
         rws.commit();
         rws.relator := relator;
     fi;
@@ -68,7 +73,7 @@ BindGlobal("IMGISONE@", function(m,relator,w,skip)
         else
             t := rws.reduce(rws.cyclicallyreduce(t));
         fi;
-        if not IsEmpty(t) then
+        if t<>[] then
             if KnowsDictionary(seen,t) then
                 return false;
             fi;
@@ -130,6 +135,94 @@ InstallMethod(Order, "(FR) for an IMG element",
     end;
     return recur(e);
 end);
+
+BindGlobal("MAKENFREL@", function(rel)
+    rel := LetterRepAssocWord(rel);
+    if rel[1]<0 then rel := -Reversed(rel); fi;
+    rel := [rel,[],[]];
+    rel[2]{rel[1]} := [1..Length(rel[1])];
+    rel[3]{rel[1]} := 3*Length(rel[1])+1-[1..Length(rel[1])];
+    Append(rel[1],rel[1]);
+    Append(rel[1],-Reversed(rel[1]));
+    return rel;
+end);
+
+InstallOtherMethod(NFFUNCTION@, [IsGroup, IsWord], function(g,rel)
+    # simplify a word in the free group g/[rel]
+    local gfam;
+    gfam := FamilyObj(Representative(g));
+    rel := MAKENFREL@(rel);
+    return x->AssocWordByLetterRep(gfam,NFFUNCTION_FR(rel,true,LetterRepAssocWord(x)));
+end);
+
+BindGlobal("REMOVEADDER@", function(g,rel,adder)
+    # get rid of generator adder in g/[rel]
+    local gens, img, i, w;
+    gens := GeneratorsOfGroup(g);
+    img := ShallowCopy(gens);
+    i := PositionWord(rel,adder);
+    if i=fail then rel := rel^-1; i := PositionWord(rel,adder); fi;
+    img[Position(gens,adder)] := (Subword(rel,i+1,Length(rel))*Subword(rel,1,i-1))^-1;
+    return x->MappedWord(x,gens,img);
+end);
+
+# a homomorphism from the free group with 1 relation to a genuinely free group
+BindGlobal("ISOMORPHISMSIMPLIFIEDIMGGROUP@", function(src, rel)
+    local f, srcfam, ffam;
+    
+    rel := MAKENFREL@(rel);
+    f := FreeGroup(RankOfFreeGroup(src)-1);
+    srcfam := FamilyObj(Representative(src));
+    ffam := FamilyObj(Representative(f));
+    return GroupHomomorphismByFunction(src,f,
+                   x->AssocWordByLetterRep(ffam,NFFUNCTION_FR(rel,false,LetterRepAssocWord(x))),
+                   y->AssocWordByLetterRep(srcfam,NFFUNCTION_FR(rel,true,LetterRepAssocWord(y))));
+end);
+    
+# takes into account the IMG relator to try harder to express a machine
+# as a subfrmachine
+InstallMethod(SubFRMachine, "(FR) for an IMG machine and a map",
+        [IsIMGMachine, IsGroupHomomorphism],
+        function(M,f)
+    local S, trans, out, i, pi, x, rel, g, h;
+    S := StateSet(M);
+    while S<>Range(f) do
+        Error("SubFRMachine: range and stateset must be the same\n");
+    od;
+    pi := WreathRecursion(M);
+    rel := IMGRelator(M);
+    trans := [];
+    out := [];
+    x := LetterRepAssocWord(rel);
+    if [1..RankOfFreeGroup(S)] in [SortedList(x),SortedList(-x)] then
+        h := ISOMORPHISMSIMPLIFIEDIMGGROUP@(S,rel);
+        g := f*h;
+    else
+        h := IdentityMapping(S);
+        g := f;
+    fi;
+    
+    for i in GeneratorsOfGroup(Source(f)) do
+        x := pi(i^f);
+        x[1] := List(x[1],x->PreImagesRepresentative(g,x^h));
+        if fail in x[1] then return fail; fi;
+        Add(trans,x[1]);
+        Add(out,x[2]);
+    od;
+    x := FRMachineNC(FamilyObj(M),Source(f),trans,out);
+    i := PreImagesRepresentative(f,rel);
+    if i<>fail then
+        SetIMGRelator(x,i);
+        x := CleanedIMGMachine(x);
+    fi;
+    if HasAddingElement(M) then
+        i := PreImagesRepresentative(f,InitialState(AddingElement(M)));
+        if i<>fail then
+            SetAddingElement(x,FRElement(x,i));
+        fi;
+    fi;
+    return x;
+end);
 #############################################################################
 
 #############################################################################
@@ -137,19 +230,82 @@ end);
 #A AsGroupFRMachine, AsMonoidFRMachine, AsSemigroupFRMachine
 #A AsIMGMachine
 ##
+InstallGlobalFunction(NewSemigroupFRMachine,
+        function(arg)
+    if Length(arg)=1 and IsSemigroupFRMachine(arg[1]) then
+        return COPYFRMACHINE@(arg[1]);
+    fi;
+    return UnderlyingFRMachine(CallFuncList(FRSemigroup,arg:IsFRElement).1);
+end);
+InstallGlobalFunction(NewMonoidFRMachine,
+        function(arg)
+    if Length(arg)=1 and IsMonoidFRMachine(arg[1]) then
+        return COPYFRMACHINE@(arg[1]);
+    fi;
+    return UnderlyingFRMachine(CallFuncList(FRMonoid,arg:IsFRElement).1);
+end);
+InstallGlobalFunction(NewGroupFRMachine,
+        function(arg)
+    if Length(arg)=1 and IsGroupFRMachine(arg[1]) then
+        return COPYFRMACHINE@(arg[1]);
+    fi;
+    return UnderlyingFRMachine(CallFuncList(FRGroup,arg:IsFRElement).1);
+end);
+
+InstallGlobalFunction(NewIMGMachine,
+        function(arg)
+    local relator, args, group, machine, data;
+    
+    if Length(arg)=1 and IsIMGMachine(arg[1]) then
+        machine := COPYFRMACHINE@(arg[1]);
+        SetIMGRelator(machine,IMGRelator(arg[1]));
+        SetCorrespondence(machine,IdentityMapping(StateSet(machine)));
+        return machine;
+    fi;
+    
+    if '=' in arg[Length(arg)] then
+        relator := fail;
+        args := arg;
+    else
+        relator := arg[Length(arg)];
+        args := arg{[1..Length(arg)-1]};
+    fi;
+    machine := UnderlyingFRMachine(CallFuncList(FRGroup,args:IsFRElement).1);
+    if relator=fail then
+        return AsIMGMachine(machine);
+    else
+        data := rec(holdername := RANDOMNAME@());
+        BindGlobal(data.holdername, StateSet(machine));
+        relator := STRING_WORD2GAP@(List(GeneratorsOfFRMachine(machine),String),"GeneratorsOfGroup",data,relator);
+        MakeReadWriteGlobal(data.holdername);
+        UnbindGlobal(data.holdername);
+        return AsIMGMachine(machine,relator);
+    fi;
+end);
+
 BindGlobal("ISIMGRELATOR@", function(M,w)
     local r;
     r := WreathRecursion(M)(w);
     return ISONE@(r[2]) and ForAll(r[1],x->IsOne(x) or IsConjugate(M!.free,x,w));
 end);
 
+InstallMethod(IMGMachineNC, "(FR) for a group, a list of transitions, a list of outputs, and a relator",
+        [IsFamily,IsFreeGroup,IsList,IsList,IsAssocWord],
+        function(fam,g,trans,out,rel)
+    local M;
+    M := FRMachineNC(fam,g,trans,out);
+    SetIMGRelator(M,rel);
+    return M;
+end);
+
 InstallMethod(AsIMGMachine, "(FR) for a group FR machine and a word",
         [IsGroupFRMachine,IsAssocWord],
         function(M,w)
-    local f, i, out, trans, r, p;
+    local f, i, out, trans, r, p, N;
     if ISIMGRELATOR@(M,w) then
-        M := COPYFRMACHINE@(M);
-        SetIMGRelator(M,w);
+        N := COPYFRMACHINE@(M);
+        SetIMGRelator(N,w);
+        i := IdentityMapping(StateSet(M));
     else
         f := ElementsFamily(FamilyObj(M!.free))!.names;
         if "t" in f then
@@ -173,45 +329,22 @@ InstallMethod(AsIMGMachine, "(FR) for a group FR machine and a word",
         p := PositionProperty(trans[r],x->Length(x)=p);
         trans[r][p] := trans[r][p]*w^i*f.(r);
 
-        M := FRMachineNC(FamilyObj(M),f,trans,out);
-        SetIMGRelator(M,w^i*f.(r));
+        N := FRMachineNC(FamilyObj(M),f,trans,out);
+        SetIMGRelator(N,w^i*f.(r));
     fi;
-    return M;
+    SetCorrespondence(N,i);
+    return N;
 end);
 
-BindGlobal("IMGRELATORS@", function(gens,ordering)
-    local e, o, i, relators;
-
-    o := ShallowCopy(ordering);
-    relators := [];
-    for i in [1..Length(o)] do
-        e := Product(gens{o});
-        Add(relators,e);
-        Add(relators,e^-1);
-        Add(o,Remove(o,1));
-    od;
-    return relators;
-end);
-
-InstallMethod(SPIDERRELATORS@, [IsSpider],
-        spider->IMGRELATORS@(GeneratorsOfGroup(spider!.model),spider!.ordering));
-
-InstallOtherMethod(NFFUNCTION@, [IsGroup, IsWord], function(g,r)
-    return FpElementNFFunction(FamilyObj(One(g / [r])));
-end);
-
-InstallMethod(NFFUNCTION@, [IsSpider],
-        spider->NFFUNCTION@(spider!.model, SPIDERRELATORS@(spider)[1]));
-
-BindGlobal("IMGOPTIMIZE@", function(trans, perm, relators, canfail)
+BindGlobal("IMGOPTIMIZE@", function(trans, perm, relator, canfail)
     # modify entries in <trans> so that products along cycles of <perm>
     # are conjugates of a generator; or return fail if that's impossible.
     # also check that these generators occur only once.
-
-    local g, h, i, j, nf, c, group, seen;
-
-    group := CollectionsFamily(FamilyObj(relators[1]))!.wholeGroup;
-    nf := NFFUNCTION@(group, relators[1]);
+    local g, h, i, j, nf, iso, c, group, seen, w, x, y, z;
+    
+    group := CollectionsFamily(FamilyObj(relator))!.wholeGroup;
+    nf := NFFUNCTION@(group, relator);
+    iso := ISOMORPHISMSIMPLIFIEDIMGGROUP@(group, relator);
     seen := [];
 
     for i in [1..Length(trans)] do
@@ -222,46 +355,83 @@ BindGlobal("IMGOPTIMIZE@", function(trans, perm, relators, canfail)
                 trans[i][j] := g^-1*h;
                 g := h;
             od;
-            if IsOne(h) then continue; fi;
-            h := CyclicallyReducedWord(h);
-            if not h in GeneratorsOfGroup(group) then
-                g := First(relators,x->CyclicallyReducedWord(h*x) in GeneratorsOfGroup(group));
-                while g=fail do
-                    if canfail then return fail; fi;
-                    Error("Could not express recursion on topological sphere");
-                od;
-                h := CyclicallyReducedWord(h*g);
-                j := First(Reversed(c),j->not IsOne(trans[i][j])); # last <>1
-                trans[i][j] := trans[i][j]*g;
+            if IsOne(h) or # product of entries is 1
+               # or product of entries is a conjugate of a generator
+               ForAny(GeneratorsOfGroup(group),g->IsConjugate(group,g,h)) then
+                continue;
             fi;
-            if h in seen then return fail; fi;
-            AddSet(seen,h);
+            # we try to be subtle: maybe it becomes a conjugate of a generator
+            # only using the IMG relation.
+            x := h^iso;
+            for y in GeneratorsOfGroup(group) do
+                z := RepresentativeAction(Range(iso),y^iso,x);
+                if z<>fail then break; fi;
+            od;
+            while z=fail or y in seen do # either x<>y^z, or y appears twice
+                if canfail then return fail; fi;
+                Error("Could not express recursion on topological sphere");
+            od;
+            z := PreImage(iso,z); # now h=y^z            
+            AddSet(seen,y);
+            # ok, now we want to change the last <>1 entry of trans[i]{c} so
+            # that the product really is a conjugate of a generator.
+            j := First(Reversed(c),j->not IsOne(trans[i][j]));
+            trans[i][j] := trans[i][j]/h*nf(y^z);
         od;
     od;
     return true;
 end);
 
-#!!! this code is not very efficient. see AsPolynomialIMGMachine for a speedup
-#using Thurston's algorithm
+InstallMethod(CleanedIMGMachine, "(FR) for an IMG machine",
+        [IsIMGMachine],
+        function(M)
+    local perm, trans, f, newM;
+    
+    perm := M!.output;
+    trans := List(M!.transitions,ShallowCopy);
+    
+    if IMGOPTIMIZE@(trans, perm, IMGRelator(M), true)=fail then # cheap method, then
+        f := NFFUNCTION@(StateSet(M),IMGRelator(M));
+        trans := List(M!.transitions,r->List(r,f));
+    fi;
+    newM := FRMachineNC(FamilyObj(M),StateSet(M),trans,perm);
+    SetIMGRelator(newM,IMGRelator(M));
+    return newM;
+end);
+
+InstallMethod(AsIMGMachine, "(FR) for a group FR machine",
+        [IsIMGMachine], M->M);
+
 InstallMethod(AsIMGMachine, "(FR) for a group FR machine",
         [IsGroupFRMachine],
         function(M)
-    local w, p, trans, perm;
-    if IsIMGMachine(M) then
-        return M;
+    local w, p, trans, perm, N;
+    
+    # try running a spider algorithm to discover a good ordering
+    w := SPIDERALGORITHM@(M);
+    perm := [fail];
+    if w<>fail and w.minimal then # insert that ordering
+        Add(perm,GeneratorsOfGroup(M!.free){w.ordering},1);
     fi;
-    for p in PermutationsList(GeneratorsOfGroup(M!.free)) do
-        w := Product(p);
+    for p in perm do
+        if p=fail then # add now all permutations fixing first letter
+            for p in SymmetricGroup([2..Length(GeneratorsOfGroup(M!.free))]) do
+                Add(perm,Permuted(GeneratorsOfGroup(M!.free),p));
+            od;
+            continue;
+        fi;
+        w := Product(p,One(StateSet(M)));
         if ISIMGRELATOR@(M,w) then
             trans := List(M!.transitions,ShallowCopy);
             perm := List(M!.output,ShallowCopy);
 
-            if IMGOPTIMIZE@(trans,perm,SPIDERRELATORS@(p,[1..Length(GeneratorsOfGroup(M!.free))]),true)=fail then
+            if IMGOPTIMIZE@(trans,perm,w,true)=fail then
                 break;
             fi;
-            M := FRMachineNC(FamilyObj(M),M!.free,trans,perm);
-            SetIMGRelator(M,w);
-            return M;
+            N := FRMachineNC(FamilyObj(M),M!.free,trans,perm);
+            SetIMGRelator(N,w);
+            SetCorrespondence(N,IdentityMapping(M!.free));
+            return N;
         fi;
     od;
     return fail;
@@ -271,18 +441,13 @@ InstallMethod(AsGroupFRMachine, "(FR) for an IMG machine",
         [IsIMGMachine],
         COPYFRMACHINE@);
 
-InstallMethod(ViewObj, "(FR) for an IMG machine",
+InstallMethod(ViewString, "(FR) for an IMG machine",
         [IsIMGMachine and IsFRMachineStdRep],
-        function(M)
-    Print("<FR machine with alphabet ", AlphabetOfFRObject(M), " on ", StateSet(M), "/[ ",IMGRelator(M)," ]>");
-end);
+        M->CONCAT@("<FR machine with alphabet ", AlphabetOfFRObject(M), " on ", StateSet(M), "/[ ",IMGRelator(M)," ]>"));
 
-InstallMethod(Display, "(FR) for an IMG machine",
+InstallMethod(DisplayString, "(FR) for an IMG machine",
         [IsIMGMachine and IsFRMachineStdRep],
-        function(M)
-    DISPLAYFRMACHINE@(M);
-    Print("Relator: ",IMGRelator(M),"\n");
-end);
+        M->CONCAT@(DISPLAYFRMACHINE@(M),"Relator: ",IMGRelator(M),"\n"));
 #############################################################################
 
 #############################################################################
@@ -342,6 +507,23 @@ BindGlobal("COPYADDER@", function(M,N)
     SetAddingElement(M,FRElement(M,InitialState(AddingElement(N))));
 end);
 
+BindGlobal("NORMALIZEHOMOMORPHISM@", function(f)
+    local g, mapi, sf, rf, gens;
+    if not HasMappingGeneratorsImages(f) then
+        return f;
+    fi;
+    mapi := MappingGeneratorsImages(f);
+    sf := Source(f);
+    rf := Range(f);
+    gens := GeneratorsOfGroup(sf);
+    if mapi[1]=gens then
+        return f;
+    fi;
+    g := Group(mapi[1]);
+    mapi := mapi[2];
+    return GroupHomomorphismByImagesNC(sf,rf,gens,List(gens,x->Product(AsWordLetterRepInGenerators(x,g),i->mapi[AbsInt(i)]^SignInt(i),One(rf))));
+end);
+                       
 InstallMethod(\*, "(FR) for an FR machine and a mapping",
         [IsFRMachine and IsFRMachineStdRep, IsMapping],
         function(M,f)
@@ -350,11 +532,14 @@ InstallMethod(\*, "(FR) for an FR machine and a mapping",
     if S<>Source(f) or S<>Range(f) then
         Error("\*: source, range and stateset must be the same\n");
     fi;
+    f := NORMALIZEHOMOMORPHISM@(f);
     N := FRMachineNC(FamilyObj(M),S,List(M!.transitions,r->List(r,x->x^f)),M!.output);
-    if IMGISONE@(N,IMGRelator(M),IMGRelator(M),true) then
-        SetIMGRelator(N,IMGRelator(M));
-    else
-        Info(InfoFR, 1, "Warning: result of composition does not seem to be an IMG machine");
+    if HasIMGRelator(M) then
+        if IMGISONE@(N,IMGRelator(M),IMGRelator(M),true) then
+            SetIMGRelator(N,IMGRelator(M));
+        else
+            Info(InfoFR, 2, "Warning: result of composition does not seem to be an IMG machine");
+        fi;
     fi;
     if HasAddingElement(M) then
         x := InitialState(AddingElement(M));
@@ -374,16 +559,19 @@ InstallMethod(\*, "(FR) for a mapping and an FR machine",
     pi := WreathRecursion(M);
     trans := [];
     out := [];
+    
     for i in [1..Length(M!.output)] do
         x := pi(GeneratorsOfFRMachine(M)[i]^f);
         Add(trans,x[1]);
         Add(out,x[2]);
     od;
     N := FRMachineNC(FamilyObj(M),S,trans,out);
-    if IMGISONE@(M,IMGRelator(M),IMGRelator(M),true) then
-        SetIMGRelator(N,IMGRelator(M));
-    else
-        Info(InfoFR, 1, "Warning: result of composition is not an IMG machine");
+    if HasIMGRelator(M) then
+        if IMGISONE@(N,IMGRelator(M),IMGRelator(M),true) then
+            SetIMGRelator(N,IMGRelator(M));
+        else
+            Info(InfoFR, 2, "Warning: result of composition does not seem to be an IMG machine");
+        fi;
     fi;
     if HasAddingElement(M) then
         x := InitialState(AddingElement(M));
@@ -398,12 +586,13 @@ InstallMethod(\^, "(FR) for a group FR machine and a mapping",
     local S, trans, out, i, pi, x, finv;
     S := StateSet(M);
     if S<>Source(f) or S<>Range(f) then
-        Error("\*: source, range and stateset must be the same\n");
+        Error("\^: source, range and stateset must be the same\n");
     fi;
     pi := WreathRecursion(M);
     trans := [];
     out := [];
     finv := Inverse(f);
+    f := NORMALIZEHOMOMORPHISM@(f);
     if finv=fail then return fail; fi;
     for i in [1..Length(M!.output)] do
         x := pi(GeneratorsOfFRMachine(M)[i]^finv);
@@ -412,7 +601,7 @@ InstallMethod(\^, "(FR) for a group FR machine and a mapping",
     od;
     x := FRMachineNC(FamilyObj(M),S,trans,out);
     if HasIMGRelator(M) then
-        SetIMGRelator(x,IMGRelator(M)^f);
+        SetIMGRelator(x,CyclicallyReducedWord(IMGRelator(M)^f));
     fi;
     if HasAddingElement(M) then
         SetAddingElement(x,FRElement(x,InitialState(AddingElement(M))^f));
@@ -420,38 +609,73 @@ InstallMethod(\^, "(FR) for a group FR machine and a mapping",
     return x;
 end);
 
-InstallMethod(ComplexConjugate, "(FR) for a group FR machine",
-        [IsGroupFRMachine],
-        function(M)
-    local S;
-    S := StateSet(M);
-    M := M^GroupHomomorphismByImagesNC(S,S,GeneratorsOfGroup(S),List(GeneratorsOfGroup(S),Inverse));
-    M!.AddingElement := AddingElement(M)^-1;#!!! is that really what we want?
-    return M;
-end);
 #############################################################################
 
 #############################################################################
 ##
 #M ChangeFRMachineBasis
 ##
+BindGlobal("REORDERREC@", function(m,perm)
+    # reorder the entries of m=[trans,perm] according to the permutation perm.
+    local i;
+    for i in [1..Length(m[1])] do
+        m[1][i] := Permuted(m[1][i],perm);
+        m[2][i] := ListPerm(PermList(m[2][i])^perm,Length(m[2][i]));
+    od;
+end);
+
+BindGlobal("FLIPSPIDER@", function(m,adder)
+    # reverses the marking at infinity, by conjugating by the base change
+    # <adder,1,...,1>[1,deg,deg-1,...,2]
+    # this is a change of basis that sends the adding machine to its inverse,
+    # assuming the adding machine was normalized to be <adder,1,...,1>(i->i-1)
+    local j, k, deg;
+    
+    for j in [1..Length(m[1])] do
+        m[1][j][1] := adder^-1*m[1][j][1];
+        k := Position(m[2][j],1);
+        m[1][j][k] := m[1][j][k]*adder;
+    od;
+    deg := Length(m[1][1]);
+    REORDERREC@(m,PermList(Concatenation([1],[deg,deg-1..2])));
+end);
+
+BindGlobal("CHANGEFRMACHINEBASIS@", function(M,l,p)
+    local trans, i, d, newM;
+    d := Size(AlphabetOfFRObject(M));
+    while Length(l)<>d or not ForAll(l,x->x in StateSet(M)) do
+        Error("Invalid base change ",l,"\n");
+    od;
+    while LargestMovedPoint(p)>d do
+	Error("Invalid permutation ",p,"\n");
+    od;
+    trans := [];
+    for i in [1..Length(M!.transitions)] do
+        Add(trans,Permuted(List(AlphabetOfFRObject(M),a->l[a]^-1*M!.transitions[i][a]*l[M!.output[i][a]]),p));
+    od;
+    newM := FRMachineNC(FamilyObj(M),StateSet(M),trans,List(M!.output,r->ListPerm(PermList(r)^p,d)));
+    if HasIMGRelator(M) then
+        SetIMGRelator(newM,IMGRelator(M));
+    fi;
+    if HasAddingElement(M) then
+        SetAddingElement(newM,FRElement(newM,InitialState(AddingElement(M))));
+    fi;
+    return newM;
+end);
+
 InstallMethod(ChangeFRMachineBasis, "(FR) for a group FR machine and a list",
         [IsGroupFRMachine, IsCollection],
         function(M,l)
-    local trans, i;
-    if Length(l)<>Size(AlphabetOfFRObject(M)) or not ForAll(l,x->x in StateSet(M)) then
-        Error("Invalid base change ",l,"\n");
-    fi;
-    trans := [];
-    for i in [1..Length(M!.transitions)] do
-        Add(trans,List(AlphabetOfFRObject(M),a->l[a]^-1*M!.transitions[i][a]*l[M!.output[i][a]]));
-    od;
-    i := FRMachineNC(FamilyObj(M),StateSet(M),trans,M!.output);
-    if HasIMGRelator(M) then
-        SetIMGRelator(i,IMGRelator(M));
-    fi;
-    return i;
-end);
+    return CHANGEFRMACHINEBASIS@(M,l,());
+end);	
+InstallMethod(ChangeFRMachineBasis, "(FR) for a group FR machine and a permutation",
+        [IsGroupFRMachine, IsPerm],
+        function(M,p)
+    return CHANGEFRMACHINEBASIS@(M,List(AlphabetOfFRObject(M),x->One(StateSet(M))),p);
+end);	
+InstallMethod(ChangeFRMachineBasis, "(FR) for a group FR machine, a list and a permutation",
+        [IsGroupFRMachine, IsCollection, IsPerm],
+    CHANGEFRMACHINEBASIS@);
 
 InstallMethod(ChangeFRMachineBasis, "(FR) for an FR machine",
         [IsGroupFRMachine],
@@ -469,7 +693,7 @@ InstallMethod(ChangeFRMachineBasis, "(FR) for an FR machine",
     l := [];
     l[1] := One(StateSet(M));
 #    l[Random([1..Length(AlphabetOfFRObject(M))])] := One(StateSet(M));
-    while not IsEmpty(S) do
+    while S<>[] do
         t := First([1..Length(S)],i->Number(S[i][2],i->IsBound(l[i]))>0);
         if t=fail then
             Error("Action is not transitive");
@@ -477,14 +701,14 @@ InstallMethod(ChangeFRMachineBasis, "(FR) for an FR machine",
         fi;
         t := Remove(S,t);
         s := Filtered(t[2],i->IsBound(l[i]));
-        if Length(s)>1 then
+        if Length(s)>1 and not IsIMGMachine(M) then
             Error("Action is not contractible (tree-like)");
             return fail;
         fi;
         s := s[1];
         u := s;
         while true do
-            v := PermList(Output(M,t[1],u));
+            v := Output(M,t[1],u);
             if v=s then
                 break;
             else
@@ -493,7 +717,73 @@ InstallMethod(ChangeFRMachineBasis, "(FR) for an FR machine",
             fi;
         od;
     od;
-    return ChangeFRMachineBasis(M,l);
+    return CHANGEFRMACHINEBASIS@(M,l,());
+end);
+
+
+InstallMethod(ComplexConjugate, "(FR) for a group FR machine",
+        [IsGroupFRMachine],
+        function(M)
+    local S;
+    S := StateSet(M);
+    M := M^GroupHomomorphismByImagesNC(S,S,GeneratorsOfGroup(S),List(GeneratorsOfGroup(S),Inverse));
+    return M;
+end);
+
+InstallMethod(ComplexConjugate, "(FR) for an IMG FR machine",
+        [IsIMGMachine],
+        function(M)
+    local S, N, a, m;
+    S := StateSet(M);
+    N := M^GroupHomomorphismByImagesNC(S,S,GeneratorsOfGroup(S),List(GeneratorsOfGroup(S),Inverse));
+    N!.IMGRelator := Reversed(IMGRelator(M)); # make it a positive word
+    if HasAddingElement(N) then
+        m := [List(N!.transitions,ShallowCopy),ShallowCopy(N!.output)];
+        a := InitialState(AddingElement(N));
+        FLIPSPIDER@(m,a);
+        a := Inverse(a);
+        N!.transitions := List(m[1],x->List(x,y->y^a));
+        N!.output := m[2];
+        N!.AddingElement := FRElement(N,a); # make it a positive generator
+    fi;
+    return N;
+end);
+
+InstallMethod(RotatedSpider, "(FR) for a polynomial IMG machine",
+        [IsPolynomialIMGMachine,IsInt],
+        function(M,p)
+    local adder;
+    adder := DecompositionOfFRElement(AddingElement(M)^p);
+    return CHANGEFRMACHINEBASIS@(M,List(adder[1],InitialState),PermList(adder[2]));
+end);
+
+InstallMethod(RotatedSpider, "(FR) for a polynomial IMG machine",
+        [IsPolynomialIMGMachine],
+        M->RotatedSpider(M,1));
+
+InstallMethod(VirtualEndomorphism, "(FR) for a group FR machine and a vertex",
+        [IsIMGMachine,IsPosInt],
+        function(M,v)
+    local G, Q, T, T2, Hgens, Himg, g, c;
+    G := StateSet(M);
+    # construct transversal: T[i] maps i to v
+    T2 := RightTransversal(G,Stabilizer(G,v,function(w,g) return w^FRElement(M,g); end));
+    T := [];
+    T{List(T2,g->v^FRElement(M,g))} := List(T2,Inverse);
+    
+    # now choose good generators: one per cycle of the action
+    Hgens := [];
+    Himg := [];
+    for g in GeneratorsOfGroup(G) do
+        for c in Cycles(PermList(Output(M,g)),AlphabetOfFRObject(M)) do
+            Add(Hgens,(g^Length(c))^T[c[1]]);
+            Add(Himg,Product(Transitions(M,g){c})^Transition(M,T[c[1]],c[1]));
+        od;
+    od;
+    Q := G/[IMGRelator(M)];
+    Hgens := List(Hgens,g->ElementOfFpGroup(FamilyObj(One(Q)),g));
+    Himg := List(Himg,g->ElementOfFpGroup(FamilyObj(One(Q)),g));
+    return GroupHomomorphismByImages(Group(Hgens),Q,Hgens,Himg);
 end);
 #############################################################################
 
@@ -507,32 +797,23 @@ BindGlobal("TRUNC@", function(a)
     if a<0 then return a+1; else return a; fi;
 end);
 
-InstallMethod(ViewObj, "(FR) for a polynomial FR machine",
+InstallMethod(ViewString, "(FR) for a polynomial FR machine",
         [IsPolynomialFRMachine and IsFRMachineStdRep],
-        function(M)
-    Print("<FR machine with alphabet ", AlphabetOfFRObject(M), " and adder ", AddingElement(M), " on ", StateSet(M), ">");
-end);
+        M->CONCAT@("<FR machine with alphabet ", AlphabetOfFRObject(M), " and adder ", AddingElement(M), " on ", StateSet(M), ">"));
 
-InstallMethod(Display, "(FR) for a polynomial FR machine",
+InstallMethod(DisplayString, "(FR) for a polynomial FR machine",
         [IsPolynomialFRMachine and IsFRMachineStdRep],
-        function(M)
-    DISPLAYFRMACHINE@(M);
-    Print("Adding element: ",AddingElement(M),"\n");
-end);
+        M->CONCAT@(DISPLAYFRMACHINE@(M),"Adding element: ",AddingElement(M),"\n"));
 
-InstallMethod(ViewObj, "(FR) for a polynomial IMG machine",
+InstallMethod(ViewString, "(FR) for a polynomial IMG machine",
         [IsPolynomialIMGMachine and IsFRMachineStdRep],
-        function(M)
-    Print("<FR machine with alphabet ", AlphabetOfFRObject(M), " and adder ", AddingElement(M), " on ", StateSet(M), "/[ ",IMGRelator(M)," ]>");
-end);
+        M->CONCAT@("<FR machine with alphabet ", AlphabetOfFRObject(M), " and adder ", AddingElement(M), " on ", StateSet(M), "/[ ",IMGRelator(M)," ]>"));
 
-InstallMethod(Display, "(FR) for an IMG machine",
+InstallMethod(DisplayString, "(FR) for an IMG machine",
         [IsPolynomialIMGMachine and IsFRMachineStdRep],
-        function(M)
-    DISPLAYFRMACHINE@(M);
-    Print("Adding element: ",AddingElement(M),"\n");
-    Print("Relator: ",IMGRelator(M),"\n");
-end);
+        M->CONCAT@(DISPLAYFRMACHINE@(M),
+                "Adding element: ",AddingElement(M),"\n",
+                "Relator: ",IMGRelator(M),"\n"));
 
 BindGlobal("ISTREELIKEPERMUTATIONLIST@", function(S,A)
     local s, t;
@@ -568,14 +849,21 @@ InstallMethod(IsKneadingMachine, "(FR) for an FR machine",
 end);
 
 BindGlobal("PLANAREMBEDDINGMEALYMACHINE@", function(M,justone)
-    local S, aS, result, a, x;
-    # could be made faster, see [BS02a: Bruin & Schleicher, Symbolic Dynamics of quadratic polynomials]
+    local S, aS, result, a, x, perm;
+
     if not IsKneadingMachine(M) then
         return [];
     fi;
     S := M{GeneratorsOfFRMachine(M)};
     aS := Filtered([1..Length(S)],i->not IsOne(S[i]));
     result := [];
+    perm := PermutationsList(aS);
+    
+    # use a spider algorithm to try to guess a good ordering
+    a := SPIDERALGORITHM@(AsGroupFRMachine(M));
+    if a<>fail and a.minimal then
+        Add(perm,a.ordering,1); # put it at front
+    fi;
     for a in PermutationsList(aS) do
         x := List([1..Length(aS)],i->Product(S{a{[i+1..Length(aS)]}},S[1]^0)
                   *Product(S{a{[1..i]}}));
@@ -589,26 +877,17 @@ end);
 
 InstallMethod(IsPlanarKneadingMachine, "(FR) for a Mealy machine",
         [IsMealyMachine],
-        M->not IsEmpty(PLANAREMBEDDINGMEALYMACHINE@(M,true)));
+        M->PLANAREMBEDDINGMEALYMACHINE@(M,true)<>[]);
 
 InstallMethod(AsPolynomialFRMachine, "(FR) for a Mealy machine",
         [IsMealyMachine],
         function(M)
     local a;
     a := PLANAREMBEDDINGMEALYMACHINE@(M,true);
-    if IsEmpty(a) then return fail; fi;
+    if a=[] then return fail; fi;
     M := AsGroupFRMachine(M);
     SetAddingElement(M,FRElement(M,Product(a,x->x^Correspondence(M))));
     return M;
-end);
-
-BindGlobal("REORDERREC@", function(m,perm)
-    # reorder the entries of m=[trans,perm] according to the permutation perm.
-    local i;
-    for i in [1..Length(m[1])] do
-        m[1][i] := Permuted(m[1][i],perm);
-        m[2][i] := ListPerm(PermList(m[2][i])^perm,Length(m[2][i]));
-    od;
 end);
 
 BindGlobal("COMPOSERECURSION@", function(trans,out,pre,post)
@@ -635,96 +914,6 @@ end);
 
 BindGlobal("FJ@",["Fatou","Julia"]);
 
-BindGlobal("LIFTPOLYNOMIAL@", function(M,adder,shift)
-    # applies Thurston's algorithm to the machine M, a (supposedly) polynomial
-    # FR machine.
-    # adder is the position of the adding machine (or fail if there is none)
-    # shift is an integer, or a list, telling how far after the position
-    # of the critical value we shold go to start the cycle.
-    # returns fail if the machine is not polynomial.
-    local a, ap, g, i, j, k, kk, n,
-          cycle, successor, type, start, phi, N;
-    a := GeneratorsOfFRMachine(M);
-    ap := [];
-    successor := [];
-    cycle := [];
-    type := [];
-    n := Length(a);
-    for i in [1..Length(a)] do
-        for k in Cycles(PermList(M!.output[i]),AlphabetOfFRObject(M)) do
-            if (i<>adder and not IsSortedList(k)) or
-               (i=adder and k<>Concatenation([1],[Length(AlphabetOfFRObject(M)),Length(AlphabetOfFRObject(M))-1..2])) then
-                return fail;
-            fi;
-            g := Product(M!.transitions[i]{k});
-            if IsOne(g) then
-                if Length(k)=1 then continue; fi;
-                n := n+1;
-                j := n;
-            else
-                j := Position(a,CyclicallyReducedWord(g));
-                if j=fail or IsBound(ap[j]) then return fail; fi;
-                ap[j] := g;
-            fi;
-            successor[j] := i;
-            cycle[j] := k;
-        od;
-    od;
-    if BoundPositions(ap)<>BoundPositions(a) then return fail; fi;
-    
-    for j in [1..n] do
-        if IsBound(type[j]) then continue; fi;
-        k := j; kk := j;
-        repeat
-            k := successor[k]; kk := successor[successor[kk]];
-        until k=kk;
-        type[j] := FJ@[2]; # by default, is julia
-        repeat
-            k := successor[k];
-            if Length(cycle[k])>1 then type[j] := FJ@[1]; fi;
-        until k=kk;
-    od;
-
-    phi := GroupHomomorphismByImages(M!.free,M!.free,ap,a);
-    if phi=fail then return fail; fi;
-    
-    Info(InfoFR,3,"Change f_i->f\"_i: ",phi);
-    Info(InfoFR,3,"Active element in f\"_i: ",List(M!.transitions[1],x->x^phi),"sigma");
-            
-    start := [];
-    for j in [1..Length(a)] do
-        i := successor[j];
-        start[j] := PositionProperty(cycle[j],k->PositionWord(M!.transitions[i][k]^phi,a[i]^-1)<>fail);
-        if start[j]=fail then start[j] := Length(cycle[j]); fi;
-        if IsList(shift) then
-            start[j] := start[j]+shift[j];
-        else
-            start[j] := start[j]+shift;
-        fi;
-        start[j] := (start[j]-1) mod Length(cycle[j]);
-        ap[j] := ap[j]^Product(M!.transitions[i]{cycle[j]{[1..start[j]]}},One(ap[j]));
-        start[j] := cycle[j][start[j]+1];
-    od;
-    start[adder] := 1; # adder is the only element oriented differently
-    
-    phi := GroupHomomorphismByImages(M!.free,M!.free,a,ap);
-    if phi=fail then return fail; fi;
-    
-    Info(InfoFR,3,"Change f'_i->f_i: ",phi);
-    
-    i := COMPOSERECURSION@(M!.transitions,M!.output,phi,phi);
-    N := FRMachineNC(FamilyObj(M),M!.free,i[1],i[2]);
-    if HasIMGRelator(M) then
-        SetIMGRelator(N,PreImage(phi,IMGRelator(M)));
-    fi;
-    return rec(machine := N,
-               twist := phi,
-               successor := successor,
-               start := start,
-               type := type,
-               cycle := cycle);
-end);
-
 BindGlobal("ADDER@", function(M)
     return Position(GeneratorsOfFRMachine(M),InitialState(AddingElement(M)));
 end);
@@ -737,161 +926,35 @@ BindGlobal("ISADDER@", function(M,w)
            IsConjugate(StateSet(M),w,Product(r[1]{c[1]}));
 end);
 
-BindGlobal("LIFT@", function(M,shift)
-    local lift;
-    lift := LIFTPOLYNOMIAL@(M,ADDER@(M),shift);
-    if lift=fail then return fail; fi;
-    COPYADDER@(lift.machine,M);
-    return lift.machine;
-end);
-
-InstallMethod(Lift, "(FR) for a polynomial FR machine",
-        [IsPolynomialFRMachine],
-        M->LIFT@(M,0));
-
-InstallMethod(Lift, "(FR) for a polynomial FR machine and an integer shift",
-        [IsPolynomialFRMachine,IsInt],
-        function(M,shift) return LIFT@(M,shift); end);
-
-InstallMethod(Lift, "(FR) for a polynomial FR machine and shifts",
-        [IsPolynomialFRMachine,IsHomogeneousList],
-        function(M,shift) return LIFT@(M,shift); end);
-        
-BindGlobal("PERIODICLIFT@", function(lift,adder,maxlen,shift)
-    # find a periodic recursion (= a periodic spider)
-    # returns fail if no period found (some transition gets longer than maxlen
-    # returs an dehn twist isomorphism if there's an obstruction
-    # otherwise, returns a list with the period
-    local l, n, i, j, sublift;
-
-    lift := [lift];
-    n := 1;
-    repeat
-        l := LIFTPOLYNOMIAL@(lift[n].machine,adder,shift);
-        if l=fail then return fail; fi;
-#        l.twist := l.twist*lift[n].twist; #! too slow
-        Add(lift,l);
-        n := n+1;
-        if ForAny(lift[n].machine!.transitions,x->ForAny(x,y->Length(y)>=maxlen)) then
-            return fail;
-        fi;
-    until lift[n].machine=lift[QuoInt(n,2)].machine;
-    
-    i := QuoInt(n,2);
-    for j in DivisorsInt(n-i) do
-        if lift[i].machine=lift[i+j].machine then # keep the period
-#            if lift[i].twist<>lift[i+j].twist then
-#                return lift[i].twist/lift[i+j].twist;
-#            fi;
-            lift := lift{i+[j,j-1..1]};
-            j := Product(lift,l->l.twist);
-            if not IsOne(j) then
-                return rec(obstruction := "Dehn twist", machine := lift[1].machine, twist := j);
-            fi;
-            break;
-        fi;
-    od;
-    return lift;
-end);
-
-BindGlobal("EXTERNALANGLES@", function(M,adder)
-    local machines, l, N, n, lift, fatou, julia, angle, successor,
-          a, b, i, j, k, deg, set, phi;
-    n := 1;
-    N := 2*Length(M!.transitions)*(Maximum(List(Flat(M!.transitions),Length))+1);
-    deg := Length(AlphabetOfFRObject(M));
-    lift := rec(machine := M, twist := IdentityMapping(StateSet(M)));
-    
-    lift := PERIODICLIFT@(lift,adder,N,0);
-    if lift=fail then
-        return rec(obstruction := "Topological");
-    elif IsRecord(lift) then
-        return lift;
-    elif Length(lift)>1 then
-        lift := PERIODICLIFT@(lift[Length(lift)],adder,N,1); # different shift
-    fi;
-    
-    if Length(lift)>1 then
-        Info(InfoFR,3,"code not tested for non-fixed spiders!");
-    fi;
-     
-    fatou := [];
-    julia := [];
-    angle := [];
-    successor := lift[1].successor; # the successor map
-
-    for i in [1..Length(lift[1].cycle)] do
-        a := lift[1].cycle[i]-1;
-        j := successor[i];
-        n := 1;
-        k := 1;
-        N := [];
-        Info(InfoFR,3,"i = ",i," init = ",a);
-        repeat # find preperiod
-            Info(InfoFR,3," pos = ",j," digit = ",lift[n].start[j]-1);
-            a := deg*a + (lift[n].start[j]-1);
-            AddSet(N,[n,j]);
-            n := (n mod Length(lift))+1;
-            j := successor[j];
-            k := k+1;
-        until [n,j] in N;
-        b := 0;
-        l := 0;
-        N := [n,j];
-        repeat # now follow period
-            Info(InfoFR,3," period digit = ",lift[n].start[j]-1);
-            b := deg*b + (lift[n].start[j]-1);
-            n := (n mod Length(lift))+1;
-            j := successor[j];
-            l := l+1;
-        until [n,j] = N;
-        a := (a + b / (deg^l-1)) / deg^k;
-
-        if Length(a)>1 and i<>adder then
-            if lift[1].type[i]=FJ@[1] then Add(fatou,a); else Add(julia,a); fi;
-        fi;
-        if IsBound(lift[1].start[i]) then # only postcritical points
-            Add(angle,TRUNC@(deg*a[1]));
-        fi;
-    od;
-    b := [];
-    for i in Combinations([1..Length(fatou)],2) do
-        if fatou[i[1]]=fatou[i[2]] then Add(b,i); fi;
-    od;
-    for i in Combinations([1..Length(julia)],2) do
-        if julia[i[1]]=julia[i[2]] then Add(b,i); fi;
-    od;
-    if IsEmpty(b) then
-        return rec(degree := deg, fatou := fatou, julia := julia,
-                   angle := angle, twist := lift[1].twist);
-    else
-        return rec(obstruction := "Collisions", pairs := b);
-    fi;
-end);
-
-InstallMethod(ExternalAngles, "(FR) for a polynomial IMG machine",
-        [IsPolynomialFRMachine],
+InstallMethod(SupportingRays, "(FR) for a group FR machine",
+        [IsGroupFRMachine],
         function(M)
     local e;
-    e := EXTERNALANGLES@(M,ADDER@(M));
-    if IsBound(e.obstruction) then
+    e := SPIDERALGORITHM@(M);
+    if e.minimal = false then
         return e;
     fi;
-    return [e.degree,e.fatou,e.julia];
+    return [Length(AlphabetOfFRObject(M)),e.supportingangles[1],e.supportingangles[2]];
 end);
 
-InstallMethod(ExternalAngles, "(FR) for a polynomial IMG machine and a bool",
-        [IsPolynomialFRMachine,IsBool],
-        function(M,b)
-    local e;
-    e := EXTERNALANGLES@(M,ADDER@(M));
-    if IsBound(e.obstruction) then
+InstallMethod(SupportingRays, "(FR) for a group FR machine",
+        [IsPolynomialIMGMachine],
+        function(M)
+    local e, trans, out, nf, newM, i;
+    
+    # first remove all occurrences of the adding element, if possible
+    e := InitialState(AddingElement(M));
+    nf := REMOVEADDER@(StateSet(M),IMGRelator(M),e);
+    trans := List(M!.transitions,r->List(r,nf));
+    i := Position(GeneratorsOfFRMachine(M),e);
+    trans[i] := M!.transitions[i];
+    newM := IMGMachineNC(FamilyObj(M),StateSet(M),trans,M!.output,IMGRelator(M));
+    
+    e := SPIDERALGORITHM@(newM);
+    if e.minimal = false then
         return e;
-    elif b then
-        return e;
-    else
-        return [e.degree,e.fatou,e.julia];
     fi;
+    return [Length(AlphabetOfFRObject(M)),e.supportingangles[1],e.supportingangles[2]];
 end);
 
 InstallMethod(AsPolynomialFRMachine, "(FR) for a group FR machine",
@@ -956,15 +1019,23 @@ end);
 InstallMethod(AsPolynomialIMGMachine, "(FR) for a polynomial machine",
         [IsPolynomialFRMachine],
         function(M)
-    local e, r;
-    
-    e := EXTERNALANGLES@(M,ADDER@(M));    
-    r := ShallowCopy(GeneratorsOfGroup(StateSet(M)));
-    SortParallel(e.angle,r);
-    r := Product(Reversed(r))^e.twist;
-    Assert(0,ISIMGRELATOR@(M,r));
-    SetIMGRelator(M,r);
-    return M;
+    # add one generator for adding element
+    local f, i, n, trans, perm, rel, newM;
+    n := RankOfFreeGroup(StateSet(M));
+    f := FreeGroup(n+1);
+    i := GroupHomomorphismByImages(StateSet(M),f,GeneratorsOfFRMachine(M),GeneratorsOfGroup(f){[1..n]});
+    trans := List(M!.transitions,r->List(r,x->x^i));
+    perm := ShallowCopy(M!.output);
+    newM := WreathRecursion(M)(InitialState(AddingElement(M)));
+    Add(trans,List(newM[1],x->x^i));
+    Add(perm,newM[2]);
+    rel := InitialState(AddingElement(M))^i/GeneratorsOfGroup(f)[n+1];
+    IMGOPTIMIZE@(trans,perm,rel,true);
+    newM := FRMachineNC(FamilyObj(M),f,trans,perm);
+    SetAddingElement(newM,FRElement(newM,n+1));
+    SetIMGRelator(newM,rel);
+    SetCorrespondence(newM,i);
+    return newM;
 end);
 
 InstallMethod(AsPolynomialIMGMachine, "(FR) for a polynomial machine and an img relatorn",
@@ -1010,13 +1081,86 @@ end);
 ##
 #M Normalize polynomial machine
 ##
-BindGlobal("NORMALIZEADDINGMACHINE@", function(model,trans,out,adder,sign)
+BindGlobal("REDUCEINNER@", function(img0,gen,nf)
+    # repeatedly apply conjugation by elements of gen to reduce img, the list
+    # of images of generators under an endomorphism.
+    # nf makes elements in normal form.
+    # modifies img, and returns the conjugating element that was used to reduce;
+    # i.e. after the run, List(img,x->x^elt) = img0
+
+    local cost, oldcost, i, img, oldimg, elt, idle;
+
+    elt := One(img0[1]);
+    oldimg := List(img0,nf);
+    oldcost := Sum(oldimg,Length);
+    gen := Concatenation(gen,List(gen,Inverse));
+    
+    repeat
+        idle := true;
+        for i in gen do
+            img := List(oldimg,x->nf(x^i));
+            cost := Sum(img,Length);
+            if cost < oldcost then
+                oldcost := cost;
+                oldimg := img;
+                elt := elt*i;
+                idle := false;
+                break;
+            fi;
+        od;
+    until idle;
+    for i in [1..Length(oldimg)] do img0[i] := oldimg[i]; od;
+    return elt;
+end);
+
+BindGlobal("MATCHMARKINGS@", function(M,group,recur)
+    # return a homomorphism phi from StateSet(M) to <group> such that:
+    # if g[i]^k lifts to a conjugate h of g[j] for some integer k, then
+    # phi(g[i]^k) = corresponding expression obtained from <recur>.
+    local src, dst, transM, transR, i, c, x, gens, g, h;
+
+    gens := GeneratorsOfGroup(StateSet(M));
+    transM := [One(StateSet(M))];
+    transR := [One(group)];
+    src := [1];
+    dst := Difference(AlphabetOfFRObject(M),src);
+    while dst<>[] do
+        c := Cartesian(src,dst);
+        for i in [1..Length(gens)] do
+            x := First(c,p->Output(M,gens[i])[p[1]]=p[2]);
+            if x<>fail then break; fi;
+        od;
+        transM[x[2]] := Transition(M,gens[i],x[1])^-1*transM[x[1]];
+        transR[x[2]] := recur[1][i][x[1]]^-1*transR[x[1]];
+        Add(src,Remove(dst,Position(dst,x[2])));
+    od;
+
+    src := [];
+    dst := [];
+    for i in [1..Length(gens)] do
+        x := WreathRecursion(M)(gens[i]);
+        Assert(0,recur[2][i]=x[2]);
+        for c in Cycles(PermList(x[2]),AlphabetOfFRObject(M)) do
+            g := Product(x[1]{c})^transM[c[1]];
+            h := Product(recur[1][i]{c})^transR[c[1]];
+            Add(src,g);
+            Add(dst,h);
+        od;
+    od;
+
+    x := GroupHomomorphismByImagesNC(StateSet(M),group,src,dst);
+    dst := List(gens,g->g^x);
+    REDUCEINNER@(dst,GeneratorsOfMonoid(group),x->x);
+
+    return GroupHomomorphismByImagesNC(StateSet(M),group,gens,dst);
+end);
+
+BindGlobal("NORMALIZEADDINGMACHINE@", function(model,trans,out,adder)
     # conjugate the recursion so that element adder, which is checked to
-    # be an adding machine, becomes of the form t=(1,...,t)s or
-    # (t,...,1)s^-1, where s is the cycle i|->i+1 mod d.
+    # be an adding machine, becomes of the form (t,...,1)s,
+    # where s is the cycle i|->i-1 mod d.
     # adder is the position of the adding element.
     # model is the ambient fundamental group.
-    # sign is +1 in first case and -1 in second.
     local cycle, deg, perm, x, i, j, basis;
     
     deg := Length(trans[1]);
@@ -1025,17 +1169,13 @@ BindGlobal("NORMALIZEADDINGMACHINE@", function(model,trans,out,adder,sign)
         Error("Element #",adder," is not an adding element");
     od;
     
-    if sign=1 then
-        perm := PermList(Concatenation([2..deg],[1]));
-    elif sign=-1 then
-        perm := PermList(Concatenation([deg],[1..deg-1]));
-    fi;
+    perm := PermList(Concatenation([deg],[1..deg-1]));
     perm := RepresentativeAction(SymmetricGroup(deg),PermList(out[adder]),perm);
     REORDERREC@([trans,out],perm);
 
     basis := [];
     x := One(model);
-    for i in (sign)*[1..deg]+(1-sign)*(deg+1)/2 do
+    for i in [deg,deg-1..1] do
         basis[i] := x;
         x := x*trans[adder][i];
     od;
@@ -1056,7 +1196,7 @@ InstallMethod(NormalizedPolynomialFRMachine, "(FR) for a polynomial FR machine",
     out := List(M!.output,ShallowCopy);
     adder := Position(GeneratorsOfFRMachine(M),InitialState(AddingElement(M)));
     if adder=fail then return fail; fi;
-    NORMALIZEADDINGMACHINE@(M!.free,trans,out,adder,-1);
+    NORMALIZEADDINGMACHINE@(M!.free,trans,out,adder);
     N := FRMachineNC(FamilyObj(M),M!.free,trans,out);
     COPYADDER@(N,M);
     return N;
@@ -1075,8 +1215,39 @@ end);
 InstallMethod(NormalizedPolynomialIMGMachine, "(FR) for a polynomial IMG machine",
         [IsPolynomialFRMachine],
         M->NormalizedPolynomialFRMachine(AsIMGMachine(M)));
+
+InstallMethod(SimplifiedIMGMachine, "(FR) for a polynomial IMG machine",
+        [IsPolynomialIMGMachine],
+        function(M)
+    local r, i, x;
+    r := SPIDERALGORITHM@(M);
+    if r<>fail and r.minimal then
+        SetCorrespondence(r.machine,r.transformation);
+        x := IMGRelator(M);
+        for i in r.transformation do x := x^i; od;
+        SetIMGRelator(r.machine,x);
+        return r.machine;
+    fi;
+    return M;
+end);
+
+InstallMethod(SimplifiedIMGMachine, "(FR) for an IMG machine",
+        [IsIMGMachine],
+        function(M)
+    local N;
+    Info(InfoFR,2,"Simplification not yet implemented for general IMG machines");
+    N := COPYFRMACHINE@(M);
+    SetIMGRelator(N,IMGRelator(M));
+    if HasAddingElement(M) then
+        SetAddingElement(N,FRElement(N,InitialState(AddingElement(M))));
+    fi;
+    SetCorrespondence(N,[]);
+    return N;
+end);
 #############################################################################
 
+ReadPackage("fr", "gap/triangulations.g");
+  
 #############################################################################
 ##
 #M PolynomialMealyMachine
@@ -1170,13 +1341,13 @@ BindGlobal("POLYNOMIALMACHINE@", function(d,F,J,machtype,inner,formal)
         od;
         q := p;
         t := false;
-        repeat # search for a critical point on limit cycle
+        repeat
             p := [TRUNC@(d*p[1]),p[2]];
-            t := t or (p in V);
+            t := t or (p in V); # check if there's a critical point on cycle
         until q=p;
-#        while (p[2]="Fatou") <> t do # this can in fact happen, see example 7
-#            Error("critical value ",i[1]," should not be in the ",p[2]," set");
-#        od;
+        while (p[2]=FJ@[1] and not t) or (p[2]=FJ@[2] and t and d=2) do
+            Error("critical value ",i[1]," should not be in the ",p[2]," set");
+        od;
     od;
     Sort(pcp,function(x,y)
         return x[1]<y[1] or (x[1]=y[1] and x[2]=FJ@[2] and y[2]=FJ@[1]);
@@ -1193,9 +1364,9 @@ BindGlobal("POLYNOMIALMACHINE@", function(d,F,J,machtype,inner,formal)
     od;
     
     
-    if Sum(C,x->Length(x[1])-1)<>d-1 then
+    while Sum(C,x->Length(x[1])-1)<>d-1 do
         Error("F and J describe a map of wrong degree");
-    fi;
+    od;
     
     part := part{List([0..d-1]/d,x->KM$INPART@(part,x))};
 
@@ -1261,18 +1432,19 @@ BindGlobal("POLYNOMIALMACHINE@", function(d,F,J,machtype,inner,formal)
         Add(out,[1..d]);
         machine := MealyMachine(trans,out);
         SetCorrespondence(machine,pcp);
-        SetAddingElement(machine,Product(g,i->FRElement(machine,i)));
+        #!!! Product(Reversed(g)) should be faster, but buggy in 4.dev
+        SetAddingElement(machine,Product(Reversed(g),i->FRElement(machine,i)));
     elif machtype=2 then
         machine := FRMachine(f,trans,out);
         SetCorrespondence(machine,pcp);
-        SetAddingElement(machine,FRElement(machine,Product(g)));
+        SetAddingElement(machine,FRElement(machine,Reversed(Product(g))));
     elif machtype=3 then
         t := [g[Length(g)]];
         Append(t,List([1..d-1],i->one));
         Add(trans,t);
         Add(out,Concatenation([d],[1..d-1]));
         machine := FRMachine(f,trans,out);
-        SetIMGRelator(machine,Product(Reversed(g)));
+        SetIMGRelator(machine,Reversed(Product(g)));
         SetAddingElement(machine,FRElement(machine,g[Length(g)]));
         SetCorrespondence(machine,pcp);
     fi;
@@ -1347,16 +1519,58 @@ InstallMethod(PolynomialIMGMachine, "(FR) for a degree, Fatou and Julia preangle
     return POLYNOMIALMACHINE@(n,F,J,3,false,formal);
 end);
 
+BindGlobal("FATOUANGLES@", function(n,A)
+    return Filtered(A,x->Gcd(DenominatorRat(x),n)=1);
+end);
+BindGlobal("JULIAANGLES@", function(n,A)
+    return Filtered(A,x->Gcd(DenominatorRat(x),n)<>1);
+end);
+
+InstallMethod(PolynomialMealyMachine, "(FR) for a degree and preangles",
+        [IsPosInt,IsList],
+        function(n,A)
+    return PolynomialMealyMachine(n,FATOUANGLES@(n,A),JULIAANGLES@(n,A));
+end);
+
+InstallMethod(PolynomialFRMachine, "(FR) for a degree and preangles",
+        [IsPosInt,IsList],
+        function(n,A)
+    return PolynomialFRMachine(n,FATOUANGLES@(n,A),JULIAANGLES@(n,A));
+end);
+
+InstallMethod(PolynomialIMGMachine, "(FR) for a degree and preangles",
+        [IsPosInt,IsList],
+        function(n,A)
+    return PolynomialIMGMachine(n,FATOUANGLES@(n,A),JULIAANGLES@(n,A));
+end);
+
+InstallMethod(PolynomialIMGMachine, "(FR) for a degree, preangles, and formal",
+        [IsPosInt,IsList,IsBool],
+        function(n,A,formal)
+    return PolynomialIMGMachine(n,FATOUANGLES@(n,A),JULIAANGLES@(n,A),formal);
+end);
+
 BindGlobal("MATING@", function(machines,adders,formal)
-    local w, i, j, states, gen, sgen, sum, f, c, trans, out;
+    local w, i, j, k, states, gen, sgen, sum, f, c, trans, out, deg;
     
     if not formal then
-        Error("Non-formal matings are not yet implemented");
+        Error("Non-formal matings are not yet implemented. Complain to laurent.bartholdi@gmail.com");
     fi;
-
+    
+    deg := List(machines,m->Length(AlphabetOfFRObject(m)));
+    while deg[1]<>deg[2] do
+        Error("In a mating, the machines must have same degree, not ",deg);
+    od;
+    deg := deg[1];
+           
     w := List(machines,m->CyclicallyReducedWord(IMGRelator(m)));
     for i in [1..2] do
         j := PositionWord(w[i],adders[i]);
+        if j=fail then
+            Assert(0,false); # this should not happen, adders are normalized
+            w[i] := w[i]^-1;
+            j := PositionWord(w[i],adders[i]);
+        fi;
         if j=fail then
             Error("Cannot find adding machine in ",machines[i]);
         fi;
@@ -1391,18 +1605,16 @@ BindGlobal("MATING@", function(machines,adders,formal)
         Add(sgen[i],fail,c[i]);
         w[i] := MappedWord(w[i],GeneratorsOfGroup(states[i]),sgen[i]);
         sgen[i][c[i]] := w[i]^-1;
-    od;
-    j := [];
-    for i in [1..2] do
         trans := List(machines[i]!.transitions,ShallowCopy);
         out := List(machines[i]!.output,ShallowCopy);
-        NORMALIZEADDINGMACHINE@(StateSet(machines[i]),trans,out,c[i],2*i-3);
-        Add(j,FRMachineNC(FamilyObj(machines[i]),StateSet(machines[i]),trans,out));
+        NORMALIZEADDINGMACHINE@(StateSet(machines[i]),trans,out,c[i]);
+        if i=2 then
+            FLIPSPIDER@([trans,out],GeneratorsOfGroup(states[i])[c[i]]);
+        fi;
+        machines[i] := FRMachineNC(FamilyObj(machines[i]),StateSet(machines[i]),trans,out);
+        c[i] := GroupHomomorphismByImagesNC(states[i],f,GeneratorsOfGroup(states[i]),sgen[i]);
     od;
-    machines := j;
     
-    c := List([1..2],i->GroupHomomorphismByImagesNC(states[i],f,
-                 GeneratorsOfGroup(states[i]),sgen[i]));
     trans := [];
     out := [];
     for i in [1..2] do
@@ -1420,1854 +1632,232 @@ end);
 InstallMethod(Mating, "(FR) for two polynomial IMG machines",
         [IsPolynomialFRMachine,IsPolynomialFRMachine],
         function(M1,M2)
-    return MATING@([M1,M2],[InitialState(AddingElement(M1)),InitialState(AddingElement(M2))],true);
+    return Mating(M1,M2,true);
 end);
 
 InstallMethod(Mating, "(FR) for two polynomial IMG machines and a boolean",
         [IsPolynomialFRMachine,IsPolynomialFRMachine,IsBool],
         function(M1,M2,formal)
-    return MATING@([M1,M2],[InitialState(AddingElement(M1)),InitialState(AddingElement(M2))],formal);
+    local i, inj, M;
+    M := [M1,M2];
+    inj := [];
+    for i in [1..2] do
+        if IsIMGMachine(M[i]) then
+            inj[i] := IdentityMapping(StateSet(M[i]));
+        else
+            M[i] := AsPolynomialIMGMachine(M[i]);
+            inj[i] := Correspondence(M[i]);
+        fi;
+    od;
+    M := MATING@(M,List(M,x->InitialState(AddingElement(x))),formal);
+    M!.Correspondence := List([1..2],i->inj[i]*Correspondence(M)[i]);
+    return M;
 end);
 #############################################################################
 
-##############################################################################
+#############################################################################
 ##
-#M  triangulations
+#F Automorphisms of machines and virtual endomorphisms
 ##
-BindGlobal("EPS@", rec(
-        mesh := MacFloat(2*10^-1), # refine triangulation if points are that close
-        prec := MacFloat(10^-6), # points that far apart are considered equal
-        obst := MacFloat(10^-1), # points that far apart are suspected to form
-                                 # an obstruction
-        juliaiter := 1000,       # maximum depth in iteration
-        fast := MacFloat(10^-1), # if spider moved that little, just wiggle it
-        ratprec := MacFloat(10^-10), # quality to achieve in rational fct.
-        fail := fail));
-
-BindGlobal("POSITIONID@", function(l,x)
-    return PositionProperty(l,y->IsIdenticalObj(x,y));
-end);
-
-BindGlobal("INID@", function(x,l)
-    return ForAny(l,y->IsIdenticalObj(x,y));
-end);
-
-BindGlobal("MACFLOAT_1mEPS@", MacFloat(1-10^-8));
-BindGlobal("SPHEREDIST@", function(u,v)
-    local d;
-    d := u*v;
-    if d<=-MACFLOAT_1 then
-        return MACFLOAT_PI;
-    elif d>=MACFLOAT_1mEPS@ then
-        return Sqrt((u-v)^2); # less roundoff error this way
-    else
-        return ACOS_MACFLOAT(d);
-    fi;
-end);
-
-BindGlobal("ISCLOSE@", function(x,y)
-    return SPHEREDIST@(x,y)<EPS@.prec;
-end);
-
-InstallMethod(ViewObj, "(FR) for a triangulation",
-        [IsSphereTriangulation],
-        function(t)
-    Print("<triangulation with ",Length(t!.v)," vertices, ",Length(t!.e), " edges and ",Length(t!.f)," faces>");
-end);
-
-InstallMethod(PrintObj, "(FR) for a triangulation",
-        [IsSphereTriangulation],
-        ViewObj);
-
-BindGlobal("STRINGCOORD@", function(l)
-    local f, s;
-    s := ""; f := OutputTextString(s,false);
-    PrintTo(f,"(",l[1],",",l[2],",",l[3],")");
-    return s;
-end);
-
-InstallMethod(Display, "(FR) for a triangulation",
-        [IsSphereTriangulation],
-        function(t)
-    local i, j;
-    Print("   vertex | position                       | neighbours\n");
-    Print("----------+--------------------------------+-------------\n");
-    for i in t!.v do
-        Print(String(Concatenation("Vertex ",String(i.index)),9)," | ",String(STRINGCOORD@(i.pos),-30)," |");
-        for j in i.n do Print(" ",j.index); od;
-        Print("\n");
-    od;
-    Print("----------+--------------------------------+-------------\n");
-    Print("     edge | position                       |frm to lt rt\n");
-    Print("----------+--------------------------------+-------------\n");
-    for i in t!.e do
-        Print(String(Concatenation("Edge ",String(i.index)),9)," | ",String(STRINGCOORD@(i.pos),-30)," |");
-        for j in [i.from,i.to,i.left,i.right] do Print(String(j.index,3)); od;
-        Print("\n");
-    od;
-    Print("----------+--------------------------------+----------v-----------\n");
-    Print("     face | position                       | radius   | neighbours\n");
-    Print("----------+--------------------------------+----------+-----------\n");
-    for i in t!.f do
-        Print(String(Concatenation("Face ",String(i.index)),9)," | ",String(STRINGCOORD@(i.pos),-30)," | ",String(i.radius,-5)," |");
-        for j in i.n do Print(" ",j.index); od;
-        Print("\n");
-    od;
-    Print("----------+--------------------------------+----------+-----------\n");
-end);
-
-InstallMethod(DelaunayTriangulation, "(FR) for a list of points",
-        [IsList],
-        function(points)
-    local t, d, e, f, i, j, k, n;
-
-    while not (IsList(points) and ForAll(points,l->IsList(l) and ForAll(l,IsMacFloat))) do
-        Error("DelaunayTriangution: argument should be a list of points on the sphere");
-    od;
-    n := Length(points);
-    while n<2 do
-        Error("DelaunayTriangution: need at least 2 points");
-    od;
-    t := rec(v := List([1..n],i->rec(pos := points[i], n := [])),
-             e := [],
-             f := []);
-
-    d := DELAUNAY_TRIANGULATION(EPS@.mesh,true,points);
-
-    while IsInt(d) do
-        i := RoundCyc(d/100);
-        j := d-100*i;
-        Error("A FORTRAN error ",j," occurred in ",ELM_LIST(["fr_dll","trmesh_","crlist_","addnod_"],i+1));
-    od;
-
-    for i in d[4] do
-        Add(t.v, rec(pos := i, n := [], fake := true));
-    od;
-
-    for i in [1..Length(d[3])] do
-        j := d[3][i];
-        repeat
-            j := d[2][j];
-            t.e[j] := rec(pos := SphereProject(t.v[i].pos+t.v[d[1][j]].pos),
-                          from := t.v[i], to := t.v[d[1][j]]);
-            Add(t.v[i].n, t.e[j]);
-        until j=d[3][i];
-    od;
-    for i in t.e do
-        i.reverse := First(i.to.n,e->IsIdenticalObj(e.to,i.from));
-    od;
-
-    for i in [1..Length(d[7])] do
-        f := rec(radius := d[8][i], n := []);
-        for j in [1..3] do
-            k := PositionProperty([1..Length(d[6])],k->d[6][k]=i and (j=1 or IsIdenticalObj(f.n[j-1].to,t.e[k].from)));
-            Add(f.n, t.e[k]);
-        od;
-        f.pos := SphereProject(Sum(f.n,x->x.to.pos));
-        # we could use the circumcenter d[7][i], but it's not guaranteed
-        # to be in the circle; so we use the center of mass
-        Add(t.f, f);
-    od;
-
-    for i in t.f do
-        for j in i.n do
-            j.left := i;
-            j.reverse.right := i;
-        od;
-    od;
-
-    t.mesh := d[10];
-
-    for i in [1..Length(t.v)] do t.v[i].index := i; od;
-    for i in [1..Length(t.e)] do t.e[i].index := i; od;
-    for i in [1..Length(t.f)] do t.f[i].index := i; od;
-
-    # prevent from printing whole recursive structure
-    for i in t.v do
-        i.operations := rec(ViewObj := function(x)
-            Print("<vertex ",x.index,">"); end, PrintObj := ~.ViewObj);
-    od;
-    for i in t.e do
-        i.operations := rec(ViewObj := function(x)
-            Print("<edge ",x.index,">"); end, PrintObj := ~.ViewObj);
-    od;
-    for i in t.f do
-        i.operations := rec(ViewObj := function(x)
-            Print("<face ",x.index,">"); end, PrintObj := ~.ViewObj);
-    od;
-
-    return Objectify(TYPE_TRIANGULATION, t);
-end);
-
-BindGlobal("WIGGLETRIANGULATION@", function(t,points)
-    # move positions in t so vertices match <points>
-    local r, i, j;
-    r := rec(v := StructuralCopy(t!.v),
-             e := [],
-             f := [],
-             wiggled := MACFLOAT_0);
-    for i in [1..Length(r.v)] do
-        if not IsBound(r.v[i].fake) then
-            r.wiggled := r.wiggled + SPHEREDIST@(r.v[i].pos, points[i]);
-            r.v[i].pos := points[i];
-        fi;
-        for j in r.v[i].n do r.e[j.index] := j; od;
-    od;
-    for i in r.e do
-        r.f[i.left.index] := i.left;
-        i.pos := SphereProject(i.from.pos+i.to.pos);
-    od;
-    for i in r.f do
-        i.pos := SphereProject(Sum(i.n,e->e.to.pos));
-    od;
-    return Objectify(TYPE_TRIANGULATION, r);
-end);
-
-BindGlobal("ISVERTEX@", r->IsBound(r.n) and not IsBound(r.radius));
-BindGlobal("ISEDGE@", r->IsBound(r.to));
-BindGlobal("ISFACE@", r->IsBound(r.radius));
-
-BindGlobal("LOCATE@", function(t,seed,p)
-    local vertex, coord, i, v, f;
-
-    vertex := DELAUNAY_FIND(t!.mesh, seed, p);
-    coord := vertex[2]/Sqrt(vertex[2]^2);
-    vertex := vertex[1];
+BindGlobal("PUREMCG@", function(arg)
+    local r, i, j, m, ni, nj, gens, img, aut, relator, G, maker;
     
-    while vertex[3]=0 do
-        Error("ClosestFaceInTriangulation: point should always be in convex hull");
-    od;
-
-    v := t!.v[vertex[2]];
-    f := First(t!.v[vertex[1]].n,e->IsIdenticalObj(e.to,v)).left;
-    i := Filtered([1..3],i->coord[i]<EPS@.prec);
-    if IsEmpty(i) then # not on edge
-        return f;
-    elif Size(i)=2 then # at a vertex
-        return t!.v[vertex[Difference([1..3],i)[1]]];
+    if Length(arg)=1 and IsFpGroup(arg[1]) then
+        G := arg[1];
+        relator := RelatorsOfFpGroup(G)[1];
+        maker := w->ElementOfFpGroup(FamilyObj(One(G)),w);
+    elif Length(arg)=2 and IsFreeGroup(arg[1]) and arg[2] in arg[1] then
+        G := arg[1];
+        relator := arg[2];
+        maker := w->w;
     else
-        v := t!.v[vertex[i[1]]];
-        return First(f.n,e->not INID@(v,[e.from,e.to]));
+        Error("PUREMCG@fr: requires a fp group or a free group and a relator");
     fi;
-end);
-
-BindGlobal("CLOSESTFACES@", function(x)
-    if ISFACE@(x) then
-        return [x];
-    elif ISEDGE@(x) then
-        return [x.left,x.right];
-    else
-        return List(x.n,x->x.to.left);
-    fi;
-end);
-
-BindGlobal("CLOSESTVERTICES@", function(x)
-    if ISFACE@(x) then
-        return List(x.n,x->x.to);
-    elif ISEDGE@(x) then
-        return [x.to,x.from];
-    else
-        return [x];
-    fi;
-end);
-
-InstallMethod(LocateInTriangulation, "(FR) for a triangulation and point",
-        [IsSphereTriangulation, IsList],
-        function(t,p)
-    return LOCATE@(t,1,p);
-end);
-
-InstallMethod(LocateInTriangulation, "(FR) for a triangulation, integer seed and point",
-        [IsSphereTriangulation, IsInt, IsList],
-        function(t,s,p)
-    return LOCATE@(t,s,p);
-end);
-
-InstallMethod(LocateInTriangulation, "(FR) for a triangulation, face/edge/vertex and point",
-        [IsSphereTriangulation, IsRecord, IsList],
-        function(t,s,p)
-    if ISFACE@(s) then
-        return LOCATE@(t,s.n[1].to.index,p);
-    elif ISEDGE@(s) then
-        return LOCATE@(t,s.to.index,p);
-    else
-        return LOCATE@(t,s.index,p);
-    fi;
-end);
-
-BindGlobal("INTERPOLATE_ARC@", function(l)
-    # interpolate along points of l
-    local r, i, p;
-    r := ShallowCopy(l);
-    i := 1;
-    while i<Length(r) do
-        if SPHEREDIST@(r[i],r[i+1])>MACFLOAT_PI/12 then
-            Add(r,SphereProject(r[i]+r[i+1]),i+1);
-        else
-            i := i+1;
-        fi;
-    od;
-    return r;
-end);
-
-BindGlobal("PRINTPT@", function(f,p,s)
-    PrintTo(f, p[1], " ", p[2], " ", p[3], s, "\n");
-end);
-
-BindGlobal("PRINTARC@", function(f,a,col,sep)
-    local j;
-    a := INTERPOLATE_ARC@(a);
-    PrintTo(f, "ARC ",Length(a)," ",String(col[1])," ",String(col[2])," ",String(col[3]),"\n");
-    for j in a do
-        PRINTPT@(f, j*sep, "");
-    od;
-end);
-
-InstallMethod(Draw, "(FR) for a triangulation",
-        [IsSphereTriangulation],
-        function(t)
-    local i, s, f;
-    s := ""; f := OutputTextString(s, false);
-
-    PrintTo(f, "POINTS ",Length(t!.v)+Length(t!.f),"\n");
-    for i in t!.v do
-        if IsBound(i.fake) then
-            PRINTPT@(f, i.pos, " 1.0");
-        else
-            PRINTPT@(f, i.pos, " 4.0");
-        fi;
-    od;
-    for i in t!.f do PRINTPT@(f, i.pos, " 2.0"); od;
-
-    PrintTo(f, "ARCS ", 2*Length(t!.e),"\n");
-    for i in t!.e do
-        PRINTARC@(f, [i.from.pos,i.pos,i.to.pos], [255,0,255], MACFLOAT_1);
-        PRINTARC@(f, [i.left.pos,i.pos,i.right.pos], [0,255,255], MACFLOAT_1);
-    od;
-    Info(InfoFR,3,"calling javaplot with:\n",s);
-    JAVAPLOT@(InputTextString(s));
-end);
-##############################################################################
-
-##############################################################################
-##
-#M  Spiders
-##
-InstallMethod(ViewObj, "(FR) for a point in Teichmuller space",
-        [IsSpider],
-        function(s)
-    Print("<spider on ",s!.cut," marked by ",s!.marking,">");
-end);
-
-InstallMethod(PrintObj, "(FR) for a point in Teichmuller space",
-        [IsSpider],
-        ViewObj);
-
-InstallMethod(Display, "(FR) for a point in Teichmuller space",
-        [IsSpider],
-        function(s)
-    Display(s!.cut);
-    Print("Spanning tree on edges ",List(s!.treeedge,r->r.index)," costing ",s!.treecost,"\n");
-    Print("Marking ",s!.marking,"\n");
-end);
-
-InstallMethod(Draw, "(FR) for a point in Teichmuller space",
-        [IsSpider],
-        function(spider)
-    local a, i, j, k, s, f, t, points, arcs;
-    s := ""; f := OutputTextString(s, false);
-    t := spider!.cut;
-    if IsBound(spider!.points) then
-        points := spider!.points;
-    else
-        points := [];
-    fi;
-    if IsBound(spider!.arcs) then
-        arcs := spider!.arcs;
-    else
-        arcs := [];
-    fi;
-    PrintTo(f, "POINTS ",Length(t!.v)+Length(t!.f)+Length(points),"\n");
-    for i in t!.v do
-        if IsBound(i.fake) then
-            PRINTPT@(f, i.pos, " 1.0");
-        else
-            PRINTPT@(f, i.pos, " 4.0");
-        fi;
-    od;
-    for i in t!.f do PRINTPT@(f, i.pos, " 2.0"); od;
-    for i in points do PRINTPT@(f, i, " 0.5"); od;
-
-    PrintTo(f, "ARCS ", Length(t!.e)+Length(arcs),"\n");
-    for i in t!.e do
-        if i.from.index>i.to.index then # print only in 1 direction
-            continue;
-        fi;
-        j := [128,64,64];
-        k := [64,128,64];
-        if spider!.intree[i.index] and (INID@(i,spider!.treeedge) or INID@(i.reverse,spider!.treeedge) or not (IsBound(i.from.fake) or IsBound(i.to.fake))) then
-            j := [255,64,64];
-        else
-            k := [64,255,64];
-        fi;
-        PRINTARC@(f, [i.from.pos,i.pos,i.to.pos], j, MacFloat(101/100));
-        PRINTARC@(f, [i.left.pos,i.pos,i.right.pos], k, MacFloat(102/100));
-    od;
-    for a in arcs do PRINTARC@(f, a[3], a[1], a[2]); od;
-
-    Info(InfoFR,3,"calling javaplot with:\n",s);
-    JAVAPLOT@(InputTextString(s));
-end);
-
-BindGlobal("TRIVIALSPIDER@", function(points)
-    # constructs a spider with identity marking on <points>
-    local r, f, edges, tree, i, ii, j, n, gens;
-    n := Length(points);
-    f := FreeGroup(n-1);
-    gens := GeneratorsOfGroup(f);
-    r := rec(model := f,                            # marking group
-             cut := DelaunayTriangulation(points),  # triangulation
-             group := f,                            # group on spanning tree
-             marking := IdentityMapping(f),         # isomorphism between them
-             intree := [],                          # if an edge is in the tree
-             treeelt := [],                         # group element on edge
-             treeedge := []);                       # list of edges in tree
-
-    # construct a spanning tree
-    edges := [];
-    for i in r!.cut!.e do
-        j := [i.from.index,i.to.index];
-        # force edges to fake vertices, or to infinity, to be more expensive,
-        # so they will be leaves in the tree
-        if IsBound(i.from.fake) or IsBound(i.to.fake) then
-            Add(j,MACFLOAT_2PI*Number([i.from,i.to],x->IsBound(x.fake)));
-        else
-            Add(j,SPHEREDIST@(i.from.pos,i.to.pos));
-        fi;
-        Add(edges,j);
-        Add(r.intree,false);
-    od;
-    tree := ARC_MIN_SPAN_TREE(Length(r!.cut!.v),edges);
-    r.treecost := Remove(tree);
-
-    j := 1;
-    for i in [1..Length(edges)] do
-        if edges[i]{[1,2]} in tree then
-            ii := r.cut!.e[i].reverse.index;
-            r.intree[i] := true;
-            r.intree[ii] := true;
-            if edges[i][3]<MACFLOAT_PI then     # usual edge
-                r.treeelt[i] := gens[j];
-                r.treeelt[ii] := gens[j]^-1;
-                r.treeedge[j] := r.cut!.e[i];
-                j := j+1;
-            elif edges[i][3]<MACFLOAT_2PI then # edge to infinity
-                if r.cut!.e[i].to.index=n then
-                    r.treeelt[i] := gens[n-1];
-                    r.treeelt[ii] := gens[n-1]^-1;
-                    r.treeedge[n-1] := r.cut!.e[i];
-                else
-                    r.treeelt[i] := gens[n-1]^-1;
-                    r.treeelt[ii] := gens[n-1];
-                    r.treeedge[n-1] := r.cut!.e[ii];
-                fi;
-            fi;
-        fi;
-    od;
-
-    if BoundPositions(r.treeedge)<>[1..n-1] then # two opposite clusters
-        # we must take an edge from one of the clusters to a fake point;
-        # since we only use the .left, .right and .pos fields of edges
-        # in r.treeedge, we shouldn't worry that the edge we take doesn't
-        # actually form a tree
-        for i in [n+1..n+3] do
-            ii := Filtered(tree,e->e[1]=i or e[2]=i);
-            if Length(ii)=2 then
-                n := Intersection(ii)[1];
-                ii := Difference(Union(ii),[n]); # so edges ii[1]--n--ii[2]
-                break;
-            fi;
+    gens := GeneratorsOfGroup(G);
+        
+    aut := [];
+    for ni in [1..Length(relator)] do
+        for nj in [ni+1..Length(relator)] do
+            m := maker(Subword(relator,ni+1,nj-1));
+            i := LetterRepAssocWord(relator)[ni];
+            j := LetterRepAssocWord(relator)[nj];
+            img := ShallowCopy(gens);
+            img[i] := gens[i]^(m*gens[j]/m);
+            img[j] := gens[j]^(m^-1*gens[i]*m*gens[j]);
+            Add(aut,GroupHomomorphismByImages(G,G,gens,img));
         od;
-        r.treeedge[j] := First(r.cut!.v[ii[1]].n,e->e.to.index=n);
-
-        for i in [Position(edges,[ii[1],n,MACFLOAT_2PI]),
-                Position(edges,[n,ii[2],MACFLOAT_2PI])] do
-            ii := r.cut!.e[i].reverse.index;
-            r.intree[i] := true;
-            r.intree[ii] := true;
-            r.treeelt[i] := gens[j];
-            r.treeelt[ii] := gens[j]^-1;
-        od;
-    fi;
-
-    return Objectify(TYPE_SPIDER,r);
-end);
-
-BindGlobal("WIGGLESPIDER@", function(spider,points)
-    # move vertices of spider to <points>
-    local r;
-    r := rec(model := spider!.model,
-             cut := WIGGLETRIANGULATION@(spider!.cut,points),
-             group := spider!.group,
-             marking := spider!.marking,
-             treecost := spider!.treecost,
-             intree := spider!.intree,
-             treeelt := spider!.treeelt);
-    r.treeedge := r.cut!.e{List(spider!.treeedge,e->e.index)};
-    if IsBound(spider!.ordering) then
-        r.ordering := spider!.ordering;
-    fi;
-
-    return Objectify(TYPE_SPIDER,r);
-end);
-
-InstallMethod(TREEBOUNDARY@, [IsSpider],
-        function(spider)
-    # return a list of edges traversed when one surrounds the tree with
-    # it on our left. visit vertex n first.
-    local i, e, edges, n;
-
-    n := Length(VERTICES@(spider));
-    e := First(spider!.cut!.e,e->spider!.intree[e.index] and e.from.index=n);
-    edges := [];
-    repeat
-        Add(edges,e);
-        i := POSITIONID@(e.to.n,e.reverse);
-        repeat
-            i := i+1;
-            if i>Length(e.to.n) then i := 1; fi;
-        until spider!.intree[e.to.n[i].index];
-        e := e.to.n[i];
-    until IsIdenticalObj(e,edges[1]);
-    return edges;
-end);
-
-BindGlobal("IMGMARKING@", function(spider,model)
-    # changes the marking group so that it's generated by lollipops
-    # around punctures.
-    # if ordering<>fail, then the product of the lollipops, in that order,
-    # must be trivial.
-    local e, image, ordering;
-
-    spider!.model := model;
-    ordering := [];
-    image := [];
-
-    for e in TREEBOUNDARY@(spider) do
-        if not IsBound(e.from.fake) then
-            if not IsBound(image[e.from.index]) then
-                image[e.from.index] := One(spider!.group);
-                Add(ordering,e.from.index);
-            fi;
-            if IsBound(spider!.treeelt[e.index]) then
-                image[e.from.index] := image[e.from.index] / spider!.treeelt[e.index];
-            fi;
-        fi;
     od;
-    while ordering[1]<>Length(ordering) do # force ordering[n]=n
-        Add(ordering,Remove(ordering,1));
-    od;
-    spider!.ordering := Reversed(ordering);
-    spider!.marking := GroupHomomorphismByImagesNC(model,spider!.group,GeneratorsOfGroup(model),image{[1..Length(GeneratorsOfGroup(model))]});
+    if Length(gens)=2 then Add(aut,InnerAutomorphism(G,gens[1])); fi;
+    return Group(aut);
 end);
-##############################################################################
 
-##############################################################################
-##
-#M  Function to IMG
-##
-BindGlobal("JULIASET@", function(cachesize,f)
-    local i, j, m, n, p, q, prejulia, julia, cache, critexp, deg, df, fp,
-          JULIAITER;
-
-    deg := DegreeOfRationalFunction(f);
-    df := Derivative(f);
-    fp := ComplexRootsOfUnivariatePolynomial(NumeratorOfRationalFunction(f)
-                  -IndeterminateOfUnivariateRationalFunction(f)*
-                  DenominatorOfRationalFunction(f)); # fixed points
-    SortParallel(List(fp,x->Norm(Value(Derivative(f),x))),fp);
-    fp := fp[Length(fp)]; # the one with largest derivative
-
-    JULIAITER := function(p,d,iter)
-        local i, j, k;
-
-        if p=P1infinity then
-            k := COMPLEX_0;
-            i := 2;
-        elif Norm(Complex(p))>MACFLOAT_1 then
-            k := COMPLEX_1/Complex(p);
-            i := 2;
-        else
-            k := Complex(p);
-            i := 1;
-        fi;
-        j := Int(1+(cachesize-EPS@.prec)*(RealPart(k)+1)/2);
-        k := Int(1+(cachesize-EPS@.prec)*(ImaginaryPart(k)+1)/2);
-        if cache[i][j][k] then
-            return;
-        fi;
-        Add(julia,SphereP1(p));
-        cache[i][j][k] := true;
-        if d<0 and iter<EPS@.juliaiter then
-            for p in P1PreImages(f,p) do
-                JULIAITER(p,d+LOG_MACFLOAT(AbsoluteValue(Value(df,Complex(p))))-critexp,iter+1);
-            od;
-        fi;
+InstallMethod(AutomorphismVirtualEndomorphism, "(FR) for a virtual endo",
+        [IsGroupHomomorphism],
+        function(vendo)
+    # given a virtual endomorphism h->g, constructs the induced
+    # virtual endomorphism on aut(g)
+    local g, h, freeg, freeh, isog, isoh, embedding, v, vinverse,
+          mcg, mch, freemcg, cch, restricth, mcv, mcvimg, act;
+    
+    g := Range(vendo);
+    h := Source(vendo);
+    isog := IsomorphismSimplifiedFpGroup(g);
+    isog := isog*GroupHomomorphismByImages(Range(isog),FreeGroupOfFpGroup(Range(isog)));
+    isoh := IsomorphismFpGroup(h);
+    isoh := isoh*IsomorphismSimplifiedFpGroup(Range(isoh));
+    isoh := isoh*GroupHomomorphismByImages(Range(isoh),FreeGroupOfFpGroup(Range(isoh)));
+    freeg := Range(isog);
+    freeh := Range(isoh);
+    embedding := GroupHomomorphismByImages(freeh,freeg,List(GeneratorsOfGroup(h),x->x^isoh),List(GeneratorsOfGroup(h),x->x^isog));
+    v := GroupHomomorphismByImages(freeh,freeg,List(GeneratorsOfGroup(h),x->x^isoh),List(GeneratorsOfGroup(h),x->(x^vendo)^isog));
+    vinverse := GroupHomomorphismByImages(freeg,freeh,GeneratorsOfGroup(freeg),List(GeneratorsOfGroup(freeg),x->PreImagesRepresentative(vendo,PreImage(isog,x))^isoh));
+    
+    mcg := PUREMCG@(g);
+    freemcg := Group(List(GeneratorsOfGroup(mcg),x->x^isog));
+#    isomcg := GroupHomomorphismByImagesNC(mcg,freemcg);
+    
+    # first the subgroup of mcg stabilizing h
+    act := function(subgroup,aut)
+        return Group(List(GeneratorsOfGroup(subgroup),x->x^aut));
     end;
+    mch := Stabilizer(freemcg,Image(embedding),act);
 
-    cache := List([1..2],i->List([1..cachesize],j->BlistList([1..cachesize],[])));
-    julia := [];
-    prejulia := [[P1Point(fp),1]];
-    n := LogInt(1000,deg); # compute at most 1000 points to estimate hausdorff dimension
-    for i in [1..n] do
-        j := prejulia;
-        prejulia := [];
-        for p in j do
-            for q in P1PreImages(f,p[1]) do
-                Add(prejulia,[q,p[2]*Value(df,Complex(q))]);
+    # then the subgroup fixing parabolic conjugacy classes in h;
+    cch := List(GeneratorsOfGroup(h),x->ConjugacyClass(freeh,x^isoh));
+    restricth := aut->GroupHomomorphismByImages(freeh,freeh,List(GeneratorsOfGroup(freeh),g->PreImagesRepresentative(embedding,(g^embedding)^aut)));
+    act := function(list,aut)
+        return List(list,x->ConjugacyClass(freeh,Representative(x)^restricth(aut)));
+    end;
+    mch := Stabilizer(mch,cch,act);
+    
+    mch := GroupByGenerators(List(GeneratorsOfGroup(mch),a->GroupHomomorphismByImages(g,g,List(GeneratorsOfGroup(g),x->PreImage(isog,(x^isog)^a)))));
+    return GroupHomomorphismByFunction(mch,mcg,a->GroupHomomorphismByImages(g,g,List(GeneratorsOfGroup(g),x->PreImage(isog,((PreImage(isoh,(x^isog)^vinverse)^a)^isoh)^v))));        
+end);
+
+BindGlobal("DISTILLATE@", function(M)
+    # distillates the machine M to a machine with at most one non-trivial
+    # transition on each cycle; which is at the beginning of the cycle
+    # and is a generator.
+    # returns [new machine, free group automorphism encoding distillation]
+    local G, perm, trans, cc, zero, g, i, j, c, cg, aut;
+    
+    G := StateSet(M);
+    cc := List(GeneratorsOfFRMachine(M),g->ConjugacyClass(G,g));
+    zero := ConjugacyClass(G,One(G));
+    aut := [];
+    
+    perm := M!.output;
+    trans := List(M!.transitions,ShallowCopy);
+    for i in [1..Length(trans)] do
+        for c in Cycles(PermList(perm[i]),AlphabetOfFRObject(M)) do
+            g := One(G);
+            for j in c do
+                g := g*trans[i][j];
+                trans[i][j] := One(G);
             od;
-        od;
-    od;
-    for i in prejulia do
-        i[2] := LOG_MACFLOAT(AbsoluteValue(i[2]));
-        if i[2]<MACFLOAT_0 then
-            Info(InfoFR,2,"Doesn't seem possible to compute critical exponent");
-            critexp := MACFLOAT_0;
-            break;
-        fi;
-    od;
-    if not IsBound(critexp) then
-        p := MACFLOAT_0; q := MacFloat(10^8);
-        while AbsoluteValue(p-q)>q/100 do
-            m := (p+q)/2;
-            i := Sum(prejulia,x->EXP_MACFLOAT(-m*x[2]));
-            if i>MACFLOAT_1 then
-                p := m;
-            else
-                q := m;
-            fi;
-        od;
-        critexp := q*LOG_MACFLOAT(MacFloat(deg));
-    fi;
-    Info(InfoFR,2,"Critical exponent approximated by ",critexp);
-    for i in prejulia do
-        JULIAITER(i[1],i[2]-n*critexp,0);
-    od;
-    return julia;
-end);
-
-BindGlobal("LIFTPOINT@", function(t,map,p)
-    # lifts point <p> through <map>.
-    # returns a list of rec(pos, cell), where
-    # <cell> is a face containing <p> in <t>
-    local i, r, f;
-    f := [];
-    for i in map(p) do
-        r := rec(pos := i);
-        i := LocateInTriangulation(t,i);
-        r.cell := CLOSESTFACES@(i)[1];
-        Add(f, r);
-    od;
-    return f;
-end);
-
-BindGlobal("MATCHPOINTS@", function(ptA, ptB)
-    # ptA is a list of n points; ptB[i] is a list of neighbours of ptA[i]
-    # each ptB[i][j] is a sphere point
-    # returns: a matching i|->j(i), [1..n]->[1..n] such that
-    # ptA is at least 2x closer to ptB[i][j(i)] as to other neighbours;
-    # or return fail if no such matching exists.
-    local i, j, dists, perm;
-
-    dists := [];
-    for i in [1..Length(ptA)] do
-        dists[i] := List(ptB[i],v->SPHEREDIST@(ptA[i],v));
-    od;
-    perm := List(dists, l->Position(l,Minimum(l)));
-
-    for i in [1..Length(dists)] do
-        for j in [1..Length(dists[i])] do
-            if j<>perm[i] and dists[i][j]<dists[i][perm[i]]*2 then
-                return fail;
+            cg := ConjugacyClass(G,g);
+            if cg<>zero then
+                j := Position(cc,cg);
+                trans[i][c[1]] := GeneratorsOfFRMachine(M)[j];
+                aut[j] := g;
             fi;
         od;
     od;
-    return perm;
+    return [FRMachineNC(FamilyObj(M),G,trans,perm),GroupHomomorphismByImages(G,G,aut)];
 end);
 
-BindGlobal("MATCHLIFTS@", function(t, from, to)
-    # tries to order points in <to> so that they're all at least 2x closer
-    # to the respective point in <from>.pos, corners of respective <from>,
-    # or other points in <to>.
-    # return fail, or <newpos> so that face[i].cell is the face/edge/vertex
-    # containing to[matched i].
-    local i, j, perm, e, olde, f, newpos, edge;
-
-    perm := [];
-    for i in [1..Length(to)] do
-        perm[i] := List(from,r->r.pos); # match to face centers
-        if ISEDGE@(from[i].cell) then # avoid edge endpoints
-            Append(perm[i],[from[i].cell.from.pos,from[i].cell.to.pos]);
-        elif ISFACE@(from[i].cell) then # avoid face corners
-            Append(perm[i],List(from[i].cell.n,e->e.to.pos));
-        fi;
-    od;
-    perm := MATCHPOINTS@(to,perm);
-    if perm=fail or Set(perm)<>[1..Length(to)] then return fail; fi;
-
-    SortParallel(perm,to);
-
-    newpos := [];
-    for i in [1..Length(to)] do
-        Add(newpos, rec(pos := to[i],
-            cell := LocateInTriangulation(t, from[i].cell, to[i])));
-    od;
-    return newpos;
-end);
-
-BindGlobal("CROSSEDELEMENT@", function(spider,from,to)
-    # an edge just progressed from <from> to <to>. Update
-    # edge.elt or return fail if <from> and <to> do not touch.
-    # maybe bind newface.from, if newface.cell is a vertex and we want
-    # to remember how we reached it.
-    local e, g, j;
-
-    e := []; # probably no edge crossed
-    if IsIdenticalObj(from.cell,to.cell) then # nothing crossed
-        if IsBound(from.from) then to.from := from.from; fi;
-    elif ISFACE@(from.cell) and ISFACE@(to.cell) then # face to other face
-        Add(e,First(from.cell.n,f->IsIdenticalObj(f.right,to.cell)));
-        if e[1]=fail then # not adjacent face
-            Info(InfoFR,3," faces ",from," and ",to," do not touch");
-            return fail;
-        fi;
-    elif ISEDGE@(from.cell) and ISEDGE@(to.cell) then
-        if IsIdenticalObj(from.cell.reverse,to.cell) then
-            to.cell := from.cell; # make sure we stay in the same orientation
-        else
-            Info(InfoFR,3," edges ",from," and ",to," are different");
-            return fail;        # two different edges in sequence
-        fi;
-    elif ISEDGE@(from.cell) and ISFACE@(to.cell) then
-        if IsIdenticalObj(from.cell.right,to.cell) then
-            Add(e,from.cell); # an edge crossed
-        elif IsIdenticalObj(from.cell.left,to.cell) then
-        else
-            Info(InfoFR,3," edge ",from," and face ",to," do not touch");
-            return fail;
-        fi;
-    elif ISFACE@(from.cell) and ISEDGE@(to.cell) then
-        if IsIdenticalObj(from.cell,to.cell.left) then
-        elif IsIdenticalObj(from.cell,to.cell.right) then
-            to.cell := to.cell.reverse; # make sure we cross from L to R
-        else
-            Info(InfoFR,3," face ",from," and edge ",to," do not touch");
-            return fail;
-        fi;
-    elif ISFACE@(from.cell) and ISVERTEX@(to.cell) then
-        j := PositionProperty(to.cell.n,e->IsIdenticalObj(e.left,from.cell));
-        if j=fail then
-            Info(InfoFR,3," face ",from," and vertex ",to," do not touch");
-            return fail;
-        fi;
-        to.from := j; # remember edge leaving vertex and in face we came from
-    elif ISEDGE@(from.cell) and ISVERTEX@(to.cell) then
-        if IsIdenticalObj(from.cell.from,to.cell) then
-            to.from := POSITIONID@(to.cell.n,from.cell);
-        elif IsIdenticalObj(from.cell.to,to.cell) then
-            to.from := PositionProperty(to.cell.n,e->IsIdenticalObj(e.left,from.cell.left));
-        else
-            Info(InfoFR,3," edge ",from," and vertex ",to," do not touch");
-            return fail;
-        fi;
-    elif ISVERTEX@(from.cell) and ISFACE@(to.cell) then
-        j := PositionProperty(from.cell.n,e->IsIdenticalObj(e.left,to.cell));
-        if j=fail then
-            Info(InfoFR,3," vertex ",from," and face ",to," do not touch");
-            return fail;
-        fi;
-        while j<>from.from do # we assume direction in which we go around is
-            # unimportant, because from.cell is a fake vertex
-            j := j-1; if j=0 then j := Length(from.cell.n); fi;
-            Add(e,from.cell.n[j]);
-        od;
-    elif ISVERTEX@(from.cell) and ISEDGE@(to.cell) then
-        if IsIdenticalObj(to.cell.from,from.cell) then
-        elif IsIdenticalObj(to.cell.to,from.cell) then
-            to.cell := to.cell.reverse;
-        else
-            Info(InfoFR,3," vertex ",from," and edge ",to," do not touch");
-            return fail;
-        fi;
-        j := POSITIONID@(from.cell.n,to.cell);
-        e := [];
-        while j<>from.from do
-            j := j-1; if j=0 then j := Length(from.cell.n); fi;
-            Add(e,from.cell.n[j]);
-        od;
-    fi;
-    g := One(spider!.group);
-    for e in e do
-        if IsBound(spider!.treeelt[e.index]) then
-            g := g * spider!.treeelt[e.index];
-        fi;
-    od;
-    return g;
-end);
-
-BindGlobal("CELLCENTER@", function(cell)
-    # return a cell record corresponding to the center of <face>
-    return rec(pos := cell.cell.pos, cell := cell.cell);
-end);
-
-BindGlobal("LIFTEDGE@", function(spider,map,from,to,arc)
-    # lifts list <arc> through <map>. <from> is a list of rec(pos, cell).
-    # <to> is either fail or a list of rec(pos, cell);
-    # in these two cases, <cell> is a face.
-    # <arc> is a list of points along which to lift.
-    # returns list <edge> where:
-    # <edge> is a list of rec(arc, from:=<cell>, to:=<cell>, elt),
-    # <cell> is a list of rec(pos, cell) as above describing start
-    # and end of <arc>, and
-    # <elt> is a the spider!.group element crossed along the edge.
-    # if <to> is bound, then edge.to will have to belong to that list.
-    local face, newface, edge, next, iarc, elt, i, j, m;
-if ForAny(from,r->not ISFACE@(r.cell)) then Error("not a face"); fi;
-    arc := ShallowCopy(arc);
-    iarc := 2;
-    edge := List(from, r->rec(from := r, arc := [r.cell.pos,r.pos]));
-    face := List(from, ShallowCopy);
-    for i in [1..Length(edge)] do
-        edge[i].elt := CROSSEDELEMENT@(spider,CELLCENTER@(from[i]),face[i]);
-    od;
-    next := List(arc,map);
-    while iarc <= Length(arc) do
-        newface := MATCHLIFTS@(spider!.cut, face, next[iarc]);
-        if newface<>fail then
-            elt := [];
-            for i in [1..Length(edge)] do
-                elt[i] := CROSSEDELEMENT@(spider,face[i],newface[i]);
-                if elt[i]=fail then
-                    newface := fail; break;
-                fi;
-            od;
-        fi;
-        if newface=fail then # subdivide
-            Add(arc,SphereProject(arc[iarc-1]+arc[iarc]),iarc);
-            Add(next,map(arc[iarc]),iarc);
-        else
-            for i in [1..Length(edge)] do
-                Add(edge[i].arc,next[iarc][i]);
-                edge[i].elt := edge[i].elt * elt[i];
-                face := newface;
-            od;
-            iarc := iarc+1;
-        fi;
-    od;
-
-    for i in [1..Length(edge)] do
-        if to=fail then # create new face at which we end
-            edge[i].to := rec(pos := face[i].pos,
-                              cell := CLOSESTFACES@(face[i].cell)[1]);
-        else
-            for j in to do
-                if ISCLOSE@(face[i].pos,j.pos) then
-                    edge[i].to := j;
-                    break;
-                fi;
-            od;
-            while not IsBound(edge[i].to) do
-                Error("Could not match up edge ",edge[i]);
-            od;
-        fi;
-        Add(edge[i].arc,edge[i].to.pos);
-        edge[i].elt := edge[i].elt * CROSSEDELEMENT@(spider,face[i],edge[i].to);
-        Add(edge[i].arc,edge[i].to.cell.pos);
-        edge[i].elt := edge[i].elt * CROSSEDELEMENT@(spider,edge[i].to,CELLCENTER@(edge[i].to));
-    od;
-    return edge;
-end);
-
-BindGlobal("LIFTSPIDER@", function(target,src,map,poly)
-    # lifts all dual arcs in <src> through <map>; rounds their endpoints
-    # to faces of <target>; and rewrites the generators of <src> as words
-    # in <target>'s group. <base> is a preferred starting face of <src>.
-    # returns [face,edge] where:
-    # face, edge are lists of length Degree(map^-1), and contain lifts of faces,
-    # edges indexed by the faces, edges of <src>
-    # face[i][j] is rec(pos, targetface, targetgpelt)
-    # edge[i][j] is rec(arc, targetfromface, targettoface, targetgpelt)
-    local face, edge, f, e, i, j, todo, lifts, perm, state, p, s, base;
-
-    target!.arcs := [];
-
-    face := [];
-    edge := [];
-
-    if poly then
-        base := First(src!.cut!.f,f->ForAny(f.n,e->e.to.index=Length(GeneratorsOfGroup(src!.group))));
-    else
-        base := src!.cut!.f[1];
-    fi;
-
-    # first lift edges in the dual tree
-    lifts := LIFTPOINT@(target!.cut,map,base.pos);
-    for f in lifts do
-        f.elt := One(target!.group);
-    od;
-    todo := NewFIFO([[base,lifts]]);
-    for f in todo do
-        face[f[1].index] := f[2];
-        for e in f[1].n do
-            if not src!.intree[e.index] and not IsBound(face[e.right.index]) then
-                lifts := LIFTEDGE@(target,map,face[f[1].index],fail,[e.left.pos,e.pos,e.right.pos]);
-                edge[e.index] := lifts;
-                edge[e.reverse.index] := List(lifts, l->rec(elt := l.elt^-1,
-                                                 from := l.to, to := l.from,
-                                                 arc := Reversed(l.arc)));
-                for i in [1..Length(lifts)] do
-                    Add(target!.arcs, [[255,255,255],MacFloat(103/100),lifts[i].arc]);
-                    lifts[i].to.elt := f[2][i].elt*lifts[i].elt;
-                od;
-                Add(todo,[e.right,List(lifts,x->x.to)]);
-            fi;
-        od;
-    od;
-
-    # then lift edges cutting the tree
-    perm := [];
-    state := [];
-    for e in src!.treeedge do
-        lifts := LIFTEDGE@(target,map,face[e.left.index],face[e.right.index],[e.left.pos,e.pos,e.right.pos]);
-        p := [];
-        s := [];
-        for i in [1..Length(lifts)] do
-            j := POSITIONID@(face[e.right.index],lifts[i].to);
-            Add(p,j);
-            Add(s,face[e.left.index][i].elt*lifts[i].elt/face[e.right.index][j].elt);
-            Add(target!.arcs, [[255,255,0],MacFloat(104/100),lifts[i].arc]);
-        od;
-        Add(perm,p);
-        Add(state,s);
-    od;
-
-    if IsBound(src!.points) then
-        target!.points := [];
-        for i in src!.points do
-            Add(target!.points, Random(map(i)));
-        od;
-    fi;
-
-    return [state,perm];
-end);
-
-BindGlobal("POSTCRITICALPOINTS@", function(f)
-    # return [poly,[critical points],[post-critical points],[transitions]]
-    # where poly=true/false says if there is a fixed point of maximal degree;
-    # it is then the last element of <post-critical points>
-    # critical points is a list of [point in P1,degree]
-    # post-critical points are points in P1
-    # post-critical graph is a list of [i,j,n] meaning pcp[i] maps to pcp[j]
-    # with local degree n>=1; or, if i<0, then cp[-i] maps to pcp[j].
-
-    local c, i, j, cp, pcp, n, deg, newdeg, poly, transitions, src, dst;
-
-    i := NumeratorOfRationalFunction(f);
-    j := DenominatorOfRationalFunction(f);
-    cp := List(ComplexRootsOfUnivariatePolynomial(Derivative(i)*j-Derivative(j)*i),P1Point);
-    deg := DegreeOfRationalFunction(f);
-    while Length(cp)<2*deg-2 do Add(cp,P1infinity); od;
-    cp := List(cp,x->[x,2]);
-    i := 1;
-    while i<=Length(cp) do
-        j := i+1;
-        while j<= Length(cp) do
-            if P1Distance(cp[i][1],cp[j][1])<EPS@.prec then
-                Remove(cp,j);
-                cp[i][2] := cp[i][2]+1;
-            else
-                j := j+1;
-            fi;
-        od;
-        i := i+1;
-    od;
-
-    poly := First([1..Length(cp)],i->cp[i][2]=deg and P1Distance(Value(f,cp[i][1]),cp[i][1])<EPS@.prec);
-
-    pcp := [];
-    transitions := [];
-    n := 0;
-    for i in [1..Length(cp)] do
-        c := cp[i][1];
-        src := -i;
-        deg := cp[i][2];
-        repeat
-            c := Value(f,c);
-            j := PositionProperty(cp,x->P1Distance(c,x[1])<EPS@.prec);
-            if j<>fail then
-                c := cp[j][1];
-                newdeg := cp[j][2];
-            else
-                newdeg := 1;
-            fi;
-            dst := PositionProperty(pcp,d->P1Distance(c,d)<EPS@.prec);
-            if dst=fail then
-                if j=fail then
-                    Add(pcp,c);
-                else
-                    Add(pcp,cp[j][1]);
-                fi;
-                dst := Length(pcp);
-                Add(transitions,[src,dst,deg]);
-                n := n+1;
-                if IsInt(poly) and IsIdenticalObj(pcp[n],cp[poly][1]) then
-                    poly := n;
-                fi;
-            else
-                Add(transitions,[src,dst,deg]);
-                break;
-            fi;
-            deg := newdeg;
-            src := dst;
-        until false;
-    od;
-
-    if poly=fail then
-        poly := false;
-    else
-        Add(pcp,Remove(pcp,poly)); # force infinity to be at end
-        poly := true;
-    fi;
-
-    return [poly,cp,pcp,transitions];
-end);
-
-BindGlobal("RAT2FRMACHINE@", function(f)
-    local i, j, perm, poly, pcp, spider, deg, m, n;
-
-    if ValueOption("precision")<>fail then
-        EPS@.prec := ValueOption("precision");
-    else
-        EPS@.prec := MacFloat(10^-5);
-    fi;
-
-    deg := DegreeOfRationalFunction(f);
-    pcp := POSTCRITICALPOINTS@(f);
-    poly := pcp[1];
-    pcp := List(pcp[3],SphereP1);
-    n := Length(pcp);
-    Info(InfoFR,2,"Post-critical points at ",pcp);
-
-    spider := TRIVIALSPIDER@(pcp);
-
-    m := LIFTSPIDER@(spider,spider,SPHEREINVF@(f),poly);
-    Add(m,spider);
-    Add(m,poly);
-
-    i := ValueOption("julia");
-    if i<>fail then
-        if not IsInt(i) then # default grid size
-            i := 250;
-        fi;
-        spider!.points := JULIASET@(i,f);
-        Info(InfoFR,2,"Computed Julia set with ",Length(spider!.points)," points");
-    fi;
-
-    return m;
-end);
-
-InstallMethod(FRMachine, "(FR) for a rational function",
-        [IsRationalFunction],
-        function(f)
-    local m, x;
-
-    x := RAT2FRMACHINE@(f);
-    m := FRMachine(x[3]!.model, x[1], x[2]);
-    SetSpider(m, x[3]);
-    SetRationalFunction(m,f);
-
-    return m;
-end);
-
-BindGlobal("IMGRECURSION@", function(to,from,trans,out,poly)
-    # <trans,out> describe a recursion from spider <from> to spider <to>;
-    # each line corresponds to a generator of <from>.group.
-    # if poly, then last generator is assumed to correspond to fixed element
-    # of maximal degree; put it in standard form.
-    # returns: [ <newtrans> <newout> ], where now
-    # each line corresponds to a generator of <from>.model, and each
-    # entry in <newtrans>[i] is an element of <to>.model.
-
-    trans := COMPOSERECURSION@(trans,out,from!.marking,to!.marking);
-    out := trans[2]; trans := trans[1];
+BindGlobal("FACTORIZEAUT@", function(epi,M,aut)
+    local nf, img, oldimg, cost, oldcost, w, gens, i, idle;
     
-    IMGOPTIMIZE@(trans, out, SPIDERRELATORS@(to),false);
-
-    if poly then
-        NORMALIZEADDINGMACHINE@(from!.model,trans,out,Length(trans),-1);
-    fi;
-    
-    return [trans, out];
-end);
-
-InstallMethod(IMGMachine, "(FR) for a rational function",
-        [IsRationalFunction],
-        function(f)
-    local x, m, spider, poly;
-
-    x := RAT2FRMACHINE@(f);
-    spider := x[3];
-    poly := x[4];
-    IMGMARKING@(spider,FreeGroup(Length(x[1])+1));
-    x := IMGRECURSION@(spider,spider,x[1],x[2],poly);
-
-    m := FRMachine(spider!.model, x[1], x[2]);
-    SetIMGRelator(m, SPIDERRELATORS@(spider)[1]);
-    SetSpider(m, spider);
-    SetRationalFunction(m, f);
-    if poly then
-        SetAddingElement(m,FRElement(m,spider!.model.(Length(x[1]))));
-    fi;
-
-    return m;
-end);
-##############################################################################
-
-#############################################################################
-##
-#M IMG Machine to Function
-##
-InstallMethod(IMGORDERING@, [IsIMGMachine],
-        function(M)
-    local w;
-    w := LetterRepAssocWord(IMGRelator(M));
-    if ForAny(w,IsNegInt) then w := -Reversed(w); fi;
-    while w[Length(w)]<>Length(w) do
-        Add(w,Remove(w,1));
-    od;
-    return w;
-end);
-
-InstallMethod(VERTICES@, [IsSpider],
-        function(spider)
-    # the vertices a spider lies on
-    return List(Filtered(spider!.cut!.v,v->not IsBound(v.fake)),v->v.pos);
-end);
-
-BindGlobal("STRINGTHETAPHI@", function(point)
-    return Concatenation(String(ATAN2_MACFLOAT(point[2],point[1]))," ",
-                   String(ACOS_MACFLOAT(point[3])));
-end);
-
-BindGlobal("RUNCIRCLEPACK@", function(values,perm)
-    local spider, s, output, f, i, j, p;
-
-    spider := TRIVIALSPIDER@(values);
-    IMGMARKING@(spider,FreeGroup(Length(values)));
-    f := GroupHomomorphismByImagesNC(spider!.model,SymmetricGroup(Length(perm[1])),GeneratorsOfGroup(spider!.model),List(perm,PermList));
-    s := "";
-    output := OutputTextString(s, false);
-
-    PrintTo(output,"SLITCOUNT: ",Length(spider!.treeedge),"\n");
-    for i in spider!.treeedge do
-        PrintTo(output,STRINGTHETAPHI@(i.from.pos)," ",STRINGTHETAPHI@(i.to.pos),"\n");
-    od;
-
-    PrintTo(output,"\nPASTECOUNT: ",Length(spider!.treeedge)*Length(perm[1]),"\n");
-    for i in [1..Length(spider!.treeedge)] do
-        p := PreImagesRepresentative(spider!.marking,spider!.group.(i))^f;
-        for j in [1..Length(perm[1])] do
-            PrintTo(output,j," ",2*i-1," ",j^p," ",2*i,"\n");
-        od;
-    od;
-    Print(s);
-    CHECKEXEC@("mycirclepack");
-    output := "";
-    Process(DirectoryCurrent(), EXEC@.mycirclepack, InputTextString(s),
-            OutputTextString(output,false), []);
-    Error("Interface to circlepack is not yet written. Contact the developers for more information. Output is ", output);
-end);
-
-BindGlobal("TRICRITICAL@", function(z,perm)
-    # find a rational function with critical values 0,1,infinity
-    # with monodromy action perm[1],perm[2],perm[3]
-    # return fail if it's too hard to do.
-    local deg, cl, i, j, k, m, points, f, order;
-
-    deg := Length(perm[1]);
-    perm := List(perm,PermList);
-    cl := List(perm,x->SortedList(CycleLengths(x,[1..deg])));
-    
-    points := [[MACFLOAT_0,MACFLOAT_0,MACFLOAT_1], # 0
-               [MACFLOAT_1,MACFLOAT_0,MACFLOAT_0], # 1
-               [MACFLOAT_0,MACFLOAT_0,-MACFLOAT_1]]; # infinity
-    
-    if deg=4 and ForAll(cl,x->x=[1,3]) then # (1,2,3), (1,2,4), (1,3,4)
-        f := z^3*(z-2)/(1-2*z);
-        Add(points,SphereP1(P1Point(1/2)));
-        Add(points,SphereP1(P1Point(-1)));
-        Add(points,SphereP1(P1Point(2)));
-        return [f,points,[1,2,3]];
-    fi;
-
-    i := First([1..3],i->cl[i]=[deg]); # max. cycle
-    if i=fail then return fail; fi;
-    if Product(perm)=() then
-        j := i mod 3+1; k := j mod 3+1;
-    else
-        k := i mod 3+1; j := k mod 3+1;
-    fi;
-    if IsSubset(cl{[j,k]},[[2,2],[1,1,2]]) then # (1,2,3,4), (1,2)(3,4), (2,3)
-        f := z^2*(z-2)^2;
-        if cl[j]=[2,2] then
-	    order := [j,k,i];
-        else
-            order := [k,j,i];
-        fi;
-	points := points{order};
-        Add(points,SphereP1(P1Point(2)));
-        Add(points,SphereP1(P1Point(2+Sqrt(2*COMPLEX_1))));
-        Add(points,SphereP1(P1Point(2-Sqrt(2*COMPLEX_1))));
-        return [f,points,order];
-    fi;
-    
-    m := Maximum(cl[j]);
-    if Set(cl[j])<>[1,m] or Set(cl[k])<>[1,deg-m+1] then
-        return fail;
-    fi;
-    # so we know the action around i is (1,...,deg), at infinity
-    # the action around j is (m,m-1,...,1), at 0
-    # the action around k in (deg,deg-1...,m), at 1
-    f := m*Binomial(deg,m)*Primitive(z^(m-1)*(1-z)^(deg-m));
-    order := [j,k,i];
-    points := points{order};
-    for i in [0,1] do
-        j := P1PreImages(f,P1Point(i));
-        k := List(j,x->P1Distance(x,P1Point(i)));
-        SortParallel(k,j);
-        if i=0 then
-            j := j{[m+1..deg]};
-        else
-            j := j{[deg+2-m..deg]};
-        fi;
-        Append(points,List(j,SphereP1));
-    od;
-    
-    return [f,points,order];
-end);
-
-BindGlobal("RATIONALMAP@", function(z,values,perm,oldf,oldlifts)
-    # find a rational map that has critical values at <values>, with
-    # monodromy action given by <perm>, a list of permutations (as lists).
-    # returns [map,points] where <points> is the full preimage of <values>
-    local cv, p, f, points, deg, i;
-    cv := Filtered([1..Length(values)],i->not ISONE@(perm[i]));
-    deg := Length(perm[1]);
-    if Length(cv)=2 then # bicritical
-        p := List(values{cv},C2SPHERE@);
-        f := (p[2][1]*z^deg+p[1][1])/(p[2][2]*z^deg+p[1][2]);
-        points := [[MACFLOAT_0,MACFLOAT_0,MACFLOAT_1],
-                   [MACFLOAT_0,MACFLOAT_0,-MACFLOAT_1]];
-    elif Length(cv)=3 then
-        p := TRICRITICAL@(z,perm{cv});
-        if p<>fail then
-            f := PSL2VALUE@(CallFuncList(P1Map,List(ELMS_LIST(values{cv},p[3]),P1Sphere)),p[1]);
-            points := p[2];
-        fi;
-    fi;
-    if not IsBound(points) then # run circlepack
-        p := RUNCIRCLEPACK@(values{cv},perm{cv});
-        Error(p);
-        f := fail;
-        points := fail;
-    fi;
-    for i in [1..Length(values)] do if not i in cv then
-        Append(points,SPHEREINVF@(f)(values[i]));
-    fi; od;
-    return [f,points];
-end);
-
-BindGlobal("MATCHPERMS@", function(M,q)
-    # find a bijection of [1..n] that conjugates M!.output[i] to q[i] for all i
-    local c, g, p;
-    g := SymmetricGroup(Length(q[1]));
-    p := List(GeneratorsOfGroup(StateSet(M)),g->PermList(Output(M,g)));
-    q := List(q,PermList);
-    c := List([1..Length(p)],i->RepresentativeAction(g,q[i],p[i]));
-    Assert(0, not fail in c);
-    c := Intersection(List([1..Length(p)],i->RightCoset(Centralizer(g,q[i]),c[i])));
-    Assert(0, not IsEmpty(c));
-    return c[1];
-end);
-
-BindGlobal("MATCHTRANS@", function(M,recur,spider,v)
-    # match generators g[i] of M to elements of v.
-    # returns a list <w> of elements of <v> such that:
-    # if, in M, g[i]^N lifts to a conjugate of g[j] for some integer N, and
-    # through <recur> g[i]^N lifts to a conjugate of generator h[k], then
-    # set w[j] = v[k].
-    # it is in particular assumed that recur[1] has as many lines as
-    # StateSet(M) has generators; and that entries in recur[1][j] belong to a
-    # free group of rank the length of v.
-    local w, i, j, k, c, x, gensM, gensR;
-
-    gensM := GeneratorsOfGroup(StateSet(M));
-    gensR := List(GeneratorsOfGroup(spider!.model),x->x^spider!.marking);
-    w := [];
-
-    for i in [1..Length(gensM)] do
-        x := WreathRecursion(M)(gensM[i]);
-        Assert(0,x[2]=recur[2][i]);
-        for c in Cycles(PermList(x[2]),AlphabetOfFRObject(M)) do
-            j := CyclicallyReducedWord(Product(x[1]{c}));
-            k := CyclicallyReducedWord(Product(recur[1][i]{c})^spider!.marking);
-            if IsOne(j) then continue; fi;
-            j := Position(gensM,j);
-            k := PositionProperty(gensR,g->IsConjugate(spider!.group,k,g));
-            w[j] := v[k];
-        od;
-    od;
-    Assert(0,BoundPositions(w)=[1..Length(gensM)]);
-    return w;
-end);
-
-BindGlobal("REDUCEINNER@", function(img0,gen,nf)
-    # repeatedly apply conjugation by elements of gen to reduce img, the list
-    # of images of generators under an endomorphism.
-    # nf makes elements in normal form.
-    # modifies img, and returns the conjugating element that was used to reduce;
-    # i.e. after the run, List(img,x->x^elt) = img0
-
-    local cost, oldcost, i, img, oldimg, elt, idle;
-
-    elt := One(img0[1]);
-    oldimg := List(img0,nf);
+    w := One(Source(epi));
+    nf := NFFUNCTION@(StateSet(M),IMGRelator(M));
+    gens := GeneratorsOfFRMachine(M);
+    img := List(gens,x->nf(x^aut));
+    oldimg := img;
     oldcost := Sum(oldimg,Length);
-
     repeat
         idle := true;
-        for i in gen do
-            img := List(oldimg,x->nf(x^i));
+        for i in GeneratorsOfMonoid(Source(epi)) do
+            img := List(oldimg,x->x^(i^epi));
+            REDUCEINNER@(img,gens,nf);
             cost := Sum(img,Length);
             if cost < oldcost then
                 oldcost := cost;
                 oldimg := img;
-                elt := elt*i;
+                w := w*i;
                 idle := false;
                 break;
             fi;
         od;
     until idle;
-    for i in [1..Length(oldimg)] do img0[i] := oldimg[i]; od;
-    return elt;
+    Assert(0,oldimg=gens);
+    return w;
 end);
 
-BindGlobal("MATCHMARKINGS@", function(M,group,recur)
-    # return a homomorphism phi from StateSet(M) to <group> such that:
-    # if g[i]^k lifts to a conjugate h of g[j] for some integer k, then
-    # phi(g[i]^k) = corresponding expression obtained from <recur>.
-    local src, dst, transM, transR, i, c, x, gens, g, h;
-
-    gens := GeneratorsOfGroup(StateSet(M));
-    transM := [One(StateSet(M))];
-    transR := [One(group)];
-    src := [1];
-    dst := Difference(AlphabetOfFRObject(M),src);
-    while not IsEmpty(dst) do
-        c := Cartesian(src,dst);
-        for i in [1..Length(gens)] do
-            x := First(c,p->Output(M,gens[i])[p[1]]=p[2]);
-            if x<>fail then break; fi;
-        od;
-        transM[x[2]] := Transition(M,gens[i],x[1])^-1*transM[x[1]];
-        transR[x[2]] := recur[1][i][x[1]]^-1*transR[x[1]];
-        Add(src,Remove(dst,Position(dst,x[2])));
-    od;
-
-    src := [];
-    dst := [];
+BindGlobal("MOTIONGROUP@", function(G)
+    local i, j, gens, img, aut;
+    
+    gens := GeneratorsOfGroup(G);
+        
+    aut := [];
     for i in [1..Length(gens)] do
-        x := WreathRecursion(M)(gens[i]);
-        Assert(0,recur[2][i]=x[2]);
-        for c in Cycles(PermList(x[2]),AlphabetOfFRObject(M)) do
-            g := Product(x[1]{c})^transM[c[1]];
-            h := Product(recur[1][i]{c})^transR[c[1]];
-            Add(src,g);
-            Add(dst,h);
+        for j in [1..Length(gens)] do
+            if i=j then continue; fi;
+            img := ShallowCopy(gens);
+            img[i] := gens[i]^gens[j];
+            Add(aut,GroupHomomorphismByImages(G,G,img));
         od;
     od;
-
-    x := GroupHomomorphismByImagesNC(StateSet(M),group,src,dst);
-    dst := List(gens,g->g^x);
-    REDUCEINNER@(dst,GeneratorsOfMonoid(group),x->x);
-
-    return GroupHomomorphismByImagesNC(StateSet(M),group,gens,dst);
+    return Group(aut);
 end);
 
-BindGlobal("NORMALIZINGROT@", function(points,oldpoints)
-    # returns the (matrix of) Mobius transformation that is a rotation sending
-    # P1Sphere(last point) to P1infinity and, if oldpoints<>fail,
-    # matches points and oldpoints as well as possible by rotating around the
-    # 0-infinity axis
-    local i, m, p, q, r;
-    
-    i := Length(points);
-    p := P1Sphere(points[i]);
-    if p=P1infinity then
-        m := IdentityMat(2,COMPLEX_FIELD);
-    else
-        p := Complex(p);
-        m := [[ComplexConjugate(p),COMPLEX_1],[COMPLEX_1,-p]];
-    fi;
-    
-    r := fail;
-    p := List(points,x->CallFuncList(Complex,SphereP1(PSL2VALUE@(m,P1Sphere(x))){[1,2]}));
-    
-    if oldpoints<>fail then # find optimal rotation to match with oldpoints
-        q := List(oldpoints,x->Complex(x[1],x[2]));
-        r := (ComplexConjugate(p)*q) / (ComplexConjugate(p)*p);
-        
-        if AbsoluteValue(r) < 9/10 then # there's no good rotation
-            r := fail;
-        fi;
-    fi;
-    if r=fail then
-        q := MACFLOAT_1/10; r := MACFLOAT_1;
-        for p in p do
-            i := AbsoluteValue(p);
-            if i>q then q := i; r := p; fi;
-        od;
-    fi;
-    
-    return [r/AbsoluteValue(r)*m[1],m[2]];
-end);
-
-BindGlobal("NORMALIZINGMAP@", function(points,oldpoints)
-    # returns the (matrix of) Mobius transformation that sends v[n] to infinity,
-    # the barycenter to 0, and makes the new points as close as possible
-    # to oldpoints by a rotation fixing 0-infinity.
-    local map, rot, i, barycenter, dilate;
-
-    barycenter := FIND_BARYCENTER(points,[MACFLOAT_1,MACFLOAT_1,MACFLOAT_1],100,MACFLOAT_EPS*10);
-    while IsString(barycenter) do
-        Error("FIND_BARYCENTER returned ",barycenter,"\nRepent.");
-    od;
-    dilate := Sqrt(barycenter[1]^2);
-    rot := NORMALIZINGROT@([-barycenter[1]/dilate],fail);
-    map := [dilate*rot[1],rot[2]];
-
-    points := List(points,p->SphereP1(PSL2VALUE@(map,P1Sphere(p))));
-
-    return NORMALIZINGROT@(points,oldpoints)*map;
-end);
-
-BindGlobal("SPIDERDIST@", function(spiderA,spiderB,fast)
-    local model, points, perm, dist, recur, endo, nf, g;
-
-    model := spiderA!.model;
-
-    # try to match feet of spiderA and spiderB
-    points := VERTICES@(spiderA);
-    perm := VERTICES@(spiderB);
-
-    perm := MATCHPOINTS@(perm,List(perm,x->points));
-    if perm=fail or Set(perm)<>[1..Length(points)] then # no match, find something coarse
-        return Sum(GeneratorsOfGroup(spiderA!.group),x->Length(PreImagesRepresentative(spiderA!.marking,x)^spiderB!.marking));
-    fi;
-
-    # move points of spiderB to their spiderA matches
-    spiderB := WIGGLESPIDER@(spiderB,points{perm});
-    dist := spiderB!.cut!.wiggled;
-    
-    if fast then # we just wiggled the points, the combinatorics didn't change
-        return dist;
-    fi;
-    
-    recur := LIFTSPIDER@(spiderA,spiderB,z->[z],false);
-    
-    if Group(Concatenation(recur[1]))<>spiderA!.group then
-        Error("Endomorphism is not invertible");
-    fi;
-    
-
-    endo := GroupHomomorphismByImagesNC(spiderB!.group,model,
-                    GeneratorsOfGroup(spiderB!.group),
-        List(recur[1],x->PreImagesRepresentative(spiderA!.marking,x[1])))*spiderB!.marking;
-
-    endo := List(GeneratorsOfGroup(spiderB!.group),x->x^endo);
-    REDUCEINNER@(endo,GeneratorsOfMonoid(spiderB!.group),x->x);
-    
-    for g in endo do
-        dist := dist + (Length(g)-1); # if each image in a gen, then endo=1
-    od;
-    return dist;
-end);
-
-BindGlobal("PUSHRECURSION@", function(map,M)
-    # returns a WreathRecursion() function for Range(map), and not
-    # Source(map) = StateSet(M)
-    local w;
-    w := WreathRecursion(M);
-    return function(x)
-        local l;
-        l := w(PreImagesRepresentative(map,x));
-        return [List(l[1],x->Image(map,x)),l[2]];
-    end;
-end);
-
-BindGlobal("PULLRECURSION@", function(map,M)
-    # returns a WreathRecursion() function for Source(map), and not
-    # Range(map) = StateSet(M)
-    local w;
-    w := WreathRecursion(M);
-    return function(x)
-        local l;
-        l := w(Image(map,x));
-        return [List(l[1],x->PreImagesRepresentative(map,x)),l[2]];
-    end;
-end);
-
-BindGlobal("PERRONMATRIX@", function(mat)
-    local i, j, len;
-    # find if there's an eigenvalue >= 1, without using numerical methods
-
-    len := Length(mat);
-    if IsEmpty(NullspaceMat(mat-IdentityMat(len))) then # no 1 eigenval
-        i := List([1..len],i->1);
-        j := List([1..len],i->1); # first approximation to perron-frobenius vector
-        repeat
-            i := i*mat;
-            j := j*mat*mat; # j should have all entries growing exponentially
-            if ForAll([1..len],a->j[a]=0 or j[a]<i[a]) then
-                return false; # perron-frobenius eigenval < 1
-            fi;
-        until ForAll(j-i,IsPosRat);
-    fi;
-    return true;
-end);
-
-BindGlobal("SURROUNDINGCURVE@", function(t,x)
-    # returns a CCW sequence of edges disconnecting x from its complement in t.
-    # x is a sequence of indices of vertices. t is a triangulation.
-    local starte, a, c, v, e, i;
-
-    starte := First(t!.e,j->j.from.index in x and not j.to.index in x);
-    v := starte.from;
-    a := [starte.left.pos];
-    c := [];
-    i := POSITIONID@(v.n,starte);
-    repeat
-        i := i+1;
-        if i > Length(v.n) then i := 1; fi;
-        e := v.n[i];
-        if e.to.index in x then
-            v := e.to;
-            e := e.reverse;
-            i := POSITIONID@(v.n,e);
-        else
-            Add(c,e);
-            Add(a,e.pos);
-            Add(a,e.left.pos);
-        fi;
-    until IsIdenticalObj(e,starte);
-    return [a,c];
-end);
-
-BindGlobal("FINDOBSTRUCTION@", function(M,multicurve,spider,boundary)
-    # search for an obstruction starting with the elements of M.
-    # return fail or a record describing the obstruction.
-    # spider and boundary may be "fail".
-    local len, w, x, mat, row, i, j, c, d, group, pi, gens, peripheral;
-
-    len := Length(multicurve);
-    gens := GeneratorsOfGroup(StateSet(M));
-    group := FreeGroup(Length(gens)-1);
-    c := IMGRelator(M);
-    pi := GroupHomomorphismByImagesNC(StateSet(M),group,List([1..Length(gens)],i->Subword(c,i,i)),Concatenation(GeneratorsOfGroup(group),[Product(List(Reversed(GeneratorsOfGroup(group)),Inverse))]));
-
-    w := PUSHRECURSION@(pi,M);
-
-    peripheral := List(GeneratorsOfSemigroup(StateSet(M)),x->CyclicallyReducedWord(x^pi));
-    multicurve := List(multicurve,x->CyclicallyReducedWord(x^pi));
-    mat := [];
-    for i in multicurve do
-        d := w(i);
-        row := List([1..len],i->0);
-        for i in Cycles(PermList(d[2]),AlphabetOfFRObject(M)) do
-            c := CyclicallyReducedWord(Product(d[1]{i}));
-            if ForAny(peripheral,x->IsConjugate(group,x,c)) then
-                continue; # peripheral curve
-            fi;
-            j := First([1..len],j->IsConjugate(group,c,multicurve[j])
-                       or IsConjugate(group,c^-1,multicurve[j]));
-            if j=fail then # add one more curve
-                for j in mat do Add(j,0); od;
-                Add(row,1/Length(i));
-                len := len+1;
-                Add(multicurve,c);
-            else
-                row[j] := row[j] + 1/Length(i);
-            fi;
-        od;
-        Add(mat,row);
-    od;
-
-    Info(InfoFR,1,"Thurston matrix is ",mat);
-
-    x := List(EquivalenceClasses(StronglyConnectedComponents(BinaryRelationOnPoints(List([1..len],x->Filtered([1..len],y->IsPosRat(mat[x][y])))))),Elements);
-    for i in x do
-        if PERRONMATRIX@(mat{i}{i}) then # there's an eigenvalue >= 1
-            d := rec(machine := M,
-                     obstruction := [],
-                     matrix := mat{i}{i});
-            if spider<>fail then
-                d.spider := spider;
-            fi;
-            for j in i do
-                if spider<>fail and IsBound(boundary[j]) then
-                    Add(spider!.arcs,[[0,0,255],MacFloat(105/100),boundary[j][1]]);
-                fi;
-                c := [PreImagesRepresentative(pi,multicurve[j])];
-                if spider<>fail then
-                    REDUCEINNER@(c,GeneratorsOfMonoid(StateSet(M)),NFFUNCTION@(spider));
-                fi;
-                Append(d.obstruction,c);
-            od;
-            return d;
-        fi;
-    od;
-    return fail;
-end);
-
-InstallOtherMethod(FindThurstonObstruction, "(FR) for a list of IMG elements",
-#        [IsIMGElementCollection], !method selection doesn't work!
-        [IsFRElementCollection],
-        function(elts)
-    local M;
-    M := UnderlyingFRMachine(elts[1]);
-    while not IsIMGMachine(M) or ForAny(elts,x->not IsIdenticalObj(M,UnderlyingFRMachine(x))) do
-        Error("Elements do not all have the same underlying IMG machine");
-    od;
-    return FINDOBSTRUCTION@(M,List(elts,InitialState),fail,fail);
-end);
-
-BindGlobal("SPIDEROBSTRUCTION@", function(spider,M)
-    # check if <spider> has coalesced points; in that case, read the
-    # loops around them and check if they form an obstruction
-    local multicurve, boundary, i, j, c, d, x, w;
-
-    # construct a list <x> of (lists of vertices that coalesce)
-    w := VERTICES@(spider);
-    x := Filtered(Combinations([1..Length(w)],2),p->SPHEREDIST@(w[p[1]],w[p[2]])<EPS@.obst);
-    x := EquivalenceClasses(EquivalenceRelationByPairs(Domain([1..Length(w)]),x));
-    x := Filtered(List(x,Elements),c->Size(c)>1);
-    if IsEmpty(x) then
-        return fail;
-    fi;
-
-    # replace each x by its conjugacy class
-    multicurve := [];
-    boundary := [];
-    for i in x do
-        c := One(spider!.group);
-        for j in TREEBOUNDARY@(spider) do
-            if (not j.from.index in i) and j.to.index in i and IsBound(spider!.treeelt[j.index]) then
-                c := c*spider!.treeelt[j.index];
-            fi;
-        od;
-        Add(multicurve,c);
-        Add(boundary,SURROUNDINGCURVE@(spider!.cut,i));
-
-    od;
-    Info(InfoFR,1,"Testing multicurve ",multicurve," for an obstruction");
-
-    return FINDOBSTRUCTION@(M,List(multicurve,x->PreImagesRepresentative(spider!.marking,x)),spider,boundary);
-end);
-
-BindGlobal("EQUIDISTRIBUTEDPOINTS@", function(N)
-    # creates a list of N points equidistributed on the sphere, spiralling
-    # from the north pole to the south pole
-    local points, i, angle, x, y, z, s, sN;
-
-    points := [];
-
-    while Length(points)<N do
-        x := List([1..3],i->Random([-10^6..10^6]));
-        if x^2 > 0 and x^2 < 10^12 then
-            Add(points,SphereProject(MACFLOAT_1*x));
-        fi;
-    od;
-    return points;
-
-    # old code creates spiral, but it's not nicer
-    angle := MACFLOAT_0;
-    sN := Sqrt(MACFLOAT_1*N);
-    for i in [1..N] do
-        z := MACFLOAT_1 - (2*i-1)/N;
-        s := Sqrt(MACFLOAT_1-z^2);
-        angle := angle + s;
-        x := COS_MACFLOAT(angle)*s;
-        y := SIN_MACFLOAT(angle)*s;
-        Add(points, [x,y,z]);
-    od;
-    return points;
-end);
-
-BindGlobal("FRMACHINE2RAT@", function(z,M)
-    local oldspider, spider, t, gens, n, deg, model, poly,
-          f, mobius, match, v, i, j, recf, recmobius, map,
-          dist, obstruction, lifts, sublifts, fast;
-
-    if ValueOption("precision")<>fail then
-        EPS@.prec := ValueOption("precision");
-    fi;
-    if ValueOption("obstruction")<>fail then
-        EPS@.obst := ValueOption("obstruction");
-    fi;
-
-    model := StateSet(M);
-    gens := GeneratorsOfGroup(model);
-    n := Length(gens);
-    deg := Length(AlphabetOfFRObject(M));
-
-    # find out if last state is odometer
-    poly := Output(M,n)=Concatenation([2..deg],[1]) and Transition(M,n,deg)=gens[n] and ForAll(Transitions(M,n){[1..deg-1]},IsOne);
-
-    # create spider on equidistributed points on Greenwich meridian
-    v := [];
-    for i in [1..n] do
-        i := MACFLOAT_PI*(i/n); # on positive real axis, tending to infinity
-        Add(v,[SIN_MACFLOAT(i),MACFLOAT_0,COS_MACFLOAT(i)]);
-    od;
-    v := Permuted(v,PermList(IMGORDERING@(M)));
-    spider := TRIVIALSPIDER@(v);
-    IMGMARKING@(spider,model);
-
-    if ValueOption("julia")<>fail then
-        i := ValueOption("julia");
-        if not IsInt(i) then i := 1000; fi; # number of points to trace
-        spider!.points := EQUIDISTRIBUTEDPOINTS@(i);
-    fi;
-    
-    lifts := fail;
-    f := fail; # in the beginning, we don't know them
-    fast := false;
-    repeat
-        oldspider := spider;
-
-        # find a rational map that has the right critical values
-        f := RATIONALMAP@(z,VERTICES@(spider),List(gens,g->Output(M,g)),f,lifts);
-        lifts := f[2]; f := f[1];
-        Info(InfoFR,3,"1: found rational map ",f," on vertices ",lifts);
-
-        if fast then # just get points closest to those in spider t
-            match := MATCHPOINTS@(sublifts,List(sublifts,x->lifts));
-            if match=fail then
-		Info(InfoFR,3,"Back to slow mode");
-                fast := false; continue;
-            fi;
-            sublifts := lifts{match};
-        else
-            # create a spider on the full preimage of the points of <spider>
-            t := TRIVIALSPIDER@(lifts);
-            IMGMARKING@(t,FreeGroup(Length(lifts)));
-            Info(InfoFR,3,"2: created liftedspider ",t);
-
-            # lift paths in <spider> to <t>
-            recf := LIFTSPIDER@(t,spider,SPHEREINVF@(f),poly);
-            recf := IMGRECURSION@(t,spider,recf[1],recf[2],poly);
-            Info(InfoFR,3,"3: recursion ",recf);
-
-            # find a bijection between the alphabets of <recf> and <M>
-            match := MATCHPERMS@(M,recf[2]);
-            REORDERREC@(recf,match);
-            Info(InfoFR,3,"4: alphabet permutation ",match);
-
-            # extract those vertices in <v> that appear in the recursion
-            sublifts := MATCHTRANS@(M,recf,t,lifts);
-            Info(InfoFR,3,"5: extracted and sorted vertices ",sublifts);
-        fi;
- 
-        # find a mobius transformation that normalizes <sublifts> wrt PSL2C
-        mobius := NORMALIZINGMAP@(sublifts,VERTICES@(spider));
-        Info(InfoFR,3,"6: normalize by mobius map ",mobius);
-        
-        # now create the new spider on the image of these points
-        map := p->SphereP1(PSL2VALUE@(mobius,P1Sphere(p)));
-        v := List(sublifts,map);
-        
-        if fast then # just wiggle spider around
-            spider := WIGGLESPIDER@(spider,v);
-        else
-            spider := TRIVIALSPIDER@(v);
-            recmobius := LIFTSPIDER@(spider,t,p->[map(p)],poly)[1];
-            Info(InfoFR,3,"7: new spider ",spider," with recursion ",recmobius);
-
-            # compose recursion of f with that of mobius
-            map := t!.marking*GroupHomomorphismByImagesNC(t!.group,spider!.group,GeneratorsOfGroup(t!.group),List(recmobius,x->x[1]));
-            for i in recf[1] do
-                for j in [1..Length(i)] do i[j] := i[j]^map; od;
-            od;
-            Info(InfoFR,3,"8: composed recursion is ",recf);
-
-            # finally set marking of new spider using M
-            spider!.model := model;
-            spider!.ordering := oldspider!.ordering;
-            spider!.marking := MATCHMARKINGS@(M,spider!.group,recf);
-            Info(InfoFR,3,"9: marked new spider ",spider);
-        fi;
-        
-        dist := SPIDERDIST@(spider,oldspider,fast);
-        Info(InfoFR,2,"Spider moved ",dist," steps; feet=",VERTICES@(spider)," marking=",spider!.marking);
-        
-        if dist<EPS@.ratprec then
-            break;
-        elif dist<EPS@.fast then
-            fast := true;
-            continue;
-        else
-            fast := false;
-        fi;
-        obstruction := SPIDEROBSTRUCTION@(spider,M);
-        if obstruction<>fail then
-            return obstruction;
-        fi;
-    until false;
-    
-    Info(InfoFR,1,"Spider converged");
-
-    # use last values computed for f,mobius
-    # we have to truncate microscopic coefficients to 0, otherwise Value()
-    # creates 0/0 and infinity/infinity values
-    i := CLEANUPRATIONAL@(PSL2VALUE@(mobius^-1,z),EPS@.ratprec);
-    f := CLEANUPRATIONAL@(Value(f,i),EPS@.ratprec);
-
-    # construct a new machine with simpler recursion
-    for i in recf[1] do
-        for j in [1..Length(i)] do
-            i[j] := PreImagesRepresentative(spider!.marking,i[j]);
-        od;
-    od;
-    IMGOPTIMIZE@(recf[1], recf[2], SPIDERRELATORS@(spider),false);
-    t := FRMachine(model, recf[1], recf[2]);
-    SetIMGRelator(t, SPIDERRELATORS@(spider)[1]);
-    SetIMGMachine(f, t);
-    #!!! we should "untwist" by seeking a
-    # free group automorphism that "untwists" far more spider!.marking
-    # set Correspondence(t) to [automorphism, feet positions on P1]
-    
-    SetSpider(f,spider);
-
-    return f;
-end);
-
-InstallMethod(RationalFunction, "(FR) for an IMG machine",
+InstallMethod(AutomorphismIMGMachine, "(FR) for an IMG machine",
         [IsIMGMachine],
-        M->FRMACHINE2RAT@(Indeterminate(COMPLEX_FIELD,"z":old),M));
+        function(M)
+    local orbit, act, inneract, pmcg, states, output, transition, o, t,
+          reps, transversal, epi, a, b, d, g, newM, recur;
+    
+    states := StateSet(M);
+    act := function(machine,aut) return DISTILLATE@(aut^-1*machine)[1]; end;
+    inneract := function(machine,g) return DISTILLATE@(InnerAutomorphism(states,g^-1)*machine)[1]; end;
+    pmcg := PUREMCG@(states,IMGRelator(M));
+    orbit := Orbit(pmcg,DISTILLATE@(M)[1],act);
+    
+    # sort orbit so that consecutive blocks are related by inner automorphisms
+    orbit := OrbitsDomain(states,orbit,inneract);
+    reps := List(orbit,o->RepresentativeAction(pmcg,orbit[1][1],o[1],act)*List(o,machine->InnerAutomorphism(states,RepresentativeAction(states,o[1],machine,inneract))));
+    transversal := List([1..Length(orbit)],i->List([1..Length(orbit[i])],j->reps[i][j]^-1*M));
+    # now orbit[i][j] is a distilled machine;
+    # orbit[i][j] and orbit[i][k] are related by inner automorphisms
+    # act(M,reps[i][j]) = orbit[i][j]
+    # transversal[i][j] = reps[i][j]^-1*M
+    # distil(transversal[i][j])=orbit[i][j]
 
-InstallMethod(RationalFunction, "(FR) for an indeterminate and an IMG machine",
-        [IsRingElement,IsIMGMachine],
-        FRMACHINE2RAT@);
+    epi := EpimorphismFromFreeGroup(pmcg);
+    
+    output := [];
+    transition := [];
+    
+    for g in GeneratorsOfGroup(Source(epi)) do
+        o := [];
+        t := [];
+        for a in [1..Length(orbit)] do
+            newM := (g^-1)^epi*transversal[a][1];
+            d := DISTILLATE@(newM)[1];
+            b := [PositionProperty(orbit,o->d in o)];
+            Add(b,Position(orbit[b[1]],d));
+            Add(o,b[1]);
+            d := transversal[b[1]][b[2]];
+            d := MATCHMARKINGS@(newM,states,[d!.transitions,d!.output]);
+            Add(t,FACTORIZEAUT@(epi,M,d));
+        od;
+        Add(output,o);
+        Add(transition,t);
+    od;
+    a := FRMachine(Source(epi),transition,output);
+    SetCorrespondence(a,pmcg);
+    return a;
+end);
 #############################################################################
 
 #############################################################################
@@ -3408,7 +1998,7 @@ BindGlobal("CVQUADRATICRATIONAL@", function(f)
     if Length(roots)=0 then
         roots := [0,infinity];
     fi;
-    if Length(roots)>=2 and AbsoluteValue(roots[1]-roots[2])<EPS@.prec then
+    if Length(roots)>=2 and not infinity in roots and AbsoluteValue(roots[1]-roots[2])<EPS@.prec then
         Remove(roots,1);
     fi;
     if Length(roots)=1 then
@@ -3489,6 +2079,223 @@ InstallGlobalFunction(DBRationalIMGGroup, function(arg)
     else
         Error("Argument should be indices in Dau's table, or a rational function\n");
     fi;
+end);
+
+InstallGlobalFunction(Mandel, function(arg)
+    local f, a, b, c, d, cmd;
+
+    while Length(arg)>1 or not ForAll(arg,IsRationalFunction) do
+        Error("Mandel: argument should be at most one rational function");
+    od;
+    cmd := "mandel";
+    if arg<>[] then
+        f := RationalP1Map(IndeterminateOfUnivariateRationalFunction(arg[1]),NORMALIZEV@(P1MapRational(arg[1]),0,false)); # (az^2+b)/(cz^2+d)
+        if IsPolynomial(f) then
+            f := CoefficientsOfUnivariatePolynomial(f);
+            if f[1]=COMPLEX_0 then # z^2
+                a := COMPLEX_0;
+            else # az^2+1
+                a := f[3];
+            fi;
+            Add(cmd,' '); Append(cmd, String(RealPart(a)));
+            Add(cmd,' '); Append(cmd, String(ImaginaryPart(a)));
+        else
+            f := [NumeratorOfRationalFunction(f),DenominatorOfRationalFunction(f)];
+            b := CoefficientsOfUnivariatePolynomial(f[1])[1];
+            c := CoefficientsOfUnivariatePolynomial(f[2])[3];
+            d := CoefficientsOfUnivariatePolynomial(f[2])[1];
+            if DegreeOfRationalFunction(f[1])<2 then # b/(cz^2+d)
+                f := [c*b^2/d^3,COMPLEX_0];
+            else # (az^2+b)/(cz^2+d)
+                a := CoefficientsOfUnivariatePolynomial(f[1])[3];
+                f := [c^2*b/a^3,c*d/a^2];
+            fi;
+            Add(cmd,' '); Append(cmd, String(RealPart(f[1])));
+            Add(cmd,' '); Append(cmd, String(ImaginaryPart(f[1])));
+            Add(cmd,' '); Append(cmd, String(RealPart(f[2])));
+            Add(cmd,' '); Append(cmd, String(ImaginaryPart(f[2])));
+        fi;
+    fi;
+    EXECINSHELL@(InputTextNone(),cmd,ValueOption("detach"));
+end);        
+#############################################################################
+
+#############################################################################
+# conversions
+#
+BindGlobal("SEPARATION@", function(set,s)
+    local a, b, c, i, j, cut;
+  
+    cut := function(set,s)
+        local bins, i;
+        bins := List([0..Length(s)],i->[]);
+        for i in set do
+            Add(bins[PositionSorted(s,i)],i);
+        od;  
+        if Length(bins[1])=1 then
+            UniteSet(bins[1],Remove(bins));
+        fi;
+        return bins;
+    end;
+  
+    b := [];
+    c := [];
+    for i in set do
+        a :=[];
+        for j in s do
+            UniteSet(a,Difference(Set(cut(j,i)),[[]]));
+        od;
+        s := a;
+    od;  
+    
+    return s;
+end);
+
+BindGlobal("EXTERNALANGLESRELATION@",[]);
+
+InstallGlobalFunction(ExternalAnglesRelation, function(degree,n)
+    local a, b, c, i, j, set;
+    
+    if not IsBound(EXTERNALANGLESRELATION@[degree]) then
+        EXTERNALANGLESRELATION@[degree] := [];
+    fi;
+    
+    if not IsBound(EXTERNALANGLESRELATION@[degree][n]) then
+        a := [0..degree-2]/(degree-1);
+        set := [ShallowCopy(a)];
+        for i in [2..n] do
+            b := [1..degree^i-2]/(degree^i-1);
+            SubtractSet(b,a);
+            UniteSet(a,b);
+            c := SEPARATION@(set,[b]);
+            UniteSet(set,c);
+        od;
+        EXTERNALANGLESRELATION@[degree][n] := EquivalenceRelationByPartition(Rationals,set);
+    fi;
+    return EXTERNALANGLESRELATION@[degree][n];
+end);
+
+InstallGlobalFunction(ExternalAngle, function(arg)
+    # convert supporting rays to external angle
+    local deg, sr, n;
+    
+    if Length(arg)=1 and IsFRMachine(arg[1]) then
+        n := SupportingRays(arg[1]);
+    elif Length(arg)>=2 and IsPosInt(arg[1]) and IsList(arg[2]) then
+        n := arg;
+    elif Length(arg)=1 and IsList(arg[1]) then
+        n := arg[1];
+    else
+        Error("ExternalAngle: call with FR machine or supporting rays data, not ",arg);
+    fi;
+    deg := n[1];
+    if Length(n[2])=1 then
+        sr := n[2][1];
+    elif Length(n[3])=1 then
+        sr := n[3][1];
+    fi;
+    sr := sr[1]*deg; sr := sr - Int(sr);
+
+    if RemInt(DenominatorRat(sr),deg)=0 then
+        return sr;
+    fi;
+    n := 1; while not IsInt((deg^n-1)*sr) do n := n+1; od;
+    return EquivalenceClassOfElement(ExternalAnglesRelation(deg,n),sr);
+end);
+
+InstallMethod(KneadingSequence, "(FR) for a rational angle",
+        [IsRat],
+        function(angle)
+    local i, t, s, set, j, marked;
+        
+    s := [];
+    set := [];
+    t := angle;
+    marked := angle>=1/7 and angle<=2/7 and ValueOption("marked")<>fail;
+    
+    if marked then j := "A1"; else j := 1; fi;
+    while not t in s do
+        Add(set,j);
+        if marked then j := "C0"; else j := 0; fi;
+        Add(s,t);
+   
+        t := 2*t - Int(2*t);
+        if t>angle/2 and t<angle/2+1/2 then
+            if marked then j := "C1"; else j := 1; fi;
+        fi; 
+        if marked and t>=1/7 and t<2/7 then j := "A1"; fi;
+        if marked and t>=2/7 and t<4/7 then j := "B1"; fi;
+        if marked and t>=9/14 and t<11/14 then j := "A0"; fi;
+        if marked and t>=11/14 or t<1/14 then j := "B0"; fi;
+    od;
+    i := Position(s,t);
+
+    if i=1 then 
+        Remove(set);
+    else
+        s:=[[],set];
+        for j in [1..i-1] do
+            Add(s[1],set[1]);
+            Remove(set,1);
+        od; 
+        set := s;
+    fi;
+  
+    return set;
+end);
+
+InstallGlobalFunction(AllInternalAddresses, function(n)
+    local a, b, c, i, j, set, s, external, isseparate;
+    
+    external := function(n)
+        local a, b, c, i, j, set, s;
+        a := [];
+        set := [];
+        s := [[]];
+        for i in [2..n] do
+            b := [];
+            for j in [1..2^i-2] do
+                Add(b,j/(2^i-1));
+            od;
+            SubtractSet(b,a);
+            UniteSet(a,b);
+            c := SEPARATION@(set,[b]);
+            UniteSet(set,c);
+            Add(s,c);
+        od;
+        return [a,s];
+    end;
+
+    isseparate := function(a,b)
+        return not (a[1]<b[1] or a[2]>b[2]);
+    end;
+
+    a := external(n);
+    s := a[2];
+    a := a[1]; 
+    for i in [2..n] do
+        for j in [1..Length(s[i])]  do
+            Add(s[i][j],i);
+        od;   
+    od;
+    
+    for i in [2..n] do
+        for j in [1..Length(s[i])] do
+            a:=i-1;
+            while a>1 and Length(s[i][j])<4 do
+                for b in s[a] do
+                    if isseparate(s[i][j],b) then
+                        for c in b do
+                            Add(s[i][j],c);
+                        od; 
+                    fi;
+                od; 
+                a :=a-1;  
+            od;
+        od;   
+    od;
+
+    return s;
 end);
 #############################################################################
 

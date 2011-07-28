@@ -3,7 +3,7 @@
 #W  word.gd                     GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: word.gd,v 4.41 2010/02/23 15:13:36 gap Exp $
+#H  @(#)$Id: word.gd,v 4.42 2011/06/14 13:03:44 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,7 +19,7 @@
 ##  5. External Representation for Nonassociative Words
 ##
 Revision.word_gd :=
-    "@(#)$Id: word.gd,v 4.41 2010/02/23 15:13:36 gap Exp $";
+    "@(#)$Id: word.gd,v 4.42 2011/06/14 13:03:44 gap Exp $";
 
 
 #############################################################################
@@ -349,7 +349,7 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  generator numbers etc. When mapping many (several thousand) words, an
 ##  explicit loop over the words syllables might be faster.
 ##  <P/>
-##  For example, If the elements in <A>imgs</A> are all
+##  For example, if the elements in <A>imgs</A> are all
 ##  <E>associative words</E>
 ##  (see Chapter&nbsp;<Ref Chap="Associative Words"/>)
 ##  in the same family as the elements in <A>gens</A>,

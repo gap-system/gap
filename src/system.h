@@ -9,7 +9,7 @@
 *W                                                  & Burkhard Höfling (MAC)
 *W                                                    & Steve Linton (MS/DOS)
 **
-*H  @(#)$Id: system.h,v 4.69 2010/02/23 15:13:49 gap Exp $
+*H  @(#)$Id: system.h,v 4.75 2011/05/18 13:03:28 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -126,7 +126,7 @@
 #endif
 
 #ifndef SY_STOR_MIN
-# if SYS_MAC_MPW || SYS_TOS_GCC2
+# if SYS_TOS_GCC2
 #  define SY_STOR_MIN   0
 # else
 #  define SY_STOR_MIN   24 * 1024 
@@ -235,7 +235,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_system_h =
-   "@(#)$Id: system.h,v 4.69 2010/02/23 15:13:49 gap Exp $";
+   "@(#)$Id: system.h,v 4.75 2011/05/18 13:03:28 sal Exp $";
 #endif
 extern const char * Revision_system_c;  /* gap.c uses this */
 extern const char * Revision_system_h;
@@ -325,27 +325,6 @@ extern const char * Revision_system_h;
 
 /****************************************************************************
 **
-*V  SYS_MAC_MPW . . . . . . . . . . . . . . . . . . . . . . . . MAC using MPW
-*/
-#ifdef SYS_IS_MAC_MPW
-# define SYS_MAC_MPW    1
-#else
-# define SYS_MAC_MPW    0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_MAC_MWC . . . . . . . . . . . . . . . . . . .  Mac using Metrowerks C
-*/
-#ifdef SYS_IS_MAC_MWC
-# define SYS_MAC_MWC    1
-#else
-# define SYS_MAC_MWC    0
-#endif
-
-/****************************************************************************
-**
 *V  SYS_DARWIN . . . . . . . . . . . . . . .  DARWIN (BSD underlying MacOS X)
 */
 #ifdef SYS_IS_DARWIN
@@ -354,13 +333,7 @@ extern const char * Revision_system_h;
 # define SYS_DARWIN    0
 #endif
 
-
-#if SYS_MAC_MWC  /* on the Mac, fputs does not work. Print error messages 
-					using WriteToLog */
-# define FPUTS_TO_STDERR(str) 	WriteToLog (str)
-#else 
-# define FPUTS_TO_STDERR(str) fputs (str, stderr)
-#endif
+#define FPUTS_TO_STDERR(str) fputs (str, stderr)
 
 /****************************************************************************
 **
@@ -398,11 +371,14 @@ typedef char                    Int1;
 typedef short int               Int2;
 typedef long int                Int4;
 typedef long int                Int;
+typedef long long int           Int8;
 typedef unsigned char           UChar;
 typedef unsigned char           UInt1;
 typedef unsigned short int      UInt2;
 typedef unsigned long int       UInt4;
 typedef unsigned long int       UInt;
+typedef unsigned long long int  UInt8;
+
 #endif
 
 
@@ -570,24 +546,10 @@ extern UInt SyCacheSize;
 
 
 /****************************************************************************
-**
-*V  SyCheckForCompletion  . . . . . . . . . . . .  check for completion files
-*/
-extern Int SyCheckForCompletion;
-
-
-/****************************************************************************
-**
-*V  SyCheckCompletionCrcComp  . . .  check crc while reading completion files
-*/
-extern Int SyCheckCompletionCrcComp;
-
-
-/****************************************************************************
-**
-*V  SyCheckCompletionCrcRead  . . . . . . .  check crc while completing files
-*/
-extern Int SyCheckCompletionCrcRead;
+ **
+ *V  SyCheckCRCCompiledModule  . . .  check crc while loading compiled modules
+ */
+extern Int SyCheckCRCCompiledModule;
 
 
 /****************************************************************************
@@ -879,17 +841,6 @@ extern int SyUseModule;
 **  starting with '@' to the output to let 'xgap' know what is going on.
 */
 extern UInt SyWindow;
-
-
-/****************************************************************************
-**
-*V  SyFalseEqFail . . . . .. .compatibility option, identifies false and fail
-**
-** In GAP 3 there was no fail, and false was often used. This flag causes
-** false and fail to be the same value
-*/
-
-extern UInt SyFalseEqFail;
 
 
 /****************************************************************************
@@ -1300,6 +1251,32 @@ extern Char *getOptionArg(Char key, UInt which);
 
 extern void MergeSort(void *data, unsigned count, unsigned width,
   int (*lessThan)(const void *a, const void *));
+
+/****************************************************************************
+ **
+ *F    sySetjmp( <jump buffer> )
+ *F    syLongjmp( <jump buffer>, <value>)
+ ** 
+ **   macros, defining our selected longjump mechanism
+ */
+
+#if HAVE_SIGSETJMP
+#define sySetjmp( buff ) (sigsetjmp( (buff), 0))
+#define syLongjmp siglongjmp
+#define syJmp_buf sigjmp_buf
+#else
+#if HAVE__SETJMP
+#define sySetjmp _setjmp
+#define syLongjmp _longjmp
+#define syJmp_buf jmp_buf
+#else
+#define sySetjmp setjmp
+#define syLongjmp longjmp
+#define syJmp_buf jmp_buf
+#endif
+#endif
+
+
 
 /****************************************************************************
 **

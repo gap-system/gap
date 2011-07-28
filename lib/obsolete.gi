@@ -2,7 +2,7 @@
 ##
 #W  obsolete.gi                  GAP library                     Steve Linton
 ##
-#H  @(#)$Id: obsolete.gi,v 4.2 2010/08/02 16:36:55 alexk Exp $
+#H  @(#)$Id: obsolete.gi,v 4.4 2011/02/03 12:49:57 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  See the comments in `lib/obsolete.gd'.
 ##
 Revision.obsolete_gi :=
-    "@(#)$Id: obsolete.gi,v 4.2 2010/08/02 16:36:55 alexk Exp $";
+    "@(#)$Id: obsolete.gi,v 4.4 2011/02/03 12:49:57 gap Exp $";
 
 
 #############################################################################
@@ -420,6 +420,310 @@ InstallGlobalFunction( ProductPol, function( f, g )
     od;
     return prod;
 end );
+
+
+#############################################################################
+##
+#F  TeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . . . TeX objects
+##
+##  <ManSection>
+##  <Func Name="TeX" Arg='obj1, ...'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+BIND_GLOBAL( "TeX", function( arg )
+    local   str,  res,  obj;
+
+    str := "";
+    for obj  in arg  do
+        res := TeXObj(obj);
+        APPEND_LIST_INTR( str, res );
+        APPEND_LIST_INTR( str, "%\n" );
+    od;
+    CONV_STRING(str);
+    return str;
+end );
+
+
+#############################################################################
+##
+#F  LaTeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . LaTeX objects
+##
+##  <#GAPDoc Label="LaTeX">
+##
+##  <ManSection>
+##  <Func Name="LaTeX" Arg='obj1, obj2, ...'/>
+##  
+##  <Description>
+##  Returns a LaTeX string describing the objects <A>obj1</A>, <A>obj2</A>, ... .
+##  This string can for example be pasted to a &LaTeX; file, or one can use
+##  it in composing a temporary &LaTeX; file,
+##  which is intended for being &LaTeX;'ed afterwards from within &GAP;.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> LaTeX(355/113);
+##  "\\frac{355}{113}%\n"
+##  gap> LaTeX(Z(9)^5);
+##  "Z(3^{2})^{5}%\n"
+##  gap> Print(LaTeX([[1,2,3],[4,5,6],[7,8,9]]));
+##  \left(\begin{array}{rrr}%
+##  1&2&3\\%
+##  4&5&6\\%
+##  7&8&9\\%
+##  \end{array}\right)%
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "LaTeX", function( arg )
+    local   str,  res,  obj;
+
+    str := "";
+    for obj  in arg  do
+        res := LaTeXObj(obj);
+        APPEND_LIST_INTR( str, res );
+        APPEND_LIST_INTR( str, "%\n" );
+    od;
+    CONV_STRING(str);
+    return str;
+end );
+
+
+#############################################################################
+##
+#M  LaTeXObj( <ffe> ) . . . . . .  convert a finite field element into a string
+##
+InstallMethod(LaTeXObj,"for an internal FFE",true,[IsFFE and IsInternalRep],0,
+function ( ffe )
+local   str, log,deg,char;
+  char:=Characteristic(ffe);
+  if   IsZero( ffe )  then
+    str := Concatenation("0\*Z(",String(char),")");
+  else
+    str := Concatenation("Z(",String(char));
+    deg:=DegreeFFE(ffe);
+    if deg <> 1  then
+      str := Concatenation(str,"^{",String(deg),"}");
+    fi;
+    str := Concatenation(str,")");
+    log:= LogFFE(ffe,Z( char ^ deg ));
+    if log <> 1 then
+      str := Concatenation(str,"^{",String(log),"}");
+    fi;
+  fi;
+  ConvertToStringRep( str );
+  return str;
+end );
+
+
+#############################################################################
+##
+#M  LaTeXObj( <elm> ) . . . . . . . for packed word in default representation
+##
+InstallMethod( LaTeXObj,"for an element of an f.p. group (default repres.)",
+  true, [ IsElementOfFpGroup and IsPackedElementDefaultRep ],0,
+function( obj )
+  return LaTeXObj( obj![1] );
+end );
+
+
+#############################################################################
+##
+#M  LaTeXObj
+##
+InstallMethod(LaTeXObj,"matrix",
+  [IsMatrix],
+function(m)
+local i,j,l,n,s;
+  l:=Length(m);
+  n:=Length(m[1]);
+  s:="\\left(\\begin{array}{";
+  for i in [1..n] do
+    Add(s,'r');
+  od;
+  Append(s,"}%\n");
+  for i in [1..l] do
+    for j in [1..n] do
+      Append(s,LaTeXObj(m[i][j]));
+      if j<n then
+        Add(s,'&');
+      fi;
+    od;
+    Append(s,"\\\\%\n");
+  od;
+  Append(s,"\\end{array}\\right)");
+  return s;
+end);
+
+
+InstallMethod( LaTeXObj,"polynomial",true, [ IsPolynomial ],0,function(pol)
+local fam, ext, str, zero, one, mone, le, c, s, b, ind, i, j;
+
+  fam:=FamilyObj(pol);
+  ext:=ExtRepPolynomialRatFun(pol);
+  str:="";
+  zero := fam!.zeroCoefficient;
+  one := fam!.oneCoefficient;
+  mone := -one;
+  le:=Length(ext);
+
+  if le=0 then
+    return String(zero);
+  fi;
+  for i  in [ le-1,le-3..1] do
+    if i<le-1 then
+      # this is the second summand, so arithmetic will occur
+    fi;
+
+    if ext[i+1]=one then
+      if i<le-1 then
+	Add(str,'+');
+      fi;
+      c:=false;
+    elif ext[i+1]=mone then
+      Add(str,'-');
+      c:=false;
+    else
+      if IsRat(ext[i+1]) and ext[i+1]<0 then
+	s:=Concatenation("-",LaTeXObj(-ext[i+1]));
+      else
+	s:=LaTeXObj(ext[i+1]);
+      fi;
+
+      b:=false;
+      if '+' in s and s[1]<>'(' then
+	s:=Concatenation("(",s,")");
+      fi;
+
+      if i<le-1 and s[1]<>'-' then
+	Add(str,'+');
+      fi;
+      Append(str,s);
+      c:=true;
+    fi;
+
+    if Length(ext[i])<2 then
+      # trivial monomial. Do we have to add a '1'?
+      if c=false then
+        Append(str,String(one));
+      fi;
+    else
+      #if c then
+#	Add(str,'*');
+#      fi;
+      for j  in [ 1, 3 .. Length(ext[i])-1 ]  do
+#	if 1 < j  then
+#	  Add(str,'*');
+#	fi;
+	ind:=ext[i][j];
+	if HasIndeterminateName(fam,ind) then
+	  Append(str,IndeterminateName(fam,ind));
+	else
+	  Append(str,"x_{");
+	  Append(str,String(ind)); 
+	  Add(str,'}');
+	fi;
+	if 1 <> ext[i][j+1]  then
+	  Append(str,"^{");
+	  Append(str,String(ext[i][j+1]));
+	  Add(str,'}');
+	fi;
+      od;
+    fi;
+  od;
+
+  return str;
+end);
+
+
+#############################################################################
+##
+#M  LaTeXObj
+##
+InstallMethod(LaTeXObj,"rational",
+  [IsRat],
+function(r)
+local n,d;
+  if IsInt(r) then
+    return String(r);
+  fi;
+  n:=NumeratorRat(r);
+  d:=DenominatorRat(r);
+  if AbsInt(n)<5 and AbsInt(d)<5 then
+    return Concatenation(String(n),"/",String(d));
+  else
+    return Concatenation("\\frac{",String(n),"}{",String(d),"}");
+  fi;
+end);
+
+
+InstallMethod(LaTeXObj,"assoc word in letter rep",true,
+  [IsAssocWord and IsLetterAssocWordRep],0,
+function(elm)
+local names,len,i,g,h,e,a,s;
+
+  names:= ShallowCopy(FamilyObj( elm )!.names);
+  for i in [1..Length(names)] do
+    s:=names[i];
+    e:=Length(s);
+    while e>0 and s[e] in CHARS_DIGITS do
+      e:=e-1;
+    od;
+    if e<Length(s) then
+      if e=Length(s)-1 then
+	s:=Concatenation(s{[1..e]},"_",s{[e+1..Length(s)]});
+      else
+	s:=Concatenation(s{[1..e]},"_{",s{[e+1..Length(s)]},"}");
+      fi;
+      names[i]:=s;
+    fi;
+  od;
+
+  s:="";
+  elm:=LetterRepAssocWord(elm);
+  len:= Length( elm );
+  i:= 2;
+  if len = 0 then
+    return( "id" );
+  else
+    g:=AbsInt(elm[1]);
+    e:=SignInt(elm[1]);
+    while i <= len do
+      h:=AbsInt(elm[i]);
+      if h=g then
+        e:=e+SignInt(elm[i]);
+      else
+	Append(s, names[g] );
+	if e<>1 then
+	  Append(s,"^{");
+	  Append(s,String(e));
+	  Append(s,"}");
+	fi;
+        g:=h;
+	e:=SignInt(elm[i]);
+      fi;
+      i:=i+1;
+    od;
+    Append(s, names[g] );
+    if e<>1 then
+      Append(s,"^{");
+      Append(s,String(e));
+      Append(s,"}");
+    fi;
+  fi;
+  return s;
+end);
+
+#############################################################################
+##
+#V  PROFILETHRESHOLD
+##
+##  This is now stored in GAPInfo.ProfileThreshold
+##
+PROFILETHRESHOLD := GAPInfo.ProfileThreshold;
 
 
 #############################################################################

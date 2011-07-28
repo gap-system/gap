@@ -3,7 +3,7 @@
 #W  ctadmin.tbd         GAP character table library             Thomas Breuer
 #W                                                               Ute Schiffer
 ##
-#H  @(#)$Id: ctadmin.tbd,v 4.62 2006/09/13 16:14:07 gap Exp $
+#H  @(#)$Id: ctadmin.tbd,v 4.66 2011/02/11 16:07:46 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -20,7 +20,7 @@
 ##  6. Functions to produce tables in library format
 ##
 Revision.( "ctbllib/gap4/ctadmin_tbd" ) :=
-    "@(#)$Id: ctadmin.tbd,v 4.62 2006/09/13 16:14:07 gap Exp $";
+    "@(#)$Id: ctadmin.tbd,v 4.66 2011/02/11 16:07:46 gap Exp $";
 
 
 #############################################################################
@@ -43,25 +43,21 @@ Revision.( "ctbllib/gap4/ctadmin_tbd" ) :=
 ##  <C>cto</C><E>descr</E><C>.tbl</C>.
 ##  <P/>
 ##  Each data file of the table library is supposed to consist of
-##  <List>
-##  <Mark>1.</Mark>
+##  <Enum>
 ##  <Item>
 ##    comment lines, starting with <C>#</C> in the first column,
 ##  </Item>
-##  <Mark>2.</Mark>
 ##  <Item>
-##    assignments to <C>ALN</C> (short for <Q>add library name</Q>,
+##    assignments to <Ref Func="ALN"/> (short for <Q>add library name</Q>,
 ##    see&nbsp;<Ref Func="NotifyNameOfCharacterTable"/>)
 ##    and to a component of <C>Revision</C>, at the beginning of the file,
 ##    for example in the file with name <F>ctoalter.tbl</F> a value is
 ##    assigned to <C>Revision.ctoalter&uscore;tbl</C>,
 ##  </Item>
-##  <Mark>3.</Mark>
 ##  <Item>
-##    assignments to <C>ALN</C> and to a component of
+##    assignments to <Ref Func="ALN"/> and to a component of
 ##    <C>LIBTABLE.LOADSTATUS</C>, at the end of the file, and
 ##  </Item>
-##  <Mark>4.</Mark>
 ##  <Item>
 ##    function calls of the form
 ##    <C>SET&uscore;TABLEFILENAME( <A>filename</A> )</C>,
@@ -89,11 +85,11 @@ Revision.( "ctbllib/gap4/ctadmin_tbd" ) :=
 ##    <A>component</A> a string, and
 ##    <A>compdata</A> any &GAP; object.
 ##    <P/>
-##    <C>MOT</C>, <C>ALF</C>, <C>ALN</C>, and <C>ARC</C> occur only in files
-##    containing ordinary character tables,
+##    <C>MOT</C>, <Ref Func="ALF"/>, <Ref Func="ALN"/>, and <C>ARC</C>
+##    occur only in files containing ordinary character tables,
 ##    and <C>MBT</C> occurs only in files containing Brauer tables.
 ##  </Item>
-##  </List>
+##  </Enum>
 ##  <P/>
 ##  Besides the above calls, the data in files containing ordinary and Brauer
 ##  tables may contain only the following &GAP; functions.
@@ -101,19 +97,19 @@ Revision.( "ctbllib/gap4/ctadmin_tbd" ) :=
 ##  arbitrary &GAP; library functions.)
 ##  <P/>
 ##  <C>ACM</C>,
-##  <C>Concatenation</C>,
-##  <C>E</C>,
+##  <Ref Func="Concatenation" BookName="ref"/>,
+##  <Ref Func="E" BookName="ref"/>,
 ##  <C>EvalChars</C>,
 ##  <C>GALOIS</C>,
-##  <C>Length</C>,
+##  <Ref Func="Length" BookName="ref"/>,
 ##  <C>NotifyCharTableName</C>,
-##  <C>ShallowCopy</C>,
+##  <Ref Func="ShallowCopy" BookName="ref"/>,
 ##  <C>TENSOR</C>, and
-##  <C>TransposedMat</C>.
+##  <Ref Func="TransposedMat" BookName="ref"/>.
 ##  <P/>
-##  The <F>awk</F> script <F>maketbl</F> in the <F>etc</F> directory of the
-##  &CTblLib; package expects the file format described above,
-##  and to some extent this format is checked by this script.
+##  The function <C>CTblLibRecomputeTOC</C> in the file <F>dev/maketbl.g</F>
+##  of the &CTblLib; package expects the file format described above,
+##  and to some extent it checks this format.
 ##  <P/>
 ##  The function calls may be continued over several lines of a file.
 ##  A semicolon is assumed to be the last character in its line
@@ -122,24 +118,26 @@ Revision.( "ctbllib/gap4/ctadmin_tbd" ) :=
 ##  Names of character tables are strings
 ##  (see Chapter&nbsp;<Ref Chap="Strings and Characters" BookName="ref"/>),
 ##  i.&nbsp;e., they are enclosed in double quotes;
-##  strings in table library files must not be split over several lines,
-##  because otherwise the <C>awk</C> script may get confused.
+##  <E>strings in table library files must not be split over several
+##  lines</E>, because otherwise the function <C>CTblLibRecomputeTOC</C> may
+##  get confused.
 ##  Additionally, no character table name is allowed to contain double
 ##  quotes.
 ##  <P/>
 ##  &GAP;'s knowledge about the ordinary tables in the table library
 ##  is given by the file <F>ctprimar.tbl</F> (the <Q>primary file</Q> of the
 ##  table library).
-##  This file can be produced from the library files by the script
-##  <F>maketbl</F> in the <F>etc</F> directory of the &CTblLib; package.
+##  This file can be produced from the library files using the function
+##  <C>CTblLibRecomputeTOC</C> in the file <F>dev/maketbl.g</F> of the
+##  &CTblLib; package.
 ##  The information is stored in the global variable <C>LIBLIST</C>,
 ##  which is a record with the following components.
 ##  <P/>
 ##  <List>
 ##  <Mark><C>firstnames</C></Mark>
 ##  <Item>
-##    the list of <C>Identifier</C> (see&nbsp;<Ref Func="Identifier"
-##    Label="for character tables" BookName="ref"/>)
+##    the list of
+##    <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
 ##    values of the ordinary tables,
 ##  </Item>
 ##  <Mark><C>files</C></Mark>
@@ -188,13 +186,13 @@ Revision.( "ctbllib/gap4/ctadmin_tbd" ) :=
 ##  </Item>
 ##  <Mark><C>sporadicSimple</C></Mark>
 ##  <Item>
-##    a list of identifiers of the tables of the <C>26</C> sporadic simple
+##    a list of identifiers of the tables of the <M>26</M> sporadic simple
 ##    groups, and
 ##  </Item>
 ##  <Mark><C>GENERIC</C></Mark>
 ##  <Item>
 ##    a record with information about generic tables
-##    (see Section&nbsp;<Ref Sect="sec:generic_tables"/>).
+##    (see Section&nbsp;<Ref Sect="sec:generictables"/>).
 ##  </Item>
 ##  </List>
 ##  <P/>
@@ -204,9 +202,10 @@ Revision.( "ctbllib/gap4/ctadmin_tbd" ) :=
 ##  <E>Full ordinary tables</E> are encoded by a call to the function
 ##  <C>MOT</C>,
 ##  where the arguments correspond to the relevant attribute values;
-##  each fusion into another library table is added by a call to <C>ALF</C>,
-##  values to be stored in components of the table object are added with
-##  <C>ARC</C>, and admissible names are notified with <C>ALN</C>.
+##  each fusion into another library table is added by a call to
+##  <Ref Func="ALF"/>, values to be stored in components of the table object
+##  are added with <C>ARC</C>, and admissible names are notified with
+##  <Ref Func="ALN"/>.
 ##  The argument of <C>MOT</C> that encodes the irreducible characters is
 ##  abbreviated as follows.
 ##  For each subset of characters that differ just by multiplication with a
@@ -219,7 +218,7 @@ Revision.( "ctbllib/gap4/ctadmin_tbd" ) :=
 ##  <P/>
 ##  <E>Brauer tables</E> are stored relative to the corresponding ordinary
 ##  tables; attribute values that can be got by restriction from the ordinary
-##  table to <M>p</M>--regular classes are not stored,
+##  table to <M>p</M>-regular classes are not stored,
 ##  and instead of the irreducible characters the files contain (inverses of)
 ##  decomposition matrices or Brauer trees for the blocks of nonzero defect.
 ##  <P/>
@@ -227,8 +226,9 @@ Revision.( "ctbllib/gap4/ctadmin_tbd" ) :=
 ##  <Ref Func="ConstructionInfoCharacterTable"/> set,
 ##  with value a list that contains the name of the construction
 ##  function used and the arguments for a call to this function;
-##  the function call is performed by <C>CharacterTable</C> when the table is
-##  constructed (<E>not</E> when the file containing the table is read).
+##  the function call is performed by
+##  <Ref Func="CharacterTable" BookName="ref"/> when the table is constructed
+##  (<E>not</E> when the file containing the table is read).
 ##  The aim of this mechanism is to store structured character tables such as
 ##  tables of direct products and tables of central extensions of other
 ##  tables in a compact way.
@@ -240,33 +240,45 @@ Revision.( "ctbllib/gap4/ctadmin_tbd" ) :=
 ##  0. Global variables to handle the table library.
 ##
 
+BindGlobal( "CTblLib", rec() );
+
+
 #############################################################################
 ##
 #V  LIBTABLE
 ##
 ##  is a record with the components
-##  \beginitems
-##  `LOADSTATUS' &
+##  <P/>
+##  <List>
+##  <Mark><C>LOADSTATUS</C></Mark>
+##  <Item>
 ##     a record whose components are names of files in the table library,
-##     with value one of `\"loaded\"', `\"unloaded\"', `\"userloaded\"',
-##
-##  `TABLEFILENAME' &
+##     with value one of <C>"loaded"</C>, <C>"unloaded"</C>,
+##     <C>"userloaded"</C>,
+##  </Item>
+##  <Mark><C>TABLEFILENAME</C></Mark>
+##  <Item>
 ##     the name of the file that is currently read
-##     (is set by `SET_TABLEFILENAME'),
-##
-##  `unload' &
+##     (is set by <C>SET_TABLEFILENAME</C>),
+##  </Item>
+##  <Mark><C>unload</C></Mark>
+##  <Item>
 ##     a Boolean, only one file with ordinary character tables plus perhaps
 ##     the corresponding file with Brauer tables is kept in memory if the
-##     value is `true' (which is the default),
-##
-##  `clmelab' &
+##     value is <K>true</K> (which is the default),
+##  </Item>
+##  <Mark><C>clmelab</C></Mark>
+##  <Item>
 ##     the list for Clifford matrices of extensions by elementary abelian
 ##     normal subgroups
-##
-##  `clmexsp' &
+##  </Item>
+##  <Mark><C>clmexsp</C></Mark>
+##  <Item>
 ##     the list for Clifford matrices of extensions by extraspecial normal
 ##     subgroups
-##  \enditems
+##  </Item>
+##  </List>
+##  <P/>
 ##  Additionally the filenames of loaded and userloaded files occur as
 ##  components, with values the lists of data stored in the files.
 ##
@@ -286,16 +298,17 @@ DeclareSynonym( "OrderCyc", Order );
 
 #############################################################################
 ##
-##  1. Representations of library tables
+#F  SET_TABLEFILENAME( <filename> )
 ##
-##  All these are in the library now, because the library accesses these.
+DeclareGlobalFunction( "SET_TABLEFILENAME" );
 
 
 #############################################################################
 ##
-#F  SET_TABLEFILENAME( <filename> )
+##  1. Representations of library tables
 ##
-DeclareGlobalFunction( "SET_TABLEFILENAME" );
+##  All these are in the library now, because the library accesses these.
+##
 
 
 #############################################################################
@@ -337,7 +350,7 @@ DeclareGlobalFunction( "EvalChars" );
 ##  <Func Name="ALF" Arg="from, to, map[, text, spec]"/>
 ##
 ##  <Description>
-##  <C>ALF</C> stores the fusion map <A>map</A> between the ordinary
+##  <Ref Func="ALF"/> stores the fusion map <A>map</A> between the ordinary
 ##  character tables with identifier strings <A>from</A> and <A>to</A>
 ##  in the record encoding the table with identifier <A>from</A>.
 ##  If the string <A>text</A> is given then it is added
@@ -345,9 +358,9 @@ DeclareGlobalFunction( "EvalChars" );
 ##  If the argument <A>spec</A> is given then it is added
 ##  as <C>specification</C> component of the fusion.
 ##  <P/>
-##  <C>ALF</C> changes the global list <C>LIBLIST.fusionsource</C>.
+##  <Ref Func="ALF"/> changes the global list <C>LIBLIST.fusionsource</C>.
 ##  <P/>
-##  Note that the <C>ALF</C> statement should be placed in the file
+##  Note that the <Ref Func="ALF"/> statement should be placed in the file
 ##  containing the data for the table with identifier <A>from</A>.
 ##  </Description>
 ##  </ManSection>
@@ -394,14 +407,23 @@ DeclareGlobalFunction( "ARC" );
 ##  If there is already another library table for which some of these names
 ##  are admissible then an error is signaled.
 ##  <P/>
-##  <C>NotifyNameOfCharacterTable</C> modifies the global variable
+##  <Ref Func="NotifyNameOfCharacterTable"/> modifies the global variable
 ##  <C>LIBLIST</C>.
 ##  <P/>
-##  <C>ALN</C> is a shorthand for <C>NotifyNameOfCharacterTable</C>.
-##  In those library files for which the <F>maketbl</F> script has produced
-##  the necessary information for <C>LIBLIST</C>, <C>ALN</C> is set to
-##  <C>Ignore</C> in the beginning
-##  and back to <C>NotifyNameOfCharacterTable</C> in the end.
+##  <Ref Func="ALN"/> is a shorthand for
+##  <Ref Func="NotifyNameOfCharacterTable"/>.
+##  In those library files for which <C>CTblLibRecomputeTOC</C> has produced
+##  the necessary information for <C>LIBLIST</C>,
+##  <Ref Func="ALN"/> is set to <C>Ignore</C>
+##  in the beginning and back to <Ref Func="NotifyNameOfCharacterTable"/>
+##  in the end.
+##  <Example>
+##  gap> CharacterTable( "private" );
+##  fail
+##  gap> NotifyNameOfCharacterTable( "A5", [ "private" ] );
+##  gap> a5:= CharacterTable( "private" );
+##  CharacterTable( "A5" )
+##  </Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -410,9 +432,6 @@ DeclareGlobalFunction( "NotifyNameOfCharacterTable" );
 ALN:= NotifyNameOfCharacterTable;  # We do not use `DeclareSynonym' here
                                    # because assignments are made to `ALN'
                                    # in data files.
-
-#T because of the table files ...
-NotifyCharTableName := NotifyNameOfCharacterTable;
 
 
 #############################################################################
@@ -425,7 +444,9 @@ NotifyCharTableName := NotifyNameOfCharacterTable;
 ##
 ##  <Description>
 ##  notifies a new ordinary table to the library.
-##  This table has <C>Identifier</C> value <A>firstname</A>,
+##  This table has
+##  <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
+##  value <A>firstname</A>,
 ##  it is contained (in library format, see&nbsp;<Ref Func="PrintToLib"/>)
 ##  in the file with name <A>filename</A> (without suffix <C>.tbl</C>),
 ##  and the names contained in the list <A>othernames</A> are admissible
@@ -436,8 +457,8 @@ NotifyCharTableName := NotifyNameOfCharacterTable;
 ##  Otherwise it is interpreted <E>relative</E> to the <F>data</F> directory
 ##  of the &CTblLib; package.
 ##  <P/>
-##  <C>NotifyCharacterTable</C> modifies the global variable <C>LIBLIST</C>
-##  for the current &GAP; session,
+##  <Ref Func="NotifyCharacterTable"/> modifies the global variable
+##  <C>LIBLIST</C> for the current &GAP; session,
 ##  after having checked that there is no other library table yet with an
 ##  admissible name equal to <A>firstname</A>
 ##  or contained in <A>othernames</A>.
@@ -537,7 +558,7 @@ DeclareGlobalFunction( "PrimeBase" );
 ##
 #F  LibInfoCharacterTable( <tblname> )
 ##
-##  <#GAPDoc Label="CharacterTableFromLibrary">
+##  <#GAPDoc Label="LibInfoCharacterTable">
 ##  <ManSection>
 ##  <Func Name="LibInfoCharacterTable" Arg="tblname"/>
 ##
@@ -590,8 +611,10 @@ DeclareGlobalFunction( "LibraryTables" );
 ##  We replace the library function `CharacterTableFromLibrary' that just
 ##  issues a warning about nonavailability of the Character Table Library.
 ##
-MakeReadWriteGlobal( "CharacterTableFromLibrary" );
-UNBIND_GLOBAL( "CharacterTableFromLibrary" );
+if IsBoundGlobal( "CharacterTableFromLibrary" ) then
+  MakeReadWriteGlobal( "CharacterTableFromLibrary" );
+  UNBIND_GLOBAL( "CharacterTableFromLibrary" );
+fi;
 
 
 #############################################################################
@@ -606,28 +629,29 @@ UNBIND_GLOBAL( "CharacterTableFromLibrary" );
 ##  <Description>
 ##  If the only argument is a string <A>tblname</A> and if this is
 ##  an admissible name (see below) of a library character table then
-##  <C>CharacterTableFromLibrary</C> returns this library table,
+##  <Ref Func="CharacterTableFromLibrary"/> returns this library table,
 ##  otherwise <K>fail</K>.
 ##  <P/>
-##  If <C>CharacterTableFromLibrary</C> is called with more than one argument
-##  then the first must be a string <A>tblname</A> specifying a series of
-##  groups which is implemented via a generic character table,
+##  If <Ref Func="CharacterTableFromLibrary"/> is called with more than one
+##  argument then the first must be a string <A>tblname</A> specifying a
+##  series of groups which is implemented via a generic character table,
 ##  for example <C>"Symmetric"</C> for symmetric groups;
 ##  the remaining arguments specialise then the desired member of the series
-##  (see Section&nbsp;<Ref Sect="sec:generic_tables"/> for a list of
+##  (see Section&nbsp;<Ref Sect="sec:generictables"/> for a list of
 ##  available generic tables).
 ##  If no generic table with name <A>tblname</A> is available or if the
-##  parameters are not admissible then <C>CharacterTableFromLibrary</C>
-##  returns <K>fail</K>.
+##  parameters are not admissible
+##  then <Ref Func="CharacterTableFromLibrary"/> returns <K>fail</K>.
 ##  <P/>
-##  A call of <C>CharacterTableFromLibrary</C> may cause to read some library
-##  files and to construct the table object from the data stored in these
-##  files,
+##  A call of <Ref Func="CharacterTableFromLibrary"/> may cause that some
+##  library files are read and that some table objects are constructed
+##  from the data stored in these files,
 ##  so fetching a library table may take more time than on expects.
 ##  <P/>
-##  <C>CharacterTableFromLibrary</C> is called by <C>CharacterTable</C> if
+##  <Ref Func="CharacterTableFromLibrary"/> is called by
+##  <Ref Func="CharacterTable" BookName="ref"/> if
 ##  the first argument is a string,
-##  so one may also call <C>CharacterTable</C> instead.
+##  so one may also call <Ref Func="CharacterTable" BookName="ref"/> instead.
 ##  <P/>
 ##  Admissible names for the <E>ordinary character table</E> <M>t</M> of
 ##  the group <M>G</M> are
@@ -637,7 +661,7 @@ UNBIND_GLOBAL( "CharacterTableFromLibrary" );
 ##    (see Section&nbsp;<Ref Sect="sec:ATLAS Tables"/>), for example
 ##    <C>"M22"</C> for the table of the Mathieu group <M>M_{22}</M>,
 ##    <C>"L2(13).2"</C> for <M>L_2(13):2</M>, and
-##    <C>"12&uscore;1.U4(3).2&uscore;1"</C> for <M>12_1.U_4(3).2_1</M>.
+##    <C>"12_1.U4(3).2_1"</C> for <M>12_1.U_4(3).2_1</M>.
 ##    <P/>
 ##    (The difference to the name printed in the &ATLAS; is
 ##    that subscripts and superscripts are omitted except if they are used to
@@ -697,13 +721,22 @@ UNBIND_GLOBAL( "CharacterTableFromLibrary" );
 ##  so it is not necessary to define admissible names of Brauer tables.
 ##  <P/>
 ##  A <E>generic character table</E>
-##  (see Section&nbsp;<Ref Sect="sec:generic_tables"/>) is
-##  accessible only by the name given by its <C>Identifier</C> value
-##  (see <Ref Func="Identifier" Label="for character tables" BookName="ref"/>).
+##  (see Section&nbsp;<Ref Sect="sec:generictables"/>) is
+##  accessible only by the name given by its 
+##  <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
+##  value.
 ##  <P/>
 ##  Case is not significant for character table names.
 ##  For example, both <C>"suzm3"</C> and <C>"SuzM3"</C> are admissible names
 ##  for the third maximal subgroup of the sporadic simple Suzuki group.
+##  <Example>
+##  gap> s5:= CharacterTable( "A5.2" );
+##  CharacterTable( "A5.2" )
+##  gap> sym5:= CharacterTable( "Symmetric", 5 );
+##  CharacterTable( "Sym(5)" )
+##  gap> TransformingPermutationsCharacterTables( s5, sym5 );
+##  rec( columns := (2,3,4,7,5), rows := (1,7,3,4,6,5,2), group := Group(()) )
+##  </Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -781,7 +814,7 @@ DeclareGlobalFunction( "BrauerTableFromLibrary" );
 ##  <Description>
 ##  For a record <A>gentbl</A> representing a generic character table,
 ##  and a parameter value <A>q</A>,
-##  <C>CharacterTableSpecialized</C> returns a character table object
+##  <Ref Func="CharacterTableSpecialized"/> returns a character table object
 ##  computed by evaluating <A>gentbl</A> at <A>q</A>.
 ##  <P/>
 ##  <Example>
@@ -986,14 +1019,16 @@ InstallMethod( FingerprintOfCharacterTable,
 ##  <P/>
 ##  The selection function for character tables from the &GAP; Character
 ##  Table Library that have certain abstract properties is
-##  <C>AllCharacterTableNames</C>.
+##  <Ref Func="AllCharacterTableNames"/>.
 ##  <Index>selection function!for character tables</Index>
 ##  Contrary to the situation in the case of group libraries,
 ##  the selection function returns a list not of library character tables
 ##  but of their names;
-##  using <C>CharacterTable</C> one can then access the tables themselves.
+##  using <Ref Func="CharacterTable" BookName="ref"/>
+##  one can then access the tables themselves.
 ##  <P/>
-##  <C>AllCharacterTableNames</C> takes an arbitrary even number of arguments.
+##  <Ref Func="AllCharacterTableNames"/> takes an arbitrary even number
+##  of arguments.
 ##  The argument at each odd position must be a function, and
 ##  the argument at the subsequent even position must be a value that this
 ##  function must return when called for the character table in question,
@@ -1039,10 +1074,11 @@ InstallMethod( FingerprintOfCharacterTable,
 ##  <P/>
 ##  returns the union of names of ordinary tables of those maximal subgroups
 ##  of sporadic simple groups that are contained in the table library in the
-##  sense that the attribute <C>Maxes</C> is set.
+##  sense that the attribute <Ref Attr="Maxes"/> is set.
 ##  <P/>
 ##  For the sake of efficiency, <C>OfThose</C> followed by one of the
-##  arguments <C>AutomorphismGroup</C>, <C>SchurCover</C>,
+##  arguments <Ref Attr="AutomorphismGroup" BookName="ref"/>,
+##  <Ref Func="SchurCover" BookName="ref"/>,
 ##  <C>CompleteGroup</C> is handled in a special way.
 ##  </Description>
 ##  </ManSection>
@@ -1063,10 +1099,11 @@ DeclareGlobalFunction( "AllCharacterTableNames" );
 ##  <Description>
 ##  The example function for character tables from the &GAP; Character
 ##  Table Library that have certain abstract properties is
-##  <C>OneCharacterTableName</C>.
+##  <Ref Func="OneCharacterTableName"/>.
 ##  It is analogous to the selection function
 ##  <Ref Func="AllCharacterTableNames"/>,
-##  the difference is that it returns one <C>Identifier</C> value of a
+##  the difference is that it returns one
+##  <Ref Attr="Identifier" BookName="ref"/> value of a
 ##  character table with the properties in question
 ##  instead of the list of all such values.
 ##  If no table with the required properties is contained in the &GAP;
@@ -1103,13 +1140,14 @@ DeclareSynonym( "AllCharTableNames", AllCharacterTableNames );
 ##  <Func Name="CTblLibSetUnload" Arg="value"/>
 ##
 ##  <Description>
-##  If <A>value</A> is <K>false</K> then the call to <C>CTblLibSetUnload</C>
+##  If <A>value</A> is <K>false</K> then the call to
+##  <Ref Func="CTblLibSetUnload"/>
 ##  has the effect that data files from the &GAP; Character Table Library are
 ##  read only once in the current session.
 ##  By default, the contents of only one data file is kept in memory,
 ##  in order to keep the space small.
-##  This behaviour can be achieved also by calling <C>CTblLibSetUnload</C>
-##  with <K>true</K>.
+##  This behaviour can be achieved also by calling
+##  <Ref Func="CTblLibSetUnload"/> with argument <K>true</K>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1230,18 +1268,42 @@ DeclareGlobalFunction( "ClfToCll" );
 ##  <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
 ##  value of an ordinary character table in the &GAP; library,
 ##  and a record <A>fus</A> with the components
-##  <C>name</C> (the identifier of the destination table,
-##  or this table itself),
-##  <C>map</C> (the fusion map, a list of image positions),
-##  and optionally
-##  <C>text</C> (a string containing information about the fusion)
-##  and <C>specification</C> (a string or an integer),
-##  <C>LibraryFusion</C> returns a string whose printed value can be used
-##  to add the fusion in question to the library file containing the data
-##  for the table with identifier <A>name</A>.
+##  <List>
+##  <Mark><C>name</C></Mark>
+##  <Item>
+##    the identifier of the destination table, or this table itself,
+##  </Item>
+##  <Mark><C>map</C></Mark>
+##  <Item>
+##    the fusion map, a list of image positions,
+##  </Item>
+##  <Mark><C>text</C> (optional)</Mark>
+##  <Item>
+##    a string describing properties of the fusion, and
+##  </Item>
+##  <Mark><C>specification</C> (optional)</Mark>
+##  <Item>
+##    a string or an integer,
+##  </Item>
+##  </List>
+##  <Ref Func="LibraryFusion"/> returns a string whose printed value can be
+##  used to add the fusion in question to the library file containing
+##  the data for the table with identifier <A>name</A>.
 ##  <P/>
-##  <A>name</A> may also be a character table,
-##  in this case its <C>Identifier</C> value is used as string.
+##  If <A>name</A> is a character table then its
+##  <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
+##  value is used as the corresponding string.
+##  <Example>
+##  gap> s5:= CharacterTable( "S5" );
+##  CharacterTable( "A5.2" )
+##  gap> fus:= PossibleClassFusions( a5, s5 );
+##  [ [ 1, 2, 3, 4, 4 ] ]
+##  gap> fusion:= rec( name:= Identifier( s5 ), map:= fus[1], text:= "unique" );;
+##  gap> Print( LibraryFusion( "A5", fusion ) );
+##  ALF("A5","A5.2",[1,2,3,4,4],[
+##  "unique"
+##  ]);
+##  </Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1253,18 +1315,59 @@ DeclareGlobalFunction( "LibraryFusion" );
 ##
 #F  LibraryFusionTblToTom( <name>, <fus> )
 ##
-##  For a string <name> that is an `Identifier' value
-##  (see~"ref:Identifier!for character tables" in the {\GAP} Reference
-##  Manual) of an ordinary character table in the {\GAP} library,
-##  and a record <fus> with components `name' (the identifier of the
-##  destination table of marks), `map' (the fusion map, a list of image
-##  positions), and optionally `text' (a string containing information about
-##  the fusion), `LibraryFusionTblToTom' returns a string whose printed value
-##  can be used to add the fusion in question to the character table library
-##  file containing the data for the table with identifier <name>.
+##  <#GAPDoc Label="LibraryFusionTblToTom">
+##  <ManSection>
+##  <Func Name="LibraryFusionTblToTom" Arg="name, fus"/>
 ##
-##  <name> may also be a character table, in this case its `Identifier' value
-##  is used as string.
+##  <Description>
+##  For a string <A>name</A> that is an
+##  <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
+##  value of an ordinary character table in the &GAP; library,
+##  and a record <A>fus</A> with the components
+##  <List>
+##  <Mark><C>name</C></Mark>
+##  <Item>
+##    the identifier of the destination table of marks, or this table itself,
+##  </Item>
+##  <Mark><C>map</C></Mark>
+##  <Item>
+##    the fusion map, a list of image positions,
+##  </Item>
+##  <Mark><C>text</C> (optional)</Mark>
+##  <Item>
+##    a string describing properties of the fusion, and
+##  </Item>
+##  <Mark><C>perm</C> (optional)</Mark>
+##  <Item>
+##    a permutation,
+##  </Item>
+##  </List>
+##  <Ref Func="LibraryFusionTblToTom"/> returns a string whose printed value
+##  can be used to add the fusion in question to the library file containing
+##  the data for the table with identifier <A>name</A>.
+##  <P/>
+##  The meaning of the component <C>perm</C> is as follows.
+##  Let <A>prim</A> be the primitive permutation characters obtained by
+##  computing the <Ref Func="PermCharsTom"/> value of the tables of marks,
+##  taking the sublist at the positions in the first component of the
+##  <Ref Func="MaximalSubgroupsTom"/> value of the tables of marks,
+##  and restricting these lists via the <C>map</C> component.
+##  Permuting <A>prim</A> with the <C>perm</C> component via
+##  <Ref Func="Permuted"/> yields the list of permutation characters
+##  obtained by inducing the trivial characters of the subgroups given by the
+##  <Ref Attr="Maxes"/> value of the character table.
+##  If the component <C>perm</C> is not present and if the character table
+##  has the attribute <Ref Attr="Maxes"/> set then the two ways of computing
+##  the primitive permutation characters yield the same list.
+##  <P/>
+##  If <A>name</A> is a character table then its
+##  <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
+##  value is used as the corresponding string.
+##  <Example>
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LibraryFusionTblToTom" );
 
@@ -1283,9 +1386,10 @@ DeclareGlobalFunction( "LibraryFusionTblToTom" );
 ##  (or <A>file</A> if this has already the suffix <C>.tbl</C>).
 ##  <P/>
 ##  If <A>tbl</A> is an ordinary table then the value of the attribute
-##  <C>NamesOfFusionSources</C> is ignored by <C>PrintToLib</C>,
+##  <Ref Attr="NamesOfFusionSources" BookName="ref"/> is ignored by
+##  <Ref Func="PrintToLib"/>,
 ##  since for library tables this information is extracted from the source
-##  files by the <F>maketbl</F> script.
+##  files by the function <C>CTblLibRecomputeTOC</C>.
 ##  <P/>
 ##  The names of data files in the &GAP; Character Table Library begin with
 ##  <C>cto</C> (for ordinary tables) or
@@ -1293,8 +1397,9 @@ DeclareGlobalFunction( "LibraryFusionTblToTom" );
 ##  see Section&nbsp;<Ref Sect="sec:organization"/>.
 ##  This is supported also for private extensions of the library,
 ##  that is, if the filenames are chosen this way and the ordinary tables
-##  in the <C>cto</C> files are notified via <C>NotifyCharacterTable</C>
-##  then the Brauer tables will be found in the <C>ctb</C> files.
+##  in the <C>cto</C> files are notified via
+##  <Ref Func="NotifyCharacterTable"/> then the Brauer tables will be found
+##  in the <C>ctb</C> files.
 ##  Alternatively, if the filenames of the files with the ordinary tables do
 ##  not start with <C>cto</C> then &GAP; expects the corresponding Brauer
 ##  tables in the same file as the ordinary tables.
@@ -1348,7 +1453,7 @@ DeclareGlobalFunction( "OrbitsResidueClass" );
 ##  When one fetches <A>tbl</A> from the library,
 ##  one does in general not get the original &CAS; table.
 ##  Namely, in many cases (mostly &ATLAS; tables,
-##  see Section&nbsp;<Ref Sect="sec:Atlas Tables"/>),
+##  see Section&nbsp;<Ref Sect="sec:ATLAS Tables"/>),
 ##  the identifier of the table (see&nbsp;<Ref Func="Identifier"
 ##  Label="for character tables" BookName="ref"/>)
 ##  as well as the ordering of classes and
@@ -1359,9 +1464,9 @@ DeclareGlobalFunction( "OrbitsResidueClass" );
 ##  in particular these tables may have different names and orderings of
 ##  classes and characters.
 ##  <P/>
-##  The <C>CASInfo</C> value of <A>tbl</A>, if stored, is a list of records,
-##  each describing the relation between <A>tbl</A> and a character table in
-##  the &CAS; library.
+##  The <Ref Attr="CASInfo"/> value of <A>tbl</A>, if stored,
+##  is a list of records, each describing the relation between <A>tbl</A>
+##  and a character table in the &CAS; library.
 ##  The records have the components
 ##  <List>
 ##  <Mark><C>name</C></Mark>
@@ -1370,9 +1475,9 @@ DeclareGlobalFunction( "OrbitsResidueClass" );
 ##  </Item>
 ##  <Mark><C>permchars</C> and <C>permclasses</C></Mark>
 ##  <Item>
-##    permutations of the <C>Irr</C> values and the classes of <A>tbl</A>,
-##    respectively, that must be applied in order to get the orderings in
-##    the original &CAS; table, and
+##    permutations of the <Ref Attr="Irr" BookName="ref"/> values and the
+##    classes of <A>tbl</A>, respectively, that must be applied in order
+##    to get the orderings in the original &CAS; table, and
 ##  </Item>
 ##  <Mark><C>text</C></Mark>
 ##  <Item>
@@ -1380,6 +1485,15 @@ DeclareGlobalFunction( "OrbitsResidueClass" );
 ##    (which may contain incorrect statements).
 ##  </Item>
 ##  </List>
+##  <Example>
+##  gap> HasCASInfo( tbl );
+##  true
+##  gap> CASInfo( tbl );
+##  [ rec( name := "m10", permchars := (3,5)(4,8,7,6), permclasses := (), 
+##        text := "names:     m10\norder:     2^4.3^2.5 = 720\nnumber of classes: \
+##  8\nsource:    cambridge atlas\ncomments:  point stabilizer of mathieu-group m1\
+##  1\ntest:      orth, min, sym[3]\n" ) ]
+##  </Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1402,9 +1516,9 @@ DeclareAttributeSuppCT( "CASInfo", IsNearlyCharacterTable,
 ##  This is meaningful only for library tables,
 ##  and there is no default method to compute the value.
 ##  <P/>
-##  If the <C>Maxes</C> value of <A>tbl</A> is stored then it lists exactly
-##  one representative for each conjugacy class of maximal subgroups of the
-##  group of <A>tbl</A>,
+##  If the <Ref Attr="Maxes"/> value of <A>tbl</A> is stored then it lists
+##  exactly one representative for each conjugacy class of maximal subgroups
+##  of the group of <A>tbl</A>,
 ##  and the tables of these maximal subgroups are available in the &GAP;
 ##  table library, and the fusions to <A>tbl</A> are stored on these tables.
 ##  <P/>
@@ -1448,7 +1562,7 @@ DeclareAttributeSuppCT( "Maxes", IsNearlyCharacterTable, [] );
 #T be always optional arguments to be applied after the constuction?
 ##
 DeclareAttributeSuppCT( "ConstructionInfoCharacterTable",
-    IsNearlyCharacterTable, [] );
+    IsNearlyCharacterTable, [ "character", "class" ] );
 
 
 #############################################################################
@@ -1467,15 +1581,31 @@ DeclareAttributeSuppCT( "ConstructionInfoCharacterTable",
 ##  <List>
 ##  <Mark><C>name</C></Mark>
 ##  <Item>
-##    the <C>Identifier</C> component of the table of marks of <A>tbl</A>,
+##    the
+##    <Ref Func="Identifier" Label="for tables of marks" BookName="ref"/>
+##    component of the table of marks of <A>tbl</A>,
 ##  </Item>
 ##  <Mark><C>map</C></Mark>
 ##  <Item>
-##    the fusion map, and
+##    the fusion map,
 ##  </Item>
 ##  <Mark><C>text</C> (optional)</Mark>
 ##  <Item>
-##    a string describing the status of the fusion.
+##    a string describing the status of the fusion, and
+##  </Item>
+##  <Mark><C>perm</C> (optional)</Mark>
+##  <Item>
+##    a permutation that establishes the bijection between the classes of
+##    maximal subgroups in the table of marks
+##    (see <Ref Func="MaximalSubgroupsTom" BookName="ref"/>) and the
+##    <Ref Func="Maxes"/> list of <A>tbl</A>.
+##    Applying the permutation to the sublist of permutation characters
+##    (see <Ref Func="PermCharsTom" BookName="ref"/>) at the positions of the
+##    maximal subgroups of the table of marks yields the list of primitive
+##    permutation characters computed from the character tables described by
+##    the <Ref Func="Maxes"/> list.
+##    Usually, there is no <C>perm</C> component, which means that the two
+##    lists of primitive permutation characters are equal.
 ##  </Item>
 ##  </List>
 ##  <P/>
@@ -1504,9 +1634,11 @@ DeclareAttributeSuppCT( "FusionToTom", IsNearlyCharacterTable, [ "class" ] );
 ##  <List>
 ##  <Mark><C>name</C></Mark>
 ##  <Item>
-##    the <C>Identifier</C> value of the character table <C>mult</C> of the
-##    covering whose faithful irreducible characters are described by the
-##    record,
+##    the
+##    <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
+##    value of the character table <C>mult</C>
+##    of the covering whose faithful irreducible characters are described
+##    by the record,
 ##  </Item>
 ##  <Mark><C>chars</C></Mark>
 ##  <Item>
@@ -1564,10 +1696,13 @@ DeclareAttributeSuppCT( "ProjectivesInfo", IsNearlyCharacterTable,
 ##  In this case, an admissible name for the character table of the
 ##  Darstellungsgruppe of <M>G</M> (if this table is available and different
 ##  from <A>tbl</A>) is given by the concatenation of <C>M</C>, <C>"."</C>,
-##  and the <C>Identifier</C> value of <A>tbl</A>.
+##  and the
+##  <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
+##  value of <A>tbl</A>.
 ##  Analogously, an admissible name for the character table of the
 ##  automorphism group of <M>G</M> (if this table is available and different
-##  from <A>tbl</A>) is given by the concatenation of the <C>Identifier</C>
+##  from <A>tbl</A>) is given by the concatenation of the
+##  <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
 ##  value of <A>tbl</A>, <C>"."</C>, and <C>A</C>.
 ##  <P/>
 ##  <Example>
@@ -1580,6 +1715,88 @@ DeclareAttributeSuppCT( "ProjectivesInfo", IsNearlyCharacterTable,
 ##
 DeclareAttributeSuppCT( "ExtensionInfoCharacterTable",
     IsNearlyCharacterTable, [] );
+
+
+#############################################################################
+##
+#A  GroupInfoForCharacterTable( <tbl> )
+##
+##  <#GAPDoc Label="GroupInfoForCharacterTable">
+##  <ManSection> 
+##  <Attr Name="GroupInfoForCharacterTable" Arg="tbl"/>
+##
+##  <Description>
+##  Let <A>tbl</A> be an ordinary character table
+##  from the &GAP; Character Table Library.
+##  <Ref Attr="GroupInfoForCharacterTable"/> returns a list of pairs
+##  <C>[ <A>funcname</A>, <A>args</A> ]</C> where <A>funcname</A> is a string
+##  that is the name of a &GAP; function <A>fun</A>, say,
+##  and <A>args</A> is a list of arguments for this function
+##  such that <C>CallFuncList( <A>fun</A>, <A>args</A> )</C> yields a group
+##  whose ordinary character table is <A>tbl</A>, up to permutations of rows
+##  and columns.
+##  <P/>
+##  Note that this group is in general <E>not</E> determined up to
+##  isomorphism, since nonisomorphic groups may have the same character table
+##  (including power maps).
+##  <P/>
+##  Contrary to the attribute <Ref Attr="UnderlyingGroup" BookName="ref"/>,
+##  the entries of the <Ref Attr="GroupInfoForCharacterTable"/> list for
+##  <A>tbl</A> are not related to the ordering of the conjugacy classes in
+##  <A>tbl</A>.
+##  <P/>
+##  The main sources for this attribute are the &GAP; databases of groups,
+##  see Chapter <Ref Chap="Group Libraries" BookName="ref"/>.
+##  <P/>
+##  <Example>
+##  gap> GroupInfoForCharacterTable( CharacterTable( "A5" ) );
+##  [ [ "AlternatingGroup", [ 5 ] ], [ "AtlasGroup", [ "A5" ] ], 
+##    [ "AtlasSubgroup", [ "A5.2", 1 ] ], [ "AtlasSubgroup", [ "A6", 1 ] ], 
+##    [ "AtlasSubgroup", [ "J2", 9 ] ], [ "AtlasSubgroup", [ "L2(11)", 1 ] ], 
+##    [ "AtlasSubgroup", [ "S6(3)", 11 ] ], [ "PerfectGroup", [ 60, 1 ] ], 
+##    [ "PrimitiveGroup", [ 5, 4 ] ], [ "PrimitiveGroup", [ 6, 1 ] ], 
+##    [ "PrimitiveGroup", [ 10, 1 ] ], [ "SmallGroup", [ 60, 5 ] ], 
+##    [ "TomGroup", [ "a5" ] ], [ "TransitiveGroup", [ 5, 4 ] ], 
+##    [ "TransitiveGroup", [ 6, 12 ] ], [ "TransitiveGroup", [ 10, 7 ] ], 
+##    [ "TransitiveGroup", [ 12, 33 ] ], [ "TransitiveGroup", [ 15, 5 ] ], 
+##    [ "TransitiveGroup", [ 20, 15 ] ], [ "TransitiveGroup", [ 30, 9 ] ] ]
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttributeSuppCT( "GroupInfoForCharacterTable",
+    IsNearlyCharacterTable, [] );
+
+
+##############################################################################
+##
+#F  CharacterTableForGroupInfo( <info> )
+##
+##  <#GAPDoc Label="CharacterTableForGroupInfo">
+##  <ManSection> 
+##  <Attr Name="CharacterTableForGroupInfo" Arg="info"/>
+##
+##  <Description>
+##  This function is a partial inverse of
+##  <Ref Attr="GroupInfoForCharacterTable"/>.
+##  If <A>info</A> has the form <C>[ <A>funcname</A>, <A>args</A> ]</C>
+##  and occurs in the list returned by
+##  <Ref Attr="GroupInfoForCharacterTable"/> when called with
+##  the character table <A>tbl</A>, say,
+##  then <Ref Func="CharacterTableForGroupInfo"/> returns
+##  the character table <A>tbl</A>.
+##  Otherwise <K>fail</K> is returned.
+##  <P/>
+##  <Example>
+##  gap> CharacterTableForGroupInfo( [ "AlternatingGroup", [ 5 ] ] );
+##  CharacterTable( "A5" )
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "CharacterTableForGroupInfo" );
 
 
 #############################################################################
@@ -1602,7 +1819,7 @@ DeclareGlobalFunction( "GaloisPartnersOfIrreducibles" );
 ##  extension of a simple group that occurs in the
 ##  &ATLAS; of Finite Groups&nbsp;<Cite Key="CCN85"/> or the
 ##  &ATLAS; of Brauer Characters&nbsp;<Cite Key="JLPW95"/>.
-##  <C>AtlasLabelsOfIrreducibles</C> returns a list of strings,
+##  <Ref Func="AtlasLabelsOfIrreducibles"/> returns a list of strings,
 ##  the <M>i</M>-th entry being a label for the <M>i</M>-th irreducible
 ##  character of <A>tbl</A>.
 ##  <P/>
@@ -1617,8 +1834,8 @@ DeclareGlobalFunction( "GaloisPartnersOfIrreducibles" );
 ##  which denotes the <M>i</M>-th ordinary character shown in the &ATLAS;.
 ##  <P/>
 ##  The labels of faithful ordinary characters of groups <M>m.G</M> with
-##  <M>m \geq 3</M> are of the form <M>\chi_i</M>, <M>\chi_i^{\ast}</M>,
-##  or <M>\chi_i^{\ast k}</M>,
+##  <M>m \geq 3</M> are of the form <M>\chi_i</M>, <M>\chi_i^\ast</M>,
+##  or <M>\chi_i^{{\ast k}}</M>,
 ##  which means the <M>i</M>-th character printed in the &ATLAS;,
 ##  the unique character that is not printed and for which <M>\chi_i</M>
 ##  acts as proxy
@@ -1634,40 +1851,57 @@ DeclareGlobalFunction( "GaloisPartnersOfIrreducibles" );
 ##  <Mark>1.</Mark>
 ##  <Item>
 ##    If the ordinary irreducible character <M>\chi_i</M> of <M>m.G</M>
-##    extends to <M>m.G.a</M> then the <M>a^{\prime}</M> extensions are
-##    denoted by <M>\chi_{i,0}, \chi_{i,1}, \ldots, \chi_{i,a^{\prime}}</M>,
-##    where <M>\chi_{i,0}</M> is the character whose values are printed in
-##    the &ATLAS;.
+##    extends to <M>m.G.a</M> then the <M>a^\prime</M> extensions are
+##    denoted by
+##    <M>\chi_{{i,0}}, \chi_{{i,1}}, \ldots, \chi_{{i,a^\prime}}</M>,
+##    where <M>\chi_{{i,0}}</M> is the character whose values are printed
+##    in the &ATLAS;.
 ##  </Item>
 ##  <Mark>2.</Mark>
 ##  <Item>
-##    The label <M>\chi_{i_1 + i_2 + \cdots + i_a}</M> means that <M>a</M>
-##    different characters <M>\chi_{i_1}, \chi_{i_2}, \ldots, \chi_{i_a}</M>
+##    The label <M>\chi_{{i_1 + i_2 + \cdots + i_a}}</M> means that <M>a</M>
+##    different characters
+##    <M>\chi_{{i_1}}, \chi_{{i_2}}, \ldots, \chi_{{i_a}}</M>
 ##    of <M>m.G</M> induce to an irreducible character of <M>m.G.a</M> with
 ##    this label.
 ##    <P/>
 ##    If either <K>true</K> or the string <C>"short"</C> is entered
 ##    as the second argument then the label has the short form
-##    <M>\chi_{i_1+}</M>.
+##    <M>\chi_{{i_1+}}</M>.
 ##    Note that <M>i_2, i_3, \ldots, i_a</M> can be read off from the
 ##    fusion signs in the &ATLAS;.
 ##  </Item>
 ##  <Mark>3.</Mark>
 ##  <Item>
 ##    Finally, the label
-##    <M>\chi_{i_1,j_1 + i_2,j_2 + \cdots + i_{a^{\prime}},j_{a^{\prime}}}</M>
+##    <M>\chi_{{i_1,j_1 + i_2,j_2 + \cdots + i_{{a^\prime}},j_{{a^\prime}}}}</M>
 ##    means that the characters
-##    <M>\chi_{i_1}, \chi_{i_2}, \ldots, \chi_{i_{a^{\prime}}}</M> of
+##    <M>\chi_{{i_1}}, \chi_{{i_2}}, \ldots, \chi_{{i_{{a^\prime}}}}</M> of
 ##    <M>m.G</M> extend to a group that lies properly between <M>m.G</M> and
 ##    <M>m.G.a</M>,
-##    and the extensions <M>\chi_{i_1,j_1}, \chi_{i_2,j_2}, \ldots
-##    \chi_{i_{a^{\prime}},j_{a^{\prime}}}</M>
+##    and the extensions <M>\chi_{{i_1, j_1}}, \chi_{{i_2, j_2}}, \ldots
+##    \chi_{{i_{{a^\prime}},j_{{a^\prime}}}}</M>
 ##    induce to an irreducible character of <M>m.G.a</M> with this label.
 ##    <P/>
 ##    Again, if the string <C>"short"</C> was entered as the second argument
-##    then the label has a short form, namely <M>\chi_{i,j+}</M>.
+##    then the label has a short form, namely <M>\chi_{{i,j+}}</M>.
 ##  </Item>
 ##  </List>
+##  <Example>
+##  gap> AtlasLabelsOfIrreducibles( CharacterTable( "3.A7.2" ) );
+##  [ "\\chi_{1,0}", "\\chi_{1,1}", "\\chi_{2,0}", "\\chi_{2,1}", "\\chi_{3+4}", 
+##    "\\chi_{5,0}", "\\chi_{5,1}", "\\chi_{6,0}", "\\chi_{6,1}", "\\chi_{7,0}", 
+##    "\\chi_{7,1}", "\\chi_{8,0}", "\\chi_{8,1}", "\\chi_{9,0}", "\\chi_{9,1}", 
+##    "\\chi_{17+17\\ast 2}", "\\chi_{18+18\\ast 2}", "\\chi_{19+19\\ast 2}", 
+##    "\\chi_{20+20\\ast 2}", "\\chi_{21+21\\ast 2}", "\\chi_{22+23\\ast 8}", 
+##    "\\chi_{22\\ast 8+23}" ]
+##  gap> AtlasLabelsOfIrreducibles( CharacterTable( "3.A7.2" ), "short" );
+##  [ "\\chi_{1,0}", "\\chi_{1,1}", "\\chi_{2,0}", "\\chi_{2,1}", "\\chi_{3+}", 
+##    "\\chi_{5,0}", "\\chi_{5,1}", "\\chi_{6,0}", "\\chi_{6,1}", "\\chi_{7,0}", 
+##    "\\chi_{7,1}", "\\chi_{8,0}", "\\chi_{8,1}", "\\chi_{9,0}", "\\chi_{9,1}", 
+##    "\\chi_{17+}", "\\chi_{18+}", "\\chi_{19+}", "\\chi_{20+}", "\\chi_{21+}", 
+##    "\\chi_{22+}", "\\chi_{23+}" ]
+##  </Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

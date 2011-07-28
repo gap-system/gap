@@ -247,21 +247,9 @@ end);
 InstallMethod( ClosureGroup, 
                true, [IsPcpGroup, IsPcpGroup], 0,
 function( G, H )
-    local pcs, U;
-
-    if G = Parent(G) then
-        return G;
-    elif H = Parent(H) then
-        return H;
-    elif HasIgs( G ) then
-        U := SubgroupByIgs( Parent(G), Igs(G), GeneratorsOfGroup(H) );
-    elif HasIgs( H ) then
-        U := SubgroupByIgs( Parent(G), Igs(H), GeneratorsOfGroup(G) );
-    else
-        U := Subgroup( Parent( G ),
-             Concatenation(GeneratorsOfGroup(G), GeneratorsOfGroup(H)));
-    fi;
-    return U;
+    local P;
+    P := PcpGroupByCollectorNC( Collector(G) );
+    return SubgroupByIgs( P, Igs(G), GeneratorsOfGroup(H) );
 end );
  
 #############################################################################
@@ -415,13 +403,106 @@ end;
 ##
 InstallMethod( AbelianInvariants, true, [IsPcpGroup], 0,
 function( G )
-    return RelativeOrdersOfPcp( Pcp(G, DerivedSubgroup(G),"snf") );
+    return AbelianInvariantsOfList( RelativeOrdersOfPcp( Pcp(G, DerivedSubgroup(G), "snf") ) );
 end );
 
 InstallMethod( AbelianInvariants, true, [IsPcpGroup and IsAbelian], 0,
 function( G )
-    return RelativeOrdersOfPcp( Pcp(G, "snf") );
+    return AbelianInvariantsOfList( RelativeOrdersOfPcp( Pcp(G, "snf") ) );
 end );
+
+
+ComputeIndependentGeneratorsOfAbelianPcpGroup := function ( G )
+	local pcp, id, mat, base, ord, i, g, o, cf, j;
+
+	# Get a pcp in Smith normal form
+	if not IsBound( G!.snfpcp ) then
+		pcp := Pcp(G, "snf");
+		G!.snfpcp := pcp;
+	else
+		pcp := G!.snfpcp;
+	fi;
+
+	if IsBound( G!.indgens ) and IsBound( G!.indgenmat ) then
+		return;
+	fi;
+
+	# Unfortunately, this is not *quite* what we need; in order to match
+	# the Abelian invariants, we now have to further refine the generator
+	# list to ensure only generators of prime power order are in the list.
+	id := IdentityMat( Length(pcp) );
+	mat := [];
+	base := [];
+	ord := [];
+	for i in [1..Length(pcp)] do
+		g := pcp[i];
+		o := Order(g);
+		if o = 1 then continue; fi;
+		if o = infinity then
+			Add(base, g);
+			Add(mat, id[i]);
+			Add(ord, 0);
+			continue;
+		fi;
+		cf:=Collected(Factors(o));
+		if Length(cf) > 1 then
+			for j in cf do
+				j := j[1]^j[2];
+				Add(base, g^(o/j));
+				Add(mat, id[i] * (j/o mod j));
+				Add(ord, j);
+			od;
+		else
+			Add(base, g);
+			Add(mat, id[i]);
+			Add(ord, o);
+		fi;
+	od;
+	SortParallel(ShallowCopy(ord),base);
+	SortParallel(ord,mat);
+
+	mat := TransposedMat( mat );
+
+	G!.indgens := base;
+	G!.indgenmat := mat;
+end;
+
+#############################################################################
+##
+#A  IndependentGeneratorsOfAbelianGroup( <A> )
+##
+InstallMethod(IndependentGeneratorsOfAbelianGroup, true, [IsPcpGroup and IsAbelian], 0,
+function( G )
+	ComputeIndependentGeneratorsOfAbelianPcpGroup( G );
+	return G!.indgens;
+end );
+
+
+#############################################################################
+##
+#O  IndependentGeneratorExponents( <G>, <g> )
+##
+InstallMethod(IndependentGeneratorExponents, IsCollsElms,
+  [IsPcpGroup and IsAbelian, IsMultiplicativeElementWithInverse], 0,
+function(G,elm)
+	local exp, rels, i;
+
+	# Ensure everything has been set up
+	ComputeIndependentGeneratorsOfAbelianPcpGroup( G );
+
+	# Convert elm into an exponent vector with respect to a snf pcp
+	exp := ExponentsByPcp( G!.snfpcp, elm );
+	rels := AbelianInvariants( G );
+
+	# Convert the exponent vector with respect to pcp into one
+	# with respect to our independent abelian generators.
+	exp := exp * G!.indgenmat;
+    for i in [1..Length(exp)] do
+        if rels[i] > 0 then exp[i] := exp[i] mod rels[i]; fi;
+    od;
+	return exp;
+end);
+
 
 #############################################################################
 ##

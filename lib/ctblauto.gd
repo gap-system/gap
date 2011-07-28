@@ -2,7 +2,7 @@
 ##
 #W  ctblauto.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblauto.gd,v 4.16 2010/02/23 15:12:51 gap Exp $
+#H  @(#)$Id: ctblauto.gd,v 4.17 2010/09/29 14:14:56 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -14,7 +14,7 @@
 ##  to the rows of another matrix.
 ##
 Revision.ctblauto_gd :=
-    "@(#)$Id: ctblauto.gd,v 4.16 2010/02/23 15:12:51 gap Exp $";
+    "@(#)$Id: ctblauto.gd,v 4.17 2010/09/29 14:14:56 alexk Exp $";
 
 
 #############################################################################
@@ -226,13 +226,13 @@ DeclareOperation( "TransformingPermutations", [ IsMatrix, IsMatrix ] );
 ##  gap> OrdersClassRepresentatives( tblq8 );
 ##  [ 1, 4, 2, 4, 4 ]
 ##  gap> TransformingPermutations( irrd8, irrq8 );
-##  rec( group := Group([ (4,5), (2,4) ]), columns := (), rows := () )
+##  rec( columns := (), group := Group([ (4,5), (2,4) ]), rows := () )
 ##  gap> TransformingPermutationsCharacterTables( tbld8, tblq8 );
 ##  fail
 ##  gap> tbld6:= CharacterTable( "Dihedral", 6 );;
 ##  gap> tbls3:= CharacterTable( "Symmetric", 3 );;
 ##  gap> TransformingPermutationsCharacterTables( tbld6, tbls3 );
-##  rec( group := Group(()), columns := (2,3), rows := (1,3,2) )
+##  rec( columns := (2,3), group := Group(()), rows := (1,3,2) )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

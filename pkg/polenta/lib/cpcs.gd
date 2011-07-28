@@ -5,7 +5,7 @@
 ## Methods for the calculation of 
 ## constructive pc-sequences for rational matrix groups
 ##
-#H  @(#)$Id: cpcs.gd,v 1.4 2004/11/02 11:45:37 gap Exp $
+#H  @(#)$Id: cpcs.gd,v 1.5 2011/05/31 13:10:57 gap Exp $
 ##
 #Y 2003
 ##
@@ -109,19 +109,3 @@ DeclareGlobalFunction( "CPCS_UnipotentByAbelianGroupByRadSeries" );
 #############################################################################
 ##
 #E
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,7 +2,7 @@
 **
 *W  gap.h                       GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gap.h,v 4.40 2010/02/23 15:13:42 gap Exp $
+*H  @(#)$Id: gap.h,v 4.41 2011/05/09 09:24:22 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_gap_h =
-   "@(#)$Id: gap.h,v 4.40 2010/02/23 15:13:42 gap Exp $";
+   "@(#)$Id: gap.h,v 4.41 2011/05/09 09:24:22 sal Exp $";
 #endif
 
 
@@ -239,103 +239,6 @@ extern Obj FuncError (
     Obj                 args );
 
 #endif
-
-/****************************************************************************
-**
-*F * * * * * * * * * functions for creating the init file * * * * * * * * * *
-*/
-
-
-
-/****************************************************************************
-**
-
-*F  Complete( <list> )  . . . . . . . . . . . . . . . . . . . complete a file
-*/
-extern Obj  CompNowFuncs;
-extern UInt CompNowCount;
-
-extern void Complete (
-            Obj                 list );
-
-
-/****************************************************************************
-**
-*F  DoComplete<i>args(...)  . . . . . . . . . . .  handler to complete a file
-*/
-extern Obj DoComplete0args (
-            Obj                 self );
-
-extern Obj DoComplete1args (
-            Obj                 self,
-            Obj                 arg1 );
-
-extern Obj DoComplete2args (
-            Obj                 self,
-            Obj                 arg1,
-            Obj                 arg2 );
-
-extern Obj DoComplete3args (
-            Obj                 self,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3 );
-
-extern Obj DoComplete4args (
-            Obj                 self,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4 );
-
-extern Obj DoComplete5args (
-            Obj                 self,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4,
-            Obj                 arg5 );
-
-extern Obj DoComplete6args (
-            Obj                 self,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4,
-            Obj                 arg5,
-            Obj                 arg6 );
-
-extern Obj DoCompleteXargs (
-            Obj                 self,
-            Obj                 args );
-
-
-/****************************************************************************
-**
-*F  IS_UNCOMPLETED_FUNC( <func> ) . . . . . . . . . . . is <func> uncompleted
-*/
-#define IS_UNCOMPLETED_FUNC(func) \
-    (TNUM_OBJ(func)==T_FUNCTION && HDLR_FUNC(func,0)==DoComplete0args)
-
-
-/****************************************************************************
-**
-*F  COMPLETE_FUNC( <func> ) . . . . . . . . . . . . . . . . . complete <func>
-*/
-#define COMPLETE_FUNC( func ) \
-    do { \
-        Obj body; \
-        body = BODY_FUNC(func); \
-        if ( TNUM_OBJ(body) == T_FUNCTION ) { \
-            if ( IS_UNCOMPLETED_FUNC(body) ) { \
-                Complete(BODY_FUNC(body)); \
-            } \
-            InstallMethodArgs(func,body); \
-        } \
-        else { \
-            Complete( BODY_FUNC(func) ); \
-        } \
-    } while (0)
 
 
 /****************************************************************************

@@ -1,7 +1,7 @@
 #############################################################################
 #W  semirel.gi                  GAP library                James D. Mitchell
 ##
-#H  @(#)$Id: semirel.gi,v 4.44 2010/02/23 15:13:29 gap Exp $
+#H  @(#)$Id: semirel.gi,v 4.45 2010/10/20 17:14:20 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  congruences, and Rees congruences.
 ##
 Revision.semirel_gi :=
-    "@(#)$Id: semirel.gi,v 4.44 2010/02/23 15:13:29 gap Exp $";
+    "@(#)$Id: semirel.gi,v 4.45 2010/10/20 17:14:20 alexk Exp $";
 
 #######################
 #######################
@@ -1079,7 +1079,7 @@ repeat
           	  
 	  AddSet(sortedelts, newelt);
 	  
-          COPY_LIST_ENTRIES( pos, old, 1, pos, old+1, 1, Last-old );
+          CopyListEntries( pos, old, 1, pos, old+1, 1, Last-old );
 	  pos[old] := Last; 
 
        fi;

@@ -2,8 +2,6 @@
 ##
 #W  rcwagrp.gi                GAP4 Package `RCWA'                 Stefan Kohl
 ##
-#H  @(#)$Id: rcwagrp.gi,v 1.201 2009/09/22 20:24:30 stefan Exp $
-##
 ##  This file contains implementations of methods and functions for computing
 ##  with rcwa groups over
 ##
@@ -14,8 +12,7 @@
 ##
 ##  See the definitions given in the file rcwamap.gd.
 ##
-Revision.rcwagrp_gi :=
-  "@(#)$Id: rcwagrp.gi,v 1.201 2009/09/22 20:24:30 stefan Exp $";
+#############################################################################
 
 #############################################################################
 ##
@@ -746,6 +743,58 @@ InstallMethod( IsSubset,
     then return false; fi;
     Error("sorry - this is still an open question!");
     return fail;
+  end );
+
+#############################################################################
+##
+#S  Counting / enumerating certain elements of RCWA(R) and CT(R). ///////////
+##
+#############################################################################
+
+#############################################################################
+##
+#V  NrElementsOfCTZWithGivenModulus
+##
+##  The numbers of elements of CT(Z) of given order m <= 24, subject to the
+##  conjecture that CT(Z) is the setwise stabilizer of N_0 in RCWA(Z).
+##
+BindGlobal( "NrElementsOfCTZWithGivenModulus",
+[ 1, 1, 17, 238, 4679, 115181, 3482639, 124225680, 5114793582, 238618996919, 
+  12441866975999, 716985401817362, 45251629386163199, 3104281120750130159, 
+  229987931693135611303, 18301127616460012222080, 1556718246822087917567999, 
+  140958365897067252175843218, 13537012873511994353270783999, 
+  1374314160482820530097944198162, 147065220260069766956421116517343, 
+  16544413778663040175990602280223999, 1951982126641242370890486633922559999, 
+  241014406219744996673035312579811441520 ] );
+
+#############################################################################
+## 
+#F  AllElementsOfCTZWithGivenModulus( m ) .  elements of CT(Z) with modulus m
+##
+##  Assumes the conjecture that CT(Z) is the setwise stabilizer of the
+##  nonnegative integers in RCWA(Z).
+##
+InstallGlobalFunction( AllElementsOfCTZWithGivenModulus,
+
+  function ( m )
+
+    local  elems, source, ranges, range, perms, g;
+
+    if not IsPosInt(m) then
+      Error("usage: AllElementsOfCTZWithGivenModulus( <m> ) ",
+            "for a positive integer m\n");
+    fi;
+    if m = 1 then return [ IdentityRcwaMappingOfZ ]; fi;
+    source := AllResidueClassesModulo(Integers,m);
+    ranges := PartitionsIntoResidueClasses(Integers,m);
+    perms  := AsList(SymmetricGroup(m));
+    elems  := [];
+    for range in ranges do
+      for g in perms do
+        Add(elems,RcwaMapping(source,Permuted(range,g)));
+      od;
+    od;
+    return Filtered(Set(elems),elm->Mod(elm)=m);
   end );
 
 #############################################################################
@@ -1517,6 +1566,24 @@ InstallGlobalFunction( NrConjugacyClassesOfRCWAZOfOrder,
 
 #############################################################################
 ##
+#F  NrConjugacyClassesOfCTZOfOrder( <ord> ) . . . #Ccl of CT(Z) / order <ord>
+##
+InstallGlobalFunction( NrConjugacyClassesOfCTZOfOrder,
+
+  function ( ord )
+    if   not IsPosInt(ord) then return 0;
+    elif ord = 1 then return 1;
+    else Info(InfoWarning,1,"Function `NrConjugacyClassesOfCTZOfOrder' ",
+                            "assumes the conjecture ");
+         Info(InfoWarning,1,"that CT(Z) is the setwise ",
+                            "stabilizer of N_0 in RCWA(Z).");
+         return Length(Filtered(Combinations(DivisorsInt(ord)),
+                                l -> l <> [] and Lcm(l) = ord));
+    fi;
+  end );
+
+#############################################################################
+##
 #S  Constructing rcwa groups: ///////////////////////////////////////////////
 #S  The general things. /////////////////////////////////////////////////////
 ##
@@ -1811,7 +1878,7 @@ InstallMethod( IsomorphismRcwaGroup,
 
   function ( G, R )
 
-    local  H, Hgens, phi1, phi2, Gperm, n, P, p, pos, maxdensity;
+    local  H, Hgens, phi1, phi2, phi, Gperm, n, P, p, pos, maxdensity;
 
     if   IsRcwaGroup(G) and Source(One(G)) = R
     then return IdentityMapping(G); fi;
@@ -1839,9 +1906,11 @@ InstallMethod( IsomorphismRcwaGroup,
     H    := GroupWithGenerators(Hgens);
     SetIsTame(H,true);
     SetRespectedPartition(H,P);
-    if HasSize(G) then SetSize(H,Size(G)); fi;
     phi2 := EpimorphismByGeneratorsNC(Gperm,H);
-    return Immutable(CompositionMapping(phi2,phi1));
+    phi := Immutable(CompositionMapping(phi2,phi1));
+    SetIsInjective(phi,true); SetIsSurjective(phi,true);
+    if HasSize(G) then SetSize(Image(phi),Size(G)); fi;
+    return phi;
   end );
 
 #############################################################################
@@ -1942,7 +2011,8 @@ InstallMethod( IsomorphismRcwaGroup,
     embsF    := info.embeddings;
     embnrs   := List(gensF,
                      f->First([1..m],
-                              i->f in GeneratorsOfGroup(Image(embsF[i]))));
+                              i->ForAny(GeneratorsOfGroup(Image(embsF[i])),
+                                        g->IsIdenticalObj(f,g))));
     gens     := List([1..Length(gensF)],
                      i->Image(embs[embnrs[i]],
                               PreImagesRepresentative(embsF[embnrs[i]],
@@ -2218,6 +2288,57 @@ InstallMethod( Embedding,
 
 #############################################################################
 ##
+#S  Constructing rcwa groups: ///////////////////////////////////////////////
+#S  Getting smaller or otherwise nicer sets of generators. //////////////////
+##
+#############################################################################
+
+#############################################################################
+##
+#M  SmallGeneratingSet( <G> ) . . . . . . . . . . . .  for rcwa groups over Z
+##
+InstallMethod( SmallGeneratingSet,
+               "for rcwa groups over Z (RCWA)",
+               true, [ IsRcwaGroupOverZ ], 0,
+
+  function ( G )
+
+    local  gens, gensred, H, r, i, shrinked;
+
+    gens := Set(GeneratorsOfGroup(G));
+
+    if ForAll(gens,IsClassTransposition) then
+      SortParallel(List(gens,ct->[Modulus(ct),TransposedClasses(ct)]),gens);
+    fi;
+
+    Info(InfoRCWA,1,"SmallGeneratingSet: #initial generators = ",
+                    Length(gens));
+    Info(InfoRCWA,2,"Initial generators = ",gens);
+
+    r := 1;
+    repeat
+      gensred := gens{[1]};
+      for i in [2..Length(gens)] do
+        Info(InfoRCWA,3,"i = ",i);
+        H := Group(gens{[1..i-1]});
+        if   IsEmpty(Intersection(RestrictedBall(H,One(H),r),
+                                  RestrictedBall(H,gens[i],r)))
+        then Add(gensred,gens[i]); fi;
+      od;
+      Info(InfoRCWA,1,"SmallGeneratingSet: #generators after reduction ",
+                      "with r = ",r,": ",Length(gensred));
+      Info(InfoRCWA,2,"Remaining generators = ",gensred);
+
+      shrinked := Length(gensred) < Length(gens);
+      gens     := gensred;
+      r        := r + 1;
+    until not shrinked;    
+
+    return gens;
+  end );
+
+#############################################################################
+##
 #S  Constructing rcwa groups: Other. ////////////////////////////////////////
 ##
 #############################################################################
@@ -2240,7 +2361,7 @@ InstallGlobalFunction( GroupByResidueClasses,
 ##
 InstallMethod( Iterator,
                "for rcwa groups (and infinite groups in general) (RCWA)",
-               true, [ IsGroup ], SUM_FLAGS,
+               true, [ IsGroup ], 0,
 
   function ( G )
     if   not IsRcwaGroup(G) and HasIsFinite(G) and IsFinite(G)
@@ -2290,7 +2411,7 @@ InstallMethod( NextIterator,
 
   function ( iter )
 
-    local  G, gens, sphere, g;
+    local  G, P, gens, sphere, g;
 
     G := iter!.G;
     if   not HasParent(G) or not HasElementTestFunction(G)
@@ -2441,9 +2562,9 @@ InstallMethod( OrbitsModulo,
 
 #############################################################################
 ##
-#M  Projections( <G>, <m> ) . . . . . . . . . . . . . . . . . for rcwa groups
+#M  ProjectionsToInvariantUnionsOfResidueClasses( <G>, <m> )  for rcwa groups
 ##
-InstallMethod( Projections,
+InstallMethod( ProjectionsToInvariantUnionsOfResidueClasses,
                "for rcwa groups (RCWA)", ReturnTrue,
                [ IsRcwaGroup, IsRingElement ], 0,
 
@@ -2587,11 +2708,12 @@ InstallMethod( Divisor,
 
 #############################################################################
 ##
-#F  RespectedPartitionOfRcwaGroup  worker function: RespectedPartition[Short]
+#M  RespectedPartition( <G> ) . . . . . . . . . . . . .  for tame rcwa groups
 ##
-BindGlobal( "RespectedPartitionOfRcwaGroup",
+InstallMethod( RespectedPartition,
+               "for tame rcwa groups (RCWA)", true, [ IsRcwaGroup ], 0,
 
-  function ( G, short )
+  function ( G )
 
     local  R, P, m, moved, fixed, remaining, allcls, cls, cl, orb;
 
@@ -2608,32 +2730,16 @@ BindGlobal( "RespectedPartitionOfRcwaGroup",
       cls := Filtered(cls, cl -> Intersection(cl,remaining) <> []);
       for cl in cls do
         orb := Orbit(G,cl);
-        if short and Maximum(List(orb,Modulus)) <= m then break; fi;
-        if not short and Minimum(List(orb,Modulus)) = m then break; fi;
+        if Maximum(List(orb,Modulus)) <= m then break; fi;
       od;
       P         := Union(P,orb);
       remaining := Difference(remaining,Union(orb));
     od;
     Assert(1,Union(P)=R);
     Assert(2,Action(G,P)<>fail);
+    Assert(3,RespectsPartition(G,P));
     return P;
   end );
-
-#############################################################################
-##
-#M  RespectedPartitionShort( <G> ) . . . . . . . . . . . for tame rcwa groups
-##
-InstallMethod( RespectedPartitionShort,
-               "for tame rcwa groups (RCWA)", true, [ IsRcwaGroup ], 0,
-               G -> RespectedPartitionOfRcwaGroup( G, true ) );
-
-#############################################################################
-##
-#M  RespectedPartitionLong( <G> ) . . . . . . . . . . .  for tame rcwa groups
-##
-InstallMethod( RespectedPartitionLong,
-               "for tame rcwa groups (RCWA)", true, [ IsRcwaGroup ], 0,
-               G -> RespectedPartitionOfRcwaGroup( G, false ) );
 
 #############################################################################
 ##
@@ -3005,7 +3111,7 @@ InstallMethod( IsomorphismMatrixGroup,
       od;
     fi;
     g := GeneratorsOfGroup(G);
-    P := RespectedPartitionShort(G);
+    P := RespectedPartition(G);
     deg := 2 * Length(P);
     H := Action(G,P); h := GeneratorsOfGroup(H);
     m := [];
@@ -3260,7 +3366,8 @@ InstallMethod( \in,
         fi;
       fi;
       m       := Lcm(List(Concatenation(gens,[g]),Modulus));
-      orbsmod := List(Projections(G,m),proj->Support(Image(proj)));
+      orbsmod := List(ProjectionsToInvariantUnionsOfResidueClasses(G,m),
+                      proj->Support(Image(proj)));
       if ForAny(orbsmod,orb->orb^g<>orb) then
         Info(InfoRCWA,2,"<g> does not leave the partition of Z into unions");
         Info(InfoRCWA,2,"of residue classes (mod ",m,") invariant which is");
@@ -3391,7 +3498,8 @@ InstallMethod( \in,
         fi;
       fi;
       m       := Lcm(List(Concatenation(gens,[g]),Modulus));
-      orbsmod := List(Projections(G,m),proj->Support(Image(proj)));
+      orbsmod := List(ProjectionsToInvariantUnionsOfResidueClasses(G,m),
+                      proj->Support(Image(proj)));
       if ForAny(orbsmod,orb->orb^g<>orb) then
         Info(InfoRCWA,2,"<g> does not leave the partition of ",
                         RingToString(R)," into");
@@ -3843,9 +3951,10 @@ InstallMethod( IsPrimitive,
 
 #############################################################################
 ##
-#V  IsOrbitInStandardRep . . . . . . . . . shorthand to specify orbit objects
+#V  IsRcwaGroupOrbitInStandardRep . .  shorthand for rcwa group orbit objects
 ##
-BindGlobal( "IsOrbitInStandardRep", IsOrbit and IsOrbitStandardRep );
+BindGlobal( "IsRcwaGroupOrbitInStandardRep",
+             IsRcwaGroupOrbit and IsRcwaGroupOrbitStandardRep );
 
 #############################################################################
 ## 
@@ -3940,7 +4049,7 @@ InstallOtherMethod( OrbitOp,
     if ball = oldball then return Set(ball); fi;
     
     orbit := Objectify( NewType( CollectionsFamily( FamilyObj( pnt ) ),
-                                 IsOrbitInStandardRep ),
+                                 IsRcwaGroupOrbitInStandardRep ),
                         rec( group          := G,
                              representative := pnt,
                              action         := act ) );
@@ -3949,18 +4058,18 @@ InstallOtherMethod( OrbitOp,
 
 #############################################################################
 ##
-#M  UnderlyingGroup( <orbit> ) . . . . . . . . . . . . . . . . . . for orbits
+#M  UnderlyingGroup( <orbit> ) . . . . . . . . . .  for orbits of rcwa groups
 ##
-InstallMethod( UnderlyingGroup,
-               "for orbits (RCWA)", true, [ IsOrbitInStandardRep ], 0,
+InstallMethod( UnderlyingGroup, "for orbits of rcwa groups (RCWA)", true,
+               [ IsRcwaGroupOrbitInStandardRep ], 0,
                orbit -> orbit!.group );
 
 #############################################################################
 ##
-#M  Representative( <orbit> ) . . . . . . . . . . . . . . . . . .  for orbits
+#M  Representative( <orbit> ) . . . . . . . . . . . for orbits of rcwa groups
 ##
-InstallMethod( Representative,
-               "for orbits (RCWA)", true, [ IsOrbitInStandardRep ], 0,
+InstallMethod( Representative, "for orbits of rcwa groups (RCWA)", true,
+               [ IsRcwaGroupOrbitInStandardRep ], 0,
                orbit -> orbit!.representative );
 
 #############################################################################
@@ -3969,7 +4078,7 @@ InstallMethod( Representative,
 ##
 InstallMethod( IsSubset,
                "for underlying ring and orbit of an rcwa group (RCWA)",
-               ReturnTrue, [ IsRing, IsOrbitInStandardRep ], 0,
+               ReturnTrue, [ IsRing, IsRcwaGroupOrbitInStandardRep ], 0,
 
   function ( R, orbit )
     if   IsRcwaGroup(orbit!.group) and IsSubset(R,Source(One(orbit!.group)))
@@ -3980,10 +4089,11 @@ InstallMethod( IsSubset,
 
 #############################################################################
 ##
-#M  ViewObj( <orbit> ) . . . . . . . . . . . . . . . . . . . . . . for orbits
+#M  ViewObj( <orbit> ) . . . . . . . . . . . . . .  for orbits of rcwa groups
 ##
 InstallMethod( ViewObj,
-               "for orbits (RCWA)", true, [ IsOrbitInStandardRep ], 0,
+               "for orbits of rcwa groups (RCWA)", true,
+              [ IsRcwaGroupOrbitInStandardRep ], 0,
 
   function ( orbit )
     Print("<orbit of ");
@@ -3995,11 +4105,12 @@ InstallMethod( ViewObj,
 
 #############################################################################
 ##
-#M  \=( <orbit1>, <orbit2> ) . . . . . . . . . . . . . . . . . . . for orbits
+#M  \=( <orbit1>, <orbit2> ) . . . . . . . . . . .  for orbits of rcwa groups
 ##
 InstallMethod( \=,
-               "for orbits (RCWA)", IsIdenticalObj,
-               [ IsOrbitInStandardRep, IsOrbitInStandardRep ], 0,
+               "for orbits of rcwa groups (RCWA)", IsIdenticalObj,
+               [ IsRcwaGroupOrbitInStandardRep,
+                 IsRcwaGroupOrbitInStandardRep ], 0,
 
   function ( orbit1, orbit2 )
 
@@ -4043,11 +4154,11 @@ InstallMethod( \=,
 
 #############################################################################
 ##
-#M  \=( <orbit>, <list> ) . . . . . . . . . . . . . . for an orbit and a list
+#M  \=( <orbit>, <list> ) . . . . .  for an orbit of an rcwa group and a list
 ##
 InstallMethod( \=,
-               "for an orbit and a list (RCWA)", ReturnTrue,
-               [ IsOrbitInStandardRep, IsList ], 0,
+               "for an orbit of an rcwa group and a list (RCWA)", ReturnTrue,
+               [ IsRcwaGroupOrbitInStandardRep, IsList ], 0,
 
   function ( orbit, list )
 
@@ -4066,19 +4177,20 @@ InstallMethod( \=,
 
 #############################################################################
 ##
-#M  \=( <list>, <orbit> ) . . . . . . . . . . . . . . for a list and an orbit
+#M  \=( <list>, <orbit> ) . . . . .  for a list and an orbit of an rcwa group
 ##
 InstallMethod( \=,
-               "for a list and an orbit (RCWA)", ReturnTrue,
-               [ IsList, IsOrbitInStandardRep ], 0,
+               "for a list and an orbit of an rcwa group (RCWA)", ReturnTrue,
+               [ IsList, IsRcwaGroupOrbitInStandardRep ], 0,
                function ( list, orbit ) return orbit = list; end );
 
 #############################################################################
 ##
-#M  AsList( <orbit> ) . . . . . . . . . . . . . . . . . . . . . .  for orbits
+#M  AsList( <orbit> ) . . . . . . . . . . . . . . . for orbits of rcwa groups
 ##
 InstallMethod( AsList,
-               "for orbits (RCWA)", true, [ IsOrbitInStandardRep ], 0,
+               "for orbits of rcwa groups (RCWA)", true,
+               [ IsRcwaGroupOrbitInStandardRep ], 0,
 
   function ( orbit )
 
@@ -4097,11 +4209,11 @@ InstallMethod( AsList,
 
 #############################################################################
 ##
-#M  \in( <point>, <orbit> ) . . . . . . . . . . . . . for a point in an orbit
+#M  \in( <point>, <orbit> ) . . . . for a point and an orbit of an rcwa group
 ##
 InstallMethod( \in,
-               "for a point in an orbit (RCWA)", ReturnTrue,
-               [ IsObject, IsOrbitInStandardRep ], 0,
+               "for a point and an orbit of an rcwa group (RCWA)",
+               ReturnTrue, [ IsObject, IsRcwaGroupOrbitInStandardRep ], 0,
 
   function ( point, orbit )
     return Orbit(orbit!.group,point,orbit!.action) = orbit;
@@ -4109,10 +4221,11 @@ InstallMethod( \in,
 
 #############################################################################
 ##
-#M  Size( <orbit> ) . . . . . . . . . . . . . . . . . . . . . . .  for orbits
+#M  Size( <orbit> ) . . . . . . . . . . . . . . . . for orbits of rcwa groups
 ##
 InstallMethod( Size,
-               "for orbits (RCWA)", true, [ IsOrbitInStandardRep ], 0,
+               "for orbits of rcwa groups (RCWA)", true,
+               [ IsRcwaGroupOrbitInStandardRep ], 0,
 
   function ( orbit )
     if HasIsFinite(orbit) and not IsFinite(orbit) then return infinity; fi;
@@ -4121,15 +4234,17 @@ InstallMethod( Size,
 
 #############################################################################
 ##
-#M  Iterator( <orbit> ) . . . . . . . . . . . . . . . . . . . . .  for orbits
+#M  Iterator( <orbit> ) . . . . . . . . . . . . . . for orbits of rcwa groups
 ##
 InstallMethod( Iterator,
-               "for orbits (RCWA)", true, [ IsOrbitInStandardRep ], 0,
+               "for orbits of rcwa groups (RCWA)", true,
+               [ IsRcwaGroupOrbitInStandardRep ], 0,
 
   function ( orbit )
-    return Objectify( NewType( IteratorsFamily, IsIterator
-                                            and IsMutable
-                                            and IsOrbitsIteratorRep ),
+    return Objectify( NewType( IteratorsFamily,
+                               IsIterator
+                           and IsMutable
+                           and IsRcwaGroupOrbitsIteratorRep ),
                       rec( orbit     := orbit,
                            sphere    := [Representative(orbit)],
                            oldsphere := [],
@@ -4138,11 +4253,12 @@ InstallMethod( Iterator,
 
 #############################################################################
 ##
-#M  NextIterator( <iter> ) . . . . . . . . . . . . .  for iterators of orbits
+#M  NextIterator( <iter> ) . . . . . . for iterators of orbits of rcwa groups
 ##
 InstallMethod( NextIterator,
-               "for iterators of orbits (RCWA)", true,
-               [ IsIterator and IsMutable and IsOrbitsIteratorRep ], 0,
+               "for iterators of orbits of rcwa groups (RCWA)", true,
+               [     IsIterator and IsMutable
+                 and IsRcwaGroupOrbitsIteratorRep ], 0,
 
   function ( iter )
 
@@ -4168,20 +4284,20 @@ InstallMethod( NextIterator,
 
 #############################################################################
 ##
-#M  IsDoneIterator( <iter> ) . . . . . . . . . . . .  for iterators of orbits
+#M  IsDoneIterator( <iter> ) . . . . . for iterators of orbits of rcwa groups
 ##
 InstallMethod( IsDoneIterator,
-               "for iterators of orbits (RCWA)", true,
-               [ IsIterator and IsOrbitsIteratorRep ], 0,
+               "for iterators of orbits of rcwa groups (RCWA)", true,
+               [ IsIterator and IsRcwaGroupOrbitsIteratorRep ], 0,
                iter -> IsEmpty( iter!.sphere ) );
 
 #############################################################################
 ##
-#M  ShallowCopy( <iter> ) . . . . . . . . . . . . . . for iterators of orbits
+#M  ShallowCopy( <iter> ) . . . . . .  for iterators of orbits of rcwa groups
 ##
 InstallMethod( ShallowCopy,
-               "for iterators of orbits (RCWA)", true,
-               [ IsIterator and IsOrbitsIteratorRep ], 0,
+               "for iterators of orbits of rcwa groups (RCWA)", true,
+               [ IsIterator and IsRcwaGroupOrbitsIteratorRep ], 0,
 
   iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
                      rec( orbit     := iter!.orbit,
@@ -4191,11 +4307,11 @@ InstallMethod( ShallowCopy,
 
 #############################################################################
 ##
-#M  ViewObj( <iter> ) . . . . . . . . . . . . . . . . for iterators of orbits
+#M  ViewObj( <iter> ) . . . . . . . .  for iterators of orbits of rcwa groups
 ##
 InstallMethod( ViewObj,
-               "for iterators of orbits (RCWA)", true,
-               [ IsIterator and IsOrbitsIteratorRep ], 0,
+               "for iterators of orbits of rcwa groups (RCWA)", true,
+               [ IsIterator and IsRcwaGroupOrbitsIteratorRep ], 0,
 
   function ( iter )
     Print("Iterator of ");
@@ -4748,7 +4864,8 @@ InstallMethod( EpimorphismFromFpGroup,
 
   function ( G, r )
 
-    local  Fp, FpS, phi, phiFp, phiFpS, F, BF, BG, BGset, rels, gensF, g, w;
+    local  Fp, FpS, phi, phiFp, phiFpS, F, BF, BG, BGset, rels, gensF, g, w,
+           ShortGroupRelations;
 
     if IsFpGroup(G) then return IdentityMapping(G); fi;
 
@@ -4756,9 +4873,11 @@ InstallMethod( EpimorphismFromFpGroup,
     F         := Source(phi);
     gensF     := GeneratorsOfGroup(F);
 
-    if IsReadOnlyGlobal( "FindGroupRelations" ) then # FR package is loaded.
+    if IsReadOnlyGlobal( "ShortGroupRelations" ) then # FR is loaded.
 
-      rels := FindGroupRelations(G,r);
+      ShortGroupRelations := ValueGlobal( "ShortGroupRelations" );
+
+      rels := ShortGroupRelations(G,r);
       rels := rels{[2..Length(rels)]};
 
     else

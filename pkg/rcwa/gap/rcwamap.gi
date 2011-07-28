@@ -2,8 +2,6 @@
 ##
 #W  rcwamap.gi                GAP4 Package `RCWA'                 Stefan Kohl
 ##
-#H  @(#)$Id: rcwamap.gi,v 1.287 2009/09/30 20:45:39 stefan Exp $
-##
 ##  This file contains implementations of methods and functions for computing
 ##  with rcwa mappings of
 ##
@@ -14,8 +12,7 @@
 ##
 ##  See the definitions given in the file rcwamap.gd.
 ##
-Revision.rcwamap_gi :=
-  "@(#)$Id: rcwamap.gi,v 1.287 2009/09/30 20:45:39 stefan Exp $";
+#############################################################################
 
 #############################################################################
 ##
@@ -1185,10 +1182,10 @@ InstallGlobalFunction( SemilocalizedRcwaMapping,
 
 #############################################################################
 ##
-#M  Projections( <f> ) . . proj. of an rcwa mapping of Z^2 to the coordinates
+#M  ProjectionsToCoordinates( <f> ) . . . . . . . .  for rcwa mappings of Z^2
 ##
-InstallMethod( Projections,
-               "rcwa mapping of Z^2 by two rcwa mappings of Z (RCWA)", true,
+InstallMethod( ProjectionsToCoordinates,
+               "rcwa mapping of Z^2 to two rcwa mappings of Z (RCWA)", true,
                [ IsRcwaMappingOfZxZ ], 0,
 
   function ( f )
@@ -1209,6 +1206,37 @@ InstallMethod( Projections,
       if t[1][1][2] <> 0 or t[1][2][1] <> 0 then return fail; fi;
     od;
     return [ RcwaMapping(cf), RcwaMapping(cg) ];
+  end );
+
+#############################################################################
+##
+#M  Projection( <f>, <coord> ) .  proj. of an rcwa mapping of Z^2 to 1 coord.
+##
+InstallOtherMethod( Projection,
+                    "for rcwa mappings of Z^2 (RCWA)",
+                    ReturnTrue, [ IsRcwaMappingOfZxZ, IsPosInt ], 0,
+
+  function ( f, coord )
+
+    local  m, c, c_proj, proj;
+
+    if not coord in [1,2] then return fail; fi; # there are only 2 coord's
+
+    proj := ProjectionsToCoordinates(f); # maybe even both projections exist
+    if proj <> fail then return proj[coord]; fi;
+
+    m := Modulus(f); # check whether the choice of the affine partial mapping
+                     # depends only on the specified coordinate:
+    if   m[1][2] <> 0 or m[2][1] <> 0 or m[3-coord][3-coord] <> 1
+    then return fail; fi;
+ 
+    c := Coefficients(f); # check for dependency on other coordinate:
+    if not ForAll(c,t->t[1][3-coord][coord]=0) then return fail; fi;
+
+    # build coefficient list in one dimension:
+    c_proj := List(c,t->[t[1][coord][coord],t[2][coord],t[3]]);
+
+    return RcwaMapping(c_proj);
   end );
 
 #############################################################################
@@ -2817,16 +2845,16 @@ InstallMethod( Display,
 
 #############################################################################
 ##
-#M  LaTeXObj( <f> ) . . . . . . . . . . . . . . . . .  for rcwa mappings of Z
+#M  RcwaMappingToLaTeX( <f> ) . . . . . . . . . . . .  for rcwa mappings of Z
 ##
-InstallMethod( LaTeXObj,
-               "for rcwa mappings of Z (RCWA)", true,
-               [ IsRcwaMappingOfZ ], 0,
+InstallMethod( RcwaMappingToLaTeX,
+               "for rcwa mappings of Z (RCWA)",
+               true, [ IsRcwaMappingOfZ ], 0,
 
   function ( f )
 
-    local  LaTeXAffineMappingOfZ, append, german, varname, gens,
-           c, m, res, P, str, affs, affstrings, maxafflng, indent, i, j;
+    local  LaTeXAffineMappingOfZ, append, indent, varname, german,
+           gens, c, m, res, P, str, affs, affstrings, maxafflng, i, j;
 
     append := function ( arg )
       str := CallFuncList(Concatenation,
@@ -2880,7 +2908,8 @@ InstallMethod( LaTeXObj,
       return str;
     fi;
 
-    german := ValueOption("german") = true;
+    german :=   ValueOption("German") = true
+             or ValueOption("german") = true;
     varname := First(List(["varname","VarName"],ValueOption),
                      name->name<>fail);
     if varname = fail then varname := "n"; fi;
@@ -2921,16 +2950,16 @@ InstallMethod( LaTeXObj,
 
 #############################################################################
 ##
-#M  LaTeXObj( <f> ) . . . . . . . . . . . . . . . .  for rcwa mappings of ZxZ
+#M  RcwaMappingToLaTeX( <f> ) . . . . . . . . . . .  for rcwa mappings of Z^2
 ##
-InstallMethod( LaTeXObj,
-               "for rcwa mappings of ZxZ (RCWA)", true,
-               [ IsRcwaMappingOfZxZ ], 0,
+InstallMethod( RcwaMappingToLaTeX,
+               "for rcwa mappings of Z^2 (RCWA)",
+               true, [ IsRcwaMappingOfZxZ ], 0,
 
   function ( f )
 
-    local  LaTeXAffineMappingOfZxZ, append, german, varname, gens,
-           c, m, res, P, str, affs, affstrings, maxafflng, indent, i, j;
+    local  LaTeXAffineMappingOfZxZ, append, indent, varname, german,
+           gens, c, m, res, P, str, affs, affstrings, maxafflng, i, j;
 
     append := function ( arg )
       str := CallFuncList(Concatenation,
@@ -3000,7 +3029,8 @@ InstallMethod( LaTeXObj,
       return str;
     fi;
 
-    german  := ValueOption("german") = true;
+    german :=   ValueOption("German") = true
+             or ValueOption("german") = true;
     varname := First(List(["varnames","VarNames"],ValueOption),
                      names->names<>fail);
     if varname = fail then varname := "mn"; fi;
@@ -3083,7 +3113,7 @@ InstallMethod( LaTeXAndXDVI,
              String(Modulus(f)),", multiplier ",String(Multiplier(f)),
              " and divisor ",String(Divisor(f)),", given by\n");
     AppendTo(stream,"\\begin{align*}\n");
-    str := LaTeXObj(f:Indentation:=2);
+    str := RcwaMappingToLaTeX(f:Indentation:=2);
     AppendTo(stream,str,"\\end{align*}");
     if HasIsTame(f) then
       if IsTame(f) then AppendTo(stream,"\nThis mapping is tame.");
@@ -3091,7 +3121,7 @@ InstallMethod( LaTeXAndXDVI,
     fi;
     if HasOrder(f) then
       AppendTo(stream,"\nThe order of this mapping is \\(",
-               LaTeXObj(Order(f)),"\\).");
+               IntOrInfinityToLaTeX(Order(f)),"\\).");
     fi;
     if HasIsTame(f) or HasOrder(f) then AppendTo(stream," \\newline"); fi;
     if IsBijective(f) then
@@ -3148,7 +3178,7 @@ InstallMethod( LaTeXAndXDVI,
                                                            "\\mathbb{Z}"),
              "\\), given by\n");
     AppendTo(stream,"\\begin{align*}\n");
-    str := LaTeXObj(f:Indentation:=2);
+    str := RcwaMappingToLaTeX(f:Indentation:=2);
     AppendTo(stream,str,"\\end{align*}");
     if HasIsTame(f) then
       if IsTame(f) then AppendTo(stream,"\nThis mapping is tame.");
@@ -3156,7 +3186,7 @@ InstallMethod( LaTeXAndXDVI,
     fi;
     if HasOrder(f) then
       AppendTo(stream,"\nThe order of this mapping is \\(",
-               LaTeXObj(Order(f)),"\\).");
+               IntOrInfinityToLaTeX(Order(f)),"\\).");
     fi;
     if HasIsTame(f) or HasOrder(f) then AppendTo(stream," \\newline"); fi;
     AppendTo(stream,"\n\n\\end{document}\n");
@@ -3166,13 +3196,6 @@ InstallMethod( LaTeXAndXDVI,
     Process(tmpdir,dvi,InputTextNone( ),OutputTextNone( ), 
             ["-paper","a1r","rcwamap.dvi"]);
   end );
-
-#############################################################################
-##
-#M  LaTeXObj( infinity ) . . . . . . . . . . . . . . . . . . . . for infinity
-##
-InstallMethod( LaTeXObj, "for infinity (RCWA)", true, [ IsInfinity ], 0,
-               inf -> "\\infty" );
 
 #############################################################################
 ##
@@ -3781,6 +3804,16 @@ InstallMethod( Multpk, "for rcwa mappings of Z^2 (RCWA)", true,
                   i->PadicValuation(DeterminantMat(c[i][1])/c[i][3]^2,p)=k);
     return ResidueClassUnion(R,m,AllResidues(R,m){r});
   end );
+
+#############################################################################
+##
+#M  MultDivType( <f> ) . . . . . . . . . . . . . . . . for rcwa mappings of Z
+##
+InstallMethod( MultDivType,
+               "for rcwa mappings of Z (RCWA)",
+               true, [ IsRcwaMappingOfZ ], 0,
+               f->List(Collected(List(Coefficients(f),c->c[1]/c[3])),
+                       t->[t[1],t[2]/Mod(f)]) );
 
 #############################################################################
 ##
@@ -5738,28 +5771,15 @@ InstallMethod( IsTame,
 
 #############################################################################
 ##
-#M  RespectedPartitionShort( <sigma> ) . . . for tame bijective rcwa mappings
+#M  RespectedPartition( <sigma> ) . . . for tame bijective rcwa mappings
 ##
-InstallMethod( RespectedPartitionShort,
+InstallMethod( RespectedPartition,
                "for tame bijective rcwa mappings (RCWA)", true,
                [ IsRcwaMapping ], 0,
 
   function ( sigma )
     if not IsBijective(sigma) then return fail; fi;
-    return RespectedPartitionShort( Group( sigma ) );
-  end );
-
-#############################################################################
-##
-#M  RespectedPartitionLong( <sigma> ) . . .  for tame bijective rcwa mappings
-##
-InstallMethod( RespectedPartitionLong,
-               "for tame bijective rcwa mappings (RCWA)", true,
-               [ IsRcwaMapping ], 0,
-
-  function ( sigma )
-    if not IsBijective(sigma) then return fail; fi;
-    return RespectedPartitionLong( Group( sigma ) );
+    return RespectedPartition( Group( sigma ) );
   end );
 
 #############################################################################
@@ -5962,10 +5982,10 @@ InstallMethod( Order,
       return infinity;
     fi;
 
-    Info(InfoRCWA,3,"Order: Attempt to determine a respected partition <P>");
-    Info(InfoRCWA,3,"       of <g>, and compute the order <k> of the per-");
-    Info(InfoRCWA,3,"       mutation induced by <g> on <P> as well as the");
-    Info(InfoRCWA,3,"       order of <g>^<k>.");
+    Info(InfoRCWA,3,"Order: determine a respected partition <P> of <g>,");
+    Info(InfoRCWA,3,"       and compute the order <k> of the permutation");
+    Info(InfoRCWA,3,"       induced by <g> on <P> as well as the order");
+    Info(InfoRCWA,3,"       of <g>^<k>.");
 
     P := RespectedPartition(g);
 
@@ -5986,6 +6006,16 @@ InstallMethod( Order,
       p := Characteristic(Source(g));
       gtilde := gtilde^p;
       if IsOne(gtilde) then return k * e * p; fi;
+    fi;
+
+    if IsRcwaMappingOfZxZ(g) then
+      if ForAny(Coefficients(gtilde),c->Order(c[1])=infinity) then
+        return infinity;
+      else
+        e := Lcm(List(Coefficients(gtilde),c->Order(c[1])));
+        gtilde := gtilde^e;
+        if IsOne(gtilde) then return k * e; else return infinity; fi;
+      fi;
     fi;
 
     Info(InfoRCWA,3,"Order: Giving up.");
@@ -6479,6 +6509,44 @@ InstallMethod( ShortCycles,
     then TryNextMethod(); fi;
     return List(ShortOrbits(Group(sigma),S,maxlng),
                 orb->Cycle(sigma,Minimum(orb)));
+  end );
+
+#############################################################################
+##
+#M  ShortCycles( <sigma>, <S>, <maxlng>, <maxn> )
+##
+InstallMethod( ShortCycles,
+               Concatenation("for a bijective rcwa mapping of Z, ",
+                             "a set and two positive integers (RCWA)"),
+               ReturnTrue, [ IsRcwaMappingOfZ, IsListOrCollection,
+                             IsPosInt, IsPosInt ], 0,
+
+  function ( sigma, S, maxlng, maxn )
+
+    local  cycs, cyc, done, min, max, lng, n, m, i, j;
+
+    if   not IsBijective(sigma) or not ForAll(S,IsInt)
+    then TryNextMethod(); fi;
+
+    S := ShallowCopy(S);
+    SortParallel(List(S,n->AbsInt(n)-SignInt(n)/2),S);
+    min := Minimum(S); max := Maximum(S);
+
+    cycs := [];
+    done := List(S,n->false);
+    while false in done do
+      i := Position(done,false); done[i] := true;
+      n := S[i]; m := n; cyc := []; lng := 0;
+      repeat
+        Add(cyc,m); m := m^sigma; lng := lng + 1;
+        if m >= min and m <= max then
+          j := Position(S,m);
+          if j <> fail then done[j] := true; fi;
+        fi;
+      until m = n or lng >= maxlng or AbsInt(m) > maxn;
+      if m = n then Add(cycs,cyc); fi;
+    od;
+    return cycs;
   end );
 
 #############################################################################

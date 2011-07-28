@@ -2,7 +2,7 @@
 ##
 #W  pcgs.gd                     GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: pcgs.gd,v 4.89 2010/02/23 15:13:22 gap Exp $
+#H  @(#)$Id: pcgs.gd,v 4.90 2011/01/07 01:05:20 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the operations for polycylic generating systems.
 ##
 Revision.pcgs_gd :=
-    "@(#)$Id: pcgs.gd,v 4.89 2010/02/23 15:13:22 gap Exp $";
+    "@(#)$Id: pcgs.gd,v 4.90 2011/01/07 01:05:20 alexk Exp $";
 
 #############################################################################
 ##
@@ -125,8 +125,9 @@ DeclareRepresentation(
 ##  <Description>
 ##  constructs a pcgs for the elements family <A>fam</A> from the elements in
 ##  the list <A>pcs</A>. The elements must lie in the family <A>fam</A>.
-##  <Ref Func="PcgsByPcSequence"/> and its <C>NC</C> variant will always
-##  create a new pcgs which is not induced by any other pcgs.
+##  <Ref Oper="PcgsByPcSequence"/> and its <C>NC</C> variant will always
+##  create a new pcgs which is not induced by any other pcgs 
+##  (cf. <Ref Oper="InducedPcgsByPcSequence"/>).
 ##  <Example><![CDATA[
 ##  gap> fam := FamilyObj( (1,2) );; # the family of permutations
 ##  gap> p := PcgsByPcSequence( fam, [(1,2),(1,2,3)] );
@@ -875,8 +876,10 @@ DeclareOperation( "ExponentsOfPcElement",
 ##  <Description>
 ##  returns the exponents of
 ##  <C><A>pcgs</A>[<A>i</A>]^<A>pcgs</A>[<A>j</A>]</C> with respect to
-##  <A>pcgs</A>. For the family pcgs or pcgs induced by it, this might be
-##  faster than computing the element and computing its exponent vector.
+##  <A>pcgs</A>. For the family pcgs or pcgs induced by it (see section 
+##  <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>), this 
+##  might be faster than computing the element and computing its exponent 
+##  vector.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -896,8 +899,10 @@ DeclareOperation( "ExponentsOfConjugate",
 ##  For <M>p = <A>pcgs</A>[<A>i</A>]</M> this function returns the
 ##  exponent vector with respect to <A>pcgs</A> of the element <M>p^e</M>
 ##  where <M>e</M> is the relative order of <A>p</A> in <A>pcgs</A>.
-##  For the family pcgs or pcgs induced by it, this might be
-##  faster than computing the element and computing its exponent vector.
+##  For the family pcgs or pcgs induced by it (see section 
+##  <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>), this 
+##  might be faster than computing the element and computing its exponent 
+##  vector.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -917,6 +922,7 @@ DeclareOperation( "ExponentsOfRelativePower",
 ##  returns the exponents of the commutator
 ##  <C>Comm( </C><M><A>pcgs</A>[<A>i</A>], <A>pcgs</A>[<A>j</A>]</M><C> )</C>
 ##  with respect to <A>pcgs</A>. For the family pcgs or pcgs induced by it,
+##  (see section <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>),
 ##  this might be faster than computing the element and computing its
 ##  exponent vector.
 ##  </Description>

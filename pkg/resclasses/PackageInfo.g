@@ -1,37 +1,39 @@
 ####################################################################################################
 ##
 ##  PackageInfo.g                      GAP4 Package `ResClasses'                         Stefan Kohl
-##  
-#H  @(#)$Id: PackageInfo.g,v 1.59 2009/05/28 22:19:57 stefan Exp $
 ##
+####################################################################################################
 
 SetPackageInfo( rec(
 
 PackageName      := "ResClasses",
 Subtitle         := "Set-Theoretic Computations with Residue Classes",
-Version          := "3.dev",
-Date             := "15/02/2009",
-ArchiveURL       := "http://univlora.edu.al/personel/kohl/resclasses/resclasses-3.0.0",
-ArchiveFormats   := ".tar.gz",
+Version          := "3.0.1",
+Date             := "08/05/2011",
+ArchiveURL       := Concatenation("http://www.gap-system.org/DevelopersPages/StefanKohl/",
+                                  "resclasses/resclasses-3.0.1"),
+ArchiveFormats   := "-win.zip", # ".tar.gz" when providing text files with UNIX-style line breaks
 Persons          := [
                       rec( LastName      := "Kohl",
                            FirstNames    := "Stefan",
                            IsAuthor      := true,
                            IsMaintainer  := true,
-                           Email         := "kohl@univlora.edu.al",
-                           WWWHome       := "http://univlora.edu.al/personel/kohl/",
-                           PostalAddress := Concatenation("Departamenti i Matematikes\n",
-                                                          "Universiteti \"Ismail Qemali\" ",
-                                                          "Vlore\nLagja: Pavaresia\n",
+                           Email         := "stefan@mcs.st-and.ac.uk",
+                           WWWHome       := "http://www.gap-system.org/DevelopersPages/StefanKohl/",
+                           PostalAddress := Concatenation("Department of Mathematics\n",
+                                                          "University of Vlora\n",
+                                                          "Lagjja: Pavaresia\n",
                                                           "Vlore / Albania"),
                            Place         := "Vlore / Albania",
                            Institution   := "University of Vlora"
                          )
                     ],
 Status           := "deposited",
-PackageWWWHome   := "http://univlora.edu.al/personel/kohl/resclasses.html",
-README_URL       := "http://univlora.edu.al/personel/kohl/resclasses/README.resclasses",
-PackageInfoURL   := "http://univlora.edu.al/personel/kohl/resclasses/PackageInfo.g",
+PackageWWWHome   := "http://www.gap-system.org/DevelopersPages/StefanKohl/resclasses.html",
+README_URL       := Concatenation("http://www.gap-system.org/DevelopersPages/StefanKohl/",
+                                  "resclasses/README.resclasses"),
+PackageInfoURL   := Concatenation("http://www.gap-system.org/DevelopersPages/StefanKohl/",
+                                  "resclasses/PackageInfo.g"),
 AbstractHTML     := Concatenation("This package permits to compute with set-theoretic ",
                                   "unions of residue classes of&nbsp;Z and a few other rings. ",
                                   "In particular it provides methods for computing unions, ",
@@ -48,14 +50,14 @@ PackageDoc       := rec(
                        ),
 Dependencies     := rec(
                          GAP                    := ">=4.4.12",
-                         NeededOtherPackages    := [ ["GAPDoc",">=1.1"], ["Polycyclic",">=2.4"] ],
+                         NeededOtherPackages    := [ ["GAPDoc",">=1.1"], ["Polycyclic",">=2.6"] ],
                          SuggestedOtherPackages := [ ],
                          ExternalConditions     := [ ]
                        ),
 AvailabilityTest := ReturnTrue,
 BannerString     := Concatenation( "\nLoading ResClasses ", ~.Version,
                                    " (Computations with Residue Classes)",
-                                   "\nby Stefan Kohl, kohl@univlora.edu.al\n\n" ),
+                                   "\nby Stefan Kohl, stefan@mcs.st-and.ac.uk\n\n" ),
 Autoload         := true,
 TestFile         := "tst/testall.g",
 Keywords         := [ "residue classes", "integers", "number theory" ]

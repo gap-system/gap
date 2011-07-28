@@ -2,14 +2,14 @@
 ##
 #W  grpperm.gi                  GAP library                   Heiko Theißen
 ##
-#H  @(#)$Id: grpperm.gi,v 4.172 2010/06/09 08:32:40 gap Exp $
+#H  @(#)$Id: grpperm.gi,v 4.173 2011/01/25 17:51:04 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpperm_gi :=
-    "@(#)$Id: grpperm.gi,v 4.172 2010/06/09 08:32:40 gap Exp $";
+    "@(#)$Id: grpperm.gi,v 4.173 2011/01/25 17:51:04 gap Exp $";
 
 
 #############################################################################
@@ -1817,15 +1817,40 @@ end );
 InstallMethod(SmallGeneratingSet,"random and generators subset, randsims",true,
   [IsPermGroup],0,
 function (G)
-local  i, j, U, gens;
+local  i, j, U, gens,o,v,a,sel;
+
+  # remove obvious redundancies
+  gens := ShallowCopy(Set(GeneratorsOfGroup(G)));
+  o:=List(gens,Order);
+  SortParallel(o,gens,function(a,b) return a>b;end);
+  sel:=Filtered([1..Length(gens)],x->o[x]>1);
+  for i in [1..Length(gens)] do
+    if i in sel then
+      U:=Filtered(sel,x->x>i and IsInt(o[i]/o[x])); # potential powers
+      v:=[];
+      for j in U do
+	a:=SmallestMovedPoint(gens[j]);
+	if IsSubset(OrbitPerms([gens[i]],a),OrbitPerms([gens[j]],a)) then
+	  Add(v,j);
+	fi;
+      od;
+      # v are the possible powers
+      for j in v do
+	a:=gens[i]^(o[i]/o[j]);
+	if ForAny(Filtered([1..o[j]],z->Gcd(z,o[j])=1),x->a^x=gens[j]) then
+	  RemoveSet(sel,j);
+	fi;
+      od;
+    fi;
+  od;
+  gens:=gens{sel};
 
   # try pc methods first
   if Length(MovedPoints(G))<1000 and HasIsSolvableGroup(G) 
-     and IsSolvableGroup(G) and Length(GeneratorsOfGroup(G))>2 then
+     and IsSolvableGroup(G) and Length(gens)>3 then
     return MinimalGeneratingSet(G);
   fi;
 
-  gens := Set(GeneratorsOfGroup(G));
   if Length(gens)>2 then
     i:=2;
     while i<=3 and i<Length(gens) do

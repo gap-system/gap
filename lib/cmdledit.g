@@ -2,7 +2,7 @@
 ##
 #W  cmdledit.g                    GAP library                    Frank Lübeck 
 ##
-#H  @(#)$Id: cmdledit.g,v 4.21 2010/08/03 13:39:09 gap Exp $
+#H  @(#)$Id: cmdledit.g,v 4.26 2011/05/27 11:39:58 gap Exp $
 ##
 #Y  Copyright (C)  2010 The GAP Group
 ##
@@ -14,7 +14,7 @@
 ##  this library.
 ##
 Revision.cmdledit_g :=
-    "@(#)$Id: cmdledit.g,v 4.21 2010/08/03 13:39:09 gap Exp $";
+    "@(#)$Id: cmdledit.g,v 4.26 2011/05/27 11:39:58 gap Exp $";
 
 
 if IsBound(BINDKEYSTOGAPHANDLER) then
@@ -143,9 +143,10 @@ GAPInfo.UseReadline := true;
 ##  <Description>
 ##  The first  command saves the  lines in the  command line history  to the
 ##  file given by  the string <A>fname</A>. The default  for <A>fname</A> is
-##  <C>"~/.gap_hist"</C>. If the optional  argument <A>app</A> is <K>true</K>
-##  then  the  lines  are  appended  to that  file  otherwise  the  file  is
-##  overwritten.
+##  <F>"~/.gap/history"</F>  or  <F>"~/.gap_hist"</F>  if you  do  not  have
+##  a  <F>.gap</F>  directory.  If   the  optional  argument  <A>app</A>  is
+##  <K>true</K> then the lines are appended  to that file otherwise the file
+##  is overwritten.
 ##  <P/>
 ##  The  second command  is  the  converse, it  reads  the  lines from  file
 ##  <A>fname</A> and <Emph>prepends</Emph> them  to the current command line
@@ -501,7 +502,14 @@ GAPInfo.CommandLineEditFunctions.Functions.ForwardHistory := function(l)
   hist := GAPInfo.History.Lines;
   n := GAPInfo.History.Pos;
   if n > Length(hist) then
-    n := 0;
+    # special case on empty line, we don't wrap to the beginning, but
+    # the position of the last history use 
+    if Length(l[3]) = 0 and GAPInfo.History.Last < Length(hist) then
+      GAPInfo.History.Pos := GAPInfo.History.Last;
+      n := GAPInfo.History.Pos;
+    else
+      n := 0;
+    fi;
   fi;
   # searching forward in history for line starting with input before cursor
   if l[4] = Length(l[3]) + 1 then
@@ -621,8 +629,8 @@ BindKeysToGAPHandler("\022");
 #F  ReadCommandLineHistory( [<fname>] )
 ##  
 ##  Use the first command to write the currently saved command lines in the 
-##  history to file <fname>. If not given the default file name `~/.gap_hist' 
-##  is used. The second command prepends the lines from <fname> to the current
+##  history to file <fname>. If not given the default file name '~/.gap/history'##  or '~/.gap_hist' is used. 
+##  The second command prepends the lines from <fname> to the current
 ##  command line history (as much as possible when GAPInfo.History.MaxLines
 ##  is less than infinity).
 ##  
@@ -631,7 +639,11 @@ BindGlobal("SaveCommandLineHistory", function(arg)
   if Length(arg) > 0 then
     fnam := arg[1];
   else
-    fnam := "~/.gap_hist";
+    if IsExistingFile(USER_HOME_EXPAND("~/.gap")) then
+      fnam := Concatenation(USER_HOME_EXPAND("~/.gap"), "/history");
+    else
+      fnam := "~/.gap_hist";
+    fi;
   fi;
   if true in arg then
     append := true;
@@ -660,7 +672,11 @@ BindGlobal("ReadCommandLineHistory", function(arg)
   if Length(arg) > 0 and IsString(arg[1]) then
     fnam := arg[1];
   else
-    fnam := "~/.gap_hist";
+    if IsExistingFile(USER_HOME_EXPAND("~/.gap")) then
+      fnam := Concatenation(USER_HOME_EXPAND("~/.gap"), "/history");
+    else
+      fnam := "~/.gap_hist";
+    fi;
   fi;
   s := StringFile(fnam);
   if s = fail then
@@ -715,6 +731,14 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
     cf.tabcount := 1;
     Unbind(cf.tabrec);
     Unbind(cf.tabcompnam);
+  fi;
+  pos := l[4]-1;
+  # in whitespace in beginning of line \t is just inserted
+  while pos > 0 and l[3][pos] in " \t" do
+    pos := pos-1;
+  od;
+  if pos = 0 then
+     return ["\t"];
   fi;
   pos := l[4]-1;
   # find word to complete

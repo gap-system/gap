@@ -14,7 +14,7 @@
 ##  4. Functions for ...
 ##
 Revision.ghom_gi :=
-    "@(#)$Id: ghom.gi,v 4.118 2010/06/14 08:44:38 gap Exp $";
+    "@(#)$Id: ghom.gi,v 4.121 2011/01/25 08:27:04 gap Exp $";
 
 
 #############################################################################
@@ -72,14 +72,24 @@ InstallGlobalFunction( GroupHomomorphismByImages,
 ##
 #M  RestrictedMapping(<hom>,<U>)
 ##
+InstallMethod(RestrictedMapping,"try if restriction is proper",
+  CollFamSourceEqFamElms,[IsGroupGeneralMapping,IsGroup],SUM_FLAGS,
+function(hom, U)
+  if IsSubset (U, Source (hom)) then
+      return hom;   
+  fi;
+  TryNextMethod();
+end);
+
+
+#############################################################################
+##
+#M  RestrictedMapping(<hom>,<U>)
+##
 InstallMethod(RestrictedMapping,"create new GHBI",
   CollFamSourceEqFamElms,[IsGroupHomomorphism,IsGroup],0,
 function(hom,U)
 local rest,gens,imgs,imgp;
-
-  if ForAll(GeneratorsOfGroup(Source(hom)),i->i in U) then
-    return hom;   
-  fi;
 
   gens:=GeneratorsOfGroup(U);
   imgs:=List(gens,i->ImageElm(hom,i));
@@ -98,6 +108,22 @@ local rest,gens,imgs,imgp;
   fi;
 
   return rest;
+end);
+
+
+#############################################################################
+##
+#M  RestrictedMapping(<hom>,<U>)
+##
+InstallMethod(RestrictedMapping,"injective case: use GeneralRestrictedMapping",
+  CollFamSourceEqFamElms,[IsGroupHomomorphism and IsInjective,IsGroup],0,
+function(hom,U)
+
+  if IsGroupGeneralMappingByImages(hom) then # restrictions of GHBI should be GHBI
+	TryNextMethod();
+  fi;
+  
+  return GeneralRestrictedMapping (hom, U, Range(hom));
 end);
 
 
@@ -834,6 +860,21 @@ end );
 ##
 ##  3. Functions for conjugation action
 ##
+
+#############################################################################
+##
+#M  ConjugatorOfConjugatorIsomorphism(<hom>)
+##
+InstallOtherMethod(ConjugatorOfConjugatorIsomorphism,
+  "default -- try RepresentativeAction",true,
+  [IsGroupHomomorphism and IsConjugatorIsomorphism],0,
+function(hom)
+local gi,x;
+  gi:=MappingGeneratorsImages(hom);
+  x:=RepresentativeAction(Parent(Source(hom)),gi[1],gi[2],OnTuples);
+  if x=fail then TryNextMethod();fi;
+  return x;
+end);
 
 
 #############################################################################

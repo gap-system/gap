@@ -2,13 +2,13 @@
 ##
 #W  lpres.gi			The NQL-package			René Hartung
 ##
-#H   @(#)$Id: lpres.gi,v 1.8 2009/05/06 12:58:59 gap Exp $
+#H   @(#)$Id: lpres.gi,v 1.9 2010/03/17 13:03:41 gap Exp $
 ##
 ## Based on Alexander Hulpke's and Volkmar Felsch's construction of
 ## finitely presented groups ("GAPDIR/lib/grpfp.gi").
 ##
 Revision.("nql/gap/lpres_gi"):=
-  "@(#)$Id: lpres.gi,v 1.8 2009/05/06 12:58:59 gap Exp $";
+  "@(#)$Id: lpres.gi,v 1.9 2010/03/17 13:03:41 gap Exp $";
 
 
 ############################################################################
@@ -16,8 +16,7 @@ Revision.("nql/gap/lpres_gi"):=
 #M  ElementOfLpGroup
 ##
 InstallMethod( ElementOfLpGroup,
-   "for a family of L-presented group elements, and an assoc. word",
-   true,
+   "for a family of L-presented group elements, and an assoc. word", true,
    [ IsElementOfLpGroupFamily, IsAssocWordWithInverse ],
    function( fam, elm )
      return Objectify(fam!.defaultType, [Immutable(elm)]);
@@ -28,8 +27,7 @@ InstallMethod( ElementOfLpGroup,
 #M  PrintObj( <elm> ) 
 ## 
 InstallMethod( PrintObj,
-  "for an element of an L-presented group",
-  true,
+  "for an element of an L-presented group", true,
   [IsElementOfLpGroup and IsPackedElementDefaultRep], 0,
   function(obj)
     Print(obj![1]);
@@ -40,8 +38,7 @@ InstallMethod( PrintObj,
 #M  ViewObj( <elm> ) 
 ## 
 InstallMethod( ViewObj,
-  "for an element of an L-presented group",
-  true,
+  "for an element of an L-presented group", true,
   [IsElementOfLpGroup and IsPackedElementDefaultRep], 0,
   function(obj)
     View(obj![1]);
@@ -52,8 +49,7 @@ InstallMethod( ViewObj,
 #M  String( <elm> ) 
 ## 
 InstallMethod( String,
-  "for an element of an L-presented group",
-  true,
+  "for an element of an L-presented group", true,
   [IsElementOfLpGroup and IsPackedElementDefaultRep], 0,
   obj-> String(obj![1]));
 
@@ -62,8 +58,7 @@ InstallMethod( String,
 #M  LaTeXObj( <elm> ) 
 ## 
 InstallMethod( LaTeXObj,
-  "for an element of an L-presented group",
-  true,
+  "for an element of an L-presented group", true,
   [IsElementOfLpGroup and IsPackedElementDefaultRep], 0,
   obj->LaTeXObj(obj![1]));
 
@@ -72,8 +67,7 @@ InstallMethod( LaTeXObj,
 #M  UnderlyingElement( <elm> ) 
 ## 
 InstallMethod( UnderlyingElement,
-  "for an element of an L-presented group",
-  true,
+  "for an element of an L-presented group", true,
   [IsElementOfLpGroup and IsPackedElementDefaultRep], 0,
    obj -> obj![1]);
 
@@ -82,8 +76,7 @@ InstallMethod( UnderlyingElement,
 #M  ExtRepOfObj( <elm> )
 ## 
 InstallMethod( ExtRepOfObj,
-  "for an element of an L-presented group",
-  true,
+  "for an element of an L-presented group", true,
   [IsElementOfLpGroup and IsPackedElementDefaultRep], 0,
   obj -> ExtRepOfObj(obj![1]));
 
@@ -92,8 +85,7 @@ InstallMethod( ExtRepOfObj,
 #M  Length ( <elm> )
 ##
 InstallOtherMethod( Length, 
-  "for an element of an L-presented group", 
-  true,
+  "for an element of an L-presented group", true,
   [ IsElementOfLpGroup and IsPackedElementDefaultRep ], 0,
   x->Length(UnderlyingElement(x)));
 
@@ -102,8 +94,7 @@ InstallOtherMethod( Length,
 #M  InverseOp ( <elm> ) 
 ## 
 InstallMethod( InverseOp,
-  "for an element of an L-presented group",
-  true,
+  "for an element of an L-presented group", true,
   [IsElementOfLpGroup], 0,
   obj->ElementOfLpGroup(FamilyObj(obj),Inverse(UnderlyingElement(obj))));
 
@@ -112,8 +103,7 @@ InstallMethod( InverseOp,
 #M  One( <fam> )
 ##
 InstallOtherMethod( One,
-  "for a family of L-presented group elements",
-  true,
+  "for a family of L-presented group elements", true,
   [IsElementOfLpGroupFamily],0,
   fam->ElementOfLpGroup(fam,One(fam!.freeGroup)));
 
@@ -122,15 +112,13 @@ InstallOtherMethod( One,
 #M  One( <elm> )
 ##
 InstallMethod( One, 
-  "for an L-presented group element", 
-  true,
+  "for an L-presented group element", true,
   [IsElementOfLpGroup], 0, 
   obj->One(FamilyObj(obj)));
 
 #a^0 calls OneOp
 InstallMethod( OneOp, 
-  "for an L-presented group element",
-  true,
+  "for an L-presented group element", true,
   [IsElementOfLpGroup],0,
   obj -> One(FamilyObj(obj)));
 
@@ -139,8 +127,7 @@ InstallMethod( OneOp,
 #M  \*( <elm1>, <elm2> )  . . . . . for two elements of an L-presented group 
 ##
 InstallMethod( \*, 
-   "for two L-presented group elements",
-    IsIdenticalObj, 
+   "for two L-presented group elements", IsIdenticalObj, 
     [ IsElementOfLpGroup, IsElementOfLpGroup ], 0,
     function( left, right )
     local fam,k;
@@ -158,8 +145,7 @@ InstallMethod( \*,
 ## image in <imgs>.
 ##
 InstallOtherMethod( MappedWord,
-   "for LpGroup elements",
-   true,
+   "for LpGroup elements", true,
    [ IsElementOfLpGroup, IsList, IsList ], 0,
    function(x,gens1,gens2)
    if not IsElementOfLpGroupCollection(gens1) then
@@ -175,8 +161,7 @@ InstallOtherMethod( MappedWord,
 #M  GeneratorsOfGroup( <F> )  . . . . . . . . . . . for an L-presented group
 ##
 InstallMethod( GeneratorsOfGroup, 
-   "for whole family of L-presented groups", 
-   true,
+   "for whole family of L-presented groups", true,
    [ IsLpGroup and IsGroupOfFamily ], 0,
    function( F )
    local Fam;	
@@ -189,10 +174,8 @@ InstallMethod( GeneratorsOfGroup,
 #M  Display( <G> ) . . . . . . . . . . . . . . . . . . .  display an LpGroup
 ##
 InstallMethod( Display,
-   "for L-presented groups",
-   true,
-   [ IsLpGroup and IsGroupOfFamily ],
-   0,
+   "for L-presented groups", true,
+   [ IsLpGroup and IsGroupOfFamily ], 0,
    function( G )
    local   gens,       # generators o the free group
            rels,       # relators of <G>
@@ -249,28 +232,43 @@ InstallMethod( Display,
 #M  FreeGeneratorsOfLpGroup ( G )
 ##
 InstallMethod( FreeGeneratorsOfLpGroup,
-   "for an L-presented group",
-   true,
+   "for an L-presented group", true,
    [ IsLpGroup and IsGroupOfFamily ], 0,
    G -> GeneratorsOfGroup( FreeGroupOfLpGroup (G)));
+
+############################################################################
+##
+#M  FreeGeneratorsOfWholeGroup
+##
+InstallMethod( FreeGeneratorsOfWholeGroup, 
+  "for a subgroup of an L-presented group", true,
+  [ IsSubgroupLpGroup ], 0, 
+  G -> GeneratorsOfGroup( ElementsFamily( FamilyObj( G ) )!.freeGroup ) );
 
 ############################################################################
 ##
 #M  FreeGroupOfLpGroup( F ) . . underlying free group of an L-presented group
 ##
 InstallMethod( FreeGroupOfLpGroup, 
-   "for an L-presented group", 
-   true,
+   "for an L-presented group", true,
    [ IsLpGroup and IsGroupOfFamily ], 0,
    G -> ElementsFamily( FamilyObj( G ) )!.freeGroup );
+
+############################################################################
+##
+#M  FreeGroupOfWholeGroup 
+##
+InstallMethod( FreeGroupOfWholeGroup,
+  "for a subgroup of an L-presented group", true,
+  [ IsSubgroupLpGroup ], 0,
+  G -> ElementsFamily( FamilyObj( G ) )!.freeGroup );
 
 ############################################################################
 ##
 #M  FixedRelatorsOfLpGroup( F )
 ##
 InstallMethod( FixedRelatorsOfLpGroup,
-    "for an L-presented group",
-    true,
+    "for an L-presented group", true,
     [ IsLpGroup and IsGroupOfFamily ], 0,
     G -> ElementsFamily( FamilyObj( G ) )!.relators );
 
@@ -279,8 +277,7 @@ InstallMethod( FixedRelatorsOfLpGroup,
 #M  IteratedRelatorsOfLpGroup( F )
 ##
 InstallMethod( IteratedRelatorsOfLpGroup,
-    "for an L-presented group",
-    true,
+    "for an L-presented group", true,
     [ IsLpGroup and IsGroupOfFamily ], 0,
     G -> ElementsFamily( FamilyObj( G ) )!.itrels );
 
@@ -289,8 +286,7 @@ InstallMethod( IteratedRelatorsOfLpGroup,
 #M  EndomorphismsOfLpGroup( F )
 ##
 InstallMethod( EndomorphismsOfLpGroup,
-    "for an L-presented group",
-    true,
+    "for an L-presented group", true,
     [ IsLpGroup and IsGroupOfFamily ], 0,
     G -> ElementsFamily( FamilyObj( G ) )!.endos );
 
@@ -299,12 +295,19 @@ InstallMethod( EndomorphismsOfLpGroup,
 #M  ViewObj(<G>)
 ##
 InstallMethod( ViewObj,
-   "for an L-presented group",
-   true,
-   [ IsLpGroup ], 0,
-   function(G)
-     if IsGroupOfFamily(G) then
-       Print("<L-presented group");
+   "for a subgroup of an L-presented group", true,
+   [ IsSubgroupLpGroup ], 1,
+   function( G )
+     if IsGroupOfFamily( G ) then
+       Print("<");;
+       if HasIsInvariantLPresentation( G ) then 
+         if IsInvariantLPresentation( G )  then 
+           Print("invariant ");
+         else
+           Print("non-invariant ");
+         fi;
+       fi;
+       Print("LpGroup");
        if HasSize( G ) then
          Print(" of size ", Size( G ) );
        fi;
@@ -314,7 +317,22 @@ InstallMethod( ViewObj,
          Print(" on the generators ",GeneratorsOfGroup(G),">");
        fi;
      else
-       Error("not implemented yet\n");
+       Print( "Group(" );
+       if HasGeneratorsOfGroup( G ) then 
+         if not IsBound( G!.gensWordLengthSum ) then 
+           G!.gensWordLengthSum := Sum( List( GeneratorsOfGroup( G ), 
+                                   x -> Length( UnderlyingElement( x ) ) ) );
+         fi;
+         if G!.gensWordLengthSum <= GAPInfo.ViewLength * 30 then 
+           Print( GeneratorsOfGroup( G ) );
+         else
+           Print( "<subgroup of L-presented group with ", 
+                  Length( GeneratorsOfGroup( G ) ), " generators>" );;
+         fi;
+       else
+         Print("<subgroup of L-presented group, no generators known>");
+       fi;
+       Print( ")" );
      fi;
    end);
 
@@ -322,7 +340,7 @@ InstallMethod( ViewObj,
 ##
 #F  LPresentedGroup ( <F> , <rels> , <Endos> , <itrels> ) 
 ##
-InstallGlobalFunction(LPresentedGroup,
+InstallGlobalFunction( LPresentedGroup,
     function( F, rels, endos, itrels)
     local G,	# new object of an L-presentation
 	  fam,  # new family of an L-presentation
@@ -342,18 +360,18 @@ InstallGlobalFunction(LPresentedGroup,
     # Create the group.
     G := Objectify(
          NewType( CollectionsFamily( fam ),
-            IsLpGroup and IsWholeFamily and IsAttributeStoringRep ),
+            IsSubgroupLpGroup and IsWholeFamily and IsAttributeStoringRep ),
          rec() );
 
     # Mark <G> to be the 'whole group' of its elements
-    FamilyObj(G)!.wholeGroup:=G;
-    SetFilterObj(G,IsGroupOfFamily);
+    FamilyObj( G )!.wholeGroup := G;
+    SetFilterObj( G, IsGroupOfFamily );
     
     # an ascending L-presentation is an invariant L-presentation
-    if IsAscendingLPresentation(G) then
-      SetIsInvariantLPresentation(G,true);
-      SetEmbeddingOfAscendingSubgroup(G,GroupHomomorphismByImagesNC(G,G,
-                                    GeneratorsOfGroup(G),GeneratorsOfGroup(G)));
+    if IsAscendingLPresentation( G ) then
+      SetIsInvariantLPresentation( G, true );
+      SetEmbeddingOfAscendingSubgroup( G, GroupHomomorphismByImagesNC( G, G,
+                    GeneratorsOfGroup(G), GeneratorsOfGroup(G)));
     fi;
 
     # Create generators of the group.
@@ -424,10 +442,31 @@ InstallMethod( IsInvariantLPresentation,
 
 ############################################################################
 ##
+#M IsFinitelyGeneratedGroup
+##
+InstallMethod( IsFinitelyGeneratedGroup,
+  "for a subgroup of an L-presented group", true,
+  [ IsSubgroupLpGroup ], 0, 
+  function( U )
+
+    if HasGeneratorsOfGroup( U ) and IsList( GeneratorsOfGroup( U ) ) then
+      return( true );
+    fi;
+  
+    # try to compute the index of <U> in its (finitely generated) parent
+    if IndexInWholeGroup( U ) < infinity then 
+      return( true );
+    else
+      TryNextMethod();
+    fi;
+    end);
+
+############################################################################
+##
 #A  UnderlyingAscendingLPresentation( <G> )
 ##
 InstallMethod( UnderlyingAscendingLPresentation,
-  "for an arbitrary LpGroup",
+  "for an arbitrary LpGroup", true,
   [ IsLpGroup ], 0, 
   G -> LPresentedGroup( FreeGroupOfLpGroup(G), [], EndomorphismsOfLpGroup(G),
    	   	        IteratedRelatorsOfLpGroup(G)) );
@@ -437,12 +476,12 @@ InstallMethod( UnderlyingAscendingLPresentation,
 #A  UnderlyingInvariantLPresentation( <G> )
 ##
 InstallMethod( UnderlyingInvariantLPresentation,
-  "for invariant L-presented groups",
-  [ IsLpGroup and HasIsInvariantLPresentation and IsInvariantLPresentation ],
+  "for invariant L-presented groups", true,
+  [ IsLpGroup and HasIsInvariantLPresentation and IsInvariantLPresentation ],0,
   G -> G);
 
 InstallMethod( UnderlyingInvariantLPresentation,
-  "for an arbitrary L-presented group", 
+  "for an arbitrary L-presented group", true,
   [ IsLpGroup ], 1,
   function( G )
   local rels,	# all possible combinations of fixed relators of <G>
@@ -503,7 +542,7 @@ InstallMethod( UnderlyingInvariantLPresentation,
   end);
 
 InstallMethod( UnderlyingInvariantLPresentation,
-  "for an arbitrary L-presented group",
+  "for an arbitrary L-presented group", true,
   [ IsLpGroup ], 0, 
   UnderlyingAscendingLPresentation );
    
@@ -516,36 +555,30 @@ InstallMethod( UnderlyingInvariantLPresentation,
 ##  L-presented group <LpGroup>
 ##
 InstallMethod( EpimorphismFromFpGroup,
-  "for an L-presented group and a position integer",
-  true,
-  [IsLpGroup, IsPosInt], 0,
+  "for an L-presented group and a positive integer", true,
+  [ IsLpGroup, IsPosInt ], 0,
   function (L, n)
   local G, 	# the finitely presented group
   	F, 	# free group for <G>
 	rels,	# relators for <G>
- 	endos,	# set endomorphisms that acts on the iterated relations
-	epi,	# epimorphism from <G> onto <L>
-	i;	# loop variable
+ 	Endos,	# set endomorphisms that acts on the iterated relations
+	sig;	# loop variable
    
-  F:=FreeGroupOfLpGroup(L);
-  rels:=ShallowCopy(FixedRelatorsOfLpGroup(L));
+  F    := FreeGroupOfLpGroup( L );
+  rels := ShallowCopy( FixedRelatorsOfLpGroup( L ) );
 
-  # determine all words in the monoid of the endomorphism of length at most <n>
-  endos:=NQL_WordsOfLengthAtMostN(EndomorphismsOfLpGroup(L),n);
+  # all words in the free monoid of length at most <n>
+  Endos := NQL_WordsOfLengthAtMostN( EndomorphismsOfLpGroup( L ), n );
 
   # apply the endomorphisms
-  for i in [1..Length(endos)] do 
-    Append(rels,List(ShallowCopy(IteratedRelatorsOfLpGroup(L)),x->x^endos[i]));
+  for sig in Endos do 
+    Append( rels, List( IteratedRelatorsOfLpGroup(L), x-> Image( sig, x ) ) );;
   od;
   
   # the finitely presented group 
-  G:=F/rels;
-
-  # the epimorphism from <G> onto L
-  epi:=GroupHomomorphismByImagesNC(G,L,GeneratorsOfGroup(G),
-				       GeneratorsOfGroup(L));
-
-  return(epi);
+  G := F/rels;
+  return( GroupHomomorphismByImagesNC( G, L, GeneratorsOfGroup( G ),
+	   			             GeneratorsOfGroup( L ) ) );
   end);
 
 ############################################################################
@@ -557,8 +590,7 @@ InstallMethod( EpimorphismFromFpGroup,
 ## in the list <auts>.
 ##
 InstallMethod( SplitExtensionByAutomorphismsLpGroup,
-  "for an LpGroup, an FpGroup and a list of automorphisms",
-  true,
+  "for an LpGroup, an FpGroup and a list of automorphisms", true,
   [ IsLpGroup, IsFpGroup, IsList] , 0,
   function( G, H, auts )
   local gensG,	# generators of <G> 
@@ -626,8 +658,7 @@ InstallMethod( SplitExtensionByAutomorphismsLpGroup,
 ## in the list <auts>.
 ##
 InstallMethod(SplitExtensionByAutomorphismsLpGroup,
-  "for L-presented groups and a list of automorphism",
-  true,
+  "for L-presented groups and a list of automorphism", true,
   [ IsLpGroup, IsLpGroup, IsList ], 0,
   function( G, H, auts )
   local gensG,	# generators of <G> 
@@ -701,8 +732,7 @@ InstallMethod(SplitExtensionByAutomorphismsLpGroup,
 #M  \= ( <elm1>, <elm2> )  . . . . . for two elements of an L-presented group 
 ##
 InstallMethod( \=, 
-   "for elements of an L-presented group",
-   IsIdenticalObj, 
+   "for elements of an L-presented group", IsIdenticalObj, 
    [ IsElementOfLpGroup, IsElementOfLpGroup ], 0,
    function( left, right )
    local epi, 		# epimorphism onto a nilpotent quotient of the group
@@ -839,4 +869,3 @@ InstallMethod( IsomorphismLpGroup,
 
   return( iso );
   end); 
-

@@ -2,7 +2,7 @@
 ##
 #W  alghom.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: alghom.gi,v 4.27 2010/02/23 15:12:45 gap Exp $
+#H  @(#)$Id: alghom.gi,v 4.29 2010/12/28 00:26:45 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -21,7 +21,7 @@
 ##  5. methods for isomorphisms to f.p. algebras
 ##
 Revision.alghom_gi :=
-    "@(#)$Id: alghom.gi,v 4.27 2010/02/23 15:12:45 gap Exp $";
+    "@(#)$Id: alghom.gi,v 4.29 2010/12/28 00:26:45 gap Exp $";
 
 
 #############################################################################
@@ -51,6 +51,9 @@ DeclareRepresentation( "IsAlgebraGeneralMappingByImagesDefaultRep",
     IsAlgebraGeneralMapping and IsAdditiveElementWithInverse
     and IsAttributeStoringRep, [] );
 
+DeclareRepresentation( "IsPolynomialRingDefaultGeneratorMapping",
+    IsAlgebraGeneralMappingByImagesDefaultRep,[]);
+
 
 #############################################################################
 ##
@@ -61,7 +64,9 @@ InstallMethod( AlgebraGeneralMappingByImages,
     [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ],
     function( S, R, gens, imgs )
 
-    local map;        # general mapping from <S> to <R>, result
+    local map,        # general mapping from <S> to <R>, result
+	  filter,
+	  i,basic;
 
     # Handle the case that `gens' is a basis or empty.
     # We can form a left module general mapping directly.
@@ -84,11 +89,29 @@ InstallMethod( AlgebraGeneralMappingByImages,
       Error( "<S> and <R> must have same left acting domain" );
     fi;
 
+    # type setting
+    filter:=IsSPGeneralMapping
+	    and IsAlgebraGeneralMapping
+	    and IsAlgebraGeneralMappingByImagesDefaultRep;
+
+    #special case: test whether polynomial ring is mapped via 1 and free
+    #generators
+    if IsPolynomialRing(S) then
+      basic:=ForAll(imgs,x->ForAll(imgs,y->x*y=y*x));
+      for i in [1..Length(gens)] do
+	if IsOne(gens[i]) then
+	  if not IsOne(imgs[i]) then basic:=false;fi;
+	elif not gens[i] in IndeterminatesOfPolynomialRing(S) then
+	  basic:=false;
+	fi;
+      od;
+      if basic=true then
+	filter:=filter and IsPolynomialRingDefaultGeneratorMapping;
+      fi;
+    fi;
+
     # Make the general mapping.
-    map:= Objectify( TypeOfDefaultGeneralMapping( S, R,
-                             IsSPGeneralMapping
-                         and IsAlgebraGeneralMapping
-                         and IsAlgebraGeneralMappingByImagesDefaultRep ),
+    map:= Objectify( TypeOfDefaultGeneralMapping( S, R,filter),
                      rec(
 #                          generators := gens,
 #                          genimages  := imgs
@@ -534,7 +557,26 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
 InstallMethod( IsSingleValued,
     "for algebra g.m.b.i.",
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
-    map -> IsSingleValued( AsLeftModuleGeneralMappingByImages( map ) ) );
+function(map)
+local S,gi,i,basic;
+  S:=Source(map);
+
+  # rewriting to left modules is not feasible for infinite dimensional
+  # domains
+  if not IsFiniteDimensional(S) then
+    TryNextMethod();
+  fi;
+  return IsSingleValued( AsLeftModuleGeneralMappingByImages( map ) );
+end);
+
+#############################################################################
+##
+#M  IsSingleValued( <map> ) . . . . . . . . . . . . . .  for algebra g.m.b.i.
+##
+InstallMethod( IsSingleValued,
+    "for algebra g.m.b.i.",
+    [ IsGeneralMapping and IsPolynomialRingDefaultGeneratorMapping ],0,
+    map->true);
 
 
 #############################################################################
@@ -603,6 +645,16 @@ InstallMethod( PreImagesRepresentative,
     function( map, elm )
     return PreImagesRepresentative( AsLeftModuleGeneralMappingByImages(map),
                                     elm );
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for algebra g.m.b.i. knowing inverse, and element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep
+      and HasInverseGeneralMapping,
+      IsObject ],
+    function( map, elm )
+    return ImagesRepresentative( InverseGeneralMapping(map), elm );
     end );
 
 

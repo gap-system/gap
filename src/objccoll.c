@@ -2,7 +2,7 @@
 **
 *W  objccoll.c                  GAP source                      Werner Nickel
 **
-*H  @(#)$Id: objccoll.c,v 4.6 2010/02/23 15:13:45 gap Exp $
+*H  @(#)$Id: objccoll.c,v 4.7 2011/05/09 11:11:29 sal Exp $
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
@@ -17,7 +17,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_objccoll_c =
-   "@(#)$Id: objccoll.c,v 4.6 2010/02/23 15:13:45 gap Exp $";
+   "@(#)$Id: objccoll.c,v 4.7 2011/05/09 11:11:29 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -300,6 +300,7 @@ Int C8Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
     vcnj = SC_CONJUGATES(sc);
     lcnj = LEN_PLIST(vcnj);
+    (void) lcnj; /* please compiler -- lcnj not actually used */
     cnj  = ADDR_OBJ(vcnj);
 
     avc = ADDR_OBJ( SC_AVECTOR(sc) );
@@ -761,6 +762,7 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
     vcnj = SC_CONJUGATES(sc);
     lcnj = LEN_PLIST(vcnj);
+    (void) lcnj; /* please compiler -- lcnj not actually used */
     cnj  = ADDR_OBJ(vcnj);
 
     avc = ADDR_OBJ( SC_AVECTOR(sc) );
@@ -1222,6 +1224,7 @@ Int C32Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
     vcnj = SC_CONJUGATES(sc);
     lcnj = LEN_PLIST(vcnj);
+    (void) lcnj; /* please compiler -- lcnj not actually used */
     cnj  = ADDR_OBJ(vcnj);
 
     avc = ADDR_OBJ( SC_AVECTOR(sc) );

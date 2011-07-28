@@ -4,7 +4,7 @@
 #W                                                           Alexander Hulpke
 #W                                                             Heiko Theißen
 ##
-#H  @(#)$Id: ghom.gd,v 4.65 2010/02/23 15:13:00 gap Exp $
+#H  @(#)$Id: ghom.gd,v 4.66 2011/04/14 23:10:36 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  4. Functions for ...
 ##
 Revision.ghom_gd :=
-    "@(#)$Id: ghom.gd,v 4.65 2010/02/23 15:13:00 gap Exp $";
+    "@(#)$Id: ghom.gd,v 4.66 2011/04/14 23:10:36 alexk Exp $";
 
 
 #############################################################################
@@ -295,7 +295,8 @@ end;
 ##  with the image of <A>G</A> this permits efficient computations in the factor
 ##  group.
 ##  The homomorphism returned is not necessarily surjective, so
-##  <Ref Func="ImagesSource"/> should be used instead of <Ref Func="Range"/>
+##  <Ref Func="ImagesSource"/> should be used instead of 
+##  <Ref Func="Range" Label="of a general mapping"/>
 ##  to get a group isomorphic to the factor group.
 ##  The <C>NC</C> variant does not check whether <A>N</A> is normal in
 ##  <A>G</A>.

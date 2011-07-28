@@ -2,7 +2,7 @@
 ##
 #W  kernel.g                    GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: kernel.g,v 4.46 2010/07/28 15:45:21 gap Exp $
+#H  @(#)$Id: kernel.g,v 4.47 2011/05/23 10:58:41 sal Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  the bootstrap.
 ##
 Revision.kernel_g :=
-    "@(#)$Id: kernel.g,v 4.46 2010/07/28 15:45:21 gap Exp $";
+    "@(#)$Id: kernel.g,v 4.47 2011/05/23 10:58:41 sal Exp $";
 
 
 #############################################################################
@@ -208,8 +208,6 @@ Runtimes := function()
   fi;
   return res;
 end;
-
-
 #############################################################################
 ##
 #E

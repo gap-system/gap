@@ -2,7 +2,7 @@
 ##
 #W  basic.gd                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basic.gd,v 4.37 2010/02/23 15:12:39 gap Exp $
+#H  @(#)$Id: basic.gd,v 4.38 2011/04/05 02:30:34 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,7 +10,7 @@
 ##  types.
 ##
 Revision.basic_gd :=
-    "@(#)$Id: basic.gd,v 4.37 2010/02/23 15:12:39 gap Exp $";
+    "@(#)$Id: basic.gd,v 4.38 2011/04/05 02:30:34 gap Exp $";
 
 
 #############################################################################
@@ -319,6 +319,66 @@ BindGlobal( "DihedralGroup", function ( arg )
   Error( "usage: DihedralGroup( [<filter>, ]<size> )" );
 
 end );
+
+#############################################################################
+##
+#O  QuaternionGroupCons( <filter>, <n> )
+##
+##  <ManSection>
+##  <Oper Name="QuaternionGroupCons" Arg='filter, n'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+DeclareConstructor( "QuaternionGroupCons", [ IsGroup, IsInt ] );
+
+
+#############################################################################
+##
+#F  QuaternionGroup( [<filt>, ]<n> )  . . . . . . . quaternion group of order <n>
+##
+##  <#GAPDoc Label="QuaternionGroup">
+##  <ManSection>
+##  <Func Name="QuaternionGroup" Arg='[filt, ]n'/>
+##  <Func Name="DicyclicGroup" Arg='[filt, ]n'/>
+##
+##  <Description>
+##  constructs the generalized quaternion group (or dicyclic group) of size
+##  <A>n</A> in the category given by the filter <A>filt</A>.  Here, <A>n</A>
+##  is a multiple of 4.
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  Methods are also available for permutation and matrix groups (of minimal
+##  degree and minimal dimension in coprime characteristic).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> QuaternionGroup(32);
+##  <pc group of size 32 with 5 generators>
+##  gap> g:=QuaternionGroup(IsMatrixGroup,CF(16),32);
+##  Group([ [ [ 0, 1 ], [ -1, 0 ] ], [ [ E(16), 0 ], [ 0, -E(16)^7 ] ] ])
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BindGlobal( "QuaternionGroup", function ( arg )
+
+  if Length(arg) = 1  then
+    return QuaternionGroupCons( IsPcGroup, arg[1] );
+  elif IsOperation(arg[1]) then
+
+    if Length(arg) = 2  then
+      return QuaternionGroupCons( arg[1], arg[2] );
+
+    elif Length(arg) = 3  then
+      return QuaternionGroupCons( arg[1], arg[2], arg[3] );
+    fi;
+  fi;
+  Error( "usage: QuaternionGroup( [<filter>, ]<size> )" );
+
+end );
+
+DeclareSynonym( "DicyclicGroup", QuaternionGroup );
 
 
 #############################################################################

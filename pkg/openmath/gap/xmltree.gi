@@ -3,7 +3,7 @@
 #W  xmltree.gi          OpenMath Package              Andrew Solomon
 #W                                                    Marco Costantini
 ##
-#H  @(#)$Id: xmltree.gi,v 1.5 2008/12/15 17:22:46 alexk Exp $
+#H  @(#)$Id: xmltree.gi,v 1.8 2010/11/12 13:18:24 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,19 +15,19 @@
 ##
 
 Revision.("openmath/gap/xmltree.gi") :=
-    "@(#)$Id: xmltree.gi,v 1.5 2008/12/15 17:22:46 alexk Exp $";
+    "@(#)$Id: xmltree.gi,v 1.8 2010/11/12 13:18:24 alexk Exp $";
 
 
-InstallGlobalFunction( OMParseXmlObj, 
-    function ( node )
+InstallGlobalFunction( OMParseXmlObj, function ( node )
     local obj;
 
     if not IsBound( OMObjects.(node.name) )  then
         Error( "unknown OpenMath object ", node.name );
     fi;
 
-    if IsBound( node.content ) and IsList( node.content ) and 
-                not (node.name = "OMSTR" or node.name = "OMI")  then
+    if IsBound( node.content ) and 
+       IsList( node.content ) and 
+        not (node.name = "OMSTR" or node.name = "OMI" or node.name = "OMB")  then
         node.content := Filtered( node.content, OMIsNotDummyLeaf );
     fi;
     obj := OMObjects.(node.name)( node );
@@ -42,11 +42,14 @@ end );
 
 
 
-InstallGlobalFunction( OMgetObjectXMLTree,
-    function ( string )
+InstallGlobalFunction( OMgetObjectXMLTree, function ( string )
     local  node;
 
-
+    # TODO: this maybe be reset in the middle of the session
+    # making references invalid. We need either to keep this
+    # for the whole session or to create another record to 
+    # store such objects
+    
     OMTempVars.OMBIND := rec(  );
     OMTempVars.OMREF := rec(  );
 

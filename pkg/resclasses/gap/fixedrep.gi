@@ -2,14 +2,11 @@
 ##
 #W  fixedrep.gi             GAP4 Package `ResClasses'             Stefan Kohl
 ##
-#H  @(#)$Id: fixedrep.gi,v 1.8 2008/04/14 13:36:54 stefan Exp $
-##
 ##  This file contains implementations of methods and functions for
 ##  computing with unions of residue classes with distinguished ("fixed")
 ##  representatives.
 ##
-Revision.fixedrep_gi :=
-  "@(#)$Id: fixedrep.gi,v 1.8 2008/04/14 13:36:54 stefan Exp $";
+#############################################################################
 
 #############################################################################
 ##

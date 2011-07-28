@@ -2,7 +2,7 @@
 ##
 #W  pcgsind.gd                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: pcgsind.gd,v 4.42 2010/02/23 15:13:22 gap Exp $
+#H  @(#)$Id: pcgsind.gd,v 4.44 2011/04/14 23:10:37 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  systems.
 ##
 Revision.pcgsind_gd :=
-    "@(#)$Id: pcgsind.gd,v 4.42 2010/02/23 15:13:22 gap Exp $";
+    "@(#)$Id: pcgsind.gd,v 4.44 2011/04/14 23:10:37 alexk Exp $";
 
 #############################################################################
 ##
@@ -275,13 +275,10 @@ DeclareProperty( "IsCanonicalPcgs", IsInducedPcgs );
 ##  This property indicates that the pcgs <A>pcgs</A> is induced with respect
 ##  to a family pcgs.
 ##  <P/>
-##  In &GAP;&nbsp;3 the family pcgs had been the only pcgs allowed for a
-##  pc group. Note that this has changed in &GAP;&nbsp;4 where a pc group
-##  may have several independent polycyclic generating sequences.
-##  <P/>
-##  However, the elementary operations for a non-family pcgs may
-##  not be as efficient as the elementary operations for the family
-##  pcgs.
+##  This property is needed to distinguish between different independent 
+##  polycyclic generating sequences which a pc group may have, since
+##  the elementary operations for a non-family pcgs may not be as efficient 
+##  as the elementary operations for the family pcgs.
 ##  <P/>
 ##  This can have a significant influence on the performance of algorithms
 ##  for polycyclic groups.
@@ -298,7 +295,8 @@ DeclareProperty( "IsCanonicalPcgs", IsInducedPcgs );
 ##  Therefore, if the family pcgs chosen for arithmetic is not of importance
 ##  it might be worth to <E>change</E> to another, nicer, pcgs to speed up
 ##  calculations.
-##  This can be achieved, for example, by using the <Ref Func="Range"/> value
+##  This can be achieved, for example, by using the 
+##  <Ref Func="Range" Label="of a general mapping"/> value
 ##  of the isomorphism obtained by <Ref Func="IsomorphismSpecialPcGroup"/>.
 ##  </Description>
 ##  </ManSection>
@@ -360,8 +358,9 @@ DeclareOperation( "CanonicalPcElement", [ IsInducedPcgs, IsObject ] );
 ##  same as the depth of one of the generators in <A>pcgs</A>.
 ##  Thus the identity is returned if <A>elm</A> lies in the group generated
 ##  by <A>pcgs</A>.
-##  <A>pcgs</A> must be an induced pcgs and <A>elm</A> must lie in the span
-##  of the parent of <A>pcgs</A>.
+##  <A>pcgs</A> must be an induced pcgs (see section 
+##  <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>) 
+##  and <A>elm</A> must lie in the span of the parent of <A>pcgs</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -6,7 +6,7 @@
 #W                                                         & Martin Schönert
 #W                                                              & Alex Wegner
 ##
-#H  @(#)$Id: integer.gd,v 4.57 2010/02/23 15:13:10 gap Exp $
+#H  @(#)$Id: integer.gd,v 4.64 2011/02/09 10:29:41 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,7 +15,7 @@
 ##  This file declares the operations for integers.
 ##
 Revision.integer_gd :=
-    "@(#)$Id: integer.gd,v 4.57 2010/02/23 15:13:10 gap Exp $";
+    "@(#)$Id: integer.gd,v 4.64 2011/02/09 10:29:41 gap Exp $";
 
 
 #############################################################################
@@ -391,18 +391,18 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  <#GAPDoc Label="FactorsInt">
 ##  <ManSection>
 ##  <Func Name="FactorsInt" Arg='n'/>
-##  <Func Name="FactorsInt" Arg='n[:RhoTrials:=trials]' Label="using Pollard's Rho"/>
+##  <Func Name="FactorsInt" Arg='n:RhoTrials:=trials' Label="using Pollard's Rho"/>
 ##
 ##  <Description>
-##  <Ref Func="FactorsInt"/> returns a list of prime factors of the integer
-##  <A>n</A>.
+##  <Ref Func="FactorsInt"/> returns a list of factors of a given integer 
+##  <A>n</A> such that <C>Product( FactorsInt( <A>n</A> ) ) = <A>n</A></C>.
+##  If <M>|n| \leq 1</M> the list <C>[<A>n</A>]</C> is returned. Otherwise
+##  the result contains probable primes, sorted by absolute value. The
+##  entries will all be positive except for the first one in case of
+##  a negative <A>n</A>.
 ##  <P/>
-##  If the <M>i</M>th power of a prime divides <A>n</A> this prime appears
-##  <M>i</M> times.
-##  The list is sorted, that is the smallest prime factors come first.
-##  The first element has the same sign as <A>n</A>, the others are positive.
-##  For any integer <A>n</A> it holds that
-##  <C>Product( FactorsInt( <A>n</A> ) ) = <A>n</A></C>.
+##  See <Ref Func="PrimeDivisors"/> for a function that returns a set of
+##  (probable) primes dividing <A>n</A>.
 ##  <P/>
 ##  Note that <Ref Func="FactorsInt"/> uses a probable-primality test
 ##  (see&nbsp;<Ref Func="IsPrimeInt"/>).
@@ -448,7 +448,6 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  gap> FactorsInt( 2^63 - 1 );
 ##  [ 7, 7, 73, 127, 337, 92737, 649657 ]
 ##  gap> FactorsInt( 10^42 + 1 );
-##  #I  beyond the guaranteed bound of the probabilistic primality test
 ##  [ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ]
 ##  gap> FactorsInt(2^256+1:RhoTrials:=100000000);
 ##  [ 1238926361552897,
@@ -460,6 +459,29 @@ DeclareGlobalFunction( "DivisorsInt");
 ##
 DeclareGlobalFunction( "FactorsInt" );
 
+#############################################################################
+##
+#F  PrimeDivisors( <n> ) . . . . . . . . . . . . . . . list of prime factors
+##  
+##  <#GAPDoc Label="PrimeDivisors">
+##  <ManSection>
+##  <Func Name="PrimeDivisors" Arg='n'/>
+##  <Description>
+##  This function returns for a non-zero integer <A>n</A> a set of its positive
+##  (probable) primes divisors. In rare cases the result could contain a
+##  composite number which passed certain primality tests, see <Ref
+##  Func="IsProbablyPrimeInt"/> and <Ref Func="FactorsInt"/> for more details.
+##  <Example>
+##  gap> PrimeDivisors(-12);
+##  [ 2, 3 ]
+##  gap> PrimeDivisors(1);
+##  [  ]
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##  
+DeclareGlobalFunction("PrimeDivisors");
 
 #############################################################################
 ##
@@ -528,20 +550,20 @@ DeclareGlobalFunction( "FactorsInt" );
 ##  3 to&nbsp;10.
 ##  (Also see <Ref Func="CheapFactorsInt" BookName="EDIM"/>).
 ##  <Example><![CDATA[
-##  gap> List([0..5],i->PartialFactorization(7^64-1,i));
-##  [ [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17,
-##        1868505648951954197516197706132003401892793036353 ],
-##    [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353,
-##        5293217135841230021292344776577913319809612001 ],
-##    [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353,
-##        5293217135841230021292344776577913319809612001 ],
-##    [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353, 1201, 169553,
-##        25993886839444213788175959621751342817 ],
-##    [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353, 1201, 169553, 134818753,
-##        192806165767192742008049574689 ],
-##    [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353, 1201, 169553, 7699649,
-##        134818753, 25040903262888053988961 ] ]
-#]]></Example>
+##  gap> List([0..5],i->PartialFactorization(97^35-1,i)); 
+##  [ [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 
+##        2446338959059521520901826365168917110105972824229555319002965029 ], 
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 
+##        2529823122088440042297648774735177983563570655873376751812787 ], 
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 
+##        2529823122088440042297648774735177983563570655873376751812787 ], 
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 
+##        242549173950325921859769421435653153445616962914227 ], 
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 687121, 
+##        352993394104278463123335513593170858474150787 ], 
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 687121, 20241187, 
+##        504769301, 34549173843451574629911361501 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -583,14 +605,14 @@ DeclareOperation( "PartialFactorization",
 ##  is <M>1</M> or <M>-1</M>.
 ##  <Example><![CDATA[
 ##  gap> Gcdex( 123, 66 );
-##  rec( gcd := 3, coeff1 := 7, coeff2 := -13, coeff3 := -22, coeff4 := 41 )
+##  rec( coeff1 := 7, coeff2 := -13, coeff3 := -22, coeff4 := 41, gcd := 3 )
 ##  ]]></Example>
 ##  This means <M>3 = 7 * 123 - 13 * 66</M>, <M>0 = -22 * 123 + 41 * 66</M>.
 ##  <Example><![CDATA[
 ##  gap> Gcdex( 0, -3 );
-##  rec( gcd := 3, coeff1 := 0, coeff2 := -1, coeff3 := 1, coeff4 := 0 )
+##  rec( coeff1 := 0, coeff2 := -1, coeff3 := 1, coeff4 := 0, gcd := 3 )
 ##  gap> Gcdex( 0, 0 );
-##  rec( gcd := 0, coeff1 := 1, coeff2 := 0, coeff3 := 0, coeff4 := 1 )
+##  rec( coeff1 := 1, coeff2 := 0, coeff3 := 0, coeff4 := 1, gcd := 0 )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -772,10 +794,11 @@ DeclareGlobalFunction( "NextPrimeInt" );
 ##  <Description>
 ##  returns <M><A>r</A>^{<A>e</A>} \pmod{<A>m</A>}</M> for integers <A>r</A>,
 ##  <A>e</A> and <A>m</A> (<M><A>e</A> \geq 0</M>).
-##  Note that using <C><A>r</A>^<A>e</A> mod <A>m</A></C> will generally be
-##  slower, because it cannot reduce intermediate results the way
-##  <Ref Func="PowerModInt"/>
-##  does but would compute <M><A>r</A>^{<A>e</A>}</M> first and then reduce
+##  <P/>
+##  Note that <Ref Func="PowerModInt"/> can reduce intermediate results and
+##  thus will generally be faster than using
+##  <A>r</A><C>^</C><A>e</A><C> mod </C><A>m</A>,
+##  which would compute <M><A>r</A>^{<A>e</A>}</M> first and reduces
 ##  the result afterwards.
 ##  <P/>
 ##  <Ref Func="PowerModInt"/> is a method for the general operation

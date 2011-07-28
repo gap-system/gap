@@ -1,0 +1,43 @@
+/* Verify function, insertNoBanner:  gcc FILE.c; ./a.out */
+
+#include <assert.h>
+#include <stdio.h>
+
+void insertNoBanner(int *argc, char **argv[], int isQuiet);
+
+int main(int argc, char *argv[]) {
+  int i;
+  printf("argc: %d\n", argc);
+  insertNoBanner(&argc, &argv, 1); /* 1 == isQuiet */
+  printf("argc: %d\n", argc);
+  for (i = 0; i < argc; i++)
+    printf("%s ", argv[i]);
+  printf("\n");
+  return 0;
+}
+
+void insertNoBanner(int *argcPtr, char **argvPtr[], int isQuiet) {
+  static char *newArgv[100];
+  static char *noBannerFlag = "-b";
+  static char *quietFlag = "-q";
+  int i, noBannerCount = 0;
+  int shift = (isQuiet ? 2 : 1);
+
+  for (i = 1; i < *argcPtr; i++)
+    if (0 == strcmp((*argvPtr)[i], noBannerFlag))
+      noBannerCount++;
+  if (noBannerCount & 0x1) /* If already an odd number of flags, */
+    return;                /* then already specifying no banner */
+
+  assert(*argcPtr < 100); /* don't overflow newArgv[] */
+  assert( (*argvPtr)[*argcPtr] == NULL );
+  for (i = 1; i <= *argcPtr; i++)
+    newArgv[i+shift] = (*argvPtr)[i];
+  assert( newArgv[*argcPtr + 1] == NULL );
+  newArgv[1] = noBannerFlag;
+  if (isQuiet)
+    newArgv[2] = quietFlag;
+  newArgv[0] = (*argvPtr)[0];
+  *argcPtr += shift;
+  *argvPtr = newArgv;
+}

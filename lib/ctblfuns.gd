@@ -2,7 +2,7 @@
 ##
 #W  ctblfuns.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblfuns.gd,v 4.73 2010/08/02 16:04:07 gap Exp $
+#H  @(#)$Id: ctblfuns.gd,v 4.75 2010/10/10 12:34:37 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -27,7 +27,7 @@
 ##  14. Auxiliary operations
 ##
 Revision.ctblfuns_gd :=
-    "@(#)$Id: ctblfuns.gd,v 4.73 2010/08/02 16:04:07 gap Exp $";
+    "@(#)$Id: ctblfuns.gd,v 4.75 2010/10/10 12:34:37 alexk Exp $";
 
 
 #############################################################################
@@ -2755,7 +2755,6 @@ DeclareGlobalFunction( "RealizableBrauerCharacters" );
 ##  4
 ##  gap> Dimension( w );
 ##  5
-##  \endexample
 ##  
 ##  Note that for generating a group of class functions,
 ##  one should use the two-argument version of
@@ -2765,7 +2764,6 @@ DeclareGlobalFunction( "RealizableBrauerCharacters" );
 ##  if this matrix is invertible.
 ##  % Otherwise it seems to work, but why?
 ##  
-##  \beginexample
 ##  gap> g:= CyclicGroup( 4 );;
 ##  gap> irr:= Irr( g );;
 ##  gap> Size( Group( irr ) );
@@ -2893,13 +2891,13 @@ DeclareGlobalFunction( "OrbitRepresentativesCharacters" );
 ##  <Example><![CDATA[
 ##  gap> mat:= [ [ 1, 1, 1, 1 ], [ 2, -1, 0, 0 ], [ 4, 4, 1, 1 ] ];;
 ##  gap> coll:= CollapsedMat( mat, [] );
-##  rec( mat := [ [ 1, 1, 1 ], [ 2, -1, 0 ], [ 4, 4, 1 ] ], 
-##    fusion := [ 1, 2, 3, 3 ] )
+##  rec( fusion := [ 1, 2, 3, 3 ], 
+##    mat := [ [ 1, 1, 1 ], [ 2, -1, 0 ], [ 4, 4, 1 ] ] )
 ##  gap> List( last.mat, x -> x{ last.fusion } ) = mat;
 ##  true
 ##  gap> coll:= CollapsedMat( mat, [ [ 1, 1, 1, 2 ] ] );
-##  rec( mat := [ [ 1, 1, 1, 1 ], [ 2, -1, 0, 0 ], [ 4, 4, 1, 1 ] ], 
-##    fusion := [ 1, 2, 3, 4 ] )
+##  rec( fusion := [ 1, 2, 3, 4 ], 
+##    mat := [ [ 1, 1, 1, 1 ], [ 2, -1, 0, 0 ], [ 4, 4, 1, 1 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

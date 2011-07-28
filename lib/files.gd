@@ -9,7 +9,7 @@
 ##  This file contains the operations for files and directories.
 ##
 Revision.files_gd :=
-    "@(#)$Id: files.gd,v 4.62 2010/07/28 15:45:20 gap Exp $";
+    "@(#)$Id: files.gd,v 4.68 2011/06/15 16:48:46 gap Exp $";
 
 
 #############################################################################
@@ -86,7 +86,7 @@ DeclareOperation( "Directory", [ IsString ] );
 ##  The function is intended to provide a cross-platform interface to a
 ##  directory that is easily accessible by the user.
 ##
-##  Under Unix systems (as well as on the Mac) this will be the
+##  Under Unix systems (including Mac OS X) this will be the
 ##  usual user home directory. Under Windows it will the the users <C>My
 ##  Documents</C> folder (or the appropriate name under different
 ##  languages).
@@ -110,7 +110,7 @@ DeclareGlobalFunction( "DirectoryHome" );
 ##  The function is intended to provide a cross-platform interface to a
 ##  directory that is easily accessible by the user.
 ##
-##  Under Unix systems (as well as on the Mac) this will be the
+##  Under Unix systems (including Mac OS X) this will be the
 ##  <C>Desktop</C> directory in the users home directory if it exists, and
 ##  the users home directry otherwise. 
 ##  Under Windows it will the the users <C>Desktop</C> folder
@@ -231,8 +231,8 @@ DeclareOperation( "Filename", [ IsList, IsString ] );
 ##  <P/>
 ##  Note that one file may very well contain a read statement causing another
 ##  file to be read, before input is again taken from the first file.
-##  There is an operating system dependent maximum on the number of files
-##  that may be open simultaneously.  Usually it is 15.
+##  There is an upper limit of 15 on the number of files
+##  that may be open simultaneously.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -436,24 +436,19 @@ end );
 
 #############################################################################
 ##
-#F  DirectoryTemporary( [<hint>] )  . . . . . .  create a temporary directory
+#F  DirectoryTemporary() . . . . . . . . . . . . create a temporary directory
 ##
 ##  <#GAPDoc Label="DirectoryTemporary">
 ##  <ManSection>
-##  <Func Name="DirectoryTemporary" Arg='[hint]'/>
+##  <Func Name="DirectoryTemporary" Arg=''/>
 ##
 ##  <Description>
 ##  returns a directory object in the category <C>IsDirectory</C>
 ##  for a <E>new</E> temporary directory.
 ##  This is guaranteed to be newly created and empty immediately after the
 ##  call to <Ref Func="DirectoryTemporary"/>.
-##  &GAP; will make a reasonable effort to <E>remove</E> this directory
-##  either when a garbage collection collects the directory object or upon
-##  termination of the &GAP; job that created the directory.
-##  <P/>
-##  <A>hint</A> can be used by <Ref Func="DirectoryTemporary"/> to construct
-##  the name of the directory but <Ref Func="DirectoryTemporary"/> is free
-##  to use only a part of <A>hint</A> or even ignore it completely.
+##  &GAP; will make a reasonable effort to remove this directory
+##  upon termination of the &GAP; job that created the directory.
 ##  <P/>
 ##  If <Ref Func="DirectoryTemporary"/> is unable to create a new directory,
 ##  <K>fail</K> is returned.
@@ -470,7 +465,7 @@ BIND_GLOBAL( "DirectoryTemporary", function( arg )
 
     # check arguments
     if 1 < Length(arg)  then
-        Error( "usage: DirectoryTemporary( [<hint>] )" );
+        Error( "usage: DirectoryTemporary( )" );
     fi;
 
   # create temporary directory
@@ -500,7 +495,6 @@ BIND_GLOBAL( "DirectoryTemporary", function( arg )
 
     return Directory(dir);
 end );
-UNBIND_GLOBAL("Exec");
 UNBIND_GLOBAL("SplitString");
 
 #T THIS IS A HACK UNTIL `RemoveDirectory' IS AVAILABLE
@@ -543,6 +537,7 @@ if ARCH_IS_WINDOWS() then
 
   end );
 fi;
+UNBIND_GLOBAL("Exec");
 
 
 #############################################################################
@@ -683,7 +678,15 @@ end );
 ##  You should set the &GAP; variable <C>GAPInfo.UserPreferences.Editor</C>
 ##  to the name of the editor that you usually use,
 ##  e.g., <F>/usr/bin/vim</F>.
-##  On Windows you can use <C>edit.com</C>.
+##  On Windows you can use <C>edit.com</C>. 
+##  ##  <P/>
+##  Under Mac OS X, you should use
+##  <C>GAPInfo.UserPreferences.Editor := "open"</C>; this will open 
+##  the file in the default editor. If you set 
+##  <C>GAPInfo.UserPreferences.EditorOptions := ["-t"]</C>, the file
+##  will open in TextEdit, and 
+##  <C>GAPInfo.UserPreferences.EditorOptions := ["-a", "&lt;appl&gt;"]</C>
+##  will open the file using the application <C>&lt;appl&gt;</C>.
 ##  <P/>
 ##  This can for example be done in your <F>gap.ini</F> file,
 ##  see Section <Ref Subsect="subsect:gap.ini file"/>.
@@ -714,7 +717,7 @@ DeclareGlobalFunction( "Edit" );
 ##  If you want to call <Ref Func="CreateCompletionFiles"/> without arguments
 ##  then you should start &GAP; with the <C>-r</C> option,
 ##  since otherwise &GAP; will try to create the completion files in the
-##  directory <F>~/.gap/lib</F>, see <Ref Sect="The .gaprc file"/>.
+##  directory <F>~/.gap/lib</F>, see <Ref Sect="sect:gap.ini"/>.
 ##  <P/>
 ##  This produces, in addition to lots of informational output,
 ##  the completion files.
@@ -745,7 +748,7 @@ DeclareGlobalFunction( "CreateCompletionFiles" );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction("CheckCompletionFiles");
+## DeclareGlobalFunction("CheckCompletionFiles");
 
 # the character set definitions might be needed when processing files, thus
 # they must come earlier.

@@ -161,7 +161,7 @@ NqCompleteParameters := function( params )
 
         for opt in options do
             if not opt in NqParameterStrings then
-                Error( "unknown option ", op );
+                Error( "unknown option ", opt );
                 return fail;
             fi;
             

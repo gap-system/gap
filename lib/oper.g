@@ -4,7 +4,7 @@
 #W                                                             & Frank Celler
 #W                                                          & Martin Schönert
 ##
-#H  @(#)$Id: oper.g,v 4.112 2010/08/03 20:43:51 alexk Exp $
+#H  @(#)$Id: oper.g,v 4.115 2011/03/25 12:24:38 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,7 +14,7 @@
 ##  to oper1.g so as to be compiled in the default kernel
 ##
 Revision.oper_g :=
-    "@(#)$Id: oper.g,v 4.112 2010/08/03 20:43:51 alexk Exp $";
+    "@(#)$Id: oper.g,v 4.115 2011/03/25 12:24:38 alexk Exp $";
 
 
 INSTALL_METHOD := false;
@@ -1382,7 +1382,7 @@ DeclareOperationKernel( "ViewObj", [ IS_OBJECT ], VIEW_OBJ );
 ##  <Description>
 ##  <Ref Oper="ViewString"/> returns a string which would be displayed 
 ##  by <Ref Oper="ViewObj"/> for an
-##  object. Note that no method vor <Ref Oper="ViewString"/> may 
+##  object. Note that no method for <Ref Oper="ViewString"/> may 
 ##  delegate to any of
 ##  the operations <Ref Oper="Display"/>, <Ref Oper="ViewObj"/>,
 ##  <Ref Oper="DisplayString"/> or <Ref Oper="PrintObj"/> to avoid 
@@ -1443,111 +1443,6 @@ BIND_GLOBAL( "ViewLength", function(arg)
   else
     GAPInfo.ViewLength:= arg[1];
   fi;
-end );
-
-
-#############################################################################
-##
-#O  TeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . . . TeX an object
-##
-##  <ManSection>
-##  <Oper Name="TeXObj" Arg='obj'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation( "TeXObj", [ IS_OBJECT ] );
-
-
-#############################################################################
-##
-#F  TeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . . . TeX objects
-##
-##  <ManSection>
-##  <Func Name="TeX" Arg='obj1, ...'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "TeX", function( arg )
-    local   str,  res,  obj;
-
-    str := "";
-    for obj  in arg  do
-        res := TeXObj(obj);
-        APPEND_LIST_INTR( str, res );
-        APPEND_LIST_INTR( str, "%\n" );
-    od;
-    CONV_STRING(str);
-    return str;
-end );
-
-
-#############################################################################
-##
-#O  LaTeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . LaTeX an object
-##
-##  <#GAPDoc Label="LaTeXObj">
-##  <ManSection>
-##  <Oper Name="LaTeXObj" Arg='obj'/>
-##  
-##  <Description>
-##  The function <Ref Func="LaTeX"/> actually calls the operation
-##  <Ref Func="LaTeXObj"/> for each argument.
-##  By installing special methods for this operation, it is possible
-##  to achieve special &LaTeX;'ing behavior for certain objects
-##  (see Chapter&nbsp;<Ref Chap="Method Selection"/>).
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
-
-
-#############################################################################
-##
-#F  LaTeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . LaTeX objects
-##
-##  <#GAPDoc Label="LaTeX">
-##
-##  <ManSection>
-##  <Func Name="LaTeX" Arg='obj1, obj2, ...'/>
-##  
-##  <Description>
-##  Returns a LaTeX string describing the objects <A>obj1</A>, <A>obj2</A>, ... .
-##  This string can for example be pasted to a &LaTeX; file, or one can use
-##  it in composing a temporary &LaTeX; file,
-##  which is intended for being &LaTeX;'ed afterwards from within &GAP;.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> LaTeX(355/113);
-##  "\\frac{355}{113}%\n"
-##  gap> LaTeX(Z(9)^5);
-##  "Z(3^{2})^{5}%\n"
-##  gap> Print(LaTeX([[1,2,3],[4,5,6],[7,8,9]]));
-##  \left(\begin{array}{rrr}%
-##  1&2&3\\%
-##  4&5&6\\%
-##  7&8&9\\%
-##  \end{array}\right)%
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-BIND_GLOBAL( "LaTeX", function( arg )
-    local   str,  res,  obj;
-
-    str := "";
-    for obj  in arg  do
-        res := LaTeXObj(obj);
-        APPEND_LIST_INTR( str, res );
-        APPEND_LIST_INTR( str, "%\n" );
-    od;
-    CONV_STRING(str);
-    return str;
 end );
 
 
@@ -1659,10 +1554,11 @@ end );
 ##  InstallGlobalFunction( SumOfTwoCubes, function(x, y) return x^3 + y^3; end);
 ##  ]]></Log>
 ##  <P/>
+##  <!-- Commented out by AK after the withdrowal of completion files:
 ##  <E>Note:</E> <A>func</A> must be a function which has <E>not</E> been
 ##  declared with <Ref Func="DeclareGlobalFunction"/> itself.
 ##  Otherwise completion files
-##  (see&nbsp;<Ref Sect="Completion Files"/>) get confused!
+##  (see&nbsp;<Ref Sect="Completion Files"/>) get confused! -->
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

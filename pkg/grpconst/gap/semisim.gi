@@ -4,7 +4,7 @@
 #W                                                         Hans Ulrich Besche
 ##
 Revision.("grpconst/gap/semisim_gi") :=
-    "@(#)$Id: semisim.gi,v 1.6 2005/02/15 12:19:24 gap Exp $";
+    "@(#)$Id: semisim.gi,v 1.7 2011/01/31 12:18:13 gap Exp $";
 
 #############################################################################
 ##
@@ -115,6 +115,63 @@ end;
 
 #############################################################################
 ##
+#F MyRationalClassesPElements( P, p )
+##
+MyRatClassesPElmsReps := function(P,p)
+    local o, Q, cl, l, todo, i, j, k, sc;
+
+    # some easy cases
+    o := Size(P);
+    if o = 1 or not IsInt(o/p) then 
+        return []; 
+    elif not IsInt(o/p^2) then 
+        return [GeneratorsOfGroup(SylowSubgroup(P,p))[1]]; 
+    fi;
+
+    # try Sylow
+    Q := SylowSubgroup(P,p);
+    cl := RationalClasses(Q);
+    cl := List(cl, Representative);
+    cl := Filtered(cl, x -> Order(x) = p);
+    l := Length(cl);
+
+    # fuse
+    todo := List([1..l], x -> true);
+    for i in [1..l-1] do
+        if todo[i] = true then 
+            for j in [i+1..l] do
+                if todo[j] = true then 
+                    for k in [1..p-1] do
+                        if IsConjugate(P, cl[i], cl[j]^k) then 
+                            todo[j] := false;
+                        fi;
+                    od;
+                fi;
+            od;
+        fi;
+    od;
+
+    cl := cl{Filtered([1..l], x -> todo[x]=true)};
+
+    # check
+    #sc := RationalClassesPElements(P,p);
+    #sc := List(sc, Representative);
+    #sc := Filtered(sc, x -> IsInt(p/Order(x)));
+    #if Length(sc) <> Length(cl) then Error("hier"); fi;
+
+    return cl;
+end;
+
+MyRatClassesPElmsReps2 := function(P,q)
+    local cl;
+    cl := RationalClasses(P);
+    cl := List(cl, Representative);
+    cl := Filtered(cl, x -> Order(x) = q);
+    return cl;
+end;
+
+#############################################################################
+##
 #F SemiSimpleGroupsTS( n, p, sizes, iso )
 ##
 ## Case for trivial sizes; that is, sizes = [q] for q = 1 or q prime
@@ -132,9 +189,7 @@ SemiSimpleGroupsTS := function( n, p, sizes, iso )
 
     # add coprime subgroups if desired
     if q <> 1 and q <> p then 
-        new := RationalClassesPElements( P, q );
-        new := List( new, Representative );
-        new := Filtered( new, x -> IsInt( q / Order( x ) ) );
+        new := MyRatClassesPElmsReps( P, q );
         new := List( new, x -> Subgroup( P, [x] ) );
         Append( sub, new );
     fi;

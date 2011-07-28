@@ -2,8 +2,6 @@
 ##
 #W  pplus1.gi               GAP4 Package `FactInt'                Stefan Kohl
 ##
-#H  @(#)$Id: pplus1.gi,v 1.5 2007/09/24 09:49:29 stefan Exp $
-##
 ##  This file contains functions for factorization using a variant of
 ##  Williams' p+1.
 ##
@@ -20,8 +18,7 @@
 ##  contains the prime factors found, and the second list contains
 ##  remaining unfactored parts of <n>, if there are any.
 ##
-Revision.pplus1_gi :=
-  "@(#)$Id: pplus1.gi,v 1.5 2007/09/24 09:49:29 stefan Exp $";
+#############################################################################
 
 Pplus1Product := function (a,b,n)
 

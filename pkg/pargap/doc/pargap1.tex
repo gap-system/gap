@@ -2,7 +2,7 @@
 %%
 %W  pargap1.tex            ParGAP documentation            Gene Cooperman
 %%
-%H  $Id: pargap1.tex,v 1.8 2001/11/16 15:57:00 gap Exp $
+%H  $Id: pargap1.tex,v 1.10 2011/04/13 17:19:46 alexk Exp $
 %%
 %Y  Copyright (C) 1999-2001  Gene Cooperman
 %Y    See included file, COPYING, for conditions for copying
@@ -202,8 +202,8 @@ BroadcastMsg("x:=\"abc\"; Print(Length(x), \"\\n\")");;
     version in {\GAP} currently works only in a distributed  environment.
     In the C~language, this  parallel  model  is  known  as  TOP-C  (Task
     Oriented Parallel~C). For examples of the use of the TOP-C model  see
-    \cite{Coo98},     \cite{CFTY94},     \cite{CH97},      \cite{CHLM97},
-    \cite{CLMW96}, and \cite{CT96}.
+    \cite{Coo98},     \cite{CCHW02},      \cite{CFTY94},     \cite{CG02},
+    \cite{CH97}, \cite{CHLM97}, \cite{CLMW96}, and \cite{CT96}.
 
 `'& While no parallel software can eliminate the problem of designing  an
     algorithm that is efficient in  a  parallel  environment,  the  TOP-C
@@ -235,8 +235,8 @@ will be the directory `pkg' in the hierarchy of your version of  {\GAP}~4
 (in fact, currently it is  not  possible  to  have  the  `pkg'  directory
 separate from {\GAP}'s `pkg' directory; we hope to remedy this in  future
 versions of {\ParGAP} so that it will also possible to keep an additional
-`pkg' directory in your private directories; section "ref:Installing  GAP
-Packages" of the GAP 4 reference manual gives details on how to do  this,
+`pkg' directory in your private directories; section "ref:Installing a GAP Package" 
+of the GAP 4 reference manual gives details on how to do  this,
 when it's possible.)
 
 Now change into  the  `pkg'  directory  in  which  you  plan  to  install
@@ -408,13 +408,6 @@ gap> RecvMsg( 2 ); # No value for last SendMsg() command
 "<no_return_val>"
 gap> RecvMsg( 1 );
 45
-gap> myfnc := function() return 42; end;;
-gap> # Use PrintToString() to define myfnc on all slave processes
-gap> BroadcastMsg( PrintToString( "myfnc := ", myfnc ) );
-gap> SendRecvMsg( "myfnc()", 1 );
-42
-gap> FlushAllMsgs(); # There are no messages pending.
-0
 gap> # Execute analogue of GAP's List() in parallel on slaves.
 gap> squares := ParList( [1..100], x->x^2 );
 [ 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 
@@ -429,6 +422,22 @@ gap> squares := ParList( [1..100], x->x^2 );
 gap> # Ensure problem shared data is read into master and slaves.
 gap> # Try one of your GAP program files instead.
 gap> ParRead( "/home/gene/myprogram.g");
+
+gap> # Send a large, local (non-remote) data structure to a slave
+gap> Concatenation("x := ", PrintToString([1..10]*2));            
+"x := [ 2, 4, 6, 8, 10, 12, 14, 16, 18, 20 ]\n\000"
+gap> SendMsg( Concatenation("x := ", PrintToString([1..10]*2)) ); 
+gap> RecvMsg();                                                  
+[ 2, 4, 6, 8, 10, 12, 14, 16, 18, 20 ]
+
+gap> # Send a local (non-remote) function to a slave
+gap> myfnc := function() return 42; end;;
+gap> # Use PrintToString() to define myfnc on all slave processes
+gap> BroadcastMsg( PrintToString( "myfnc := ", myfnc ) );
+gap> SendRecvMsg( "myfnc()", 1 );
+42
+gap> FlushAllMsgs(); # There are no messages pending.
+0
 \endexample
 
 Now that you have done a fairly rudimentary test of {\ParGAP} you  should
@@ -620,33 +629,29 @@ MPI will use a line
 
 to create a UNIX subprocess executing:
 
-\){\kernttindent}rsh <host-machine> <pargap-script>
+\){\kernttindent}ssh <host-machine> <pargap-script>
 
 Suppose <host-machine> is `regulus.ccs.neu.edu'  and  <pargap-script>  is
 `/usr/local/bin/pargap' as in the above example,  and  we  were  to  have
 trouble invoking {\ParGAP}, then it would be a good idea to try  invoking
-`rsh regulus.ccs.neu.edu' from a UNIX prompt and  if  that  succeeds,  to
-then try executing the full `rsh' command.
+`ssh regulus.ccs.neu.edu' from a UNIX prompt and  if  that  succeeds,  to
+then try executing the full `ssh' command.
 
 A typical problem is that the remote processor  requires  a  password  to
-login.   MPI   requires   a   login   without    passwords.    Typically,
-`/etc/hosts.equiv' has not been set up to remove the password requirement
-for your remote host. Sometimes this can  be  solved  by  an  appropriate
-`.rhosts' file in your home directory on the remote host. Sometimes,  PAM
-is also used for user authentication (see `/etc/pam.conf'). `man in.rshd'
-also has helpful information.  Consult  your  system  staff  for  further
-analysis. In these days of hyper-security, `rsh' may be disabled at  your
-site and you may have to use `ssh' instead; if so, there  is  a  solution
-here: add the lines
+login.   MPI   requires   a   login   without    passwords.    This   can
+be set up for `ssh'.  See `man ssh'. Sometimes, PAM is also used for user
+authentication (see `/etc/pam.conf').  Consult  your  system  staff   for
+further analysis. If your site uses an alternative to `ssh', there  is  a
+solution here: add the lines
 
 \begintt
 #############################################################################
 ##
-##  RSH . . . .. . . . . . . . . . . . . . . . .  remote shell used by ParGAP
+##  SSH . . . .. . . . . . . . . . . . . . . . .  remote shell used by ParGAP
 ##
 ##
-RSH=ssh
-export RSH
+SSH=myssh
+export SSH
 \endtt
 
 before the `GAP' block with the `exec' line. (Of course, the  `\#'  lines
@@ -727,33 +732,32 @@ pkg/pargap/bin/pargap.sh
     Were the remote slave processes able to start up? If so,  could  they
     connect back to  the  master?  To  test  connectivity  problems,  try
     manually starting a remote slave by executing a line in  the  script.
-    Try a simple `rsh <remote-hostname>' to see  if  the  issue  is  with
-    security. If your site uses `ssh' instead of `rsh', then there  is  a
+    Try a simple `ssh <remote-hostname>' to see  if  the  issue  is  with
+    security. If your site uses `ssh' instead of `ssh', then there  is  a
     security issue. Read Section~"Problems with Passwords (Getting Around
     Security)", and possibly `man sshd'.
 
 \item{5.}
     If  the  previous  step  failed  due  to  security  issues,  such  as
-    requesting a password, you have several options. `man rshd' tells you
-    the security model at your site (or possibly `man  ssh'  if  you  use
-    that). Then read Section~"Problems  with  Passwords  (Getting  Around
-    Security)".
+    requesting a password, you have several options. `man ssh' tells  you
+    the security model at your site.  Then read Section~"Problems    with
+    Passwords  (Getting  Around Security)".
 
 \item{6.}
     Is the `procgroup' file in your current directory set correctly?
     Test it.  If you are calling it on a remote host, manually type:
 
-\){\kernttindent}rsh <HOSTNAME> <ParGAP>
+\){\kernttindent}ssh <HOSTNAME> <ParGAP>
 
 \item{}
     where <HOSTNAME> and <ParGAP> appear exactly as in `procgroup', e.g.
     
-\){\kernttindent}rsh denali.ccs.neu.edu /usr/local/gap4r3/bin/pargap.sh
+\){\kernttindent}ssh denali.ccs.neu.edu /usr/local/gap4r3/bin/pargap.sh
 
 \item{}
     In some cases, `exec' is used to save process overhead. Also try:
 
-\){\kernttindent}rsh <HOSTNAME> exec <ParGAP>
+\){\kernttindent}ssh <HOSTNAME> exec <ParGAP>
 
 \item{}
     If you plan to call it on localhost, try just:   <ParGAP>
@@ -763,7 +767,7 @@ pkg/pargap/bin/pargap.sh
     to the master, then {\ParGAP} writes out a file:
 
 \begintt
-/tmp/pargapmpi--rsh.$$
+/tmp/pargapmpi-ssh.$$
 \endtt
        
 \item{}
@@ -804,7 +808,7 @@ gap> SendRecvMsg("UNIX_Getpid()");
     `ssh' specifies `KeepAlive yes' by default, but setting `KeepAlive no'
     might get you through some transient lapses in  connectivity  due  to
     high congestion. 
-    You may also want to experiment with: `setenv RSH "rsh -n"'
+    You may also want to experiment with: `setenv SSH "ssh -n"'
 
 \item{11.}
     Read the documentation for further possible problems.
@@ -838,33 +842,28 @@ and last line of `.../pkg/pargap/bin/pargap.sh'.
 \Section{Problems with Passwords (Getting Around Security)}
 
 There is a simple test to see if you need to read this  section.  Pick  a
-remote machine, <HOSTNAME>, that you wish to execute on, and  type:  `rsh
+remote machine, <HOSTNAME>, that you wish to execute on, and  type:  `ssh
 <HOSTNAME>'. If this did not work, also try `ssh <HOSTNAME>'. If you were
 asked for your password, then you and your system administrator may  need
-to talk about security policy. If you were successful with `ssh' and  not
-with `rsh' then set the environment variable, `RSH', to the value  `ssh',
-as described in item~3 below.
+to talk about security policy. If you were successful with an alternative
+to `ssh' then  set  the environment  variable, `SSH', to  the alternative
+value, as described in item~3 below.
 
 \beginlist
 \item{(1)}
-    Ask your systems administrator to put the machines in a `hosts.equiv'
-    file, so that logging in from one to the other  does  not  require  a
-    password. (`man hosts.equiv')
+    Add a `.shosts' file to your home directory (for `ssh').
 
 \item{(2)}
-    Add a `.rhosts' file to your home directory (or `.shosts' for `ssh').
-
-\item{(3)}
-    Hack around the problem: By default, the startup script uses `rsh' to
-    start remote processes. However, if the  environment  variable  `RSH'
+    Hack around the problem: By default, the startup script uses `ssh' to
+    start remote processes. However, if the  environment  variable  `SSH'
     was set, the script  uses  the  value  of  the  environment  variable
-    instead of `rsh'. This may be useful, if you have  your  own  script,
-    `myrsh', that automatically gets around  the  security  issues.  Then
+    instead of `ssh'. This may be useful, if you have  your  own  script,
+    `myssh', that automatically gets around  the  security  issues.  Then
     just type:
 
 \begintt
-RSH=myrsh; export RSH  # [ in sh/bash/... ]
-setenv RSH myrsh       # [ in csh/tcsh/... ]
+SSH=myrsh; export SSH  # [ in sh/bash/... ]
+setenv SSH myrsh       # [ in csh/tcsh/... ]
 \endtt
 
 \item{}
@@ -874,7 +873,7 @@ setenv RSH myrsh       # [ in csh/tcsh/... ]
     first and last line of `.../pkg/pargap/bin/pargap.sh'.  (The  example
     for `ssh' was given earlier.)
 
-\item{(4)}
+\item{(3)}
     `ssh': `man ssh' mentions some possibilities for giving the  password
     the first time, and then having ssh remember that  future  logins  to
     that machine are authorized for the duration of  the  session.  Don't
@@ -883,11 +882,11 @@ setenv RSH myrsh       # [ in csh/tcsh/... ]
     parameters of interest  might  be  `KeepAlive',  `RSAAuthentication',
     `UseRsh'. You may also find useful information in `man sshd'.
 
-\item{(5)}
+\item{(4)}
      After starting {\ParGAP}, manually call
 
 \begintt
-/tmp/pargapmpi--rsh.$$
+/tmp/pargapmpi-ssh.$$
 \endtt
 
 \item{}

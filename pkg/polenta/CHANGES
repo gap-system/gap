@@ -1,0 +1,50 @@
+===========================================================================
+ This file describes changes in 'polenta'.
+ 
+ This file was added after the 1.2.7 release. Any information pertaining
+ older polycyclic versions may not be complete accurate, as it was
+ re-created from old records. If you notice anything amiss, please let
+ us know.
+===========================================================================
+
+1.X.Y (TODO)
+	o Updated README
+    o Added GPL license text
+	o Added this CHANGES file
+	o Fixed bug in POL_KroneckerProduct (used by the examples)
+	o Added Max Horn as addition package maintainer; removed outdated
+	  email address for Bjoern Assmann and removed his maintainer flag
+	  (at least for the time being, due to lack of time on his part)
+	o Removed references to KANT / KASH -- which is a dependency of
+	  (old versions of) Alnuth, so we should not have to worry about
+	  it here.
+
+1.2.7 (17/06/2007)
+	o TODO
+
+1.2.6 (11/06/2007)
+	o TODO
+
+1.2.5 (10/06/2007)
+	o TODO
+
+1.2.4 (07/06/2007)
+	o TODO
+
+1.2.3 (17/07/2006)
+	o TODO
+
+1.2.2 (10/01/2006)
+	o TODO
+
+1.2.1 (09/08/2005)
+	o TODO
+
+1.2 (04/02/2004)
+	o TODO
+
+1.1 (02/11/2003)
+	o TODO
+
+1.0 (02/11/2003)
+	o TODO

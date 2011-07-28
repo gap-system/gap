@@ -2,14 +2,11 @@
 ##
 #W  factint.gd              GAP4 Package `FactInt'                Stefan Kohl
 ##
-#H  @(#)$Id: factint.gd,v 1.10 2007/09/24 09:49:29 stefan Exp $
-##
 ##  This file contains the declarations of the routines for 
 ##  integer factorization implemented in pminus1.gi, pplus1.gi, ecm.gi,
 ##  cfrac.gi, mpqs.gi and general.gi.
 ##
-Revision.factint_gd :=
-  "@(#)$Id: factint.gd,v 1.10 2007/09/24 09:49:29 stefan Exp $";
+#############################################################################
 
 #############################################################################
 ##

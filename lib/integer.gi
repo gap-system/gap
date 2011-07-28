@@ -8,14 +8,14 @@
 #W                                                         & Martin Schönert
 #W                                                              & Alex Wegner
 ##
-#H  @(#)$Id: integer.gi,v 4.85 2010/02/23 15:13:10 gap Exp $
+#H  @(#)$Id: integer.gi,v 4.87 2010/09/20 14:03:17 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.integer_gi :=
-    "@(#)$Id: integer.gi,v 4.85 2010/02/23 15:13:10 gap Exp $";
+    "@(#)$Id: integer.gi,v 4.87 2010/09/20 14:03:17 gap Exp $";
 
 
 #############################################################################
@@ -730,6 +730,25 @@ InstallGlobalFunction(FactorsInt,function ( n )
     return factors;
 end);
 
+#############################################################################
+##
+#F  PrimeDivisors( <n> ) . . . . . . . . . . . . . . list of prime divisors
+##  
+##  delegating to FactorsInt
+##  
+InstallGlobalFunction(PrimeDivisors, function(n)
+  if n = 0 then
+    Error("PrimeDivisors: 0 has an infinite number of prime divisors.");
+    return;
+  fi;
+  if n < 0 then
+    n := -n;
+  fi;
+  if n = 1 then
+    return [];
+  fi;
+  return Set(FactorsInt(n));
+end);
 
 #############################################################################
 ##

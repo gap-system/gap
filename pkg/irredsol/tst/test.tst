@@ -1,54 +1,8 @@
-gap> START_TEST ("$Id: test.tst,v 1.5 2007/10/04 16:41:23 gap Exp $");
-gap> LoadPackage ("irredsol");
+gap> START_TEST("$Id: test.tst,v 1.8 2011/05/18 14:37:33 gap Exp $");
+gap> LoadPackage ("irredsol", "", false);
 true
+gap> SetInfoLevel (InfoIrredsol, 0);
 gap> UnloadAbsolutelyIrreducibleSolvableGroupData ();
-gap> d := 2;;
-gap> limit := 2^16-1;;
-gap> for d in [2.. limit] do
->    p := SmallestRootInt (d);
->    if IsPrimeInt (p) then
->       m := LogInt (d, p);
->       for e in DivisorsInt (m) do
->          if IsAvailableAbsolutelyIrreducibleSolvableGroupData (m/e, p^e) then
->             LoadAbsolutelyIrreducibleSolvableGroupData (m/e, p^e);
->             if e > 1 then
->                divs := Difference (DivisorsInt (e), [e]);
->                for j in [1..Length(divs)] do
->                   t := divs[j];
->                   inds := IndicesIrreducibleSolvableMatrixGroups (m/t, p^t, e/t);
->                   if m = e then
->                      data := IRREDSOL_DATA.GROUPS_DIM1[p^e];
->                      data := data{[1..Length(data)]}[2];
->                   else
->                      data := IRREDSOL_DATA.GROUPS[m/e][p^e];
->                      data := data{[1..Length(data)]}[3];
->                   fi;
->                   wrong := [];
->                   for i in [1..Length (data)] do
->                      if IsBound (data[i][j]) <> (i in inds) then
->                         Add (wrong, i);
->                      fi;
->                   od;
->                   if Length (wrong) > 0 then
->                      Error ("wrong subfield info for indices ", wrong, " d = ", t);
->                   fi;
->                od;
->             fi;         
->             UnloadAbsolutelyIrreducibleSolvableGroupData (m/e, p^e);
->             LoadAbsolutelyIrreducibleSolvableGroupFingerprintIndex (m/e, p^e);
->             if e < m then
->                for k in Set (IRREDSOL_DATA.FP_INDEX[m/e][p^e][2]) do
->                   LoadAbsolutelyIrreducibleSolvableGroupFingerprintData (m/e, p^e, k);
->                od;
->             fi;
->             UnloadAbsolutelyIrreducibleSolvableGroupFingerprints (m/e, p^e);
->          else
->             Error ("Absolutely irreducible group data for GL(", m/e, ", ", p^e,") not available");
->          fi;
->       od;
->    fi;
-> od;
-
 gap> all := AllIrreducibleSolvableMatrixGroups (Degree, 2, Field, GF(3));;
 gap> SortedList (List (all, Size));
 [ 4, 8, 8, 8, 16, 24, 48 ]
@@ -126,13 +80,14 @@ gap> Collected (List (all, Size)) ;
   [ 384, 1 ] ]
 
 
-gap> RandomIrreducibleSolvableMatrixGroup := function (n, q, d, k, e)
+gap> TestRandomIrreducibleSolvableMatrixGroup := function (n, q, d, k, e)
 > 
->    local x, y, G, H1, H, gens, M, rep;
+>    local x, y, G, repG, H1, H, gens, M, rep, info;
 > 
 >    G := IrreducibleSolvableMatrixGroup (n, q, d, k);
+>    repG := RepresentationIsomorphism (G);
 >    
->    H1 := Source (RepresentationIsomorphism (G));
+>    H1 := Source (repG);
 >    
 >    H := TrivialSubgroup (H1);
 >    gens := [];
@@ -146,7 +101,7 @@ gap> RandomIrreducibleSolvableMatrixGroup := function (n, q, d, k, e)
 >    
 >    y := RandomInvertibleMat (n, GF(q^e));
 >    
->    M := GroupWithGenerators (List (gens, x -> ImageElm (RepresentationIsomorphism (G), x)^y));
+>    M := GroupWithGenerators (List (gens, x -> ImageElm (repG, x)^y));
 >    SetSize (M, Size (G));
 >    SetIsSolvableGroup (M, true);
 >    SetIdIrreducibleSolvableMatrixGroup (M, IdIrreducibleSolvableMatrixGroup (G));
@@ -155,23 +110,35 @@ gap> RandomIrreducibleSolvableMatrixGroup := function (n, q, d, k, e)
 >    SetIsSingleValued (rep, true);
 >    SetIsBijective (rep, true);
 >    SetRepresentationIsomorphism (M, rep);
->    return M;
-> end;
-function( n, q, d, k, e ) ... end
+>    info := RecognitionIrreducibleSolvableMatrixGroup (M, true, true, true); 
+>    if ForAny (GeneratorsOfGroup (Source (rep)), 
+>        g -> ImageElm (rep, g) ^info.mat <> ImageElm (RepresentationIsomorphism(info.group), ImageElm (info.iso, g))) then
+>            Error ("wrong conjugating matrix");
+>    fi;
+> end;;
 gap> inds := [ 1168, 1224, 1229, 1231, 1237, 1242, 1247, 1249, 1513, 1515, 1517, 1519,  1533 ];;
 gap> for i in inds do
->    G := RandomIrreducibleSolvableMatrixGroup (8, 3, 2, i, 1);
->    info := RecognitionIrreducibleSolvableMatrixGroup (G, true, true); 
->    if G^info.mat <> info.group or info.id <> IdIrreducibleSolvableMatrixGroup (G) then
->       Error ("wrong result for group of id ", IdIrreducibleSolvableMatrixGroup (G));
->    fi;
+>    TestRandomIrreducibleSolvableMatrixGroup (8, 3, 2, i, 3);
 > od;
-gap> G1:=Group([ [ [ Z(7), 0*Z(7) ], [ 0*Z(7), Z(7) ] ], [ [ Z(7)^0, Z(7)^0 ],
-> [ Z(7)^5, Z(7)^3 ] ], [ [ Z(7)^4, 0*Z(7) ], [ Z(7)^4, Z(7)^2 ] ]]);;
+gap> inds := [ 6081, 6082, 6083, 6084, 6085, 6086, 6087, 6088 ];;
+gap> for i in inds do
+>    TestRandomIrreducibleSolvableMatrixGroup (8, 3, 1, i, 3);
+> od;
+gap> inds := [ 1513, 1514, 1515 ];;
+gap> for i in inds do
+>    TestRandomIrreducibleSolvableMatrixGroup (6, 5, 1, i, 4);
+> od;
+gap> inds := [ 1..6 ];;
+gap> for i in inds do
+>    TestRandomIrreducibleSolvableMatrixGroup (4, 3, 4, i, 3);
+> od;
+gap> G1:=Group([ [ [ Z(7), 0*Z(7) ], [ 0*Z(7), Z(7) ] ], [ [ Z(7)^0, Z(7)^0 ], [ Z(7)^5, Z(7)^3 ] ], 
+> [ [ Z(7)^4, 0*Z(7) ], [ Z(7)^4, Z(7)^2 ] ]]);;
 gap> IdIrreducibleSolvableMatrixGroup(G1);
 [ 2, 7, 1, 20 ]
-gap> G2:=Group([ [ [ Z(7), Z(7)^5 ], [ Z(7), Z(7)^0 ] ],[ [ Z(7), Z(7)^3 ], [
->  Z(7), Z(7)^4 ] ] ]);;
+gap> G2:=Group([ [ [ Z(7), Z(7)^5 ], [ Z(7), Z(7)^0 ] ],[ [ Z(7), Z(7)^3 ], [Z(7), Z(7)^4 ] ] ]);;
 gap> IdIrreducibleSolvableMatrixGroup(G2);
 [ 2, 7, 1, 21 ]
-gap> STOP_TEST ("test.tst", 0);
+gap> STOP_TEST("test.tst", 0);
+$Id: test.tst,v 1.8 2011/05/18 14:37:33 gap Exp $
+GAP4stones: 0

@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  samples.gi                      CRISP                 Burkhard H\"ofling
+##  samples.gi                      CRISP                    Burkhard Höfling
 ##
-##  @(#)$Id: samples.gi,v 1.5 2005/12/21 17:00:58 gap Exp $
+##  @(#)$Id: samples.gi,v 1.6 2011/05/15 19:18:00 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000, 2005 Burkhard Höfling
 ##
 Revision.samples_gi :=
-    "@(#)$Id: samples.gi,v 1.5 2005/12/21 17:00:58 gap Exp $";
+    "@(#)$Id: samples.gi,v 1.6 2011/05/15 19:18:00 gap Exp $";
 
 
 #############################################################################

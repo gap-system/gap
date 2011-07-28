@@ -2,14 +2,14 @@
 ##
 #W  clas.gi                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: clas.gi,v 4.76 2010/02/23 15:12:48 gap Exp $
+#H  @(#)$Id: clas.gi,v 4.78 2011/06/12 08:33:26 stefan Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.clas_gi :=
-    "@(#)$Id: clas.gi,v 4.76 2010/02/23 15:12:48 gap Exp $";
+    "@(#)$Id: clas.gi,v 4.78 2011/06/12 08:33:26 stefan Exp $";
 
 
 #############################################################################
@@ -157,6 +157,17 @@ end );
 
 #############################################################################
 ##
+#M  \^( <g>, <G> ) . . . . . . . . . conjugacy class of an element of a group
+##
+InstallOtherMethod( \^, "conjugacy class of an element of a group",
+                    IsElmsColls, [ IsMultiplicativeElement, IsGroup ], 0,
+
+  function ( g, G )
+    if g in G then return ConjugacyClass(G,g); else TryNextMethod(); fi;
+  end );
+
+#############################################################################
+##
 #M  HomeEnumerator( <cl> )  . . . . . . . . . . . . . . . . enumerator of <G>
 ##
 InstallMethod( HomeEnumerator, [ IsConjugacyClassGroupRep ],
@@ -218,10 +229,8 @@ end);
 
 InstallGlobalFunction( ConjugacyClassesTry,
 function ( G, classes, elm, length, fixes )
-local   C,          # new class
-	D,          # another new class
-	new,        # new classes
-	i;          # loop variable
+local i,D,o,divs,pows,norms,next,nnorms,oq,lelm,from,n,k,m,nu,zen,pr,orb,lo,
+      prg,C,u;
 
     # if the element is not in one of the known classes add a new class
     i:=1;
@@ -237,31 +246,68 @@ local   C,          # new class
       i:=i+1;
     od;
 
-    C := ConjugacyClass( G, elm );
-    Add( classes, C );
-    Info(InfoClasses,2,"found new class ",Length(classes),
-	 " of size ",Size(C));
-    new := [ C ];
+    # do not add the class here as we'll do it later with the powers
+    o:=Order(elm);
+    Info(InfoClasses,2,"process new class ",Length(classes)+1,
+         " element order ",o);
+    
+    # gho through the divisors lattice
+    divs:=Filtered(DivisorsInt(o),x->x>1);
+    pows:=[1];
+    norms:=[G];
 
-    # try powers that keep the order, compare only with new classes
-    for i  in [2..Order(elm)-1]  do
-	if GcdInt( i, Order(elm) * fixes ) = 1  then
-	    if not elm^i in C  then
-		if ForAll( new, D -> not elm^i in D )  then
-		    D := ConjugacyClass( G, elm^i );
-		    Add( classes, D );
-		    Add( new, D );
-		    Info(InfoClasses,2,"found new power");
-		fi;
-	    elif IsPrimeInt(i)  then
-		fixes := fixes * i;
+    while Length(divs)>0 do
+      # those one prime away
+      next:=Filtered(divs,x->ForAny(pows,y->IsInt(x/y) and IsPrimeInt(x/y)));
+      divs:=Difference(divs,next);
+      nnorms:=[];
+      for i in next do
+	oq:=o/i; # power needed to get order i
+	lelm:=elm^oq;
+	from:=First(Reversed(pows),y->IsInt(i/y) and IsPrimeInt(i/y));
+	# step of normalizer calculation via powers
+	n:=Normalizer(norms[from],Subgroup(G,[lelm]));
+	nnorms[i]:=n;
+
+	if i=o or not ForAny(classes,x->lelm in x) then
+	  # this power gives a new class
+	  zen:=Centralizer(n,lelm); # all powers have the same centralizer
+
+	  # what coprime powers are normalizer induced?
+	  pr:=Difference(PrimeResidues(i),[1]);
+	  u:=GroupByGenerators([ZmodnZObj(1,i)]);
+	  orb:=Orbit(n,lelm);
+	  lo:=Length(orb);
+	  orb:=Set(Filtered(orb,x->x<>lelm));
+	  while Size(u)<lo do
+	    m:=First(pr,x->lelm^x=orb[1]);
+	    nu:=ClosureGroup(u,ZmodnZObj(m,i));
+	    if Size(nu)<lo then
+	      for k in Difference(nu,u) do
+		RemoveSet(orb,lelm^Int(k));
+	      od;
 	    fi;
-	fi;
-    od;
+	    u:=nu;
+	  od;
+	  # now u is the group of normalizer induced powers
+	  prg:=GroupByGenerators(
+	    List(Flat(GeneratorsPrimeResidues(i).generators),
+	            x->ZmodnZObj(x,i)));
+	  orb:=List(RightTransversal(prg,u),Int);
+	  for k in orb do
+	    D:=ConjugacyClass(G,lelm^k);
+	    SetStabilizerOfExternalSet(D,zen);
+	    Add(classes,D);
+	    Info(InfoClasses,3,"found new power of order ",i,
+	         " class size ",Size(D));
+	    if k=1 and i=o then C:=D;fi; #remember for return value
+	  od;
 
-    # try also the powers of this element that reduce the order
-    for i  in Set( FactorsInt( Order( elm ) ) )  do
-	ConjugacyClassesTry(G,classes,elm^i,Size(C),fixes);
+	fi;
+      od;
+
+      pows:=next;
+      norms:=nnorms;
     od;
 
     return Centralizer(C);

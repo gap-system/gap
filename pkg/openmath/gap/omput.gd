@@ -3,7 +3,7 @@
 #W  omput.gd                OpenMath Package           Andrew Solomon
 #W                                                     Marco Costantini
 ##
-#H  @(#)$Id: omput.gd,v 1.14 2009/05/09 11:07:59 alexk Exp $
+#H  @(#)$Id: omput.gd,v 1.27 2010/09/23 20:44:01 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,10 +13,28 @@
 ## 
 
 Revision.("openmath/gap/omput.gd") := 
-    "@(#)$Id: omput.gd,v 1.14 2009/05/09 11:07:59 alexk Exp $";
+    "@(#)$Id: omput.gd,v 1.27 2010/09/23 20:44:01 alexk Exp $";
 
 DeclareGlobalVariable("OpenMathRealRandomSource");
 
+
+#############################################################################
+#
+# Declarations for OpenMathWriter
+#
+DeclareCategory( "IsOpenMathWriter", IsObject );
+DeclareCategory( "IsOpenMathXMLWriter", IsOpenMathWriter );
+DeclareCategory( "IsOpenMathBinaryWriter", IsOpenMathWriter );
+OpenMathWritersFamily := NewFamily( "OpenMathWritersFamily" );
+DeclareGlobalFunction ( "OpenMathBinaryWriter" );
+DeclareGlobalFunction ( "OpenMathXMLWriter" );
+DeclareRepresentation( "IsOpenMathWriterRep", IsPositionalObjectRep, [ ] );
+OpenMathBinaryWriterType := NewType( OpenMathWritersFamily, 
+                              IsOpenMathWriterRep and IsOpenMathBinaryWriter );
+OpenMathXMLWriterType    := NewType( OpenMathWritersFamily, 
+                              IsOpenMathWriterRep and IsOpenMathXMLWriter );                                
+                            
+                               
 #######################################################################
 ##
 #F  OMPutObject( <stream>, <obj> )  
@@ -32,6 +50,8 @@ DeclareGlobalVariable("OpenMathRealRandomSource");
 ##  complex objects.
 ## 
 DeclareGlobalFunction("OMPutObject");
+DeclareOperation("OMPutOMOBJ",    [ IsOpenMathWriter ] );
+DeclareOperation("OMPutEndOMOBJ", [ IsOpenMathWriter ] );
 
 DeclareGlobalFunction("OMPutObjectNoOMOBJtags");
 
@@ -41,7 +61,7 @@ DeclareGlobalFunction("OMPutObjectNoOMOBJtags");
 #O  OMPut(<stream>,<obj> ) 
 ## 
 ##
-DeclareOperation("OMPut", [IsOutputStream, IsObject ]);
+DeclareOperation("OMPut", [IsOpenMathWriter, IsObject ]);
 
 
 #######################################################################
@@ -82,7 +102,16 @@ DeclareGlobalFunction("OMWriteLine");
 ##  Input : cd, name as strings
 ##  Output: <OMS cd="<cd>" name="<name>" />
 ##
-DeclareGlobalFunction("OMPutSymbol");
+DeclareOperation("OMPutSymbol", [ IsOpenMathWriter, IsString, IsString ] );
+
+
+#######################################################################
+##
+#F  OMPutForeign( <stream>, <encoding>, <string> )
+##
+##  Input : encoding and string representing the foreighn object
+##
+DeclareOperation("OMPutForeign", [ IsOpenMathWriter, IsString, IsString ] );
 
 
 #######################################################################
@@ -92,7 +121,7 @@ DeclareGlobalFunction("OMPutSymbol");
 ##  Input : name as string
 ##  Output: <OMV name="<name>" />
 ##
-DeclareGlobalFunction("OMPutVar");
+DeclareOperation("OMPutVar", [ IsOpenMathWriter, IsObject ] );
 
 
 #######################################################################
@@ -109,10 +138,73 @@ DeclareGlobalFunction("OMPutVar");
 ##        </OMA>
 ##
 DeclareGlobalFunction("OMPutApplication");
+DeclareOperation("OMPutOMA",    [ IsOpenMathWriter ] );
+DeclareOperation("OMPutOMAWithId", [ IsOpenMathWriter , IsString ] );
+DeclareOperation("OMPutEndOMA", [ IsOpenMathWriter ] );
+
+
+#######################################################################
+##
+## Tags for attributions and attribution pairs
+##
+DeclareOperation("OMPutOMATTR",    [ IsOpenMathWriter ] );
+DeclareOperation("OMPutEndOMATTR",    [ IsOpenMathWriter ] );
+DeclareOperation("OMPutOMATP", [ IsOpenMathWriter ] );
+DeclareOperation("OMPutEndOMATP", [ IsOpenMathWriter ] );
+
+#######################################################################
+##
+#M  OMPutBinding( <stream>, <cd>, <name>, <listbvars>, <object> )
+##
+##  Input : cd, name, list of bvars, object
+##  Output:
+##        <OMBIND>
+##                <OMS cd=<cd> name=<name>/>
+##                OMPut(<list>[1])
+##                OMPut(<object)
+##                ...
+##        </OMBIND>
+##
+#DeclareGlobalFunction("OMPutBinding");
+DeclareOperation("OMPutOMBIND",    [ IsOpenMathWriter ] );
+DeclareOperation("OMPutOMBINDWithId", [ IsOpenMathWriter , IsString ] );
+DeclareOperation("OMPutEndOMBIND", [ IsOpenMathWriter ] );
+
+#######################################################################
+##
+## Tags for binding vars
+##
+DeclareOperation("OMPutOMBVAR",    [ IsOpenMathWriter ] );
+DeclareOperation("OMPutEndOMBVAR",    [ IsOpenMathWriter ] );
+
+#######################################################################
+##
+#M  OMPutError( <stream>, <cd>, <name>, <list> )
+##
+##  Input : cd, name as strings, list as a list
+##  Output:
+##        <OME>
+##                <OMS cd=<cd> name=<name>/>
+##                OMPut(<list>[1])
+##                OMPut(<list>[2])
+##                ...
+##        </OME>
+##
+DeclareGlobalFunction("OMPutError");
+DeclareOperation("OMPutOME",    [ IsOpenMathWriter ] );
+DeclareOperation("OMPutEndOME", [ IsOpenMathWriter ] );
 
 DeclareAttribute( "OMReference", IsObject );
 
-DeclareOperation( "OMPutReference", [ IsOutputStream, IsObject ] );
+DeclareOperation( "OMPutReference", [ IsOpenMathWriter, IsObject ] );
+
+#######################################################################
+##
+#O  OMPutByteArray( <stream>, <bitlist> ) 
+## 
+##  Put bitlists into byte arrays
+##
+DeclareGlobalFunction("OMPutByteArray");
 
 
 #######################################################################
@@ -121,7 +213,7 @@ DeclareOperation( "OMPutReference", [ IsOutputStream, IsObject ] );
 ## 
 ##  Tries to render this as an OpenMath list
 ##
-DeclareOperation("OMPutList", [IsOutputStream, IsObject ]);
+DeclareOperation("OMPutList", [ IsOpenMathWriter, IsObject ]);
 
 
 # Determines the indentation of the next line to be printed.
@@ -137,7 +229,7 @@ OMPlainStringsFamily := NewFamily( "OMPlainStringsFamily" );
 DeclareGlobalFunction ( "OMPlainString" );
 DeclareRepresentation( "IsOMPlainStringRep", IsPositionalObjectRep, [ ] );
 OMPlainStringDefaultType := NewType( OMPlainStringsFamily, 
-                                IsOMPlainStringRep and IsOMPlainString );
+                                IsOMPlainStringRep and IsOMPlainString );                                
 
 #############################################################################
 #E

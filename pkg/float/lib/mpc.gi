@@ -2,14 +2,14 @@
 ##
 #W  mpc.gi                        GAP library               Laurent Bartholdi
 ##
-#H  @(#)$Id: mpc.gi,v 1.1 2008/06/14 15:45:40 gap Exp $
+#H  @(#)$Id: mpc.gi,v 1.2 2011/04/11 13:17:21 gap Exp $
 ##
 #Y  Copyright (C) 2008 Laurent Bartholdi
 ##
 ##  This file deals with complex floats
 ##
 Revision.mpc_gi :=
-  "@(#)$Id: mpc.gi,v 1.1 2008/06/14 15:45:40 gap Exp $";
+  "@(#)$Id: mpc.gi,v 1.2 2011/04/11 13:17:21 gap Exp $";
 
 ################################################################
 # viewers
@@ -153,7 +153,7 @@ InstallMethod(MPCFloat, "for rationals", [IsRat],
 end);
 InstallMethod(MPCFloat, "for lists", [IsList],
         l->List(l,MPCFloat));
-InstallMethod(MPCFloat, "for macfloats", [IsMacFloat],
+InstallMethod(MPCFloat, "for macfloats", [IsFloat], #!!!
         x->MPCFloat(String(x)));
 InstallMethod(MPCFloat, "for strings", [IsString],
         function(s)

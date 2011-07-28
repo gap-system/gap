@@ -2,7 +2,7 @@
 ##
 #W  object.gd                   GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: object.gd,v 4.70 2010/06/24 22:52:05 gap Exp $
+#H  @(#)$Id: object.gd,v 4.74 2011/03/25 14:58:00 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file declares the operations for all objects.
 ##
 Revision.object_gd :=
-    "@(#)$Id: object.gd,v 4.70 2010/06/24 22:52:05 gap Exp $";
+    "@(#)$Id: object.gd,v 4.74 2011/03/25 14:58:00 gap Exp $";
 
 
 #T Shall we add a check that no  object ever lies in both
@@ -395,6 +395,9 @@ DeclareAttribute( "Name", IsObject );
 ##  "123"
 ##  "[ 1, 2, 3 ]"
 ##  ]]></Example>
+##  <Ref Oper="String"/> must not put in additional control 
+##  characters <C>\&lt;</C> (ASCII 1) and <C>\&gt;</C> (ASCII 2) 
+##  that allow proper line breaks.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -434,6 +437,69 @@ InstallMethod( PrintObj, "for an operation", true, [IsOperation], 0,
         function ( op )
     Print("<Operation \"",NAME_FUNC(op),"\">");
 end);
+
+
+#############################################################################
+##
+#O  PrintString( <obj> ) . . . . . . . . . . . string which would be printed
+##
+##  <#GAPDoc Label="PrintString">
+##  <ManSection>
+##  <Oper Name="PrintString" Arg='obj'/>
+##
+##  <Description>
+##  <Ref Oper="PrintString"/> returns a representation of <A>obj</A>,
+##  which may be an object of arbitrary type, as a string.
+##  This string should approximate as closely as possible the character
+##  sequence you see if you print <A>obj</A> using <Ref Oper="PrintObj"/>.
+##  <P/>
+##  If <A>length</A> is given it must be an integer.
+##  The absolute value gives the minimal length of the result.
+##  If the string representation of <A>obj</A> takes less than that many
+##  characters it is filled with blanks.
+##  If <A>length</A> is positive it is filled on the left,
+##  if <A>length</A> is negative it is filled on the right.
+##  <P/>
+##  In the two argument case, the string returned is a new mutable
+##  string (in particular not a part of any other object);
+##  it can be modified safely,
+##  and <Ref Func="MakeImmutable"/> may be safely applied to it.
+##  <Example><![CDATA[
+##  gap> PrintString(123);PrintString([1,2,3]);
+##  "123"
+##  "[ 1, 2, 3 ]"
+##  ]]></Example>
+##  <Ref Oper="PrintString"/> is entitled to put in additional control 
+##  characters <C>\&lt;</C> (ASCII 1) and <C>\&gt;</C> (ASCII 2) 
+##  that allow proper line breaks. See <Ref Func="StripLineBreakCharacters"/>
+##  for a function to get rid of these control characters.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "PrintString", [ IsObject ] );
+DeclareOperation( "PrintString", [ IsObject, IS_INT ] );
+
+
+#############################################################################
+##
+#F  StripLineBreakCharacters( <string> ) . . . removes \< and \> characters
+##
+##  <#GAPDoc Label="StripLineBreakCharacters">
+##  <ManSection>
+##  <Func Name="StripLineBreakCharacters" Arg="st"/>
+##
+##  <Description>
+##  This function takes a string <A>st</A> as an argument and removes all
+##  control characters <C>\&lt;</C> (ASCII 1) and <C>\&gt;</C> (ASCII 2) 
+##  which are used by
+##  <Ref Oper="PrintString"/> and <Ref Oper="PrintObj"/> to ensure proper
+##  line breaking. A new string with these characters removed is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "StripLineBreakCharacters" );
 
 
 #############################################################################
@@ -684,7 +750,7 @@ DeclareOperation( "KnownTruePropertiesOfObject", [ IsObject ]  );
 ##    "CategoryCollections(IsMultiplicativeElementWithInverse)", 
 ##    "CategoryCollections(IsAssociativeElement)", 
 ##    "CategoryCollections(IsFiniteOrderElement)", "IsGeneralizedDomain", 
-##    "CategoryCollections(IS_PERM)", "IsMagma", "IsMagmaWithOne", 
+##    "CategoryCollections(IsPerm)", "IsMagma", "IsMagmaWithOne", 
 ##    "IsMagmaWithInversesIfNonzero", "IsMagmaWithInverses" ]
 ##  ]]></Example>
 ##  </Description>
@@ -799,7 +865,12 @@ DeclareGlobalFunction( "MU_Finalize" );
 
 
 BIND_GLOBAL( "MU_MemPointer", GAPInfo.BytesPerVariable );
-BIND_GLOBAL( "MU_MemBagHeader", 2 * GAPInfo.BytesPerVariable );
+if GAPInfo.BytesPerVariable = 4 then
+  BIND_GLOBAL( "MU_MemBagHeader", 12 );
+else
+  BIND_GLOBAL( "MU_MemBagHeader", 16 );
+fi;
+
 
 #############################################################################
 ##

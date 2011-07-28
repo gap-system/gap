@@ -9,7 +9,7 @@
 ##  This file contains the generic operations for cosets.
 ##
 Revision.csetgrp_gi:=
-  "@(#)$Id: csetgrp.gi,v 4.66 2010/02/23 15:12:50 gap Exp $";
+  "@(#)$Id: csetgrp.gi,v 4.67 2011/03/31 02:08:20 gap Exp $";
 
 
 #############################################################################
@@ -101,7 +101,8 @@ local o,b,img,G1;
     fi;
     G:=G1;
   fi;
-  o:=ActionHomomorphism(G,RightTransversal(G,U),OnRight,"surjective");
+  o:=ActionHomomorphism(G,RightTransversal(G,U:noascendingchain),
+    OnRight,"surjective");
   img:=Range(o);
   b:=Blocks(img,MovedPoints(img));
   if Length(b)=1 then
@@ -130,7 +131,7 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,hardlimit,cheap;
   if IsInt(c) then
     hardlimit:=c;
   else
-    hardlimit:=20000;
+    hardlimit:=100000;
   fi;
 
   c:=[];  
@@ -527,7 +528,7 @@ end);
 ##
 BindGlobal("CalcDoubleCosets",function(G,a,b)
 local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
-      stabs, dcs, homs, tra, a1, a2, indx, normal, hom, omi, omiz,
+      stabs, dcs, homs, tra, a1, a2, indx, normal, hom, omi, omiz,c1,
       unten, compst, s, nr, nstab, lst, sifa, pinv, blist, bsz, cnt,
       ps, e, mop, mo, lstgens, lstgensop, rep, st, o, oi, i, img, ep,
       siz, rt, j, canrep, rsiz, step, nu;
@@ -568,7 +569,17 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
   if maxidx(c)>50000 then
     # try to do better
 
-    if IsPermGroup(G) then
+    # what about flipping (back)?
+    c1:=AscendingChain(G,b:refineChainActionLimit:=50000);
+    if maxidx(c1)<=50000 then
+      Info(InfoCoset,1,"flip to get better chain");
+      c:=b;
+      b:=a;
+      a:=c;
+      flip:=not flip;
+      c:=c1;
+
+    elif IsPermGroup(G) then
 
       tryfct:=function(obj,act)
 	local G1,a1,c1;

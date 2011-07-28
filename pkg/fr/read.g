@@ -2,7 +2,7 @@
 ##
 #W read.g                                                   Laurent Bartholdi
 ##
-#H   @(#)$Id: read.g,v 1.15 2009/07/16 19:59:37 gap Exp $
+#H   @(#)$Id: read.g,v 1.20 2011/04/04 06:47:52 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -27,9 +27,7 @@ ReadPackage("fr", "gap/vhgroup.gi");
 ReadPackage("fr", "gap/vector.gi");
 ReadPackage("fr", "gap/linear.gi");
 ReadPackage("fr", "gap/algebra.gi");
-if IsBound(MacFloat) then
-    ReadPackage("fr", "gap/img.gi");
-fi;
+ReadPackage("fr", "gap/img.gi");
 ReadPackage("fr", "gap/examples.gi");
 #############################################################################
 
@@ -61,12 +59,38 @@ end;
 
 DeclareAttribute("Alphabet", IsFRObject);
 DeclareAttribute("Alphabet", IsFRSemigroup);
-#DeclareAttribute("Alphabet", IsFRAlgebra); # since they're semigroups
+DeclareAttribute("Alphabet", IsFRAlgebra);
 InstallMethod(Alphabet, [IsFRObject], AlphabetOfFRObject);
 InstallMethod(Alphabet, [IsFRSemigroup], AlphabetOfFRSemigroup);
 InstallMethod(Alphabet, [IsFRAlgebra], AlphabetOfFRAlgebra);
 
-while not IsEmpty(POSTHOOK@) do Remove(POSTHOOK@)(); od;
-Unbind(POSTHOOK@);
+if IsBound(Nucleus) and FLAG2_FILTER(Nucleus)=0 then
+    DeclareOperation("Nucleus", [IsFRMachine]);
+    DeclareOperation("Nucleus", [IsFRSemigroup]);
+else
+    DeclareAttribute("Nucleus", IsFRMachine);
+    DeclareAttribute("Nucleus", IsFRSemigroup);
+fi;
+InstallMethod(Nucleus, [IsFRMachine], NucleusOfFRMachine);
+InstallMethod(Nucleus, [IsFRSemigroup], NucleusOfFRSemigroup);
+
+if IsBound(Decomposition) and FLAG2_FILTER(Decomposition)=0 then
+    DeclareOperation("Decomposition", [IsFRElement]);
+else
+    DeclareAttribute("Decomposition", IsFRElement);
+fi;
+InstallMethod(Decomposition, [IsFRElement], DecompositionOfFRElement);
+
+while not IsEmpty(POSTHOOK@fr) do Remove(POSTHOOK@fr)(); od;
+Unbind(POSTHOOK@fr);
+
+if IsBound(IO_Pickle) then
+    ReadPackage("fr","gap/pickle.g");
+else
+    if not IsBound(IO_PkgThingsToRead) then
+        IO_PkgThingsToRead := [];
+    fi;
+    Add(IO_PkgThingsToRead, ["fr","gap/pickle.g"]);
+fi;
 
 #E read.g . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

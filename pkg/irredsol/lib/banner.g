@@ -1,17 +1,20 @@
 ############################################################################
 ##
-##  access.gd                    IRREDSOL                 Burkhard Hoefling
+##  banner.g                      IRREDSOL                  Burkhard Höfling
 ##
-##  @(#)$Id: banner.g,v 1.2 2005/06/28 11:29:03 gap Exp $
+##  @(#)$Id: banner.g,v 1.3 2011/04/07 19:00:41 gap Exp $
 ##
-##  Copyright (C) 2003-2005 by Burkhard Hoefling, 
-##  Institut fuer Geometrie, Algebra und Diskrete Mathematik
-##  Technische Universitaet Braunschweig, Germany
+##  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 ##
-Print ("The Library of Irreducible Solvable Matrix Groups\n");
-Print ("Version ", InstalledPackageVersion ("irredsol"), "\n");
-Print ("by Burkhard Hoefling\n");
 
+Print ("\
+----------------------------------------------------------------------\n\
+                         IRREDSOL Version ", InstalledPackageVersion ("irredsol"),"\
+  A library of irreducible solvable linear groups over finite fields\n\
+                   and finite primivite soluble groups\n\
+                         by Burkhard Höfling\n\
+-----------------------------------------------------------------------\n\
+");
 ############################################################################
 ##
 #E

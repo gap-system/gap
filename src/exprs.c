@@ -2,7 +2,7 @@
 **
 *W  exprs.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: exprs.c,v 4.48 2010/02/23 15:13:41 gap Exp $
+*H  @(#)$Id: exprs.c,v 4.52 2011/06/06 16:28:08 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,7 +16,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_exprs_c =
-   "@(#)$Id: exprs.c,v 4.48 2010/02/23 15:13:41 gap Exp $";
+   "@(#)$Id: exprs.c,v 4.52 2011/06/06 16:28:08 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -42,14 +42,19 @@ const char * Revision_exprs_c =
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
+#include        "calls.h"
 #include        "stats.h"
+
 
 #define INCLUDE_DECLARATION_PART
 #include        "exprs.h"               /* expressions                     */
 #undef  INCLUDE_DECLARATION_PART
 
 #include        "tls.h"                 /* thread-local storage            */
+
+#include        "vars.h"                /* variables                       */
+
+#include	<assert.h>
 
 
 /****************************************************************************
@@ -868,9 +873,14 @@ Obj             EvalIntExpr (
     Expr                expr )
 {
     Obj                 val;            /* integer, result                 */
+#if 0
     UInt                i;              /* loop variable                   */
+#endif
 
+    
     /* allocate the integer                                                */
+    val = NewBag( ((UInt *)ADDR_EXPR(expr))[0], SIZE_EXPR(expr)-sizeof(UInt));
+#if 0
     if ( ((UInt2*)ADDR_EXPR(expr))[0] == 1 ) {
         val = NewBag( T_INTPOS, SIZE_EXPR(expr) - sizeof(UInt2) );
     }
@@ -879,9 +889,14 @@ Obj             EvalIntExpr (
     }
 
     /* copy over                                                           */
+    /* Need to fix this for GMP integers */
     for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
         ((UInt2*)ADDR_OBJ(val))[i-1] = ((UInt2*)ADDR_EXPR(expr))[i];
     }
+    */
+#endif
+
+      memcpy((void *)ADDR_OBJ(val), (void *)(((UInt *)ADDR_EXPR(expr))+1), (size_t) (SIZE_EXPR(expr)-sizeof(UInt)));
 
     /* return the value                                                    */
     return val;
@@ -1332,6 +1347,84 @@ Obj             EvalStringExpr (
     return string;
 }
 
+/****************************************************************************
+**
+*F  EvalFloatExprLazy(<expr>)  . . . . eval float expressions to a float value
+**
+**  'EvalFloatExpr'   evaluates the  float  expression  <expr>  to a float
+**  value.
+*/
+static Obj CONVERT_FLOAT_LITERAL;
+static Obj FLOAT_LITERAL_CACHE;
+static UInt GVAR_FLOAT_LITERAL_CACHE;
+static Obj MAX_FLOAT_LITERAL_CACHE_SIZE;
+
+Obj             EvalFloatExprLazy (
+    Expr                expr )
+{
+    Obj                 string;         /* string value            */
+    UInt                 len;           /* size of expression              */
+    UInt                 ix;
+    Obj cache= 0;
+    Obj fl;
+    
+    ix = ((UInt *)ADDR_EXPR(expr))[1];
+    if (ix && (!MAX_FLOAT_LITERAL_CACHE_SIZE || 
+	       MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
+	       ix <= INT_INTOBJ(MAX_FLOAT_LITERAL_CACHE_SIZE))) {
+      cache = FLOAT_LITERAL_CACHE;
+      if (!cache)
+	{
+	  cache = NEW_PLIST(T_PLIST,ix);
+	  AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
+	}
+      else
+	assert(IS_PLIST(cache));
+      GROW_PLIST(cache,ix);
+      fl = ELM_PLIST(cache,ix);
+      if (fl)
+	return fl;
+    }
+    len = *((UInt *)ADDR_EXPR(expr));
+    string = NEW_STRING(len);
+    memcpy((void *)CHARS_STRING(string), 
+	   (void *)((char *)ADDR_EXPR(expr) + 2*sizeof(UInt)), 
+	   len );
+    fl = CALL_1ARGS(CONVERT_FLOAT_LITERAL, string);
+    if (cache) {
+      SET_ELM_PLIST(cache, ix, fl);
+      CHANGED_BAG(cache);
+      if (LEN_PLIST(cache) < ix)
+	SET_LEN_PLIST(cache, ix);
+    }
+
+    return fl;
+}
+
+/****************************************************************************
+**
+*F  EvalFloatExprEager(<expr>)  . . . . eval float expressions to a float value
+**
+**  'EvalFloatExpr'   evaluates the  float  expression  <expr>  to a float
+**  value.
+*/
+static Obj EAGER_FLOAT_LITERAL_CACHE;
+
+Obj             EvalFloatExprEager (
+    Expr                expr )
+{
+    UInt                 ix;
+    Obj cache= 0;
+    Obj fl;
+    
+    ix = ((UInt *)ADDR_EXPR(expr))[0];
+    cache = EAGER_FLOAT_LITERAL_CACHE;
+    assert(IS_PLIST(cache));
+    fl = ELM_PLIST(cache,ix);
+    assert(fl);
+    return fl;
+}
+
 
 /****************************************************************************
 **
@@ -1582,10 +1675,20 @@ void            PrintAInv (
     UInt                oldPrec;
 
     oldPrec = PrintPreceedence;
-    PrintPreceedence = 14;
+    PrintPreceedence = 11;
+    
+    /* if necessary print the opening parenthesis                          */
+    if ( oldPrec >= PrintPreceedence ) Pr("%>(%>",0L,0L);
+    else Pr("%2>",0L,0L);
+    
     Pr("-%> ",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<",0L,0L);
+    
+    /* if necessary print the closing parenthesis                          */
+    if ( oldPrec >= PrintPreceedence ) Pr("%2<)",0L,0L);
+    else Pr("%2<",0L,0L);
+    
     PrintPreceedence = oldPrec;
 }
 
@@ -1607,7 +1710,6 @@ void            PrintBinop (
 {
     UInt                oldPrec;        /* old preceedence level           */
     Char *              op;             /* operand                         */
-
     /* remember the current preceedence level                              */
     oldPrec = PrintPreceedence;
 
@@ -1830,6 +1932,36 @@ void            PrintStringExpr (
     /*Pr( "\"%S\"", (Int)ADDR_EXPR(expr), 0L );*/
 }
 
+/****************************************************************************
+**
+*F  PrintFloatExpr(<expr>) . . . . . . . . . . . . print a float expression
+**
+**  'PrintFloatExpr' prints the float expression <expr>.
+*/
+void            PrintFloatExprLazy (
+    Expr                expr )
+{
+  Pr("%s", (Int)(((char *)ADDR_EXPR(expr) + 2*sizeof(UInt))), 0L);
+}
+
+/****************************************************************************
+**
+*F  PrintFloatExprEager(<expr>) . . . . . . . . . . . . print a float expression
+**
+**  'PrintFloatExpr' prints the float expression <expr>.
+*/
+void            PrintFloatExprEager (
+    Expr                expr )
+{
+  Char mark;
+  Pr("%s", (Int)(((char *)ADDR_EXPR(expr) + 3*sizeof(UInt))), 0L);
+  Pr("_",0L,0L);
+  mark = (Char)(((UInt *)ADDR_EXPR(expr))[2]);
+  if (mark != '\0') {
+    Pr("%c",mark,0L);
+  }
+}
+
 
 /****************************************************************************
 **
@@ -1894,6 +2026,12 @@ static Int InitKernel (
 {
     UInt                type;           /* loop variable                   */
 
+    InitFopyGVar("CONVERT_FLOAT_LITERAL",&CONVERT_FLOAT_LITERAL);
+    InitCopyGVar("FLOAT_LITERAL_CACHE",&FLOAT_LITERAL_CACHE);
+    InitCopyGVar("EAGER_FLOAT_LITERAL_CACHE",&EAGER_FLOAT_LITERAL_CACHE);
+    InitCopyGVar("MAX_FLOAT_LITERAL_CACHE_SIZE",&MAX_FLOAT_LITERAL_CACHE_SIZE);
+
+    
     /* clear the evaluation dispatch table                                 */
     for ( type = 0; type < 256; type++ ) {
         EvalExprFuncs[ type ] = EvalUnknownExpr;
@@ -1952,6 +2090,8 @@ static Int InitKernel (
     EvalExprFuncs [ T_STRING_EXPR    ] = EvalStringExpr;
     EvalExprFuncs [ T_REC_EXPR       ] = EvalRecExpr;
     EvalExprFuncs [ T_REC_TILD_EXPR  ] = EvalRecTildeExpr;
+    EvalExprFuncs [ T_FLOAT_EXPR_LAZY  ] = EvalFloatExprLazy;
+    EvalExprFuncs [ T_FLOAT_EXPR_EAGER  ] = EvalFloatExprEager;
 
     /* clear the tables for the printing dispatching                       */
     for ( type = 0; type < 256; type++ ) {
@@ -1995,6 +2135,8 @@ static Int InitKernel (
     PrintExprFuncs[ T_LIST_TILD_EXPR ] = PrintListExpr;
     PrintExprFuncs[ T_RANGE_EXPR     ] = PrintRangeExpr;
     PrintExprFuncs[ T_STRING_EXPR    ] = PrintStringExpr;
+    PrintExprFuncs[ T_FLOAT_EXPR_LAZY    ] = PrintFloatExprLazy;
+    PrintExprFuncs[ T_FLOAT_EXPR_EAGER    ] = PrintFloatExprEager;
     PrintExprFuncs[ T_REC_EXPR       ] = PrintRecExpr;
     PrintExprFuncs[ T_REC_TILD_EXPR  ] = PrintRecExpr;
 
@@ -2002,6 +2144,13 @@ static Int InitKernel (
     return 0;
 }
 
+
+static Int InitLibrary (
+    StructInitInfo *    module )
+{
+    GVAR_FLOAT_LITERAL_CACHE = GVarName("FLOAT_LITERAL_CACHE");
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -2015,11 +2164,11 @@ static StructInitInfo module = {
     0,                                  /* version                        */
     0,                                  /* crc                            */
     InitKernel,                         /* initKernel                     */
-    0,                                  /* initLibrary                    */
+    InitLibrary,                        /* initLibrary                    */
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    0                                   /* postRestore                    */
+    InitLibrary                                   /* postRestore                    */
 };
 
 StructInitInfo * InitInfoExprs ( void )

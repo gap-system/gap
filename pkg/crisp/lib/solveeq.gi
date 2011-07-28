@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  solveeq.gi                      CRISP                 Burkhard H\"ofling
+##  solveeq.gi                      CRISP                    Burkhard Höfling
 ##
-##  @(#)$Id: solveeq.gi,v 1.5 2002/01/16 12:22:36 gap Exp $
+##  @(#)$Id: solveeq.gi,v 1.6 2011/05/15 19:18:04 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000-2002 Burkhard Höfling
 ##
 Revision.solveeq_gi :=
-    "@(#)$Id: solveeq.gi,v 1.5 2002/01/16 12:22:36 gap Exp $";
+    "@(#)$Id: solveeq.gi,v 1.6 2011/05/15 19:18:04 gap Exp $";
 
 
 #############################################################################

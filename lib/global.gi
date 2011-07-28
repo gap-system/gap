@@ -2,7 +2,7 @@
 ##
 #W  global.gi                   GAP library                      Steve Linton
 ##
-#H  @(#)$Id: global.gi,v 4.15 2010/02/23 15:13:01 gap Exp $
+#H  @(#)$Id: global.gi,v 4.17 2011/02/08 14:37:15 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -32,7 +32,7 @@
 ##
 
 Revision.global_gi :=
-    "@(#)$Id: global.gi,v 4.15 2010/02/23 15:13:01 gap Exp $";
+    "@(#)$Id: global.gi,v 4.17 2011/02/08 14:37:15 gap Exp $";
 
 #############################################################################
 ##
@@ -51,16 +51,17 @@ DeclareInfoClass("InfoGlobal");
 ##
 
 IdentifierLetters := 
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_@";
 
 #############################################################################
 ##
 #F  IsValidIdentifier( <str> ) . . .  check if a string is a valid identifier
 ##
 
-InstallGlobalFunction("IsValidIdentifier", function(str)
+InstallGlobalFunction( IsValidIdentifier, function(str)
     return ForAll(str, c -> c in IdentifierLetters) and
-           ForAny(str, c -> not (c in "0123456789") );
+           ForAny(str, c -> not (c in "0123456789") and
+           not str in ALL_KEYWORDS() );
 end);
 
 #############################################################################

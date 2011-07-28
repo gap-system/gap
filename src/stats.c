@@ -2,7 +2,7 @@
 **
 *W  stats.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: stats.c,v 4.46 2010/06/14 15:56:26 sal Exp $
+*H  @(#)$Id: stats.c,v 4.47 2011/05/15 18:39:16 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,7 +16,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_stats_c =
-   "@(#)$Id: stats.c,v 4.46 2010/06/14 15:56:26 sal Exp $";
+   "@(#)$Id: stats.c,v 4.47 2011/05/15 18:39:16 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -40,7 +40,6 @@ const char * Revision_stats_c =
 #include        "bool.h"                /* booleans                        */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 #include        "exprs.h"               /* expressions                     */
 
 #include        "intrprtr.h"            /* interpreter                     */
@@ -56,9 +55,7 @@ const char * Revision_stats_c =
 #include	"tls.h"
 #include	"thread.h"
 
-#ifdef SYS_IS_MAC_MWC
-#include        "macintr.h"              /* Mac interrupt handlers	      */
-#endif
+#include        "vars.h"                /* variables                       */
 
 /****************************************************************************
 **
@@ -1711,7 +1708,6 @@ UInt ExecIntrStat (
 **  'ExecStatFuncs'  to point to  'ExecIntrStat',  which changes  the entries
 **  back, calls 'Error', and redispatches after a return from the break-loop.
 */
-#if !SYS_MAC_MWC
 void InterruptExecStat ( void )
 {
     UInt                i;              /* loop variable                   */
@@ -1737,7 +1733,6 @@ void InterruptExecStat ( void )
         ExecStatFuncs[i] = ExecIntrStat;
     }
 }
-#endif
 
 /****************************************************************************
 **
@@ -1770,10 +1765,6 @@ void ClearError ( void )
           Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax, 0L);
         }
     }
-
-#ifdef SYS_IS_MAC_MWC
-	ReactivateIntr ();   /* re-enable Mac interrupt check */
-#endif
 
     /* reset <TLS->nrError>                                                     */
     TLS->nrError = 0;

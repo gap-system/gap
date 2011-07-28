@@ -12,7 +12,7 @@
 ##  This file contains generic methods for groups.
 ##
 Revision.grp_gi :=
-    "@(#)$Id: grp.gi,v 4.259 2010/07/18 23:39:12 gap Exp $";
+    "@(#)$Id: grp.gi,v 4.263 2011/06/16 09:28:26 gap Exp $";
 
 
 #############################################################################
@@ -1556,6 +1556,8 @@ function( G )
                            x -> weights[x][3] = primes[i] )};
         sub  := InducedPcgsByPcSequenceNC( spec, gens );
         comp[i] := SubgroupByPcgs( G, sub );
+        SetIsPGroup( comp[i], true );
+        SetPrimePGroup( comp[i], primes[i] );
     od;
     return comp;
 end );
@@ -1565,7 +1567,7 @@ end );
 #M  HallSystem( <G> ) . . . . . . . . . . . . . . Hall system of finite group
 ##
 InstallMethod( HallSystem,
-    "generic method for finite groups",
+    "test whether finite group is solvable",
     [ IsGroup and IsFinite ],
 function( G )
     local spec, weights, primes, comp, i, gens, pis, sub;
@@ -2824,7 +2826,16 @@ InstallMethod( Intersection2,
 ##
 #M  Enumerator( <G> ) . . . . . . . . . . . .  set of the elements of a group
 ##
-EnumeratorOfGroup := function( G )
+CallFuncList(function(enum)
+    InstallMethod( Enumerator, "generic method for a group",
+            [ IsGroup and IsAttributeStoringRep ],
+            enum );
+
+    # the element list is only stored in the locally created new group H
+    InstallMethod(AsSSortedListNonstored, "generic method for groups",
+            [ IsGroup ],
+            enum );
+end, [function( G )
 
     local   H,          # subgroup of the first generators of <G>
             gen;        # generator of <G>
@@ -2842,17 +2853,8 @@ EnumeratorOfGroup := function( G )
     # return the list of elements
     Assert( 2, HasAsSSortedList( H ) );
     return AsSSortedList( H );
-end;
+end]);
 
-InstallMethod( Enumerator,
-    "generic method for a group",
-    [ IsGroup and IsAttributeStoringRep ],
-    EnumeratorOfGroup );
-
-InstallMethod(AsSSortedListNonstored,"generic method for groups",true,
-  [IsGroup],0,
-  # the element list is only stored in the locally created new group H
-  EnumeratorOfGroup);
 
 
 #############################################################################
@@ -3465,7 +3467,7 @@ InstallGlobalFunction( SmallSimpleGroup,
 
   function ( arg )
 
-    local  order, i, grps;
+    local  order, i, grps,j;
 
     if   not Length(arg) in [1,2] or not ForAll(arg,IsPosInt)
     then Error("usage: SmallSimpleGroup( <order> [, <i> ] )"); fi;
@@ -3479,20 +3481,15 @@ InstallGlobalFunction( SmallSimpleGroup,
 
     if order < 60 then return fail; fi;
 
-    if   order > 1000000
-    then Error("simple groups of order > 1000000 are currently\n",
+    if   order > 10^18
+    then Error("simple groups of order > 10^18 are currently\n",
                "not available via this function.");
     fi;
 
-    if   not IsReadOnlyGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS")
-    then ReadLib("simplegroupslist.g"); fi;
+    order:=SimpleGroupsIterator(order,order);
+    for j in [1..i-1] do NextIterator(order);od;
+    return NextIterator(order);
 
-    grps := Filtered(ValueGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS"),
-                     G -> Size(G) = order);
-
-    if Length(grps) < i then return fail; fi;
-
-    return grps[i];
   end );
 
 
@@ -3504,21 +3501,24 @@ InstallGlobalFunction( AllSmallNonabelianSimpleGroups,
 
   function ( orders )
 
-    local  grps;
+    local  grps,it,a,min,max;
 
     if   not IsList(orders) or not ForAll(orders,IsPosInt)
     then Error("usage: AllSmallNonabelianSimpleGroups( <orders> )"); fi;
 
-    if   not IsSubset([1..1000000],orders)
-    then Error("simple groups of order > 1000000 are currently\n",
+    min:=Minimum(orders);
+    max:=Maximum(orders);
+    if max>10^18 then 
+      Error("simple groups of order > 10^18 are currently\n",
                "not available via this function.");
     fi;
-
-    if   not IsReadOnlyGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS")
-    then ReadLib("simplegroupslist.g"); fi;
-
-    grps := Filtered(ValueGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS"),
-                     G -> Size(G) in orders);
+    it:=SimpleGroupsIterator(min,max);
+    grps:=[];
+    for a in it do
+      if Size(a) in orders then
+	Add(grps,a);
+      fi;
+    od;
 
     return grps;
   end );

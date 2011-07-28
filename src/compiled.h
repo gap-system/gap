@@ -56,7 +56,6 @@
 
 #include        "code.h"                /* coder                           */
 
-#include        "vars.h"                /* variables                       */
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 #include        "funcs.h"               /* functions                       */
@@ -74,6 +73,8 @@
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
 #include        "tls.h"                 /* thread-local storage            */
+
+#include        "vars.h"                /* variables                       */
 
 extern Obj InfoDecision;
 extern Obj InfoDoPrint;

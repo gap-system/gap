@@ -10,6 +10,7 @@ ReadGrp( "perf.grp"    );
 ReadGrp( "classic.gi"  );
 ReadGrp( "suzuki.gi"   );
 ReadGrp( "ree.gi"      );
+ReadGrp( "simple.gi"      );
 ReadGrp( "imf.grp"     );
 ReadGrp( "imf.gi"      );
 ReadGrp( "glzmodmz.gi" );

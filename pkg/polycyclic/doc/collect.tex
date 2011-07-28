@@ -253,7 +253,9 @@ This is the inverse operation to `ExponentsByObj'.  See
 \>ExponentsByObj( <coll>, <genexp> )
 
 returns an exponent vector for the generator exponent list <genexp>.
-This is the inverse operation to `ObjByExponents'.
+This is the inverse operation to `ObjByExponents'. The function 
+assumes that the generators in <genexp> are given in the right
+order and that the exponents are in the right range.
 
 \beginexample
 gap> G := UnitriangularPcpGroup( 4, 0 );   

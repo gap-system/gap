@@ -3,14 +3,14 @@
 #W  parunits.g             The UnitLib package            Alexander Konovalov
 #W                                                            Elena Yakimenko
 ##
-#H  $Id: parunits.g,v 1.2 2009/05/31 20:21:26 alexk Exp $
+#H  $Id: parunits.g,v 1.3 2010/08/04 09:32:39 alexk Exp $
 ##
 #############################################################################
 
 
 InstallGlobalFunction( NormalizedUnitCFpower, 
 function( arg )
-local id, p, i, KG, e, wb, coef, f, fgens, w, j;
+local id, p, i, name, KG, e, wb, coef, f, fgens, w, j;
 id:=arg[1][1];
 p:=arg[1][2];
 i:=arg[1][3];
@@ -41,7 +41,7 @@ end);
 
 InstallGlobalFunction( NormalizedUnitCFcommutator,
 function( arg )
-local id, p, i, j, KG, e, wb, coef, f, fgens, w, k;
+local id, p, i, j, name, KG, e, wb, coef, f, fgens, w, k;
 id:=arg[1][1];
 p:=arg[1][2];
 i:=arg[1][3];

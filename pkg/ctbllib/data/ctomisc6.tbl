@@ -2,7 +2,7 @@
 ##
 #W  ctomisc6.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomisc6.tbl,v 4.29 2009/04/22 12:39:06 gap Exp $
+#H  @(#)$Id: ctomisc6.tbl,v 4.31 2010/12/01 17:47:57 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,24 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomisc6.tbl,v $
+#H  Revision 4.31  2010/12/01 17:47:57  gap
+#H  renamed "Sym(4)" to "Symm(4)";
+#H  note that the table constructed with `CharacterTable( "Symmetric", 4 )'
+#H  gets the identifier `"Sym(4)"', and this table is sorted differently
+#H      TB
+#H
+#H  Revision 4.30  2010/05/05 13:20:07  gap
+#H  - added many class fusions,
+#H  - changed several class fusions according to consistency conditions,
+#H    after systematic checks of consistency
+#H    - with Brauer tables w.r.t. the restriction of characters,
+#H    - of subgroup fusions with the corresponding subgroup fusions between
+#H      proper factors where the factor fusions are stored,
+#H    - of subgroup fusions from maximal subgroups with subgroup fusions of
+#H      extensions inside automorphic extensions
+#H
+#H      TB
+#H
 #H  Revision 4.29  2009/04/22 12:39:06  gap
 #H  added missing maxes of He.2, ON.2, HN.2, Fi24, and B
 #H      TB
@@ -208,7 +226,7 @@
 #H  ==========================================================================
 ##
 Revision.ctomisc6_tbl :=
-    "@(#)$Id: ctomisc6.tbl,v 4.29 2009/04/22 12:39:06 gap Exp $";
+    "@(#)$Id: ctomisc6.tbl,v 4.31 2010/12/01 17:47:57 gap Exp $";
 
 SET_TABLEFILENAME("ctomisc6");
 ALN:= Ignore;
@@ -2582,7 +2600,7 @@ MOT("s2wrs3",
 [( 7, 8)( 9,10)]);
 ALF("s2wrs3","A6.2_1",[1,8,2,7,4,11,2,8,5,9],[
 "fusion map is unique up to table automorphisms,\n",
-"equal to the map from 2xSym4, mapped under an outer autom."
+"equal to the map from 2xSymm(4), mapped under an outer autom."
 ]);
 
 MOT("s2wrs4",
@@ -2838,7 +2856,7 @@ MOT("A6M5",
 ["ConstructPermuted",["s4"]]);
 ALF("A6M5","A6",[1,2,4,2,5],[
 "fusion map is unique up to table automorphisms,\n",
-"equals the map from A6M4 mapped under the action of S6"
+"equals the map from A6M4, mapped under the action of S6"
 ]);
 
 MOT("s4wrs2",

@@ -1,5 +1,5 @@
-##  this creates the documentation, needs: GAPDoc package, latex, pdflatex,
-##  mkindex, dvips
+##  This builds the documentation of the Example package
+##  Needs: GAPDoc package, latex, pdflatex, mkindex
 ##  
 LoadPackage( "GAPDoc" );
 

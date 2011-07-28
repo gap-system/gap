@@ -1,454 +1,228 @@
 #############################################################################
 ##
-#W kantin.gi            Alnuth -  Kant interface                 Bettina Eick
-#W                                                             Bjoern Assmann
-#W                                                            Andreas Distler
+#W kantin.gi            Alnuth -  Kant interface               Bettina Eick
+#W                                                           Bjoern Assmann
+#W                                                          Andreas Distler
 ##
 
 #############################################################################
 ##
-#V Global variables
+#F PolynomialWithNameToStringList( f[, name] )
 ##
-if not IsBound( KANTVars )    then KANTVars   := false; fi;
-if not IsBound( KANTVart )    then KANTVart   := false; fi;
-if not IsBound( KANTVaru )    then KANTVaru   := false; fi;
+InstallGlobalFunction(PolynomialWithNameToStringList, function( arg )
+    local c, f, stringlist, i;
 
-#############################################################################
-##
-#F TestKantExecutable( path )
-##
-InstallGlobalFunction( TestKantExecutable, function( path )
-    local str, pos, libstr;
+    # get input
+    f := arg[1];
 
-    # tests wether there is an executable file behind <path>
-    while Filename( DirectoriesSystemPrograms( ), path ) = fail and
-       not IsExecutableFile( path ) do
-        Error( "<path> has to be an executable" );
-    od;
-    
-    if not IsExecutableFile( path ) then
-        path := Filename( DirectoriesSystemPrograms( ), path );
-    fi;
-
-    # try to find out, if it's a proper KANT-version
-    str := "";
-    Process( DirectoryCurrent( ), path, InputTextNone( ),
-             OutputTextString( str, false ), [ ] );
-    # set library path if necessary
-    if str = "kash> " then
-        libstr := path{[1..Length(path)-PositionSublist(Reversed(path),"/")]};
-        libstr := Concatenation( libstr, "/lib/" );
-        str := "";
-        Process( DirectoryCurrent( ), path, InputTextNone( ),
-                 OutputTextString( str, false ), [ "-l", libstr ] );
-        path := Concatenation( path, " -l ", libstr );
-    fi;
-
-    if PositionSublist( str, "KANT" ) = fail then
-        Error( "<path> has to be an executable for KASH" );
-    fi; 
-
-    # check version number, must be 2.4 or 2.5
-    pos := PositionSublist( str, "Version " );
-    if pos = fail then
-        Error( "<path> has to be an executable for KASH" );
-    fi;
-
-    if str[ pos+8 ] <> '2' then
-        Error("<path> has to be an executable for KASH Version 2.4 or 2.5");
-    elif str[ pos+10 ] < '4' then
-            Error("<path> has to be an executable for KASH Version 2.4 or 2.5");
-    fi;
-
-    return path;
-end );
-
-#############################################################################
-##
-#F SetKantExecutable( path )
-##
-InstallGlobalFunction( SetKantExecutable, function( path )
-
-    path := TestKantExecutable( path );
-    MakeReadWriteGlobal( "KANTEXEC" );
-    KANTEXEC := path;
-    MakeReadOnlyGlobal( "KANTEXEC" );
-end );
-
-#############################################################################
-##
-#F SetKantExecutablePermanently( path )
-##
-InstallGlobalFunction( SetKantExecutablePermanently, function( path )
-
-    SetKantExecutable( path );
-    PrintTo( Concatenation( PackageInfo("alnuth")[1].InstallationPath,
-                            "/defs.g" ),
-             "###########################################################",
-             "##################\n##\n##  KANTEXEC\n##\n##  Here 'KANTEXEC',",
-             " the name of the executable for KASH, is set.\n##  Depending ",
-             "on the installation of KASH the entry may have to be changed.",
-             "\n##  See '4.3 Adjust the path of the executable for KASH' ",
-             "for details.\n##\n",
-             "if not IsBound( KANTEXEC ) then\n",
-             "    BindGlobal( \"KANTEXEC\", \"", KANTEXEC,"\" );\n",
-             "fi;");
-end );
-
-#############################################################################
-##
-#F PrintPolynomialToFile( arg )
-##
-PrintPolynomialToFile := function( arg )
-    local c, i, file, f;
-    file := arg[1];
-    f := arg[2];
-    if Length( arg ) > 2 then
-        name := arg[3];
-        AppendTo( file, name, " := ");
+    # print identifier of polynomial, default 'f', or given as second argument
+    if Length( arg ) = 1 then
+        stringlist := ["f = "];
     else
-        PrintTo( file, "f := ");
+        stringlist := Concatenation(arg[2], " = ");
     fi;
+
+    # print polynomial using 'x' as variable
     c := CoefficientsOfUnivariatePolynomial( f );
     for i in [1..Length(c)] do
-        if c[i] >= 0 and i > 1 then AppendTo( file, "+"); fi;
-        AppendTo( file, c[i],"*x^",i-1," ");
-    od; 
-    AppendTo( file,"; \n \n"); 
-end;
+        if c[i] >= 0 and i > 1 then 
+            Add(stringlist, "+"); 
+        fi;
+        Add(stringlist, Concatenation(String(c[i]), "*x^", String(i-1)));
+    od;
+    Add(stringlist,";\n");
+
+    return stringlist; 
+end);
 
 #############################################################################
 ##
-#F MaximalOrderDescriptionKant( F )
+#F CoefficientsToStringList(name, coeffs)
 ##
-MaximalOrderDescriptionKant := function( F )
-    local file, inpt, outt, trsh, f;
+InstallGlobalFunction(CoefficientsToStringList, function(name, coeffs)
+    local stringlist, c;
+
+    stringlist := ["{"];
+    Add(stringlist, name);
+    Add(stringlist, "= [ \n");
+    for c in coeffs do
+        Add(stringlist, String(c));
+        Add(stringlist, ", \n");
+    od;
+    Add(stringlist, "0]; }\n");
+
+    return stringlist;
+end);
+
+#############################################################################
+##
+#F MaximalOrderDescriptionPari( F )
+##
+InstallGlobalFunction(MaximalOrderDescriptionPari, function( F )
+    local input, result;
  
     if IsPrimeField(F) then return [1]; fi;
 
-    # test, wether KANTEXEC is set
-    if KANTEXEC = fail then
-        Error( "KANTEXEC, the executable for Kant, has to be set" );
-    fi; 
+    # initialize list of input strings with the defining polynomial
+    input := PolynomialWithNameToStringList(IntegerDefiningPolynomial(F));
 
-    # get the path to the kant directory
-    file := Concatenation( KANTOUTPUT, "kant.tmp" );
-    inpt := Concatenation( KANTOUTPUT, "kant.input" );
-    outt := Concatenation( KANTOUTPUT, "kant.output");
-    trsh := Concatenation( KANTOUTPUT, "kant.trash");
+    # execute PARI/GP
+    result := ProcessPariGP(Concatenation(input), "maxord.gp");
 
-    # compute generating polynomial and print it
-    f := IntegerDefiningPolynomial( F );
-    PrintPolynomialToFile( file, f );
-    AppendTo( file, "outt := \"", outt,"\"; \n \n");
-
-    # execute kant
-    Info( InfoAlnuth, 1, "executing Kant");
-    Exec(Concatenation( "cat ",file," ",ALNUTHPATH,"maxord.kt > ", inpt ));
-    Exec(Concatenation(KANTEXEC, " < ",inpt," > ", trsh));
-
-    # read results
-    Info( InfoAlnuth, 1, "reading Kant-results into Gap \n");
-    Read(outt);
-
-    # delete junk
-    Exec(Concatenation("rm ",inpt," ",outt," ",file," ",trsh));
-
-    # return info
-    return KANTVars;
-end;
+    # return result
+    return result;
+end);
 
 #############################################################################
 ##
-#F UnitGroupDescriptionKant( F )
+#F UnitGroupDescriptionPari( F )
 ##
-UnitGroupDescriptionKant := function( F )
-    local file, inpt, outt, exec, trsh, f;
+InstallGlobalFunction(UnitGroupDescriptionPari, function( F )
+    local input, result;
 
     if IsPrimeField( F ) then return [-1]; fi;
     
-    # test, wether KANTEXEC is set
-    if KANTEXEC = fail then
-        Error( "KANTEXEC, the executable for Kant, has to be set" );
-    fi; 
+    # initialize list of input strings with the defining polynomial
+    input := PolynomialWithNameToStringList(IntegerDefiningPolynomial(F));
 
-    # get the path to the kant directory
-    file := Concatenation( KANTOUTPUT, "kant.tmp" );
-    inpt := Concatenation( KANTOUTPUT, "kant.input" );
-    outt := Concatenation( KANTOUTPUT, "kant.output");
-    trsh := Concatenation( KANTOUTPUT, "kant.trash");
+    # execute PARI/GP
+    result := ProcessPariGP(Concatenation(input), "units.gp");
 
-    # compute generating polynomial and print it
-    f := IntegerDefiningPolynomial( F );
-    PrintPolynomialToFile( file, f );
-    AppendTo( file, "outt := \"", outt,"\"; \n \n");
-
-    # execute kant
-    Info( InfoAlnuth, 1, "executing Kant");
-    Exec(Concatenation( "cat ",file," ",ALNUTHPATH,"units.kt > ", inpt ));
-    Exec(Concatenation(KANTEXEC, " < ",inpt," > ", trsh));
-
-    # read results
-    Info( InfoAlnuth, 1, "reading Kant-results into Gap");
-    Read(outt);
-
-    # delete junk
-    Exec(Concatenation("rm ",inpt," ",outt," ",file," ",trsh));
-
-    # return
-    return KANTVars;
-end;
-
+    # return result
+    return result;
+end);
 
 #############################################################################
 ##
-#F ExponentsOfUnitsDescriptionKant( F, elms )
+#F ExponentsOfUnitsDescriptionWithRankPari( F, elms )
 ##
-ExponentsOfUnitsDescriptionKant := function( F, elms )
-    local file, inpt, outt, trsh, f, e;
+InstallGlobalFunction(ExponentsOfUnitsDescriptionWithRankPari,
+function( F, elms )
+    local input, e, result;
 
     if IsPrimeField( F ) then return fail; fi;
 
-    # test, wether KANTEXEC is set
-    if KANTEXEC = fail then
-        Error( "KANTEXEC, the executable for Kant, has to be set" );
-    fi; 
+    # initialize list of input strings with the defining polynomial
+    input := PolynomialWithNameToStringList(IntegerDefiningPolynomial(F));
 
-    # get the path to the kant directory
-    file := Concatenation( KANTOUTPUT, "kant.tmp" );
-    inpt := Concatenation( KANTOUTPUT, "kant.input" );
-    outt := Concatenation( KANTOUTPUT, "kant.output");
-    trsh := Concatenation( KANTOUTPUT, "kant.trash");
-    
-    # compute generating polynomial
-    f := IntegerDefiningPolynomial( F );
-    PrintPolynomialToFile( file, f );
+    # add coefficients of <elms>
+    input := Concatenation(input, CoefficientsToStringList("elms", elms));
 
-    # print elms to file
-    AppendTo( file, "elms := [ \n");
-    for e in elms do AppendTo( file, e,", \n"); od;
-    AppendTo( file, "]; \n \n");
-    AppendTo( file, "outt := \"", outt,"\"; \n \n");
+    # execute PARI/GP
+    result := ProcessPariGP(Concatenation(input), "decompra.gp");
 
-    # execute kant
-    Info( InfoAlnuth, 1, "executing Kant");
-    Exec(Concatenation( "cat ",file," ",ALNUTHPATH,"decomp.kt > ", inpt ));
-    Exec(Concatenation(KANTEXEC, " < ",inpt," > ", trsh));
-
-    # read results
-    Info( InfoAlnuth, 1, "reading Kant-results into Gap");
-    Read(outt);
-    Info( InfoAlnuth, 3, "KANTVars");
-    Info( InfoAlnuth, 3, KANTVars);
-    Info( InfoAlnuth, 3, "KANTVart");
-    Info( InfoAlnuth, 3, KANTVars);
-
-
-    # delete junk
-    Exec(Concatenation("rm ",inpt," ",outt," ",file," ",trsh));
-
-    # return unit group and exponents
-    return rec( units := KANTVars, expns := KANTVart );
-end;
+    # return result
+    return rec(units := result[1], expns := result[2], rank := result[3]);
+end);
 
 #############################################################################
 ##
-#F ExponentsOfUnitsDescriptionWithRankKant( F, elms )
+#F ExponentsOfFractionalIdealDescriptionPari( F, elms )
 ##
-ExponentsOfUnitsDescriptionWithRankKant := function( F, elms )
-    local file, inpt, outt, trsh, f, e;
-
-    if IsPrimeField( F ) then return fail; fi;
-
-    # test, wether KANTEXEC is set
-    if KANTEXEC = fail then
-        Error( "KANTEXEC, the executable for Kant, has to be set" );
-    fi; 
-
-    # get the path to the kant directory
-    file := Concatenation( KANTOUTPUT, "kant.tmp" );
-    inpt := Concatenation( KANTOUTPUT, "kant.input" );
-    outt := Concatenation( KANTOUTPUT, "kant.output");
-    trsh := Concatenation( KANTOUTPUT, "kant.trash");
-    
-    # compute generating polynomial
-    f := IntegerDefiningPolynomial( F );
-    PrintPolynomialToFile( file, f );
-
-    # print elms to file
-    AppendTo( file, "elms := [ \n");
-    for e in elms do AppendTo( file, e,", \n"); od;
-    AppendTo( file, "]; \n \n");
-    AppendTo( file, "outt := \"", outt,"\"; \n \n");
-
-    # execute kant
-    Info( InfoAlnuth, 1, "executing Kant");
-    Exec(Concatenation( "cat ",file," ",ALNUTHPATH,"decompra.kt > ", inpt ));
-    Exec(Concatenation(KANTEXEC, " < ",inpt," > ", trsh));
-
-    # read results
-    Info( InfoAlnuth, 1, "reading Kant-results into Gap");
-    Read(outt);
-    Info( InfoAlnuth, 3, "KANTVars");
-    Info( InfoAlnuth, 3, KANTVars);
-    Info( InfoAlnuth, 3, "KANTVart");
-    Info( InfoAlnuth, 3, KANTVars);
-
-
-    # delete junk
-    if InfoLevel( InfoAlnuth ) < 3 then
-        Exec(Concatenation("rm ",inpt," ",outt," ",file," ",trsh));
-    fi;
-
-    # return unit group and exponents
-    return rec( units := KANTVars, expns := KANTVart, rank:=KANTVaru);
-end;
-
-#############################################################################
-##
-#F ExponentsOfFractionalIdealDescriptionKant( F, elms )
-##
-## <elms> are arbitrary elements of F.
+## <elms> are arbitrary elements of F (or rather their coefficients).
 ## Returns the exponents vectors of the fractional ideals
 ## generated by elms corresponding to the underlying prime ideals.
 ##
-ExponentsOfFractionalIdealDescriptionKant := function( F, elms )
-    local file, inpt, outt, trsh, f, e;
+InstallGlobalFunction( ExponentsOfFractionalIdealDescriptionPari, 
+function( F, elms )
+    local input, e, result;
 
     if IsPrimeField( F ) then return fail; fi;
 
-    # test, wether KANTEXEC is set
-    if KANTEXEC = fail then
-        Error( "KANTEXEC, the executable for Kant, has to be set" );
-    fi; 
+    # initialize list of input strings with the defining polynomial
+    input := PolynomialWithNameToStringList(IntegerDefiningPolynomial(F));
 
-    # get the path to the kant directory
-    file := Concatenation( KANTOUTPUT, "kant.tmp" );
-    inpt := Concatenation( KANTOUTPUT, "kant.input" );
-    outt := Concatenation( KANTOUTPUT, "kant.output");
-    trsh := Concatenation( KANTOUTPUT, "kant.trash");
-    
-    # compute generating polynomial
-    f := IntegerDefiningPolynomial( F );
-    PrintPolynomialToFile( file, f );
+    # add coefficients of <elms>
+    input := Concatenation(input, CoefficientsToStringList("elms", elms));
+ 
+    # execute PARI/GP
+    result := ProcessPariGP(Concatenation(input), "fracidea.gp");
 
-    # print elms to file
-    AppendTo( file, "elms := [ \n");
-    for e in elms do AppendTo( file, e,", \n"); od;
-    AppendTo( file, "]; \n \n");
-    AppendTo( file, "outt := \"", outt,"\"; \n \n");
-
-    # execute kant
-    Info( InfoAlnuth, 1, "executing Kant");
-    Exec(Concatenation( "cat ",file," ",ALNUTHPATH,"fracidea.kt > ", inpt ));
-    Exec(Concatenation(KANTEXEC, " < ",inpt," > ", trsh));
-
-    # read results
-    Info( InfoAlnuth, 1, "reading Kant-results into Gap ");
-    Read(outt);
-
-    # delete junk
-    Exec(Concatenation("rm ",inpt," ",outt," ",file," ",trsh));
-
-    # return unit group and exponents
-    return KANTVars;
-end;
+    # return result
+    return result;
+end);
 
 #############################################################################
 ##
-#F NormCosetsDescriptionKant( F, norm )
+#F NormCosetsDescriptionPari( F, norm )
 ##
-NormCosetsDescriptionKant := function( F, norm )
-    local file, inpt, outt, trsh, f;
+InstallGlobalFunction( NormCosetsDescriptionPari, function( F, norm )
+    local input, result;
 
     if IsPrimeField(F) then return fail; fi;
 
-    # test, wether KANTEXEC is set
-    if KANTEXEC = fail then
-        Error( "KANTEXEC, the executable for Kant, has to be set" );
-    fi; 
+    # initialize list of input strings with the defining polynomial
+    input := PolynomialWithNameToStringList(IntegerDefiningPolynomial(F));
 
-    # get the path to the kant directory
-    file := Concatenation( KANTOUTPUT, "kant.tmp" );
-    inpt := Concatenation( KANTOUTPUT, "kant.input" );
-    outt := Concatenation( KANTOUTPUT, "kant.output");
-    trsh := Concatenation( KANTOUTPUT, "kant.trash");
+    # add norm information
+    Add(input, "nrm = ");
+    Add(input, String(norm));
+    Add(input, "; \n");
 
-    # compute generating polynomial and print it
-    f := IntegerDefiningPolynomial( F );
-    PrintPolynomialToFile( file, f );
-    AppendTo( file, "norm := ",norm,"; \n");
-    AppendTo( file, "outt := \"", outt,"\"; \n \n");
+    # execute PARI/GP
+    result := ProcessPariGP(Concatenation(input), "norm.gp");
 
-    # execute kant
-    Info( InfoAlnuth, 1, "executing Kant");
-    Exec(Concatenation( "cat ",file," ",ALNUTHPATH,"norm.kt > ", inpt ));
-    Exec(Concatenation(KANTEXEC, " < ",inpt," > ", trsh));
-
-    # read results
-    Info( InfoAlnuth, 1, "reading Kant-results into Gap");
-    Read(outt);
-
-    # delete junk
-    Exec(Concatenation("rm ",inpt," ",outt," ",file," ",trsh));
-
-    # return unit group and exponents
-    return rec( units := KANTVars, creps := KANTVart );
-end;
+    # return result
+    return rec(units := result[1], creps := result[2]);
+end);
 
 #############################################################################
 ##
-#F  PolynomialFactorsDescriptionKant, function( <F>, <coeffs> )
+#F  PolynomialFactorsDescriptionPari, function( <F>, <coeffs> )
 ##
 ##  Factorizes the polynomial defined by <coeffs> over the field <F>
-##  with KANT
+##  using PARI/GP
 ##
-InstallGlobalFunction( PolynomialFactorsDescriptionKant, function( F, coeffs )
-    local file, inpt, outt, trsh, tmpdir, f, c;
+InstallGlobalFunction( PolynomialFactorsDescriptionPari, function( F, coeffs )
+    local input, c, result, runtime;
                                                                                
-    # test, wether KANTEXEC is set
-    if KANTEXEC = fail then
-        Error( "KANTEXEC, the executable for Kant, has to be set" );
-    fi; 
+    # initialize list of input strings with the defining polynomial
+    input := PolynomialWithNameToStringList(IntegerDefiningPolynomial(F));
 
-    # get the path to the kant directory
-    tmpdir := DirectoryTemporary( );
-    file := Filename( tmpdir, "kant.tmp" );
-    inpt := Filename( tmpdir, "kant.input" );
-    outt := Filename( tmpdir, "kant.output");
-    trsh := Filename( tmpdir, "kant.trash");
-                                                                               
-    # print the polynomial
-    f := IntegerDefiningPolynomial( F );
-    PrintPolynomialToFile( file, f );
+    # add the coefficients of the polynomial to be factorised
+    input := Concatenation(input, CoefficientsToStringList("coeffs", coeffs));
+ 
+    # execute PARI/GP
+    result := ProcessPariGP(Concatenation(input), "polyfactors.gp");
 
-    # print coeffs to file
-    AppendTo( file, "coeffs := [ \n");
-    for c in coeffs do AppendTo( file, c,", \n"); od;
-    AppendTo( file, "]; \n \n");
-    AppendTo( file, "outt := \"", outt,"\"; \n \n");
+    # print runtime
+    runtime := Remove(result);
+    Info(InfoAlnuth, 1, "Runtime: ", runtime);
 
-    # execute kant
-    Info( InfoAlnuth, 1, "executing Kant");
-    Exec(Concatenation( "cat ",file," ",ALNUTHPATH,"polyfactors.kt > ", inpt));
-    Exec(Concatenation(KANTEXEC, " < ",inpt," > ", trsh));
-                                                                               
-    # read results
-    Info( InfoAlnuth, 1, "reading Kant-results into Gap");
-    Read(outt);
-    Info( InfoAlnuth, 1, "Runtime: ", KANTVars[ Length( KANTVars ) ] );
-    Unbind( KANTVars[ Length( KANTVars ) ] ); 
-                                                                               
-    # delete junk
-    Exec( "rm -r ", Filename( tmpdir, "" ));
-
-    # return info
-    return KANTVars;
+    # return result
+    return result;
 end );
+
+#############################################################################
+##
+#F ProcessPariGP(input, codefile)
+##
+InstallGlobalFunction(ProcessPariGP, function(input, codefile)
+    local output, paricode;
+
+    # test, wether AL_EXECUTABLE is set
+    if AL_EXECUTABLE = fail then
+        Error( "AL_EXECUTABLE, the executable for PARI/GP, has to be set" );
+    fi;
+
+    # add the prepared code fragments for the calculations in PARI/GP
+    paricode := InputTextFile(Filename(AL_PATH, codefile));
+
+    # execute PARI/GP
+    Info(InfoAlnuth, 1, "executing PARI/GP with ", codefile);
+    output := "";
+    Process(DirectoryCurrent(), AL_EXECUTABLE, 
+            InputTextString(Concatenation(input, ReadAll(paricode))),
+            OutputTextString(output,false), 
+            Concatenation(AL_OPTIONS, [AL_STACKSIZE])
+           );
+
+    # close open input stream from file with GP code
+    CloseStream(paricode);
+
+    return EvalString(output);
+end);
 
 #############################################################################
 ##
 #E
-                                                                               
-
-

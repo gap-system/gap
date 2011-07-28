@@ -3,8 +3,6 @@
 <!-- ##                                                                                       ## -->
 <!-- ##  rcwabib.xml                    RCWA documentation                       Stefan Kohl  ## -->
 <!-- ##                                                                                       ## -->
-<!-- ##  $Id: rcwabib.xml,v 1.29 2009/09/18 21:34:22 stefan Exp $                             ## -->
-<!-- ##                                                                                       ## -->
 <!-- ########################################################################################### -->
 
 <!DOCTYPE file SYSTEM "../../gapdoc/bibxmlext.dtd" []>
@@ -69,11 +67,11 @@
     <name><first>Laurent</first><last>Bartholdi</last></name>
   </author>
   <title>
-    <C>FR -- Computations with functionally recursive groups. Version 0.714285</C>
+    <C>FR -- Computations with functionally recursive groups. Version 1.1.3</C>
   </title>
-  <year>2007</year>
+  <year>2010</year>
   <other type="note">
-    GAP package, <URL>http://mad.epfl.ch/~laurent/FR/</URL>
+    GAP package, <URL>http://www.gap-system.org/Packages/fr.html</URL>
   </other>
 </manual></entry>
 
@@ -94,9 +92,9 @@
     <name><first>Frank</first><last>Lübeck</last></name>
     <name><first>Max</first><last>Neunhöffer</last></name>
   </author>
-  <title><C>GAPDoc (Version 1.1)</C></title>
+  <title><C>GAPDoc (Version 1.3)</C></title>
   <organization>RWTH Aachen</organization>
-  <year>2007</year>
+  <year>2011</year>
   <other type="note">
     GAP package, <URL>http://www.gap-system.org/Packages/gapdoc.html</URL>
   </other>
@@ -120,9 +118,9 @@
   <author>
     <name><first>Leonard</first><last>Soicher</last></name>
   </author>
-  <title><C>GRAPE -- GRaph Algorithms using PErmutation groups (Version 4.1)</C></title>
+  <title><C>GRAPE -- GRaph Algorithms using PErmutation groups (Version 4.3)</C></title>
   <organization>Queen Mary, University of London</organization>
-  <year>2002</year>
+  <year>2006</year>
   <other type="note">
     GAP package, <URL>http://www.gap-system.org/Packages/grape.html</URL>
   </other>
@@ -245,7 +243,7 @@
   <year>2007</year>
   <other type="note">
     Preprint (short note),
-    <URL>http://www.cip.mathematik.uni-stuttgart.de/~kohlsn/preprints/graphcrit.pdf</URL>
+    <URL>http://www.gap-system.org/DevelopersPages/StefanKohl/preprints/graphcrit.pdf</URL>
   </other>
 </misc></entry>
 
@@ -260,7 +258,7 @@
   <year>2007</year>
   <other type="note">
     Preprint (short note),
-    <URL>http://www.cip.mathematik.uni-stuttgart.de/~kohlsn/preprints/3n+1tree.pdf</URL>
+    <URL>http://www.gap-system.org/DevelopersPages/StefanKohl/preprints/3n+1tree.pdf</URL>
   </other>
 </misc></entry>
 
@@ -292,6 +290,7 @@
   <volume>43</volume>
   <number>8</number>
   <pages>545-581</pages>
+  <mrnumber>MR2415857</mrnumber>
   <note>DOI:&nbsp;10.1016/j.jsc.2007.12.001</note>
 </article></entry>
 
@@ -306,7 +305,7 @@
   <year>2008</year>
   <other type="note">
     Preprint,
-    <URL>http://www.cip.mathematik.uni-stuttgart.de/~kohlsn/preprints/ctzd.pdf</URL>
+    <URL>http://www.gap-system.org/DevelopersPages/StefanKohl/preprints/ctzd.pdf</URL>
   </other>
 </misc></entry>
 
@@ -319,11 +318,11 @@
     of the Integers
   </title>
   <journal>Math. Z.</journal>
-  <year>2009</year>
-  <volume>(online first)</volume>
-  <number></number>
-  <pages></pages>
-  <mrnumber></mrnumber>
+  <year>2010</year>
+  <volume>264</volume>
+  <number>4</number>
+  <pages>927-938</pages>
+  <mrnumber>MR2593301</mrnumber>
   <note>DOI:&nbsp;10.1007/s00209-009-0497-8</note>
 </article></entry>
 
@@ -394,9 +393,9 @@
     <name><first>Werner</first><last>Nickel</last></name>
   </author>
   <title>
-    <C>Polycyclic -- Computation with polycyclic groups; Version 2.2</C>
+    <C>Polycyclic -- Computation with polycyclic groups; Version 2.6</C>
   </title>
-  <year>2007</year>
+  <year>2009</year>
   <other type="note">
     GAP package, <URL>http://www.gap-system.org/Packages/polycyclic.html</URL>
   </other>

@@ -3,7 +3,7 @@
 #W  onecohom.gd                     GAP library                  Frank Celler
 ##                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: onecohom.gd,v 4.24 2010/02/23 15:13:19 gap Exp $
+#H  @(#)$Id: onecohom.gd,v 4.26 2011/01/25 23:24:27 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains the declarations of operations for the 1-Cohomology
 ##
 Revision.onecohom_gd:=
-  "@(#)$Id: onecohom.gd,v 4.24 2010/02/23 15:13:19 gap Exp $";
+  "@(#)$Id: onecohom.gd,v 4.26 2011/01/25 23:24:27 alexk Exp $";
 
 
 #############################################################################
@@ -249,25 +249,24 @@ DeclareOperation( "OCCoprimeComplement",
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> n:=Group((1,2)(3,4),(1,3)(2,4));;
 ##  gap> oc:=OneCocycles(g,n);
-##  rec( oneCoboundaries := <vector space over GF(2), with 2 generators>,
-##    oneCocycles := <vector space over GF(2), with 2 generators>,
-##    generators := [ (3,4), (2,4,3) ], isSplitExtension := true,
-##    complement := Group([ (3,4), (2,4,3) ]),
-##    cocycleToList := function( c ) ... end,
-##    listToCocycle := function( L ) ... end,
-##    cocycleToComplement := function( c ) ... end,
-##    factorGens := [ (3,4), (2,4,3) ],
-##    complementToCocycle := function( K ) ... end )
+##  rec( cocycleToComplement := function( c ) ... end, 
+##    cocycleToList := function( c ) ... end, 
+##    complement := Group([ (3,4), (2,4,3) ]), 
+##    complementGens := [ (3,4), (2,4,3) ], 
+##    complementToCocycle := function( K ) ... end, 
+##    factorGens := [ (3,4), (2,4,3) ], generators := [ (3,4), (2,4,3) ], 
+##    isSplitExtension := true, listToCocycle := function( L ) ... end, 
+##    oneCoboundaries := <vector space over GF(2), with 2 generators>, 
+##    oneCocycles := <vector space over GF(2), with 2 generators> )
 ##  gap> oc.cocycleToList([ 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ]);
 ##  [ (1,2)(3,4), (1,2)(3,4) ]
-##  gap> oc.listToCocycle([(),(1,3)(2,4)]);
-##  [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ]
-##  gap> oc.cocycleToComplement([ 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ]);
+##  gap> oc.listToCocycle([(),(1,3)(2,4)]) = Z(2) * [ 0, 0, 1, 0];
+##  true
 ##  Group([ (1,2), (1,2,3) ])
 ##  gap> oc.cocycleToComplement([ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ]);
 ##  Group([ (3,4), (1,3,4) ])
-##  gap> oc.complementToCocycle(Group((1,2,4),(1,4)));
-##  [ 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0 ]
+##  gap> oc.complementToCocycle(Group((1,2,4),(1,4))) = Z(2) * [ 0, 1, 1, 1 ];
+##  true
 ##  ]]></Example>
 ##  <P/>
 ##  The factor group

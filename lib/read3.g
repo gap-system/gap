@@ -198,6 +198,7 @@ ReadGrp( "classic.gd"  );
 ReadGrp( "perf.gd"     );
 ReadGrp( "suzuki.gd"   );
 ReadGrp( "ree.gd"   );
+ReadGrp( "simple.gd"   );
 ReadGrp( "imf.gd"      );
 ReadGrp( "glzmodmz.gd" );
 

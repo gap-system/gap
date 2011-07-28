@@ -16,24 +16,16 @@ ParGAP works only under UNIX. (Cygwin is a possible  option  on  Windows,
 but you will have to port it yourself.)
 
 ParGAP may be obtained as `pargap-XXX.zoo' (for some version number  XXX)
-from the same places as GAP. The main FTP servers are:
+from the same places as GAP.
 
-  ftp://ftp-gap.dcs.st-and.ac.uk/pub/gap/gap4/share/
-  ftp://ftp.math.rwth-aachen.de/pub/gap4/share/
-  ftp://ftp.ccs.neu.edu/pub/mirrors/ftp-gap.dcs.st-and.ac.uk/pub/gap/gap4/share/
-  ftp://pell.anu.edu.au/pub/algebra/gap4/share/
+`pargap' is available for download via the GAP www page at
 
-`pargap-XXX.zoo' is also available via the GAP www page at
-
-  http://www-gap.dcs.st-and.ac.uk/~gap/Info4/share.html
-  http://aldebaran.math.rwth-aachen.de/~GAP/Info4/share.html
-  http://mirrors.ccs.neu.edu/GAP/NEU/Info4/share.html
-  http://wwwmaths.anu.edu.au/research.groups/algebra/GAP/www/Info4/share.html
+  http://www-gap.mcs.st-and.ac.uk/Packages/packages.html
 
 or, alternatively, `pargap-XXX.tar.gz' (which is  assured  to  be  the
 most recent version) can be obtained from the author's ftp site:
 
-  ftp://ftp.ccs.neu.edu/pub/people/gene/pargapmpi/
+  ftp://ftp.ccs.neu.edu/pub/people/gene/pargap/
 
 ParGAP has been tested on Linux (ELF), Solaris 2.6 and OSF 1 (alpha).
 
@@ -174,13 +166,6 @@ gap> RecvMsg( 2 ); # No value for last SendMsg() command
 "<no_return_val>"
 gap> RecvMsg( 1 );
 45
-gap> myfnc := function() return 42; end;;
-gap> # Use PrintToString() to define myfnc on all slave processes
-gap> BroadcastMsg( PrintToString( "myfnc := ", myfnc ) );
-gap> SendRecvMsg( "myfnc()", 1 );
-42
-gap> FlushAllMsgs(); # There are no messages pending.
-0
 gap> # Execute analogue of GAP's List() in parallel on slaves.
 gap> squares := ParList( [1..100], x->x^2 );
 [ 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 
@@ -195,6 +180,22 @@ gap> squares := ParList( [1..100], x->x^2 );
 gap> # Ensure problem environment is read into master and slaves.
 gap> # Try one of your GAP program files instead.
 gap> ParRead( "/home/gene/myprogram.g");
+
+gap> # Send a large, local (non-remote) data structure to a slave
+gap> Concatenation("x := ", PrintToString([1..10]*2));            
+"x := [ 2, 4, 6, 8, 10, 12, 14, 16, 18, 20 ]\n\000"
+gap> SendMsg( Concatenation("x := ", PrintToString([1..10]*2)) ); 
+gap> RecvMsg();                                                  
+[ 2, 4, 6, 8, 10, 12, 14, 16, 18, 20 ]
+
+gap> # Send a local (non-remote) function to a slave
+gap> myfnc := function() return 42; end;;
+gap> # Use PrintToString() to define myfnc on all slave processes
+gap> BroadcastMsg( PrintToString( "myfnc := ", myfnc ) );
+gap> SendRecvMsg( "myfnc()", 1 );
+42
+gap> FlushAllMsgs(); # There are no messages pending.
+0
 
 
 The ParGAP package was designed and written by:
@@ -256,34 +257,33 @@ If you use ParGAP to solve a problem then please send a  short  email  to
 4.  Were the remote slave processes able to start up? If so,  could  they
     connect back to  the  master?  To  test  connectivity  problems,  try
     manually starting a remote slave by executing a line in  the  script.
-    Try a simple `rsh remote_hostname'  to  see  if  the  issue  is  with
+    Try a simple `ssh remote_hostname'  to  see  if  the  issue  is  with
     security.
 
 5.  If  the  previous  step  failed  due  to  security  issues,  such  as
-    requesting a password, you have several options. `man rshd' tells you
-    the security model at your site (or possibly `man  ssh'  if  you  use
-    that). Then read "Problems with Passwords (Getting Around  Security)"
-    in the ParGAP manual in the `doc' directory.
+    requesting a password, you have several options. `man ssh'  tells you
+    the security model at your site.  Then read "Problems  with Passwords
+    (Getting Around  Security)" in the ParGAP manual in the `doc' directory.
 
 6.  Is the `procgroup' file in your current directory set correctly?
     Test it.  If you are calling it on a remote host, manually type:
 
-       rsh <HOSTNAME> <ParGAP>
+       ssh <HOSTNAME> <ParGAP>
 
     where <HOSTNAME> and <ParGAP> appear exactly as in `procgroup', e.g.
     
-       rsh denali.ccs.neu.edu /usr/local/gap4r3/bin/pargap.sh
+       ssh denali.ccs.neu.edu /usr/local/gap4r3/bin/pargap.sh
 
     In some cases, `exec' is used to save process overhead. Also try:
 
-       rsh <HOSTNAME> exec <ParGAP>
+       ssh <HOSTNAME> exec <ParGAP>
 
     If you plan to call it on localhost, try just:   <ParGAP>
 
     Note that if not all the slave processes succeed in connecting
     to the master, then ParGAP writes out a file:
 
-       /tmp/pargapmpi--rsh.$$
+       /tmp/pargapmpi-ssh.$$
        
     where $$ is replaced by the the process id of the ParGAP process.
 
@@ -312,7 +312,7 @@ If you use ParGAP to solve a problem then please send a  short  email  to
     `ssh' specifies `KeepAlive yes' by default, but setting `KeepAlive no'
     might get you through some transient lapses in  connectivity  due  to
     high congestion. 
-    You may also want to experiment with: `setenv RSH "rsh -n"'
+    You may also want to experiment with: `setenv SSH "ssh -n"'
 
 11. Read the documentation for further possible problems.
 

@@ -135,7 +135,7 @@ static Obj  HdlrFunc2 (
   }
   l_i = t_2;
   
-  /* if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[i]) then */
+  /* if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[i] ) then */
   t_7 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
   CHECK_BOUND( t_7, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
   CHECK_INT_POS( l_i )
@@ -225,7 +225,7 @@ static Obj  HdlrFunc3 (
  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  l_hash = t_1;
  
- /* if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[hash]) then */
+ /* if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[hash] ) then */
  t_3 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
  CHECK_BOUND( t_3, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
  CHECK_INT_POS( l_hash )
@@ -455,7 +455,7 @@ static Obj  HdlrFunc5 (
   C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
   l_hash2 = t_2;
   
-  /* if IsBound( WITH_IMPS_FLAGS_CACHE[hash2]) then */
+  /* if IsBound( WITH_IMPS_FLAGS_CACHE[hash2] ) then */
   t_4 = GC_WITH__IMPS__FLAGS__CACHE;
   CHECK_BOUND( t_4, "WITH_IMPS_FLAGS_CACHE" )
   CHECK_INT_POS( l_hash2 )
@@ -723,7 +723,7 @@ static Obj  HdlrFunc6 (
   }
   l_i = t_2;
   
-  /* if IsBound( RANK_FILTERS[i]) then */
+  /* if IsBound( RANK_FILTERS[i] ) then */
   t_7 = GC_RANK__FILTERS;
   CHECK_BOUND( t_7, "RANK_FILTERS" )
   CHECK_INT_POS( l_i )
@@ -951,10 +951,10 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.filter1_g := "@(#)$Id: c_filt1.c,v 4.26 2010/02/23 18:03:59 gap Exp $"; */
+ /* Revision.filter1_g := "@(#)$Id: c_filt1.c,v 4.27 2011/01/20 14:21:51 jjm Exp $"; */
  t_1 = GC_Revision;
  CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 54, "@(#)$Id: c_filt1.c,v 4.26 2010/02/23 18:03:59 gap Exp $" )
+ C_NEW_STRING( t_2, 54, "@(#)$Id: c_filt1.c,v 4.27 2011/01/20 14:21:51 jjm Exp $" )
  ASS_REC( t_1, R_filter1__g, t_2 );
  
  /* HIDDEN_IMPS := [  ]; */
@@ -983,7 +983,7 @@ static Obj  HdlrFunc1 (
       local  i, flags;
       flags := FLAGS_FILTER( filter );
       for i  in [ 1, 3 .. LEN_LIST( WITH_HIDDEN_IMPS_FLAGS_CACHE ) - 1 ]  do
-          if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[i])  then
+          if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[i] )  then
               if IS_SUBSET_FLAGS( WITH_HIDDEN_IMPS_FLAGS_CACHE[i + 1], flags )  then
                   Unbind( WITH_HIDDEN_IMPS_FLAGS_CACHE[i] );
                   Unbind( WITH_HIDDEN_IMPS_FLAGS_CACHE[i + 1] );
@@ -997,7 +997,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(32);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(29);
  ENDLINE_BODY(t_4) = INTOBJ_INT(41);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
@@ -1007,7 +1007,7 @@ static Obj  HdlrFunc1 (
  /* BIND_GLOBAL( "WITH_HIDDEN_IMPS_FLAGS", function ( flags )
       local  with, changed, imp, hash;
       hash := 2 * (HASH_FLAGS( flags ) mod 1009) + 1;
-      if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[hash])  then
+      if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[hash] )  then
           if IS_IDENTICAL_OBJ( WITH_HIDDEN_IMPS_FLAGS_CACHE[hash], flags )  then
               WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT := WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT + 1;
               return WITH_HIDDEN_IMPS_FLAGS_CACHE[hash + 1];
@@ -1034,7 +1034,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(47);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(44);
  ENDLINE_BODY(t_4) = INTOBJ_INT(74);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
@@ -1072,7 +1072,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(90);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(89);
  ENDLINE_BODY(t_4) = INTOBJ_INT(91);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
@@ -1084,7 +1084,7 @@ static Obj  HdlrFunc1 (
       hash := HASH_FLAGS( flags ) mod 11001;
       for i  in [ 0 .. 3 ]  do
           hash2 := 2 * ((hash + 31 * i) mod 11001) + 1;
-          if IsBound( WITH_IMPS_FLAGS_CACHE[hash2])  then
+          if IsBound( WITH_IMPS_FLAGS_CACHE[hash2] )  then
               if IS_IDENTICAL_OBJ( WITH_IMPS_FLAGS_CACHE[hash2], flags )  then
                   WITH_IMPS_FLAGS_CACHE_HIT := WITH_IMPS_FLAGS_CACHE_HIT + 1;
                   return WITH_IMPS_FLAGS_CACHE[hash2 + 1];
@@ -1119,7 +1119,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(97);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(94);
  ENDLINE_BODY(t_4) = INTOBJ_INT(133);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
@@ -1140,7 +1140,7 @@ static Obj  HdlrFunc1 (
           flags := filter;
       fi;
       for i  in TRUES_FLAGS( WITH_HIDDEN_IMPS_FLAGS( flags ) )  do
-          if IsBound( RANK_FILTERS[i])  then
+          if IsBound( RANK_FILTERS[i] )  then
               rank := rank + RANK_FILTERS[i];
           else
               rank := rank + 1;
@@ -1153,7 +1153,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(150);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(147);
  ENDLINE_BODY(t_4) = INTOBJ_INT(164);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
@@ -1188,7 +1188,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(172);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(169);
  ENDLINE_BODY(t_4) = INTOBJ_INT(183);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
@@ -1219,7 +1219,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(189);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(186);
  ENDLINE_BODY(t_4) = INTOBJ_INT(201);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;

@@ -2,14 +2,14 @@
 ##
 #W  oprt.gd                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: oprt.gd,v 4.110 2010/02/23 15:13:20 gap Exp $
+#H  @(#)$Id: oprt.gd,v 4.116 2011/06/10 17:06:58 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.oprt_gd :=
-    "@(#)$Id: oprt.gd,v 4.110 2010/02/23 15:13:20 gap Exp $";
+    "@(#)$Id: oprt.gd,v 4.116 2011/06/10 17:06:58 gap Exp $";
 
 DeclareInfoClass( "InfoAction" );
 DeclareSynonym( "InfoOperation",InfoAction );
@@ -159,7 +159,8 @@ DeclareAttribute( "ActingDomain", IsExternalSet );
 ##  gap> FunctionAction(e)=OnRight;
 ##  true
 ##  gap> HomeEnumerator(e);
-##  <enumerator of perm group>
+##  [ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2), (1,3,4),
+##    (1,3)(2,4), (1,4,2), (1,4,3), (1,4)(2,3) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -892,7 +893,8 @@ end );
 ##  <P/>
 ##  By default the homomorphism returned by
 ##  <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>
-##  is not necessarily surjective (its <Ref Func="Range"/> value is the full
+##  is not necessarily surjective (its 
+##  <Ref Func="Range" Label="of a general mapping"/> value is the full
 ##  symmetric group) to avoid unnecessary computation of the image.
 ##  If the optional string argument <C>"surjective"</C> is given,
 ##  a surjective homomorphism is created.
@@ -1010,15 +1012,15 @@ DeclareGlobalFunction("DoSparseActionHomomorphism");
 
 #############################################################################
 ##
-#O  SparseActionHomomorphism( <G>, <Omega>, <start> [,<gens>,<acts>] [,<act>] )
-#O  SortedSparseActionHomomorphism(<G>,<Omega>,<start>[,<gens>,<acts>] [,<act>])
+#O  SparseActionHomomorphism( <G>, <start> [,<gens>,<acts>] [,<act>] )
+#O  SortedSparseActionHomomorphism(<G>,<start>[,<gens>,<acts>] [,<act>])
 ##
 ##  <#GAPDoc Label="SparseActionHomomorphism">
 ##  <ManSection>
 ##  <Oper Name="SparseActionHomomorphism"
-##   Arg='G, Omega, start[, gens, acts][, act]'/>
+##   Arg='G, start[, gens, acts][, act]'/>
 ##  <Oper Name="SortedSparseActionHomomorphism"
-##   Arg='G, Omega, start[, gens, acts][, act]'/>
+##   Arg='G, start[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  <Ref Func="SparseActionHomomorphism"/> computes the action homomorphism
@@ -1029,9 +1031,9 @@ DeclareGlobalFunction("DoSparseActionHomomorphism");
 ##  In the <Ref Func="Orbit"/> calls that are used to create <M>D</M>,
 ##  again the optional arguments given are entered.)
 ##  <P/>
-##  If <A>G</A> acts on a very large domain <A>Omega</A> not surjectively
+##  If <A>G</A> acts on a very large domain not surjectively
 ##  this may yield a permutation image of
-##  substantially smaller degree than by action on <A>Omega</A>.
+##  substantially smaller degree than by action on the whole domain.
 ##  <P/>
 ##  The operation <Ref Func="SparseActionHomomorphism"/> will only use
 ##  <Ref Func="\="/> comparisons of points in the orbit.
@@ -1099,7 +1101,7 @@ DeclareGlobalFunction( "ImageElmActionHomomorphism" );
 ##  Note that (for compatibility reasons to be able to get the
 ##  action homomorphism) this image group internally stores the action
 ##  homomorphism.
-##  If <A>G</A> or <A>Omega</A> are exteremly big, this can cause memory
+##  If <A>G</A> or <A>Omega</A> are extremely big, this can cause memory
 ##  problems. In this case compute only generator images and form the image
 ##  group yourself.
 ##  <P/>
@@ -1132,18 +1134,22 @@ DeclareGlobalFunction( "Action" );
 ##
 ##  <Description>
 ##  creates the external set for the action <A>act</A> of <A>G</A> on <A>Omega</A>.
-##  <A>Omega</A> can be either a proper set  or a domain which is represented as
-##  described in <Ref Sect="Domains"/> and <Ref Chap="Collections"/>.
+##  <A>Omega</A> can be either a proper set, or a domain which is represented as
+##  described in <Ref Sect="Domains"/> and <Ref Chap="Collections"/>, or (to use
+##  less memory but with a slower performance) an enumerator 
+##  (see <Ref Attr="Enumerator"/> ) of this domain.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3),(2,3,4));;
 ##  gap> e:=ExternalSet(g,[1..4]);
 ##  <xset:[ 1, 2, 3, 4 ]>
 ##  gap> e:=ExternalSet(g,g,OnRight);
-##  <xset:<enumerator of perm group>>
+##  <xset:[ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2), (1,3,4),
+##    (1,3)(2,4), (1,4,2), (1,4,3), (1,4)(2,3) ]>
 ##  gap> Orbits(e);
 ##  [ [ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,4,2), (1,2,3), 
 ##        (1,3,4), (2,3,4), (1,3,2), (1,4,3), (1,2,4) ] ]
 ##  ]]></Example>
+##  
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2104,8 +2110,8 @@ DeclareOperation( "RepresentativeActionOp",
 ##  gap> Stabilizer(g,[1,2],OnTuples);
 ##  Group(())
 ##  gap> OrbitStabilizer(g,[1,2],OnSets);
-##  rec( stabilizer := Group([ (1,2)(3,4) ]), 
-##    orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], [ 2, 4 ] ] )
+##  rec( orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], [ 2, 4 ] ], 
+##    stabilizer := Group([ (1,2)(3,4) ]) )
 ##  ]]></Example>
 ##  <P/>
 ##  (See Section&nbsp;<Ref Sect="Basic Actions"/>
@@ -2243,14 +2249,14 @@ DeclareGlobalFunction( "StabilizerOfBlockNC" );
 ##      [ <an immutable 2x2 matrix over GF2>, <an immutable 2x2 matrix over GF2> ]
 ##      , MappingByFunction( my_group, ( GF(2)^
 ##      2 ), function( e ) ... end, function( r ) ... end ), 
-##    Pcgs([ (2,8,3,9)(4,10,5,11), (1,6,12,7)(4,10,5,11) ]) ]
+##    Pcgs([ (2,9,3,8)(4,11,5,10), (1,6,12,7)(4,10,5,11) ]) ]
 ##  gap> mat:=Image(a[1],g);
 ##  Group([ <an immutable 2x2 matrix over GF2>, 
 ##    <an immutable 2x2 matrix over GF2> ])
 ##  gap> Size(mat);
 ##  3
 ##  gap> e:=PreImagesRepresentative(a[2],[Z(2),0*Z(2)]);
-##  (2,8,3,9)(4,10,5,11)
+##  (2,9,3,8)(4,11,5,10)
 ##  gap> e in c[3];e in c[4];
 ##  true
 ##  false

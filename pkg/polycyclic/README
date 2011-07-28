@@ -36,7 +36,7 @@ The features of this package include
 
         - computation of various subgroups of finite index
 
-        - computation of teh Schur multiplicator, the non-abelian
+        - computation of the Schur multiplicator, the non-abelian
           exterior square and the non-abelian tenor square
 
 There is a manual in the subdirectory 'doc' written in plain TeX which
@@ -49,11 +49,12 @@ an email.
 
 Bettina Eick  <beick@tu-bs.de>
 Werner Nickel <nickel@mathematik.tu-darmstadt.de>
+Max Horn      <mhorn@tu-bs.de>
 
 You  can also reach  us by sending an email   to the general GAP email
 address for problems with GAP:
 
-                     gap-trouble@dcs.st-and.ac.uk
+                     support@gap-system.org
 
 Contents
 --------
@@ -117,7 +118,7 @@ also the GAP 4 manual about the installation of GAP packages.
 
     sh > gap4
     [... startup messages ...]
-    gap> RequirePackage("polycyclic");
+    gap> LoadPackage("polycyclic");
     true
     gap>     
 
@@ -145,7 +146,7 @@ also the GAP 4 manual about the installation of GAP packages.
 
     sh > gap4 -l ';mygap/'
     [... startup messages ...]
-    gap> RequirePackage("polycyclic");
+    gap> LoadPackage("polycyclic");
     true
     gap>     
 

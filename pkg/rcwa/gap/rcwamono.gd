@@ -2,15 +2,12 @@
 ##
 #W  rcwamono.gd                GAP4 Package `RCWA'                Stefan Kohl
 ##
-#H  @(#)$Id: rcwamono.gd,v 1.5 2008/07/14 15:58:18 stefan Exp $
-##
 ##  This file contains declarations of functions, operations etc. for
 ##  computing with rcwa monoids.
 ##
 ##  See the definitions given in the file rcwamap.gd.
 ##
-Revision.rcwamono_gd :=
-  "@(#)$Id: rcwamono.gd,v 1.5 2008/07/14 15:58:18 stefan Exp $";
+#############################################################################
 
 #############################################################################
 ##
@@ -54,18 +51,44 @@ DeclareGlobalFunction( "Rcwa" );
 
 #############################################################################
 ##
-#P  IsNaturalRcwa( <G> ) . . . . . . . . . . . . . . . . . . . . .  Rcwa( R )
+#P  IsNaturalRcwa( <M> ) . . . . . . . . . . . . . . . . . . . . .  Rcwa( R )
 ##
 DeclareProperty( "IsNaturalRcwa", IsRcwaMonoid );
 
 #############################################################################
 ##
-#A  ModulusOfRcwaMonoid( <G> ) . . . . . . . . modulus of the rcwa monoid <M>
+#A  ModulusOfRcwaMonoid( <M> ) . . . . . . . . modulus of the rcwa monoid <M>
 ##
 ##  We define the *modulus* of an rcwa monoid by the lcm of the moduli of its
 ##  elements in case such an lcm exists, and by 0 otherwise. 
 ##
 DeclareAttribute( "ModulusOfRcwaMonoid", IsRcwaMonoid );
+
+#############################################################################
+##
+#O  Ball( <M>, <f>, <r> )    ball of radius <r> around the element <f> of <M>
+#O  Ball( <M>, <p>, <r>, <act> )   "    the point <p> under the action of <M>
+#O  RestrictedBall( <M>, <f>, <r> )'restricted' ball of radius <r> around <f>
+##
+##  The first operation returns the ball of radius <r> around the element <f>
+##  of <M>.
+##
+##  The second operation returns the ball of radius <r> around the point <p>
+##  under the action of <M>.
+##
+##  The third operation does the same as the first except that it stops where
+##  extending the ball would increase the moduli of the elements encountered.
+##
+##  All balls are understood w.r.t. the stored generators of the monoid <M>,
+##  respectively w.r.t. the stored generators and their inverses if <M> is
+##  actually a group.
+##
+##  An option `Spheres' is recognized. If set, the returned ball is splitted
+##  into a list of spheres.
+##
+DeclareOperation( "Ball", [ IsMonoid, IsObject, IsInt ] );
+DeclareOperation( "Ball", [ IsMonoid, IsObject, IsInt, IsFunction ] );
+DeclareOperation( "RestrictedBall", [ IsMonoid, IsObject, IsInt ] );
 
 #############################################################################
 ##

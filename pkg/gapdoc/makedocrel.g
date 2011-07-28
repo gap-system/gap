@@ -2,7 +2,7 @@
 ##
 #A  makedocrel.g                          GAPDoc                 Frank Lübeck
 ##  
-#H  @(#)$Id: makedocrel.g,v 1.10 2007/06/01 10:08:38 gap Exp $
+#H  @(#)$Id: makedocrel.g,v 1.11 2010/10/28 14:18:09 gap Exp $
 ##  
 ##  Rebuild the  whole documentation, provided sufficiently  good (pdf)LaTeX
 ##  is  available.   This  version  produces  relative   paths  to  external
@@ -17,7 +17,7 @@ maintree := MakeGAPDocDoc("doc", "gapdoc", ["../lib/BibTeX.gi",
 "../lib/GAPDoc.gi", "../lib/GAPDoc2LaTeX.gi", "../lib/GAPDoc2Text.gi", 
 "../lib/PrintUtil.gi", "../lib/Text.gi", "../lib/XMLParser.gi", 
 "../lib/Examples.gi",
-"../lib/XMLParser.gd", "../lib/Make.g" ], "GAPDoc", relpath);
+"../lib/XMLParser.gd", "../lib/Make.g" ], "GAPDoc", relpath, "MathJax");
 
 # now load it (for cross reference in example)
 Print("\n========== converting example document for GAPDoc ================\n");
@@ -26,11 +26,13 @@ HELP_ADD_BOOK("GAPDoc", "Package for Preparing GAP Documentation",
 
 # example
 exampletree := 
-      MakeGAPDocDoc("example", "example", [], "GAPDocExample", relpath);
+      MakeGAPDocDoc("example", "example", [], "GAPDocExample", relpath,
+      "MathJax");
 
 # from first chapter
 Print("\n========== converting small example from introduction ============\n");
-3kp1tree := MakeGAPDocDoc("3k+1", "3k+1", [], "ThreeKPlusOne", relpath);
+3kp1tree := MakeGAPDocDoc("3k+1", "3k+1", [], "ThreeKPlusOne", relpath,
+            "MathJax");
 
 # .lab files for references from main manual
 GAPDocManualLab("GAPDoc");

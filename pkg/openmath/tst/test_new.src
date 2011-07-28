@@ -92,7 +92,8 @@ CloseStream( stream );
 g := SymmetricGroup(5);
 t := "";
 s := OutputTextString(t, true);
-OMPutObject(s, g);
+w := OpenMathXMLWriter( s );
+OMPutObject(w, g);
 CloseStream(s);
 
 s := InputTextString(t);
@@ -109,9 +110,10 @@ OMPrint(g);
 ## OutputTextFile, InputTextFile
 
 s := OutputTextFile( Filename( OMDirectoryTemporary, "test" ), false );;
-OMPutObject( s, 123 );
-OMPutObject( s, false );
-OMPutObject( s, "OutputTextFile, InputTextFile" );
+w := OpenMathXMLWriter( s );;
+OMPutObject( w, 123 );
+OMPutObject( w, false );
+OMPutObject( w, "OutputTextFile, InputTextFile" );
 CloseStream( s );
 
 s := InputTextFile( Filename( OMDirectoryTemporary, "test" ) );;
@@ -133,9 +135,10 @@ RemoveFile( Filename( OMDirectoryTemporary, "test" ) );
 test_string := "";
 
 s := OutputTextString( test_string, false );
-OMPutObject( s, 123 );
-OMPutObject( s, false );
-OMPutObject( s, "OutputTextString, InputTextString" );
+w := OpenMathXMLWriter( s );;
+OMPutObject( w, 123 );
+OMPutObject( w, false );
+OMPutObject( w, "OutputTextString, InputTextString" );
 CloseStream( s );
 
 test_string;
@@ -149,9 +152,10 @@ CloseStream( s );
 ## OutputTextNone
 
 s := OutputTextNone(  );
-OMPutObject( s, 123 );
-OMPutObject( s, false );
-OMPutObject( s, "OutputTextNone" );
+w := OpenMathXMLWriter( s );;
+OMPutObject( w, 123 );
+OMPutObject( w, false );
+OMPutObject( w, "OutputTextNone" );
 CloseStream( s );
 
 ## InputOutputLocalProcess (doesn't work with Gap 4.2 or earlier)
@@ -160,10 +164,11 @@ CloseStream( s );
 
 tpipe_exec := Filename( DirectoriesPackageLibrary( "openmath", "OMCv1.3c/src" ), "tpipe" );;
 s := InputOutputLocalProcess( OMDirectoryTemporary, tpipe_exec, [ "-ux", "-", "-", ] );
+w := OpenMathXMLWriter( s );;
 
-OMPutObject( s, 123 );
-OMPutObject( s, false );
-OMPutObject( s, "InputOutputLocalProcess, XML encoding" );
+OMPutObject( w, 123 );
+OMPutObject( w, false );
+OMPutObject( w, "InputOutputLocalProcess, XML encoding" );
 
 OMGetObject( s );
 OMGetObject( s );
@@ -174,10 +179,11 @@ CloseStream( s );
 
 tpipe_exec := Filename( DirectoriesPackageLibrary( "openmath", "OMCv1.3c/src" ), "tpipe" );;
 s := InputOutputLocalProcess( OMDirectoryTemporary, tpipe_exec, [ "-ub", "-", "-", ] );
+w := OpenMathXMLWriter( s );;
 
-OMPutObject( s, 123 );
-OMPutObject( s, false );
-OMPutObject( s, "InputOutputLocalProcess, binary encoding" );
+OMPutObject( w, 123 );
+OMPutObject( w, false );
+OMPutObject( w, "InputOutputLocalProcess, binary encoding" );
 
 OMGetObject( s );
 OMGetObject( s );

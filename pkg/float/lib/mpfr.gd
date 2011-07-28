@@ -2,14 +2,14 @@
 ##
 #W  mpfr.gd                       GAP library               Laurent Bartholdi
 ##
-#H  @(#)$Id: mpfr.gd,v 1.1 2008/06/14 15:45:40 gap Exp $
+#H  @(#)$Id: mpfr.gd,v 1.4 2011/04/11 13:17:21 gap Exp $
 ##
 #Y  Copyright (C) 2008 Laurent Bartholdi
 ##
 ##  This file deals with floats
 ##
 Revision.mpfr_gd :=
-  "@(#)$Id: mpfr.gd,v 1.1 2008/06/14 15:45:40 gap Exp $";
+  "@(#)$Id: mpfr.gd,v 1.4 2011/04/11 13:17:21 gap Exp $";
 
 #############################################################################
 ##
@@ -29,13 +29,9 @@ Revision.mpfr_gd :=
 ## </ManSection>
 ## <#/GAPDoc>
 ##
-DeclareCategory("IsMPFRFloat", IsFloat);
+DeclareRepresentation("IsMPFRFloat", IsFloat and IsDataObjectRep, []);
 
-BIND_GLOBAL("MPFRFloatsFamily", 
-        NewFamily("MPFRFloatsFamily", IsMPFRFloat));
-
-BIND_GLOBAL("TYPE_MPFR", 
-        NewType(MPFRFloatsFamily, IsMPFRFloat and IsInternalRep));
+BIND_GLOBAL("TYPE_MPFR", NewType(FloatsFamily, IsMPFRFloat));
 #############################################################################
 
 #############################################################################

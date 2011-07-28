@@ -2,7 +2,7 @@
 ##
 #W  polyrat.gi                 GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id: polyrat.gi,v 4.46 2010/08/20 03:34:33 gap Exp $
+#H  @(#)$Id: polyrat.gi,v 4.50 2011/06/10 17:06:30 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains functions for polynomials over the rationals
 ##
 Revision.polyrat_gi:=
-  "@(#)$Id: polyrat.gi,v 4.46 2010/08/20 03:34:33 gap Exp $";
+  "@(#)$Id: polyrat.gi,v 4.50 2011/06/10 17:06:30 gap Exp $";
 
 #############################################################################
 ##
@@ -531,8 +531,9 @@ end);
 #F  RPGcdModPrime(<R>,<f>,<g>,<p>,<a>,<brci>)  . . gcd mod <p>
 ##
 BindGlobal("RPGcdModPrime",function(R,f,g,p,a,brci)
-local gcd, u, v, w, val, r, s;
+local fam,gcd, u, v, w, val, r, s;
   
+  fam:=CoefficientsFamily(FamilyObj(f));
   f:=CoefficientsOfLaurentPolynomial(f);
   g:=CoefficientsOfLaurentPolynomial(g);
   # compute in the finite field F_<p>
@@ -558,7 +559,7 @@ local gcd, u, v, w, val, r, s;
   ReduceCoeffsMod(gcd,p);
 
   # and return the polynomial
-  return LaurentPolynomialByCoefficients(CoefficientsFamily(FamilyObj(f)),gcd,val,brci);
+  return LaurentPolynomialByCoefficients(fam,gcd,val,brci);
 
 end);
 
@@ -1139,7 +1140,7 @@ end);
 ##
 #F  TryCombinations(<f>,...)  . . . . . . . . . . . . . . . .  try factors
 ##
-InstallGlobalFunction(TryCombinations,function(f,lc,l,p,t,bounds,opt,split)
+InstallGlobalFunction(TryCombinations,function(f,lc,l,p,t,bounds,opt,split,useonefacbound)
 local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
      degf, good, act, da, prd, cof, q, combi,mind,binoli,alldegs;
 
@@ -1169,9 +1170,16 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
   repeat
 
   # factors of larger than half remaining degree we will find as
-  # final cofactor
-  degf:=DegreeOfLaurentPolynomial(f);
-  degs:=Filtered(alldegs,i -> 2*i<=degf);
+  # final cofactor. This cannot be used if we factor only using the one
+  # factor bound!
+
+  if not useonefacbound then
+    degf:=DegreeOfLaurentPolynomial(f);
+    degs:=Filtered(alldegs,i -> 2*i<=degf);
+  else
+    degs:=alldegs;
+  fi;
+
   if IsBound(opt.onlydegs) then
     degs:=Intersection(degs,opt.onlydegs);
     Info(InfoPoly,3,"degs=",degs);
@@ -1205,36 +1213,36 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
     # fix mind to make sure,we don't erroneously eliminate the factor
 	mind:=0;
     else
-	Info(InfoPoly,2,lco," combinations");
-	i:=1;
-	while good and i<=lco  do
+      Info(InfoPoly,2,lco," combinations");
+      i:=1;
+      while good and i<=lco  do
 
-	  # try combination number i
-	  # combi:=CombinationNr(cnew,step,i);
+	# try combination number i
+	# combi:=CombinationNr(cnew,step,i);
 
-	  q:=i;
-	  d:=Length(cnew); # the remaining Length
-	  o:=0;
-	  combi:=[];
-	  for ii in [step-1,step-2..0] do
-	  j:=1;
-	  b:=binoli[d][ii+1];
-	  while q>b do
-	    q:=q-b;
-	    # compute b:=Binomial(d-(j+1),ii);
-	    b:=b*(d-j-ii)/(d-j);
-	    j:=j+1;
-	  od;
-	  o:=j+o;
-	  d:=d-j;
-	  Add(combi,cnew[o]);
-	  od;
+	q:=i;
+	d:=Length(cnew); # the remaining Length
+	o:=0;
+	combi:=[];
+	for ii in [step-1,step-2..0] do
+	j:=1;
+	b:=binoli[d][ii+1];
+	while q>b do
+	  q:=q-b;
+	  # compute b:=Binomial(d-(j+1),ii);
+	  b:=b*(d-j-ii)/(d-j);
+	  j:=j+1;
+	od;
+	o:=j+o;
+	d:=d-j;
+	Add(combi,cnew[o]);
+	od;
 
-	  # check whether this yields a minimal degree
-	  d:=Sum(deli{combi});
-	  if d<mind then
+	# check whether this yields a minimal degree
+	d:=Sum(deli{combi});
+	if d<mind then
 	  mind:=d;
-	  fi;
+	fi;
 
       if d in da then
 	  AddSet(combi,act); # add the 'always' factor
@@ -1267,10 +1275,10 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
 	    prd:=CoefficientsOfUnivariatePolynomial(prd);
 	    cof:=[];
 	    for j  in [ 1 .. Length(prd) ]  do
-		  cof[j]:=(lc*prd[j]) mod p;
-		  if p2 < cof[j]  then
-		    cof[j]:=cof[j] - p;
-		  fi;
+	      cof[j]:=(lc*prd[j]) mod p;
+	      if p2 < cof[j]  then
+		cof[j]:=cof[j] - p;
+	      fi;
 	    od;
 
 	    # make the product primitive
@@ -1287,28 +1295,28 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
 	    if Length(combi)=1 or split  then
 		q:=0;
 	    else
-		q:=2*lc*OneFactorBound(prd);
-		if q <= p  then
-		  Info(InfoPoly,2,"proven irreducible by 'OneFactorBound'");
-		fi;
+	      q:=2*lc*OneFactorBound(prd);
+	      if q <= p  then
+		Info(InfoPoly,2,"proven irreducible by 'OneFactorBound'");
+	      fi;
 	    fi;
 
 	    # for some reason,we know,the factor is irred.
 	    if q <= p  then
-		Append(res.irreducibles,combi);
-		Add(res.irrFactors,prd);
+	      Append(res.irreducibles,combi);
+	      Add(res.irrFactors,prd);
 
-		if IsBound(opt.stopdegs) 
-		 and DegreeOfLaurentPolynomial(prd) in opt.stopdegs then
-		  Info(InfoPoly,2,"hit stopdegree");
-		  Add(res.redFactors,f);
-		  res.stop:=true;
-		  return res;
-		fi;
+	      if IsBound(opt.stopdegs) 
+		and DegreeOfLaurentPolynomial(prd) in opt.stopdegs then
+		Info(InfoPoly,2,"hit stopdegree");
+		Add(res.redFactors,f);
+		res.stop:=true;
+		return res;
+	      fi;
 
 	    else
-		Add(res.reducibles,combi);
-		Add(res.redFactors,prd);
+	      Add(res.reducibles,combi);
+	      Add(res.redFactors,prd);
 	    fi;
 	    SubtractSet(res.remaining,combi);
 	    good:=false;
@@ -1458,10 +1466,14 @@ BindGlobal("RPSquareHensel",function(R,f,t,opt)
       od;
 
       # try to find true factors
-      if max <= q or ofb < q  then 
+      if max <= q then 
         Info(InfoPoly,2,"searching for factors: ",Runtime());
-        fcn:=TryCombinations(f,lc,l,q,t,bounds,opt,false);
-        Info(InfoPoly,2,"finishing search:    ",Runtime());
+        fcn:=TryCombinations(f,lc,l,q,t,bounds,opt,false,false);
+      elif ofb < q  then 
+        Info(InfoPoly,2,"searching for factors: ",Runtime());
+        fcn:=TryCombinations(f,lc,l,q,t,bounds,opt,false,true);
+
+        #Info(InfoPoly,2,"finishing search:    ",Runtime());
       else
         fcn:=rec(irreducibles:=[], reducibles:=[]);
       fi;
@@ -1488,8 +1500,8 @@ BindGlobal("RPSquareHensel",function(R,f,t,opt)
         Info(InfoPoly,2,"new one factor bound = ",ofb);
 
         # degree arguments or OFB arguments prove f irreducible
-        if ForAll(t.degrees,i->i=0 or 2*i>=DegreeOfLaurentPolynomial(f))
-	   or ofb<q  then
+        if (ForAll(t.degrees,i->i=0 or 2*i>=DegreeOfLaurentPolynomial(f))
+	   or ofb<q) and DegreeOfLaurentPolynomial(f)>0 then
           Add(fcn.irrFactors,f);
           Add(res.irrFactors,f);
           f:=f^0;
@@ -1704,7 +1716,7 @@ local t, h, fac, g, tmp;
 		   t,
 		   h.bounds,
 		   opt,
-		   true);
+		   true,false);
     Append(fac,tmp.irrFactors);
     Append(fac,tmp.redFactors);
   else
@@ -1826,6 +1838,10 @@ local   fc,ind, v, g, q, s, r, x,shift;
   # sort the factors
   Append(s,List([1..v],f->x));
   Sort(s);
+
+  if not IsBound(opt.stopdegs) and Sum(s,DegreeOfLaurentPolynomial)<>DegreeOfLaurentPolynomial(f)+v then
+    Error("degree discrepancy!");
+  fi;
 
   # return the (primitive) factors
   return s;

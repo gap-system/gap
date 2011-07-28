@@ -2,7 +2,7 @@
 ##
 #W frelement.gi                                             Laurent Bartholdi
 ##
-#H   @(#)$Id: frelement.gi,v 1.48 2009/07/07 20:37:07 gap Exp $
+#H   @(#)$Id: frelement.gi,v 1.59 2011/04/04 19:52:34 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -25,19 +25,43 @@ InstallMethod(InitialState, "(FR) for an FR element",
         [IsFRElement and IsFRElementStdRep],
         E->E![2]);
 
+InstallMethod(SetUnderlyingMealyElement, "(FR) for two FR elements",
+        [IsFRElement and IsFRElementStdRep,IsFRElement],
+        function(E,M)
+    E![3] := M;
+    SetFilterObj(E,HasUnderlyingMealyElement);
+end);    
+
+InstallMethod(UnderlyingMealyElement, "(FR) for an FR element",
+        [IsFRElement and IsFRElementStdRep],
+        function(E)
+    E![3] := AsMealyElement(E);
+    SetFilterObj(E,HasUnderlyingMealyElement);
+    return E![3];
+end);
+
+InstallMethod(UnderlyingMealyElement, "(FR) for a Mealy-FR element",
+        [IsFRElement and IsFRElementStdRep and HasUnderlyingMealyElement],
+        function(E)
+    return E![3];
+end);
+
 InstallMethod(FREFamily, "(FR) for an alphabet",
         [IsListOrCollection],
         d -> FREFamily(FRMFamily(d)));
 
-InstallMethod(FREFamily, "(FR) for an FR family",
+InstallMethod(FREFamily, "(FR) for an FR machine family",
         [IsFamily],
         function(fam)
     local i, f;
     for i in FR_FAMILIES do
-        if i[2]=fam then
+        if fam in i{[2..Length(i)]} then
             if IsBound(i[3]) then return i[3]; fi;
-            f := NewFamily(Concatenation("FRElement(",STRING@(i[1]),")"), IsFRElement);
+            f := NewFamily(Concatenation("FRElement(",STRING@(i[1]),")"), IsFRElement and IsAssociativeElement);
             f!.alphabet := i[1];
+	    if IsVectorSpace(i[1]) then # so LieObject works
+		SetCharacteristic(f,Characteristic(i[1]));
+	    fi;
             f!.standard := Size(i[1])<2^28 and i[1]=[1..Size(i[1])];
             if not f!.standard then
                 f!.a2n := x->Position(Enumerator(i[1]),x);
@@ -55,7 +79,7 @@ InstallMethod(FRMFamily, "(FR) for an FRE family",
         function(f)
     local i;
     for i in FR_FAMILIES do
-        if IsBound(i[3]) and i[3]=f then return i[2]; fi;
+        if f in i{[3..Length(i)]} then return i[2]; fi;
     od;
     return fail;
 end);
@@ -268,48 +292,70 @@ end);
 #M  String(FRElement)
 #M  Display(FRElement)
 ##
-InstallMethod(ViewObj, "(FR) for a FR element",
+InstallMethod(ViewString, "(FR) for a FR element",
         [IsFRElement and IsFRElementStdRep],
         function(E)
-    Print("<", Size(AlphabetOfFRObject(E)), "|");
-    if HasOne(E![1]!.free) and IsOne(E![2]) then
-        Print("identity ...>");
+    local s;
+    s := "";
+    APPEND@(s,"<", Size(AlphabetOfFRObject(E)), "|");
+    if HasOne(UnderlyingFRMachine(E)!.free) and IsOne(InitialState(E)) then
+        APPEND@(s,"identity ...");
     else
-        Print(E![2], ">");
+        APPEND@(s,InitialState(E));
     fi;
+    if HasUnderlyingMealyElement(E) then
+        APPEND@(s,"|",Length(StateSet(UnderlyingMealyElement(E))));
+    fi;
+    APPEND@(s,">");
+    return s;
 end);
 
 InstallMethod(String, "(FR) for a FR element",
         [IsFRElement and IsFRElementStdRep],
         function(E)
-    return String(E![2]);
+    return CONCAT@("FRElement(...,",InitialState(E),")");
 end);
 
-InstallMethod(Display, "(FR) for a FR element",
+InstallMethod(DisplayString, "(FR) for a FR element",
         [IsFRElement and IsFRElementStdRep],
         function(E)
-    Display(E![1]);
-    Print("Initial state: ",E![2],"\n");
+    return CONCAT@(DisplayString(UnderlyingFRMachine(E)),"Initial state: ",InitialState(E),"\n");
 end);
+
+INSTALLPRINTERS@(IsFRElement);
+#############################################################################
 
 #############################################################################
 ##
 #M One(FRElement)
 ##
+BindGlobal("ONE@", function(E)
+    local e;
+    e := FRElement(E![1],One(E![2]));
+    if HasUnderlyingMealyElement(E) then
+        SetUnderlyingMealyElement(e,One(UnderlyingMealyElement(E)));
+    fi;
+    return e;
+end);
+    
 InstallMethod(OneOp, "(FR) for a FR element",
         [IsGroupFRElement],
-        E->FRElement(E![1], One(E![2])));
+        ONE@);
 
 InstallMethod(OneOp, "(FR) for a FR element",
         [IsMonoidFRElement],
-        E->FRElement(E![1], One(E![2])));
+        ONE@);
 
 InstallMethod(OneOp, "(FR) for a FR element",
         [IsSemigroupFRElement],
         function(E)
-    local s, g;
+    local s, g, e;
     s := FreeSemigroup(1); g := GeneratorsOfSemigroup(s)[1];
-    return FRElementNC(FamilyObj(E),s,[List(AlphabetOfFRObject(E),x->g)],[AlphabetOfFRObject(E)],g);
+    e := FRElementNC(FamilyObj(E),s,[List(AlphabetOfFRObject(E),x->g)],[AlphabetOfFRObject(E)],g);
+    if HasUnderlyingMealyElement(E) then
+        SetUnderlyingMealyElement(e,One(UnderlyingMealyElement(E)));
+    fi;
+    return e;
 end);
 #############################################################################
 
@@ -334,10 +380,10 @@ end);
 InstallMethod(InverseOp, "(FR) for a group FR element",
         [IsFRElement and IsFRElementStdRep],
         function(E)
-    local s, trans, out, i, rws;
+    local s, trans, out, i, rws, e;
     if HasIsGroupFRMachine(E![1]) and IsGroupFRMachine(E![1]) then
         rws := NewFRMachineRWS(E![1]);
-        return FRElement(E![1], rws.letterunrep(rws.reduce(rws.letterrep(E![2]^-1))));
+        e := FRElement(E![1], rws.letterunrep(rws.reduce(rws.letterrep(E![2]^-1))));
     else
         s := INVOLVEDGENERATORS@(E);
         trans := [];
@@ -355,8 +401,12 @@ InstallMethod(InverseOp, "(FR) for a group FR element",
                 Add(out,E![1]!.output[i]);
             fi;
         od;
-        return FRElementNC(FamilyObj(E),E![1]!.free,trans,out,REVERSEDWORD@(E![2]));
+        e := FRElementNC(FamilyObj(E),E![1]!.free,trans,out,REVERSEDWORD@(E![2]));
     fi;
+    if HasUnderlyingMealyElement(E) then
+        SetUnderlyingMealyElement(e,InverseOp(UnderlyingMealyElement(E)));
+    fi;
+    return e;
 end);
 
 InstallMethod(IsInvertible, "(FR) for an FR element",
@@ -375,21 +425,26 @@ InstallMethod(\*, "(FR) for two FR elements",
         IsIdenticalObj,
         [IsFRElement and IsFRElementStdRep, IsFRElement and IsFRElementStdRep],
         function(left, right)
-    local M, N, rws;
+    local M, N, rws, e;
     if IsIdenticalObj(left![1],right![1]) then
         rws := NewFRMachineRWS(left![1]);
-        return FRElement(left![1], rws.letterunrep(rws.reduce(rws.letterrep(left![2]*right![2]))));
+        e := FRElement(left![1], rws.letterunrep(rws.reduce(rws.letterrep(left![2]*right![2]))));
+    else    
+        N := SubFRMachine(left![1],right![1]);
+        if N <> fail then
+            return FRElement(left![1],left![2]*right![2]^N);
+        fi;
+        N := SubFRMachine(right![1],left![1]);
+        if N <> fail then
+            return FRElement(right![1],left![2]^N*right![2]);
+        fi;
+        M := left![1] * right![1];
+        e := FRElement(M,left![2]^Correspondence(M)[1]*right![2]^Correspondence(M)[2]);
     fi;
-    N := SubFRMachine(left![1],right![1]);
-    if N <> fail then
-        return FRElement(left![1],left![2]*right![2]^N);
+    if HasUnderlyingMealyElement(left) and HasUnderlyingMealyElement(right) then
+        SetUnderlyingMealyElement(e,UnderlyingMealyElement(left)*UnderlyingMealyElement(right));
     fi;
-    N := SubFRMachine(right![1],left![1]);
-    if N <> fail then
-        return FRElement(right![1],left![2]^N*right![2]);
-    fi;
-    M := left![1] * right![1];
-    return FRElement(M,left![2]^Correspondence(M)[1]*right![2]^Correspondence(M)[2]);
+    return e;
 end);
 #############################################################################
 
@@ -431,7 +486,7 @@ InstallOtherMethod(\^, "(FR) for a periodic vertex and an FR element",
         Add(t,Output(M,s,i));
         s := Transition(M,s,i);
     od;
-    if not IsEmpty(l![2]) then
+    if l![2]<>[] then
         states := NewDictionary(s,true);
         while not KnowsDictionary(states,s) do
             AddDictionary(states,s,Length(t));
@@ -448,19 +503,28 @@ end);
 InstallOtherMethod(State, "(FR) for an FR element and an integer",
         [IsFRElement and IsFRElementStdRep, IsInt],
         function(E,x)
-    return FRElement(E![1], Transition(E![1],E![2],x));
+    local e;
+    e := FRElement(E![1], Transition(E![1],E![2],x));
+    if HasUnderlyingMealyElement(E) then
+        SetUnderlyingMealyElement(e,State(UnderlyingMealyElement(E),x));
+    fi;
+    return e;
 end);
 
 InstallOtherMethod(State, "(FR) for an FR element and a list",
         [IsFRElement and IsFRElementStdRep, IsList],
         function(E,x)
-    local pi, i, v;
+    local pi, i, v, e;
     pi := WreathRecursion(E![1]);
     v := E![2];
     for i in [1..Length(x)] do
         v := pi(v)[1][x[i]];
     od;
-    return FRElement(E![1], v);
+    e := FRElement(E![1], v);
+    if HasUnderlyingMealyElement(E) then
+        SetUnderlyingMealyElement(e,State(UnderlyingMealyElement(E),x));
+    fi;
+    return e;    
 end);
 #############################################################################
 
@@ -630,7 +694,7 @@ PORTRAIT@ := function(g,n,act)
         return List(AlphabetOfFRObject(g),a->PORTRAIT@(State(g,a),n-1,act));
     fi;
 end;
-MakeReadOnlyGlobal("PORTRAIT@");
+MAKE_READ_ONLY_GLOBAL("PORTRAIT@");
 
 InstallMethod(Portrait, "(FR) for an FR element an a maximal level",
         [IsFRElement, IsInt],
@@ -653,9 +717,15 @@ end);
 InstallMethod(DecompositionOfFRElement, "(FR) for an FR element",
         [IsFRElement and IsFRElementStdRep],
         function(E)
-    local d;
+    local d, e, i;
     d := WreathRecursion(E![1])(E![2]);
-    return [List(d[1],x->FRElement(E![1],x)),d[2]];
+    e := List(d[1],x->FRElement(E![1],x));
+    if HasUnderlyingMealyElement(E) then
+        for i in [1..Length(e)] do
+            SetUnderlyingMealyElement(e[i],State(UnderlyingMealyElement(E),i));
+        od;
+    fi;
+    return [e,d[2]];
 end);
 
 InstallMethod(DecompositionOfFRElement, "(FR) for an FR element and a level",
@@ -690,10 +760,10 @@ BindGlobal("GROUPISONE@", function(m,w)
     todo := NewFIFO([rws.letterrep(w)]);
     for t in todo do
         u := rws.reduce(rws.cyclicallyreduce(t));
-        if not IsEmpty(u) then
+        if u<>[] then
             d := rws.pi(u);
             if not ISONE@(d[2]) then return false; fi;
-            rws.addgprule(u);
+            rws.addgprule(u,true);
             Append(todo,d[1]);
         fi;
     od;
@@ -708,7 +778,7 @@ BindGlobal("MONOIDCOMPARE@", function(m,v,w)
 
     rws := NewFRMachineRWS(m);
     todo := NewFIFO([[rws.letterrep(v),rws.letterrep(w)]]);
-
+    
     for t in todo do
         t := List(t,rws.reduce);
         if t[1]<>t[2] then
@@ -716,12 +786,19 @@ BindGlobal("MONOIDCOMPARE@", function(m,v,w)
             if d[1][2]<>d[2][2] then
                 if d[1][2]<d[2][2] then return -1; else return 1; fi;
             fi;
-            rws.addsgrule(t[1],t[2]);
+            rws.addsgrule(t[1],t[2],false);
             Append(todo,TransposedMat(List(d,x->x[1])));
         fi;
     od;
-    rws.commit();
+    rws.commit(); # add these rules, since we now know we have equality
     return 0;
+end);
+
+InstallMethod(\=, "(FR) for two group FR-Mealy elements",
+        IsIdenticalObj,
+        [IsFRMealyElement and IsFRElementStdRep, IsFRMealyElement and IsFRElementStdRep], 2, # better than other methods
+        function(left, right)
+    return UnderlyingMealyElement(left)=UnderlyingMealyElement(right);
 end);
 
 InstallMethod(\=, "(FR) for two group FR elements",
@@ -729,7 +806,7 @@ InstallMethod(\=, "(FR) for two group FR elements",
         [IsGroupFRElement and IsFRElementStdRep, IsGroupFRElement and IsFRElementStdRep],
         function(left, right)
     local m;
-
+    
     if IsIdenticalObj(left![1], right![1]) then
         if left![2]=right![2] then
             return true;
@@ -747,7 +824,7 @@ InstallMethod(\=, "(FR) for two FR elements",
         [IsFRElement and IsFRElementStdRep, IsFRElement and IsFRElementStdRep],
         function(left, right)
     local m;
-
+    
     if IsIdenticalObj(left![1], right![1]) then
         if left![2]=right![2] then
             return true;
@@ -760,13 +837,18 @@ InstallMethod(\=, "(FR) for two FR elements",
 end);
 
 InstallMethod(IsOne, "(FR) for a group FR element",
-        [IsGroupFRElement],
+        [IsFRMealyElement and IsFRElementStdRep], 1, # better than next
+        function(E)
+    return IsOne(UnderlyingMealyElement(E));
+end);
+
+InstallMethod(IsOne, "(FR) for a group FR element",
+        [IsGroupFRElement and IsFRElementStdRep],
         function(E)
     if IsOne(E![2]) then
         return true;
-    else
-        return GROUPISONE@(E![1],E![2]);
     fi;
+    return GROUPISONE@(E![1],E![2]);
 end);
 
 InstallMethod(IsOne, "(FR) for a FR element",
@@ -793,6 +875,12 @@ end);
 ##
 #M \<(FRElement, FRElement)
 ##
+InstallMethod(\<, "(FR) for two FR elements",
+        IsIdenticalObj,
+        [IsFRMealyElement and IsFRElementStdRep, IsFRMealyElement and IsFRElementStdRep],
+        function(left, right)
+    return UnderlyingMealyElement(left)<UnderlyingMealyElement(right);
+end);
 
 InstallMethod(\<, "(FR) for two FR elements",
         IsIdenticalObj,
@@ -816,7 +904,7 @@ end);
 ##
 InstallMethod(AsGroupFRElement, "(FR) for a group FR element",
         [IsGroupFRElement],
-        E->E);
+        E->FRElement(E![1],E![2]));
 
 InstallMethod(AsGroupFRElement, "(FR) for a monoid FR element",
         [IsMonoidFRElement],
@@ -852,7 +940,7 @@ end);
 
 InstallMethod(AsMonoidFRElement, "(FR) for a monoid FR element",
         [IsMonoidFRElement],
-        E->E);
+        E->FRElement(E![1],E![2]));
 
 InstallMethod(AsMonoidFRElement, "(FR) for a semigroup FR element",
         [IsSemigroupFRElement],
@@ -880,7 +968,7 @@ end);
 
 InstallMethod(AsSemigroupFRElement, "(FR) for a semigroup FR element",
         [IsSemigroupFRElement],
-        E->E);
+        E->FRElement(E![1],E![2]));
 ############################################################################
 
 ############################################################################
@@ -1033,8 +1121,8 @@ BindGlobal("NUCLEUS@", function(L)
     maybeinf := []; # the part of s that may be of
                     # infinite order and self-recurrent
     while true do
-        olds := s;
-        s := Union(s,LimitStates(news));
+        olds := ShallowCopy(s);
+        UniteSet(s,LimitStates(news));
         if Length(s)=Length(olds) then
             return s;
         fi;
@@ -1075,6 +1163,10 @@ InstallMethod(NucleusOfFRMachine, "(FR) for an FR machine",
 ##
 BindGlobal("ORDER@", function(e)
     local testing, found, recur;
+    
+    if HasUnderlyingMealyElement(e) then
+        e := UnderlyingMealyElement(e);
+    fi;
     
     if IsAbelian(VertexTransformationsFRElement(e)) then
         found := NewDictionary(e,false);
@@ -1143,9 +1235,14 @@ InstallMethod(Order, "(FR) for a Mealy element; not guaranteed to terminate",
         [IsMealyElement], ORDER@);
         
 InstallMethod(IsLevelTransitive, "(FR) for a group FR element",
+        [IsGroupFRMealyElement],
+        E->IsLevelTransitive(UnderlyingMealyElement(E)));
+
+InstallMethod(IsLevelTransitive, "(FR) for a group FR element",
         [IsGroupFRElement],
         function(E)
     local seen, d, c, w, x;
+
     x := CyclicallyReducedWord(E![2]);
     seen := NewDictionary(x,false);
     w := WreathRecursion(E![1]);

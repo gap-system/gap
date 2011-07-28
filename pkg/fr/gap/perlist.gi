@@ -2,7 +2,7 @@
 ##
 #W perlist.gi                                               Laurent Bartholdi
 ##
-#H   @(#)$Id: perlist.gi,v 1.4 2009/03/27 19:28:53 gap Exp $
+#H   @(#)$Id: perlist.gi,v 1.9 2011/05/01 14:31:29 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -14,7 +14,7 @@
 ##
 BindGlobal("EXTENDPERIODICLIST@", function(l,i)
     local x;
-    if IsEmpty(l![2]) then return fail; fi;
+    if l![2]=[] then return fail; fi;
     while Length(l![1])<i-Length(l![2]) do
         Append(l![1],l![2]);
     od;
@@ -70,7 +70,7 @@ InstallMethod(Period, "for a periodic list",
 InstallOtherMethod(ListOp, "for a periodic list",
         [IsPeriodicList],
         function(l)
-    if IsEmpty(l![2]) then
+    if l![2]=[] then
         return l![1];
     else
         return fail;
@@ -82,7 +82,7 @@ InstallMethod(CompressPeriodicList, "for a periodic list",
         function(l)
     local brk, d, divs, i, j, n, q;
 
-    if IsEmpty(l![2]) then return; fi;
+    if l![2]=[] then return; fi;
     n := Length(l![2]);
     divs := FactorsInt(n);
     while Length(divs)>0 do
@@ -120,23 +120,47 @@ InstallGlobalFunction(CompressedPeriodicList,
     return l;
 end);
 
-InstallMethod(PrintObj, "for a periodic list",
+InstallMethod(String, "for a periodic list",
         [IsPeriodicList],
         function(l)
-    Print("PeriodicList("); Print(l![1]);
-    if not IsEmpty(l![2]) then Print(","); Print(l![2]); fi;
-    Print(")");
+    local s;
+    s := CONCAT@("PeriodicList(",l![1]);
+    if l![2]<>[] then APPEND@(s,",",l![2]); fi;
+    Append(s,")");
+    return s;
 end);
+
+InstallMethod(ViewString, "for a periodic list",
+        [IsPeriodicList],
+        function(l)
+    local s, comma;
+    if l![2]=[] then
+        return ViewString(l![1]);
+    else
+        s := "[";
+        if l![1]<>[] then
+            Append(s," ");
+            Append(s,JoinStringsWithSeparator(List(l![1],ViewString),", "));
+            Append(s,", ");
+        fi;
+        Append(s,"/ ");
+        Append(s,JoinStringsWithSeparator(List(l![2],ViewString),", "));
+        Append(s," ]");
+        return s;
+    fi;
+end);
+
+INSTALLPRINTERS@(IsPeriodicList);
 
 InstallMethod(ViewObj, "for a periodic list",
         [IsPeriodicList],
         function(l)
-    local x, comma;
-    if IsEmpty(l![2]) then
+    local x, s, comma;
+    if l![2]=[] then
         ViewObj(l![1]);
     else
         Print("[");
-        if not IsEmpty(l![1]) then
+        if l![1]<>[] then
             Print(" ");
             for x in l![1] do ViewObj(x); Print(", "); od;
         fi;
@@ -151,29 +175,12 @@ InstallMethod(ViewObj, "for a periodic list",
     fi;
 end);
 
-InstallMethod(String, "for a periodic list",
-        [IsPeriodicList],
-        function(l)
-    local x;
-    x := Concatenation("PeriodicList(",String(l![1]));
-    if not IsEmpty(l![2]) then Append(x,","); Append(x,String(l![2])); fi;
-    Append(x,")");
-    return x;
-end);
-
-InstallMethod(Display, "for a periodic list",
-        [IsPeriodicList],
-        function(l)
-    ViewObj(l);
-    Print("\n");
-end);
-
 InstallMethod(\[\], "for a periodic list and a position",
         [IsPeriodicList,IsPosInt],
         function(l,i)
     if i<=Length(l![1]) then
         return l![1][i];
-    elif IsEmpty(l![2]) then
+    elif l![2]=[] then
         Error("Periodic List Element: <list>[",i,"] must have an assigned value\n");
     else
         return l![2][(i-Length(l![1])-1) mod Length(l![2]) + 1];
@@ -188,7 +195,7 @@ InstallMethod(\{\}, "for a periodic list and positions",
     for i in p do
         if i<=Length(l![1]) then
             Add(x,l![1][i]);
-        elif IsEmpty(l![2]) then
+        elif l![2]=[] then
             Error("Periodic List Element: <list>[",i,"] must have an assigned value\n");
         else
             Add(x,l![2][(i-Length(l![1])-1) mod Length(l![2]) + 1]);
@@ -200,7 +207,7 @@ end);
 InstallMethod(Iterator, "for a periodic list",
         [IsPeriodicList],
         function(l)
-    if IsEmpty(l![2]) then
+    if l![2]=[] then
         return Iterator(l![1]);
     else
         return IteratorByFunctions(rec(i := 0,
@@ -228,12 +235,12 @@ end);
 
 InstallOtherMethod(IsFinite, "for a periodic list",
         [IsPeriodicList],
-        l->IsEmpty(l![2]));
+        l->l![2]=[]);
 
 InstallMethod(Length, "for a periodic list",
         [IsPeriodicList],
         function(l)
-    if IsEmpty(l![2]) then
+    if l![2]=[] then
         return Length(l![1]);
     else
         return infinity;
@@ -264,7 +271,7 @@ end);
 InstallMethod(ISB_LIST, "for a periodic list and position",
         [IsPeriodicList, IsPosInt],
         function(l,i)
-    if IsEmpty(l![2]) or i<=Length(l![1]) then
+    if l![2]=[] or i<=Length(l![1]) then
         return ISB_LIST(l![1],i);
     else
         return ISB_LIST(l![2],(i-Length(l![1])-1) mod Length(l![2]) + 1);
@@ -281,7 +288,7 @@ end);
 InstallOtherMethod(Add, "for a periodic list and an element",
         [IsPeriodicList, IsObject],
         function(l,x)
-    if IsEmpty(l![2]) then
+    if l![2]=[] then
         Add(l![1],x);
     else
         Error("Cannot add at end of infinite list ",l,"\n");
@@ -298,7 +305,7 @@ end);
 InstallOtherMethod(Remove, "for a periodic list",
         [IsPeriodicList],
         function(l)
-    if IsEmpty(l![2]) then
+    if l![2]=[] then
         return Remove(l![1]);
     else
         Error("Cannot remove from end of infinite list ",l,"\n");
@@ -316,7 +323,7 @@ InstallMethod(IsConfinal, "for two periodic lists",
         [IsPeriodicList, IsPeriodicList],
         function(l,m)
     local i, il, im, ll, lm;
-    if IsEmpty(l![2]) or IsEmpty(m![2]) then return fail; fi;
+    if l![2]=[] or m![2]=[] then return fail; fi;
     il := Length(l![1]); ll := Length(l![2]);
     im := Length(m![1]); lm := Length(m![2]);
     if il>im then
@@ -336,7 +343,7 @@ InstallMethod(ConfinalityClass, "for a periodic list",
         [IsPeriodicList],
         function(l)
     local i, n;
-    if IsEmpty(l![2]) then
+    if l![2]=[] then
         return [];
     else
         n := Length(l![2]);
@@ -365,9 +372,9 @@ InstallMethod(\=, "for two periodic lists",
         [IsPeriodicList, IsPeriodicList],
         function(l,m)
     local il, im, pl, pm, dol, dom;
-    if IsEmpty(l![2]) then
-        return IsEmpty(m![2]) and l![1]=m![1];
-    elif IsEmpty(m![2]) then return false; fi;
+    if l![2]=[] then
+        return m![2]=[] and l![1]=m![1];
+    elif m![2]=[] then return false; fi;
     il := 0; pl := 1; dol := true;
     im := 0; pm := 1; dom := true;
     while dol or dom do
@@ -389,13 +396,13 @@ end);
 InstallMethod(\=, "for a list and a periodic list",
         [IsPeriodicList, IsList],
         function(l,m)
-    return IsEmpty(l![2]) and l![1]=m;
+    return l![2]=[] and l![1]=m;
 end);
 
 InstallMethod(\=, "for a periodic list and a list",
         [IsList, IsPeriodicList],
         function(l,m)
-    return IsEmpty(m![2]) and l=m![1];
+    return m![2]=[] and l=m![1];
 end);
 
 InstallMethod(\in, "for a periodic list",
@@ -408,7 +415,7 @@ InstallMethod(\<, "for two periodic lists",
         [IsPeriodicList, IsPeriodicList],
         function(l,m)
     local il, im, pl, pm, dol, dom;
-    if IsEmpty(l![2]) and IsEmpty(m![2]) then
+    if l![2]=[] and m![2]=[] then
         return l![1]<m![1];
     fi;
     il := 0; pl := 1; dol := true;
@@ -416,13 +423,13 @@ InstallMethod(\<, "for two periodic lists",
     while dol or dom do
         il := il+1;
         if il>Length(l![pl]) then
-            if IsEmpty(l![2]) then return true; fi; # lex ordering
+            if l![2]=[] then return true; fi; # lex ordering
             if pl=2 then dol := false; fi;
             pl := 2; il := 1;
         fi;
         im := im+1;
         if im>Length(m![pm]) then
-            if IsEmpty(m![2]) then return false; fi; # lex ordering
+            if m![2]=[] then return false; fi; # lex ordering
             if pm=2 then dom := false; fi;
             pm := 2; im := 1;
         fi;
@@ -437,7 +444,7 @@ InstallMethod(\<, "for a list and a periodic list",
         [IsList, IsPeriodicList],
         function(l,m)
     local il, im, pm;
-    if IsEmpty(m![2]) then
+    if m![2]=[] then
         return l<m![1];
     fi;
     il := 0;
@@ -460,7 +467,7 @@ InstallMethod(\<, "for a periodic list and a list",
         [IsPeriodicList, IsList],
         function(l,m)
     local il, pl, im;
-    if IsEmpty(l![2]) then
+    if l![2]=[] then
         return l![1]<m;
     fi;
     il := 0; pl := 1;
@@ -482,9 +489,9 @@ end);
 InstallMethod(MaximumList, "for a periodic list",
         [IsPeriodicList],
         function(l)
-    if IsEmpty(l![2]) then
+    if l![2]=[] then
         return MaximumList(l![1]);
-    elif IsEmpty(l![1]) then
+    elif l![1]=[] then
         return MaximumList(l![2]);
     else
         return Maximum(MaximumList(l![1]),MaximumList(l![2]));
@@ -494,9 +501,9 @@ end);
 InstallMethod(MinimumList, "for a periodic list",
         [IsPeriodicList],
         function(l)
-    if IsEmpty(l![2]) then
+    if l![2]=[] then
         return MinimumList(l![1]);
-    elif IsEmpty(l![1]) then
+    elif l![1]=[] then
         return MinimumList(l![2]);
     else
         return Minimum(MinimumList(l![1]),MinimumList(l![2]));
@@ -521,7 +528,7 @@ end);
 InstallOtherMethod(Append, "for periodic lists",
         [IsPeriodicList, IsPeriodicList],
         function(l,m)
-    if IsEmpty(l![2]) then
+    if l![2]=[] then
         Append(l![1],m![1]);
         l![2] := m![2];
     else
@@ -542,7 +549,7 @@ InstallMethod(Collected, "for a periodic list",
     x := Collected(l![1]);
     for i in l![2] do
         p := PositionFirstComponent(x,i);
-        if p=fail then
+        if p>Length(x) then
             AddSet(x,[i,infinity]);
         else
             x[p][2] := infinity;
@@ -672,13 +679,16 @@ InstallMethod(NewFIFO, "(FR) for a list",
             iter!.out := iter!.inp;
             iter!.inp := [];
         fi;
+        while iter!.index > Length(iter!.out) do
+            Error("FIFO is empty");
+        od;
         x := iter!.out[iter!.index];
         Unbind(iter!.out[iter!.index]);
         iter!.index := iter!.index+1;
         return x;
     end,
       IsDoneIterator := function(iter)
-        return iter!.index > Length(iter!.out) and IsEmpty(iter!.inp);
+        return iter!.index > Length(iter!.out) and iter!.inp=[];
     end,
       ShallowCopy := function(iter)
         return rec(out := ShallowCopy(iter!.out),
@@ -689,7 +699,7 @@ InstallMethod(NewFIFO, "(FR) for a list",
                    ShallowCopy := iter!.ShallowCopy);
     end);
 
-    return Objectify( NewType(IteratorsFamily, IsIteratorByFunctions and IsAttributeStoringRep and IsMutable and IsFIFO), iter);
+    return Objectify( NewType(IteratorsFamily, IsIteratorByFunctions and IsMutable and IsFIFO), iter);
 end);
 
 InstallMethod(NewFIFO, "(FR) for no arguments",
@@ -704,24 +714,60 @@ InstallMethod(Add, "(FR) for a FIFO and an object",
     Add(iter!.inp,x);
 end);
 
+InstallOtherMethod(Add, "(FR) for a FIFO, an object and an index",
+        [IsFIFO,IsObject,IsPosInt], 1,
+        function(iter,x,i)
+    local l;
+    l := i+iter!.index-1;
+    if l<=Length(iter!.out)+1 then
+        Add(iter!.out,x,l);
+    else
+        Add(iter!.inp,x,l-Length(iter!.out));
+    fi;
+end);
+
 InstallMethod(Append, "(FR) for a FIFO and a list",
         [IsFIFO, IsList],
         function(iter,l)
     Append(iter!.inp,l);
 end);
 
-InstallMethod(PrintObj, "(FR) for a FIFO",
+InstallMethod(String, "(FR) for a FIFO",
         [IsFIFO],
-        function(f)
-    Print("<FIFO iterator>");
-end);
+        f->"NewFIFO(...)");
 
-InstallOtherMethod(Length, "(FR) for a FIFO",
+InstallMethod(ViewString, "(FR) for a FIFO",
+        [IsFIFO],
+        f->CONCAT@("<FIFO iterator of size ",Length(f),">"));
+
+INSTALLPRINTERS@(IsFIFO);
+
+InstallMethod(Length, "(FR) for a FIFO",
         [IsFIFO],
         iter->Length(iter!.out)-iter!.index+1+Length(iter!.inp));
 
-InstallOtherMethod(\[\], "(FR) for a FIFO",
-        [IsFIFO, IsInt],
+InstallOtherMethod(Remove, "(FR) for a FIFO",
+        [IsFIFO],
+        NextIterator);
+
+InstallOtherMethod(Remove, "(FR) for a FIFO and a position",
+        [IsFIFO,IsPosInt], 1,
+        function(iter,i)
+    local l;
+    l := i+iter!.index-1;
+    if l <= Length(iter!.out) then
+        return Remove(iter!.out,l);
+    else
+        return Remove(iter!.inp,l-Length(iter!.out));
+    fi;
+end);
+
+InstallMethod(IsEmpty, "(FR) for a FIFO",
+        [IsFIFO],
+        IsDoneIterator);
+
+InstallMethod(\[\], "(FR) for a FIFO and an index",
+        [IsFIFO,IsInt],
         function(iter,i)
     local l;
     l := i+iter!.index-1;
@@ -730,6 +776,83 @@ InstallOtherMethod(\[\], "(FR) for a FIFO",
     else
         return iter!.inp[l-Length(iter!.out)];
     fi;
+end);
+
+InstallOtherMethod(\[\]\:\=, "(FR) for a FIFO, an index and an object",
+        [IsFIFO,IsInt,IsObject],
+        function(iter,i,x)
+    local l;
+    l := i+iter!.index-1;
+    if l <= Length(iter!.out) then
+        iter!.out[l] := x;
+    else
+        iter!.inp[l-Length(iter!.out)] := x;
+    fi;
+end);
+
+InstallMethod(AsList, "for a FIFO",
+        [IsFIFO],
+        iter->Compacted(Concatenation(iter!.out,iter!.inp)));
+
+InstallMethod(AsSortedList, "for a FIFO",
+        [IsFIFO],
+        iter->AsSortedList(Concatenation(iter!.out,iter!.inp)));
+
+InstallMethod(AsSSortedList, "for a FIFO",
+        [IsFIFO],
+        iter->AsSSortedList(Concatenation(iter!.out,iter!.inp)));
+
+InstallMethod(Position, "(FR) for a FIFO, an object and a starting pos",
+        [IsFIFO,IsObject,IsInt],
+        function(iter,x,from)
+    local l, p;
+    l := iter!.index+from-1;
+    p := Position(iter!.out,x,l);
+    if p=fail then
+        p := Position(iter!.inp,x,Maximum(0,l-Length(iter!.out)));
+        if p=fail then
+            return p;
+        else
+            return p-iter!.index+1+Length(iter!.out);
+        fi;
+    fi;
+    return p-iter!.index+1;
+end);
+
+InstallOtherMethod(PositionProperty, "(FR) for a FIFO, a function and a starting pos",
+        [IsFIFO,IsFunction,IsInt],
+        function(iter,f,from)
+    local p, i;
+    for i in [iter!.index+from..Length(iter!.out)] do
+        if f(iter!.out[i]) then
+            return i-iter!.index+1;
+        fi;
+    od;
+    from := Maximum(0,from-Length(iter!.out)+iter!.index);
+    for i in [from+1..Length(iter!.inp)] do
+        if f(iter!.inp[i]) then
+            return i-iter!.index+Length(iter!.out)+1;
+        fi;
+    od;
+    return fail;
+end);
+
+InstallOtherMethod(PositionProperty, "(FR) for a FIFO and a function",
+        [IsFIFO,IsFunction],
+        function(iter,f)
+    return PositionProperty(iter,f,0);
+end);
+  
+InstallMethod(ForAllOp, "for a FIFO",
+        [IsFIFO,IsFunction],
+        function(l,p)
+    return ForAllOp(l!.out,p) and ForAllOp(l!.inp,p);
+end);
+
+InstallMethod(ForAnyOp, "for a FIFO",
+        [IsFIFO,IsFunction],
+        function(l,p)
+    return ForAnyOp(l!.out,p) or ForAnyOp(l!.inp,p);
 end);
 #############################################################################
 

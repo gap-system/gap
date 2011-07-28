@@ -2,7 +2,7 @@
 ##
 #W init.g                                                   Laurent Bartholdi
 ##
-#H   @(#)$Id: init.g,v 1.32 2009/10/09 15:07:08 gap Exp $
+#H   @(#)$Id: init.g,v 1.50 2011/05/16 07:05:45 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -23,110 +23,55 @@ SetInfoLevel(InfoFR, 1);
 #############################################################################
 
 #############################################################################
-##
-#W  Add missing methods
-##
-if false then
-    Info(InfoWarning,1,"Installed generic IsSubset");
-InstallOtherMethod(IsSubset,
-        [IsObject,IsObject],
-        function(x,y)
-    for y in y do if not y in x then return false; fi; od; return true;
-end);
-fi;
-InstallMethod(String, "ultimate recourse for groups",
-        [IsGroup],
-        function(O)
-    local s, os;
-    s := "";
-    os := OutputTextString(s,true);
-    PrintTo(os,O);
-    CloseStream(os);
-    return s;
-end);
-#############################################################################
 
-if GAPInfo.Version{[1..3]}="4.4" then # a set of hacks
-    Info(InfoFR,2,"Extending `ListPerm'");
-    __ListPerm := ListPerm;
-    MakeReadWriteGlobal("ListPerm");
-    ListPerm := function(arg)
-        local l; l := __ListPerm(arg[1]);
-        while Length(arg)=2 and Length(l)<arg[2] do Add(l,Length(l)+1); od;
-        return l;
-    end;
-
-    Info(InfoFR,2,"Declaring stubs for FLOAT and COMPLEX -- will be broken");
-    InstallOtherMethod(Sqrt,[IsFloat],x->x);
-    DeclareSynonym("MacFloat", Float);
-    DeclareSynonym("IsMacFloat", IsFloat);
-    DeclareSynonym("MACFLOAT_INT", FLOAT_INT);
-    DeclareSynonym("MACFLOAT_STRING", FLOAT_STRING);
-    ForAll(["ACOS","COS","SIN","TAN","LOG","EXP","ATAN2","RINT"], function(w)
-        BindGlobal(Concatenation(w,"_MACFLOAT"), function(arg)
-            Info(InfoFR,2,"You need a more recent GAP kernel to use this floating-point function; I'll return 0");
-	    return Float(0);
-        end);
-        return true;
-    end);
-
-    DeclareOperation("AsPermutation",[IsObject]); # appeared in 4.dev
-
-    Info(InfoFR,2,"Fixing bug in GroupHomomorphismByImagesNC for 0-generated groups");
-    InstallOtherMethod(GroupHomomorphismByImagesNC,[IsGroup,IsGroup,IsEmpty,IsEmpty],SUM_FLAGS,
-            function(g,h,gg,gh)
-        return GroupHomomorphismByFunction(g,h,x->One(h));
-    end);
-
-    Info(InfoFR,2,"Fixing bug in IsomorphismFpMonoid for 0-generated groups");
-    InstallOtherMethod(IsomorphismFpMonoid,[IsFpGroup], SUM_FLAGS,
-            function(g)
-        local f, h;
-        if Length(GeneratorsOfGroup(g))>0 then
-            TryNextMethod();
+if true  then # a set of hacks
+    Info(InfoPackageLoading,2,"Installing missing 2-argument `MaximumList' and `MinimumList'");
+    InstallOtherMethod(MaximumList, "with seed",
+            [IsSortedList, IsInt],
+            function(list,seed)
+        local i;
+        if Length(list)>0 then
+            i := list[Length(list)];
+            if i>seed then return i; fi;
         fi;
-        f := FreeMonoid(0); SetIsFreeMonoid(f,true);
-        h := f/[]; SetFreeMonoidOfFpMonoid(h,f);
-        return MagmaIsomorphismByFunctionsNC(g,h,x->One(h),x->One(g));
+        return seed;
     end);
-    
-    InstallOtherMethod(GeneratorsOfLeftOperatorRingWithOne,[IsLeftOperatorRing],GeneratorsOfLeftOperatorRing);
-fi;
 
-if not IsBound(FpElementNFFunction) then # appeared in 4.dev
-    DeclareSynonym("FpElementNFFunction", FpElmKBRWS);
-fi;
-
-if not IsBound(IsomorphismFpMonoidInversesFirst) then # appeared in 4.dev
-    DeclareSynonym("IsomorphismFpMonoidInversesFirst", IsomorphismFpMonoid);
-fi;
-
-if not IsBound(DirectSum) then
-DeclareGlobalFunction("DirectSum");
-DirectSumOp := fail; # shut up warning
-InstallGlobalFunction(DirectSum, function(arg)
-    local d;
-    if Length(arg) = 0 then
-        Error("<arg> must be nonempty");
-    elif Length(arg) = 1 and IsList(arg[1])  then
-        if IsEmpty(arg[1])  then
-            Error("<arg>[1] must be nonempty");
+InstallOtherMethod(MaximumList, "with seed",
+        [IsList, IsInt],
+        function(list,seed)
+    local i;
+    for i in list do
+        if i>seed then
+            seed := i;
         fi;
-        arg := arg[1];
+    od;
+    return seed;
+end);
+
+InstallOtherMethod(MinimumList, "with seed",
+        [IsSortedList, IsInt],
+        function(list,seed)
+    local i;
+    if Length(list)>0 then
+        i := list[1];
+        if i<seed then return i; fi;
     fi;
-    d := DirectSumOp(arg,arg[1]);
-    if ForAll(arg, HasSize) then
-        if ForAll(arg, IsFinite) then
-            SetSize(d, Product( List(arg, Size)));
-        else
-            SetSize(d, infinity);
-        fi;
-    fi;
-    return d;
+    return seed;
 end);
-Unbind(DirectSumOp);
-fi;
 
+InstallOtherMethod(MinimumList, "with seed",
+        [IsList, IsInt],
+        function(list,seed)
+    local i;
+    for i in list do
+        if i<seed then
+            seed := i;
+        fi;
+    od;
+    return seed;
+end);
+fi;
 #############################################################################
 ##
 #R Read the declaration files.
@@ -140,9 +85,7 @@ ReadPackage("fr", "gap/mealy.gd");
 ReadPackage("fr", "gap/group.gd");
 ReadPackage("fr", "gap/vector.gd");
 ReadPackage("fr", "gap/algebra.gd");
-if IsBound(MacFloat) then
-    ReadPackage("fr", "gap/img.gd");
-fi;
+ReadPackage("fr", "gap/img.gd");
 ReadPackage("fr", "gap/examples.gd");
 
 CallFuncList(function()
@@ -151,15 +94,22 @@ CallFuncList(function()
     dll := Filename(dirs,"fr_dll.so");
     if dll=fail then
         dll := Filename(dirs[1],"fr_dll.so");
-        if IsBound(PACKAGE_WARNING) then
-            LogPackageLoadingMessage(PACKAGE_WARNING, Concatenation("Could not find ",dll,"; did you compile it?"));
-        fi;
         for w in ["COMPLEX_ROOTS","DELAUNAY_TRIANGULATION","DELAUNAY_FIND",
-                "FIND_BARYCENTER","ARC_MIN_SPAN_TREE"] do            
+                "FIND_BARYCENTER","FIND_RATIONALFUNCTION","STRING_MACFLOAT_FR",
+                "EQ_P1POINT","LT_P1POINT","SphereP1","P1Sphere",
+                "P1POINT2STRING","P1Distance","P1POINT2C2","P1BARYCENTRE",
+                "P1MAP2","P1MAP3","COMPOSEP1MAP","INVERTP1MAP","P1MAP2MAT",
+                "P1Image","P1PreImages","CleanedP1Map","P1ROTATION",
+                "P1INTERSECT","P1MapCriticalPoints","DegreeOfP1Map",
+		"P1Path","P1Circumcentre","NFFUNCTION_FR","P1XRatio",
+                "SphereP1Y","CleanedP1Point","P1Midpoint"] do
             BindGlobal(w, function(arg)
-                Error("Could not find ",dll,"; did you compile it?");
+                Error("You need to compile ",dll," before using ",w,"\nYou may compile it with './configure && make' in ",PackageInfo("fr")[1].InstallationPath,"\n...");
             end);
         od;
+        BindGlobal("MAT2P1MAP",ReturnFail);
+        BindGlobal("P1Antipode",ReturnFail); # hack, so we can define P1infinity
+        BindGlobal("C22P1POINT",ReturnFail);
     else
         LoadDynamicModule(dll);
     fi;
@@ -173,6 +123,10 @@ if not IsBound(IsLpGroup) then
         return true;
     end);
 fi;
+
+InstallMethod(IsMatrixModule,[IsFRAlgebra],1000,ReturnFalse);
+# otherwise, bug causes SubmoduleNC(algebra,[]) to run indefinitely
+
 #############################################################################
 
 #E init.g . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

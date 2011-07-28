@@ -16,7 +16,15 @@
   </Version>
   <Author> Werner Nickel
     <Email>nickel@mathematik.tu-darmstadt.de</Email>
-    <Homepage>http://www. ...</Homepage>
+    <Homepage>http://www.mathematik.tu-darmstadt.de/~nickel</Homepage>
+  </Author>
+  <Author> Greg Gamble
+    <Email>gregg@math.rwth-aachen.de</Email>
+    <Homepage>http://www.math.rwth-aachen.de/~Greg.Gamble</Homepage>
+  </Author>
+  <Author> Alexander Konovalov
+    <Email>konovalov@member.ams.org</Email>
+    <Homepage>http://www.cs.st-andrews.ac.uk/~alexk/</Homepage>
   </Author>
 </TitlePage>
 

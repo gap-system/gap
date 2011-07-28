@@ -2,7 +2,7 @@
 ##
 ##    Makefile                      NQ                         Werner Nickel
 ##
-##    $Id: Makefile,v 1.32 2003/10/11 23:08:31 werner Exp $
+##    $Id: Makefile,v 1.33 2011/06/17 14:00:36 gap Exp $
 ##
 
 ##    GNU cc has the integer data type long long.  It can be used for
@@ -19,7 +19,7 @@ OBJ = consistency.o pc.o relations.o word.o system.o time.o \
       presentation.o mem.o pcarith.o collect.o combicol.o trmetab.o gap.o
 
 nq : nq.o $(OBJ)
-	$(CC) $(CFLAGS) nq.o $(OBJ) -L$(GNU_MP_LIB) -o nq -lgmp -static
+	$(CC) $(CFLAGS) nq.o $(OBJ) -L$(GNU_MP_LIB) -o nq -lgmp
 
 glimt.o: glimt.c
 	$(CC) $(CFLAGS) -I$(GNU_MP_INC) -c glimt.c

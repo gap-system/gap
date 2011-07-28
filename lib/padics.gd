@@ -2,7 +2,7 @@
 ##
 #W  padics.gd                   GAP Library                     Jens Hollmann
 ##
-#H  @(#)$Id: padics.gd,v 4.27 2010/02/23 15:13:21 gap Exp $
+#H  @(#)$Id: padics.gd,v 4.28 2010/11/02 15:02:58 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the declaration part of the padic numbers.
 ##
 Revision.padics_gd :=
-    "@(#)$Id: padics.gd,v 4.27 2010/02/23 15:13:21 gap Exp $";
+    "@(#)$Id: padics.gd,v 4.28 2010/11/02 15:02:58 sal Exp $";
 
 
 #############################################################################
@@ -225,7 +225,8 @@ DeclareOperation( "ShiftedPadicNumber", [ IsPadicNumber, IsInt ] );
 ##
 ##  <Description>
 ##  returns the family of pure <M>p</M>-adic numbers over the
-##  prime <A>p</A> with <A>precision</A> <Q>digits</Q>.
+##  prime <A>p</A> with <A>precision</A> <Q>digits</Q>. That is to say, the approximate value
+##  will differ from the correct value by a multiple of <M>p^{digits}</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

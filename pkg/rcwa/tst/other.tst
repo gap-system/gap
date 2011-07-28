@@ -2,12 +2,12 @@
 ##
 #W  other.tst                 GAP4 Package `RCWA'                 Stefan Kohl
 ##
-#H  @(#)$Id: other.tst,v 1.6 2008/04/16 14:56:18 stefan Exp $
-##
 ##  This file contains automated tests of RCWA's functionality which is not
 ##  directly related to rcwa groups.
 ##
-gap> START_TEST("$Id: other.tst,v 1.6 2008/04/16 14:56:18 stefan Exp $");
+#############################################################################
+
+gap> START_TEST("other.tst");
 gap> RCWADoThingsToBeDoneBeforeTest();
 gap> R := PolynomialRing(GF(4),1);; x := Z(4) * One(R);;
 gap> x in DefaultRing(x);
@@ -27,7 +27,7 @@ gap> DifferencesList(last);
 gap> QuotientsList(List([1..10],n->n^2));
 [ 4, 9/4, 16/9, 25/16, 36/25, 49/36, 64/49, 81/64, 100/81 ]
 gap> FloatQuotientsList(List([1..10],n->n^2));
-[ 4, 2.25, 1.77778, 1.5625, 1.44, 1.36111, 1.30612, 1.26562, 1.23457 ]
+[ 4., 2.25, 1.77778, 1.5625, 1.44, 1.36111, 1.30612, 1.26562, 1.23457 ]
 gap> SearchCycle([1,4,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3]);    
 [ 2, 3, 1 ]
 gap> EquivalenceClasses([1..100],n->Phi(n));
@@ -65,7 +65,7 @@ gap> ListOfPowers(10,8);
 gap> GeneratorsAndInverses(SymmetricGroup(4));
 [ (1,2,3,4), (1,2), (1,4,3,2), (1,2) ]
 gap> RCWADoThingsToBeDoneAfterTest();
-gap> STOP_TEST( "other.tst", 10000000 );
+gap> STOP_TEST( "other.tst", 4000000 );
 
 #############################################################################
 ##

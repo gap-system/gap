@@ -2,7 +2,7 @@
 ##  
 #W  pager.gi                     GAP Library                     Frank Lübeck
 ##  
-#H  @(#)$Id: pager.gi,v 1.6 2010/07/28 15:45:21 gap Exp $
+#H  @(#)$Id: pager.gi,v 1.8 2011/04/18 23:05:29 gap Exp $
 ##  
 #Y  Copyright  (C) 2001, Lehrstuhl  D  für  Mathematik, RWTH  Aachen, Germany 
 #Y (C) 2001 School Math and  Comp. Sci., University of St Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  But this utility is certainly useful for other purposes as well.
 ##  
 Revision.pager_gi := 
-  "@(#)$Id: pager.gi,v 1.6 2010/07/28 15:45:21 gap Exp $";
+  "@(#)$Id: pager.gi,v 1.8 2011/04/18 23:05:29 gap Exp $";
 ##  
 ##  There is a builtin pager `PAGER_BUILTIN', but  at least under UNIX one
 ##  should use an external one.  This can be  set via the variable
@@ -72,6 +72,8 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   
   if IsString(lines) then
     lines := SplitString(lines, "\n", "");
+  elif not formatted then
+    lines := ShallowCopy(lines);
   fi;
   
   size   := SizeScreen();
@@ -134,10 +136,7 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     for i in [from..Minimum(len, from+size[2]-2)] do
       pl(lines[i]);
     od;
-    if len = i+1 then
-      pl(lines[len]);
-      char := 'q';
-    elif len = i then
+    if len = i then
       char := 'q';
     else
       PrintTo(out, halt);

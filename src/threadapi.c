@@ -45,7 +45,6 @@
 
 #include        "code.h"                /* coder                           */
 
-#include        "vars.h"                /* variables                       */
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 #include        "funcs.h"               /* functions                       */
@@ -54,6 +53,7 @@
 #include        "tls.h"
 #include        "threadapi.h"
 
+#include        "vars.h"                /* variables                       */
 
 #include        "intrprtr.h"            /* interpreter                     */
 

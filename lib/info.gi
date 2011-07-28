@@ -2,7 +2,7 @@
 ##
 #W  info.gi                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: info.gi,v 4.33 2010/02/23 15:13:10 gap Exp $
+#H  @(#)$Id: info.gi,v 4.34 2011/05/04 03:44:11 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -28,7 +28,7 @@
 ##  This file is the implementation  part of that package
 ##
 Revision.info_gi :=
-    "@(#)$Id: info.gi,v 4.33 2010/02/23 15:13:10 gap Exp $";
+    "@(#)$Id: info.gi,v 4.34 2011/05/04 03:44:11 gap Exp $";
 
 
 #############################################################################
@@ -393,21 +393,32 @@ if not IsBound(InfoTeaching) then
   fi;
 fi;
 
+LAST_COMPLETIONBAR_STRING:=fail;
+LAST_COMPLETIONBAR_VAL:=0;
+
 InstallGlobalFunction(CompletionBar,function(c,a,s,v)
-local out,w,i;
+local out,w,w0,i;
   if InfoLevel(c)>=a then
-    out:=OutputTextUser();
     if not IsRat(v) then
+      out:=OutputTextUser();
       PrintTo(out,"\n");
       return;
     fi;
-    w:=SizeScreen()[1];
+    w0:=SizeScreen()[1];
+    w:=Int(v*(w0-Length(s)-5));
+    if s=LAST_COMPLETIONBAR_STRING and w=LAST_COMPLETIONBAR_VAL then
+      return; # nothing new to say
+    fi;
+    LAST_COMPLETIONBAR_STRING:=s;
+    LAST_COMPLETIONBAR_VAL:=w;
+    out:=OutputTextUser();
+    v:=w;
+    w:=w0;
     for i in [1..w] do
       PrintTo(out,"\r");
     od;
     PrintTo(out,"\c");
     w:=w-Length(s)-5;
-    v:=v*w;
     PrintTo(out,s," ");
     for i in [1..w] do
       if v>0 then

@@ -3,7 +3,7 @@
 #W  package.gd                  GAP Library                      Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: package.gd,v 4.9 2010/08/09 08:22:34 gap Exp $
+#H  @(#)$Id: package.gd,v 4.18 2011/04/21 11:08:30 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -21,7 +21,7 @@
 #T   `PackageVariablesInfo'
 ##
 Revision.package_gd :=
-    "@(#)$Id: package.gd,v 4.9 2010/08/09 08:22:34 gap Exp $";
+    "@(#)$Id: package.gd,v 4.18 2011/04/21 11:08:30 gap Exp $";
 
 
 #############################################################################
@@ -87,14 +87,21 @@ GAPInfo.PackageLoadingMessages := [];
 ##  <Func Name="CompareVersionNumbers" Arg='supplied, required[, "equal"]'/>
 ##
 ##  <Description>
+##  A version number is a string which contains nonnegative integers separated
+##  by non-numeric characters. Examples of valid version numbers are for
+##  example:
+##  <P/>
+##  <Log><![CDATA[
+##  "1.0"   "3.141.59"  "2-7-8.3" "5 release 2 patchlevel 666"
+##  ]]></Log>
+##  <P/>
+##  <Ref Func="CompareVersionNumbers"/> 
 ##  compares two version numbers, given as strings.
 ##  They are split at non-digit characters,
 ##  the resulting integer lists are compared lexicographically.
 ##  The routine tests whether <A>supplied</A> is at least as large as
 ##  <A>required</A>, and returns <K>true</K> or <K>false</K> accordingly.
 ##  A version number ending in <C>dev</C> is considered to be infinite.
-##  See Section&nbsp;<Ref Sect="Version Numbers"/>
-##  for details about version numbers.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -167,20 +174,13 @@ DeclareGlobalFunction( "SetPackageInfo" );
 ##  and sorts the lists of records according to descending package
 ##  version numbers.
 ##  <P/>
-##  The function initializes three global records.
+##  The function initializes global records.
 ##  <List>
 ##  <Mark><C>GAPInfo.PackagesInfo</C></Mark>
 ##  <Item>
 ##       the record with the lists of info records of all existing packages;
 ##       they are looked up in all subdirectories of <F>pkg</F>
 ##       subdirectories of &GAP; root directories,
-##  </Item>
-##  <Mark><C>GAPInfo.PackagesInfoAutoloadDocumentation</C></Mark>
-##  <Item>
-##       the record with the lists of info records for all those existing
-##       packages which are not scheduled for autoloading
-##       but for which at least one version has autoloadable documentation,
-##       according to its <F>PackageInfo.g</F> file.
 ##  </Item>
 ##  </List>
 ##  </Description>
@@ -255,7 +255,7 @@ DeclareGlobalFunction( "LinearOrderByPartialWeakOrder" );
 ##  As usual, the argument <A>name</A> is case insensitive.
 ##  <P/>
 ##  The result is <K>true</K> if the package is already loaded,
-##  <K>false</K> if it cannot be loaded in the desire version,
+##  <K>false</K> if it cannot be loaded in the desired version,
 ##  and the string denoting the &GAP; root path where the package resides
 ##  if the package is available, but not yet loaded.
 ##  (In recursive calls, also <K>fail</K> may be returned, which means that
@@ -308,9 +308,9 @@ DeclareGlobalFunction( "PackageAvailabilityInfo" );
 ##  For strings <A>name</A> and <A>version</A>, this function tests
 ##  whether the  &GAP; package <A>name</A> is available for loading in a
 ##  version that is at least <A>version</A>, or equal to <A>version</A>
-##  if the first character of <A>version</A> is <C>=</C>,
-##  see Section <Ref Sect="Version Numbers"/>
-##  for details about version numbers.
+##  if the first character of <A>version</A> is <C>=</C>
+##  (see <Ref Func="CompareVersionNumbers"/> for further 
+##  details about version numbers).
 ##  <P/>
 ##  The result is <K>true</K> if the package is already loaded,
 ##  <K>fail</K> if it is not available,
@@ -381,8 +381,20 @@ DeclareGlobalFunction( "TestPackageAvailability" );
 ##  a call of a package's <C>AvailabilityTest</C> function
 ##  (see <Ref Sect="The PackageInfo.g File"/>)
 ##  or is called from a package file that is read from <F>init.g</F> or
-##  <F>read.g</F>; in these cases, the name of the current package is taken,
-##  which is stored in <C>GAPInfo.PackageCurrent</C>.
+##  <F>read.g</F>; in these cases, the name of the current package
+##  (stored in the record <C>GAPInfo.PackageCurrent</C>) is taken.
+##  <P/>
+##  If you want to see the log messages already during the package loading
+##  process, you can set the level of the info class
+##  <Ref Var="InfoPackageLoading"/> to one of the severity values
+##  listed above;
+##  afterwards the messages with at most this severity are shown immediately
+##  when they arise.
+##  In order to make this work already for autoloaded packages,
+##  you can set <C>GAPInfo.UserPreferences.InfoPackageLoadingLevel</C>
+##  to the desired severity level.
+##  This can for example be done in your <F>gap.ini</F> file,
+##  see Section <Ref Subsect="subsect:gap.ini file"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -452,15 +464,17 @@ DeclareGlobalFunction( "DefaultPackageBannerString" );
 ##  (this can be accessed as <C>GAPInfo.Architecture</C>,
 ##  see <Ref Var="GAPInfo"/>)
 ##  and the version of the installed package coincides with
-##  the version of the package <A>name</A> that either is already loaded
-##  or that would be the first version &GAP; would try to load
-##  (if no other version is explicitly prescribed).
+##  the version of the package <A>name</A> that is already loaded
+##  or is currently going to be loaded
+##  or would be the first version &GAP; would try to load if no other version
+##  is explicitly prescribed.
+##  (If the package <A>name</A> is not yet loaded then we cannot guarantee
+##  that the returned directories belong to a version that really can be
+##  loaded.)
 ##  <P/>
 ##  Note that <Ref Func="DirectoriesPackagePrograms"/> is likely to be called
 ##  in the <C>AvailabilityTest</C> function in the package's
-##  <F>PackageInfo.g</F> file (see <Ref Sect="The PackageInfo.g File"/>),
-##  so we cannot guarantee that the returned directories belong
-##  to a version that really can be loaded.
+##  <F>PackageInfo.g</F> file (see <Ref Sect="The PackageInfo.g File"/>).
 ##  <P/>
 ##  The directories returned by <Ref Func="DirectoriesPackagePrograms"/>
 ##  are the place where external binaries of the &GAP; package <A>name</A>
@@ -469,7 +483,8 @@ DeclareGlobalFunction( "DefaultPackageBannerString" );
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> DirectoriesPackagePrograms( "nq" );
-##  [ dir("/home/werner/gap/4.0/pkg/nq/bin/i686-unknown-linux2.0.30-gcc/") ]
+##  [ dir("/home/gap/4.0/pkg/nq/bin/x86_64-unknown-linux-gnu-gcc/64-bit/"),
+##    dir("/home/gap/4.0/pkg/nq/bin/x86_64-unknown-linux-gnu-gcc/") ]
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
@@ -487,25 +502,26 @@ DeclareGlobalFunction( "DirectoriesPackagePrograms" );
 ##  <Func Name="DirectoriesPackageLibrary" Arg='name[, path]'/>
 ##
 ##  <Description>
-##  <Index Key="GAPInfo.RootPaths"><C>GAPInfo.RootPaths</C></Index>
 ##  takes the string <A>name</A>, a name of a &GAP; package,
 ##  and returns a list of directory objects for those sub-directory/ies
 ##  containing the library functions of this &GAP; package,
-##  for the version that is already loaded or would be loaded if no other
-##  version is explicitly prescribed,
-##  up to one directory for each <F>pkg</F> sub-directory of a path in
-##  <C>GAPInfo.RootPaths</C> (see <Ref Var="GAPInfo"/>).
+##  for the version that is already loaded
+##  or is currently going to be loaded
+##  or would be the first version &GAP; would try to load if no other version 
+##  is explicitly prescribed.
+##  (If the package <A>name</A> is not yet loaded then we cannot guarantee
+##  that the returned directories belong to a version that really can be
+##  loaded.)
+##  <P/>
 ##  The default is that the library functions are in the subdirectory
 ##  <F>lib</F> of the &GAP; package's home directory.
 ##  If this is not the case, then the second argument <A>path</A> needs to be
 ##  present and must be a string that is a path name relative to the home
 ##  directory  of the &GAP; package with name <A>name</A>.
 ##  <P/>
-##  Note that <Ref Func="DirectoriesPackageLibrary"/> may be called in the
-##  <C>AvailabilityTest</C> function in the package's <F>PackageInfo.g</F>
-##  file (see <Ref Sect="The PackageInfo.g File"/>),
-##  so we cannot guarantee that the returned directories belong to a version
-##  that really can be loaded.
+##  Note that <Ref Func="DirectoriesPackageLibrary"/> is likely to be called
+##  in the <C>AvailabilityTest</C> function in the package's
+##  <F>PackageInfo.g</F> file (see <Ref Sect="The PackageInfo.g File"/>).
 ##  <P/>
 ##  As an example, the following returns a directory object for the library
 ##  functions of the &GAP; package <Package>Example</Package>:
@@ -555,7 +571,8 @@ DeclareGlobalFunction( "DirectoriesPackageLibrary" );
 ##  <Ref Func="ReadPackage"/> reads the file <A>file</A>
 ##  of the &GAP; package <A>name</A>,
 ##  where <A>file</A> is given as a path relative to the home directory
-##  of <A>name</A>.
+##  of <A>name</A>. Note that <A>file</A> is read in the namespace
+##  of the package, see Section <Ref Sect="Namespaces"/> for details.
 ##  <P/>
 ##  If only one argument <A>file</A> is given,
 ##  this should be the path of a file relative to the <F>pkg</F> subdirectory
@@ -593,22 +610,20 @@ DeclareGlobalFunction( "RereadPackage" );
 
 #############################################################################
 ##
-#F  LoadPackageDocumentation( <info>, <all> )
+#F  LoadPackageDocumentation( <info> )
 ##
 ##  <ManSection>
-##  <Func Name="LoadPackageDocumentation" Arg='info, all'/>
+##  <Func Name="LoadPackageDocumentation" Arg='info'/>
 ##
 ##  <Description>
 ##  Let <A>info</A> be a record as defined in the <F>PackageInfo.g</F> file
 ##  of a package.
-##  <Ref Func="LoadPackageDocumentation"/> loads books of the documentation
-##  for this package.
-##  If <A>all</A> is <K>true</K> then <E>all</E> books are loaded,
-##  otherwise only the <E>autoloadable</E> books are loaded.
+##  <Ref Func="LoadPackageDocumentation"/> loads all books of the
+##  documentation for this package.
 ##  <P/>
 ##  Note that this function might run twice for a package, first in the
 ##  autoloading process (where the package itself is not necessarily loaded)
-##  and later when the package is loaded.
+##  and later when the package gets loaded.
 ##  In this situation, the names used by the help viewer differ before and
 ##  after the true loading.
 ##  </Description>
@@ -619,11 +634,11 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 
 #############################################################################
 ##
-#F  LoadPackage( <name>[, <version>[, <banner>]] )
+#F  LoadPackage( <name>[, <version>][, <banner>] )
 ##
 ##  <#GAPDoc Label="LoadPackage">
 ##  <ManSection>
-##  <Func Name="LoadPackage" Arg='name[, version[, banner]]'/>
+##  <Func Name="LoadPackage" Arg='name[, version][, banner]'/>
 ##
 ##  <Description>
 ##  loads the &GAP; package with name <A>name</A>.
@@ -631,7 +646,7 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  the package will only be loaded in a version number at least as large as
 ##  <A>version</A>,
 ##  or equal to <A>version</A> if its first character is <C>=</C>
-##  (see&nbsp;<Ref Sect="Version Numbers"/>).
+##  (see&nbsp;<Ref Func="CompareVersionNumbers"/>).
 ##  The argument <A>name</A> is case insensitive.
 ##  <P/>
 ##  <Ref Func="LoadPackage"/> will return <K>true</K> if the package has been
@@ -646,8 +661,9 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  <Ref Func="LoadPackage"/> returns <K>true</K> without doing anything
 ##  else.
 ##  <P/>
-##  If the optional third argument <A>banner</A> is <K>false</K>
-##  then no package banner is printed.
+##  If the optional argument <A>banner</A> is present then it must be either
+##  <K>true</K> or <K>false</K>;
+##  in the latter case, the effect is that no package banner is printed.
 ##  <P/>
 ##  After a package has been loaded its code and documentation should be
 ##  available as other parts of the &GAP; library are.
@@ -922,8 +938,13 @@ DeclareGlobalFunction( "DeclareAutoreadableVariables" );
 ##  in the latter case information about the incorrect components is printed.
 ##  <P/>
 ##  Note that the components used for package loading are checked as well as
-##  the components that are needed for composing the package overview Web
+##  the components that are needed for composing the package overview web
 ##  page or for updating the package archives.
+##  <P/>
+##  If <A>info</A> is a string then <Ref Func="ValidatePackageInfo"/> checks
+##  additionally whether those package files exist that are mentioned in the
+##  file <F>info</F>, for example the <F>manual.six</F> file of the package
+##  documentation.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

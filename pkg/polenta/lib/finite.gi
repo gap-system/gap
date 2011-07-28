@@ -5,7 +5,7 @@
 ## Methods for the calculation of 
 ## constructive pc-sequences for finite matrix groups
 ##
-#H  @(#)$Id: finite.gi,v 1.3 2004/10/22 18:12:57 gap Exp $
+#H  @(#)$Id: finite.gi,v 1.4 2011/05/31 13:10:57 gap Exp $
 ##
 #Y 2003
 ##
@@ -594,10 +594,3 @@ end;
 #############################################################################
 ##
 #E
-
-
-
-
-
-
-

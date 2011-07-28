@@ -2,7 +2,7 @@
 ##
 #W vhgroup.gi                                               Laurent Bartholdi
 ##
-#H   @(#)$Id: vhgroup.gi,v 1.10 2009/06/16 19:12:53 gap Exp $
+#H   @(#)$Id: vhgroup.gi,v 1.14 2011/06/13 22:54:36 gap Exp $
 ##
 #Y Copyright (C) 2007, Laurent Bartholdi
 ##
@@ -100,14 +100,15 @@ InstallMethod(VHStructure, "for a f.p. group",
     return result;
 end);
 
-InstallMethod(ViewObj, "for a VH group",
+InstallMethod(ViewString, "for a VH group",
         [IsVHGroup], 10,
         function(G)
     local s, t;
     s := String(VHStructure(G).v);
     t := String(VHStructure(G).h);
-    Print("<VH group on the generators ",s{[1..Length(s)-1]},"|",t{[2..Length(t)]},">");
+    return Concatenation("<VH group on the generators ",s{[1..Length(s)-1]},"|",t{[2..Length(t)]},">");
 end);
+INSTALLPRINTERS@(IsVHGroup);
 
 InstallMethod(FpElementNFFunction, "for a VH group",
         [IsElementOfFpGroupFamily and HasVHStructure],
@@ -118,9 +119,9 @@ InstallMethod(FpElementNFFunction, "for a VH group",
     gffam := FamilyObj(UnderlyingElement(Representative(CollectionsFamily(gfam)!.wholeGroup)));
     vgens := [];
     for i in r.v do Add(vgens,String(i)); od;
-    for i in Reversed(r.v) do Add(vgens,Concatenation(String(i),"^-1")); od;
+    for i in Reversed(r.v) do Add(vgens,CONCAT@(i,"^-1")); od;
     for i in r.h do Add(vgens,String(i)); od;
-    for i in Reversed(r.h) do Add(vgens,Concatenation(String(i),"^-1")); od;
+    for i in Reversed(r.h) do Add(vgens,CONCAT@(i,"^-1")); od;
     mon := FreeMonoid(vgens);
     mffam := FamilyObj(Representative(mon));
     m := Length(r.v);
@@ -284,8 +285,8 @@ InstallGlobalFunction(VHGroup, function(arg)
     if Length(l)<>m*n or ForAny(l,x->0 in x) then
         Error("Missing corners ",Difference(Cartesian(Concatenation([-m..-1],[1..m]),Concatenation([-n..-1],[1..n])),r));
     fi;
-    v := List([1..m],i->Concatenation("a",String(i)));
-    h := List([1..n],i->Concatenation("b",String(i)));
+    v := List([1..m],i->CONCAT@("a",i));
+    h := List([1..n],i->CONCAT@("b",i));
     f := FreeGroup(Concatenation(v,h));
     v := GeneratorsOfGroup(f){[1..m]};
     h := GeneratorsOfGroup(f){[m+1..m+n]};
@@ -344,7 +345,7 @@ InstallMethod(LambdaElementVHGroup, "(FR) for a VH group",
     local act, pi, iter, trans, clock, i, x, y;
     act := [VerticalAction(G),HorizontalAction(G)];
     trans := Filtered([1,2],i->IsInfinitelyTransitive(Range(act[i])));
-    if IsEmpty(trans) then
+    if trans=[] then
         return fail;
     fi;
     pi := List(act,x->EpimorphismFromFreeGroup(Source(x)));
@@ -468,7 +469,7 @@ BindGlobal("MEALY2WORD@", function(x,g,h)
         if ForAll(stack,IsEmpty) then
             return fail;
         fi;
-        work := Remove(First(stack,x-> not IsEmpty(x)));
+        work := Remove(First(stack,x->x<>[]));
         time := time+1;
         if time mod 1000 = 0 then
             Info(InfoFR,1,"MEALY2WORD@: considering now a Mealy machine on ",work[1]!.nrstates, " states");
@@ -518,16 +519,11 @@ end);
 #E GammaPQMachine
 #E GammaPQGroup
 ##
-QUATERNIONBASIS@ := fail;
-if IsBound(POSTHOOK@) then
-    Add(POSTHOOK@, function()
-        QUATERNIONBASIS@ := Basis(QuaternionAlgebra(Rationals));
-    end);
-fi;
+BindGlobal("QUATERNIONBASIS@", fail); # must be computed only at run-time
 
 BindGlobal("QUATERNIONNORMP@", function(p)
     local a, b, c, d, bound, result, x, y, z;
-
+    
     if not IsPrime(p) then
         Error("Argument ",p," should be prime");
     fi;
@@ -594,6 +590,12 @@ end);
 InstallGlobalFunction(GammaPQMachine, function(p,q)
     local i, j, k, pset, qset, trans, out;
 
+    if QUATERNIONBASIS@=fail then
+        MakeReadWriteGlobal("QUATERNIONBASIS@");
+        QUATERNIONBASIS@ := Basis(QuaternionAlgebra(Rationals));
+        MakeReadOnlyGlobal("QUATERNIONBASIS@");
+    fi;
+
     pset := QUATERNIONNORMP@(p);
     qset := QUATERNIONNORMP@(q);
     trans := List(pset,x->[]);
@@ -606,7 +608,7 @@ InstallGlobalFunction(GammaPQMachine, function(p,q)
         od;
     od;
     i := MealyMachine(trans,out);
-    SetName(i,Concatenation("GammaPQMachine(",String(p),",",String(q),")"));
+    SetName(i,CONCAT@("GammaPQMachine(",p,",",q,")"));
     SetCorrespondence(i,[pset,qset]);
     out := [];
     for j in qset do
@@ -848,6 +850,8 @@ InstallValue(RattaggiGroup,
                    3_72 := VHGroup([1,1,-1,-1],[1,2,-1,-3],[1,3,-1,2],
                            [2,1,-2,3],[2,2,-2,-2],[2,3,-2,-1],
                            [3,1,-3,-2],[3,2,-3,1],[3,3,-3,-3]),
+		   # from AGT 2009
+		   JensenWise := VHGroup([1,2,-2,-1],[-1,-2,1,-1],[-2,2,-1,-1],[2,2,2,-1]),
                    ));
 #############################################################################
 

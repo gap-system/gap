@@ -2,7 +2,7 @@
 **
 *W  read.h                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: read.h,v 4.19 2010/02/23 15:13:47 gap Exp $
+*H  @(#)$Id: read.h,v 4.21 2011/02/18 20:36:18 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_read_h =
-   "@(#)$Id: read.h,v 4.19 2010/02/23 15:13:47 gap Exp $";
+   "@(#)$Id: read.h,v 4.21 2011/02/18 20:36:18 gap Exp $";
 #endif
 
 
@@ -25,11 +25,11 @@ const char * Revision_read_h =
 **  the interpretation of  an expression  or  statement lead to an  error (in
 **  which case 'ReadEvalError' jumps back to 'READ_ERROR' via 'longjmp').
 */
-/* TL: extern jmp_buf ReadJmpError; */
+/* TL: extern syJmp_buf ReadJmpError; */
 
 #ifndef DEBUG_READ_ERROR
 
-#define READ_ERROR()    (TLS->nrError || (TLS->nrError+=setjmp(TLS->readJmpError)))
+#define READ_ERROR()    (TLS->nrError || (TLS->nrError+=sySetjmp(TLS->readJmpError)))
 
 #else
 

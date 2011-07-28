@@ -3,7 +3,7 @@
 #W  init.g                     ParGAP Package                  Gene Cooperman
 #W                                                                Greg Gamble
 ##
-#H  @(#)$Id: init.g,v 1.7 2001/11/16 15:35:19 gap Exp $
+#H  @(#)$Id: init.g,v 1.8 2010/03/10 22:37:26 alexk Exp $
 ##
 #Y  Copyright (C) 1999-2001  Gene Cooperman
 #Y    See included file, COPYING, for conditions for copying
@@ -59,9 +59,5 @@ else
 fi;
 
 DeclarePackageAutoDocumentation( "pargap", "doc" );
-
-if not QUIET and BANNER then
-  ReadPkg("pargap", "lib/banner.g");
-fi;
 
 #E init.g . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

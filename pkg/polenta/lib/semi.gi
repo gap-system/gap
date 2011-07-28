@@ -5,7 +5,7 @@
 ## Methods for the calculation of 
 ## constructive pc-sequences for rational abelian semisimple matrix groups
 ##
-#H  @(#)$Id: semi.gi,v 1.4 2005/02/01 18:54:06 gap Exp $
+#H  @(#)$Id: semi.gi,v 1.5 2011/05/31 13:10:58 gap Exp $
 ##
 #Y 2003
 ##
@@ -238,11 +238,3 @@ end;
 #############################################################################
 ##
 #E
-
-
-
-
-
-
-
-

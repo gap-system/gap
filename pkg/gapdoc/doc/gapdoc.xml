@@ -2,7 +2,7 @@
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd">
 
-<!-- $Id: gapdoc.xml,v 1.15 2008/06/17 14:22:25 gap Exp $ -->
+<!-- $Id: gapdoc.xml,v 1.17 2011/03/03 09:52:10 gap Exp $ -->
 
 <!-- The documentation to the GAPDoc system. 
      Copyright 2000-2007 by Frank Lübeck and Max Neunhöffer
@@ -24,8 +24,9 @@
     <Email>neunhoef at mcs.st-and.ac.uk</Email>
     <Homepage>http://www-groups.mcs.st-and.ac.uk/~neunhoef/</Homepage>
   </Author>
-  <Date>June 2008</Date>
-  <Copyright> &copyright; 2000-2008 by Frank Lübeck and Max Neunhöffer <P/>
+  <Date>March 2011</Date>
+  <Copyright> <Index>License</Index>
+              &copyright; 2000-2011 by Frank Lübeck and Max Neunhöffer <P/>
               We adopt the copyright regulations of &GAP; as detailed in the 
               copyright notice in the &GAP; manual. </Copyright>
 </TitlePage>

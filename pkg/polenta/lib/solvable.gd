@@ -5,7 +5,7 @@
 ## Methods for testing if a matrix group 
 ## is solvable or polycyclic
 ##
-#H  @(#)$Id: solvable.gd,v 1.4 2006/01/15 18:09:21 gap Exp $
+#H  @(#)$Id: solvable.gd,v 1.5 2011/05/31 13:10:58 gap Exp $
 ##
 #Y 2003
 ##
@@ -29,5 +29,3 @@ DeclareOperation( "IsTriangularizableMatGroup", [ IsMatrixGroup ] );
 #############################################################################
 ##
 #E
-
-

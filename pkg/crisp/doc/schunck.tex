@@ -1,11 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%  schunck.tex              CRISP documentation           Burkhard H\"ofling
+%%  schunck.tex              CRISP documentation            Burkhard Höfling
 %%
-%%  @(#)$Id: schunck.tex,v 1.12 2006/09/13 17:44:16 gap Exp $
+%%  @(#)$Id: schunck.tex,v 1.15 2011/05/26 10:08:56 gap Exp $
 %%
-%%  Copyright (C) 2000, Burkhard H\"ofling, Mathematisches Institut,
-%%  Friedrich Schiller-Universit\"at Jena, Germany
+%%  Copyright (C) 2000 Burkhard Höfling
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Schunck classes and formations}
@@ -37,9 +36,9 @@ returns a Schunck class defined by the information stored in the record
 defines a Schunck class. <rec> may have the following components: `\\in',
 `proj', `bound', `char', and `name'. The values bound to these entries, if
 present, are stored, respectively, in the attributes `MemberFunction', 
-`ProjectorFunction', `BoundaryFunction', `Characteristic', and `Name'.
-Please refer to "MemberFunction", 
-"ProjectorFunction", "BoundaryFunction", "Characteristic", and "ref:Name"
+`ProjectorFunction', `BoundaryFunction', `Characteristic', and `Name', see
+"MemberFunction", 
+"ProjectorFunction", "BoundaryFunction"m, "Characteristic", and "ref:Name"
 for the meaning of these attributes.
 
 At least one of the attributes `MemberFunction', `ProjectorFunction', or
@@ -154,16 +153,18 @@ rather than `ProjectorFunction', should be used by the user to compute
 \index{primitive solvable group!attributes of}
 \index{attributes!of primitive solvable group}
 
-A finite group $G$ is *primitive* if it has a faithful primitive permutation 
-representation, or equivalently, if it has a maximal subgroup $M$ with trivial 
-core. If $G$ is solvable, $M$ complements the unique minimal normal subgroup
-$N$ of $G$. Therefore $N$ is the socle as well as the Fitting subgroup of
-<grp>.
 
 
+\>IsPrimitiveSolvableGroup(<grp>) P
 \>IsPrimitiveSolvable(<grp>) P
 
 returns true if <grp> is primitive and solvable, and false otherwise.
+An abstract finite group $G$ is *primitive* if it has a faithful primitive permutation 
+representation, or equivalently, if it has a maximal subgroup $M$ with trivial 
+core. If $G$ is solvable, $M$ complements the unique minimal normal subgroup
+$N$ of $G$. Therefore $N$ is the socle as well as the Fitting subgroup of
+$G$. A permutation group may be primitive as an abstract group while it is 
+not primitive as a permutation group (cf. "ref:IsPrimitive").
 
 
 \>SocleComplement(<grp>) A
@@ -440,7 +441,7 @@ particular, if $\cal C$ is a formation, then
 <grp>.
 
 The following example shows how to use `OneInvariantSubgroupMinWrtQProperty' to
-compute the derived subgroup of a group $G$. (Note that in practise, this 
+compute the derived subgroup of a group $G$. (Note that in practice, this 
 is not a particularly efficient way of computing the derived subgroup.)
 
 \beginexample
@@ -478,7 +479,7 @@ At present, there exist only methods for finite solvable groups <grp>.
 gap> G := GL(2,3);
 GL(2,3)
 gap> normsWithSupersolvableFactorGroups :=
-> AllInvSgrsWithQPropUnderAction (G, G, 
+> AllInvariantSubgroupsWithQProperty (G, G, 
 >    function (U, V, R, data)
 >       return IsPrimeInt (Index (U, V));
 >    end,
@@ -496,15 +497,15 @@ gap> normsWithSupersolvableFactorGroups :=
 
 \>OneNormalSubgroupMinWrtQProperty(<grp>, <pretest>, <test>, <data>) O
 
-`OneNormalSubgroupMinWrtQProperty' is the same as 
+`OneNormalSubgroupMinWrtQProperty' is a special case of 
 `OneInvariantSubgroupMinWrtQProperty' (see
-"OneInvariantSubgroupMinWrtQProperty"), where $<act> = <grp>$. 
+"OneInvariantSubgroupMinWrtQProperty") where $<act> = <grp>$. 
 
 \>AllNormalSubgroupsWithQProperty(<grp>, <pretest>, <test>, <data>) O
 
-`AllNormalSubgroupsWithQProperty' is the same as 
+`AllNormalSubgroupsWithQProperty' is a special case of 
 `AllInvariantSubgroupsWithQProperty' (see
-"AllInvariantSubgroupsWithQProperty"), where $<act> = <grp>$. 
+"AllInvariantSubgroupsWithQProperty") where $<act> = <grp>$. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

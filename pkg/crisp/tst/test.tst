@@ -1,30 +1,272 @@
-gap> START_TEST ("$Id: test.tst,v 1.3 2007/10/04 16:40:57 gap Exp $");
+gap> START_TEST("$Id: test.tst,v 1.6 2011/05/26 10:04:29 gap Exp $");
 gap> LoadPackage ("crisp", "", false);
 true
-gap> 
-gap> PRINT_METHODS := false;
-false
-gap> 
-gap> ReadPackage ("crisp", "tst/classes.g");
+gap> ReadPackage ("crisp", "tst/all.g");
+testing class construction 
+testing bases of classes 
+testing boundaries of classes  
+testing characteristics of classes  
+testing membership for classes  
+testing injectors 
+testing normal subgroups 
+testing projectors routines 
+testing radicals 
+testing residuals 
+testing socles 
+testing print routines 
+[2,5]-grps by boundary
+[2,5]-grps by boundary
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by locdef ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by locdef ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by membersip ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by membersip ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by res ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by res ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by rad ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by rad ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by inj ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by inj ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by proj ])
+Intersection ([ [2,5]-grps by boundary, [2,5]-grps by proj ])
+[2,5]-grps by locdef
+[2,5]-grps by locdef
+Intersection ([ [2,5]-grps by locdef, [2,5]-grps by membersip ])
+Intersection ([ [2,5]-grps by locdef, [2,5]-grps by membersip ])
+Intersection ([ [2,5]-grps by locdef, [2,5]-grps by res ])
+Intersection ([ [2,5]-grps by locdef, [2,5]-grps by res ])
+Intersection ([ [2,5]-grps by locdef, [2,5]-grps by rad ])
+Intersection ([ [2,5]-grps by locdef, [2,5]-grps by rad ])
+Intersection ([ [2,5]-grps by locdef, [2,5]-grps by inj ])
+Intersection ([ [2,5]-grps by locdef, [2,5]-grps by inj ])
+Intersection ([ [2,5]-grps by locdef, [2,5]-grps by proj ])
+Intersection ([ [2,5]-grps by locdef, [2,5]-grps by proj ])
+[2,5]-grps by membersip
+[2,5]-grps by membersip
+Intersection ([ [2,5]-grps by membersip, [2,5]-grps by res ])
+Intersection ([ [2,5]-grps by membersip, [2,5]-grps by res ])
+Intersection ([ [2,5]-grps by membersip, [2,5]-grps by rad ])
+Intersection ([ [2,5]-grps by membersip, [2,5]-grps by rad ])
+Intersection ([ [2,5]-grps by membersip, [2,5]-grps by inj ])
+Intersection ([ [2,5]-grps by membersip, [2,5]-grps by inj ])
+Intersection ([ [2,5]-grps by membersip, [2,5]-grps by proj ])
+Intersection ([ [2,5]-grps by membersip, [2,5]-grps by proj ])
+[2,5]-grps by res
+[2,5]-grps by res
+Intersection ([ [2,5]-grps by res, [2,5]-grps by rad ])
+Intersection ([ [2,5]-grps by res, [2,5]-grps by rad ])
+Intersection ([ [2,5]-grps by res, [2,5]-grps by inj ])
+Intersection ([ [2,5]-grps by res, [2,5]-grps by inj ])
+Intersection ([ [2,5]-grps by res, [2,5]-grps by proj ])
+Intersection ([ [2,5]-grps by res, [2,5]-grps by proj ])
+[2,5]-grps by rad
+[2,5]-grps by rad
+Intersection ([ [2,5]-grps by rad, [2,5]-grps by inj ])
+Intersection ([ [2,5]-grps by rad, [2,5]-grps by inj ])
+Intersection ([ [2,5]-grps by rad, [2,5]-grps by proj ])
+Intersection ([ [2,5]-grps by rad, [2,5]-grps by proj ])
+[2,5]-grps by inj
+[2,5]-grps by inj
+Intersection ([ [2,5]-grps by inj, [2,5]-grps by proj ])
+Intersection ([ [2,5]-grps by inj, [2,5]-grps by proj ])
+[2,5]-grps by proj
+[2,5]-grps by proj
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by rad)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by rad)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by boundary, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by rad)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by rad)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by locdef, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by rad)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by rad)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by membersip, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by rad)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by rad)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by res, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by rad, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by rad, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by rad, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by rad, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by rad, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by rad, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by rad, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by rad, [2,5]-grps by res)
+FittingFormationProduct ([2,5]-grps by rad, [2,5]-grps by rad)
+FittingFormationProduct ([2,5]-grps by rad, [2,5]-grps by rad)
+FittingFormationProduct ([2,5]-grps by rad, [2,5]-grps by inj)
+FittingFormationProduct ([2,5]-grps by rad, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by rad, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by rad, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by inj, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by inj, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by inj, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by inj, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by inj, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by inj, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by inj, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by inj, [2,5]-grps by res)
+FittingFormationProduct ([2,5]-grps by inj, [2,5]-grps by rad)
+FittingFormationProduct ([2,5]-grps by inj, [2,5]-grps by rad)
+FittingFormationProduct ([2,5]-grps by inj, [2,5]-grps by inj)
+FittingFormationProduct ([2,5]-grps by inj, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by inj, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by inj, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by boundary)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by locdef)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by membersip)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by res)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by rad)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by rad)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by inj)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by proj)
+FormationProduct ([2,5]-grps by proj, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by boundary, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by locdef, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by locdef, [2,5]-grps by boundary)
+FittingFormationProduct ([2,5]-grps by locdef, [2,5]-grps by locdef)
+FittingFormationProduct ([2,5]-grps by locdef, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by locdef, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by locdef, [2,5]-grps by membersip)
+FittingFormationProduct ([2,5]-grps by locdef, [2,5]-grps by res)
+FittingFormationProduct ([2,5]-grps by locdef, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by locdef, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by locdef, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by locdef, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by locdef, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by locdef, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by locdef, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by membersip, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by res, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by res, [2,5]-grps by boundary)
+FittingFormationProduct ([2,5]-grps by res, [2,5]-grps by locdef)
+FittingFormationProduct ([2,5]-grps by res, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by res, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by res, [2,5]-grps by membersip)
+FittingFormationProduct ([2,5]-grps by res, [2,5]-grps by res)
+FittingFormationProduct ([2,5]-grps by res, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by res, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by res, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by res, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by res, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by res, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by res, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by rad, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by inj, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by boundary)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by locdef)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by membersip)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by res)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by rad)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by inj)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by proj)
+FittingProduct ([2,5]-grps by proj, [2,5]-grps by proj)
 true
-gap> ReadPackage ("crisp", "tst/basis.g");
-true
-gap> ReadPackage ("crisp", "tst/boundary.g");
-true
-gap> ReadPackage ("crisp", "tst/char.g");
-true
-gap> ReadPackage ("crisp", "tst/in.g");
-true
-gap> ReadPackage ("crisp", "tst/injectors.g");
-true
-gap> ReadPackage ("crisp", "tst/normals.g");
-true
-gap> ReadPackage ("crisp", "tst/projectors.g");
-true
-gap> ReadPackage ("crisp", "tst/radicals.g");
-true
-gap> ReadPackage ("crisp", "tst/residuals.g");
-true
-gap> ReadPackage ("crisp", "tst/socle.g");
-true
-gap> STOP_TEST ("test.tst", 0);
+gap> STOP_TEST("test.tst", 0);
+$Id: test.tst,v 1.6 2011/05/26 10:04:29 gap Exp $
+GAP4stones: 0

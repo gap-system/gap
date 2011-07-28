@@ -10,7 +10,7 @@
 ##  This file contains the declarations for functions for strings.
 ##
 Revision.string_gd :=
-    "@(#)$Id: string.gd,v 4.35 2010/06/16 15:33:41 gap Exp $";
+    "@(#)$Id: string.gd,v 4.37 2010/11/12 14:44:29 alexk Exp $";
 
 
 #############################################################################
@@ -534,7 +534,6 @@ MakeReadOnlyGlobal("ReplacedString"); # function defined in `init.g'.
 ##  <Description>
 ##  passes the string <A>expr</A> through an input text stream so that &GAP;
 ##  interprets it, and returns the result.
-##  The following trivial example demonstrates its use.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> a:=10;
@@ -553,7 +552,7 @@ MakeReadOnlyGlobal("ReplacedString"); # function defined in `init.g'.
 ##  know about the local variables and the arguments of the function. 
 ##  A possible workaround is to define global variables in advance, and
 ##  then to assign the values of the local variables to the global ones,
-##  like in the following example.
+##  like in the example below.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> global_a := 0;;
@@ -625,7 +624,7 @@ DeclareGlobalFunction( "JoinStringsWithSeparator" );
 ##  it is returned unchanged.
 ##  This latter property means that <Ref Func="Chomp"/> is safe to use in
 ##  cases where one is manipulating the result of another function which
-##  might sometimes return <K>fail</K>, for example.
+##  might sometimes return <K>fail</K>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Chomp("The quick brown fox jumps over the lazy dog.\n");
@@ -660,6 +659,21 @@ DeclareGlobalFunction( "JoinStringsWithSeparator" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "Chomp" );
+
+
+#############################################################################
+##
+## IntChar(<char>) . . . . . . .  integer in [0..255] corresponding to <char>
+## CharInt(<int>)  . . . . . . character corresponding to <int> from [0..255] 
+## SIntChar(<char>) . . signed integer in [-128..127] corresponding to <char>
+## CharSInt(<int>) . . .  character corresponding to <int> from [-128 .. 127] 
+## The signed and unsigned integer functions behave the same for values 
+## in the range [0..127].
+
+DeclareSynonym( "IntChar",  INT_CHAR);
+DeclareSynonym( "CharInt",  CHAR_INT);
+DeclareSynonym( "SIntChar", SINT_CHAR);
+DeclareSynonym( "CharSInt", CHAR_SINT);
 
 
 #############################################################################

@@ -2,14 +2,14 @@
 ##
 #W  teachm2.g                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: teachm2.g,v 4.3 2009/12/28 22:57:22 gap Exp $
+#H  @(#)$Id: teachm2.g,v 4.4 2010/10/29 09:02:47 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
 ##  This  file contains rotines for turning teaching mode on and off.
 ##
 Revision.teachm2_g:=
-  "@(#)$Id: teachm2.g,v 4.3 2009/12/28 22:57:22 gap Exp $";
+  "@(#)$Id: teachm2.g,v 4.4 2010/10/29 09:02:47 gap Exp $";
 
 TEACHMODE:=fail;
 
@@ -23,10 +23,10 @@ local s;
   fi;
   if TEACHMODE=true then
     s:="ON";
-    INDETERMINATENAMEREUSE:=1;
+    GAPInfo.UserPreferences.IndeterminateNameReuse:= 1;
   else
     s:="OFF";
-    INDETERMINATENAMEREUSE:=0;
+    GAPInfo.UserPreferences.IndeterminateNameReuse:= 0;
   fi;
   Info(InfoWarning,1,"Teaching mode is turned ",s);
 end);

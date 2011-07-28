@@ -2,7 +2,7 @@
 ##
 #W helpers.gi                                               Laurent Bartholdi
 ##
-#H   @(#)$Id: helpers.gi,v 1.81 2009/10/07 19:08:45 gap Exp $
+#H   @(#)$Id: helpers.gi,v 1.112 2011/06/20 14:23:51 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -23,6 +23,7 @@ if VERSION@<>fail then
     VERSION@ := ReadLine(InputTextFile(VERSION@));
     Remove(VERSION@); # remove \n
 fi;
+MakeReadOnlyGlobal("VERSION@");
 
 BindGlobal("DOC@", function() MakeGAPDocDoc(Concatenation(PATH@,"/doc"),"fr",
   ["../gap/frmachine.gd","../gap/frelement.gd","../gap/mealy.gd",
@@ -42,7 +43,7 @@ InstallGlobalFunction(TensorSum, function(arg)
     if Length(arg) = 0 then
         Error("<arg> must be nonempty");
     elif Length(arg) = 1 and IsList(arg[1])  then
-        if IsEmpty(arg[1])  then
+        if arg[1]=[]  then
             Error("<arg>[1] must be nonempty");
         fi;
         arg := arg[1];
@@ -63,7 +64,7 @@ BindGlobal("TENSORPRODUCT@", function(arg)
     if Length(arg) = 0 then
         Error("<arg> must be nonempty");
     elif Length(arg) = 1 and IsList(arg[1])  then
-        if IsEmpty(arg[1])  then
+        if arg[1]=[]  then
             Error("<arg>[1] must be nonempty");
         fi;
         arg := arg[1];
@@ -103,20 +104,38 @@ BindGlobal("CHECKEXEC@", function(prog)
     EXEC@.(prog) := s;
 end);
 
+BindGlobal("OUTPUTTEXTSTRING@", function(s)
+    local f;
+    f := OutputTextString(s,false);
+    SetPrintFormattingStatus(f,false);
+    return f;
+end);
+
+BindGlobal("STRINGGROUP@",
+        function(O)
+    local s, os;
+    s := "";
+    os := OutputTextString(s,true);
+    PrintTo(os,O);
+    CloseStream(os);
+    return s;
+end);
+
 BindGlobal("EXECINSHELL@", function(input,command,detach)
     local tmp, outs, output;
     outs := "";
-    output := OutputTextString(outs,false);
+    output := OUTPUTTEXTSTRING@(outs);
     CHECKEXEC@("sh");
 
     if detach=fail then
         if IsString(input) then input := InputTextString(input); fi;
     else
 	tmp := Filename(DirectoryTemporary(), "stdin");
+ 
         if not IsString(input) then
 	    input := ReadAll(input);
         fi;
-        PrintTo(tmp, input);
+        WriteAll(OutputTextFile(tmp,false), input);
         input := InputTextNone();
         CHECKEXEC@("cat");
         command := Concatenation("cat ",tmp,"|",command,"&");
@@ -130,7 +149,7 @@ BindGlobal("DOT2DISPLAY@", function(str,prog,args)
     CHECKEXEC@(prog);
     CHECKEXEC@("sh");
 
-    return EXECINSHELL@(str,Concatenation(EXEC@.(prog)," ",args," | ",EXEC@.display),ValueOption("detach"));
+    return EXECINSHELL@(str,Concatenation(EXEC@.(prog)," ",args," | ",EXEC@.display," -flatten -"),ValueOption("detach"));
 end);
 
 BindGlobal("JAVAPLOT@", function(input)
@@ -143,11 +162,27 @@ BindGlobal("JAVAPLOT@", function(input)
         r := EXECINSHELL@(input,Concatenation(EXEC@.appletviewer," ",r[1]," ",r[2]),true);
     else
         r := Process(DirectoryCurrent(), EXEC@.appletviewer, input,
-                     OutputTextString(s,false), r);
+                     OUTPUTTEXTSTRING@(s), r);
     fi;
     if r<>"" and r<>0 then
         Error("JAVAPLOT: error ",r,": ",s);
     fi;
+end);
+
+BindGlobal("APPEND@", function(arg)
+    local i;
+    for i in [2..Length(arg)] do
+        Append(arg[1],String(arg[i]));
+    od;
+end);
+
+BindGlobal("CONCAT@", function(arg)
+    local i, s;
+    s := "";
+    for i in arg do
+        Append(s,String(i));
+    od;
+    return s;
 end);
 
 InstallGlobalFunction(WordGrowth, function(arg)
@@ -177,7 +212,7 @@ InstallGlobalFunction(WordGrowth, function(arg)
         options := rec(spheresizes := options);
     fi;
     i := Difference(RecNames(options),optionnames);
-    if not IsEmpty(i) then
+    if i<>[] then
         Info(InfoFR,1,"WordGrowth: unused options ",i);
     fi;
 
@@ -282,17 +317,10 @@ InstallGlobalFunction(WordGrowth, function(arg)
             else
                 col := Position(gens,gen);
             fi;
-            Append(S,"  "); Append(S,String(nsrc)); Append(S,String("."));
-            Append(S,String(src)); Append(S," -> ");
-            Append(S,String(ndst)); Append(S,String("."));
-            Append(S,String(dst)); Append(S," [color=");
-            Append(S,COLOURS@(col)); Append(S,",dir=");
-            Append(S,dir); Append(S,"];\n");
+            APPEND@(S,"  ",nsrc,".",src," -> ",ndst,".",dst," [color=",COLOURS@(col),",dir=",dir,"];\n");
         end;
         plotvertex := function(nsrc,src)
-            Append(S,"  "); Append(S,String(nsrc)); Append(S,String("."));
-            Append(S,String(src));
-            Append(S," [height=0.3,width=0.6,fixedsize=true]\n");
+            APPEND@(S,"  ",nsrc,".",src," [height=0.3,width=0.6,fixedsize=true]\n");
         end;
     fi;
 
@@ -316,7 +344,7 @@ InstallGlobalFunction(WordGrowth, function(arg)
         sphere := [sphere,Difference(gens,sphere)];
         if track<>fail then
             Add(track,trackgens);
-            if not IsEmpty(track[1]) then
+            if track[1]<>[] then
                 t := Position(track[2],track[1][1]);
                 if t<>fail then Remove(track[2],t); fi;
             fi;
@@ -411,12 +439,12 @@ InstallGlobalFunction(WordGrowth, function(arg)
                 fi;
             od; od;
         fi;
-        if limit=infinity and IsEmpty(sphere[n+2]) then
+        if limit=infinity and sphere[n+2]=[] then
             Remove(sphere);
-            if IsEmpty(sphere[n+1]) then Remove(sphere); Remove(result); fi;
+            if sphere[n+1]=[] then Remove(sphere); Remove(result); fi;
             if track<>fail then
                 Remove(track);
-                if IsEmpty(track[n+1]) then Remove(track); fi;
+                if track[n+1]=[] then Remove(track); fi;
             fi;
             break;
         fi;
@@ -525,7 +553,68 @@ end);
 
 #############################################################################
 ##
+#H Draw order relations
+##
+BindGlobal("ORDER2DOT@", function(R)
+    local i, j, succ, S;
+    
+    if not IsBinaryRelationOnPointsRep(R) then
+        R := AsBinaryRelationOnPoints(R);
+    fi;
+
+    S := "digraph ";
+    if HasName(R) and ForAll(Name(R),IsAlphaChar) then
+        APPEND@(S, "\"",Name(R),"\"");
+    else
+        Append(S,"HasseDiagram");
+    fi;
+    Append(S," {\n");
+    for i in [1..DegreeOfBinaryRelation(R)] do
+        APPEND@(S,i," [shape=circle]\n");
+    od;
+    
+    succ := Successors(R);
+
+    for i in [1..DegreeOfBinaryRelation(R)] do
+        for j in succ[i] do
+            APPEND@(S,"  ",i," -> ",j," [label=\".\"];\n");
+        od;
+    od;
+    Append(S,"}\n");
+    return S;
+end);
+
+InstallMethod(Draw, "(FR) for a binary relation",
+        [IsBinaryRelation],
+        function(R)
+    DOT2DISPLAY@(ORDER2DOT@(R),"dot","-Gbgcolor=white -Tps 2>/dev/null");
+end);
+
+InstallMethod(Draw, "(FR) for a binary relation and a filename",
+        [IsBinaryRelation,IsString],
+        function(R,S)
+    AppendTo(S,ORDER2DOT@(R));
+end);
+
+InstallMethod(HeightOfPoset, "(FR) for a binary relation",
+        [IsBinaryRelation],
+        function(poset)
+  local s, n, min;
+  s := Elements(Source(poset));
+  n := -1;
+  repeat
+    min := Filtered(s,x->Intersection(ImagesElm(poset,x),s)=[x]);
+    s := Difference(s,min);
+    n := n+1;
+  until s=[];
+  return n;
+end);
+#############################################################################
+
+#############################################################################
+##
 #H StringByInt
+#H Rename subobjects if they have "=" (but not IsIdentical) named objects
 ##
 InstallGlobalFunction(StringByInt, function(arg)
     local base, result, digit, n;
@@ -563,6 +652,20 @@ InstallGlobalFunction(PositionInTower, function(seq,x)
     return low;
 end);
 
+InstallMethod(RenameSubobjects, "(FR) for an object and a list of named objs",
+        [IsObject, IsList],
+        function(obj,refobj)
+    local i;
+    if IsList(obj) then
+        for i in obj do RenameSubobjects(i,refobj); od;
+    elif IsRecord(obj) then
+        for i in RecNames(obj) do RenameSubobjects(obj.(i),refobj); od;
+    elif not HasName(obj) then
+        i := Position(refobj,obj);
+        if i<>fail then SetName(obj,Name(refobj[i])); fi;
+    fi;
+end);
+
 InstallGlobalFunction(CoefficientsInAbelianExtension, function(x,seq,G)
     local ord, i, j, k;
     ord := [];
@@ -582,7 +685,7 @@ BindGlobal("MAPPEDWORD@", function(arg)
     while not IsAssocWord(w) do w := UnderlyingElement(w); od;
     w := LetterRepAssocWord(w);
     gens := arg[2];
-    if IsEmpty(w) then
+    if w=[] then
         if Length(arg)=2 then return One(gens[1]); else return arg[3]; fi;
     fi;
     e := fail;
@@ -799,26 +902,30 @@ InstallMethod(ShortGroupRelations, "for a list and a length",
 end);
 
 BindGlobal("SHORTWORDINSET@", function(f,fgen,fone,ggen,gone,set,result,n)
-    local x, newfx, newlen, i, seen, forbidden, todo, justone;
+    local x, newfx, newlen, i, seen, forbidden, todo, justone, compare;
     if n<0 then
         n := -n;
         justone := false;
     else
         justone := true;
     fi;
+    compare := function(set,elm)
+        if IsFunction(set) then
+            return set(elm);
+        elif FamilyObj(elm)=FamilyObj(set) and elm=set then
+            return true;    
+        elif IsList(set) then
+            return elm in set;
+        fi;
+        return false;
+    end;
     if fone=fail then
         todo := NewFIFO(List([1..Length(fgen)],i->[ggen[i],fgen[i],1]));
     else
         todo := NewFIFO([[gone,fone,0]]);
     fi;
     if Length(ggen)=0 then # special case
-        if IsList(set) then
-            if gone in set then Add(result,fone); fi;
-        elif IsFunction(set) then
-            if set(gone) then Add(result,fone); fi;
-        else
-            if set=gone then Add(result,fone); fi;
-        fi;
+        if compare(set,gone) then Add(result,fone); fi;
         return result;
     fi;
     seen := NewDictionary(ggen[1],false);
@@ -829,13 +936,7 @@ BindGlobal("SHORTWORDINSET@", function(f,fgen,fone,ggen,gone,set,result,n)
             continue;
         fi;
         AddDictionary(seen,x[1]);
-        if IsList(set) then
-            if x[1] in set then Add(result,x[2]); if justone then break; fi; fi;
-        elif IsFunction(set) then
-            if set(x[1]) then Add(result,x[2]); if justone then break; fi; fi;
-        else
-            if x[1]=set then Add(result,x[2]); if justone then break; fi; fi;
-        fi;
+        if compare(set,x[1]) then Add(result,x[2]); if justone then break; fi; fi;
         if x[3]<n then
             for i in [1..Length(ggen)] do
                 newfx := x[2]*fgen[i];
@@ -891,11 +992,11 @@ end);
 ##
 InstallGlobalFunction(SurfaceBraidFpGroup, function(n,g,p)
   local G, R, a, b, z, s;
-  a := List([1..g],i->Concatenation("a",String(i)));
-  b := List([1..g],i->Concatenation("b",String(i)));
-  s := List([1..n-1],i->Concatenation("s",String(i)));
+  a := List([1..g],i->CONCAT@("a",i));
+  b := List([1..g],i->CONCAT@("b",i));
+  s := List([1..n-1],i->CONCAT@("s",i));
   if p>0 then
-    z := List([1..p-1],i->Concatenation("z",String(i)));
+    z := List([1..p-1],i->CONCAT@("z",i));
   else
     z := [];
   fi;
@@ -961,12 +1062,12 @@ InstallGlobalFunction(ArtinRepresentation, function(n)
                                    S{[i+2..n]}))));
 end);
 
-BindGlobal("ENDOIsOne@", function(x)
+BindGlobal("ENDOISONE@", function(x)
     return ForAll(GeneratorsOfGroup(Source(x)),s->s=s^x);
 end);
 
-BindGlobal("ENDONorm@", function(x)
-    if ENDOIsOne@(x) then
+BindGlobal("ENDONORM@", function(x)
+    if ENDOISONE@(x) then
         return 0;
     else
         return LogInt(Maximum(List(GeneratorsOfGroup(Source(x)),s->Length(s^x)))^4,2);
@@ -1064,19 +1165,18 @@ InstallMethod(DimensionSeries, "for an algebra with one and a limit",
 ##
 #M Complex numbers, and points on the Riemann sphere
 ##
-InstallValue(MACFLOAT_0,MacFloat(0));
-InstallValue(MACFLOAT_1,MacFloat(1));
-InstallValue(MACFLOAT_INF,MACFLOAT_1/MACFLOAT_0);
-InstallValue(MACFLOAT_MINF,-MACFLOAT_INF);
-InstallValue(MACFLOAT_NAN,MACFLOAT_0/MACFLOAT_0);
-InstallValue(MACFLOAT_PI,ACOS_MACFLOAT(-MACFLOAT_1));
-InstallValue(MACFLOAT_2PI,2*MACFLOAT_PI);
-BindGlobal("MACFLOAT_EPS",MACFLOAT_1);
-MakeReadWriteGlobal("MACFLOAT_EPS");
-while MACFLOAT_1+MACFLOAT_EPS<>MACFLOAT_1 do
-    MACFLOAT_EPS := MACFLOAT_EPS / 2;
-od;
-MakeReadOnlyGlobal("MACFLOAT_EPS");
+InstallValue(MACFLOAT_INF,1.0/0.0);
+InstallValue(MACFLOAT_NAN,0.0/0.0);
+InstallValue(MACFLOAT_PI,ACOS_MACFLOAT(-1.0));
+BindGlobal("MACFLOAT_EPS", CallFuncList(function()
+    local eps, neweps;
+    neweps := 1.0;
+    repeat
+        eps := neweps;
+        neweps := eps/2;
+    until 1.0+neweps=1.0;
+    return eps;
+end, []));
 
 SetLeftActingDomain(COMPLEX_FIELD,COMPLEX_FIELD);
 SetCharacteristic(COMPLEX_FIELD,0);
@@ -1089,15 +1189,17 @@ SetName(COMPLEX_FIELD,"COMPLEX_FIELD");
 InstallGlobalFunction(Complex, function(arg)
     local i, p, q, r, s, z;
     if Length(arg)=2 then
-        return Objectify(TYPE_COMPLEX,[MacFloat(arg[1]),MacFloat(arg[2])]);
+        return Objectify(TYPE_COMPLEX,[Float(arg[1]),Float(arg[2])]);
     elif IS_COMPLEX(arg[1]) then
         return arg[1];
     elif IsP1Point(arg[1]) then
-        return arg[1]![1];
-    elif IsMacFloat(arg[1]) or IsRat(arg[1]) then
-        return Objectify(TYPE_COMPLEX,[MacFloat(arg[1]),MACFLOAT_0]);
+        p := P1POINT2C2(arg[1]);
+        if p[2]=COMPLEX_0 then return Complex(infinity); fi;
+        return p[1]/p[2];
+    elif IsFloat(arg[1]) or IsRat(arg[1]) then
+        return Objectify(TYPE_COMPLEX,[Float(arg[1]),0.0]);
     elif IsInfinity(arg[1]) then
-        return Objectify(TYPE_COMPLEX,[MACFLOAT_INF,MACFLOAT_0]);
+        return Objectify(TYPE_COMPLEX,[MACFLOAT_INF,0.0]);
     elif IsCyclotomic(arg[1]) or IsAlgebraicElement(arg[1]) then
         p := MinimalPolynomial(Rationals,arg[1]);
         r := ComplexRootsOfUnivariatePolynomial(p);
@@ -1110,22 +1212,37 @@ InstallGlobalFunction(Complex, function(arg)
             return fail;
         fi;
     elif IS_STRING(arg[1]) then
-        s := DifferenceLists(LowercaseString(arg[1])," *");
-        p := 1;
-        z := [MacFloat(0),MacFloat(0)];
+        s := DifferenceLists(LowercaseString(arg[1]),Concatenation(WHITESPACE,"*"));
+        if s in ["inf","infinity"] then return Complex(infinity); fi;
+        if s="nan" then return Complex(MACFLOAT_NAN); fi;
+        p := 1; # start parsing a float here
+        z := [Float(0),Float(0)];
         while p <= Length(s) do
-            i := 1;
-            q := p;
-            if s[p] in "+-" then p := p+1; fi;
-            if s[p]='i' then i := 2; Remove(s,p); fi;
-            if p>Length(s) or s[p] in "+-" then Add(s,'1',p); fi;
+            i := 1; # by default, real part
+            q := p; # start parsing a float here
+            if s[p] in "+-" then # sign
+                p := p+1;
+                if p>Length(s) then return fail; fi;
+            fi;
+            if s[p]='i' then
+                i := 2; Remove(s,p); # imaginary part, zap it
+                if p>Length(s) or s[p] in "+-" then Add(s,'1',p); fi; # i+... = 1*i+...
+            fi;
             while p<=Length(s) and s[p] in "0123456789." do p := p+1; od;
-            if p<=Length(s) and s[p]='e' then
-                p := p+2;
+            if p<=Length(s) and s[p]='e' then # exponent
+                p := p+1;
+                if p<=Length(s) and s[p] in "+-" then p := p+1; fi;
+                p := p+1;
                 while p<=Length(s) and IsDigitChar(s[p]) do p := p+1; od;
             fi;
-            if p<=Length(s) and s[p]='i' then i := 2; Remove(s,p); fi;
-            z[i] := z[i] + MACFLOAT_STRING(s{[q..p-1]});
+            if p<=Length(s) and s[p]='i' then
+                if i=2 then return fail; fi; # two imaginaries
+                i := 2; Remove(s,p);
+            fi;
+            if q>=p then return fail; fi; # no new characters
+            q := MACFLOAT_STRING(s{[q..p-1]});
+            if q=fail then return fail; fi; # something wrong
+            z[i] := z[i] + q;
         od;
         return Objectify(TYPE_COMPLEX,z);
     fi;
@@ -1135,8 +1252,13 @@ end);
 InstallMethod(ComplexRootsOfUnivariatePolynomial, "for a list of coefficients",
         [IsList],
         function(l)
-    local dll;
-    return List(COMPLEX_ROOTS(List(l,Complex)),z->Objectify(TYPE_COMPLEX,z));
+    local r;
+    r := COMPLEX_ROOTS(List(l,Complex));
+    while r=fail do
+        if Length(l)<=1 then return []; fi; # that's OK, no root
+        Error("COMPLEX_ROOTS returned Fail. Repent.");
+    od;
+    return List(r,z->Objectify(TYPE_COMPLEX,z));
 end);
 
 InstallMethod(ComplexRootsOfUnivariatePolynomial, "for a complex polynomial",
@@ -1146,7 +1268,7 @@ InstallMethod(ComplexRootsOfUnivariatePolynomial, "for a complex polynomial",
 InstallValue(COMPLEX_0,Complex(0));
 InstallValue(COMPLEX_1,Complex(1));
 InstallValue(COMPLEX_I,Complex(0,1));
-InstallValue(COMPLEX_2IPI,Complex(0,2*ACOS_MACFLOAT(-MACFLOAT_1)));
+InstallValue(COMPLEX_2IPI,Complex(0,2*ACOS_MACFLOAT(-1.0)));
 
 InstallOtherMethod(RealPart, [IS_COMPLEX], x->x![1]);
 InstallOtherMethod(ImaginaryPart, [IS_COMPLEX], x->x![2]);
@@ -1159,36 +1281,51 @@ InstallMethod(Argument, [IS_COMPLEX], x->ATAN2_MACFLOAT(x![2],x![1]));
 SetIsUFDFamily(COMPLEX_FAMILY,true);
 SetZero(COMPLEX_FAMILY,Complex(0));
 SetOne(COMPLEX_FAMILY,Complex(1));
-InstallMethod(PrintObj, [IS_COMPLEX], function(x)
-    Print(x![1]);
-    if x![2]>MACFLOAT_0 then
-        Print("+I*",x![2]);
-    elif x![2]<MACFLOAT_0 then
-        Print("-I*",-x![2]);
-    fi;
-end);
-InstallMethod(ViewObj, [IS_COMPLEX], function(x)
-    local i;
-    Print(x![1]);
-    i := (x![2]+x![1])-x![1]; # wipe out a very small imaginary part
-    if i>MACFLOAT_0 then
-        Print("+I*",i);
-    elif x![2]<MACFLOAT_0 then
-        Print("-I*",-i);
-    fi;
-end);
 InstallMethod(String, [IS_COMPLEX], function(x)
     local s;
-    s := "";
-    PrintTo(OutputTextString(s,false),x);
+    s := ShallowCopy(String(x![1]));
+    if x![2]>0.0 then
+        APPEND@(s,"+I*",x![2]);
+    elif x![2]<0.0 then
+        APPEND@(s,"-I*",-x![2]);
+    fi;
     return s;
 end);
+InstallMethod(ViewString, [IS_COMPLEX], function(x)
+    local i, s;
+    s := ShallowCopy(ViewString(x![1]));
+    i := (x![2]+x![1])-x![1]; # wipe out a very small imaginary part
+    if i>0.0 then
+        Append(s,"+I*");
+        Append(s,ViewString(i));
+    elif i<0.0 then
+        Append(s,"-I*");
+        Append(s,ViewString(-i));
+    fi;
+    return s;
+end);
+
+BindGlobal("INSTALLPRINTERS@", function(filter)
+    InstallMethod(PrintObj, [filter], function(x) Print(String(x)); end);
+    InstallMethod(ViewObj, [filter], function(x) Print(ViewString(x)); end);
+    InstallMethod(Display, [filter], function(x) Print(DisplayString(x)); end);
+end);
+
+BindGlobal("STRING@", function(x) # try to avoid this as much as possible
+    local s;
+    Info(InfoFR,2,"Deprecated STRING@ called on ",x);
+    s := "";
+    PrintTo(OUTPUTTEXTSTRING@(s),x);
+    return s;
+end);
+
+INSTALLPRINTERS@(IS_COMPLEX);
 
 InstallOtherMethod(SUM, IsIdenticalObj, [IS_COMPLEX, IS_COMPLEX],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]+y![1], x![2]+y![2]]);
 end);
-InstallOtherMethod(SUM, [IS_COMPLEX, IsMacFloat],
+InstallOtherMethod(SUM, [IS_COMPLEX, IsFloat],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]+y, x![2]]);
 end);
@@ -1196,7 +1333,7 @@ InstallOtherMethod(SUM, [IS_COMPLEX, IsRat],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]+y, x![2]]);
 end);
-InstallOtherMethod(SUM, [IsMacFloat, IS_COMPLEX],
+InstallOtherMethod(SUM, [IsFloat, IS_COMPLEX],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x+y![1], y![2]]);
 end);
@@ -1208,7 +1345,7 @@ InstallOtherMethod(DIFF, IsIdenticalObj, [IS_COMPLEX, IS_COMPLEX],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]-y![1], x![2]-y![2]]);
 end);
-InstallOtherMethod(DIFF, [IS_COMPLEX, IsMacFloat],
+InstallOtherMethod(DIFF, [IS_COMPLEX, IsFloat],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]-y, x![2]]);
 end);
@@ -1216,7 +1353,7 @@ InstallOtherMethod(DIFF, [IS_COMPLEX, IsRat],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]-y, x![2]]);
 end);
-InstallOtherMethod(DIFF, [IsMacFloat, IS_COMPLEX],
+InstallOtherMethod(DIFF, [IsFloat, IS_COMPLEX],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x-y![1], -y![2]]);
 end);
@@ -1230,7 +1367,7 @@ InstallOtherMethod(PROD, IsIdenticalObj, [IS_COMPLEX, IS_COMPLEX],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]*y![1]-x![2]*y![2],x![1]*y![2]+x![2]*y![1]]);
 end);
-InstallOtherMethod(PROD, [IS_COMPLEX, IsMacFloat],
+InstallOtherMethod(PROD, [IS_COMPLEX, IsFloat],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]*y,x![2]*y]);
 end);
@@ -1238,7 +1375,7 @@ InstallOtherMethod(PROD, [IS_COMPLEX, IsRat],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]*y,x![2]*y]);
 end);
-InstallOtherMethod(PROD, [IsMacFloat, IS_COMPLEX],
+InstallOtherMethod(PROD, [IsFloat, IS_COMPLEX],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x*y![1],x*y![2]]);
 end);
@@ -1255,7 +1392,7 @@ InstallOtherMethod(QUO, IsIdenticalObj, [IS_COMPLEX, IS_COMPLEX],
         function(x,y)
     return x*INV(y);
 end);
-InstallOtherMethod(QUO, [IS_COMPLEX, IsMacFloat],
+InstallOtherMethod(QUO, [IS_COMPLEX, IsFloat],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]/y,x![2]/y]);
 end);
@@ -1263,7 +1400,7 @@ InstallOtherMethod(QUO, [IS_COMPLEX, IsRat],
         function(x,y)
     return Objectify(TYPE_COMPLEX, [x![1]/y,x![2]/y]);
 end);
-InstallOtherMethod(QUO, [IsMacFloat, IS_COMPLEX],
+InstallOtherMethod(QUO, [IsFloat, IS_COMPLEX],
         function(x,y)
     return x*INV(y);
 end);
@@ -1271,8 +1408,8 @@ InstallOtherMethod(QUO, [IsRat, IS_COMPLEX],
         function(x,y)
     return x*INV(y);
 end);
-BindGlobal("COMPLEX_NAN",COMPLEX_0/MACFLOAT_0);
-BindGlobal("COMPLEX_INF",COMPLEX_1/MACFLOAT_0);
+BindGlobal("COMPLEX_NAN",COMPLEX_0/0.0);
+BindGlobal("COMPLEX_INF",COMPLEX_1/0.0);
 InstallOtherMethod(POW, IsIdenticalObj, [IS_COMPLEX, IS_COMPLEX],
         function(x,y)
     local r, n, a;
@@ -1285,9 +1422,22 @@ end);
 InstallOtherMethod(POW, [IS_COMPLEX, IsScalar],
         function(x,y)
     local r, a;
-    r := (x![1]^2+x![2]^2)^MacFloat(y/2);
-    a := ATAN2_MACFLOAT(x![2],x![1])*MacFloat(y);
+    r := (x![1]^2+x![2]^2)^Float(y/2);
+    a := ATAN2_MACFLOAT(x![2],x![1])*Float(y);
     return Objectify(TYPE_COMPLEX, [r*COS_MACFLOAT(a),r*SIN_MACFLOAT(a)]);
+end);
+InstallOtherMethod(POW, [IS_COMPLEX, IsInt],
+        function(x,n)
+    local j, xpow, y;
+    if n=0 then return COMPLEX_1; elif n<0 then n := -n; x := INV(x); fi;
+    if n>100 then TryNextMethod(); fi;
+    y := COMPLEX_1;
+    while n<>0 do
+        if IsOddInt(n) then y := y*x; fi;
+        if n>1 then x := x*x; fi;
+        n := QuoInt(n,2);
+    od;
+    return y;
 end);
 InstallOtherMethod(POW, [IsScalar, IS_COMPLEX],
         function(x,y)
@@ -1297,7 +1447,7 @@ InstallMethod(Sqrt, [IS_COMPLEX],
         function(x)
     local r, a;
     r := Sqrt(Sqrt(x![1]^2+x![2]^2));
-    a := ATAN2_MACFLOAT(x![2],x![1])*MacFloat(1/2);
+    a := ATAN2_MACFLOAT(x![2],x![1])*Float(1/2);
     return Objectify(TYPE_COMPLEX, [r*COS_MACFLOAT(a),r*SIN_MACFLOAT(a)]);
 end);
 InstallOtherMethod(Random, [IS_COMPLEXCollection],
@@ -1337,6 +1487,17 @@ InstallGlobalFunction(EXP_COMPLEX, function(z)
     return Complex(r*COS_MACFLOAT(z![2]),r*SIN_MACFLOAT(z![2]));
 end);
 
+BindGlobal("CLEANUPCOMPLEX@", function(z,prec)
+    if AbsoluteValue(ImaginaryPart(z)) < prec*AbsoluteValue(RealPart(z)) then
+        z := RealPart(z);
+        if AbsoluteValue(z-1.0) < prec then
+            z := 1.0;
+        fi;
+        return Complex(z,0.0);
+    fi;
+    return z;
+end);
+
 InstallOtherMethod(ReduceCoeffs, "(FR) for complex vectors",
         [IS_COMPLEXCollection, IsInt, IS_COMPLEXCollection, IsInt],
         function (l1, n1, l2, n2)
@@ -1372,79 +1533,6 @@ InstallOtherMethod(ReduceCoeffs, "(FR) for complex vectors",
     return n1;
 end);
 
-BindGlobal("COMPLEX_INV@", function(M)
-    if Length(M)<>2 then
-        TryNextMethod(); # we don't care about matrices > 2x2
-    fi;
-    return [[M[2][2],-M[1][2]],[-M[2][1],M[1][1]]]/(M[1][1]*M[2][2]-M[1][2]*M[2][1]);
-end);
-InstallOtherMethod(INV_MUT, "(FR) for a complex matrix",
-        [IS_COMPLEXCollColl], COMPLEX_INV@);
-InstallOtherMethod(INV, "(FR) for a complex matrix",
-        [IS_COMPLEXCollColl], COMPLEX_INV@);
-
-BindGlobal("PSL2VALUE@", function(m,z)
-    if IsP1Point(z) then
-        if z=P1infinity then
-            z := [COMPLEX_1,COMPLEX_0];
-        else
-            z := [Complex(z),COMPLEX_1];
-        fi;
-        m := m*z;
-        if m[2]=COMPLEX_0 then
-            return P1infinity;
-        else
-            return P1Point(m[1]/m[2]);
-        fi;
-    fi;
-    return (z*m[1][1]+m[1][2])/(z*m[2][1]+m[2][2]);
-end);
-
-BindGlobal("MATMOEBIUS@", function(m)
-    local n, d;
-    n := Reversed(CoefficientsOfUnivariatePolynomial(NumeratorOfRationalFunction(m)));
-    d := Reversed(CoefficientsOfUnivariatePolynomial(DenominatorOfRationalFunction(m)));
-    if Length(n)<2 then Add(n,COMPLEX_0,1); fi;
-    if Length(d)<2 then Add(d,COMPLEX_0,1); fi;
-    return [n,d];
-end);
-
-BindGlobal("CLEANUPRATIONAL@", function(f,prec)
-    local n, d, z, i, m, norm;
-    n := ShallowCopy(CoefficientsOfUnivariatePolynomial(NumeratorOfRationalFunction(f)));
-    d := ShallowCopy(CoefficientsOfUnivariatePolynomial(DenominatorOfRationalFunction(f)));
-    z := IndeterminateOfUnivariateRationalFunction(f);
-
-    norm := List(d,Norm);
-    m := Maximum(norm);
-    for i in [1..Length(d)] do
-        if norm[i] < prec*m then
-            d[i] := Zero(d[i]);
-        fi;
-    od;
-    norm := List(n,Norm);
-    m := Maximum(norm);
-    for i in [1..Length(n)] do
-        if norm[i] < prec*m then
-            n[i] := Zero(n[i]);
-        fi;
-    od;
-    m := First(d,x->x<>COMPLEX_0);
-    n := n/m;
-    d := d/m;
-    for i in [1..Length(d)] do
-        if AbsoluteValue(ImaginaryPart(d[i])) < prec*AbsoluteValue(RealPart(d[i])) then
-            d[i] := Complex(RealPart(d[i]),MACFLOAT_0);
-        fi;
-    od;
-    for i in [1..Length(n)] do
-        if AbsoluteValue(ImaginaryPart(n[i])) < prec*AbsoluteValue(RealPart(n[i])) then
-            n[i] := Complex(RealPart(n[i]),MACFLOAT_0);
-        fi;
-    od;
-    return Sum([1..Length(n)],i->n[i]*z^(i-1)) / Sum([1..Length(d)],i->d[i]*z^(i-1));
-end);
-
 InstallMethod(PROD, "(FR) for a rational and a complex rational function",
         [IsRat, IsUnivariateRationalFunction],
         function(r,f)
@@ -1472,189 +1560,145 @@ InstallOtherMethod(ComplexConjugate, "(FR) for a univariate rational function",
 end);
 #############################################################################
 
-InstallValue(P1infinity, Objectify(TYPE_P1POINT,[infinity]));
-
+#############################################################################
+# P1 points
+#############################################################################
 InstallGlobalFunction(P1Point, function(arg)
-    if arg[1]=infinity then
+    if Length(arg)=2 and ForAll(arg,IS_COMPLEX) then
+        return C22P1POINT(arg);
+    elif arg=[infinity] then
         return P1infinity;
+    elif Length(arg)=1 and IS_COMPLEX(arg[1]) then
+        return C22P1POINT([arg[1],COMPLEX_1]);
     else
-        return Objectify(TYPE_P1POINT,[CallFuncList(Complex,arg)]);
+        return C22P1POINT([CallFuncList(Complex,arg),COMPLEX_1]);
     fi;
 end);
 
-InstallOtherMethod(EQ, IsIdenticalObj, [IsP1Point, IsP1Point],
-        function(x,y)
-    return x![1]=y![1];
-end);
+InstallValue(P1infinity, P1Antipode(C22P1POINT([COMPLEX_0,COMPLEX_1])));
 
-InstallMethod(LT, "for points on P1",
-        [IsP1Point,IsP1Point],
-        function(x,y)
-    x := x![1]; y := y![1];
-    if x=infinity then return false; fi;
-    return y=infinity or (y<>infinity and x<y);
-end);
+InstallOtherMethod(EQ, IsIdenticalObj, [IsP1Point, IsP1Point], EQ_P1POINT);
+InstallMethod(LT, IsIdenticalObj, [IsP1Point,IsP1Point], LT_P1POINT);
+InstallMethod(DisplayString, [IsP1Point], x->P1POINT2STRING(20,x));
+InstallMethod(ViewString, [IsP1Point], function(x) return P1POINT2STRING(5,x); end);
+InstallMethod(String, [IsP1Point], x->Concatenation("P1Point(\"",P1POINT2STRING(20,x),"\")"));
+INSTALLPRINTERS@(IsP1Point);
 
-InstallMethod(PrintObj, [IsP1Point], function(x) Print(x![1]); end);
-
-InstallMethod(Value, "for a rational function and a point on P1",
-        [IsRationalFunction,IsP1Point],
-        function(rat,p)
-    local n, d, i, j;
-    n := NumeratorOfRationalFunction(rat);
-    d := DenominatorOfRationalFunction(rat);
-    if p=P1infinity then
-        i := DegreeOfUnivariateLaurentPolynomial(n);
-        j := DegreeOfUnivariateLaurentPolynomial(d);
-        if i<j then
-            return P1Point(0);
-        elif i>j then
-            return P1infinity;
-        else
-            return P1Point(CoefficientsOfUnivariatePolynomial(n)[i+1]/CoefficientsOfUnivariatePolynomial(d)[j+1]);
-        fi;
-    else
-        n := Value(n,p![1]);
-        d := Value(d,p![1]);
-        if IsZero(d) then
-            return P1infinity;
-        else
-            return P1Point(n/d);
-        fi;
-    fi;
-end);
-
-InstallOtherMethod(POW, "for point and matrix",
-        [IsP1Point, IsMatrix],
-        function(p,M)
-    local n, d; # matrix M is transposed of usual one:
-    # [[a,b],[c,d]] means (az+c)/(bz+d)
-    if p=P1infinity then
-        if IsZero(M[1][2]) then
-            return P1infinity;
-        else
-            return P1Point(M[1][1]/M[1][2]);
-        fi;
-    else
-        n := M[1][1]*p![1]+M[2][1];
-        d := M[1][2]*p![1]+M[2][2];
-        if IsZero(d) then
-            return P1infinity;
-        else
-            return P1Point(n/d);
-        fi;
-    fi;
-end);
+InstallMethod(P1Barycentre, [IsList], P1BARYCENTRE);
+InstallMethod(P1Barycentre, [IsP1Point], p->p);
+InstallMethod(P1Barycentre, [IsP1Point,IsP1Point], P1Midpoint);
+InstallMethod(P1Barycentre, [IsP1Point,IsP1Point,IsP1Point], function(arg) return P1BARYCENTRE(arg); end);
+#############################################################################
+# P1 maps
+#############################################################################
+InstallMethod(P1Map, "(FR) for images of 0,1,infinity",
+        [IsP1Point,IsP1Point,IsP1Point],
+        P1MAP3);
 
 InstallMethod(P1Map, "(FR) for images of 0,infinity",
         [IsP1Point,IsP1Point],
-        function(a,b)
-    # map 0 to a, infinity to b
-
-    a := a![1]; b := b![1];
-
-    if a=infinity then
-        return [[b,COMPLEX_1],[COMPLEX_1,COMPLEX_0]];
-    elif b=infinity then
-        return [[COMPLEX_1,a],[COMPLEX_0,COMPLEX_1]];
-    else
-        return [[b,a],[COMPLEX_1,COMPLEX_1]];
-    fi;
-end);
-
-InstallMethod(P1Map, "(FR) for images of 0,1,infinity",
-        [IsP1Point,IsP1Point,IsP1Point],
-        function(a,b,c)
-    # map 0 to a, 1 to b, infinity to c
-
-    a := a![1]; b := b![1]; c := c![1];
-
-    if a=infinity then
-        return [[c,b-c],[COMPLEX_1,COMPLEX_0]];
-    elif b=infinity then
-        return [[c,-a],[COMPLEX_1,-COMPLEX_1]];
-    elif c=infinity then
-        return [[b-a,a],[COMPLEX_0,COMPLEX_1]];
-    else
-        return [[c*(b-a),a*(c-b)],[b-a,c-b]];
-    fi;
-end);
+        P1MAP2);
 
 InstallMethod(P1Map, "(FR) for 3 points and their 3 images",
         [IsP1Point,IsP1Point,IsP1Point,IsP1Point,IsP1Point,IsP1Point],
         function(a,b,c,A,B,C)
     # map a to A, b to B, c to C
-    return P1Map(A,B,C)/P1Map(a,b,c);
+    return P1MAP3(A,B,C)/P1MAP3(a,b,c);
 end);
 
-InstallMethod(SphereP1, [IsP1Point],
-        function(p)
-    local n;
-    if p=P1infinity then
-        return [MACFLOAT_0,MACFLOAT_0,-MACFLOAT_1];
-    else
-        n := Norm(p![1]);
-        return [2*RealPart(p![1]),2*ImaginaryPart(p![1]),MACFLOAT_1-n]/(MACFLOAT_1+n);
-    fi;
-end);
+InstallMethod(ViewString, [IsP1Map], x->CONCAT@("<P1 mapping of degree ",DegreeOfP1Map(x),">"));
 
-BindGlobal("C2SPHERE@", function(p)
-    # return a point [v1:v2] in homogeneous coordinates mapping to p
-    if p[3]>MACFLOAT_0 then
-        return [Complex(p[1],p[2]),Complex(MACFLOAT_1+p[3])];
-    else
-        return [Complex(MACFLOAT_1-p[3]),Complex(p[1],-p[2])];
-    fi;
-end);
-
-InstallMethod(P1Sphere, [IsList],
-        function(v)
-    local n;
-    n := C2SPHERE@(v);
-    if n[2]=COMPLEX_0 then return P1infinity; else return P1Point(n[1]/n[2]); fi;
-end);
-
-InstallMethod(SphereProject, [IsList], v->v/Sqrt(v^2));
-
-InstallMethod(P1Distance, [IsP1Point,IsP1Point],
-        function(p,q)
-    return Sqrt((SphereP1(p)-SphereP1(q))^2)/2;
-end);
-
-InstallMethod(P1PreImages, [IsRationalFunction,IsP1Point],
-        function(rat,p)
-    local v, n, d;
-    n := NumeratorOfRationalFunction(rat);
-    d := DenominatorOfRationalFunction(rat);
-    if p![1]=infinity then
-        v := ComplexRootsOfUnivariatePolynomial(d);
-    else
-        v := ComplexRootsOfUnivariatePolynomial(n-p![1]*d);
-    fi;
-    while Length(v)<DegreeOfRationalFunction(rat) do
-        Add(v,infinity);
+InstallMethod(DisplayString, [IsP1Map], function(f)
+#    local z;
+#    z := Indeterminate(COMPLEX_FIELD);
+#    f := RationalP1Map(z,f);
+#    return DisplayString(f);
+    local i, j, m, s, lo, hi;
+    m := P1MAP2MAT(f);
+    s := "(";
+    for i in [1..2] do
+        if i=2 then Append(s,") / ("); fi;
+        hi := Length(m[i]); while IsZero(m[i][hi]) and hi>1 do hi := hi-1; od;
+        lo := 1; while IsZero(m[i][lo]) and lo<hi do lo := lo+1; od;
+        for j in [lo..hi] do
+            if j>lo then
+                Append(s,"+");
+            fi;
+            APPEND@(s,"(",String(m[i][j]),")");
+            if j>=2 then Append(s,"*z"); fi;
+            if j>=3 then APPEND@(s,"^",j-1); fi;
+        od;
     od;
-    return List(v,P1Point);
+    Append(s,")\n");
+    return s;
 end);
 
-BindGlobal("SPHEREINVF@", f->(x->List(P1PreImages(f,P1Sphere(x)),SphereP1)));
+InstallMethod(String, [IsP1Map], DisplayString);
 
-InstallMethod(XProduct, [IsList, IsList],
-        function(v,w)
-    return [v[2]*w[3]-v[3]*w[2],v[3]*w[1]-v[1]*w[3],v[1]*w[2]-v[2]*w[1]];
+INSTALLPRINTERS@(IsP1Map);
+
+InstallGlobalFunction(P1MapByCoefficients, function(numer,denom)
+    return MAT2P1MAP([[1,0],[0,1]]*COMPLEX_1*[numer,denom]);
 end);
 
-InstallMethod(TripleProduct, [IsList, IsList, IsList],
-        function(u,v,w)
-    return u[1]*v[2]*w[3]-u[1]*v[3]*w[2]+u[2]*v[3]*w[1]-u[2]*v[1]*w[3]+u[3]*v[1]*w[2]-u[3]*v[2]*w[1];
-#    return Determinant([u,v,w]);
+InstallGlobalFunction(CoefficientsOfP1Map, P1MAP2MAT);
+    
+InstallGlobalFunction(P1MapRational, function(rat)
+    return CallFuncList(P1MapByCoefficients,List([NumeratorOfRationalFunction(rat),DenominatorOfRationalFunction(rat)],CoefficientsOfUnivariatePolynomial));
 end);
 
-InstallMethod(SphereXProduct, [IsList, IsList],
-        function(v,w)
-    return SphereProject(XProduct(v,w));
+InstallGlobalFunction(RationalP1Map, function(arg)
+    local z, map;
+    if Length(arg)=1 then
+        z := Indeterminate(COMPLEX_FIELD,"z":old);
+        map := arg[1];
+    else
+        z := arg[1];
+        map := arg[2];
+    fi;
+    while not Length(arg) in [1..2] and IsRingElement(z) and IsP1Map(map) do
+        Error("Arguments should be an optional indeterminate and a P1 map");
+    od;
+    return CallFuncList(QUO,List(P1MAP2MAT(map),r->Sum([1..Length(r)],i->r[i]*z^(i-1))));
 end);
 
+InstallGlobalFunction(P1MapSL2, function(mat)
+    while not IsMatrix(mat) and Length(mat)=2 and ForAll(mat,x->Length(x)=2) do
+        Error("Argument ",mat," should be a 2x2 matrix");
+    od;
+    return MAT2P1MAP(mat*COMPLEX_1*[[0,1],[1,0]]);
+end);
+
+InstallGlobalFunction(SL2P1Map, function(map)
+    while not IsP1Map(map) do
+        Error("Argument ",map," should be a P1 map");
+    od;
+    return P1MAP2MAT(map)*[[0,1],[1,0]];
+end);
+
+BindGlobal("P1MAPMONOMIAL@", function(d)
+    local m;
+    m := NullMat(2,AbsoluteValue(d)+1);
+    if d>=0 then
+        m[1][d+1] := 1; m[2][1] := 1;
+    else
+        m[1][1] := 1; m[2][-d+1] := 1;
+    fi;
+    return MAT2P1MAP(COMPLEX_1*m);
+end);
+
+BindGlobal("P1Identity", P1MAPMONOMIAL@(1));
+
+InstallMethod(PROD,[IsP1Map,IsP1Map],COMPOSEP1MAP);
+InstallMethod(CompositionMapping2,[IsP1Map,IsP1Map],COMPOSEP1MAP);
+InstallMethod(Source,[IsP1Map],x->COMPLEX_FIELD);
+InstallMethod(Range,[IsP1Map],x->COMPLEX_FIELD);
+InstallMethod(INV,[IsP1Map],INVERTP1MAP);
+#############################################################################
+
+#############################################################################
+# missing methods for rational maps
+#############################################################################
 InstallMethod(DegreeOfRationalFunction, "(FR) for a rational function",
         [IsRationalFunction],
         f->Maximum(DegreeOfUnivariateLaurentPolynomial(
@@ -1668,7 +1712,7 @@ InstallMethod(Primitive, "(FR) for a univariate polynomial",
     local d, i, c;
 
     d := CoefficientsOfLaurentPolynomial(f);
-    if IsEmpty(d[1]) then # easy case: primitive of 0-Polynomial
+    if d[1]=[] then # easy case: primitive of 0-Polynomial
         return f;
     fi;
     c := [];
@@ -1682,7 +1726,6 @@ InstallMethod(Primitive, "(FR) for a univariate polynomial",
     od;
     return LaurentPolynomialByCoefficients(CoefficientsFamily(FamilyObj(f)),c,
                    d[2]+1,IndeterminateNumberOfUnivariateRationalFunction(f));
-
 end);
 #############################################################################
 
@@ -1736,59 +1779,6 @@ MakeIncompressible := function(n)
   od;
   return ginc;
 end;
-
-#############################################################################
-##
-#H Unused complex methods
-##
-InstallMethod(P1MidPoint, [IsP1Point, IsP1Point],
-        function(a,b)
-    local c;
-    c := SphereP1(a)+SphereP1(b);
-    return P1Sphere(SphereProject(c));
-end);
-
-InstallMethod(SphereIntersection, [IsList, IsList, IsList, IsList],
-        function(a1,b1,a2,b2)
-    # intersection number of segment a1-b1 with segment a2-b2
-    # returns 0 if no intersection;
-    # +-1 if a1b1 intersects a2b2 in positive/negative direction;
-    # +-1/2 if b1 touches a2b2 arriving in positive/negative direction.
-    local x1, x2;
-    if a1*a2<MACFLOAT_0 then return 0; fi;
-    x1 := TripleProduct(a1,b1,a2);
-    x2 := TripleProduct(a1,b1,b2);
-    if x1*x2>=MACFLOAT_0 then return 0; fi;
-    x1 := TripleProduct(a2,b2,a1);
-    x2 := TripleProduct(a2,b2,b1);
-    if x1*x2<MACFLOAT_0 then
-        if x1>0 then return 1; else return -1; fi;
-    elif x2=MACFLOAT_0 then
-        if x1>0 then return 1/2; else return -1/2; fi;
-    else
-        return 0;
-    fi;
-end);
-
-InstallMethod(P1Angle, [IsP1Point, IsP1Point, IsP1Point],
-        function(base,a,b)
-    local angle;
-    base := SphereP1(base);
-    a := XProduct(base,SphereP1(a));
-    b := XProduct(base,SphereP1(b));
-    angle := (a*b)/Sqrt(a^2*b^2);
-    if angle > 1 then
-        return MACFLOAT_0;
-    elif angle < -1 then
-        return MACFLOAT_PI;
-    else
-        angle := ACOS_MACFLOAT((a*b)/Sqrt(a^2*b^2));
-        if TripleProduct(base,a,b)<0 then
-            angle := 2*MACFLOAT_PI-angle;
-        fi;
-    fi;
-    return angle;
-end);
 fi;
 #############################################################################
 
@@ -1894,6 +1884,71 @@ end);
 
 #############################################################################
 ##
+#F Minimal spanning tree
+##
+BindGlobal("MINSPANTREE@", function(node,cost)
+    # node is a list of pairs giving edges
+    # cost is a list of real numbers giving edge's cost
+    # returns [[i1,j1],...,[in,jn],tree_cost], where [ik,jk] are the
+    # edges in the minimal spanning tree.
+    local nnode, nedge, tree, tree_cost, new_cost, best,
+          potential, arc, free, huge, e, v, w, t;
+    
+    nnode := Maximum(Concatenation(node));
+    nedge := Length(node);
+    huge := Sum(cost)+1.0; # acts like infinity
+    
+    free := List([1..nnode],x->true);
+    tree := [];
+    arc := [];
+    
+    # find the first non-zero arc
+    e := First([1..nedge],e->cost[e]>0.0);
+    free[e] := false;
+    tree_cost := 0.0;
+
+    for t in [1..nnode-1] do
+        potential := List([1..nnode],i->huge);
+        for v in [1..nnode] do
+            # for each forward arc originating at node v,
+            # compute the length of the path to node v.
+            if not free[v] then
+                for e in [1..nedge] do
+                    if v in node[e] then
+                        w := Sum(node[e])-v; # other vertex of edge
+                        if free[w] then
+                            new_cost := tree_cost + cost[e];
+                            if new_cost < potential[w] then
+                                potential[w] := new_cost;
+                                arc[w] := [v,e];
+                            fi;
+                        fi;
+                    fi;
+                od;
+            fi;
+        od;
+        # find the free node of minimum potential
+        new_cost := huge;
+        best := [0];
+        for v in [1..nnode] do
+            if free[v] and potential[v] < new_cost then
+                new_cost := potential[v];
+                best := [v,arc[v][1],arc[v][2]];
+            fi;
+        od;
+        if best[1]>0 then
+            free[best[1]] := false;
+            tree_cost := tree_cost + cost[best[3]];
+            Add(tree,best{[2,1]});
+        fi;
+    od;
+    Add(tree,tree_cost);
+    return tree;
+end);
+#############################################################################
+
+#############################################################################
+##
 #F JenningsLieAlgebra
 ##
 BindGlobal("LIEELEMENT@", function(A,l)
@@ -1943,12 +1998,8 @@ BindGlobal("LIEEXTENDLCS@", function(A,d)
 
     if d<=A!.degree then return; fi;
 
-    if IsLpGroup(A!.group) then
+    if IsLpGroup(A!.group) or (IsFpGroup(A!.group) and Characteristic(A!.ring)=0) then
         A!.quo := NqEpimorphismNilpotentQuotient(A!.group,d);
-        A!.pcp := Pcp;
-        A!.exp := ExponentsByPcp;
-    elif IsFpGroup(A!.group) and Characteristic(A!.ring)=0 then
-        A!.quo := EpimorphismNilpotentQuotient(A!.group,d);
         A!.pcp := Pcp;
         A!.exp := ExponentsByPcp;
     else
@@ -2008,20 +2059,23 @@ InstallMethod(Grading, "(FR) for a FP Lie algebra",
     end);
 end);
 
-InstallMethod(ViewObj, "(FR) for a FP Lie algebra",
+InstallMethod(ViewString, "(FR) for a FP Lie algebra",
         [IsFpLieAlgebra],
         function(A)
-    Print("<FP Lie algebra over ",A!.ring);
+    local s;
+    s := Concatenation("<FP Lie algebra over ",String(A!.ring));
     if A!.degree>0 then
         if IsTrivial(A!.lcs[A!.degree]) then
-            Print(", of");
+            Append(s,", of");
         else
-            Print(", computed up to");
+            Append(s,", computed up to");
         fi;
-        Print(" degree ",A!.degree);
+        APPEND@(s," degree ",A!.degree);
     fi;
-    Print(">");
+    Append(s,">");
+    return s;
 end);
+INSTALLPRINTERS@(IsFpLieAlgebra);
 
 InstallOtherMethod(ZeroOp, "(FR) for a FP Lie algebra",
         [IsFpLieAlgebra],
@@ -2219,22 +2273,24 @@ InstallMethod(Degree, "(FR) for a FR Lie algebra element",
     return infinity;
 end);
 
-InstallMethod(ViewObj, "(FR) for a FP Lie algebra element",
+InstallMethod(ViewString, "(FR) for a FP Lie algebra element",
         [IsLieObject and IsLieFpElementRep],
         function(X)
-    local n;
-    Print("<");
+    local n, s;
+    s := "<";
     n := Degree(X);
     if n=infinity then
-        Print("zero");
+        Append(s,"zero");
     else
         if ForAll([n+1..Length(X![2])],i->not IsBound(X![2][i]) or ForAll(X![2][i],IsZero)) then
-            Print("homogeneous ");
+            Append(s,"homogeneous ");
         fi;
-        Print("degree-",n);
+        APPEND@(s,"degree-",n);
     fi;
-    Print(" Lie element>");
+    Append(s," Lie element>");
+    return s;
 end);
+INSTALLPRINTERS@(IsLieObject and IsLieFpElementRep);
 
 BindGlobal("LIE2VECTOR@", function(dims,dim,x)
     local i, v;
@@ -2255,7 +2311,7 @@ end);
 
 InstallHandlingByNiceBasis("IsLieFpElementSpace", rec(
         detect := function(R,l,V,z)
-    if IsEmpty(l) then
+    if l=[] then
         return IsLieObject(z) and IsLieFpElementRep(z) and z![1]!.ring=R;
     else
         return ForAll(l,x->IsLieObject(x) and IsLieFpElementRep(x) and x![1]!.ring=R);

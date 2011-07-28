@@ -7,7 +7,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.randiso_gd :=
-    "@(#)$Id: randiso.gd,v 1.17 2010/06/24 12:26:26 gap Exp $";
+    "@(#)$Id: randiso.gd,v 1.19 2011/01/07 01:05:21 alexk Exp $";
 
 DeclareInfoClass( "InfoRandIso" );
 DeclareAttribute( "OmegaAndLowerPCentralSeries", IsGroup );
@@ -22,6 +22,12 @@ DeclareAttribute( "OmegaAndLowerPCentralSeries", IsGroup );
 ##
 ##  <Description>
 ##  returns the code corresponding to <A>pcgs</A>.
+##  <Example><![CDATA[
+##  gap> G := CyclicGroup(512);;
+##  gap> p := Pcgs( G );;
+##  gap> CodePcgs( p );  
+##  162895587718739690298008513020159
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -38,6 +44,11 @@ DeclareGlobalFunction( "CodePcgs" );
 ##
 ##  <Description>
 ##  returns the code for a pcgs of <A>G</A>.
+##  <Example><![CDATA[
+##  gap> G := DihedralGroup(512);;
+##  gap> CodePcGroup( G );       
+##  2940208627577393070560341803949986912431725641726
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -58,24 +69,6 @@ DeclareGlobalFunction( "CodePcGroup" );
 ##  otherwise anything may happen.
 ##  Valid codes are usually obtained by one of the functions
 ##  <Ref Func="CodePcgs"/> or <Ref Func="CodePcGroup"/>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareGlobalFunction( "PcGroupCode" );
-
-#############################################################################
-##
-#F  PcGroupCodeRec( <rec> )
-##
-##  <#GAPDoc Label="PcGroupCodeRec">
-##  <ManSection>
-##  <Func Name="PcGroupCodeRec" Arg='record'/>
-##
-##  <Description>
-##  Here <A>record</A> needs to have entries .code and .order.
-##  Then <Ref Func="PcGroupCode"/> returns a pc group of size .order
-##  corresponding to .code.
 ##  <Example><![CDATA[
 ##  gap> G := SmallGroup( 24, 12 );;
 ##  gap> p := Pcgs( G );;
@@ -91,6 +84,34 @@ DeclareGlobalFunction( "PcGroupCode" );
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PcGroupCode" );
+
+#############################################################################
+##
+#F  PcGroupCodeRec( <rec> )
+##
+##  <ManSection>
+##  <Func Name="PcGroupCodeRec" Arg='record'/>
+##
+##  <Description>
+##  Here <A>record</A> needs to have entries .code and .order.
+##  Then <Ref Func="PcGroupCode"/> returns a pc group of size .order
+##  corresponding to .code.
+##  <Example><![CDATA[
+##  gap> G := SmallGroup( 24, 12 );;
+##  gap> p := Pcgs( G );;
+##  gap> coderec:=rec( code:=CodePcgs(p), order:=Size(G) );
+##  rec( code := 5790338948, order := 24 )
+##  gap> H := PcGroupCodeRec( coderec );
+##  <pc group of size 24 with 4 generators>
+##  gap> map := GroupHomomorphismByImages( G, H, p, FamilyPcgs(H) );
+##  Pcgs([ f1, f2, f3, f4 ]) -> Pcgs([ f1, f2, f3, f4 ])
+##  gap> IsBijective(map);
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
 ##
 DeclareGlobalFunction( "PcGroupCodeRec" );
 
@@ -115,13 +136,25 @@ DeclareGlobalFunction( "RandomSpecialPcgsCoded" );
 ##
 ##  <#GAPDoc Label="RandomIsomorphismTest">
 ##  <ManSection>
-##  <Func Name="RandomIsomorphismTest" Arg='list, n'/>
+##  <Func Name="RandomIsomorphismTest" Arg='coderecs, n'/>
 ##
 ##  <Description>
-##  <A>list</A> must be a list of code records of pc groups
-##  and <A>n</A> a non-negative integer.
-##  Returns a sublist of <A>list</A> where isomorphic copies detected by 
-##  the probabilistic test have been removed.
+##  The first argument is a list <A>coderecs</A> containing records describing 
+##  groups, and the second argument is a non-negative integer <A>n</A>.
+##  <P/>
+##  The test returns a sublist of <A>coderecs</A> where isomorphic copies 
+##  detected by the probabilistic test have been removed.
+##  <P/>
+##  The list <A>coderecs</A> should contain records with two components,
+##  <C>code</C> and <C>order</C>, describing a group via 
+##  <C>PcGroupCode( code, order )</C> (see <Ref Func="PcGroupCode"/>).
+##  <P/>
+##  The integer <A>n</A> gives a certain amount of control over the 
+##  probability to detect all isomorphisms. If it is <M>0</M>, then nothing 
+##  will be done at all. The larger <A>n</A> is, the larger is the probability
+##  of finding all isomorphisms. However, due to the underlying method we can
+##  not guarantee that the algorithm finds all isomorphisms, no matter how
+##  large <A>n</A> is.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

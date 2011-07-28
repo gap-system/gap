@@ -1,6 +1,6 @@
 #############################################################################
 ##  
-##  Packageinfo.g for CRISP package                       (Burkhard Hoefling)
+##  Packageinfo.g for CRISP package                       (Burkhard Höfling)
 ##
 ##  adapted from PackageInfo.g template by Frank Luebeck
 ##  
@@ -13,23 +13,23 @@ PackageName := "CRISP",
 Subtitle := "Computing with Radicals, Injectors, Schunck classes and Projectors",
 BannerString := "\
 ----------------------------------------------------------------------\n\
-                        CRISP Version 1.3.2\n\
+                        CRISP Version 1.3.4\n\
   Computing with Radicals, Injectors, Schunck classes and Projectors\n\
-                         by Burkhard Hoefling\n\
------------------------------------------------------------------------\n",
+                         by Burkhard Höfling\n\
+----------------------------------------------------------------------\n",
 
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers.
-Version := "1.3.2",
+Version := "1.3.4",
 
 ##  Release date of the current version in dd/mm/yyyy format.
-Date := "08/06/2007",
+Date := "26/05/2011",
 
 ##  URL of the archive(s) of the current package release, but *without*
 ##  the format extension(s), like '.zoo', which are given next.
 ##  The archive file name *must be changed* with each version of the archive
 ##  (and probably somehow contain the package name and version).
-ArchiveURL := "http://www-public.tu-bs.de:8080/~bhoeflin/crisp/crisp-1r3n2",
+ArchiveURL := "http://www-public.tu-bs.de:8080/~bhoeflin/crisp/crisp-1r3n4",
 
 ##  All provided formats as list of file extensions, separated by white
 ##  space or commas.
@@ -68,7 +68,7 @@ ArchiveFormats := ".tar.bz2", # the others are generated automatically
 ##  archives)
 ##  
 ##  These entries are *optional*.
-BinaryFiles := ["doc/manual.dvi", "doc/manual.pdf"],
+BinaryFiles := ["doc/manual.pdf"],
 
 ##  Information about authors and maintainers. Specify for each person a 
 ##  record with the following information:
@@ -102,14 +102,12 @@ BinaryFiles := ["doc/manual.dvi", "doc/manual.pdf"],
 ##  
 Persons := [
   rec(
-  LastName := "Hoefling",
+  LastName := "Höfling",
   FirstNames := "Burkhard",
   IsAuthor := true,
   IsMaintainer := true,
   WWWHome := "http://www-public.tu-bs.de:8080/~bhoeflin",
-  #PostalAddress := "",           
-  Place := "Braunschweig",
-  Institution := "Technical University"
+  Email := "b.hoefling@tu-bs.de"
   )
 # provide such a record for each author and/or maintainer ...
   
@@ -127,7 +125,7 @@ Status := "accepted",
 ##  You must provide the next two entries if and only if the status is 
 ##  "accepted":
 # format: 'name (place)'
-CommunicatedBy := "Joachim Neubueser (Aachen)",
+CommunicatedBy := "Joachim Neubüser (Aachen)",
 # format: mm/yyyy
 AcceptDate := "12/2000",
 
@@ -171,7 +169,7 @@ normal subgroups of a finite solvable group, its characteristic \
 subgroups, minimal normal subgroups and the socle and \
 <i>p</i>-socles for given primes <i>p</i>.",
 
-PackageWWWHome := "http://www-public.tu-bs.de:8080/~bhoeflin/crisp/index.htm",
+PackageWWWHome := "http://www-public.tu-bs.de:8080/~bhoeflin/crisp/index.html",
                   
 ##  On the GAP Website there is an online version of all manuals in the
 ##  GAP distribution. To handle the documentation of a package it is
@@ -214,7 +212,7 @@ PackageDoc := rec(
 Dependencies := rec(
   # GAP version, use version strings for specifying exact versions,
   # prepend a '>=' for specifying a least version.
-  GAP := ">=4.4.6",
+  GAP := ">=4.4.12",
   # list of pairs [package name, (least) version],  package name is case
   # insensitive, least version denoted with '>=' prepended to version string.
   # without these, the package will not load

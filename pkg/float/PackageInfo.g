@@ -2,17 +2,17 @@
 ##  
 ##  PackageInfo.g for the package `float'                   Laurent Bartholdi
 ##
-## $Id: PackageInfo.g,v 1.1 2008/04/21 18:38:07 gap Exp $
+## $Id: PackageInfo.g,v 1.2 2011/04/08 14:26:30 gap Exp $
 ##
 SetPackageInfo( rec(
 PackageName := "Float",
 Subtitle := "Integration of mpfr and mpfi in GAP",
-Version := "0.0",
+Version := "0.1",
 ## <#GAPDoc Label="Version">
-## 0.0
+## 0.1
 ## <#/GAPDoc>
-Date := "21/4/2008",
-ArchiveURL := Concatenation("http://mad.epfl.ch/~laurent/Float/float-",~.Version),
+Date := "08/03/2011",
+ArchiveURL := Concatenation("http://www.uni-math.gwdg.de/laurent/Float/float-",~.Version),
 ArchiveFormats := ".tar.gz .zoo",
 Persons := [
   rec( 
@@ -21,29 +21,28 @@ Persons := [
     IsAuthor      := true,
     IsMaintainer  := true,
     Email         := "laurent.bartholdi@gmail.com",
-    WWWHome       := "http://mad.epfl.ch/~laurent",
+    WWWHome       := "http://www.uni-math.gwdg.de/laurent",
     PostalAddress := Concatenation( [
-                       "EPFL SB SMA IMB\n",
-                       "Station 8\n",
-                       "1015 Lausanne\n",
-                       "Switzerland" ] ),
-    Place         := "Lausanne",
-    Institution   := "EPFL"
+                       "Mathematisches Institut\n",
+                       "Bunsenstraße 3—5\n",
+                       "D-37073 Göttingen\n",
+                       "Germany" ] ),
+    Place         := "Göttingen",
+    Institution   := "Georg-August Universität zu Göttingen"
   )
 ],
 
 Status := "started",
 
-README_URL := "http://mad.epfl.ch/~laurent/Float/README.float",
-PackageInfoURL := "http://mad.epfl.ch/~laurent/Float/PackageInfo.g",
+README_URL := "http://www.uni-math.gwdg.de/laurent/Float/README.float",
+PackageInfoURL := "http://www.uni-math.gwdg.de/laurent/Float/PackageInfo.g",
 AbstractHTML := "The <span class=\"pkgname\">Float</span> package allows \
                     GAP to manipulate floating-point numbers with arbitrary \
                     precision. It is based on MPFR",
-PackageWWWHome := "http://mad.epfl.ch/~laurent/Float/",
+PackageWWWHome := "http://www.uni-math.gwdg.de/laurent/Float/",
 
 PackageDoc := rec(
   BookName  := "Float",
-  Archive := Concatenation("http://mad.epfl.ch/~laurent/FR/floatdoc-",~.Version,".tar.gz"),
   ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
@@ -53,7 +52,7 @@ PackageDoc := rec(
 ),
 
 Dependencies := rec(
-  GAP := ">=4.4.9",
+  GAP := ">=4.5.0",
   NeededOtherPackages := [["GAPDoc",">=1.0"]],
   SuggestedOtherPackages := [],
   ExternalConditions := []                      

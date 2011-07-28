@@ -2,7 +2,7 @@
 **
 *W  set.c                       GAP source                   Martin Schönert
 **
-*H  @(#)$Id: set.c,v 4.49 2010/02/23 15:13:48 gap Exp $
+*H  @(#)$Id: set.c,v 4.50 2010/09/16 14:29:16 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -24,7 +24,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_set_c =
-   "@(#)$Id: set.c,v 4.49 2010/02/23 15:13:48 gap Exp $";
+   "@(#)$Id: set.c,v 4.50 2010/09/16 14:29:16 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -454,7 +454,6 @@ Obj FuncADD_SET (
 {
   UInt                len;            /* logical length of the list      */
   UInt                pos;            /* position                        */
-  UInt                i;              /* loop variable                   */
   UInt                isCyc;          /* True if the set being added to consists
 					 of kernel cyclotomics           */
   UInt                notpos;         /* position of an original element
@@ -481,12 +480,15 @@ Obj FuncADD_SET (
     SET_LEN_PLIST( set, len+1 );
     {
       Obj *ptr;
-      ptr = PTR_BAG(set) + len+1;
+      ptr = PTR_BAG(set);
+      memmove((void *)(ptr + pos+1),(void*)(ptr+pos),(size_t)(sizeof(Obj)*(len+1-pos)));
+#if 0
       for ( i = len+1; pos < i; i-- ) {
 	*ptr = *(ptr-1);
-	ptr--;
+	ptr--;   */
 	/* SET_ELM_PLIST( set, i, ELM_PLIST(set,i-1) ); */
       }
+#endif
     }
     SET_ELM_PLIST( set, pos, obj );
     CHANGED_BAG( set );

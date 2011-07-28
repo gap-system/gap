@@ -1,25 +1,23 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%  classes.tex              CRISP documentation           Burkhard H\"ofling
+%%  classes.tex              CRISP documentation            Burkhard Höfling
 %%
-%%  @(#)$Id: classes.tex,v 1.8 2001/11/05 12:55:50 gap Exp $
+%%  @(#)$Id: classes.tex,v 1.10 2011/05/26 10:08:56 gap Exp $
 %%
-%%  Copyright (C) 2000, Burkhard H\"ofling, Mathematisches Institut,
-%%  Friedrich Schiller-Universit\"at Jena, Germany
+%%  Copyright (C) 2000, 2011 Burkhard Höfling
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Set theoretical classes}
 
 In {\CRISP}, a class (in the set-theoretical sense) is usually represented
 by an algorithm which decides membership in that class. Wherever this makes
-sense, sets (see "ref:Set" in the {\GAP} reference
-manual) may also be used as classes.
+sense, sets (see "ref:Set") may also be used as classes.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Creating set theoretical classes}\null
 
-\index{classes!creating}
+\index{classes!creation of}
 
 \>IsClass(<C>) C
 
@@ -37,27 +35,10 @@ components, if present, are bound to the attributes `MemberFunction' and
 otherwise; cf. "MemberFunction" below. The second form is equivalent to `Class(rec(\\in
 := <func>))'. It is the user's responsibility to ensure that <func> returns the same
 result for different {\GAP} objects representing the same mathematical object (or
-element, in the {\GAP} sense; see "ref:objects and elements" in the {\GAP}
+element, in the {\GAP} sense; see "ref:Objects and Elements" in the {\GAP}
 reference manual).
 
 \beginexample
-gap> RequirePackage ("crisp");
-                                                   
-             _____  ___    __  ____   ___        
-            / ___/ / _ \  / / / __/  / _ \       
-           / /__  /   _/ / / _\_ \  / ___/       
-           \___/ /_/\_\ /_/ /____/ /_/           
-                                                    
-                 A GAP 4 package for           
-          Computing with Radicals, Injectors        
-            Schunck classes and Projectors          
-              of finite solvable groups             
-                                                    
-                By Burkhard H\"ofling               
-                                                    
-                For help, type ?CRISP               
-                                                    
-true
 gap> FermatPrimes := Class (p -> IsPrime (p) and p = 2^LogInt (p, 2) + 1); 
 Class (in:=function( p ) ... end)
 \endexample
@@ -161,7 +142,7 @@ a sublist of that list. By default, `INTERSECTION_LIMIT' is 1000.
 gap> Intersection (Class (IsPrimeInt), [1..10]);
 [ 2, 3, 5, 7 ]
 gap> Intersection (Class (IsPrimeInt), Class (n -> n = 2^LogInt (n+1, 2) - 1));
-Intersection ([ Class (in:=function( n ) ... end), 
+Intersection ([ Class (in:=function( N ) ... end), 
   Class (in:=function( n ) ... end) ])
 \endexample
 
@@ -183,7 +164,7 @@ result will be a sublist of <C>.
 \beginexample
 gap> Difference (Class (IsPrimePowerInt), Class (IsPrimeInt));
 Intersection ([ Class (in:=function( n ) ... end), 
-  Complement (Class (in:=function( n ) ... end)) ])
+  Complement (Class (in:=function( N ) ... end)) ])
 gap> Difference ([1..10], Class (IsPrimeInt));
 [ 1, 4, 6, 8, 9, 10 ]
 \endexample

@@ -1,0 +1,16 @@
+***************
+*** 78,83 ****
+  ReadLib( "cmdledit.g"  );
+  
+  ReadLib( "thread.g" );
+  
+  ReadLib( "error.g"   );
+  ReadLib( "session.g" );
+--- 78,84 ----
+  ReadLib( "cmdledit.g"  );
+  
+  ReadLib( "thread.g" );
++ ReadLib( "tasks.g"  );
+  
+  ReadLib( "error.g"   );
+  ReadLib( "session.g" );

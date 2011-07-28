@@ -25,20 +25,6 @@ function( G )
     return ser;
 end );
 
-InstallOtherMethod( LowerCentralSeries, true, [IsPcpGroup, IsInt], 0, 
-function( G, l )
-    local ser, U;
-    ser := [G];
-    U   := ShallowCopy( G );
-    G!.isNormal := true;
-    while Length(Igs(U)) > 0 and Length(ser) < l do
-        U := CommutatorSubgroup( U, G );
-        Add( ser, U );
-    od;
-    Unbind( G!.isNormal );
-    return ser;
-end );
-
 InstallMethod( PCentralSeriesOp, true, [IsPcpGroup, IsPosInt], 0,
 function( G, p )
     local ser, U, C, pcp, new;

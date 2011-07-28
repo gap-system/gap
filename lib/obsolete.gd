@@ -2,7 +2,7 @@
 ##
 #W  obsolete.gd                  GAP library                     Steve Linton
 ##
-#H  @(#)$Id: obsolete.gd,v 4.3 2010/08/02 16:36:55 alexk Exp $
+#H  @(#)$Id: obsolete.gd,v 4.9 2011/05/29 22:24:35 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -63,7 +63,7 @@
 ##  for example in order to make sure that one's own &GAP; code does not rely
 ##  on the obsolete variables.
 ##  For that, one can set the component <C>ReadObsolete</C> in the file
-##  <F>gap.ini</F> to <K>false</K> (see <Ref Sect="The .gaprc file"/>).
+##  <F>gap.ini</F> to <K>false</K> (see <Ref Sect="sect:gap.ini"/>).
 ##  <P/>
 ##  (Note that the condition whether the library files with the obsolete
 ##  &GAP; code shall be read has changed.
@@ -74,7 +74,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.obsolete_gd :=
-    "@(#)$Id: obsolete.gd,v 4.3 2010/08/02 16:36:55 alexk Exp $";
+    "@(#)$Id: obsolete.gd,v 4.9 2011/05/29 22:24:35 alexk Exp $";
 
 
 #############################################################################
@@ -192,15 +192,6 @@ BindGlobal( "PACKAGES_VERSIONS", rec() );
 ##
 ##  
 ##
-
-
-#############################################################################
-##
-#F  P( <obj> )
-##
-##  This was defined in `init.g' before `banner.g' was read.
-##
-P := function(a) Print("   ", a, "\n" );  end;
 
 
 #############################################################################
@@ -463,6 +454,138 @@ POST_RESTORE_FUNCS:= GAPInfo.PostRestoreFuncs;
 ##
 DeclareGlobalFunction( "ProductPol" );
 
+
+#############################################################################
+##
+#O  TeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . . . TeX an object
+##
+##  <ManSection>
+##  <Oper Name="TeXObj" Arg='obj'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "TeXObj", [ IS_OBJECT ] );
+
+
+#############################################################################
+##
+#O  LaTeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . LaTeX an object
+##
+##  <ManSection>
+##  <Oper Name="LaTeXObj" Arg='obj'/>
+##  
+##  <Description>
+##  The function <Ref Func="LaTeX"/> actually calls the operation
+##  <Ref Func="LaTeXObj"/> for each argument.
+##  By installing special methods for this operation, it is possible
+##  to achieve special &LaTeX;'ing behavior for certain objects
+##  (see Chapter&nbsp;<Ref Chap="Method Selection"/>).
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
+
+
+#############################################################################
+##
+#F  DisplayRevision() . . . . . . . . . . . . . . .  display revision entries
+##
+##  <ManSection>
+##  <Func Name="DisplayRevision" Arg=''/>
+##
+##  <Description>
+##  Displays the revision numbers of all loaded files from the library.
+##  </Description>
+##  </ManSection>
+##
+BIND_GLOBAL("DisplayRevision",function()
+    local   names,  source,  library,  unknown,  name,  p,  s,  type,
+            i,  j;
+
+    names   := RecNames( Revision );
+    source  := [];
+    library := [];
+    unknown := [];
+
+    for name  in names  do
+        p := Position( name, '_' );
+        if p = fail  then
+            Add( unknown, name );
+        else
+            s := name{[p+1..Length(name)]};
+            if s = "c" or s = "h"  then
+                Add( source, name );
+            elif s = "g" or s = "gi" or s = "gd"  then
+                Add( library, name );
+            else
+                Add( unknown, name );
+            fi;
+        fi;
+    od;
+    Sort( source );
+    Sort( library );
+    Sort( unknown );
+
+    for type  in [ source, library, unknown ]  do
+        if 0 < Length(type)  then
+            if IsIdenticalObj(type,source)  then
+                Print( "Source Files\n" );
+            elif IsIdenticalObj(type,library)  then
+                Print( "Library Files\n" );
+            else
+                Print( "Unknown Files\n" );
+            fi;
+            j := 1;
+            for name  in type  do
+                s := Revision.(name);
+                p := Position( s, ',' )+3;
+                i := p;
+                while s[i] <> ' '  do i := i + 1;  od;
+                s := Concatenation( String( Concatenation(
+                         name, ":" ), -15 ), String( s{[p..i]},
+                         -5 ) );
+                if j = 3  then
+                    Print( s, "\n" );
+                    j := 1;
+                else
+                    Print( s, "    " );
+                    j := j + 1;
+                fi;
+            od;
+            if j <> 1  then Print( "\n" );  fi;
+            Print( "\n" );
+        fi;
+    od;
+end);
+
+
+#############################################################################
+##
+#F  ARCH_IS_MAC()
+##
+##  <#GAPDoc Label="ARCH_IS_MAC">
+##  <ManSection>
+##  <Func Name="ARCH_IS_MAC" Arg=''/>
+##
+##  <Description>
+##  tests whether &GAP; is running on a Macintosh under Mac OS 8, 9 or
+##  under Mac OS X in the Classic Environment.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("MACINTOSH_68K_ARCHITECTURE",
+  IMMUTABLE_COPY_OBJ("MC68020-motorola-macos-mwerksc"));
+
+BIND_GLOBAL("MACINTOSH_PPC_ARCHITECTURE",
+  IMMUTABLE_COPY_OBJ("PPC-motorola-macos-mwerksc"));
+
+BIND_GLOBAL("ARCH_IS_MAC",function()
+  return GAPInfo.Architecture = MACINTOSH_68K_ARCHITECTURE
+      or GAPInfo.Architecture = MACINTOSH_PPC_ARCHITECTURE;
+end);
 
 #############################################################################
 ##

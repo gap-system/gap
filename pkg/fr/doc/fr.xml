@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<!-- $Id: fr.xml,v 1.49 2009/10/06 17:13:31 gap Exp $ -->
+<?LaTeX ExtraPreamble="\usepackage{graphicx}"?>
+
+<!-- $Id: fr.xml,v 1.56 2011/06/20 14:14:30 gap Exp $ -->
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
  [ <!ENTITY see '<Alt Only="LaTeX">$\to$</Alt><Alt Not="LaTeX">--&tgt;</Alt>'>]>
@@ -18,7 +20,7 @@
 		 <Alt Not="HTML">laurent.bartholdi@gmail.com</Alt></Email>
 	  <Homepage>http://www.uni-math.gwdg.de/laurent/</Homepage>
   </Author>
-  <Date>$Date: 2009/10/06 17:13:31 $</Date>
+  <Date>$Date: 2011/06/20 14:14:30 $</Date>
   <Address>
   Mathematisches Institut<Br/>Bunsenstraße 3-5<Br/>D-37073 Göttingen<Br/>Germany
   </Address>
@@ -48,10 +50,11 @@
     For comments or questions on <Package>FR</Package> please contact
     the author; this package is still under development.
   </Abstract>
-  <Copyright>&copyright; 2006-2009 by Laurent Bartholdi
+  <Copyright>&copyright; 2006-2010 by Laurent Bartholdi
   </Copyright>
-  <Acknowledgements>Part of this work is supported by the "Swiss
-  National Fund for Scientific Research"
+  <Acknowledgements>Part of this work is/was supported by the
+  "Swiss National Fund for Scientific Research" and the
+  "German Science Foundation".
   </Acknowledgements>
   <Colophon>
   This project started in the mid-1990s, when, as a PhD student I did
@@ -241,7 +244,7 @@ considered in <Cite Key="MR1902367"/> and <Cite Key="MR2176547"/>.
 <P/> We may start by defining a group: it has two generators <M>a</M>
 and <M>b</M>, satisfying the specified recursions.
 <Example><![CDATA[
-gap> B := FRGroup("a=<1,b>(1,2)","b=<1,a>":IsFRElement);
+gap> B := FRGroup("a=<1,b>(1,2)","b=<1,a>",IsFRMealyElement);
 <self-similar group over [ 1 .. 2 ] with 2 generators>
 gap> AssignGeneratorVariables(B);
 #I  Assigned the global variables [ a, b ]
@@ -265,7 +268,10 @@ representation is always possible, but it is usually inefficient for
 calculations. The argument <Ref Filt="IsMealyElement"/> forces
 <Package>FR</Package> to use a more efficient representation, which in
 some cases may take an infinite time to set up. With no extra
-argument, <Package>FR</Package> does what it thinks is best.
+argument, <Package>FR</Package> does what it thinks is best. The
+advantages of both representations are sometimes obtained by the
+argument <Ref Filt="IsFRMealyElement"/>, which stores both
+representations.
 
 <P/> Elements act on sequences over <M>\{1,2\}</M>. The action is
 computed in the standard manner:
@@ -298,7 +304,7 @@ gap> a := Bm.1; b := Bm.2;
 <Mealy element on alphabet [ 1, 2 ] with 3 states>
 ]]></Example>
 This could have been done automatically by specifying
-<C>:IsMealyElement</C> as an option in the call to <C>FRGroup</C>.
+<C>IsMealyElement</C> as last argument in the call to <C>FRGroup</C>.
 
 <P/> The group <M>B</M> is torsion-free, and its elements are bounded
 automata. Although torsion-freeness is difficult to check for
@@ -628,6 +634,22 @@ difference is that now the sum and products of statesets are distinct;
 the sum of statesets being their disjoint union, and their product
 being their cartesian product.
 
+<P/> Sometimes one would like to know how a Mealy element was obtained
+as a word in Mealy elements. This is possible within the
+representation <Ref Filt="IsFRMealyElement"/>, which combines the
+representations <Ref Filt="IsMealyElement"/> and
+<Ref Filt="IsFRElement"/>. On top of usual FR elements, they have an
+attribute <C>UnderlyingMealyMachine</C>, which is used for faster
+comparison of elements, and computation of the action.
+
+<P/> Therefore, if <C>L</C> is a list of FR elements, the
+call <C>List(L,UnderlyingElement);;</C> will set these attributes, and
+all calculations made with elements of <C>L</C> will use and propagate
+the attributes. FR-Mealy elements are displayed in the
+form <C>&lt;d|w|n&gt;</C>, where <C>d</C> is the degree of the
+alphabet, <C>w</C> is a word in the stateset, and <C>n</C> is the
+number of states of the underlying Mealy element.
+
 <Section><Heading>Creators for <C>MealyMachine</C>s and <C>MealyElement</C>s</Heading>
 <#Include Label="MealyMachine">
 <#Include Label="AllMealyMachines">
@@ -796,6 +818,7 @@ trivial if there exists an integer <M>N</M> such that unfolding
 <#Include Label="IMGMachine">
 <#Include Label="PolynomialFRMachine">
 <#Include Label="IMGOperations">
+<#Include Label="AutomorphismsFRMachines">
 <#Include Label="DBRationalIMGGroup">
 </Section>
 
@@ -824,7 +847,8 @@ are:<List>
 </List>
 
 <#Include Label="Triangulations">
-<#Include Label="Spiders">
+<#Include Label="MarkedSpheres">
+<#Include Label="Conversions">
 </Section>
 </Chapter>
 
@@ -1361,7 +1385,7 @@ gap> Inverse(bacher(3));
 
 </Subsection>
 
-<Subsection><Heading>Spiders</Heading>
+<Subsection><Heading>Marked spheres</Heading>
 <Package>FR</Package> contains algorithms that convert a rational
 function (with floating-point complex coefficients) to an IMG machine
 and back.
@@ -1452,9 +1476,14 @@ continue.
 <#Include Label="ShortMonoidRelations">
 <#Include Label="Braids">
 <#Include Label="Helpers">
+<#Include Label="Posets">
 <#Include Label="FIFOs">
 <#Include Label="LowerCentralSeries">
 <#Include Label="Trans">
+<#Include Label="AlgebraHomomorphismbyFunction">
+<#Include Label="fpliealgebra">
+<#Include Label="complexnumbers">
+<#Include Label="P1Points">
 </Section>
 
 <Section><Heading>User settings</Heading>

@@ -1,6 +1,6 @@
 ############################################################################
 ##
-#W  factors.gi            Alnuth - Kant interface            Andreas Distler
+#W  factors.gi         Alnuth - PARI/GP interface          Andreas Distler
 ##
 
 
@@ -29,7 +29,7 @@ end);
 #F  FactorsPolynomialAlgExt, function( <H>, <poly> )
 ##
 ##  Factorizes the rational polynomial <poly> over the field <H>, a proper
-##  algebraic extension of the rationals, with KANT
+##  algebraic extension of the rationals, using PARI/GP
 ##
 InstallGlobalFunction( FactorsPolynomialAlgExt, function( H, poly )
     local faktoren, irf, i;
@@ -48,7 +48,7 @@ InstallGlobalFunction( FactorsPolynomialAlgExt, function( H, poly )
         return irf[i][2];
     fi;
 
-    faktoren := FactorsPolynomialKant( AlgExtEmbeddedPol( H, poly ));
+    faktoren := FactorsPolynomialPari( AlgExtEmbeddedPol( H, poly ));
     StoreFactorsAlgExtPol( H, poly, faktoren );
 
     return faktoren;
@@ -57,13 +57,14 @@ end );
 
 #############################################################################
 ##
-#F  FactorsPolynomialKant, function( <poly> )
+#F  FactorsPolynomialPari, function( <poly> )
 ##
 ##  Factorizes the polynomial <poly> defined over an algebraic extension of
-##  the rationals with KANT
-##  As a method of 'Factors' ?
+##  the rationals using PARI/GP
 ##
-InstallGlobalFunction( FactorsPolynomialKant, function( poly )
+##  As a method of 'Factors' ? AD
+##
+InstallGlobalFunction(FactorsPolynomialPari, function( poly )
     local faktoren, fak, coeff, c, lcoeff, irf, i, coeffs, H;
 
     H := CoefficientsRing( DefaultRing( poly ));
@@ -84,7 +85,7 @@ InstallGlobalFunction( FactorsPolynomialKant, function( poly )
     lcoeff := LeadingCoefficient( poly );
     coeffs := CoefficientsOfUnivariatePolynomial( poly / lcoeff );
     coeffs := List( Reversed( coeffs ), ExtRepOfObj );
-    for fak in PolynomialFactorsDescriptionKant( H, coeffs ) do
+    for fak in PolynomialFactorsDescriptionPari( H, coeffs ) do
         coeff := [ ];
         for c in Reversed( fak ) do
             if ( c in Rationals ) then

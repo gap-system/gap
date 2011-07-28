@@ -7,7 +7,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grppcaut_gd :=
-    "@(#)$Id: grppcaut.gd,v 4.10 2010/02/23 15:13:06 gap Exp $";
+    "@(#)$Id: grppcaut.gd,v 4.12 2011/06/17 21:11:55 gap Exp $";
 
 #############################################################################
 ##
@@ -15,6 +15,9 @@ Revision.grppcaut_gd :=
 ##
 DeclareProperty( "IsFrattiniFree", IsGroup );
 
+DeclareGlobalFunction("AutomorphismGroupNilpotentGroup");
+DeclareGlobalFunction("AutomorphismGroupSolvableGroup");
+DeclareGlobalFunction("AutomorphismGroupFrattFreeGroup");
 
 #############################################################################
 ##

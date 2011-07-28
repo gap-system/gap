@@ -3,7 +3,7 @@
 #W  grplatt.gd                GAP library                   Martin Schönert,
 #W                                                          Alexander Hulpke
 ##
-#H  @(#)$Id: grplatt.gd,v 4.37 2010/02/23 15:13:05 gap Exp $
+#H  @(#)$Id: grplatt.gd,v 4.38 2011/01/25 23:24:27 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This  file  contains declarations for subgroup latices
 ##
 Revision.grplatt_gd:=
-  "@(#)$Id: grplatt.gd,v 4.37 2010/02/23 15:13:05 gap Exp $";
+  "@(#)$Id: grplatt.gd,v 4.38 2011/01/25 23:24:27 alexk Exp $";
 
 
 #############################################################################
@@ -257,7 +257,7 @@ DeclareGlobalFunction("LatticeViaRadical");
 ##  gap> last[6];
 ##  [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ]
 ##  gap> u1:=Representative(ConjugacyClassesSubgroups(l)[6]);
-##  Group([ (1,2)(3,4), (3,4) ])
+##  Group([ (3,4), (1,2)(3,4) ])
 ##  gap> u2:=ClassElementLattice(ConjugacyClassesSubgroups(l)[3],1);;
 ##  gap> u3:=ClassElementLattice(ConjugacyClassesSubgroups(l)[3],6);;
 ##  gap> u4:=ClassElementLattice(ConjugacyClassesSubgroups(l)[2],3);;

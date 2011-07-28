@@ -2,13 +2,13 @@
 ##
 #W  semiloc.tst                GAP4 Package `RCWA'                Stefan Kohl
 ##
-#H  @(#)$Id: semiloc.tst,v 1.26 2007/10/29 11:12:46 stefan Exp $
-##
 ##  This file contains automated tests of RCWA's functionality for
 ##  rcwa mappings of and rcwa groups over semilocalizations Z_pi of
 ##  the ring of integers.
 ##
-gap> START_TEST("$Id: semiloc.tst,v 1.26 2007/10/29 11:12:46 stefan Exp $");
+#############################################################################
+
+gap> START_TEST( "semiloc.tst" );
 gap> RCWADoThingsToBeDoneBeforeTest();
 gap> RcwaMapping(Z_pi(2),[[2,0,1]]);
 Rcwa mapping of Z_( 2 ): n -> 2 n
@@ -246,11 +246,8 @@ gap> IsomorphismRcwaGroup(Group(()),Z_pi(2));
 [ () ] -> [ IdentityMapping( Z_( 2 ) ) ]
 gap> IsomorphismRcwaGroup(SmallGroup(1,1),Z_pi(2));
 [ <identity> of ... ] -> [ IdentityMapping( Z_( 2 ) ) ]
-gap> IsomorphismRcwaGroup(SmallGroup(8,4),Z_pi(2));
-[ f1, f2, f3 ] -> [ <bijective rcwa mapping of Z_( 2 ) with modulus 8>, 
-  <bijective rcwa mapping of Z_( 2 ) with modulus 4>, 
-  <bijective rcwa mapping of Z_( 2 ) with modulus 2> ]
-gap> StructureDescription(Image(last));
+gap> phi := IsomorphismRcwaGroup(SmallGroup(8,4),Z_pi(2));;
+gap> StructureDescription(Image(phi));
 "Q8"
 gap> phi := IsomorphismRcwaGroup(SymmetricGroup(5),Z_pi([2,3,5]));
 [ (1,2,3,4,5), (1,2) ] -> 

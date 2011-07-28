@@ -1,12 +1,10 @@
 ############################################################################
 ##
-##  access.gd                    IRREDSOL                 Burkhard Hoefling
+##  access.gd                      IRREDSOL                 Burkhard Höfling
 ##
-##  @(#)$Id: access.gd,v 1.3 2005/07/06 09:52:13 gap Exp $
+##  @(#)$Id: access.gd,v 1.5 2011/05/18 16:25:44 gap Exp $
 ##
-##  Copyright (C) 2003-2005 by Burkhard Hoefling, 
-##  Institut fuer Geometrie, Algebra und Diskrete Mathematik
-##  Technische Universitaet Braunschweig, Germany
+##  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 ##
 
 
@@ -18,18 +16,21 @@
 ##  the actual data will be loaded when required.
 ##  
 BindGlobal ("IRREDSOL_DATA", rec(
-   GROUPS := [],                  # group descriptions
-   GUARDIANS := [],               # guardian data, each group in the library 
-                                  # is a subgroup of a guardian
-   GROUPS_LOADED := [],           # indicates which groups have been loaded
-   GAL_PERM := [],                # permutation of grops in the library
-                                  # induced by a Galois automorphism
-   MAX := [],                     # indices of maximal subgroups of the relevant GL
-   GROUPS_DIM1 := [],             # group info for dimension 1
-   FP := [],                      # fingerprints of groups
-   FP_INDEX := [],                # fingerprint index
-   FP_ELMS := [],                 # fingerprints of elements
-   FP_LOADED := []                # indicates which fingerprint files have been loaded
+    GROUPS := [],             # group descriptions
+    GUARDIANS := [],          # guardian data, each group in the library 
+                              # is a subgroup of a guardian
+    GROUPS_LOADED := [],      # indicates which groups have been loaded
+    GAL_PERM := [],           # permutation of grops in the library
+                              # induced by the Frobenius automorphism
+    MAX := [],                # indices of maximal subgroups of the relevant GL
+    GROUPS_DIM1 := [],        # group info for dimension 1
+    PRIM_GUARDIANS := [],     # primitive groups corresponding to guardians,
+                              # each primitive pc group in the library will be a subgroup 
+                              # of this guardian
+    FP := [],                 # fingerprints of groups
+    FP_INDEX := [],           # fingerprint index
+    FP_ELMS := [],            # fingerprints of elements
+    FP_LOADED := []           # indicates which fingerprint files have been loaded
 ));
 
 
@@ -45,7 +46,7 @@ BindGlobal ("IRREDSOL_DATA", rec(
 ##  over F_p^n. The result is meaningless if 
 ##  AbsolutelyIrreducibleSolvableMatrixGroup (n/d, q^d, k) does not exist
 ##
-DeclareGlobalFunction ("PermCanonicalIndexIrreducibleSolvableMatrixGroup"); 
+DECLARE_IRREDSOL_FUNCTION ("PermCanonicalIndexIrreducibleSolvableMatrixGroup"); 
 
 
 ############################################################################
@@ -54,7 +55,7 @@ DeclareGlobalFunction ("PermCanonicalIndexIrreducibleSolvableMatrixGroup");
 ##
 ##  see the IRREDSOL manual
 ##  
-DeclareGlobalFunction ("IndicesIrreducibleSolvableMatrixGroups");
+DECLARE_IRREDSOL_FUNCTION ("IndicesIrreducibleSolvableMatrixGroups");
 
 
 ############################################################################
@@ -63,7 +64,8 @@ DeclareGlobalFunction ("IndicesIrreducibleSolvableMatrixGroups");
 ##
 ##  see the IRREDSOL manual
 ##  
-DeclareGlobalFunction ("IrreducibleSolvableMatrixGroup");
+DECLARE_IRREDSOL_FUNCTION ("IrreducibleSolvableMatrixGroup");
+  
 
 ############################################################################
 ##
@@ -71,8 +73,8 @@ DeclareGlobalFunction ("IrreducibleSolvableMatrixGroup");
 ##
 ##  see the IRREDSOL manual
 ##  
-DeclareGlobalFunction ("IndicesMaximalAbsolutelyIrreducibleSolvableMatrixGroups");
-   
+DECLARE_IRREDSOL_FUNCTION ("IndicesMaximalAbsolutelyIrreducibleSolvableMatrixGroups");
+
 
 ############################################################################
 ##

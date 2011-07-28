@@ -9,25 +9,40 @@ SetPackageInfo( rec(
 
 PackageName := "nq",
 Subtitle := "Nilpotent Quotients of Finitely Presented Groups",
-Version := "2.2",
-Date    := "06/02/2007",
+Version := "2.2.1",
+Date    := "01/07/2011",
 
 Persons := [
-  rec(
-  LastName      := "Nickel",
-  FirstNames    := "Werner",
-  IsAuthor      := true,
-  IsMaintainer  := true,
-  Email         := "nickel@mathematik.tu-darmstadt.de",
-  WWWHome       := "http://www.mathematik.tu-darmstadt.de/~nickel",
-  PostalAddress := Concatenation( "Fachbereich Mathematik, AG 2 \n",
-                                  "TU Darmstadt\n",
-                                  "Schlossgartenstr. 7\n",
-                                  "64289 Darmstadt\n",
-                                  "Germany" ),
-  Place         := "Darmstadt, Germany",
-  Institution   := "Fachbereich Mathematik, TU Darmstadt"
-  )
+  rec( LastName      := "Nickel",
+       FirstNames    := "Werner",
+       IsAuthor      := true,
+       IsMaintainer  := false,
+       Email         := "nickel@mathematik.tu-darmstadt.de",
+       WWWHome       := "http://www.mathematik.tu-darmstadt.de/~nickel",
+       PostalAddress := Concatenation( 
+               "Fachbereich Mathematik\n",
+               "TU Darmstadt\n",
+               "Schlossgartenstr. 7\n",
+               "64289 Darmstadt\n",
+               "Germany" ),
+       Place         := "Darmstadt, Germany",
+       Institution   := "Fachbereich Mathematik, TU Darmstadt"),
+
+  rec( LastName      := "Horn",
+       FirstNames    := "Max",
+       IsAuthor      := false,
+       IsMaintainer  := true,
+       Email         := "mhorn@tu-bs.de",
+       WWWHome       := "http://www.icm.tu-bs.de/~mhorn",
+       PostalAddress := Concatenation(
+               "AG Algebra und Diskrete Mathematik\n",
+               "Institut Computational Mathematics\n",
+               "TU Braunschweig\n",
+               "Pockelsstr. 14\n",
+               "D-38106 Braunschweig\n",
+               "Germany" ),
+       Place         := "Braunschweig",
+       Institution   := "TU Braunschweig")
 ],
 
 Status         := "accepted",
@@ -59,9 +74,9 @@ PackageDoc := rec(
 ),
 
 Dependencies := rec(
-  GAP                    := ">= 4.2",
-  NeededOtherPackages    := [ ["polycyclic", ">= 1.0"] ],
-  SuggestedOtherPackages := [ ["GAPDoc", ">= 0.99"] ],
+  GAP                    := ">= 4.4",
+  NeededOtherPackages    := [ ["polycyclic", "1.0"] ],
+  SuggestedOtherPackages := [ ["GAPDoc", "0.99"] ],
   ExternalConditions     := [ "needs a UNIX system with C-compiler",
                               "needs GNU multiple precision library" ]
 ),

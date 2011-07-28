@@ -2,7 +2,7 @@
 ##
 #W  basicprm.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basicprm.gi,v 4.33 2010/02/23 15:12:39 gap Exp $
+#H  @(#)$Id: basicprm.gi,v 4.34 2011/04/05 02:30:34 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,7 +10,7 @@
 ##  group types.
 ##
 Revision.basicprm_gi :=
-    "@(#)$Id: basicprm.gi,v 4.33 2010/02/23 15:12:39 gap Exp $";
+    "@(#)$Id: basicprm.gi,v 4.34 2011/04/05 02:30:34 gap Exp $";
 
 
 #############################################################################
@@ -241,6 +241,22 @@ InstallMethod( DihedralGroupCons,
     fi;
     return D;
     end );
+
+#############################################################################
+##
+#M  QuaternionGroupCons( <IsPermGroup>, <4n> )
+##
+InstallMethod( QuaternionGroupCons,
+    "perm. group",
+    true,
+    [ IsPermGroup, IsPosInt ], 0,
+function( filter, n )
+  local y, z, x;
+  if 0 <> n mod 4 then TryNextMethod(); fi;
+  y := PermList( Concatenation( [2..n/2], [1], [n/2+2..n], [n/2+1] ) );
+  x := PermList( Concatenation( Cycle( y^-1, [n/2+1..n], n/2+1 ), Cycle( y^-1, [1..n/2], n/4+1 ) ) );
+  return Group(x,y);
+end );
 
 
 #############################################################################

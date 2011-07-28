@@ -3,7 +3,7 @@
 #W  combinat.gd                 GAP library                  Martin Schönert
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: combinat.gd,v 4.30 2010/02/23 15:12:49 gap Exp $
+#H  @(#)$Id: combinat.gd,v 4.33 2011/04/19 02:51:45 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains declaration for combinatorics functions.
 ##
 Revision.combinat_gd :=
-  "@(#)$Id: combinat.gd,v 4.30 2010/02/23 15:12:49 gap Exp $";
+  "@(#)$Id: combinat.gd,v 4.33 2011/04/19 02:51:45 gap Exp $";
 
 
 #############################################################################
@@ -104,6 +104,38 @@ DeclareGlobalFunction("Factorial");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("Binomial");
+
+#############################################################################
+##
+#F  GaussianCoefficient( <n>, <k>, <q> )  . number of subspaces
+##
+##  <#GAPDoc Label="GaussianCoefficient">
+##  <ManSection>
+##  <Func Name="GaussianCoefficient" Arg='n, k, q'/>
+##
+##  <Description>
+##  returns the <E>Gaussian binomial coefficient</E>
+##  <Index Subkey="gaussian">coefficient</Index>
+##  <M>{{n \choose k}}_q</M> of integers <A>n</A>, <A>k</A>, and <A>q</A>,
+##  which is defined as
+##  <M>
+##  {n \choose k}_q
+##  = \begin{cases}
+##  \frac{(1-q^n)(1-q^{n-1})\cdots(1-q^{n-k+1})} {(1-q)(1-q^2)\cdots(1-q^k)} & k
+##  \le n \\
+##  0 & k>n \end{cases}.
+##  </M>
+##  It counts the number of <M>k</A>-dimensional subspaces of an
+##  <M>n</M>-dimensional vector space over the field with <M>q</M> elements.
+##  <P/>
+##  <Example><![CDATA[
+##  ]]></Example>
+##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("GaussianCoefficient");
 
 
 #############################################################################
@@ -275,11 +307,62 @@ DeclareGlobalFunction("Stirling2");
 ##  <Index>subsets</Index>
 ##  of <A>mset</A>, which contains all <E>subsets</E> of <A>mset</A> and has
 ##  cardinality <M>2^{{|<A>mset</A>|}}</M>.
+##  <P/>
+##  To loop over combinations of a larger multiset use <Ref
+##  Func="IteratorOfCombinations" /> which produces combinations one by one
+##  and may save a lot of memory. Another memory efficient representation of 
+##  the list of all combinations is provided by <Ref
+##  Func="EnumeratorOfCombinations" />.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("Combinations");
+
+#############################################################################
+##
+#F  IteratorOfCombinations( mset[, k ] )
+#F  EnumeratorOfCombinations( mset )
+##
+##  <#GAPDoc Label="IteratorOfCombinations">
+##  <ManSection>
+##  <Heading>Iterator and enumerator of combinations</Heading>
+##  <Func Name="IteratorOfCombinations" Arg='mset[, k]'/>
+##  <Func Name="EnumeratorOfCombinations" Arg='mset'/>
+##
+##  <Description>
+##  <Ref Func="IteratorOfCombinations" /> returns an <Ref Oper="Iterator" /> 
+##  for  combinations (see <Ref Func="Combinations"/>) of the given multiset
+##  <A>mset</A>. If a non-negative integer <A>k</A> is given as second argument
+##  then only the combinations with <A>k</A> entries are produced, otherwise
+##  all combinations. 
+##  <P/>
+##  <Ref Func="EnumeratorOfCombinations"/> returns an <Ref Oper="Enumerator" />
+##  of the given multiset <A>mset</A>. Currently only a variant without second 
+##  argument <A>k</A> is implemented.
+##  <P/>
+##  The ordering of combinations from these functions can be different and also
+##  different from the list returned by <Ref Func="Combinations"/>.
+##  <P/>
+##  <Example>
+##  gap> m:=[1..15];; Add(m, 15);
+##  gap> NrCombinations(m);
+##  49152
+##  gap> i := 0;; for c in Combinations(m) do i := i+1; od;
+##  gap> i;
+##  49152
+##  gap> cm := EnumeratorOfCombinations(m);;
+##  gap> cm[1000];
+##  [ 1, 2, 3, 6, 7, 8, 9, 10 ]
+##  gap> Position(cm, [1,13,15,15]);
+##  36866
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "IteratorOfCombinations" );
+DeclareGlobalFunction( "EnumeratorOfCombinations" );
 
 
 #############################################################################
@@ -546,26 +629,26 @@ DeclareGlobalFunction("Tuples");
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  (It might be interesting to add analogous enumerator constructors
+##
+##  It might be interesting to add analogous enumerator constructors
 ##  also for other functions that are declared in <F>lib/combinat.gd</F>.
-##  For the moment, <E>this is kept undocumented</E> since it is too trivial.)
 ##
 DeclareGlobalFunction( "EnumeratorOfTuples" );
 
 
 #############################################################################
 ##
-#F  IteratorOfTuples( <set>, <n> )
+#F  IteratorOfTuples( <set>, <k> )
 ##
 ##  <#GAPDoc Label="IteratorOfTuples">
 ##  <ManSection>
-##  <Func Name="IteratorOfTuples" Arg='n'/>
+##  <Func Name="IteratorOfTuples" Arg='set, k'/>
 ##
 ##  <Description>
-##  For a set <A>set</A> and a positive integer <A>n</A>,
+##  For a set <A>set</A> and a positive integer <A>k</A>,
 ##  <Ref Func="IteratorOfTuples"/>
 ##  returns an iterator (see&nbsp;<Ref Sect="Iterators"/>) of the set of
-##  all ordered tuples (see&nbsp;<Ref Func="Tuples"/>) of length <A>n</A>
+##  all ordered tuples (see&nbsp;<Ref Func="Tuples"/>) of length <A>k</A>
 ##  of the set <A>set</A>. The tuples are returned in lexicographic order.
 ##  </Description>
 ##  </ManSection>
@@ -824,7 +907,11 @@ DeclareGlobalFunction("NrPartitionsSet");
 ##  <M>p_1 \geq p_2 \geq \ldots \geq p_k</M>.
 ##  We write <M>p \vdash n</M>.
 ##  There are approximately
-##  <M>\exp(\pi \sqrt{{2/3 n}}) / (4 \sqrt{{3}} n)</M> such partitions.
+##  <M>\exp(\pi \sqrt{{2/3 n}}) / (4 \sqrt{{3}} n)</M> such partitions,
+##  use <Ref Func="NrPartitions"/> to compute the precise number.
+##  <P/>
+##  If you want to loop over all partitions of some larger <A>n</A> use
+##  the more memory efficient <Ref Func="IteratorOfPartitions"/>.
 ##  <P/>
 ##  It is possible to associate with every partition of the integer <A>n</A>
 ##  a conjugacy class of permutations in the symmetric group on <A>n</A>
@@ -835,10 +922,6 @@ DeclareGlobalFunction("NrPartitionsSet");
 ##  Ramanujan found the identities <M>p(5i+4) = 0</M> mod 5,
 ##  <M>p(7i+5) = 0</M>  mod 7 and <M>p(11i+6) = 0</M> mod 11
 ##  and many other fascinating things about the number of partitions.
-##  <P/>
-##  Do not call <Ref Func="Partitions"/> with an <A>n</A> much larger than
-##  40, in which case there are 37338 partitions,
-##  since the list will simply become too large.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1046,16 +1129,20 @@ DeclareGlobalFunction("NrRestrictedPartitions");
 ##
 #F  IteratorOfPartitions( <n> )
 ##
+##  <#GAPDoc Label="IteratorOfPartitions">
 ##  <ManSection>
 ##  <Func Name="IteratorOfPartitions" Arg='n'/>
 ##
 ##  <Description>
-##  For a positive integer <A>n</A>, `IteratorOfPartitions returns an iterator
-##  (see&nbsp;<Ref Sect="Iterators"/>) of the set of partitions of <A>n</A> (see&nbsp;<Ref Func="Partitions"/>).
+##  For a positive integer <A>n</A>, <Ref Func="IteratorOfPartitions" /> 
+##  returns an iterator
+##  (see&nbsp;<Ref Sect="Iterators"/>) of the set of partitions 
+##  of <A>n</A> (see&nbsp;<Ref Func="Partitions"/>).
 ##  The partitions of <A>n</A> are returned in lexicographic order.
 ##  </Description>
 ##  </ManSection>
-##
+##  <#/GAPDoc>
+##  
 DeclareGlobalFunction( "IteratorOfPartitions" );
 
 

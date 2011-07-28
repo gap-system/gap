@@ -1,4 +1,4 @@
-<!-- $Id: openmath.xml,v 1.7 2009/05/26 16:42:08 alexk Exp $ -->
+<!-- $Id: openmath.xml,v 1.8 2010/03/30 11:32:30 alexk Exp $ -->
 
 <Chapter Label="OpenMathFunctionality">
 <Heading>&OpenMath; functionality in &GAP;</Heading>    
@@ -12,7 +12,7 @@ The package is loaded as shown below (possibly loading required packages at the 
 <![CDATA[
 gap> LoadPackage("openmath");
 -----------------------------------------------------------------------------
-Loading  openmath 10.0.4 (OpenMath functionality in GAP)
+Loading  openmath 10.1.0 (OpenMath functionality in GAP)
 by Marco Costantini (costanti@science.unitn.it),
    Alexander Konovalov (http://www.cs.st-andrews.ac.uk/~alexk/), and
    Andrew Solomon (http://www.illywhacker.net/).

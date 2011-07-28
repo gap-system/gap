@@ -4,7 +4,7 @@
 #W							         Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: dict.gi,v 4.41 2010/02/23 15:12:55 gap Exp $
+#H  @(#)$Id: dict.gi,v 4.42 2011/04/19 02:53:49 gap Exp $
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  This file contains the implementations for dictionaries.
 ##
 Revision.dict_gi :=
-    "@(#)$Id: dict.gi,v 4.41 2010/02/23 15:12:55 gap Exp $";
+    "@(#)$Id: dict.gi,v 4.42 2011/04/19 02:53:49 gap Exp $";
 
 ##
 ## List and Sort dictionaries
@@ -269,7 +269,7 @@ local hashfun,obj,dom,lookup;
   fi;
 
   # are we given a domain, which can index very quickly?
-  if dom<>fail and 
+  if dom<>fail and IsList(dom) and 
     (IsQuickPositionList(dom) or 
       (not IsMutable(dom) and IsSSortedList(dom) and
        CanEasilySortElements(dom[1]) )  )
@@ -280,7 +280,11 @@ local hashfun,obj,dom,lookup;
 
   # can we try hashing? Only if domain is given and not for small perms.
   if dom<>fail and (not IsPerm(obj) or NrMovedPoints(obj)>100000) then
-    hashfun:=SparseIntKey(dom,obj);
+    if IsRecord(dom) and IsBound(dom.hashfun) then
+      hashfun:=dom.hashfun;
+    else
+      hashfun:=SparseIntKey(dom,obj);
+    fi;
   else
     hashfun:=fail;
   fi;
@@ -767,6 +771,7 @@ function( hash )
 
   hash!.LengthArray := NextPrimeInt(hash!.LengthArray * 2);
   hash!.LengthArrayHalf := QuoInt(hash!.LengthArray,2);
+  hash!.KeyArray:=0; # old one away
   hash!.KeyArray := ListWithIdenticalEntries( hash!.LengthArray, fail );
   hash!.ValueArray := [];
   hash!.NumberKeys := 0;
@@ -775,17 +780,17 @@ function( hash )
     for i in [l,l-1..1] do
       if oldKeyArray[i] <> fail then
 	HashDictAddDictionary( hash, oldKeyArray[i], oldValueArray[i] );
-	Unbind(oldKeyArray[i]);
-	Unbind(oldValueArray[i]);
       fi;
+      Unbind(oldKeyArray[i]);
+      Unbind(oldValueArray[i]);
     od;
   else
     for i in [l,l-1..1] do
       if oldKeyArray[i] <> fail then
 	AddDictionary( hash, oldKeyArray[i], oldValueArray[i] );
-	Unbind(oldKeyArray[i]);
-	Unbind(oldValueArray[i]);
       fi;
+      Unbind(oldKeyArray[i]);
+      Unbind(oldValueArray[i]);
     od;
   fi;
 end );

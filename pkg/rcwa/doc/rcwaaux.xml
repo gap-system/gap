@@ -2,8 +2,6 @@
 <!-- ##                                                                ## -->
 <!-- ##  rcwaaux.xml         RCWA documentation           Stefan Kohl  ## -->
 <!-- ##                                                                ## -->
-<!-- ##  $Id: rcwaaux.xml,v 1.56 2008/04/16 14:56:18 stefan Exp $      ## -->
-<!-- ##                                                                ## -->
 <!-- #################################################################### -->
 
 <Chapter Label="ch:InstallationAndAuxiliaryFunctions">
@@ -14,10 +12,11 @@
 <Section Label="sec:Requirements">
 <Heading>Requirements</Heading>
 
-The &RCWA; package needs at least &GAP;&nbsp;4.4.10, &ResClasses;&nbsp;3.0.0,
-<Package>GRAPE</Package>&nbsp;4.0&nbsp;<Cite Key="GRAPE"/>,
-<Package>Polycyclic</Package>&nbsp;2.2&nbsp;<Cite Key="Polycyclic"/> and
-&GAPDoc;&nbsp;1.1&nbsp;<Cite Key="GAPDoc"/>. With possible exception of
+This version of &RCWA; needs at least &GAP;&nbsp;4.4.12,
+&ResClasses;&nbsp;3.0.0,
+<Package>GRAPE</Package>&nbsp;4.3&nbsp;<Cite Key="GRAPE"/>,
+<Package>Polycyclic</Package>&nbsp;2.6&nbsp;<Cite Key="Polycyclic"/> and
+&GAPDoc;&nbsp;1.3&nbsp;<Cite Key="GAPDoc"/>. With possible exception of
 the most recent version of &ResClasses;, all needed packages are already
 present in an up-to-date standard &GAP; installation.
 The &RCWA; package can be used under UNIX, under Windows and on the
@@ -65,13 +64,38 @@ load the package as usual via <C>LoadPackage( "rcwa" );</C>.
 <Heading>The testing routine</Heading>
 
 <ManSection>
-  <Func Name="RCWATest" Arg=""/>
+  <Func Name="RCWATestInstall" Arg=""/>
   <Returns> Nothing. </Returns>
   <Description>
-    Performs tests of the &RCWA; package.
-    Errors, i.e. differences to the correct results of the test computations,
-    are reported. The processed test files are in the directory
-    <F>pkg/rcwa/tst</F>.
+    Performs a nontrivial computation to check whether an installation of
+    &RCWA; appears to work. Errors, i.e. differences to the correct results
+    of the test computation, are reported. The processed test file is
+    <F>pkg/rcwa/tst/testinstall.tst</F>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Func Name="RCWATestAll" Arg=""/>
+  <Returns> Nothing. </Returns>
+  <Description>
+    Runs the full test suite of the &RCWA; package.
+    Any differences to the supposed results of the test computations
+    are reported. The processed test file is
+    <F>pkg/rcwa/tst/testall.g</F>. <P/>
+
+    Please note that the test suite is a tool for developing.
+    The tests are deliberately very volatile to allow to spot possible
+    problems of any kind also in other packages or in the &GAP; Library.
+    For this reason you may see reports of differences
+    which simply reflect improved methods in other packages or in the
+    &GAP; Library (for example an object may already know more of its
+    attributes or properties than it is expected to, or an object may
+    be represented in a better way), or which are caused by changes of
+    the way certain objects are printed, and which are therefore harmless.
+    However if the correct and the actual output look different
+    mathematically or if you see error messages or if &GAP; crashes,
+    then something went wrong. Also, run times which are much longer
+    than the predicted times shown may indicate a problem.
   </Description>
 </ManSection>
 
@@ -174,6 +198,28 @@ of other features of &GAP;. It is intended for being used in talks.
 
 <!-- #################################################################### -->
 
+<Section Label="sec:ConvertingLogfilesToHTML">
+<Heading>Converting GAP logfiles to HTML</Heading>
+
+&RCWA; provides a routine to convert &GAP; logfiles to HTML.
+
+<ManSection>
+  <Func Name="Log2HTML" Arg="logfilename" Label="logfilename"/>
+  <Returns> Nothing. </Returns>
+  <Description>
+    This function converts the &GAP; logfile <A>logfilename</A> to HTML.
+    The extension of the input file must be <C>*.log</C>. The name of the
+    output file is the same as the one of the input file except that the
+    extension <C>*.log</C> is replaced by <C>*.html</C>.
+    There is a sample CSS file in <File>rcwa/doc/gaplog.css</File>,
+    which you can adjust to your taste.
+  </Description>
+</ManSection>
+
+</Section>
+
+<!-- #################################################################### -->
+
 <Section Label="sec:UtilityFunctions">
 <Heading>Some general utility functions</Heading>
 
@@ -212,7 +258,7 @@ all products of <A>k</A> entries of the list&nbsp;<A>l</A>,
 the functions <C>DifferencesList(<A>l</A>)</C> and
 <C>QuotientsList(<A>l</A>)</C> return the list of differences respectively
 quotients of consecutive entries of the list&nbsp;<A>l</A>, and
-the function <C>FloatQuotients(<A>l</A>)</C> returns the list of
+the function <C>FloatQuotientsList(<A>l</A>)</C> returns the list of
 floating point approximations of the latter. <P/>
 
 There are also methods <C>EquivalenceClasses(<A>l</A>,<A>inv</A>)</C>

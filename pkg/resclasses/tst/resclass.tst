@@ -2,12 +2,12 @@
 ##
 #W  resclass.tst            GAP4 Package `ResClasses'             Stefan Kohl
 ##
-#H  @(#)$Id: resclass.tst,v 1.32 2008/04/15 10:11:33 stefan Exp $
-##
 ##  This file contains automated tests of ResClasses' functionality for
 ##  computing with residue class unions.
 ##
-gap> START_TEST("$Id: resclass.tst,v 1.32 2008/04/15 10:11:33 stefan Exp $");
+#############################################################################
+
+gap> START_TEST( "resclass.tst" );
 gap> ResClassesDoThingsToBeDoneBeforeTest();
 gap> cl1 := ResidueClass(Integers,3,2);
 The residue class 2(3) of Z

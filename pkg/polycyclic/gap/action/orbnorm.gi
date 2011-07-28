@@ -149,7 +149,7 @@ end;
 ## g exists. If no g exists, then false is returned.
 ##
 ConjugacyHomogeneousAction := function( G, linG, baseU, baseW )
-    local K, baseK, baseL, L, U, a, f, b, C, g, exp, N, k, h;
+    local K, baseK, baseL, L, U, a, f, b, C, g, N, k, h;
 
     # check for trivial cases
     if Length(baseU) <> Length(baseW) then return false; fi;

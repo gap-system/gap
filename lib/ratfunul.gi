@@ -4,7 +4,7 @@
 #W                                                             Andrew Solomon
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: ratfunul.gi,v 4.98 2010/02/23 15:13:26 gap Exp $
+#H  @(#)$Id: ratfunul.gi,v 4.99 2011/05/14 17:00:18 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,7 +14,7 @@
 ##  are univariate.
 ##
 Revision.ratfunul_gi :=
-    "@(#)$Id: ratfunul.gi,v 4.98 2010/02/23 15:13:26 gap Exp $";
+    "@(#)$Id: ratfunul.gi,v 4.99 2011/05/14 17:00:18 gap Exp $";
 
 #############################################################################
 ##
@@ -653,7 +653,6 @@ local f,g,h,fs,gs,hs,q,t;
         g := t[2];       gs := fs - t[1]*gs;
         f := h;          fs := hs;
     od;
-    Error("QQQ");
     q:=QuotRemLaurpols(r,f,4);
     if q = fail  then
         return fail;

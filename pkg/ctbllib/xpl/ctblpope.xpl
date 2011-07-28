@@ -2,13 +2,13 @@
 %%
 %W  ctblpope.xpl              GAP applications              Thomas Breuer
 %%
-%H  @(#)$Id: ctblpope.xpl,v 1.22 2009/10/05 15:09:01 gap Exp $
+%H  @(#)$Id: ctblpope.xpl,v 1.23 2010/11/15 16:55:20 gap Exp $
 %%
 %Y  Copyright 1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
 %%
 %X  NAME="ctblpope"
 %X  rm -rf doc/$NAME.tex
-%X  etc/xpl2tst xpl/$NAME.xpl tst/$NAME.tst
+%X  etc/xpl2tst xpl/$NAME.xpl tst/$NAME.tst ctbllib
 %X  etc/xpl2latex xpl/$NAME.xpl doc/$NAME.tex
 %X  cd doc
 %X  chmod 444 $NAME.tex
@@ -40,6 +40,7 @@
 %%tth: \font\mathbb=msbm10
 \def\N{{\mathbb B}} \def\Z{{\mathbb Z}} \def\Q{{\mathbb Q}}
 \def\R{{\mathbb R}} \def\C{{\mathbb C}} \def\F{{\mathbb F}}
+\def\CC{{\cal C}}
 \def\tthdump#1{#1}
 \tthdump{\def\URL#1#2{\texttt{#1}}}
 %%tth: \def\URL#1#2{\url{#2}}
@@ -81,8 +82,10 @@ satisfying the conditions listed in Section
 %%tth: \href{link}{{\GAP} Reference Manual}.
 
 (Sections~\ref{U35sub} and~\ref{O82sub} were added in October~2001,
-Section~\ref{monsterperm1} was added in June~2009, and
-Section~\ref{monsterperm2} was added in September~2009.)
+Section~\ref{monsterperm1} was added in June~2009,
+Section~\ref{monsterperm2} was added in September~2009,
+Section~\ref{monsterperm3} was added in October~2009, and
+Section~\ref{monsterperm4} was added in November~2009.)
 }
 
 % using `\abstract' seems to reset `\parskip' and `parindent' ...
@@ -103,7 +106,7 @@ Section~\ref{monsterperm2} was added in September~2009.)
 %T show an example where the modular criteria are guaranteed by starting
 %T from the matrix of projective indecomposables!
 
-% gap> START_TEST("$Id: ctblpope.xpl,v 1.22 2009/10/05 15:09:01 gap Exp $");
+% gap> START_TEST("$Id: ctblpope.xpl,v 1.23 2010/11/15 16:55:20 gap Exp $");
 
 
 In the following, the {\GAP} Character Table Library~\cite{CTblLib1.1.3}
@@ -1656,38 +1659,33 @@ Thus we get one permutation character of $G$ which is not multiplicity-free.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Two Primitive Permutation Characters of the Monster}%
+\section{Four Primitive Permutation Characters of the Monster Group}%
 \label{monsterperm}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{The Subgroup $2^2.2^{11}.2^{22}.(S_3 \times M_{24})$ (June~2009)}%
-\label{monsterperm1}
+In this section, we compute four primitive permutation characters
+$1_H^M$ of the sporadic simple Monster group $M$,
+using the following strategy.
 
 \tthdump{\begin{tabular}{p{90mm}p{45mm}}}
 %%tth: \begin{html} <table><tr><td width="65%"> \end{html}
+Let $E$ be an elementary abelian $2$-subgroup of $M$,
+and $H = N_M(E)$.
+For an involution $z \in E$, let $G = C_M(z)$ and $U = G \cap H = C_H(z)$
+and $V = C_H(E)$, a normal subgroup of $H$.
 According to the Atlas of Finite Groups~\cite[p.~234]{CCN85},
-the Monster group $M$ has a class of maximal subgroups $H$ of the type
-$2^2.2^{11}.2^{22}.(S_3 \times M_{24})$.
-Currently the character table of $H$ and the class fusion into $M$
-are not available in {\GAP},
-but we are interested in the permutation character $1_H^G$.
+$G$ has the structure $2.B$ if $z$ is in the class `2A' of $M$,
+and $G$ has the structure $2^{1+24}_+.Co_1$
+if $z$ is in the class `2B' of $M$.
+In the latter case, let $N$ denote the extraspecial normal subgroup of order
+$2^{25}$ in $G$.
+It will turn out that in out situation, $U$ contains $N$.
 
-The subgroup $H$ normalizes a Klein four group whose involutions lie in
-the class `2B', so the index three subgroups of $H$ lie inside
-`2B' normalizers in $M$, which have the structure $2^{1+24}_+.Co_1$.
-
-Let $U$ denote an index three subgroup in $H$,
-$Z$ denote the central subgroup of order $2$ in $U$,
-and $N$ the normal subgroup of order $2^{25}$ in the centralizer $G$ of
-$Z$ in $M$.
-Then the order of $N U / N$ is a multiple of
-$2^{2+11+22-25} \cdot 2 \cdot |M_{24}|$.
-This is the order of a subgroup of $Co_1$.
-
-The list of maximal subgroups of $Co_1$ (see~\cite[p.~183]{CCN85})
-tells us that $NU / N$ is a maximal subgroup $K$ of $Co_1$
-and has the structure $2^{11}:M_{24}$.
-In particular, $U$ contains $N$ and thus $U/N \cong K$.
+We want to compute many values of $1_H^M$
+from the knowledge of permutation characters $1_X^M$,
+for suitable subgroups $X$ with the property $V \leq X \leq U$,
+and then use the {\GAP} function `PermChars' for computing all those
+possible permutation characters of $M$ that take the known values;
+if there is a unique solution then this is the desired character $1_H^M$.
 
 \tthdump{&}
 
@@ -1698,19 +1696,21 @@ In particular, $U$ contains $N$ and thus $U/N \cong K$.
 \tthdump{\setlength{\unitlength}{3pt}
 \begin{picture}(30,50)(0,0)
 \put(20,0){\circle*{1}} % trivial group
-\put(20,5){\circle*{1}} \put(23,5){\makebox(0,0){$Z$}}
+\put(20,3){\circle*{1}} \put(23,3){\makebox(0,0){$Z$}}
 \put(20,10){\circle*{1}} % N \cap V
 \put(25,15){\circle*{1}} \put(28,15){\makebox(0,0){$N$}}
-\put(10,20){\circle*{1}} \put(7,20){\makebox(0,0){$V$}}
-\put(15,25){\circle*{1}} \put(18,25){\makebox(0,0){$U$}}
+\put(15,15){\circle*{1}} \put(12,15){\makebox(0,0){$V$}}
+\put(20,20){\circle*{1}} \put(24,20){\makebox(0,0){$VN$}}
+\put(15,25){\circle*{1}} \put(12,25){\makebox(0,0){$U$}}
 \put(5,35){\circle*{1}} \put(2,35){\makebox(0,0){$G$}}
 \put(20,30){\circle*{1}} \put(23,30){\makebox(0,0){$H$}}
 \put(15,45){\circle*{1}} \put(15,48){\makebox(0,0){$M$}}
 %
 \put(20,0){\line(0,1){10}}
 \put(20,10){\line(1,1){5}}
-\put(20,10){\line(-1,1){10}}
-\put(10,20){\line(1,1){10}}
+\put(20,10){\line(-1,1){5}}
+\put(15,15){\line(1,1){5}}
+\put(15,25){\line(1,1){5}}
 \put(25,15){\line(-1,1){20}}
 \put(5,35){\line(1,1){10}}
 \put(20,30){\line(-1,3){5}}
@@ -1720,6 +1720,67 @@ In particular, $U$ contains $N$ and thus $U/N \cong K$.
 \tthdump{\end{tabular}}
 %%tth: \begin{html} </td></tr></table> \end{html}
 
+Why does this approach have a chance to be successful?
+Currently we do not have representations for the subgroups $H$ in question,
+but the character tables of the involution centralizers $G$ in $M$
+are available, and also either the character tables of $X/V$
+for the interesting subgroups $X$ are known or we have enough information
+to compute the characters $1_X^G$.
+
+And how do we compute certain values of $1_H^M$?
+Suppose that $\CC$ is a union of classes of $M$ and $I$ is an index set
+such that
+$(1_H)_{\CC \cap H} = (\sum_{i \in I} c_i 1_{X_i}^H)_{\CC \cap H}$
+holds for suitable rational numbers $c_i$.
+
+The right hand side of this equality lives in $H/V$,
+provided that $\CC$ ``behaves well'' w.r.t. factoring out
+the normal subgroup $V$ of $H$,
+i.~e., if there is a set of classes in $H/V$ whose preimages in $H$
+form the set $H \cap \CC$.
+For example, $\CC$ may be the set of all those elements in $M$
+whose order is not divisible by a particular prime $p$
+that divides $|H|$ but not $|U|$.
+
+Under these conditions, we have
+$(1_H^M)_{\CC} = ((\sum_{i \in I} c_i 1_{X_i}^G)^M)_{\CC}$,
+and we interpret the right hand side as follows:
+If $X_i$ contains $N$ then $1_{X_i}^G$ can be identified
+with $1_{X_i/N}^{G/N}$.
+If $X_i$ contains at least $Z$ then $1_{X_i}^G$ can be identified
+with $1_{X_i/Z}^{G/Z}$.
+As mentioned above, we have good chances to compute these characters.
+So the main task in each of the following sections is to find,
+for a suitable set $\CC$ of classes,
+a linear combination of permutation characters of $H/V$
+whose restriction to $(\CC \cap H) / V$ is constant and nonzero.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Subgroup $2^2.2^{11}.2^{22}.(S_3 \times M_{24})$
+(June~2009)}%
+\label{monsterperm1}
+
+According to the Atlas of Finite Groups~\cite[p.~234]{CCN85},
+the Monster group $M$ has a class of maximal subgroups $H$ of the type
+$2^2.2^{11}.2^{22}.(S_3 \times M_{24})$.
+Currently the character table of $H$ and the class fusion into $M$
+are not available in {\GAP}.
+We are interested in the permutation character $1_H^G$,
+and we will compute it without this information.
+
+The subgroup $H$ normalizes a Klein four group $E$
+whose involutions lie in the class `2B'.
+We fix an involution $z$ in $E$, and set $G = C_M(z)$, $U = C_H(z)$,
+and $V = C_H(E)$.
+Further, let $N$ be the extraspecial normal subgroup of order $2^{25}$
+in $G$.
+
+So $G$ has the structure $2^{1+24}_+.Co_1$, and $U$ has index three in $H$.
+The order of $N U / N$ is a multiple of
+$2^{2+11+22-25} \cdot 2 \cdot |M_{24}|$,
+and $N U / N$ occurs as a subgroup of $G / N \cong Co_1$.
+
 \beginexample
 gap> co1:= CharacterTable( "Co1" );;
 gap> order:= 2^(2+11+22-25) * 2 * Size( CharacterTable( "M24" ) );
@@ -1727,10 +1788,39 @@ gap> order:= 2^(2+11+22-25) * 2 * Size( CharacterTable( "M24" ) );
 gap> maxes:= List( Maxes( co1 ), CharacterTable );;
 gap> filt:= Filtered( maxes, t -> Size( t ) mod order = 0 );
 [ CharacterTable( "2^11:M24" ) ]
+gap> List( filt, t -> Size( t ) / order );
+[ 1 ]
 gap> k:= filt[1];;
 \endexample
 
-This means that we can compute the permutation character $\pi = 1_U^G$
+The list of maximal subgroups of $Co_1$ (see~\cite[p.~183]{CCN85})
+tells us that $NU / N$ is a maximal subgroup $K$ of $Co_1$
+and has the structure $2^{11}:M_{24}$.
+In particular, $U$ contains $N$ and thus $U/N \cong K$.
+
+Let
+\[
+   \CC = \{ g \in M; 3 \not\mid |g| \mbox{\rm\ or\ } 1_V^M(g^3) = 0 \}.
+\]
+
+Then $(1_H)_{\CC \cap H} = (1_U^H - \frac{1}{3} 1_V^H)_{\CC \cap H}$
+holds, as we can see from computations with $H/V \cong S_3$, as follows.
+
+\beginexample
+gap> f:= CharacterTable( "Symmetric", 3 );
+CharacterTable( "Sym(3)" )
+gap> OrdersClassRepresentatives( f );
+[ 1, 2, 3 ]
+gap> deg3:= PermChars( f, 3 );
+[ Character( CharacterTable( "Sym(3)" ), [ 3, 1, 0 ] ) ]
+gap> deg6:= PermChars( f, 6 );
+[ Character( CharacterTable( "Sym(3)" ), [ 6, 0, 0 ] ) ]
+gap> deg3[1] - 1/3 * deg6[1];
+ClassFunction( CharacterTable( "Sym(3)" ), [ 1, 1, 0 ] )
+\endexample
+
+The character table of $G$ is available in {\GAP},
+so we can compute the permutation character $\pi = 1_U^G$
 by computing the primitive permutation character $1_K^{Co_1}$,
 identifying it with $1_{U/N}^{G/N}$,
 and then inflating this character to $G$.
@@ -1743,100 +1833,68 @@ CharacterTable( "2^1+24.Co1" )
 gap> pi:= RestrictedClassFunction( TrivialCharacter( k )^co1, g );;
 \endexample
 
-Next we consider the index $2$ subgroup $V$ of the type
-$2^2.2^{11}.2^{22}.M_{24}$ in $U$;
-we want to compute the permutation character $\psi = 1_V^G$.
+Next we consider the permutation character $\phi = 1_V^G$.
 The group $V$ does not contain $N$ because $K$ is perfect.
 But $V$ contains $Z$ because otherwise $U$ would be a direct product
 of $V$ and $Z$, which would imply that $N$ would be
 a direct product of $V \cap N$ and $Z$.
-
-Since $\psi(g) = [G:V] \cdot |g^G \cap V| / |g^G|$ holds for $g \in G$,
-and since $g^G \cap V \subseteq g^G \cap U$,
-with equality if $g$ has odd order,
-we get $\psi(g) = 2 \cdot \pi(g)$ if $g$ has odd order,
-and $\psi(g) = 0$ if $\pi(g) = 0$.
-
-Moreover, $\psi$ is the inflation of $1_{V/Z}^{G/Z}$ from $G/Z$ to $G$,
-so we can perform the computations with the character table of the
+So we can regard $\phi$ as the inflation of $1_{V/Z}^{G/Z}$
+from $G/Z$ to $G$,
+i.~e., we can perform the computations with the character table of the
 factor group $G/Z$.
 
 \beginexample
-gap> gmodz:= g / ClassPositionsOfCentre( g );
+gap> zclasses:= ClassPositionsOfCentre( g );;
+gap> gmodz:= g / zclasses;
 CharacterTable( "2^1+24.Co1/[ 1, 2 ]" )
-gap> map:= InverseMap( GetFusionMap( g, gmodz ) );;
-gap> pibar:= CompositionMaps( pi, map );
-[ 8292375, 8292375, 8292375, 8292375, 32535, 32535, 32535, 32535, 32535, 
-  32535, 4095, 4095, 1783, 1783, 1783, 1783, 1783, 1783, 0, 1701, 1701, 1701, 
-  1701, 0, 0, 0, 135, 135, 135, 135, 135, 135, 231, 231, 231, 231, 231, 375, 
-  375, 375, 375, 375, 375, 375, 375, 207, 207, 207, 207, 207, 207, 63, 63, 
-  51, 51, 51, 51, 51, 51, 0, 75, 75, 75, 75, 0, 0, 0, 0, 0, 27, 27, 27, 0, 0, 
-  0, 117, 117, 117, 117, 117, 117, 0, 0, 0, 19, 19, 19, 19, 19, 15, 15, 7, 7, 
-  7, 7, 0, 14, 14, 14, 14, 14, 15, 15, 7, 7, 7, 7, 3, 3, 3, 11, 11, 11, 11, 
-  11, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 0, 0, 0, 0, 0, 0, 0, 0, 
-  15, 15, 5, 5, 5, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 9, 
-  9, 9, 0, 15, 15, 15, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 9, 9, 9, 9, 0, 0, 3, 3, 
-  3, 3, 3, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 0, 6, 6, 6, 6, 6, 0, 0, 0, 
-  0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 2, 2, 
-  2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 3, 3, 0, 1, 1, 1, 0, 0, 0, 0, 
-  0, 2, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-gap> orders:= OrdersClassRepresentatives( gmodz );;
-gap> psibar:= [];;
-gap> for i in [ 1 .. Length( pibar ) ] do
->   if pibar[i] = 0 then
->     psibar[i]:= 0;
->   elif orders[i] mod 2 = 1 then
->     psibar[i]:= pibar[i] * 2;
->   fi;
-> od;
-gap> psibar;
-[ 16584750,,,,,,,,,,,,,,,,,, 0, 3402,,,, 0, 0, 0, 270,,,,,,,,,,,,,,,,,,,,,,,,,
-  ,,,,,,,, 0, 150,,,, 0, 0, 0, 0, 0,,,, 0, 0, 0,,,,,,, 0, 0, 0,,,,,,,,,,,, 0, 
-  28,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, 0, 0, 0, 0, 0, 0, 0, 0,,,,,, 0, 0, 0,,,,,
-  , 6,,,,, 0, 0, 0, 0, 0,,,, 0,,,, 0, 0, 0, 0, 0,,,,,,,,,, 0, 0,,,,,, 0, 0,,,,
-  ,,,,,, 0, 0, 0, 12,,,,, 0, 0, 0, 0,,,,,,, 0, 0, 0, 0, 0, 0,,,, 0, 0, 0, 0, 
-  0, 0, 4,,,,,,,, 2,,,, 2,,,, 0, 0,,, 0,,,, 0, 0, 0, 0, 0,,,,, 0, 0, 0, 0,,,,
-  , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+gap> invmap:= InverseMap( GetFusionMap( g, gmodz ) );;
+gap> pibar:= CompositionMaps( pi, invmap );;
 \endexample
 
-These conditions suffice for computing $\psi$; it is the unique
-possible permutation character of $G/Z$ that has the prescribed values.
+Since $\phi(g) = [G:V] \cdot |g^G \cap V| / |g^G|$ holds for $g \in G$,
+and since $g^G \cap V \subseteq g^G \cap VN$,
+with equality if $g$ has odd order,
+we get $\phi(g) = 2 \cdot \pi(g)$ if $g$ has odd order,
+and $\phi(g) = 0$ if $\pi(g) = 0$.
+
+We want to compute the possible permutation characters with these
+values.
 
 \beginexample
-gap> cand:= PermChars( gmodz, rec( torso:= psibar ) );
-[ Character( CharacterTable( "2^1+24.Co1/[ 1, 2 ]" ), 
-    [ 16584750, 8290350, 8294446, 8290350, 65070, 30510, 34350, 32302, 32526, 
-      32558, 8190, 4094, 3566, 3566, 1742, 1806, 1774, 1782, 0, 3402, 1674, 
-      1738, 1674, 0, 0, 0, 270, 126, 142, 270, 126, 142, 462, 206, 222, 238, 
-      230, 750, 270, 462, 366, 390, 350, 382, 374, 414, 190, 222, 198, 214, 
-      206, 126, 62, 102, 62, 50, 54, 46, 50, 0, 150, 70, 86, 70, 0, 0, 0, 0, 
-      0, 54, 22, 30, 0, 0, 0, 234, 90, 138, 106, 114, 122, 0, 0, 0, 38, 38, 
-      14, 22, 18, 30, 14, 14, 14, 6, 6, 0, 28, 20, 20, 12, 12, 30, 14, 14, 
-      14, 6, 6, 6, 6, 2, 22, 6, 14, 10, 10, 30, 6, 22, 14, 18, 18, 10, 18, 
-      14, 30, 14, 14, 0, 0, 0, 0, 0, 0, 0, 0, 30, 14, 10, 2, 6, 0, 0, 0, 6, 
-      6, 6, 2, 2, 6, 6, 2, 2, 2, 0, 0, 0, 0, 0, 18, 6, 10, 0, 30, 14, 14, 0, 
-      0, 0, 0, 0, 6, 6, 6, 2, 2, 18, 10, 6, 10, 0, 0, 6, 2, 6, 2, 2, 0, 0, 
-      12, 4, 8, 8, 4, 4, 8, 8, 4, 0, 0, 0, 12, 4, 8, 8, 4, 0, 0, 0, 0, 2, 2, 
-      0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 4, 0, 2, 2, 2, 
-      2, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2, 0, 0, 6, 2, 0, 2, 2, 0, 0, 0, 0, 0, 0, 
-      4, 0, 2, 2, 0, 0, 0, 0, 4, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
-     ] ) ]
-gap> psi:= RestrictedClassFunction( cand[1], g );;
+gap> factorders:= OrdersClassRepresentatives( gmodz );;
+gap> phibar:= [];;
+gap> for i in [ 1 .. NrConjugacyClasses( gmodz ) ] do
+>      if factorders[i] mod 2 = 1 then
+>        phibar[i]:= 2 * pibar[i];
+>      elif pibar[i] = 0 then
+>        phibar[i]:= 0;
+>      fi;
+>    od;
+gap> cand:= PermChars( gmodz, rec( torso:= phibar ) );;
+gap> Length( cand );
+1
 \endexample
 
-% (if we would not prescribe the values except the degree then
-% we would run into a backtrack with 39 constit. and 247 columns)
+Now we know $\pi^M = 1_U^M$ and $\phi^M = 1_V^M$,
+so we can write down $(1_H^M)_{\CC}$.
 
-Now we use $\pi^M$ and $\psi^M$ for prescribing conditions on the values of
-$1_H^M$.
-Consider the factor group $F$ of the type $S_3$ of $H$.
-Let $F_1$, $F_2$, $F_3$ denote its subgroups of the orders $1$, $2$,
-and $3$, respectively.
-The group $F$ is the disjoint union of $F_1$, $F_3 \setminus F_1$,
-and the three $F$-conjugates of $F_2 \setminus F_1$.
+\beginexample
+gap> phi:= RestrictedClassFunction( cand[1], g )^m;;
+gap> pi:= pi^m;;
+gap> cand:= ShallowCopy( pi - 1/3 * phi );
+gap> morders:= OrdersClassRepresentatives( m );;
+gap> for i in [ 1 .. Length( morders ) ] do
+>      if morders[i] mod 3 = 0 and phi[ PowerMap( m, 3 )[i] ] <> 0 then
+>        Unbind( cand[i] );
+>      fi;
+>    od;
+\endexample
 
-Let $H'$ denote the index two subgroup of $H$, and let $g \in M$.
-Then
+We claim that $1_H^M(g) \geq \pi^M(g) - 1/3 \psi^M(g)$ for all $g \in M$.
+In order to see this, let $H'$ denote the index two subgroup of $H$,
+and let $g \in M$.
+Since $H$ is the disjoint union of $V$, $H' \setminus V$, and three
+$H$-conjugates of $U \setminus V$, we get
 \begin{eqnarray*}
   1_H^M(g) & = & [M:H] \cdot |g^M \cap H| / |g^M| \\
            & = & [M:H] \cdot \left( |g^M \cap V|
@@ -1844,47 +1902,16 @@ Then
                              + |g^M \cap H' \setminus V| \right) / |g^M| \\
            & = & [M:H] \cdot \left( 3 |g^M \cap U| - 2 |g^M \cap V|
                              + |g^M \cap H' \setminus V| \right) / |g^M| \\
-           & = & 1_U^M(g) - 1/3 \cdot 1_V^G(g) + 
+           & = & 1_U^M(g) - 1/3 \cdot 1_V^G(g) +
                     [M:H] \cdot |g^M \cap H' \setminus V| / |g^M| .
 \end{eqnarray*}
-
-So $1_H^M(g) \geq \pi^M(g) - \psi^M(g) / 3$,
-with equality if the order of $g$ is not divisible by $3$,
-or if $g^3$ is not contained in an $H$-conjugate of $U$;
-the latter condition is satisfied if $\pi^M(g^3) = 0$.
-
-We prescribe these values and lower bounds for $1_H^M$,
-
-\beginexample
-gap> mpi:= pi^m;;
-gap> mpsi:= psi^m;;
-gap> cand:= [];;
-gap> lower:= [];;
-gap> for i in [ 1 .. NrConjugacyClasses( m ) ] do
->   lower[i]:= mpi[i] - mpsi[i]/3;
->   if OrdersClassRepresentatives( m )[i] mod 3 <> 0 or
->      mpi[ PowerMap( m, 3 )[i] ] = 0 then
->     cand[i]:= lower[i];
->   fi;
-> od;
-gap> cand;
-[ 16009115629875684006343550944921875, 7774182899642733721875, 
-  120168544413337875,,,, 760550656275, 110042727795, 943894035, 568854195, 
-  1851609375, 0,,,,,,, 874650, 0, 76995, 591163, 224055, 34955, 29539, 20727,,
-  , 375375, 15775, 0, 0, 0, 495,,,,,,,,,,, 0, 0, 4410, 1498, 0,,,,, 83, 135, 
-  31, 0,,,,,, 0, 255, 195, 0, 215, 0, 0,,,,, 35, 15, 1, 1, 109, 21, 0,, 11,,,,
-  ,, 0, 0, 0, 0, 0, 98, 74, 42, 0, 0,, 90, 50, 0,, 0,, 0, 0, 1, 1,,, 0, 0, 0,,
-  ,,, 0,,,,, 5, 3, 0, 0, 0,,,,, 3, 3,, 1, 1, 1, 1, 0, 0,, 0,, 0, 0,, 0, 2, 0, 
-  0,, 0, 0,,,, 0,, 0, 0, 0,, 0, 0, 0, 0, 0, 0, 0, 0, 0,,,,,, 0, 0, 1, 1, 1, 1,
-  ,, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-\endexample
 
 Possible constituents of $1_H^M$ are those rational irreducible
 characters of $M$ that are constituents of $\pi^M$.
 
 \beginexample
-gap> constit:= Filtered( rat:= RationalizedMat( Irr( m ) ),
->                        chi -> ScalarProduct( m, chi, mpi ) <> 0 );;
+gap> constit:= Filtered( RationalizedMat( Irr( m ) ),
+>                        chi -> ScalarProduct( m, chi, pi ) <> 0 );;
 \endexample
 
 Now we compute the possible permutation characters that
@@ -1893,10 +1920,11 @@ are compatible with the given lower bounds for values,
 and have only constituents in the given list.
 
 \beginexample
-gap> res:= PermChars( m, rec( torso:= cand, chars:= constit,
->                             lower:= lower,
->                             normalsubgroup:= [ 1 .. NrConjugacyClasses( m ) ],
->                             nonfaithful:= TrivialCharacter( m ) ) );
+gap> cand:= PermChars( m,
+>      rec( torso:= cand, chars:= constit,
+>           lower:= ShallowCopy( pi - 1/3 * phi ),
+>           normalsubgroup:= [ 1 .. NrConjugacyClasses( m ) ],
+>           nonfaithful:= TrivialCharacter( m ) ) );
 [ Character( CharacterTable( "M" ), [ 16009115629875684006343550944921875, 
       7774182899642733721875, 120168544413337875, 4436049512692980, 
       215448838605, 131873639625, 760550656275, 110042727795, 943894035, 
@@ -1913,6 +1941,8 @@ gap> res:= PermChars( m, rec( torso:= cand, chars:= constit,
       0, 0, 0, 0, 0, 0 ] ) ]
 \endexample
 
+% The last command requires about 20 minutes of CPU time.
+
 There is only one candidate, so we have found the permutation character.
 
 
@@ -1921,68 +1951,27 @@ There is only one candidate, so we have found the permutation character.
 (September~2009)}%
 \label{monsterperm2}
 
-\tthdump{\begin{tabular}{p{90mm}p{45mm}}}
-%%tth: \begin{html} <table><tr><td width="65%"> \end{html}
 According to the Atlas of Finite Groups~\cite[p.~234]{CCN85},
 the Monster group $M$ has a class of maximal subgroups $H$ of the type
 $2^3.2^6.2^{12}.2^{18}.(L_3(2) \times 3.S_6)$.
 Currently the character table of $H$ and the class fusion into $M$
-are not available in {\GAP},
-but we are interested in the permutation character $1_H^G$.
+are not available in {\GAP}.
+We are interested in the permutation character $1_H^G$,
+and we will compute it without this information.
 
-The subgroup $H$ normalizes an elementary abelian group of order eight
+The subgroup $H$ normalizes an elementary abelian group $E$ of order eight
 whose involutions lie in the class `2B'.
-The index seven subgroups of $H$ lie inside
-`2B' normalizers in $M$, which have the structure $2^{1+24}_+.Co_1$.
+We fix an involution $z$ in $E$, and set $G = C_M(z)$, $U = C_H(z)$,
+and $V = C_H(E)$.
+Further, let $N$ be the extraspecial normal subgroup of order $2^{25}$
+in $G$.
+
+So $G$ has the structure $2^{1+24}_+.Co_1$, and $U$ has index seven in $H$.
 % Note that there must be an orbit of odd length on the seven involutions,
 % and there is no smaller nontrivial odd index than seven.
-
-Let $U$ denote such an index seven subgroup in $H$,
-$Z$ denote the central subgroup of order $2$ in $U$,
-and $N$ the normal subgroup of order $2^{25}$ in the centralizer $G$ of
-$Z$ in $M$.
-Then the order of $N U / N$ is a multiple of
-$2^{3+6+12+18-25} \cdot |L_3(2)| \cdot |3.S_6| / 7$.
-This is the order of a subgroup of $Co_1$.
-
-The list of maximal subgroups of $Co_1$ (see~\cite[p.~183]{CCN85})
-tells us that $NU / N$ is a maximal subgroup $K$ of $Co_1$
-and has the structure $2^{4+12}.(S_3 \times 3.S_6)$.
-(Note that the group $O_8^+(2)$ has no proper subgroup of index $105$.)
-In particular, $U$ contains $N$ and thus $U/N \cong K$.
-
-\tthdump{&}
-
-%%tth: \begin{html} </td><td width="35%"> \end{html}
-\begin{center}
-%%tth: \includegraphics{ctblpope02.png}
-%BP ctblpope02
-\tthdump{\setlength{\unitlength}{3pt}
-\begin{picture}(30,50)(0,0)
-\put(20,0){\circle*{1}} % trivial group
-\put(20,5){\circle*{1}} \put(23,5){\makebox(0,0){$Z$}}
-\put(20,10){\circle*{1}} % N \cap V
-\put(25,15){\circle*{1}} \put(28,15){\makebox(0,0){$N$}}
-\put(15,15){\circle*{1}} \put(12,15){\makebox(0,0){$V$}}
-\put(15,25){\circle*{1}} \put(18,25){\makebox(0,0){$U$}}
-\put(20,20){\circle*{1}} \put(25,20){\makebox(0,0){$VN$}}
-\put(5,35){\circle*{1}} \put(2,35){\makebox(0,0){$G$}}
-\put(20,30){\circle*{1}} \put(23,30){\makebox(0,0){$H$}}
-\put(15,45){\circle*{1}} \put(15,48){\makebox(0,0){$M$}}
-%
-\put(20,0){\line(0,1){10}}
-\put(20,10){\line(1,1){5}}
-\put(20,10){\line(-1,1){5}} % V cap N to V
-\put(15,25){\line(1,1){5}}  % U to H
-\put(15,15){\line(1,1){5}}  % V to VN
-\put(25,15){\line(-1,1){20}}
-\put(5,35){\line(1,1){10}}
-\put(20,30){\line(-1,3){5}}
-\end{picture}}
-%EP
-\end{center}
-\tthdump{\end{tabular}}
-%%tth: \begin{html} </td></tr></table> \end{html}
+The order of $N U / N$ is a multiple of
+$2^{3+6+12+18-25} \cdot |L_3(2)| \cdot |3.S_6| / 7$,
+and $N U / N$ occurs as a subgroup of $G / N \cong Co_1$.
 
 \beginexample
 gap> co1:= CharacterTable( "Co1" );;
@@ -1999,7 +1988,70 @@ gap> PermChars( o8p2, rec( torso:= [ 105 ] ) );
 gap> k:= filt[2];;
 \endexample
 
-This means that we can compute the permutation character $\pi = 1_U^G$
+The list of maximal subgroups of $Co_1$ (see~\cite[p.~183]{CCN85})
+tells us that $NU / N$ is a maximal subgroup $K$ of $Co_1$
+and has the structure $2^{4+12}.(S_3 \times 3.S_6)$.
+(Note that the group $O_8^+(2)$ has no proper subgroup of index $105$.)
+In particular, $U$ contains $N$ and thus $U/N \cong K$.
+
+Let $\CC$ be the set of elements in $M$ whose order is not divisible by $7$.
+Then
+$(1_H)_{\CC \cap H} =
+ (1_U^H - \frac{1}{3} 1_{VN}^H + \frac{1}{21} 1_V^H)_{\CC \cap H}$
+holds, as we can see from computations with $H/V \cong L_3(2)$, as follows.
+
+% How to *find* such an expression:
+%
+% gap> pi:= PermCharsTom( t, TableOfMarks( t ) );
+% [ Character( CharacterTable( "L3(2)" ), [ 168, 0, 0, 0, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 84, 4, 0, 0, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 56, 0, 2, 0, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 42, 6, 0, 0, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 42, 6, 0, 0, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 42, 2, 0, 2, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 28, 4, 1, 0, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 24, 0, 0, 0, 3, 3 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 21, 5, 0, 1, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 14, 2, 2, 0, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 14, 2, 2, 0, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 8, 0, 2, 0, 1, 1 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 7, 3, 1, 1, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 7, 3, 1, 1, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 1, 1, 1, 1, 1, 1 ] ) ]
+% gap> SolutionMat( pi, [1,1,1,1,0,0] );  # not good enough ...
+% [ -2/7, 0, 1/2, 0, 0, 1/2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+% gap> pi:= pi{[1,4,9,13]};
+% [ Character( CharacterTable( "L3(2)" ), [ 168, 0, 0, 0, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 42, 6, 0, 0, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 21, 5, 0, 1, 0, 0 ] ),
+%   Character( CharacterTable( "L3(2)" ), [ 7, 3, 1, 1, 0, 0 ] ) ]
+% gap> SolutionMat( pi, [1,1,1,1,0,0] );
+% [ 1/21, -1/3, 0, 1 ]
+%
+% So S4, V4, 1 suffice!
+
+\beginexample
+gap> f:= CharacterTable( "L3(2)" );
+CharacterTable( "L3(2)" )
+gap> OrdersClassRepresentatives( f );
+[ 1, 2, 3, 4, 7, 7 ]
+gap> deg7:= PermChars( f, 7 );
+[ Character( CharacterTable( "L3(2)" ), [ 7, 3, 1, 1, 0, 0 ] ) ]
+gap> deg42:= PermChars( f, 42 );
+[ Character( CharacterTable( "L3(2)" ), [ 42, 2, 0, 2, 0, 0 ] ), 
+  Character( CharacterTable( "L3(2)" ), [ 42, 6, 0, 0, 0, 0 ] ) ]
+gap> deg168:= PermChars( f, 168 );
+[ Character( CharacterTable( "L3(2)" ), [ 168, 0, 0, 0, 0, 0 ] ) ]
+gap> deg7[1] - 1/3 * deg42[2] + 1/21 * deg168[1];
+ClassFunction( CharacterTable( "L3(2)" ), [ 1, 1, 1, 1, 0, 0 ] )
+\endexample
+
+(Note that $VN/V$ is a Klein four group, and there is only one
+transitive permutation character of $L_3(2)$ that is induced from
+such subgroups.)
+
+The character table of $G$ is available in {\GAP},
+so we can compute the permutation character $\pi = 1_U^G$
 by computing the primitive permutation character $1_K^{Co_1}$,
 identifying it with $1_{U/N}^{G/N}$,
 and then inflating this character to $G$.
@@ -2011,10 +2063,6 @@ gap> g:= CharacterTable( "MC2B" );
 CharacterTable( "2^1+24.Co1" )
 gap> pi:= RestrictedClassFunction( TrivialCharacter( k )^co1, g );;
 \endexample
-
-The group $U$ has the structure $[2^{39}].(S_4 \times 3.S_6)$.
-Let $V$ denote the subgroup of the structure $[2^{39}].3.S_6$ in $U$.
-We have $H/V \cong L_3(2)$, $U/V \cong S_4$, and $U/VN \cong S_3$.
 
 The permutation character $\psi = 1_{VN}^G$ can be computed as
 the inflation of $1_{VN/N}^{G/N} = (1_{VN/N}^{U/N})^{G/N}$,
@@ -2031,19 +2079,6 @@ gap> for i in nn do
 >    od;
 gap> psi:= InducedClassFunction( k, psi, co1 );;
 gap> psi:= RestrictedClassFunction( psi, g );;
-\endexample
-
-Similarly, we compute the character $\sigma = 1_W^G$,
-where $VN < W < U$, with $[U:W] = 3$.
-(So we have $W/V \cong D_8$.)
-We compute it from the character table of $K$,
-as its unique possible permutation character of degree three.
-
-\beginexample
-gap> sigma:= PermChars( k, rec( torso:= [ 3 ] ) );;
-gap> Length( sigma );
-1
-gap> sigma:= RestrictedClassFunction( sigma[1]^co1, g );;
 \endexample
 
 Next we consider the permutation character $\phi = 1_V^G$.
@@ -2146,162 +2181,27 @@ gap> phicand:= RestrictedClassFunctions( poss, g );;
 
 % This needed about 40 seconds.
 
-The last permutation character we are interested in is $\tau = 1_C^G$,
-where $V < C < U$ and $C/V$ is a cyclic group of order four.
-We may assume that $C$ is contained in $W$, of index two,
-so we get the values of $\tau$ on elements of odd order from $\sigma$.
-
-\beginexample
-gap> sigmabar:= CompositionMaps( sigma, invmap );;
-gap> taubar:= [];;
-gap> uppertaubar:= [];;
-gap> for i in [ 1 .. NrConjugacyClasses( gmodz ) ] do
->      if factorders[i] mod 2 = 1 then
->        taubar[i]:= 2 * sigmabar[i];
->      elif sigmabar[i] = 0 then
->        taubar[i]:= 0;
->      else
->        uppertaubar[i]:= 2 * sigmabar[i];
->      fi;
->    od;
-gap> cand:= PermChars( gmodz, rec( torso:= taubar,
->             upper:= uppertaubar,
->             normalsubgroup:= [ 1 .. NrConjugacyClasses( gmodz ) ],
->             nonfaithful:= TrivialCharacter( gmodz ) ) );;
-gap> Length( cand );
-7
-\endexample
-
-We get seven solutions. Again, we exclude the candidates that are
-induced from subgroups containing $N/Z$,
-and we are left with four solutions.
-
-\beginexample
-gap> cont:= PermCharInfo( gmodz, cand ).contained;;
-gap> cand:= cand{ Filtered( [ 1 .. Length( cand ) ],
->                           i -> Sum( cont[i]{ nn }) < 2^24 ) };;
-gap> Length( cand );
-4
-gap> taucand:= RestrictedClassFunctions( cand, g );;
-\endexample
-
-Now we use the fact that any element $x \in H$ of order coprime to $7$
-lies in an $H$-conjugate of $U$, because $x$ is the preimage
-of an element in $L_3(2)$ that fixes at least one of the seven nonzero
-vectors in the natural representation, and $U$ is the full stabilizer
-in $H$ of such a vector.
-
-\beginexample
-gap> factgrp:= Action( GL(3,2), NormedRowVectors( GF(2)^3 ) );;
-gap> List( ConjugacyClasses( factgrp ), Representative );
-[ (), (4,5)(6,7), (2,3)(4,6,5,7), (2,4,6)(3,5,7), (1,2,4,3,6,7,5), 
-  (1,2,4,5,7,3,6) ]
-\endexample
-
-More precisely, if we know the element orders in $L_3(2)$ of the images
-of $x^M \cap U$ under the natural epimorphism $\theta\colon H \rightarrow H/V$
-then we can compute $|x^M \cap H|$.
-
-For example, if $x^M \cap U$ is empty and $x$ has order coprime to $7$
-then also $x^M \cap H$ is empty.
-If $x^M \cap U$ is contained in $V$ then also $x^M \cap H$ is contained
-in $V$.
-And if $x^M \cap U$ maps to elements of order three or four under
-$\theta$ then $|x^M \cap H| = 7 |x^M \cap U|$
-because each element in $x^M \cap H$ is contained in exactly one
-$H$-conjugate of $U$,
-since the elements of order three or four in $L_3(2)$ fix exactly one
-of the seven vectors.
-
-Using this idea systematically, we get the following.
-
-\begin{eqnarray*}
-%%%%%%%%%%%%%%%%%
-   \left|\left\{ h \in x^M \cap H; |\theta(h)| = 4 \right\}\right| & = &
-         7 \cdot \left|\left\{ h \in x^M \cap U; |\theta(h)| = 4 \right\}\right| \\
-   & = & 21 \cdot \left|\left\{ h \in x^M \cap C; |\theta(h)| = 4 \right\}\right| \\
-   & = & 21 \cdot \left( |x^M \cap C| - |x^M \cap C \cap VN| \right) \\
-   & = & 21 \cdot |x^M \cap C|
-         - 21 \cdot \left( |x^M \cap V| + 1/3 \cdot |x^M \cap VN \setminus V| \right) \\
-   & = & 21 \cdot |x^M \cap C|
-         - 21 \cdot \left( |x^M \cap V| + 1/3 \cdot |x^M \cap VN| - 1/3 \cdot |x^M \cap V| \right) \\
-   & = & 21 \cdot |x^M \cap C| - 7 \cdot |x^M \cap VN| - 14 \cdot |x^M \cap V| , \\
-%%%%%%%%%%%%%%%%%
-   \left|\left\{ h \in x^M \cap H; |\theta(h)| = 3 \right\}\right| & = &
-         7 \cdot \left|\left\{ h \in x^M \cap U; |\theta(h)| = 3 \right\}\right| \\
-   & = & 7 \cdot \left( |x^M \cap U| - |x^M \cap \bigcup_{g \in U} W^g| \right) \\
-   & = & 7 \cdot |x^M \cap U| - 21 \cdot |x^M \cap W| + 14 \cdot |x^M \cap VN| , \\
-%%%%%%%%%%%%%%%%%
-   \left|\left\{ h \in x^M \cap H; |\theta(h)| = 2 \right\}\right| & = &
-   7/3 \cdot\left|\left\{ h \in x^M \cap U; |\theta(h)| = 2 \right\}\right| \\
-   & = &
-   7/3 \cdot \left( 3 \cdot |x^M \cap W| - 2 \cdot |x^M \cap VN| - |x^M \cap V| \right. \\
-   &   & \left. - 3 \cdot \left|\left\{ h \in x^M \cap W; |\theta(h)| = 4 \right\}\right| \right) \\
-   & = &
-   7 \cdot |x^M \cap W| - 14/3 \cdot |x^M \cap VN| - 7/3 \cdot |x^M \cap V| \\
-   &   & - 7 \cdot \left|\left\{ h \in x^M \cap C; |\theta(h)| = 4 \right\}\right| \\
-   & = &
-   7 \cdot |x^M \cap W| - 14/3 \cdot |x^M \cap VN| - 7/3 \cdot |x^M \cap V|
-               - 7 \cdot |x^M \cap C| \\
-   &   & + 7/3 \cdot |x^M \cap VN| + 14/3 \cdot |x^M \cap V| \\
-   & = &
-   7 \cdot |x^M \cap W| - 7/3 \cdot |x^M \cap VN|
-   - 7 \cdot |x^M \cap C| + 7/3 \cdot |x^M \cap V| , \\
-   \mbox{\rm and} & & \\
-%%%%%%%%%%%%%%%%%
-   \left|\left\{ h \in x^M \cap H; |\theta(h)| = 1 \right\}\right|
-   & = &
-   |x^M \cap V| .
-\end{eqnarray*}
-
-So
-
-\begin{eqnarray*}
-   |x^M \cap H| & = &
-         \sum_{n = 1}^4
-           \left|\left\{ h \in x^M \cap H; |\theta(h)| = n \right\}\right| \\
-   & = & - \frac{32}{3} \cdot |x^M \cap V|
-         + \frac{14}{3} \cdot |x^M \cap VN|
-           + 14 \cdot |x^M \cap C|
-           - 14 \cdot |x^M \cap W|
-            + 7 \cdot |x^M \cap U|
-\end{eqnarray*}
-
-and thus
-
-\begin{eqnarray*}
-   1_H^M(x) & = & -\frac{4}{63} \cdot 1_V^M(x) + \frac{1}{9} \cdot 1_{VN}^M(x)
-                  + \frac{1}{3} \cdot 1_C^M(x) - \frac{2}{3} \cdot 1_W^M(x)
-                  + 1_U^M(x).
-\end{eqnarray*}
-
-Since we have several candidates for $1_V^G$ and $1_C^G$,
+Since we have several candidates for $1_V^G$,
 we form the linear combinations for all these candidates.
 
 \beginexample
+gap> phicand:= RestrictedClassFunctions( poss, g );;
 gap> phicand:= InducedClassFunctions( phicand, m );;
 gap> psi:= psi^m;;
-gap> taucand:= InducedClassFunctions( taucand, m );;
-gap> sigma:= sigma^m;;
 gap> pi:= pi^m;;
-gap> cand:= [];;
-gap> for phi in phicand do
->   for tau in taucand do
->     Add( cand, ShallowCopy( -32/(3*168) * phi + 1/9 * psi + 1/3 * tau
->                             - 2/3 * sigma + pi ) );
->   od;
-> od;
+gap> cand:= List( phicand,
+>             phi -> ShallowCopy( pi - 1/3 * psi + 1/21 * phi ) );
 gap> morders:= OrdersClassRepresentatives( m );;
 gap> for x in cand do
->   for i in [ 1 .. Length( morders ) ] do
->     if morders[i] mod 7 = 0 then
->       Unbind( x[i] );
->     fi;
->   od;
-> od;
+>      for i in [ 1 .. Length( morders ) ] do
+>        if morders[i] mod 7 = 0 then
+>          Unbind( x[i] );
+>        fi;
+>      od;
+>    od;
 \endexample
 
-Only one of these candidates has only integral values.
+Exactly one of the candidates has only integral values.
 
 \beginexample
 gap> cand:= Filtered( cand, x -> ForAll( x, IsInt ) );
@@ -2348,6 +2248,701 @@ gap> cand:= PermChars( m, rec( torso:= cand[1], chars:= constit ) );
       0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 4, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 
       0, 0, 0, 0, 0, 0, 4, 0, 0, 0 ] ) ]
 \endexample
+
+% The last command requires about 2 seconds.
+
+There is only one candidate, so we have found the permutation character.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Subgroup $2^5.2^{10}.2^{20}.(S_3 \times L_5(2))$
+(October~2009)}%
+\label{monsterperm3}
+
+According to the Atlas of Finite Groups~\cite[p.~234]{CCN85},
+the Monster group $M$ has a class of maximal subgroups $H$ of the type
+$2^5.2^{10}.2^{20}.(S_3 \times L_5(2))$.
+Currently the character table of $H$ and the class fusion into $M$
+are not available in {\GAP}.
+We are interested in the permutation character $1_H^G$,
+and we will compute it without this information.
+
+The subgroup $H$ normalizes an elementary abelian group $E$ of order $32$
+whose involutions lie in the class `2B'.
+We fix an involution $z$ in $E$, and set $G = C_M(z)$, $U = C_H(z)$,
+and $V = C_H(E)$.
+Further, let $N$ be the extraspecial normal subgroup of order $2^{25}$
+in $G$.
+
+So $G$ has the structure $2^{1+24}_+.Co_1$, and $U$ has index $31$ in $H$.
+% Note that there must be an orbit of odd length on the $31$ involutions,
+% and there is no smaller nontrivial odd index than seven.
+The order of $N U / N$ is a multiple of
+$2^{5+10+20-25} \cdot |L_5(2)| \cdot |S_3| / 31$,
+and $N U / N$ occurs as a subgroup of $G / N \cong Co_1$.
+
+\beginexample
+gap> co1:= CharacterTable( "Co1" );;
+gap> order:= 2^35*Size( CharacterTable( "L5(2)" ) )*6 / 2^25 / 31;
+1981808640
+gap> maxes:= List( Maxes( co1 ), CharacterTable );;
+gap> filt:= Filtered( maxes, t -> Size( t ) mod order = 0 );
+[ CharacterTable( "2^11:M24" ), CharacterTable( "2^(1+8)+.O8+(2)" ), 
+  CharacterTable( "2^(2+12):(A8xS3)" ) ]
+gap> List( filt, t -> Size( t ) / order );
+[ 253, 45, 1 ]
+gap> m24:= CharacterTable( "M24" );;
+gap> cand:= PermChars( m24, rec( torso:=[ 253 ] ) );
+[ Character( CharacterTable( "M24" ), [ 253, 29, 13, 10, 1, 5, 5, 1, 3, 2, 1, 
+      1, 1, 1, 3, 0, 2, 1, 1, 1, 0, 0, 1, 1, 0, 0 ] ) ]
+gap> TestPerm5( m24, cand, m24 mod 11 );
+[  ]
+gap> PermChars( CharacterTable( "O8+(2)" ), rec( torso:=[ 45 ] ) );
+[  ]
+gap> k:= filt[3];;
+\endexample
+
+The list of maximal subgroups of $Co_1$ (see~\cite[p.~183]{CCN85})
+tells us that $NU / N$ is a maximal subgroup $K$ of $Co_1$
+and has the structure $2^{2+12}.(A_8 \times S_3)$.
+(Note that the group $M_{24}$ has no proper subgroup of index $253$,
+which is shown above using the $11$-modular Brauer table of $M_{24}$.
+Furthermore, the group $O_8^+(2)$ has no subgroup of index $45$.)
+In particular, $U$ contains $N$ and thus $U/N \cong K$.
+
+Let $\CC$ be the set of elements in $M$ whose order is not divisible by $31$
+or $21$.
+We want to find an index set $I$ and subgroups $X_i$, for $i \in I$,
+with the property that $V \leq X_i \leq U$ and
+\[
+   (1_H)_{\CC \cap H} = \left( \sum_{i \in I} c_i 1_{X_i}^H \right)_{\CC \cap H}
+\]
+holds for suitable rational integers $c_i$.
+Let $W$ be the full preimage of the elementary normal subgroup of order $16$
+in $U/V \cong 2^4.A_8$ under the natural epimorphism from $U$ to $U/V$,
+and set $I_1 = \{ i \in I; W \leq X_i \}$ and $I_2 = I \setminus I_1$.
+
+Using the known table of marks of $U/V$,
+we will find a solution such that $[W:(W \cap X_i)] = 2$ for all $i \in I_2$.
+First we compute the permutation characters $1_S^{U/V}$ for all
+subgroups $S$ of $U/V$ that contain $W/V$,
+and induce them to $H/V$.
+
+\beginexample
+gap> subtbl:= CharacterTable( "2^4:A8" );;
+gap> subtom:= TableOfMarks( subtbl );;
+gap> perms:= PermCharsTom( subtbl, subtom );;
+gap> nsg:= ClassPositionsOfNormalSubgroups( subtbl );
+[ [ 1 ], [ 1, 2 ], [ 1 .. 25 ] ]
+gap> above:= Filtered( perms, x -> x[1] = x[2] );;
+gap> tbl:= CharacterTable( "L5(2)" );;
+gap> above:= Set( Induced( subtbl, tbl, above ) );;
+\endexample
+
+Next we compute the permutation characters $1_S^{U/V}$ for all
+subgroups $S$ of $U/V$ whose intersection with $W/V$ has index two
+in $W/V$.
+Afterwards we exclude certain subgroups that would slow down later
+computations,
+and induce also these characters to $H/V$.
+
+\beginexample
+gap> index2:= Filtered( perms,
+>      x -> Sum( PermCharInfo( subtbl, [x] ).contained[1]{ [1,2] } ) = 8 );;
+gap> index2:= Filtered( index2, x -> not x[1] in [ 630, 840, 1260, 1680 ] );;
+gap> index2:= Set( Induced( subtbl, tbl, index2 ) );;
+\endexample
+
+Now we induce the permutation characters to $H/V$,
+and compute the coefficients of a linear combination as desired.
+
+\beginexample
+gap> orders:= OrdersClassRepresentatives( tbl );;
+gap> goodclasses:= Filtered( [ 1 .. NrConjugacyClasses( tbl ) ],
+>                            i -> not orders[i] in [ 21, 31 ] );
+[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ]
+gap> matrix:= List( Concatenation( above, index2 ), x -> x{ goodclasses } );;
+gap> sol:= SolutionMat( matrix,
+>              ListWithIdenticalEntries( Length( goodclasses ), 1 ) );
+[ 692/651, 57/217, -78/217, -26/217, 0, 74/651, 11/217, 0, 3/217, 151/651, 0, 
+  22/651, 0, 0, 0, -11/217, 0, 0, 0, 0, 0, 0, 0, 0, -115/651, 0, -3/31, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, -34/93, -11/651, 0, 2/21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/31, 0, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0 ]
+gap> nonzero:= Filtered( [ 1 .. Length( sol ) ], i -> sol[i] <> 0 );
+[ 1, 2, 3, 4, 6, 7, 9, 10, 12, 16, 25, 27, 106, 107, 109, 120 ]
+gap> sol:= sol{ nonzero };;
+\endexample
+
+Now we transfer this linear combination to the character tables
+which are given in our situation.
+
+Those constituents that are induced from subgroups of $H$ above $W$
+can be identified uniquely via their degrees and their values distribution;
+we compute these characters in the character table of $U/W$ obtained
+as a factor table of the character table of $U/N$, lift them back
+to $U/N$, induce them to $G/N$, inflate them to $G$,
+and then induce them fo $M$.
+
+\beginexample
+gap> a8degrees:= List( above{ Filtered( nonzero,
+>                                 x -> x <= Length( above ) ) },
+>                      x -> x[1] ) / 31;
+[ 1, 8, 15, 28, 56, 56, 70, 105, 120, 168, 336, 336 ]
+gap> a8tbl:= subtbl / [ 1, 2 ];;
+gap> invtoa8:= InverseMap( GetFusionMap( subtbl, a8tbl ) );;
+gap> nsg:= ClassPositionsOfNormalSubgroups( k );;
+gap> nn:= First( nsg, x -> Sum( SizesConjugacyClasses( k ){ x } ) = 6*2^14 );;
+gap> a8tbl_other:= k / nn;;
+gap> g:= CharacterTable( "MC2B" );
+CharacterTable( "2^1+24.Co1" )
+gap> constit:= [];;
+gap> for i in [ 1 .. Length( a8degrees ) ] do
+>      cand:= PermChars( a8tbl_other, rec( torso:= [ a8degrees[i] ] ) );
+>      filt:= Filtered( perms, x -> x^tbl = above[ nonzero[i] ] );
+>      filt:= List( filt, x -> CompositionMaps( x, invtoa8 ) );
+>      cand:= Filtered( cand,
+>               x -> ForAny( filt, y -> Collected( x ) = Collected(y) ) );
+>      Add( constit, List( Induced( Restricted( Induced(
+>        Restricted( cand, k ), co1 ), g ), m ), ValuesOfClassFunction ) );
+>    od;
+gap> List( constit, Length );
+[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+\endexample
+
+Dealing with the remaining constituents is more involved.
+For a permutation character $1_{X/V}^{U/V}$, we compute
+$1_{WX/V}^{U/V}$, a character whose degree is half as large
+and which can be regarded as a character of $U/W$.
+This character can be treated like the ones above:
+We lift it to $U/N$, induce it to $G/N$, and inflate it to $G/Z(G)$;
+let this character be $1_Y^{G/Z(G)}$, for some subgroup $Y$.
+Then we compute the possible permutation characters of $G/Z(G)$ that
+can be induced from a subgroup of index two inside $Y$,
+inflate these characters to $G$ and then induce them to $M$.
+
+\beginexample
+gap> downdegrees:= List( index2{ Filtered( nonzero,
+>                                    x -> x > Length( above ) )
+>                                - Length( above ) },
+>                        x -> x[1] ) / 31;
+[ 30, 210, 210, 1920 ]
+gap> f:= g / ClassPositionsOfCentre( g );;
+gap> forders:= OrdersClassRepresentatives( f );;
+gap> inv:= InverseMap( GetFusionMap( g, f ) );;
+gap> for j in [ 1 .. Length( downdegrees ) ] do
+>      chars:= [];
+>      cand:= PermChars( a8tbl_other, rec( torso:= [ downdegrees[j]/2 ] ) );
+>      filt:= Filtered( perms, x -> x^tbl = index2[ nonzero[
+>                   j + Length( a8degrees ) ] - Length( above ) ] );
+>      filt:= Induced( subtbl, a8tbl, filt,
+>                      GetFusionMap( subtbl, a8tbl ));
+>      cand:= Filtered( cand, x -> ForAny( filt,
+>                 y -> Collected( x ) = Collected( y ) ) );
+>      cand:= Restricted( Induced( Restricted( cand, k ), co1 ), g );
+>      for chi in cand do
+>        cchi:= CompositionMaps( chi, inv );
+>        upper:= [];
+>        pphi:= [];
+>        for i in [ 1 .. NrConjugacyClasses( f ) ] do
+>          if forders[i] mod 2 = 1 then
+>            pphi[i]:= 2 * cchi[i];
+>          elif cchi[i] = 0 then
+>            pphi[i]:= 0;
+>          else
+>            upper[i]:= 2* cchi[i];
+>          fi;
+>        od;
+>        Append( chars, PermChars( f, rec( torso:= ShallowCopy( pphi ),
+>            upper:= upper,
+>            normalsubgroup:= [ 1 .. 4 ],
+>            nonfaithful:= cchi ) ) );
+>      od;
+>      Add( constit, List( Induced( Restricted( chars, g ), m ),
+>                          ValuesOfClassFunction ) );
+>    od;
+gap> List( constit, Length );
+[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 10, 10, 2 ]
+\endexample
+
+Now we form the possible linear combinations.
+
+\beginexample
+gap> cand:= List( Cartesian( constit ), l -> sol * l );;
+gap> m:= CharacterTable( "M" );
+gap> morders:= OrdersClassRepresentatives( m );;
+gap> for x in cand do
+>      for i in [ 1 .. Length( morders ) ] do
+>        if morders[i] mod 31 = 0 or morders[i] mod 21 = 0 then
+>          Unbind( x[i] );
+>        fi;
+>      od;
+>    od;
+\endexample
+
+Exactly one of the candidates has only integral values.
+
+\beginexample
+gap> cand:= Filtered( cand, x -> ForAll( x, IsInt ) );
+[ [ 391965121389536908413379198941796875, 23914487292951376996875, 
+      474163138042468875, 9500455925885925, 646346515815, 334363486275, 
+      954161764875, 147339103275, 1481392395, 1313281515, 0, 8203125, 
+      9827885925, 1216215, 91556325, 9388791, 115911, 587331, 874650, 0, 
+      79515, 581955, 336375, 104371, 62331, 36855, 0, 0, 0, 0, 28125, 525, 
+      1125, 0, 188325, 16767, 88965, 2403, 9477, 1155, 891, 207, 351, 627, 0, 
+      0, 4410, 1498, 0, 0, 0, 30, 150, 91, 151, 31, 0, 0, 0, 0, 0, 0, 0, 0, 
+      0, 125, 0, 5, 5,,,,, 0, 0, 0, 0, 141, 45, 27, 61, 27, 9, 9, 7, 3, 15, 
+      0, 0, 0, 0, 0, 98, 74, 42, 0, 0, 30, 0, 0, 0, 6, 6, 6,,, 1, 1, 0, 0, 0, 
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,,,,, 0, 0, 0, 0, 0, 0, 
+      0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2,,, 0, 
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,,,, 0, 0, 0, 0, 0, 0,,, 0, 0, 0, 0, 0, 
+      0,, 0, 0, 0 ] ]
+\endexample
+ 
+% Possible constituents of $1_H^M$ are those rational irreducible
+% characters of $M$ that are constituents of ...
+% 
+% \beginexample
+% gap> constit:= Filtered( RationalizedMat( Irr( m ) ),
+% >                        chi -> ScalarProduct( m, chi, ... ) <> 0 );;
+% \endexample
+% why not?
+
+Now we compute the possible permutation characters that
+have the prescribed values.
+
+\beginexample
+gap> cand:= PermChars( m, rec( torso:= cand[1] ) );
+[ Character( CharacterTable( "M" ), [ 391965121389536908413379198941796875, 
+      23914487292951376996875, 474163138042468875, 9500455925885925, 
+      646346515815, 334363486275, 954161764875, 147339103275, 1481392395, 
+      1313281515, 0, 8203125, 9827885925, 1216215, 91556325, 9388791, 115911, 
+      587331, 874650, 0, 79515, 581955, 336375, 104371, 62331, 36855, 0, 0, 
+      0, 0, 28125, 525, 1125, 0, 188325, 16767, 88965, 2403, 9477, 1155, 891, 
+      207, 351, 627, 0, 0, 4410, 1498, 0, 0, 0, 30, 150, 91, 151, 31, 0, 0, 
+      0, 0, 0, 0, 0, 0, 0, 125, 0, 5, 5, 210, 0, 42, 0, 0, 0, 0, 0, 141, 45, 
+      27, 61, 27, 9, 9, 7, 3, 15, 0, 0, 0, 0, 0, 98, 74, 42, 0, 0, 30, 0, 0, 
+      0, 6, 6, 6, 3, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+      1, 1, 0, 18, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 
+      2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 2, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+      0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ) 
+ ]
+\endexample
+
+% The last command requires about 2 seconds.
+
+There is only one candidate, so we have found the permutation character.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Subgroup $2^{10+16}.O_{10}^+(2)$ (November~2009)}%
+\label{monsterperm4}
+
+According to the Atlas of Finite Groups~\cite[p.~234]{CCN85},
+the Monster group $M$ has a class of maximal subgroups $H$ of the type
+$2^{10+16}.O_{10}^+(2)$.
+Currently the character table of $H$ and the class fusion into $M$
+are not available in {\GAP}.
+We are interested in the permutation character $1_H^G$,
+and we will compute it without this information.
+
+The subgroup $H$ normalizes an elementary abelian group $E$ of order $2^{10}$
+which contains $496$ involutions in the class `2A' and $527$ involutions
+in the class `2B'.
+Let $V$ denote the normal subgroup of order $2^{26}$ in $H$,
+and set $\bar{H} = H/N$.
+Since the smallest two indices of maximal subgroups of $\bar{H}$
+are $496$ and $527$, respectively, $H$ acts transitively on both the
+`2A' and the `2B' involutions in $E$,
+and the centralizers of these involutions contain $V$.
+
+\beginexample
+gap> Hbar:= CharacterTable( "O10+(2)" );;
+gap> U_Abar:= CharacterTable( "O10+(2)M1" );
+CharacterTable( "S8(2)" )
+gap> Index( Hbar, U_Abar );
+496
+gap> U_Bbar:= CharacterTable( "O10+(2)M2" );
+CharacterTable( "2^8:O8+(2)" )
+gap> Index( Hbar, U_Bbar );
+527
+\endexample
+
+% careful: the 2^8 in O10+(2) is apparently NOT the one above the 2^(1+24),
+% since the 2^8:O8+(2) is not a factor of Co1M5 !!!
+% (The irreducibles coincide but the power maps do not fit!)
+
+We fix a `2A' involution $z_A$ in $E$, and set $G_A = C_M(z_A)$
+and $U_A = C_H(z_A)$.
+So $G_A$ has the structure $2.B$ and $U_A$ has the structure
+$2^{10+16}.S_8(2)$.
+From the list of maximal subgroups of $B$ we see that the image of $G_A$
+under the natural epimorphism from $G_A$ to $B$ is a maximal
+subgroup of $B$ and has the structure $2^{9+16}.S_8(2)$.
+
+\beginexample
+gap> b:= CharacterTable( "B" );
+CharacterTable( "B" )
+gap> Horder:= 2^26 * Size( Hbar );
+1577011055923770163200
+gap> order:= Horder / ( 2 * 496 );
+1589728887019929600
+gap> maxes:= List( Maxes( b ), CharacterTable );;
+gap> filt:= Filtered( maxes, t -> Size( t ) mod order = 0 );
+[ CharacterTable( "2^(9+16).S8(2)" ) ]
+gap> List( filt, t -> Size( t ) / order );
+[ 1 ]
+gap> u1:= filt[1];
+CharacterTable( "2^(9+16).S8(2)" )
+\endexample
+
+Analogously,
+we fix a `2B' involution $z_B$ in $E$, and set $G_B = C_M(z_B)$
+and $U_B = C_H(z_B)$,
+Further, let $N$ be the extraspecial normal subgroup of order $2^{25}$
+in $G_B$.
+So $G_B$ has the structure $2^{1+24}_+.Co_1$,
+and $U_B$ has index $527$ in $G_B$.
+From the list of maximal subgroups of $Co_1$ we see that the image of $U_B$
+under the natural epimorphism from $G_B$ to $Co_1$ is a maximal
+subgroup of $Co_1$ and has the structure $2^{1+8}_+.O_8^+(2)$.
+
+\beginexample
+gap> co1:= CharacterTable( "Co1" );;
+gap> order:= Horder / ( 2^25 * 527 );
+89181388800
+gap> maxes:= List( Maxes( co1 ), CharacterTable );;
+gap> filt:= Filtered( maxes, t -> Size( t ) mod order = 0 );
+[ CharacterTable( "2^(1+8)+.O8+(2)" ) ]
+gap> List( filt, t -> Size( t ) / order );
+[ 1 ]
+gap> u2:= filt[1];
+CharacterTable( "2^(1+8)+.O8+(2)" )
+\endexample
+
+First we compute the permutation characters $\pi_A = 1_{U_A}^M$ and
+$\pi_B = 1_{U_B}^M$.
+
+\beginexample
+gap> m:= CharacterTable( "M" );
+CharacterTable( "M" )
+gap> 2b:= CharacterTable( "MC2A" );
+CharacterTable( "2.B" )
+gap> mm:= CharacterTable( "MC2B" );
+CharacterTable( "2^1+24.Co1" )
+gap> pi_A:= RestrictedClassFunction( TrivialCharacter( u1 )^b, 2b )^m;;
+gap> pi_B:= RestrictedClassFunction( TrivialCharacter( u2 )^co1, mm )^m;;
+\endexample
+
+The degree of $1_H^M$ is of course known.
+
+\beginexample
+gap> torso:= [ Size( m ) / Horder ];
+[ 512372707698741056749515292734375 ]
+\endexample
+
+Next we compute some zero values of $1_H^M$,
+using the following conditions.
+
+%T \why does this help?
+%T The question is whether `PermChars' can use the perm. characters of subgroups
+%T in general, for getting additional zeros.
+%T Or would the zeros shown here be found automatically by `PermChars' in its
+%T initialization?
+
+\begin{itemize}
+\item
+    For $g \in M$, if $|g|$ does not divide $|H|$ or
+    if $|g|$ is not the product of an element order in $H/V$ and a $2$-power.
+    (In fact we could use that the exponent of $V$ is $4$,
+    but this would not improve the result.)
+\item
+    Let $U \leq H \leq G$, and let $p$ be a prime that does not divide
+    $[H:U]$.
+    Then $U$ contains a Sylow $p$ subgroup of $H$,
+    so each element of order $p$ in $H$ is conjugate in $H$ to an element
+    in $U$.
+    For $g \in G$, $g = g_p h$, where the order of $g_p$ is a power of $p$
+    such that $1_U^G(g_p) = 0$ holds, we have $1_H^G(g) = 0$.
+    We apply this to $U \in \{ U_A, U_B \}$.
+% One of these groups would suffice.
+\end{itemize}
+
+% Since these conditions are closed under taking roots,
+% we need not run through the roots of the positions where zeros are set.
+
+\beginexample
+gap> morders:= OrdersClassRepresentatives( m );;
+gap> 2parts:= Union( [ 1 ], Filtered( Set( morders ),
+>                          x -> IsPrimePowerInt( x ) and IsEvenInt( x ) ) );
+[ 1, 2, 4, 8, 16, 32 ]
+gap> factorders:= Set( OrdersClassRepresentatives( Hbar ) );;
+gap> primes_A:= Filtered( Set( Factors( Horder ) ), p -> 496 mod p <> 0 );
+[ 3, 5, 7, 17 ]
+gap> primes_B:= Filtered( Set( Factors( Horder ) ), p -> 527 mod p <> 0 );
+[ 2, 3, 5, 7 ]
+gap> primes:= Union( primes_A, primes_B );;
+gap> n:= NrConjugacyClasses( m );;
+gap> for i in [ 1 .. n ] do
+>   if Horder mod morders[i] <> 0 then
+>     torso[i]:= 0;
+>   elif ForAll( factorders, x -> not morders[i] / x in 2parts ) then
+>     torso[i]:= 0;
+>   else
+>     for p in primes do
+>       if morders[i] mod p = 0 then
+>         pprime:= morders[i];
+>         while pprime mod p = 0 do pprime:= pprime / p; od;
+>         pos:= PowerMap( m, pprime )[i];
+>         if p in primes_A and pi_A[ pos ] = 0 then
+>           torso[i]:= 0;
+>         elif p in primes_B and pi_B[ pos ] = 0 then
+>           torso[i]:= 0;
+>         fi;
+>       fi;
+>     od;
+>   fi;
+> od;
+gap> torso;
+[ 512372707698741056749515292734375,,,,, 0,,,,,,,,,,,, 0,, 0,,,,,,,,,,,,,, 0,,
+  ,, 0,,,,,, 0, 0, 0,,, 0,,,, 0,,,,,,,,,, 0,,,,,,,, 0, 0, 0, 0, 0, 0, 0,,,,, 
+  0,,,,, 0, 0, 0, 0, 0, 0,,,, 0, 0,,,,, 0,,,,,,, 0, 0,, 0, 0,,,,, 0, 0, 0, 0, 
+  0,,,,, 0,, 0, 0, 0, 0, 0,, 0, 0, 0, 0, 0, 0,, 0,, 0, 0, 0, 0,, 0, 0, 0, 0, 
+  0,,,,,, 0,,, 0, 0,, 0, 0, 0, 0, 0, 0, 0, 0, 0,, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+\endexample
+
+Now we want to compute as many nonzero values of $1_H^M$ as possible,
+using the same approach as in the previous sections.
+For that, we first compute several permutation characters $1_X^M$,
+for subgroups $X$ with the property $V < X < U_A$ or $V < X < U_B$.
+Then we find several subsets $\CC$ of $M$,
+each being a union of conjugacy classes of $M$
+such that $(1_H)_{\CC \cap H}$ is a linear combination of the characters
+$1_X^H$, restricted to $\CC \cap H$.
+This yields the values of $1_H^M$ on the classes in $\CC$.
+
+The actual computations are performed with the characters $1_{X/V}^{H/V}$.
+So we build two parallel lists `cand' and `candbar' of permutation characters
+of $M$ and of $H/V$, respectively.
+For that, we write two small {\GAP} functions:
+
+\begin{itemize}
+\item
+    In the function `AddSubgroupOfS82',
+    we choose a subgroup $Y$ of $S_8(2) \cong U_A/V$,
+    compute $1_Y^{U_A/V}$, inflate it to a character of $U_A$,
+    induce this character to $B$, inflate the result to $G_A$,
+    and finally induce this character to $M$.
+\item
+    In the function `AddSubgroupOfO8p2',
+    we choose a subgroup $Y$ of the factor group $F \cong O_8^+(2)$ of
+    $U_B/N$, compute $1_Y^F$, inflate it to a character of $U_B/N$,
+    induce this to a character of $G_B/N \cong Co_1$,
+    inflate this to a character of $G_B$,
+    and finally induce this character to $M$.
+
+    One difficulty in this case is that choosing a subgroup $X/V$ of $H/V$
+    involves fixing the class fusion into $H/V$,
+    but it is not clear which is a compatible class fusion of the
+    corresponding subgroup $X$ into $M$;
+    therefore, each entry of `cand' is in fact not the permutation character
+    of $M$ in question but a list of possibilities.
+\end{itemize}
+
+\beginexample
+gap> cand:= [ [ pi_A ], [ pi_B ] ];;
+gap> candbar:= [ TrivialCharacter( U_Abar )^Hbar,
+>                TrivialCharacter( U_Bbar )^Hbar ];;
+gap> AddSubgroupOfS82:= function( subname )
+>   local psis82;
+> 
+>   psis82:= TrivialCharacter( CharacterTable( subname ) )^U_Abar;
+>   Add( cand, [ Restricted( Restricted( psis82, u1 )^b, 2b )^m ] );
+>   Add( candbar, psis82 ^ Hbar );
+> end;;
+gap> tt1:= CharacterTable( "O8+(2)" );
+CharacterTable( "O8+(2)" )
+gap> AddSubgroupOfO8p2:= function( subname )
+>   local psi, list, char;
+> 
+>   psi:= TrivialCharacter( CharacterTable( subname ) )^tt1;
+>   list:= [];
+>   for char in Orbit( AutomorphismsOfTable( tt1 ), psi, Permuted ) do
+>     AddSet( list, Restricted( Restricted( char, u2 ) ^ co1, mm ) ^ m );
+>   od;
+>   Add( cand, list );
+>   Add( candbar, Restricted( psi, U_Bbar ) ^ Hbar );
+> end;;
+\endexample
+
+Now we choose the subgroups that will turn out to be sufficient
+for our computations.
+
+\beginexample
+gap> AddSubgroupOfS82( "O8+(2).2" );
+gap> AddSubgroupOfO8p2( "S6(2)" );
+gap> AddSubgroupOfS82( "O8-(2).2" );
+gap> AddSubgroupOfS82( "A10.2" );
+gap> AddSubgroupOfS82( "S4(4).2" );
+gap> AddSubgroupOfS82( "L2(17)" );
+gap> AddSubgroupOfO8p2( "A9" );
+gap> AddSubgroupOfO8p2( "2^6:A8" );
+gap> AddSubgroupOfO8p2( "(3xU4(2)):2" );
+gap> AddSubgroupOfO8p2( "(A5xA5):2^2" );
+gap> AddSubgroupOfS82( "S8(2)M4" );
+\endexample
+
+In the case of $A_5 < S_8(2)$, the function `AddSubgroupOfS82' does not
+work because there are several class fusions of $A_5$ into $S_8(2)$.
+We choose one fusion; the fact that it really describes an embedding of
+an $A_5$ type subgroup of $S_8(2)$ can be checked using the function
+`NrPolyhedralSubgroups'.
+
+\beginexample
+gap> a5:= CharacterTable( "A5" );;
+gap> fus:= PossibleClassFusions( a5, U_Abar )[1];;
+gap> NrPolyhedralSubgroups( U_Abar, fus[2], fus[3], fus[4] );
+rec( number := 548352, type := "A5" )
+gap> psis82:= Induced( a5, U_Abar, [ TrivialCharacter( a5 ) ], fus )[1];;
+gap> Add( cand, [ Restricted( Restricted( psis82, u1 )^b, 2b )^m ] );
+gap> Add( candbar, psis82 ^ Hbar );
+gap> List( cand, Length );
+[ 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1 ]
+\endexample
+
+The following function takes a condition on conjugacy classes in terms of
+their element orders, which gives a set $\CC$ of elements in $M$.
+It forms the corresponding set of elements in $H/V$ and tries to express
+the restriction of $1_{H/V}$ as a linear combination of the characters
+$1_X^{H/V}$ that are stored in the list `candbar'.
+If this works and if the corresponding linear combination of the
+candidates in `cand' is unique,
+the newly found values of $1_H^M$ are entered into the list `torso'.
+
+\beginexample
+gap> Hbarorders:= OrdersClassRepresentatives( Hbar );;
+gap> TryCondition:= function( cond )
+>   local pos, sol, lincomb, oldknown, i;
+> 
+>   pos:= Filtered( [ 1 .. Length( Hbarorders ) ],
+>             i -> cond( Hbarorders[i] ) );
+>   sol:= SolutionMat( candbar{[1..Length(candbar)]}{ pos },
+>             ListWithIdenticalEntries( Length( pos ), 1 ) );
+>   if sol = fail then
+>     return "no solution";
+>   fi;
+> 
+>   pos:= Filtered( [ 1 .. Length( morders) ], i -> cond( morders[i] ) );
+>   lincomb:= Filtered( Set( List( Cartesian( cand ), x -> sol * x ) ),
+>                 x -> ForAll( pos, i -> IsPosInt( x[i] ) or x[i] = 0 ) );
+>   if Length( lincomb ) <> 1 then
+>     return "solution is not unique";
+>   fi;
+> 
+>   lincomb:= lincomb[1];;
+>   oldknown:= Number( torso );
+>   for i in pos do
+>     if IsBound( torso[i] ) then
+>       if torso[i] <> lincomb[i] then
+>         Error( "contradiction of new and known value at position ", i );
+>       fi;
+>     elif not IsInt( lincomb[i] ) or lincomb[i] < 0 then
+>       Error( "new value at position ", i, " is not a nonneg. integer" );
+>     fi;
+>     torso[i]:= lincomb[i];
+>   od;
+>   return Concatenation( "now ", String( Number( torso ) ), " values (",
+>              String( Number( torso ) - oldknown ), " new)" );
+> end;;
+\endexample
+
+This procedure makes sense only if the elements of $H$ that satisfy the
+condition are contained in the full preimage of the classes of $H/V$
+that satisfy the condition.
+Note that this is in fact the case for the conditions used below.
+This is clear for condition concerning only *odd* element orders,
+because $V$ is a $2$-group.
+Also the set of all elements of the orders $9$, $18$, and $36$ is such a
+``closed'' set, since $M$ has no elements of order $72$.
+Finally, the set of all elements of the orders $1$, $2$, and $4$ in $H$ is
+admissible because it is contained in the preimage of the set of all
+elements of these orders in $H/V$.
+
+\beginexample
+gap> TryCondition( x -> x mod 7 = 0 and x mod 3 <> 0 );
+"now 99 values (7 new)"
+gap> TryCondition( x -> x mod 17 = 0 and x mod 3 <> 0 );
+"now 102 values (3 new)"
+gap> TryCondition( x -> x mod 5 = 0 and x mod 3 <> 0 );
+"now 119 values (17 new)"
+gap> TryCondition( x -> 4 mod x = 0 );
+"now 125 values (6 new)"
+gap> TryCondition( x -> 9 mod x = 0 );
+"now 129 values (4 new)"
+gap> TryCondition( x -> x in [ 9, 18, 36 ] );
+"now 138 values (9 new)"
+\endexample
+
+Possible constituents of $1_H^M$ are those rational irreducible
+characters of $M$ that are constituents of $\pi^M$.
+
+\beginexample
+gap> constit:= Filtered( RationalizedMat( Irr( m ) ),
+>               x -> ScalarProduct( m, x, pi_A ) <> 0
+>                    and ScalarProduct( m, x, pi_B ) <> 0 );;
+\endexample
+
+% Prescribing bounds for the multiplicities of the constituents
+% does not help.
+
+For the missing values, we can provide at least lower bounds,
+using that $U \leq H \leq G$ implies 
+$1_H^G(g) \geq 1_U^G(g) / [H:U] = [G:H] \cdot 1_U^G(g) / 1_U^G(1)$.
+
+\beginexample
+gap> lower:= [];;
+gap> Hindex:= Size( m ) / Horder;
+512372707698741056749515292734375
+gap> for i in [ 1 .. NrConjugacyClasses( m ) ] do
+>   lower[i]:= Maximum( pi_A[i] / ( pi_A[1] / Hindex ),
+>                       pi_B[i] / ( pi_B[1] / Hindex ) );
+> od;
+\endexample
+
+Now we compute the possible permutation characters that
+have the prescribed values,
+are compatible with the given lower bounds for values,
+and have only constituents in the given list.
+
+\beginexample
+gap> PermChars( m, rec( torso:= torso, chars:= constit, lower:= lower,
+>    normalsubgroup:= [ 1 .. NrConjugacyClasses( m ) ],
+>    nonfaithful:= TrivialCharacter( m ) ) );
+[ Character( CharacterTable( "M" ), [ 512372707698741056749515292734375, 
+      405589064025344574375, 29628786742129575, 658201521662685, 
+      215448838605, 0, 121971774375, 28098354375, 335229607, 108472455, 
+      164587500, 4921875, 2487507165, 2567565, 26157789, 6593805, 398925, 0, 
+      437325, 0, 44983, 234399, 90675, 21391, 41111, 12915, 6561, 6561, 
+      177100, 7660, 6875, 315, 275, 0, 113373, 17901, 57213, 0, 4957, 1197, 
+      909, 301, 397, 0, 0, 0, 3885, 525, 0, 2835, 90, 45, 0, 103, 67, 43, 28, 
+      81, 189, 9, 9, 9, 0, 540, 300, 175, 20, 15, 7, 420, 0, 0, 0, 0, 0, 0, 
+      0, 165, 61, 37, 37, 0, 9, 9, 13, 5, 0, 0, 0, 0, 0, 0, 77, 45, 13, 0, 0, 
+      45, 115, 19, 10, 0, 5, 5, 9, 9, 1, 1, 0, 0, 4, 0, 0, 9, 9, 3, 1, 0, 0, 
+      0, 0, 0, 0, 4, 1, 1, 0, 24, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 1, 0, 
+      4, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, 3, 1, 1, 2, 0, 3, 3, 0, 0, 0, 0, 0, 
+      0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+      0, 0, 0, 0 ] ) ]
+\endexample
+
+% The last command requires about 25 minutes of CPU time.
 
 There is only one candidate, so we have found the permutation character.
 

@@ -286,7 +286,7 @@ static Obj  HdlrFunc2 (
   }
   l_j = t_2;
   
-  /* if IsBound( IMMEDIATES[j]) then */
+  /* if IsBound( IMMEDIATES[j] ) then */
   t_7 = GC_IMMEDIATES;
   CHECK_BOUND( t_7, "IMMEDIATES" )
   CHECK_INT_POS( l_j )
@@ -1310,7 +1310,7 @@ static Obj  HdlrFunc6 (
  }
  /* fi */
  
- /* if not IsBound( arglist[pos]) or not IS_LIST( arglist[pos] ) then */
+ /* if not IsBound( arglist[pos] ) or not IS_LIST( arglist[pos] ) then */
  CHECK_INT_POS( l_pos )
  t_4 = C_ISB_LIST( a_arglist, l_pos );
  t_3 = (Obj)(UInt)(t_4 != False);
@@ -1528,7 +1528,7 @@ static Obj  HdlrFunc6 (
  }
  /* od */
  
- /* if not IsBound( arglist[pos]) then */
+ /* if not IsBound( arglist[pos] ) then */
  CHECK_INT_POS( l_pos )
  t_3 = C_ISB_LIST( a_arglist, l_pos );
  t_2 = (Obj)(UInt)(t_3 != False);
@@ -1572,7 +1572,7 @@ static Obj  HdlrFunc6 (
  }
  /* fi */
  
- /* if not IsBound( arglist[pos]) then */
+ /* if not IsBound( arglist[pos] ) then */
  CHECK_INT_POS( l_pos )
  t_3 = C_ISB_LIST( a_arglist, l_pos );
  t_2 = (Obj)(UInt)(t_3 != False);
@@ -2378,8 +2378,8 @@ static Obj  HdlrFunc7 (
    t_6 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
    ENVI_FUNC( t_6 ) = TLS->currLVars;
    t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-   STARTLINE_BODY(t_7) = INTOBJ_INT(577);
-   ENDLINE_BODY(t_7) = INTOBJ_INT(592);
+   STARTLINE_BODY(t_7) = INTOBJ_INT(576);
+   ENDLINE_BODY(t_7) = INTOBJ_INT(594);
    FILENAME_BODY(t_7) = FileName;
    BODY_FUNC(t_6) = t_7;
    CHANGED_BAG( TLS->currLVars );
@@ -2693,8 +2693,8 @@ static Obj  HdlrFunc10 (
   t_1 = NewFunction( NameFunc[11], NargFunc[11], NamsFunc[11], HdlrFunc11 );
   ENVI_FUNC( t_1 ) = TLS->currLVars;
   t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
-  STARTLINE_BODY(t_2) = INTOBJ_INT(730);
-  ENDLINE_BODY(t_2) = INTOBJ_INT(733);
+  STARTLINE_BODY(t_2) = INTOBJ_INT(731);
+  ENDLINE_BODY(t_2) = INTOBJ_INT(735);
   FILENAME_BODY(t_2) = FileName;
   BODY_FUNC(t_1) = t_2;
   CHANGED_BAG( TLS->currLVars );
@@ -2773,8 +2773,8 @@ static Obj  HdlrFunc10 (
  t_6 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
  ENVI_FUNC( t_6 ) = TLS->currLVars;
  t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_7) = INTOBJ_INT(750);
- ENDLINE_BODY(t_7) = INTOBJ_INT(750);
+ STARTLINE_BODY(t_7) = INTOBJ_INT(752);
+ ENDLINE_BODY(t_7) = INTOBJ_INT(752);
  FILENAME_BODY(t_7) = FileName;
  BODY_FUNC(t_6) = t_7;
  CHANGED_BAG( TLS->currLVars );
@@ -2836,8 +2836,8 @@ static Obj  HdlrFunc10 (
  t_6 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
  ENVI_FUNC( t_6 ) = TLS->currLVars;
  t_7 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_7) = INTOBJ_INT(766);
- ENDLINE_BODY(t_7) = INTOBJ_INT(784);
+ STARTLINE_BODY(t_7) = INTOBJ_INT(765);
+ ENDLINE_BODY(t_7) = INTOBJ_INT(786);
  FILENAME_BODY(t_7) = FileName;
  BODY_FUNC(t_6) = t_7;
  CHANGED_BAG( TLS->currLVars );
@@ -2917,7 +2917,7 @@ static Obj  HdlrFunc15 (
   }
   ASS_LVAR_1UP( 5, t_2 );
   
-  /* re := re or IsBound( cond[i]) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] ); */
+  /* re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] ); */
   t_7 = OBJ_LVAR_1UP( 4 );
   CHECK_BOUND( t_7, "re" )
   CHECK_BOOL( t_7 )
@@ -3122,7 +3122,7 @@ static Obj  HdlrFunc14 (
  /* InstallOtherMethod( oper, "fallback method to test conditions", fampred, reqs, val, function ( arg )
       re := false;
       for i  in [ 1 .. LEN_LIST( reqs ) ]  do
-          re := re or IsBound( cond[i]) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] );
+          re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] );
       od;
       if re  then
           return CallFuncList( oper, arg );
@@ -3140,8 +3140,8 @@ static Obj  HdlrFunc14 (
  t_5 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
  ENVI_FUNC( t_5 ) = TLS->currLVars;
  t_6 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_6) = INTOBJ_INT(833);
- ENDLINE_BODY(t_6) = INTOBJ_INT(848);
+ STARTLINE_BODY(t_6) = INTOBJ_INT(834);
+ ENDLINE_BODY(t_6) = INTOBJ_INT(850);
  FILENAME_BODY(t_6) = FileName;
  BODY_FUNC(t_5) = t_6;
  CHANGED_BAG( TLS->currLVars );
@@ -3176,10 +3176,10 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.oper1_g := "@(#)$Id: c_oper1.c,v 4.39 2010/02/23 18:03:59 gap Exp $"; */
+ /* Revision.oper1_g := "@(#)$Id: c_oper1.c,v 4.40 2011/01/20 14:21:51 jjm Exp $"; */
  t_1 = GC_Revision;
  CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 53, "@(#)$Id: c_oper1.c,v 4.39 2010/02/23 18:03:59 gap Exp $" )
+ C_NEW_STRING( t_2, 55, "@(#)$Id: c_oper1.c,v 4.40 2011/01/20 14:21:51 jjm Exp $" )
  ASS_REC( t_1, R_oper1__g, t_2 );
  
  /* RUN_IMMEDIATE_METHODS_CHECKS := 0; */
@@ -3202,7 +3202,7 @@ static Obj  HdlrFunc1 (
       type := TYPE_OBJ( obj );
       flags := type![2];
       for j  in flagspos  do
-          if IsBound( IMMEDIATES[j])  then
+          if IsBound( IMMEDIATES[j] )  then
               imm := IMMEDIATES[j];
               for i  in [ 0, 7 .. LEN_LIST( imm ) - 7 ]  do
                   if IS_SUBSET_FLAGS( flags, imm[i + 4] ) and not IS_SUBSET_FLAGS( flags, imm[i + 3] ) and not imm[i + 6] in tried  then
@@ -3236,7 +3236,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(43);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(29);
  ENDLINE_BODY(t_4) = INTOBJ_INT(116);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
@@ -3333,7 +3333,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(127);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(123);
  ENDLINE_BODY(t_4) = INTOBJ_INT(234);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
@@ -3349,7 +3349,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(282);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(281);
  ENDLINE_BODY(t_4) = INTOBJ_INT(283);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
@@ -3365,7 +3365,7 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(309);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(308);
  ENDLINE_BODY(t_4) = INTOBJ_INT(310);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
@@ -3403,7 +3403,7 @@ static Obj  HdlrFunc1 (
       else
           rel := true;
       fi;
-      if not IsBound( arglist[pos]) or not IS_LIST( arglist[pos] )  then
+      if not IsBound( arglist[pos] ) or not IS_LIST( arglist[pos] )  then
           Error( "<arglist>[", pos, "] must be a list of filters" );
       fi;
       filters := arglist[pos];
@@ -3437,7 +3437,7 @@ static Obj  HdlrFunc1 (
       for i  in filters  do
           ADD_LIST( flags, FLAGS_FILTER( i ) );
       od;
-      if not IsBound( arglist[pos])  then
+      if not IsBound( arglist[pos] )  then
           Error( "the method is missing in <arglist>" );
       elif IS_INT( arglist[pos] )  then
           rank := arglist[pos];
@@ -3445,7 +3445,7 @@ static Obj  HdlrFunc1 (
       else
           rank := 0;
       fi;
-      if not IsBound( arglist[pos])  then
+      if not IsBound( arglist[pos] )  then
           Error( "the method is missing in <arglist>" );
       fi;
       method := arglist[pos];
@@ -3522,8 +3522,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(337);
- ENDLINE_BODY(t_4) = INTOBJ_INT(523);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(321);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(525);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -3579,8 +3579,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
  ENVI_FUNC( t_2 ) = TLS->currLVars;
  t_3 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_3) = INTOBJ_INT(546);
- ENDLINE_BODY(t_3) = INTOBJ_INT(596);
+ STARTLINE_BODY(t_3) = INTOBJ_INT(544);
+ ENDLINE_BODY(t_3) = INTOBJ_INT(598);
  FILENAME_BODY(t_3) = FileName;
  BODY_FUNC(t_2) = t_3;
  CHANGED_BAG( TLS->currLVars );
@@ -3594,8 +3594,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[9], NargFunc[9], NamsFunc[9], HdlrFunc9 );
  ENVI_FUNC( t_2 ) = TLS->currLVars;
  t_3 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_3) = INTOBJ_INT(600);
- ENDLINE_BODY(t_3) = INTOBJ_INT(605);
+ STARTLINE_BODY(t_3) = INTOBJ_INT(601);
+ ENDLINE_BODY(t_3) = INTOBJ_INT(607);
  FILENAME_BODY(t_3) = FileName;
  BODY_FUNC(t_2) = t_3;
  CHANGED_BAG( TLS->currLVars );
@@ -3652,8 +3652,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[10], NargFunc[10], NamsFunc[10], HdlrFunc10 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(728);
- ENDLINE_BODY(t_4) = INTOBJ_INT(785);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(727);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(787);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -3671,7 +3671,7 @@ static Obj  HdlrFunc1 (
       InstallOtherMethod( oper, "fallback method to test conditions", fampred, reqs, val, function ( arg )
             re := false;
             for i  in [ 1 .. LEN_LIST( reqs ) ]  do
-                re := re or IsBound( cond[i]) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] );
+                re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] );
             od;
             if re  then
                 return CallFuncList( oper, arg );
@@ -3687,8 +3687,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(822);
- ENDLINE_BODY(t_4) = INTOBJ_INT(849);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(820);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(851);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -3800,38 +3800,38 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CallFuncList", &GF_CallFuncList );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(4282350005)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(4282350005)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(4282350005)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](4282350005)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(4282350005)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](4282350005)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(4282350005)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](4282350005)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(4282350005)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](4282350005)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(4282350005)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](4282350005)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(4282350005)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](4282350005)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(4282350005)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](4282350005)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(4282350005)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](4282350005)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(4282350005)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](4282350005)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(4282350005)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](4282350005)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(4282350005)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](4282350005)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(4282350005)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](4282350005)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(4282350005)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](4282350005)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(4282350005)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](4282350005)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(4282350005)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](4282350005)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-97711829)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/oper1.g:FileName(-97711829)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-97711829)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-97711829)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-97711829)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-97711829)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-97711829)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-97711829)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-97711829)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-97711829)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-97711829)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-97711829)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-97711829)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-97711829)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-97711829)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-97711829)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-97711829)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-97711829)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-97711829)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-97711829)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-97711829)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-97711829)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-97711829)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-97711829)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-97711829)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-97711829)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-97711829)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-97711829)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-97711829)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-97711829)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-97711829)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-97711829)" );
  
  /* return success */
  return 0;
@@ -4130,7 +4130,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 4282350005,
+ /* crc         = */ -97711829,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

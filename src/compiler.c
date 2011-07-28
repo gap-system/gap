@@ -47,13 +47,13 @@ const char * Revision_compiler_c =
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
-#include        "vars.h"                /* variables                       */
-
 #define INCLUDE_DECLARATION_PART
 #include        "compiler.h"            /* compiler                        */
 #undef  INCLUDE_DECLARATION_PART
 
 #include        "tls.h"                 /* thread-local storage            */
+
+#include        "vars.h"                /* variables                       */
 
 
 /****************************************************************************

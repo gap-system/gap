@@ -4,7 +4,7 @@
 #W                                                               Frank Lübeck
 #W                                                                Stefan Kohl
 ##
-#H  @(#)$Id: grpffmat.gi,v 4.47 2010/02/23 15:13:04 gap Exp $
+#H  @(#)$Id: grpffmat.gi,v 4.48 2011/01/14 16:40:55 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  This file contains the operations for matrix groups over finite field.
 ##
 Revision.grpffmat_gi :=
-    "@(#)$Id: grpffmat.gi,v 4.47 2010/02/23 15:13:04 gap Exp $";
+    "@(#)$Id: grpffmat.gi,v 4.48 2011/01/14 16:40:55 gap Exp $";
 
 
 #############################################################################
@@ -628,7 +628,7 @@ end);
 InstallMethod( NrConjugacyClasses,
                "for natural GL",
                true,
-               [ IsGroup and IsFinite and IsNaturalGL ],
+               [ IsFFEMatrixGroup and IsFinite and IsNaturalGL ],
                0,
 function ( G )
 
@@ -647,7 +647,7 @@ end );
 InstallMethod( NrConjugacyClasses,
                "for natural SL",
                true,
-               [ IsGroup and IsFinite and IsNaturalSL ],
+               [ IsFFEMatrixGroup and IsFinite and IsNaturalSL ],
                0,
 function ( G )
 
@@ -666,7 +666,7 @@ end );
 InstallMethod( NrConjugacyClasses,
                "for GU(n,q)",
                true,
-               [ IsGroup and IsFinite 
+               [ IsFFEMatrixGroup and IsFinite 
                  and IsFullSubgroupGLorSLRespectingSesquilinearForm ],
                0,
 function ( G )
@@ -688,7 +688,7 @@ end );
 InstallMethod( NrConjugacyClasses,
                "for natural SU",
                true,
-               [ IsGroup and IsFinite 
+               [ IsFFEMatrixGroup and IsFinite 
                  and IsFullSubgroupGLorSLRespectingSesquilinearForm
                  and IsSubgroupSL ],
                0,

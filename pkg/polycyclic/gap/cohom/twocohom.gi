@@ -290,7 +290,7 @@ InstallGlobalFunction( TwoCocyclesCR, function( A )
     od;
 
     # and return solution
-    return KernelCR( A, sys ).basis;
+    return KernelCR( A, sys );
 end );
 
 #############################################################################

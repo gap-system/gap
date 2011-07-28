@@ -2,7 +2,7 @@
 ##
 #W examples.gi                                              Laurent Bartholdi
 ##
-#H   @(#)$Id: examples.gi,v 1.49 2009/06/16 19:12:52 gap Exp $
+#H   @(#)$Id: examples.gi,v 1.62 2011/06/13 22:54:33 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -969,7 +969,7 @@ InstallGlobalFunction(GeneralizedGuptaSidkiGroups, function(p)
     SETGENERATORNAMES@(G,["a","t"]);
     SetName(G,Concatenation("GeneralizedGuptaSidkiGroups(",String(p),")"));
     SetUnderlyingFRMachine(G,P);
-    SetIsStateClosedFRSemigroup(G,true);
+    SetIsStateClosed(G,true);
 
     SetFRGroupPreImageData(G,function(depth)
         local r, s;
@@ -1057,7 +1057,7 @@ InstallGlobalFunction(NeumannGroup, function(P)
     local G, M;
     M := NeumannMachine(P);
     G := SCGroup(M);
-    SetName(G,Concatenation("NeumannGroup(",String(P),")"));
+    SetName(G,Concatenation("NeumannGroup(",STRINGGROUP@(P),")"));
     G!.Correspondence := [GroupHomomorphismByImages(P,G,GeneratorsOfGroup(P),
       GeneratorsOfGroup(G){Correspondence(G){Correspondence(M)[1]}}),
     GroupHomomorphismByImages(P,G,GeneratorsOfGroup(P),
@@ -1150,6 +1150,48 @@ InstallGlobalFunction(HanoiGroup, function(k)
     od;
     G := SCGroup(MealyMachine(trans,out));
     SetName(G, Concatenation("HanoiGroup(",String(k),")"));
+    if k=3 then
+        SetFRGroupPreImageData(G,function(depth)
+            local F, Fgens, Ggens, Sgens, a, b, c, d, e, f, g, h, i, tau, rels;
+            
+            if depth=infinity then
+                F := FreeGroup("a","b","c","tau");
+                tau := F.4;
+            else
+                F := FreeGroup("a","b","c");
+            fi;
+            
+            a := F.1; b := F.2; c := F.3;
+            d := Comm(a,b); e := Comm(b,c); f := Comm(c,a);
+            g := d^c; h := e^a; i := f^b;
+            Fgens := [a,b,c];
+            Sgens := [a,b^c,c^b];
+            rels := [a^2,b^2,c^2,d^-1*e*f/i*g/e,h/e/d*f*d/i,e^-1/g/f*e*g*f,e^-1*d*h/e^2/d*h^2];
+            if depth=infinity then
+                F := F / Concatenation(rels,List([1..3],i->Fgens[i]^tau/Sgens[i]));
+                Fgens := GeneratorsOfGroup(F){[1..3]};
+                F := Subgroup(F,Fgens);
+            else
+                tau := GroupHomomorphismByImagesNC(F,F,Fgens,Sgens);
+                if depth>=0 then
+                    F := F / Flat([rels{[1..3]},List(rels{[4..Length(rels)]},r->ITERATEMAP@(tau,depth,r))]);
+                else
+                    F := LPresentedGroup(F,[],[tau],rels);
+                fi;
+                Fgens := GeneratorsOfGroup(F);
+            fi;
+            Ggens := GeneratorsOfGroup(G);
+            if IsLpGroup(F) then
+                Sgens := List(Sgens,x->ElementOfLpGroup(FamilyObj(Representative(F)),x));
+            else
+                Sgens := List(Sgens,x->ElementOfFpGroup(FamilyObj(Representative(F)),x));
+            fi;
+            return rec(F:=F,
+                   image:=LPGROUPIMAGE@(G,F,Ggens,Fgens,Sgens,3),
+                   preimage:=LPGROUPPREIMAGE@(Ggens,Fgens,Sgens,depth,3),
+                   reduce:=w->w);
+        end);
+    fi;
     return G;
 end);
 
@@ -1284,7 +1326,7 @@ InstallGlobalFunction(CayleyGroup, function(g)
     s := GeneratorsOfGroup(m);
     id := First(s,x->Activity(x)=());
     m!.Correspondence := [GroupHomomorphismByImages(g,m,GeneratorsOfGroup(g),List(GeneratorsOfGroup(g),x->First(s,y->Activity(y)=(x^h)^-1)^-1*id)),id];
-    SetName(m,Concatenation("CayleyGroup(",String(g),")"));
+    SetName(m,Concatenation("CayleyGroup(",STRINGGROUP@(g),")"));
     return m;
 end);
 
@@ -1375,7 +1417,7 @@ BindGlobal("BINARYKNEADINGMACHINE@", function(arg)
         Append(name,String(arg[1]));
     elif not ForAll(arg,IsList) then
         Error("Arguments should be lists\n");
-    elif (Length(arg)=2 and not IsEmpty(arg[1]))
+    elif (Length(arg)=2 and arg[1]<>[])
       or (Length(arg)=1 and IsPeriodicList(arg[1])) then # argument is pair of lists w,v
         if Length(arg)=2 then
             preperiod := arg[1]; period := arg[2];
@@ -1386,7 +1428,7 @@ BindGlobal("BINARYKNEADINGMACHINE@", function(arg)
         n := Length(period);
         transition := [[n+k+1,n+k+1]]; # b1
         output := [(1,2)];
-        Add(name,'"');
+        Add(name,'"'); #" to fix font-lock
         for i in [1..k-1] do
             s := ksym(preperiod[i]);
             if s='1' then
@@ -1427,7 +1469,7 @@ BindGlobal("BINARYKNEADINGMACHINE@", function(arg)
                               GeneratorsOfGroup(G){[1+k..n+k]}];
 
 
-    elif Length(arg)=1 or IsEmpty(arg[1]) then # argument is list v
+    elif Length(arg)=1 or arg[1]=[] then # argument is list v
         period := Concatenation(arg);
         Add(name,'"');
         if Length(period)=0 then
@@ -2061,6 +2103,43 @@ end);
 InstallValue(BasilicaGroup, BinaryKneadingGroup("1"));
 BasilicaGroup!.Name := "BasilicaGroup";
 SETGENERATORNAMES@(BasilicaGroup,["a","b"]);
+SetName(GeneratorsOfSemigroup(BasilicaGroup)[4],"a^-1");
+SetName(GeneratorsOfSemigroup(BasilicaGroup)[5],"b^-1");
+SetName(NucleusOfFRSemigroup(BasilicaGroup)[4],"a"); #???
+
+InstallValue(FornaessSibonyGroup, FRGroup("alpha=(1,2)(3,4)",
+        "beta=<alpha,gamma,alpha,gamma>","gamma=<beta,,,beta>","a=(1,3)(2,4)",
+        "b=<alpha*a,alpha*a,c,c>","c=<beta*b,beta*b,b,b>":IsMealyElement));
+
+InstallGlobalFunction(PoirierExamples, function(arg)
+    if arg=[1] then
+        return PolynomialIMGMachine(2,[1/7],[]);
+    elif arg=[2] then
+        return PolynomialIMGMachine(2,[],[1/2]);
+    elif arg=[3,1] then
+        return PolynomialIMGMachine(2,[],[5/12]);
+    elif arg=[3,2] then
+        return PolynomialIMGMachine(2,[],[7/12]);
+    elif arg=[4,1] then
+        return PolynomialIMGMachine(3,[[3/4,1/12],[1/4,7/12]],[]);
+    elif arg=[4,2] then
+        return PolynomialIMGMachine(3,[[7/8,5/24],[5/8,7/24]],[]);
+    elif arg=[4,3] then
+        return PolynomialIMGMachine(3,[[1/8,19/24],[3/8,17/24]],[]);
+    elif arg=[5] then
+        return PolynomialIMGMachine(3,[[3/4,1/12],[3/8,17/24]],[]);
+    elif arg=[6,1] then
+        return PolynomialIMGMachine(4,[],[[1/4,3/4],[1/16,13/16],[5/16,9/16]]);
+    elif arg=[6,2] then
+        return PolynomialIMGMachine(4,[],[[1/4,3/4],[3/16,15/16],[7/16,11/16]]);
+    elif arg=[7] then
+        return PolynomialIMGMachine(5,[[0,4/5],[1/5,2/5,3/5]],[[1/5,4/5]]);
+    elif arg=[9,1] then
+        return PolynomialIMGMachine(3,[[0,1/3],[5/9,8/9]],[]);
+    elif arg=[9,2] then
+        return PolynomialIMGMachine(3,[[0,1/3]],[[5/9,8/9]]);
+    fi;
+end);
 #############################################################################
 
 #############################################################################
@@ -2086,54 +2165,102 @@ SETGENERATORNAMES@(I4Monoid,["s","f"]);
 #############################################################################
 # the PSZ algebras
 #
-InstallGlobalFunction(PSZAlgebra, function(k)
-    local p, t, m;
-
-    if IsPosInt(k) then k := GF(k); fi;
+InstallGlobalFunction(PSZAlgebra, function(arg)
+    local p, t, u, i, k, m;
+    
+    while Length(arg)=0 or Length(arg)>2 do
+        Error("PSZAlgebra: need 1 or 2 arguments");
+    od;
+    if IsPosInt(arg[1]) then
+        k := GF(arg[1]);
+    elif IsField(arg[1]) then
+        k := arg[1];
+    else
+        k := Rationals; # trigger error
+    fi;
     p := Characteristic(k);
     while p=0 do
-        Error("PSZAlgebra: field ",k," must have positive characteristic");
+        Error("PSZAlgebra: first argument ",k," must be a field of positive characteristic");
     od;
-
-    t := MATRIX@(IdentityMat(p,k),i->i*[[0,0,0],[1,0,0],[0,0,1]]);
-    for m in [1..p-1] do
-        t[m+1][m][1][3] := One(k);
+    if Length(arg)=2 then
+        m := arg[2];
+        while not IsPosInt(arg[2]) do
+            Error("PSZAlgebra: optional second argument ",arg[2]," must be a positive integer");
+        od;
+    else
+        m := 2;
+    fi;
+    
+    u := NullMat(m+1,m+1,k);
+    t := MATRIX@(IdentityMat(p,k),i->u);
+    
+    u := NullMat(m+1,m+1,k);
+    for i in [1..m-1] do
+        u[i+1][i] := One(k);
     od;
-    t[1][p][2][2] := -One(k);
-    m := VectorMachine(k,t,[0,0,1]);
-    t := SCAlgebraWithOne(m);
-    SetName(t,Concatenation("PSZAlgebra(",String(k),")"));
-    SetName(t.1,"u");
+    u[m+1][m+1] := One(k);
+    for i in [1..p] do t[i][i] := u; od;
+    
+    u := NullMat(m+1,m+1,k);
+    u[1][m+1] := One(k);
+    for i in [1..p-1] do t[i+1][i] := u; od;
+    
+    u := NullMat(m+1,m+1,k);
+    u[m][m] := -One(k);
+    t[1][p] := u;
+    
+    u := ListWithIdenticalEntries(m+1,Zero(k)); u[m+1] := One(k);
+    t := SCAlgebraWithOne(VectorMachine(k,t,u));
+    SetName(t,Concatenation("PSZAlgebra(",String(k),",",String(m),")"));
+    if m=2 then
+        SetName(t.1,"d");
+    else
+        for i in [1..m-1] do
+            SetName(t.(i),Concatenation("d",String(i)));
+        od;
+    fi;
     SetName(t.2,"v");
-    SetGrading(t,rec(min_degree := [0,0], max_degree := [infinity,infinity],
-                                   hom_components := function(m,n)
-        local i, j;
-        if not IsBound(t!.components) then
-            t!.components := [[VectorSpace(k,[One(t)])]];
+    
+    for i in [1..m] do
+        SetDegreeOfHomogeneousElement(t.(i),IdentityMat(m)[i]);
+    od;
+    t!.components := NewDictionary(u,true);
+    SetDegreeOfHomogeneousElement(One(t),Zero(Integers^m));
+    i := VectorSpace(k,[One(t)]);
+    SetParent(i,t);
+    AddDictionary(t!.components,Zero(Integers^m),i);
+    SetGrading(t,rec(source := Integers^m, hom_components := function(arg)
+        local i, j, v;
+        
+        while not arg in Grading(t).source do
+            Error("Grading degree ",arg," must belong to ",Grading(t).source);
+        od;
+        if KnowsDictionary(t!.components,arg) then
+            return LookupDictionary(t!.components,arg);
         fi;
-        for i in [1..m] do if not IsBound(t!.components[i+1][1]) then
-            t!.components[i+1][1] := VectorSpace(k,[t.1^i]);
-        fi; od;
-        for j in [1..n] do if not IsBound(t!.components[1][j+1]) then
-            t!.components[1][j+1] := VectorSpace(k,[t.2^j]);
-        fi; od;
-        for i in [1..m] do for j in [1..n] do
-            if not IsBound(t!.components[i+1][j+1]) then
-                t!.components[i+1][j+1] := ProductSpace(t!.components[i+1][j],t!.components[1][2])+ProductSpace(t!.components[i][j+1],t!.components[2][1]);
+        v := MutableBasis(k,[],Zero(t));
+        for i in [1..m] do
+            if arg[i]>0 then
+                for j in Basis(CallFuncList(Grading(t)!.hom_components,arg-IdentityMat(m)[i])) do
+                    j := t.(i)*j;
+                    SetDegreeOfHomogeneousElement(j,arg);
+                    CloseMutableBasis(v,j);
+                od;
             fi;
-        od; od;
-        return t!.components[m+1][n+1];
+        od;
+        v := VectorSpace(k, BasisVectors(v), Zero(t), "basis");
+        AddDictionary(t!.components,arg,v);
+        return v;
     end));
     return t;
 end);
-
 #############################################################################
 
 #############################################################################
 # Grigorchuk's thinned algebra
 #
 InstallGlobalFunction(GrigorchukThinnedAlgebra, function(k)
-    local a, g;
+    local a, i, g;
 
     if IsPosInt(k) then k := GF(k); fi;
 
@@ -2141,14 +2268,22 @@ InstallGlobalFunction(GrigorchukThinnedAlgebra, function(k)
     SetDimension(a,infinity);
     if Characteristic(k)=2 then
         g := GeneratorsOfAlgebraWithOne(a);
-        SetGrading(a, rec(min_degree := 0, max_degree := infinity,
-                                        hom_components := function(n)
-            local i;
-            if not IsBound(a!.components) then
-                a!.components := [VectorSpace(k,[One(a)]),VectorSpace(k,g-One(a))];
-            fi;
+        a!.components := [SubmoduleNC(a,[One(a)],"basis")];
+        SetDegreeOfHomogeneousElement(One(a),0);
+        i := VectorSpace(k,g-One(a));
+        Add(a!.components, SubmoduleNC(a,Basis(i)));
+        for i in Basis(a!.components[2]) do
+            SetDegreeOfHomogeneousElement(i,1);
+        od;
+        SetGrading(a, rec(source := Integers,
+                                    min_degree := 0, max_degree := infinity,
+                                    hom_components := function(n)
+            local i, j;
             for i in [2..n] do if not IsBound(a!.components[i+1]) then
                 a!.components[i+1] := ProductSpace(a!.components[i],a!.components[2]);
+                for j in Basis(a!.components[i+1]) do
+                    SetDegreeOfHomogeneousElement(j,i);
+                od;
             fi; od;
             return a!.components[n+1];
         end));
@@ -2162,7 +2297,81 @@ InstallGlobalFunction(GuptaSidkiThinnedAlgebra, function(k)
 
     if IsPosInt(k) then k := GF(k); fi;
 
-    a := ThinnedAlgebraWithOne(k,GuptaSidkiGroup);
+    a := THINNEDALGEBRAWITHONE@(k,GuptaSidkiGroup,GeneratorsOfGroup(GuptaSidkiGroup));
+    return a;
+end);
+
+InstallGlobalFunction(GuptaSidkiLieAlgebra, function(k)
+    local a, g;
+
+    if IsPosInt(k) then k := GF(k); fi;
+
+    a := FRAlgebraWithOne(k,"a=[[0,1,0],[0,0,1],[0,0,0]]:0",
+                 "t=[[0,0,0],[a,0,0],[-t,-a,0]]:0");
+    if Characteristic(k)=3 then
+        a!.components := [[SubmoduleNC(a,[One(a)],"basis"),
+                           SubmoduleNC(a,[a.2],"basis")],
+                          [SubmoduleNC(a,[a.1],"basis")]];
+        SetDegreeOfHomogeneousElement(One(a),[0,0]);
+        SetDegreeOfHomogeneousElement(a.1,[1,0]);
+        SetDegreeOfHomogeneousElement(a.2,[0,1]);
+        SetGrading(a, rec(source := Integers^2,
+                                    hom_components := function(i,j)
+            local u, v;
+            if i<0 or j<0 then
+                return SubmoduleNC(a,[]);
+            fi;
+            if not IsBound(a!.components[i+1]) then
+                a!.components[i+1] := [];
+            fi;
+            if not IsBound(a!.components[i+1][j+1]) then
+                u := Basis(Grading(a).hom_components(i-1,j));
+                v := Basis(Grading(a).hom_components(i,j-1));
+                u := Basis(VectorSpace(k,Concatenation(u*a.1,v*a.2)));
+                for v in u do
+                    SetDegreeOfHomogeneousElement(v,[i,j]);
+                od;
+                a!.components[i+1][j+1] := SubmoduleNC(a,u,"basis");
+            fi;
+            return a!.components[i+1][j+1];
+        end));
+    fi;
+    return a;
+end);
+
+InstallGlobalFunction(GrigorchukLieAlgebra, function(k)
+    local a, g;
+
+    if IsPosInt(k) then k := GF(k); fi;
+
+    a := FRAlgebraWithOne(k,"a=[[0,1],[0,0]]:0","b=[[0,0],[a+c,0]]:0",
+                 "c=[[0,0],[a+d,0]]:0","d=[[0,0],[b,0]]:0");
+    if Characteristic(k)=2 then
+        a!.components := [SubmoduleNC(a,[One(a)],"basis"),
+                          SubmoduleNC(a,[a.1,a.2,a.3],"basis")];
+        SetDegreeOfHomogeneousElement(One(a),0);
+        SetDegreeOfHomogeneousElement(a.1,1);
+        SetDegreeOfHomogeneousElement(a.2,1);
+        SetDegreeOfHomogeneousElement(a.3,1);
+        SetDegreeOfHomogeneousElement(a.4,1);
+        SetGrading(a, rec(source := Integers,
+                                    min_degree := 0, max_degree := infinity,
+                                    hom_components := function(i)
+            local u, v;
+            if i<0 then
+                return SubmoduleNC(a,[]);
+            fi;
+            if not IsBound(a!.components[i+1]) then
+                u := Basis(Grading(a).hom_components(i-1));
+                u := Basis(VectorSpace(k,Concatenation(u*a.1,u*a.2,u*a.3)));
+                for v in u do
+                    SetDegreeOfHomogeneousElement(v,i);
+                od;
+                a!.components[i+1] := SubmoduleNC(a,u,"basis");
+            fi;
+            return a!.components[i+1];
+        end));
+    fi;
     return a;
 end);
 
@@ -2177,14 +2386,19 @@ InstallGlobalFunction(SidkiMonomialAlgebra, function(k)
     if IsPosInt(k) then k := GF(k); fi;
 
     a := FRAlgebraWithOne(k,"s=[[0,0],[1,0]]:0","t=[[0,t],[0,s]]:0");
-    SetGrading(a, rec(min_degree := 0, max_degree := infinity,
-                                    hom_components := function(n)
-        local i;
-        if not IsBound(a!.components) then
-            a!.components := [VectorSpace(k,[One(a)]),VectorSpace(k,[a.1,a.2])];
-        fi;
+    a!.components := [SubmoduleNC(a,[One(a)]),SubmoduleNC(a,[a.1,a.2])];
+    SetDegreeOfHomogeneousElement(One(a),0);
+    SetDegreeOfHomogeneousElement(a.1,1);
+    SetDegreeOfHomogeneousElement(a.2,1);
+    SetGrading(a, rec(source := Integers,
+                                min_degree := 0, max_degree := infinity,
+                                hom_components := function(n)
+        local i, j;
         for i in [2..n] do if not IsBound(a!.components[i+1]) then
             a!.components[i+1] := ProductSpace(a!.components[i],a!.components[2]);
+            for j in Basis(a!.components[i+1]) do
+                SetDegreeOfHomogeneousElement(j,i);
+            od;
         fi; od;
         return a!.components[n+1];
     end));

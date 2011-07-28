@@ -3,7 +3,7 @@
 #W  lex.g               OpenMath Package              Andrew Solomon
 #W                                                    Marco Costantini
 ##
-#H  @(#)$Id: lex.g,v 1.17 2006/08/01 08:22:56 gap Exp $
+#H  @(#)$Id: lex.g,v 1.18 2010/11/12 13:18:23 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -16,7 +16,7 @@
 ##
 
 Revision.("openmath/gap/lex.g") :=
-    "@(#)$Id: lex.g,v 1.17 2006/08/01 08:22:56 gap Exp $";
+    "@(#)$Id: lex.g,v 1.18 2010/11/12 13:18:23 alexk Exp $";
 
 
 
@@ -81,8 +81,7 @@ BindGlobal("BTWOBJ", "IN_BETWEEN_OBJECTS");
 ##  The next byte on the stream which hasn't been "got".
 ##  
 ##  
-BindGlobal("OMinstreamNextByte",
-function(stream)
+BindGlobal("OMinstreamNextByte", function(stream)
 	# if we're at BTWOBJ then we've been explicitly asked
 	# for the next thing, so we try.
 	if stream.next = BTWOBJ then
@@ -97,8 +96,7 @@ end);
 ##
 ##  Pop a byte off the stream
 ##
-BindGlobal("OMinstreamPopByte",
-function(stream)
+BindGlobal("OMinstreamPopByte", function(stream)
 	local next;
 
 	next := OMinstreamNextByte(stream);
@@ -118,8 +116,7 @@ end);
 ##
 ##  Pop a string off the stream (all bytes until next OMtokenDelimiter).
 ##
-BindGlobal("OMinstreamPopString",
-function(stream)
+BindGlobal("OMinstreamPopString", function(stream)
 	local s,i;
 
 	s := "";
@@ -145,8 +142,7 @@ end);
 ##
 ##  Just returns the next byte on the stream (without popping it).
 ##
-BindGlobal("OMnextToken",
-function(stream)
+BindGlobal("OMnextToken", function(stream)
 	return OMinstreamNextByte(stream);
 end);
 
@@ -156,8 +152,7 @@ end);
 ##
 ##  return value of the next token and gets next byte off the stream.
 ##
-BindGlobal("OMgetToken",
-function(stream, token)
+BindGlobal("OMgetToken", function(stream, token)
 	local
 		otok;
 
@@ -181,8 +176,7 @@ end);
 ##
 
 # convert a string of the form "xaf93bc" or "-xaf93bc"  into an integer
-BindGlobal("Xint" , 
-function(str)
+BindGlobal("Xint" , function(str)
 	local digmap, i, neg, start, tot;
 
 	digmap := function(c)
@@ -224,8 +218,7 @@ function(str)
 
 end);
 
-BindGlobal("OMgetInteger",
-function(stream)
+BindGlobal("OMgetInteger", function(stream)
 	local intstr;
 
   OMgetToken(stream,OMtokenInteger); # skip past token 
@@ -246,8 +239,7 @@ end);
 ## 
 ##  a symbol is returned as a pair [cd, name]
 ##
-BindGlobal("OMgetSymbol",
-function(stream)
+BindGlobal("OMgetSymbol", function(stream)
   OMgetToken(stream,OMtokenSymbol); # skip past token
 
 	# now return the [cd, name] pair
@@ -260,8 +252,7 @@ end);
 ##
 ##  a variable is returned as the string of its name.
 ##
-BindGlobal("OMgetVar",
-function(stream)
+BindGlobal("OMgetVar", function(stream)
   OMgetToken(stream,OMtokenVar); # skip past token
   return OMinstreamPopString(stream);
 end);
@@ -273,8 +264,7 @@ end);
 ##
 ##  a string  is popped from stream and it is returned as a GAP string.
 ##
-BindGlobal("OMgetString",
-function(stream)
+BindGlobal("OMgetString", function(stream)
   local string;
   OMgetToken(stream,OMtokenString); # skip past token
   string := OMinstreamPopString(stream);

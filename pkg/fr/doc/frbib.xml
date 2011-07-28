@@ -2,7 +2,7 @@
 <!DOCTYPE file SYSTEM "bibxmlext.dtd">
 <file>
 <entry id="IDENT-TAG"><misc>
-  <other type="name">$Id: frbib.xml,v 1.8 2009/09/15 10:26:37 gap Exp $</other>
+  <other type="name">$Id: frbib.xml,v 1.12 2010/04/20 09:49:01 gap Exp $</other>
 </misc></entry>
 <entry id="MR713968"><article>
   <author>
@@ -163,6 +163,14 @@
   <other type="coden">JALGA4</other>
   <other type="fjournal">Journal of Algebra</other>
 </article></entry>
+<entry id="1003.1125"><unpublished>
+  <author>
+    <name><first>Laurent</first><last>Bartholdi</last></name>
+  </author>
+  <title>Self-similar Lie algebras</title>
+  <note>arXiv:math/1003.1125</note>
+  <year>2010</year>
+</unpublished></entry>
 <entry id="MR0142635"><article>
   <author>
     <name><first>Gilbert</first><last>Baumslag</last></name>
@@ -620,7 +628,7 @@
   <other type="fjournal">International Journal of Algebra and
       Computation</other>
 </article></entry>
-<entry id="steinberg-vorobets"><unpublished>
+<entry id="0610033"><unpublished>
   <author>
     <name><first>Benjamin</first><last>Steinberg</last></name>
     <name><first>Mariya</first><last>Vorobets</last></name>
@@ -639,7 +647,26 @@
   <note>Diplomarbeit at ETHZ, under the supervision of R. Pink</note>
   <year>2002</year>
 </unpublished></entry>
-<entry id="vorobets"><unpublished>
+<entry id="MR2318547"><article>
+  <author>
+    <name><first>Mariya</first><last>Vorobets</last></name>
+    <name><first>Yaroslav</first><last>Vorobets</last></name>
+  </author>
+  <title>On a free group of transformations defined by an automaton</title>
+  <journal>Geom. Dedicata</journal>
+  <year>2007</year>
+  <volume>124</volume>
+  <pages>237--249</pages>
+  <issn>0046-5755</issn>
+  <mrnumber>MR2318547 (2008i:20030)</mrnumber>
+  <mrclass>20E05 (20E08)</mrclass>
+  <mrreviewer>Daniel P. Groves</mrreviewer>
+  <url>http://dx.doi.org/10.1007/s10711-006-9060-5</url>
+  <other type="coden">GEMDAT</other>
+  <other type="doi">10.1007/s10711-006-9060-5</other>
+  <other type="fjournal">Geometriae Dedicata</other>
+</article></entry>
+<entry id="0604328"><unpublished>
   <author>
     <name><first>Mariya</first><last>Vorobets</last></name>
     <name><first>Yaroslav</first><last>Vorobets</last></name>
@@ -648,6 +675,22 @@
       groups</title>
   <note>arXiv:math.GR/0604328</note>
   <year>2006</year>
+</unpublished></entry>
+<entry id="0810.4936"><unpublished>
+  <author>
+    <name><first>Volodymyr</first><last>Nekrashevych</last></name>
+  </author>
+  <title>Combinatorial models of expanding dynamical systems</title>
+  <note>arXiv:math.GR/0810.4936</note>
+  <year>2008</year>
+</unpublished></entry>
+<entry id="0811.2777"><unpublished>
+  <author>
+    <name><first>Volodymyr</first><last>Nekrashevych</last></name>
+  </author>
+  <title>The Julia set of a post-critically finite endomorphism of PC^2</title>
+  <note>arXiv:math.GR/0811.2777</note>
+  <year>2008</year>
 </unpublished></entry>
 <entry id="MR1839488"><article>
   <author>
@@ -970,4 +1013,13 @@
   <other type="fjournal">International Journal of Algebra and
       Computation</other>
 </article></entry>
+<entry id="PSZ"><misc>
+  <author>
+    <name><first>Victor</first><last>Petrogradsky</last></name>
+    <name><first>Ivan</first><last>Shestakov</last></name>
+    <name><first>Efim</first><last>Zelmanov</last></name>
+  </author>
+  <title><C>Nil graded self-similar algebras</C></title>
+  <howpublished>Submitted</howpublished>
+</misc></entry>
 </file>

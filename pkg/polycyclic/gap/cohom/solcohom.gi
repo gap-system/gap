@@ -140,12 +140,12 @@ end;
 ##
 ## KernelCR( A, sys )
 ##
-## returns the kernel of the system and a special solution, if necessary
+## returns the kernel of the system
 ##
 KernelCR := function( A, sys )
-    local mat, null, sol, vec;
+    local mat, null;
 
-    if sys.len = 0 then return rec( basis := [], transl := [] ); fi;
+    if sys.len = 0 then return []; fi;
 
     # we want the kernel of the transposed
     mat := TransposedMat( sys.base );
@@ -161,10 +161,25 @@ KernelCR := function( A, sys )
         null := TriangulizedIntegerMat( null );
     fi;
 
+    return null;
+end;
+
+#############################################################################
+##
+## SpecialSolutionCR( A, sys )
+##
+## returns a special solution of the system corresponding to A.extension
+##
+SpecialSolutionCR := function( A, sys )
+    local mat, sol, vec;
+
+    if sys.len = 0 then return []; fi;
+
     if Length( sys.base ) = 0 or not IsBound( A.extension ) then
         sol := List( [1..sys.dim * sys.len], x -> 0 );
         if A.char > 0 then sol := sol * One( A.field ); fi;
     else
+		mat := TransposedMat( sys.base );
         vec := Concatenation( A.extension );
         if A.char > 0 then
             sol := SolutionMat( mat, vec );
@@ -174,7 +189,7 @@ KernelCR := function( A, sys )
     fi;
 
     # return with special solution
-    return rec( basis := null, transl := sol );
+    return sol;
 end;
 
 

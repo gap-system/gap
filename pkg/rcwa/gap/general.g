@@ -2,27 +2,11 @@
 ##
 #W  general.g                 GAP4 Package `RCWA'                 Stefan Kohl
 ##
-#H  @(#)$Id: general.g,v 1.46 2009/10/05 12:11:36 stefan Exp $
-##
 ##  This file contains some more general pieces of code which are not direct-
 ##  ly related to RCWA. Some of them might perhaps later be moved into the
 ##  GAP Library or elsewhere.
 ##
-Revision.general_g :=
-  "@(#)$Id: general.g,v 1.46 2009/10/05 12:11:36 stefan Exp $";
-
 #############################################################################
-##
-#S  Take care of the change of the interface for floats. ////////////////////
-##
-if   VERSION = "4.dev" or not IsBound( Float ) then
-  if IsReadOnlyGlobal("Float") then MakeReadWriteGlobal("Float"); fi;
-  BindGlobal( "Float",
-    function ( a )
-      if not IsString(a) then a := String(a); fi;
-      return MACFLOAT_STRING(a);
-    end );
-fi;
 
 #############################################################################
 ##
@@ -57,17 +41,6 @@ InstallMethod( \*, "for infinity and infinity (RCWA)",
 #S  Some utility functions for lists. ///////////////////////////////////////
 ##
 #############################################################################
-
-#############################################################################
-##
-#F  Positions( <list>, <elm> ) . (the Library function, for old GAP versions)
-##
-if not IsBound( Positions ) then
-BindGlobal( "Positions",
-  function ( list, elm )
-    return Filtered( [ 1 .. Length( list ) ], i -> list[ i ] = elm );
-  end );
-fi;
 
 #############################################################################
 ##
@@ -152,9 +125,9 @@ InstallOtherMethod( Trajectory,
   end );
 
 InstallOtherMethod( Trajectory,
-                    "for function, starting point and halting criterion (RCWA)",
-                    ReturnTrue, [ IsFunction, IsObject, IsFunction ],
-                    0,
+                 "for function, starting point and halting criterion (RCWA)",
+                 ReturnTrue, [ IsFunction, IsObject, IsFunction ],
+                 0,
 
   function ( f, n, halt )
 
@@ -343,13 +316,6 @@ InstallMethod( AbelianInvariants,
                "for groups knowing an isomorphism to a permutation group",
                true, [ IsGroup and HasIsomorphismPermGroup ], 0,
                G -> AbelianInvariants(Image(IsomorphismPermGroup(G))) );
-
-#############################################################################
-##
-#F  FindGroupRelations( <G>, <r> ) . placebo `ReturnFail' if FR is not loaded
-##
-if   not IsReadOnlyGlobal( "FindGroupRelations" )
-then FindGroupRelations := ReturnFail; fi;
 
 #############################################################################
 ##
@@ -581,7 +547,7 @@ InstallGlobalFunction( DrawGrid,
 
 #############################################################################
 ##
-#S  Utilities to be used in talks. //////////////////////////////////////////
+#S  Utility to run a demonstration in a talk. ///////////////////////////////
 ##
 #############################################################################
 
@@ -643,6 +609,82 @@ InstallGlobalFunction( RunDemonstration,
     InputLogTo();
 
   end );
+
+#############################################################################
+##
+#S  Utility to convert GAP log files to XHTML 1.0 Strict. ///////////////////
+##
+#############################################################################
+
+#############################################################################
+##
+#F  Log2HTML ( logfilename )
+##
+##  Utility to convert GAP log files to XHTML 1.0 Strict.
+##
+##  Usage:
+##
+##  - Issue Log2HTML( <logfilename> ). The extension of the input file must
+##    be *.log. The name of the output file is the same as the one of the
+##    input file except that the extension *.log is replaced by *.html.
+##
+##  - Adapt the style file rcwa/doc/gaplog.css to your taste.
+##
+BindGlobal( "Log2HTML",
+
+function ( logfilename )
+
+  local  outputname, s1, s2, header, footer, pos,
+         lastlf, nextlf, crlf, prompt;
+
+  if ARCH_IS_UNIX() then crlf := 1; else crlf := 2; fi;
+  header := Concatenation(
+              "<?xml version = \"1.0\" encoding = \"ISO-8859-1\"?>\n\n",
+              "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n",
+              "                      \"http://www.w3.org/TR/xhtml1/DTD/",
+              "xhtml1-strict.dtd\">\n<html>\n\n<head>\n  <title> ",
+              logfilename, " </title>\n  <link rel = \"stylesheet\" ",
+              "type = \"text/css\" href = \"gaplog.css\" />\n",
+              "</head>\n\n<body>\n\n<pre class = \"logfile\">\n");
+  footer := "</pre> </body> </html>";
+  s1 := StringFile(logfilename);
+  pos := PositionSublist(s1,"gap>"); prompt := "gap> ";
+  s2 := ReplacedString(s1{[1..pos-1]},"<","&lt;");
+  while pos <> fail do
+    s2 := Concatenation(s2,"<em class = \"prompt\">",prompt,"</em>");
+    s2 := Concatenation(s2,"<em class = \"input\">");
+    nextlf := Position(s1,'\n',pos); prompt := "gap>";
+    if nextlf = fail then nextlf := Length(s1); fi;
+    s2 := Concatenation(s2,ReplacedString(s1{[pos+5..nextlf-crlf]},
+                                          "<","&lt;"),"</em>");
+    while nextlf < Length(s1) and s1[nextlf+1] = '>' do
+      s2 := Concatenation(s2,"\n<em class = \"prompt\">></em>",
+                          "<em class = \"input\">");
+      lastlf := nextlf;
+      nextlf := Position(s1,'\n',lastlf);
+      if nextlf = fail then nextlf := Length(s1); fi;
+      s2 := Concatenation(s2,ReplacedString(s1{[lastlf+2..nextlf-crlf]},
+                                            "<","&lt;"),"</em>");
+    od;
+    s2 := Concatenation(s2,"\n");
+    pos := PositionSublist(s1,"\ngap>",nextlf-1);
+    if pos = fail then pos := Length(s1); fi;
+    if pos > nextlf then
+      s2 := Concatenation(s2,"<em class = \"output\">",
+                          ReplacedString(s1{[nextlf+1..pos-crlf]},
+                                         "<","&lt;"),"</em>\n");
+    fi;
+    if pos > Length(s1) - 3 then break; fi;
+  od;
+  s2 := Concatenation(header,s2,footer);
+  logfilename := LowercaseString(logfilename); 
+  if   PositionSublist(logfilename,".log") <> fail
+  then outputname := ReplacedString(logfilename,".log",".html");
+  elif PositionSublist(logfilename,".txt") <> fail
+  then outputname := ReplacedString(logfilename,".txt",".html");
+  else outputname := Concatenation(logfilename,".html"); fi;
+  FileString(outputname,s2);
+end );
 
 #############################################################################
 ##

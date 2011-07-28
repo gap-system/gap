@@ -231,4 +231,3 @@ TwoCohomologyModCR := function( A, lat )
                 factor := AdditiveFactorPcp( cc, cb, 0 ) );
 end;
 
-

@@ -1,4 +1,5 @@
 C intro.tex 1. Introduction
+S 1.1. License
 C fields.tex 2. Methods for number fields
 S 2.1. Creation of number fields
 F 2.1. FieldByMatricesNC

@@ -14,7 +14,7 @@ BindGlobal( "AddHallPolynomials", function( coll )
        coll![PC_DEEP_THOUGHT_POLS] = [] then
 
         # Compute the deep thought polynomials
-        coll![PC_DEEP_THOUGHT_POLS] := calcreps2(coll![PC_CONJUGATES], 8, 1);
+        coll![PC_DEEP_THOUGHT_POLS] := Calcreps2(coll![PC_CONJUGATES], 8, 1);
 
         # Compute the orders of the genrators of dtrws
         CompleteOrdersOfRws(coll);

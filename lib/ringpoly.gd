@@ -2,7 +2,7 @@
 ##
 #W  ringpoly.gd                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: ringpoly.gd,v 4.43 2010/06/14 16:51:17 gap Exp $
+#H  @(#)$Id: ringpoly.gd,v 4.51 2011/05/16 22:22:06 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  for polynomial rings and function fields.
 ##
 Revision.ringpoly_gd :=
-    "@(#)$Id: ringpoly.gd,v 4.43 2010/06/14 16:51:17 gap Exp $";
+    "@(#)$Id: ringpoly.gd,v 4.51 2011/05/16 22:22:06 alexk Exp $";
 
 
 #############################################################################
@@ -137,6 +137,7 @@ DeclareCategory( "IsAlgebraicExtensionPolynomialRing", IsPolynomialRing );
 ##  is the category of polynomial rings over the rationals
 ##  (see Chapter&nbsp;<Ref Chap="Rational Numbers"/>).
 ##  <Example><![CDATA[
+##  gap> r := PolynomialRing(Rationals, ["a", "b"]:old );;
 ##  gap> IsPolynomialRing(r);
 ##  true
 ##  gap> IsFiniteFieldPolynomialRing(r);
@@ -227,9 +228,9 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  <Log><![CDATA[
 ##  gap> R:=PolynomialRing(GF(3),["x","y","z"]);
 ##  Error, Indeterminate ``x'' is already used.
-##  Use the `old' option; e.g. X(Rationals,"x":old);
+##  Use the `old' option; e.g. Indeterminate(Rationals,"x":old);
 ##    to re-use the variable already defined with this name and the
-##  `new' option; e.g. X(Rationals,"x":new);
+##  `new' option; e.g. Indeterminate(Rationals,"x":new);
 ##    to create a new variable with the duplicate name.
 ##   called from GiveNumbersNIndeterminates(  [...]
 ##  brk> quit;
@@ -244,49 +245,52 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  >   IndeterminateNumberOfLaurentPolynomial);
 ##  [ 4, 5, 6 ]
 ##  ]]></Log>
-##  <#/GAPDoc>
 ##
 ##  When trying to create an indeterminate with a name that exists already
 ##  for the family, &GAP; will stop with an error message. You can specify
-##  to create the same variable that already has been given this name by
+##  to create the same indeterminate that already has been given this name by
 ##  adding the <C>old</C> option to the function call.
-##  Similarly it is possible to create a <E>new</E> variable with the <E>same</E> name
+##  Similarly it is possible to create a <E>new</E> indeterminate 
+##  with the <E>same</E> name
 ##  by using the <C>new</C> option. (This is in most cases not a good idea.)
-##
-
-##
-#V  INDETERMINATENAMEREUSE
-##
-##  <#GAPDoc Label="INDETERMINATENAMEREUSE">
-##  <ManSection>
-##  <Var Name="INDETERMINATENAMEREUSE"/>
-##
-##  <Description>
-##  Users who prefer a certain behaviour as a default can set the global
-##  variable <Ref Var="INDETERMINATENAMEREUSE"/> to <C>1</C> to set
-##  (as long as no option is given) the behaviour of the
-##  <C>old</C> option as default and to <C>2</C> to have the <C>new</C>
-##  option as default.
-##  This can be done for example in the user's <F>.gaprc</F> file
-##  (see Section <Ref Sect="The .gaprc file"/>).
+##  <P/>
+##  <Index Key="GAPInfo.UserPreferences.IndeterminateNameReuse">
+##  <C>GAPInfo.UserPreferences.IndeterminateNameReuse</C></Index>
+##  Users who prefer that the creation of different indeterminates with the same
+##  name without using the <C>old</C> or <C>new</C> options should not 
+##  trigger an error (for example for compatibility with old code) 
+##  can do so using the global variable
+##  <C>GAPInfo.UserPreferences.IndeterminateNameReuse</C>.
+##  This can be done for example in the user's <F>gap.ini</F> file
+##  (see Section <Ref Sect="sect:gap.ini"/>).
+##  When <C>GAPInfo.UserPreferences.IndeterminateNameReuse</C>
+##  is set to <C>0</C> (the value as it is when &GAP; starts),
+##  the system will behave as described above. When the variable
+##  is set to 
+##  <C>1</C> all calls to operations creating indeterminates (unless they
+##  explicitly specify the option <C>new</C>) behave as if
+##  the <C>old</C> option is given. Similarly setting 
+##  <C>GAPInfo.UserPreferences.IndeterminateNameReuse</C> to
+##  <C>2</C> does the same for the <C>new</C>
+##  option. (Incidentally, this had been the default behavior in prior
+##  releases of &GAP;.)
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> x:=X(GF(3),"x");
+##  gap> x:=Indeterminate(GF(3),"x");
 ##  Error, Indeterminate ``x'' is already used. [...]
-##  gap> INDETERMINATENAMEREUSE:=2;;
-##  gap> x:=X(GF(3),"x");IndeterminateNumberOfLaurentPolynomial(x);
+##  gap> GAPInfo.UserPreferences.IndeterminateNameReuse:= 2;;
+##  gap> x:=Indeterminate(GF(3),"x");
 ##  x
+##  IndeterminateNumberOfLaurentPolynomial(x);
 ##  7
-##  gap> INDETERMINATENAMEREUSE:=1;;
-##  gap> x:=X(GF(3),"x");IndeterminateNumberOfLaurentPolynomial(x);
+##  gap> GAPInfo.UserPreferences.IndeterminateNameReuse:= 1;;
+##  gap> x:=Indeterminate(GF(3),"x");
 ##  x
+##  IndeterminateNumberOfLaurentPolynomial(x);
 ##  1
 ##  ]]></Log>
-##  </Description>
-##  </ManSection>
 ##  <#/GAPDoc>
 ##
-INDETERMINATENAMEREUSE:=0;
 
 
 #############################################################################
@@ -326,7 +330,9 @@ INDETERMINATENAMEREUSE:=0;
 ##  (also avoiding the indeterminates in <A>avoid</A> if given).
 ##  <P/>
 ##  <Ref Oper="X" Label="for a ring (and a number)"/> is simply a synonym for
-##  <Ref Oper="Indeterminate" Label="for a ring (and a number)"/>.
+##  <Ref Oper="Indeterminate" Label="for a ring (and a number)"/>. However, 
+##  we do not recommend to use this synonym which is supported only for the
+##  backwards compatibility.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> x:=Indeterminate(GF(3),"x");
@@ -404,11 +410,8 @@ DeclareOperation( "UnivariatePolynomialRing", [IsRing] );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "IndeterminatesOfPolynomialRing", IsPolynomialRing );
-DeclareSynonym("IndeterminatesOfFunctionField",IndeterminatesOfPolynomialRing);
-DeclareSynonym("SetIndeterminatesOfFunctionField",
-  SetIndeterminatesOfPolynomialRing);
-DeclareSynonym("HasIndeterminatesOfFunctionField",
-  HasIndeterminatesOfPolynomialRing);
+DeclareSynonymAttr("IndeterminatesOfFunctionField",
+                   IndeterminatesOfPolynomialRing);
 
 
 #############################################################################

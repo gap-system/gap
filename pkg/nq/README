@@ -51,15 +51,15 @@ Theoretical Computer Science, Volume 25, pp 175-191.
 About this version
 ------------------
 
-This   directory contains  Version  1.3  of   the  Australian National
-University Nilpotent Quotient Program (ANU NQ), an implementation of a
-nilpotent   quotient algorithm in    C.  This implementation has  been
-developed   in  a Unix  environment and   Unix  is  currently the only
-operating system  supported.  It  runs  on a number of  different Unix
-versions, e.g.  SunOS and Ultrix. An earlier version  of the ANU NQ is
-also  available  as part  of quotpic  (Derek  F.   Holt, Sarah Rees: A
-graphics system for  displaying finite quotients of finitely presented
-groups.  DIMACS Workshop on Groups and Computation, AMS-ACM 1991).
+This directory  contains the Australian National  University Nilpotent
+Quotient Program (ANU  NQ), an implementation of  a nilpotent quotient
+algorithm  in C.  This implementation  has  been developed  in a  Unix
+environment and Unix is currently the only operating system supported.
+It runs on a number of  different Unix versions. An earlier version of
+the ANU NQ is also available as  part of quotpic (Derek F. Holt, Sarah
+Rees: A  graphics system for  displaying finite quotients  of finitely
+presented groups.  DIMACS Workshop on Groups  and Computation, AMS-ACM
+1991).
 
 This directory contains the following directories and files:
 
@@ -88,17 +88,12 @@ This directory contains the following directories and files:
 How to install the ANU NQ
 -------------------------
 
-The installation of the program is easy.  However, it requires the GNU
-multiple  precision  library  (GNU  MP).    GNU is the  Free  Software
-Foundation's  collection of UNIX compatible  software. If this library
-is not available on your system, it has to be installed first.  A copy
-of GNU MP  can be obtained  via anonymous ftp  from  many file servers
-around the world, for example:
+The installation of the program is  easy. However, it requires the GNU
+multiple precision library (GNU MP).  If this library is not available
+on your system, it has to be installed  first. A copy of GNU MP can be
+obtained from:
 
-        prep.ai.mit.edu:/pub/gnu/gmp-2.0.2.tar.gz
-
-It is likely  that there is an ftp  server closer to you that  carries
-GNU MP.   
+        http://gmplib.org/
 
 You start compiling NQ by running the configure script:
 
@@ -106,7 +101,7 @@ You start compiling NQ by running the configure script:
 
 Among other things  it will tell you  whether it succeeded in locating
 the GNU MP library and the  corresponding include files.  If configure
-reports no problems, you prcoeed by typing
+reports no problems, you proceed by typing
 
         make
 
@@ -394,13 +389,15 @@ items :
 	Use the mpz-interface of the GNU multiple precision package
 	Find a more satisfying solution for generating sets for each
 	     central factor.
-        Multiple precision integers as exponents of generators
+	Multiple precision integers as exponents of generators
 	Better control over the output
-        Output computed nilpotent quotient if the program times out
+	Output computed nilpotent quotient if the program times out
 
 
 Acknowledgements
 ----------------
+The author of ANU NQ is Werner Nickel.
+
 The   development of this  program  was started  while  the author was
 supported by an Australian National University  PhD scholarship and an
 Overseas Postgraduate Research Scholarship.
@@ -409,18 +406,11 @@ Further development of  this program  was done  while the  author  was
 supported       by     the DFG-Schwerpunkt-Projekt    "`Algorithmische
 Zahlentheorie und Algebra"'.
 
+Since then, maintenance of ANU NQ has been taken over by Max Horn. All
+credit for creating ANU NQ still goes to Werner Nickel as sole author.
 
 Contact addresses
 -----------------
-Comments and suggestions are very welcome, my email address is 
+Comments, bug reports and suggestions are welcome, please email to
 
-		nickel@mathematik.tu-darmstadt.de
-
-Werner Nickel
-Fachbereich Mathematik, AG 2
-TU Darmstadt
-Schlossgartenstr. 7
-64289 Darmstadt
-Germany
-
-
+		Max Horn <mhorn@tu-bs.de>

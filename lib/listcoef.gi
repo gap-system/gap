@@ -21,7 +21,7 @@
 ##  different lengths, the returned result will have trailing zeros removed.
 ##
 Revision.listcoef_gi :=
-    "@(#)$Id: listcoef.gi,v 4.62 2010/08/02 16:36:55 alexk Exp $";
+    "@(#)$Id: listcoef.gi,v 4.63 2010/10/20 19:01:57 sal Exp $";
 
 
 #############################################################################

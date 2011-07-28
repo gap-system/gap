@@ -3,7 +3,7 @@
 #W  permutat.g                   GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: permutat.g,v 4.51 2010/06/14 21:24:15 alexk Exp $
+#H  @(#)$Id: permutat.g,v 4.52 2010/10/14 18:02:17 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file deals with permutations.
 ##
 Revision.permutat_g :=
-    "@(#)$Id: permutat.g,v 4.51 2010/06/14 21:24:15 alexk Exp $";
+    "@(#)$Id: permutat.g,v 4.52 2010/10/14 18:02:17 alexk Exp $";
 
 
 #############################################################################
@@ -25,9 +25,8 @@ Revision.permutat_g :=
 ##  to the largest moved integer, but a bigger <M>d</M> can result from a
 ##  multiplication of two permutations, because the product is not shortened
 ##  if it fixes&nbsp;<M>d</M>.
-##  The images are stored as <M>16</M>-bit integers or all as
-##  <M>32</M>-bit integers (actually as &GAP; immediate integers less than
-##  <M>2^{28}</M>), depending on whether <M>d \leq 65536</M> or not.
+##  The images are stored all as <M>16</M>-bit integers or all as
+##  <M>32</M>-bit integers, depending on whether <M>d \leq 65536</M> or not.
 ##  For example, if <M>m\geq 65536</M>, the permutation 
 ##  <M>(1, 2, \ldots, m)</M> has internal degree <M>d=m</M> and takes
 ##  <M>4m</M> bytes of memory for storage. But --- since the internal degree
@@ -37,13 +36,6 @@ Revision.permutat_g :=
 ##  takes <M>4m</M> bytes of storage.
 ##  It can take even more because the internal list has sometimes room for
 ##  more than <M>d</M> images.
-##  For example, the maximal degree of any permutation in &GAP; is
-##  <M>m = 2^{22}-1024 = 4{,}193{,}280</M>,
-##  because bigger permutations would have an internal list with room for
-##  more than <M>2^{22}</M> images, requiring more than
-##  <M>2^{24}</M>&nbsp;bytes.
-##  However, <M>2^{24}</M> is the largest possible size of an object that the
-##  &GAP; storage manager can deal with.
 ##  <P/>
 ##  The operation <Ref Func="RestrictedPerm"/> reduces the storage degree of
 ##  its result and therefore can be used to save memory if intermediate

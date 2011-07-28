@@ -2,8 +2,6 @@
 <!-- ##                                                                ## -->
 <!-- ##  algs.xml           RCWA documentation            Stefan Kohl  ## -->
 <!-- ##                                                                ## -->
-<!-- ##  $Id: algs.xml,v 1.72 2009/09/18 21:35:14 stefan Exp $         ## -->
-<!-- ##                                                                ## -->
 <!-- #################################################################### -->
 
 <Chapter Label="ch:algorithms">
@@ -242,7 +240,7 @@ algorithms and methods can be found in&nbsp;<Cite Key="Kohl08b"/>.
   </Item>
 
   <Mark>
-    <C>GluckTaylorInvariant(<A>a</A>(</C>
+    <C>GluckTaylorInvariant(<A>a</A>)</C>
   </Mark>
   <Item>
     Evaluation of the given expression.
@@ -592,7 +590,7 @@ algorithms and methods can be found in&nbsp;<Cite Key="Kohl08b"/>.
     use <C>ActionOnRespectedPartition</C>.
     If <A>G</A> is finite, but not class-wise order-preserving, compute
     the action on the respected partition which is obtained by splitting
-    any residue class <M>r(m)</M> in <C>RespectedPartition(<A>G</A></C>
+    any residue class <M>r(m)</M> in <C>RespectedPartition(<A>G</A>)</C>
     into three residue classes <M>r(3m), r+m(3m), r+2m(3m)</M>. 
     If <A>G</A> is infinite, there is no isomorphism to a finite
     permutation group, thus return <C>fail</C>.

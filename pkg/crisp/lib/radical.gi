@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  radical.gi                      CRISP                 Burkhard H\"ofling
+##  radical.gi                      CRISP                    Burkhard Höfling
 ##
-##  @(#)$Id: radical.gi,v 1.6 2005/12/21 17:00:58 gap Exp $
+##  @(#)$Id: radical.gi,v 1.7 2011/05/15 19:17:58 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000, 2002, 2005 Burkhard Höfling
 ##
 Revision.radical_gi :=
-    "@(#)$Id: radical.gi,v 1.6 2005/12/21 17:00:58 gap Exp $";
+    "@(#)$Id: radical.gi,v 1.7 2011/05/15 19:17:58 gap Exp $";
 
 
 #############################################################################

@@ -2,7 +2,7 @@
 ##
 #W  numtheor.gd                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: numtheor.gd,v 4.39 2010/06/16 14:14:19 gap Exp $
+#H  @(#)$Id: numtheor.gd,v 4.41 2011/04/04 01:59:17 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -29,7 +29,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.numtheor_gd:=
-    "@(#)$Id: numtheor.gd,v 4.39 2010/06/16 14:14:19 gap Exp $";
+    "@(#)$Id: numtheor.gd,v 4.41 2011/04/04 01:59:17 gap Exp $";
 
 
 ##########################################################################
@@ -301,12 +301,12 @@ DeclareGlobalFunction( "PrimitiveRootMod" );
 ##  </List>
 ##  <Example><![CDATA[
 ##  gap> GeneratorsPrimeResidues( 1 );
-##  rec( generators := [  ], primes := [  ], exponents := [  ] )
+##  rec( exponents := [  ], generators := [  ], primes := [  ] )
 ##  gap> GeneratorsPrimeResidues( 4*3 );
-##  rec( generators := [ 7, 5 ], primes := [ 2, 3 ], exponents := [ 2, 1 ] )
+##  rec( exponents := [ 2, 1 ], generators := [ 7, 5 ], primes := [ 2, 3 ] )
 ##  gap> GeneratorsPrimeResidues( 8*9*5 );
-##  rec( generators := [ [ 271, 181 ], 281, 217 ], primes := [ 2, 3, 5 ], 
-##    exponents := [ 3, 2, 1 ] )
+##  rec( exponents := [ 3, 2, 1 ], generators := [ [ 271, 181 ], 281, 217 ], 
+##    primes := [ 2, 3, 5 ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -433,8 +433,6 @@ DeclareGlobalFunction( "Legendre" );
 ##  If only the arguments <A>n</A> and <A>m</A> are given,
 ##  the default value for <A>k</A> is <M>2</M>.
 ##  <P/>
-##  In the current implementation <A>k</A> must be a prime.
-##  <P/>
 ##  A square root of <A>n</A> exists only if <C>Legendre(<A>n</A>,<A>m</A>) = 1</C>
 ##  (see&nbsp;<Ref Func="Legendre"/>).
 ##  If <A>m</A> has <M>r</M> different prime factors then  there are <M>2^r</M>  different
@@ -479,8 +477,6 @@ DeclareGlobalFunction( "RootMod" );
 ##  all <M>r</M> such that <M>r^{<A>k</A>} \equiv <A>n</A> \pmod{<A>m</A>}</M>.
 ##  If only the arguments <A>n</A> and <A>m</A> are given,
 ##  the default value for <A>k</A> is <M>2</M>.
-##  <P/>
-##  In the current implementation <A>k</A> must be a prime.
 ##  <Example><![CDATA[
 ##  gap> RootsMod( 1, 7*31 );  # the same as `RootsUnityMod( 7*31 )'
 ##  [ 1, 92, 125, 216 ]

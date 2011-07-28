@@ -14,7 +14,7 @@
 ##  2. methods for f.p. groups
 ##
 Revision.grpfp_gi :=
-    "@(#)$Id: grpfp.gi,v 4.255 2010/06/11 15:04:15 gap Exp $";
+    "@(#)$Id: grpfp.gi,v 4.259 2011/06/20 15:40:22 gap Exp $";
 
 
 #############################################################################
@@ -66,15 +66,6 @@ function( obj )
   return String( obj![1] );
 end );
 
-#############################################################################
-##
-#M  LaTeXObj( <elm> ) . . . . . . . for packed word in default representation
-##
-InstallMethod( LaTeXObj,"for an element of an f.p. group (default repres.)",
-  true, [ IsElementOfFpGroup and IsPackedElementDefaultRep ],0,
-function( obj )
-  return LaTeXObj( obj![1] );
-end );
 
 #############################################################################
 ##
@@ -1967,7 +1958,8 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
   fi;
 
   # reduce
-  if HasSize(s) and IsPermGroup(s) and (Size(s)=Size(A) or Size(s)=Size(B)) then
+  if HasSize(s) and IsPermGroup(s) and (Size(s)=Size(A) or Size(s)=Size(B)
+    or NrMovedPoints(s)>1000) then
     d:=SmallerDegreePermutationRepresentation(s);
     A:=Image(d,s);
     if NrMovedPoints(A)<NrMovedPoints(s) then
@@ -4324,6 +4316,7 @@ local Fgens,	# generators of F
       pimgs,	# possible images
       val,	# its value
       i,	# loop
+      ma,
       h;	# epis
 
   Fgens:=GeneratorsOfGroup(F);
@@ -4353,6 +4346,16 @@ local Fgens,	# generators of F
       h:=First(AsList(G),i->Order(i)=Size(G));
       # just map them
       return [GroupHomomorphismByImagesNC(F,G,Fgens,[h])];
+    fi;
+  fi;
+
+  # try abelian part first
+  if not IsAbelian(G) and not IsPerfectGroup(G) then
+    ma:=MaximalAbelianQuotient(F);
+    if IsFinite(Image(ma)) then
+      if Length(GQuotients(Image(ma),G/DerivedSubgroup(G)))=0 then
+	return [];
+      fi;
     fi;
   fi;
 
@@ -6008,7 +6011,7 @@ end );
 # the generators in the order corresponding to AbelianInvariants.
 # If the FpGroup is abelian, then it is suitable as a method for
 # IndependentGeneratorsOfAbelianGroup.
-IndependentGeneratosOfMaximalAbelianQuotientOfFpGroup := function( G )
+IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup := function( G )
   local gens, matrix, snf, base, ord, cti, row, g, o, cf, j, i;
 
   gens := FreeGeneratorsOfFpGroup( G );
@@ -6048,7 +6051,7 @@ end;
 InstallMethod( IndependentGeneratorsOfAbelianGroup,
   "For abelian fpgroup, use Smith normal form",
   [ IsFpGroup and IsAbelian ],
-  IndependentGeneratosOfMaximalAbelianQuotientOfFpGroup );
+  IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup );
 
 
 #############################################################################

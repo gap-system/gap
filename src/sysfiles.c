@@ -4,7 +4,7 @@
 *W                                                         & Martin Schönert
 *W                                                  & Burkhard Höfling (MAC)
 **
-*H  @(#)$Id: sysfiles.c,v 4.156 2010/07/28 13:29:18 gap Exp $
+*H  @(#)$Id: sysfiles.c,v 4.167 2011/05/15 18:39:17 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,7 +19,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_sysfiles_c =
-   "@(#)$Id: sysfiles.c,v 4.156 2010/07/28 13:29:18 gap Exp $";
+   "@(#)$Id: sysfiles.c,v 4.167 2011/05/15 18:39:17 gap Exp $";
 
 #define INCLUDE_DECLARATION_PART
 #include        "sysfiles.h"            /* file input/output               */
@@ -54,7 +54,6 @@ const char * Revision_sysfiles_c =
 #include        <readline/readline.h>   /* readline for interactive input  */
 #endif
 
-#if !SYS_MAC_MWC
 #if HAVE_SELECT
 /* Only for the Hook handler calls: */
 #include        "read.h"                /* reader                          */
@@ -62,14 +61,11 @@ const char * Revision_sysfiles_c =
 #include        <sys/time.h>
 #include        <sys/types.h>
 #endif
-#endif
 
 #ifndef SYS_STDIO_H                     /* standard input/output functions */
 # include <stdio.h>
 # define SYS_STDIO_H
 #endif
-
-#if !SYS_MAC_MWC
 
 #ifndef SYS_UNISTD_H                    /* definition of 'R_OK'            */
 # include <unistd.h>
@@ -142,7 +138,6 @@ extern int execve (const char*,char * const [],char * const []);
 #else
 extern int execve (char*, char * [], char * [] );
 #endif
-#endif
 
 
 #ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
@@ -151,19 +146,6 @@ extern int             getpid ( void );
 extern int             kill ( int, int );
 #endif
 
-#endif
-
-#if SYS_MAC_MWC
-#include <folders.h>
-#include <Sound.h>
-#include <TextUtils.h>
-#include "macdefs.h"
-#include "macte.h"
-#include "macedit.h"
-#include "maccon.h"
-#include "macpaths.h"
-
-extern OSErr SyLastMacErrorCode; /* MacOS error code, similar to errno on Unix */
 #endif
 
 /* utility to check return value of 'write'  */
@@ -203,14 +185,12 @@ ssize_t writeandcheck(int fd, const char *buf, size_t count) {
 **  4: a GAP file was found and the CRC value didn't match
 */
 #include        "compstat.h"            /* statically linked modules       */
-#if SYS_MAC_MWC
-void syUnloadLastModule ( void );
-#endif
+
 
 Int SyFindOrLinkGapRootFile (
     Char *              filename,
     Int4                crc_gap,
-    Char *              result, 
+    TypGRF_Data *       result,
     Int                 len )
 {
     UInt4               crc_dyn = 0;
@@ -225,7 +205,7 @@ Int SyFindOrLinkGapRootFile (
     StructInitInfo *    info_sta = 0;
     Int                 k;
 
-#if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY) || HAVE_DLOPEN || SYS_MAC_MWC
+#if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY) || HAVE_DLOPEN
     Char *              p;
     Char *              dot;
     Int                 pos;
@@ -234,19 +214,19 @@ Int SyFindOrLinkGapRootFile (
 #endif
 
     /* find the GAP file                                                   */
-    result[0] = '\0';
+    result->pathname[0] = '\0';
     tmp = SyFindGapRootFile(filename);
     if ( tmp ) {
-        SyStrncat( result, tmp, len );
+        SyStrncat( result->pathname, tmp, len );
         name[0] = '\0';
         SyStrncat( name, tmp, 255 );
     }
-    if ( result[0] ) {
-        if ( SyIsReadableFile(result) == 0 ) {
+    if ( result->pathname[0] ) {
+        if ( SyIsReadableFile(result->pathname) == 0 ) {
             found_gap = 1;
         }
         else {
-            result[0] = '\0';
+            result->pathname[0] = '\0';
         }
     }
     if ( ! SyUseModule ) {
@@ -273,7 +253,7 @@ Int SyFindOrLinkGapRootFile (
     
 
     /* try to find any dynamically loadable module for filename            */
-#if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY) || HAVE_DLOPEN || SYS_MAC_MWC
+#if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY) || HAVE_DLOPEN
     pos = SyStrlen(filename);
     p   = filename + pos;
     dot = 0;
@@ -301,11 +281,7 @@ Int SyFindOrLinkGapRootFile (
             SyStrncat( module, "/", 1 );
             SyStrncat( module, dot+1, SyStrlen(dot+1) );
             SyStrncat( module, filename+pos, pot-pos );
-#if SYS_MAC_MWC
-   		    SyStrncat( module, ".shlb", 5 );
-#else
             SyStrncat( module, ".so", 3 );
-#endif
         }
     }
     else {
@@ -314,11 +290,7 @@ Int SyFindOrLinkGapRootFile (
         SyStrncat( module, SyArchitecture, SyStrlen(SyArchitecture) );
         SyStrncat( module, "/compiled/", 10 );
         SyStrncat( module, filename, SyStrlen(filename) );
-#if SYS_MAC_MWC
-        SyStrncat( module, ".shlb", 5 );
-#else
         SyStrncat( module, ".so", 3 );
-#endif
     }
     tmp = SyFindGapRootFile(module);
 
@@ -351,20 +323,12 @@ Int SyFindOrLinkGapRootFile (
             SyStrncat( module, "/", 1 );
             SyStrncat( module, dot+1, SyStrlen(dot+1) );
             SyStrncat( module, filename+pos, pot-pos );
-#if SYS_MAC_MWC
-	    SyStrncat( module, ".shlb", 5 );
-#else
             SyStrncat( module, ".so", 3 );
-#endif
 	  }
 	}
 	else {
 	  SyStrncat( module, p2, SyStrlen(p2) );
-#if SYS_MAC_MWC
-	  SyStrncat( module, ".shlb", 5 );
-#else
 	  SyStrncat( module, ".so", 3 );
-#endif
 	}
 	tmp = SyFindGapRootFile(module);
 	
@@ -383,7 +347,7 @@ Int SyFindOrLinkGapRootFile (
     if ( found_gap && ( found_dyn || found_sta ) ) {
         if ( crc_gap == 0 ) {
             crc_gap = SyGAPCRC(name);
-        } else if ( SyCheckCompletionCrcComp || SyCheckCompletionCrcRead ) {
+        } else if ( SyCheckCRCCompiledModule ) {
             if ( crc_gap != SyGAPCRC(name) ) {
                 return 4;
             }
@@ -393,9 +357,6 @@ Int SyFindOrLinkGapRootFile (
 
     /* now decide what to do                                               */
     if ( found_gap && found_dyn && crc_gap != crc_dyn ) {
-#if SYS_MAC_MWC
-		syUnloadLastModule ();
-#endif
 		Pr("#W Dynamic module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
 		found_dyn = 0;
     }
@@ -404,11 +365,7 @@ Int SyFindOrLinkGapRootFile (
         found_sta = 0;
     }
     if ( found_gap && found_sta ) {
-#if SYS_MAC_MWC
-		if (found_dyn)
-			syUnloadLastModule ();
-#endif        
-        *(StructInitInfo**)result = info_sta;
+        result->module_info = info_sta;
         return 2;
     }
     if ( found_gap && found_dyn ) {
@@ -419,15 +376,11 @@ Int SyFindOrLinkGapRootFile (
         return 3;
     }
     if ( found_sta ) {
-#if SYS_MAC_MWC
-		if (found_dyn)
-			syUnloadLastModule ();
-#endif        
-        *(StructInitInfo**)result = info_sta;
+        result->module_info = info_sta;
         return 2;
     }
     if ( found_dyn ) {
-        *(StructInitInfo**)result = info_dyn;
+        result->module_info = info_dyn;
         return 1;
     }
     return 0;
@@ -499,9 +452,7 @@ Int4 SyGAPCRC( Char * name )
     Int         fid;
     Int         seen_nl;
     Char        buf[BUFSIZ];
-#if !SYS_MAC_MWC
     FILE        *f;
-#endif
 
     /* the CRC of a non existing file is 0                                 */
     fid = SyFopen( name, "r" );
@@ -514,18 +465,10 @@ Int4 SyGAPCRC( Char * name )
     seen_nl = 0;
 
     /* Here it is both safe and sensible to use buffered IO */
-#if !SYS_MAC_MWC
     f = fdopen(syBuf[fid].fp, "r");
     setbuf(f, buf);
-#else
-	SySetBuffering (fid);
-#endif
 
-#if SYS_MAC_MWC
-    while ( ( ch = SyGetc(fid) ) != EOF ) 
-#else
     while ( (ch =  fgetc(f) )!= EOF ) 
-#endif
 	{
         if ( ch == '\377' || ch == '\n' || ch == '\r' )
             ch = '\n';
@@ -547,9 +490,7 @@ Int4 SyGAPCRC( Char * name )
 
     /* and close it again                                                  */
     SyFclose( fid );
-#if !SYS_MAC_MWC
     fclose(f);
-#endif
     return ((Int4) crc) >> 4;
 }
 
@@ -565,7 +506,7 @@ This function computes a cyclic redundancy check number from a string
 <A>str</A>. See also <Ref Func="CrcFile"/>.
 <Example>
 gap> CrcString("GAP example string");
-4244515626
+-50451670
 </Example>
 </Description>
 </ManSection>
@@ -689,126 +630,10 @@ InitInfoFunc SyLoadModule ( Char * name )
 
 /****************************************************************************
 **
-*f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . .  SYS_MAC_MWC
-*/
-#if SYS_MAC_MWC
-
-void syEchos (Char * str, Int fid );
-
-Boolean SyCanLoadDynamicModules = false;   /* assume the worst */
-CFragConnectionID syLastModuleConnID = 0; /* since connection IDs are pointers, 0 is invalid */
-long syLastFragmentSize;
-
-# if MEM_FRAGMENT
-Ptr	syLastFragmentPtr = 0;
-# endif
-
-InitInfoFunc SyLoadModule ( Char * name )
-{
-    FSSpec theFSSpec;
-    Str255 errmsg;
-    InitInfoFunc fragMainAddr;
-    Handle h;
-# if MEM_FRAGMENT
-	long len;
-	short fragRef;
-# endif
-
-    if (!SyCanLoadDynamicModules) /* not supported by OS */
-	    return (InitInfoFunc)7;	
-	SyLastMacErrorCode = PathToFSSpec (name, &theFSSpec, true, false);
-	if (SyLastMacErrorCode == fnfErr)
-		SyLastMacErrorCode = PathToFSSpec (name, &theFSSpec, false, false);
-	if (SyLastMacErrorCode)
-		return (InitInfoFunc)1;	
-# if MEM_FRAGMENT
-	if ((SyLastMacErrorCode = FSpOpenDF (&theFSSpec, fsRdPerm, &fragRef)))
-    	return (InitInfoFunc)3;
-	if ((SyLastMacErrorCode = GetEOF (fragRef, &syLastFragmentSize)))
-  	 	return (InitInfoFunc)3;
-
-	h = NewHandle (gEditorScratch);
-	
-	if (h && MemError () == noErr) {
-		syLastFragmentPtr = NewPtr (syLastFragmentSize);
-		if (MemError () || !syLastFragmentPtr) { /* if allocation fails */
-			UnloadScrap ();  /* try to free some memory */
-			syLastFragmentPtr = NewPtr (syLastFragmentSize);
-			if (MemError ()) /* if allocation fails again */
-				syLastFragmentPtr = 0; /* signal failure */
-		}
-
-	} else
-		syLastFragmentPtr = 0;
-
-	if (h)
-		DisposeHandle (h);
-	
-	if (!syLastFragmentPtr) {
-		if (SyDebugLoading) {
-			p2cstr (theFSSpec.name);
-			SyFputs ("#l    not enough memory to load module \'",3);
-			SyFputs ((char*) theFSSpec.name, 3);
-			SyFputs ("\' dynamically\n", 3);
-		}
-		SyLastMacErrorCode = memFullErr;
-		return (InitInfoFunc)3;
-	}
-
-	len = syLastFragmentSize;
-
-	if ((SyLastMacErrorCode = FSRead (fragRef, &len, syLastFragmentPtr)))
- 	 	return (InitInfoFunc)3;
- 	 
-	if (syLastFragmentSize == len && (SyLastMacErrorCode = FSClose (fragRef)) == noErr)
-		SyLastMacErrorCode = GetMemFragment(syLastFragmentPtr, syLastFragmentSize, theFSSpec.name, 
-    	           kReferenceCFrag, &syLastModuleConnID, (Ptr*)&fragMainAddr, errmsg);
-    	           
-    if (SyLastMacErrorCode) {
-    	DisposePtr (syLastFragmentPtr);
-    	syLastFragmentPtr = 0;
-    	return (InitInfoFunc)3;
-    } else
-    	return fragMainAddr;
-
-# else
-	h = NewHandle (gEditorScratch);
-	
-	if (h && MemError () == noErr) 
-		SyLastMacErrorCode = GetDiskFragment(&theFSSpec, 0, kCFragGoesToEOF, theFSSpec.name, 
-       				kReferenceCFrag, &syLastModuleConnID, (Ptr*)&fragMainAddr, errmsg);
-	else
-		SyLastMacErrorCode = memFullErr;
-	if (h)
-		DisposeHandle (h);
-	
-    if (SyLastMacErrorCode)
-    	return (InitInfoFunc)3;
-    else
-    	return fragMainAddr;
-# endif
-}
-
-void syUnloadLastModule ( void )
-{
-	OSErr err;
-	
-	err = CloseConnection (& syLastModuleConnID);
-# if MEM_FRAGMENT
-	if (syLastFragmentPtr) {
-		DisposePtr (syLastFragmentPtr);	
-		syLastFragmentPtr = 0;
-	}	
-# endif
-}
-#endif
-
-/****************************************************************************
-**
 *f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . .  no support
 */
 #if !defined(SYS_HAS_RLD_LIBRARY) && !defined(SYS_HAS_DL_LIBRARY) \
-	&& !HAVE_DLOPEN && !HAVE_RLD_LOAD && !SYS_MAC_MWC
+	&& !HAVE_DLOPEN && !HAVE_RLD_LOAD 
 
 InitInfoFunc SyLoadModule ( Char * name )
 {
@@ -866,8 +691,6 @@ InitInfoFunc SyLoadModule ( Char * name )
 **  '@'  characters are duplicated, and   control characters are converted to
 **  '@<chr>', e.g., <newline> is converted to '@J'.
 */
-#if ! (SYS_MAC_MPW || SYS_MAC_MWC)
-
 void syWinPut (
     Int                 fid,
     const Char *        cmd,
@@ -911,29 +734,6 @@ void syWinPut (
     }
 }
 
-#endif
-
-#if SYS_MAC_MPW
-
-void            syWinPut (
-    Int                 fid,
-    Char *              cmd,
-    Char *              str )
-{
-}
-
-#endif
-
-#if SYS_MAC_MWC
-
-void            syWinPut (
-    Int                 fid,
-    const Char *              cmd,
-    const Char *              str )
-{
-}
-
-#endif
 
 /****************************************************************************
 **
@@ -945,8 +745,6 @@ void            syWinPut (
 **  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
 **  that string.
 */
-#if ! (SYS_MAC_MPW || SYS_MAC_MWC)
-
 Char WinCmdBuffer [8000];
 
 Char * SyWinCmd (
@@ -1039,19 +837,6 @@ Char * SyWinCmd (
     return WinCmdBuffer;
 }
 
-#endif
-
-#if SYS_MAC_MPW || SYS_MAC_MWC
-
-Char * SyWinCmd (
-    const Char *              str,
-    UInt                len )
-{
-    return "I1+S52+No Window Handler Present";
-}
-
-#endif
-
 
 /****************************************************************************
 **
@@ -1103,8 +888,6 @@ SYS_SY_BUFFER syBuffers [ 32];
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary mode.
 */
-
-#if !SYS_MAC_MWC
 
 Int SyFopen (
     Char *              name,
@@ -1205,136 +988,10 @@ Int SyFopen (
     return fid;
 }
 
-#else
-
-Int SyFopen (
-    Char *              name,
-    Char *              mode )
-{
-    long                fid;
-    long 				i;
-	FSSpec				fsspec;
-	FInfo				finfo;
-	DocumentPtr			doc;
-	short				refnum;
-#if DYNAMIC_BUFFER
-	long 				size;
-#endif
-
-    /* handle standard files                                               */
-    if ( SyStrcmp( name, "*stdin*" ) == 0 ) {
-        if ( SyStrcmp( mode, "r" ) != 0 )
-          return -1;
-        else
-          return 0;
-    }
-    else if ( SyStrcmp( name, "*stdout*" ) == 0 ) {
-        if ( SyStrcmp( mode, "w" ) != 0 )
-          return -1;
-        else
-          return 1;
-    }
-    else if ( SyStrcmp( name, "*errin*" ) == 0 ) {
-        if ( SyStrcmp( mode, "r" ) != 0 )
-          return -1;
-        else
-          return 2;
-    }
-    else if ( SyStrcmp( name, "*errout*" ) == 0 ) {
-        if ( SyStrcmp( mode, "w" ) != 0 )
-          return -1;
-        else
-          return 3;
-    }
-
-    /* try to find an unused file identifier                               */
-    for ( fid = 4; fid < sizeof(syBuf)/sizeof(syBuf[0]); ++fid )
-        if ( syBuf[fid].fp == -1 )
-          break;
-    if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) )
-        return (Int)-1;
-
-	/* make Pascal name string */
-	
-	if (SyStrlen (mode) ==2)
-	 	if (mode[1] == 'b') 
-	 		syBuf[fid].binary = true;
-		else
-	 		return (Int)-1; /* not a vaild mode string */
-	else if (SyStrlen (mode) ==1)
-	 		syBuf[fid].binary = false;
-		else
-	 		return (Int)-1; /* not a vaild mode string */
-	if ( *mode == 'w' || *mode == 'a')
-		syBuf[fid].permission = fsRdWrShPerm;
-	else if (*mode == 'r')
-		syBuf[fid].permission = fsRdPerm;
-	else
-		return -1;  /* not a vaild mode string */
-
-	i=0;
-	SyLastMacErrorCode = PathToFSSpec (name, &fsspec, true, false);
-	if ((SyLastMacErrorCode == fnfErr && syBuf[fid].permission == fsRdPerm)
-		    || SyLastMacErrorCode == bdNamErr)
-		SyLastMacErrorCode = PathToFSSpec (name, &fsspec, false, false);
-		
-	/* if file does not exist, create it */
-    if (SyLastMacErrorCode == fnfErr && syBuf[fid].permission != fsRdPerm)
-		SyLastMacErrorCode = FSpCreate(&fsspec,FCREATOR,syBuf[fid].binary?'BINA':'TEXT', -1);
-		   
-    if (SyLastMacErrorCode)   /* don't try to open folders */
-    	return -1;
-    
-    if (SyLastMacErrorCode = FSpGetFInfo (&fsspec, &finfo))
-    	return -1;
-    
-    doc = FindDocumentFromFSSpec (&fsspec, finfo.fdType);	
-	if (doc) {
-		if (syBuf[fid].permission != fsRdPerm || !doc->docData)
-			return -1; /* cannot write to open file */
-		else {
-			syBuf[fid].fromDoc = (char*)doc; /*input will come from the document doc */
-			syBuf[fid].fp = doc->dataPathRefNum; 
- 		    syBuf[fid].fsspec = fsspec;  
-    		syBuf[fid].bufno = -1;  /* no buffer allocated */
-			syBuf[fid].isTTY = 0;
-			(**(doc->docData)).consolePos = 0; /* start at the beginning */
-			return fid;
-		}
-	}
-
-    if ((SyLastMacErrorCode = FSpOpenDF(&fsspec,syBuf[fid].permission,&refnum)))
-    	return -1; 
-    	
-	if (mode[0] == 'w')
-		SyLastMacErrorCode = SetEOF (refnum, 0);  /* clear output file */
-	else if (mode[0] == 'a')
-		SyLastMacErrorCode = SetFPos (refnum, fsFromLEOF, 0);  /* set current pos to end of file */
-		
-	if (SyLastMacErrorCode) {
-		FSClose (refnum);
-		return -1;
-	}
-
-    /* return file identifier                                             */
-	syBuf[fid].fromDoc = (char*)0; /* no document attached to this file */
-    syBuf[fid].fp = refnum;
-    syBuf[fid].fsspec = fsspec;  
-    syBuf[fid].bufno = -1;  /* no buffer allocated */
-	syBuf[fid].isTTY = 0;
-    return fid;
-}
-
-#endif
 
 UInt SySetBuffering( UInt fid )
 {
   UInt bufno;
-
-#if SYS_IS_MAC_MWC
-  if (fid < 4)
-    ErrorQuit("Can't set buffering for standard i/o device", 0, 0);
-#endif
 
   if (syBuf[fid].fp == -1)
     ErrorQuit("Can't set buffering for a closed stream", 0, 0);
@@ -1362,7 +1019,6 @@ UInt SySetBuffering( UInt fid )
 **  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
 **  from 'SyFopen'.
 */
-#if !SYS_MAC_MWC
 Int SyFclose (
     Int                 fid )
 {
@@ -1402,67 +1058,11 @@ Int SyFclose (
     return 0;
 }
 
-#else
-
-Int 			SyInFid, SyOutFid; /* for i/o redirection */
-
-
-Int SyFclose (
-    Int                 fid )
-{
-	long count;
-	
-   /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
-        SyFputs("gap: panic 'SyFclose' asked to close illegal fid!\n",3);
-        return -1;
-    }
-
-    /* refuse to close the standard files                                  */
-    if ( fid == 0 || fid == 1) {
-        return -1;
-    }
-
-
-    /* close errout                                  */
-    if ( fid == 2 || fid == 3) {
-        return 0;
-    }
-
-    if ( syBuf[fid].fp == -1 ) {
-        SyFputs("gap: panic 'SyFclose' asked to close closed file!\n",3);
-        return -1;
-    }
-
-	if (syBuf[fid].fromDoc == (char*)0) {
-	    /* try to close the file                                               */
-		if ((SyLastMacErrorCode = FSClose ((short)syBuf[fid].fp))) {
-        	SyFputs("gap: 'SyFclose' cannot close file, ",3); 
-	        SyFputs("maybe your file system is full?\n",3); 
-    	}
-#if DYNAMIC_BUFFER
-		DisposeHandle (syBuf[fid].bufH);
-		syBuf[fid].bufH = 0;
-#endif
-	} else { 
-	/* 	if we were reading from a document window, reset its read position 
-		otherwise the document window cannot be closed */
-		TE32KSetEOF (((DocumentPtr)syBuf[fid].fromDoc)->docData); 
-	}
-    /* mark the buffer as unused                                           */
-    if (syBuf[fid].bufno >= 0)
-      syBuffers[syBuf[fid].bufno].inuse = 0;
-    syBuf[fid].fp = -1;
-    return (SyLastMacErrorCode) ? -1 : 0;
-}
-#endif
-
 
 /****************************************************************************
 **
 *F  SyIsEndOfFile( <fid> )  . . . . . . . . . . . . . . . end of file reached
 */
-#if !SYS_MAC_MWC
 Int SyIsEndOfFile (
     Int                 fid )
 {
@@ -1483,46 +1083,6 @@ Int SyIsEndOfFile (
     return syBuf[fid].ateof;
     /* return feof(syBuf[fid].fp);*/
 }
-
-#else
-
-Int SyIsEndOfFile (
-    Int                 fid )
-{
-	TE32KHandle tH;
-	long eofpos, fpos;
-	Int bufno;
-	
-    /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
-        return -1;
-    }
-
-    /* *stdin* and *errin* are never at end of file                        */
-    if ( fid < 4 )
-        return 0;
-
-    if ( syBuf[fid].fp == -1 ) {
-        return -1;
-    }
-
-	if (syBuf[fid].fromDoc) /* are we reading from an open window? */
-		if (((DocumentPtr)syBuf[fid].fromDoc)->fValidDoc 
-				&& (tH = ((DocumentPtr)syBuf[fid].fromDoc)->docData)) 
-			return (Int) TE32KIsEOF (tH);
-		else
-			return -1;
-	else /* reading from a file */
-		if (syBuf[fid].permission == fsRdPerm && (bufno = syBuf[fid].bufno) >= 0
-			&& syBuffers[bufno].bufstart < syBuffers[bufno].buflen) /* still data in i/o buffer? */
-				return 0;
-		else {
-			GetFPos ( (short) syBuf[fid].fp, &fpos);
-			GetEOF ( (short) syBuf[fid].fp, &eofpos);
-			return (fpos < eofpos) ? 0 : 1;
-		}
-}
-#endif
 
 
 /****************************************************************************
@@ -1571,7 +1131,7 @@ extern void syStopraw (
 **  to cooked mode before stopping GAP and back to raw mode when continueing.
 */
 
-#if !SYS_IS_DARWIN && (SYS_BSD || SYS_MACH || HAVE_SGTTY_H)
+#if !SYS_IS_DARWIN && (SYS_BSD || SYS_MACH || HAVE_SGTTY_H) && !HAVE_TERMIOS_H
 
 #ifndef SYS_SGTTY_H                     /* terminal control functions      */
 # include       <sgtty.h>
@@ -2071,47 +1631,6 @@ UInt syStartraw (
 
 /****************************************************************************
 **
-*f  syStartraw( <fid> ) . . . . . . . . . . . . . . . . . . . . . . . MAC MPW
-**
-**  For the MAC with MPW we do not really know how to do this.
-*/
-#if SYS_MAC_MPW
-
-UInt syStartraw (
-    Int                 fid )
-{
-    /* clear away pending <command>-'.'                                    */
-    SyIsIntr();
-
-    return 0;
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syStartraw( <fid> ) . . . . . . . . . . . . . . . . . . . . . . . MAC MWC
-**
-*/
-#if SYS_MAC_MWC
-
-long SyRawMode;
-
-UInt syStartraw (
-    Int                 fid )
-{
-
-	FlushLog ();
-	SyRawMode = true;
-    return 0;
-}
-
-#endif
-
-
-/****************************************************************************
-**
 *F  syStopraw( <fid> )  . . . . . .  stop raw mode on input file <fid>, local
 */
 
@@ -2120,7 +1639,7 @@ UInt syStartraw (
 **
 *f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . .  BSD/MACH
 */
-#if !SYS_IS_DARWIN && (SYS_BSD || SYS_MACH || HAVE_SGTTY_H)
+#if !SYS_IS_DARWIN && (SYS_BSD || SYS_MACH || HAVE_SGTTY_H) && !HAVE_TERMIOS_H
 
 void syStopraw (
     Int                 fid )
@@ -2271,37 +1790,6 @@ void syStopraw (
 
 /****************************************************************************
 **
-*f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . MAC MPW
-*/
-#if SYS_MAC_MPW
-
-void syStopraw (
-    Int                 fid )
-{
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . MAC MWC
-*/
-#if SYS_MAC_MWC
-
-void syStopraw (
-    Int                 fid )
-{
-	SyRawMode = false;
-}
-
-#endif
-
-
-
-
-/****************************************************************************
-**
 
 *F  SyIsIntr()  . . . . . . . . . . . . . . . . check wether user hit <ctr>-C
 **
@@ -2321,9 +1809,6 @@ void syStopraw (
 **  GAP.
 */
 #if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || SYS_VMS || HAVE_SIGNAL
-
-#if !SYS_MAC_MWC  
-	/* we use interrupt signals on the Mac, but they work differently */
 
 #ifndef SYS_SIGNAL_H                    /* signal handling functions       */
 # include       <signal.h>
@@ -2426,7 +1911,6 @@ UInt SyIsIntr ( void )
 }
 
 #endif
-#endif
 
 
 /****************************************************************************
@@ -2504,179 +1988,6 @@ UInt SyIsIntr ( void )
 
 
 /****************************************************************************
-**
-*f  SyIsIntr()  . . . . . . . . . . . . . . . . . . . . . . . . . . . MAC MPW
-**
-**  For a  MPW Tool, we install 'syAnswerIntr'  to answer interrupt 'SIGINT'.
-**  However, the interrupt is  only delivered when  the system has a control,
-**  namely  when  we call the  toolbox   function 'SpinCursor' in 'SyIsIntr'.
-**  Thus the mechanism is effectively polling.
-**
-**  For a MPW SIOW, we search the event queue for a <cmd>-'.' or a <cnt>-'C'.
-**  If one is found, all keyboard events are flushed.
-**
-*/
-#if SYS_MAC_MPW
-
-#ifdef  SYS_HAS_TOOL
-
-#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
-# include       <Signal.h>
-# ifdef SYS_HAS_SIG_T
-#  define SYS_SIG_T     SYS_HAS_SIG_T
-# else
-#  define SYS_SIG_T     void
-# endif
-# define SYS_SIGNAL_H
-typedef SYS_SIG_T       sig_handler_t ( int );
-#endif
-
-#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
-extern  sig_handler_t * signal ( int, sig_handler_t * );
-#endif
-
-#ifndef SYS_CURSORCTL_H                 /* cursor control functions:       */
-# include       <CursorCtl.h>           /* 'Show_Cursor', 'SpinCursor'     */
-# define SYS_CURSORCTL_H
-#endif
-
-UInt            syNrIntr;               /* number of interrupts            */
-
-UInt            syLastIntr;             /* time of the last interrupt      */
-
-UInt            syIsIntrFreq = 100;     /* frequency to test interrupts    */
-
-UInt            syIsIntrCount =  0;     /* countdown to test interrupts    */
-
-
-void syAnswerIntr (
-    int                 signr )
-{
-    /* reinstall the signal handler                                        */
-    signal( SIGINT, &syAnswerIntr );
-
-    /* exit if two interrupts happen within one second                     */
-    /*N 1993/05/28 martin this doesn't work, because interrupts are only   */
-    /*N                   delivered when we call 'SpinCursor' below        */
-    if ( syNrIntr && SyTime()-syLastIntr <= 1000 )
-        SyExit( 1 );
-
-    /* got one more interrupt                                              */
-    syNrIntr   = syNrIntr + 1;
-    syLastIntr = SyTime();
-}
-
-void SyInstallAnswerIntr ( void )
-{
-#if SYS_MAC_MPW
-# ifdef SYS_HAS_TOOL
-    signal( SIGINT, &syAnswerIntr );
-# endif
-#endif
-}
-
-UInt SyIsIntr ( void )
-{
-    UInt                syIsIntr;
-
-    /* don't check for interrupts every time 'SyIsIntr' is called          */
-    if ( 0 < --syIsIntrCount )
-        return 0;
-    syIsIntrCount = syIsIntrFreq;
-
-    /* spin the beachball                                                  */
-    Show_Cursor( HIDDEN_CURSOR );
-    SpinCursor( 8 );
-
-    /* check for interrupts                                                */
-    syIsIntr = (syNrIntr != 0);
-
-    /* every interrupt leaves a <eof>, which we want to remove             */
-    while ( syNrIntr ) {
-        while ( getchar() != EOF ) ;
-        clearerr( stdin );
-        syNrIntr = syNrIntr - 1;
-    }
-
-    /* return whether an interrupt has happened                            */
-    return syIsIntr;
-}
-
-#else
-
-#ifndef SYS_TNUMS_H                     /* various types                   */
-# include       <TNums.h>
-# define SYS_TNUMS_H
-#endif
-
-#ifndef SYS_OSUTILS_H                   /* system utils:                   */
-# include       <OSUtils.h>             /* 'QHdr'                          */
-# define SYS_OSUTILS_H
-#endif
-
-#ifndef SYS_OSEVENTS_H                  /* system events, low level:       */
-# include       <OSEvents.h>            /* 'EvQEl', 'GetEvQHdr',           */
-                                        /* 'FlushEvents'                   */
-# define SYS_OSEVENTS_H
-#endif
-
-#ifndef SYS_EVENTS_H                    /* system events, high level:      */
-# include       <Events.h>              /* 'EventRecord', 'GetNextEvent'   */
-# define SYS_EVENTS_H
-#endif
-
-UInt            syNrIntr;               /* number of interrupts            */
-
-UInt            syLastIntr;             /* time of the last interrupt      */
-
-UInt            syIsIntrFreq = 100;     /* frequency to test interrupts    */
-
-UInt            syIsIntrCount =  0;     /* countdown to test interrupts    */
-
-
-UInt SyIsIntr ( void )
-{
-    UInt                syIsIntr;
-    struct QHdr *       queue;
-    struct EvQEl *      qentry;
-
-    /* don't check for interrupts every time 'SyIsIntr' is called          */
-    if ( 0 < --syIsIntrCount )
-        return 0;
-    syIsIntrCount = syIsIntrFreq;
-
-    /* look through the event queue for <command>-'.' or <control>-'C'     */
-    queue = GetEvQHdr();
-    qentry = (struct EvQEl *)(queue->qHead);
-    while ( qentry ) {
-        if ( qentry->evtQWhat == keyDown
-            &&   ( ((qentry->evtQModifiers & controlKey) != 0)
-                && ((qentry->evtQMessage & charCodeMask) ==   3))
-              || ( ((qentry->evtQModifiers & cmdKey    ) != 0)
-                && ((qentry->evtQMessage & charCodeMask) == '.')) ) {
-            syNrIntr++;
-        }
-        qentry = (struct EvQEl *)(qentry->qLink);
-    }
-
-
-    /* check for interrupts                                                */
-    syIsIntr = (syNrIntr != 0);
-
-    /* flush away all keyboard events after an interrupt                   */
-    if ( syNrIntr ) {
-        FlushEvents( keyDownMask, 0 );
-        syNrIntr = 0;
-    }
-
-    /* return whether an interrupt has happened                            */
-    return syIsIntr;
-}
-
-#endif
-
-#endif
-/****************************************************************************
  **
  *F  getwindowsize() . . . . . . . get screen size from termcap or TIOCGWINSZ
  **
@@ -2690,6 +2001,8 @@ extern  char *  getenv ( const char *);
 
 #define CO SyNrCols
 #define LI SyNrRows
+/* SyNrCols can be at most MAXLENOUTPUTLINE */
+#define ML MAXLENOUTPUTLINE
 
 #ifdef TIOCGWINSZ
 /* signal routine: window size changed */
@@ -2703,7 +2016,7 @@ SYS_SIG_T syWindowChangeIntr (
         if(!SyNrColsLocked && win.ws_col > 0)
           CO = win.ws_col - 1;        /* never trust last column */
         if (CO < 20) CO = 20;
-        if (CO > 256) CO = 256;
+        if (CO > ML) CO = ML;
     }
 
 #if defined(SYS_HAS_SIG_T) && ! HAVE_SIGNAL_VOID
@@ -2749,56 +2062,19 @@ void getwindowsize( void )
 	}
       }
 #endif
-      /* if nothing worked, use 24x80 */
+      /* if nothing worked, use 80x24 */
       if (CO <= 0)
 	CO = 80;
       if (LI <= 0)
 	LI = 24;
       /* reset CO if value is strange */
       if (CO < 20) CO = 20;
-      if (CO > 256) CO = 256;
+      if (CO > ML) CO = ML;
 }
 
 #undef CO
 #undef LI
-
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For Metrowerks CodeWarrior, we have PlainText handle one event every
-**  SyIsIntrInterval/60 seconds. An interrupt is signalled via the 
-**  SyIsInterrupted flag. 
-**
-*/
-#if SYS_MAC_MWC
-
-long            syIsIntrFreq  =  6;    /* ticks after which to test interrupts    */
-
-long            syIsIntrTime =   0;    /* next time to test interrupts    */
-
-long			SyIsInterrupted = 0;
-
-UInt            SyIsIntr ( void )
-{
-    /* don't check for interrupts every time 'SyIsIntr' is called          */
-    if ( TickCount() <= syIsIntrTime )
-        return 0;
-    syIsIntrTime = TickCount() + syIsIntrFreq;
-    SyStopTime = SyTime();
-    ProcessEvent ();
-    SyStartTime += SyTime() - SyStopTime;
-    if ( SyIsInterrupted ) {
-	    SyIsInterrupted = 0;
-		FlushLog ();   /* discard pending input */
-	    return 1;
-    }
-    else 
-        return 0;
-}
-#endif
-
-
+#undef ML
 
 
 /****************************************************************************
@@ -2819,7 +2095,7 @@ UInt            SyIsIntr ( void )
 **
 *f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . .  BSD/MACH
 */
-#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
+#if (SYS_BSD || SYS_MACH || HAVE_SGTTY_H) && !HAVE_TERMIOS_H
 
 void syEchoch (
     Int                 ch,
@@ -2845,7 +2121,7 @@ void syEchoch (
 **
 *f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . . . USG
 */
-#if SYS_USG || HAVE_TERMIO_H
+#if SYS_USG || HAVE_TERMIO_H || HAVE_TERMIOS_H
 
 void syEchoch (
     Int                 ch,
@@ -2947,50 +2223,6 @@ void syEchoch (
 
 /****************************************************************************
 **
-*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . MAC MPW
-*/
-#if SYS_MAC_MPW
-
-void syEchoch (
-    Int                 ch,
-    Int                 fid )
-{
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . MAC MWC
-*/
-#if SYS_MAC_MWC
-    
-void syEchoch (
-    Int                 ch,
-    Int                 fid )
-{
-    char 				c[2];
-    Char 				ch2;
-    long 				count;
-    	
-    /* echo the character                                                  */
-    if (fid >= 0 && fid < 4 ) {
-    	c[0] = (char) ch;
-    	c[1] = '\0';
-    	SyFputs (c, fid);
-    } else {
-		ch2 = (Char) ch;
-		count = 1;
-		SyLastMacErrorCode = FSWrite ((short)syBuf[fid].fp, &count, &ch2);  
-	}
-}
-
-#endif
-
-
-/****************************************************************************
-**
 *F  SyEchoch( <ch>, <fid> ) . . . . . . . . . . . . .  echo a char from <fid>
 */
 Int SyEchoch (
@@ -3020,7 +2252,7 @@ Int SyEchoch (
 **
 *f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . .  BSD/MACH
 */
-#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
+#if (SYS_BSD || SYS_MACH || HAVE_SGTTY_H) && !HAVE_TERMIOS_H
 
 void syEchos (
     Char *              str,
@@ -3042,7 +2274,7 @@ void syEchos (
 **
 *f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . . . USG
 */
-#if SYS_USG || HAVE_TERMIO_H
+#if SYS_USG || HAVE_TERMIO_H || HAVE_TERMIOS_H
 
 void syEchos (
     Char *              str,
@@ -3146,42 +2378,6 @@ void            syEchos (
 
 /****************************************************************************
 **
-*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . MAC MPW
-*/
-#if SYS_MAC_MPW
-
-void syEchos (
-    Char *              str,
-    Int                 fid )
-{
-    Char *              s;
-    for ( s = str; *s != '\0'; s++ )
-        putchar( *s );
-    fflush( stdout );
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . MAC MWC
-*/
-#if SYS_MAC_MWC
-
-void syEchos (
-    Char *              str,
-    Int                 fid )
-{	
-	SyFputs (str, fid);
-}
-
-
-#endif
-
-
-/****************************************************************************
-**
 *F  SyFputs( <line>, <fid> )  . . . . . . . .  write a line to the file <fid>
 **
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
@@ -3195,7 +2391,7 @@ Char   syPrompt [256];                  /* characters already on the line   */
 **
 *f  SyFputs( <line>, <fid> )  . . . . . . .  BSD/MACH/USG/OS2 EMX/VMS/MAC MPW
 */
-#if SYS_BSD||SYS_MACH||SYS_USG||SYS_OS2_EMX||SYS_VMS||SYS_MAC_MPW||HAVE_SGTTY_H||HAVE_TERMIO_H
+#if SYS_BSD||SYS_MACH||SYS_USG||SYS_OS2_EMX||SYS_VMS||HAVE_SGTTY_H||HAVE_TERMIO_H||HAVE_TERMIOS_H
 
 void SyFputs (
     Char *              line,
@@ -3225,75 +2421,11 @@ void SyFputs (
 
     /* otherwise, write it to the output file                              */
     else
-#if ! SYS_MAC_MPW
         writeandcheck( syBuf[fid].fp, line, i );
-#else
-        fputs( line, syBuf[fid].fp );
-#endif
 }
 
 #endif
 
-#if SYS_MAC_MWC
-/****************************************************************************
-**
-*f  syFputs( <line>, <fid> )  . . . . . . . . . . . . . . . . . . . . MAC MWC
-*f  SyFputs( <line>, <fid> )  . . . . . . . . . . . . . . . . . . . . MAC MWC
-*/
-Int syFputs (
-    Char *              line,
-    Int                 fid )
-{
-    long                i, size;
-
-	if (fid == 1)  /* redirect output */
-    	fid = SyOutFid;
-    /* if outputing to the terminal compute the cursor position and length */
-    if ( fid == 1 || fid == 3 ) {
-        syNrchar = 0;
-        for ( i = 0; line[i] != '\0'; i++ ) {
-            if ( line[i] == '\n' )  syNrchar = 0;
-            else                    syPrompt[syNrchar++] = line[i];
-        }
-        syPrompt[syNrchar] = '\0';
-		WriteToLog (line);
-		return 0; /* success */
-    }
-
-    /* otherwise compute only the length                                   */
-    else if (fid < 4) {
-    	return 1;  /* error - write to input file */
-    } else {
-    	
-        for ( i = 0; line[i] != '\0'; i++ )
-            ;
-		size = i;
-		SyLastMacErrorCode = FSWrite ((short)syBuf[fid].fp, &size, line);   /* let the Mac OS do the write */
-		if (SyLastMacErrorCode || i != size)
-			return 2;
-	}
-	return 0;
-}
-
-void SyFputs (
-    Char *              line,
-    Int                 fid )
-{
-	char thePath[255]; 
-	
-	switch (syFputs (line, fid)) {
-		case 1: 
-			ErrorQuit ("Error: attempt to write to standard input file", 0, 0);
-			return;
-		case 2:
-			FSSpecToPath (&syBuf[fid].fsspec, thePath, sizeof (thePath), true, false);
-			ErrorQuit ("Error writing to file %s", (long)thePath, 0);
-	}
-}
-
-
-
-#endif
 
 /****************************************************************************
 **
@@ -3349,8 +2481,6 @@ void SyFputs (
 
 *F  SyFtell( <fid> )  . . . . . . . . . . . . . . . . . .  position of stream
 */
-#if !SYS_MAC_MWC
-
 Int SyFtell (
     Int                 fid )
 {
@@ -3372,46 +2502,12 @@ Int SyFtell (
     
     return (Int) lseek(syBuf[fid].fp, 0, SEEK_CUR);
 }
-#else
-Int SyFtell (
-    Int                 fid )
-{
-	TE32KHandle tH;
-	long fpos;
-	Int bufno;
-	
-    /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
-        return -1;
-    }
-    if ( syBuf[fid].fp == -1 ) {
-        return -1;
-    }
-
-	if (syBuf[fid].fromDoc) /* are we reading from an open window? */
-		if (((DocumentPtr)syBuf[fid].fromDoc)->fValidDoc 
-				&& (tH = ((DocumentPtr)syBuf[fid].fromDoc)->docData)) 
-			return (Int) (**tH).consolePos;
-		else
-			return -1;
-	else {/* reading/writing  a file */
-		GetFPos ( (short) syBuf[fid].fp, &fpos);
-		/* take into account data in i/o buffer */
-		if (syBuf[fid].permission != fsRdPerm || (bufno = syBuf[fid].bufno) == -1) 
-			return (Int) (fpos); /* + (syBuf[fid].bufLen)); -- no write buffering */
-		else
-			return (Int) (fpos - 
-				(syBuffers[bufno].buflen - syBuffers[bufno].bufstart)); 
-	}
-}
-#endif
 
 
 /****************************************************************************
 **
 *F  SyFseek( <fid>, <pos> )   . . . . . . . . . . . seek a position of stream
 */
-#if !SYS_MAC_MWC
 Int SyFseek (
     Int                 fid,
     Int                 pos )
@@ -3433,43 +2529,6 @@ Int SyFseek (
     lseek( syBuf[fid].fp, pos, SEEK_SET );
     return 0;
 }
-#else
-
-Int SyFseek (
-    Int                 fid,
-    Int                 pos )
-{
-	TE32KHandle tH;
-	Int bufno;
-	
-    /* check file identifier                                               */
-    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
-        return -1;
-    }
-    if ( syBuf[fid].fp == -1 ) {
-        return -1;
-    }
-
-    /* set the position                                                    */
-	if (syBuf[fid].fromDoc) {/* are we reading from an open window? */
-		if (((DocumentPtr)syBuf[fid].fromDoc)->fValidDoc 
-				&& (tH = ((DocumentPtr)syBuf[fid].fromDoc)->docData)) 
-			if (pos <= (**tH).teLength) {
-				(**tH).consolePos = pos;
-				return 0;
-			}
-	} else {/* reading/wrinting a file */
-		if (syBuf[fid].permission == fsRdPerm && (bufno = syBuf[fid].bufno) >= 0) {
-			syBuffers[bufno].buflen = 0;
-			syBuffers[bufno].bufstart = 0; /* clear data in i/o buffer */
-		} 
-		if (SetFPos ( (short) syBuf[fid].fp, fsFromStart, pos) == noErr)
-			return 0;
-	}
-	return -1;
-}
-#endif
-
 
 
 /****************************************************************************
@@ -3492,7 +2551,7 @@ Int SyFseek (
 **  that return odd things rather than waiting for a key
 **  
 */
-#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H ||SYS_USG || HAVE_TERMIO_H
+#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H ||SYS_USG || HAVE_TERMIO_H || HAVE_TERMIOS_H
 
 /* In the cygwin environment it is not predictable if text files get the
  * '\r' in their line ends filtered out *before* GAP sees them. This leads
@@ -3842,63 +2901,6 @@ Int syGetch (
 
 /****************************************************************************
 **
-*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . MAC MPW
-*/
-#if SYS_MAC_MPW
-
-int syGetch (
-    Int                 fid )
-{
-    return 0;
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . MAC MWC
-*/
-#if SYS_MAC_MWC
-
-Int syGetch (
-    Int                 fid )
-{
-	Int c;
-	char line[2];
-	
-	if (fid == 0)  /* redirect input */
-    	fid = SyInFid;
-	if (fid == 0 || fid == 1 || fid == 2 || fid == 3) {   
-		SyStopTime = SyTime();
-		if (SyRawMode) {
-			do {
-				ProcessEvent ();
-				c = SyGetc (fid);
-			} while (c == EOF && !SyIsInterrupted);
-			if (SyIsInterrupted)
-				c = CTR('C');
-			else {
-				WriteToLog ("\b");   /* remove character */
-				if (c == '\r') /* SyGetc doesn't do translations */
-				c = '\n';
-			}
-		} else {
-			ReadFromLog (line, 2, fid);
-			c = *line;
-		}
-  	    SyStartTime += SyTime() - SyStopTime;
-		return c;
-	}
-	else
-		return SyGetc (fid);
-}
-
-#endif
-
-
-/****************************************************************************
-**
 *F  SyGetch( <fid> )  . . . . . . . . . . . . . . . . . get a char from <fid>
 **
 **  'SyGetch' reads a character from <fid>, which is switch to raw mode if it
@@ -3913,13 +2915,11 @@ Int SyGetch (
     if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
         return -1;
     }
-#if !SYS_MAC_MWC
 	/* on the Mac, syBuf[fid].fp is -1 for stdin, stdout, errin, errout 
 	   the other cases are handled by syGetch */
     if ( syBuf[fid].fp == -1 ) {
         return -1;
     }
-#endif 
 
     /* if we are reading stdin or errin use raw mode                       */
     if ( fid == 0 || fid == 2 ) {
@@ -3941,7 +2941,6 @@ Int SyGetch (
 **   interference
 */
 
-#if !SYS_MAC_MWC
 Int SyGetc
 (
     Int                 fid )
@@ -3953,52 +2952,6 @@ Int SyGetc
   else
     return (Int)ch;
 }
-#endif
-
-#if SYS_MAC_MWC
-Int SyGetc
-(
-    Int                 fid )
-{
-    TE32KHandle			tH;
-	Int bufno;
-	char buf[1];
-	long count;
-	
-    if (fid == 0)  /* redirect input */
-    	fid = SyInFid;
-	if (syBuf[fid].fromDoc) { /* document window attached to it: read from document */
-		if (((DocumentPtr)syBuf[fid].fromDoc)->fValidDoc 
-				&& (tH = ((DocumentPtr)syBuf[fid].fromDoc)->docData)) {
-    		if ((**tH).consolePos < (**tH).teLength)
-    			return ((unsigned char*) (*(**tH).hText))[(**tH).consolePos++];
- 		}
-	} else { /* read from file */
-    	if ( fid != 0 && fid != 2 ) {
-	    	SyLastMacErrorCode = noErr;
-    		if ((bufno = syBuf[fid].bufno) >= 0) {
-		    	if (syBuffers[bufno].bufstart < syBuffers[bufno].buflen) /* char in buffer */
-					return syBuffers[bufno].buf[syBuffers[bufno].bufstart++] & 0xFF;
-				syBuffers[bufno].bufstart = 0;
-				syBuffers[bufno].buflen = sizeof (syBuffers[bufno].buf);
-    			SyLastMacErrorCode = FSRead ((short) syBuf[fid].fp, 
-    				(long*)&syBuffers[bufno].buflen, syBuffers[bufno].buf);
-				if ((SyLastMacErrorCode==noErr || SyLastMacErrorCode==eofErr) && syBuffers[bufno].buflen)
-					return syBuffers[bufno].buf[syBuffers[bufno].bufstart++] & 0xFF;
-			} else {
-				count = 1;
-    			SyLastMacErrorCode = FSRead ((short) syBuf[fid].fp, &count, buf);
-				if ((SyLastMacErrorCode==noErr || SyLastMacErrorCode==eofErr) && count)
-					return *buf & 0xFF;
-			}
-					
-		}	
-		else 
-			SyFputs ("Internal error: no window attached to stdin or errin", 3);
-	}
-    return EOF;
-}
-#endif
 
 /****************************************************************************
 **
@@ -4008,7 +2961,6 @@ Int SyGetc
 **   interference
 */
 
-#if !SYS_MAC_MWC
 extern Int SyPutc
 (
     Int                 fid,
@@ -4017,33 +2969,6 @@ extern Int SyPutc
   writeandcheck(syBuf[fid].fp,&c,1);
   return 0;         
 }
-#endif
-
-#if SYS_MAC_MWC
-Int SyPutc
-(
-    Int                 fid,
-    Char                c )
-{
-	char buf[2];
-	long count;
-	
-	buf[0] = c;
-
-	if (fid == 1)  /* redirect output */
-    	fid = SyOutFid;
-	if (fid < 4) {
-		buf[0] = c;
-		buf[1]='\0';
-		SyFputs (buf, fid);
-	} else {
-		count = 1;
-		SyLastMacErrorCode = FSWrite ((short)syBuf[fid].fp, &count,  buf);   /* let the Mac OS do the write */
-	}	
-	return 0;
-}
-#endif
-
 
 
 /****************************************************************************
@@ -4106,8 +3031,6 @@ Int SyPutc
 
 UInt   syCTRO;                          /* number of '<ctr>-O' pending     */
 UInt   syESCN;                          /* number of '<Esc>-N' pending     */
-
-#if !SYS_MAC_MWC
 
 #if HAVE_SELECT
 Obj OnCharReadHookActive = 0;  /* if bound the hook is active */
@@ -4616,7 +3539,7 @@ Char * syFgets (
     
 #if HAVE_LIBREADLINE
     /* switch back to cooked mode                                          */
-    if ( SyLineEdit == 1 )
+    if ( SyLineEdit )
         syStopraw(fid);
 
     /* stop the clock, reading should take no time                         */
@@ -5196,156 +4119,6 @@ Obj FuncEchoLine(Obj self, Obj line, Obj len, Obj off, Obj pos, Obj gfid) {
   return (Obj)0;
 }
 
-#endif
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For the MAC with CodeWarrior we use PlainText by Mel Park as a console.
-**  Command line editing differs somewhat from the GAP standard, but most keys work.
-**  
-*/
-
-#if SYS_MAC_MWC
-Int HasAvailableBytes( UInt fid )
-{
-  Int ret;
-  ret =  SyIsEndOfFile( fid);
-  return (ret != -1 && ret != 1);
-}
-
-
-Char *SyFgetsSemiBlock ( 
-    Char *              line,
-    UInt                length,
-    Int                 fid)
-{
-  return SyFgets( line, length, fid);
-}
-
-
-
-Char * SyFgets (
-    Char *              line,
-    UInt                length,
-    Int                 fid )
-{
-    char                * p, *q, ch, buf[32];
-    UInt 				avail, count;
-    TE32KHandle			tH;
-	Int 				bufno;
-	
-    if (fid == 0)  /* redirect input */
-    	fid = SyInFid;
-    /* no line editing if the file is not '*stdin*' or '*errin*'           */
-    if ( fid != 0 && fid != 2 ) {
-    	if (syBuf[fid].fromDoc) { /* document window attached to it: read from document */
-			if (((DocumentPtr)syBuf[fid].fromDoc)->fValidDoc 
-					&& (tH = ((DocumentPtr)syBuf[fid].fromDoc)->docData)) {
-	    		HLock ((**tH).hText);
-	    		p = *(**tH).hText + (**tH).consolePos;
-    			avail = (**tH).teLength - (**tH).consolePos;
-    			SyLastMacErrorCode = eofErr;
-    		} else { /* window has disappeared: signal a read error */
-    			p = 0;
-    			avail = 0;
-    			SyLastMacErrorCode = fnfErr;
-    		}
-    	} else { /* read from file */
-	    	SyLastMacErrorCode = noErr;
-	    	if ((bufno = syBuf[fid].bufno) >= 0) {
-		    	p = syBuffers[bufno].buf + syBuffers[bufno].bufstart;
-	    		avail = syBuffers[bufno].buflen - syBuffers[bufno].bufstart;
-	    	} else
-	    		avail = 0;
-	    }
-    	q = line;
-
-    	length--; /* leave one byte for zero char at end */
-    	
-    	while (length) {
-    		if (!avail) {    /* buffer is empty: read from file */
-    			if (SyLastMacErrorCode)
-    				break;
-    			if (bufno >= 0) { /* buffered read */
-    				syBuffers[bufno].buflen = sizeof(syBuffers[bufno].buf);
-    				SyLastMacErrorCode = FSRead ((short) syBuf[fid].fp, (long*)&syBuffers[bufno].buflen, syBuffers[bufno].buf);
-					p = syBuffers[bufno].buf;
-					if ((SyLastMacErrorCode && SyLastMacErrorCode != eofErr) || !syBuffers[bufno].buflen)
-						break;
- 			   		avail = syBuffers[bufno].buflen;
- 			   	} else {
- 			   		avail = (length > sizeof (buf))? sizeof (buf): length;
-    				SyLastMacErrorCode = FSRead ((short) syBuf[fid].fp, (long*)&avail, &buf);
-   					if (SyLastMacErrorCode == eofErr && !avail) 
-    					break;
-    				p = buf;
-     			}
- 			   		
-			}
-			if (avail > length) 
-				count = length;
-			else 
-				count = avail;
-				
-			/* compute number of characters still to handle */	
-			length -= count;
-			avail -= count;
-
-			/* transfer at most count characters from p to q */
-			if (syBuf[fid].binary) {
-				while (count && (ch = *p++) && ch != '\n') {
-					count--;
-					*q++ = ch;
-				}
-			} else {
-				while (count && (ch = *p++) && ch != '\n' && ch != '\r') {
-					count--;
-					*q++ = ch;
-				}
-				if (ch == '\r')
-					ch = '\n';
-			}
-			
-			/* update number of characters still to handle */	
-			avail += count;
-			length += count;
-			
-			if (ch == '\n') {
-				*q++ = ch;	
-				length--;
-				avail--;
-				break;
-			}
-
-     	}
-    	*q = '\0'; /* finished reading string */
-    	
-    	/* adjust read marks */
-	   	if (syBuf[fid].fromDoc) { /* document window attached to it */
-	   		if (tH) {
-	   			(**tH).consolePos = p - *(**tH).hText;
-	   			HUnlock ((**tH).hText);
-	   		}
-	   	} else if (bufno >= 0) {
-	    	syBuffers[bufno].bufstart = p - syBuffers[bufno].buf;
-	    } else if (avail) { /* no buffering, we reset the mark */
-	    	if (SetFPos ( (short) syBuf[fid].fp, fsFromMark, -avail) != noErr)
-	    		return 0;
-	    }
-    	if((SyLastMacErrorCode && SyLastMacErrorCode != eofErr) || q == line)  /* eof if line is empty */
-    		return 0;  /* read error */
-    	else {
-    		SyLastMacErrorCode = noErr;
-    		return line;
-    	}
-    } else {
-        SyStopTime = SyTime();
-        p = ReadFromLog (line, length, fid);
-        SyStartTime += SyTime() - SyStopTime;
-        return p;
-    }
-}
-#endif
 
 
 /****************************************************************************
@@ -5377,11 +4150,7 @@ Char SyLastErrorMessage [ 1024 ];
 
 void SyClearErrorNo ( void )
 {
-#if SYS_MAC_MWC
-	SyLastMacErrorCode = noErr;
-#else
     errno = 0;
-#endif
     SyLastErrorNo = 0;
     SyLastErrorMessage[0] = '\0';
     SyStrncat( SyLastErrorMessage, "no error", 8 );
@@ -5397,7 +4166,6 @@ void SyClearErrorNo ( void )
 # define SYS_STRING_H
 #endif
 
-#if !SYS_MAC_MWC
 #if defined(SYS_HAS_NO_STRERROR) || ! HAVE_STRERROR
 extern char * sys_errlist[];
 #endif
@@ -5420,44 +4188,6 @@ void SySetErrorNo ( void )
         SyClearErrorNo();
     }
 }
-#endif
-
-#if SYS_MAC_MWC
-
-OSErr SyLastMacErrorCode = noErr;   /* most recent Mac error code */
-
-void SySetErrorNo ( void )
-{
- 	unsigned char *      p;
-	errdesc * desc;
-	
-    if ( SyLastMacErrorCode != noErr ) {
-        SyLastErrorNo = SyLastMacErrorCode;
-		/* get description string from table */
-        desc = gMacOSErrDesc;
-        while (desc->code && desc->code != SyLastMacErrorCode)
-        	desc++;
-        SyLastErrorMessage[0] = '\0';
-		SyStrncat (SyLastErrorMessage, 
-			desc->code? desc->description: "Unknown Mac error code", 
-			sizeof (SyLastErrorMessage)-10);
-        p = (unsigned char *)SyLastErrorMessage;
-
-        while (*p++)
-        	;
-        p[-1] = ' ';
-        NumToString (SyLastMacErrorCode, p); /* inserts a pascal string at p */
-        
-		/* convert number string to C string and put parentheses around it */
-        p[p[0]+1] = ')';
-        p[p[0]+2] = '\0';
-        p[0] = '(';
-    }
-    else {
-        SyClearErrorNo();
-    }
-}
-#endif
 
 /****************************************************************************
 **
@@ -5466,10 +4196,9 @@ void SySetErrorNo ( void )
 *F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
 
-
+#if 0
 /****************************************************************************
 **
-
 *F  SyExec( <cmd> ) . . . . . . . . . . . execute command in operating system
 **
 **  'SyExec' executes the command <cmd> (a string) in the operating system.
@@ -5490,281 +4219,20 @@ void SySetErrorNo ( void )
 extern  int             system ( const char * );
 #endif
 
-#if ! (SYS_MAC_MPW || SYS_MAC_MWC)
 
-void SyExec (
+int SyExec (
     Char *              cmd )
 {
-    Int                 ignore;
 
+    int rc;
     syWinPut( 0, "@z", "" );
-    ignore = system( cmd );
+    rc = system( cmd );
     syWinPut( 0, "@mAgIc", "" );
+    return rc;
 }
 
 #endif
 
-#if SYS_MAC_MPW
-
-void SyExec (
-    Char *              cmd;
-{
-}
-
-#endif
-
-/****************************************************************************
-**
-**  For the MAC with Metrowerks Codewarrior, we use LaunchApplication to run 
-**  the desired application. Then we wait for a child-died event which signals that
-**  the launched application has terminated. Command line parameters cannot
-**  be passed directly, so we place them in a file in the same folder as
-**  the application itself. 
-*/
-
-#if SYS_MAC_MWC
-
-Boolean SyCanExec = false;   /* assume the worst */
-
-Str255 cmdline = "\p options";    /* extension of program parameter file */ 
-
-#if IC_SUPPORT
-char browser[] = "Internet Config";
-
-#include "ICAPI.h"
-
-
-OSStatus LaunchURL(const char * urlStr)
-{
-	OSStatus err;
-	ICInstance inst;
-	long startSel, endSel;
-	
-	err = ICStart(&inst, FCREATOR);	
-	if (err == noErr) {
-		err = ICFindConfigFile(inst, 0, nil);
-			if (err == noErr) {
-				endSel = strlen (urlStr);
-				startSel = 0; 
-				err = ICLaunchURL(inst, "\p", (Ptr)urlStr, endSel, &startSel, &endSel);
-			}
-		(void) ICStop(inst);
-	}
-	return (err);
-}
-
-#endif
-
-Boolean FindProcess (ProcessSerialNumber *process,
-	FSSpecPtr theFSSpecPtr)
-{
-	ProcessInfoRec theProcInfo;
-	FSSpec processFSSpec;
-	
-	process->highLongOfPSN = 0;
-	process->lowLongOfPSN = kNoProcess; 	/* start from the beginning */
-	theProcInfo.processAppSpec = &processFSSpec;
-	theProcInfo.processName = 0;
-	
-	theProcInfo.processInfoLength = sizeof(ProcessInfoRec);
-
-	while (!GetNextProcess(process)) {
-
-		if ( !GetProcessInformation(process, &theProcInfo) ) {
-			if ( (theProcInfo.processType == (long) 'APPL') 
-					&& EqualFSSpec (theProcInfo.processAppSpec, theFSSpecPtr))
-				return true;		/* found the process */
-
-		}
-	} /* while */
-
-	return false;
-}
-
-UInt syExecuteProcess (   /* version which returns Mac i/o errors */
-    Char *                  dir,
-    Char *                  prg,
-    Int                     in,
-    Int                     out,
-    Char *                  args[] )
-{
-	char 					*paramstr;
-	char					fname[1024];
-	FSSpec 					appFSS, paramFSS;
-    int 					i;
-    short 					fref;
-    long 					iocount;
-	LaunchParamBlockRec		myLaunchParams;
- 	ProcessSerialNumber 	PSN;
-    Boolean 				appDied;
-    OSErr err;
-    
-#if IC_SUPPORT
-	if (SyStrcmp (prg, browser) == 0)
-		/* first argument = protocol/full URL, second argument: filename, third argument: #XXXX */
-		fname[0] = 0;
-		if (strlen (args[1]) + strlen (args[2]) + strlen (args[3]) + strlen(dir) + 1 > sizeof (fname)) 
-			return bdNamErr;
-			
-		SyStrncat (fname, args[1], strlen (args[1]));
-		if (*dir) { /* second argument is a path name relative to dir */
-			SyStrncat (fname, dir, strlen (dir));
-			SyStrncat (fname, args[2], strlen (args[2]));
-			/* get the full pathname for the file to view */
-			if ((err = PathToFSSpec (fname+strlen (args[1]), &paramFSS, true, false)))
-				return err;
-			if ((err = FSSpecToPath (&paramFSS, fname+strlen (args[1]), 
-				sizeof (fname) - strlen (args[1]) - strlen (args[3]) -1, true, false)))
-				return err;
-		} else
-			SyStrncat (fname, args[2], strlen (args[2]));
-			
-		SyStrncat (fname, args[3], strlen (args[3]));
-		return LaunchURL (fname); 
-#endif
-
-    /* separate name of launched program from parameters and options */
-    paramstr = dir;
-    i =+1;
-	while (*paramstr != '\0' && i <= sizeof(fname)-2) 
-		fname[i++] = *paramstr++;
-    paramstr = prg;
-	while (*paramstr != '\0' && i <=  sizeof(fname)-2) 
-		fname[i++] = *paramstr++;
-	fname[0] = i-1;   /* fname is a Pascal string */
-	fname[i] = '\0';  /*fname + 1 is a C string */
-	if (*paramstr == ' ') {   /* skip one(!) whitespace inserted by GAP's Edit () */
-		paramstr++; 
-	}
-	SyLastMacErrorCode = PathToFSSpec ((char*)fname+1, &appFSS, true, false);  /* first try if path is a Unix path */
-	if (SyLastMacErrorCode == fnfErr || SyLastMacErrorCode == bdNamErr) 
-		SyLastMacErrorCode = PathToFSSpec ((char*)fname+1, &appFSS, false, false); /* is it a Mac path? */
-	if (SyLastMacErrorCode) 
-		return SyLastMacErrorCode;	
-	if ((unsigned short)fname[0]  >  sizeof(fname)-8)  /* otherwise we cannot append " options" */ 
-		return bdNamErr;
-	while (FindProcess (&PSN, &appFSS)) 
-#if GAPVER == 4
-        ErrorReturnVoid( "Application %s is already running. Please quit it and try again", (long) fname, 0L, 
-        	"you can 'return;'" );
-#elif GAPVER == 3
-		Error ("Application %s is already running. Please quit it and try again", (long) fname, 0L);
-#endif
-	BlockMove (appFSS.name, fname, appFSS.name[0]+1);  /* copy application name to fname */
-	BlockMove (cmdline+1, fname + appFSS.name[0] + 1, cmdline[0]);  /* append " options" */
-	fname[0] += cmdline[0];
-	SyLastMacErrorCode = FSMakeFSSpec (appFSS.vRefNum, appFSS.parID, (unsigned char*)fname,&paramFSS);
-	if (SyLastMacErrorCode == fnfErr) {
-		SyLastMacErrorCode = FSpCreate (&paramFSS, FCREATOR, 'TEXT', 0);
-		}
-	if (SyLastMacErrorCode)
-		return SyLastMacErrorCode;
-	if (SyLastMacErrorCode = FSpOpenDF (&paramFSS, fsWrPerm, &fref))
-		return SyLastMacErrorCode;
-	SetEOF (fref,0);
-	if (in != 0) { /* redirect input */
-		FSSpecToPath (&syBuf[in].fsspec, fname+2, sizeof (fname)-2, true, false);
-		fname[0] = ' ';
-		fname[1] = '<';
-		iocount = strlen (fname);
-	 	SyLastMacErrorCode = FSWrite (fref, &iocount, fname); 
-	 	if (SyLastMacErrorCode) 
-	 		return SyLastMacErrorCode;
-	 }
-	if (out != 1) { /* redirect output */
-		FSSpecToPath (&syBuf[out].fsspec, fname+2, sizeof (fname)-2, true, true);
-		fname[0] = ' ';
-		fname[1] = '>';
-		iocount = strlen (fname);
-	 	if (SyLastMacErrorCode = FSWrite (fref, &iocount, fname))
-	 		return SyLastMacErrorCode; 
-	}
-	i = 1;
-	while (args[i]) { /* write the arguments */
-		iocount = 1;
-	 	if (SyLastMacErrorCode = FSWrite (fref, &iocount, fname))
-	 		return SyLastMacErrorCode; 
-	 	iocount = strlen (args[i]);
-	 	if (SyLastMacErrorCode = FSWrite (fref, &iocount, args[i]))
-	 		return SyLastMacErrorCode; 
-	 	i++;
-	 }
-	if (SyLastMacErrorCode = FSClose (fref) || SyLastMacErrorCode)
-		return SyLastMacErrorCode; 
-	myLaunchParams.launchBlockID = extendedBlock;
-	myLaunchParams.launchEPBLength = extendedBlockLen;
-	myLaunchParams.launchFileFlags = 0;
-	myLaunchParams.launchControlFlags = launchContinue + launchNoFileFlags;
-	myLaunchParams.launchAppSpec = &appFSS;
-	myLaunchParams.launchAppParameters = NULL;
-	if (SyLastMacErrorCode = LaunchApplication(&myLaunchParams))
-		return SyLastMacErrorCode;
-	do {
-		appDied = !FindProcess (&PSN, &appFSS);
-		if (!appDied) 
-           if ( SyIsIntr() )  
-#if GAPVER == 4
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-#elif GAPVER == 3
-           		Error("user interrupt",0L,0L); 
-#endif
-	} while (!appDied);
-	SyLastMacErrorCode = FSpDelete (&paramFSS);
-	return SyLastMacErrorCode;
-}
-
-UInt SyExecuteProcess (   /* version which returns 255 if no errors */
-    Char *                  dir,
-    Char *                  prg,
-    Int                     in,
-    Int                     out,
-    Char *                  args[] )
-{
-	SyLastMacErrorCode = syExecuteProcess (dir, prg, in, out, args);
-	return SyLastMacErrorCode==noErr? 0 : 255;
-}
-
-
-int            syExec ( cmd )   /* version of SyExec which returns an error code */
-    char *              cmd;
-{
-	char 					*paramstr;
-	char					fname[256];
-    char * 					args[2];
-    int						i;
-
-    /* separate name of launched program from parameters and options */
-	/* theoretically, we should do proper parsing, but this will do for the moment */
-	
-    paramstr = cmd;
-    i = 0;
-	while (*paramstr != 0 && *paramstr != ' ' && i <= 254) 
-		fname[i++] = *paramstr++;
-	fname[i] = '\0';  /*fname + 1 is a C string */
-	if (*paramstr == ' ') {   /* skip one(!) whitespace inserted by GAP's Edit () */
-		paramstr++; 
-	}
-	args[0] = paramstr;
-	args[1] = 0;
-	return syExecuteProcess ("", fname, 0, 1, args);
-}
-
-
-void SyExec (
-    Char *              cmd )
-{
-    long err;
-
-	if ((err = syExec (cmd))) 
-#if GAPVER == 4
-            ErrorReturnVoid( "GAP: could not execute '%s' (error code %d) \n", (long)cmd, err,
-            	 "you can 'return;'" );
-#elif GAPVER == 3
-			Error ("GAP: could not execute '%s' (error code %d) \n", (long)cmd, err);
-#endif
-}
-
-#endif
 /****************************************************************************
 **
 *F  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . . . new process
@@ -5991,26 +4459,6 @@ Int SyIsExistingFile ( Char * name )
 
 #endif
 
-#if SYS_MAC_MWC
-Int SyIsExistingFile ( Char * name )
-{
-	FSSpec fsspec;
-	OSErr err;
-	
-    SyClearErrorNo();
-	if (SyLastMacErrorCode = PathToFSSpec (name, &fsspec, true, false))
-		if (err = PathToFSSpec (name, &fsspec, false, false)) {
-			if (SyLastMacErrorCode == fnfErr || err == fnfErr) {
-				SyLastMacErrorCode = fnfErr;
-				return -1;
-			} else {
-            	SySetErrorNo();
-            	return -1;
-            }
-		}
-	return 0;
-}
-#endif
 /****************************************************************************
 **
 *F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
@@ -6049,29 +4497,6 @@ Int SyIsReadableFile ( Char * name )
 
 #endif
 
-#if SYS_MAC_MWC
-Int SyIsReadableFile ( Char * name )
-{
-	FSSpec fsspec;
-	short ref;
-	OSErr err;
-	
-	if (SyLastMacErrorCode = PathToFSSpec (name, &fsspec, true, false))
-		if (err = PathToFSSpec (name, &fsspec, false, false)) {
-			SySetErrorNo();
-			return -1;
-		}
-	if (SyLastMacErrorCode = FSpOpenDF (&fsspec, fsRdPerm, &ref));
-	else SyLastMacErrorCode = FSClose (ref);
-	if (SyLastMacErrorCode) {
-		SySetErrorNo();
-		return -1;
-	} else {
-	    SyClearErrorNo();
-		return 0;
-	}
-}
-#endif
 
 /****************************************************************************
 **
@@ -6102,29 +4527,6 @@ Int SyIsWritableFile ( Char * name )
 
 #endif
 
-#if SYS_MAC_MWC
-Int SyIsWritableFile ( Char * name )
-{
-	FSSpec fsspec;
-	short ref;
-	OSErr err;
-
-	if (SyLastMacErrorCode = PathToFSSpec (name, &fsspec, true, false))
-		if (err = PathToFSSpec (name, &fsspec, false, false)) {
-			SySetErrorNo();
-			return -1;
-		}
-	if (SyLastMacErrorCode = FSpOpenDF (&fsspec, fsWrPerm, &ref)) ;
-	else SyLastMacErrorCode = FSClose (ref);
-	if (SyLastMacErrorCode) {
-		SySetErrorNo();
-		return -1;
-	} else {
-	    SyClearErrorNo();
-		return 0;
-	}
-}
-#endif
 
 /****************************************************************************
 **
@@ -6153,29 +4555,6 @@ Int SyIsExecutableFile ( Char * name )
     return res;
 }
 
-#endif
-
-#if SYS_MAC_MWC
-Int SyIsExecutableFile ( Char * name )
-{
-	FSSpec fsspec;
-	FInfo finfo;
-	OSErr err;
-
-	if (SyLastMacErrorCode = PathToFSSpec (name, &fsspec, true, false))
-		if (err = PathToFSSpec (name, &fsspec, false, false)) {
-			SySetErrorNo();
-			return -1;
-		}
-	if (SyLastMacErrorCode = FSpGetFInfo (&fsspec, &finfo)) {
-		SySetErrorNo();
-		return -1;
-	}
-	else {
-		SyClearErrorNo ();
-		return finfo.fdType == 'APPL' ? 0 : -1;
-	}
-}
 #endif
 		
 
@@ -6214,26 +4593,6 @@ Int SyIsDirectoryPath ( Char * name )
 
 #endif
 
-#if SYS_MAC_MWC
-Int SyIsDirectoryPath ( Char * name )
-{
-	FSSpec fsspec;
-	Boolean isFolder, wasAliased;
-	OSErr err;
-
-	if (SyLastMacErrorCode = PathToFSSpec (name, &fsspec, true, false))
-		if (err = PathToFSSpec (name, &fsspec, false, false)) {
-			SySetErrorNo();
-			return -1;
-		}
-	if (SyLastMacErrorCode = ResolveAliasFile (&fsspec, false, &isFolder, &wasAliased)) {
-		SySetErrorNo();
-		return -1;
-	}
-	SyClearErrorNo ();
-	return isFolder ? 0 : -1;
-}
-#endif
 
 /****************************************************************************
 **
@@ -6252,20 +4611,6 @@ Int SyRemoveFile ( Char * name )
     return unlink(name);
 }
 
-#endif
-
-#if SYS_MAC_MWC
-Int SyRemoveFile ( Char * name )
-{
-	FSSpec fsspec;
-
-	if (SyLastMacErrorCode = PathToFSSpec (name, &fsspec, true, false))
-		if (SyLastMacErrorCode = PathToFSSpec (name, &fsspec, false, false))
-			return -1;
-	if (SyLastMacErrorCode = FSpDelete(&fsspec))
-		return 0;
-	return 1;
-}
 #endif
 
 
@@ -6310,8 +4655,6 @@ Char * SyFindGapRootFile ( Char * filename )
 **  to 'SyTmpname'  should  produce different  file names  *even* if no files
 **  were created.
 */
-#if !SYS_MAC_MWC
-
 #ifndef SYS_STDIO_H                     /* standard input/output functions */
 # include       <stdio.h>
 # define SYS_STDIO_H
@@ -6369,85 +4712,7 @@ Char * SyTmpname ( void )
     return name;
 }
 #endif
-#endif
 
-/****************************************************************************
-**
-*F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
-**
-**  'SyTmpname' creates and returns a new temporary name.
-*/
-#if SYS_MAC_MWC
-
-short 	syTmpVref; /* volume ref num for temp directory */
-long 	syTmpDirId;  /* dir id for temp directory */
-
-char	syTmpFname[1024];   /* fortunately, GAP copies the temp filename, so we need not store it permanently */
-
-Str31	syTmpFNtemplate = "\ptemp0000"; /* name of last temp file */
-
-OSErr SyFSMakeNewFSSpec (short vol, long dir, Str31 name, FSSpecPtr newFSSpec)
-{
-	Str31 tryname;
-	OSErr err;
-	long len, digits, i;
-		
-	len = name[0];	
-	BlockMove (name+1, tryname+1, len); /* copy name to tryname */
-	digits = 0;
-	while (len && tryname[len] >= '0' && tryname[len] <= '9') {
-		digits ++;
-		len--;
-	}
-	if (!digits) {
-		digits = 3;
-		if (len + digits > 31)
-			len = 31 - digits;  /* truncate file name if not enough space for 3 digits */
-		for (i = len+digits; i > len; i--)
-			tryname[i] = '0';
-	}
-	tryname[0] = len + digits;
-	
-	do {
-		i = len + digits;
-		while (i > len && tryname[i] == '9')
-			tryname[i--] = '0';
-		if (i == len)  /* no more file names available */
-			return dirFulErr; /* , this is probably the best-matching Mac error code */
-		tryname[i]++;
-		err = FSMakeFSSpec (vol, dir, tryname, newFSSpec);
-	}
-	while (err == noErr);
-	if (err == fnfErr)
-		return noErr; /* file does not exist, that's what we want */
-	else 
-		return err;  
-}
-
-
-Char * SyTmpname ( void )
-{
-	FSSpec tmpFSSpec;
-	
-	if ((SyLastMacErrorCode = SyFSMakeNewFSSpec (syTmpVref, syTmpDirId, 
-			syTmpFNtemplate, &tmpFSSpec)) == noErr) {
-		BlockMove (tmpFSSpec.name, syTmpFNtemplate, tmpFSSpec.name[0]);
-    	SyLastMacErrorCode = FSSpecToPath (&tmpFSSpec, syTmpFname, 
-    		sizeof (syTmpFname), true, true);
-	}
-    if (SyLastMacErrorCode) {
-#if GAPVER == 4
-        ErrorReturnVoid( "could not create temporary file", 0L, 0L, 
-        	"you can 'return;'" );
-#elif GAPVER == 3
-		Error ("could not create temporary file", 0L, 0L );
-#endif
-    	return (char*) 0;
-    } else
-	    return syTmpFname;
-}
-
-#endif
 
 /****************************************************************************
 **
@@ -6515,43 +4780,6 @@ Char * SyTmpdir ( Char * hint )
 
 
 #endif
-#endif
-#if SYS_MAC_MWC
-
-Char * SyTmpdir ( Char * hint )
-{
-    Str31		tmp;
-	long 		len, dirid;
-	FSSpec 		tmpFSSpec;
-	len = 0;
-	while (len < 31 && *hint)
-		tmp[++len] = *hint++;
-	tmp[0] = len;
-	
-	SyLastMacErrorCode = SyFSMakeNewFSSpec (syTmpVref, syTmpDirId, 
-		len?tmp:syTmpFNtemplate, &tmpFSSpec);
-
-	if (!len)
-		BlockMove (tmpFSSpec.name, syTmpFNtemplate, tmpFSSpec.name[0]);
-	
-	if (SyLastMacErrorCode == noErr) 
-		if ((SyLastMacErrorCode = FSpDirCreate (&tmpFSSpec, 0, &dirid)) == noErr) {
-			SyLastMacErrorCode = FSSpecToPath (&tmpFSSpec, syTmpFname, 
-  		  		sizeof (syTmpFname) - 1, true, true);
-			SyStrncat (syTmpFname, "/",	1);
-		}
-    if (SyLastMacErrorCode) {
-#if GAPVER == 4
-        ErrorReturnVoid( "could not create temporary directory", 0L, 0L, 
-        	"you can 'return;'" );
-#elif GAPVER == 3
-		Error ("could not create temporary file", 0L, 0L );
-#endif
-    	return (char*) 0;
-    } else
-	    return syTmpFname;
-}
-
 #endif
 
 

@@ -2,7 +2,7 @@
 ##
 #W  maketbl.g           GAP character table library             Thomas Breuer
 ##
-#H  @(#)$Id: maketbl.g,v 1.3 2009/04/27 08:21:11 gap Exp $
+#H  @(#)$Id: maketbl.g,v 1.5 2010/12/01 17:34:32 gap Exp $
 ##
 #Y  Copyright (C)  2007,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -69,8 +69,8 @@ CTblLibRecomputeTOC:= function()
           ordinfiles, modinfiles, clminfiles, outfile, bakfile, outstr,
           firstnames, allnames, lowerposition, simplenames, extinfo, tbltom,
           projectivesinfo, fusions, currname, infile, lines, i, line, nam,
-          tolo, spl, k, entry, l, map, currfile, count, filecounts, pair,
-          oldcontents, pos, diff, str, out;
+          tolo, spl, k, entry, l, map, known, currfile, count, filecounts,
+          pair, oldcontents, pos, diff, str, out;
 
     match:= function( str, substr )
       return PositionSublist( str, substr ) <> fail;
@@ -292,7 +292,17 @@ CTblLibRecomputeTOC:= function()
             Append( map, "\n  " );
             Append( map, line{ [ 1 .. Length( line ) - 2 ] } );
           fi;
-          Add( fusions, [ spl[2], spl[4], map ] );
+          known:= Filtered( fusions, x -> x[1] = spl[2] and x[2] = spl[4] );
+          if ForAny( known, x -> x[3] = map ) then
+            Print( infile, ": remove duplicate fusion ",
+                   spl[2], " -> ", spl[4], "\n" );
+          elif not IsEmpty( known ) then
+            Print( infile, ": several fusions ",
+                   spl[2], " -> ", spl[4], "?\n" );
+            Add( fusions, [ spl[2], spl[4], map ] );
+          else
+            Add( fusions, [ spl[2], spl[4], map ] );
+          fi;
         fi;
 
         # Store the names of source and image of the projections.
@@ -428,20 +438,27 @@ CTblLibRecomputeTOC:= function()
          "  Append( LIBLIST.position,\n",
          "          List( [2..Length(entry)], x -> LIBLIST.pos ) );\n",
          "od;\n",
-         "end;\n",
-         "LIBLIST.makenames();\n",
          "Unbind( LIBLIST.names );\n",
          "Unbind( LIBLIST.pos );\n",
-         "Unbind( LIBLIST.makenames );\n\n" );
+         "Unbind( LIBLIST.makenames );\n",
+         "for entry in LIBLIST.allnames do MakeImmutable( entry ); od;\n",
+         "end;\n",
+         "LIBLIST.makenames();\n\n" );
 
     # They shall be sorted according to the ordering of GAP,
     # so we leave the sorting to GAP.
     app( "SortParallel( LIBLIST.allnames, LIBLIST.position );\n\n" );
-#T change this!
+#T We could store the sorted result lists directly,
+#T this would speed up the loading process.
+#T Disadvantages would be that the differences between versions of the
+#T file `ctprimar.tbl' would be large also in the case of small changes
+#T of the contents, and that we would not have a list of all names for a
+#T given table in the file.
 
     # Print the map to the identifiers of tables of marks.
     app( "BindGlobal( \"TOM_TBL_INFO\", [ [], [] ] );\n",
          "if TestPackageAvailability(\"tomlib\",\"1.0\") <> fail then\n" );
+#T Call `IsPackageMarkedForLoading' instead!
     for i in [ 1, 2 ] do
       app( "  TOM_TBL_INFO[", String( i ), "]:= [\n" );
       line:= "  ";
@@ -560,6 +577,12 @@ CTblLibRecomputeTOC:= function()
     Exec( "sed -e '1d;/^gap> true$/d;/^gap> $/d' < maketbl.checkout" );
     RemoveFile( "maketbl.checkin" );
     RemoveFile( "maketbl.checkout" );
+
+    # Load the updated table of contents.
+    RereadPackage( "ctbllib", "data/ctprimar.tbl" );
+    for nam in RecNames( LIBTABLE.LOADSTATUS ) do
+      Unbind( LIBTABLE.LOADSTATUS.( nam ) );
+    od;
 end;
 
 

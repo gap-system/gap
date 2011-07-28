@@ -10,7 +10,7 @@
 #F CollectedOneCR( A, w ) . . . . . . . . . . . . . . . . . . . . . comb word
 ##
 CollectedOneCR := function( A, w )
-    local tail, t, i, j, exp, mat;
+    local tail, t, i, j, mat;
 
     tail := [];
     t    := A.one;

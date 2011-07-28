@@ -2,7 +2,7 @@
 ##
 #W mealy.gi                                                 Laurent Bartholdi
 ##
-#H   @(#)$Id: mealy.gi,v 1.68 2009/06/04 20:58:05 gap Exp $
+#H   @(#)$Id: mealy.gi,v 1.72 2011/06/13 22:54:35 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -293,7 +293,7 @@ InstallMethod(FixedRay, "(FR) for a Mealy element",
             return CompressedPeriodicList(ray,i);
         fi;
         Add(state,s);
-        while not IsEmpty(f[s]) do
+        while f[s]<>[] do
             i := Remove(f[s]);
             Add(ray,i);
             i := recur(e!.transitions[s][i],e,state,ray);
@@ -435,7 +435,7 @@ end);
 InstallMethod(Minimized, "(FR) for a Mealy machine in int rep",
         [IsMealyMachine and IsMealyMachineIntRep],
         function(M)
-    if IsEmpty(M!.output) then
+    if M!.output=[] then
         return M;
     else
         return MMMINIMIZE@(FamilyObj(M),AlphabetOfFRObject(M),
@@ -758,42 +758,41 @@ InstallMethod(UnderlyingFRMachine, "(FR) for a Mealy element",
 ##
 #M ViewObj
 ##
-InstallMethod(ViewObj, "(FR) displays a Mealy machine in compact form",
+InstallMethod(ViewString, "(FR) displays a Mealy machine in compact form",
         [IsMealyMachine and IsMealyMachineIntRep],
         function(M)
-    Print("<Mealy machine on alphabet ", AlphabetOfFRObject(M), " with ", M!.nrstates);
-    if M!.nrstates<>1 then Print(" states"); else Print(" state"); fi;
-    Print(">");
+    local s;
+    s := "<Mealy machine on alphabet ";
+    APPEND@(s, AlphabetOfFRObject(M), " with ", M!.nrstates, " state");
+    if M!.nrstates<>1 then Append(s,"s"); fi;
+    Append(s,">");
+    return s;
 end);
 
-InstallMethod(ViewObj, "(FR) displays a Mealy machine in compact form",
+InstallMethod(ViewString, "(FR) displays a Mealy machine in compact form",
         [IsMealyMachine and IsMealyMachineDomainRep],
-        function(M)
-    Print("<Mealy machine on alphabet ", AlphabetOfFRObject(M), " with states ", M!.states);
-    Print(">");
-end);
+        M->CONCAT@("<Mealy machine on alphabet ", AlphabetOfFRObject(M), " with states ", M!.states,">"));
 
-InstallMethod(ViewObj, "(FR) displays a Mealy element in compact form",
+InstallMethod(ViewString, "(FR) displays a Mealy element in compact form",
         [IsMealyElement and IsMealyMachineIntRep],
         function(E)
+    local s;
     if IsOne(E) then
-        Print("<Trivial Mealy element on alphabet ", AlphabetOfFRObject(E), ">");
+        s := CONCAT@("<Trivial Mealy element on alphabet ", AlphabetOfFRObject(E), ">");
     else
-        Print("<Mealy element on alphabet ", AlphabetOfFRObject(E),
-              " with ", E!.nrstates, " state");
-        if E!.nrstates<>1 then Print("s"); fi;
-        if E!.initial<>1 then Print(", initial state ",E!.initial); fi;
-        Print(">");
+        s := CONCAT@("<Mealy element on alphabet ", AlphabetOfFRObject(E),
+            " with ", E!.nrstates, " state");
+        if E!.nrstates<>1 then Append(s,"s"); fi;
+        if E!.initial<>1 then APPEND@(s,", initial state ",E!.initial); fi;
+        Append(s,">");
     fi;
+    return s;
 end);
 
-InstallMethod(ViewObj, "(FR) displays a Mealy element in compact form",
+InstallMethod(ViewString, "(FR) displays a Mealy element in compact form",
         [IsMealyElement and IsMealyMachineDomainRep],
-        function(E)
-    Print("<Mealy element on alphabet ", AlphabetOfFRObject(E),
-          " with states ", E!.states, ", initial state ",InitialState(E));
-    Print(">");
-end);
+        E->CONCAT@("<Mealy element on alphabet ", AlphabetOfFRObject(E),
+        " with states ", E!.states, ", initial state ", InitialState(E), ">"));
 #############################################################################
 
 #############################################################################
@@ -802,33 +801,22 @@ end);
 ##
 InstallMethod(String, "(FR) Mealy machine to string",
         [IsMealyMachine and IsMealyMachineIntRep],
-        function(M)
-    return Concatenation("MealyMachine(",String(M!.transitions),", ",
-                   String(M!.output),")");
-end);
+        M->CONCAT@("MealyMachine(",M!.transitions,", ", M!.output,")"));
 
 InstallMethod(String, "(FR) Mealy element to string",
         [IsMealyElement and IsMealyMachineIntRep],
-        function(E)
-    return Concatenation("MealyElement(",String(E!.transitions),", ",
-                   String(E!.output),", ",String(InitialState(E)),")");
-end);
+        E->CONCAT@("MealyElement(",E!.transitions,", ",
+                   E!.output,", ",InitialState(E),")"));
 
 InstallMethod(String, "(FR) Mealy machine to string",
         [IsMealyMachine and IsMealyMachineDomainRep],
-        function(M)
-    return Concatenation("MealyMachine(",String(M!.states),", ",
-                   String(AlphabetOfFRObject(M)),", ",String(M!.transitions),
-                   ", ",String(M!.output),")");
-end);
+        M->CONCAT@("MealyMachine(",M!.states,", ", AlphabetOfFRObject(M),
+                ", ",M!.transitions, ", ",M!.output,")"));
 
 InstallMethod(String, "(FR) Mealy element to string",
         [IsMealyElement and IsMealyMachineDomainRep],
-        function(E)
-    return Concatenation("MealyElement(",String(E!.states),", ",
-                   String(AlphabetOfFRObject(E)),", ",String(E!.transitions),
-                   ", ",String(E!.output),", ",String(InitialState(E)),")");
-end);
+        E->CONCAT@("MealyElement(",E!.states,", ", AlphabetOfFRObject(E),
+                ", ",E!.transitions,", ",E!.output,", ",InitialState(E),")"));
 #############################################################################
 
 #############################################################################
@@ -836,14 +824,14 @@ end);
 #M  Display . . . . . . . . . . . . . . . . . . . .pretty-print Mealy machine
 ##
 BindGlobal("MEALYDISPLAY@", function(M)
-    local a, i, j, s, slen, alen, sprint, aprint, sblank, ablank, srule, arule;
+    local a, i, j, states, slen, alen, sprint, aprint, sblank, ablank, srule, arule, s;
     a := AlphabetOfFRObject(M);
-    s := StateSet(M);
-    if IsSubset(Integers,s) then
-        slen := LogInt(Maximum(Elements(s)),8)+2;
+    states := StateSet(M);
+    if IsSubset(Integers,states) then
+        slen := LogInt(Maximum(Elements(states)),8)+2;
         sprint := i->String(WordAlp("abcdefgh",i),slen);
     else
-        slen := Maximum(List(s,t->Length(String(t))))+1;
+        slen := Maximum(List(states,t->Length(String(t))))+1;
         sprint := i->String(i,slen);
     fi;
     sblank := ListWithIdenticalEntries(slen,' ');
@@ -858,27 +846,28 @@ BindGlobal("MEALYDISPLAY@", function(M)
     ablank := ListWithIdenticalEntries(alen,' ');
     arule := ListWithIdenticalEntries(alen,'-');
 
-    Print(sblank," |");
-    for i in a do Print(sblank,aprint(i)," "); od;
-    Print("\n");
-    Print(srule,"-+"); for i in a do Print(srule,arule,"+"); od; Print("\n");
-    for i in s do
-        Print(sprint(i)," |");
+    s := Concatenation(sblank," |");
+    for i in a do APPEND@(s,sblank,aprint(i)," "); od;
+    APPEND@(s,"\n");
+    APPEND@(s,srule,"-+"); for i in a do APPEND@(s,srule,arule,"+"); od; APPEND@(s,"\n");
+    for i in states do
+        APPEND@(s,sprint(i)," |");
         for j in a do
-            Print(sprint(Transition(M,i,j)),",",aprint(Output(M,i,j)));
+            APPEND@(s,sprint(Transition(M,i,j)),",",aprint(Output(M,i,j)));
         od;
-        Print("\n");
+        APPEND@(s,"\n");
     od;
-    Print(srule,"-+"); for i in a do Print(srule,arule,"+"); od; Print("\n");
+    APPEND@(s,srule,"-+"); for i in a do APPEND@(s,srule,arule,"+"); od; APPEND@(s,"\n");
     if IsMealyElement(M) then
-        Print("Initial state:",sprint(InitialState(M)),"\n");
+        APPEND@(s,"Initial state:",sprint(InitialState(M)),"\n");
     fi;
+    return s;
 end);
 
-InstallMethod(Display, "(FR) for a Mealy machine",
+InstallMethod(DisplayString, "(FR) for a Mealy machine",
         [IsMealyMachine], MEALYDISPLAY@);
 
-InstallMethod(Display, "(FR) for a Mealy element",
+InstallMethod(DisplayString, "(FR) for a Mealy element",
         [IsMealyElement], MEALYDISPLAY@);
 #############################################################################
 
@@ -2762,17 +2751,17 @@ InstallMethod(IsWeaklyFinitaryFRElement, "(FR) for a Mealy element",
         function(E)
     local c;
     c := ConfinalityClasses(E);
-    return c<>fail and IsEmpty(c);
+    return c<>fail and c=[];
 end);
 INSTALLMEHANDLER@(IsWeaklyFinitaryFRElement,true);
 #############################################################################
 
 #############################################################################
 ##
-#M LimitMachine
+#M LimitFRMachine
 #M NucleusMachine
 ##
-InstallMethod(LimitMachine, "(FR) for a Mealy machine",
+InstallMethod(LimitFRMachine, "(FR) for a Mealy machine",
         [IsMealyMachine and IsMealyMachineIntRep],
         function(M)
     local S, pos, i;
@@ -2781,19 +2770,19 @@ InstallMethod(LimitMachine, "(FR) for a Mealy machine",
     pos{S} := [1..Length(S)];
     return MealyMachineNC(FamilyObj(M),List(M!.transitions{S},r->List(r,i->pos[i])),M!.output{S});
 end);
-INSTALLMMHANDLER@(LimitMachine,true);
+INSTALLMMHANDLER@(LimitFRMachine,true);
 
 InstallMethod(NucleusMachine, "(FR) for an FR machine",
         [IsFRMachine],
         function(M)
     local N, oldN, oldsize, size;
-    M := LimitMachine(M);
+    M := LimitFRMachine(M);
     N := M;
     size := Size(StateSet(N));
     repeat
         oldN := N;
         oldsize := size;
-        N := Minimized(LimitMachine(N*M));
+        N := Minimized(LimitFRMachine(N*M));
         size := Size(StateSet(N));
         if size=oldsize then return oldN; fi;
         Info(InfoFR, 2, "NucleusMachine: at least ",size," states");

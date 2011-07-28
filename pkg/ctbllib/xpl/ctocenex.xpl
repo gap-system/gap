@@ -2,13 +2,13 @@
 %%
 %W  ctocenex.xpl              GAP applications              Thomas Breuer
 %%
-%H  @(#)$Id: ctocenex.xpl,v 1.5 2006/06/07 16:46:46 gap Exp $
+%H  @(#)$Id: ctocenex.xpl,v 1.6 2010/12/01 17:36:07 gap Exp $
 %%
 %Y  Copyright 2004,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
 %%
 %X  NAME="ctocenex"
 %X  rm -rf doc/$NAME.tex
-%X  etc/xpl2tst xpl/$NAME.xpl tst/$NAME.tst
+%X  etc/xpl2tst xpl/$NAME.xpl tst/$NAME.tst ctbllib
 %X  etc/xpl2latex xpl/$NAME.xpl doc/$NAME.tex
 %X  cd doc
 %X  chmod 444 $NAME.tex
@@ -37,9 +37,13 @@
 \def\N{{\mathbb B}} \def\Z{{\mathbb Z}} \def\Q{{\mathbb Q}}
 \def\R{{\mathbb R}} \def\C{{\mathbb C}} \def\F{{\mathbb F}}
 \def\tthdump#1{#1}
-\tthdump{\def\URL#1{\texttt{#1}}}
-%%tth: \def\URL#1{\url{#1}}
+\tthdump{\def\URL#1#2{\texttt{#1}}}
+%%tth: \def\URL#1#2{\url{#2}}
 %%tth: \def\abstract#1{#1}
+%%tth: \def\colon{:}
+%%tth: \def\thinspace{ }
+%%tth: \def\textendash{--}
+%%tth: \def\discretionary{}
 
 \begin{document}
 
@@ -64,7 +68,7 @@ First it shows how the {\GAP} system~\cite{GAP4} can be utilized to
 construct character tables of certain central extensions from known
 character tables;
 the {\GAP} functions used for that are part of the {\GAP} Character Table
-Library~\cite{CTblLib}.
+Library~\cite{CTblLib1.1.3}.
 Second it documents several constructions of character tables which are
 contained in the {\GAP} Character Table Library.
 Third it serves as a testfile for the {\GAP} functions.}
@@ -80,7 +84,7 @@ Third it serves as a testfile for the {\GAP} functions.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tableofcontents
 
-% gap> START_TEST("$Id: ctocenex.xpl,v 1.5 2006/06/07 16:46:46 gap Exp $");
+% gap> START_TEST("$Id: ctocenex.xpl,v 1.6 2010/12/01 17:36:07 gap Exp $");
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -522,8 +526,6 @@ gap> list:= [
 >   ];;
 \endexample
 
-%T construct (2x12).L3(4), (2^2x3).L3(4), (4^2x3).L3(4)!
-
 As was discussed in the sections~\ref{classes} and~\ref{compat},
 the class ordering of the result tables is the same as that in the {\GAP}
 library tables,
@@ -591,6 +593,106 @@ gap> SetInfoLevel( InfoCharacterTable, 0 );
 
 We see that in all cases, the irreducible characters of the groups $M.G$
 are obtained by reducing tensor products and applying the LLL algorithm.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Central Extensions of Other {\ATLAS} Groups}
+
+The following cases also fit to the pattern introduced above.
+
+(The following examples were added in October~2006.)
+
+The group $(2^2 \times 3).L_3(4)$ can be viewed as a
+common central extension of its factor group $2.L_3(4)$
+by the two groups $2^2.L_3(4)$ and $6.L_3(4)$.
+
+Analogously, the group $(4^2 \times 3).L_3(4)$ can be viewed as a
+common central extension of its factor group $(2 \times 4).L_3(4)$
+by the two groups $4^2.L_3(4)$ and $(2 \times 12).L_3(4)$.
+
+Finally, the group $(2 \times 12).L_3(4)$ can be viewed as a
+common central extension of the factor group $2^2.L_3(4)$
+by the two groups $(2 \times 4).L_3(4)$ and $(2^2 \times 3).L_3(4)$.
+
+The construction of the character tables of the involved factor groups
+as well as an alternative construction of the table of $(2 \times 12).L_3(4)$
+can be found in~\cite{Auto}.
+
+\beginexample
+gap> list2:= [
+>     [ "2.L3(4)",     "2^2.L3(4)",   "6.L3(4)",       "(2^2x3).L3(4)" ],
+>     [ "2^2.L3(4)",   "(2x4).L3(4)", "(2^2x3).L3(4)", "(2x12).L3(4)"  ],
+>     [ "(2x4).L3(4)", "4^2.L3(4)",   "(2x12).L3(4)",  "(4^2x3).L3(4)" ],
+>   ];;
+\endexample
+
+% Viewing $(2 \times 12).L_3(4)$ as a common central extension of
+% $4_1.L_3(4)$ by $(2 \times 4).L_3(4)$ and $12_1.L_3(4)$, or of
+% $4_2.L_3(4)$ by $(2 \times 4).L_3(4)$ and $12_2.L_3(4)$ does not work,
+% since the function wants to have an element of maximal order in the centre
+% of the target group that projects to elements of strictly smaller order
+% in the two factors.
+
+(The following examples were added in December~2010.)
+
+The group $(3^2 \times 2).U_4(3)$ can be viewed
+as a common central extension of its factor group $3_1.U_4(3)$
+by the two groups $6_1.U_4(3)$ and $3^2.U_4(3)$,
+or as a common central extension of its factor group $3_2.U_4(3)$
+by the two groups $6_2.U_4(3)$ and $3^2.U_4(3)$.
+
+Analogously, the group $(3^2 \times 4).U_4(3)$ can be viewed
+as a common central extension of its factor group $6_1.U_4(3)$
+by the two groups $12_1.U_4(3)$ and $(3^2 \times 2).U_4(3)$,
+or as a common central extension of its factor group $6_2.U_4(3)$
+by the two groups $12_2.U_4(3)$ and $(3^2 \times 2).U_4(3)$.
+
+\beginexample
+gap> Append( list2, [
+>     [ "3_1.U4(3)",   "6_1.U4(3)",   "3^2.U4(3)",     "(3^2x2).U4(3)" ],
+>     [ "3_2.U4(3)",   "6_2.U4(3)",   "3^2.U4(3)",     "(3^2x2).U4(3)" ],
+>     [ "6_1.U4(3)",   "12_1.U4(3)",  "(3^2x2).U4(3)", "(3^2x4).U4(3)" ],
+>     [ "6_2.U4(3)",   "12_2.U4(3)",  "(3^2x2).U4(3)", "(3^2x4).U4(3)" ],
+>   ] );
+gap> SetInfoLevel( InfoCharacterTable, 1 );
+gap> for entry in list2 do
+>   id    := entry[4];
+>   tblG  := CharacterTable( entry[1] );
+>   tblmG := CharacterTable( entry[2] );
+>   tblnG := CharacterTable( entry[3] );
+>   lib   := CharacterTable( id );
+>   res:= CharacterTableOfCommonCentralExtension( tblG, tblmG, tblnG, id );
+>   if not res.IsComplete then
+>     Print( "#E  not complete: ", id, "\n" );
+>   fi;
+>   if TransformingPermutationsCharacterTables( res.tblmnG, lib ) = fail then
+>     Print( "#E  inconsistent: ", id, "\n" );
+>   fi;
+> od;
+#I  (2^2x3).L3(4): need 14 faithful irreducibles
+#I  (2^2x3).L3(4): 14 found by tensoring
+#I  (2x12).L3(4): need 11 faithful irreducibles
+#I  (2x12).L3(4): 7 found by tensoring
+#I  (2x12).L3(4): 4 found by LLL
+#I  (4^2x3).L3(4): need 22 faithful irreducibles
+#I  (4^2x3).L3(4): 14 found by tensoring
+#I  (4^2x3).L3(4): 8 found by LLL
+#I  (3^2x2).U4(3): need 39 faithful irreducibles
+#I  (3^2x2).U4(3): 27 found by tensoring
+#I  (3^2x2).U4(3): 12 found by LLL
+#I  (3^2x2).U4(3): need 42 faithful irreducibles
+#I  (3^2x2).U4(3): 2 found by tensoring
+#I  (3^2x2).U4(3): 40 found by LLL
+#I  (3^2x4).U4(3): need 30 faithful irreducibles
+#I  (3^2x4).U4(3): 6 found by tensoring
+#I  (3^2x4).U4(3): 8 found by tensoring
+#I  (3^2x4).U4(3): 16 found by LLL
+#I  (3^2x4).U4(3): need 33 faithful irreducibles
+#I  (3^2x4).U4(3): 9 found by tensoring
+#I  (3^2x4).U4(3): 18 found by tensoring
+#I  (3^2x4).U4(3): 6 found by further tensoring
+gap> SetInfoLevel( InfoCharacterTable, 0 );
+\endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -756,7 +858,7 @@ possibilities, which form one orbit under table automorphisms.)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{amsalpha}
-\bibliography{../../../doc/mrabbrev,manual,../../../doc/manual,../../atlasrep/doc/manual}
+\bibliography{manualbib.xml,../../../doc/manualbib.xml,../../atlasrep/doc/manualbib.xml,../../Browse/doc/browsebib.xml}
 
 % gap> STOP_TEST( "ctocenex.tst", 612923095 );
 

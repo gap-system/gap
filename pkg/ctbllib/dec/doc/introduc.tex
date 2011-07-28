@@ -2,9 +2,15 @@
 %%
 %W  introduc.tex              GAP applications              Thomas Breuer
 %%
-%H  @(#)$Id: introduc.tex,v 1.1 2002/06/27 16:17:38 gap Exp $
+%H  @(#)$Id: introduc.tex,v 1.2 2010/01/27 15:43:41 gap Exp $
 %%
 %Y  Copyright 1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%X  NAME="introduc"
+%X  chmod 444 $NAME.tex 
+%X  latex $NAME; latex $NAME
+%X  pdflatex $NAME
+%X  tth -u -L$NAME < $NAME.tex > ../htm/$NAME.htm
 %%
 \documentclass[a4paper]{article}
 
@@ -14,25 +20,34 @@
 \parskip 1ex plus 0.5ex minus 0.5ex
 \parindent0pt
 
+\usepackage{amssymb}
+
 % Miscellaneous macros.
-\def\GAP{{\sf GAP}}
-\def\ATLAS{{\sf ATLAS}}
-\def\N{{\Bbb N}} \def\Z{{\Bbb Z}} \def\Q{{\Bbb Q}} \def\R{{\Bbb R}}
-\def\C{{\Bbb C}} \def\F{{\Bbb F}}
+\def\GAP{\textsf{GAP}}
+\def\ATLAS{\textsc{ATLAS}}
+\def\N{{\mathbb N}} \def\Z{{\mathbb Z}} \def\Q{{\mathbb Q}}
+\def\R{{\mathbb R}} \def\C{{\mathbb C}} \def\F{{\mathbb F}}
+\def\tthdump#1{#1}
+\tthdump{\def\URL#1{\texttt{#1}}}
+%%tth: \def\URL#1{\url{#1}}
+%%tth: \def\abstract#1{#1}
 
 \begin{document}
 
 \title{How to Read the Decomposition Matrices}
 
-\author{{\sc Thomas Breuer} \\[0.5cm]
-{\it Lehrstuhl D f\accent127ur Mathematik} \\
-{\it RWTH, 52056 Aachen, Germany}}
+\author{\textsc{Thomas Breuer} \\[0.5cm]
+\textit{Lehrstuhl D f{\"u}r Mathematik} \\
+\textit{RWTH, 52056 Aachen, Germany}}
 
 \date{July 18th, 1999}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \maketitle
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 For a fixed characteristic $p$ and a fixed simple group $G$,
 various bicyclic extensions $m.G.a$ may occur,

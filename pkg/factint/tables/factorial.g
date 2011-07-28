@@ -2,12 +2,9 @@
 ##
 #W  factorial.g              GAP4 Package `FactInt'               Stefan Kohl
 ##
-#H  @(#)$Id: factorial.g,v 1.3 2005/01/18 08:58:36 stefan Exp $
-##
 ##  This file contains a database of factors of numbers of the form k! +/- 1.
 ##
-Revision.factorial_g :=
-  "@(#)$Id: factorial.g,v 1.3 2005/01/18 08:58:36 stefan Exp $";
+#############################################################################
 
 MakeReadWriteGlobal( "K_FACTORIAL_M1_FACTORS" );
 K_FACTORIAL_M1_FACTORS :=

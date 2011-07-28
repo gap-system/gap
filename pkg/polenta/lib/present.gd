@@ -5,7 +5,7 @@
 ## Methods for the calculation of 
 ## pcp-presentations for matrix groups
 ##
-#H  @(#)$Id: present.gd,v 1.1 2003/11/04 14:07:05 gap Exp $
+#H  @(#)$Id: present.gd,v 1.2 2011/05/31 13:10:57 gap Exp $
 ##
 #Y 2003
 ##
@@ -26,4 +26,3 @@ DeclareGlobalFunction( "POL_IsMatGroupOverFiniteField" );
 #############################################################################
 ##
 #E
-

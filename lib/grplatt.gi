@@ -3,7 +3,7 @@
 #W  grplatt.gi                GAP library                   Martin Schönert,
 #W                                                          Alexander Hulpke
 ##
-#H  @(#)$Id: grplatt.gi,v 4.89 2010/02/23 15:13:05 gap Exp $
+#H  @(#)$Id: grplatt.gi,v 4.93 2011/06/12 08:34:30 stefan Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This  file  contains declarations for subgroup latices
 ##
 Revision.grplatt_gi:=
-  "@(#)$Id: grplatt.gi,v 4.89 2010/02/23 15:13:05 gap Exp $";
+  "@(#)$Id: grplatt.gi,v 4.93 2011/06/12 08:34:30 stefan Exp $";
 
 #############################################################################
 ##
@@ -31,6 +31,37 @@ local   zuppos,            # set of zuppos,result
   for c in List(ConjugacyClasses(G),Representative)  do
     o:=Order(c);
     if IsPrimePowerInt(o)  then
+      if ForAll([2..o],i -> Gcd(o,i) <> 1 or not c^i in zuppos) then
+	N:=Normalizer(G,Subgroup(G,[c]));
+	for t in RightTransversal(G,N)  do
+	  Add(zuppos,c^t);
+	od;
+      fi;
+    fi;
+  od;
+
+  # return the set of zuppos
+  Sort(zuppos);
+  return zuppos;
+end);
+
+#############################################################################
+##
+#F  Zuppos(<G>) .  set of generators for cyclic subgroups of prime power size
+##
+InstallOtherMethod(Zuppos,"group with condition",true,[IsGroup,IsFunction],0,
+function (G,func)
+local   zuppos,            # set of zuppos,result
+	c,                 # a representative of a class of elements
+	o,                 # its order
+	N,                 # normalizer of < c >
+	t;                 # loop variable
+
+  # compute the zuppos
+  zuppos:=[One(G)];
+  for c in List(ConjugacyClasses(G),Representative)  do
+    o:=Order(c);
+    if func(Group(c)) and IsPrimePowerInt(o)  then
       if ForAll([2..o],i -> Gcd(o,i) <> 1 or not c^i in zuppos) then
 	N:=Normalizer(G,Subgroup(G,[c]));
 	for t in RightTransversal(G,N)  do
@@ -66,6 +97,18 @@ local filter,cl;
     SetFunctionAction(cl,OnPoints);
     return cl;
 end);
+
+#############################################################################
+##
+#M  \^( <H>, <G> ) . . . . . . . . . conjugacy class of a subgroup of a group
+##
+InstallOtherMethod( \^, "conjugacy class of a subgroup of a group",
+                    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
+
+  function ( H, G )
+    if IsSubgroup(G,H) then return ConjugacyClassSubgroups(G,H);
+                       else TryNextMethod(); fi;
+  end );
 
 #############################################################################
 ##
@@ -282,7 +325,11 @@ local   G,		   # group
     factors:=Factors(Size(G));
 
     # compute a system of generators for the cyclic sgr. of prime power size
-    zuppos:=Zuppos(G);
+    if func<>false then
+      zuppos:=Zuppos(G,func);
+    else
+      zuppos:=Zuppos(G);
+    fi;
 
     Info(InfoLattice,1,"<G> has ",Length(zuppos)," zuppos");
 
@@ -2041,6 +2088,8 @@ local rt,op,a,l,i,j,u,max,subs;
   a:=ShallowCopy(AllBlocks(op));
   l:=Length(a);
 
+  if l = 0 then return rec( inclusions := [ [0,1] ], subgroups := [] ); fi;
+
   # compute inclusion information among sets
   Sort(a,function(x,y)return Length(x)<Length(y);end);
   # this is n^2 but I hope will not dominate everything.
@@ -2076,7 +2125,7 @@ InstallMethod(IntermediateSubgroups,"normal case",
   IsIdenticalObj, [IsGroup,IsGroup],
   1,# better than the previous method
 function(G,N)
-local hom,F,cl,cls,lcl,sub,sel,unsel,i,j;
+local hom,F,cl,cls,lcl,sub,sel,unsel,i,j,rmNonMax;
   if not IsNormal(G,N) then
     TryNextMethod();
   fi;
@@ -2093,6 +2142,7 @@ local hom,F,cl,cls,lcl,sub,sel,unsel,i,j;
   cls:=List(cl,Size);
   sub:=List(cl,i->[]);
   sub[lcl+1]:=[0..Length(cl)];
+  rmNonMax := function(j) if j > 0 then UniteSet( unsel, sub[j] ); Perform( sub[j], rmNonMax ); fi; end;
   # now build a list of contained maximal subgroups
   for i in [1..lcl] do
     sel:=Filtered([1..i-1],j->IsInt(cls[i]/cls[j]) and cls[j]<cls[i]);
@@ -2103,7 +2153,7 @@ local hom,F,cl,cls,lcl,sub,sel,unsel,i,j;
       if not j in unsel then
 	if IsSubset(cl[i],cl[j]) then
 	  AddSet(sub[i],j);
-	  UniteSet(unsel,sub[j]); # these are not maximal
+	  rmNonMax(j);
 	  RemoveSet(sub[lcl+1],j); # j is not maximal in whole
 	fi;
       fi;

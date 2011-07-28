@@ -9,7 +9,7 @@
 ##  This file contains the declarations of operations for factor group maps
 ##
 Revision.factgrp_gi:=
-  "@(#)$Id: factgrp.gi,v 4.70 2010/02/23 15:12:58 gap Exp $";
+  "@(#)$Id: factgrp.gi,v 4.71 2010/12/22 18:20:31 gap Exp $";
 
 #############################################################################
 ##
@@ -496,13 +496,6 @@ local pool, dom, o, bl, op, Go, j, b, i;
       op:=ActionHomomorphism(G,i,OnSets,"surjective");
       ImagesSource(op:onlyimage); #`onlyimage' forces same generators 
       b:=KernelOfMultiplicativeGeneralMapping(op);
-
-      #AH kernel is blockstab intersect.
-      #b:=g;
-      #for j in i do
-      #  b:=StabilizerOfBlockNC(b,j);
-      #od;
-
       AddNaturalHomomorphismsPool(G,b,op);
     od;
 
@@ -743,7 +736,22 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop, i,cheap;
   AddNaturalHomomorphismsPool(H,TrivialSubgroup(H),hom,NrMovedPoints(H));
   b.dotriv:=false;
   ihom:=H;
+  improve:=false; # indicator for first run
   repeat
+    if improve=false and NrMovedPoints(H)*5>Size(H) and
+      IsTransitive(H,MovedPoints(H)) then
+      b:=Blocks(H,MovedPoints(H));
+      map:=ActionHomomorphism(G,b,OnSets,"surjective");
+      ImagesSource(map:onlyimage); #`onlyimage' forces same generators 
+      b:=KernelOfMultiplicativeGeneralMapping(map);
+      AddNaturalHomomorphismsPool(G,b,map);
+      if Size(b)=1 then
+	H:=Image(map);
+	Info(InfoFactor,2," first improved to degree ",NrMovedPoints(H));
+	hom:=hom*map;
+	ihom:=H;
+      fi;
+    fi;
     improve:=false;
     b:=NaturalHomomorphismsPool(H);
     b.dotriv:=true;

@@ -2,13 +2,13 @@
 ##
 #A  galois.gi                   GAP library                  Alexander Hulpke
 ##
-#A  @(#)$Id: galois.gi,v 4.4 2004/01/24 16:16:14 gap Exp $
+#A  @(#)$Id: galois.gi,v 4.5 2011/05/14 20:44:12 alexk Exp $
 ##
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation for the computation of Galois Groups.
 Revision.galois_gi :=
-    "@(#)$Id: galois.gi,v 4.4 2004/01/24 16:16:14 gap Exp $";
+    "@(#)$Id: galois.gi,v 4.5 2011/05/14 20:44:12 alexk Exp $";
 
 
 #############################################################################
@@ -26,7 +26,7 @@ local d;
       return -1;
     fi;
   else
-    f:=X(ring)^2-d;
+    f:=Indeterminate(ring)^2-d;
     if IsIrreducibleRingElement(PolynomialRing(ring,
 		      [IndeterminateNumberOfUnivariateRationalFunction(f)]),f)
       then
@@ -329,7 +329,7 @@ local pol, fam, inum, x, r;
   fi;
   r:=UnivariatePolynomialByCoefficients(fam,r,inum+1);
   Info(InfoPoly,2,"Tschirnhausen transformation with ",r);
-  pol:=Resultant(pol,X(fam,inum)-r,inum+1);
+  pol:=Resultant(pol,Indeterminate(fam,inum)-r,inum+1);
   if Length(arg)>2 then
     return [pol,r];
   else
@@ -393,7 +393,7 @@ end);
 ##
 InstallGlobalFunction(GaloisSetResolvent,function(f,m)
 local i,p,r,x,d;
-  x:=X(CoefficientsFamily(FamilyObj(f)),
+  x:=Indeterminate(CoefficientsFamily(FamilyObj(f)),
     IndeterminateNumberOfUnivariateRationalFunction(f));
   # remember, which resolvent types already failed (most likely for
   # smaller sums), so we won't have to use them twice! 
@@ -454,7 +454,7 @@ end);
 InstallGlobalFunction(GaloisDiffResolvent,function(f)
 local s,i,p,r,x,m,pc;
   m:=DegreeOfUnivariateLaurentPolynomial(f);
-  x:=X(CoefficientsFamily(FamilyObj(f)),
+  x:=Indeterminate(CoefficientsFamily(FamilyObj(f)),
        IndeterminateNumberOfUnivariateRationalFunction(f));
   r:=x^2; # just to set initail value to non-squarefree pol
   i:=0;
@@ -777,7 +777,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
 
   basring:=Rationals;
   indnum:=IndeterminateNumberOfUnivariateRationalFunction(f);
-  indet:=X(basring,indnum);
+  indet:=Indeterminate(basring,indnum);
   polring:=PolynomialRing(basring,[indnum]);
 
   if LeadingCoefficient(f)<>1 then

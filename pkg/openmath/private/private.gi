@@ -3,7 +3,7 @@
 #W  omput.gi                OpenMath Package           Andrew Solomon
 #W                                                     Marco Costantini
 ##
-#H  @(#)$Id: private.gi,v 1.9 2009/06/26 13:57:41 alexk Exp $
+#H  @(#)$Id: private.gi,v 1.11 2010/11/12 13:18:24 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,141 +15,124 @@
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <cyc> )  
+#M  OMPut( <OMWriter>, <cyc> )  
 ##
 ##  Printing for cyclotomics
 ## 
-InstallMethod(OMPut, "for a proper cyclotomic", true,
-[IsOutputStream, IsCyc],0,
-function(stream, x)
-	local
-                real,
-                imaginary,
-
-		n, # Length(powlist)
-		i,
-		clist; # x = Sum_i clist[i]*E(n)^(i-1)
-
-    if IsGaussRat( x )  then
-
-        real := x -> (x + ComplexConjugate( x )) / 2;
-        imaginary := x -> (x - ComplexConjugate( x )) * -1 / 2 * E( 4 );
-
-        OMPutApplication( stream, "complex1", "complex_cartesian", 
-            [ real(x), imaginary(x)] );
-
-    else
-
+InstallMethod( OMPut, "for a proper cyclotomic", true,
+[ IsOpenMathWriter, IsCyc ],0,
+function(writer, x)
+local real,
+      imaginary,
+      n, # Length(powlist)
+	  i,
+	  clist; # x = Sum_i clist[i]*E(n)^(i-1)
+	  
+  if IsGaussRat( x )  then
+	real := x -> (x + ComplexConjugate( x )) / 2;
+    imaginary := x -> (x - ComplexConjugate( x )) * -1 / 2 * E( 4 );
+    OMPutApplication( writer, "complex1", "complex_cartesian", 
+                      [ real(x), imaginary(x)] );
+  else
 	n := Conductor(x);
 	clist := CoeffsCyc(x, n);
 
-	OMWriteLine(stream, ["<OMA>"]);
-	OMIndent := OMIndent+1;
-	OMPutSymbol( stream, "arith1", "plus" );
+	OMPutOMA( writer );
+	OMPutSymbol( writer, "arith1", "plus" );
 	for i in [1 .. n] do
 		if clist[i] <> 0 then
-
-			OMWriteLine(stream, ["<OMA>"]); # times
-			OMIndent := OMIndent+1;
-			OMPutSymbol( stream, "arith1", "times" );
-			OMPut(stream, clist[i]);
-
-			OMPutApplication( stream, "algnums", "NthRootOfUnity", [ n, i-1 ] );
-
-			OMIndent := OMIndent-1;
-			OMWriteLine(stream, ["</OMA>"]); #times
+            OMPutOMA( writer );    #times
+				OMPutSymbol( writer, "arith1", "times" );
+				OMPut(writer, clist[i]);
+				OMPutApplication( writer, "algnums", "NthRootOfUnity", [ n, i-1 ] );
+            OMPutEndOMA( writer ); #times
 		fi;
 	od;
-	OMIndent := OMIndent-1;
-	OMWriteLine(stream, ["</OMA>"]);
-
-    fi;
+	OMPutEndOMA( writer );
+  fi;
 end);
 
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <transformation> )  
+#M  OMPut( <writer>, <transformation> )  
 ##
 ##  Printing for transformations : specified in permut1.ocd 
 ## 
 InstallMethod(OMPut, "for a transformation", true,
-[IsOutputStream, IsTransformation],0,
-function(stream, x)
-	OMPutApplication( stream, "transform1", "transformation", ImageListOfTransformation(x) );
+[IsOpenMathWriter, IsTransformation],0,
+function(writer, x)
+	OMPutApplication( writer, "transform1", "transformation", 
+	                  ImageListOfTransformation(x) );
 end);
 
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <semigroup> )  
+#M  OMPut( <writer>, <semigroup> )  
 ##
 InstallMethod(OMPut, "for a semigroup", true,
-[IsOutputStream, IsSemigroup],0,
-function(stream, x)
-	OMPutApplication( stream, "semigroup1", "semigroup_by_generators", 
-		GeneratorsOfSemigroup(x) );
+[IsOpenMathWriter, IsSemigroup],0,
+function(writer, x)
+	OMPutApplication( writer, "semigroup1", "semigroup_by_generators", 
+		              GeneratorsOfSemigroup(x) );
 end);
 
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <monoid> )  
+#M  OMPut( <writer>, <monoid> )  
 ##
 ## 
 InstallMethod(OMPut, "for a monoid", true,
-[IsOutputStream, IsMonoid],0,
-function(stream, x)
-	OMPutApplication( stream, "monoid1", "monoid_by_generators", 
-		GeneratorsOfMonoid(x) );
+[IsOpenMathWriter, IsMonoid],0,
+function(writer, x)
+	OMPutApplication( writer, "monoid1", "monoid_by_generators", 
+		              GeneratorsOfMonoid(x) );
 end);
 
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <free group> )  
+#M  OMPut( <writer>, <free group> )  
 ##
 ## 
 InstallMethod(OMPut, "for a free group", true,
-[IsOutputStream, IsFreeGroup],0,
-function(stream, f)
+[IsOpenMathWriter, IsFreeGroup],0,
+function(writer, f)
 #	SetOMReference( f, Concatenation("freegroup", RandomString(16) ) );
-#	OMWriteLine( stream, [ "<OMA id=\"", OMReference( f ), "\" >" ] );
-	OMWriteLine( stream, [ "<OMA>" ] );
-	OMIndent := OMIndent+1;
-	OMPutSymbol( stream, "fpgroup1", "free_groupn" );
-	OMPut( stream, Rank( f ) );
-	OMIndent := OMIndent-1;
-	OMWriteLine(stream, ["</OMA>"]);
+#	OMWriteLine( writer, [ "<OMA id=\"", OMReference( f ), "\" >" ] );
+    OMPutOMA( writer );
+	OMPutSymbol( writer, "fpgroup1", "free_groupn" );
+	OMPut( writer, Rank( f ) );
+    OMPutEndOMA( writer );
 end);
 
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <FpGroup> )  
+#M  OMPut( <writer>, <FpGroup> )  
 ##
 ## 
 InstallMethod(OMPut, "for an FpGroup", true,
-[IsOutputStream, IsFpGroup],0,
-function(stream, g)
+[IsOpenMathWriter, IsFpGroup],0,
+function(writer, g)
 	local x;
 #	SetOMReference( g, Concatenation( "fpgroup", RandomString(16) ) );
-#	OMWriteLine( stream, [ "<OMA id=\"", OMReference( g ), "\" >" ] );
-	OMWriteLine( stream, [ "<OMA>" ] );
-		OMIndent := OMIndent+1;
-		OMPutSymbol( stream, "fpgroup1", "fpgroup" );
-		OMPutReference( stream, FreeGroupOfFpGroup( g ) );
+#	OMWriteLine( writer, [ "<OMA id=\"", OMReference( g ), "\" >" ] );
+    OMPutOMA( writer );
+		OMPutSymbol( writer, "fpgroup1", "fpgroup" );
+		OMPutReference( writer, FreeGroupOfFpGroup( g ) );
 		for x in RelatorsOfFpGroup( g ) do
-			OMPut( stream, ExtRepOfObj( x ) );
+			OMPut( writer, ExtRepOfObj( x ) );
 		od;
-		OMIndent := OMIndent-1;
-	OMWriteLine(stream, ["</OMA>"]);
+    OMPutEndOMA( writer );
 end);
 
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <record> )  
+#M  OMPut( <writer>, <record> )  
 ##
 ##  There is no OpenMath representation for records, though this might
 ##  be done within standard using OMATTR. However, for better efficiency
@@ -167,40 +150,38 @@ end);
 ##  for graphs.
 ##   
 InstallMethod(OMPut, "for a record", true,
-[IsOutputStream, IsRecord], 0 ,
-function(stream, x )
+[IsOpenMathWriter, IsRecord], 0 ,
+function(writer, x )
     local r;
-	OMWriteLine(stream, ["<OMA>"]);
-	OMIndent := OMIndent+1;
-	OMPutSymbol( stream, "record1", "record" );
+    OMPutOMA( writer );
+	OMPutSymbol( writer, "record1", "record" );
 	for r in RecNames(x) do
-	   OMPut( stream, r );
-	   OMPut( stream, x.(r) );
+	   OMPut( writer, r );
+	   OMPut( writer, x.(r) );
 	od;
-	OMIndent := OMIndent-1;
-	OMWriteLine(stream, ["</OMA>"]);	   
+    OMPutEndOMA( writer );	   
 end);
 
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <group> )  
+#M  OMPut( <writer>, <group> )  
 ##
 ##  Printing for groups as in openmath/cds/group1.ocd (Note that it 
 ##  differs from group1.group from the group1 CD at http://www.openmath.org,
 ##  since we just output the list of generators)
 ## 
 InstallMethod(OMPut, "for a group", true,
-[IsOutputStream, IsGroup],0,
-function(stream, x)
-	OMPutApplication( stream, "group1", "group_by_generators", 
+[IsOpenMathWriter, IsGroup],0,
+function(writer, x)
+	OMPutApplication( writer, "group1", "group_by_generators", 
 		GeneratorsOfGroup(x) );
 end);
 
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <pcgroup> )  
+#M  OMPut( <writer>, <pcgroup> )  
 ##
 ##  Printing for pcgroups as pcgroup1.pcgroup_by_pcgscode:
 ##  the 1st argument is pcgs code of the group, the 2nd is
@@ -209,26 +190,24 @@ end);
 ##  an isomorphic group but not equal to the original one.
 ## 
 InstallMethod(OMPut, "for a pcgroup", true,
-[IsOutputStream, IsPcGroup],0,
-function(stream, x)
-	OMWriteLine(stream, ["<OMA>"]);
-	OMIndent := OMIndent+1;
-	OMPutSymbol( stream, "pcgroup1", "pcgroup_by_pcgscode" );
-    OMPut( stream, CodePcGroup(x) );
-	OMPut( stream, Size(x) );
-	OMIndent := OMIndent-1;
-	OMWriteLine(stream, ["</OMA>"]);	
+[IsOpenMathWriter, IsPcGroup],0,
+function(writer, x)
+    OMPutOMA( writer );
+	OMPutSymbol( writer, "pcgroup1", "pcgroup_by_pcgscode" );
+    OMPut( writer, CodePcGroup(x) );
+	OMPut( writer, Size(x) );
+    OMPutEndOMA( writer );	
 end);
 
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <subgroup lattice> )  
+#M  OMPut( <writer>, <subgroup lattice> )  
 ##
 ## 
 InstallMethod(OMPut, "for a lattice of subgroups", true,
-[IsOutputStream, IsLatticeSubgroupsRep],0,
-function(stream, L)
+[IsOpenMathWriter, IsLatticeSubgroupsRep],0,
+function(writer, L)
   local cls, sz, len, i, levels, j, class, max, levelnr, rep, k, z, t, 
         nr, class_size;
 	
@@ -287,68 +266,53 @@ function(stream, L)
     od;
   od;
 	
-  OMWriteLine(stream, ["<OMA>"]);
-  OMIndent := OMIndent+1;
-  OMPutSymbol( stream, "poset1", "poset_diagram" );
+  OMPutOMA( writer );
+  OMPutSymbol( writer, "poset1", "poset_diagram" );
     for i in [ 1 .. Length(levels) ] do
-      OMWriteLine(stream, ["<OMA>"]);
-      OMIndent := OMIndent+1;
-      OMPutSymbol( stream, "poset1", "level" );
-      OMPut( stream, levels[i].index );
-      OMWriteLine(stream, ["<OMA>"]);
-      OMIndent := OMIndent+1;     
-      OMPutSymbol( stream, "list1", "list" );         
+      OMPutOMA( writer );
+      OMPutSymbol( writer, "poset1", "level" );
+      OMPut( writer, levels[i].index );
+      OMPutOMA( writer );
+      OMPutSymbol( writer, "list1", "list" );         
       for nr in RecNames( levels[i].classes ) do
-        OMWriteLine(stream, ["<OMA>"]);
-        OMIndent := OMIndent+1;     
-        OMPutSymbol( stream, "poset1", "class" );     
-        OMWriteLine(stream, ["<OMA>"]);
-        OMIndent := OMIndent+1;     
-        OMPutSymbol( stream, "list1", "list" );   
+        OMPutOMA( writer );
+        OMPutSymbol( writer, "poset1", "class" );     
+        OMPutOMA( writer );
+        OMPutSymbol( writer, "list1", "list" );   
         class_size := Length( levels[i].classes.(nr).vertices );
         for j in [ 1 .. class_size ] do
-          OMWriteLine(stream, ["<OMA>"]);
-          OMIndent := OMIndent+1;     
-          OMPutSymbol( stream, "poset1", "vertex" );  
+          OMPutOMA( writer );
+          OMPutSymbol( writer, "poset1", "vertex" );  
           if i = 1 then
-            OMPut( stream, "G" );
+            OMPut( writer, "G" );
           elif class_size = 1 then
-            OMPut( stream, String( levels[i].classes.(nr).number ) );    
+            OMPut( writer, String( levels[i].classes.(nr).number ) );    
           else
-            OMPut( stream, Concatenation( String( levels[i].classes.(nr).number ), ".", String(j) ) );    
+            OMPut( writer, Concatenation( String( levels[i].classes.(nr).number ), ".", String(j) ) );    
           fi;
           if Length( levels[i].classes.(nr).vertices[j] ) > 0 then
-            OMWriteLine(stream, ["<OMA>"]);
-            OMIndent := OMIndent+1;     
-            OMPutSymbol( stream, "list1", "list" );  
+            OMPutOMA( writer );
+            OMPutSymbol( writer, "list1", "list" );  
             for k in levels[i].classes.(nr).vertices[j] do
               if len[k[1]] = 1 then
-                OMPut( stream, String( k[1] ) );    
+                OMPut( writer, String( k[1] ) );    
               else
-                OMPut( stream, Concatenation( String( k[1] ), ".", String( k[2] ) ) );    
+                OMPut( writer, Concatenation( String( k[1] ), ".", String( k[2] ) ) );    
               fi;            
             od;
-            OMIndent := OMIndent-1;
-            OMWriteLine(stream, ["</OMA>"]);    
+			OMPutEndOMA( writer );  
           else
-          	OMPutSymbol( stream, "set1", "emptyset" );  
+          	OMPutSymbol( writer, "set1", "emptyset" );  
           fi;       
-          OMIndent := OMIndent-1;
-          OMWriteLine(stream, ["</OMA>"]);            
+		  OMPutEndOMA( writer );           
         od;
-        OMIndent := OMIndent-1;
-        OMWriteLine(stream, ["</OMA>"]);        
-        OMIndent := OMIndent-1;
-        OMWriteLine(stream, ["</OMA>"]);
+		OMPutEndOMA( writer );  
+		OMPutEndOMA( writer );  
       od;
-      OMIndent := OMIndent-1;
-      OMWriteLine(stream, ["</OMA>"]);
-      OMIndent := OMIndent-1;
-      OMWriteLine(stream, ["</OMA>"]);
+	  OMPutEndOMA( writer );  
+	  OMPutEndOMA( writer ); 
     od;
-  OMIndent := OMIndent-1;
-  OMWriteLine(stream, ["</OMA>"]);
-	
+    OMPutEndOMA( writer ); 
 end);
 
 
@@ -358,7 +322,7 @@ end);
 ##
 #######################################################################
 ##
-#F  OMIrredMatEntryPut( <stream>, <entry>, <data> )
+#F  OMIrredMatEntryPut( <writer>, <entry>, <data> )
 ##
 ##  <entry> is a (possibly unknown) cyclotomic
 ##  <data> is the record of information about names and values
@@ -367,72 +331,57 @@ end);
 ##  This borrows heavily from Thomas Breuer's 
 ##  CharacterTableDisplayStringEntryDefault
 ##
-BindGlobal("OMIrredMatEntryPut",
-function(stream, entry, data)
+BindGlobal("OMIrredMatEntryPut", function(writer, entry, data)
 	local val, irrstack, irrnames, name, ll, i, letters, n;
 
-  # OMPut(stream,entry);
+  # OMPut(writer,entry);
 	if IsCyc( entry ) and not IsInt( entry ) then
       # find shorthand for cyclo
       irrstack:= data.irrstack;
       irrnames:= data.irrnames;
       for i in [ 1 .. Length( irrstack ) ] do
         if entry = irrstack[i] then
-          OMPutVar(stream, irrnames[i]);
+          OMPutVar(writer, irrnames[i]);
 					return;
         elif entry = -irrstack[i] then
-					OMWriteLine(stream, ["<OMA>"]);
-					OMIndent := OMIndent +1;
-					OMPutSymbol(stream, "arith1", "unary_minus");
-          OMPutVar(stream, irrnames[i]);
-					OMIndent := OMIndent -1;
-					OMWriteLine(stream, ["</OMA>"]);
+                    OMPutOMA( writer );
+					OMPutSymbol(writer, "arith1", "unary_minus");
+          OMPutVar(writer, irrnames[i]);
+                    OMPutEndOMA( writer ); 
 					return;
         fi;
         val:= GaloisCyc( irrstack[i], -1 );
         if entry = val then
-					OMWriteLine(stream, ["<OMA>"]);
-					OMIndent := OMIndent +1;
-					OMPutSymbol(stream, "complex1", "conjugate");
-          OMPutVar(stream, irrnames[i]);
-					OMIndent := OMIndent -1;
-					OMWriteLine(stream, ["</OMA>"]);
+                    OMPutOMA( writer );
+					OMPutSymbol(writer, "complex1", "conjugate");
+          OMPutVar(writer, irrnames[i]);
+                    OMPutEndOMA( writer ); 
 					return;
         elif entry = -val then
-					OMWriteLine(stream, ["<OMA>"]);
-					OMIndent := OMIndent +1;
-					OMPutSymbol(stream, "arith1", "unary_minus");
-					OMWriteLine(stream, ["<OMA>"]);
-					OMIndent := OMIndent +1;
-					OMPutSymbol(stream, "complex1", "conjugate");
-          OMPutVar(stream, irrnames[i]);
-					OMIndent := OMIndent -1;
-					OMWriteLine(stream, ["</OMA>"]);
-					OMIndent := OMIndent -1;
-					OMWriteLine(stream, ["</OMA>"]);
+                    OMPutOMA( writer );
+					OMPutSymbol(writer, "arith1", "unary_minus");
+                    OMPutOMA( writer );
+					OMPutSymbol(writer, "complex1", "conjugate");
+          OMPutVar(writer, irrnames[i]);
+                    OMPutEndOMA( writer ); 
+                    OMPutEndOMA( writer ); 
 					return;
         fi;
         val:= StarCyc( irrstack[i] );
         if entry = val then
-					OMWriteLine(stream, ["<OMA>"]);
-					OMIndent := OMIndent +1;
-					OMPutSymbol(stream, "algnums", "star");
-          OMPutVar(stream, irrnames[i]);
-					OMIndent := OMIndent -1;
-					OMWriteLine(stream, ["</OMA>"]);
+                    OMPutOMA( writer );
+					OMPutSymbol(writer, "algnums", "star");
+          OMPutVar(writer, irrnames[i]);
+                    OMPutEndOMA( writer ); 
 					return;
         elif -entry = val then
-					OMWriteLine(stream, ["<OMA>"]);
-					OMIndent := OMIndent +1;
-					OMPutSymbol(stream, "arith1", "unary_minus");
-					OMWriteLine(stream, ["<OMA>"]);
-					OMIndent := OMIndent +1;
-					OMPutSymbol(stream, "algnums", "star");
-          OMPutVar(stream, irrnames[i]);
-					OMIndent := OMIndent -1;
-					OMWriteLine(stream, ["</OMA>"]);
-					OMIndent := OMIndent -1;
-					OMWriteLine(stream, ["</OMA>"]);
+                    OMPutOMA( writer );
+					OMPutSymbol(writer, "arith1", "unary_minus");
+                    OMPutOMA( writer );
+					OMPutSymbol(writer, "algnums", "star");
+          OMPutVar(writer, irrnames[i]);
+                    OMPutEndOMA( writer ); 
+                    OMPutEndOMA( writer ); 
 					return;
         fi;
         i:= i+1;
@@ -449,14 +398,14 @@ function(stream, entry, data)
         n:= QuoInt(n-1, ll);
       od;
       Add( irrnames, name );
-      OMPutVar(stream, irrnames[ Length( irrnames ) ]);
+      OMPutVar(writer, irrnames[ Length( irrnames ) ]);
 			return;
 
 		elif IsUnknown( entry ) then
-			OMPutVar(stream, "?"); 
+			OMPutVar(writer, "?"); 
 			return;
 		else
-			OMPut(stream, entry);
+			OMPut(writer, entry);
 			return;
 		fi;
 
@@ -465,61 +414,47 @@ end);
 
 #######################################################################
 ##
-#F  OMPutIrredMat( <stream>, <x> )
+#F  OMPutIrredMat( <writer>, <x> )
 ##
 ##  <x> is a character table
 ##
 ##  This borrows heavily from Thomas Breuer's 
 ##  character table Display routines -- see lib/ctbl.gi
 ##
-BindGlobal("OMPutIrredMat",
-function(stream, x)
+BindGlobal("OMPutIrredMat", function(writer, x)
 	local r,i, irredmat, data;
 
 	data := CharacterTableDisplayStringEntryDataDefault( x );
   # irreducibles matrix
   irredmat :=  List(Irr(x), ValuesOfClassFunction);
 
-	# OMPut(stream,irredmat);
+	# OMPut(writer,irredmat);
 
-  OMWriteLine(stream, ["<OMA>"]);
-  OMIndent := OMIndent +1;
+  OMPutOMA( writer );
 
-  OMPutSymbol( stream, "linalg2", "matrix" );
+  OMPutSymbol( writer, "linalg2", "matrix" );
   for r in irredmat do
-    OMWriteLine(stream, ["<OMA>"]);
-    OMIndent := OMIndent +1;
-
-      OMPutSymbol( stream, "linalg2", "matrixrow" );
-
-    for i in r do
-      OMIrredMatEntryPut(stream, i, data);
-    od;
-
-    OMIndent := OMIndent -1;
-    OMWriteLine(stream, ["</OMA>"]);
-
-
+      OMPutOMA( writer );
+      OMPutSymbol( writer, "linalg2", "matrixrow" );
+      for i in r do
+      		OMIrredMatEntryPut(writer, i, data);
+      od;
+      OMPutEndOMA( writer ); 
   od;
 
-  OMIndent := OMIndent -1;
-  OMWriteLine(stream, ["</OMA>"]);
+  OMPutEndOMA( writer ); 
 
 	# Now output the list of (variable = value) pairs
-	OMWriteLine(stream, ["<OMA>"]);
-	OMIndent := OMIndent +1;
-	OMPutSymbol(stream, "list1", "list");
+    OMPutOMA( writer );
+	OMPutSymbol(writer, "list1", "list");
 	for i in [1 .. Length(data.irrstack)] do
-		OMWriteLine(stream, ["<OMA>"]);
-		OMIndent := OMIndent +1;
-		OMPutSymbol(stream, "relation1", "eq");
-		OMPutVar(stream, data.irrnames[i]);
-		OMPut(stream, data.irrstack[i]);
-		OMIndent := OMIndent -1;
-		OMWriteLine(stream, ["</OMA>"]);
+        OMPutOMA( writer );
+		OMPutSymbol(writer, "relation1", "eq");
+		OMPutVar(writer, data.irrnames[i]);
+		OMPut(writer, data.irrstack[i]);
+        OMPutEndOMA( writer ); 
 	od;
-	OMIndent := OMIndent -1;
-	OMWriteLine(stream, ["</OMA>"]);
+    OMPutEndOMA( writer ); 
 
 end);
 
@@ -527,12 +462,12 @@ end);
 
 #######################################################################
 ##
-#M  OMPut( <stream>, <character table> )  
+#M  OMPut( <writer>, <character table> )  
 ##
 ##
 InstallMethod(OMPut, "for a character table", true,
-[IsOutputStream, IsCharacterTable],0,
-function(stream, c)
+[IsOpenMathWriter, IsCharacterTable],0,
+function(writer, c)
 	local
 		centralizersizes,
 		centralizerindices,
@@ -568,20 +503,18 @@ function(stream, c)
   # irreducibles matrix
   # irredmat :=  List(Irr(c), ValuesOfClassFunction);
 
-  OMWriteLine(stream, ["<OMA>"]);
-  OMIndent := OMIndent +1;
-    OMPutSymbol( stream, "group1", "character_table" );
-		OMPutList(stream, classnames);
-		OMPutList(stream, centralizersizes);
-		OMPutList(stream, centralizerprimes);
-		OMPutList(stream, centralizerindices); 
-		OMPutList(stream, powmap);
-		OMPutList(stream, sizesconjugacyclasses);
-		OMPutList(stream, ordersclassreps);
-		# OMPut(stream, irredmat); # previous cd version
-		OMPutIrredMat(stream, c);
-	OMIndent := OMIndent -1;
-	OMWriteLine(stream, ["</OMA>"]);
+  OMPutOMA( writer );
+  	OMPutSymbol( writer, "group1", "character_table" );
+	OMPutList(writer, classnames);
+	OMPutList(writer, centralizersizes);
+	OMPutList(writer, centralizerprimes);
+	OMPutList(writer, centralizerindices); 
+	OMPutList(writer, powmap);
+	OMPutList(writer, sizesconjugacyclasses);
+	OMPutList(writer, ordersclassreps);
+	# OMPut(writer, irredmat); # previous cd version
+	OMPutIrredMat(writer, c);
+  OMPutEndOMA( writer );
 end);
 
 #############################################################################

@@ -2,7 +2,7 @@
 ##
 #W  ctoline7.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoline7.tbl,v 4.15 2009/05/11 15:35:50 gap Exp $
+#H  @(#)$Id: ctoline7.tbl,v 4.17 2011/02/09 16:06:27 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -16,6 +16,24 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoline7.tbl,v $
+#H  Revision 4.17  2011/02/09 16:06:27  gap
+#H  replaced tables: 27:2^2 -> D108, 28.2^2 -> D112, D62x2 -> D124;
+#H  the old names (used in the library of tables of marks) are still
+#H  admissible
+#H      TB
+#H
+#H  Revision 4.16  2010/05/05 13:20:02  gap
+#H  - added many class fusions,
+#H  - changed several class fusions according to consistency conditions,
+#H    after systematic checks of consistency
+#H    - with Brauer tables w.r.t. the restriction of characters,
+#H    - of subgroup fusions with the corresponding subgroup fusions between
+#H      proper factors where the factor fusions are stored,
+#H    - of subgroup fusions from maximal subgroups with subgroup fusions of
+#H      extensions inside automorphic extensions
+#H
+#H      TB
+#H
 #H  Revision 4.15  2009/05/11 15:35:50  gap
 #H  added fusions L2(59) -> M, L2(71) -> M
 #H      TB
@@ -124,7 +142,7 @@
 #H  ==========================================================================
 ##
 Revision.ctoline7_tbl :=
-    "@(#)$Id: ctoline7.tbl,v 4.15 2009/05/11 15:35:50 gap Exp $";
+    "@(#)$Id: ctoline7.tbl,v 4.17 2011/02/09 16:06:27 gap Exp $";
 
 SET_TABLEFILENAME("ctoline7");
 ALN:= Ignore;
@@ -504,6 +522,7 @@ MOT("L2(109)",
 (31,32,34,38,46,53,39,48,49,47,51,43,56,33,36,42,54,37,44,57)(35,40,50,45,55)
 (41,52)],
 ["ConstructPermuted",["PSL2even",109]]);
+ARC("L2(109)","maxes",["109:54","D110","D108","A5","A5"]);
 ARC("L2(109)","tomfusion",rec(name:="L2(109)",map:=[1,27,27,20,18,14,18,20,9,
 20,18,6,18,20,9,20,18,14,18,20,3,20,18,14,18,20,9,20,18,2,23,23,23,23,11,23,
 23,23,23,11,5,23,23,23,11,23,23,23,23,11,23,5,23,23,11,23,23],text:=[
@@ -523,6 +542,7 @@ MOT("L2(113)",
 51,48,54,42,53,44,57),(32,36,56,42,33,41,38,53,35,51,45,44,39,48,59,57,47,54)
 (34,46,49,55,37,58,52,40,43)],
 ["ConstructPermuted",["PSL2even",113]]);
+ARC("L2(113)","maxes",["113:56","D114","D112","s4","s4"]);
 ARC("L2(113)","tomfusion",rec(name:="L2(113)",map:=[1,30,30,25,21,25,14,25,21,
 9,8,25,21,25,14,25,4,25,8,25,21,25,14,9,21,25,8,25,21,25,2,28,28,18,28,28,18,
 28,28,18,28,28,18,28,28,18,28,28,18,3,28,18,28,28,18,28,28,18,28],text:=[
@@ -541,11 +561,12 @@ MOT("L2(121)",
 (10,32,20,22)(15,27),( 2, 3),(34,35,37,41,49,62,36,39,45,57,46,59,42,51,58,44,
  55,50,60,40,47,61,38,43,53,54,52,56,48,63)],
 ["ConstructPermuted",["PSL2even",121]]);
-ARC("L2(121)","tomfusion",rec(name:="L2(121)",map:=[1,15,16,37,31,23,22,17,12,
-37,22,23,8,37,7,37,31,4,22,37,12,37,3,23,31,37,7,17,31,23,22,37,2,42,42,42,42,
-42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,
-42],text:=[
-"fusion map is unique up to table automorphisms"
+ARC("L2(121)","maxes",["11^2:60","L2(11).2","L2(121)M3","D122","D120"]);
+ARC("L2(121)","tomfusion",rec(name:="L2(121)",map:=[1,16,15,37,31,23,22,
+17,12,37,22,23,8,37,7,37,31,4,22,37,12,37,3,23,31,37,7,17,31,23,22,37,2,
+42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,
+42,42,42,42,42,42],text:=[
+"fusion map is unique up to table autom., compatible with `Maxes'"
 ]));
 ARC("L2(121)","isSimple",true);
 ARC("L2(121)","extInfo",["2","2^2"]);
@@ -562,6 +583,7 @@ MOT("L2(125)",
 (35,39,59)(36,44,47)(37,49,46)(38,54,60)(40,64,58)(41,62,48)(42,57,45)
 (43,52,61)(50,51,56)(53,65,63)],
 ["ConstructPermuted",["PSL2even",125]]);
+ARC("L2(125)","maxes",["5^3:62","D126","D124","A5"]);
 ARC("L2(125)","tomfusion",rec(name:="L2(125)",map:=[1,5,5,19,15,19,15,19,
 15,19,15,19,15,19,15,19,15,19,15,19,15,19,15,19,15,19,15,19,15,19,15,19,
 15,2,22,22,13,22,22,13,8,22,7,22,22,13,22,8,13,22,22,7,22,22,3,22,22,13,

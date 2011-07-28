@@ -4,12 +4,12 @@
 ##
 ## The declaration file for the computation of intersections of free groups
 ##
-#H @(#)$Id: Intsect.gd,v 1.2 2003/09/05 13:58:57 gap Exp $
+#H @(#)$Id: Intsect.gd,v 1.3 2010/04/13 09:41:43 gap Exp $
 ##
-#Y 2003
+#Y 2003 - 2009
 ##
 Revision.("fga/lib/Intsect_gd") :=
-    "@(#)$Id: Intsect.gd,v 1.2 2003/09/05 13:58:57 gap Exp $";
+    "@(#)$Id: Intsect.gd,v 1.3 2010/04/13 09:41:43 gap Exp $";
 
 
 ## These are all helper functions:
@@ -34,7 +34,7 @@ DeclareGlobalFunction( "FGA_GetNr" );
 
 #############################################################################
 ##
-#F  FGA_FindRepInIntersection ( <A1>, <A2> )
+#F  FGA_FindRepInIntersection ( <A1>, <t1>, <A2>, <t2> )
 ##
 DeclareGlobalFunction( "FGA_FindRepInIntersection" );
 

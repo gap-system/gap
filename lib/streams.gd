@@ -2,7 +2,7 @@
 ##
 #W  streams.gd                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: streams.gd,v 4.52 2010/02/23 15:13:32 gap Exp $
+#H  @(#)$Id: streams.gd,v 4.53 2010/09/10 15:44:55 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the operations for streams.
 ##
 Revision.streams_gd :=
-    "@(#)$Id: streams.gd,v 4.52 2010/02/23 15:13:32 gap Exp $";
+    "@(#)$Id: streams.gd,v 4.53 2010/09/10 15:44:55 gap Exp $";
 
 
 ##  <#GAPDoc Label="[1]{streams}">
@@ -35,8 +35,8 @@ Revision.streams_gd :=
 ##  <P/>
 ##  Any stream is either a <E>text stream</E>, which translates the <C>end-of-line</C>
 ##  character (<C>\n</C>) to or from the system's representation of
-##  <C>end-of-line</C> (e.g., <E>new-line</E> under UNIX, <E>carriage-return</E> under
-##  MacOS, <E>carriage-return</E>-<E>new-line</E> under DOS), or a <E>binary stream</E>,
+##  <C>end-of-line</C> (e.g., <E>new-line</E> under UNIX and
+##  <E>carriage-return</E>-<E>new-line</E> under DOS), or a <E>binary stream</E>,
 ##  which does not translate the <C>end-of-line</C> character. The processing of
 ##  other unprintable characters by text streams is undefined. Binary streams
 ##  pass them unchanged.

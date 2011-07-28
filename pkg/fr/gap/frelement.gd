@@ -2,7 +2,7 @@
 ##
 #W frelement.gd                                             Laurent Bartholdi
 ##
-#H   @(#)$Id: frelement.gd,v 1.25 2009/07/07 20:37:07 gap Exp $
+#H   @(#)$Id: frelement.gd,v 1.33 2011/06/13 22:54:33 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -20,13 +20,37 @@
 ## <#GAPDoc Label="IsFRElement">
 ## <ManSection>
 ##   <Filt Name="IsFRElement" Arg="obj"/>
+##   <Filt Name="IsSemigroupFRElement" Arg="obj"/>
+##   <Filt Name="IsMonoidFRElement" Arg="obj"/>
+##   <Filt Name="IsGroupFRElement" Arg="obj"/>
 ##   <Returns><K>true</K> if <A>obj</A> is an FR element.</Returns>
 ##   <Description>
-##     This function is the acceptor for the <E>functionally recursive
+##     This filter is the acceptor for the <E>functionally recursive
 ##     element</E> category.
 ##
 ##     <P/> It implies that <A>obj</A> has an underlying FR machine,
 ##     may act on sequences, and has a recursive <Ref Attr="DecompositionOfFRElement"/>.
+##
+##     <P/> The next filters specify the type of free object the stateset of
+##     <A>obj</A> is modelled on.
+##   </Description>
+## </ManSection>
+## <ManSection>
+##   <Filt Name="IsFRMealyElement" Arg="obj"/>
+##   <Filt Name="IsSemigroupFRMealyElement" Arg="obj"/>
+##   <Filt Name="IsMonoidFRMealyElement" Arg="obj"/>
+##   <Filt Name="IsGroupFRMealyElement" Arg="obj"/>
+##   <Attr Name="UnderlyingMealyElement" Arg="obj"/>
+##   <Returns><K>true</K> if <A>obj</A> is an FR element.</Returns>
+##   <Description>
+##     This filter is the acceptor for the <E>functionally recursive
+##     element</E> category, with an additional Mealy element stored as
+##     attribute for faster calculations. It defines a subcategory of
+##     <Ref Filt="IsFRElement"/>. This additional Mealy element may be
+##     obtained as <C>UnderlyingMealyElement(obj)</C>.
+##
+##     <P/> The next filters specify the type of free object the stateset of
+##     <A>obj</A> is modelled on.
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>
@@ -48,9 +72,14 @@
 ##
 DeclareCategory("IsFRElement", IsFRObject);
 DeclareCategoryCollections("IsFRElement");
-DeclareCategory("IsGroupFRElement", IsFRElement);
-DeclareCategory("IsMonoidFRElement", IsFRElement);
-DeclareCategory("IsSemigroupFRElement", IsFRElement);
+DeclareCategory("IsGroupFRElement", IsFRElement and IsAssociativeElement and IsInvertible);
+DeclareCategory("IsMonoidFRElement", IsFRElement and IsAssociativeElement);
+DeclareCategory("IsSemigroupFRElement", IsFRElement and IsAssociativeElement);
+DeclareAttribute("UnderlyingMealyElement", IsFRElement);
+DeclareSynonym("IsFRMealyElement", IsFRElement and HasUnderlyingMealyElement);
+DeclareSynonym("IsGroupFRMealyElement", IsGroupFRElement and HasUnderlyingMealyElement);
+DeclareSynonym("IsMonoidFRMealyElement", IsMonoidFRElement and HasUnderlyingMealyElement);
+DeclareSynonym("IsSemigroupFRMealyElement", IsSemigroupFRElement and HasUnderlyingMealyElement);
 DeclareOperation("FREFamily", [IsObject]);
 DeclareOperation("Minimized", [IsFRElement]);
 #############################################################################
@@ -617,7 +646,7 @@ DeclareOperation("ActivityTransformation", [IsFRElement, IsInt]);
 DeclareOperation("ActivityPerm", [IsFRElement]);
 DeclareOperation("ActivityPerm", [IsFRElement, IsInt]);
 DeclareOperation("DecompositionOfFRElement", [IsFRElement]);
-DeclareOperation("DecompositionOfFRElement", [IsFRElement, IsPosInt]);
+DeclareOperation("DecompositionOfFRElement", [IsFRElement, IsInt]);
 ##############################################################################
 
 ##############################################################################
@@ -626,6 +655,7 @@ DeclareOperation("DecompositionOfFRElement", [IsFRElement, IsPosInt]);
 #O State . . . . . . . . . . . . . . . . . . . . . element acting on a subtree
 #O States . . . . . . . . . . . . . . . . .all the elements acting on subtrees
 #O LimitStates . .those elements that appear infinitely many times in subtrees
+#O LimitFRMachine . . . . . . . . . . .the Mealy machine on those limit states
 ##
 ## <#GAPDoc Label="States">
 ## <ManSection>
@@ -789,6 +819,7 @@ DeclareOperation("DecompositionOfFRElement", [IsFRElement, IsPosInt]);
 ##
 ## <ManSection>
 ##   <Oper Name="NucleusOfFRMachine" Arg="m"/>
+##   <Oper Name="Nucleus" Arg="m" Label="FR machine"/>
 ##   <Returns>The nucleus of the machine <A>m</A>.</Returns>
 ##   <Description>
 ##     This function computes the <E>nucleus</E> of the machine <A>m</A>.
@@ -827,6 +858,8 @@ DeclareOperation("FixedStates", [IsFRElement]);
 DeclareOperation("FixedStates", [IsFRElementCollection]);
 DeclareOperation("LimitStates", [IsFRElement]);
 DeclareOperation("LimitStates", [IsFRElementCollection]);
+DeclareOperation("LimitFRMachine", [IsFRObject]);
+DeclareOperation("LimitFRMachine", [IsFRElementCollection]);
 DeclareProperty("IsFiniteStateFRElement", IsFRElement);
 DeclareProperty("IsFiniteStateFRMachine", IsFRMachine);
 DeclareOperation("NucleusOfFRMachine", [IsFRMachine]);

@@ -2,7 +2,7 @@
 ##
 #W init.g                                                   Laurent Bartholdi
 ##
-#H   @(#)$Id: init.g,v 1.3 2008/06/14 15:45:40 gap Exp $
+#H   @(#)$Id: init.g,v 1.5 2011/04/07 16:12:40 gap Exp $
 ##
 #Y Copyright (C) 2008, Laurent Bartholdi
 ##
@@ -25,19 +25,12 @@ FLOAT_MAKEDOC := function()
              "../lib/mpc.gd","../lib/cxsc.gd","../PackageInfo.g"],"float");
 end;
 
-if IsBound(IsFloat) then
-  Info(InfoFloat,1,"Zapping cybersquatter `IsFloat'");
-  MakeReadWriteGlobal("IsFloat"); Unbind(IsFloat);
-  Info(InfoFloat,1,"Zapping cybersquatter `Float'");
-  MakeReadWriteGlobal("Float"); Unbind(Float);
-fi;
-
 CallFuncList(function()
     local f;
     f := Filename(DirectoriesPackagePrograms("float"),"mp_float.so");
     if f<>fail then
         LoadDynamicModule(f);
-        if not IsBound(MPFR_INT) then
+        if not ISBOUND_GLOBAL("MPFR_INT") then
             Unbind(GAPInfo.PackagesLoaded.float);
             Error("float: Something went wrong when loading the kernel module ",f);
         fi;
@@ -46,7 +39,7 @@ CallFuncList(function()
     f := Filename(DirectoriesPackagePrograms("float"),"cxsc_float.so");
     if f<>fail then
         LoadDynamicModule(f);
-        if not IsBound(CXSC_INT) then
+        if not ISBOUND_GLOBAL("CXSC_INT") then
             Unbind(GAPInfo.PackagesLoaded.float);
             Error("float: Something went wrong when loading the kernel module ",f);
         fi;

@@ -2,7 +2,7 @@
 ##
 #W  mgmring.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: mgmring.gd,v 4.42 2010/02/23 15:13:17 gap Exp $
+#H  @(#)$Id: mgmring.gd,v 4.43 2010/10/10 12:34:37 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -62,7 +62,6 @@
 ##  of the magma;
 ##  for example, the addition in the group ring of a matrix group does in
 ##  general <E>not</E> coincide with the addition of matrices.
-##  Consider the following example.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> a:= Algebra( GF(2), [ [ [ Z(2) ] ] ] );;  Size( a );
@@ -106,7 +105,6 @@
 ##  (see&nbsp;<Ref Func="Embedding" Label="for two domains"/>)
 ##  explicitly whenever one needs for example the magma ring element
 ##  corresponding to a given magma element.
-##  Here is an example.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f:= Rationals;;  g:= SymmetricGroup( 3 );;
@@ -233,7 +231,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.mgmring_gd :=
-    "@(#)$Id: mgmring.gd,v 4.42 2010/02/23 15:13:17 gap Exp $";
+    "@(#)$Id: mgmring.gd,v 4.43 2010/10/10 12:34:37 alexk Exp $";
 
 
 #############################################################################

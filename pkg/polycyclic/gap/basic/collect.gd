@@ -113,7 +113,7 @@ DeclareProperty( "IsPolycyclicPresentation", IsFromTheLeftCollectorRep );
 #############################################################################
 ##
 #H The following indices point into a from the left collector.  They are used
-##  in additoin to the ones  defined in the GAP source file src/objcftl.h/.c.
+##  in addition to the ones  defined in the GAP source file src/objcftl.h/.c.
 ##  Eventually,  there  will be  one  place for  defining  the  indices of  a
 ##  from-the-left collector.
 ##

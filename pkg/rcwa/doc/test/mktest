@@ -3,8 +3,6 @@
 ##
 #W  mktest            Test the RCWA manual examples            Volkmar Felsch
 ##
-#H  $Id: mktest,v 1.14 2007/09/25 10:51:06 stefan Exp $
-##
 #Y  Copyright (C) 2002, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
 ##
 ##  mktest [-f] [-i] [-o] [-d] [-c]

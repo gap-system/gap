@@ -2,7 +2,7 @@
 **
 *W  objects.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: objects.h,v 4.54 2010/04/26 14:14:22 gap Exp $
+*H  @(#)$Id: objects.h,v 4.56 2011/05/23 10:58:39 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,7 +16,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_objects_h =
-   "@(#)$Id: objects.h,v 4.54 2010/04/26 14:14:22 gap Exp $";
+   "@(#)$Id: objects.h,v 4.56 2011/05/23 10:58:39 sal Exp $";
 #endif
 
 
@@ -152,7 +152,7 @@ static inline Obj prod_intobjs(Int l, Int r)
     return (Obj)r;
   if (r == (Int)INTOBJ_INT(1))
     return (Obj)l;
-  prod = ((Int)l >> 2) * ((Int)r-1)+1;
+  prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
   if ((prod << 1)>> 1 !=  prod)
     return (Obj) 0;
   if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
@@ -237,11 +237,12 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_FLAGS                 (FIRST_CONSTANT_TNUM+11)
 #define T_MACFLOAT              (FIRST_CONSTANT_TNUM+12)
 #define T_LVARS                 (FIRST_CONSTANT_TNUM+13)   
-#define LAST_CONSTANT_TNUM      (T_LVARS)
+#define T_SINGULAR              (FIRST_CONSTANT_TNUM+14)   
+#define LAST_CONSTANT_TNUM      (T_SINGULAR)
 
 #define IMMUTABLE               1
 
-#define FIRST_IMM_MUT_TNUM      (LAST_CONSTANT_TNUM+1)       /* Should be even */
+#define FIRST_IMM_MUT_TNUM      (LAST_CONSTANT_TNUM+2)       /* Should be even */
 #define FIRST_RECORD_TNUM       FIRST_IMM_MUT_TNUM
 #define T_PREC                  (FIRST_RECORD_TNUM+ 0)
 #define LAST_RECORD_TNUM        (T_PREC+IMMUTABLE)

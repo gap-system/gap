@@ -2,7 +2,7 @@
 ##
 #W  algsc.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: algsc.gi,v 4.40 2010/02/23 15:12:46 gap Exp $
+#H  @(#)$Id: algsc.gi,v 4.44 2011/01/15 21:46:52 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -27,7 +27,7 @@
 ##  then it has the component `coefficientsDomain'.
 ##
 Revision.algsc_gi :=
-    "@(#)$Id: algsc.gi,v 4.40 2010/02/23 15:12:46 gap Exp $";
+    "@(#)$Id: algsc.gi,v 4.44 2011/01/15 21:46:52 gap Exp $";
 
 
 #T need for the norm of a quaternion?
@@ -194,6 +194,72 @@ InstallMethod( PrintObj,
       od;
 
     fi;
+    end );
+
+#############################################################################
+##
+#M  String( <elm> )  . . . . . . . . . . . . . . .  for s.~c. algebra elements
+##
+InstallMethod( String,
+    "for s. c. algebra element",
+    [ IsSCAlgebraObj ],
+    function( elm )
+
+    local F,      # family of `elm'
+          s,      # string
+          names,  # generators names
+          len,    # dimension of the algebra
+          zero,   # zero element of the ring
+          depth,  # first nonzero position in coefficients list
+          one,    # identity element of the ring
+          i;      # loop over the coefficients list
+
+    F     := FamilyObj( elm );
+    names := F!.names;
+    elm   := ExtRepOfObj( elm );
+    len   := Length( elm );
+
+    # Treat the case that the algebra is trivial.
+    if len = 0 then
+      return "<zero of trivial s.c. algebra>";
+    fi;
+
+    zero  := Zero( elm[1] );
+    depth := PositionNot( elm, zero );
+
+    s:="";
+    if len < depth then
+
+      # Print the zero element.
+      # (Note that the unique element of a zero algebra has a name.)
+      Append(s, "0*");
+      Append(s,names[1]);
+
+    else
+
+      one:= One(  elm[1] );
+
+      if elm[ depth ] <> one then
+	Add(s,'(');
+	Append(s,String(elm[ depth ]));
+	Append(s, ")*" );
+      fi;
+      Append(s, names[ depth ] );
+
+      for i in [ depth+1 .. len ] do
+        if elm[i] <> zero then
+          Add(s, '+' );
+          if elm[i] <> one then
+	    Add(s,'(');
+	    Append(s,String(elm[ i ]));
+	    Append(s, ")*" );
+          fi;
+	  Append(s, names[ i ] );
+        fi;
+      od;
+
+    fi;
+    return s;
     end );
 
 
@@ -581,11 +647,28 @@ InstallGlobalFunction( LieAlgebraByStructureConstants, function( arg )
 end );
 
 InstallGlobalFunction( RestrictedLieAlgebraByStructureConstants, function( arg )
-    local A, firstargs;
-    firstargs := arg{[1..Length(arg)-1]};
-    A:= AlgebraByStructureConstantsArg( firstargs, IsSCAlgebraObj and IsRestrictedJacobianElement );
+    local A, fam, pmap, i, j, v;
+    A := AlgebraByStructureConstantsArg( arg{[1..Length(arg)-1]}, IsSCAlgebraObj and IsRestrictedJacobianElement );
+    SetIsLieAlgebra( A, true );
     SetIsRestrictedLieAlgebra( A, true );
-    FamilyObj(Representative(A))!.pMapping := arg[Length(arg)];
+    fam := FamilyObj(Representative(A));
+    fam!.pMapping := [];
+    pmap := arg[Length(arg)];
+    while Length(pmap)<>Dimension(A) do
+        Error("Pth power images list should have length ",Dimension(A));
+    od;
+    for i in [1..Length(pmap)] do
+        v := List(pmap,i->fam!.zerocoeff);
+        for j in [2,4..Length(pmap[i])] do
+            v[pmap[i][j]] := One(v[1])*pmap[i][j-1];
+        od;
+        v := ObjByExtRep(fam,v);
+#        while AdjointMatrix(Basis(A),A.(i))^Characteristic(A)<>AdjointMatrix(Basis(A),v) do
+#            Error("p-mapping at position ",i," doesn't satisfy the axioms of a restricted Lie algebra");
+#        od;
+        Add(fam!.pMapping,v);
+    od;
+    SetPthPowerImages(Basis(A),fam!.pMapping);
     return A;
 end );
 

@@ -4,12 +4,12 @@
 ##
 ##  Methods for homomorphisms of free groups
 ##
-#H  @(#)$Id: Hom.gi,v 1.4 2009/04/07 11:24:22 gap Exp $
+#H  @(#)$Id: Hom.gi,v 1.5 2010/04/13 09:56:55 gap Exp $
 ##
-#Y  2003 - 2009
+#Y  2003 - 2010
 ##
 Revision.("fga/lib/Hom_gi") :=
-    "@(#)$Id: Hom.gi,v 1.4 2009/04/07 11:24:22 gap Exp $";
+    "@(#)$Id: Hom.gi,v 1.5 2010/04/13 09:56:55 gap Exp $";
 
 
 InstallMethod( PreImagesRepresentative,
@@ -27,10 +27,11 @@ InstallMethod( PreImagesRepresentative,
                     One(Source(hom)));
     end );
 
-InstallMethod( ImageElm,
+InstallMethod( ImagesRepresentative,
     "for homomorphisms of free groups",
     FamSourceEqFamElm,
-    [ IsGroupGeneralMappingByImages and IsMapping, IsElementOfFreeGroup ],
+    [ IsGroupGeneralMappingByImages, IsElementOfFreeGroup ],
+    23,
     function( hom, x )
     local w, mgi;
     mgi := MappingGeneratorsImages( hom );

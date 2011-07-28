@@ -566,11 +566,11 @@ Changes between version 2.5.3 and version 2.5.4:
  - The line length used in the examples has been reduced to 75 in order to
    improve their appearance in the online help with standard settings.
 
-Changes between version 2.5.4 and version 3.0.0 (??? ??, 200?):
+Changes between version 2.5.4 and version 3.0.0 (May 8, 2011):
 
 The main changes are:
 
- - Now, RCWA provides basic functionality for computing in
+ - Now the RCWA package provides basic functionality for computing in
    rcwa groups over Z^2.
 
  - Many examples have been added -- to the manual as well as
@@ -604,7 +604,40 @@ Further changes are:
    class reflections have no longer predefined names, and the nice
    `View'ing is cared for by separate methods.
 
- - Now, RCWA needs GAP 4.4.10, ResClasses 3.0.0 (which now supports
-   unions of residue classes of Z^2), GAPDoc 1.1 and Polycyclic 2.2.
+ - Now the RCWA package needs GAP 4.4.12, ResClasses 3.0.0 (which supports
+   unions of residue classes of Z^2), GAPDoc 1.3 and Polycyclic 2.6.
+
+Changes between version 3.0.0 and version 3.0.1:
+
+ - Instead of `RCWATest' there are now two different test functions:
+   `RCWATestInstall' for briefly checking whether a installation
+   went well, and `RCWATestAll' for running the full test suite.
+   The function `RCWATestAll' corresponds to the former `RCWATest'.
+
+Changes between version 3.0.1 and version 3.0.2:
+
+ - Renamed the operation `Projections' for rcwa mappings of Z^2 to
+   `ProjectionsToCoordinates' and turned it into an attribute.
+ - Renamed the operation `Projections' for rcwa group and modulus to
+   `ProjectionsToInvariantUnionsOfResidueClasses'.
+
+Changes between version 3.0.2 and version 3.0.3:
+
+ - The CVS revision entries have been removed from the source files.
+ - The PDF version of the manual contains now bookmarks for chapters,
+   sections and subsections. -- This is due to improved functionality
+   of the most recent version of the GAPDoc package.
+
+Changes between version 3.0.3 and version 3.0.4:
+
+ - Renamed undocumented variables:
+     - `IsOrbit' -> `IsRcwaGroupOrbit'
+     - `IsOrbitStandardRep' -> `IsRcwaGroupOrbitStandardRep'
+     - `IsOrbitsIteratorRep' -> `IsRcwaGroupOrbitsIteratorRep'
+     - `IsOrbitInStandardRep' -> `IsRcwaGroupOrbitInStandardRep'.
+   Reason: name collision with orb package, and potential for
+   further name collisions; expected benefit from synergies
+   with other code for dealing with orbits is small.
+
 
 

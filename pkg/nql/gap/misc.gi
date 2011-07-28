@@ -2,10 +2,10 @@
 ##
 #W misc.gi			NQL				René Hartung
 ##
-#H   @(#)$Id: misc.gi,v 1.3 2008/08/28 08:12:26 gap Exp $
+#H   @(#)$Id: misc.gi,v 1.4 2010/03/17 12:47:34 gap Exp $
 ##
 Revision.("nql/gap/misc_gi"):=
-  "@(#)$Id: misc.gi,v 1.3 2008/08/28 08:12:26 gap Exp $";
+  "@(#)$Id: misc.gi,v 1.4 2010/03/17 12:47:34 gap Exp $";
 
 
 ############################################################################
@@ -19,14 +19,15 @@ InstallGlobalFunction( NQL_WordsOfLengthAtMostN,
   local Words,	# list of all words
 	i,g;	# loop variables
 
-  Words:=[[list[1]^0],list];
-  for i in [3..n+1] do 
-    Add(Words,[]);
+# Words:=[ [ list[1]^0 ], list ];
+  Words:=[ [ One( list[1] ) ], list ];
+  for i in [ 3 .. n+1 ] do 
+    Add( Words, [] );
     for g in list do 
-      Append(Words[i],List(Words[i-1],x->x*g));
+      Append( Words[i], List( Words[i-1], x -> x*g ) );
     od;
   od;
-  return(Concatenation(Words));
+  return( Concatenation( Words ) );
   end);
 
 ############################################################################

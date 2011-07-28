@@ -2,7 +2,7 @@
 ##
 #W  wordlett.gi                  GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id: wordlett.gi,v 4.18 2010/02/23 15:13:37 gap Exp $
+#H  @(#)$Id: wordlett.gi,v 4.21 2011/06/10 17:01:08 gap Exp $
 ##
 #Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -10,28 +10,7 @@
 ##  This  file contains  methods for   associative words  in letter
 ##  representation
 Revision.wordlett_gi :=
-    "@(#)$Id: wordlett.gi,v 4.18 2010/02/23 15:13:37 gap Exp $";
-
-LIB_CHAR_SINT:=function(n)
-  if n<0 then n:=n+256;fi;
-  return CHAR_INT(n);
-end;
-
-LIB_SINT_CHAR:=function(c)
-  c:=INT_CHAR(c);
-  if c>127 then c:=c-256;fi;
-  return c;
-end;
-
-LIB_SINTLIST_STRING:=s->List(s,SINT_CHAR);
-
-LIB_STRING_SINTLIST:=function(l)
-  l:=List(l,CHAR_SINT);
-  IS_STRING_CONV(l);
-  return l;
-end;
-
-SINTLIST_STRING := s-> INTLIST_STRING(s, -1);
+    "@(#)$Id: wordlett.gi,v 4.21 2011/06/10 17:01:08 gap Exp $";
 
 InstallMethod(AssocWordByLetterRep, "W letter words family", true,
     [ IsWLetterWordsFamily, IsHomogeneousList ], 0,
@@ -72,7 +51,7 @@ InstallMethod(LetterRepAssocWord,"W letter rep",true,
   [IsWLetterAssocWordRep],0,w->w![1]);
 
 InstallMethod(LetterRepAssocWord,"B letter rep",true,
-  [IsBLetterAssocWordRep],0,w->SINTLIST_STRING(w![1]));
+[IsBLetterAssocWordRep],0,w->INTLIST_STRING(w![1],-1));
 
 InstallOtherMethod(LetterRepAssocWord,"letter rep,gens",
 true, #TODO: This should be IsElmsColls once the tietze code is fixed.
@@ -342,62 +321,6 @@ local names,len,i,g,h,e;
   fi;
 end);
 
-InstallMethod(LaTeXObj,"assoc word in letter rep",true,
-  [IsAssocWord and IsLetterAssocWordRep],0,
-function(elm)
-local names,len,i,g,h,e,a,s;
-
-  names:= ShallowCopy(FamilyObj( elm )!.names);
-  for i in [1..Length(names)] do
-    s:=names[i];
-    e:=Length(s);
-    while e>0 and s[e] in CHARS_DIGITS do
-      e:=e-1;
-    od;
-    if e<Length(s) then
-      if e=Length(s)-1 then
-	s:=Concatenation(s{[1..e]},"_",s{[e+1..Length(s)]});
-      else
-	s:=Concatenation(s{[1..e]},"_{",s{[e+1..Length(s)]},"}");
-      fi;
-      names[i]:=s;
-    fi;
-  od;
-
-  s:="";
-  elm:=LetterRepAssocWord(elm);
-  len:= Length( elm );
-  i:= 2;
-  if len = 0 then
-    return( "id" );
-  else
-    g:=AbsInt(elm[1]);
-    e:=SignInt(elm[1]);
-    while i <= len do
-      h:=AbsInt(elm[i]);
-      if h=g then
-        e:=e+SignInt(elm[i]);
-      else
-	Append(s, names[g] );
-	if e<>1 then
-	  Append(s,"^{");
-	  Append(s,String(e));
-	  Append(s,"}");
-	fi;
-        g:=h;
-	e:=SignInt(elm[i]);
-      fi;
-      i:=i+1;
-    od;
-    Append(s, names[g] );
-    if e<>1 then
-      Append(s,"^{");
-      Append(s,String(e));
-      Append(s,"}");
-    fi;
-  fi;
-  return s;
-end);
 
 # operations for two associative words
 InstallMethod(\=,"assoc words in letter rep",IsIdenticalObj,

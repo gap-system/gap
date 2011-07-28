@@ -3,7 +3,7 @@
 #W  ctadmin.tbi         GAP character table library             Thomas Breuer
 #W                                                               Ute Schiffer
 ##
-#H  @(#)$Id: ctadmin.tbi,v 4.99 2009/08/07 21:40:08 gap Exp $
+#H  @(#)$Id: ctadmin.tbi,v 4.102 2011/02/11 16:09:27 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -22,7 +22,7 @@
 ##  a plain record, *not* a table object.
 ##
 Revision.( "ctbllib/gap4/ctadmin_tbi" ) :=
-    "@(#)$Id: ctadmin.tbi,v 4.99 2009/08/07 21:40:08 gap Exp $";
+    "@(#)$Id: ctadmin.tbi,v 4.102 2011/02/11 16:09:27 gap Exp $";
 
 
 #############################################################################
@@ -60,6 +60,30 @@ BindGlobal( "PParseBackwards", function( string, format )
     fi;
 
     return Reversed( result );
+    end );
+
+
+#############################################################################
+##
+#F  ClassPositionsOfLargestNormalPSubgroup( <ordtbl>, <p> )
+##
+BindGlobal( "ClassPositionsOfLargestNormalPSubgroup", function( ordtbl, p )
+    local nsg, op, opsizeexp, classes, n, nsize;
+
+    nsg:= ClassPositionsOfNormalSubgroups( ordtbl );
+    op:= [ 1 ];
+    opsizeexp:= 0;
+    classes:= SizesConjugacyClasses( ordtbl );
+    for n in nsg do
+      nsize:= Collected( Factors( Sum( classes{ n }, 0 ) ) );
+      if Length( nsize ) = 1 and nsize[1][1] = p
+                             and opsizeexp < nsize[1][2] then
+        op:= n;
+        opsizeexp:= nsize[1][2];
+      fi;
+    od;
+
+    return op;
     end );
 
 
@@ -128,15 +152,11 @@ InstallFlushableValue( LIBTABLE, rec(
 ##  In order to avoid an error message, we also define a dummy filter
 ##  `IsLibTomRep' here.)
 ##
-if LoadPackage( "tomlib", "1.0" ) <> true then
-  DeclareAutoreadableVariables( "ctbllib", "data/ctprimar.tbl",
-      [ "LIBLIST" ] );
-  BindGlobal( "TOM_TBL_INFO", [ [], [] ] );
+if not IsPackageMarkedForLoading( "tomlib", "1.0" ) then
   DeclareFilter( "IsLibTomRep" );
-else
-  DeclareAutoreadableVariables( "ctbllib", "data/ctprimar.tbl",
-      [ "LIBLIST", "TOM_TBL_INFO" ] );
 fi;
+DeclareAutoreadableVariables( "ctbllib", "data/ctprimar.tbl",
+    [ "LIBLIST", "TOM_TBL_INFO" ] );
 
 
 #############################################################################
@@ -296,6 +316,7 @@ InstallGlobalFunction( NotifyNameOfCharacterTable,
     SortParallel( LIBLIST.allnames, LIBLIST.position );
     LIBLIST.allnames := Immutable( LIBLIST.allnames );
     LIBLIST.position := Immutable( LIBLIST.position );
+#T better MakeImmutable! (also in other places!)
 end );
 
 
@@ -998,10 +1019,7 @@ end );
 #F  DecMatBrauerTree( <brauertree> )
 ##
 InstallGlobalFunction( DecMatBrauerTree, function( brauertree )
-    local i,
-          j,
-          max,
-          decmat;
+    local i, j, max, decmat;
 
     max:= 1;
     for i in brauertree do
@@ -1075,10 +1093,7 @@ InstallGlobalFunction( BrauerTableFromLibrary, function( ordtbl, prime )
           fld,           # library tables of the whole library file
           libtbl,        # record with data of the desired table
           reg,           # Brauer table, result
-          nsg,           # normal subgroups of the ordinary table
           op,            # largest normal $p$-subgroup
-          classes,       # class lengths in `ordtbl'
-          size,          # size of normal $p$-subgroup
           orders,        # representative orders in `ordtbl'
           nccl,          # no. of classes in `ordtbl'
           entry,         # loop over stored fusions
@@ -1127,20 +1142,8 @@ InstallGlobalFunction( BrauerTableFromLibrary, function( ordtbl, prime )
 
       # Maybe we have to factor out a normal $p$-subgroup before
       # we find the table (name) in the library.
-      nsg:= ClassPositionsOfNormalSubgroups( ordtbl );
-      op:= false;
-      j:= 0;
-      classes:= SizesConjugacyClasses( ordtbl );
-      for i in nsg do
-        size:= Collected( Factors( Sum( classes{ i }, 0 ) ) );
-        if Length( size ) = 1 and size[1][1] = prime
-                              and j < size[1][2] then
-          op:= i;
-          j:= size[1][2];
-        fi;
-      od;
-
-      if j = 0 then
+      op:= ClassPositionsOfLargestNormalPSubgroup( ordtbl, prime );
+      if Length( op ) = 1 then
         Info( InfoCharacterTable, 1,
               "No library table with name `", name, "'" );
         return fail;
@@ -1202,7 +1205,6 @@ InstallGlobalFunction( BrauerTableFromLibrary, function( ordtbl, prime )
       return fail;
 
     fi;
-
 
     libtbl:= fld.( name );
 
@@ -1304,6 +1306,9 @@ InstallGlobalFunction( BrauerTableFromLibrary, function( ordtbl, prime )
           fi;
         od;
       od;
+
+      reg!.factorblocks:= libtbl.factorblocks;
+#T a hack? (make the stored component evaluable)
 
     fi;
 
@@ -1451,11 +1456,11 @@ InstallMethod( BrauerTableOp,
         if orig <> fail then
           result:= CharacterTableRegular( tbl, p );
           # Restrict the permutation (if given) to the `p'-regular classes.
-          fus:= GetFusionMap( orig, t );
+          fus:= GetFusionMap( result, tbl );
           if IsBound( info[3] ) then
             fus:= OnTuples( fus, Inverse( info[3] ) );
           fi;
-          rest:= CompositionMaps( InverseMap( GetFusionMap( result, tbl ) ),
+          rest:= CompositionMaps( InverseMap( GetFusionMap( orig, t ) ),
                      fus );
           SetIrr( result, List( Irr( orig ),
                         chi -> Character( result,
@@ -1488,6 +1493,25 @@ InstallMethod( BrauerTableOp,
           if result <> fail then
             return result.table;
           fi;
+        fi;
+      elif IsList( info ) and info[1] = "ConstructV4G" then
+        result:= fail;
+        if Length( info ) = 2 then
+          ordfacttbls:= List( info[2], CharacterTableFromLibrary );
+          modfacttbls:= List( ordfacttbls, x -> x mod p );
+          if not fail in modfacttbls then
+            result:= BrauerTableOfTypeV4G( tbl, modfacttbls );
+          fi;
+        else
+          modfacttbl:= CharacterTable( info[2] ) mod p;
+          if modfacttbl <> fail then
+            result:= CallFuncList( BrauerTableOfTypeV4G,
+                         Concatenation( [ tbl, modfacttbl ],
+                             info{ [ 3 .. Length( info ) ] } ) );
+          fi;
+        fi;
+        if result <> fail then
+          return result;
         fi;
       fi;
     fi;
@@ -1893,7 +1917,7 @@ InstallGlobalFunction( OfThose,
 BindGlobal( "CTblLibAccessFunction", function( args, mode )
     local sporsimp, multinfo, simpinfo, autoinfo,
           result, list, startpos, name, vals, pos, newvals, val, resul,
-          ident, pp, ext;
+          ident, pp, ext, attrs, data, nam, attr, apos;
 
     if IsEmpty( args ) then
       if   mode = "all" then
@@ -1918,7 +1942,9 @@ BindGlobal( "CTblLibAccessFunction", function( args, mode )
     result:= [];
 
     # initialize the names list;
-    # supported special cases up to now are `IsSimple', `IsSporadicSimple'
+    # supported special cases are `IsSimple', `IsSporadicSimple',
+    # and (if the `Browse' package is available) those database attributes
+    # that correspond to GAP functions
 
     if     ( args[1] = IsSimple or args[1] = IsSimpleGroup
                                 or args[1] = IsSimpleCharacterTable )
@@ -1927,7 +1953,8 @@ BindGlobal( "CTblLibAccessFunction", function( args, mode )
       startpos:= 3;
 #T careful:
 #T in the case of user extensions, loop also over these files!!
-    elif args[1] = IsSporadicSimple and args[2] = true then
+    elif ( args[1] = IsSporadicSimple or args[1] = IsSporadicSimpleGroup )
+         and args[2] = true then
       list:= sporsimp;
       startpos:= 3;
     else
@@ -1993,6 +2020,7 @@ BindGlobal( "CTblLibAccessFunction", function( args, mode )
 
             else
 
+              # generic `OfThose' case
               if not IsCharacterTable( val ) then
                 val:= CharacterTable( val );
               fi;
@@ -2009,12 +2037,42 @@ BindGlobal( "CTblLibAccessFunction", function( args, mode )
 
           else
 
-            if not IsCharacterTable( val ) then
-              val:= CharacterTable( val );
+            # Check one condition.
+            # If a database attribute is available for it then use it.
+            if IsBoundGlobal( "CTblLibData" ) then
+              # Preprocessing for accessing database attributes ...
+              if not IsBound( attrs ) then
+                attrs:= [ [], [] ];
+                data:= ValueGlobal( "CTblLibData" );
+                for nam in RecNames( data.IdEnumerator.attributes ) do
+                  attr:= data.IdEnumerator.attributes.( nam );
+                  if IsBound( attr.name ) then
+                    Add( attrs[1], ValueGlobal( attr.name ) );
+                    Add( attrs[2], attr );
+                  fi;
+                od;
+              fi;
+              apos:= Position( attrs[1], args[ pos ] );
+            else
+              apos:= fail;
             fi;
-            resul:= args[ pos ]( val );
-            if    resul = args[ pos+1 ]
-               or ( IsList( args[ pos+1 ] ) and resul in args[ pos+1 ] ) then
+
+            if apos = fail then
+              # Use the character table for computing this invariant.
+              if not IsCharacterTable( val ) then
+                val:= CharacterTable( val );
+              fi;
+              resul:= args[ pos ]( val );
+            else
+              attr:= attrs[2][ apos ];
+              if IsCharacterTable( val ) then
+                resul:= attr.attributeValue( attr, Identifier( val ) );
+              else
+                resul:= attr.attributeValue( attr, val );
+              fi;
+            fi;
+            if resul = args[ pos+1 ] or
+               ( IsList( args[ pos+1 ] ) and resul in args[ pos+1 ] ) then
               Add( newvals, val );
             fi;
 
@@ -2434,6 +2492,17 @@ InstallGlobalFunction( LibraryFusionTblToTom, function( name, fus )
       Append( string, "text:=" );
       Append( string, TextString( fus.text ) );
     fi;
+
+    # If a permutation of maxes is bound then add it.
+    if IsBound( fus.perm ) then
+      Add( string, ',' );
+      if linelen >= 71 then
+        Add( string, '\n' );
+      fi;
+      Append( string, "perm:=" );
+      Append( string, String( fus.perm ) );
+    fi;
+
     Append( string, "));\n" );
 
     return string;
@@ -2446,43 +2515,39 @@ end );
 ##
 ##  (This is a utility for `CTblLibStringBrauer'.)
 ##
-##  Let <tbl> be the Brauer character table of a group $G$, say.
-##  If the {\GAP} table library contains the tables of factor groups of $G$
-##  by central subgroups
+##  Let <A>tbl</A> be the Brauer character table of a group <M>G</M>, say.
+##  If the &GAP; Character Table Library contains the tables of factor groups
+##  of <M>G</M> by central subgroups
 ##  such that the irreducible characters of these factors precede the other
-##  characters in <tbl> then the blocks of the factors can be omitted in the
-##  library version of <tbl>, and references to the factors are stored
-##  instead.
-##
-##  `ConsiderFactorBlocks' returns `0' if no such replacement is possible;
-##  otherwise a record with components `faithful' and `info' is returned,
-##  the former being the range of those irreducible characters of <tbl> that
-##  are not covered by the factor groups, the latter being the list that
-##  must be inserted as value of the `factorblocks' component in the library
-##  version of <tbl>;
+##  characters in <A>tbl</A> then the blocks of the factors can be omitted
+##  in the library version of <A>tbl</A>,
+##  and references to the factors are stored instead.
+##  <P/>
+##  <Ref Func="ConsiderFactorBlocks"/> returns an empty record if no such
+##  replacement is possible because no table of a relevant factor group was
+##  found.
+##  If some factor fusion is missing or if the irreducibles of a factor table
+##  are sorted incompatibly then a record with the component <C>error</C>
+##  is returned, whose value is a string.
+##  Otherwise a record with the components <C>offset</C> and <C>info</C> is
+##  returned,
+##  the former being the number of those irreducible characters of <A>tbl</A>
+##  that are not covered by the factor groups,
+##  and the latter being the list that can be inserted as value of the
+##  <C>factorblocks</C> component in the library version of <A>tbl</A>;
 ##  this is a list of pairs whose first entries are the names of the factor
 ##  tables, and the second entries are the offsets of numbers of basic set
 ##  characters.
-##
+##  <P/>
 ##  Currently this special treatment of factor groups is supported only for
-##  Brauer tables in the {\ATLAS} of Finite Groups.
-##  This means that the central subgroups in question have order divisible
-##  by $12$.
+##  Brauer tables in the &ATLAS; of Finite Groups.
+##  This means that the central subgroups in question must have order
+##  divisible by <M>12</M>, and the ordering of characters in the tables of
+##  the factor groups must coincide with the ordering for the table given.
 ##
 BindGlobal( "ConsiderFactorBlocks", function( tbl )
-    local p,
-          ordinary,
-          factfus,
-          classes,
-          pos,
-          mult,
-          sizes,
-          kernels,
-          i,
-          kernel,
-          size,
-          name,
-          facttbl,
+    local p, ordinary, factfus, classes, nsg, pos, mult, sizes, kernels, i,
+          kernel, size, name, facttbl, map, modfacttbl,
           info,
           nonfaith1,
           nonfaith,
@@ -2498,12 +2563,17 @@ BindGlobal( "ConsiderFactorBlocks", function( tbl )
     ordinary:= OrdinaryCharacterTable( tbl );
     factfus:= Filtered( ComputedClassFusions( ordinary ),
                   x -> Length( ClassPositionsOfKernel( x.map ) ) <> 1 );
-#T problem: if not all fusions are stored then later some blocks are missing!
+
+    # We must make sure that the fusions to all relevant factor tables
+    # are available.  (Otherwise some blocks could be missing.)
 #T (example: "2^2.L3(4).2_3" with fusion only to "2.L3(4).2_3"
 #T but not to "L3(4).2_3")
+    classes:= SizesConjugacyClasses( ordinary );
+    nsg:= Filtered( ClassPositionsOfNormalSubgroups( ordinary ),
+                    n -> 12 mod Sum( classes{ n } ) = 0 );
+    nsg:= Difference( nsg, [ [ 1 ] ] );
 
     # Get the maximal normal subgroup of order dividing $12$.
-    classes:= SizesConjugacyClasses( ordinary );
     pos:= 0;
     mult:= 0;
     sizes:= List( factfus, x -> 0 );
@@ -2511,7 +2581,8 @@ BindGlobal( "ConsiderFactorBlocks", function( tbl )
     for i in [ 1 .. Length( factfus ) ] do
       kernel:= ClassPositionsOfKernel( factfus[i].map );
       size:= Sum( classes{ kernel } );
-      if 12 mod size = 0 and size = Sum( classes{ kernel } ) then
+      if 12 mod size = 0 then
+        RemoveSet( nsg, kernel );
         sizes[i]:= size;
         kernels[i]:= kernel;
         if mult < size then
@@ -2521,12 +2592,35 @@ BindGlobal( "ConsiderFactorBlocks", function( tbl )
       fi;
     od;
     if pos = 0 or ( mult mod p = 0 ) then
-      return 0;
+      # No ordinary factor table was found,
+      # or the Brauer table can be constructed itself from that of a factor.
+      return rec();
+    elif not IsEmpty( nsg ) and
+      # If `kernels[ pos ]' describes a cyclic group then some fusions are
+      # missing; if the normal subgroup has the type 2^2 or 2^2x3 then only
+      # one factor fusion for kernels of order 2 or 6 is needed.
+         not ( sizes[ pos ] = 4 and Length( nsg ) = 2 and
+               List( nsg, n -> Sum( classes{ n } ) ) = [ 2, 2 ] ) and
+         not ( sizes[ pos ] = 12 and Length( nsg ) = 4 and
+               SortedList( List( nsg, n -> Sum( classes{ n } ) ) ) = [ 2, 2, 6, 6 ] ) then
+#T and what if 2^2.G really comes with three nonisom. factors 2.G?
+      return rec( error:= "some fusion missing" );
     fi;
 
-    # Get the table of the factor group.
+    # Get the table of the smallest factor group.
     name:= factfus[ pos ].name;
     facttbl:= CharacterTable( name );
+
+    # Check that the irreducibles fit together.
+    map:= factfus[ pos ].map;
+    if List( Irr( facttbl ), x -> x{ map } )
+           <> Irr( ordinary ){ [ 1 .. NrConjugacyClasses( facttbl ) ] } then
+      return rec( error:= "incompatible irred. for 1.G" );
+    fi;
+    modfacttbl:= facttbl mod p;
+    if modfacttbl <> fail and not IsBound( modfacttbl!.defect ) then
+      return rec( error:= "missing components in 1.G" );
+    fi;
 
     # Initialize the `factorblocks' info.
     info:= [ [ name, 0 ] ];
@@ -2537,7 +2631,7 @@ BindGlobal( "ConsiderFactorBlocks", function( tbl )
     if mult <> 3 and mult <> 2 then
 
       # Get the number of ordinary characters of `1.G'.
-      1faith:= Maximum( factfus[ pos ].map );
+      1faith:= Maximum( map );
 
       # Get the number of faithful ordinary characters of `2.G'.
       # (Note that there is no group `2.G' if `2^2.G' occurs and the three
@@ -2546,11 +2640,18 @@ BindGlobal( "ConsiderFactorBlocks", function( tbl )
                     i ->     sizes[i] = mult / 2
                          and IsSubset( kernels[ pos ], kernels[i] ) );
       if ppos <> fail then
-        2faith:= Maximum( factfus[ ppos ].map ) - 1faith;
+        map:= factfus[ ppos ].map;
+        2faith:= Maximum( map ) - 1faith;
         Add( info, [ factfus[ ppos ].name, 0 ] );
         facttbl:= CharacterTable( factfus[ ppos ].name );
         nonfaith2:= Length( PrimeBlocks( facttbl, p ).defect );
         nonfaith:= nonfaith2;
+
+        # Check that the irreducibles fit together.
+        if List( Irr( facttbl ), x -> x{ map } )
+           <> Irr( ordinary ){ [ 1 .. NrConjugacyClasses( facttbl ) ] } then
+          return rec( error:= "incompatible irred. for 2.G" );
+        fi;
       else
         2faith:= 0;
       fi;
@@ -2566,6 +2667,15 @@ BindGlobal( "ConsiderFactorBlocks", function( tbl )
         Add( info, [ factfus[ ppos ].name, 2faith ] );
         facttbl:= CharacterTable( factfus[ ppos ].name );
 
+        # Check that the irreducibles fit together.
+        map:= factfus[ ppos ].map;
+        if List( Irr( facttbl ), x -> x{ map } )
+           <> Irr( ordinary ){
+                Concatenation( [ 1 .. 1faith ], 1faith + 2faith +
+                    [ 1 .. Maximum( map ) - 1faith ] ) } then
+          return rec( error:= "incompatible irred. for 3.G" );
+        fi;
+
         nonfaith:= Length( PrimeBlocks( facttbl, p ).defect )
                    + nonfaith2 - nonfaith1;
 
@@ -2573,8 +2683,8 @@ BindGlobal( "ConsiderFactorBlocks", function( tbl )
 
         # If the normal subgroup of order 12 is cyclic then the proper factor
         # groups have orders 1, 2, 4, 3, 6 (in this order).
-        # If the structure is 2^2x3 then the proper factor groups are a
-        # subset of these (in this order).
+        # If the structure is 2^2x3 then the proper factor groups have orders
+        # 1, 2, 4, 3, 6 or 1, 4, 3 (in this order).
 
         # Consider `4.G' or `2^2.G' (no offset).
         ppos:= First( [ 1 .. Length( factfus ) ],
@@ -2584,17 +2694,34 @@ BindGlobal( "ConsiderFactorBlocks", function( tbl )
         facttbl:= CharacterTable( factfus[ ppos ].name );
         nonfaith4:= Length( PrimeBlocks( facttbl, p ).defect );
 
+        # Check that the irreducibles fit together.
+        map:= factfus[ ppos ].map;
+        if List( Irr( facttbl ), x -> x{ map } )
+           <> Irr( ordinary ){ [ 1 .. NrConjugacyClasses( facttbl ) ] } then
+          return rec( error:= "incompatible irred. for [4].G" );
+        fi;
+
         # Get the number of ordinary characters of `4.G' or `2^2.G' that
         # are not characters of `2.G'.
-        4faith:= Maximum( factfus[ ppos ].map ) - 1faith - 2faith;
+        4faith:= Maximum( map ) - 1faith - 2faith;
 
         # Consider `3.G' (offset is the number of
         # ordinary faithful characters of `2.G' and `4.G').
         ppos:= First( [ 1 .. Length( factfus ) ],
                       i ->     sizes[i] = 4
                            and IsSubset( kernels[ pos ], kernels[i] ) );
+
         Add( info, [ factfus[ ppos ].name, 2faith + 4faith ] );
+        map:= factfus[ ppos ].map;
         facttbl:= CharacterTable( factfus[ ppos ].name );
+
+        # Check that the irreducibles fit together.
+        if List( Irr( facttbl ), x -> x{ map } )
+           <> Irr( ordinary ){
+                Concatenation( [ 1 .. 1faith ], 1faith + 2faith + 4faith +
+                    [ 1 .. Maximum( map ) - 1faith ] ) } then
+          return rec( error:= "incompatible irred. for 3.G" );
+        fi;
 
         # Consider `6.G' (offset is the number of
         # ordinary faithful characters of `4.G').
@@ -2602,11 +2729,25 @@ BindGlobal( "ConsiderFactorBlocks", function( tbl )
                       i ->     sizes[i] = 2
                            and IsSubset( kernels[ pos ], kernels[i] ) );
         if ppos <> fail then
+          map:= factfus[ ppos ].map;
           Add( info, [ factfus[ ppos ].name, 4faith ] );
           facttbl:= CharacterTable( factfus[ ppos ].name );
           nonfaith:= Length( PrimeBlocks( facttbl, p ).defect )
                      + nonfaith4 - nonfaith2;
+
+          # Check that the irreducibles fit together.
+          if List( Irr( facttbl ), x -> x{ map } )
+             <> Irr( ordinary ){
+                  Concatenation( [ 1 .. 1faith + 2faith ], 1faith + 2faith + 4faith +
+                      [ 1 .. Maximum( map ) - 1faith - 2faith ] ) } then
+            return rec( error:= "incompatible irred. for 6.G" );
+          fi;
+
         else
+          # The normal subgroup has the structure 2^2x3, and no invariant 2.
+          # So we have to take the table of 3.G as the missing factor table
+          # for computing the number of non-faithful characters..
+#T ???
           nonfaith:= Length( PrimeBlocks( facttbl, p ).defect )
                      + nonfaith4 - nonfaith1;
         fi;
@@ -2726,12 +2867,19 @@ end );
 #F  CTblLibBasicSet( <decmat> )
 ##
 BindGlobal( "CTblLibBasicSet", function( decmat )
-    local lic, other, det, k, comb, old, diff, new, bs;
+    local lic, other, k, comb, old, diff, new, bs;
 
     lic:= LinearIndependentColumns( TransposedMat( decmat ) );
+    if DeterminantMat( decmat{ lic } ) in [ 1, -1 ] then
+      return lic;
+    fi;
+
+    # The first choice was not successful.
+    # Exchange `k' members, starting with `k = 1'.
     other:= Difference( [ 1 .. Length( decmat ) ], lic );
-    det:= DeterminantMat( decmat{ lic } );
     for k in [ 1 .. Minimum( Length( lic ), Length( other ) ) ] do
+      Info( InfoCharacterTable, 2,
+            "CTblLibBasicSet: exchange ", k, " members" );
       comb:= Combinations( other, k );
       for old in Combinations( lic, k ) do
         diff:= Difference( lic, old );
@@ -2746,8 +2894,68 @@ BindGlobal( "CTblLibBasicSet", function( decmat )
 
     # There is no basic set that consists of ordinary irreducibles.
     Info( InfoWarning, 1, "no basic set of irreducibles found" );
-    return lic;
+    return fail;
     end );
+
+
+#############################################################################
+##
+#F  CTblLibAppendSpecial( <stream>, <ncols>, <chars>, <used> )  
+##
+##  Special cases are `Irr( tbl )' and `ProjectivesInfo( tbl )' since
+##  after the call of `ShrinkChars' they may
+##  contain strings, which shall be printed without `"'
+##
+BindGlobal( "CTblLibAppendSpecial", function( stream, ncols, chars, used )  
+    local j;
+
+    used:= BlanklessPrintTo( stream, "[", ncols, used, false );
+    for j in [ 1 .. Length( chars ) ] do
+      if j <> 1 then
+        used:= BlanklessPrintTo( stream, ",", ncols, used, false );
+      fi;
+      if IsBound( chars[j] ) then 
+        if IsString( chars[j] ) then
+          PrintTo( stream, chars[j] );            # strip the `"' 
+          used:= Length( chars[j] );
+        else
+          used:= BlanklessPrintTo( stream, chars[j], ncols, used, false );
+        fi;
+      fi;
+    od; 
+    return BlanklessPrintTo( stream, "]", ncols, used, false );
+end );
+
+
+#############################################################################
+##
+#F  CTblLibStringOfProjectivesInfo( <projinfo>, <name> )
+##
+BindGlobal( "CTblLibStringOfProjectivesInfo", function( projinfo, name )
+    local ncols, string, stream, used, j;
+
+    ncols:= 78;
+    string:= "";
+    stream:= OutputTextString( string, true );
+    SetPrintFormattingStatus( stream, true );
+    used:= BlanklessPrintTo( stream,
+               Concatenation( "ARC(\"", name,
+                              "\",\"projectives\",[" ),
+               ncols, 0, false );
+    for j in projinfo do
+      used:= BlanklessPrintTo( stream,
+                 Concatenation( "\"", j.name, "\"," ), ncols, used, false );
+      EvalChars( j.chars );
+      used:= CTblLibAppendSpecial( stream, ncols, ShrinkChars( j.chars ), used );
+      used:= BlanklessPrintTo( stream, ",", ncols, used, false );
+    od;
+    BlanklessPrintTo( stream, "]);", ncols, used, false );
+    PrintTo( stream, "\n" );
+
+    # Return the string.
+    CloseStream( stream );
+    return string;
+end );
 
 
 #############################################################################
@@ -2757,8 +2965,7 @@ BindGlobal( "CTblLibBasicSet", function( decmat )
 #F  PrintToLib( <file>, <tbl> )
 ##
 BindGlobal( "CTblLibStringOrdinary", function( tbl )
-    local special,
-          ncols,
+    local ncols,
           used,
           string,
           stream,
@@ -2778,35 +2985,6 @@ BindGlobal( "CTblLibStringOrdinary", function( tbl )
           libinfo,
           maxes,
           pos;
-
-    # Special cases are `Irr( tbl )' and `ProjectivesInfo( tbl )' since
-    # after the call of `ShrinkChars' they may
-    # contain strings, which shall be printed without `"'
-    special:= function( chars, used )
-        local j;
-        used:= BlanklessPrintTo( stream, "[", ncols, used, false );
-        for j in [ 1 .. Length( chars ) - 1 ] do
-          if IsBound( chars[j] ) then
-            if IsString( chars[j] ) then
-              PrintTo( stream, chars[j] );            # strip the `"'
-              used:= Length( chars[j] );
-            else
-              used:= BlanklessPrintTo( stream, chars[j], ncols, used, false );
-            fi;
-          fi;
-          used:= BlanklessPrintTo( stream, ",", ncols, used, false );
-        od;
-        if not IsEmpty( chars ) then
-          j:= Length( chars );
-          if IsString( chars[j] ) then
-            PrintTo( stream, chars[j] );              # strip the `"'
-            used:= Length( chars[j] );
-          else
-            used:= BlanklessPrintTo( stream, chars[j], ncols, used, false );
-          fi;
-        fi;
-        return BlanklessPrintTo( stream, "]", ncols, used, false );
-    end;
 
     ncols:= 78;
     string:= "";
@@ -2845,7 +3023,7 @@ Error( "handling of Clifford tables not yet installed!" );
       PrintTo( stream, "0,\n" );
     fi;
 
-    if HasSizesCentralizers( tbl ) then
+    if HasSizesCentralizers( tbl ) or HasSizesConjugacyClasses( tbl ) then
       used:= BlanklessPrintTo( stream, SizesCentralizers( tbl ), ncols, 0,
                                false );
       BlanklessPrintTo( stream, ",", ncols, used, false );
@@ -2875,7 +3053,7 @@ Error( "handling of Clifford tables not yet installed!" );
     fi;
 
     if HasIrr( tbl ) then
-      used:= special( ShrinkChars( Irr( tbl ) ), 0 );
+      used:= CTblLibAppendSpecial( stream, ncols, ShrinkChars( Irr( tbl ) ), 0 );
       BlanklessPrintTo( stream, ",", ncols, used, false );
       PrintTo( stream, "\n" );
     else
@@ -2930,21 +3108,8 @@ Error( "handling of Clifford tables not yet installed!" );
 
     # Shrink and print the projectives.
     if HasProjectivesInfo( tbl ) then
-
-      used:= BlanklessPrintTo( stream,
-                 Concatenation( "ARC(\"", name,
-                                "\",\"projectives\",[" ),
-                 ncols, 0, false );
-      for j in ProjectivesInfo( tbl ) do
-        used:= BlanklessPrintTo( stream,
-                   Concatenation( "\"", j.name, "\"," ), ncols, used, false );
-        EvalChars( j.chars );
-        used:= special( ShrinkChars( j.chars ), used );
-        used:= BlanklessPrintTo( stream, ",", ncols, used, false );
-      od;
-      BlanklessPrintTo( stream, "]);", ncols, used, false );
-      PrintTo( stream, "\n" );
-
+      PrintTo( stream,
+          CTblLibStringOfProjectivesInfo( ProjectivesInfo( tbl ), name ) );
     fi;
 
     # Print remaining supported components of library tables.
@@ -3105,11 +3270,13 @@ BindGlobal( "CTblLibStringBrauer", function( tbl )
 
     # factor blocks (pos. 9)
     offset:= 0;
-    if factorblocks <> 0 then
+    if IsBound( factorblocks.info ) then
       offset:= factorblocks.offset;
       info:= info{ [ offset + 1 .. Length( info ) ] };
       block:= Filtered( block, x -> offset < x );
       factorblocks:= factorblocks.info;
+    else
+      factorblocks:= 0;
     fi;
 
     # `defect' component (position 5)
@@ -3364,6 +3531,78 @@ end );
 
 ##############################################################################
 ##
+#M  GroupInfoForCharacterTable( <tbl> )
+##
+InstallMethod( GroupInfoForCharacterTable,
+    "for an ordinary library character table",
+    [ IsOrdinaryTable and IsLibraryCharacterTableRep ],
+    tbl -> GroupInfoForCharacterTable( Identifier( tbl ) ) );
+
+InstallOtherMethod( GroupInfoForCharacterTable,
+    "for the identifier of an ordinary library character table",
+    [ IsString ],
+    function( id )
+    local result, data, name, attr;
+
+    result:= [];
+
+    if IsBoundGlobal( "CTblLibData" ) then
+      data:= ValueGlobal( "CTblLibData" );
+      for name in RecNames( data.IdEnumerator.attributes ) do
+        attr:= data.IdEnumerator.attributes.( name );
+        if attr.identifier in
+             data.attributesRelevantForGroupInfoForCharacterTable then
+          Append( result, attr.attributeValue( attr, id ) );
+        fi;
+      od;
+    else
+      Info( InfoWarning, 1,
+            "GroupInfoForCharacterTable: CTblLibData is not bound" );
+    fi;
+
+    return SortedList( result );
+    end );
+
+
+##############################################################################
+##
+#F  CharacterTableForGroupInfo( <info> )
+##
+InstallGlobalFunction( CharacterTableForGroupInfo, function( info )
+    local data, name, attr, value;
+
+    if not ( IsDenseList( info ) and Length( info ) = 2 ) then
+      Error( "<info> must be a list of length two" );
+    elif not IsString( info[1] ) then
+      Error( "<info>[1] must be a string" );
+    elif not IsList( info[2] ) then
+      Error( "<info>[2] must be the list of arguments of <info>[1]" );
+    fi;
+
+    if IsBoundGlobal( "CTblLibData" ) then
+      data:= ValueGlobal( "CTblLibData" );
+      for name in RecNames( data.IdEnumerator.attributes ) do
+        attr:= data.IdEnumerator.attributes.( name );
+        if attr.identifier in
+             data.attributesRelevantForGroupInfoForCharacterTable
+           and IsBound( attr.reverseEval ) then
+          value:= attr.reverseEval( attr, info );
+          if value <> fail then
+            return CharacterTable( value );
+          fi;
+        fi;
+      od;
+    else
+      Info( InfoWarning, 1,
+            "GroupInfoForCharacterTable: CTblLibData is not bound" );
+    fi;
+
+    return fail;
+    end );
+
+
+##############################################################################
+##
 #F  GaloisPartnersOfIrreducibles( <tbl>, <characters>, <n> )
 ##
 ##  Compute the Galois automorphism(s) carrying to the partner(s).
@@ -3532,7 +3771,7 @@ InstallGlobalFunction( AtlasLabelsOfIrreducibles, function( arg )
 
     # Get the arguments.
     tbl:= arg[1];
-    short:= Length( arg ) = 2 and arg[2] = "short";
+    short:= Length( arg ) = 2 and ( arg[2] = "short" or arg[2] = true );
 
     # `tbl' is assumed to be the table of a bicyclic extension
     # of a simple group.

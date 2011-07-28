@@ -3,7 +3,7 @@
 #W  coll.gi                     GAP library                  Martin Schönert
 #W                                                            & Thomas Breuer
 ##
-#H  @(#)$Id: coll.gi,v 4.107 2010/02/23 15:12:49 gap Exp $
+#H  @(#)$Id: coll.gi,v 4.110 2011/05/09 20:44:46 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains methods for collections in general.
 ##
 Revision.coll_gi :=
-    "@(#)$Id: coll.gi,v 4.107 2010/02/23 15:12:49 gap Exp $";
+    "@(#)$Id: coll.gi,v 4.110 2011/05/09 20:44:46 gap Exp $";
 
 
 #############################################################################
@@ -897,6 +897,21 @@ InstallOtherMethod( Iterator,
     IdFunc );
 #T or change the for-loop to accept iterators?
 
+#############################################################################
+##
+#M  List( <iter> ) . . . . . . return list of remaining objects in an iterator
+##  
+##  Does not change the iterator.
+##  
+InstallOtherMethod(ListOp, [IsIterator], function(it)
+  local l, a;
+  l := [];
+  it := ShallowCopy(it);
+  for a in it do 
+    Add(l,a);
+  od;
+  return l;
+end);
 
 #############################################################################
 ##
@@ -947,7 +962,7 @@ InstallGlobalFunction( IteratorByFunctions, function( record )
       Error( "<record> must be a record with components `NextIterator',\n",
              "`IsDoneIterator', and `ShallowCopy'" );
     fi;
-    filter:= IsIteratorByFunctions and IsAttributeStoringRep and IsMutable;
+    filter:= IsIteratorByFunctions and IsMutable;
 
     return Objectify( NewType( IteratorsFamily, filter ), record );
 end );
@@ -974,6 +989,52 @@ InstallMethod( ShallowCopy,
     return IteratorByFunctions( new );
     end );
 
+
+#############################################################################
+##
+#F  ConcatenationIterators( <iters> ) . . . . . . . .combine list of iterators
+##  to one iterator
+##  
+BIND_GLOBAL("NextIterator_Concatenation", function(it)
+  local it1, res;
+  it1 := it!.iters[it!.i];
+  res := NextIterator(it1);
+  if IsDoneIterator(it1) then 
+    if it!.i = Length(it!.iters) then
+      it!.done := true;
+    else
+      it!.i := it!.i+1;
+    fi;
+  fi;
+  return res;
+end);
+BIND_GLOBAL("IsDoneIterator_Concatenation", function(it)
+  return it!.done;
+end);
+BIND_GLOBAL("ShallowCopy_Concatenation", function(it)
+  return rec(NextIterator := it!.NextIterator,
+    IsDoneIterator := it!.IsDoneIterator,
+    ShallowCopy := it!.ShallowCopy,
+    done := it!.done,
+    i := it!.i,
+    iters := List(it!.iters, ShallowCopy)
+    );
+end);
+BIND_GLOBAL("ConcatenationIterators", function(iters)
+  local i;
+  i := 1;
+  while i <= Length(iters) and IsDoneIterator(iters[i]) do
+    i := i+1;
+  od;
+  return IteratorByFunctions(rec(
+    NextIterator := NextIterator_Concatenation,
+    IsDoneIterator := IsDoneIterator_Concatenation,
+    ShallowCopy := ShallowCopy_Concatenation,
+    i := i,
+    iters := iters,
+    done := i > Length(iters)
+            ));
+end);  
 
 #############################################################################
 ##
@@ -2458,6 +2519,146 @@ InstallMethod( Union2,
     return I;
     end );
 
+AbsInt:="2b defined";
+
+# join ranges
+# [a0,a+da..a1] with [b0,db,b1]
+JoinRanges:=function(a0,da,a1,b0,db,b1)
+local x;
+
+  # ensure a0<=b0
+  if a0>b0 then
+    x:=a0;a0:=b0;b0:=x;
+    x:=a1;a1:=b1;b1:=x;
+    x:=da;da:=db;db:=x;
+  fi;
+
+  # first deal with 1-point ranges
+  if da=0 then
+    if a0=b0 then
+      return [b0,db,b1]; # point a is in b
+    elif db=0 then
+      return [a0,b0-a0,b0]; # new length 2 range from two points
+    else
+      # a is point at proper distance before proper range b
+      if b0-a0=db then
+        return [a0,db,b1];
+      else
+        return fail;
+      fi;
+    fi;
+  elif db=0 then
+    if (b0-a0) mod da=0 then
+      if b0<=a1 then
+        # b is point in a
+        return [a0,da,a1];
+      elif b0-a1=da then
+	# b is point at proper distance after a
+	return [a0,da,b0];
+      else
+        return fail;
+      fi;
+    else
+      # b is point at different distance. The only way this can happen is if
+      # a has length 2 and b splits it. (As a0<=b0 this case can not happen
+      # for da=0)
+      if a1-a0=da and 2*(b0-a0)=da then
+        return [a0,b0-a0,a1];
+      else
+        return fail;
+      fi;
+    fi;
+  fi;
+
+  # now a and b are proper ranges.
+  if da=db then
+    if (b0-a0) mod da=0 then
+      # at compatible pattern.
+      if b0<=a1+da then
+        # and b does not start too late. If subsets, or extends a
+	return [a0,da,Maximum(a1,b1)];
+      else
+        #b starts too late -- there is a gap we cannot fill
+        return fail;
+      fi;
+    else
+      # b is on different pattern. This is only possible if b interleaves a,
+      # at half distance, and the end points must be at most this half
+      # distance away
+      if AbsInt(b0-a0)*2=da and AbsInt(b1-a1)*2=da then
+        return [Minimum(a0,b0),da/2,Maximum(a1,b1)];
+      else
+        # not half step, or leaving gaps at start or end -- will not work
+	return fail;
+      fi;
+    fi;
+  elif IsInt(db/da) then
+    # a steps at distance that properly divides db.
+    # We can join the ranges, if and only if b0 is from a0 on the da grid
+    # and the last element of b is at most da away from a1
+    if (b0-a0) mod da=0 and b1<=a1+da then
+      return [a0,da,Maximum(b1,a1)];
+    else
+      return fail;
+    fi;
+  elif IsInt(da/db) then
+    # b steps at distance that properly divides da
+    # We can join the ranges, if and only if a0 is from b0 on the db grid
+    # and the first element of a is at most db away from b0 and
+    # due to ordering this was not possible in dual case)
+    if (b0-a0) mod db=0 and a0>=b0-db and a1<=b1+db then
+      return [Minimum(a0,b0),db,Maximum(a1,b1)];
+    else
+      return fail;
+    fi;
+  else
+    # distances are incompatible and length is at least 2 for both, no range
+    return fail;
+  fi;
+end;
+Unbind(AbsInt);
+
+# Test routine for joining random ranges.
+# Test:=function()
+# local a0,b0,da,db,a1,b1,ra,rb,r,u;
+#   a0:=Random([1..50]);
+#   da:=Random([0..6]);
+#   a1:=a0+Random([1..5])*da;
+#   if da=0 then
+#     ra:=[a0];
+#   else
+#     ra:=[a0,a0+da..a1];
+#   fi;
+#   b0:=Random([1..50]);
+#   db:=Random([0..6]);
+#   b1:=b0+Random([1..5])*db;
+#   if db=0 then
+#     rb:=[b0];
+#   else
+#     rb:=[b0,b0+db..b1];
+#   fi;
+# 
+#   u:=Union(ra,rb);
+#   IsRange(u);
+#   r:=JoinRanges(a0,da,a1,b0,db,b1);
+#   if r=fail then
+#     Print("Join ",ra," ",rb," to ",r,"\n");
+#     if IsRangeRep(u) then
+#       Error("did not recognize range");
+#     fi;
+#   elif r<>fail then
+#     if r[2]=0 then
+#       r:=[r[1]];
+#     else
+#       r:=[r[1],r[1]+r[2]..r[3]];
+#     fi;
+#     Print("Join ",ra," ",rb," to ",r,"\n");
+#     if u<>r then
+#       Error("wrong union");
+#     fi;
+#   fi;
+# end;
+
 
 #############################################################################
 ##
@@ -2466,62 +2667,167 @@ InstallMethod( Union2,
 ##
 InstallGlobalFunction( Union, function ( arg )
     local   lists,      # concatenation of arguments that are lists
+	    ranges,     # those arguments that are proper ranges
             other,      # those arguments that are not lists
             D,          # domain or list, running over the arguments
             U,          # union, result
             start,      # start position in `other'
-            i;          # loop variable
+	    better,     # did pairwise join of ranges give improvement?
+            i,j;        # loop variable
 
-    # unravel the argument list if necessary
-    if Length(arg) = 1  then
-        arg := arg[1];
+  # unravel the argument list if necessary
+  if Length(arg) = 1  then
+      arg := arg[1];
+  fi;
+
+  # empty case first
+  if Length( arg ) = 0  then
+      return [  ];
+  fi;
+
+  # Separate ranges, lists and domains.
+  lists:= [];
+  other:= [];
+  ranges:=[];
+  for D in arg do
+    if (IsPlistRep(D) and Length(D)=1 and IsInt(D[1])) then
+      # detect lists that could be ranges
+      Add(ranges,[D[1],0,D[1]]);
+    elif IS_RANGE_REP(D) then
+      Add(ranges,[D[1],D[2]-D[1],D[Length(D)]]);
+    elif IsList( D ) then
+      Append( lists, D );
+    else
+      Add( other, D );
     fi;
+  od;
 
-    # empty case first
-    if Length( arg ) = 0  then
-        return [  ];
-    fi;
-
-    # Separate lists and domains.
-    lists:= [];
-    other:= [];
-    for D in arg do
-      if IsList( D ) then
-        Append( lists, D );
+  # if lists is long processing would take long
+  if Length(ranges)>0 and Length(lists)<50 and ForAll(lists,IsInt) then
+    # is lists also a range?
+    lists:=Set(lists);
+    if Length(lists)>0 and IS_RANGE(lists) then
+      if Length(lists)=1 then
+	Add(ranges,[lists[1],0,lists[1]]);
       else
-        Add( other, D );
+	Add(ranges,[lists[1],lists[2]-lists[1],lists[Length(lists)]]);
+      fi;
+      lists:=[];
+    fi;
+
+    # try to merge smaller by considering all pairs of ranges
+    better:=true; # in case of length 1
+    while Length(ranges)>1 do
+      better:=false;
+      i:=1;
+      while i<Length(ranges) and better=false do
+	j:=i+1;
+	while j<=Length(ranges) and better=false do
+	  # now try range i with range j
+	  U:=JoinRanges(ranges[i][1],ranges[i][2],ranges[i][3],
+			ranges[j][1],ranges[j][2],ranges[j][3]);
+	  if U<>fail then
+	    # worked, replace one and overwrite other
+	    ranges[i]:=U;
+	    ranges[j]:=ranges[Length(ranges)];
+	    Unbind(ranges[Length(ranges)]);
+	    better:=true;
+	  fi;
+	  j:=j+1;
+	od;
+	i:=i+1;
+      od;
+
+      if better=false then
+	# no join was possible -- need to go list way
+	for i in ranges do
+	  if i[2]= 0 then
+	    j:=[i[1]];
+	  else
+	    j:=[i[1],i[1]+i[2]..i[3]];
+	  fi;
+	  Append(lists,j);
+	od;
+	ranges:=[];
+      fi;
+
+    od;
+
+
+    if better then
+      # we were able to join to a single range
+      ranges:=ranges[1];
+
+      i:=1;
+      better:=true;
+      while i<=Length(lists) and better do
+	U:=JoinRanges(ranges[1],ranges[2],ranges[3],lists[i],0,lists[i]);
+	if U<>fail then
+	  ranges:=U;
+	else
+	  better:=false;
+	fi;
+	i:=i+1;
+      od;
+
+      if ranges[2]=0 then
+	ranges:=[ranges[1]];
+      else
+	ranges:=[ranges[1],ranges[1]+ranges[2]..ranges[3]];
+      fi;
+
+      if better then
+	# all one range
+	lists:=ranges;
+      else
+	Append(lists,ranges);
+      fi;
+      # now all ranges are merged in lists, but lists might be in range
+      # rep.
+
+    fi;
+
+  else
+    # joining nonintegers or a lot of lists -- forget the ranges.
+    for i in ranges do
+      if i[2]= 0 then
+	Add(lists,i[1]);
+      else
+	Append(lists,[i[1],i[1]+i[2]..i[3]]);
       fi;
     od;
 
-    # First unite the lists.
-    # (This can be regarded as the most usual case.
-    # For efficiency reasons, we use one `Set' call instead of
-    # repeated `UniteSet' calls.)
+  fi;
+
+  # Then unite the lists.
+  # (This can be regarded as the most usual case.
+  # For efficiency reasons, we use one `Set' call instead of
+  # repeated `UniteSet' calls.)
 #T However, this causes a lot of space loss
 #T if many long and redundant lists occur;
 #T using `UniteSet' would be much slower but ``conservative''.
-    if Length( lists ) = 0 then
-      if Length(other)=0 then
-        return lists;
-      fi;
-      U:= other[1];
-      start:= 2;
-    else
-      U:= Set( lists );
-      start:= 1;
+  if Length( lists ) = 0 then
+    if Length(other)=0 then
+      return lists;
     fi;
+    U:= other[1];
+    start:= 2;
+  else
+    U:= Set( lists );
+    start:= 1;
+  fi;
 
-    # Now loop over the domains.
-    for i in [ start .. Length( other ) ] do
-      U:= Union2( U, other[i] );
-    od;
+  # Now loop over the domains.
+  for i in [ start .. Length( other ) ] do
+    U:= Union2( U, other[i] );
+  od;
 
-    # return the union
-    if IsList( U ) and not IsSSortedList( U ) then
-        U := Set( U );
-    fi;
-    return U;
-end );
+  # return the union
+  if IsList( U ) and not IsSSortedList( U ) then
+      U := Set( U );
+  fi;
+  return U;
+end);
 
 
 #############################################################################

@@ -2,7 +2,7 @@
 ##
 #W  modulmat.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: modulmat.gi,v 4.23 2010/04/30 13:56:37 gap Exp $
+#H  @(#)$Id: modulmat.gi,v 4.24 2010/12/22 14:43:28 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,7 +19,7 @@
 ##  suffices.)
 ##
 Revision.modulmat_gi :=
-    "@(#)$Id: modulmat.gi,v 4.23 2010/04/30 13:56:37 gap Exp $";
+    "@(#)$Id: modulmat.gi,v 4.24 2010/12/22 14:43:28 alexk Exp $";
 
 
 #############################################################################
@@ -245,6 +245,7 @@ InstallMethod( \in,
       IsFreeLeftModule and IsFullMatrixModule ],
     function( mat, M )
     return     IsMatrix( mat )
+           and IsRectangularTable( mat )
            and DimensionsMat( mat ) = DimensionOfVectors( M )
            and ForAll( mat, row -> IsSubset( LeftActingDomain( M ), row ) );
     end );

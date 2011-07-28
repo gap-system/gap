@@ -5,8 +5,7 @@ targets: default
 
 # this target creates a bin-directory
 bindir:
-	if test ! -d bin;  then mkdir bin;  fi
-	if test ! -d bin/@GAPARCH@;  then mkdir bin/@GAPARCH@;  fi
+	mkdir -p bin/@GAPARCH@
 
 
 default: bindir src/Makefile.in

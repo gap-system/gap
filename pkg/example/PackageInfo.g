@@ -11,19 +11,19 @@
 ##  the package loading mechanism and the upgrade mechanism for the
 ##  redistribution of the package via the GAP website.
 ##  
-##  Entries that are commented out are those used for the EDIM package 
-##  and are there for purposes of illustration of a possible alternative,
+##  Entries that are commented out are based on the EDIM package and 
+##  are there for purposes of illustration of a possible alternative,
 ##  especially in the case where the Example package's entry is blank.
 ##  
-
-##  For the LoadPackage mechanism in GAP >= 4.4 only the entries
-##  .PackageName, .Version, .PackageDoc, .Dependencies, .AvailabilityTest
-##  .Autoload   are needed. The other entries are relevant if the
-##  package shall be distributed for other GAP users, in particular if it
-##  shall be redistributed via the GAP Website.
-
-##  With a new release of the package at least the entries .Version, .Date and
-##  .ArchiveURL must be updated.
+##  For the LoadPackage mechanism in GAP >= 4.5 the minimal set of needed
+##  entries is .PackageName, .Version, and .AvailabilityTest, and an error
+##  will occur if any of them is missing. Other important entries are
+##  .PackageDoc and .Dependencies. The other entries are relevant if the
+##  package will be distributed for other GAP users, in particular if it
+##  will be redistributed via the GAP Website.
+##
+##  With a new release of the package at least the entries .Version, .Date 
+##  and .ArchiveURL must be updated.
 
 SetPackageInfo( rec(
 
@@ -38,28 +38,29 @@ Subtitle := "A Demo for Package Authors",
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers. For an automatic package distribution update
 ##  you must provide a new version number even after small changes.
-Version := "2.0",
+Version := "3.0",
 
 ##  Release date of the current version in dd/mm/yyyy format.
 ##
-Date := "31/01/2006",
+Date := "16/03/2011",
+
+PackageWWWHome :=
+  Concatenation( "http://www.cs.st-andrews.ac.uk/~alexk/",
+      LowercaseString( ~.PackageName ), "/" ),
 
 ##  URL of the archive(s) of the current package release, but *without*
-##  the format extension(s), like '.zoo', which are given next.
+##  the format extension(s), like '.tar.gz' or '-win.zip', which are given next.
 ##  The archive file name *must be changed* with each version of the archive
 ##  (and probably somehow contain the package name and version).
 ##  The paths of the files in the archive must begin with the name of the
 ##  directory containing the package (in our "example" probably:
-##  example/init.g, ...    or  example-1.3/init.g, ...  )
+##  example/init.g, ...    or  example-3.0/init.g, ...  )
 # 
-ArchiveURL := 
-          "http://www.math.rwth-aachen.de/~Greg.Gamble/Example/example-2.0",
+ArchiveURL := Concatenation( ~.PackageWWWHome, "example-3.0" ),
 
 ##  All provided formats as list of file extensions, separated by white
 ##  space or commas.
 ##  Currently recognized formats are:
-##      .zoo       the (GAP-traditional) zoo-format with "!TEXT!" comments 
-##                 for text files
 ##      .tar.gz    the UNIX standard
 ##      .tar.bz2   compressed with 'bzip2', often smaller than with gzip
 ##      -win.zip   zip-format for DOS/Windows, text files must have DOS 
@@ -68,8 +69,8 @@ ArchiveURL :=
 ##  In the future we may also provide .deb or .rpm formats which allow
 ##  a convenient installation and upgrading on Linux systems.
 ##  
-# ArchiveFormats := ".zoo", # the others are generated automatically
-ArchiveFormats := ".zoo",
+# ArchiveFormats := ".tar.gz", # the others are generated automatically
+ArchiveFormats := ".tar.gz",
 
 ##  If not all of the archive formats mentioned above are provided, these 
 ##  can be produced at the GAP side. Therefore it is necessary to know which
@@ -101,8 +102,8 @@ ArchiveFormats := ".zoo",
 ##  person's record should be as per the following example: 
 ##  
 ##     rec(
-##     # these are compulsory, characters are interpreted as latin-1, so
-##     # German umlauts and other western European special characters are ok:
+##     # these are compulsory, the strings can be encoded in UTF-8 or latin1,
+##     # so using German umlauts or other special characters is ok:
 ##     LastName := "Müller",
 ##     FirstNames := "Fritz Eduard",
 ##  
@@ -158,7 +159,22 @@ Persons := [
                        "Australia" ] ),
     Place         := "Perth",
     Institution   := "Curtin University of Technology"
-  )
+  ),
+  rec( 
+    LastName      := "Konovalov",
+    FirstNames    := "Alexander",
+    IsAuthor      := false,
+    IsMaintainer  := true,
+    Email         := "konovalov@member.ams.org",
+    WWWHome       := "http://www.cs.st-andrews.ac.uk/~alexk/",
+    PostalAddress := Concatenation( [
+                     "School of Computer Science\n",
+                     "University of St Andrews\n",
+                     "Jack Cole Building, North Haugh,\n",
+                     "St Andrews, Fife, KY16 9SX, Scotland" ] ),
+    Place         := "St Andrews",
+    Institution   := "University of St Andrews"
+     ),  
 # provide such a record for each author and/or maintainer ...
   
 ],
@@ -193,9 +209,9 @@ Status := "deposited",
 ##  and updating of the package in the GAP distribution.
 #
 README_URL := 
-  "http://www.math.rwth-aachen.de/~Greg.Gamble/Example/README.example",
+  Concatenation( ~.PackageWWWHome, "README.example" ),
 PackageInfoURL := 
-  "http://www.math.rwth-aachen.de/~Greg.Gamble/Example/PackageInfo.g",
+  Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
 
 ##  Here you  must provide a short abstract explaining the package content 
 ##  in HTML format (used on the package overview Web page) and an URL 
@@ -212,8 +228,6 @@ AbstractHTML :=
    is an example of how to create a <span class=\"pkgname\">GAP</span> \
    package. It has little functionality except for being a package",
 
-PackageWWWHome := "http://www.math.rwth-aachen.de/~Greg.Gamble/Example",
-               
 ##  Here is the information on the help books of the package, used for
 ##  loading into GAP's online help and maybe for an online copy of the 
 ##  documentation on the GAP website.
@@ -222,8 +236,6 @@ PackageWWWHome := "http://www.math.rwth-aachen.de/~Greg.Gamble/Example",
 ##       - the name of the book (.BookName)
 ##       - a long title, shown by ?books (.LongTitle, optional)
 ##       - the path to the manual.six file for this book (.SixFile)
-##       - a decision if the book should be (auto)loaded, probably 'true'
-##         (.Autoload)
 ##  
 ##  For an online version on a Web page further entries are needed, 
 ##  if possible, provide an HTML- and a PDF-version:
@@ -244,11 +256,11 @@ PackageWWWHome := "http://www.math.rwth-aachen.de/~Greg.Gamble/Example",
 PackageDoc := rec(
   # use same as in GAP            
   BookName  := "Example",
-  # format/extension can be one of .zoo, .tar.gz, .tar.bz2, -win.zip
+  # format/extension can be one of .tar.gz, .tar.bz2, -win.zip, .zoo.
   Archive := 
-      "http://www.math.rwth-aachen.de/~Greg.Gamble/Example/exampledoc-2.0.zoo",
+      Concatenation( ~.PackageWWWHome, "exampledoc-3.0.tar.gz" ),
   ArchiveURLSubset := ["doc", "htm"],
-  HTMLStart := "htm/chapters.htm",
+  HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
   # the path to the .six file used by GAP's help system
   SixFile   := "doc/manual.six",
@@ -256,26 +268,37 @@ PackageDoc := rec(
   # fit on a single text line (appears with the '?books' command in GAP)
   # LongTitle := "Elementary Divisors of Integer Matrices",
   LongTitle := "Example/Template of a GAP Package",
-  # Should this help book be autoloaded when GAP starts up? This should
-  # usually be 'true', otherwise say 'false'. 
-  Autoload  := true
 ),
 
 
 ##  Are there restrictions on the operating system for this package? Or does
 ##  the package need other packages to be available?
 Dependencies := rec(
-  # GAP version, use version strings for specifying exact versions,
-  # prepend a '>=' for specifying a least version.
-  GAP := ">=4.4",
-  # list of pairs [package name, (least) version],  package name is case
-  # insensitive, least version denoted with '>=' prepended to version string.
+  # GAP version, use the version string for specifying a least version,
+  # prepend a '=' for specifying an exact version.
+  GAP := "4.5",
+
+  # list of pairs [package name, version], package name is case
+  # insensitive, exact version denoted with '=' prepended to version string.
   # without these, the package will not load
-  # NeededOtherPackages := [["GAPDoc", ">= 0.99"]],
-  NeededOtherPackages := [],
-  # without these the package will issue a warning while loading
+  # NeededOtherPackages := [["GAPDoc", "0.99"]],
+  NeededOtherPackages := [["GAPDoc", "0.99"]],
+
+  # list of pairs [package name, version] as above,
+  # these package are will be loaded if they are available,
+  # but the current package will be loaded if they are not available
   # SuggestedOtherPackages := [],
   SuggestedOtherPackages := [],
+
+  # *Optional*: a list of pairs as above, denoting those needed packages
+  # that must be completely loaded before loading of the current package
+  # is started (if this is not possible due to a cyclic dependency
+  # then the current package is regarded as not loadable);
+  # this component should be used only if functions from the needed packages
+  # in question are called (or global lists or records are accessed)
+  # while the current package gets loaded
+  # OtherPackagesLoadedInAdvance := [],
+
   # needed external conditions (programs, operating system, ...)  provide 
   # just strings as text or
   # pairs [text, URL] where URL  provides further information
@@ -288,30 +311,29 @@ Dependencies := rec(
 ),
 
 ##  Provide a test function for the availability of this package.
-##  For packages which will not fully work, use 'Info(InfoWarning, 1,
-##  ".....")' statements. For packages containing nothing but GAP code,
-##  just say 'ReturnTrue' here.
-##  With the new package loading mechanism (GAP >=4.4)  the availability
+##  For packages which will not fully work,
+##  use 'LogPackageLoadingMessage( PACKAGE_WARNING, ... )' statements,
+##  do not call `Print'.
+##  For packages containing nothing but GAP code, just say 'ReturnTrue' here.
+##  With the package loading mechanism of GAP >=4.4, the availability
 ##  tests of other packages, as given under .Dependencies above, will be 
 ##  done automatically and need not be included in this function.
 #AvailabilityTest := ReturnTrue,
 AvailabilityTest := function()
   local path, file;
     # test for existence of the compiled binary
-    path := DirectoriesPackagePrograms("example");
-    file := Filename(path,"hello");
-    if file=fail then
-      Info(InfoWarning,1,
-        "Package ``Example'': The program `hello' is not compiled");
-      Info(InfoWarning,1,
-        "`HelloWorld()' is thus unavailable");
-      Info(InfoWarning,1,
-        "See the installation instructions; ",
-        "type: ?Installing the Example package");
+    path:= DirectoriesPackagePrograms( "example" );
+    file:= Filename( path, "hello" );
+    if file = fail then
+      LogPackageLoadingMessage( PACKAGE_WARNING,
+          [ "The program `hello' is not compiled,",
+            "`HelloWorld()' is thus unavailable.",
+            "See the installation instructions;",
+            "type: ?Installing the Example package" ] );
     fi;
     # if the hello binary was vital to the package we would return
     # the following ...
-    #return file<>fail;
+    #return file <> fail;
     # since the hello binary is not vital we return ...
     return true;
   end,
@@ -320,25 +342,19 @@ AvailabilityTest := function()
 ##  shall be read immediately before the package is loaded.
 #PreloadFile := "...",
 
-##  The LoadPackage mechanism can produce a default banner from the info
-##  in this file. If you are not happy with it, you can provide a string
-##  here that is used as a banner. GAP decides when the banner is shown and
-##  when it is not shown. *optional* (note the ~-syntax in this example)
+##  *Optional*: the LoadPackage mechanism can produce a default banner from
+##  the info in this file. If you are not happy with it, you can provide
+##  a string here that is used as a banner. GAP decides when the banner is 
+##  shown and when it is not shown (note the ~-syntax in this example).
 BannerString := Concatenation( 
   "----------------------------------------------------------------\n",
   "Loading  Example ", ~.Version, "\n",
-  "by ", ~.Persons[1].FirstNames, " ", ~.Persons[1].LastName,
-        " (", ~.Persons[1].WWWHome, ")\n",
-  "   ", ~.Persons[2].FirstNames, " ", ~.Persons[2].LastName,
-        " (", ~.Persons[2].WWWHome, ")\n",
+  "by ",
+  JoinStringsWithSeparator( List( Filtered( ~.Persons, r -> r.IsAuthor ),
+                                  r -> Concatenation(
+      r.FirstNames, " ", r.LastName, " (", r.WWWHome, ")\n" ) ), "   " ),
   "For help, type: ?Example package \n",
   "----------------------------------------------------------------\n" ),
-
-##  Suggest here if the package should be *automatically loaded* when GAP is 
-##  started.  This should usually be 'false'. Say 'true' only if your package 
-##  provides some improvements of the GAP library which are likely to enhance 
-##  the overall system performance for many users.
-Autoload := false,
 
 ##  *Optional*, but recommended: path relative to package root to a file which 
 ##  contains as many tests of the package functionality as sensible.
@@ -355,5 +371,4 @@ Autoload := false,
 Keywords := ["package example", "package template", "package creation hints"]
 
 ));
-
 

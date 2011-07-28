@@ -3,7 +3,7 @@
 *W  string.c                    GAP source                     Frank Lübeck,
 *W                                            Frank Celler & Martin Schönert
 **
-*H  @(#)$Id: string.c,v 4.79 2010/03/11 19:57:57 gap Exp $
+*H  @(#)$Id: string.c,v 4.80 2011/05/23 10:58:40 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -54,7 +54,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_string_c =
-   "@(#)$Id: string.c,v 4.79 2010/03/11 19:57:57 gap Exp $";
+   "@(#)$Id: string.c,v 4.80 2011/05/23 10:58:40 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -409,6 +409,13 @@ Obj FuncINTLIST_STRING (
 
   CHANGED_BAG(n);
   return n;
+}
+
+Obj FuncSINTLIST_STRING (
+    Obj             self,
+    Obj             val )
+{
+  return FuncINTLIST_STRING ( self, val, INTOBJ_INT(-1L) );
 }
 
 /****************************************************************************
@@ -2345,6 +2352,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "INTLIST_STRING", 2, "string, sign",
       FuncINTLIST_STRING, "src/string.c:INTLIST_STRING" },
+
+    { "SINTLIST_STRING", 1, "string",
+      FuncSINTLIST_STRING, "src/string.c:SINTLIST_STRING" },
 
     { "EmptyString", 1, "len",
       FuncEmptyString, "src/string.c:FuncEmptyString" },

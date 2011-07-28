@@ -15,7 +15,7 @@
 ##  2. Functions for elements represented by straight line programs
 ##
 Revision.straight_gi :=
-    "@(#)$Id: straight.gi,v 4.40 2010/02/23 15:13:32 gap Exp $";
+    "@(#)$Id: straight.gi,v 4.43 2011/02/17 14:10:11 gap Exp $";
 
 
 #############################################################################
@@ -2293,19 +2293,24 @@ InstallGlobalFunction( SLPReversedRenumbered,
 ##
 #F  RestrictOutputsOfSLP( <slp>, <k> )
 ##
-##  Returns a new slp that calculates only those outputs specified by
-##  <k>. <k> may be an integer or a list of integers. If <k> is an integer,
-##  the resulting slp calculates only the result with that number. 
-##  If <k> is a list of integers, the resulting slp calculates those
-##  results with numbers in <k>. In both cases the resulting slp
-##  does only what is necessary. The slp must have a line with at least
-##  <k> expressions (lists) as its last line (if <k> is an integer).
-##  <slp> is either an slp or a pair where the first entry are the lines
+##  slp must be a straight line program returning a tuple
+##  of values. This function
+##  returns a new slp that calculates only those outputs specified by
+##  k. The argument
+##  k may be an integer or a list of integers. If k is an integer,
+##  the resulting slp calculates only the result with that number
+##  in the original output tuple. 
+##  If k is a list of integers, the resulting slp calculates those
+##  results with indices k in the original output tuple. 
+##  In both cases the resulting slp
+##  does only what is necessary. Obviously, the slp must have a line with 
+##  enough expressions (lists) for the supplied k as its last line.
+##  slp is either an slp or a pair where the first entry are the lines
 ##  of the slp and the second is the number of inputs.
 ##
 InstallGlobalFunction( RestrictOutputsOfSLP,
   function(slp,k)
-    local biggest,changes,i,invtab,j,kk,kkl,kl,klist,l,lastline,line,ll,lll,n,
+    local biggest,changes,i,invtab,j,kk,kkl,kl,klist,l,lastline,word,ll,lll,n,
           needed,nrinps,slotsused;
 
     if IsInt(k) then
@@ -2333,24 +2338,25 @@ InstallGlobalFunction( RestrictOutputsOfSLP,
         if Length(l[i]) < k or not(IsList(l[i][k])) then
             Error("slp does not have result number ",k);
         fi;
-        line := l[i][k];
-        for j in [1,3..Length(line)-1] do
-            needed[line[j]] := true;
+        word := l[i][k];
+        for j in [1,3..Length(word)-1] do
+            needed[word[j]] := true;
         od;
-        if Length(line) > 2 or (Length(line)=2 and line[2] <> 1) then
-            ll[1] := [ShallowCopy(line),biggest+1];
+        if Length(word) > 2 then
+            ll[1] := [ShallowCopy(word),biggest+1];
             AddSet(slotsused,biggest+1);
         fi;   
         lastline := fail;
-        # if Length(line)=2 and line[2]=1 then the last result is the result
+        # if Length(word)=2 and word[2]=1 then the last result is the result
+        # if the SLP has actually no lines, then we fix this further down!
     else   # a list of results:
         lastline := [];  # Here we collect results
         for n in klist do
-            line := l[i][n];
-            for j in [1,3..Length(line)-1] do
-                needed[line[j]] := true;
+            word := l[i][n];
+            for j in [1,3..Length(word)-1] do
+                needed[word[j]] := true;
             od;
-            Add(lastline,ShallowCopy(line));
+            Add(lastline,ShallowCopy(word));
         od;
     fi;
     
@@ -2374,15 +2380,9 @@ InstallGlobalFunction( RestrictOutputsOfSLP,
         Add(lll,kkl);
     fi;
     if Length(lll) = 0 then  # One of the original generators!
-        if IsList(k) then
-            ll := [];
-            for i in k do
-                Add(ll,[i,1]);
-            od;
-            return StraightLineProgramNC([ll],nrinps);
-        else
-            return StraightLineProgramNC([[k,1]],nrinps);
-        fi;
+        # k must be an integer here, otherwise lastline was added to lll!
+        # also, word must be of length 2 and second component equal to 1
+        return StraightLineProgramNC([ShallowCopy(word)],nrinps);
     else
        return StraightLineProgramNC(lll, nrinps);
     fi;
@@ -2800,8 +2800,12 @@ end);
 ##
 ##  <Description>
 ##  Analyses the straight line program <A>s</A> for more efficient
-##  evaluation. When this attribute is known, the evaluation of the
-##  SLP needs less memory.
+##  evaluation. This means in particular two things, when this attribute
+##  is known: First of all,
+##  intermediate results which are not actually needed later on are
+##  not computed at all, and once an intermediate result is used for
+##  the last time in this SLP, it is discarded. The latter leads to 
+##  the fact that the evaluation of the SLP needs less memory.
 ##  </Description>
 ##  </ManSection>
 InstallMethod( SlotUsagePattern, "for an slp",

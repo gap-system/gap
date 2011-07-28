@@ -2,14 +2,14 @@
 ##
 #W  oprtpcgs.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: oprtpcgs.gi,v 4.49 2010/02/23 15:13:20 gap Exp $
+#H  @(#)$Id: oprtpcgs.gi,v 4.50 2011/04/19 02:56:29 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.oprtpcgs_gi :=
-    "@(#)$Id: oprtpcgs.gi,v 4.49 2010/02/23 15:13:20 gap Exp $";
+    "@(#)$Id: oprtpcgs.gi,v 4.50 2011/04/19 02:56:29 gap Exp $";
 
 InstallGlobalFunction(Pcs_OrbitStabilizer,function(pcgs,D,pnt,acts,act)
 local   orb,             # orbit
@@ -33,7 +33,6 @@ local   orb,             # orbit
   for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
     img := act( pnt, acts[ i ] );
     MakeImmutable(img);
-    pos := Position( orb, img );
     pos := LookupDictionary( d, img );
     if pos = fail  then
 

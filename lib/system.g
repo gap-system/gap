@@ -2,7 +2,7 @@
 ##
 #W  system.g                   GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id: system.g,v 4.38 2010/07/28 15:45:22 gap Exp $
+#H  @(#)$Id: system.g,v 4.51 2011/05/20 22:01:15 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,13 +19,13 @@
 ##  ``post restore functions'' mechanism.
 ##  
 Revision.system_g :=
-    "@(#)$Id: system.g,v 4.38 2010/07/28 15:45:22 gap Exp $";
+    "@(#)$Id: system.g,v 4.51 2011/05/20 22:01:15 gap Exp $";
 
 BIND_GLOBAL( "GAPInfo", rec(
 
 # do not edit the following two lines. They get replaced by string matching
 # in the distribution wrapper scripts. (Occurrences of `4.dev' and `today'
-        # get replaced.)    
+# get replaced.)    
     Version := "4.dev",
     Date := "today",
         
@@ -69,8 +69,8 @@ BIND_GLOBAL( "GAPInfo", rec(
       [ "y", "", "<num>", "set number of lines" ],
       ,
       [ "g", 0, "show GASMAN messages (full/all/no garbage collections)" ],
-      [ "m", "128m", "<mem>", "set the initial workspace size" ],
-      [ "o", "1g", "<mem>", "set hint for maximal workspace size (GAP may allocate more)n" ],
+      [ "m", "70m", "<mem>", "set the initial workspace size" ],
+      [ "o", "512m", "<mem>", "set hint for maximal workspace size (GAP may allocate more)" ],
       [ "K", "0", "<mem>", "set maximal workspace size (GAP never allocates more)" ],
       [ "c", "0", "<mem>", "set the cache size value" ],
       [ "a", "0", "<mem>", "set amount to pre-malloc-ate",
@@ -78,16 +78,13 @@ BIND_GLOBAL( "GAPInfo", rec(
       ,
       [ "l", [], "<paths>", "set the GAP root paths" ],
       [ "r", false, "disable/enable root dir. '~/.gap' and reading 'gap.ini', 'gaprc'" ],
-      [ "A", false, "disable/enable autoloading of GAP packages" ],
+      [ "A", false, "disable/enable autoloading of suggested GAP packages" ],
       [ "B", "", "<name>", "current architecture" ],
       [ "D", false, "enable/disable debugging the loading of files" ],
       [ "M", false, "disable/enable loading of compiled modules" ],
-      [ "N", false, "disable/enable check for completion files" ],
-      [ "P", "0", "<mem>", "set amount of memory reserved for printing (Mac)" ],
+      [ "N", false, "unused, for backward compatibility only" ],
+      [ "X", false, "enable/disable CRC checking for compiled modules" ],
       [ "T", false, "disable/enable break loop" ],
-      [ "W", "0", "<mem>", "set amount of memory available for GAP log window (Mac)" ],
-      [ "X", false, "enable/disable CRC for comp. files while reading" ],
-      [ "Y", false, "enable/disable CRC for comp. files while completing" ],
       [ "i", "", "<file>", "change the name of the init file" ],
       ,
       [ "L", "", "<file>", "restore a saved workspace" ],
@@ -95,7 +92,6 @@ BIND_GLOBAL( "GAPInfo", rec(
       ,
       [ "p", false, "enable/disable package output mode" ],
       [ "E", false ],
-      [ "O", false ],  # unadvertisted GAP 3 compatibility flag
       [ "U", "" ],     # -C -U undocumented options to the compiler
       [ "s", "0k" ],
       [ "z", "20" ],
@@ -143,6 +139,13 @@ CallAndInstallPostRestore( function()
     GAPInfo.KernelInfo:= KERNEL_INFO();    
     GAPInfo.KernelVersion:= GAPInfo.KernelInfo.KERNEL_VERSION;
     GAPInfo.Architecture:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
+    GAPInfo.ArchitectureBase:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
+    for i in [ 1 .. LENGTH( GAPInfo.Architecture ) ] do
+      if GAPInfo.Architecture[i] = '/' then
+        GAPInfo.ArchitectureBase:= GAPInfo.Architecture{ [ 1 .. i-1 ] };
+        break;
+      fi;
+    od;
 
     # The exact command line which called GAP as list of strings;
     # first entry is the executable followed by the options.
@@ -193,22 +196,26 @@ CallAndInstallPostRestore( function()
       if word[1] = '-' and LENGTH( word ) = 2 then
         opt:= word{[2]};
         if not IsBound( CommandLineOptions.( opt ) ) then
-          PRINT_TO( "*errout*", "Unrecognised command line option: ",
+          PRINT_TO( "*errout*", "Unrecognised command line option: -",
                     word, "\n" );
         else
           value:= CommandLineOptions.( opt );
           if IS_BOOL( value ) then
             CommandLineOptions.( opt ):= not CommandLineOptions.( opt );
-          elif IS_STRING_REP( value ) then
-            # string
-            CommandLineOptions.( opt ):= line[i];
-            i := i+1;
-          elif IS_LIST( value ) then
-            # list of strings, starting from the empty list
-            ADD_LIST_DEFAULT( CommandLineOptions.( opt ), line[i] );
-            i := i+1;
           elif IS_INT( value ) then
             CommandLineOptions.( opt ):= CommandLineOptions.( opt ) + 1;
+          elif i <= LENGTH( line ) then
+            if IS_STRING_REP( value ) then
+              # string
+              CommandLineOptions.( opt ):= line[i];
+              i := i+1;
+            elif IS_LIST( value ) then
+              # list of strings, starting from the empty list
+              ADD_LIST_DEFAULT( CommandLineOptions.( opt ), line[i] );
+              i := i+1;
+            fi;
+          else
+            PRINT_TO( "*errout*", "Command line option -", word, " needs an argument.\n" );
           fi;
         fi;
       else
@@ -298,33 +305,10 @@ end );
 ##  identifier that will recognize the Windows and the Mac version
 ##
 BIND_GLOBAL("WINDOWS_ARCHITECTURE",
-  IMMUTABLE_COPY_OBJ("win"));
-BIND_GLOBAL("MACINTOSH_68K_ARCHITECTURE",
-  IMMUTABLE_COPY_OBJ("MC68020-motorola-macos-mwerksc"));
-BIND_GLOBAL("MACINTOSH_PPC_ARCHITECTURE",
-  IMMUTABLE_COPY_OBJ("PPC-motorola-macos-mwerksc"));
+  IMMUTABLE_COPY_OBJ("i686-pc-cygwin-gcc/32-bit"));
 
 #T the following functions eventually should be more clever. This however
 #T will require kernel support and thus is something for later.  AH
-
-#############################################################################
-##
-#F  ARCH_IS_MAC()
-##
-##  <#GAPDoc Label="ARCH_IS_MAC">
-##  <ManSection>
-##  <Func Name="ARCH_IS_MAC" Arg=''/>
-##
-##  <Description>
-##  tests whether &GAP; is running on a Macintosh under MacOS
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-BIND_GLOBAL("ARCH_IS_MAC",function()
-  return GAPInfo.Architecture = MACINTOSH_68K_ARCHITECTURE
-      or GAPInfo.Architecture = MACINTOSH_PPC_ARCHITECTURE;
-end);
 
 #############################################################################
 ##
@@ -341,11 +325,27 @@ end);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ARCH_IS_WINDOWS",function()
-local l;
-  l:=LEN_LIST( GAPInfo.Architecture );
-  if l<9 then return false;fi; # trap some unixes with incredibly short
-                               # string name
-  return GAPInfo.Architecture{[l-6..l-4]} = WINDOWS_ARCHITECTURE;
+  return GAPInfo.Architecture = WINDOWS_ARCHITECTURE;
+end);
+
+#############################################################################
+##
+#F  ARCH_IS_MAC_OS_X()
+##
+##  <#GAPDoc Label="ARCH_IS_MAC_OS_X">
+##  <ManSection>
+##  <Func Name="ARCH_IS_MAC_OS_X" Arg=''/>
+##
+##  <Description>
+##  tests whether &GAP; is running on Mac OS X. Note that on Mac OS X, also
+##  <Ref Func="ARCH_IS_UNIX"/> will be <C>true</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("ARCH_IS_MAC_OS_X",function()
+  return POSITION_SUBSTRING (GAPInfo.Architecture, "apple-darwin", 0) <> fail 
+    and IsReadableFile ("/System/Library/CoreServices/Finder.app");
 end);
 
 #############################################################################
@@ -357,13 +357,13 @@ end);
 ##  <Func Name="ARCH_IS_UNIX" Arg=''/>
 ##
 ##  <Description>
-##  tests whether &GAP; is running on a UNIX system.
+##  tests whether &GAP; is running on a UNIX system (including Mac OS X).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ARCH_IS_UNIX",function()
-  return not (ARCH_IS_MAC() or ARCH_IS_WINDOWS());
+  return not ARCH_IS_WINDOWS();
 end);
 
 

@@ -2,12 +2,12 @@
 ##
 #W  modular.tst                GAP4 Package `RCWA'                Stefan Kohl
 ##
-#H  @(#)$Id: modular.tst,v 1.35 2007/10/29 11:12:46 stefan Exp $
-##
 ##  This file contains automated tests of RCWA's functionality for
 ##  rcwa mappings of and rcwa groups over polynomial rings GF(q)[x].
 ##
-gap> START_TEST("$Id: modular.tst,v 1.35 2007/10/29 11:12:46 stefan Exp $");
+#############################################################################
+
+gap> START_TEST( "modular.tst" );
 gap> RCWADoThingsToBeDoneBeforeTest();
 gap> R := PolynomialRing(GF(2),1);;
 gap> x := IndeterminatesOfPolynomialRing(R)[1];; SetName(x,"x");;
@@ -356,13 +356,8 @@ Bijective rcwa mapping of GF(2)[x] with modulus x^2+x, of order 2
 
 gap> prod1 := ct*cs1;
 <bijective rcwa mapping of GF(2)[x] with modulus x^2+x>
-gap> RCWAInfo(3);
 gap> IsTame(prod1);
-#I  `IsTame' for an rcwa mapping <f> of GF(2)[x].
-#I  IsTame: Loop Criterion.
-#I  IsTame: <f> is wild, by loop criterion.
 false
-gap> RCWAInfo(0);
 gap> prod1^2;
 <wild bijective rcwa mapping of GF(2)[x] with modulus x^3+x>
 gap> prod1^3;
@@ -385,10 +380,8 @@ gap> IsomorphismRcwaGroup(Group(()),R);
 [ () ] -> [ IdentityMapping( GF(2)[x] ) ]
 gap> IsomorphismRcwaGroup(SmallGroup(1,1),R);
 [ <identity> of ... ] -> [ IdentityMapping( GF(2)[x] ) ]
-gap> IsomorphismRcwaGroup(SmallGroup(6,1),R);
-[ f1, f2 ] -> [ <bijective rcwa mapping of GF(2)[x] with modulus x^2>, 
-  <bijective rcwa mapping of GF(2)[x] with modulus x^3> ]
-gap> StructureDescription(Image(last));
+gap> phi := IsomorphismRcwaGroup(SmallGroup(6,1),R);;
+gap> StructureDescription(Image(phi));
 "S3"
 gap> IsomorphismRcwaGroup(MathieuGroup(11),R);
 [ (1,2,3,4,5,6,7,8,9,10,11), (3,7,11,8)(4,10,5,6) ] -> 
@@ -424,7 +417,7 @@ true
 gap> PreImagesRepresentative(phi,elm);
 ac^-1
 gap> RCWADoThingsToBeDoneAfterTest();
-gap> STOP_TEST( "modular.tst", 1500000000 );
+gap> STOP_TEST( "modular.tst", 2300000000 );
 
 #############################################################################
 ##

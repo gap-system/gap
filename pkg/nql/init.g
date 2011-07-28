@@ -2,7 +2,7 @@
 ##
 #W    init.g               GAP 4 package NQL                     Rene Hartung  
 ##
-#H   @(#)$Id: init.g,v 1.5 2009/07/02 12:53:41 gap Exp $
+#H   @(#)$Id: init.g,v 1.6 2010/03/17 13:09:28 gap Exp $
 ##
 
 ############################################################################
@@ -64,6 +64,7 @@ ReadPkg( NQLPkgName, "gap/quotsys.gd");
 ReadPkg( NQLPkgName, "gap/nq.gd");
 ReadPkg( NQLPkgName, "gap/nq_non.gd");
 ReadPkg( NQLPkgName, "gap/examples.gd");
+ReadPkg( NQLPkgName, "gap/subgrps.gd" );
 
 # approximating the Schur multiplier
 ReadPkg( NQLPkgName, "gap/schumu/schumu.gd" );

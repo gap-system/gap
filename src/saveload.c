@@ -2,7 +2,7 @@
 **
 *W  saveload.c                  GAP source                       Steve Linton
 **
-*H  @(#)$Id: saveload.c,v 4.59 2010/02/23 15:13:47 gap Exp $
+*H  @(#)$Id: saveload.c,v 4.62 2011/05/15 18:39:16 gap Exp $
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,7 +15,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_saveload_c =
-   "@(#)$Id: saveload.c,v 4.59 2010/02/23 15:13:47 gap Exp $";
+   "@(#)$Id: saveload.c,v 4.62 2011/05/15 18:39:16 gap Exp $";
 
 #include        <unistd.h>              /* write, read                     */
    
@@ -72,25 +72,6 @@ static Int OpenForSave( Obj fname )
   return 0;
 }
 
-#ifdef SYS_IS_MAC_MWC
-
-static void CloseAfterSave( void )
-{
-  long count;
-  
-  if (SaveFile == -1)
-    {
-      Pr("Internal error -- this should never happen",0L,0L);
-      SyExit(2);
-    }
-  count = LBPointer-LoadBuffer;
-  FSWrite (syBuf[SaveFile].fp, &count, LoadBuffer);
-  SyFclose(SaveFile);
-  SaveFile = -1;
-}
-
-#else
-
 static void CloseAfterSave( void )
 {
   if (SaveFile == -1)
@@ -106,7 +87,6 @@ static void CloseAfterSave( void )
   SaveFile = -1;
 }
 
-#endif
 Int LoadFile = -1;
 
 
@@ -137,19 +117,6 @@ static void CloseAfterLoad( void )
   LoadFile = -1;
 }
 
-#ifdef SYS_IS_MAC_MWC
-
-void SAVE_BYTE_BUF( void )
-{
-  long count;
-  count = LBEnd-LoadBuffer;
-  FSWrite (syBuf[SaveFile].fp, &count, LoadBuffer);
-  LBPointer = LoadBuffer;
-  return;
-}
-
-#else
-
 void SAVE_BYTE_BUF( void )
 {
   if (write(syBuf[SaveFile].fp, LoadBuffer, LBEnd-LoadBuffer) < 0)
@@ -159,31 +126,10 @@ void SAVE_BYTE_BUF( void )
   return;
 }
 
-#endif
-
 #define SAVE_BYTE(byte) {if (LBPointer >= LBEnd) {SAVE_BYTE_BUF();} \
                           *LBPointer++ = (UInt1)(byte);}
 
 Char * LoadByteErrorMessage = "Unexpected End of File in Load\n";
-
-#ifdef SYS_IS_MAC_MWC
-
-UInt1 LOAD_BYTE_BUF( void )
-{
-  OSErr ret;
-  long count = sizeof(LoadBuffer);
-  ret = FSRead (syBuf[LoadFile].fp, &count, LoadBuffer);
-  if ((ret != noErr) && ((ret != eofErr || count == 0)))
-    {
-      Pr(LoadByteErrorMessage, 0L, 0L );
-      SyExit(2);
-    }
-  LBEnd = LoadBuffer + count;
-  LBPointer = LoadBuffer;
-  return *LBPointer++;   
-}
-
-#else
 
 UInt1 LOAD_BYTE_BUF( void )
 {
@@ -198,8 +144,6 @@ UInt1 LOAD_BYTE_BUF( void )
   LBPointer = LoadBuffer;
   return *LBPointer++;   
 }
-
-#endif
 
 #define LOAD_BYTE()    (UInt1)((LBPointer >= LBEnd) ?\
                                   (LOAD_BYTE_BUF()) : (*LBPointer++))
@@ -420,7 +364,7 @@ Obj LoadSubObj()
   if ((word & 0x3) == 1 || (word & 0x3) == 2)
     return (Obj) word;
   else
-    return (Obj)(MptrBags + (word >> 2));
+    return (Obj)(MptrBags + (word >> 2)-1);
 }
 
 void SaveHandler( ObjFunc hdlr )
@@ -456,7 +400,7 @@ void SaveDouble( Double d)
 {
   UInt i;
   UInt1 buf[sizeof(Double)];
-  *(Double *)buf = d;
+  memcpy((void *) buf, (void *)&d, sizeof(Double));
   for (i = 0; i < sizeof(Double); i++)
     SAVE_BYTE(buf[i]);
 }
@@ -465,9 +409,11 @@ Double LoadDouble( void)
 {
   UInt i;
   UInt1 buf[sizeof(Double)];
+  Double d;
   for (i = 0; i < sizeof(Double); i++)
     buf[i] = LOAD_BYTE();
-  return *(Double *)buf;
+  memcpy((void *)&d, (void *)buf, sizeof(Double));
+  return d;
 }
 
 /***************************************************************************
@@ -645,7 +591,7 @@ Obj FuncFindBag( Obj self, Obj minsize, Obj maxsize, Obj tnum )
 **  The return value is either True or Fail
 */
 
-static UInt NextSaveIndex;
+static UInt NextSaveIndex = 1;
 
 static void AddSaveIndex( Bag bag)
 {
@@ -687,7 +633,7 @@ static void WriteSaveHeader( void )
     if (GlobalBags.cookie[i] != NULL)
       globalcount++;
   SaveUInt(globalcount);
-  SaveUInt(NextSaveIndex);
+  SaveUInt(NextSaveIndex-1);
   SaveUInt(AllocBags - OldBags);
   
   SaveCStr("Loaded Modules");
@@ -733,7 +679,7 @@ Obj SaveWorkspace( Obj fname )
   CollectBags( 0, 1);
   
   /* Add indices in link words of all bags, for saving inter-bag references */
-  NextSaveIndex = 0;
+  NextSaveIndex = 1;
   CallbackForAllBags( AddSaveIndex );
 
   /* Now do the work */
@@ -919,7 +865,7 @@ void LoadWorkspace( Char * fname )
   if (SyStrcmp(buf,"Kernel to WS refs") != 0)
     {
       Pr("Bad divider\n",0L,0L);
-      SyExit(1);
+       SyExit(1);
     }
   SortGlobals(2);               /* globals by cookie for quick
                                  lookup */

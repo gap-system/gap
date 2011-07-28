@@ -3,7 +3,7 @@
 #W  omget.g             OpenMath Package               Andrew Solomon
 #W                                                     Marco Costantini
 ##
-#H  @(#)$Id: omget.g,v 1.23 2006/08/03 18:23:38 gap Exp $
+#H  @(#)$Id: omget.g,v 1.26 2010/11/12 13:18:23 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,7 +15,7 @@
 ##
 
 Revision.("openmath/gap/omget.g") :=
-    "@(#)$Id: omget.g,v 1.23 2006/08/03 18:23:38 gap Exp $";
+    "@(#)$Id: omget.g,v 1.26 2010/11/12 13:18:23 alexk Exp $";
 
 
 
@@ -32,10 +32,9 @@ Revision.("openmath/gap/omget.g") :=
 
 
 
-InstallGlobalFunction(OMGetObject,
-function( stream )
+InstallGlobalFunction(OMGetObject, function( stream )
     local
-        fromgap, # string
+        fromgap, firstbyte, gap_obj, # string
         success; # whether PipeOpenMathObject worked
 
     if IsClosedStream( stream )  then
@@ -44,28 +43,33 @@ function( stream )
         Error( "end of stream" );
     fi;
 
-    fromgap := "";
+    firstbyte := ReadByte(stream);
+    
+    if firstbyte = 24 then 
+  	    # Binary encoding
+ 	    gap_obj := GetNextObject( stream, firstbyte );
+     	gap_obj := OMParseXmlObj( gap_obj.content[1] );
+        return gap_obj;
+    else        
+     	# XML encoding
+        fromgap := "";
+        # Get one OpenMath object from 'stream' and put into 'fromgap',
+        # using PipeOpenMathObject
 
-    # Get one OpenMath object from 'stream' and put into 'fromgap',
-    # using PipeOpenMathObject
+        success := PipeOpenMathObject( stream, fromgap, firstbyte );
 
-    success := PipeOpenMathObject( stream, fromgap );
+        if success <> true  then
+       		Error( "OpenMath object not retrieved" );
+        fi;
+		
+        # convert the OpenMath string into a Gap object using an appropriate
+        # function
 
-    if success <> true  then
-        Error( "OpenMath object not retrieved" );
-    fi;
-
-    # convert the OpenMath string into a Gap object using an appropriate
-    # function
-
-    # this means XML encoding
-    if fromgap[1] = '<' and OMgetObjectXMLTree <> ReturnFail  then
         return OMgetObjectXMLTree( fromgap );
-    else
-        return OMpipeObject( fromgap );
-    fi;
-
-end );
+ 
+  	fi;    
+    
+end);
 
 
 #############################################################################

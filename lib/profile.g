@@ -2,7 +2,7 @@
 ##
 #W  profile.g                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: profile.g,v 4.49 2010/07/09 16:47:07 alexk Exp $
+#H  @(#)$Id: profile.g,v 4.53 2011/02/09 12:51:44 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the profiling functions.
 ##
 Revision.profile_g :=
-    "@(#)$Id: profile.g,v 4.49 2010/07/09 16:47:07 alexk Exp $";
+    "@(#)$Id: profile.g,v 4.53 2011/02/09 12:51:44 gap Exp $";
 
 
 #############################################################################
@@ -65,18 +65,18 @@ end);
 ##  - the footer line showing ``OTHER'' contains a value (total memory
 ##    allocated) in column 4,
 ##  - the table really contains the rows for those functions that satisfy the
-##    conditions defined for `PROFILETHRESHOLD' (its definition says `<=' but
-##    the old implementation checked `<'),
+##    conditions defined for `GAPInfo.ProfileThreshold' (its definition 
+##    says `<=' but the old implementation checked `<'),
 ##  - the ``TOTAL'' and ``OTHER'' lines show the summation over all profiled
 ##    functions, including the ones for which no line is shown due to the
-##    restrictions imposed by `PROFILETHRESHOLD'.
+##    restrictions imposed by `GAPInfo.ProfileThreshold'.
 ##
 ##  This function, in particular the component `funs' in the record it
 ##  returns, is used also in the package `Browse'.
 ##
 BindGlobal( "ProfileInfo", function( funcs, mincount, mintime )
-    local all, nam, prof, sort, funs, ttim, tsto, otim, osto, i, tmp, str,
-          v3, v5, pi;
+    local all, nam, pkgnames, pkgpaths, prof, sort, funs, ttim, tsto,
+          otim, osto, i, tmp, str, v3, v5, pkg, pi;
 
     all:= Concatenation( PROFILED_FUNCTIONS,
                          PREV_PROFILED_FUNCTIONS );
@@ -86,6 +86,15 @@ BindGlobal( "ProfileInfo", function( funcs, mincount, mintime )
     if funcs = "all" then
       funcs:= all;
     fi;
+
+    # (Similar code is in `app/methods.g' of the `Browse' package.)
+    pkgnames:= ShallowCopy( RecNames( GAPInfo.PackagesLoaded ) );
+    pkgpaths:= List( pkgnames, nam -> GAPInfo.PackagesLoaded.( nam )[1] );
+    pkgnames:= List( pkgnames, nam -> GAPInfo.PackagesLoaded.( nam )[3] );
+    Append( pkgnames, List( GAPInfo.RootPaths, x -> "GAP" ) );
+    Append( pkgpaths, GAPInfo.RootPaths );
+    Add( pkgnames, "GAP" );
+    Add( pkgpaths, "GAPROOT/" ); # used for compiled functions in lib
 
     prof:= [];
     sort:= [];
@@ -110,7 +119,20 @@ BindGlobal( "ProfileInfo", function( funcs, mincount, mintime )
         if v5 < 0 then
           v5:= 0;
         fi;
-        Add( prof, [ tmp[1], tmp[3], v3, tmp[5], v5, str ] );
+        pkg:= FilenameFunc( all[i] );
+        if pkg <> fail then
+          pkg:= PositionProperty( pkgpaths,
+                    path -> Length( path ) < Length( pkg )
+                    and pkg{ [ 1 .. Length( path ) ] } = path );
+        fi;
+        if pkg <> fail then
+          pkg:= pkgnames[ pkg ];
+        elif IsOperation( all[i] ) then
+          pkg:= "(oprt.)";
+        else
+          pkg:= "";
+        fi;
+        Add( prof, [ tmp[1], tmp[3], v3, tmp[5], v5, pkg, str ] );
         Add( funs, all[i] );
         Add( sort, tmp[2] );
       else
@@ -128,10 +150,10 @@ BindGlobal( "ProfileInfo", function( funcs, mincount, mintime )
 
     return rec( prof:= prof, ttim:= ttim, tsto:= tsto,
                 funs:= funs, otim:= otim, osto:= osto,
-                denom:= [ 1, 1, 1, 1024, 1024, 1 ],
-                widths:= [ 7, 7, 7, 7, 7, -1 ],
+                denom:= [ 1, 1, 1, 1024, 1024, 1, 1 ],
+                widths:= [ 7, 7, 7, 7, 7, -7, -1 ],
                 labelsCol:= [ "  count", "self/ms", "chld/ms", "stor/kb",
-                              "chld/kb", "function" ],
+                              "chld/kb", "package", "function" ],
                 sepCol:= "  " );
 end );
 
@@ -139,12 +161,12 @@ end );
 #############################################################################
 ##
 #F  DisplayProfile( [<functions>][,][<mincount>, <mintime>] )
-#V  PROFILETHRESHOLD
+#V  GAPInfo.ProfileThreshold
 ##
 ##  <#GAPDoc Label="DisplayProfile">
 ##  <ManSection>
 ##  <Func Name="DisplayProfile" Arg="[functions][,][mincount, mintime]"/>
-##  <Var Name="PROFILETHRESHOLD"/>
+##  <Var Name="GAPInfo.ProfileThreshold"/>
 ##
 ##  <Description>
 ##  Called without arguments, <Ref Func="DisplayProfile"/> displays the
@@ -156,9 +178,10 @@ end );
 ##  called at least <A>mincount</A> times or for which the total time spent
 ##  (see below) was at least <A>mintime</A> milliseconds.
 ##  The defaults for <A>mincount</A> and <A>mintime</A> are the entries of
-##  the list stored in the global variable <Ref Var="PROFILETHRESHOLD"/>.
+##  the list stored in the global variable
+##  <Ref Var="GAPInfo.ProfileThreshold"/>.
 ##  <P/>
-##  The default value of <Ref Var="PROFILETHRESHOLD"/> is
+##  The default value of <Ref Var="GAPInfo.ProfileThreshold"/> is
 ##  <C>[ 10000, 30 ]</C>.
 ##  <P/>
 ##  Profile information is displayed in a list of lines for all functions
@@ -170,9 +193,15 @@ end );
 ##  <Q>chld/ms</Q> the time (in milliseconds) spent in profiled functions
 ##  called from within this function,
 ##  <Q>stor/kb</Q> the amount of storage (in kilobytes) allocated by the
-##  function itself, and
+##  function itself,
 ##  <Q>chld/kb</Q> the amount of storage (in kilobytes) allocated by
-##  profiled functions called from within this function.
+##  profiled functions called from within this function, and
+##  <Q>package</Q> the name of the &GAP; package to which the function
+##  belongs; the entry <Q>GAP</Q> in this column means that the function
+##  belongs to the &GAP; library, the entry <Q>(oprt.)</Q> means that the
+##  function is an operation (which may belong to several packages),
+##  and an empty entry means that <Ref Func="FilenameFunc"/> cannot
+##  determine in which file the function is defined.
 ##  <P/>
 ##  The list is sorted according to the total time spent in the functions,
 ##  that is the sum of the values in the columns
@@ -186,7 +215,7 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-PROFILETHRESHOLD:=[10000,30]; # cnt, time
+GAPInfo.ProfileThreshold:=[10000,30]; # cnt, time
 
 BIND_GLOBAL("DisplayProfile",function( arg )
     local i, funcs, mincount, mintime, prof, w, n, s, j, k, line, str, denom,
@@ -200,12 +229,12 @@ BIND_GLOBAL("DisplayProfile",function( arg )
     # unravel the arguments
     if 0 = Length(arg)  then
       funcs:= "all";
-      mincount:= PROFILETHRESHOLD[1];
-      mintime:= PROFILETHRESHOLD[2];
+      mincount:= GAPInfo.ProfileThreshold[1];
+      mintime:= GAPInfo.ProfileThreshold[2];
     elif Length( arg ) = 1 and IsList( arg[1] ) then
       funcs:= arg[1];
-      mincount:= PROFILETHRESHOLD[1];
-      mintime:= PROFILETHRESHOLD[2];
+      mincount:= GAPInfo.ProfileThreshold[1];
+      mintime:= GAPInfo.ProfileThreshold[2];
     elif Length( arg ) = 2 and IsInt( arg[1] ) and IsInt( arg[2] ) then
       funcs:= "all";
       mincount:= arg[1];
@@ -217,8 +246,8 @@ BIND_GLOBAL("DisplayProfile",function( arg )
       mintime:= arg[3];
     elif ForAll( arg, IsFunction ) then
       funcs:= arg;
-      mincount:= PROFILETHRESHOLD[1];
-      mintime:= PROFILETHRESHOLD[2];
+      mincount:= GAPInfo.ProfileThreshold[1];
+      mintime:= GAPInfo.ProfileThreshold[2];
     else
       # Start profiling again.
       for i in PROFILED_FUNCTIONS do
@@ -238,7 +267,7 @@ BIND_GLOBAL("DisplayProfile",function( arg )
     # use screen size for the name
     j := 0;
     k:= Length( w );
-    for i  in [ 1 .. Length(w) ]  do
+    for i  in [ 1 .. k ]  do
         if i <> k then
             j := j + AbsInt(w[i]) + Length(s);
         fi;
@@ -251,7 +280,7 @@ BIND_GLOBAL("DisplayProfile",function( arg )
 
     # print a nice header
     line := "";
-    for j  in [ 1 .. Length( w ) ]  do
+    for j  in [ 1 .. k ]  do
         if j <> 1 then
           Append( line, s );
         fi;
@@ -268,7 +297,7 @@ BIND_GLOBAL("DisplayProfile",function( arg )
     denom:= prof.denom;
     for i in prof.prof do
         line := "";
-        for j  in [ 1 .. Length( w ) ]  do
+        for j  in [ 1 .. k ]  do
             if j <> 1 then
                 Append( line, s );
             fi;
@@ -291,7 +320,7 @@ BIND_GLOBAL("DisplayProfile",function( arg )
     qosto:= QuoInt( prof.osto, denom[4] );
     if 0 < qotim or 0 < qosto then
         line := "";
-        for j  in [ 1 .. Length( w ) ]  do
+        for j  in [ 1 .. k ]  do
             if j <> 1 then
               Append( line, s   );
             fi;
@@ -299,7 +328,7 @@ BIND_GLOBAL("DisplayProfile",function( arg )
                 str := String( qotim, w[j] );
             elif j = 4  then
                 str := String( qosto, w[j] );
-            elif j = 6  then
+            elif j = k  then
                 str := String( "OTHER", w[j] );
             else
                 str := String( " ", w[j] );
@@ -315,7 +344,7 @@ BIND_GLOBAL("DisplayProfile",function( arg )
 
     # print total
     line := "";
-    for j  in [ 1 .. Length( w ) ]  do
+    for j  in [ 1 .. k ]  do
         if j <> 1 then
           Append( line, s   );
         fi;
@@ -323,7 +352,7 @@ BIND_GLOBAL("DisplayProfile",function( arg )
           str := String( prof.ttim, w[j] );
         elif j = 4  then
             str := String( QuoInt( prof.tsto, 1024 ), w[j] );
-        elif j = 6  then
+        elif j = k  then
             str := String( "TOTAL", w[j] );
         else
             str := String( " ", w[j] );
@@ -341,6 +370,143 @@ BIND_GLOBAL("DisplayProfile",function( arg )
         PROFILE_FUNC(i);
     od;
 end);
+
+
+#############################################################################
+##
+#F  DisplayProfileSummaryForPackages( [<functions>][,]
+#F                                    [<mincount>, <mintime>][,][<mode>] )
+##
+BIND_GLOBAL( "DisplayProfileSummaryForPackages", function( arg )
+    local i, modes, funcs, mincount, mintime, mode, prof, n, pkgpos, timepos,
+          storpos, pkgnames, sumtime, sumstor, denom, pkg, pos, range, sep,
+          widths;
+
+    # Stop profiling of functions needed below.
+    for i in PROFILED_FUNCTIONS do
+      UNPROFILE_FUNC( i );
+    od;
+
+    modes:= [ "time", "stor", "name", "Name" ];
+
+    # Unravel the arguments.
+    funcs:= "all";
+    mincount:= GAPInfo.ProfileThreshold[1];
+    mintime:= GAPInfo.ProfileThreshold[2];
+    mode:= "time";
+    if 0 = Length(arg)  then
+      # Keep these defaults.
+    elif Length( arg ) = 1 and arg[1] in modes then
+      mode:= arg[1];
+    elif Length( arg ) = 1 and IsList( arg[1] )
+                           and ForAll( arg[1], IsFunction ) then
+      funcs:= arg[1];
+    elif Length( arg ) = 2 and IsInt( arg[1] ) and IsInt( arg[2] ) then
+      mincount:= arg[1];
+      mintime:= arg[2];
+    elif Length( arg ) = 2 and IsList( arg[1] )
+                           and ForAll( arg[1], IsFunction )
+                           and arg[2] in modes then
+      funcs:= arg[1];
+      mode:= arg[2];
+    elif Length( arg ) = 3 and IsList( arg[1] )
+                           and ForAll( arg[1], IsFunction )
+                           and IsInt( arg[2] ) and IsInt( arg[3] ) then
+      funcs:= arg[1];
+      mincount:= arg[2];
+      mintime:= arg[3];
+    elif Length( arg ) = 3 and IsInt( arg[1] ) and IsInt( arg[2] )
+                           and arg[3] in modes then
+      mincount:= arg[1];
+      mintime:= arg[2];
+      mode:= arg[3];
+    elif Length( arg ) = 4 and IsList( arg[1] )
+                           and ForAll( arg[1], IsFunction )
+                           and IsInt( arg[2] ) and IsInt( arg[3] )
+                           and arg[4] in modes then
+      funcs:= arg[1];
+      mincount:= arg[2];
+      mintime:= arg[3];
+      mode:= arg[4];
+    elif ForAll( arg, IsFunction ) then
+      funcs:= arg;
+    else
+      # Start profiling again.
+      for i in PROFILED_FUNCTIONS do
+        PROFILE_FUNC( i );
+      od;
+      Error( "usage: DisplayProfileSummaryForPackages( ",
+             "[<functions>][,][<mincount>, <mintime>][,][<mode>] )" );
+    fi;
+
+    # Collect the data.
+    prof:= ProfileInfo( funcs, mincount, mintime );
+
+    # Initialize values.
+    n:= prof.labelsCol;
+    pkgpos:= Position( n, "package" );
+    timepos:= Position( n, "self/ms" );
+    storpos:= Position( n, "stor/kb" );
+    pkgnames:= [ "GAP" ];
+    sumtime:= [ 0 ];
+    sumstor:= [ 0 ];
+
+    # Distribute values.
+    denom:= prof.denom;
+    for i in prof.prof do
+      pkg:= i[ pkgpos ];
+      if pkg = "GAP" or pkg = "" then
+        pos:= 1;
+      else
+        pos:= Position( pkgnames, pkg );
+        if pos = fail then
+          Add( pkgnames, pkg );
+          pos:= Length( pkgnames );
+          sumtime[ pos ]:= 0;
+          sumstor[ pos ]:= 0;
+        fi;
+      fi;
+      sumtime[ pos ]:= sumtime[ pos ] + i[ timepos ];
+      sumstor[ pos ]:= sumstor[ pos ] + i[ storpos ];
+    od;
+    sumtime:= List( sumtime, x -> QuoInt( x, denom[ timepos ] ) );
+    sumstor:= List( sumstor, x -> QuoInt( x, denom[ storpos ] ) );
+
+    # Sort data.
+    range:= [ 1 .. Length( pkgnames ) ];
+    if   mode = "time" then
+      SortParallel( - sumtime, range );
+    elif mode = "stor" then
+      SortParallel( - sumstor, range );
+    elif mode = "name" then
+      SortParallel( List( pkgnames, LowercaseString ), range );
+    else      # "Name"
+      SortParallel( ShallowCopy( pkgnames ), range );
+    fi;
+
+    # Print profile information.
+    sep:= "  ";
+    widths:= [ - Maximum( Length( "package" ),
+                          Maximum( List( pkgnames, Length ) ) ),
+               Maximum( Length( "self/ms" ),
+                        Length( String( Maximum( sumtime ) ) ) ),
+               Maximum( Length( "stor/kb" ),
+                        Length( String( Maximum( sumstor ) ) ) ) ];
+    Print( "Profile information by packages:\n",
+           sep, String( "package", widths[1] ),
+           sep, String( "self/ms", widths[2] ),
+           sep, String( "stor/kb", widths[3] ), "\n" );
+    for i in range do
+      Print( sep, String( pkgnames[i], widths[1] ),
+             sep, String( sumtime[i], widths[2] ),
+             sep, String( sumstor[i], widths[3] ), "\n" );
+    od;
+
+    # Start profiling of functions needed above.
+    for i in PROFILED_FUNCTIONS do
+      PROFILE_FUNC( i );
+    od;
+end );
 
 
 #############################################################################
@@ -764,82 +930,6 @@ BIND_GLOBAL( "ProfileFunctionsInGlobalVariables", function( arg )
 end);
 
 
-
-#############################################################################
-##
-#F  DisplayRevision() . . . . . . . . . . . . . . .  display revision entries
-##
-##  <#GAPDoc Label="DisplayRevision">
-##  <ManSection>
-##  <Func Name="DisplayRevision" Arg=''/>
-##
-##  <Description>
-##  Displays the revision numbers of all loaded files from the library.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-BIND_GLOBAL("DisplayRevision",function()
-    local   names,  source,  library,  unknown,  name,  p,  s,  type,
-            i,  j;
-
-    names   := RecNames( Revision );
-    source  := [];
-    library := [];
-    unknown := [];
-
-    for name  in names  do
-        p := Position( name, '_' );
-        if p = fail  then
-            Add( unknown, name );
-        else
-            s := name{[p+1..Length(name)]};
-            if s = "c" or s = "h"  then
-                Add( source, name );
-            elif s = "g" or s = "gi" or s = "gd"  then
-                Add( library, name );
-            else
-                Add( unknown, name );
-            fi;
-        fi;
-    od;
-    Sort( source );
-    Sort( library );
-    Sort( unknown );
-
-    for type  in [ source, library, unknown ]  do
-        if 0 < Length(type)  then
-            if IsIdenticalObj(type,source)  then
-                Print( "Source Files\n" );
-            elif IsIdenticalObj(type,library)  then
-                Print( "Library Files\n" );
-            else
-                Print( "Unknown Files\n" );
-            fi;
-            j := 1;
-            for name  in type  do
-                s := Revision.(name);
-                p := Position( s, ',' )+3;
-                i := p;
-                while s[i] <> ' '  do i := i + 1;  od;
-                s := Concatenation( String( Concatenation(
-                         name, ":" ), -15 ), String( s{[p..i]},
-                         -5 ) );
-                if j = 3  then
-                    Print( s, "\n" );
-                    j := 1;
-                else
-                    Print( s, "    " );
-                    j := j + 1;
-                fi;
-            od;
-            if j <> 1  then Print( "\n" );  fi;
-            Print( "\n" );
-        fi;
-    od;
-end);
-
-
 #############################################################################
 ##
 #F  DisplayCacheStats() . . . . . . . . . . . . . .  display cache statistics
@@ -943,11 +1033,11 @@ end);
 ##  <Description>
 ##  <Ref Func="START_TEST"/> and <Ref Func="STOP_TEST"/> may be optionally
 ##  used in files that are read via <Ref Func="ReadTest"/>. If used,
-##  <Ref Func="START_TEST"/> reinitialize the caches and the global 
-##  random number generator, in order to be independent of the reading 
-##  order of several test files. Furthermore, the assertion level 
-##  (see&nbsp;<Ref Func="Assert"/>) is set to <M>2</M> by 
-##  <Ref Func="START_TEST"/> and set back to the previous value in the 
+##  <Ref Func="START_TEST"/> reinitialize the caches and the global
+##  random number generator, in order to be independent of the reading
+##  order of several test files. Furthermore, the assertion level
+##  (see&nbsp;<Ref Func="Assert"/>) is set to <M>2</M> by
+##  <Ref Func="START_TEST"/> and set back to the previous value in the
 ##  subsequent <Ref Func="STOP_TEST"/> call.
 ##  <P/>
 ##  To use these options, a test file should be started with a line

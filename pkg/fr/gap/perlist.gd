@@ -2,7 +2,7 @@
 ##
 #W perlist.gd                                               Laurent Bartholdi
 ##
-#H   @(#)$Id: perlist.gd,v 1.2 2007/12/20 14:14:16 gap Exp $
+#H   @(#)$Id: perlist.gd,v 1.4 2011/06/13 22:54:35 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -17,6 +17,14 @@
 #H Periodic lists
 ##
 ## <#GAPDoc Label="PeriodicLists">
+## <ManSection>
+##   <Fam Name="PeriodicListsFamily"/>
+##   <Filt Name="IsPeriodicList"/>
+##   <Description>
+##     The family, respectively filter, of <Ref Oper="PeriodicList"/>s.
+##   </Description>
+## </ManSection>
+##
 ## <ManSection>
 ##   <Oper Name="PeriodicList" Arg="preperiod[,period]"/>
 ##   <Oper Name="PeriodicList" Arg="list,i" Label="period, looping point"/>
@@ -46,6 +54,14 @@
 ##
 ##     <P/> The sixth and seventh commands return respectively the preperiod
 ##     and period of a periodic list.
+##
+##     <P/> Most of the methods applied for lists have an obvious equivalent
+##     for periodic lists: <Ref Oper="List" BookName="ref"/>,
+##     <Ref Oper="Filtered" BookName="ref"/>,
+##     <Ref Oper="First" BookName="ref"/>,
+##     <Ref Oper="ForAll" BookName="ref"/>,
+##     <Ref Oper="ForAny" BookName="ref"/>,
+##     <Ref Oper="Number" BookName="ref"/>.
 ## <Example><![CDATA[
 ## gap> l := PeriodicList([1],[2,3,4]);
 ## [ 1, / 2, 3, 4 ]
@@ -157,6 +173,7 @@ DeclareOperation("LargestCommonPrefix",[IsList]);
 ##
 ## <#GAPDoc Label="FIFOs">
 ## <ManSection>
+##   <Filt Name="IsFIFO"/>
 ##   <Oper Name="NewFIFO" Arg="[l]"/>
 ##   <Oper Name="Add" Arg="f,i" Label="FIFO"/>
 ##   <Oper Name="Append" Arg="f,l" Label="FIFO"/>
@@ -184,7 +201,7 @@ DeclareOperation("LargestCommonPrefix",[IsList]);
 ## </ManSection>
 ## <#/GAPDoc>
 ##
-DeclareCategory("IsFIFO",IsIterator);
+DeclareCategory("IsFIFO",IsIterator and IsList);
 DeclareOperation("NewFIFO",[IsList]);
 DeclareOperation("NewFIFO",[]);
 DeclareOperation("Add",[IsFIFO,IsObject]);

@@ -2,12 +2,9 @@
 ##
 #W  resclaux.g             GAP4 Package `ResClasses'              Stefan Kohl
 ##
-#H  @(#)$Id: resclaux.g,v 1.21 2008/04/15 12:33:45 stefan Exp $
-##
 ##  This file contains some auxiliary functions for the ResClasses package.
 ##
-Revision.resclaux_g :=
-  "@(#)$Id: resclaux.g,v 1.21 2008/04/15 12:33:45 stefan Exp $";
+#############################################################################
 
 BindGlobal( "RESCLASSES_VIEWINGFORMAT", "long" );
 RESCLASSES_VIEWINGFORMAT_BUFFER := RESCLASSES_VIEWINGFORMAT;

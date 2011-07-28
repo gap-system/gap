@@ -2,8 +2,6 @@
 <!-- ##                                                                ## -->
 <!-- ##  about.xml           RCWA documentation           Stefan Kohl  ## -->
 <!-- ##                                                                ## -->
-<!-- ##  $Id: about.xml,v 1.19 2009/09/18 21:31:38 stefan Exp $        ## -->
-<!-- ##                                                                ## -->
 <!-- #################################################################### -->
 
 <Chapter Label="ch:AboutRCWA"><Heading>About the RCWA Package</Heading>
@@ -49,7 +47,7 @@ whose elements are permutations which are <Q>similar to the Collatz
 mapping</Q>, i.e. <E>residue-class-wise affine</E>. <P/>
 
 After having investigated these groups for a couple of years,
-the author feels that this is a gap which is worth to be filled.
+the author felt that this is a gap which is worth to be filled.
 
 </Section>
 
@@ -150,7 +148,7 @@ in&nbsp;<Cite Key="Kohl08b"/>.
 <Heading>Scope of this package</Heading>
 
 This package can be applied in various ways to various different problems,
-and it is just not possible to say what can be found out with its help
+and it is simply not possible to say what can be found out with its help
 about which groups. The best way to get an idea about this is likely to
 experiment with the examples discussed in this manual and included in the
 file <File>pkg/rcwa/examples/examples.g</File>. <P/>

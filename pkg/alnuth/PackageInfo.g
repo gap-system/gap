@@ -1,20 +1,20 @@
 #############################################################################
 ##
-##  PackageInfo.g        GAP4 Package `Alnuth'                 Bjoern Assmann
+##  PackageInfo.g        GAP4 Package "Alnuth"               Bjoern Assmann
+##                                                          Andreas Distler
 ##  
 
 SetPackageInfo( rec(
 
 PackageName := "Alnuth",
-Subtitle := "Algebraic number theory and an interface to KANT",
-Version := "2.2.5",
-Date := "10/07/2007",
+Subtitle := "Algebraic number theory and an interface to PARI/GP",
+Version := "3.0.0",
+Date := "10/06/2011",
 
-ArchiveURL := Concatenation([ 
-"http://www.cs.st-and.ac.uk/~bjoern/software/Alnuth/Alnuth-", 
-~.Version]),
+PackageWWWHome := "http://www.icm.tu-bs.de/ag_algebra/software/Alnuth/",
+
+ArchiveURL := Concatenation([~.PackageWWWHome, "archives/Alnuth-", ~.Version]),
 ArchiveFormats := ".tar.gz",
-
 
 Persons := [
 
@@ -22,30 +22,22 @@ Persons := [
       LastName      := "Assmann",
       FirstNames    := "Bjoern",
       IsAuthor      := true,
-      IsMaintainer  := true,
-      Email         := "BjoernAssmann@gmx.net",
-      WWWHome       := "http://www.dcs.st-and.ac.uk/~bjoern",
-      PostalAddress := Concatenation( [
-            "Mathematical Institute\n",
-            "University of St. Andrews\n",
-            "North Haugh\n St. Andrews, Fife, KY16 9SS\n Scotland, UK" ] ),
-      Place         := "St. Andrews",
-      Institution   := "University of St. Andrews"),
-
+      WWWHome       := "http://www.dcs.st-and.ac.uk/~bjoern"
+  ),
   rec(
       LastName      := "Distler",
       FirstNames    := "Andreas",
       IsAuthor      := true,
       IsMaintainer  := true,
       Email         := "a.distler@tu-bs.de",
-      #WWWHome       := "http://www.tu-bs.de/~beick",
       PostalAddress := Concatenation( [
-            "Mathematical Institute\n",
-            "University of St. Andrews\n",
-            "North Haugh\n St. Andrews, Fife, KY16 9SS\n Scotland, UK" ] ),
-      Place         := "St. Andrews",
-      Institution   := "University of St. Andrews"),
-
+            "CAUL (Centro de Álgebra da Universidade de Lisboa)\n",
+            "Av. Prof. Gama Pinto, 2\n",
+            "1649-003 Lisboa\n",
+            "Portugal" ] ),
+      Place         := "Lisboa",
+      Institution   := "Centro de Álgebra da Universidade de Lisboa"
+ ),
  rec(
       LastName      := "Eick",
       FirstNames    := "Bettina",
@@ -58,21 +50,19 @@ Persons := [
             "TU Braunschweig\n",
             "Pockelsstr. 14\n D-38106 Braunschweig\n Germany" ] ),
       Place         := "Braunschweig",
-      Institution   := "TU Braunschweig"),
-
+      Institution   := "TU Braunschweig"
+ ),
 ],
 
 Status := "accepted",
 CommunicatedBy := "Charles Wright (Eugene)",
 AcceptDate := "01/2004",
 
-README_URL := "http://www.cs.st-and.ac.uk/~bjoern/software/Alnuth/README",
-PackageInfoURL := "http://www.cs.st-and.ac.uk/~bjoern/software/Alnuth/PackageInfo.g",
+README_URL := Concatenation( ~.PackageWWWHome, "README" ),
+PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
 
 AbstractHTML := 
-"The <span class=\"pkgname\">Alnuth</span> package provides various methods to compute with number fields which are given by a defining polynomial or by generators. Some of the methods provided in this package are written in <span class=\"pkgname\">GAP</span> code. The other part of the methods is imported from the Computer Algebra System KANT. Hence this package contains some Gap functions and an interface to some functions in the computer algebra system KANT. The main methods included in this package are: creating a number field, computing its maximal order (using KANT), computing its unit group (using KANT) and a presentation of this unit group, computing the elements of a given norm of the number field (using KANT) and determining a presentation for a finitely generated multiplicative subgroup (using KANT).",
-
-PackageWWWHome := "http://www.cs.st-and.ac.uk/~bjoern/software/Alnuth",
+"The <span class=\"pkgname\">Alnuth</span> package provides various methods to compute with number fields which are given by a defining polynomial or by generators. Some of the methods provided in this package are written in <span class=\"pkgname\">GAP</span> code. The other part of the methods is imported from the computer algebra system PARI/GP. Hence this package contains some <span class=\"pkgname\">GAP</span> functions and an interface to some functions in the computer algebra system PARI/GP. The main methods included in this package are: creating a number field, computing its maximal order (using PARI/GP), computing its unit group (using PARI/GP) and a presentation of this unit group, computing the elements of a given norm of the number field (using PARI/GP) and determining a presentation for a finitely generated multiplicative subgroup (using PARI/GP).",
 
 PackageDoc := rec(
   BookName  := "Alnuth",
@@ -80,7 +70,7 @@ PackageDoc := rec(
   HTMLStart := "htm/chapters.htm",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
-  LongTitle := "Algebraic number theory and an interface to KANT",
+  LongTitle := "Algebraic number theory and an interface to PARI/GP",
   Autoload  := true),
 
 Dependencies := rec(
@@ -88,8 +78,8 @@ Dependencies := rec(
   NeededOtherPackages := [[ "polycyclic", ">=1.1" ]],
   SuggestedOtherPackages := [], 
   ExternalConditions := 
-[["needs KANT/KASH Computer Algebra System Version 2.4 or 2.5",
-"http://www.math.tu-berlin.de/~kant/" ] ]
+[["needs the PARI/GP computer algebra system Version 2.3.4 or higher",
+"http://pari.math.u-bordeaux.fr/" ] ]
 ),
 
 AvailabilityTest := ReturnTrue,
@@ -97,10 +87,10 @@ BannerString := Concatenation([
 "Loading Alnuth ",
 ~.Version,
 " ... \n" ]),     
-Autoload := true,
+Autoload := false,
 TestFile := "tst/testall.g",
-Keywords := ["algebraic number theory", "number field" , "maximal order", "interface to KANT", "unit group", "elements of given norm" ]
-
+Keywords := ["algebraic number theory", "number field" , "maximal order",
+"interface to PARI/GP", "unit group", "elements of given norm" ]
 ));
 
 

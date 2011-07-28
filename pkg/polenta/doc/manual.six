@@ -31,10 +31,9 @@ S 3.3. Triangularizable subgroups
 C install.tex 4. Installation
 I 4.0. Installation
 S 4.1. Installing this package
-S 4.2. Getting and installing KASH
-S 4.3. Loading the Polenta package
-I 4.3. Loading the Polenta package
-S 4.4. Running the test suite
+S 4.2. Loading the Polenta package
+I 4.2. Loading the Polenta package
+S 4.3. Running the test suite
 C info.tex 5. Information Messages
 S 5.1. Info Class
 F 5.1. InfoPolenta

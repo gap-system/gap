@@ -2,7 +2,7 @@
 ##
 #W  ctomaxi5.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomaxi5.tbl,v 4.19 2009/04/22 12:39:05 gap Exp $
+#H  @(#)$Id: ctomaxi5.tbl,v 4.20 2010/05/05 13:20:06 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,6 +13,18 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomaxi5.tbl,v $
+#H  Revision 4.20  2010/05/05 13:20:06  gap
+#H  - added many class fusions,
+#H  - changed several class fusions according to consistency conditions,
+#H    after systematic checks of consistency
+#H    - with Brauer tables w.r.t. the restriction of characters,
+#H    - of subgroup fusions with the corresponding subgroup fusions between
+#H      proper factors where the factor fusions are stored,
+#H    - of subgroup fusions from maximal subgroups with subgroup fusions of
+#H      extensions inside automorphic extensions
+#H
+#H      TB
+#H
 #H  Revision 4.19  2009/04/22 12:39:05  gap
 #H  added missing maxes of He.2, ON.2, HN.2, Fi24, and B
 #H      TB
@@ -199,7 +211,7 @@
 #H  ==========================================================================
 ##
 Revision.ctomaxi5_tbl :=
-    "@(#)$Id: ctomaxi5.tbl,v 4.19 2009/04/22 12:39:05 gap Exp $";
+    "@(#)$Id: ctomaxi5.tbl,v 4.20 2010/05/05 13:20:06 gap Exp $";
 
 SET_TABLEFILENAME("ctomaxi5");
 ALN:= Ignore;
@@ -271,9 +283,10 @@ ARC("2.[2^6]:(S3xS3)","tomfusion",rec(name:="2.[2^6]:(S3xS3)",map:=[1,2,3,4,8,
 5,6,71,12,13,83,47,132,130,72,45,103,439,14,58,57,438],text:=[
 "fusion map is unique up to table autom. (very expensive)"
 ]));
-ALF("2.[2^6]:(S3xS3)","S6(2)",[1,3,2,4,3,4,12,5,9,8,20,3,4,12,13,10,11,6,
-16,18,15,29,17,7,18,16,27,28,2,5,10,4,5,13,11,19,21,12,9,13,23,5,11,10,24],[
-"fusion map is unique up to table automorphisms"
+ALF("2.[2^6]:(S3xS3)","S6(2)",[1,3,2,4,3,4,12,5,9,8,20,4,3,12,13,11,10,6,
+16,18,15,29,17,7,16,18,28,27,2,5,10,4,5,13,11,19,21,9,12,13,23,5,10,11,24],[
+"fusion map is unique up to table automorphisms,\n",
+"unique map that is compatible with 2^2.[2^6].(S3xS3) -> 2.S6(2)"
 ]);
 ALN("2.[2^6]:(S3xS3)",["S6(2)C2B","S6(2)N2B"]);
 
@@ -383,9 +396,10 @@ ARC("2^6:L3(2)","tomfusion",rec(name:="2^6:L3(2)",map:=[1,3,4,2,5,19,20,40,29,
 42,48,7,6,8,9,62,65,63,225,222,59,60,68,68],text:=[
 "fusion map is unique up to table autom."
 ]));
-ALF("2^6:L3(2)","S6(2)",[1,3,4,2,5,9,12,12,11,10,13,4,3,5,8,20,19,21,23,
-24,13,12,22,22],[
-"fusion map is unique up to table automorphisms"
+ALF("2^6:L3(2)","S6(2)",[1,3,4,2,5,12,9,12,10,11,13,3,4,5,8,20,19,21,24,
+23,12,13,22,22],[
+"fusion map is unique up to table automorphisms,\n",
+"unique map that is compatible with 2.2^6.L3(2) -> 2.S6(2)"
 ]);
 ALF("2^6:L3(2)","L3(2)",[1,1,1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,4,4,4,4,5,6]);
 
@@ -1673,7 +1687,29 @@ ALF("(2^(1+8)x2^6):S6(2)","S6(2)",[1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,
 20,20,20,20,21,21,21,21,21,21,21,21,22,22,22,22,22,23,23,23,23,23,23,23,
 24,24,24,24,24,24,24,25,25,26,26,26,26,27,27,27,28,28,28,29,29,29,29,29,
 30,30]);
-ALN("(2^(1+8)x2^6):S6(2)",["F4(2)M1","F4(2)M2","F4(2)C2A","F4(2)N2A"]);
+ALN("(2^(1+8)x2^6):S6(2)",["F4(2)M1","F4(2)C2A","F4(2)N2A"]);
+
+MOT("F4(2)M2",
+[
+"2nd maximal subgroup of F4(2),\n",
+"differs from F4(2)M1 only by fusion map"
+],
+0,
+0,
+0,
+0,
+["ConstructPermuted",["(2^(1+8)x2^6):S6(2)"]]);
+ALF("F4(2)M2","F4(2)",[1,3,2,4,5,4,3,10,12,16,12,18,5,13,14,4,3,13,14,19,
+18,21,17,16,11,9,15,5,11,5,4,5,2,21,23,20,18,21,10,16,17,12,9,11,4,5,5,19,
+17,23,22,21,18,16,41,43,17,10,12,19,14,13,15,21,18,5,32,28,7,26,57,30,8,
+62,54,25,31,6,27,27,31,33,21,22,9,15,23,44,46,20,17,38,44,41,18,21,13,19,
+40,43,39,44,18,21,42,14,19,22,23,17,45,38,39,40,42,15,23,19,21,19,20,11,
+15,48,47,45,46,43,41,21,19,23,20,42,40,51,53,52,24,34,59,61,26,32,63,34,
+28,29,35,67,65,63,55,34,32,62,64,31,27,58,60,64,60,58,33,31,33,25,58,60,
+54,62,90,88,64,33,93,73,73,73,37,78,79,47,39,45,48,42,77,76,38,45,48,47,
+40,83,50,84,85,52,53,89,59,65,91,65,61,68,69,56,66,70,75,95],[
+"equals the map from F4(2)M1, mapped under an outer autom."
+]);
 
 MOT("3^6:L3(3)",
 [

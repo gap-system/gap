@@ -2,7 +2,7 @@
 ##
 #W  tietze.gd                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id: tietze.gd,v 4.36 2010/02/23 15:13:33 gap Exp $
+#H  @(#)$Id: tietze.gd,v 4.37 2011/05/14 21:27:34 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  (fp groups).
 ##
 Revision.tietze_gd :=
-    "@(#)$Id: tietze.gd,v 4.36 2010/02/23 15:13:33 gap Exp $";
+    "@(#)$Id: tietze.gd,v 4.37 2011/05/14 21:27:34 alexk Exp $";
 
 
 #############################################################################
@@ -333,7 +333,7 @@ DeclareGlobalFunction("AddRelator");
 ##  Nevertheless, a certain misuse of the command is still possible, and we
 ##  want to explicitly warn you from this.
 ##  The reason is that the Tietze option parameters described in
-##  Section <Ref Sect="Tietze Transformations"/> apply to
+##  Section <Ref Sect="Tietze Options"/> apply to
 ##  <Ref Func="DecodeTree"/> as well.
 ##  Hence, in case of inadequate values of these parameters, it may happen that
 ##  <Ref Func="DecodeTree"/> stops before all the secondary generators have

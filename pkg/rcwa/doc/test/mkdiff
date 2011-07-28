@@ -3,8 +3,6 @@
 ##
 #W  mkdiff      Differences of examples (package manual)       Volkmar Felsch
 ##
-#H  $Id: mkdiff,v 1.2 2002/08/29 14:22:52 stefan Exp $
-##
 #Y  Copyright (C) 2002, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
 ##
 ##  mkdiff.sh [-c] [file1 file2 ...]

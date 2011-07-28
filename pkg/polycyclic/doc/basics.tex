@@ -2,8 +2,9 @@
 %%
 %W  basics.tex             GAP documentation                 Bettina Eick
 %W                                                          Werner Nickel
+%W                                                               Max Horn
 %%
-%H  $Id: basics.tex,v 1.9 2008/11/10 08:04:16 gap Exp $
+%H  $Id: basics.tex,v 1.11 2011/05/24 11:31:30 gap Exp $
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -183,7 +184,7 @@ second list <igs2> is not only a generating set, but an igs.
 \label{pcps}
 
 A subfactor of a pcp-group $G$ is again a polycyclic group for which a
-polycyclic presentation can computed.  However, to compute a polycyclic
+polycyclic presentation can be computed. However, to compute a polycyclic
 presentation for  a given subfactor  can  be time-consuming.  Hence we
 introduce *polycyclic presentation sequences* or *Pcp* to compute more
 efficiently with subfactors. (Note that a subgroup is also a subfactor 
@@ -246,10 +247,11 @@ returns <U>.
 
 returns the identity element of <G>.
 
-\bigbreak
-The two main  features of pcp are the  possibility to compute exponent
-vectors  with respect to to   a pcp  and   to compute  the  group   defined by the
-corresponding igs of $U/N$.
+\bigskip
+The main feature of a pcp are the  possibility to compute exponent
+vectors without having to determine an explicit pcp-group corresponding
+to the subfactor that is represented by the pcp. Nonetheless, it is
+possible to determine this subfactor.
 
 \>ExponentsByPcp( <pcp>, <g> )
 
@@ -456,16 +458,17 @@ of the Polycyclic package, while others may be part of other packages.
 
 For example, Polycyclic contains methods for this function in the case
 that <G> is a finite pc-group or a finite solvable permutation group. 
-Further, Polycyclic can convert a finitely presented group with a 
-polycyclic presentation into a pcp group via IsomorphismPcpGroup.
 
 Other examples for methods for IsomorphismPcpGroup are the methods for
 the case that <G> is a crystallographic group (see Cryst) or the case
-that <G> is an almost crystallographic group (see AClib). A general 
-method for the case that <G> is a rational polycyclic matrix group will
-be included in the Polenta package. A general method for the case that
-<G> is a polycyclic finitely presented group will be included in the
-IPCQ package. 
+that <G> is an almost crystallographic group (see AClib). A method for 
+the case that <G> is a rational polycyclic matrix group is included in 
+the Polenta package. 
+
+\>IsomorphismPcpGroupFromFpGroupWithPcPres( <G> )
+
+This function can convert a finitely presented group with a polycyclic 
+presentation into a pcp group.
 
 \>IsomorphismPcGroup( <G> )
 

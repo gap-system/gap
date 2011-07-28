@@ -3,7 +3,7 @@
 #W  xmltree.gi          OpenMath Package              Andrew Solomon
 #W                                                    Marco Costantini
 ##
-#H  @(#)$Id: xmltree.g,v 1.12 2009/06/11 22:05:11 alexk Exp $
+#H  @(#)$Id: xmltree.g,v 1.15 2010/09/20 14:16:41 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,7 +15,7 @@
 ##
 
 Revision.("openmath/gap/xmltree.gi") :=
-    "@(#)$Id: xmltree.g,v 1.12 2009/06/11 22:05:11 alexk Exp $";
+    "@(#)$Id: xmltree.g,v 1.15 2010/09/20 14:16:41 alexk Exp $";
 
 
 BindGlobal( "OMTempVars", 
@@ -30,6 +30,7 @@ BindGlobal( "OMIsNotDummyLeaf",
 
 if VERSION <> "4.dev" and not IsBoundGlobal( "MACFLOAT_STRING" ) then
     MACFLOAT_STRING := Float;
+    IS_MACFLOAT := IsFloat;
 fi;
 
 
@@ -39,9 +40,8 @@ BindGlobal( "OMObjects",
 
     # Basic OpenMath objects
 
-
   OMB := function ( node )
-        Error( "GAP doesn't support byte arrays." );
+        return node.content[1].content;
     end,
 
 
@@ -134,10 +134,10 @@ OMSTR := function ( node )
   OMBIND := function ( node )
     local  OMBVAR, string, i;
 
-        if not (node.content[1].attributes.cd = "fns1" and node.content[1].attributes.name = "lambda" and
-            node.content[1].name = "OMS" and node.content[2].name = "OMBVAR" )  then
-            Error( "this binding is unimplemented" );
-        fi;
+#        if not (node.content[1].attributes.cd = "fns1" and node.content[1].attributes.name = "lambda" and
+#            node.content[1].name = "OMS" and node.content[2].name = "OMBVAR" )  then
+#            Error( "this binding is unimplemented" );
+#        fi;
 
         node.content[2].content := Filtered( node.content[2].content, OMIsNotDummyLeaf );
         if IsList( node.content[3].content )  then

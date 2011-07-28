@@ -5,7 +5,7 @@
 %W                                                     
 %W                                                       
 %%
-%H  @(#)$Id: install.tex,v 1.7 2007/06/17 18:01:31 gap Exp $
+%H  @(#)$Id: install.tex,v 1.8 2011/05/31 13:43:23 gap Exp $
 %%
 %Y 2003
 %%
@@ -29,43 +29,13 @@ Note that the GAP-Packages Alnuth and Polycyclic are needed for this package.
 Normally they should be contained in your distribution. If not, 
 they can be obtained at
 \begintt
-               www.gap-system.org/Packages/packages.html             
+               http://www.gap-system.org/Packages/packages.html             
 
 \endtt
 
 
 %To create the documentation, go into the `doc' directory and type
 %`make_doc'.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Getting and installing KASH}
-                    
-Note that the {\GAP} package Alnuth whose functionality is used by the Polenta
-package requires the installation of KANT respectively
-KASH, the shell
-of the computational algebraic number theory system KANT.  KASH itself
-is not part of Alnuth.  It has to be obtained and installed
-independently.
-                                                            
-KASH is available at
-\begintt
-               www.math.tu-berlin.de/~kant/download.html
-\endtt
-Note that you have to download two files for a complete installation
-of KASH.  To install version 2.4 of KASH on a Linux
-system you should do the following:
-\beginlist
-\item{1.} Download the files
-    kash_2.4.common.tar.gz and kash_2.4.1.linux.tar.gz
-    into the same directory on your system.
-                                                                               
-\item{2.} Unpack the files using tar.  This will create a directory
-    KASH_2.4 containing, amongst other files, the KASH executable called
-    kash.  The place where KASH is put is independent of the place
-    where the Alnuth or Polenta package is installed.
-    
-\endlist
-                                                                               
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,9 +64,9 @@ in the {\GAP} Reference Manual.
 
     If the test suite runs into an error, even though the packages
     Polycyclic and 
-    Alnuth  and  the computational algebraic number theory system KANT
+    Alnuth  and  their depdendencies
     have been correctly installed, then please send a message
-    to `BjoernAssmann@gmx.net' including the error message.
+    to `mhorn@tu-bs.de' including the error message.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

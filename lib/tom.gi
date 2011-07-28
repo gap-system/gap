@@ -3,7 +3,7 @@
 #W  tom.gi                   GAP library                       Götz Pfeiffer
 #W                                                          & Thomas Merkwitz
 ##
-#H  @(#)$Id: tom.gi,v 4.57 2010/05/20 16:23:59 gap Exp $
+#H  @(#)$Id: tom.gi,v 4.58 2010/10/20 13:26:28 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -26,7 +26,7 @@
 ##  13. Generic Construction of Tables of Marks
 ##
 Revision.tom_gi :=
-    "@(#)$Id: tom.gi,v 4.57 2010/05/20 16:23:59 gap Exp $";
+    "@(#)$Id: tom.gi,v 4.58 2010/10/20 13:26:28 gap Exp $";
 
 
 #############################################################################
@@ -65,7 +65,7 @@ InstallMethod( TableOfMarks,
     "for a cyclic group",
     [ IsGroup and IsCyclic ],
     function( G )
-    local n, tom, gens, gen, subs, marks, classNames,
+    local n, c, tom, gens, gen, subs, marks, classNames,
           name, i, j, divs, index;
 
     n:= Size( G );
@@ -74,6 +74,7 @@ InstallMethod( TableOfMarks,
 
     # initialize
     divs:= DivisorsInt( n );
+    c:= Length( divs );
     subs:= [];
     marks:= [];
     classNames:=[];
@@ -89,10 +90,10 @@ InstallMethod( TableOfMarks,
       gen:= One( G );
     fi;
     gens:= [ List( divs, d -> gen^(n/d) ),
-             List( [ 1 .. Length( divs ) ], i -> [ i ] ) ];
+             List( [ 1 .. c ], i -> [ i ] ) ];
 
     # construct each subgroup (each divisor)
-    for i in [ 1 .. Length( divs ) ] do
+    for i in [ 1 .. c ] do
 
       classNames[i]:= String( divs[i] );
       ConvertToStringRep( classNames[i] );
@@ -120,8 +121,8 @@ InstallMethod( TableOfMarks,
     tom:= rec( Identifier                := name,
                SubsTom                   := subs,
                MarksTom                  := marks,
-               NormalizersTom            := List( [ 1 .. n ], x -> n ),
-               DerivedSubgroupsTomUnique := List( [ 1 .. n ], x -> 1 ),
+               NormalizersTom            := List( [ 1 .. c ], x -> c ),
+               DerivedSubgroupsTomUnique := List( [ 1 .. c ], x -> 1 ),
                UnderlyingGroup           := G,
                GeneratorsSubgroupsTom    := gens );
 

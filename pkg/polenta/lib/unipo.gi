@@ -5,7 +5,7 @@
 ## Methods for the calculation of 
 ## constructive pc-sequences for unipotent matrix groups
 ##
-#H  @(#)$Id: unipo.gi,v 1.10 2006/01/15 18:08:46 gap Exp $
+#H  @(#)$Id: unipo.gi,v 1.11 2011/05/31 13:10:58 gap Exp $
 ##
 #Y 2003
 ##
@@ -1007,6 +1007,3 @@ end;
 #############################################################################
 ##
 #E
-
-
-

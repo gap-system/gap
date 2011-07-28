@@ -2,7 +2,7 @@
 ##
 ##  print.g                         CRISP                 Burkhard H\"ofling
 ##
-##  @(#)$Id: print.g,v 1.3 2005/07/19 14:01:18 gap Exp $
+##  @(#)$Id: print.g,v 1.4 2011/05/26 10:01:17 gap Exp $
 ##
 ##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
 ##  Friedrich Schiller-Universit\"at Jena, Germany
@@ -19,13 +19,9 @@ cl := classes();
 for i in [1..Length (cl)] do
    View (cl[i]);
    Print ("\n",cl[i], "\n");
-   for j in [i..Length (cl)] do
+   for j in [i+1..Length (cl)] do
       I := Intersection (cl[i], cl[j]);
-      if InfoLevel (InfoTest) >= 3 then
-         View (I);
-         Print ("\n");
-      fi;
-      View (P);
+      View (I);
       Print ("\n", I, "\n");
    od;
 od;

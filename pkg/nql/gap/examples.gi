@@ -2,10 +2,10 @@
 ##
 #W examples.gi			NQL				René Hartung
 ##
-#H   @(#)$Id: examples.gi,v 1.11 2008/08/28 08:16:42 gap Exp $
+#H   @(#)$Id: examples.gi,v 1.12 2010/03/17 12:51:26 gap Exp $
 ##
 Revision.("nql/gap/examples_gi"):=
-  "@(#)$Id: examples.gi,v 1.11 2008/08/28 08:16:42 gap Exp $";
+  "@(#)$Id: examples.gi,v 1.12 2010/03/17 12:51:26 gap Exp $";
 
 
 ############################################################################
@@ -25,12 +25,13 @@ InstallGlobalFunction(ExamplesOfLPresentations,
         t,r,u,v, 	# free group generators
         T,U,V, 		# free group generators
         G,		# L-presented group
+	e,f,g,h,i,	# for abbreviation in the Hanoi tower group
 	IL;		# info level of InfoNQL
 
 
   if n=1 then 
     # The Grigorchuk group on 4 generators
-    Info(InfoNQL,1,"The Grigorchuk group on 4 generators");
+    Info(InfoNQL,1,"The Grigorchuk group on 4 generators from [Lys85]");
     F:=FreeGroup("a","b","c","d");
     a:=F.1;;b:=F.2;;c:=F.3;;d:=F.4;;
     rels:=[a^2,b^2,c^2,d^2,b*c*d];
@@ -40,6 +41,7 @@ InstallGlobalFunction(ExamplesOfLPresentations,
     
     G:=LPresentedGroup(F,rels,endos,itrels);
     SetIsInvariantLPresentation(G,true);
+    SetSize( G, infinity );
   elif n=2 then
     # The Grigorchuk group on 3 generators
     Info(InfoNQL,1,"The Grigorchuk group on 3 generators");
@@ -51,6 +53,7 @@ InstallGlobalFunction(ExamplesOfLPresentations,
     itrels:=[a^2,Comm(d,d^a),Comm(d,d^(a*c*a*c*a))];
   
     G:=LPresentedGroup(F,rels,endos,itrels);
+    SetSize( G, infinity );
   elif n=3 then 
     # The lamplighter group \Z_2 \wr \Z
     Info(InfoNQL,1,"The lamplighter group on two lamp states");
@@ -58,6 +61,7 @@ InstallGlobalFunction(ExamplesOfLPresentations,
     SetInfoLevel( InfoNQL, 0 );
     G := LamplighterGroup( IsLpGroup, 2 );
     SetInfoLevel( InfoNQL, IL );
+    SetSize( G, infinity );
   elif n=4 then 
     # Brunner-Sidki-Vieira group
     Info(InfoNQL,1,"The Brunner-Sidki-Vieira group");
@@ -69,6 +73,7 @@ InstallGlobalFunction(ExamplesOfLPresentations,
     itrels:=[Comm(a,a^b),Comm(a,a^(b^3))];
   
     G:=LPresentedGroup(F,rels,endos,itrels);
+    SetSize( G, infinity );
   elif n=5 then 
     # The Grigorchuk supergroup
     Info(InfoNQL,1,"The Grigorchuk supergroup");
@@ -81,10 +86,12 @@ InstallGlobalFunction(ExamplesOfLPresentations,
              (c^(a*b))^a),Comm(c^(a*b),(d^(a*b))^a),Comm(d^(a*b),(d^(a*b))^a)];
   
     G:=LPresentedGroup(F,rels,endos,itrels);
+    SetSize( G, infinity );
   elif n=6 then 
     # The Fabrykowski-Gupta group
     Info(InfoNQL,1,"The Fabrykowski-Gupta group");
     G:=GeneralizedFabrykowskiGuptaLpGroup( 3 );
+    SetSize( G, infinity );
   elif n=7 then 
     # The Gupta-Sidki group
     Info(InfoNQL,1,"The Gupta-Sidki group");
@@ -137,12 +144,13 @@ InstallGlobalFunction(ExamplesOfLPresentations,
             u*V*t*V*U*T*V*U*t*U*V*T*u*V*u*t*v*U*v*T*u, 
             u*V*t*V*U*T*v*t*U*v*U*T*V*u*V*u*t*v*U*v*T*U*t*v*u*T*u*V ];
 
-     endos:=[GroupHomomorphismByImagesNC(F,F,[a,t,u,v],
-                                        [a,t,T*v*u*t*V*t*U,T*u*v*t*U*t*V])];
-     G:=LPresentedGroup(F,rels,endos,itrels);
+    endos:=[ GroupHomomorphismByImagesNC( F, F, [a,t,u,v],
+                                          [a,t,T*v*u*t*V*t*U,T*u*v*t*U*t*V]) ];
+    G:=LPresentedGroup(F,rels,endos,itrels);
   
-     SetUnderlyingInvariantLPresentation(G,
-         LPresentedGroup(F,[a^3],endos,itrels));
+    SetUnderlyingInvariantLPresentation(G,
+           LPresentedGroup(F,[a^3],endos,itrels));
+    SetSize( G, infinity );
   elif n=8 then 
     # An index-3 subgroups of the Gupta-Sidki group
     Info(InfoNQL,1,"An index-3 subgroup of the Gupta-Sidki group");
@@ -198,7 +206,8 @@ InstallGlobalFunction(ExamplesOfLPresentations,
             u*V*t*V*U*T*V*U*t*U*V*T*u*V*u*t*v*U*v*T*u, 
             u*V*t*V*U*T*v*t*U*v*U*T*V*u*V*u*t*v*U*v*T*U*t*v*u*T*u*V ];
   
-    G:=LPresentedGroup(F,rels,endos,itrels);
+    G := LPresentedGroup(F,rels,endos,itrels);
+    SetSize( G, infinity );
   elif n=9 then 
     # The Basilica group
     Info(InfoNQL,1,"The Basilica group");
@@ -207,8 +216,8 @@ InstallGlobalFunction(ExamplesOfLPresentations,
     rels:=[];
     endos:=[GroupHomomorphismByImagesNC(F,F,[a,b],[b^2,a])];
     itrels:=[Comm(a,a^b)];
-  
-    G:=LPresentedGroup(F,rels,endos,itrels);
+    G := LPresentedGroup( F, rels, endos, itrels );
+    SetSize( G, infinity );
   elif n=10 then 
     # Gilbert Baumslag's group
     Info(InfoNQL,1,"Baumslag's group");
@@ -218,9 +227,39 @@ InstallGlobalFunction(ExamplesOfLPresentations,
     endos:=[GroupHomomorphismByImagesNC(F,F,[a,b,t,u],[a,b,t,u^t]), 
             GroupHomomorphismByImagesNC(F,F,[a,b,t,u],[a,b,t,u^(t^-1)])];
     itrels:=[ a^t/a^4, (b^2)^t/b, Comm(a,u) ];
-    G:=LPresentedGroup(F,rels,endos,itrels);
+    G := LPresentedGroup( F, rels, endos, itrels );
+    SetIsInvariantLPresentation( G, false );  # as proved in [Har08];
+    SetSize( G, infinity );
+  elif n = 11 then 
+    Info( InfoNQL, 1, "The modified L-presentation of the Basilica Group" );
+    F := FreeGroup( "a", "b" );;
+    a := F.1; b := F.2;;
+    rels := [];;
+    endos := [ GroupHomomorphismByImagesNC( F, F, [a,b], [b^2,a] ),
+               GroupHomomorphismByImagesNC( F, F, [a,b], [a*b,a^2] ) ];;
+    itrels := [ Comm( a, a^b ) ];;
+    G := LPresentedGroup( F, rels, endos, itrels );
+    SetSize( G, infinity );
+  elif n = 12 then 
+    Info( InfoNQL, 1, "The Hanoi-Tower group from [BSZ09]" );
+    # as determined in Bartholdi, Siegenthaler, Zalesski, 2009
+    F := FreeGroup( "a", "b", "c" );;
+    a := F.1;; b := F.2;; c := F.3;;
+    d := Comm( a, b );
+    e := Comm( b, c );
+    f := Comm( c, a );
+    g := d ^ c;;
+    h := e ^ a;;
+    i := f ^ b;;
+    rels := [ a^2, b^2, c^2 ];
+    endos := [ GroupHomomorphismByImagesNC( F, F, [a,b,c], [a,b^c,c^b] ) ];
+    itrels := [ d^-1*e*f*i^-1*g*e, h*e^-1*d^-1*f*d*i^-1, e^-1*g^-1*f^-1*e*g*f,
+                e^-1*d*h*e^-2*d^-1*h^2, h*g*d^-2*f^-1*g*f*e^-1 ];
+    G := LPresentedGroup( F, rels, endos, itrels );
+    SetIsInvariantLPresentation( G, true );
+    SetSize( G, infinity );
   else
-    Error("n must be an integer less than 10");
+    Error("<n> must be an integer less than 12");
   fi;
 
   return(G);
@@ -462,4 +501,40 @@ InstallMethod( LamplighterGroup,
   else 
      return( LamplighterGroup(IsLpGroup,Size(C)) );
   fi;
+  end);
+
+############################################################################
+##
+#M SymmetricGroupCons
+##
+## `economical' L-presentations for the symmetric groups by L. Bartholdi.
+##
+############################################################################
+InstallMethod( SymmetricGroupCons,
+  "for an LpGroup and a positive integer", true,
+  [ IsLpGroup, IsPosInt ], 0,
+  function( filter, n )
+  local F, rels, map, PHI, gens;
+
+  if n < 3 then return( fail ); fi;
+
+  F    := FreeGroup( n-1 );
+  rels := [ F.1^2, (F.1*F.2)^3, (F.1*F.3)^2 ];
+
+  gens := GeneratorsOfGroup( F );
+
+  # for p = (1..n)
+  PHI :=[ GroupHomomorphismByImagesNC( F, F, gens,
+          Concatenation( gens{[2..n-1]}, [ F.1^Product( gens{[2..n-1]} ) ] ) ),
+
+  # for p = (1,2)
+          GroupHomomorphismByImagesNC( F, F, gens,
+          Concatenation( [ F.1, F.2^F.1 ], gens{[3..n-1]} ) ),
+
+  # for p = (3..n)
+          GroupHomomorphismByImagesNC( F, F, gens,
+          Concatenation( [ F.1, F.2^F.3 ], gens{[4..n-1]}, 
+                         [ F.3^Product( gens{[4..n-1]} ) ] ) ) ];;
+
+  return( LPresentedGroup( F, [], PHI, rels ) );
   end);

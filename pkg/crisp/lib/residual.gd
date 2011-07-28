@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  residual.gd                      CRISP                 Burkhard H\"ofling
+##  residual.gd                      CRISP                   Burkhard Höfling
 ##
-##  @(#)$Id: residual.gd,v 1.6 2006/09/13 17:44:59 gap Exp $
+##  @(#)$Id: residual.gd,v 1.7 2011/05/15 19:17:58 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000-2002, 2006 by Burkhard Höfling
 ##
 Revision.residual_gd :=
-    "@(#)$Id: residual.gd,v 1.6 2006/09/13 17:44:59 gap Exp $";
+    "@(#)$Id: residual.gd,v 1.7 2011/05/15 19:17:58 gap Exp $";
 
 
 #############################################################################

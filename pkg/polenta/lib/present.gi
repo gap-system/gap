@@ -5,7 +5,7 @@
 ## Methods for the calculation of 
 ## pcp-presentations for matrix groups
 ##
-#H  @(#)$Id: present.gi,v 1.7 2006/07/17 15:46:10 gap Exp $
+#H  @(#)$Id: present.gi,v 1.8 2011/05/31 13:10:57 gap Exp $
 ##
 #Y 2003
 ##
@@ -288,4 +288,3 @@ end );
 #############################################################################
 ##
 #E
-

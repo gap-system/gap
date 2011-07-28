@@ -244,6 +244,9 @@ ReadLib( "other.gi");
 
 ReadLib( "gasman.gi");
 
+# floateans, now really install all handlers
+ReadLib( "float.gi" );
+
 #############################################################################
 ##
 #X  files dealing with subgroup chains

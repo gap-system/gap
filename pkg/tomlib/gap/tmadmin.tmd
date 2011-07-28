@@ -2,7 +2,7 @@
 ##
 #W  tmadmin.tmd          GAP table of marks library           Thomas Merkwitz
 ##
-#H  @(#)$Id: tmadmin.tmd,v 1.7 2007/10/23 07:52:30 gap Exp $
+#H  @(#)$Id: tmadmin.tmd,v 1.8 2010/05/19 15:56:24 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,7 +10,7 @@
 ##  handle the table of marks library.
 ##
 Revision.( "tomlib/gap/tmadmin_tmd" ) :=
-    "@(#)$Id: tmadmin.tmd,v 1.7 2007/10/23 07:52:30 gap Exp $";
+    "@(#)$Id: tmadmin.tmd,v 1.8 2010/05/19 15:56:24 gap Exp $";
 
 
 #############################################################################
@@ -93,9 +93,10 @@ DeclareRepresentation("IsLibTomRep", IsAttributeStoringRep,["sortperm"]);
 ##  We replace the library function `TableOfMarksFromLibrary' that just
 ##  issues a warning about nonavailability of the Tables Of Marks Library.
 ##
-MakeReadWriteGlobal( "TableOfMarksFromLibrary" );
-UNBIND_GLOBAL( "TableOfMarksFromLibrary" );
-
+if IsBoundGlobal( "TableOfMarksFromLibrary" ) then
+  MakeReadWriteGlobal( "TableOfMarksFromLibrary" );
+  UNBIND_GLOBAL( "TableOfMarksFromLibrary" );
+fi;
 
 #############################################################################
 ##

@@ -2,7 +2,7 @@
 ##
 #W mealy.gd                                                 Laurent Bartholdi
 ##
-#H   @(#)$Id: mealy.gd,v 1.34 2009/06/04 20:58:05 gap Exp $
+#H   @(#)$Id: mealy.gd,v 1.37 2011/06/13 22:54:35 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -38,7 +38,7 @@
 ## <#/GAPDoc>
 ##
 DeclareCategory("IsMealyMachine", IsFRMachine);
-DeclareCategory("IsMealyElement", IsFRElement);
+DeclareCategory("IsMealyElement", IsFRElement and IsAssociativeElement);
 #############################################################################
 
 #############################################################################
@@ -282,6 +282,16 @@ DeclareOperation("MealyElementNC", [IsFamily, IsList, IsList, IsInt]);
 ##
 ##     <P/> It is assumed that <Package>graphviz</Package>
 ##     and <Package>display</Package> are properly installed on the system.
+##
+##     <P/> For example, the command
+##     <C>Draw(NucleusMachine(BasilicaGroup));</C> produces (in a new
+##     window) the following picture:
+##     <Alt Only="LaTeX"><![CDATA[
+##       \includegraphics[height=4cm,keepaspectratio=true]{basilica-nucleus.jpg}
+##     ]]></Alt>
+##     <Alt Only="HTML"><![CDATA[
+##       <img alt="Nucleus" src="basilica-nucleus.jpg">
+##     ]]></Alt>
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>
@@ -1113,12 +1123,12 @@ DeclareProperty("IsWeaklyFinitaryFRElement", IsFRElement);
 
 #############################################################################
 ##
-#M LimitMachine
+#M LimitFRMachine
 #M NucleusMachine
 ##
 ## <#GAPDoc Label="LimitMachine">
 ## <ManSection>
-##   <Attr Name="LimitMachine" Arg="m"/>
+##   <Attr Name="LimitFRMachine" Arg="m"/>
 ##   <Returns>The submachine of <A>m</A> on all recurrent states.</Returns>
 ##   <Description>
 ##     This command creates a new Mealy machine, with stateset the limit
@@ -1136,7 +1146,7 @@ DeclareProperty("IsWeaklyFinitaryFRElement", IsFRElement);
 ## gap> LimitStates(m);
 ## [ <Mealy element on alphabet [ 1 .. 3 ] with 2 states>,
 ##   <Mealy element on alphabet [ 1 .. 3 ] with 1 state> ]
-## gap> LimitMachine(m);
+## gap> LimitFRMachine(m);
 ## <Mealy machine on alphabet [ 1 .. 3 ] with 2 states>
 ## gap> Display(last);
 ##    |  1     2     3
@@ -1156,7 +1166,7 @@ DeclareProperty("IsWeaklyFinitaryFRElement", IsFRElement);
 ##     nucleus (see <Ref Oper="NucleusOfFRMachine"/>) of <A>m</A>.
 ##
 ##     <P/> This nucleus machine is characterized as the smallest machine
-##     <C>n</C> such that <C>Minimized(LimitMachine(m*n))</C>
+##     <C>n</C> such that <C>Minimized(LimitFRMachine(m*n))</C>
 ##     is isomorphic to <C>n</C>. It is also isomorphic to the
 ##     <Ref Attr="NucleusMachine" Label="FR semigroup"/> of the state
 ##     closure of the <Ref Oper="SCSemigroup"/> of <A>m</A>.
@@ -1189,7 +1199,6 @@ DeclareProperty("IsWeaklyFinitaryFRElement", IsFRElement);
 ## <#/GAPDoc>
 ##
 DeclareOperation("LimitStates", [IsFRMachine]);
-DeclareOperation("LimitMachine", [IsFRMachine]);
 DeclareAttribute("NucleusMachine", IsFRMachine);
 #############################################################################
 

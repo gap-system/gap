@@ -2,7 +2,7 @@
 ##
 #W  type.g                      GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: type.g,v 4.55 2010/05/28 16:04:53 gap Exp $
+#H  @(#)$Id: type.g,v 4.56 2011/01/12 17:38:31 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  are moved to type1.g, which is compiled
 ##
 Revision.type_g :=
-    "@(#)$Id: type.g,v 4.55 2010/05/28 16:04:53 gap Exp $";
+    "@(#)$Id: type.g,v 4.56 2011/01/12 17:38:31 alexk Exp $";
 
 
 #############################################################################
@@ -98,10 +98,6 @@ end );
 ##  or a subcategory of it.
 ##  If no specific supercategory of <A>cat</A> is known,
 ##  <A>super</A> may be <Ref Func="IsObject"/>.
-##  <P/>
-##  <E>@Eventually tools will be provided to display hierarchies of
-##  categories etc.,
-##  which will help to choose <A>super</A> appropriately.@</E>
 ##  <P/>
 ##  The optional third argument <A>rank</A> denotes the incremental rank
 ##  (see&nbsp;<Ref Sect="Filters"/>) of <A>cat</A>,

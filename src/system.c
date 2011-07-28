@@ -8,7 +8,7 @@
 *W                                                  & Burkhard Höfling (MAC)
 *W                                                    & Steve Linton (MS/DOS)
 **
-*H  @(#)$Id: system.c,v 4.139 2010/07/16 16:59:13 gap Exp $
+*H  @(#)$Id: system.c,v 4.154 2011/05/20 22:20:35 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -38,9 +38,10 @@
 #undef  INCLUDE_DECLARATION_PART
 
 const char * Revision_system_c =
-   "@(#)$Id: system.c,v 4.139 2010/07/16 16:59:13 gap Exp $";
+   "@(#)$Id: system.c,v 4.154 2011/05/20 22:20:35 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
+#include        "gasman.h"            
 #include        <fcntl.h>
 
 
@@ -49,15 +50,12 @@ const char * Revision_system_c =
 # define SYS_STDIO_H
 #endif
 
-#if !SYS_MAC_MWC
 #include <dirent.h>
-#endif
 
 #ifndef SYS_UNISTD_H                    /* definition of 'R_OK'            */
 # include <unistd.h>
 # define SYS_UNISTD_H
 #endif
-
 
 #ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
 # if SYS_ANSI
@@ -66,6 +64,9 @@ const char * Revision_system_c =
 # define SYS_STDLIB_H
 #endif
 
+#if HAVE_LIBREADLINE
+#include        <readline/readline.h>   /* readline for interactive input  */
+#endif
 
 #ifndef SYS_HAS_STDIO_PROTO             /* ANSI/TRAD decl. from H&S 15     */
 extern FILE * fopen ( const char *, const char * );
@@ -75,23 +76,6 @@ extern char * fgets ( char *, int, FILE * );
 extern int    fputs ( const char *, FILE * );
 #endif
 
-
-#ifdef __MWERKS__
-# if !SYS_MAC_MWC /* BH:__MWERKS__ is also true for  SYS_MAC_MWC */
-#  define SYS_IS_MAC_MPW             1
-#  define SYS_HAS_CALLOC_PROTO       1
-# endif
-#endif
-
-#if SYS_MAC_MWC
-# include "macdefs.h"
-# include "macpaths.h"
-# include "macte.h"
-# include "macedit.h"
-# include "maccon.h"
-# include "macpaths.h"
-# include "macintr.h"
-#endif
 
 #if SYS_DARWIN
 #define task_self mach_task_self
@@ -106,7 +90,7 @@ const Char * SyKernelVersion = "4.5";
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
 */
-const Char * SyWindowsPath = "C:/gap4r4/";
+const Char * SyWindowsPath = "/cygdrive/c/gap4r5";
 
 /****************************************************************************
 **
@@ -163,23 +147,9 @@ UInt SyCacheSize;
 
 /****************************************************************************
 **
-*V  SyCheckForCompletion  . . . . . . . . . . . .  check for completion files
+*V  SyCheckCRCCompiledModule  . . .  check crc while loading compiled modules
 */
-Int SyCheckForCompletion;
-
-
-/****************************************************************************
-**
-*V  SyCheckCompletionCrcComp  . . .  check crc while reading completion files
-*/
-Int SyCheckCompletionCrcComp;
-
-
-/****************************************************************************
-**
-*V  SyCheckCompletionCrcRead  . . . . . . .  check crc while completing files
-*/
-Int SyCheckCompletionCrcRead;
+Int SyCheckCRCCompiledModule;
 
 
 /****************************************************************************
@@ -464,25 +434,6 @@ int _stksize;
 static UInt syStackSpace;
 #endif
 
-#if SYS_MAC_MPW || SYS_MAC_MWC 
-static UInt syStackSpace;
-#endif
-
-#if SYS_MAC_MWC	
-char * SyMinStack;
-#endif
-
-
-/****************************************************************************
-**
-*V  SyFalseEqFail . . . . .. .compatibility option, identifies false and fail
-**
-** In GAP 3 there was no fail, and false was often used. This flag causes
-** false and fail to be the same value
-*/
-
-UInt SyFalseEqFail;
-
 
 /****************************************************************************
 **
@@ -730,63 +681,6 @@ UInt SyTime ( void )
 
 /****************************************************************************
 **
-*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . MAC
-**
-**  For  MAC with MPW we  use the 'TickCount' function  and allow to stop the
-**  clock.
-*/
-#if SYS_MAC_MPW
-
-#ifndef SYS_TYPES_H                     /* various types                   */
-# include       <Types.h>
-# define SYS_TYPES_H
-#endif
-
-#ifndef SYS_EVENTS_H                    /* system events, high level:      */
-# include       <Events.h>              /* 'TickCount'                     */
-# define SYS_EVENTS_H
-#endif
-
-UInt SyTime ( void )
-{
-    return 100 * (UInt)TickCount() / (60/10) - SyStartTime;
-}
-
-#endif
-
-/****************************************************************************
-**
-*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . . . . . . MAC MWC
-**
-**  For  MAC with Metrowerks C we  use the 'Microseconds' function  and allow 
-**  to stop the clock.
-*/
-#if SYS_MAC_MWC
-
-# include       <Timer.h>  /* Microseconds */
-
-UInt SyTime ( void )
-{
-	UnsignedWide w;
-	unsigned long div, res;
-	
-	Microseconds (&w);
-    
-    div = ((w.hi % 1000) << 16) | (w.lo >> 16);
-     
-    res = (div / 1000) << 16;
- 
-    div = ((div % 1000) << 16) | (w.lo & ((1L<<16) - 1 ));
-     
-    res |= div/1000;
-    
-    return res - SyStartTime;
-}
-
-#endif
-
-/****************************************************************************
-**
 
 *F * * * * * * * * * * * * * * * string functions * * * * * * * * * * * * * *
 */
@@ -956,14 +850,8 @@ Char * SyStrncat (
 **  'SyMsgsBags' is the function that is used by Gasman to  display  messages
 **  during garbage collections.
 */
-#if SYS_MAC_MWC
-UInt syLastFreeWorkspace;
-	/* amout of free workspace during last collection */
-#endif
 
 Int SyGasmanNumbers[2][9];
-
-
 
 void SyMsgsBags (
     UInt                full,
@@ -1029,10 +917,6 @@ void SyMsgsBags (
       str[6] = 'M';
 
     
-#if SYS_MAC_MWC
- 	if (phase == 5)
- 		syLastFreeWorkspace = nr; /* save for status message in about box */
-#endif
 
     /* ordinary full garbage collection messages                           */
     if ( 1 <= SyMsgsFlagBags && full ) {
@@ -1055,7 +939,6 @@ void SyMsgsBags (
         if ( phase == 5 ) { SyFputs( str, 3 );  SyFputs( "/",         3 ); }
         if ( phase == 6 ) { SyFputs( str, 3 );  SyFputs( shifted ? "mb free\n":"kb free\n", 3 ); }
     }
-#if !SYS_MAC_MWC
     /* package (window) mode full garbage collection messages              */
     if ( phase != 0 ) {
       shifted =   3 <= phase && nr >= (1 << 21);
@@ -1073,7 +956,6 @@ void SyMsgsBags (
 	str[i++] = 'k';
       syWinPut( 1, cmd, str );
     }
-#endif
 }
 
 
@@ -1129,11 +1011,10 @@ static UInt SyAllocPool;
 extern  char * sbrk ( int );
 #endif
 
-UInt * * * syWorkspace;
-UInt       syWorksize;
+UInt * * * syWorkspace = NULL;
+UInt       syWorksize = 0;
 
 void *     POOL = NULL;
-UInt       POOLUSED = 0;
 
 UInt * * * SyAllocBags (
     Int                 size,
@@ -1151,9 +1032,9 @@ UInt * * * SyAllocBags (
          }
          /* ensure alignment of start address */
          if ((UInt)POOL % 8 == 0) 
-           syWorkspace = (UInt***)(POOL + (8-(UInt)POOL % 8));
-         else
            syWorkspace = (UInt***)POOL;
+         else
+           syWorkspace = (UInt***)((Char *)POOL + (8-(UInt)POOL % 8));
       }
       /* get the storage, but only if we stay within the bounds              */
       /* if ( (0 < size && syWorksize + size <= SyStorMax) */
@@ -1164,16 +1045,14 @@ UInt * * * SyAllocBags (
           SyExit( 2 );
       }
       if (size > 0) {
-        if (POOLUSED+size*1024 <= SyAllocPool) {
+        if ((syWorksize+size)*1024 <= SyAllocPool) {
           ret = (UInt***)((char*)syWorkspace + syWorksize*1024);
-          POOLUSED += size*1024;
         }
         else
           ret = (UInt***)-1;
       }
       else if  (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size))  {
         ret = (UInt***)((char*)syWorkspace + syWorksize*1024);
-        POOLUSED += size*1024;
       }
       else {
         ret = (UInt***)-1;
@@ -1287,11 +1166,9 @@ UInt * * * SyAllocBags (
 #include <mach/mach.h>
 
 vm_address_t syBase;
-Int         sySize;
-UInt * * * syWorkspace;
-UInt       syWorksize;
-void *     POOL = NULL;
-UInt       POOLUSED = 0;
+UInt         sySize = 0;
+UInt * * *   syWorkspace = NULL;
+void *       POOL = NULL;
  
 UInt * * * SyAllocBags (
     Int                 size,
@@ -1309,36 +1186,36 @@ UInt * * * SyAllocBags (
          }
          /* ensure alignment of start address */
          if ((UInt)POOL % 8 == 0) 
-           syWorkspace = (UInt***)(POOL + (8-(UInt)POOL % 8));
-         else
            syWorkspace = (UInt***)POOL;
+         else
+           syWorkspace = (UInt***)((Char *)POOL + (8-(UInt)POOL % 8));
       }
       /* get the storage, but only if we stay within the bounds              */
-      /* if ( (0 < size && syWorksize + size <= SyStorMax) */
+      /* if ( (0 < size && sySize + size <= SyStorMax) */
       /* first check if we would get above SyStorKill, if yes exit! */
       if ( need < 2 && SyStorKill != 0 && 0 < size 
-                    && SyStorKill < syWorksize + size ) {
+                    && SyStorKill < sySize + size ) {
           fputs("gap: will not extend workspace above -K limit, bye!\n",stderr);
           SyExit( 2 );
       }
       if (size > 0) {
-        if (POOLUSED+size*1024 <= SyAllocPool) {
-          ret = (UInt***)((char*)syWorkspace + syWorksize*1024);
-          POOLUSED += size*1024;
+        if ((sySize+size)*1024 <= SyAllocPool) {
+          ret = (UInt***)((char*)syWorkspace + sySize*1024);
+          sySize += size;
         }
         else
           ret = (UInt***)-1;
       }
-      else if  (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size))  {
-        ret = (UInt***)((char*)syWorkspace + syWorksize*1024);
-        POOLUSED += size*1024;
+      else if  (size < 0 && (need >= 2 || SyStorMin <= sySize + size))  {
+        ret = (UInt***)((char*)syWorkspace + sySize*1024);
+        sySize += size;
       }
       else {
         ret = (UInt***)-1;
       }
     }
     else {
-        if ( SyStorKill != 0 && 0 < size && SyStorKill < sySize + size ) {
+        if ( SyStorKill != 0 && 0 < size && SyStorKill < 1024*(sySize + size) ) {
             if (need) {
                 fputs("gap: will not extend workspace above -K limit, bye!\n",stderr);
                 SyExit( 2 );
@@ -1388,124 +1265,26 @@ UInt * * * SyAllocBags (
             fputs("gap: cannot extend the workspace any more\n",stderr);
             SyExit(1);
         }
-
-        /* otherwise return the result (which could be 0 to indicate failure)  */
-        if ( ret == (UInt***)-1 )
-            return (UInt***) 0;
-        else {
-            if ( sySize  > SyStorMax)  {
-                SyStorOverrun = -1;
-                SyStorMax=sySize*2; /* new maximum */
-                InterruptExecStat(); /* interrupt at the next possible point */
-           }
-         }
     }
+
+    /* otherwise return the result (which could be 0 to indicate failure)  */
+    if ( ret == (UInt***)-1 ){
+        if (need) { 
+            fputs("gap: cannot extend the workspace any more\n",stderr);
+            SyExit( 1 );
+        }
+        return (UInt***) 0;
+    } 
+    else {
+        if (sySize  > SyStorMax)  {
+            SyStorOverrun = -1;
+            SyStorMax=sySize*2; /* new maximum */
+            InterruptExecStat(); /* interrupt at the next possible point */
+       }
+     }
     return ret;
 }
 
-#endif
-
-
-/****************************************************************************
-**
-*f  SyAllocBags( <size>, <need> ) . . . . . . . . . . . . . . . . . . MAC MPW
-**
-**  For the MAC under MPW we currently use 'calloc'.  This  does not allow to
-**  extend the arena, but this is a problem of the memory manager anyhow.
-*/
-#if SYS_MAC_MPW
-
-#ifndef SYS_HAS_CALLOC_PROTO
-extern  char *          calloc ( int, int );
-#endif
-
-char * syWorkspace;
-
-
-char * SyGetmem ( size )
-    long                size;
-{
-  size = size*1024;
-    /* get the memory                                                      */
-    /*N 1993/05/29 martin try to make it possible to extend the arena      */
-    if ( syWorkspace == 0 ) {
-        syWorkspace = calloc( (int)size/4, 4 );
-        syWorkspace = (char*)(((long)syWorkspace + 3) & ~3);
-        return syWorkspace;
-    }
-    else {
-        return (char*)-1;
-    }
-}
-
-#endif
-
-
-
-/****************************************************************************
-**
-*f  SyAllocBags( <size>, <need> ) . . . . . . . . . . . . . . . . . . MAC MWC
-**
-**  For Mac under CodeWarrior, we use 'NewPtr to allocate as much memory
-**  as possible at startup, then hand it on to GAP as required.
-*/
-#if SYS_MAC_MWC
-
-UInt * * * 		syWorkspace;
-long       		syWorksize = 0;  /* currently allocated amount in KB*/
-long			SyStorLimit;     /* maximum allocable amount in KB*/
-long            SyStorReserve = 512L; /* reserve memory if all other storage is gone */
-
-UInt * * * SyAllocBags (
-    Int                 size,
-    UInt                need )
-{
-	UInt*** ret;
-	long *p;
-	unsigned long count;
-	
-    if ( (0 < size && (syWorksize + size <= SyStorMax || 
-    				   (need && syWorksize + size <= SyStorLimit)))
-      || (size < 0 && SyStorMin <= syWorksize + size) ) {
-      
-		ret = (UInt***)((char*)syWorkspace + (syWorksize << 10L) );
-        syWorksize += size;
-		syLastFreeWorkspace += size;
-		
-       /* set the overrun flag if we became larger than SyStorMax */
-       if ( syWorksize > SyStorMax && size > 0)  {
-			SyStorMax=syWorksize*2; /* new maximum */
-	        if (SyStorMax > SyStorLimit - SyStorReserve) {
-		        SyStorMax = SyStorLimit - SyStorReserve;
-		        SyStorOverrun = -2;
-            } else 
-            	SyStorOverrun = -1;
-	        InterruptExecStat(); /* interrupt at the next possible point */
-       }
-		/* clear memory, 256 bytes at a time */
- 		p = (long *) ret;
-		if (size > 0) {
-			count = size * (1024UL / sizeof(*p) / 64);
-			while (count--) {
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; 
-				*p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0; *p++ = 0;
-			}
-		}
-        return ret;
-    }
-    else 
- 	   if ( need ) {
-	        syEchos("gap: cannot extend the workspace any more\n",3);
-	        SyExit( 1 );
-	    } 
-	return (UInt***) 0;
-}
 #endif
 
 
@@ -1529,31 +1308,11 @@ void SyAbortBags (
 **  NB Various OS events (like signals) might wake us up
 **
 */
-#if SYS_MAC_MWC
-
-void SySleep ( UInt secs )
-{
-	Boolean oldGapIsIdle;
-	long t;
-	
-	oldGapIsIdle = gGAPIsIdle;
-	gGAPIsIdle = false;
-	t = TickCount();
-	
-	while (TickCount() - t < 60*secs)
-		ProcessEvent();
-		
-	gGAPIsIdle = oldGapIsIdle;
-}
-
-#else
-
 void SySleep ( UInt secs )
 {
   sleep( (unsigned int) secs );
 }
 
-#endif
 /****************************************************************************
 **
 
@@ -1575,16 +1334,9 @@ void SySleep ( UInt secs )
 extern  void            exit ( int );
 #endif
 
-#if !SYS_MAC_MWC
 void SyExit (
     UInt                ret )
 {
-#if SYS_MAC_MPW
-# ifndef SYS_HAS_TOOL
-    fputs("gap: please use <option>-'Q' to close the window.\n",stdout);
-# endif
-#endif
-
 #if SYS_IS_CYGWIN32
   if (ret!=0) {
     Int c;
@@ -1598,39 +1350,6 @@ void SyExit (
 
     exit( (int)ret );
 }
-#endif
-
-#if SYS_MAC_MWC
-extern short syTmpVref; /* volume ref num for temp directory */
-extern long syTmpDirId;  /* dir id for temp directory */
-
-void            SyExit ( ret )
-    UInt                ret;
-{
-	Int c;
-	OSErr err;
-	
-	if (ret) {		 /* make sure the user can see the last error message(s) */
-		OpenLogWindow ();
-		SyFputs ("\nA fatal error has occurred. \n", 3);
-		SyFputs ("GAP will quit now. Press the <return> key.\n", 3);
-		FlushLog ();   /* discard pending input */
-		do {
-			SyIsInterrupted = false;
-			c = SyGetch (2);   /* wait for the user to type <return> */
-		} while (c != '\n' && c != 3);
-	} 
-
-	if (!gUserWantsToQuitGAP)
-		DoQuit (false);
-	
-	/* delete temp files */
-	if ((err = DeleteFolderAndContents (syTmpVref, syTmpDirId)) != noErr) 
-		doDiagnosticMessage (23, err);
-		
-	ExitToShell ();
-}
-#endif
 
 /****************************************************************************
 **
@@ -1650,8 +1369,7 @@ void            SyExit ( ret )
 **
 *f  SySetGapRootPath( <string> )  . . . . . . . . . . . . . . .  BSG/Mach/USG
 */
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || HAVE_SLASH_SEPARATOR \
-    || SYS_MAC_MWC
+#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || HAVE_SLASH_SEPARATOR 
 
 void SySetGapRootPath( const Char * string )
 {
@@ -1783,42 +1501,47 @@ extern void   free ( char * );
 #endif
 
 
-#if SYS_MAC_MPW || SYS_MAC_MWC
-# ifndef SYS_HAS_TOOL
-#  ifndef SYS_MEMORY_H                  /* Memory stuff:                   */
-#   include     <Memory.h>              /* 'GetApplLimit', 'SetApplLimit', */
-#   define SYS_MEMORY_H                 /* 'MaxApplZone', 'StackSpace',    */
-#  endif                                /* 'MaxMem'                        */
-# endif
+typedef struct { Char symbol; UInt value; } sizeMultiplier;
+
+sizeMultiplier memoryUnits[]= {
+  {'k', 1024},
+  {'K', 1024},
+  {'m', 1024*1024},
+  {'M', 1024*1024},
+  {'g', 1024*1024*1024},
+  {'G', 1024*1024*1024},
+#ifdef SYS_IS_64_BIT
+  {'t', 1024UL*1024*1024*1024},
+  {'T', 1024UL*1024*1024*1024},
+  {'p', 1024UL*1024*1024*1024*1024}, /* you never know */
+  {'P', 1024UL*1024*1024*1024*1024},
 #endif
-
-
-#if SYS_MAC_MPW || SYS_MAC_MWC
-# ifndef SYS_HAS_TOOL
-Char * syArgv [128];
-Char   syArgl [1024];
-# endif
-#endif
-
-#if SYS_MAC_MWC
-# include <gestalt.h>
-# include <folders.h>
-#endif
-
+};
 
 static UInt ParseMemory( Char * s)
 {
-  UInt size;
-  size = atoi(s);
-  if ( s[SyStrlen(s)-1] == 'k'
-       || s[SyStrlen(s)-1] == 'K' )
-    size = size * 1024;
-  if ( s[SyStrlen(s)-1] == 'm'
-       || s[SyStrlen(s)-1] == 'M' )
-    size = size * 1024 * 1024;
-  if ( s[SyStrlen(s)-1] == 'g'
-       || s[SyStrlen(s)-1] == 'G' )
-    size = size * 1024* 1024 * 1024;
+  UInt size  = atoi(s);
+  Char symbol =  s[SyStrlen(s)-1];
+  UInt i;
+  UInt maxmem;
+#ifdef SYS_IS_64_BIT
+  maxmem = 15000000000000000000UL;
+#else
+  maxmem = 4000000000UL;
+#endif
+  
+  for (i = 0; i < sizeof(memoryUnits)/sizeof(memoryUnits[0]); i++) {
+    if (symbol == memoryUnits[i].symbol) {
+      UInt value = memoryUnits[i].value;
+      if (size > maxmem/value)
+	size = maxmem;
+      else
+	size *= value;
+      return size;
+    }      
+  }
+  if (!isdigit(symbol))
+    FPUTS_TO_STDERR("Unrecognised memory unit ignored");
   return size;
 }
 
@@ -1902,18 +1625,9 @@ struct optInfo options[] = {
   { 'K',  storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
   { 'L',  storeString, &SyRestoring, 1}, /* must be handled in kernel  */
   { 'M',  toggle, &SyUseModule, 0}, /* must be handled in kernel */
-  { 'N',  toggle, &SyCheckForCompletion, 0}, /* must be handled in kernel */
-  { 'O',  toggle, &SyFalseEqFail, 0},/* must be handled in kernel */
-#if SYS_MAC_MWC
-  { 'P',  storeMemory, &gPrintBufferSize, 1},
-#endif
+  { 'X',  toggle, &SyCheckCRCCompiledModule, 0}, /* must be handled in kernel */
   { 'R',  unsetString, &SyRestoring, 0}, /* kernel */
   { 'U',  storeString, SyCompileOptions, 1}, /* kernel */
-#if SYS_MAC_MWC
-  { 'W',  storeMemory, &gMaxLogSize, 1},
-#endif
-  { 'X',  toggle, &SyCheckCompletionCrcComp, 0 }, /* kernel */
-  { 'Y',  toggle, &SyCheckCompletionCrcRead, 0 }, /* kernel */
   { 'a',  storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
   { 'c',  storeMemory, &SyCacheSize, 1 }, /* kernel, unless we provided a hook to set it from library, 
 					   never seems to be useful */
@@ -1927,7 +1641,8 @@ struct optInfo options[] = {
   { 'n',  forceLineEditing, 0, 0}, /* prob library */
   { 'o',  storeMemory2, &SyStorMax, 1 }, /* library with new interface */
   { 'p',  toggle, &SyWindow, 0 }, /* ?? */
-#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 || SYS_MAC_MPW || SYS_MAC_MWC
+  { 'q',  toggle, &SyQuiet, 0 }, /* ?? */
+#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 
   { 'z',  storeInteger, &syIsIntrFreq, 0},
 #endif
   { '\0',0,0}};
@@ -1945,31 +1660,12 @@ void InitSystem (
     Char *              *ptrlist;
     UInt                i;             /* loop variable                   */
     Int res;                       /* return from option processing function */
-#if SYS_MAC_MWC
-	KeyMap				theKeys;
-	long				k;
-	short 				s;
-	Size				mem;
-	Int					fid;
-	Char 				syOptionsPath [1024] = "gap.options";
-	char				match;
-	OSErr 				err;
-	FSSpec 				tmpFSSpec;
-	char				first, last;  /* dummy for checking stack ptr */
-	char *				ptr;
-#endif
 	/* Initialize global and static variables. Do it here rather than
 	   with initializers to allow for restart */
 	/*	SyBanner = 1; */
-#if SYS_MAC_MWC
-	SyCTRD = 0; /* doesn't make too much sense on a Mac */            
-#else
 	SyCTRD = 1;             
-#endif
 	SyCacheSize = 0;
-	SyCheckForCompletion = 1;
-	SyCheckCompletionCrcComp = 0;
-	SyCheckCompletionCrcRead = 1;
+	SyCheckCRCCompiledModule = 0;
 	SyCompilePlease = 0;
 	SyDebugLoading = 0;
 	SyHasUserHome = 0;
@@ -1983,7 +1679,7 @@ void InitSystem (
 	SyNrRowsLocked = 0;
 	SyQuiet = 0;
 	SyInitializing = 0;
-	SyStorMax = 256*1024L;
+	SyStorMax = 512*1024L;
         SyAllocPool = 0;
 	SyStorOverrun = 0;
 	SyStorKill = 0;
@@ -1994,21 +1690,6 @@ void InitSystem (
 # define __NO_INLINE__
 	_stksize = 64 * 1024;   /* GNU C, amount of stack space    */
 	syStackSpace = 64 * 1024;
-#endif
-
-#if SYS_MAC_MPW || SYS_MAC_MWC 
-	syStackSpace = 2L * 1024L * 1024L;
-#endif
-
-#if SYS_MAC_MWC	
-	SyMinStack = (char*) -1L;
-#endif
-
-	SyFalseEqFail = 0;
-
-#if SYS_MAC_MWC
-	syLastFreeWorkspace = 0;  
-	/* amout of free workspace during last collection */
 #endif
 
 	{ UInt i,j;
@@ -2028,90 +1709,8 @@ void InitSystem (
 	lenoptvalsbuff = 0;
 	gaprc = 1; */
 	
-#if SYS_MAC_MPW
-	preAllocAmount = 0;
-# ifndef SYS_HAS_TOOL
-    /* Increase the amount of stack space available to GAP.                */
-    /* Following "Inside Macintosh - Memory" 1992, pages 1-42.             */
-    /* For use with MPW 'SIOW.o' *after* changing instruction word         */
-    /* at 3F94 from 'A063' (call to '_MaxApplZone') to '4E71' (NOP).       */
-    /* 'fix_SIOW.c' is the source for an MPW tool, which does this safely. */
-    /* Otherwise bungee-jumping the stack will lead to fatal head injuries.*/
-    /*                                              Dave Bayer, 1994/07/14 */
-    SetApplLimit( GetApplLimit() - (syStackSpace - StackSpace() + 1024) );
-    MaxApplZone();
-    if ( StackSpace() < syStackSpace ) {
-        FPUTS_TO_STDERR("gap: cannot get enough stack space.\n");
-        SyExit( 1 );
-    }
-# endif
-#endif
-
     preAllocAmount = 4*1024*1024;
     
-#if SYS_MAC_MWC	
-# if !TARGET_API_MAC_CARBON && !powerc 
-	SyMinStack = GetApplLimit() - (syStackSpace - StackSpace()) + 1024;
-    SetApplLimit( GetApplLimit() - (syStackSpace - StackSpace() + 1024) );
-    /* compute the least possible value for the stack pointer */
-    SyMinStack = (&last < &first ? &last : &first) - StackSpace () + 8192;
-# else /* we need more reserve stack for the PPC, apparently */
-    SyMinStack = (&last < &first ? &last : &first) - StackSpace () + 65536;
-# endif
-    MaxApplZone();
-    
-    /* look for a GAP options file in the GAP directory */
-    err = FSMakeFSSpec (0, 0, "\pGAP options", &gGapOptionsFSSpec);
-	
-	/* if there is none for the local copy of GAP, try in the system preferences */
-	if (err != noErr) {
-		err = FindFolder (kOnSystemDisk, kPreferencesFolderType, kCreateFolder, &s, &k);
-		if (err == noErr)
-			err = FSMakeFSSpec (s, k, "\pGAP options", &gGapOptionsFSSpec);
-		else
-			err = dirNFErr; /* make sure it is not fnfErr */
-	}
-	
-	/* get path to a GAP options file, create file if necessary */
-	
-	if (err == noErr || err == fnfErr)
-		err = FSSpecToPath (&gGapOptionsFSSpec, (char*)&syOptionsPath, sizeof (syOptionsPath), 
-			true, err == fnfErr);
-	if (err != noErr && err != fnfErr)
-		syOptionsPath[0] = '\0';
-			
-	InitEditor ();   /* initialize the editor */
-    if ( StackSpace() < syStackSpace ) {
-        SyFputs ("gap: cannot get enough stack space.\n",3);
-        SyExit( 1 );
-    }
-	
-	syIsIntrTime = TickCount();
-
-    for (i = 0; i < 4; i++) {
-    	syBuf[i].fp = -1;   /* must not be used !!!, hope for a bus error*/
-    	syBuf[i].fromDoc = (char*)&LOGDOCUMENT;
-    	syBuf[i].binary = false;
-		syBuf[i].isTTY = 1;
-		syBuf[i].bufno = -1;
-	}    
-	SyInFid = 0;  /* no input redirection */
-    SyOutFid = 1; /* no output redirection */
-	SyCanExec = (Gestalt (gestaltAppleEventsAttr, &k) == noErr
-						&& (k & (1 << gestaltAppleEventsPresent)));
-    if (Gestalt (gestaltCFMAttr,&k) == noErr) /* knows about dynamic libraries */
-	    SyCanLoadDynamicModules = (k & (1<<gestaltCFMPresent));
-	else
-		SyCanLoadDynamicModules = false;
-	if ((err = FindFolder (kOnSystemDisk, kTemporaryFolderType, kCreateFolder, &syTmpVref, &syTmpDirId))
-			 == noErr)
-		if ((err = SyFSMakeNewFSSpec (syTmpVref, syTmpDirId, "\pGAP temp", &tmpFSSpec)) == noErr)
-			err = FSpDirCreate (&tmpFSSpec, 0, &syTmpDirId);
-	if (err) {
-        SyFputs ("#Warning: cannot create temporary folder.\n",3);
-	}
-#endif
-
     /* open the standard files                                             */
 #if SYS_BSD || SYS_MACH || SYS_USG || SYS_VMS || HAVE_TTYNAME
     syBuf[0].fp = fileno(stdin);
@@ -2180,12 +1779,6 @@ void InitSystem (
     if ( isatty( fileno(stderr) ) )
         syBuf[2].fp = stderr;
 #endif
-#if SYS_MAC_MPW
-    syBuf[0].fp = stdin;
-    syBuf[1].fp = stdout;
-    syBuf[2].fp = stdin;
-    syBuf[3].fp = stderr;
-#endif
 
     for (i = 4; i < sizeof(syBuf)/sizeof(syBuf[0]); i++)
       syBuf[i].fp = -1;
@@ -2193,67 +1786,11 @@ void InitSystem (
     for (i = 0; i < sizeof(syBuffers)/sizeof(syBuffers[0]); i++)
 	  syBuffers[i].inuse = 0;
 
-#if !SYS_MAC_MWC    /* install the signal handler for '<ctr>-C'                            */
-    SyInstallAnswerIntr();
+#if HAVE_LIBREADLINE
+    rl_initialize ();
 #endif
-
-#if SYS_MAC_MPW || SYS_MAC_MWC
-# ifndef SYS_HAS_TOOL
-    /* the Macintosh doesn't support command line options, read from file  */
-
     
-#if SYS_MAC_MPW
-    if ( (fid = SyFopen( "gap.options", "r" )) != -1 ) 
-#else
-    if ( (fid = SyFopen( syOptionsPath, "r" )) != -1 ) 
-#endif
-	{
-	    ptr = syArgl;
-        while ( SyFgets( ptr, (sizeof(syArgl)-1) - (ptr-syArgl), fid )
-          && (ptr-syArgl) < (sizeof(syArgl)-1) ) {
-            while ( *ptr != '#' && *ptr != '\0' )
-                ptr++;
-        }
-        SyFclose( fid );
-    } else
-    	*syArgl = '\0';
-    	        
-    /* see whether the user wants to change preferences, i.e., whether 
-       shift, cmd, ctrl, space, apple key pressed */
-	GetKeys (theKeys);
-	if (theKeys[1] & (1 | 4 | 8 | 512 | 32768L)) { 
-		ModifyOptions (syArgl);
-	}
-
-    argc = 0;
-    argv = syArgv;
-    argv[argc++] = "gap";
-    ptr = syArgl;
-        
-    while ( *ptr==' ' || *ptr=='\t' || *ptr=='\n' )  
-    	*ptr++ = '\0';
-    	
-    while ( *ptr != '\0' ) {
-         if (*ptr == '\"' || *ptr == '\'')
-        	match = *ptr++;
-        else 
-        	match = ' ';
-        argv[argc++] = ptr; 
-        while ( *ptr!=match && *ptr!='\t' && *ptr!='\n' && *ptr!='\0' ) {
-            if ( *ptr=='\\' )
-                for ( k = 0; ptr[k+1] != '\0'; k++ )
-                    ptr[k] = ptr[k+1];
-            ptr++;
-        }
-        if (*ptr == match)
-         	*ptr++ = '\0';
-        else if (match != ' ')
-        	SyFputs ("Error in command line argument: no matching quote found\n",3);
-        while ( *ptr==' ' || *ptr=='\t' || *ptr=='\n' )  *ptr++ = '\0';
-    }
-# endif
-#endif
-
+    SyInstallAnswerIntr();
 
     SySystemInitFile[0] = '\0';
     SyStrncat( SySystemInitFile, "lib/init.g", 10 );
@@ -2330,80 +1867,23 @@ void InitSystem (
 
     /* now that the user has had a chance to give -x and -y,
        we determine the size of the screen ourselves */
-#if SYS_MAC_MWC
-	GetLogWindowSize ();
-#else
 	getwindowsize();
-#endif	
 
     /* fix max if it is lower than min                                     */
     if ( SyStorMax != 0 && SyStorMax < SyStorMin ) {
         SyStorMax = SyStorMin;
     }
 
-    /* only check once                                                     */
-    if ( SyCheckCompletionCrcComp ) {
-        SyCheckCompletionCrcRead = 0;
-    }
-
     /* when running in package mode set ctrl-d and line editing            */
     if ( SyWindow ) {
       /*         SyLineEdit   = 1;
 		 SyCTRD       = 1; */
-#if !SYS_MAC_MWC
         syBuf[2].fp = fileno(stdin);  syBuf[2].echo = fileno(stdout);
         syBuf[3].fp = fileno(stdout);
-#endif
         syWinPut( 0, "@p", "1." );
     }
    
 
-#if SYS_MAC_MWC
-
-    /* find out how much memory we can now allocate in the zone            */
-	if (gPrintBufferSize < 32L*1024L)
-		gEditorScratch = 32L*1024L;
-	else 
-		gEditorScratch = gPrintBufferSize;
-			
-	SyStorLimit = MaxMem( &mem );
-	SyStorLimit -= gEditorScratch + gMaxLogSize;  
-
-	/* make SyStorLimit divisible by the minimum allocatable unit */
-#if GAPVER == 4
-	SyStorLimit /= 1024L;
-	SyStorLimit -= SyStorLimit % 512L;
-#elif GAPVER == 3
-	SyStorLimit -= SyStorLimit % 1024;
-#endif
-
-	/* try to set SyStorMax so that the user gets a warning before memory is too low */
-	if (SyStorMax > SyStorLimit)
-		SyStorMax = SyStorLimit - SyStorReserve;
-;
-
-    if ( SyStorMin <= 0 ) 
-   	     SyStorMin = SyStorMax;
-
-	syWorkspace = (UInt***) NewPtr (SyStorLimit*1024L);  /* allocate all we can get */
-	
-
-    if ( SyStorMax < SyStorMin || !syWorkspace) {
-            SyFputs(
-        "gap: please use the 'Get Info' command in the Finder 'File' menu\n",  3 );  
-            SyFputs(
-        "     to increase the minimum amount of memory and the preferred amount of memory\n", 3);
-            SyFputs (
-        "     as described in the documentation of GAP for MacOS.\n", 3 );
-            SyExit( 1 );
-    }
-	if (SyBanner && !SyCompilePlease) {
-		if (SyRestoring)
-			SyFputs ("Loading GAP workspace. Please be patient, this may take a while.\n\n", 1);
-		OpenAboutBox (5);   /* show GAP's About ... box for 5 seconds*/
-	}
-
-#else
     if (SyAllocPool == 0) {
       /* premalloc stuff                                                     */
       /* allocate in small chunks, and write something to them
@@ -2423,7 +1903,6 @@ void InitSystem (
       ptr1 = (Char *)malloc(4);
       if ( ptr != 0 )  free( ptr ); */
     }
-#endif
 
     /* try to find 'LIBNAME/init.g' to read it upon initialization         */
     if ( SyCompilePlease || SyRestoring ) {
@@ -2439,12 +1918,31 @@ void InitSystem (
 #if HAVE_DOTGAPRC || HAVE_GAPRC
     /* the users home directory                                            */
     if ( getenv("HOME") != 0 ) {
+        SyUserHome[0] = '\0';
         SyStrncat(SyUserHome, getenv("HOME"), sizeof(SyUserHome)-1);
         SyHasUserHome = 1;
         if (!IgnoreGapRC) {
+# if SYS_DARWIN
+            DotGapPath[0] = '\0';
+            SyStrncat(DotGapPath, getenv("HOME"), sizeof(DotGapPath)-26);
+            SyStrncat(DotGapPath+SyStrlen(DotGapPath), "/Library/Preferences/GAP;", 26);
+            SySetGapRootPath(DotGapPath);
+# endif
+            DotGapPath[0] = '\0';
           SyStrncat(DotGapPath, getenv("HOME"), sizeof(DotGapPath)-6);
           SyStrncat(DotGapPath+SyStrlen(DotGapPath), "/.gap;", 6);
           SySetGapRootPath(DotGapPath);
+        }
+        /* and in this case we can also expand paths which start
+           with a tilde ~ */
+        for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
+          if (SyGapRootPaths[i][0] == '~' && 
+              SyStrlen(SyUserHome)+SyStrlen(SyGapRootPaths[i]) < 512) {
+            memmove(SyGapRootPaths[i]+SyStrlen(SyUserHome),
+                    /* don't copy the ~ but the trailing '\0' */
+                    SyGapRootPaths[i]+1, SyStrlen(SyGapRootPaths[i]));
+            memcpy(SyGapRootPaths[i], SyUserHome, SyStrlen(SyUserHome));
+          }
         }
     }
 #endif
@@ -2452,6 +1950,8 @@ void InitSystem (
 
     /* start the clock                                                     */
     SyStartTime = SyTime();
+
+
 
     /* now we start                                                        */
     return;

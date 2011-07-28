@@ -6,9 +6,9 @@ SetPackageInfo( rec(
 
 PackageName := "GrpConst",
 Subtitle := "Constructing the Groups of a Given Order",
-Version := "2.1",
+Version := "2.2",
 Date := "19/11/2002",
-ArchiveURL := "http://www-public.tu-bs.de:8080/~beick/soft/grpconst/grpconst-2.0",
+ArchiveURL := "http://www-public.tu-bs.de:8080/~beick/soft/grpconst/grpconst-2.2",
 ArchiveFormats := ".tar.gz",
 
 Persons := [
@@ -70,7 +70,7 @@ Dependencies := rec(
   ExternalConditions := [] ),
 
 AvailabilityTest := ReturnTrue,
-BannerString := "Loading GrpConst 2.0 ... \n",
+BannerString := "Loading GrpConst 2.2 ... \n",
 Autoload := false,
 Keywords := ["constructing groups of small order", 
              "Frattini extension method",

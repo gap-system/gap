@@ -2,15 +2,11 @@
 ##
 #W  classic.gd                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: classic.gd,v 4.24 2010/02/23 15:12:39 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the operations for the construction of the classical
 ##  group types.
 ##
-Revision.classic_gd :=
-    "@(#)$Id: classic.gd,v 4.24 2010/02/23 15:12:39 gap Exp $";
 
 
 #############################################################################
@@ -24,11 +20,19 @@ Revision.classic_gd :=
 ##  SU<M>(2,q)</M> and SL<M>(2,q)</M> is used,
 ##  see for example&nbsp;<Cite Key="Hup67"/>.
 ##  The generators of the orthogonal groups are taken
-##  from&nbsp;<Cite Key="IshibashiEarnest94"/>
-##  and&nbsp;<Cite Key="KleidmanLiebeck90"/>,
+##  from&nbsp;<Cite Key="IshibashiEarnest94"/>,
+##  <Cite Key="KleidmanLiebeck90"/>,
+##  and&nbsp;<Cite Key="RylandsTalor98"/>,
 ##  except that the generators of the orthogonal groups in odd dimension in
 ##  even characteristic are constructed via the isomorphism to a symplectic
 ##  group, see for example&nbsp;<Cite Key="Car72a"/>.
+##  The generators for the semilinear groups are constructed from the
+##  generators of the corresponding linear groups plus one additional
+##  generator that describes the action of the group of field automorphisms;
+##  for prime integers <M>p</M> and positive integers <M>f</M>,
+##  this yields the matrix groups <M>Gamma</M>L<M>(d, p^f)</M> and
+##  <M>Sigma</M>L<M>(d, p^f)</M> as groups of <M>d f \times df</M> matrices
+##  over the field with <M>p</M> elements.
 ##  <P/>
 ##  For symplectic and orthogonal matrix groups returned by the functions
 ##  described below, the invariant bilinear form is stored as the value of
@@ -38,6 +42,14 @@ Revision.classic_gd :=
 ##  <Ref Attr="InvariantSesquilinearForm"/>).
 ##  The defining quadratic form of orthogonal groups is stored as the value
 ##  of the attribute <Ref Attr="InvariantQuadraticForm"/>.
+##  <P/>
+##  Note that due to the different sources for the generators,
+##  the invariant forms for the groups <M>\Omega(e,d,q)</M> are in general
+##  different from the forms for SO<M>(e,d,q)</M> and GO<M>(e,d,q)</M>.
+##  <!--
+##  If the <Package>Forms</Package> is loaded then compatible groups can be
+##  created by specifying the desired form, see the examples below.
+##  -->
 ##  <#/GAPDoc>
 ##
 
@@ -53,7 +65,7 @@ Revision.classic_gd :=
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareConstructor( "GeneralLinearGroupCons", [ IsGroup, IsInt, IsRing ] );
+DeclareConstructor( "GeneralLinearGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 
 
 #############################################################################
@@ -114,6 +126,10 @@ DeclareConstructor( "GeneralLinearGroupCons", [ IsGroup, IsInt, IsRing ] );
 ##  gap> Size(pgl);
 ##  12130560
 ##  ]]></Example>
+##  <P/>
+##  If you are interested only in the projective group as a permutation group
+##  and not in the correspondence between its moved points and the points in
+##  the projective space, you can also use <Ref Func="PGL"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -151,6 +167,8 @@ DeclareSynonym( "GL", GeneralLinearGroup );
 ##
 DeclareConstructor( "GeneralOrthogonalGroupCons",
     [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
+DeclareConstructor( "GeneralOrthogonalGroupCons",
+    [ IsGroup, IsInt, IsPosInt, IsRing ] );
 
 
 #############################################################################
@@ -177,6 +195,9 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
 ##  and the returned group is the general orthogonal group itself.
 ##  <P/>
+##  <!--
+##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
+##  specify the desired invariant quadratic form respected by the group. -->
 ##  Note that in&nbsp;<Cite Key="KleidmanLiebeck90"/>,
 ##  GO is defined as the stabilizer
 ##  <M>\Delta(V, F, \kappa)</M> of the quadratic form, up to scalars,
@@ -186,10 +207,10 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 ##  <#/GAPDoc>
 ##
 BindGlobal( "GeneralOrthogonalGroup", function ( arg )
-
   if   Length( arg ) = 2 then
     return GeneralOrthogonalGroupCons( IsMatrixGroup, 0, arg[1], arg[2] );
-  elif Length( arg ) = 3 and ForAll( arg, IsInt ) then
+  elif Length( arg ) = 3 and IsInt(arg[1]) and IsInt(arg[2]) and
+    (IsInt(arg[3]) or IsRing(arg[3])) then
     return GeneralOrthogonalGroupCons( IsMatrixGroup,arg[1],arg[2],arg[3] );
   elif IsOperation( arg[1] ) then
     if   Length( arg ) = 3 then
@@ -199,7 +220,6 @@ BindGlobal( "GeneralOrthogonalGroup", function ( arg )
     fi;
   fi;
   Error( "usage: GeneralOrthogonalGroup( [<filter>, ][<e>, ]<d>, <q> )" );
-
 end );
 
 DeclareSynonym( "GO", GeneralOrthogonalGroup );
@@ -240,6 +260,9 @@ DeclareConstructor( "GeneralUnitaryGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
 ##  and the returned group is the general unitary group itself.
 ##  <P/>
+##  <!--
+##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
+##  specify the desired invariant sesquilinear form respected by the group. -->
 ##  <Example><![CDATA[
 ##  gap> GeneralUnitaryGroup( 3, 5 );
 ##  GU(3,5)
@@ -364,6 +387,8 @@ DeclareSynonym( "SL", SpecialLinearGroup );
 ##
 DeclareConstructor( "SpecialOrthogonalGroupCons",
     [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
+DeclareConstructor( "SpecialOrthogonalGroupCons",
+    [ IsGroup, IsInt, IsPosInt, IsRing ] );
 
 
 #############################################################################
@@ -385,14 +410,16 @@ DeclareConstructor( "SpecialOrthogonalGroupCons",
 ##  (The index of SO( <A>e</A>, <A>d</A>, <A>q</A> ) in
 ##  GO( <A>e</A>, <A>d</A>, <A>q</A> ) is <M>2</M> if <A>q</A> is
 ##  odd, and <M>1</M> if <A>q</A> is even.)
-##  <!-- Also interesting is the group Omega( <A>e</A>, <A>d</A>, <A>q</A> ), which is always of-->
-##  <!-- index <M>2</M> in SO( <A>e</A>, <A>d</A>, <A>q</A> );-->
-##  <!-- this is the subgroup of all matrices with square spinor norm in odd-->
-##  <!-- characteristic or Dickson invariant <M>0</M> in even characteristic.-->
+##  Also interesting is the group Omega( <A>e</A>, <A>d</A>, <A>q</A> ),
+##  see <Ref Oper="Omega" Label="construct an orthogonal group"/>,
+##  which is always of index <M>2</M> in SO( <A>e</A>, <A>d</A>, <A>q</A> ).
 ##  <P/>
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
 ##  and the returned group is the special orthogonal group itself.
 ##  <P/>
+##  <!--
+##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
+##  specify the desired invariant quadratic form respected by the group. -->
 ##  <Example><![CDATA[
 ##  gap> GeneralOrthogonalGroup( 3, 7 );
 ##  GO(0,3,7)
@@ -409,7 +436,8 @@ BindGlobal( "SpecialOrthogonalGroup", function ( arg )
 
   if   Length( arg ) = 2 then
     return SpecialOrthogonalGroupCons( IsMatrixGroup, 0, arg[1], arg[2] );
-  elif Length( arg ) = 3 and ForAll( arg, IsInt ) then
+  elif Length( arg ) = 3 and IsInt(arg[1]) and IsInt(arg[2]) and
+    (IsInt(arg[3]) or IsRing(arg[3])) then
     return SpecialOrthogonalGroupCons( IsMatrixGroup,arg[1],arg[2],arg[3] );
   elif IsOperation( arg[1] ) then
     if   Length( arg ) = 3 then
@@ -461,6 +489,9 @@ DeclareConstructor( "SpecialUnitaryGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
 ##  and the returned group is the special unitary group itself.
 ##  <P/>
+##  <!--
+##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
+##  specify the desired invariant sesquilinear form respected by the group. -->
 ##  <Example><![CDATA[
 ##  gap> SpecialUnitaryGroup( 3, 5 );
 ##  SU(3,5)
@@ -498,6 +529,7 @@ DeclareSynonym( "SU", SpecialUnitaryGroup );
 ##  </ManSection>
 ##
 DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsPosInt ] );
+DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 
 
 #############################################################################
@@ -509,22 +541,36 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsPosInt ] );
 ##  <#GAPDoc Label="SymplecticGroup">
 ##  <ManSection>
 ##  <Func Name="SymplecticGroup" Arg='[filt, ]d, q'/>
+##  <Func Name="SymplecticGroup" Arg='[filt, ]d, ring'/>
 ##  <Func Name="Sp" Arg='[filt, ]d, q'/>
+##  <Func Name="Sp" Arg='[filt, ]d, ring'/>
 ##  <Func Name="SP" Arg='[filt, ]d, q'/>
+##  <Func Name="SP" Arg='[filt, ]d, ring'/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the symplectic group
 ##  Sp( <A>d</A>, <A>q</A> ) of those <M><A>d</A> \times <A>d</A></M>
-##  matrices over the field with <A>q</A> elements
+##  matrices over the field with <A>q</A> elements (respectively the ring
+##  <A>ring</A>)
 ##  that respect a fixed nondegenerate symplectic form,
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
 ##  and the returned group is the symplectic group itself.
 ##  <P/>
+##  At the moment finite fields or residue class rings 
+##  <C>Integers mod <A>q</A></C>, with <A>q</A> an odd prime power are
+##  supported.
+##  <!--
+##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
+##  specify the desired invariant symplectic form respected by the group. -->
 ##  <Example><![CDATA[
 ##  gap> SymplecticGroup( 4, 2 );
 ##  Sp(4,2)
+##  gap> g:=SymplecticGroup(6,Integers mod 9);
+##  Sp(6,Z/9Z)
+##  gap> Size(g);
+##  95928796265538862080
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -546,6 +592,72 @@ end );
 
 DeclareSynonym( "Sp", SymplecticGroup );
 DeclareSynonym( "SP", SymplecticGroup );
+
+
+#############################################################################
+##
+#O  OmegaCons( <filter>, <e>, <d>, <q> )  . . . . . . . . .  orthogonal group
+##
+##  <ManSection>
+##  <Oper Name="OmegaCons" Arg='filter, d, e, q'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
+
+
+#############################################################################
+##
+#O  Omega( [<filt>, ][<e>, ]<d>, <q> )
+##
+##  <#GAPDoc Label="Omega_orthogonal_groups">
+##  <ManSection>
+##  <Oper Name="Omega" Arg='[filt, ][e, ]d, q'
+##   Label="construct an orthogonal group"/>
+##
+##  <Description>
+##  constructs a group isomorphic to the
+##  group <M>\Omega</M>( <A>e</A>, <A>d</A>, <A>q</A> ) of those
+##  <M><A>d</A> \times <A>d</A></M> matrices over the field with <A>q</A>
+##  elements that respect a non-singular quadratic form
+##  (see&nbsp;<Ref Func="InvariantQuadraticForm"/>) specified by <A>e</A>,
+##  and that have square spinor norm in odd characteristic
+##  or Dickson invariant <M>0</M> in even characteristic, respectively,
+##  in the category given by the filter <A>filt</A>.
+##  This group has always index two in SO( <A>e</A>, <A>d</A>, <A>q</A> ),
+##  see <Ref Func="SpecialOrthogonalGroup"/>.
+##  <P/>
+##  The value of <A>e</A> must be <M>0</M> for odd <A>d</A> (and can
+##  optionally be omitted in this case), respectively one of <M>1</M> or
+##  <M>-1</M> for even <A>d</A>.
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  and the returned group is the group
+##  <M>\Omega</M>( <A>e</A>, <A>d</A>, <A>q</A> ) itself.
+##  <P/>
+##  <!--
+##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
+##  specify the desired invariant quadratic form respected by the group. -->
+##  <Example><![CDATA[
+##  gap> g:= Omega( 3, 5 );  StructureDescription( g );
+##  Omega(0,3,5)
+##  "A5"
+##  gap> g:= Omega( 1, 4, 4 );  StructureDescription( g );
+##  Omega(+1,4,4)
+##  "A5 x A5"
+##  gap> g:= Omega( -1, 4, 3 );  StructureDescription( g );
+##  Omega(-1,4,3)
+##  "A6"
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "Omega", [ IsPosInt, IsPosInt ] );
+DeclareOperation( "Omega", [ IsInt, IsPosInt, IsPosInt ] );
+DeclareOperation( "Omega", [ IsFunction, IsPosInt, IsPosInt ] );
+DeclareOperation( "Omega", [ IsFunction, IsInt, IsPosInt, IsPosInt ] );
 
 
 #############################################################################
@@ -849,6 +961,67 @@ DECLARE_PROJECTIVE_GROUPS_OPERATION("SymplecticGroup","SP",1,
     return Size(g)/Gcd(2,q-1);
   end);
 DeclareSynonym( "PSp", PSP );
+
+
+#############################################################################
+##
+#O  ProjectiveOmegaCons( <filt>, <e>, <d>, <q> )
+#F  ProjectiveOmega( [<filt>, ][<e>, ]<d>, <q> )
+#F  POmega( [<filt>, ][<e>, ]<d>, <q> )
+##
+##  <#GAPDoc Label="ProjectiveOmega">
+##  <ManSection>
+##  <Func Name="ProjectiveOmega" Arg='[filt, ][e, ]d, q'/>
+##  <Func Name="POmega" Arg='[filt, ][e, ]d, q'/>
+##
+##  <Description>
+##  constructs a group isomorphic to the projective group
+##  P<M>\Omega</M>( <A>e</A>, <A>d</A>, <A>q</A> )
+##  of <M>\Omega</M>( <A>e</A>, <A>d</A>, <A>q</A> ),
+##  modulo the centre
+##  (see <Ref Oper="Omega" Label="construct an orthogonal group"/>),
+##  in the category given by the filter <A>filt</A>.
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Func="IsPermGroup"/>,
+##  and the returned group is the action on lines of the underlying vector
+##  space.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareConstructor( "ProjectiveOmegaCons", [ IsGroup, IsInt, IsInt, IsInt ] );
+
+BindGlobal( "ProjectiveOmega", function( arg )
+    if Length( arg ) = 2  then
+      return ProjectiveOmegaCons( IsPermGroup, 0, arg[1], arg[2] );
+    elif Length( arg ) = 3  and IsInt( arg[1] ) then
+      return ProjectiveOmegaCons( IsPermGroup, arg[1], arg[2], arg[3] );
+    elif Length( arg ) = 3  and IsOperation( arg[1] ) then
+      return ProjectiveOmegaCons( arg[1], 0, arg[2], arg[3] );
+    elif IsOperation( arg[1] ) and Length( arg ) = 4 then
+      return ProjectiveOmegaCons( arg[1], arg[2], arg[3], arg[4] );
+    fi;
+    Error( "usage: ProjectiveOmega( [<filter>, ][<e>, ]<d>, <q> )" );
+  end );
+
+DeclareSynonym( "POmega", ProjectiveOmega );
+
+InstallMethod( ProjectiveOmegaCons,
+    "action on lines",
+    [ IsPermGroup, IsInt, IsPosInt, IsPosInt ],
+    function( filter, e, n, q )
+    local g, p;
+
+    g:= Omega( IsMatrixGroup, e, n, q );
+    p:= ProjectiveActionOnFullSpace( g, GF( q ), n );
+    if n mod 2 = 0 and ( q^(n/2) - e ) mod 4 = 0 then
+      SetSize( p, Size( g ) / 2 );
+    else
+      SetSize( p, Size( g ) );
+    fi;
+
+    return p;
+  end);
 
 
 #############################################################################

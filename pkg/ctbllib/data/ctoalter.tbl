@@ -2,7 +2,7 @@
 ##
 #W  ctoalter.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoalter.tbl,v 4.63 2009/07/29 13:51:33 gap Exp $
+#H  @(#)$Id: ctoalter.tbl,v 4.68 2011/02/09 15:53:50 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -29,6 +29,38 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoalter.tbl,v $
+#H  Revision 4.68  2011/02/09 15:53:50  gap
+#H  added fusion Isoclinic(2.A5.2) -> 2.J2.2
+#H      TB
+#H
+#H  Revision 4.67  2010/12/01 17:47:55  gap
+#H  renamed "Sym(4)" to "Symm(4)";
+#H  note that the table constructed with `CharacterTable( "Symmetric", 4 )'
+#H  gets the identifier `"Sym(4)"', and this table is sorted differently
+#H      TB
+#H
+#H  Revision 4.66  2010/09/15 08:00:26  gap
+#H  changed the class parameters of A6 and S6, since they did not fit to the
+#H  fusions into the tables of marks (thanks to Klaus Lux for reporting this)
+#H      TB
+#H
+#H  Revision 4.65  2010/05/05 13:20:00  gap
+#H  - added many class fusions,
+#H  - changed several class fusions according to consistency conditions,
+#H    after systematic checks of consistency
+#H    - with Brauer tables w.r.t. the restriction of characters,
+#H    - of subgroup fusions with the corresponding subgroup fusions between
+#H      proper factors where the factor fusions are stored,
+#H    - of subgroup fusions from maximal subgroups with subgroup fusions of
+#H      extensions inside automorphic extensions
+#H
+#H      TB
+#H
+#H  Revision 4.64  2010/01/19 17:05:30  gap
+#H  added several tables of maximal subgroups of central extensions of
+#H  simple groups (many of them were contributed by S. Dany)
+#H      TB
+#H
 #H  Revision 4.63  2009/07/29 13:51:33  gap
 #H  added maxes of A12, A13, S13
 #H      TB
@@ -464,7 +496,7 @@
 #H  ==========================================================================
 ##
 Revision.ctoalter_tbl :=
-    "@(#)$Id: ctoalter.tbl,v 4.63 2009/07/29 13:51:33 gap Exp $";
+    "@(#)$Id: ctoalter.tbl,v 4.68 2011/02/09 15:53:50 gap Exp $";
 
 SET_TABLEFILENAME("ctoalter");
 ALN:= Ignore;
@@ -511,7 +543,10 @@ ALF("2.A10","A10",[1,1,2,3,4,4,5,5,6,6,7,8,9,10,10,11,11,12,13,14,15,15,
 ALF("2.A10","2.A10.2",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
 21,22,23,23,24,25,24,25,26,27,27,28,28,29,30,31,32,31,32]);
 ALF("2.A10","2.A11",[1,2,3,4,5,6,7,8,9,10,13,11,12,14,15,16,17,19,20,21,
-24,25,26,27,28,29,28,29,30,36,36,37,38,40,41,46,47,48,49]);
+24,25,26,27,28,29,28,29,30,36,36,37,38,40,41,46,47,48,49],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables and factors"
+]);
 
 MOT("2.A10.2",
 [
@@ -545,7 +580,8 @@ MOT("Isoclinic(2.A10.2)",
 0,
 0,
 0,
-0,
+[(56,57),(54,55),(52,53),(48,49)(54,55)(56,57),(48,49)(52,53)(56,57),(44,45),
+(48,49)],
 ["ConstructIsoclinic",[["2.A10.2"]]]);
 ALF("Isoclinic(2.A10.2)","2.A12",[1,2,3,5,6,7,8,9,12,13,16,14,15,18,19,20,
 21,22,24,26,30,31,32,35,36,41,48,51,53,54,59,60,3,4,5,14,16,17,22,26,23,
@@ -572,7 +608,7 @@ MOT("2.A11",
 (22,23)],
 ["ConstructProj",[["A11",[]],["2.A11",[]]]]);
 ARC("2.A11","maxes",["2.A10","Isoclinic(2.A9.2)","(2.A8x3).2","2.(A7xA4).2",
-"2.(A6xA5).2","2xM11","2xM11"]);
+"2.(A6xA5).2","2xM11","2.A11M7"]);
 ALF("2.A11","A11",[1,1,2,3,4,4,5,5,6,6,7,8,9,10,10,11,11,12,13,14,15,16,
 16,17,17,18,18,19,19,20,21,21,22,22,23,24,25,25,26,27,27,28,28,29,29,30,
 30,31,31]);
@@ -581,11 +617,14 @@ ALF("2.A11","2.A11.2",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
 39,40,41,40,41]);
 ALF("2.A11","2.A12",[1,2,3,5,6,7,8,9,12,13,14,15,16,18,19,20,21,23,22,24,
 26,28,29,30,31,32,32,35,36,41,44,45,46,47,50,48,51,51,52,53,54,55,56,57,
-58,59,60,59,60]);
-ALF("2.A11","Ly",[1,2,5,2,3,8,4,9,4,10,12,5,13,6,15,7,16,8,19,20,10,9,10,11,
-21,13,12,14,25,26,17,29,18,30,19,31,32,33,35,22,36,23,37,47,48,27,49,28,50],[
-"fusion is unique up to table automorphisms,\n",
-"chosen representative is compatible with 5-modular tables"
+58,59,60,59,60],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
+ALF("2.A11","Ly",[1,2,5,2,3,8,4,9,4,10,12,5,13,6,15,7,16,8,19,20,10,9,10,
+11,21,13,12,14,25,26,17,29,18,30,19,31,32,33,35,22,36,23,37,47,48,27,49,
+28,50],[
+"fusion map is unique up to table autom."
 ]);
 ALN("2.A11",["LyC2A","LyN2A"]);
 
@@ -1512,11 +1551,28 @@ ALF("2.A5","Isoclinic(2.A5.2)",[1,2,3,4,5,6,7,6,7],[
 "fusion map is unique"
 ]);
 ALF("2.A5","2.A6",[1,2,3,4,5,10,11,12,13],[
-"fusion map is unique up to table autom."
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
 ],"tom:26");
-ALF("2.A5","2.L2(11)",[1,2,3,4,5,6,7,8,9]);
+ALF("2.A5","2.L2(11)",[1,2,3,4,5,6,7,8,9],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
+ALF("2.A5","2.L2(19)",[1,2,3,4,5,6,7,8,9],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
+ALF("2.A5","2.L2(29)",[1,2,3,4,5,6,7,8,9],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
+ALF("2.A5","2.L2(31)",[1,2,3,4,5,8,9,10,11],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
 ALF("2.A5","2.J2",[1,2,5,8,9,16,17,18,19],[
-"fusion of maximal 2.A5 determined by the 3B elements"
+"fusion map determined up to table aut. by compatibility\n",
+"with factors"
 ]);
 ALN("2.A5",["2.L2(4)","2.L2(5)","2.A1(4)","2.A1(5)","2.U2(4)","2.U2(5)",
 "2.S2(4)","2.S2(5)","2.O3(4)","2.O3(5)","2.O4-(2)"]);
@@ -1557,10 +1613,17 @@ ARC("Isoclinic(2.A5.2)","tomfusion",rec(name:="2.S5'",map:=[1,2,5,3,7,6,
 11,4,10,10,12,12],text:=[
 "fusion map is unique"
 ]));
+ALF("Isoclinic(2.A5.2)","2.L2(25)",[1,2,3,4,5,8,9,3,7,6,12,13],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables and factors"
+]);
 ALF("Isoclinic(2.A5.2)","2.A7",[1,2,3,4,5,10,11,3,8,9,12,12],[
 "fusion map is unique up to table automorphisms"
 ]);
 ALF("Isoclinic(2.A5.2)","A5.2",[1,1,2,3,3,4,4,5,6,6,7,7]);
+ALF("Isoclinic(2.A5.2)","2.J2.2",[1,2,5,8,9,14,15,29,31,32,33,33],[
+"fusion map is unique up to table autom."
+]);
 
 MOT("2.A6",
 [
@@ -1572,17 +1635,25 @@ MOT("2.A6",
 0,
 [(10,12)(11,13),(8,9),(4,6)(5,7)],
 ["ConstructProj",[["A6",[]],["2.A6",[]]]]);
-ARC("2.A6","maxes",["2.A5","2.A6M2","3^2:8","2.Sym4","2.A6M5"]);
-ARC("2.A6","tomfusion",rec(name:="2.A6",map:=[1,2,5,4,8,3,7,11,11,6,13,6,13],
-text:=[
+ARC("2.A6","maxes",["2.A5","2.A6M2","3^2:8","2.Symm(4)","2.A6M5"]);
+ARC("2.A6","tomfusion",rec(name:="2.A6",map:=[1,2,5,4,8,3,7,11,11,6,13,6,
+13],text:=[
 "fusion map is unique up to table autom."
-]));
+],
+perm:=(4,5)));
 ALF("2.A6","A6",[1,1,2,3,3,4,4,5,5,6,6,7,7]);
 ALF("2.A6","2.A6.2_1",[1,2,3,4,5,6,7,8,8,9,10,9,10],[
-"fusion map is unique up to table automorphisms, compatible with tomfusion"
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
 ]);
-ALF("2.A6","2.A6.2_2",[1,2,3,4,5,4,5,6,7,8,9,10,11]);
-ALF("2.A6","2.A7",[1,2,3,4,5,6,7,8,9,10,11,10,11]);
+ALF("2.A6","2.A6.2_2",[1,2,3,4,5,4,5,6,7,8,9,10,11],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables and factors"
+]);
+ALF("2.A6","2.A7",[1,2,3,6,7,4,5,8,9,10,11,10,11],[
+"fusion map is unique up to table autom.,\n",
+"compatible with tomfusion and factors"
+]);
 ALN("2.A6",["2.L2(9)","2.S4(2)'","2.A1(9)","2.U2(9)","2.S2(9)","2.O3(9)",
 "2.O4-(3)","2.C2(2)'","2.O5(2)'"]);
 
@@ -1605,6 +1676,7 @@ ALF("2.A6.2_1","Isoclinic(2.A7.2)",[1,2,3,6,7,4,5,8,9,10,15,14,16,18,19,
 17,17],[
 "fusion map is unique up to table autom."
 ]);
+ALF("2.A6.2_1","2.U4(2)",[1,2,4,11,12,9,10,15,16,17,3,4,15,24,25,26,26]);
 ALF("2.A6.2_1","2.A8",[1,2,4,7,8,5,6,10,11,12,3,4,10,14,15,13,13],[
 "fusion map is unique up to table autom."
 ]);
@@ -1646,7 +1718,8 @@ ALF("2.A7","Isoclinic(2.A7.2)",[1,2,3,4,5,6,7,8,8,9,10,11,12,13,12,13],[
 "fusion map is unique"
 ]);
 ALF("2.A7","2.A8",[1,2,4,5,6,7,8,10,10,11,12,13,16,17,18,19],[
-"fusion map is unique up to table autom."
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
 ]);
 ALF("2.A7","2.Suz",[1,2,5,10,11,10,11,16,16,19,20,29,30,31,30,31],[
 "fusion map is unique"
@@ -1686,7 +1759,8 @@ ALF("Isoclinic(2.A7.2)","A7.2",[1,1,2,3,3,4,4,5,6,6,7,8,8,9,10,11,12,13,
 13,14,14,15,15]);
 ALF("Isoclinic(2.A7.2)","Isoclinic(2.A8.2)",[1,2,4,5,6,7,8,10,11,12,13,15,
 16,19,20,21,23,25,25,28,29,30,31],[
-"fusion map is unique up to table autom."
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables"
 ]);
 ALF("Isoclinic(2.A7.2)","2.A9",[1,2,3,5,6,9,10,11,13,14,15,18,19,3,4,11,
 15,16,17,24,24,25,26]);
@@ -1726,7 +1800,10 @@ ALF("2.A8","2.A8.2",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,14,15,16,15,16,17,
 ALF("2.A8","Isoclinic(2.A8.2)",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,14,15,16,
 15,16,17,18,17,18]);
 ALF("2.A8","2.A9",[1,2,4,3,5,6,9,10,12,11,13,14,15,16,17,18,19,18,19,27,
-28,29,30]);
+28,29,30],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
 ALF("2.A8","McL",[1,2,2,5,3,8,4,9,5,12,6,15,18,9,9,10,19,11,20,21,23,22,
 24],[
 "fusion is unique up to table automorphisms,\n",
@@ -1799,12 +1876,22 @@ ARC("2.A9","maxes",["2.A8","Isoclinic(2.A7.2)","(2.A6x3).2_1","2xL2(8).3",
 "2.A9M5","2.(A5xA4).2","(2x3^3).S4","2x3^2:2A4"]);
 ALF("2.A9","A9",[1,1,2,3,4,4,5,5,6,6,7,8,9,9,10,11,11,12,12,13,13,14,14,
 15,16,16,17,17,18,18]);
+ALF("2.A9","O8+(2)M8",[1,1,2,3,4,4,5,5,6,6,7,8,9,9,10,11,11,12,12,13,13,
+14,14,15,16,16,17,17,18,18]);
 ALF("2.A9","2.A9.2",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,16,17,18,19,
 20,19,20,21,22,22,23,24,23,24]);
 ALF("2.A9","Isoclinic(2.A9.2)",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
 16,17,18,19,20,19,20,21,22,22,23,24,23,24]);
 ALF("2.A9","2.A10",[1,2,3,4,5,6,9,10,7,8,12,13,14,15,18,20,20,21,22,25,26,
-27,28,29,30,31,34,35,34,35]);
+27,28,29,30,31,34,35,34,35],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
+ALF("2.A9","2.O8+(2)",[1,2,6,8,11,12,15,16,17,18,24,26,29,30,39,50,50,51,
+52,60,61,56,57,64,76,76,80,81,80,81],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with relevant factors"
+]);
 
 MOT("2.A9.2",
 [
@@ -1832,11 +1919,22 @@ MOT("Isoclinic(2.A9.2)",
 0,
 0,
 0,
-0,
+[(41,42),(39,40),(33,34),(35,36)],
 ["ConstructIsoclinic",[["2.A9.2"]]]);
+ALF("Isoclinic(2.A9.2)","A9.2",[1,1,2,3,4,4,5,5,6,6,7,8,9,9,10,11,12,12,
+13,13,14,15,16,16,17,18,19,20,21,22,23,24,25,25,26,26,27,28,29,29,30,30]);
 ALF("Isoclinic(2.A9.2)","2.A11",[1,2,3,4,5,6,9,10,7,8,11,12,14,15,19,21,
-24,25,28,29,30,36,40,41,3,4,11,13,19,18,20,21,22,23,26,27,30,36,39,39,44,
-45]);
+24,25,28,29,30,36,40,41,3,4,11,13,19,18,20,21,22,23,27,26,30,36,39,39,44,
+45],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables"
+]);
+ALF("Isoclinic(2.A9.2)","2.O7(3)",[1,2,4,5,8,9,12,13,16,17,24,23,25,26,35,
+44,47,48,56,57,60,73,80,81,3,5,20,24,28,36,38,43,39,40,50,51,61,67,79,78,
+88,87],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables and factors"
+]);
 
 MOT("2F4(2)'M7",
 [
@@ -1850,7 +1948,7 @@ MOT("2F4(2)'M7",
 ["ConstructPermuted",["A6.2^2"]]);
 ALF("2F4(2)'M7","2F4(2)'",[1,3,4,7,8,3,5,9,2,13,14,7,12],[
 "fusion map is unique up to table automorphisms,\n",
-"equals the map from 2F4(2)'M6 mapped under the outer autom."
+"equals the map from 2F4(2)'M6, mapped under the outer autom."
 ]);
 
 MOT("3.A6",
@@ -1863,14 +1961,24 @@ MOT("3.A6",
 0,
 [(12,15)(13,16)(14,17),(7,8),( 2, 3)( 5, 6)(10,11)(13,14)(16,17)],
 ["ConstructProj",[["A6",[]],,["3.A6",[11,11,-1,-1,-1]]]]);
-ARC("3.A6","maxes",["3xA5","3.A6M2","3^(1+2):4","3xSym4","3.A6M5"]);
+ARC("3.A6","maxes",["3xA5","3.A6M2","3^(1+2):4","3xSymm(4)","3.A6M5"]);
 ALF("3.A6","A6",[1,1,1,2,2,2,3,4,5,5,5,6,6,6,7,7,7]);
+ALF("3.A6","3.A6.2_1",[1,2,2,3,4,4,5,6,7,8,8,9,10,11,9,11,10],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
+ALF("3.A6","3.A6.2_2",[1,2,2,3,4,4,5,5,6,7,7,8,9,9,10,11,11],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
 ALF("3.A6","3.A6.2_3",[1,2,3,4,5,6,7,7,8,9,10,11,12,13,11,12,13]);
-ALF("3.A6","3.A6.2_1",[1,2,2,3,4,4,5,6,7,8,8,9,10,11,9,11,10]);
-ALF("3.A6","3.A6.2_2",[1,2,2,3,4,4,5,5,6,7,7,8,9,9,10,11,11]);
-ALF("3.A6","3.A7",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,12,13,14]);
+ALF("3.A6","3.A7",[1,2,3,4,5,6,8,7,9,10,11,12,13,14,12,13,14],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
 ALF("3.A6","3.L3(4)",[1,2,3,4,5,6,7,7,8,9,10,17,18,19,20,21,22],[
-"fusion map is unique up to table automorphisms"
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
 ]);
 ALN("3.A6",["3.L2(9)","3.S4(2)'","3.A1(9)","3.U2(9)","3.S2(9)","3.O3(9)",
 "3.O4-(3)","3.C2(2)'","3.O5(2)'"]);
@@ -1914,8 +2022,10 @@ ALF("3.A6.2^2","Ru",[1,4,2,11,4,5,18,10,24,2,8,11,3,13,17,6,19,13,30,31],[
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
 ]);
-ALF("3.A6.2^2","J2.2",[1,4,2,9,5,6,15,7,16,17,18,20,3,12,13,18,23,21,26,27],[
-"fusion is unique up to table automorphisms",
+ALF("3.A6.2^2","J2.2",[1,4,2,9,5,6,15,7,16,17,18,20,3,12,13,18,23,21,27,
+26],[
+"fusion map is unique up to table autom.,\n",
+"unique map that is compatible with Brauer tables"
 ]);
 ALF("3.A6.2^2","A6.2^2",[1,1,2,2,3,4,4,5,5,6,7,8,9,10,11,12,12,13,13,13]);
 ALN("3.A6.2^2",["3.A6.V4","RuN3A","J2.2N3A"]);
@@ -1981,10 +2091,19 @@ MOT("3.A6.2_3",
 ["ConstructProj",[["A6.2_3",[]],,["3.A6.2_3",[-1,17,-1,-1]]]]);
 ALF("3.A6.2_3","A6.2_3",[1,1,1,2,2,2,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8]);
 ALF("3.A6.2_3","3.A6.2^2",[1,2,2,3,4,4,5,6,7,7,8,9,9,16,17,17,18,19,20,18,
-20,19]);
+20,19],[
+"fusion map is unique up to table autom.,\n",
+"unique map that is compatible with Brauer tables"
+]);
 ALF("3.A6.2_3","3.M22",[1,2,3,4,5,6,7,8,9,10,14,15,16,11,12,13,26,27,28,
 26,27,28],[
-"fusion map is determined by fusion A6.2_3 -> M22"
+"fusion map determined up to table aut. by compatibility\n",
+"with factors"
+]);
+ALF("3.A6.2_3","3.U3(5)",[1,3,2,4,6,5,7,8,10,9,14,16,15,8,10,9,32,34,33,
+35,37,36],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables and factors"
 ]);
 
 MOT("3.A7",
@@ -2002,15 +2121,23 @@ MOT("3.A7",
 ARC("3.A7","maxes",["3.A6","3xL3(2)","3xL3(2)","3xA5.2","3.(A4x3):2"]);
 ALF("3.A7","A7",[1,1,1,2,2,2,3,4,5,5,5,6,6,6,7,7,7,8,8,8,9,9,9]);
 ALF("3.A7","3.A7.2",[1,2,2,3,4,4,5,6,7,8,8,9,10,10,11,12,12,13,14,15,13,
-15,14]);
+15,14],[
+"fusion map is unique up to table autom.,\n",
+"unique map that is compatible with Brauer tables"
+]);
 ALF("3.A7","3.M22",[1,2,3,4,5,6,7,7,11,12,13,14,15,16,17,18,19,20,21,22,
 23,24,25],[
-"fusion map is unique up to table automorphisms"
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
+ALF("3.A7","3.U3(5)",[1,2,3,4,5,6,7,7,8,9,10,14,15,16,23,24,25,26,27,28,
+29,30,31],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables and factors"
 ]);
 ALF("3.A7","3.Suz",[1,2,3,7,8,9,16,16,26,27,28,32,33,34,47,47,47,48,49,50,
 48,49,50],[
-"fusion map is unique up to table automorphisms,\n",
-"together with compatibility with factor groups A7 and Suz"
+"fusion map of the maximal subgroup 3.A7 determined up to table aut."
 ]);
 
 MOT("3.A7.2",
@@ -2039,6 +2166,7 @@ ALF("3.A7.2","A7.2",[1,1,2,2,3,4,5,5,6,6,7,7,8,8,8,9,10,11,12,13,14,15]);
 ALF("3.A7.2","He",[1,4,2,10,4,5,6,19,9,25,10,10,14,28,29,2,3,6,10,11,18,
 19],[
 "fusion is unique up to table automorphisms,\n",
+"unique map that is compatible with Brauer tables,\n",
 "the representative is equal to the fusion map on the CAS table"
 ]);
 ALF("3.A7.2","3.Suz.2",[1,2,5,6,11,11,18,19,22,23,31,31,32,33,33,77,76,79,
@@ -2077,6 +2205,7 @@ MOT("6.A6",
 (11,13),( 2, 6)( 3, 5)( 8, 9)(15,19)(16,18)(21,25)(22,24)(27,31)(28,30)],
 ["ConstructProj",[["A6",[]],["2.A6",[]],["3.A6",[11,11,-1,-1,-1]],,,["6.A6",
 [17,17,11,11]]]]);
+ARC("6.A6","maxes",["3x2.A5","6.A6M2","6.A6M3","3x2.Symm(4)","6.A6M5"]);
 ALF("6.A6","A6",[1,1,1,1,1,1,2,2,2,3,3,4,4,5,5,5,5,5,5,6,6,6,6,6,6,7,7,7,
 7,7,7]);
 ALF("6.A6","2.A6",[1,2,1,2,1,2,3,3,3,4,5,6,7,8,9,8,9,8,9,10,11,10,11,10,
@@ -2084,11 +2213,20 @@ ALF("6.A6","2.A6",[1,2,1,2,1,2,3,3,3,4,5,6,7,8,9,8,9,8,9,10,11,10,11,10,
 ALF("6.A6","3.A6",[1,2,3,1,2,3,4,5,6,7,7,8,8,9,10,11,9,10,11,12,13,14,12,
 13,14,15,16,17,15,16,17]);
 ALF("6.A6","6.A6.2_1",[1,2,3,4,3,2,5,6,6,7,8,9,10,11,12,12,11,13,13,14,15,
-16,17,18,19,14,19,18,17,16,15]);
+16,17,18,19,14,19,18,17,16,15],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
 ALF("6.A6","6.A6.2_2",[1,2,3,4,3,2,5,6,6,7,8,7,8,9,10,11,12,11,10,13,14,
-15,16,15,14,17,18,19,20,19,18]);
-ALF("6.A6","6.A7",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,
-22,23,24,25,20,21,22,23,24,25]);
+15,16,15,14,17,18,19,20,19,18],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables and factors"
+]);
+ALF("6.A6","6.A7",[1,2,3,4,5,6,7,8,9,12,13,10,11,14,15,16,17,18,19,20,21,
+22,23,24,25,20,21,22,23,24,25],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
 ALN("6.A6",["6.L2(9)","6.S4(2)'","6.A1(9)","6.U2(9)","6.S2(9)","6.O3(9)",
 "6.O4-(3)","6.C2(2)'","6.O5(2)'"]);
 
@@ -2153,6 +2291,8 @@ MOT("6.A7",
 (37,39)],
 ["ConstructProj",[["A7",[]],["2.A7",[]],["3.A7",[-1,-1,-1,-1,-1,-13,-13]],,,
 ["6.A7",[17,17,-13,-13,-1]]]]);
+ARC("6.A7","maxes",["6.A6","3x2.L3(2)","3x2.L3(2)","3xIsoclinic(2.A5.2)",
+"6.(A4x3).2"]);
 ALF("6.A7","A7",[1,1,1,1,1,1,2,2,2,3,3,4,4,5,5,5,5,5,5,6,6,6,6,6,6,7,7,7,
 8,8,8,8,8,8,9,9,9,9,9,9]);
 ALF("6.A7","2.A7",[1,2,1,2,1,2,3,3,3,4,5,6,7,8,9,8,9,8,9,10,11,10,11,10,
@@ -2160,9 +2300,15 @@ ALF("6.A7","2.A7",[1,2,1,2,1,2,3,3,3,4,5,6,7,8,9,8,9,8,9,10,11,10,11,10,
 ALF("6.A7","3.A7",[1,2,3,1,2,3,4,5,6,7,7,8,8,9,10,11,9,10,11,12,13,14,12,
 13,14,15,16,17,18,19,20,18,19,20,21,22,23,21,22,23]);
 ALF("6.A7","6.A7.2",[1,2,3,4,3,2,5,6,6,7,8,9,10,11,12,12,11,13,13,14,15,
-16,17,16,15,18,19,19,20,21,22,23,24,25,20,25,24,23,22,21]);
+16,17,16,15,18,19,19,20,21,22,23,24,25,20,25,24,23,22,21],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables"
+]);
 ALF("6.A7","6.Suz",[1,2,3,4,5,6,13,14,15,28,29,28,29,42,43,44,42,43,44,51,
-52,53,54,55,56,81,81,81,82,83,84,85,86,87,82,83,84,85,86,87]);
+52,53,54,55,56,81,81,81,82,83,84,85,86,87,82,83,84,85,86,87],[
+"fusion map is unique up to table autom.,\n",
+"representative compatible with factors"
+]);
 
 MOT("6.A7.2",
 [
@@ -2372,6 +2518,8 @@ E(15)+E(15)^2+E(15)^4-E(15)^7+E(15)^8-E(15)^11-E(15)^13-E(15)^14],[448,0,0,28,
 E(40)^7+E(40)^13-E(40)^21+E(40)^23-E(40)^29-E(40)^31+E(40)^37-E(40)^39,0],[
 800,0,0,20,-4,-1,0,0,0,0,0,0,0,0,2,0,-1,0,0,0,0,-1,0,0,0,0,0,0,0,0,0,0,0,
 3*E(4),0,0,0,0,0,0,0,0]],]);
+ARC("A10.2","maxes",["A10","A9.2","S8x2","S7xS3","s5wrs2","S6xS4","s2wrs5",
+"A6.2^2"]);
 ARC("A10.2","tomfusion",rec(name:="S10",map:=[1,3,6,7,8,9,30,31,32,35,36,53,
 52,56,58,143,149,156,213,214,222,407,2,4,5,29,33,34,49,50,51,54,55,57,144,155,
 157,211,212,221,406,533],text:=[
@@ -2642,6 +2790,7 @@ ARC("A11.2","projectives",["2.A11.2",[[32,0,0,-16,8,-4,0,0,0,-8,2,0,0,0,0,0,4,
 0,0,0,2,-4,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[3168,0,
 0,96,12,0,0,0,0,8,-2,0,0,0,0,0,4,0,0,0,0,0,0,0,0,-4,2,0,-2,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],]);
+ARC("A11.2","maxes",["A11","A10.2","S9x2","S8xS3","S7xS4","S6xS5","11:10"]);
 ARC("A11.2","tomfusion",rec(name:="S11",map:=[1,3,6,7,8,9,30,33,32,35,36,53,
 55,59,60,62,64,150,155,164,166,248,250,251,261,263,264,479,482,2,4,5,29,31,34,
 52,54,56,57,58,61,63,149,162,163,165,246,247,249,262,447,478,710,723,736,737],
@@ -2801,8 +2950,9 @@ ALF("A12","HN",[1,2,2,3,4,4,4,5,7,6,7,6,9,13,14,15,14,14,15,14,16,17,19,
 "fusion map is unique up to table automorphisms"
 ]);
 ALF("A12","A13",[1,2,4,3,5,6,8,7,9,10,11,12,13,14,15,16,19,20,17,22,21,23,
-24,25,26,27,28,30,31,32,32,33,36,35,37,41,42,43,47,48,52,54,55],[
-"fusion map is unique up to table automorphisms"
+24,25,26,27,28,30,31,32,32,33,36,35,37,41,42,43,47,48,52,55,54],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables"
 ]);
 
 MOT("A12.2",
@@ -3817,13 +3967,13 @@ ARC("A5.2","tomfusion",rec(name:="S5",map:=[1,3,4,8,2,6,11],text:=[
 ARC("A5.2","maxes",["A5","s4","5:4","S3x2"]);
 ALF("A5.2","A6.2_1",[1,2,3,6,7,9,10],[
 "fusion map is unique up to table automorphisms"
-],"tom:53");
+],"tom:54");
 ALF("A5.2","A7",[1,2,3,6,2,5,7],[
 "fusion map is unique"
 ]);
 ALF("A5.2","L2(25)",[1,2,3,5,2,4,7],[
 "fusion map is unique up to table autom."
-],"tom:33");
+],"tom:34");
 ALF("A5.2","L3(4).2_1",[1,2,3,7,9,10,11],[
 "fusion map is unique"
 ]);
@@ -3893,8 +4043,8 @@ text:=Concatenation(
 "    comments:  alternating group\n",
 "    test:      orth, min, sym[3]\n",
 ""))]);
-ARC("A6","ClassParameters",[[1,[1,1,1,1,1,1]],[1,[2,2,1,1]],[1,[3,1,1,1]],[1,
-[3,3]],[1,[4,2]],[1,[[5,1],'+']],[1,[[5,1],'-']]]);
+ARC("A6","ClassParameters",[[1,[1,1,1,1,1,1]],[1,[2,2,1,1]],[1,[3,3]],
+[1,[3,1,1,1]],[1,[4,2]],[1,[[5,1],'+']],[1,[[5,1],'-']]]);
 ARC("A6","projectives",["2.A6",[[4,0,-2,1,0,-1,-1],[4,0,1,-2,0,-1,-1],[8,0,-1,
 -1,0,-E(5)-E(5)^4,-E(5)^2-E(5)^3],
 [GALOIS,[3,2]],[10,0,1,1,E(8)-E(8)^3,0,0],
@@ -3907,13 +4057,15 @@ ARC("A6","maxes",["A5","A6M2","3^2:4","s4","A6M5"]);
 ARC("A6","isSimple",true);
 ARC("A6","extInfo",["6","2^2"]);
 ARC("A6","tomfusion",rec(name:="A6",map:=[1,2,4,3,6,5,5],text:=[
-"fusion map is unique up to table autom., compatible with `Maxes'"
+"fusion map is unique up to table autom.,\n",
+"compatible with `Maxes' and class parameters"
 ]));
 ALF("A6","A6.2_1",[1,2,3,4,5,6,6]);
 ALF("A6","A6.2_2",[1,2,3,3,4,5,6]);
 ALF("A6","A6.2_3",[1,2,3,3,4,5,5]);
-ALF("A6","A7",[1,2,3,4,5,6,6],[
-"fusion map is unique up to table autom."
+ALF("A6","A7",[1,2,4,3,5,6,6],[
+"fusion map is unique up to table autom.,\n",
+"unique map that is compatible with 2^4:a6 -> 2^4:a7"
 ]);
 ALF("A6","L3(4)",[1,2,3,3,4,7,8],[
 "fusion map is unique up to table autom."
@@ -3975,7 +4127,7 @@ ALF("A6.2^2","L3(4).2^2",[1,2,3,4,6,13,14,15,18,20,22,9,11],[
 ALF("A6.2^2","M12",[1,3,4,7,8,3,6,10,2,12,13,7,12],[
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
-],"tom:143");
+],"tom:144");
 ALF("A6.2^2","M22.2",[1,2,3,4,6,12,15,16,13,17,18,5,10],[
 "uniquely determined by the fact that M10 lies inside M22"
 ]);
@@ -3990,10 +4142,24 @@ ALF("A6.2^2","U3(5).2",[1,2,3,4,6,12,13,14,12,15,16,4,10],[
 ALF("A6.2^2","U4(3).2_1",[1,2,6,7,9,19,22,26,20,27,28,8,15],[
 "fusion map is unique"
 ]);
+ALF("A6.2^2","U4(3).2_3",[1,2,5,6,8,16,17,18,16,19,22,7,12],[
+"determined as extension from A6.2_3 < U4(3)"
+]);
 ALF("A6.2^2","2F4(2)'",[1,3,4,7,8,3,5,9,2,12,14,7,13],[
 "fusion map is unique up to table automorphisms"
 ],"tom:421");
 ALN("A6.2^2",["A6.V4","S6.2","m10.2"]);
+
+MOT("U4(3).2_3M10",
+0,
+0,
+0,
+0,
+0,
+["ConstructPermuted",["A6.2^2"]]);
+ALF("U4(3).2_3M10","U4(3).2_3",[1,2,4,7,8,2,7,10,16,21,22,17,21],[
+"determined as novelty extending S6 < U4(2) < U4(3)"
+]);
 
 MOT("A6.2_1",
 [
@@ -4019,9 +4185,9 @@ text:=Concatenation(
 "    comments:  symmetric group\n",
 "    test:      orth, min, sym[3]\n",
 ""))]);
-ARC("A6.2_1","ClassParameters",[[1,[1,1,1,1,1,1]],[1,[2,2,1,1]],[1,[3,1,1,1]],
-[1,[3,3]],[1,[4,2]],[1,[5,1]],[1,[2,1,1,1,1]],[1,[2,2,2]],[1,[4,1,1]],[1,[3,2,
-1]],[1,[6]]]);
+ARC("A6.2_1","ClassParameters",[[1,[1,1,1,1,1,1]],[1,[2,2,1,1]],[1,[3,3]],[1,
+[3,1,1,1]],[1,[4,2]],[1,[5,1]],[1,[2,2,2]],[1,[2,1,1,1,1]],[1,[4,1,1]],
+[1,[6]],[1,[3,2,1]]]);
 ARC("A6.2_1","CharacterParameters",[[1,[6]],[1,[1,1,1,1,1,1]],[1,[5,1]],[1,[2,
 1,1,1,1]],[1,[2,2,2]],[1,[3,3]],[1,[3,2,1]],[1,[4,2]],[1,[2,2,1,1]],[1,[4,1,1]
 ],[1,[3,1,1,1]]]);
@@ -4030,14 +4196,16 @@ ARC("A6.2_1","projectives",["2.A6.2_1",[[4,0,-2,1,0,-1,0,0,0,0,
 0,0],[20,0,2,2,0,0,0,0,0,0,0]],]);
 ARC("A6.2_1","tomfusion",rec(name:="S6",map:=[1,4,6,5,9,14,3,2,11,17,20],
 text:=[
-"fusion map is unique up to table autom."
-]));
-ARC("A6.2_1","maxes",["A6","A5.2","A6.2_1M3","s3wrs2","2xSym4","s2wrs3"]);
+"fusion map is unique up to table autom.,\n",
+"compatible with class parameters"
+],
+perm:=(5,6)));
+ARC("A6.2_1","maxes",["A6","A5.2","A6.2_1M3","s3wrs2","2xSymm(4)","s2wrs3"]);
 ALF("A6.2_1","A6.2^2",[1,2,3,3,4,5,6,6,7,8,8]);
-ALF("A6.2_1","A7.2",[1,2,3,4,5,6,9,10,11,12,13],[
+ALF("A6.2_1","A7.2",[1,2,4,3,5,6,10,9,11,13,12],[
 "fusion map is unique up to table automorphisms"
 ]);
-ALF("A6.2_1","A8",[1,3,4,5,7,8,3,2,7,9,10],[
+ALF("A6.2_1","A8",[1,3,5,4,7,8,2,3,7,10,9],[
 "fusion map is unique up to table autom."
 ]);
 ALF("A6.2_1","L3(4).2_2",[1,2,3,3,4,6,9,9,10,11,11],[
@@ -4046,7 +4214,7 @@ ALF("A6.2_1","L3(4).2_2",[1,2,3,3,4,6,9,9,10,11,11],[
 ALF("A6.2_1","S4(4)",[1,4,5,6,8,13,2,3,8,14,15],[
 "fusion map is unique up to table autom."
 ]);
-ALF("A6.2_1","U4(2)",[1,3,6,7,9,10,3,2,9,16,15],[
+ALF("A6.2_1","U4(2)",[1,3,7,6,9,10,2,3,9,15,16],[
 "fusion map is unique up to table autom."
 ]);
 ALN("A6.2_1",["S6","S4(2)"]);
@@ -4155,7 +4323,7 @@ ALF("A6.2_3","Th",[1,2,4,7,8,7,14,14],[
 ]);
 ALF("A6.2_3","U3(5)",[1,2,3,4,6,4,12,13],[
 "fusion map is unique up to table autom."
-],"tom:74");
+],"tom:75");
 ALF("A6.2_3","U4(3)",[1,2,6,7,9,8,15,15],[
 "fusion map is unique"
 ]);
@@ -4218,12 +4386,11 @@ ALF("A7","Suz",[1,3,6,6,10,12,17,18,18],[
 "fusion map is unique (use structure constants)"
 ]);
 ALF("A7","ON",[1,2,3,3,5,6,7,9,9],[
-"fusion determined using structure constants and the fact\n",
-"that A7 contains 7B elements of ON"
+"fusion map uniquely determined by Brauer tables"
 ]);
 ALF("A7","U3(5)",[1,2,3,3,4,6,9,10,11],[
 "fusion map is unique up to table autom."
-],"tom:78");
+],"tom:79");
 ALF("A7","U4(3)",[1,2,4,6,8,9,11,13,14],[
 "fusion map is unique up to table autom."
 ],"tom:365");
@@ -4344,7 +4511,8 @@ ALF("A8","A9",[1,3,2,4,6,8,7,9,10,11,12,12,17,18],[
 "fusion map is unique up to table autom."
 ]);
 ALF("A8","M23",[1,2,2,3,3,4,4,5,6,6,7,8,15,14],[
-"fusion is unique up to table automorphisms,\n",
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables,\n",
 "the representative is equal to the fusion map on the CAS table"
 ]);
 ALF("A8","Ru",[1,2,2,4,4,7,8,10,11,11,12,12,24,24],[
@@ -4355,7 +4523,8 @@ ALF("A8","2^4:a8",[1,3,5,7,8,11,14,16,17,18,20,22,24,25],[
 "compatible with Brauer tables"
 ]);
 ALF("A8","2^6:A8",[1,4,9,14,17,21,25,29,31,34,38,39,40,41],[
-"fusion map is unique up to table automorphisms"
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables"
 ]);
 ALF("A8","P31/G1/L1/V1/ext3",[1,16,21,51,72,87,89,107,118,136,139,142,145,
 148],[
@@ -4412,6 +4581,7 @@ ARC("A8.2","projectives",["2.A8.2",[[8,0,0,-4,2,0,0,-2,0,0,1,1,0,0,0,0,0,0,0,
 -2,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0],[112,0,0,4,4,0,0,2,0,0,0,-1,0,0,0,0,0,0,
 0,0,0,0],[64,0,0,4,-2,0,0,-1,0,0,1,-1,0,0,0,0,0,0,0,0,E(5)-E(5)^2-E(5)^3
  +E(5)^4,0]],]);
+ARC("A8.2","maxes",["A8","A7.2","S6x2","mo61","S5xS3","s2wrs4","L3(2).2"]);
 ARC("A8.2","tomfusion",rec(name:="S8",map:=[1,3,4,6,7,18,20,23,30,35,36,95,2,
 5,11,15,29,26,32,68,73,81],text:=[
 "fusion map is unique"
@@ -4593,6 +4763,8 @@ ALF("A9.2","A11",[1,2,3,4,6,5,7,8,10,13,15,17,19,20,24,27,2,3,7,9,13,12,
 14,15,16,18,20,24,26,29],[
 "fusion map is unique"
 ]);
+ALF("A9.2","O7(3)",[1,3,4,6,8,10,15,14,16,24,31,33,38,40,49,53,2,4,12,15,
+18,25,27,30,28,35,41,45,52,58]);
 ALN("A9.2",["S9"]);
 
 MOT("M12M4",
@@ -6454,7 +6626,10 @@ MOT("Isoclinic(6.A6x2)",
 ["ConstructIsoclinic",[["6.A6"],["Cyclic",2]]]);
 ALF("Isoclinic(6.A6x2)","12.A6.2_3",[1,7,5,8,2,9,4,7,3,8,6,9,10,13,11,14,
 12,15,16,18,17,19,16,19,17,18,20,23,21,27,22,24,20,26,21,25,22,28,29,35,
-33,39,30,36,32,38,31,37,34,40,29,38,33,37,30,40,32,35,31,39,34,36]);
+33,39,30,36,32,38,31,37,34,40,29,38,33,37,30,40,32,35,31,39,34,36],[
+"fusion map is unique up to table autom.,\n",
+"compatible with Brauer tables"
+]);
 
 MOT("Isoclinic(3.A6.2_3x2)",
 [

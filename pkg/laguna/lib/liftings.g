@@ -3,7 +3,7 @@
 #W  liftings.g                 The LAGUNA package           Wolfgang Kimmerle
 #W                                                        Alexander Konovalov
 ##
-#H  $Id: liftings.g,v 1.4 2007/03/26 20:36:52 alexk Exp $
+#H  $Id: liftings.g,v 1.5 2010/10/02 16:49:35 alexk Exp $
 ##
 #############################################################################
 
@@ -398,6 +398,13 @@ x[i]=Zero(UnderlyingField(KG))));
   fi;
 
 end;
+
+
+IsPartialAugmentationsCorrect := function( KG, u )
+local i;
+return Number( PartialAugmentations(KG,u)[1],
+               i -> i = One(UnderlyingRing(KG))) = 1;
+end; 
 
 
 ###########################################################################
@@ -1048,6 +1055,18 @@ for f in maps[n-1] do
               fi;
               Print("\r", Length(maps[n]), " \c");
             fi;
+          elif mode="linaug" then
+            if Size(H) = Dimension(Subspace(KG, List(Elements(H),
+                                                h -> (h^lift)^pcumap ))) then
+              if ForAll( List(Elements(H), h -> (h^lift)^pcumap ),
+                         u -> IsPartialAugmentationsCorrect( KG, u ) ) then;                                
+                Add(maps[n], lift);
+                if num=1 then
+                  return maps[n];
+                fi;
+              fi;
+              Print("\r", Length(maps[n]), " \c");
+            fi;            
           fi;
         fi;
       fi;

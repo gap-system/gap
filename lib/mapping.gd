@@ -4,7 +4,7 @@
 #W                                                         & Martin Schönert
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: mapping.gd,v 4.67 2010/06/24 13:37:02 gap Exp $
+#H  @(#)$Id: mapping.gd,v 4.70 2011/04/14 23:10:37 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -23,7 +23,7 @@
 ##  <M>S</M>, <M>R</M>, and <M>Rel</M> are generalized domains
 ##  (see <Ref Chap="Domains"/>).
 ##  The corresponding attributes for general mappings are
-##  <Ref Func="Source"/>, <Ref Func="Range"/>,
+##  <Ref Func="Source"/>, <Ref Func="Range" Label="of a general mapping"/>,
 ##  and <Ref Func="UnderlyingRelation"/>.
 ##  <!-- what about the family predicates if the source/range is not a -->
 ##  <!-- collection? -->
@@ -58,8 +58,8 @@
 ##  <#/GAPDoc>
 ##
 ##  <#GAPDoc Label="[2]{mapping}">
-##  <Ref Func="Source"/> and <Ref Func="Range"/> are basic operations for
-##  general mappings.
+##  <Ref Func="Source"/> and <Ref Func="Range" Label="of a general mapping"/> 
+##  are basic operations for general mappings.
 ##  <Ref Func="UnderlyingRelation"/> is secondary, its default method sets up
 ##  a domain that delegates tasks to the general mapping.
 ##  (Note that this allows one to handle also infinite relations by generic
@@ -204,7 +204,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.mapping_gd :=
-    "@(#)$Id: mapping.gd,v 4.67 2010/06/24 13:37:02 gap Exp $";
+    "@(#)$Id: mapping.gd,v 4.70 2011/04/14 23:10:37 alexk Exp $";
 
 
 #############################################################################
@@ -484,7 +484,7 @@ DeclareSynonymAttr( "IsEndoMapping", IsMapping and IsEndoGeneralMapping );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsInjective", IsGeneralMapping );
-
+DeclareSynonym("IsOneToOne",IsInjective);
 
 #############################################################################
 ##
@@ -505,6 +505,7 @@ DeclareProperty( "IsInjective", IsGeneralMapping );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSurjective", IsGeneralMapping );
+DeclareSynonym("IsOnto",IsSurjective);
 
 
 #############################################################################
@@ -533,7 +534,7 @@ DeclareSynonymAttr( "IsBijective",
 ##
 ##  <#GAPDoc Label="Range">
 ##  <ManSection>
-##  <Attr Name="Range" Arg='map'/>
+##  <Attr Name="Range" Arg='map' Label="of a general mapping"/>
 ##
 ##  <Description>
 ##  </Description>
@@ -571,7 +572,7 @@ DeclareAttribute( "Source", IsGeneralMapping );
 ##  The <E>underlying relation</E> of a general mapping <A>map</A> is the
 ##  domain of pairs <M>(s,r)</M>, with <M>s</M> in the source and <M>r</M> in
 ##  the range of <A>map</A> (see&nbsp;<Ref Func="Source"/>,
-##  <Ref Func="Range"/>),
+##  <Ref Func="Range" Label="of a general mapping"/>),
 ##  and <M>r \in</M> <C>ImagesElm( <A>map</A>, </C><M>s</M><C> )</C>.
 ##  <P/>
 ##  Each element of the underlying relation is represented by

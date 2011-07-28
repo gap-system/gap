@@ -1,13 +1,11 @@
 These are the things I'll get to do when I get to do them:
-$Id: TODO,v 1.17 2009/10/06 17:08:24 gap Exp $
+$Id: TODO,v 1.22 2010/11/04 04:03:11 gap Exp $
 
 ALL:
   * extend alphabet by natural embedding, "skip levels" in tree
   * quotient alphabets
   * check alphabets not [1..n]
   * should stateset be an attribute or an operation?
-  * in e.g. Nucleus, keep track of words along with mealy machine; this
-    will speed up FabrykowskiGuptaGroups which reconstructs the nucleus's words
 
 frmachine:
   * add or remove generator
@@ -24,6 +22,8 @@ group:
   * Exponent, IsSolvable, IsNilpotent, IsSimple
   * smarter IsTorsion, IsTorsionFree, HasCongruenceProperty
   * SubexponentialGrowth
+  * SEARCH@.BALL should not compute full balls if #gens is large (>100)
+  * complex of groups covering contracting group
 
 vhgroup:
   * IsLevelTransitiveOnPatterns
@@ -33,18 +33,22 @@ examples:
 
 helpers:
   * interval arithmetic
+  * maybe use InputOutputLocalProcess
 
 img:
   * blow-ups, tuning of IMG
   * adding machines of fractional (e.g. 1/7) amplitude, for more tunings & matings
   * "dilute" FR machine by multiplying stateset with {1..n} and chaining them in sequence
-  * formal matings
+  * actual matings
   * given obstruction, compute quotient machine. More generally, find a common format for obstructions
+  * canonical decompositions
 
 linear, vector:
   * stategrowth limitmachine nucleus nucleusmachine
   * Minimize, nice vectors for algebra elements
   * extend / restrict scalars
-
+  * "in" method
+  
 algebra:
   * test membership in an algebra
+  * test nillity of algebra (akin to IsTorsion for groups)

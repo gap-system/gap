@@ -1,206 +1,131 @@
 #############################################################################
 ##
-#W  macfloat.g                        GAP library                   Steve Linton
+#W  macfloat.g                        GAP library                Steve Linton
 ##                                                                Stefan Kohl
+##                                                          Laurent Bartholdi
 ##
-#H  @(#)$Id: macfloat.g,v 4.2 2010/02/23 15:13:12 gap Exp $
+#H  @(#)$Id: macfloat.g,v 4.10 2011/06/20 21:55:24 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-##  This file deals with macfloats
+##  This file deals with macfloats 
 ##
 Revision.macfloat_g :=
-  "@(#)$Id: macfloat.g,v 4.2 2010/02/23 15:13:12 gap Exp $";
 
-BIND_GLOBAL( "MacFloatsFamily", 
-        NewFamily( "MacFloatsFamily", IS_MACFLOAT ));
+  "@(#)$Id: macfloat.g,v 4.10 2011/06/20 21:55:24 gap Exp $";
 
-BIND_GLOBAL( "TYPE_MACFLOAT", 
-        NewType(MacFloatsFamily, IS_MACFLOAT and IsInternalRep and IsScalar
-                and IsCommutativeElement));
 
-BIND_GLOBAL( "TYPE_MACFLOAT0", 
-        NewType(MacFloatsFamily, IS_MACFLOAT and IsInternalRep and IsZero and IsScalar
-                and IsCommutativeElement));
+
+#############################################################################
+DeclareRepresentation("IsIEEE754FloatRep", IsFloat and IsInternalRep and IS_MACFLOAT,[]);
+
+BIND_GLOBAL( "TYPE_MACFLOAT", NewType(FloatsFamily, IsIEEE754FloatRep));
+
+BIND_GLOBAL( "TYPE_MACFLOAT0", NewType(FloatsFamily, IsIEEE754FloatRep and IsZero));
 
 #############################################################################
 ##
-#C  IsMacFloat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . C macfloat
+#M  Constructors . . . . . . . . . . . . . . . . . . . . . . . . for integers
 ##
-DeclareSynonym( "IsMacFloat", IS_MACFLOAT );
-
-#############################################################################
-##
-#A  AbsoluteValue( x ) . . . . . . . . . . . . . . . . . . . . . . for macfloats
-##
-DeclareAttribute( "AbsoluteValue", IsMacFloat );
-InstallOtherMethod( AbsoluteValue,
-                    "for macfloats", true, [ IsMacFloat ], 0,
-
-  function ( x )
-    if x < MACFLOAT_INT(0) then return -x; else return x; fi;
-  end );
-
-#############################################################################
-##
-#O  MacFloat( x ) . . . . . . . . . . . . . . . . . macfloating point approximation
-##
-DeclareOperation( "MacFloat", [ IsObject ] );
-
-#############################################################################
-##
-#M  MacFloat( n ) . . . . . . . . . . . . . . . . . . . . . . . . . for integers
-##
-InstallMethod( MacFloat,
-               "for integers", true, [ IsInt ], 0,
-
-  function ( n )
-
+InstallMethod( NewFloat, "for IsIEEE754FloatRep and integer",
+        [ IsIEEE754FloatRep, IsInt ],
+        function ( filter, n )
+    
     local  x, b, pow, sgn;
 
     if n < 0 then n := -n; sgn := -1; else sgn := 1; fi;
     x := MACFLOAT_INT(0);
     b := MACFLOAT_INT(65536); pow := MACFLOAT_INT(1);
     while n > 0 do
-      x   := x + pow * MACFLOAT_INT(n mod 65536);
-      n   := QUO_INT(n,65536);
-      pow := pow * b;
+        x   := x + pow * MACFLOAT_INT(n mod 65536);
+        n   := QUO_INT(n,65536);
+        pow := pow * b;
     od;
     return MACFLOAT_INT(sgn) * x;
-  end );
+end);
 
 #############################################################################
 ##
-#M  MacFloat( x ) . . . . . . . . . . . . . . . . . . . . . . . .  for rationals
+#M  Constructor. . . . . . . . . . . . . . . . . . . . . . . . .  for strings
 ##
-InstallMethod( MacFloat,
-               "for rationals", true, [ IsRat ], 0,
-               x -> MacFloat(NumeratorRat(x))/MacFloat(DenominatorRat(x)));
-
-#############################################################################
-##
-#M  MacFloat( M ) . . . . . . . . . . . . . . . . . . . . . . . . . for matrices
-##
-InstallMethod( MacFloat,
-               "for matrices", true, [ IsMatrix ], 0,
-               M -> List( M, l -> List( l, MacFloat ) ) );
-
-#############################################################################
-##
-#M  MacFloat( x ) . . . . . . . . . . . . . . . . . . . . . . . .  for macfloats
-##
-InstallMethod( MacFloat, "for macfloats", true, [ IsMacFloat ], 0, IdFunc );
-
-#############################################################################
-##
-#M  MacFloat( x ) . . . . . . . . . . . . . . . . . . . . . . . .  for strings
-##
-InstallMethod( MacFloat, "for strings", true, [ IsString ], 0, MACFLOAT_STRING );
+InstallMethod( NewFloat, "for IsIEEE754FloatRep and string",
+        [ IsIEEE754FloatRep, IsString ],
+        function ( filter, s )
+    return MACFLOAT_STRING(s);
+end);
 
 #############################################################################
 ##
 #M  String( x ) . . . . . . . . . . . . . . . . . . . . . . . .  for macfloats
 ##
-InstallMethod( String, "for macfloats", true, [ IsMacFloat ], 0, STRING_MACFLOAT );
+BindGlobal("MACFLOAT_STRING_DOTTIFY", function(s)
+    local p;
+    if '.' in s or Intersection(s,"0123456789")=[] then return s; fi;
+    for p in [1..Length(s)] do
+        if not s[p] in "+-0123456789" then p := p-1; break; fi;
+    od;
+    Add(s,'.',p+1);
+    return s;
+end);    
+
+InstallMethod( String, "for macfloats", [ IsIEEE754FloatRep ],
+        f->MACFLOAT_STRING_DOTTIFY(STRING_DIGITS_MACFLOAT(FLOAT.DECIMAL_DIG,f)));
+
+InstallMethod( ViewString, "for macfloats", [ IsIEEE754FloatRep ],
+        f->MACFLOAT_STRING_DOTTIFY(STRING_DIGITS_MACFLOAT(FLOAT.VIEW_DIG,f)));
 
 #############################################################################
 ##
 #M  Int( x ) . . . . . . . . . . . . . . . . . . . . . . . . . . . for macfloats
 ##
-InstallMethod( Int, "for macfloats", true, [ IsMacFloat ], 0, INTFLOOR_MACFLOAT );
+InstallMethod( Int, "for macfloats", true, [ IsIEEE754FloatRep ], 0, INTFLOOR_MACFLOAT );
 
 #############################################################################
 ##
-#M  Rat( x ) . . . . . . . . . . . . . . . . . . . . . . . . . . . for macfloats
+#M  Sqrt, etc. for macfloats
 ##
-InstallOtherMethod( Rat,
-                    "for macfloats", true, [ IsMacFloat ], 0,
-
-  function ( x )
-
-    local  M, a_i, i, sign;
-
-    i := 0; M := [[1,0],[0,1]];
-    if x < 0 then sign := -1; x := -x; else sign := 1; fi;
-    repeat
-      a_i := Int(x); i := i + 1;
-      M := M * [[a_i,1],[1,0]];
-      if x - a_i > 1/10000 then x := 1/(x - a_i); else break; fi;
-    until M[1][1] * FLOOR_MACFLOAT(x) > 10000;
-    return sign * M[1][1]/M[2][1];
-  end );
+InstallMethod( Sin, "for macfloats", [ IsIEEE754FloatRep ], SIN_MACFLOAT );
+InstallMethod( Cos, "for macfloats", [ IsIEEE754FloatRep ], COS_MACFLOAT );
+InstallMethod( Tan, "for macfloats", [ IsIEEE754FloatRep ], TAN_MACFLOAT );
+InstallMethod( Acos, "for macfloats", [ IsIEEE754FloatRep ], ACOS_MACFLOAT );
+InstallMethod( Asin, "for macfloats", [ IsIEEE754FloatRep ], ASIN_MACFLOAT );
+InstallMethod( Atan, "for macfloats", [ IsIEEE754FloatRep ], ATAN_MACFLOAT );
+InstallMethod( Atan2, "for macfloats", [ IsIEEE754FloatRep, IsIEEE754FloatRep ], ATAN2_MACFLOAT );
+InstallMethod( Log, "for macfloats", [ IsIEEE754FloatRep ], LOG_MACFLOAT );
+InstallMethod( Exp, "for macfloats", [ IsIEEE754FloatRep ], EXP_MACFLOAT );
+InstallMethod( Sqrt, "for macfloats", [ IsIEEE754FloatRep ], SQRT_MACFLOAT );
+InstallMethod( Round, "for macfloats", [ IsIEEE754FloatRep ], RINT_MACFLOAT );
+InstallMethod( Floor, "for macfloats", [ IsIEEE754FloatRep ], FLOOR_MACFLOAT );
+InstallMethod( LdExp, "for macfloat,int", [ IsIEEE754FloatRep, IsInt ], LDEXP_MACFLOAT );
+InstallMethod( FrExp, "for macfloat", [ IsIEEE754FloatRep ], FREXP_MACFLOAT );
 
 #############################################################################
-##
-#M  \<( x ) . . . . . . . . . . . . . . . . . . . . .  for rational and macfloat
-##
-InstallMethod( \<,
-               "for rational and macfloat", ReturnTrue, [ IsRat, IsMacFloat ], 0,
-               function ( x, y ) return MacFloat(x) < y; end );
-
+# constants
+BindGlobal("IEEE754FLOAT_CONSTANTS", rec(
+        DIG := 15,
+        VIEW_DIG := 6,
+        MANT_DIG := 53,
+        EPSILON := LDEXP_MACFLOAT(MACFLOAT_INT(1),1-~.MANT_DIG),
+        MAX_10_EXP := 308,
+        MAX_EXP := 1024,
+        MAX := LDEXP_MACFLOAT(NewFloat(IsIEEE754FloatRep,2^~.MANT_DIG-1),~.MAX_EXP-~.MANT_DIG),
+        MIN_10_EXP := -307,
+        MIN_EXP := -1021,
+        MIN := LDEXP_MACFLOAT(MACFLOAT_INT(1),~.MIN_EXP-1),
+        DECIMAL_DIG := 17,
+        INFINITY := MACFLOAT_STRING("inf"),
+        NINFINITY := MACFLOAT_STRING("-inf"),
+        NAN := MACFLOAT_STRING("nan")));
+        
 #############################################################################
-##
-#M  \<( x ) . . . . . . . . . . . . . . . . . . . . .  for macfloat and rational
-##
-InstallMethod( \<,
-               "for macfloat and rational", ReturnTrue, [ IsMacFloat, IsRat ], 0,
-               function ( x, y ) return x < MacFloat(y); end );
-
-#############################################################################
-##
-#M  \+( x ) . . . . . . . . . . . . . . . . . . . . .  for macfloat and rational
-##
-InstallOtherMethod( \+,
-                    "for macfloat and rational", ReturnTrue, [ IsMacFloat, IsRat ],
-                    0, function ( x, y ) return x + MacFloat(y); end );
-
-#############################################################################
-##
-#M  \+( x ) . . . . . . . . . . . . . . . . . . . . .  for rational and macfloat
-##
-InstallOtherMethod( \+,
-                    "for rational and macfloat", ReturnTrue, [ IsRat, IsMacFloat ],
-                    0, function ( x, y ) return MacFloat(x) + y; end );
-
-#############################################################################
-##
-#M  \*( x ) . . . . . . . . . . . . . . . . . . . . .  for macfloat and rational
-##
-InstallOtherMethod( \*,
-                    "for macfloat and rational", ReturnTrue, [ IsMacFloat, IsRat ],
-                    0, function ( x, y ) return x * MacFloat(y); end );
-
-#############################################################################
-##
-#M  \*( x ) . . . . . . . . . . . . . . . . . . . . .  for rational and macfloat
-##
-InstallOtherMethod( \*,
-                    "for rational and macfloat", ReturnTrue, [ IsRat, IsMacFloat ],
-                    0, function ( x, y ) return MacFloat(x) * y; end );
-
-#############################################################################
-##
-#M  \^( x ) . . . . . . . . . . . . . . . . . . . . .  for macfloat and rational
-##
-InstallOtherMethod( \^,
-                    "for macfloat and rational", ReturnTrue, [ IsMacFloat, IsRat ],
-                    3, function ( x, y ) return x ^ MacFloat(y); end );
-
-#############################################################################
-##
-#M  \^( x ) . . . . . . . . . . . . . . . . . . . . .  for rational and macfloat
-##
-InstallOtherMethod( \^,
-                    "for rational and macfloat", ReturnTrue, [ IsRat, IsMacFloat ],
-                    0, function ( x, y ) return MacFloat(x) ^ y; end );
-
-#############################################################################
-##
-#M  Sqrt( x ) . . . . . . . . . . . . . . . . . . . . . . . . . .  for macfloats
-##
-InstallOtherMethod( Sqrt, "for macfloats", true, [ IsMacFloat ], 0, SQRT_MACFLOAT );
+# default constructor record
+BindGlobal("IEEE754FLOAT", rec(
+        constants := IEEE754FLOAT_CONSTANTS,
+        filter := IsIEEE754FloatRep,
+        creator := MACFLOAT_STRING,
+        eager := 'l') );
 
 #############################################################################
 ##

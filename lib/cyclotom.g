@@ -3,7 +3,7 @@
 #W  cyclotom.g                   GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: cyclotom.g,v 4.51 2010/02/23 15:12:55 gap Exp $
+#H  @(#)$Id: cyclotom.g,v 4.53 2011/05/25 16:00:29 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file deals with cyclotomics.
 ##
 Revision.cyclotom_g :=
-    "@(#)$Id: cyclotom.g,v 4.51 2010/02/23 15:12:55 gap Exp $";
+    "@(#)$Id: cyclotom.g,v 4.53 2011/05/25 16:00:29 gap Exp $";
 
 
 #############################################################################
@@ -870,14 +870,13 @@ InstallMethod( Order,
 ##  
 ##  <Description>
 ##  The operation <Ref Func="Int" Label="for a cyclotomic"/>
-##  can be used to find a cyclotomic integer near to an arbitrary cyclotomic.
-##  For rationals, <Ref Func="Int" Label="for a cyclotomic"/> returns
-##  the largest integer smaller or equal to the argument.
+##  can be used to find a cyclotomic integer near to an arbitrary cyclotomic,
+##  by applying <Ref Attr="Int"/> to the coefficients.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> Int( E(5)+1/2*E(5)^2 ); Int( 2/3*E(7)+3/2*E(4) );
+##  gap> Int( E(5)+1/2*E(5)^2 ); Int( 2/3*E(7)-3/2*E(4) );
 ##  E(5)
-##  E(4)
+##  -E(4)
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -896,16 +895,7 @@ InstallMethod( Int,
 InstallMethod( Int,
     "for a cyclotomic",
     [ IsCyc ],
-    function ( x )
-    local i, int, n, cfs;
-    n:= Conductor( x );
-    cfs:= COEFFS_CYC( x );
-    int:= 0;
-    for i in [ 1 .. n ] do
-      int:= int + Int( cfs[i] ) * E(n)^(i-1);
-    od;
-    return int;
-    end );
+    cyc -> CycList( List( COEFFS_CYC( cyc ), Int ) ) );
 
 
 #############################################################################
@@ -914,7 +904,7 @@ InstallMethod( Int,
 #M  String( <rat> ) . . . . . . . . . . . .  convert a rational into a string
 #M  String( <cyc> ) . . . . . . . . . . . .  convert cyclotomic into a string
 #M  String( <infinity> )  . . . . . . . . . . . . . . . . . .  for `infinity'
-##  
+##
 ##  <#GAPDoc Label="String:cyclotomics">
 ##  <ManSection>
 ##  <Meth Name="String" Arg='cyc' Label="for a cyclotomic"/>
@@ -933,7 +923,7 @@ InstallMethod( Int,
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 InstallMethod( String,
     "for an integer",
     [ IsInt ],
@@ -945,15 +935,15 @@ function(a)
     # kernel method
     return STRING_INT(a);
   fi;
-  
+
   # sign
-  if a < 0 then 
+  if a < 0 then
     sign := "-";
     a := -a;
   else
     sign := "";
   fi;
-  
+
   # recursion
   halflen := QuoInt(Log2Int(a)*100, 664);
   b := 10^halflen;
@@ -966,7 +956,7 @@ function(a)
   fi;
   s2 := String(qr[2]);
   pad := ListWithIdenticalEntries(halflen-Length(s2), '0');
-  
+
   return Concatenation(sign,s1,pad,s2);
 end);
 

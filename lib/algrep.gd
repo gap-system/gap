@@ -2,7 +2,7 @@
 ##
 #W  algrep.gd                  GAP library               Willem de Graaf
 ##
-#H  @(#)$Id: algrep.gd,v 4.28 2010/02/23 15:12:46 gap Exp $
+#H  @(#)$Id: algrep.gd,v 4.30 2010/11/11 23:34:39 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the declarations for general modules over algebras.
 ##
 Revision.algrep_gd :=
-    "@(#)$Id: algrep.gd,v 4.28 2010/02/23 15:12:46 gap Exp $";
+    "@(#)$Id: algrep.gd,v 4.30 2010/11/11 23:34:39 alexk Exp $";
 
 
 #############################################################################
@@ -874,6 +874,8 @@ DeclareGlobalFunction( "TensorProduct" );
 ##  <Description>
 ##  Here the elements of <A>list</A> must be algebra modules. 
 ##  The tensor product is returned as an algebra module. 
+##  The two-argument version works in the same way and 
+##  returns the tensor product of its arguments.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 ##  gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
@@ -1010,8 +1012,8 @@ DeclareOperation( "SymmetricPower", [ IsLeftModule, IsInt ] );
 ##  <Oper Name="SymmetricPowerOfAlgebraModule" Arg='V, k'/>
 ##
 ##  <Description>
-##  Here <A>V</A> must be an algebra module. This function returns the <A>k</A>-th
-##  symmetric power of <A>V</A> (as an algebra module).
+##  Here <A>V</A> must be an algebra module. This function returns the 
+##  <A>k</A>-th symmetric power of <A>V</A> (as an algebra module).
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 ##  gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
@@ -1077,6 +1079,7 @@ DeclareCategoryFamily( "IsDirectSumElement" );
 ##    ( [ 0, 0, 0 ] )(+)( [ 0, 1, 0 ] ), ( [ 0, 0, 0 ] )(+)( [ 0, 0, 1 ] ) ]
 ##  ]]></Example>
 ##  <Example><![CDATA[
+##  gap> SizeScreen([ 81, ]);; # temporary increase line length for nicer output
 ##  gap> L:= SimpleLieAlgebra( "C", 3, Rationals );;
 ##  gap> V:= HighestWeightModule( L, [ 1, 1, 0 ] );
 ##  <64-dimensional left-module over <Lie algebra of dimension 21 over Rationals>>

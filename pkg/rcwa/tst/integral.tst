@@ -2,12 +2,12 @@
 ##
 #W  integral.tst               GAP4 Package `RCWA'                Stefan Kohl
 ##
-#H  @(#)$Id: integral.tst,v 1.155 2008/07/22 13:04:42 stefan Exp $
-##
 ##  This file contains automated tests of RCWA's functionality for
 ##  rcwa mappings of and rcwa groups over the ring of integers.
 ##
-gap> START_TEST("$Id: integral.tst,v 1.155 2008/07/22 13:04:42 stefan Exp $");
+#############################################################################
+
+gap> START_TEST( "integral.tst" );
 gap> RCWADoThingsToBeDoneBeforeTest();
 gap> IdentityRcwaMappingOfZ;
 IdentityMapping( Integers )
@@ -79,7 +79,7 @@ gap> t := RcwaMapping([[-1,0,1]]);
 Rcwa mapping of Z: n -> -n
 gap> Order(t);
 2
-gap> LaTeXObj(t);
+gap> RcwaMappingToLaTeX(t);
 "n \\ \\mapsto \\ -n"
 gap> MovedPoints(t);
 Z \ [ 0 ]
@@ -123,8 +123,8 @@ gap> k := RcwaMapping([[-1,-3,1]]);
 Rcwa mapping of Z: n -> -n - 3
 gap> k := RcwaMapping([[2,0,1],[0,3,1]]);
 <rcwa mapping of Z with modulus 2>
-gap> PreImage(k,[0,1,4,8,14]);
-[ 0, 2, 4 ]
+gap> PreImage(k,[0,1,4,8,16]);
+[ 0, 2, 4, 8 ]
 gap> PreImage(k,[0,1,3,4,8,14]);
 1(2) U [ 0, 2, 4 ]
 gap> ZeroOne := RcwaMapping([[0,0,1],[0,1,1]]);;
@@ -260,7 +260,7 @@ Bijective rcwa mapping of Z with modulus 18, of order 6
    6                                   | (n + 2)/2
   15                                   | (n - 5)/2
 
-gap> Print(LaTeXObj(ab));
+gap> Print(RcwaMappingToLaTeX(ab));
 n \ \mapsto \
 \begin{cases}
   n       & \text{if} \ n \in 0(9) \cup 2(9) \cup 3(9) \cup 8(9), \\
@@ -270,14 +270,14 @@ n \ \mapsto \
   (n+2)/2 & \text{if} \ n \in 6(18), \\
   (n-5)/2 & \text{if} \ n \in 15(18).
 \end{cases}
-gap> Print(LaTeXObj(a:Indentation:=2));
+gap> Print(RcwaMappingToLaTeX(a:Indentation:=2));
   n \ \mapsto \
   \begin{cases}
     3n/2     & \text{if} \ n \in 0(2), \\
     (3n+1)/4 & \text{if} \ n \in 1(4), \\
     (3n-1)/4 & \text{if} \ n \in 3(4).
   \end{cases}
-gap> Print(LaTeXObj(a:german));
+gap> Print(RcwaMappingToLaTeX(a:german));
 n \ \mapsto \
 \begin{cases}
   3n/2     & \text{falls} \ n \in 0(2), \\
@@ -567,7 +567,7 @@ true
 gap> H := Image(IsomorphismRcwaGroup(Group((1,2),(3,4),(5,6),(7,8),
 >                                          (1,3)(2,4),(1,3,5,7)(2,4,6,8)),
 >                                    Integers));
-<rcwa group over Z with 6 generators>
+<tame rcwa group over Z with 6 generators>
 gap> Size(H);
 384
 gap> IsSolvable(H);
@@ -852,7 +852,7 @@ gap> G := Restriction(Group(a,b),RcwaMapping([[5,3,1]]));
 gap> MovedPoints(G);
 3(5) \ [ -2, 3 ]
 gap> GuessedDivergence(g);
-1
+1.
 gap> GuessedDivergence(a);
 1.06066
 gap> GuessedDivergence(u);
@@ -1110,8 +1110,8 @@ gap> Ball(Group((1,2),(2,3),(3,4),(4,5),(5,6)),(),2);
 [ (), (5,6), (4,5), (4,5,6), (4,6,5), (3,4), (3,4)(5,6), (3,4,5), (3,5,4),
   (2,3), (2,3)(5,6), (2,3)(4,5), (2,3,4), (2,4,3), (1,2), (1,2)(5,6),
   (1,2)(4,5), (1,2)(3,4), (1,2,3), (1,3,2) ]
-gap> Ball(Group((1,2),(2,3),(3,4),(4,5),(5,6)),1,3,OnPoints);
-[ 1, 2, 3, 4 ]
+gap> Ball(Group((1,2),(2,3),(3,6)),1,3,OnPoints);
+[ 1, 2, 3, 6 ]
 gap> Ball(Group((1,2),(2,3),(3,4),(4,5),(5,6)),[1,2,3],1,OnTuples);
 [ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 3, 2 ], [ 2, 1, 3 ] ]
 gap> Ball(G,[1,2,3],2,OnTuples);
@@ -1168,10 +1168,8 @@ gap> IsomorphismRcwaGroup(Group(()));
 [ () ] -> [ IdentityMapping( Integers ) ]
 gap> IsomorphismRcwaGroup(SmallGroup(1,1));
 [ <identity> of ... ] -> [ IdentityMapping( Integers ) ]
-gap> IsomorphismRcwaGroup(SmallGroup(6,1),Integers);
-[ f1, f2 ] -> [ <bijective rcwa mapping of Z with modulus 6>, 
-  <bijective rcwa mapping of Z with modulus 3> ]
-gap> StructureDescription(Image(last));
+gap> phi := IsomorphismRcwaGroup(SmallGroup(6,1),Integers);;
+gap> StructureDescription(Image(phi));
 "S3"
 gap> M11 := MathieuGroup(11);;
 gap> Action(Image(IsomorphismRcwaGroup(M11))^ClassShift(0,1),
@@ -1417,7 +1415,7 @@ gap> List([1,2,6,12],m->RespectsPartition(ClassReflection(0,m),P));
 gap> List([g,h,g*h,a,ab],elm->RespectsPartition(elm,P));
 [ true, true, true, false, false ]
 gap> G := Group(ClassTransposition(0,2,1,2),ClassShift(3,4));;
-gap> Projections(G,8);
+gap> ProjectionsToInvariantUnionsOfResidueClasses(G,8);
 [ [ ClassTransposition(0,2,1,2), ClassShift(3,4) ] ->
     [ <bijective rcwa mapping of Z with modulus 8>,
       IdentityMapping( Integers ) ],
@@ -1681,6 +1679,20 @@ gap> H := Group(List([[0,2,1,2],[1,2,2,4],[0,2,1,4],[1,4,2,4]],
 <rcwa group over Z with 4 generators>
 gap> G = H;
 true
+gap> cts := Filtered(List(ClassPairs(4),ClassTransposition),
+>                    ct->Mod(ct) in [2,4]);;
+gap> G := Group(cts);
+<rcwa group over Z with 11 generators>
+gap> gens := SmallGeneratingSet(G);
+[ ClassTransposition(0,2,1,2), ClassTransposition(0,2,1,4), 
+  ClassTransposition(0,2,3,4), ClassTransposition(0,4,1,4) ]
+gap> G := Group(gens);
+<rcwa group over Z with 4 generators>
+gap> Br := List([1..10],r->RestrictedBall(G,One(G),r));;
+gap> List(Br,Length);
+[ 5, 14, 27, 39, 51, 71, 99, 118, 120, 120 ]
+gap> List([1..4],m->Length(AllElementsOfCTZWithGivenModulus(m)));
+[ 1, 1, 17, 238 ]
 gap> RCWADoThingsToBeDoneAfterTest();
 gap> STOP_TEST( "integral.tst", 8000000000 );
 

@@ -2,7 +2,7 @@
 ##
 #W  ideal.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ideal.gi,v 4.13 2010/02/23 15:13:10 gap Exp $
+#H  @(#)$Id: ideal.gi,v 4.15 2010/12/28 00:28:05 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,7 +10,7 @@
 ##
 ##
 Revision.ideal_gi :=
-    "@(#)$Id: ideal.gi,v 4.13 2010/02/23 15:13:10 gap Exp $";
+    "@(#)$Id: ideal.gi,v 4.15 2010/12/28 00:28:05 gap Exp $";
 
 
 #############################################################################
@@ -863,6 +863,28 @@ InstallMethod( AsTwoSidedIdeal,
     fi;
     return I;
     end );
+
+InstallMethod(IsSubset,"2-sided ideal in ring, naive",IsIdenticalObj,
+  [IsRing,IsRing and HasRightActingRingOfIdeal and HasLeftActingRingOfIdeal],
+  2*SIZE_FLAGS(FLAGS_FILTER(IsFLMLOR)),
+function(R,I)
+  if IsIdenticalObj(R,RightActingRingOfIdeal(I)) and
+     IsIdenticalObj(R,LeftActingRingOfIdeal(I)) then
+     return IsSubset(R,GeneratorsOfTwoSidedIdeal(I)); 
+   fi;
+   TryNextMethod();
+end);
+
+InstallMethod(IsLeftIdeal,"left ideal in ring, naive",IsIdenticalObj,
+  [IsRing,IsRing and HasLeftActingRingOfIdeal],
+  2*SIZE_FLAGS(FLAGS_FILTER(IsFLMLOR)),
+function(R,I)
+  if IsIdenticalObj(LeftActingRingOfIdeal(I),R) then
+    return true;
+  else
+    TryNextMethod();
+  fi;
+end);
 
 
 #############################################################################

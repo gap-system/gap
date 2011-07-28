@@ -9,7 +9,7 @@
 ##  alternating groups on Coxeter or standard generators.
 ##
 Revision.schursym_gi :=
-    "@(#)$Id: schursym.gi,v 4.1 2010/01/31 17:45:18 gap Exp $";
+    "@(#)$Id: schursym.gi,v 4.2 2011/01/26 05:28:38 gap Exp $";
 
 #############################################################################
 ##
@@ -518,7 +518,8 @@ function(arg)
   if Length(arg) < 2 then p := 3; else p := arg[2]; fi;
   if Length(arg) < 3 then s := 1; else s := arg[3]; fi;
   mats := BasicSpinRepSym(n,p,s).T;
-  if p > 0 then return List( mats, mat -> ImmutableMatrix( GF(p^2), mat ) ); fi;
+  if p = 2 then return List( mats, mat -> ImmutableMatrix( GF(p), mat ) );
+  elif p > 0 then return List( mats, mat -> ImmutableMatrix( GF(p^2), mat ) ); fi;
   return mats;
 end );
 

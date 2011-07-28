@@ -2,7 +2,7 @@
 **
 *W  cyclotom.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: cyclotom.c,v 4.44 2010/05/19 11:09:26 gap Exp $
+*H  @(#)$Id: cyclotom.c,v 4.46 2010/10/06 08:58:51 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -86,11 +86,13 @@
 **
 **  The terms are sorted with respect to the exponent.  Note that none of the
 **  arithmetic functions need this, but it makes the equality test simpler.
+**
+**  Chnaged the exponent size from 2 to 4 bytes to avoid overflows SL, 2008
 */
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_cyclotom_c =
-   "@(#)$Id: cyclotom.c,v 4.44 2010/05/19 11:09:26 gap Exp $";
+   "@(#)$Id: cyclotom.c,v 4.46 2010/10/06 08:58:51 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -2055,8 +2057,8 @@ static StructGVarOper GVarOpers [] = {
     { "GALOIS_CYC", 2, "cyc, n", &GaloisCycOper,
       FuncGALOIS_CYC, "src/cyclotom.c:GALOIS_CYC" },
 
-    { "CYC_LIST", 1, "list", &CycListOper,
-      FuncCycList, "src/cyclotom.c:CYC_LIST" },
+    { "CycList", 1, "list", &CycListOper,
+      FuncCycList, "src/cyclotom.c:CycList" },
 
     { 0 }
 

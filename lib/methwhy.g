@@ -2,7 +2,7 @@
 ##
 #W  methwhy.g                  GAP tools                    Alexander Hulpke
 ##
-#H  @(#)$Id: methwhy.g,v 4.30 2010/02/23 15:13:15 gap Exp $
+#H  @(#)$Id: methwhy.g,v 4.31 2011/06/14 19:13:20 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file allows some fancy accesses to the method selection
 ##
 Revision.methwhy_g :=
-    "@(#)$Id: methwhy.g,v 4.30 2010/02/23 15:13:15 gap Exp $";
+    "@(#)$Id: methwhy.g,v 4.31 2011/06/14 19:13:20 gap Exp $";
 
 #############################################################################
 ##
@@ -113,9 +113,6 @@ end);
 ##  circumventing the method selection mechanism.
 ##  Therefore for these operations <Ref Func="ApplicableMethod"/> may return
 ##  a method which is not the kernel method actually used.
-##  <P/>
-##  <Ref Func="ApplicableMethod"/> does not work for constructors
-##  (for example <C>GeneralLinearGroupCons</C> is a constructor).
 ##  <P/>
 ##  The function <Ref Func="ApplicableMethodTypes"/> takes the <E>types</E>
 ##  or <E>filters</E> of the arguments as argument (if only filters are given

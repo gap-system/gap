@@ -3,7 +3,7 @@
 #W    hasse/hasse.g       OpenMath Package             Andrew Solomon
 #W                                                     Marco Costantini
 ##
-#H    @(#)$Id: hasse.g,v 1.11 2009/04/18 10:14:10 alexk Exp $
+#H    @(#)$Id: hasse.g,v 1.14 2010/11/12 13:18:24 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -14,7 +14,7 @@
 
 
 Revision.("openmath/hasse/hasse.g") :=
-    "@(#)$Id: hasse.g,v 1.11 2009/04/18 10:14:10 alexk Exp $";
+    "@(#)$Id: hasse.g,v 1.14 2010/11/12 13:18:24 alexk Exp $";
 
 
 #########################################################################
@@ -94,76 +94,13 @@ end;
 
 
 
-#######################################################################
-##
-#F  OMPutListVar( <stream>, <list> )  
-##
-##
-BindGlobal("OMPutListVar", 
-function(stream, x)
-  local i;
-
-  OMWriteLine(stream, ["<OMA>"]);
-  OMIndent := OMIndent +1;
-
-	OMPutSymbol( stream, "list1", "list" );
-	for i in x do
-		OMPutVar(stream, i); 
-	od;
-
-	OMIndent := OMIndent -1;
-	OMWriteLine(stream, ["</OMA>"]);
-end);
-
-
-#######################################################################
-##
-#M  OMPut( <stream>, <hasse diagram> )
-##
-## Addendum to GAP OpenMath phrasebook.
-##
-InstallMethod(OMPut, "for a Hasse diagram", true,
-[IsOutputStream,IsHasseDiagram],0,
-function(stream, x)
-	local d, i;
-	d := UnderlyingDomainOfBinaryRelation(x);
-	OMWriteLine(stream, ["<OMBIND>"]);
-	OMIndent := OMIndent +1;
-	OMPutSymbol(stream, "fns2", "constant");
-	OMWriteLine(stream, ["<OMBVAR>"]);
-	OMIndent := OMIndent +1;
-	for i in d do
-		OMPutVar(stream, i);
-	od;
-	OMIndent := OMIndent -1;
-	OMWriteLine(stream, ["</OMBVAR>"]);
-
-	OMWriteLine(stream, ["<OMA>"]);
-	OMIndent := OMIndent +1;
-	OMPutSymbol(stream, "relation2", "hasse_diagram");
-	
-	for i in d do
-		OMWriteLine(stream, ["<OMA>"]);
-		OMIndent := OMIndent +1;
-		OMPutSymbol(stream, "list1", "list");
-		OMPutVar(stream, i);
-		OMPutListVar(stream, ImagesElm(x, i));
-		OMIndent := OMIndent -1;
-		OMWriteLine(stream, ["</OMA>"]);
-	od;
-	OMIndent := OMIndent -1;
-	OMWriteLine(stream, ["</OMA>"]);
-	OMIndent := OMIndent -1;
-	OMWriteLine(stream, ["</OMBIND>"]);
-end);
 
 
 
 BindGlobal( "OMDirectoryTemporary", DirectoryTemporary() );
 
 
-BindGlobal("DrawHasse", 
-function(h)
+BindGlobal("DrawHasse", function(h)
 
 	local output, filename;
 
@@ -173,7 +110,6 @@ function(h)
 	output := OutputTextFile( filename, false ); #append
 	SetPrintFormattingStatus( output, false );
 	AppendTo(output, TOP_HTML);
-
 
 	OMPutObject(output,h);
 	AppendTo(output, BOTTOM_HTML);

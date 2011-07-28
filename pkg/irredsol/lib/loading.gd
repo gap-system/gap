@@ -1,12 +1,10 @@
 ############################################################################
 ##
-##  loading.gd                   IRREDSOL                 Burkhard Hoefling
+##  loading.gd                   IRREDSOL                  Burkhard Höfling
 ##
-##  @(#)$Id: loading.gd,v 1.3 2005/07/06 10:05:02 gap Exp $
+##  @(#)$Id: loading.gd,v 1.4 2011/04/07 07:58:08 gap Exp $
 ##
-##  Copyright (C) 2003-2005 by Burkhard Hoefling, 
-##  Institut fuer Geometrie, Algebra und Diskrete Mathematik
-##  Technische Universitaet Braunschweig, Germany
+##  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 ##
 
 
@@ -16,7 +14,7 @@
 ##
 ##  see IRREDSOL documentation
 ##  
-DeclareGlobalFunction ("IsAvailableAbsolutelyIrreducibleSolvableGroupData");
+DECLARE_IRREDSOL_FUNCTION ("IsAvailableAbsolutelyIrreducibleSolvableGroupData");
 
 
 ############################################################################
@@ -25,7 +23,7 @@ DeclareGlobalFunction ("IsAvailableAbsolutelyIrreducibleSolvableGroupData");
 ##
 ##  see IRREDSOL documentation
 ##  
-DeclareGlobalFunction ("IsAvailableIrreducibleSolvableGroupData");
+DECLARE_IRREDSOL_FUNCTION ("IsAvailableIrreducibleSolvableGroupData");
 
 
 ############################################################################
@@ -34,7 +32,7 @@ DeclareGlobalFunction ("IsAvailableIrreducibleSolvableGroupData");
 ##
 ##  see IRREDSOL documentation
 ##  
-DeclareGlobalFunction ("TryLoadAbsolutelyIrreducibleSolvableGroupData");
+DECLARE_IRREDSOL_FUNCTION ("TryLoadAbsolutelyIrreducibleSolvableGroupData");
 
 
 ############################################################################
@@ -43,7 +41,7 @@ DeclareGlobalFunction ("TryLoadAbsolutelyIrreducibleSolvableGroupData");
 ##
 ##  see IRREDSOL documentation
 ##  
-DeclareGlobalFunction ("LoadAbsolutelyIrreducibleSolvableGroupData");
+DECLARE_IRREDSOL_FUNCTION ("LoadAbsolutelyIrreducibleSolvableGroupData");
 
 
 ############################################################################
@@ -52,7 +50,7 @@ DeclareGlobalFunction ("LoadAbsolutelyIrreducibleSolvableGroupData");
 ##
 ##  see IRREDSOL documentation
 ##  
-DeclareGlobalFunction ("LoadedAbsolutelyIrreducibleSolvableGroupData");
+DECLARE_IRREDSOL_FUNCTION ("LoadedAbsolutelyIrreducibleSolvableGroupData");
 
 
 ############################################################################
@@ -61,7 +59,7 @@ DeclareGlobalFunction ("LoadedAbsolutelyIrreducibleSolvableGroupData");
 ##
 ##  see IRREDSOL documentation
 ##  
-DeclareGlobalFunction ("UnloadAbsolutelyIrreducibleSolvableGroupData");
+DECLARE_IRREDSOL_FUNCTION ("UnloadAbsolutelyIrreducibleSolvableGroupData");
 
 
 ############################################################################

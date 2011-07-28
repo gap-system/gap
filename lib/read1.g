@@ -71,6 +71,7 @@ ReadLib( "options.gi"  );
 ReadLib( "attr.gd"     );
 ReadLib( "attr.gi"     );
 
+ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 
 ReadLib( "string.gd"   );
@@ -78,7 +79,7 @@ ReadLib( "string.gd"   );
 ReadLib( "cmdledit.g"  );
 
 ReadLib( "thread.g" );
-ReadLib( "tasks.g"  );
+ReadLib( "tasks.g" );
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );

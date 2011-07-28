@@ -3,7 +3,7 @@
 #W  coll.gd                     GAP library                  Martin Schönert
 #W                                                            & Thomas Breuer
 ##
-#H  @(#)$Id: coll.gd,v 4.125 2010/05/05 12:05:23 gap Exp $
+#H  @(#)$Id: coll.gd,v 4.130 2011/02/07 21:40:44 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file declares the operations for collections.
 ##
 Revision.coll_gd :=
-    "@(#)$Id: coll.gd,v 4.125 2010/05/05 12:05:23 gap Exp $";
+    "@(#)$Id: coll.gd,v 4.130 2011/02/07 21:40:44 gap Exp $";
 
 #T change the installation of isomorphism and factor maintained methods
 #T in the same way as that of subset maintained methods!
@@ -1606,10 +1606,10 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Random(Rationals);
-##  -4
+##  4
 ##  gap> g:= Group( (1,2,3) );;  Random( g );  Random( g );
 ##  (1,3,2)
-##  (1,3,2)
+##  ()
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

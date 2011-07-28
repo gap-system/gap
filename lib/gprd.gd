@@ -2,14 +2,14 @@
 ##
 #W  gprd.gd                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: gprd.gd,v 4.43 2010/02/23 15:13:01 gap Exp $
+#H  @(#)$Id: gprd.gd,v 4.45 2011/01/29 16:46:04 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.gprd_gd :=
-    "@(#)$Id: gprd.gd,v 4.43 2010/02/23 15:13:01 gap Exp $";
+    "@(#)$Id: gprd.gd,v 4.45 2011/01/29 16:46:04 alexk Exp $";
 
 
 #############################################################################
@@ -194,7 +194,7 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  gap> Size(au);
 ##  120
 ##  gap> p:=SemidirectProduct(au,n);
-##  <permutation group with 5 generators>
+##  <permutation group with 4 generators>
 ##  gap> Size(p);
 ##  3000
 ##  gap> n:=Group((1,2),(3,4));;
@@ -223,7 +223,7 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  gap> p:=SemidirectProduct(g,apci,n);
 ##  <pc group of size 24 with 4 generators>
 ##  gap> IsomorphismGroups(p,Group((1,2,3,4),(1,2)));
-##  [ f1, f2, f3, f4 ] -> [ (1,4), (1,4,3), (1,4)(2,3), (1,2)(3,4) ]
+##  [ f1, f2, f3, f4 ] -> [ (1,3), (1,3,2), (1,3)(2,4), (1,2)(3,4) ]
 ##  gap> SemidirectProduct(SU(3,3),GF(9)^3);
 ##  <matrix group of size 4408992 with 3 generators>
 ##  gap> SemidirectProduct(Group((1,2,3),(2,3,4)),GF(5)^4);

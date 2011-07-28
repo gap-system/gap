@@ -2,7 +2,7 @@
 **
 *W  mp_float.c                     GAP source               Laurent Bartholdi
 **
-*H  @(#)$Id: mp_float.c,v 1.1 2008/06/14 15:45:40 gap Exp $
+*H  @(#)$Id: mp_float.c,v 1.2 2010/02/22 19:25:24 gap Exp $
 **
 *Y  Copyright (C) 2008 Laurent Bartholdi
 **
@@ -10,9 +10,9 @@
 **  It defers to mpfr.c, mpfi.c etc. for initialization
 */
 static const char *Revision_mp_float_c =
-   "@(#)$Id: mp_float.c,v 1.1 2008/06/14 15:45:40 gap Exp $";
+   "@(#)$Id: mp_float.c,v 1.2 2010/02/22 19:25:24 gap Exp $";
 
-#define TRACE_ALLOC
+#undef TRACE_ALLOC
 #define USE_GMP
 #define BANNER_MP_FLOAT_H
 

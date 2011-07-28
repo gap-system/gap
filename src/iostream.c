@@ -2,7 +2,7 @@
 **
 *W  iostream.c                  GAP source                       Steve Linton
 **
-*H  @(#)$Id: iostream.c,v 4.36 2010/02/23 15:13:43 gap Exp $
+*H  @(#)$Id: iostream.c,v 4.38 2011/05/15 18:39:13 gap Exp $
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
@@ -27,7 +27,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_iostream_c =
-   "@(#)$Id: iostream.c,v 4.36 2010/02/23 15:13:43 gap Exp $";
+   "@(#)$Id: iostream.c,v 4.38 2011/05/15 18:39:13 gap Exp $";
 
 #define INCLUDE_DECLARATION_PART
 #include        "iostream.h"            /* file input/output               */
@@ -64,68 +64,7 @@ const char * Revision_iostream_c =
 #include <sys/stat.h>
 #endif
 
-#if !SYS_MAC_MWC
 #include  <sys/time.h>
-#endif
-
-#if SYS_MAC_MWC || SYS_MAC_MPW
-
-Obj FuncCREATE_PTY_IOSTREAM( Obj self, Obj dir, Obj prog, Obj args )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-  
-Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-
-Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-
-Obj FuncREAD_IOSTREAM_NOWAIT( Obj self, Obj stream, Obj string, Obj len )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-
-Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return 0;
-}
-
-Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return 0;
-}
-
-Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj signal)
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return 0;
-}
-
-Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-
-Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-
-
-#else
 
 #if HAVE_UNISTD_H
 #include <unistd.h>
@@ -359,12 +298,15 @@ static UInt GetMasterPty ( int * pty, Char * nametty, Char *namepty )
                 namepty[strlen(namepty)-1] = SYS_PTYCHAR2[devindex];
                         
                 if ( (*pty = open( namepty, O_RDWR )) >= 0 )
+                {
                     if ( (slave = open( nametty, O_RDWR, 0 )) >= 0 )
                     {
                         close(slave);
                         (void) devindex++;
                         return 0;
                     }
+                    else close(*pty);
+                } 
                 devindex++;
             }
             devindex = 0;
@@ -827,8 +769,6 @@ Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
   return INTOBJ_INT(PtyIOStreams[pty].ptyFD);
 }
 
-#endif
-/* end of if Macintosh */
 
 /****************************************************************************
 **

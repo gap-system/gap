@@ -2,7 +2,7 @@
 ##
 #W helpers.gd                                               Laurent Bartholdi
 ##
-#H   @(#)$Id: helpers.gd,v 1.40 2009/09/25 14:59:18 gap Exp $
+#H   @(#)$Id: helpers.gd,v 1.53 2011/06/20 14:23:51 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -158,6 +158,16 @@ DeclareGlobalFunction("TensorSum");
 ##     return [max,Filtered([1..maxpt],n->growth[n]=max)];
 ## end;
 ## </Listing>
+##
+##     <P/> For example, the command
+##     <C>Draw(BasilicaGroup,rec(point:=PeriodicList([],[2,1]),limit:=3));</C>
+##     produces (in a new window) the following picture:
+##     <Alt Only="LaTeX"><![CDATA[
+##       \includegraphics[height=5cm,keepaspectratio=true]{basilica-ball.jpg}
+##     ]]></Alt>
+##     <Alt Only="HTML"><![CDATA[
+##       <img alt="Nucleus" src="basilica-ball.jpg">
+##     ]]></Alt>
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>
@@ -194,6 +204,27 @@ DeclareOperation("Sphere",[IsObject,IsInt]);
 ##     returned.
 ##
 ##     <P/> <A>x</A> can be an element or a subdomain of <C>t[1]</C>.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="RenameSubobjects" Arg="obj,refobj"/>
+##   <Description>
+##     This function traverses <A>obj</A> if it is a list or a record, and,
+##     when it finds an element which has no name, but is equal (in the sense
+##     of <C>=</C>) to an element of <A>refobj</A>, assigns it the name of
+##     that element.
+## <Example><![CDATA[
+## gap> trivial := Group(());; SetName(trivial,"trivial");
+## gap> a := List([1..10],i->Group(Random(SymmetricGroup(3))));
+## [ Group([ (2,3) ]), Group([ (2,3) ]), Group([ (1,3) ]), Group([ (1,3) ]),
+##   Group([ (1,3,2) ]), Group([ (1,3,2) ]), Group([ (1,2) ]), Group(()),
+##   Group([ (2,3) ]), Group([ (1,3,2) ]) ]
+## gap> RenameSubobjects(a,[trivial]); a;
+## [ Group([ (2,3) ]), Group([ (2,3) ]), Group([ (1,3) ]), Group([ (1,3) ]),
+##   Group([ (1,3,2) ]), Group([ (1,3,2) ]), Group([ (1,2) ]), trivial,
+##   Group([ (2,3) ]), Group([ (1,3,2) ]) ]
+## ]]></Example>
 ##   </Description>
 ## </ManSection>
 ##
@@ -235,8 +266,10 @@ DeclareOperation("Sphere",[IsObject,IsInt]);
 ## <#/GAPDoc>
 ##
 DeclareGlobalFunction("StringByInt");
-DeclareGlobalFunction("HallBasis");
 DeclareGlobalFunction("PositionInTower");
+DeclareOperation("RenameSubobjects",[IsObject,IsList]);
+DeclareOperation("Draw",[IsBinaryRelation]);
+DeclareOperation("Draw",[IsBinaryRelation,IsString]);
 DeclareGlobalFunction("CoefficientsInAbelianExtension");
 DeclareGlobalFunction("MagmaEndomorphismByImagesNC");
 DeclareGlobalFunction("MagmaHomomorphismByImagesNC");
@@ -390,6 +423,23 @@ DeclareGlobalFunction("ArtinRepresentation");
 
 #############################################################################
 ##
+#H Posets
+##
+## <#GAPDoc Label="Posets">
+## <ManSection>
+##   <Func Name="Draw" Arg="p" Label="poset"/>
+##   <Func Name="HeightOfPoset" Arg="p"/>
+##   <Returns>The length of a maximal chain in the poset.</Returns>
+##   <Description>
+##   </Description>
+## </ManSection>
+## <#/GAPDoc>
+##
+DeclareAttribute("HeightOfPoset", IsBinaryRelation);
+#############################################################################
+
+#############################################################################
+##
 #H Find incompressible elements
 ##
 ## <#GAPDoc Label="">
@@ -501,8 +551,262 @@ DeclareOperation("DimensionSeries",[IsAlgebra,IsInt]);
 ##
 #M Complex numbers, and points on the Riemann sphere
 ##
-DeclareCategoryCollections("IsMacFloat");
-DeclareCategoryCollections("IsMacFloatCollection");
+## <#GAPDoc Label="complexnumbers">
+## <ManSection>
+##   <Filt Name="IS_COMPLEX"/>
+##   <Fam Name="COMPLEX_FAMILY"/>
+##   <Func Name="Complex" Arg="..."/>
+##   <Var Name="COMPLEX_FIELD"/>
+##   <Var Name="COMPLEX_0"/>
+##   <Var Name="COMPLEX_1"/>
+##   <Var Name="COMPLEX_I"/>
+##   <Var Name="COMPLEX_2IPI"/>
+##   <Var Name="COMPLEX_INF"/>
+##   <Var Name="COMPLEX_NAN"/>
+##   <Func Name="EXP_COMPLEX" Arg="z"/>
+##   <Oper Name="Argument" Arg="z"/>
+##   <Oper Name="AbsoluteValue" Arg="z"/>
+##   <Oper Name="Norm" Arg="z"/>
+##   <Oper Name="RealPart" Arg="z"/>
+##   <Oper Name="ImaginaryPart" Arg="z"/>
+##   <Description>
+##     A rough implementation of complex numbers, based on the underlying
+##     floating-point numbers in &GAP;.
+##     <P/>
+##     Strictly speaking, complex numbers do not form a field in &GAP;,
+##     because associativity etc. do not hold. Still, a field is defined,
+##     <C>COMPLEX_FIELD</C>, making it possible to construct an indeterminate
+##     and rational functions, to be passed to <Package>FR</Package>'s
+##     routines.
+## <Example><![CDATA[
+## gap> z := Indeterminate(COMPLEX_FIELD);
+## gap> z := Indeterminate(COMPLEX_FIELD);
+## z
+## gap> (z+1/2)^5/(z-1/2);
+## (z^5+2.5*z^4+2.5*z^3+1.25*z^2+0.3125*z+0.03125)/(z+(-0.5))
+## gap> Complex(1,2);
+## 1+I*2
+## gap> last^2;
+## -3+I*4
+## gap> RealPart(last);
+## -3
+## gap> Norm(last2);
+## 25
+## gap> Complex("1+2*I");
+## 1+I*2
+## ]]></Example>
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="ComplexRootsOfUnivariatePolynomial" Arg="poly"/>
+##   <Oper Name="ComplexRootsOfUnivariatePolynomial" Arg="list" Label="l"/>
+##   <Returns>The complex roots of <A>poly</A>.</Returns>
+##   <Description>
+##     These methods compute the complex roots of a univariate
+##     complex polynomial, using the Jenkins-Traub algorithm (TOMS 493).
+##     <P/>
+##     Note that this is a globally-convergent, very fast algorithm, but
+##     that it suffers from loss of precision due to deflation, in
+##     case many roots have the same norm.
+## <Example><![CDATA[
+## gap> ComplexRootsOfUnivariatePolynomial(z^2-5);
+## [ -2.23607, 2.23607 ]
+## gap> ComplexRootsOfUnivariatePolynomial([COMPLEX_1,COMPLEX_2]);
+## Error, Variable: 'COMPLEX_2' must have a value
+## not in any function
+## gap> ComplexRootsOfUnivariatePolynomial([COMPLEX_1,2*COMPLEX_1]);
+## [ -0.5 ]
+## gap> ComplexRootsOfUnivariatePolynomial(ListWithIdenticalEntries(70,COMPLEX_1));
+## [ 0.995974-I*0.0896393, 0.995974+I*0.0896393, 0.963963+I*0.266037, 0.98393-I*0.178557,
+##   ...
+##   -0.550314+I*0.826223 ]
+## gap> List(last,AbsoluteValue);
+## [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.989218, 0.977391, 0.9982, 1,
+##   1.01007, 1, 1.0075, 1.00466, 1.00055, 1.00228, 0.999955, 1.00023, 0.999212, 0.999573, 1,
+##   0.999914, 1, 1, 1.00104, 1, 0.999998, 1.00224, 1, 1.01073, 1, 1, 1.00003, 1, 0.990849, 1,
+##   0.999983, 0.999955, 0.999985, 0.999749, 0.999999, 1.00043, 1.00002, 1, 0.999926, 1.00004,
+##   1.00001, 0.99722, 1.00597, 0.999355, 1, 0.997287, 1.00555, 1.00117, 1.00759, 0.992719 ]
+## ]]></Example>
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Var Name="MACFLOAT_PI"/>
+##   <Var Name="MACFLOAT_EPS"/>
+##   <Var Name="MACFLOAT_INF"/>
+##   <Var Name="MACFLOAT_NAN"/>
+##   <Description>
+##     Floating-point constants.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="DegreeOfRationalFunction" Arg="rat"/>
+##   <Returns>The degree of the univariate rational function <A>rat</A>.</Returns>
+## </ManSection>
+## <#/GAPDoc>
+##
+## <#GAPDoc Label="P1Points">
+## <ManSection>
+##   <Filt Name="IsP1Point"/>
+##   <Fam Name="P1PointsFamily"/>
+##   <Func Name="P1Point" Arg="complex"/>
+##   <Func Name="P1Point" Arg="real, imag" Label="ri"/>
+##   <Func Name="P1Point" Arg="string" Label="s"/>
+##   <Description>
+##     P1 points are complex numbers or infinity;
+##     fast methods are implemented to compute with them, and to apply
+##     rational maps to them.
+##     <P/>
+##     The first filter recognizes these objects. Next, the family they
+##     belong to. The next methods create a new P1 point.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="CleanedP1Point" Arg="p, prec"/>
+##   <Returns><A>p</A>, rounded towards 0/1/infinity/reals at precision <A>prec</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Var Name="P1infinity"/>
+##   <Description>The north pole of the Riemann sphere.</Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="P1Antipode" Arg="p"/>
+##   <Returns>The antipode of <A>p</A> on the Riemann sphere.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="P1Barycentre" Arg="points ..."/>
+##   <Returns>The barycentre of its arguments (which can also be a list of P1 points).</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="P1Circumcentre" Arg="p, q, r"/>
+##   <Returns>The centre of the smallest disk containing <A>p,q,r</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="P1Distance" Arg="p, q"/>
+##   <Returns>The spherical distance from <A>p</A> to <A>q</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="P1Midpoint" Arg="p, q"/>
+##   <Returns>The point between <A>p</A> to <A>q</A> (undefined if they are antipodes of each other).</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="P1Sphere" Arg="v"/>
+##   <Returns>The P1 point corresponding to <A>v</A> in <M>\mathbb R^3</M>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="SphereP1" Arg="p"/>
+##   <Returns>The coordinates in <M>\mathbb R^3</M> of <A>p</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="SphereP1Y" Arg="p"/>
+##   <Returns>The Y coordinate in <M>\mathbb R^3</M> of <A>p</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Func Name="P1XRatio" Arg="p q r s"/>
+##   <Returns>The cross ratio of <A>p, q, r, s</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Filt Name="IsP1Map"/>
+##   <Fam Name="P1MapsFamily"/>
+##   <Func Name="P1Map" Arg="p, q, r, P, Q, R"/>
+##   <Func Name="P1Map" Arg="p, q, r" Label="3"/>
+##   <Func Name="P1Map" Arg="p, q" Label="2"/>
+##   <Description>
+##     P1 maps are efficiently-coded rational maps with complex coefficients.
+##     <P/>
+##     The first filter recognizes these objects. Next, the family they
+##     belong to. The next methods create a new P1 map. In the first case,
+##     this is the Möbius transformation sending <A>p,q,r</A> to <A>P,Q,R</A>
+##     respectively; in the second case, the map sending <A>p,q,r</A> to
+##     <C>0,1,P1infinity</C> respectively; in the third case, the map sending
+##     <A>p,q</A> to <C>0,P1infinity</C> respectively, of the form <M>(z-p)/(z-q)</M>.
+##     <P/>
+##     P1 maps may not be added. They can be multiplied, and this operation
+##     corresponds to composition, in the topological order (<C>a*b</C> is
+##     first <C>b</C>, then <C>a</C>).
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Var Name="P1Identity"/>
+##   <Description>The identity Möbius transformation.</Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="CleanedP1Map" Arg="map, prec"/>
+##   <Returns><A>map</A>, with coefficients rounded using <A>prec</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="CoefficientsOfP1Map" Arg="map"/>
+##   <Returns>Coefficients of numerator and denominator of <A>map</A>, lowest degree first.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="P1MapByCoefficients" Arg="numer, denom"/>
+##   <Returns>The P1 map with numerator coefficients <A>numer</A> and denominator <A>denom</A>, lowest degree first.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="P1Path" Arg="p q"/>
+##   <Returns>The P1 map sending <C>0</C> to <A>p</A> and <C>1</C> to <A>q</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="DegreeOfP1Map" Arg="map"/>
+##   <Returns>The degree of <A>map</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="P1Image" Arg="map, p1point"/>
+##   <Returns>The image of <A>p1point</A> under <A>map</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="P1PreImages" Arg="map, p1point"/>
+##   <Returns>The preimages of <A>p1point</A> under <A>map</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="P1MapCriticalPoints" Arg="map"/>
+##   <Returns>The critical points of <A>map</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="P1MapRational" Arg="rat"/>
+##   <Returns>The P1 map given by the rational function <A>rat</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="RationalP1Map" Arg="map"/>
+##   <Oper Name="RationalP1Map" Arg="indeterminate, map" Label="im"/>
+##   <Returns>The rational function given by P1 map <A>map</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="P1MapSL2" Arg="mat"/>
+##   <Returns>The Möbius P1 map given by the 2x2 matrix <A>mat</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="SL2P1Map" Arg="map"/>
+##   <Returns>The matrix of the Möbius P1 map <A>map</A>.</Returns>
+## </ManSection>
+## <#/GAPDoc>
 DeclareCategory("IS_COMPLEX", IsScalar and IsCommutativeElement);
 DeclareCategoryCollections("IS_COMPLEX");
 DeclareCategoryCollections("IS_COMPLEXCollection");
@@ -514,44 +818,89 @@ BindGlobal("COMPLEX_FIELD",
 DeclareGlobalFunction("Complex");
 DeclareOperation("ComplexRootsOfUnivariatePolynomial",[IsList]);
 DeclareOperation("ComplexRootsOfUnivariatePolynomial",[IsPolynomial]);
-DeclareAttribute("Argument", IsScalar);
+DeclareAttribute("Argument", IS_COMPLEX);
 DeclareGlobalVariable("COMPLEX_0");
 DeclareGlobalVariable("COMPLEX_1");
 DeclareGlobalVariable("COMPLEX_I");
 DeclareGlobalVariable("COMPLEX_2IPI");
 DeclareGlobalFunction("EXP_COMPLEX");
-DeclareGlobalVariable("MACFLOAT_0");
-DeclareGlobalVariable("MACFLOAT_1");
 DeclareGlobalVariable("MACFLOAT_INF");
-DeclareGlobalVariable("MACFLOAT_MINF");
 DeclareGlobalVariable("MACFLOAT_NAN");
 DeclareGlobalVariable("MACFLOAT_PI");
-DeclareGlobalVariable("MACFLOAT_2PI");
 DeclareAttribute("RealPart", IS_COMPLEX);
 DeclareAttribute("ImaginaryPart", IS_COMPLEX);
 
 DeclareCategory("IsP1Point",IsObject);
-BindGlobal("P1Family", NewFamily("P1Family",IsP1Point));
-BindGlobal("TYPE_P1POINT", NewType(P1Family,IsP1Point));
+BindGlobal("P1PointsFamily", NewFamily("P1PointsFamily",IsP1Point));
+BindGlobal("TYPE_P1POINT", NewType(P1PointsFamily,IsP1Point and IsDataObjectRep));
+DeclareCategory("IsP1Map", IsMapping);
+BindGlobal("P1MapsFamily", NewFamily("P1MapsFamily", IsP1Map));
+SetFamilySource(P1MapsFamily,COMPLEX_FIELD);
+SetFamilyRange(P1MapsFamily,COMPLEX_FIELD);
+BindGlobal("TYPE_P1MAP", NewType(P1MapsFamily, IsP1Map and IsDataObjectRep));
+
 DeclareGlobalFunction("P1Point");
 DeclareGlobalVariable("P1infinity");
-DeclareOperation("Value",[IsRationalFunction,IsP1Point]);
 DeclareOperation("P1Map",[IsP1Point,IsP1Point]);
 DeclareOperation("P1Map",[IsP1Point,IsP1Point,IsP1Point]);
 DeclareOperation("P1Map",[IsP1Point,IsP1Point,IsP1Point,IsP1Point,IsP1Point,IsP1Point]);
-DeclareOperation("SphereP1",[IsP1Point]);
-DeclareOperation("P1Sphere",[IsList]);
-DeclareOperation("P1Distance",[IsP1Point,IsP1Point]);
-DeclareOperation("P1PreImages",[IsRationalFunction,IsP1Point]);
-DeclareOperation("SphereXProduct",[IsList,IsList]);
-DeclareOperation("XProduct",[IsList,IsList]);
-DeclareOperation("TripleProduct",[IsList,IsList,IsList]);
-DeclareOperation("SphereProject",[IsList]);
+DeclareOperation("P1Barycentre",[IsList]);
+DeclareOperation("P1Barycentre",[IsP1Point]);
+DeclareOperation("P1Barycentre",[IsP1Point,IsP1Point]);
+DeclareOperation("P1Barycentre",[IsP1Point,IsP1Point,IsP1Point]);
 DeclareAttribute("DegreeOfRationalFunction",IsRationalFunction);
 DeclareAttribute("Primitive",IsRationalFunction);
+DeclareGlobalFunction("P1MapRational");
+DeclareGlobalFunction("RationalP1Map");
+DeclareGlobalFunction("P1MapSL2");
+DeclareGlobalFunction("SL2P1Map");
+DeclareGlobalFunction("P1MapByCoefficients");
+DeclareGlobalFunction("CoefficientsOfP1Map");
 #############################################################################
 
 #############################################################################
+## <#GAPDoc Label="fpliealgebra">
+## <ManSection>
+##   <Filt Name="IsFpLieAlgebra"/>
+##   <Description>
+##     The category of Lie algebras coming from a finitely presented group.
+##     They appear as the <Ref Oper="JenningsLieAlgebra" BookName="ref"/>
+##     of a finitely presented group.
+##
+##     <P/> If <C>G</C> is an infinite, finitely presented group, then
+##     the original implementation of <Ref Oper="JenningsLieAlgebra"
+##     BookName="ref"/> does not return. On the other hand, the implementation
+##     in <Package>FR</Package> constructs a graded object, for which
+##     the graded components are computed on-demand; see
+##     <Ref Oper="JenningsLieAlgebra"/>.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="JenningsLieAlgebra" Arg="ring, fpgroup"/>
+##   <Returns>The Jennings Lie algebra of <A>fpgroup</A>.</Returns>
+##   <Description>
+##     This method does not compute the Jennings Lie algebra <E>per se</E>;
+##     it merely constructs a placeholder to contain the result.
+## <Example><![CDATA[
+## gap> f := FreeGroup(4);
+## <free group on the generators [ f1, f2, f3, f4 ]>
+## gap> surfacegp := f/[Comm(f.1,f.2)*Comm(f.3,f.4)];
+## <fp group of size infinity on the generators [ f1, f2, f3, f4 ]>
+## gap> j := JenningsLieAlgebra(Rationals,surfgp);
+## <FP Lie algebra over Rationals>
+## gap> List([1..4],Grading(j).hom_components);
+## [ <vector space over Rationals, with 4 generators>,
+##   <vector space over Rationals, with 5 generators>,
+##   <vector space over Rationals, with 16 generators>,
+##   <vector space over Rationals, with 45 generators> ]
+## gap> B := Basis(Grading(j).hom_components(1));
+## gap> B[1]*B[2]+B[3]*B[4];
+## <zero Lie element>
+## ]]></Example>
+##   </Description>
+## </ManSection>
+## <#/GAPDoc>
 DeclareRepresentation("IsLieFpElementRep",
         IsPositionalObjectRep and IsAttributeStoringRep,[]);
 DeclareCategory("IsFpLieAlgebra",IsLieAlgebra);

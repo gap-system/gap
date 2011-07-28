@@ -1,11 +1,11 @@
 #############################################################################
 ##
-##  KANTEXEC
+##  AL_EXECUTABLE
 ##
-##  Here 'KANTEXEC', the the name of the executable for KASH, is set. 
-##  Depending on the installation of KASH the entry may have to be changed.
-##  See '4.3 Adjust the path of the executable for KASH' for details.
-##  
-if not IsBound( KANTEXEC ) then
-    BindGlobal( "KANTEXEC", Filename( DirectoriesSystemPrograms( ), "kash" ) );
+##  Here 'AL_EXECUTABLE', the path to the executable of PARI/GP, is set.
+##  Depending on the installation of PARI/GP the entrymay have to be changed.
+##  See '4.3 Adjust the path of the executable for PARI/GP' for details.
+##
+if not IsBound(AL_EXECUTABLE) then
+    BindGlobal( "AL_EXECUTABLE", "/usr/bin/gp-2.3" );
 fi;

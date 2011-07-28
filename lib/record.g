@@ -3,7 +3,7 @@
 #W  record.g                    GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: record.g,v 4.27 2010/06/24 12:26:26 gap Exp $
+#H  @(#)$Id: record.g,v 4.29 2010/09/29 14:53:35 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -23,7 +23,7 @@
 ##  families, one can load the file `compat3c.g'.
 ##
 Revision.record_g :=
-    "@(#)$Id: record.g,v 4.27 2010/06/24 12:26:26 gap Exp $";
+    "@(#)$Id: record.g,v 4.29 2010/09/29 14:53:35 gap Exp $";
 
 
 #############################################################################
@@ -209,8 +209,28 @@ BIND_GLOBAL( "NamesOfComponents", function( obj )
 InstallMethod( PrintObj,
     "record",
     [ IsRecord ],
-    function( record ) PRINT_PREC_DEFAULT( record ); end );
-
+## Changed to use sorted component names to make printing nicer to read and
+## independent of session (i.e., the ordering in which component names were 
+## first used). Except for the sorting of components this does the same as 
+## the former (now removed) kernel function FuncPRINT_PREC_DEFAULT.
+    function( record )
+    local nam, com, i;
+    Print("\>\>rec(\n\>\>");
+    com := false;
+    i := 1;
+    for nam in Set(RecNames( record )) do
+        if com then
+            Print("\<\<,\n\>\>");
+        else
+            com := true;
+        fi;
+        SET_PRINT_OBJ_INDEX(i);
+        i := i+1;
+        Print(nam, "\< := \>");
+        PrintObj(record.(nam));
+    od;
+    Print(" \<\<\<\<)");
+end);
 
 #############################################################################
 ##
@@ -224,7 +244,7 @@ InstallMethod( String,
 
     str := "rec( ";
     com := false;
-    for nam in RecNames( record ) do
+    for nam in Set(RecNames( record )) do
       if com then
         Append( str, ", " );
       else
@@ -243,6 +263,7 @@ InstallMethod( String,
       fi;
     od;
     Append( str, " )" );
+    # should not be necessary if all methods for components are alright
     ConvertToStringRep( str );
     return str;
 end );
@@ -260,7 +281,7 @@ InstallMethod( ViewObj,
     Print("\>\>rec( \>\>");
     com := false;
     i := 1;
-    for nam in RecNames( record ) do
+    for nam in Set(RecNames( record )) do
         if com then
             Print("\<,\< \>\>");
         else

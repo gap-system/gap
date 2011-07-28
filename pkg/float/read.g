@@ -2,7 +2,7 @@
 ##
 #W read.g                                                   Laurent Bartholdi
 ##
-#H   @(#)$Id: read.g,v 1.2 2008/06/14 15:45:40 gap Exp $
+#H   @(#)$Id: read.g,v 1.6 2011/04/14 21:45:21 gap Exp $
 ##
 #Y Copyright (C) 2008, Laurent Bartholdi
 ##
@@ -31,25 +31,8 @@ if IsBound(CXSC_INT) then
 fi;
 #############################################################################
 
-Float := 0; NewFloat := 0; # shut up warnings
-InstallMethod(SelectFloat, "record", [IsRecord],
-        function(r)
-    if IsBound(Float) then
-        Info(InfoFloat, 1, "Modifying global variable `Float'");
-        MakeReadWriteGlobal("Float");
-        Unbind(Float);
-        MakeReadWriteGlobal("NewFloat");
-        Unbind(NewFloat);
-    fi;
-    DeclareSynonym("Float", r);
-    DeclareSynonym("NewFloat", r.New);
-end);
-Unbind(Float); Unbind(NewFloat);
-
 if IsBound(MPFR_INT) then
-    SelectFloat(MPFR);
-elif IsBound(CXSC_INT) then
-    SelectFloat(CXSC);
+    InstallFloatsHandler(MPFR);
 fi;
     
 #E read.g . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

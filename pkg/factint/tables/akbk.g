@@ -2,12 +2,9 @@
 ##
 #W  akbk.g                 GAP4 Package `FactInt'                 Stefan Kohl
 ##
-#H  @(#)$Id: akbk.g,v 1.1 2005/02/03 10:17:12 stefan Exp $
-##
 ##  This file contains lists of residues a^k +/- b^k mod 2520.
 ##
-Revision.akbk_g :=
-  "@(#)$Id: akbk.g,v 1.1 2005/02/03 10:17:12 stefan Exp $";
+#############################################################################
 
 MakeReadWriteGlobal("AK_PM_BK_MOD_2520");
 AK_PM_BK_MOD_2520 := 

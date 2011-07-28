@@ -2,7 +2,7 @@
 **
 *W  gapmpi.c            GAP source - ParGAP/MPI hooks          Gene Cooperman
 **
-*H  @(#)$Id: gapmpi.c,v 1.7 2001/07/12 15:03:13 gap Exp $
+*H  @(#)$Id: gapmpi.c,v 1.8 2010/01/18 17:30:21 alexk Exp $
 **
 *Y  Copyright (C) 1999-2001  Gene Cooperman
 *Y    See included file, COPYING, for conditions for copying
@@ -19,7 +19,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_gapmpi_c =
-"@(#)$Id: gapmpi.c,v 1.7 2001/07/12 15:03:13 gap Exp $";
+"@(#)$Id: gapmpi.c,v 1.8 2010/01/18 17:30:21 alexk Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -578,7 +578,7 @@ Obj MPIiprobe( Obj self, Obj args )
  */
 
 /* called _before_ GAP system initialization to remove command lines, etc. */
-void InitPargapmpi( int * argc_ptr, char *** argv_ptr, UInt *BreakOnError_ptr )
+void InitPargapmpi( int * argc_ptr, char *** argv_ptr )
 { char * cmd = (*argv_ptr)[0], * tmp;
 
   /* Unless this binary is called as .../pargapmpi, we return immediately;
@@ -597,8 +597,6 @@ void InitPargapmpi( int * argc_ptr, char *** argv_ptr, UInt *BreakOnError_ptr )
   { if ( INT_INTOBJ( MPIcomm_size( (Obj)0 ) ) <= 1 )
       printf("\nWARNING:  No slave processes; check procgroup file?\n\n");
     if ( INT_INTOBJ(MPIcomm_rank((Obj)0)) > 0 ) {
-      *BreakOnError_ptr = 0; /* Errors should return to GAP top level */
-      SyBanner = ! SyBanner;
       SyQuiet = ! SyQuiet;
       { sigset_t fullset;
 	sigfillset( &fullset );
@@ -612,8 +610,8 @@ void InitPargapmpi( int * argc_ptr, char *** argv_ptr, UInt *BreakOnError_ptr )
   }
 }
 /* For backward compatibility */
-void InitGapmpi( int * argc_ptr, char *** argv_ptr, UInt *BreakOnError_ptr ) {
-  InitPargapmpi( argc_ptr, argv_ptr, BreakOnError_ptr );
+void InitGapmpi( int * argc_ptr, char *** argv_ptr ) {
+  InitPargapmpi( argc_ptr, argv_ptr );
 }
 
 /* called after MPI_Init() and after GAP system initialization */

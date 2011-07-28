@@ -4,7 +4,7 @@
 #W							         Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: dict.gd,v 4.23 2010/05/20 07:11:00 gap Exp $
+#H  @(#)$Id: dict.gd,v 4.24 2011/04/04 08:38:40 gap Exp $
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -36,7 +36,7 @@
 ##	Variables MaxViewSize, LastHashIndex.
 ##
 Revision.dict_gd :=
-    "@(#)$Id: dict.gd,v 4.23 2010/05/20 07:11:00 gap Exp $";
+    "@(#)$Id: dict.gd,v 4.24 2011/04/04 08:38:40 gap Exp $";
 
 #############################################################################
 ##
@@ -235,9 +235,9 @@ DeclareOperation("KnowsDictionary",[IsDictionary,IsObject]);
 ##  <Description>
 ##  adds <A>key</A> to the dictionary <A>dict</A>, storing the associated
 ##  value <A>val</A> in case <A>dict</A> is a lookup dictionary. 
-##  If <A>key</A> is known already, or is not an object of the kind for
-##  which the dictionary was specified ??? . otherwise the results are
-##  unpredictable.
+##  If <A>key</A> is not an object of the kind for
+##  which the dictionary was specified, or if <A>key</A> is known already to
+##  <A>dict</A>, the results are unpredictable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

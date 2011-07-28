@@ -10,7 +10,7 @@
 ##  for polynomial rings and function fields.
 ##
 Revision.ringpoly_gi :=
-    "@(#)$Id: ringpoly.gi,v 4.57 2010/02/23 15:13:27 gap Exp $";
+    "@(#)$Id: ringpoly.gi,v 4.61 2011/05/16 22:22:06 alexk Exp $";
 
 
 #############################################################################
@@ -23,10 +23,8 @@ local opt, idn, nbound, p, i,str;
     opt:=1;
   elif ValueOption("new")=true then
     opt:=2;
-  else
-    if INDETERMINATENAMEREUSE<>0 then
-      opt:=INDETERMINATENAMEREUSE;
-    fi;
+  elif GAPInfo.UserPreferences.IndeterminateNameReuse <> 0 then
+    opt:= GAPInfo.UserPreferences.IndeterminateNameReuse;
   fi;
 
   avoid:=List(avoid,IndeterminateNumberOfLaurentPolynomial);
@@ -54,9 +52,9 @@ local opt, idn, nbound, p, i,str;
 	if opt<>1 then
 	  Error(
   "Indeterminate ``",str,"'' is already used.\n",
-  "Use the `old' option; e.g. X(Rationals,\"",str,"\":old);\n",
+  "Use the `old' option; e.g. Indeterminate(Rationals,\"",str,"\":old);\n",
   "  to re-use the variable already defined with this name and the\n",
-  "`new' option; e.g. X(Rationals,\"",str,"\":new);\n",
+  "`new' option; e.g. Indeterminate(Rationals,\"",str,"\":new);\n",
   "  to create a new variable with the duplicate name.\n");
 	else
 	  if p in avoid then
@@ -499,6 +497,28 @@ function( p, R )
 
 end );
 
+#############################################################################
+##
+#M  IsSubset(<polring>,<collection>)
+##
+InstallMethod(IsSubset,
+    "polynomial rings",
+    IsIdenticalObj,
+    [ IsPolynomialRing,IsCollection ],
+    100, # rank higher than FLMOR method
+function(R,C)
+  if IsPolynomialRing(C) then
+    if not IsSubset(LeftActingDomain(R),LeftActingDomain(C)) then
+      return false;
+    fi;
+    return IsSubset(R,IndeterminatesOfPolynomialRing(C));
+  fi;
+  if not IsPlistRep(C) or (HasIsFinite(C) and IsFinite(C)) then
+    TryNextMethod();
+  fi;
+  return ForAll(C,x->x in R);
+end);
+
 
 #############################################################################
 ##
@@ -786,6 +806,62 @@ function(f,R)
   return true;
 
 end);
+
+# homomorphisms -- cf alghom.gi
+
+BindGlobal("PolringHomPolgensSetup",function(map)
+local gi,p;
+  if not IsBound(map!.polgens) then
+    gi:=MappingGeneratorsImages(map);
+    p:=Filtered([1..Length(gi[1])],x->gi[1][x] in
+	IndeterminatesOfPolynomialRing(Source(map)));
+    map!.polgens:=[gi[1]{p},gi[2]{p}];
+  fi;
+end);
+
+#############################################################################
+##
+#M  ImagesRepresentative( <map>, <elm> )  . . . . . . .  for polring g.m.b.i.
+##
+InstallMethod( ImagesRepresentative,
+    "for polring g.m.b.i., and element",
+    FamSourceEqFamElm,
+    [ IsGeneralMapping and IsPolynomialRingDefaultGeneratorMapping,
+      IsObject ],
+    function( map, elm )
+    local gi;
+      PolringHomPolgensSetup(map);
+      gi:=map!.polgens;
+      return Value(elm,gi[1],gi[2],One(Range(map)));
+    end );
+
+#############################################################################
+##
+#M  ImagesSet( <map>, <r> )  . . . . . . .  for polring g.m.b.i.
+##
+InstallMethod( ImagesSet,
+    "for polring g.m.b.i., and ring",
+    CollFamSourceEqFamElms,
+    [ IsGeneralMapping and IsPolynomialRingDefaultGeneratorMapping,
+      IsRing ],
+    function( map, sub )
+      if HasGeneratorsOfTwoSidedIdeal(sub) 
+	and (HasLeftActingRingOfIdeal(sub) and
+	    IsSubset(LeftActingRingOfIdeal(sub),Source(map)) )
+	and (HasRightActingRingOfIdeal(sub) and
+	    IsSubset(RightActingRingOfIdeal(sub),Source(map)) ) then
+	return Ideal(Image(map),
+			 List(GeneratorsOfTwoSidedIdeal(sub),
+			      x->ImagesRepresentative(map,x)));
+
+      elif HasGeneratorsOfRing(sub) then
+	return SubringNC(Range(map),
+			 List(GeneratorsOfRing(sub),
+			      x->ImagesRepresentative(map,x)));
+      fi;
+
+      TryNextMethod();
+    end );
 
 #############################################################################
 ##

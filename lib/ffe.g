@@ -3,7 +3,7 @@
 #W  ffe.g                        GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: ffe.g,v 4.17 2010/02/23 15:12:58 gap Exp $
+#H  @(#)$Id: ffe.g,v 4.18 2010/10/19 19:22:43 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file deals with internal finite field elements.
 ##
 Revision.ffe_g :=
-    "@(#)$Id: ffe.g,v 4.17 2010/02/23 15:12:58 gap Exp $";
+    "@(#)$Id: ffe.g,v 4.18 2010/10/19 19:22:43 sal Exp $";
 
 
 #############################################################################
@@ -60,7 +60,7 @@ BIND_GLOBAL( "TYPE_FFE", function ( p )
     IS_FFE,CanEasilySortElements,CanEasilySortElements );
     SetIsUFDFamily( fam, true );
     SetCharacteristic( fam, p );
-    type:= NewType( fam, IS_FFE and IsInternalRep );
+    type:= NewType( fam, IS_FFE and IsInternalRep and HasDegreeFFE);
     TYPES_FFE[p]:= type;
 #T     SetElmWPObj( TYPES_FFE, p, type );
     return type;
@@ -85,7 +85,8 @@ BIND_GLOBAL( "TYPE_FFE0", function ( p )
 #T       fi;
 #T     fi;
     fam:= FamilyType(TYPE_FFE(p));
-    type:= NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero );
+    type:= NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero 
+                   and HasDegreeFFE );
     TYPES_FFE0[p]:= type;
 #T     SetElmWPObj( TYPES_FFE, p, type );
     return type;

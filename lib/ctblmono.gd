@@ -3,7 +3,7 @@
 #W  ctblmono.gd                 GAP library                     Thomas Breuer
 #W                                                         & Erzsébet Horváth
 ##
-#H  @(#)$Id: ctblmono.gd,v 4.25 2010/02/23 15:12:53 gap Exp $
+#H  @(#)$Id: ctblmono.gd,v 4.26 2010/09/29 14:38:05 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -91,7 +91,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.ctblmono_gd :=
-    "@(#)$Id: ctblmono.gd,v 4.25 2010/02/23 15:12:53 gap Exp $";
+    "@(#)$Id: ctblmono.gd,v 4.26 2010/09/29 14:38:05 alexk Exp $";
 
 
 #############################################################################
@@ -270,18 +270,18 @@ DeclareProperty( "IsBergerCondition", IsClassFunction );
 ##  gap> chi:= Irr( Sl23 )[7];
 ##  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
 ##  gap> TestHomogeneous( chi, n );
-##  rec( isHomogeneous := false, comment := "restriction checked", 
-##    character := Character( CharacterTable( Group(
+##  rec( character := Character( CharacterTable( Group(
 ##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
 ##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
 ##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ), 
-##    multiplicity := 1 )
+##    comment := "restriction checked", isHomogeneous := false, multiplicity := 1 
+##   )
 ##  gap> chi:= Irr( Sl23 )[4];
 ##  Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
 ##  gap> cln:= ClassPositionsOfNormalSubgroup( CharacterTable( Sl23 ), n );
 ##  [ 1, 4, 7 ]
 ##  gap> TestHomogeneous( chi, cln );
-##  rec( isHomogeneous := true, comment := "restricts irreducibly" )
+##  rec( comment := "restricts irreducibly", isHomogeneous := true )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -353,12 +353,11 @@ DeclareProperty( "IsPrimitiveCharacter", IsClassFunction );
 ##  gap> chi:= Irr( Sl23 )[7];
 ##  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
 ##  gap> TestQuasiPrimitive( chi );
-##  rec( comment := "restriction checked",
-##    character := Character( CharacterTable( Group(
-##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ],
-##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ],
-##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ),
-##    isQuasiPrimitive := false )
+##  rec( character := Character( CharacterTable( Group(
+##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
+##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
+##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ), 
+##    comment := "restriction checked", isQuasiPrimitive := false )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -405,11 +404,11 @@ DeclareProperty( "IsQuasiPrimitive", IsClassFunction );
 ##  [ false, false, false, false, false, false, true ]
 ##  gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
 ##  >          TestInducedFromNormalSubgroup );
-##  [ rec( comment := "linear character", isInduced := false ),
-##    rec( comment := "induced from component '.character'",
-##        character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
-##          [ 1, 1, E(3)^2, E(3) ] ), isInduced := true ),
-##    rec( comment := "all maximal normal subgroups checked", isInduced := false
+##  [ rec( comment := "linear character", isInduced := false ), 
+##    rec( character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), 
+##          [ 1, 1, E(3)^2, E(3) ] ), 
+##        comment := "induced from component '.character'", isInduced := true ), 
+##    rec( comment := "all maximal normal subgroups checked", isInduced := false 
 ##       ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -723,9 +722,8 @@ TestMonomialUseLattice := 1000;
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> TestSubnormallyMonomial( S4 );
-##  rec( comment := "found non-SM character",
-##    character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ),
-##    isSubnormallyMonomial := false )
+##  rec( character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
+##    comment := "found non-SM character", isSubnormallyMonomial := false )
 ##  gap> TestSubnormallyMonomial( Irr( S4 )[4] );
 ##  rec( comment := "all subnormal subgroups checked",
 ##    isSubnormallyMonomial := false )

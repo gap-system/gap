@@ -4,7 +4,7 @@
 #W                                                         Hans Ulrich Besche
 ##
 Revision.("grpconst/gap/cycl_gi") :=
-    "@(#)$Id: cycl.gi,v 1.10 1999/07/21 15:42:33 gap Exp $";
+    "@(#)$Id: cycl.gi,v 1.11 2011/01/31 12:18:13 gap Exp $";
 
 #############################################################################
 ##
@@ -55,9 +55,7 @@ QClasses := function( A, G, q )
     fi;
     
     # otherwise compute
-    cl := RationalClassesPElements( P, q );
-    cl := List( cl, Representative );
-    cl := Filtered( cl, x -> Order(x) = q );
+    cl := MyRatClassesPElmsReps( P, q );
     cl := List( cl, x -> AutoByPermutation(G, elms, x));
     return cl;
 end;

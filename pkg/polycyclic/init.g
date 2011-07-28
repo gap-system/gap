@@ -2,6 +2,7 @@
 ##
 #W    init.g            GAP 4 package 'polycyclic'               Bettina Eick
 #W                                                              Werner Nickel
+#W                                                                   Max Horn
 ##
 
 
@@ -11,13 +12,6 @@
 ## easer to change it to something else if necessary.
 ##
 PolycyclicPkgName := "polycyclic";
-
-#############################################################################
-##
-#D Declare the package
-##
-DeclarePackage( PolycyclicPkgName, "1.0", function() return true; end );
-DeclarePackageDocumentation( PolycyclicPkgName, "doc" );
 
 #############################################################################
 ##
@@ -39,8 +33,13 @@ ReadPkg( PolycyclicPkgName, "gap/exam/exam.gd");
 
 #############################################################################
 ##
-#D require other packages
+#R  Compatibility mode
 ##
-RequirePackage("alnuth");
-RequirePackage("autpgrp");
-
+##    With 4.5, calcreps2 has been renamed to Calcreps2. Since we use it,
+##    we have to declare it here.
+##
+if not CompareVersionNumbers( GAPInfo.Version, "4.5.0") then
+    if not IsBound( Calcreps2 ) then
+        DeclareSynonym( "Calcreps2", calcreps2 );
+    fi;
+fi;

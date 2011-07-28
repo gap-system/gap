@@ -4,7 +4,7 @@
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
-*H  @(#)$Id: integer.h,v 4.14 2010/02/23 15:13:43 gap Exp $
+*H  @(#)$Id: integer.h,v 4.15 2011/05/10 16:04:51 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,7 +19,7 @@
 
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_integer_h =
-   "@(#)$Id: integer.h,v 4.14 2010/02/23 15:13:43 gap Exp $";
+   "@(#)$Id: integer.h,v 4.15 2011/05/10 16:04:51 sal Exp $";
 #endif
 
 
@@ -221,6 +221,8 @@ extern  Obj             GcdInt (
             Obj                 opL,
             Obj                 opR );
 
+
+extern Obj FuncLog2Int( Obj self, Obj intnum);
 
 /****************************************************************************
 **

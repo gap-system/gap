@@ -3,7 +3,7 @@
 #W  ctbl.gi                     GAP library                     Thomas Breuer
 #W                                                           & Götz Pfeiffer
 ##
-#H  @(#)$Id: ctbl.gi,v 4.120 2010/05/19 16:22:10 gap Exp $
+#H  @(#)$Id: ctbl.gi,v 4.122 2011/03/30 08:36:49 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -28,7 +28,7 @@
 ##  13. Auxiliary Stuff
 ##
 Revision.ctbl_gi :=
-    "@(#)$Id: ctbl.gi,v 4.120 2010/05/19 16:22:10 gap Exp $";
+    "@(#)$Id: ctbl.gi,v 4.122 2011/03/30 08:36:49 gap Exp $";
 
 
 #############################################################################
@@ -4045,24 +4045,6 @@ InstallMethod( CharacterTable,
 
 #############################################################################
 ##
-#F  CharacterTableFromLibrary( <name>, <param1>, ... )
-##
-##  The `CharacterTable' methods for a string and optional parameters call
-##  `CharacterTableFromLibrary'.
-##  We bind this to a dummy function that signals an error.
-##
-##  (If the package CTblLib is already loaded, for example because the
-##  current file is reread, we do not replace the working function.)
-##
-if not IsBound( CharacterTableFromLibrary ) then
-  BindGlobal( "CharacterTableFromLibrary", function( arg )
-      Error( "sorry, the GAP Character Table Library is not installed" );
-      end );
-fi;
-
-
-#############################################################################
-##
 #M  CharacterTable( <name> )  . . . . . . . . . library table with given name
 #M  CharacterTable( <series>, <param> )
 #M  CharacterTable( <series>, <param1>, <param2> )
@@ -4696,7 +4678,9 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
           chars:= record.chars;
           cnr:= [ 1 .. Length( chars ) ];
           chars_from_irr:= false;
-          cletter:= "Y";
+          if not IsBound( cletter ) then
+            cletter:= "Y";
+          fi;
         else
           cnr:= [];
           chars:= [];
@@ -4711,8 +4695,10 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
       cnr:= [ 1 .. Length( chars ) ];
       if HasCharacterNames( tbl ) then
         charnames:= CharacterNames( tbl );
-      else
       fi;
+    fi;
+    if not IsBound( cletter ) then
+      cletter:= "X";
     fi;
     if not IsBound( charnames ) then
       charnames:= List( cnr,
@@ -5011,7 +4997,6 @@ fi;
 ##
 InstallValue( CharacterTableDisplayDefaults, rec(
       Global:= rec(
-        letter          := "X",
         centralizers    := true,
 
         Display         := CharacterTableDisplayDefault,
@@ -5756,7 +5741,7 @@ BindGlobal( "IrreducibleCharactersOfIsoclinicGroup",
 ##  Let <ordtbl> be the ordinary character table of $G$.
 ##  We have to construct the ordinary character table of $H$.
 ##  Currently the only supported cases for $|Z|$ are $4$ and $8$.
-##  
+##
 ##  We set up a character table of the same format as <ordtbl>.
 ##  The classes inside the normal subgroup given by <nsg> correspond to
 ##  $U = G \cap H$.

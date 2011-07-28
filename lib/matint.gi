@@ -6,7 +6,7 @@
 #W                                                                    D. Holt
 #W                                                                  A. Hulpke
 ##
-#H  $Id: matint.gi,v 4.35 2010/02/23 15:13:13 gap Exp $
+#H  $Id: matint.gi,v 4.36 2011/04/11 22:43:41 gap Exp $
 ##
 #Y  Copyright (C) 2003 The GAP Group
 ##
@@ -15,7 +15,7 @@
 ##  combination of the input.
 ##
 Revision.matint_gi :=
-    "$Id: matint.gi,v 4.35 2010/02/23 15:13:13 gap Exp $";
+    "$Id: matint.gi,v 4.36 2011/04/11 22:43:41 gap Exp $";
 
 ########################################################
 ##
@@ -729,6 +729,16 @@ InstallMethod( DiagonalizeMat, "over the integers",
   [ IsIntegers, IsMatrix and IsMutable ],
 function(I,mat)
   DiagonalizeIntMat(mat);
+end );
+
+#############################################################################
+##
+#M  ElementaryDivisorsTransformationsMat(<integers>,<mat>)
+##
+InstallMethod( ElementaryDivisorsTransformationsMat, "over the integers",
+  [ IsIntegers, IsMatrix and IsMutable ],
+function(I,mat)
+  return SmithNormalFormIntegerMatTransforms(mat);
 end );
 
 #############################################################################

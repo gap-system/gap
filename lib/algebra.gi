@@ -3,7 +3,7 @@
 #W  algebra.gi                  GAP library                     Thomas Breuer
 #W                                                        and Willem de Graaf
 ##
-#H  @(#)$Id: algebra.gi,v 4.83 2010/02/23 15:12:45 gap Exp $
+#H  @(#)$Id: algebra.gi,v 4.84 2010/12/22 21:00:46 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains generic methods for algebras and algebras-with-one.
 ##
 Revision.algebra_gi :=
-    "@(#)$Id: algebra.gi,v 4.83 2010/02/23 15:12:45 gap Exp $";
+    "@(#)$Id: algebra.gi,v 4.84 2010/12/22 21:00:46 gap Exp $";
 
 
 #############################################################################
@@ -1835,6 +1835,12 @@ InstallMethod( IsSubset,
     if not ( HasIsDivisionRing( F1 ) and IsDivisionRing( F1 ) and 
              HasIsDivisionRing( F2 ) and IsDivisionRing( F2 ) ) then
       TryNextMethod();
+    fi;
+
+    # catch trivial case
+    if IsSubset(GeneratorsOfLeftOperatorRing(D1),
+                  GeneratorsOfLeftOperatorRing(D2)) then
+	return true;
     fi;
     return IsSubset( D1, GeneratorsOverIntersection( D2,
                              GeneratorsOfLeftOperatorRing( D2 ),

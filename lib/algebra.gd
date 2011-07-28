@@ -2,7 +2,7 @@
 ##
 #W  algebra.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: algebra.gd,v 4.91 2010/02/23 15:12:44 gap Exp $
+#H  @(#)$Id: algebra.gd,v 4.97 2011/01/23 12:48:50 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file declares the operations for `FLMLOR's and algebras.
 ##
 Revision.algebra_gd :=
-    "@(#)$Id: algebra.gd,v 4.91 2010/02/23 15:12:44 gap Exp $";
+    "@(#)$Id: algebra.gd,v 4.97 2011/01/23 12:48:50 alexk Exp $";
 
 
 #############################################################################
@@ -1638,16 +1638,14 @@ DeclareGlobalFunction( "AlgebraByStructureConstants" );
 ##  <#GAPDoc Label="LieAlgebraByStructureConstants">
 ##  <ManSection>
 ##  <Func Name="LieAlgebraByStructureConstants"
-##   Arg='R, sctable[, nameinfo]'/>
-##  <Func Name="RestrictedLieAlgebraByStructureConstants"
-##   Arg='R, sctable[, nameinfo], pmapping'/>
+##   Arg='R, sct[, nameinfo]'/>
 ##
 ##  <Description>
 ##  <Ref Func="LieAlgebraByStructureConstants"/> does the same as
-##  <Ref Func="AlgebraByStructureConstants"/>,
-##  except that the result is assumed to be a Lie algebra.
+##  <Ref Func="AlgebraByStructureConstants"/>, and has the same meaning
+##  of arguments, except that the result is assumed to be a Lie algebra.
 ##  Note that the function does not check whether
-##  <A>sctable</A> satisfies the Jacobi identity.
+##  <A>sct</A> satisfies the Jacobi identity.
 ##  (So if one creates a Lie algebra this way with a table that does not
 ##  satisfy the Jacobi identity, errors may occur later on.)
 ##  <Example><![CDATA[
@@ -1661,6 +1659,49 @@ DeclareGlobalFunction( "AlgebraByStructureConstants" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "LieAlgebraByStructureConstants" );
+
+#############################################################################
+##
+#F  RestrictedLieAlgebraByStructureConstants( <R>, <sct>[, <nameinfo>], pmapping )
+##
+##  <#GAPDoc Label="RestrictedLieAlgebraByStructureConstants">
+##  <ManSection>
+##  <Func Name="RestrictedLieAlgebraByStructureConstants"
+##   Arg='R, sct[, nameinfo], pmapping'/>
+##
+##  <Description>
+##  <Ref Func="RestrictedLieAlgebraByStructureConstants"/> does the same as
+##  <Ref Func="LieAlgebraByStructureConstants"/>, and has the same meaning of
+##  all arguments, except that the result is assumed to be a restricted Lie 
+##  algebra (see <Ref Label="Restricted Lie algebras"/>) with the <M>p</M>-map 
+##  given by the additional argument <A>pmapping</A>. This last argument is a
+##  list of the length equal to the dimension of the algebra; its <M>i</M>-th 
+##  entry specifies the <M>p</M>-th power of the <M>i</M>-th basis vector
+##  in the same format <C>[ coeff1, position1, coeff2, position2, ... ]</C> as 
+##  <Ref Func="SetEntrySCTable"/> uses to specify entries of the structure 
+##  constants table.
+##  <P/>
+##  Note that the function does not check whether
+##  <A>sct</A> satisfies the Jacobi identity, of whether <A>pmapping</A>
+##  specifies a legitimate <M>p</M>-mapping.
+##  <P/>
+##  The following example creates a commutative restricted Lie algebra of dimension
+##  3, in which the <M>p</M>-th power of the <M>i</M>-th basis element is 
+##  the <M>i+1</M>-th basis element (except for the 3rd basis element which
+##  goes to zero).
+##  <Example><![CDATA[
+##  gap> T:= EmptySCTable( 3, Zero(GF(5)), "antisymmetric" );;
+##  gap> L:= RestrictedLieAlgebraByStructureConstants( GF(5), T, [[1,2],[1,3],[]] );
+##  <Lie algebra of dimension 3 over GF(5)>
+##  gap> List(Basis(L),PthPowerImage);
+##  [ v.2, v.3, 0*v.1 ]
+##  gap> PthPowerImage(L.1+L.2);
+##  v.2+v.3
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareGlobalFunction( "RestrictedLieAlgebraByStructureConstants" );
 
 
@@ -2108,8 +2149,8 @@ DeclareSynonym( "IsLieNilpotentElement", IsNilpotentElement);
 ##  gap> L:= JenningsLieAlgebra( G );
 ##  <Lie algebra of dimension 6 over GF(3)>
 ##  gap> g:= Grading( L );
-##  rec( min_degree := 1, max_degree := 9, source := Integers, 
-##    hom_components := function( d ) ... end )
+##  rec( hom_components := function( d ) ... end, max_degree := 9, 
+##    min_degree := 1, source := Integers )
 ##  gap> g.hom_components( 3 );
 ##  <vector space over GF(3), with 1 generators>
 ##  gap> g.hom_components( 14 );

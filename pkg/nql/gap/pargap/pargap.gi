@@ -2,10 +2,10 @@
 ##
 #W pargap.gi			NQL				René Hartung
 ##
-#H   @(#)$Id: pargap.gi,v 1.4 2009/07/02 12:37:14 gap Exp $
+#H   @(#)$Id: pargap.gi,v 1.5 2010/03/17 12:47:34 gap Exp $
 ##
 Revision.("nql/gap/pargap/pargap_gi"):=
-  "@(#)$Id: pargap.gi,v 1.4 2009/07/02 12:37:14 gap Exp $";
+  "@(#)$Id: pargap.gi,v 1.5 2010/03/17 12:47:34 gap Exp $";
 
 ############################################################################
 ##
@@ -36,6 +36,11 @@ InstallMethod( ExtendQuotientSystem,
 	IRels,FRels,	# the mapped iterated and fixed relations
 	tmpParTrace,	# the old value of <ParTrace>
 	time;
+
+  # do not try to call this Master-function on the slaves
+  if not IsMaster() then  
+    TryNextMethod();
+  fi;
 
   # enable/disable tracing in ParGap w.r.t. InfoNQL
   tmpParTrace := ParTrace;

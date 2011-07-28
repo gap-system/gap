@@ -13,45 +13,48 @@
 #
 ############################################################################
 Revision.matobj2_gd :=
-    "@(#)$Id: matobj2.gd,v 4.3 2010/02/23 15:13:13 gap Exp $";
+    "@(#)$Id: matobj2.gd,v 4.4 2011/02/16 13:13:56 gap Exp $";
 
 
 ############################################################################
 #
 # Overview:
 #
+# <#GAPDoc Label="MatObj_Overview">
 # The whole idea of this interface is that (row-) vectors and matrices must
 # be proper objects with a stored type (i.e. created by Objectify allowing
-# inheritance) to benefit from method selection. This is not true for
-# lists of lists which have traditionally been matrices in GAP and whose
-# type is computed rather expensively on the fly every time the method
-# selection considers them. In addition it should be possible to write
+# inheritance) to benefit from method selection. We therefore refer
+# to the new style vectors and matrices as <Q>vector objects</Q> and
+# <Q>matrix objects</Q> respectively. 
+# <P/>It should be possible to write
 # (efficient) code that is independent of the actual representation (in
-# the sense of GAP's representation filters) and preserves it.
-#
+# the sense of &GAP;'s representation filters) and preserves it.
+# <P/>
 # This latter requirement makes it necessary to distinguish between
 # (at least) two classes of matrices:
-#   (1) "RowList"-Matrices which behave basically like lists of rows,
-#       in particular are the rows individual GAP objects that can
-#       be shared between different matrix objects.
-#   (2) "Flat" matrices which behave basically like one GAP object
+# <List>
+# <Item><Q>RowList</Q>-Matrices which behave basically like lists of rows,
+#       in particular are the rows individual &GAP; objects that can
+#       be shared between different matrix objects.</Item>
+# <Item><Q>Flat</Q> matrices which behave basically like one &GAP; object
 #       that cannot be split up further. In particular a row is only
-#       a part of a matrix and no GAP object in itself.
+#       a part of a matrix and no GAP object in itself.</Item>
+# </List>
 # For various reasons these two classes have to be distinguished
 # already with respect to the definition of the operations for them.
-#
+# <P/>
 # In particular vectors and matrices know their BaseDomain and their
 # dimensions. Note that the basic condition is that the elements of
 # vectors and matrices must either lie in the BaseDomain or naturally
 # embed in the sense that + and * and = automatically work with all elements
 # of the base domain (example: integers in polynomials over integers).
-#
+# <P/>
 # Vectors are equal with respect to "=" if they have the same length
 # and the same entries. It is not necessary that they have the same
 # BaseDomain. Matrices are equal with respect to "=" if they have the
 # same dimensions and the same entries. It is possible that not for all
 # pairs of representations methods exist.
-#
+# <P/>
 # It is not guaranteed that all rows of a matrix have the same vector type!
 # It is for example thinkable that a matrix stores some of its rows in a
 # sparse representation and some in a dense one!
@@ -60,23 +63,26 @@ Revision.matobj2_gd :=
 # defined in this interface can be applied to them and that new matrices
 # in the same representation as the original matrix can be formed out of
 # them.
+# <P/>
 # Note that there is neither a default mapping from the set of matrix 
 # representations to the set of vector representations nor one in the 
 # reverse direction! There is nothing like an "associated" vector
 # representation to a matrix representation or vice versa.
-#
+# <P/>
 # The way to write code that preserves the representation basically
 # works by using constructing operations that take template objects
 # to decide about the actual representation of the new object.
-#
+# <P/>
 # Vectors do not have to be lists in the sense that they do not have
 # to support all list operations. The same holds for matrices. However,
 # RowList matrices behave nearly like lists of row vectors that insist
 # on being dense and containing only vectors of the same length and
 # with the same BaseDomain.
-#
+# <P/>
 # There are some rules embedded in the comments to the following code.
-# They are marked with the word "Rule".
+# They are marked with the word "Rule". FIXME: Collect all rules here.
+# <P/>
+# <#/GAPDoc>
 #
 ############################################################################
 

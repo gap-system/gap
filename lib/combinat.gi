@@ -2,7 +2,7 @@
 ##
 #W  combinat.gi                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: combinat.gi,v 4.31 2010/06/16 11:27:43 gap Exp $
+#H  @(#)$Id: combinat.gi,v 4.33 2011/04/19 02:51:45 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains method for combinatorics.
 ##
 Revision.combinat_gi :=
-    "@(#)$Id: combinat.gi,v 4.31 2010/06/16 11:27:43 gap Exp $";
+    "@(#)$Id: combinat.gi,v 4.33 2011/04/19 02:51:45 gap Exp $";
 
 
 #############################################################################
@@ -23,6 +23,23 @@ InstallGlobalFunction(Factorial,function ( n )
     return Product( [1..n] );
 end);
 
+
+#############################################################################
+##
+#F  Binomial( <n>, <k> )  . . . . . . . . .  binomial coefficient of integers
+##
+InstallGlobalFunction(GaussianCoefficient,function ( n, k, q )
+local   gc, i, j;
+  if   k < 0 or n<0 or k>n  then
+    return 0;
+  else
+    gc:=1;
+    for i in [1..k] do
+      gc:=gc*(q^(n-i+1)-1)/(q^i-1);
+    od;
+    return gc;
+  fi;
+end);
 
 #############################################################################
 ##
@@ -206,6 +223,208 @@ InstallGlobalFunction(Combinations,function ( arg )
         Error("usage: Combinations( <mset> [, <k>] )");
     fi;
     return combs;
+end);
+
+#############################################################################
+##
+#F  IteratorOfCombinations( <mset>[, <k> ] )
+#F  EnumeratorOfCombinations( <mset> )
+##  
+InstallGlobalFunction(EnumeratorOfCombinations, function(mset)
+  local c, max, l, mods, size, els, ElementNumber, NumberElement;
+  c := Collected(mset);
+  max := List(c, a-> a[2]);
+  els := List(c, a-> a[1]);
+  l := Length(max);
+  mods := max+1;
+  size := Product(mods);
+  # a combination can contain els[i] from 0 to max[i] times (mods[i]
+  # possibilities), we number the combination that contains a[i] times els[i]
+  # for all i by n = 1 + sum_i a[i]*m[i] where m[i] = prod_(j<i) mods[i]
+  ElementNumber := function(enu, n)
+    local comb, res, i, j;
+    if n > size then
+      Error("Index ", n, " not bound.");
+    fi;
+    comb := EmptyPlist(l);
+    n := n-1;
+    for i in [1..l] do
+      comb[i] := n mod mods[i];
+      n := (n - comb[i])/mods[i];
+    od;
+    res := [];
+    for i in [1..l] do
+      for j in [1..comb[i]] do
+        Add(res, els[i]);
+      od;
+    od;
+    return res;
+  end;
+  NumberElement := function(enu, comb)
+    local c, d, pos, n, a, i;
+    if not IsList(comb) then
+      return fail;
+    fi;
+    c := Collected(comb);
+    d := 0*max;
+    for a in c do
+      pos := PositionSorted(els, a[1]);
+      if not IsBound(els[pos]) or els[pos] <> a[1] or a[2] > max[pos] then
+        return fail;
+      else
+        d[pos] := a[2];
+      fi;
+    od;
+    n := 0;
+    for i in [l,l-1..1] do
+      n := n*mods[i] + d[i];
+    od;
+    return n+1;
+  end;
+  return EnumeratorByFunctions(ListsFamily, rec(
+           ElementNumber := ElementNumber,
+           NumberElement := NumberElement,
+           els := els,
+           Length := x->size,
+           max := max));
+end);
+
+BindGlobal("NextIterator_Combinations_set", function(it)
+  local res, comb, k, i, len;
+  comb := it!.comb;
+  if comb = fail then
+    Error("No more elements in iterator.");
+  fi;
+  # first create combination to return
+  res := it!.els{comb};
+  # now construct indices for next combination
+  len := it!.len;
+  k := it!.k;
+  for i in [1..k] do
+    if i = k or comb[i]+1 < comb[i+1] then
+      comb[i] := comb[i] + 1;
+      comb{[1..i-1]} := [1..i-1];
+      break;
+    fi;     
+  od;
+  # check if done
+  if k = 0 or comb[k] > len then
+    it!.comb := fail;
+  fi;
+  return res;
+end);
+
+# helper function to substitute elements described by r!.comb[j], 
+# j in [1..i] by smallest possible ones
+BindGlobal("Distr_Combinations", function(r, i)
+  local max, kk, l, comb, j;
+  max := r!.max;
+  kk := 0;
+  l := Length(max);
+  comb := r!.comb;
+  for j in [1..i] do
+    kk := kk + comb[j];
+    comb[j] := 0;
+  od;
+  for i in [1..l] do 
+    if kk <= max[i] then
+      comb[i] := kk;
+      break;
+    else
+      comb[i] := max[i];
+      kk := kk - max[i];
+    fi;
+  od;
+end);
+BindGlobal("NextIterator_Combinations_mset", function(it)
+  local res, comb, l, els, i, j, max;
+  if it!.comb = fail then
+    Error("No more elements in iterator.");
+  fi;
+  comb := it!.comb;
+  max := it!.max;
+  l := Length(comb);
+  # first create the combination to return, this is the time critical
+  # code which is more efficient in the proper set case above
+  res := EmptyPlist(it!.k);
+  els := it!.els;
+  for i in [1..l] do
+    for j in [1..comb[i]] do
+      Add(res, els[i]);
+    od;
+  od;
+  # now find next combination if there is one;
+  # for this find smallest element which can be substituted by the next
+  # larger element and reset the previous ones to the smallest 
+  # possible ones
+  i := 1;
+  while i < l and (comb[i] = 0 or comb[i+1] = max[i+1]) do
+    i := i+1;
+  od;
+  if i = l then
+    it!.comb := fail;
+  else
+    comb[i+1] := comb[i+1] + 1;
+    comb[i] := comb[i] - 1;
+    Distr_Combinations(it, i);
+  fi;
+  return res;
+end);
+BindGlobal("IsDoneIterator_Combinations", function(it)
+  return it!.comb = fail;
+end);
+BindGlobal("ShallowCopy_Combinations", function(it)
+  return rec(
+    NextIterator := it!.NextIterator,
+    IsDoneIterator := it!.IsDoneIterator,
+    ShallowCopy := it!.ShallowCopy,
+    els := it!.els,
+    max := it!.max,
+    len := it!.len,
+    k := it!.k,
+    comb := ShallowCopy(it!.comb));
+end);
+InstallGlobalFunction(IteratorOfCombinations,  function(arg)
+  local mset, k, c, max, els, len, comb, NextFunc;
+  mset := arg[1];
+  len := Length(mset);
+  if Length(arg) = 1 then
+    # case of one argument, call 2-arg version for each k and concatenate
+    return ConcatenationIterators(List([0..len], k->
+                                         IteratorOfCombinations(mset, k)));
+  fi;
+  k := arg[2];
+  if k > Length(mset) then
+    return IteratorList([]);
+  fi;
+  c := Collected(mset);
+  max := List(c, a-> a[2]);
+  els := List(c, a-> a[1]);
+  if Maximum(max) = 1 then
+    # in case of a proper set 'mset' we use 'comb' for indices of
+    # elements in current combination; this way the generation
+    # of the actual combinations is a bit more efficient than below in the
+    # general case of a multiset 
+    comb := [1..k];
+    NextFunc := NextIterator_Combinations_set;
+  else
+    # the general case of a multiset, here 'comb'
+    # describes the combination which contains comb[i] times els[i] for all i
+    comb := 0*max;
+    comb[1] := k;
+    # initialize first combination
+    Distr_Combinations(rec(comb := comb,max := max),1);
+    NextFunc := NextIterator_Combinations_mset;
+  fi;
+  return IteratorByFunctions(rec(
+    NextIterator := NextFunc,
+    IsDoneIterator := IsDoneIterator_Combinations,
+    ShallowCopy := ShallowCopy_Combinations,
+    els := els,
+    max := max,
+    len := len,
+    k := k,
+    comb := comb));
 end);
 
 

@@ -6,7 +6,7 @@
 #W                                                           & Heiko Theißen
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: matrix.gi,v 4.182 2010/02/23 15:13:14 gap Exp $
+#H  @(#)$Id: matrix.gi,v 4.193 2011/06/10 17:05:52 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,7 +15,7 @@
 ##  This file contains methods for matrices.
 ##
 Revision.matrix_gi :=
-    "@(#)$Id: matrix.gi,v 4.182 2010/02/23 15:13:14 gap Exp $";
+    "@(#)$Id: matrix.gi,v 4.193 2011/06/10 17:05:52 gap Exp $";
 
 
 #
@@ -23,7 +23,7 @@ Revision.matrix_gi :=
 #
 
 InstallMethod(Zero,
-        [IsRectangularTable and IsAdditiveElementWithZeroCollColl],
+        [IsRectangularTable and IsAdditiveElementWithZeroCollColl and IsInternalRep],
         ZERO_ATTR_MAT);
 
 
@@ -255,6 +255,11 @@ InstallMethod( AINV,
     "for a null map matrix",
     [ IsNullMapMatrix ],
     null -> null );
+
+InstallMethod( AdditiveInverseOp,
+    "for a null map matrix",
+    [ IsNullMapMatrix ],
+    null -> null );    
 
 InstallMethod( \*,
     "for two null map matrices",
@@ -726,6 +731,20 @@ function( F, mat,inum )
     return MinimalPolynomialMatrixNC( F, mat,inum);
 end );
 
+InstallOtherMethod( MinimalPolynomial,
+    "supply field",
+    [ IsMatrix,IsPosInt ],
+function(m,n)
+  return MinimalPolynomial( DefaultFieldOfMatrix( m ), m, n );
+end);
+
+InstallOtherMethod( MinimalPolynomial,
+    "supply field and indeterminate 1",
+    [ IsMatrix ],
+function(m)
+  return MinimalPolynomial( DefaultFieldOfMatrix( m ), m, 1 );
+end);
+
 InstallMethod( MinimalPolynomialMatrixNC, "spinning over field",
     IsElmsCollsX,
     [ IsField, IsOrdinaryMatrix, IsPosInt ],
@@ -1011,7 +1030,7 @@ InstallMethod( Order,
 
     # Compute the order of the reduction modulo $2$.
     red:= mat * Z(2);
-    ConvertToMatrixRepNC(red,2);
+    ConvertToMatrixRep(red,2);
     order:= Order( red );
 #T if OrderMatTrial was used above then call `ProjectiveOrder' directly?
 
@@ -1506,25 +1525,29 @@ InstallMethod( DeterminantMatDivFree,
 ##
 InstallMethod( DimensionsMat,
     [ IsMatrix ],
-    A -> [ Length(A), Length(A[1]) ] );
+    function( A )
+    if IsRectangularTable(A) then
+    	return [ Length(A), Length(A[1]) ];
+    else
+    	return fail;
+    fi;
+	end	);
 
-#############################################################################
-##
-#M  DiagonalizeMat(<euclring>,<mat>)
-##
-# this is a very naive implementation but it should work for any euclidean
-# ring.
-InstallMethod( DiagonalizeMat, 
-  "method for general Euclidean Ring",
-  true, [ IsEuclideanRing,IsMatrix and IsMutable], 0, function(R,M)
+BindGlobal("DoDiagonalizeMat",function(R,M,transform,divide)
 local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
-      typ, ed, pos, a, b, qr, c, i;
+      typ, ed, posi,posj, a, b, qr, c, i,j,left,right,cleanout,
+      alldivide;
 
   swaprow:=function(a,b)
   local r;
     r:=M[a];
     M[a]:=M[b];
     M[b]:=r;
+    if transform then
+      r:=left[a];
+      left[a]:=left[b];
+      left[b]:=r;
+    fi;
   end;
 
   swapcol:=function(a,b)
@@ -1532,64 +1555,52 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
     c:=M{[1..l]}[a];
     M{[1..l]}[a]:=M{[1..l]}[b];
     M{[1..l]}[b]:=c;
+    if transform then
+      c:=right{[1..l]}[a];
+      right{[1..l]}[a]:=right{[1..l]}[b];
+      right{[1..l]}[b]:=c;
+    fi;
   end;
 
   addcol:=function(a,b,m)
   local i;
     for i in [1..l] do
       M[i][a]:=M[i][a]+m*M[i][b];
+      if transform then
+	right[i][a]:=right[i][a]+m*right[i][b];
+      fi;
     od;
   end;
 
   addrow:=function(a,b,m)
     AddCoeffs(M[a],M[b],m);
+    if transform then
+      AddCoeffs(left[a],left[b],m);
+    fi;
   end;
 
   multcol:=function(a,m)
   local i;
     for i in [1..l] do
       M[i][a]:=M[i][a]*m;
+      if transform then
+	right[i][a]:=right[i][a]*m;
+      fi;
     od;
   end;
 
   multrow:=function(a,m)
     MultRowVector(M[a],m);
+    if transform then
+      MultRowVector(left[a],m);
+    fi;
   end;
 
-  l:=Length(M);
-  n:=Length(M[1]);
-  start:=1;
-  while start<Length(M) and start<n do
-    # find element of lowest degree
-    d:=EuclideanDegree(R,M[start][start]);
-    typ:=0;
-    for i in [start+1..n] do
-      ed:=EuclideanDegree(R,M[start][i]);
-      if ed<d then
-	pos:=i;
-	typ:=1;
-      fi;
-    od;
-    for i in [start+1..l] do
-      ed:=EuclideanDegree(R,M[i][start]);
-      if ed<d then
-	pos:=i;
-	typ:=2;
-      fi;
-    od;
-    # and move it up
-    if typ=1 then
-      swapcol(start,pos);
-    elif typ=2 then
-      swaprow(start,pos);
-    fi;
-
-    # normalize
-    qr:=StandardAssociate(R,M[start][start])/M[start][start];
-    multrow(start,qr);
-
+  # clean out row and column
+  cleanout:=function()
+  local a,i,b,c,qr;
     repeat
-      # now do the GCD calculations
+      # now do the GCD calculations only in row/column
       for i in [start+1..n] do
 	a:=i;
 	b:=start;
@@ -1602,9 +1613,12 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
 	  if b=start then
 	    swapcol(start,i);
 	  fi;
-	  qr:=StandardAssociate(R,M[start][start])/M[start][start];
-	  multcol(start,qr);
 	fi;
+
+	# normalize
+	qr:=StandardAssociate(R,M[start][start])/M[start][start];
+	multcol(start,qr);
+
       od;
 
       for i in [start+1..l] do
@@ -1619,18 +1633,109 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
 	  if b=start then
 	    swaprow(start,i);
 	  fi;
-	  qr:=StandardAssociate(R,M[start][start])/M[start][start];
-	  multrow(start,qr);
 	fi;
+
+	qr:=StandardAssociate(R,M[start][start])/M[start][start];
+	multrow(start,qr);
+
       od;
     until ForAll([start+1..n],i->IsZero(M[start][i]));
+  end;
+
+  l:=Length(M);
+  n:=Length(M[1]);
+
+  if transform then
+    left:=IdentityMat(l,R);
+    right:=IdentityMat(n,R);
+  fi;
+
+  start:=1;
+  while start<Length(M) and start<n do
+
+    # find element of lowest degree and move it into pivot
+    # hope is this will reduce the total number of iterations by making
+    # it small in the first place
+    if IsZero(M[start][start]) then
+      d:=infinity;
+    else
+      d:=EuclideanDegree(R,M[start][start]);
+    fi;
+    posi:=start;
+    posj:=start;
+
+    for i in [start..l] do
+      for j in [start..n] do
+        if not IsZero(M[i][j]) then
+	  ed:=EuclideanDegree(R,M[i][j]);
+	  if ed<d then
+	    d:=ed;
+	    posi:=i;
+	    posj:=j;
+	  fi;
+	fi;
+      od;
+    od;
+
+    if d<>infinity then # there is at least one nonzero entry
+
+      if posi<>start then
+        swaprow(start,posi);
+      fi;
+      if posj<>start then
+	swapcol(start,posj);
+      fi;
+      cleanout();
+
+      if divide then
+	repeat
+	  alldivide:=true;
+	  #make sure the pivot also divides the rest
+	  for i in [start+1..l] do
+	    for j in [start+1..n] do
+	      if Quotient(M[i][j],M[start][start])=fail then
+		alldivide:=false;
+		# do gcd
+		addrow(start,j,1);
+		cleanout();
+	      fi;
+	    od;
+	  od;
+	until alldivide;
+
+      fi;
+
+      # normalize
+      qr:=StandardAssociate(R,M[start][start])/M[start][start];
+      multcol(start,qr);
+
+    fi;
     start:=start+1;
   od;
 
-  # normalize
-  qr:=StandardAssociate(R,M[start][start])/M[start][start];
-  multrow(start,qr);
-  return M;
+  # normalize last entry
+  if not IsZero(M[start][start]) then
+    qr:=StandardAssociate(R,M[start][start])/M[start][start];
+    multcol(start,qr);
+  fi;
+
+  if transform then
+   return rec(rowtrans:=left,coltrans:=right,normal:=M);
+  else
+    return M;
+  fi;
+end);
+
+#############################################################################
+##
+#M  DiagonalizeMat(<euclring>,<mat>)
+##
+# this is a very naive implementation but it should work for any euclidean
+# ring.
+InstallMethod( DiagonalizeMat, 
+  "method for general Euclidean Ring",
+  true, [ IsEuclideanRing,IsMatrix and IsMutable], 0,function(R,M)
+  return DoDiagonalizeMat(R,M,false,false);
 end);
 
 #############################################################################
@@ -1662,30 +1767,30 @@ local  divs, gcd, zero, m, n, i, k;
     m := Length(mat);  n := Length(mat[1]);
 
     # diagonalize the matrix
-    DiagonalizeMat(ring, mat );
+    DoDiagonalizeMat(ring, mat,false,true );
 
     # get the diagonal elements
     divs := [];
     for i  in [1..Minimum(m,n)]  do
         divs[i] := mat[i][i];
     od;
-    if divs <> []  then zero := divs[1] - divs[1];  fi;
-
-    # transform the divisors so that every divisor divides the next
-    for i  in [1..Length(divs)-1]  do
-        for k  in [i+1..Length(divs)]  do
-            if divs[i] = zero and divs[k] <> zero  then
-                divs[i] := divs[k];
-                divs[k] := zero;
-            elif divs[i] <> zero
-              and EuclideanRemainder(ring, divs[k], divs[i] ) <> zero  then
-                gcd     := Gcd(ring, divs[i], divs[k] );
-                divs[k] := divs[k] / gcd * divs[i];
-                divs[i] := gcd;
-            fi;
-        od;
-        divs[i] := StandardAssociate( ring,divs[i] );
-    od;
+#    #if divs <> []  then zero := divs[1] - divs[1];  fi;
+#
+#    # transform the divisors so that every divisor divides the next
+#    for i  in [1..Length(divs)-1]  do
+#        for k  in [i+1..Length(divs)]  do
+#            if divs[i] = zero and divs[k] <> zero  then
+#                divs[i] := divs[k];
+#                divs[k] := zero;
+#            elif divs[i] <> zero
+#              and EuclideanRemainder(ring, divs[k], divs[i] ) <> zero  then
+#                gcd     := Gcd(ring, divs[i], divs[k] );
+#                divs[k] := divs[k] / gcd * divs[i];
+#                divs[i] := gcd;
+#            fi;
+#        od;
+#        divs[i] := StandardAssociate( ring,divs[i] );
+#    od;
 
     return divs;
 end );
@@ -1696,14 +1801,60 @@ InstallMethod( ElementaryDivisorsMat,
 function ( ring,mat )
   # make a copy to avoid changing the original argument
   mat := MutableCopyMat( mat );
+  if IsIdenticalObj(ring,Integers) then
+    DiagonalizeMat(Integers,mat);
+    return DiagonalOfMat(mat);
+  fi;
   return ElementaryDivisorsMatDestructive(ring,mat);
 end);
 
 InstallOtherMethod( ElementaryDivisorsMat,
-    "compatibility method for integers",
+    "compatibility method -- supply ring",
     [ IsMatrix ],
-    mat->ElementaryDivisorsMat(Integers,mat));
+function(mat)
+local ring;
+  if ForAll(mat,row->ForAll(row,IsInt)) then
+    return ElementaryDivisorsMat(Integers,mat);
+  fi;
+  ring:=DefaultRing(Flat(mat));
+  return ElementaryDivisorsMat(ring,mat);
+end);
 
+#############################################################################
+##
+#M  ElementaryDivisorsTransformationsMat(<mat>) elem. divisors of a matrix
+##
+##  'ElementaryDivisorsTransformationsMat' does not only compute the
+##  elementary divisors, but also transforming matrices.
+
+InstallGlobalFunction(ElementaryDivisorsTransformationsMatDestructive,
+function(ring,mat)
+
+    # diagonalize the matrix
+    return DoDiagonalizeMat(ring, mat,true,true );
+
+end );
+
+InstallMethod( ElementaryDivisorsTransformationsMat,
+    "generic method for euclidean rings",
+    [ IsEuclideanRing,IsMatrix ],
+function ( ring,mat )
+  # make a copy to avoid changing the original argument
+  mat := MutableCopyMat( mat );
+  return ElementaryDivisorsTransformationsMatDestructive(ring,mat);
+end);
+
+InstallOtherMethod( ElementaryDivisorsTransformationsMat,
+    "compatibility method -- supply ring",
+    [ IsMatrix ],
+function(mat)
+local ring;
+  if ForAll(mat,row->ForAll(row,IsInt)) then
+    return ElementaryDivisorsTransformationsMat(Integers,mat);
+  fi;
+  ring:=DefaultRing(Flat(mat));
+  return ElementaryDivisorsTransformationsMat(ring,mat);
+end);
 
 #############################################################################
 ##
@@ -2160,9 +2311,11 @@ InstallMethod( SemiEchelonMatTransformationDestructive,
     ncols := Length( mat[1] );
     
     f := DefaultFieldOfMatrix(mat);
-
-    zero  := Zero(f );
-
+    if f = fail then
+        f := mat[1][1];
+    fi;
+    zero := Zero(f);
+    
     heads   := ListWithIdenticalEntries( ncols, 0 );
     vectors := [];
 
@@ -2745,6 +2898,13 @@ InstallOtherMethod( TriangulizeMat,
     [ IsList and IsEmpty],
     function( m ) return; end );
 
+InstallMethod( TriangulizedMat, "generic method for matrices", [ IsMatrix ],
+function ( mat )
+local m;
+  m:=List(mat,ShallowCopy);
+  TriangulizeMat(m);
+  return m;
+end);
 
 #############################################################################
 ##
@@ -3698,6 +3858,26 @@ end);
 
 #############################################################################
 ##
+#F  OnSubspacesByCanonicalBasisConcatenations(<basvec>,<mat>)
+##
+InstallGlobalFunction(OnSubspacesByCanonicalBasisConcatenations,
+function( bvec, obj )
+  local n,a,mat,r;
+  n:=Length(obj); # acting dimension
+  mat:=[];
+  a:=1;
+  while a<Length(bvec) do
+    r:=bvec{[a..a+n-1]}*obj;
+    if not IsMutable(r) then r:=ShallowCopy(r);fi;
+    Add(mat,r);
+    a:=a+n;
+  od;
+  TriangulizeMat(mat);
+  return Concatenation(mat);
+end);
+  
+#############################################################################
+##
 #M  FieldOfMatrixList
 ##
 InstallMethod(FieldOfMatrixList,
@@ -3724,33 +3904,6 @@ local i,j,k,fg,f;
   return f;
 end);
 
-#############################################################################
-##
-#M  LaTeXObj
-##
-InstallMethod(LaTeXObj,"matrix",
-  [IsMatrix],
-function(m)
-local i,j,l,n,s;
-  l:=Length(m);
-  n:=Length(m[1]);
-  s:="\\left(\\begin{array}{";
-  for i in [1..n] do
-    Add(s,'r');
-  od;
-  Append(s,"}%\n");
-  for i in [1..l] do
-    for j in [1..n] do
-      Append(s,LaTeXObj(m[i][j]));
-      if j<n then
-        Add(s,'&');
-      fi;
-    od;
-    Append(s,"\\\\%\n");
-  od;
-  Append(s,"\\end{array}\\right)");
-  return s;
-end);
 
 #############################################################################
 ##
@@ -3859,6 +4012,124 @@ InstallMethod( BaseOrthogonalSpaceMat,
     "for a matrix",
     [ IsMatrix ],
     mat -> NullspaceMat( TransposedMat( mat ) ) );
+
+# simplex method, code by Ken Monks, AH
+
+#in matrix M, row reduce to get 1s
+#in exactly the columns given by 
+#L a list of indices
+BindGlobal("TriangulizeMatPivotColumns",function(M,L)
+local idx,i;
+
+   if L=[1..Length(L)] then
+     TriangulizeMat(M);
+   else
+     idx:=Concatenation(L,Filtered([1..Length(M[1])],x->not x in L));
+     for i in [1..Length(M)] do M[i]:=M[i]{idx}; od;
+     TriangulizeMat(M);
+     idx:=ListPerm(PermList(idx)^-1,Length(M[1]));
+     for i in [1..Length(M)] do M[i]:=M[i]{idx}; od;
+   fi;
+
+end);
+
+#inputs a linear form c and maximizes it subject to 
+#the constraints Ax <= b where all entries of b are nonnegative.
+InstallGlobalFunction(SimplexMethod,function(A,b,c)
+local M, n, p, vars, slackVars, i, id, bestMove,
+  newNonzero, len, ratios, newZero, positiveRatios, point, value,Val;
+
+  Val:=function(M,vars,slackVars,len,x) 
+      if x in vars then 
+	  return 0; 
+      else return M[Position(slackVars,x)+1][len]; 
+      fi; 
+  end;
+
+   #check the size of the data is legit
+
+   n:=Size(c);
+   p:=Size(b);
+   if not (IsMatrix(A) and Size(A)=p and ForAny(A,R->Size(R)=n)) then
+     Error( "usage: SimplexMethod( <A>, <b>, <c>)");
+   fi;
+
+   id:=IdentityMat(p,Rationals);
+
+   #build the augmented matrix
+   
+   #first row   
+   M:=[Concatenation([1],-c,List([1..p+1],x->0))];
+   #the rest of the rows
+   for i in [1..p] do 
+       Add(M,Concatenation([0],A[i],id[i],[b[i]]));
+   od;
+      
+   len:=Size(M[1]);
+
+   #initialize the feasible starting vertex
+   if ForAll(b,x->not x<0) then 
+      vars:=[2..2+n-1];      
+      slackVars:=[2+n..n+p+1];
+   else return "Invalid data: not all constraints nonnegative!";
+   fi;
+   
+   #Print("slackVars are ",slackVars ,"\n");
+   #Print("vars are ",vars,"\n");
+   #Display(M);
+   
+   TriangulizeMatPivotColumns(M,Concatenation([1],slackVars));
+   #Display(M);
+   #bestMove is the coeff var that will become nonzero
+   bestMove:=Minimum(List(vars,i->M[1][i]));
+   newNonzero:=vars[Position(List(vars,i->M[1][i]),bestMove)];
+   
+   #Print(newNonzero, " is the new nonzero guy \n");
+   
+   while bestMove<0  do
+        
+       #see if figure is unbounded
+       #Print("about to do some ratios \n");
+       #Print(List([1..p],x-> M[x+1][newNonzero]), " is what we're going to divide by \n");
+       ratios:=List([1..p], function(x) if M[x+1][newNonzero]=0 then return infinity; else return M[x+1][len]/M[x+1][newNonzero]; fi; end);
+       #Print("done doing some ratios");
+       positiveRatios:=Filtered(ratios,x -> x>0);
+       if Size(positiveRatios)=0 then return "Feasible region unbounded!"; fi;
+       
+       #Print("Feasible region still looks bounded. \n");
+
+       #figure out who will become zero
+       newZero:=slackVars[Position(ratios,Minimum(positiveRatios))];       
+       
+       #Print(newZero, " is the new zero guy \n");       
+       
+       Remove(slackVars,Position(slackVars,newZero));
+       Remove(vars,Position(vars,newNonzero));
+       Add(vars,newZero);
+       Add(slackVars,newNonzero);
+       
+       slackVars:=Set(slackVars);
+       vars:=Set(vars);
+
+       #Print("slackVars are ",slackVars,"\n");
+       #Print("vars are ",vars,"\n");
+
+       TriangulizeMatPivotColumns(M,Concatenation([1],slackVars));
+       #Display(M);
+       bestMove:=Minimum(List(vars,i->M[1][i]));
+       
+       newNonzero:=vars[Position(List(vars,i->M[1][i]),bestMove)];
+       #Print(newNonzero," is the new nonzero guy");
+
+   od;
+   
+   #calculate the original point and the max value there
+   
+   point:=List([2..2+n-1],x -> Val(M,vars,slackVars,len,x));
+   value:=point*c;
+   
+   return [point,value];
+end);
 
 
 

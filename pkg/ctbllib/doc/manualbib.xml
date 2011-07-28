@@ -248,8 +248,10 @@
 
 <entry id="GMN"><article>
   <author>
+    <name><first>Thomas</first><last>Breuer</last></name>
     <name><first>Robert M.</first><last>Guralnick</last></name>
-    <name><first>Attila</first><last>Maroti</last></name>
+    <name><first>Andrea</first><last>Lucchini</last></name>
+    <name><first>Attila</first><last>Maróti</last></name>
     <name><first>Gabor P.</first><last>Nagy</last></name>
   </author>
   <title>Hamiltonian cycles in the generating graphs of finite groups</title>
@@ -408,6 +410,24 @@
   <other type="fjournal">Journal of Algebra</other>
 </article></entry>
 
+<entry id="Pah07"><article>
+  <author>
+    <name><first>Herbert</first><last>Pahlings</last></name>
+  </author>
+  <title>The character table of <C><M>2^{1+22}_+.{\rm Co}_2</M></C></title>
+  <journal>J. Algebra</journal>
+  <year>2007</year>
+  <volume>315</volume>
+  <number>1</number>
+  <pages>301&ndash;325</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>MR2344348 (2008g:20023)</mrnumber>
+  <mrclass>20C34</mrclass>
+  <mrreviewer>Shigeo Koshitani</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
 <entry id="Wilson93"><article>
   <author>
     <name><first>Robert A.</first><last>Wilson</last></name>
@@ -455,7 +475,7 @@
     <name><first>Robert A.</first><last>Wilson</last></name>
   </author>  
   <title><C>ATLAS</C>: <C>M</C>onster group <M>{M}</M></title>
-  <howpublished><URL>http://brauer.maths.qmul.ac.uk/Atlas/v3/spor/M</URL></howpublished>
+  <howpublished><URL>http://brauer.maths.qmul.ac.uk/Atlas/spor/M</URL></howpublished>
 </misc></entry>
 
 </file>

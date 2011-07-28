@@ -3,7 +3,7 @@
 #W  ctbllatt.gd                 GAP library                     Thomas Breuer
 #W                                                                Ansgar Kaup
 ##
-#H  @(#)$Id: ctbllatt.gd,v 4.23 2010/02/23 15:12:53 gap Exp $
+#H  @(#)$Id: ctbllatt.gd,v 4.24 2010/09/29 14:14:56 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  lattices in the context of character tables.
 ##
 Revision.ctbllatt_gd :=
-    "@(#)$Id: ctbllatt.gd,v 4.23 2010/02/23 15:12:53 gap Exp $";
+    "@(#)$Id: ctbllatt.gd,v 4.24 2010/09/29 14:14:56 alexk Exp $";
 
 
 #############################################################################
@@ -77,13 +77,13 @@ Revision.ctbllatt_gd :=
 ##  >     [ 12, 0, 4, 0, 0 ], [ 6, 0, 2, 0, -2 ], [ 12, -2, 0, 0, 0 ],
 ##  >     [ 8, 0, 0, 2, 0 ], [ 12, 2, 0, 0, 0 ], [ 1, 1, 1, 1, 1 ] ];;
 ##  gap> LLL( s4, chars );
-##  rec( norms := [  ],
+##  rec( 
 ##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 
 ##           ] ), Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ) ], 
-##    remainders := [  ] )
+##    norms := [  ], remainders := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -138,21 +138,17 @@ DeclareGlobalFunction( "LLL" );
 ##  [ [ 6, 3, 2, 0, 2 ], [ 3, 2, 1, 0, 1 ], [ 2, 1, 2, 0, 0 ], [ 0, 0, 0, 2, 1 ], 
 ##    [ 2, 1, 0, 1, 2 ] ]
 ##  gap> ext:= Extract( s4, red, gram, 5 );
+##  rec( choice := [ [ 2, 5, 3, 4, 1 ] ],
+##    solution := [ [ [ 1, 1, 0, 0, 2 ], [ 1, 0, 1, 0, 1 ], [ 0, 1, 0, 1, 0 ], 
+##            [ 0, 0, 1, 0, 1 ], [ 0, 0, 0, 1, 0 ] ] ] )
+##  gap> dec:= Decreased( s4, red, ext.solution[1], ext.choice[1] );
 ##  rec( 
-##    solution := [ [ [ 1, 1, 0, 0, 2 ], [ 1, 0, 1, 0, 1 ], [ 0, 1, 0, 1, 0 ], [ 
-##                0, 0, 1, 0, 1 ], [ 0, 0, 0, 1, 0 ] ] ], 
-##    choice := [ [ 2, 5, 3, 4, 1 ] ] )
-##  gap> dec:= Decreased( s4, red, ext.solution[1], ext.choice[1] );;
-##  gap> Display( dec );
-##  rec(
-##    matrix := [  ],
-##    irreducibles := 
-##     [ Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
+##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] )
+##          , Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ) ],
-##    remainders := [  ] )
+##        Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ) ], 
+##    matrix := [  ], remainders := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -226,17 +222,17 @@ DeclareGlobalFunction( "Extract" );
 ##  gap> gram:= MatScalarProducts( s6, rem, rem );;  RankMat( gram );
 ##  8
 ##  gap> emb1:= OrthogonalEmbeddings( gram, 8 );
-##  rec( vectors := [ [ -1, 0, 1, 0, 1, 0, 1, 0 ], [ 1, 0, 0, 1, 0, 1, 0, 0 ], 
+##  rec( norms := [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 
+##    solutions := [ [ 1, 2, 3, 7, 11, 12, 13, 15 ], 
+##        [ 1, 2, 4, 8, 10, 12, 13, 14 ], [ 1, 2, 5, 6, 9, 12, 13, 16 ] ], 
+##    vectors := [ [ -1, 0, 1, 0, 1, 0, 1, 0 ], [ 1, 0, 0, 1, 0, 1, 0, 0 ], 
 ##        [ 0, 1, 1, 0, 0, 0, 1, 1 ], [ 0, 1, 1, 0, 0, 0, 1, 0 ], 
 ##        [ 0, 1, 1, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 1, 0 ], 
 ##        [ 0, -1, 0, 0, 0, 0, 0, 1 ], [ 0, 1, 0, 0, 0, 0, 0, 0 ], 
 ##        [ 0, 0, 1, 0, 0, 0, 1, 1 ], [ 0, 0, 1, 0, 0, 0, 0, 1 ], 
 ##        [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, -1, 1, 0, 0, 0 ], 
 ##        [ 0, 0, 0, 0, 0, 1, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 1, 1 ], 
-##        [ 0, 0, 0, 0, 0, 0, 1, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 1 ] ], 
-##    norms := [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 
-##    solutions := [ [ 1, 2, 3, 7, 11, 12, 13, 15 ], 
-##        [ 1, 2, 4, 8, 10, 12, 13, 14 ], [ 1, 2, 5, 6, 9, 12, 13, 16 ] ] )
+##        [ 0, 0, 0, 0, 0, 0, 1, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 1 ] ] )
 ##  ]]></Example>
 ##  <P/>
 ##  In the following example we temporarily decrease the line length limit
@@ -319,6 +315,10 @@ DeclareGlobalFunction( "OrthogonalEmbeddingsSpecialDimension" );
 ##  </Item>
 ##  </List>
 ##  <P/>
+##  In the following example we temporarily decrease the line length limit
+##  from its default value <M>80</M> to <M>62</M>
+##  in order to get a nicer output format.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> s4:= CharacterTable( "Symmetric", 4 );;
 ##  gap> x:= Irr( s4 );;
@@ -326,21 +326,25 @@ DeclareGlobalFunction( "OrthogonalEmbeddingsSpecialDimension" );
 ##  gap> mat:= MatScalarProducts( s4, red, red );
 ##  [ [ 2, -1, -1, -1 ], [ -1, 2, 0, 0 ], [ -1, 0, 2, 0 ], [ -1, 0, 0, 2 ] ]
 ##  gap> emb:= OrthogonalEmbeddings( mat );
-##  rec( vectors := [ [ -1, 1, 1, 0 ], [ -1, 1, 0, 1 ], [ 1, -1, 0, 0 ], 
+##  rec( norms := [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 
+##    solutions := [ [ 1, 6, 7, 12 ], [ 2, 5, 8, 11 ], [ 3, 4, 9, 10 ] ], 
+##    vectors := [ [ -1, 1, 1, 0 ], [ -1, 1, 0, 1 ], [ 1, -1, 0, 0 ], 
 ##        [ -1, 0, 1, 1 ], [ -1, 0, 1, 0 ], [ -1, 0, 0, 1 ], [ 0, -1, 1, 0 ], 
 ##        [ 0, -1, 0, 1 ], [ 0, 1, 0, 0 ], [ 0, 0, -1, 1 ], [ 0, 0, 1, 0 ], 
-##        [ 0, 0, 0, 1 ] ], norms := [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 
-##    solutions := [ [ 1, 6, 7, 12 ], [ 2, 5, 8, 11 ], [ 3, 4, 9, 10 ] ] )
-##  gap> dec:= Decreased( s4, red, emb.vectors{ emb.solutions[1] } );;
-##  gap> Display( dec );
-##  rec(
-##    matrix := [  ],
-##    irreducibles := 
-##     [ Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ) ],
+##        [ 0, 0, 0, 1 ] ] )
+##  gap> SizeScreen([ 62, ]);;
+##  gap> dec:= Decreased( s4, red, emb.vectors{ emb.solutions[1] } );
+##  rec( 
+##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), 
+##          [ 3, -1, -1, 0, 1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), 
+##          [ 1, -1, 1, 1, -1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), 
+##          [ 2, 0, 2, -1, 0 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), 
+##          [ 3, 1, -1, 0, -1 ] ) ], matrix := [  ], 
 ##    remainders := [  ] )
+##  gap> SizeScreen([ 80, ]);;
 ##  gap> Decreased( s4, red, emb.vectors{ emb.solutions[2] } );
 ##  fail
 ##  gap> Decreased( s4, red, emb.vectors{ emb.solutions[3] } );
@@ -399,21 +403,28 @@ DeclareGlobalFunction( "Decreased" );
 ##  So <Ref Func="DnLattice"/> might be useful even if it fails to find
 ##  irreducible characters.
 ##  <P/>
+##  In the following example we temporarily decrease the line length limit
+##  from its default value <M>80</M> to <M>62</M>
+##  in order to get a nicer output format.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> s4:= CharacterTable( "Symmetric", 4 );;
 ##  gap> red:= [ [ 2, 0, 2, 2, 0 ], [ 4, 0, 0, 1, 2 ],
 ##  >            [ 5, -1, 1, -1, 1 ], [ -1, 1, 3, -1, -1 ] ];;
 ##  gap> gram:= MatScalarProducts( s4, red, red );
 ##  [ [ 2, 1, 0, 0 ], [ 1, 2, 1, -1 ], [ 0, 1, 2, 0 ], [ 0, -1, 0, 2 ] ]
-##  gap> dn:= DnLattice( s4, gram, red );; Display( dn );
-##  rec(
-##    irreducibles := 
-##     [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ],
-##    remainders := [  ],
-##    gram := [  ] )
+##  gap> SizeScreen([ 62, ]);;
+##  gap> dn:= DnLattice( s4, gram, red );
+##  rec( gram := [  ], 
+##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), 
+##          [ 2, 0, 2, -1, 0 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), 
+##          [ 1, -1, 1, 1, -1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), 
+##          [ 1, 1, 1, 1, 1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), 
+##          [ 3, -1, -1, 0, 1 ] ) ], remainders := [  ] )
+##  gap> SizeScreen([ 80, ]);;
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -447,19 +458,27 @@ DeclareGlobalFunction( "DnLattice" );
 ##  <Ref Func="DnLatticeIterative"/> returns a record with the same
 ##  components and meaning of components as <Ref Func="LLL"/>.
 ##  <P/>
+##  In the following example we temporarily decrease the line length limit
+##  from its default value <M>80</M> to <M>62</M>
+##  in order to get a nicer output format.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> s4:= CharacterTable( "Symmetric", 4 );;
 ##  gap> red:= [ [ 2, 0, 2, 2, 0 ], [ 4, 0, 0, 1, 2 ],
 ##  >            [ 5, -1, 1, -1, 1 ], [ -1, 1, 3, -1, -1 ] ];;
-##  gap> dn:= DnLatticeIterative( s4, red );; Display( dn );
-##  rec(
-##    norms := [  ],
-##    irreducibles := 
-##     [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ],
+##  gap> SizeScreen([ 62, ]);;
+##  gap> dn:= DnLatticeIterative( s4, red );
+##  rec( 
+##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), 
+##          [ 2, 0, 2, -1, 0 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), 
+##          [ 1, -1, 1, 1, -1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), 
+##          [ 1, 1, 1, 1, 1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), 
+##          [ 3, -1, -1, 0, 1 ] ) ], norms := [  ], 
 ##    remainders := [  ] )
+##  gap> SizeScreen([ 80, ]);;
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

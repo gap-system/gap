@@ -3,7 +3,7 @@
 #W  list.gd                     GAP library                  Martin Schönert
 #W                                                            & Werner Nickel
 ##
-#H  @(#)$Id: list.gd,v 4.116 2010/06/16 14:48:20 gap Exp $
+#H  @(#)$Id: list.gd,v 4.122 2011/05/11 12:05:00 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains the definition of operations and functions for lists.
 ##
 Revision.list_gd :=
-    "@(#)$Id: list.gd,v 4.116 2010/06/16 14:48:20 gap Exp $";
+    "@(#)$Id: list.gd,v 4.122 2011/05/11 12:05:00 alexk Exp $";
 
 
 #############################################################################
@@ -301,10 +301,6 @@ DeclareAttribute( "ConstantTimeAccessList", IsList );
 ##  </Description>
 ##  </ManSection>
 ##
-#DeclareOperationKernel( "AsSSortedListList",
-#    [ IsList ],
-#    AS_LIST_SORTED_LIST );
-#T  1996/10/28 fceller at the moment this is defined as function in kernel.g
 DeclareSynonym( "AsSSortedListList", AS_LIST_SORTED_LIST );
 
 
@@ -434,8 +430,7 @@ InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 ##
 ##  <Description>
 ##  returns <K>true</K> if <A>obj</A> is a list and it is sorted,
-##  <Index>sorted list</Index>
-##  and <K>false</K> otherwise.
+##  <Index Subkey="sorted">list</Index> and <K>false</K> otherwise.
 ##  <P/>
 ##  A list <A>list</A> is <E>sorted</E> if it is dense
 ##  (see&nbsp;<Ref Func="IsDenseList"/>)
@@ -830,7 +825,7 @@ DeclareGlobalFunction( "PositionSet" );
 ##  <Oper Name="PositionProperty" Arg='list, func[, from]'/>
 ##
 ##  <Description>
-##  returns the position of the first entry in the dense list <A>list</A>
+##  returns the position of the first entry in the list <A>list</A>
 ##  for which the property tester function <A>func</A> returns <K>true</K>,
 ##  or <K>fail</K> if no such entry exists.
 ##  If a starting index <A>from</A> is given, it
@@ -851,8 +846,37 @@ DeclareGlobalFunction( "PositionSet" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "PositionProperty", [ IsDenseList, IsFunction ] );
-DeclareOperation( "PositionProperty", [ IsDenseList, IsFunction, IS_INT ] );
+DeclareOperation( "PositionProperty", [ IsList, IsFunction ] );
+DeclareOperation( "PositionProperty", [ IsList, IsFunction, IS_INT ] );
+
+
+#############################################################################
+##
+#O  PositionsProperty( <list>, <func> )
+##
+##  <#GAPDoc Label="PositionsProperty">
+##  <ManSection>
+##  <Oper Name="PositionsProperty" Arg='list, func'/>
+##
+##  <Description>
+##  returns the list of all those positions in the dense list <A>list</A>
+##  for which the property tester function <A>func</A> returns <K>true</K>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> l:= [ -5 .. 5 ];;
+##  gap> PositionsProperty( l, IsPosInt );
+##  [ 7, 8, 9, 10, 11 ]
+##  gap> PositionsProperty( l, IsPrimeInt );
+##  [ 1, 3, 4, 8, 9, 11 ]
+##  ]]></Example>
+##  <P/>
+##  <Ref Func="PositionProperty"/> allows you to extract the position of the
+##  first element in a list that satisfies a certain property.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "PositionsProperty", [ IsDenseList, IsFunction ] );
 
 
 #############################################################################
@@ -1048,6 +1072,7 @@ DeclareOperation( "Add", [ IsList and IsMutable, IsObject,  IS_INT ]);
 DeclareOperation( "Remove", [IsList and IsMutable]);
 DeclareOperation( "Remove", [IsList and IsMutable, IS_INT]);
 
+DeclareSynonym( "CopyListEntries", COPY_LIST_ENTRIES );
 
 #############################################################################
 ##
@@ -1382,6 +1407,35 @@ DeclareGlobalFunction( "Reversed", [ IsDenseList ] );
 ##
 DeclareOperation( "ReversedOp", [ IsDenseList ] );
 
+#############################################################################
+##
+#F  Shuffle( <list> )  . . . . . . . . . . . . . . . permute entries randomly
+##
+##  <#GAPDoc Label="Shuffle">
+##  <ManSection>
+##  <Oper Name="Shuffle" Arg='list'/>
+##
+##  <Description>
+##  The argument <A>list</A> must be a dense mutable list. This operation 
+##  permutes the entries of <A>list</A> randomly (in place), and returns 
+##  <A>list</A>.
+##  <Example>
+##  gap> Reset(GlobalMersenneTwister, 12345);; # make manual tester happy
+##  gap> l := [1..20];
+##  [ 1 .. 20 ]
+##  gap> m := Shuffle(ShallowCopy(l));
+##  [ 15, 13, 3, 19, 8, 11, 14, 7, 16, 4, 17, 18, 5, 1, 10, 6, 2, 9, 12, 20 ]
+##  gap> l;
+##  [ 1 .. 20 ]
+##  gap> Shuffle(l);;
+##  gap> l;
+##  [ 3, 4, 18, 13, 10, 7, 9, 8, 14, 17, 16, 6, 19, 12, 1, 11, 20, 2, 15, 5 ]
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##  
+DeclareOperation( "Shuffle", [IsDenseList and IsMutable] );
 
 #############################################################################
 ##
@@ -2097,20 +2151,28 @@ DeclareOperation("PlainListCopyOp", [IsSmallList]);
 
 #############################################################################
 ##
-#O  PositionNot( <list>, <val>[, <from-minus-one>] )  . . . .  find not <val>
+#O  PositionNot( <list>, <val>[, <from>] )  . . . . . . . . .  find not <val>
 ##
 ##  <#GAPDoc Label="PositionNot">
 ##  <ManSection>
-##  <Oper Name="PositionNot" Arg='list, val[, from-minus-one]'/>
+##  <Oper Name="PositionNot" Arg='list, val[, from]'/>
 ##
 ##  <Description>
 ##  For a list <A>list</A> and an object <A>val</A>,
 ##  <Ref Oper="PositionNot"/> returns the smallest
 ##  nonnegative integer <M>n</M> such that <M><A>list</A>[n]</M>
 ##  is either unbound or not equal to <A>val</A>.
-##  If a nonnegative integer is given as optional argument
-##  <A>from-minus-one</A> then the first position larger than
-##  <A>from-minus-one</A> with this property is returned.
+##  If a starting index <A>from</A> is given, it
+##  returns the first position with this property
+##  starting the search <E>after</E> position <A>from</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> l:= [ 1, 1, 2, 3, 2 ];;  PositionNot( l, 1 );
+##  3
+##  gap> PositionNot( l, 1, 4 );  PositionNot( l, 2, 4 );
+##  5
+##  6
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2121,18 +2183,22 @@ DeclareOperation( "PositionNot", [ IsList, IsObject, IS_INT ] );
 
 #############################################################################
 ##
-#O  PositionNonZero( <vec> ) . . . . . . . . Position of first non-zero entry
+#O  PositionNonZero( <vec>[, <from>] ) . . . position of first non-zero entry
 ##
 ##  <#GAPDoc Label="PositionNonZero">
 ##  <ManSection>
-##  <Oper Name="PositionNonZero" Arg='vec'/>
+##  <Oper Name="PositionNonZero" Arg='vec[, from]'/>
 ##
 ##  <Description>
 ##  For a row vector <A>vec</A>,
 ##  <Ref Oper="PositionNonZero"/> returns the position of the
 ##  first non-zero element of <A>vec</A>,
-##  or <C>Length(<A>vec</A>)+1</C> if all entries of
+##  or <C>Length(</C> <A>vec</A> <C>)+1</C> if all entries of
 ##  <A>vec</A> are zero.
+##  <P/>
+##  If a starting index <A>from</A> is given,
+##  it returns the position of the first occurrence starting the search
+##  <E>after</E> position <A>from</A>.
 ##  <P/>
 ##  <Ref Oper="PositionNonZero"/> implements a special case of
 ##  <Ref Oper="PositionNot"/>.
@@ -2141,13 +2207,9 @@ DeclareOperation( "PositionNot", [ IsList, IsObject, IS_INT ] );
 ##  because otherwise the zero element cannot be specified implicitly.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> l:= [ 1, 1, 2, 3, 2 ];;  PositionNot( l, 1 );
-##  3
-##  gap> PositionNot( l, 1, 4 );  PositionNot( l, 2, 5 );
-##  5
-##  6
-##  gap> PositionNonZero( l );  PositionNonZero( [ 2, 3, 4, 5 ] * Z(2) );
+##  gap> PositionNonZero( [ 1, 1, 2, 3, 2 ] );
 ##  1
+##  gap> PositionNonZero( [ 2, 3, 4, 5 ] * Z(2) );
 ##  2
 ##  ]]></Example>
 ##  </Description>
@@ -2155,7 +2217,6 @@ DeclareOperation( "PositionNot", [ IsList, IsObject, IS_INT ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "PositionNonZero", [ IsHomogeneousList ] );
-#T In principle, this could become an attribute ...
 DeclareOperation( "PositionNonZero", [ IsHomogeneousList, IS_INT ] );
 
 

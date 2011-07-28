@@ -4,7 +4,7 @@
 ##
 ## examples for polycyclic rational matrix groups
 ##
-#H  @(#)$Id: exam.gi,v 1.13 2006/10/04 12:10:48 gap Exp $
+#H  @(#)$Id: exam.gi,v 1.15 2011/05/31 13:10:58 gap Exp $
 ##
 #Y 2003
 ##
@@ -19,8 +19,8 @@
 POL_KroneckerProduct := function( G, e ) 
     local newGens, gens;
     gens := GeneratorsOfGroup( G );
-    if exp = 0 then 
-        exp := RandomList( [1,-1] );
+    if e = 0 then 
+        e := RandomList( [1,-1] );
     fi;
     newGens := List( gens, x->KroneckerProduct(x,x^e) );
     return Group( newGens );
@@ -850,21 +850,6 @@ POL_DirectProduct:= function( G1, G2 )
     return Group( gens ); 
 end;
 
-#############################################################################
-##
-#F POL_KroneckerProduct
-## 
-## Examples build with the Kroneckerproduct.
-## 
-POL_KroneckerProduct := function( G, e ) 
-    local newGens, gens;
-    gens := GeneratorsOfGroup( G );
-    if exp = 0 then 
-        exp := RandomList( [1,-1] );
-    fi;
-    newGens := List( gens, x->KroneckerProduct(x,x^e) );
-    return Group( newGens );
-end;
 
 #############################################################################
 ##
@@ -1632,4 +1617,3 @@ end;
 # 
 #   H = { (\sigma,g) : \sigma \alpha = g \beta}
 #   K < G \times H
-    

@@ -2,14 +2,14 @@
 ##
 #W  general.g              GAP4 Package `ResClasses'              Stefan Kohl
 ##
-#H  @(#)$Id: general.g,v 1.37 2008/04/22 09:50:22 stefan Exp $
+#H  @(#)$Id: general.g,v 1.41 2011/06/11 13:47:50 stefan Exp $
 ##
 ##  This file contains a couple of functions and methods which are not
 ##  directly related to computations with residue classes, and which might
 ##  perhaps later be moved into the GAP Library.
 ##
 Revision.general_g :=
-  "@(#)$Id: general.g,v 1.37 2008/04/22 09:50:22 stefan Exp $";
+  "@(#)$Id: general.g,v 1.41 2011/06/11 13:47:50 stefan Exp $";
 
 #############################################################################
 ##
@@ -262,6 +262,63 @@ InstallMethod( \in,
 
 #############################################################################
 ##
+#M  \^( <p>, <G> ) . . . . . . . orbit of a point under the action of a group
+##
+##  Returns the orbit of the point <p> under the action of the group <G>,
+##  with respect to the action OnPoints.
+##
+##  The following cases are handled specially:
+##
+##    - if <p> is an element of <G>, then the method returns the
+##      conjugacy class of <G> which contains <p>, and
+##    - if <p> is a subgroup of <G>, then the method returns the
+##      conjugacy class of subgroups of <G>  which contains <p>.
+##
+InstallOtherMethod( \^, "orbit of a point under the action of a group",
+                    ReturnTrue, [ IsObject, IsGroup ], 0,
+
+  function ( p, G )
+    if   p in G then return ConjugacyClass(G,p);
+    elif IsGroup(p) and IsSubgroup(G,p)
+    then return ConjugacyClassSubgroups(G,p);
+    else return Orbit(G,p,OnPoints); fi;
+  end );
+
+#############################################################################
+##
+#S  A tool for telling GAP about linear order relations (inclusions, etc.) //
+##  between certain objects (particularly domains). /////////////////////////
+##
+#############################################################################
+
+#############################################################################
+##
+#F  LinearOrder( <rel>, <domains> )
+##
+DeclareGlobalFunction( "LinearOrder" );
+InstallGlobalFunction( LinearOrder,
+
+  function ( rel, domains )
+
+    local  pairs, pair;
+
+    pairs := Combinations([1..Length(domains)],2);
+    for pair in pairs do
+      InstallMethod( rel,
+                     Concatenation( "for ",NameFunction(domains[pair[2]]),
+                                    " and ",NameFunction(domains[pair[1]]) ),
+                     ReturnTrue, [domains[pair[1]],domains[pair[2]]], 0,
+                     ReturnFalse );
+      InstallMethod( rel,
+                     Concatenation( "for ",NameFunction(domains[pair[1]]),
+                                    " and ",NameFunction(domains[pair[2]]) ),
+                     ReturnTrue, [domains[pair[2]],domains[pair[1]]], 0,
+                     ReturnTrue );
+    od;
+  end );
+
+#############################################################################
+##
 #S  Miscellanea. ////////////////////////////////////////////////////////////
 ##
 #############################################################################
@@ -279,6 +336,17 @@ BindGlobal( "BlankFreeString",
     str := String(obj);
     RemoveCharacters(str," ");
     return str;
+  end );
+
+#############################################################################
+##
+#F  IntOrInfinityToLaTeX( n )
+##
+BindGlobal( "IntOrInfinityToLaTeX",
+  function( n )
+    if   IsInt(n)      then return String(n);
+    elif IsInfinity(n) then return "\\infty";
+    else return fail; fi;
   end );
 
 #############################################################################

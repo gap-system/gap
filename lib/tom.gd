@@ -3,7 +3,7 @@
 #W  tom.gd                   GAP library                       Götz Pfeiffer
 #W                                                          & Thomas Merkwitz
 ##
-#H  @(#)$Id: tom.gd,v 4.57 2010/02/23 15:13:33 gap Exp $
+#H  @(#)$Id: tom.gd,v 4.60 2011/03/28 08:15:24 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -27,7 +27,7 @@
 ##  13. Generic Construction of Tables of Marks
 ##
 Revision.tom_gd :=
-    "@(#)$Id: tom.gd,v 4.57 2010/02/23 15:13:33 gap Exp $";
+    "@(#)$Id: tom.gd,v 4.60 2011/03/28 08:15:24 gap Exp $";
 
 
 #############################################################################
@@ -974,10 +974,10 @@ DeclareAttribute( "UnderlyingGroup", IsTableOfMarks );
 ##  [ 1, 1, 1, 1, 1, 1, 1, 1, 9 ]
 ##  gap> IdempotentsTomInfo( a5 );
 ##  rec( 
-##    primidems := [ [ 1, -2, -1, 0, 0, 1, 1, 1 ], [ -1, 2, 1, 0, 0, -1, -1, -1, 
-##            1 ] ], 
 ##    fixpointvectors := [ [ 1, 1, 1, 1, 1, 1, 1, 1, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 
-##            0, 1 ] ] )
+##            0, 1 ] ], 
+##    primidems := [ [ 1, -2, -1, 0, 0, 1, 1, 1 ], [ -1, 2, 1, 0, 0, -1, -1, -1, 
+##            1 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1083,8 +1083,8 @@ DeclareAttribute( "MatTom", IsTableOfMarks );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> MoebiusTom( a5 );
-##  rec( mu := [ -60, 4, 2,,, -1, -1, -1, 1 ], nu := [ -1, 2, 1,,, -1, -1, -1, 1 ]
-##      , ex := [ -60, 4, 2,,, -1, -1, -1, 1 ], hyp := [  ] )
+##  rec( ex := [ -60, 4, 2,,, -1, -1, -1, 1 ], hyp := [  ], 
+##    mu := [ -60, 4, 2,,, -1, -1, -1, 1 ], nu := [ -1, 2, 1,,, -1, -1, -1, 1 ] )
 ##  gap> tom:= TableOfMarks( "M12" );;
 ##  gap> moebius:= MoebiusTom( tom );;
 ##  gap> moebius.hyp;
@@ -1796,14 +1796,14 @@ DeclareOperation( "MinimalSupergroupsTom", [ IsTableOfMarks, IsPosInt ] );
 ##  &GAP; provides two different possibilities to store generators of the
 ##  representatives of classes of subgroups.
 ##  The first is implemented by the attribute
-##  <Ref Func="GeneratorsSubgroupsTom"/>, which uses explicit generators.
-##  The second, more general, possibility is implemented by the attributes
-##  <Ref Func="StraightLineProgramsTom"/> and
-##  <Ref Func="StandardGeneratorsInfo" Label="for tables of marks"/>.
-##  The <Ref Func="StraightLineProgramsTom"/> value encodes the generators as
+##  <Ref Func="GeneratorsSubgroupsTom"/>, which uses explicit generators
+##  of the subgroups.
+##  The second, more general, possibility is implemented by the attribute
+##  <Ref Func="StraightLineProgramsTom"/>, which encodes the generators as
 ##  straight line programs (see&nbsp;<Ref Sect="Straight Line Programs"/>)
 ##  that evaluate to the generators in question when applied to
-##  standard generators of <M>G</M>.
+##  <E>standard generators</E> of <M>G</M>.
+##  <!--, see <Ref Sect="Standard Generators of Groups" BookName="tomlib"/>. -->
 ##  This means that on the one hand, standard generators of <M>G</M> must be
 ##  known in order to use <Ref Func="StraightLineProgramsTom"/>.
 ##  On the other hand, the straight line programs allow one to compute easily
@@ -1811,7 +1811,7 @@ DeclareOperation( "MinimalSupergroupsTom", [ IsTableOfMarks, IsPosInt ] );
 ##  generators of the image of <M>U</M> in any representation of <M>G</M>,
 ##  provided that one knows standard generators of the image of <M>G</M>
 ##  under this representation.
-##  See&nbsp;<Ref Func="RepresentativeTomByGenerators"/> for details
+##  See the manual of the package <Package>TomLib</Package> for details
 ##  and an example.
 ##  <#/GAPDoc>
 ##
@@ -1878,67 +1878,6 @@ DeclareAttribute( "GeneratorsSubgroupsTom", IsTableOfMarks );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "StraightLineProgramsTom", IsTableOfMarks );
-
-
-#############################################################################
-##
-#A  StandardGeneratorsInfo( <tom> )
-##
-##  <#GAPDoc Label="StandardGeneratorsInfo:tom">
-##  <ManSection>
-##  <Attr Name="StandardGeneratorsInfo" Arg='tom'
-##  Label="for tables of marks"/>
-##
-##  <Description>
-##  For a table of marks <A>tom</A>, a stored value of
-##  <Ref Func="StandardGeneratorsInfo" Label="for tables of marks"/>
-##  equals  the  value  of  this   attribute   for   the   underlying   group
-##  (see&nbsp;<Ref Attr="UnderlyingGroup" Label="for tables of marks"/>)
-##  of <A>tom</A>,
-##  cf.&nbsp;Section&nbsp;<Ref Sect="Standard Generators of Groups"/>.
-##  <P/>
-##  In this case, the <Ref Func="GeneratorsOfGroup"/> value of the underlying
-##  group <M>G</M> of <A>tom</A> is assumed to be in fact a list of
-##  standard generators for <M>G</M>;
-##  So one should be careful when setting the
-##  <Ref Func="StandardGeneratorsInfo" Label="for tables of marks"/> value
-##  by hand.
-##  <P/>
-##  There is no default method to compute the
-##  <Ref Func="StandardGeneratorsInfo" Label="for tables of marks"/> value
-##  of a table of marks if it is not yet stored.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> std:= StandardGeneratorsInfo( a5 );
-##  [ rec( generators := "a, b", ATLAS := true, 
-##        description := "|a|=2, |b|=3, |ab|=5", 
-##        script := [ [ 1, 2 ], [ 2, 3 ], [ 1, 1, 2, 1, 5 ] ] ) ]
-##  gap> # Now find standard generators of an isomorphic group.
-##  gap> g:= SL(2,4);;
-##  gap> repeat
-##  >   x:= PseudoRandom( g );
-##  > until Order( x ) = 2;
-##  gap> repeat
-##  >   y:= PseudoRandom( g );
-##  > until Order( y ) = 3 and Order( x*y ) = 5;
-##  gap> # Compute a representative w.r.t. these generators.
-##  gap> RepresentativeTomByGenerators( a5, 4, [ x, y ] );
-##  Group([ [ [ Z(2)^0, Z(2^2)^2 ], [ 0*Z(2), Z(2)^0 ] ], 
-##    [ [ Z(2)^0, Z(2^2) ], [ 0*Z(2), Z(2)^0 ] ] ])
-##  gap> # Show that the new generators are really good.
-##  gap> grp:= UnderlyingGroup( a5 );;
-##  gap> iso:= GroupGeneralMappingByImages( grp, g,
-##  >              GeneratorsOfGroup( grp ), [ x, y ] );;
-##  gap> IsGroupHomomorphism( iso );
-##  true
-##  gap> IsBijective( iso );
-##  true
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareAttribute( "StandardGeneratorsInfo", IsTableOfMarks );
 
 
 #############################################################################
@@ -2359,7 +2298,6 @@ BindGlobal( "TableOfMarksComponents", [
       "UnderlyingGroup",            UnderlyingGroup,
       "StraightLineProgramsTom",    StraightLineProgramsTom,
       "GeneratorsSubgroupsTom",     GeneratorsSubgroupsTom,
-      "StandardGeneratorsInfo",     StandardGeneratorsInfo,
       "PermutationTom",             PermutationTom,
       "ClassNamesTom",              ClassNamesTom,
     ] );

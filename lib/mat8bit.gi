@@ -2,7 +2,7 @@
 ##
 #W  mat8bit.gi                   GAP Library                     Steve Linton
 ##
-#H  @(#)$Id: mat8bit.gi,v 4.35 2010/02/23 15:13:13 gap Exp $
+#H  @(#)$Id: mat8bit.gi,v 4.40 2011/05/05 09:31:04 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,7 +14,7 @@
 ##  all rows must be the same length and written over the same field
 ##
 Revision.mat8bit_gi :=
-    "@(#)$Id: mat8bit.gi,v 4.35 2010/02/23 15:13:13 gap Exp $";
+    "@(#)$Id: mat8bit.gi,v 4.40 2011/05/05 09:31:04 sal Exp $";
 
 #############################################################################
 ##
@@ -248,7 +248,7 @@ end);
 #############################################################################
 ##
 #M  ConvertToMatrixRepNC( <list>, <fieldsize )
-#M  ConvertToMatrixRepC( <list>[, <fieldsize> | <field>])
+#M  ConvertToMatrixRep( <list>[, <fieldsize> | <field>])
 ##
 
 
@@ -281,7 +281,10 @@ InstallGlobalFunction(ConvertToMatrixRep,
     if Length(arg) > 1 then
         q1 := arg[2];
         if not IsInt(q1) then
-	  if IsField(q1) then
+            if IsField(q1) then
+                if Characteristic(q1) = 0 then
+                    return fail;
+                fi;
 	      q1 := Size(q1);
 	  else
 	    return; # not a field -- exit
@@ -393,7 +396,29 @@ InstallGlobalFunction(ConvertToMatrixRep,
 end);    
 
 
-InstallGlobalFunction(ConvertToMatrixRepNC, function(m,q)    
+InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)    
+    local   v, m,  q, result;
+    if Length(arg) = 1 then
+        return ConvertToMatrixRep(arg[1]);
+    else 
+        m := arg[1];
+        q := arg[2];
+    fi;
+    if Length(m)=0 then
+    	return ConvertToMatrixRep(m,q);  
+    fi;
+    if not IsInt(q) then 
+        q := Size(q);
+    fi;
+    if Is8BitMatrixRep(m) or IsGF2MatrixRep(m) then
+        return;
+    fi;
+    for v in m do
+        result := ConvertToVectorRepNC(v,q);
+        if result <> q then
+            Error("ConvertToMatrixRep: Failed to convert a row");
+        fi;
+    od;
     if q = 2 then
         CONV_GF2MAT(m);
     elif q <= 256 then

@@ -2,7 +2,7 @@
 ##
 #W  domain.gd                   GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: domain.gd,v 4.59 2010/02/23 15:12:55 gap Exp $
+#H  @(#)$Id: domain.gd,v 4.60 2011/04/14 23:10:36 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -95,7 +95,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.domain_gd :=
-    "@(#)$Id: domain.gd,v 4.59 2010/02/23 15:12:55 gap Exp $";
+    "@(#)$Id: domain.gd,v 4.60 2011/04/14 23:10:36 alexk Exp $";
 
 
 #############################################################################
@@ -318,10 +318,12 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  This section describes how you can add  new <Q>in parent attributes</Q>
 ##  (see&nbsp;<Ref Sect="Constructing Subdomains"/>
 ##  and <Ref Sect="Parents"/>).
-##  As an example, we describe how <Ref Func="Index"/>
+##  As an example, we describe how 
+##  <Ref Func="Index" Label="for a group and its subgroup"/>
 ##  and its related functions are implemented.
 ##  <P/>
-##  There are two operations <Ref Func="Index"/> and
+##  There are two operations 
+##  <Ref Func="Index" Label="for a group and its subgroup"/> and
 ##  <C>IndexOp</C>,
 ##  and an attribute <C>IndexInParent</C>.
 ##  They are created together as shown below,
@@ -333,7 +335,8 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  see&nbsp;<Ref Sect="Attributes"/>),
 ##  namely <C>D -> IndexOp( Parent( D ), D )</C>.
 ##  <P/>
-##  The operation <Ref Func="Index"/> proceeds as follows.
+##  The operation <Ref Func="Index" Label="for a group and its subgroup"/> 
+##  proceeds as follows.
 ##  <List>
 ##  <Item>
 ##    If it is called with the two arguments <A>super</A> and <A>sub</A>,
@@ -344,12 +347,13 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  </Item>
 ##  <Item>
 ##    Otherwise, <C>IndexOp</C> is called with the same arguments that
-##    <Ref Func="Index"/> was called with,
+##    <Ref Func="Index" Label="for a group and its subgroup"/> was called with,
 ##    and the result is returned.
 ##  </Item>
 ##  </List>
 ##  (Note that it is in principle possible to install even
-##  <Ref Func="Index"/> and <C>IndexOp</C> methods
+##  <Ref Func="Index" Label="for a group and its subgroup"/> 
+##  and <C>IndexOp</C> methods
 ##  for a number of arguments different from two,
 ##  with <Ref Func="InstallOtherMethod"/>,
 ##  see <Ref Sect="Creating Attributes and Properties"/>).
@@ -375,7 +379,7 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  and <Ref Func="DeclareAttribute"/> otherwise.
 ##  <P/>
 ##  For example, to set up the three objects
-##  <Ref Func="Index"/>, <C>IndexOp</C>,
+##  <Ref Func="Index" Label="for a group and its subgroup"/>, <C>IndexOp</C>,
 ##  and <C>IndexInParent</C> together,
 ##  the declaration file <F>lib/domain.gd</F> contains the following line of
 ##  code.
@@ -384,7 +388,8 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  ]]></Log>
 ##  <P/>
 ##  Note that no methods need be installed for
-##  <Ref Func="Index"/> and <C>IndexInParent</C>.
+##  <Ref Func="Index" Label="for a group and its subgroup"/> 
+##  and <C>IndexInParent</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

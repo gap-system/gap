@@ -2,7 +2,7 @@
 ##
 #W algebra.gd                                               Laurent Bartholdi
 ##
-#H   @(#)$Id: algebra.gd,v 1.11 2009/06/04 20:58:03 gap Exp $
+#H   @(#)$Id: algebra.gd,v 1.15 2011/06/13 22:54:33 gap Exp $
 ##
 #Y Copyright (C) 2007, Laurent Bartholdi
 ##
@@ -34,7 +34,8 @@
 DeclareSynonym("IsFRAlgebra", IsFRElementCollection and IsAlgebra);
 DeclareSynonym("IsFRAlgebraWithOne", IsFRElementCollection and IsAlgebraWithOne);
 DeclareAttribute("AlphabetOfFRAlgebra", IsFRAlgebra);
-DeclareProperty("IsStateClosedFRAlgebra", IsFRAlgebra);
+DeclareAttribute("NucleusMachine", IsFRAlgebra);
+DeclareProperty("IsStateClosed", IsFRAlgebra);
 #############################################################################
 
 #############################################################################
@@ -91,11 +92,13 @@ DeclareGlobalFunction("FRAlgebraWithOne");
 #############################################################################
 ##
 #O SCAlgebra
+#O SCLieAlgebra
 #O SCAlgebraWithOne
 ##
 ## <#GAPDoc Label="SCAlgebra">
 ## <ManSection>
 ##   <Oper Name="SCAlgebra" Arg="m"/>
+##   <Oper Name="SCLieAlgebra" Arg="m"/>
 ##   <Oper Name="SCAlgebraWithOne" Arg="m"/>
 ##   <Oper Name="SCAlgebraNC" Arg="m"/>
 ##   <Oper Name="SCAlgebraWithOneNC" Arg="m"/>
@@ -124,6 +127,29 @@ DeclareGlobalFunction("FRAlgebraWithOne");
 ## </ManSection>
 ##
 ## <ManSection>
+##   <Attr Name="NucleusOfFRAlgebra" Arg="a"/>
+##   <Oper Name="Nucleus" Arg="a" Label="FR algebra"/>
+##   <Returns>The nucleus of the contracting algebra <A>a</A>.</Returns>
+##   <Description>
+##     This function returns the <E>nucleus</E> of the contracting algebra
+##     <A>a</A>, i.e. the smallest subspace <C>N</C> of <A>a</A>
+##     such that the <Ref Oper="LimitStates"/> of every element of <A>a</A>
+##     belong to <C>N</C>.
+##
+##     <P/> This function returns <K>fail</K> if no such <C>N</C> exists.
+##     Usually, it loops forever without being able to decide whether <C>N</C>
+##     is finite or infinite. It succeeds precisely when
+##     <C>IsContracting(g)</C> succeeds.
+## <Example><![CDATA[
+## gap> > a := GrigorchukThinnedAlgebra(2);
+## <self-similar algebra-with-one on alphabet GF(2)^2 with 4 generators, of dimension infinity>
+## gap> NucleusOfFRAlgebra(a);
+## <vector space over GF(2), with 4 generators>
+## ]]></Example>
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
 ##   <Oper Name="BranchingIdeal" Arg="A"/>
 ##   <Returns>An ideal <M>I</M> that contains matrices over itself.</Returns>
 ##   <Description>
@@ -143,10 +169,13 @@ DeclareGlobalFunction("FRAlgebraWithOne");
 ## <#/GAPDoc>
 ##
 DeclareOperation("SCAlgebra", [IsLinearFRMachine]);
+DeclareOperation("SCLieAlgebra", [IsLinearFRMachine]);
 DeclareOperation("SCAlgebraWithOne", [IsLinearFRMachine]);
 DeclareOperation("SCAlgebraNC", [IsLinearFRMachine]);
 DeclareOperation("SCAlgebraWithOneNC", [IsLinearFRMachine]);
 DeclareAttribute("BranchingIdeal", IsFRAlgebra);
+DeclareProperty("IsContracting",IsFRAlgebra);
+DeclareAttribute("NucleusOfFRAlgebra",IsFRAlgebra);
 #############################################################################
 
 #############################################################################
@@ -189,18 +218,36 @@ DeclareOperation("ThinnedAlgebraWithOne", [IsRing, IsFRMonoid]);
 ##
 ## <#GAPDoc Label="Nillity">
 ## <ManSection>
-##   <Oper Name="Nillity" Arg="x"/>
+##   <Attr Name="Nillity" Arg="x"/>
+##   <Prop Name="IsNilElement" Arg="x"/>
 ##   <Returns>The smallest <C>n</C> such that <M>x^n=0</M>.</Returns>
 ##   <Description>
-##     This command computes the nillity of <A>x</A>, i.e. the smallest
-##     <C>n</C> such that <M>x^n=0</M>. The command is of course not
-##     guaranteed to terminate.
+##     The first command computes the nillity of <A>x</A>, i.e. the smallest
+##     <C>n</C> such that <M>x^n=0</M>. The command is not guaranteed to
+##     terminate.
+##
+##     <P/> The second command returns whether <A>x</A> is nil, that is,
+##     whether its nillity is finite.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Attr Name="DegreeOfHomogeneousElement" Arg="x"/>
+##   <Prop Name="IsHomogeneousElement" Arg="x"/>
+##   <Returns>The degree of <A>x</A> in its parent.</Returns>
+##   <Description>
+##     If <A>x</A> belongs to a graded algebra <C>A</C>, then the second
+##     command returns whether <A>x</A> belongs to a homogeneous component
+##     of <C>Grading(A)</C>, and the first command returns the degree of
+##     that component (or <K>fail</K> if no such component exists).
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>
 ##
-DeclareAttribute("Nillity", IsAssociativeElement);
-DeclareOperation("IsNilpotentElement", [IsAssociativeElement]);
+DeclareAttribute("Nillity", IsMultiplicativeElementWithZero);
+DeclareProperty("IsNilElement", IsMultiplicativeElementWithZero);
+DeclareAttribute("DegreeOfHomogeneousElement", IsLinearFRElement);
+DeclareProperty("IsHomogeneousElement", IsLinearFRElement);
 #############################################################################
 
 #############################################################################
@@ -224,6 +271,27 @@ DeclareOperation("IsNilpotentElement", [IsAssociativeElement]);
 ## <self-similar algebra-with-one on alphabet GF(2)^2 with 4 generators>
 ## gap> List([0..4],i->Dimension(MatrixQuotient(a,i)));
 ## [ 1, 2, 6, 22, 78 ]
+## ]]></Example>
+##   </Description>
+## </ManSection>
+## <#/GAPDoc>
+##
+## <#GAPDoc Label="AlgebraHomomorphismbyFunction">
+## <ManSection>
+##   <Oper Name="AlgebraHomomorphismByFunction" Arg="A B f"/>
+##   <Oper Name="AlgebraWithOneHomomorphismByFunction" Arg="A B f"/>
+##   <Returns>A homomorphism from the algebra <A>A</A> to the algebra <A>B</A>.</Returns>
+##   <Description>
+##     These functions construct an algebra homomorphism from a one-argument
+##     function. They do not check that the function actually defines a
+##     homomorphism.
+## <Example><![CDATA[
+## gap> A := MatrixAlgebra(Rationals,2);
+## ( Rationals^[ 2, 2 ] )
+## gap> e1 := AlgebraHomomorphismByFunction(Rationals,A,f->[[f,0],[0,0]]);
+## MappingByFunction( Rationals, ( Rationals^[ 2, 2 ] ), function( f ) ... end )
+## gap> 11^e1;
+## [ [ 11, 0 ], [ 0, 0 ] ]
 ## ]]></Example>
 ##   </Description>
 ## </ManSection>

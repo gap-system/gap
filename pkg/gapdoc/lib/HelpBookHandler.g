@@ -2,7 +2,7 @@
 ##
 #W  HelpBookHandler.g                GAPDoc                      Frank Lübeck
 ##
-#H  @(#)$Id: HelpBookHandler.g,v 1.10 2007/05/18 13:35:47 gap Exp $
+#H  @(#)$Id: HelpBookHandler.g,v 1.12 2011/05/16 07:30:13 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -36,7 +36,7 @@ fi;
 HELP_BOOK_HANDLER.GapDocGAP.apptheme := function(res, theme)
   local a;
   if ANSI_COLORS <> true 
-                  and (not IsBound(res.theme) or res.theme <> false) then
+                  or (not IsBound(res.theme) or res.theme <> false) then
     for a in res.entries do
       a[1] := StripEscapeSequences(a[8]);
     od;
@@ -53,7 +53,10 @@ HELP_BOOK_HANDLER.GapDocGAP.ReadSix := function(stream)
   local fname, res, bname, nam, a, apptheme;
   # our .six file is directly GAP-readable
   fname := ShallowCopy(stream![2]);
-  Read(stream);
+  #Read(stream);
+  # this seems better on NFS file systems ...
+  CloseStream(stream);
+  Read(fname);
   res := HELPBOOKINFOSIXTMP;
   Unbind(HELPBOOKINFOSIXTMP);
   

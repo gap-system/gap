@@ -3,7 +3,7 @@
 *W  finfield.c                  GAP source                      Werner Nickel
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id: finfield.c,v 4.52 2010/02/23 15:13:42 gap Exp $
+*H  @(#)$Id: finfield.c,v 4.54 2011/06/19 20:33:56 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -53,7 +53,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_finfield_c =
-   "@(#)$Id: finfield.c,v 4.52 2010/02/23 15:13:42 gap Exp $";
+   "@(#)$Id: finfield.c,v 4.54 2011/06/19 20:33:56 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1567,12 +1567,10 @@ Obj             PowFFEInt (
     FFV                 vL, vX;         /* value of left, result           */
     Int                 vR;             /* value of right                  */
     FF                  fX;             /* field of result                 */
-    Int                 pX;             /* char. of result                 */
     FF*                 sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opL );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     /* get the right operand                                               */
@@ -1667,6 +1665,7 @@ Obj FuncIS_FFE (
 **  with respect to the root <r> which must lie in the same field like <z>.
 */
 Obj LOG_FFE_LARGE;
+#include <stdio.h>
 
 Obj FuncLOG_FFE_DEFAULT (
     Obj                 self,
@@ -1741,7 +1740,12 @@ Obj FuncLOG_FFE_DEFAULT (
       return Fail;
     }
 
+
+    while (a < 0)
+      a+= (qX -1)/c;
     /* return the logarithm                                                */
+    
+
     return INTOBJ_INT( (((Int) (vZ-1) / c) * a) % ((Int) (qX-1)) );
 
 }
@@ -1792,6 +1796,8 @@ Obj INT_FF (
     /* return the conversion table                                           */
     return ELM_PLIST( IntFF, ff );
 }
+
+
 
 Obj FuncINT_FFE_DEFAULT (
     Obj                 self,

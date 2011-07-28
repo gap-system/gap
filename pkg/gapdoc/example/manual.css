@@ -1,5 +1,5 @@
 /* gapdoc.css        Frank Lübeck */
-/* $Id: manual.css,v 1.8 2007/02/20 16:56:27 gap Exp $  */
+/* $Id: manual.css,v 1.9 2010/10/29 08:10:26 gap Exp $  */
 
 
 /* basic settings */
@@ -157,27 +157,77 @@ div.chlinkprevnextbot a {
 
 
 /* table of contents */
+div.ContSSBlock {
+  display: none;
+}
+
+div.ContSSBlock br {
+  display: none;
+}
+
+/* this is for the main table of contents */
 div.ContChap {
 }
 
+div.ContChap div.ContSect:hover div.ContSSBlock {
+  display: block;
+  position: absolute;
+  background: #aaaaaa;
+  color: #5500ff;
+  left: 50%;
+  width: 50%;
+}
+
+div.ContChap a {
+  display: block;
+  width: 100%;
+}
+
+div.ContChap a:hover {
+  display: block;
+  width: 100%;
+  background: #333333;
+  color: #ffffff;
+}
+
+/* and here for the side menu of contents in the chapter files */
+div.ChapSects {
+}
+
+div.ChapSects a {
+  display: block;
+  width: 100%;
+}
+
+div.ChapSects a:hover {
+  display: block;
+  width: 100%;
+  background: #333333;
+  color: #ffffff;
+}
+
 div.ContSect {
+  text-align: left;
   margin-left: 1em;
 }
 
-span.ContSS {
-  display: none;
-  margin-left: 2em;
-}
-
-div.ContSect:hover span.ContSS {
+div.ChapSects div.ContSect:hover div.ContSSBlock {
   display: block;
-  margin-left: 2em;
+  position: fixed;
+  background: #aaaaaa;
+  color: #5500ff;
+  left: 53%;
+  width: 25%;
+  z-index: 10000;
 }
 
 div.ChapSects {
   position: fixed;
   left: 75%;
   font-size: 80%;
+  overflow: auto;
+  top: 10px;
+  bottom: 0px;
 }
 
 /* Table elements */
@@ -195,6 +245,31 @@ table.GAPDocTable  td, table.GAPDocTable  th {
 }
 
 caption.GAPDocTable {
+  caption-side: bottom;
+  width: 70%;
+  margin-top: 1em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+td.tdleft {
+  text-align: left;
+}
+
+table.GAPDocTablenoborder {
+  border-collapse: collapse;
+  border-style: none;
+  border-color: black;
+}
+
+table.GAPDocTablenoborder  td, table.GAPDocTable  th {
+  padding: 3pt;
+  border-width: 0pt;
+  border-style: solid;
+  border-color: #555555;
+}
+
+caption.GAPDocTablenoborder {
   caption-side: bottom;
   width: 70%;
   margin-top: 1em;
@@ -299,3 +374,7 @@ div.contents {
 div.index {
 }
 
+/* ignore some text for non-css layout */
+span.nocss {
+  display: none;
+}

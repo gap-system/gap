@@ -2,14 +2,14 @@
 ##
 #W  mpc.gd                       GAP library                Laurent Bartholdi
 ##
-#H  @(#)$Id: mpc.gd,v 1.1 2008/06/14 15:45:40 gap Exp $
+#H  @(#)$Id: mpc.gd,v 1.4 2011/04/11 13:17:21 gap Exp $
 ##
 #Y  Copyright (C) 2008 Laurent Bartholdi
 ##
 ##  This file deals with floats
 ##
 Revision.mpc_gd :=
-  "@(#)$Id: mpc.gd,v 1.1 2008/06/14 15:45:40 gap Exp $";
+  "@(#)$Id: mpc.gd,v 1.4 2011/04/11 13:17:21 gap Exp $";
 
 #############################################################################
 ##
@@ -29,13 +29,9 @@ Revision.mpc_gd :=
 ## </ManSection>
 ## <#/GAPDoc>
 ##
-DeclareCategory("IsMPCFloat", IsFloat);
+DeclareCategory("IsMPCFloat", IsFloat and IsDataObjectRep);
 
-BIND_GLOBAL("MPCFloatsFamily", 
-        NewFamily("MPCFloatsFamily", IsMPCFloat));
-
-BIND_GLOBAL("TYPE_MPC", 
-        NewType(MPCFloatsFamily, IsMPCFloat and IsInternalRep));
+BIND_GLOBAL("TYPE_MPC", NewType(FloatsFamily, IsMPCFloat));
 #############################################################################
 
 #############################################################################

@@ -2,7 +2,7 @@
 **
 *W  listfunc.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: listfunc.c,v 4.66 2010/02/23 15:13:44 gap Exp $
+*H  @(#)$Id: listfunc.c,v 4.67 2010/09/17 05:09:23 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,7 +13,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_listfunc_c =
-   "@(#)$Id: listfunc.c,v 4.66 2010/02/23 15:13:44 gap Exp $";
+   "@(#)$Id: listfunc.c,v 4.67 2010/09/17 05:09:23 sal Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -51,7 +51,7 @@ const char * Revision_listfunc_c =
 #include	"tls.h"
 
 #include		<string.h>
-
+#include                <stdlib.h> 
 
 /****************************************************************************
 **
@@ -608,6 +608,62 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
 **  Donald Shell, CACM 2, July 1959, 30-32
 **  Robert Sedgewick, Algorithms 2nd ed., AddWes 1988, 107-123
 */
+
+static void BubbleDown(Obj list, UInt pos, UInt len)
+{
+  UInt lcpos, rcpos;
+  Obj lco, rco,x;
+
+  lcpos = 2*pos;
+  rcpos = 2*pos+1;
+  if (lcpos > len)
+    return;
+  lco = ELM_PLIST(list, lcpos);
+  x = ELM_PLIST(list,pos);
+  if (rcpos > len)
+    {
+      if (LT(x,lco))
+	{
+	  SET_ELM_PLIST(list, pos, lco);
+	  SET_ELM_PLIST(list, lcpos, x);
+	}
+      return;
+    }
+  rco = ELM_PLIST(list, rcpos);
+  if (LT(lco, rco)){
+    if (LT(x,rco)) {
+      SET_ELM_PLIST(list, pos, rco);
+      SET_ELM_PLIST(list, rcpos, x);
+      BubbleDown(list, rcpos, len);
+    }
+  }  else {
+    if (LT(x,lco)) {
+      SET_ELM_PLIST(list, pos, lco);
+      SET_ELM_PLIST(list, lcpos, x);
+      BubbleDown(list, lcpos, len);
+    }
+  }
+  return;
+}
+
+Obj HEAP_SORT_PLIST ( Obj self, Obj list )
+{
+  UInt len = LEN_LIST(list);
+  UInt i;
+  for (i = (len/2); i > 0 ; i--)
+    BubbleDown(list, i, len);
+  for (i = len; i > 0; i--)
+    {
+      Obj x = ELM_PLIST(list, i);
+      Obj y = ELM_PLIST(list, 1);
+      SET_ELM_PLIST(list, i, y);
+      SET_ELM_PLIST(list, 1, x);
+      BubbleDown(list, 1, i-1);
+    }
+  return (Obj) 0;
+}
+  
+
 void SORT_LIST (
     Obj                 list )
 {
@@ -708,6 +764,11 @@ void SORT_LISTComp (
     RESET_FILT_LIST(list, FN_IS_SSORT);
     RESET_FILT_LIST(list, FN_IS_NSORT);
 }
+
+
+
+
+
 
 void SortDensePlistComp (
     Obj                 list,
@@ -1000,10 +1061,8 @@ UInt            RemoveDupsDensePlist (
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
 */
-
 
 /****************************************************************************
 **
@@ -1816,6 +1875,8 @@ Obj FuncBIMULT_MONOMIALS_ALGEBRA_ELEMENT(Obj self,
   return prd;
 }
 
+
+
 /****************************************************************************
 **
 *F  FuncHORSPOOL_LISTS
@@ -1951,6 +2012,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "HORSPOOL_LISTS",3,"list, sub, pre",
       FuncHORSPOOL_LISTS,"src/listfunc.c:HORSPOOL_LISTS" },
+
+    { "HEAP_SORT_PLIST",1,"list",
+      HEAP_SORT_PLIST,"src/listfunc.c:HEAP_SORT_PLIST" },
 
     { 0 }
 

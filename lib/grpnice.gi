@@ -2,7 +2,7 @@
 ##
 #W  grpnice.gi                  GAP library                      Frank Celler
 ##
-#H  @(#)$Id: grpnice.gi,v 4.76 2010/02/23 15:13:05 gap Exp $
+#H  @(#)$Id: grpnice.gi,v 4.78 2011/01/23 09:41:21 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  monomorphisms..
 ##
 Revision.grpnice_gi :=
-    "@(#)$Id: grpnice.gi,v 4.76 2010/02/23 15:13:05 gap Exp $";
+    "@(#)$Id: grpnice.gi,v 4.78 2011/01/23 09:41:21 gap Exp $";
 
 #############################################################################
 ##
@@ -795,7 +795,7 @@ GroupSeriesMethodByNiceMonomorphism( UpperCentralSeriesOfGroup,
 
 #############################################################################
 ##
-#M  RepresentativeAction( <G> )  . . . . upper central series of a group
+#M  RepresentativeAction( <G> )
 ##
 InstallOtherMethod(RepresentativeActionOp,"nice group on elements",
   IsCollsElmsElmsX,[IsHandledByNiceMonomorphism and IsGroup,
@@ -807,8 +807,11 @@ local hom,rep;
     TryNextMethod();
   fi;
   hom:=NiceMonomorphism(G);
-  rep:=RepresentativeAction(NiceObject(G),Image(hom,a),Image(hom,b),
-                               OnPoints);
+  if not ( a in Source( hom ) and b in Source( hom ) ) then
+    TryNextMethod();
+  fi;
+  rep:= RepresentativeAction( NiceObject( G ),
+            ImageElm( hom, a ), ImageElm( hom, b ), OnPoints );
   if rep<>fail then
     rep:=PreImagesRepresentative(hom,rep);
   fi;
@@ -839,10 +842,11 @@ InstallMethod( GroupGeneralMappingByImages,
    "from a group handled by a niceomorphism",true,
     [ IsGroup and IsHandledByNiceMonomorphism, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
-local nice,geni,map2;
+local nice,geni,map2,tmp;
   if RUN_IN_GGMBI=true then
     TryNextMethod();
   fi;
+  tmp := RUN_IN_GGMBI;
   RUN_IN_GGMBI:=true;
   nice:=NiceMonomorphism(G);
   if not IsIdenticalObj(Source(nice),G) then
@@ -850,7 +854,7 @@ local nice,geni,map2;
   fi;
   geni:=List(gens,i->ImageElm(nice,i));
   map2:=GroupGeneralMappingByImages(NiceObject(G),H,geni,imgs);
-  RUN_IN_GGMBI:=false;
+  RUN_IN_GGMBI:=tmp;
   return CompositionMapping(map2,nice);
 end );
 
@@ -862,16 +866,17 @@ InstallMethod( AsGroupGeneralMappingByImages,
   "for Niceomorphisms: avoid recursion",true,
   [IsGroupGeneralMapping and IsNiceMonomorphism],NICE_FLAGS,
 function(hom)
-local h;
+local h, tmp;
   # we actually want to use the next method with `RUN_IN_GGMBI' set to
   # `true'. Therefore we redispatch, but will skip this method the second
   # time.
   if RUN_IN_GGMBI=true then
     TryNextMethod();
   fi;
+  tmp := RUN_IN_GGMBI;
   RUN_IN_GGMBI:=true;
   h:=AsGroupGeneralMappingByImages(hom);
-  RUN_IN_GGMBI:=false;
+  RUN_IN_GGMBI:=tmp;
   return h;
 end);
 
@@ -884,11 +889,12 @@ InstallMethod( PreImagesRepresentative, "for PBG-Niceo",
     [ IsPreimagesByAsGroupGeneralMappingByImages and IsNiceMonomorphism,
       IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
-local p;
+local p, tmp;
   # avoid the double dispatch for `AsGroupGeneralMappingByImages'
-  RUN_IN_GGMBI:=true;
+  tmp := RUN_IN_GGMBI;
+   RUN_IN_GGMBI:=true;
   p:=PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
-  RUN_IN_GGMBI:=false;
+  RUN_IN_GGMBI:=tmp;
   return p;
 end );
 

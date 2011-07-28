@@ -2,7 +2,7 @@
 ##
 #W  ComposeXML.gi                GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: ComposeXML.gi,v 1.10 2008/09/03 07:59:36 gap Exp $
+#H  @(#)$Id: ComposeXML.gi,v 1.12 2010/10/14 23:06:32 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -65,10 +65,11 @@ DOCCOMPOSEERROR := true;
 InstallGlobalFunction(ComposedDocument, function(arg)
   local path, main, source, info, tagname, btag, etag,
         pieces, origin, fname, str, posnl, i, j, pre, pos, name, piece, 
-        b, len, Collect, res, src, f, a, usedpieces;
+        b, len, Collect, res, src, f, a, usedpieces, lenb;
   # get arguments, 5th arg is optional for compatibility with older versions
   tagname := arg[1];
   btag := Concatenation("<#", tagname, " Label=\"");
+  lenb := Length(btag);
   etag := Concatenation("<#/", tagname, ">");
   path := arg[2];
   main := arg[3];
@@ -102,22 +103,22 @@ InstallGlobalFunction(ComposedDocument, function(arg)
         j := j-1;
       od;
       pre := str{[j+1..i-1]};
-      pos := Position(str, '\"', i+15);
+      pos := Position(str, '\"', i+lenb-1);
       if pos=fail then
         Error(f, ": File ends within <#", tagname, " tag.\n");
       fi;     
-      name := str{[i+16..pos-1]};
+      name := str{[i+lenb..pos-1]};
       i := Position(str, '\n', pos);
       if i=fail then
         Error(f, ": File ends within <#", tagname, " piece.\n");
       fi;
       pos := PositionSublist(str, etag, i);
-      while str[pos-1] <> '\n' do
-        pos := pos-1;
-      od;
       if pos=fail then
         Error(f, ": File ends within <#", tagname, " piece.\n");
       fi;
+      while str[pos-1] <> '\n' do
+        pos := pos-1;
+      od;
       piece := SplitString(str{[i+1..pos-1]}, "\n", "");
       for a in [1..Length(piece)] do 
         b := 1;
@@ -133,6 +134,13 @@ InstallGlobalFunction(ComposedDocument, function(arg)
         Add(a, '\n'); 
       od;
       Info(InfoGAPDoc, 3, "Found piece ", name, "\n");
+      if IsBound(pieces.(name)) then
+        Info(InfoGAPDoc, 1, "#W WARNING: overwriting piece with label \"",
+             name,"\"\n#W   Previous occurrence: ",origin.(name)[1],
+             " line ", origin.(name)[2],"\n",
+             "#W   New occurrence: ",fname," line ",PositionSorted(posnl,
+             i+1),"\n");
+      fi;
       pieces.(name) := Concatenation(piece);
       # for each found piece store the filename and number of the first
       # line of the piece in that file

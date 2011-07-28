@@ -34,7 +34,7 @@ typedef struct ThreadLocalStorage
   Bag currLVars;
   Obj *ptrLVars;
   /* From read.c */
-  jmp_buf readJmpError;
+  syJmp_buf readJmpError;
   Obj stackNams;
   UInt countNams;
   UInt readTop;

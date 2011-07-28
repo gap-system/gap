@@ -2,14 +2,14 @@
 ##
 #W  grpprmcs.gi                 GAP library                       Ákos Seress
 ##
-#H  @(#)$Id: grpprmcs.gi,v 4.56 2010/05/01 20:34:18 alexk Exp $
+#H  @(#)$Id: grpprmcs.gi,v 4.58 2011/02/13 21:24:28 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpprmcs_gi :=
-    "@(#)$Id: grpprmcs.gi,v 4.56 2010/05/01 20:34:18 alexk Exp $";
+    "@(#)$Id: grpprmcs.gi,v 4.58 2011/02/13 21:24:28 gap Exp $";
 
 
 #############################################################################
@@ -363,6 +363,7 @@ InstallGlobalFunction( PerfectCSPG,
             stab1,      # stabilizer of first base point in K
             stab2,      # stabilizer of first two base points in K
             kerelement, # element of normal subgroup
+            ker2,       # conjugate of kerelement
             word,       # random element of stab1 as word
             x,y,        # first two base points of K
             i,j,        # loop variables
@@ -406,16 +407,20 @@ InstallGlobalFunction( PerfectCSPG,
                                     chainK.stabilizer.orbit[1]],
                              OnTuples);
             if IsTrivial(stab2) then
-               # a perfect Frobenius group must have SL(2,5) as
-               # one-point stabilizer; 1/120 chance to hit socle
-               prime := FactorsInt(whichcase[2])[1];
-	       repeat
-	         kerelement:=Random(K);
-	       #until (not IsOne(kerelement)) and IsOne(kerelement^prime);
-	       until NrMovedPoints(kerelement)=LargestMovedPoint(K) and
-		     IsOne(kerelement^prime);
 
-               N := NormalClosure(K, SubgroupNC(K,[kerelement]));
+               prime := FactorsInt(whichcase[2])[1];
+               N:=Group(One(K));	       
+               repeat
+	         kerelement:=Random(K);
+                 if NrMovedPoints(kerelement)=LargestMovedPoint(K) and
+		     IsOne(kerelement^prime) then 
+                     ker2:=kerelement^Random(K);
+                     if Comm(kerelement,ker2)=One(K) then 
+                        N := NormalClosure(K, SubgroupNC(K,[kerelement]));
+                     fi;
+                 fi;
+               until Size(N)=whichcase[2];
+
             else
                list := NormalizerStabCSPG(K);
                H := list[1];
@@ -1155,7 +1160,11 @@ InstallGlobalFunction( PullbackKernelCSPG,
                          StabChainMutable( auxiliary[i] ).generators);
            if Length(gens)>6 then
 	     g:=Group(gens,());
-	     SetSize(g,Size(k)*Size(auxiliary[i]));
+	     if IsSubset(auxiliary[i],k) then
+	       SetSize(g,Size(auxiliary[i]));
+	     else
+	       StabChainOptions(g).limit:=Size(k)*Size(auxiliary[i]);
+	     fi;
 	     gens:=SmallGeneratingSet(g);
 	   fi;
        else

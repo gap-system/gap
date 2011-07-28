@@ -3,14 +3,14 @@
 #W    singular.g           Package singular            Willem de Graaf
 #W                                                     Marco Costantini
 ##
-#H    @(#)$Id: singular.g,v 1.56 2006/07/23 17:56:57 gap Exp $
+#H    @(#)$Id: singular.g,v 1.58 2011/05/19 15:51:55 pas Exp $
 ##
 #Y    Copyright (C) 2003 Willem de Graaf and Marco Costantini
 #Y    Copyright (C) 2004, 2005, 2006 Marco Costantini
 ##
 
 Revision.("singular/gap/singular.g") :=
-    "@(#)$Id: singular.g,v 1.56 2006/07/23 17:56:57 gap Exp $";
+    "@(#)$Id: singular.g,v 1.58 2011/05/19 15:51:55 pas Exp $";
 
 ##############################################################################
 ##############################################################################
@@ -2115,6 +2115,25 @@ collections. Introduced in Singular 3.0.0.",
 );
 
 
+# The SingularDataTypes record is traversed in ConvertGapObjToSingObj, and the
+# order of the entries is important. We can't guarantee that GAP will present 
+# the record entries in the order that we have given them (a change introduced 
+# in GAP 4.5). So we here list the order in which they should be tested
+
+SingularDataTypeTestOrder := [ "def", "ideal", "int", "intmat", "intvec", "link", 
+  "map", "matrix", "module", "number", "poly", "proc", "qring", "resolution", 
+  "ring", "string", "vector", "list", "?unknown type?", "none", "bigint", 
+  "package" ];
+
+# And check for sanity that this set is same as the names in the record
+if Set(SingularDataTypeTestOrder) <> Set(RecNames(SingularDataTypes)) then
+  Error( "Singular<->GAP datatypes database error!\n" );
+fi;
+
+
+
+
+
 
 ##############################################################################
 
@@ -2123,7 +2142,7 @@ collections. Introduced in Singular 3.0.0.",
 
 SingularType := function ( obj )
     local  i;
-    for i  in RecNames( SingularDataTypes )  do
+    for i  in SingularDataTypeTestOrder  do
         if SingularDataTypes.(i)[2]( obj )  then
             return i;
         fi;
@@ -2890,48 +2909,6 @@ SingularTest := function (  )
     fn := Filename( DirectoriesPackageLibrary( "singular", "tst" ), testfile );
     
     return ReadTest( fn );
-end;
-
-
-
-ReadPackage("GAPDoc","lib/Examples.g");
-SingularTestDocumentation := function (  )
-local TstExamples2, path;
-
-
-  TstExamples2 := function ( path, main, files )
-      local  str, r, examples, temp_dir, file, otf;
-
-      str := ComposedXMLString( path, Concatenation( main, ".xml" ), files );
-      r := ParseTreeXMLString( str );
-
-#  Print(TstExamples( r ));
-
-      examples := Concatenation( "gap> START_TEST( \"Test by GapDoc\");\n",
-         TstExamples( r ),
-         "\ngap> STOP_TEST( \"test\", 10000 );\n",
-         "Test by GapDoc\nGAP4stones: fail\n" );
-
-      temp_dir := DirectoryTemporary( "gapdoc" );
-      file := Filename( temp_dir, "testfile" );
-      otf := OutputTextFile( file, true );
-      SetPrintFormattingStatus( otf, false );
-      AppendTo( otf, examples );
-      CloseStream( otf );
-
-      ReadTest( file );
-
-      RemoveFile( file );
-      RemoveFile( temp_dir![1] );
-  end;
-
-
-  SizeScreen([80,]);
-  LoadPackage("guava");
-
-  path := DirectoriesPackageLibrary("singular", "doc");
-  TstExamples2( path, "singular", [] );
-
 end;
 
 

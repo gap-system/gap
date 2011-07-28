@@ -3,7 +3,7 @@
 #W  gap.g               OpenMath Package               Andrew Solomon
 #W                                                     Marco Costantini
 ##
-#H  @(#)$Id: gap.g,v 1.61 2009/08/11 14:29:23 alexk Exp $
+#H  @(#)$Id: gap.g,v 1.63 2010/11/12 13:18:23 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -14,7 +14,7 @@
 ##
 
 Revision.("openmath/gap/gap.g") :=
-    "@(#)$Id: gap.g,v 1.61 2009/08/11 14:29:23 alexk Exp $";
+    "@(#)$Id: gap.g,v 1.63 2010/11/12 13:18:23 alexk Exp $";
 
 
 ######################################################################
@@ -33,16 +33,14 @@ BindGlobal("OMgapId",  x->x);
 ##
 ##  OMgapnARGS Throws an error if the argument is not of length n.
 ##
-BindGlobal("OMgap1ARGS",
-function(x)
+BindGlobal("OMgap1ARGS", function(x)
   if Length(x) <> 1 then
     Error("argument list of length 1 expected");
   fi;
 	return true;
 end);
 
-BindGlobal("OMgap2ARGS", 
-function(x)
+BindGlobal("OMgap2ARGS", function(x)
   if Length(x) <> 2 then
     Error("argument list of length 2 expected");
   fi;
@@ -64,11 +62,11 @@ BindGlobal("OMgapPower", x-> OMgapId([OMgap2ARGS(x), x[1]^x[2]])[2]);
 ##
 ##  Semantic mappings for symbols from field3.cd
 ##
-BindGlobal("OMgap_field_by_poly",
+BindGlobal("OMgap_field_by_poly", function( x )
     # The 1st argument of field_by_poly is a univariate polynomial 
-    # ring R over a field, and the second argument is an irreducible    # polynomial f in this polynomial ring R. So, when applied to R
+    # ring R over a field, and the second argument is an irreducible
+    # polynomial f in this polynomial ring R. So, when applied to R
     # and f, the value of field_by_poly is value the quotient ring R/(f).
-	function( x )
 	return AlgebraicExtension( x[1], x[2] );;
 	end);	
 	
@@ -77,14 +75,14 @@ BindGlobal("OMgap_field_by_poly",
 ##
 ##  Semantic mappings for symbols from field4.cd
 ##
-BindGlobal("OMgap_field_by_poly_vector",
+BindGlobal("OMgap_field_by_poly_vector", function( x )
     # The symbol field_by_poly_vector has two arguments, the 1st 
-    # should be a field_by_poly(R,f). The 2nd argument should be a     # list L of elements of F, the coefficient field of the univariate 
+    # should be a field_by_poly(R,f). The 2nd argument should be a 
+    # list L of elements of F, the coefficient field of the univariate 
     # polynomial ring R = F[X]. The length of the list L should be equal 
     # to the degree d of f. When applied to R and L, it represents the 
     # element L[0] + L[1] x + L[2] x^2 + ... + L[d-1] ^(d-1) of R/(f),
     # where x stands for the image of x under the natural map R -> R/(f).
-	function( x )
 	return ObjByExtRep( FamilyObj( One( x[1] ) ), x[2] );
 	end);
 
@@ -92,8 +90,7 @@ BindGlobal("OMgap_field_by_poly_vector",
 ##
 ##  Semantic mappings for symbols from groupname1.cd
 ##
-BindGlobal("OMquaternion_group",	
-	function() 
+BindGlobal("OMquaternion_group", function() 
 	local F, a, b, Q;
 	F := FreeGroup( "a", "b" );
 	a:=F.1; b:=F.2;
@@ -128,8 +125,8 @@ BindGlobal("OMgapGcd", Gcd);
 ## 
 BindGlobal("OMgapNot", x-> OMgapId([OMgap1ARGS(x), not x[1]])[2]);
 BindGlobal("OMgapOr", function(x) local t; return ForAny( x, t -> t = true ); end );
-BindGlobal("OMgapXor", 
-			function(x) local t; return IsOddInt(Number( x, t -> t = true ) ); end );
+BindGlobal("OMgapXor", function(x) 
+	local t; return IsOddInt(Number( x, t -> t = true ) ); end );
 BindGlobal("OMgapAnd", function(x) local t; return ForAll( x, t -> t = true ); end );
 # Old 2-argument versions were:
 # BindGlobal("OMgapOr", x -> OMgapId([OMgap2ARGS(x), x[1] or x[2]])[2]);
@@ -214,11 +211,10 @@ BindGlobal("OMgapIsTransitive",
 ##
 ##  Semantic mappings for symbols from polyd1.cd
 ##
-BindGlobal("OMgap_poly_ring_d_named",
+BindGlobal("OMgap_poly_ring_d_named", function( x )
     # poly_ring_d_named is the constructor of polynomial ring. 
     # The first argument is a ring (the ring of the coefficients), 
     # the remaining arguments are the names of the variables.
-	function( x )
 	local coeffring, indetnames, indets, name;
 	coeffring := x[1];
 	indetnames := x{[2..Length(x)]};
@@ -229,11 +225,10 @@ BindGlobal("OMgap_poly_ring_d_named",
 	end);
 	
 	
-BindGlobal("OMgap_poly_ring_d",
+BindGlobal("OMgap_poly_ring_d",	function( x )
     # poly_ring_d is the constructor of polynomial ring.
     # The first argument is a ring (the ring of the coefficients), 
     # the second is the number of variables as an integer. 
-	function( x )
 	local coeffring, rank;
 	coeffring := x[1];
 	rank := x[2];
@@ -241,11 +236,13 @@ BindGlobal("OMgap_poly_ring_d",
 	end);
 		
 
-BindGlobal("OMgap_SDMP",
-    # SDMP is the constructor for multivariate polynomials without    # any indication of variables or domain for the coefficients.	# Its arguments are just *monomials*. No monomials should differ only by    # the coefficient (i.e it is not permitted to have both 2*x*y and x*y 
+BindGlobal("OMgap_SDMP", function( x )
+    # SDMP is the constructor for multivariate polynomials without
+    # any indication of variables or domain for the coefficients.
+	# Its arguments are just *monomials*. No monomials should differ only by
+    # the coefficient (i.e it is not permitted to have both 2*x*y and x*y 
     # as monomials in a SDMP). 
-	function( x )
-	# we just pass the list of monomials (represented as lists containing
+	# We just pass the list of monomials (represented as lists containing
 	# coefficients and powers and indeterminates) as the 2nd argument in 
 	# the DMP symbol, which will construct the polynomial in the polynomial 
 	# ring given as the 1st argument of the DMP symbol
@@ -253,11 +250,10 @@ BindGlobal("OMgap_SDMP",
 	end);
 	
 	
-BindGlobal("OMgap_DMP",
+BindGlobal("OMgap_DMP",	function( x )
     # DMP is the constructor of Distributed Multivariate Polynomials. 
     # The first argument is the polynomial ring containing the polynomial 
     # and the second is a "SDMP"
-	function( x )
 	local one, polyring, terms, fam, ext, t, term, i, poly;
 	polyring := x[1];
 	one := One( CoefficientsRing( polyring ) );
@@ -283,8 +279,7 @@ BindGlobal("OMgap_DMP",
 ##
 ##  Semantic mappings for symbols from polyu.cd
 ##
-BindGlobal("OMgap_poly_u_rep",
-	function( x )
+BindGlobal("OMgap_poly_u_rep", function( x )
 	local indetname, rep, coeffs, r, i, indet, fam, nr;
 	indetname := x[1];
 	rep := x{[2..Length(x)]};
@@ -303,8 +298,7 @@ BindGlobal("OMgap_poly_u_rep",
 	return LaurentPolynomialByCoefficients( fam, coeffs, 0, nr );
 	end );
 	
-BindGlobal("OMgap_term",
-	x->x );
+BindGlobal("OMgap_term", x->x );
 		
 
 #####################################################################
@@ -1176,7 +1170,6 @@ setname2 := rec(
 
 ));
  
-if LoadPackage("monoid") <> fail then
 
 OMsymRecord.semigroup4 := rec(
 	automorphism_group := AutomorphismGroup, # requires MONOID package and GRAPE, duplicated in semigroup3 CD
@@ -1187,7 +1180,6 @@ OMsymRecord.semigroup4 := rec(
         return SemigroupHomomorphismByImagesOfGensNC( x[1], x[2], List( x[3], g -> g[2] ) );
         end);
 
-fi; 
  
 ######################################################################
 ##
@@ -1196,8 +1188,7 @@ fi;
 ##  Maps a pair [<cd>, <name>] to the corresponding OMgap... function
 ##  defined above by looking up the symbol table.
 ##
-BindGlobal("OMsymLookup", 
-function( symbol )
+BindGlobal("OMsymLookup", function( symbol )
 local cd, name;
 cd := symbol[1];
 name := symbol[2];

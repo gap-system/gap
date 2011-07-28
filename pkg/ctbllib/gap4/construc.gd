@@ -2,7 +2,7 @@
 ##
 #W  construc.gd           GAP 4 package `ctbllib'               Thomas Breuer
 ##
-#H  @(#)$Id: construc.gd,v 1.23 2009/05/08 16:05:35 gap Exp $
+#H  @(#)$Id: construc.gd,v 1.25 2011/02/11 16:04:44 gap Exp $
 ##
 #Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -17,7 +17,7 @@
 ##  9. Miscellaneous
 ##
 Revision.( "ctbllib/gap4/construc_gd" ) :=
-    "@(#)$Id: construc.gd,v 1.23 2009/05/08 16:05:35 gap Exp $";
+    "@(#)$Id: construc.gd,v 1.25 2011/02/11 16:04:44 gap Exp $";
 
 
 #############################################################################
@@ -323,7 +323,7 @@ DeclareGlobalFunction( "PossibleActionsForTypeGS3" );
 ##  <#GAPDoc Label="PossibleCharacterTablesOfTypeGV4">
 ##  <ManSection>
 ##  <Func Name="PossibleCharacterTablesOfTypeGV4"
-##  Arg="tblG, tblG2, acts, identifier[, tblGfustblsG2]"/>
+##  Arg="tblG, tblsG2, acts, identifier[, tblGfustblsG2]"/>
 ##  <Func Name="PossibleCharacterTablesOfTypeGV4"
 ##  Arg="modtblG, modtblsG2, ordtblGV4" Label="for Brauer tables"/>
 ##
@@ -1053,7 +1053,7 @@ DeclareGlobalFunction( "ConstructSubdirect" );
 ##  <Description>
 ##  The wreath product of the library character table with identifier value
 ##  <A>subname</A> with the symmetric group on <A>n</A> points is constructed
-##  using <Ref Func="CharacterTableWreathProduct" BookName="ref"/>,
+##  using <Ref Func="CharacterTableWreathSymmetric" BookName="ref"/>,
 ##  and all its components that are not yet stored on <A>tbl</A> are
 ##  added to <A>tbl</A>.
 ##  <P/>
@@ -1068,17 +1068,24 @@ DeclareGlobalFunction( "ConstructWreathSymmetric" );
 
 #############################################################################
 ##
-#F  ConstructIsoclinic( <tbl>, <factors>[, <nsg>] )
+#F  ConstructIsoclinic( <tbl>, <factors>[, <nsg>[, <centre>]]
+#F                      [, <permclasses>, <permchars>] )
 ##
 ##  <#GAPDoc Label="ConstructIsoclinic">
 ##  <ManSection>
-##  <Func Name="ConstructIsoclinic" Arg="tbl, factors[, nsg]"/>
+##  <Func Name="ConstructIsoclinic"
+##  Arg="tbl, factors[, nsg[, centre]][, permclasses, permchars]"/>
 ##
 ##  <Description>
 ##  constructs first the direct product of library tables as given by the
 ##  list <A>factors</A> of admissible character table names,
 ##  and then constructs the isoclinic table of the result
 ##  using <Ref Func="CharacterTableIsoclinic" BookName="ref"/>.
+##  The arguments <A>nsg</A> and <A>centre</A>, if present, are passed to
+##  <Ref Func="CharacterTableIsoclinic" BookName="ref"/>.
+##  <P/>
+##  If the optional arguments <A>permclasses</A>, <A>permchars</A> are given
+##  then the classes and characters of the result are sorted accordingly.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

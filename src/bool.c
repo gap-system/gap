@@ -2,7 +2,7 @@
 **
 *W  bool.c                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: bool.c,v 4.29 2010/02/23 15:13:39 gap Exp $
+*H  @(#)$Id: bool.c,v 4.30 2010/10/15 21:06:04 alexk Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,7 +17,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_bool_c =
-   "@(#)$Id: bool.c,v 4.29 2010/02/23 15:13:39 gap Exp $";
+   "@(#)$Id: bool.c,v 4.30 2010/10/15 21:06:04 alexk Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -444,10 +444,7 @@ static Int InitLibrary (
     /* bags are registered in 'InitKernel'                                 */
     True  = NewBag( T_BOOL, 0L );
     False = NewBag( T_BOOL, 0L );
-    if (SyFalseEqFail)
-      Fail = False;
-    else
-      Fail  = NewBag( T_BOOL, 0L );
+    Fail  = NewBag( T_BOOL, 0L );
 
     /* `fail' is a variable not a language construct                       */
     gvar = GVarName( "fail" );

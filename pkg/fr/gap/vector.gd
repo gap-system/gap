@@ -2,7 +2,7 @@
 ##
 #W vector.gd                                                Laurent Bartholdi
 ##
-#H   @(#)$Id: vector.gd,v 1.14 2009/06/16 19:12:53 gap Exp $
+#H   @(#)$Id: vector.gd,v 1.19 2011/06/13 22:54:36 gap Exp $
 ##
 #Y Copyright (C) 2007, Laurent Bartholdi
 ##
@@ -38,7 +38,7 @@
 ## <#/GAPDoc>
 ##
 DeclareCategory("IsLinearFRMachine", IsFRMachine);
-DeclareCategory("IsLinearFRElement", IsFRElement);
+DeclareCategory("IsLinearFRElement", IsFRElement and IsMultiplicativeElementWithZero);
 DeclareCategoryCollections("IsLinearFRElement");
 
 #DeclareCategory("IsTransitionTensor", CategoryCollections(CategoryCollections);
@@ -330,8 +330,6 @@ DeclareHandlingByNiceBasis("IsLinearFRElementSpace",
 DeclareOperation("Transitions", [IsLinearFRMachine, IsVector, IsVector]);
 DeclareOperation("Transition", [IsLinearFRMachine, IsVector, IsVector, IsVector]);
 
-DeclareOperation("States", [IsVectorSpace]);
-
 DeclareOperation("NestedMatrixState", [IsLinearFRElement, IsList, IsList]);
 DeclareOperation("NestedMatrixCoefficient", [IsLinearFRElement, IsList, IsList]);
 
@@ -355,7 +353,7 @@ DeclareOperation("LDUDecompositionFRElement", [IsLinearFRElement]);
 #O VectorMachineNC(IsFamily,IsTransitionTensor,IsVector)
 #O VectorElementNC(IsFamily,IsTransitionTensor,IsVector,IsVector)
 #O VectorMachine(IsRing,IsTransitionTensor,IsVector)
-#O VectorElement(IsRing,IsTransitionTensor,IsVector,IsVector)
+#O VectorElement(IsRing,IsTransitionTensor,IsVector,IsVector[,category])
 #O VectorElement(IsRing,IsFreeMagmaRing,IsTransitionTensor,IsVector,IsVector)
 ##
 ## <#GAPDoc Label="VectorMachine">
@@ -363,15 +361,20 @@ DeclareOperation("LDUDecompositionFRElement", [IsLinearFRElement]);
 ##   <Oper Name="VectorMachine" Arg="domain, transitions, output"/>
 ##   <Oper Name="VectorElement" Arg="domain, transitions, output, init"/>
 ##   <Oper Name="VectorMachineNC" Arg="fam, transitions, output"/>
-##   <Oper Name="VectorElementNC" Arg="fam, transitions, output, init"/>
+##   <Oper Name="VectorElementNC" Arg="fam, transitions, output, init, category"/>
 ##   <Returns>A new vector machine/element.</Returns>
 ##   <Description>
 ##     This function constructs a new linear machine or element, of vector type.
 ##
-##     <P/> <A>transitions</A> is a matrix of matrices; for <C>a,b</C> indices of
-##     basis vectors of the alphabet, <C>transitions[a][b]</C> is a square matrix
-##     indexed by the stateset, which is the transition to be effected on the
-##     stateset upon the output <M>a\to b</M>.
+##     <P/> <A>transitions</A> is a matrix of matrices; for <C>a,b</C> indices
+##     of basis vectors of the alphabet, <C>transitions[a][b]</C> is a square
+##     matrix indexed by the stateset, which is the transition to be effected
+##     on the stateset upon the output <M>a\to b</M>.
+##
+##     <P/> The optional last argument <A>category</A> specifies a category
+##     (<Ref Filt="IsAssociativeElement" BookName="ref"/>,
+##     <Ref Filt="IsJacobianElement" BookName="ref"/>,...) to which the new element
+##     should belong.
 ##
 ##     <P/> <A>output</A> and <A>init</A> are vectors in the stateset.
 ##
@@ -408,6 +411,30 @@ DeclareOperation("LDUDecompositionFRElement", [IsLinearFRElement]);
 ## ]]></Example>
 ##   </Description>
 ## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="AssociativeObject" Arg="x"/>
+##   <Returns>An associative object related to <A>x</A>.</Returns>
+##   <Description>
+##     If <A>x</A> belongs to a family that admits a non-associative and
+##     an associative product, and the product of <A>x</A> is non-associative,
+##     this function returns the object corresponding to <A>x</A>, but with
+##     associative product.
+##
+##     <P/> A typical example is that <A>x</A> is a derivation of a vector
+##     space. The product of derivations is <M>a\circ b-b\circ a</M>, and is
+##     not associative; but derivations are endomorphisms of the vector space,
+##     and as such can be composed associatively.
+## <Example><![CDATA[
+## gap> A := VectorElement(Rationals,[[[[0]],[[1]]],[[[1]],[[0]]]],[1],[1],IsJacobianElement);
+## <Linear element on alphabet Rationals^2 with 1-dimensional stateset->
+## gap> A^2;
+## <Zero linear element on alphabet Rationals^2->
+## gap> AssociativeObject(A)^2;
+## <Identity linear element on alphabet Rationals^2>
+## ]]></Example>
+##   </Description>
+## </ManSection>
 ## <#/GAPDoc>
 ##
 DeclareOperation("VectorMachineNC", [IsFamily,IsTransitionTensor,IsVector]);
@@ -415,8 +442,11 @@ DeclareOperation("VectorElementNC", [IsFamily,IsTransitionTensor,IsVector,IsVect
 
 DeclareOperation("VectorMachine", [IsRing,IsTransitionTensor,IsVector]);
 DeclareOperation("VectorElement", [IsRing,IsTransitionTensor,IsVector,IsVector]);
+DeclareOperation("VectorElement", [IsRing,IsTransitionTensor,IsVector,IsVector,IsOperation]);
 
 DeclareOperation("TopElement", [IsRing, IsMatrix]);
+
+DeclareAttribute("AssociativeObject",IsObject);
 #############################################################################
 
 #############################################################################
@@ -566,6 +596,7 @@ DeclareOperation("AsLinearElement", [IsRing,IsFRElement]);
 DeclareOperation("AsVectorMachine", [IsRing,IsFRMachine]);
 DeclareOperation("AsVectorElement", [IsRing,IsFRElement]);
 DeclareOperation("AsVectorMachine", [IsLinearFRMachine]);
+DeclareOperation("AsVectorMachine", [IsVectorSpace and IsFRElementCollection]);
 DeclareOperation("AsVectorElement", [IsLinearFRElement]);
 
 DeclareOperation("AsAlgebraMachine", [IsRing,IsFRMachine]);
@@ -667,6 +698,8 @@ DeclareOperation("AlgebraElementNC", [IsFamily,IsFreeMagmaRing,IsTransitionTenso
 DeclareOperation("AlgebraMachine", [IsRing,IsFreeMagmaRing,IsTransitionTensor,IsVector]);
 DeclareOperation("AlgebraMachine", [IsFreeMagmaRing,IsTransitionTensor,IsVector]);
 DeclareOperation("AlgebraElement", [IsRing,IsFreeMagmaRing,IsTransitionTensor,IsVector,IsVector]);
+DeclareOperation("AlgebraElement", [IsRing,IsFreeMagmaRing,IsTransitionTensor,IsVector,IsVector,IsOperation]);
+DeclareOperation("FRElement", [IsFRMachine,IsObject,IsOperation]);
 DeclareOperation("AlgebraElement", [IsFreeMagmaRing,IsTransitionTensor,IsVector,IsVector]);
 #############################################################################
 

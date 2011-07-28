@@ -2,7 +2,7 @@
 ##
 #W  ctoline9.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoline9.tbl,v 1.5 2009/04/22 12:39:03 gap Exp $
+#H  @(#)$Id: ctoline9.tbl,v 1.6 2010/05/05 13:20:03 gap Exp $
 ##
 #Y  Copyright (C)  2003,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,18 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoline9.tbl,v $
+#H  Revision 1.6  2010/05/05 13:20:03  gap
+#H  - added many class fusions,
+#H  - changed several class fusions according to consistency conditions,
+#H    after systematic checks of consistency
+#H    - with Brauer tables w.r.t. the restriction of characters,
+#H    - of subgroup fusions with the corresponding subgroup fusions between
+#H      proper factors where the factor fusions are stored,
+#H    - of subgroup fusions from maximal subgroups with subgroup fusions of
+#H      extensions inside automorphic extensions
+#H
+#H      TB
+#H
 #H  Revision 1.5  2009/04/22 12:39:03  gap
 #H  added missing maxes of He.2, ON.2, HN.2, Fi24, and B
 #H      TB
@@ -38,7 +50,7 @@
 #H
 ##
 Revision.ctoline9_tbl :=
-    "@(#)$Id: ctoline9.tbl,v 1.5 2009/04/22 12:39:03 gap Exp $";
+    "@(#)$Id: ctoline9.tbl,v 1.6 2010/05/05 13:20:03 gap Exp $";
 
 SET_TABLEFILENAME("ctoline9");
 ALN:= Ignore;
@@ -2603,6 +2615,8 @@ E(5)^2+E(5)^3+2*E(5)^4,E(5)+2*E(5)^3+E(5)^4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 (125,130)]);
 ARC("L3(11)","isSimple",true);
 ARC("L3(11)","extInfo",["","2"]);
+ARC("L3(11)","maxes",["11^2:(5x2L2(11).2)","11^2:(5x2L2(11).2)","L2(11).2",
+"10^2:S3","133:3","L3(2)"]);
 ARC("L3(11)","tomfusion",rec(name:="L3(11)",map:=[1,2,3,5,6,6,6,6,7,7,8,10,10,
 12,12,14,14,14,14,17,17,17,17,15,15,16,16,16,16,19,20,21,21,25,25,25,25,27,27,
 27,27,27,27,28,28,28,28,37,41,41,41,41,44,44,44,44,47,47,47,47,47,47,47,47,61,

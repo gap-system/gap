@@ -1,14 +1,22 @@
 #############################################################################
 ##
-##  schunck.gd                      CRISP                 Burkhard H\"ofling
+##  schunck.gd                      CRISP                    Burkhard Höfling
 ##
-##  @(#)$Id: schunck.gd,v 1.3 2000/11/02 11:57:14 gap Exp $
+##  @(#)$Id: schunck.gd,v 1.4 2011/05/15 19:18:00 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000 Burkhard Höfling
 ##
 Revision.schunck_gd :=
-    "@(#)$Id: schunck.gd,v 1.3 2000/11/02 11:57:14 gap Exp $";
+    "@(#)$Id: schunck.gd,v 1.4 2011/05/15 19:18:00 gap Exp $";
+
+
+#############################################################################
+##
+#P  IsPrimitiveSolvableGroup (<grp>)
+#P  IsPrimitiveSolvable (<grp>)
+##
+DeclareProperty ("IsPrimitiveSolvableGroup", IsGroup);
+DeclareSynonym ("IsPrimitiveSolvable", IsPrimitiveSolvableGroup);
 
 
 #############################################################################

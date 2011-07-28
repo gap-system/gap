@@ -3,7 +3,7 @@ I 1.0. CRISP
 I 1.0. FORMAT package
 C classes.tex 2. Set theoretical classes
 S 2.1. Creating set theoretical classes
-I 2.1. classes!creating
+I 2.1. classes!creation of
 F 2.1. IsClass
 F 2.1. Class
 F 2.1. Class
@@ -30,7 +30,7 @@ F 2.3. Union
 F 2.3. Difference
 C grpclass.tex 3. Generic group classes
 S 3.1. Creating group classes
-I 3.1. group classes!creation
+I 3.1. group classes!creation of
 F 3.1. GroupClass
 F 3.1. GroupClass
 F 3.1. GroupClass
@@ -93,6 +93,7 @@ F 4.2. ProjectorFunction
 S 4.3. Additional attributes for primitive solvable groups
 I 4.3. primitive solvable group!attributes of
 I 4.3. attributes!of primitive solvable group
+F 4.3. IsPrimitiveSolvableGroup
 F 4.3. IsPrimitiveSolvable
 F 4.3. SocleComplement
 S 4.4. Creating formations

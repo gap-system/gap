@@ -2,7 +2,7 @@
 ##
 #W  tietze.gi                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id: tietze.gi,v 4.60 2010/02/23 15:13:33 gap Exp $
+#H  @(#)$Id: tietze.gi,v 4.62 2010/11/01 09:23:37 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  records (i.e., of presentations of finitely presented groups (fp groups).
 ##
 Revision.tietze_gi :=
-    "@(#)$Id: tietze.gi,v 4.60 2010/02/23 15:13:33 gap Exp $";
+    "@(#)$Id: tietze.gi,v 4.62 2010/11/01 09:23:37 gap Exp $";
 
 #############################################################################
 ##
@@ -1813,8 +1813,13 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
 		    fi;
 		  od;
   #Print("fixing ",i," from ",num,"\n");
-		  occRelNums[i]:=pos;
-		  occMultiplicities[i]:=num;
+		  if pos=fail then
+		    Unbind(occRelNums[i]);
+		    Unbind(occMultiplicities[i]);
+		  else
+		    occRelNums[i]:=pos;
+		    occMultiplicities[i]:=num;
+		  fi;
 
 		fi;
 	      fi;
@@ -1838,7 +1843,14 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
     fi;
 
     tietze[TZ_MODIFIED] := modified;
-    tietze[TZ_OCCUR]:=[occTotals,occRelNums,occMultiplicities];
+    if 0 in occTotals then
+      # code might not work if generators vanish.
+      tietze[TZ_OCCUR]:=false;
+    else
+      tietze[TZ_OCCUR]:=[occTotals,occRelNums,occMultiplicities];
+    fi;
+
+    #if tietze[TZ_OCCUR]<>TzOccurrences(tietze) then Error("occur!"); fi;
 
 end );
 

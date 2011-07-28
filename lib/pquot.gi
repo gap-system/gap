@@ -2,12 +2,12 @@
 ##  
 #W  pquot.gi                    GAP Library                     Werner Nickel
 ##
-#H  $Id: pquot.gi,v 4.47 2006/09/26 01:04:44 gap Exp $
+#H  $Id: pquot.gi,v 4.49 2011/05/05 19:27:18 gap Exp $
 ##
 #Y  Copyright (C) 1998  . . . . . . . . .  University of St Andrews, Scotland
 ##
 Revision.pquot_gi :=
-    "$Id: pquot.gi,v 4.47 2006/09/26 01:04:44 gap Exp $";
+    "$Id: pquot.gi,v 4.49 2011/05/05 19:27:18 gap Exp $";
 
 CHECK := false;
 NumberOfCommutators := function( ranks )
@@ -1579,6 +1579,24 @@ local phi, ngens, qs, psi, images, eps;
     SetIsSurjective( eps, true );
 
     return eps;
+end);
+
+InstallMethod( EpimorphismPGroup,"finite groups",true,
+        [IsFinite and IsGroup, IsPosInt ],0,
+function( U, p )
+  return EpimorphismPGroup( U, p, LogInt(Size(U),p) );
+end );    
+
+InstallMethod( EpimorphismPGroup,"finite group, class bound",true,
+  [IsFinite and IsGroup, IsPosInt, IsPosInt ],0,
+function( U, p, c )
+local ser;
+  if IsSubgroupFpGroup(U) or IsFreeGroup(U) then
+    TryNextMethod(); # fp groups *use* the PQ for the central series.
+  fi;
+  ser:=PCentralSeries(U,p);
+  c:=Minimum(c+1,Length(ser));
+  return NaturalHomomorphismByNormalSubgroupNC(U,ser[c]);
 end);
 
 

@@ -3,14 +3,22 @@
 #W  groebner.gi                   GAP Library               Alexander Hulpke   
 #W                                                              David Joyner   
 ##
-#H  @(#)$Id: groebner.gi,v 4.12 2010/01/08 23:24:04 gap Exp $
+#H  @(#)$Id: groebner.gi,v 4.15 2011/05/14 20:44:12 alexk Exp $
 ##
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementations for monomial orderings and Groebner
 ##  bases.
 Revision.groebner_gi :=
-    "@(#)$Id: groebner.gi,v 4.12 2010/01/08 23:24:04 gap Exp $";
+    "@(#)$Id: groebner.gi,v 4.15 2011/05/14 20:44:12 alexk Exp $";
+
+# convenience function to catch cases
+BindGlobal("GBasisFixOrderingArgument",function(a)
+  if IsFunction(a) then
+    a:=a();
+  fi;
+  return a;
+end);
 
 BindGlobal("MakeMonomialOrdering",function(name,ercomp)
 local obj;
@@ -1043,7 +1051,7 @@ local ov,i,d;
       d:=Difference(OccuringVariableIndices(i),ov);
       if Length(d)>0 then 
         Error("Ordering is undefined for variables ",
-	  List(d,j->X(DefaultRing([FamilyObj(i)!.zeroCoefficient]),j)));
+	  List(d,j->Indeterminate(DefaultRing([FamilyObj(i)!.zeroCoefficient]),j)));
       fi;
     od;
   fi;
@@ -1064,15 +1072,19 @@ InstallMethod(StoredGroebnerBasis,"ideal",true,
   [IsPolynomialRingIdeal],0,function(I)
 local ord;
   ord:=MonomialGrlexOrdering();
-  return [GroebnerBasisNC(I,ord),ord];
+  return [ReducedGroebnerBasis(GeneratorsOfTwoSidedIdeal(I),ord),ord];
 end);
 
 InstallMethod(GroebnerBasis,"ideal",true,
   [IsPolynomialRingIdeal,IsMonomialOrdering],0,
 function(I,order)
 local bas;
+  if HasStoredGroebnerBasis(I) then
+    bas:=StoredGroebnerBasis(I);
+    if IsIdenticalObj(bas[2],order) then return bas[1];fi;
+  fi;
   # do some tests
-  bas:=GroebnerBasis(GeneratorsOfIdeal(I),order);
+  bas:=ReducedGroebnerBasis(GeneratorsOfIdeal(I),order);
   if not HasStoredGroebnerBasis(I) then
     SetStoredGroebnerBasis(I,[bas,order]);
   fi;
@@ -1166,7 +1178,7 @@ function(R,f,g)
 local basis_elt,p,t,F,vars,vars2,GB,coeff_t;
   F:=CoefficientsRing(R); 
   vars:=IndeterminatesOfPolynomialRing(R);
-  t:=X(F,vars);
+  t:=Indeterminate(F,vars);
   vars2:=Concatenation([t],vars);
   GB:=ReducedGroebnerBasis([t*f,(1-t)*g],MonomialLexOrdering(vars2));
   for basis_elt in GB do
@@ -1219,7 +1231,140 @@ local orderext, bas, baslte, fam, t, B, i, j, s;
   return bas;
 end);
 
+# setup for quotient rings of polynomial rings
 
+#############################################################################
+##
+#M  NaturalHomomorphismByIdeal(<R>,<I>)
+##
+InstallMethod( NaturalHomomorphismByIdeal,"polynomial rings",IsIdenticalObj,
+    [ IsPolynomialRing,IsRing],
+function(R,I)
+  local ord,b,ind,num,c,corners,i,j,a,bound,mon,n,monb,dim,sc,k,l,char,hom;
+  if not IsIdeal(R,I) then
+    Error("I is not an ideal!");
+  fi;
+  if not IsField(LeftActingDomain(R)) then
+    TryNextMethod();
+  fi;
+  char:=Characteristic(LeftActingDomain(R));
+  ord:=MonomialGrlexOrdering();
+  b:=GroebnerBasis(I,ord);
+
+  # determine all monomials bounded
+  ind:=IndeterminatesOfPolynomialRing(R);
+  n:=Length(ind);
+  num:=List(ind,IndeterminateNumberOfUnivariateRationalFunction);
+  c:=List(b,x->ExtRepNumeratorRatFun(LeadingMonomialOfPolynomial(x,ord))[1]);
+  corners:=[];
+  bound:=List(ind,x->infinity);
+  for i in c do
+    a:=List(ind,x->0);
+    for j in [1,3..Length(i)-1] do
+      a[Position(num,i[j])]:=i[j+1];
+    od;
+    # single variable bound
+    if Number(a,x->x<>0)=1 then
+      bound[PositionNonZero(a)]:=Sum(a);
+    else
+      Add(corners,a); # extra corner
+    fi;
+  od;
+  if not ForAll(bound,x->IsInt(x)) then
+    Info(InfoWarning,1,"quotient ring has infinite dimension");
+    TryNextMethod();
+  fi;
+
+  #run through bounded simplex
+  a:=[0,0];
+  mon:=[a];
+  i:=Length(a);
+  repeat
+    a[i]:=a[i]+1;
+    while i>0 and a[i]>=bound[i] do
+      a[i]:=0;
+      i:=i-1;
+      if i>0 then
+	a[i]:=a[i]+1;
+      fi;
+    od;
+    if i>0 then
+      if ForAny(corners,x->ForAll([1..n],j->x[j]<=a[j])) then
+	# set last coordinate to become 0 again
+	a[n]:=bound[n];
+      else
+	Add(mon,ShallowCopy(a));
+	i:=Length(a);
+      fi;
+    fi;
+  until i=0;
+
+  # basis of the quotient as vector space
+  mon:=List(mon,x->Product([1..n],y->ind[y]^x[y]));
+  monb:=Basis(VectorSpace(LeftActingDomain(R),mon));
+
+  # now form the quotient
+  dim:=Length(mon);
+  sc:=EmptySCTable(dim,0);
+  for i in [1..dim] do
+    for j in [1..dim] do
+      a:=PolynomialReducedRemainder(mon[i]*mon[j],b,ord);
+      if not IsZero(a) then
+	a:=Coefficients(monb,a);
+	if char>0 then
+	  a:=List(a,Int);
+	fi;
+	l:=[];
+	for k in [1..dim] do
+	  if not IsZero(a[k]) then
+	    Add(l,a[k]);
+	    Add(l,k);
+	  fi;
+	od;
+	SetEntrySCTable(sc,i,j,l);
+      fi;
+    od;
+  od;
+  l:=List(mon,x->Concatenation("(",
+        Filtered(String(x),y->y<>'^' and y<>'*'),")"));
+  a:=PositionProperty(mon,IsOne);
+  if a<>fail then
+    l[a]:="(1)";
+  fi;
+
+  a:=AlgebraByStructureConstants(LeftActingDomain(R),sc,l);
+  if Length(l)<50 then
+    j:=Concatenation("<ring ",String(LeftActingDomain(R)));
+    for i in l do
+      Append(j,",");
+      Append(j,i);
+    od;
+    Append(j,">");
+    SetName(a,j);
+  fi;
+  #k:=Concatenation([One(R)],IndeterminatesOfPolynomialRing(R));
+  k:=IndeterminatesOfPolynomialRing(R);
+  l:=[];
+  for i in k do
+    j:=Position(mon,i);
+    if j<>fail then
+      Add(l,GeneratorsOfLeftOperatorRing(a)[j]);
+    else
+      Add(l,Zero(a));
+    fi;
+  od;
+
+  hom:=AlgebraWithOneHomomorphismByImages(R,a,k,l);
+  SetIsSurjective(hom,true);
+  SetKernelOfAdditiveGeneralMapping(hom,I);
+
+  j:=AlgebraWithOneGeneralMappingByImages(a,R,l,k);
+  SetInverseGeneralMapping(hom,j);
+
+  return hom;
+  #x*y^3-x^2,x^3*y^2-y
+
+end);
 
 
 # BindGlobal("CANGB",function(elms,order)

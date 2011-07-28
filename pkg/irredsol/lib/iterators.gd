@@ -1,12 +1,10 @@
 ############################################################################
 ##
-##  iterators.gd                 IRREDSOL                 Burkhard Hoefling
+##  iterators.gd                 IRREDSOL                  Burkhard Höfling
 ##
-##  @(#)$Id: iterators.gd,v 1.2 2005/02/14 12:19:40 gap Exp $
+##  @(#)$Id: iterators.gd,v 1.3 2011/04/07 07:58:08 gap Exp $
 ##
-##  Copyright (C) 2003-2005 by Burkhard Hoefling, 
-##  Institut fuer Geometrie, Algebra und Diskrete Mathematik
-##  Technische Universitaet Braunschweig, Germany
+##  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 ##
 
 
@@ -21,16 +19,20 @@
 ##  To ignore one of the parameters orders, blockdims, max, set it to fail
 ##  If <indices> is fail, all groups are considered.
 ##  
-DeclareGlobalFunction ("SelectionIrreducibleSolvableMatrixGroups");
+DECLARE_IRREDSOL_FUNCTION ("SelectionIrreducibleSolvableMatrixGroups");
 
 
 ############################################################################
 ##
-#F  MaximalAbsolutelyIrreducibleSolvableMatrixGroup(<n>, <q>, <k>)
+#F  OrdersAbsolutelyIrreducibleSolvableMatrixGroups(n, q, blockdims, max)
 ##
-##  see the IRREDSOL manual
+##  returns a set. Each entry is a pair [order, count] describing how many
+##  groups of that order are in the data base whose minimal block dims are in <blockdims>
+##  if max is true, only the maximal solvable groups are counted, if max is
+##  false, the non-maximal ones are returned. 
+##  To ignore one of the parameters blockdims, max, set it to fail
 ##  
-DeclareGlobalFunction ("OrdersAbsolutelyIrreducibleSolvableMatrixGroups");
+DECLARE_IRREDSOL_FUNCTION ("OrdersAbsolutelyIrreducibleSolvableMatrixGroups");
 
 
 ############################################################################
@@ -59,7 +61,7 @@ DeclareGlobalFunction ("CheckAndExtractArguments");
 ##
 ##  see the IRREDSOL manual
 ##  
-DeclareGlobalFunction ("IteratorIrreducibleSolvableMatrixGroups");
+DECLARE_IRREDSOL_FUNCTION ("IteratorIrreducibleSolvableMatrixGroups");
 
 
 ############################################################################
@@ -68,7 +70,7 @@ DeclareGlobalFunction ("IteratorIrreducibleSolvableMatrixGroups");
 ##
 ##  see the IRREDSOL manual
 ##  
-DeclareGlobalFunction ("OneIrreducibleSolvableMatrixGroup");
+DECLARE_IRREDSOL_FUNCTION ("OneIrreducibleSolvableMatrixGroup");
 
 
 ############################################################################
@@ -77,7 +79,7 @@ DeclareGlobalFunction ("OneIrreducibleSolvableMatrixGroup");
 ##
 ##  see the IRREDSOL manual
 ##  
-DeclareGlobalFunction ("AllIrreducibleSolvableMatrixGroups");
+DECLARE_IRREDSOL_FUNCTION ("AllIrreducibleSolvableMatrixGroups");
 
 
 ############################################################################

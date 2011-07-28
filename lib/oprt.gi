@@ -7,7 +7,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.oprt_gi :=
-    "@(#)$Id: oprt.gi,v 4.202 2010/03/12 04:52:41 gap Exp $";
+    "@(#)$Id: oprt.gi,v 4.204 2011/06/12 08:32:33 stefan Exp $";
 
 
 #############################################################################
@@ -571,7 +571,8 @@ end );
 InstallGlobalFunction( ActionHomomorphism, function( arg )
     local   attr,  xset,  p;
     
-    if arg[ Length( arg ) ] = "surjective"  then
+    if arg[ Length( arg ) ] = "surjective"  or
+       arg[ Length( arg ) ] = "onto"  then
         attr := SurjectiveActionHomomorphismAttr;
         Unbind( arg[ Length( arg ) ] );
     else
@@ -976,6 +977,20 @@ InstallGlobalFunction( OrbitByPosOp,
     od;
     return Immutable( orb );
 end );
+
+#############################################################################
+##
+#M  \^( <p>, <G> ) . . . . . . . orbit of a point under the action of a group
+##
+##  Returns the orbit of the point <A>p</A> under the action of the group
+##  <A>G</A>, with respect to the action <C>OnPoints</C>.
+##
+InstallOtherMethod( \^, "orbit of a point under the action of a group",
+                    ReturnTrue, [ IsObject, IsGroup ], 0,
+
+  function ( p, G )
+    return Orbit(G,p,OnPoints);
+  end );
 
 #############################################################################
 ##

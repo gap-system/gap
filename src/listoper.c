@@ -2,7 +2,7 @@
 **
 *W  listoper.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: listoper.c,v 4.89 2010/02/23 15:13:44 gap Exp $
+*H  @(#)$Id: listoper.c,v 4.92 2011/05/15 18:39:14 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,7 +14,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_listoper_c =
-   "@(#)$Id: listoper.c,v 4.89 2010/02/23 15:13:44 gap Exp $";
+   "@(#)$Id: listoper.c,v 4.92 2011/05/15 18:39:14 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -989,15 +989,6 @@ Obj             ProdListList (
     lenL = LEN_LIST( listL );
     lenR = LEN_LIST( listR );
     len =  (lenL < lenR) ? lenL : lenR;
-#if 0
-    if ( len != LEN_LIST( listR ) ) {
-        listR = ErrorReturnObj(
-            "Vector *: <right> must have the same length as <left> (%d)",
-            (Int)LEN_LIST(listR), 0L,
-            "you can replace list <right> via 'return <right>;'" );
-        return PROD( listL, listR );
-    }
-#endif
     /* loop over the entries and multiply and accumulate                   */
     listP = 0;
     imm = 0;
@@ -1194,9 +1185,6 @@ Obj             FuncOneMatrixMutable (
 **  circumstances, we should use a more efficient function based on
 **  calls to AddRowVector, etc.
 */
-#ifdef SYS_IS_MAC_MWC
-#pragma global_optimizer on /* CW Pro 2 can't compile this w/o global optimization */
-#endif
 
 Obj             InvMatrix (
     Obj                 mat,
@@ -1331,10 +1319,6 @@ Obj             InvMatrix (
     /* return the result                                                   */
     return res;
 }
-
-#ifdef SYS_IS_MAC_MWC
-#pragma global_optimizer reset 
-#endif
 
 Obj FuncINV_MATRIX_MUTABLE( Obj self, Obj mat)
 {
@@ -1823,10 +1807,6 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
 **
 */
 
-#ifdef SYS_IS_MAC_MWC
-#pragma global_optimizer on /* CW 11 can't compile this w/o global optimization */
-#endif
-
 Obj ConvertToMatrixRep;
 
 Obj InvMatWithRowVecs( Obj mat, UInt mut)
@@ -1845,7 +1825,6 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
   Obj                 one;            /* one element                     */
   UInt                len;            /* length (and width) of matrix    */
   UInt                i, k, j;        /* loop variables                  */
-  UInt                ctype;          /* type for result                */
 
   /* check that the operand is a *square* matrix                         */
   len = LEN_LIST( mat );
@@ -1873,7 +1852,6 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
   zerov = ZERO( ELMW_LIST(mat, 1));
   zero = ZERO( ELMW_LIST( ELMW_LIST( mat, 1 ), 1 ) );
   one  = ONE( zero );
-  ctype = T_PLIST;
     
   /* set up res (initially the identity) and matcopy */
   res = NEW_PLIST(T_PLIST,len);
@@ -1998,10 +1976,6 @@ Obj FuncINV_MAT_DEFAULT_IMMUTABLE ( Obj self, Obj mat)
 }
 
   
-#ifdef SYS_IS_MAC_MWC
-#pragma global_optimizer reset 
-#endif
-
 /****************************************************************************
 **
 *F  FuncADD_TO_LIST_ENTRIES_PLIST_RANGE( <list>, <range>, <x> )

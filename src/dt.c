@@ -2,7 +2,7 @@
 **
 *W  dt.c                        GAP source                  Wolfgang Merkwitz
 **
-*H  @(#)$Id: dt.c,v 4.30 2010/02/23 15:13:41 gap Exp $
+*H  @(#)$Id: dt.c,v 4.31 2011/05/09 11:11:29 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -55,7 +55,7 @@
 #include       "system.h"
 
 const char * Revision_dt_c =
-   "@(#)$Id: dt.c,v 4.30 2010/02/23 15:13:41 gap Exp $";
+   "@(#)$Id: dt.c,v 4.31 2011/05/09 11:11:29 sal Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -555,13 +555,12 @@ UInt    FindTree(
                  Obj     tree,
                  Int     indexx )
 {
-    UInt   i, len; /*     loop variable                                    */
+    UInt   i; /*     loop variable                                    */
 
     /*  return 0 if (<tree>, indexx) is marked                           */
     if ( DT_IS_MARKED(tree, indexx) )
         return  0;
     i = indexx;
-    len = indexx + DT_LENGTH(tree, indexx);
     /*  loop over all nodes of tree(<tree>, indexx) to find a tree with the
     **  properties described above.                                       */
     while( i < indexx + DT_LENGTH(tree, indexx)  )

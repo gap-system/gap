@@ -2,7 +2,7 @@
 **
 *W  gvars.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gvars.c,v 4.55 2010/02/23 15:13:43 gap Exp $
+*H  @(#)$Id: gvars.c,v 4.56 2011/02/08 12:33:32 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -33,7 +33,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_gvars_c =
-   "@(#)$Id: gvars.c,v 4.55 2010/02/23 15:13:43 gap Exp $";
+   "@(#)$Id: gvars.c,v 4.56 2011/02/08 12:33:32 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -407,6 +407,7 @@ UInt GVarName (
     const Char *        p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
     Int                 len;            /* length of name                  */
+    Int                 len2;           /* length of namespace name        */
 
     /* First see whether it could be namespace-local: */
     cns = TLS->currNamespace ? CSTR_STRING(TLS->currNamespace) : "";
@@ -416,8 +417,8 @@ UInt GVarName (
             gvarbuf[0] = 0;
             if (len > 512) len = 512;
             SyStrncat(gvarbuf,name,len);
-            len = GET_LEN_STRING(TLS->currNamespace);
-            if (len > 511) len = 511;
+            len2 = GET_LEN_STRING(TLS->currNamespace);
+            if (len2 > 511) len2 = 511;
             SyStrncat(gvarbuf+len,cns,GET_LEN_STRING(TLS->currNamespace));
             name = gvarbuf;
         }

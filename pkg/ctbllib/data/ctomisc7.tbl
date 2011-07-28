@@ -2,7 +2,7 @@
 ##
 #W  ctomisc7.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomisc7.tbl,v 1.3 2009/05/11 15:37:12 gap Exp $
+#H  @(#)$Id: ctomisc7.tbl,v 1.4 2010/05/05 13:20:07 gap Exp $
 ##
 #Y  Copyright (C)  2008,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,18 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomisc7.tbl,v $
+#H  Revision 1.4  2010/05/05 13:20:07  gap
+#H  - added many class fusions,
+#H  - changed several class fusions according to consistency conditions,
+#H    after systematic checks of consistency
+#H    - with Brauer tables w.r.t. the restriction of characters,
+#H    - of subgroup fusions with the corresponding subgroup fusions between
+#H      proper factors where the factor fusions are stored,
+#H    - of subgroup fusions from maximal subgroups with subgroup fusions of
+#H      extensions inside automorphic extensions
+#H
+#H      TB
+#H
 #H  Revision 1.3  2009/05/11 15:37:12  gap
 #H  added some missing `tomfusion' mappings
 #H      TB
@@ -26,7 +38,7 @@
 #H
 ##
 Revision.ctomisc7_tbl :=
-    "@(#)$Id: ctomisc7.tbl,v 1.3 2009/05/11 15:37:12 gap Exp $";
+    "@(#)$Id: ctomisc7.tbl,v 1.4 2010/05/05 13:20:07 gap Exp $";
 
 SET_TABLEFILENAME("ctomisc7");
 ALN:= Ignore;
@@ -52,7 +64,7 @@ ALF("2^4:3^2:4","2^4:a6",[1,2,2,6,8,7,3,4,5,9,10,9,10],[
 "fusion map is unique"
 ]);
 ALF("2^4:3^2:4","M22",[1,2,2,3,3,7,2,4,5,4,10,4,10],[
-"fusion map is determined by factoring through 2^4:A6"
+"fusion map uniquely determined by Brauer tables"
 ]);
 
 MOT("2^4:3^2:D8",
@@ -154,6 +166,10 @@ ARC("3^(1+4):4S4","tomfusion",rec(name:="3^(1+4)+.(2S4x2)",map:=[1,4,6,7,
 2,15,9,3,10,20,44,5,8,16,18,41,41,49,49,11,13,23,28,46,78,78],text:=[
 "fusion map is unique"
 ]));
+ALF("3^(1+4):4S4","U4(3).2_3",[1,3,4,5,2,9,17,16,6,18,15,3,4,9,10,13,14,
+23,23,17,7,19,12,23,24,25],[
+"fusion map is unique up to table automorphisms"
+]);
 
 MOT("2^(4+4).(S3xS3).2",
 [

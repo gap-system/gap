@@ -2,7 +2,7 @@
 ##
 #W  BibTeX.gi                    GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: BibTeX.gi,v 1.41 2009/03/18 11:14:35 gap Exp $
+#H  @(#)$Id: BibTeX.gi,v 1.42 2011/03/03 09:22:03 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -1080,6 +1080,11 @@ end);
 ##  <Package>IO</Package>-package <Cite Key="IO"/> is available. The other is,
 ##  of course, that you use these functions from a computer which has access to
 ##  <Package>MathSciNet</Package>.<P/>
+##  
+##  Please note, that the usual license for <Package>MathSciNet</Package> 
+##  access does not allow for automated searches in the database. Therefore,
+##  only use the <Ref Func="SearchMR" /> function for single queries, as you 
+##  would do using your webbrowser.<P/>
 ##  
 ##  <ManSection >
 ##  <Func Arg="qurec" Name="SearchMR" />

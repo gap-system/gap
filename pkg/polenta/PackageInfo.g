@@ -22,15 +22,24 @@ Persons := [
       LastName      := "Assmann",
       FirstNames    := "Bjoern",
       IsAuthor      := true,
-      IsMaintainer  := true,
-      Email         := "BjoernAssmann@gmx.net",
-      WWWHome       := "http://www.dcs.st-and.ac.uk/~bjoern",
-      PostalAddress := Concatenation( [
-            "Mathematical Institute\n",
-            "University of St. Andrews\n",
-            "North Haugh, St. Andrews\n Fife, KY 16 9SS, Scotland" ] ),
-      Place         := "St. Andrews",
-      Institution   := "University of St. Andrews"),
+      WWWHome       := "http://www.dcs.st-and.ac.uk/~bjoern"
+  ),
+
+  rec( LastName      := "Horn",
+       FirstNames    := "Max",
+       IsAuthor      := false,
+       IsMaintainer  := true,
+       Email         := "mhorn@tu-bs.de",
+       WWWHome       := "http://www.icm.tu-bs.de/~mhorn",
+       PostalAddress := Concatenation(
+               "AG Algebra und Diskrete Mathematik\n",
+               "Institut Computational Mathematics\n",
+               "TU Braunschweig\n",
+               "Pockelsstr. 14\n",
+               "D-38106 Braunschweig\n",
+               "Germany" ),
+       Place         := "Braunschweig",
+       Institution   := "TU Braunschweig")
 
 ],
 
@@ -60,10 +69,7 @@ Dependencies := rec(
   GAP := ">= 4.3fix4",
   NeededOtherPackages := [[ "polycyclic", ">=1.1" ],
                           [ "alnuth" , "2.2.3"], ],
-  SuggestedOtherPackages := [ ["aclib", "1.0"]], 
-  ExternalConditions := 
-[["needs KANT/KASH Computer Algebra System Version 2.5",
-"http://www.math.tu-berlin.de/~kant/" ]] 
+  SuggestedOtherPackages := [ ["aclib", "1.0"]],
 ), 
 
 AvailabilityTest := ReturnTrue,             

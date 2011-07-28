@@ -2,7 +2,7 @@
 ##
 #W  object.gi                   GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: object.gi,v 4.44 2010/02/23 15:13:19 gap Exp $
+#H  @(#)$Id: object.gi,v 4.50 2011/05/05 09:47:46 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains some methods applicable to objects in general.
 ##
 Revision.object_gi :=
-    "@(#)$Id: object.gi,v 4.44 2010/02/23 15:13:19 gap Exp $";
+    "@(#)$Id: object.gi,v 4.50 2011/05/05 09:47:46 gap Exp $";
 
 
 #############################################################################
@@ -159,10 +159,118 @@ InstallMethod(String, [IsObject], o-> "<object>");
 
 #############################################################################
 ##
-#M  PrintObj( <obj> ) . . . . . . . . . . . . default View method for objects
+#M  PrintObj( <obj> ) . . . . . . . . . . . default Print method for objects
 ##  
 ##      
-InstallMethod(PrintObj, [IsObject], function(o) Print(String(o)); end );
+InstallMethod(PrintObj, "default method delegating to PrintString",
+  [IsObject], function(o) Print(PrintString(o)); end );
+
+#############################################################################
+##
+#M  PrintString( <obj> ) . . . . . . . . . . . . default delegating to String
+##
+##
+InstallMethod(PrintString, "default method delegating to String",
+  [IsObject], -1, String);
+
+#############################################################################
+##
+#F  StripLineBreakCharacters( <string> ) . . . removes \< and \> characters
+##
+InstallGlobalFunction( StripLineBreakCharacters,
+  function(st)
+    local res,c;
+    res := EmptyString(Length(st));
+    for c in st do 
+        if c <> '\<' and c <> '\>' then
+            Add(res,c);
+        fi;
+    od;
+    ShrinkAllocationString(res);
+    return res;
+  end);
+
+#############################################################################
+##
+#M  PrintString( <obj>, <width> )  . . . . . convert object into a string
+##
+InstallMethod( PrintString,
+    "for an object, and a positive integer",
+    true,
+    [ IsObject,
+      IsPosInt ],
+    0,
+
+function( str, n )
+
+    local   blanks, fill;
+
+    str:= PrintString( str );
+
+    # If <width> is too small, return.
+    if Length( str ) >= n then
+        return ShallowCopy(str);
+    fi;
+
+    # If <width> is positive, blanks are filled in from the left.
+    blanks := "                                                 ";
+    fill := n - Length( str );
+    while fill > 0  do
+        if fill >= Length( blanks )  then
+            str := Concatenation( blanks, str );
+        else
+            str := Concatenation( blanks{ [ 1 .. fill ] }, str );
+        fi;
+        fill := n - Length( str );
+    od;
+    return str;
+end );
+
+
+InstallMethod( PrintString,
+    "for an object, and a negative integer",
+    true,
+    [ IsObject,
+      IsNegRat and IsInt ],
+    0,
+
+function( str, n )
+
+    local   blanks, fill;
+
+    str:= PrintString( str );
+
+    # If <width> is too small, return.
+    if Length( str ) >= -n then
+        return ShallowCopy(str);
+    fi;
+
+    # If <width> is negative, blanks are filled in from the right.
+    blanks := "                                                 ";
+    fill :=  - n - Length( str );
+    while fill > 0  do
+        if fill >= Length( blanks )  then
+            str := Concatenation( str, blanks );
+        else
+            str := Concatenation( str, blanks{ [ 1 .. fill ] } );
+        fi;
+        fill :=  - n - Length( str );
+    od;
+    return str;
+end );
+
+
+InstallMethod( PrintString,
+    "for an object, and zero",
+    true,
+    [ IsObject,
+      IsZeroCyc ],
+    0,
+
+function( str, zero ) 
+    return PrintString( str ); 
+end );
+
 
 #############################################################################
 ##
@@ -280,10 +388,49 @@ InstallMethod( ViewObj,
 
 #############################################################################
 ##
+#V  DEFAULTVIEWSTRING . . . . . . . . . default string returned by ViewString
+##
+BIND_GLOBAL("DEFAULTVIEWSTRING", "<object>");
+
+
+#############################################################################
+##
+#M  ViewObj( <obj> )  . . . . . try view string before delegating to PrintObj
+##
+InstallMethod( ViewObj,
+    "default method trying ViewString",
+    true,
+    [ IsObject ],
+    1, # beat the PrintObj installation in oper1.g
+    function ( obj )  
+      local st;
+      st := ViewString(obj);
+      if not(IsIdenticalObj(st,DEFAULTVIEWSTRING)) then
+          Print(st);
+      else
+          TryNextMethod();
+      fi;
+    end );
+
+
+#############################################################################
+##
 #M  ViewString( <obj> ) . . . . . . . . . . . . . . . for an object with name
 ##
 InstallMethod( ViewString, "for an object with name", true,
-               [ HasName ], 0 , Name );
+               [ IsObject and HasName ], 1 , Name );
+
+
+#############################################################################
+##
+#M  ViewString( <obj> ) . . . . . . . . . . . . . . . . . . . default method
+##
+InstallMethod( ViewString, "generic default method", true,
+               [ IsObject ], 1 ,   # this has to beat the legacy method
+                                   # in the resclasses package
+  function(obj)
+    return DEFAULTVIEWSTRING;
+  end );
 
 
 #############################################################################
@@ -444,19 +591,48 @@ end );
 
 #############################################################################
 ##
+#V  DEFAULTDISPLAYSTRING . . . . . . default string returned by DisplayString
+##
+BIND_GLOBAL("DEFAULTDISPLAYSTRING", "<object>\n");
+
+
+#############################################################################
+##
 #M  Display( <obj> )  . . . . . . . . . . . . . . . . . . . display an object
 ##
 ##  We do not call `PrintObj' because strings shall be displayed without
 ##  enclosing doublequotes.
 ##
 InstallMethod( Display,
-        "generic: use Print",
+        "generic: use DisplayString or otherwise PrintObj",
         true,
         [ IsObject ], 0,
-        function( obj ) 
-    Print(obj, "\n"); 
+  function( obj ) 
+    local st;
+    st := DisplayString(obj);
+    if IsIdenticalObj(st,DEFAULTDISPLAYSTRING) then
+        Print(obj, "\n");
+    else
+        Print(st);
+    fi;
 end );
     
+
+#############################################################################
+##
+#M  DisplayString( <obj> )  . . . . . . . . . . display string for an object
+##
+##  We do not call `PrintObj' because strings shall be displayed without
+##  enclosing doublequotes.
+##
+InstallMethod( DisplayString,
+        "generic: return default string",
+        true,
+        [ IsObject ], -1,
+  function( obj ) 
+    return DEFAULTDISPLAYSTRING;
+  end );
+
 #############################################################################
 ##
 #M  PostMakeImmutable( <obj> ) . . . . . . . . . . . . .do nothing in general
@@ -591,7 +767,7 @@ InstallMethod( MemoryUsage, "fallback method for objs without subobjs",
         fi;
         if MEMUSAGECACHE.depth = 0 then   
             # we were the first to be called, thus we have to do the cleanup
-            MEMUSAGECACHE.ids := [];
+            ClearObjectMarker( MEMUSAGECACHE );
         fi;
     fi;
     return mem;

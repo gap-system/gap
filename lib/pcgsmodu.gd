@@ -2,7 +2,7 @@
 ##
 #W  pcgsmodu.gd                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: pcgsmodu.gd,v 4.26 2010/02/23 15:13:22 gap Exp $
+#H  @(#)$Id: pcgsmodu.gd,v 4.27 2011/01/07 01:05:20 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  another such system.
 ##
 Revision.pcgsmodu_gd :=
-    "@(#)$Id: pcgsmodu.gd,v 4.26 2010/02/23 15:13:22 gap Exp $";
+    "@(#)$Id: pcgsmodu.gd,v 4.27 2011/01/07 01:05:20 alexk Exp $";
 
 #############################################################################
 ##
@@ -170,8 +170,9 @@ DeclareProperty( "IsNumeratorParentPcgsFamilyPcgs", IsModuloPcgs );
 ##  <A>e</A> a pc element in the span of the
 ##  parent pcgs of <A>mpcgs</A> and <A>mpcgs</A> must be the modulo pcgs for
 ##  an abelian layer. (This is the usual case when acting on a chief
-##  factor). In this case if <A>mpcgs</A> is induced by the family pcgs, the
-##  exponents can be computed directly by looking up exponents without
+##  factor). In this case if <A>mpcgs</A> is induced by the family pcgs (see
+##  section <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>), 
+##  the exponents can be computed directly by looking up exponents without
 ##  having to compute in the group and having to collect a potential tail.
 ##  </Description>
 ##  </ManSection>

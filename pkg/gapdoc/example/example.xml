@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- $Id: example.xml,v 1.21 2008/09/03 09:19:38 gap Exp $ -->
+<!-- $Id: example.xml,v 1.23 2011/03/03 09:52:10 gap Exp $ -->
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
  [ <!ENTITY see '<Alt Only="LaTeX">$\to$</Alt><Alt Not="LaTeX">--&gt;</Alt>'>
@@ -22,7 +22,7 @@
   <Author> Max Neunhöffer 
           <Email>neunhoef at mcs.st-and.ac.uk</Email>
   </Author>
-  <Date>June 2008</Date>
+  <Date>March 2011</Date>
   <Address>
   Lehrstuhl D für Mathematik<Br/> Templergraben 
   64<Br/> 52062 Aachen<Br/> (Germany)
@@ -34,7 +34,7 @@
             source text. This should enable new users to learn &GAPDoc;
             quickly.
   </Abstract>
-  <Copyright>&copyright; 2000-2008 by Frank Lübeck and Max Neunhöffer
+  <Copyright>&copyright; 2000-2011 by Frank Lübeck and Max Neunhöffer
   </Copyright>
   <Acknowledgements>We thank Lehrstuhl D für Mathematik.
   </Acknowledgements>
@@ -289,10 +289,10 @@ version of such a formula as in the following example:<P/>
          d                d                 d   
        -----            -----             -----  -----                 
         \                \                 \      \                    
- ==> (   )  x_i b_i )(    )  y_i b_i ) =    )  (   )  x_i y_j h_ijk ) b_k
+ ==> (   )  x_i b_i )(    )  y_j b_j ) =    )  (   )  x_i y_j h_ijk ) b_k
         /                /                 /      /                    
        -----            -----             -----  -----                
-       i = 1            i = 1             k = 1   i,j                
+       i = 1            j = 1             k = 1   i,j                
 </Verb><P/></Alt>
 
 For small formulae without <Q>difficult</Q> parts use the <C>M</C>

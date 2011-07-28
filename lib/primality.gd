@@ -2,14 +2,14 @@
 ##
 #W  primality.gd                GAP library                      Jack Schmidt
 ##
-#H  @(#)$Id: primality.gd,v 4.5 2008/01/09 23:01:44 alexk Exp $
+#H  @(#)$Id: primality.gd,v 4.7 2011/01/29 23:06:06 gap Exp $
 ##
 #Y  Copyright (C)  2005 Jack Schmidt
 ##
 ##  This file contains declarations for the primality test in the integers.
 ##
 Revision.primality_gd :=
-    "@(#)$Id: primality.gd,v 4.5 2008/01/09 23:01:44 alexk Exp $";
+    "@(#)$Id: primality.gd,v 4.7 2011/01/29 23:06:06 gap Exp $";
 
 ##############################################################################
 ##
@@ -86,7 +86,7 @@ DeclareGlobalVariable("CCANT_1_7_3_q65");
 ##  <Func Name="IsSquareInt" Arg='n'/>
 ##
 ##  <Description>
-##  <Ref Func="IsSquareInt"/> tests whether the (positive) integer <A>n</A> 
+##  <Ref Func="IsSquareInt"/> tests whether the (positive) integer <A>n</A>
 ##  is square of an integer or not.
 ##  This test is much faster than the simpler <C>RootInt</C><M>(n)^2=n</M>
 ##  because of the initial residue tests.
@@ -121,24 +121,25 @@ DeclareGlobalFunction("PrimalityProof_FindStructure");
 ##  <Func Name="IsProbablyPrimeInt" Arg='n'/>
 ##
 ##  <Description>
-##  <Ref Func="IsPrimeInt"/> returns <K>false</K> if it can  prove that 
-##  <A>n</A> is composite and <K>true</K> otherwise.
+##  <Ref Func="IsPrimeInt"/> returns <K>false</K> if it can  prove that
+##  the integer <A>n</A> is composite and <K>true</K> otherwise.
 ##  By  convention <C>IsPrimeInt(0) = IsPrimeInt(1) = false</C>
-##  and we define <C>IsPrimeInt(-<A>n</A>) = IsPrimeInt(<A>n</A>)</C>.
+##  and we define
+##  <C>IsPrimeInt(-</C><A>n</A><C>) = IsPrimeInt(</C><A>n</A><C>)</C>.
 ##  <P/>
-##  <Ref Func="IsPrimeInt"/> will return <K>true</K> for every prime <A>n</A>. 
-##  <Ref Func="IsPrimeInt"/> will return <K>false</K> for all composite 
-##  <A>n</A><M> &lt; 10^{13}</M> and for all composite <A>n</A> that have
-##  a factor <M>p &lt; 1000</M>. So for integers <A>n</A><M> &lt; 10^{13}</M>,
+##  <Ref Func="IsPrimeInt"/> will return <K>true</K> for every prime <A>n</A>.
+##  <Ref Func="IsPrimeInt"/> will return <K>false</K> for all composite
+##  <A>n</A> <M>&lt; 10^{13}</M> and for all composite <A>n</A> that have
+##  a factor <M>p &lt; 1000</M>. So for integers <A>n</A> <M>&lt; 10^{13}</M>,
 ##  <Ref Func="IsPrimeInt"/> is a proper primality test. It is conceivable that
-##  <Ref Func="IsPrimeInt"/> may  return <K>true</K> for some  composite 
-##  <A>n</A><M> &gt; 10^{13}</M>, but no such <A>n</A> is currently known.  
-##  So for integers <A>n</A><M> &gt; 10^{13}</M>, <Ref Func="IsPrimeInt"/>
+##  <Ref Func="IsPrimeInt"/> may  return <K>true</K> for some  composite
+##  <A>n</A> <M>&gt; 10^{13}</M>, but no such <A>n</A> is currently known.
+##  So for integers <A>n</A> <M>&gt; 10^{13}</M>, <Ref Func="IsPrimeInt"/>
 ##  is a  probable-primality test. <Ref Func="IsPrimeInt"/> will issue a
 ##  warning when its argument is probably prime but not a proven prime.
-##  (The function <Ref Func="IsProbablyPrimeInt"/> will do a similar 
-##  calculation but not issue a warning.) The warning can be switched off by 
-##  <C>SetInfoLevel( InfoPrimeInt, 0 );</C>, the default level is <M>1</M> 
+##  (The function <Ref Func="IsProbablyPrimeInt"/> will do a similar
+##  calculation but not issue a warning.) The warning can be switched off by
+##  <C>SetInfoLevel( InfoPrimeInt, 0 );</C>, the default level is <M>1</M>
 ##  (also see <Ref Oper="SetInfoLevel"/> ).
 ##  <P/>
 ##  If composites that  fool <Ref Func="IsPrimeInt"/> do exist, they  would be extremely
@@ -160,10 +161,10 @@ DeclareGlobalFunction("PrimalityProof_FindStructure");
 ##  <P/>
 ##  <Ref Func="IsPrimeInt"/> is a method for the general operation <Ref Oper="IsPrime"/>.
 ##  <P/>
-##  Remark: In future versions of &GAP; we hope to change the definition of 
+##  Remark: In future versions of &GAP; we hope to change the definition of
 ##  <Ref Func="IsPrimeInt"/> to return <K>true</K> only for proven primes (currently, we lack
 ##  a sufficiently good primality proving function). In applications, use
-##  explicitly <Ref Func="IsPrimeInt"/> or <Ref Func="IsProbablyPrimeInt"/> 
+##  explicitly <Ref Func="IsPrimeInt"/> or <Ref Func="IsProbablyPrimeInt"/>
 ##  with this change in mind.
 ##  <Example><![CDATA[
 ##  gap> IsPrimeInt( 2^31 - 1 );
@@ -188,6 +189,18 @@ DeclareGlobalFunction( "IsProbablyPrimeInt" );
 ##  <Func Name="PrimalityProof" Arg='n'/>
 ##
 ##  <Description>
+##  Construct a machine verifable proof of the primality of (the probable
+##  prime) <A>n</A>, following the ideas of <Cite Key="BLS1975"/>.
+##
+##  The proof consists of various Fermat and Lucas pseudoprimality tests,
+##  which taken as a whole prove the primality.  The proof is represented
+##  as a list of witnesses of two kinds.  The first kind, <C>[ "F", divisor,
+##  base ]</C>, indicates a successful Fermat pseudoprimality test, where
+##  <A>n</A> is a strong pseudoprime at <K>base</K> with order not divisible by
+##  <M>(<A>n</A>-1)/divisor</M>.  The second kind, <C>[ "L", divisor,
+##  discriminant, P ]</C> indicates a successful Lucas pseudoprimality test,
+##  for a quadratic form of given <K>discriminant</K> and middle term <K>P</K>
+##  with an extra check at <M>(<A>n</A>+1)/divisor</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -206,3 +219,4 @@ DeclareGlobalVariable("PrimesProofs");
 #############################################################################
 ##
 #E
+

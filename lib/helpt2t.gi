@@ -4,7 +4,7 @@
 #W                                                          Alexander Hulpke
 #W                                                          Greg Gamble
 ##  
-#H  @(#)$Id: helpt2t.gi,v 1.19 2010/02/23 15:13:09 gap Exp $
+#H  @(#)$Id: helpt2t.gi,v 1.20 2011/06/04 19:24:09 gap Exp $
 ##  
 #Y  Copyright  (C)  1996-2001, Lehrstuhl  D  für  Mathematik, RWTH  Aachen,
 #Y  Germany (C) 2001 School Math and  Comp. Sci., University of St Andrews,
@@ -15,7 +15,7 @@
 ##  into text for the "screen" online help viewer.
 ##  
 Revision.helpt2t_gi := 
-  "@(#)$Id: helpt2t.gi,v 1.19 2010/02/23 15:13:09 gap Exp $";
+  "@(#)$Id: helpt2t.gi,v 1.20 2011/06/04 19:24:09 gap Exp $";
   
 #############################################################################
 ##
@@ -324,11 +324,16 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
               EmptyLine();
           fi;
       elif verbatim then
-          if  MATCH_BEGIN(line,"\\endtt") or
-            ( not ttenv and MATCH_BEGIN(line,"\\endexample") ) then
+          if  MATCH_BEGIN(line,"\\endtt") then
               verbatim := false;
               ttenv := false;
               lastblank:=false;
+              EmptyLine();
+          elif  ( not ttenv and MATCH_BEGIN(line,"\\endexample") ) then
+              verbatim := false;
+              ttenv := false;
+              lastblank:=false;
+              buff :=  Concatenation (ListWithIdenticalEntries (width, "-"));
               EmptyLine();
           else
               lastblank:=true;
@@ -399,13 +404,25 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           line:="";
 
       # example environments
-      elif MATCH_BEGIN(line,"\\beginexample")
-        or MATCH_BEGIN(line,"\\begintt")  then
-          ttenv := MATCH_BEGIN(line,"\\begintt");
+      elif MATCH_BEGIN(line,"\\beginexample") then
+          verbatim := true;
+          ttenv := false;
+          EmptyLine();
+          buff := Concatenation (
+            Concatenation (ListWithIdenticalEntries (QuoInt (width-9, 2), "-")), 
+            " Example ",
+            Concatenation (ListWithIdenticalEntries (width - 9 - QuoInt (width-9, 2), "-")));  
+          EmptyLine();
+       elif MATCH_BEGIN(line,"\\begintt")  then
+          ttenv := true;
           verbatim := true;
           EmptyLine();
-      elif MATCH_BEGIN(line,"\\endexample")  # Just in case ...
-        or MATCH_BEGIN(line,"\\endtt")  then
+       elif MATCH_BEGIN(line,"\\endexample") then  # Just in case ...
+          verbatim := false;
+          lastblank:=false;
+          buff := Concatenation (ListWithIdenticalEntries (width-9, "-"));
+          EmptyLine();
+       elif  MATCH_BEGIN(line,"\\endtt")  then
           verbatim := false;
           lastblank:=false;
           EmptyLine();

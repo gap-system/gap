@@ -5,7 +5,7 @@
 ## Methods for the calculation of 
 ## radicalseries and homogeneous series of matrix groups
 ##
-#H  @(#)$Id: series.gd,v 1.1 2003/11/04 14:07:05 gap Exp $
+#H  @(#)$Id: series.gd,v 1.2 2011/05/31 13:10:58 gap Exp $
 ##
 #Y 2003
 ##
@@ -22,14 +22,3 @@ DeclareOperation( "RadicalSeriesSolvableMatGroup", [ IsMatrixGroup ] );
 #############################################################################
 ##
 #E
-
-
-
-
-
-
-
-
-
-
-

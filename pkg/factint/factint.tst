@@ -2,15 +2,14 @@
 ##
 #W  factint.tst              GAP4 Package `FactInt'               Stefan Kohl
 ##
-#H  @(#)$Id: factint.tst,v 1.7 2007/09/26 12:18:52 stefan Exp $
-##
 ##  For purposes of limiting the execution time, the testing numbers given
 ##  here are all 'easy' to factor. This does not mean that the factorization
 ##  routines provided by this package are not capable of factoring much
 ##  'harder' numbers.
 ##
+#############################################################################
 
-gap> START_TEST("$Id: factint.tst,v 1.7 2007/09/26 12:18:52 stefan Exp $");
+gap> START_TEST( "factint.tst" );
 gap> oldwarninglevel := InfoLevel(InfoPrimeInt);;
 gap> SetInfoLevel(InfoPrimeInt,0);
 gap> IntegerFactorization(Factorial(39)+1:ECMDeterministic);

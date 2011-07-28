@@ -2,32 +2,29 @@
 
 This is the README file for the GAP package "Example".
 
-This package serves as an example of how to create a  GAP  4  package.
-This release (2.0) has  been  updated  for  the  new  package  loading
-mechanism introduced in GAP 4.4. Some indications of what changes were
-necessary will be found in comments.
+This package serves as an example of how to create a GAP 4 package.
+This release (3.0) has been updated for the changes in the package 
+loading mechanism introduced in GAP 4.5. 
 
-The  package is  distributed with  the main  GAP archive.  For updates
+The package is distributed with the main GAP archive.  For updates
 between releases of GAP itself check the package Web page
-     http://www.math.rwth-aachen.de/~Greg.Gamble/Example
+
+    http://www.math.rwth-aachen.de/~Greg.Gamble/Example
   
 or the Australian mirrors
 
-http://www.maths.uwa.edu.au/~gregg/Example/      (Perth, Australia)
-http://www.itee.uq.edu.au/~gregg/Example/        (Queensland, Australia)
+	http://www.maths.uwa.edu.au/~gregg/Example/ (Perth, Australia)
+	http://www.itee.uq.edu.au/~gregg/Example/   (Queensland, Australia)
 
-or via the Packages links from the GAP sites
+or via the Packages links from the GAP website 
 
-http://www.gap-system.org/                       (UK)
-http://www.math.rwth-aachen.de/~GAP/             (Germany)
+	http://www.gap-system.org/                     
 
-or the GAP ftp servers
+or the GAP ftp server, dependently on the preferred archive format:
 
-ftp://ftp-gap.dcs.st-and.ac.uk/pub/gap/gap4/zoo/packages/
-ftp://ftp.math.rwth-aachen.de/pub/gap4/zoo/packages/
-
-If you prefer tar.gz or tar.bz2 to zoo archives, substitute tar.gz  or
-tar.bz2 (as appropriate) for zoo in the above paths.
+	ftp://ftp.gap-system.org/pub/gap/gap4/tar.gz/packages/
+	ftp://ftp.gap-system.org/pub/gap/gap4/tar.bz2/packages/
+	ftp://ftp.gap-system.org/pub/gap/gap4/win.zip/packages/
 
 The Example package uses an external binary and therefore  a  complete
 installation only works on UNIX systems  or  systems  that  support  a
@@ -41,16 +38,16 @@ To  complete the  installation of  the ``Example''  package go  to the
 directory `example'  created (the  directory contains  a copy  of this
 README file) and call
 
-  /bin/sh ./configure <path>
+	/bin/sh ./configure <path>
 
 where <path> is a path to the main GAP root directory; so normally you
 would call
 
-  /bin/sh ./configure ../..
+	/bin/sh ./configure ../..
 
 (the ../.. is the default and so may be omitted) and then call
 
-  make 
+	make 
   
 to compile the binary.
 
@@ -61,7 +58,7 @@ architecture.
 
 That's it. Now start GAP and type
 
-  LoadPackage("example");
+	LoadPackage("example");
 
 The ``Example" package banner should appear on the screen. If you have
 not compiled the external binary, you  should  receive  a  warning  of
@@ -76,3 +73,4 @@ manual.
   Werner Nickel,
   Greg Gamble -- 12 February, 2002; 13 January, 2003; 20 June, 2003;
                  31 January, 2006.
+  Alexander Konovalov -- March 2011.               

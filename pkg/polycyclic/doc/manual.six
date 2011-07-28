@@ -130,6 +130,7 @@ F 5.8. PrintPcpPresentation
 F 5.8. PrintPcpPresentation
 S 5.9. Converting to and from a presentation
 F 5.9. IsomorphismPcpGroup
+F 5.9. IsomorphismPcpGroupFromFpGroupWithPcPres
 F 5.9. IsomorphismPcGroup
 C libraries.tex 6. Libraries and examples of pcp-groups
 S 6.1. Libraries of various types of polycyclic groups
@@ -212,14 +213,6 @@ F 7.9. NonAbelianTensorSquarePlus
 F 7.9. WhiteheadQuadraticFunctor
 S 7.10. Schur covers and Schur towers
 F 7.10. SchurCovers
-F 7.10. ReadOrderDB
-F 7.10. NrItCovers
-F 7.10. AllItCovers
-F 7.10. ItCover
-F 7.10. ReadCoclassDB
-F 7.10. NrCcCovers
-F 7.10. AllCcCovers
-F 7.10. CcCover
 C cohom.tex 8. Cohomology for pcp-groups
 S 8.1. Cohomology records
 F 8.1. CRRecordByMats

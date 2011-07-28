@@ -8,7 +8,7 @@
 #M AbelianPcpGroup
 ##
 InstallGlobalFunction( AbelianPcpGroup, function( arg )
-    local coll, i, n, r;
+    local coll, i, n, r, grp;
 
     # catch arguments
     if Length(arg) = 1 and IsInt(arg[1]) then
@@ -30,7 +30,9 @@ InstallGlobalFunction( AbelianPcpGroup, function( arg )
         fi;
     od;
     UpdatePolycyclicCollector(coll);
-    return PcpGroupByCollectorNC( coll );
+    grp := PcpGroupByCollectorNC( coll );
+    SetIsAbelian( grp, true );
+    return grp;
 end );
 
 #############################################################################

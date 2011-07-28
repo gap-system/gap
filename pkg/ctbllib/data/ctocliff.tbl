@@ -2,7 +2,7 @@
 ##
 #W  ctocliff.tbl                GAP table library                Ute Schiffer
 ##
-#H  @(#)$Id: ctocliff.tbl,v 4.15 2009/04/27 08:27:21 gap Exp $
+#H  @(#)$Id: ctocliff.tbl,v 4.17 2010/12/01 17:39:15 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,22 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctocliff.tbl,v $
+#H  Revision 4.17  2010/12/01 17:39:15  gap
+#H  the table "2^8:O8+(2)" is also "O10+(2)M2"
+#H      TB
+#H
+#H  Revision 4.16  2010/05/05 13:20:00  gap
+#H  - added many class fusions,
+#H  - changed several class fusions according to consistency conditions,
+#H    after systematic checks of consistency
+#H    - with Brauer tables w.r.t. the restriction of characters,
+#H    - of subgroup fusions with the corresponding subgroup fusions between
+#H      proper factors where the factor fusions are stored,
+#H    - of subgroup fusions from maximal subgroups with subgroup fusions of
+#H      extensions inside automorphic extensions
+#H
+#H      TB
+#H
 #H  Revision 4.15  2009/04/27 08:27:21  gap
 #H  removed some superfluous explicit <nam>M<n> names,
 #H  which are created automatically
@@ -119,7 +135,7 @@
 #H  ==========================================================================
 ##
 Revision.ctocliff_tbl :=
-    "@(#)$Id: ctocliff.tbl,v 4.15 2009/04/27 08:27:21 gap Exp $";
+    "@(#)$Id: ctocliff.tbl,v 4.17 2010/12/01 17:39:15 gap Exp $";
 
 SET_TABLEFILENAME("ctocliff");
 ALN:= Ignore;
@@ -537,6 +553,7 @@ ALF("2^8:O8+(2)","O10+(2)",[1,3,2,2,5,4,11,3,10,11,5,12,4,13,4,13,5,13,14,
 57,63,81,78,79,65,65],[
 "fusion map is unique up to table automorphisms"
 ]);
+ALN("2^8:O8+(2)",["O10+(2)M2"]);
 
 MOT("2^8:S8(2)",
 [
@@ -906,6 +923,7 @@ ALF("2^(1+22).Co2","B",[1,3,2,3,8,9,5,5,2,5,3,4,8,9,10,13,14,11,11,3,5,5,8,
 144,86,85,90,147,148,87,84,149,150,89,92,95,94,97,157,107,100,105,108,108,
 162,161,163,106,164,112,170,113,171,115,117,175,123,174,124,119,126,121,
 125,132,133,178,179,136,141,137,139,181,140,143,142,144,142]);
+ALN("2^(1+22).Co2",["BN2B"]);
 
 LIBTABLE.LOADSTATUS.ctocliff:="userloaded";
 ALN:= NotifyNameOfCharacterTable;

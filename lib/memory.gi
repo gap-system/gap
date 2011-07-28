@@ -10,7 +10,7 @@
 #############################################################################
 
 Revision.memory_gi :=
-  "@(#)$Id: memory.gi,v 1.3 2010/02/23 15:13:14 gap Exp $";
+  "@(#)$Id: memory.gi,v 1.4 2011/02/04 20:14:28 gap Exp $";
 
 InstallMethod(TypeOfObjWithMemory,"generic",true,[IsFamily],0,
 function(fam)
@@ -123,7 +123,7 @@ InstallGlobalFunction( GroupWithMemory,
     else
         memgens := GeneratorsWithMemory(gens);
     fi;
-    g := Group(memgens);
+    g := GroupWithGenerators(memgens);
     return g;
   end);
 

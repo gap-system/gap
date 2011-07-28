@@ -1,5 +1,5 @@
 default: compile @PWD@/bin/pargap.sh @GAPPATH@/bin/@GAPARCH@
-	echo "DONE"
+	@ echo "DONE"
 	@ if [ ! -d @GAPPATH@/bin/@GAPARCH@ ]; then \
 	  echo ""; \
 	  echo "WARNING:  Directory, @GAPPATH@/bin/@GAPARCH@, not found."; \
@@ -21,6 +21,11 @@ default: compile @PWD@/bin/pargap.sh @GAPPATH@/bin/@GAPARCH@
 	  rm -f @PWD@/bin/pargap.sh; \
 	  mv pargap.sh @PWD@/bin/; \
 	)
+	@ echo ""
+	@ echo "*** ParGAP is ready."
+	@ echo "*** To try it, do:  cd bin; ./pargap.sh"
+	@ echo "*** You can copy pargap.sh _and_ procgroup to another directory"
+	@ echo ""
 
 #HACK:  @PWD@/ needed when making gapmpi.o below.  When that goes away,
 #  @PWD@/ can go away.
@@ -45,11 +50,11 @@ compile: bin/@GAPARCH@/libmpi.a @GAPPATH@/src/gapmpi.c \
 	  rm -f gap.o; \
 	  $(MAKE) \
 	    COPTS="$(COPTS) -DGAPMPI -DPARGAPMPI -DPARGAP" \
-	    MPILIBS="@PWD@/bin/@GAPARCH@/libmpi.a @SOCKETLIBS@" \
+	    MPILIBS="@PWD@/bin/@GAPARCH@/libmpi.a @SOCKETLIBS@ -lpthread" \
 	    MPIINCLUDEDIR=@PWD@/mpinu/. \
 	    GAPMPI_OBJ=gapmpi.o ; \
 	    rm -f gap.o ; \
-            strip gap; \
+	    strip gap; \
 	)
 	# If successful:
 	if [ ! -f @PWD@/../ALLPKG ] ; then \
@@ -63,6 +68,8 @@ clean:
 	rm -f @GAPPATH@/bin/@GAPARCH@/pargap
 	rm -f @GAPPATH@/bin/@GAPARCH@/pargapmpi
 	rm -f @GAPPATH@/bin/@GAPARCH@/gapmpi
+	rm -f @GAPPATH@/bin/@GAPARCH@/gapmpi.o
+	rm -f @GAPPATH@/src/gapmpi.c @GAPPATH@/src/gapmpi.h
 	rm -f bin/pargapmpi.sh
 	rm -f bin/pargap.sh
 	rm -f bin/gapmpi.sh
@@ -78,6 +85,5 @@ distclean: clean
 	rm -f Makefile
 
 dist: distclean
-	( cd @PWD@/..; \
-	  tar cvf pargap-new.tar ./pargap; \
-	  gzip pargap-new.tar )
+	cd @PWD@/..; tar cvf pargap-new.tar ./pargap; gzip pargap-new.tar
+	ls -l ../pargap-new.tar.gz

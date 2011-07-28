@@ -1,0 +1,45 @@
+This describes some of the internals that may have changed in the middle
+of the GAP 4.4 series of releases.  They forced ParGAP to adapt.
+
+It used to be that GAP would look at the C variable, SyBanner, in deciding
+whether to display the banner.  ParGAP could gain control early, because
+  gap.c:main() quickly called pargapmpi.c:InitPargapmpi(),
+  which toggled SyBanner to false.
+
+GAP now looks at the GAP variable,
+GAPInfo.CommandLineOptions.b in deciding whether to display the banner.
+
+In src/gap.c:InitializeGap(), it calls:
+    READ_GAP_ROOT(SySystemInitFile)
+
+SySystemInitFile is set to:  "lib/init.g"
+
+and lib/init.g:"print the banner (but not on the Macintosh version)"
+calls:
+  if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
+    ...
+      Print( GAPInfo.BannerString,
+      "   Loading the library. Please be patient, this may take a while.\n");
+
+It appears that ParGAP's init.g is read only after the banner is displayed.
+
+Also, ParGAP's init.g does:
+if not QUIET and BANNER then
+  ReadPkg("pargap", "lib/banner.g");
+fi;
+and apparently, those GAP variables are no longer supported.  instead,
+one should now use GAPInfo.CommandLineOptions.{q,b} .
+
+===
+The difficulty is that ParGAP gains control early through InitPargapmpi(),
+but the hash table for record names has not yet been built, and the GAP
+variables have not yet been created.
+So, ParGAP cannot do:   GAPInfo.CommandLineOptions.b := false;
+Later, ParGAP gains control again through its own initLibrary() function.
+But this happens near the end of lib/init.g and after the banner has
+already been printed.
+
+An alternative seems to be be to change the command line itself to
+insert "-b" if it is not already in the command line.
+This can be done inside InitPargapmpi, since it receives a copy of
+the command line.

@@ -53,7 +53,7 @@ file are stored in the directory `tex/<name>'.
 For example, the files containing the $p$-modular decomposition matrices
 of $A_5$, for $p \in \{ 2, 3, 5 \}$, are created with
 
-    gap> names:= DacMatNames();;
+    gap> names:= DecMatNames();;
     gap> entry:= First( names, x -> x[1][1] = "A5" );;
     gap> DecMatMakeGroup( entry );
 

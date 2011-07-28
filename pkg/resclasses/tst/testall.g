@@ -3,11 +3,10 @@
 #W  testall.g             GAP4 Package `ResClasses'              Frank Celler
 ##                                                                Stefan Kohl
 ##
-#H  @(#)$Id: testall.g,v 1.8 2007/10/15 07:53:56 stefan Exp $
-##
 ##  This is an adaptation of the test file for the GAP library to the
 ##  `ResClasses' - package.
 ##
+#############################################################################
 
 #############################################################################
 ##

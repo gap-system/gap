@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  normpro.gd                      CRISP                 Burkhard H\"ofling
+##  normpro.gd                      CRISP                    Burkhard Höfling
 ##
-##  @(#)$Id: normpro.gd,v 1.2 2000/10/11 13:24:46 gap Exp $
+##  @(#)$Id: normpro.gd,v 1.3 2011/05/15 19:17:56 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000 Burkhard Höfling
 ##
 Revision.normpro_gd :=
-    "@(#)$Id: normpro.gd,v 1.2 2000/10/11 13:24:46 gap Exp $";
+    "@(#)$Id: normpro.gd,v 1.3 2011/05/15 19:17:56 gap Exp $";
 
 
 #############################################################################

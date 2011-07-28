@@ -2,7 +2,7 @@
 ##
 #W  construc.gi           GAP 4 package `ctbllib'               Thomas Breuer
 ##
-#H  @(#)$Id: construc.gi,v 1.19 2009/05/08 16:05:36 gap Exp $
+#H  @(#)$Id: construc.gi,v 1.22 2011/02/11 16:04:44 gap Exp $
 ##
 #Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -17,7 +17,7 @@
 ##  9. Miscellaneous
 ##
 Revision.( "ctbllib/gap4/construc_gi" ) :=
-    "@(#)$Id: construc.gi,v 1.19 2009/05/08 16:05:36 gap Exp $";
+    "@(#)$Id: construc.gi,v 1.22 2011/02/11 16:04:44 gap Exp $";
 
 
 #############################################################################
@@ -151,6 +151,10 @@ InstallGlobalFunction( PossibleCharacterTablesOfTypeMGA,
     # Compute approximations for power maps of `tblMGA'.
     # (All $p$-th power maps for $p$ coprime to $|A|$ are uniquely
     # determined this way, since inner and outer part are kept separately.)
+#T We know more:
+#T If |A| is a prime and does not divide |M| then the action is
+#T semiregular; we have a unique fixed point for any element in N
+#T that has a p-th root outside N.
     primes:= Set( Factors( tblMGA.Size ) );
     invMGAfusGA:= InverseMap( MGAfusGA );
 
@@ -765,20 +769,8 @@ end );
 #T action of S_3.)
 ##
 InstallGlobalFunction( PossibleActionsForTypeGS3, function( tbl, tblC, tblK )
-    local tfustC,
-          tfustK,
-          c,
-          elms,
-          inner,
-          linK,
-          i,
-          vals,
-          c1,
-          c2,
-          newelms,
-          inv,
-          orbs,
-          orb;
+    local tfustC, tfustK, c, elms, inner, linK, i, vals, c1, c2, newelms,
+          inv, orbs, orb;
 
     # Check that the function is applicable.
     tfustC:= GetFusionMap( tbl, tblC );
@@ -1163,7 +1155,7 @@ InstallGlobalFunction( PossibleCharacterTablesOfTypeGV4,
           # This cannot happen, so the actions must be wrong.
           Info( InfoCharacterTable, 1,
                 "PossibleCharacterTablesOfTypeGV4: contradiction, ",
-                "imposs. inertia subgroup\n" );
+                "imposs. inertia subgroup" );
           return [];
         elif num2 = 0 then
           # The character has inertia subgroup $G$.
@@ -1191,7 +1183,7 @@ InstallGlobalFunction( PossibleCharacterTablesOfTypeGV4,
           if numinv in [ 1, 2 ] then
             Info( InfoCharacterTable, 1,
                   "PossibleCharacterTablesOfTypeGV4: contradiction, ",
-                  "impossible inertia subgroup\n" );
+                  "impossible inertia subgroup" );
             return [];
           elif Permuted( ext[1], acts[1] ) <> ext[1] then
             # The character induces from any of the $G.2_i$.
@@ -1280,9 +1272,10 @@ InstallGlobalFunction( PossibleCharacterTablesOfTypeGV4,
       # check the scalar products with the characters $\chi^{2-}$,
       # for all known irreducible (nonlinear) characters $\chi$.
       pow:= ComputedPowerMaps( tblGV4 )[2];
-      minus:= Set( List( Union( Filtered( irr, x -> NestingDepthA( x ) = 2 ) ),
+      minus:= Set( List( Union( Filtered( irr,
+                                    x -> x[1] <> 1 and
+                                         NestingDepthA( x ) = 2 ) ),
                          chi -> MinusCharacter( chi, pow, 2 ) ) );
-#T omit linear characters here
       nexttodo:= todo;
       repeat
         todo:= ShallowCopy( nexttodo );
@@ -1294,7 +1287,7 @@ InstallGlobalFunction( PossibleCharacterTablesOfTypeGV4,
             # Something must be wrong, for example the given actions.
             Info( InfoCharacterTable, 1,
                   "PossibleCharacterTablesOfTypeGV4: contradiction, ",
-                  "incompat. scalar products\n" );
+                  "incompat. scalar products" );
             return [];
           elif poss1 and not poss2 then
             irr[i]:= irr[i][1];
@@ -1328,14 +1321,21 @@ InstallGlobalFunction( PossibleCharacterTablesOfTypeGV4,
         # Check that the irreducibles are closed under multiplication
         # with linear characters,
         # and that the power maps are admissible.
+        # (Note that `PossiblePowerMaps' is not sufficient here,
+        # we check whether all symmetrizations decompose.
+        # An example where this excludes a candidate table is
+        # `2.U4(3).(2^2)_{133}'.
         tblGV4:= ConvertToCharacterTableNC( ShallowCopy( tblrec ) );
         SetIrr( tblGV4, List( Concatenation( Compacted( poss[i] ) ),
                               chi -> Character( tblGV4, chi ) ) );
         if ForAll( Irr( tblGV4 ), x -> ForAll( LinearCharacters( tblGV4 ),
                    y -> y * x in Irr( tblGV4 ) ) )
            and ForAll( Set( Factors( Size( tblGV4 ) ) ),
-                 p -> not IsEmpty( PossiblePowerMaps( tblGV4, p,
-                  rec( powermap:= ComputedPowerMaps( tblGV4 )[p] ) ) ) ) then
+                 p -> ForAll( Symmetrizations( tblGV4, Irr( tblGV4 ), p ),
+                              x -> NonnegIntScalarProducts( tblGV4, Irr( tblGV4 ), x ) ) ) then
+             #   p -> not IsEmpty( PossiblePowerMaps( tblGV4, p,
+             #    rec( powermap:= ComputedPowerMaps( tblGV4 )[p] ) ) ) ) then
+#T is it possible to detect this earlier?
           SetInfoText( tblGV4,
               "constructed using `PossibleCharacterTablesOfTypeGV4'" );
           AutomorphismsOfTable( tblGV4 );
@@ -1348,7 +1348,7 @@ InstallGlobalFunction( PossibleCharacterTablesOfTypeGV4,
 
     else
 
-      # Test the decomposability of all combinations.
+      # Brauer case: Test the decomposability of all combinations.
 #T improve: consider blockwise, and perhaps for increasing degree
       poss:= [ irr ];
       for i in todo do
@@ -1544,7 +1544,7 @@ InstallGlobalFunction( ConstructProj, function( tbl, irrinfo )
       od;
 
       # Now we have to multiply the values on certain classes `j' with
-      # roots of unity, dependent on the value of `d':
+      # roots of unity, depending on the value of `d':
 #T Note that we do not have the factor fusion from d.G to G available,
 #T since the only tables we have are those of mult.G and G,
 #T together with the projective characters for the various intermediate
@@ -1909,10 +1909,9 @@ InstallGlobalFunction( ConstructDirectProduct, function( arg )
     if 2 < Length( arg ) then
       t:= CharacterTableWithSortedClasses( t, arg[3] );
       t:= CharacterTableWithSortedCharacters( t, arg[4] );
-      if not IsBound( tbl.ClassPermutation ) then
-        # Do *not* inherit the permutation from the construction!
-        tbl.ClassPermutation:= ();
-      fi;
+      # We must keep the class permutation obtained this way
+      # since it is contained in the `ConstructionInfo' data,
+      # and hence Brauer tables derived from the factors will respect it.
     fi;
     TransferComponentsToLibraryTableRecord( t, tbl );
     if 1 < Length( factors ) then
@@ -1966,11 +1965,11 @@ end );
 
 #############################################################################
 ##
-#F  ConstructIsoclinic( <tbl>, <factors> )
-#F  ConstructIsoclinic( <tbl>, <factors>, <nsg> )
+#F  ConstructIsoclinic( <tbl>, <factors>[, <nsg>[, <centre>]] 
+#F                      [, <permclasses>, <permchars>] )
 ##
 InstallGlobalFunction( ConstructIsoclinic, function( arg )
-    local tbl, factors, t, i, fld;
+    local tbl, factors, t, i, fld, perms;
 
     tbl:= arg[1];
     factors:= arg[2];
@@ -1979,10 +1978,13 @@ InstallGlobalFunction( ConstructIsoclinic, function( arg )
       t:= CharacterTableDirectProduct( t,
               CallFuncList( CharacterTableFromLibrary, factors[i] ) );
     od;
-    if Length( arg ) = 2 then
-      t:= CharacterTableIsoclinic( t );
-    else
-      t:= CharacterTableIsoclinic( t, arg[3] );
+    t:= CallFuncList( CharacterTableIsoclinic,
+            Concatenation( [ t ],
+                Filtered( arg{ [ 3 .. Length( arg ) ] }, IsList ) ) );
+    perms:= Filtered( arg, IsPerm );
+    if Length( perms ) = 2 then
+      t:= CharacterTableWithSortedClasses( t, perms[1] );
+      t:= CharacterTableWithSortedCharacters( t, perms[2] );
     fi;
     TransferComponentsToLibraryTableRecord( t, tbl );
 end );
@@ -2116,6 +2118,12 @@ InstallGlobalFunction( PossibleCharacterTablesOfTypeV4G, function( arg )
     fi;
 
     # Try to resolve ambiguities using the power maps in the third factor.
+    # For example, this check determines the class among the four preimages
+    # that is fixed under the order three automorphisms (if there is one)
+    # if the image in the factor group is a 2nd power of a fixed class.
+#T Is this true?
+    # And the case 2 image/preimage of a fixed class in case 2 under an odd
+    # power map must be fixed.
     firstfus:= Concatenation( List( fus[3], x -> x[1] ) );
     testfus:= Parametrized( [ firstfus,
                   Concatenation( List( fus[3], x -> x[ Length( x ) ] ) ) ] );
@@ -2278,7 +2286,8 @@ InstallGlobalFunction( PossibleCharacterTablesOfTypeV4G, function( arg )
         SetIrr( split,
             List( Concatenation( irr, List( faith, chi -> chi{ choice } ) ),
                   chi -> Character( split, chi ) ) );
-#T also set the construction info!
+        SetConstructionInfoCharacterTable( split,
+            ConstructV4GInfo( split, [ 1 .. 4 ] ) );
 
         # Add the table to the result list.
         SetInfoText( split,
@@ -2324,21 +2333,25 @@ InstallGlobalFunction( BrauerTableOfTypeV4G, function( arg )
     # Fetch the factor fusions and inflate the irreducible characters.
     fus:= List( modtbls2G, x -> GetFusionMap( modtblV4G, x ) );
     irr:= List( Irr( modtbls2G[1] ), x -> x{ fus[1] } );
-    if Length( arg ) = 2 then
-      for i in [ 2 .. Length( modtbls2G ) ] do
-        Append( irr, Filtered( List( Irr( modtbls2G[i] ), x -> x{ fus[i] } ),
-                               x -> not x in irr ) );
-      od;
-    else
-      modfus:= GetFusionMap( modtblV4G, ordtblV4G );
-      aut:= PermList( CompositionMaps( InverseMap( modfus ),
-                OnTuples( modfus, aut ) ) );
-      ker:= Position( fus[1], Position( GetFusionMap( modtbls2G[1],
-                OrdinaryCharacterTable( modtbls2G[1] ) ), ker ) );
-      chars:= List( Filtered( irr, x -> x[1] <> x[ ker ] ),
-                    x -> Permuted( x, aut ) );
-      Append( irr, chars );
-      Append( irr, List( chars, x -> Permuted( x, aut ) ) );
+    if p <> 2 then
+      # (For `p = 2', we would run into an error in the `else' case.)
+      if Length( arg ) = 2 then
+        for i in [ 2 .. Length( modtbls2G ) ] do
+          Append( irr, Filtered( List( Irr( modtbls2G[i] ),
+                                       x -> x{ fus[i] } ),
+                                 x -> not x in irr ) );
+        od;
+      else
+        modfus:= GetFusionMap( modtblV4G, ordtblV4G );
+        aut:= PermList( CompositionMaps( InverseMap( modfus ),
+                  OnTuples( modfus, aut ) ) );
+        ker:= Position( fus[1], Position( GetFusionMap( modtbls2G[1],
+                  OrdinaryCharacterTable( modtbls2G[1] ) ), ker ) );
+        chars:= List( Filtered( irr, x -> x[1] <> x[ ker ] ),
+                      x -> Permuted( x, aut ) );
+        Append( irr, chars );
+        Append( irr, List( chars, x -> Permuted( x, aut ) ) );
+      fi;
     fi;
     SetIrr( modtblV4G, List( irr, x -> Character( modtblV4G, x ) ) );
     SetInfoText( modtblV4G, "constructed using `BrauerTableOfTypeV4G'" );
@@ -2624,6 +2637,10 @@ InstallGlobalFunction( ConstructPermuted,
 
     # Store the components in `tbl'.
     TransferComponentsToLibraryTableRecord( t, tbl );
+
+    # Remove attribute values that may contradict the compatibility
+    # between several tables.
+    Unbind( tbl.FusionToTom );
     end );
 
 
@@ -2844,7 +2861,7 @@ end );
 BindGlobal( "IrreducibleCharactersOfIndexTwoSubdirectProduct",
     function( irrH1xH2, irrG1xG2, H1xH2fusG, GfusG1xG2 )
     local H1xH2fusG1xG2, restpos, i, rest, pos, irr, zero, proj1, perm,
-          proj2, chi, ind;
+          proj2, chi, ind, j;
 
     H1xH2fusG1xG2:= CompositionMaps( GfusG1xG2, H1xH2fusG );
 
@@ -2879,8 +2896,21 @@ BindGlobal( "IrreducibleCharactersOfIndexTwoSubdirectProduct",
         # H1xG2 or G1xH2, so it induces irreducibly to G.
         # Compute the induced character (without using the table head).
         chi:= irrH1xH2[i];
-        ind:= ShallowCopy( zero ) + chi{ proj1 } + chi{ proj2 };
-#T curly bracket works only for dense sublists!
+
+        # The curly bracket operator works only for dense sublists.
+        # ind:= ShallowCopy( zero ) + chi{ proj1 } + chi{ proj2 };
+        ind:= ShallowCopy( zero );
+        for j in [ 1 .. Length( proj1 ) ] do
+          if IsBound( proj1[j] ) then
+            ind[j]:= ind[j] + chi[ proj1[j] ];
+          fi;
+        od;
+        for j in [ 1 .. Length( proj2 ) ] do
+          if IsBound( proj2[j] ) then
+            ind[j]:= ind[j] + chi[ proj2[j] ];
+          fi;
+        od;
+
         if not ind in irr then
           Add( irr, ind );
         fi;
@@ -2920,7 +2950,21 @@ InstallGlobalFunction( ClassFusionsForIndexTwoSubdirectProduct,
       H1orders:= OrdersClassRepresentatives( tblH1 );
       H2orders:= OrdersClassRepresentatives( tblH2 );
       H1fusG1:= GetFusionMap( tblH1, tblG1 );
+      if H1fusG1 = fail then
+        H1fusG1:= RepresentativesFusions( tblH1,
+                      PossibleClassFusions( tblH1, tblG1 ), tblG1 );
+        if Length( H1fusG1 ) <> 1 then
+          Error( "fusion <tblH1> to <tblG1> is not determined" );
+        fi;
+      fi;
       H2fusG2:= GetFusionMap( tblH2, tblG2 );
+      if H2fusG2 = fail then
+        H2fusG2:= RepresentativesFusions( tblH2,
+                      PossibleClassFusions( tblH2, tblG2 ), tblG2 );
+        if Length( H2fusG2 ) <> 1 then
+          Error( "fusion <tblH2> to <tblG2> is not determined" );
+        fi;
+      fi;
       inv1:= InverseMap( H1fusG1 );
       inv2:= InverseMap( H2fusG2 );
       ncclH2:= Length( H2classes );
@@ -3039,7 +3083,8 @@ InstallGlobalFunction( CharacterTableOfIndexTwoSubdirectProduct,
     function( tblH1, tblG1, tblH2, tblG2, identifier )
     local char, ordtblG, permcols, info, H1fusG1, H2fusG2, H1xH2fusG,
           GfusG1xG2, Gclasses, H1xH2, G1xG2, H1fusG1xG2, H2fusG1xG2, nsg,
-          outer, tblG, powermap, p, pow, irrH1xH2, irrG1xG2, fus, result;
+          outer, tblG, powermap, p, pow, i, j, irrH1xH2, irrG1xG2, fus,
+          result;
 
     # Fetch the underlying characteristic, and check the arguments.
     char:= UnderlyingCharacteristic( tblH1 );
@@ -3160,7 +3205,15 @@ InstallGlobalFunction( CharacterTableOfIndexTwoSubdirectProduct,
 
       # Adjust the fusions to the sorted table head.
       H1xH2fusG:= OnTuples( H1xH2fusG, permcols );
-      GfusG1xG2:= Permuted( GfusG1xG2, permcols );
+      outer:= [];
+      for i in [ 1 .. NrConjugacyClasses( tblG1 ) ] do
+        for j in [ 1 .. NrConjugacyClasses( tblG2 ) ] do
+          if not ( i in H1fusG1 or j in H2fusG2 ) then
+            Add( outer, j + ( i - 1 ) * NrConjugacyClasses( tblG2 ) );
+          fi;
+        od;
+      od;
+      GfusG1xG2:= Permuted( Concatenation( GfusG1xG2, outer ), permcols );
 
       # Form the irreducibles of the subgroup and the supergroup.
       irrH1xH2:= KroneckerProduct( Irr( tblH1 ), Irr( tblH2 ) );
@@ -3468,6 +3521,8 @@ InstallGlobalFunction( CharacterTableOfCommonCentralExtension,
 
     tblmnG:= ConvertToLibraryCharacterTableNC( rec(
         Identifier                 := id,
+        InfoText                   :=
+            "constructed using `CharacterTableOfCommonCentralExtension'",
         Size                       := Size( tblmG ) * n,
         UnderlyingCharacteristic   := 0,
         SizesCentralizers          := cents,
@@ -3523,7 +3578,6 @@ InstallGlobalFunction( CharacterTableOfCommonCentralExtension,
       SetIrr( tblmnG, irr );
     fi;
 
-#T set InfoText: "constructed using `CharacterTableOfCommonCentralExtension'"
     return rec( tblmnG       := tblmnG,
                 IsComplete   := Length( irr ) = NrConjugacyClasses( tblmnG ),
                 irreducibles := irr );
@@ -3611,6 +3665,7 @@ InstallGlobalFunction( IrreduciblesForCharacterTableOfCommonCentralExtension,
       return faithmn;
     fi;
 
+#T The following code was not needed up to now.
 # #T make sure that lll.remainders are orthogonal to lll.irreducibles!
 # if ForAny( lll.remainders, x -> ForAny( lll.irreducibles, y ->
 #            ScalarProduct( tblmnG, x, y ) <> 0 ) ) then

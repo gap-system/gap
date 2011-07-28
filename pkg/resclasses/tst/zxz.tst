@@ -2,12 +2,12 @@
 ##
 #W  zxz.tst               GAP4 Package `ResClasses'               Stefan Kohl
 ##
-#H  @(#)$Id: zxz.tst,v 1.11 2007/11/16 13:28:10 stefan Exp $
-##
 ##  This file contains automated tests of ResClasses' functionality for
 ##  computing with residue class unions of Z^2.
 ##
-gap> START_TEST("$Id: zxz.tst,v 1.11 2007/11/16 13:28:10 stefan Exp $");
+#############################################################################
+
+gap> START_TEST( "zxz.tst" );
 gap> ResClassesDoThingsToBeDoneBeforeTest();
 gap> R := Integers^2;
 ( Integers^2 )

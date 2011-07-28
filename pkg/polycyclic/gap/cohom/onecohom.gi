@@ -23,7 +23,7 @@ InstallGlobalFunction( OneCocyclesEX, function( A )
     od;
 
     # solve system
-    return KernelCR( A, sys );
+	return rec( basis := KernelCR( A, sys ), transl := SpecialSolutionCR( A, sys ) );
 end );
 
 InstallGlobalFunction( OneCocyclesCR, function( A )

@@ -2,7 +2,7 @@
 ##
 #W  list.g                        GAP library                Martin Schönert
 ##
-#H  @(#)$Id: list.g,v 4.47 2010/02/23 15:13:11 gap Exp $
+#H  @(#)$Id: list.g,v 4.48 2011/01/20 14:42:44 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  very early in the bootstrap stage (therefore they are not in list.gi)
 ##
 Revision.list_g :=
-    "@(#)$Id: list.g,v 4.47 2010/02/23 15:13:11 gap Exp $";
+    "@(#)$Id: list.g,v 4.48 2011/01/20 14:42:44 alexk Exp $";
 
 
 #############################################################################
@@ -68,21 +68,23 @@ InstallTrueMethod( IsListDefault, IsInternalRep and IsList );
 ##
 #P  IsRectangularTable( <list> )  . . . . table with all rows the same length
 ##
+##  <#GAPDoc Label="IsRectangularTable">
 ##  <ManSection>
 ##  <Prop Name="IsRectangularTable" Arg='list'/>
 ##
 ##  <Description>
 ##  A list lies in <C>IsRectangularTable</C> when it is nonempty and its elements
 ##  are all homogeneous lists of the same family and the same length.
-##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##  
 ##  This filter is a Property, not a Category, because it is not
 ##  always possible to determine cheaply the length of a row (which
 ##  might be some sort of Enumerator).  If the rows are plain lists
 ##  then this property should always be known (the kernel type determination
 ##  for plain lists handles this). Plain lists without mutable
 ##  elements will remember their rectangularity once it is determined.
-##  </Description>
-##  </ManSection>
 ##
 DeclareProperty( "IsRectangularTable", IsList );
 

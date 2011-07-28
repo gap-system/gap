@@ -1,7 +1,7 @@
                              The FR package
 
 This is the README file for the GAP package "FR",
-version $Id: README,v 1.11 2009/10/13 09:37:06 gap Exp $
+version $Id: README,v 1.13 2010/01/31 20:24:38 gap Exp $
 
 This package implements Functionally Recursive and Mealy automata in
 GAP. These objects can be manipulated as group elements, and various
@@ -9,10 +9,11 @@ specific commands allow their manipulation as automorphisms of infinite
 rooted trees. Permutation quotients can also be created and manipulated
 as standard GAP groups or semigroups.
 
-This release (0.99) is preliminary, and more functionality will be
-added in the future; in particular, computations of presentations for
-self-similar groups, interval arithmetic for complex dynamics, etc.
-(see the TODO file for more details).
+This release (1.0) is the first containing all the planned functionality,
+though some rough edges will still need to be smoothed. In particular,
+the TODO file describes plans for future development, including
+computations of presentations for self-similar groups, interval arithmetic
+for complex dynamics, etc.
 
 The package is distributed in source form, and does not require anything
 else than a running GAP 4.4 or later. For updates, check
@@ -31,8 +32,7 @@ It should be compiled, after the command `LoadPackage("FR")', by invoking
 DOC@fr();
 
 at the GAP prompt. The documentation will then be available in the `doc'
-subdirectory (view either `manual.dvi' via `xdvi' or or `manual.pdf' via a
-PDF viewer).
+subdirectory (view the file `manual.pdf' via a PDF viewer).
 
 An optional external module (DLL) provides floating-point functions used
 by the "iterated monodromy groups" part of FR. Its presence or absence
@@ -56,4 +56,4 @@ You should have received a copy of the GNU General Public License
 along with this program, in the file COPYING.  If not, see
 <http://www.gnu.org/licenses/>.
 
-  Laurent Bartholdi, Göttingen, $Date: 2009/10/13 09:37:06 $
+  Laurent Bartholdi, Göttingen, $Date: 2010/01/31 20:24:38 $

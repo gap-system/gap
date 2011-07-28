@@ -2,7 +2,7 @@
 ##
 #W  liefam.gd                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: liefam.gd,v 4.30 2010/02/23 15:13:11 gap Exp $
+#H  @(#)$Id: liefam.gd,v 4.31 2010/11/11 23:34:39 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,13 +15,14 @@
 #############################################################################
 ##
 ##  <#GAPDoc Label="[1]{liefam}">
-##  Let <M>x</M> be a ring element, then <C>LieObject(x)</C> wraps <M>x</M> up into an
-##  object that contains the same data (namely <M>x</M>). The multiplication
+##  Let <C>x</C> be a ring element, then <C>LieObject(x)</C> 
+##  (see&nbsp;<Ref Func="LieObject"/>) wraps <C>x</C> up into an
+##  object that contains the same data (namely <C>x</C>). The multiplication
 ##  <C>*</C> for Lie objects is formed by taking the commutator. More exactly,
-##  if <M>l_1</M> and <M>l_2</M> are the Lie objects corresponding to
-##  the ring elements <M>r_1</M> and <M>r_2</M>, then <M>l_1 * l_2</M> is equal to the
-##  Lie object corresponding to <M>r_1 * r_2 - r_2 * r_1</M>. Two rules
-##  for Lie objects are worth noting:
+##  if <C>l1</C> and <C>l2</C> are the Lie objects corresponding to
+##  the ring elements <C>r1</C> and <C>r2</C>, then <C>l1 * l2</C> 
+##  is equal to the Lie object corresponding to <C>r1 * r2 - r2 * r1</C>. 
+##  Two rules for Lie objects are worth noting:
 ##  <P/>
 ##  <List>
 ##  <Item>
@@ -36,12 +37,13 @@
 ##  </Item>
 ##  </List>
 ##  <P/>
-##  Given a family <M>F</M> of ring elements, we can form its Lie family <M>L</M>.
-##  The elements of <M>F</M> and <M>L</M> are in bijection, only the multiplications
-##  via <C>*</C> differ for both families.
-##  More exactly, if <M>l_1</M> and <M>l_2</M> are the Lie elements corresponding to
-##  the elements <M>f_1</M> and <M>f_2</M> in <M>F</M>, we have <M>l_1 * l_2</M> equal to the
-##  Lie element corresponding to <M>f_1 * f_2 - f_2 * f_2</M>.
+##  Given a family <C>F</C> of ring elements, we can form its Lie family 
+##  <C>L</C>. The elements of <C>F</C> and <C>L</C> are in bijection, only 
+##  the multiplications via <C>*</C> differ for both families.
+##  More exactly, if <C>l1</C> and <C>l2</C> are the Lie elements 
+##  corresponding to the elements <C>f1</C> and <C>f2</C> in <C>F</C>, 
+##  we have <C>l1 * l2</C> equal to the Lie element corresponding to 
+##  <C>f1 * f2 - f2 * f1</C>.
 ##  <P/>
 ##  The main reason to distinguish elements and Lie elements on the family
 ##  level is that this helps to avoid forming domains that contain
@@ -76,7 +78,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.liefam_gd :=
-    "@(#)$Id: liefam.gd,v 4.30 2010/02/23 15:13:11 gap Exp $";
+    "@(#)$Id: liefam.gd,v 4.31 2010/11/11 23:34:39 alexk Exp $";
 
 
 #############################################################################
@@ -92,8 +94,8 @@ Revision.liefam_gd :=
 ##  <Filt Name="IsRestrictedLieObjectCollection" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  An object lies in <C>IsLieObject</C> if and only if it lies in a family
-##  constructed by <C>LieFamily</C>.
+##  An object lies in <Ref Filt="IsLieObject"/> if and only if 
+##  it lies in a family constructed by <Ref Attr="LieFamily"/>.
 ##  <Example><![CDATA[
 ##  gap> m:= [ [ 1, 0 ], [ 0, 1 ] ];;
 ##  gap> lo:= LieObject( m );
@@ -128,15 +130,18 @@ DeclareCategoryCollections( "IsRestrictedLieObject" );
 ##  <Attr Name="LieFamily" Arg='Fam'/>
 ##
 ##  <Description>
-##  is a family <M>F</M> in bijection with the family <A>Fam</A>,
+##  is a family <C>F</C> in bijection with the family <A>Fam</A>,
 ##  but with the Lie bracket as infix multiplication.
-##  That is, for <M>x</M>, <M>y</M> in <A>Fam</A>, the product of the images in <M>F</M> will be
-##  the image of <M>x * y - y * x</M>.
+##  That is, for <C>x</C>, <C>y</C> in <A>Fam</A>, the product of 
+##  the images in <C>F</C> will be the image of <C>x * y - y * x</C>.
 ##  <P/>
-##  The standard type of objects in a Lie family <A>F</A> is <C><A>F</A>!.packedType</C>.
+##  The standard type of objects in a Lie family <C>F</C> is 
+##  <C><A>F</A>!.packedType</C>.
 ##  <P/>
 ##  <Index Key="Embedding" Subkey="for Lie algebras"><C>Embedding</C></Index>
-##  The bijection from <A>Fam</A> to <M>F</M> is given by <C>Embedding( <A>Fam</A>, </C><M>F</M><C> )</C>;
+##  The bijection from <A>Fam</A> to <C>F</C> is given by 
+##  <C>Embedding( <A>Fam</A>, F )</C> 
+##  (see&nbsp;<Ref Oper="Embedding" Label="for two domains"/>);
 ##  this bijection respects addition and additive inverses.
 ##  </Description>
 ##  </ManSection>
@@ -155,7 +160,7 @@ DeclareAttribute( "LieFamily", IsFamily );
 ##
 ##  <Description>
 ##  If <A>Fam</A> is a Lie family then <C>UnderlyingFamily( <A>Fam</A> )</C>
-##  is a family <M>F</M> such that <C><A>Fam</A> = LieFamily( </C><M>F</M><C> )</C>.
+##  is a family <C>F</C> such that <C><A>Fam</A> = LieFamily( F )</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -173,8 +178,8 @@ DeclareAttribute( "UnderlyingFamily", IsObject );
 ##
 ##  <Description>
 ##  Let <A>obj</A> be a ring element. Then <C>LieObject( <A>obj</A> )</C> is the
-##  corresponding Lie object. If <A>obj</A> lies in the family <A>F</A>,
-##  then <C>LieObject( <A>obj</A> )</C> lies in the family LieFamily( <A>F</A> )
+##  corresponding Lie object. If <A>obj</A> lies in the family <C>F</C>,
+##  then <C>LieObject( <A>obj</A> )</C> lies in the family <C>LieFamily( F )</C>
 ##  (see&nbsp;<Ref Func="LieFamily"/>).
 ##  <Example><![CDATA[
 ##  gap> m:= [ [ 1, 0 ], [ 0, 1 ] ];;

@@ -67,6 +67,7 @@
 \makelabel{crisp:BoundaryFunction}{4.2.5}
 \makelabel{crisp:ProjectorFunction}{4.2.6}
 \makelabel{crisp:Additional attributes for primitive solvable groups}{4.3}
+\makelabel{crisp:IsPrimitiveSolvableGroup}{4.3.1}
 \makelabel{crisp:IsPrimitiveSolvable}{4.3.1}
 \makelabel{crisp:SocleComplement}{4.3.2}
 \makelabel{crisp:Creating formations}{4.4}

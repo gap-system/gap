@@ -2,7 +2,7 @@
 ##
 #W  GAPDoc.gi                    GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: GAPDoc.gi,v 1.26 2008/05/23 16:03:00 gap Exp $
+#H  @(#)$Id: GAPDoc.gi,v 1.29 2011/02/08 00:31:51 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -408,8 +408,22 @@ end);
 
 # non-documented utility
 ##  normalizes the Args attribute in function like elements
-BindGlobal("NormalizedArgList", function(argl)
-  local f, tr, g;
+InstallGlobalFunction(NormalizedArgList, function(argl)
+  local pos, opt, f, tr, g;
+  # first optional arguments
+  pos := Position(argl, ':');
+  if pos <> fail then
+    opt := argl{[pos+1..Length(argl)]};
+    argl := argl{[1..pos-1]};
+    opt := SubstitutionSublist(opt, ":=", " := ");
+    NormalizeWhitespace(opt);
+    opt := SubstitutionSublist(opt, " := ", "OPTIONASSxpty");
+    opt := NormalizedArgList(opt);
+    opt := SubstitutionSublist(opt, "OPTIONASSxpty", " := ");
+  else
+    opt := "";
+  fi;
+
   # remove ',' and split into tree
   argl := NormalizedWhitespace(SubstitutionSublist(argl, ",", " "));
   argl := SubstitutionSublist(argl, "[]", "");
@@ -468,7 +482,12 @@ BindGlobal("NormalizedArgList", function(argl)
     od;
     return res;
   end;
-  return g(tr, false);
+  tr := g(tr, false);
+  if Length(opt) > 0 then
+    Append(tr, ": ");
+    Append(tr, opt);
+  fi;
+  return tr;
 end);
 
 # shared utility for the converters to read data for bibliography 

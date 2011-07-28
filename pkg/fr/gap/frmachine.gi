@@ -2,7 +2,7 @@
 ##
 #W frmachine.gi                                             Laurent Bartholdi
 ##
-#H   @(#)$Id: frmachine.gi,v 1.48 2009/09/15 10:26:38 gap Exp $
+#H   @(#)$Id: frmachine.gi,v 1.58 2011/04/04 19:52:35 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -22,18 +22,7 @@ InstallMethod(AlphabetOfFRObject, "(FR) for an FR object",
         [IsFRObject],
         M->FamilyObj(M)!.alphabet);
 
-InstallMethod(PrintObj, "(FR) for a FR object",
-        [IsFRObject],
-        function(E)
-    Print(String(E));
-end);
-
-BindGlobal("STRING@", function(x)
-    local s;
-    s := "";
-    PrintTo(OutputTextString(s,true),x);
-    return s;
-end);
+INSTALLPRINTERS@(IsFRObject);
 
 InstallMethod(FRMFamily, "(FR) for an alphabet",
         [IsListOrCollection],
@@ -108,7 +97,7 @@ InstallOtherMethod(FRMachineNC, "(FR) for a family, a free monoid, a list of tra
 end);
 
 BindGlobal("COPYFRMACHINE@", function(m)
-    return Objectify(NewType(FamilyObj(m), First([IsGroupFRMachine,IsMonoidFRMachine,IsSemigroupFRMachine],p->Tester(p)(m)) and IsFRMachineStdRep),
+    return Objectify(NewType(FamilyObj(m), First([IsGroupFRMachine,IsMonoidFRMachine,IsSemigroupFRMachine],p->Tester(p)(m) and p(m)) and IsFRMachineStdRep),
                    rec(free := m!.free,
                        pack := m!.pack,
                        transitions := m!.transitions,
@@ -276,22 +265,23 @@ InstallMethod(StateSet, "(FR) for an FR machine",
 #M  String(FRMachine)
 #M  Display(FRMachine)
 ##
-InstallMethod(ViewObj, "(FR) for an FR machine",
+InstallMethod(ViewString, "(FR) for an FR machine",
         [IsFRMachine and IsFRMachineStdRep],
         function(M)
-    Print("<FR machine with alphabet ", AlphabetOfFRObject(M), " on ", StateSet(M), ">");
+    return CONCAT@("<FR machine with alphabet ", AlphabetOfFRObject(M), " on ", StateSet(M), ">");
 end);
 
 InstallMethod(String, "(FR) for an FR machine",
         [IsFRMachine and IsFRMachineStdRep],
         function(M)
-    return Concatenation("FRMachine(...,",String(M!.output),")");
+    return CONCAT@("FRMachine(...,",M!.output,")");
 end);
 
 BindGlobal("DISPLAYFRMACHINE@", function(M)
-    local a, i, j, g, alen, slen, glen, ablank, sblank, gblank, arule, grule, srule, StringId;
+    local a, i, j, g, alen, slen, glen, ablank, sblank, gblank, arule, grule, srule, StringId, s;
     a := AlphabetOfFRObject(M);
     g := GeneratorsOfFRMachine(M);
+    s := "";
     StringId := function(arg)
         local s;
         s := CallFuncList(String,arg);
@@ -303,7 +293,7 @@ BindGlobal("DISPLAYFRMACHINE@", function(M)
     alen := LogInt(Maximum(a),10)+3;
     ablank := ListWithIdenticalEntries(alen,' ');
     arule := ListWithIdenticalEntries(alen,'-');
-    if IsEmpty(g) then
+    if g=[] then
         glen := 2;
         slen := List(a,i->1);
     else
@@ -316,31 +306,34 @@ BindGlobal("DISPLAYFRMACHINE@", function(M)
     srule := List(a,i->ListWithIdenticalEntries(slen[i],'-'));
 
     if IsGroupFRMachine(M) then
-        Print(" G");
+        s := " G";
     elif IsMonoidFRMachine(M) then
-        Print(" M");
-    else Print(" S"); fi;
-    Print(gblank{[3..glen]}," |");
-    for i in [1..Length(a)] do Print(sblank[i],String(a[i],-alen)," "); od;
-    Print("\n");
-    Print(grule,"-+");
-    for i in [1..Length(a)] do Print(srule[i],arule,"+"); od;
-    Print("\n");
+        s := " M";
+    else s := " S"; fi;
+    APPEND@(s,gblank{[3..glen]}," |");
+    for i in [1..Length(a)] do APPEND@(s,sblank[i],String(a[i],-alen)," "); od;
+    APPEND@(s,"\n");
+    APPEND@(s,grule,"-+");
+    for i in [1..Length(a)] do APPEND@(s,srule[i],arule,"+"); od;
+    APPEND@(s,"\n");
     for i in [1..Length(g)] do
-        Print(StringId(g[i],glen)," |");
+        APPEND@(s,StringId(g[i],glen)," |");
         for j in [1..Length(a)] do
-            Print(StringId(M!.transitions[i][j],slen[j]),",",String(M!.output[i][j],-alen));
+            APPEND@(s,StringId(M!.transitions[i][j],slen[j]),",",String(M!.output[i][j],-alen));
         od;
-        Print("\n");
+        APPEND@(s,"\n");
     od;
-    Print(grule,"-+");
-    for i in [1..Length(a)] do Print(srule[i],arule,"+"); od;
-    Print("\n");
+    APPEND@(s,grule,"-+");
+    for i in [1..Length(a)] do APPEND@(s,srule[i],arule,"+"); od;
+    APPEND@(s,"\n");
+    return s;
 end);
 
-InstallMethod(Display, "(FR) for an FR machine",
+InstallMethod(DisplayString, "(FR) for an FR machine",
         [IsFRMachine and IsFRMachineStdRep],
         DISPLAYFRMACHINE@);
+
+INSTALLPRINTERS@(IsFRMachine);
 #############################################################################
 ##
 #M One(FRMachine)
@@ -683,7 +676,7 @@ InstallMethod(TreeWreathProduct, "for two FR machines",
     od;
     c := LARGESTDENOMINATOR@(g,h,g,Zero(g));
     gen := Remove(c);
-    if IsEmpty(gen[4]) then
+    if gen[4]=[] then
         one := One(Range(c[1]));
     else
         one := gen[4][1]^c[4];
@@ -962,6 +955,15 @@ InstallMethod(WreathRecursion, "(FR) for an FR machine",
         return [vector,perm];
     end;
 end);
+
+InstallMethod(VirtualEndomorphism, "(FR) for a group FR machine and a vertex",
+        [IsGroupFRMachine,IsObject],
+        function(M,v)
+    local G, H;
+    G := StateSet(M);
+    H := Stabilizer(G,v,function(w,g) return w^FRElement(M,g); end);
+    return GroupHomomorphismByImages(H,G,GeneratorsOfGroup(H),List(GeneratorsOfGroup(H),x->Transition(M,x,v)));
+end);
 #############################################################################
 
 #############################################################################
@@ -1023,10 +1025,10 @@ InstallMethod(FRMachineRWS, "(FR) for an FR machine",
         return [vector,perm];
     end;
     rws.reduce := w->ReduceLetterRepWordsRewSys(rws.rws!.tzrules,w);
-    rws.addsgrule := function(l,r)
+    rws.addsgrule := function(l,r,short)
         local ll, lr;
         ll := Length(l); lr := Length(r);
-        if ll>rws.maxlen or lr>rws.maxlen then return; fi;
+        if short and (ll>rws.maxlen or lr>rws.maxlen) then return; fi;
         rws.modified := true;
         if ll>lr or (ll=lr and l>r) then
             Info(InfoFR,3,"# Added rule ",l," -> ",r);
@@ -1037,21 +1039,21 @@ InstallMethod(FRMachineRWS, "(FR) for an FR machine",
         fi;
     end;
     if IsGroupFRMachine(M) then
-        rws.addgprule := function(w)
+        rws.addgprule := function(w,short)
             local i, l, ll, left, right;
             l := Length(w);
-            if l>2*rws.maxlen then return; fi;
+            if short and l>2*rws.maxlen then return; fi;
             Info(InfoFR,3,"# Adding group rule ",w);
-            rws.addsgrule(w,[]);
-            rws.addsgrule(inverse{w{[l,l-1..1]}},[]);
+            rws.addsgrule(w,[],short);
+            rws.addsgrule(inverse{w{[l,l-1..1]}},[],short);
             ll := QuoInt(l,2);
             left := w{[1..ll]};
             right := inverse{w{[l,l-1..ll+1]}};
             for i in [1..l] do
-                rws.addsgrule(left,right);
+                rws.addsgrule(left,right,short);
                 Add(left,inverse[Remove(right)]);
                 if IsOddInt(l) then
-                    rws.addsgrule(left,right);
+                    rws.addsgrule(left,right,short);
                 fi;
                 Add(right,inverse[Remove(left,1)],1);
             od;
@@ -1375,7 +1377,7 @@ BindGlobal("MINIMIZERWS@", function(M)
         od;
     od;
     for p in part do
-        p[3] := p[3] and ForAll(p[1],x->ForAll(rws.pi([x])[1],x->IsEmpty(rws.reduce(x))));
+        p[3] := p[3] and ForAll(p[1],x->ForAll(rws.pi([x])[1],x->rws.reduce(x)=[]));
         MINIMIZERWS_MAKERULES@(rws,p);
     od;
     rws.rws!.tzrules := Concatenation(rws.tzrules,Concatenation(List(part,p->p[4])));
@@ -1471,6 +1473,37 @@ InstallMethod(SubFRMachine, "(FR) for two group/monoid/semigroup FR machines",
     else
         return fail;
     fi;
+end);
+
+InstallMethod(SubFRMachine, "(FR) for a machine and a homomorphism",
+        [IsFRMachine and IsFRMachineStdRep, IsMapping],
+        function(M,f)
+    local S, trans, out, i, pi, x;
+    S := StateSet(M);
+    while S<>Range(f) do
+        Error("SubFRMachine: range and stateset must be the same\n");
+    od;
+    while not IsFreeGroup(Source(f)) do
+        Error("SubFRMachine: source must be a free group\n");
+    od;
+    pi := WreathRecursion(M);
+    trans := [];
+    out := [];
+    for i in GeneratorsOfGroup(Source(f)) do
+        x := pi(i^f);
+        x[1] := List(x[1],g->PreImagesRepresentative(f,g));
+        if fail in x[1] then return fail; fi;
+        Add(trans,x[1]);
+        Add(out,x[2]);
+    od;
+    x := FRMachineNC(FamilyObj(M),Source(f),trans,out);
+    if HasAddingElement(M) then
+        i := PreImagesRepresentative(f,InitialState(AddingElement(M)));
+        if i<>fail then
+            SetAddingElement(x,FRElement(x,i));
+        fi;
+    fi;
+    return x;
 end);
 #############################################################################
 

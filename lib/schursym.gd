@@ -6,7 +6,7 @@
 #Y  Copyright (C) 2009, The GAP group
 ##
 Revision.schursym_gd := 
-    "@(#)$Id: schursym.gd,v 4.1 2010/01/31 17:45:17 gap Exp $";
+    "@(#)$Id: schursym.gd,v 4.2 2011/01/26 05:28:38 gap Exp $";
 
 
 #############################################################################
@@ -18,7 +18,7 @@ Revision.schursym_gd :=
 ##  The covering groups of symmetric groups were classified in <Cite
 ##  Key="Schur1911"/>; an inductive procedure to construct faithful,
 ##  irreducible representations of minimal degree over all fields was presented
-##  in <Cite Key="Maas2009"/>. Methods for <Ref Func="EpimorphismSchurCover"/> are
+##  in <Cite Key="Maas2010"/>. Methods for <Ref Func="EpimorphismSchurCover"/> are
 ##  provided for natural symmetric groups which use these representations. For
 ##  alternating groups, the restriction of these representations are provided,
 ##  but they may not be irreducible.  In the case of degree <M>6</M> and

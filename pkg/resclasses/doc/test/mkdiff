@@ -3,8 +3,6 @@
 ##
 #W  mkdiff      Differences of examples (package manual)       Volkmar Felsch
 ##
-#H  $Id: mkdiff,v 1.1 2003/02/22 17:43:13 stefan Exp $
-##
 #Y  Copyright (C) 2002, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
 ##
 ##  mkdiff.sh [-c] [file1 file2 ...]
@@ -20,6 +18,7 @@
 ##  If no file names are specified handle all '.tst' files in the current
 ##  directory.
 ##
+#############################################################################
 
 #############################################################################
 ##

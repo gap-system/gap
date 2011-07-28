@@ -2,7 +2,7 @@
 ##
 #W  claspcgs.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: claspcgs.gi,v 4.72 2010/02/23 15:12:48 gap Exp $
+#H  @(#)$Id: claspcgs.gi,v 4.74 2011/03/16 20:43:01 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,7 +15,7 @@
 ##  representation of the groups.
 ##
 Revision.claspcgs_gi:=
-    "@(#)$Id: claspcgs.gi,v 4.72 2010/02/23 15:12:48 gap Exp $";
+    "@(#)$Id: claspcgs.gi,v 4.74 2011/03/16 20:43:01 gap Exp $";
 
 #############################################################################
 ##
@@ -171,7 +171,7 @@ local   classes,    # classes to be constructed, the result
 	cengen,
 	exp,  w,    # coefficient vectors for projection along $[h,N]$
 	kern,img,
-	c;          # loop variable
+	c,nc;          # loop variable
 
     field:=GF( RelativeOrders( N )[ 1 ] );
     h:=cl.representative;
@@ -214,16 +214,21 @@ local   classes,    # classes to be constructed, the result
                 MultRowVector( exp, One( field ) );
                 w:=exp * N!.subspace.projection;
                 exp{ N!.subspace.baseComplement }:=
-                  w - exp{ N!.subspace.baseComplement };
-                c:=rec( representative:=h * PcElementByExponentsNC
+                  exp{ N!.subspace.baseComplement }-w;
+                nc:=rec( representative:=h * PcElementByExponentsNC
                              ( N, N!.subspace.baseComplement, w ),
                           #centralizer:=C,
                           #centralizerpcgs:=cengen,
                           cengen:=cengen,
                           operator:=LinearCombinationPcgs( gens,
                                   exp * N!.subspace.inverse,
-				  One( cl.candidates[1] ))^-1);
-                Add( classes, c );
+				  One( cl.candidates[1] ))^(-1));
+
+		# check that action is really OK
+		Assert(1,c^nc.operator/nc.representative in
+		  Group(DenominatorOfModuloPcgs(N),One(U)));
+
+                Add( classes, nc );
             od;
         else
             c:=rec( representative:=cl.candidates,
@@ -856,9 +861,16 @@ Error("This case disabled -- code not yet corrected");
         # classes to which   the list `<cl>.candidates'   maps modulo
         # <K>,  together  with   `operator's and   `exponent's  as in
         # (c^o^e=r)).
-        if allcent or cent(fhome,cl.centralizerpcgs, N, Ldep) then
+        if allcent then
+	  # generic central
+	  Info(InfoClasses,5,"central case 1");
+          newcls:=CentralStepClEANS(fhome,QH, QG, N, cl,false);
+        elif cent(fhome,cl.centralizerpcgs, N, Ldep) then
+	  # central in this case
+	  Info(InfoClasses,5,"central case 2");
           newcls:=CentralStepClEANS(fhome,QH, QG, N, cl,false);
         else
+	  Info(InfoClasses,5,"general case");
           newcls:=GeneralStepClEANS(fhome, QH, QG, N, nexpo, cl,false);
         fi;
         

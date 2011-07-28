@@ -2,7 +2,7 @@
 ##
 #W  vspcrow.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: vspcrow.gi,v 4.98 2010/02/23 15:13:36 gap Exp $
+#H  @(#)$Id: vspcrow.gi,v 4.99 2010/10/20 19:02:09 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -31,7 +31,7 @@
 ##  8. Methods installed by somebody else without documenting this ...
 ##
 Revision.vspcrow_gi :=
-    "@(#)$Id: vspcrow.gi,v 4.98 2010/02/23 15:13:36 gap Exp $";
+    "@(#)$Id: vspcrow.gi,v 4.99 2010/10/20 19:02:09 sal Exp $";
 
 
 #############################################################################

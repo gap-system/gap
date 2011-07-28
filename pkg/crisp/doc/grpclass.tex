@@ -1,11 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%  grpclass.tex            CRISP documentation           Burkhard H\"ofling
+%%  grpclass.tex            CRISP documentation              Burkhard Höfling
 %%
-%%  @(#)$Id: grpclass.tex,v 1.6 2001/10/17 17:03:49 gap Exp $
+%%  @(#)$Id: grpclass.tex,v 1.8 2011/05/26 10:08:56 gap Exp $
 %%
-%%  Copyright (C) 2000, Burkhard H\"ofling, Mathematisches Institut,
-%%  Friedrich Schiller-Universit\"at Jena, Germany
+%%  Copyright (C) 2000, Burkhard Höfling
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Generic group classes}
@@ -40,7 +39,7 @@ group classes".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Creating group classes}\null
 
-\index{group classes!creation}
+\index{group classes!creation of}
 
 Group classes can either be defined by a function deciding membership, or
 alternatively by a (finite) list of groups containing at least one
@@ -125,8 +124,8 @@ have.
 Since nonempty group classes are infinite, {\CRISP} cannot, in
 general, decide whether a group class has a certain property. Therefore the
 user is required to set the appropriate properties and attributes. 
-See Sections "ref:attributes" and "ref:properties" in the {\GAP} reference
-manual. To facilitate this task, there are special functions available to
+See Sections "ref:Attributes" and "ref:Properties". To facilitate this task, 
+there are special functions available to
 create common types of group classes such as formations (see "Creating
 formations"), Fitting classes (see "Creating Fitting classes"), and Schunck
 classes (see "Creating Schunck classes").
@@ -144,7 +143,7 @@ basic properties are defined for group classes.
 
 \>IsGroupClass(<grpclass>) P
 
-A generic class (see Chapter "set theoretical classes") is considered a group
+A generic class (see Chapter "Set theoretical classes") is considered a group
 class if it has the property `IsGroupClass'. There is no way for {\CRISP} to
 *know* that a given class defined by a membership function is a group class,
 i.~e., consists of groups and is closed under group isomorphisms.
@@ -207,7 +206,7 @@ if true, <G> belongs to <X> whenever <G>/`FrattiniSubgroup(<G>)' belongs to
 \index{properties!of group classes}
 
 Note that the following ``properties'' are not properties but only filters in
-the {\GAP} sense (cf. "ref:Properties" and "ref:filters" in the {\GAP}
+the {\GAP} sense (cf. "ref:Properties" and "ref:Filters" in the {\GAP}
 reference manual).
 
 \>HasIsFittingClass(<obj>) F

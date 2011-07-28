@@ -2,7 +2,7 @@
 ##  
 #W  helpview.gi                 GAP Library                      Frank Lübeck
 ##  
-#H  @(#)$Id: helpview.gi,v 1.15 2010/07/28 15:45:20 gap Exp $
+#H  @(#)$Id: helpview.gi,v 1.23 2011/05/22 08:53:36 gap Exp $
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  different help viewer.
 ##  
 Revision.helpview_gi := 
-  "@(#)$Id: helpview.gi,v 1.15 2010/07/28 15:45:20 gap Exp $";
+  "@(#)$Id: helpview.gi,v 1.23 2011/05/22 08:53:36 gap Exp $";
 
 #############################################################################
 ##  
@@ -49,24 +49,8 @@ type := "text",
 show := Pager
 );
 
-if ARCH_IS_MAC() then
-  # html version on MAC
-  HELP_VIEWER_INFO.("mac default browser") := rec(
-  type := "macurl",
-  show := function(data)
-    if IsBound (data.path) then
-       ExecuteProcess ("./", "Internet Config", 1, 0, [data.protocol, data.path, data.section]);
-    else
-       ExecuteProcess ("", "Internet Config", 1, 0, [data.url, "", data.section]);
-    fi;
-  end
-  );
-  
-  # old name for for backward compatibility
-  HELP_VIEWER_INFO.("internet config") :=
-  	HELP_VIEWER_INFO.("mac default browser"); 
 
-elif ARCH_IS_WINDOWS() then
+if ARCH_IS_WINDOWS() then
   # html version on Windows
   HELP_VIEWER_INFO.browser := rec(
   type := "url",
@@ -83,7 +67,124 @@ elif ARCH_IS_WINDOWS() then
   end
   );
   	
-else
+elif ARCH_IS_MAC_OS_X() then
+  # html version using Mac OS X default browser
+  HELP_VIEWER_INFO.("mac default browser") := rec (
+    type := "url", 
+    show := function (url)
+            Exec ( Concatenation( "osascript <<ENDSCRIPT\n",
+                                  "open location \"file://", url, "\"\n",
+                                  "ENDSCRIPT\n" ) );
+            return;
+        end
+  );
+  
+  HELP_VIEWER_INFO.browser := HELP_VIEWER_INFO.("mac default browser");
+
+  # html version using Mac OS X browser Safari
+  HELP_VIEWER_INFO.safari := rec (
+    type := "url", 
+    show := function (url)
+            Exec ( Concatenation( "osascript <<ENDSCRIPT\n",
+                                  "tell application \"Safari\"\n",
+                                  "activate\n",
+                                  "open location \"file://", url, "\"\n",
+                                  "end tell\n",
+                                  "ENDSCRIPT\n" ) );
+            return;
+        end);
+
+  # html version using Mac OS X browser Safari
+  HELP_VIEWER_INFO.firefox := rec (
+    type := "url", 
+    show := function (url)
+            Exec ( Concatenation( "osascript <<ENDSCRIPT\n",
+                                  "tell application \"Firefox\"\n",
+                                  "activate\n",
+                                  "open location \"file://", url, "\"\n",
+                                  "end tell\n",
+                                  "ENDSCRIPT\n" ) );
+            return;
+        end);
+    HELP_VIEWER_INFO.preview := rec(
+        type := "pdf",
+        show := function(file)
+          local   page;
+          # unfortunately one cannot (yet?) give a start page to acroread
+          # it is currently ignored
+          page := 1;
+          if IsRecord(file) then
+            if IsBound(file.page) then
+              page := file.page;
+            fi;
+            file := file.file;
+          fi;
+          Exec(Concatenation("open -a Preview ", file));
+          Print("#  see page ", page, " in the Preview window.\n");
+        end
+    );
+    HELP_VIEWER_INFO.("adobe reader") := rec(
+        type := "pdf",
+        show := function(file)
+          local   page;
+          # unfortunately one cannot (yet?) give a start page to acroread
+          # it is currently ignored
+          page := 1;
+          if IsRecord(file) then
+            if IsBound(file.page) then
+              page := file.page;
+            fi;
+            file := file.file;
+          fi;
+          Exec(Concatenation("open -a \"Adobe Reader\" ", file));
+          Print("#  see page ", page, " in the Adobe Reader window.\n");
+        end
+    );
+    HELP_VIEWER_INFO.("pdf viewer") := rec(
+        type := "pdf",
+        show := function(file)
+          local   page;
+          # unfortunately one cannot (yet?) give a start page to acroread
+          # it is currently ignored
+          page := 1;
+          if IsRecord(file) then
+            if IsBound(file.page) then
+              page := file.page;
+            fi;
+            file := file.file;
+          fi;
+          Exec(Concatenation("open ", file));
+          Print("#  see page ", page, " in the pdf viewer window.\n");
+        end
+    );
+    HELP_VIEWER_INFO.("skim") := rec(
+        type := "pdf",
+        show := function(file)
+            local   page;
+            # unfortunately one cannot (yet?) give a start page to acroread
+            # it is currently ignored
+            page := 1;
+            if IsRecord(file) then
+                if IsBound(file.page) then
+                page := file.page;
+                fi;
+                file := file.file;
+            fi;
+            Exec( Concatenation(    
+                "osascript <<ENDSCRIPT\n",
+                    "tell application \"Skim\"\n",
+                    "activate\n",
+                    "open \"", file, "\"\n",
+                    "set theDoc to document of front window\n",
+                    "go theDoc to page ",String(page)," of theDoc\n",
+                    "end tell\n",
+                "ENDSCRIPT\n" ) );
+            return;
+        end
+    );
+ 
+else # UNIX but not Mac OS X
+
   # html version with netscape
   HELP_VIEWER_INFO.netscape := rec(
   type := "url",
@@ -108,6 +209,14 @@ else
   end
   );
 
+  # html version with chrome
+  HELP_VIEWER_INFO.chrome := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("chromium-browser \"file://", url,"\" >/dev/null 2>1 &"));
+  end
+  );
+  
   # html version with konqueror  - doesn't work with 'file://...#...' URLs
   HELP_VIEWER_INFO.konqueror := rec(
   type := "url",
@@ -132,23 +241,26 @@ else
   end
   );
 
-  # html version using Mac OS X default browser
-  HELP_VIEWER_INFO.("mac default browser") := rec (
-    type := "url", 
-    show := function (url)
-            Exec (Concatenation ("open \"file://", url,"\""));
-            return;
-        end
+  HELP_VIEWER_INFO.elinks := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("elinks \"", url, "\""));
+  end
   );
 
-  # html version using Mac OS X browser Safari
-  HELP_VIEWER_INFO.safari := rec (
-    type := "url", 
-    show := function (url)
-            Exec (Concatenation ("open -a Safari \"file://", url,"\""));
-            return;
-        end);
+  HELP_VIEWER_INFO.links2ng := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("links2 \"", url, "\""));
+  end
+  );
 
+  HELP_VIEWER_INFO.links2 := rec(
+  type := "url",
+  show := function(url)
+    Exec(Concatenation("links2 -g \"", url, "\""));
+  end
+  );
 fi;
 
 # Function to find the X-windows window ID of a program accessing file
@@ -314,13 +426,18 @@ end
 # No argument shows current setting.
 InstallGlobalFunction(SetHelpViewer, function(arg)
   local   view,  i,  a;
+
+  if Length(arg) = 0 then
+    return GAPInfo.UserPreferences.HelpViewers;
+  fi;
+
   view := List(arg, LowercaseString);
   
   for i in [1..Length(view)] do 
     a := view[i];
     # special handling of help viewer `less'
     if a = "less" then
-      Info(InfoWarning, 1, 
+      Info(InfoWarning, 2, 
       "Help viewer \"less\": interpreted as ",
       "viewer \"screen\" and setting:\n#I  ",
       "GAPInfo.UserPreferences.Pager := \"less\";\n#I  ",
@@ -330,7 +447,7 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
       GAPInfo.UserPreferences.PagerOptions:= ["-f","-r","-a","-i","-M","-j2"];
       view[i] := "screen";
     elif a = "more" then
-      Info(InfoWarning, 1, 
+      Info(InfoWarning, 2, 
       "Help viewer \"more\": interpreted as ",
       "viewer \"screen\" and setting:\n#I  ",
       "GAPInfo.UserPreferences.Pager := \"more\";\n#I  ",
@@ -344,18 +461,16 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
       view[i] := fail;
     fi;
   od;
-  if Length(view) = 0 or view[Length(view)] <> "screen" then
+  if not "screen" in view then
     Add(view, "screen");
   fi;
-  if Length(arg) > 0 then
-    GAPInfo.UserPreferences.HelpViewers := Filtered(view, a-> a<>fail);  
-  fi;
+  GAPInfo.UserPreferences.HelpViewers := Filtered(view, a-> a<>fail);  
   if Length( GAPInfo.UserPreferences.HelpViewers ) > 1 then
-    Info( InfoWarning, 1, "Trying to use\n#I  ",
+    Info( InfoWarning, 2, "Trying to use\n#I  ",
           GAPInfo.UserPreferences.HelpViewers, 
           "\n#I  (in this order) as help viewer.");
   else
-    Info(InfoWarning, 1, Concatenation(
+    Info(InfoWarning, 2, Concatenation(
           "Using ", GAPInfo.UserPreferences.HelpViewers[1],
           " as help viewer."));
   fi;

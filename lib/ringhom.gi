@@ -2,7 +2,7 @@
 ##
 #W  ringhom.gi                   GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id: ringhom.gi,v 1.3 2008/09/16 15:36:13 gap Exp $
+#H  @(#)$Id: ringhom.gi,v 1.5 2010/12/28 00:29:21 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -10,7 +10,7 @@
 ##  It is based on alghom.gi
 ##
 Revision.ringhom_gi :=
-    "@(#)$Id: ringhom.gi,v 1.3 2008/09/16 15:36:13 gap Exp $";
+    "@(#)$Id: ringhom.gi,v 1.5 2010/12/28 00:29:21 gap Exp $";
 
 
 #############################################################################
@@ -32,10 +32,10 @@ DeclareRepresentation( "IsSCRingGeneralMappingByImagesDefaultRep",
 #M  RingGeneralMappingByImages( <S>, <R>, <gens>, <imgs> )
 ##
 InstallMethod( RingGeneralMappingByImages,
-    "for sc ring and arbitrary ring and two homogeneous lists",
-    [ IsSubringSCRing, IsRing, IsHomogeneousList, IsHomogeneousList ],
+    "for two rings and two homogeneous lists",
+    [ IsRing, IsRing, IsHomogeneousList, IsHomogeneousList ],
 function( S, R, gens, imgs )
-local map;        # general mapping from <S> to <R>, result
+  local filter,map;        # general mapping from <S> to <R>, result
 
   # Check the arguments.
   if   Length( gens ) <> Length( imgs )  then
@@ -44,6 +44,11 @@ local map;        # general mapping from <S> to <R>, result
     Error( "<gens> must lie in <S>" );
   elif not IsSubset( R, imgs ) then
     Error( "<imgs> must lie in <R>" );
+  fi;
+  filter:=IsSPGeneralMapping and IsRingGeneralMapping;
+
+  if IsSubringSCRing(S) then
+    filter:=filter and IsSCRingGeneralMappingByImagesDefaultRep;
   fi;
 
   # Make the general mapping.
@@ -169,7 +174,7 @@ end);
 #M  IsSingleValued( <map> ) . . . . . . . . . . . . . .  for ring g.m.b.i.
 ##
 InstallMethod( IsSingleValued,
-    "for ring g.m.b.i.",
+    "for sc ring g.m.b.i.",
     [ IsGeneralMapping and IsSCRingGeneralMappingByImagesDefaultRep ],
 function(map)
   local r, moduli, std, stdi, sel, o, elm, elmi, i, j, k;
@@ -611,6 +616,16 @@ function( R, I )
   x:=List(GeneratorsOfRing(R),x->Zero(q));
   x{posi}:=GeneratorsOfRing(q);
   hom:=RingHomomorphismByImages(R,q,GeneratorsOfRing(R),x);
+  SetIsSurjective(hom,true);
+  SetKernelOfAdditiveGeneralMapping(hom,I);
   return hom;
 end );
+
+InstallOtherMethod( \/,
+    "generic method for two rings",
+    IsIdenticalObj,
+    [ IsRing, IsRing ],
+    function( R, I )
+    return ImagesSource( NaturalHomomorphismByIdeal( R, I ) );
+    end );
 

@@ -248,10 +248,10 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.random_g := "@(#)$Id: c_random.c,v 4.26 2010/02/23 18:03:59 gap Exp $"; */
+ /* Revision.random_g := "@(#)$Id: c_random.c,v 4.27 2011/01/20 14:21:51 jjm Exp $"; */
  t_1 = GC_Revision;
  CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 53, "@(#)$Id: c_random.c,v 4.26 2010/02/23 18:03:59 gap Exp $" )
+ C_NEW_STRING( t_2, 53, "@(#)$Id: c_random.c,v 4.27 2011/01/20 14:21:51 jjm Exp $" )
  ASS_REC( t_1, R_random__g, t_2 );
  
  /* R_N := 1; */
@@ -274,7 +274,7 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_1 ) = TLS->currLVars;
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_2) = INTOBJ_INT(27);
+ STARTLINE_BODY(t_2) = INTOBJ_INT(26);
  ENDLINE_BODY(t_2) = INTOBJ_INT(30);
  FILENAME_BODY(t_2) = FileName;
  BODY_FUNC(t_1) = t_2;
@@ -297,7 +297,7 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_1 ) = TLS->currLVars;
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_2) = INTOBJ_INT(34);
+ STARTLINE_BODY(t_2) = INTOBJ_INT(32);
  ENDLINE_BODY(t_2) = INTOBJ_INT(42);
  FILENAME_BODY(t_2) = FileName;
  BODY_FUNC(t_1) = t_2;
@@ -344,14 +344,14 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "RANDOM_SEED", &GF_RANDOM__SEED );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(4165679765)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(4165679765)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(4165679765)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](4165679765)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(4165679765)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](4165679765)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(4165679765)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](4165679765)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(-129287531)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(-129287531)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(-129287531)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](-129287531)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(-129287531)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](-129287531)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(-129287531)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](-129287531)" );
  
  /* return success */
  return 0;
@@ -448,7 +448,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 4165679765,
+ /* crc         = */ -129287531,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

@@ -1,12 +1,10 @@
 ############################################################################
 ##
-##  matmeths.gd                  IRREDSOL                 Burkhard Hoefling
+##  matmeths.gd                    IRREDSOL                 Burkhard Höfling
 ##
-##  @(#)$Id: matmeths.gd,v 1.3 2005/02/14 12:23:26 gap Exp $
+##  @(#)$Id: matmeths.gd,v 1.4 2011/04/07 07:58:08 gap Exp $
 ##
-##  Copyright (C) 2003-2005 by Burkhard Hoefling, 
-##  Institut fuer Geometrie, Algebra und Diskrete Mathematik
-##  Technische Universitaet Braunschweig, Germany
+##  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 ##
 
 
@@ -22,6 +20,7 @@
 ##
 DeclareProperty ("IsIrreducibleMatrixGroup", IsMatrixGroup);
 KeyDependentOperation ("IsIrreducibleMatrixGroup", IsMatrixGroup, IsField, ReturnTrue);
+DECLARE_IRREDSOL_SYNONYMS ("IsIrreducibleMatrixGroup");
 DeclareOperation ("IsIrreducible", [IsMatrixGroup, IsField]);
 
 ############################################################################
@@ -33,6 +32,7 @@ DeclareOperation ("IsIrreducible", [IsMatrixGroup, IsField]);
 ##  
 DeclareOperation ("IsAbsolutelyIrreducible", [IsMatrixGroup]);
 DeclareProperty ("IsAbsolutelyIrreducibleMatrixGroup", IsMatrixGroup);
+DECLARE_IRREDSOL_SYNONYMS ("IsAbsolutelyIrreducibleMatrixGroup");
 
 
 ############################################################################
@@ -46,6 +46,7 @@ DeclareProperty ("IsAbsolutelyIrreducibleMatrixGroup", IsMatrixGroup);
 ##  
 DeclareProperty ("IsPrimitiveMatrixGroup", IsMatrixGroup);
 KeyDependentOperation ("IsPrimitiveMatrixGroup", IsMatrixGroup, IsField, ReturnTrue);
+DECLARE_IRREDSOL_SYNONYMS ("IsPrimitiveMatrixGroup");
 DeclareProperty ("IsPrimitive", IsMatrixGroup); # already a property elsewhere in the library
 DeclareOperation ("IsPrimitive", [IsMatrixGroup, IsField]);
 
@@ -62,6 +63,7 @@ DeclareOperation ("IsPrimitive", [IsMatrixGroup, IsField]);
 ##
 DeclareAttribute ("MinimalBlockDimensionOfMatrixGroup", IsMatrixGroup);
 KeyDependentOperation ("MinimalBlockDimensionOfMatrixGroup", IsMatrixGroup, IsField, ReturnTrue);
+DECLARE_IRREDSOL_SYNONYMS ("MinimalBlockDimensionOfMatrixGroup");
 DeclareOperation ("MinimalBlockDimension", [IsMatrixGroup, IsField]);
 
 
@@ -92,6 +94,7 @@ DeclareAttribute ("RepresentationIsomorphism", IsMatrixGroup);
 ##  see IRREDSOL documentation
 ##  
 DeclareProperty ("IsMaximalAbsolutelyIrreducibleSolvableMatrixGroup", IsMatrixGroup);
+DECLARE_IRREDSOL_SYNONYMS ("IsMaximalAbsolutelyIrreducibleSolvableMatrixGroup");
 
 
 ############################################################################
@@ -119,9 +122,9 @@ DeclareGlobalFunction ("SmallBlockDimensionOfRepresentation");
 ##
 ##  Each imprimitivity system is represented by a record with the following entries:
 ##  bases: a list of lists of vectors, each list of vectors being a basis of a block 
-##         in the imprimitivity system
+##            in the imprimitivity system
 ##  stab1: the stabilizer in G of the first block (i. e., the block with basis bases[1])
-##  min:   true if the block system is a minimal block system amongst the systems returned
+##  min:    true if the block system is a minimal block system amongst the systems returned
 ##
 DeclareGlobalFunction ("ImprimitivitySystemsForRepresentation");
 

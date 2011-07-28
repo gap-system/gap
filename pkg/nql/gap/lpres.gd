@@ -2,10 +2,10 @@
 ##
 #W lpres.gd 			The NQL-package			René Hartung
 ##
-#H   @(#)$Id: lpres.gd,v 1.6 2009/05/06 12:58:20 gap Exp $
+#H   @(#)$Id: lpres.gd,v 1.7 2010/03/17 13:03:41 gap Exp $
 ##
 Revision.("nql/gap/lpres_gd"):=
-  "@(#)$Id: lpres.gd,v 1.6 2009/05/06 12:58:20 gap Exp $";
+  "@(#)$Id: lpres.gd,v 1.7 2010/03/17 13:03:41 gap Exp $";
 
 
 ############################################################################
@@ -27,17 +27,25 @@ DeclareCategoryCollections( "IsElementOfLpGroup" );
 ##
 DeclareCategoryFamily( "IsElementOfLpGroup" );
 
+
 ############################################################################
 ##
-#C  IsLpGroup
+#C IsSubgroupLpGroup
 ##
-DeclareCategory( "IsLpGroup", IsSubgroupFgGroup );
+DeclareCategory( "IsSubgroupLpGroup", IsSubgroupFgGroup );
+
+InstallTrueMethod( IsSubgroupLpGroup, IsGroup and IsElementOfLpGroupCollection);
+#InstallTrueMethod( IsSubgroupLpGroup, IsGroup and IsAssocWordCollection );
 
 ############################################################################
 ##
 #C  IsLpGroup
 ##
-InstallTrueMethod( IsLpGroup, IsGroup and IsElementOfLpGroupCollection );
+#DeclareSynonym( "IsLpGroup", IsSubgroupLpGroup and IsWholeFamily );
+DeclareSynonym( "IsLpGroup", IsSubgroupLpGroup and IsGroupOfFamily );
+
+#InstallTrueMethod( IsLpGroup, IsGroup and IsElementOfLpGroupCollection );
+#InstallTrueMethod( IsLpGroup, IsGroup and IsGroupOfFamily );
 
 ############################################################################
 ##
@@ -50,6 +58,9 @@ InstallTrueMethod( IsLpGroup, IsGroup and IsElementOfLpGroupCollection );
 ## 
 DeclareOperation( "ElementOfLpGroup",
                 [ IsElementOfLpGroupFamily, IsAssocWordWithInverse ]);
+
+InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
+   IsElementOfLpGroupCollection );
 
 ############################################################################
 ##
@@ -71,6 +82,8 @@ DeclareProperty( "IsAscendingLPresentation", IsLpGroup );
 ## corresponding to the generators of the L-presented group <G>.
 ##
 DeclareAttribute( "FreeGeneratorsOfLpGroup", IsLpGroup and IsGroupOfFamily  );
+DeclareOperation( "FreeGeneratorsOfWholeGroup", [ IsSubgroupLpGroup ] );
+DeclareOperation( "FreeGroupOfWholeGroup", [ IsSubgroupLpGroup ] );
 
 ############################################################################
 ##

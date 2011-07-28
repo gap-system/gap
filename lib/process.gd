@@ -9,7 +9,7 @@
 ##  This file contains the operations for process.
 ##
 Revision.process_gd :=
-    "@(#)$Id: process.gd,v 4.24 2010/05/20 08:25:13 gap Exp $";
+    "@(#)$Id: process.gd,v 4.25 2011/06/15 16:48:48 gap Exp $";
 
 
 #############################################################################
@@ -150,6 +150,15 @@ Revision.process_gd :=
 UNBIND_GLOBAL( "Process" );
 DeclareOperation( "Process",
     [ IsDirectory, IsString, IsInputStream, IsOutputStream, IsList ] );
+
+#############################################################################
+##
+#F  TmpNameAllArchs( )
+##
+##  returns a temporary file name based on the output of a call to TmpName
+##  but with adjusted temporary directory path for Window architectures
+##
+DeclareGlobalFunction("TmpNameAllArchs");
 
 #############################################################################
 ##

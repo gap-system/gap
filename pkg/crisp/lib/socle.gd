@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  socle.gd                         CRISP                 Burkhard H\"ofling
+##  socle.gd                         CRISP                   Burkhard Höfling
 ##
-##  @(#)$Id: socle.gd,v 1.2 2003/02/11 14:47:39 gap Exp $
+##  @(#)$Id: socle.gd,v 1.3 2011/05/15 19:18:01 gap Exp $
 ##
-##  Copyright (C) 2001 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2001, 2002 Burkhard Höfling
 ##
 Revision.socle_gd :=
-    "@(#)$Id: socle.gd,v 1.2 2003/02/11 14:47:39 gap Exp $";
+    "@(#)$Id: socle.gd,v 1.3 2011/05/15 19:18:01 gap Exp $";
 
 #############################################################################
 ##

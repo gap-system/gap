@@ -5,7 +5,7 @@
 ## Methods for the calculation of 
 ## certain subgroups of matrix groups
 ##
-#H  @(#)$Id: subgroups.gd,v 1.2 2005/02/03 11:38:15 gap Exp $
+#H  @(#)$Id: subgroups.gd,v 1.3 2011/05/31 13:10:58 gap Exp $
 ##
 #Y 2004
 ##
@@ -48,5 +48,3 @@ DeclareOperation( "SubgroupsUnipotentByAbelianByFinite" , [ IsMatrixGroup ] );
 #############################################################################
 ##
 #E
-
-

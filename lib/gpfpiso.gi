@@ -3,7 +3,7 @@
 #W  gpfpiso.gi                  GAP library                      Bettina Eick
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: gpfpiso.gi,v 4.9 2010/02/23 15:13:01 gap Exp $
+#H  @(#)$Id: gpfpiso.gi,v 4.10 2011/06/14 19:31:23 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  (permutation) groups.
 ##
 Revision.gpfpiso_gi :=
-    "@(#)$Id: gpfpiso.gi,v 4.9 2010/02/23 15:13:01 gap Exp $";
+    "@(#)$Id: gpfpiso.gi,v 4.10 2011/06/14 19:31:23 gap Exp $";
 
 #############################################################################
 ##
@@ -481,6 +481,33 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
     nimg:=GeneratorsOfGroup(f){idx};
     decomp:=function(elm)
       return LinearCombinationPcgs(nimg,ExponentsOfPcElement(pcgs,elm));
+    end;
+    # n-relators
+    for i in [1..Length(pcgs)] do
+      Add(rels,nimg[i]^p);
+      for j in [1..i-1] do
+	Add(rels,Comm(nimg[i],nimg[j]));
+      od;
+    od;
+
+  elif IsRecord(mnsf) then
+    # mnsf is record with components:
+    # pcgs: generator list for pcgs
+    # p: prime
+    # decomp: Exponents for element of pcgs
+    pcgs:=mnsf.pcgs;
+    p:=mnsf.prime;
+    f:=FreeGroup(Length(fpqg)+Length(pcgs));
+    qimg:=GeneratorsOfGroup(f){[1..Length(fpqg)]};
+    idx:=[Length(fpqg)+1..Length(fpqg)+Length(pcgs)];
+    nimg:=GeneratorsOfGroup(f){idx};
+    decomp:=function(elm)
+     local coeff;
+      coeff:=mnsf.decomp(elm);
+      if LinearCombinationPcgs(pcgs,coeff)<>elm then
+	Error("decomperror");
+      fi;
+      return LinearCombinationPcgs(nimg,mnsf.decomp(elm));
     end;
     # n-relators
     for i in [1..Length(pcgs)] do

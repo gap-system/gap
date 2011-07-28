@@ -2,7 +2,7 @@
 ##
 #W  chapter-5-a.tst                FR Package               Laurent Bartholdi
 ##
-#H  @(#)$Id: chapter-5-a.tst,v 1.2 2008/10/31 10:48:18 gap Exp $
+#H  @(#)$Id: chapter-5-a.tst,v 1.3 2010/06/04 11:55:35 gap Exp $
 ##
 #Y  Copyright (C) 2008,  Laurent Bartholdi
 ##
@@ -907,9 +907,9 @@ gap>
 gap> Info(InfoFR,1,"3.5.5 TensorProductOp");
 #I  3.5.5 TensorProductOp
 gap> 
-gap> ForAll(Flat(mealym{[1,2,3,4,5, 7,8 ]}{[1,2]}), m -> TensorProductX(m) = m);
+gap> ForAll(Flat(mealym{[1,2,3,4,5, 7,8 ]}{[1,2]}), m -> TensorProduct(m) = m);
 true
-gap> m := TensorProductX(mealym[4][1],mealym[4][1]);
+gap> m := TensorProduct(mealym[4][1],mealym[4][1]);
 <Mealy machine on alphabet [ 1 .. 25 ] with 2 states>
 gap> Size(AlphabetOfFRObject(m)) = 25;
 true
@@ -919,9 +919,9 @@ gap> Activity(m[1],2) = Activity(mealym[4][1][1], 4);
 true
 gap> PermGroup(SCGroup(m), 1) = PermGroup(SCGroup(mealym[4][1]),2);
 true
-gap> SubFRMachine(TensorProductX(mealym[1][1],mealym[1][1],mealym[1][2]), mealym[2][1]) <> fail;
+gap> SubFRMachine(TensorProduct(mealym[1][1],mealym[1][1],mealym[1][2]), mealym[2][1]) <> fail;
 true
-gap> m := TensorProductX(mealym[7][1],mealym[3][1]);
+gap> m := TensorProduct(mealym[7][1],mealym[3][1]);
 <Mealy machine on alphabet [ 1 .. 4 ] with 4 states>
 gap> Size(AlphabetOfFRObject(m)) = 4;
 true
@@ -931,7 +931,7 @@ gap> Activity(m[1]) = Trans([2,1,1,2]);
 true
 gap> Size(TransMonoid(SCMonoid(m), 1)) = 6;
 true
-gap> m := TensorProductX(mealym[8][2],mealym[4][2]);
+gap> m := TensorProduct(mealym[8][2],mealym[4][2]);
 <Mealy machine on alphabet [ 1 .. 35 ] with 2 states>
 gap> Size(AlphabetOfFRObject(m)) = 35;
 true

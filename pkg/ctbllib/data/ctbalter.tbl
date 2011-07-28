@@ -2,7 +2,7 @@
 ##
 #W  ctbalter.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbalter.tbl,v 4.15 2009/03/02 16:45:35 gap Exp $
+#H  @(#)$Id: ctbalter.tbl,v 4.16 2011/03/02 09:00:22 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,6 +13,11 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbalter.tbl,v $
+#H  Revision 4.16  2011/03/02 09:00:22  gap
+#H  added a remark to the InfoText of the 3-modular table of 2.A11.2
+#H  that a paper by Morris/Yaseen states an incorrect decomposition matrix
+#H      TB
+#H
 #H  Revision 4.15  2009/03/02 16:45:35  gap
 #H  added tables of A15, A16, A17 mod all primes
 #H  (contributed by J"urgen M"uller)
@@ -163,7 +168,7 @@
 #H  ==========================================================================
 ##
 Revision.ctbalter_tbl :=
-    "@(#)$Id: ctbalter.tbl,v 4.15 2009/03/02 16:45:35 gap Exp $";
+    "@(#)$Id: ctbalter.tbl,v 4.16 2011/03/02 09:00:22 gap Exp $";
 
 SET_TABLEFILENAME("ctbalter");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
@@ -252,7 +257,12 @@ TEXT1,
 0);
 
 MBT("2.A11.2",3,
-TEXT1,
+[
+"Note that the decomposition matrix shown in the Morris/Yaseen paper\n",
+"(Proc. Roy. Soc. Edinburgh Sect. A 108 (1988), no. 1-2, 145-164)\n",
+"is not correct.\n",
+"origin: modular ATLAS of finite groups, tests: DEC, TENS"
+],
 [5,6,6,5,5,6,6],
 [4,2],
 [[57,60,64]],

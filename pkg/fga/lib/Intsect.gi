@@ -4,12 +4,12 @@
 ##
 ## Installations for the computation of intersections of free groups
 ##
-#H @(#)$Id: Intsect.gi,v 1.4 2005/04/07 17:56:57 gap Exp $
+#H @(#)$Id: Intsect.gi,v 1.5 2010/04/13 09:42:12 gap Exp $
 ##
-#Y 2003 - 2005
+#Y 2003 - 2010
 ##
 Revision.("fga/lib/Intsect_gi") :=
-    "@(#)$Id: Intsect.gi,v 1.4 2005/04/07 17:56:57 gap Exp $";
+    "@(#)$Id: Intsect.gi,v 1.5 2010/04/13 09:42:12 gap Exp $";
 
 
 #############################################################################
@@ -124,7 +124,7 @@ InstallGlobalFunction( FGA_TrySetRepTable,
 #F  FGA_GetNr ( <state>, <statelist> )
 ##
 InstallGlobalFunction( FGA_GetNr,
-    function( q ,sl )
+    function( q, sl )
     if not IsBound( q.nr ) then
         Add( sl, q );
         q.nr := Size( sl );
@@ -136,19 +136,17 @@ InstallGlobalFunction( FGA_GetNr,
 
 #############################################################################
 ##
-#F  FGA_FindRepInIntersection ( <A1>, <A2> )
+#F  FGA_FindRepInIntersection ( <A1>, <t1>, <A2>, <t2> )
 ##
 InstallGlobalFunction( FGA_FindRepInIntersection,
     function( A1, t1, A2, t2 )
-    local tab, t1nr, t2nr, sl1, sl2, Q, pair, g, q1, nr1, q2, nr2, r, rx;
+    local tab, sl1, sl2, Q, pair, g, q1, nr1, q2, nr2, r, rx;
     sl1 := [];
-    sl1 [ Size( FGA_States( A1 ) ) + 1 ] := 23;
     sl2 := [];
-    sl2 [ Size( FGA_States( A2 ) ) + 1 ] := 42;
     q1 := A1!.initial;
     q2 := A2!.initial;
     if IsIdenticalObj( q1, t1) and
-       IsIdenticalObj( q1, t2) then
+       IsIdenticalObj( q2, t2) then
         return [];
     fi;
     nr1 := FGA_GetNr( q1, sl1 );
@@ -167,8 +165,8 @@ InstallGlobalFunction( FGA_FindRepInIntersection,
             nr2 := FGA_GetNr(q2.delta[g], sl2);
             rx := FGA_TrySetRepTable( tab, nr1, nr2, r, g );
             if rx <> fail then
-                if IsIdenticalObj(sl1[ nr1 ], t1)
-                      and IsIdenticalObj(sl2[ nr2 ], t2) then
+                if IsIdenticalObj(sl1[ nr1 ], t1) and
+                   IsIdenticalObj(sl2[ nr2 ], t2) then
                     return rx;
                 fi;
                 Add( Q, [ nr1, nr2 ] );
@@ -181,8 +179,8 @@ InstallGlobalFunction( FGA_FindRepInIntersection,
             nr2 := FGA_GetNr(q2.deltainv[g], sl2);
             rx := FGA_TrySetRepTable( tab, nr1, nr2, r, -g );
             if rx <> fail then
-                if IsIdenticalObj(sl1[ nr1 ], t1)
-                      and IsIdenticalObj(sl2[ nr2 ], t2) then
+                if IsIdenticalObj(sl1[ nr1 ], t1) and
+                   IsIdenticalObj(sl2[ nr2 ], t2) then
                     return rx;
                 fi;
                 Add( Q, [ nr1, nr2 ] );

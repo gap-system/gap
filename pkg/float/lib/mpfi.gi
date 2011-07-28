@@ -2,14 +2,14 @@
 ##
 #W  mpfi.gi                        GAP library              Laurent Bartholdi
 ##
-#H  @(#)$Id: mpfi.gi,v 1.1 2008/06/14 15:45:40 gap Exp $
+#H  @(#)$Id: mpfi.gi,v 1.2 2011/04/11 13:17:21 gap Exp $
 ##
 #Y  Copyright (C) 2008 Laurent Bartholdi
 ##
 ##  This file deals with interval floats
 ##
 Revision.mpfi_gi :=
-  "@(#)$Id: mpfi.gi,v 1.1 2008/06/14 15:45:40 gap Exp $";
+  "@(#)$Id: mpfi.gi,v 1.2 2011/04/11 13:17:21 gap Exp $";
 
 ################################################################
 # viewers
@@ -207,7 +207,7 @@ InstallMethod(MPFIFloat, "for rationals", [IsRat],
 end);
 InstallMethod(MPFIFloat, "for lists", [IsList],
         l->List(l,MPFIFloat));
-InstallMethod(MPFIFloat, "for macfloats", [IsMacFloat],
+InstallMethod(MPFIFloat, "for macfloats", [IsFloat], #!!!
         x->MPFIFloat(String(x)));
 InstallMethod(MPFIFloat, "for strings", [IsString],
         function(s)

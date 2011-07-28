@@ -2,7 +2,7 @@
 ##
 #W  csetgrp.gd                      GAP library              Alexander Hulpke
 ##
-#H  @(#)$Id: csetgrp.gd,v 4.40 2010/02/23 15:12:50 gap Exp $
+#H  @(#)$Id: csetgrp.gd,v 4.41 2011/01/25 23:24:27 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the declarations of operations for cosets.
 ##
 Revision.csetgrp_gd:=
-  "@(#)$Id: csetgrp.gd,v 4.40 2010/02/23 15:12:50 gap Exp $";
+  "@(#)$Id: csetgrp.gd,v 4.41 2011/01/25 23:24:27 alexk Exp $";
 
 #############################################################################
 ##
@@ -354,7 +354,7 @@ DeclareCategory("IsRightCoset", IsDomain and IsExternalOrbit and
 ##  gap> Size(c);
 ##  6
 ##  gap> AsList(c);
-##  [ (2,3,4), (1,4,2), (1,3)(2,4), (2,4), (1,4,2,3), (1,3,4,2) ]
+##  [ (2,3,4), (1,4,2), (1,3,4,2), (1,3)(2,4), (2,4), (1,4,2,3) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

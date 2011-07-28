@@ -2,7 +2,7 @@
 ##
 #W  grpfp.gd                    GAP library                    Volkmar Felsch
 ##
-#H  @(#)$Id: grpfp.gd,v 4.85 2010/07/16 21:14:33 gap Exp $
+#H  @(#)$Id: grpfp.gd,v 4.86 2010/10/10 12:34:37 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  (fp groups).
 ##
 Revision.grpfp_gd :=
-    "@(#)$Id: grpfp.gd,v 4.85 2010/07/16 21:14:33 gap Exp $";
+    "@(#)$Id: grpfp.gd,v 4.86 2010/10/10 12:34:37 alexk Exp $";
 
 
 #############################################################################
@@ -111,18 +111,18 @@ CosetTableDefaultLimit := 1000;
 ##  enumeration) to <Ref Var="infinity"/> (or to <M>0</M>) will force all
 ##  coset enumerations to continue until
 ##  they either get a result or exhaust the whole available space.
-##  For example, each of
+##  For example, each of the following two inputs
 ##  <P/>
-##  <Log><![CDATA[
+##  <Listing><![CDATA[
 ##  gap> CosetTableDefaultMaxLimit := 0;;
 ##  gap> Index( f, u );
-##  ]]></Log>
+##  ]]></Listing>
 ##  <P/>
 ##  or
 ##  <P/>
-##  <Log><![CDATA[
+##  <Listing><![CDATA[
 ##  gap> Index( f, u : max := 0 );
-##  ]]></Log>
+##  ]]></Listing>
 ##  <P/>
 ##  have essentially the same effect as choosing the third option
 ##  (typing: <C>maxlimit := 0; return;</C>) at the <C>brk></C> prompt above

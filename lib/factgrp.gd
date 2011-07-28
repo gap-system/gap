@@ -2,7 +2,7 @@
 ##
 #W  factgrp.gd                      GAP library              Alexander Hulpke
 ##
-#H  @(#)$Id: factgrp.gd,v 4.23 2010/02/23 15:12:58 gap Exp $
+#H  @(#)$Id: factgrp.gd,v 4.24 2011/01/21 17:01:10 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains the declarations of operations for factor group maps
 ##
 Revision.factgrp_gd:=
-  "@(#)$Id: factgrp.gd,v 4.23 2010/02/23 15:12:58 gap Exp $";
+  "@(#)$Id: factgrp.gd,v 4.24 2011/01/21 17:01:10 alexk Exp $";
 
 ##
 ##  To implement new factor group methods, one does not need to deal with
@@ -224,7 +224,7 @@ DeclareSynonym( "ImproveOperationDegreeByBlocks",
 ##  24
 ##  gap> small:= SmallerDegreePermutationRepresentation( image );;
 ##  gap> Image( small );
-##  Group([ (2,3), (2,4,3), (1,3)(2,4), (1,2)(3,4) ])
+##  Group([ (2,3), (2,3,4), (1,2)(3,4), (1,3)(2,4) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

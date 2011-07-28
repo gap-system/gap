@@ -7,7 +7,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grppcext_gi :=
-    "@(#)$Id: grppcext.gi,v 4.64 2010/02/23 15:13:06 gap Exp $";
+    "@(#)$Id: grppcext.gi,v 4.65 2011/01/25 17:51:36 gap Exp $";
 
 #############################################################################
 ##
@@ -762,7 +762,7 @@ InstallGlobalFunction( CompatiblePairs, function( arg )
 	    Size(D)/Size(tmp));
       if Size(tmp)<Size(D) then
 	D:=tmp;
-	gens:=GeneratorsOfGroup(tmp);
+	gens:=SmallGeneratingSet(tmp);
 	genimgs:=List(gens,i->ImageElm(triso,i));
 	if translate<>false then
 	  translate:=rec(pairgens:=genimgs,
@@ -782,6 +782,21 @@ InstallGlobalFunction( CompatiblePairs, function( arg )
 
     if translate<>false then
       l:=Size(D);
+      if Length(gens)>3 then
+	# reduce generator number
+	
+	u:=SmallGeneratingSet(D);
+	if IsSubset(gens,u) then
+	  Info( InfoMatOrb, 3, "Reduce generators subset");
+	  idx:=List(u,x->Position(gens,x));
+	  gens:=gens{idx};
+	  genimgs:=genimgs{idx};
+	else
+	  Info( InfoMatOrb, 3, "Reduce generators new words");
+	  gens:=u;
+	  genimgs:=List(gens,i->ImageElm(triso,i));
+	fi;
+      fi;
       tmp:=SubgroupNC(Range(triso),genimgs);
       SetSize(tmp,l);
       # cache the faithful permutation representation in case we need it

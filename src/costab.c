@@ -5,7 +5,7 @@
 *W                                                         & Martin Schönert
 *W                                                         & Alexander Hulpke
 **
-*H  @(#)$Id: costab.c,v 4.44 2010/02/23 15:13:41 gap Exp $
+*H  @(#)$Id: costab.c,v 4.45 2011/05/09 11:11:29 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,7 +16,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_costab_c =
-   "@(#)$Id: costab.c,v 4.44 2010/02/23 15:13:41 gap Exp $";
+   "@(#)$Id: costab.c,v 4.45 2011/05/09 11:11:29 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -578,9 +578,7 @@ Obj FuncMakeConsequencesPres (
     Obj                 list )
 {
     Obj                 objDefs1;       /* handle of defs list part 1      */
-    Obj *               ptDefs1;        /* pointer to this list            */
     Obj                 objDefs2;       /* handle of defs list part 2      */
-    Obj *               ptDefs2;        /* pointer to this list            */
     Obj                 objRels;        /*                                 */
     Obj *               ptRel;          /* pointer to the relator bag      */
     Obj *               ptNums;         /* pointer to this list            */
@@ -607,8 +605,6 @@ Obj FuncMakeConsequencesPres (
     objTable  = ELM_PLIST( list, 1 );
     objDefs1  = ELM_PLIST( list, 2 );
     objDefs2  = ELM_PLIST( list, 3 );
-    ptDefs1   = &(ELM_PLIST(objDefs1,1)) - 1;
-    ptDefs2   = &(ELM_PLIST(objDefs2,1)) - 1;
 
     undefined = INT_INTOBJ( ELM_PLIST( list, 4 ) );
     ndefs     = INT_INTOBJ( ELM_PLIST( list, 5 ) );

@@ -3,7 +3,7 @@
 #W  ctblpope.gd                 GAP library                     Thomas Breuer
 #W                                                           & Götz Pfeiffer
 ##
-#H  @(#)$Id: ctblpope.gd,v 4.37 2010/02/23 15:12:54 gap Exp $
+#H  @(#)$Id: ctblpope.gd,v 4.40 2011/03/30 08:36:49 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -125,7 +125,7 @@
 ##  <#/GAPDoc>
 ##
 Revision.ctblpope_gd :=
-    "@(#)$Id: ctblpope.gd,v 4.37 2010/02/23 15:12:54 gap Exp $";
+    "@(#)$Id: ctblpope.gd,v 4.40 2011/03/30 08:36:49 gap Exp $";
 
 
 #############################################################################
@@ -133,6 +133,7 @@ Revision.ctblpope_gd :=
 #F  PermCharInfo( <tbl>, <permchars>[, <format> ] )
 ##
 ##  <#GAPDoc Label="PermCharInfo">
+##  <Index Subkey="for permutation characters">LaTeX</Index>
 ##  <ManSection>
 ##  <Func Name="PermCharInfo" Arg='tbl, permchars[, format ]'/>
 ##
@@ -197,11 +198,11 @@ Revision.ctblpope_gd :=
 ##  gap> psi:= Sum( Irr( t ){ [ 1, 3, 6 ] } );
 ##  Character( CharacterTable( "A6" ), [ 15, 3, 0, 3, 1, 0, 0 ] )
 ##  gap> info:= PermCharInfo( t, psi );
-##  rec( bound := [ [ 1, 3, 8, 8, 6, 24, 24 ] ], ATLAS := [ "1a+5b+9a" ], 
-##    display := rec( classes := [ 1, 2, 4, 5 ], letter := "I", 
-##        chars := [ [ 15, 3, 0, 3, 1, 0, 0 ], [ 1, 9, 0, 8, 6, 0, 0 ], 
-##            [ 1, 3, 8, 8, 6, 24, 24 ] ] ), 
-##    contained := [ [ 1, 9, 0, 8, 6, 0, 0 ] ] )
+##  rec( ATLAS := [ "1a+5b+9a" ], bound := [ [ 1, 3, 8, 8, 6, 24, 24 ] ], 
+##    contained := [ [ 1, 9, 0, 8, 6, 0, 0 ] ], 
+##    display := rec( chars := [ [ 15, 3, 0, 3, 1, 0, 0 ], 
+##            [ 1, 9, 0, 8, 6, 0, 0 ], [ 1, 3, 8, 8, 6, 24, 24 ] ], 
+##        classes := [ 1, 2, 4, 5 ], letter := "I" ) )
 ##  gap> Display( t, info.display );
 ##  A6
 ##  
@@ -214,9 +215,9 @@ Revision.ctblpope_gd :=
 ##      3P 1a 2a 1a 4a
 ##      5P 1a 2a 3b 4a
 ##  
-##  Y.1    15  3  3  1
-##  Y.2     1  9  8  6
-##  Y.3     1  3  8  6
+##  I.1    15  3  3  1
+##  I.2     1  9  8  6
+##  I.3     1  3  8  6
 ##  gap> j1:= CharacterTable( "J1" );;
 ##  gap> psi:= TrivialCharacter( CharacterTable( "7:6" ) )^j1;
 ##  Character( CharacterTable( "J1" ), [ 4180, 20, 10, 0, 0, 2, 1, 0, 0, 0, 0, 0, 

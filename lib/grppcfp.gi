@@ -10,7 +10,7 @@
 ##  fp group and vice versa.
 ##
 Revision.grppcfp_gi :=
-    "@(#)$Id: grppcfp.gi,v 4.50 2010/02/23 15:13:07 gap Exp $";
+    "@(#)$Id: grppcfp.gi,v 4.51 2011/05/29 19:50:43 gap Exp $";
 
 #############################################################################
 ##
@@ -768,7 +768,7 @@ end );
 #F  SQ( <F>, <...> ) / SolvableQuotient( <F>, <...> )
 ##
 InstallGlobalFunction( SolvableQuotient, function ( F, primes )
-    local G, epi, tup, lift, i, found, fac, j, p, iso;
+local G, epi, tup, lift, i, found, fac, j, p, iso;
 
     # initialise epimorphism
     epi := InitEpimorphismSQ(F);
@@ -783,6 +783,7 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
 
     # if <primes> is a list of tuples, it denotes a chief series
     if IsList( primes ) and IsList( primes[1] ) then
+	
         Info(InfoSQ,2,"have chief series given");
         for tup in primes{[2..Length(primes)]} do
             Info(InfoSQ,1,"trying ", tup);
@@ -827,6 +828,12 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
                 
     # if <primes> is an integer it is size we want
     if IsInt(primes)  then
+	if not IsInt(primes/Size(G)) then
+	  i:=Lcm(primes,Size(G));
+	  Info(InfoWarning,1,"Added extra factor ",i/primes,
+	       " to allow for G/G'");
+          primes:=i;
+	fi;
         i := primes / Size( G );
         found := true;
         while i > 1 and found do

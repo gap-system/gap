@@ -3,7 +3,7 @@
 #W  scanmtx.gi     GAP 4 packages AtlasRep and MeatAxe          Thomas Breuer
 #W                                                              Frank L"ubeck
 ##
-#H  @(#)$Id: scanmtx.gi,v 1.42 2008/06/25 12:44:04 gap Exp $
+#H  @(#)$Id: scanmtx.gi,v 1.43 2010/05/19 16:28:04 gap Exp $
 ##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -20,9 +20,9 @@
 ##
 if IsBound( Revision ) then
   Revision.( "atlasrep/gap/scanmtx_gi" ) :=
-    "@(#)$Id: scanmtx.gi,v 1.42 2008/06/25 12:44:04 gap Exp $";
+    "@(#)$Id: scanmtx.gi,v 1.43 2010/05/19 16:28:04 gap Exp $";
   Revision.( "cmeataxe/gap/scanmtx_gi" ) :=
-    "@(#)$Id: scanmtx.gi,v 1.42 2008/06/25 12:44:04 gap Exp $";
+    "@(#)$Id: scanmtx.gi,v 1.43 2010/05/19 16:28:04 gap Exp $";
 fi;
 
 
@@ -499,8 +499,8 @@ od;
         fi;
         pos:= 0;
         for i in [ 1 .. nrows ] do
-          result[i]:= fflist{ SINTLIST_STRING(
-                                  string{ [ pos+1 .. pos+ncols ] } ) };
+          result[i]:= fflist{ INTLIST_STRING(
+                                 string{ [ pos+1 .. pos+ncols ] }, -1 ) };
           pos:= pos + ncols;
         od;
 
@@ -533,7 +533,7 @@ od;
             Append( line, newline );
             len:= len + Length( newline );
           od;
-          result[i] := fflist{ SINTLIST_STRING( line{ [ 1 .. ncols ] } ) };
+          result[i] := fflist{ INTLIST_STRING( line{ [ 1 .. ncols ] }, -1 ) };
           line:= line{ [ ncols + 1 .. len ] };
           len:= len - ncols;
 
@@ -1031,6 +1031,7 @@ InstallGlobalFunction( FFMatOrPermCMtxBinary, function( fname )
       j:= j + 4;
     od;
     res:= PermList( list );
+#T perhaps zero based, i.e., we have to add 1 to all entries??
     # ugly hack:
     # several of the data files on the server are stored in a wrong format.
     if res = fail then
@@ -1041,6 +1042,10 @@ InstallGlobalFunction( FFMatOrPermCMtxBinary, function( fname )
         j:= j + 4;
       od;
       res:= PermList( list );
+      if res = fail then
+        Info( InfoCMeatAxe, 1,
+              "not a permutation: ", fname );
+      fi;
     fi;
   else
     # matrix

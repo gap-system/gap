@@ -2,7 +2,7 @@
 **
 *W  calls.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: calls.c,v 4.56 2010/02/23 15:13:39 gap Exp $
+*H  @(#)$Id: calls.c,v 4.60 2011/05/12 06:46:22 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -37,7 +37,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_calls_c =
-   "@(#)$Id: calls.c,v 4.56 2010/02/23 15:13:39 gap Exp $";
+   "@(#)$Id: calls.c,v 4.60 2011/05/12 06:46:22 gap Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -65,12 +65,13 @@ const char * Revision_calls_c =
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 
 #include        "stats.h"               /* statements                      */
 
 #include        "saveload.h"            /* saving and loading              */
 #include        "tls.h"                 /* thread-local storage            */
+
+#include        "vars.h"                /* variables                       */
 
 
 /****************************************************************************
@@ -1053,7 +1054,7 @@ const Char * CookieOfHandler (
 ObjFunc HandlerOfCookie(
        const Char * cookie )
 {
-  UInt i,top,bottom,middle;
+  Int i,top,bottom,middle;
   Int res;
   if (HandlerSortingStatus != 2) 
     {
@@ -1062,8 +1063,6 @@ ObjFunc HandlerOfCookie(
           if (SyStrcmp(cookie, HandlerFuncs[i].cookie) == 0)
             return HandlerFuncs[i].hdlr;
         }
-      Pr("Function Handler %s Missing from Kernel\n", (Int)cookie, 0L);
-      SyExit(1);
       return (ObjFunc)0L;
     }
   else
@@ -1080,8 +1079,6 @@ ObjFunc HandlerOfCookie(
         else
           return HandlerFuncs[middle].hdlr;
       }
-      Pr("Function Handler %s Missing from Kernel\n", (Int)cookie, 0L);
-      SyExit(1);
       return (ObjFunc)0L;
     }
 }
@@ -1299,10 +1296,6 @@ void PrintFunction (
     Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
 
-    /* complete the function if necessary                                  */
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        COMPLETE_FUNC(func);
-    }
 
     if ( IS_OPERATION(func) ) {
       CALL_1ARGS( PrintOperation, func );
@@ -1340,10 +1333,7 @@ void PrintFunction (
         }
 
         /* print the body                                                  */
-        if ( IS_UNCOMPLETED_FUNC(func) )  {
-            Pr( "<<uncompletable function>>", 0L, 0L );
-        }
-        else if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) ) {
+        if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) ) {
             Pr("<<kernel or compiled code>>",0L,0L);
         }
         else {
@@ -1400,6 +1390,8 @@ Obj FuncIS_FUNCTION (
 **  i.e., it is equivalent to '<func>( <arg1>, <arg2>... )'.
 */
 Obj CallFunctionOper;
+
+
 
 Obj FuncCALL_FUNC (
     Obj                 self,
@@ -1505,53 +1497,48 @@ Obj FuncCALL_FUNC_LIST (
             "you can replace <list> via 'return <list>;'" );
     }
 
-    /* check that the first argument is a function                         */
-    /*N 1996/06/26 mschoene this should be done by 'CALL_<i>ARGS'          */
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "CallFuncList: <func> must be a function",
-            0L, 0L,
-            "you can replace function <func> via 'return <func>;'" );
-    }
+    if (TNUM_OBJ(func) == T_FUNCTION) {
 
-    /* call the function                                                   */
-    if      ( LEN_LIST(list) == 0 ) {
+      /* call the function                                                   */
+      if      ( LEN_LIST(list) == 0 ) {
         result = CALL_0ARGS( func );
-    }
-    else if ( LEN_LIST(list) == 1 ) {
+      }
+      else if ( LEN_LIST(list) == 1 ) {
         result = CALL_1ARGS( func, ELMV_LIST(list,1) );
-    }
-    else if ( LEN_LIST(list) == 2 ) {
+      }
+      else if ( LEN_LIST(list) == 2 ) {
         result = CALL_2ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2) );
-    }
-    else if ( LEN_LIST(list) == 3 ) {
+      }
+      else if ( LEN_LIST(list) == 3 ) {
         result = CALL_3ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-                                   ELMV_LIST(list,3) );
-    }
-    else if ( LEN_LIST(list) == 4 ) {
+			     ELMV_LIST(list,3) );
+      }
+      else if ( LEN_LIST(list) == 4 ) {
         result = CALL_4ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-                                   ELMV_LIST(list,3), ELMV_LIST(list,4) );
-    }
-    else if ( LEN_LIST(list) == 5 ) {
+			     ELMV_LIST(list,3), ELMV_LIST(list,4) );
+      }
+      else if ( LEN_LIST(list) == 5 ) {
         result = CALL_5ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-                                   ELMV_LIST(list,3), ELMV_LIST(list,4),
-                                   ELMV_LIST(list,5) );
-    }
-    else if ( LEN_LIST(list) == 6 ) {
+			     ELMV_LIST(list,3), ELMV_LIST(list,4),
+			     ELMV_LIST(list,5) );
+      }
+      else if ( LEN_LIST(list) == 6 ) {
         result = CALL_6ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-                                   ELMV_LIST(list,3), ELMV_LIST(list,4),
-                                   ELMV_LIST(list,5), ELMV_LIST(list,6) );
-    }
-    else {
+			     ELMV_LIST(list,3), ELMV_LIST(list,4),
+			     ELMV_LIST(list,5), ELMV_LIST(list,6) );
+      }
+      else {
         list2 = NEW_PLIST( T_PLIST, LEN_LIST(list) );
         SET_LEN_PLIST( list2, LEN_LIST(list) );
         for ( i = 1; i <= LEN_LIST(list); i++ ) {
-            arg = ELMV_LIST( list, (Int)i );
-            SET_ELM_PLIST( list2, i, arg );
+	  arg = ELMV_LIST( list, (Int)i );
+	  SET_ELM_PLIST( list2, i, arg );
         }
         result = CALL_XARGS( func, list2 );
+      }
+    } else {
+      result = DoOperation2Args(self, func, list);
     }
-
     /* return the result                                                   */
     return result;
 }
@@ -1624,13 +1611,6 @@ Obj FuncNARG_FUNC (
     Obj                 func )
 {
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
-        if ( IS_UNCOMPLETED_FUNC(func) )  {
-            COMPLETE_FUNC(func);
-            if ( IS_UNCOMPLETED_FUNC(func) ) {
-                ErrorQuit( "<func> did not complete", 0L, 0L );
-                return 0;
-            }
-        }
         return INTOBJ_INT( NARG_FUNC(func) );
     }
     else {
@@ -1651,13 +1631,6 @@ Obj FuncNAMS_FUNC (
 {
   Obj nams;
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
-        if ( IS_UNCOMPLETED_FUNC(func) )  {
-            COMPLETE_FUNC(func);
-            if ( IS_UNCOMPLETED_FUNC(func) ) {
-                ErrorQuit( "<func> did not complete", 0L, 0L );
-                return 0;
-            }
-        }
         nams = NAMS_FUNC(func);
 	return (nams != (Obj)0) ? nams : Fail;
     }
@@ -1709,13 +1682,6 @@ Obj FuncCLEAR_PROFILE_FUNC(
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        COMPLETE_FUNC(func);
-        if ( IS_UNCOMPLETED_FUNC(func) ) {
-            ErrorQuit( "<func> did not complete", 0L, 0L );
-            return 0;
-        }
-    }
 
     /* clear profile info                                                  */
     prof = PROF_FUNC(func);
@@ -1756,14 +1722,6 @@ Obj FuncPROFILE_FUNC(
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        COMPLETE_FUNC(func);
-        if ( IS_UNCOMPLETED_FUNC(func) ) {
-            ErrorQuit( "<func> did not complete", 0L, 0L );
-            return 0;
-        }
-    }
-
     /* uninstall trace handler                                             */
     ChangeDoOperations( func, 0 );
 
@@ -1813,13 +1771,6 @@ Obj FuncIS_PROFILED_FUNC(
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
-    }
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        COMPLETE_FUNC(func);
-        if ( IS_UNCOMPLETED_FUNC(func) ) {
-            ErrorQuit( "<func> did not complete", 0L, 0L );
-            return 0;
-        }
     }
     return ( TNUM_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
 }
@@ -1878,13 +1829,6 @@ Obj FuncUNPROFILE_FUNC(
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
-    }
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        COMPLETE_FUNC(func);
-        if ( IS_UNCOMPLETED_FUNC(func) ) {
-            ErrorQuit( "<func> did not complete", 0L, 0L );
-            return 0;
-        }
     }
 
     /* uninstall trace handler                                             */
@@ -2102,6 +2046,7 @@ static Int InitKernel (
     InitFopyGVar( "PRINT_OPERATION", &PrintOperation );
     PrintObjFuncs[ T_FUNCTION ] = PrintFunction;
 
+
     /* initialise all 'Do<Something><N>args' handlers, give the most       */
     /* common ones short cookies to save space in in the saved workspace   */
     InitHandlerFunc( DoFail0args, "f0" );
@@ -2140,8 +2085,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
-{
+    StructInitInfo *    module ){
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarOpersFromTable( GVarOpers );

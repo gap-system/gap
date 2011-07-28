@@ -2,16 +2,17 @@
 ##
 #W  PackageInfo.g       GAP 4 Package `polycyclic'               Bettina Eick
 #W                                                              Werner Nickel
+#W                                                                   Max Horn
 ##  
-#H  @(#)$Id: PackageInfo.g,v 1.28 2009/02/18 10:46:01 gap Exp $
+#H  @(#)$Id: PackageInfo.g,v 1.33 2011/06/17 13:57:49 gap Exp $
 ##
 
 SetPackageInfo( rec(
 
 PackageName := "Polycyclic",
 Subtitle    := "Computation with polycyclic groups",
-Version     := "2.6",
-Date        := "18/02/2009",
+Version     := "2.8.1",
+Date        := "24/05/2011",
 
 Persons          := [ 
   rec( LastName      := "Eick",
@@ -19,18 +20,20 @@ Persons          := [
        IsAuthor      := true,
        IsMaintainer  := true,
        Email         := "beick@tu-bs.de",
-       WWWHome       := "http://www-public.tu-bs.de:8080/~beick",
-       PostalAddress := Concatenation([
+       PostalAddress := Concatenation(
+               "AG Algebra und Diskrete Mathematik\n",
                "Institut Computational Mathematics\n",
                "TU Braunschweig\n",
-               "Pockelsstr. 14 \n D-38106 Braunschweig \n Germany"] ),
+               "Pockelsstr. 14\n",
+               "D-38106 Braunschweig\n",
+               "Germany" ),
        Place         := "Braunschweig",
        Institution   := "TU Braunschweig"),
 
   rec( LastName      := "Nickel",
        FirstNames    := "Werner",
        IsAuthor      := true,
-       IsMaintainer  := true,
+       IsMaintainer  := false,
        Email         := "nickel@mathematik.tu-darmstadt.de",
        WWWHome       := "http://www.mathematik.tu-darmstadt.de/~nickel",
        PostalAddress := Concatenation( 
@@ -40,15 +43,32 @@ Persons          := [
                "64289 Darmstadt\n",
                "Germany" ),
        Place         := "Darmstadt, Germany",
-       Institution   := "Fachbereich Mathematik, TU Darmstadt") ],
+       Institution   := "Fachbereich Mathematik, TU Darmstadt"),
+
+  rec( LastName      := "Horn",
+       FirstNames    := "Max",
+       IsAuthor      := true,
+       IsMaintainer  := true,
+       Email         := "mhorn@tu-bs.de",
+       WWWHome       := "http://www.icm.tu-bs.de/~mhorn",
+       PostalAddress := Concatenation(
+               "AG Algebra und Diskrete Mathematik\n",
+               "Institut Computational Mathematics\n",
+               "TU Braunschweig\n",
+               "Pockelsstr. 14\n",
+               "D-38106 Braunschweig\n",
+               "Germany" ),
+       Place         := "Braunschweig",
+       Institution   := "TU Braunschweig")
+    ],
 
 Status              := "accepted",
 CommunicatedBy   := "Charles Wright (Eugene)",
 AcceptDate       := "01/2004",
 
-PackageWWWHome := "http://www-public.tu-bs.de:8080/~beick/soft/polycyclic/",
+PackageWWWHome := "http://www.icm.tu-bs.de/ag_algebra/software/polycyclic/",
 
-ArchiveFormats := ".tar.gz",
+ArchiveFormats := ".tar.gz .tar.bz2",
 ArchiveURL     := Concatenation( ~.PackageWWWHome, "polycyclic-", ~.Version ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README" ),
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
@@ -67,7 +87,7 @@ PackageDoc     := rec(
                 Autoload  := true),
 
 Dependencies    := rec(
-                GAP                    := ">= 4.3fix4",
+                GAP                    := ">= 4.4",
                 NeededOtherPackages    := [["alnuth", "1.0"],
                                            ["autpgrp","1.0"]],
                 SuggestedOtherPackages := [["nq","1.0"]],

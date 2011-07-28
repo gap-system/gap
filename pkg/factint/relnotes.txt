@@ -102,7 +102,7 @@ Changes between version 1.4.12 and version 1.5.1 (September 20, 2007):
    was unnecessarily triggered, which resulted in short delays and some
    wasting of memory. This issue has been resolved.
 
-Changes between version 1.5.1 and version 1.5.2:
+Changes between version 1.5.1 and version 1.5.2 (September 26, 2007):
 
  - FactInt now uses a flexible caching mechanism for factorizations of
    small integers. This yields a substantial speedup when many small numbers
@@ -110,4 +110,9 @@ Changes between version 1.5.1 and version 1.5.2:
  - The copy of Brent's tables of factors of integers of the form b^k +/- 1
    has been updated. There are now roughly 20000 new factors in the database.
 
+Changes between version 1.5.2 and version 1.5.3 (June 16, 2011):
+
+ - The copy of Brent's tables of factors of integers of the form b^k +/- 1
+   has been updated.
+ - The CVS revision entries have been removed from the source files.
 

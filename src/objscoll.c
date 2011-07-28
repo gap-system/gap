@@ -2,7 +2,7 @@
 **
 *W  objscoll.c                  GAP source                       Frank Celler
 **
-*H  @(#)$Id: objscoll.c,v 4.40 2010/02/23 15:13:45 gap Exp $
+*H  @(#)$Id: objscoll.c,v 4.41 2011/05/09 11:11:30 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -25,7 +25,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_objscoll_c =
-   "@(#)$Id: objscoll.c,v 4.40 2010/02/23 15:13:45 gap Exp $";
+   "@(#)$Id: objscoll.c,v 4.41 2011/05/09 11:11:30 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -410,6 +410,7 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     vcnj = SC_CONJUGATES(sc);
     lcnj = LEN_PLIST(vcnj);
+    (void) lcnj; /* please compiler -- lcnj not actually used */
     cnj  = ADDR_OBJ(vcnj);
 
     avc = ADDR_OBJ( SC_AVECTOR(sc) );
@@ -990,6 +991,7 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     vcnj = SC_CONJUGATES(sc);
     lcnj = LEN_PLIST(vcnj);
+    (void) lcnj; /* please compiler -- lcnj not actually used */
     cnj  = ADDR_OBJ(vcnj);
 
     avc = ADDR_OBJ( SC_AVECTOR(sc) );
@@ -1570,6 +1572,7 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     vcnj = SC_CONJUGATES(sc);
     lcnj = LEN_PLIST(vcnj);
+    (void) lcnj; /* please compiler -- lcnj not actually used */
     cnj  = ADDR_OBJ(vcnj);
 
     avc = ADDR_OBJ( SC_AVECTOR(sc) );

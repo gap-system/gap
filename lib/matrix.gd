@@ -6,7 +6,7 @@
 #W                                                           & Heiko Theißen
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: matrix.gd,v 4.113 2010/02/23 15:13:14 gap Exp $
+#H  @(#)$Id: matrix.gd,v 4.123 2011/06/10 17:05:51 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,7 +15,7 @@
 ##  This file contains those functions that mainly deal with matrices.
 ##
 Revision.matrix_gd :=
-    "@(#)$Id: matrix.gd,v 4.113 2010/02/23 15:13:14 gap Exp $";
+    "@(#)$Id: matrix.gd,v 4.123 2011/06/10 17:05:51 gap Exp $";
 
 
 #############################################################################
@@ -335,10 +335,14 @@ DeclareOperation("DeterminantMatDivFree",[IsMatrix]);
 ##
 ##  <Description>
 ##  is a list of length 2, the first being the number of rows, the second
-##  being the number of columns of the matrix <A>mat</A>.
+##  being the number of columns of the matrix <A>mat</A>. If <A>mat</A> is
+##  malformed, that is, it is not a <Ref Prop="IsRectangularTable"/>, 
+##  returns <K>fail</K>.
 ##  <Example><![CDATA[
 ##  gap> DimensionsMat([[1,2,3],[4,5,6]]);
 ##  [ 2, 3 ]
+##  gap> DimensionsMat([[1,2,3],[4,5]]);
+##  fail
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -361,7 +365,8 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##  <C>ElementaryDivisors</C> returns a list of the elementary divisors, i.e., the
 ##  unique <A>d</A> with <C><A>d</A>[<A>i</A>]</C> divides  <C><A>d</A>[<A>i</A>+1]</C> and <A>mat</A> is  equivalent
 ##  to a diagonal matrix with the elements <C><A>d</A>[<A>i</A>]</C> on the diagonal.
-##  The operations are performed over the ring <A>ring</A>, which must contain
+##  The operations are performed over the euclidean
+##  ring <A>ring</A>, which must contain
 ##  all matrix entries. For compatibility reasons it can be omitted and
 ##  defaults to <Ref Var="Integers"/>.
 ##  <P/>
@@ -371,7 +376,7 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##  gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
 ##  gap> ElementaryDivisorsMat(mat);
 ##  [ 1, 3, 0 ]
-##  gap> x:=X(Rationals,"x");;
+##  gap> x:=Indeterminate(Rationals,"x");;
 ##  gap> mat:=mat*One(x)-x*mat^0;       
 ##  [ [ -x+1, 2, 3 ], [ 4, -x+5, 6 ], [ 7, 8, -x+9 ] ]
 ##  gap> ElementaryDivisorsMat(PolynomialRing(Rationals,1),mat);
@@ -391,6 +396,79 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##
 DeclareOperation( "ElementaryDivisorsMat", [IsRing,IsMatrix] );
 DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
+
+#############################################################################
+##
+#O  ElementaryDivisorsTranformationsMat([<ring>,] <mat>)
+#F  ElementaryDivisorsTranformationsMatDestructive(<ring>,<mat>)
+##
+##  <#GAPDoc Label="ElementaryDivisorsTranformationsMat">
+##  <ManSection>
+##  <Oper Name="ElementaryDivisorsTranformationsMat" Arg='[ring,] mat'/>
+##  <Func Name="ElementaryDivisorsTranformationsMatDestructive" Arg='ring,mat'/>
+##
+##  <Description>
+##  <C>ElementaryDivisorsTransformations</C>, in addition to the tasks done
+##  by <C>ElementaryDivisors</C>, also calculates transforming matrices.
+##  It returns a record with components <C>normal</C> (a matrix <M>S</M>),
+##  <C>rowtrans</C> (a matrix <M>P</M>),
+##  and <C>coltrans</C> (a matrix <M>Q</M>) such that <M>P A Q = S</M>.
+##  The operations are performed over the euclidean ring
+##  <A>ring</A>, which must contain
+##  all matrix entries. For compatibility reasons it can be omitted and
+##  defaults to <Ref Var="Integers"/>.
+##  <P/>
+##  The function <Ref Func="ElementaryDivisorsTransformationsMatDestructive"/>
+##  produces the same result
+##  but in the process destroys the contents of <A>mat</A>.
+##  <Example><![CDATA[
+##  gap> mat:=KroneckerProduct(CompanionMat((x-1)^2),CompanionMat((x^3-1)*(x-1)));;
+##  gap> mat:=mat*One(x)-x*mat^0;                                                 
+##  [ [ -x, 0, 0, 0, 0, 0, 0, 1 ], [ 0, -x, 0, 0, -1, 0, 0, -1 ], 
+##    [ 0, 0, -x, 0, 0, -1, 0, 0 ], [ 0, 0, 0, -x, 0, 0, -1, -1 ], 
+##    [ 0, 0, 0, -1, -x, 0, 0, -2 ], [ 1, 0, 0, 1, 2, -x, 0, 2 ], 
+##    [ 0, 1, 0, 0, 0, 2, -x, 0 ], [ 0, 0, 1, 1, 0, 0, 2, -x+2 ] ]
+##  gap> t:=ElementaryDivisorsTransformationsMat(PolynomialRing(Rationals,1),mat);
+##  rec( coltrans := [ [ 0, 0, 0, 0, 0, 0, 1/6*x^2-7/9*x-1/18, -3*x^3-x^2-x-1 ], 
+##        [ 0, 0, 0, 0, 0, 0, -1/6*x^2+x-1, 3*x^3-3*x^2 ], 
+##        [ 0, 0, 0, 0, 0, 1, -1/18*x^4+1/3*x^3-1/3*x^2-1/9*x, x^5-x^4+2*x^2-2*x 
+##           ], [ 0, 0, 0, 0, -1, 0, -1/9*x^3+1/2*x^2+1/9*x, 2*x^4+x^3+x^2+2*x ],
+##        [ 0, -1, 0, 0, 0, 0, -2/9*x^2+19/18*x, 4*x^3+x^2+x ], 
+##        [ 0, 0, -1, 0, 0, -x, 1/18*x^5-1/3*x^4+1/3*x^3+1/9*x^2, 
+##            -x^6+x^5-2*x^3+2*x^2 ], 
+##        [ 0, 0, 0, -1, x, 0, 1/9*x^4-2/3*x^3+2/3*x^2+1/18*x, 
+##            -2*x^5+2*x^4-x^2+x ], 
+##        [ 1, 0, 0, 0, 0, 0, 1/6*x^3-7/9*x^2-1/18*x, -3*x^4-x^3-x^2-x ] ], 
+##    normal := [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 0, 0 ], 
+##        [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0 ], 
+##        [ 0, 0, 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 1, 0, 0 ], 
+##        [ 0, 0, 0, 0, 0, 0, x-1, 0 ], 
+##        [ 0, 0, 0, 0, 0, 0, 0, x^7-x^6-2*x^4+2*x^3+x-1 ] ], 
+##    rowtrans := [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 1, 1, 0, 0, 0, 0, 0, 0 ], 
+##        [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 1, 0, 0, 1, 0, 0, 0, 0 ], 
+##        [ -x+2, -x, 0, 0, 1, 0, 0, 0 ], 
+##        [ 2*x^2-4*x+2, 2*x^2-x, 0, 2, -2*x+1, 0, 0, 1 ], 
+##        [ 3*x^3-6*x^2+3*x, 3*x^3-2*x^2, 2, 3*x, -3*x^2+2*x, 0, 1, 2*x ], 
+##        [ 1/6*x^8-7/6*x^7+2*x^6-4/3*x^5+7/3*x^4-4*x^3+13/6*x^2-7/6*x+2, 
+##            1/6*x^8-17/18*x^7+13/18*x^6-5/18*x^5+35/18*x^4-31/18*x^3+1/9*x^2-x+\
+##  2, 1/9*x^5-5/9*x^4+1/9*x^3-1/9*x^2+14/9*x-1/9, 
+##            1/6*x^6-5/6*x^5+1/6*x^4-1/6*x^3+11/6*x^2-1/6*x, 
+##            -1/6*x^7+17/18*x^6-13/18*x^5+5/18*x^4-35/18*x^3+31/18*x^2-1/9*x+1, 
+##            1, 1/18*x^5-5/18*x^4+1/18*x^3-1/18*x^2+23/18*x-1/18, 
+##            1/9*x^6-5/9*x^5+1/9*x^4-1/9*x^3+14/9*x^2-1/9*x ] ] )
+##  gap> t.rowtrans*mat*t.coltrans;
+##  [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 0, 0 ], 
+##    [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0 ], 
+##    [ 0, 0, 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 1, 0, 0 ], 
+##    [ 0, 0, 0, 0, 0, 0, x-1, 0 ], 
+##    [ 0, 0, 0, 0, 0, 0, 0, x^7-x^6-2*x^4+2*x^3+x-1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "ElementaryDivisorsTransformationsMat", [IsRing,IsMatrix] );
+DeclareGlobalFunction( "ElementaryDivisorsTransformationsMatDestructive" );
 
 #############################################################################
 ##
@@ -697,7 +775,7 @@ DeclareAttribute( "SemiEchelonMat", IsMatrix );
 ##  <Example><![CDATA[
 ##  gap> mm:=[[1,2,3],[4,5,6],[7,8,9]];;
 ##  gap> SemiEchelonMatDestructive( mm );
-##  rec( vectors := [ [ 1, 2, 3 ], [ 0, 1, 2 ] ], heads := [ 1, 2, 0 ] )
+##  rec( heads := [ 1, 2, 0 ], vectors := [ [ 1, 2, 3 ], [ 0, 1, 2 ] ] )
 ##  gap> mm;
 ##  [ [ 1, 2, 3 ], [ 0, 1, 2 ], [ 0, 0, 0 ] ]
 ##  ]]></Example>
@@ -735,8 +813,8 @@ DeclareOperation( "SemiEchelonMatDestructive", [ IsMatrix and IsMutable] );
 ##  </List>
 ##  <Example><![CDATA[
 ##  gap> SemiEchelonMatTransformation([[1,2,3],[0,0,1]]);
-##  rec( vectors := [ [ 1, 2, 3 ], [ 0, 0, 1 ] ], relations := [  ], 
-##    heads := [ 1, 0, 2 ], coeffs := [ [ 1, 0 ], [ 0, 1 ] ] )
+##  rec( coeffs := [ [ 1, 0 ], [ 0, 1 ] ], heads := [ 1, 0, 2 ], 
+##    relations := [  ], vectors := [ [ 1, 2, 3 ], [ 0, 0, 1 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1084,22 +1162,32 @@ DeclareOperation( "SumIntersectionMat", [ IsMatrix, IsMatrix ] );
 ##  <#GAPDoc Label="TriangulizeMat">
 ##  <ManSection>
 ##  <Oper Name="TriangulizeMat" Arg='mat'/>
+##  <Oper Name="TriangulizedMat" Arg='mat'/>
+##  <Oper Name="RREF" Arg='mat'/>
 ##
 ##  <Description>
 ##  applies the Gaussian Algorithm to the mutable matrix <A>mat</A> and changes
 ##  <A>mat</A> such that it is in upper triangular
-##  normal form (sometimes called <Q>Hermite normal form</Q>).
+##  normal form (sometimes called <Q>Hermite normal form</Q> or <Q>Reduced
+##  Row Echelon Form</Q>).  <C>RREF</C> is a synonym.
 ##  <Example><![CDATA[
 ##  gap> m:=TransposedMatMutable(mat);
 ##  [ [ 1, 4, 7 ], [ 2, 5, 8 ], [ 3, 6, 9 ] ]
 ##  gap> TriangulizeMat(m);m;
 ##  [ [ 1, 0, -1 ], [ 0, 1, 2 ], [ 0, 0, 0 ] ]
+##  gap> m:=TransposedMatMutable(mat);
+##  [ [ 1, 4, 7 ], [ 2, 5, 8 ], [ 3, 6, 9 ] ]
+##  gap> TriangulizedMat(m);m;
+##  [ [ 1, 0, -1 ], [ 0, 1, 2 ], [ 0, 0, 0 ] ]
+##  [ [ 1, 4, 7 ], [ 2, 5, 8 ], [ 3, 6, 9 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "TriangulizeMat", [ IsMatrix and IsMutable ] );
+DeclareOperation( "TriangulizedMat", [ IsMatrix ] );
+DeclareSynonym( "RREF", TriangulizedMat);
 
 #############################################################################
 ##
@@ -1200,8 +1288,9 @@ DeclareGlobalFunction( "BaseFixedSpace" );
 ##  </List>
 ##  <Example><![CDATA[
 ##  gap> BaseSteinitzVectors(IdentityMat(3,1),[[11,13,15]]);
-##  rec( heads := [ -1, 1, 2 ], subspace := [ [ 1, 13/11, 15/11 ] ], 
-##    factorspace := [ [ 0, 1, 15/13 ], [ 0, 0, 1 ] ], factorzero := [ 0, 0, 0 ] )
+##  rec( factorspace := [ [ 0, 1, 15/13 ], [ 0, 0, 1 ] ], 
+##    factorzero := [ 0, 0, 0 ], heads := [ -1, 1, 2 ], 
+##    subspace := [ [ 1, 13/11, 15/11 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1555,6 +1644,13 @@ DeclareGlobalFunction( "ReflectionMat" );
 ##  <Ref Func="RandomInvertibleMat"/> returns a new mutable invertible random
 ##  matrix with <A>m</A> rows and columns with elements taken from the ring
 ##  <A>R</A>, which defaults to <Ref Var="Integers"/>.
+##  <Example><![CDATA[
+##  gap> m := RandomInvertibleMat(4);
+##  [ [ 1, -2, -1, 0 ], [ 1, 0, 1, -1 ], [ 0, 2, 0, 4 ], [ -1, -3, 1, -4 ] ]
+##  gap> m^-1;                                                                     
+##  [ [ 1/4, 1/2, -1/8, -1/4 ], [ -1/3, 0, -1/3, -1/3 ], 
+##    [ -1/12, 1/2, 13/24, 5/12 ], [ 1/6, 0, 5/12, 1/6 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1574,6 +1670,10 @@ DeclareGlobalFunction( "RandomInvertibleMat" );
 ##  <Ref Func="RandomMat"/> returns a new mutable random matrix with <A>m</A> rows and
 ##  <A>n</A> columns with elements taken from the ring <A>R</A>, which defaults
 ##  to <Ref Var="Integers"/>.
+##  <Example><![CDATA[
+##  gap> RandomMat(2,3,GF(3));
+##  [ [ Z(3), Z(3), 0*Z(3) ], [ Z(3), Z(3)^0, Z(3) ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1593,10 +1693,10 @@ DeclareGlobalFunction( "RandomMat" );
 ##  returns a new random mutable <A>m</A><M>\times</M><A>m</A> matrix with integer
 ##  entries that is invertible over the integers.
 ##  <Example><![CDATA[
-##  gap> RandomMat(2,3,GF(3));
-##  [ [ 0*Z(3), 0*Z(3), Z(3) ], [ Z(3), Z(3)^0, Z(3) ] ]
-##  gap> RandomInvertibleMat(4);
-##  [ [ 5, 1, 0, -2 ], [ 4, 3, 5, 3 ], [ 1, -2, 1, -1 ], [ -2, 4, -1, -3 ] ]
+##  gap> m := RandomUnimodularMat(3);
+##  [ [ 1, 0, 0 ], [ 156, -39, -25 ], [ -100, 25, 16 ] ]
+##  gap> m^-1;
+##  [ [ 1, 0, 0 ], [ 4, 16, 25 ], [ 0, -25, -39 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1740,6 +1840,7 @@ DeclareGlobalFunction( "EmptyMatrix" );
 ##  <#GAPDoc Label="OnSubspacesByCanonicalBasis">
 ##  <ManSection>
 ##  <Func Name="OnSubspacesByCanonicalBasis" Arg='bas,mat'/>
+##  <Func Name="OnSubspacesByCanonicalBasisConcatenations" Arg='basvec,mat'/>
 ##
 ##  <Description>
 ##  implements the operation of a matrix group on subspaces of a vector
@@ -1757,6 +1858,7 @@ DeclareGlobalFunction( "EmptyMatrix" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("OnSubspacesByCanonicalBasis");
+DeclareGlobalFunction("OnSubspacesByCanonicalBasisConcatenations");
 
 
 #############################################################################
@@ -1964,6 +2066,29 @@ DeclareOperation("BaseField",[IsObject]);
 ##  </ManSection>
 ##
 #DeclareOperation("IdentityMatrix",[IsInt,IsObject]);
+
+#############################################################################
+##
+#O  SimplexMethod( <A>, <b>, <c> )
+##
+##  <#GAPDoc Label="SimplexMethod">
+##  <ManSection>
+##  <Oper Name="SimplexMethod" Arg='A,b,c'/>
+##
+##  <Description>
+##  Find a rational vector <A>x</A> that maximizes <M><A>x</A>\cdot<A>c</A></M>, subject
+##  to the constraint <M><A>A</A>\cdot<A>x</A>\le<A>b</A></M>. 
+##  <Example><![CDATA[
+##  gap> A:=[[3,1,1,4],[1,-3,2,3],[2,1,3,-1]];;
+##  gap> b:=[12,7,10];;c:=[2,4,3,1];;
+##  gap> SimplexMethod(A,b,c);
+##  [ [ 0, 52/5, 0, 2/5 ], 42 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "SimplexMethod" );
 
 
 #############################################################################

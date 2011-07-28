@@ -1,12 +1,12 @@
 \indexentry {CRISP}{3}
 \indexentry {FORMAT package@FORMAT package}{3}
-\indexentry {classes!creating}{4}
+\indexentry {classes!creation of}{4}
 \indexentry {IsClass@`IsClass'}{4}
 \indexentry {Class@`Class'}{4}
 \indexentry {Class@`Class'}{4}
 \indexentry {View@`View'!for classes}{4}
-\indexentry {Print@`Print'!for classes}{5}
-\indexentry {Display@`Display'!for classes}{5}
+\indexentry {Print@`Print'!for classes}{4}
+\indexentry {Display@`Display'!for classes}{4}
 \indexentry {element test!for classes}{5}
 \indexentry {in@`in'!for classes}{5}
 \indexentry {membership test!for classes}{5}
@@ -21,9 +21,9 @@
 \indexentry {Intersection@`Intersection'!of classes}{5}
 \indexentry {Intersection@`Intersection'!of classes}{5}
 \indexentry {INTERSECTION_LIMIT@`INTERSECTION_LIMIT'}{5}
-\indexentry {Union@`Union'}{6}
+\indexentry {Union@`Union'}{5}
 \indexentry {Difference@`Difference'}{6}
-\indexentry {group classes!creation}{7}
+\indexentry {group classes!creation of}{7}
 \indexentry {GroupClass@`GroupClass'}{7}
 \indexentry {GroupClass@`GroupClass'}{7}
 \indexentry {GroupClass@`GroupClass'}{7}
@@ -79,13 +79,14 @@
 \indexentry {ProjectorFunction@`ProjectorFunction'}{13}
 \indexentry {primitive solvable group!attributes of}{14}
 \indexentry {attributes!of primitive solvable group}{14}
+\indexentry {IsPrimitiveSolvableGroup@`IsPrimitiveSolvableGroup'}{14}
 \indexentry {IsPrimitiveSolvable@`IsPrimitiveSolvable'}{14}
 \indexentry {SocleComplement@`SocleComplement'}{14}
 \indexentry {formations!creating}{14}
 \indexentry {OrdinaryFormation@`OrdinaryFormation'}{14}
 \indexentry {SaturatedFormation@`SaturatedFormation'}{14}
 \indexentry {FormationProduct@`FormationProduct'}{15}
-\indexentry {FittingFormationProduct@`FittingFormationProduct'}{15}
+\indexentry {FittingFormationProduct@`FittingFormationProduct'}{16}
 \indexentry {formations!attributes for}{16}
 \indexentry {formations!operations for}{16}
 \indexentry {attributes!of formation}{16}

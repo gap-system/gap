@@ -2,7 +2,7 @@
 ##
 #W Makefile.in                                              Laurent Bartholdi
 ##
-#H   @(#)$Id: Makefile.in,v 1.1 2008/06/14 15:45:40 gap Exp $
+#H   @(#)$Id: Makefile.in,v 1.4 2011/04/14 21:42:50 gap Exp $
 ##
 #Y Copyright (C) 2007, Laurent Bartholdi
 ##
@@ -14,13 +14,13 @@
 
 GAC=@GAC@
 GAP=@GAP@
-LOCALBIN=bin/@ARCH@
+LOCALBIN=bin/@TARGET@
 CFLAGS=@CFLAGS@ -Wall @WITH_CXSC@ @CXSC_INCLUDEDIR@
 GACFLAGS=@MP_GACFLAGS@ -p -fno-stack-protector -p "@WITH_MPFR@" -p "@WITH_MPFI@" -p "@WITH_MPC@" -p "@WITH_CXSC@"
 
 all: @FLOAT_TARGET@
 
-distribute: symlinks help tarballs zoo
+distribute: symlinks help tarballs
 
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
@@ -83,11 +83,5 @@ checkblocks:
 tarballs: .version help
 	tar cfz www/float-`cat .version`.tar.gz --exclude '*~' --exclude sandbox --exclude www --exclude CVS --exclude .version -C .. float
 	tar cfz www/floatdoc-`cat .version`.tar.gz --exclude '*~' --exclude CVS -C .. float/doc
-
-zoo: .version help
-	rm -f www/float-`cat .version`.zoo
-	find . -wholename ./sandbox -prune -o -wholename ./www -prune -o -name '*~' -prune -o -name CVS -prune -o -name .version -prune -o -print | zoo ahI www/float-`cat .version`.zoo
-	rm -f www/floatdoc-`cat .version`.zoo
-	find doc -name '*~' -prune -o -name CVS -prune -o -print | zoo ahI www/floatdoc-`cat .version`.zoo
 
 #E Makefile . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

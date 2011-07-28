@@ -2,7 +2,7 @@
 ##
 #W  grppc.gd                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: grppc.gd,v 4.64 2010/02/23 15:13:05 gap Exp $
+#H  @(#)$Id: grppc.gd,v 4.65 2011/01/07 01:05:19 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -26,7 +26,7 @@
 ##    a group that knows a pcgs of a super group
 ##
 Revision.grppc_gd :=
-    "@(#)$Id: grppc.gd,v 4.64 2010/02/23 15:13:05 gap Exp $";
+    "@(#)$Id: grppc.gd,v 4.65 2011/01/07 01:05:19 alexk Exp $";
 
 
 #############################################################################
@@ -336,7 +336,7 @@ DeclareOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
 #O  AffineAction( <gens>, <basisvectors>, <linear>, <transl> )
 #O  AffineOperation( <gens>, <basisvectors>, <linear>, <transl> )
 ##
-##  <#GAPDoc Label="AffineOperation">
+##  <#GAPDoc Label="AffineAction">
 ##  <ManSection>
 ##  <Oper Name="AffineAction" Arg='gens, basisvectors, linear, transl'/>
 ##  <Oper Name="AffineOperation" Arg='gens, basisvectors, linear, transl'/>
@@ -360,7 +360,7 @@ DeclareSynonym( "AffineOperation", AffineAction );
 #O  LinearAction( <gens>, <basisvectors>, <linear> )
 #O  LinearOperation( <gens>, <basisvectors>, <linear> )
 ##
-##  <#GAPDoc Label="LinearOperation">
+##  <#GAPDoc Label="LinearAction">
 ##  <ManSection>
 ##  <Oper Name="LinearAction" Arg='gens, basisvectors, linear'/>
 ##  <Oper Name="LinearOperation" Arg='gens, basisvectors, linear'/>
@@ -391,7 +391,7 @@ InstallTrueMethod(
 #F  AffineActionLayer( <G>, <gens>, <pcgs>, <transl> )
 #F  AffineOperationLayer( <G>, <gens>, <pcgs>, <transl> )
 ##
-##  <#GAPDoc Label="AffineOperationLayer">
+##  <#GAPDoc Label="AffineActionLayer">
 ##  <ManSection>
 ##  <Func Name="AffineActionLayer" Arg='G, gens, pcgs, transl'/>
 ##  <Func Name="AffineOperationLayer" Arg='G, gens, pcgs, transl'/>
@@ -454,7 +454,7 @@ DeclareSynonym( "GeneratorsCenterPGroup", GeneratorsCentrePGroup );
 #F  LinearActionLayer( <G>, <gens>, <pcgs> )
 #F  LinearOperationLayer( <G>, <gens>, <pcgs> )
 ##
-##  <#GAPDoc Label="LinearOperationLayer">
+##  <#GAPDoc Label="LinearActionLayer">
 ##  <ManSection>
 ##  <Func Name="LinearActionLayer" Arg='G, gens, pcgs'/>
 ##  <Func Name="LinearOperationLayer" Arg='G, gens, pcgs'/>

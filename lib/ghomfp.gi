@@ -6,7 +6,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghomfp_gi :=
-    "@(#)$Id: ghomfp.gi,v 4.51 2010/06/03 15:58:12 gap Exp $";
+    "@(#)$Id: ghomfp.gi,v 4.53 2011/06/14 19:29:19 gap Exp $";
 
 #############################################################################
 ##
@@ -565,7 +565,9 @@ local s,t,p,w,c,q,chom,tg,thom,hi,i,lp,max;
     else
       u:=KuKGenerators(w,chom,thom);
       # could the group be too expensive?
-      if (not IsBound(s!.quot)) or Size(s!.quot)>10^50 then
+      if (not IsBound(s!.quot)) or
+        (IsPermGroup(s!.quot)
+	  and Size(s!.quot)>10^50 and NrMovedPoints(s!.quot)>10000) then
 	t:=[];
 	max:=LargestMovedPoint(u);
 	for i in u do
@@ -881,6 +883,10 @@ local H, pres,map,mapi,opt;
     opt.lengthLimit:=ValueOption("lengthLimit");
   else
     opt.lengthLimit:=Int(3*pres!.tietze[TZ_TOTAL]); # not too big.
+  fi;
+
+  if ValueOption("protected")<>fail then
+    opt.expandLimit:=ValueOption("protected");
   fi;
 
   opt.printLevel:=InfoLevel(InfoFpGroup); 

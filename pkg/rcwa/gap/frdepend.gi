@@ -2,33 +2,29 @@
 ##
 #W  frdepend.gi                GAP4 Package `RCWA'                Stefan Kohl
 ##
-#H  @(#)$Id: frdepend.gi,v 1.1 2008/02/19 14:41:47 stefan Exp $
-##
 ##  This file contains code which depends on the FR package.
 ##  Therefore it is read only when FR is available.
 ##
-Revision.frdepend_gi :=
-  "@(#)$Id: frdepend.gi,v 1.1 2008/02/19 14:41:47 stefan Exp $";
-
-#############################################################################
-##
-#S  Methods concerning periodic lists, e.g. the action of rcwa mappings /////
-#S  and -groups on them. ////////////////////////////////////////////////////
-##
 #############################################################################
 
 #############################################################################
 ##
-#M  \^( <perlist>, <g> ) . . for a periodic list and an rcwa permutation of Z
+#S  Methods dealing with periodic lists. ////////////////////////////////////
+##
+#############################################################################
+
+#############################################################################
+##
+#M  Permuted( <perlist>, <g> ) . for a periodic list and an rcwa permut. of Z
 ##
 ##  Returns the periodic list which is obtained from <perlist> by permuting
 ##  the entries by the rcwa permutation <g>.
 ##  Periodic lists are implemented in the FR package, which therefore needs
 ##  to be loaded in order to use this method.
 ##
-InstallMethod( \^,
-               "for a periodic list and an rcwa permutation of Z (RCWA)",
-               ReturnTrue, [ IsPeriodicList, IsRcwaMappingOfZ ], 0,
+InstallOtherMethod( Permuted,
+                   "for a periodic list and an rcwa permutation of Z (RCWA)",
+                    ReturnTrue, [ IsPeriodicList, IsRcwaMappingOfZ ], 0,
 
   function ( perlist, g )
 
@@ -42,7 +38,7 @@ InstallMethod( \^,
     if not IsBijective(g) then TryNextMethod(); fi;
 
     if not IsSignPreserving(g) then
-      Error("\^ for a periodic list <l> and an rcwa permutation <g>: \n",
+      Error("`Permuted' for a periodic list <l> and a <g> in RCWA(Z): \n",
             "<g> must fix the nonnegative integers setwise, as <l> \n",
             "does not have entries at negative positions.");
       TryNextMethod();
@@ -66,16 +62,16 @@ InstallMethod( \^,
 
 #############################################################################
 ##
-#M  \^( <perlist>, <f> ) for a periodic list and a non-bijective rcwa mapping
+#M  Permuted( <perlist>, <f> ) .  for periodic list and non-bij. rcwa mapping
 ##
 ##  Returns the periodic list whose n-th entry is the sum of the n^(f^-1)-th
 ##  entries of <perlist>, where n^(f^-1) denotes the preimage of n under <f>.
 ##  Periodic lists are implemented in the FR package, which therefore needs
 ##  to be loaded in order to use this method.
 ##
-InstallMethod( \^,
-               "for a periodic list and an rcwa mapping of Z (RCWA)",
-               ReturnTrue, [ IsPeriodicList, IsRcwaMappingOfZ ], 0,
+InstallOtherMethod( Permuted,
+                    "for a periodic list and an rcwa mapping of Z (RCWA)",
+                    ReturnTrue, [ IsPeriodicList, IsRcwaMappingOfZ ], 0,
 
   function ( perlist, f )
 
@@ -89,7 +85,7 @@ InstallMethod( \^,
     if IsBijective(f) or Multiplier(f) = 0 then TryNextMethod(); fi;
 
     if not IsSignPreserving(f) then
-      Error("\^ for a periodic list <l> and an rcwa mapping <f>: \n",
+      Error("`Permuted' for a periodic list <l> and an rcwa mapping <f>: \n",
             "<f> must fix the nonnegative integers setwise, as <l> \n",
             "does not have entries at negative positions.");
       TryNextMethod();
@@ -159,20 +155,64 @@ InstallMethod( ProductOp,
 
 #############################################################################
 ##
-#S  Attributes and properties of certain rcwa groups, ///////////////////////
-#S  which are defined in the FR package. ////////////////////////////////////
+#M  AdditiveInverseOp( <perlist> ) . . . . . . . . . . . . for periodic lists
 ##
-#############################################################################
+InstallOtherMethod( AdditiveInverseOp,
+                    "for periodic lists (RCWA)", true, [ IsPeriodicList ], 0,
+                    l -> PeriodicList(-PrePeriod(l),-Period(l)));
 
 #############################################################################
 ##
-#M  IsBranch( RCWA( <R> ) ) . . . . . . . . . . . . . . . . . . . for RCWA(R)
-#M  IsBranch( CT( <R> ) ) . . . . . . . . . . . . . . . . . . . . . for CT(R)
-#M  IsBranchingSubgroup( RCWA( <R> ) )  . . . . . . . . . . . . . for RCWA(R)
-#M  IsBranchingSubgroup( CT( <R> ) )  . . . . . . . . . . . . . . . for CT(R)
+#M  \+( <l1>, <l2> ) . . . . . . . . . . . . . . . . . . . for periodic lists
 ##
-InstallTrueMethod( IsBranch, IsNaturalRCWA_OR_CT );
-InstallTrueMethod( IsBranchingSubgroup, IsNaturalRCWA_OR_CT );
+InstallOtherMethod( \+,
+                    "for periodic lists (RCWA)", ReturnTrue,
+                    [ IsPeriodicList, IsPeriodicList ], 0,
+
+  function ( l1, l2 )
+
+    local  prelng, perlng, sum;
+
+    prelng := Maximum(Length(PrePeriod(l1)),Length(PrePeriod(l2)));
+    perlng := Lcm(Length(Period(l1)),Length(Period(l2)));
+    sum := PeriodicList(l1{[1..prelng]} + l2{[1..prelng]},
+                        l1{[prelng+1..prelng+perlng]}
+                      + l2{[prelng+1..prelng+perlng]});
+    CompressPeriodicList(sum);
+    return sum;
+  end );
+
+#############################################################################
+##
+#M  \+( <l>, <n> ) . . . . . . . . . . . . . . for periodic list and constant
+#M  \+( <n>, <l> ) . . . . . . . . . . . . . . for constant and periodic list
+##
+InstallOtherMethod( \+,"for periodic list and constant (RCWA)", ReturnTrue,
+                       [ IsPeriodicList, IsAdditiveElement ], 0,
+  function ( l, n ) return PeriodicList(PrePeriod(l)+n,Period(l)+n); end );
+InstallOtherMethod( \+,"for constant and periodic list (RCWA)", ReturnTrue,
+                       [ IsAdditiveElement, IsPeriodicList ], 0,
+  function ( n, l ) return PeriodicList(n+PrePeriod(l),n+Period(l)); end );
+
+#############################################################################
+##
+#M  \*( <l>, <n> ) . . . . . . . . . . . . . . for periodic list and constant
+#M  \*( <n>, <l> ) . . . . . . . . . . . . . . for constant and periodic list
+##
+InstallOtherMethod( \*,"for periodic list and constant (RCWA)", ReturnTrue,
+                       [ IsPeriodicList, IsMultiplicativeElement ], 0,
+  function ( l, n ) return PeriodicList(PrePeriod(l)*n,Period(l)*n); end );
+InstallOtherMethod( \*,"for constant and periodic list (RCWA)", ReturnTrue,
+                       [ IsMultiplicativeElement, IsPeriodicList ], 0,
+  function ( n, l ) return PeriodicList(n*PrePeriod(l),n*Period(l)); end );
+
+#############################################################################
+##
+#M  \/( <l>, <n> ) . . . . . . . . . . . . . . for periodic list and constant
+##
+InstallOtherMethod( \/,"for periodic list and constant (RCWA)", ReturnTrue,
+                       [ IsPeriodicList, IsMultiplicativeElement ], 0,
+  function ( l, n ) return PeriodicList(PrePeriod(l)/n,Period(l)/n); end );
 
 #############################################################################
 ##

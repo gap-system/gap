@@ -2,14 +2,14 @@
 ##
 #W  gprdperm.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: gprdperm.gi,v 4.42 2010/02/23 15:13:03 gap Exp $
+#H  @(#)$Id: gprdperm.gi,v 4.43 2011/04/13 14:33:08 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.gprdperm_gi :=
-    "@(#)$Id: gprdperm.gi,v 4.42 2010/02/23 15:13:03 gap Exp $";
+    "@(#)$Id: gprdperm.gi,v 4.43 2011/04/13 14:33:08 gap Exp $";
 
 
 #############################################################################
@@ -915,10 +915,10 @@ end );
 ##  Original version by Derek Holt, 6/9/96, in first GAP3 version of xmod
 ##
 InstallMethod( SemidirectProduct, "generic method for permutation groups",
-    true, [ IsPermGroup, IsGroupHomomorphism, IsPermGroup ], 0,
+    [ IsPermGroup, IsGroupHomomorphism, IsPermGroup ],
 function( R, map, S )
 
-    local P, genP, genR, genS, L2, L3, perm, r, s, ordS, genno, LS, LR, info;
+    local P, genP, genR, genS, L3, perm, r, s, ordS, genno, LS, info, aut;
 
     # Take the action of R on S  by conjugation.
     LS := AsSSortedList( S );
@@ -926,31 +926,26 @@ function( R, map, S )
     genR := GeneratorsOfGroup( R );
     genS := GeneratorsOfGroup( S );
     for r in genR do
-        L2 := List( LS, x -> Image( Image( map, r ), x ) );
-        L3 := List( L2, x -> Position( LS, x ) );
-        perm := PermList( L3 );
-        Add( genP, perm );
+        aut:= Image( map, r );
+        L3 := List( LS, x -> Position( LS, Image( aut, x ) ) );
+        Add( genP, PermList( L3 ) );
     od;
     # Check order of group at this stage, to see if the action is faithful.
     # If not, adjoin the action of R as a permutation group.
     P := Group( genP, () );  # `genP' arose from `PermList'
     if ( Size( P ) <> Size( R ) ) then
         ordS := Size( S );
-        LR := AsSSortedList( R );
         genno := 0;
         for r in genR do
-            L3 := List( ListPerm( r ), x -> x + ordS );
-            perm := PermList( Concatenation( [1..ordS], L3 ) );
             genno := genno + 1;
-            genP[ genno ] := genP[ genno ] * perm;
+            genP[ genno ] := genP[ genno ]
+                * PermList( Concatenation( [1..ordS], ListPerm( r ) + ordS ) );
         od;
     fi;
     # Take the action of S on S by right multiplication.
     for s in genS do
-        L2 := List( LS, x -> x*s );
-        L3 := List( L2, x -> Position( LS, x ) );
-        perm := PermList( L3 );
-        Add( genP, perm );
+        L3 := List( LS, x -> Position( LS, x*s ) );
+        Add( genP, PermList( L3 ) );
     od;
     P := Group( genP, () );  # `genP' arose from `PermList'
     info := rec( groups := [ R, S ],

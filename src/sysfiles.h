@@ -4,7 +4,7 @@
 *W                                                         & Martin Schönert
 *W                                                  & Burkhard Höfling (MAC)
 **
-*H  @(#)$Id: sysfiles.h,v 4.36 2010/02/23 15:13:49 gap Exp $
+*H  @(#)$Id: sysfiles.h,v 4.39 2011/05/15 18:39:18 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,7 +15,7 @@
 */
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_sysfiles_h =
-   "@(#)$Id: sysfiles.h,v 4.36 2010/02/23 15:13:49 gap Exp $";
+   "@(#)$Id: sysfiles.h,v 4.39 2011/05/15 18:39:18 gap Exp $";
 #endif
 
 
@@ -43,10 +43,16 @@ const char * Revision_sysfiles_h =
 **  module.  If the CRC matches this module  is loaded otherwise the filename
 **  is returned.
 */
+
+typedef union {
+  Char pathname[256];
+  StructInitInfo * module_info;
+} TypGRF_Data;
+
 extern Int SyFindOrLinkGapRootFile (
             Char *          filename,
             Int4            crc_gap,
-            Char *          result,
+            TypGRF_Data *          result,
             Int             len );
 
 
@@ -67,16 +73,6 @@ extern Int4 SyGAPCRC(
 */
 extern InitInfoFunc SyLoadModule(
             Char *          name );
-
-
-/****************************************************************************
-**
-*V  SyCanLoadDynamicModules . . . true if system supports dynamical libraries
-*/
-#if SYS_MAC_MWC
-# include <Types.h>
-extern Boolean SyCanLoadDynamicModules;
-#endif
 
 
 /****************************************************************************
@@ -134,32 +130,6 @@ extern Char * SyWinCmd (
 **  routines  from   allocating their  buffers  using  'malloc',  which would
 **  otherwise confuse Gasman.
 */
-#if SYS_MAC_MWC
-/* on the Mac, we need some additional info about the file 
-** fromDoc should really be of type DocumentRecord*, but but this would require "macedit.h", 
-** which gives trouble with some of the other  GAP source files under CW Pro 2,
-** because it refuses to include "List.h" if it has already read <List.h>
-*/
-#include <Files.h>    /* for FSSpec, SIgnedByte and Boolean (from MacTypes.h) */
-
-#define MIN_BUFSIZ 16
-typedef struct {
-    short	     	fp;                     /* reference number for this file      */
-#if 0 
-    FILE *      	echo;                   /* file pointer for the echo       */
-#endif
-    void *		 	fromDoc;				/* the document window from which it reads, if any */
-    Int              bufno;                 /* if non-negative then this file has a buffer in
-					                           syBuffers[bufno]; If negative, this file may not
-					                           be buffered */
-	FSSpec 			fsspec;					/* the file specs for this file */
-	SignedByte		permission;
-	Boolean			binary;                 /* binary file? */
-    UInt       		isTTY;		      /* set in Fopen when this fid is a *stdin* or *errin*
-				       and really is a tty*/
-} SYS_SY_BUF;
-
-#else
 typedef struct {
   int         fp;                     /* file descriptor for this file      */
   int         echo;                   /* file descriptor for the echo       */
@@ -176,8 +146,6 @@ typedef struct {
   UInt       isTTY;		      /* set in Fopen when this fid is a *stdin* or *errin*
 				       and really is a tty*/
 } SYS_SY_BUF;
-
-#endif
 
 #define SYS_FILE_BUF_SIZE 20000
 
@@ -305,7 +273,6 @@ extern Int SyIsEndOfFile (
 **      <ctr>-_ undo a command.
 **      <esc>-T exchange two words.
 */
-#if !SYS_MAC_MWC
 #if HAVE_SELECT
 extern Obj OnCharReadHookActive;  /* if bound the hook is active */
 extern Obj OnCharReadHookInFds;   /* a list of UNIX file descriptors */
@@ -314,7 +281,6 @@ extern Obj OnCharReadHookOutFds;  /* a list of UNIX file descriptors */
 extern Obj OnCharReadHookOutFuncs;/* a list of GAP functions with 0 args */
 extern Obj OnCharReadHookExcFds;  /* a list of UNIX file descriptors */
 extern Obj OnCharReadHookExcFuncs;/* a list of GAP functions with 0 args */
-#endif
 #endif
 
 extern Char * SyFgets (
@@ -347,16 +313,6 @@ extern void SyInstallAnswerIntr ( void );
 
 extern UInt SyIsIntr ( void );
 
-
-/****************************************************************************
-**
-*V  SyInFid . . . 
-**
-*V  SyOutFid
-*/
-#if SYS_MAC_MWC
-extern Int 			SyInFid, SyOutFid; /* for i/o redirection */
-#endif
 
 /****************************************************************************
 **
@@ -448,9 +404,6 @@ extern Int SyPutc
 **
 *V  SyLastMacErrorNo . . . . . . . . . . . . . .last error number, Macintosh
 */
-#ifdef SYS_IS_MAC_MWC
-extern OSErr SyLastMacErrorCode;
-#endif
 
 
 /****************************************************************************
@@ -486,7 +439,7 @@ extern void SySetErrorNo ( void );
 
 *F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
-
+#if 0
 
 /****************************************************************************
 **
@@ -501,10 +454,10 @@ extern void SySetErrorNo ( void );
 **
 **  For UNIX we can use 'system', which does exactly what we want.
 */
-extern void SyExec (
+extern int SyExec (
     Char *              cmd );
 
-
+#endif
 /****************************************************************************
 **
 *F  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . . . new process
@@ -520,16 +473,6 @@ extern UInt SyExecuteProcess (
     Int                     in,
     Int                     out,
     Char *                  args[] );
-
-
-/****************************************************************************
-**
-*V  SyCanExec . . . . . . true if operating system supports launching another 
-**                        application
-*/
-#if SYS_MAC_MWC
-extern Boolean		SyCanExec;
-#endif
 
 
 /****************************************************************************
@@ -633,28 +576,6 @@ extern Char * SyTmpname ( void );
 **  '/usr/tmp/guava_17188_1/'.
 */
 extern Char * SyTmpdir ( Char * hint );
-
-/****************************************************************************
-**
-*V  SyTmpVref . . . . . . . . . .. . . volume ref num for temporary directory
-**
-*V  SyTmpDirId . . . . . . . . . . . . . . . . dir id for temporary directory
-*/
-#if SYS_MAC_MWC
-extern short 		SyTmpVref; 
-extern long 		SyTmpDirId;
-#endif
-
-/****************************************************************************
-**
-*F  SyFSMakeNewFSSpec ( <vol>, <dir>, <name>, <newFSSpec>) . .  get an unused
-**                                                              Mac file spec
-**  This returns a Mac file specification for a file in directory <dir> on 
-**  volume <vol>, whose name is based upon the string <name>
-*/
-#if SYS_MAC_MWC
-OSErr SyFSMakeNewFSSpec (short vol, long dir, Str31 name, FSSpecPtr newFSSpec);
-#endif
 
 /****************************************************************************
 **

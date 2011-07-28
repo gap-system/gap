@@ -3,7 +3,7 @@
 #W    init.g               OpenMath Package            Andrew Solomon
 #W                                                     Marco Costantini
 ##
-#H    @(#)$Id: init.g,v 1.29 2009/05/26 16:42:07 alexk Exp $
+#H    @(#)$Id: init.g,v 1.35 2010/09/11 22:04:44 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,7 +13,7 @@
 ##
 
 Revision.("openmath/init.g") :=
-    "@(#)$Id: init.g,v 1.29 2009/05/26 16:42:07 alexk Exp $";
+    "@(#)$Id: init.g,v 1.35 2010/09/11 22:04:44 alexk Exp $";
 
 # If SuppressOpenMathReferences is set to true, then 
 # OMPutReference (gap/omput.gi) will put the actual 
@@ -30,7 +30,7 @@ fi;
 if not CompareVersionNumbers( VERSION, "4.4" )  then
 
     # announce the package version and test for the existence of the binary
-    DeclarePackage( "openmath", "10.0.4", ReturnTrue );
+    DeclarePackage( "openmath", "10.1.0", ReturnTrue );
 
     # install the documentation
     DeclarePackageDocumentation( "openmath", "doc" );
@@ -130,23 +130,6 @@ ReadPackage("openmath", "/gap/gap.g");
 
 
 #################################################################
-## Module 1.2.a
-## This module reads token/values off the stream and builds GAP objects;
-## uses the external binary gpipe, 
-## requires the function OMsymLookup and provides OMpipeObject
-## Directories bin, include, OMCv1.3c, src belongs to this module.
-
-ReadPackage("openmath", "/gap/lex.g");
-ReadPackage("openmath", "/gap/parse.gi");
-
-# test for existence of the compiled binary
-if Filename(DirectoriesPackagePrograms("openmath"), "gpipe") = fail  then
-    Info( InfoWarning, 1,
-     "Warning: package openmath, the program `gpipe' is not compiled." );
-fi;
-
-
-#################################################################
 ## Module 1.2.b
 ## This module converts the OpenMath XML into a tree and parses it;
 ## requires the function OMsymLookup (and the function 
@@ -155,6 +138,38 @@ fi;
 
 if IsBound( ParseTreeXMLString )  then
     ReadPackage("openmath", "/gap/xmltree.g");
+fi;
+
+#################################################
+# patch for HexStringBlist
+
+if VERSION <> "4.dev" then
+
+MakeReadWriteGlobal("HexStringBlist");
+
+HexStringBlist := function ( b )
+   local  i, n, s;
+   HexBlistSetup(  );
+   n := Length( b );
+   i := 1;
+   s := "";
+   while i + 7 <= n  do
+       Append( s, HEXBYTES[PositionSorted( BLISTBYTES, b{[ i .. i + 7 ]} )] );
+       i := i + 8;
+   od;
+   b := b{[ i .. n ]};
+   if Length( b ) = 0  then
+       return s;
+   fi;
+   while Length( b ) < 8  do
+       Add( b, false );
+   od;
+   Append( s, HEXBYTES[PositionSorted( BLISTBYTES, b )] );
+   return s;
+end;
+
+MakeReadOnlyGlobal("HexStringBlist");
+
 fi;
 
 
@@ -167,6 +182,14 @@ fi;
 ReadPackage("openmath", "/gap/pipeobj.g");
 
 
+#############################################################################
+##
+## Binary OpenMath --> GAP
+##
+ReadPackage("openmath", "/gap/const.g");
+ReadPackage("openmath", "/gap/binread.g");
+
+
 #################################################################
 ## Module 1.4
 ## This module converts one OpenMath object to a Gap object; requires
@@ -177,8 +200,6 @@ ReadPackage("openmath", "/gap/omget.g");
 
 # file containing updates
 ReadPackage("openmath", "/gap/new.g");
-
-
 
 #############################################################################
 ## Module 2: conversion from Gap to OpenMath

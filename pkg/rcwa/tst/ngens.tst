@@ -2,9 +2,9 @@
 ##
 #W  ngens.tst                 GAP4 Package `RCWA'                 Stefan Kohl
 ##
-#H  @(#)$Id: ngens.tst,v 1.4 2007/10/22 08:55:52 stefan Exp $
-##
-gap> START_TEST("$Id: ngens.tst,v 1.4 2007/10/22 08:55:52 stefan Exp $");
+#############################################################################
+
+gap> START_TEST( "ngens.tst" );
 gap> RCWADoThingsToBeDoneBeforeTest();
 gap> nu  := ClassShift(0,1);;
 gap> t   := ClassReflection(0,1);;
@@ -43,7 +43,7 @@ gap> Comm(ClassShift(1,2),ClassShift(1,3))^
 >  * Comm(ClassShift(0,2),ClassShift(2,3)) = ClassTransposition(1,3,2,3);
 true
 gap> RCWADoThingsToBeDoneAfterTest();
-gap> STOP_TEST( "ngens.tst", 25000000 );
+gap> STOP_TEST( "ngens.tst", 15000000 );
 
 #############################################################################
 ##

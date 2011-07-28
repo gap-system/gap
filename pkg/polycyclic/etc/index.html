@@ -1,49 +1,42 @@
-<!doctype html public "-//w3c//dtd html 3.2 final//en">
-
-<html>
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
-    <link href="style.css" type="text/css" rel="StyleSheet" />
-
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+    <link href="style.css" type="text/css" rel="StyleSheet">
     <title>GAP 4 Package Polycyclic</title>
 </head>
 
-<body bgcolor="ffffff">
+<body bgcolor="#ffffff">
 
 <h1> <span class="pkg">GAP 4</span> package <span class="pkg">Polycyclic</span> </h1>
 
 <strong>Authors:</strong>
-  <a href="http://www-public.tu-bs.de:8080/~beick/">Bettina Eick</a>,
+  <a href="http://www-public.tu-bs.de/~beick/">Bettina Eick</a>,
+  <a href="http://www-public.tu-bs.de/~mhorn/">Max Horn</a>,
   <a href="http://www.mathematik.tu-darmstadt.de/~nickel/">Werner Nickel</a>
 
-  <br/>
+  <br>
 
 <strong>Needs: </strong> <a href="http://www.gap-system.org">GAP</a>,
-       version 4.3 or more recent, GAP package Alnuth, version 1.0
+       version 4.4 or more recent;
+       GAP package <a href="http://www.gap-system.org/Packages/alnuth.html">Alnuth</a>, version 1.0 or later;
+       GAP package <a href="http://www.gap-system.org/Packages/autpgrp.html">AutPGrp</a>, version 1.0 or later
   
-  <br/>
+  <br>
 
-<strong>Operating systems: </strong>   UNIX
-
-  <br/>
-
-<strong>Current version: </strong> 2.2
-  <br/>
-  
-<strong>Status:</strong> 
-
-  <br/>
+<strong>Current version: </strong> 2.8.1
+  <br>
 
 <strong>Contact: </strong> 
   <a href="mailto:beick at tu-bs.de">Bettina Eick</a>, 
-  <a href="mailto:nickel at mathematik.tu-darmstadt.de">Werner Nickel</a>
+  <a href="mailto:mhorn at tu-bs.de">Max Horn</a>,
+  <a href="http://www.mathematik.tu-darmstadt.de/~nickel/">Werner Nickel</a>
 
-  <br/>
+  <br>
 
 <strong>Download:</strong> 
-   <a href="#ARCHIVES">Several formats available</a>
+   <a href="#LINKS">Several formats available</a>
   
 
 <h3>Description</h3>
@@ -78,55 +71,47 @@ will try to address it as soon as possible.
 <h3>Installation</h3>
 
   <p>
-  You need to install both <span class="pkg">Polycyclic</span> and
-  <span class="pkg">Alnuth</span>.  The latter contains  
-  methods for algebraic number theory and an interface to the number 
-  theory system Kant.
+  In order to install and use <span class="pkg">Polycyclic</span>,
+  your also need to install both <span class="pkg">Alnuth</span> and
+  <span class="pkg">AutPGrp</span>. The former contains  
+  methods for algebraic number theory, the later for computations of
+  automorphisms of p-groups; both are required by Polycyclic for
+  various operations.
 
-  The <a href="README.polycyclic">README</a> file describes the installation
-  of the <span class="pkg">polycyclic</span> package. 
+  The <a href="README">README</a> file describes the installation
+  of the <span class="pkg">Polycyclic</span> package. 
   </p>
 
-  <p>For the installation of Alnuth, follow the instructions in the
-   <span class="pkg">Alnuth</span> manual.
+  <p>For the installation of Alnuth and AutPGrp, follow the instructions in their
+  respective manuals.
   </p>
 
 
   <h3>Online Documentation</h3>
 
   <p>
-  The manuals of <span class="pkg">Polycyclic</span> and 
-  <span class="pkg">Alnuth</span> are available in 
-  PostScript, PDF and HTML</a>:
+  The manual of <span class="pkg">Polycyclic</span> is available in 
+       <a href="polycyclic-manual.ps">Postscript</a>,
+       <a href="polycyclic-manual.pdf">PDF</a> and
+       <a href="htm/chapters.htm">HTML</a>.
 
-  <ul>
-  <li> Manual for Polycyclic:
-       <a href="polycyclic-manual.ps">(Postscript)</a>
-       <a href="polycyclic-manual.pdf">(PDF)</a>
-  <li> Manual for Alnuth:
-       <a href="http://www.icm.tu-bs.de/ag_algebra/software/assmann/Alnuth/doc/manual.pdf">(PDF)</a>
-       <a href="http://www.icm.tu-bs.de/ag_algebra/software/assmann/Alnuth/htm/chapters.htm">(HTML)</a>
-  </ul>
+  <p>
+  If the package has been installed properly, the manual is
+  also accessible through the GAP online help. 
 
-  If the packages have been installed properly, these documents
-  are also accessible through the GAP online
-  help. 
-  </p>
-
-<a name="ARCHIVES"><h3>Download</h3></a>
+<h3><a name="LINKS">Links</a></h3>
 
 <ul>
-<li> the <a href="README.polycyclic">README</a> file
-<li> the <a href="http://www.icm.tu-bs.de/ag_algebra/software/eick/polycyclic/PackageInfo.g">PackageInfo.g</a> file
+<li> the <a href="README">README</a> file
+<li> the <a href="PackageInfo.g">PackageInfo.g</a> file
 <li> Polycyclic as 
-     <a href="http://www.icm.tu-bs.de/ag_algebra/software/eick/polycyclic/polycyclic-2.2.tar.gz">gzipped tar archive</a> (ca. 600k).
-<li> Alnuth as 
-     <a href="http://www.icm.tu-bs.de/ag_algebra/software/assmann/Alnuth/Alnuth-2.2.0.tar.gz">gzipped tar archive</a> (ca. 140k), 
-     as <a href="http://www.icm.tu-bs.de/ag_algebra/software/assmann/Alnuth/Alnuth-2.2.0.tar">tar archive</a> (ca. 370k) 
-<li> <a href="http://www.math.tu-berlin.de/~kant/kash.html">The Kant homepage</a>
+     <a href="polycyclic-2.8.1.tar.gz">.tar.gz archive</a> (ca. 870k)
+     or as
+     <a href="polycyclic-2.8.1.tar.bz2">.tar.bz2 archive</a> (ca. 800k)
+<li> <a href="http://www.gap-system.org/Packages/alnuth.html">The Alnuth homepage</a>
+<li> <a href="http://www.gap-system.org/Packages/autpgrp.html">The AutPGrp homepage</a>
 
 </ul>
 
 </body>
 </html>
-

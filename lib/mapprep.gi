@@ -4,7 +4,7 @@
 #W                                                         & Martin Schönert
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: mapprep.gi,v 4.45 2010/02/23 15:13:13 gap Exp $
+#H  @(#)$Id: mapprep.gi,v 4.54 2011/01/25 08:28:54 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -20,7 +20,7 @@
 ##  6. methods for zero mappings
 ##
 Revision.mapprep_gi :=
-    "@(#)$Id: mapprep.gi,v 4.45 2010/02/23 15:13:13 gap Exp $";
+    "@(#)$Id: mapprep.gi,v 4.54 2011/01/25 08:28:54 gap Exp $";
 
 
 #############################################################################
@@ -1685,7 +1685,7 @@ InstallMethod( IsSurjective,
 ##
 InstallGlobalFunction(GeneralRestrictedMapping,
 function( map, s,r )
-local res;      
+local res, prop;      
 
   # Make the general mapping.
   if IsSPGeneralMapping( map )  then
@@ -1701,17 +1701,14 @@ local res;
   # Enter the identifying information.
   res!.map:= map;
   SetSource(res,s);
-  SetRange(res,s);
+  SetRange(res,r);
 
-  if IsSingleValued(map) then
-    SetIsSingleValued(res,true);
-  fi;
-  if IsTotal(map) then
-    SetIsTotal(res,true);
-  fi;
-  if IsInjective(map) then
-    SetIsInjective(res,true);
-  fi;
+  for prop in [IsSingleValued, IsTotal, IsInjective, RespectsMultiplication, , RespectsInverses,
+	  RespectsAddition, RespectsAdditiveInverses, RespectsScalarMultiplication] do
+	if Tester(prop)(map) and prop(map) then
+		Setter(prop)(res, true);
+	fi;
+  od;
 
   # Return the restriction.
   return res;
@@ -1770,10 +1767,10 @@ InstallMethod( ImagesRepresentative,
     if im = fail then
       # 'elm' has no images under 'res!.map', so it has none under 'res'.
       return fail;
-    elif HasIsSingleValued(res!.map) and IsSingleValued(res!.map) then
-      return im;
     elif im in Range(res) then
       return im;
+    elif HasIsSingleValued(res!.map) and IsSingleValued(res!.map) then
+      return fail; # no other choice
     else
       # It may happen that only the chosen representative is not in im
       im:= ImagesElm( res!.map, elm );
@@ -1791,13 +1788,13 @@ InstallMethod( PreImagesElm,
     FamRangeEqFamElm,
     [ IsGeneralRestrictedMappingRep, IsObject ], 0,
     function( res, elm )
-    local im;
-    im:= PreImagesElm( res!.map, elm );
+    local preim;
+    preim:= PreImagesElm( res!.map, elm );
     if not ( (HasIsInjective(res) and IsInjective(res)) or
 	(HasIsInjective(res!.map) and IsInjective(res!.map)) ) then
-      im:=Intersection(Source(res),im);
+      preim:=Intersection(Source(res),preim);
     fi;
-    return im;
+    return preim;
 end );
 
 
@@ -1810,13 +1807,13 @@ InstallMethod( PreImagesSet,
     CollFamRangeEqFamElms,
     [ IsGeneralRestrictedMappingRep, IsCollection ], 0,
     function( res, elms )
-    local im;
-    im:= PreImagesSet( res!.map2, elms );
+    local preim;
+    preim:= PreImagesSet( res!.map, elms );
     if not ( (HasIsInjective(res) and IsInjective(res)) or
 	(HasIsInjective(res!.map) and IsInjective(res!.map)) ) then
-      im:=Intersection(Source(res),im);
+      preim:=Intersection(Source(res),preim);
     fi;
-    return im;
+    return preim;
     end );
 
 
@@ -1829,18 +1826,18 @@ InstallMethod( PreImagesRepresentative,
     FamRangeEqFamElm,
     [ IsGeneralRestrictedMappingRep, IsObject ], 0,
     function( res, elm )
-    local im, rep;
-    im:= PreImagesRepresentative( res!.map, elm );
-    if im = fail then
-      # 'elm' has no preimages under 'res!.map2', so it has none under 'res'.
+    local preim, rep;
+    preim:= PreImagesRepresentative( res!.map, elm );
+    if preim = fail then
+      # 'elm' has no preimages under 'res!.map', so it has none under 'res'.
       return fail;
+    elif preim in Source(res) then
+      return preim;
     elif HasIsInjective(res!.map) and IsInjective(res!.map) then
-      return im;
-    elif im in Source(res) then
-      return im;
+      return fail; # no other choice
     else
-      im:= PreImagesRepresentative( res!.map, im );
-      return First(im,x->x in Source(res));
+      preim:= PreImages( res!.map, elm );
+      return First(preim,x->x in Source(res));
     fi;
     end );
 
@@ -1926,6 +1923,30 @@ InstallMethod( PrintObj,
     Print( "GeneralRestrictedMapping( ", res!.map, ", ", Source(res),
            ",", Range(res)," )" );
     end );
+
+
+#############################################################################
+##
+#M  RestrictedMapping(<hom>,<U>)
+##
+InstallMethod(RestrictedMapping,"for mapping that is already restricted",
+  CollFamSourceEqFamElms,
+  [IsGeneralMapping and IsGeneralRestrictedMappingRep, IsDomain],
+  SUM_FLAGS,
+function(hom, U)
+  return GeneralRestrictedMapping (hom!.map, U, Range(hom!.map));
+end);
+
+
+#############################################################################
+##
+#M  RestrictedMapping(<hom>,<U>)
+##
+InstallMethod(RestrictedMapping,"use GeneralRestrictedMapping",
+  CollFamSourceEqFamElms,[IsGeneralMapping,IsDomain],0,
+function(hom, U)
+  return GeneralRestrictedMapping (hom, U, Range(hom));
+end);
 
 
 #############################################################################

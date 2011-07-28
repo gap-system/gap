@@ -1,12 +1,10 @@
 ############################################################################
 ##
-##  recognize.gd                 IRREDSOL                 Burkhard Hoefling
+##  recognize.gd                 IRREDSOL                  Burkhard Höfling
 ##
-##  @(#)$Id: recognize.gd,v 1.4 2005/06/28 11:35:19 gap Exp $
+##  @(#)$Id: recognize.gd,v 1.5 2011/04/07 07:58:09 gap Exp $
 ##
-##  Copyright (C) 2003-2005 by Burkhard Hoefling, 
-##  Institut fuer Geometrie, Algebra und Diskrete Mathematik
-##  Technische Universitaet Braunschweig, Germany
+##  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 ##
 
 
@@ -16,7 +14,7 @@
 ##
 ##  see the IRREDSOL manual
 ##  
-DeclareGlobalFunction ("IsAvailableIdIrreducibleSolvableMatrixGroup");
+DECLARE_IRREDSOL_FUNCTION ("IsAvailableIdIrreducibleSolvableMatrixGroup");
 
 
 ############################################################################
@@ -25,7 +23,7 @@ DeclareGlobalFunction ("IsAvailableIdIrreducibleSolvableMatrixGroup");
 ##
 ##  see the IRREDSOL manual
 ##  
-DeclareGlobalFunction ("IsAvailableIdAbsolutelyIrreducibleSolvableMatrixGroup");
+DECLARE_IRREDSOL_FUNCTION ("IsAvailableIdAbsolutelyIrreducibleSolvableMatrixGroup");
 
 
 ############################################################################
@@ -36,6 +34,7 @@ DeclareGlobalFunction ("IsAvailableIdAbsolutelyIrreducibleSolvableMatrixGroup");
 ##  of the containing GL
 ##  
 DeclareAttribute ("FingerprintMatrixGroup", IsMatrixGroup);
+DECLARE_IRREDSOL_SYNONYMS ("FingerprintMatrixGroup");
 
 
 ############################################################################
@@ -103,7 +102,7 @@ DeclareGlobalFunction ("RecognitionAISMatrixGroup");
 ##  Note that in most cases, the function will be much slower if wantmat
 ##  is set to true.  
 ##
-DeclareGlobalFunction ("RecognitionIrreducibleSolvableMatrixGroup");
+DECLARE_IRREDSOL_FUNCTION ("RecognitionIrreducibleSolvableMatrixGroup");
 
 
 ############################################################################
@@ -114,7 +113,7 @@ DeclareGlobalFunction ("RecognitionIrreducibleSolvableMatrixGroup");
 ##  its arguments and returns fail if G is not within the scope of the 
 ##  IRREDSOL library
 ##
-DeclareGlobalFunction ("RecognitionIrreducibleSolvableMatrixGroupNC");
+DECLARE_IRREDSOL_FUNCTION ("RecognitionIrreducibleSolvableMatrixGroupNC");
 
 
 ############################################################################
@@ -124,7 +123,7 @@ DeclareGlobalFunction ("RecognitionIrreducibleSolvableMatrixGroupNC");
 ##  see the IRREDSOL manual
 ##  
 DeclareAttribute ("IdIrreducibleSolvableMatrixGroup", IsMatrixGroup);
-
+DECLARE_IRREDSOL_SYNONYMS ("IdIrreducibleSolvableMatrixGroup");
 
 ############################################################################
 ##
@@ -132,7 +131,7 @@ DeclareAttribute ("IdIrreducibleSolvableMatrixGroup", IsMatrixGroup);
 ##
 ##  see the IRREDSOL manual
 ##  
-DeclareGlobalFunction ("IdIrreducibleSolvableMatrixGroupIndexMS");
+DECLARE_IRREDSOL_FUNCTION ("IdIrreducibleSolvableMatrixGroupIndexMS");
 
 
 ############################################################################
@@ -141,7 +140,7 @@ DeclareGlobalFunction ("IdIrreducibleSolvableMatrixGroupIndexMS");
 ##
 ##  see the IRREDSOL manual
 ##  
-DeclareGlobalFunction ("IndexMSIdIrreducibleSolvableMatrixGroup");
+DECLARE_IRREDSOL_FUNCTION ("IndexMSIdIrreducibleSolvableMatrixGroup");
 
 
 ############################################################################

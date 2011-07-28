@@ -2,7 +2,7 @@
 ##
 #W  chapter-3.tst                  FR Package               Laurent Bartholdi
 ##
-#H  @(#)$Id: chapter-3.tst,v 1.5 2008/10/29 12:57:41 gap Exp $
+#H  @(#)$Id: chapter-3.tst,v 1.6 2010/06/04 11:55:35 gap Exp $
 ##
 #Y  Copyright (C) 2008,  Laurent Bartholdi
 ##
@@ -573,9 +573,9 @@ gap>
 gap> Info(InfoFR,1,"3.5.5 TensorProductOp");
 #I  3.5.5 TensorProductOp
 gap> 
-gap> ForAll(Flat([mg, mm, ms]), m -> TensorProductX(m) = m);
+gap> ForAll(Flat([mg, mm, ms]), m -> TensorProduct(m) = m);
 true
-gap> m := TensorProductX(mg[4][1],mg[4][1]);
+gap> m := TensorProduct(mg[4][1],mg[4][1]);
 <FR machine with alphabet [ 1 .. 25 ] on Group( [ f1 ] )>
 gap> Size(AlphabetOfFRObject(m)) = 25;
 true
@@ -585,9 +585,9 @@ gap> Activity(m[1],2) = Activity(mg[4][1][1], 4);
 true
 gap> Size(PermGroup(SCGroup(m), 1)) = Size(PermGroup(SCGroup(mg[4][1]),2));
 true
-gap> SubFRMachine(TensorProductX(mg[1][1],mg[1][1],mg[1][1]), mg[2][1]) <> fail;
+gap> SubFRMachine(TensorProduct(mg[1][1],mg[1][1],mg[1][1]), mg[2][1]) <> fail;
 true
-gap> m := TensorProductX(mm[7][1],mm[7][1]);
+gap> m := TensorProduct(mm[7][1],mm[7][1]);
 <FR machine with alphabet [ 1 .. 4 ] on Monoid( [ m1, m2, m3 ], ... )>
 gap> Size(AlphabetOfFRObject(m)) = 4;
 true
@@ -597,7 +597,7 @@ gap> Activity(m[1]) = Trans([1,1,2,2]);
 true
 gap> Size(TransMonoid(SCMonoid(m), 1)) = Size(TransMonoid(SCMonoid(mm[7][1]),2));
 true
-gap> m := TensorProductX(ms[9][2],ms[9][2]);
+gap> m := TensorProduct(ms[9][2],ms[9][2]);
 <FR machine with alphabet [ 1 .. 9 ] on Semigroup( [ s1, s2 ] )>
 gap> Size(AlphabetOfFRObject(m)) = 9;
 true

@@ -2,14 +2,14 @@
 ##
 #W  mpfi.gd                       GAP library               Laurent Bartholdi
 ##
-#H  @(#)$Id: mpfi.gd,v 1.1 2008/06/14 15:45:40 gap Exp $
+#H  @(#)$Id: mpfi.gd,v 1.4 2011/04/11 13:17:21 gap Exp $
 ##
 #Y  Copyright (C) 2008 Laurent Bartholdi
 ##
 ##  This file deals with floats
 ##
 Revision.mpfi_gd :=
-  "@(#)$Id: mpfi.gd,v 1.1 2008/06/14 15:45:40 gap Exp $";
+  "@(#)$Id: mpfi.gd,v 1.4 2011/04/11 13:17:21 gap Exp $";
 
 #############################################################################
 ##
@@ -29,13 +29,9 @@ Revision.mpfi_gd :=
 ## </ManSection>
 ## <#/GAPDoc>
 ##
-DeclareCategory("IsMPFIFloat", IsFloat);
+DeclareRepresentation("IsMPFIFloat", IsFloat and IsDataObjectRep, []);
 
-BIND_GLOBAL("MPFIFloatsFamily", 
-        NewFamily("MPFIFloatsFamily", IsMPFIFloat));
-
-BIND_GLOBAL("TYPE_MPFI", 
-        NewType(MPFIFloatsFamily, IsMPFIFloat and IsInternalRep));
+BIND_GLOBAL("TYPE_MPFI", NewType(FloatsFamily, IsMPFIFloat));
 #############################################################################
 
 #############################################################################

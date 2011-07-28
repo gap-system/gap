@@ -2,7 +2,7 @@
 ##
 #W  stdgen.gd                GAP library                        Thomas Breuer
 ##
-#H  @(#)$Id: stdgen.gd,v 1.4 2008/08/18 16:11:40 gap Exp $
+#H  @(#)$Id: stdgen.gd,v 1.6 2010/09/28 16:47:46 alexk Exp $
 ##
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
@@ -10,7 +10,7 @@
 ##  generators of finite groups.
 ##
 Revision.stdgen_gd :=
-    "@(#)$Id: stdgen.gd,v 1.4 2008/08/18 16:11:40 gap Exp $";
+    "@(#)$Id: stdgen.gd,v 1.6 2010/09/28 16:47:46 alexk Exp $";
 
 
 #T TO DO:
@@ -132,11 +132,11 @@ Revision.stdgen_gd :=
 ##  can be computed by <Ref Func="HumanReadableDefinition"/>.
 ##  <Example><![CDATA[
 ##  gap> StandardGeneratorsInfo( TableOfMarks( "L3(3)" ) );
-##  [ rec( generators := "a, b", 
+##  [ rec( ATLAS := true, 
 ##        description := "|a|=2, |b|=3, |C(b)|=9, |ab|=13, |ababb|=4", 
+##        generators := "a, b", 
 ##        script := [ [ 1, 2 ], [ 2, 3 ], [ [ 2, 1 ], [ "|C(",, ")|" ], 9 ], 
-##            [ 1, 1, 2, 1, 13 ], [ 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 4 ] ], 
-##        ATLAS := true ) ]
+##            [ 1, 1, 2, 1, 13 ], [ 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 4 ] ] ) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -187,10 +187,10 @@ DeclareAttribute( "StandardGeneratorsInfo", IsGroup );
 ##  gap> HumanReadableDefinition( info );
 ##  "|a|=2, |b|=3, |C(b)|=9, |ab|=13, |ababb|=4"
 ##  gap> info;
-##  rec( script := [ [ 1, 2 ], [ 2, 3 ], [ [ 2, 1 ], [ "|C(",, ")|" ], 9 ], 
-##        [ 1, 1, 2, 1, 13 ], [ 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 4 ] ], 
+##  rec( description := "|a|=2, |b|=3, |C(b)|=9, |ab|=13, |ababb|=4", 
 ##    generators := "a, b", 
-##    description := "|a|=2, |b|=3, |C(b)|=9, |ab|=13, |ababb|=4" )
+##    script := [ [ 1, 2 ], [ 2, 3 ], [ [ 2, 1 ], [ "|C(",, ")|" ], 9 ], 
+##        [ 1, 1, 2, 1, 13 ], [ 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 4 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -310,8 +310,8 @@ DeclareGlobalFunction( "IsStandardGeneratorsOfGroup" );
 ##  gap> a5:= AlternatingGroup( 5 );
 ##  Alt( [ 1 .. 5 ] )
 ##  gap> info:= StandardGeneratorsInfo( TableOfMarks( "A5" ) )[1];
-##  rec( generators := "a, b", description := "|a|=2, |b|=3, |ab|=5", 
-##    script := [ [ 1, 2 ], [ 2, 3 ], [ 1, 1, 2, 1, 5 ] ], ATLAS := true )
+##  rec( ATLAS := true, description := "|a|=2, |b|=3, |ab|=5", 
+##    generators := "a, b", script := [ [ 1, 2 ], [ 2, 3 ], [ 1, 1, 2, 1, 5 ] ] )
 ##  gap> IsStandardGeneratorsOfGroup( info, a5, [ (1,3)(2,4), (3,4,5) ] );
 ##  true
 ##  gap> IsStandardGeneratorsOfGroup( info, a5, [ (1,3)(2,4), (1,2,3) ] );

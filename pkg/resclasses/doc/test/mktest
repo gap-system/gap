@@ -3,8 +3,6 @@
 ##
 #W  mktest         Test the ResClasses manual examples         Volkmar Felsch
 ##
-#H  $Id: mktest,v 1.5 2006/05/29 11:44:07 stefan Exp $
-##
 #Y  Copyright (C) 2002, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
 ##
 ##  mktest [-f] [-i] [-o] [-d] [-c]
@@ -34,6 +32,7 @@
 ##  If '-d' and '-c' are specified use the context output format of the
 ##  'diff' command.
 ##
+#############################################################################
 
 #############################################################################
 ##

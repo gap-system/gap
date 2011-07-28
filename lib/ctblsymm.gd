@@ -3,7 +3,7 @@
 #W  ctblsymm.gd                 GAP library                    Götz Pfeiffer
 #W                                                               Felix Noeske
 ##
-#H  @(#)$Id: ctblsymm.gd,v 4.19 2010/02/23 15:12:54 gap Exp $
+#H  @(#)$Id: ctblsymm.gd,v 4.20 2010/11/10 15:02:22 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -70,7 +70,7 @@
 ##  symbol.
 ##
 Revision.ctblsymm_gd :=
-    "@(#)$Id: ctblsymm.gd,v 4.19 2010/02/23 15:12:54 gap Exp $";
+    "@(#)$Id: ctblsymm.gd,v 4.20 2010/11/10 15:02:22 gap Exp $";
 
 
 #############################################################################
@@ -255,7 +255,7 @@ DeclareGlobalFunction( "CharValueWreathSymmetric" );
 ##
 ##  <Description>
 ##  returns the character table of the wreath product of a group <M>G</M>
-##  with the full symmetric group on <M>n</M> points,
+##  with the full symmetric group on <A>n</A> points,
 ##  where <A>tbl</A> is the character table of <M>G</M>.
 ##  <P/>
 ##  The result has values for <Ref Attr="ClassParameters"/> and

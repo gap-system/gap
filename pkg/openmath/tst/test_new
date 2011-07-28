@@ -3,6 +3,10 @@ gap> SizeScreen([80]);;
 gap> ValidatePackageInfo( Filename( DirectoriesPackageLibrary( "openmath", "" ), "PackageInfo.g" ) );
 true
 gap> LoadPackage("openmath");
+#I  Package `GRAPE': non-Unix architecture or binaries not compiled
+#I  Package `GRAPE': functions depending on nauty will not work
+#I  the `grape' package is not fully installed and so some of the functions
+#I  in MONOID will not work. Type `?the monoid package' for more infomation.
 true
 gap> 
 gap> ### Some examples from file openmath/examples
@@ -153,7 +157,9 @@ gap> t := "";
 ""
 gap> s := OutputTextString(t, true);
 OutputTextString(0)
-gap> OMPutObject(s, g);
+gap> w := OpenMathXMLWriter( s );
+<OpenMath XML writer to OutputTextString(0)>
+gap> OMPutObject(w, g);
 gap> CloseStream(s);
 gap> 
 gap> s := InputTextString(t);
@@ -193,9 +199,10 @@ gap>
 gap> ## OutputTextFile, InputTextFile
 gap> 
 gap> s := OutputTextFile( Filename( OMDirectoryTemporary, "test" ), false );;
-gap> OMPutObject( s, 123 );
-gap> OMPutObject( s, false );
-gap> OMPutObject( s, "OutputTextFile, InputTextFile" );
+gap> w := OpenMathXMLWriter( s );;
+gap> OMPutObject( w, 123 );
+gap> OMPutObject( w, false );
+gap> OMPutObject( w, "OutputTextFile, InputTextFile" );
 gap> CloseStream( s );
 gap> 
 gap> s := InputTextFile( Filename( OMDirectoryTemporary, "test" ) );;
@@ -223,9 +230,10 @@ gap> test_string := "";
 gap> 
 gap> s := OutputTextString( test_string, false );
 OutputTextString(0)
-gap> OMPutObject( s, 123 );
-gap> OMPutObject( s, false );
-gap> OMPutObject( s, "OutputTextString, InputTextString" );
+gap> w := OpenMathXMLWriter( s );;
+gap> OMPutObject( w, 123 );
+gap> OMPutObject( w, false );
+gap> OMPutObject( w, "OutputTextString, InputTextString" );
 gap> CloseStream( s );
 gap> 
 gap> test_string;
@@ -247,9 +255,10 @@ gap> ## OutputTextNone
 gap> 
 gap> s := OutputTextNone(  );
 OutputTextNone()
-gap> OMPutObject( s, 123 );
-gap> OMPutObject( s, false );
-gap> OMPutObject( s, "OutputTextNone" );
+gap> w := OpenMathXMLWriter( s );;
+gap> OMPutObject( w, 123 );
+gap> OMPutObject( w, false );
+gap> OMPutObject( w, "OutputTextNone" );
 gap> CloseStream( s );
 gap> 
 gap> ## InputOutputLocalProcess (doesn't work with Gap 4.2 or earlier)
@@ -259,10 +268,11 @@ gap>
 gap> tpipe_exec := Filename( DirectoriesPackageLibrary( "openmath", "OMCv1.3c/src" ), "tpipe" );;
 gap> s := InputOutputLocalProcess( OMDirectoryTemporary, tpipe_exec, [ "-ux", "-", "-", ] );
 < input/output stream to tpipe >
+gap> w := OpenMathXMLWriter( s );;
 gap> 
-gap> OMPutObject( s, 123 );
-gap> OMPutObject( s, false );
-gap> OMPutObject( s, "InputOutputLocalProcess, XML encoding" );
+gap> OMPutObject( w, 123 );
+gap> OMPutObject( w, false );
+gap> OMPutObject( w, "InputOutputLocalProcess, XML encoding" );
 gap> 
 gap> OMGetObject( s );
 123
@@ -277,10 +287,11 @@ gap>
 gap> tpipe_exec := Filename( DirectoriesPackageLibrary( "openmath", "OMCv1.3c/src" ), "tpipe" );;
 gap> s := InputOutputLocalProcess( OMDirectoryTemporary, tpipe_exec, [ "-ub", "-", "-", ] );
 < input/output stream to tpipe >
+gap> w := OpenMathXMLWriter( s );;
 gap> 
-gap> OMPutObject( s, 123 );
-gap> OMPutObject( s, false );
-gap> OMPutObject( s, "InputOutputLocalProcess, binary encoding" );
+gap> OMPutObject( w, 123 );
+gap> OMPutObject( w, false );
+gap> OMPutObject( w, "InputOutputLocalProcess, binary encoding" );
 gap> 
 gap> OMGetObject( s );
 123

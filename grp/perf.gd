@@ -2,7 +2,7 @@
 ##
 #W  perf.gd               GAP Groups Library                 Alexander Hulpke
 ##
-#H  @(#)$Id: perf.gd,v 4.22 2010/02/23 15:12:42 gap Exp $
+#H  @(#)$Id: perf.gd,v 4.23 2011/01/30 00:13:04 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,7 +10,7 @@
 ##  perfect groups
 ##
 Revision.perf_gd :=
-    "@(#)$Id: perf.gd,v 4.22 2010/02/23 15:12:42 gap Exp $";
+    "@(#)$Id: perf.gd,v 4.23 2011/01/30 00:13:04 gap Exp $";
 
 
 PERFRec := fail; # indicator that perf0.grp is not loaded
@@ -89,6 +89,15 @@ DeclareAttribute("PerfectIdentification", IsGroup );
 ##  <Func Name="SizesPerfectGroups" Arg=''/>
 ##
 ##  <Description>
+##  This is the ordered list of all numbers up to <M>10^6</M> that occur as
+##  sizes of perfect groups.  One can iterate over the perfect groups libray with:
+##  <Example><![CDATA[
+##  gap> for n in SizesPerfectGroups() do
+##  >      for k in [1..NrPerfectLibraryGroups(n)] do
+##  >        pg := PerfectGroup(n,k);
+##  >      od;
+##  >    od;
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

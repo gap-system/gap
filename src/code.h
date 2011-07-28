@@ -2,7 +2,7 @@
 **
 *W  code.h                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: code.h,v 4.26 2010/02/23 15:13:40 gap Exp $
+*H  @(#)$Id: code.h,v 4.28 2011/05/23 10:58:39 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,7 +15,7 @@
 */
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_code_h =
-   "@(#)$Id: code.h,v 4.26 2010/02/23 15:13:40 gap Exp $";
+   "@(#)$Id: code.h,v 4.28 2011/05/23 10:58:39 sal Exp $";
 #endif
 
 
@@ -360,8 +360,10 @@ const char * Revision_code_h =
 #define T_ISB_COMOBJ_EXPR       (FIRST_EXPR_TNUM+80)
 
 #define T_FUNCCALL_OPTS         (FIRST_EXPR_TNUM+81)
+#define T_FLOAT_EXPR_EAGER         (FIRST_EXPR_TNUM+82)
+#define T_FLOAT_EXPR_LAZY         (FIRST_EXPR_TNUM+83)
 
-#define LAST_EXPR_TNUM          T_FUNCCALL_OPTS
+#define LAST_EXPR_TNUM          T_FLOAT_EXPR_LAZY
 
 
 /****************************************************************************
@@ -536,7 +538,7 @@ extern  void            CodeFuncCallEnd (
 
 /****************************************************************************
 **
-*F  CodeFuncExprBegin(<narg>,<nloc>,<nams>) . code function expression, begin
+*F  CodeFuncExprBegin(<narg>,<nloc>,<nams>,<startline>) . code function expression, begin
 *F  CodeFuncExprEnd(<nr>) . . . . . . . . . . . code function expression, end
 **
 **  'CodeFuncExprBegin'  is an action to code  a  function expression.  It is
@@ -553,7 +555,8 @@ extern  void            CodeFuncCallEnd (
 extern void CodeFuncExprBegin (
             Int                 narg,
             Int                 nloc,
-            Obj                 nams );
+            Obj                 nams,
+	    Int startLine);
 
 extern void CodeFuncExprEnd (
             UInt                nr,
@@ -671,6 +674,49 @@ extern  void            CodeForEndBody (
             UInt                nr );
 
 extern  void            CodeForEnd ( void );
+
+/****************************************************************************
+**
+*F  CodeAtomicBegin()  . . . . . . .  code atomic-statement, begin of statement
+*F  CodeAtomicBeginBody()  . . . . . . . . code atomic-statement, begin of body
+*F  CodeAtomicEndBody( <nr> )  . . . . . . . code atomic-statement, end of body
+*F  CodeAtomicEnd()  . . . . . . . . .  code atomic-statement, end of statement
+**
+**  'CodeAtomicBegin'  is an action to  code a atomic-statement.   It is called
+**  when the  reader encounters the 'atomic',  i.e., *before* the condition is
+**  read.
+**
+**  'CodeAtomicBeginBody'  is  an action   to code a  atomic-statement.   It is
+**  called when  the reader encounters  the beginning  of the statement body,
+**  i.e., *after* the condition is read.
+**
+**  'CodeAtomicEndBody' is an action to  code a atomic-statement.  It is called
+**  when the reader encounters  the end of  the statement body.  <nr> is  the
+**  number of statements in the body.
+**
+**  'CodeAtomicEnd' is an action to code a atomic-statement.  It is called when
+**  the reader encounters  the end  of the  statement, i.e., immediate  after
+**  'CodeAtomicEndBody'.
+*/
+
+void CodeAtomicBegin ( void );
+
+void CodeAtomicBeginBody ( UInt nrexprs );
+
+void CodeAtomicEndBody (
+    UInt                nrstats );
+void CodeAtomicEnd ( void );
+
+/****************************************************************************
+**
+*F  CodeQualifiedExprBegin()  . . . code readonly/readwrite expression start
+*F  CodeQualifiedExprEnd()  . . . . . code readonly/readwrite expression end
+**
+*/
+
+void CodeQualifiedExprBegin(UInt qual);
+
+void CodeQualifiedExprEnd( void );
 
 
 /****************************************************************************
@@ -927,6 +973,16 @@ extern  void            CodeListExprEnd (
 *F  CodeStringExpr(<str>) . . . . . . . . . .  code literal string expression
 */
 extern  void            CodeStringExpr (
+            Obj              str );
+
+/****************************************************************************
+**
+*F  CodeFloatExpr(<str>) . . . . . . . . . .  code literal float expression
+*/
+extern  void            CodeFloatExpr (
+            Char *              str );
+
+extern  void            CodeLongFloatExpr (
             Obj              str );
 
 

@@ -2,7 +2,7 @@
 ##
 #W  Text.gi                      GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: Text.gi,v 1.15 2007/10/29 11:18:37 gap Exp $
+#H  @(#)$Id: Text.gi,v 1.18 2011/03/03 09:39:59 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -131,15 +131,29 @@ TextAttr.home := Concatenation(TextAttr.CSI, "1G");
 ##  <#GAPDoc Label="RepeatedString">
 ##  <ManSection >
 ##  <Func Arg="c, len" Name="RepeatedString" />
+##  <Func Arg="c, len" Name="RepeatedUTF8String" />
 ##  <Description>
 ##  Here <A>c</A> must be either a  character or a string and <A>len</A>
 ##  is a non-negative number. Then <Ref Func="RepeatedString" /> returns
 ##  a string of length <A>len</A> consisting of copies of <A>c</A>.
+##  <P/>
+##  In the variant <Ref Func="RepeatedUTF8String" /> the argument <A>c</A>
+##  is considered as string in UTF-8 encoding, and it can also be specified
+##  as unicode string or character, see <Ref Oper="Unicode" />. The result is 
+##  a string in UTF-8 encoding which has visible width <A>len</A> as explained
+##  in <Ref Func="WidthUTF8String"/>. 
 ##  <Example>
 ##  gap> RepeatedString('=',51);
 ##  "==================================================="
 ##  gap> RepeatedString("*=",51);
 ##  "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*"
+##  gap> s := "bäh";;
+##  gap> enc := GAPInfo.TermEncoding;;
+##  gap> if enc &lt;&gt; "UTF-8" then s := Encode(Unicode(s, enc), "UTF-8"); fi;
+##  gap> l := RepeatedUTF8String(s, 8);;
+##  gap> u := Unicode(l, "UTF-8");;
+##  gap> Print(Encode(u, enc), "\n");
+##  bähbähbä
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
@@ -170,6 +184,55 @@ InstallGlobalFunction(RepeatedString, function(s, n)
   Append(res, res{[1..n-Length(res)]});
   return res;
 end);
+InstallGlobalFunction(RepeatedUTF8String, function(s, n)
+  local res, w, r, u, tail, i;
+  if IsUnicodeCharacter(s) then
+    # need to check this first because s is also in IsChar
+    s := Encode(Unicode([Int(s)]),"utf8");
+  elif IsChar(s) then
+    res := "";
+    Add(res,s);
+    s := res;
+  elif IsUnicodeString(s) then
+    s := Encode(s, "utf8");
+  elif not IsString(s) then
+    Error("RepeatedUTF8String: First argument must be character, string \
+or unicode \ncharacter or string.\n"); 
+  fi;
+  w := WidthUTF8String(s);
+  if w = 0 then
+    if n = 0 then 
+      return "";
+    else
+      Error("RepeatedUTF8String: First argument has width 0.\n"); 
+    fi;
+  fi;
+  r := QuotientRemainder(n, w);
+  if r[2] <> 0 then
+    u := Unicode(s, "utf8");
+    tail := "";
+    i := 1;
+    while WidthUTF8String(tail) < r[2] do
+      Append(tail, Encode(u{[i]}, "utf8"));
+      i := i+1;
+    od;
+  else
+    tail := "";
+  fi;
+  if r[1] = 0 then
+    return tail;
+  fi;
+  r := r[1]*Length(s)+Length(tail);
+  res := EmptyString(r);
+  Append(res, s);
+  while 2*Length(res) <= r do
+    Append(res, res);
+  od;
+  Append(res, res{[1..r-Length(tail)-Length(res)]});
+  Append(res, tail);
+  return res;
+end);
+
 
 ##  <#GAPDoc Label="PositionMatchingDelimiter">
 ##  <ManSection >
@@ -441,7 +504,7 @@ end);
 
 ##  <#GAPDoc Label="FormatParagraph">
 ##  <ManSection >
-##  <Func Arg="str[, len][, flush][, attr][, widthfun]]]" 
+##  <Func Arg="str[, len][, flush][, attr][, widthfun]" 
 ##      Name="FormatParagraph" />
 ##  <Returns>the formatted paragraph as string</Returns>
 ##  <Description>

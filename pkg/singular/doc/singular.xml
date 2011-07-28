@@ -666,7 +666,7 @@ are <A>MonomialLexOrdering</A>, <A>MonomialGrevlexOrdering</A>, and
 <P/>
 
 <A>TermOrdering</A> is a mutable attribute, see the &GAP; documentation
-of <Ref Func="DeclareAttribute" BookName="prg"/>; if it is changed on
+of <Ref Func="DeclareAttribute" BookName="Ref"/>; if it is changed on
 the &GAP; side, it is necessary thereafter to send again the ring to
 <Package>Singular</Package> with <Ref Func="SingularSetBaseRing"/>.
 
@@ -963,7 +963,7 @@ to be written
 
 
 
-<Section Label="Interaction"> <Heading>Interaction with
+<Section Label="InteractionLow"> <Heading>Interaction with
 <Package>Singular</Package> at low level</Heading>
 
 
@@ -1411,7 +1411,7 @@ send a bug report according to this text.
 
 If the report is about the manual, please cite also its revision:
 <P/>
-<Code>@(#)$Id: singular.xml,v 1.30 2006/07/23 20:05:30 gap Exp $</Code>.
+<Code>@(#)$Id: singular.xml,v 1.31 2011/06/14 10:31:33 pas Exp $</Code>.
 
 
 </Subsection>

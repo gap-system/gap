@@ -2,9 +2,9 @@
 ##
 #W  straight.gd              GAP library                        Thomas Breuer
 #W                                                           Alexander Hulpke
-#W                                                            Max Neunhöffer
+#W                                                             Max Neunhöffer
 ##
-#H  @(#)$Id: straight.gd,v 4.30 2010/02/23 15:13:32 gap Exp $
+#H  @(#)$Id: straight.gd,v 4.36 2011/04/13 13:55:08 gap Exp $
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,7 +17,7 @@
 ##  2. Functions for elements represented by straight line programs
 ##
 Revision.straight_gd :=
-    "@(#)$Id: straight.gd,v 4.30 2010/02/23 15:13:32 gap Exp $";
+    "@(#)$Id: straight.gd,v 4.36 2011/04/13 13:55:08 gap Exp $";
 
 
 #############################################################################
@@ -155,8 +155,8 @@ DeclareCategory( "IsStraightLineProgram", IsObject );
 ##  arithmetic expression in terms of the strings in the list <A>gens</A>,
 ##  where multiplication is denoted by concatenation, powering is denoted by
 ##  <C>^</C>, and round brackets <C>(</C>, <C>)</C> may be used.
-##  Each entry in <A>gens</A> must consist only of (uppercase or lowercase)
-##  letters (i.e., letters in <Ref Func="IsAlphaChar"/>
+##  Each entry in <A>gens</A> must consist only of uppercase or lowercase
+##  letters (i.e., letters in <Ref Func="IsAlphaChar"/>)
 ##  such that no entry is an initial part of another one.
 ##  Called with this input,
 ##  <Ref Func="StraightLineProgram" Label="for a string and a list of generators names"/>
@@ -297,7 +297,6 @@ DeclareAttribute( "NrInputsOfStraightLineProgram", IsStraightLineProgram );
 ##  </Item>
 ##  </List>
 ##  <P/>
-##  Here are some examples.
 ##  <Example><![CDATA[
 ##  gap> f:= FreeGroup( "x", "y" );;  gens:= GeneratorsOfGroup( f );;
 ##  gap> x:= gens[1];;  y:= gens[2];;
@@ -366,6 +365,7 @@ DeclareOperation( "ResultOfStraightLineProgram",
 #F  StringOfResultOfStraightLineProgram( <prog>, <gensnames>[, "LaTeX"] )
 ##
 ##  <#GAPDoc Label="StringOfResultOfStraightLineProgram">
+##  <Index Subkey="for the result of a straight line program">LaTeX</Index>
 ##  <ManSection>
 ##  <Func Name="StringOfResultOfStraightLineProgram"
 ##  Arg='prog, gensnames[, "LaTeX"]'/>
@@ -641,7 +641,8 @@ DeclareGlobalFunction("StraightLineProgGens");
 ##  24
 ##  gap> Random(g);
 ##  <[ [ 1, -1, 2, -1, 1, 1, 2, -1, 1, -1, 2, 1, 1, 1, 2, 1, 1, -1, 2, 2, 1, 1 ], 
-##    [ 3, -2, 2, -2, 1, -1, 2, -2, 1, 1 ], [ 4, 1, 2, -1, 4, 1 ] ]|(1,2,3,4)>
+##    [ 3, -2, 2, -2, 1, -1, 2, -2, 1, 1, 2, -1, 1, -1, 2, -2, 1, 1, 2, -1, 1,
+##        -1, 2, -1, 1, 1, 2, 1, 1, -1, 2, 1, 1, 1 ] ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -740,14 +741,18 @@ DeclareGlobalFunction( "SLPReversedRenumbered" );
 ##  <Func Name="RestrictOutputsOfSLP" Arg='slp, k'/>
 ##
 ##  <Description>
-##  Returns a new slp that calculates only those outputs specified by
-##  <A>k</A>.
+##  <A>slp</A> must be a straight line program returning a tuple
+##  of values. This function
+##  returns a new slp that calculates only those outputs specified by
+##  <A>k</A>. The argument
 ##  <A>k</A> may be an integer or a list of integers. If <A>k</A> is an integer,
-##  the resulting slp calculates only the result with that number. 
+##  the resulting slp calculates only the result with that number
+##  in the original output tuple. 
 ##  If <A>k</A> is a list of integers, the resulting slp calculates those
-##  results with numbers in <A>k</A>. In both cases the resulting slp
-##  does only what is necessary. The slp must have a line with at least
-##  <A>k</A> expressions (lists) as its last line (if <A>k</A> is an integer).
+##  results with indices <A>k</A> in the original output tuple. 
+##  In both cases the resulting slp
+##  does only what is necessary. Obviously, the slp must have a line with 
+##  enough expressions (lists) for the supplied <A>k</A> as its last line.
 ##  <A>slp</A> is either an slp or a pair where the first entry are the lines
 ##  of the slp and the second is the number of inputs.
 ##  </Description>
@@ -908,15 +913,22 @@ DeclareGlobalFunction( "NewProductOfStraightLinePrograms" );
 ##
 #A  SlotUsagePattern( <s> )
 ##
+##  <#GAPDoc Label="SlotUsagePattern">
 ##  <ManSection>
 ##  <Attr Name="SlotUsagePattern" Arg="s"/>
 ##
 ##  <Description>
 ##  Analyses the straight line program <A>s</A> for more efficient
-##  evaluation. When this attribute is known, the evaluation of the
-##  SLP needs less memory.
+##  evaluation. This means in particular two things, when this attribute
+##  is known: First of all,
+##  intermediate results which are not actually needed later on are
+##  not computed at all, and once an intermediate result is used for
+##  the last time in this SLP, it is discarded. The latter leads to 
+##  the fact that the evaluation of the SLP needs less memory.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "SlotUsagePattern", IsStraightLineProgram );
 
 ##

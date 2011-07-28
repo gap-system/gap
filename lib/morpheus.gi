@@ -2,7 +2,7 @@
 ##
 #W  morpheus.gi                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: morpheus.gi,v 4.124 2010/02/23 15:13:18 gap Exp $
+#H  @(#)$Id: morpheus.gi,v 4.127 2011/06/17 21:11:55 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This  file  contains declarations for Morpheus
 ##
 Revision.morpheus_gi:=
-  "@(#)$Id: morpheus.gi,v 4.124 2010/02/23 15:13:18 gap Exp $";
+  "@(#)$Id: morpheus.gi,v 4.127 2011/06/17 21:11:55 gap Exp $";
 
 #############################################################################
 ##
@@ -215,7 +215,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
   elif IsAbelian(g) then
 
     SetIsFinite(au,true);
-    gens:=SmallGeneratingSet(g);
+    gens:=IndependentGeneratorsOfAbelianGroup(g);
     c:=[];
     for i in gens do
       c:=Union(c,Orbit(au,i));
@@ -333,7 +333,8 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
       bv:=0;
       if HasConjugacyClasses(g) then
         for r in ConjugacyClasses(g) do
-	  if not Representative(r) in  u then
+	  if IsPrimePowerInt(Order(Representative(r))) and
+	      not Representative(r) in  u then
 	    v:=ClosureGroup(u,Representative(r));
 	    if allinner then
 	      val:=Size(Centralizer(r))*Size(NormalClosure(g,v));
@@ -352,6 +353,12 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
 	  repeat
 	    r:=Random(g);
 	  until not r in u;
+	  # force prime power order
+	  if not IsPrimePowerInt(Order(r)) then
+	    v:=List(Collected(Factors(Order(r))),x->r^(x[1]^x[2]));
+	    r:=First(v,x->not x in u); # if all are in u, r would be as well
+	  fi;
+
 	  v:=ClosureGroup(u,r);
 	  if allinner then
 	    val:=Size(Centralizer(g,r))*Size(NormalClosure(g,v));
@@ -438,7 +445,8 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
       Add(gens,r);
       u:=ClosureSubgroupNC(u,r);
     od;
-    Info(InfoMorph,1,"Found generating set of ",Length(gens)," elements");
+    Info(InfoMorph,1,"Found generating set of ",Length(gens)," elements",
+         List(gens,Order));
     hom:=NiceMonomorphismAutomGroup(au,dom,gens);
 
   fi;
@@ -1288,13 +1296,7 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
   fi;
 
   # get standard generating system
-  if not IsPermGroup(G) then
-    p:=IsomorphismPermGroup(G);
-    gens:=IndependentGeneratorsOfAbelianGroup(Image(p));
-    gens:=List(gens,i->PreImagesRepresentative(p,i));
-  else
-    gens:=IndependentGeneratorsOfAbelianGroup(G);
-  fi;
+  gens:=IndependentGeneratorsOfAbelianGroup(G);
 
   au:=[];
   # run by primes
@@ -1663,36 +1665,43 @@ end);
 ##
 #M  AutomorphismGroup(<G>) . . group of automorphisms, given as Homomorphisms
 ##
-InstallMethod(AutomorphismGroup,"for groups",true,[IsGroup and IsFinite],0,
+InstallMethod(AutomorphismGroup,"finite groups",true,[IsGroup and IsFinite],0,
 function(G)
-local a;
+local A;
+  # since the computation is expensive, it is worth to test some properties first,
+  # instead of relying on the method selection
   if IsAbelian(G) then
-    a:=AutomorphismGroupAbelianGroup(G);
-    if HasIsFinite(G) and IsFinite(G) then
-      SetIsFinite(a,true);
+    A:=AutomorphismGroupAbelianGroup(G);
+  elif (not HasIsPGroup(G)) and IsPGroup(G) then
+    #if G did not yet know to be a P-group, but is -- redispatch to catch the
+    #`autpgroup' package method. This will be called at most once.
+    LoadPackage("autpgrp"); # try to load the package if it exists
+    return AutomorphismGroup(G);
+  elif IsNilpotentGroup(G) and not IsPGroup(G) then
+    LoadPackage("autpgrp"); # try to load the package if it exists
+    A:=AutomorphismGroupNilpotentGroup(G);
+  elif IsSolvableGroup(G) then
+    if HasIsFrattiniFree(G) and IsFrattiniFree(G) then
+      A:=AutomorphismGroupFrattFreeGroup(G);
+    else
+      A:=AutomorphismGroupSolvableGroup(G);
     fi;
-    return a;
   elif Size(RadicalGroup(G))=1 then
-      return AutomorphismGroupFittingFree(G);
+    # essentially a normalizer when suitably embedded 
+    A:=AutomorphismGroupFittingFree(G);
   else
-    return AutomorphismGroupMorpheus(G);
+    A:=AutomorphismGroupMorpheus(G);
   fi;
+  SetIsAutomorphismGroup(A,true);
+  SetIsGroupOfAutomorphismsFiniteGroup(A,true);
+  SetIsFinite(A,true);
+  SetAutomorphismDomain(A,G);
+  return A;
 end);
 
+# just in case it does not know to be finite
 RedispatchOnCondition(AutomorphismGroup,true,[IsGroup],
     [IsGroup and IsFinite],0);
-
-#############################################################################
-##
-#M AutomorphismGroup( G )
-##
-InstallMethod( AutomorphismGroup, 
-               "finite abelian groups",
-               true,
-               [IsGroup and IsFinite and IsAbelian],
-               0,
-AutomorphismGroupAbelianGroup);
-
 
 #############################################################################
 ##

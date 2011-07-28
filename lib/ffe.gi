@@ -3,7 +3,7 @@
 #W  ffe.gi                      GAP library                     Werner Nickel
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: ffe.gi,v 4.76 2010/02/23 15:12:58 gap Exp $
+#H  @(#)$Id: ffe.gi,v 4.78 2011/03/25 12:14:02 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -23,7 +23,7 @@
 ##  in the file `zmodnz.gi'.
 ##
 Revision.ffe_gi :=
-    "@(#)$Id: ffe.gi,v 4.76 2010/02/23 15:12:58 gap Exp $";
+    "@(#)$Id: ffe.gi,v 4.78 2011/03/25 12:14:02 gap Exp $";
 
 
 #############################################################################
@@ -687,14 +687,19 @@ InstallMethod( String,
                "for a field of FFEs",
                [ IsField and IsFFECollection ], 10,
   function( F )
-
-    local  str, out;
-
-    str := "";
-    out := OutputTextString( str, true );
-    PrintTo( out, F );
-    CloseStream(out);
-    return str;
+    if IsPrimeField( F ) then
+      return Concatenation( "GF(", String(Characteristic( F )), ")" );
+    elif IsPrimeField( LeftActingDomain( F ) ) then
+      return Concatenation( "GF(", String(Characteristic( F )),
+                    "^", String(DegreeOverPrimeField( F )), ")" );
+    elif F = LeftActingDomain( F ) then
+      return Concatenation( "FieldOverItselfByGenerators( ",
+             String(GeneratorsOfField( F )), " )" );
+    else
+      return Concatenation( "AsField( ", String(LeftActingDomain( F )),
+             ", GF(", String(Characteristic( F )),
+                      "^", String(DegreeOverPrimeField( F )), ") )" );
+    fi;
   end );
 
 #############################################################################
@@ -973,34 +978,6 @@ local   str, log,deg,char;
     log:= LogFFE(ffe,Z( char ^ deg ));
     if log <> 1 then
       str := Concatenation(str,"^",String(log));
-    fi;
-  fi;
-  ConvertToStringRep( str );
-  return str;
-end );
-
-
-
-#############################################################################
-##
-#M  LaTeXObj( <ffe> ) . . . . . .  convert a finite field element into a string
-##
-InstallMethod(LaTeXObj,"for an internal FFE",true,[IsFFE and IsInternalRep],0,
-function ( ffe )
-local   str, log,deg,char;
-  char:=Characteristic(ffe);
-  if   IsZero( ffe )  then
-    str := Concatenation("0\*Z(",String(char),")");
-  else
-    str := Concatenation("Z(",String(char));
-    deg:=DegreeFFE(ffe);
-    if deg <> 1  then
-      str := Concatenation(str,"^{",String(deg),"}");
-    fi;
-    str := Concatenation(str,")");
-    log:= LogFFE(ffe,Z( char ^ deg ));
-    if log <> 1 then
-      str := Concatenation(str,"^{",String(log),"}");
     fi;
   fi;
   ConvertToStringRep( str );

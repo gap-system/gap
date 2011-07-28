@@ -2,7 +2,7 @@
 ##
 #W  ring.gd                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ring.gd,v 4.65 2010/02/23 15:13:26 gap Exp $
+#H  @(#)$Id: ring.gd,v 4.68 2010/10/08 22:34:59 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file declares the operations for rings.
 ##
 Revision.ring_gd :=
-    "@(#)$Id: ring.gd,v 4.65 2010/02/23 15:13:26 gap Exp $";
+    "@(#)$Id: ring.gd,v 4.68 2010/10/08 22:34:59 alexk Exp $";
 
 
 #############################################################################
@@ -189,9 +189,9 @@ DeclareAttribute( "GeneratorsOfRing", IsRing );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> R:= RingWithOne( [ 4, 6 ] );
-##  <ring-with-one, with 2 generators>
+##  Integers
 ##  gap> GeneratorsOfRingWithOne( R );
-##  [ 4, 6 ]
+##  [ 1 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -324,7 +324,7 @@ DeclareOperation( "RingWithOneByGenerators", [ IsCollection ] );
 ##  common ring an error is raised.
 ##  <Example><![CDATA[
 ##  gap> RingWithOne( [ 4, 6 ] );
-##  <ring-with-one, with 2 generators>
+##  Integers
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -410,7 +410,7 @@ DeclareGlobalFunction( "DefaultRing" );
 ##  gap> R:= Integers;
 ##  Integers
 ##  gap> S:= Subring( R, [ 4, 6 ] );
-##  <ring with 2 generators>
+##  <ring with 1 generators>
 ##  gap> Parent( S );
 ##  Integers
 ##  ]]></Example>
@@ -441,7 +441,7 @@ DeclareGlobalFunction( "SubringNC" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> R:= SubringWithOne( Integers, [ 4, 6 ] );
-##  <ring-with-one, with 2 generators>
+##  Integers
 ##  gap> Parent( R );
 ##  Integers
 ##  ]]></Example>
@@ -1193,7 +1193,7 @@ DeclareOperation( "QuotientMod",
 ##  <A>R</A> must be a Euclidean ring (see <Ref Func="IsEuclideanRing"/>)
 ##  so that <Ref Func="EuclideanRemainder"/> can be applied to its elements.
 ##  <P/>
-##  If <A>e</A> is positive the result is <C><A>r</A>^{<A>e</A>}</C> modulo
+##  If <A>e</A> is positive the result is <A>r</A><C>^</C><A>e</A> modulo
 ##  <A>m</A>.
 ##  If <A>e</A> is negative then <Ref Oper="PowerMod"/> first tries to find
 ##  the inverse of <A>r</A> modulo <A>m</A>, i.e.,

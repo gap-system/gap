@@ -2,12 +2,12 @@
 ##
 #W  rcwa_ct.tst                GAP4 Package `RCWA'                Stefan Kohl
 ##
-#H  @(#)$Id: rcwa_ct.tst,v 1.23 2008/04/21 15:17:29 stefan Exp $
-##
 ##  This file contains automated tests of RCWA's specialized functionality
 ##  for the monoids Rcwa(R) and the groups RCWA(R) and CT(R).
 ##
-gap> START_TEST("$Id: rcwa_ct.tst,v 1.23 2008/04/21 15:17:29 stefan Exp $");
+#############################################################################
+
+gap> START_TEST( "rcwa_ct.tst" );
 gap> RCWADoThingsToBeDoneBeforeTest();
 gap> if not IsBound( IsBranch ) then
 >      DeclareProperty( "IsBranch", IsGroup );
@@ -485,7 +485,7 @@ gap> List([RCWA(Integers),CT(Integers),
 >          RCWA(R),CT(R)],Exponent);
 [ infinity, infinity, infinity, infinity, infinity, infinity ]
 gap> RCWADoThingsToBeDoneAfterTest();
-gap> STOP_TEST( "rcwa_ct.tst", 1500000000 );
+gap> STOP_TEST( "rcwa_ct.tst", 1900000000 );
 
 #############################################################################
 ##

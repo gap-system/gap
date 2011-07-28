@@ -2,7 +2,7 @@
 ##
 #W  vecmat.gd                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: vecmat.gd,v 4.47 2010/06/14 16:34:30 sal Exp $
+#H  @(#)$Id: vecmat.gd,v 4.49 2010/10/20 19:02:00 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  with vectors.
 ##
 Revision.vecmat_gd :=
-    "@(#)$Id: vecmat.gd,v 4.47 2010/06/14 16:34:30 sal Exp $";
+    "@(#)$Id: vecmat.gd,v 4.49 2010/10/20 19:02:00 sal Exp $";
 
 
 #############################################################################
@@ -180,7 +180,7 @@ DeclareSynonym( "ConvertToGF2VectorRep", CONV_GF2VEC );
 ##  gap> v := [Z(2)^0,Z(2),Z(2),0*Z(2)];
 ##  [ Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2) ]
 ##  gap> RepresentationsOfObject(v);
-##  [ "IS_PLIST_REP", "IsInternalRep" ]
+##  [ "IsPlistRep", "IsInternalRep" ]
 ##  gap> ConvertToVectorRep(v);
 ##  2
 ##  gap> v;

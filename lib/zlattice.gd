@@ -2,7 +2,7 @@
 ##
 #W  zlattice.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: zlattice.gd,v 4.28 2010/02/23 15:13:37 gap Exp $
+#H  @(#)$Id: zlattice.gd,v 4.29 2010/09/28 16:47:46 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  with lattices.
 ##
 Revision.zlattice_gd :=
-    "@(#)$Id: zlattice.gd,v 4.28 2010/02/23 15:13:37 gap Exp $";
+    "@(#)$Id: zlattice.gd,v 4.29 2010/09/28 16:47:46 alexk Exp $";
 
 
 #############################################################################
@@ -328,16 +328,14 @@ DeclareGlobalFunction( "DecompositionInt" );
 ##  gap> vectors:= [ [ 9, 1, 0, -1, -1 ], [ 15, -1, 0, 0, 0 ],
 ##  >                [ 16, 0, 1, 1, 1 ], [ 20, 0, -1, 0, 0 ],
 ##  >                [ 25, 1, 1, 0, 0 ] ];;
-##  gap> LLLReducedBasis( vectors, "linearcomb" );; Display( last );
-##  rec(
-##    B := [ 5, 36/5, 12, 50/3 ],
-##    relations := [ [ -1, 0, -1, 0, 1 ] ],
+##  gap> LLLReducedBasis( vectors, "linearcomb" );
+##  rec( B := [ 5, 36/5, 12, 50/3 ], 
 ##    basis := [ [ 1, 1, 1, 1, 1 ], [ 1, 1, -2, 1, 1 ], [ -1, 3, -1, -1, -1 ], 
-##        [ -3, 1, 0, 2, 2 ] ],
-##    mue := [ [  ], [ 2/5 ], [ -1/5, 1/3 ], [ 2/5, 1/6, 1/6 ] ],
-##    transformation := 
-##     [ [ 0, -1, 1, 0, 0 ], [ -1, -2, 0, 2, 0 ], [ 1, -2, 0, 1, 0 ], 
-##        [ -1, -2, 1, 1, 0 ] ] )
+##        [ -3, 1, 0, 2, 2 ] ], 
+##    mue := [ [  ], [ 2/5 ], [ -1/5, 1/3 ], [ 2/5, 1/6, 1/6 ] ], 
+##    relations := [ [ -1, 0, -1, 0, 1 ] ], 
+##    transformation := [ [ 0, -1, 1, 0, 0 ], [ -1, -2, 0, 2, 0 ], 
+##        [ 1, -2, 0, 1, 0 ], [ -1, -2, 1, 1, 0 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -395,17 +393,14 @@ DeclareGlobalFunction( "LLLReducedBasis" );
 ##  <Example><![CDATA[
 ##  gap> g:= [ [ 4, 6, 5, 2, 2 ], [ 6, 13, 7, 4, 4 ],
 ##  >    [ 5, 7, 11, 2, 0 ], [ 2, 4, 2, 8, 4 ], [ 2, 4, 0, 4, 8 ] ];;
-##  gap> LLLReducedGramMat( g );; Display( last );
-##  rec(
-##    B := [ 4, 4, 75/16, 168/25, 32/7 ],
-##    relations := [  ],
+##  gap> LLLReducedGramMat( g );
+##  rec( B := [ 4, 4, 75/16, 168/25, 32/7 ], 
 ##    mue := [ [  ], [ 1/2 ], [ 1/4, -1/8 ], [ 1/2, 1/4, -2/25 ], 
-##        [ -1/4, 1/8, 37/75, 8/21 ] ],
-##    transformation := 
-##     [ [ 1, 0, 0, 0, 0 ], [ -1, 1, 0, 0, 0 ], [ -1, 0, 1, 0, 0 ], 
-##        [ 0, 0, 0, 1, 0 ], [ -2, 0, 1, 0, 1 ] ],
+##        [ -1/4, 1/8, 37/75, 8/21 ] ], relations := [  ], 
 ##    remainder := [ [ 4, 2, 1, 2, -1 ], [ 2, 5, 0, 2, 0 ], [ 1, 0, 5, 0, 2 ], 
-##        [ 2, 2, 0, 8, 2 ], [ -1, 0, 2, 2, 7 ] ] )
+##        [ 2, 2, 0, 8, 2 ], [ -1, 0, 2, 2, 7 ] ], 
+##    transformation := [ [ 1, 0, 0, 0, 0 ], [ -1, 1, 0, 0, 0 ], 
+##        [ -1, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], [ -2, 0, 1, 0, 1 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -444,11 +439,10 @@ DeclareGlobalFunction( "LLLReducedGramMat" );
 ##  only those vectors <M>x</M> with nonnegative entries are computed.
 ##  <Example><![CDATA[
 ##  gap> g:= [ [ 2, 1, 1 ], [ 1, 2, 1 ], [ 1, 1, 2 ] ];;  
-##  gap> ShortestVectors(g,4);; Display( last );
-##  rec(
+##  gap> ShortestVectors(g,4);
+##  rec( norms := [ 4, 2, 2, 4, 2, 4, 2, 2, 2 ], 
 ##    vectors := [ [ -1, 1, 1 ], [ 0, 0, 1 ], [ -1, 0, 1 ], [ 1, -1, 1 ], 
-##        [ 0, -1, 1 ], [ -1, -1, 1 ], [ 0, 1, 0 ], [ -1, 1, 0 ], [ 1, 0, 0 ] ],
-##    norms := [ 4, 2, 2, 4, 2, 4, 2, 2, 2 ] )
+##        [ 0, -1, 1 ], [ -1, -1, 1 ], [ 0, 1, 0 ], [ -1, 1, 0 ], [ 1, 0, 0 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -513,13 +507,12 @@ DeclareGlobalFunction( "ShortestVectors" );
 ##  this will accelerate the algorithm in some cases.
 ##  <Example><![CDATA[
 ##  gap> b:= [ [ 3, -1, -1 ], [ -1, 3, -1 ], [ -1, -1, 3 ] ];;
-##  gap> c:=OrthogonalEmbeddings( b );; Display( c );
-##  rec(
-##    vectors := [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ], [ -1, 1, 0 ], 
-##        [ -1, 0, 1 ], [ 1, 0, 0 ], [ 0, -1, 1 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
-##    norms := [ 1, 1, 1, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2 ],
+##  gap> c:=OrthogonalEmbeddings( b );
+##  rec( norms := [ 1, 1, 1, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2 ], 
 ##    solutions := [ [ 1, 2, 3 ], [ 1, 6, 6, 7, 7 ], [ 2, 5, 5, 8, 8 ], 
-##        [ 3, 4, 4, 9, 9 ], [ 4, 5, 6, 7, 8, 9 ] ] )
+##        [ 3, 4, 4, 9, 9 ], [ 4, 5, 6, 7, 8, 9 ] ], 
+##    vectors := [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ], [ -1, 1, 0 ], 
+##        [ -1, 0, 1 ], [ 1, 0, 0 ], [ 0, -1, 1 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] )
 ##  gap> c.vectors{ c.solutions[1] };
 ##  [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ] ]
 ##  ]]></Example>

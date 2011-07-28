@@ -2,7 +2,7 @@
 ##
 #W  arith.gd                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: arith.gd,v 4.87 2010/06/24 13:17:56 gap Exp $
+#H  @(#)$Id: arith.gd,v 4.88 2011/01/13 23:01:05 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -22,7 +22,7 @@
 ##  mean that the the product of *any* two elements in the family is defined,
 ##
 Revision.arith_gd :=
-    "@(#)$Id: arith.gd,v 4.87 2010/06/24 13:17:56 gap Exp $";
+    "@(#)$Id: arith.gd,v 4.88 2011/01/13 23:01:05 gap Exp $";
 
 
 #############################################################################
@@ -1269,7 +1269,7 @@ DeclareCategory( "IsJacobianElement", IsRingElement );
 DeclareCategoryCollections( "IsJacobianElement" );
 DeclareCategoryCollections( "IsJacobianElementCollection" );
 
-DeclareCategory( "IsRestrictedJacobianElement", IsRingElement );
+DeclareCategory( "IsRestrictedJacobianElement", IsJacobianElement );
 DeclareCategoryCollections( "IsRestrictedJacobianElement" );
 DeclareCategoryCollections( "IsRestrictedJacobianElementCollection" );
 

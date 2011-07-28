@@ -32,7 +32,7 @@
     \sub of all nilpotent groups, 25
     \sub of all supersolvable groups, 25
     \sub of all trivial groups, 25
-  classes, creating, 4
+  classes, creation of, 4
     \sub properties of, 5
   closure properties, of group classes, 8
   comparison, for classes, 5
@@ -42,7 +42,7 @@
   CRISP, 3
 \letter D
   `Difference', 6
-  `Display', for classes, 5
+  `Display', for classes, 4
 \letter E
   element test, for classes, 5
   equality, for classes, 5
@@ -58,7 +58,7 @@
     \sub operations for, 22
   `FittingClass', 19
   `FittingFormation', 20
-  `FittingFormationProduct', 15, 19
+  `FittingFormationProduct', 16, 19
   `FittingProduct', 19
   `FittingSet', 20
   FORMAT package, 3
@@ -70,7 +70,7 @@
 \letter G
   group classes, attributes for, 11
     \sub closure properties of, 8
-    \sub creation, 7
+    \sub creation of, 7
     \sub properties of, 9
   `GroupClass', 7
 \letter H
@@ -103,6 +103,7 @@
   `IsNormalSubgroupClosed', 9
   `IsOrdinaryFormation', 10
   `IsPrimitiveSolvable', 14
+  `IsPrimitiveSolvableGroup', 14
   `IsQuotientClosed', 9
   `IsResiduallyClosed', 9
   `IsSaturated', 9
@@ -139,7 +140,7 @@
   `PreImageFittingSet', 21
   primes, set of all, 26
   primitive solvable group, attributes of, 14
-  `Print', for classes, 5
+  `Print', for classes, 4
   `Projector', 13
   `ProjectorFunction', 13
   properties, of classes, 5
@@ -178,6 +179,6 @@
 \letter T
   trivial groups, class of, 25
 \letter U
-  `Union', 6
+  `Union', 5
 \letter V
   `View', for classes, 4

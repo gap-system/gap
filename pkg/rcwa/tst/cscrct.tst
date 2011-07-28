@@ -2,12 +2,12 @@
 ##
 #W  cscrct.tst                GAP4 Package `RCWA'                 Stefan Kohl
 ##
-#H  @(#)$Id: cscrct.tst,v 1.8 2007/11/02 17:18:07 stefan Exp $
-##
 ##  This file contains automated tests related to series of rcwa permutations
 ##  like class shifts, -reflections, -rotations and -transpositions.
 ##
-gap> START_TEST("$Id: cscrct.tst,v 1.8 2007/11/02 17:18:07 stefan Exp $");
+#############################################################################
+
+gap> START_TEST( "cscrct.tst" );
 gap> RCWADoThingsToBeDoneBeforeTest();
 gap> x := Indeterminate(GF(4),1);; SetName(x,"x");
 gap> R1 := PolynomialRing(GF(4),1);
@@ -504,7 +504,7 @@ gap> ViewString(cr);
 gap> Print(cr,"\n");
 ClassRotation((Integers^2),[1,14],[[2,6],[0,15]],[[1,1],[0,1]])
 gap> RCWADoThingsToBeDoneAfterTest();
-gap> STOP_TEST( "cscrct.tst", 900000000 );
+gap> STOP_TEST( "cscrct.tst", 1700000000 );
 
 #############################################################################
 ##

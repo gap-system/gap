@@ -1,4 +1,3 @@
-
 The GAP 4 package 'NQL'
 =======================
 
@@ -11,7 +10,7 @@ algorithm for L-presented groups.
 
 The features of this package include
 
-  - creating an L-presented group as new gap object,
+  - creating an L-presented group as a gap object,
 
   - computing nilpotent quotients of L-presented groups, and
 
@@ -19,6 +18,10 @@ The features of this package include
     nilpotent quotients;
 
   - computing the abelian invariants of an L-presented group
+
+  - computing the Dwyer quotients of the Schur multiplier of an LpGroup
+
+  - coset enumeration for finite index subgroups of LpGroups
 
 There is a manual in the subdirectory 'doc' written in plain TeX which
 describes the functions available.
@@ -73,6 +76,12 @@ documentation of the 'NQL' package. For this purpose, change into the
 
 BugFixes/Changes/Features Added
 -----------------------------
+
+- Version 0.10: - added the html-manual
+                - moved website to GWDG in Goettingen
+
+- Version 0.09: - added methods for computing (finite index) subgroups
+                - AutPGrp as SuggestedOtherPackages
 
 - Version 0.08: - minor changes due to problems with the FR-package
                 - added operation `DwyerQuotient'

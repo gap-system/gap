@@ -1,6 +1,42 @@
                        CHANGES of the GAPDoc package
 
+1.3 -> 1.4
+
+- Link from MathJax HTML manuals to central server http://cdn.mathjax.org
+  to get scripts and fonts.
+
+- Added a link to the "Contents" on top and bottom of each HTML manual page.
+
+- For LaTeX/PDF conversion of manuals we use now the "psnfss" for postscript
+  fonts.
+
+- Added more hooks for customization of LaTeX/PDF manuals
+  ("SetGapDocLaTeXOptions"). Now bookmarks (for acroread and other viewers) 
+  are generated but not opened by default.
+
+- Fixed a bug when displaying multiple hits while ANSI_COLORS=false.
+
 1.2 -> 1.3
+
+- Improved the example ./gapdoc.css file (also used for the GAPDoc manuals):
+  when hovering over a link to a section its subsections are now shown in 
+  a separate block.
+
+- The Arg attribute in <Func > and other elements now allows for GAP 
+  options.
+
+- Added support for HTML output using MathJax (http://www.mathjax.org/).
+  MakeGAPDocDoc and GAPDoc2HTML now allow an optional argument
+  "MathJax".
+
+- Better bound for long index entries to be hyphenated (can now also
+  be changed by setting GAPDoc2LaTeXProcs.MaxIndexEntryWidth).
+
+- Improved the \description environment in LaTeX output using the
+  enumitem LaTeX packages. Now works with very long labels.
+
+- Now a warning is given if ComposedDocument finds several pieces of
+  documentation with the same label.
 
 - Fixed a problem which caused ParseError in rare cases to display the
   wrong line (reported by Laurent Bartholdi).

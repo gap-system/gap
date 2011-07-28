@@ -2,7 +2,7 @@
 ##
 #W  morpheus.gd                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: morpheus.gd,v 4.41 2010/02/23 15:13:18 gap Exp $
+#H  @(#)$Id: morpheus.gd,v 4.44 2011/01/29 16:46:04 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This  file  contains declarations for Morpheus
 ##
 Revision.morpheus_gd:=
-  "@(#)$Id: morpheus.gd,v 4.41 2010/02/23 15:13:18 gap Exp $";
+  "@(#)$Id: morpheus.gd,v 4.44 2011/01/29 16:46:04 alexk Exp $";
 
 DeclareInfoClass("InfoMorph");
 
@@ -121,9 +121,12 @@ DeclareAttribute( "AutomorphismDomain", IsGroupOfAutomorphisms );
 ##  gap> au:=AutomorphismGroup(g);
 ##  <group of size 8 with 3 generators>
 ##  gap> GeneratorsOfGroup(au);
-##  [ ^(1,2,3,4), ^(1,3), [ (1,2,3,4), (2,4) ] -> [ (1,2,3,4), (1,2)(3,4) ] ]
+##  [ Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) ->
+##      [ (1,2)(3,4), (1,2,3,4), (1,3)(2,4) ],
+##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> [ (1,3), (1,2,3,4), (1,3)(2,4) ],
+##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> [ (2,4), (1,4,3,2), (1,3)(2,4) ] ]
 ##  gap> NiceObject(au);
-##  Group([ (1,4)(2,6), (2,6)(3,5), (1,2,4,6) ])
+##  Group([ (1,2,3,4), (1,3)(2,4), (2,4) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -489,7 +492,7 @@ DeclareGlobalFunction("IsomorphismGroups");
 ##  gap> h:=Group((1,2,3),(1,2));
 ##  Group([ (1,2,3), (1,2) ])
 ##  gap> quo:=GQuotients(g,h);
-##  [ [ (1,4,2,3), (1,2,4) ] -> [ (2,3), (1,2,3) ] ]
+##  [ [ (1,2,3,4), (1,2,3) ] -> [ (2,3), (1,2,3) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

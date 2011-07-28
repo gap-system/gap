@@ -1,6 +1,6 @@
-rm htm/CHAP???.htm
-rm htm/biblio.htm
-rm htm/theindex.htm
-rm htm/chapters.htm
-perl ../../etc/convert.pl -n CRISP -c -i doc htm
-chmod -R a+r htm
+rm html/CHAP???.htm
+rm html/biblio.htm
+rm html/theindex.htm
+rm html/chapters.htm
+perl ../../etc/convert.pl -n CRISP -c -i doc html
+chmod -R a+r html

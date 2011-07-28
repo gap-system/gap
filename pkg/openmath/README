@@ -1,203 +1,85 @@
-#############################################################################
+##############################################################################
 ##
-#W README                   The OpenMath package             Marco Costantini
-#W                                                        Alexander Konovalov
-#W                                                             Andrew Solomon
+#W README                   The OpenMath package              Marco Costantini
+#W                                                         Alexander Konovalov
+#W                                                              Andrew Solomon
 ##
-#H $Id: README,v 1.65 2009/05/26 16:42:07 alexk Exp $
+#H $Id: README,v 1.67 2010/09/22 11:03:47 alexk Exp $
 ##
-#############################################################################
 
                            The OpenMath Package
                            --------------------
 
-The package provides an OpenMath phrasebook for GAP: it allows GAP 
-users to import and export mathematical objects encoded in OpenMath, 
-for the purpose of exchanging them with other OpenMath-enabled 
-applications. 
+The package provides an OpenMath phrasebook for GAP: it allows GAP users to
+import and export mathematical objects encoded in OpenMath, for the purpose of
+exchanging them with other OpenMath-enabled applications. 
 
-Copyright:
-==========
+The OpenMath package is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option) any
+later version. For details, see the FSF's own site
 
-The OpenMath package is free software; you can redistribute it and/or 
-modify it under the terms of the GNU General Public License as published 
-by the Free Software Foundation; either version 2 of the License, or 
-(at your option) any later version. For details, see the FSF's own site
-http://www.gnu.org/licenses/gpl.html.
+	              http://www.gnu.org/licenses/gpl.html
 
-Additionally, it contains code developed at INRIA (copyright INRIA), 
-under the ESPRIT project number 24969 (OpenMath). The user may not use 
-the library in commercial products without seeking permission from the 
-GAP group (support@gap-system.org) and the CAFE team at INRIA SA 
-(stephane.dalmas@sophia.inria.fr).
-
-Installation:
-=============
-
-This package is installed as a normal Gap package: see Gap reference
-manual, chapter "74 GAP Packages" (and if you don't have write access to
-the Gap installation see also section "9.2 GAP Root Directory"), for
-details.
-
-The binaries should be compiled in two stages:
-- compilation of the OpenMath C library from INRIA
-- compilation of the 'gpipe' program
-
-To do this, change to the package directory gap4r4/pkg/openmath
-and perform the following commands:
-
-cd OMCv1.3c/src/
-./configure
-make
-cd ../../
-./configure ../../
-make
-
-
-The part in C language compiles and runs also on Windows with Cygwin 
-(see http://www.cygwin.com/).
-A Windows user may also try to get a precompiled OMC binary from
-ftp://ftp-sop.inria.fr/safir/OM (I didn't try), and thereafter
-
-cd pkg/openmath
-
-./configure ../../
-make
-
-Some historical notes from previous releases and changelogs
-are collected below.
+The installation of the package is standard: for details, see Gap reference
+manual, chapter "74 GAP Packages" (and if you don't have write access to the
+Gap installation see also section "9.2 GAP Root Directory").
 
 To contact developers, please write to:
-alexk at mcs dot st-andrews dot ac dot uk
+
+                 alexk at mcs dot st-andrews dot ac dot uk
 
 
 Alexander Konovalov
 
-April 2009
+September 2010
 
+##############################################################################
 
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+          Historical notes from previous releases and changelogs
 
+##############################################################################
 
-The compilation is non-standard! See below.
+The first release of the package was produced in March 2000 by Andrew Solomon 
+when he worked at the School of Computer Science, University of St Andrews. 
 
-This package has been developed to allow GAP users to
-import and export mathematical objects encoded in OpenMath,
-for the purpose of exchanging them with other applications that
-are OpenMath enabled.
+In June 2004 Marco Costantini made some modifications in this package in order
+to make it usable again:
+* provided a PackageInfo.g file as needed by GAP 4.4;
+* changed "share package" to "package" as the term "share" became obsolete;
+* made slight modifications in the file doc/make_doc;
+* added the warning about non-standard compilation.
 
+After agreement with Andrew Solomon, Marco Costantini became the maintainer of
+this package. He made the modifications listed below, which were necessary in 
+order to extend the functionality and to fix the bugs, and because both 
+OpenMath and the package mechanism of GAP have evolved in the meantime.
 
-1. Copyright
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-This package is distributed under GPL license and the terms of the GAP
-copyright. Additionally, it contains code developed at INRIA
-(copyright INRIA), under the ESPRIT project number 24969 (OpenMath).
-The user may not use the library in commercial products without seeking
-permission from the GAP group (support@gap-system.org) and the 
-CAFE team at  INRIA SA (stephane.dalmas@sophia.inria.fr).
+This package performs the conversion from GAP to OpenMath, using only GAP
+code, and this part is expected to work on each machine on which GAP works.
+This package performs also the conversion from OpenMath to GAP, either using a
+function from the GAP package ``GapDoc'', or using an external program (which
+is included in the package, is written in C, and needs to be compiled);
+autodetection is used.
 
-It may be redistributed ``as is'' together with this notice.
+The list of supported OpenMath Content Dictionaries (CDs) is implicit in the 
+code. 
 
+For the supported CDs and symbols when converting from OpenMath to GAP, see
+the files gap/gap.g, variables OMsymTable and OMnullarySymbolToGAP, and
+gap/new.g.
 
-2. Technicalities and installation
+/* Remark: from version 9.4.0, OMnullarySymbolToGAP no longer exists, and
+OMsymTable was converted into OMsymRecord */
 
-This package includes a C program, and works with full functionality
-only if this program has been compiled.
+For the supported CDs and symbols when converting from GAP to OpenMath, see
+the files gap/omput.gi, method for OMPut (and hasse/hasse.g for the Hasse
+diagram).
 
-To install this package (after extracting the packages archive
-file to the GAP pkg directory):
-
-a) go to the directory `pkg/openmath/OMCv1.3c/src' and call 
-
-/bin/sh ./configure
-
-and then call `make' to compile the INRIA library (producing libOM.a).
-
-
-b) go to the directory `pkg/openmath' (the
-directory containing this README file) and call
-
-/bin/sh ./configure <path>
-
-where <path> is a path to the main GAP root directory (so normally you would
-call /bin/sh ./configure ../..).
-
-afterwards call `make' to compile the binary. See file examples for usage examples.
-
-c) you also need to modify the file hasse/config.g
-to make the Hasse diagram stuff work.
-
-
-3. The INRIA library
-
-The files in the directory `openmath/OMCv1.3c' are the OpenMath C library
-version 1.3c developed by the CAFE group at INRIA SA. For the latest 
-version, contact: stephane.dalmas@sophia.inria.fr , or try
-ftp://ftp-sop.inria.fr/safir/OM .
-
-
-Andrew Solomon (andrew@illywhacker.net),
-Department of Computer Science,
-University of St. Andrews.
-
-9 March 2000.
-
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-
-June 2004: I have done some modifications in this package, in order to
-make it usable again:
-
-provided a PackageInfo.g file (this file is needed by GAP 4.4);
-
-changed in several points ``share package'' into ``package'' as now the
-term ``share'' is obsolete;
-
-slight modifications in the file doc/make_doc;
-
-the warning ``The compilation is non-standard! See below.'' above.
-
-Marco Costantini
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-
-After agreement with Andrew Solomon, I will be the maintainer of this
-package. I have done the modifications listed below, which were
-necessary in order to extend the functionality and to fix the bugs, and
-because both OpenMath and the package mechanism of GAP have evolved
-in the meantime.
-
-Marco Costantini
-
-December 2005 and January 2006
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-
-This package performs the conversion from GAP to OpenMath, using only
-GAP code, and this part is expected to work on each machine on which
-GAP works. This package performs also the conversion from OpenMath to
-GAP, either using a function from the GAP package ``GapDoc'', or
-using an external program (which is included in the package, is
-written in C, and needs to be compiled); autodetection is used.
-
-
-The list of supported OpenMath Content Dictionaries (CDs) is implicit in
-the code. 
-
-For the supported CDs and symbols when converting from OpenMath to
-GAP, see the files gap/gap.g, variables OMsymTable and
-OMnullarySymbolToGAP, and gap/new.g.
-
-/* Remark: from version 9.4.0, OMnullarySymbolToGAP no longer
-exists, and OMsymTable was converted into OMsymRecord */
-
-For the supported CDs and symbols when converting from GAP to
-OpenMath, see the files gap/omput.gi, method for OMPut (and
-hasse/hasse.g for the Hasse diagram).
-
-If you modify the code to add support for other CDs, please inform me,
-so that your modifications can be included in a new version of this
-package.
+If you modify the code to add support for other CDs, please inform me, so that
+your modifications can be included in a new version of this package.
 
 
 The websites of this package are:
@@ -327,69 +209,62 @@ Marco Costantini
 
 December 2005, January and July 2006
 
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+Since 2007 Alexander Konovalov made several further changes in this package
+and after an agreement with Andrew Solomon became its maintainer. The list of
+major updates is below:
 
-Since 2007 Alexander Konovalov made several further changes 
-in this package and after an agreement with Andrew Solomon 
-became its maintainer. The list of major updates is below:
-
-* Fixes of names of symbols and their distribution across 
-  CDs following recent changes in OpenMath CDs.
-  
-* Multiple additions and updates to support various symbols 
-  from CDs alg1, algnums, arith1, arith2, arith3, calculus1, 
-  comnbinat1, fieldname1, group1, group2, group, groupname1, 
-  integer1, integer2, list1, logic1, permgp1, set1.
+* Fixes of names of symbols and their distribution across CDs following recent
+  changes in OpenMath CDs. * Multiple additions and updates to support various
+  symbols from CDs alg1, algnums, arith1, arith2, arith3, calculus1, 
+  comnbinat1, fieldname1, group1, group2, group, groupname1, integer1, 
+  integer2, list1, logic1, permgp1, set1. 
   
 * Extended support of polynomial CDs.
 
 * Fixed and extended support of OpenMath references.
 
-* Fixed error messages for unexpected_symbol, unhandled_symbol, 
-  unsupported_CD as required by the 'error' OM CD.
+* Fixed error messages for unexpected_symbol, unhandled_symbol, unsupported_CD
+  as required by the 'error' OM CD.
     
 * Changes in conversion from GAP to OpenMath:
-- introduced OMINT_LIMIT and fixed OMput for integers too 
-  large to be printed.
-- commented out method for OMPut( <stream>,  <vector> ) to 
-  have the default output as list1.list.
+- introduced OMINT_LIMIT and fixed OMput for integers too large to be printed.
+- commented out method for OMPut( <stream>,  <vector> ) to have the default 
+  output as list1.list.
   
-* OMsymTable turned from the list of nested lists into a 
-  record and renamed to OMsymRecord.
+* OMsymTable turned from the list of nested lists into a record and renamed it 
+  to OMsymRecord.
 
-* Removed OMnullarySymbolToGAP, now all lookup is performed 
-  by OMsymLookup with no distinction between nullary and
-  n-ary OpenMath symbols.
+* Removed OMnullarySymbolToGAP, now all lookup is performed by OMsymLookup 
+  with no distinction between nullary and n-ary OpenMath symbols.
   
 * New functionality:
-  - New function OMPutObjectNoOMOBJtags, a variation of the 
-    function OMPutObject to write to the stream the OpenMath
-    object without enclosing <OMOBJ> .. </OMOBJ> tags, which 
-    may be useful for combining complex objects.
-  - New objects OMPlainString which are strings of OpenMath
-    code that are plainly substituted into the output while
-    printing/writing into stream instead of converting to
-    OMSTR, which may be useful for composing OpenMath code
-    from GAP.
-  - New function OMString to return a string with the 
-    OpenMath representation of a GAP object.     
+  - New function OMPutObjectNoOMOBJtags, a variation of the function 
+    OMPutObject to write to the stream the OpenMath object without enclosing 
+    <OMOBJ> .. </OMOBJ> tags, which may be useful for combining complex 
+    objects.
+  - New objects OMPlainString which are strings of OpenMath code that are 
+    plainly substituted into the output while printing/writing into stream 
+    instead of converting to OMSTR, which may be useful for composing OpenMath
+    code from GAP.
+  - New function OMString to return a string with the OpenMath representation 
+    of a GAP object.     
     
 * Better organising of handling private CDs/symbols:
-  - created directory 'openmath/private' to store implementations 
-    of our private CDs and private/experimental symbols (this is
-    also the place where users may put their code if they will 
-    need to addsupport for their own private CDs)
-  - moved to 'openmath/private/private.{g,gi}' code for algnums 
-    and cas CDs and for private symbols groups1.group_by_generators,
+  - created directory 'openmath/private' to store implementations of our 
+    private CDs and private/experimental symbols (this is also the place where
+    users may put their code if they will need to addsupport for their own 
+    private CDs)
+  - moved to 'openmath/private/private.{g,gi}' code for algnums and cas CDs 
+    and for private symbols groups1.group_by_generators, 
     groups1.character_table and groups1.character_table_of_group
   - transformed OM_append into two functions OM_append_new and 
     OM_append_private.
 
-* multiple rearrangements of declaring and assigning global 
-  variables and moving of reading *.g files from read.g to 
-  init.g to fix errors when OpenMath is loaded as required 
-  package from other package.
+* multiple rearrangements of declaring and assigning global variables and 
+  moving of reading *.g files from read.g to init.g to fix errors when 
+  OpenMath is loaded as required package from other package.
   
 * Converted the manual into GAPDoc format and extended it.
 
@@ -397,13 +272,11 @@ became its maintainer. The list of major updates is below:
   - updated PackageInfo.g file
   - removed the non-standard banner 
   - removed INSTALL file containig duplicated information
-  - added openmatj/gap/buildman.g with utility functions
-    to build the manual
+  - added openmatj/gap/buildman.g with utility functions to build the manual
   - rewrote the README file which is also the changelog
   - changed the system of version numbers
-  - removed printutil.g since now GAPDoc has printutil.{gd,gi}
-    and replaced in private.g ViewString by StringView as it
-    was renamed in printutil.*
+  - removed printutil.g since now GAPDoc has printutil.{gd,gi} and replaced in 
+    private.g ViewString by StringView as it was renamed in printutil.*
   
 Alexander Konovalov                               April 2009  
       
@@ -415,6 +288,26 @@ Alexander Konovalov                               April 2009
   semigroup4.homomorphism_by_generators, and and private 
   monoid1.monoid_by_generators, semigroup1.semigroup_by_generators,
   transform1.transformation to support two-sided conversion of
-  transformations, transformation semigroups and their automorphism 
-  groups; private symbols record1.record for records and 
-  pcgroup1.pcgroup_by_pcgscode for PcGroups
+  transformations, transformation semigroups and their automorphism groups; 
+  private symbols record1.record for records and pcgroup1.pcgroup_by_pcgscode 
+  for PcGroups.
+  
+10.1.0 (March 2010)
+* Switched dev/random -> dev/urandom to prevent the server from blocking
+  and waiting for additional entropy to be collected.
+* Added permutation1.{action, are_distinct, cycle, cycle_type, domain, 
+  endomap, endomap_left_compose, endomap_right_compose, inverse, is_bijective, 
+  is_endomap, is_list_perm, is_permutation, length, list_perm, listendomap, 
+  order, permutation, permutationsn, sign, support}.
+* OpenMath to GAP support for finfield1.{conway_polynomial, discrete_log, 
+  field_by_conway, is_primitive, primitive_element} and 
+  setname2.{Boolean, GFp, GFpn, Zm}.
+* Method to print finite field element as a power of a primitive element 
+  of a given field, and adjustment of output for polynomials over finite 
+  fields.
+* Introduced OpenMathDefaultPolynomialRing to output collections of 
+  polynomials.
+* OMPrint may accept 1 or 2 arguments to be compatible with 3-argument 
+  version of OMPut.
+* OMPut for a finite field element using finfield1 CD.
+* OMPut for a finite field using setname2.{GFp,GFpn}.

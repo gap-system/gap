@@ -1,14 +1,13 @@
 #############################################################################
 ##
-##  projector.gi                     CRISP                 Burkhard H\"ofling
+##  projector.gi                     CRISP                  Burkhard Höfling
 ##
-##  @(#)$Id: projector.gi,v 1.7 2005/12/21 17:00:58 gap Exp $
+##  @(#)$Id: projector.gi,v 1.9 2011/05/15 19:17:57 gap Exp $
 ##
-##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
-##  Friedrich Schiller-Universit\"at Jena, Germany
+##  Copyright (C) 2000-2003, 2005, 2011 Burkhard Höfling
 ##
 Revision.projector_gi :=
-    "@(#)$Id: projector.gi,v 1.7 2005/12/21 17:00:58 gap Exp $";
+    "@(#)$Id: projector.gi,v 1.9 2011/05/15 19:17:57 gap Exp $";
 
 
 #############################################################################
@@ -301,7 +300,7 @@ InstallGlobalFunction(BFUNC_FROM_TEST_FUNC_FAC,
       # now compute primitive image
       nat := NaturalHomomorphismByNormalSubgroupNC (ImagesSource (hom), cent);
       F := ImagesSource (nat);
-      SetIsPrimitiveSolvable (F, true);
+      SetIsPrimitiveSolvableGroup (F, true);
       SetSocle (F, ImagesSet (nat, N));
       SetSocleComplement (F, 
          ImagesSet (nat, ImagesSet (hom, GroupOfPcgs (cpcgs))));
@@ -331,7 +330,7 @@ InstallGlobalFunction(BFUNC_FROM_TEST_FUNC_MOD,
       
       nat := NaturalHomomorphismByNormalSubgroupNC (H, cent);
       F := ImagesSource (nat);
-      SetIsPrimitiveSolvable (F, true);
+      SetIsPrimitiveSolvableGroup (F, true);
       SetSocle (F, ImagesSet (nat, GroupOfPcgs (npcgs)));
       SetSocleComplement (F, ImagesSet (nat, GroupOfPcgs (cpcgs)));
       return data.test (F, data);
@@ -668,8 +667,8 @@ InstallGlobalFunction ("PROJECTOR_FROM_BOUNDARY",
                # centpcgs in such a complement, and any upcgs-invariant
                # complement arises in that way (see crisp.dvi)
             
-               if centind = Length (userinds) and diff = 0 then 
-                  # centind = 0 means that ser[i] = centpcgs, so that
+               if centind = Length (userinds) and i = 1 and diff = 0 then 
+                  # centind = Length (userinds) means that ser[1] = centpcgs, so that
                   # the complement is trivial
                   kpcgs := ser[i+1];
                   Info(InfoProjector, 3, "trivial normal complement");

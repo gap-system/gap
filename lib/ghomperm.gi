@@ -7,7 +7,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghomperm_gi :=
-    "@(#)$Id: ghomperm.gi,v 4.108 2010/02/23 15:13:01 gap Exp $";
+    "@(#)$Id: ghomperm.gi,v 4.109 2011/01/24 17:04:33 gap Exp $";
 
 #############################################################################
 ##
@@ -581,13 +581,13 @@ end );
 DoShortwordBasepoint:=function(shorb)
 local dom, l, n, i, j,o,ld,mp,lp,x;
   # do not take all elements but a sampler
-  if Length(shorb)>1000 then
+  #if Length(shorb)>10000 then
+  #  mp:=[1..Length(shorb)];
+  #  shorb:=shorb{Set(List([1..5000],i->Random(mp)))};
+  #fi;
+  if Length(shorb)>3000 then
     mp:=[1..Length(shorb)];
-    shorb:=shorb{Set(List([1..500],i->Random(mp)))};
-  fi;
-  if Length(shorb)>300 then
-    mp:=[1..Length(shorb)];
-    l:=List([1..100],i->shorb[Random(mp)][1]);
+    l:=List([1..1000],i->shorb[Random(mp)][1]);
   else
     l:=List(shorb,i->i[1]);
   fi;
@@ -674,6 +674,7 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
     # Add to short word orbit fct.
     AddToStbO:=function(o,dict,e,w)
     local i;
+      #Print("add length ",Length(UnderlyingElement(w)),"\n");
       i:=LookupDictionary(dict,e);
       if i<>fail then
 	if Length(o[i][2])>Length(w) then

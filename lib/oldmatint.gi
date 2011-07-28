@@ -2,7 +2,7 @@
 ##
 #A  oldmatint.gi                   GAP library                 Robert Wainwright
 ##
-#H  $Id: oldmatint.gi,v 1.2 2010/02/23 15:13:19 gap Exp $
+#H  $Id: oldmatint.gi,v 1.3 2010/10/10 12:34:37 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  St Andrews
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,7 +18,7 @@
 
 ##
 Revision.oldmatint_gi :=
-    "$Id: oldmatint.gi,v 1.2 2010/02/23 15:13:19 gap Exp $";
+    "$Id: oldmatint.gi,v 1.3 2010/10/10 12:34:37 alexk Exp $";
 
 
 ##############################################################################
@@ -1237,15 +1237,12 @@ end;
 ##  If <reduction> is not given, a value of 1 is assumed.
 ##  Note, if <trans> is given the operation does not change <mat>.
 ##
-##  \beginexample
 ##  gap> m:=[ [ 14, 20 ], [ 6, 9 ] ];;
 ##  gap> HNFNormDriven(m);
 ##  [ [ 2, 2 ], [ 0, 3 ] ]
 ##  gap> m;
 ##  [ [ 2, 2 ], [ 0, 3 ] ]
-##  \endexample
 ##
-##  \beginexample
 ##  gap> m:=[[14,20],[6,9]];; 
 ##  gap> HNFNormDriven(m,1);
 ##  rec( normal := [ [ 2, 2 ], [ 0, 3 ] ], rowtrans := [ [ 1, -2 ], [ -3, 7 ] ] )
@@ -1253,7 +1250,6 @@ end;
 ##  [ [ 14, 20 ], [ 6, 9 ] ]
 ##  gap> last2.rowtrans*m;
 ##  [ [ 2, 2 ], [ 0, 3 ] ]
-##  \endexample
 ##
 BindGlobal("HNFNormDriven", function(arg)
 

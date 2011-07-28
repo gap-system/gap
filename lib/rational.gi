@@ -2,7 +2,7 @@
 ##
 #W  rational.gi                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: rational.gi,v 4.40 2010/02/23 15:13:26 gap Exp $
+#H  @(#)$Id: rational.gi,v 4.41 2010/10/02 22:47:27 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  This file contains methods for rationals.
 ##
 Revision.rational_gi :=
-    "@(#)$Id: rational.gi,v 4.40 2010/02/23 15:13:26 gap Exp $";
+    "@(#)$Id: rational.gi,v 4.41 2010/10/02 22:47:27 alexk Exp $";
 
 
 #############################################################################
@@ -447,27 +447,6 @@ InstallMethod( PadicValuation,
     od;
     return -i;
   end );
-
-
-#############################################################################
-##
-#M  LaTeXObj
-##
-InstallMethod(LaTeXObj,"rational",
-  [IsRat],
-function(r)
-local n,d;
-  if IsInt(r) then
-    return String(r);
-  fi;
-  n:=NumeratorRat(r);
-  d:=DenominatorRat(r);
-  if AbsInt(n)<5 and AbsInt(d)<5 then
-    return Concatenation(String(n),"/",String(d));
-  else
-    return Concatenation("\\frac{",String(n),"}{",String(d),"}");
-  fi;
-end);
 
 
 #############################################################################

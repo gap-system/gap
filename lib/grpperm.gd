@@ -2,14 +2,14 @@
 ##
 #W  grpperm.gd                  GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: grpperm.gd,v 4.62 2010/06/11 15:53:30 gap Exp $
+#H  @(#)$Id: grpperm.gd,v 4.63 2010/09/28 16:47:44 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpperm_gd :=
-    "@(#)$Id: grpperm.gd,v 4.62 2010/06/11 15:53:30 gap Exp $";
+    "@(#)$Id: grpperm.gd,v 4.63 2010/09/28 16:47:44 alexk Exp $";
 
 
 #############################################################################
@@ -442,7 +442,7 @@ DeclareAttribute( "ONanScottType", IsPermGroup );
 ##  rec( 
 ##    name := "A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) ~ 2A(1,4\
 ##  ) = U(2,4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,5) ~ 2A(1,5) = U\
-##  (2,5)", series := "A", parameter := 5, width := 2 )
+##  (2,5)", parameter := 5, series := "A", width := 2 )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

@@ -2,7 +2,7 @@
 ##
 #W frmachine.gd                                             Laurent Bartholdi
 ##
-#H   @(#)$Id: frmachine.gd,v 1.24 2009/09/25 14:59:18 gap Exp $
+#H   @(#)$Id: frmachine.gd,v 1.30 2011/03/31 10:21:28 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -49,8 +49,8 @@
 ## </ManSection>
 ## <#/GAPDoc>
 ##
-DeclareCategory("IsFRObject", IsRingElementWithInverse and IsAssociativeElement);
-DeclareCategory("IsFRMachine", IsFRObject);
+DeclareCategory("IsFRObject", IsRingElementWithInverse);
+DeclareCategory("IsFRMachine", IsFRObject and IsAssociativeElement);
 BindGlobal("FR_FAMILIES", []); # an associative list [[alphabet, machine family, element family],...]
 #############################################################################
 
@@ -80,6 +80,9 @@ DeclareOperation("FRMFamily", [IsObject]);
 ## <#GAPDoc Label="AlphabetOfFRObject">
 ## <ManSection>
 ##   <Oper Name="AlphabetOfFRObject" Arg="obj"/>
+##   <Oper Name="AlphabetOfFRAlgebra" Arg="obj"/>
+##   <Oper Name="AlphabetOfFRSemigroup" Arg="obj"/>
+##   <Oper Name="Alphabet" Arg="obj"/>
 ##   <Returns>the alphabet associated with <A>obj</A>.</Returns>
 ##   <Description>
 ##     This command applies to the family of any FR object, or to the
@@ -437,6 +440,7 @@ DeclareAttribute("GeneratorsOfFRMachine", IsFRMachine);
 ## <#/GAPDoc>
 ##
 DeclareAttribute("WreathRecursion", IsFRMachine);
+DeclareOperation("VirtualEndomorphism", [IsFRMachine, IsObject]);
 DeclareOperation("Output", [IsFRMachine, IsObject]);
 DeclareOperation("Output", [IsFRMachine, IsObject, IsObject]);
 DeclareOperation("Transition", [IsFRMachine, IsObject, IsObject]);
@@ -881,12 +885,17 @@ DeclareAttribute("AsSemigroupFRMachine", IsFRMachine);
 ## <#GAPDoc Label="SubFRMachine">
 ## <ManSection>
 ##   <Oper Name="SubFRMachine" Arg="machine1,machine2"/>
+##   <Oper Name="SubFRMachine" Arg="machine1,f" Label="machine,map"/>
 ##   <Returns>Either <K>fail</K> or an embedding of the states of <A>machine2</A> in the states of <A>machine1</A>.</Returns>
 ##   <Description>
-##     This function attempts to locate a copy of <A>machine2</A> in
-##     <A>machine1</A>. If is succeeds, it returns a homomorphism from the
-##     stateset of <A>machine2</A> into the stateset of
-##     <A>machine1</A>; otherwise it returns <K>fail</K>.
+##     In its first form, this function attempts to locate a copy of
+##     <A>machine2</A> in <A>machine1</A>. If is succeeds, it returns
+##     a homomorphism from the stateset of <A>machine2</A> into the
+##     stateset of <A>machine1</A>; otherwise it returns <K>fail</K>.
+##     <P/>
+##     In its second form, this function attempts to construct a machine
+##     with stateset the source of <A>f</A>, that could be identified as
+##     a submachine of <A>machine1</A> via <A>f</A>.
 ## <Example><![CDATA[
 ## gap> n := FRMachine(["tau","mu"],[[[],[1]],[[],[-2]]],[(1,2),(1,2)]);
 ## <FR machine with alphabet [ 1, 2 ] on Group( [ tau, mu ] )>
@@ -894,12 +903,15 @@ DeclareAttribute("AsSemigroupFRMachine", IsFRMachine);
 ## <FR machine with alphabet [ 1, 2 ] on Group( [ f1 ] )>
 ## gap> SubFRMachine(n,tauinv);
 ## [ f1 ] -> [ tau^-1 ]
+## gap> SubFRMachine(n,last);
+## <FR machine with alphabet [ 1, 2 ] on Group( [ f1 ] )>
 ## ]]></Example>
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>
 ##
 DeclareOperation("SubFRMachine", [IsFRMachine,IsFRMachine]);
+DeclareOperation("SubFRMachine", [IsFRMachine,IsMapping]);
 #############################################################################
 
 #############################################################################

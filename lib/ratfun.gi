@@ -5,7 +5,7 @@
 #W                                                            Juergen Mueller
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: ratfun.gi,v 4.119 2010/02/23 15:13:25 gap Exp $
+#H  @(#)$Id: ratfun.gi,v 4.121 2010/12/28 00:24:52 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,7 +15,7 @@
 ##  polynomials and polynomials and their families.
 ##
 Revision.ratfun_gi :=
-    "@(#)$Id: ratfun.gi,v 4.119 2010/02/23 15:13:25 gap Exp $";
+    "@(#)$Id: ratfun.gi,v 4.121 2010/12/28 00:24:52 gap Exp $";
 
 #############################################################################
 ##
@@ -427,6 +427,30 @@ end );
 
 #############################################################################
 ##
+#M  NumeratorOfRationalFunction( <ratfun> )
+##
+InstallMethod( NumeratorOfRationalFunction,"univariate using ExtRepNumerator",true,
+  [ IsRationalFunction ],0,
+function( f )
+  f:= PolynomialByExtRepNC(FamilyObj(f),ExtRepNumeratorRatFun(f));
+  IsUnivariatePolynomial(f);
+  return f;
+end );
+
+#############################################################################
+##
+#M  DenominatorOfRationalFunction( <ratfun> )
+##
+InstallMethod( DenominatorOfRationalFunction,"univariate using ExtRepDenominator",true,
+  [ IsRationalFunction ],0,
+function( f )
+  f:= PolynomialByExtRepNC(FamilyObj(f),ExtRepDenominatorRatFun(f));
+  IsUnivariatePolynomial(f);
+  return f;
+end );
+
+#############################################################################
+##
 #M  AsPolynomial( <ratfun> )
 ##
 InstallMethod( AsPolynomial,"call ExtRepPolynomial",true,
@@ -583,85 +607,6 @@ function( obj )
     Print( ExtRepOfPolynomial_String( FamilyObj( obj ),
                                       ExtRepPolynomialRatFun( obj ) ) );
 end );
-
-InstallMethod( LaTeXObj,"polynomial",true, [ IsPolynomial ],0,function(pol)
-local fam, ext, str, zero, one, mone, le, c, s, b, ind, i, j;
-
-  fam:=FamilyObj(pol);
-  ext:=ExtRepPolynomialRatFun(pol);
-  str:="";
-  zero := fam!.zeroCoefficient;
-  one := fam!.oneCoefficient;
-  mone := -one;
-  le:=Length(ext);
-
-  if le=0 then
-    return String(zero);
-  fi;
-  for i  in [ le-1,le-3..1] do
-    if i<le-1 then
-      # this is the second summand, so arithmetic will occur
-    fi;
-
-    if ext[i+1]=one then
-      if i<le-1 then
-	Add(str,'+');
-      fi;
-      c:=false;
-    elif ext[i+1]=mone then
-      Add(str,'-');
-      c:=false;
-    else
-      if IsRat(ext[i+1]) and ext[i+1]<0 then
-	s:=Concatenation("-",LaTeXObj(-ext[i+1]));
-      else
-	s:=LaTeXObj(ext[i+1]);
-      fi;
-
-      b:=false;
-      if '+' in s and s[1]<>'(' then
-	s:=Concatenation("(",s,")");
-      fi;
-
-      if i<le-1 and s[1]<>'-' then
-	Add(str,'+');
-      fi;
-      Append(str,s);
-      c:=true;
-    fi;
-
-    if Length(ext[i])<2 then
-      # trivial monomial. Do we have to add a '1'?
-      if c=false then
-        Append(str,String(one));
-      fi;
-    else
-      #if c then
-#	Add(str,'*');
-#      fi;
-      for j  in [ 1, 3 .. Length(ext[i])-1 ]  do
-#	if 1 < j  then
-#	  Add(str,'*');
-#	fi;
-	ind:=ext[i][j];
-	if HasIndeterminateName(fam,ind) then
-	  Append(str,IndeterminateName(fam,ind));
-	else
-	  Append(str,"x_{");
-	  Append(str,String(ind)); 
-	  Add(str,'}');
-	fi;
-	if 1 <> ext[i][j+1]  then
-	  Append(str,"^{");
-	  Append(str,String(ext[i][j+1]));
-	  Add(str,'}');
-	fi;
-      od;
-    fi;
-  od;
-
-  return str;
-end);
 
 
 #############################################################################

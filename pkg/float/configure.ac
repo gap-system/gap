@@ -1,24 +1,21 @@
 AC_INIT(configure)
 
-AC_ARG_WITH(gac,
- [  --with-gac=<path>       Location of the gap compiler],
- [GAC="$withval"],
- [GAC="gacdev"]
+AC_ARG_WITH(gapdir,
+ [  --with-gapdir=<path>       Location of the gap installation directory],
+ [GAPDIR="$withval"],
+ [GAPDIR="../.."]
 )
 
-if test "`which $GAC`" == ""; then
-   AC_MSG_ERROR([Cannot find gac under filename $GAC])
+if ! test -f $GAPDIR/sysinfo.gap; then
+  AC_MSG_ERROR([Cannot find gap installation directory under $GAPDIR.
+    Try supplying it with --with-gapdir=<dir>])
 fi
 
-AC_ARG_WITH(gap,
- [  --with-gap=<path>       Location of the gap executable],
- [GAP="$withval"],
- [GAP="gapdevL"]
-)
+. $GAPDIR/sysinfo.gap
 
-if test "`which $GAP`" == ""; then
-   AC_MSG_ERROR([Cannot find gap under filename $GAP])
-fi
+TARGET="$GAParch"
+GAP="$GAPDIR/bin/gap`echo $GAParch_abi | cut -d- -f1`.sh"
+GAC="$GAPDIR/bin/$GAParch/gac"
 
 AC_ARG_WITH(mpfr,
  [  --with-mpfr=<path>|no
@@ -108,7 +105,7 @@ fi
 
 if test "$WITH_MPFI" != ""; then
    if test "$WITH_MPFR" == ""; then
-      AC_MSG_ERROR([Option --with-mpfi is meaninless without --with-mpfr])
+      AC_MSG_ERROR([Option --with-mpfi is meaningless without --with-mpfr])
    fi
    if test "$MPFI_DIR" == ""; then
       AC_CHECK_HEADER(mpfi.h,[],[AC_MSG_ERROR(library mpfi is not properly installed)],[#include <mpfr.h>])
@@ -127,7 +124,7 @@ fi
 
 if test "$WITH_MPC" != ""; then
    if test "$WITH_MPFR" == ""; then
-      AC_MSG_ERROR([Option --with-mpc is meaninless without --with-mpfr])
+      AC_MSG_ERROR([Option --with-mpc is meaningless without --with-mpfr])
    fi
    if test "$MPC_DIR" == ""; then
       AC_CHECK_HEADER(mpc.h,[],[AC_MSG_ERROR(library mpc is not properly installed)],[#include <mpfr.h>])
@@ -160,15 +157,13 @@ if test "$WITH_CXSC" != ""; then
   CXSC_INCLUDEDIR="$CXSC_INCLUDEDIR -I$GAP_BIN -I$GAP_BIN/../.."
 fi
 
-AC_CANONICAL_TARGET
-ARCH="$target-$CC"
-
 AC_SUBST(GAC)
 AC_SUBST(GAP)
 AC_SUBST(CC)
 AC_SUBST(CXX)
 AC_SUBST(CFLAGS)
-AC_SUBST(ARCH)
+AC_SUBST(GAPDIR)
+AC_SUBST(TARGET)
 AC_SUBST(WITH_MPFR)
 AC_SUBST(WITH_MPFI)
 AC_SUBST(WITH_MPC)

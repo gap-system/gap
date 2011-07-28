@@ -48,9 +48,9 @@ install the Alnuth-package into the pkg subdirectory of the GAP
 installation tree.  If you do not have the permission to do that you
 may install the Alnuth-package in your private area. In the latter case you
 need to have a directory named pkg in your private area (for details see
-"ref:Installing a GAP Package" in the reference manual). 
+the Section "ref:Installing a GAP Package" in the reference manual). 
 
-Now move the alnuth.tar.gz of alnuth.tar file into the directory pkg and
+Now move the alnuth.tar.gz or alnuth.tar file into the directory pkg and
 unpack it:
 
 \beginexample
@@ -96,9 +96,10 @@ where `mykash' needs to be replaced with the directory where KASH
 was installed. For example `mykash' could be replaced by
 `/usr/local/KASH_2.5'. Please note that in case of a new installation 
 of Alnuth you will have to edit the file `pkg/alnuth/defs.g'
-again. Alternatively you can also change your personal `.gaprc' file (see 3.4
-The .gaprc file) for setting the variable KANTEXEC to a proper value. To do
-this add the command line mentioned above to `.gaprc'.
+again. Alternatively you can also change your personal `gaprc' file (see 
+the Subsection "ref:The gaprc file" in the reference manual) for setting the
+variable KANTEXEC to a proper value. To do this add the command line mentioned
+above to `gaprc'.
  
 The third possibility is to change the path to the executable within GAP using
 one of the following two functions. To do this you first have to load the
@@ -132,8 +133,8 @@ executable for KASH version 2.4 or 2.5.
 If you want to set the path to the executable of KASH using the function
 `SetKantExecutable' every time you start GAP, you could add
 the command line `SetKantExecutable( <path> )' to your 
-personal `.gaprc' file (see Section "ref:The .gaprc file" in the 
-GAP Reference manual). 
+personal `gaprc' file (see the Subsection "ref:The gaprc file" in the 
+reference manual). 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{How to write a shell script which executes KASH}

@@ -2,7 +2,7 @@
 ##
 #W  oper1.g                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: oper1.g,v 4.20 2010/02/23 15:13:19 gap Exp $
+#H  @(#)$Id: oper1.g,v 4.21 2011/01/17 12:54:37 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,7 +11,7 @@
 ##  Functions moved from oper.g, so as to be compiled in the default kernel
 ##
 Revision.oper1_g :=
-    "@(#)$Id: oper1.g,v 4.20 2010/02/23 15:13:19 gap Exp $";
+    "@(#)$Id: oper1.g,v 4.21 2011/01/17 12:54:37 alexk Exp $";
 
 
 #############################################################################
@@ -335,7 +335,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
     # Check the arguments.
     len:= LEN_LIST( arglist );
-    if   len < 3 then
+    if len < 3 then
       Error( "too few arguments given in <arglist>" );
     fi;
 
@@ -422,7 +422,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
     method:= arglist[ pos ];
 
     # For a property, check whether this in fact installs an implication.
-    if     FLAG1_FILTER( opr ) <> 0
+    if FLAG1_FILTER( opr ) <> 0
        and ( rel = true or rel = RETURN_TRUE )
        and LEN_LIST( filters ) = 1
        and ( method = true or method = RETURN_TRUE ) then
@@ -432,90 +432,92 @@ BIND_GLOBAL( "INSTALL_METHOD",
     # Test if `check' is `true'.
     if CHECK_INSTALL_METHOD and check then
 
-        # Signal a warning if the operation is only a wrapper operation.
-        if opr in WRAPPER_OPERATIONS then
-          INFO_DEBUG( 1,
+      # Signal a warning if the operation is only a wrapper operation.
+      if opr in WRAPPER_OPERATIONS then
+        INFO_DEBUG( 1,
               "a method is installed for the wrapper operation ",
               NAME_FUNC( opr ), "\n",
               "#I  probably it should be installed for (one of) its\n",
               "#I  underlying operation(s)" );
-        fi;
+      fi;
 
-        # find the operation
-        req := false;
-        for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
-            if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
-                req := OPERATIONS[i+1];
-                break;
+      # find the operation
+      req := false;
+      for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
+        if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
+          req := OPERATIONS[i+1];
+          break;
+        fi;
+      od;
+      if req = false  then
+        Error( "unknown operation ", NAME_FUNC(opr) );
+      fi;
+
+      # do check with implications
+      imp := [];
+      for i in flags  do
+        ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
+      od;
+
+      # Check that the requirements of the method match
+      # (at least) one declaration.
+      j:= 0;
+      match:= false;
+	  notmatch:=0;
+      while j < LEN_LIST( req ) and not match do
+        j:= j+1;
+        reqs:= req[j];
+        if LEN_LIST( reqs ) = LEN_LIST( imp ) then
+          match:= true;
+          for i  in [ 1 .. LEN_LIST(reqs) ]  do
+            if not IS_SUBSET_FLAGS( imp[i], reqs[i] )  then
+              match:= false;
+		      notmatch:=i;
+              break;
             fi;
-        od;
-        if req = false  then
-            Error( "unknown operation ", NAME_FUNC(opr) );
+          od;
+          if match then 
+            break; 
+          fi;
+        fi;
+      od;
+
+      if not match then
+
+        # If the requirements do not match any of the declarations
+        # then something is wrong or `InstallOtherMethod' should be used.
+	    if notmatch=0 then
+	      Error("the number of arguments does not match a declaration of ",
+	            NAME_FUNC(opr) );
+        else
+	      Error("required filters ", NamesFilter(imp[notmatch]),"\nfor ",
+	            Ordinal(notmatch)," argument do not match a declaration of ",
+		        NAME_FUNC(opr) );
         fi;
 
-        # do check with implications
-        imp := [];
-        for i  in flags  do
-            ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
-        od;
+      else
 
-        # Check that the requirements of the method match
-        # (at least) one declaration.
-        j:= 0;
-        match:= false;
-	notmatch:=0;
-        while j < LEN_LIST( req ) and not match do
-          j:= j+1;
-          reqs:= req[j];
+        # If the requirements match *more than one* declaration
+        # then a warning is raised by `INFO_DEBUG'.
+        for k in [ j+1 .. LEN_LIST( req ) ] do
+          reqs:= req[k];
           if LEN_LIST( reqs ) = LEN_LIST( imp ) then
             match:= true;
             for i  in [ 1 .. LEN_LIST(reqs) ]  do
               if not IS_SUBSET_FLAGS( imp[i], reqs[i] )  then
                 match:= false;
-		notmatch:=i;
                 break;
               fi;
             od;
-            if match then break; fi;
+            if match then
+              INFO_DEBUG( 1,
+              		"method installed for ", NAME_FUNC(opr), 
+                    " matches more than one declaration" );
+            fi;
           fi;
         od;
 
-        if not match then
-
-          # If the requirements do not match any of the declarations
-          # then something is wrong or `InstallOtherMethod' should be used.
-	  if notmatch=0 then
-	    Error("the number of arguments does not match a declaration of ",
-	           NAME_FUNC(opr) );
-          else
-	    Error("required filters ", NamesFilter(imp[notmatch]),"\nfor ",
-	          Ordinal(notmatch)," argument do not match a declaration of ",
-		   NAME_FUNC(opr) );
-          fi;
-
-        else
-
-          # If the requirements match *more than one* declaration
-          # then a warning is raised by `INFO_DEBUG'.
-          for k in [ j+1 .. LEN_LIST( req ) ] do
-            reqs:= req[k];
-            if LEN_LIST( reqs ) = LEN_LIST( imp ) then
-              match:= true;
-              for i  in [ 1 .. LEN_LIST(reqs) ]  do
-                if not IS_SUBSET_FLAGS( imp[i], reqs[i] )  then
-                  match:= false;
-                  break;
-                fi;
-              od;
-              if match then
-                INFO_DEBUG( 1,
-                      "method installed for ", NAME_FUNC(opr),
-                      " matches more than one declaration" );
-              fi;
-            fi;
-          od;
-
-        fi;
+      fi;
     fi;
 
     # Install the method in the operation.

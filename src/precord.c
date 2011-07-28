@@ -2,7 +2,7 @@
 **
 *W  precord.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: precord.c,v 4.51 2010/03/16 14:44:08 gap Exp $
+*H  @(#)$Id: precord.c,v 4.54 2011/05/23 10:58:40 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -24,13 +24,14 @@
 **  positive rnams and can thus be distinguished. Every read access will
 **  clean up the mess by sorting the new part and then merging the two
 **  sorted areas. After that, all rnams are negative indicating sortedness.
+**
 */
 #include        <stdlib.h>              /* for qsort */
 #include        <sys/time.h>            /* for gettimeofday() */
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_precord_c =
-   "@(#)$Id: precord.c,v 4.51 2010/03/16 14:44:08 gap Exp $";
+   "@(#)$Id: precord.c,v 4.54 2011/05/23 10:58:40 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -472,6 +473,9 @@ void UnbPRec (
             SET_RNAM_PREC( rec, i, GET_RNAM_PREC( rec, i+1 ) );
             SET_ELM_PREC(  rec, i, GET_ELM_PREC(  rec, i+1 ) );
         }
+        SET_RNAM_PREC( rec, len, 0 );
+        SET_ELM_PREC( rec, len, 0L );
+
 
         /* resize the record                                               */
         SET_LEN_PREC(rec,LEN_PREC(rec)-1);
@@ -768,65 +772,11 @@ Obj MethodPRec (
     return method;
 }
 
-
-/****************************************************************************
-**
-*F  FuncPRINT_PREC_DEFAULT( <self>, <rec> ) . . . . . . . . .  print a record
-**
-**  'FuncPRINT_PREC_DEFAULT' prints the plain record <rec>.
-*/
-Obj FuncPRINT_PREC_DEFAULT (
-    Obj                 self,
-    Obj                 rec )
-{
-    Int PrintObjIndex;
-    /* print the record                                                    */
-    Pr( "%2>rec(\n%2>", 0L, 0L );
-    /*PrintObjDepth = 1;
-    PrintObjThis = rec;*/
-    for ( PrintObjIndex=1; PrintObjIndex<=LEN_PREC(rec); PrintObjIndex++ ) {
-        Pr( "%I", (Int)NAME_RNAM(
-                       labs((Int)(GET_RNAM_PREC(rec,PrintObjIndex)))), 0L );
-        Pr( "%< := %>", 0L, 0L );
-        PrintObj( GET_ELM_PREC( rec, PrintObjIndex ) );
-        if ( PrintObjIndex < LEN_PREC(rec) ) {
-            Pr( "%2<,\n%2>", 0L, 0L );
-        }
-    }
-    Pr( " %4<)", 0L, 0L );
-    return 0L;
-}
-
 void PrintPathPRec (
     Obj                 rec,
     Int                 indx )
 {
     Pr( ".%I", (Int)NAME_RNAM( labs((Int)(GET_RNAM_PREC(rec,indx))) ), 0L );
-}
-
-
-/****************************************************************************
-**
-*F  FuncPRINT_PREC( <self>, <rec> ) . . . . . . . . . . . . .  print a record
-**
-**  'FuncPRINT_PREC' prints the plain record <rec>.
-*/
-UInt PrintRNam;
-
-Obj FuncPRINT_PREC (
-    Obj                 self,
-    Obj                 rec )
-{
-    Obj                 method;         /* method                          */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( rec, PrintRNam )) )
-    {
-        return FuncPRINT_PREC_DEFAULT( self, rec );
-    }
-
-    /* call that function                                                  */
-    return CALL_1ARGS( method, rec );
 }
 
 /****************************************************************************
@@ -1457,12 +1407,6 @@ static StructGVarFunc GVarFuncs [] = {
     { "REC_NAMES_COMOBJ", 1, "rec obj",
       FuncREC_NAMES_COMOBJ, "src/precord.c:REC_NAMES_COMOBJ" },
 
-    { "PRINT_PREC", 1, "rec",
-      FuncPRINT_PREC, "src/precord.c:PRINT_PREC" },
-
-    { "PRINT_PREC_DEFAULT", 1, "rec",
-      FuncPRINT_PREC_DEFAULT, "src/precord.c:PRINT_PREC_DEFAULT" },
-
     { "SUM_PREC", 2, "left, right",
       FuncSUM_PREC, "src/precord.c:SUM_PREC" },
 
@@ -1599,7 +1543,6 @@ static Int PostRestore (
     /* get the appropriate record record name                              */
     OperationsRNam = RNamName( "operations"   );
     COMPONENTSRNam = RNamName( "COMPONENTS"   );
-    PrintRNam      = RNamName( "Print"        );
     EqRNam         = RNamName( "="            );
     LtRNam         = RNamName( "<"            );
     InRNam         = RNamName( "in"           );

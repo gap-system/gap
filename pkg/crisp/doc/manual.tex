@@ -1,49 +1,40 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%  manual.tex               CRISP documentation           Burkhard H\"ofling
+%%  manual.tex               CRISP documentation            Burkhard Höfling
 %%
-%%  @(#)$Id: manual.tex,v 1.12 2007/10/03 15:37:16 gap Exp $
+%%  @(#)$Id: manual.tex,v 1.15 2011/05/26 10:04:34 gap Exp $
 %%
-%%  Copyright (C) 2000, Burkhard H\"ofling, Mathematisches Institut,
-%%  Friedrich Schiller-Universit\"at Jena, Germany
+%%  Copyright (C) 2000, Burkhard Höfling
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \input ../../../doc/gapmacro.tex
+% \casesensitivetrue
+\citebookstrue
+\biblitemtrue
+\bibindent 4.5 em
+
 \hyphenation{Is-ListOr-Col-lec-tion}
 \Package{CRISP}
 \Package{FORMAT}
+\emergencystretch 1 em
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \BeginningOfBook{crisp}
-  \UseReferences{../../../doc/ref}
-  \TitlePage{
+  \UseGapDocReferences{../../../doc/ref}
+  \TitlePage{\unskip{
+    \baselineskip 72 pt
+    \centerline{\subtitlefont Burkhard H{\accent 127 o}f{}ling}
     \vfill
     \centerline{\inchhigh CRISP}
-    \bigskip
-    \bigskip
-    \bigskip
-    \centerline{\subtitlefont Version 1.3.2}
-    \bigskip
-    \bigskip
+    \baselineskip 36 pt
+    \centerline{}
+    \centerline{\subtitlefont Version 1.3.4}
+    \centerline{}
     \centerline{\subtitlefont Computing with Radicals, Injectors}
-    \medskip
     \centerline{\subtitlefont Schunck classes and Projectors}
-    \medskip
     \centerline{\subtitlefont of finite solvable groups}          
-    \bigskip
-    \bigskip
-    \bigskip
-    \bigskip
-    \centerline{\subtitlefont Burkhard H{\accent 127 o}f{}ling}
-    \bigskip
-    \centerline{\secfont Institut f{\accent 127 u}r Geometrie, Algebra und Diskrete
-       Mathematik}
-    \medskip
-    \centerline{\secfont Technische Universit{\accent 127 a}t}
-    \medskip
-    \centerline{\secfont Braunschweig, Germany}
-    \vfill
-  }
+  }}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \TableOfContents
@@ -66,7 +57,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \Appendices     % don't uncomment - this is needed for the online manual
-  
+
     \Bibliography
     \Index
 

@@ -3,7 +3,7 @@
 #W  grppcprp.gi                 GAP Library                      Frank Celler
 #W                                                             & Bettina Eick
 ##
-#H  @(#)$Id: grppcprp.gi,v 4.7 2010/02/23 15:13:07 gap Exp $
+#H  @(#)$Id: grppcprp.gi,v 4.8 2010/09/29 12:17:19 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file contains the methods for properties of polycylic groups.
 ##
 Revision.grppcprp_gi :=
-    "@(#)$Id: grppcprp.gi,v 4.7 2010/02/23 15:13:07 gap Exp $";
+    "@(#)$Id: grppcprp.gi,v 4.8 2010/09/29 12:17:19 gap Exp $";
 
 InstallMethod( IsNilpotentGroup,
                "method for pc groups",
@@ -32,7 +32,7 @@ InstallMethod( IsSupersolvableGroup,
                0,
 function( G )
     local pr, spec, pcgs, p, sub, fac, mats, modu, facs;
-    pr := Set(FactorsInt(Size(G)));
+    pr := PrimeDivisors(Size(G));
     spec := SpecialPcgs(G);
     pcgs := InducedPcgs( spec, FrattiniSubgroup( G ) );
     for p in pr do

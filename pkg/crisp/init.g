@@ -2,13 +2,11 @@
 ##
 ##  init.g                          CRISP                 Burkhard H\"ofling
 ##
-##  @(#)$Id: init.g,v 1.8 2007/10/03 15:34:25 gap Exp $
+##  @(#)$Id: init.g,v 1.9 2011/04/12 15:49:40 gap Exp $
 ##
 ##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
 ##  Friedrich Schiller-Universit\"at Jena, Germany
 ##
-DeclareAutoPackage ("crisp", "1.3.2", true);
-DeclarePackageAutoDocumentation ("crisp", "doc");
 
 ReadPackage ("crisp", "lib/classes.gd");
 ReadPackage ("crisp", "lib/grpclass.gd");
@@ -25,10 +23,6 @@ ReadPackage ("crisp", "lib/residual.gd");
 ReadPackage ("crisp", "lib/util.gd");
 ReadPackage ("crisp", "lib/samples.gd");
 ReadPackage ("crisp", "lib/socle.gd");
-
-if not CompareVersionNumbers (GAPInfo.Version, "4.4.7") then
-   ReadPackage ("crisp", "lib/pcgscache.gd");
-fi;
 
 
 ############################################################################

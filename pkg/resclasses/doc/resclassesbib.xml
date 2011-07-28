@@ -3,8 +3,6 @@
 <!-- ##                                                                                       ## -->
 <!-- ##  resclassesbib.xml              ResClasses documentation                 Stefan Kohl  ## -->
 <!-- ##                                                                                       ## -->
-<!-- ##  $Id: resclassesbib.xml,v 1.4 2007/10/23 07:18:02 stefan Exp $                        ## -->
-<!-- ##                                                                                       ## -->
 <!-- ########################################################################################### -->
 
 <!DOCTYPE file SYSTEM "../../gapdoc/bibxmlext.dtd"[]>
@@ -16,9 +14,9 @@
     <name><first>Frank</first><last>Lübeck</last></name>
     <name><first>Max</first><last>Neunhöffer</last></name>
   </author>
-  <title><C>GAPDoc (Version 1.1)</C></title>
+  <title><C>GAPDoc (Version 1.3)</C></title>
   <organization>RWTH Aachen</organization>
-  <year>2007</year>
+  <year>2011</year>
   <other type="note">
     GAP package, <URL>http://www.gap-system.org/Packages/gapdoc.html</URL>
   </other>
@@ -30,9 +28,9 @@
     <name><first>Werner</first><last>Nickel</last></name>
   </author>
   <title>
-    <C>Polycyclic -- Computation with polycyclic groups; Version 2.2</C>
+    <C>Polycyclic -- Computation with polycyclic groups; Version 2.6</C>
   </title>
-  <year>2007</year>
+  <year>2009</year>
   <other type="note">
     GAP package, <URL>http://www.gap-system.org/Packages/polycyclic.html</URL>
   </other>
@@ -43,7 +41,7 @@
     <name><first>Stefan</first><last>Kohl</last></name>
   </author>
   <title><C>RCWA - Residue-Class-Wise Affine Groups (Version 3.0)</C></title>
-  <year>2007</year>
+  <year>2011</year>
   <other type="note">
     GAP package, <URL>http://www.gap-system.org/Packages/rcwa.html</URL>
   </other>

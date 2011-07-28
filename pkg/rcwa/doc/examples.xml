@@ -2,8 +2,6 @@
 <!-- ##                                                                ## -->
 <!-- ##  examples.xml         RCWA documentation          Stefan Kohl  ## -->
 <!-- ##                                                                ## -->
-<!-- ##  $Id: examples.xml,v 1.134 2009/09/18 21:35:15 stefan Exp $    ## -->
-<!-- ##                                                                ## -->
 <!-- #################################################################### -->
 
 <Chapter Label="ch:Examples"><Heading>Examples</Heading>
@@ -221,7 +219,7 @@ gap> l := ClassTransposition(1,x,x,x^2);;
 gap> m := ClassTransposition(0,x,1,x^2);;
 gap> n := ClassTransposition(1,x^2,x,x^2);;
 gap> G := Group(k,l,m,n);
-<rcwa group over Z with 4 generators>
+<rcwa group over GF(2)[x] with 4 generators>
 ]]>
 </Example>
 
@@ -913,19 +911,19 @@ Bijective rcwa mapping of GF(2)[x]: P -> P + Z(2)^0
 
 Bijective rcwa mapping of GF(2)[x] with modulus x^2+Z(2)^0, of order 2
 
-     P mod x^2+Z(2)^0     |                    Image of P
---------------------------+---------------------------------------------------
- 0*Z(2)   Z(2)^0          | P + Z(2)^0
- x        x+Z(2)^0        | P
+    P mod x^2+Z(2)^0    |                  Image of P
+------------------------+------------------------------------------------
+ 0*Z(2)   Z(2)^0        | P + Z(2)^0
+ x        x+Z(2)^0      | P
 
 
 Bijective rcwa mapping of GF(2)[x] with modulus x^2+x, of order 2
 
-       P mod x^2+x        |                    Image of P
---------------------------+---------------------------------------------------
- 0*Z(2)                   | (P + x+Z(2)^0)/(x+Z(2)^0)
- Z(2)^0   x+Z(2)^0        | (x+Z(2)^0)*P + x+Z(2)^0
- x                        | P
+      P mod x^2+x       |                  Image of P
+------------------------+------------------------------------------------
+ 0*Z(2)                 | (P + x+Z(2)^0)/(x+Z(2)^0)
+ Z(2)^0   x+Z(2)^0      | (x+Z(2)^0)*P + x+Z(2)^0
+ x                      | P
 
 ]
 

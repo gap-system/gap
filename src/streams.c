@@ -3,7 +3,7 @@
 *W  streams.c                   GAP source                       Frank Celler
 *W                                                  & Burkhard Höfling (MAC)
 **
-*H  @(#)$Id: streams.c,v 4.97 2010/04/27 09:27:44 sal Exp $
+*H  @(#)$Id: streams.c,v 4.101 2011/06/06 16:28:08 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,15 +15,9 @@
 #include        <stdio.h>
 #include        <string.h>              /* memcpy */
 #include        <unistd.h>              /* fstat, write, read              */
-#ifndef SYS_IS_MAC_MWC
 # include        <sys/types.h>
 #include         <dirent.h>             /* for reading a directory         */
 # include        <sys/stat.h>
-#endif
-#ifdef SYS_IS_MAC_MWC
-#include         "macte.h"
-#include         "macedit.h"
-#endif
 #include        "system.h"              /* system dependent part           */
 #if HAVE_SELECT
 #include        <sys/time.h>
@@ -32,7 +26,7 @@
 
 
 const char * Revision_streams_c =
-   "@(#)$Id: streams.c,v 4.97 2010/04/27 09:27:44 sal Exp $";
+   "@(#)$Id: streams.c,v 4.101 2011/06/06 16:28:08 sal Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -63,9 +57,11 @@ const char * Revision_streams_c =
 #include        "streams.h"             /* streams package                 */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "vars.h"                /* TLS->bottomLVars for execution contexts */
+#include        "code.h"
 
 #include	"tls.h"
+
+#include        "vars.h"                /* TLS->bottomLVars for execution contexts */
 
 
 /****************************************************************************
@@ -337,13 +333,13 @@ Int READ_TEST ( void )
 
 Int READ_GAP_ROOT ( Char * filename )
 {
-    Char                result[256];
+  TypGRF_Data           result;
     Int                 res;
     UInt                type;
     StructInitInfo *    info;
 
     /* try to find the file                                                */
-    res = SyFindOrLinkGapRootFile( filename, 0L, result, 256 );
+    res = SyFindOrLinkGapRootFile( filename, 0L, &result, 256 );
 
     /* not found                                                           */
     if ( res == 0 ) {
@@ -356,7 +352,7 @@ Int READ_GAP_ROOT ( Char * filename )
             Pr( "#I  READ_GAP_ROOT: loading '%s' dynamically\n",
                 (Int)filename, 0L );
         }
-        info = *(StructInitInfo**)result;
+        info = result.module_info;
 	res  = info->initKernel(info);
 	if (!SyRestoring) {
 	  UpdateCopyFopyInfo();
@@ -377,7 +373,7 @@ Int READ_GAP_ROOT ( Char * filename )
             Pr( "#I  READ_GAP_ROOT: loading '%s' statically\n",
                 (Int)filename, 0L );
         }
-        info = *(StructInitInfo**)result;
+        info = result.module_info;
 	res  = info->initKernel(info);
 	if (!SyRestoring) {
 	  UpdateCopyFopyInfo();
@@ -412,7 +408,7 @@ Int READ_GAP_ROOT ( Char * filename )
             Pr( "#I  READ_GAP_ROOT: loading '%s' as GAP file\n",
                 (Int)filename, 0L );
         }
-        if ( OpenInput(result) ) {
+        if ( OpenInput(result.pathname) ) {
 	  SySetBuffering(TLS->input->file);
             while ( 1 ) {
                 ClearError();
@@ -672,7 +668,7 @@ Obj FuncPrint (
 {
     volatile Obj        arg;
     volatile UInt       i;
-    jmp_buf             readJmpError;
+syJmp_buf           readJmpError;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
@@ -687,17 +683,17 @@ Obj FuncPrint (
 	  PrintFunction( arg );
         }
         else {
-            memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
                 PrintObj( arg );
             }
             else {
-                memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+                memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
-            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
         }
     }
 
@@ -716,7 +712,7 @@ Obj FuncPRINT_TO (
     volatile Obj        arg;
     volatile Obj        filename;
     volatile UInt       i;
-    jmp_buf             readJmpError;
+syJmp_buf           readJmpError;
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
@@ -749,7 +745,7 @@ Obj FuncPRINT_TO (
             PrintObjFull = 0;
         }
         else {
-            memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
@@ -757,10 +753,10 @@ Obj FuncPRINT_TO (
             }
             else {
                 CloseOutput();
-                memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+                memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
-            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
         }
     }
 
@@ -785,7 +781,7 @@ Obj FuncPRINT_TO_STREAM (
     volatile Obj        arg;
     volatile Obj        stream;
     volatile UInt       i;
-    jmp_buf             readJmpError;
+    syJmp_buf             readJmpError;
 
     /* first entry is the stream                                           */
     stream = ELM_LIST(args,1);
@@ -801,7 +797,7 @@ Obj FuncPRINT_TO_STREAM (
         arg = ELM_LIST(args,i);
 
         /* if an error occurs stop printing                                */
-        memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
+        memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
         if ( ! READ_ERROR() ) {
             if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
@@ -820,10 +816,10 @@ Obj FuncPRINT_TO_STREAM (
         }
         else {
             CloseOutput();
-            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
             ReadEvalError();
         }
-        memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+        memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -847,7 +843,7 @@ Obj FuncAPPEND_TO (
     volatile Obj        arg;
     volatile Obj        filename;
     volatile UInt       i;
-    jmp_buf             readJmpError;
+    syJmp_buf             readJmpError;
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
@@ -880,7 +876,7 @@ Obj FuncAPPEND_TO (
             PrintObjFull = 0;
         }
         else {
-            memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
+            memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
 
             /* if an error occurs stop printing                            */
             if ( ! READ_ERROR() ) {
@@ -888,10 +884,10 @@ Obj FuncAPPEND_TO (
             }
             else {
                 CloseOutput();
-                memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+                memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
                 ReadEvalError();
             }
-            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
         }
     }
 
@@ -916,7 +912,7 @@ Obj FuncAPPEND_TO_STREAM (
     volatile Obj        arg;
     volatile Obj        stream;
     volatile UInt       i;
-    jmp_buf             readJmpError;
+    syJmp_buf             readJmpError;
 
     /* first entry is the stream                                           */
     stream = ELM_LIST(args,1);
@@ -932,7 +928,7 @@ Obj FuncAPPEND_TO_STREAM (
         arg = ELM_LIST(args,i);
 
         /* if an error occurs stop printing                                */
-        memcpy( readJmpError, TLS->readJmpError, sizeof(jmp_buf) );
+        memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
         if ( ! READ_ERROR() ) {
             if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
@@ -951,10 +947,10 @@ Obj FuncAPPEND_TO_STREAM (
         }
         else {
             CloseOutput();
-            memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+            memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
             ReadEvalError();
         }
-        memcpy( TLS->readJmpError, readJmpError, sizeof(jmp_buf) );
+        memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -1391,7 +1387,6 @@ Obj FuncIsDirectoryPath (
 **  reason for the error can be found with 'LastSystemError();' in GAP.
 **
 */
-#ifndef SYS_IS_MAC_MWC
 Obj FuncSTRING_LIST_DIR (
     Obj         self,
     Obj         dirname  )
@@ -1432,84 +1427,6 @@ Obj FuncSTRING_LIST_DIR (
     *(CHARS_STRING(res) + len) = 0;
     return res;
 }
-#endif
-
-#ifdef SYS_IS_MAC_MWC
-Obj FuncSTRING_LIST_DIR (
-    Obj         self,
-    Obj         dirname  )
-{
-	short k, index;
-	OSErr dirErr;
-	CInfoPBRec dirCPB;
-	FSSpec dirFSSpec;
-	Char pathname [262], *q, *p;
-	Str31 dirstr;
-    Obj res;
-	long len;
-	
-    /* check the argument                                                  */
-    while ( ! IsStringConv( dirname ) ) {
-        dirname = ErrorReturnObj(
-            "<dirname> must be a string (not a %s)",
-            (Int)TNAM_OBJ(dirname), 0L,
-            "you can replace <dirname> via 'return <dirname>;'" );
-    }
-
-    SyClearErrorNo();
-	q = CSTR_STRING(dirname);
-	
-    /* to create a valid FSSpec, we need a file name in the directory ---
-       the file need not exist, though. */
-
-	p = pathname;
-	while (*q)
-		*p++ = *q++;
-	if (p > pathname && p[-1] != '/')
-		*p++ = '/';
-	q = "dummy";
-	while (*q)
-		*p++ = *q++;
-	*p = '\0';
-	
-	SyLastMacErrorCode = PathToFSSpec (pathname, &dirFSSpec, true, false);
-	if (SyLastMacErrorCode == fnfErr)
-		SyLastMacErrorCode = noErr; /* we don't care whether file `dummy' exists or not */
-		
-	if (SyLastMacErrorCode != noErr) {
-	    SySetErrorNo();
-      	return Fail;
-    }
-    res = NEW_STRING(256);
-    len = 0;
-	index = 1;
-	while (1) {
-		dirCPB.dirInfo.ioVRefNum = dirFSSpec.vRefNum;
-		dirCPB.dirInfo.ioDrDirID = dirFSSpec.parID;
-		dirCPB.dirInfo.ioNamePtr = dirstr;
-		dirCPB.dirInfo.ioACUser = 0;
-		dirCPB.dirInfo.ioFDirIndex = index;
-		SyLastMacErrorCode = PBGetCatInfo(&dirCPB, false);  /* get n-th dir entry */
-		if (SyLastMacErrorCode != noErr) {
-	    	break;
-      	}
-		GROW_STRING(res, len + dirstr[0] + 1);
-		p = (char*)CHARS_STRING(res);
-		BlockMove (dirstr + 1, p + len, dirstr[0]);
-		*(p + len + dirstr[0]) = '\0';
-		len += dirstr[0] + 1;
-		index++;
-	}
-	if (SyLastMacErrorCode == fnfErr) {
-    	SET_LEN_STRING(res, len);
-    	*(CHARS_STRING(res) + len) = 0;
-    	return res;
-	} else {
-	    SySetErrorNo();
-      	return Fail;
-    }
-}
-#endif
 
 /****************************************************************************
 **
@@ -1791,8 +1708,6 @@ Obj FuncREAD_LINE_FILE (
 **   (c) we have read <limit> bytes (-1 indicates no limit)
 */
 
-#ifndef SYS_IS_MAC_MWC
-
 Obj FuncREAD_ALL_FILE (
     Obj             self,
     Obj             fid,
@@ -1918,107 +1833,6 @@ Obj FuncREAD_ALL_FILE (
     /* and return                                                          */
     return len == 0 ? Fail : str;
 }
-#endif
-
-#ifdef SYS_IS_MAC_MWC
-Obj FuncREAD_ALL_FILE (
-    Obj             self,
-    Obj             iofid,
-    Obj             limit)
-{
-    Int             fid, read, len, count, ilim;
-    Obj             str;
-    TE32KHandle		tH;
-    Int 			bufno;
-    unsigned char 	* p;
-    
-    /* check the argument                                                  */
-    while ( ! (IS_INTOBJ(iofid)) ) {
-        iofid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(iofid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
-    fid = INT_INTOBJ (iofid);
-    if (fid == 0)  /* redirect input */
-    	fid = SyInFid;
-
-    while ( ! IS_INTOBJ(limit) ) {
-      limit = ErrorReturnObj(
-			     "<limit> must be a small integer (not a %s)",
-			     (Int)TNAM_OBJ(limit), 0L,
-			     "you can replace limit via 'return <limit>;'" );
-    }
-    ilim = INT_INTOBJ(limit);
-
-    if (syBuf[fid].fromDoc) {
-    	if (((DocumentPtr)syBuf[fid].fromDoc)->fValidDoc 
-			&& (tH = ((DocumentPtr)syBuf[fid].fromDoc)->docData)) {
-			len = (**tH).teLength - (**tH).consolePos;
-			if (ilim != -1 && len > ilim)
-				len = ilim;  /* read at most ilim bytes */
-		    str = NEW_STRING( len );
-			HLock ((**tH).hText);
-			BlockMove (*(**tH).hText + (**tH).consolePos, CHARS_STRING (str), len);
-			HUnlock ((**tH).hText);
-		} else
-    	    return Fail;
-    } else { /* read from file */
-		SyLastMacErrorCode = GetEOF ((short) syBuf[fid].fp, &len);
-		if (SyLastMacErrorCode != noErr) 
-			return Fail;
-		read = len;
-		SyLastMacErrorCode = GetFPos ((short) syBuf[fid].fp, &len);
-		if (SyLastMacErrorCode != noErr) 
-			return Fail;
-		read -= len; /* number of bytes to be read from disk */
-		if ((bufno = syBuf[fid].bufno) >= 0) {
-	   		len = syBuffers[bufno].buflen - syBuffers[bufno].bufstart;  /* number of bytes in buffer */
-			if (ilim != -1) {
-				if (len > ilim) {
-					len = ilim;  /* read at most ilim bytes */
-					read = 0;
-				}
-				ilim -= len;
-				if (ilim > read) 
-					read = ilim;
-			}
-			str = NEW_STRING (read+len);
-			BlockMove (syBuffers[bufno].buf + syBuffers[bufno].bufstart, 
-				CHARS_STRING (str), len); /* copy from buffer */
-			syBuffers[bufno].bufstart += len; /* mark as read */
-		} else {
-			if (ilim != -1 && ilim < read) 
-				read = ilim;
-			len = 0;
-			str = NEW_STRING (read);
-		}
-		if (read) { /* read from file */
-			count = read;
-			SyLastMacErrorCode = FSRead((short) syBuf[fid].fp, &read, CHARS_STRING(str)+len); 
-			if (SyLastMacErrorCode != noErr) 
-				return Fail;
-			if (count > read) { /* couldn't get all we wanted, shoouldn't happen */
-				SET_LEN_STRING (str, read+len);
-	    		ResizeBag( str, SIZEBAG_STRINGLEN(len) );
-	    	}
-		} else
-			read = 0;
-			
-	}
-	
-	if (!syBuf[fid].binary) {
-		count = read + len;
-		p = CHARS_STRING (str)-1;
-		while (count--) {
-			if (*++p == '\r')
-				*p = '\n';
-		}
-	}
-	
-	return read+len == 0 ? Fail : str;
-}
-#endif
 
 /****************************************************************************
 **
@@ -2080,7 +1894,6 @@ Obj FuncWRITE_BYTE_FILE (
     return ret == -1 ? Fail : True;
 }
 
-#ifndef SYS_IS_MAC_MWC
 /****************************************************************************
 **
 *F  FuncWRITE_STRING_FILE_NC( <self>, <fid>, <string> ) .write a whole string
@@ -2099,22 +1912,7 @@ Obj FuncWRITE_STRING_FILE_NC (
     return (ret == len)?True : Fail;
 }
 
-#else
-/****************************************************************************
-**
-*F  FuncWRITE_STRING_FILE_NC( <self>, <fid>, <string> ) .write a whole string
-*/
-Obj FuncWRITE_STRING_FILE_NC (
-    Obj             self,
-    Obj             fid,
-    Obj             str )
-{
-	return (syFputs (CSTR_STRING(str), INT_INTOBJ(fid)) == 0 ?True : Fail);
-}
-#endif
 
-
-#ifndef SYS_IS_MAC_MWC
 Obj FuncREAD_STRING_FILE (
     Obj             self,
     Obj             fid )
@@ -2177,70 +1975,7 @@ Obj FuncREAD_STRING_FILE (
     syBuf[INT_INTOBJ(fid)].ateof = 1;
     return len == 0 ? Fail : str;
 }
-#endif
 
-#ifdef SYS_IS_MAC_MWC
-Obj FuncREAD_STRING_FILE (
-    Obj             self,
-    Obj             iofid )
-{
-    Int             len, fid;
-    Obj             str;
-    TE32KHandle     tH;
-    /* check the argument                                                  */
-    while ( ! (IS_INTOBJ(iofid)) ) {
-        iofid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(iofid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
-
-    if (iofid == INTOBJ_INT(0))  /* redirect input */
-    	iofid = INTOBJ_INT(SyInFid);
-    	
-	fid = INT_INTOBJ(iofid);
-	
-	if (fid < 4) 
-		return Fail;   /* only supposed to read from real files */
-		    	
-	/* get length of file to read */	    	
-    if (syBuf[fid].fromDoc) {
-    	if (((DocumentPtr)syBuf[fid].fromDoc)->fValidDoc 
-			&& (tH = ((DocumentPtr)syBuf[fid].fromDoc)->docData)) {
-			len = (**tH).teLength; /* we assume that no data has been read */; 
-		} else
-    	    return Fail;  /* no data in window */
-    } else { /* read from file */
-		SyLastMacErrorCode = GetEOF ((short) syBuf[fid].fp, &len); /* we assume that no data has been read */; 
-		if (SyLastMacErrorCode != noErr) 
-			return Fail;
-	}
-	return FuncREAD_ALL_FILE (self, iofid, INTOBJ_INT(len));
-}
-#endif
-
-#if SYS_MAC_MWC
-
-/****************************************************************************
-**
-*F  FuncFD_OF_FILE( <fid> )
-*/
-Obj FuncFD_OF_FILE(Obj self,Obj fid)
-{
-  ErrorQuit("FD_OF_FILE is not available on this architecture", (Int)0L, 
-            (Int) 0L);
-  return Fail;
-}
-
-Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
-                   Obj timeoutsec, Obj timeoutusec)
-{
-  ErrorQuit("UNIXSelect is not available on this architecture", (Int)0L, 
-            (Int) 0L);
-  return Fail;
-}
-
-#else
 /****************************************************************************
 **
 *F  FuncFD_OF_FILE( <fid> )
@@ -2367,17 +2102,6 @@ Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist,
   }
   return INTOBJ_INT(n);
 }
-#else
-Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
-                   Obj timeoutsec, Obj timeoutusec)
-{
-  ErrorQuit("UNIXSelect is not available on this architecture", (Int)0L, 
-            (Int) 0L);
-  return Fail;
-}
-
-#endif
-
 #endif
 
 /****************************************************************************

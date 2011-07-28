@@ -1,30 +1,14 @@
-%T add examples 127:7 < L7(2), 121:5 < L5(3) --see probgen.xpl!
-
-%T open problem: fusion BM6 = BN2C -> B (see ctbllib/BM6fus)
-
-%T add easy example U3(8).3_1 -> 2E6(2): determined by U3(8).6 -> 2E6(2).2
-%T (inspect which classes are the reason ...)
-
-%T L2(59) -> M determined by the fact that 30G elements are contained
-%T (see Norton/Wilson 2002, Anatomy of the Monster, II;
-%T or better Holmes/Wilson?)
-
-%T L2(71) -> M determined by the fact that 7B and 36D elements are contained
-%T (see Norton/Wilson 2002, Anatomy of the Monster, II)
-
-%T section with hard but not ambiguous cases!
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %W  ambigfus.xpl              GAP applications              Thomas Breuer
 %%
-%H  @(#)$Id: ambigfus.xpl,v 1.16 2009/05/11 15:42:25 gap Exp $
+%H  @(#)$Id: ambigfus.xpl,v 1.18 2011/01/26 18:24:05 gap Exp $
 %%
 %Y  Copyright 2003,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
 %%
 %X  NAME="ambigfus"
 %X  rm -rf doc/$NAME.tex
-%X  etc/xpl2tst xpl/$NAME.xpl tst/$NAME.tst
+%X  etc/xpl2tst xpl/$NAME.xpl tst/$NAME.tst ctbllib
 %X  etc/xpl2latex xpl/$NAME.xpl doc/$NAME.tex
 %X  cd doc
 %X  chmod 444 $NAME.tex
@@ -111,7 +95,7 @@ the {\GAP} Character Table Library~\cite{CTblLib1.1.3}.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tableofcontents
 
-% gap> START_TEST("$Id: ambigfus.xpl,v 1.16 2009/05/11 15:42:25 gap Exp $");
+% gap> START_TEST("$Id: ambigfus.xpl,v 1.18 2011/01/26 18:24:05 gap Exp $");
 
 
 The examples use the {\GAP} Character Table Library,
@@ -397,7 +381,8 @@ $H$ into $F_{3+}$.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Fusions Determined by Commutative Diagrams Using Smaller Subgroups}
+\section{Fusions Determined Using Commutative Diagrams Involving Smaller
+Subgroups}
 
 \tthdump{\begin{tabular}{p{90mm}p{45mm}}}
 %%tth: \begin{html} <table><tr><td width="75%"> \end{html}
@@ -757,7 +742,7 @@ Finally, we compare the result with the class fusion that is stored
 on the library table.
 
 \beginexample
-gap> GetFusionMap( tblG, b ) in gfusb;
+gap> GetFusionMap( tblg, b ) in gfusb;
 true
 \endexample
 
@@ -815,13 +800,13 @@ character tables.
 
 \beginexample
 gap> tbln:= CharacterTable( Image( IsomorphismPcGroup( n1 ) ) );;
-gap> tbls:= CharacterTable( "7^(2+1+2):GL2(7)" );
+gap> tbls:= CharacterTable( "7^(2+1+2):GL2(7)" );;
 gap> nfusm:= PossibleClassFusions( tbln, m );;
 gap> Length( RepresentativesFusions( tbln, nfusm, m ) );
 2
 gap> nfuss:= PossibleClassFusions( tbln, tbls );;
 gap> sfusm:= PossibleClassFusions( tbls, m );;
-gap> nfusm:= SetOfComposedClassFusions( sfusm, nfuss );
+gap> nfusm:= SetOfComposedClassFusions( sfusm, nfuss );;
 gap> Length( nfusm );
 1
 \endexample
@@ -838,7 +823,7 @@ gap> Length( RepresentativesFusions( tblu, ufusm, m ) );
 1
 \endexample
 
-Let $C$ be the cantralizer in $U$ of the normal subgroup of order $7$;
+Let $C$ be the centralizer in $U$ of the normal subgroup of order $7$;
 note that $C$ is the `7B' centralizer on $M$.
 We can use the information about the class fusion of $U$ into $M$
 for determining the class fusion of $C$ into $M$.
@@ -862,6 +847,436 @@ gap> Length( RepresentativesFusions( tblc, cfusm, m ) );
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{$3^7.O_7(3):2 \rightarrow Fi_{24}$
+(November 2010)}
+
+The class fusion of the maximal subgroup $M \cong 3^7.O_7(3):2$
+of $G = Fi_{24} = F_{3+}.2$ is ambiguous.
+
+\beginexample
+gap> m:= CharacterTable( "3^7.O7(3):2" );;
+gap> t:= CharacterTable( "F3+.2" );;
+gap> mfust:= PossibleClassFusions( m, t );;
+gap> Length( RepresentativesFusions( m, mfust, t ) );
+2
+\endexample
+
+We will use the fact that the elementary abelian normal subgroup of order
+$3^7$ in $M$ contains an element $x$, say, in the class `3A' of $G$.
+This fact can be shown as follows.
+
+\beginexample
+gap> nsg:= ClassPositionsOfNormalSubgroups( m );
+[ [ 1 ], [ 1 .. 4 ], [ 1 .. 158 ], [ 1 .. 291 ] ]
+gap> Sum( SizesConjugacyClasses( m ){ nsg[2] } );
+2187
+gap> 3^7;
+2187
+gap> rest:= Set( List( mfust, map -> map{ nsg[2] } ) );
+[ [ 1, 4, 5, 6 ] ]
+gap> List( rest, l -> ClassNames( t, "Atlas" ){ l } );
+[ [ "1A", "3A", "3B", "3C" ] ]
+\endexample
+
+The normalizer $S$ of $\langle x \rangle$ in $G$ has the form
+$S_3 \times O_8^+(3):S_3$,
+and the order of $U = S \cap M = N_M( \langle x \rangle)$
+is $53059069440$, so $U$ has index $3360$ in $S$.
+
+\beginexample
+gap> s:= CharacterTable( "F3+.2N3A" );
+CharacterTable( "S3xO8+(3):S3" )
+gap> PowerMap( m, 2 )[4];
+4
+gap> size_u:= 2 * SizesCentralizers( m )[ 2 ];
+53059069440
+gap> Size( s ) / size_u;
+3360
+\endexample
+
+Using the list of maximal subgroups of $O_8^+(3)$,
+we see that only the maximal subgroups of the type $3^6:L_4(3)$
+have index dividing $3360$ in $O_8^+(3)$.
+(There are three classes of such subgroups.)
+This implies that $U$ contains a subgroup of the type
+$S_3 \times 3^6:L_4(3)$.
+
+\beginexample
+gap> o8p3:= CharacterTable( "O8+(3)" );;
+gap> mx:= List( Maxes( o8p3 ), CharacterTable );;
+gap> filt:= Filtered( mx, x -> 3360 mod Index( o8p3, x ) = 0 );
+[ CharacterTable( "3^6:L4(3)" ), CharacterTable( "O8+(3)M8" ), 
+  CharacterTable( "O8+(3)M9" ) ]
+gap> List( filt, x -> Index( o8p3, x ) );
+[ 1120, 1120, 1120 ]
+\endexample
+
+We compute the possible class fusions from $U$ into $M$ and $S$ in two
+steps, because this is faster.
+First the possible class fusions from $U^{\prime\prime} \cong 3^6:L_4(3)$
+into $M$ and $S$ are computed, and then these fusions are used to derive
+approximations for the fusions from $U$ into $M$ and $S$.
+
+\beginexample
+gap> uu:= filt[1];;
+gap> u:= CharacterTable( "Symmetric", 3 ) * uu;
+CharacterTable( "Sym(3)x3^6:L4(3)" )
+gap> uufusm:= PossibleClassFusions( uu, m );;
+gap> Length( uufusm );
+8
+gap> approx:= List( uufusm, map -> CompositionMaps( map,
+>                   InverseMap( GetFusionMap( uu, u ) ) ) );;
+gap> ufusm:= Concatenation( List( approx, map ->
+>        PossibleClassFusions( u, m, rec( fusionmap:= map ) ) ) );;
+gap> Length( ufusm );
+8
+gap> uufuss:= PossibleClassFusions( uu, s );;
+gap> Length( uufuss );
+8
+gap> approx:= List( uufuss, map -> CompositionMaps( map,
+>              InverseMap( GetFusionMap( uu, u ) ) ) );;
+gap> ufuss:= Concatenation( List( approx, map ->
+>   PossibleClassFusions( u, s, rec( fusionmap:= map ) ) ) );;
+gap> Length( ufuss );
+8
+\endexample
+
+Now we compute the possible class fusions from $S$ into $G$,
+and the compositions of these maps with the possible class fusions
+from $U$ into $S$.
+
+\beginexample
+gap> sfust:= PossibleClassFusions( s, t );;
+gap> comp:= SetOfComposedClassFusions( sfust, ufuss );;
+gap> Length( comp );
+8
+\endexample
+
+It turns out that only one orbit of the possible class fusions from $M$ to
+$G$ is compatible with these possible class fusions from $U$ to $G$.
+
+\beginexample
+gap> filt:= Filtered( mfust, map2 -> ForAny( ufusm, map1 ->
+>        CompositionMaps( map2, map1 ) in comp ) );;
+gap> Length( filt );
+4
+gap> Length( RepresentativesFusions( m, filt, t ) );
+1
+\endexample
+
+The class fusion stored in the {\GAP} Character Table Library is one of them.
+
+\beginexample
+gap> GetFusionMap( m, t ) in filt;
+true
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Fusions Determined Using Commutative Diagrams Involving Factor
+Groups}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{$3.A_7 \rightarrow 3.Suz$ (December 2010)}
+
+The maximal subgroups of type $A_7$ in the sporadic simple Suzuki group $Suz$
+lift to groups of the type $3.A_7$ in $3.Suz$.
+This can be seen from the fact that $3.Suz$ does not admit a class fusion
+from $A_7$.
+
+\beginexample
+gap> t:= CharacterTable( "Suz" );;
+gap> 3t:= CharacterTable( "3.Suz" );;
+gap> s:= CharacterTable( "A7" );;
+gap> 3s:= CharacterTable( "3.A7" );;
+gap> PossibleClassFusions( s, 3t );
+[  ]
+\endexample
+
+The class fusion of $3.A_7$ into $3.Suz$ is ambiguous.
+
+\beginexample
+gap> 3sfus3t:= PossibleClassFusions( 3s, 3t );;
+gap> Length( 3sfus3t );
+6
+gap> RepresentativesFusions( 3s, 3sfus3t, 3t );
+[ [ 1, 2, 3, 7, 8, 9, 16, 16, 26, 27, 28, 32, 33, 34, 47, 47, 47, 48, 49, 50, 
+      48, 49, 50 ], 
+  [ 1, 11, 12, 4, 36, 37, 13, 16, 23, 82, 83, 32, 100, 101, 44, 38, 41, 48, 
+      112, 116, 48, 115, 113 ] ]
+gap> ClassPositionsOfCentre( 3t );
+[ 1, 2, 3 ]
+\endexample
+
+We see that the possible fusions in the second orbit avoid the centre of
+$3.Suz$.
+Since the preimages in $3.Suz$ of the $A_7$ type subgroups of $Suz$
+contain the centre of $3.Suz$, we know that the class fusion of these
+preimages belong to the first orbit.
+This can be formalized by checking the commutativity of the diagram
+of fusions between $3.A_7$, $3.Suz$, and their factors $A_7$ and $Suz$.
+
+\beginexample
+gap> sfust:= PossibleClassFusions( s, t );;
+gap> Length( sfust );
+1
+gap> filt:= Filtered( 3sfus3t, map -> CompositionMaps( GetFusionMap( 3t, t ),
+>                                         map )
+>               = CompositionMaps( sfust[1], GetFusionMap( 3s, s ) ) );
+[ [ 1, 2, 3, 7, 8, 9, 16, 16, 26, 27, 28, 32, 33, 34, 47, 47, 47, 48, 49, 50, 
+      48, 49, 50 ], 
+  [ 1, 3, 2, 7, 9, 8, 16, 16, 26, 28, 27, 32, 34, 33, 47, 47, 47, 48, 50, 49, 
+      48, 50, 49 ] ]
+\endexample
+
+So the class fusion of maximal $3.A_7$ type subgroups of $3.Suz$ is
+determined up to table automorphisms.
+One of these fusions is stored on the table of $3.A_7$.
+
+\beginexample
+gap> RepresentativesFusions( 3s, filt, 3t );
+[ [ 1, 2, 3, 7, 8, 9, 16, 16, 26, 27, 28, 32, 33, 34, 47, 47, 47, 48, 49, 50, 
+      48, 49, 50 ] ]
+gap> GetFusionMap( 3s, 3t ) in filt;
+true
+\endexample
+
+Also the class fusions in the other orbit belong to subgroups of type
+$3.A_7$ in $3.Suz$.
+Note that $Suz$ contains maximal subgroups of the type
+$3_2.U_4(3).2_3^{\prime}$ (see~\cite[p.~131]{CCN85}),
+and the $A_7$ type subgroups of $U_4(3)$ (see~\cite[p.~52]{CCN85})
+lift to groups of the type $3.A_7$ in $3_2.U_4(3)$ because
+$3_2.U_4(3)$ does not admit a class fusion from $A_7$.
+The preimages in $3.Suz$ of the $3.A_7$ tape subgroups of $Suz$
+have the structure $3 \times 3.A_7$.
+
+\beginexample
+gap> u:= CharacterTable( "3_2.U4(3)" );;
+gap> PossibleClassFusions( s, u );
+[  ]
+gap> Length( PossibleClassFusions( 3s, u ) );
+8
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Fusions Determined Using Commutative Diagrams Involving
+Automorphic Extensions}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{$U_3(8).3_1 \rightarrow {}^2E_6(2)$ (December 2010)}%
+\label{u383to2e62}
+
+According to the {\ATLAS} (see~\cite[p.~191]{CCN85}),
+the group $G = {}^2E_6(2)$ contains a maximal subgroup $U$ of the type
+$U_3(8).3_1$.
+The class fusion of $U$ into $G$ is ambiguous.
+
+\beginexample
+gap> s:= CharacterTable( "U3(8).3_1" );;
+gap> t:= CharacterTable( "2E6(2)" );;
+gap> sfust:= PossibleClassFusions( s, t );;
+gap> Length( sfust );
+24
+gap> Length( RepresentativesFusions( s, sfust, t ) );
+2
+\endexample
+
+In the automorphic extension $G.2 = {}^2E_6(2).2$ of $G$,
+the subgroup $U$ extends to a group $U.2$ of the type $U_3(8).6$
+(again, see ~\cite[p.~191]{CCN85}).
+The class fusion of $U.2$ into $G.2$ is unique up to table automorphisms.
+
+\beginexample
+gap> s2:= CharacterTable( "U3(8).6" );;
+gap> t2:= CharacterTable( "2E6(2).2" );;
+gap> s2fust2:= PossibleClassFusions( s2, t2 );;
+gap> Length( s2fust2 );
+2
+gap> Length( RepresentativesFusions( s2, s2fust2, t2 ) );
+1
+\endexample
+
+Only half of the possible class fusions from $U$ into $G$ are compatible
+with the embeddings of $U$ into $G.2$ via $U.2$ and $G$,
+and the compatible maps form one orbit under table automorphisms.
+
+\beginexample
+gap> sfuss2:= PossibleClassFusions( s, s2 );;
+gap> comp:= SetOfComposedClassFusions( s2fust2, sfuss2 );;
+gap> tfust2:= PossibleClassFusions( t, t2 );;
+gap> filt:= Filtered( sfust, map -> ForAny( tfust2,
+>               map2 -> CompositionMaps( map2, map ) in comp ) );;
+gap> Length( filt );
+12
+gap> Length( RepresentativesFusions( s, filt, t ) );
+1
+\endexample
+
+Let us see which classes of $U$ and $G$ are involved in the
+disambiguation of the class fusion.
+The ``good'' fusion candidates differ from the excluded ones on the
+classes at the positions $31$ to $36$:
+Under all possible class fusions, two pairs of classes are mapped to
+the classes $81$ and $82$ of $G$;
+from these classes, the excluded maps fuse classes at odd positions
+with classes at even positions, whereas the ``good'' class fusions
+do not have this property.
+
+\beginexample
+gap> Set( List( filt, x -> x{ [ 31 .. 36 ] } ) );
+[ [ 74, 74, 81, 82, 81, 82 ], [ 74, 74, 82, 81, 82, 81 ], 
+  [ 81, 82, 74, 74, 81, 82 ], [ 81, 82, 81, 82, 74, 74 ], 
+  [ 82, 81, 74, 74, 82, 81 ], [ 82, 81, 82, 81, 74, 74 ] ]
+gap> Set( List( Difference( sfust, filt ), x -> x{ [ 31 .. 36 ] } ) );
+[ [ 74, 74, 81, 82, 82, 81 ], [ 74, 74, 82, 81, 81, 82 ], 
+  [ 81, 82, 74, 74, 82, 81 ], [ 81, 82, 82, 81, 74, 74 ], 
+  [ 82, 81, 74, 74, 81, 82 ], [ 82, 81, 81, 82, 74, 74 ] ]
+\endexample
+
+None of the possible class fusions from $U$ to $U.2$ fuses classes
+at odd positions in the interval from $31$ to $36$ with classes at
+even positions.
+
+\beginexample
+gap> Set( List( sfuss2, x -> x{ [ 31 .. 36 ] } ) );
+[ [ 28, 29, 30, 31, 30, 31 ], [ 29, 28, 31, 30, 31, 30 ], 
+  [ 30, 31, 28, 29, 30, 31 ], [ 30, 31, 30, 31, 28, 29 ], 
+  [ 31, 30, 29, 28, 31, 30 ], [ 31, 30, 31, 30, 29, 28 ] ]
+\endexample
+
+This suffices to exclude the ``bad'' fusion candidates
+because no further fusion of the relevant classes of $G$ happens in $G.2$.
+
+\beginexample
+gap> List( tfust2, x -> x{ [ 74, 81, 82 ] } );
+[ [ 65, 70, 71 ], [ 65, 70, 71 ], [ 65, 71, 70 ], [ 65, 71, 70 ], 
+  [ 65, 70, 71 ], [ 65, 70, 71 ], [ 65, 71, 70 ], [ 65, 71, 70 ], 
+  [ 65, 70, 71 ], [ 65, 70, 71 ], [ 65, 71, 70 ], [ 65, 71, 70 ] ]
+\endexample
+
+(The same holds for the fusion of the relevant classes of $U.2$ in $G.2$.)
+
+\beginexample
+gap> List( s2fust2, x -> x{ [ 28 .. 31 ] } );
+[ [ 65, 65, 70, 71 ], [ 65, 65, 71, 70 ] ]
+\endexample
+
+Finally, we check that a correct map is stored on the library table.
+
+\beginexample
+gap> GetFusionMap( s, t ) in filt;
+true
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{$L_3(4).2_1 \rightarrow U_6(2)$ (December 2010)}
+
+According to the {\ATLAS} (see~\cite[p.~115]{CCN85}),
+the group $G = U_6(2)$ contains a maximal subgroup $U$ of the type
+$L_3(4).2_1$.
+The class fusion of $U$ into $G$ is ambiguous.
+
+\beginexample
+gap> s:= CharacterTable( "L3(4).2_1" );;
+gap> t:= CharacterTable( "U6(2)" );;
+gap> sfust:= PossibleClassFusions( s, t );;
+gap> Length( sfust );
+27
+gap> Length( RepresentativesFusions( s, sfust, t ) );
+3
+\endexample
+
+In the automorphic extension $G.3 = U_6(2).3$ of $G$,
+the subgroup $U$ extends to a group $U.3$ of the type $L_3(4).6$
+(again, see ~\cite[p.~115]{CCN85}).
+The class fusion of $U.3$ into $G.3$ is unique up to table automorphisms.
+
+\beginexample
+gap> s3:= CharacterTable( "L3(4).6" );;
+gap> t3:= CharacterTable( "U6(2).3" );;
+gap> s3fust3:= PossibleClassFusions( s3, t3 );;
+gap> Length( s3fust3 );
+2
+gap> Length( RepresentativesFusions( s3, s3fust3, t3 ) );
+1
+\endexample
+
+Here the argument used in Section~\ref{u383to2e62} does not work,
+because all possible class fusions from $U$ into $G$ are compatible
+with the embeddings of $U$ into $G.3$ via $U.3$ and $G$.
+
+\beginexample
+gap> sfuss3:= PossibleClassFusions( s, s3 );;
+gap> comp:= SetOfComposedClassFusions( s3fust3, sfuss3 );;
+gap> tfust3:= PossibleClassFusions( t, t3 );;
+gap> sfust = Filtered( sfust, map -> ForAny( tfust3,
+>                map2 -> CompositionMaps( map2, map ) in comp ) );
+true
+\endexample
+
+Consider the elements of order four in $U$.
+There are three such classes inside $U^{\prime} \cong L_3(4)$,
+which fuse to one class of $U.3$.
+
+\beginexample
+gap> OrdersClassRepresentatives( s );
+[ 1, 2, 3, 4, 4, 4, 5, 7, 2, 4, 6, 8, 8, 8 ]
+gap> sfuss3;
+[ [ 1, 2, 3, 4, 4, 4, 5, 6, 7, 8, 9, 10, 10, 10 ] ]
+\endexample
+
+These classes of $U$ fuse into some of the classes $10$ to $12$ of $G$.
+In $G.3$, these three classes fuse into one class.
+
+\beginexample
+gap> Set( List( sfust, map -> map{ [ 4 .. 6 ] } ) );
+[ [ 10, 10, 10 ], [ 10, 10, 11 ], [ 10, 10, 12 ], [ 10, 11, 10 ], 
+  [ 10, 11, 11 ], [ 10, 11, 12 ], [ 10, 12, 10 ], [ 10, 12, 11 ], 
+  [ 10, 12, 12 ], [ 11, 10, 10 ], [ 11, 10, 11 ], [ 11, 10, 12 ], 
+  [ 11, 11, 10 ], [ 11, 11, 11 ], [ 11, 11, 12 ], [ 11, 12, 10 ], 
+  [ 11, 12, 11 ], [ 11, 12, 12 ], [ 12, 10, 10 ], [ 12, 10, 11 ], 
+  [ 12, 10, 12 ], [ 12, 11, 10 ], [ 12, 11, 11 ], [ 12, 11, 12 ], 
+  [ 12, 12, 10 ], [ 12, 12, 11 ], [ 12, 12, 12 ] ]
+gap> Set( List( tfust3, map -> map{ [ 10 .. 12 ] } ) );
+[ [ 10, 10, 10 ] ]
+\endexample
+
+This means that the automorphism $\alpha$ of $G$ that is induced by
+the action of $G.3$ permutes the classes $10$ to $12$ of $G$ transitively.
+The fact that $U$ extends to $U.3$ in $G.3$ means that $U$ is invariant
+under $\alpha$.
+This implies that $U$ contains either no elements from the classes
+$10$ to $12$ or elements from all of these classes.
+The possible class fusions from $U$ to $G$ satisfying this condition
+form one orbit under table automprhisms.
+
+\beginexample
+gap> Filtered( sfust, map -> Intersection( map, [ 10 .. 12 ] ) = [] );
+[  ]
+gap> filt:= Filtered( sfust, map -> IsSubset( map, [ 10 .. 12 ] ) );
+[ [ 1, 3, 7, 10, 11, 12, 15, 24, 4, 14, 23, 26, 27, 28 ], 
+  [ 1, 3, 7, 10, 12, 11, 15, 24, 4, 14, 23, 26, 28, 27 ], 
+  [ 1, 3, 7, 11, 10, 12, 15, 24, 4, 14, 23, 27, 26, 28 ], 
+  [ 1, 3, 7, 11, 12, 10, 15, 24, 4, 14, 23, 27, 28, 26 ], 
+  [ 1, 3, 7, 12, 10, 11, 15, 24, 4, 14, 23, 28, 26, 27 ], 
+  [ 1, 3, 7, 12, 11, 10, 15, 24, 4, 14, 23, 28, 27, 26 ] ]
+gap> Length( RepresentativesFusions( s, filt, t ) );
+1
+\endexample
+
+Finally, we check that a correct map is stored on the library table.
+
+\beginexample
+gap> GetFusionMap( s, t ) in filt;
+true
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conditions Imposed by Brauer Tables}
 
 The examples in this section show that symmetries can be broken as soon as
@@ -875,7 +1290,7 @@ of certain modules, similar to the arguments used in~\ref{generality} below.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{$L_2(16).4 \rightarrow J_3.2$}
+\subsection{$L_2(16).4 \rightarrow J_3.2$ (January~2004)}
 
 It can happen that Brauer tables decide ambiguities of class fusions between
 the corresponding ordinary tables.
@@ -962,7 +1377,7 @@ of $G = S_8(2)$ is ambiguous.
 \beginexample
 gap> m:= CharacterTable( "L2(17)" );;
 gap> t:= CharacterTable( "S8(2)" );;
-gap> mfust:= PossibleClassFusions( m, t );
+gap> mfust:= PossibleClassFusions( m, t );;
 gap> Length( RepresentativesFusions( m, mfust, t ) );
 4
 \endexample
@@ -1094,14 +1509,15 @@ Representations~\cite{AGR}, and access it via the {\GAP} package
 gap> LoadPackage( "atlasrep" );
 true
 gap> prog:= AtlasStraightLineProgram( "J3", "maxes", 2 );
-rec( program := <straight line program>, standardization := 1, 
-  identifier := [ "J3", "J3G1-max2W1", 1 ] )
+rec( groupname := "J3", identifier := [ "J3", "J3G1-max2W1", 1 ],
+  program := <straight line program>, size := 3420, standardization := 1 )
 gap> gens:= OneAtlasGeneratingSet( "J3", Characteristic, 19, Dimension, 110 );
-rec( generators := [ < immutable compressed matrix 110x110 over GF(19) >, 
-      < immutable compressed matrix 110x110 over GF(19) > ], 
-  standardization := 1, 
-  identifier := [ "J3", [ "J3G1-f19r110B0.m1", "J3G1-f19r110B0.m2" ], 1, 19 ] 
- )
+rec( dim := 110,
+  generators := [ < immutable compressed matrix 110x110 over GF(19) >,
+      < immutable compressed matrix 110x110 over GF(19) > ],
+  groupname := "J3", id := "",
+  identifier := [ "J3", [ "J3G1-f19r110B0.m1", "J3G1-f19r110B0.m2" ], 1, 19 ],
+  repnr := 35, ring := GF(19), size := 50232960, standardization := 1 )
 gap> restgens:= ResultOfStraightLineProgram( prog.program, gens.generators );
 [ < immutable compressed matrix 110x110 over GF(19) >,
   < immutable compressed matrix 110x110 over GF(19) > ]
@@ -1188,7 +1604,7 @@ true
 % gap> 2lfus2b:= PossibleClassFusions( dp, 2b );;
 % #I  RepresentativesFusions: 6 orbit(s) of length(s) [ 2, 2, 2, 2, 2, 2 ]
 % #I  PossibleClassFusions: 12 solutions
-% gap> Filtered( 2lfus2b, x -> CompositionMaps( GetFusionMap( 2b, b ), x ) =
+% gap> filt:= Filtered( 2lfus2b, x -> CompositionMaps( GetFusionMap( 2b, b ), x ) =
 % > CompositionMaps( [1,5,7,15,19,19,44,44,82,82,82,82,90,90,90,90,145,146],
 % > GetFusionMap( dp, l ) ) );
 % #I  GetFusionMap: Used fusion has specification 2
@@ -1209,7 +1625,7 @@ true
 %   [ 1, 7, 10, 20, 25, 25, 56, 56, 107, 107, 107, 107, 117, 117, 117, 117, 
 %       190, 192, 2, 7, 11, 20, 26, 26, 56, 56, 108, 108, 108, 108, 116, 116, 
 %       116, 116, 191, 193 ] ]
-% gap> RepresentativesFusions( dp, last, 2b );
+% gap> RepresentativesFusions( dp, filt, 2b );
 % #I  RepresentativesFusions: Not all table automorphisms of the
 % #I    subgroup table act; computing the admiss. subgroup.
 % #I  RepresentativesFusions: Not all table automorphisms of the
@@ -1221,9 +1637,7 @@ true
 %   [ 1, 7, 10, 20, 25, 25, 56, 56, 107, 107, 107, 107, 117, 117, 117, 117, 
 %       190, 192, 2, 7, 11, 20, 26, 26, 56, 56, 108, 108, 108, 108, 116, 116, 
 %       116, 116, 191, 193 ] ]
-% gap> ConsiderStructureConstants;
-% function( subtbl, tbl, map ) ... end
-% gap> List( last2, x -> ConsiderStructureConstants( dp, 2b, x ) );
+% gap> List( filt, x -> ConsiderStructureConstants( dp, 2b, x ) );
 % [ true, true ]
 % \endexample
 % 
@@ -1462,7 +1876,7 @@ true
 %   [ 1, 2, 2, 3, 7, 4, 14, 6, 6, 7, 10, 21, 9, 22, 13, 26, 30, 14, 15, 17, 33,
 %       19, 18, 21, 23, 41, 29, 45, 31, 34, 48, 39, 40, 2, 3, 6, 7, 18, 14, 14,
 %       15, 19, 19, 22, 27, 28, 30, 33, 33, 53, 54, 40, 40, 39, 39, 48, 48 ] ]
-% gap> Parametrized( last ); 
+% gap> Parametrized( rep ); 
 % [ 1, 2, 2, 3, 7, 4, 14, 6, 6, 7, 10, 21, 9, 22, 13, 26, 30, 14, 15, 17, 33,
 %   19, 18, 21, 23, 41, 29, 45, 31, 34, 48, 39, 40, 2, 3, 6, 7, 18, 14, 14, 15,
 %   19, 19, 22, 27, 28, 30, 33, 33, 53, 54, [ 39, 40 ], [ 39, 40 ], [ 39, 40 ],
@@ -1497,13 +1911,13 @@ true
 % gap> OrdersClassRepresentatives( u );
 % [ 1, 2, 5, 10, 5, 10, 5, 10, 2, 2, 10, 10, 4, 4, 8, 8, 8, 8, 4, 20, 20, 4, 4, 
 %   20, 20, 2, 10, 10, 8, 40, 40, 8, 40, 40, 20, 20, 4, 20, 20, 8, 8 ]
-% gap> GetFusionMap( s, t );
+% gap> sfust:= GetFusionMap( s, t );
 % [ 1, 2, 2, 3, 7, 4, 14, 6, 6, 7, 10, 21, 9, 22, 13, 26, 30, 14, 15, 17, 33, 
 %   19, 18, 21, 23, 41, 29, 45, 31, 34, 48, 39, 40, 2, 3, 6, 7, 18, 14, 14, 15, 
 %   19, 19, 22, 27, 28, 30, 33, 33, 53, 54, 40, 40, 39, 39, 48, 48 ]
-% gap> last[11];
+% gap> sfust[11];
 % 10
-% gap> ClassNames( t )[last];
+% gap> ClassNames( t )[ sfust[11] ];
 % "5b"
 % 
 % so it is contained in the 5B normalizer in HN (HNN5B = HNM6, order 2*10^6)
@@ -1556,7 +1970,7 @@ true
 % gap> ntfust:= PossibleClassFusions( nt, t );;
 % #I  RepresentativesFusions: 2 orbit(s) of length(s) [ 8, 8 ]
 % #I  PossibleClassFusions: 16 solutions
-% gap> RepresentativesFusions( nt, last, t );
+% gap> rep:= RepresentativesFusions( nt, ntfust, t );
 % #I  RepresentativesFusions: 2 orbit(s) of length(s) [ 8, 8 ]
 % [ [ 1, 3, 6, 2, 6, 3, 6, 3, 2, 2, 2, 7, 7, 19, 6, 6, 6, 6, 19, 19, 7, 3, 7, 
 %       6, 7, 2, 3, 6, 7, 7, 2, 3, 19, 19, 18, 18, 19, 19, 15, 14, 15, 15, 4, 
@@ -1565,7 +1979,7 @@ true
 %       7, 3, 7, 6, 7, 2, 3, 6, 7, 7, 2, 3, 19, 19, 18, 18, 19, 19, 15, 14, 15, 
 %       15, 4, 31, 14, 14, 39, 40, 40, 39, 40, 10, 23, 21, 21, 39, 30, 14, 15, 
 %       30, 15, 14 ] ]
-% gap> Parametrized( last );
+% gap> Parametrized( rep );
 % [ 1, 3, 6, 2, 6, 3, 6, 3, 2, 2, 2, 7, 7, 19, 6, 6, 6, 6, 19, 19, 7, 3, 7, 6, 
 %   7, 2, 3, 6, 7, 7, 2, 3, 19, 19, 18, 18, 19, 19, 15, 14, 15, 15, 4, 31, 14, 
 %   14, 39, 40, 40, 39, [ 39, 40 ], 10, 23, 21, 21, [ 39, 40 ], 30, 14, 15, 30, 
@@ -1584,7 +1998,7 @@ true
 % gap> ntfusv:= PossibleClassFusions( nt, v );;
 % #I  RepresentativesFusions: 2 orbit(s) of length(s) [ 16, 16 ]
 % #I  PossibleClassFusions: 32 solutions
-% gap> RepresentativesFusions( nt, last, v );
+% gap> rep:= RepresentativesFusions( nt, ntfusv, v );
 % #I  RepresentativesFusions: 2 orbit(s) of length(s) [ 16, 16 ]
 % [ [ 1, 2, 5, 3, 5, 4, 5, 4, 3, 3, 3, 17, 17, 18, 15, 15, 15, 15, 18, 18, 17, 
 %       14, 44, 43, 44, 41, 42, 43, 44, 44, 41, 42, 46, 46, 47, 47, 46, 46, 25, 
@@ -1594,7 +2008,7 @@ true
 %       14, 44, 43, 44, 41, 42, 43, 44, 44, 41, 42, 46, 46, 47, 47, 46, 46, 25, 
 %       24, 26, 23, 22, 27, 24, 24, 37, 38, 38, 37, 38, 34, 35, 36, 36, 37, 50, 
 %       49, 48, 50, 48, 49 ] ]
-% gap> Parametrized( last );
+% gap> Parametrized( rep );
 % [ 1, 2, 5, 3, 5, 4, 5, 4, 3, 3, 3, 17, 17, 18, 15, 15, 15, 15, 18, 18, 17, 
 %   14, 44, 43, 44, 41, 42, 43, 44, 44, 41, 42, 46, 46, 47, 47, 46, 46, 25, 24, 
 %   26, 23, 22, 27, 24, 24, 37, 38, 38, 37, [ 37, 38 ], 34, 35, 36, 36, 
@@ -1649,20 +2063,15 @@ true
 %   CharacterTable( "3^4:2(A4xA4).4" ), CharacterTable( "3^(1+4):4A5" ) ]
 % gap> Position( OrdersClassRepresentatives( t ), 20 );
 % 39
-% gap> Filtered( maxes, x -> 39 in GetFusionMap( x, t ) );
+% gap> filt:= Filtered( maxes, x -> 39 in GetFusionMap( x, t ) );
 % [ CharacterTable( "2.HS.2" ), CharacterTable( "2^(1+8).(A5xA5).2" ), 
 %   CharacterTable( "(D10xU3(5)).2" ), CharacterTable( "5^(1+4):2^(1+4).5.4" ) ]
-% gap> filt:= last;;
-% gap> GetFusionMap( filt[3], t );
+% gap> fus:= GetFusionMap( filt[3], t );
 % [ 1, 2, 4, 7, 10, 9, 13, 14, 17, 18, 21, 9, 22, 34, 41, 9, 13, 11, 12, 48, 
 %   51, 52, 53, 54, 22, 7, 6, 30, 18, 41, 31, 39, 40, 2, 3, 14, 7, 21, 22, 26, 
 %   15, 33, 18, 23, 7, 6, 30, 18, 41, 31, 40, 39 ]
-% gap> Position( last, 6 );
-% 27
-% gap> Position( last2, 6, last );
-% 46
-% gap> Position( last3, 6, last );
-% fail
+% gap> PositionsProperty( fus, x -> x = 6 );
+% [ 27, 46 ]
 % gap> SizesCentralizers( filt[3] ){[27,46]};
 % [ 480, 480 ]
 % gap> u;
@@ -1696,11 +2105,11 @@ true
 % 44352000
 % gap> Centre( g );
 % <permutation group of size 2 with 1 generators>
-% gap> IsSubset( ns, last );
+% gap> IsSubset( ns, Centre( g ) );
 % true
 % gap> Centre( ns );
 % <permutation group with 1 generators>
-% gap> Size( last );
+% gap> Size( Centre( ns ) );
 % 2
 % gap> cl:= ClosureGroup( ns, Centre( ns ) );
 % <permutation group of size 8000 with 6 generators>
@@ -1787,8 +2196,7 @@ true
 % gap> newfus:= PossibleClassFusions( tbls[1], u );;
 % #I  RepresentativesFusions: 1 orbit(s) of length(s) [ 16 ]
 % #I  PossibleClassFusions: 16 solutions
-% gap> List( newfus, x -> CompositionMaps( GetFusionMap( u, s ), x ) );;
-% gap> Set( last );
+% gap> Set( List( newfus, x -> CompositionMaps( GetFusionMap( u, s ), x ) ) );
 % [ [ 1, 11, 15, 13, 3, 24, 10, 10, 10, 10, 25, 4, 16, 14, 12, 2, 23, 23, 23, 
 %       23, 32, 8, 33, 26, 5, 26, 5, 8, 32, 33, 23, 23, 23, 23 ], 
 %   [ 1, 11, 15, 13, 3, 24, 10, 10, 10, 10, 25, 4, 16, 14, 12, 2, 23, 23, 23, 
@@ -2048,7 +2456,7 @@ gap> ClassNames( b, "ATLAS" ){ [ 12, 17 ] };
 We check that this map is stored on the library table.
 
 \beginexample
-gap> GetFusionMap( t, b ) = ufusb[5];
+gap> GetFusionMap( t, b ) = tfusb[5];
 true
 \endexample
 
@@ -2126,14 +2534,15 @@ $7^2:(3 \times Q_{16})$.
 \beginexample
 gap> g:= SL( 2, 49 );;
 gap> gens:= GeneratorsOfGroup( g );;
-gap> mats:= List( gens, x -> IdentityMat( 4, GF(49) ) );;
+gap> f:= GF(49);;
+gap> mats:= List( gens, x -> IdentityMat( 4, f ) );;
 gap> for i in [ 1 .. Length( gens ) ] do
 >      mats[i]{ [ 1, 2 ] }{ [ 1, 2 ] }:= gens[i];
 >      mats[i]{ [ 3, 4 ] }{ [ 3, 4 ] }:= List( gens[i],
 >                                              x -> List( x, y -> y^7 ) );
 >    od;
-gap> fieldaut:= PermutationMat( (1,3)(2,4), 4, GF(7) );;
-gap> diagaut:= IdentityMat( 4, GF(7) );;
+gap> fieldaut:= PermutationMat( (1,3)(2,4), 4, f );;
+gap> diagaut:= IdentityMat( 4, f );;
 gap> diagaut[1][1]:= Z(49);;
 gap> diagaut[3][3]:= Z(49)^7;;
 gap> g:= Group( Concatenation( mats, [ fieldaut * diagaut ] ) );;
@@ -2240,7 +2649,7 @@ gap> Length( PossibleClassFusions( CharacterTable( n ), bn7 ) );
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{$2^3.L_3(2) \rightarrow G_2(5)$}
+\subsection{$2^3.L_3(2) \rightarrow G_2(5)$ (January~2004)}
 
 The Chevalley group $G = G_2(5)$ contains a maximal subgroup $U$ of the type
 $2^3.L_3(2)$ whose class fusion is ambiguous.
@@ -2252,19 +2661,20 @@ gap> sfust:= PossibleClassFusions( s, t );;
 gap> RepresentativesFusions( s, sfust, t );
 [ [ 1, 2, 2, 5, 6, 4, 13, 16, 17, 15, 15 ], 
   [ 1, 2, 2, 5, 6, 4, 14, 16, 17, 15, 15 ] ]
+gap> OrdersClassRepresentatives( s );
+[ 1, 2, 2, 4, 4, 3, 6, 8, 8, 7, 7 ]
 \endexample
 
 So the question is whether $U$ contains elements in the class `6B' or `6C'
 of $G$ (position $13$ or $14$ in the {\ATLAS} table).
 We use a permutation representation of $G$, restrict it to $U$,
-and compute the centralizer in $G$ of an element of order $6$ in $U$.
+and compute the centralizer in $G$ of a suitable element of order $6$ in $U$.
 
 \beginexample
-gap> gens:= OneAtlasGeneratingSet( "G2(5)" );;
-gap> g:= Group( gens.generators );;
-gap> prg:= AtlasStraightLineProgram( "G2(5)", "maxes", 7 );;
-gap> subgens:= ResultOfStraightLineProgram( prg.program, gens.generators );;
-gap> u:= Group( gens.generators );;
+gap> g:= AtlasGroup( "G2(5)" );;
+gap> u:= AtlasSubgroup( "G2(5)", 7 );;
+gap> Size( u );
+1344
 gap> repeat
 >      x:= Random( u );
 >    until Order( x ) = 6;
@@ -2330,8 +2740,8 @@ natural module of this restriction.
 gap> g:= AtlasSubgroup( "B", Dimension, 4371, Ring, GF(3), 21 );;
 gap> module:= GModuleByMats( GeneratorsOfGroup( g ), GF(3) );;
 gap> dec:= MTX.CompositionFactors( module );;
-gap> List( dec, x -> x.dimension );
-[ 400, 1000, 384, 100, 400, 480, 400, 1200, 6, 1 ]
+gap> SortedList( List( dec, x -> x.dimension ) );
+[ 1, 6, 100, 384, 400, 400, 400, 480, 1000, 1200 ]
 \endexample
 
 % The `AtlasSubgroup' call needs 5247 seconds,
@@ -2349,7 +2759,7 @@ Thus the first of the two possible class fusions is the correct one.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The fusion from the character table of $7^2:2L_2(7).2$
-into the table of marks}
+into the table of marks (January~2004)}
 
 It can happen that the class fusion from the ordinary character table of a
 group $G$ into the table of marks of $G$ is not unique up to table
@@ -2373,7 +2783,7 @@ other two.
 \beginexample
 gap> tbl:= CharacterTable( "7^2:2psl(2,7)" );
 CharacterTable( "7^2:2psl(2,7)" )
-gap> tom:= TableOfMarks( FusionToTom( tbl ).name );
+gap> tom:= TableOfMarks( tbl );
 TableOfMarks( "7^2:2L2(7)" )
 gap> fus:= PossibleFusionsCharTableTom( tbl, tom );
 [ [ 1, 6, 2, 4, 3, 5, 13, 13, 7, 8, 10, 9, 16, 7, 10, 9, 8, 16 ], 
@@ -2442,13 +2852,13 @@ X.17    48 -1  .  .  .  .  .  .  /C   C   D  -1   .   C  /D  -1  /C   .
 X.18    48 -1  .  .  .  .  .  .  /C  -1   C   D   .   C  /C  /D  -1   .
 
 A = E(8)-E(8)^3
-  = ER(2) = r2
+  = Sqrt(2) = r2
 B = E(7)+E(7)^2+E(7)^4
-  = (-1+ER(-7))/2 = b7
+  = (-1+Sqrt(-7))/2 = b7
 C = 2*E(7)+2*E(7)^2+2*E(7)^4
-  = -1+ER(-7) = 2b7
+  = -1+Sqrt(-7) = 2b7
 D = -3*E(7)-3*E(7)^2-2*E(7)^3-3*E(7)^4-2*E(7)^5-2*E(7)^6
-  = (5-ER(-7))/2 = 2-b7
+  = (5-Sqrt(-7))/2 = 2-b7
 gap> mat:= MatTom( tom );;
 gap> mataut:= MatrixAutomorphisms( mat );;
 gap> Print( mataut, "\n" );
@@ -2467,11 +2877,9 @@ and decide which class fusion is correct.
 \beginexample
 gap> g:= UnderlyingGroup( tom );;
 gap> tg:= CharacterTable( g );;
-gap> tgfustom:= FusionCharTableTom( tg, tom );
-[ 1, 6, 2, 3, 5, 16, 7, 10, 9, 8, 7, 10, 9, 8, 16, 4, 13, 13 ]
+gap> tgfustom:= FusionCharTableTom( tg, tom );;
 gap> trans:= TransformingPermutationsCharacterTables( tg, tbl );;
-gap> tblfustom:= Permuted( tgfustom, trans.columns );
-[ 1, 6, 2, 4, 3, 5, 13, 13, 7, 10, 9, 8, 16, 7, 9, 8, 10, 16 ]
+gap> tblfustom:= Permuted( tgfustom, trans.columns );;
 gap> orbits:= List( reps, map -> OrbitFusions( AutomorphismsOfTable( tbl ),
 >                                              map, Group( () ) ) );;
 gap> PositionProperty( orbits, orb -> tblfustom in orb );
@@ -2484,10 +2892,189 @@ So we see that the second one of the possibilities above is the right one.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{$3 \times U_4(2) \rightarrow 3_1.U_4(3)$ (March 2010)}
+
+According to the {\ATLAS} (see~\cite[p.~52]{CCN85}),
+the simple group $U_4(3)$ contains two classes of maximal subgroups
+of the type $U_4(2)$.
+The class fusion of $U_4(2)$ into $U_4(3)$ is unique up to table
+automorphisms.
+
+\beginexample
+gap> u42:= CharacterTable( "U4(2)" );;
+gap> u43:= CharacterTable( "U4(3)" );;
+gap> u42fusu43:= PossibleClassFusions( u42, u43 );;
+gap> Length( u42fusu43 );
+4
+gap> Length( RepresentativesFusions( u42, u42fusu43, u43 ) );
+1
+\endexample
+
+More precisely, take the outer automorphism group of $U_4(3)$,
+which is a dihedral group of order eight,
+and consider the subgroup generated by its central involution
+(this automorphism is denoted by $2_1$ in the {\ATLAS})
+and another involution called $2_3$ in the {\ATLAS}.
+This subgroup is a Klein four group that induces a permutation group
+on the classes of $U_4(3)$ and thus acts on the four possible class
+fusions of $U_4(2)$ into $U_4(3)$.
+In fact, this action is transitive.
+
+The automorphism $2_1$ swaps each pair of mutually inverse classes
+of order nine,
+that is, `9A' is swapped with `9B' and `9C' is swapped with `9D'.
+All $U_4(2)$ type subgroups of $U_4(3)$ are invariant under this
+automorphism, they extend to subgroups of the type $U_4(2).2$ in
+$U_4(3).2_1$.
+
+\beginexample
+gap> u43_21:= CharacterTable( "U4(3).2_1" );;
+gap> fus1:= GetFusionMap( u43, u43_21 );
+[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 17, 17, 18 ]
+gap> act1:= Filtered( InverseMap( fus1 ), IsList );
+[ [ 16, 17 ], [ 18, 19 ] ]
+gap> CompositionMaps( ClassNames( u43, "Atlas" ), act1 );
+[ [ "9A", "9B" ], [ "9C", "9D" ] ]
+\endexample
+
+The automorphism $2_3$ swaps `6B' with `6C', `9A' with `9C',
+and `9B' with `9D'.
+The two classes of $U_4(2)$ type subgroups of $U_4(3)$ are swapped
+by this automorphism.
+
+\beginexample
+gap> u43_23:= CharacterTable( "U4(3).2_3" );;
+gap> fus3:= GetFusionMap( u43, u43_23 );
+[ 1, 2, 3, 4, 4, 5, 6, 7, 8, 9, 10, 10, 11, 11, 12, 13, 14, 13, 14, 15 ]
+gap> act3:= Filtered( InverseMap( fus3 ), IsList );
+[ [ 4, 5 ], [ 11, 12 ], [ 13, 14 ], [ 16, 18 ], [ 17, 19 ] ]
+gap> CompositionMaps( ClassNames( u43, "Atlas" ), act3 );
+[ [ "3B", "3C" ], [ "6B", "6C" ], [ "7A", "7B" ], [ "9A", "9C" ], 
+  [ "9B", "9D" ] ]
+\endexample
+
+The {\ATLAS} states that the permutation character induced by the
+first class of $U_4(2)$ type subgroups is `1a+35a+90a',
+which means that the subgroups in this class contain `9A' and `9B' elements.
+Then the permutation character induced by the second class
+of $U_4(2)$ type subgroups is `1a+35b+90a',
+and the subgroups in this class contain `9C' and `9D' elements.
+
+So we choose appropriate fusions for the two classes of maximal
+$U_4(2)$ type subgroups.
+
+\beginexample
+gap> firstfus:= First( u42fusu43, x -> IsSubset( x, [ 16, 17 ] ) );
+[ 1, 2, 2, 3, 3, 5, 4, 7, 8, 9, 10, 10, 12, 12, 11, 12, 16, 17, 20, 20 ]
+gap> secondfus:= First( u42fusu43, x -> IsSubset( x, [ 18, 19 ] ) );
+[ 1, 2, 2, 3, 3, 4, 5, 7, 8, 9, 10, 10, 11, 11, 12, 11, 18, 19, 20, 20 ]
+\endexample
+
+Let us now consider the central extension $3_1.U_4(3)$.
+Since the Schur multiplier of $U_4(2)$ has order two,
+the $U_4(2)$ type subgroups of $U_4(3)$ lift to groups of the structure
+$3 \times U_4(2)$ in $3_1.U_4(3)$.
+There are eight possible class fusions from $3 \times U_4(2)$ to $3_1.U_4(3)$,
+in two orbits of length four under the action of table automorphisms.
+
+\beginexample
+gap> 3u42:= CharacterTable( "Cyclic", 3 ) * u42;
+CharacterTable( "C3xU4(2)" )
+gap> 3u43:= CharacterTable( "3_1.U4(3)" );
+CharacterTable( "3_1.U4(3)" )
+gap> 3u42fus3u43:= PossibleClassFusions( 3u42, 3u43 );;
+gap> Length( 3u42fus3u43 );
+8
+gap> Length( RepresentativesFusions( 3u42, 3u42fus3u43, 3u43 ) );
+2
+\endexample
+
+More precisely, each of the four fusions from $U_4(2)$ to $U_4(3)$ has
+exactly two lifts.
+The four lifts of those fusions from $U_4(2)$ to $U_4(3)$ with
+`9A' and `9B' in their image form one orbit under the action of
+table automorphisms.
+The other orbit consists of the lifts of those fusions with
+`9C' and `9D' in their image.
+
+\beginexample
+gap> inducedmaps:= List( 3u42fus3u43, map -> CompositionMaps(
+>        GetFusionMap( 3u43, u43 ), CompositionMaps( map,
+>        InverseMap( GetFusionMap( 3u42, u42 ) ) ) ) );;
+gap> List( inducedmaps, map -> Position( u42fusu43, map ) );
+[ 1, 1, 2, 2, 4, 4, 3, 3 ]
+\endexample
+
+This solves the ambiguity:
+Fusions from each of the two orbits occur,
+and we can assign them to the two classes of subgroups
+by the choice of the fusions from $U_4(2)$ to $U_4(3)$.
+
+The reason for the asymmetry is that the automorphism $2_3$ of $U_4(3)$
+does not lift to $3_1.U_4(3)$.
+Note that each of the classes `9A', `9B' of $U_4(3)$ has three preimages
+in $3_1.U_4(3)$,
+whereas each of the classes `9C', `9D' has only one preimage.
+
+In fact the two classes of $3 \times U_4(2)$ type subgroups of $3_1.U_4(3)$
+behave differently.
+For example,
+inducing the irreducible characters of a $3 \times U_4(2)$ type subgroup
+in the first class of maximal subgroups of $3_1.U_4(3)$
+yields no irreducible character, whereas the two irreducible characters
+of degree $630$ are obtained by inducing the irreducible characters
+of a subgroup in the second class.
+
+\beginexample
+gap> rep:= RepresentativesFusions( 3u42, 3u42fus3u43, 3u43 );
+[ [ 1, 4, 4, 7, 7, 10, 13, 15, 18, 21, 24, 24, 27, 27, 30, 27, 48, 49, 50, 
+      50, 2, 5, 5, 8, 8, 11, 13, 16, 19, 22, 25, 25, 28, 28, 31, 28, 48, 49, 
+      51, 51, 3, 6, 6, 9, 9, 12, 13, 17, 20, 23, 26, 26, 29, 29, 32, 29, 48, 
+      49, 52, 52 ], 
+  [ 1, 4, 4, 8, 9, 13, 10, 15, 18, 21, 25, 26, 31, 32, 27, 30, 46, 44, 51, 
+      52, 2, 5, 5, 9, 7, 13, 11, 16, 19, 22, 26, 24, 32, 30, 28, 31, 47, 42, 
+      52, 50, 3, 6, 6, 7, 8, 13, 12, 17, 20, 23, 24, 25, 30, 31, 29, 32, 45, 
+      43, 50, 51 ] ]
+gap> irr:= Irr( 3u42 );;
+gap> ind:= InducedClassFunctionsByFusionMap( 3u42, 3u43, irr, rep[1] );;
+gap> Intersection( ind, Irr( 3u43 ) );
+[ Character( CharacterTable( "3_1.U4(3)" ), [ 630, 630*E(3)^2, 630*E(3), 6, 
+      6*E(3)^2, 6*E(3), 9, 9*E(3)^2, 9*E(3), -9, -9*E(3)^2, -9*E(3), 0, 0, 2, 
+      2*E(3)^2, 2*E(3), -2, -2*E(3)^2, -2*E(3), 0, 0, 0, -3, -3*E(3)^2, 
+      -3*E(3), 3, 3*E(3)^2, 3*E(3), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+      0, 0, 0, 0, 0, 0, -1, -E(3)^2, -E(3) ] ), 
+  Character( CharacterTable( "3_1.U4(3)" ), [ 630, 630*E(3), 630*E(3)^2, 6, 
+      6*E(3), 6*E(3)^2, 9, 9*E(3), 9*E(3)^2, -9, -9*E(3), -9*E(3)^2, 0, 0, 2, 
+      2*E(3), 2*E(3)^2, -2, -2*E(3), -2*E(3)^2, 0, 0, 0, -3, -3*E(3), 
+      -3*E(3)^2, 3, 3*E(3), 3*E(3)^2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+      0, 0, 0, 0, 0, 0, 0, -1, -E(3), -E(3)^2 ] ) ]
+gap> ind:= InducedClassFunctionsByFusionMap( 3u42, 3u43, irr, rep[2] );;
+gap> Intersection( ind, Irr( 3u43 ) );
+[  ]
+\endexample
+
+For $6_1.U_4(3)$ and $12_1.U_4(3)$, one gets the same phenomenon:
+We have two orbits of class fusions,
+one corresponding to each of the two classes of subgroups
+of the type $3 \times 4 Y 2.U_4(2)$.
+We get $10$ irreducible induced characters from
+a subgroup in the second class (four faithful ones,
+four with kernel of order two, and the two abovementioned
+degree $630$ characters with kernel of order four)
+and no irreducible character from a subgroup in the first class.
+
+%T Computing the possible class fusions from $3 \times 4 Y 2.U_4(2)$
+%T to $12_1.U_4(3)$ takes a long time ...
+
+% \beginexample
+% \endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tthdump{\addcontentsline{toc}{section}{References}}
 
 \bibliographystyle{amsalpha}
-\bibliography{manualbib.xml,../../../doc/manual,../../atlasrep/doc/manualbib.xml,../../Browse/doc/browsebib.xml}
+\bibliography{manualbib.xml,../../../doc/manualbib.xml,../../atlasrep/doc/manualbib.xml,../../Browse/doc/browsebib.xml}
 
 % gap> STOP_TEST( "ambigfus.tst", 6129230950 );
 

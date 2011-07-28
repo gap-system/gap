@@ -1,7 +1,8 @@
 ############################################################################
 ##
-#W  field.gi            Alnuth - Kant interface                 Bettina Eick
-#W       					               Bjoern Assmann
+#W  field.gi            Alnuth - PARI/GP interface            Bettina Eick
+#W       					            Bjoern Assmann
+#W       					           Andreas Distler
 ##
 
 #############################################################################
@@ -63,7 +64,7 @@ function( F )
         return EquationOrderBasis(F);
     fi;
     e := EquationOrderBasis(F);
-    T := MaximalOrderDescriptionKant(F);
+    T := MaximalOrderDescriptionPari(F);
     b := List( T, x -> LinearCombination( e, x ) );
     B := Objectify(NewType(FamilyObj(F), IsFiniteBasisDefault and
                                          IsRelativeBasisDefaultRep),
@@ -128,7 +129,7 @@ UnitGroupOfNumberField := function( F )
 
     # determine generators
     eqn := EquationOrderBasis(F);
-    uni := UnitGroupDescriptionKant(F);
+    uni := UnitGroupDescriptionPari(F);
     if uni=[-1] then
         G:=GroupByGenerators([-1*eqn[1]]);
     else
@@ -187,7 +188,7 @@ ExponentsOfUnitsOfNumberField := function( F, elms )
     # determine exponents
     base := EquationOrderBasis( F );
     coef := List( elms, x -> Coefficients( base, x ) );
-    exps := ExponentsOfUnitsDescriptionKant( F, coef );
+    exps := ExponentsOfUnitsDescriptionWithRankPari( F, coef );
 
     # add unit group if this is not yet known
     gens := List( exps.units, x -> LinearCombination( base, x ) );
@@ -215,7 +216,7 @@ ExponentsOfUnitsWithRank := function( F, elms )
     # determine exponents
     base := EquationOrderBasis( F );
     coef := List( elms, x -> Coefficients( base, x ) );
-    exps := ExponentsOfUnitsDescriptionWithRankKant( F, coef );
+    exps := ExponentsOfUnitsDescriptionWithRankPari( F, coef );
 
     # add unit group if this is not yet known
     gens := List( exps.units, x -> LinearCombination( base, x ) );
@@ -237,7 +238,7 @@ InstallGlobalFunction( NormCosetsOfNumberField, function( F, norm )
 
     # get representatives mod unit group
     base := EquationOrderBasis( F );
-    reps := NormCosetsDescriptionKant( F, norm );
+    reps := NormCosetsDescriptionPari( F, norm );
 
     # add unit group if this is not yet known
     gens := List( reps.units, x -> LinearCombination( base, x ) );

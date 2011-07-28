@@ -2,14 +2,14 @@
 ##
 #W  cxsc.gd                       GAP library               Laurent Bartholdi
 ##
-#H  @(#)$Id: cxsc.gd,v 1.1 2008/06/14 15:45:40 gap Exp $
+#H  @(#)$Id: cxsc.gd,v 1.4 2011/04/08 13:58:40 gap Exp $
 ##
 #Y  Copyright (C) 2008 Laurent Bartholdi
 ##
 ##  This file deals with floats
 ##
 Revision.cxsc_gd :=
-  "@(#)$Id: cxsc.gd,v 1.1 2008/06/14 15:45:40 gap Exp $";
+  "@(#)$Id: cxsc.gd,v 1.4 2011/04/08 13:58:40 gap Exp $";
 
 #############################################################################
 ##
@@ -20,15 +20,15 @@ Revision.cxsc_gd :=
 ##   <Filt Name="IsCXSCReal"/>
 ##   <Filt Name="IsCXSCComplex"/>
 ##   <Filt Name="IsCXSCInterval"/>
-##   <Filt Name="IsCXSCCInterval"/>
+##   <Filt Name="IsCXSCBox"/>
 ##   <Var Name="CXSCRealFamily"/>
 ##   <Var Name="CXSCComplexFamily"/>
 ##   <Var Name="CXSCIntervalFamily"/>
-##   <Var Name="CXSCCIntervalFamily"/>
-##   <Var Name="TYPE_CXSC_REAL"/>
-##   <Var Name="TYPE_CXSC_COMPLEX"/>
-##   <Var Name="TYPE_CXSC_INTERVAL"/>
-##   <Var Name="TYPE_CXSC_CINTERVAL"/>
+##   <Var Name="CXSCBoxFamily"/>
+##   <Var Name="TYPE_CXSC_RP"/>
+##   <Var Name="TYPE_CXSC_CP"/>
+##   <Var Name="TYPE_CXSC_RI"/>
+##   <Var Name="TYPE_CXSC_CI"/>
 ##   <Description>
 ##     The category of floating-point numbers.
 ##
@@ -38,21 +38,22 @@ Revision.cxsc_gd :=
 ## </ManSection>
 ## <#/GAPDoc>
 ##
-DeclareCategory("IsCXSCFloat", IsFloat);
-DeclareCategoryCollections("IsCXSCFloat");
-DeclareCategoryCollections("IsCXSCFloatCollection");
+DeclareCategory("IsCXSCFloat", IsFloat); # virtual classes
+DeclareCategory("IsCXSCComplexFloat", IsCXSCFloat);
+DeclareCategory("IsCXSCIntervalFloat", IsCXSCFloat and IsDomain);
+
 DeclareCategory("IsCXSCReal", IsCXSCFloat);
 DeclareCategoryCollections("IsCXSCReal");
 DeclareCategoryCollections("IsCXSCRealCollection");
-DeclareCategory("IsCXSCComplex", IsCXSCFloat);
+DeclareCategory("IsCXSCComplex", IsCXSCComplexFloat);
 DeclareCategoryCollections("IsCXSCComplex");
 DeclareCategoryCollections("IsCXSCComplexCollection");
-DeclareCategory("IsCXSCInterval", IsCXSCFloat and IsDomain);
+DeclareCategory("IsCXSCInterval", IsCXSCIntervalFloat);
 DeclareCategoryCollections("IsCXSCInterval");
 DeclareCategoryCollections("IsCXSCIntervalCollection");
-DeclareCategory("IsCXSCCInterval", IsCXSCFloat and IsDomain);
-DeclareCategoryCollections("IsCXSCCInterval");
-DeclareCategoryCollections("IsCXSCCIntervalCollection");
+DeclareCategory("IsCXSCBox", IsCXSCIntervalFloat and IsCXSCComplexFloat);
+DeclareCategoryCollections("IsCXSCBox");
+DeclareCategoryCollections("IsCXSCBoxCollection");
 
 BindGlobal("CXSCRealFamily",
         NewFamily("CXSCRealFamily", IsCXSCReal));
@@ -60,43 +61,34 @@ BindGlobal("CXSCComplexFamily",
         NewFamily("CXSCComplexFamily", IsCXSCComplex));
 BindGlobal("CXSCIntervalFamily",
         NewFamily("CXSCIntervalFamily", IsCXSCInterval));
-BindGlobal("CXSCCIntervalFamily",
-        NewFamily("CXSCCIntervalFamily", IsCXSCCInterval));
+BindGlobal("CXSCBoxFamily",
+        NewFamily("CXSCBoxFamily", IsCXSCBox));
 
-BindGlobal("TYPE_CXSC_REAL", 
+BindGlobal("TYPE_CXSC_RP", 
         NewType(CXSCRealFamily, IsCXSCReal and IsInternalRep));
-BindGlobal("TYPE_CXSC_COMPLEX", 
+BindGlobal("TYPE_CXSC_CP", 
         NewType(CXSCComplexFamily, IsCXSCComplex and IsInternalRep));
-BindGlobal("TYPE_CXSC_INTERVAL", 
+BindGlobal("TYPE_CXSC_RI", 
         NewType(CXSCIntervalFamily, IsCXSCInterval and IsInternalRep));
-BindGlobal("TYPE_CXSC_CINTERVAL", 
-        NewType(CXSCCIntervalFamily, IsCXSCCInterval and IsInternalRep));
+BindGlobal("TYPE_CXSC_CI", 
+        NewType(CXSCBoxFamily, IsCXSCBox and IsInternalRep));
 
-BindGlobal("TYPE_CXSC_REAL0", 
-        NewType(CXSCRealFamily, IsCXSCReal and IsInternalRep and IsZero));
-BindGlobal("TYPE_CXSC_COMPLEX0", 
-        NewType(CXSCComplexFamily, IsCXSCComplex and IsInternalRep and IsZero));
-BindGlobal("TYPE_CXSC_INTERVAL0", 
-        NewType(CXSCIntervalFamily, IsCXSCInterval and IsInternalRep and IsZero));
-BindGlobal("TYPE_CXSC_CINTERVAL0", 
-        NewType(CXSCCIntervalFamily, IsCXSCCInterval and IsInternalRep and IsZero));
-
-BindGlobal("CXSC_REAL_FIELD",
+BindGlobal("CXSC_RP_FIELD",
         Objectify(NewType(CollectionsFamily(CXSCRealFamily),
                 IsField and IsAttributeStoringRep),rec()));
-SetCharacteristic(CXSC_REAL_FIELD,0);
-BindGlobal("CXSC_COMPLEX_FIELD",
+SetCharacteristic(CXSC_RP_FIELD,0);
+BindGlobal("CXSC_CP_FIELD",
         Objectify(NewType(CollectionsFamily(CXSCComplexFamily),
                 IsField and IsAttributeStoringRep),rec()));
-SetCharacteristic(CXSC_COMPLEX_FIELD,0);
-BindGlobal("CXSC_INTERVAL_FIELD",
+SetCharacteristic(CXSC_CP_FIELD,0);
+BindGlobal("CXSC_RI_FIELD",
         Objectify(NewType(CollectionsFamily(CXSCIntervalFamily),
                 IsField and IsAttributeStoringRep),rec()));
-SetCharacteristic(CXSC_INTERVAL_FIELD,0);
-BindGlobal("CXSC_CINTERVAL_FIELD",
-        Objectify(NewType(CollectionsFamily(CXSCCIntervalFamily),
+SetCharacteristic(CXSC_RI_FIELD,0);
+BindGlobal("CXSC_CI_FIELD",
+        Objectify(NewType(CollectionsFamily(CXSCBoxFamily),
                 IsField and IsAttributeStoringRep),rec()));
-SetCharacteristic(CXSC_CINTERVAL_FIELD,0);
+SetCharacteristic(CXSC_CI_FIELD,0);
 #############################################################################
 
 #############################################################################
@@ -141,24 +133,18 @@ DeclareOperation("CXSCComplex", [IsObject]);
 DeclareOperation("CXSCComplex", [IsObject,IsObject]);
 DeclareOperation("CXSCInterval", [IsObject]);
 DeclareOperation("CXSCInterval", [IsObject,IsObject]);
-DeclareOperation("CXSCCInterval", [IsObject]);
-DeclareOperation("CXSCCInterval", [IsObject,IsObject]);
+DeclareOperation("CXSCBox", [IsObject]);
+DeclareOperation("CXSCBox", [IsObject,IsObject]);
 #############################################################################
 
 #############################################################################
 ##
 #O Operations
 ##
-DeclareOperation("Sup", [IsObject]);
-DeclareOperation("Inf", [IsObject]);
-DeclareOperation("Mid", [IsObject]);
-DeclareOperation("Overlaps", [IsCXSCFloat,IsCXSCFloat]);
-DeclareOperation("IsDisjoint", [IsCXSCFloat,IsCXSCFloat]);
-
 DeclareOperation("ComplexRootsOfUnivariatePolynomial", [IsList]);
-DeclareOperation("CIntervalRootsOfUnivariatePolynomial", [IsList]);
+DeclareOperation("BoxRootsOfUnivariatePolynomial", [IsList]);
 DeclareOperation("ComplexRootsOfUnivariatePolynomial", [IsPolynomial]);
-DeclareOperation("CIntervalRootsOfUnivariatePolynomial", [IsPolynomial]);
+DeclareOperation("BoxRootsOfUnivariatePolynomial", [IsPolynomial]);
 #############################################################################
 
 #############################################################################

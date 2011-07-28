@@ -3,7 +3,7 @@
 #W  onecohom.gi                     GAP library                  Frank Celler
 ##                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: onecohom.gi,v 4.51 2010/02/23 15:13:19 gap Exp $
+#H  @(#)$Id: onecohom.gi,v 4.52 2011/04/20 09:20:16 gap Exp $
 ##
 #Y  Copyright (C)  1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci.,University of St Andrews,Scotland
@@ -12,7 +12,7 @@
 ##  This file contains the methods for operations for the 1-Cohomology
 ##
 Revision.onecohom_gi:=
-  "@(#)$Id: onecohom.gi,v 4.51 2010/02/23 15:13:19 gap Exp $";
+  "@(#)$Id: onecohom.gi,v 4.52 2011/04/20 09:20:16 gap Exp $";
 
 
 #############################################################################
@@ -124,7 +124,7 @@ local  hom,fg,fpi,fpg,nt,fam;
     return;
   fi;
 
-  nt:=Subgroup(ocr.group,NumeratorOfModuloPcgs(ocr.modulePcgs));
+  nt:=SubgroupNC(ocr.group,NumeratorOfModuloPcgs(ocr.modulePcgs));
   if IsBound(ocr.factorfphom) and not IsBound(ocr.generators) then
     Info(InfoCoh,1,"using provided presentation");
     hom:=ocr.factorfphom;
@@ -521,7 +521,7 @@ local   B, S, L, T, i, j;
     if Length(S) = 0  then
     	Info(InfoCoh,1,"OCOneCoboundaries: group is trivial");
         ocr.oneCoboundaries:=FullRowSpace(ocr.field,0);
-        ocr.centralizer:=Subgroup(ocr.group,ocr.modulePcgs);
+        ocr.centralizer:=SubgroupNC(ocr.group,ocr.modulePcgs);
         return ocr.oneCoboundaries;
     fi;
 
@@ -1125,13 +1125,13 @@ function(ocr,G,K)
              =ExponentsOfPcElement(ocr.generators,ocr.generators[i])));
 
     K:=InducedPcgsByGeneratorsNC(NumeratorOfModuloPcgs(ocr.generators),K);
-    ocr.complement:=Subgroup(ocr.group,K);
+    ocr.complement:=SubgroupNC(ocr.group,K);
 end);
 
 InstallMethod(OCAddComplement,"generic",true,
   [IsRecord,IsGroup,IsListOrCollection],0,
 function(ocr,G,K)
-    ocr.complement:=Subgroup(ocr.group,K);
+    ocr.complement:=SubgroupNC(ocr.group,K);
     ocr.complementGens:=K;
 end);
 

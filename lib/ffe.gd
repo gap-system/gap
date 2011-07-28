@@ -3,7 +3,7 @@
 #W  ffe.gd                      GAP library                     Werner Nickel
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: ffe.gd,v 4.46 2010/02/23 15:12:58 gap Exp $
+#H  @(#)$Id: ffe.gd,v 4.49 2010/10/29 08:44:09 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  This file declares operations for `FFE's.
 ##
 Revision.ffe_gd :=
-    "@(#)$Id: ffe.gd,v 4.46 2010/02/23 15:12:58 gap Exp $";
+    "@(#)$Id: ffe.gd,v 4.49 2010/10/29 08:44:09 gap Exp $";
 
 
 #############################################################################
@@ -255,7 +255,7 @@ DeclareCategoryCollections( "IsFFECollColl" );
 ##  (i.e. the sizes of the smallest fields containing them).
 ##  Amongst irreducible elements of a given field, the ordering 
 ##  depends on which of these categories the elements of the field belong to
-##  (all elements of a given field should belong to the same one)
+##  (all irreducible elements of a given field should belong to the same one)
 ##  <P/>
 ##  Elements in <Ref Filt="IsLexOrderedFFE"/> are ordered lexicographically
 ##  by their coefficients with respect to the canonical basis of the field.
@@ -466,9 +466,9 @@ DeclareSynonym( "GF", GaloisField );
 
 #############################################################################
 ##
-#O  DegreeFFE( <z> )
-#O  DegreeFFE( <vec> )
-#O  DegreeFFE( <mat> )
+#A  DegreeFFE( <z> )
+#A  DegreeFFE( <vec> )
+#A  DegreeFFE( <mat> )
 ##
 ##  <#GAPDoc Label="DegreeFFE">
 ##  <ManSection>
@@ -496,7 +496,7 @@ DeclareSynonym( "GF", GaloisField );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "DegreeFFE", [ IsFFE ] );
+DeclareAttribute( "DegreeFFE", IsFFE  );
 
 
 #############################################################################
@@ -531,17 +531,17 @@ DeclareOperation( "LogFFE", [ IsFFE, IsFFE ] );
 
 #############################################################################
 ##
-#O  IntFFE( <z> )
+#A  IntFFE( <z> )
 ##
 ##  <#GAPDoc Label="IntFFE">
 ##  <ManSection>
-##  <Oper Name="IntFFE" Arg='z'/>
+##  <Attr Name="IntFFE" Arg='z'/>
 ##  <Meth Name="Int" Arg='z' Label="for a FFE"/>
 ##
 ##  <Description>
-##  <Ref Oper="IntFFE"/> returns the integer corresponding to the element
+##  <Ref Attr="IntFFE"/> returns the integer corresponding to the element
 ##  <A>z</A>, which must lie in a finite prime field.
-##  That is, <Ref Oper="IntFFE"/> returns the smallest nonnegative integer
+##  That is, <Ref Attr="IntFFE"/> returns the smallest nonnegative integer
 ##  <M>i</M> such that <M>i</M><C> * One( </C><A>z</A><C> ) = </C><A>z</A>.
 ##  <P/>
 ##  The  correspondence between elements from a finite prime field of
@@ -551,7 +551,7 @@ DeclareOperation( "LogFFE", [ IsFFE, IsFFE ] );
 ##  smallest primitive root mod <M>p</M>
 ##  (see&nbsp;<Ref Func="PrimitiveRootMod"/>).
 ##  <P/>
-##  <Ref Oper="IntFFE"/> is installed as a method for the operation
+##  <Ref Attr="IntFFE"/> is installed as a method for the operation
 ##  <Ref Func="Int"/> with argument a finite field element.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -564,22 +564,24 @@ DeclareOperation( "LogFFE", [ IsFFE, IsFFE ] );
 ##  311
 ##  311
 ##  ]]></Example>
+##
+##  See also <Ref Attr="IntFFESymm" Label="for a FFE"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "IntFFE", [ IsFFE ] );
+DeclareAttribute( "IntFFE", IsFFE  );
 
 
 #############################################################################
 ##
-#O  IntFFESymm( <z> )
-#O  IntFFESymm( <vec> )
+#A  IntFFESymm( <z> )
+#A  IntFFESymm( <vec> )
 ##
 ##  <#GAPDoc Label="IntFFESymm">
 ##  <ManSection>
-##  <Oper Name="IntFFESymm" Arg='z' Label="for a FFE"/>
-##  <Oper Name="IntFFESymm" Arg='vec' Label="for a vector of FFEs"/>
+##  <Attr Name="IntFFESymm" Arg='z' Label="for a FFE"/>
+##  <Attr Name="IntFFESymm" Arg='vec' Label="for a vector of FFEs"/>
 ##
 ##  <Description>
 ##  For a finite prime field element <A>z</A>,
@@ -609,11 +611,13 @@ DeclareOperation( "IntFFE", [ IsFFE ] );
 ##  4
 ##  -5
 ##  ]]></Example>
+##
+##  See also <Ref Attr="IntFFE"/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "IntFFESymm", [ IsFFE ] );
+DeclareAttribute( "IntFFESymm", IsFFE  );
 
 #############################################################################
 ##

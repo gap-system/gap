@@ -208,9 +208,9 @@ end;
 
 #############################################################################
 ##
-#A SchurMultiplicator(G) . . . . . . . . . . . . . . . . . . . . . . . . M(G)
+#A SchurMultPcpGroup(G) . . . . . . . . . . . . . . . . . . . . . . . . . M(G)
 ##
-InstallMethod( SchurMultiplicator, true, [IsPcpGroup], 0, function(G)
+SchurMultPcpGroup := function(G)
     local n, H, M, T, D, I;
 
     # a simple check
@@ -231,6 +231,11 @@ InstallMethod( SchurMultiplicator, true, [IsPcpGroup], 0, function(G)
     D := DerivedSubgroup(H);
     I := Intersection(M, D);
     return AbelianInvariants(I);
+end;
+
+InstallMethod( AbelianInvariantsMultiplier, true, [IsPcpGroup], 0, 
+function(G)
+    return SchurMultPcpGroup(G);
 end);
 
 #############################################################################

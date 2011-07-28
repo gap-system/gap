@@ -2,7 +2,7 @@
 **
 *W  code.c                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: code.c,v 4.44 2010/02/23 15:13:40 gap Exp $
+*H  @(#)$Id: code.c,v 4.49 2011/06/06 16:28:07 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,7 +19,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_code_c =
-   "@(#)$Id: code.c,v 4.44 2010/02/23 15:13:40 gap Exp $";
+   "@(#)$Id: code.c,v 4.49 2011/06/06 16:28:07 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -47,12 +47,12 @@ const char * Revision_code_c =
 #include        "code.h"                /* coder                           */
 #undef  INCLUDE_DECLARATION_PART
 
-#include        "vars.h"                /* variables                       */
-
 #include        "saveload.h"            /* saving and loading              */
 #include        "read.h"                /* to access stack of for loop globals */
-
+#include        "gvars.h"
 #include        "tls.h"                 /* thread-local storage            */
+
+#include        "vars.h"                /* variables                       */
 
 
 /****************************************************************************
@@ -74,6 +74,18 @@ const char * Revision_code_c =
 */
 /* TL: Stat OffsBody; */
 
+Stat OffsBodyStack[1024];
+UInt OffsBodyCount = 0;
+
+static inline void PushOffsBody() {
+  assert(OffsBodyCount <= 1023);
+  OffsBodyStack[OffsBodyCount++] = TLS->offsBody;
+}
+
+static inline void PopOffsBody() {
+  assert(OffsBodyCount);
+  TLS->offsBody = OffsBodyStack[--OffsBodyCount];
+}
 
 /****************************************************************************
 **
@@ -598,7 +610,8 @@ void CodeFuncCallEnd (
 void CodeFuncExprBegin (
     Int                 narg,
     Int                 nloc,
-    Obj                 nams )
+    Obj                 nams,
+    Int                 startLine)
 {
     Obj                 fexp;           /* function expression bag         */
     Obj                 fexs;           /* function expressions list       */
@@ -608,7 +621,8 @@ void CodeFuncExprBegin (
     UInt                len;
 
     /* remember the current offset                                         */
-    SET_BRK_CALL_TO( TLS->offsBody );
+    PushOffsBody();
+
 
     /* create a function expression                                        */
     fexp = NewBag( T_FUNCTION, SIZE_FUNC );
@@ -635,7 +649,7 @@ void CodeFuncExprBegin (
       SyStrncat(CSTR_STRING(TLS->input->gapname),TLS->input->name, len);
     }
     FILENAME_BODY(body) = TLS->input->gapname;
-    STARTLINE_BODY(body) = INTOBJ_INT(TLS->input->number);
+    STARTLINE_BODY(body) = INTOBJ_INT(startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(TLS->input->name),TLS->input->number);
 	  Pr(" Body id %d\n",(Int)(body),0L); */
     TLS->offsBody = 0;
@@ -714,6 +728,7 @@ void CodeFuncExprEnd (
 
     /* restore the remembered offset                                       */
     TLS->offsBody = BRK_CALL_TO();
+    PopOffsBody();
 
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
@@ -732,31 +747,9 @@ void CodeFuncExprEnd (
     /* otherwise, make the function and store it in 'TLS->codeResult'           */
     else {
         TLS->codeResult = MakeFunction( fexp );
-        if ( CompNowFuncs != 0 ) {
-            CompNowCount++;
-            if ( CompNowCount <= LEN_PLIST( CompNowFuncs ) ) {
-                fexp = ELM_PLIST( CompNowFuncs, CompNowCount );
-                for ( i = 0;  i <= 7;  i++ ) {
-                    HDLR_FUNC( fexp, i ) = HDLR_FUNC( TLS->codeResult, i );
-                }
-                NARG_FUNC( fexp ) = NARG_FUNC( TLS->codeResult );
-                NAMS_FUNC( fexp ) = NAMS_FUNC( TLS->codeResult );
-                NLOC_FUNC( fexp ) = NLOC_FUNC( TLS->codeResult );
-                BODY_FUNC( fexp ) = BODY_FUNC( TLS->codeResult );
-                FEXS_FUNC( fexp ) = FEXS_FUNC( TLS->codeResult );
-                CHANGED_BAG( fexp );
-            }
-            else {
-                GROW_PLIST(    CompNowFuncs, CompNowCount );
-                SET_LEN_PLIST( CompNowFuncs, CompNowCount );
-                SET_ELM_PLIST( CompNowFuncs, CompNowCount, TLS->codeResult );
-                CHANGED_BAG(   CompNowFuncs );
-            }
-        }
     }
 
 }
-
 
 /****************************************************************************
 **
@@ -964,16 +957,6 @@ void CodeForEnd ( void )
 }
 
 
-void CodeQualifiedExprBegin(UInt qual) 
-{
-  PushExpr(INTEXPR_INT(qual));
-}
-
-void CodeQualifiedExprEnd() 
-{
-}
-
-
 /****************************************************************************
 **
 *F  CodeAtomicBegin()  . . . . . . .  code atomic-statement, begin of statement
@@ -997,6 +980,7 @@ void CodeQualifiedExprEnd()
 **  the reader encounters  the end  of the  statement, i.e., immediate  after
 **  'CodeAtomicEndBody'.
 */
+
 void CodeAtomicBegin ( void )
 {
 }
@@ -1044,9 +1028,9 @@ void CodeAtomicEndBody (
     /* enter the expressions                                                */
     for ( i = 2*nrexprs; 1 <= i; i -= 2 ) {
         e = PopExpr();
-	qual = PopExpr();
+        qual = PopExpr();
         ADDR_STAT(stat)[i] = e;
-	ADDR_STAT(stat)[i-1] = qual;
+        ADDR_STAT(stat)[i-1] = qual;
     }
 
 
@@ -1057,6 +1041,25 @@ void CodeAtomicEndBody (
 void CodeAtomicEnd ( void )
 {
 }
+
+/****************************************************************************
+**
+*F  CodeQualifiedExprBegin()  . . . code readonly/readwrite expression start
+*F  CodeQualifiedExprEnd()  . . . . . code readonly/readwrite expression end
+**
+**  These functions code the beginning and end of the readonly/readwrite
+**  qualified expressions of an atomic statement.
+*/
+
+void CodeQualifiedExprBegin(UInt qual) 
+{
+  PushExpr(INTEXPR_INT(qual));
+}
+
+void CodeQualifiedExprEnd() 
+{
+}
+
 
 
 
@@ -1497,11 +1500,12 @@ void CodeIntExpr (
     /* otherwise stuff the value into the values list                      */
     /* Need to fix this up for GMP integers */
     else {
-        expr = NewExpr( T_INT_EXPR, sizeof(UInt2) + SIZE_OBJ(val) );
-        ((UInt2*)ADDR_EXPR(expr))[0] = (Expr)sign;
-        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
+        expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
+        ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
+	memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
+	/*        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
             ((UInt2*)ADDR_EXPR(expr))[i] = ((UInt2*)ADDR_OBJ(val))[i-1];
-        }
+	    } */
     }
 
     /* push the expression                                                 */
@@ -1773,6 +1777,169 @@ void CodeStringExpr (
 
     /* push the string                                                     */
     PushExpr( string );
+}
+
+/****************************************************************************
+**
+*F  CodeFloatExpr( <str> ) . . . . . . . .  code literal float expression
+*/
+#define FLOAT_0_INDEX 1
+#define FLOAT_1_INDEX 2
+#define MAX_FLOAT_INDEX ((1L<<NR_SMALL_INT_BITS)-2)
+
+static UInt GVAR_SAVED_FLOAT_INDEX;
+static UInt NextFloatExprNumber = 3;
+
+static UInt NextEagerFloatLiteralNumber = 1;
+
+static Obj EAGER_FLOAT_LITERAL_CACHE = 0;
+static Obj CONVERT_FLOAT_LITERAL_EAGER;
+
+
+static UInt getNextFloatExprNumber() {
+  if (NextFloatExprNumber > MAX_FLOAT_INDEX)
+    return 0;
+  else
+    return NextFloatExprNumber++;
+}
+
+static UInt CheckForCommonFloat(Char *str) {
+  /* skip leading zeros */
+  while (*str == '0')
+    str++;
+  if (*str == '.')
+    /* might be zero literal */
+    {
+      /* skip point */
+      str++;
+      /* skip more zeroes */
+      while (*str == '0')
+	str++;
+      /* if we've got to end of string we've got zero. */
+      if (!isdigit(*str))
+	return FLOAT_0_INDEX;
+    }
+  if (*str++ !='1')
+    return 0;
+  /* might be one literal */
+  if (*str++ != '.')
+    return 0;
+  /* skip zeros */
+  while (*str == '0')
+    str++;
+  if (*str == '\0')
+    return FLOAT_1_INDEX;
+  if (isdigit(*str))
+    return 0;
+  /* must now be an exponent character */
+  assert(isalpha(*str));
+  /* skip it */
+  str++;
+  /*skip + and - in exponent */
+  if (*str == '+' || *str == '-')
+    str++;
+  /* skip leading zeros in the exponent */
+  while (*str == '0')
+    str++;
+  /* if there's anything but leading zeros this isn't 
+     a one literal */
+  if (*str == '\0')
+    return FLOAT_1_INDEX;
+  else
+    return 0;
+}
+
+static void CodeLazyFloatExpr( Char *str, UInt len) {
+    /* Lazy case, store the string for conversion at run time */
+    Expr fl = NewExpr( T_FLOAT_EXPR_LAZY, 2*sizeof(UInt) +len+1  );
+    /* copy the string                                                     */
+    memcpy( (void *)((char *)ADDR_EXPR(fl)+2*sizeof(UInt)), (void *)str, 
+	    len+1 );
+      
+    *(UInt *)ADDR_EXPR(fl) = len;
+    UInt ix = CheckForCommonFloat(str);
+    if (!ix) 
+      ix = getNextFloatExprNumber();
+    ((UInt *)ADDR_EXPR(fl))[1] = ix;
+    
+    /* push the expression                                                     */
+    PushExpr( fl );
+}
+
+static void CodeEagerFloatExpr( Obj str, Char mark ) {
+  /* Eager case, do the conversion now */
+  UInt l = GET_LEN_STRING(str);
+  Expr fl = NewExpr( T_FLOAT_EXPR_EAGER, sizeof(UInt)* 3 + l + 1);
+  Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
+  assert(EAGER_FLOAT_LITERAL_CACHE);
+  assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
+  GROW_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
+  SET_ELM_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber, v);
+  CHANGED_BAG(EAGER_FLOAT_LITERAL_CACHE);
+  SET_LEN_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
+  ADDR_EXPR(fl)[0] = NextEagerFloatLiteralNumber;
+  ADDR_EXPR(fl)[1] = l;
+  ADDR_EXPR(fl)[2] = (UInt)mark;
+  memcpy((void*)(ADDR_EXPR(fl)+3), (void *)CHARS_STRING(str), l+1);
+  NextEagerFloatLiteralNumber++;
+  PushExpr(fl);
+}
+
+void CodeFloatExpr (
+    Char *              str )
+{
+  
+  UInt l = SyStrlen(str);
+  UInt l1 = l;
+  Char mark;
+  if (str[l-1] == '_' )
+    {
+      l1 = l-1;
+      mark = '\0';
+    }
+  else if (str[l-2] == '_')
+    {
+      l1 = l-2;
+      mark = str[l-1];
+    }
+  if (l1 < l)
+    {
+      Obj s = NEW_STRING(l1);
+      memcpy((void *)CHARS_STRING(s), (void *)str, (size_t)l1 );
+      CodeEagerFloatExpr(s,mark);
+    } else {
+    CodeLazyFloatExpr(str, l);
+  }
+}
+
+/****************************************************************************
+**
+*F  CodeLongFloatExpr( <str> ) . . . . . . .code long literal float expression
+*/
+
+void CodeLongFloatExpr (
+    Obj              str )
+{
+  Char mark;
+
+    /* allocate the float expression                                      */
+    UInt l = GET_LEN_STRING(str);
+    UInt l1 = l;
+    if (CHARS_STRING(str)[l-1] == '_') {
+      l1 = l-1;
+      mark = '\0';
+    } else if (CHARS_STRING(str)[l-2] == '_') {
+      l1 = l-2;
+      mark = CHARS_STRING(str)[l-1];
+    }
+    if (l1 < l) {
+      CHARS_STRING(str)[l1] = '\0';
+      SET_LEN_STRING(str,l1);
+      CodeEagerFloatExpr(str, mark);
+    } else {
+      CodeLazyFloatExpr((Char *)CHARS_STRING(str), l);
+    }
+    
 }
 
 
@@ -3093,58 +3260,47 @@ void LoadBody ( Obj body )
 }
 
 
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
-*/
-
-/****************************************************************************
-**
-
-*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
-*/
-static Int InitKernel (
-    StructInitInfo *    module )
+void InitCoderTLS( void )
 {
-    /* install the marking functions for function body bags                */
-    InfoBags[ T_BODY ].name = "function body bag";
-    InitMarkFuncBags( T_BODY, MarkThreeSubBags );
+    TLS->stackStat = NewBag( T_BODY, 64*sizeof(Stat) );
+    TLS->stackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
+}
 
-    SaveObjFuncs[ T_BODY ] = SaveBody;
-    LoadObjFuncs[ T_BODY ] = LoadBody;
-
-    /* Allocate function bodies in the public data space */
-    MakeBagTypePublic(T_BODY);
-
-    /* make the result variable known to Gasman                            */
-    /* TL: InitGlobalBag( &CodeResult, "CodeResult" ); */
-
-    /* allocate the statements and expressions stacks                      */
-    InitGlobalBag( &TLS->stackStat, "TLS->stackStat" );
-    InitGlobalBag( &TLS->stackExpr, "TLS->stackExpr" );
-
-    /* return success                                                      */
-    return 0;
+void DestroyCoderTLS( void )
+{
 }
 
 
-/****************************************************************************
-**
-*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
-*/
 static Int InitLibrary (
     StructInitInfo *    module )
 {
+  UInt gv;
+  Obj cache;
     /* allocate the statements and expressions stacks                      */
-    TLS->stackStat = NewBag( T_BODY, 64*sizeof(Stat) );
-    TLS->stackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
+
+    GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
+    
+    gv = GVarName("EAGER_FLOAT_LITERAL_CACHE");
+    cache = NEW_PLIST(T_PLIST+IMMUTABLE, 1000L);
+    SET_LEN_PLIST(cache,0);
+    AssGVar(gv, cache);
 
     /* return success                                                      */
     return 0;
 }
+
+/****************************************************************************
+**
+*F  PostRestore( <module> ) . . . . . . .  recover
+*/
+static Int PostRestore (
+    StructInitInfo *    module )
+{
+  GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
+  NextFloatExprNumber = INT_INTOBJ(VAL_GVAR(GVAR_SAVED_FLOAT_INDEX));
+  return 0;
+}
+
 
 /****************************************************************************
 **
@@ -3158,6 +3314,9 @@ static Int PreSave (
   /* Can't save in mid-parsing */
   if (TLS->countExpr || TLS->countStat)
     return 1;
+
+  /* push the FP cache index out into a GAP Variable */
+  AssGVar(GVAR_SAVED_FLOAT_INDEX, INTOBJ_INT(NextFloatExprNumber));
 
   /* clean any old data out of the statement and expression stacks */
   for (i = 0; i < SIZE_BAG(TLS->stackStat)/sizeof(UInt); i++)
@@ -3181,12 +3340,12 @@ static StructInitInfo module = {
     0,                                  /* revision entry of h file       */
     0,                                  /* version                        */
     0,                                  /* crc                            */
-    InitKernel,                         /* initKernel                     */
+    0,                         		/* initKernel                     */
     InitLibrary,                        /* initLibrary                    */
-    0,                                  /* checkInit                      */
+    0,                        /* checkInit                      */
     PreSave,                            /* preSave                        */
     0,                                  /* postSave                       */
-    0                                   /* postRestore                    */
+    PostRestore                        /* postRestore                    */
 };
 
 StructInitInfo * InitInfoCode ( void )

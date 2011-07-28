@@ -1,13 +1,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%  manual.tex            IRREDSOL documentation           Burkhard Hoefling
+%%  manual.tex            IRREDSOL documentation            Burkhard Höfling
 %%
-%%  @(#)$Id: manual.tex,v 1.13 2007/02/17 12:23:58 gap Exp $
+%%  @(#)$Id: manual.tex,v 1.15 2011/05/07 18:51:09 gap Exp $
 %%
-%%  Copyright (C) 2003-2005 by Burkhard Hoefling, 
-%%  Institut fuer Geometrie, Algebra und Diskrete Mathematik
-%%  Technische Universitaet Braunschweig, Germany
+%%  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 %%
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % input GAP macro file
@@ -25,34 +25,20 @@
   \UseReferences{../../../doc/ref}
   \UseReferences{../../crisp/doc}
 
-  \TitlePage{
+  \TitlePage{\unskip{
+    % \def\centerline#1{\hbox to \hsize{\hfill #1\hskip 1 cm}}
+    \baselineskip 72 pt
+    \centerline{\subtitlefont Burkhard H{\accent 127 o}f{}ling}
     \vfill
     \centerline{\titlefont IRREDSOL}
-    \bigskip
-    \bigskip
-    \centerline{\subtitlefont Version 1.1.2}
-    \bigskip
-    \bigskip
-    \bigskip
-    \centerline{\subtitlefont A library of }
-    \medskip
-    \centerline{\subtitlefont irreducible solvable matrix groups}
-    \medskip
+    \baselineskip 36 pt
+    \centerline{\subtitlefont Version 1.2}
+    \centerline{}
+    \centerline{\subtitlefont A library}
+    \centerline{\subtitlefont of irreducible soluble matrix groups}
     \centerline{\subtitlefont over finite fields}
-    \bigskip
-    \bigskip
-    \bigskip
-    \bigskip
-    \centerline{\subtitlefont Burkhard H{\accent 127 o}f{}ling}
-    \bigskip
-    \centerline{\secfont Institut f{\accent 127 u}r Geometrie, Algebra und Diskrete
-       Mathematik}
-    \medskip
-    \centerline{\secfont Technische Universit{\accent 127 a}t}
-    \medskip
-    \centerline{\secfont Braunschweig, Germany}
-    \vfill
- }
+    \centerline{\subtitlefont and of primitive soluble groups}
+ }}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \TableOfContents
   

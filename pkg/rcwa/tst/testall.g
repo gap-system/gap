@@ -3,11 +3,10 @@
 #W  testall.g                GAP4 Package `RCWA'                 Frank Celler
 ##                                                                Stefan Kohl
 ##
-#H  @(#)$Id: testall.g,v 1.21 2007/11/05 08:51:33 stefan Exp $
-##
 ##  This is an adaptation of the test file for the GAP library to the
 ##  RCWA package.
 ##
+#############################################################################
 
 #############################################################################
 ##
@@ -88,29 +87,48 @@ end;
 ##  grep -h "STOP_TEST" *.tst | sed -e 's:^gap> STOP_TEST( ":[ ":' | \
 ##  sed -e 's: );: ],:'
 ##
-TEST_FILES := [ [ "other.tst",      10000000 ],
-                [ "ngens.tst",      25000000 ],
-                [ "monoids.tst",   120000000 ],
+TEST_FILES := [ [ "other.tst",       4000000 ],
+                [ "ngens.tst",      15000000 ],
+                [ "monoids.tst",   150000000 ],
                 [ "semiloc.tst",   400000000 ],
-                [ "cscrct.tst",    900000000 ],
-                [ "rcwa_ct.tst",  1500000000 ],
-                [ "modular.tst",  1500000000 ],
-                [ "zxz.tst",      2000000000 ],
+                [ "cscrct.tst",   1700000000 ],
+                [ "rcwa_ct.tst",  1900000000 ],
+                [ "modular.tst",  2300000000 ],
+                [ "zxz.tst",      2300000000 ],
                 [ "integral.tst", 8000000000 ] ];
 
 Sort( TEST_FILES, function(a,b) return a[2] < b[2]; end );
 
 #############################################################################
 ##
-#X  read all test files
+#X  Read all test files.
 ##
-Print("You should start GAP4 using:  `gap -N -A -x 80 -r -m 100m'.\n");
-Print("The more GAP4stones you get, the faster your system is.\n");
-Print("The runtime of the following tests (in general)  increases.\n");
-Print("You should expect about 100000 GAP4stones on a Pentium 3, 1GHz.\n");
-Print("The `next' time is an approximation of the running time for the\n");
-Print("next test.\n");
-Print("\n");
+oldSizeScreen := SizeScreen();
+SizeScreen([80,]);
+
+Print("This is the test suite of the RCWA package.\n\n");
+Print(FormatParagraph(Concatenation(
+  "The tests compare the correct and the actual output of a larger ",
+  "number of GAP commands, and show any differences. ")),"\n");
+Print(FormatParagraph(Concatenation(
+  "Please note that the test suite is a tool for developing. ",
+  "The tests are deliberately very volatile to allow to spot possible ",
+  "problems of any kind also in other packages or in the GAP Library. ",
+  "For this reason you may see below reports of differences ",
+  "which simply reflect improved methods in other packages or in the ",
+  "GAP Library or which are caused by changes of the way certain ",
+  "objects are printed, and which are therefore harmless. However ",
+  "if the correct and the actual output look different mathematically ",
+  "or if you see error messages or if GAP crashes, then something ",
+  "went wrong. Also, run times which are much longer than ",
+  "predicted may indicate a problem.")),"\n");
+Print(FormatParagraph(Concatenation(
+  "The runtime of the following tests (in general) increases. ",
+  "The `next' time is an approximation of the running time for ",
+  "the next test. The more GAP4stones you get, the faster your system ",
+  "is. Since RCWA caches some data, subsequent runs of the test suite ",
+  "within the same GAP session will usually be faster than ",
+  "the first run.")),"\n");
 Print("Architecture: ", GAP_ARCHITECTURE, "\n");
 Print("\n");
 Print("test file         GAP4stones     time(msec)\n");
@@ -142,6 +160,8 @@ Print( FormattedString("total",-16), "    ",
        FormattedString(RootInt(STONE_PROD,STONE_COUNT),8), "       ",
        FormattedString(STONE_SUM,8), "\n" );
 Print("\n");
+
+SizeScreen(oldSizeScreen);
 
 InfoRead1  := infoRead1;
 InfoRead2  := infoRead2;

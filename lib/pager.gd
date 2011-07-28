@@ -2,7 +2,7 @@
 ##  
 #W  pager.gd                     GAP Library                     Frank Lübeck
 ##  
-#H  @(#)$Id: pager.gd,v 1.5 2010/07/28 15:45:21 gap Exp $
+#H  @(#)$Id: pager.gd,v 1.6 2010/10/10 12:34:38 alexk Exp $
 ##  
 #Y  Copyright  (C) 2001, Lehrstuhl  D  für  Mathematik, RWTH  Aachen, Germany 
 #Y (C) 2001 School Math and  Comp. Sci., University of St Andrews, Scotland
@@ -13,7 +13,7 @@
 ##  But this utility is certainly useful for other purposes as well.
 ##  
 Revision.pager_gd := 
-  "@(#)$Id: pager.gd,v 1.5 2010/07/28 15:45:21 gap Exp $";
+  "@(#)$Id: pager.gd,v 1.6 2010/10/10 12:34:38 alexk Exp $";
 
 #############################################################################
 ##  
@@ -43,24 +43,19 @@ Revision.pager_gd :=
 ##  `GAPInfo.UserPreferences.PagerOptions'.
 ##  
 ##  Example:
-##  \begintt
 ##    GAPInfo.UserPreferences.Pager  := "less";
 ##    GAPInfo.UserPreferences.PagerOptions := ["-f", "-r", "-a", "-i", "-M", "-j2"];
-##  \endtt
 ##  
 ##  The argument <lines> can have one of the following forms:
 ##  
-##  \beginlist%ordered
-##  \item{(1)} a string (i.e., lines are separated by newline characters)
-##  \item{(2)} a list of strings (without trailing newline characters) 
+##  (1) a string (i.e., lines are separated by newline characters)
+##  (2) a list of strings (without trailing newline characters) 
 ##  which are interpreted as lines of the text to be shown
-##  \item{(3)} a record with component `.lines' as in (1) or (2) and 
+##  (3) a record with component `.lines' as in (1) or (2) and 
 ##  optional further components
-##  \endlist
 ##  
-##  In case~(3) currently the following additional components are used:
+##  In case (3) currently the following additional components are used:
 ##  
-##  \beginitems
 ##  `.formatted' &
 ##  can be `false' or `true'. If set to `true' the builtin pager tries 
 ##  to show the text exactly as it is given (avoiding {\GAP}s automatic 
@@ -70,7 +65,6 @@ Revision.pager_gd :=
 ##  must be an integral number. This is interpreted as the number of the
 ##  first line shown by the pager (one may see the beginning of the text
 ##  via back scrolling).
-##  \enditems
 ##  
 
 DeclareGlobalFunction("Pager");

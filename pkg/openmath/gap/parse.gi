@@ -3,7 +3,7 @@
 #W  parse.gi           OpenMath Package         Andrew Solomon
 #W                                                     Marco Costantini
 ##
-#H  @(#)$Id: parse.gi,v 1.12 2009/04/11 13:23:39 alexk Exp $
+#H  @(#)$Id: parse.gi,v 1.15 2010/11/12 13:18:23 alexk Exp $
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,12 +13,11 @@
 ##  
 
 Revision.("openmath/gap/parse.gi") :=
-    "@(#)$Id: parse.gi,v 1.12 2009/04/11 13:23:39 alexk Exp $";
+    "@(#)$Id: parse.gi,v 1.15 2010/11/12 13:18:23 alexk Exp $";
 
 
 
-InstallGlobalFunction(OMgetObjectByteStream,
-function(inputstream)
+InstallGlobalFunction(OMgetObjectByteStream, function(inputstream)
 	local stream, obj;
 
 	# assumes there is at least one byte on stream.
@@ -37,59 +36,6 @@ function(inputstream)
 
 	return obj;
 end);
-
-
-InstallGlobalFunction( OMpipeObject,
-function( fromgap )
-
-    local
-        gpipe_exec, # filename of gpipe executable
-        togap_stream, fromgap_stream, # streams from gpipe and to gpipe
-        togap, # strings
-        gap_obj;
-
-    gpipe_exec := Filename( DirectoriesPackagePrograms( "openmath" ), "gpipe" );
-
-    if gpipe_exec = fail  then
-        Error( "package ``openmath'': the program `gpipe' is not compiled;\n",
-         "see the README file or the dvi/ps/pdf manual of the package ``openmath''.\n",
-         "Without this program, conversion from OpenMath to GAP cannot be performed.\n" );
-    fi;
-
-    # Remove the possible arguments of the <OMOBJ> tag. This is
-    # necessary in order to support the OpenMath 2.0 objects of the form
-    # <OMOBJ xmlns="http://www.openmath.org/OpenMath" version="2.0" cdbase="http://www.openmath.org/cd">
-
-    # this means XML encoding
-    if fromgap[1] = '<'  then
-        fromgap := Concatenation( "<OMOBJ",
-            fromgap{[ Position( fromgap, '>' ) .. Length( fromgap ) ]} );
-    fi;
-
-    # Pipe 'fromgap' to 'gpipe', getting 'togap'
-
-    fromgap_stream := InputTextString( fromgap );
-    togap := "";
-    togap_stream := OutputTextString( togap, false );
-
-    Process( DirectoryCurrent(  ), gpipe_exec,
-             fromgap_stream, togap_stream, [ "-u", "-", "-" ] );
-
-    CloseStream( fromgap_stream );
-    CloseStream( togap_stream );
-
-
-    # Send 'togap' to OMgetObjectByteStream, getting a Gap object
-
-    togap_stream := InputTextString( togap );
-
-    gap_obj := OMgetObjectByteStream( togap_stream );
-
-    CloseStream( togap_stream );
-    return gap_obj;
-
-end);
-
 
 
 InstallGlobalFunction(OMparseApplication, function(stream)

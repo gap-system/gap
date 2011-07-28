@@ -178,23 +178,6 @@ end );
 
 #############################################################################
 ##
-#M  \=
-##
-InstallMethod( \=,
-               IsIdenticalObj, [ IsPcpGHBI, IsPcpGHBI ], SUM_FLAGS,
-function( a, b )
-    if a!.Source <> b!.Source then
-        return false;
-    elif a!.Range <> b!.Range then
-        return false;
-    elif MappingGeneratorsImages( a ) <> MappingGeneratorsImages( b ) then
-        return false;
-    fi;
-    return true;
-end );
-
-#############################################################################
-##
 #M  \*
 ##
 InstallMethod( CompositionMapping2, FamSource1EqFamRange2, 

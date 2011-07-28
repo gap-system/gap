@@ -2,7 +2,7 @@
 ##
 #W  grppclat.gi                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: grppclat.gi,v 4.70 2010/02/23 15:13:07 gap Exp $
+#H  @(#)$Id: grppclat.gi,v 4.71 2011/06/17 15:58:04 gap Exp $
 ##
 #Y  Copyright (C)  1997  
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,7 +12,7 @@
 ##  pc groups.
 ##
 Revision.grppclat_gi:=
-  "@(#)$Id: grppclat.gi,v 4.70 2010/02/23 15:13:07 gap Exp $";
+  "@(#)$Id: grppclat.gi,v 4.71 2011/06/17 15:58:04 gap Exp $";
 
 #############################################################################
 ##
@@ -592,8 +592,8 @@ local g,	# group
 		   IdentityMapping(g));
       IsGroupOfAutomorphismsFiniteGroup(funcs); # set filter
       if IsTrivial( funcs ) then
+	b:=ClosureGroup(Parent(g),List(func,x->ConjugatorOfConjugatorIsomorphism(x)));
 	func:=hom2;
-	b:=Parent(g);
       else
         if IsSolvableGroup(funcs) then
 	  a:=IsomorphismPcGroup(funcs);

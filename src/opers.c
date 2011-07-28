@@ -3,7 +3,7 @@
 *W  opers.c                     GAP source                       Frank Celler
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id: opers.c,v 4.110 2010/02/23 15:13:46 gap Exp $
+*H  @(#)$Id: opers.c,v 4.112 2011/05/09 11:11:30 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,7 +17,7 @@
 
 
 const char * Revision_opers_c =
-   "@(#)$Id: opers.c,v 4.110 2010/02/23 15:13:46 gap Exp $";
+   "@(#)$Id: opers.c,v 4.112 2011/05/09 11:11:30 sal Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -1155,9 +1155,6 @@ Obj DoTestReturnTrueFilter (
 Obj TesterReturnTrueFilter (
     Obj                 getter )
 {
-    Obj                 tester;
-
-    tester = getter;
     return getter;
 }
 
@@ -4970,13 +4967,11 @@ Obj DoTestProperty (
     Obj                 self,
     Obj                 obj )
 {
-    Int                 flag1;
     Int                 flag2;
     Obj                 kind;
     Obj                 flags;
 
     /* get the flags for the getter and the tester                         */
-    flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
@@ -5385,14 +5380,6 @@ void InstallMethodArgs (
     /* clone the function                                                  */
     if ( SIZE_OBJ(oper) != SIZE_OBJ(func) ) {
         ErrorQuit( "size mismatch of function bags", 0L, 0L );
-    }
-
-    /* catch uncompleted functions                                         */
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        for ( i = 0;  i < SIZE_OBJ(func)/sizeof(Obj);  i++ ) {
-            ADDR_OBJ(oper)[i] = ADDR_OBJ(func)[i];
-        }
-        BODY_FUNC(oper) = func;
     }
 
     /* clone the functions                                                 */

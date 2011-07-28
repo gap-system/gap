@@ -2,7 +2,7 @@
 ##
 #W  cyclotom.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: cyclotom.gd,v 4.47 2010/02/23 15:12:55 gap Exp $
+#H  @(#)$Id: cyclotom.gd,v 4.50 2010/10/20 14:32:24 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,7 +16,7 @@
 ##  This file declares operations for cyclotomics.
 ##
 Revision.cyclotom_gd :=
-    "@(#)$Id: cyclotom.gd,v 4.47 2010/02/23 15:12:55 gap Exp $";
+    "@(#)$Id: cyclotom.gd,v 4.50 2010/10/20 14:32:24 gap Exp $";
 
 
 #############################################################################
@@ -88,14 +88,18 @@ DeclareAttribute( "AbsoluteValue" ,  IsCyclotomic  );
 ##
 ##  <Description>
 ##  is a cyclotomic integer <M>z</M> (see <Ref Func="IsIntegralCyclotomic"/>)
-##  near to the cyclotomic <A>cyc</A> in the sense that the <M>i</M>-th
-##  coefficient in the external representation
-##  (see&nbsp;<Ref Func="CoeffsCyc"/>) of <M>z</M> is <C>Int( c+1/2 )</C>,
-##  where <C>c</C> is the <M>i</M>-th coefficient in the external
-##  representation of <A>cyc</A>.
+##  near to the cyclotomic <A>cyc</A> in the following sense:
+##  Let <C>c</C> be the <M>i</M>-th coefficient in the external
+##  representation (see&nbsp;<Ref Func="CoeffsCyc"/>) of <A>cyc</A>.
+##  Then the <M>i</M>-th coefficient in the external representation of
+##  <M>z</M> is <C>Int( c + 1/2 )</C> or <C>Int( c - 1/2 )</C>,
+##  depending on whether <C>c</C> is nonnegative or negative, respectively.
+##  <P/>
 ##  Expressed in terms of the Zumbroich basis
 ##  (see&nbsp;<Ref Sect="Integral Bases of Abelian Number Fields"/>),
-##  the coefficients of <A>cyc</A> w.r.t.&nbsp;this basis are rounded.
+##  rounding the coefficients of <A>cyc</A> w.r.t.&nbsp;this basis to the
+##  nearest integer yields the coefficients of <M>z</M>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> RoundCyc( E(5)+1/2*E(5)^2 ); RoundCyc( 2/3*E(7)+3/2*E(4) );
 ##  E(5)+E(5)^2
@@ -144,9 +148,9 @@ DeclareOperation( "RoundCycDown" , [ IsCyclotomic ] );
 ##  belongs to the <A>N</A>-th Zumbroich basis
 ##  (see&nbsp;<Ref Sect="Integral Bases of Abelian Number Fields"/>),
 ##  and equal to zero otherwise.
-##  So we have                                        
-##  <C><A>cyc</A> = CoeffsCyc(<A>cyc</A>,<A>N</A>) * List( [1..<A>N</A>],
-##  j -> E(<A>N</A>)^(j-1) )</C>.
+##  So we have
+##  <A>cyc</A> = <C>CoeffsCyc(</C> <A>cyc</A>, <A>N</A> <C>) *
+##  List( [1..</C><A>N</A><C>], j -> E(</C><A>N</A><C>)^(j-1) )</C>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> cyc:= E(5)+E(5)^2;
@@ -239,11 +243,11 @@ DeclareGlobalFunction( "DescriptionOfRootOfUnity" );
 #############################################################################
 ##
 #F  EB( <N> ) . . . . . . . . . . . . . . . some atomic ATLAS irrationalities
-#F  EC( <N> ) 
-#F  ED( <N> ) 
-#F  EE( <N> ) 
-#F  EF( <N> ) 
-#F  EG( <N> ) 
+#F  EC( <N> )
+#F  ED( <N> )
+#F  EE( <N> )
+#F  EF( <N> )
+#F  EG( <N> )
 #F  EH( <N> )
 ##
 ##  <#GAPDoc Label="EB">
@@ -265,8 +269,8 @@ DeclareGlobalFunction( "DescriptionOfRootOfUnity" );
 ##  <Index Key="f_N"><M>f_N</M> (irrational value)</Index>
 ##  <Index Key="g_N"><M>g_N</M> (irrational value)</Index>
 ##  <Index Key="h_N"><M>h_N</M> (irrational value)</Index>
-##  For <A>N</A> a positive integer,
-##  let <M>z =</M> <C>E(</C><A>N</A><C>)</C><M> = \exp(2 \pi i/<A>N</A>)</M>.
+##  For a positive integer <A>N</A>,
+##  let <M>z =</M> <C>E(</C><A>N</A><C>)</C> <M>= \exp(2 \pi i/<A>N</A>)</M>.
 ##  The following so-called <E>atomic irrationalities</E>
 ##  (see <Cite Key="CCN85" Where="Chapter 7, Section 10"/>)
 ##  can be entered using functions.
@@ -386,8 +390,8 @@ DeclareGlobalFunction( "EH" );
 ##  By the chosen embedding of cyclotomic fields into the complex numbers,
 ##  <Ref Func="ER"/> returns the positive square root if <A>N</A> is
 ##  positive, and if <A>N</A> is negative then
-##  <C>ER(<A>N</A>) = EI(-<A>N</A>)</C> holds.
-##  In any case, <C>EI(<A>N</A>) = E(4) * ER(<A>N</A>)</C>.
+##  <C>ER(</C><A>N</A><C>) = EI(-</C><A>N</A><C>)</C> holds.
+##  In any case, <C>EI(</C><A>N</A><C>) = E(4) * ER(</C><A>N</A><C>)</C>.
 ##  <P/>
 ##  <Ref Func="ER"/> is installed as method for the operation
 ##  <Ref Func="Sqrt"/>, for rational argument.
@@ -451,21 +455,22 @@ DeclareGlobalFunction( "ER" );
 ##  <Index Key="w_N"><M>w_N</M> (irrational value)</Index>
 ##  <Index Key="x_N"><M>x_N</M> (irrational value)</Index>
 ##  <Index Key="y_N"><M>y_N</M> (irrational value)</Index>
-##  For given <A>N</A>, let <M><A>N</A>_k</M> denote the first integer
-##  with multiplicative order exactly <A>k</A> modulo <A>N</A>,
+##  For the given integer <A>N</A> <M>> 2</M>,
+##  let <M><A>N</A>_k</M> denote the first integer
+##  with multiplicative order exactly <M>k</M> modulo <A>N</A>,
 ##  chosen in the order of preference
 ##  <Display Mode="M">
 ##  1, -1, 2, -2, 3, -3, 4, -4, \ldots .
 ##  </Display>
 ##  <P/>
-##  We define
+##  We define (with <M>z = \exp(2 \pi i/<A>N</A>)</M>)
 ##  <Table Align="lclcll">
 ##  <Row>
 ##    <Item><C>EY(</C><A>N</A><C>)</C></Item>
 ##    <Item>=</Item>
 ##    <Item><M>y_{<A>N</A>}</M></Item>
 ##    <Item>=</Item>
-##    <Item><M>z+z^n</M></Item>
+##    <Item><M>z + z^n</M></Item>
 ##    <Item><M>(n = <A>N</A>_2)</M></Item>
 ##  </Row>
 ##  <Row>
@@ -473,7 +478,7 @@ DeclareGlobalFunction( "ER" );
 ##    <Item>=</Item>
 ##    <Item><M>x_{<A>N</A>}</M></Item>
 ##    <Item>=</Item>
-##    <Item><M>z + z^n + z^{{n^2}}</M></Item>           
+##    <Item><M>z + z^n + z^{{n^2}}</M></Item>
 ##    <Item><M>(n = <A>N</A>_3)</M></Item>
 ##  </Row>
 ##  <Row>
@@ -517,6 +522,10 @@ DeclareGlobalFunction( "ER" );
 ##    <Item><M>(n = <A>N</A>_8)</M></Item>
 ##  </Row>
 ##  </Table>
+##  <P/>
+##  For the two-argument versions of the functions,
+##  see Section <Ref Func="NK"/>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> EY(5);
 ##  E(5)+E(5)^4
@@ -553,6 +562,8 @@ DeclareGlobalFunction( "ES" );
 ##  <Func Name="EJ" Arg='N[, d]'/>
 ##
 ##  <Description>
+##  Let <A>N</A> be an integer, <A>N</A> <M>> 2</M>.
+##  We define (with <M>z = \exp(2 \pi i/<A>N</A>)</M>)
 ##  <Index Key="j_N"><M>j_N</M> (irrational value)</Index>
 ##  <Index Key="k_N"><M>k_N</M> (irrational value)</Index>
 ##  <Index Key="l_N"><M>l_N</M> (irrational value)</Index>
@@ -591,6 +602,9 @@ DeclareGlobalFunction( "ES" );
 ##    <Item><M>(n = <A>N</A>_8)</M></Item>
 ##  </Row>
 ##  </Table>
+##  <P/>
+##  For the two-argument versions of the functions,
+##  see Section <Ref Func="NK"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -630,7 +644,7 @@ DeclareGlobalFunction( "EJ" );
 ##  j_{<A>N</A>}^{\prime}, j_{<A>N</A>}^{\prime\prime}, \ldots
 ##  </Display>
 ##  are obtained on replacing <M><A>N</A>_{<A>k</A>}</M> in the
-##  definitions in the sections <Ref Subsect="EM"/> and <Ref Subsect="EY"/>
+##  definitions in the sections <Ref Subsect="EY"/> and <Ref Subsect="EM"/>
 ##  by <M><A>N</A>_{<A>k</A>}^{\prime},
 ##  <A>N</A>_{<A>k</A>}^{\prime\prime}, \ldots</M>;
 ##  they can be entered as
@@ -688,31 +702,31 @@ DeclareGlobalFunction( "NK" );
 ##  <Row>
 ##    <Item><C>2qN+3&amp;5-4&amp;7+&amp;9</C></Item>
 ##    <Item>means</Item>
-##    <Item><M>2 q_N + 3 q_N^{{\ast 5}} - 4 q_N^{{\ast 7}} + q_N^{{\ast 9}}</M>
+##    <Item><M>2 q_N + 3 q_N^{{*5}} - 4 q_N^{{*7}} + q_N^{{*9}}</M>
 ##    </Item>
 ##  </Row>
 ##  <Row>
 ##    <Item><C>4qN&amp;3&amp;5&amp;7-3&amp;4</C></Item>
 ##    <Item>means</Item>
-##    <Item><M>4 (q_N + q_N^{{\ast 3}} + q_N^{{\ast 5}} + q_N^{{\ast 7}})
-##    - 3 q_N^{{\ast 11}}</M></Item>
+##    <Item><M>4 (q_N + q_N^{{*3}} + q_N^{{*5}} + q_N^{{*7}})
+##    - 3 q_N^{{*11}}</M></Item>
 ##  </Row>
 ##  <Row>
 ##    <Item><C>4qN*3&amp;5+&amp;7</C></Item>
 ##    <Item>means</Item>
-##    <Item><M>4 (q_N^{{\ast 3}} + q_N^{{\ast 5}}) + q_N^{{\ast 7}}</M></Item>
+##    <Item><M>4 (q_N^{{*3}} + q_N^{{*5}}) + q_N^{{*7}}</M></Item>
 ##  </Row>
 ##  </Table>
 ##  <P/>
 ##  To explain the <Q>ampersand</Q> syntax in general we remark that
-##  <Q>&amp;k</Q> is interpreted as <M>q_N^{{\ast k}}</M>,
+##  <Q>&amp;k</Q> is interpreted as <M>q_N^{{*k}}</M>,
 ##  where <M>q_N</M> is the most recently named atomic irrationality,
 ##  and that the scope of any premultiplying coefficient is broken by a
-##  <M>+</M> or <M>-</M> sign, but not by <M>\&amp;</M> or <M>\ast k</M>.
+##  <M>+</M> or <M>-</M> sign, but not by <M>\&amp;</M> or <M>*k</M>.
 ##  The algebraic conjugations indicated by the ampersands apply directly to
 ##  the <E>atomic</E> irrationality <M>q_N</M>, even when,
 ##  as in the last example,
-##  <M>q_N</M> first appears with another conjugacy <M>\ast k</M>.
+##  <M>q_N</M> first appears with another conjugacy <M>*k</M>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> AtlasIrrationality( "b7*3" );
@@ -750,7 +764,7 @@ DeclareGlobalFunction( "AtlasIrrationality" );
 ##  extension of the rationals then <Ref Func="StarCyc"/> returns the unique
 ##  Galois conjugate of <A>cyc</A> that is different from <A>cyc</A>,
 ##  otherwise <K>fail</K> is returned.
-##  In the first case, the return value is often called <A>cyc</A><M>\ast</M>
+##  In the first case, the return value is often called <A>cyc</A><M>*</M>
 ##  (see&nbsp;<Ref Sect="Printing Character Tables"/>).
 ##  <P/>
 ##  <Example><![CDATA[
@@ -810,12 +824,12 @@ DeclareGlobalFunction( "StarCyc" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Quadratic( EB(5) ); Quadratic( EB(27) );
-##  rec( a := -1, b := 1, root := 5, d := 2, ATLAS := "b5", 
-##    display := "(-1+Sqrt(5))/2" )
-##  rec( a := -1, b := 3, root := -3, d := 2, ATLAS := "1+3b3", 
-##    display := "(-1+3*Sqrt(-3))/2" )
+##  rec( ATLAS := "b5", a := -1, b := 1, d := 2, display := "(-1+Sqrt(5))/2", 
+##    root := 5 )
+##  rec( ATLAS := "1+3b3", a := -1, b := 3, d := 2, 
+##    display := "(-1+3*Sqrt(-3))/2", root := -3 )
 ##  gap> Quadratic(0); Quadratic( E(5) );
-##  rec( a := 0, b := 0, root := 1, d := 1, ATLAS := "0", display := "0" )
+##  rec( ATLAS := "0", a := 0, b := 0, d := 1, display := "0", root := 1 )
 ##  fail
 ##  ]]></Example>
 ##  </Description>
@@ -902,20 +916,15 @@ DeclareGlobalFunction( "Quadratic" );
 ##  </Item>
 ##  </List>
 ##  <P/>
-##  In the following example we temporarily increase the line length limit
-##  from its default value 80 to 82 in order to get a nicer output format.
-##  <P/>
 ##  <Example><![CDATA[
-##  gap> SizeScreen([ 82, ]);;
 ##  gap> GaloisMat( [ [ E(3), E(4) ] ] );
-##  rec( generators := [ (1,2)(3,4), (1,3)(2,4) ], 
-##    mat := [ [ E(3), E(4) ], [ E(3), -E(4) ], [ E(3)^2, E(4) ], [ E(3)^2, -E(4) ] 
-##       ], galoisfams := [ [ [ 1, 2, 3, 4 ], [ 1, 7, 5, 11 ] ], 0, 0, 0 ] )
-##  gap> SizeScreen([ 82, ]);;
+##  rec( galoisfams := [ [ [ 1, 2, 3, 4 ], [ 1, 7, 5, 11 ] ], 0, 0, 0 ], 
+##    generators := [ (1,2)(3,4), (1,3)(2,4) ], 
+##    mat := [ [ E(3), E(4) ], [ E(3), -E(4) ], [ E(3)^2, E(4) ], 
+##        [ E(3)^2, -E(4) ] ] )
 ##  gap> GaloisMat( [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ] ] );
-##  rec( generators := [ (2,3) ], 
-##    mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ], 
-##    galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ] )
+##  rec( galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ], generators := [ (2,3) ], 
+##    mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -963,8 +972,8 @@ DeclareAttribute( "RationalizedMat", IsMatrix );
 ##
 ##  <Description>
 ##  For a cyclotomic number <A>cyc</A> (see&nbsp;<Ref Func="IsCyclotomic"/>),
-##  this function returns the smallest positive integer <A>n</A> such that
-##  <C><A>n</A> * <A>cyc</A></C> is a cyclotomic integer
+##  this function returns the smallest positive integer <M>n</M> such that
+##  <M>n</M><C> * </C><A>cyc</A> is a cyclotomic integer
 ##  (see&nbsp;<Ref Func="IsIntegralCyclotomic"/>).
 ##  For rational numbers <A>cyc</A>, the result is the same as that of
 ##  <Ref Func="DenominatorRat"/>.

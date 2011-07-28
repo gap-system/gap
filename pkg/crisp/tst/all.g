@@ -2,16 +2,17 @@
 ##
 ##  all.g                           CRISP                 Burkhard H\"ofling
 ##
-##  @(#)$Id: all.g,v 1.7 2005/07/19 14:01:18 gap Exp $
+##  @(#)$Id: all.g,v 1.8 2011/05/18 16:53:33 gap Exp $
 ##
 ##  Copyright (C) 2000 by Burkhard H\"ofling, Mathematisches Institut,
 ##  Friedrich Schiller-Universit\"at Jena, Germany
 ##
-LoadPackage ("crisp");
+LoadPackage ("crisp", "", false);
 
-if not IsBound (PRINT_METHODS) then
-	PRINT_METHODS := false;
-fi;
+PRINT_METHODS := false;
+
+#Print ("testing manual examples\n");
+#ReadTest (Filename (DirectoriesPackageLibrary ("crisp", "doc"), "manual.examples.tst"));
 
 Print ("testing class construction \n");
 ReadPackage ("crisp", "tst/classes.g");
@@ -48,30 +49,6 @@ ReadPackage ("crisp", "tst/socle.g");
 
 Print ("testing print routines \n");
 ReadPackage ("crisp", "tst/print.g");
-
-
-FAST_TEST := true;
-DO_TIMING := false;
-
-ReadPackage ("crisp", "tst/timing_injectors.g");
-ReadPackage ("crisp", "tst/timing_normals.g");
-ReadPackage ("crisp", "tst/timing_normpro.g");
-ReadPackage ("crisp", "tst/timing_projectors.g");
-ReadPackage ("crisp", "tst/timing_radicals.g");
-ReadPackage ("crisp", "tst/timing_residuals.g");
-ReadPackage ("crisp", "tst/timing_socle.g");
-
-FAST_TEST := false;
-DO_TIMING := true;
-
-ReadPackage ("crisp", "tst/timing_injectors.g");
-ReadPackage ("crisp", "tst/timing_normals.g");
-ReadPackage ("crisp", "tst/timing_projectors.g");
-ReadPackage ("crisp", "tst/timing_radicals.g");
-ReadPackage ("crisp", "tst/timing_residuals.g");
-ReadPackage ("crisp", "tst/timing_socle.g");
-ReadPackage ("crisp", "tst/timing_normpro.g");
-
 
 ############################################################################
 ##

@@ -3,10 +3,10 @@
 #W  autseq.gi			NQL				René Hartung
 ## 								Bettina Eick
 ##
-#H   @(#)$Id: autseq.gi,v 1.2 2009/08/31 07:55:23 gap Exp $
+#H   @(#)$Id: autseq.gi,v 1.3 2010/03/17 12:48:31 gap Exp $
 ##
 Revision.("nql/misc/autseq_gi"):=
-  "@(#)$Id: autseq.gi,v 1.2 2009/08/31 07:55:23 gap Exp $";
+  "@(#)$Id: autseq.gi,v 1.3 2010/03/17 12:48:31 gap Exp $";
 
 ############################################################################
 ##
@@ -123,7 +123,9 @@ InstallMethod( AutomorphismGroupSequence,
 
   # we only deal with groups so that the lower- and the p-central series 
   # coincide
-  if Length( Set( AbelianInvariants( G ) ) ) <> 1 then TRY_NEXT_METHOD(); fi;
+  if Length( Set( AbelianInvariants( G ) ) ) <> 1 then
+    TryNextMethod();
+  fi;
 
   # get all relevant aut groups
   A   := NQL_AutGroupPGroup( G );

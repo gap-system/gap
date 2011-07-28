@@ -4,7 +4,7 @@
 **                                                           
 **                                                           
 **
-*H  @(#)$Id: gmpints.h,v 4.2 2010/02/23 15:13:43 gap Exp $
+*H  @(#)$Id: gmpints.h,v 4.5 2011/05/10 17:08:28 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,7 +17,7 @@
 
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_gmpints_h =
-   "@(#)$Id: gmpints.h,v 4.2 2010/02/23 15:13:43 gap Exp $";
+   "@(#)$Id: gmpints.h,v 4.5 2011/05/10 17:08:28 gap Exp $";
 #endif
 
 #include <gmp.h>
@@ -64,7 +64,7 @@ typedef UInt2           TypDigit;
 ****************************************************************************/
 
 Obj ObjInt_Int(Int i);
-/* findme - Obj ObjInt_UInt(UInt i); */
+Obj ObjInt_UInt(UInt i);
 
 /****************************************************************************
 **
@@ -222,6 +222,9 @@ extern  Obj             RemInt (
 extern  Obj             GcdInt (
 				Obj                 opL,
 				Obj                 opR );
+
+
+extern Obj FuncLog2Int( Obj self, Obj intnum);
 
 
 /****************************************************************************

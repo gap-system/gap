@@ -2,7 +2,7 @@
 ##
 #W  ctblmaps.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblmaps.gd,v 4.42 2010/02/23 15:12:53 gap Exp $
+#H  @(#)$Id: ctblmaps.gd,v 4.43 2010/09/29 14:38:05 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,7 +19,7 @@
 ##  6. Subroutines for the Construction of Class Fusions
 ##
 Revision.ctblmaps_gd :=
-    "@(#)$Id: ctblmaps.gd,v 4.42 2010/02/23 15:12:53 gap Exp $";
+    "@(#)$Id: ctblmaps.gd,v 4.43 2010/09/29 14:38:05 alexk Exp $";
 
 
 #############################################################################
@@ -805,7 +805,7 @@ DeclareGlobalFunction( "GetFusionMap" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> ComputedClassFusions( CharacterTable( d8 ) );
-##  [ rec( name := "CT1", map := [ 1, 2, 3, 3, 5 ] ) ]
+##  [ rec( map := [ 1, 2, 3, 3, 5 ], name := "CT1" ) ]
 ##  gap> Identifier( tbls4 );
 ##  "CT1"
 ##  gap> GetFusionMap( CharacterTable( d8 ), tbls4 );
@@ -1506,14 +1506,14 @@ DeclareGlobalFunction( "ImproveMaps" );
 ##  gap> map1:= [ [ 1, 2, 3 ], [ 1, 3 ] ];;  map2:= [ [ 1, 2 ], 1, [ 1, 3 ] ];;
 ##  gap> map3:= [ [ 2, 3 ], 3 ];;  map4:= [ , 1, 2, [ 1, 2 ] ];;
 ##  gap> imp:= CommutativeDiagram( map1, map2, map3, map4 );
-##  rec( imp1 := [ 2 ], imp3 := [  ], imp2 := [ 1 ], imp4 := [  ] )
+##  rec( imp1 := [ 2 ], imp2 := [ 1 ], imp3 := [  ], imp4 := [  ] )
 ##  gap> map1;  map2;  map3;  map4;
 ##  [ [ 1, 2, 3 ], 1 ]
 ##  [ 2, 1, [ 1, 3 ] ]
 ##  [ [ 2, 3 ], 3 ]
 ##  [ , 1, 2, [ 1, 2 ] ]
 ##  gap> imp2:= CommutativeDiagram( map1, map2, map3, map4, imp );
-##  rec( imp1 := [  ], imp3 := [  ], imp2 := [  ], imp4 := [  ] )
+##  rec( imp1 := [  ], imp2 := [  ], imp3 := [  ], imp4 := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1608,12 +1608,12 @@ DeclareGlobalFunction( "CheckFixedPoints" );
 ##    [ 25, 26 ], [ 25, 26 ], 5, 5, 6, 8, 14, [ 13, 15 ], [ 18, 19 ], [ 18, 19 ], 
 ##    [ 25, 26 ], [ 25, 26 ], 27, 27 ]
 ##  gap> tr:= TransferDiagram( PowerMap( subtbl, 2 ), fus, PowerMap( tbl, 2 ) );
-##  rec( impinside1 := [  ], impbetween := [ 12, 23 ], impinside2 := [  ] )
+##  rec( impbetween := [ 12, 23 ], impinside1 := [  ], impinside2 := [  ] )
 ##  gap> tr:= TransferDiagram( PowerMap( subtbl, 3 ), fus, PowerMap( tbl, 3 ) );
-##  rec( impinside1 := [  ], impbetween := [ 14, 24, 25 ], impinside2 := [  ] )
+##  rec( impbetween := [ 14, 24, 25 ], impinside1 := [  ], impinside2 := [  ] )
 ##  gap> tr:= TransferDiagram( PowerMap( subtbl, 3 ), fus, PowerMap( tbl, 3 ),
 ##  >             tr );
-##  rec( impinside1 := [  ], impbetween := [  ], impinside2 := [  ] )
+##  rec( impbetween := [  ], impinside1 := [  ], impinside2 := [  ] )
 ##  gap> fus;
 ##  [ 1, 2, 2, 4, 5, 7, 8, 9, 11, 14, 14, 15, 16, 18, 20, [ 25, 26 ], [ 25, 26 ], 
 ##    5, 5, 6, 8, 14, 13, 19, 19, [ 25, 26 ], [ 25, 26 ], 27, 27 ]

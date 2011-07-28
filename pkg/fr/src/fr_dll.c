@@ -2,80 +2,26 @@
  *
  * fr_dll.c                                                 Laurent Bartholdi
  *
- *   @(#)$Id: fr_dll.c,v 1.11 2009/10/09 15:07:08 gap Exp $
+ *   @(#)$id: fr_dll.c,v 1.18 2010/10/26 05:19:40 gap exp $
  *
- * Copyright (C) 2009, Laurent Bartholdi
+ * Copyright (c) 2009, 2010, Laurent Bartholdi
  *
  ****************************************************************************
  *
- * call cpoly to compute the roots of a univariate polynomial
- * call trmesh_ to construct a Delaunay triangulation
+ * Call cpoly to compute the roots of a univariate polynomial
+ * Call gsl_solver to normalize barycenter of points on S^2
+ * Call gsl_solver to construct a rational map from its critical values
  *
  ****************************************************************************/
 
-#include "src/compiled.h"
-#include <stdlib.h>
-#include <math.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_multiroots.h>
+#undef DEBUG_COMPLEX_ROOTS
+
+#include "fr_dll.h"
+#include <complex.h>
 
 #ifdef MALLOC_HACK
 #include <malloc.h>
 #endif
-
-#undef DEBUG_DELAUNAY
-
-/****************************************************************************
- * externals
- ****************************************************************************/
-int cpoly(const double *opr, const double *opi, unsigned degree, double *zeror, double *zeroi, double *heap);
-
-#ifndef NOFORTRAN
-void trmesh_ (Int4 *n, double *x, double *y, double *z,
-	     Int4 *list, Int4 *lptr, Int4 *lend, Int4 *lnew,
-	     Int4 *__near, Int4 *__next, double *__dist, Int4 *ier);
-
-void crlist_ (Int4 *n, Int4 *ncol, double *x, double *y, double *z,
-	      Int4 *list, Int4 *lptr, Int4 *lend, Int4 *lnew,
-	      Int4 *__ltri, Int4 *__listc, Int4 *nb,
-	      double *xc, double *yc, double *zc, double *rc, Int4 *ier);
-
-void trfind_ (Int4 *nst, double *p, Int4 *n, double *x, double *y, double *z,
-	      Int4 *list, Int4 *lptr, Int4 *lend,
-	      double *b1, double *b2, double *b3, Int4 *i1, Int4 *i2, Int4 *i3);
-
-void bnodes_ (Int4 *n, Int4 *list, Int4 *lptr, Int4 *lend, Int4 *nodes,
-	      Int4 *nb, Int4 *na, Int4 *nt);
-
-void addnod_ (Int4 *nst, Int4 *k, double *x, double *y, double *z,
-	      Int4 *list, Int4 *lptr, Int4 *lend, Int4 *lnew, Int4 *ier);
-
-void graph_arc_min_span_tree_ (Int4 *nnode, Int4 *nedge, Int4 *inode,
-			       Int4 *jnode, double *cost, Int4 *itree,
-			       Int4 *jtree, double *tree_cost);
-#endif
-
-/****************************************************************************
- * stolen from src/float.c
- ****************************************************************************/
-#define VAL_FLOAT(obj) (*(double *)ADDR_OBJ(obj))
-#define SIZE_FLOAT   sizeof(double)
-#ifndef T_FLOAT
-#define T_FLOAT T_MACFLOAT
-#endif
-static inline Obj NEW_FLOAT (double val)
-{
-  Obj f = NewBag(T_FLOAT, SIZE_FLOAT);
-  *(double *)ADDR_OBJ(f) = val;
-  return f;
-}
-
-static inline Obj ALLOC_PLIST (UInt len)
-{
-  Obj f = NEW_PLIST(T_PLIST, len);
-  SET_LEN_PLIST(f, len);
-  return f;
-}
 
 /****************************************************************************
  * capture code that exits uncleanly rather than returning error message
@@ -93,7 +39,7 @@ static void baby_please_dont_go (void) {
    if (setjmp(e_t_go_home))
      return __result;
 
-   __result = Fail;
+   __result = fail;
 
    __result = call_bad_function();
    exit(0);
@@ -102,435 +48,206 @@ static void baby_please_dont_go (void) {
 #endif
 
 /****************************************************************************
- * COMPLEX_ROOTS of polynomial (as increasing-degree list of pairs (real,imag)
+ * complex_roots of polynomial (as increasing-degree list of pairs (real,imag)
  ****************************************************************************/
+#define cpoly cpoly_Cdouble
+typedef double xreal;
+typedef _Complex double xcomplex;
+static const struct { Cdouble ZERO, INFIN; int MIN_EXP, MAX_EXP; }
+  xdata = { 0.0, DBL_MAX, DBL_MIN_EXP, DBL_MAX_EXP };
+static xreal xnorm(xcomplex z) { return __real__(z)*__real(z)+__imag__(z)*__imag__(z);}
+static xreal xabs(xcomplex z) { return sqrt(xnorm(z)); }
+static xreal xroot(xreal x, int n) { return pow(x,1.0/n); }
+static int xlogb(xcomplex z) { return ilogb(xnorm(z)) / 2; }
+#define xbits(z) DBL_MANT_DIG
+#define xeta(z) DBL_EPSILON
+typedef enum { false = 0, true = 1 } bool;
+static void xscalbln (xcomplex *z, int e) {
+  __real__(*z) = scalbln(__real__(*z), e);
+  __imag__(*z) = scalbln(__imag__(*z), e);
+}
+#include "cpoly.C"
+
 static Obj COMPLEX_ROOTS (Obj self, Obj coeffs)
 {
-  Obj result, t, heap;
-  UInt i, degree, numroots;
-#define opr ((double *)ADDR_OBJ(heap))
-#define opi (opr+degree+1)
-#define zeror (opr+2*degree+2)
-#define zeroi (opr+3*degree+2)
-#define cpolyheap (opr+4*degree+2)
+  Obj result;
+  Int i, numroots, degree = LEN_PLIST(coeffs)-1;
+  xcomplex op[degree+1], zero[degree];
 
-  degree = LEN_PLIST(coeffs)-1;
-
-  heap = NewBag(T_DATOBJ, (14*degree+12)*sizeof(double));
+  if (degree < 1)
+    return Fail;
 
   for (i = 0; i <= degree; i++) {
-    opr[degree-i] = VAL_FLOAT(ELM_PLIST(ELM_PLIST(coeffs,i+1),1));
-    opi[degree-i] = VAL_FLOAT(ELM_PLIST(ELM_PLIST(coeffs,i+1),2));
+    __real__(op)[degree-i] = VAL_FLOAT(ELM_PLIST(ELM_PLIST(coeffs,i+1),1));
+    __imag__(op)[degree-i] = VAL_FLOAT(ELM_PLIST(ELM_PLIST(coeffs,i+1),2));
+    if (isnan(__real__(op)[degree-i]) || isnan(__imag__(op)[degree-i]))
+      return Fail;
   }
 
-  numroots = cpoly (opr, opi, degree, zeror, zeroi, cpolyheap);
+#ifdef DEBUG_COMPLEX_ROOTS
+  fprintf(stderr,"coeffs");
+  for (i = 0; i <= degree; i++)
+    fprintf(stderr," %g+I*%g",(double)opr[i],(double)opi[i]);
+   /* __asm__ __volatile__ ("int3"); */
+  fprintf(stderr,"\n");
+#endif
+
+  numroots = cpoly (degree, op, zero);
 
   if (numroots == -1)
     return Fail;
 
+#ifdef DEBUG_COMPLEX_ROOTS
+  fprintf(stderr,"roots");
+  for (i = 0; i < numroots; i++)
+    fprintf(stderr," %g+I*%g",(double)zeror[i],(double)zeroi[i]);
+  fprintf(stderr,"\n");
+#endif
+
   result = ALLOC_PLIST(numroots);
   for (i = 1; i <= numroots; i++) {
-    t = ALLOC_PLIST(2);
-    SET_ELM_PLIST(t,1, NEW_FLOAT(zeror[i-1]));
-    SET_ELM_PLIST(t,2, NEW_FLOAT(zeroi[i-1]));
-    SET_ELM_PLIST(result,i, t);
+    Obj t = ALLOC_PLIST(2);
+    set_elm_plist(t,1, NEW_FLOAT(__real__(zero)[i-1]));
+    set_elm_plist(t,2, NEW_FLOAT(__imag__(zero)[i-1]));
+    set_elm_plist(result,i, t);
   }
 
   return result;
 }
 
 /****************************************************************************
- * DELAUNAY_TRMESH of points on the sphere (as list of (x,y,z))
+ * complex_roots of polynomial (as increasing-degree list of pairs (real,imag)
  ****************************************************************************/
-#define mesh_alloc ((Int4 *)CHARS_STRING(meshdata))
-/* mesh_alloc is between n and n+3 */
-#define mesh_n (mesh_alloc+1)
-#define mesh_tol ((double *)(mesh_n+1))
-#define mesh_x (mesh_tol+1)
-#define mesh_y (mesh_x+*mesh_alloc)
-#define mesh_z (mesh_y+*mesh_alloc)
-#define mesh_list ((Int4 *)(mesh_z+*mesh_alloc))
-#define mesh_lptr (mesh_list+6*(*mesh_alloc-2))
-#define mesh_lend (mesh_lptr+6*(*mesh_alloc-2))
-#define mesh_lnew (mesh_lend+*mesh_alloc)
-#define meshdata_size ((3*n+10)*sizeof(double)+(13*n+40)*sizeof(Int4))
-
-#ifndef NOFORTRAN
-static void xprod(double a, double b, double c,
-		  double d, double e, double f,
-		  double *x, double *y, double *z)
+static Obj REAL_ROOTS (Obj self, Obj coeffs)
 {
-  *x = b*f-c*e;
-  *y = c*d-a*f;
-  *z = a*e-b*d;
-}
+  Obj result;
+  Int i, numroots;
+  int degree = LEN_PLIST(coeffs)-1;
+  Cdouble opr[degree+1], zeror[degree], zeroi[degree];
 
-static double norm (double a, double b, double c)
-{
-  return sqrt(a*a+b*b+c*c);
-}
+  if (degree < 1)
+    return Fail;
 
-static void normalize(double *x, double *y, double *z)
-{
-  double n = norm(*x, *y, *z);
-  *x /= n; *y /= n; *z /= n;
-}
-
-static void spherexprod(double a, double b, double c,
-			double d, double e, double f,
-			double *x, double *y, double *z)
-{
-  xprod (a, b, c, d, e, f, x, y, z);
-  normalize (x, y, z);
-}
-
-static double sprod(double a, double b, double c,
-		    double d, double e, double f)
-{
-  return a*d+b*e+c*f;
-}
-
-#if 0
-static double tprod(double a, double b, double c,
-		    double d, double e, double f,
-		    double g, double h, double i)
-{
-  return a*e*i+b*f*g+c*d*h-a*f*h-b*d*i-c*e*g;
-}
-#endif
-
-static double angle(double a, double b, double c,
-		    double d, double e, double f)
-{
-  double x, y, g, h, i;
-
-  x = sprod(a, b, c, d, e, f);
-  xprod (a, b, c, d, e, f, &g, &h, &i);
-  y = norm(g, h, i);
-  return fabs(atan2(y, x)); /* more precise than acos(x) */
-}
-#endif
-
-#define SWAP(x,y) { typeof(x) z; z = x; x = y; y = z; }
-
-static Obj DELAUNAY_TRIANGULATION (Obj self, Obj gap_tol, Obj convex, Obj points)
-/* creates a triangulation on <points>.
- * if <convex> then add points so as to create a convex triangulation.
- * returns a list: [[list],[lptr],[lend],[extrapoints],[bdryvertices],
- *                  [listc],[[xc,yc,zc]],[rc],,"mesh"];
- * or an integer, in case of error
- */
-{
-#ifdef NOFORTRAN
-  ErrorQuit("No fortran compiler -- DELAUNAY_TRIANGULATION is disabled",0,0);
-  return Fail;
-#else
-  Int4 ier;
-  UInt i, j, n = LEN_PLIST(points), n0 = n;
-
-  if (n <= 1)
-    return INTOBJ_INT(-1);
-
-  Obj meshdata = NEW_STRING(meshdata_size);
-
-  double tol = *mesh_tol = VAL_FLOAT(gap_tol), avg_x, avg_y, avg_z;
-  *mesh_alloc = n+3; /* at worst 3 extra points */
-  avg_x = avg_y = avg_z = 0.0;
-  for (i = 0; i < n; i++) {
-    mesh_x[i] = VAL_FLOAT(ELM_PLIST(ELM_PLIST(points,i+1),1));
-    mesh_y[i] = VAL_FLOAT(ELM_PLIST(ELM_PLIST(points,i+1),2));
-    mesh_z[i] = VAL_FLOAT(ELM_PLIST(ELM_PLIST(points,i+1),3));
-    avg_x += mesh_x[i]; avg_y += mesh_y[i]; avg_z += mesh_z[i];
+  for (i = 0; i <= degree; i++) {
+    opr[degree-i] = VAL_FLOAT(ELM_PLIST(coeffs,i+1));
+    if (isnan(opr[degree-i]))
+      return Fail;
   }
-  avg_x /= n; avg_y /= n; avg_z /= n;
 
-#ifdef DEBUG_DELAUNAY
-  printf("Points received:");
-  for (i = 0; i < n; i++)
-    printf(" (%lg,%lg,%lg)", mesh_x[i], mesh_y[i], mesh_z[i]);
-  printf(" barycenter (%lg,%lg,%lg)\n", avg_x, avg_y, avg_z);
-  fflush(stdout);
-#endif
+  rpoly (opr, &degree, zeror, zeroi);
+  numroots = degree;
 
-  /* we'll have to swap gap point 1 with point <pt1>, and 2 with <pt2>
-     before calling the fortran routine; and back. */
-  Int4 pt1 = -1, pt2 = -1;
+  if (numroots < 0)
+    return Fail;
 
-  if (convex == True) { /* add up to 3 points to make the mesh nicer */
-    double angle1 = tol;
-    for (i = 1; i < n; i++) {
-      double a = angle(mesh_x[0], mesh_y[0], mesh_z[0],
-		       mesh_x[i], mesh_y[i], mesh_z[i]);
-      if (a > M_PI/2.0) a = M_PI - a;
-      if (a > angle1) /* find most orthogonal one */
-	angle1 = a, pt1 = i;
+  result = ALLOC_PLIST(numroots);
+  for (i = 1; i <= numroots; i++) {
+    if (zeroi[i-1] == 0.0)
+      set_elm_plist(result,i, NEW_FLOAT(zeror[i-1]));
+    else {
+      Obj t = ALLOC_PLIST(2);
+      set_elm_plist(t,1, NEW_FLOAT(zeror[i-1]));
+      set_elm_plist(t,2, NEW_FLOAT(zeroi[i-1]));
+      set_elm_plist(result,i, t);
     }
+  }
+  return result;
+}
 
-    if (pt1 == -1) { /* all almost aligned. add three points */
-      double a, x = 0.0, y = 0.0, z = 0.0, u, v, w;
+/****************************************************************************
+ * NFFUNCTION reduces a list according to an IMG relation
+ ****************************************************************************/
+#define PUSH_LETTER(__v) {				\
+    Int v = __v;					\
+    Obj w = INTOBJ_INT(v);				\
+    if (resulti && v == -INT_INTOBJ(ELM_PLIST(result,resulti)))	\
+      resulti--;					\
+    else {						\
+      resulti++;					\
+      if (resulti > allocn) {				\
+        allocn *= 2;					\
+	GROW_PLIST(result,allocn);			\
+      }							\
+      SET_ELM_PLIST(result,resulti,w);			\
+    }							\
+  }
 
-      if (fabs(mesh_x[0]) > 0.5) y = 1.0; /* at least at 30 degrees away */
-      else if (fabs(mesh_y[0]) > 0.5) z = 1.0;
-      else x = 1.0;
-      spherexprod (mesh_x[0], mesh_y[0], mesh_z[0], x, y, z,
-		   &u, &v, &w); /* (u,v,w) is orthonormal */
-      spherexprod (mesh_x[0], mesh_y[0], mesh_z[0], u, v, w,
-		   &x, &y, &z); /* and (x,y,z) too! */
+#define MATCH_POS(p,__v) {					\
+    Int v = __v;						\
+    if (v > 0)							\
+      p = INT_INTOBJ(ELM_PLIST(posind,v));			\
+    else							\
+      p = INT_INTOBJ(ELM_PLIST(negind,-v));			\
+  }
 
-#ifdef DEBUG_DELAUNAY
-      printf("Found normal vectors (%lg,%lg,%lg) and (%lg,%lg,%lg)\n",
-	     x,y,z, u,v,w);
-      fflush(stdout);
-#endif
+static Obj NFFUNCTION(Obj self, Obj rel, Obj dir, Obj word)
+{
+  /* word is an integer lists. dir is true/false.
+     rel is a list of lists: square of positive relator+square of negative
+     relator; positions in 1st of letter i; position in 1st of letter -i
+   * if dir=true, replace all (>=1/2)-cyclic occurrences of rel in word by the shorter half
+   * if dir=false, replace all occurrences of the last generator in word by the corresponding bit of rel
+   */
 
-      srand48(0); /* UGLY!!! we choose a direction at "random", hoping
-		     the new points won't be in the way of the tree arcs.
-		     (worse, we always use the same 3 values of drand48() :)) */
-      for (a = drand48(), i = 0; i < 3; a += M_PI / 1.5, i++) {
-	mesh_x[n] = cos(a)*x + sin(a)*u;
-	mesh_y[n] = cos(a)*y + sin(a)*v;
-	mesh_z[n++] = cos(a)*z + sin(a)*w;
-      }
-      pt1 = n-2;
-      pt2 = n-1;
-    } else { /* check now if points are in a plane */
-      double x, y, z, angle2 = tol;
+  Obj posind = ELM_PLIST(rel,2), negind = ELM_PLIST(rel,3);
+  rel = ELM_PLIST(rel,1);
+  Int n = LEN_PLIST(posind), allocn = n, i = 0, resulti = 0, match = 0, matchlen = 0, j;
+  Obj result = ALLOC_PLIST(allocn);
 
-      spherexprod (mesh_x[0], mesh_y[0], mesh_z[0],
-		   mesh_x[pt1], mesh_y[pt1], mesh_z[pt1],
-		   &x, &y, &z);
-
-#ifdef DEBUG_DELAUNAY
-      printf("Found normal vector (%lg,%lg,%lg)\n", x,y,z);
-      fflush(stdout);
-#endif
-
-      for (i = 1; i < n; i++) {
-	double a = angle (x, y, z, mesh_x[i], mesh_y[i], mesh_z[i]);
-	a = fabs(a - M_PI/2.0);
-	if (a > angle2)
-	  angle2 = a, pt2 = i;
-      }
-
-      if (pt2 == -1) { /* all points are almost orthogonal to (x,y,z) */
-	double a;
-	for (a = 1.0, i = 0; i < 2; a = -1.0, i++) {
-	  mesh_x[n] = -avg_x+a*x;
-	  mesh_y[n] = -avg_y+a*y;
-	  mesh_z[n] = -avg_z+a*z;
-	  normalize (mesh_x+n, mesh_y+n, mesh_z+n);
-	  n++;
+  while (i < LEN_PLIST(word)) {
+    /* we produced result[1..resulti] as the compressed version of word[1..i].
+       additionally, matchlen is maximal such that
+       rel[match..match+matchlen-1] = result[resulti-matchlen+1..resulti]
+    */
+    i++;
+    Obj wi = ELM_PLIST(word,i);
+    Int vi = INT_INTOBJ(wi);
+    if (dir == False) {
+      if (vi == n) {
+	match = INT_INTOBJ(ELM_PLIST(negind,n));
+	for (j = 1; j < n; j++)
+	  PUSH_LETTER(INT_INTOBJ(ELM_PLIST(rel,j+match)));
+      } else if (vi == -n) {
+	match = INT_INTOBJ(ELM_PLIST(posind,n));
+	for (j = 1; j < n; j++)
+	  PUSH_LETTER(INT_INTOBJ(ELM_PLIST(rel,j+match)));
+      } else
+	PUSH_LETTER(vi);
+    } else {
+      if (resulti && vi == -INT_INTOBJ(ELM_PLIST(result,resulti))) {
+	/* pop letter, and update match */
+	resulti--;
+	matchlen--;
+	if (matchlen == 0 && resulti) {
+	  MATCH_POS(match,INT_INTOBJ(ELM_PLIST(result,resulti)));
+	  matchlen = 1;
+	  while (resulti > matchlen && ELM_PLIST(result,resulti-matchlen) == ELM_PLIST(rel,match+n-1)) {
+	    matchlen++;
+	    if (!--match)
+	      match = n;
+	  }
+	} else
+	  match = 0;
+      } else {
+	PUSH_LETTER(vi);
+	if (match && wi == ELM_PLIST(rel,match+matchlen)) {
+	  matchlen++;
+	  if (matchlen >= (n+1+(match < 2*n))/2) { /* more than half, or exactly half and negatives */
+	    resulti -= matchlen;
+	    for (j = n-1; j >= matchlen; j--)
+	      PUSH_LETTER(-INT_INTOBJ(ELM_PLIST(rel,j+match)));
+	    matchlen = n-matchlen;
+	    match = 4*n+1 - (match+n-1);
+	  }
+	} else {
+	  matchlen = 1;
+	  MATCH_POS(match,vi);
 	}
-	pt2 = n-1;
       }
     }
-  } else { /* don't do anything special, when convex=False */
-    pt1 = 1; pt2 = 2;
   }
-
-  if (pt1 == 2) { pt1 = pt2; pt2 = 2; } /* so permutation is really a swap */
-  if (pt2 == 1) { pt2 = pt1; pt1 = 1; }
-
-  for (i = 1, j = pt1; i <= 2; i++, j = pt2) {
-    SWAP(mesh_x[i], mesh_x[j]);
-    SWAP(mesh_y[i], mesh_y[j]);
-    SWAP(mesh_z[i], mesh_z[j]);
-  }
-
-  *mesh_n = n;
-  Int4 delaunay_near[n], delaunay_next[n];
-  double delaunay_dist[n];
-
-#ifdef DEBUG_DELAUNAY
-  printf("Points passed to trmesh:");
-  for (i = 0; i < n; i++)
-    printf(" (%lg,%lg,%lg)", mesh_x[i], mesh_y[i], mesh_z[i]);
-  printf(" swapping points (1,%ld), (2,%ld)\n", pt1, pt2);
-  fflush(stdout);
-#endif
-
-  /* create mesh of convex hull of points */
-  trmesh_ (mesh_n, mesh_x, mesh_y, mesh_z,
-	   mesh_list, mesh_lptr, mesh_lend, mesh_lnew,
-	   delaunay_near, delaunay_next, delaunay_dist, &ier);
-
-  if (ier != 0)
-    return INTOBJ_INT(100+ier);
-
-  for (i = 0; i < *mesh_lnew-1; i++)
-    if (mesh_list[i] < 0) /* something on the boundary */
-      goto foundboundary;
-  goto skipboundary;
-
- foundboundary:
-  if (convex == True) {
-    mesh_x[n] = -avg_x; mesh_y[n] = -avg_y; mesh_z[n] = -avg_z;
-    normalize (mesh_x+n, mesh_y+n, mesh_z+n);
-#ifdef DEBUG_DELAUNAY
-    printf("Adding point to make set convex: (%lg,%lg,%lg)\n",
-	   mesh_x[n], mesh_y[n], mesh_z[n]);
-    fflush(stdout);
-#endif
-    *mesh_n = ++n;
-    Int4 seed = 0;
-    addnod_ (&seed, mesh_n, mesh_x, mesh_y, mesh_z,
-	     mesh_list, mesh_lptr, mesh_lend, mesh_lnew, &ier);
-    if (ier != 0)
-      return INTOBJ_INT(ier+300);
-  }
- skipboundary:
-
-  /* swap back in place */
-  for (i = 0; i < *mesh_lnew-1; i++) {
-    j = abs(mesh_list[i])-1;
-    if (j == 1) j = pt1;
-    else if (j == 2) j = pt2;
-    else if (j == pt1) j = 1;
-    else if (j == pt2) j = 2;
-    mesh_list[i] = (mesh_list[i] < 0 ? -(1+j) : (1+j));
-  }
-  for (i = 1, j = pt1; i <= 2; i++, j = pt2) {
-    SWAP(mesh_lend[i], mesh_lend[j]);
-    SWAP(mesh_x[i], mesh_x[j]);
-    SWAP(mesh_y[i], mesh_y[j]);
-    SWAP(mesh_z[i], mesh_z[j]);
-  }
-
-  Obj result = ALLOC_PLIST(10);
-
-  SET_ELM_PLIST(result, 1, ALLOC_PLIST(*mesh_lnew-1));
-  for (i = 1; i < *mesh_lnew; i++) {
-    SET_ELM_PLIST(ELM_PLIST(result,1), i, INTOBJ_INT(mesh_list[i-1]));
-  }
-
-  SET_ELM_PLIST(result, 2, ALLOC_PLIST(*mesh_lnew-1));
-  for (i = 1; i < *mesh_lnew; i++) {
-    SET_ELM_PLIST(ELM_PLIST(result,2), i, INTOBJ_INT(mesh_lptr[i-1]));
-  }
-
-  SET_ELM_PLIST(result, 3, ALLOC_PLIST(n));
-  for (i = 1; i <= n; i++) {
-    SET_ELM_PLIST(ELM_PLIST(result,3), i, INTOBJ_INT(mesh_lend[i-1]));
-  }
-
-  SET_ELM_PLIST(result, 4, ALLOC_PLIST(n-n0));
-  for (i = n0; i < n; i++) {
-    Obj t = ALLOC_PLIST(3);
-    SET_ELM_PLIST(t, 1, NEW_FLOAT(mesh_x[i]));
-    SET_ELM_PLIST(t, 2, NEW_FLOAT(mesh_y[i]));
-    SET_ELM_PLIST(t, 3, NEW_FLOAT(mesh_z[i]));
-    SET_ELM_PLIST(ELM_PLIST(result,4), 1+i-n0, t);
-  }
-
-  Int4 delaunay_bdry[n], nb, na, nt;
-  bnodes_ (mesh_n, mesh_list, mesh_lptr, mesh_lend, delaunay_bdry, &nb, &na, &nt);
-
-  SET_ELM_PLIST(result, 5, ALLOC_PLIST(nb));
-  for (i = 1; i <= n; i++) {
-    SET_ELM_PLIST(ELM_PLIST(result,5), i, INTOBJ_INT(delaunay_bdry[i-1]));
-  }
-
-  /* additional heap for crlist_ */
-  Int4 delaunay_ltri[6*n], delaunay_listc[3*nt];
-  double delaunay_xc[nt], delaunay_yc[nt], delaunay_zc[nt], delaunay_rc[nt];
-
-  /* complete mesh to whole sphere, compute cicumcenters and triangles */
-  crlist_ (mesh_n, mesh_n, mesh_x, mesh_y, mesh_z,
-	   mesh_list, mesh_lend, mesh_lptr, mesh_lnew,
-	   delaunay_ltri, delaunay_listc, &nb,
-	   delaunay_xc, delaunay_yc, delaunay_zc, delaunay_rc, &ier);
-
-  if (ier != 0)
-    return INTOBJ_INT(200+ier);
-
-  SET_ELM_PLIST(result, 6, ALLOC_PLIST(3*nt));
-  for (i = 1; i <= 3*nt; i++) {
-    SET_ELM_PLIST(ELM_PLIST(result,6), i, INTOBJ_INT(delaunay_listc[i-1]));
-  }
-
-  SET_ELM_PLIST(result, 7, ALLOC_PLIST(nt));
-  for (i = 1; i <= nt; i++) {
-    Obj t = ALLOC_PLIST(3);
-    SET_ELM_PLIST(t, 1, NEW_FLOAT(delaunay_xc[i-1]));
-    SET_ELM_PLIST(t, 2, NEW_FLOAT(delaunay_yc[i-1]));
-    SET_ELM_PLIST(t, 3, NEW_FLOAT(delaunay_zc[i-1]));
-    SET_ELM_PLIST(ELM_PLIST(result,7), i, t);
-  }
-
-  SET_ELM_PLIST(result, 8, ALLOC_PLIST(nt));
-  for (i = 1; i <= nt; i++) {
-    SET_ELM_PLIST(ELM_PLIST(result,8), i, NEW_FLOAT(delaunay_rc[i-1]));
-  }
-
-  SET_ELM_PLIST(result, 10, meshdata);
-
+  SET_LEN_PLIST(result,resulti);
   return result;
-#endif
-}
-
-static Obj DELAUNAY_FIND (Obj self, Obj meshdata, Obj gap_seed, Obj gap_point)
-{
-#ifdef NOFORTRAN
-  ErrorQuit("No fortran compiler -- DELAUNAY_FIND is disabled",0,0);
-  return Fail;
-#else
-  Int4 triangle[3], seed = INT_INTOBJ(gap_seed);
-  Int i;
-  double point[3], coord[3];
-
-  for (i = 0; i < 3; i++)
-    point[i] = VAL_FLOAT(ELM_PLIST(gap_point,i+1));
-
-  trfind_ (&seed, point, mesh_n, mesh_x, mesh_y, mesh_z,
-	   mesh_list, mesh_lptr, mesh_lend,
-	   coord, coord+1, coord+2, triangle, triangle+1, triangle+2);
-
-  Obj result = ALLOC_PLIST(2);
-
-  SET_ELM_PLIST(result, 1, ALLOC_PLIST(3));
-  for (i = 0; i < 3; i++)
-    SET_ELM_PLIST(ELM_PLIST(result,1), i+1, INTOBJ_INT(triangle[i]));
-
-  SET_ELM_PLIST(result, 2, ALLOC_PLIST(3));
-  for (i = 0; i < 3; i++)
-    SET_ELM_PLIST(ELM_PLIST(result,2), i+1, NEW_FLOAT(coord[i]));
-
-  return result;
-#endif
-}
-
-/****************************************************************************
- * ARC_MIN_SPAN_TREE finds a minimal spanning tree in a graph
- ****************************************************************************/
-static Obj ARC_MIN_SPAN_TREE (Obj self, Obj gap_n, Obj gap_edges)
-{
-#ifdef NOFORTRAN
-  ErrorQuit("No fortran compiler -- ARC_MIN_SPAN_TREE is disabled",0,0);
-  return Fail;
-#else
-  Int4 n = INT_INTOBJ(gap_n), e = LEN_PLIST(gap_edges);
-  UInt i;
-  Int4 inode[e], jnode[e], itree[n], jtree[n];
-  double cost[e], total;
-
-  for (i = 0; i < e; i++) {
-    inode[i] = INT_INTOBJ(ELM_PLIST(ELM_PLIST(gap_edges,i+1),1));
-    jnode[i] = INT_INTOBJ(ELM_PLIST(ELM_PLIST(gap_edges,i+1),2));
-    cost[i] = VAL_FLOAT(ELM_PLIST(ELM_PLIST(gap_edges,i+1),3));
-  }
-
-  graph_arc_min_span_tree_ (&n, &e, inode, jnode, cost, itree, jtree, &total);
-
-  Obj result = ALLOC_PLIST(n);
-  for (i = 0; i < n-1; i++) {
-    SET_ELM_PLIST(result, i+1, ALLOC_PLIST(2));
-    SET_ELM_PLIST(ELM_PLIST(result,i+1), 1, INTOBJ_INT(itree[i]));
-    SET_ELM_PLIST(ELM_PLIST(result,i+1), 2, INTOBJ_INT(jtree[i]));
-  }
-  SET_ELM_PLIST(result, n, NEW_FLOAT(total));
-
-  return result;
-#endif
 }
 
 /****************************************************************************
@@ -538,7 +255,7 @@ static Obj ARC_MIN_SPAN_TREE (Obj self, Obj gap_n, Obj gap_edges)
  ****************************************************************************/
 typedef struct {
   int n;
-  double points[][3];
+  Double (*points)[3];
 } bparams;
 
 #ifdef MALLOC_HACK
@@ -547,43 +264,47 @@ void *old_free_hook, *old_malloc_hook;
 static void *
 my_malloc_hook (size_t size, const void *caller)
 {
-  printf ("allocating %d\n", size);
-  fflush(stdout);
+  fprintf(stderr,"allocating %d\n", size);
 
-  return NewBag(T_DATOBJ, size + sizeof(Int));
+  return *NewBag(T_DATOBJ, size + sizeof(Int));
 }
 
 static void
 my_free_hook (void *ptr, const void *caller)
 {
-  printf ("freeing pointer %p\n", ptr);
-  fflush(stdout);
+  fprintf(stderr,"freeing pointer %p\n", ptr);
 }
 #endif
 
 #define bpoints (((bparams *) param)->points)
 
-int barycenter (const gsl_vector *x, void *param, gsl_vector *f)
+static int barycenter (const gsl_vector *x, void *param, gsl_vector *f)
 {
+  /* x is a "shifting" parameter; it is a vector in R^3, and
+     describes the M\"obius transformation with north-south dynamics.
+     more precisely, let t=|x|. in R^3, the transformation sends
+     P to (2(1-t)P+(2-t+(v*P))v)/(1+(1-t)^2+(2-t)(v*P)).
+     In particular, for t=0 it sends everything to v, and for t=1 it fixes P.
+
+     The M\"obius transformation is 
+  */
   int i, j;
   const int n = ((bparams *) param)->n;
-  double v[3];
+  long double v[3];
 
   for (i = 0; i < 3; i++) v[i] = gsl_vector_get (x, i);
-  double t = sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-  v[0] /= t; v[1] /= t; v[2] /= t;
-
-  double sum[3] = { 0.0, 0.0, 0.0 };
+  long double t = sqrtl(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+  long double sum[3] = { 0.0, 0.0, 0.0 };
 
   for (j = 0; j < n; j++) {
-    double x[3], z = 0.0;
+    long double x[3], z = 0.0;
 
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 3; i++) /* z = v*P */
       z += bpoints[j][i] * v[i];
 
-    double d = 1.0 + t*t + (1.0 - t*t)*z;
+    long double d = 1.0 + (1.0-t)*(1.0-t) + (2.0 - t)*z;
     for (i = 0; i < 3; i++)
-      x[i] = (2.0*t*bpoints[j][i] + (1.0-t)*(1.0+t+(1.0-t)*z)*v[i]) / d;
+      x[i] = (2.0*(1.0-t)*bpoints[j][i] + (2.0-t+z)*v[i]) / d;
 
     for (i = 0; i < 3; i++) sum[i] += x[i];
   }
@@ -593,7 +314,43 @@ int barycenter (const gsl_vector *x, void *param, gsl_vector *f)
   return GSL_SUCCESS;
 }
 
-#define bparam ((bparams *) ADDR_OBJ(heap))
+/* given a set of points on S^2 \subset R^3, there is, up to rotations
+   of the sphere, a unique M\"obius transformation that centers these
+   points, i.e. such that their barycentre is (0,0,0). This follows
+   from GIT, as Burt Totaro told me:
+
+   Dear Laurent,
+
+   Geometric invariant theory (GIT) gives a complete answer to your
+   question. More concretely, the answer follows from the Kempf-Ness
+   theorem in GIT, as I think Frances Kirwan first observed.
+
+   Namely, given a sequence of N points p_1,...,p_N on the 2-sphere,
+   there is a Mobius transformation that moves these points
+   to have center of mass at the origin of R^3 if and only if either
+   (1) fewer than N/2 of the points are equal to any given point
+   in the 2-sphere; or
+   (2) N is even, N/2 of the points are equal to one point
+   in the 2-sphere, and the other N/2 points are equal
+   to a different point in the 2-sphere.
+   (In GIT terminology, condition (1) describes which
+   N-tuples of points in S^2 = CP^1 are "stable",
+   and (2) describes which N-tuples are "polystable"
+   but not stable.) In particular, if p_1,...,p_N are all distinct
+   and N is at least 2, then they can be centered
+   by some Mobius transformation.
+   
+   This result was the beginning of many developments in GIT,
+   such as Donaldson's notion of "balanced" metrics.
+   Here is a good survey (where Theorem 4.13 is the statement
+   above).
+
+   R. P. Thomas. Notes on GIT and symplectic reduction for bundles
+   and varieties. arXiv:math/0512411
+
+   Burt Totaro
+*/
+
 static Obj FIND_BARYCENTER (Obj self, Obj gap_points, Obj gap_init, Obj gap_iter, Obj gap_tol)
 {
 #ifdef MALLOC_HACK
@@ -605,13 +362,12 @@ static Obj FIND_BARYCENTER (Obj self, Obj gap_points, Obj gap_init, Obj gap_iter
 
   UInt i, j, n = LEN_PLIST(gap_points);
 
-  Obj heap = NewBag(T_DATOBJ, 3*n*sizeof(double)+sizeof(Int));
-
-  ((bparams *) ADDR_OBJ(heap))->n = n;
-
+  Double __points[n][3];
+  bparams bparam = { n, __points };
+  
   for (i = 0; i < n; i++)
     for (j = 0; j < 3; j++)
-      bparam->points[i][j] = VAL_FLOAT(ELM_PLIST(ELM_PLIST(gap_points,i+1),j+1));
+      bparam.points[i][j] = VAL_FLOAT(ELM_PLIST(ELM_PLIST(gap_points,i+1),j+1));
 
   const gsl_multiroot_fsolver_type *T;
   gsl_multiroot_fsolver *s;
@@ -620,7 +376,7 @@ static Obj FIND_BARYCENTER (Obj self, Obj gap_points, Obj gap_init, Obj gap_iter
   size_t iter = 0, max_iter = INT_INTOBJ(gap_iter);
   double precision = VAL_FLOAT(gap_tol);
 
-  gsl_multiroot_function f = {&barycenter, 3, ADDR_OBJ(heap)};
+  gsl_multiroot_function f = {&barycenter, 3, &bparam};
   gsl_vector *x = gsl_vector_alloc (3);
 
   for (i = 0; i < 3; i++) gsl_vector_set (x, i, VAL_FLOAT(ELM_PLIST(gap_init,i+1)));
@@ -641,12 +397,12 @@ static Obj FIND_BARYCENTER (Obj self, Obj gap_points, Obj gap_init, Obj gap_iter
   while (status == GSL_CONTINUE && iter < max_iter);
 
   Obj result = ALLOC_PLIST(2);
-  Obj list = ALLOC_PLIST(3); SET_ELM_PLIST(result, 1, list);
+  Obj list = ALLOC_PLIST(3); set_elm_plist(result, 1, list);
   for (i = 0; i < 3; i++)
-    SET_ELM_PLIST(list, i+1, NEW_FLOAT(gsl_vector_get (s->x, i)));
-  list = ALLOC_PLIST(3); SET_ELM_PLIST(result, 2, list);
+    set_elm_plist(list, i+1, NEW_FLOAT(gsl_vector_get (s->x, i)));
+  list = ALLOC_PLIST(3); set_elm_plist(result, 2, list);
   for (i = 0; i < 3; i++)
-    SET_ELM_PLIST(list, i+1, NEW_FLOAT(gsl_vector_get (s->f, i)));
+    set_elm_plist(list, i+1, NEW_FLOAT(gsl_vector_get (s->f, i)));
 
   gsl_multiroot_fsolver_free (s);
   gsl_vector_free (x);
@@ -664,20 +420,86 @@ static Obj FIND_BARYCENTER (Obj self, Obj gap_points, Obj gap_init, Obj gap_iter
 }
 
 /****************************************************************************
+ * FIND_RATIONALFUNCTION solves the Hurwitz problem
+ ****************************************************************************/
+static Obj FIND_RATIONALFUNCTION (Obj self, Obj gap_degrees, Obj gap_values, Obj gap_c, Obj gap_num, Obj gap_den, Obj params)
+{
+  size_t degree = 2, s;
+
+  s = LEN_PLIST(gap_degrees);
+
+  if (s != LEN_PLIST(gap_values)+3 || s != LEN_PLIST(gap_c)+3)
+    return Fail;
+
+  size_t d[s], i;
+  gsl_complex c[s-3], v[s];
+
+  for (i = 0; i < s; i++) {
+    d[i] = INT_INTOBJ(ELM_PLIST(gap_degrees,i+1));
+    degree += d[i]-1;
+    if (i < s-3) {
+      v[i] = VAL_GSL_COMPLEX(ELM_PLIST(gap_values,i+1));
+      c[i] = VAL_GSL_COMPLEX(ELM_PLIST(gap_c,i+1));
+    } else if (i == s-3)
+      GSL_SET_COMPLEX(v+i, 1.0, 0.0);
+    else if (i == s-2)
+      GSL_SET_COMPLEX(v+i, 0.0, 0.0);
+    else if (i == s-1)
+      GSL_SET_COMPLEX(v+i, HUGE_VAL, HUGE_VAL);
+  }
+  degree /= 2;
+
+  gsl_complex num_data[degree+1], den_data[degree+1];
+  polynomial num = { LEN_PLIST(gap_num)-1, num_data },
+    den = { LEN_PLIST(gap_den)-1, den_data };
+    
+  for (i = 0; i <= num.degree; i++)
+    num.data[i] = VAL_GSL_COMPLEX(ELM_PLIST(gap_num,i+1));
+  for (i = 0; i <= den.degree; i++)
+    den.data[i] = VAL_GSL_COMPLEX(ELM_PLIST(gap_den,i+1));
+    
+  int status = solve_hurwitz (degree, s, d, v, c, &num, &den,
+    INT_INTOBJ(ELM_PLIST(params,1)), VAL_FLOAT(ELM_PLIST(params,2)), VAL_FLOAT(ELM_PLIST(params,3)));
+
+  if (status != GSL_SUCCESS)
+    return INTOBJ_INT(status);
+
+  for (i = 0; i < s-3; i++)
+    set_elm_plist(gap_c,i+1, NEW_COMPLEX_GSL(c+i));
+
+  GROW_PLIST(gap_num, num.degree+1);
+  SET_LEN_PLIST(gap_num, num.degree+1);
+  for (i = 0; i <= num.degree; i++)
+    set_elm_plist(gap_num,i+1, NEW_COMPLEX_GSL(num.data+i));
+
+  GROW_PLIST(gap_den, den.degree+1);
+  SET_LEN_PLIST(gap_den, den.degree+1);
+  for (i = 0; i <= den.degree; i++)
+    set_elm_plist(gap_den,i+1, NEW_COMPLEX_GSL(den.data+i));
+
+  return INTOBJ_INT(status);
+}
+
+/****************************************************************************
+ * other
+ ****************************************************************************/
+
+/****************************************************************************
  * interface to GAP
  ****************************************************************************/
 static StructGVarFunc GVarFuncs [] = {
   { "COMPLEX_ROOTS", 1, "coeffs", COMPLEX_ROOTS, "fr_dll.c:COMPLEX_ROOTS" },
-  { "DELAUNAY_TRIANGULATION", 3, "tol, convex, points", DELAUNAY_TRIANGULATION, "fr_dll.c:DELAUNAY_TRIANGULATION" },
-  { "DELAUNAY_FIND", 3, "data, seed, point", DELAUNAY_FIND, "fr_dll.c:DELAUNAY_FIND" },
-  { "ARC_MIN_SPAN_TREE", 2, "n, edges", ARC_MIN_SPAN_TREE, "fr_dll.c:ARC_MIN_SPAN_TREE" },
+  { "REAL_ROOTS", 1, "coeffs", REAL_ROOTS, "fr_dll.c:REAL_ROOTS" },
+  { "NFFUNCTION_FR", 3, "rel, dir, word", NFFUNCTION, "fr_dll.c:NFFUNCTION" },
   { "FIND_BARYCENTER", 4, "points, init, iter, tol", FIND_BARYCENTER, "fr_dll.c:FIND_BARYCENTER" },
+  { "FIND_RATIONALFUNCTION", 6, "degrees, values, points, num, den, params", FIND_RATIONALFUNCTION, "fr_dll.c:FIND_RATIONALFUNCTION" },
   { 0 }
 };
 
 static Int InitKernel ( StructInitInfo * module )
 {
   InitHdlrFuncsFromTable( GVarFuncs );
+  InitP1Kernel();
   return 0;
 }
 
@@ -685,6 +507,7 @@ static Int InitKernel ( StructInitInfo * module )
 static Int InitLibrary ( StructInitInfo * module )
 {
   InitGVarFuncsFromTable( GVarFuncs );
+  InitP1Library();
   return 0;
 }
 

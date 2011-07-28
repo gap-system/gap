@@ -2,7 +2,7 @@
 **
 *W  intrprtr.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: intrprtr.c,v 4.75 2010/04/28 14:02:26 sal Exp $
+*H  @(#)$Id: intrprtr.c,v 4.82 2011/06/06 16:28:08 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -20,7 +20,7 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 const char * Revision_intrprtr_c =
-   "@(#)$Id: intrprtr.c,v 4.75 2010/04/28 14:02:26 sal Exp $";
+   "@(#)$Id: intrprtr.c,v 4.82 2011/06/06 16:28:08 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -50,7 +50,6 @@ const char * Revision_intrprtr_c =
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
-#include        "vars.h"                /* variables                       */
 #include        "funcs.h"               /* functions                       */
 #include        "read.h"
 
@@ -60,6 +59,8 @@ const char * Revision_intrprtr_c =
 
 #include	"tls.h"
 #include	"thread.h"
+
+#include        "vars.h"                /* variables                       */
 
 #include        "saveload.h"            /* saving and loading              */
 
@@ -286,13 +287,8 @@ ExecStatus IntrEnd (
         assert( TLS->intrCoding   == 0 );
 
         /* and the stack must contain the result value (which may be void) */
-        if ( CompNowFuncs == 0 ) {
-            assert( TLS->countObj == 1 );
-            TLS->intrResult = PopVoidObj();
-        }
-        else {
-            TLS->intrResult = 0;
-        }
+	assert( TLS->countObj == 1 );
+	TLS->intrResult = PopVoidObj();
 
         /* switch back to the old state                                    */
         TLS->countObj  = INT_INTOBJ( ADDR_OBJ(TLS->intrState)[3] );
@@ -355,7 +351,7 @@ void            IntrFuncCallBegin ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeFuncCallBegin(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 }
 
 static Obj PushOptions;
@@ -385,7 +381,7 @@ void            IntrFuncCallEnd (
     if ( TLS->intrCoding    > 0 ) {
       CodeFuncCallEnd( funccall, options, nr );
       return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     if (options)
       {
@@ -415,25 +411,33 @@ void            IntrFuncCallEnd (
     /* get and check the function from the stack                           */
     func = PopObj();
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit(
-            "<func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L );
+      args = NEW_PLIST( T_PLIST_DENSE, nr );
+      SET_LEN_PLIST( args, nr );
+      switch(nr) {
+      case 6: SET_ELM_PLIST(args,6,a6);
+      case 5: SET_ELM_PLIST(args,5,a5);
+      case 4: SET_ELM_PLIST(args,4,a4);
+      case 3: SET_ELM_PLIST(args,3,a3);
+      case 2: SET_ELM_PLIST(args,2,a2);
+      case 1: SET_ELM_PLIST(args,1,a1);
+      }
+      val = DoOperation2Args(CallFuncListOper, func, args);
+    } else {
+      /* call the function                                                   */
+      if      ( 0 == nr ) { val = CALL_0ARGS( func ); }
+      else if ( 1 == nr ) { val = CALL_1ARGS( func, a1 ); }
+      else if ( 2 == nr ) { val = CALL_2ARGS( func, a1, a2 ); }
+      else if ( 3 == nr ) { val = CALL_3ARGS( func, a1, a2, a3 ); }
+      else if ( 4 == nr ) { val = CALL_4ARGS( func, a1, a2, a3, a4 ); }
+      else if ( 5 == nr ) { val = CALL_5ARGS( func, a1, a2, a3, a4, a5 ); }
+      else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
+      else                { val = CALL_XARGS( func, args ); }
+      
+      if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+					 READ() and the user quit from a break
+					 loop inside it */
+	ReadEvalError();
     }
-
-    /* call the function                                                   */
-    if      ( 0 == nr ) { val = CALL_0ARGS( func ); }
-    else if ( 1 == nr ) { val = CALL_1ARGS( func, a1 ); }
-    else if ( 2 == nr ) { val = CALL_2ARGS( func, a1, a2 ); }
-    else if ( 3 == nr ) { val = CALL_3ARGS( func, a1, a2, a3 ); }
-    else if ( 4 == nr ) { val = CALL_4ARGS( func, a1, a2, a3, a4 ); }
-    else if ( 5 == nr ) { val = CALL_5ARGS( func, a1, a2, a3, a4, a5 ); }
-    else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
-    else                { val = CALL_XARGS( func, args ); }
-
-    if (UserHasQuit || UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
-      ReadEvalError();
 
     /* check the return value                                              */
     if ( funccall && val == 0 ) {
@@ -471,14 +475,15 @@ void            IntrFuncCallEnd (
 void            IntrFuncExprBegin (
     Int                 narg,
     Int                 nloc,
-    Obj                 nams )
+    Obj                 nams,
+    Int                 startLine)
 {
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) {
         TLS->intrCoding++;
-        CodeFuncExprBegin( narg, nloc, nams );
+        CodeFuncExprBegin( narg, nloc, nams, startLine );
         return;
     }
 
@@ -487,7 +492,7 @@ void            IntrFuncExprBegin (
     TLS->intrCoding = 1;
 
     /* code a function expression                                          */
-    CodeFuncExprBegin( narg, nloc, nams );
+    CodeFuncExprBegin( narg, nloc, nams, startLine );
 }
 
 void            IntrFuncExprEnd (
@@ -559,7 +564,7 @@ void            IntrIfBegin ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
     if ( TLS->intrCoding    > 0 ) { CodeIfBegin(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 }
 
 void            IntrIfElif ( void )
@@ -568,7 +573,7 @@ void            IntrIfElif ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIfElif(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 }
 
 void            IntrIfElse ( void )
@@ -577,7 +582,7 @@ void            IntrIfElse ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIfElse(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* push 'true' (to execute body of else-branch)                        */
     PushObj( True );
@@ -591,7 +596,7 @@ void            IntrIfBeginBody ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
     if ( TLS->intrCoding    > 0 ) { CodeIfBeginBody(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the condition                                         */
     cond = PopObj();
@@ -616,7 +621,7 @@ void            IntrIfEndBody (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 1 ) { TLS->intrIgnoring--; return; }
     if ( TLS->intrCoding    > 0 ) { CodeIfEndBody( nr ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* if the condition was 'false', the body was ignored                  */
     if ( TLS->intrIgnoring == 1 ) {
@@ -640,7 +645,7 @@ void            IntrIfEnd (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 1 ) { TLS->intrIgnoring--; return; }
     if ( TLS->intrCoding    > 0 ) { CodeIfEnd( nr ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* if one branch was executed (ignoring the others)                    */
     if ( TLS->intrIgnoring == 1 ) {
@@ -694,7 +699,7 @@ void IntrForBegin ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { TLS->intrCoding++; CodeForBegin(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* switch to coding mode now                                           */
     CodeBegin();
@@ -716,7 +721,7 @@ void IntrForBegin ( void )
 	SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
       }
 
-    CodeFuncExprBegin( 0, 0, nams );
+    CodeFuncExprBegin( 0, 0, nams, 0 );
 
     /* code a for loop                                                     */
     CodeForBegin();
@@ -727,7 +732,7 @@ void IntrForIn ( void )
     /* ignore                                                              */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     
     
@@ -741,7 +746,7 @@ void IntrForBeginBody ( void )
     /* ignore                                                              */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* otherwise must be coding                                            */
     assert( TLS->intrCoding > 0 );
@@ -756,8 +761,7 @@ void IntrForEndBody (
     if ( TLS->intrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( TLS->intrCoding != 0 || CompNowFuncs == 0 ) {
-        assert( TLS->intrCoding > 0 );
+    if ( TLS->intrCoding != 0 ) {
         CodeForEndBody( nr );
     }
 }
@@ -770,7 +774,7 @@ void IntrForEnd ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 1 ) { TLS->intrCoding--; CodeForEnd(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* otherwise must be coding                                            */
     assert( TLS->intrCoding > 0 );
@@ -830,7 +834,7 @@ void            IntrWhileBegin ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { TLS->intrCoding++; CodeWhileBegin(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* switch to coding mode now                                           */
     CodeBegin();
@@ -854,7 +858,7 @@ void            IntrWhileBegin ( void )
 	SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
       }
     
-    CodeFuncExprBegin( 0, 0, nams );
+    CodeFuncExprBegin( 0, 0, nams, 0 );
 
     /* code a while loop                                                   */
     CodeWhileBegin();
@@ -865,7 +869,7 @@ void            IntrWhileBeginBody ( void )
     /* ignore                                                              */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* otherwise must be coding                                            */
     assert( TLS->intrCoding > 0 );
@@ -880,15 +884,8 @@ void            IntrWhileEndBody (
     if ( TLS->intrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( TLS->intrCoding == 0 && CompNowFuncs != 0 ) {
-        while ( 1 < --nr ) {
-            PopStat();
-        }
-    }
-    else {
-        assert( TLS->intrCoding > 0 );
-        CodeWhileEndBody( nr );
-    }
+    assert( TLS->intrCoding > 0 );
+    CodeWhileEndBody( nr );
 }
 
 void            IntrWhileEnd ( void )
@@ -899,7 +896,7 @@ void            IntrWhileEnd ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 1 ) { TLS->intrCoding--; CodeWhileEnd(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* otherwise must be coding                                            */
     assert( TLS->intrCoding > 0 );
@@ -944,7 +941,6 @@ void IntrQualifiedExprBegin(UInt qual)
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
     if ( TLS->intrCoding    > 0 ) { CodeQualifiedExprBegin(qual); return; }
-    if ( CompNowFuncs != 0 ) { return; }
     PushObj(INTOBJ_INT(qual));
     return;
 }
@@ -955,7 +951,6 @@ void IntrQualifiedExprEnd( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring--; return; }
     if ( TLS->intrCoding    > 0 ) { CodeQualifiedExprEnd(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
     return;
 }
 
@@ -992,8 +987,6 @@ void            IntrAtomicBegin ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { TLS->intrCoding; CodeAtomicBegin(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
-
     /* nothing to do here */
     return;
   
@@ -1008,44 +1001,37 @@ void            IntrAtomicBeginBody ( UInt nrexprs )
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { TLS->intrCoding++; CodeAtomicBeginBody(nrexprs); return; }
 
-    if ( TLS->intrCoding == 0 && CompNowFuncs != 0 ) {
-        while ( 1 < --nrexprs ) {
-            PopExpr();
-        }
-    } else {
 
-
-      /* leave the expressions and qualifiers on the stack, switch to coding to process the body
-	 of the Atomic expression */
-      PushObj(INTOBJ_INT(nrexprs));
-      CodeBegin();
-      TLS->intrCoding = 1;
-      
-      
-      /* code a function expression (with no arguments and locals)           */
-      
-      nams = NEW_PLIST( T_PLIST, 0 );
-      SET_LEN_PLIST( nams, 0 );
-      
-      /* If we are in the break loop, then a local variable context may well exist,
-	 and we have to create an empty local variable names list to match the
-	 function expression that we are creating.
-	 
-	 If we are not in a break loop, then this would be a waste of time and effort */
-      
-      if (TLS->countNams > 0)
-	{
-	  GROW_PLIST(TLS->stackNams, ++TLS->countNams);
-	  SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
-	  SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
-	}
-      
-      CodeFuncExprBegin( 0, 0, nams );
-    }
+    /* leave the expressions and qualifiers on the stack, switch to coding to process the body
+       of the Atomic expression */
+    PushObj(INTOBJ_INT(nrexprs));
+    CodeBegin();
+    TLS->intrCoding = 1;
+    
+    
+    /* code a function expression (with no arguments and locals)           */
+    
+    nams = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( nams, 0 );
+    
+    /* If we are in the break loop, then a local variable context may well exist,
+       and we have to create an empty local variable names list to match the
+       function expression that we are creating.
+       
+       If we are not in a break loop, then this would be a waste of time and effort */
+    
+    if (TLS->countNams > 0)
+      {
+	GROW_PLIST(TLS->stackNams, ++TLS->countNams);
+	SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
+	SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
+      }
+    
+    CodeFuncExprBegin( 0, 0, nams, TLS->input->number );
 }
 
 void            IntrAtomicEndBody (
-    UInt                nrstats )
+    Int                nrstats )
 {
   Obj body;
 
@@ -1053,13 +1039,7 @@ void            IntrAtomicEndBody (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
 
-    /* otherwise must be coding                                            */
-    if ( TLS->intrCoding == 0 && CompNowFuncs != 0 ) {
-        while ( 1 < --nrstats ) {
-            PopStat();
-        }
-    }
-    else if (TLS->intrCoding == 1) {
+    if (TLS->intrCoding == 1) {
       /* This is the case where we are really immediately interpreting an atomic
 	 statement, but we switched to coding to store the body until we have it all */
 
@@ -1102,8 +1082,6 @@ void            IntrAtomicEnd ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { TLS->intrCoding--; CodeAtomicEnd(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
-
     /* Now we need to recover the objects to lock, and go to work */
 
     body = PopObj();
@@ -1188,7 +1166,7 @@ void            IntrRepeatBegin ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { TLS->intrCoding++; CodeRepeatBegin(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* switch to coding mode now                                           */
     CodeBegin();
@@ -1210,7 +1188,7 @@ void            IntrRepeatBegin ( void )
 	SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
       }
 
-    CodeFuncExprBegin( 0, 0, nams );
+    CodeFuncExprBegin( 0, 0, nams, TLS->input->number );
 
     /* code a repeat loop                                                  */
     CodeRepeatBegin();
@@ -1221,7 +1199,7 @@ void            IntrRepeatBeginBody ( void )
     /* ignore                                                              */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* otherwise must be coding                                            */
     assert( TLS->intrCoding > 0 );
@@ -1236,15 +1214,8 @@ void            IntrRepeatEndBody (
     if ( TLS->intrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( TLS->intrCoding == 0 && CompNowFuncs != 0 ) {
-        while ( 1 < --nr ) {
-            PopStat();
-        }
-    }
-    else {
-        assert( TLS->intrCoding > 0 );
-        CodeRepeatEndBody( nr );
-    }
+    assert( TLS->intrCoding > 0 );
+    CodeRepeatEndBody( nr );
 }
 
 void            IntrRepeatEnd ( void )
@@ -1255,7 +1226,7 @@ void            IntrRepeatEnd ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 1 ) { TLS->intrCoding--; CodeRepeatEnd(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* otherwise must be coding                                            */
     assert( TLS->intrCoding > 0 );
@@ -1347,7 +1318,7 @@ void            IntrReturnObj ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeReturnObj(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* empty the values stack and push the return value                    */
     val = PopObj();
@@ -1373,7 +1344,7 @@ void            IntrReturnVoid ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeReturnVoid(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( TLS->stackObj, 0 );
@@ -1461,7 +1432,7 @@ void            IntrOrL ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
     if ( TLS->intrCoding    > 0 ) { CodeOrL(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* if the left operand is 'true', ignore the right operand             */
     opL = PopObj();
@@ -1481,7 +1452,7 @@ void            IntrOr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 1 ) { TLS->intrIgnoring--; return; }
     if ( TLS->intrCoding    > 0 ) { CodeOr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* stop ignoring things now                                            */
     TLS->intrIgnoring = 0;
@@ -1535,7 +1506,7 @@ void            IntrAndL ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
     if ( TLS->intrCoding    > 0 ) { CodeAndL(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* if the left operand is 'false', ignore the right operand            */
     opL = PopObj();
@@ -1559,7 +1530,7 @@ void            IntrAnd ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 1 ) { TLS->intrIgnoring--; return; }
     if ( TLS->intrCoding    > 0 ) { CodeAnd(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* stop ignoring things now                                            */
     TLS->intrIgnoring = 0;
@@ -1621,7 +1592,7 @@ void            IntrNot ( void )
     /* ignore or code                                                      */
     if ( TLS->intrIgnoring > 0 ) { return; }
     if ( TLS->intrCoding   > 0 ) { CodeNot(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the operand                                           */
     op = PopObj();
@@ -1676,7 +1647,7 @@ void            IntrEq ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeEq(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -1695,7 +1666,7 @@ void            IntrNe ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeNe(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* '<left> <> <right>' is 'not <left> = <right>'                       */
     IntrEq();
@@ -1712,7 +1683,7 @@ void            IntrLt ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeLt(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -1731,7 +1702,7 @@ void            IntrGe ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeGe(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* '<left> >= <right>' is 'not <left> < <right>'                       */
     IntrLt();
@@ -1744,7 +1715,7 @@ void            IntrGt ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeGt(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* '<left> > <right>' is '<right> < <left>'                            */
     IntrXX();
@@ -1757,7 +1728,7 @@ void            IntrLe ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeLe(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* '<left> <= <right>' is 'not <right> < <left>'                       */
     IntrXX();
@@ -1783,7 +1754,7 @@ void            IntrIn ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIn(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -1822,7 +1793,7 @@ void            IntrSum ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeSum(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -1844,7 +1815,7 @@ void            IntrAInv ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAInv(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operand                                                     */
     opL = PopObj();
@@ -1866,7 +1837,7 @@ void            IntrDiff ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeDiff(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -1889,7 +1860,7 @@ void            IntrProd ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeProd(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -1911,7 +1882,7 @@ void            IntrInv ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeInv(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operand                                                     */
     opL = PopObj();
@@ -1933,7 +1904,7 @@ void            IntrQuo ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeQuo(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -1956,7 +1927,7 @@ void            IntrMod ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeMod(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -1979,7 +1950,7 @@ void            IntrPow ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodePow(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the operands                                                    */
     opR = PopObj();
@@ -2014,7 +1985,7 @@ void            IntrIntExpr (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIntExpr( str ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the signs, if any                                                */
     sign = 1;
@@ -2033,8 +2004,8 @@ void            IntrIntExpr (
         pow = 10 * pow;
         if ( pow == 100000000L ) {
 	  upp = PROD(upp,INTOBJ_INT(pow) );
-            upp = SUM(upp  , INTOBJ_INT(sign*low) );
-            pow = 1;
+	  upp = SUM(upp  , INTOBJ_INT(sign*low) );
+	  pow = 1;
             low = 0;
         }
         i++;
@@ -2079,7 +2050,7 @@ void            IntrLongIntExpr (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeLongIntExpr( string ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the signs, if any                                                */
     str = CHARS_STRING(string);
@@ -2126,6 +2097,67 @@ void            IntrLongIntExpr (
 
 /****************************************************************************
 **
+*F  IntrFloatExpr(<str>)  . . . . . . . .  interpret literal float expression
+**
+**  'IntrFloatExpr' is the action  to  interpret a literal  float expression.
+**  <str> is the float as a (null terminated) C character string.
+*/
+
+static Obj CONVERT_FLOAT_LITERAL_EAGER;
+
+static Obj ConvertFloatLiteralEager(Obj str) {
+  Char *chars = (Char *)CHARS_STRING(str);
+  UInt len = GET_LEN_STRING(str);
+  Char mark = '\0';
+  if (chars[len-1] == '_') {
+    SET_LEN_STRING(str, len-1);
+    chars[len-1] = '\0';
+  } else if (chars[len-2] == '_') {
+    mark = chars[len-1];
+    SET_LEN_STRING(str, len-2);
+    chars[len-2] = '\0';
+  }
+  return CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(UInt)mark]);
+}
+
+void            IntrFloatExpr (
+    Char *              str )
+{
+    Obj                 val;            
+    UInt len;
+
+    /* ignore or code                                                      */
+    if ( TLS->intrReturning > 0 ) { return; }
+    if ( TLS->intrIgnoring  > 0 ) { return; }
+    if ( TLS->intrCoding    > 0 ) {  CodeFloatExpr( str );   return; }
+
+    len = SyStrlen(str)+1;
+    val = NEW_STRING(len-1);
+    memcpy(CHARS_STRING(val), (void *) str, len);
+    PushObj(ConvertFloatLiteralEager(val));
+}
+
+
+/****************************************************************************
+**
+*F  IntrLongFloatExpr(<str>)   .  .  interpret literal long float expression
+**
+**  'IntrLongFloatExpr' is the action to  interpret a long literal float
+**  expression whose digits are stored in a string GAP object.
+*/
+void            IntrLongFloatExpr (
+    Obj               string )
+{
+    /* ignore or code                                                      */
+    if ( TLS->intrReturning > 0 ) { return; }
+    if ( TLS->intrIgnoring  > 0 ) { return; }
+    if ( TLS->intrCoding    > 0 ) { CodeLongFloatExpr( string );  return; }
+
+    PushObj(ConvertFloatLiteralEager(string));
+}
+
+/****************************************************************************
+**
 *F  IntrTrueExpr()  . . . . . . . . . . . . interpret literal true expression
 **
 **  'IntrTrueExpr' is the action to interpret a literal true expression.
@@ -2136,7 +2168,7 @@ void            IntrTrueExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeTrueExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* push the value                                                      */
     PushObj( True );
@@ -2155,7 +2187,7 @@ void            IntrFalseExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeFalseExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* push the value                                                      */
     PushObj( False );
@@ -2176,7 +2208,7 @@ void            IntrCharExpr (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeCharExpr( chr ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* push the value                                                      */
     PushObj( ObjsChar[ (UChar)chr ] );
@@ -2203,7 +2235,7 @@ void            IntrPermCycle (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodePermCycle(nrx,nrc); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the permutation (allocate for the first cycle)                  */
     if ( nrc == 1 ) {
@@ -2283,7 +2315,7 @@ void            IntrPerm (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodePerm(nrc); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* special case for identity permutation                               */
     if ( nrc == 0 ) {
@@ -2337,7 +2369,7 @@ void            IntrListExprBegin (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeListExprBegin( top ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* allocate the new list                                               */
     list = NEW_PLIST( T_PLIST_EMPTY, 0 );
@@ -2363,7 +2395,7 @@ void            IntrListExprBeginElm (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeListExprBeginElm( pos ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* remember this position on the values stack                          */
     PushObj( INTOBJ_INT(pos) );
@@ -2380,7 +2412,7 @@ void            IntrListExprEndElm ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeListExprEndElm(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the value                                                       */
     val = PopObj();
@@ -2416,7 +2448,7 @@ void            IntrListExprEnd (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeListExprEnd(nr,range,top,tilde); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* if this was a top level expression, restore the value of '~'        */
     if ( top ) {
@@ -2527,7 +2559,7 @@ void           IntrStringExpr (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeStringExpr( string ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* push the string, already newly created                              */
     PushObj( string );
@@ -2551,7 +2583,7 @@ void            IntrRecExprBegin (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeRecExprBegin( top ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* allocate the new record                                             */
     record = NEW_PREC( 0 );
@@ -2576,7 +2608,7 @@ void            IntrRecExprBeginElmName (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeRecExprBeginElmName( rnam ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* remember the name on the values stack                               */
     PushObj( (Obj)rnam );
@@ -2590,7 +2622,7 @@ void            IntrRecExprBeginElmExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeRecExprBeginElmExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* convert the expression to a record name                             */
     rnam = RNamObj( PopObj() );
@@ -2609,7 +2641,7 @@ void            IntrRecExprEndElm ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeRecExprEndElm(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the value                                                       */
     val = PopObj();
@@ -2639,7 +2671,7 @@ void            IntrRecExprEnd (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeRecExprEnd(nr,top,tilde); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* if this was a top level expression, restore the value of '~'        */
     if ( top ) {
@@ -2670,7 +2702,7 @@ void            IntrFuncCallOptionsBegin ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeFuncCallOptionsBegin( ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* allocate the new record                                             */
     record = NEW_PREC( 0 );
@@ -2685,7 +2717,7 @@ void            IntrFuncCallOptionsBeginElmName (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeFuncCallOptionsBeginElmName( rnam ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* remember the name on the values stack                               */
     PushObj( (Obj)rnam );
@@ -2699,7 +2731,7 @@ void            IntrFuncCallOptionsBeginElmExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeFuncCallOptionsBeginElmExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* convert the expression to a record name                             */
     rnam = RNamObj( PopObj() );
@@ -2718,7 +2750,7 @@ void            IntrFuncCallOptionsEndElm ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeFuncCallOptionsEndElm(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the value                                                       */
     val = PopObj();
@@ -2746,7 +2778,7 @@ void            IntrFuncCallOptionsEndElmEmpty ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeFuncCallOptionsEndElmEmpty(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the value                                                       */
     val = True;
@@ -2770,7 +2802,7 @@ void            IntrFuncCallOptionsEnd ( UInt nr )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeFuncCallOptionsEnd(nr); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
 }
 
@@ -2815,6 +2847,7 @@ void            IntrUnbLVar (
     else
       {
 	ASS_LVAR(lvar,0);
+	PushVoidObj();
       }
 }
 
@@ -2909,6 +2942,7 @@ void            IntrUnbHVar (
     else
       {
 	ASS_HVAR(hvar, 0);
+	PushVoidObj();
       }
 }
 
@@ -2976,7 +3010,7 @@ void            IntrAssDVar (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     /* if ( TLS->intrCoding    > 0 ) { CodeAssDVar( gvar ); return; } */
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     if ( TLS->intrCoding > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
@@ -3010,7 +3044,7 @@ void            IntrUnbDVar (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     /* if ( TLS->intrCoding    > 0 ) { CodeUnbGVar( gvar ); return; } */
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     if ( TLS->intrCoding > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
@@ -3046,7 +3080,7 @@ void            IntrRefDVar (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     /* if ( TLS->intrCoding    > 0 ) { CodeRefGVar( gvar ); return; } */
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     if ( TLS->intrCoding > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
@@ -3080,7 +3114,7 @@ void            IntrIsbDVar (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     /* if ( TLS->intrCoding    > 0 ) { CodeIsbGVar( gvar ); return; } */
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the value                                                       */
     currLVars = TLS->currLVars;
@@ -3109,7 +3143,7 @@ void            IntrAssGVar (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssGVar( gvar ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the right hand side                                             */
     rhs = PopObj();
@@ -3128,7 +3162,7 @@ void            IntrUnbGVar (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeUnbGVar( gvar ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* assign the right hand side                                          */
     AssGVar( gvar, (Obj)0 );
@@ -3151,7 +3185,7 @@ void            IntrRefGVar (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeRefGVar( gvar ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the value                                             */
     if ( (val = ValAutoGVar( gvar )) == 0 ) {
@@ -3173,7 +3207,7 @@ void            IntrIsbGVar (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIsbGVar( gvar ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the value                                                       */
     val = ValAutoGVar( gvar );
@@ -3201,7 +3235,7 @@ void            IntrAssList ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssList(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the right hand side                                             */
     rhs = PopObj();
@@ -3242,7 +3276,7 @@ void            IntrAsssList ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAsssList(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the right hand sides                                            */
     rhss = PopObj();
@@ -3286,7 +3320,7 @@ void            IntrAssListLevel (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssListLevel( level ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get right hand sides (checking is done by 'AssListLevel')           */
     rhss = PopObj();
@@ -3321,7 +3355,7 @@ void            IntrAsssListLevel (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAsssListLevel( level ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get right hand sides (checking is done by 'AsssListLevel')          */
     rhss = PopObj();
@@ -3355,7 +3389,7 @@ void            IntrUnbList ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeUnbList(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the position                                          */
     pos = PopObj();
@@ -3401,7 +3435,7 @@ void            IntrElmList ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmList(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     
     /* get  the position                                                   */
@@ -3435,7 +3469,7 @@ void            IntrElmsList ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmsList(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the positions                                         */
     poss = PopObj();
@@ -3465,7 +3499,7 @@ void            IntrElmListLevel (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmListLevel( level ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the position                                          */
     pos = PopObj();
@@ -3496,7 +3530,7 @@ void            IntrElmsListLevel (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmsListLevel( level ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the positions                                         */
     poss = PopObj();
@@ -3528,7 +3562,7 @@ void            IntrIsbList ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIsbList(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the position                                          */
     pos = PopObj();
@@ -3571,7 +3605,7 @@ void            IntrAssRecName (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssRecName( rnam ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the right hand side                                             */
     rhs = PopObj();
@@ -3596,7 +3630,7 @@ void            IntrAssRecExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssRecExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the right hand side                                             */
     rhs = PopObj();
@@ -3623,7 +3657,7 @@ void            IntrUnbRecName (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeUnbRecName( rnam ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
@@ -3644,7 +3678,7 @@ void            IntrUnbRecExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeUnbRecExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the name and convert it to a record name                        */
     rnam = RNamObj( PopObj() );
@@ -3675,7 +3709,7 @@ void            IntrElmRecName (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmRecName( rnam ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the record (checking is done by 'ELM_REC')                      */
     record = PopObj();
@@ -3697,7 +3731,7 @@ void            IntrElmRecExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmRecExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the name and convert it to a record name                        */
     rnam = RNamObj( PopObj() );
@@ -3722,7 +3756,7 @@ void            IntrIsbRecName (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIsbRecName( rnam ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the record (checking is done by 'ISB_REC')                      */
     record = PopObj();
@@ -3744,7 +3778,7 @@ void            IntrIsbRecExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIsbRecExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the name and convert it to a record name                        */
     rnam = RNamObj( PopObj() );
@@ -3778,7 +3812,7 @@ void            IntrAssPosObj ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssPosObj(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the right hand side                                             */
     rhs = PopObj();
@@ -3821,7 +3855,7 @@ void            IntrAsssPosObj ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAsssPosObj(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the right hand sides                                            */
     rhss = PopObj();
@@ -3862,16 +3896,14 @@ void            IntrAsssPosObj ( void )
 void            IntrAssPosObjLevel (
     UInt                level )
 {
-    Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, left operand          */
-    Int                 p;              /* position, as C integer          */
     Obj                 rhss;           /* right hand sides, right operand */
 
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssPosObjLevel( level ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get right hand sides (checking is done by 'AssPosObjLevel')           */
     rhss = PopObj();
@@ -3883,11 +3915,7 @@ void            IntrAssPosObjLevel (
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-    p = INT_INTOBJ(pos);
 
-    /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'AssPosObjLevel')     */
-    lists = PopObj();
 
     /* assign the right hand sides to the elements of several lists        */
     ErrorQuit(
@@ -3901,7 +3929,6 @@ void            IntrAssPosObjLevel (
 void            IntrAsssPosObjLevel (
     UInt                level )
 {
-    Obj                 lists;          /* lists, left operand             */
     Obj                 poss;           /* position, left operand          */
     Obj                 rhss;           /* right hand sides, right operand */
 
@@ -3909,7 +3936,7 @@ void            IntrAsssPosObjLevel (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAsssPosObjLevel( level ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get right hand sides (checking is done by 'AsssPosObjLevel')          */
     rhss = PopObj();
@@ -3921,10 +3948,6 @@ void            IntrAsssPosObjLevel (
     "PosObj Assignment: <positions> must be a dense list of positive integers",
             0L, 0L );
     }
-
-    /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'AsssPosObjLevel')    */
-    lists = PopObj();
 
     /* assign the right hand sides to several elements of several lists    */
     ErrorQuit(
@@ -3945,7 +3968,7 @@ void            IntrUnbPosObj ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeUnbPosObj(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the position                                          */
     pos = PopObj();
@@ -3992,7 +4015,7 @@ void            IntrElmPosObj ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmPosObj(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the position                                          */
     pos = PopObj();
@@ -4038,7 +4061,7 @@ void            IntrElmsPosObj ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmsPosObj(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the positions                                         */
     poss = PopObj();
@@ -4069,13 +4092,12 @@ void            IntrElmPosObjLevel (
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
 
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmPosObjLevel( level ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the position                                          */
     pos = PopObj();
@@ -4084,7 +4106,6 @@ void            IntrElmPosObjLevel (
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-    p = INT_INTOBJ( pos );
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'ElmPosObjLevel')     */
@@ -4109,7 +4130,7 @@ void            IntrElmsPosObjLevel (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmsPosObjLevel( level ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the positions                                         */
     poss = PopObj();
@@ -4143,7 +4164,7 @@ void            IntrIsbPosObj ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIsbPosObj(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get and check the position                                          */
     pos = PopObj();
@@ -4186,7 +4207,7 @@ void            IntrAssComObjName (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssComObjName( rnam ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the right hand side                                             */
     rhs = PopObj();
@@ -4216,7 +4237,7 @@ void            IntrAssComObjExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssComObjExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the right hand side                                             */
     rhs = PopObj();
@@ -4248,7 +4269,7 @@ void            IntrUnbComObjName (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeUnbComObjName( rnam ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
@@ -4274,7 +4295,7 @@ void            IntrUnbComObjExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeUnbComObjExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the name and convert it to a record name                        */
     rnam = RNamObj( PopObj() );
@@ -4310,7 +4331,7 @@ void            IntrElmComObjName (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmComObjName( rnam ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the record (checking is done by 'ELM_REC')                      */
     record = PopObj();
@@ -4337,7 +4358,7 @@ void            IntrElmComObjExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeElmComObjExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the name and convert it to a record name                        */
     rnam = RNamObj( PopObj() );
@@ -4367,7 +4388,7 @@ void            IntrIsbComObjName (
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIsbComObjName( rnam ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the record (checking is done by 'ISB_REC')                      */
     record = PopObj();
@@ -4394,7 +4415,7 @@ void            IntrIsbComObjExpr ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeIsbComObjExpr(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* get the name and convert it to a record name                        */
     rnam = RNamObj( PopObj() );
@@ -4426,7 +4447,7 @@ void             IntrEmpty ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeEmpty(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     /* interpret */
     PushVoidObj();
@@ -4462,7 +4483,7 @@ void            IntrInfoBegin( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeInfoBegin(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 }
 
 Obj             InfoDecision;
@@ -4479,7 +4500,7 @@ void            IntrInfoMiddle( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
     if ( TLS->intrCoding    > 0 ) { CodeInfoMiddle(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
     
     level = PopObj();
     selectors = PopObj();
@@ -4499,7 +4520,7 @@ void            IntrInfoEnd( UInt narg )
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeInfoEnd( narg ); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
     
     /* print if necessary                                                  */
     if ( TLS->intrIgnoring  > 0 )
@@ -4555,7 +4576,7 @@ void              IntrAssertBegin ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssertBegin(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 }
 
 
@@ -4567,7 +4588,7 @@ void             IntrAssertAfterLevel ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssertAfterLevel(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     level = PopObj();
 
@@ -4583,7 +4604,7 @@ void             IntrAssertAfterCondition ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssertAfterCondition(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
 
     condition = PopObj();
 
@@ -4600,7 +4621,7 @@ void             IntrAssertEnd2Args ( void )
       /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssertEnd2Args(); return; }
-    if ( CompNowFuncs != 0 ) { return; }
+
     
     if ( TLS->intrIgnoring  == 0 )
       ErrorQuit("Assertion Failure", 0, 0);
@@ -4619,7 +4640,7 @@ void             IntrAssertEnd3Args ( void )
   /* ignore or code                                                      */
   if ( TLS->intrReturning > 0 ) { return; }
   if ( TLS->intrCoding    > 0 ) { CodeAssertEnd3Args(); return; }
-  if ( CompNowFuncs != 0 ) { return; }
+
   
   if ( TLS->intrIgnoring  == 0 )
     {
@@ -4660,6 +4681,7 @@ static Int InitKernel (
     /* TL: InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  ); */
     /* TL: InitGlobalBag( &StackObj,   "src/intrprtr.c:StackObj"   ); */
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
+    InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
     /* The work of handling Info messages is delegated to the GAP level */
     ImportFuncFromLibrary( "InfoDecision", &InfoDecision );

@@ -2,7 +2,7 @@
 ##
 #W  Text.gd                      GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: Text.gd,v 1.5 2007/09/01 00:26:27 gap Exp $
+#H  @(#)$Id: Text.gd,v 1.6 2011/02/18 11:23:52 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -24,6 +24,7 @@ DeclareGlobalVariable("TextAttr");
 
 ##  some utility functions for strings
 DeclareGlobalFunction("RepeatedString");
+DeclareGlobalFunction("RepeatedUTF8String");
 DeclareGlobalFunction("PositionMatchingDelimiter");
 DeclareGlobalFunction("SubstitutionSublist");
 DeclareGlobalFunction("NumberDigits");
