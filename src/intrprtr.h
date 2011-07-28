@@ -286,7 +286,7 @@ extern void IntrQualifiedExprBegin( UInt access);
 extern void IntrQualifiedExprEnd( void);
 
 
-#define DEFAULT_LOCK_TYPE 0
+#define DEFAULT_LOCK_TYPE 1
 #define MAX_ATOMIC_OBJS 256
 
 
