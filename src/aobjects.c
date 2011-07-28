@@ -241,27 +241,27 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
     True : False;
 }
 
-static Obj FuncATOMIC_ADD(Obj self, Obj list, Obj index, Obj inc)
+static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
 {
   UInt n;
   UInt len;
   AtomicObj aold, anew, *ptr;
   if (TNUM_OBJ(list) != T_ALIST)
-    ArgumentError("ATOMIC_ADD: First argument must be an atomic list");
+    ArgumentError("ATOMIC_ADDITION: First argument must be an atomic list");
   len = (UInt) ADDR_ATOM(list)[0].atom;
   if (!IS_INTOBJ(index))
-    ArgumentError("ATOMIC_ADD: Second argument must be an integer");
+    ArgumentError("ATOMIC_ADDITION: Second argument must be an integer");
   n = INT_INTOBJ(index);
   if (n <= 0 || n > len)
-    ArgumentError("ATOMIC_ADD: Index out of range");
+    ArgumentError("ATOMIC_ADDITION: Index out of range");
   if (!IS_INTOBJ(inc))
-    ArgumentError("ATOMIC_ADD: increment is not an integer");
+    ArgumentError("ATOMIC_ADDITION: increment is not an integer");
   ptr = ADDR_ATOM(list)+n+1;
   do
   {
     aold = *ptr;
     if (!IS_INTOBJ(aold.obj))
-      ArgumentError("ATOMIC_ADD: list element is not an integer");
+      ArgumentError("ATOMIC_ADDITION: list element is not an integer");
     anew.obj = INTOBJ_INT(INT_INTOBJ(aold.obj) + INT_INTOBJ(inc));
   } while (!AO_compare_and_swap_full(&ptr->atom, aold.atom, anew.atom));
   return anew.obj;
@@ -1166,8 +1166,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "COMPARE_AND_SWAP", 4, "list, index, old, new",
       FuncCOMPARE_AND_SWAP, "src/aobjects.c:COMPARE_AND_SWAP" },
 
-    { "ATOMIC_ADD", 3, "list, index, inc",
-      FuncATOMIC_ADD, "src/aobjects.c:ATOMIC_ADD" },
+    { "ATOMIC_ADDITION", 3, "list, index, inc",
+      FuncATOMIC_ADDITION, "src/aobjects.c:ATOMIC_ADDITION" },
 
     { "AtomicRecord", -1, "[capacity]",
       FuncAtomicRecord, "src/aobjects.c:AtomicRecord" },

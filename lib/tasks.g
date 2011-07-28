@@ -41,7 +41,7 @@ Tasks.Worker := function(channels)
       SendChannel(channels.fromworker,
 	rec(value := result, channels := channels));
     fi;
-    ATOMIC_ADD(Tasks.Running, 1, -1);
+    ATOMIC_ADDITION(Tasks.Running, 1, -1);
   od;
 end;
 
@@ -110,7 +110,7 @@ ExecuteTask := function(task)
   if not task.started then
     task.request.detached := task.detached;
     SendChannel(task.request.channels.toworker, task.request);
-    ATOMIC_ADD(Tasks.Running, 1, 1);
+    ATOMIC_ADDITION(Tasks.Running, 1, 1);
     task.started := true;
     Unbind(task.request);
   fi;
