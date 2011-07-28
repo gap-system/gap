@@ -734,8 +734,10 @@ return function(o,n)
 end;
 end);
 
-NAMEDOBJECTS:=[];
-EXECUTEOBJECTS:=[];
+MakeThreadLocal("NAMEDOBJECTS");
+MakeThreadLocal("EXECUTEOBJECTS");
+BindThreadLocal("NAMEDOBJECTS", []);
+BindThreadLocal("EXECUTEOBJECTS", []);
 
 InstallGlobalFunction(SetNameObject,SpecialViewSetupFunction(NAMEDOBJECTS));
 InstallGlobalFunction(SetExecutionObject,
