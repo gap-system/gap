@@ -59,6 +59,7 @@ if not IsBound(InfoData) then
     InfoData.CurrentLevels := [];
     InfoData.ClassNames := [];
     InfoData.Handler := [];
+    SHARE(InfoData);
 fi;
 
 
@@ -66,14 +67,22 @@ fi;
 ##
 #F  InfoData.InfoClass( <num> )               make a number into an InfoClass
 ##
+atomic readwrite InfoData do
 
 InfoData.InfoClass :=  function(num)
-    if num < 1 or num > Length(InfoData.CurrentLevels) then
-        Error("Bad info class number -- this is a bug");
-    fi;
-    return Objectify(NewType(InfoClassFamily,IsInfoClassListRep),
-                   [num]);
+    local ic;
+    atomic readonly InfoData do
+       if num < 1 or num > Length(InfoData.CurrentLevels) then
+          Error("Bad info class number -- this is a bug");
+      fi;
+  od;
+    ic := Objectify(NewType(InfoClassFamily,IsInfoClassListRep),
+                  [num]);
+    MakeReadOnly(ic);
+    return ic;
 end;
+
+od;
 
 #############################################################################
 ##
@@ -96,10 +105,11 @@ InstallMethod(NewInfoClass, true, [IsString], 0,
             return InfoData.InfoClass(pos);
         fi;
     fi;
-    
-    Add(InfoData.CurrentLevels,0);
-    Add(InfoData.ClassNames,name);
-    return InfoData.InfoClass(Length(InfoData.CurrentLevels));
+    atomic readwrite InfoData do
+      Add(InfoData.CurrentLevels,0);
+      Add(InfoData.ClassNames,name);
+      return InfoData.InfoClass(Length(InfoData.CurrentLevels));
+    od;
 end);
 
 
@@ -120,7 +130,9 @@ end );
 #F  SetInfoHandler( <class>, <handler> )
 ##
 InstallGlobalFunction( SetInfoHandler, function(class, handler)
-  InfoData.Handler[class![1]] := handler;
+    atomic readwrite InfoData do
+      InfoData.Handler[class![1]] := handler;
+    od;
 end);
 
 #############################################################################
@@ -147,7 +159,9 @@ InstallMethod(PrintObj,
     "for an info class",
     true, [IsInfoClassListRep], 0,
         function(ic)
-    Print(InfoData.ClassNames[ic![1]]);
+    atomic readonly InfoData do
+       Print(InfoData.ClassNames[ic![1]]);
+    od;
 end);
 
 #############################################################################
@@ -193,20 +207,25 @@ end);
 #M  SetInfoLevel( <class>, <level>)   set desired verbosity level for a class  
 ##
 
-InfoData.handler := function(ic,lev)
-    InfoData.CurrentLevels[ic![1]] := lev;
-end;
+atomic readwrite InfoData do
+   InfoData.handler := function(ic,lev)
+       atomic readwrite(InfoData) do
+           InfoData.CurrentLevels[ic![1]] := lev;
+       od;
+   end;
 
-InstallMethod(SetInfoLevel, true, 
-        [IsInfoClass and IsInfoClassListRep, IsPosInt], 0,
-        InfoData.handler);
 
-InstallMethod(SetInfoLevel, true, 
-        [IsInfoClass and IsInfoClassListRep, IsZeroCyc], 0,
-        InfoData.handler);
+   InstallMethod(SetInfoLevel, true, 
+          [IsInfoClass and IsInfoClassListRep, IsPosInt], 0,
+           InfoData.handler);
 
-Unbind(InfoData.handler);
+   InstallMethod(SetInfoLevel, true, 
+           [IsInfoClass and IsInfoClassListRep, IsZeroCyc], 0,
+           InfoData.handler);
 
+   Unbind(InfoData.handler);
+od;   
+   
 #############################################################################
 ##
 #F  SetAllInfoLevels(  <level>)   set desired verbosity level for all classes
@@ -214,8 +233,10 @@ Unbind(InfoData.handler);
 
 BIND_GLOBAL( "SetAllInfoLevels", function( level )
     local i;
-    for i in [1..Length(InfoData.CurrentLevels)] do
-        InfoData.CurrentLevels[i] := level;
+    atomic readwrite InfoData do
+      for i in [1..Length(InfoData.CurrentLevels)] do
+          InfoData.CurrentLevels[i] := level;
+      od;
     od;
 end );
                                      
@@ -228,7 +249,9 @@ end );
 InstallMethod(InfoLevel, true, 
         [IsInfoClass and IsInfoClassListRep], 0,
         function(ic)
-    return InfoData.CurrentLevels[ic![1]];
+    atomic readonly InfoData do
+        return InfoData.CurrentLevels[ic![1]];
+    od;
 end);
 
 #############################################################################
@@ -250,12 +273,12 @@ BIND_GLOBAL( "InfoDecision", function(selectors, level)
     fi;
    
     # store the class an level
-    if IsInfoClass(selectors) then
-      InfoData.LastClass := selectors;
-    else
-      InfoData.LastClass := selectors[1];
-    fi;
-    InfoData.LastLevel := level;
+#    if IsInfoClass(selectors) then
+#      InfoData.LastClass := selectors;
+#    else
+#      InfoData.LastClass := selectors[1];
+#    fi;
+#    InfoData.LastLevel := level;
 
     if IsInfoClass(selectors) then
         return InfoLevel(selectors) >= level;
@@ -276,14 +299,16 @@ end );
 ##
 
 BIND_GLOBAL( "InfoDoPrint", function(arglist)
-    if IsBound(InfoData.Handler[InfoData.LastClass![1]]) then
-      InfoData.Handler[InfoData.LastClass![1]](InfoData.LastClass,
-                       InfoData.LastLevel, arglist);
-    else
-      Print("#I  ");
-      CallFuncList(Print, arglist);
-      Print("\n");
-    fi;
+    atomic readonly InfoData do
+       if IsBound(InfoData.Handler[InfoData.LastClass![1]]) then
+         InfoData.Handler[InfoData.LastClass![1]](InfoData.LastClass,
+                          InfoData.LastLevel, arglist);
+       else
+         Print("#I  ");
+         CallFuncList(Print, arglist);
+         Print("\n");
+     fi;
+ od;
 end );
 
 
