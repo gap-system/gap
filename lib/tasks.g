@@ -63,7 +63,7 @@ Tasks.Initialize := function()
 end;
 
 Tasks.CreateTask := function(arglist)
-  local i, channels, task, request, args, adopt, adopted, ds;
+  local i, channels, task, request, args, adopt, adopted, ds,p;
   channels := TryReceiveChannel(Tasks.Pool, fail);
   if IsIdenticalObj(channels, fail) then
     channels := Tasks.StartNewWorkerThread();
@@ -77,6 +77,7 @@ Tasks.CreateTask := function(arglist)
       if not adopted then
         args[i] := SHARE(CLONE_REACHABLE(args[i]));
 	ds := DataSpace(args[i]);
+        p := LOCK(args[i],true);
 	adopted := true;
       else
         args[i] := MIGRATE(CLONE_REACHABLE(args[i]), ds);
@@ -85,6 +86,9 @@ Tasks.CreateTask := function(arglist)
       adopt[i] := false;
     fi;
   od;
+  if adopted then
+      UNLOCK(p);
+  fi;
   request := rec( channels := channels,
     func := arglist[1], args := args, adopt := adopt);
   task :=rec(
