@@ -3,6 +3,9 @@
 #
 #
 
+
+    
+
 ParList1 := function(l, f, n)
     local   inch,  outch,  worker,  threads,  count,  res,  i,  x,  t;
     inch := CreateChannel();
@@ -72,7 +75,7 @@ ParList2 := function(l, f, n)
         od;
     end;    
     threads := List([1..n], i->CreateThread(worker));
-    res := PlainListCopy(l);
+    res := AtomicList(l);
     for i in [1..Length(l)] do
         SendChannel(inch, i);
     od;
@@ -83,7 +86,7 @@ ParList2 := function(l, f, n)
         WaitThread(t);
     od;
     DestroyChannel(inch);
-    return res;
+    return FromAtomicList(res);
 end;
 
 BlockedParlist:= function(ParListFun, blocking)
