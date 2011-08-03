@@ -700,7 +700,7 @@ void TraversePRecord(Obj obj)
 void CopyPRecord(Obj copy, Obj original)
 {
   UInt i,len = LEN_PREC(original);
-  for (i=1; i>=len; i++)
+  for (i=1; i<=len; i++)
     SET_ELM_PREC(copy, i, ReplaceByCopy(GET_ELM_PREC(original, i)));
 }
 
