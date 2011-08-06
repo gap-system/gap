@@ -82,12 +82,14 @@ void DestroyTLS()
   DestroyAObjectsTLS();
 }
 
-void WriteGuardError()
+void WriteGuardError(Obj o)
 {
-  ErrorMayQuit("Attempt to modify an object without having write access", 0L, 0L);
+  ImpliedReadGuard(o);
+  ErrorMayQuit("Attempt to write object %i of type %s without having write access", (Int)o, (Int)TNAM_OBJ(o));
 }
 
-void ReadGuardError()
+void ReadGuardError(Obj o)
 {
-  ErrorMayQuit("Attempt to read an object without having read access", 0L, 0L);
+  ImpliedReadGuard(o);
+  ErrorMayQuit("Attempt to read object %i of type %s without having read access", (Int)o, (Int)TNAM_OBJ(o));
 }

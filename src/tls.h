@@ -167,7 +167,7 @@ static inline Bag WriteGuard(Bag bag)
     return bag;
   dataspace = DS_BAG(bag);
   if (dataspace && dataspace->owner != TLS)
-    WriteGuardError();
+    WriteGuardError(bag);
   return bag;
 }
 
@@ -180,7 +180,7 @@ static inline Bag *WriteGuardByRef(Bag *bagref)
     return bagref;
   dataspace = DS_BAG(bag);
   if (dataspace && dataspace->owner != TLS)
-    WriteGuardError();
+    WriteGuardError(bag);
   return bagref;
 }
 
@@ -209,7 +209,7 @@ static inline Bag ReadGuard(Bag bag)
   dataspace = DS_BAG(bag);
   if (dataspace && dataspace->owner != TLS &&
       !dataspace->readers[TLS->threadID])
-    ReadGuardError();
+    ReadGuardError(bag);
   return bag;
 }
 
@@ -223,7 +223,7 @@ static inline Bag *ReadGuardByRef(Bag *bagref)
   dataspace = DS_BAG(bag);
   if (dataspace && dataspace->owner != TLS &&
       !dataspace->readers[TLS->threadID])
-    ReadGuardError();
+    ReadGuardError(bag);
   return bagref;
 }
 
