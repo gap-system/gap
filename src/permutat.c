@@ -4688,6 +4688,10 @@ static Int InitKernel (
     InfoBags[           T_PERM4         ].name = "permutation (large)";
     InitMarkFuncBags(   T_PERM4         , MarkNoSubBags );
 
+    MakeBagTypePublic( T_PERM2);
+    MakeBagTypePublic( T_PERM4);
+
+
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
     ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );

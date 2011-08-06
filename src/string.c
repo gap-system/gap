@@ -2419,6 +2419,8 @@ static Int InitKernel (
       MakeBagTypePublic( t1 + IMMUTABLE );
     }
 
+    MakeBagTypePublic(T_CHAR);
+
     /* make all the character constants once and for all                   */
     for ( i = 0; i < 256; i++ ) {
         for (j = 0; j < 17; j++ ) {
