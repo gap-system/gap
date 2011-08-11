@@ -644,6 +644,7 @@ Obj FuncAND_FLAGS (
     Obj                 flagsX;
     Obj                 cache;
     Obj                 entry;
+    Obj			locked;
     UInt                hash;
     UInt                hash2;
     static UInt         next = 0;
@@ -663,20 +664,31 @@ Obj FuncAND_FLAGS (
 
     /* check the cache                                                     */
 #   ifdef AND_FLAGS_HASH_SIZE
+        locked = (Obj) 0;
         if ( INT_INTOBJ(flags1) < INT_INTOBJ(flags2) ) {
             flagsX = flags2;
+	    if (!PreThreadCreation) {
+	      locked = flags1;
+	      HashLock(locked);
+	    }
             cache  = AND_CACHE_FLAGS(flags1);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
+		MakeBagPublic(cache);
                 SET_AND_CACHE_FLAGS( flags1, cache );
                 CHANGED_BAG(flags1);
             }
         }
         else {
             flagsX = flags1;
+	    if (!PreThreadCreation) {
+	      locked = flags2;
+	      HashLock(locked);
+	    }
             cache  = AND_CACHE_FLAGS(flags2);
             if ( cache == 0 ) {
                 cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
+		MakeBagPublic(cache);
                 SET_AND_CACHE_FLAGS( flags2, cache );
                 CHANGED_BAG(flags2);
             }
@@ -752,6 +764,8 @@ Obj FuncAND_FLAGS (
         SET_ELM_PLIST( cache, 2*hash+1, flagsX );
         SET_ELM_PLIST( cache, 2*hash+2, flags  );
         CHANGED_BAG(cache);
+	if (locked)
+	  HashUnlock(locked);
 #   endif
 
     /* and return the result                                               */
