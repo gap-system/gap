@@ -20,6 +20,7 @@
 #include	"precord.h"
 #include        "tls.h"
 #include        "thread.h"
+#include	"fibhash.h"
 
 #define LOG2_NUM_LOCKS 11
 #define NUM_LOCKS (1 << LOG2_NUM_LOCKS)
@@ -368,8 +369,9 @@ int JoinThread(int id)
   return 1;
 }
 
-UInt LockID(void *object) {
+static UInt LockID(void *object) {
   UInt p = (UInt) object;
+#if CUSTOM_OBJECT_HASH
   if (sizeof(void *) == 4)
     return ((p >> 2)
       ^ (p >> (2 + LOG2_NUM_LOCKS))
@@ -378,6 +380,9 @@ UInt LockID(void *object) {
     return ((p >> 3)
       ^ (p >> (3 + LOG2_NUM_LOCKS))
       ^ (p << (LOG2_NUM_LOCKS - 3))) % NUM_LOCKS;
+#else
+  return FibHash((UInt) object, LOG2_NUM_LOCKS);
+#endif
 }
 
 void HashLock(void *object) {
