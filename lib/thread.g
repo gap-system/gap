@@ -35,23 +35,3 @@ TYPE_DATASPACE := NewType(DataSpaceFamily, IsDataSpace);
 TYPE_ALIST := NewType(AtomicFamily, IsAtomicList);
 TYPE_AREC := NewType(AtomicFamily, IsAtomicRecord);
 TYPE_TLREC := NewType(AtomicFamily, IsThreadLocalRecord);
-
-# Convenience aliases
-
-IsLockable := IsShared;
-
-ShareObj := SHARE;
-ShareSingleObj := SHARE_NORECURSE;
-MigrateObj := MIGRATE;
-MigrateSingleObj := MIGRATE_NORECURSE;
-AdoptObj := ADOPT;
-AdoptSingleObj := ADOPT_NORECURSE;
-CopyRegion := CLONE_REACHABLE;
-RegionSubObjects := REACHABLE;
-RegionOf := DataSpace;
-
-# Legacy functionality
-
-SHARED_LIST := function()
-  return SHARE_NORECURSE([]);
-end;

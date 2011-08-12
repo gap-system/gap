@@ -3,6 +3,7 @@
 #X  first read the very basic stuff that the kernel needs to function at all,
 #X  after this file is read an 'ExportToKernelFinished' is done.
 ##
+ReadLib( "thread1.g"   );
 ReadLib( "filter.g"    );
 ReadLib( "filter1.g"   );
 ReadLib( "oper.g"      );
