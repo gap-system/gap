@@ -61,6 +61,22 @@ ParList1 := function(l, f, n)
     return res;
 end;
 
+ParList3 := function(l, f)
+    local   tasks,  tix,  results,  t;
+
+    tasks := List(l, x-> RunTask(f,x));
+    tix := [1..Length(tasks)];
+    results := [];
+    while tasks <> [] do
+        t :=  WaitAnyTask(tasks);
+        Print(tix[t]," completed\n");
+        results[tix[t]] := TaskResult(tasks[t]);
+        Remove(tix,t);
+        Remove(tasks,t);
+    od;
+    return results;
+end;
+
 ParList2 := function(l, f, n)
     local   inch,  worker,  threads,  res,  i,  t;
     inch := CreateChannel();
