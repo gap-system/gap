@@ -452,7 +452,7 @@ void DataSpaceUnlock(DataSpace *dataspace)
 int IsLocked(DataSpace *dataspace)
 {
   if (!dataspace)
-    return 2; /* public dataspace */
+    return 0; /* public dataspace */
   if (dataspace->owner == TLS)
     return 1;
   if (dataspace->readers[TLS->threadID])
@@ -532,6 +532,7 @@ int LockObjects(int count, Obj *objects, int *mode)
 {
   int result;
   int i;
+  int locked;
   LockRequest *order;
   if (count > MAX_LOCKS)
     return -1;
@@ -553,21 +554,23 @@ int LockObjects(int count, Obj *objects, int *mode)
      */
     if (i > 0 && ds == order[i-1].dataspace)
       continue; /* skip duplicates */
-    else if (IsLocked(ds) || ds->fixed_owner)
-    {
-      /* DataSpaces may not be locked twice. If that is attempted,
-       * the entire lock operation is reverted. Similarly if one
-       * attempts to lock another thread's data space.
-       */
-      while (--i >= 0)
-        DataSpaceUnlock(order[i].dataspace);
+    if (!ds || ds->fixed_owner) { /* public or thread-local data space */
+      PopDataSpaceLocks(result);
       return -1;
     }
-    if (order[i].mode)
-      DataSpaceWriteLock(ds);
-    else
-      DataSpaceReadLock(ds);
-    PushDataSpaceLock(ds);
+    locked = IsLocked(ds);
+    if (locked == 2 && order[i].mode) {
+      /* trying to upgrade read lock to write lock */
+      PopDataSpaceLocks(result);
+      return -1;
+    }
+    if (!locked) {
+      if (order[i].mode)
+	DataSpaceWriteLock(ds);
+      else
+	DataSpaceReadLock(ds);
+      PushDataSpaceLock(ds);
+    }
     if (GetDataSpaceOf(order[i].obj) != ds)
     {
       /* Race condition, revert locks and fail */
@@ -582,6 +585,7 @@ int TryLockObjects(int count, Obj *objects, int *mode)
 {
   int result;
   int i;
+  int locked;
   LockRequest *order;
   if (count > MAX_LOCKS)
     return -1;
@@ -603,28 +607,30 @@ int TryLockObjects(int count, Obj *objects, int *mode)
      */
     if (i > 0 && ds == order[i-1].dataspace)
       continue; /* skip duplicates */
-    else if (IsLocked(ds) || ds->fixed_owner)
-    {
-      /* DataSpaces may not be locked twice. If that is attempted,
-       * the entire lock operation is reverted. Similarly if one
-       * attempts to lock another thread's data space.
-       */
-      while (--i >= 0)
-        DataSpaceUnlock(order[i].dataspace);
+    if (!ds || ds->fixed_owner) { /* public or thread-local data space */
+      PopDataSpaceLocks(result);
       return -1;
     }
-    if (order[i].mode) {
-      if (!DataSpaceTryWriteLock(ds)) {
-	PopDataSpaceLocks(result);
-	return -1;
-      }
-    } else {
-      if (!DataSpaceTryReadLock(ds)) {
-	PopDataSpaceLocks(result);
-	return -1;
-      }
+    locked = IsLocked(ds);
+    if (locked == 2 && order[i].mode) {
+      /* trying to upgrade read lock to write lock */
+      PopDataSpaceLocks(result);
+      return -1;
     }
-    PushDataSpaceLock(ds);
+    if (!locked) {
+      if (order[i].mode) {
+	if (!DataSpaceTryWriteLock(ds)) {
+	  PopDataSpaceLocks(result);
+	  return -1;
+	}
+      } else {
+	if (!DataSpaceTryReadLock(ds)) {
+	  PopDataSpaceLocks(result);
+	  return -1;
+	}
+      }
+      PushDataSpaceLock(ds);
+    }
     if (GetDataSpaceOf(order[i].obj) != ds)
     {
       /* Race condition, revert locks and fail */
