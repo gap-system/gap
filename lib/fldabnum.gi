@@ -252,23 +252,34 @@ InstallGlobalFunction( AbelianNumberField, function ( N, stabilizer )
     fi;
 
     # The standard field is required.  Look whether it is already stored.
-    if not IsBound( ABELIAN_NUMBER_FIELDS[1][N] ) then
-      ABELIAN_NUMBER_FIELDS[1][N]:= [];
-      ABELIAN_NUMBER_FIELDS[2][N]:= [];
-    fi;
-    pos:= Position( ABELIAN_NUMBER_FIELDS[1][N], stabilizer );
-    if pos <> fail then
-      return ABELIAN_NUMBER_FIELDS[2][N][ pos ];
-    fi;
-
+    atomic readonly ABELIAN_NUMBER_FIELDS do
+      if IsBound( ABELIAN_NUMBER_FIELDS[1][N] ) then
+          pos:= Position( ABELIAN_NUMBER_FIELDS[1][N], stabilizer );
+          if pos <> fail then
+              return ABELIAN_NUMBER_FIELDS[2][N][ pos ];
+          fi;
+      fi;
+    od;
+      
     # Construct the field.
     F:= AbelianNumberFieldByReducedGaloisStabilizerInfo( Rationals,
             N, stabilizer );
 
     # Store the field.
-    Add( ABELIAN_NUMBER_FIELDS[1][N], stabilizer );
-    Add( ABELIAN_NUMBER_FIELDS[2][N], F );
-
+    atomic readwrite ABELIAN_NUMBER_FIELDS do
+       if not IsBound( ABELIAN_NUMBER_FIELDS[1][N] ) then
+           ABELIAN_NUMBER_FIELDS[1][N]:= MigrateObj([],ABELIAN_NUMBER_FIELDS);
+           ABELIAN_NUMBER_FIELDS[2][N]:= MigrateObj([],ABELIAN_NUMBER_FIELDS);
+       fi;
+       pos:= Position( ABELIAN_NUMBER_FIELDS[1][N], stabilizer );
+       if pos <> fail then
+           # someone else constructed it at the same time
+           # return their version
+           return ABELIAN_NUMBER_FIELDS[2][N][ pos ];
+       fi;
+       Add( ABELIAN_NUMBER_FIELDS[1][N], MakeImmutable(stabilizer) );
+       Add( ABELIAN_NUMBER_FIELDS[2][N], F );
+    od;
     # Return the number field.
     return F;
 end );

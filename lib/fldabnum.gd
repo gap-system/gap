@@ -389,6 +389,7 @@ DeclareSynonym( "CF", CyclotomicField );
 DeclareGlobalVariable( "ABELIAN_NUMBER_FIELDS",
     "list of lists, at position [1][n] stabilizers, at [2][n] the fields" );
 InstallFlushableValue( ABELIAN_NUMBER_FIELDS, [ [], [] ] );
+ShareObj(ABELIAN_NUMBER_FIELDS);
 
 
 #############################################################################
