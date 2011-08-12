@@ -49,6 +49,12 @@ IsSet(LETTERS);
 InstallValue(DIGITS, "0123456789");
 InstallValue(HEXDIGITS, "0123456789ABCDEFabcdef");
 
+MakeImmutable(WHITESPACE);
+MakeImmutable(CAPITALLETTERS);
+MakeImmutable(SMALLLETTERS);
+MakeImmutable(LETTERS);
+MakeImmutable(DIGITS);
+MakeImmutable(HEXDIGITS);
 
 ##  
 ##  <#GAPDoc Label="TextAttr">
@@ -880,7 +886,11 @@ fi;
 BindGlobal("Base64LETTERS",
           "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 BindGlobal("Base64REVERSE",
-[,,,,,,,,,-1,,,-1,,,,,,,,,,,,,,,,,,,-1,,,,,,,,,,,62,,62,,63,52,53,54,55,56,57,58,59,60,61,,,,-2,,,,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,,,,,63,,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51]);
+        [,,,,,,,,,-1,,,-1,,,,,,,,,,,,,,,,,,,-1,,,,,,,,,,,62,,62,,63,52,53,54,55,56,57,58,59,60,61,,,,-2,,,,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,,,,,63,,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51]);
+
+MakeImmutable(Base64LETTERS);
+MakeImmutable(Base64REVERSE);
+
 InstallGlobalFunction(Base64String, function(str)
   local istr, pad, i, res, a, d, c, b;
   istr := INTLIST_STRING(str, 1);
@@ -889,7 +899,7 @@ InstallGlobalFunction(Base64String, function(str)
     Add(istr,0);
   od;
   i := 1;
-  res := [];
+  res := "";
   while i < Length(istr) do
     if i > 1 and i mod 57 = 1 then
       Add(res, '\n');
