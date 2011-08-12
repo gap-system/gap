@@ -331,7 +331,7 @@ Obj             FuncAPPEND_LIST_INTR (
 
     }
     else {
-      PLAIN_LIST(list1);
+      RetypeBag(list1, T_PLIST);
         for ( i = 1; i <= len2; i++ ) {
             elm = ELMV0_LIST( list2, i );
             SET_ELM_PLIST( list1, i+len1, elm );
