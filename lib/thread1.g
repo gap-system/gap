@@ -39,4 +39,9 @@ LockAndMigrateObj := function(obj, target)
   else
     MIGRATE(obj, target);
   fi;
+  return obj;
+end;
+
+NewRegion := function()
+  return RegionOf(ShareObj([]));
 end;
