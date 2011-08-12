@@ -67,8 +67,10 @@ BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
         FILTERS[ FLAG1_FILTER( cat ) ] := cat;
         IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
-        INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
-        RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+	atomic FILTER_REGION do
+	    INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+            RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+	od;
         InstallTrueMethod( super, cat );
     fi;
     BIND_GLOBAL( name, cat );
@@ -118,12 +120,14 @@ BIND_GLOBAL( "NewCategory", function ( arg )
     FILTERS[ FLAG1_FILTER( cat ) ] := cat;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
 
-    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-      RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= arg[3];
-    else
-      RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= 1;
-    fi;
-    INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
+    atomic FILTER_REGION do
+	if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+	  RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= arg[3];
+	else
+	  RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= 1;
+	fi;
+	INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
+    od;
 
     # Return the filter.
     return cat;
@@ -182,8 +186,10 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
     FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-    RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
-    INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
+    atomic FILTER_REGION do
+        RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
+	INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
+    od;
     InstallTrueMethod( arg[2], rep );
     BIND_GLOBAL( arg[1], rep );
     SET_NAME_FUNC( rep, arg[1] );
@@ -270,8 +276,10 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
     FILTERS[ FLAG1_FILTER( rep ) ] := rep;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-    RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
-    INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
+    atomic FILTER_REGION do
+        RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
+	INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
+    od;
 
     # Return the filter.
     return rep;
@@ -408,6 +416,7 @@ BIND_GLOBAL( "TypeOfTypes", [
     false,
     NEW_TYPE_NEXT_ID ] );
 
+
 FamilyOfTypes!.NAME             := "FamilyOfTypes";
 FamilyOfTypes!.REQ_FLAGS        := FLAGS_FILTER( IsType   );
 FamilyOfTypes!.IMP_FLAGS        := EMPTY_FLAGS;
@@ -432,6 +441,7 @@ SET_TYPE_POSOBJ( TypeOfFamilies,   TypeOfTypes            );
 
 SET_TYPE_COMOBJ( FamilyOfTypes,    TypeOfFamilyOfTypes    );
 SET_TYPE_POSOBJ( TypeOfTypes,      TypeOfTypes            );
+MakeReadOnly(TypeOfTypes);
 
 
 #############################################################################
