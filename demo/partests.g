@@ -1,7 +1,7 @@
 
 SpinsPerSecond := rec();
 
-SpinInners := rec(
+SpinInners := MakeImmutable(rec(
                   smallint := function(loops)
     local   i,  x;
     x := 0;
@@ -29,7 +29,7 @@ end,
     for i in [1..loops] do
         x := ShallowCopy(x) * i mod 2^26;
     od;
-end);
+end));
     
     
 Spin := function(which, microseconds)
@@ -47,6 +47,8 @@ for n in NamesOfComponents(SpinInners) do
     until t > 1000;
     SpinsPerSecond.(n) := QuoInt(200*ct,t);
 od;
+
+MakeImmutable(SpinsPerSecond);
 
 DiffCurrentTimes := function(t1, t2)
     return (t1.tv_sec - t2.tv_sec)*1000000 +
