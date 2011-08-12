@@ -254,6 +254,7 @@ InstallMethod(ELM0_LIST, "For an 8 bit vector",
 #M  DegreeFFE( <vector> )
 ##
 BindGlobal("Q_TO_DEGREE", # discrete logarithm list
+  MakeImmutable( 
   [0,1,1,2,1,0,1,3,2,0,1,0,1,0,0,4,1,0,1,0,0,0,1,0,2,0,3,0,1,0,1,5,0,0,0,0,
   1,0,0,0,1,0,1,0,0,0,1,0,2,0,0,0,1,0,0,0,0,0,1,0,1,0,0,6,0,0,1,0,0,0,1,0,
   1,0,0,0,0,0,1,0,4,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,
@@ -261,7 +262,7 @@ BindGlobal("Q_TO_DEGREE", # discrete logarithm list
   0,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,2,0,0,0,1,0,0,0,0,0,1,0,
   1,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
   0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,5,0,0,0,0,0,0,0,1,0,
-  0,0,0,8]);
+  0,0,0,8] ) );
 
 InstallOtherMethod( DegreeFFE, "for 8 bit vectors", true,
     [ IsRowVector and IsFFECollection and Is8BitVectorRep], 0,
