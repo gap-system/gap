@@ -17,31 +17,44 @@ Revision.random_g :=
 ##
 #F  RANDOM_LIST( <list> ) . . . . . . . . return a random element from a list
 ##
-R_N := 1;
-R_X := [];
+MakeThreadLocal("R_N");
+MakeThreadLocal("R_X");
+BindThreadLocal("R_N", 1);
+BindThreadLocal("R_X", [ ]);
+
+BIND_GLOBAL("RANDOM_SEED_COUNTER", AtomicList(1, 0));
+BIND_GLOBAL("GET_RANDOM_SEED_COUNTER", function()
+  local r;
+  r := ATOMIC_ADDITION(RANDOM_SEED_COUNTER, 1, 1);
+  return r;
+end);
 
 # 268435456 is 2^28. This way
 # we avoid recomputing it every time we need it.
 R_228 := 2^28;
 RANDOM_LIST := function ( list )
-    R_N := R_N mod 55 + 1;
-    R_X[R_N] := (R_X[R_N] + R_X[(R_N+30) mod 55+1]) mod R_228;
-    return list[ QUO_INT( R_X[R_N] * LEN_LIST(list), R_228 ) + 1 ];
+    local r_n, r_x;
+    r_n := ThreadVar.R_N;
+    r_x := ThreadVar.R_X;
+    R_N := r_n mod 55 + 1;
+    r_x[r_n] := (r_x[r_n] + r_x[(r_n+30) mod 55+1]) mod R_228;
+    return list[ QUO_INT( r_x[r_n] * LEN_LIST(list), R_228 ) + 1 ];
 end;
 
 RANDOM_SEED := function ( n )
-    local  i;
-    R_N := 1;  R_X := [ n mod R_228 ];
+    local  i, r_n, r_x;
+    ThreadVar.R_N := 1;  ThreadVar.R_X := [ n mod R_228 ];
+    r_n := ThreadVar.R_N; r_x := ThreadVar.R_X;
     for i  in [2..55]  do
-        R_X[i] := (1664525 * R_X[i-1] + 1) mod R_228;
+        r_x[i] := (1664525 * r_x[i-1] + 1) mod R_228;
     od;
     for i  in [1..99]  do
-        R_N := R_N mod 55 + 1;
-        R_X[R_N] := (R_X[R_N] + R_X[(R_N+30) mod 55+1]) mod R_228;
+        R_N := r_n mod 55 + 1;
+        r_x[r_n] := (r_x[r_n] + r_x[(r_n+30) mod 55+1]) mod R_228;
     od;
 end;
 
-if R_X = []  then RANDOM_SEED( 1 );  fi;
+if ThreadVar.R_X = []  then RANDOM_SEED( GET_RANDOM_SEED_COUNTER() );  fi;
 
 #############################################################################
 ##
