@@ -3769,11 +3769,18 @@ local BLISTFT,BLISTIND;
   HEXBYTES1:=ShallowCopy(HEXBYTES);
   BLISTBYTES1:=ShallowCopy(BLISTBYTES);
   SortParallel(HEXBYTES1,BLISTBYTES1);
+  MakeImmutable(BLISTBYTES);
+  MakeImmutable(BLISTBYTES1);
+  MakeImmutable(HEXBYTES);
+  MakeImmutable(HEXBYTES1);
 end);
+
+HexBlistSetup();
+
 
 InstallGlobalFunction(HexStringBlist,function(b)
 local i,n,s;
-  HexBlistSetup();
+#  HexBlistSetup();
   n:=Length(b);
   i:=1;
   s:="";
@@ -3794,7 +3801,7 @@ end);
 
 InstallGlobalFunction(HexStringBlistEncode,function(b)
 local i,n,s,t,u,zero;
-  HexBlistSetup();
+#  HexBlistSetup();
   zero:="00";
   n:=Length(b);
   i:=1;
@@ -3845,7 +3852,7 @@ end);
 
 InstallGlobalFunction(BlistStringDecode,function(arg)
 local s,b,i,j,zero,l;
-  HexBlistSetup();
+#  HexBlistSetup();
   zero:=BLISTBYTES1[PositionSorted(HEXBYTES1,"00")];
   s:=arg[1];
   b:=[];
