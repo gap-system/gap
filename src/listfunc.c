@@ -167,8 +167,12 @@ Obj             FuncAPPEND_LIST_INTR (
 		0L, 0L,
 		"you can replace <list1> via 'return <list1>;'");
     
+    /* Appending the empty list to something is easy */
+    if (LEN_LIST(list2) == 0)
+      return (Obj) 0L;
 
     /* handle the case of strings now */
+      
     if ( IS_STRING_REP(list1) && IS_STRING_REP(list2))
       {
 	len1 = GET_LEN_STRING(list1);
@@ -327,6 +331,7 @@ Obj             FuncAPPEND_LIST_INTR (
 
     }
     else {
+      PLAIN_LIST(list1);
         for ( i = 1; i <= len2; i++ ) {
             elm = ELMV0_LIST( list2, i );
             SET_ELM_PLIST( list1, i+len1, elm );
