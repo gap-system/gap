@@ -13,7 +13,8 @@ Revision.simple_gi :=
     "@(#)$Id: simple.gi,v 1.3 2011/06/13 17:16:09 gap Exp $";
 
 # data for simple groups of order up to 10^18 that are not L_2(q)
-BindGlobal("SIMPLEGPSNONL2",
+BindGlobal("SIMPLEGPSNONL2", 
+  MakeImmutable(
   [[60,"A",5],[360,"A",6],[2520,"A",7],
   [5616,"L",3,3],[6048,"U",3,3],[7920,"Spor","M(11)"],
   [20160,"A",8],
@@ -124,7 +125,7 @@ BindGlobal("SIMPLEGPSNONL2",
   [498292774007829408,"U",3,163],
   [604945295112210528,"L",3,167],[665393448951722400,"U",3,169],
   [712975930219192320,"L",4,17],[796793353927300800,"G",2,19],
-  [802332214764045216,"L",3,173],[911215823217986880,"S",4,67]]);
+  [802332214764045216,"L",3,173],[911215823217986880,"S",4,67]]));
 
 # call atlasrep, possibly with extra parameters, but only if atlasrep is available
 BindGlobal("DoAtlasrepGroup",function(params)
