@@ -1112,8 +1112,8 @@ void            IntrAtomicEnd ( void )
 	  break;
 	case 2:
 	  if (locktypes[i] == 1)
-	    break;
-	  ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+	    ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+	  break;
 	case 1:
 	    break;
  	default:
