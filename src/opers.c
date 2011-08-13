@@ -704,6 +704,10 @@ Obj FuncAND_FLAGS (
 #               ifdef COUNT_OPERS
                     AndFlagsCacheHit++;
 #               endif
+#   ifdef AND_FLAGS_HASH_SIZE
+		if (locked)
+		    HashUnlock(locked);
+#   endif
                 return ELM_PLIST( cache, 2*hash2+2 );
             }
         }
@@ -726,9 +730,17 @@ Obj FuncAND_FLAGS (
     len2   = LEN_FLAGS(flags2);
     size2  = NRB_FLAGS(flags2);
     if ( len1 == 0 ) {
+#   ifdef AND_FLAGS_HASH_SIZE
+	if (locked)
+	    HashUnlock(locked);
+#   endif
         return flags2;
     }
     if ( len2 == 0 ) {
+#   ifdef AND_FLAGS_HASH_SIZE
+	if (locked)
+	    HashUnlock(locked);
+#   endif
         return flags1;
     }
     if ( len1 < len2 ) {
@@ -765,7 +777,7 @@ Obj FuncAND_FLAGS (
         SET_ELM_PLIST( cache, 2*hash+2, flags  );
         CHANGED_BAG(cache);
 	if (locked)
-	  HashUnlock(locked);
+	    HashUnlock(locked);
 #   endif
 
     /* and return the result                                               */
@@ -6495,6 +6507,7 @@ static Int InitLibrary (
     /*CCC TRY_NEXT_METHOD = NEW_STRING( 16 );
       SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );CCC*/
     C_NEW_STRING(TRY_NEXT_METHOD, 15, "TRY_NEXT_METHOD");
+    RetypeBag(TRY_NEXT_METHOD, T_STRING+IMMUTABLE);
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
     /* init filters and functions                                          */

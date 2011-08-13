@@ -618,6 +618,8 @@ Obj FuncSyncWrite(Obj self, Obj var, Obj value);
 Obj FuncSyncRead(Obj self, Obj var);
 Obj FuncIS_LOCKED(Obj self, Obj obj);
 Obj FuncLOCK(Obj self, Obj args);
+Obj FuncWRITE_LOCK(Obj self, Obj args);
+Obj FuncREAD_LOCK(Obj self, Obj args);
 Obj FuncTRYLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
 Obj FuncCURRENT_LOCKS(Obj self);
@@ -766,6 +768,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "LOCK", -1, "obj, ...",
       FuncLOCK, "src/threadapi.c:LOCK" },
+
+    { "WRITE_LOCK", 1, "obj",
+      FuncWRITE_LOCK, "src/threadapi.c:WRITE_LOCK" },
+
+    { "READ_LOCK", 1, "obj",
+      FuncREAD_LOCK, "src/threadapi.c:READ_LOCK" },
 
     { "TRYLOCK", -1, "obj, ...",
       FuncTRYLOCK, "src/threadapi.c:TRYLOCK" },
@@ -1886,6 +1894,26 @@ Obj FuncLOCK(Obj self, Obj args)
     }
   }
   result = LockObjects(count, objects, modes);
+  if (result >= 0)
+    return INTOBJ_INT(result);
+  return Fail;
+}
+
+Obj FuncWRITE_LOCK(Obj self, Obj obj)
+{
+  int result;
+  static int modes[] = { 1 };
+  result = LockObjects(1, &obj, modes);
+  if (result >= 0)
+    return INTOBJ_INT(result);
+  return Fail;
+}
+
+Obj FuncREAD_LOCK(Obj self, Obj obj)
+{
+  int result;
+  static int modes[] = { 0 };
+  result = LockObjects(1, &obj, modes);
   if (result >= 0)
     return INTOBJ_INT(result);
   return Fail;

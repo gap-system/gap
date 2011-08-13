@@ -45,7 +45,7 @@ BIND_GLOBAL( "FILTERS", [] );
 ##  <FILTERS>  and  <RANK_FILTERS> are  lists containing at position <i>  the
 ##  filter with number <i> resp.  its rank.
 ##
-BIND_GLOBAL( "RANK_FILTERS", [] );
+BIND_GLOBAL( "RANK_FILTERS", LockAndMigrateObj([], FILTER_REGION) );
 
 
 #############################################################################
@@ -68,7 +68,7 @@ BIND_GLOBAL( "RANK_FILTERS", [] );
 ##   9 = property
 ##  10 = tester of 9
 ##
-BIND_GLOBAL( "INFO_FILTERS", [] );
+BIND_GLOBAL( "INFO_FILTERS", LockAndMigrateObj([], FILTER_REGION) );
 
 BIND_GLOBAL( "FNUM_CATS", [ 1,  2 ] );
 BIND_GLOBAL( "FNUM_REPS", [ 3,  4 ] );
@@ -113,10 +113,13 @@ BIND_GLOBAL( "Tester", TESTER_FILTER );
 BIND_GLOBAL( "InstallHiddenTrueMethod", function ( filter, filters )
     local   imp;
 
-    imp := [];
-    imp[1] := FLAGS_FILTER( filter );
-    imp[2] := FLAGS_FILTER( filters );
-    ADD_LIST( HIDDEN_IMPS, imp );
+    atomic HIDDEN_IMPS do
+	imp := [];
+	imp[1] := FLAGS_FILTER( filter );
+	imp[2] := FLAGS_FILTER( filters );
+	MigrateObj(imp, HIDDEN_IMPS);
+	ADD_LIST( HIDDEN_IMPS, imp );
+    od;
 end );
 
 
@@ -142,10 +145,13 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
       Error( "filter <from> must not imply `IsMutable'" );
     fi;
 
-    imp := [];
-    imp[1] := FLAGS_FILTER( tofilt );
-    imp[2] := FLAGS_FILTER( from );
-    ADD_LIST( IMPLICATIONS, imp );
+    atomic IMPLICATIONS do
+	imp := [];
+	imp[1] := FLAGS_FILTER( tofilt );
+	imp[2] := FLAGS_FILTER( from );
+	MigrateObj(imp, IMPLICATIONS);
+	ADD_LIST( IMPLICATIONS, imp );
+    od;
     InstallHiddenTrueMethod( tofilt, from );
 end );
 
@@ -256,8 +262,10 @@ BIND_GLOBAL( "NewFilter", function( arg )
     # Do some administrational work.
     FILTERS[ FLAG1_FILTER( filter ) ] := filter;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
-    RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
-    INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
+    atomic FILTER_REGION do
+        RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
+	INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
+    od;
 
     # Return the filter.
     return filter;

@@ -1262,14 +1262,6 @@ static Obj  HdlrFunc11 (
   ASS_REC( a_family, R_nTYPES, t_1 );
  }
  
- /* UNLOCK( LOCK(  ) - 1 ); */
- t_1 = GF_UNLOCK;
- t_4 = GF_LOCK;
- t_3 = CALL_0ARGS( t_4 );
- CHECK_FUNC_RESULT( t_3 )
- C_DIFF_FIA( t_2, t_3, INTOBJ_INT(1) )
- CALL_1ARGS( t_1, t_2 );
- 
  /* if ThreadVar.NEW_TYPE_READONLY then */
  t_3 = GC_ThreadVar;
  CHECK_BOUND( t_3, "ThreadVar" )
@@ -1278,31 +1270,25 @@ static Obj  HdlrFunc11 (
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
-  /* return MakeReadOnlyObj( type ); */
-  t_2 = GF_MakeReadOnlyObj;
-  t_1 = CALL_1ARGS( t_2, l_type );
-  CHECK_FUNC_RESULT( t_1 )
-  RES_BRK_CURR_STAT();
-  SWITCH_TO_OLD_FRAME(oldFrame);
-  return t_1;
-  
- }
- 
- /* else */
- else {
-  
-  /* return type; */
-  RES_BRK_CURR_STAT();
-  SWITCH_TO_OLD_FRAME(oldFrame);
-  return l_type;
+  /* MakeReadOnlyObj( type ); */
+  t_1 = GF_MakeReadOnlyObj;
+  CALL_1ARGS( t_1, l_type );
   
  }
  /* fi */
  
- /* return; */
+ /* UNLOCK( LOCK(  ) - 1 ); */
+ t_1 = GF_UNLOCK;
+ t_4 = GF_LOCK;
+ t_3 = CALL_0ARGS( t_4 );
+ CHECK_FUNC_RESULT( t_3 )
+ C_DIFF_FIA( t_2, t_3, INTOBJ_INT(1) )
+ CALL_1ARGS( t_1, t_2 );
+ 
+ /* return type; */
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
+ return l_type;
  
  /* return; */
  RES_BRK_CURR_STAT();
@@ -4155,13 +4141,11 @@ static Obj  HdlrFunc1 (
           cache[hash] := type;
       fi;
       family!.nTYPES := family!.nTYPES + 1;
-      UNLOCK( LOCK(  ) - 1 );
       if ThreadVar.NEW_TYPE_READONLY  then
-          return MakeReadOnlyObj( type );
-      else
-          return type;
+          MakeReadOnlyObj( type );
       fi;
-      return;
+      UNLOCK( LOCK(  ) - 1 );
+      return type;
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 8, "NEW_TYPE" )
@@ -4169,7 +4153,7 @@ static Obj  HdlrFunc1 (
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_4) = INTOBJ_INT(209);
- ENDLINE_BODY(t_4) = INTOBJ_INT(270);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(269);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4183,8 +4167,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[12], NargFunc[12], NamsFunc[12], HdlrFunc12 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(273);
- ENDLINE_BODY(t_4) = INTOBJ_INT(278);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(272);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(277);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4198,8 +4182,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[13], NargFunc[13], NamsFunc[13], HdlrFunc13 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(281);
- ENDLINE_BODY(t_4) = INTOBJ_INT(288);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(280);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(287);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4213,8 +4197,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[14], NargFunc[14], NamsFunc[14], HdlrFunc14 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(291);
- ENDLINE_BODY(t_4) = INTOBJ_INT(298);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(290);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(297);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4231,8 +4215,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[15], NargFunc[15], NamsFunc[15], HdlrFunc15 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(302);
- ENDLINE_BODY(t_4) = INTOBJ_INT(313);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(301);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(312);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4261,8 +4245,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[16], NargFunc[16], NamsFunc[16], HdlrFunc16 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(316);
- ENDLINE_BODY(t_4) = INTOBJ_INT(348);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(315);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(347);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4283,8 +4267,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[17], NargFunc[17], NamsFunc[17], HdlrFunc17 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(361);
- ENDLINE_BODY(t_4) = INTOBJ_INT(375);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(360);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(374);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4305,8 +4289,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[18], NargFunc[18], NamsFunc[18], HdlrFunc18 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(378);
- ENDLINE_BODY(t_4) = INTOBJ_INT(392);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(377);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(391);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4331,8 +4315,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[19], NargFunc[19], NamsFunc[19], HdlrFunc19 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(396);
- ENDLINE_BODY(t_4) = INTOBJ_INT(410);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(395);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(409);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4353,8 +4337,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[20], NargFunc[20], NamsFunc[20], HdlrFunc20 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(424);
- ENDLINE_BODY(t_4) = INTOBJ_INT(438);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(423);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(437);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4375,8 +4359,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[21], NargFunc[21], NamsFunc[21], HdlrFunc21 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(441);
- ENDLINE_BODY(t_4) = INTOBJ_INT(455);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(440);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(454);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4398,8 +4382,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[22], NargFunc[22], NamsFunc[22], HdlrFunc22 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(458);
- ENDLINE_BODY(t_4) = INTOBJ_INT(472);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(457);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(471);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4413,8 +4397,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[23], NargFunc[23], NamsFunc[23], HdlrFunc23 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(486);
- ENDLINE_BODY(t_4) = INTOBJ_INT(486);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(485);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(485);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4428,8 +4412,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[24], NargFunc[24], NamsFunc[24], HdlrFunc24 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(500);
- ENDLINE_BODY(t_4) = INTOBJ_INT(500);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(499);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(499);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4443,8 +4427,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[25], NargFunc[25], NamsFunc[25], HdlrFunc25 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(516);
- ENDLINE_BODY(t_4) = INTOBJ_INT(516);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(515);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(515);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4459,8 +4443,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[26], NargFunc[26], NamsFunc[26], HdlrFunc26 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(518);
- ENDLINE_BODY(t_4) = INTOBJ_INT(520);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(517);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(519);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4474,8 +4458,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[27], NargFunc[27], NamsFunc[27], HdlrFunc27 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(534);
- ENDLINE_BODY(t_4) = INTOBJ_INT(534);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(533);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(533);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4503,8 +4487,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[28], NargFunc[28], NamsFunc[28], HdlrFunc28 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(633);
- ENDLINE_BODY(t_4) = INTOBJ_INT(633);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(632);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(632);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4518,8 +4502,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[29], NargFunc[29], NamsFunc[29], HdlrFunc29 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(647);
- ENDLINE_BODY(t_4) = INTOBJ_INT(647);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(646);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(646);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4533,8 +4517,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[30], NargFunc[30], NamsFunc[30], HdlrFunc30 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(661);
- ENDLINE_BODY(t_4) = INTOBJ_INT(661);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(660);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(660);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4559,8 +4543,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[31], NargFunc[31], NamsFunc[31], HdlrFunc31 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(675);
- ENDLINE_BODY(t_4) = INTOBJ_INT(688);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(674);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(687);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4594,8 +4578,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[32], NargFunc[32], NamsFunc[32], HdlrFunc32 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(704);
- ENDLINE_BODY(t_4) = INTOBJ_INT(719);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(703);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(718);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4652,8 +4636,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[33], NargFunc[33], NamsFunc[33], HdlrFunc33 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(743);
- ENDLINE_BODY(t_4) = INTOBJ_INT(781);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(742);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(780);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4694,8 +4678,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[34], NargFunc[34], NamsFunc[34], HdlrFunc34 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(803);
- ENDLINE_BODY(t_4) = INTOBJ_INT(825);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(802);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(824);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4721,8 +4705,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[35], NargFunc[35], NamsFunc[35], HdlrFunc35 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(841);
- ENDLINE_BODY(t_4) = INTOBJ_INT(847);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(840);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(846);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4774,8 +4758,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[36], NargFunc[36], NamsFunc[36], HdlrFunc36 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(868);
- ENDLINE_BODY(t_4) = INTOBJ_INT(920);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(867);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(919);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4853,8 +4837,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[37], NargFunc[37], NamsFunc[37], HdlrFunc37 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(967);
- ENDLINE_BODY(t_4) = INTOBJ_INT(1032);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(966);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(1031);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -4988,82 +4972,82 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "Objectify", &GF_Objectify );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "lib/type1.g:DefaultName(-99564075)" );
- InitGlobalBag( &FileName, "lib/type1.g:FileName(-99564075)" );
- InitHandlerFunc( HdlrFunc1, "lib/type1.g:HdlrFunc1(-99564075)" );
- InitGlobalBag( &(NameFunc[1]), "lib/type1.g:NameFunc[1](-99564075)" );
- InitHandlerFunc( HdlrFunc2, "lib/type1.g:HdlrFunc2(-99564075)" );
- InitGlobalBag( &(NameFunc[2]), "lib/type1.g:NameFunc[2](-99564075)" );
- InitHandlerFunc( HdlrFunc3, "lib/type1.g:HdlrFunc3(-99564075)" );
- InitGlobalBag( &(NameFunc[3]), "lib/type1.g:NameFunc[3](-99564075)" );
- InitHandlerFunc( HdlrFunc4, "lib/type1.g:HdlrFunc4(-99564075)" );
- InitGlobalBag( &(NameFunc[4]), "lib/type1.g:NameFunc[4](-99564075)" );
- InitHandlerFunc( HdlrFunc5, "lib/type1.g:HdlrFunc5(-99564075)" );
- InitGlobalBag( &(NameFunc[5]), "lib/type1.g:NameFunc[5](-99564075)" );
- InitHandlerFunc( HdlrFunc6, "lib/type1.g:HdlrFunc6(-99564075)" );
- InitGlobalBag( &(NameFunc[6]), "lib/type1.g:NameFunc[6](-99564075)" );
- InitHandlerFunc( HdlrFunc7, "lib/type1.g:HdlrFunc7(-99564075)" );
- InitGlobalBag( &(NameFunc[7]), "lib/type1.g:NameFunc[7](-99564075)" );
- InitHandlerFunc( HdlrFunc8, "lib/type1.g:HdlrFunc8(-99564075)" );
- InitGlobalBag( &(NameFunc[8]), "lib/type1.g:NameFunc[8](-99564075)" );
- InitHandlerFunc( HdlrFunc9, "lib/type1.g:HdlrFunc9(-99564075)" );
- InitGlobalBag( &(NameFunc[9]), "lib/type1.g:NameFunc[9](-99564075)" );
- InitHandlerFunc( HdlrFunc10, "lib/type1.g:HdlrFunc10(-99564075)" );
- InitGlobalBag( &(NameFunc[10]), "lib/type1.g:NameFunc[10](-99564075)" );
- InitHandlerFunc( HdlrFunc11, "lib/type1.g:HdlrFunc11(-99564075)" );
- InitGlobalBag( &(NameFunc[11]), "lib/type1.g:NameFunc[11](-99564075)" );
- InitHandlerFunc( HdlrFunc12, "lib/type1.g:HdlrFunc12(-99564075)" );
- InitGlobalBag( &(NameFunc[12]), "lib/type1.g:NameFunc[12](-99564075)" );
- InitHandlerFunc( HdlrFunc13, "lib/type1.g:HdlrFunc13(-99564075)" );
- InitGlobalBag( &(NameFunc[13]), "lib/type1.g:NameFunc[13](-99564075)" );
- InitHandlerFunc( HdlrFunc14, "lib/type1.g:HdlrFunc14(-99564075)" );
- InitGlobalBag( &(NameFunc[14]), "lib/type1.g:NameFunc[14](-99564075)" );
- InitHandlerFunc( HdlrFunc15, "lib/type1.g:HdlrFunc15(-99564075)" );
- InitGlobalBag( &(NameFunc[15]), "lib/type1.g:NameFunc[15](-99564075)" );
- InitHandlerFunc( HdlrFunc16, "lib/type1.g:HdlrFunc16(-99564075)" );
- InitGlobalBag( &(NameFunc[16]), "lib/type1.g:NameFunc[16](-99564075)" );
- InitHandlerFunc( HdlrFunc17, "lib/type1.g:HdlrFunc17(-99564075)" );
- InitGlobalBag( &(NameFunc[17]), "lib/type1.g:NameFunc[17](-99564075)" );
- InitHandlerFunc( HdlrFunc18, "lib/type1.g:HdlrFunc18(-99564075)" );
- InitGlobalBag( &(NameFunc[18]), "lib/type1.g:NameFunc[18](-99564075)" );
- InitHandlerFunc( HdlrFunc19, "lib/type1.g:HdlrFunc19(-99564075)" );
- InitGlobalBag( &(NameFunc[19]), "lib/type1.g:NameFunc[19](-99564075)" );
- InitHandlerFunc( HdlrFunc20, "lib/type1.g:HdlrFunc20(-99564075)" );
- InitGlobalBag( &(NameFunc[20]), "lib/type1.g:NameFunc[20](-99564075)" );
- InitHandlerFunc( HdlrFunc21, "lib/type1.g:HdlrFunc21(-99564075)" );
- InitGlobalBag( &(NameFunc[21]), "lib/type1.g:NameFunc[21](-99564075)" );
- InitHandlerFunc( HdlrFunc22, "lib/type1.g:HdlrFunc22(-99564075)" );
- InitGlobalBag( &(NameFunc[22]), "lib/type1.g:NameFunc[22](-99564075)" );
- InitHandlerFunc( HdlrFunc23, "lib/type1.g:HdlrFunc23(-99564075)" );
- InitGlobalBag( &(NameFunc[23]), "lib/type1.g:NameFunc[23](-99564075)" );
- InitHandlerFunc( HdlrFunc24, "lib/type1.g:HdlrFunc24(-99564075)" );
- InitGlobalBag( &(NameFunc[24]), "lib/type1.g:NameFunc[24](-99564075)" );
- InitHandlerFunc( HdlrFunc25, "lib/type1.g:HdlrFunc25(-99564075)" );
- InitGlobalBag( &(NameFunc[25]), "lib/type1.g:NameFunc[25](-99564075)" );
- InitHandlerFunc( HdlrFunc26, "lib/type1.g:HdlrFunc26(-99564075)" );
- InitGlobalBag( &(NameFunc[26]), "lib/type1.g:NameFunc[26](-99564075)" );
- InitHandlerFunc( HdlrFunc27, "lib/type1.g:HdlrFunc27(-99564075)" );
- InitGlobalBag( &(NameFunc[27]), "lib/type1.g:NameFunc[27](-99564075)" );
- InitHandlerFunc( HdlrFunc28, "lib/type1.g:HdlrFunc28(-99564075)" );
- InitGlobalBag( &(NameFunc[28]), "lib/type1.g:NameFunc[28](-99564075)" );
- InitHandlerFunc( HdlrFunc29, "lib/type1.g:HdlrFunc29(-99564075)" );
- InitGlobalBag( &(NameFunc[29]), "lib/type1.g:NameFunc[29](-99564075)" );
- InitHandlerFunc( HdlrFunc30, "lib/type1.g:HdlrFunc30(-99564075)" );
- InitGlobalBag( &(NameFunc[30]), "lib/type1.g:NameFunc[30](-99564075)" );
- InitHandlerFunc( HdlrFunc31, "lib/type1.g:HdlrFunc31(-99564075)" );
- InitGlobalBag( &(NameFunc[31]), "lib/type1.g:NameFunc[31](-99564075)" );
- InitHandlerFunc( HdlrFunc32, "lib/type1.g:HdlrFunc32(-99564075)" );
- InitGlobalBag( &(NameFunc[32]), "lib/type1.g:NameFunc[32](-99564075)" );
- InitHandlerFunc( HdlrFunc33, "lib/type1.g:HdlrFunc33(-99564075)" );
- InitGlobalBag( &(NameFunc[33]), "lib/type1.g:NameFunc[33](-99564075)" );
- InitHandlerFunc( HdlrFunc34, "lib/type1.g:HdlrFunc34(-99564075)" );
- InitGlobalBag( &(NameFunc[34]), "lib/type1.g:NameFunc[34](-99564075)" );
- InitHandlerFunc( HdlrFunc35, "lib/type1.g:HdlrFunc35(-99564075)" );
- InitGlobalBag( &(NameFunc[35]), "lib/type1.g:NameFunc[35](-99564075)" );
- InitHandlerFunc( HdlrFunc36, "lib/type1.g:HdlrFunc36(-99564075)" );
- InitGlobalBag( &(NameFunc[36]), "lib/type1.g:NameFunc[36](-99564075)" );
- InitHandlerFunc( HdlrFunc37, "lib/type1.g:HdlrFunc37(-99564075)" );
- InitGlobalBag( &(NameFunc[37]), "lib/type1.g:NameFunc[37](-99564075)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/type1.g:DefaultName(-41210758)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/type1.g:FileName(-41210758)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/type1.g:HdlrFunc1(-41210758)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/type1.g:NameFunc[1](-41210758)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/type1.g:HdlrFunc2(-41210758)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/type1.g:NameFunc[2](-41210758)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/type1.g:HdlrFunc3(-41210758)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/type1.g:NameFunc[3](-41210758)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/type1.g:HdlrFunc4(-41210758)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/type1.g:NameFunc[4](-41210758)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/type1.g:HdlrFunc5(-41210758)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/type1.g:NameFunc[5](-41210758)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/type1.g:HdlrFunc6(-41210758)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/type1.g:NameFunc[6](-41210758)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/type1.g:HdlrFunc7(-41210758)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/type1.g:NameFunc[7](-41210758)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/type1.g:HdlrFunc8(-41210758)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/type1.g:NameFunc[8](-41210758)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/type1.g:HdlrFunc9(-41210758)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/type1.g:NameFunc[9](-41210758)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/type1.g:HdlrFunc10(-41210758)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/type1.g:NameFunc[10](-41210758)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/type1.g:HdlrFunc11(-41210758)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/type1.g:NameFunc[11](-41210758)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/type1.g:HdlrFunc12(-41210758)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/type1.g:NameFunc[12](-41210758)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/type1.g:HdlrFunc13(-41210758)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/type1.g:NameFunc[13](-41210758)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/type1.g:HdlrFunc14(-41210758)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/type1.g:NameFunc[14](-41210758)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/type1.g:HdlrFunc15(-41210758)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/type1.g:NameFunc[15](-41210758)" );
+ InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/type1.g:HdlrFunc16(-41210758)" );
+ InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/type1.g:NameFunc[16](-41210758)" );
+ InitHandlerFunc( HdlrFunc17, "GAPROOT/lib/type1.g:HdlrFunc17(-41210758)" );
+ InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/type1.g:NameFunc[17](-41210758)" );
+ InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/type1.g:HdlrFunc18(-41210758)" );
+ InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/type1.g:NameFunc[18](-41210758)" );
+ InitHandlerFunc( HdlrFunc19, "GAPROOT/lib/type1.g:HdlrFunc19(-41210758)" );
+ InitGlobalBag( &(NameFunc[19]), "GAPROOT/lib/type1.g:NameFunc[19](-41210758)" );
+ InitHandlerFunc( HdlrFunc20, "GAPROOT/lib/type1.g:HdlrFunc20(-41210758)" );
+ InitGlobalBag( &(NameFunc[20]), "GAPROOT/lib/type1.g:NameFunc[20](-41210758)" );
+ InitHandlerFunc( HdlrFunc21, "GAPROOT/lib/type1.g:HdlrFunc21(-41210758)" );
+ InitGlobalBag( &(NameFunc[21]), "GAPROOT/lib/type1.g:NameFunc[21](-41210758)" );
+ InitHandlerFunc( HdlrFunc22, "GAPROOT/lib/type1.g:HdlrFunc22(-41210758)" );
+ InitGlobalBag( &(NameFunc[22]), "GAPROOT/lib/type1.g:NameFunc[22](-41210758)" );
+ InitHandlerFunc( HdlrFunc23, "GAPROOT/lib/type1.g:HdlrFunc23(-41210758)" );
+ InitGlobalBag( &(NameFunc[23]), "GAPROOT/lib/type1.g:NameFunc[23](-41210758)" );
+ InitHandlerFunc( HdlrFunc24, "GAPROOT/lib/type1.g:HdlrFunc24(-41210758)" );
+ InitGlobalBag( &(NameFunc[24]), "GAPROOT/lib/type1.g:NameFunc[24](-41210758)" );
+ InitHandlerFunc( HdlrFunc25, "GAPROOT/lib/type1.g:HdlrFunc25(-41210758)" );
+ InitGlobalBag( &(NameFunc[25]), "GAPROOT/lib/type1.g:NameFunc[25](-41210758)" );
+ InitHandlerFunc( HdlrFunc26, "GAPROOT/lib/type1.g:HdlrFunc26(-41210758)" );
+ InitGlobalBag( &(NameFunc[26]), "GAPROOT/lib/type1.g:NameFunc[26](-41210758)" );
+ InitHandlerFunc( HdlrFunc27, "GAPROOT/lib/type1.g:HdlrFunc27(-41210758)" );
+ InitGlobalBag( &(NameFunc[27]), "GAPROOT/lib/type1.g:NameFunc[27](-41210758)" );
+ InitHandlerFunc( HdlrFunc28, "GAPROOT/lib/type1.g:HdlrFunc28(-41210758)" );
+ InitGlobalBag( &(NameFunc[28]), "GAPROOT/lib/type1.g:NameFunc[28](-41210758)" );
+ InitHandlerFunc( HdlrFunc29, "GAPROOT/lib/type1.g:HdlrFunc29(-41210758)" );
+ InitGlobalBag( &(NameFunc[29]), "GAPROOT/lib/type1.g:NameFunc[29](-41210758)" );
+ InitHandlerFunc( HdlrFunc30, "GAPROOT/lib/type1.g:HdlrFunc30(-41210758)" );
+ InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/type1.g:NameFunc[30](-41210758)" );
+ InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/type1.g:HdlrFunc31(-41210758)" );
+ InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/type1.g:NameFunc[31](-41210758)" );
+ InitHandlerFunc( HdlrFunc32, "GAPROOT/lib/type1.g:HdlrFunc32(-41210758)" );
+ InitGlobalBag( &(NameFunc[32]), "GAPROOT/lib/type1.g:NameFunc[32](-41210758)" );
+ InitHandlerFunc( HdlrFunc33, "GAPROOT/lib/type1.g:HdlrFunc33(-41210758)" );
+ InitGlobalBag( &(NameFunc[33]), "GAPROOT/lib/type1.g:NameFunc[33](-41210758)" );
+ InitHandlerFunc( HdlrFunc34, "GAPROOT/lib/type1.g:HdlrFunc34(-41210758)" );
+ InitGlobalBag( &(NameFunc[34]), "GAPROOT/lib/type1.g:NameFunc[34](-41210758)" );
+ InitHandlerFunc( HdlrFunc35, "GAPROOT/lib/type1.g:HdlrFunc35(-41210758)" );
+ InitGlobalBag( &(NameFunc[35]), "GAPROOT/lib/type1.g:NameFunc[35](-41210758)" );
+ InitHandlerFunc( HdlrFunc36, "GAPROOT/lib/type1.g:HdlrFunc36(-41210758)" );
+ InitGlobalBag( &(NameFunc[36]), "GAPROOT/lib/type1.g:NameFunc[36](-41210758)" );
+ InitHandlerFunc( HdlrFunc37, "GAPROOT/lib/type1.g:HdlrFunc37(-41210758)" );
+ InitGlobalBag( &(NameFunc[37]), "GAPROOT/lib/type1.g:NameFunc[37](-41210758)" );
  
  /* return success */
  return 0;
@@ -5199,7 +5183,7 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* information for the functions */
  C_NEW_STRING( DefaultName, 14, "local function" )
- C_NEW_STRING( FileName, 11, "lib/type1.g" )
+ C_NEW_STRING( FileName, 19, "GAPROOT/lib/type1.g" )
  NameFunc[1] = DefaultName;
  NamsFunc[1] = 0;
  NargFunc[1] = 0;
@@ -5570,11 +5554,11 @@ static Int PostRestore ( StructInitInfo * module )
 /* <name> returns the description of this module */
 static StructInitInfo module = {
  /* type        = */ 2,
- /* name        = */ "lib/type1.g",
+ /* name        = */ "GAPROOT/lib/type1.g",
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -99564075,
+ /* crc         = */ -41210758,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

@@ -2,8 +2,8 @@ z:=0;
 
 f:=function() 
 local l,k,t; 
-l:=SHARED_LIST(); 
-k:=SHARED_LIST();
+l:=SHARE([]); 
+k:=SHARE([]);
 t:=LOCK(k);
 k[1]:=1;
 atomic readwrite l do
@@ -25,7 +25,7 @@ z;
 
 f:=function()
 local l, threads, i;
-l:=SHARED_LIST(); 
+l:=SHARE([]); 
 threads:=List( [1..10], i -> 
  CreateThread( function(i) atomic readwrite l do l[i]:=CurrentThread(); od; end, i ) );
 Perform( threads, WaitThread );
@@ -42,7 +42,7 @@ WaitThread(t);
 
 f:=function()
 local l, threads, i;
-l:=SHARED_LIST(); 
+l:=SHARE([]); 
 atomic readwrite l do
    for i in [1..10] do
       l[i]:=i;
@@ -65,7 +65,7 @@ WaitThread(t);
 
 Parmap:=function( nr, nrthreads )
 local l, map, threads, i;
-l:=SHARED_LIST(); 
+l:=SHARE([]); 
 atomic readwrite l do
    for i in [1..nr] do
      l[i]:=i;
@@ -107,13 +107,13 @@ z:=0; # global variable to store the result
 
 ParSumMat:=function( nr, nrthreads )
 local l, row, map, threads, i, j, s;
-l:=SHARED_LIST(); # matrix
-s:=SHARED_LIST(); # list of sums over rows
+l:=SHARE([]); # matrix
+s:=SHARE([]); # list of sums over rows
 # populate square matrix nr x nr with numbers from [ 1.. nr^2 ] );
 atomic readwrite l do
   for i in [1..nr] do
     # this will be changed when we will have full recursive support
-    row:=SHARED_LIST(); # create row
+    row:=SHARE([]); # create row
     atomic readonly row do
       l[i]:=row;
     od;

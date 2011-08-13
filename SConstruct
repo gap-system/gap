@@ -108,9 +108,17 @@ elif GAP["gmp"] == "yes":
 else:
   compile_gmp = False
   libs.remove("gmp")
-conf.Finish()
 if GAP["profile"]:
   libs.append("profiler")
+
+have__setjmp = 0
+have_sigsetjmp = 0
+
+if conf.CheckFunc("sigsetjmp"):
+  have_sigsetjmp = 1
+elif conf.CheckFunc("_setjmp"):
+  have__setjmp = 1
+conf.Finish()
 
 # Construct command line options
 
@@ -126,6 +134,10 @@ else:
   cflags += " -DDISABLE_GC"
 if "gmp" in libs:
   cflags += " -DUSE_GMP"
+if have_sigsetjmp:
+  cflags += " -DHAVE_SIGSETJMP=1"
+if have__setjmp:
+  cflags += " -DHAVE__SETJMP=1"
 
 if GAP["cflags"]:
   cflags += " " + string.replace(GAP["cflags"], "%", " ")
