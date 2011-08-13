@@ -638,20 +638,24 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
           Error( "operation `", name,
                  "' was created as an attribute, use`DeclareAttribute'" );
 
-        elif    INFO_FILTERS[ pos ] in FNUM_TPRS
-             or INFO_FILTERS[ pos ] in FNUM_ATTS then
-
-          # `gvar' is an attribute tester or property tester.
-          Error( "operation `", name,
-                 "' is an attribute tester or property tester" );
-
         else
+	  atomic readonly FILTER_REGION do
+	    if    INFO_FILTERS[ pos ] in FNUM_TPRS
+		 or INFO_FILTERS[ pos ] in FNUM_ATTS then
 
-          # `gvar' is a property.
-          Error( "operation `", name,
-                 "' was created as a property, use`DeclareProperty'" );
+	      # `gvar' is an attribute tester or property tester.
+	      Error( "operation `", name,
+		     "' is an attribute tester or property tester" );
 
-        fi;
+	    else
+
+	      # `gvar' is a property.
+	      Error( "operation `", name,
+		     "' was created as a property, use`DeclareProperty'" );
+
+	    fi;
+	  od;
+	fi;
 
       fi;
 
@@ -888,7 +892,9 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     # store the information about the filter
     FILTERS[ FLAG2_FILTER( tester ) ] := tester;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
-    INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
+    atomic FILTER_REGION do
+        INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
+    od;
 
     # clear the cache because <filter> is something old
     InstallHiddenTrueMethod( filter, tester );
@@ -898,7 +904,9 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
     # store the ranks
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+    atomic FILTER_REGION do
+        RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+    od;
 
     # and make the remaining assignments
     nname:= "Set"; APPEND_LIST_INTR( nname, name );
@@ -987,7 +995,9 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     fi;
 
     # store the information about the filter
-    INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
+    atomic FILTER_REGION do
+        INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
+    od;
 
     # add getter, setter and tester to the list of operations
     setter := SETTER_FILTER( getter );
@@ -1013,11 +1023,13 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
 
     # store the rank
-    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-        RANK_FILTERS[ FLAG2_FILTER( tester ) ] := arg[3];
-    else
-        RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
-    fi;
+    atomic FILTER_REGION do
+	if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+	    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := arg[3];
+	else
+	    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+	fi;
+    od;
 
     # and return the getter
     return getter;
@@ -1159,8 +1171,10 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
     FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
-    INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
-    INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
+    atomic FILTER_REGION do
+	INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
+	INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
+    od;
 
     # clear the cache because <filter> is something old
     InstallHiddenTrueMethod( tester, getter );
@@ -1172,8 +1186,10 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
     # store the ranks
-    RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
-    RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
+    atomic FILTER_REGION do
+	RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
+	RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
+    od;
 
     # and make the remaining assignments
     nname:= "Set"; APPEND_LIST_INTR( nname, name );
@@ -1237,8 +1253,10 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     FILTERS[ FLAG1_FILTER( getter ) ] := getter;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
     FILTERS[ FLAG2_FILTER( getter ) ] := tester;
-    INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
-    INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
+    atomic FILTER_REGION do
+	INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
+	INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
+    od;
 
     # the <tester> and  <getter> are newly  made, therefore the cache cannot
     # contain a flag list involving <tester> or <getter>
@@ -1250,12 +1268,14 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
     # store the rank
-    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
-    else
-        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
-    fi;
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
+    atomic FILTER_REGION do
+      if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+	  RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
+      else
+	  RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
+      fi;
+      RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
+    od;
 
     # and return the getter
     return getter;

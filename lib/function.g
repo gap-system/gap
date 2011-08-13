@@ -451,7 +451,9 @@ BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
     elif IsFilter(op) then
         class := "Filter";
         flags := TRUES_FLAGS(FLAGS_FILTER(op));
-        types := INFO_FILTERS{flags};
+	atomic readonly FILTER_REGION do
+            types := INFO_FILTERS{flags};
+	od;
         catok := true;
         repok := true;
         propok := true;

@@ -259,14 +259,13 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
         cache[hash] := type;
     fi;
     family!.nTYPES := family!.nTYPES + 1;
+    if ThreadVar.NEW_TYPE_READONLY then
+        MakeReadOnlyObj(type);
+    fi;
     UNLOCK(LOCK()-1);
 
     # return the type
-    if ThreadVar.NEW_TYPE_READONLY then
-        return MakeReadOnlyObj(type);
-    else
-        return type;
-    fi;
+    return type;
 end );
 
 

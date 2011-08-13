@@ -203,7 +203,10 @@ IS_READ_OR_COMPLETE := false;
 
 READED_FILES := [];
 
-RANK_FILTER_LIST         := [];
+FILTER_REGION	 	 := SHARE("FILTER_REGION");
+atomic FILTER_REGION do
+  RANK_FILTER_LIST         := MIGRATE([], FILTER_REGION);
+od;
 RANK_FILTER_LIST_CURRENT := fail;
 RANK_FILTER_COUNT        := fail;
 
@@ -313,13 +316,15 @@ end;
 READ_CHANGED_GAP_ROOT := function( name )
     local   rankFilter;
 
-    rankFilter := RankFilter;
-    RankFilter := RANK_FILTER;
-    Print( "#W  inconsistent completion for \"", name, "\"\n" );
-    if not READ_GAP_ROOT(name)  then
-        Error( "cannot read file ", name );
-    fi;
-    RankFilter := rankFilter;
+    atomic FILTER_REGION do
+	rankFilter := RankFilter;
+	RankFilter := RANK_FILTER;
+	Print( "#W  inconsistent completion for \"", name, "\"\n" );
+	if not READ_GAP_ROOT(name)  then
+	    Error( "cannot read file ", name );
+	fi;
+	RankFilter := rankFilter;
+    od;
 end;
 
 
@@ -419,25 +424,27 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
 
         # we are completing, store the filename and filter ranks
         if IS_READ_OR_COMPLETE  then
-            ADD_LIST( READED_FILES, libname );
-            if IsBound(RANK_FILTER_LIST_CURRENT) then
-                rflc := RANK_FILTER_LIST_CURRENT;
-            fi;
-            if IsBound(RANK_FILTER_COUNT) then
-                rfc := RANK_FILTER_COUNT;
-            fi;
-            RANK_FILTER_LIST_CURRENT := [];
-            RANK_FILTER_COUNT := 0;
-            ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
-            error:=not READ_GAP_ROOT(libname);
-            Unbind(RANK_FILTER_LIST_CURRENT);
-            if IsBound(rflc) then
-                RANK_FILTER_LIST_CURRENT := rflc;
-            fi;
-            Unbind(RANK_FILTER_COUNT);
-            if IsBound(rfc) then
-                RANK_FILTER_COUNT := rfc;
-            fi;
+	    atomic FILTER_REGION do
+		ADD_LIST( READED_FILES, libname );
+		if IsBound(RANK_FILTER_LIST_CURRENT) then
+		    rflc := RANK_FILTER_LIST_CURRENT;
+		fi;
+		if IsBound(RANK_FILTER_COUNT) then
+		    rfc := RANK_FILTER_COUNT;
+		fi;
+		RANK_FILTER_LIST_CURRENT := [];
+		RANK_FILTER_COUNT := 0;
+		ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
+		error:=not READ_GAP_ROOT(libname);
+		Unbind(RANK_FILTER_LIST_CURRENT);
+		if IsBound(rflc) then
+		    RANK_FILTER_LIST_CURRENT := rflc;
+		fi;
+		Unbind(RANK_FILTER_COUNT);
+		if IsBound(rfc) then
+		    RANK_FILTER_COUNT := rfc;
+		fi;
+	    od;
         else
             error:=not READ_GAP_ROOT(libname);
         fi;
@@ -768,10 +775,20 @@ ReadOrComplete( "lib/read4.g" );
 ReadLib( "helpview.gi"  );
 
 #T  1996/09/01 M.Schönert this helps performance
-IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
+ORIGINAL_IMPS := IMPLICATIONS;
+atomic ORIGINAL_IMPS do
+    IMPLICATIONS :=
+      IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
+    MigrateSingleObj(IMPLICATIONS, ORIGINAL_IMPS);
+    TypeObj(IMPLICATIONS[1]);
+od;
 # allow type determination of IMPLICATIONS without using it
-TypeObj(IMPLICATIONS[1]);
-HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
+ORIGINAL_IMPS := HIDDEN_IMPS;
+atomic ORIGINAL_IMPS do
+    HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
+    MigrateSingleObj(HIDDEN_IMPS, ORIGINAL_IMPS);
+od;
+UNBIND_GLOBAL("ORIGINAL_IMPS");
 #T shouldn't this better be at the end of reading the library?
 #T and what about implications installed in packages?
 #T (put later installations to the front?)

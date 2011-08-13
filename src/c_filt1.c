@@ -1,4 +1,3 @@
-#ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "src/compiled.h"
 
@@ -23,12 +22,20 @@ static GVar G_FLAGS__FILTER;
 static Obj  GF_FLAGS__FILTER;
 static GVar G_LEN__LIST;
 static Obj  GF_LEN__LIST;
+static GVar G_LOCK;
+static Obj  GF_LOCK;
+static GVar G_UNLOCK;
+static Obj  GF_UNLOCK;
 static GVar G_Revision;
 static Obj  GC_Revision;
 static GVar G_HIDDEN__IMPS;
 static Obj  GC_HIDDEN__IMPS;
+static GVar G_ShareObj;
+static Obj  GF_ShareObj;
 static GVar G_WITH__HIDDEN__IMPS__FLAGS__CACHE;
 static Obj  GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
+static GVar G_LockAndMigrateObj;
+static Obj  GF_LockAndMigrateObj;
 static GVar G_WITH__HIDDEN__IMPS__FLAGS__COUNT;
 static GVar G_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS;
 static Obj  GC_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS;
@@ -48,8 +55,12 @@ static Obj  GC_WITH__IMPS__FLAGS__CACHE__HIT;
 static GVar G_WITH__IMPS__FLAGS__CACHE__MISS;
 static Obj  GC_WITH__IMPS__FLAGS__CACHE__MISS;
 static GVar G_CLEAR__IMP__CACHE;
+static GVar G_MigrateObj;
+static Obj  GF_MigrateObj;
 static GVar G_UNBIND__GLOBAL;
 static Obj  GF_UNBIND__GLOBAL;
+static GVar G_FILTER__REGION;
+static Obj  GC_FILTER__REGION;
 static GVar G_WITH__HIDDEN__IMPS__FLAGS;
 static Obj  GF_WITH__HIDDEN__IMPS__FLAGS;
 static GVar G_RANK__FILTERS;
@@ -82,6 +93,7 @@ static Obj  HdlrFunc2 (
 {
  Obj l_i = 0;
  Obj l_flags = 0;
+ Obj l_lock = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -105,6 +117,14 @@ static Obj  HdlrFunc2 (
  t_1 = CALL_1ARGS( t_2, a_filter );
  CHECK_FUNC_RESULT( t_1 )
  l_flags = t_1;
+ 
+ /* lock := LOCK( HIDDEN_IMPS ); */
+ t_2 = GF_LOCK;
+ t_3 = GC_HIDDEN__IMPS;
+ CHECK_BOUND( t_3, "HIDDEN_IMPS" )
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
+ l_lock = t_1;
  
  /* for i in [ 1, 3 .. LEN_LIST( WITH_HIDDEN_IMPS_FLAGS_CACHE ) - 1 ] do */
  t_7 = GF_LEN__LIST;
@@ -177,6 +197,10 @@ static Obj  HdlrFunc2 (
  }
  /* od */
  
+ /* UNLOCK( lock ); */
+ t_1 = GF_UNLOCK;
+ CALL_1ARGS( t_1, l_lock );
+ 
  /* return; */
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -197,6 +221,7 @@ static Obj  HdlrFunc3 (
  Obj l_changed = 0;
  Obj l_imp = 0;
  Obj l_hash = 0;
+ Obj l_lock = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -225,6 +250,14 @@ static Obj  HdlrFunc3 (
  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  l_hash = t_1;
  
+ /* lock := LOCK( HIDDEN_IMPS ); */
+ t_2 = GF_LOCK;
+ t_3 = GC_HIDDEN__IMPS;
+ CHECK_BOUND( t_3, "HIDDEN_IMPS" )
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
+ l_lock = t_1;
+ 
  /* if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[hash] ) then */
  t_3 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
  CHECK_BOUND( t_3, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
@@ -250,15 +283,22 @@ static Obj  HdlrFunc3 (
    C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
    AssGVar( G_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT, t_1 );
    
-   /* return WITH_HIDDEN_IMPS_FLAGS_CACHE[hash + 1]; */
+   /* with := WITH_HIDDEN_IMPS_FLAGS_CACHE[hash + 1]; */
    t_2 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
    CHECK_BOUND( t_2, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
    C_SUM_FIA( t_3, l_hash, INTOBJ_INT(1) )
    CHECK_INT_POS( t_3 )
    C_ELM_LIST_FPL( t_1, t_2, t_3 )
+   l_with = t_1;
+   
+   /* UNLOCK( lock ); */
+   t_1 = GF_UNLOCK;
+   CALL_1ARGS( t_1, l_lock );
+   
+   /* return with; */
    RES_BRK_CURR_STAT();
    SWITCH_TO_OLD_FRAME(oldFrame);
-   return t_1;
+   return l_with;
    
   }
   /* fi */
@@ -364,6 +404,10 @@ static Obj  HdlrFunc3 (
  CHECK_INT_POS( t_2 )
  C_ASS_LIST_FPL( t_1, t_2, l_with )
  
+ /* UNLOCK( lock ); */
+ t_1 = GF_UNLOCK;
+ CALL_1ARGS( t_1, l_lock );
+ 
  /* return with; */
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -379,7 +423,11 @@ static Obj  HdlrFunc3 (
 static Obj  HdlrFunc4 (
  Obj  self )
 {
+ Obj l_lock = 0;
  Obj t_1 = 0;
+ Obj t_2 = 0;
+ Obj t_3 = 0;
+ Obj t_4 = 0;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -388,10 +436,27 @@ static Obj  HdlrFunc4 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* WITH_IMPS_FLAGS_CACHE := [  ]; */
- t_1 = NEW_PLIST( T_PLIST, 0 );
- SET_LEN_PLIST( t_1, 0 );
+ /* lock := LOCK( IMPLICATIONS ); */
+ t_2 = GF_LOCK;
+ t_3 = GC_IMPLICATIONS;
+ CHECK_BOUND( t_3, "IMPLICATIONS" )
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
+ l_lock = t_1;
+ 
+ /* WITH_IMPS_FLAGS_CACHE := MigrateObj( [  ], IMPLICATIONS ); */
+ t_2 = GF_MigrateObj;
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ t_4 = GC_IMPLICATIONS;
+ CHECK_BOUND( t_4, "IMPLICATIONS" )
+ t_1 = CALL_2ARGS( t_2, t_3, t_4 );
+ CHECK_FUNC_RESULT( t_1 )
  AssGVar( G_WITH__IMPS__FLAGS__CACHE, t_1 );
+ 
+ /* UNLOCK( lock ); */
+ t_1 = GF_UNLOCK;
+ CALL_1ARGS( t_1, l_lock );
  
  /* return; */
  RES_BRK_CURR_STAT();
@@ -415,6 +480,7 @@ static Obj  HdlrFunc5 (
  Obj l_hash = 0;
  Obj l_hash2 = 0;
  Obj l_i = 0;
+ Obj l_lock = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -440,6 +506,14 @@ static Obj  HdlrFunc5 (
  CHECK_FUNC_RESULT( t_2 )
  t_1 = MOD( t_2, INTOBJ_INT(11001) );
  l_hash = t_1;
+ 
+ /* lock := LOCK( IMPLICATIONS ); */
+ t_2 = GF_LOCK;
+ t_3 = GC_IMPLICATIONS;
+ CHECK_BOUND( t_3, "IMPLICATIONS" )
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
+ l_lock = t_1;
  
  /* for i in [ 0 .. 3 ] do */
  for ( t_1 = INTOBJ_INT(0);
@@ -480,15 +554,22 @@ static Obj  HdlrFunc5 (
     C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
     AssGVar( G_WITH__IMPS__FLAGS__CACHE__HIT, t_2 );
     
-    /* return WITH_IMPS_FLAGS_CACHE[hash2 + 1]; */
+    /* with := WITH_IMPS_FLAGS_CACHE[hash2 + 1]; */
     t_3 = GC_WITH__IMPS__FLAGS__CACHE;
     CHECK_BOUND( t_3, "WITH_IMPS_FLAGS_CACHE" )
     C_SUM_FIA( t_4, l_hash2, INTOBJ_INT(1) )
     CHECK_INT_POS( t_4 )
     C_ELM_LIST_FPL( t_2, t_3, t_4 )
+    l_with = t_2;
+    
+    /* UNLOCK( lock ); */
+    t_2 = GF_UNLOCK;
+    CALL_1ARGS( t_2, l_lock );
+    
+    /* return with; */
     RES_BRK_CURR_STAT();
     SWITCH_TO_OLD_FRAME(oldFrame);
-    return t_2;
+    return l_with;
     
    }
    /* fi */
@@ -633,6 +714,10 @@ static Obj  HdlrFunc5 (
  CHECK_INT_POS( t_2 )
  C_ASS_LIST_FPL( t_1, t_2, l_with )
  
+ /* UNLOCK( lock ); */
+ t_1 = GF_UNLOCK;
+ CALL_1ARGS( t_1, l_lock );
+ 
  /* return with; */
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -652,6 +737,7 @@ static Obj  HdlrFunc6 (
  Obj l_rank = 0;
  Obj l_flags = 0;
  Obj l_i = 0;
+ Obj l_lock = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -694,6 +780,14 @@ static Obj  HdlrFunc6 (
   
  }
  /* fi */
+ 
+ /* lock := LOCK( FILTER_REGION ); */
+ t_2 = GF_LOCK;
+ t_3 = GC_FILTER__REGION;
+ CHECK_BOUND( t_3, "FILTER_REGION" )
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
+ l_lock = t_1;
  
  /* for i in TRUES_FLAGS( WITH_HIDDEN_IMPS_FLAGS( flags ) ) do */
  t_5 = GF_TRUES__FLAGS;
@@ -753,6 +847,10 @@ static Obj  HdlrFunc6 (
  }
  /* od */
  
+ /* UNLOCK( lock ); */
+ t_1 = GF_UNLOCK;
+ CALL_1ARGS( t_1, l_lock );
+ 
  /* return rank; */
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -772,6 +870,7 @@ static Obj  HdlrFunc7 (
  Obj l_hash = 0;
  Obj l_rank = 0;
  Obj l_flags = 0;
+ Obj l_lock = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -814,6 +913,14 @@ static Obj  HdlrFunc7 (
  CHECK_FUNC_RESULT( t_1 )
  l_hash = t_1;
  
+ /* lock := LOCK( FILTER_REGION ); */
+ t_2 = GF_LOCK;
+ t_3 = GC_FILTER__REGION;
+ CHECK_BOUND( t_3, "FILTER_REGION" )
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
+ l_lock = t_1;
+ 
  /* rank := RANK_FILTER( flags ); */
  t_2 = GF_RANK__FILTER;
  t_1 = CALL_1ARGS( t_2, l_flags );
@@ -831,6 +938,10 @@ static Obj  HdlrFunc7 (
  t_2 = GC_RANK__FILTER__LIST__CURRENT;
  CHECK_BOUND( t_2, "RANK_FILTER_LIST_CURRENT" )
  CALL_2ARGS( t_1, t_2, l_rank );
+ 
+ /* UNLOCK( lock ); */
+ t_1 = GF_UNLOCK;
+ CALL_1ARGS( t_1, l_lock );
  
  /* return rank; */
  RES_BRK_CURR_STAT();
@@ -850,6 +961,8 @@ static Obj  HdlrFunc8 (
 {
  Obj l_hash = 0;
  Obj l_flags = 0;
+ Obj l_lock = 0;
+ Obj l_result = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -893,6 +1006,14 @@ static Obj  HdlrFunc8 (
  CHECK_FUNC_RESULT( t_1 )
  l_hash = t_1;
  
+ /* lock := LOCK( FILTER_REGION ); */
+ t_2 = GF_LOCK;
+ t_3 = GC_FILTER__REGION;
+ CHECK_BOUND( t_3, "FILTER_REGION" )
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
+ l_lock = t_1;
+ 
  /* if hash <> RANK_FILTER_LIST[RANK_FILTER_COUNT] then */
  t_3 = GC_RANK__FILTER__LIST;
  CHECK_BOUND( t_3, "RANK_FILTER_LIST" )
@@ -902,6 +1023,10 @@ static Obj  HdlrFunc8 (
  C_ELM_LIST_FPL( t_2, t_3, t_4 )
  t_1 = (Obj)(UInt)( ! EQ( l_hash, t_2 ));
  if ( t_1 ) {
+  
+  /* UNLOCK( lock ); */
+  t_1 = GF_UNLOCK;
+  CALL_1ARGS( t_1, l_lock );
   
   /* Error( "corrupted completion file" ); */
   t_1 = GF_Error;
@@ -917,7 +1042,7 @@ static Obj  HdlrFunc8 (
  C_SUM_FIA( t_1, t_2, INTOBJ_INT(2) )
  AssGVar( G_RANK__FILTER__COUNT, t_1 );
  
- /* return RANK_FILTER_LIST[RANK_FILTER_COUNT - 1]; */
+ /* result := RANK_FILTER_LIST[RANK_FILTER_COUNT - 1]; */
  t_2 = GC_RANK__FILTER__LIST;
  CHECK_BOUND( t_2, "RANK_FILTER_LIST" )
  t_4 = GC_RANK__FILTER__COUNT;
@@ -925,9 +1050,16 @@ static Obj  HdlrFunc8 (
  C_DIFF_FIA( t_3, t_4, INTOBJ_INT(1) )
  CHECK_INT_POS( t_3 )
  C_ELM_LIST_FPL( t_1, t_2, t_3 )
+ l_result = t_1;
+ 
+ /* UNLOCK( lock ); */
+ t_1 = GF_UNLOCK;
+ CALL_1ARGS( t_1, l_lock );
+ 
+ /* return result; */
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
- return t_1;
+ return l_result;
  
  /* return; */
  RES_BRK_CURR_STAT();
@@ -951,20 +1083,28 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.filter1_g := "@(#)$Id: c_filt1.c,v 4.27 2011/01/20 14:21:51 jjm Exp $"; */
+ /* Revision.filter1_g := "@(#)$Id: filter1.g,v 4.3 2010/02/23 15:12:59 gap Exp $"; */
  t_1 = GC_Revision;
  CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 54, "@(#)$Id: c_filt1.c,v 4.27 2011/01/20 14:21:51 jjm Exp $" )
+ C_NEW_STRING( t_2, 54, "@(#)$Id: filter1.g,v 4.3 2010/02/23 15:12:59 gap Exp $" )
  ASS_REC( t_1, R_filter1__g, t_2 );
  
- /* HIDDEN_IMPS := [  ]; */
- t_1 = NEW_PLIST( T_PLIST, 0 );
- SET_LEN_PLIST( t_1, 0 );
+ /* HIDDEN_IMPS := ShareObj( [  ] ); */
+ t_2 = GF_ShareObj;
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
  AssGVar( G_HIDDEN__IMPS, t_1 );
  
- /* WITH_HIDDEN_IMPS_FLAGS_CACHE := [  ]; */
- t_1 = NEW_PLIST( T_PLIST, 0 );
- SET_LEN_PLIST( t_1, 0 );
+ /* WITH_HIDDEN_IMPS_FLAGS_CACHE := LockAndMigrateObj( [  ], HIDDEN_IMPS ); */
+ t_2 = GF_LockAndMigrateObj;
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ t_4 = GC_HIDDEN__IMPS;
+ CHECK_BOUND( t_4, "HIDDEN_IMPS" )
+ t_1 = CALL_2ARGS( t_2, t_3, t_4 );
+ CHECK_FUNC_RESULT( t_1 )
  AssGVar( G_WITH__HIDDEN__IMPS__FLAGS__CACHE, t_1 );
  
  /* WITH_HIDDEN_IMPS_FLAGS_COUNT := 0; */
@@ -980,8 +1120,9 @@ static Obj  HdlrFunc1 (
  AssGVar( G_CLEAR__HIDDEN__IMP__CACHE, 0 );
  
  /* BIND_GLOBAL( "CLEAR_HIDDEN_IMP_CACHE", function ( filter )
-      local  i, flags;
+      local  i, flags, lock;
       flags := FLAGS_FILTER( filter );
+      lock := LOCK( HIDDEN_IMPS );
       for i  in [ 1, 3 .. LEN_LIST( WITH_HIDDEN_IMPS_FLAGS_CACHE ) - 1 ]  do
           if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[i] )  then
               if IS_SUBSET_FLAGS( WITH_HIDDEN_IMPS_FLAGS_CACHE[i + 1], flags )  then
@@ -990,6 +1131,7 @@ static Obj  HdlrFunc1 (
               fi;
           fi;
       od;
+      UNLOCK( lock );
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
@@ -998,19 +1140,22 @@ static Obj  HdlrFunc1 (
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
  STARTLINE_BODY(t_4) = INTOBJ_INT(29);
- ENDLINE_BODY(t_4) = INTOBJ_INT(41);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(43);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "WITH_HIDDEN_IMPS_FLAGS", function ( flags )
-      local  with, changed, imp, hash;
+      local  with, changed, imp, hash, lock;
       hash := 2 * (HASH_FLAGS( flags ) mod 1009) + 1;
+      lock := LOCK( HIDDEN_IMPS );
       if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[hash] )  then
           if IS_IDENTICAL_OBJ( WITH_HIDDEN_IMPS_FLAGS_CACHE[hash], flags )  then
               WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT := WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT + 1;
-              return WITH_HIDDEN_IMPS_FLAGS_CACHE[hash + 1];
+              with := WITH_HIDDEN_IMPS_FLAGS_CACHE[hash + 1];
+              UNLOCK( lock );
+              return with;
           fi;
       fi;
       WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS + 1;
@@ -1027,6 +1172,7 @@ static Obj  HdlrFunc1 (
       od;
       WITH_HIDDEN_IMPS_FLAGS_CACHE[hash] := flags;
       WITH_HIDDEN_IMPS_FLAGS_CACHE[hash + 1] := with;
+      UNLOCK( lock );
       return with;
   end ); */
  t_1 = GF_BIND__GLOBAL;
@@ -1034,21 +1180,29 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(44);
- ENDLINE_BODY(t_4) = INTOBJ_INT(74);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(46);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(80);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* IMPLICATIONS := [  ]; */
- t_1 = NEW_PLIST( T_PLIST, 0 );
- SET_LEN_PLIST( t_1, 0 );
+ /* IMPLICATIONS := ShareObj( [  ] ); */
+ t_2 = GF_ShareObj;
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ t_1 = CALL_1ARGS( t_2, t_3 );
+ CHECK_FUNC_RESULT( t_1 )
  AssGVar( G_IMPLICATIONS, t_1 );
  
- /* WITH_IMPS_FLAGS_CACHE := [  ]; */
- t_1 = NEW_PLIST( T_PLIST, 0 );
- SET_LEN_PLIST( t_1, 0 );
+ /* WITH_IMPS_FLAGS_CACHE := LockAndMigrateObj( [  ], IMPLICATIONS ); */
+ t_2 = GF_LockAndMigrateObj;
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ t_4 = GC_IMPLICATIONS;
+ CHECK_BOUND( t_4, "IMPLICATIONS" )
+ t_1 = CALL_2ARGS( t_2, t_3, t_4 );
+ CHECK_FUNC_RESULT( t_1 )
  AssGVar( G_WITH__IMPS__FLAGS__CACHE, t_1 );
  
  /* WITH_IMPS_FLAGS_COUNT := 0; */
@@ -1064,7 +1218,10 @@ static Obj  HdlrFunc1 (
  AssGVar( G_CLEAR__IMP__CACHE, 0 );
  
  /* BIND_GLOBAL( "CLEAR_IMP_CACHE", function (  )
-      WITH_IMPS_FLAGS_CACHE := [  ];
+      local  lock;
+      lock := LOCK( IMPLICATIONS );
+      WITH_IMPS_FLAGS_CACHE := MigrateObj( [  ], IMPLICATIONS );
+      UNLOCK( lock );
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
@@ -1072,22 +1229,25 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(89);
- ENDLINE_BODY(t_4) = INTOBJ_INT(91);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(95);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(100);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "WITH_IMPS_FLAGS", function ( flags )
-      local  with, changed, imp, hash, hash2, i;
+      local  with, changed, imp, hash, hash2, i, lock;
       hash := HASH_FLAGS( flags ) mod 11001;
+      lock := LOCK( IMPLICATIONS );
       for i  in [ 0 .. 3 ]  do
           hash2 := 2 * ((hash + 31 * i) mod 11001) + 1;
           if IsBound( WITH_IMPS_FLAGS_CACHE[hash2] )  then
               if IS_IDENTICAL_OBJ( WITH_IMPS_FLAGS_CACHE[hash2], flags )  then
                   WITH_IMPS_FLAGS_CACHE_HIT := WITH_IMPS_FLAGS_CACHE_HIT + 1;
-                  return WITH_IMPS_FLAGS_CACHE[hash2 + 1];
+                  with := WITH_IMPS_FLAGS_CACHE[hash2 + 1];
+                  UNLOCK( lock );
+                  return with;
               fi;
           else
               break;
@@ -1112,6 +1272,7 @@ static Obj  HdlrFunc1 (
       od;
       WITH_IMPS_FLAGS_CACHE[hash2] := flags;
       WITH_IMPS_FLAGS_CACHE[hash2 + 1] := with;
+      UNLOCK( lock );
       return with;
   end ); */
  t_1 = GF_BIND__GLOBAL;
@@ -1119,8 +1280,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(94);
- ENDLINE_BODY(t_4) = INTOBJ_INT(133);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(103);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(146);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -1132,13 +1293,14 @@ static Obj  HdlrFunc1 (
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "RANK_FILTER", function ( filter )
-      local  rank, flags, i;
+      local  rank, flags, i, lock;
       rank := 0;
       if IS_FUNCTION( filter )  then
           flags := FLAGS_FILTER( filter );
       else
           flags := filter;
       fi;
+      lock := LOCK( FILTER_REGION );
       for i  in TRUES_FLAGS( WITH_HIDDEN_IMPS_FLAGS( flags ) )  do
           if IsBound( RANK_FILTERS[i] )  then
               rank := rank + RANK_FILTERS[i];
@@ -1146,6 +1308,7 @@ static Obj  HdlrFunc1 (
               rank := rank + 1;
           fi;
       od;
+      UNLOCK( lock );
       return rank;
   end ); */
  t_1 = GF_BIND__GLOBAL;
@@ -1153,8 +1316,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(147);
- ENDLINE_BODY(t_4) = INTOBJ_INT(164);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(160);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(179);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -1171,16 +1334,18 @@ static Obj  HdlrFunc1 (
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "RANK_FILTER_STORE", function ( filter )
-      local  hash, rank, flags;
+      local  hash, rank, flags, lock;
       if IS_FUNCTION( filter )  then
           flags := FLAGS_FILTER( filter );
       else
           flags := filter;
       fi;
       hash := HASH_FLAGS( flags );
+      lock := LOCK( FILTER_REGION );
       rank := RANK_FILTER( flags );
       ADD_LIST( RANK_FILTER_LIST_CURRENT, hash );
       ADD_LIST( RANK_FILTER_LIST_CURRENT, rank );
+      UNLOCK( lock );
       return rank;
   end ); */
  t_1 = GF_BIND__GLOBAL;
@@ -1188,8 +1353,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(169);
- ENDLINE_BODY(t_4) = INTOBJ_INT(183);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(184);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(200);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -1201,26 +1366,30 @@ static Obj  HdlrFunc1 (
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "RANK_FILTER_COMPLETION", function ( filter )
-      local  hash, flags;
+      local  hash, flags, lock, result;
       if IS_FUNCTION( filter )  then
           flags := FLAGS_FILTER( filter );
       else
           flags := filter;
       fi;
       hash := HASH_FLAGS( flags );
+      lock := LOCK( FILTER_REGION );
       if hash <> RANK_FILTER_LIST[RANK_FILTER_COUNT]  then
+          UNLOCK( lock );
           Error( "corrupted completion file" );
       fi;
       RANK_FILTER_COUNT := RANK_FILTER_COUNT + 2;
-      return RANK_FILTER_LIST[RANK_FILTER_COUNT - 1];
+      result := RANK_FILTER_LIST[RANK_FILTER_COUNT - 1];
+      UNLOCK( lock );
+      return result;
   end ); */
  t_1 = GF_BIND__GLOBAL;
  C_NEW_STRING( t_2, 22, "RANK_FILTER_COMPLETION" )
  t_3 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
  ENVI_FUNC( t_3 ) = TLS->currLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(186);
- ENDLINE_BODY(t_4) = INTOBJ_INT(201);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(203);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(222);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( TLS->currLVars );
@@ -1252,9 +1421,13 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "TRUES_FLAGS", &GF_TRUES__FLAGS );
  InitFopyGVar( "FLAGS_FILTER", &GF_FLAGS__FILTER );
  InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
+ InitFopyGVar( "LOCK", &GF_LOCK );
+ InitFopyGVar( "UNLOCK", &GF_UNLOCK );
  InitCopyGVar( "Revision", &GC_Revision );
  InitCopyGVar( "HIDDEN_IMPS", &GC_HIDDEN__IMPS );
+ InitFopyGVar( "ShareObj", &GF_ShareObj );
  InitCopyGVar( "WITH_HIDDEN_IMPS_FLAGS_CACHE", &GC_WITH__HIDDEN__IMPS__FLAGS__CACHE );
+ InitFopyGVar( "LockAndMigrateObj", &GF_LockAndMigrateObj );
  InitCopyGVar( "WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS", &GC_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS );
  InitCopyGVar( "WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT", &GC_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT );
  InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
@@ -1263,7 +1436,9 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "WITH_IMPS_FLAGS_COUNT", &GC_WITH__IMPS__FLAGS__COUNT );
  InitCopyGVar( "WITH_IMPS_FLAGS_CACHE_HIT", &GC_WITH__IMPS__FLAGS__CACHE__HIT );
  InitCopyGVar( "WITH_IMPS_FLAGS_CACHE_MISS", &GC_WITH__IMPS__FLAGS__CACHE__MISS );
+ InitFopyGVar( "MigrateObj", &GF_MigrateObj );
  InitFopyGVar( "UNBIND_GLOBAL", &GF_UNBIND__GLOBAL );
+ InitCopyGVar( "FILTER_REGION", &GC_FILTER__REGION );
  InitFopyGVar( "WITH_HIDDEN_IMPS_FLAGS", &GF_WITH__HIDDEN__IMPS__FLAGS );
  InitCopyGVar( "RANK_FILTERS", &GC_RANK__FILTERS );
  InitCopyGVar( "RANK_FILTER", &GC_RANK__FILTER );
@@ -1273,24 +1448,24 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "RANK_FILTER_COUNT", &GC_RANK__FILTER__COUNT );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(43382433)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(43382433)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(43382433)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](43382433)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(43382433)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](43382433)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(43382433)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](43382433)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(43382433)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](43382433)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/filter1.g:HdlrFunc5(43382433)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/filter1.g:NameFunc[5](43382433)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/filter1.g:HdlrFunc6(43382433)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/filter1.g:NameFunc[6](43382433)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/filter1.g:HdlrFunc7(43382433)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/filter1.g:NameFunc[7](43382433)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/filter1.g:HdlrFunc8(43382433)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/filter1.g:NameFunc[8](43382433)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(-119998561)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(-119998561)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(-119998561)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](-119998561)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(-119998561)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](-119998561)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(-119998561)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](-119998561)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(-119998561)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](-119998561)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/filter1.g:HdlrFunc5(-119998561)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/filter1.g:NameFunc[5](-119998561)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/filter1.g:HdlrFunc6(-119998561)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/filter1.g:NameFunc[6](-119998561)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/filter1.g:HdlrFunc7(-119998561)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/filter1.g:NameFunc[7](-119998561)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/filter1.g:HdlrFunc8(-119998561)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/filter1.g:NameFunc[8](-119998561)" );
  
  /* return success */
  return 0;
@@ -1317,9 +1492,13 @@ static Int InitLibrary ( StructInitInfo * module )
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
  G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
+ G_LOCK = GVarName( "LOCK" );
+ G_UNLOCK = GVarName( "UNLOCK" );
  G_Revision = GVarName( "Revision" );
  G_HIDDEN__IMPS = GVarName( "HIDDEN_IMPS" );
+ G_ShareObj = GVarName( "ShareObj" );
  G_WITH__HIDDEN__IMPS__FLAGS__CACHE = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE" );
+ G_LockAndMigrateObj = GVarName( "LockAndMigrateObj" );
  G_WITH__HIDDEN__IMPS__FLAGS__COUNT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_COUNT" );
  G_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS" );
  G_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT" );
@@ -1331,7 +1510,9 @@ static Int InitLibrary ( StructInitInfo * module )
  G_WITH__IMPS__FLAGS__CACHE__HIT = GVarName( "WITH_IMPS_FLAGS_CACHE_HIT" );
  G_WITH__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_IMPS_FLAGS_CACHE_MISS" );
  G_CLEAR__IMP__CACHE = GVarName( "CLEAR_IMP_CACHE" );
+ G_MigrateObj = GVarName( "MigrateObj" );
  G_UNBIND__GLOBAL = GVarName( "UNBIND_GLOBAL" );
+ G_FILTER__REGION = GVarName( "FILTER_REGION" );
  G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
  G_RANK__FILTERS = GVarName( "RANK_FILTERS" );
  G_RankFilter = GVarName( "RankFilter" );
@@ -1400,9 +1581,13 @@ static Int PostRestore ( StructInitInfo * module )
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
  G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
+ G_LOCK = GVarName( "LOCK" );
+ G_UNLOCK = GVarName( "UNLOCK" );
  G_Revision = GVarName( "Revision" );
  G_HIDDEN__IMPS = GVarName( "HIDDEN_IMPS" );
+ G_ShareObj = GVarName( "ShareObj" );
  G_WITH__HIDDEN__IMPS__FLAGS__CACHE = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE" );
+ G_LockAndMigrateObj = GVarName( "LockAndMigrateObj" );
  G_WITH__HIDDEN__IMPS__FLAGS__COUNT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_COUNT" );
  G_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS" );
  G_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT" );
@@ -1414,7 +1599,9 @@ static Int PostRestore ( StructInitInfo * module )
  G_WITH__IMPS__FLAGS__CACHE__HIT = GVarName( "WITH_IMPS_FLAGS_CACHE_HIT" );
  G_WITH__IMPS__FLAGS__CACHE__MISS = GVarName( "WITH_IMPS_FLAGS_CACHE_MISS" );
  G_CLEAR__IMP__CACHE = GVarName( "CLEAR_IMP_CACHE" );
+ G_MigrateObj = GVarName( "MigrateObj" );
  G_UNBIND__GLOBAL = GVarName( "UNBIND_GLOBAL" );
+ G_FILTER__REGION = GVarName( "FILTER_REGION" );
  G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
  G_RANK__FILTERS = GVarName( "RANK_FILTERS" );
  G_RankFilter = GVarName( "RankFilter" );
@@ -1465,7 +1652,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 43382433,
+ /* crc         = */ -119998561,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,
@@ -1480,4 +1667,3 @@ StructInitInfo * Init__filter1 ( void )
 }
 
 /* compiled code ends here */
-#endif
