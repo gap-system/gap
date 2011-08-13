@@ -9,7 +9,6 @@
 **  the methods for text documents used by the text editor and methods for 
 **  the clipboard window.
 */
-#if !TARGET_API_MAC_CARBON
 #include <Lists.h>
 #include <AppleEvents.h>
 #include <Balloons.h>
@@ -1203,15 +1202,15 @@ void textPrintDraw (DocumentPtr doc,Rect *r,short page)
 				
 				if(i<lastChar) {
 					if (textPtr[i]==TAB) {
-						DrawChar('');
+						DrawChar('ï¿½');
 						GetPortPenLocation (currentPort, &pnLoc);
 						MoveTo(LeftMargin + ((pnLoc.h - LeftMargin + tabWidth)/tabWidth)*tabWidth, pnLoc.v);
 					} else if(textPtr[i]==' ')
-						DrawChar('×');
+						DrawChar('ï¿½');
 					else if(textPtr[i]=='\n')
-						DrawChar('¬');
+						DrawChar('ï¿½');
 					else 
-						DrawChar('¿');
+						DrawChar('ï¿½');
 					i++;
 				}
 				
@@ -1219,7 +1218,7 @@ void textPrintDraw (DocumentPtr doc,Rect *r,short page)
 				
 			}
 			if(i<(**tH).teLength && textPtr[i]=='\n')
-				DrawChar('¬');
+				DrawChar('ï¿½');
 		} else {
 			while (firstChar < lastChar) {
 				while (i<lastChar && textPtr[i]!=TAB)
@@ -3360,7 +3359,7 @@ char *matchLiteral(char *buf,char *lit,long *foundLen,long *litLen)
 	
 	/* fill the search string */
 	p=searchStr;
-	while(*lit && *lit!='*' && *lit!='‰' && *lit!='?' && *lit!='[') {
+	while(*lit && *lit!='*' && *lit!='ï¿½' && *lit!='?' && *lit!='[') {
 		*p++ = *lit ++;
 		len1++;
 		len2++;
@@ -3487,7 +3486,7 @@ char *matchExpressionRight(char *buf,char *exp,long *foundLen,long *expLen)
 		if(*anchor=='?') {
 			start++;
 			doLeft=true;
-		} else if(*anchor=='*' || *anchor=='‰')    /*BH: anchor == -> *anchor == */
+		} else if(*anchor=='*' || *anchor=='ï¿½')    /*BH: anchor == -> *anchor == */
 			doLeft=true;
 		else
 			break;
@@ -3506,7 +3505,7 @@ char *matchExpressionRight(char *buf,char *exp,long *foundLen,long *expLen)
 				match--;
 				(*foundLen)++;
 				(*expLen)++;
-			} else if(*anchor=='*' || *anchor=='‰') {
+			} else if(*anchor=='*' || *anchor=='ï¿½') {
 				while(match>buf && *match!='\n') {
 					match--;
 					(*foundLen)++;
@@ -3596,7 +3595,7 @@ static Boolean findSearchString (DocumentPtr doc, short direction)
 		if(gSearchMethod==2) {	/* Selection expression */
 			if(isdigit(*(gFindBuffer+1))) {
 				lastLine=(**tH).nLines-1;
-				/* Since nLines isn¹t right if the last character is a return, check for that case.
+				/* Since nLines isnï¿½t right if the last character is a return, check for that case.
 					(hint from TESample example. */
 				if ( *(*(**tH).hText + (**tH).teLength - 1) == '\n' )
 					lastLine++;
