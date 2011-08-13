@@ -6507,6 +6507,7 @@ static Int InitLibrary (
     /*CCC TRY_NEXT_METHOD = NEW_STRING( 16 );
       SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );CCC*/
     C_NEW_STRING(TRY_NEXT_METHOD, 15, "TRY_NEXT_METHOD");
+    RetypeBag(TRY_NEXT_METHOD, T_STRING+IMMUTABLE);
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
     /* init filters and functions                                          */
