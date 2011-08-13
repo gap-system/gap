@@ -299,7 +299,9 @@ end);
 BIND_GLOBAL("ShowImpliedFilters",function(fil)
 local flags,f,i,j,l,m,n;
   flags:=FLAGS_FILTER(fil);
-  f:=Filtered(IMPLICATIONS,x->IS_SUBSET_FLAGS(x[2],flags));
+  atomic readonly IMPLICATIONS do
+      f:=Filtered(IMPLICATIONS,x->IS_SUBSET_FLAGS(x[2],flags));
+  od;
   l:=[];
   m:=[];
   for i in f do
