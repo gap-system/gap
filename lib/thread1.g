@@ -42,6 +42,18 @@ LockAndMigrateObj := function(obj, target)
   return obj;
 end;
 
+LockAndAdoptObj := function(obj)
+  local lock;
+  if IsShared(obj) and not HaveWriteAccess(obj) then
+    lock := LOCK(obj);
+    ADOPT(obj);
+    UNLOCK(lock);
+  else
+    ADOPT(obj);
+  fi;
+  return obj;
+end;
+
 NewRegion := function()
   return RegionOf(ShareObj([]));
 end;
