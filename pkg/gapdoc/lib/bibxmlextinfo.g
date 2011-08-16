@@ -295,3 +295,5 @@ Bibxmlext :=
       Alt := [ "Only", "CDATA", "IMPLIED", "Not", "CDATA", "IMPLIED" ],
       Wrap := [ "Name", "CDATA", "REQUIRED" ],
       other := [ "type", "CDATA", "REQUIRED" ] ) ];
+
+MakeImmutable(Bibxmlext);
