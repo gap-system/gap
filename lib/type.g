@@ -473,6 +473,7 @@ MakeReadOnly(TypeOfTypes);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "CATEGORIES_FAMILY", [] );
+ShareObj(CATEGORIES_FAMILY);
 
 BIND_GLOBAL( "CategoryFamily", function ( elms_filter )
     local    pair, fam_filter, super, flags, name;
@@ -485,25 +486,36 @@ BIND_GLOBAL( "CategoryFamily", function ( elms_filter )
     elms_filter:= FLAGS_FILTER( elms_filter );
 
     # Check whether the desired family category is already defined.
-    for pair in CATEGORIES_FAMILY do
-      if pair[1] = elms_filter then
-        return pair[2];
-      fi;
+    atomic readonly CATEGORIES_FAMILY do
+        for pair in CATEGORIES_FAMILY do
+            if pair[1] = elms_filter then
+                return pair[2];
+            fi;
+        od;
     od;
-
-    # Find the super category among the known family categories.
-    super := IsFamily;
-    flags := WITH_IMPS_FLAGS( elms_filter );
-    for pair in CATEGORIES_FAMILY do
-      if IS_SUBSET_FLAGS( flags, pair[1] ) then
-        super := super and pair[2];
-      fi;
+    
+    atomic readwrite CATEGORIES_FAMILY do
+        for pair in CATEGORIES_FAMILY do
+            if pair[1] = elms_filter then
+                return pair[2];
+            fi;
+        od;
+    
+        # Find the super category among the known family categories.
+        super := IsFamily;
+        flags := WITH_IMPS_FLAGS( elms_filter );
+        for pair in CATEGORIES_FAMILY do
+            if IS_SUBSET_FLAGS( flags, pair[1] ) then
+                super := super and pair[2];
+            fi;
+        od;
+        
+        # Construct the family category.
+        fam_filter:= NewCategory( name, super );
+        ADD_LIST( CATEGORIES_FAMILY, 
+                MigrateObj([ elms_filter, fam_filter ], CATEGORIES_FAMILY) );
+        return fam_filter;
     od;
-
-    # Construct the family category.
-    fam_filter:= NewCategory( name, super );
-    ADD_LIST( CATEGORIES_FAMILY, [ elms_filter, fam_filter ] );
-    return fam_filter;
 end );
 
 

@@ -97,11 +97,13 @@ BIND_GLOBAL( "NEW_FAMILY",
     # using the categories defined by 'CategoryFamily'.
     imp_filter := WITH_IMPS_FLAGS( AND_FLAGS( imp_filter, req_filter ) );
     type := Subtype( typeOfFamilies, IsAttributeStoringRep );
+    READ_LOCK(CATEGORIES_FAMILY);
     for pair in CATEGORIES_FAMILY do
         if IS_SUBSET_FLAGS( imp_filter, pair[1] ) then
             type:= Subtype( type, pair[2] );
         fi;
     od;
+    UNLOCK(LOCK()-1);
 
     # cannot use 'Objectify', because 'IsList' may not be defined yet
     family := AtomicRecord();
@@ -220,6 +222,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
               and IS_IDENTICAL_OBJ(  typeOfTypes, TYPE_OBJ(cached) )
             then
                 NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
+                UNLOCK(LOCK()-1);
                 return cached;
             else
                 flags := cached![2];
