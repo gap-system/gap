@@ -745,6 +745,7 @@ BIND_GLOBAL("VIEW_STRING_SPECIAL_CHARACTERS_OLD",
   # contains characters that should instead be printed after a `\'.
   Immutable([ "\c\b\n\r\"\\", "cbnr\"\\" ]));
 BIND_GLOBAL("SPECIAL_CHARS_VIEW_STRING",
+MakeImmutable(
 [ List(Concatenation([0..31],[34,92],[127..255]), CHAR_INT), [
 "\\000", "\\>", "\\<", "\\c", "\\004", "\\005", "\\006", "\\007", "\\b", "\\t",
 "\\n", "\\013", "\\014", "\\r", "\\016", "\\017", "\\020", "\\021", "\\022",
@@ -764,7 +765,7 @@ BIND_GLOBAL("SPECIAL_CHARS_VIEW_STRING",
 "\\342","\\343","\\344","\\345","\\346","\\347","\\350","\\351","\\352",
 "\\353","\\354","\\355","\\356","\\357","\\360","\\361","\\362","\\363",
 "\\364","\\365","\\366","\\367","\\370","\\371","\\372","\\373","\\374",
-"\\375","\\376","\\377" ]]);
+"\\375","\\376","\\377" ]]));
 
 
 # help system, profiling
