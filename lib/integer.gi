@@ -457,7 +457,8 @@ end);
 #F  DivisorsInt( <n> )  . . . . . . . . . . . . . . .  divisors of an integer
 ##
 BindGlobal("DivisorsIntCache",
-List([[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]], Immutable));
+        List([[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]], Immutable));
+MakeImmutable(DivisorsIntCache);
 
 InstallGlobalFunction(DivisorsInt,function ( n )
     local  divisors, factors, divs;
@@ -466,10 +467,10 @@ InstallGlobalFunction(DivisorsInt,function ( n )
     if n < 0  then n := -n;  fi;
     if n = 0  then Error("DivisorsInt: <n> must not be 0");  fi;
     if n <= Length(DivisorsIntCache)  then 
-      return DivisorsIntCache[n];  
+        return DivisorsIntCache[n];  
     fi;
     factors := FactorsInt( n );
-
+    
     # recursive function to compute the divisors
     divs := function ( i, m )
         if Length(factors) < i     then return [ m ];
