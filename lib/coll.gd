@@ -196,7 +196,7 @@ DeclareAttribute( "ElementsFamily", IsFamily );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "CATEGORIES_COLLECTIONS", [] );
-
+ShareObj(CATEGORIES_COLLECTIONS);
 
 #############################################################################
 ##
@@ -230,34 +230,51 @@ BIND_GLOBAL( "CATEGORIES_COLLECTIONS", [] );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "CategoryCollections", function ( elms_filter )
-    local    pair, super, flags, name, coll_filter;
-
-    # Check whether the collections category is already defined.
-    for pair in CATEGORIES_COLLECTIONS do
-      if IsIdenticalObj( pair[1], elms_filter ) then
-        return pair[2];
-      fi;
+    local    pair, super, flags, name, coll_filter, len;
+    
+    # check once with read lock -- common case 
+    atomic readonly  CATEGORIES_COLLECTIONS do
+        # Check whether the collections category is already defined.
+        for pair in CATEGORIES_COLLECTIONS do
+            if IsIdenticalObj( pair[1], elms_filter ) then
+                return pair[2];
+            fi;
+        od;
+        len := LENGTH(CATEGORIES_COLLECTIONS);
     od;
-
-    # Find the super category among the known collections categories.
-    super := IsCollection;
-    flags := WITH_IMPS_FLAGS( FLAGS_FILTER( elms_filter ) );
-    for pair in CATEGORIES_COLLECTIONS do
-      if IS_SUBSET_FLAGS( flags, FLAGS_FILTER( pair[1] ) ) then
-        super := super and pair[2];
-      fi;
+    
+    # that failed, so get exclusive lock as we may need to modify
+    atomic readwrite CATEGORIES_COLLECTIONS do
+        # Check whether the collections category was defined by another thread.
+        if LENGTH(CATEGORIES_COLLECTIONS) > len then
+            for pair in CATEGORIES_COLLECTIONS do
+                if IsIdenticalObj( pair[1], elms_filter ) then
+                    return pair[2];
+                fi;
+            od;
+        fi;
+        
+        # Find the super category among the known collections categories.
+        super := IsCollection;
+        flags := WITH_IMPS_FLAGS( FLAGS_FILTER( elms_filter ) );
+        for pair in CATEGORIES_COLLECTIONS do
+            if IS_SUBSET_FLAGS( flags, FLAGS_FILTER( pair[1] ) ) then
+                super := super and pair[2];
+            fi;
+        od;
+        
+        # Construct the name of the category.
+        name := "CategoryCollections(";
+        APPEND_LIST_INTR( name, SHALLOW_COPY_OBJ( NameFunction(elms_filter) ) );
+        APPEND_LIST_INTR( name, ")" );
+        CONV_STRING( name );
+        
+        # Construct the collections category.
+        coll_filter:= NewCategory( name, super );
+        ADD_LIST( CATEGORIES_COLLECTIONS, 
+                MigrateObj([ elms_filter, coll_filter ], CATEGORIES_COLLECTIONS) );
+        return coll_filter;
     od;
-
-    # Construct the name of the category.
-    name := "CategoryCollections(";
-    APPEND_LIST_INTR( name, SHALLOW_COPY_OBJ( NameFunction(elms_filter) ) );
-    APPEND_LIST_INTR( name, ")" );
-    CONV_STRING( name );
-
-    # Construct the collections category.
-    coll_filter:= NewCategory( name, super );
-    ADD_LIST( CATEGORIES_COLLECTIONS, [ elms_filter, coll_filter ] );
-    return coll_filter;
 end );
 
 
