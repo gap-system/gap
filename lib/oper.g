@@ -67,6 +67,13 @@ SHARE(CATS_AND_REPS);
 ##  </ManSection>
 ##
 BIND_GLOBAL( "CONSTRUCTORS", [] );
+SHARE(CONSTRUCTORS);
+
+BIND_GLOBAL( "IS_CONSTRUCTOR", function(op) 
+    atomic readonly CONSTRUCTORS do
+        return op in CONSTRUCTORS;
+    od;
+end);
 
 
 #############################################################################
@@ -588,7 +595,9 @@ BIND_GLOBAL( "NewConstructor", function ( name, filters )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-    ADD_LIST( CONSTRUCTORS, oper );
+    atomic readwrite CONSTRUCTORS do
+        ADD_LIST( CONSTRUCTORS, oper );
+    od;
     ADD_LIST( OPERATIONS,   oper );
     ADD_LIST( OPERATIONS,   [ filt ] );
     return oper;
@@ -758,7 +767,7 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
       # The constructor has already been declared.
       # If it was not created as a constructor
       # then ask for re-declaration as an ordinary operation.
-      if not gvar in CONSTRUCTORS then
+      if not IS_CONSTRUCTOR(gvar) then
         Error( "operation `", name, "' was not created as a constructor" );
       fi;
 
@@ -815,8 +824,10 @@ BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
     od;
-
-    ADD_LIST( CONSTRUCTORS, oper );
+    
+    atomic readwrite CONSTRUCTORS do
+        ADD_LIST( CONSTRUCTORS, oper );
+    od;
     ADD_LIST( OPERATIONS,   oper );
     ADD_LIST( OPERATIONS,   [ filt ] );
 end );
