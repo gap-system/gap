@@ -312,20 +312,20 @@ end;
 ##
 #F  READ_CHANGED_GAP_ROOT( <name> ) . . . . . .  completion file is out-dated
 ##
-READ_CHANGED_GAP_ROOT := function( name )
-    local   rankFilter;
-
-    atomic FILTER_REGION do
-	rankFilter := RankFilter;
-	RankFilter := RANK_FILTER;
-	Print( "#W  inconsistent completion for \"", name, "\"\n" );
-	if not READ_GAP_ROOT(name)  then
-	    Error( "cannot read file ", name );
-	fi;
-	RankFilter := rankFilter;
-    od;
-end;
-
+##READ_CHANGED_GAP_ROOT := function( name )
+##    local   rankFilter;
+##
+##    atomic FILTER_REGION do
+##	rankFilter := RankFilter;
+##	RankFilter := RANK_FILTER;
+##	Print( "#W  inconsistent completion for \"", name, "\"\n" );
+##	if not READ_GAP_ROOT(name)  then
+##	    Error( "cannot read file ", name );
+##	fi;
+##	RankFilter := rankFilter;
+##    od;
+##end;
+##
 
 #############################################################################
 ##
