@@ -551,15 +551,17 @@ InstallAttributeFunction(
         rank  := 0;
         cats  := IS_OBJECT;
         props := [];
-        for i in [ 1 .. LEN_FLAGS( flags ) ] do
-            if ELM_FLAGS( flags, i ) then
-                if i in CATS_AND_REPS  then
-                    cats := cats and FILTERS[i];
-                    rank := rank - RankFilter( FILTERS[i] );
-                elif i in NUMBERS_PROPERTY_GETTERS  then
-                    ADD_LIST( props, FILTERS[i] );
+        atomic readonly CATS_AND_REPS do
+            for i in [ 1 .. LEN_FLAGS( flags ) ] do
+                if ELM_FLAGS( flags, i ) then
+                    if i in CATS_AND_REPS  then
+                        cats := cats and FILTERS[i];
+                        rank := rank - RankFilter( FILTERS[i] );
+                    elif i in NUMBERS_PROPERTY_GETTERS  then
+                        ADD_LIST( props, FILTERS[i] );
+                    fi;
                 fi;
-            fi;
+            od;
         od;
 
         if 0 < LEN_LIST( props ) then

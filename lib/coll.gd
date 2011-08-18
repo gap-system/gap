@@ -566,10 +566,12 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
     # (We must not call `SUBTR_SET' here because the lists types may be
     # not yet defined.)
     filtssub:= [];
-    for flag in TRUES_FLAGS( FLAGS_FILTER( sub_req ) ) do
-      if not flag in CATS_AND_REPS then
-        ADD_LIST_DEFAULT( filtssub, flag );
-      fi;
+    atomic readonly CATS_AND_REPS do
+        for flag in TRUES_FLAGS( FLAGS_FILTER( sub_req ) ) do
+            if not flag in CATS_AND_REPS then
+                ADD_LIST_DEFAULT( filtssub, flag );
+            fi;
+        od;
     od;
 
     for triple in SUBSET_MAINTAINED_INFO[2] do
@@ -602,10 +604,12 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
     # (We must not call `SUBTR_SET' here because the lists types may be
     # not yet defined.)
     filtsopr:= [];
-    for flag in TRUES_FLAGS( filt1 ) do
-      if not flag in CATS_AND_REPS then
-        ADD_LIST_DEFAULT( filtsopr, flag );
-      fi;
+    atomic readonly CATS_AND_REPS do
+        for flag in TRUES_FLAGS( filt1 ) do
+            if not flag in CATS_AND_REPS then
+                ADD_LIST_DEFAULT( filtsopr, flag );
+            fi;
+        od;
     od;
     for triple in SUBSET_MAINTAINED_INFO[2] do
       req:= SHALLOW_COPY_OBJ( filtsopr );
