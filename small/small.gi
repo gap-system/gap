@@ -456,3 +456,21 @@ function( G )
     fi;
     return IdGroup( ff );                                      
 end );
+
+#############################################################################
+##  
+#F  FinalizeSmallGroupData()
+##
+## This function should be called when all levels of the small group library 
+## have been loaded. It makes various records immutable for thread-safety 
+##
+InstallGlobalFunction( FinalizeSmallGroupData,
+        function()
+    MakeImmutable(CODE_SMALL_GROUP_FUNCS);
+    MakeImmutable(SMALL_GROUP_FUNCS);
+    MakeImmutable(NUMBER_SMALL_GROUPS_FUNCS);
+    MakeImmutable(SELECT_SMALL_GROUPS_FUNCS);
+    MakeImmutable(SMALL_AVAILABLE_FUNCS);
+end);
+    
+    
