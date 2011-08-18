@@ -56,7 +56,7 @@ end );
 ## 
 ##  also used to remember which data files were read
 ##  
-BindGlobal("CONWAYPOLYNOMIALSINFO",  rec(
+BindGlobal("CONWAYPOLYNOMIALSINFO",  AtomicRecord(rec(
  RP := "original list by Richard Parker (from 1980's)\n",
  GAP := "computed with the GAP function by Thomas Breuer, just checks\n\
 conditions starting from 'smallest' polynomial\n",
@@ -73,9 +73,11 @@ elements, respectively a similar algorithm as in GAP (~2005)\n",
  conwdat2 := false,
  conwdat3 := false,
  # cache for p > 110000 
- cache := rec()
+ cache := AtomicRecord(rec())
             
-) );
+             ) ) );
+
+ATOMIC_RECORD_REPLACEMENT(CONWAYPOLYNOMIALSINFO.cache, false);
 
 ############################################################################
 ##
@@ -93,6 +95,7 @@ elements, respectively a similar algorithm as in GAP (~2005)\n",
 ##              num = a0 + a1 p + a2 p^2 + ... + a<n-1> p^(n-1).
 ##  
 BindGlobal("CONWAYPOLDATA", []);
+ShareObj(CONWAYPOLDATA);
 
 ##  a utility function, checks consistency of a polynomial with Conway
 ##  polynomials of proper subfield. (But  doesn't check that it is the
@@ -206,13 +209,25 @@ ConwayCandidates := function()
     od;
   od;
   Sort(cand);
-  cand := Filtered(cand, a-> not IsBound(CONWAYPOLDATA[a[2]][a[3]]));
+  atomic readonly CONWAYPOLDATA do
+      cand := Filtered(cand, a-> not IsBound(CONWAYPOLDATA[a[2]][a[3]]));
+  od;
   return cand;
 end;
 
 ##  
 ##  
 ####################   end of list of new polynomials   ####################
+
+BIND_GLOBAL("PREPARE_CONWAY_DATA", function(list)
+    local x;
+    for x in list do
+        MakeImmutable(x);
+    od;
+    return ShareObj(list);
+end);
+
+
 
 ############################################################################
 ##
@@ -241,6 +256,7 @@ InstallGlobalFunction( ConwayPol, function( p, n )
           e,          # 1 or -1, used to compute the next candidate
           linfac,     # for a quick precheck
           cachelist,  # list of known Conway pols for given p
+          cachedata,  # entry n from that list
           StoreConwayPol;  # maybe move out?
 
     # Check the arguments.
@@ -250,25 +266,54 @@ InstallGlobalFunction( ConwayPol, function( p, n )
 
     # read data files if necessary
     if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
-      ReadLib("conwdat1.g");
+        atomic readwrite CONWAYPOLDATA do
+            ReadLib("conwdat1.g");
+        od;
     elif 109 < p and p < 1000 and CONWAYPOLYNOMIALSINFO.conwdat2 = false then
-      ReadLib("conwdat2.g");
+        atomic readwrite CONWAYPOLDATA do
+            ReadLib("conwdat2.g");
+        od;
     elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
-      ReadLib("conwdat3.g");
+        atomic readwrite CONWAYPOLDATA do
+            ReadLib("conwdat3.g");
+        od;
     fi;
 
     if p < 110000 then
-      if not IsBound( CONWAYPOLDATA[p] ) then
-        CONWAYPOLDATA[p] := [];
-      fi;
-      cachelist := CONWAYPOLDATA[p];
+        cachelist := fail;
+        atomic readonly CONWAYPOLDATA do
+            if IsBound( CONWAYPOLDATA[p] ) then
+                cachelist := CONWAYPOLDATA[p];
+            fi;
+        od;
+        if IsIdenticalObj(cachelist, fail) then
+            atomic readwrite CONWAYPOLDATA do
+                if IsBound( CONWAYPOLDATA[p] ) then
+                    cachelist := CONWAYPOLDATA[p];
+                else
+                    cachelist := ShareObj([]);
+                    CONWAYPOLDATA[p] := cachelist;
+                fi;
+            od;                
+        fi;
     else
-      if not IsBound( CONWAYPOLYNOMIALSINFO.cache.(String(p)) ) then
-        CONWAYPOLYNOMIALSINFO.cache.(String(p)) := [];
-      fi;
-      cachelist := CONWAYPOLYNOMIALSINFO.cache.(String(p));
+        if not IsBound( CONWAYPOLYNOMIALSINFO.cache.(String(p)) ) then
+            CONWAYPOLYNOMIALSINFO.cache.(String(p)) := SharedObj([]);
+        fi;
+        cachelist := CONWAYPOLYNOMIALSINFO.cache.(String(p));
     fi;
-    if not IsBound( cachelist[n] ) then
+  
+  #
+  # at this point cachelist is a shared list and we hold no locks 
+  #
+  cachedata := fail;
+  atomic readonly cachelist do
+      if IsBound( cachelist[n]) then
+          cachedata := cachelist[n];
+      fi;
+  od;
+  
+  if cachedata = fail then
 
       Info( InfoWarning, 1,
             "computing Conway polynomial for p = ", p, " and n = ", n );
@@ -419,15 +464,20 @@ InstallGlobalFunction( ConwayPol, function( p, n )
         found:= ShallowCopy( cpol );
         Unbind( found[ n+1 ] );
         ShrinkRowVector( found );
-        cachelist[n]:= [List([0..Length(found)-1], k-> p^k) * found, 
-                              "GAP"];
-      end;
-      StoreConwayPol(cpol, cachelist);
-    else
+        cachelist[n]:= MakeImmutable([List([0..Length(found)-1], k-> p^k) * found, 
+                              "GAP"]);
+    end;
+    atomic readwrite cachelist do
+        if not IsBound(cachelist[n]) then
+            StoreConwayPol(cpol, cachelist);
+        fi;
+    od;
+    return cpol;
+else
 
       # Decode the polynomial stored in the list (see description of
       # CONWAYPOLDATA above).
-      c := cachelist[n][1];
+      c := cachedata[1];
       cpol:= [];
       while c <> 0 do
         Add(cpol, c mod p);
@@ -437,11 +487,12 @@ InstallGlobalFunction( ConwayPol, function( p, n )
         Add( cpol, 0 );
       od;
       Add( cpol, 1 );
+        # Return the coefficients list.
+      return cpol;
+    
+  fi;
 
-    fi;
 
-    # Return the coefficients list.
-    return cpol;
 end );
 
 
@@ -455,11 +506,17 @@ InstallGlobalFunction( ConwayPolynomial, function( p, n )
       F:= GF(p);
       res := UnivariatePolynomial( F, One( F ) * ConwayPol( p, n ) );
       if p < 110000 then
-          Setter(InfoText)(res, CONWAYPOLYNOMIALSINFO.(
-                  CONWAYPOLDATA[p][n][2]));
+          atomic readonly CONWAYPOLDATA do
+              atomic readonly CONWAYPOLDATA[p] do
+                  Setter(InfoText)(res, CONWAYPOLYNOMIALSINFO.(
+                          CONWAYPOLDATA[p][n][2]));
+              od;
+          od;
       else
-          Setter(InfoText)(res, CONWAYPOLYNOMIALSINFO.cache.(
-                  String(p))[n][2]);
+          atomic readonly CONWAYPOLYNOMIALSINFO.cache.(String(p)) do
+              Setter(InfoText)(res, CONWAYPOLYNOMIALSINFO.cache.(
+                      String(p))[n][2]);
+          od;
       fi;
       return res;
     else
