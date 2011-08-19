@@ -102,10 +102,12 @@ InstallGlobalFunction( CyclotomicField, function ( arg )
     # The subfield is given by `Rationals' denoting the prime field.
     if subfield = Rationals then
 
-      # The standard field is required.  Look whether it is already stored.
-      if IsBound( CYCLOTOMIC_FIELDS[ xtension ] ) then
-        return CYCLOTOMIC_FIELDS[ xtension ];
-      fi;
+      # The standard field is required.  Look whether it is already stored
+      atomic readonly CYCLOTOMIC_FIELDS do
+      	if IsBound( CYCLOTOMIC_FIELDS[ xtension ] ) then
+        	return CYCLOTOMIC_FIELDS[ xtension ];	
+        fi;
+      od;
 
     elif IsAbelianNumberField( subfield ) then
 
@@ -123,7 +125,12 @@ InstallGlobalFunction( CyclotomicField, function ( arg )
 
     # If the standard field was constructed, store it.
     if subfield = Rationals then
-      CYCLOTOMIC_FIELDS[ xtension ]:= F;
+    	atomic readwrite CYCLOTOMIC_FIELDS do
+    		if IsBound( CYCLOTOMIC_FIELDS[ xtension ] ) then
+        		return CYCLOTOMIC_FIELDS[ xtension ];	
+        	fi;
+        	CYCLOTOMIC_FIELDS[ xtension ]:= F;
+        od;
     fi;
 
     # Return the field.
