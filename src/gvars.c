@@ -549,10 +549,15 @@ void MakeThreadLocalVar (
     UInt                rnam )
 {       
     UInt gvar_bucket = GVAR_BUCKET(gvar);
-    VAL_GVAR(gvar) = (Obj) 0;
     UInt gvar_index = GVAR_INDEX(gvar);
+    Obj value = VAL_GVAR(gvar);
+    VAL_GVAR(gvar) = (Obj) 0;
+    if (IS_INTOBJ(ELM_PLIST( ExprGVars[gvar_bucket], gvar_index)))
+       value = (Obj) 0;
     SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, INTOBJ_INT(rnam) );
-    CHANGED_BAG(ExprGVars[gvar_bucket])
+    CHANGED_BAG(ExprGVars[gvar_bucket]);
+    if (value && TLVars)
+        SetTLDefault(TLVars, rnam, value);
 }
 
 

@@ -985,13 +985,13 @@ static Obj NewTLRecord(Obj defaults, Obj constructors) {
   return result;
 }
 
-static void SetTLDefault(Obj record, UInt rnam, Obj value) {
+void SetTLDefault(Obj record, UInt rnam, Obj value) {
   Obj inner = GetTLInner(record);
   SetARecordField(ADDR_OBJ(inner)[TLR_DEFAULTS],
     rnam, CopyReachableObjectsFrom(value, 0, 1));
 }
 
-static void SetTLConstructor(Obj record, UInt rnam, Obj func) {
+void SetTLConstructor(Obj record, UInt rnam, Obj func) {
   Obj inner = GetTLInner(record);
   SetARecordField(ADDR_OBJ(inner)[TLR_CONSTRUCTORS],
     rnam, func);
