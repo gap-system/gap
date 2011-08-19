@@ -264,7 +264,7 @@ void            AssGVar (
 
     /* if the value is a function, assign it to all the internal fopies    */
     cops = ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index );
-    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public data space? */
+    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public region? */
 	if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
 	    for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
 		copy  = (Obj*) ELM_PLIST(cops,i);
@@ -290,7 +290,7 @@ void            AssGVar (
     }
 
     /* assign name to a function                                           */
-    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public data space? */
+    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public region? */
 	if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
 	    name = NameGVar(gvar);
 	    /*CCC        onam = NEW_STRING(SyStrlen(name));
@@ -549,10 +549,15 @@ void MakeThreadLocalVar (
     UInt                rnam )
 {       
     UInt gvar_bucket = GVAR_BUCKET(gvar);
-    VAL_GVAR(gvar) = (Obj) 0;
     UInt gvar_index = GVAR_INDEX(gvar);
+    Obj value = VAL_GVAR(gvar);
+    VAL_GVAR(gvar) = (Obj) 0;
+    if (IS_INTOBJ(ELM_PLIST( ExprGVars[gvar_bucket], gvar_index)))
+       value = (Obj) 0;
     SET_ELM_PLIST( ExprGVars[gvar_bucket], gvar_index, INTOBJ_INT(rnam) );
-    CHANGED_BAG(ExprGVars[gvar_bucket])
+    CHANGED_BAG(ExprGVars[gvar_bucket]);
+    if (value && TLVars)
+        SetTLDefault(TLVars, rnam, value);
 }
 
 

@@ -28,7 +28,6 @@ AdoptObj := ADOPT;
 AdoptSingleObj := ADOPT_NORECURSE;
 CopyRegion := CLONE_REACHABLE;
 RegionSubObjects := REACHABLE;
-RegionOf := DataSpace;
 
 LockAndMigrateObj := function(obj, target)
   local lock;

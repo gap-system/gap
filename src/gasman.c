@@ -461,7 +461,7 @@ TNumInfoBags            InfoBags [ NTYPES ];
 
 /****************************************************************************
 **
-*V  DSInfoBags[<type>]  . . . .  . . . . . . . . . .  data space info for bags
+*V  DSInfoBags[<type>]  . . . .  . . . . . . . . . .  region info for bags
 */
 
 static char DSInfoBags[NTYPES];
@@ -1179,7 +1179,7 @@ void            InitBags (
     GC_init();
 #endif
     AddGCRoots();
-    CreateMainDataSpace();
+    CreateMainRegion();
 #endif /* DISABLE_GC */
 #endif /* BOEHM_GC */
 }
@@ -1301,13 +1301,13 @@ Bag NewBag (
     PTR_BAG(bag) = dst;
     switch (DSInfoBags[type]) {
     case DSI_TL:
-      DS_BAG(bag) = CurrentDataSpace();
+      DS_BAG(bag) = CurrentRegion();
       break;
     case DSI_PUBLIC:
       DS_BAG(bag) = NULL;
       break;
     case DSI_PROTECTED:
-      DS_BAG(bag) = ProtectedDataSpace;
+      DS_BAG(bag) = ProtectedRegion;
       break;
     }
 #if 0
@@ -1369,7 +1369,7 @@ void            RetypeBag (
         DS_BAG(bag) = NULL;
 	break;
       case DSI_PROTECTED:
-        DS_BAG(bag) = ProtectedDataSpace;
+        DS_BAG(bag) = ProtectedRegion;
 	break;
     }
 }
@@ -2718,24 +2718,24 @@ void LockFinalizer(void *lock, void *data)
   pthread_rwlock_destroy(lock);
 }
 
-DataSpace *NewDataSpace(void)
+Region *NewRegion(void)
 {
-  DataSpace *result;
+  Region *result;
   pthread_rwlock_t *lock;
-  Obj dataspace_obj;
+  Obj region_obj;
 #ifndef DISABLE_GC
-  result = GC_malloc(sizeof(DataSpace) + (MAX_THREADS+1)*sizeof(unsigned char));
+  result = GC_malloc(sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
   lock = GC_malloc_atomic(sizeof(*lock));
   GC_register_finalizer(lock, LockFinalizer, NULL, NULL, NULL);
 #else
-  result = malloc(sizeof(DataSpace) + (MAX_THREADS+1)*sizeof(unsigned char));
-  memset(result, 0, sizeof(DataSpace) + (MAX_THREADS+1)*sizeof(unsigned char));
+  result = malloc(sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
+  memset(result, 0, sizeof(Region) + (MAX_THREADS+1)*sizeof(unsigned char));
   lock = malloc(sizeof(*lock));
 #endif
   pthread_rwlock_init(lock, NULL);
-  dataspace_obj = NewBag(T_DATASPACE, sizeof(DataSpace *));
-  *(DataSpace **)(ADDR_OBJ(dataspace_obj)) = result;
-  result->obj = dataspace_obj;
+  region_obj = NewBag(T_REGION, sizeof(Region *));
+  *(Region **)(ADDR_OBJ(region_obj)) = result;
+  result->obj = region_obj;
   result->lock = lock;
   return result;
 }

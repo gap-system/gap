@@ -297,7 +297,7 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_CONDVAR		(FIRST_SHARED_TNUM+ 1)
 #define T_RWLOCK		(FIRST_SHARED_TNUM+ 2)
 #define T_MONITOR		(FIRST_SHARED_TNUM+ 3)
-#define T_DATASPACE		(FIRST_SHARED_TNUM+ 4)
+#define T_REGION		(FIRST_SHARED_TNUM+ 4)
 /* User-programmable types */
 #define T_LOCK			(FIRST_SHARED_TNUM+ 5)
 #define T_CHANNEL		(FIRST_SHARED_TNUM+ 6)

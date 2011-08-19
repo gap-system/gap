@@ -958,17 +958,17 @@ static Obj FuncATOMIC_RECORD_REPLACEMENT(Obj self, Obj record, Obj strat)
 }
 
 static Obj CreateTLDefaults(Obj defrec) {
-  DataSpace *savedDS = TLS->currentDataSpace;
+  Region *savedDS = TLS->currentRegion;
   Obj result;
   UInt i;
-  TLS->currentDataSpace = LimboDataSpace;
+  TLS->currentRegion = LimboRegion;
   result = NewBag(T_PREC, SIZE_BAG(defrec));
   memcpy(ADDR_OBJ(result), ADDR_OBJ(defrec), SIZE_BAG(defrec));
   for (i = 1; i <= LEN_PREC(defrec); i++) {
     SET_ELM_PREC(result, i,
       CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1));
   }
-  TLS->currentDataSpace = savedDS;
+  TLS->currentRegion = savedDS;
   return NewAtomicRecordFrom(result);
 }
 
@@ -978,20 +978,20 @@ static Obj NewTLRecord(Obj defaults, Obj constructors) {
   ADDR_OBJ(inner)[TLR_SIZE] = 0;
   ADDR_OBJ(inner)[TLR_DEFAULTS] = CreateTLDefaults(defaults);
   WriteGuard(constructors);
-  DS_BAG(constructors) = LimboDataSpace;
+  DS_BAG(constructors) = LimboRegion;
   AO_nop_write();
   ADDR_OBJ(inner)[TLR_CONSTRUCTORS] = NewAtomicRecordFrom(constructors);
   ((AtomicObj *)(ADDR_OBJ(result)))->obj = inner;
   return result;
 }
 
-static void SetTLDefault(Obj record, UInt rnam, Obj value) {
+void SetTLDefault(Obj record, UInt rnam, Obj value) {
   Obj inner = GetTLInner(record);
   SetARecordField(ADDR_OBJ(inner)[TLR_DEFAULTS],
     rnam, CopyReachableObjectsFrom(value, 0, 1));
 }
 
-static void SetTLConstructor(Obj record, UInt rnam, Obj func) {
+void SetTLConstructor(Obj record, UInt rnam, Obj func) {
   Obj inner = GetTLInner(record);
   SetARecordField(ADDR_OBJ(inner)[TLR_CONSTRUCTORS],
     rnam, func);

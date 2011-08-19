@@ -143,6 +143,25 @@ DeclareCategory( "IsInputTextStream", IsInputStream );
 
 #############################################################################
 ##
+#C  IsInputCustomStream( <obj> )  . . . . .  category of input custom streams
+##
+##  <#GAPDoc Label="IsInputCustomStream">
+##  <ManSection>
+##  <Filt Name="IsInputCustomStream" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  All <E>custom</E> input streams lie in this category. They translate
+##  new-line
+##  characters read.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareCategory( "IsInputCustomStream", IsInputStream );
+
+
+#############################################################################
+##
 #C  IsInputTextNone( <obj> )  . . . . . . category of input text none streams
 ##
 ##  <#GAPDoc Label="IsInputTextNone">
@@ -195,6 +214,24 @@ DeclareCategory( "IsOutputStream", IsStream );
 ##  <#/GAPDoc>
 ##
 DeclareCategory( "IsOutputTextStream", IsOutputStream );
+
+
+#############################################################################
+##
+#C  IsOutputCustomStream( <obj> ) . . . . . category of output custom streams
+##
+##  <#GAPDoc Label="IsOutputCustomStream">
+##  <ManSection>
+##  <Filt Name="IsOutputCustomStream" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  All <E>custom</E> output streams lie in this category and translate
+##  new-line characters on output.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareCategory( "IsOutputCustomStream", IsOutputStream );
 
 
 #############################################################################
@@ -619,6 +656,28 @@ DeclareOperation( "InputTextString", [ IsString ] );
 
 #############################################################################
 ##
+#O  InputTextCustom( <record> )	. . . .  create input text stream from record
+##
+##  <#GAPDoc Label="InputTextCustom">
+##  <ManSection>
+##  <Oper Name="InputTextCustom" Arg='record'/>
+##
+##  <Description>
+##  <C>InputTextString( <A>record</A> )</C>returns an input stream that
+##  delivers the characters based on the operations defined in the record
+##  <A>record</A>. The record entries have the same names as the usual
+##  stream operations. At least a <C>ReadByte</C> element has to be
+##  provided.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+
+DeclareOperation( "InputTextCustom", [ IsRecord ] );
+
+
+#############################################################################
+##
 #O  InputTextFile( <name-file> )  . . . .  create input text stream from file
 ##
 ##  <#GAPDoc Label="InputTextFile">
@@ -712,6 +771,24 @@ DeclareGlobalFunction( "InputTextUser" );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
+
+
+#############################################################################
+##
+#O  OutputTextCustom( <record> )  . . . . create custom output text stream
+##
+##  <#GAPDoc Label="OutputTextCustom">
+##  <ManSection>
+##  <Oper Name="OutputTextCustom" Arg='list, append'/>
+##
+##  <Description>
+##  returns an output stream that sends all received characters to functions
+##  defined in the record <A>record</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "OutputTextCustom", [ IsRecord ] );
 
 
 #############################################################################

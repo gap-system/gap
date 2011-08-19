@@ -76,7 +76,7 @@ Tasks.CreateTask := function(arglist)
       adopt[i] := true;
       if not adopted then
         args[i] := SHARE(CLONE_REACHABLE(args[i]));
-	ds := DataSpace(args[i]);
+	ds := RegionOf(args[i]);
         p := LOCK(args[i],true);
 	adopted := true;
       else

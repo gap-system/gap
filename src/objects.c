@@ -894,7 +894,7 @@ void            PrintObj (
 #ifndef WARD_ENABLED
    if (IS_BAG_REF(obj) && !CheckRead(obj)) {
      char buffer[64];
-     sprintf(buffer, "<obj %p inaccessible in data space %p>", obj, DS_BAG(obj));
+     sprintf(buffer, "<obj %p inaccessible in region %p>", obj, DS_BAG(obj));
      Pr(buffer, 0L, 0L);
      return;
    }
@@ -1030,7 +1030,7 @@ void            ViewObj (
 #ifndef WARD_ENABLED
    if (IS_BAG_REF(obj) && !CheckRead(obj)) {
      char buffer[64];
-     sprintf(buffer, "<obj %p inaccessible in data space %p>", obj, DS_BAG(obj));
+     sprintf(buffer, "<obj %p inaccessible in region %p>", obj, DS_BAG(obj));
      Pr(buffer, 0L, 0L);
      return;
    }
@@ -1560,6 +1560,91 @@ Obj FuncCLONE_OBJ (
     return 0;
 }
 
+/****************************************************************************
+**
+
+*F  FuncSWITCH_OBJ( <self>, <obj1>, <obj2> ) . . .  switch <obj1> and <obj2>
+**
+**  `SWITCH_OBJ' exchanges the objects referenced by its two arguments.  It
+**   is not allowed to switch clone small integers or finite field elements.
+**
+**   This is inspired by the Smalltalk 'become:' operation.
+*/
+
+Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
+    Obj *ptr1, *ptr2;
+    Region *ds1, *ds2;
+
+    if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
+        ErrorReturnVoid( "small integer objects cannot be switched", 0, 0,
+                         "you can 'return;' to leave them in place" );
+        return 0;
+    }
+    if ( IS_FFE(obj1) || IS_FFE(obj2) ) {
+        ErrorReturnVoid( "finite field elements cannot be switched", 0, 0,
+                         "you can 'return;' to leave them in place" );
+        return 0;
+    }
+    ptr1 = PTR_BAG(obj1);
+    ptr2 = PTR_BAG(obj2);
+    ds1 = DS_BAG(obj1);
+    ds2 = DS_BAG(obj2);
+    if (!ds1 || ds1->owner != TLS)
+        ErrorQuit("SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
+    if (!ds2 || ds2->owner != TLS)
+        ErrorQuit("SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
+    DS_BAG(obj2) = ds1;
+    PTR_BAG(obj2) = ptr1;
+    DS_BAG(obj1) = ds2;
+    PTR_BAG(obj1) = ptr2;
+    CHANGED_BAG(obj1);
+    CHANGED_BAG(obj2);
+    return (Obj) 0;
+}
+
+
+/****************************************************************************
+**
+
+*F  FuncFORCE_SWITCH_OBJ( <self>, <obj1>, <obj2> ) .  switch <obj1> and <obj2>
+**
+**  `FORCE_SWITCH_OBJ' exchanges the objects referenced by its two arguments.
+**   It is not allowed to switch clone small integers or finite field
+**   elements. Unlike 'SWITCH_OBJ' it will allow even public objects to be
+**   exchanged.
+*/
+
+Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
+    Obj *ptr1, *ptr2;
+    Region *ds1, *ds2;
+
+    if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
+        ErrorReturnVoid( "small integer objects cannot be switched", 0, 0,
+                         "you can 'return;' to leave them in place" );
+        return 0;
+    }
+    if ( IS_FFE(obj1) || IS_FFE(obj2) ) {
+        ErrorReturnVoid( "finite field elements cannot be switched", 0, 0,
+                         "you can 'return;' to leave them in place" );
+        return 0;
+    }
+    ptr1 = PTR_BAG(obj1);
+    ptr2 = PTR_BAG(obj2);
+    ds1 = DS_BAG(obj1);
+    ds2 = DS_BAG(obj2);
+    if (ds1 && ds1->owner != TLS)
+        ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
+    if (ds2 && ds2->owner != TLS)
+        ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
+    DS_BAG(obj2) = ds1;
+    PTR_BAG(obj2) = ptr1;
+    DS_BAG(obj1) = ds2;
+    PTR_BAG(obj1) = ptr2;
+    CHANGED_BAG(obj1);
+    CHANGED_BAG(obj2);
+    return (Obj) 0;
+}
+
 
 /****************************************************************************
 **
@@ -1656,6 +1741,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CLONE_OBJ", 2, "obj, dst, src",
       FuncCLONE_OBJ, "src/objects.c:CLONE_OBJ" },
+
+    { "SWITCH_OBJ", 2, "obj1, obj2",
+      FuncSWITCH_OBJ, "src/objects.c:SWITCH_OBJ" },
+
+    { "FORCE_SWITCH_OBJ", 2, "obj1, obj2",
+      FuncFORCE_SWITCH_OBJ, "src/objects.c:FORCE_SWITCH_OBJ" },
 
     { "SET_PRINT_OBJ_INDEX", 1, "index",
       FuncSET_PRINT_OBJ_INDEX, "src/objects.c:SET_PRINT_OBJ_INDEX" },
