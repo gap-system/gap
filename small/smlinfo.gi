@@ -442,3 +442,4 @@ SMALL_GROUPS_INFORMATION[ 26 ] := function( size, smav, num )
 
 end;
 
+MakeImmutable( SMALL_GROUPS_INFORMATION );
