@@ -199,8 +199,8 @@ ReadGapRoot( "lib/global.g" );
 ReadGapRoot( "lib/system.g" );
 
 ##IS_READ_OR_COMPLETE := false;
-
-READED_FILES := [];
+## commented out - was needed by the completion mechanism
+## READED_FILES := [];
 
 FILTER_REGION	 	 := SHARE("FILTER_REGION");
 atomic FILTER_REGION do
