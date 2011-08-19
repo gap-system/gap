@@ -1094,7 +1094,7 @@ extern void CallbackForAllBags(
 typedef struct
 {
   void *lock; /* void * so that we don't have to include pthread.h always */
-  Bag obj; /* references a unique T_DATASPACE object per data space */
+  Bag obj; /* references a unique T_DATASPACE object per region */
   int fixed_owner;
   void *owner; /* opaque thread descriptor */
   unsigned char readers[0];
@@ -1102,7 +1102,7 @@ typedef struct
 
 /****************************************************************************
 **
-*F  NewDataSpace() . . . . . . . . . . . . . . . . allocate a new data space
+*F  NewDataSpace() . . . . . . . . . . . . . . . . allocate a new region
 */
 
 DataSpace *NewDataSpace(void);
@@ -1116,9 +1116,9 @@ DataSpace *NewDataSpace(void);
 
 /****************************************************************************
 **
-*F  Migrate(bag, dataspace)  . . . . migrate 'bag' to data space 'dataspace'
-*F  Publish(bag) . . . . . . . . . . . migrate 'bag' to the public data space
-*F  Share(bag) . . . . . . . . . . . . . . migrate 'bag' to a new data space
+*F  Migrate(bag, region)  . . . . migrate 'bag' to region 'region'
+*F  Publish(bag) . . . . . . . . . . . migrate 'bag' to the public region
+*F  Share(bag) . . . . . . . . . . . . . . migrate 'bag' to a new region
 */
 
 static inline void Migrate(Bag bag, DataSpace *dataspace)

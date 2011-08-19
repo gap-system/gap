@@ -1447,7 +1447,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "PushOptions", &PushOptions );
     ImportFuncFromLibrary( "PopOptions",  &PopOptions  );
 
-    /* Allocate functions in the public data space */
+    /* Allocate functions in the public region */
     MakeBagTypePublic(T_FUNCTION);
 
     /* use short cookies to save space in saved workspace                  */

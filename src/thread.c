@@ -554,7 +554,7 @@ int LockObjects(int count, Obj *objects, int *mode)
      */
     if (i > 0 && ds == order[i-1].dataspace)
       continue; /* skip duplicates */
-    if (!ds || ds->fixed_owner) { /* public or thread-local data space */
+    if (!ds || ds->fixed_owner) { /* public or thread-local region */
       PopDataSpaceLocks(result);
       return -1;
     }
@@ -607,7 +607,7 @@ int TryLockObjects(int count, Obj *objects, int *mode)
      */
     if (i > 0 && ds == order[i-1].dataspace)
       continue; /* skip duplicates */
-    if (!ds || ds->fixed_owner) { /* public or thread-local data space */
+    if (!ds || ds->fixed_owner) { /* public or thread-local region */
       PopDataSpaceLocks(result);
       return -1;
     }
@@ -850,7 +850,7 @@ void QueueForTraversal(Obj obj)
     return; /* skip ojects that aren't bags */
   traversal = currentTraversal();
   if (DS_BAG(obj) != traversal->dataSpace)
-    return; /* stop traversal at the border of a data space */
+    return; /* stop traversal at the border of a region */
   if (!SeenDuringTraversal(obj))
     return; /* don't revisit objects that we've already seen */
   if (traversal->listSize == traversal->listCapacity)
@@ -961,7 +961,7 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList)
     EndTraversal();
     if (delimited)
       return GetDataSpaceOf(obj)->obj;
-    ErrorQuit("Object not in a readable data space", 0L, 0L);
+    ErrorQuit("Object not in a readable region", 0L, 0L);
   }
   traversal.copyMap = NewList(LEN_PLIST(traversal.hashTable));
   for (i = 1; i<=len; i++) {

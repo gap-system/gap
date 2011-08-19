@@ -1070,7 +1070,7 @@ UInt ExecAtomic(
       PopDataSpaceLocks(lockSP);
     } else {
       status = 0;
-      ErrorMayQuit("Cannot lock required data spaces", 0L, 0L);      
+      ErrorMayQuit("Cannot lock required regions", 0L, 0L);      
     }
     return status;
 }

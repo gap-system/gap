@@ -264,7 +264,7 @@ void            AssGVar (
 
     /* if the value is a function, assign it to all the internal fopies    */
     cops = ELM_PLIST( FopiesGVars[gvar_bucket], gvar_index );
-    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public data space? */
+    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public region? */
 	if ( cops != 0 && val != 0 && TNUM_OBJ(val) == T_FUNCTION ) {
 	    for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
 		copy  = (Obj*) ELM_PLIST(cops,i);
@@ -290,7 +290,7 @@ void            AssGVar (
     }
 
     /* assign name to a function                                           */
-    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public data space? */
+    if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public region? */
 	if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
 	    name = NameGVar(gvar);
 	    /*CCC        onam = NEW_STRING(SyStrlen(name));

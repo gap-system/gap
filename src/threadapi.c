@@ -447,7 +447,7 @@ Obj FuncCurrentThread(Obj self) {
 
 /****************************************************************************
 **
-*F FuncDataSpace ... return data space of an object
+*F FuncDataSpace ... return region of an object
 **
 */
 
@@ -492,7 +492,7 @@ Obj FuncIsThreadLocal(Obj self, Obj obj) {
 
 /****************************************************************************
 **
-*F FuncHaveWriteAccess ... return if we have a write lock on the data space
+*F FuncHaveWriteAccess ... return if we have a write lock on the region
 **
 */
 
@@ -507,7 +507,7 @@ Obj FuncHaveWriteAccess(Obj self, Obj obj)
 
 /****************************************************************************
 **
-*F FuncHaveReadAccess ... return if we have a read lock on the data space
+*F FuncHaveReadAccess ... return if we have a read lock on the region
 **
 */
 
@@ -1840,19 +1840,19 @@ static void PrintDataSpace(Obj obj)
   DataSpace *ds = GetDataSpaceOf(obj);
   if (ds) {
     if (ds == LimboDataSpace) {
-      Pr("<limbo data space>", 0L, 0L);
+      Pr("<limbo region>", 0L, 0L);
       return;
     } else if (ds == ReadOnlyDataSpace) {
-      Pr("<read-only data space>", 0L, 0L);
+      Pr("<read-only region>", 0L, 0L);
       return;
     } else if (ds == ProtectedDataSpace) {
-      Pr("<protected data space>", 0L, 0L);
+      Pr("<protected region>", 0L, 0L);
       return;
     }
-    sprintf(buffer, "<data space %p>", GetDataSpaceOf(obj));
+    sprintf(buffer, "<region %p>", GetDataSpaceOf(obj));
     Pr(buffer, 0L, 0L);
   } else
-    Pr("<public data space>", 0L, 0L);
+    Pr("<public region>", 0L, 0L);
 }
 
 Obj FuncIS_LOCKED(Obj self, Obj obj)
@@ -2007,7 +2007,7 @@ Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 {
   DataSpace *targetDS = GetDataSpaceOf(target);
   if (!targetDS || IsLocked(targetDS) != 1)
-    ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target data space");
+    ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target region");
   if (!MigrateObjects(1, &obj, targetDS))
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to object");
   return obj;
@@ -2074,7 +2074,7 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
   DataSpace *targetDS = GetDataSpaceOf(target);
   Obj reachable;
   if (!targetDS || IsLocked(targetDS) != 1)
-    ArgumentError("MIGRATE: Thread does not have exclusive access to target data space");
+    ArgumentError("MIGRATE: Thread does not have exclusive access to target region");
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, targetDS))

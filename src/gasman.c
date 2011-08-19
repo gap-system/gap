@@ -461,7 +461,7 @@ TNumInfoBags            InfoBags [ NTYPES ];
 
 /****************************************************************************
 **
-*V  DSInfoBags[<type>]  . . . .  . . . . . . . . . .  data space info for bags
+*V  DSInfoBags[<type>]  . . . .  . . . . . . . . . .  region info for bags
 */
 
 static char DSInfoBags[NTYPES];
