@@ -6,9 +6,12 @@
 Revision.col1_z :=
     "@(#)$Id: col1.z,v 1.2 1998/07/25 13:54:44 gap Exp $";
 
-SMALL_GROUP_LIB[ 16 ] :=
+atomic SMALL_GROUP_LIB, PROPERTIES_SMALL_GROUPS do
+
+SMALL_GROUP_LIB[ 16 ] := MigrateObj(
 [ 149511, 9219, 16905, 279051, 9221, 140301, 2245212, 35922525, 574759519,
-513, 520, 139787, 8716, 0 ]; 
+513, 520, 139787, 8716, 0 ],
+SMALL_GROUP_LIB); 
 
 PROPERTIES_SMALL_GROUPS[ 16 ] := rec(
 isAbelian := [ 1, -2, 5, 10, 14 ], 
@@ -176,3 +179,4 @@ lgLength := rec( lgLength := [ 2, 3, 4, 5 ], pos := [ [ 49, 51, -52 ], [ 11,
 frattFacs := rec( frattFacs := [ 5, 9, 14, 18, 22, 51, 55, 59 ], pos := [ 1,
 2, 3, 19, 27, 34, 44, 48 ] ) );
 
+od;

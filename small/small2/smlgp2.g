@@ -59,22 +59,40 @@ end;
 ##  loads the data if necessary
 CODE_SMALL_GROUP_FUNCS[ 8 ] := function( size, i, inforec )
     local g;
-
-    if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-        if inforec.func = 8 then
-            ReadSmallLib( "sml", inforec.lib, size, [ ] );
-        else
-            ReadSmallLib( "col", inforec.lib, inforec.file, [ ] );
+    
+    atomic readonly SMALL_GROUP_LIB do
+    	if IsBound( SMALL_GROUP_LIB[ size ] ) then
+    		if i > Length( SMALL_GROUP_LIB[ size ] ) then
+    			Error( "there are just ", Length( SMALL_GROUP_LIB[ size ] ),
+    				   " groups of size ", size );
+    		fi;
+    		return SMALL_GROUP_LIB[ size ][ i ];
+    	fi;	    
+    od;
+    # we do not want to deep into ReadSmallLib and read a file from 
+    # several threads. So we put atomic here to ensure that only one 
+    # thread will read it. 
+    atomic readwrite SMALL_GROUP_LIB do
+    	# first we check if in the meantime it was computed by other thread
+    	if not IsBound( SMALL_GROUP_LIB[ size ] ) then
+        	if inforec.func = 8 then
+            	ReadSmallLib( "sml", inforec.lib, size, [ ] );
+            else
+            	ReadSmallLib( "col", inforec.lib, inforec.file, [ ] );
+            fi;
         fi;
-    fi;
-
-    if i > Length( SMALL_GROUP_LIB[ size ] ) then
-        Error( "there are just ", Length( SMALL_GROUP_LIB[ size ] ),
-               " groups of size ", size );
-    fi;
-
-    return SMALL_GROUP_LIB[ size ][ i ];
+    od;
+    # now SMALL_GROUP_LIB[ size ] should be already there - it was either
+    # read in this thread above or by some other thread in the meantime
+    atomic readonly SMALL_GROUP_LIB do
+        if i > Length( SMALL_GROUP_LIB[ size ] ) then
+        	Error( "there are just ", Length( SMALL_GROUP_LIB[ size ] ),
+                   " groups of size ", size );
+        fi;
+        return SMALL_GROUP_LIB[ size ][ i ];
+    od;
 end;
+
 CODE_SMALL_GROUP_FUNCS[ 9 ] := CODE_SMALL_GROUP_FUNCS[ 8 ];
 
 #############################################################################
@@ -484,12 +502,18 @@ SELECT_SMALL_GROUPS_FUNCS[ 10 ] := SELECT_SMALL_GROUPS_FUNCS[ 8 ];
 #F  NUMBER_SMALL_GROUPS_FUNCS[ 8 .. 9 ]( size, inforec )
 ## 
 NUMBER_SMALL_GROUPS_FUNCS[ 8 ] := function( size, inforec )
-   
-    if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-        CODE_SMALL_GROUP_FUNCS[ inforec.func ]( size, 1, inforec );
-    fi;
-
-    inforec.number := Length( SMALL_GROUP_LIB[ size ] );
-    return inforec;
+    atomic readonly SMALL_GROUP_LIB do
+    	if IsBound( SMALL_GROUP_LIB[ size ] ) then
+        	inforec.number := Length( SMALL_GROUP_LIB[ size ] );
+        	return inforec;
+        fi;	
+    od;
+    # atomic readwrite for SMALL_GROUP_LIB will be inside the next call
+    CODE_SMALL_GROUP_FUNCS[ inforec.func ]( size, 1, inforec );
+    atomic readonly SMALL_GROUP_LIB do
+    	inforec.number := Length( SMALL_GROUP_LIB[ size ] );
+    	return inforec;
+    od;
 end;
+
 NUMBER_SMALL_GROUPS_FUNCS[ 9 ] := NUMBER_SMALL_GROUPS_FUNCS[ 8 ];

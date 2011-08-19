@@ -74,6 +74,7 @@ SELECT_SMALL_GROUPS_FUNCS := [ ];
 ##  This list will contain all data for the group construction read from the
 ##  small group library.
 SMALL_GROUP_LIB := [ ];
+ShareObj( SMALL_GROUP_LIB );
 
 #############################################################################
 ##
@@ -82,6 +83,7 @@ SMALL_GROUP_LIB := [ ];
 ##  This list will contain all data for the group selection read from the
 ##  small group library.
 PROPERTIES_SMALL_GROUPS := [ ];
+ShareObj( PROPERTIES_SMALL_GROUPS );
 
 #############################################################################
 ##
@@ -471,6 +473,8 @@ InstallGlobalFunction( FinalizeSmallGroupData,
     MakeImmutable(NUMBER_SMALL_GROUPS_FUNCS);
     MakeImmutable(SELECT_SMALL_GROUPS_FUNCS);
     MakeImmutable(SMALL_AVAILABLE_FUNCS);
+    MakeImmutable(READ_SMALL_FUNCS);
+    MakeImmutable(READ_IDLIB_FUNCS);
 end);
     
     
