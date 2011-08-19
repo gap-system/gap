@@ -21,32 +21,32 @@ void RunThreadedMain(
 	char **argv,
 	char **environ );
 
-void CreateMainDataSpace();
+void CreateMainRegion();
 int RunThread(void (*start)(void *), void *arg);
 int JoinThread(int id);
 
-void DataSpaceWriteLock(DataSpace *dataspace);
-int DataSpaceTryWriteLock(DataSpace *dataspace);
-void DataSpaceWriteUnlock(DataSpace *dataspace);
-void DataSpaceReadLock(DataSpace *dataspace);
-int DataSpaceTryReadLock(DataSpace *dataspace);
-void DataSpaceReadUnlock(DataSpace *dataspace);
-void DataSpaceUnlock(DataSpace *dataspace);
-DataSpace *CurrentDataSpace();
-DataSpace *GetDataSpaceOf(Obj obj);
-extern DataSpace *LimboDataSpace, *ReadOnlyDataSpace, *ProtectedDataSpace;
-extern Obj PublicDataSpace;
+void RegionWriteLock(Region *region);
+int RegionTryWriteLock(Region *region);
+void RegionWriteUnlock(Region *region);
+void RegionReadLock(Region *region);
+int RegionTryReadLock(Region *region);
+void RegionReadUnlock(Region *region);
+void RegionUnlock(Region *region);
+Region *CurrentRegion();
+Region *GetRegionOf(Obj obj);
+extern Region *LimboRegion, *ReadOnlyRegion, *ProtectedRegion;
+extern Obj PublicRegion;
 
 int IsSingleThreaded();
 void BeginSingleThreaded();
 void EndSingleThreaded();
 
-int IsLocked(DataSpace *dataspace);
+int IsLocked(Region *region);
 void GetLockStatus(int count, Obj *objects, int *status);
 int LockObjects(int count, Obj *objects, int *mode);
-void PushDataSpaceLock(DataSpace *dataspace);
-void PopDataSpaceLocks(int newSP);
-int DataSpaceLockSP();
+void PushRegionLock(Region *region);
+void PopRegionLocks(int newSP);
+int RegionLockSP();
 
 typedef void (*TraversalFunction)(Obj);
 

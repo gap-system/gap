@@ -5684,7 +5684,7 @@ Obj MethsOper (
     methods = METHS_OPER( oper, i );
     if ( methods == 0 ) {
         methods = NEW_PLIST( T_PLIST, 0 );
-	DS_BAG(methods) = ProtectedDataSpace;
+	DS_BAG(methods) = ProtectedRegion;
         METHS_OPER( oper, i ) = methods;
         CHANGED_BAG( oper );
     }

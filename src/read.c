@@ -1978,7 +1978,7 @@ void ReadAtomic (
     /* remember the current variables in case of an error                  */
     currLVars = TLS->currLVars;
     nrError   = TLS->nrError;
-    lockSP    = DataSpaceLockSP();
+    lockSP    = RegionLockSP();
 
     /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'                                                */    
     if ( ! READ_ERROR() ) { IntrAtomicBegin(); }
@@ -2022,7 +2022,7 @@ void ReadAtomic (
     }
     /* This is a no-op if IntrAtomicEnd() succeeded, otherwise it restores
      * locks to where they were before. */
-    PopDataSpaceLocks(lockSP);
+    PopRegionLocks(lockSP);
 }
 
 
@@ -2367,7 +2367,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     RecreateStackNams(context);
     errorLVars = TLS->errorLVars;
     TLS->errorLVars = context;
-    lockSP = DataSpaceLockSP();
+    lockSP = RegionLockSP();
 
     IntrBegin( context );
 
@@ -2416,7 +2416,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     else {
         IntrEnd( 1UL );
         type = STATUS_ERROR;
-        PopDataSpaceLocks(lockSP);
+        PopRegionLocks(lockSP);
     }
 
     /* switch back to the old reader context                               */
@@ -2479,7 +2479,7 @@ UInt ReadEvalFile ( void )
     readTop     = TLS->readTop;
     readTilde   = TLS->readTilde;
     currLHSGVar = TLS->currLHSGVar;
-    lockSP      = DataSpaceLockSP();
+    lockSP      = RegionLockSP();
     memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
 
     /* intialize everything and begin an interpreter                       */
@@ -2554,7 +2554,7 @@ UInt ReadEvalFile ( void )
 
     /* switch back to the old reader context                               */
     memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
-    PopDataSpaceLocks(lockSP);
+    PopRegionLocks(lockSP);
     TLS->stackNams   = stackNams;
     TLS->countNams   = countNams;
     TLS->readTop     = readTop;

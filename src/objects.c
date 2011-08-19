@@ -1573,7 +1573,7 @@ Obj FuncCLONE_OBJ (
 
 Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     Obj *ptr1, *ptr2;
-    DataSpace *ds1, *ds2;
+    Region *ds1, *ds2;
 
     if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
         ErrorReturnVoid( "small integer objects cannot be switched", 0, 0,
@@ -1616,7 +1616,7 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
 
 Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     Obj *ptr1, *ptr2;
-    DataSpace *ds1, *ds2;
+    Region *ds1, *ds2;
 
     if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
         ErrorReturnVoid( "small integer objects cannot be switched", 0, 0,

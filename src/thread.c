@@ -47,12 +47,12 @@ typedef struct TraversalState {
   UInt hashSize;
   UInt hashCapacity;
   UInt hashBits;
-  DataSpace *dataSpace;
+  Region *dataSpace;
   int delimitedCopy;
 } TraversalState;
 
-DataSpace *LimboDataSpace, *ReadOnlyDataSpace, *ProtectedDataSpace;
-Obj PublicDataSpace;
+Region *LimboRegion, *ReadOnlyRegion, *ProtectedRegion;
+Obj PublicRegion;
 
 static AO_t ThreadCounter = 1;
 
@@ -74,11 +74,11 @@ int IsSingleThreaded() {
 
 void BeginSingleThreaded() {
   if (ThreadCounter == 1)
-    ProtectedDataSpace->owner = TLS;
+    ProtectedRegion->owner = TLS;
 }
 
 void EndSingleThreaded() {
-  ProtectedDataSpace->owner = NULL;
+  ProtectedRegion->owner = NULL;
 }
 
 static ThreadData thread_data[MAX_THREADS];
@@ -226,21 +226,21 @@ static void RunThreadedMain2(
   exit((*mainFunction)(argc, argv, environ));
 }
 
-void CreateMainDataSpace()
+void CreateMainRegion()
 {
   int i;
-  TLS->currentDataSpace = NewDataSpace();
-  ((DataSpace *)TLS->currentDataSpace)->fixed_owner = 1;
-  DataSpaceWriteLock(TLS->currentDataSpace);
-  LimboDataSpace = NewDataSpace();
-  LimboDataSpace->fixed_owner = 1;
-  ReadOnlyDataSpace = NewDataSpace();
-  ProtectedDataSpace = NewDataSpace();
-  ReadOnlyDataSpace->fixed_owner = 1;
-  ProtectedDataSpace->fixed_owner = 1;
+  TLS->currentRegion = NewRegion();
+  ((Region *)TLS->currentRegion)->fixed_owner = 1;
+  RegionWriteLock(TLS->currentRegion);
+  LimboRegion = NewRegion();
+  LimboRegion->fixed_owner = 1;
+  ReadOnlyRegion = NewRegion();
+  ProtectedRegion = NewRegion();
+  ReadOnlyRegion->fixed_owner = 1;
+  ProtectedRegion->fixed_owner = 1;
   for (i=0; i<=MAX_THREADS; i++) {
-    ReadOnlyDataSpace->readers[i] = 1;
-    ProtectedDataSpace->readers[i] = 1;
+    ReadOnlyRegion->readers[i] = 1;
+    ProtectedRegion->readers[i] = 1;
   }
   BeginSingleThreaded();
 }
@@ -258,13 +258,13 @@ void *DispatchThread(void *arg)
   InitTLS();
   pthread_mutex_init(&thread_mutex, NULL);
   pthread_cond_init(&thread_cond, NULL);
-  TLS->currentDataSpace = NewDataSpace();
+  TLS->currentRegion = NewRegion();
   TLS->threadLock = &thread_mutex;
   TLS->threadSignal = &thread_cond;
-  ((DataSpace *)TLS->currentDataSpace)->fixed_owner = 1;
-  DataSpaceWriteLock(TLS->currentDataSpace);
+  ((Region *)TLS->currentRegion)->fixed_owner = 1;
+  RegionWriteLock(TLS->currentRegion);
   this_thread->start(this_thread->arg);
-  DataSpaceWriteUnlock(TLS->currentDataSpace);
+  RegionWriteUnlock(TLS->currentRegion);
   pthread_mutex_destroy(&thread_mutex);
   pthread_cond_destroy(&thread_cond);
   DestroyTLS();
@@ -401,71 +401,71 @@ void HashUnlockShared(void *object) {
   pthread_rwlock_unlock(&ObjLock[LockID(object)]);
 }
 
-void DataSpaceWriteLock(DataSpace *dataspace)
+void RegionWriteLock(Region *region)
 {
-  pthread_rwlock_wrlock(dataspace->lock);
-  dataspace->owner = TLS;
+  pthread_rwlock_wrlock(region->lock);
+  region->owner = TLS;
 }
 
-int DataSpaceTryWriteLock(DataSpace *dataspace)
+int RegionTryWriteLock(Region *region)
 {
-  int result = !pthread_rwlock_trywrlock(dataspace->lock);
+  int result = !pthread_rwlock_trywrlock(region->lock);
   if (result)
-    dataspace->owner = TLS;
+    region->owner = TLS;
   return result;
 }
 
-void DataSpaceWriteUnlock(DataSpace *dataspace)
+void RegionWriteUnlock(Region *region)
 {
-  dataspace->owner = NULL;
-  pthread_rwlock_unlock(dataspace->lock);
+  region->owner = NULL;
+  pthread_rwlock_unlock(region->lock);
 }
 
-void DataSpaceReadLock(DataSpace *dataspace)
+void RegionReadLock(Region *region)
 {
-  pthread_rwlock_rdlock(dataspace->lock);
-  dataspace->readers[TLS->threadID] = 1;
+  pthread_rwlock_rdlock(region->lock);
+  region->readers[TLS->threadID] = 1;
 }
 
-int DataSpaceTryReadLock(DataSpace *dataspace)
+int RegionTryReadLock(Region *region)
 {
-  int result = !pthread_rwlock_rdlock(dataspace->lock);
+  int result = !pthread_rwlock_rdlock(region->lock);
   if (result)
-    dataspace->readers[TLS->threadID] = 1;
+    region->readers[TLS->threadID] = 1;
   return result;
 }
 
-void DataSpaceReadUnlock(DataSpace *dataspace)
+void RegionReadUnlock(Region *region)
 {
-  dataspace->readers[TLS->threadID] = 0;
-  pthread_rwlock_unlock(dataspace->lock);
+  region->readers[TLS->threadID] = 0;
+  pthread_rwlock_unlock(region->lock);
 }
 
-void DataSpaceUnlock(DataSpace *dataspace)
+void RegionUnlock(Region *region)
 {
-  if (dataspace->owner == TLS)
-    dataspace->owner = NULL;
-  dataspace->readers[TLS->threadID] = 0;
-  pthread_rwlock_unlock(dataspace->lock);
+  if (region->owner == TLS)
+    region->owner = NULL;
+  region->readers[TLS->threadID] = 0;
+  pthread_rwlock_unlock(region->lock);
 }
 
-int IsLocked(DataSpace *dataspace)
+int IsLocked(Region *region)
 {
-  if (!dataspace)
-    return 0; /* public dataspace */
-  if (dataspace->owner == TLS)
+  if (!region)
+    return 0; /* public region */
+  if (region->owner == TLS)
     return 1;
-  if (dataspace->readers[TLS->threadID])
+  if (region->readers[TLS->threadID])
     return 2;
   return 0;
 }
 
-DataSpace *GetDataSpaceOf(Obj obj)
+Region *GetRegionOf(Obj obj)
 {
   if (!IS_BAG_REF(obj))
     return NULL;
-  if (TNUM_OBJ(obj) == T_DATASPACE)
-    return *(DataSpace **)(ADDR_OBJ(obj));
+  if (TNUM_OBJ(obj) == T_REGION)
+    return *(Region **)(ADDR_OBJ(obj));
   return DS_BAG(obj);
 }
 
@@ -490,20 +490,20 @@ static Obj NewList(UInt size)
 typedef struct
 {
   Obj obj;
-  DataSpace *dataspace;
+  Region *region;
   int mode;
 } LockRequest;
 
 static int LessThanLockRequest(const void *a, const void *b)
 {
-  DataSpace *ds_a = ((LockRequest *)a)->dataspace;
-  DataSpace *ds_b = ((LockRequest *)b)->dataspace;
+  Region *ds_a = ((LockRequest *)a)->region;
+  Region *ds_b = ((LockRequest *)b)->region;
   if (ds_a == ds_b) /* prioritize writes */
     return ((LockRequest *)a)->mode>((LockRequest *)b)->mode;
   return (char *)ds_a < (char *)ds_b;
 }
 
-void PushDataSpaceLock(DataSpace *dataspace) {
+void PushRegionLock(Region *region) {
   if (!TLS->lockStack) {
     TLS->lockStack = NewList(16);
     TLS->lockStackPointer = 0;
@@ -512,19 +512,19 @@ void PushDataSpaceLock(DataSpace *dataspace) {
     GROW_PLIST(TLS->lockStack, newlen);
   }
   TLS->lockStackPointer++;
-  SET_ELM_PLIST(TLS->lockStack, TLS->lockStackPointer, dataspace->obj);
+  SET_ELM_PLIST(TLS->lockStack, TLS->lockStackPointer, region->obj);
 }
 
-void PopDataSpaceLocks(int newSP) {
+void PopRegionLocks(int newSP) {
   while (newSP < TLS->lockStackPointer)
   {
     int p = TLS->lockStackPointer--;
-    DataSpaceUnlock(*(DataSpace **)(ADDR_OBJ(ELM_PLIST(TLS->lockStack, p))));
+    RegionUnlock(*(Region **)(ADDR_OBJ(ELM_PLIST(TLS->lockStack, p))));
     SET_ELM_PLIST(TLS->lockStack, p, (Obj) 0);
   }
 }
 
-int DataSpaceLockSP() {
+int RegionLockSP() {
   return TLS->lockStackPointer;
 }
 
@@ -540,41 +540,41 @@ int LockObjects(int count, Obj *objects, int *mode)
   for (i=0; i<count; i++)
   {
     order[i].obj = objects[i];
-    order[i].dataspace = GetDataSpaceOf(objects[i]);
+    order[i].region = GetRegionOf(objects[i]);
     order[i].mode = mode[i];
   }
   MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
   result = TLS->lockStackPointer;
   for (i=0; i<count; i++)
   {
-    DataSpace *ds = order[i].dataspace;
+    Region *ds = order[i].region;
     /* If there are multiple lock requests with different modes,
      * they have been sorted for writes to occur first, so deadlock
      * cannot occur from doing readlocks before writelocks.
      */
-    if (i > 0 && ds == order[i-1].dataspace)
+    if (i > 0 && ds == order[i-1].region)
       continue; /* skip duplicates */
     if (!ds || ds->fixed_owner) { /* public or thread-local region */
-      PopDataSpaceLocks(result);
+      PopRegionLocks(result);
       return -1;
     }
     locked = IsLocked(ds);
     if (locked == 2 && order[i].mode) {
       /* trying to upgrade read lock to write lock */
-      PopDataSpaceLocks(result);
+      PopRegionLocks(result);
       return -1;
     }
     if (!locked) {
       if (order[i].mode)
-	DataSpaceWriteLock(ds);
+	RegionWriteLock(ds);
       else
-	DataSpaceReadLock(ds);
-      PushDataSpaceLock(ds);
+	RegionReadLock(ds);
+      PushRegionLock(ds);
     }
-    if (GetDataSpaceOf(order[i].obj) != ds)
+    if (GetRegionOf(order[i].obj) != ds)
     {
       /* Race condition, revert locks and fail */
-      PopDataSpaceLocks(result);
+      PopRegionLocks(result);
       return -1;
     }
   }
@@ -593,57 +593,57 @@ int TryLockObjects(int count, Obj *objects, int *mode)
   for (i=0; i<count; i++)
   {
     order[i].obj = objects[i];
-    order[i].dataspace = GetDataSpaceOf(objects[i]);
+    order[i].region = GetRegionOf(objects[i]);
     order[i].mode = mode[i];
   }
   MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
   result = TLS->lockStackPointer;
   for (i=0; i<count; i++)
   {
-    DataSpace *ds = order[i].dataspace;
+    Region *ds = order[i].region;
     /* If there are multiple lock requests with different modes,
      * they have been sorted for writes to occur first, so deadlock
      * cannot occur from doing readlocks before writelocks.
      */
-    if (i > 0 && ds == order[i-1].dataspace)
+    if (i > 0 && ds == order[i-1].region)
       continue; /* skip duplicates */
     if (!ds || ds->fixed_owner) { /* public or thread-local region */
-      PopDataSpaceLocks(result);
+      PopRegionLocks(result);
       return -1;
     }
     locked = IsLocked(ds);
     if (locked == 2 && order[i].mode) {
       /* trying to upgrade read lock to write lock */
-      PopDataSpaceLocks(result);
+      PopRegionLocks(result);
       return -1;
     }
     if (!locked) {
       if (order[i].mode) {
-	if (!DataSpaceTryWriteLock(ds)) {
-	  PopDataSpaceLocks(result);
+	if (!RegionTryWriteLock(ds)) {
+	  PopRegionLocks(result);
 	  return -1;
 	}
       } else {
-	if (!DataSpaceTryReadLock(ds)) {
-	  PopDataSpaceLocks(result);
+	if (!RegionTryReadLock(ds)) {
+	  PopRegionLocks(result);
 	  return -1;
 	}
       }
-      PushDataSpaceLock(ds);
+      PushRegionLock(ds);
     }
-    if (GetDataSpaceOf(order[i].obj) != ds)
+    if (GetRegionOf(order[i].obj) != ds)
     {
       /* Race condition, revert locks and fail */
-      PopDataSpaceLocks(result);
+      PopRegionLocks(result);
       return -1;
     }
   }
   return result;
 }
 
-DataSpace *CurrentDataSpace()
+Region *CurrentRegion()
 {
-  return TLS->currentDataSpace;
+  return TLS->currentRegion;
 }
 
 void QueueForTraversal(Obj obj);
@@ -683,7 +683,7 @@ static inline Obj ReplaceByCopy(Obj obj)
     if (!IS_BAG_REF(obj) || !DS_BAG(obj) || DS_BAG(obj) == traversal->dataSpace)
       return obj;
     else
-      return GetDataSpaceOf(obj)->obj;
+      return GetRegionOf(obj)->obj;
   }
   else
     return obj;
@@ -867,7 +867,7 @@ void QueueForTraversal(Obj obj)
   ADDR_OBJ(traversal->list)[++traversal->listSize] = obj;
 }
 
-void TraverseDataSpaceFrom(TraversalState *traversal, Obj obj)
+void TraverseRegionFrom(TraversalState *traversal, Obj obj)
 {
   if (!IS_BAG_REF(obj) || !CheckRead(obj)) {
     traversal->list = NewList(0);
@@ -906,7 +906,7 @@ Obj ReachableObjectsFrom(Obj obj)
   if (!IS_BAG_REF(obj) || DS_BAG(obj) == NULL)
     return NewList(0);
   BeginTraversal(&traversal);
-  TraverseDataSpaceFrom(&traversal, obj);
+  TraverseRegionFrom(&traversal, obj);
   EndTraversal();
   return traversal.list;
 }
@@ -951,7 +951,7 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList)
       return obj;
   }
   BeginTraversal(&traversal);
-  TraverseDataSpaceFrom(&traversal, obj);
+  TraverseRegionFrom(&traversal, obj);
   traversed = ADDR_OBJ(traversal.list);
   len = LEN_PLIST(traversal.list);
   copyList = NewList(len);
@@ -960,7 +960,7 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList)
   if (len == 0) {
     EndTraversal();
     if (delimited)
-      return GetDataSpaceOf(obj)->obj;
+      return GetRegionOf(obj)->obj;
     ErrorQuit("Object not in a readable region", 0L, 0L);
   }
   traversal.copyMap = NewList(LEN_PLIST(traversal.hashTable));

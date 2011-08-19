@@ -447,46 +447,46 @@ Obj FuncCurrentThread(Obj self) {
 
 /****************************************************************************
 **
-*F FuncDataSpace ... return region of an object
+*F FuncRegionOf ... return region of an object
 **
 */
 
 
-Obj FuncDataSpace(Obj self, Obj obj) {
-  DataSpace *ds = GetDataSpaceOf(obj);
-  return ds == NULL ? PublicDataSpace : ds->obj;
+Obj FuncRegionOf(Obj self, Obj obj) {
+  Region *ds = GetRegionOf(obj);
+  return ds == NULL ? PublicRegion : ds->obj;
 }
 
 /****************************************************************************
 **
-*F FuncIsShared ... return whether a dataspace is shared
+*F FuncIsShared ... return whether a region is shared
 **
 */
 
 Obj FuncIsShared(Obj self, Obj obj) {
-  DataSpace *ds = GetDataSpaceOf(obj);
+  Region *ds = GetRegionOf(obj);
   return (ds && !ds->fixed_owner) ? True : False;
 }
 
 /****************************************************************************
 **
-*F FuncIsPublic ... return whether a dataspace is public
+*F FuncIsPublic ... return whether a region is public
 **
 */
 
 Obj FuncIsPublic(Obj self, Obj obj) {
-  DataSpace *ds = GetDataSpaceOf(obj);
+  Region *ds = GetRegionOf(obj);
   return ds == NULL ? True : False;
 }
 
 /****************************************************************************
 **
-*F FuncIsThreadLocal ... return whether a dataspace is thread-local
+*F FuncIsThreadLocal ... return whether a region is thread-local
 **
 */
 
 Obj FuncIsThreadLocal(Obj self, Obj obj) {
-  DataSpace *ds = GetDataSpaceOf(obj);
+  Region *ds = GetRegionOf(obj);
   return (ds && ds->fixed_owner && ds->owner == TLS) ? True : False;
 }
 
@@ -498,7 +498,7 @@ Obj FuncIsThreadLocal(Obj self, Obj obj) {
 
 Obj FuncHaveWriteAccess(Obj self, Obj obj)
 {
-  DataSpace* ds = GetDataSpaceOf(obj);
+  Region* ds = GetRegionOf(obj);
   if (ds != NULL && ds->owner == TLS)
     return True;
   else
@@ -513,7 +513,7 @@ Obj FuncHaveWriteAccess(Obj self, Obj obj)
 
 Obj FuncHaveReadAccess(Obj self, Obj obj)
 {
-  DataSpace* ds = GetDataSpaceOf(obj);
+  Region* ds = GetRegionOf(obj);
   if (ds != NULL && (ds->owner == TLS || ds->readers[TLS->threadID+1]))
     return True;
   else
@@ -679,8 +679,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "SynchronizedShared", 2, "object, function",
       FuncHASH_SYNCHRONIZED_SHARED, "src/threadapi.c:SynchronizedShared" },
 
-    { "DataSpace", 1, "object",
-      FuncDataSpace, "src/threadapi.c:DataSpace" },
+    { "RegionOf", 1, "object",
+      FuncRegionOf, "src/threadapi.c:RegionOf" },
 
     { "IsShared", 1, "object",
       FuncIsShared, "src/threadapi.c:IsShared" },
@@ -873,7 +873,7 @@ Obj TypeSyncVar(Obj obj)
   return TYPE_SYNCVAR;
 }
 
-Obj TypeDataSpace(Obj obj)
+Obj TypeRegion(Obj obj)
 {
   return TYPE_DATASPACE;
 }
@@ -890,7 +890,7 @@ static void FinalizeMonitor(Bag);
 static void PrintChannel(Obj);
 static void PrintBarrier(Obj);
 static void PrintSyncVar(Obj);
-static void PrintDataSpace(Obj);
+static void PrintRegion(Obj);
 
 /****************************************************************************
 **
@@ -904,13 +904,13 @@ static Int InitKernel (
   InfoBags[T_CHANNEL].name = "channel";
   InfoBags[T_BARRIER].name = "barrier";
   InfoBags[T_SYNCVAR].name = "syncvar";
-  InfoBags[T_DATASPACE].name = "dataspace";
+  InfoBags[T_REGION].name = "region";
   
     /* install the kind methods */
     TypeObjFuncs[ T_CHANNEL ] = TypeChannel;
     TypeObjFuncs[ T_BARRIER ] = TypeBarrier;
     TypeObjFuncs[ T_SYNCVAR ] = TypeSyncVar;
-    TypeObjFuncs[ T_DATASPACE ] = TypeDataSpace;
+    TypeObjFuncs[ T_REGION ] = TypeRegion;
     /* install global variables */
     InitCopyGVar("TYPE_CHANNEL", &TYPE_CHANNEL);
     InitCopyGVar("TYPE_BARRIER", &TYPE_BARRIER);
@@ -921,23 +921,23 @@ static Int InitKernel (
     InitMarkFuncBags(T_BARRIER, MarkBarrierBag);
     InitMarkFuncBags(T_SYNCVAR, MarkSyncVarBag);
     InitMarkFuncBags(T_MONITOR, MarkNoSubBags);
-    InitMarkFuncBags(T_DATASPACE, MarkNoSubBags);
+    InitMarkFuncBags(T_REGION, MarkNoSubBags);
     InitFinalizerFuncBags(T_MONITOR, FinalizeMonitor);
     /* install print functions */
     PrintObjFuncs[ T_CHANNEL ] = PrintChannel;
     PrintObjFuncs[ T_BARRIER ] = PrintBarrier;
     PrintObjFuncs[ T_SYNCVAR ] = PrintSyncVar;
-    PrintObjFuncs[ T_DATASPACE ] = PrintDataSpace;
+    PrintObjFuncs[ T_REGION ] = PrintRegion;
     /* install mutability functions */
     IsMutableObjFuncs [ T_CHANNEL ] = AlwaysMutable;
     IsMutableObjFuncs [ T_BARRIER ] = AlwaysMutable;
     IsMutableObjFuncs [ T_SYNCVAR ] = AlwaysMutable;
-    IsMutableObjFuncs [ T_DATASPACE ] = AlwaysMutable;
+    IsMutableObjFuncs [ T_REGION ] = AlwaysMutable;
     MakeBagTypePublic(T_CHANNEL);
-    MakeBagTypePublic(T_DATASPACE);
+    MakeBagTypePublic(T_REGION);
     MakeBagTypePublic(T_SYNCVAR);
     MakeBagTypePublic(T_BARRIER);
-    PublicDataSpace = NewBag(T_DATASPACE, sizeof(DataSpace *));
+    PublicRegion = NewBag(T_REGION, sizeof(Region *));
     /* return success                                                      */
     return 0;
 }
@@ -1094,7 +1094,7 @@ static void ExpandChannel(Channel *channel)
 static void AddToChannel(Channel *channel, Obj obj, int migrate)
 {
   Obj children;
-  DataSpace *ds = DS_BAG(channel->queue);
+  Region *ds = DS_BAG(channel->queue);
   UInt i, len;
   if (migrate && IS_BAG_REF(obj) && DS_BAG(obj) && DS_BAG(obj)->owner == TLS) {
     children = ReachableObjectsFrom(obj);
@@ -1118,7 +1118,7 @@ static Obj RetrieveFromChannel(Channel *channel)
 {
   Obj obj = ADDR_OBJ(channel->queue)[++channel->head];
   Obj children = ADDR_OBJ(channel->queue)[++channel->head];
-  DataSpace *ds = TLS->currentDataSpace;
+  Region *ds = TLS->currentRegion;
   UInt i, len = children ? LEN_PLIST(children) : 0;
   ADDR_OBJ(channel->queue)[channel->head-2] = 0;
   ADDR_OBJ(channel->queue)[channel->head-1] = 0;
@@ -1422,7 +1422,7 @@ static Obj CreateChannel(int capacity)
   channel->dynamic = (capacity < 0);
   channel->waiting = 0;
   channel->queue = NEW_PLIST( T_PLIST, channel->capacity);
-  DS_BAG(channel->queue) = LimboDataSpace;
+  DS_BAG(channel->queue) = LimboRegion;
   SET_LEN_PLIST(channel->queue, channel->capacity);
   return channelBag;
 }
@@ -1834,22 +1834,22 @@ static void PrintSyncVar(Obj obj)
   Pr(buffer, 0L, 0L);
 }
 
-static void PrintDataSpace(Obj obj)
+static void PrintRegion(Obj obj)
 {
   char buffer[32];
-  DataSpace *ds = GetDataSpaceOf(obj);
+  Region *ds = GetRegionOf(obj);
   if (ds) {
-    if (ds == LimboDataSpace) {
+    if (ds == LimboRegion) {
       Pr("<limbo region>", 0L, 0L);
       return;
-    } else if (ds == ReadOnlyDataSpace) {
+    } else if (ds == ReadOnlyRegion) {
       Pr("<read-only region>", 0L, 0L);
       return;
-    } else if (ds == ProtectedDataSpace) {
+    } else if (ds == ProtectedRegion) {
       Pr("<protected region>", 0L, 0L);
       return;
     }
-    sprintf(buffer, "<region %p>", GetDataSpaceOf(obj));
+    sprintf(buffer, "<region %p>", GetRegionOf(obj));
     Pr(buffer, 0L, 0L);
   } else
     Pr("<public region>", 0L, 0L);
@@ -1857,7 +1857,7 @@ static void PrintDataSpace(Obj obj)
 
 Obj FuncIS_LOCKED(Obj self, Obj obj)
 {
-  DataSpace *ds = IS_BAG_REF(obj) ? DS_BAG(obj) : NULL;
+  Region *ds = IS_BAG_REF(obj) ? DS_BAG(obj) : NULL;
   if (!ds)
     return INTOBJ_INT(0);
   return INTOBJ_INT(IsLocked(ds));
@@ -1959,7 +1959,7 @@ Obj FuncUNLOCK(Obj self, Obj sp)
 {
   if (!IS_INTOBJ(sp) || INT_INTOBJ(sp) < 0)
     ArgumentError("UNLOCK: argument must be a non-negative integer");
-  PopDataSpaceLocks(INT_INTOBJ(sp));
+  PopRegionLocks(INT_INTOBJ(sp));
   return (Obj) 0;
 }
 
@@ -1973,14 +1973,14 @@ Obj FuncCURRENT_LOCKS(Obj self)
   return result;
 }
 
-static int MigrateObjects(int count, Obj *objects, DataSpace *target)
+static int MigrateObjects(int count, Obj *objects, Region *target)
 {
   int i;
   for (i=0; i<count; i++) {
-    DataSpace *ds;
+    Region *ds;
     if (IS_BAG_REF(objects[i])) {
-      ds = (DataSpace *)(DS_BAG(objects[i]));
-      if (!ds || ds->owner != TLS || ds == ProtectedDataSpace)
+      ds = (Region *)(DS_BAG(objects[i]));
+      if (!ds || ds->owner != TLS || ds == ProtectedRegion)
         return 0;
     }
   }
@@ -1998,14 +1998,14 @@ Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
 
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj)
 {
-  if (!MigrateObjects(1, &obj, NewDataSpace()))
+  if (!MigrateObjects(1, &obj, NewRegion()))
     ArgumentError("SHARE_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
 
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 {
-  DataSpace *targetDS = GetDataSpaceOf(target);
+  Region *targetDS = GetRegionOf(target);
   if (!targetDS || IsLocked(targetDS) != 1)
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target region");
   if (!MigrateObjects(1, &obj, targetDS))
@@ -2015,7 +2015,7 @@ Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
 {
-  if (!MigrateObjects(1, &obj, TLS->currentDataSpace))
+  if (!MigrateObjects(1, &obj, TLS->currentRegion))
     ArgumentError("ADOPT_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2046,7 +2046,7 @@ Obj FuncSHARE(Obj self, Obj obj)
 {
   Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, NewDataSpace()))
+       ADDR_OBJ(reachable)+1, NewRegion()))
     ArgumentError("SHARE: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2055,7 +2055,7 @@ Obj FuncADOPT(Obj self, Obj obj)
 {
   Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, TLS->currentDataSpace))
+       ADDR_OBJ(reachable)+1, TLS->currentRegion))
     ArgumentError("ADOPT: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2071,7 +2071,7 @@ Obj FuncMAKE_PUBLIC(Obj self, Obj obj)
 
 Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
 {
-  DataSpace *targetDS = GetDataSpaceOf(target);
+  Region *targetDS = GetRegionOf(target);
   Obj reachable;
   if (!targetDS || IsLocked(targetDS) != 1)
     ArgumentError("MIGRATE: Thread does not have exclusive access to target region");
@@ -2094,61 +2094,61 @@ Obj FuncMakeThreadLocal(Obj self, Obj var)
 
 Obj FuncMakeReadOnly(Obj self, Obj obj)
 {
-  DataSpace *ds = GetDataSpaceOf(obj);
+  Region *ds = GetRegionOf(obj);
   Obj reachable;
-  if (!ds || ds == ReadOnlyDataSpace)
+  if (!ds || ds == ReadOnlyRegion)
     return obj;
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, ReadOnlyDataSpace))
+       ADDR_OBJ(reachable)+1, ReadOnlyRegion))
     ArgumentError("MakeReadOnly: Thread does not have exclusive access to objects");
   return obj;
 }
 
 Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
 {
-  DataSpace *ds = GetDataSpaceOf(obj);
+  Region *ds = GetRegionOf(obj);
   Obj reachable;
-  if (!ds || ds == ReadOnlyDataSpace)
+  if (!ds || ds == ReadOnlyRegion)
     return obj;
-  if (!MigrateObjects(1, &obj, ReadOnlyDataSpace))
+  if (!MigrateObjects(1, &obj, ReadOnlyRegion))
     ArgumentError("MakeReadOnlyObj: Thread does not have exclusive access to object");
   return obj;
 }
 
 Obj FuncMakeProtected(Obj self, Obj obj)
 {
-  DataSpace *ds = GetDataSpaceOf(obj);
+  Region *ds = GetRegionOf(obj);
   Obj reachable;
-  if (ds == ProtectedDataSpace)
+  if (ds == ProtectedRegion)
     return obj;
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, ProtectedDataSpace))
+       ADDR_OBJ(reachable)+1, ProtectedRegion))
     ArgumentError("MakeProtected: Thread does not have exclusive access to objects");
   return obj;
 }
 
 Obj FuncMakeProtectedObj(Obj self, Obj obj)
 {
-  DataSpace *ds = GetDataSpaceOf(obj);
-  if (ds == ProtectedDataSpace)
+  Region *ds = GetRegionOf(obj);
+  if (ds == ProtectedRegion)
     return obj;
-  if (!MigrateObjects(1, &obj, ProtectedDataSpace))
+  if (!MigrateObjects(1, &obj, ProtectedRegion))
     ArgumentError("MakeProtectedObj: Thread does not have exclusive access to object");
   return obj;
 }
 
 Obj FuncIsReadOnly(Obj self, Obj obj)
 {
-  DataSpace *ds = GetDataSpaceOf(obj);
-  return (ds == ReadOnlyDataSpace) ? True : False;
+  Region *ds = GetRegionOf(obj);
+  return (ds == ReadOnlyRegion) ? True : False;
 }
 
 Obj FuncIsProtected(Obj self, Obj obj)
 {
-  DataSpace *ds = GetDataSpaceOf(obj);
-  return (ds == ProtectedDataSpace) ? True : False;
+  Region *ds = GetRegionOf(obj);
+  return (ds == ProtectedRegion) ? True : False;
 }
 
 Obj FuncBEGIN_SINGLE_THREADED(Obj self)

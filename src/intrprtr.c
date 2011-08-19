@@ -1123,7 +1123,7 @@ void            IntrAtomicEnd ( void )
     lockSP = LockObjects(j, tolock, locktypes);
     if (lockSP >= 0) {
       CALL_0ARGS( body );
-      PopDataSpaceLocks(lockSP);
+      PopRegionLocks(lockSP);
     } else
       ErrorMayQuit("Cannot lock required regions", 0L, 0L);
 

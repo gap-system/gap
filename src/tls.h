@@ -13,7 +13,7 @@ typedef struct ThreadLocalStorage
   void *threadSignal;
   void *acquiredMonitor;
   unsigned multiplexRandomSeed;
-  void *currentDataSpace;
+  void *currentRegion;
   void *traversalState;
   Obj tlRecords;
   Obj lockStack;
@@ -162,11 +162,11 @@ static inline ThreadLocalStorage *GetTLS()
 static inline Bag WriteGuard(Bag bag)
 {
   extern void WriteGuardError();
-  DataSpace *dataspace;
+  Region *region;
   if (!IS_BAG_REF(bag))
     return bag;
-  dataspace = DS_BAG(bag);
-  if (dataspace && dataspace->owner != TLS)
+  region = DS_BAG(bag);
+  if (region && region->owner != TLS)
     WriteGuardError(bag);
   return bag;
 }
@@ -175,11 +175,11 @@ static inline Bag *WriteGuardByRef(Bag *bagref)
 {
   extern void WriteGuardError();
   Bag bag = *bagref;
-  DataSpace *dataspace;
+  Region *region;
   if (!IS_BAG_REF(bag))
     return bagref;
-  dataspace = DS_BAG(bag);
-  if (dataspace && dataspace->owner != TLS)
+  region = DS_BAG(bag);
+  if (region && region->owner != TLS)
     WriteGuardError(bag);
   return bagref;
 }
@@ -193,22 +193,22 @@ static inline Bag ImpliedWriteGuard(Bag bag)
 
 static inline int CheckWrite(Bag bag)
 {
-  DataSpace *dataspace;
+  Region *region;
   if (!IS_BAG_REF(bag))
     return 1;
-  dataspace = DS_BAG(bag);
-  return !(dataspace && dataspace->owner != TLS);
+  region = DS_BAG(bag);
+  return !(region && region->owner != TLS);
 }
 
 static inline Bag ReadGuard(Bag bag)
 {
   extern void ReadGuardError();
-  DataSpace *dataspace;
+  Region *region;
   if (!IS_BAG_REF(bag))
     return bag;
-  dataspace = DS_BAG(bag);
-  if (dataspace && dataspace->owner != TLS &&
-      !dataspace->readers[TLS->threadID])
+  region = DS_BAG(bag);
+  if (region && region->owner != TLS &&
+      !region->readers[TLS->threadID])
     ReadGuardError(bag);
   return bag;
 }
@@ -217,12 +217,12 @@ static inline Bag *ReadGuardByRef(Bag *bagref)
 {
   extern void ReadGuardError();
   Bag bag = *bagref;
-  DataSpace *dataspace;
+  Region *region;
   if (!IS_BAG_REF(bag))
     return bagref;
-  dataspace = DS_BAG(bag);
-  if (dataspace && dataspace->owner != TLS &&
-      !dataspace->readers[TLS->threadID])
+  region = DS_BAG(bag);
+  if (region && region->owner != TLS &&
+      !region->readers[TLS->threadID])
     ReadGuardError(bag);
   return bagref;
 }
@@ -237,12 +237,12 @@ static inline Bag ImpliedReadGuard(Bag bag)
 
 static inline int CheckRead(Bag bag)
 {
-  DataSpace *dataspace;
+  Region *region;
   if (!IS_BAG_REF(bag))
     return 1;
-  dataspace = DS_BAG(bag);
-  return !(dataspace && dataspace->owner != TLS &&
-    !dataspace->readers[TLS->threadID]);
+  region = DS_BAG(bag);
+  return !(region && region->owner != TLS &&
+    !region->readers[TLS->threadID]);
 }
 
 static inline int IsMainThread()
