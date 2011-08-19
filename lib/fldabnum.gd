@@ -316,6 +316,7 @@ DeclareGlobalVariable( "CYCLOTOMIC_FIELDS",
 InstallFlushableValue( CYCLOTOMIC_FIELDS,
     [ Rationals,,, GaussianRationals ] );
 
+ShareSingleObj(CYCLOTOMIC_FIELDS);
 
 #############################################################################
 ##
