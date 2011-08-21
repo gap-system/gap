@@ -467,7 +467,8 @@ UNBIND_GLOBAL( "infinity" );
 BIND_GLOBAL( "infinity",
     Objectify( NewType( CyclotomicsFamily, IsInfinity
                         and IsPositionalObjectRep ), [] ) );
-
+MakeReadOnly(infinity);
+                        
 InstallMethod( PrintObj,
     "for infinity",
     [ IsInfinity ], function( obj ) Print( "infinity" ); end );
