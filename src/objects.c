@@ -1211,7 +1211,13 @@ Obj IS_POSOBJ_Handler (
     Obj                 self,
     Obj                 obj )
 {
-    return (TNUM_OBJ(obj) == T_POSOBJ ? True : False);
+    switch (TNUM_OBJ(obj)) {
+      case T_POSOBJ:
+      case T_APOSOBJ:
+        return True;
+      default:
+        return False;
+    }
 }
 
 
@@ -1224,9 +1230,17 @@ Obj SET_TYPE_POSOBJ_Handler (
     Obj                 obj,
     Obj                 kind )
 {
-    TYPE_POSOBJ( obj ) = kind;
-    RetypeBag( obj, T_POSOBJ );
-    CHANGED_BAG( obj );
+    switch (TNUM_OBJ(obj)) {
+      case T_APOSOBJ:
+      case T_ALIST:
+        SET_TYPE_OBJ( obj, kind );
+        break;
+      default:
+	TYPE_POSOBJ( obj ) = kind;
+	RetypeBag( obj, T_POSOBJ );
+	CHANGED_BAG( obj );
+	break;
+    }
     return obj;
 }
 
@@ -1239,7 +1253,13 @@ Obj LEN_POSOBJ_Handler (
     Obj                 self,
     Obj                 obj )
 {
-    return INTOBJ_INT( SIZE_OBJ(obj) / sizeof(Obj) - 1 );
+    switch (TNUM_OBJ(obj)) {
+    case T_ALIST:
+    case T_APOSOBJ:
+      return INTOBJ_INT(ADDR_OBJ(obj)[0]);
+    default:
+      return INTOBJ_INT( SIZE_OBJ(obj) / sizeof(Obj) - 1 );
+    }
 }
 
 

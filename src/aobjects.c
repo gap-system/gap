@@ -107,6 +107,7 @@ Obj TypeTLRecord(Obj obj)
 void SetTypeAList(Obj obj, Obj kind)
 {
   ADDR_OBJ(obj)[1] = kind;
+  RetypeBag(obj, T_APOSOBJ);
   AO_nop_write();
 }
 
@@ -1066,12 +1067,12 @@ static Int IsSmallListAList(Obj list)
 
 static Int LenListAList(Obj list)
 {
-  return (Int)(ADDR_OBJ(list)[0]);
+  return (Int)(ADDR_ATOM(list)[0].atom);
 }
 
 static Obj LengthAList(Obj list)
 {
-  return INTOBJ_INT(ADDR_OBJ(list)[0]);
+  return INTOBJ_INT(ADDR_ATOM(list)[0].atom);
 }
 
 static Obj Elm0AList(Obj list, Int pos)
@@ -1083,7 +1084,7 @@ static Obj Elm0AList(Obj list, Int pos)
   return ADDR_ATOM(list)[1+pos].obj;
 }
 
-static Obj ElmAList(Obj list, Int pos)
+Obj ElmAList(Obj list, Int pos)
 {
   UInt len = (UInt)ADDR_ATOM(list)[0].atom;
   Obj result;
@@ -1110,7 +1111,12 @@ static Obj ElmAList(Obj list, Int pos)
   }
 }
 
-static void AssAList(Obj list, Int pos, Obj obj)
+int IsbAList(Obj list, Int pos) {
+  UInt len = (UInt)ADDR_ATOM(list)[0].atom;
+  return pos >= 1 && pos <= len && ADDR_ATOM(list)[1+pos].obj;
+}
+
+void AssAList(Obj list, Int pos, Obj obj)
 {
   UInt len = (UInt)ADDR_ATOM(list)[0].atom;
   while (pos < 1 || pos > len) {
@@ -1125,6 +1131,15 @@ static void AssAList(Obj list, Int pos, Obj obj)
   }
   ADDR_ATOM(list)[1+pos].obj = obj;
   AO_nop_write();
+}
+
+void UnbAList(Obj list, Int pos)
+{
+  UInt len = (UInt)ADDR_ATOM(list)[0].atom;
+  if (pos >= 1 && pos <= len) {
+    ADDR_ATOM(list)[1+pos].obj = 0;
+    AO_nop_write();
+  }
 }
 
 void InitAObjectsTLS() {
@@ -1217,16 +1232,19 @@ static Int InitKernel (
     UsageCap[i] = (1<<i)/3 * 2;
   /* install info string */
   InfoBags[T_ALIST].name = "atomic list";
+  InfoBags[T_APOSOBJ].name = "atomic positional object";
   InfoBags[T_AREC].name = "atomic record";
   InfoBags[T_ACOMOBJ].name = "atomic component object";
   InfoBags[T_TLREC].name = "thread-local record";
   
   /* install the kind methods */
   TypeObjFuncs[ T_ALIST ] = TypeAList;
+  TypeObjFuncs[ T_APOSOBJ ] = TypeAList;
   TypeObjFuncs[ T_AREC ] = TypeARecord;
   TypeObjFuncs[ T_ACOMOBJ ] = TypeARecord;
   TypeObjFuncs[ T_TLREC ] = TypeTLRecord;
   SetTypeObjFuncs[ T_ALIST ] = SetTypeAList;
+  SetTypeObjFuncs[ T_APOSOBJ ] = SetTypeAList;
   SetTypeObjFuncs[ T_AREC ] = SetTypeARecord;
   SetTypeObjFuncs[ T_ACOMOBJ ] = SetTypeARecord;
   /* install global variables */
@@ -1235,6 +1253,7 @@ static Int InitKernel (
   InitCopyGVar("TYPE_TLREC", &TYPE_TLREC);
   /* install mark functions */
   InitMarkFuncBags(T_ALIST, MarkAtomicList);
+  InitMarkFuncBags(T_APOSOBJ, MarkAtomicList);
   InitMarkFuncBags(T_AREC, MarkAtomicRecord);
   InitMarkFuncBags(T_ACOMOBJ, MarkAtomicRecord);
   InitMarkFuncBags(T_AREC_INNER, MarkAtomicRecord2);
@@ -1245,9 +1264,11 @@ static Int InitKernel (
   PrintObjFuncs[ T_TLREC ] = PrintTLRecord;
   /* install mutability functions */
   IsMutableObjFuncs [ T_ALIST ] = AlwaysMutable;
+  IsMutableObjFuncs [ T_APOSOBJ ] = AlwaysMutable;
   IsMutableObjFuncs [ T_AREC ] = AlwaysMutable;
   IsMutableObjFuncs [ T_ACOMOBJ ] = AlwaysMutable;
   MakeBagTypePublic(T_ALIST);
+  MakeBagTypePublic(T_APOSOBJ);
   MakeBagTypePublic(T_AREC);
   MakeBagTypePublic(T_ACOMOBJ);
   MakeBagTypePublic(T_AREC_INNER);
@@ -1264,6 +1285,8 @@ static Int InitKernel (
   ElmvListFuncs[T_ALIST] = ElmAList;
   ElmwListFuncs[T_ALIST] = ElmAList;
   AssListFuncs[T_ALIST] = AssAList;
+  UnbListFuncs[T_ALIST] = UnbAList;
+  IsbListFuncs[T_ALIST] = IsbAList;
   /* AsssListFuncs[T_ALIST] = AsssAList; */
   /* install record functions */
   ElmRecFuncs[ T_AREC ] = ElmARecord;

@@ -3837,6 +3837,9 @@ void            IntrAssPosObj ( void )
         SET_ELM_PLIST( list, p, rhs );
         CHANGED_BAG( list );
     }
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        AssListFuncs[T_ALIST]( list, p, rhs );
+    }
     else {
         ASS_LIST( list, p, rhs );
     }
@@ -3882,7 +3885,7 @@ void            IntrAsssPosObj ( void )
     list = PopObj();
 
     /* assign to several elements of the list                              */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ || TNUM_OBJ(list) == T_APOSOBJ ) {
         ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
     }
     else {
@@ -3988,6 +3991,9 @@ void            IntrUnbPosObj ( void )
             SET_ELM_PLIST( list, p, 0 );
         }
     }
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        UnbListFuncs[T_ALIST]( list, p );
+    }
     else {
         UNB_LIST( list, p );
     }
@@ -4043,6 +4049,9 @@ void            IntrElmPosObj ( void )
                 (Int)p, 0L );
         }
     }
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        elm = ElmListFuncs[T_ALIST]( list, p );
+    }
     else {
         elm = ELM_LIST( list, p );
     }
@@ -4075,7 +4084,7 @@ void            IntrElmsPosObj ( void )
     list = PopObj();
 
     /* select several elements from the list                               */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
+    if ( TNUM_OBJ(list) == T_POSOBJ || TNUM_OBJ(list) == T_APOSOBJ ) {
         elms = 0;
         ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
     }
@@ -4182,6 +4191,9 @@ void            IntrIsbPosObj ( void )
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
         isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
                True : False);
+    }
+    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
+        isb = (IsbListFuncs[T_ALIST]( list, p ) ? True : False);
     }
     else {
         isb = (ISB_LIST( list, p ) ? True : False);
