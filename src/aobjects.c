@@ -1271,14 +1271,17 @@ static Int InitKernel (
   AssRecFuncs[ T_AREC ] = AssARecord;
   CopyObjFuncs[ T_AREC ] = CopyARecord;
   CleanObjFuncs[ T_AREC ] = CleanARecord;
+  IsRecFuncs[ T_AREC ] = IsRecYes;
   ElmRecFuncs[ T_ACOMOBJ ] = ElmARecord;
   IsbRecFuncs[ T_ACOMOBJ ] = IsbARecord;
   AssRecFuncs[ T_ACOMOBJ ] = AssARecord;
   CopyObjFuncs[ T_ACOMOBJ ] = CopyARecord;
   CleanObjFuncs[ T_ACOMOBJ ] = CleanARecord;
+  IsRecFuncs[ T_ACOMOBJ ] = IsRecNot;
   ElmRecFuncs[ T_TLREC ] = ElmTLRecord;
   IsbRecFuncs[ T_TLREC ] = IsbTLRecord;
   AssRecFuncs[ T_TLREC ] = AssTLRecord;
+  IsRecFuncs[ T_TLREC ] = IsRecYes;
   /* return success                                                      */
   return 0;
 }

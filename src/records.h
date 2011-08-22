@@ -82,6 +82,10 @@ extern  UInt            RNamObj (
 extern  Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 
+extern Int IsRecYes( Obj obj );
+extern Int IsRecNot( Obj obj );
+
+
 /****************************************************************************
 **
 *F  ELM_REC(<rec>,<rnam>) . . . . . . . . . . select an element from a record
@@ -147,6 +151,7 @@ extern  void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, O
                         ((*UnbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 
 extern  void            (*UnbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
+
 
 
 /****************************************************************************
