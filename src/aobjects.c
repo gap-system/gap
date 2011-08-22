@@ -173,7 +173,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
         ArgumentError("AtomicList: First argument must be a non-negative integer");
       len = INT_INTOBJ(ELM_PLIST(args, 1));
       if (len < 0)
-        ArgumentError("NewAtomicList: First argument must be a non-negative integer");
+        ArgumentError("AtomicList: First argument must be a non-negative integer");
       result = NewAtomicList(len);
       init = ELM_PLIST(args, 2);
       data = ADDR_ATOM(result);
@@ -228,7 +228,7 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
   UInt n;
   UInt len;
   AtomicObj aold, anew;
-  if (TNUM_OBJ(list) != T_ALIST)
+  if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_APOSOBJ)
     ArgumentError("COMPARE_AND_SWAP: First argument must be an atomic list");
   len = (UInt) ADDR_ATOM(list)[0].atom;
   if (!IS_INTOBJ(index))
@@ -247,7 +247,7 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
   UInt n;
   UInt len;
   AtomicObj aold, anew, *ptr;
-  if (TNUM_OBJ(list) != T_ALIST)
+  if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_APOSOBJ)
     ArgumentError("ATOMIC_ADDITION: First argument must be an atomic list");
   len = (UInt) ADDR_ATOM(list)[0].atom;
   if (!IS_INTOBJ(index))
@@ -901,15 +901,15 @@ static Obj FuncAtomicRecord(Obj self, Obj args)
       arg = ELM_PLIST(args, 1);
       if (IS_INTOBJ(arg)) {
 	if (INT_INTOBJ(arg) <= 0)
-          ArgumentError("NewAtomicRecord: capacity must be a positive integer");
+          ArgumentError("AtomicRecord: capacity must be a positive integer");
         return NewAtomicRecord(INT_INTOBJ(arg));
       }
       if (TNUM_OBJ(arg) == T_PREC) {
         return NewAtomicRecordFrom(arg);
       }
-      ArgumentError("NewAtomicRecord: argument must be an integer or record");
+      ArgumentError("AtomicRecord: argument must be an integer or record");
     default:
-      ArgumentError("NewAtomicRecord: takes one optional argument");
+      ArgumentError("AtomicRecord: takes one optional argument");
       return (Obj) 0;
   }
 }
@@ -1111,7 +1111,7 @@ Obj ElmAList(Obj list, Int pos)
   }
 }
 
-int IsbAList(Obj list, Int pos) {
+Int IsbAList(Obj list, Int pos) {
   UInt len = (UInt)ADDR_ATOM(list)[0].atom;
   return pos >= 1 && pos <= len && ADDR_ATOM(list)[1+pos].obj;
 }
