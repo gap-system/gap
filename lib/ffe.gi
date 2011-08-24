@@ -185,12 +185,14 @@ InstallGlobalFunction( FFEFamily, function( p )
 
     if MAXSIZE_GF_INTERNAL < p then
 
-      # large characteristic
-      if p in FAMS_FFE_LARGE[1] then
-
-        F:= FAMS_FFE_LARGE[2][ PositionSorted( FAMS_FFE_LARGE[1], p ) ];
-
-      else
+        # large characteristic
+        atomic readonly FAMS_FFE_LARGE do
+            if p in FAMS_FFE_LARGE[1] then                
+                return FAMS_FFE_LARGE[2][ PositionSorted( FAMS_FFE_LARGE[1], p ) ];
+            fi;
+        od;
+        
+        
 
         F:= NewFamily( "FFEFamily", IsFFE, 
                        CanEasilySortElements,
@@ -210,12 +212,18 @@ InstallGlobalFunction( FFEFamily, function( p )
 
         # The whole family is a unique factorisation domain.
         SetIsUFDFamily( F, true );
+        
+        atomic readwrite FAMS_FFE_LARGE do 
+            if p in FAMS_FFE_LARGE[1] then                
+                return FAMS_FFE_LARGE[2][ PositionSorted( FAMS_FFE_LARGE[1], p ) ];
+            fi;
+            
+            Add( FAMS_FFE_LARGE[1], p );
+            Add( FAMS_FFE_LARGE[2], F );
+            SortParallel( FAMS_FFE_LARGE[1], FAMS_FFE_LARGE[2] );
+            return F;
+        od;
 
-        Add( FAMS_FFE_LARGE[1], p );
-        Add( FAMS_FFE_LARGE[2], F );
-        SortParallel( FAMS_FFE_LARGE[1], FAMS_FFE_LARGE[2] );
-
-      fi;
 
     else
 
