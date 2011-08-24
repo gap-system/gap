@@ -107,6 +107,7 @@ Obj TypeTLRecord(Obj obj)
 void SetTypeAList(Obj obj, Obj kind)
 {
   ADDR_OBJ(obj)[1] = kind;
+  RetypeBag(obj, T_APOSOBJ);
   AO_nop_write();
 }
 
@@ -172,7 +173,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
         ArgumentError("AtomicList: First argument must be a non-negative integer");
       len = INT_INTOBJ(ELM_PLIST(args, 1));
       if (len < 0)
-        ArgumentError("NewAtomicList: First argument must be a non-negative integer");
+        ArgumentError("AtomicList: First argument must be a non-negative integer");
       result = NewAtomicList(len);
       init = ELM_PLIST(args, 2);
       data = ADDR_ATOM(result);
@@ -227,7 +228,7 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
   UInt n;
   UInt len;
   AtomicObj aold, anew;
-  if (TNUM_OBJ(list) != T_ALIST)
+  if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_APOSOBJ)
     ArgumentError("COMPARE_AND_SWAP: First argument must be an atomic list");
   len = (UInt) ADDR_ATOM(list)[0].atom;
   if (!IS_INTOBJ(index))
@@ -246,7 +247,7 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
   UInt n;
   UInt len;
   AtomicObj aold, anew, *ptr;
-  if (TNUM_OBJ(list) != T_ALIST)
+  if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_APOSOBJ)
     ArgumentError("ATOMIC_ADDITION: First argument must be an atomic list");
   len = (UInt) ADDR_ATOM(list)[0].atom;
   if (!IS_INTOBJ(index))
@@ -900,15 +901,15 @@ static Obj FuncAtomicRecord(Obj self, Obj args)
       arg = ELM_PLIST(args, 1);
       if (IS_INTOBJ(arg)) {
 	if (INT_INTOBJ(arg) <= 0)
-          ArgumentError("NewAtomicRecord: capacity must be a positive integer");
+          ArgumentError("AtomicRecord: capacity must be a positive integer");
         return NewAtomicRecord(INT_INTOBJ(arg));
       }
       if (TNUM_OBJ(arg) == T_PREC) {
         return NewAtomicRecordFrom(arg);
       }
-      ArgumentError("NewAtomicRecord: argument must be an integer or record");
+      ArgumentError("AtomicRecord: argument must be an integer or record");
     default:
-      ArgumentError("NewAtomicRecord: takes one optional argument");
+      ArgumentError("AtomicRecord: takes one optional argument");
       return (Obj) 0;
   }
 }
@@ -1066,12 +1067,12 @@ static Int IsSmallListAList(Obj list)
 
 static Int LenListAList(Obj list)
 {
-  return (Int)(ADDR_OBJ(list)[0]);
+  return (Int)(ADDR_ATOM(list)[0].atom);
 }
 
 static Obj LengthAList(Obj list)
 {
-  return INTOBJ_INT(ADDR_OBJ(list)[0]);
+  return INTOBJ_INT(ADDR_ATOM(list)[0].atom);
 }
 
 static Obj Elm0AList(Obj list, Int pos)
@@ -1083,7 +1084,7 @@ static Obj Elm0AList(Obj list, Int pos)
   return ADDR_ATOM(list)[1+pos].obj;
 }
 
-static Obj ElmAList(Obj list, Int pos)
+Obj ElmAList(Obj list, Int pos)
 {
   UInt len = (UInt)ADDR_ATOM(list)[0].atom;
   Obj result;
@@ -1110,7 +1111,12 @@ static Obj ElmAList(Obj list, Int pos)
   }
 }
 
-static void AssAList(Obj list, Int pos, Obj obj)
+Int IsbAList(Obj list, Int pos) {
+  UInt len = (UInt)ADDR_ATOM(list)[0].atom;
+  return pos >= 1 && pos <= len && ADDR_ATOM(list)[1+pos].obj;
+}
+
+void AssAList(Obj list, Int pos, Obj obj)
 {
   UInt len = (UInt)ADDR_ATOM(list)[0].atom;
   while (pos < 1 || pos > len) {
@@ -1125,6 +1131,15 @@ static void AssAList(Obj list, Int pos, Obj obj)
   }
   ADDR_ATOM(list)[1+pos].obj = obj;
   AO_nop_write();
+}
+
+void UnbAList(Obj list, Int pos)
+{
+  UInt len = (UInt)ADDR_ATOM(list)[0].atom;
+  if (pos >= 1 && pos <= len) {
+    ADDR_ATOM(list)[1+pos].obj = 0;
+    AO_nop_write();
+  }
 }
 
 void InitAObjectsTLS() {
@@ -1217,16 +1232,19 @@ static Int InitKernel (
     UsageCap[i] = (1<<i)/3 * 2;
   /* install info string */
   InfoBags[T_ALIST].name = "atomic list";
+  InfoBags[T_APOSOBJ].name = "atomic positional object";
   InfoBags[T_AREC].name = "atomic record";
   InfoBags[T_ACOMOBJ].name = "atomic component object";
   InfoBags[T_TLREC].name = "thread-local record";
   
   /* install the kind methods */
   TypeObjFuncs[ T_ALIST ] = TypeAList;
+  TypeObjFuncs[ T_APOSOBJ ] = TypeAList;
   TypeObjFuncs[ T_AREC ] = TypeARecord;
   TypeObjFuncs[ T_ACOMOBJ ] = TypeARecord;
   TypeObjFuncs[ T_TLREC ] = TypeTLRecord;
   SetTypeObjFuncs[ T_ALIST ] = SetTypeAList;
+  SetTypeObjFuncs[ T_APOSOBJ ] = SetTypeAList;
   SetTypeObjFuncs[ T_AREC ] = SetTypeARecord;
   SetTypeObjFuncs[ T_ACOMOBJ ] = SetTypeARecord;
   /* install global variables */
@@ -1235,6 +1253,7 @@ static Int InitKernel (
   InitCopyGVar("TYPE_TLREC", &TYPE_TLREC);
   /* install mark functions */
   InitMarkFuncBags(T_ALIST, MarkAtomicList);
+  InitMarkFuncBags(T_APOSOBJ, MarkAtomicList);
   InitMarkFuncBags(T_AREC, MarkAtomicRecord);
   InitMarkFuncBags(T_ACOMOBJ, MarkAtomicRecord);
   InitMarkFuncBags(T_AREC_INNER, MarkAtomicRecord2);
@@ -1245,9 +1264,11 @@ static Int InitKernel (
   PrintObjFuncs[ T_TLREC ] = PrintTLRecord;
   /* install mutability functions */
   IsMutableObjFuncs [ T_ALIST ] = AlwaysMutable;
+  IsMutableObjFuncs [ T_APOSOBJ ] = AlwaysMutable;
   IsMutableObjFuncs [ T_AREC ] = AlwaysMutable;
   IsMutableObjFuncs [ T_ACOMOBJ ] = AlwaysMutable;
   MakeBagTypePublic(T_ALIST);
+  MakeBagTypePublic(T_APOSOBJ);
   MakeBagTypePublic(T_AREC);
   MakeBagTypePublic(T_ACOMOBJ);
   MakeBagTypePublic(T_AREC_INNER);
@@ -1264,6 +1285,8 @@ static Int InitKernel (
   ElmvListFuncs[T_ALIST] = ElmAList;
   ElmwListFuncs[T_ALIST] = ElmAList;
   AssListFuncs[T_ALIST] = AssAList;
+  UnbListFuncs[T_ALIST] = UnbAList;
+  IsbListFuncs[T_ALIST] = IsbAList;
   /* AsssListFuncs[T_ALIST] = AsssAList; */
   /* install record functions */
   ElmRecFuncs[ T_AREC ] = ElmARecord;
@@ -1271,14 +1294,17 @@ static Int InitKernel (
   AssRecFuncs[ T_AREC ] = AssARecord;
   CopyObjFuncs[ T_AREC ] = CopyARecord;
   CleanObjFuncs[ T_AREC ] = CleanARecord;
+  IsRecFuncs[ T_AREC ] = IsRecYes;
   ElmRecFuncs[ T_ACOMOBJ ] = ElmARecord;
   IsbRecFuncs[ T_ACOMOBJ ] = IsbARecord;
   AssRecFuncs[ T_ACOMOBJ ] = AssARecord;
   CopyObjFuncs[ T_ACOMOBJ ] = CopyARecord;
   CleanObjFuncs[ T_ACOMOBJ ] = CleanARecord;
+  IsRecFuncs[ T_ACOMOBJ ] = IsRecNot;
   ElmRecFuncs[ T_TLREC ] = ElmTLRecord;
   IsbRecFuncs[ T_TLREC ] = IsbTLRecord;
   AssRecFuncs[ T_TLREC ] = AssTLRecord;
+  IsRecFuncs[ T_TLREC ] = IsRecYes;
   /* return success                                                      */
   return 0;
 }
