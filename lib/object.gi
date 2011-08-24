@@ -390,7 +390,7 @@ InstallMethod( ViewObj,
 ##
 #V  DEFAULTVIEWSTRING . . . . . . . . . default string returned by ViewString
 ##
-BIND_GLOBAL("DEFAULTVIEWSTRING", "<object>");
+BIND_GLOBAL("DEFAULTVIEWSTRING", MakeImmutable("<object>"));
 
 
 #############################################################################
