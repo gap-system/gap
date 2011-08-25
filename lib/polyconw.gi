@@ -298,7 +298,7 @@ InstallGlobalFunction( ConwayPol, function( p, n )
         fi;
     else
         if not IsBound( CONWAYPOLYNOMIALSINFO.cache.(String(p)) ) then
-            CONWAYPOLYNOMIALSINFO.cache.(String(p)) := SharedObj([]);
+            CONWAYPOLYNOMIALSINFO.cache.(String(p)) := ShareObj([]);
         fi;
         cachelist := CONWAYPOLYNOMIALSINFO.cache.(String(p));
     fi;
@@ -501,7 +501,7 @@ end );
 #F  ConwayPolynomial( <p>, <n> ) .  <n>-th Conway polynomial in charact. <p>
 ##
 InstallGlobalFunction( ConwayPolynomial, function( p, n )
-    local F, res;
+    local   F,  res;
     if IsPrimeInt( p ) and IsPosInt( n ) then
       F:= GF(p);
       res := UnivariatePolynomial( F, One( F ) * ConwayPol( p, n ) );
@@ -525,6 +525,7 @@ InstallGlobalFunction( ConwayPolynomial, function( p, n )
 end );
 
 InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
+    local   cacheentry;
   if IsPrimeInt( p ) and IsPosInt( n ) then
     # read data files if necessary
     if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
@@ -533,15 +534,25 @@ InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
       ReadLib("conwdat2.g");
     elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
       ReadLib("conwdat3.g");
-    fi;
-    if p < 110000 and IsBound(CONWAYPOLDATA[p]) and IsBound(CONWAYPOLDATA[p][n]) then
-      return true;
   fi;
-  if p >= 110000 and IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))) 
-     and IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))[n]) then
-      return true;
+  atomic readonly CONWAYPOLDATA do
+      if p < 110000 then
+          atomic readonly CONWAYPOLDATA[p] do
+              if IsBound(CONWAYPOLDATA[p]) and IsBound(CONWAYPOLDATA[p][n]) then
+                  return true;
+              fi;
+          od;
+      fi;
+  od;
+  if p >= 110000 and IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))) then
+      cacheentry := CONWAYPOLYNOMIALSINFO.cache.(String(p));
+      atomic readonly cacheentry do
+          if IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))[n]) then
+              return true;
+          fi;
+      od;
   fi;
-    # this is not very precise, hopefully good enough for the moment
+        # this is not very precise, hopefully good enough for the moment
     if p < 41 then 
       if n < 100 and IsPrimeInt(n) then
         return true;
