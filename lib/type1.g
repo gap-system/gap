@@ -362,6 +362,7 @@ end );
 ##
 BIND_GLOBAL( "Subtype2", function ( type, filter )
     local   new, i;
+    ThreadVar.NEW_TYPE_READONLY := false;
     new := NEW_TYPE( TypeOfTypes,
                      type![1],
                      WITH_IMPS_FLAGS( AND_FLAGS(
@@ -369,16 +370,19 @@ BIND_GLOBAL( "Subtype2", function ( type, filter )
                         FLAGS_FILTER( filter ) ) ),
                      type![ POS_DATA_TYPE ] );
     for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) then
+        if IsBound( type![i] ) and not IsBound(new![i]) then
             new![i] := type![i];
         fi;
     od;
+    MakeReadOnlyObj(new);
+    ThreadVar.NEW_TYPE_READONLY := true;
     return new;
 end );
 
 
 BIND_GLOBAL( "Subtype3", function ( type, filter, data )
     local   new, i;
+    ThreadVar.NEW_TYPE_READONLY := false;
     new := NEW_TYPE( TypeOfTypes,
                      type![1],
                      WITH_IMPS_FLAGS( AND_FLAGS(
@@ -386,10 +390,12 @@ BIND_GLOBAL( "Subtype3", function ( type, filter, data )
                         FLAGS_FILTER( filter ) ) ),
                      data );
     for i in [ POS_FIRST_FREE_TYPE .. LEN_POSOBJ( type ) ] do
-        if IsBound( type![i] ) then
+        if IsBound( type![i] ) and not IsBound(new![i]) then
             new![i] := type![i];
         fi;
     od;
+    MakeReadOnlyObj(new);
+    ThreadVar.NEW_TYPE_READONLY := true;
     return new;
 end );
 
