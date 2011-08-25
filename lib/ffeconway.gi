@@ -1675,3 +1675,4 @@ end;
         
 
 SetNamesForFunctionsInRecord("FFECONWAY");
+MakeImmutable(FFECONWAY);
