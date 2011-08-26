@@ -1233,6 +1233,7 @@ Obj SET_TYPE_POSOBJ_Handler (
     switch (TNUM_OBJ(obj)) {
       case T_APOSOBJ:
       case T_ALIST:
+      case T_FIXALIST:
         SET_TYPE_OBJ( obj, kind );
         break;
       default:
@@ -1254,8 +1255,9 @@ Obj LEN_POSOBJ_Handler (
     Obj                 obj )
 {
     switch (TNUM_OBJ(obj)) {
-    case T_ALIST:
     case T_APOSOBJ:
+    case T_ALIST:
+    case T_FIXALIST:
       return INTOBJ_INT(ADDR_OBJ(obj)[0]);
     default:
       return INTOBJ_INT( SIZE_OBJ(obj) / sizeof(Obj) - 1 );

@@ -3838,7 +3838,7 @@ void            IntrAssPosObj ( void )
         CHANGED_BAG( list );
     }
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        AssListFuncs[T_ALIST]( list, p, rhs );
+        AssListFuncs[T_FIXALIST]( list, p, rhs );
     }
     else {
         ASS_LIST( list, p, rhs );
@@ -3992,7 +3992,7 @@ void            IntrUnbPosObj ( void )
         }
     }
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        UnbListFuncs[T_ALIST]( list, p );
+        UnbListFuncs[T_FIXALIST]( list, p );
     }
     else {
         UNB_LIST( list, p );
@@ -4050,7 +4050,7 @@ void            IntrElmPosObj ( void )
         }
     }
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        elm = ElmListFuncs[T_ALIST]( list, p );
+        elm = ElmListFuncs[T_FIXALIST]( list, p );
     }
     else {
         elm = ELM_LIST( list, p );
@@ -4193,7 +4193,7 @@ void            IntrIsbPosObj ( void )
                True : False);
     }
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        isb = (IsbListFuncs[T_ALIST]( list, p ) ? True : False);
+        isb = (IsbListFuncs[T_FIXALIST]( list, p ) ? True : False);
     }
     else {
         isb = (ISB_LIST( list, p ) ? True : False);

@@ -202,7 +202,7 @@ Obj FuncLENGTH (
     ReadGuard(list);
     ImpliedWriteGuard(list);
     if ( (FIRST_LIST_TNUM<=TNUM_OBJ(list) && TNUM_OBJ(list)<=LAST_LIST_TNUM)
-         || TNUM_OBJ(list) == T_ALIST) {
+         || TNUM_OBJ(list) == T_ALIST || TNUM_OBJ(list) == T_FIXALIST) {
         return ObjInt_Int( LEN_LIST(list) );
     }
 

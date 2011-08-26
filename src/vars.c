@@ -2076,7 +2076,7 @@ UInt            ExecAssPosObj (
         SET_ELM_PLIST( list, p, rhs );
         CHANGED_BAG( list );
     } else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        AssListFuncs[T_ALIST](list, p, rhs);
+        AssListFuncs[T_FIXALIST](list, p, rhs);
     }
     /* generic case                                                        */
     else {
@@ -2122,7 +2122,7 @@ UInt            ExecUnbPosObj (
             SET_ELM_PLIST( list, p, 0 );
         }
     } else if (TNUM_OBJ(list) == T_APOSOBJ ) {
-        UnbListFuncs[T_ALIST](list, p);
+        UnbListFuncs[T_FIXALIST](list, p);
     }
     else {
         UNB_LIST( list, p );
@@ -2177,7 +2177,7 @@ Obj             EvalElmPosObj (
                 "you can 'return;' after assigning a value" );
         }
     } else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        elm = ElmListFuncs[T_ALIST](list, p);
+        elm = ElmListFuncs[T_FIXALIST](list, p);
     }
 
     /* generic case                                                        */
@@ -2224,7 +2224,7 @@ Obj             EvalIsbPosObj (
                True : False);
     }
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        isb = IsbListFuncs[T_ALIST](list, p) ? True : False;
+        isb = IsbListFuncs[T_FIXALIST](list, p) ? True : False;
     }
     else {
         isb = (ISB_LIST( list, p ) ? True : False);
