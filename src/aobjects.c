@@ -272,7 +272,8 @@ static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
 	case T_ALIST:
 	case T_FIXALIST:
 	  RetypeBag(list, T_FIXALIST);
-	  return (Obj) 0;
+	  HashUnlock(list);
+	  return list;
         default:
 	  HashUnlock(list);
           ArgumentError("MakeFixedAtomicList: Argument must be atomic list");
