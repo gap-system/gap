@@ -110,17 +110,16 @@ void SetTypeAList(Obj obj, Obj kind)
 {
   switch (TNUM_OBJ(obj)) {
     case T_ALIST:
+    case T_FIXALIST:
       HashLock(obj);
       ADDR_OBJ(obj)[1] = kind;
       RetypeBag(obj, T_APOSOBJ);
       HashUnlock(obj);
       break;
-    case T_FIXALIST:
-      ADDR_OBJ(obj)[1] = kind;
-      RetypeBag(obj, T_APOSOBJ);
-      break;
     case T_APOSOBJ:
+      HashLock(obj);
       ADDR_OBJ(obj)[1] = kind;
+      HashUnlock(obj);
       break;
   }
   AO_nop_write();
@@ -264,6 +263,29 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
   }
 }
 
+static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
+  switch (TNUM_OBJ(list)) {
+    case T_ALIST:
+    case T_FIXALIST:
+      HashLock(list);
+      switch (TNUM_OBJ(list)) {
+	case T_ALIST:
+	case T_FIXALIST:
+	  RetypeBag(list, T_FIXALIST);
+	  return (Obj) 0;
+        default:
+	  HashUnlock(list);
+          ArgumentError("MakeFixedAtomicList: Argument must be atomic list");
+	  return (Obj) 0; /* flow control hint */
+      }
+      HashUnlock(list);
+      break;
+    default:
+      ArgumentError("MakeFixedAtomicList: Argument must be atomic list");
+  }
+  return (Obj) 0; /* flow control hint */
+}
+
 static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
 {
   UInt n;
@@ -288,7 +310,7 @@ static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
   UInt n;
   UInt len;
   AtomicObj *addr;
-  if (TNUM_OBJ(list) != T_ALIST)
+  if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_FIXALIST)
     ArgumentError("SET_ATOMIC_LIST: First argument must be an atomic list");
   addr = ADDR_ATOM(list);
   len = (UInt) addr[0].atom;
@@ -309,12 +331,11 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
   AtomicObj aold, anew;
   AtomicObj *addr;
   switch (TNUM_OBJ(list)) {
-    case T_ALIST:
     case T_FIXALIST:
     case T_APOSOBJ:
       break;
     default:
-      ArgumentError("COMPARE_AND_SWAP: First argument must be an atomic list");
+      ArgumentError("COMPARE_AND_SWAP: First argument must be a fixed atomic list");
   }
   addr = ADDR_ATOM(list);
   len = addr[0].atom;
@@ -335,12 +356,11 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
   UInt len;
   AtomicObj aold, anew, *addr;
   switch (TNUM_OBJ(list)) {
-    case T_ALIST:
     case T_FIXALIST:
     case T_APOSOBJ:
       break;
     default:
-    ArgumentError("ATOMIC_ADDITION: First argument must be an atomic list");
+      ArgumentError("ATOMIC_ADDITION: First argument must be a fixed atomic list");
   }
   addr = ADDR_ATOM(list);
   len = (UInt) addr[0].atom;
@@ -367,7 +387,7 @@ static Obj FuncFromAtomicList(Obj self, Obj list)
   Obj result;
   AtomicObj *data;
   UInt i, len;
-  if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_FIXALIST)
+  if (TNUM_OBJ(list) != T_FIXALIST && TNUM_OBJ(list) != T_ALIST)
     ArgumentError("FromAtomicList: First argument must be an atomic list");
   data = ADDR_ATOM(list);
   len = (UInt) (data++->atom);
@@ -1327,6 +1347,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "FixedAtomicList", -1, "list|count, obj",
       FuncFixedAtomicList, "src/aobjects.c:FixedAtomicList" },
+
+    { "MakeFixedAtomicList", 1, "list",
+      FuncMakeFixedAtomicList, "src/aobjects.c:MakeFixedAtomicList" },
 
     { "FromAtomicList", 1, "list",
       FuncFromAtomicList, "src/aobjects.c:FromAtomicList" },
