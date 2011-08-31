@@ -4,7 +4,7 @@ Tasks := AtomicRecord( rec(
   Initial := 0,
   ReportErrors := true,
   Pool := CreateChannel(),
-  Running := AtomicList(1, 0) ));
+  Running := FixedAtomicList(1, 0) ));
 
 RunningTasks := function()
   return Tasks.Running[1];
