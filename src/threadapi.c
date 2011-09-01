@@ -856,7 +856,7 @@ static StructGVarFunc GVarFuncs [] = {
 Obj TYPE_CHANNEL;
 Obj TYPE_BARRIER;
 Obj TYPE_SYNCVAR;
-Obj TYPE_DATASPACE;
+Obj TYPE_REGION;
 
 Obj TypeChannel(Obj obj)
 {
@@ -875,7 +875,7 @@ Obj TypeSyncVar(Obj obj)
 
 Obj TypeRegion(Obj obj)
 {
-  return TYPE_DATASPACE;
+  return TYPE_REGION;
 }
 
 static Int AlwaysMutable( Obj obj)
@@ -915,7 +915,7 @@ static Int InitKernel (
     InitCopyGVar("TYPE_CHANNEL", &TYPE_CHANNEL);
     InitCopyGVar("TYPE_BARRIER", &TYPE_BARRIER);
     InitCopyGVar("TYPE_SYNCVAR", &TYPE_SYNCVAR);
-    InitCopyGVar("TYPE_DATASPACE", &TYPE_DATASPACE);
+    InitCopyGVar("TYPE_REGION", &TYPE_REGION);
     /* install mark functions */
     InitMarkFuncBags(T_CHANNEL, MarkChannelBag);
     InitMarkFuncBags(T_BARRIER, MarkBarrierBag);
