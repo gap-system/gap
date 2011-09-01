@@ -22,7 +22,7 @@ MakeThreadLocal("R_X");
 BindThreadLocal("R_N", 1);
 BindThreadLocal("R_X", [ ]);
 
-BIND_GLOBAL("RANDOM_SEED_COUNTER", AtomicList(1, 0));
+BIND_GLOBAL("RANDOM_SEED_COUNTER", FixedAtomicList(1, 0));
 BIND_GLOBAL("GET_RANDOM_SEED_COUNTER", function()
   local r;
   r := ATOMIC_ADDITION(RANDOM_SEED_COUNTER, 1, 1);
