@@ -42,9 +42,8 @@ Revision.grpfp_gd :=
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+CosetTableDefaultLimit := 1000;
 MakeThreadLocal("CosetTableDefaultLimit");
-BindThreadLocal("CosetTableDefaultLimit",10000);
-CosetTableDefaultMaxLimit := 10000;
 
 
 #############################################################################
@@ -134,9 +133,8 @@ CosetTableDefaultMaxLimit := 10000;
 ##  <#/GAPDoc>
 ##
 
-MakeThreadLocal("CosetTableDefaultMaxLimit");
-BindThreadLocal("CosetTableDefaultMaxLimit",2^12*CosetTableDefaultLimit);
 CosetTableDefaultMaxLimit := 2^12*CosetTableDefaultLimit;
+MakeThreadLocal("CosetTableDefaultMaxLimit");
 
 
 #############################################################################
