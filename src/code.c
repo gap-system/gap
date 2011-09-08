@@ -1850,6 +1850,7 @@ static UInt CheckForCommonFloat(Char *str) {
 }
 
 static void CodeLazyFloatExpr( Char *str, UInt len) {
+    UInt ix;
     /* Lazy case, store the string for conversion at run time */
     Expr fl = NewExpr( T_FLOAT_EXPR_LAZY, 2*sizeof(UInt) +len+1  );
     /* copy the string                                                     */
@@ -1857,7 +1858,7 @@ static void CodeLazyFloatExpr( Char *str, UInt len) {
 	    len+1 );
       
     *(UInt *)ADDR_EXPR(fl) = len;
-    UInt ix = CheckForCommonFloat(str);
+    ix = CheckForCommonFloat(str);
     if (!ix) 
       ix = getNextFloatExprNumber();
     ((UInt *)ADDR_EXPR(fl))[1] = ix;
