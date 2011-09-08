@@ -833,7 +833,10 @@ static Obj NewAtomicRecordFrom(Obj precord)
   result = NewAtomicRecord(len);
   table = ARecordTable(result);
   for (i=1; i<=len; i++) {
-    pos = ARecordFastInsert(table, GET_RNAM_PREC(precord, i));
+    Int field = GET_RNAM_PREC(precord, i);
+    if (field < 0)
+      field = -field;
+    pos = ARecordFastInsert(table, field);
     table[AR_DATA+2*pos+1].obj = GET_ELM_PREC(precord, i);
   }
   AO_nop_write();
