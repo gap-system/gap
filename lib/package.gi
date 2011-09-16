@@ -206,11 +206,11 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
           for file in files do
 
             # Read the `PackageInfo.g' file.
-            Unbind( GAPInfo.PackageInfoCurrent );
+              GAPInfo.PackageInfoCurrent := fail;
             Read( file[1] );
-            if IsBound( GAPInfo.PackageInfoCurrent ) then
+            if GAPInfo.PackageInfoCurrent <> fail then
               record:= GAPInfo.PackageInfoCurrent;
-              Unbind( GAPInfo.PackageInfoCurrent );
+               GAPInfo.PackageInfoCurrent := fail;
               pkgname:= LowercaseString( record.PackageName );
               NormalizeWhitespace( pkgname );
               version:= record.Version;
@@ -479,7 +479,7 @@ InstallGlobalFunction( LogPackageLoadingMessage, function( arg )
     message:= arg[2];
     if Length( arg ) = 3 then
       currpkg:= arg[3];
-    elif IsBound( GAPInfo.PackageCurrent ) then
+    elif IsBound( GAPInfo.PackageCurrent ) and GAPInfo.PackageCurrent <> fail then
       # This happens inside availability tests.
       currpkg:= GAPInfo.PackageCurrent.PackageName;
     else
@@ -675,7 +675,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
       fi;
       GAPInfo.PackageCurrent:= inforec;
       test:= inforec.AvailabilityTest();
-      Unbind( GAPInfo.PackageCurrent );
+      GAPInfo.PackageCurrent := fail;
       if test <> true then
         LogPackageLoadingMessage( PACKAGE_DEBUG,
             Concatenation( "PackageAvailabilityInfo: the AvailabilityTest",
@@ -941,7 +941,7 @@ InstallGlobalFunction( DirectoriesPackagePrograms, function( name )
     if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
       # The package is already loaded.
       version:= GAPInfo.PackagesLoaded.( name )[2];
-    elif IsBound( GAPInfo.PackageCurrent ) then
+    elif IsBound( GAPInfo.PackageCurrent ) and GAPInfo.PackageCurrent <> fail then
       # The package is currently going to be loaded.
       version:= GAPInfo.PackageCurrent.Version;
     elif 0 < Length( info ) then
@@ -992,7 +992,7 @@ InstallGlobalFunction( DirectoriesPackageLibrary, function( arg )
     if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
       # The package is already loaded.
       version:= GAPInfo.PackagesLoaded.( name )[2];
-    elif IsBound( GAPInfo.PackageCurrent ) then
+    elif IsBound( GAPInfo.PackageCurrent ) and GAPInfo.PackageCurrent <> fail then
       # The package is currently going to be loaded.
       version:= GAPInfo.PackageCurrent.Version;
     elif 0 < Length( info ) then
@@ -1129,7 +1129,7 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
       ENTER_NAMESPACE(namespace);
       Read( pair[2] );
       LEAVE_NAMESPACE();
-      Unbind( GAPInfo.PackageCurrent );
+      GAPInfo.PackageCurrent  := fail;
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           "finish reading file read.g",
           namespace );
@@ -1311,7 +1311,7 @@ fi;
             pkgname );
         GAPInfo.PackageCurrent:= info;
         ReadPackage( pkgname, "init.g" );
-        Unbind( GAPInfo.PackageCurrent );
+        GAPInfo.PackageCurrent := fail;
         LogPackageLoadingMessage( PACKAGE_DEBUG, "finish reading file init.g",
             pkgname );
 
@@ -1384,10 +1384,10 @@ InstallGlobalFunction( SetPackagePath, function( pkgname, pkgpath )
     if file = fail then
       return;
     fi;
-    Unbind( GAPInfo.PackageInfoCurrent );
+    GAPInfo.PackageInfoCurrent := fail;
     Read( file );
     record:= GAPInfo.PackageInfoCurrent;
-    Unbind( GAPInfo.PackageInfoCurrent );
+    GAPInfo.PackageInfoCurrent  := fail;
     if IsBound( record.PkgName ) then
       record.PackageName:= record.PkgName;
     fi;
@@ -1562,7 +1562,7 @@ BindGlobal( "BANNER", false );
           GAPInfo.delayedImplementationParts, false );
       GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
     fi;
-    Unbind( GAPInfo.delayedImplementationParts );
+    GAPInfo.delayedImplementationParts  := fail;
 
 #T remove this as soon as `BANNER' is not used anymore in packages
 MakeReadWriteGlobal( "BANNER" );
@@ -1689,12 +1689,12 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
           list;
 
     if IsString( info ) then
-      if IsReadableFile( info ) then
-        Unbind( GAPInfo.PackageInfoCurrent );
+        if IsReadableFile( info ) then
+            GAPInfo.PackageInfoCurrent := fail;
         Read( info );
         if IsBound( GAPInfo.PackageInfoCurrent ) then
           record:= GAPInfo.PackageInfoCurrent;
-          Unbind( GAPInfo.PackageInfoCurrent );
+          GAPInfo.PackageInfoCurrent  := fail;
         else
           Error( "the file <info> is not a `PackageInfo.g' file" );
         fi;
@@ -1910,7 +1910,7 @@ InstallGlobalFunction( CheckPackageLoading, function( pkgname )
     od;
 
     # Check the contents of the `PackageInfo.g' file of the package.
-    Unbind( GAPInfo.PackageInfoCurrent );
+    GAPInfo.PackageInfoCurrent  := fail;
     ReadPackage( pkgname, "PackageInfo.g" );
     if IsBound( GAPInfo.PackageInfoCurrent ) then
       result:= ValidatePackageInfo( GAPInfo.PackageInfoCurrent ) and result;
@@ -1919,7 +1919,7 @@ InstallGlobalFunction( CheckPackageLoading, function( pkgname )
              pkgname, "'\n" );
       result:= false;
     fi;
-    Unbind( GAPInfo.PackageInfoCurrent );
+    GAPInfo.PackageInfoCurrent  := fail;
 
     return result;
     end );
@@ -2686,7 +2686,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
     fi;
 
     # Delete the auxiliary component from `GAPInfo'.
-    Unbind( GAPInfo.data );
+    GAPInfo.data := fail;
 
     return result;
     end );

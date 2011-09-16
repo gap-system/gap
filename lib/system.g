@@ -21,7 +21,7 @@
 Revision.system_g :=
     "@(#)$Id: system.g,v 4.51 2011/05/20 22:01:15 gap Exp $";
 
-BIND_GLOBAL( "GAPInfo", rec(
+BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
 
 # do not edit the following two lines. They get replaced by string matching
 # in the distribution wrapper scripts. (Occurrences of `4.dev' and `today'
@@ -53,7 +53,7 @@ BIND_GLOBAL( "GAPInfo", rec(
     AtExitFuncs:= [],
     PostRestoreFuncs:= [],
 
-    TestData:= rec(),
+    TestData:= ThreadLocal(rec()),
 
     # admissible command line options
     # (name of the option, default value, descr. strings for help page;
@@ -96,7 +96,7 @@ BIND_GLOBAL( "GAPInfo", rec(
       [ "s", "0k" ],
       [ "z", "20" ],
           ],
-    ) );
+    ) ));
 
 
 #############################################################################
