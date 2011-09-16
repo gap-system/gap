@@ -67,4 +67,4 @@ GAPInfo.tmpfunc := function()
 end;
 GAPInfo.tmpfunc();
 Add(POST_RESTORE_FUNCS, GAPInfo.tmpfunc);
-Unbind(GAPInfo.tmpfunc);
+GAPInfo.tmpfunc := fail;
