@@ -1177,6 +1177,8 @@ Obj SET_TYPE_COMOBJ_Handler (
       case T_AREC:
       case T_ACOMOBJ:
         SET_TYPE_OBJ( obj, kind );
+	RetypeBag( obj, T_ACOMOBJ );
+	CHANGED_BAG( obj );
 	break;
     }
     return obj;
@@ -1235,6 +1237,8 @@ Obj SET_TYPE_POSOBJ_Handler (
       case T_ALIST:
       case T_FIXALIST:
         SET_TYPE_OBJ( obj, kind );
+	RetypeBag( obj, T_APOSOBJ );
+	CHANGED_BAG( obj );
         break;
       default:
 	TYPE_POSOBJ( obj ) = kind;
