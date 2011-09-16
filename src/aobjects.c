@@ -8,7 +8,6 @@
 **
 **  This file contains the GAP interface for thread primitives.
 */
-#include        <stdio.h>
 #include        <assert.h>
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 #include        <string.h>              /* memcpy */
@@ -285,6 +284,11 @@ static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
       ArgumentError("MakeFixedAtomicList: Argument must be atomic list");
   }
   return (Obj) 0; /* flow control hint */
+}
+
+static Obj FuncIsAtomicRecord (Obj self, Obj obj) 
+{
+	return (TNUM_OBJ(obj) == T_AREC) ? True : False;
 }
 
 static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
@@ -1372,6 +1376,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "AtomicRecord", -1, "[capacity]",
       FuncAtomicRecord, "src/aobjects.c:AtomicRecord" },
+   
+    { "IsAtomicRecord", 1, "object",
+    FuncIsAtomicRecord, "src/abjects.c:IsAtomicRecord" },
 
     { "GET_ATOMIC_RECORD", 3, "record, field, default",
       FuncGET_ATOMIC_RECORD, "src/aobjects.c:GET_ATOMIC_RECORD" },
