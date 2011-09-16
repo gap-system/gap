@@ -5053,9 +5053,10 @@ Obj DoSetProperty (
     /*N 1996/06/28 mschoene <self> is the <setter> here, not the <getter>! */
     /*N 1996/06/28 mschoene see hack below                                 */
     switch (TNUM_OBJ(obj)) {
-	case T_COMOBJ:
-	case T_ACOMOBJ:
-	case T_POSOBJ:
+    case T_COMOBJ:
+    case T_ACOMOBJ:
+    case T_APOSOBJ:
+    case T_POSOBJ:
 	case T_DATOBJ:
 	    flags = (val == True ? self : TESTR_FILT(self));
 	    CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
