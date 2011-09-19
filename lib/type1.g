@@ -716,7 +716,7 @@ BIND_GLOBAL( "Objectify", function(type, obj)
         SET_TYPE_POSOBJ( obj, type );
     elif IS_REC( obj )  then
         Print("AAA\n");
-        if IsAtomicRecord(obj) then
+        if IS_ATOMIC_RECORD(obj) then
             if IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
                 obj := FromAtomicRecord(obj);
             fi;

@@ -286,7 +286,7 @@ static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
   return (Obj) 0; /* flow control hint */
 }
 
-static Obj FuncIsAtomicRecord (Obj self, Obj obj) 
+static Obj FuncIS_ATOMIC_RECORD (Obj self, Obj obj) 
 {
 	return (TNUM_OBJ(obj) == T_AREC) ? True : False;
 }
@@ -668,9 +668,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
 	AtomicObj new;
 	new.obj = obj;
 	do {
-	  do {
-	    old = data[hash*2+1];
-	  } while (!old.obj);
+	  old = data[hash*2+1];
 	} while (!AO_compare_and_swap_full(&data[hash*2+1].atom,
 	          old.atom, new.atom));
 	HashUnlockShared(record);
@@ -796,7 +794,7 @@ static Obj FuncFromAtomicRecord(Obj self, Obj record)
   data = table + AR_DATA;
   AO_nop_read(); /* memory barrier */
   cap = table[AR_CAP].atom;
-  result = NEW_PREC(table[AR_SIZE].atom);
+  result = NEW_PREC(0);
   for (i=0; i<cap; i++)
   {
     UInt key;
@@ -851,6 +849,12 @@ static void SetARecordUpdateStrategy(Obj record, UInt strat)
 {
   AtomicObj *table = ARecordTable(record);
   table[AR_STRAT].atom = strat;
+}
+
+static UInt GetARecordUpdateStrategy(Obj record)
+{
+  AtomicObj *table = ARecordTable(record);
+  return table[AR_STRAT].atom;
 }
 
 Obj ElmARecord(Obj record, UInt rnam)
@@ -1066,6 +1070,24 @@ static Obj FuncSET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj value)
     ErrorQuit("SET_ATOMIC_RECORD: Field '%s' already exists",
       (UInt) CSTR_STRING(field), 0L);
   return result;
+}
+
+static Obj FuncUNBIND_ATOMIC_RECORD(Obj self, Obj record, Obj field)
+{
+  UInt fieldname;
+  Obj exists;
+  if (TNUM_OBJ(record) != T_AREC)
+    ArgumentError("UNBIND_ATOMIC_RECORD: First argument must be an atomic record");
+  if (!IsStringConv(field))
+    ArgumentError("UNBIND_ATOMIC_RECORD: Second argument must be a string");
+  fieldname = RNamName(CSTR_STRING(field));
+  if (GetARecordUpdateStrategy(record) <= 0)
+    ErrorQuit("UNBIND_ATOMIC_RECORD: Record elements cannot be changed",
+      (UInt) CSTR_STRING(field), 0L);
+  exists = GetARecordField(record, fieldname);
+  if (exists)
+    SetARecordField(record, fieldname, (Obj) 0);
+  return (Obj) 0;
 }
 
 static Obj FuncATOMIC_RECORD_REPLACEMENT(Obj self, Obj record, Obj strat)
@@ -1377,14 +1399,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "AtomicRecord", -1, "[capacity]",
       FuncAtomicRecord, "src/aobjects.c:AtomicRecord" },
    
-    { "IsAtomicRecord", 1, "object",
-    FuncIsAtomicRecord, "src/abjects.c:IsAtomicRecord" },
+    { "IS_ATOMIC_RECORD", 1, "object",
+      FuncIS_ATOMIC_RECORD, "src/abjects.c:IS_ATOMIC_RECORD" },
 
     { "GET_ATOMIC_RECORD", 3, "record, field, default",
       FuncGET_ATOMIC_RECORD, "src/aobjects.c:GET_ATOMIC_RECORD" },
 
     { "SET_ATOMIC_RECORD", 3, "record, field, value",
       FuncSET_ATOMIC_RECORD, "src/aobjects.c:SET_ATOMIC_RECORD" },
+
+    { "UNBIND_ATOMIC_RECORD", 2, "record, field",
+      FuncUNBIND_ATOMIC_RECORD, "src/aobjects.c:UNBIND_ATOMIC_RECORD" },
 
     { "ATOMIC_RECORD_REPLACEMENT", 2, "record, strategy",
       FuncATOMIC_RECORD_REPLACEMENT, "src/aobjects.c:ATOMIC_RECORD_REPLACEMENT" },
