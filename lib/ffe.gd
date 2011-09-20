@@ -307,7 +307,6 @@ DeclareCategoryFamily( "IsFFE" );
 ##
 DeclareGlobalFunction( "FFEFamily" );
 
-Print(3,"\n");
 
 #############################################################################
 ##
