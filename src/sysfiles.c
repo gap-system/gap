@@ -361,7 +361,9 @@ Int SyFindOrLinkGapRootFile (
 		found_dyn = 0;
     }
     if ( found_gap && found_sta && crc_gap != crc_sta ) {
+#ifdef WARN_STATIC_MODULES_CRC
       Pr("#W Static module %s has CRC mismatch, ignoring\n", (Int) filename, 0);
+#endif
         found_sta = 0;
     }
     if ( found_gap && found_sta ) {
