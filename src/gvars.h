@@ -39,6 +39,13 @@ const char * Revision_gvars_h =
 #define GVAR_BUCKET(gvar) ((UInt)(gvar) / GVAR_BUCKET_SIZE)
 #define GVAR_INDEX(gvar) ((UInt)(gvar) % GVAR_BUCKET_SIZE + 1)
 
+
+
+/****************************************************************************
+**
+*T  GVarDescriptor  . . . . . . . . . . . .  descriptor for a global variable
+*/
+
 typedef struct GVarDescriptor {
 	  Obj *ref;
 	  char *name;
@@ -48,7 +55,6 @@ typedef struct GVarDescriptor {
 
 /****************************************************************************
 **
-
 *V  ValGVars  . . . . . . . . . . . . . . . . . .  values of global variables
 *V  PtrGVars  . . . . . . . . . . . . . pointer to values of global variables
 **
@@ -266,6 +272,16 @@ extern void RemoveCopyFopyInfo( void );
 *F  RestoreCopyFopyInfo() . . .  restore the info from the copy in the kernel
 */
 extern void RestoreCopyFopyInfo( void );
+
+/****************************************************************************
+**
+*F  DeclareGVar(<gvar>, <name>) . . . . . .  declare global variable by name
+*F  GVarValue(<gvar>) . . . . . . . . . return value of <gvar>, 0 if unbound
+*F  GVarObj(<gvar>) . . . . . . . . return value of <gvar>, error if unbound
+*F  GVarFunc(<gvar>) . . . . return value of <gvar>, error if not a function
+*F  GVarOptFunc(<gvar>) . . return value of <gvar>, 0 if unbound/no function
+*F  SetGVar(<gvar>, <obj>) . . . . . . . . . . . . .  assign <obj> to <gvar>
+*/
 
 extern void DeclareGVar(GVarDescriptor *gvar, char *name);
 extern Obj GVarValue(GVarDescriptor *gvar);

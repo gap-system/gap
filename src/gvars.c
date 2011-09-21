@@ -1167,6 +1167,16 @@ void RestoreCopyFopyInfo( void )
 GVarDescriptor *FirstDeclaredGVar;
 GVarDescriptor *LastDeclaredGVar;
 
+/****************************************************************************
+**
+*F  DeclareGVar(<gvar>, <name>) . . . . . .  declare global variable by name
+*F  GVarValue(<gvar>) . . . . . . . . . return value of <gvar>, 0 if unbound
+*F  GVarObj(<gvar>) . . . . . . . . return value of <gvar>, error if unbound
+*F  GVarFunc(<gvar>) . . . . return value of <gvar>, error if not a function
+*F  GVarOptFunc(<gvar>) . . return value of <gvar>, 0 if unbound/no function
+*F  SetGVar(<gvar>, <obj>) . . . . . . . . . . . . .  assign <obj> to <gvar>
+*/
+
 void DeclareGVar(GVarDescriptor *gvar, char *name)
 {
   gvar->ref = NULL;
