@@ -129,7 +129,8 @@ void UnlockGVars() {
 **
 **  'VAL_GVAR' is defined in the declaration part of this package as follows
 **
-#define VAL_GVAR(gvar)          PtrGVars[ (gvar) ]
+#define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
+				[GVAR_INDEX(gvar)-1])
 */
 
 
@@ -248,6 +249,7 @@ void            AssGVar (
 	  return;
 	}
     }
+    AO_nop_write();
     VAL_GVAR(gvar) = val;
     CHANGED_BAG( ValGVars[gvar_bucket] );
 
@@ -347,7 +349,7 @@ Obj             ValAutoGVar (
     }
 
     /* return the value                                                    */
-    return VAL_GVAR(gvar);
+    return ValGVar(gvar);
 }
 
 
@@ -551,7 +553,7 @@ void MakeThreadLocalVar (
 {       
     UInt gvar_bucket = GVAR_BUCKET(gvar);
     UInt gvar_index = GVAR_INDEX(gvar);
-    Obj value = VAL_GVAR(gvar);
+    Obj value = ValGVar(gvar);
     VAL_GVAR(gvar) = (Obj) 0;
     if (IS_INTOBJ(ELM_PLIST( ExprGVars[gvar_bucket], gvar_index)))
        value = (Obj) 0;
@@ -1113,10 +1115,11 @@ void UpdateCopyFopyInfo ( void )
 
         /* now copy the value of <gvar> to <cvar>                          */
         if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
-            if ( VAL_GVAR(gvar) != 0 && IS_FUNC(VAL_GVAR(gvar)) ) {
-                *copy = VAL_GVAR(gvar);
+	    Obj val = ValGVar(gvar);
+            if ( val != 0 && IS_FUNC(val) ) {
+                *copy = val;
             }
-            else if ( VAL_GVAR(gvar) != 0 ) {
+            else if ( val != 0 ) {
                 *copy = ErrorMustEvalToFuncFunc;
             }
             else {
@@ -1124,7 +1127,7 @@ void UpdateCopyFopyInfo ( void )
             }
         }
         else {
-            *copy = VAL_GVAR(gvar);
+            *copy = ValGVar(gvar);
         }
     }
     UnlockGVars();

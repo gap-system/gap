@@ -3298,7 +3298,7 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
   GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
-  NextFloatExprNumber = INT_INTOBJ(VAL_GVAR(GVAR_SAVED_FLOAT_INDEX));
+  NextFloatExprNumber = INT_INTOBJ(ValGVar(GVAR_SAVED_FLOAT_INDEX));
   return 0;
 }
 

@@ -71,6 +71,7 @@ extern  Obj *           PtrGVars[GVAR_BUCKETS];
 /****************************************************************************
 **
 *F  VAL_GVAR(<gvar>)  . . . . . . . . . . . . . . .  value of global variable
+*F  ValGVar(<gvar>)   . . . . . . . . . . . . . . .  value of global variable
 **
 **  'VAL_GVAR' returns the  value of the global  variable  <gvar>.  If <gvar>
 **  has no  assigned value, 'VAL_GVAR' returns 0.   In this case <gvar> might
@@ -78,8 +79,16 @@ extern  Obj *           PtrGVars[GVAR_BUCKETS];
 **  will return the value of <gvar>  after evaluating <gvar>-s expression, or
 **  0 if <gvar> was not an automatic variable.
 */
+
+
 #define VAL_GVAR(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
 				[GVAR_INDEX(gvar)-1])
+
+static inline Obj ValGVar(UInt gvar) {
+  Obj result = VAL_GVAR(gvar);
+  AO_nop_read();
+  return result;
+}
 
 
 /****************************************************************************
