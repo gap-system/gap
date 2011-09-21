@@ -31,11 +31,19 @@ const char * Revision_gvars_h =
    "@(#)$Id: gvars.h,v 4.22 2010/02/23 15:13:43 gap Exp $";
 #endif
 
+#include "global.h"
+
 #define GVAR_BUCKETS 1024
 #define GVAR_BUCKET_SIZE 1024
 
 #define GVAR_BUCKET(gvar) ((UInt)(gvar) / GVAR_BUCKET_SIZE)
 #define GVAR_INDEX(gvar) ((UInt)(gvar) % GVAR_BUCKET_SIZE + 1)
+
+typedef struct GVarDescriptor {
+	  Obj *ref;
+	  char *name;
+	  struct GVarDescriptor *next;
+	} GVarDescriptor;
 
 
 /****************************************************************************
@@ -258,6 +266,13 @@ extern void RemoveCopyFopyInfo( void );
 *F  RestoreCopyFopyInfo() . . .  restore the info from the copy in the kernel
 */
 extern void RestoreCopyFopyInfo( void );
+
+extern void DeclareGVar(GVarDescriptor *gvar, char *name);
+extern Obj GVarValue(GVarDescriptor *gvar);
+extern Obj GVarObj(GVarDescriptor *gvar);
+extern Obj GVarFunc(GVarDescriptor *gvar);
+extern Obj GVarOptFunc(GVarDescriptor *gvar);
+extern void SetGVar(GVarDescriptor *gvar, Obj obj);
 
 
 /****************************************************************************

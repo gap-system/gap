@@ -29,6 +29,7 @@
 */
 #include        <stdio.h>
 #include        <pthread.h>
+#include        <atomic_ops.h>
 
 #include        "system.h"              /* Ints, UInts                     */
 
@@ -1059,6 +1060,8 @@ void InitFopyGVar (
 */
 static Int NCopyAndFopyDone;
 
+void DeclareAllGVars( void );
+
 void UpdateCopyFopyInfo ( void )
 {
     Obj                 cops;           /* copies list                     */
@@ -1125,6 +1128,7 @@ void UpdateCopyFopyInfo ( void )
         }
     }
     UnlockGVars();
+    DeclareAllGVars();
 }
 
 
@@ -1148,7 +1152,6 @@ void RemoveCopyFopyInfo( void )
     return;
 }
 
-
 /****************************************************************************
 **
 *F  RestoreCopyFopyInfo() . . .  restore the info from the copy in the kernel
@@ -1160,6 +1163,88 @@ void RestoreCopyFopyInfo( void )
     UnlockGVars();
     UpdateCopyFopyInfo();
 }
+
+GVarDescriptor *FirstDeclaredGVar;
+GVarDescriptor *LastDeclaredGVar;
+
+void DeclareGVar(GVarDescriptor *gvar, char *name)
+{
+  gvar->ref = NULL;
+  gvar->name = name;
+  gvar->next = NULL;
+  if (LastDeclaredGVar) {
+    LastDeclaredGVar->next = gvar;
+    LastDeclaredGVar = gvar;
+  } else {
+    FirstDeclaredGVar = gvar;
+    LastDeclaredGVar = gvar;
+  }
+}
+
+void DeclareAllGVars( void )
+{
+  GVarDescriptor *gvar;
+  LockGVars(1);
+  for (gvar = FirstDeclaredGVar; gvar; gvar = gvar->next) {
+    UInt index = GVarName(gvar->name);
+    gvar->ref = &(VAL_GVAR(index));
+  }
+  FirstDeclaredGVar = LastDeclaredGVar = 0;
+  UnlockGVars();
+}
+
+Obj GVarValue(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  AO_nop_read();
+  return result;
+}
+
+Obj GVarObj(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  if (!result)
+    ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0L);
+  AO_nop_read();
+  return result;
+}
+
+Obj GVarFunc(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  if (!result)
+    ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0L);
+  if (DS_BAG(result))
+    ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0L);
+  ImpliedWriteGuard(result);
+  if (TNUM_OBJ(result) != T_FUNCTION)
+    ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0L);
+  AO_nop_read();
+  return result;
+}
+
+Obj GVarOptFunc(GVarDescriptor *gvar)
+{
+  Obj result = *(gvar->ref);
+  if (!result)
+    return (Obj) 0;
+  if (DS_BAG(result))
+    return (Obj) 0;
+  ImpliedWriteGuard(result);
+  if (TNUM_OBJ(result) != T_FUNCTION)
+    return (Obj) 0;
+  AO_nop_read();
+  return result;
+}
+
+void SetGVar(GVarDescriptor *gvar, Obj obj)
+{
+  AO_nop_write();
+  *(gvar->ref) = obj;
+}
+
+
+
 
 
 /****************************************************************************
