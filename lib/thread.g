@@ -41,6 +41,7 @@ AT_THREAD_EXIT_LIST := 0;
 MakeThreadLocal("AT_THREAD_EXIT_LIST");
 
 BindGlobal("THREAD_EXIT", function()
+  local func;
   if AT_THREAD_EXIT_LIST <> 0 then
     for func in AT_THREAD_EXIT_LIST do
       func();
