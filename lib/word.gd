@@ -349,7 +349,7 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  generator numbers etc. When mapping many (several thousand) words, an
 ##  explicit loop over the words syllables might be faster.
 ##  <P/>
-##  For example, If the elements in <A>imgs</A> are all
+##  For example, if the elements in <A>imgs</A> are all
 ##  <E>associative words</E>
 ##  (see Chapter&nbsp;<Ref Chap="Associative Words"/>)
 ##  in the same family as the elements in <A>gens</A>,

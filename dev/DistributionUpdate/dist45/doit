@@ -26,8 +26,7 @@
 # (note that the next script also unpacks the meta-information archive)
 ./unpackgapcore
 ./unpackpackages
-# TODO: check package permissions in order to report strange cases to authors
-# ./checkpkgpermissions
+./checkpermissions
 ./makedoc
 ./addmanualfiles
 ./zipgapsourcedistro

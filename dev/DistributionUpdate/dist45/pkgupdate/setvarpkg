@@ -1,0 +1,34 @@
+#!/bin/sh
+# $Id$    (C) Frank Lübeck
+
+# path to the directory which will contain directories needed by the 
+# packages update mechanism (pkgcache, webftp, mergedarchives, tmp, WWW2).
+# no trailing "/" is needed since all subdirectories below start with "/".
+# "/mnt/raid/hudson-slave/..." is the path used by Jenkins continuous build 
+# system.
+
+export PREFIX="/mnt/raid/hudson-slave/workspace/GAP-pkg-update/pkgadmin"
+
+# how to call GAP, e.g. "/gap/bin/gapL"
+export GAP="/mnt/raid/hudson-slave/workspace/GAP-source-distro/wrap/gap45beta/gapsourcedistro/gap4r5/bin/gap.sh"
+
+# path to directory for caching PackageInfo.g, archive and unpacked
+# package documentation
+export PkgCacheDir=${PREFIX}"/pkgcache"
+
+# path to directory for files for export to ftp/web site
+export PkgWebFtpDir=${PREFIX}"/webftp"
+
+# path to directory for collecting merged archives (will contain the current 
+# packages-... files and subdirectory 'old' holding the older versions
+export PkgMergedArchiveDir=${PREFIX}"/mergedarchives"
+
+# temporary directory for merging the package archives
+export PkgMergeTmpDir=${PREFIX}"/tmp"
+
+# directory with a CVS checkout of WWW2 (only subdir 'Packages' is needed)
+export WWW2Dir=${PREFIX}"/WWW2"
+
+# destination of the ftp server directory (can be remote), the one
+# containing the directories 'tar.gz', 'tar.bz2' and 'win.zip'
+export FtpServer="/ftp/pub/gap/gap45"

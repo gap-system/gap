@@ -1790,14 +1790,33 @@ InstallMethod( CentreOfCharacter,
 ##
 #M  ClassPositionsOfCentre( <chi> )  . . classes in the centre of a character
 ##
+##  We know that an algebraic integer $\alpha$ is a root of unity
+##  if and only if all conjugates of $\alpha$ have absolute value at most 1.
+##  Since $\alpha^{\ast} \overline{\alpha^{\ast}} = 1$ holds for a Galois
+##  automorphism $\ast$ if and only if $\alpha \overline{\alpha} = 1$ holds,
+##  a cyclotomic integer is a root of unity iff its absolute value is $1$.
+##
+##  Cf. the comment about the `Order' method for cyclotomics in the file
+##  `lib/cyclotom.g'.
+##
+##  The `IsCyc' test is necessary to avoid errors in the case that <chi>
+##  contains unknowns.
+##
 InstallMethod( ClassPositionsOfCentre,
     "for a homogeneous list",
     [ IsHomogeneousList ],
-    chi -> Filtered( [ 1 .. Length( chi ) ],
-                     i -> chi[i] = chi[1] or
-                          chi[i] = - chi[1] or
-                          IsCyc( chi[i] ) and ForAny( COEFFS_CYC( chi[i] ),
-                                            x -> AbsInt( x ) = chi[1] ) ) );
+    function( chi )
+    local deg, mdeg, degsquare;
+
+    deg:= chi[1];
+    mdeg:= - deg;
+    degsquare:= deg^2;
+
+    return PositionsProperty( chi,
+               x -> x = deg or x = mdeg or
+                    ( ( not IsInt( x ) ) and IsCyc( x ) and IsCycInt( x )
+                      and x * GaloisCyc( x, -1 ) = degsquare ) );
+    end );
 
 
 #############################################################################
@@ -4288,7 +4307,7 @@ InstallGlobalFunction( ZevDataValue, function( q, n )
       quot:= ( extfieldsize - 1 ) / n;
 
       R:= PolynomialRing( K );
-      for f in Factors( PolynomialRing( F ), X(F)^n - 1 ) do
+      for f in Factors( PolynomialRing( F ), Indeterminate(F)^n - 1 ) do
 
         y:= 0;
         for fac in Factors( R, f ) do
@@ -4325,7 +4344,7 @@ InstallGlobalFunction( ZevDataValue, function( q, n )
                                 conw, conwlen );
       zetalen:= Length( zeta );
 
-      for f in Factors( PolynomialRing( F ), X(F)^n - 1 ) do
+      for f in Factors( PolynomialRing( F ), Indeterminate(F)^n - 1 ) do
 
         y:= 0;
         coeffs:= CoefficientsOfUnivariatePolynomial( f );

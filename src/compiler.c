@@ -103,7 +103,7 @@ Int CompCheckListElements;
 **
 */
 
-struct CompOptStruc { Char *extname;
+struct CompOptStruc { const Char *extname;
   Int *variable;
   Int val;};
 
@@ -132,21 +132,21 @@ void SetCompileOpts( Char *opts )
   while (*s)
     {
       while (IsSpace(*s))
-	s++;
+        s++;
       for (i = 0; i < N_CompOpts; i++)
-	{
-	  if (0 == SyStrncmp(CompOptNames[i].extname,
-			     s,
-			     SyStrlen(CompOptNames[i].extname)))
-	    {
-	      *(CompOptNames[i].variable) = CompOptNames[i].val;
-	      break;
-	    }
-	}
+        {
+          if (0 == SyStrncmp(CompOptNames[i].extname,
+                             s,
+                             SyStrlen(CompOptNames[i].extname)))
+            {
+              *(CompOptNames[i].variable) = CompOptNames[i].val;
+              break;
+            }
+        }
       while (*s && *s != ',')
-	s++;
+        s++;
       if (*s == ',')
-	s++;
+        s++;
     }
   return;
 }
@@ -456,7 +456,7 @@ Int             IsEqInfoCVars (
 typedef UInt4           Temp;
 
 Temp            NewTemp (
-    Char *              name )
+    const Char *        name )
 {
     Temp                temp;           /* new temporary, result           */
     Bag                 info;           /* information bag                 */
@@ -586,7 +586,7 @@ UInt            GetLevlHVar (
 #if 0
         if ( NHVAR_INFO(info) != 0 ) 
 #endif
-	  levl++;
+          levl++;
     }
 
     /* return level (the number steps to go up)                            */
@@ -740,7 +740,7 @@ Int             EmitIndent;
 Int             EmitIndent2;
 
 void            Emit (
-    char *              fmt,
+    const char *        fmt,
     ... )
 {
     Int                 narg;           /* number of arguments             */
@@ -748,9 +748,9 @@ void            Emit (
     Int                 dint;           /* integer argument                */
     CVar                cvar;           /* C variable argument             */
     Char *              string;         /* string argument                 */
-    Char *              p;              /* loop variable                   */
+    const Char *        p;              /* loop variable                   */
     Char *              q;              /* loop variable                   */
-    Char *              hex = "0123456789ABCDEF";
+    const Char *        hex = "0123456789ABCDEF";
 
     /* are we in pass 2?                                                   */
     if ( CompPass != 2 )  return;
@@ -1224,7 +1224,7 @@ CVar CompFunccallXArgs (
 *F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . . .  T_FUNCCALL_OPTS
 */
 CVar CompFunccallOpts(
-		      Expr expr)
+                      Expr expr)
 {
   CVar opts = CompExpr(ADDR_STAT(expr)[0]);
   GVar pushOptions;
@@ -2394,7 +2394,7 @@ CVar CompIntExpr (
         siz = SIZE_EXPR(expr);
         if ( ((UInt2*)ADDR_EXPR(expr))[0] == 1 ) {
             Emit( "%c = NewBag( T_INTPOS, %d );\n", val, siz-sizeof(UInt2) );
-	    SetInfoCVar(val, W_INT_POS);
+            SetInfoCVar(val, W_INT_POS);
         }
         else {
             Emit( "%c = NewBag( T_INTNEG, %d );\n", val, siz-sizeof(UInt2) );
@@ -2751,10 +2751,10 @@ CVar CompStringExpr (
     /* create the string and copy the stuff                                */
     Emit( "C_NEW_STRING( %c, %d, \"%C\" )\n",
 
-	  /* the sizeof(UInt) offset is to get past the length of the string
-	     which is now stored in the front of the literal */
+          /* the sizeof(UInt) offset is to get past the length of the string
+             which is now stored in the front of the literal */
           string, SIZE_EXPR(expr)-1-sizeof(UInt),
-	  sizeof(UInt)+ (Char*)ADDR_EXPR(expr) );
+          sizeof(UInt)+ (Char*)ADDR_EXPR(expr) );
 
     /* we know that the result is a list                                   */
     SetInfoCVar( string, W_LIST );
@@ -3906,7 +3906,7 @@ void CompProccallXArgs (
 *F  CompProccallXArgs( <expr> ) . . . . . . . . . . . . . .  T_PROCCALL_OPTS
 */
 void CompProccallOpts(
-		      Stat stat)
+                      Stat stat)
 {
   CVar opts = CompExpr(ADDR_STAT(stat)[0]);
   GVar pushOptions;
@@ -4224,7 +4224,7 @@ void CompFor (
         }
         else /* if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
             var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
-	    CompSetUseGVar( var, COMP_USE_GVAR_ID );
+            CompSetUseGVar( var, COMP_USE_GVAR_ID );
             vart = 'g';
         }
 
@@ -4236,15 +4236,15 @@ void CompFor (
         /* compile and check the first and last value                      */
         list = CompExpr( ADDR_STAT(stat)[1] );
 
-	/* SL Patch added to try and avoid a bug */
-	if (IS_LVAR_CVAR(list))
-	  {
-	    CVar copylist;
-	    copylist = CVAR_TEMP( NewTemp( "copylist" ) );
-	    Emit("%c = %c;\n",copylist, list);
-	    list = copylist;
-	  }
-	/* end of SL patch */
+        /* SL Patch added to try and avoid a bug */
+        if (IS_LVAR_CVAR(list))
+          {
+            CVar copylist;
+            copylist = CVAR_TEMP( NewTemp( "copylist" ) );
+            Emit("%c = %c;\n",copylist, list);
+            list = copylist;
+          }
+        /* end of SL patch */
 
         /* find the invariant temp-info                                    */
         pass = CompPass;

@@ -11,6 +11,10 @@
 **  This file declares the functions of the  filters, operations, attributes,
 **  and properties package.
 */
+
+#ifndef GAP_OPERS_H
+#define GAP_OPERS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_opers_h =
    "@(#)$Id$";
@@ -629,6 +633,8 @@ extern void LoadOperationExtras( Obj oper );
 */
 StructInitInfo * InitInfoOpers ( void );
 
+
+#endif // GAP_OPERS_H
 
 /****************************************************************************
 **

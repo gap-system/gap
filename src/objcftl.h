@@ -6,6 +6,10 @@
 **  This file declares the function collecting from the left with polycyclic
 **  presentations.
 */
+
+#ifndef GAP_OBJCFTL_H
+#define GAP_OBJCFTL_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_objcftl_h =
    "@(#)$Id$";
@@ -49,6 +53,8 @@ const char * Revision_objcftl_h =
 */
 StructInitInfo * InitInfoPcc ( void );
 
+
+#endif // GAP_OBJCFTL_H
 
 /****************************************************************************
 **

@@ -393,21 +393,32 @@ if not IsBound(InfoTeaching) then
   fi;
 fi;
 
+LAST_COMPLETIONBAR_STRING:=fail;
+LAST_COMPLETIONBAR_VAL:=0;
+
 InstallGlobalFunction(CompletionBar,function(c,a,s,v)
-local out,w,i;
+local out,w,w0,i;
   if InfoLevel(c)>=a then
-    out:=OutputTextUser();
     if not IsRat(v) then
+      out:=OutputTextUser();
       PrintTo(out,"\n");
       return;
     fi;
-    w:=SizeScreen()[1];
+    w0:=SizeScreen()[1];
+    w:=Int(v*(w0-Length(s)-5));
+    if s=LAST_COMPLETIONBAR_STRING and w=LAST_COMPLETIONBAR_VAL then
+      return; # nothing new to say
+    fi;
+    LAST_COMPLETIONBAR_STRING:=s;
+    LAST_COMPLETIONBAR_VAL:=w;
+    out:=OutputTextUser();
+    v:=w;
+    w:=w0;
     for i in [1..w] do
       PrintTo(out,"\r");
     od;
     PrintTo(out,"\c");
     w:=w-Length(s)-5;
-    v:=v*w;
     PrintTo(out,s," ");
     for i in [1..w] do
       if v>0 then

@@ -252,11 +252,10 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
       mats:=List(stabm,i->MappedWord(i,freegens,mats));
       shadows:=List(stabm,i->MappedWord(i,freegens,shadows));
       if AssertionLevel()>0 then
-	ind:=[dims[bp]+1..dim];
-	acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
-	nv:=vec{ind};
-	Assert(1,ForAll(acts,i->nv*i=nv));
-	Print("Assertion 1 passed\n");
+	    ind:=[dims[bp]+1..dim];
+	    acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
+	    nv:=vec{ind};
+	    Assert(1,ForAll(acts,i->nv*i=nv));
       fi;
 
       # should we try to refine the next step?
@@ -297,7 +296,6 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 	  acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
 	  nv:=vec{ind};
 	  Assert(1,ForAll(acts,i->nv*i=nv));
-	  Print("Assertion 2 passed\n");
 	fi;
 
       fi;
@@ -874,7 +872,7 @@ end;
 ##
 #F AutomorphismGroupSolvableGroup( G )
 ##
-AutomorphismGroupSolvableGroup := function( G )
+InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H, 
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
           auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
@@ -1062,13 +1060,13 @@ AutomorphismGroupSolvableGroup := function( G )
     B := GroupByGenerators( autos );
     SetSize( B, Size(A) );
     return B;
-end;
+end);
 
 #############################################################################
 ##
 #F AutomorphismGroupFrattFreeGroup( G )
 ##
-AutomorphismGroupFrattFreeGroup := function( G )
+InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
     local F, K, gensF, gensK, gensG, A, 
           iso, P, gensU, k, aut, U, hom, N, gensN,
           full, n, imgs, i, m, a, l, new, size, 
@@ -1164,45 +1162,59 @@ AutomorphismGroupFrattFreeGroup := function( G )
     SetSize( B, size );
 
     return B;
-end;
+end);
 
-#############################################################################
-##
-#M AutomorphismGroup( G )
-##
-InstallMethod( AutomorphismGroup, 
-               "finite solvable groups",
-               true,
-               [IsGroup and IsFinite],
-               0,
-function( G )
-    local A;
-    if not IsSolvableGroup(G) then
-      TryNextMethod();
-    fi;
-    if IsAbelian( G ) then TryNextMethod(); fi;
-    A := AutomorphismGroupSolvableGroup(G);
-    SetIsAutomorphismGroup( A, true );
-    SetIsGroupOfAutomorphismsFiniteGroup( A, true );
-    SetIsFinite( A, true );
-    return A;
+# The following computes the automorphism group of
+# a nilpotent group which is NOT a p-group. It computes
+# the automorphism groups of each Sylow subgroup of G
+# and then glues these together.
+# For p-groups, either the standard GAP functionality, or
+# that from the autpgrp package is used.
+InstallGlobalFunction(AutomorphismGroupNilpotentGroup,function(G)
+	local S, autS, gens, imgs, i, j, x, off, gensAutG, pcgsSi, autG;
+	if IsAbelian(G) then
+		return AutomorphismGroupAbelianGroup(G);
+	fi;
+
+	if not IsNilpotentGroup(G) or not IsFinite(G) then
+		return fail;
+	fi;
+
+	if IsPGroup(G) then
+		return fail;	# p-groups should be handled elsewhere
+	fi;
+
+	# Compute the Sylow subgroups of G; G is the direct product of
+	# these, and Aut(G) is the direct product of the automorphism
+	# groups of the Sylow subgroups.
+	S := SylowSystem(G);
+
+	# Compute the automorphism group of each of the p-groups
+	autS := List(S, AutomorphismGroup);
+
+	# Compute automorphism group for G from this
+	gens := Concatenation(List(S, P->Pcgs(P)));
+	off := 0;
+	gensAutG := [];
+	for i in [1..Length(S)] do
+		# Convert the automorphisms of S[i] into automorphisms of G.
+		pcgsSi := Pcgs(S[i]);
+		for x in GeneratorsOfGroup(autS[i]) do
+			imgs := ShallowCopy( gens );
+			for j in [1..Length(pcgsSi)] do
+				imgs[off + j] := Image(x, pcgsSi[j]);
+			od;
+			Add(gensAutG, GroupHomomorphismByImages(G, G, gens, imgs));
+		od;
+		off := off + Length(pcgsSi);
+	od;
+
+	# Now construct autG as "inner" direct product of all the autS
+	autG := Group( gensAutG, IdentityMapping(G) );
+	SetIsAutomorphismGroup(autG, true);
+	SetIsGroupOfAutomorphismsFiniteGroup(autG, true);
+	SetIsFinite(autG,true);
+
+	return autG;
 end );
-             
-#############################################################################
-##
-#M AutomorphismGroup( G )
-##
-InstallMethod( AutomorphismGroup, 
-               "finite frattini free solvable groups",
-               true,
-               [IsGroup and IsFinite and 
-                IsFrattiniFree],
-               0,
-function( G )
-    local A;
-    if IsAbelian( G ) then TryNextMethod(); fi;
-    A := AutomorphismGroupFrattFreeGroup(G);
-    SetIsAutomorphismGroup( A, true );
-    SetIsFinite( A, true );
-    return A;
-end );
+

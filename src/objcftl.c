@@ -274,7 +274,7 @@ Obj CollectPolycyc (
               if( LtInt( INTOBJ_INT(0), e ) ) x = ELM_PLIST(  gens, h );
               else                            x = ELM_PLIST( igens, h );
             
-	    }
+            }
             if( LtInt( e, INTOBJ_INT(0) ) ) {
               C_PROD_FIA( ee, e, INTOBJ_INT(-1) );  e = ee;
             }

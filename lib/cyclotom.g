@@ -870,14 +870,13 @@ InstallMethod( Order,
 ##  
 ##  <Description>
 ##  The operation <Ref Func="Int" Label="for a cyclotomic"/>
-##  can be used to find a cyclotomic integer near to an arbitrary cyclotomic.
-##  For rationals, <Ref Func="Int" Label="for a cyclotomic"/> returns
-##  the largest integer smaller or equal to the argument.
+##  can be used to find a cyclotomic integer near to an arbitrary cyclotomic,
+##  by applying <Ref Attr="Int"/> to the coefficients.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> Int( E(5)+1/2*E(5)^2 ); Int( 2/3*E(7)+3/2*E(4) );
+##  gap> Int( E(5)+1/2*E(5)^2 ); Int( 2/3*E(7)-3/2*E(4) );
 ##  E(5)
-##  E(4)
+##  -E(4)
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

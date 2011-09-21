@@ -18,8 +18,9 @@
 ##  <P/>
 ##  <#GAPDoc Label="[1]{testall.g}">
 ##  If you want to run a more advanced check (this is not required and 
-##  make take up to several hours), you can read in an extended test script
-##  performing all tests from the <File>tst</File> directory.
+##  make take up to an hour), you can read <File>testall.g</File>
+##  which is an extended test script performing all tests from the 
+##  <File>tst</File> directory.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "testall.g" ) );
@@ -34,8 +35,11 @@
 Print( "You should start GAP4 using `gap -N -A -x 80 -r -m 100m -o 512m'.\n",
        "The more GAP4stones you get, the faster your system is.\n",
        "The runtime of the following tests (in general) increases.\n",
-       "You should expect about 100000 GAP4stones \n",
-       "on an Intel Core 2 Duo / 2.53 GHz machine.\n",
+       "******************************************************************\n",
+       "You should expect the test to take about *ONE HOUR* and show about\n",
+       "100000 GAP4stones on an Intel Core 2 Duo / 2.53 GHz machine.\n",
+       "For a quick test taking about one minute, use 'testinstall.g'\n",
+       "******************************************************************\n",
        "The `next' time is an approximation of the running time ",
        "for the next file.\n\n" );
 
@@ -73,6 +77,8 @@ RunStandardTests( [
   [ "hash2.tst", 20000000 ],
   [ "helpsys.tst", 79318448],
   [ "listgen.tst", 1440000 ],
+  [ "longnumber.tst", 2000000 ],
+  [ "mapphomo.tst", 9000000 ],
   [ "mapping.tst", 31000000 ],
   [ "matblock.tst", 1200000 ],
   [ "matrix.tst",3721017553],

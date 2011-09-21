@@ -105,6 +105,38 @@ DeclareGlobalFunction("Factorial");
 ##
 DeclareGlobalFunction("Binomial");
 
+#############################################################################
+##
+#F  GaussianCoefficient( <n>, <k>, <q> )  . number of subspaces
+##
+##  <#GAPDoc Label="GaussianCoefficient">
+##  <ManSection>
+##  <Func Name="GaussianCoefficient" Arg='n, k, q'/>
+##
+##  <Description>
+##  returns the <E>Gaussian binomial coefficient</E>
+##  <Index Subkey="gaussian">coefficient</Index>
+##  <M>{{n \choose k}}_q</M> of integers <A>n</A>, <A>k</A>, and <A>q</A>,
+##  which is defined as
+##  <M>
+##  {n \choose k}_q
+##  = \begin{cases}
+##  \frac{(1-q^n)(1-q^{n-1})\cdots(1-q^{n-k+1})} {(1-q)(1-q^2)\cdots(1-q^k)} & k
+##  \le n \\
+##  0 & k>n \end{cases}.
+##  </M>
+##  It counts the number of <M>k</A>-dimensional subspaces of an
+##  <M>n</M>-dimensional vector space over the field with <M>q</M> elements.
+##  <P/>
+##  <Example><![CDATA[
+##  ]]></Example>
+##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("GaussianCoefficient");
+
 
 #############################################################################
 ##

@@ -8,6 +8,10 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
+
+#ifndef GAP_OBJFGELM_H
+#define GAP_OBJFGELM_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_objfgelm_h =
    "@(#)$Id$";
@@ -154,6 +158,8 @@ const char * Revision_objfgelm_h =
 */
 StructInitInfo * InitInfoFreeGroupElements ( void );
 
+
+#endif // GAP_OBJFGELM_H
 
 /****************************************************************************
 **

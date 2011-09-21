@@ -50,7 +50,7 @@ fi
 ##  './configure' stage.
 ##
 if [ "x$GAP_PRG" = "x" ];  then
-GAP_PRG=@target@-@BASECC@/@BUILD_MODE@-bit/gap@EXEEXT@
+GAP_PRG=@target@-@BASECC@-@CONFIGNAME@/gap@EXEEXT@
 fi
 
 

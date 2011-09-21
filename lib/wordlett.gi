@@ -12,27 +12,6 @@
 Revision.wordlett_gi :=
     "@(#)$Id$";
 
-LIB_CHAR_SINT:=function(n)
-  if n<0 then n:=n+256;fi;
-  return CHAR_INT(n);
-end;
-
-LIB_SINT_CHAR:=function(c)
-  c:=INT_CHAR(c);
-  if c>127 then c:=c-256;fi;
-  return c;
-end;
-
-LIB_SINTLIST_STRING:=s->List(s,SINT_CHAR);
-
-LIB_STRING_SINTLIST:=function(l)
-  l:=List(l,CHAR_SINT);
-  IS_STRING_CONV(l);
-  return l;
-end;
-
-SINTLIST_STRING := s-> INTLIST_STRING(s, -1);
-
 InstallMethod(AssocWordByLetterRep, "W letter words family", true,
     [ IsWLetterWordsFamily, IsHomogeneousList ], 0,
 function( F, l )
@@ -72,7 +51,7 @@ InstallMethod(LetterRepAssocWord,"W letter rep",true,
   [IsWLetterAssocWordRep],0,w->w![1]);
 
 InstallMethod(LetterRepAssocWord,"B letter rep",true,
-  [IsBLetterAssocWordRep],0,w->SINTLIST_STRING(w![1]));
+[IsBLetterAssocWordRep],0,w->INTLIST_STRING(w![1],-1));
 
 InstallOtherMethod(LetterRepAssocWord,"letter rep,gens",
 true, #TODO: This should be IsElmsColls once the tietze code is fixed.

@@ -41,16 +41,17 @@ InstallTrueMethod( IsFinite,
 
 #############################################################################
 ##
-#F  NicomorphismOfFFEMatrixGroup
+#F  NicomorphismFFMatGroupOnFullSpace
 ##
 ##  <ManSection>
-##  <Func Name="NicomorphismOfFFEMatrixGroup" Arg='obj'/>
+##  <Func Name="NicomorphismFFMatGroupOnFullSpace" Arg='obj'/>
 ##
 ##  <Description>
+##  Compute the permutation action on the full vector space
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "NicomorphismOfFFEMatrixGroup" );
+DeclareGlobalFunction( "NicomorphismFFMatGroupOnFullSpace" );
 
 
 #############################################################################

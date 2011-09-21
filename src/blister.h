@@ -17,6 +17,10 @@
 **  Lists" in the {\GAP} Manual.  Read  also the section "More  about Boolean
 **  Lists" about the different internal representations of such lists.
 */
+
+#ifndef GAP_BLISTER_H
+#define GAP_BLISTER_H
+
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_blister_h =
    "@(#)$Id$";
@@ -261,6 +265,8 @@ extern void ConvBlist (
 */
 StructInitInfo * InitInfoBlist ( void );
 
+
+#endif // GAP_BLISTER_H
 
 /****************************************************************************
 **

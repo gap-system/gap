@@ -551,13 +551,12 @@ UInt    FindTree(
                  Obj     tree,
                  Int     indexx )
 {
-    UInt   i, len; /*     loop variable                                    */
+    UInt   i; /*     loop variable                                    */
 
     /*  return 0 if (<tree>, indexx) is marked                           */
     if ( DT_IS_MARKED(tree, indexx) )
         return  0;
     i = indexx;
-    len = indexx + DT_LENGTH(tree, indexx);
     /*  loop over all nodes of tree(<tree>, indexx) to find a tree with the
     **  properties described above.                                       */
     while( i < indexx + DT_LENGTH(tree, indexx)  )
@@ -771,7 +770,7 @@ Int     Leftof(
                 return   ( DT_POS(tree1, index1) < DT_POS(tree2, index2) );
             else
                 return   ( DT_GEN(tree1, index1) < DT_GEN(tree2, index2) );
-	}
+        }
     }
     if( Earlier(tree1, index1, tree2, index2)  )
         return  !Leftof2( tree2, index2, tree1, index1);

@@ -13,6 +13,9 @@
 **  This file declares the functions handling arbitrary size integers.
 */
 
+#ifndef GAP_INTEGER_H
+#define GAP_INTEGER_H
+
 #ifdef USE_GMP /* then use the gmp version of the header file */
  #include "gmpints.h"
 #else /* read the rest of this file */
@@ -222,6 +225,8 @@ extern  Obj             GcdInt (
             Obj                 opR );
 
 
+extern Obj FuncLog2Int( Obj self, Obj intnum);
+
 /****************************************************************************
 **
 
@@ -236,8 +241,10 @@ extern  Obj             GcdInt (
 */
 StructInitInfo * InitInfoInt ( void );
 
-/* this matches the USE_GMP test at the top of the file */
-#endif
+
+#endif // USE_GMP
+
+#endif // GAP_INTEGER_H
 
 /****************************************************************************
 **

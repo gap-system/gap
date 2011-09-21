@@ -455,7 +455,7 @@ void MakeImmutableWPObj( Obj obj )
     {
       elm = ELM_WPOBJ(obj,i);
       if (elm != 0 && IS_WEAK_DEAD_BAG(elm)) 
-	ELM_WPOBJ(obj,i) = 0;
+        ELM_WPOBJ(obj,i) = 0;
     }
   /* Change the type */
   RetypeBag( obj, T_PLIST+IMMUTABLE);

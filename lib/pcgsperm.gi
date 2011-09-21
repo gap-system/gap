@@ -1033,45 +1033,6 @@ end );
 
 #############################################################################
 ##
-#M  EpiPcByModpcgs( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
-##
-BindGlobal("EpiPcByModpcgs",function( G, H, gens, imgs )
-local   filter,  hom,pcgs,imgso;
-  
-  hom := rec();
-  filter := HasSource and HasRange and IsGroupGeneralMappingByPcgs
-            and IsToPcGroupGeneralMappingByImages and IsTotal;
-
-  if IsPermGroup( G )  then
-    filter := filter and IsPermGroupGeneralMappingByImages;
-  fi;
-
-  pcgs:=[gens,imgs];
-
-  hom.sourcePcgs       := gens;
-  hom.sourcePcgsImages := imgs;
-
-  if HasGeneratorsOfGroup(H) 
-      and IsIdenticalObj(GeneratorsOfGroup(H),imgs) then
-    imgso:=H;
-  else
-    imgso:=SubgroupNC( H, imgs);
-  fi;
-  # we can also get the ImagesSource quickly
-  ObjectifyWithAttributes( hom,
-  NewType( GeneralMappingsFamily
-	  ( ElementsFamily( FamilyObj( G ) ),
-	    ElementsFamily( FamilyObj( H ) ) ), filter and HasImagesSource ), 
-	    Source,G,
-	    Range,H,
-	    ImagesSource,imgso);
-
-  SetIsMapping(hom,true);
-  return hom;
-end );
-
-#############################################################################
-##
 #M  ModuloPcgs( <G>, <N> )
 ##
 InstallMethod( ModuloPcgs, "for permutation groups", IsIdenticalObj,

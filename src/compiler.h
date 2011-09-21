@@ -11,6 +11,10 @@
 **
 **  This file declares the functions of the GAP to C compiler.
 */
+
+#ifndef GAP_COMPILER_H
+#define GAP_COMPILER_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_compiler_h =
    "@(#)$Id$";
@@ -52,11 +56,10 @@ extern void SetCompileOpts( Char *opts );
 StructInitInfo * InitInfoCompiler ( void );
 
 
+#endif // GAP_COMPILER_H
+
 /****************************************************************************
 **
 
 *E  compiler.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

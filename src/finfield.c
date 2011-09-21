@@ -1563,12 +1563,10 @@ Obj             PowFFEInt (
     FFV                 vL, vX;         /* value of left, result           */
     Int                 vR;             /* value of right                  */
     FF                  fX;             /* field of result                 */
-    Int                 pX;             /* char. of result                 */
     FF*                 sX;             /* successor table of result field */
 
     /* get the field for the result                                        */
     fX = FLD_FFE( opL );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     /* get the right operand                                               */
@@ -1663,6 +1661,7 @@ Obj FuncIS_FFE (
 **  with respect to the root <r> which must lie in the same field like <z>.
 */
 Obj LOG_FFE_LARGE;
+#include <stdio.h>
 
 Obj FuncLOG_FFE_DEFAULT (
     Obj                 self,
@@ -1737,7 +1736,12 @@ Obj FuncLOG_FFE_DEFAULT (
       return Fail;
     }
 
+
+    while (a < 0)
+      a+= (qX -1)/c;
     /* return the logarithm                                                */
+    
+
     return INTOBJ_INT( (((Int) (vZ-1) / c) * a) % ((Int) (qX-1)) );
 
 }
@@ -1788,6 +1792,8 @@ Obj INT_FF (
     /* return the conversion table                                           */
     return ELM_PLIST( IntFF, ff );
 }
+
+
 
 Obj FuncINT_FFE_DEFAULT (
     Obj                 self,
@@ -1855,7 +1861,7 @@ Obj FuncZ (
 
     /* check the argument                                                  */
     if ( (TNUM_OBJ(q) == T_INT && (INT_INTOBJ(q) > 65536)) ||
-	 (TNUM_OBJ(q) == T_INTPOS))
+         (TNUM_OBJ(q) == T_INTPOS))
       return CALL_1ARGS(ZOp, q);
     
     if ( TNUM_OBJ(q)!=T_INT || INT_INTOBJ(q)<=1 ) {
@@ -1907,20 +1913,20 @@ Obj FuncZ2 ( Obj self, Obj p, Obj d)
       ip = INT_INTOBJ(p);
       id = INT_INTOBJ(d);
       if (ip > 1 && id > 0 && id <= 16 && ip <= 65536)
-	{
-	  id1 = id;
-	  q = ip;
-	  while (--id1 > 0 && q <= 65536)
-	    q *= ip;
-	  if (q <= 65536)
-	    {
-	      /* get the finite field                                                */
-	      ff = FiniteField( ip, id );
-	      
-	      /* make the root                                                       */
-	      return NEW_FFE( ff, (ip == 2 && id == 1 ? 1 : 2) );
-	    }
-	}
+        {
+          id1 = id;
+          q = ip;
+          while (--id1 > 0 && q <= 65536)
+            q *= ip;
+          if (q <= 65536)
+            {
+              /* get the finite field                                                */
+              ff = FiniteField( ip, id );
+              
+              /* make the root                                                       */
+              return NEW_FFE( ff, (ip == 2 && id == 1 ? 1 : 2) );
+            }
+        }
     }
   return CALL_2ARGS(ZOp, p, d);
 }

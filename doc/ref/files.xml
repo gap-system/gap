@@ -82,9 +82,11 @@ to <C>-l</C> when &GAP; is started and &GAP; wants to locate a file
 <F>lib/group.gd</F> in the &GAP; root directory.
 If the command line option <C>-r</C> is not given then &GAP; will first
 check if the file exists in the <F>.gap</F> subdirectory of the user's
-home directory.
+home directory. On Mac OS X, the directory <F>Library/Preferences/GAP</F>
+in the user's home directory will be searched next.
 If the command line option <C>-r</C> is given or if the file does not
-exist inside <F>.gap</F> then the directory <C>root1</C> is checked next,
+exist inside <F>.gap</F> (or <F>Library/Preferences/GAP</F>) 
+then the directory <C>root1</C> is checked next,
 and if the file is not found there, <C>root2</C> is checked, and so on.
 <P/>
 This layout makes it possible to have one system-wide installation of &GAP;

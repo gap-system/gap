@@ -10,6 +10,10 @@
 **
 **  This module declares the functions to read  expressions  and  statements.
 */
+
+#ifndef GAP_READ_H
+#define GAP_READ_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_read_h =
    "@(#)$Id$";
@@ -140,6 +144,8 @@ Obj Call1ArgsInNewReader(Obj f,Obj a);
 */
 StructInitInfo * InitInfoRead ( void );
 
+
+#endif // GAP_READ_H
 
 /****************************************************************************
 **

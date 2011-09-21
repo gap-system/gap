@@ -10,6 +10,9 @@
 <#Include SYSTEM "../versiondata">
    ]>
 
+<?LaTeX ExtraPreamble="
+"?>
+
 <Book Name="tut">
 <TitlePage>
   <Title>GAP &mdash; A Tutorial</Title>

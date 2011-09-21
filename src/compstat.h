@@ -9,6 +9,8 @@
 *Y  Copyright (C) 2002 The GAP Group
 */
 
+#ifndef GAP_COMPSTAT_H
+#define GAP_COMPSTAT_H
 
 /****************************************************************************
 **
@@ -19,6 +21,8 @@
 */
 extern InitInfoFunc CompInitFuncs [];
 
+
+#endif // GAP_COMPSTAT_H
 
 /****************************************************************************
 **

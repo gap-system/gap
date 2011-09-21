@@ -33,6 +33,10 @@
 **  information to distinguish true references to bags from other values that
 **  happen to  look like references.
 */
+
+#ifndef GAP_GASMAN_H
+#define GAP_GASMAN_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_gasman_h =
    "@(#)$Id$";
@@ -690,6 +694,8 @@ extern  void            InitMsgsFuncBags (
 **  bag identifiers for the elements  of the  list or 0   if an entry has  no
 **  assigned value.
 ** */
+
+
 typedef void            (* TNumMarkFuncBags ) (
             Bag                 bag );
 
@@ -741,6 +747,9 @@ extern  Bag                     MarkedBags;
                   && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) ) \
                   {                                                          \
                     PTR_BAG(bag)[-1] = MarkedBags; MarkedBags = (bag);      }
+
+extern void MarkAllSubBagsDefault ( Bag );
+
 
 /****************************************************************************
 **
@@ -1024,7 +1033,7 @@ typedef Bag *           (* TNumAllocFuncBags) (
 typedef void            (* TNumStackFuncBags) ( void );
 
 typedef void            (* TNumAbortFuncBags) (
-                                Char *          msg );
+                                const Char *    msg );
 
 extern  void            InitBags (
             TNumAllocFuncBags   alloc_func,
@@ -1056,6 +1065,8 @@ extern void FinishBags( void );
 extern void CallbackForAllBags(
      void (*func)(Bag) );
 
+
+#endif // GAP_GASMAN_H
 
 /****************************************************************************
 **

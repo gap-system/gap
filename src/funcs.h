@@ -14,6 +14,10 @@
 **  calls, the  evaluators  for function calls,  the   evaluator for function
 **  expressions, and the handlers for the execution of function bodies.
 */
+
+#ifndef GAP_FUNCS_H
+#define GAP_FUNCS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_funcs_h =
    "@(#)$Id$";
@@ -60,11 +64,10 @@ extern Int RecursionDepth;
 StructInitInfo * InitInfoFuncs ( void );
 
 
+#endif // GAP_FUNCS_H
+
 /****************************************************************************
 **
 
 *E  funcs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

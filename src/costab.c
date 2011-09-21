@@ -574,9 +574,7 @@ Obj FuncMakeConsequencesPres (
     Obj                 list )
 {
     Obj                 objDefs1;       /* handle of defs list part 1      */
-    Obj *               ptDefs1;        /* pointer to this list            */
     Obj                 objDefs2;       /* handle of defs list part 2      */
-    Obj *               ptDefs2;        /* pointer to this list            */
     Obj                 objRels;        /*                                 */
     Obj *               ptRel;          /* pointer to the relator bag      */
     Obj *               ptNums;         /* pointer to this list            */
@@ -603,8 +601,6 @@ Obj FuncMakeConsequencesPres (
     objTable  = ELM_PLIST( list, 1 );
     objDefs1  = ELM_PLIST( list, 2 );
     objDefs2  = ELM_PLIST( list, 3 );
-    ptDefs1   = &(ELM_PLIST(objDefs1,1)) - 1;
-    ptDefs2   = &(ELM_PLIST(objDefs2,1)) - 1;
 
     undefined = INT_INTOBJ( ELM_PLIST( list, 4 ) );
     ndefs     = INT_INTOBJ( ELM_PLIST( list, 5 ) );
@@ -653,9 +649,9 @@ Obj FuncMakeConsequencesPres (
                 if ( INT_INTOBJ(ELM_PLIST(ptRel[rp],rc)) <= 0 ) {
                     SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( lc ) );
                     undefined--;
-		}
+                }
                 ndefs++;
-		if ( ndefs > ndefsMax ) {
+                if ( ndefs > ndefsMax ) {
                     ErrorQuit( "inconsistent definitions lists", 0L, 0L );
                     return 0;
                 }
@@ -3039,19 +3035,19 @@ UInt RelatorScan (
     }
     else {
       if (j==i) {
-	a=rp[i];
-	if ((a%2)==0) {
-	  p=a-1;
-	  ret1=pb;
-	  ret2=p;
-	}
-	else {
-	  p=a+1;
-	  ret1=pa;
-	  ret2=a;
-	}
-	SET_ELM_PLIST(ELM_PLIST(t,a),pa,INTOBJ_INT(pb));
-	SET_ELM_PLIST(ELM_PLIST(t,p),pb,INTOBJ_INT(pa));
+        a=rp[i];
+        if ((a%2)==0) {
+          p=a-1;
+          ret1=pb;
+          ret2=p;
+        }
+        else {
+          p=a+1;
+          ret1=pa;
+          ret2=a;
+        }
+        SET_ELM_PLIST(ELM_PLIST(t,a),pa,INTOBJ_INT(pb));
+        SET_ELM_PLIST(ELM_PLIST(t,p),pb,INTOBJ_INT(pa));
 
         return 2;
       }
@@ -3099,20 +3095,20 @@ Obj FuncLOWINDEX_COSET_SCAN (
     while ((ok==1)&&(i<=l)) {
       ok=RelatorScan(t,d,ELM_PLIST(rx,i));
       if (ok==2) {
-	j++;
-	if (j>sd) {
-	  sd=2*sd;
-	  GROW_PLIST(s1,sd);
-	  SET_LEN_PLIST(s1,sd);
-	  CHANGED_BAG(s1);
-	  GROW_PLIST(s2,sd);
-	  SET_LEN_PLIST(s2,sd);
-	  CHANGED_BAG(s2);
-	  s1a=(UInt*)ADDR_OBJ(s1);
-	  s2a=(UInt*)ADDR_OBJ(s2);
-	}
-	s1a[j]=ret1;
-	s2a[j]=ret2;
+        j++;
+        if (j>sd) {
+          sd=2*sd;
+          GROW_PLIST(s1,sd);
+          SET_LEN_PLIST(s1,sd);
+          CHANGED_BAG(s1);
+          GROW_PLIST(s2,sd);
+          SET_LEN_PLIST(s2,sd);
+          CHANGED_BAG(s2);
+          s1a=(UInt*)ADDR_OBJ(s1);
+          s2a=(UInt*)ADDR_OBJ(s2);
+        }
+        s1a[j]=ret1;
+        s2a[j]=ret2;
         ok=1;
       }
       i++;
@@ -3125,16 +3121,16 @@ Obj FuncLOWINDEX_COSET_SCAN (
     while ((ok==1)&&(i<=l)) {
       ok=RelatorScan(t,e,ELM_PLIST(rx,i));
       if (ok==2) {
-	j++;
-	if (j>sd) {
-	  sd=2*sd;
-	  GROW_PLIST(s1,sd);
-	  GROW_PLIST(s2,sd);
-	  s1a=(UInt*)ADDR_OBJ(s1);
-	  s2a=(UInt*)ADDR_OBJ(s2);
-	}
-	s1a[j]=ret1;
-	s2a[j]=ret2;
+        j++;
+        if (j>sd) {
+          sd=2*sd;
+          GROW_PLIST(s1,sd);
+          GROW_PLIST(s2,sd);
+          s1a=(UInt*)ADDR_OBJ(s1);
+          s2a=(UInt*)ADDR_OBJ(s2);
+        }
+        s1a[j]=ret1;
+        s2a[j]=ret2;
         ok=1;
       }
       i++;
@@ -3183,25 +3179,25 @@ Obj FuncLOWINDEX_IS_FIRST (
     while ((ok==1) && (b<=n)) {
       g=1;
       while ((ok==1)&&(g<=mm)) {
-	ga=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),b));
-	de=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),mu[b]));
-	if ((ga==0)||(de==0)) 
-	  ok=0;
-	else {
-	  if (nu[de]==0) {
-	    l++;
-	    mu[l]=de;
-	    nu[de]=l;
-	  }
-	  if (nu[de]<ga) 
-	    return False;
-	  else {
-	    if (nu[de]>ga) {
-	      ok=0;
-	    }
-	  }
-	}
-	g=g+2;
+        ga=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),b));
+        de=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),mu[b]));
+        if ((ga==0)||(de==0)) 
+          ok=0;
+        else {
+          if (nu[de]==0) {
+            l++;
+            mu[l]=de;
+            nu[de]=l;
+          }
+          if (nu[de]<ga) 
+            return False;
+          else {
+            if (nu[de]>ga) {
+              ok=0;
+            }
+          }
+        }
+        g=g+2;
       }
       b=b+1;
     }
@@ -3229,7 +3225,7 @@ Obj FuncLOWINDEX_PREPARE_RELS (
       l=LEN_PLIST(rel);
       rp=(UInt*)ADDR_OBJ(rel);
       for (k=1;k<=l;k++) 
-	rp[k]=INT_INTOBJ(rp[k]); /* convert relator entries to C-integers */
+        rp[k]=INT_INTOBJ(rp[k]); /* convert relator entries to C-integers */
       /* change type */
       TYPE_DATOBJ(rel) = TYPE_LOWINDEX_DATA;
       RetypeBag(rel,T_DATOBJ);

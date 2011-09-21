@@ -13,6 +13,10 @@
 **  The  coder package  is   the part of   the interpreter  that creates  the
 **  expressions.  Its functions are called from the reader.
 */
+
+#ifndef GAP_CODE_H
+#define GAP_CODE_H
+
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_code_h =
    "@(#)$Id$";
@@ -358,8 +362,10 @@ extern  Stat *          PtrBody;
 #define T_ISB_COMOBJ_EXPR       (FIRST_EXPR_TNUM+80)
 
 #define T_FUNCCALL_OPTS         (FIRST_EXPR_TNUM+81)
+#define T_FLOAT_EXPR_EAGER         (FIRST_EXPR_TNUM+82)
+#define T_FLOAT_EXPR_LAZY         (FIRST_EXPR_TNUM+83)
 
-#define LAST_EXPR_TNUM          T_FUNCCALL_OPTS
+#define LAST_EXPR_TNUM          T_FLOAT_EXPR_LAZY
 
 
 /****************************************************************************
@@ -528,7 +534,7 @@ extern  void            CodeFuncCallBegin ( void );
 
 extern  void            CodeFuncCallEnd (
             UInt                funccall,
-	    UInt                options,
+            UInt                options,
             UInt                nr );
 
 
@@ -552,7 +558,7 @@ extern void CodeFuncExprBegin (
             Int                 narg,
             Int                 nloc,
             Obj                 nams,
-	    Int startLine);
+            Int startLine);
 
 extern void CodeFuncExprEnd (
             UInt                nr,
@@ -928,6 +934,16 @@ extern  void            CodeListExprEnd (
 extern  void            CodeStringExpr (
             Obj              str );
 
+/****************************************************************************
+**
+*F  CodeFloatExpr(<str>) . . . . . . . . . .  code literal float expression
+*/
+extern  void            CodeFloatExpr (
+            Char *              str );
+
+extern  void            CodeLongFloatExpr (
+            Obj              str );
+
 
 /****************************************************************************
 **
@@ -1268,11 +1284,11 @@ extern  void            CodeContinue ( void );
 StructInitInfo * InitInfoCode ( void );
 
 
+
+#endif // GAP_CODE_H
+
 /****************************************************************************
 **
 
 *E  code.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

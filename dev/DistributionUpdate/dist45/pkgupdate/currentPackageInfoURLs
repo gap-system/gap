@@ -1,0 +1,27 @@
+#!/bin/sh
+# $Id$    (C) Frank Lübeck
+
+
+mypath=`dirname  $0`/
+
+source ${mypath}setvarpkg
+
+
+if [ "$#" != "1" ]; then
+  export fname=${PkgWebFtpDir}/Packages/currentPackageInfoURLList
+else
+  export fname=$1
+fi;
+
+$GAP -r -b -q  ${mypath}PackageInfoTools.g  << EOI
+ANSI_COLORS := false;;
+Unbind(PrintPromptHook);
+Print("\n");
+
+str := AddpackageLinesCurrent("${PkgCacheDir}");;
+
+FileString("${fname}", str);
+
+quit;
+EOI
+

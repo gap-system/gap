@@ -639,6 +639,22 @@ found in the <F>tst</F> directory of the &GAP; distribution.
 <#Include Label="ReadTest">
 <#Include Label="StartStopTest">
 
+<#Include Label="[1]{testinstall.g}">
+
+<Log><![CDATA[
+test file         GAP4stones     time(msec)
+-------------------------------------------
+testing: ................/gap4r5/tst/zlattice.tst
+zlattice.tst               0              0
+testing: ................/gap4r5/tst/gaussian.tst
+gaussian.tst               0             10
+[ further lines deleted ]
+]]></Log>
+
+<#Include Label="[1]{testall.g}">
+<P/>
+
+
 </Section>
 
 

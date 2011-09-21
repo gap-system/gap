@@ -1274,18 +1274,18 @@ Setup files for <C>emacs</C>/<C>xemacs</C> are contained in the
 <Heading>Changing the Screen Size</Heading>
 
 <ManSection>
-<Func Name="SizeScreen" Arg='[l]'/>
+<Func Name="SizeScreen" Arg='[sz]'/>
 
 <Description>
 Called with no arguments, <Ref Func="SizeScreen"/> returns the size of the
 screen as a list with two entries.
 The first is the length of each line, the second is the number of lines.
 <P/>
-Called with one argument that is a list <A>l</A>,
+Called with one argument that is a list <A>sz</A>,
 <Ref Func="SizeScreen"/> sets the size of the screen;
-The first entry of <A>l</A>, if bound, is the length of each line,
-and the second entry of <A>l</A>, if bound, is the number of lines.
-The values for unbound entries of <A>l</A> are left unaffected.
+The first entry of <A>sz</A>, if bound, is the length of each line,
+and the second entry of <A>sz</A>, if bound, is the number of lines.
+The values for unbound entries of <A>sz</A> are left unaffected.
 The function returns the new values.
 <P/>
 Note that those parameters can also be set with the command line options
@@ -1296,7 +1296,7 @@ To check/change whether line breaking occurs for files and streams
 see&nbsp;<Ref Func="PrintFormattingStatus"/>
 and&nbsp;<Ref Func="SetPrintFormattingStatus"/>.
 <P/>
-The line length must be between <M>20</M> and <M>256</M> characters
+The line length must be between <M>20</M> and <M>4096</M> characters
 (inclusive) and the number of lines must be at least <M>10</M>.
 Values outside this range will be adjusted to the nearest endpoint of the
 range.

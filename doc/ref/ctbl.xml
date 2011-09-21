@@ -1,17 +1,12 @@
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- %% -->
-<!-- %A  ctbl.msk                    GAP documentation               Thomas Breuer -->
-<!-- %A                                                           Alexander Hulpke -->
-<!-- %% -->
-<!-- %A  @(#)<M>Id: ctbl.msk,v 1.52 2006/10/31 15:11:51 jjm Exp </M> -->
-<!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
-<!-- %Y  Copyright (C) 2002 The GAP Group -->
-<!-- %% -->
-<!-- %%  The documentation in this chapter corresponds to the declarations in the -->
-<!-- %%  library files <C>ctbl.gd</C>, <C>ctblauto.gd</C>, <C>ctblgrp.gd</C>, <C>ctblothe.gd</C>, -->
-<!-- %%  <C>ctblsolv.gd</C>. -->
-<!-- %% -->
+<!--
+%W  ctbl.xml                   GAP documentation               Thomas Breuer
+%W                                                          Alexander Hulpke
+%Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
+
+The documentation in this chapter corresponds to the declarations in the
+library files ctbl.gd, ctblauto.gd, ctblgrp.gd, ctblothe.gd, ctblsolv.gd.
+-->
 <Chapter Label="Character Tables">
 <Heading>Character Tables</Heading>
 
@@ -285,6 +280,7 @@ The following few conventions should be noted.
 <#Include Label="ClassPositionsOfLowerCentralSeries">
 <#Include Label="ClassPositionsOfUpperCentralSeries">
 <#Include Label="ClassPositionsOfSupersolvableResiduum">
+<#Include Label="ClassPositionsOfPCore">
 <#Include Label="ClassPositionsOfNormalClosure">
 
 </Section>
@@ -651,8 +647,5 @@ gap> SetInfoLevel( InfoCharacterTable, 0 );
 </Section>
 </Chapter>
 
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- %% -->
 <!-- %E -->
 

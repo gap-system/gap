@@ -10,8 +10,14 @@ ApproximationNormalizerClasses:=function(u,approx)
   local bas, prm, hashfun, e, cs, pt, classes, p, nosplit, short, better, newclasses, newnosplit, dict, spl, ej, basx, cji, spll, i, j, x, y;
 
   bas:=Immutable(Set(BaseStabChain(StabChainMutable(u))));
-  prm:=Maximum(bas);
-  prm:=Immutable(Primes{[prm+1..prm+Length(bas)]});
+  e:=Maximum(bas)+1;
+  prm:=[];
+  while Length(prm)<Length(bas) do
+    e:=NextPrimeInt(e);
+    Add(prm,e);
+    e:=e*2+1;
+  od;
+  MakeImmutable(prm);
   hashfun:=tup->tup*prm;
   e:=Subgroup(Parent(u),GeneratorsOfGroup(u));
   SetSize(e,Size(u));

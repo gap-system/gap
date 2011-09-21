@@ -354,7 +354,7 @@ DeclareOperation( "AsPlist", [IsListOrCollection] );
 ##  brk> l[4] := 16;;  # assigning a value
 ##  brk> return;       # to escape the break-loop
 ##  16
-##  gap>
+##  gap> 
 ##  ]]></Log>
 ##  <P/>
 ##  Observe that requesting the value of <C>l[4]</C>, which was not
@@ -446,6 +446,10 @@ InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 ##  <P/>
 ##  In sorted lists, membership test and computing of positions can be done
 ##  by binary search, see&nbsp;<Ref Sect="Sorted Lists and Sets"/>.
+##  <P/>
+##  Note that  &GAP; cannot  compare (by  less than)  arbitrary objects.
+##  This can cause  that <Ref Func="IsSortedList"/> runs  into an error,
+##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -481,6 +485,10 @@ DeclareProperty( "IsSortedList", IsList);
 ##  but not strictly sorted.
 ##  In particular, internally represented lists will <E>not</E> store
 ##  that they are sorted but not strictly sorted.)
+##  <P/>
+##  Note that  &GAP; cannot  compare (by  less than)  arbitrary objects.
+##  This can cause  that <Ref Func="IsSSortedList"/> runs  into an error,
+##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -523,6 +531,10 @@ InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 ##  A list is <E>duplicate free</E> if it is dense and does not contain equal
 ##  entries in different positions.
 ##  Every domain (see&nbsp;<Ref Sect="Domains"/>) is duplicate free.
+##  <P/>
+##  Note that  &GAP; cannot  compare arbitrary objects (by equality).
+##  This can cause  that <Ref Func="IsDuplicateFree"/> runs  into an error,
+##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -825,7 +837,7 @@ DeclareGlobalFunction( "PositionSet" );
 ##  <Oper Name="PositionProperty" Arg='list, func[, from]'/>
 ##
 ##  <Description>
-##  returns the position of the first entry in the dense list <A>list</A>
+##  returns the position of the first entry in the list <A>list</A>
 ##  for which the property tester function <A>func</A> returns <K>true</K>,
 ##  or <K>fail</K> if no such entry exists.
 ##  If a starting index <A>from</A> is given, it
@@ -846,8 +858,8 @@ DeclareGlobalFunction( "PositionSet" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "PositionProperty", [ IsDenseList, IsFunction ] );
-DeclareOperation( "PositionProperty", [ IsDenseList, IsFunction, IS_INT ] );
+DeclareOperation( "PositionProperty", [ IsList, IsFunction ] );
+DeclareOperation( "PositionProperty", [ IsList, IsFunction, IS_INT ] );
 
 
 #############################################################################
@@ -1069,7 +1081,7 @@ DeclareOperation( "Add", [ IsList and IsMutable, IsObject,  IS_INT ]);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "Remove", [IsList and IsMutable]);
+DeclareOperationKernel( "Remove", [IsList and IsMutable], REM_LIST);
 DeclareOperation( "Remove", [IsList and IsMutable, IS_INT]);
 
 DeclareSynonym( "CopyListEntries", COPY_LIST_ENTRIES );

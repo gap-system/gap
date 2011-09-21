@@ -33,7 +33,6 @@ local   orb,             # orbit
   for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
     img := act( pnt, acts[ i ] );
     MakeImmutable(img);
-    pos := Position( orb, img );
     pos := LookupDictionary( d, img );
     if pos = fail  then
 

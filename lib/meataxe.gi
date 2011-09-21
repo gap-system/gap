@@ -2149,43 +2149,50 @@ SMTX_CollectedFactors:= function ( module )
          Info(InfoMeatAxe,2,"Reducible.");
          #module is reducible. Add sub- and quotient-modules to queue.
          lq:=Length (queue);
-         q:=SMTX.InducedAction(cmod,
-                  SMTX.Subbasis (cmod),3);
+	 q:=SMTX.InducedAction(cmod,
+		  SMTX.Subbasis (cmod),3);
          smod:=q[1];
          ds:=SMTX.Dimension(smod);
          if ds < d/10 and SMTX.IsIrreducible(smod) then
            #Small dimensional submodule
            #test for repeated occurrences.
-           homs:=SMTX.Homomorphisms( smod, cmod);
+           homs:=SMTX.Homomorphisms( smod, cmod); # must have length >0
+
+	   # build the submodule formed by their images
+	   mat:=homs[1];
+	   for i in [2..Length(homs)] do
+	     mat:=Concatenation(mat,homs[i]);
+	   od;
+	   TriangulizeMat(mat);
+	   mat:=Filtered(mat,i->not IsZero(i));
+	   mat:=ImmutableMatrix(field,mat);
+	   if Length(mat)<cmod.dimension then
+	     # there is still some factor left
+	     queue[lq+1]:=SMTX.InducedActionFactorModule(cmod, mat);
+	   fi;
+
            Info(InfoMeatAxe,2,
-              "Small irreducible submodule X ",Length(homs),":");
+              "Small irreducible submodule X ",Length(homs),
+	      " subdim :",Length(mat)/smod.dimension,":");
+
            #module is irreducible. See if it is already on the list.
            new:=true;
            lf:=Length (factors[ds]);
            i:=1;
            while new and i <= lf do
               if SMTX.IsEquivalent(factors[ds][i][1], smod) then
+		 Info(InfoMeatAxe,2," old.");
                  new:=false;
-                 factors[ds][i][2]:=factors[ds][i][2] + Length(homs);
+                 factors[ds][i][2]:=factors[ds][i][2] +
+		  Length(mat)/smod.dimension;
               fi;
               i:=i + 1;
            od;
            if new then
               Info(InfoMeatAxe,2," new.");
-              factors[ds][lf + 1]:=[smod, Length(homs)];
-           else
-              Info(InfoMeatAxe,2," old.");
+              factors[ds][lf + 1]:=[smod, Length(mat)/smod.dimension];
            fi;
-           if Length(homs) * ds < d then
-             mat:=homs[1];
-             for i in [2..Length(homs)] do
-               mat:=Concatenation(mat,homs[i]);
-             od;
-             TriangulizeMat(mat);
-	     mat:=Filtered(mat,i->not IsZero(i));
-	     mat:=ImmutableMatrix(field,mat);
-             queue[lq + 1]:=SMTX.InducedActionFactorModule(cmod, mat);
-           fi;
+	   
          else
            queue[lq + 1]:=smod; queue[lq + 2]:=q[2];
          fi;

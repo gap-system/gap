@@ -82,12 +82,9 @@ BIND_GLOBAL( "GAPInfo", rec(
       [ "B", "", "<name>", "current architecture" ],
       [ "D", false, "enable/disable debugging the loading of files" ],
       [ "M", false, "disable/enable loading of compiled modules" ],
-      [ "N", false, "disable/enable check for completion files" ],
-      [ "P", "0", "<mem>", "set amount of memory reserved for printing (Mac)" ],
+      [ "N", false, "unused, for backward compatibility only" ],
+      [ "X", false, "enable/disable CRC checking for compiled modules" ],
       [ "T", false, "disable/enable break loop" ],
-      [ "W", "0", "<mem>", "set amount of memory available for GAP log window (Mac)" ],
-      [ "X", false, "enable/disable CRC for comp. files while reading" ],
-      [ "Y", false, "enable/disable CRC for comp. files while completing" ],
       [ "i", "", "<file>", "change the name of the init file" ],
       ,
       [ "L", "", "<file>", "restore a saved workspace" ],
@@ -142,6 +139,13 @@ CallAndInstallPostRestore( function()
     GAPInfo.KernelInfo:= KERNEL_INFO();    
     GAPInfo.KernelVersion:= GAPInfo.KernelInfo.KERNEL_VERSION;
     GAPInfo.Architecture:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
+    GAPInfo.ArchitectureBase:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
+    for i in [ 1 .. LENGTH( GAPInfo.Architecture ) ] do
+      if GAPInfo.Architecture[i] = '/' then
+        GAPInfo.ArchitectureBase:= GAPInfo.Architecture{ [ 1 .. i-1 ] };
+        break;
+      fi;
+    od;
 
     # The exact command line which called GAP as list of strings;
     # first entry is the executable followed by the options.
@@ -302,10 +306,6 @@ end );
 ##
 BIND_GLOBAL("WINDOWS_ARCHITECTURE",
   IMMUTABLE_COPY_OBJ("i686-pc-cygwin-gcc/32-bit"));
-BIND_GLOBAL("MACINTOSH_68K_ARCHITECTURE",
-  IMMUTABLE_COPY_OBJ("MC68020-motorola-macos-mwerksc"));
-BIND_GLOBAL("MACINTOSH_PPC_ARCHITECTURE",
-  IMMUTABLE_COPY_OBJ("PPC-motorola-macos-mwerksc"));
 
 #T the following functions eventually should be more clever. This however
 #T will require kernel support and thus is something for later.  AH
@@ -330,6 +330,26 @@ end);
 
 #############################################################################
 ##
+#F  ARCH_IS_MAC_OS_X()
+##
+##  <#GAPDoc Label="ARCH_IS_MAC_OS_X">
+##  <ManSection>
+##  <Func Name="ARCH_IS_MAC_OS_X" Arg=''/>
+##
+##  <Description>
+##  tests whether &GAP; is running on Mac OS X. Note that on Mac OS X, also
+##  <Ref Func="ARCH_IS_UNIX"/> will be <C>true</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("ARCH_IS_MAC_OS_X",function()
+  return POSITION_SUBSTRING (GAPInfo.Architecture, "apple-darwin", 0) <> fail 
+    and IsReadableFile ("/System/Library/CoreServices/Finder.app");
+end);
+
+#############################################################################
+##
 #F  ARCH_IS_UNIX()
 ##
 ##  <#GAPDoc Label="ARCH_IS_UNIX">
@@ -337,7 +357,7 @@ end);
 ##  <Func Name="ARCH_IS_UNIX" Arg=''/>
 ##
 ##  <Description>
-##  tests whether &GAP; is running on a UNIX system.
+##  tests whether &GAP; is running on a UNIX system (including Mac OS X).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

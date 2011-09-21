@@ -26,6 +26,14 @@ InstallMethod( PrintObj,
     Print( "Monoid( ... )" );
     end );
 
+InstallMethod( String,
+    "for monoid",
+    true,
+    [ IsMonoid ], 0,
+    function( M )
+    return "Monoid( ... )";
+    end );
+
 InstallMethod( PrintObj,
     "for monoid with known generators",
     true,
@@ -34,6 +42,21 @@ InstallMethod( PrintObj,
     Print( "Monoid( ", GeneratorsOfMagmaWithOne( M ), ", ... )" );
     end );
 
+InstallMethod( String,
+    "for monoid with known generators",
+    true,
+    [ IsMonoid and HasGeneratorsOfMonoid ], 0,
+    function( M )
+    return STRINGIFY( "Monoid( ", GeneratorsOfMagmaWithOne( M ), ", ... )" );
+    end );
+
+InstallMethod( PrintString,
+    "for monoid with known generators",
+    true,
+    [ IsMonoid and HasGeneratorsOfMonoid ], 0,
+    function( M )
+    return PRINT_STRINGIFY( "Monoid( ", GeneratorsOfMagmaWithOne( M ), ", ... )" );
+    end );
 
 #############################################################################
 ##

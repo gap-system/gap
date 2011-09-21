@@ -1051,7 +1051,7 @@ local ov,i,d;
       d:=Difference(OccuringVariableIndices(i),ov);
       if Length(d)>0 then 
         Error("Ordering is undefined for variables ",
-	  List(d,j->X(DefaultRing([FamilyObj(i)!.zeroCoefficient]),j)));
+	  List(d,j->Indeterminate(DefaultRing([FamilyObj(i)!.zeroCoefficient]),j)));
       fi;
     od;
   fi;
@@ -1178,7 +1178,7 @@ function(R,f,g)
 local basis_elt,p,t,F,vars,vars2,GB,coeff_t;
   F:=CoefficientsRing(R); 
   vars:=IndeterminatesOfPolynomialRing(R);
-  t:=X(F,vars);
+  t:=Indeterminate(F,vars);
   vars2:=Concatenation([t],vars);
   GB:=ReducedGroebnerBasis([t*f,(1-t)*g],MonomialLexOrdering(vars2));
   for basis_elt in GB do

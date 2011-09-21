@@ -5,6 +5,10 @@
 **  This package defines macros and functions that are used by compiled code.
 **  Those macros and functions should go into the appropriate packages.
 */
+
+#ifndef GAP_COMPILED_H
+#define GAP_COMPILED_H
+
 #include        "system.h"              /* system dependent part           */
 
 #include        "gasman.h"              /* garbage collector               */
@@ -314,10 +318,9 @@ extern  Obj             GF_IS_DONE_ITER;
 extern  Obj             GF_NEXT_ITER;
 
 
+#endif // GAP_COMPILED_H
+
 /****************************************************************************
 **
 *E  compiled.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

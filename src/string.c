@@ -409,6 +409,13 @@ Obj FuncINTLIST_STRING (
   return n;
 }
 
+Obj FuncSINTLIST_STRING (
+    Obj             self,
+    Obj             val )
+{
+  return FuncINTLIST_STRING ( self, val, INTOBJ_INT(-1L) );
+}
+
 /****************************************************************************
 **
 *F  FuncSTRING_SINTLIST( <self>, <string> ) string by signed integer list
@@ -1609,12 +1616,12 @@ Obj FuncPOSITION_SUBSTRING(
     return FuncPOSITION_SUBSTRING( self, string, substr, off );
   }
 
-  /* check wether pos is a non-negative integer  */
+  /* check wether <off> is a non-negative integer  */
   if ( ! IS_INTOBJ(off) || (ipos = INT_INTOBJ(off)) < 0 ) {
     off = ErrorReturnObj(
-          "POSITION_SUBSTRING: <pos> must be  non-negative integer (not a %s)",
-          (Int)TNAM_OBJ(substr), 0L,
-          "you can replace <pos> via 'return <pos>;'");
+          "POSITION_SUBSTRING: <off> must be a non-negative integer (not a %s)",
+          (Int)TNAM_OBJ(off), 0L,
+          "you can replace <off> via 'return <off>;'");
     return FuncPOSITION_SUBSTRING( self, string, substr, off );
   }
   
@@ -2339,6 +2346,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "INTLIST_STRING", 2, "string, sign",
       FuncINTLIST_STRING, "src/string.c:INTLIST_STRING" },
 
+    { "SINTLIST_STRING", 1, "string",
+      FuncSINTLIST_STRING, "src/string.c:SINTLIST_STRING" },
+
     { "EmptyString", 1, "len",
       FuncEmptyString, "src/string.c:FuncEmptyString" },
     
@@ -2383,7 +2393,7 @@ static Int InitKernel (
     UInt                t1;
     UInt                t2;
     Int                 i, j;
-    Char *              cookie_base = "src/string.c:Char";
+    const Char *        cookie_base = "src/string.c:Char";
 
     /* check dependencies                                                  */
     RequireModule( module, "lists", 403600000UL );

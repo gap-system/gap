@@ -483,7 +483,8 @@ DeclareGlobalFunction( "DefaultPackageBannerString" );
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> DirectoriesPackagePrograms( "nq" );
-##  [ dir("/home/werner/gap/4.0/pkg/nq/bin/i686-unknown-linux2.0.30-gcc/") ]
+##  [ dir("/home/gap/4.0/pkg/nq/bin/x86_64-unknown-linux-gnu-gcc/64-bit/"),
+##    dir("/home/gap/4.0/pkg/nq/bin/x86_64-unknown-linux-gnu-gcc/") ]
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>

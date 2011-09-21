@@ -25,7 +25,7 @@ to &GAP; then hopefully you will find the necessary information here.
 <P/>
 The basic idea of the  help  system  is  as  follows:  One  tells  &GAP;  a
 directory which contains a file <F>manual.six</F>,
-see&nbsp;<Ref Sect="Installing a Help Book"/>.
+see&nbsp;<Ref Sect="Installing and Removing a Help Book"/>.
 When the &GAP; help is asked something about this book  it  reads  in  some
 basic information from the file <F>manual.six</F>:
 strings like section  headers,
@@ -48,8 +48,8 @@ an appropriate <F>manual.six</F> file.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Installing a Help Book">
-<Heading>Installing a Help Book</Heading>
+<Section Label="Installing and Removing a Help Book">
+<Heading>Installing and Removing a Help Book</Heading>
 
 <ManSection>
 <Func Name="HELP_ADD_BOOK" Arg="short, long, dir"/>
@@ -74,6 +74,15 @@ explains how this file must look.
 </Description>
 </ManSection>
 
+<ManSection>
+<Func Name="HELP_REMOVE_BOOK" Arg="short"/>
+
+<Description>
+This command tells &GAP; not to use the help book with identifying name <A>short</A>
+any more. The book can be re-installed using <Ref Func="HELP_ADD_BOOK" />. <P/>
+
+</Description>
+</ManSection>
 </Section>
 
 

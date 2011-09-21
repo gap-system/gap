@@ -653,7 +653,6 @@ local f,g,h,fs,gs,hs,q,t;
         g := t[2];       gs := fs - t[1]*gs;
         f := h;          fs := hs;
     od;
-    Error("QQQ");
     q:=QuotRemLaurpols(r,f,4);
     if q = fail  then
         return fail;

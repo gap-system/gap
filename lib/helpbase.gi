@@ -266,6 +266,8 @@ InstallValue(HELP_KNOWN_BOOKS, [[],[]]);
 # or if short corresponds to an installed "(not loaded)" version,
 # else we raise an error
 # dir can be given as string relative to GAP's home or as directory object
+
+
 InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
   local sortfun, str, hnb, pos;
   # we sort books with main books first and packages alphabetically,
@@ -315,6 +317,22 @@ InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
   hnb[2][pos] := [short, long, dir];
   SortParallel(hnb[1], hnb[2], sortfun);
 end);
+
+
+InstallGlobalFunction(HELP_REMOVE_BOOK, function( short )
+  local str, pos;
+  
+  str := SIMPLE_STRING(short);
+  pos := Position(HELP_KNOWN_BOOKS[1], str);
+  if pos = fail then
+    Error("Book with normalized name ", str, " is not installed.");
+  else
+    Remove (HELP_KNOWN_BOOKS[1], pos);
+    Remove (HELP_KNOWN_BOOKS[2], pos);
+    Unbind (HELP_BOOKS_INFO.(str));
+  fi;
+end);
+
 
 #############################################################################
 ##  

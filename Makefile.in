@@ -62,45 +62,57 @@ MAKE_GMP=@MAKE_GMP@
 ifndef GMP_VER
  GMP_VER=@GMP_VER@
 endif
-ifndef BUILD_MODE
- BUILD_MODE=@BUILD_MODE@
+ifndef ABI
+ ABI=@ABI@
 endif
 ABI_CFLAGS=@ABI_CFLAGS@
 export CFLAGS+=@ABI_CFLAGS@ @CFLAGS@
-export JENKINS_CFLAGS=@JENKINS_CFLAGS@
 export NOREADLINE=@NOREADLINE@
 export READLINEPREFIX=@READLINEPREFIX@
+ifndef CONFIGNAME
+ CONFIGNAME=@CONFIGNAME@
+endif
 
-TESTGAP = ./bin/gap.sh -b -m 100m -o 512m -A -N -q -x 80 -r
-TESTGAPauto = ./bin/gap.sh -b -m 100m -o 512m -N -q -x 80 -r
+TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 512m -A -N -q -x 80 -r
+TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 512m -N -q -x 80 -r
 
 default: compile
 
-config: bin/@target@-@BASECC@/$(BUILD_MODE)-bit/configure  bin/@target@-@BASECC@/$(BUILD_MODE)-bit/Makefile bin/@target@-@BASECC@/$(BUILD_MODE)-bit/extern/Makefile 
+setconfig:
+	if test -e sysinfo.gap-$(CONFIGNAME); then \
+	  rm -f Makefile sysinfo.gap bin/gap.sh; \
+	  ln -s sysinfo.gap-$(CONFIGNAME) sysinfo.gap; \
+	  ln -s Makefile-$(CONFIGNAME) Makefile; \
+	  ln -s gap-$(CONFIGNAME).sh bin/gap.sh; \
+	else \
+	  echo "There is no config with name: "$(CONFIGNAME); \
+	fi;
 
-bin/@target@-@BASECC@/$(BUILD_MODE)-bit/configure: cnf/configure.out 
-	mkdir -p bin/@target@-@BASECC@/$(BUILD_MODE)-bit
-	@rm -f bin/@target@-@BASECC@/$(BUILD_MODE)-bit/configure
-	cp cnf/configure.out bin/@target@-@BASECC@/$(BUILD_MODE)-bit/configure
+config: bin/@target@-@BASECC@-$(CONFIGNAME)/configure  bin/@target@-@BASECC@-$(CONFIGNAME)/Makefile bin/@target@-@BASECC@-$(CONFIGNAME)/extern/Makefile 
 
-bin/@target@-@BASECC@/$(BUILD_MODE)-bit/Makefile bin/@target@-@BASECC@/$(BUILD_MODE)-bit/extern/Makefile : bin/@target@-@BASECC@/$(BUILD_MODE)-bit/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
-	mkdir -p bin/@target@-@BASECC@/$(BUILD_MODE)-bit/extern
-	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; CC='$(CC)' BUILD_MODE='$(BUILD_MODE)' ABI_CFLAGS='$(ABI_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' NOREADLINE='$(NOREADLINE)' READLINEPREFIX='$(READLINEPREFIX)' ./configure --target=@target@ @gp_configure_options@ )
+bin/@target@-@BASECC@-$(CONFIGNAME)/configure: cnf/configure.out 
+	mkdir -p bin/@target@-@BASECC@-$(CONFIGNAME)
+	@rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/configure
+	cp cnf/configure.out bin/@target@-@BASECC@-$(CONFIGNAME)/configure
+
+bin/@target@-@BASECC@-$(CONFIGNAME)/Makefile bin/@target@-@BASECC@-$(CONFIGNAME)/extern/Makefile : bin/@target@-@BASECC@-$(CONFIGNAME)/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
+	mkdir -p bin/@target@-@BASECC@-$(CONFIGNAME)/extern
+	( cd bin/@target@-@BASECC@-$(CONFIGNAME) ; CC='$(CC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' NOREADLINE='$(NOREADLINE)' READLINEPREFIX='$(READLINEPREFIX)' CONFIGNAME='$(CONFIGNAME)' ./configure --target=@target@ @gp_configure_options@ )
 
 extern: config
-	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit/extern ; $(MAKE) TARGET='$(TARGET)' BASECC='$(BASECC)' BUILD_MODE='$(BUILD_MODE)' ABI_CFLAGS='$(ABI_CFLAGS)' CC='$(CC)' GMP_VER='$(GMP_VER)' MAKE_GMP='$(MAKE_GMP)' )
+	( cd bin/@target@-@BASECC@-$(CONFIGNAME)/extern ; $(MAKE) TARGET='$(TARGET)' BASECC='$(BASECC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' CC='$(CC)' GMP_VER='$(GMP_VER)' MAKE_GMP='$(MAKE_GMP)' CONFIGNAME='$(CONFIGNAME)' )
 
 compile: extern
-	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; $(MAKE) BUILD_MODE='$(BUILD_MODE)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' READLINEPREFIX='$(READLINEPREFIX)'  NOREADLINE='$(NOREADLINE)'  )
-	chmod +x bin/gap$(BUILD_MODE).sh
+	( cd bin/@target@-@BASECC@-$(CONFIGNAME); $(MAKE) ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' READLINEPREFIX='$(READLINEPREFIX)'  NOREADLINE='$(NOREADLINE)' CONFIGNAME='$(CONFIGNAME)' )
+	chmod +x bin/gap-$(CONFIGNAME).sh
 
 static: extern
-	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; $(MAKE) static CC='$(CC)' BUILD_MODE='$(BUILD_MODE)' )
+	( cd bin/@target@-@BASECC@-$(CONFIGNAME) ; $(MAKE) static CC='$(CC)' ABI='$(ABI)' )
 	chmod +x bin/gap.sh
-	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; strip gap@EXEEXT@)
+	( cd bin/@target@-@BASECC@-$(CONFIGNAME) ; strip gap@EXEEXT@)
 
 strip: compile
-	if ! grep darwin sysinfo.gap ; then ( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; strip gap@EXEEXT@) ; fi
+	if ! grep darwin sysinfo.gap ; then ( cd bin/@target@-@BASECC@-$(CONFIGNAME); strip gap@EXEEXT@) ; fi
 
 removewin: strip
 	( rm -f bin/*.exe bin/*.dll bin/*.bat bin/*.pif "bin/GAP 4 PPC")
@@ -109,63 +121,52 @@ rebuild:
 	rm -f config.cache config.log config.status
 	touch src/*
 
-allclean: clean32 clean64
+ifndef CLEANME
+ CLEANME=@CONFIGNAME@
+endif
 
-clean: clean$(BUILD_MODE)
+clean: clean_$(CLEANME)
 
-clean32: clean_gap32 clean_gmp32 clean_jenkins32
+clean_$(CLEANME): clean_gap_$(CLEANME) clean_gmp_$(CLEANME)
+	rm -rf bin/@target@-@BASECC@-$(CONFIGNAME)
 
-clean64: clean_gap64 clean_gmp64 clean_jenkins64
 
-clean_gap: clean_gap$(BUILD_MODE)
+clean_gap: clean_gap_$(CLEANME)
 
-clean_gap32: rebuild
-	rm -f bin/@target@-@BASECC@/32-bit/*.o
-	rm -f bin/@target@-@BASECC@/32-bit/Makefile
-	rm -f bin/@target@-@BASECC@/32-bit/config*
-	rm -f bin/@target@-@BASECC@/32-bit/gac
-	rm -f bin/@target@-@BASECC@/32-bit/gap
-	rm -f bin/gap32.sh
-	rm -f Makefile
+clean_gap_$(CLEANME): rebuild
+	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/*.o
+	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/Makefile
+	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/config*
+	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/gac
+	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/gap
+	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/sysinfo*
+	rm -f bin/gap-$(CONFIGNAME).sh
+	rm -f sysinfo.gap-$(CONFIGNAME)
+	(if ! test -h sysinfo.gap -a -e sysinfo.gap; then \
+	  nextconf=`ls sysinfo.gap-* 2>/dev/null | head -1 | \
+	          sed -e "s/sysinfo.gap-//g"`; \
+	  if [ "x$$nextconf" != "x" ]; then \
+	    echo "changing config to "$$nextconf; \
+	    make setconfig CONFIGNAME=$$nextconf; \
+	  else \
+	    rm -f Makefile sysinfo.gap bin/gap.sh; \
+	  fi; \
+	fi)
+	rm -f Makefile-$(CONFIGNAME)
 
-clean_gap64: rebuild
-	rm -f bin/@target@-@BASECC@/64-bit/*.o
-	rm -f bin/@target@-@BASECC@/64-bit/Makefile
-	rm -f bin/@target@-@BASECC@/64-bit/config*
-	rm -f bin/@target@-@BASECC@/64-bit/gac
-	rm -f bin/@target@-@BASECC@/64-bit/gap
-	rm -f bin/gap64.sh
-	rm -f Makefile
+clean_gmp: clean_gmp_$(CLEANME)
 
-clean_gmp: clean_gmp$(BUILD_MODE)
-
-clean_gmp32:
-	if test -d bin/@target@-@BASECC@/32-bit/extern/gmp-$(GMP_VER); then \
-	 rm -rf bin/@target@-@BASECC@/32-bit/extern/gmp-$(GMP_VER); fi
-	if test -h bin/@target@-@BASECC@/32-bit/extern/gmp; then \
-	 rm -f bin/@target@-@BASECC@/32-bit/extern/gmp; fi
+clean_gmp_$(CLEANME):
+	if test -d bin/@target@-@BASECC@-$(CONFIGNAME)/extern/gmp-$(GMP_VER); then \
+	 rm -rf bin/@target@-@BASECC@-$(CONFIGNAME)/extern/gmp-$(GMP_VER); fi
+	if test -h bin/@target@-@BASECC@-$(CONFIGNAME)/extern/gmp; then \
+	 rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/extern/gmp; fi
 	if test -d extern/gmp-$(GMP_VER); then \
 	 (cd extern/gmp-$(GMP_VER); rm -f LASTBUILD.*; \
 	  if test -r Makefile; then make distclean; fi ); fi
 
-clean_gmp64:
-	if test -d bin/@target@-@BASECC@/64-bit/extern/gmp-$(GMP_VER); then \
-	 rm -rf bin/@target@-@BASECC@/64-bit/extern/gmp-$(GMP_VER); fi
-	if test -h bin/@target@-@BASECC@/64-bit/extern/gmp; then \
-	 rm -f bin/@target@-@BASECC@/64-bit/extern/gmp; fi
-	if test -d extern/gmp-$(GMP_VER); then \
-	 (cd extern/gmp-$(GMP_VER); rm -f LASTBUILD.*; \
-	  if test -r Makefile; then make distclean; fi ); fi
-
-clean_jenkins: clean_jenkins$(BUILD_MODE)
-
-clean_jenkins32:
-	if test -d bin/@target@-@BASECC@/32-bit/extern/jenkins; \
-	 then rm -rf bin/@target@-@BASECC@/32-bit/extern/jenkins; fi
-
-clean_jenkins64:
-	if test -d bin/@target@-@BASECC@/64-bit/extern/jenkins; \
-	 then rm -rf bin/@target@-@BASECC@/64-bit/extern/jenkins; fi
+distclean:
+	while test -e Makefile; do make clean; done
 
 manuals:
 	( echo 'SaveWorkspace( "doc/wsp.g" );' | $(TESTGAPauto) )
@@ -233,19 +234,37 @@ testpackagesload:
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
 	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
             "dev/log/testpackagesload1", \
-            "$(TESTGAP) -L wsp.g", false );'\
+            "$(TESTGAP) -L wsp.g", false, false );'\
             | $(TESTGAP) -L wsp.g > /dev/null )
 	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
             `date -u +dev/log/testpackagesload1_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "dev/log/testpackagesloadN1", \
+            "$(TESTGAP) -L wsp.g", false, true );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadN1_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
 	( rm wsp.g )	
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
 	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
             "testpackagesloadA", \
-            "$(TESTGAPauto) -L wsp.g", true );'\
+            "$(TESTGAPauto) -L wsp.g", true, false );'\
             | $(TESTGAPauto) -L wsp.g > /dev/null )
 	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
             `date -u +dev/log/testpackagesloadA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageLoadTestsInput( "testpackagesload.in", \
+            "testpackagesloadNA", \
+            "$(TESTGAPauto) -L wsp.g", true, true );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesload.in; ./testpackagesload.in > \
+            `date -u +dev/log/testpackagesloadNA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
 	( rm wsp.g )
 
 testmanuals:
@@ -282,9 +301,9 @@ testmanuals:
 	( rm doc/test/wsp.g )
 
 cygwin:	extern
-	( cd bin/@target@-@BASECC@/$(BUILD_MODE)-bit ; $(MAKE) gapdll BUILD_MODE='$(BUILD_MODE)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' READLINEPREFIX='$(READLINEPREFIX)'  NOREADLINE='$(NOREADLINE)'  )
-	cp bin/@target@-@BASECC@/$(BUILD_MODE)-bit/gapw95.exe bin
-	cp bin/@target@-@BASECC@/$(BUILD_MODE)-bit/gap.dll bin
+	( cd bin/@target@-@BASECC@-$(CONFIGNAME) ; $(MAKE) gapdll ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' READLINEPREFIX='$(READLINEPREFIX)'  NOREADLINE='$(NOREADLINE)'  )
+	cp bin/@target@-@BASECC@-$(CONFIGNAME)/gapw95.exe bin
+	cp bin/@target@-@BASECC@-$(CONFIGNAME)/gap.dll bin
 	cp /bin/cygncurses-10.dll /bin/cygncursesw-10.dll \
 	   /bin/cygpanel-10.dll /bin/cygwin1.dll \
 	   /bin/libW11.dll /usr/bin/rxvt.exe /usr/bin/regtool.exe \
@@ -307,8 +326,8 @@ cygwin:	extern
 
 winbinp:
 	( tar cfz ../winbin.tgz bin/*.dll bin/*.exe \
-          bin/@target@-@BASECC@/$(BUILD_MODE)-bit/gac \
-          bin/@target@-@BASECC@/$(BUILD_MODE)-bit/config.h \
+          bin/@target@-@BASECC@-$(CONFIGNAME)/gac \
+          bin/@target@-@BASECC@-$(CONFIGNAME)/config.h \
           terminfo )
 
 packages:

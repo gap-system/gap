@@ -8,7 +8,7 @@ LoadPackage("FR");
 
 starttime:=Runtime();
 
-i:=8;
+i:=7;
 
   Print("Test ", i, "\n");
   n:=GrigorchukMachine^i;

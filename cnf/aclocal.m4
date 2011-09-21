@@ -205,8 +205,8 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
     *-irix* )
         gp_cv_prog_cc_cdynoptions=" -O3 -woff 1110,1167,1174,1552";;
    
-    * )
-        gp_cv_prog_cc_cdynoptions="UNSUPPORTED";;
+    * )    dnl ## if we don't recognise this compiler, guess some flags
+        gp_cv_prog_cc_cdynoptions="-fpic -Wall -O2 ${ABI_CFLAGS}";;
    esac 
  ])
  AC_CACHE_CHECK(dynamic linker, gp_cv_prog_cc_cdynlinker,
@@ -229,8 +229,9 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
 	gp_cv_prog_cc_cdynlinker="cc";;
     *-irix* )
         gp_cv_prog_cc_cdynlinker="ld";;
-    * )
-        gp_cv_prog_cc_cdynlinker="echo";;
+
+    * )    dnl ## if we don't recognise this compiler, assume it can link
+        gp_cv_prog_cc_cdynlinker="${CC}";;
    esac 
  ])
  AC_CACHE_CHECK(dynamic module link flags, gp_cv_prog_cc_cdynlinking,
@@ -265,8 +266,9 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynlinking="-G -Bdynamic";;
     *sunos* )
         gp_cv_prog_cc_cdynlinking="-assert pure-text -Bdynamic -x";;
-    * )
-        gp_cv_prog_cc_cdynlinking="UNSUPPORTED";;
+
+    * )   dnl ## if we don't recognise this compiler, guess some flags
+        gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
    esac 
  ])
 

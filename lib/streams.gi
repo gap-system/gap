@@ -1205,6 +1205,31 @@ InstallMethod( SetPrintFormattingStatus, "output text file",
     fi;
 end);
 
+##  formatting status for stdout
+GAPInfo.FormattingStatusStdout := true;
+InstallOtherMethod( PrintFormattingStatus, "for stdout", [IsString],
+function(str)
+  if str <> "*stdout*" then
+    Error("Only the string \"*stdout*\" is recognized by this method.");
+  fi;
+  return GAPInfo.FormattingStatusStdout;
+end);
+
+InstallOtherMethod( SetPrintFormattingStatus, "for stdout", [IsString, IsBool],
+function(str, status)
+  if str <> "*stdout*" then
+    Error("Only the string \"*stdout*\" is recognized by this method.");
+  fi;
+  if status = false then
+    SET_PRINT_FORMATTING_STDOUT(false);
+    GAPInfo.FormattingStatusStdout := false;
+  else
+    SET_PRINT_FORMATTING_STDOUT(true);
+    GAPInfo.FormattingStatusStdout := true;
+  fi;
+end);
+
+
 
 #############################################################################
 ##

@@ -114,9 +114,6 @@ end);
 ##  Therefore for these operations <Ref Func="ApplicableMethod"/> may return
 ##  a method which is not the kernel method actually used.
 ##  <P/>
-##  <Ref Func="ApplicableMethod"/> does not work for constructors
-##  (for example <C>GeneralLinearGroupCons</C> is a constructor).
-##  <P/>
 ##  The function <Ref Func="ApplicableMethodTypes"/> takes the <E>types</E>
 ##  or <E>filters</E> of the arguments as argument (if only filters are given
 ##  of course family predicates cannot be tested).

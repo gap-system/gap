@@ -158,7 +158,9 @@ DeclareAttribute("OccuringVariableIndices",IsMonomialOrdering);
 ##  returns the leading monomial (with respect to the ordering <A>ord</A>)
 ##  of the polynomial <A>pol</A>.
 ##  <Example><![CDATA[
-##  gap> x:=X(Rationals,"x":old);;y:=X(Rationals,"y":old);;z:=X(Rationals,"z");;
+##  gap> x:=Indeterminate(Rationals,"x":old);;
+##  gap> y:=Indeterminate(Rationals,"y":old);;
+##  gap> z:=Indeterminate(Rationals,"z");;
 ##  gap> lexord:=MonomialLexOrdering();grlexord:=MonomialGrlexOrdering();
 ##  MonomialLexOrdering()
 ##  MonomialGrlexOrdering()

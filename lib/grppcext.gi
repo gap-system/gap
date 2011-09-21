@@ -1286,7 +1286,7 @@ function( G, aut, p )
 
     pcgs := Pcgs( G );
     n    := Length( pcgs );
-    R    := Range( IsomorphismFpGroupByPcgs( G, "g" ) );
+    R    := Range( IsomorphismFpGroupByPcgs( pcgs, "g" ) );
     gensR := GeneratorsOfGroup( FreeGroupOfFpGroup( R ) );
     
     F := FreeGroup(IsSyllableWordsFamily, n + 1 );

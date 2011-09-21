@@ -586,16 +586,16 @@ Obj FuncTzSubstituteGen (
             continue;
         }
 
-	/* mark that the relator changed */
-	if (len>=alen) {
-	  alen+=100; /* more relators changed */
-	  GROW_PLIST(Idx,alen);
-	  SET_LEN_PLIST(Idx,alen);
-	  ptIdx=ADDR_OBJ(Idx);
-	}
-	len+=1;
-	ptIdx[len]=INTOBJ_INT(i);
-	CHANGED_BAG(Idx);
+        /* mark that the relator changed */
+        if (len>=alen) {
+          alen+=100; /* more relators changed */
+          GROW_PLIST(Idx,alen);
+          SET_LEN_PLIST(Idx,alen);
+          ptIdx=ADDR_OBJ(Idx);
+        }
+        len+=1;
+        ptIdx[len]=INTOBJ_INT(i);
+        CHANGED_BAG(Idx);
 
 
 
@@ -1610,8 +1610,8 @@ Obj  FuncReduceLetterRepWordsRewSys (
        nw=NEW_PLIST(T_PLIST_EMPTY,0);
      }
      else {
-	/* make space for the new word */
-	nw = NEW_PLIST(TNUM_OBJ(w),newlen);
+        /* make space for the new word */
+        nw = NEW_PLIST(TNUM_OBJ(w),newlen);
 
        /* addresses */
        wa=ADDR_OBJ(w);
@@ -1622,7 +1622,7 @@ Obj  FuncReduceLetterRepWordsRewSys (
        /* for a in [ 1 .. p ] do */
        /* Add( nw, w[a] ); */
        for (a=1; a<=p;a++) {
- 	 *nwa++=*wa++;
+         *nwa++=*wa++;
        }
        /* od */
 
@@ -1635,7 +1635,7 @@ Obj  FuncReduceLetterRepWordsRewSys (
        /* for a in [ 1 .. Length( rul ) ] do */
        /* Add( nw, rul[a] ); */
        for (a=1;a<=rlen;a++) {
-	 *nwa++=*wa++;
+         *nwa++=*wa++;
        }
        /* od */
 
@@ -1644,7 +1644,7 @@ Obj  FuncReduceLetterRepWordsRewSys (
        wa=(Obj*) &(ADDR_OBJ(w)[i+1]);
        /* Add( nw, w[a] ); */
        for (a=i+1;a<=n;a++) {
-	 *nwa++=*wa++;
+         *nwa++=*wa++;
        }
        /* od */
 

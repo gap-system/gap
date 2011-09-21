@@ -6011,7 +6011,7 @@ end );
 # the generators in the order corresponding to AbelianInvariants.
 # If the FpGroup is abelian, then it is suitable as a method for
 # IndependentGeneratorsOfAbelianGroup.
-IndependentGeneratosOfMaximalAbelianQuotientOfFpGroup := function( G )
+IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup := function( G )
   local gens, matrix, snf, base, ord, cti, row, g, o, cf, j, i;
 
   gens := FreeGeneratorsOfFpGroup( G );
@@ -6051,7 +6051,7 @@ end;
 InstallMethod( IndependentGeneratorsOfAbelianGroup,
   "For abelian fpgroup, use Smith normal form",
   [ IsFpGroup and IsAbelian ],
-  IndependentGeneratosOfMaximalAbelianQuotientOfFpGroup );
+  IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup );
 
 
 #############################################################################

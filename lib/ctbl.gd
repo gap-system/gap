@@ -2132,6 +2132,32 @@ DeclareAttribute( "ClassPositionsOfSupersolvableResiduum", IsOrdinaryTable );
 
 #############################################################################
 ##
+#O  ClassPositionsOfPCore( <ordtbl>, <p> )
+##
+##  <#GAPDoc Label="ClassPositionsOfPCore">
+##  <ManSection>
+##  <Oper Name="ClassPositionsOfPCore" Arg='ordtbl, p'/>
+##
+##  <Description>
+##  corresponds to <Ref Oper="PCore"/>
+##  for the group of the ordinary character table <A>ordtbl</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> tbls4:= CharacterTable( "Symmetric", 4 );;
+##  gap> ClassPositionsOfPCore( tbls4, 2 );
+##  [ 1, 3 ]
+##  gap> ClassPositionsOfPCore( tbls4, 3 );
+##  [ 1 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "ClassPositionsOfPCore", [ IsOrdinaryTable, IsPosInt ] );
+
+
+#############################################################################
+##
 #O  ClassPositionsOfNormalClosure( <ordtbl>, <classes> )
 ##
 ##  <#GAPDoc Label="ClassPositionsOfNormalClosure">
@@ -3627,7 +3653,7 @@ DeclareOperation( "CharacterTableDirectProduct",
 ##
 ##  <Description>
 ##  For an ordinary character table that has been constructed via
-##  <Ref Func="CharacterTableDirectProduct"/>,
+##  <Ref Oper="CharacterTableDirectProduct"/>,
 ##  the value of <Ref Attr="FactorsOfDirectProduct"/> is the list of
 ##  arguments in the <Ref Oper="CharacterTableDirectProduct"/> call.
 ##  <P/>
@@ -3708,10 +3734,12 @@ DeclareOperation( "CharacterTableFactorGroup",
 #############################################################################
 ##
 #O  CharacterTableIsoclinic( <tbl>[, <classes>][, <centre>] )
+#A  SourceOfIsoclinicTable( <tbl> )
 ##
 ##  <#GAPDoc Label="CharacterTableIsoclinic">
 ##  <ManSection>
 ##  <Oper Name="CharacterTableIsoclinic" Arg='tbl[, classes][, centre]'/>
+##  <Attr Name="SourceOfIsoclinicTable" Arg='tbl'/>
 ##
 ##  <Description>
 ##  If <A>tbl</A> is the (ordinary or modular) character table of a group
@@ -3732,11 +3760,21 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##  <A>centre</A> denote class numbers w.r.t.&nbsp;the <E>ordinary</E>
 ##  character table.
 ##  <P/>
+##  For an ordinary character table that has been constructed via
+##  <Ref Oper="CharacterTableIsoclinic"/>,
+##  the value of <Ref Attr="SourceOfIsoclinicTable"/> is the list of three
+##  arguments in the <Ref Oper="CharacterTableIsoclinic"/> call.
+##  <P/>
+##  Note that there is no default method for <E>computing</E> the value of
+##  <Ref Attr="SourceOfIsoclinicTable"/>.
+##  <P/>
 ##  <Example><![CDATA[
-##  gap> d8:= CharacterTable( "Dihedral", 8 );;
+##  gap> d8:= CharacterTable( "Dihedral", 8 );
+##  CharacterTable( "Dihedral(8)" )
 ##  gap> nsg:= ClassPositionsOfNormalSubgroups( d8 );
 ##  [ [ 1 ], [ 1, 3 ], [ 1 .. 3 ], [ 1, 3, 4 ], [ 1, 3 .. 5 ], [ 1 .. 5 ] ]
-##  gap> Display( CharacterTableIsoclinic( d8, nsg[3] ) );
+##  gap> iso:= CharacterTableIsoclinic( d8, nsg[3] );;
+##  gap> Display( iso );
 ##  Isoclinic(Dihedral(8))
 ##  
 ##       2  3  2  3  2  2
@@ -3749,6 +3787,8 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##  X.3     1 -1  1  1 -1
 ##  X.4     1 -1  1 -1  1
 ##  X.5     2  . -2  .  .
+##  gap> SourceOfIsoclinicTable( iso );
+##  [ CharacterTable( "Dihedral(8)" ), [ 1, 2, 3 ], [ 3 ], 3 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3765,27 +3805,8 @@ DeclareOperation( "CharacterTableIsoclinic",
     [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection,
       IsList and IsCyclotomicCollection ] );
 
-
-#############################################################################
-##
-#A  SourceOfIsoclinicTable( <tbl> )
-##
-##  <ManSection>
-##  <Attr Name="SourceOfIsoclinicTable" Arg='tbl'/>
-##
-##  <Description>
-##  For an ordinary character table that has been constructed via
-##  <Ref Func="CharacterTableIsoclinic"/>,
-##  the value of <Ref Attr="SourceOfIsoclinicTable"/> is the list of three
-##  arguments in the <Ref Oper="CharacterTableIsoclinic"/> call.
-##  <P/>
-##  Note that there is no default method for <E>computing</E> the value of
-##  <Ref Attr="SourceOfIsoclinicTable"/>.
-##  </Description>
-##  </ManSection>
-##
 DeclareAttributeSuppCT( "SourceOfIsoclinicTable", IsNearlyCharacterTable,
-    [ "class" ] );
+    [] );
 
 
 #############################################################################
@@ -4395,7 +4416,7 @@ DeclareRepresentation( "IsGenericCharacterTableRep", IsNearlyCharacterTable,
      ] );
 
 
-############################################################################
+#############################################################################
 ##
 #F  CharacterTableFromLibrary( <name>, <param1>, ... )
 ##

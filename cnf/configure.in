@@ -5,7 +5,7 @@ dnl ##
 
 AC_INIT
 AC_CONFIG_SRCDIR([gap.c])
-AC_CONFIG_AUX_DIR(../../../cnf)
+AC_CONFIG_AUX_DIR(../../cnf)
 
 if test "x$CFLAGS" = "x" ;  then
   CFLAGS=${COPTS}
@@ -16,7 +16,7 @@ dnl ##
 dnl ## create a config file from "config.hin"
 dnl ##
 
-AC_CONFIG_HEADER(config.h:../../../cnf/config.hin)
+AC_CONFIG_HEADER(config.h:../../cnf/config.hin)
 
 
 dnl #########################################################################
@@ -42,7 +42,7 @@ dnl ## find a canonical name for the system
 dnl ##
 
 AC_CANONICAL_TARGET
-AC_DEFINE_UNQUOTED( SYS_ARCH, "$target-$CC/$BUILD_MODE-bit" )
+AC_DEFINE_UNQUOTED( SYS_ARCH, "$target-$CC-$CONFIGNAME" )
 
 dnl This has to be left until after we know the system type
 GP_C_LONG_ALIGN
@@ -205,6 +205,13 @@ AC_CHECK_FUNCS( opendir closedir dirfd readdir rewinddir seekdir telldir )
 
 dnl #########################################################################
 dnl ##
+dnl ## check for math functions
+dnl ##
+
+AC_CHECK_FUNCS( log2 log10 log1p exp2 expm1 exp10 trunc )
+
+dnl #########################################################################
+dnl ##
 dnl ## check if GNU readline is available
 dnl ##
 if test "x$READLINEPREFIX" != "x"  ; then
@@ -280,8 +287,14 @@ case "$host" in
 	;;
 esac
 
+dnl #########################################################################
+dnl ##
+dnl ## These lines allow us to capture the arguments passed to this configure
+dnl ## so we can substitute into sysinfo.in to make sysinfo.gap
+dnl ##
 
-
+gp_configure_options=$ac_configure_args
+AC_SUBST(gp_configure_options)
 
 dnl #########################################################################
 dnl ##
@@ -291,9 +304,9 @@ dnl ##
 AC_SUBST(gapbin)
 gapbin=`pwd`
 
-AC_SUBST(BUILD_MODE)
+AC_SUBST(ABI)
 AC_SUBST(ABI_CFLAGS)
-BUILD_MODE=$BUILD_MODE
+ABI=$ABI
 ABI_CFLAGS=$ABI_CFLAGS
 
 AC_SUBST(GMP_LIBS)
@@ -302,8 +315,9 @@ GMP_LIBS=$GMP_LIBS
 AC_ARG_WITH(gmp,[dummy],[],[])
 AC_ARG_WITH(abi,[dummy],[],[])
 AC_ARG_WITH(readline,[dummy],[],[])
+AC_ARG_WITH(configname,[dummy],[],[])
 
-AC_CONFIG_FILES([gac:../../../cnf/gac.in Makefile:../../../cnf/Makegap.in extern/Makefile:../../../extern/Makefile.in])
+AC_CONFIG_FILES([sysinfo.gap:../../cnf/sysinfo.in gac:../../cnf/gac.in Makefile:../../cnf/Makegap.in extern/Makefile:../../extern/Makefile.in])
 AC_OUTPUT
 chmod a+x gac
 

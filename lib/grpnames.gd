@@ -431,16 +431,20 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  <Attr Name="StructureDescription" Arg="G"/>
 ##
 ##  <Description>
-##  The method for <Ref Func="StructureDescription"/> exhibits the structure
-##  of the given group <A>G</A> to some extent using the strategy outlined
+##  The method for <Ref Func="StructureDescription"/> exhibits a structure
+##  of the given group <A>G</A> to some extent, using the strategy outlined
 ##    below. The idea is to return a possibly short string which gives some
-##    insight in the structure of the considered group. <P/>
+##    insight in the structure of the considered group. It is intended
+##  primarily for small groups (order less than 100) or groups with few normal
+##  subgroups, in other cases, in particular large <M>p</M>-groups, it can
+##  be very costly. Furthermore, the string returned is -- as the action on
+##  chief factors is not described -- often not the most useful way to describe
+##  a group.<P/>
 ##
-##    Note that non-isomorphic groups can have the same
-##  <Ref Func="StructureDescription"/> value, since the structure description
-##  might not exhibit the structure of the considered groups in all detail.
-##  However, isomorphic groups in different representation will always obtain
-##  the same structure description. <P/>
+##  The string returned by <Ref Func="StructureDescription"/> is
+##  <B>not</B> an isomorphism invariant: non-isomorphic groups can have the
+##  same string value, and two isomorphic groups in different representations
+##  can produce different strings.
 ##
 ##  The value returned by <Ref Func="StructureDescription"/> is a string of
 ##  the following form: <P/>

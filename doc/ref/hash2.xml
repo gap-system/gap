@@ -205,7 +205,7 @@ in particular integers.
 Stores keys as an unordered list and values as an 
 array with holes.  The position of a value is given by the attribute
 <C>IntKeyFun</C> or the function returned by <Ref Oper="DenseIntKey"/>,
-and so KeyIntDense must be one-to-one.  
+and so <C>KeyIntDense</C> must be one-to-one.  
 
 <#Include Label="DenseHashTable">
 
@@ -219,19 +219,18 @@ and so KeyIntDense must be one-to-one.
 Sparse hash tables are used for hashing sparse sets.  
 Stores keys as an array with fail 
 denoting an empty position, stores values as an array with holes.
-Uses <Ref Func="HashFunct"/> applied to the <C>IntKeyFun</C>
-(respectively the result of calling <Ref Oper="SparseIntKey"/>) of the key.
-DefaultHashLength 
+Uses 
+the result of calling <Ref Oper="SparseIntKey"/>) of the key.
+<C>DefaultHashLength</C>
 is the default starting hash table length; the table is doubled 
 when it becomes half full.
 <P/>
 In sparse hash tables, the integer obtained from the hash key is then
-transformed to an index position, this transformation is done using the hash
-function <Ref Func="HashFunct"/>.
+transformed to an index position by taking it modulo the length of the hash
+array.
 
 <#Include Label="SparseHashTable">
 <#Include Label="DoubleHashArraySize">
-<#Include Label="HashFunct">
 
 </Section>
 </Chapter>

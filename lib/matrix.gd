@@ -376,7 +376,7 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##  gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
 ##  gap> ElementaryDivisorsMat(mat);
 ##  [ 1, 3, 0 ]
-##  gap> x:=X(Rationals,"x");;
+##  gap> x:=Indeterminate(Rationals,"x");;
 ##  gap> mat:=mat*One(x)-x*mat^0;       
 ##  [ [ -x+1, 2, 3 ], [ 4, -x+5, 6 ], [ 7, 8, -x+9 ] ]
 ##  gap> ElementaryDivisorsMat(PolynomialRing(Rationals,1),mat);
@@ -1840,6 +1840,7 @@ DeclareGlobalFunction( "EmptyMatrix" );
 ##  <#GAPDoc Label="OnSubspacesByCanonicalBasis">
 ##  <ManSection>
 ##  <Func Name="OnSubspacesByCanonicalBasis" Arg='bas,mat'/>
+##  <Func Name="OnSubspacesByCanonicalBasisConcatenations" Arg='basvec,mat'/>
 ##
 ##  <Description>
 ##  implements the operation of a matrix group on subspaces of a vector
@@ -1857,6 +1858,7 @@ DeclareGlobalFunction( "EmptyMatrix" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("OnSubspacesByCanonicalBasis");
+DeclareGlobalFunction("OnSubspacesByCanonicalBasisConcatenations");
 
 
 #############################################################################
@@ -2064,6 +2066,29 @@ DeclareOperation("BaseField",[IsObject]);
 ##  </ManSection>
 ##
 #DeclareOperation("IdentityMatrix",[IsInt,IsObject]);
+
+#############################################################################
+##
+#O  SimplexMethod( <A>, <b>, <c> )
+##
+##  <#GAPDoc Label="SimplexMethod">
+##  <ManSection>
+##  <Oper Name="SimplexMethod" Arg='A,b,c'/>
+##
+##  <Description>
+##  Find a rational vector <A>x</A> that maximizes <M><A>x</A>\cdot<A>c</A></M>, subject
+##  to the constraint <M><A>A</A>\cdot<A>x</A>\le<A>b</A></M>. 
+##  <Example><![CDATA[
+##  gap> A:=[[3,1,1,4],[1,-3,2,3],[2,1,3,-1]];;
+##  gap> b:=[12,7,10];;c:=[2,4,3,1];;
+##  gap> SimplexMethod(A,b,c);
+##  [ [ 0, 52/5, 0, 2/5 ], 42 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "SimplexMethod" );
 
 
 #############################################################################

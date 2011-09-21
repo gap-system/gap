@@ -1353,7 +1353,7 @@ local K, inum, fact, degf, m, degm, dis, def, cf, d, avoid, bw, zaehl, p,
 
   m:=DefiningPolynomial(K);
   if IndeterminateNumberOfUnivariateLaurentPolynomial(m)<>inum then
-    m:=Value(m,X(LeftActingDomain(K),inum));
+    m:=Value(m,Indeterminate(LeftActingDomain(K),inum));
   fi;
   degm:=DegreeOfLaurentPolynomial(m);
 
@@ -1643,7 +1643,7 @@ local K, inum, fact, degf, m, degm, dis, def, cf, d, avoid, bw, zaehl, p,
         for k in actli do
           ext[k]:=AlgebraicExtension(Rationals,mmf[k]);
           # also to provoke the binding of the Ring
-          w:=X(ext[k],"X");
+          w:=Indeterminate(ext[k],"X");
 
           for j in [1..Length(fff[k])] do
             fff[k][j]:=TransferedExtensionPol(ext[k],fff[k][j],inum);
@@ -1748,7 +1748,7 @@ local K, inum, fact, degf, m, degm, dis, def, cf, d, avoid, bw, zaehl, p,
 #Assert(1,ForAll(U,i->IndeterminateNumberOfUnivariateLaurentPolynomial(i)=inum));
         od;
       else
-        U:=[X(Rationals,inum)^0];
+        U:=[Indeterminate(Rationals,inum)^0];
       fi;
       # sort according to the number of factors:
       # Our 'starting' factorisation is the one with the fewest factors,

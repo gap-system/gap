@@ -10,6 +10,21 @@
 
 gap> START_TEST("bugfixes test");
 
+##  Check if ConvertToMatrixRepNC works properly. BH
+##
+gap> mat := [[1,0,1,1],[0,1,1,1]]*One(GF(2));
+[ [ Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0 ] ]
+gap> ConvertToMatrixRepNC( mat, GF(2) );
+2
+gap> DimensionsMat(mat);
+[ 2, 4 ]
+gap> mat := [[1,0,1,1],[0,1,1,1]]*One(GF(3));
+[ [ Z(3)^0, 0*Z(3), Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0, Z(3)^0, Z(3)^0 ] ]
+gap> ConvertToMatrixRepNC( mat, GF(3) );
+3
+gap> DimensionsMat(mat);
+[ 2, 4 ]
+
 ##  Check that a new SpecialPcgs is created for which 
 ##    LGWeights can be set properly
 ##    see my mail of 2011/02/22 to gap-dev for details. BH
@@ -397,7 +412,7 @@ false
 ## bug 16-18 for fix 4
 gap> AbelianInvariantsMultiplier(SL(3,2));
 [ 2 ]
-gap> AllPrimitiveGroups(Size,60);
+gap> AllPrimitiveGroups(Size,60,NrMovedPoints,[2..2499]);
 [ A(5), PSL(2,5), A(5) ]
 gap> ix18:=X(GF(5),1);;f:=ix18^5-1;;
 gap> Discriminant(f);
@@ -1133,16 +1148,19 @@ false
 
 
 # 2005/12/22 (Robert F. Morse)
+# 2011/09/13 (Updated by AK as suggested by JM)
 gap> t:=Transformation([1,2,3,3]);;
 gap> s:=FullTransformationSemigroup(4);;
 gap> ld:=GreensDClassOfElement(FullTransformationSemigroup(4),
 > Transformation([1,2,3,3]));;
 gap> rs:=AssociatedReesMatrixSemigroupOfDClass(ld);;
-gap> SandwichMatrixOfReesZeroMatrixSemigroup(rs);
-[ [ 0, 0, 0, (), (), () ], [ 0, (), (), 0, 0, () ],
-  [ (), 0, (), 0, (1,2)(3,4)(5,6), 0 ],
-  [ (), (1,3)(2,5)(4,6), 0, (1,4,5)(2,6,3), 0, 0 ] ]
-
+gap> mat:=SandwichMatrixOfReesZeroMatrixSemigroup(rs);;
+gap> Length(mat);
+4
+gap> List(mat, x-> [Size(x), Number(x, y-> y=MultiplicativeZero(rs))]);
+[ [ 6, 3 ], [ 6, 3 ], [ 6, 3 ], [ 6, 3 ] ]
+gap> Size(UnderlyingSemigroupOfReesZeroMatrixSemigroup(rs));
+7
 
 # 2006/01/11 (MC)
 gap> d := DirectoryCurrent();;

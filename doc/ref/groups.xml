@@ -340,6 +340,8 @@ as they depend on a parameter.
 <#Include Label="IsSimpleGroup">
 <#Include Label="IsAlmostSimpleGroup">
 <#Include Label="IsomorphismTypeInfoFiniteSimpleGroup">
+<#Include Label="SimpleGroup">
+<#Include Label="SimpleGroupsIterator">
 <#Include Label="SmallSimpleGroup">
 <#Include Label="AllSmallNonabelianSimpleGroups">
 <#Include Label="IsFinitelyGeneratedGroup">
@@ -578,6 +580,7 @@ see <Cite Key="BJR87"/>.
 
 <#Include Label="[3]{grp}">
 <#Include Label="CanEasilyTestMembership">
+<#Include Label="CanEasilyComputeWithIndependentGensAbelianGroup">
 <#Include Label="CanComputeSize">
 <#Include Label="CanComputeSizeAnySubgroup">
 <#Include Label="CanComputeIndex">

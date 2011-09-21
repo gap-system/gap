@@ -38,6 +38,112 @@ local   pcgs,r,hom,A,iso;
 
 end );
 
+InstallGlobalFunction(FittingFreeSubgroupSetup,function(G,U)
+local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
+  ffs:=FittingFreeLiftSetup(G);
+
+  # result cached?
+  if not IsBound(U!.cachedFFS) then
+    cache:=[];
+    U!.cachedFFS:=cache;
+  else
+    cache:=U!.cachedFFS;
+  fi;
+  r:=First(cache,x->IsIdenticalObj(x[1],ffs));
+  if r<>fail then
+    return r[2];
+  fi;
+
+  pcisom:=ffs.pcisom;
+
+  rest:=RestrictedMapping(ffs.factorhom,U);
+
+  # in radical?
+  if ForAll(MappingGeneratorsImages(rest)[2],IsOne) then
+    ker:=U;
+    k:=InducedPcgsByGeneratorsNC(ffs.pcgs,GeneratorsOfGroup(U));
+  else
+
+    it:=CoKernelGensIterator(InverseGeneralMapping(rest));
+    kpc:=TrivialSubgroup(Image(pcisom));
+    while not IsDoneIterator(it) do
+      x:=ImagesRepresentative(pcisom,NextIterator(it));
+      if not x in kpc then
+	kpc:=ClosureGroup(kpc,x);
+      fi;
+    od;
+    SetSize(U,Size(Image(rest))*Size(kpc));
+    k:=InducedPcgs(FamilyPcgs(Image(pcisom)),kpc);
+    k:=List(k,x->PreImagesRepresentative(pcisom,x));
+    k:=InducedPcgsByPcSequenceNC(ffs.pcgs,k);
+    ker:=SubgroupNC(G,k);
+    SetSize(ker,Size(kpc));
+  fi;
+
+  SetPcgs(ker,k);
+  SetKernelOfMultiplicativeGeneralMapping(rest,ker);
+  r:=Concatenation(k!.depthsInParent,[Length(ffs.pcgs)+1]);
+
+  r:=rec(parentffs:=ffs,
+            rest:=rest,
+            ker:=ker,
+	    pcgs:=k,
+	    serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
+	    );
+  Add(cache,[ffs,r]); # keep
+  return r;
+
+end);
+
+InstallGlobalFunction(SubgroupByFittingFreeData,function(G,gens,imgs,ipcgs)
+local ffs,hom,U,rest,ker,r;
+
+  ffs:=FittingFreeLiftSetup(G);
+  hom:=ffs.factorhom;
+
+  U:=SubgroupNC(G,Concatenation(gens,ipcgs));
+
+  gens:=Concatenation(gens,ipcgs);
+  imgs:=Concatenation(imgs,List(ipcgs,x->One(Range(hom))));
+
+  if IsPermGroup(U) and AssertionLevel()>0 then
+    rest:=GroupHomomorphismByImages(U,Range(hom),gens,imgs);
+  else
+    RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+    rest:=GroupHomomorphismByImagesNC(U,Range(hom),gens,imgs);
+    RUN_IN_GGMBI:=false;
+  fi;
+  if rest=fail then Error("can't build homomorphism"); fi;
+
+  if HasRecogDecompinfoHomomorphism(hom) then
+    SetRecogDecompinfoHomomorphism(rest,RecogDecompinfoHomomorphism(hom));
+  fi;
+
+  ker:=SubgroupNC(G,ipcgs);
+  SetPcgs(ker,ipcgs);
+  SetSize(ker,Product(RelativeOrders(ipcgs)));
+  SetKernelOfMultiplicativeGeneralMapping(rest,ker);
+
+  SetSize(U,Size(Group(imgs,One(Image(ffs.factorhom))))*Size(ker));
+
+  if IsBound(ipcgs!.depthsInParent) then
+    r:=Concatenation(ipcgs!.depthsInParent,[Length(ffs.pcgs)+1]);
+  else
+    r:=Concatenation(List(ipcgs,x->DepthOfPcElement(ffs.pcgs,x)),
+      [Length(ffs.pcgs)+1]);
+  fi;
+  r:=rec(parentffs:=ffs,
+            rest:=rest,
+            ker:=ker,
+	    pcgs:=ipcgs,
+	    serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
+	    );
+
+  U!.cachedFFS:=[[ffs,r]];
+  return U;
+
+end);
+
 InstallGlobalFunction(AutomorphismRepresentingGroup,function(G,autos)
 local G0,a0,cnt,iso,Gi,ai,dom,s,u,a,red,degs,degs2,v,w;
   G0:=G;

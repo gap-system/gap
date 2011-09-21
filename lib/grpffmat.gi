@@ -91,24 +91,14 @@ end );
 ##
 #M  NiceMonomorphism( <ffe-mat-grp> )
 ##
-InstallGlobalFunction( NicomorphismOfFFEMatrixGroup, function( grp )
+InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     local   field,  dim,  V,  xset,  nice;
     
     field := FieldOfMatrixGroup( grp );
     dim   := DimensionOfMatrixGroup( grp );
     V     := field ^ dim;
-    # for large groups it is not worth to find short orbits
-    if (HasIsNaturalGL( grp ) and IsNaturalGL( grp ))
-       or (HasIsNaturalSL( grp ) and IsNaturalSL( grp ))
-       or (     HasIsFullSubgroupGLorSLRespectingBilinearForm( grp )
-            and IsFullSubgroupGLorSLRespectingBilinearForm( grp ) )
-       or (     HasIsFullSubgroupGLorSLRespectingSesquilinearForm( grp )
-            and IsFullSubgroupGLorSLRespectingSesquilinearForm( grp ) ) then
-        xset := ExternalSet( grp, V );
-    else
-	# One(grp) is a silly way to give the standard basis
-        xset := ExternalSubset( grp, V, One( grp ) );
-    fi;
+    xset := ExternalSet( grp, V );
+
     # STILL: reverse the base to get point sorting compatible with lexicographic
     # vector arrangement
     SetBaseOfGroup( xset, One( grp ));
@@ -126,37 +116,22 @@ end );
 InstallMethod( NiceMonomorphism, "falling back on GL", true,
     [ IsFFEMatrixGroup and IsFinite ], 0,
 function( grp )
+  # is it GL?
+  if (HasIsNaturalGL( grp ) and IsNaturalGL( grp ))
+      or (HasIsNaturalSL( grp ) and IsNaturalSL( grp )) then
+    return NicomorphismFFMatGroupOnFullSpace(grp);
+  fi;
+
+  # is the GL domain small enough to simply use it?
   if IsTrivial(grp) 
      or Size(FieldOfMatrixGroup(Parent(grp)))^DimensionOfMatrixGroup(grp)
-         >10000 then
+         >2000 then
     # if the permutation image would be too large, compute the orbit.
     TryNextMethod();
   fi;
-  return NicomorphismOfFFEMatrixGroup( GL( DimensionOfMatrixGroup( grp ),
+  return NicomorphismFFMatGroupOnFullSpace( GL( DimensionOfMatrixGroup( grp ),
 		  Size( FieldOfMatrixGroup( Parent(grp) ) ) ) );
 end );
-
-
-# obsolete
-#############################################################################
-##
-#M  IsomorphismPermGroup( <grp> ) . . . . . . . . . operation on vector space
-##
-#InstallMethod( IsomorphismPermGroup, "ffe matrix group", true,
-#        [ IsFFEMatrixGroup and IsFinite ], 0,
-#function( grp )
-#local   nice;
-#  if Size(FieldOfMatrixGroup(Parent(grp)))^DimensionOfMatrixGroup(grp)
-#    >10000 then
-#      # if the permutation image would be too large, compute the orbit.
-#      TryNextMethod();
-#  fi;
-#    
-#  nice := NicomorphismOfFFEMatrixGroup( grp );
-#  SetRange( nice, Image( nice ) );
-#  SetIsBijective( nice, true );
-#  return nice;
-#end );
 
 #############################################################################
 ##

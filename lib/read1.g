@@ -71,11 +71,12 @@ ReadLib( "options.gi"  );
 ReadLib( "attr.gd"     );
 ReadLib( "attr.gi"     );
 
-ReadLib( "macfloat.g"  );
-
 ReadLib( "string.gd"   );
 
 ReadLib( "cmdledit.g"  );
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
+
+ReadLib( "float.gd"    );
+ReadLib( "macfloat.g"  );

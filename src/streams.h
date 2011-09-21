@@ -12,6 +12,10 @@
 **  This file contains the  various read-eval-print loops and streams related
 **  stuff.  The system depend part is in "sysfiles.c".
 */
+
+#ifndef GAP_STREAMS_H
+#define GAP_STREAMS_H
+
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_streams_h =
    "@(#)$Id$";
@@ -88,10 +92,10 @@ extern Int READ_GAP_ROOT ( Char * filename );
 StructInitInfo * InitInfoStreams ( void );
 
 
+#endif // GAP_STREAMS_H
+
 /****************************************************************************
 **
 
 *E  streams.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-

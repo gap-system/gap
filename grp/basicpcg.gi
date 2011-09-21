@@ -85,10 +85,6 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
     SetSize(k,Size(f));
     SetIsAbelian( k, true );
 
-    if ForAll(ints,IsPrimePowerInt) then
-      SetIndependentGeneratorsOfAbelianGroup(k,GeneratorsOfGroup(k));
-    fi;
-
     if Size(Set(Filtered(Flat(pis),p->p<>1))) = 1 then
         SetIsPGroup( k, true );
         SetPrimePGroup( k, First(Flat(pis),p -> p<>1) );

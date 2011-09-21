@@ -13,6 +13,10 @@
 **  The  statements package  is the  part  of  the interpreter that  executes
 **  statements for their effects and prints statements.
 */
+
+#ifndef GAP_STATS_H
+#define GAP_STATS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_stats_h =
    "@(#)$Id$";
@@ -147,6 +151,8 @@ extern  void            (* PrintStatFuncs[256] ) ( Stat stat );
 */
 StructInitInfo * InitInfoStats ( void );
 
+
+#endif // GAP_STATS_H
 
 /****************************************************************************
 **

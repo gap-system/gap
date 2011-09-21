@@ -26,7 +26,7 @@ local genpreimages,  pre,kg,sz;
   fi;
 
   genpreimages:= List(genpreimages,
-		    gen -> PreImagesRepresentative( map, gen ) );
+                    gen -> PreImagesRepresentative( map, gen ) );
   if fail in genpreimages then
     TryNextMethod();
   fi;
@@ -41,14 +41,14 @@ local genpreimages,  pre,kg,sz;
     od;
   else
     pre := SubgroupNC( Source( map ), Concatenation(
-	      GeneratorsOfMagmaWithInverses(
-		  KernelOfMultiplicativeGeneralMapping( map ) ),
-	      genpreimages ) );
+              GeneratorsOfMagmaWithInverses(
+                  KernelOfMultiplicativeGeneralMapping( map ) ),
+              genpreimages ) );
 
     if     HasSize( KernelOfMultiplicativeGeneralMapping( map ) )
       and HasSize( elms )  then
-	SetSize( pre, Size( KernelOfMultiplicativeGeneralMapping( map ) )
-		* Size( elms ) );
+        SetSize( pre, Size( KernelOfMultiplicativeGeneralMapping( map ) )
+                * Size( elms ) );
     fi;
   fi;
   return pre;
@@ -63,8 +63,8 @@ InstallGlobalFunction( AddGeneratorsGenimagesExtendSchreierTree,
     local   old,        # genlabels before extension
             len,        # initial length of the orbit of <S>
             img,        # image during orbit algorithm
-	    pos,        # label positions
-	    ind,        # index of new labels
+            pos,        # label positions
+            ind,        # index of new labels
             i,  j;      # loop variables
     
     # check duplicates
@@ -80,18 +80,18 @@ InstallGlobalFunction( AddGeneratorsGenimagesExtendSchreierTree,
     i := 1;
     while i <= Length( S.orbit )  do
       for j  in S.genlabels  do
-	# Use new labels for old points, all labels for new points.
-	if i > len  or  not j in old  then
-	  img := S.orbit[ i ] / S.labels[ j ];
-	  if not IsBound( S.translabels[ img ] )  then
-	    S.translabels[ img ] := j;
-	    Add( S.orbit, img );
-	    if not IsBound(S.transversal[img]) then
-	      S.transversal[ img ] := S.labels[ j ];
-	      S.transimages[ img ] := S.labelimages[ j ];
-	    fi;
-	  fi;
-	fi;
+        # Use new labels for old points, all labels for new points.
+        if i > len  or  not j in old  then
+          img := S.orbit[ i ] / S.labels[ j ];
+          if not IsBound( S.translabels[ img ] )  then
+            S.translabels[ img ] := j;
+            Add( S.orbit, img );
+            if not IsBound(S.transversal[img]) then
+              S.transversal[ img ] := S.labels[ j ];
+              S.transimages[ img ] := S.labelimages[ j ];
+            fi;
+          fi;
+        fi;
       od;
       i := i + 1;
     od;
@@ -208,7 +208,7 @@ local   S,  iter,mgi;
               NextIterator   := NextIterator_CoKernelGens,
               ShallowCopy    := ShallowCopy_CoKernelGens,
 
-	      level := S,
+              level := S,
               pointNo := 1,
               genlabelNo := 1,
               levelNo := 1,
@@ -232,7 +232,7 @@ InstallGlobalFunction( CoKernelGensPermHom, function( hom )
     C := [  ];
     for sch  in CoKernelGensIterator( hom )  do
       if not (sch=One(sch) or sch in C) then
-	AddSet( C, sch );
+        AddSet( C, sch );
       fi;
     od;
     return C;
@@ -267,7 +267,7 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
           order, P, perm, perms, range, regular, rel, rel2, rels, relsG,
           relsGen, relsH, relsP, S, sizeS, stabG, stabS, table, tail, tail1,
           tail2, tietze, tzword, undefined,
-	  wordsH,allnums,fam,NewRelators,newrels,chunk, one;
+          wordsH,allnums,fam,NewRelators,newrels,chunk, one;
 
     chunk:=ValueOption("chunk");
     # get the involved groups
@@ -281,7 +281,7 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
     # are all generators as we would expect them?
     allnums:=List(gensF,i->GeneratorSyllable(i,1));
     allnums:=(allnums=[1..Length(allnums)]) 
-	      and ForAll(gensF,i->Length(i)=1 and ExponentSyllable(i,1)=1);
+              and ForAll(gensF,i->Length(i)=1 and ExponentSyllable(i,1)=1);
 
     # special case: G is the identity group
     if Size( G ) = 1 then
@@ -387,11 +387,11 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
     relsG := [ ];
     for tzword in relsP do
       if tzword <> [ ] then
-	if allnums then
-	  Add( relsG, AssocWordByLetterRep(fam,tzword ));
-	else
-	  Add( relsG, AbstractWordTietzeWord( tzword, gensF ) );
-	fi;
+        if allnums then
+          Add( relsG, AssocWordByLetterRep(fam,tzword ));
+        else
+          Add( relsG, AbstractWordTietzeWord( tzword, gensF ) );
+        fi;
       fi;
     od;
 
@@ -448,29 +448,29 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
     local rel;
       # add the new relator to the Tietze presentation and reduce it
       for rel in nrels do
-	AddRelator( P, rel );
+        AddRelator( P, rel );
       od;
       if tietze[TZ_MODIFIED] then
-	while tietze[TZ_MODIFIED] and tietze[TZ_TOTAL] > 0 do
-	  TzSearch( P );
-	od;
+        while tietze[TZ_MODIFIED] and tietze[TZ_TOTAL] > 0 do
+          TzSearch( P );
+        od;
 
-	# reconvert the Tietze relators to abstract words
-	rels := relsG;
-	relsG := [ ];
-	relsP := tietze[TZ_RELATORS];
-	for tzword in relsP do
-	  if allnums then
-	    Add( relsG, AssocWordByLetterRep(fam,tzword ));
-	  else
-	    Add( relsG, AbstractWordTietzeWord( tzword, gensF ) );
-	  fi;
-	od;
+        # reconvert the Tietze relators to abstract words
+        rels := relsG;
+        relsG := [ ];
+        relsP := tietze[TZ_RELATORS];
+        for tzword in relsP do
+          if allnums then
+            Add( relsG, AssocWordByLetterRep(fam,tzword ));
+          else
+            Add( relsG, AbstractWordTietzeWord( tzword, gensF ) );
+          fi;
+        od;
 
-	# reconstruct the rows for the relators if necessary
-	if relsG <> rels then
-	  relsGen := RelsSortedByStartGen( gensF, relsG, table, true );
-	fi;
+        # reconstruct the rows for the relators if necessary
+        if relsG <> rels then
+          relsGen := RelsSortedByStartGen( gensF, relsG, table, true );
+        fi;
       fi;
     end;
     newrels:=[];
@@ -530,17 +530,17 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
           fi;
 
           if Length( rel ) > 0 then
-	    if Length(relsG)<100 or chunk=fail then
-	      # few relators or no chunk option: process step by step
-	      NewRelators([rel]);
-	    else
-	      # if there are many relators add them in chunks.
-	      Add(newrels,rel);
-	      if Length(newrels)>QuoInt(Length(relsG),10) then
-		NewRelators(newrels);
-		newrels:=[];
-	      fi;
-	    fi;
+            if Length(relsG)<100 or chunk=fail then
+              # few relators or no chunk option: process step by step
+              NewRelators([rel]);
+            else
+              # if there are many relators add them in chunks.
+              Add(newrels,rel);
+              if Length(newrels)>QuoInt(Length(relsG),10) then
+                NewRelators(newrels);
+                newrels:=[];
+              fi;
+            fi;
           fi;
 
           # continue the enumeration and find all consequences
@@ -567,11 +567,11 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
     relsG := [ ];
     for tzword in relsP do
       if tzword <> [ ] then
-	if allnums then
-	  Add( relsG, AssocWordByLetterRep(fam,tzword ));
-	else
-	  Add( relsG, AbstractWordTietzeWord( tzword, gensF ) );
-	fi;
+        if allnums then
+          Add( relsG, AssocWordByLetterRep(fam,tzword ));
+        else
+          Add( relsG, AbstractWordTietzeWord( tzword, gensF ) );
+        fi;
       fi;
     od;
     return relsG;
@@ -599,30 +599,30 @@ local dom, l, n, i, j,o,ld,mp,lp,x;
     for j in shorb do
       x:=j[1];
       if LargestMovedPointPerm(x)>0 then
-	mp:=[];
-	lp:=1/(1+Length(j[2]));
-	for i in dom do
-	  if i^x=i then
-	    n[i]:=n[i]+lp;
-	  fi;
-	od;
+        mp:=[];
+        lp:=1/(1+Length(j[2]));
+        for i in dom do
+          if i^x=i then
+            n[i]:=n[i]+lp;
+          fi;
+        od;
       fi;
     od;
     for j in o do
       lp:=Length(j);
       for i in j do
-	if n[i]>0 then
-	  Add(l,[n[i]*lp,i]);
-	fi;
+        if n[i]>0 then
+          Add(l,[n[i]*lp,i]);
+        fi;
       od;
     od;
   else
     for i in dom do
       n:=0;
       for j in shorb do
-	if i^j[1]=i then
-	  n:=n+1/(1+Length(j[2]));
-	fi;
+        if i^j[1]=i then
+          n:=n+1/(1+Length(j[2]));
+        fi;
       od;
       j:=PositionProperty(o,k->i in k);
       n:=n*Length(o[j]);
@@ -657,19 +657,19 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
             two,        # power of two
             trivgens,   # trivial generators and their images, must be
             trivimgs,   #   entered into every level of the chain
-	    mapi,
+            mapi,
             i, T,  # loop variables
-	    orb,
-	    orbf,	# indicates with which generator the image was obtained
-	    dict,
-	    cnt,
-	    short,
-	    FillTransversalShort,
-	    BuildOrb,
-	    AddToStbO,
-	    maxstor,
-	    gsize,
-	    l;	# position
+            orb,
+            orbf,       # indicates with which generator the image was obtained
+            dict,
+            cnt,
+            short,
+            FillTransversalShort,
+            BuildOrb,
+            AddToStbO,
+            maxstor,
+            gsize,
+            l;  # position
 
     # Add to short word orbit fct.
     AddToStbO:=function(o,dict,e,w)
@@ -677,25 +677,25 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
       #Print("add length ",Length(UnderlyingElement(w)),"\n");
       i:=LookupDictionary(dict,e);
       if i<>fail then
-	if Length(o[i][2])>Length(w) then
-	  o[i]:=Immutable([e,w]);
-	  return 0;
-	fi;
-	return 1;
+        if Length(o[i][2])>Length(w) then
+          o[i]:=Immutable([e,w]);
+          return 0;
+        fi;
+        return 1;
       else
-	Add(o,Immutable([e,w]));
-	AddDictionary(dict,e,Length(o));
-	return 0;
+        Add(o,Immutable([e,w]));
+        AddDictionary(dict,e,Length(o));
+        return 0;
       fi;
 
 #      if l<>Fail then
 #      for i in [1..Length(o)] do
-#	if o[i][1]=e then
-#	  if Length(o[i][2])>Length(w) then
-#	    o[i]:=Immutable([e,w]);
-#	  fi;
-#	  return;
-#	fi;
+#       if o[i][1]=e then
+#         if Length(o[i][2])>Length(w) then
+#           o[i]:=Immutable([e,w]);
+#         fi;
+#         return;
+#       fi;
 #      od;
 #      Add(o,Immutable([e,w]));
     end;
@@ -710,29 +710,29 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
       i:=1;
       n:=Length(genimg[1]);
       while Length(orb)<maxstor and i<=Length(orb) do
-	for T in [1..n] do
-	  if orbf[i]<>-T then
-	    elm:=orb[i][1]*genimg[1][T];
-	    if not KnowsDictionary(dict,elm) then
-	      # new rep found
-	      img:=orb[i][2]*genimg[2][T];
-	      AddDictionary(dict,elm);
-	      Add(orb,Immutable([elm,img]));
-	      Add(orbf,T);
-	    fi;
-	  fi;
-	  if orbf[i]<>T then
-	    elm:=orb[i][1]/genimg[1][T];
-	    if not KnowsDictionary(dict,elm) then
-	      # new rep found
-	      img:=orb[i][2]/genimg[2][T];
-	      AddDictionary(dict,elm);
-	      Add(orb,Immutable([elm,img]));
-	      Add(orbf,-T);
-	    fi;
-	  fi;
-	od;
-	i:=i+1;
+        for T in [1..n] do
+          if orbf[i]<>-T then
+            elm:=orb[i][1]*genimg[1][T];
+            if not KnowsDictionary(dict,elm) then
+              # new rep found
+              img:=orb[i][2]*genimg[2][T];
+              AddDictionary(dict,elm);
+              Add(orb,Immutable([elm,img]));
+              Add(orbf,T);
+            fi;
+          fi;
+          if orbf[i]<>T then
+            elm:=orb[i][1]/genimg[1][T];
+            if not KnowsDictionary(dict,elm) then
+              # new rep found
+              img:=orb[i][2]/genimg[2][T];
+              AddDictionary(dict,elm);
+              Add(orb,Immutable([elm,img]));
+              Add(orbf,-T);
+            fi;
+          fi;
+        od;
+        i:=i+1;
       od;
       return orb;
     end;
@@ -741,7 +741,7 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
 
     # do products build up? (Must we prefer short words?)
     short:=(IsFreeGroup(Range(hom)) or IsFpGroup(Range(hom)))
-	    and ValueOption("noshort")<>true;
+            and ValueOption("noshort")<>true;
 
     if short then
       # compute how many perms we permit to store?
@@ -753,75 +753,75 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
       # but don't be crazy 
       maxstor:=Minimum(maxstor,
                  Size(Source(hom))/10,
-		 500*LogInt(Size(Source(hom)),2),
-		 25000); 
+                 500*LogInt(Size(Source(hom)),2),
+                 25000); 
 
       # fill transversal with elements that are short words
       # This is similar to Minkwitz' approach and produces much shorter
       # words when decoding.
       FillTransversalShort:=function(stb,size)
       local l,i,bpt,m,elm,wrd,z,j,dict,fc,mfc;
-	mfc:=Minimum(maxstor*10,gsize/size);
-	bpt:=stb.orbit[1];
-	stb.norbit:=ShallowCopy(stb.orbit);
-	# fill transversal with short words
-	for l in stb.orb do
-	  i:=bpt/l[1];
-	  if not i in stb.norbit then
-	    Add(stb.norbit,i);
-	    stb.transversal[i]:=l[1];
-	    stb.transimages[i]:=l[2];
-	  fi;
-	  i:=bpt^l[1];
-	  if not i in stb.norbit then
-	    Add(stb.norbit,i);
-	    stb.transversal[i]:=Inverse(l[1]);
-	    stb.transimages[i]:=Inverse(l[2]);
-	  fi;
-	od;
-	stb.stabilizer.orb:=Filtered(stb.orb,i->bpt^i[1]=bpt);
-	dict:=NewDictionary(stb.stabilizer.orb[1][1],true);
-	for l in [1..Length(stb.stabilizer.orb)] do
-	  AddDictionary(dict,stb.stabilizer.orb[l][1],l);
-	od;
-	l:=1;
-	fc:=1;
-	maxstor:=Minimum(maxstor,QuoInt(5*gsize,size));
-	if maxstor<1000 then 
-	  maxstor:=Maximum(maxstor,Minimum(QuoInt(gsize,size),1000));
-	fi;
-	#Print(maxstor," ",gsize/size,"<\n");
-	while Length(stb.stabilizer.orb)*5<maxstor and l<=Length(stb.orb)
-	  and fc<mfc do
-	  # add schreier gens
-	  elm:=stb.orb[l][1];
-	  wrd:=stb.orb[l][2];
-	  for z in [1,2] do
-	    if z=2 then
-	      elm:=elm^-1;
-	      wrd:=wrd^-1;
-	    fi;
-	    i:=bpt^elm;
-	    for j in stb.orb do
-	      if bpt^j[1]=i then
-		fc:=fc+AddToStbO(stb.stabilizer.orb,dict,elm/j[1],wrd/j[2]);
-	      elif i^j[1]=bpt then
-		fc:=fc+AddToStbO(stb.stabilizer.orb,dict,elm*j[1],wrd*j[2]);
-	      fi;
-	    od;
-	  od;
-	  l:=l+1;
-	od;
+        mfc:=Minimum(maxstor*10,gsize/size);
+        bpt:=stb.orbit[1];
+        stb.norbit:=ShallowCopy(stb.orbit);
+        # fill transversal with short words
+        for l in stb.orb do
+          i:=bpt/l[1];
+          if not i in stb.norbit then
+            Add(stb.norbit,i);
+            stb.transversal[i]:=l[1];
+            stb.transimages[i]:=l[2];
+          fi;
+          i:=bpt^l[1];
+          if not i in stb.norbit then
+            Add(stb.norbit,i);
+            stb.transversal[i]:=Inverse(l[1]);
+            stb.transimages[i]:=Inverse(l[2]);
+          fi;
+        od;
+        stb.stabilizer.orb:=Filtered(stb.orb,i->bpt^i[1]=bpt);
+        dict:=NewDictionary(stb.stabilizer.orb[1][1],true);
+        for l in [1..Length(stb.stabilizer.orb)] do
+          AddDictionary(dict,stb.stabilizer.orb[l][1],l);
+        od;
+        l:=1;
+        fc:=1;
+        maxstor:=Minimum(maxstor,QuoInt(5*gsize,size));
+        if maxstor<1000 then 
+          maxstor:=Maximum(maxstor,Minimum(QuoInt(gsize,size),1000));
+        fi;
+        #Print(maxstor," ",gsize/size,"<\n");
+        while Length(stb.stabilizer.orb)*5<maxstor and l<=Length(stb.orb)
+          and fc<mfc do
+          # add schreier gens
+          elm:=stb.orb[l][1];
+          wrd:=stb.orb[l][2];
+          for z in [1,2] do
+            if z=2 then
+              elm:=elm^-1;
+              wrd:=wrd^-1;
+            fi;
+            i:=bpt^elm;
+            for j in stb.orb do
+              if bpt^j[1]=i then
+                fc:=fc+AddToStbO(stb.stabilizer.orb,dict,elm/j[1],wrd/j[2]);
+              elif i^j[1]=bpt then
+                fc:=fc+AddToStbO(stb.stabilizer.orb,dict,elm*j[1],wrd*j[2]);
+              fi;
+            od;
+          od;
+          l:=l+1;
+        od;
 
-	Unbind(stb.orb);
-	Unbind(stb.norbit);
-	stb:=stb.stabilizer;
-	#Print("|o|=",Length(stb.orb),"\n");
-	# is there too little left? If yes, extend!
-	if Length(stb.orb)*20<maxstor then
-	  stb.orb:=BuildOrb([List(stb.orb,i->i[1]),
-	                     List(stb.orb,i->i[2])]);
-	fi;
+        Unbind(stb.orb);
+        Unbind(stb.norbit);
+        stb:=stb.stabilizer;
+        #Print("|o|=",Length(stb.orb),"\n");
+        # is there too little left? If yes, extend!
+        if Length(stb.orb)*20<maxstor then
+          stb.orb:=BuildOrb([List(stb.orb,i->i[1]),
+                             List(stb.orb,i->i[2])]);
+        fi;
 #Print(bpt,":",Length(stb.orb),"\n");
       end;
     else
@@ -854,7 +854,7 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
     if bpt=fail then;
       bpt := SmallestMovedPoint( Source( hom ) );
       if bpt = infinity  then
-	  bpt := 1;
+          bpt := 1;
       fi;
     fi;
     InsertTrivialStabilizer( S, bpt );
@@ -879,13 +879,13 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
     # create new elements until we have reached the size
     while size <> gsize  do
 
-	# try random elements
-	elm := rnd[rni];
-	img := rne[rni];
-	i := Random( [ 1 .. Length( mapi[1] ) ] );
-	rnd[rni] := rnd[rni] * mapi[1][i];
-	rne[rni] := rne[rni] * mapi[2][i];
-	rni := rni mod two + 1;
+        # try random elements
+        elm := rnd[rni];
+        img := rne[rni];
+        i := Random( [ 1 .. Length( mapi[1] ) ] );
+        rnd[rni] := rnd[rni] * mapi[1][i];
+        rne[rni] := rne[rni] * mapi[2][i];
+        rni := rni mod two + 1;
 
         # divide the element through the stabilizer chain
         stb := S;
@@ -910,37 +910,37 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
         # if the element was not in the stabilizer chain
         if elm <> stb.identity  then
 
-	  # if this stabilizer is trivial add an new level
-	  if not IsBound( stb.stabilizer )  then
-	    l:=fail;
-	    if short and IsBound(stb.orb) then
-	      l:=DoShortwordBasepoint(stb.orb);
-	    fi;
-	    if l=fail then
-	      l:=SmallestMovedPoint(elm);
-	    fi;
-	    InsertTrivialStabilizer( stb, l );
-	    AddGeneratorsGenimagesExtendSchreierTree( stb,
-		    trivgens, trivimgs );
-	    # the short words usable on this level
-	    FillTransversalShort(stb,size);
-	  fi;
+          # if this stabilizer is trivial add an new level
+          if not IsBound( stb.stabilizer )  then
+            l:=fail;
+            if short and IsBound(stb.orb) then
+              l:=DoShortwordBasepoint(stb.orb);
+            fi;
+            if l=fail then
+              l:=SmallestMovedPoint(elm);
+            fi;
+            InsertTrivialStabilizer( stb, l );
+            AddGeneratorsGenimagesExtendSchreierTree( stb,
+                    trivgens, trivimgs );
+            # the short words usable on this level
+            FillTransversalShort(stb,size);
+          fi;
 
-#	  if short then
-#	    l:=LookupDictionary(dict,elm);
-#	    if l<>fail then
-#	      img:=l;
-#	    fi;
-#	  fi;
+#         if short then
+#           l:=LookupDictionary(dict,elm);
+#           if l<>fail then
+#             img:=l;
+#           fi;
+#         fi;
 
-	  # extend the Schreier trees above level `stb'
-	  T := S;
-	  repeat
-	    T := T.stabilizer;
-	    size := size / Length( T.orbit );
-	    AddGeneratorsGenimagesExtendSchreierTree( T, [elm], [img] );
-	    size := size * Length( T.orbit );
-	  until T.orbit[ 1 ] = stb.orbit[ 1 ];
+          # extend the Schreier trees above level `stb'
+          T := S;
+          repeat
+            T := T.stabilizer;
+            size := size / Length( T.orbit );
+            AddGeneratorsGenimagesExtendSchreierTree( T, [elm], [img] );
+            size := size * Length( T.orbit );
+          until T.orbit[ 1 ] = stb.orbit[ 1 ];
 
         fi;
 
@@ -957,21 +957,13 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
     true, [ IsPermGroupGeneralMappingByImages ], 0,
 function( hom )
 local is;
-  # This seems not to be useful: Otherwise we call `MakeMapping' which
-  # enumerates the codomain anyhow, so a stupid `NormalClosure' cannot do
-  # more harm. AH
-  #if not CanComputeSizeAnySubgroup(Range(hom)) then
-  #  TryNextMethod();
-  #fi;
-
-  #as ImagesSource might call ImagesSet which would require the co kernel
-  #again, one has to be a careful a bit.
-  if HasImagesSource(hom) then
-    is:=ImagesSource(hom);
-  else
-    is:=SubgroupNC(Range(hom),List(GeneratorsOfGroup(Source(hom)),
-                                   i->ImagesRepresentative(hom,i)));
-  fi;
+  # As ImagesSource might call ImagesSet which would require the co-kernel
+  # again, one has to be a careful a bit.
+  # However, the default ImagesSource method for IsGroupGeneralMappingByImages
+  # does not use ImagesSet, and these days there should be no reason to use
+  # ImagesSet in any ImagesSource method due to the existence of
+  # MappingGeneratorsImages.
+  is:=ImagesSource(hom);
 
   return NormalClosure( is, SubgroupNC
                    ( Range( hom ), CoKernelGensPermHom( hom ) ) );
@@ -1009,18 +1001,18 @@ local   S,img,img2;
   else
     S := StabChainMutable( hom );
     img := ImageSiftedBaseImage( S, OnTuples( BaseStabChain( S ), elm ),
-		    S.idimage, OnRight );
-		    
+                    S.idimage, OnRight );
+                    
     if IsPerm( img ) then
       if IsInternalRep( img ) then
-	TRIM_PERM( img, LargestMovedPoint( Range( hom ) ) );
+        TRIM_PERM( img, LargestMovedPoint( Range( hom ) ) );
       else
-	img:=RestrictedPermNC(img,[1..LargestMovedPoint(Range(hom))]);
+        img:=RestrictedPermNC(img,[1..LargestMovedPoint(Range(hom))]);
       fi;
     elif IsAssocWord(img) or IsElementOfFpGroup(img) then
       # try the inverse as well -- it might be better
       img2:= ImageSiftedBaseImage( S, List(BaseStabChain(S),i->i/elm),
-		    S.idimage, OnRight );
+                    S.idimage, OnRight );
       if Length(UnderlyingElement(img2))<Length(UnderlyingElement(img)) then
         return img2;
       fi;
@@ -1044,7 +1036,7 @@ InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
     S := stb;
     while IsBound( S.stabilizer )  do
         S.idimage := One( Range( hom1 ) );
-	oli:=S.labelimages;
+        oli:=S.labelimages;
         if not ForAny( levs, lev -> IsIdenticalObj( lev, S.labelimages ) )  then
             Add( levs, S );
             S.labelimages := List( S.labelimages, g ->
@@ -1053,16 +1045,16 @@ InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
         S.generators  := S.labels     { S.genlabels };
         S.genimages   := S.labelimages{ S.genlabels };
         t:=S.translabels{ S.orbit };
-	# are transimages actually given by translabels?
-	if ForAll([1..Length(S.orbit)],
-	  x->IsIdenticalObj(S.transimages[S.orbit[x]],oli[t[x]])) then
-	  S.transimages := [  ];
-	  S.transimages{ S.orbit } := S.labelimages{ S.translabels{ S.orbit } };
-	else
-	  for i in S.orbit do
-	    S.transimages[i]:=Image(hom1,S.transimages[i]);
-	  od;
-	fi;
+        # are transimages actually given by translabels?
+        if ForAll([1..Length(S.orbit)],
+          x->IsIdenticalObj(S.transimages[S.orbit[x]],oli[t[x]])) then
+          S.transimages := [  ];
+          S.transimages{ S.orbit } := S.labelimages{ S.translabels{ S.orbit } };
+        else
+          for i in S.orbit do
+            S.transimages[i]:=Image(hom1,S.transimages[i]);
+          od;
+        fi;
         S := S.stabilizer;
     od;
     prd := GroupHomomorphismByImagesNC( Source( hom2 ), Range( hom1 ),
@@ -1085,7 +1077,7 @@ local r, fgens, gens, kg;
   fi;
   fgens:=ShallowCopy(GeneratorsOfGroup(r));
   gens:=List(fgens,
-	     i->PreImagesRepresentative(hom2,PreImagesRepresentative(hom1,i)));
+             i->PreImagesRepresentative(hom2,PreImagesRepresentative(hom1,i)));
   kg:=GeneratorsOfGroup(KernelOfMultiplicativeGeneralMapping(hom2));
   Append(gens,kg);
   Append(fgens,List(kg,i->One(r)));
@@ -1114,12 +1106,12 @@ InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
             n,  
             k,
             i,
-	    a,b,
+            a,b,
             longgens,
             longgroup,
             conperm,
             conperminv,
-	    mapi,
+            mapi,
             op;
     
     if IsTrivial( Source( hom ) )
@@ -1255,10 +1247,10 @@ InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
       a:=mapi[1][i];
       b:=mapi[2][i];
       if not IsInternalRep(a) then
-	a:=RestrictedPermNC(a,[1..n]);
+        a:=RestrictedPermNC(a,[1..n]);
       fi;
       if not IsInternalRep(b) then
-	b:=RestrictedPermNC(b,[1..k]);
+        b:=RestrictedPermNC(b,[1..k]);
       fi;
       longgens[i] := a * (b ^ conperm); 
     od;
@@ -1335,7 +1327,7 @@ InstallGlobalFunction( MakeStabChainLong,
             stb := stb.stabilizer;
         else
             RemoveStabChain( S );
-	    S.genimages:=[];
+            S.genimages:=[];
             S.labelimages := [  ];
             S := false;
         fi;
@@ -1349,7 +1341,7 @@ InstallGlobalFunction( MakeStabChainLong,
         if not Tester( cokername )( cohom )  then
             S := EmptyStabChain( [  ], idimage );
             ConjugateStabChain( stb, S, c2, c2 );
-	    TrimStabChain(S,LargestMovedPoint(Range(hom)));
+            TrimStabChain(S,LargestMovedPoint(Range(hom)));
             Setter( cokername )
               ( cohom, GroupStabChain( Range( hom ), S, true ) );
         fi;
@@ -1373,7 +1365,7 @@ InstallMethod( StabChainMutable, "perm to perm mapping by images",true,
 #M  KernelOfMultiplicativeGeneralMapping(<hom>) . for perm to perm group homs
 ##
 InstallMethod( KernelOfMultiplicativeGeneralMapping, 
-	"for perm to perm group homs, compute stab chain, try again",
+        "for perm to perm group homs, compute stab chain, try again",
         [ IsPermGroupGeneralMappingByImages and
           IsToPermGroupGeneralMappingByImages ], 0,
 function( hom )
@@ -1424,8 +1416,8 @@ end );
 #M  ImagesSet( <hom>, <H> ) . . . . . . . . . . . . . . . . . . for const hom
 ##
 InstallMethod( ImagesSet,"constituent homomorphism", CollFamSourceEqFamElms,
-	# this method should *not* be applied if the group to be mapped has
-	# no stabilizer chain (for example because it is very big).
+        # this method should *not* be applied if the group to be mapped has
+        # no stabilizer chain (for example because it is very big).
         [ IsConstituentHomomorphism, IsPermGroup and HasStabChainMutable], 0,
 function( hom, H )
 local   D,  I,G;
@@ -1433,9 +1425,9 @@ local   D,  I,G;
   D := Enumerator( UnderlyingExternalSet( hom ) );
   I := EmptyStabChain( [  ], One(Range(hom)) );
   RemoveStabChain( ConjugateStabChain( StabChainOp( H, D ), I,
-	  hom, hom!.conperm,
-	  S -> BasePoint( S ) <> false
-	    and BasePoint( S ) in D ) );
+          hom, hom!.conperm,
+          S -> BasePoint( S ) <> false
+            and BasePoint( S ) in D ) );
   #GroupStabChain might give too many generators
   if Length(I.generators)<10 then
     return GroupStabChain( Range( hom ), I, true );
@@ -1461,9 +1453,9 @@ local   D,H,I,G;
   D := Enumerator( UnderlyingExternalSet( hom ) );
   I := EmptyStabChain( [  ], () );
   RemoveStabChain( ConjugateStabChain( StabChainOp( H, D ), I,
-	  hom, hom!.conperm,
-	  S -> BasePoint( S ) <> false
-	    and BasePoint( S ) in D ) );
+          hom, hom!.conperm,
+          S -> BasePoint( S ) <> false
+            and BasePoint( S ) in D ) );
   #GroupStabChain might give too many generators
   if Length(I.generators)<10 then
     return GroupStabChain( I );
@@ -1541,7 +1533,7 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
     true, [ IsConstituentHomomorphism ], 0,
 function( hom )
   return Stabilizer( Source( hom ), Enumerator( UnderlyingExternalSet( hom ) ),
-		  OnTuples );
+                  OnTuples );
 end );
 
 #############################################################################
@@ -1711,26 +1703,26 @@ InstallMethod( PreImagesRepresentative, "blocks homomorphism",
 
         # Find the image block <B> of the current block.
 
-	# test if the point is in no block (transitive action)
-	# if not we can simply skip this step in the stabilizer chain.
-	if IsBound(hom!.reps[S.orbit[1]]) then
-	  b := hom!.reps[ S.orbit[ 1 ] ] ^ elm;
-	  if b > Length( D )  then
-	      return fail;
-	  fi;
-	  B := D[ b ];
-	  
-	  # Find a point in <B> that can be hit by the preimage.
-	  pos := PositionProperty( B, pnt ->
-			 IsBound( S.translabels[ pnt/pre ] ) );
-	  if pos = fail  then
-	      return fail;
-	  else
-	      pre := LeftQuotient( InverseRepresentative( S, B[ pos ] / pre ),
-			     pre );
-	  fi;
+        # test if the point is in no block (transitive action)
+        # if not we can simply skip this step in the stabilizer chain.
+        if IsBound(hom!.reps[S.orbit[1]]) then
+          b := hom!.reps[ S.orbit[ 1 ] ] ^ elm;
+          if b > Length( D )  then
+              return fail;
+          fi;
+          B := D[ b ];
+          
+          # Find a point in <B> that can be hit by the preimage.
+          pos := PositionProperty( B, pnt ->
+                         IsBound( S.translabels[ pnt/pre ] ) );
+          if pos = fail  then
+              return fail;
+          else
+              pre := LeftQuotient( InverseRepresentative( S, B[ pos ] / pre ),
+                             pre );
+          fi;
 
-	fi;
+        fi;
 
         S := S.stabilizer;
     od;
@@ -1828,7 +1820,7 @@ local e1,e2,d1,d2,i,ac,act,hom,xset;
   ac:=FunctionAction(e1);
   act:=function(set,g)
          set:=List(set,i->ac(i,g));
-	 Sort(set);
+         Sort(set);
          return set;
        end;
   e2:=UnderlyingExternalSet(map2);
@@ -1886,7 +1878,7 @@ end);
 #   Error();
 # 
 #   return RepresentativeActionOp( ImagesSource( hom ),
-# 		  xset!.basePermImage, imgs, OnTuples );
+#                 xset!.basePermImage, imgs, OnTuples );
 # end );
 
 
@@ -1914,161 +1906,161 @@ InstallOtherMethod( IsConjugatorIsomorphism,
   # to a perm group. So we have to test explicitly and make this method
   # higher ranking than the default one in `ghom.gi'.
   1,
-    function( hom )
-    local s, genss, rep,dom,insn,stb,E,bpt,fix,pnt,idom,sliced,
-      o,oimgs,i,pi,sto,stbs,stbi, r, sym;
+function( hom )
+  local s, genss, rep,dom,insn,stb,E,bpt,fix,pnt,idom,sliced,
+    o,oimgs,i,pi,sto,stbs,stbi, r, sym;
 
-    s:= Source( hom );
-    if not IsPermGroup( s ) then
-      TryNextMethod();
-    elif not ( IsGroupHomomorphism( hom ) and IsBijective( hom ) ) then
-      return false;
-    fi;
-    genss:= GeneratorsOfGroup( s );
+  s:= Source( hom );
+  if not IsPermGroup( s ) then
+    TryNextMethod();
+  elif not ( IsGroupHomomorphism( hom ) and IsBijective( hom ) ) then
+    return false;
+  fi;
+  genss:= GeneratorsOfGroup( s );
 
-    if IsEndoGeneralMapping( hom ) then
+  if IsEndoGeneralMapping( hom ) then
 
-  # test in transitive case whether we can realize in S_n
-  # we do not yet compute the permutation here because we will still have to
-  # test first whether it is in fact an inner automorphism:
-  # ConjugatorAutomorphisms are guaranteed to conjugate with an inner
-  # element if possible!
-  insn:=false;
-  dom:=MovedPoints(s);
-  if IsTransitive(s,dom) then
-    bpt := dom[ 1 ];
-    stb:=Stabilizer(s,bpt);
-    E:=Image(hom,stb);
-    if Number(dom,i->ForAll(GeneratorsOfGroup(E),j->i^j=i))=
-       Number(dom,i->ForAll(GeneratorsOfGroup(stb),j->i^j=i)) then
-#T why not with NrMovedPoints?
-#T why not compare orbit lengths of point stabilizer and its image?
-      insn:=true;
-    else
-      # we cannot realize in S_n
-      return false;
-    fi;
-  else
-    # compute the orbits and their image orbits
-    o:=OrbitsDomain(s,dom);
-    oimgs:=[];
-    stbs:=[];
-    stbi:=[];
-    i:=1;
-    while i<=Length(o) do
-      stb:=Stabilizer(s,o[i][1]);
-      sto:=Collected(List(OrbitsDomain(stb,o[i]),Length)); # stb orbit lengths
+    # test in transitive case whether we can realize in S_n
+    # we do not yet compute the permutation here because we will still have to
+    # test first whether it is in fact an inner automorphism:
+    # ConjugatorAutomorphisms are guaranteed to conjugate with an inner
+    # element if possible!
+    insn:=false;
+    dom:=MovedPoints(s);
+    if IsTransitive(s,dom) then
+      bpt := dom[ 1 ];
+      stb:=Stabilizer(s,bpt);
       E:=Image(hom,stb);
-      Add(stbs,stb);
-      Add(stbi,E);
-      pi:=Filtered(o,j->Length(j)=Length(o[i])); # possible images by length
-      # possible images by stabilizer orbit lengths
-      pi:=Filtered(pi,j->Collected(List(OrbitsDomain(E,j),Length))=sto);
-      if Length(pi)=0 then
-        return false; # image cannot be stabilizer
-      elif Length(pi)=1 then
-        Add(oimgs,pi[1]);
+      if Number(dom,i->ForAll(GeneratorsOfGroup(E),j->i^j=i))=
+         Number(dom,i->ForAll(GeneratorsOfGroup(stb),j->i^j=i)) then
+  #T why not with NrMovedPoints?
+  #T why not compare orbit lengths of point stabilizer and its image?
+        insn:=true;
       else
-        # orbit image not unique. We would have to backtrack. For the time
-	# being, give up
-#T why not inspect other orbits, and hope for a cheap `false' answer?
-        i:=Length(o)+10;
-      fi;
-      i:=i+1;
-    od;
-    if Length(oimgs)=Length(o) then
-      insn:=2; # conjugation in S_n established on multiple orbits
-    fi;
-  fi;
-
-  # try first to find an element in the group itself
-  rep:=RepresentativeAction(s, genss,
-         List( genss, i -> ImagesRepresentative( hom, i ) ), OnTuples );
-
-  if rep<>fail then
-    # we found the automorphism is in fact inner
-    Assert( 1, ForAll( genss, i -> ImagesRepresentative( hom, i ) = i^rep ) );
-    SetIsInnerAutomorphism(hom,true);
-  else
-    if insn=true then
-      hom:=AsGroupGeneralMappingByImages(hom);
-      fix := First( dom, p -> ForAll( GeneratorsOfGroup( E ),
-		    gen -> p ^ gen = p ) );
-      
-      # The automorphism <aut> maps <d>_bpt to <e>_fix, so permutes the points.
-      # Find an element in <G> with the same action.
-      idom := [  ];
-      for pnt  in dom  do
-	  sliced := [  ];
-	  while pnt <> bpt  do
-	      Add( sliced, StabChainMutable( hom ).transimages[ pnt ] );
-	      pnt := pnt ^ StabChainMutable( hom ).transversal[ pnt ];
-	  od;
-	  Add( idom, PreImageWord( fix, sliced ) );
-      od;
-      
-      rep:=MappingPermListList( dom, idom );
-    elif insn=2 then
-      dom:=[];
-      idom:=[];
-      for i in [1..Length(o)] do
-	# compute the images for orbit o[i]
-	stb:=stbs[i]; # pnt stabilizer and its image
-	E:=stbi[i];
-	# base point and image
-	bpt:=o[i][1];
-	fix:=First(oimgs[i],p->ForAll(GeneratorsOfGroup(E),
-		    gen -> p ^ gen = p ) );
-
-	# we could try to use stabilizer chains, but the homomorphism does
-	# not necessarily have one which acts in every orbit. So we use the
-	# time-homoured transversal
-	sliced:=RightTransversal(s,stb);
-	for pnt in sliced do
-	  Add(dom,bpt^pnt);
-	  Add(idom,fix^ImageElm(hom,pnt));
-	od;
-        
-      od;
-      rep:=MappingPermListList( dom, idom );
-    else
-      # we got 
-      rep:=RepresentativeAction(OrbitStabilizingParentGroup(s),
-            genss,
-	    List( genss, i -> ImagesRepresentative( hom, i ) ), OnTuples );
-      if rep<>fail then
-        Assert(1,ForAll(genss,i->ImagesRepresentative(hom,i)=i^rep));
-      fi;
-    fi;
-  fi;
-
-    else
-
-      r:= Range( hom );
-      if not IsPermGroup( r ) then
+        # we cannot realize in S_n
         return false;
       fi;
-      sym:= SymmetricGroup( Union( MovedPoints( s ), MovedPoints( r ) ) );
-
-      # Simply compute a conjugator in the enveloping symmetric group.
-      # (Note that all checks whether source and range
-      # can fit together under conjugation
-      # should better be left to `RepresentativeAction'.)
-      rep:= RepresentativeAction( sym, genss, List( genss,
-                      i -> ImagesRepresentative( hom, i ) ), OnTuples );
-      if rep<>fail then
-	Assert(1,ForAll(genss,i->ImagesRepresentative(hom,i)=i^rep));
+    else
+      # compute the orbits and their image orbits
+      o:=OrbitsDomain(s,dom);
+      oimgs:=[];
+      stbs:=[];
+      stbi:=[];
+      i:=1;
+      while i<=Length(o) do
+        stb:=Stabilizer(s,o[i][1]);
+        sto:=Collected(List(OrbitsDomain(stb,o[i]),Length)); # stb orbit lengths
+        E:=Image(hom,stb);
+        Add(stbs,stb);
+        Add(stbi,E);
+        pi:=Filtered(o,j->Length(j)=Length(o[i])); # possible images by length
+        # possible images by stabilizer orbit lengths
+        pi:=Filtered(pi,j->Collected(List(OrbitsDomain(E,j),Length))=sto);
+        if Length(pi)=0 then
+          return false; # image cannot be stabilizer
+        elif Length(pi)=1 then
+          Add(oimgs,pi[1]);
+        else
+          # orbit image not unique. We would have to backtrack. For the time
+          # being, give up
+  #T why not inspect other orbits, and hope for a cheap `false' answer?
+          i:=Length(o)+10;
+        fi;
+        i:=i+1;
+      od;
+      if Length(oimgs)=Length(o) then
+        insn:=2; # conjugation in S_n established on multiple orbits
       fi;
-
+    fi;
+  
+    # try first to find an element in the group itself
+    rep:=RepresentativeAction(s, genss,
+           List( genss, i -> ImagesRepresentative( hom, i ) ), OnTuples );
+  
+    if rep<>fail then
+      # we found the automorphism is in fact inner
+      Assert( 1, ForAll( genss, i -> ImagesRepresentative( hom, i ) = i^rep ) );
+      SetIsInnerAutomorphism(hom,true);
+    else
+      if insn=true then
+        hom:=AsGroupGeneralMappingByImages(hom);
+        fix := First( dom, p -> ForAll( GeneratorsOfGroup( E ),
+                      gen -> p ^ gen = p ) );
+        
+        # The automorphism <aut> maps <d>_bpt to <e>_fix, so permutes the points.
+        # Find an element in <G> with the same action.
+        idom := [  ];
+        for pnt  in dom  do
+            sliced := [  ];
+            while pnt <> bpt  do
+                Add( sliced, StabChainMutable( hom ).transimages[ pnt ] );
+                pnt := pnt ^ StabChainMutable( hom ).transversal[ pnt ];
+            od;
+            Add( idom, PreImageWord( fix, sliced ) );
+        od;
+        
+        rep:=MappingPermListList( dom, idom );
+      elif insn=2 then
+        dom:=[];
+        idom:=[];
+        for i in [1..Length(o)] do
+          # compute the images for orbit o[i]
+          stb:=stbs[i]; # pnt stabilizer and its image
+          E:=stbi[i];
+          # base point and image
+          bpt:=o[i][1];
+          fix:=First(oimgs[i],p->ForAll(GeneratorsOfGroup(E),
+                      gen -> p ^ gen = p ) );
+  
+          # we could try to use stabilizer chains, but the homomorphism does
+          # not necessarily have one which acts in every orbit. So we use the
+          # time-homoured transversal
+          sliced:=RightTransversal(s,stb);
+          for pnt in sliced do
+            Add(dom,bpt^pnt);
+            Add(idom,fix^ImageElm(hom,pnt));
+          od;
+          
+        od;
+        rep:=MappingPermListList( dom, idom );
+      else
+        # we got 
+        rep:=RepresentativeAction(OrbitStabilizingParentGroup(s),
+              genss,
+              List( genss, i -> ImagesRepresentative( hom, i ) ), OnTuples );
+        if rep<>fail then
+          Assert(1,ForAll(genss,i->ImagesRepresentative(hom,i)=i^rep));
+        fi;
+      fi;
     fi;
 
-    # Return the result.
-    if rep <> fail then
-      SetConjugatorOfConjugatorIsomorphism( hom, rep );
-      return true;
-    else
+  else
+
+    r:= Range( hom );
+    if not IsPermGroup( r ) then
       return false;
     fi;
+    sym:= SymmetricGroup( Union( MovedPoints( s ), MovedPoints( r ) ) );
+
+    # Simply compute a conjugator in the enveloping symmetric group.
+    # (Note that all checks whether source and range
+    # can fit together under conjugation
+    # should better be left to `RepresentativeAction'.)
+    rep:= RepresentativeAction( sym, genss, List( genss,
+                    i -> ImagesRepresentative( hom, i ) ), OnTuples );
+    if rep<>fail then
+      Assert(1,ForAll(genss,i->ImagesRepresentative(hom,i)=i^rep));
+    fi;
+
+  fi;
+
+  # Return the result.
+  if rep <> fail then
+    SetConjugatorOfConjugatorIsomorphism( hom, rep );
+    return true;
+  else
+    return false;
+  fi;
 end );
 
 #############################################################################

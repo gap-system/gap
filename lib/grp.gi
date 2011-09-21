@@ -71,9 +71,7 @@ function ( G )
 local g;
   if Size(G)=1 then return [One(G)];fi;
   g:=Product(IndependentGeneratorsOfAbelianGroup(G),One(G));
-  if Index(G,Subgroup(G,[g]))>1 then
-    Error("not cyclic");
-  fi;
+  Assert( 1, Index(G,Subgroup(G,[g])) = 1 );
   return [g];
 end);
 
@@ -119,7 +117,7 @@ InstallMethod( IsElementaryAbelian,
     "generic method for groups",
     [ IsGroup ],
     function ( G )
-    local   i,		# loop
+    local   i,          # loop
             p;          # order of one generator of <G>
 
     # if <G> is not commutative it is certainly not elementary abelian
@@ -137,11 +135,11 @@ InstallMethod( IsElementaryAbelian,
     # otherwise compute the order of the first nontrivial generator
     else
         # p := Order( GeneratorsOfGroup( G )[1] );
-	i:=1;
-	repeat
-	  p:=Order(GeneratorsOfGroup(G)[i]);
-	  i:=i+1;
-	until p>1; # will work, as G is not trivial
+        i:=1;
+        repeat
+            p:=Order(GeneratorsOfGroup(G)[i]);
+            i:=i+1;
+        until p>1; # will work, as G is not trivial
 
         # if the order is not a prime <G> is certainly not elementary abelian
         if not IsPrime( p )  then
@@ -294,12 +292,6 @@ InstallMethod( IsNilpotentGroup,
     function ( G )
     local   S;          # lower central series of <G>
 
-    # give a warning if the group is infinite
-    if not IsFinite( G )  then
-        Info( InfoWarning, 1,
-              "IsNilpotentGroup: may not stop for infinite group <G>" );
-    fi;
-
     # compute the lower central series
     S := LowerCentralSeriesOfGroup( G );
 
@@ -420,11 +412,6 @@ InstallMethod( IsAlmostSimpleGroup,
 ##
 #M  IsSolvableGroup( <G> )  . . . . . . . . . . . test if a group is solvable
 ##
-##  For finite groups, supersolvability implies monomiality, and this implies
-##  solvability.
-##  But monomiality is defined only for finite groups, for the general case
-##  we need the direct implication from supersolvability to solvability.
-##
 InstallImmediateMethod( IsSolvableGroup, IsGroup and HasSize, 10,
     function( G )
     G:= Size( G );
@@ -439,12 +426,6 @@ InstallMethod( IsSolvableGroup,
     [ IsGroup ],
     function ( G )
     local   S;          # derived series of <G>
-
-    # give a warning for infinite groups, where this may run forever
-    if not IsFinite( G )  then
-        Info( InfoWarning, 1,
-              "IsSolvable: may not stop for infinite group <G>" );
-    fi;
 
     # compute the derived series of <G>
     S := DerivedSeriesOfGroup( G );
@@ -528,7 +509,7 @@ InstallMethod( AbelianInvariants,
         repeat
             H := cmm;
             for g  in gns  do
-		#NC is safe
+                #NC is safe
                 H := ClosureSubgroupNC( H, g ^ p );
             od;
             r := Size(G) / Size(H);
@@ -757,7 +738,7 @@ InstallMethod( DerivedSeriesOfGroup,
             D;          # derived subgroups
 
     # print out a warning for infinite groups
-    if not (HasIsFinite(G) and IsFinite( G )) 
+    if (HasIsFinite(G) and not IsFinite( G )) 
       and not (HasIsPolycyclicGroup(G) and IsPolycyclicGroup( G )) then
       Info( InfoWarning, 1,
             "DerivedSeriesOfGroup: may not stop for infinite group <G>" );
@@ -796,8 +777,8 @@ InstallMethod( DerivedSubgroup,
     for i  in [ 2 .. Length( gens ) ]  do
         for j  in [ 1 .. i - 1 ]  do
             comm := Comm( gens[i], gens[j] );
-	    #NC is safe (init with Triv)
-	    D := ClosureSubgroupNC( D, comm );
+            #NC is safe (init with Triv)
+            D := ClosureSubgroupNC( D, comm );
         od;
     od;
 
@@ -973,7 +954,7 @@ InstallMethod( FittingSubgroup,
         else
             return SubgroupNC( G, Filtered(Union( List( Set( FactorsInt( Size( G ) ) ),
                          p -> GeneratorsOfGroup( PCore( G, p ) ) ) ),
-			 p->p<>One(G)));
+                         p->p<>One(G)));
         fi;
     end);
 
@@ -1040,10 +1021,10 @@ InstallMethod( LowerCentralSeriesOfGroup,
             C;          # commutator subgroups
 
     # print out a warning for infinite groups
-    if not ((CanComputeSize(G) or HasSize(G) or HasIsFinite(G)) 
-       and IsFinite( G ))  then
+    if (HasIsFinite(G) and not IsFinite( G )) 
+      and not (HasIsNilpotentGroup(G) and IsNilpotentGroup( G )) then
       Info( InfoWarning, 1,
-  "LowerCentralSeriesOfGroup: may not stop for potentially infinite group");
+            "LowerCentralSeriesOfGroup: may not stop for infinite group <G>");
     fi;
 
     # compute the series by repeated calling of `CommutatorSubgroup'
@@ -1124,12 +1105,13 @@ local ind, pcgs, primes, pos, p, i, e, f, a, j;
     primes:=[];
     pos:=[];
     for i in ind do
+      Assert(1, IsPrimePowerInt(Order(i)));
       p:=Factors(Order(i))[1];
       Add(primes,p);
       Add(pos,Length(pcgs)+1);
       while not IsOne(i) do
-	Add(pcgs,i);
-	i:=i^p;
+        Add(pcgs,i);
+        i:=i^p;
       od;
     od;
     Add(pos,Length(pcgs)+1);
@@ -1228,7 +1210,7 @@ InstallMethod( GeneratorsSmallest,
         # add the element not lying in the subgroup generated by the previous
         if not gen in H  then
             Add( gens, gen );
-	    #NC is safe (init with Triv)
+            #NC is safe (init with Triv)
             H := ClosureSubgroupNC( H, gen );
 
             # it is important to know when to stop
@@ -1556,6 +1538,8 @@ function( G )
                            x -> weights[x][3] = primes[i] )};
         sub  := InducedPcgsByPcSequenceNC( spec, gens );
         comp[i] := SubgroupByPcgs( G, sub );
+        SetIsPGroup( comp[i], true );
+        SetPrimePGroup( comp[i], primes[i] );
     od;
     return comp;
 end );
@@ -1601,9 +1585,10 @@ InstallMethod( UpperCentralSeriesOfGroup,
             hom;        # homomorphisms of <G> to `<G>/<C>'
 
     # print out a warning for infinite groups
-    if not IsFinite( G ) and not IsPolycyclicGroup( G ) then
+    if (HasIsFinite(G) and not IsFinite( G )) 
+      and not (HasIsNilpotentGroup(G) and IsNilpotentGroup( G )) then
       Info( InfoWarning, 1,
-          "UpperCentralSeriesOfGroup: may not stop for infinite group <G>");
+            "UpperCentralSeriesOfGroup: may not stop for infinite group <G>");
     fi;
 
     # compute the series by repeated calling of `Centre'
@@ -1709,8 +1694,8 @@ InstallGlobalFunction( ClosureGroupDefault, function( G, elm )
             gens,       # generators of <G>
             gen,        # generator of <G> or <C>
             Celements,  # intermediate list of elements
-	    rg,		# rep*gen
-	    e,		# loop
+            rg,         # rep*gen
+            e,          # loop
             reps,       # representatives of cosets of <G> in <C>
             rep;        # representative of coset of <G> in <C>
 
@@ -1743,10 +1728,10 @@ InstallGlobalFunction( ClosureGroupDefault, function( G, elm )
             rep := elm;
             while not rep in AsSSortedList( G ) do
                 #Append( Celements, AsSSortedList( G ) * rep );
-		for e in AsSSortedList(G) do
-		  # we cannot have duplicates here
-		  Add(Celements,e*rep);
-		od;
+                for e in AsSSortedList(G) do
+                    # we cannot have duplicates here
+                    Add(Celements,e*rep);
+                od;
                 rep := rep * elm;
             od;
             SetAsSSortedList( C, AsSSortedList( Celements ) );
@@ -1761,21 +1746,21 @@ InstallGlobalFunction( ClosureGroupDefault, function( G, elm )
             Info( InfoGroup, 2, "   |<cosets>| = ", Length(reps) );
             for rep  in reps  do
                 for gen  in GeneratorsOfGroup( C ) do
-		    rg:=rep*gen;
+                    rg:=rep*gen;
                     if not rg in Celements  then
                         #Append( Celements, AsSSortedList( G ) * rg );
-			# rather do this as a set as well to compare
-			# elements better
+                        # rather do this as a set as well to compare
+                        # elements better
                         for e in AsSSortedList( G ) do
-			  AddSet(Celements,e*rg);
-			od;
+                            AddSet(Celements,e*rg);
+                        od;
                         Add( reps, rg );
                         Info( InfoGroup, 3,
                               "   |<cosets>| = ", Length(reps) );
                     fi;
                 od;
             od;
-	    # Celements is sorted already
+            # Celements is sorted already
             #SetAsSSortedList( C, AsSSortedList( Celements ) );
             SetAsSSortedList( C, Celements );
             SetIsFinite( C, true );
@@ -2292,6 +2277,13 @@ function( cs )
     Print( "RightTransversal( ", cs!.group, ", ", cs!.subgroup, " )" );
 end );
 
+InstallMethod( PrintString,
+    "for right transversal",
+    [ IsList and IsRightTransversalRep ],
+function( cs )
+    return PRINT_STRINGIFY( "RightTransversal( ", cs!.group, ", ", cs!.subgroup, " )" );
+end );
+
 InstallMethod( ViewObj,
     "for right transversal",
     [ IsList and IsRightTransversalRep ],
@@ -2606,7 +2598,7 @@ InstallMethod( SylowSubgroupOp,
         until not r in S and ForAll( GeneratorsOfGroup( S ), g -> g^r in S );
 
         # add it to <S>
-	# NC is safe (init with Triv)
+        # NC is safe (init with Triv)
         S := ClosureSubgroupNC( S, r );
 
     od;
@@ -2723,8 +2715,8 @@ InstallMethod( \=,
         return GeneratorsOfGroup( G ) = GeneratorsOfGroup( H )
                or IsEqualSet( GeneratorsOfGroup( G ), GeneratorsOfGroup( H ) )
                or (Size( G ) = Size( H )
-		and ((Size(G)>1 and ForAll(GeneratorsOfGroup(G),gen->gen in H))
-		  or (Size(G)=1 and One(G) in H)) );
+                and ((Size(G)>1 and ForAll(GeneratorsOfGroup(G),gen->gen in H))
+                  or (Size(G)=1 and One(G) in H)) );
       else
         return false;
       fi;
@@ -2783,7 +2775,7 @@ InstallMethod( IsSubset,
       return true;
     elif IsFinite( G ) then
       if IsFinite( H ) then
-	return     (not HasSize(G) or not HasSize(H) or Size(G) mod Size(H) = 0)
+        return     (not HasSize(G) or not HasSize(H) or Size(G) mod Size(H) = 0)
                and ForAll( GeneratorsOfGroup( H ), gen -> gen in G );
       else
         return false;
@@ -2824,10 +2816,24 @@ InstallMethod( Intersection2,
 ##
 #M  Enumerator( <G> ) . . . . . . . . . . . .  set of the elements of a group
 ##
-EnumeratorOfGroup := function( G )
+CallFuncList(function(enum)
+    InstallMethod( Enumerator, "generic method for a group",
+            [ IsGroup and IsAttributeStoringRep ],
+            enum );
+
+    # the element list is only stored in the locally created new group H
+    InstallMethod(AsSSortedListNonstored, "generic method for groups",
+            [ IsGroup ],
+            enum );
+end, [function( G )
 
     local   H,          # subgroup of the first generators of <G>
             gen;        # generator of <G>
+
+    # The following code only does not work infinite groups.
+    if HasIsFinite( G ) and not IsFinite( G ) then
+      TryNextMethod();
+    fi;
 
     # start with the trivial group and its element list
     H:= TrivialSubgroup( G );
@@ -2842,17 +2848,8 @@ EnumeratorOfGroup := function( G )
     # return the list of elements
     Assert( 2, HasAsSSortedList( H ) );
     return AsSSortedList( H );
-end;
+end]);
 
-InstallMethod( Enumerator,
-    "generic method for a group",
-    [ IsGroup and IsAttributeStoringRep ],
-    EnumeratorOfGroup );
-
-InstallMethod(AsSSortedListNonstored,"generic method for groups",true,
-  [IsGroup],0,
-  # the element list is only stored in the locally created new group H
-  EnumeratorOfGroup);
 
 
 #############################################################################
@@ -2916,13 +2913,13 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # test if <G> is a cyclic group of prime size
     if IsPrimeInt( size )  then
         return rec(series:="Z",parameter:=size,
-	           name:=Concatenation( "Z(", String(size), ")" ));
+                   name:=Concatenation( "Z(", String(size), ")" ));
     fi;
 
     # test if <G> is A(5) ~ A(1,4) ~ A(1,5)
     if size = 60  then
         return rec(series:="A",parameter:=5,
-	           name:=Concatenation( "A(5) ",
+                   name:=Concatenation( "A(5) ",
                             "~ A(1,4) = L(2,4) ",
                             "~ B(1,4) = O(3,4) ",
                             "~ C(1,4) = S(2,4) ",
@@ -2936,7 +2933,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # test if <G> is A(6) ~ A(1,9)
     if size = 360  then
         return rec(series:="A",parameter:=6,
-		   name:=Concatenation( "A(6) ",
+                   name:=Concatenation( "A(6) ",
                             "~ A(1,9) = L(2,9) ",
                             "~ B(1,9) = O(3,9) ",
                             "~ C(1,9) = S(2,9) ",
@@ -2949,7 +2946,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
         # check that <G> is a group
         if not IsGroup( G )  then
             return rec(name:=Concatenation(
-	                          "cannot decide from size alone between ",
+                                  "cannot decide from size alone between ",
                                   "A(8) ",
                                 "~ A(3,2) = L(4,2) ",
                                 "~ D(3,2) = O+(6,2) ",
@@ -3063,7 +3060,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # test if <G> is the Chevalley group A(1,8), where p = 3 <> char.
     if size = 504  then
         return rec(series:="L",parameter:=[2,8],
-	           name:=Concatenation( "A(1,8) = L(2,8) ",
+                   name:=Concatenation( "A(1,8) = L(2,8) ",
                             "~ B(1,8) = O(3,8) ",
                             "~ C(1,8) = S(2,8) ",
                             "~ 2A(1,8) = U(2,8)" ));
@@ -3074,7 +3071,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
       and size = (q-1) * ((q-1)^2-1) / Gcd(2,(q-1)-1)
     then
         return rec(series:="L",parameter:=[2,q-1],
-	           name:=Concatenation( "A(",  "1", ",", String(q-1), ") ",
+                   name:=Concatenation( "A(",  "1", ",", String(q-1), ") ",
                             "= L(",  "2", ",", String(q-1), ") ",
                             "~ B(",  "1", ",", String(q-1), ") ",
                             "= O(",  "3", ",", String(q-1), ") ",
@@ -3089,7 +3086,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
       and size = (p-1) * ((p-1)^2-1) / Gcd(2,(p-1)-1)
     then
         return rec(series:="L",parameter:=[2,p-1],
-	           name:=Concatenation( "A(",  "1", ",", String(p-1), ") ",
+                   name:=Concatenation( "A(",  "1", ",", String(p-1), ") ",
                             "= L(",  "2", ",", String(p-1), ") ",
                             "~ B(",  "1", ",", String(p-1), ") ",
                             "= O(",  "3", ",", String(p-1), ") ",
@@ -3116,7 +3113,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # exceptions: A(1,4) ~ A(1,5) ~ A(5), A(1,7) ~ A(2,2), A(1,9) ~ A(6)
     if n = 1  and size = size2  then
         return rec(series:="L",parameter:=[2,q],
-	           name:=Concatenation( "A(", "1", ",", String(q), ") ",
+                   name:=Concatenation( "A(", "1", ",", String(q), ") ",
                             "= L(", "2", ",", String(q), ") ",
                             "~ B(", "1", ",", String(q), ") ",
                             "= O(", "3", ",", String(q), ") ",
@@ -3130,7 +3127,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # exceptions: A(3,2) ~ A(8)
     if n = 3  and size = size2  then
         return rec(series:="L",parameter:=[4,q],
-	           name:=Concatenation( "A(", "3", ",", String(q), ") ",
+                   name:=Concatenation( "A(", "3", ",", String(q), ") ",
                             "= L(", "4", ",", String(q), ") ",
                             "~ D(", "3", ",", String(q), ") ",
                             "= O+(","6", ",", String(q), ") " ));
@@ -3139,7 +3136,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # test if <G> is a Chevalley group A(n,q)
     if size = size2  then
         return rec(series:="L",parameter:=[n+1,q],
-	           name:=Concatenation( "A(", String(n),   ",", String(q), ") ",
+                   name:=Concatenation( "A(", String(n),   ",", String(q), ") ",
                             "= L(", String(n+1), ",", String(q), ") " ));
     fi;
 
@@ -3159,7 +3156,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # test if <G> is a Chevalley group B(2,3) ~ C(2,3) ~ 2A(3,2) ~ 2D(3,2)
     if n = 2  and q = 3  and size = size2  then
         return rec(series:="B",parameter:=[2,3],
-	           name:=Concatenation( "B(2,3) = O(5,3) ",
+                   name:=Concatenation( "B(2,3) = O(5,3) ",
                             "~ C(2,3) = S(4,3) ",
                             "~ 2A(3,2) = U(4,2) ",
                             "~ 2D(3,2) = O-(6,2)" ));
@@ -3178,7 +3175,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # non-simple: B(2,2) ~ S(6)
     if n = 2  and size = size2  then
         return rec(series:="B",parameter:=[2,q],
-	           name:=Concatenation( "B(2,", String(q), ") ",
+                   name:=Concatenation( "B(2,", String(q), ") ",
                             "= O(5,", String(q), ") ",
                             "~ C(2,", String(q), ") ",
                             "= S(4,", String(q), ")" ));
@@ -3188,7 +3185,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # non-simple: B(2,2) ~ S(6)
     if p = 2  and size = size2  then
         return rec(series:="B",parameter:=[n,q],
-	           name:=Concatenation("B(",String(n),  ",", String(q), ") ",
+                   name:=Concatenation("B(",String(n),  ",", String(q), ") ",
                             "= O(", String(2*n+1), ",", String(q), ") ",
                             "~ C(", String(n),     ",", String(q), ") ",
                             "= S(", String(2*n),   ",", String(q), ")" ));
@@ -3217,11 +3214,11 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
 
         if Size(C) mod (q^(2*n-2)-1) <> 0 then
             return rec(series:="B",parameter:=[n,q],
-	               name:=Concatenation("B(", String(n),",",String(q),") ",
+                       name:=Concatenation("B(", String(n),",",String(q),") ",
                                 "= O(", String(2*n+1), ",", String(q), ")"));
         else
             return rec(series:="C",parameter:=[n,q],
-	               name:=Concatenation( "C(",String(n),",",String(q),") ",
+                       name:=Concatenation( "C(",String(n),",",String(q),") ",
                                 "= S(", String(2*n), ",", String(q), ")" ));
         fi;
 
@@ -3242,7 +3239,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size = size2  or n = 4;
     if size = size2  then
         return rec(series:="D",parameter:=[n,q],
-	           name:=Concatenation("D(",String(n),",",String(q), ") ",
+                   name:=Concatenation("D(",String(n),",",String(q), ") ",
                             "= O+(", String(2*n), ",", String(q), ")" ));
     fi;
 
@@ -3255,7 +3252,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2 then
         return rec(series:="E",parameter:=[6,q],
-	           name:=Concatenation( "E(", "6", ",", String(q), ")" ));
+                   name:=Concatenation( "E(", "6", ",", String(q), ")" ));
     fi;
 
     # test whether <G> is an exceptional Chevalley group E(7,q)
@@ -3267,7 +3264,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="E",parameter:=[7,q],
-	           name:=Concatenation( "E(", "7", ",", String(q), ")" ));
+                   name:=Concatenation( "E(", "7", ",", String(q), ")" ));
     fi;
 
     # test whether <G> is an exceptional Chevalley group E(8,q)
@@ -3279,7 +3276,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="E",parameter:=[8,q],
-	           name:=Concatenation( "E(", "8", ",", String(q), ")" ));
+                   name:=Concatenation( "E(", "8", ",", String(q), ")" ));
     fi;
 
     # test whether <G> is an exceptional Chevalley group F(4,q)
@@ -3290,7 +3287,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="F",parameter:=q,
-	           name:=Concatenation( "F(4,", String(q), ")" ));
+                   name:=Concatenation( "F(4,", String(q), ")" ));
     fi;
 
     # Rule out the case G(2,2) ~ U(3,3).2 if only the group order is given.
@@ -3311,13 +3308,13 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="G",parameter:=q,
-	           name:=Concatenation( "G(", "2", ",", String(q), ")" ));
+                   name:=Concatenation( "G(", "2", ",", String(q), ")" ));
     fi;
 
     # test if <G> is 2A(2,3), where p = 2 <> char.
     if size = 3^3*(3^2-1)*(3^3+1)  then
         return rec(series:="2A",parameter:=[2,3],
-	           name:="2A(2,3) = U(3,3)");
+                   name:="2A(2,3) = U(3,3)");
     fi;
 
     # try to find <n> and <q> for size of 2A(n,q)
@@ -3337,7 +3334,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # order is given, since the dominant prime for group order 72 is 3.)
     if n = 3  and size = size2  then
         return rec(series:="2A",parameter:=[3,q],
-	           name:=Concatenation( "2A(", "3", ",", String(q), ") ",
+                   name:=Concatenation( "2A(", "3", ",", String(q), ") ",
                             "= U(",  "4", ",", String(q), ") ",
                             "~ 2D(", "3", ",", String(q), ") ",
                             "= O-(", "6", ",", String(q), ")" ));
@@ -3347,7 +3344,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     # non-simple: 2A(2,2) ~ 3^2 . Q(8)
     if size = size2  then
         return rec(series:="2A",parameter:=[n,q],
-	           name:=Concatenation("2A(",String(n),",", String(q), ") ",
+                   name:=Concatenation("2A(",String(n),",", String(q), ") ",
                             "= U(",  String(n+1), ",", String(q), ")" ));
     fi;
 
@@ -3362,7 +3359,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if p = 2  and m mod 2 = 1  and size = size2  then
         return rec(series:="2B",parameter:=q,
-	           name:=Concatenation( "2B(", "2", ",", String(q), ") ",
+                   name:=Concatenation( "2B(", "2", ",", String(q), ") ",
                             "= 2C(", "2", ",", String(q), ") ",
                             "= Sz(",           String(q), ")" ));
     fi;
@@ -3381,7 +3378,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size = size2  or n = 4;
     if size = size2  then
         return rec(series:="2D",parameter:=[n,q],
-	           name:=Concatenation("2D(",String(n),",", String(q), ") ",
+                   name:=Concatenation("2D(",String(n),",", String(q), ") ",
                             "= O-(", String(2*n), ",", String(q), ")" ));
     fi;
 
@@ -3393,7 +3390,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="3D",parameter:=q,
-	           name:=Concatenation( "3D(", "4", ",", String(q), ")" ));
+                   name:=Concatenation( "3D(", "4", ",", String(q), ")" ));
     fi;
 
 
@@ -3406,13 +3403,13 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if size = size2  then
         return rec(series:="2E",parameter:=q,
-	           name:=Concatenation( "2E(", "6", ",", String(q), ")" ));
+                   name:=Concatenation( "2E(", "6", ",", String(q), ")" ));
     fi;
 
     # test if <G> is the Ree group 2F(4,q)'
     if size = 2^12 * (2^6+1)*(2^4-1)*(2^3+1)*(2-1) / 2  then
         return rec(series:="2F",parameter:=2,
-	           name:="2F(4,2)' = Ree(2)' = Tits");
+                   name:="2F(4,2)' = Ree(2)' = Tits");
     fi;
 
     # test whether <G> is a Ree group 2F(4,q)
@@ -3423,7 +3420,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if p = 2  and 1 < m  and m mod 2 = 1  and size = size2  then
         return rec(series:="2F",parameter:=q,
-	           name:=Concatenation( "2F(", "4", ",", String(q), ") ",
+                   name:=Concatenation( "2F(", "4", ",", String(q), ") ",
                            "= Ree(",           String(q), ")" ));
     fi;
 
@@ -3435,7 +3432,7 @@ IsomorphismTypeInfoFiniteSimpleGroup_fun:= function( G )
     until size <= size2;
     if p = 3  and 1 < m  and m mod 2 = 1  and size = size2  then
         return rec(series:="2G",parameter:=q,
-	           name:=Concatenation( "2G(", "2", ",", String(q), ") ",
+                   name:=Concatenation( "2G(", "2", ",", String(q), ") ",
                            "= Ree(",           String(q), ")" ));
     fi;
 
@@ -3465,7 +3462,7 @@ InstallGlobalFunction( SmallSimpleGroup,
 
   function ( arg )
 
-    local  order, i, grps;
+    local  order, i, grps,j;
 
     if   not Length(arg) in [1,2] or not ForAll(arg,IsPosInt)
     then Error("usage: SmallSimpleGroup( <order> [, <i> ] )"); fi;
@@ -3479,20 +3476,15 @@ InstallGlobalFunction( SmallSimpleGroup,
 
     if order < 60 then return fail; fi;
 
-    if   order > 1000000
-    then Error("simple groups of order > 1000000 are currently\n",
+    if   order > 10^18
+    then Error("simple groups of order > 10^18 are currently\n",
                "not available via this function.");
     fi;
 
-    if   not IsReadOnlyGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS")
-    then ReadLib("simplegroupslist.g"); fi;
+    order:=SimpleGroupsIterator(order,order);
+    for j in [1..i-1] do NextIterator(order);od;
+    return NextIterator(order);
 
-    grps := Filtered(ValueGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS"),
-                     G -> Size(G) = order);
-
-    if Length(grps) < i then return fail; fi;
-
-    return grps[i];
   end );
 
 
@@ -3504,21 +3496,24 @@ InstallGlobalFunction( AllSmallNonabelianSimpleGroups,
 
   function ( orders )
 
-    local  grps;
+    local  grps,it,a,min,max;
 
     if   not IsList(orders) or not ForAll(orders,IsPosInt)
     then Error("usage: AllSmallNonabelianSimpleGroups( <orders> )"); fi;
 
-    if   not IsSubset([1..1000000],orders)
-    then Error("simple groups of order > 1000000 are currently\n",
+    min:=Minimum(orders);
+    max:=Maximum(orders);
+    if max>10^18 then 
+      Error("simple groups of order > 10^18 are currently\n",
                "not available via this function.");
     fi;
-
-    if   not IsReadOnlyGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS")
-    then ReadLib("simplegroupslist.g"); fi;
-
-    grps := Filtered(ValueGlobal("SMALL_NONABELIAN_SIMPLE_GROUPS"),
-                     G -> Size(G) in orders);
+    it:=SimpleGroupsIterator(min,max);
+    grps:=[];
+    for a in it do
+      if Size(a) in orders then
+        Add(grps,a);
+      fi;
+    od;
 
     return grps;
   end );
@@ -3534,6 +3529,13 @@ InstallMethod( PrintObj,
     function( G )
     Print( "Group( ... )" );
     end );
+    
+InstallMethod( String,
+    "for a group",
+    [ IsGroup ],
+    function( G )
+    return "Group( ... )";
+    end );
 
 InstallMethod( PrintObj,
     "for a group with generators",
@@ -3546,44 +3548,70 @@ InstallMethod( PrintObj,
     fi;
     end );
 
+InstallMethod( String,
+    "for a group with generators",
+    [ IsGroup and HasGeneratorsOfGroup ],
+    function( G )
+    if IsEmpty( GeneratorsOfGroup( G ) ) then
+      return STRINGIFY( "Group( ", One( G ), " )" );
+    else
+      return STRINGIFY( "Group( ", GeneratorsOfGroup( G ), " )" );
+    fi;
+    end );
+
+InstallMethod( PrintString,
+    "for a group with generators",
+    [ IsGroup and HasGeneratorsOfGroup ],
+    function( G )
+    if IsEmpty( GeneratorsOfGroup( G ) ) then
+      return PRINT_STRINGIFY( "Group( ", One( G ), " )" );
+    else
+      return PRINT_STRINGIFY( "Group( ", GeneratorsOfGroup( G ), " )" );
+    fi;
+    end );
 
 #############################################################################
 ##
 #M  ViewObj( <M> )  . . . . . . . . . . . . . . . . . . . . . .  view a group
 ##
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a group",
     [ IsGroup ],
     function( G )
-    Print( "<group>" );
-    end );
-
-InstallMethod( ViewObj,
+    return "<group>";
+end );
+    
+InstallMethod( ViewString,
     "for a group with generators",
     [ IsGroup and HasGeneratorsOfMagmaWithInverses ],
     function( G )
     if IsEmpty( GeneratorsOfMagmaWithInverses( G ) ) then
-      Print( "<trivial group>" );
+        return "<trivial group>";
     else
-      Print( "<group with ",
-             Length( GeneratorsOfMagmaWithInverses( G ) ),
-             " generators>" );
+        return Concatenation("<group with ",
+                       String( Length( GeneratorsOfMagmaWithInverses( G ) ) ),
+                       " generators>");
     fi;
     end );
 
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a group with generators and size",
     [ IsGroup and HasGeneratorsOfMagmaWithInverses and HasSize],
     function( G )
     if IsEmpty( GeneratorsOfMagmaWithInverses( G ) ) then
-      Print( "<trivial group>" );
+        return "<trivial group>";
     else
-      Print( "<group of size ",Size(G)," with ",
-             Length( GeneratorsOfMagmaWithInverses( G ) ),
-             " generators>" );
+        return Concatenation("<group of size ", String(Size(G))," with ",
+             String(Length( GeneratorsOfMagmaWithInverses( G ) )),
+             " generators>");
     fi;
     end );
 
+InstallMethod( ViewObj, "for a group",
+    [ IsGroup ],
+        function(G)
+    Print(ViewString(G));
+end);   
 
 #############################################################################
 ##
@@ -3635,17 +3663,17 @@ InstallMethod( GroupWithGenerators,
     fam:=FamilyObj(gens);
     if IsFinite(gens) then
       if not IsBound(fam!.defaultFinitelyGeneratedGroupType) then
-	fam!.defaultFinitelyGeneratedGroupType:=
-	  NewType(fam,IsGroup and IsAttributeStoringRep
-		      and HasGeneratorsOfMagmaWithInverses
-		      and IsFinitelyGeneratedGroup);
+        fam!.defaultFinitelyGeneratedGroupType:=
+          NewType(fam,IsGroup and IsAttributeStoringRep
+                      and HasGeneratorsOfMagmaWithInverses
+                      and IsFinitelyGeneratedGroup);
       fi;
       typ:=fam!.defaultFinitelyGeneratedGroupType;
     else
       if not IsBound(fam!.defaultGroupType) then
         fam!.defaultGroupType:=
-	  NewType(fam,IsGroup and IsAttributeStoringRep
-		      and HasGeneratorsOfMagmaWithInverses);
+          NewType(fam,IsGroup and IsAttributeStoringRep
+                      and HasGeneratorsOfMagmaWithInverses);
       fi;
       typ:=fam!.defaultGroupType;
     fi;
@@ -3665,17 +3693,17 @@ InstallMethod( GroupWithGenerators,
     fam:=FamilyObj(gens);
     if IsFinite(gens) then
       if not IsBound(fam!.defaultFinitelyGeneratedGroupWithOneType) then
-	fam!.defaultFinitelyGeneratedGroupWithOneType:=
-	  NewType(fam,IsGroup and IsAttributeStoringRep
-		      and HasGeneratorsOfMagmaWithInverses
-		      and IsFinitelyGeneratedGroup and HasOne);
+        fam!.defaultFinitelyGeneratedGroupWithOneType:=
+          NewType(fam,IsGroup and IsAttributeStoringRep
+                      and HasGeneratorsOfMagmaWithInverses
+                      and IsFinitelyGeneratedGroup and HasOne);
       fi;
       typ:=fam!.defaultFinitelyGeneratedGroupWithOneType;
     else
       if not IsBound(fam!.defaultGroupWithOneType) then
         fam!.defaultGroupWithOneType:=
-	  NewType(fam,IsGroup and IsAttributeStoringRep
-		      and HasGeneratorsOfMagmaWithInverses and HasOne);
+          NewType(fam,IsGroup and IsAttributeStoringRep
+                      and HasGeneratorsOfMagmaWithInverses and HasOne);
       fi;
       typ:=fam!.defaultGroupWithOneType;
     fi;
@@ -3849,8 +3877,8 @@ InstallGlobalFunction( SubgroupByProperty, function( G, prop )
 local K, S;
 
   K:= NewType( FamilyObj(G), IsMagmaWithInverses
-		  and IsAttributeStoringRep 
-		  and HasElementTestFunction);
+                  and IsAttributeStoringRep 
+                  and HasElementTestFunction);
   S:=rec();
   ObjectifyWithAttributes(S, K, ElementTestFunction, prop );
   SetParent( S, G );
@@ -3861,7 +3889,7 @@ InstallMethod( PrintObj, "subgroup by property",
     [ IsGroup and HasElementTestFunction ],100,
 function( G )
   Print( "SubgroupByProperty( ", Parent( G ), ",",
-	  ElementTestFunction(G)," )" );
+          ElementTestFunction(G)," )" );
 end );
 
 InstallMethod( ViewObj, "subgroup by property",
@@ -3892,7 +3920,7 @@ InstallGlobalFunction( SubgroupShell, function( G )
 local K, S;
 
   K:= NewType( FamilyObj(G), IsMagmaWithInverses
-		  and IsAttributeStoringRep);
+                  and IsAttributeStoringRep);
   S:=rec();
   Objectify(K,S);
   SetParent( S, G );
@@ -3976,9 +4004,9 @@ end);
 ##
 InstallGlobalFunction( NormalSubgroupsAbove, function (G,N,avoid)
 local   R,         # normal subgroups above <N>,result
-	C,         # one conjugacy class of <G>
-	g,         # representative of a conjugacy class of <G>
-	M;          # normal closure of <N> and <g>
+        C,         # one conjugacy class of <G>
+        g,         # representative of a conjugacy class of <G>
+        M;          # normal closure of <N> and <g>
 
     # initialize the list of normal subgroups
     Info(InfoGroup,1,"normal subgroup of order ",Size(N));
@@ -4037,7 +4065,7 @@ end);
 InstallMethod( MaximalNormalSubgroups,
     "generic search",
     [ IsGroup ],
-	function(G)
+    function(G)
     local
           maximal, # list of maximal normal subgroups,result
           normal,  # list of normal subgroups
@@ -4072,38 +4100,38 @@ InstallMethod( MinimalNormalSubgroups,
     [ IsGroup and IsFinite and HasNormalSubgroups],
     function (G)
 
-		local grps, sizes, n, min, i, j, k, size;
-		
-		grps := ShallowCopy (NormalSubgroups (G));
-		sizes := List (grps, Size);
-		n := Length (grps);
-		if n = 0 then
-			return [];
-		fi;
-		SortParallel (sizes, grps);
-		
-		# if a group is not minimal, we set the corresponding size to 1,
-				
-		min := [];
-	
-		for i in [1..n] do
-			if sizes[i] > 1 then
-				G := grps[i];
-				Add (min, G);
-				size := sizes[i];
-				j := i + 1;
-				while j <= n and sizes[j] <= size do
-					j := j + 1;
-				od;
-				for k in [j..n] do
-					if sizes[k] mod size = 0 and IsSubgroup (grps[k], G) then
-						sizes[k] := 1; # mark grps[k] as deleted
-					fi;
-				od;
-			fi;
-		od;
-		return min;
-	end);
+    local grps, sizes, n, min, i, j, k, size;
+    
+    grps := ShallowCopy (NormalSubgroups (G));
+    sizes := List (grps, Size);
+    n := Length (grps);
+    if n = 0 then
+      return [];
+    fi;
+    SortParallel (sizes, grps);
+    
+    # if a group is not minimal, we set the corresponding size to 1,
+        
+    min := [];
+  
+    for i in [1..n] do
+      if sizes[i] > 1 then
+        G := grps[i];
+        Add (min, G);
+        size := sizes[i];
+        j := i + 1;
+        while j <= n and sizes[j] <= size do
+          j := j + 1;
+        od;
+        for k in [j..n] do
+          if sizes[k] mod size = 0 and IsSubgroup (grps[k], G) then
+            sizes[k] := 1; # mark grps[k] as deleted
+          fi;
+        od;
+      fi;
+    od;
+    return min;
+  end);
 
 
 ##############################################################################
@@ -4144,7 +4172,7 @@ InstallMethod (MinimalNormalSubgroups,
       local hom;
       hom := NiceMonomorphism (grp);
       return List (MinimalNormalSubgroups (NiceObject (grp)), 
-      	N -> PreImagesSet (hom, N));
+        N -> PreImagesSet (hom, N));
    end);
    
    
@@ -4527,9 +4555,9 @@ function(G,elm)
     m:=(i mod maxlist)+1;
     if r[m] then
       if r[m+1] then
-	return 2;
+        return 2;
       else
-	return 1;
+        return 1;
       fi;
     elif r[m+1] then
       return 0;
@@ -4582,10 +4610,10 @@ function(G,elm)
       one:=One(G);
       gens:=List(gens,i->Image(iso,i));
       hom:=GroupHomomorphismByImagesNC(F,G,
-	       MappingGeneratorsImages(hom)[1],gens);
+               MappingGeneratorsImages(hom)[1],gens);
       if not HasEpimorphismFromFreeGroup(G) then
-	SetEpimorphismFromFreeGroup(G,hom);
-	G!.factFreeMap:=hom; # compatibility
+        SetEpimorphismFromFreeGroup(G,hom);
+        G!.factFreeMap:=hom; # compatibility
       fi;
     fi;
     info.iso:=iso;
@@ -4599,97 +4627,97 @@ function(G,elm)
       #tune enumerator (use a bit more memory to get unfactorized transversal
       # on top level)
       if not IsPlistRep(e) then
-	e:=EnumeratorByFunctions( G, rec(
-		    ElementNumber:=e!.ElementNumber,
-		    NumberElement:=e!.NumberElement,
-		    Length:=e!.Length,
-		    PrintObj:=e!.PrintObj,
-		    stabChain:=ShallowCopy(e!.stabChain)));
-	S:=e!.stabChain;
+        e:=EnumeratorByFunctions( G, rec(
+                    ElementNumber:=e!.ElementNumber,
+                    NumberElement:=e!.NumberElement,
+                    Length:=e!.Length,
+                    PrintObj:=e!.PrintObj,
+                    stabChain:=ShallowCopy(e!.stabChain)));
+        S:=e!.stabChain;
       else
-	S:=ShallowCopy(StabChainMutable(G));
+        S:=ShallowCopy(StabChainMutable(G));
       fi;
 
       cnt:=QuoInt(10^6,4*NrMovedPoints(G));
       SC:=S;
       repeat
-	S.newtransversal:=ShallowCopy(S.transversal);
-	S.stabilizer:=ShallowCopy(S.stabilizer);
-	i:=1;
-	while i<=Length(S.orbit) do
-	  p:=S.orbit[i];
-	  S.newtransversal[p]:=InverseRepresentative(S,p);
-	  i:=i+1;
-	od;
-	cnt:=cnt-Length(S.orbit);
-	S.transversal:=S.newtransversal;
-	Unbind(S.newtransversal);
-	S:=S.stabilizer;
+        S.newtransversal:=ShallowCopy(S.transversal);
+        S.stabilizer:=ShallowCopy(S.stabilizer);
+        i:=1;
+        while i<=Length(S.orbit) do
+          p:=S.orbit[i];
+          S.newtransversal[p]:=InverseRepresentative(S,p);
+          i:=i+1;
+        od;
+        cnt:=cnt-Length(S.orbit);
+        S.transversal:=S.newtransversal;
+        Unbind(S.newtransversal);
+        S:=S.stabilizer;
       until cnt<1 or Length(S.generators)=0;
       # store orbit lengths
       olens:=[];
       stblst:=[];
       S:=SC;
       while Length(S.generators)>0 do
-	Add(olens,Length(S.orbit));
-	Add(stblst,S);
-	S:=S.stabilizer;
+        Add(olens,Length(S.orbit));
+        Add(stblst,S);
+        S:=S.stabilizer;
       od;
       stblst:=Reversed(stblst);
 
       # do we want to use base images instead
       if Length(BaseStabChain(SC))<Length(SC.orbit)/3 then
-	e:=BaseStabChain(SC);
-	objelm:=x->OnTuples(e,x);
-	objnum:=
-	  function(pos)
-	  local stk, S, l, img, te, d, elm, i;
-	    pos:=pos-1;
-	    stk:=[];
-	    S:=SC;
-	    l:=Length(e);
-	    for d in [1..l] do
-	      img:=S.orbit[pos mod olens[d] + 1];
-	      pos:=QuoInt(pos,olens[d]);
-	      while img<>S.orbit[1] do
-		te:=S.transversal[img];
-		Add(stk,te);
-		img:=img^te;
-	      od;
-	      S:=S.stabilizer;
-	    od;
-	    elm:=ShallowCopy(e); # base;
-	    for d in [Length(stk),Length(stk)-1..1] do
-	      te:=stk[d];
-	      for i in [1..l] do
-		elm[i]:=elm[i]/te;
-	      od;
-	    od;
-	    return elm;
-	  end;
+        e:=BaseStabChain(SC);
+        objelm:=x->OnTuples(e,x);
+        objnum:=
+          function(pos)
+          local stk, S, l, img, te, d, elm, i;
+            pos:=pos-1;
+            stk:=[];
+            S:=SC;
+            l:=Length(e);
+            for d in [1..l] do
+              img:=S.orbit[pos mod olens[d] + 1];
+              pos:=QuoInt(pos,olens[d]);
+              while img<>S.orbit[1] do
+                te:=S.transversal[img];
+                Add(stk,te);
+                img:=img^te;
+              od;
+              S:=S.stabilizer;
+            od;
+            elm:=ShallowCopy(e); # base;
+            for d in [Length(stk),Length(stk)-1..1] do
+              te:=stk[d];
+              for i in [1..l] do
+                elm[i]:=elm[i]/te;
+              od;
+            od;
+            return elm;
+          end;
 
-	numobj:=
-	  function(elm)
-	  local pos, val, S, img, d,te;
-	    pos:=1;
-	    val:=1;
-	    S:=SC;
-	    for d in [1..Length(e)] do
-	      img:=elm[d]; # image base point
-	      pos:=pos+val*S.orbitpos[img];
-	      val:=val*S.ol;
-	      #elm:=OnTuples(elm,InverseRepresentative(S,img));
-	      while img<>S.orbit[1] do
-		te:=S.transversal[img];
-		img:=img^te;
-		elm:=OnTuples(elm,te);
-	      od;
-	      S:=S.stabilizer;
-	    od;
-	    return pos;
-	  end;
+        numobj:=
+          function(elm)
+          local pos, val, S, img, d,te;
+            pos:=1;
+            val:=1;
+            S:=SC;
+            for d in [1..Length(e)] do
+              img:=elm[d]; # image base point
+              pos:=pos+val*S.orbitpos[img];
+              val:=val*S.ol;
+              #elm:=OnTuples(elm,InverseRepresentative(S,img));
+              while img<>S.orbit[1] do
+                te:=S.transversal[img];
+                img:=img^te;
+                elm:=OnTuples(elm,te);
+              od;
+              S:=S.stabilizer;
+            od;
+            return pos;
+          end;
 
-	actobj:=OnTuples;
+        actobj:=OnTuples;
       fi;
     fi;
     info.objelm:=objelm;
@@ -4702,8 +4730,8 @@ function(G,elm)
     gens:=ShallowCopy(gens);
     for i in [1..l] do
       if Order(gens[i])>2 then
-	Add(gens,gens[i]^-1);
-	Add(letters,letters[i]^-1);
+        Add(gens,gens[i]^-1);
+        Add(letters,letters[i]^-1);
       fi;
     od;
 
@@ -4771,58 +4799,58 @@ function(G,elm)
 
     while cont do
       if from=1 then
-	diam:=diam+1;
-	dist[diam]:=total;
-	Info(InfoGroup,1,"process diameter ",diam,", extend ",total,
-	  " elements, ",count," elements left");
+        diam:=diam+1;
+        dist[diam]:=total;
+        Info(InfoGroup,1,"process diameter ",diam,", extend ",total,
+          " elements, ",count," elements left");
       fi;
       i:=ll[from];
       from:=from+1;
       if 0=from mod 20000 then
-	CompletionBar(InfoGroup,2,"#I  processed ",(total-(to-from))/(total+1));
+        CompletionBar(InfoGroup,2,"#I  processed ",(total-(to-from))/(total+1));
       fi;
       ri:=(rvalue(i)+1) mod 3;
       old:=objnum(i);
       for g in gens do
-	new:=numobj(actobj(old,g));
-	if rvalue(new)=8 then
-	  setrvalue(new,ri);
-	  if new=aim then cont:=false;fi;
-	  # add new element
-	  if from>write then
-	    # overwrite old position
-	    ll[write]:=new;
-	    write:=write+1;
-	  else
-	    Add(ll,new);
-	  fi;
-	  count:=count-1;
-	fi;
+        new:=numobj(actobj(old,g));
+        if rvalue(new)=8 then
+          setrvalue(new,ri);
+          if new=aim then cont:=false;fi;
+          # add new element
+          if from>write then
+            # overwrite old position
+            ll[write]:=new;
+            write:=write+1;
+          else
+            Add(ll,new);
+          fi;
+          count:=count-1;
+        fi;
       od;
       if from>to then
-	# we did all of the current length
-	l:=Length(ll);
-	# move the end in free space
-	i:=write;
-	while i<=to and l>to do
-	  ll[i]:=ll[l];
-	  Unbind(ll[l]);
-	  i:=i+1;
-	  l:=l-1;
-	od;
-	# the list gets shorter
-	while i<=to do
-	  Unbind(ll[i]);
-	  i:=i+1;
-	od;
+        # we did all of the current length
+        l:=Length(ll);
+        # move the end in free space
+        i:=write;
+        while i<=to and l>to do
+          ll[i]:=ll[l];
+          Unbind(ll[l]);
+          i:=i+1;
+          l:=l-1;
+        od;
+        # the list gets shorter
+        while i<=to do
+          Unbind(ll[i]);
+          i:=i+1;
+        od;
 
-	if from>19999 then
-	  CompletionBar(InfoGroup,2,"#I  processed ",false);
-	fi;
-	from:=1;
-	to:=Length(ll);
-	total:=to-from+1;
-	write:=1;
+        if from>19999 then
+          CompletionBar(InfoGroup,2,"#I  processed ",false);
+        fi;
+        from:=1;
+        to:=Length(ll);
+        total:=to-from+1;
+        write:=1;
       fi;
 
     od;
@@ -4851,11 +4879,11 @@ function(G,elm)
       old:=actobj(a,gens[num]^-1);
       hold:=numobj(old);
       if rvalue(hold)= (rna - 1) mod 3 then
-	# reduced to shorter
-	a:=old;
-	w:=w/letters[num];
-	rna:=rna-1;
-	stop:=true;
+        # reduced to shorter
+        a:=old;
+        w:=w/letters[num];
+        rna:=rna-1;
+        stop:=true;
       fi;
       num:=num+1;
     od;

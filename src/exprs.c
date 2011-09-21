@@ -42,13 +42,16 @@ const char * Revision_exprs_c =
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
+#include        "calls.h"
 #include        "vars.h"                /* variables                       */
 #include        "stats.h"
+
 
 #define INCLUDE_DECLARATION_PART
 #include        "exprs.h"               /* expressions                     */
 #undef  INCLUDE_DECLARATION_PART
 
+#include <assert.h>
 
 /****************************************************************************
 **
@@ -1159,10 +1162,10 @@ void ListExpr2 (
     Int                 len;            /* logical length of the list      */
     Int                 i;              /* loop variable                   */
     Int                 posshole;       /* initially 0, set to 1 at
-					   first empty position, then
-					   next full position causes
-					   the list to be made
-					   non-dense */
+                                           first empty position, then
+                                           next full position causes
+                                           the list to be made
+                                           non-dense */
 
     /* get the length of the list                                          */
     len = SIZE_EXPR(expr) / sizeof(Expr);
@@ -1175,41 +1178,41 @@ void ListExpr2 (
 
         /* if the subexpression is empty                                   */
         if ( ADDR_EXPR(expr)[i-1] == 0 ) {
-	  if (!posshole)
-	    posshole = 1;
-	  continue;
+          if (!posshole)
+            posshole = 1;
+          continue;
         }
-	else 
-	  {
-	    if (posshole == 1)
-	      {
-		SET_FILT_LIST(list, FN_IS_NDENSE);
-		posshole = 2;
-	      }
+        else 
+          {
+            if (posshole == 1)
+              {
+                SET_FILT_LIST(list, FN_IS_NDENSE);
+                posshole = 2;
+              }
 
-	    /* special case if subexpression is a list expression              */
-	    if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_LIST_EXPR ) {
-	      sub = ListExpr1( ADDR_EXPR(expr)[i-1] );
-	      SET_ELM_PLIST( list, i, sub );
-	      CHANGED_BAG( list );
-	      ListExpr2( sub, ADDR_EXPR(expr)[i-1] );
-	    }
-	    
-	    /* special case if subexpression is a record expression            */
-	    else if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_REC_EXPR ) {
-	      sub = RecExpr1( ADDR_EXPR(expr)[i-1] );
-	      SET_ELM_PLIST( list, i, sub );
-	      CHANGED_BAG( list );
-	      RecExpr2( sub, ADDR_EXPR(expr)[i-1] );
-	    }
-	    
-	    /* general case                                                    */
-	    else {
-	      sub = EVAL_EXPR( ADDR_EXPR(expr)[i-1] );
-	      SET_ELM_PLIST( list, i, sub );
-	      CHANGED_BAG( list );
-	    }
-	  }
+            /* special case if subexpression is a list expression              */
+            if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_LIST_EXPR ) {
+              sub = ListExpr1( ADDR_EXPR(expr)[i-1] );
+              SET_ELM_PLIST( list, i, sub );
+              CHANGED_BAG( list );
+              ListExpr2( sub, ADDR_EXPR(expr)[i-1] );
+            }
+            
+            /* special case if subexpression is a record expression            */
+            else if ( TNUM_EXPR( ADDR_EXPR(expr)[i-1] ) == T_REC_EXPR ) {
+              sub = RecExpr1( ADDR_EXPR(expr)[i-1] );
+              SET_ELM_PLIST( list, i, sub );
+              CHANGED_BAG( list );
+              RecExpr2( sub, ADDR_EXPR(expr)[i-1] );
+            }
+            
+            /* general case                                                    */
+            else {
+              sub = EVAL_EXPR( ADDR_EXPR(expr)[i-1] );
+              SET_ELM_PLIST( list, i, sub );
+              CHANGED_BAG( list );
+            }
+          }
 
     }
     if (!posshole)
@@ -1338,6 +1341,84 @@ Obj             EvalStringExpr (
 
     /* return the string                                                   */
     return string;
+}
+
+/****************************************************************************
+**
+*F  EvalFloatExprLazy(<expr>)  . . . . eval float expressions to a float value
+**
+**  'EvalFloatExpr'   evaluates the  float  expression  <expr>  to a float
+**  value.
+*/
+static Obj CONVERT_FLOAT_LITERAL;
+static Obj FLOAT_LITERAL_CACHE;
+static UInt GVAR_FLOAT_LITERAL_CACHE;
+static Obj MAX_FLOAT_LITERAL_CACHE_SIZE;
+
+Obj             EvalFloatExprLazy (
+    Expr                expr )
+{
+    Obj                 string;         /* string value            */
+    UInt                 len;           /* size of expression              */
+    UInt                 ix;
+    Obj cache= 0;
+    Obj fl;
+    
+    ix = ((UInt *)ADDR_EXPR(expr))[1];
+    if (ix && (!MAX_FLOAT_LITERAL_CACHE_SIZE || 
+               MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
+               ix <= INT_INTOBJ(MAX_FLOAT_LITERAL_CACHE_SIZE))) {
+      cache = FLOAT_LITERAL_CACHE;
+      if (!cache)
+        {
+          cache = NEW_PLIST(T_PLIST,ix);
+          AssGVar(GVAR_FLOAT_LITERAL_CACHE, cache);
+        }
+      else
+        assert(IS_PLIST(cache));
+      GROW_PLIST(cache,ix);
+      fl = ELM_PLIST(cache,ix);
+      if (fl)
+        return fl;
+    }
+    len = *((UInt *)ADDR_EXPR(expr));
+    string = NEW_STRING(len);
+    memcpy((void *)CHARS_STRING(string), 
+           (void *)((char *)ADDR_EXPR(expr) + 2*sizeof(UInt)), 
+           len );
+    fl = CALL_1ARGS(CONVERT_FLOAT_LITERAL, string);
+    if (cache) {
+      SET_ELM_PLIST(cache, ix, fl);
+      CHANGED_BAG(cache);
+      if (LEN_PLIST(cache) < ix)
+        SET_LEN_PLIST(cache, ix);
+    }
+
+    return fl;
+}
+
+/****************************************************************************
+**
+*F  EvalFloatExprEager(<expr>)  . . . . eval float expressions to a float value
+**
+**  'EvalFloatExpr'   evaluates the  float  expression  <expr>  to a float
+**  value.
+*/
+static Obj EAGER_FLOAT_LITERAL_CACHE;
+
+Obj             EvalFloatExprEager (
+    Expr                expr )
+{
+    UInt                 ix;
+    Obj cache= 0;
+    Obj fl;
+    
+    ix = ((UInt *)ADDR_EXPR(expr))[0];
+    cache = EAGER_FLOAT_LITERAL_CACHE;
+    assert(IS_PLIST(cache));
+    fl = ELM_PLIST(cache,ix);
+    assert(fl);
+    return fl;
 }
 
 
@@ -1624,7 +1705,7 @@ void            PrintBinop (
     Expr                expr )
 {
     UInt                oldPrec;        /* old preceedence level           */
-    Char *              op;             /* operand                         */
+    const Char *        op;             /* operand                         */
     /* remember the current preceedence level                              */
     oldPrec = PrintPreceedence;
 
@@ -1654,10 +1735,10 @@ void            PrintBinop (
 
     /* print the left operand                                              */
     if ( TNUM_EXPR(expr) == T_POW
-	 && ((  (IS_INTEXPR(ADDR_EXPR(expr)[0])
-		 && INT_INTEXPR(ADDR_EXPR(expr)[0]) < 0)
-		|| TNUM_EXPR(ADDR_EXPR(expr)[0]) == T_INTNEG)
-	     || TNUM_EXPR(ADDR_EXPR(expr)[0]) == T_POW) ) {
+         && ((  (IS_INTEXPR(ADDR_EXPR(expr)[0])
+                 && INT_INTEXPR(ADDR_EXPR(expr)[0]) < 0)
+                || TNUM_EXPR(ADDR_EXPR(expr)[0]) == T_INTNEG)
+             || TNUM_EXPR(ADDR_EXPR(expr)[0]) == T_POW) ) {
         Pr( "(", 0L, 0L );
         PrintExpr( ADDR_EXPR(expr)[0] );
         Pr( ")", 0L, 0L );
@@ -1847,6 +1928,36 @@ void            PrintStringExpr (
     /*Pr( "\"%S\"", (Int)ADDR_EXPR(expr), 0L );*/
 }
 
+/****************************************************************************
+**
+*F  PrintFloatExpr(<expr>) . . . . . . . . . . . . print a float expression
+**
+**  'PrintFloatExpr' prints the float expression <expr>.
+*/
+void            PrintFloatExprLazy (
+    Expr                expr )
+{
+  Pr("%s", (Int)(((char *)ADDR_EXPR(expr) + 2*sizeof(UInt))), 0L);
+}
+
+/****************************************************************************
+**
+*F  PrintFloatExprEager(<expr>) . . . . . . . . . . . . print a float expression
+**
+**  'PrintFloatExpr' prints the float expression <expr>.
+*/
+void            PrintFloatExprEager (
+    Expr                expr )
+{
+  Char mark;
+  Pr("%s", (Int)(((char *)ADDR_EXPR(expr) + 3*sizeof(UInt))), 0L);
+  Pr("_",0L,0L);
+  mark = (Char)(((UInt *)ADDR_EXPR(expr))[2]);
+  if (mark != '\0') {
+    Pr("%c",mark,0L);
+  }
+}
+
 
 /****************************************************************************
 **
@@ -1911,6 +2022,12 @@ static Int InitKernel (
 {
     UInt                type;           /* loop variable                   */
 
+    InitFopyGVar("CONVERT_FLOAT_LITERAL",&CONVERT_FLOAT_LITERAL);
+    InitCopyGVar("FLOAT_LITERAL_CACHE",&FLOAT_LITERAL_CACHE);
+    InitCopyGVar("EAGER_FLOAT_LITERAL_CACHE",&EAGER_FLOAT_LITERAL_CACHE);
+    InitCopyGVar("MAX_FLOAT_LITERAL_CACHE_SIZE",&MAX_FLOAT_LITERAL_CACHE_SIZE);
+
+    
     /* clear the evaluation dispatch table                                 */
     for ( type = 0; type < 256; type++ ) {
         EvalExprFuncs[ type ] = EvalUnknownExpr;
@@ -1969,6 +2086,8 @@ static Int InitKernel (
     EvalExprFuncs [ T_STRING_EXPR    ] = EvalStringExpr;
     EvalExprFuncs [ T_REC_EXPR       ] = EvalRecExpr;
     EvalExprFuncs [ T_REC_TILD_EXPR  ] = EvalRecTildeExpr;
+    EvalExprFuncs [ T_FLOAT_EXPR_LAZY  ] = EvalFloatExprLazy;
+    EvalExprFuncs [ T_FLOAT_EXPR_EAGER  ] = EvalFloatExprEager;
 
     /* clear the tables for the printing dispatching                       */
     for ( type = 0; type < 256; type++ ) {
@@ -2012,6 +2131,8 @@ static Int InitKernel (
     PrintExprFuncs[ T_LIST_TILD_EXPR ] = PrintListExpr;
     PrintExprFuncs[ T_RANGE_EXPR     ] = PrintRangeExpr;
     PrintExprFuncs[ T_STRING_EXPR    ] = PrintStringExpr;
+    PrintExprFuncs[ T_FLOAT_EXPR_LAZY    ] = PrintFloatExprLazy;
+    PrintExprFuncs[ T_FLOAT_EXPR_EAGER    ] = PrintFloatExprEager;
     PrintExprFuncs[ T_REC_EXPR       ] = PrintRecExpr;
     PrintExprFuncs[ T_REC_TILD_EXPR  ] = PrintRecExpr;
 
@@ -2019,6 +2140,13 @@ static Int InitKernel (
     return 0;
 }
 
+
+static Int InitLibrary (
+    StructInitInfo *    module )
+{
+    GVAR_FLOAT_LITERAL_CACHE = GVarName("FLOAT_LITERAL_CACHE");
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -2032,11 +2160,11 @@ static StructInitInfo module = {
     0,                                  /* version                        */
     0,                                  /* crc                            */
     InitKernel,                         /* initKernel                     */
-    0,                                  /* initLibrary                    */
+    InitLibrary,                        /* initLibrary                    */
     0,                                  /* checkInit                      */
     0,                                  /* preSave                        */
     0,                                  /* postSave                       */
-    0                                   /* postRestore                    */
+    InitLibrary                                   /* postRestore                    */
 };
 
 StructInitInfo * InitInfoExprs ( void )

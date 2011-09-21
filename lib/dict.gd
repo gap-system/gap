@@ -1,7 +1,7 @@
 #############################################################################
 ##
-#W  dict.gd			GAP Library		       Gene Cooperman
-#W							         Scott Murray
+#W  dict.gd                     GAP Library                    Gene Cooperman
+#W                                                               Scott Murray
 #W                                                           Alexander Hulpke
 ##
 #H  @(#)$Id$
@@ -27,13 +27,13 @@
 ##
 ##  Requires: nothing
 ##  Exports: 
-##     	Category IsHash.
-##     	Representations IsDenseHashRep and IsSparseHashRep.  
-##     	Operations PrintHashWithNames, Iterator, GetHashEntry, AddHashEntry,
-##     	  GetHashEntryAtLastIndex, SetHashEntryAtLastIndex, SetHashEntry, 
-##	  [AddHashEntryAtLastIndex], HashFunct, KeyIntDense, KeyIntSparse.
-##	Functions DenseHash, SparseHash.
-##	Variables MaxViewSize, LastHashIndex.
+##      Category IsHash.
+##      Representations IsDenseHashRep and IsSparseHashRep.  
+##      Operations PrintHashWithNames, Iterator, GetHashEntry, AddHashEntry,
+##        GetHashEntryAtLastIndex, SetHashEntryAtLastIndex, SetHashEntry, 
+##        [AddHashEntryAtLastIndex], HashFunct, KeyIntDense, KeyIntSparse.
+##      Functions DenseHash, SparseHash.
+##      Variables MaxViewSize, LastHashIndex.
 ##
 Revision.dict_gd :=
     "@(#)$Id$";
@@ -536,11 +536,11 @@ DeclareSynonym("DoubleHashArraySize", DoubleHashDictSize);
 
 #############################################################################
 ##
-#F  HashFunct( <key>, <i>, <size> )
+#F  IntegerHashFunction( <key>, <i>, <size> )
 ##
-##  <#GAPDoc Label="HashFunct">
+##  <#GAPDoc Label="IntegerHashFunction">
 ##  <ManSection>
-##  <Func Name="HashFunct" Arg='key, i, size'/>
+##  <Func Name="IntegerHashFunction" Arg='key, i, size'/>
 ##
 ##  <Description>
 ##  This will be a good double hashing function for any reasonable KeyInt 
@@ -550,7 +550,8 @@ DeclareSynonym("DoubleHashArraySize", DoubleHashDictSize);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "HashFunct", [ IsInt, IsInt, IsInt ] );
+DeclareGlobalFunction( "IntegerHashFunction", [ IsInt, IsInt, IsInt ] );
+DeclareSynonym( "HashFunct", IntegerHashFunction);
 
 #############################################################################
 ##

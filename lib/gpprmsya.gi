@@ -1384,14 +1384,24 @@ end);
 ##
 #M  ViewObj( <nat-sym-grp> )
 ##
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
+    "for natural alternating group",
+    true,
+    [ IsNaturalAlternatingGroup ], 0,
+function(alt)
+    alt:=MovedPoints(alt);
+    IsRange(alt);
+    return Concatenation( "Alt( ", String(alt), " )" );
+end );
+
+InstallMethod( ViewString,
     "for natural symmetric group",
     true,
     [ IsNaturalSymmetricGroup ], 0,
 function(sym)
     sym:=MovedPoints(sym);
     IsRange(sym);
-    Print( "Sym( ",sym, " )" );
+    return Concatenation( "Sym( ",String(sym), " )" );
 end );
 
 InstallMethod( ViewObj,
@@ -1399,24 +1409,39 @@ InstallMethod( ViewObj,
     true,
     [ IsNaturalAlternatingGroup ], 0,
 function(alt)
-    alt:=MovedPoints(alt);
-    IsRange(alt);
-    Print( "Alt( ", alt, " )" );
+    Print(ViewString(alt));
 end );
 
+InstallMethod( ViewObj,
+    "for natural symmetric group",
+    true,
+    [ IsNaturalSymmetricGroup ], 0,
+function(sym)
+    Print(ViewString(sym));
+end );
 
 #############################################################################
 ##
 #M  PrintObj( <nat-sym-grp> )
 ##
-InstallMethod( PrintObj,
+InstallMethod( String,
     "for natural symmetric group",
     true,
     [ IsNaturalSymmetricGroup ], 0,
 function(sym)
     sym:=MovedPoints(sym);
     IsRange(sym);
-    Print( "SymmetricGroup( ",sym, " )" );
+    return Concatenation( "SymmetricGroup( ",String(sym), " )" );
+end );
+
+InstallMethod( String,
+    "for natural alternating group",
+    true,
+    [ IsNaturalAlternatingGroup ], 0,
+function(alt)
+    alt:=MovedPoints(alt);
+    IsRange(alt);
+    return Concatenation( "AlternatingGroup( ",String(alt), " )" );
 end );
 
 InstallMethod( PrintObj,
@@ -1424,11 +1449,16 @@ InstallMethod( PrintObj,
     true,
     [ IsNaturalAlternatingGroup ], 0,
 function(alt)
-    alt:=MovedPoints(alt);
-    IsRange(alt);
-    Print( "AlternatingGroup( ", alt, " )" );
+    Print(String(alt));
 end );
 
+InstallMethod( PrintObj,
+    "for natural symmetric group",
+    true,
+    [ IsNaturalSymmetricGroup ], 0,
+function(sym)
+    Print(String(sym));
+end );
 
 #############################################################################
 ##

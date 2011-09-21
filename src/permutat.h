@@ -11,6 +11,10 @@
 **
 **  This file defines the functions for permutations (small and large).
 */
+
+#ifndef GAP_PERMUTAT_H
+#define GAP_PERMUTAT_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_permutat_h =
    "@(#)$Id$";
@@ -89,6 +93,8 @@ extern Obj Array2Perm (
 */
 StructInitInfo * InitInfoPermutat ( void );
 
+
+#endif // GAP_PERMUTAT_H
 
 /****************************************************************************
 **

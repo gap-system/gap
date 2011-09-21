@@ -50,6 +50,10 @@
 **  Zech-Logarithm  table.  The zeroth  entry in the  finite field bag is the
 **  order of the finite field minus one.
 */
+
+#ifndef GAP_FINFIELD_H
+#define GAP_FINFIELD_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_finfield_h =
    "@(#)$Id$";
@@ -414,6 +418,8 @@ extern  Obj             TypeFFE (
 */
 StructInitInfo * InitInfoFinfield ( void );
 
+
+#endif // GAP_FINFIELD_H
 
 /****************************************************************************
 **

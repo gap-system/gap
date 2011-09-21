@@ -24,6 +24,7 @@ const char * Revision_read_c =
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
+#include        "string.h"              /* strings                         */
 #include        "calls.h"               /* generic call mechanism          */
 #include        "code.h"                /* coder                           */
 #include        "vars.h"                /* variables                       */
@@ -33,7 +34,7 @@ const char * Revision_read_c =
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#include        "string.h"              /* strings                         */
+
 
 #include        "intrprtr.h"            /* interpreter                     */
 
@@ -374,7 +375,6 @@ void ReadCallVarAss (
       && var != Tilde
       && VAL_GVAR(var) == 0 
       && ELM_PLIST(ExprGVars,var) == 0
-      && CompNowFuncs == 0
       && ! IntrIgnoring
       && ! GlobalComesFromEnclosingForLoop(var)      
       && (GAPInfo == 0 || !IS_REC(GAPInfo) || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) ||
@@ -677,49 +677,226 @@ void ReadPerm (
 
 /****************************************************************************
 **
-*F  ReadLongInt( <follow> )  . . . . . . . . . . . . . . . read a long integer
+*F  ReadLongNumber( <follow> )  . . . . . . . . . . . . . . . read a long integer
 ** 
 **  A `long integer' here means one whose digits don't fit into `Value',
 **  see scanner.c.  This function copies repeatedly  digits from `Value'
 **  into a GAP string until the full integer is read.
 **
 */
-void ReadLongInt( 
+
+static UInt appendToString(Obj string, UInt len)
+{
+       UInt len1 = SyStrlen(Value);
+       GROW_STRING(string, len+len1+1);
+       memcpy(CHARS_STRING(string) + len, (void *)Value, len1+1);
+       SET_LEN_STRING(string, len+len1);
+       return len + len1;
+}
+
+void ReadLongNumber( 
       TypSymbolSet        follow )
 {
      Obj  string;   
-     UInt count;
+     UInt len;
+     UInt status;
+     UInt done;
 
-     /* string for digits of first part */
-     string = NEW_STRING(sizeof(Value) - 1);
-     count = 1;
-     memcpy(CHARS_STRING(string), (void *)Value, sizeof(Value));
+     /* string in which to accumulate number */
+     len = SyStrlen(Value);
+     string = NEW_STRING(len);
+     memcpy(CHARS_STRING(string), (void *)Value, len+1);
+     done = 0;
 
-     Match(S_PARTIALINT, "", follow);
-     while (Symbol == S_PARTIALINT) {
-         /* grow for next chunk, this should be cheap since no
-            other objects were allocated in between   */
-         GROW_STRING(string, (count+1) * (sizeof(Value)-1));
-         memcpy(CHARS_STRING(string) + count*(sizeof(Value)-1), (void *)Value,
-                                        sizeof(Value));
-         count++;
-         Match(S_PARTIALINT, "", follow);
+     while (!done) {
+       /* remember the current symbol and get the next one */
+       status = Symbol;
+       Match(Symbol, "partial number", follow);
+
+       /* Now there are just lots of cases */
+       switch (status) {
+       case S_PARTIALINT:
+	 switch (Symbol) {
+	 case S_INT:
+	   len = appendToString(string, len);
+	   Match(S_INT, "integer", follow);
+	   IntrLongIntExpr(string);
+	   done = 1;
+	   break;
+
+	 case S_PARTIALINT:
+	   len = appendToString(string, len);
+	   /*	   Match(S_PARTIALINT, "integer", follow);*/
+	   break;
+	   
+	 case S_PARTIALFLOAT1:
+	   assert(0);
+	   Pr("Parsing error, this should never happen", 0L, 0L);
+	   SyExit(2);
+
+	 case S_PARTIALFLOAT2:
+	 case S_PARTIALFLOAT3:
+	 case S_PARTIALFLOAT4:
+	   status = Symbol;
+	   len = appendToString(string, len);
+	   /* Match(Symbol, "float", follow); */
+	   break;
+	   
+	 case S_FLOAT:
+	   len = appendToString(string, len);
+	   Match(S_FLOAT, "float", follow);
+	   IntrLongFloatExpr(string);
+	   done = 1;
+	   break;
+	   
+	 case S_IDENT:
+	   SyntaxError("Identifier over 1024 characters");
+	   
+	 default:
+	   len = appendToString(string, len);
+	   IntrLongIntExpr(string);
+	   done = 1;
+	 }
+	 break;
+
+       case S_PARTIALFLOAT1:
+	 switch (Symbol) {
+	 case S_INT:
+	 case S_PARTIALINT:
+	 case S_PARTIALFLOAT1:
+	   assert(0);
+	   Pr("Parsing error, this should never happen", 0L, 0L);
+	   SyExit(2);
+
+
+	 case S_PARTIALFLOAT2:
+	 case S_PARTIALFLOAT3:
+	 case S_PARTIALFLOAT4:
+	   status = Symbol;
+	   len = appendToString(string, len);
+	   /* Match(Symbol, "float", follow); */
+	   break;
+	   
+	 case S_FLOAT:
+	   len = appendToString(string, len);
+	   Match(S_FLOAT, "float", follow);
+	   IntrLongFloatExpr(string);
+	   done = 1;
+	   break;
+	   
+	 default:
+	   SyntaxError("Badly Formed Number");
+	 }
+	 break;
+
+       case S_PARTIALFLOAT2:
+	 switch (Symbol) {
+	 case S_INT:
+	 case S_PARTIALINT:
+	 case S_PARTIALFLOAT1:
+	   assert(0);
+	   Pr("Parsing error, this should never happen", 0L, 0L);
+	   SyExit(2);
+
+
+	 case S_PARTIALFLOAT2:
+	 case S_PARTIALFLOAT3:
+	 case S_PARTIALFLOAT4:
+	   status = Symbol;
+	   len = appendToString(string, len);
+	   /* Match(Symbol, "float", follow); */
+	   break;
+	   
+	 case S_FLOAT:
+	   len = appendToString(string, len);
+	   Match(S_FLOAT, "float", follow);
+	   IntrLongFloatExpr(string);
+	   done = 1;
+	   break;
+	   
+
+	 case S_IDENT:
+	   SyntaxError("Badly Formed Number");
+	   
+	 default:
+	   len = appendToString(string, len);
+	   IntrLongFloatExpr(string);
+	   done = 1;
+	 }
+	 break;
+
+       case S_PARTIALFLOAT3:
+	 switch (Symbol) {
+	 case S_INT:
+	 case S_PARTIALINT:
+	 case S_PARTIALFLOAT1:
+	 case S_PARTIALFLOAT2:
+	 case S_PARTIALFLOAT3:
+	   assert(0);
+	   Pr("Parsing error, this should never happen", 0L, 0L);
+	   SyExit(2);
+
+
+	 case S_PARTIALFLOAT4:
+	   status = Symbol;
+	   len = appendToString(string, len);
+	   /* Match(Symbol, "float", follow); */
+	   break;
+	   
+	 case S_FLOAT:
+	   len = appendToString(string, len);
+	   Match(S_FLOAT, "float", follow);
+	   IntrLongFloatExpr(string);
+	   done = 1;
+	   break;
+	   
+
+	 default:
+	   SyntaxError("Badly Formed Number");
+	   
+	 }
+	 break;
+       case S_PARTIALFLOAT4:
+	 switch (Symbol) {
+	 case S_INT:
+	 case S_PARTIALINT:
+	 case S_PARTIALFLOAT1:
+	 case S_PARTIALFLOAT2:
+	 case S_PARTIALFLOAT3:
+	   assert(0);
+	   Pr("Parsing error, this should never happen", 0L, 0L);
+	   SyExit(2);
+
+
+	 case S_PARTIALFLOAT4:
+	   status = Symbol;
+	   len = appendToString(string, len);
+	   /* Match(Symbol, "float", follow); */
+	   break;
+	   
+	 case S_FLOAT:
+	   len = appendToString(string, len);
+	   Match(S_FLOAT, "float", follow);
+	   IntrLongFloatExpr(string);
+	   done = 1;
+	   break;
+	   
+	 case S_IDENT:
+	   SyntaxError("Badly Formed Number");
+	   
+	 default:
+	   len = appendToString(string, len);
+	   IntrLongFloatExpr(string);
+	   done = 1;
+	   
+	 }
+	 break;
+       default:
+	 assert(0);
+	 Pr("Parsing error, this should never happen", 0L, 0L);
+	 SyExit(2);
+       }
      }
-
-     if (Symbol == S_INT) {
-         /* last chunk must not fill `Value' completely      */
-         GROW_STRING(string, (count+1) * (sizeof(Value)-1));
-         memcpy(CHARS_STRING(string) + count*(sizeof(Value)-1), (void *)Value, 
-                                        sizeof(Value));
-         Match(S_INT, "", follow);
-         IntrLongIntExpr( string );
-     }
-     else if (Symbol == S_IDENT)
-         SyntaxError("Identifiers only allowed with length smaller 1024");
-     else
-         /* next symbol found, have been just at the end in last step of
-            while loop  */
-         IntrLongIntExpr( string );
 }
 
 /****************************************************************************
@@ -735,25 +912,24 @@ void ReadString(
       TypSymbolSet        follow )
 {
      Obj  string;   
-     UInt count;
+     UInt len;
 
      string = NEW_STRING(ValueLen);
-     count = 1;
+     len = ValueLen;
      memcpy(CHARS_STRING(string), (void *)Value, ValueLen);
 
      while (Symbol == S_PARTIALSTRING) {
          Match(S_PARTIALSTRING, "", follow);
-         GROW_STRING(string, (count) * (sizeof(Value)-1) + ValueLen);
-         memcpy(CHARS_STRING(string) + count*(sizeof(Value)-1), (void *)Value,
+         GROW_STRING(string, len + ValueLen);
+         memcpy(CHARS_STRING(string) + len, (void *)Value,
                                         ValueLen);
-         count++;
+         len += ValueLen;
      }
 
      Match(S_STRING, "", follow);
-     count = (count-1) * (sizeof(Value)-1) + ValueLen;
-     SET_LEN_STRING(string, count);
+     SET_LEN_STRING(string, len);
      /* ensure trailing zero for interpretation as C-string */
-     *(CHARS_STRING(string) + count) = 0;
+     *(CHARS_STRING(string) + len) = 0;
      IntrStringExpr( string );
 }
 
@@ -1121,9 +1297,17 @@ void ReadLiteral (
         Match( S_INT, "integer", follow );
     }
 
+    /* <Float> */
+    else if ( Symbol == S_FLOAT ) {
+        if ( ! READ_ERROR() ) { IntrFloatExpr( Value ); }
+        Match( S_FLOAT, "float", follow );
+    }
+      
+
     /* partial Int */
-    else if ( Symbol == S_PARTIALINT ) {
-         ReadLongInt( follow );
+    else if ( Symbol == S_PARTIALINT || Symbol == S_PARTIALFLOAT1 ||
+	      Symbol == S_PARTIALFLOAT2 ) {
+         ReadLongNumber( follow );
     } 
 
     /* 'true'                                                              */
@@ -1164,6 +1348,17 @@ void ReadLiteral (
         ReadFuncExpr( follow );
     }
 
+    else if (Symbol == S_DOT ) {
+      /* Hack The only way a dot could turn up here is in 
+       a floating point literal that starts with .. So, change the token
+      to  a partial float of the right kind to end with a . and an
+      associated value and dive into the long float literal handler in the parser*/
+      Symbol = S_PARTIALFLOAT1;
+      Value[0] = '.';
+      Value[1] = '\0';
+      ReadLongNumber( follow );
+    }
+
     /* signal an error, we want to see a literal                           */
     else {
         Match( S_INT, "literal", follow );
@@ -1196,56 +1391,12 @@ void ReadAtom (
     else if ( Symbol == S_ISBOUND ) {
         ReadIsBound( follow );
     }
-
     /* otherwise read a literal expression                                 */
     else if (IS_IN(Symbol,S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
-                          S_REC|S_FUNCTION))
+                          S_REC|S_FUNCTION| S_FLOAT | S_DOT))
     {
         ReadLiteral( follow );
     }
-
-
-
-
-/* #ifndef LAURENT_IS_A_FISHHEAD
-    // otherwise read a floating-point number                              
-    else if ( Symbol == S_DOT ) {
-        Obj strobj = NEW_STRING(sizeof(Value)+20);
-	Char *string, *s;
-        Match (S_DOT, "floating-point dot", follow);
-	if ( ! READ_ERROR() ) {
-	    Char *exp = 0;
-	    Match (Symbol, "floating-point mantissa", follow);
-	    string = s = CSTR_STRING(strobj);
-	    *s++ = '.';
-	    memcpy (s, Value, sizeof Value);
-	    for (; *s; s++) {
- 	        if (*s =='e' || *s == 'E' || *s == '@')
-		    exp = s;
-	    }
-	    if (s == exp+1 && (Symbol == S_MINUS || Symbol == S_PLUS)) {
-  	        if (Symbol == S_PLUS)
-		    *s++ = '+';
-		else
-		    *s++ = '-';
-	        Match(Symbol,"floating-point exponent", follow);
-		for (exp = Value; *exp;)
-		    *s++ = *exp++;
-		Match(S_INT,"floating-point exponent", follow);
-	    }
-	    SET_LEN_STRING(strobj,s-string);
-	}
-	Obj Float = VAL_GVAR(GVarName("Float"));
- //   FL: XXX This is to please compiler for the moment. 
- //   Doesn't the use of PushObj here mean that this code is in the
- //   wrong place?  
-void            PushObj ( Obj                 val );
-	if (Float)
-	    PushObj (CALL_1ARGS(Float,strobj));
-	else
-	    PushObj (strobj);
-    }
-#endif */
 
     /* '(' <Expr> ')'                                                      */
     else if ( Symbol == S_LPAREN ) {
@@ -1709,7 +1860,8 @@ void ReadFor (
       CurrLVars = currLVars;
       PtrLVars  = PTR_BAG( CurrLVars );
       PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
-      
+      if (CountNams > 0)
+	CountNams--;      
     }
 }
 
@@ -2074,7 +2226,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     UInt                readTilde;
     UInt                currLHSGVar;
     Obj                 errorLVars;
-    syJmp_buf             readJmpError;
+    syJmp_buf           readJmpError;
 
     /* get the first symbol from the input                                 */
     Match( Symbol, "", 0UL );

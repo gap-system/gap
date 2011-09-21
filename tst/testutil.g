@@ -329,12 +329,18 @@ BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfiles, gap )
                 Append( result, Concatenation(
                         "echo 'Testing ", name, " ", entry.Version, ", test=", 
 		                testfile, ", all packages=", pair[2], "'\n" ) );
+                Append( result, Concatenation( "echo ",
+                "'============================OUTPUT START=============================='",
+                        " > ", pair[1], "$TIMESTAMP.", name, "\n" ) );
                 Append( result, Concatenation(
                         "echo 'RunPackageTests( \"", name,
                         "\", \"", entry.Version, "\", \"", entry.TestFile,
-                        "\", ", pair[2], " );' | ", gap, " > ",
-                        pair[1], "$TIMESTAMP.", name, "\n" ) );
-              else
+                        "\", ", pair[2], " );' | ", gap, 
+                        " >> ", pair[1], "$TIMESTAMP.", name, "\n" ) );
+                Append( result, Concatenation( "echo ",
+                "'============================OUTPUT END================================'",
+                        " >> ", pair[1], "$TIMESTAMP.", name, "\n" ) );
+                        else
                 Append( result, Concatenation(
                         "echo 'failed to find test files for the ", name, " package'\n") );
               fi;            
@@ -383,7 +389,7 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
              pkgname, "' (version ", version, ") not readable\n" );
       return;
     fi;
-    if PositionSublist( str, "START_TEST" ) = fail then
+    if PositionSublist( str, "gap> START_TEST(" ) = fail then
       if not READ( file ) then
         Print( "#E  RunPackageTests: file `", testfile, "' for package `",
                pkgname, "' (version ", version, ") not read\n" );
@@ -401,16 +407,32 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
 
 #############################################################################
 ##
-#F  CreatePackageLoadTestsInput( <scriptfile>, <outfileprefix>, <gap>, <autoload> )
+#F  CreatePackageLoadTestsInput( <scriptfile>, <outfileprefix>, <gap>, 
+##                               <autoload>, <onlyneeded> )
 ##
 ##  Writes the file <scriptfile> that tests loading each package
 ##
-BindGlobal( "CreatePackageLoadTestsInput", function( scriptfile, outfileprefix, gap, autoload )
-    local result, name, entry, packagenames;
+BindGlobal( "CreatePackageLoadTestsInput", 
+
+	function( scriptfile, outfileprefix, gap, autoload, onlyneeded )
+
+    local mode, PKGLOADTSTOPT, result, name, entry, packagenames;
 
     SizeScreen( [ 1000 ] );
     InitializePackagesInfoRecords( false );
     result:= "";
+    
+    mode:="";
+    PKGLOADTSTOPT:="";
+    if autoload then 
+		Append( mode, " with autoloaded" );
+	else	
+		Append( mode, "                " );
+	fi;	
+    if onlyneeded then 
+		Append( mode, ", only needed" );
+		PKGLOADTSTOPT:=":OnlyNeeded";
+	fi;	
     
     packagenames := ShallowCopy( RecNames( GAPInfo.PackagesInfo ) );
     Sort( packagenames );
@@ -420,15 +442,10 @@ BindGlobal( "CreatePackageLoadTestsInput", function( scriptfile, outfileprefix, 
     for name in packagenames do
         for entry in GAPInfo.PackagesInfo.( name ) do
             Append( result, "echo '==========================================='\n" );
-            if autoload then
             Append( result, 
-                Concatenation( "echo 'Testing autoload + ", name, " ", entry.Version, "'\n" ) );
-            else
+                Concatenation( "echo 'Testing loading ", name, " ", entry.Version, mode, "'\n" ) );
             Append( result, 
-                Concatenation( "echo 'Testing ", name, " ", entry.Version, "'\n" ) );
-            fi;    
-            Append( result, 
-                Concatenation( "echo 'LoadPackage( \"", name, "\" );",
+                Concatenation( "echo 'LoadPackage( \"", name, "\"", PKGLOADTSTOPT, ");",
                                "Filtered(NamesUserGVars(),x->IsLowerAlphaChar(x[1]) or Length(x)<=3);' | ", 
                                gap, " > ", outfileprefix, "$TIMESTAMP.", name, " 2>&1 \n" ) );
             Append( result, 
@@ -436,17 +453,39 @@ BindGlobal( "CreatePackageLoadTestsInput", function( scriptfile, outfileprefix, 
          od;
     od;
     Append( result, "echo '==========================================='\n" );
-    if autoload then
-        Append( result, "echo 'Testing autoload + LoadAllPackages'\n" );
-    else
-        Append( result, "echo 'Testing LoadAllPackages'\n" );
-    fi;    
+    Append( result, Concatenation("echo '\n======OUTPUT START: LoadAllPackages", mode, "'\n" ) );
     Append( result, 
-        Concatenation( "echo 'if VERSION=\"4.dev\" then SetInfoLevel(InfoPackageLoading,4);fi;LoadAllPackages();' | ", 
+        Concatenation( "echo 'if CompareVersionNumbers( GAPInfo.Version, \"4.5.0\") then ",
+                                "SetInfoLevel(InfoPackageLoading,4);",
+                                "fi;LoadAllPackages(", PKGLOADTSTOPT, "); ",
+                                "Print([CHAR_INT(10)]); ",
+                                "Print(\"### all packages loaded                 ", mode, "\"); ' | ",  
                        gap, " > ", outfileprefix, "$TIMESTAMP.all 2>&1 \n" ) );
     Append( result, 
         Concatenation( "cat ", outfileprefix, "$TIMESTAMP.all\n" ) );
+    Append( result, 
+        Concatenation("echo '\n======OUTPUT END: LoadAllPackages", mode, "'\n" ) );
     Append( result, "echo '==========================================='\n" );
+    Append( result, 
+        Concatenation("echo '\n======OUTPUT START: LoadAllPackages ",
+                      "in the reverse order", mode, "'\n" ) );
+    if PKGLOADTSTOPT="" then
+      	PKGLOADTSTOPT:=":reversed";
+    else
+      	PKGLOADTSTOPT:=":OnlyNeeded,reversed";
+    fi;
+    Append( result, 
+        Concatenation( "echo 'if CompareVersionNumbers( GAPInfo.Version, \"4.5.0\") then ",
+                                "SetInfoLevel(InfoPackageLoading,4);",
+                                "fi;LoadAllPackages(", PKGLOADTSTOPT, "); ",
+                                "Print([CHAR_INT(10)]); ",
+                                "Print(\"### all packages loaded in reverse order", mode, "\"); ' | ", 
+                       gap, " > ", outfileprefix, "$TIMESTAMP.all 2>&1 \n" ) );
+    Append( result, 
+        Concatenation( "cat ", outfileprefix, "$TIMESTAMP.all\n" ) );
+    Append( result, 
+        Concatenation("echo '\n======OUTPUT END: LoadAllPackages ",
+                      "in the reverse order", mode, "'\n" ) );
     Append( result, Concatenation( "rm ", outfileprefix, "$TIMESTAMP.*\n" ) );
     PrintTo( scriptfile, result );
     end );

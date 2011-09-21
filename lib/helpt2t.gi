@@ -324,11 +324,16 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
               EmptyLine();
           fi;
       elif verbatim then
-          if  MATCH_BEGIN(line,"\\endtt") or
-            ( not ttenv and MATCH_BEGIN(line,"\\endexample") ) then
+          if  MATCH_BEGIN(line,"\\endtt") then
               verbatim := false;
               ttenv := false;
               lastblank:=false;
+              EmptyLine();
+          elif  ( not ttenv and MATCH_BEGIN(line,"\\endexample") ) then
+              verbatim := false;
+              ttenv := false;
+              lastblank:=false;
+              buff :=  Concatenation (ListWithIdenticalEntries (width, "-"));
               EmptyLine();
           else
               lastblank:=true;
@@ -399,13 +404,25 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           line:="";
 
       # example environments
-      elif MATCH_BEGIN(line,"\\beginexample")
-        or MATCH_BEGIN(line,"\\begintt")  then
-          ttenv := MATCH_BEGIN(line,"\\begintt");
+      elif MATCH_BEGIN(line,"\\beginexample") then
+          verbatim := true;
+          ttenv := false;
+          EmptyLine();
+          buff := Concatenation (
+            Concatenation (ListWithIdenticalEntries (QuoInt (width-9, 2), "-")), 
+            " Example ",
+            Concatenation (ListWithIdenticalEntries (width - 9 - QuoInt (width-9, 2), "-")));  
+          EmptyLine();
+       elif MATCH_BEGIN(line,"\\begintt")  then
+          ttenv := true;
           verbatim := true;
           EmptyLine();
-      elif MATCH_BEGIN(line,"\\endexample")  # Just in case ...
-        or MATCH_BEGIN(line,"\\endtt")  then
+       elif MATCH_BEGIN(line,"\\endexample") then  # Just in case ...
+          verbatim := false;
+          lastblank:=false;
+          buff := Concatenation (ListWithIdenticalEntries (width-9, "-"));
+          EmptyLine();
+       elif  MATCH_BEGIN(line,"\\endtt")  then
           verbatim := false;
           lastblank:=false;
           EmptyLine();

@@ -4,6 +4,7 @@
 %W                                                         & Frank Celler
 %W                                                     & Martin Schoenert
 %W                                                       & Heiko Theissen
+%W                                                     & Burkhard Höfling
 %%
 %H  @(#)$Id$
 %%
@@ -14,23 +15,29 @@
 %%
 \input gapmacro
 \BeginningOfBook{gapmacro}
+\UseReferences{ref}
 \TitlePage{
   \centerline{\titlefont GAP}\bigskip
   \centerline{\secfont Release 4.5}\medskip
-  \centerline{\secfont DD MM 2008}\bigskip\bigskip
-  \centerline{\titlefont The gapmacro.tex Manual Format}\vfill
+  \centerline{\secfont May 2011}\vfill
+  \centerline{\titlefont The gapmacro.tex}\bigskip\bigskip
+  \centerline{\titlefont Manual Format}\vfill
   \centerline{\secfont The GAP Group}\bigskip
   \centerline{\secfont http://www.gap-system.org}
 }
-\TableOfContents
+\OneColumnTableOfContents
 \FrontMatter
-\input ref/copyrigh
+%\input ../doc/ref/copyrigh
+
 \Chapters
 
 \Chapter{The gapmacro.tex Manual Format}
 
 This document describes a restricted {\TeX} format,
-which is defined by the of macros in the file `GAPPATH/doc/gapmacro.tex',
+which is defined by the of macros in the file 
+
+\){\kernttindent GAPPATH/doc/gapmacro.tex}
+
 and how to create the final documents (which can be printed or used by
 {\GAP}'s online help) from it.
 Some {\GAP}~4 package documentation is written in this format.
@@ -51,7 +58,7 @@ see Chapter ``Introduction and Example''
 in the \package{GAPDoc} manual,
 for example type
 
-%notest
+\testexamplefalse
 \beginexample
 gap> ?GAPDoc:chapters
 \endexample
@@ -69,6 +76,7 @@ in Chapter ``Interface to the GAP Help System'' of the
 \Section{The Main File}
 
 \indextt{gapmacro.tex}\indextt{\\BeginningOfBook}\indextt{\\UseReferences}
+\indextt{\\UseGapDocReferences}
 \indextt{\\TitlePage}\indextt{\\Colophon}\indextt{\\TableOfContents}
 \indextt{\\OneColumnTableOfContents}
 \indextt{\\FrontMatter}\indextt{\\Chapters}\indextt{\\Appendices}
@@ -79,6 +87,7 @@ This file should contain the following commands:
 
 %\begintt
 \){\kernttindent\\input ../gapmacro}
+\){\kernttindent\ ... (gapmacro.tex options, see "Additional Typesetting Options" below)}
 \){\kernttindent\\Package\{<package-name>\}}
 \){\kernttindent\\BeginningOfBook\{<name-of-book>\}}
 \){\kernttindent\ \ \\UseReferences\{<book1>\}}
@@ -117,6 +126,10 @@ consistent with the system while the latter forces users  to  change  the
 `manual.tex' file if they are installing a package in a private location.
 See also Section ``GAP Root Directory'' in the {\GAP} Reference Manual.
 
+\index{typesetting options}
+\index{options!for gapmacro.tex}
+
+
 \indextt{\\Package}
 `\\Package\{<package-name>\}'&
 defines   a   macro   `\\<package-name>'   so   that   when   you    type
@@ -143,23 +156,20 @@ starts the book <name-of-book>. It  is  used  for  cross-references,  see
 of your package here.
 
 \indextt{\\UseReferences}\indextt{\\UseGapDocReferences}
-`\\UseReferences\{<booki>\}'&
+`\\UseReferences\{<booki>\}', `\\UseGapDocReferences\{<booki>\}' &
 If your manual cross-refers to another manual, `\\UseReferences'  can  be
 used to load the labels of  the  other  books  in  case  cross-references
 occur. <booki> should be the path of the directory  containing  the  book
-whose references you want to load. If you are writing  a  {\GAP}  package
-and you need to reference the main {\GAP} manual,  use  `\\UseReferences'
-for each book you want to reference. However, as said above this requires
+whose references you want to load. However, as said above this requires
 changes to the `manual.tex' file if the package is not installed  in  the
-standard location.
+standard location. `\\UseGapDocReferences' can also be used to load 
+\package{GAPDoc} style references, but this function exists only for backward
+compatibility.
 
   &
-You  may  also  cross-refer to other `gapmacro.tex' format manuals and to
-\package{GapDoc}-produced manuals. Just ensure you get the  path  to  the
+Just ensure you get the  path  to  the
 other manual's directory correct *relative* to  the  directory  in  which
-your manual resides, and if it's a \package{GapDoc}-produced manual  that
-you  are  cross-referring  to,  use  `\\UseGapDocReferences'  instead  of
-`\\UseReferences'.
+your manual resides.
 
   &
 If your `manual.tex' file lives in `pkg/qwer/doc' and  you  want  to  use
@@ -205,7 +215,7 @@ fetch bibliography information.
 starts the chapters of the manual,  which  are  included  via  `\\Input'.
 `\\Input\{<filei>\}' inputs the file `<filei>.tex',  i.e.~<filei>  should
 be the name of the file *without* the `.tex' extension. For  the  chapter
-format, see Section~"Structuring the text: Chapters and Sections".
+format, see Section~"gapmacro:Structuring the text: Chapters and Sections".
 
 \indextt{\\Appendices}
 `\\Appendices'&
@@ -343,6 +353,65 @@ See the copyright notice at the beginning of this book.
 %See "Copyright".
 %enddisplay
 \endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Additional Typesetting Options}
+
+\label{options!for gapmacro.tex}
+
+There are a number of additional options which you can activate/
+deactivate by adding the following {\TeX} just after the line
+
+\){\kernttindent\\input ../gapmacro}.
+
+Of course, you need not set options which are marked as default.
+
+\beginitems
+   
+`\\usepsfonts' & (default) use the standard Postscript fonts for typesetting
+
+`\\usecmfonts' & use the TeX standard (Computer Modern) fonts (this was the 
+    behaviour until {\GAP} 4.4.
+    
+`\\addlinks' & (default) This inserts pdf links within the document, so 
+    that you can click on a reference or citation. This will only work
+    with pdftex, otherwise this has no effect.
+
+`\\nolinks' & This switches off additional pdf links within the document (this was the 
+    behaviour until {\GAP} 4.4.
+
+`\\citebooksfalse' & (default) References to external books will just print the 
+   chapter/section/subsection number(s).
+   
+`\\citebookstrue' & References to external books will be printed as
+    ``GAP Reference Manual, 2.7.12\'' instead of just ``2.7.12'', similarly 
+    for the GAP tutorial. If you cite other books, you have to define 
+    for each book `XXX' a macro `\\xxxManual' which expands to the text 
+    which you want to be inserted before the number for package `XXX'.
+    (Note that the `xxx' in `\\xxxManual' must always be lower case, regardless
+    of the actual package name `XXX'.)
+    
+    &
+    If you want to cite from the manual of a package ``OtherPackage'', then you should 
+    ``\gdef\otherpackageManual{The OtherPackage Manual}''.
+
+`\\biblitemfalse' & (default, same as in {\GAP} 4.4) In the bibliography, 
+   print abbreviations for papers right-aligned 
+   
+`\\biblitemtrue' & Print abbreviations left-aligned in the bibliography. d
+   Depending on the abbreviations you use, you may need more indentation.
+   You may set `\\bibindent' to another value (the present default is 3 pc)
+   if you get overfull `\\hbox'es.  (This effect also exists if you use 
+   `\\bibitemsfalse'
+   but there is not very obvious because long abbreviations will
+   protrude into the left margin only.)
+
+`\\casesensitivefalse' & (default) labels are case insensitive
+
+`\\casesensitivetrue' & makes labels case sensitive (this is still experimental
+   and not currently supported by the html converter)
+
+\enditems
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Structuring the text: Chapters and Sections}
@@ -1035,28 +1104,26 @@ gap> 1+2;
 3
 \endexample
 
+All examples in a chapter will also be written to files with the extension 
+`.example-<chapno>.tst', where <chapno> is the chapter number. These `.tst'
+files can be used to verify the examples in the manual. See 
+"Testing the Examples" below for details.
+
 \indextt{\\beginexample!indicating unstable output}
-Examples whose output may vary should be introduced with `\%notest', e.g.
+Examples whose output may vary can be excluded from these test files, by
+using the command `\\testexamplefalse', e.~g.
 
 \begintt
-%notest
+\testexamplefalse
 \beginexample
 gap> Exec("date");
 Sun Oct  7 16:23:45 CEST 2001
 \endexample
 \endtt
 
-typesets in all manual versions in the same way:
+`\\testexamplefalse' is only valid for the example immediately following.
 
-%notest
-\beginexample
-gap> Exec("date");
-Sun Oct  7 16:23:45 CEST 2001
-\endexample
-
-but the automatic manual checker knows to treat the example differently.
-
-Non-{\GAP} examples are typeset in typewriter style
+Non-{\GAP} examples should be typeset in typewriter style
 using the `\\begintt', `\\endtt' environment.
 
 *Notes*
@@ -1146,30 +1213,36 @@ $$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Testing the Examples}
 
-For purposes of automatically checking the manual,
-the {\GAP} examples in one chapter (the text between `\\beginexample'
-and `\\endexample') should produce the same output, up to line breaks
-and whitespace, whenever they are run in the same order
-immediately after starting {\GAP}
-(this will ensure that the global random number generator is initialized
-to the *same* values).
+Ideally, the {\GAP} examples (the text between `\\beginexample'
+and `\\endexample') should be chosen such that every user obtains the
+same output (up to line breaks and whitespace) when typing in your example. 
+
+This is often difficult to achieve, or can only be achieved at the cost of
+writing unnecessarily complicated examples. Therefore, it is recommended that
+you choose examples in such a way that when a user starts {\GAP}, loads your 
+package and types the examples of a chapter in the given order, then (s)he will
+see the same output as in the manual examples. (This will ensure that the 
+global random number generator is initialized to the *same* values.
 For more details,
 see the last paragraph of ``Starting and Leaving GAP''
-in the {\GAP} Tutorial.
+in the {\GAP} Tutorial.)
+In cases where this is 
+impossible, you may use `\\testexamplefalse' before `\\beginexample', see 
+"Examples, Lists, and Verbatim".
 
-To permit this automatic running,
-examples that shall produce error messages should be put between
-`\\begintt' and `\\endtt'
-such that they will not be seen by this automatic test.
+As mentioned above, a {\TeX} run of the manual produces files
+`manual.example-<chapno>.tst', one for each chapter containing at least
+one {\GAP} example (the text between `\\beginexample'
+and `\\endexample'). These files can be read into {\GAP} using `ReadTest' 
+(see "ref:ReadTest"), to ensure that the {\GAP} output for the examples
+hasn't changed.
 
-The automatic test also requires that examples are not indented
-in the files;
-in the printed manual,
+The test also requires that examples are not indented
+in the {\TeX} files; in the typeset manual,
 the lines between `\\beginexample' and `\\endexample'
 and the lines between `\\begintt' and `\\endtt' are automatically
 indented.
 
-% mention how this test can be executed!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Usage of the Percent Symbol}
@@ -1181,8 +1254,8 @@ use it correctly. These uses are:
 \item{1.}
 A line *beginning* with 16 (or more) `\%' symbols marks the  *end*  of  a
 section, or the *end* of a chapter introduction  (which  may  be  empty).
-Such  a  line  *must*  precede  *every*  `\\Section'  (see~"Chapters  and
-Sections").
+Such  a  line  *must* precede  *every*  `\\Section' 
+(see~"gapmacro:Structuring the text: Chapters and Sections").
 
 \item{2.}
 A `\%' at the beginning of a line tells {\TeX} that the line is a comment

@@ -27,7 +27,13 @@ local opt, idn, nbound, p, i,str;
     opt:= GAPInfo.UserPreferences.IndeterminateNameReuse;
   fi;
 
-  avoid:=List(avoid,IndeterminateNumberOfLaurentPolynomial);
+  #avoid:=List(avoid,IndeterminateNumberOfLaurentPolynomial);
+  avoid:=ShallowCopy(avoid);
+  for i in [1..Length(avoid)] do
+    if not IsInt(avoid[i]) then
+      avoid[i]:=IndeterminateNumberOfLaurentPolynomial(avoid[i]);
+    fi;
+  od;
   idn:=[];
   i:=1;
   while Length(idn)<cnt do
@@ -52,9 +58,9 @@ local opt, idn, nbound, p, i,str;
 	if opt<>1 then
 	  Error(
   "Indeterminate ``",str,"'' is already used.\n",
-  "Use the `old' option; e.g. X(Rationals,\"",str,"\":old);\n",
+  "Use the `old' option; e.g. Indeterminate(Rationals,\"",str,"\":old);\n",
   "  to re-use the variable already defined with this name and the\n",
-  "`new' option; e.g. X(Rationals,\"",str,"\":new);\n",
+  "`new' option; e.g. Indeterminate(Rationals,\"",str,"\":new);\n",
   "  to create a new variable with the duplicate name.\n");
 	else
 	  if p in avoid then

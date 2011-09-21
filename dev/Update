@@ -466,7 +466,7 @@ lib/ctblpope.gi
 ! Changed by
 AH
 ! Reported by
-V. Dabbhagian
+V. Dabbaghian
 ! Type of Change
 Fix: wrong result
 ! Description
@@ -498,5 +498,54 @@ gap> g:=CyclicGroup(2^6);; IntermediateSubgroups( g, TrivialSubgroup(g) ).inclus
 [ [ 0, 1 ], [ 1, 2 ], [ 2, 3 ], [ 3, 4 ], [ 4, 5 ], [ 5, 6 ] ]
 ! Changed Files
 lib/grplatt.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/04/29
+! Changed by
+TB
+! Reported by
+F. Petenyi
+! Type of Change
+Fix: wrong result
+! Description
+The function <mixer manual="Reference: CentreOfCharacter">
+<span class="code">CentreOfCharacter</span></mixer>
+and the function
+<mixer manual="Reference: ClassPositionsOfCentre">
+<span class="code">ClassPositionsOfCentre</span></mixer>
+with argument a group character
+returned a perhaps too large result.
+! Test Code
+gap> t:= CharacterTable( SmallGroup( 72, 26 ) );;
+gap> Set( List( Irr( t ), x -> Size( CentreOfCharacter( x ) ) ) );
+[ 6, 12, 18, 72 ]
+! Changed Files
+lib/ctblfuns.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/06/01
+! Changed by
+TB
+! Reported by
+xiaolei zhang
+! Type of Change
+Fix: inappropriate error message
+! Description
+The function <mixer manual="Reference: Trace">
+<span class="code">Trace</span></mixer>
+with argument an element of a finite field that was created with
+<mixer manual="Reference: AlgebraicExtension">
+<span class="code">AlgebraicExtension</span></mixer>
+ran into an error.
+! Test Code
+gap> F2:= GF( 2 );;
+gap> x:= Indeterminate( F2 );;
+gap> F:= AlgebraicExtension( F2, x^2+x+1 );;
+gap> Trace( RootOfDefiningPolynomial( F ) );
+Z(2)^0
+! Changed Files
+lib/field.gd
 ! End
 

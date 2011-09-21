@@ -11,6 +11,10 @@
 **  This file declares  the functions of the  package with the operations for
 **  generic lists.
 */
+
+#ifndef GAP_LISTOPER_H
+#define GAP_LISTOPER_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_listoper_h =
    "@(#)$Id$";
@@ -171,6 +175,8 @@ Obj             ProdListList (
 */
 StructInitInfo * InitInfoListOper ( void );
 
+
+#endif // GAP_LISTOPER_H
 
 /****************************************************************************
 **

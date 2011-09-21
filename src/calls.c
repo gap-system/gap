@@ -1232,9 +1232,9 @@ Obj NewFunctionCT (
         while ( nams_c[l]!=' ' && nams_c[l]!=',' && nams_c[l]!='\0' ) {
             l++;
         }
-	/*CCC        name_o = NEW_STRING((l-k) );
-	  SyStrncat( CSTR_STRING(name_o), nams_c+k, (UInt)(l-k) );CCC*/
-	C_NEW_STRING(name_o, l-k, nams_c+k);
+        /*CCC        name_o = NEW_STRING((l-k) );
+          SyStrncat( CSTR_STRING(name_o), nams_c+k, (UInt)(l-k) );CCC*/
+        C_NEW_STRING(name_o, l-k, nams_c+k);
         RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
         SET_ELM_PLIST( nams_o, i, name_o );
         k = l;
@@ -1294,10 +1294,6 @@ void PrintFunction (
     Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
 
-    /* complete the function if necessary                                  */
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        COMPLETE_FUNC(func);
-    }
 
     if ( IS_OPERATION(func) ) {
       CALL_1ARGS( PrintOperation, func );
@@ -1335,10 +1331,7 @@ void PrintFunction (
         }
 
         /* print the body                                                  */
-        if ( IS_UNCOMPLETED_FUNC(func) )  {
-            Pr( "<<uncompletable function>>", 0L, 0L );
-        }
-        else if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) ) {
+        if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) ) {
             Pr("<<kernel or compiled code>>",0L,0L);
         }
         else {
@@ -1516,28 +1509,28 @@ Obj FuncCALL_FUNC_LIST (
       }
       else if ( LEN_LIST(list) == 3 ) {
         result = CALL_3ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-			     ELMV_LIST(list,3) );
+                             ELMV_LIST(list,3) );
       }
       else if ( LEN_LIST(list) == 4 ) {
         result = CALL_4ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-			     ELMV_LIST(list,3), ELMV_LIST(list,4) );
+                             ELMV_LIST(list,3), ELMV_LIST(list,4) );
       }
       else if ( LEN_LIST(list) == 5 ) {
         result = CALL_5ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-			     ELMV_LIST(list,3), ELMV_LIST(list,4),
-			     ELMV_LIST(list,5) );
+                             ELMV_LIST(list,3), ELMV_LIST(list,4),
+                             ELMV_LIST(list,5) );
       }
       else if ( LEN_LIST(list) == 6 ) {
         result = CALL_6ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-			     ELMV_LIST(list,3), ELMV_LIST(list,4),
-			     ELMV_LIST(list,5), ELMV_LIST(list,6) );
+                             ELMV_LIST(list,3), ELMV_LIST(list,4),
+                             ELMV_LIST(list,5), ELMV_LIST(list,6) );
       }
       else {
         list2 = NEW_PLIST( T_PLIST, LEN_LIST(list) );
         SET_LEN_PLIST( list2, LEN_LIST(list) );
         for ( i = 1; i <= LEN_LIST(list); i++ ) {
-	  arg = ELMV_LIST( list, (Int)i );
-	  SET_ELM_PLIST( list2, i, arg );
+          arg = ELMV_LIST( list, (Int)i );
+          SET_ELM_PLIST( list2, i, arg );
         }
         result = CALL_XARGS( func, list2 );
       }
@@ -1572,9 +1565,9 @@ Obj FuncNAME_FUNC (
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
         if ( name == 0 ) {
-	  /*CCC name = NEW_STRING(SyStrlen(deflt));
+          /*CCC name = NEW_STRING(SyStrlen(deflt));
             SyStrncat( CSTR_STRING(name), deflt, SyStrlen(deflt) );CCC*/
-	    C_NEW_STRING(name, 7, "unknown");
+            C_NEW_STRING(name, 7, "unknown");
             RESET_FILT_LIST( name, FN_IS_MUTABLE );
             NAME_FUNC(func) = name;
             CHANGED_BAG(func);
@@ -1588,13 +1581,13 @@ Obj FuncNAME_FUNC (
 }
 
 Obj FuncSET_NAME_FUNC(
-		      Obj self,
-		      Obj func,
-		      Obj name )
+                      Obj self,
+                      Obj func,
+                      Obj name )
 {
   while (!IsStringConv(name))
     name = ErrorReturnObj("SET_NAME_FUNC( <func>, <name> ): <name> must be a string, not a %s",
-			  (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
+                          (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
   if (TNUM_OBJ(func) == T_FUNCTION ) {
     NAME_FUNC(func) = name;
     CHANGED_BAG(func);
@@ -1615,13 +1608,6 @@ Obj FuncNARG_FUNC (
     Obj                 func )
 {
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
-        if ( IS_UNCOMPLETED_FUNC(func) )  {
-            COMPLETE_FUNC(func);
-            if ( IS_UNCOMPLETED_FUNC(func) ) {
-                ErrorQuit( "<func> did not complete", 0L, 0L );
-                return 0;
-            }
-        }
         return INTOBJ_INT( NARG_FUNC(func) );
     }
     else {
@@ -1642,15 +1628,8 @@ Obj FuncNAMS_FUNC (
 {
   Obj nams;
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
-        if ( IS_UNCOMPLETED_FUNC(func) )  {
-            COMPLETE_FUNC(func);
-            if ( IS_UNCOMPLETED_FUNC(func) ) {
-                ErrorQuit( "<func> did not complete", 0L, 0L );
-                return 0;
-            }
-        }
         nams = NAMS_FUNC(func);
-	return (nams != (Obj)0) ? nams : Fail;
+        return (nams != (Obj)0) ? nams : Fail;
     }
     else {
         return DoOperation1Args( self, func );
@@ -1700,13 +1679,6 @@ Obj FuncCLEAR_PROFILE_FUNC(
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        COMPLETE_FUNC(func);
-        if ( IS_UNCOMPLETED_FUNC(func) ) {
-            ErrorQuit( "<func> did not complete", 0L, 0L );
-            return 0;
-        }
-    }
 
     /* clear profile info                                                  */
     prof = PROF_FUNC(func);
@@ -1747,14 +1719,6 @@ Obj FuncPROFILE_FUNC(
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        COMPLETE_FUNC(func);
-        if ( IS_UNCOMPLETED_FUNC(func) ) {
-            ErrorQuit( "<func> did not complete", 0L, 0L );
-            return 0;
-        }
-    }
-
     /* uninstall trace handler                                             */
     ChangeDoOperations( func, 0 );
 
@@ -1805,52 +1769,54 @@ Obj FuncIS_PROFILED_FUNC(
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        COMPLETE_FUNC(func);
-        if ( IS_UNCOMPLETED_FUNC(func) ) {
-            ErrorQuit( "<func> did not complete", 0L, 0L );
-            return 0;
-        }
-    }
     return ( TNUM_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
 }
 
 Obj FuncFILENAME_FUNC(Obj self, Obj func) {
-  if (BODY_FUNC(func))
-    {
-      Obj fn =  FILENAME_BODY(BODY_FUNC(func));
-      if (fn)
-	return fn;
-      else
-	return Fail;
+
+    /* check the argument                                                  */
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
+        ErrorQuit( "<func> must be a function", 0L, 0L );
+        return 0;
     }
-  else
+
+    if (BODY_FUNC(func)) {
+        Obj fn =  FILENAME_BODY(BODY_FUNC(func));
+        if (fn)
+            return fn;
+    }
     return Fail;
 }
 
 Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
-  if (BODY_FUNC(func)) 
-    {
-      Obj sl = STARTLINE_BODY(BODY_FUNC(func));
-      if (sl)
-	return sl;
-      else
-	return Fail;
+
+    /* check the argument                                                  */
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
+        ErrorQuit( "<func> must be a function", 0L, 0L );
+        return 0;
     }
-  else
+
+    if (BODY_FUNC(func)) {
+        Obj sl = STARTLINE_BODY(BODY_FUNC(func));
+        if (sl)
+            return sl;
+    }
     return Fail;
 }
 
 Obj FuncENDLINE_FUNC(Obj self, Obj func) {
-  if (BODY_FUNC(func)) 
-    {
-      Obj el = ENDLINE_BODY(BODY_FUNC(func));
-      if (el)
-	return el;
-      else
-	return Fail;
+
+    /* check the argument                                                  */
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
+        ErrorQuit( "<func> must be a function", 0L, 0L );
+        return 0;
     }
-  else
+
+    if (BODY_FUNC(func)) {
+        Obj el = ENDLINE_BODY(BODY_FUNC(func));
+        if (el)
+            return el;
+    }
     return Fail;
 }
 
@@ -1869,13 +1835,6 @@ Obj FuncUNPROFILE_FUNC(
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
-    }
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        COMPLETE_FUNC(func);
-        if ( IS_UNCOMPLETED_FUNC(func) ) {
-            ErrorQuit( "<func> did not complete", 0L, 0L );
-            return 0;
-        }
     }
 
     /* uninstall trace handler                                             */

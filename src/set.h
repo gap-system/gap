@@ -14,6 +14,10 @@
 **  For the full definition  of sets see chapter "Sets" in the {\GAP} Manual.
 **  Read also section "More about Sets" about the internal flag for sets.
 */
+
+#ifndef GAP_SET_H
+#define GAP_SET_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_set_h =
    "@(#)$Id$";
@@ -68,6 +72,8 @@ extern  Int             IsSet (
 */
 StructInitInfo * InitInfoSet ( void );
 
+
+#endif // GAP_SET_H
 
 /****************************************************************************
 **

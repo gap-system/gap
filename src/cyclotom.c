@@ -1730,23 +1730,23 @@ Obj FuncGALOIS_CYC (
     tnumord = TNUM_OBJ(ord);
     tnumcyc = TNUM_OBJ(cyc);
     if ( FIRST_EXTERNAL_TNUM <= tnumcyc
-	 || FIRST_EXTERNAL_TNUM <= tnumord 
-	 || (tnumord != T_INT && tnumord != T_INTNEG && tnumord != T_INTPOS)
-	 || ( tnumcyc != T_INT    && tnumcyc != T_RAT
-	      && tnumcyc != T_INTPOS && tnumcyc != T_INTNEG
-	      && tnumcyc != T_CYC )
-	 )
+         || FIRST_EXTERNAL_TNUM <= tnumord 
+         || (tnumord != T_INT && tnumord != T_INTNEG && tnumord != T_INTPOS)
+         || ( tnumcyc != T_INT    && tnumcyc != T_RAT
+              && tnumcyc != T_INTPOS && tnumcyc != T_INTNEG
+              && tnumcyc != T_CYC )
+         )
       {
         return DoOperation2Args( self, cyc, ord );
       }
 
     /* get and check <ord>                                                 */
     if ( TNAM_OBJ(ord) == T_INT ) {
-	o = INT_INTOBJ(ord);
+        o = INT_INTOBJ(ord);
     }
     else {
-	ord = MOD( ord, FuncCONDUCTOR( 0, cyc ) );
-	o = INT_INTOBJ(ord);
+        ord = MOD( ord, FuncCONDUCTOR( 0, cyc ) );
+        o = INT_INTOBJ(ord);
     }
 
     /* every galois automorphism fixes the rationals                       */
@@ -1904,7 +1904,7 @@ Obj FuncCycList (
     if ( ! ( T_PLIST <= TNUM_OBJ( list )
              && TNUM_OBJ( list ) <= LAST_PLIST_TNUM )
          || ! IS_DENSE_LIST( list ) ) {
-	ErrorQuit( "CycList: <list> must be a dense plain list (not a %s)",
+        ErrorQuit( "CycList: <list> must be a dense plain list (not a %s)",
                    (Int)TNAM_OBJ( list ), 0L );
     }
 

@@ -196,15 +196,6 @@ BindGlobal( "PACKAGES_VERSIONS", rec() );
 
 #############################################################################
 ##
-#F  P( <obj> )
-##
-##  This was defined in `init.g' before `banner.g' was read.
-##
-P := function(a) Print("   ", a, "\n" );  end;
-
-
-#############################################################################
-##
 #F  ListSorted( <coll> )
 #F  AsListSorted(<coll>)
 ##
@@ -585,6 +576,12 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+BIND_GLOBAL("MACINTOSH_68K_ARCHITECTURE",
+  IMMUTABLE_COPY_OBJ("MC68020-motorola-macos-mwerksc"));
+
+BIND_GLOBAL("MACINTOSH_PPC_ARCHITECTURE",
+  IMMUTABLE_COPY_OBJ("PPC-motorola-macos-mwerksc"));
+
 BIND_GLOBAL("ARCH_IS_MAC",function()
   return GAPInfo.Architecture = MACINTOSH_68K_ARCHITECTURE
       or GAPInfo.Architecture = MACINTOSH_PPC_ARCHITECTURE;

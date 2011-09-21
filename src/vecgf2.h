@@ -8,6 +8,10 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
+
+#ifndef GAP_VECGF2_H
+#define GAP_VECGF2_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_vecgf2_h =
    "@(#)$Id$";
@@ -245,6 +249,8 @@ extern Obj IsGF2VectorRep;
 */
 StructInitInfo * InitInfoGF2Vec ( void );
 
+
+#endif // GAP_VECGF2_H
 
 /****************************************************************************
 **

@@ -17,8 +17,9 @@
 ##  The documentation states the following:
 ##  <P/>
 ##  <#GAPDoc Label="[1]{testinstall.g}">
-##  If you want to run a more thorough test (though this is not required), 
-##  you can read in a test script that exercises more &GAP;'s capabilities.
+##  If you want to run a quick test of your &GAP; installation 
+##  (though this is not required), you can read in a test script 
+##  that exercises some &GAP;'s capabilities.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "testinstall.g" ) );
@@ -34,8 +35,8 @@
 Print( "You should start GAP4 using `gap -N -A -x 80 -r -m 100m -o 512m'.\n",
        "The more GAP4stones you get, the faster your system is.\n",
        "The runtime of the following tests (in general) increases.\n",
-       "You should expect about 100000 GAP4stones \n",
-       "on an Intel Core 2 Duo / 2.53 GHz machine.\n",
+       "You should expect the test to take about one minute and show about\n",
+       "100000 GAP4stones on an Intel Core 2 Duo / 2.53 GHz machine.\n",
        "The `next' time is an approximation of the running time ",
        "for the next file.\n\n" );
 
@@ -59,6 +60,8 @@ RunStandardTests( [
   [ "grppc.tst",116000670],
   [ "grppcnrm.tst",1532002851],
   [ "listgen.tst", 1440000 ],
+  [ "longnumber.tst", 2000000 ],
+  [ "mapphomo.tst", 9000000 ],
   [ "mapping.tst", 31000000 ],
   [ "mgmring.tst", 19000000 ],
   [ "modfree.tst",36000000 ],

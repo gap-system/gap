@@ -54,9 +54,6 @@ function( filter, ints )
     grp  := CallFuncList( DirectProduct, grps );
     SetSize( grp, Product(ints) );
     SetIsAbelian( grp, true );
-    if ForAll(ints,IsPrimePowerInt) then
-      SetIndependentGeneratorsOfAbelianGroup(grp,GeneratorsOfGroup(grp));
-    fi;
     return grp;
 end );
 

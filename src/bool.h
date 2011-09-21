@@ -10,6 +10,10 @@
 **
 **  This file declares the functions for the boolean package.
 */
+
+#ifndef GAP_BOOL_H
+#define GAP_BOOL_H
+
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_bool_h =
    "@(#)$Id$";
@@ -68,12 +72,10 @@ extern Obj SFail;
 StructInitInfo * InitInfoBool ( void );
 
 
+#endif // GAP_BOOL_H
+
 /****************************************************************************
 **
 
 *E  bool.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
-

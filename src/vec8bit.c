@@ -17,7 +17,6 @@ const char * Revision_vec8bit_c =
 #include        "finfield.h"            /* finite fields and ff elements   */
 
 #include        "bool.h"                /* booleans                        */
-
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
 
@@ -965,10 +964,7 @@ void PlainVec8Bit (
     Obj                 first;          /* first entry                     */
     Obj                 second = 0;
     UInt                q;
-    UInt                p;
-    UInt                d;
     UInt                elts;
-    FF                  field;
     Obj                 info;
     UInt1              *gettab;
     UInt                tnum;
@@ -986,9 +982,6 @@ void PlainVec8Bit (
     q = FIELD_VEC8BIT(list);
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
-    p = P_FIELDINFO_8BIT(info);
-    d = D_FIELDINFO_8BIT(info);
-    field = FiniteField(p,d);
 
 
     if (len == 0)
@@ -1327,8 +1320,6 @@ void MultVec8BitFFEInner( Obj prod,
 			  UInt stop )
 {
   Obj info;
-  UInt p;
-  UInt q;
   UInt elts;
   UInt1 *ptrV;
   UInt1 *ptrS;
@@ -1338,8 +1329,6 @@ void MultVec8BitFFEInner( Obj prod,
   if (!stop)
     return;
   info = GetFieldInfo8Bit(FIELD_VEC8BIT(prod));
-  q = Q_FIELDINFO_8BIT(info);
-  p = P_FIELDINFO_8BIT(info);
   elts = ELS_BYTE_FIELDINFO_8BIT(info);
   
   assert(q == FIELD_VEC8BIT(vec));
@@ -1756,7 +1745,7 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_5( Obj self, Obj vl, Obj vr, Obj mul, Obj from, O
   if (q != FIELD_VEC8BIT(vr) || q != SIZE_FF(FLD_FFE(mul)))
     {
       Obj info, info1;
-      UInt d, d1, q1,d2,q2, d0, q0, p, i;
+      UInt d, d1, q1,d2, d0, q0, p, i;
       FFV val;
       /* find a common field */
       info = GetFieldInfo8Bit(q);
@@ -1764,7 +1753,6 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_5( Obj self, Obj vl, Obj vr, Obj mul, Obj from, O
       q1 = FIELD_VEC8BIT(vr);
       info1 = GetFieldInfo8Bit(q1);
       d1 = D_FIELDINFO_8BIT(info1);
-      q2 = SIZE_FF(FLD_FFE(mul));
       d2 = DegreeFFE(mul);
       d0 = LcmDegree(d,d1);
       d0 = LcmDegree(d0,d2);
@@ -1820,7 +1808,7 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_3( Obj self, Obj vl, Obj vr, Obj mul)
   if (q != FIELD_VEC8BIT(vr) || q != SIZE_FF(FLD_FFE(mul)))
     {
       Obj info, info1;
-      UInt d,d1, q1,d2,q2, d0, q0, p, i;
+      UInt d,d1, q1,d2, d0, q0, p, i;
       FFV val;
       /* find a common field */
       info = GetFieldInfo8Bit(q);
@@ -1828,7 +1816,6 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_3( Obj self, Obj vl, Obj vr, Obj mul)
       q1 = FIELD_VEC8BIT(vr);
       info1 = GetFieldInfo8Bit(q1);
       d1 = D_FIELDINFO_8BIT(info1);
-      q2 = SIZE_FF(FLD_FFE(mul));
       d2 = DegreeFFE(mul);
       d0 = LcmDegree(d,d1);
       d0 = LcmDegree(d0,d2);
@@ -2065,12 +2052,9 @@ Int CmpVec8BitVec8Bit( Obj vl, Obj vr )
   UInt1 *gettab;
   Obj *ffe_elt;
   UInt len;
-  FF f;
   assert(FIELD_VEC8BIT(vl) == FIELD_VEC8BIT(vr));
   q = FIELD_VEC8BIT(vl);
   info = GetFieldInfo8Bit(q);
-  f = FiniteField(P_FIELDINFO_8BIT(info),
-		  D_FIELDINFO_8BIT(info));
   lenl = LEN_VEC8BIT(vl);
   lenr = LEN_VEC8BIT(vr);
   elts = ELS_BYTE_FIELDINFO_8BIT(info);
@@ -2601,7 +2585,7 @@ Obj FuncNUMBER_VEC8BIT (Obj self, Obj vec)
 */
 
 
-
+#include <stdio.h>
 
 UInt CosetLeadersInner8Bits( Obj veclis,
 			   Obj v,
@@ -2639,7 +2623,7 @@ UInt CosetLeadersInner8Bits( Obj veclis,
     {
       for (i = pos; i <= len; i++)
 	{
-	  vp = ELM_PLIST(veclis, i);
+                          vp = ELM_PLIST(veclis, i);
 	  u = ELM_PLIST(vp,1);
 	  AddVec8BitVec8BitInner(w,w,u,1,lenw);
 	  ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
@@ -2647,8 +2631,10 @@ UInt CosetLeadersInner8Bits( Obj veclis,
 	  sy = 0;
 	  for (j = 0; j < lenw; j++)
 	    {
-	      sy *= q;
-	      sy += gettab[ptrw[j / elts] + 256* (j % elts)];
+		      UInt xxxx;
+		      sy *= q;
+		      xxxx = gettab[ptrw[j / elts] + 256* (j % elts)];
+		      sy += xxxx;
 	    }
 	  if ((Obj) 0 == ELM_PLIST(leaders,sy+1))
 	    {
@@ -2662,18 +2648,20 @@ UInt CosetLeadersInner8Bits( Obj veclis,
 	      wc = ZeroVec8Bit(q,lenw,1);
 	      settab = SETELT_FIELDINFO_8BIT(info);
 	      gettab = GETELT_FIELDINFO_8BIT(info);
-	      ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
+                     ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
 	      ptrw = BYTES_VEC8BIT(w);
-	      for (k = 1; k < q; k++)
+	      for (k = 2; k < q; k++)
 		{		  
 		  qk = FFE_FELT_FIELDINFO_8BIT(info)[k];
 		  MultVec8BitFFEInner(wc,w,qk,1,lenw);
-		  ptrw = BYTES_VEC8BIT(wc);
+                          ptrw = BYTES_VEC8BIT(wc);
 		  sy = 0;
 		  for (j = 0; j < lenw; j++)
 		    {
+		      UInt xxxx;
 		      sy *= q;
-		      sy += gettab[ptrw[j / elts] + 256* (j % elts)];
+		      xxxx = gettab[ptrw[j / elts] + 256* (j % elts)];
+		      sy += xxxx;
 		    }
 		  vc = ZeroVec8Bit(q, len, 0);
 		  settab = SETELT_FIELDINFO_8BIT(info);
@@ -2697,7 +2685,7 @@ UInt CosetLeadersInner8Bits( Obj veclis,
     {
       if (pos + weight <= len)
 	{
-	  found += CosetLeadersInner8Bits(veclis, v, w, weight, pos+1, leaders, tofind, felts);
+	    found += CosetLeadersInner8Bits(veclis, v, w, weight, pos+1, leaders, tofind, felts);
 	  if (found == tofind)
 	    return found;
 	}
@@ -2715,13 +2703,14 @@ UInt CosetLeadersInner8Bits( Obj veclis,
 	  found += CosetLeadersInner8Bits(veclis,v,w,weight-1,pos+1,leaders,tofind-found,felts);
 	  if (found == tofind)
 	    return found;
-	  settab = SETELT_FIELDINFO_8BIT(info);
+	}
+	     settab = SETELT_FIELDINFO_8BIT(info);
 	  feltffe = FELT_FFE_FIELDINFO_8BIT(info);
-	  ptr = BYTES_VEC8BIT(v) + (pos-1)/elts;
 	  u = ELM_PLIST(vp,q);
 	  AddVec8BitVec8BitInner(w,w,u,1,lenw);
-	  *ptr = settab[*ptr + 256 * ((pos-1) % elts)];
-	}
+	
+      ptr = BYTES_VEC8BIT(v) + (pos-1)/elts;
+      *ptr = settab[*ptr + 256 * ((pos-1) % elts)];
       
     }
   TakeInterrupt();
@@ -4138,7 +4127,7 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
 Obj SumMat8BitMat8Bit( Obj ml, Obj mr)
 {
   Obj sum;
-  UInt ll,lr,wl,wr,ls,ws;
+  UInt ll,lr,wl,wr,ls;
   UInt q;
   UInt i;
   Obj  row;
@@ -4157,13 +4146,11 @@ Obj SumMat8BitMat8Bit( Obj ml, Obj mr)
   if (ll > lr)
     {
       ls = ll;
-      ws = wl;
       assert(wl > wr);
     }
   else
     {
       ls = lr;
-      ws = wr;
       assert(wr >= wl);
     }
       
@@ -4226,7 +4213,7 @@ Obj DiffMat8BitMat8Bit( Obj ml, Obj mr)
   FF f;
   FFV minusOne;
   Obj mone;
-  UInt ll,lr,wl,wr,ld,wd;
+  UInt ll,lr,wl,wr,ld;
   
   ll = LEN_MAT8BIT(ml);
   lr = LEN_MAT8BIT(mr);
@@ -4242,13 +4229,11 @@ Obj DiffMat8BitMat8Bit( Obj ml, Obj mr)
   if (ll > lr)
     {
       ld = ll;
-      wd = wl;
       assert(wl > wr);
     }
   else
     {
       ld = lr;
-      wd = wr;
       assert(wr >= wl);
     }
   q = FIELD_VEC8BIT(ELM_MAT8BIT(ml,1));
@@ -4572,7 +4557,7 @@ Obj FuncADD_COEFFS_VEC8BIT_3( Obj self, Obj vec1, Obj vec2, Obj mult )
   if (q != FIELD_VEC8BIT(vec2) || q != SIZE_FF(FLD_FFE(mult)))
     {
       Obj info, info1;
-      UInt d,d1, q1,d2,q2, d0, q0, p, i;
+      UInt d,d1, q1,d2, d0, q0, p, i;
       FFV val;
       /* find a common field */
       info = GetFieldInfo8Bit(q);
@@ -4580,7 +4565,6 @@ Obj FuncADD_COEFFS_VEC8BIT_3( Obj self, Obj vec1, Obj vec2, Obj mult )
       q1 = FIELD_VEC8BIT(vec2);
       info1 = GetFieldInfo8Bit(q1);
       d1 = D_FIELDINFO_8BIT(info1);
-      q2 = SIZE_FF(FLD_FFE(mult));
       d2 = DegreeFFE(mult);
       d0 = LcmDegree(d,d1);
       d0 = LcmDegree(d0,d2);
@@ -5253,8 +5237,6 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
   Obj *convtab1;
   UInt1 zero, one;
   UInt1 x = 0;
-  FF f;
-  FFV *sf;
   UInt1 *rowp;
   UInt1 byte;
   Obj y;
@@ -5267,7 +5249,6 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
   q = FIELD_VEC8BIT(ELM_PLIST(mat, 1));
   info = GetFieldInfo8Bit(q);
   elts = ELS_BYTE_FIELDINFO_8BIT(info);
-  f = FLD_FFE( FFE_FELT_FIELDINFO_8BIT(info)[0]);
 
   /* Get the Felt numbers for zero and one */
   convtab = FELT_FFE_FIELDINFO_8BIT(info);
@@ -5295,7 +5276,6 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
   for (i = 1; i <= nrows; i++)
     {
       row = ELM_PLIST(mat, i);
-      sf = SUCC_FF(f);
       if (TransformationsNeeded)
 	{
 	    coeffrow = NewBag(T_DATOBJ, SIZE_VEC8BIT(nrows,elts));

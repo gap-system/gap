@@ -13,10 +13,14 @@
 # lines starting with a T are patterns for files to be shipped
 # with the tools archive. The first match decides about the class.
 #
+# some problematic files which we need:
+# (in particular there are files with extension .o and .a)
++small/*/*
 # files and directories we never include
 -*.o
 -*.cvsignore*
 -*CVS/*
+-*.git/*
 # excluded directories 
 -alpha/*
 -benchmark/*
@@ -37,12 +41,16 @@
 # *** TOOLS ***
 #
 Tdoc/gapmacro.tex
+Tdoc/gapmacro-ps.tex
 Tdoc/manualindex
 Tetc/README.tools
 Tetc/buildman.pe
 Tetc/convert.pl
 Tetc/packpack
 Tetc/unzoo.c
+Tetc/classifyfiles.py
+Tetc/patternscolor.txt
+Tetc/patternstextbinary.txt
 #
 # *** MAIN ARCHIVE ***
 #

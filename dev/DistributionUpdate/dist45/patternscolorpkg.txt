@@ -1,0 +1,22 @@
+#############################################################################
+#
+# $Id$
+#
+# patternscolorpkg.txt
+#
+# These are patterns to classify files in a package according to whether 
+# they are shipped with the redistributed packages archive or not.
+#
+# Lines starting with # are ignored, lines starting with - are
+# patterns for files not to be shipped, lines starting with + 
+# are patterns files to be shipped.
+# 
+# The first match decides about the class.
+#
+# files and directories we never include
+-*.o
+-*.cvsignore*
+-*CVS/*
+-*.git/*
+# for packages, everything else is included 
++*

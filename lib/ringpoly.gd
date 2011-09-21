@@ -228,9 +228,9 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  <Log><![CDATA[
 ##  gap> R:=PolynomialRing(GF(3),["x","y","z"]);
 ##  Error, Indeterminate ``x'' is already used.
-##  Use the `old' option; e.g. X(Rationals,"x":old);
+##  Use the `old' option; e.g. Indeterminate(Rationals,"x":old);
 ##    to re-use the variable already defined with this name and the
-##  `new' option; e.g. X(Rationals,"x":new);
+##  `new' option; e.g. Indeterminate(Rationals,"x":new);
 ##    to create a new variable with the duplicate name.
 ##   called from GiveNumbersNIndeterminates(  [...]
 ##  brk> quit;
@@ -276,15 +276,17 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  releases of &GAP;.)
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> x:=X(GF(3),"x");
+##  gap> x:=Indeterminate(GF(3),"x");
 ##  Error, Indeterminate ``x'' is already used. [...]
 ##  gap> GAPInfo.UserPreferences.IndeterminateNameReuse:= 2;;
-##  gap> x:=X(GF(3),"x");IndeterminateNumberOfLaurentPolynomial(x);
+##  gap> x:=Indeterminate(GF(3),"x");
 ##  x
+##  IndeterminateNumberOfLaurentPolynomial(x);
 ##  7
 ##  gap> GAPInfo.UserPreferences.IndeterminateNameReuse:= 1;;
-##  gap> x:=X(GF(3),"x");IndeterminateNumberOfLaurentPolynomial(x);
+##  gap> x:=Indeterminate(GF(3),"x");
 ##  x
+##  IndeterminateNumberOfLaurentPolynomial(x);
 ##  1
 ##  ]]></Log>
 ##  <#/GAPDoc>
@@ -328,7 +330,9 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  (also avoiding the indeterminates in <A>avoid</A> if given).
 ##  <P/>
 ##  <Ref Oper="X" Label="for a ring (and a number)"/> is simply a synonym for
-##  <Ref Oper="Indeterminate" Label="for a ring (and a number)"/>.
+##  <Ref Oper="Indeterminate" Label="for a ring (and a number)"/>. However, 
+##  we do not recommend to use this synonym which is supported only for the
+##  backwards compatibility.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> x:=Indeterminate(GF(3),"x");

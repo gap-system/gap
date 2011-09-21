@@ -607,7 +607,8 @@ GMP_VER
 MAKE_GMP
 GMP_LIBS
 GMP_CFLAGS
-JENKINS_CFLAGS
+m4_PRESENT
+CONFIGNAME
 gapdir
 SET_MAKE
 BASECC
@@ -625,7 +626,7 @@ build_cpu
 build
 gp_configure_options
 ABI_CFLAGS
-BUILD_MODE
+ABI
 EGREP
 GREP
 CPP
@@ -677,7 +678,6 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
-with_abi
 with_gmp
 with_readline
 '
@@ -690,11 +690,8 @@ LDFLAGS
 LIBS
 CPPFLAGS
 CPP
-CPPFLAGS
-CC
-LDFLAGS
-LIBS
-CPPFLAGS'
+ABI
+CONFIGNAME'
 
 
 # Initialize some variables set by options.
@@ -1308,23 +1305,17 @@ if test -n "$ac_init_help"; then
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-abi              Set this equal to 32 or 64 to build GAP (and GMP
-                          provided you do not deselect it) in 32- or 64-bit
-                          mode. The default value for this option is
-                          determined by testing the behaviour of your
-                          compiler, so should be 32 on a 32-bit system and 64
-                          on one which is 64-bit.
   --with-gmp              Use GMP library. If the argument you supply is "yes"
                           or <empty>, then the version of GMP bundled with
-                          this GAP will be used. (Default) If the argument is
+                          this GAP will be used (default). If the argument is
                           "system" that means the library is reachable with
                           the standard search path "/usr" or "/usr/local".
                           Otherwise you give the <path> to the directory which
                           contains the library. If the argument is no, use
                           original GAP large integers instead of GMP.
                           [[default=yes]]
-  --with-readline=yes|no|<path>
-    Use readline library for command line editing.
+ --with-readline=yes|no|<path>
+   Use readline library for command line editing.
 
 
 Some influential environment variables:
@@ -1336,6 +1327,16 @@ Some influential environment variables:
   CPPFLAGS    (Objective) C/C++ preprocessor flags, e.g. -I<include dir> if
               you have headers in a nonstandard directory <include dir>
   CPP         C preprocessor
+  ABI         Set this equal to 32 or 64 to build GAP (and GMP provided you do
+              not deselect it) in 32- or 64-bit mode. The default value for
+              this option is determined by testing the behaviour of your
+              compiler, so should be 32 on a 32-bit system and 64 on one which
+              is 64-bit.
+  CONFIGNAME  Supply a (meaningful) name for the configuration you are
+              building. This name will be appended to the
+              architecture-dependent named sub-directory of bin/. Allows for
+              multiple configurations side by side. Default value is
+              "defaultXX" where "XX" is 32 or 64.
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -3322,45 +3323,34 @@ _ACEOF
 
 
 
-# Check whether --with-abi was given.
-if test "${with_abi+set}" = set; then :
-  withval=$with_abi;   if test "$withval" = 64; then
-    if test $ac_cv_sizeof_void_p = 4; then
-     as_fn_error $? "--with-abi=64 cannot be used on a 32-bit system.
-                    Please replace this value with 32 and retry configure.
-                    If you think this error is wrong, email
-                    support@gap-system.org with full details." "$LINENO" 5
-    else
-     BUILD_MODE="64"
-     ABI_CFLAGS="-m64"
-    fi
-   elif test "$withval" = 32; then
-    BUILD_MODE="32"
-    ABI_CFLAGS="-m32"
-   elif ! test "$withval" = ""; then
-    as_fn_error $? "Unrecognised build mode \"$withval\". Please specify 32 or 64,
-                  or do not set this option." "$LINENO" 5
-   else
-    if test $ac_cv_sizeof_void_p = 8; then
-     BUILD_MODE="64"
-    else
-     BUILD_MODE="32"
-    fi
-    ABI_CFLAGS=""
-   fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking ABI bit size" >&5
+$as_echo_n "checking ABI bit size... " >&6; }
+if test "x$ABI" = "x" ;  then
+  if test $ac_cv_sizeof_void_p = 8; then
+    ABI="64"
+  else
+    ABI="32"
+  fi
+  ABI_CFLAGS=""
+elif test "$ABI" = "64"; then
+  if test $ac_cv_sizeof_void_p = 4; then
+    as_fn_error $? " ABI=64 cannot be used on a 32-bit system.
+                   Please replace this value with 32 and retry configure.
+                   If you think this error is wrong, email
+                   support@gap-system.org with full details." "$LINENO" 5
+  else
+    ABI_CFLAGS="-m64"
+  fi
+elif test "$ABI" = "32"; then
+  ABI_CFLAGS="-m32"
 else
-
- if test $ac_cv_sizeof_void_p = 8; then
-  BUILD_MODE="64"
- else
-  BUILD_MODE="32"
- fi
- ABI_CFLAGS=""
-
-
+  as_fn_error $? " $ABI is not a supported value for ABI. Please use ABI=64
+                 or 32, or leave it unset." "$LINENO" 5
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ABI" >&5
+$as_echo "$ABI" >&6; }
 
 
 
@@ -4083,58 +4073,129 @@ fi
 gapdir=`pwd`
 
 
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking GAP config name" >&5
+$as_echo_n "checking GAP config name... " >&6; }
+if test "x$CONFIGNAME" = "x"; then
+  CONFIGNAME="default${ABI}"
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $CONFIGNAME" >&5
+$as_echo "$CONFIGNAME" >&6; }
+
+
+
+
 # Check whether --with-gmp was given.
 if test "${with_gmp+set}" = set; then :
-  withval=$with_gmp;  if test "$withval" = yes ; then
-    GMP_HOME="`pwd`/bin/$target-$BASECC/${BUILD_MODE}-bit/extern/gmp"
-    GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
-    GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
-    MAKE_GMP="gmp"
-    GMP_VER="5.0.1"
-   elif test "$withval" = system ; then
-    GMP_CFLAGS="-DUSE_GMP -m${BUILD_MODE}"
-    GMP_LIBS="-lgmp"
-    MAKE_GMP=""
-   elif test "$withval" != no ; then
-    GMP_HOME="$withval"
-    GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
-    GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
-    MAKE_GMP=""
-   else
-    GMP_CFLAGS=""
-    GMP_LIBS=""
-    MAKE_GMP=""
-   fi
+  withval=$with_gmp;  if test "$withval" = "yes" ; then
+      GMP_HOME="`pwd`/bin/$target-$BASECC-${CONFIGNAME}/extern/gmp"
+      GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
+      GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
+      MAKE_GMP="gmp"
+      GMP_VER="5.0.2"
+    elif test "$withval" = "5.0.1" ; then
+      GMP_HOME="`pwd`/bin/$target-$BASECC-${CONFIGNAME}/extern/gmp"
+      GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
+      GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
+      MAKE_GMP="gmp"
+      GMP_VER="5.0.1"
+    elif test "$withval" = "system" ; then
+      GMP_CFLAGS="-DUSE_GMP -m${ABI}"
+      GMP_LIBS="-lgmp"
+      MAKE_GMP=""
+    elif test "$withval" != "no" ; then
+      GMP_HOME="$withval"
+      GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
+      GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
+      MAKE_GMP=""
+    else
+      GMP_CFLAGS=""
+      GMP_LIBS=""
+      MAKE_GMP=""
+    fi
 
 else
-   GMP_HOME="`pwd`/bin/$target-$BASECC/${BUILD_MODE}-bit/extern/gmp"
+   GMP_HOME="`pwd`/bin/$target-$BASECC-${CONFIGNAME}/extern/gmp"
    GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
    GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
    MAKE_GMP="gmp"
-   GMP_VER="5.0.1"
+   GMP_VER="5.0.2"
 
 
 fi
 
+
+if test "$MAKE_GMP" = "gmp" ; then
+  if ! test $ac_cv_sizeof_void_p = 4; then
+    if test "$ac_cv_prog_ac_ct_CC" = gcc ; then
+      if test `gcc -dumpversion` = "4.3.2" ; then
+        as_fn_error $? "The version of gcc found on your system is known to
+                       miscompile GMP on 64-bit machines. Please use another
+                       compiler or build GAP without GMP." "$LINENO" 5
+      fi
+    fi
+  fi
+  # Extract the first word of "m4", so it can be a program name with args.
+set dummy m4; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_m4_PRESENT+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$m4_PRESENT"; then
+  ac_cv_prog_m4_PRESENT="$m4_PRESENT" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_m4_PRESENT="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_m4_PRESENT" && ac_cv_prog_m4_PRESENT="no"
+fi
+fi
+m4_PRESENT=$ac_cv_prog_m4_PRESENT
+if test -n "$m4_PRESENT"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $m4_PRESENT" >&5
+$as_echo "$m4_PRESENT" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  if test "$m4_PRESENT" = "no"; then
+    as_fn_error $? "You have requested that GAP be built with GMP but this
+                   requires m4, which has not been detected on your system.
+                   Please install m4 or build without GMP." "$LINENO" 5
+ fi
+fi
 
 
 # Check whether --with-readline was given.
 if test "${with_readline+set}" = set; then :
-  withval=$with_readline;   if test "$withval" = "no"; then
-      NOREADLINE="-DNO_READLINE"
-      READLINEPREFIX=""
-    elif test "$withval" = "yes"; then
-      NOREADLINE=""
-      READLINEPREFIX=""
-    else
-      NOREADLINE=""
-      READLINEPREFIX=$withval
-    fi
+  withval=$with_readline;  if test "$withval" = "no"; then
+     NOREADLINE="-DNO_READLINE"
+     READLINEPREFIX=""
+   elif test "$withval" = "yes"; then
+     NOREADLINE=""
+     READLINEPREFIX=""
+   else
+     NOREADLINE=""
+     READLINEPREFIX=$withval
+   fi
 
 fi
 
-
-JENKINS_CFLAGS="-I`pwd`/bin/$target-$BASECC/${BUILD_MODE}-bit/extern/jenkins"
 
 
 
@@ -4144,7 +4205,7 @@ JENKINS_CFLAGS="-I`pwd`/bin/$target-$BASECC/${BUILD_MODE}-bit/extern/jenkins"
 
 
 mkdir -p bin
-ac_config_files="$ac_config_files Makefile sysinfo.gap:sysinfo.in bin/gap${BUILD_MODE}.sh:gap.shi"
+ac_config_files="$ac_config_files Makefile-${CONFIGNAME}:Makefile.in sysinfo.gap-${CONFIGNAME}:sysinfo.in bin/gap-${CONFIGNAME}.sh:gap.shi"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4863,9 +4924,9 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "sysinfo.gap") CONFIG_FILES="$CONFIG_FILES sysinfo.gap:sysinfo.in" ;;
-    "bin/gap${BUILD_MODE}.sh") CONFIG_FILES="$CONFIG_FILES bin/gap${BUILD_MODE}.sh:gap.shi" ;;
+    "Makefile-${CONFIGNAME}") CONFIG_FILES="$CONFIG_FILES Makefile-${CONFIGNAME}:Makefile.in" ;;
+    "sysinfo.gap-${CONFIGNAME}") CONFIG_FILES="$CONFIG_FILES sysinfo.gap-${CONFIGNAME}:sysinfo.in" ;;
+    "bin/gap-${CONFIGNAME}.sh") CONFIG_FILES="$CONFIG_FILES bin/gap-${CONFIGNAME}.sh:gap.shi" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -5315,4 +5376,6 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
-ln -sf gap${BUILD_MODE}.sh bin/gap.sh
+ln -sf gap-${CONFIGNAME}.sh bin/gap.sh
+ln -sf Makefile-${CONFIGNAME} Makefile
+ln -sf sysinfo.gap-${CONFIGNAME} sysinfo.gap

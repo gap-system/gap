@@ -25,9 +25,9 @@ at many  places several lines of  input  (which you  should type  on your
 terminal) followed by the corresponding output  (which &GAP; produces as
 an answer to your input).
 <Log><![CDATA[
-This ``session protocol'' is indented and printed in typewriter style
-(like this paragraph) in this tutorial and should look exactly as it
-looks on your text terminal or text window.
+This ``session protocol'' is printed in typewriter style and highlihted
+(like this paragraph) in this tutorial. It should look exactly as it
+looks in your GAP session.
 ]]></Log>
 This is  to encourage you to actually  run through these examples on your
 computer. This will support your  feeling for &GAP;  as a tool, which is
@@ -100,7 +100,8 @@ second. Here as always, a combination like  <A>ctl</A>-<C>D</C> means that you h
 to press the <C>D</C> key while you hold down the <A>ctl</A> key.
 <P/>
 On some systems (for example the Apple Macintosh) minor changes might be
-necessary. This is explained in chapter <Ref Chap="Installing GAP" BookName="ref"/>.
+necessary. This is explained in &GAP; installation instructions.
+<!-- TODO: put URL -->
 <P/>
 <Index>whitespace</Index>
 In  most   places <E>whitespace</E>  characters   (i.e.  <A>space</A>s, <A>tab</A>s  and

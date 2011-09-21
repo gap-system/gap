@@ -28,5 +28,12 @@ cat listtextfiles.txt | zip -q ${ziparchive} -@
 echo 'Adding binary files to the archive '${GAPSOURCE}/$ziparchive
 
 cat listbinaryfiles.txt | zip -q ${ziparchive} -@
+
+echo 'Unpacking the newly created archive to check for missing files ...'
+unzip -q ${ziparchive} -d tmpunpack
+mv tmpunpack/${DISTNAME} ${DISTNAME}tst
+rm -rf tmpunpack
+diff -rq ${DISTNAME} ${DISTNAME}tst
+rm -rf ${DISTNAME}tst
              
 exit 0

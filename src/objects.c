@@ -823,8 +823,8 @@ static inline UInt IS_MARKED( Obj obj )
   return 0;
 }
      
-#define MARK(obj)
-#define UNMARK(obj)
+#define MARK(obj)     do {} while (0)
+#define UNMARK(obj)   do {} while (0)
 
 /* This variable is used to allow a ViewObj method to call PrintObj on
    the same object without triggering use of ~ */

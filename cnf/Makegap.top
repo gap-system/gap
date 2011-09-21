@@ -32,4 +32,3 @@ else
 endif
 
 
-EXTOBJS=extern/jenkins/jhash.o

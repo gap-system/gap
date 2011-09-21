@@ -135,7 +135,6 @@
 <#Include SYSTEM "unknown.xml">
 <#Include SYSTEM "ctblmono.xml">
 
-<#Include SYSTEM "install.xml">
 <#Include SYSTEM "gappkg.xml">
 <#Include SYSTEM "obsolete.xml">
 

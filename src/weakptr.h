@@ -17,6 +17,10 @@
 **
 **
 */
+
+#ifndef GAP_WEAKPTR_H
+#define GAP_WEAKPTR_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_weakptr_h =
    "@(#)$Id$";
@@ -37,6 +41,8 @@ const char * Revision_weakptr_h =
 */
 StructInitInfo * InitInfoWeakPtr ( void );
 
+
+#endif // GAP_WEAKPTR_H
 
 /****************************************************************************
 **

@@ -11,6 +11,10 @@
 **
 **  This file declares the functions of the  arithmetic  operations  package.
 */
+
+#ifndef GAP_ARITHS_H
+#define GAP_ARITHS_H
+
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_ariths_h =
    "@(#)$Id$";
@@ -707,6 +711,8 @@ extern void InstallModObject ( Int );
 */
 StructInitInfo * InitInfoAriths ( void );
 
+
+#endif // GAP_ARITHS_H
 
 /****************************************************************************
 **

@@ -27,5 +27,9 @@ echo 'Adding a list of binary documentation files to '${GAPSOURCE}/listbinaryfil
 find \
    $pre/doc/{ref,tut}/*.pdf \
        -print >> listbinaryfiles.txt
+
+find \
+   $pre/doc/{ref,tut}/*.js \
+       -print >> listbinaryfiles.txt
                          
 exit 0

@@ -8,7 +8,7 @@ LoadPackage("FR");
 
 starttime:=Runtime();
 
-for i in [1..7] do
+for i in [1..6] do
   Print("Test ", i, "\n");
   n:=GrigorchukMachine^i;
   r:=BinaryRelationOnPointsNC(n!.transitions);

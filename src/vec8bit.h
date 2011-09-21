@@ -6,12 +6,16 @@
 **
 *Y  Copyright (C)  1997,  St Andrews
 */
+
+#ifndef GAP_VEC8BIT_H
+#define GAP_VEC8BIT_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_vec8bit_h =
    "@(#)$Id$";
 #endif
 
-	
+
 /****************************************************************************
 **
 *F  RewriteGF2Vec( <vec>, <q> ) . . .
@@ -65,6 +69,8 @@ extern Obj FuncASS_VEC8BIT (
 */
 extern StructInitInfo * InitInfoVec8bit ( void );
 
+
+#endif // GAP_VEC8BIT_H
 
 /****************************************************************************
 **

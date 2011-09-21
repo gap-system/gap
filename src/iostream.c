@@ -60,68 +60,7 @@ const char * Revision_iostream_c =
 #include <sys/stat.h>
 #endif
 
-#if !SYS_MAC_MWC
 #include  <sys/time.h>
-#endif
-
-#if SYS_MAC_MWC || SYS_MAC_MPW
-
-Obj FuncCREATE_PTY_IOSTREAM( Obj self, Obj dir, Obj prog, Obj args )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-  
-Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-
-Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-
-Obj FuncREAD_IOSTREAM_NOWAIT( Obj self, Obj stream, Obj string, Obj len )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-
-Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return 0;
-}
-
-Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return 0;
-}
-
-Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj signal)
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return 0;
-}
-
-Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-
-Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
-{
-  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
-  return Fail;
-}
-
-
-#else
 
 #if HAVE_UNISTD_H
 #include <unistd.h>
@@ -826,8 +765,6 @@ Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
   return INTOBJ_INT(PtyIOStreams[pty].ptyFD);
 }
 
-#endif
-/* end of if Macintosh */
 
 /****************************************************************************
 **

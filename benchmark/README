@@ -16,7 +16,9 @@ As a place for these tests I have created a folder ``benchmark'' in the main
 GAP directory under CVS. Tests can be put in subfolders (which should be
 self-contained, but can contain arbitrary content). The tests in the
 subfolders are run by running GAP (from the subfolder) on a file
-test<n>
+
+test<n>.g
+
 (<n> being the number of the test) in the same folder. This file should
 contain all necessary `Read' statements and loading of packages etc. It can
 produce arbitrary screen output, which will be parsed only for the following

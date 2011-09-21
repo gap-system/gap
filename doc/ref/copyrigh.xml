@@ -82,6 +82,36 @@ Of course we are interested in all of your modifications.  In  particular
 we would like to see bug-fixes, improvements and new functions.  So again
 we would appreciate it if you would inform us about all modifications you
 make.
+<P/>
+In addition to the general copyright for &GAP; set forth above,
+the following terms apply to the versions of &GAP; for Windows.
+<P/>
+The executable of &GAP; for Windows that we distribute was compiled with
+the <C>gnuwin32</C> compiler of the <C>cygwin</C> package. 
+This compiler can be obtained by anonymous <C>ftp</C> from a
+variety of general public FTP archives. Many thanks to the Free Software
+Foundation and RedHat Software for this amazing piece of work.
+<P/>
+The GNU C compiler is
+<P/>
+<E>Copyright (C) 2002 Free Software Foundation, Inc.
+675 Mass Ave, Cambridge, MA 02139, USA</E>
+<P/>
+under the terms of the GNU General Public License (GPL).
+<P/>
+The Cygwin32 API library is also covered by the GNU GPL. The executable we
+provide is linked against this library (and in the process includes
+GPL'd Cygwin32 glue code). This means that the executable falls under
+the GPL too, which it does anyhow.
+<P/>
+The <F>cygwin1.dll</F>, <F>libW11.dll</F>, <F>rxvt.exe</F> and <F>regtool.exe</F> binaries are
+taken unmodified from the Cygwin distribution. They are copyright by RedHat Software
+and released under the GPL. You can find more information about <C>cygwin</C> under
+<URL>http://www.cygwin.com</URL>. You also will be able to obtain the sources for <C>cygwin</C> from this place.
+<P/>
+Please contact <Email>support@gap-system.org</Email> if you need further information.
+
+
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->

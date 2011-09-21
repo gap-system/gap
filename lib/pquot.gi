@@ -1581,6 +1581,24 @@ local phi, ngens, qs, psi, images, eps;
     return eps;
 end);
 
+InstallMethod( EpimorphismPGroup,"finite groups",true,
+        [IsFinite and IsGroup, IsPosInt ],0,
+function( U, p )
+  return EpimorphismPGroup( U, p, LogInt(Size(U),p) );
+end );    
+
+InstallMethod( EpimorphismPGroup,"finite group, class bound",true,
+  [IsFinite and IsGroup, IsPosInt, IsPosInt ],0,
+function( U, p, c )
+local ser;
+  if IsSubgroupFpGroup(U) or IsFreeGroup(U) then
+    TryNextMethod(); # fp groups *use* the PQ for the central series.
+  fi;
+  ser:=PCentralSeries(U,p);
+  c:=Minimum(c+1,Length(ser));
+  return NaturalHomomorphismByNormalSubgroupNC(U,ser[c]);
+end);
+
 
 #############################################################################
 ##

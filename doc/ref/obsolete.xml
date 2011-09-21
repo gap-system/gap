@@ -168,7 +168,7 @@ Here are some further name changes.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="obsolete_gaprc">
+<Section Label="obsolete-gaprc">
 <Heading>The former .gaprc file</Heading>
 
 Up to &GAP;&nbsp;4.4, a file <F>.gaprc</F> in the user's home directory

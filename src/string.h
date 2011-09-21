@@ -21,7 +21,12 @@
 **  and `SET_ELM_STRING'.
 **  
 **  This  package also contains the   list  function  for ranges, which   are
-**  installed in the appropriate tables by 'InitString'.  */
+**  installed in the appropriate tables by 'InitString'.
+*/
+
+#ifndef GAP_STRING_H
+#define GAP_STRING_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_string_h =
    "@(#)$Id$";
@@ -302,6 +307,8 @@ extern Int IsStringConv (
 */
 StructInitInfo * InitInfoString ( void );
 
+
+#endif // GAP_STRING_H
 
 /****************************************************************************
 **

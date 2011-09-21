@@ -15,6 +15,9 @@ Revision.grppcaut_gd :=
 ##
 DeclareProperty( "IsFrattiniFree", IsGroup );
 
+DeclareGlobalFunction("AutomorphismGroupNilpotentGroup");
+DeclareGlobalFunction("AutomorphismGroupSolvableGroup");
+DeclareGlobalFunction("AutomorphismGroupFrattFreeGroup");
 
 #############################################################################
 ##

@@ -46,6 +46,16 @@ function(A)
   fi;
 end);
 
+InstallMethod( Pcgs, "from independent generators of abelian group", true,
+    [ IsGroup and IsAbelian and CanEasilyComputeWithIndependentGensAbelianGroup ], 0,
+function(A)
+  if HasHomePcgs(A) then
+    TryNextMethod();
+  else
+    return PcgsByIndependentGeneratorsOfAbelianGroup(A);
+  fi;
+end);
+
 #############################################################################
 ##
 #M  SetPcgs( <G>, fail )  . . . . . . . . . . . . . . . . .  never set `fail'

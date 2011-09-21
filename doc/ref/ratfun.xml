@@ -86,7 +86,7 @@ therefore all arithmetic operations are applicable to rational functions.
 <C><A>f</A> / <A>g</A></C>
 <P/>
 <Example><![CDATA[
-gap> x:=X(Rationals,1);;y:=X(Rationals,2);;
+gap> x:=Indeterminate(Rationals,1);;y:=Indeterminate(Rationals,2);;
 gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
 gap> a:=g/f;
 (x_1^2*x_2+x_1*x_2^2+5)/(x_1^5+x_1*x_2+3)
@@ -140,7 +140,7 @@ Two rational functions <A>f</A> and <A>g</A> are equal if the product
 <C>Numerator(<A>g</A>) * Denominator(<A>f</A>)</C>.
 <P/>
 <Example><![CDATA[
-gap> x:=X(Rationals,"x");;y:=X(Rationals,"y");;
+gap> x:=Indeterminate(Rationals,"x");;y:=Indeterminate(Rationals,"y");;
 gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
 gap> a:=g/f;
 (x^2*y+x*y^2+5)/(x^5+x*y+3)
@@ -463,7 +463,8 @@ Alternatively, first create the
 indeterminates and then create the ring including these indeterminates.
 <P/>
 <Example><![CDATA[
-gap> a:=X(Rationals,"a":old);;b:=X(Rationals,"b":old);;
+gap> a:=Indeterminate(Rationals,"a");;
+gap> b:=Indeterminate(Rationals,"b");;
 gap> PolynomialRing(Rationals,[a,b]);;
 ]]></Example>
 <P/>

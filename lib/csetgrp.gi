@@ -876,11 +876,11 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
     # canonization fct
     canrep:=function(x)
     local stb, p, pinv, t, hom,ps, mop, mo, o, oi, rep, st, lstgens, lstgensop,
-          i, img, step, j;
+          i, img, step, j,calcs;
       stb:=b;
       p:=One(G);
       for step in [1..Length(c)-1] do
-	#calcs:=step>1 or Length(omi)<>1;
+	calcs:=step<Length(c)-1;
 	pinv:=p^-1;
 	t:=tra[step];
 	hom:=homs[step];
@@ -918,10 +918,11 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 
 	      # if there is only one orbit on the top step, we know the
 	      # stabilizer!
-	      #if calcs then
+	      if calcs then
 		#NC is safe (initializing as TrivialSubgroup(G)
 		st := ClosureSubgroupNC(st,rep[i]*lstgens[j]/rep[oi[ps]]);
 		if Size(st)*Length(o)=Size(b) then i:=Length(o);fi;
+	      fi;
 	      #fi;
 	    else
 	      Add(o,ps);
@@ -946,8 +947,9 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 	  i:=i+1;
 	od;
 	
-	#if calcs then
-	stb:=st^(rep[mop]);
+	if calcs then
+	  stb:=st^(rep[mop]);
+	fi;
 	#if HasSmallGeneratingSet(st) then
 	#  SetSmallGeneratingSet(stb,List(SmallGeneratingSet(st),x->x^rep[mop]));
 	#fi;
@@ -971,10 +973,11 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
     # now fuse orbits under the left action of a
     indx:=Index(a,a2);
     Info(InfoCoset,2,"fusion index ",indx);
-    t:=RightTransversal(a,a2);
+    t:=Filtered(RightTransversal(a,a2),x->not x in a2);
     sifa:=Size(a2)*Size(b);
 
-    SortParallel(r,stabs);
+    SortParallel(r,stabs); # quick find
+    IsSSortedList(r);
 
     bsz:=Length(r);
     blist:=BlistList([1..bsz],[]);
@@ -988,7 +991,8 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
       e:=r[ps];
       j:=1;
       while siz<rsiz do #j<=Length(t) do
-	img:=canrep(t[j]*e);
+	img:=t[j]*e;
+	img:=canrep(img);
 	ps:=Position(r,img);
 	if blist[ps]=false then
 	  blist[ps]:=true;

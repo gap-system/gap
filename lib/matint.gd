@@ -505,9 +505,9 @@ DeclareOperation( "SolutionNullspaceIntMat",
 ##  <Attr Name="AbelianInvariantsOfList" Arg='list'/>
 ##
 ##  <Description>
-##  Given a list of positive integers, this routine returns a list of prime
-##  powers, such that the prime power factors of the entries in the list are
-##  returned in sorted form.
+##  Given a list of positive integers, this routine returns a sorted list
+##  containing the prime power factors of the entries in the original
+##  list.
 ##  <Example><![CDATA[
 ##  gap> AbelianInvariantsOfList([4,6,2,12]);
 ##  [ 2, 2, 3, 3, 4, 4 ]

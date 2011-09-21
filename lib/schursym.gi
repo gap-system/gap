@@ -586,8 +586,10 @@ function( n, p )
   Assert( 3, AbelianInvariants( Center( grp ) ) = [ 2 ] );
   SetAbelianInvariants( Center( grp ), [ 2 ] );
 
-  Assert( 3, IsPerfectGroup( grp ) );
-  SetIsPerfectGroup( grp, true );
+  if n >= 5 then
+    Assert( 3, IsPerfectGroup( grp ) );
+    SetIsPerfectGroup( grp, true );
+  fi;
 
   return grp;
 end );

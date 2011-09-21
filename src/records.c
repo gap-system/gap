@@ -80,7 +80,7 @@ Obj             HashRNam;
 UInt            SizeRNam;
 
 UInt            RNamName (
-    Char *              name )
+    const Char *        name )
 {
     Obj                 rnam;           /* record name (as imm intobj)     */
     UInt                pos;            /* hash position                   */
@@ -88,7 +88,7 @@ UInt            RNamName (
     Obj                 string;         /* temporary string object <name>  */
     Obj                 table;          /* temporary copy of <HashRNam>    */
     Obj                 rnam2;          /* one element of <table>          */
-    Char *              p;              /* loop variable                   */
+    const Char *        p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
 
     /* start looking in the table at the following hash position           */

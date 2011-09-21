@@ -1010,17 +1010,19 @@ DeclareAttribute( "UnderlyingExternalSet", IsActionHomomorphism );
 ##
 DeclareGlobalFunction("DoSparseActionHomomorphism");
 
+DeclareGlobalFunction("MultiActionsHomomorphism");
+
 #############################################################################
 ##
-#O  SparseActionHomomorphism( <G>, <Omega>, <start> [,<gens>,<acts>] [,<act>] )
-#O  SortedSparseActionHomomorphism(<G>,<Omega>,<start>[,<gens>,<acts>] [,<act>])
+#O  SparseActionHomomorphism( <G>, <start> [,<gens>,<acts>] [,<act>] )
+#O  SortedSparseActionHomomorphism(<G>,<start>[,<gens>,<acts>] [,<act>])
 ##
 ##  <#GAPDoc Label="SparseActionHomomorphism">
 ##  <ManSection>
 ##  <Oper Name="SparseActionHomomorphism"
-##   Arg='G, Omega, start[, gens, acts][, act]'/>
+##   Arg='G, start[, gens, acts][, act]'/>
 ##  <Oper Name="SortedSparseActionHomomorphism"
-##   Arg='G, Omega, start[, gens, acts][, act]'/>
+##   Arg='G, start[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  <Ref Func="SparseActionHomomorphism"/> computes the action homomorphism
@@ -1031,9 +1033,9 @@ DeclareGlobalFunction("DoSparseActionHomomorphism");
 ##  In the <Ref Func="Orbit"/> calls that are used to create <M>D</M>,
 ##  again the optional arguments given are entered.)
 ##  <P/>
-##  If <A>G</A> acts on a very large domain <A>Omega</A> not surjectively
+##  If <A>G</A> acts on a very large domain not surjectively
 ##  this may yield a permutation image of
-##  substantially smaller degree than by action on <A>Omega</A>.
+##  substantially smaller degree than by action on the whole domain.
 ##  <P/>
 ##  The operation <Ref Func="SparseActionHomomorphism"/> will only use
 ##  <Ref Func="\="/> comparisons of points in the orbit.

@@ -10,6 +10,10 @@
 **
 **  This file declares the functions for the floating point package
 */
+
+#ifndef GAP_IOSTREAM_H
+#define GAP_IOSTREAM_H
+
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_iostream_h =
    "@(#)$Id$";
@@ -28,11 +32,9 @@ const char * Revision_iostream_h =
 StructInitInfo * InitInfoIOStream ( void );
 
 
+#endif // GAP_IOSTREAM_H
+
 /****************************************************************************
 **
 *E  float.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
-

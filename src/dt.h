@@ -1,3 +1,21 @@
+/****************************************************************************
+**
+*W  dt.h                        GAP source                  Wolfgang Merkwitz
+**
+*H  @(#)$Id$
+**
+*Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
+**
+**  This file implements the part of the deep thought package which deals
+**  with computing the deep thought polynomials. See dt.c for further
+**  information.
+*/
+
+#ifndef GAP_DT_H
+#define GAP_DT_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_dt_h =
    "@(#)$Id$";
@@ -150,9 +168,12 @@ extern Obj Power(
 StructInitInfo * InitInfoDeepThought ( void );
 
 
+#endif // GAP_DT_H
+
 /****************************************************************************
 **
 
 *E  dt.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 **
 */
+

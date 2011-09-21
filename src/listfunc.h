@@ -10,6 +10,10 @@
 **
 **  This file declares the functions for generic lists.
 */
+
+#ifndef GAP_LISTFUNC_H
+#define GAP_LISTFUNC_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_listfunc_h =
    "@(#)$Id$";
@@ -133,9 +137,10 @@ extern  UInt            RemoveDupsDensePlist (
 StructInitInfo * InitInfoListFunc ( void );
 
 
+#endif // GAP_LISTFUNC_H
+
 /****************************************************************************
 **
 
 *E  listfunc.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-

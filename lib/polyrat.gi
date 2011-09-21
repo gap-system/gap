@@ -531,8 +531,9 @@ end);
 #F  RPGcdModPrime(<R>,<f>,<g>,<p>,<a>,<brci>)  . . gcd mod <p>
 ##
 BindGlobal("RPGcdModPrime",function(R,f,g,p,a,brci)
-local gcd, u, v, w, val, r, s;
+local fam,gcd, u, v, w, val, r, s;
   
+  fam:=CoefficientsFamily(FamilyObj(f));
   f:=CoefficientsOfLaurentPolynomial(f);
   g:=CoefficientsOfLaurentPolynomial(g);
   # compute in the finite field F_<p>
@@ -558,7 +559,7 @@ local gcd, u, v, w, val, r, s;
   ReduceCoeffsMod(gcd,p);
 
   # and return the polynomial
-  return LaurentPolynomialByCoefficients(CoefficientsFamily(FamilyObj(f)),gcd,val,brci);
+  return LaurentPolynomialByCoefficients(fam,gcd,val,brci);
 
 end);
 

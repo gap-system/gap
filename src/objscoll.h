@@ -8,6 +8,10 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
+
+#ifndef GAP_OBJSCOLL_H
+#define GAP_OBJSCOLL_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_objscoll_h =
    "@(#)$Id$";
@@ -167,6 +171,8 @@ extern Obj FuncFinPowConjCol_ReducedQuotient ( Obj, Obj, Obj, Obj );
 */
 StructInitInfo * InitInfoSingleCollector ( void );
 
+
+#endif // GAP_OBJSCOLL_H
 
 /****************************************************************************
 **

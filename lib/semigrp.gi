@@ -62,6 +62,13 @@ InstallMethod( PrintObj,
     Print( "Semigroup( ... )" );
     end );
 
+InstallMethod( String,
+    "for a semigroup",
+    [ IsSemigroup ],
+    function( S )
+    return "Semigroup( ... )";
+    end );
+
 InstallMethod( PrintObj,
     "for a semigroup with known generators",
     [ IsSemigroup and HasGeneratorsOfMagma ],
@@ -69,6 +76,19 @@ InstallMethod( PrintObj,
     Print( "Semigroup( ", GeneratorsOfMagma( S ), " )" );
     end );
 
+InstallMethod( String,
+    "for a semigroup with known generators",
+    [ IsSemigroup and HasGeneratorsOfMagma ],
+    function( S )
+    return STRINGIFY( "Semigroup( ", GeneratorsOfMagma( S ), " )" );
+    end );
+
+InstallMethod( PrintString,
+    "for a semigroup with known generators",
+    [ IsSemigroup and HasGeneratorsOfMagma ],
+    function( S )
+    return PRINT_STRINGIFY( "Semigroup( ", GeneratorsOfMagma( S ), " )" );
+    end );
 
 #############################################################################
 ##

@@ -23,7 +23,9 @@ const char * Revision_macfloat_c =
 #include        "gap.h"                 /* error handling, initialisation  */
 
 
+#include        "plist.h"               /* lists */
 #include        "ariths.h"              /* basic arithmetic                */
+#include        "integer.h"             /* basic arithmetic                */
 
 #define INCLUDE_DECLARATION_PART
 #include        "macfloat.h"                /* macfloateans                        */
@@ -32,6 +34,7 @@ const char * Revision_macfloat_c =
 #include        "bool.h"
 #include        "scanner.h"
 #include        "string.h"
+#include        <assert.h>
 
 /* the following two declarations would belong in `saveload.h', but then all
  * files get macfloat dependencies */
@@ -62,13 +65,11 @@ extern void SaveDouble( Double d);
 **  'TypeMacfloat' is the function in 'TypeObjFuncs' for macfloatean values.
 */
 Obj TYPE_MACFLOAT;
-Obj TYPE_MACFLOAT0;
 
 Obj TypeMacfloat (
     Obj                 val )
-{
-  
-    return VAL_MACFLOAT(val) == 0.0L ? TYPE_MACFLOAT0 : TYPE_MACFLOAT;
+{  
+    return TYPE_MACFLOAT;
 }
 
 
@@ -78,24 +79,6 @@ Obj TypeMacfloat (
 **
 **  'PrintMacfloat' prints the macfloating value <macfloat>.
 */
-#if SYS_MAC_MWC
-#include <fp.h>
-void PrintMacfloat (
-    Obj                 x )
-{
-  Char buf[40];
-  decimal dec;
-  decform decf;
-  	
-  decf.style  = MACFLOATDECIMAL;
-  decf.digits = 32;
-  num2dec (&decf, VAL_MACFLOAT(x), &dec);
-  dec2str (&decf, &dec, buf);
-  Pr("%s",(Int)buf, 0);
-}
-
-#else
-
 void PrintMacfloat (
     Obj                 x )
 {
@@ -103,8 +86,6 @@ void PrintMacfloat (
   sprintf(buf, "%.16" PRINTFFORMAT, (TOPRINTFFORMAT) VAL_MACFLOAT(x));
   Pr("%s",(Int)buf, 0);
 }
-#endif
-
 
 
 /****************************************************************************
@@ -119,6 +100,13 @@ Int EqMacfloat (
     Obj                 macfloatR )
 {
   return VAL_MACFLOAT(macfloatL) == VAL_MACFLOAT(macfloatR);
+}
+
+Obj FuncEqMacfloat (
+    Obj                 macfloatL,
+    Obj                 macfloatR )
+{
+  return EqMacfloat(macfloatL,macfloatR) ? True : False;
 }
 
 
@@ -327,7 +315,7 @@ Obj ModMacfloat( Obj fl, Obj fr )
 **
 */
 
-Obj FuncMACFLOAT_INT( Obj self, Obj i)
+Obj FuncMACFLOAT_INT( Obj self, Obj i )
 {
   if (!IS_INTOBJ(i))
     return Fail;
@@ -341,7 +329,7 @@ Obj FuncMACFLOAT_INT( Obj self, Obj i)
 **
 */
 
-Obj FuncMACFLOAT_STRING( Obj self, Obj s)
+Obj FuncMACFLOAT_STRING( Obj self, Obj s )
 {
 
   while (!IsStringConv(s))
@@ -349,7 +337,12 @@ Obj FuncMACFLOAT_STRING( Obj self, Obj s)
       s = ErrorReturnObj("MACFLOAT_STRING: object to be converted must be a string not a %s",
 			 (Int)(InfoBags[TNUM_OBJ(s)].name),0,"You can return a string to continue" );
     }
-  return NEW_MACFLOAT((Double) STRTOD((char*)CHARS_STRING(s),NULL));
+  char * endptr;
+  UChar *sp = CHARS_STRING(s);
+  Obj res= NEW_MACFLOAT((Double) STRTOD((char *)sp,&endptr));
+  if ((UChar *)endptr != sp + GET_LEN_STRING(s)) 
+    return Fail;
+  return res;
 }
 
 /****************************************************************************
@@ -371,7 +364,7 @@ Obj SumIntMacfloat( Obj i, Obj f )
 */
 
 #define MAKEMATHPRIMITIVE(NAME,name)			\
-  Obj Func##NAME##_MACFLOAT( Obj self, Obj f)		\
+  Obj Func##NAME##_MACFLOAT( Obj self, Obj f )		\
   {							\
     return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f)));	\
   }
@@ -382,34 +375,70 @@ Obj SumIntMacfloat( Obj i, Obj f )
     return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f),VAL_MACFLOAT(g)));	\
   }
 
-MAKEMATHPRIMITIVE(COS,cos);
-MAKEMATHPRIMITIVE(SIN,sin);
-MAKEMATHPRIMITIVE(TAN,tan);
-MAKEMATHPRIMITIVE(ACOS,acos);
-MAKEMATHPRIMITIVE(ASIN,asin);
-MAKEMATHPRIMITIVE(ATAN,atan);
-MAKEMATHPRIMITIVE(LOG,log);
-MAKEMATHPRIMITIVE(EXP,exp);
-#ifdef VERY_LONG_DOUBLES
-Obj FuncSQRT_MACFLOAT( Obj self, Obj f)
-{
-  Double val = VAL_MACFLOAT(f), result = sqrtl(val);
-  if (result != 0.0L)
-    result = (result + val/result) / 2.0; /* one more iteration */
-  return NEW_MACFLOAT(result);
-}
-#else
-MAKEMATHPRIMITIVE(SQRT,sqrt);
+MAKEMATHPRIMITIVE(COS,cos)
+MAKEMATHPRIMITIVE(SIN,sin)
+MAKEMATHPRIMITIVE(TAN,tan)
+MAKEMATHPRIMITIVE(ACOS,acos)
+MAKEMATHPRIMITIVE(ASIN,asin)
+MAKEMATHPRIMITIVE(ATAN,atan)
+MAKEMATHPRIMITIVE(LOG,log)
+MAKEMATHPRIMITIVE(EXP,exp)
+#if HAVE_LOG2
+MAKEMATHPRIMITIVE(LOG2,log2)
 #endif
-MAKEMATHPRIMITIVE(RINT,rint);
-MAKEMATHPRIMITIVE(FLOOR,floor);
-MAKEMATHPRIMITIVE(CEIL,ceil);
-MAKEMATHPRIMITIVE2(ATAN2,atan2);
-MAKEMATHPRIMITIVE2(HYPOT,hypot);
+#if HAVE_LOG10
+MAKEMATHPRIMITIVE(LOG10,log10)
+#endif
+#if HAVE_LOG1P
+MAKEMATHPRIMITIVE(LOG1P,log1p)
+#endif
+#if HAVE_EXP2
+MAKEMATHPRIMITIVE(EXP2,exp2)
+#endif
+#if HAVE_EXPM1
+MAKEMATHPRIMITIVE(EXPM1,expm1)
+#endif
+#if HAVE_EXP10
+MAKEMATHPRIMITIVE(EXP10,exp10)
+#endif
+MAKEMATHPRIMITIVE(SQRT,sqrt)
+MAKEMATHPRIMITIVE(RINT,rint)
+MAKEMATHPRIMITIVE(FLOOR,floor)
+MAKEMATHPRIMITIVE(CEIL,ceil)
+MAKEMATHPRIMITIVE(ABS,fabs)
+MAKEMATHPRIMITIVE2(ATAN2,atan2)
+MAKEMATHPRIMITIVE2(HYPOT,hypot)
 
-Obj FuncINTFLOOR_MACFLOAT( Obj self, Obj f )
+extern Obj FuncIntHexString(Obj,Obj);
+
+Obj FuncINTFLOOR_MACFLOAT( Obj self, Obj obj )
 {
-  return INTOBJ_INT((Int)floor(VAL_MACFLOAT(f)));
+#if HAVE_TRUNC
+  Double f = trunc(VAL_MACFLOAT(obj));
+#else
+  Double f = VAL_MACFLOAT(obj);
+  if (f >= 0.0)
+    f = floor(f);
+  else
+    f = -floor(-f);
+#endif
+
+
+  if (fabs(f) < (Double) (1L<<NR_SMALL_INT_BITS))
+    return INTOBJ_INT((Int)f);
+
+  int str_len = (int) (log(fabs(f)) / log(16.0)) + 3;
+
+  Obj str = NEW_STRING(str_len);
+  char *s = CSTR_STRING(str), *p = s+str_len-1;
+  if (f < 0.0)
+    f = -f, s[0] = '-';
+  while (p > s || (p == s && s[0] != '-')) {
+    int d = (int) fmod(f,16.0);
+    *p-- = d < 10 ? '0'+d : 'a'+d-10;
+    f /= 16.0;
+  }
+  return FuncIntHexString(self,str);
 }
 
 Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj prec, Obj f)
@@ -427,6 +456,22 @@ Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj prec, Obj f)
 Obj FuncSTRING_MACFLOAT( Obj self, Obj f) /* backwards compatibility */
 {
   return FuncSTRING_DIGITS_MACFLOAT(self,INTOBJ_INT(PRINTFDIGITS),f);
+}
+
+Obj FuncLDEXP_MACFLOAT( Obj self, Obj f, Obj i)
+{
+  return NEW_MACFLOAT(ldexp(VAL_MACFLOAT(f),INT_INTOBJ(i)));
+}
+
+Obj FuncFREXP_MACFLOAT( Obj self, Obj f)
+{
+  int i;
+  Obj d = NEW_MACFLOAT(frexp (VAL_MACFLOAT(f), &i));
+  Obj l = NEW_PLIST(T_PLIST,2);
+  SET_ELM_PLIST(l,1,d);
+  SET_ELM_PLIST(l,2,INTOBJ_INT(i));
+  SET_LEN_PLIST(l,2);
+  return l;
 }
 
 /****************************************************************************
@@ -454,6 +499,9 @@ static StructGVarFilt GVarFilts [] = {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
+#define GVARENTRY(NAME) { #NAME "_MACFLOAT", 1, "macfloat",		\
+      Func##NAME##_MACFLOAT, "src/macfloat.c:" #NAME "_MACFLOAT" }
+
 static StructGVarFunc GVarFuncs [] = {
   { "MACFLOAT_INT", 1, "int",
     FuncMACFLOAT_INT, "src/macfloat.c:MACFLOAT_INT" },
@@ -461,50 +509,57 @@ static StructGVarFunc GVarFuncs [] = {
   { "MACFLOAT_STRING", 1, "string",
     FuncMACFLOAT_STRING, "src/macfloat.c:MACFLOAT_STRING" },
 
-  { "SIN_MACFLOAT", 1, "macfloat",
-    FuncSIN_MACFLOAT, "src/macfloat.c:SIN_MACFLOAT" },
-
-  { "COS_MACFLOAT", 1, "macfloat",
-    FuncCOS_MACFLOAT, "src/macfloat.c:COS_MACFLOAT" },
-
-  { "TAN_MACFLOAT", 1, "macfloat",
-    FuncTAN_MACFLOAT, "src/macfloat.c:TAN_MACFLOAT" },
-
-  { "ASIN_MACFLOAT", 1, "macfloat",
-    FuncASIN_MACFLOAT, "src/macfloat.c:ASIN_MACFLOAT" },
-
-  { "ACOS_MACFLOAT", 1, "macfloat",
-    FuncACOS_MACFLOAT, "src/macfloat.c:ACOS_MACFLOAT" },
-
-  { "ATAN_MACFLOAT", 1, "macfloat",
-    FuncATAN_MACFLOAT, "src/macfloat.c:ATAN_MACFLOAT" },
+  GVARENTRY(SIN),
+  GVARENTRY(COS),
+  GVARENTRY(TAN),
+  GVARENTRY(ASIN),
+  GVARENTRY(ACOS),
+  GVARENTRY(ATAN),
 
   { "ATAN2_MACFLOAT", 2, "real, imag",
     FuncATAN2_MACFLOAT, "src/macfloat.c:ATAN2_MACFLOAT" },
 
-  { "LOG_MACFLOAT", 1, "macfloat",
-    FuncLOG_MACFLOAT, "src/macfloat.c:LOG_MACFLOAT" },
+  { "HYPOT_MACFLOAT", 2, "real, imag",
+    FuncHYPOT_MACFLOAT, "src/macfloat.c:HYPOT_MACFLOAT" },
 
-  { "EXP_MACFLOAT", 1, "macfloat",
-    FuncEXP_MACFLOAT, "src/macfloat.c:EXP_MACFLOAT" },
+  GVARENTRY(LOG),
+  GVARENTRY(EXP),
+#if HAVE_LOG2
+  GVARENTRY(LOG2),
+#endif
+#if HAVE_LOG10
+  GVARENTRY(LOG10),
+#endif  
+#if HAVE_LOG1P
+  GVARENTRY(LOG1P),
+#endif  
+#if HAVE_EXP2
+  GVARENTRY(EXP2),
+#endif  
+#if HAVE_EXPM1
+  GVARENTRY(EXPM1),
+#endif
+#if HAVE_EXP10
+  GVARENTRY(EXP10),
+#endif
 
-  { "SQRT_MACFLOAT", 1, "macfloat",
-    FuncSQRT_MACFLOAT, "src/macfloat.c:SQRT_MACFLOAT" },
+  { "LDEXP_MACFLOAT", 2, "macfloat, int",
+    FuncLDEXP_MACFLOAT, "src/macfloat.c:LDEXP_MACFLOAT" },
 
-  { "RINT_MACFLOAT", 1, "macfloat",
-    FuncRINT_MACFLOAT, "src/macfloat.c:RINT_MACFLOAT" },
-
-  { "INTFLOOR_MACFLOAT", 1, "macfloat",
-    FuncINTFLOOR_MACFLOAT, "src/macfloat.c:INTFLOOR_MACFLOAT" },
-
-  { "FLOOR_MACFLOAT", 1, "macfloat",
-    FuncFLOOR_MACFLOAT, "src/macfloat.c:FLOOR_MACFLOAT" },
-
-  { "STRING_MACFLOAT", 1, "macfloat",
-    FuncSTRING_MACFLOAT, "src/macfloat.c:STRING_MACFLOAT" },
+  GVARENTRY(FREXP),
+  GVARENTRY(SQRT),
+  GVARENTRY(RINT),
+  GVARENTRY(INTFLOOR),
+  GVARENTRY(FLOOR),
+  GVARENTRY(CEIL),
+  GVARENTRY(ABS),
+  GVARENTRY(STRING),
 
   { "STRING_DIGITS_MACFLOAT", 2, "digits, macfloat",
     FuncSTRING_DIGITS_MACFLOAT, "src/macfloat.c:STRING_DIGITS_MACFLOAT" },
+
+  { "EQ_MACFLOAT", 2, "x, y",
+    FuncEqMacfloat, "src/macfloat.c:FuncEqMacfloat" },
 
   {0}
 };
@@ -518,6 +573,8 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+    Int EqObject (Obj,Obj);
+
     /* install the marking functions for macfloatean values                    */
     InfoBags[ T_MACFLOAT ].name = "macfloat";
     InitMarkFuncBags( T_MACFLOAT, MarkNoSubBags );
@@ -528,7 +585,6 @@ static Int InitKernel (
 
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_MACFLOAT", &TYPE_MACFLOAT );
-    ImportGVarFromLibrary( "TYPE_MACFLOAT0", &TYPE_MACFLOAT0 );
     TypeObjFuncs[ T_MACFLOAT ] = TypeMacfloat;
 
     /* install the saving functions                                       */
@@ -543,7 +599,14 @@ static Int InitKernel (
     /* install the comparison functions                                    */
     EqFuncs[ T_MACFLOAT ][ T_MACFLOAT ] = EqMacfloat;
     LtFuncs[ T_MACFLOAT ][ T_MACFLOAT ] = LtMacfloat;
-    
+
+    /* allow method selection to protest against comparisons of float and int */
+    {
+      int t;
+      for (t = T_INT; t <= T_CYC; t++)
+	EqFuncs[T_MACFLOAT][t] = EqFuncs[t][T_MACFLOAT] = EqObject;
+    }
+
     /* install the unary arithmetic methods                                */
     ZeroFuncs[ T_MACFLOAT ] = ZeroMacfloat;
     ZeroMutFuncs[ T_MACFLOAT ] = ZeroMacfloat;

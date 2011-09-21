@@ -172,7 +172,7 @@ Obj             ErrorMustHaveAssObjHandler (
 **  'AssGVar' assigns the value <val> to the global variable <gvar>.
 */
 
-static Obj REREADING;			/* Copy of GAP global variable REREADING */
+static Obj REREADING;                   /* Copy of GAP global variable REREADING */
 
 void            AssGVar (
     UInt                gvar,
@@ -187,7 +187,7 @@ void            AssGVar (
 
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
-	    (ELM_PLIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
+            (ELM_PLIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
         ErrorReturnVoid(
             "Variable: '%s' is read only",
             (Int)CSTR_STRING( ELM_PLIST(NameGVars,gvar) ), 0L,
@@ -238,10 +238,10 @@ void            AssGVar (
     /* assign name to a function                                           */
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
         name = NameGVar(gvar);
-	/*CCC        onam = NEW_STRING(SyStrlen(name));
-	  SyStrncat( CSTR_STRING(onam), name, SyStrlen(name) ); CCC*/
-	len = SyStrlen(name);
-	C_NEW_STRING(onam, len, name);
+        /*CCC        onam = NEW_STRING(SyStrlen(name));
+          SyStrncat( CSTR_STRING(onam), name, SyStrlen(name) ); CCC*/
+        len = SyStrlen(name);
+        C_NEW_STRING(onam, len, name);
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
         NAME_FUNC(val) = onam;
         CHANGED_BAG(val);
@@ -370,13 +370,13 @@ UInt GVarName (
         CountGVars++;
         gvar = INTOBJ_INT(CountGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
-	/*CCC        namx[0] = '\0';
+        /*CCC        namx[0] = '\0';
         SyStrncat( namx, name, 1023 );
         string = NEW_STRING( SyStrlen(namx) );
         SyStrncat( CSTR_STRING(string), namx, SyStrlen(namx) );CCC*/
-	len = SyStrlen(name);
-	memcpy(namx, name, len+1);
-	C_NEW_STRING(string, len, namx);
+        len = SyStrlen(name);
+        memcpy(namx, name, len+1);
+        C_NEW_STRING(string, len, namx);
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
         GROW_PLIST(    ValGVars,    CountGVars );
         SET_LEN_PLIST( ValGVars,    CountGVars );
@@ -763,7 +763,7 @@ Obj FuncISB_GVAR (
 
     gv = GVarName( CSTR_STRING(gvar) );
     return ( VAL_GVAR( gv ) ||
-	     ELM_PLIST( ExprGVars, gv )) ? True : False;
+             ELM_PLIST( ExprGVars, gv )) ? True : False;
 }
 
 
@@ -790,8 +790,8 @@ Obj FuncVAL_GVAR (
 
     while (val == (Obj) 0)
       val = ErrorReturnObj("VAL_GVAR: No value bound to %s",
-			   (Int)CSTR_STRING(gvar), (Int) 0,
-			   "you can return a value" );
+                           (Int)CSTR_STRING(gvar), (Int) 0,
+                           "you can return a value" );
     return val;
 }
 

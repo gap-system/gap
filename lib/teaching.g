@@ -790,8 +790,11 @@ InstallGlobalFunction(NumbersString,function(arg)
     table:=arg[3];
   else
     table:=Concatenation(ListWithIdenticalEntries(9,0)," ",
-	     CHARS_UALPHA,CHARS_DIGITS);
+	     CHARS_UALPHA,CHARS_DIGITS,CHARS_SYMBOLS);
     message:=UppercaseString(message);
+  fi;
+  if modulus<Length(table) then
+    Error("modulus must be at least as large as the translation table");
   fi;
   tenpow:=10^(LogInt(Length(table),10)+1);
   bound:=Int(modulus/tenpow);
@@ -821,7 +824,10 @@ InstallGlobalFunction(StringNumbers,function(arg)
     table:=arg[3];
   else
     table:=Concatenation(ListWithIdenticalEntries(9,0)," ",
-	     CHARS_UALPHA,CHARS_DIGITS);
+	     CHARS_UALPHA,CHARS_DIGITS,CHARS_SYMBOLS);
+  fi;
+  if modulus<Length(table) then
+    Error("modulus must be at least as large as the translation table");
   fi;
   message:="";
   tenpow:=10^(LogInt(Length(table),10)+1);
@@ -992,7 +998,7 @@ BindGlobal("AllAutomorphisms",G->Elements(AutomorphismGroup(G)));
 
 BindGlobal("GallianAutoDn",AllAutomorphisms);
 
-BindGlobal("GallianIntror2",n->RootsOfPolynomial(X(Integers mod n)^2+1));
+BindGlobal("GallianIntror2",n->RootsOfPolynomial(Indeterminate(Integers mod n)^2+1));
 
 
 

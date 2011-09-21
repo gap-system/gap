@@ -140,15 +140,15 @@ Int             IsSmallListObject (
     {
       len = DoAttribute(LengthAttr, obj);
       if (IS_INTOBJ(len))
-	{
-	  CALL_2ARGS(SetIsSmallList, obj, True);
-	  return 1;
-	}
+        {
+          CALL_2ARGS(SetIsSmallList, obj, True);
+          return 1;
+        }
       else
-	{
-	  CALL_2ARGS(SetIsSmallList, obj, False);
-	  return 0;
-	}
+        {
+          CALL_2ARGS(SetIsSmallList, obj, False);
+          return 0;
+        }
     }
   return 0;
 }
@@ -811,7 +811,7 @@ Obj ElmsListDefault (
         lenList = LEN_LIST( list );
 
         /* get the length of <positions>                                   */
-	/* OK because all positions lists are small                        */
+        /* OK because all positions lists are small                        */
         lenPoss = LEN_LIST( poss );
 
         /* make the result list                                            */
@@ -822,13 +822,13 @@ Obj ElmsListDefault (
         for ( i = 1; i <= lenPoss; i++ ) {
 
             /* get <position>                                              */
-	  p = ELMW_LIST( poss, i);
-	  while (!IS_INTOBJ(p))
-	    {
-	      p = ErrorReturnObj("List Elements: position is too large for this type of list",
-				 0L, 0L, 
+          p = ELMW_LIST( poss, i);
+          while (!IS_INTOBJ(p))
+            {
+              p = ErrorReturnObj("List Elements: position is too large for this type of list",
+                                 0L, 0L, 
                                  "you can supply a new position <pos> via 'return <pos>;'" );
-	    }
+            }
             pos = INT_INTOBJ( p );
 
             /* select the element                                          */
@@ -1182,7 +1182,7 @@ void            AssbListInternal (
 {
   do {
     pos = ErrorReturnObj( "List assignment: you cannot assign to such a large position in an internal list",
-			  0, 0, 
+                          0, 0, 
                           "you can supply a new position <pos> via 'return <pos>;'" );
   } while (!IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0);
   ASS_LIST(list, INT_INTOBJ(pos), obj);
@@ -1268,17 +1268,17 @@ void            AsssListDefault (
         for ( i = 1; i <= lenPoss; i++ ) {
 
             /* get <position>                                              */
-	  p  = ELMW_LIST( poss, i );
-	  
-	  /* select the element                                          */
-	  obj = ELMW_LIST( objs, i );
-	  if (IS_INTOBJ(p) )
-	    {
-	      /* assign the element into <elms>                              */
-	      ASS_LIST( list, INT_INTOBJ(p), obj );
-	    }
-	  else
-	    ASSB_LIST(list, p, obj);
+          p  = ELMW_LIST( poss, i );
+          
+          /* select the element                                          */
+          obj = ELMW_LIST( objs, i );
+          if (IS_INTOBJ(p) )
+            {
+              /* assign the element into <elms>                              */
+              ASS_LIST( list, INT_INTOBJ(p), obj );
+            }
+          else
+            ASSB_LIST(list, p, obj);
 
         }
 
@@ -1554,9 +1554,9 @@ Int             IsTableListDefault (
         if ( elm == 0 || fam != FAMILY_TYPE( TYPE_OBJ( elm ) ) ) {
             return 0L;
         }
-	/*        if ( ! IS_LIST( elm ) || LEN_LIST( elm ) != len ) {
+        /*        if ( ! IS_LIST( elm ) || LEN_LIST( elm ) != len ) {
             return 0L;
-	    } */
+            } */
     }
 
     /* the list is equal length                                            */
@@ -1731,20 +1731,20 @@ Int             IsPossListDefault (
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
 
-	/* if it's a hole then its not a poss list */
+        /* if it's a hole then its not a poss list */
         if ( elm == 0)
-	  return 0L;
+          return 0L;
 
-	/* if it's a small integer and non-positive then
-	   it's not a poss list */
-	if ( IS_INTOBJ(elm)) {
-	  if (INT_INTOBJ(elm) <= 0)
-	    return  0L;
+        /* if it's a small integer and non-positive then
+           it's not a poss list */
+        if ( IS_INTOBJ(elm)) {
+          if (INT_INTOBJ(elm) <= 0)
+            return  0L;
         }
-	/* or if it's not a small integer or a positive large integer then it's
-	   not a poss list */
-	else if (TNUM_OBJ(elm) != T_INTPOS)
-	  return 0L;
+        /* or if it's not a small integer or a positive large integer then it's
+           not a poss list */
+        else if (TNUM_OBJ(elm) != T_INTPOS)
+          return 0L;
     }
 
     /* the list is a positions list                                        */
@@ -1800,7 +1800,7 @@ Obj             PosListHandler3 (
     Obj                 start )
 {
     while ( TNUM_OBJ(start) != T_INTPOS &&
-	    (! IS_INTOBJ(start) || INT_INTOBJ(start) < 0) ) {
+            (! IS_INTOBJ(start) || INT_INTOBJ(start) < 0) ) {
         start = ErrorReturnObj(
             "Position: <start> must be a nonnegative integer (not a %s)",
             (Int)TNAM_OBJ(start), 0L,
@@ -1901,11 +1901,11 @@ void            ElmListLevel (
             /* get the list                                                */
             list = ELM_PLIST( lists, i );
 
-	    /* select the element                                          */
-	    if (IS_INTOBJ(pos))
-	      elm = ELM_LIST( list, INT_INTOBJ(pos) );
-	    else
-	      elm = ELMB_LIST(list, pos);
+            /* select the element                                          */
+            if (IS_INTOBJ(pos))
+              elm = ELM_LIST( list, INT_INTOBJ(pos) );
+            else
+              elm = ELMB_LIST(list, pos);
 
             /* replace the list with the element                           */
             SET_ELM_PLIST( lists, i, elm );
@@ -1914,7 +1914,7 @@ void            ElmListLevel (
             CHANGED_BAG( lists );
 
         }
-	RetypeBag(lists, T_PLIST_DENSE);
+        RetypeBag(lists, T_PLIST_DENSE);
 
     }
 
@@ -2048,10 +2048,10 @@ void            AssListLevel (
             obj = ELMW_LIST( objs, i );
 
             /* assign the element                                          */
-	    if (IS_INTOBJ(pos))
-	      ASS_LIST( list, INT_INTOBJ(pos), obj );
-	    else
-	      ASSB_LIST(list, pos, obj);
+            if (IS_INTOBJ(pos))
+              ASS_LIST( list, INT_INTOBJ(pos), obj );
+            else
+              ASSB_LIST(list, pos, obj);
 
         }
 
@@ -2361,24 +2361,24 @@ Obj FuncSET_FILTER_LIST (
     /* this could be done by a table lookup                                */
     flags = FLAGS_FILT(filter);
     if (FuncIS_SUBSET_FLAGS(0,flags,FLAGS_FILT(IsSSortListProp))==True) {
-	new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_DENSE];
-	if ( new < 0 )  goto error;
-	new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_HOMOG];
-	if ( new < 0 )  goto error;
-	new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_SSORT];
-	if ( new > 0 )  RetypeBag( list, new );	 else goto error;
+        new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_DENSE];
+        if ( new < 0 )  goto error;
+        new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_HOMOG];
+        if ( new < 0 )  goto error;
+        new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_SSORT];
+        if ( new > 0 )  RetypeBag( list, new );  else goto error;
     }
     if (FuncIS_SUBSET_FLAGS(0,flags,FLAGS_FILT(IsNSortListProp))==True) {
-	new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_NSORT];
-	if ( new > 0 )  RetypeBag( list, new );	 else goto error;
+        new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_NSORT];
+        if ( new > 0 )  RetypeBag( list, new );  else goto error;
     }
     return 0;
 
     /* setting of filter failed                                            */
 error:
     ErrorReturnVoid( "filter not possible for %s",
-		     (Int)TNAM_OBJ(list), 0,
-		     "you can 'return;'" );
+                     (Int)TNAM_OBJ(list), 0,
+                     "you can 'return;'" );
     return 0;
 }
 
@@ -2400,21 +2400,21 @@ Obj FuncRESET_FILTER_LIST (
         fn = FN_IS_SSORT;
     }
     else if ( filter == IsNSortListProp ) {
-	fn = FN_IS_NSORT;
+        fn = FN_IS_NSORT;
     }
     else {
-	return 0;
+        return 0;
     }
 
     /* try to set the filter                                               */
     new = ResetFiltListTNums[TNUM_OBJ(list)][fn];
     if ( new > 0 ) {
-	RetypeBag( list, new );
+        RetypeBag( list, new );
     }
     else if ( new < 0 ) {
-	ErrorReturnVoid( "filter not possible for %s",
-			 (Int)TNAM_OBJ(list), 0,
-			 "you can 'return;'" );
+        ErrorReturnVoid( "filter not possible for %s",
+                         (Int)TNAM_OBJ(list), 0,
+                         "you can 'return;'" );
     }
     return 0;
 }
@@ -3016,7 +3016,7 @@ static Int CheckInit (
     Int         fnums[] = { FN_IS_MUTABLE, FN_IS_EMPTY, FN_IS_DENSE,
                             FN_IS_NDENSE, FN_IS_HOMOG, FN_IS_NHOMOG,
                             FN_IS_TABLE, FN_IS_SSORT, FN_IS_NSORT };
-    Char *      fnams[] = { "mutable", "empty", "dense", "ndense",
+    const Char *fnams[] = { "mutable", "empty", "dense", "ndense",
                             "homog", "nhomog", "table", "ssort",
                             "nsort" };
 

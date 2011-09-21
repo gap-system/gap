@@ -10,6 +10,10 @@
 **
 **  This file declares the functions for the macfloating point package
 */
+
+#ifndef GAP_MACFLOAT_H
+#define GAP_MACFLOAT_H
+
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_macfloat_h =
    "@(#)$Id$";
@@ -42,11 +46,9 @@ typedef double Double;
 StructInitInfo * InitInfoMacfloat ( void );
 
 
+#endif // GAP_MACFLOAT_H
+
 /****************************************************************************
 **
 *E  macfloat.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
-

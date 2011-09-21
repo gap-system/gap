@@ -8,6 +8,10 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
+
+#ifndef GAP_OBJPCGEL_H
+#define GAP_OBJPCGEL_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_objpcgel_h =
    "@(#)$Id$";
@@ -67,9 +71,10 @@ const char * Revision_objpcgel_h =
 StructInitInfo * InitInfoPcElements ( void );
 
 
+#endif // GAP_OBJPCGEL_H
+
 /****************************************************************************
 **
 
 *E  objpcgel.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-

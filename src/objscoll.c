@@ -408,6 +408,7 @@ Int C8Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     vcnj = SC_CONJUGATES(sc);
     lcnj = LEN_PLIST(vcnj);
+    (void) lcnj; /* please compiler -- lcnj not actually used */
     cnj  = ADDR_OBJ(vcnj);
 
     avc = ADDR_OBJ( SC_AVECTOR(sc) );
@@ -988,6 +989,7 @@ Int C16Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     vcnj = SC_CONJUGATES(sc);
     lcnj = LEN_PLIST(vcnj);
+    (void) lcnj; /* please compiler -- lcnj not actually used */
     cnj  = ADDR_OBJ(vcnj);
 
     avc = ADDR_OBJ( SC_AVECTOR(sc) );
@@ -1568,6 +1570,7 @@ Int C32Bits_SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     vcnj = SC_CONJUGATES(sc);
     lcnj = LEN_PLIST(vcnj);
+    (void) lcnj; /* please compiler -- lcnj not actually used */
     cnj  = ADDR_OBJ(vcnj);
 
     avc = ADDR_OBJ( SC_AVECTOR(sc) );

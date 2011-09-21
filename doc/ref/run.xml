@@ -53,9 +53,9 @@ and to <C>gap -b -q -b -q</C> etc.
 <P/>
 &GAP; for UNIX will distinguish between upper and lower case options.
 <P/>
-As is described in Chapter&nbsp;<Ref Chap="Installing GAP"/>,
-usually you will not execute &GAP; directly.
-Instead  you  will
+As is described in the &GAP; installation instructions,
+<!-- TODO: put URL -->
+usually you will not execute &GAP; directly. Instead  you  will
 call a shell script, with the name <C>gap</C>, which in turn executes  &GAP;.
 This shell script sets some options which are necessary  to  make  &GAP;
 work on your system. This means that the default settings mentioned below
@@ -232,8 +232,9 @@ section&nbsp;<Ref Sect="Saving and Loading a Workspace"/>.
 can be used to modify &GAP;'s list of root directories
 (see <Ref Sect="GAP Root Directory"/>).
 Before the option <C>-l</C> is used for the first time, the  only
-root directories are <F>.gap</F> in the user's home directory (if exists)
-and <F>./</F> (the current directory).
+root directories are <F>.gap</F> in the user's home directory (if it exists)
+and <F>./</F> (the current directory). In addition, on Mac OS X, also
+an additional root directory, <F>Library/Preferences/GAP</F> is used (if it exists).
 Usually this option is used inside a startup script to specify
 where &GAP; is installed on the system.
 The <C>-l</C> option can also be used by individual users to tell &GAP;
@@ -330,6 +331,7 @@ specified via the <C>-L</C> option. This option does not toggle.
 The option <C>-r</C> tells &GAP; not to read any
 <F>gap.ini</F> file or any <F>gaprc</F> from the &GAP; root directories,
 and not to add the <F>.gap</F> subdirectory of the user's home directory
+(and, in case of Mac OS X, the directory <F>Library/Preferences/GAP</F>) 
 to the &GAP; root directories.
 This option may be repeated to enable the user parameters again;
 each use of <C>-r</C> toggles whether to read the files.
@@ -355,7 +357,7 @@ repeated to toggle this behavior on and off.
 <C>-X</C></Mark>
 <Item>
 tells &GAP; to do a consistency  check  of  the  library  file  and  the
-corresponding completion file when reading the completion file. This
+corresponding compiled module when loading the compiled module. This
 option may be repeated to toggle this behavior on and off.
 </Item>
 <Mark><Index Key="-x"><C>-x</C></Index>
@@ -444,9 +446,9 @@ save a workspace, and then start from this workspace <E>without</E>
 reading one's <F>gaprc</F> file again.)
 <P/>
 Note that by default, the directory <F>.gap</F> in your home directory
-is the first &GAP; root directory.
-So you can put files <F>gap.ini</F> and <F>gaprc</F> into this directory.
-
+is the first &GAP; root directory. On Mac OS X, the directory 
+<F>Library/Preferences/GAP</F> in your home directory is searched 
+next. So you can put files <F>gap.ini</F> and <F>gaprc</F> into these directories.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Subsection Label="subsect:gap.ini file">
@@ -657,7 +659,7 @@ or called from a break loop.
 <Heading>Testing for the System Architecture</Heading>
 
 <#Include Label="ARCH_IS_UNIX">
-<#Include Label="ARCH_IS_MAC">
+<#Include Label="ARCH_IS_MAC_OS_X">
 <#Include Label="ARCH_IS_WINDOWS">
 
 </Section>

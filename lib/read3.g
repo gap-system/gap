@@ -10,17 +10,17 @@ ReadLib( "extlset.gd"  );
 ReadLib( "extrset.gd"  );
 ReadLib( "extuset.gd"  );
 
-ReadLib( "dict.gd"  );
+ReadLib( "dict.gd"     );
 
 ReadLib( "mapping.gd"  );
 ReadLib( "mapphomo.gd" );
 ReadLib( "relation.gd");
 
 ReadLib( "magma.gd"    );
-ReadLib( "mgmideal.gd"    );
-ReadLib( "mgmhom.gd" );
-ReadLib( "mgmadj.gd"    );
-ReadLib( "mgmcong.gd");
+ReadLib( "mgmideal.gd" );
+ReadLib( "mgmhom.gd"   );
+ReadLib( "mgmadj.gd"   );
+ReadLib( "mgmcong.gd"  );
 ReadLib( "semicong.gd" );
 ReadLib( "semigrp.gd"  );
 ReadLib( "smgideal.gd" );
@@ -54,8 +54,8 @@ ReadLib( "integer.gd"  );
 ReadLib( "numtheor.gd" );
 ReadLib( "primality.gd");
 ReadLib( "contfrac.gd" );
-ReadLib( "ringsc.gd"    );
-ReadLib( "ringhom.gd"    );
+ReadLib( "ringsc.gd"   );
+ReadLib( "ringhom.gd"  );
 
 ReadLib( "combinat.gd" );
 
@@ -69,7 +69,7 @@ ReadLib( "fldabnum.gd" );
 ReadLib( "padics.gd"   );
 ReadLib( "ringpoly.gd" );
 ReadLib( "upoly.gd"    );
-ReadLib( "polyfinf.gd"  );
+ReadLib( "polyfinf.gd" );
 ReadLib( "polyrat.gd"  );
 ReadLib( "polyconw.gd" );
 ReadLib( "algfld.gd"   );
@@ -172,7 +172,6 @@ ReadLib( "hash.gd"     );
 # files needed for deep thought
 ReadLib( "dt.g" );
 
-
 ReadLib( "integer.gi"  ); # needed for CoefficientsQadic
 ReadLib( "list.gi"     ); # was too early
 ReadLib( "set.gi"      );
@@ -198,6 +197,7 @@ ReadGrp( "classic.gd"  );
 ReadGrp( "perf.gd"     );
 ReadGrp( "suzuki.gd"   );
 ReadGrp( "ree.gd"   );
+ReadGrp( "simple.gd"   );
 ReadGrp( "imf.gd"      );
 ReadGrp( "glzmodmz.gd" );
 

@@ -1,35 +1,42 @@
 #!/bin/sh
 #############################################################################
-##
-##  $Id$
-
-# where to put the temporary export tree and archives
+#
+#  $Id$
+#
+# Where to put the temporary export tree and archives. The path 
+# "/mnt/raid/hudson-slave/..." is used by Jenkins continuous build system.
 export DISTROOT=/mnt/raid/hudson-slave/workspace/GAP-source-distro/wrap/gap45beta
 
 # the cvs repository (login once, before using these scripts) 
 export CVSROOT=":pserver:visitor@cvs.gap-system.org:/gap/CVS"
 
-# the version to wrap, "-D now" for current, for the release first tag
-# all files when the status of a release candidate is reached, say:
-#      cvs tag -b -D now GAP4r4
-# (the -b flag created a CVS branch such that (bugfix) changes can be
-# applied independently of the changes in the main branch.)
+
+# the version to wrap dependently on our needs:
+# - to get the current snapshot, use "-D now"
+# - to get the state used for the previous release (e.g. to merge with the
+#   new packages archive, use e.g. "-r GAP4R5P1" 
 export GAPCVSVERSION="-D now"
-# export GAPCVSVERSION="-r GAP4R4"
+# export GAPCVSVERSION="-r GAP4R5P1"
+
+# OLD COMMENT: for the release first tag all files when the status of a 
+# OLD COMMENT: release candidate is reached, say:
+# OLD COMMENT:     cvs tag -b -D now GAP4r4
+# OLD COMMENT: (the -b flag created a CVS branch such that (bugfix) changes 
+# OLD COMMENT: can be applied independently of the changes in the main branch.)
 
 # version to wrap
 export VERSION="5"
-export FULLVERSION="$VERSION.1"
+export FULLVERSION="$VERSION.2(beta)"
 
 # directory name
 export DISTNAME="gap4r$VERSION"
 
 # archive name
-export RBVERSION="4r5p1"
+export RBVERSION="4r5p2"
 export ARCHNAME="gap$RBVERSION"
 
-# package archive URL
-export PKGLOC="ftp://ftp.gap-system.org/pub/gap/gap4/tar.gz/packages-2011_03_01-11_17_UTC.tar.gz"
+# location of the merged packages archive (assumed to be on the same machine)
+export MERGEDPKGLOC="/mnt/raid/hudson-slave/workspace/GAP-pkg-update/pkgadmin/mergedarchives"
 
 #-----------------------------------------------------------------------------
 # everything below should be system independent.

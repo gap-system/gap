@@ -686,6 +686,72 @@ InstallMethod( PreImagesRepresentative,
     end );
 
 
+
+#############################################################################
+##
+##  Transfer information about the mapping map to its associated inverse
+##  mapping inv. For example, if map is total than inv is surjective and
+##  vice versa.
+##
+BindGlobal( "TransferMappingPropertiesToInverse", function ( map, inv )
+    # If possible, enter preimage and image.
+    if HasImagesSource( map ) then
+      SetPreImagesRange( inv, ImagesSource( map ) );
+    fi;
+    if HasPreImagesRange( map )  then
+      SetImagesSource( inv, PreImagesRange( map ) );
+    fi;
+
+    # Maintain important properties.
+    if HasIsSingleValued( map ) then
+      SetIsInjective( inv, IsSingleValued( map ) );
+    fi;
+    if HasIsInjective( map ) then
+      SetIsSingleValued( inv, IsInjective( map ) );
+    fi;
+    if HasIsTotal( map ) then
+      SetIsSurjective( inv, IsTotal( map ) );
+    fi;
+    if HasIsSurjective( map ) then
+      SetIsTotal( inv, IsSurjective( map ) );
+    fi;
+    if HasIsEndoGeneralMapping( map ) then
+      SetIsEndoGeneralMapping( inv, IsEndoGeneralMapping( map ) );
+    fi;
+
+    # Maintain the maintainings w.r.t. multiplication.
+    if HasRespectsMultiplication( map ) then
+      SetRespectsMultiplication( inv, RespectsMultiplication( map ) );
+    fi;
+    if HasRespectsInverses( map ) then
+      SetRespectsInverses( inv, RespectsInverses( map ) );
+    elif HasRespectsOne( map ) then
+      SetRespectsOne( inv, RespectsOne( map ) );
+    fi;
+
+    # Maintain the maintainings w.r.t. addition.
+    if HasRespectsAddition( map ) then
+      SetRespectsAddition( inv, RespectsAddition( map ) );
+    fi;
+    if HasRespectsAdditiveInverses( map ) then
+      SetRespectsAdditiveInverses( inv, RespectsAdditiveInverses( map ) );
+    elif HasRespectsZero( map ) then
+      SetRespectsZero( inv, RespectsZero( map ) );
+    fi;
+
+    # Maintain respecting of scalar multiplication.
+    # (Note the slight asymmetry, depending on the coefficient domains.)
+    if     HasRespectsScalarMultiplication( map )
+       and   LeftActingDomain( Source( map ) )
+           = LeftActingDomain( Range( map ) ) then
+      SetRespectsScalarMultiplication( inv,
+          RespectsScalarMultiplication( map ) );
+    fi;
+
+    # We know the inverse general mapping of the inverse general mapping ;-).
+    SetInverseGeneralMapping( inv, map );
+end );
+
 #############################################################################
 ##
 #M  InverseGeneralMapping( <map> )  . . . . . . . . . for mapping by function
@@ -698,7 +764,7 @@ InstallMethod( InverseGeneralMapping,
     local inv;
     inv:= MappingByFunction( Range( map ), Source( map ),
                              map!.invFun, map!.fun );
-    SetInverseGeneralMapping( inv, map );
+    TransferMappingPropertiesToInverse( map, inv );
     return inv;
     end );
 
@@ -817,62 +883,7 @@ InstallMethod( InverseGeneralMapping,
                          and IsAttributeStoringRep ),
                      rec() );
 
-    # If possible, enter preimage and image.
-    if HasImagesSource( map ) then
-      SetPreImagesRange( inv, ImagesSource( map ) );
-    fi;
-    if HasPreImagesRange( map )  then
-      SetImagesSource( inv, PreImagesRange( map ) );
-    fi;
-
-    # Maintain important properties.
-    if HasIsSingleValued( map ) then
-      SetIsInjective( inv, IsSingleValued( map ) );
-    fi;
-    if HasIsInjective( map ) then
-      SetIsSingleValued( inv, IsInjective( map ) );
-    fi;
-    if HasIsTotal( map ) then
-      SetIsSurjective( inv, IsTotal( map ) );
-    fi;
-    if HasIsSurjective( map ) then
-      SetIsTotal( inv, IsSurjective( map ) );
-    fi;
-    if HasIsEndoGeneralMapping( map ) then
-      SetIsEndoGeneralMapping( inv, IsEndoGeneralMapping( map ) );
-    fi;
-
-    # Maintain the maintainings w.r.t. multiplication.
-    if HasRespectsMultiplication( map ) then
-      SetRespectsMultiplication( inv, RespectsMultiplication( map ) );
-    fi;
-    if HasRespectsInverses( map ) then
-      SetRespectsInverses( inv, RespectsInverses( map ) );
-    elif HasRespectsOne( map ) then
-      SetRespectsOne( inv, RespectsOne( map ) );
-    fi;
-
-    # Maintain the maintainings w.r.t. addition.
-    if HasRespectsAddition( map ) then
-      SetRespectsAddition( inv, RespectsAddition( map ) );
-    fi;
-    if HasRespectsAdditiveInverses( map ) then
-      SetRespectsAdditiveInverses( inv, RespectsAdditiveInverses( map ) );
-    elif HasRespectsZero( map ) then
-      SetRespectsZero( inv, RespectsZero( map ) );
-    fi;
-
-    # Maintain respecting of scalar multiplication.
-    # (Note the slight asymmetry, depending on the coefficient domains.)
-    if     HasRespectsScalarMultiplication( map )
-       and   LeftActingDomain( Source( map ) )
-           = LeftActingDomain( Range( map ) ) then
-      SetRespectsScalarMultiplication( inv,
-          RespectsScalarMultiplication( map ) );
-    fi;
-
-    # We know the inverse general mapping of the inverse general mapping ;-).
-    SetInverseGeneralMapping( inv, map );
+    TransferMappingPropertiesToInverse( map, inv );
 
     # Return the inverse general mapping.
     return inv;

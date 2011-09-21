@@ -490,6 +490,33 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
       od;
     od;
 
+  elif IsRecord(mnsf) then
+    # mnsf is record with components:
+    # pcgs: generator list for pcgs
+    # p: prime
+    # decomp: Exponents for element of pcgs
+    pcgs:=mnsf.pcgs;
+    p:=mnsf.prime;
+    f:=FreeGroup(Length(fpqg)+Length(pcgs));
+    qimg:=GeneratorsOfGroup(f){[1..Length(fpqg)]};
+    idx:=[Length(fpqg)+1..Length(fpqg)+Length(pcgs)];
+    nimg:=GeneratorsOfGroup(f){idx};
+    decomp:=function(elm)
+     local coeff;
+      coeff:=mnsf.decomp(elm);
+      if LinearCombinationPcgs(pcgs,coeff)<>elm then
+	Error("decomperror");
+      fi;
+      return LinearCombinationPcgs(nimg,mnsf.decomp(elm));
+    end;
+    # n-relators
+    for i in [1..Length(pcgs)] do
+      Add(rels,nimg[i]^p);
+      for j in [1..i-1] do
+	Add(rels,Comm(nimg[i],nimg[j]));
+      od;
+    od;
+
   else
     # nonabelian
     p:=Range(mnsf);
@@ -551,7 +578,9 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
   SetIsWordDecompHomomorphism(hom2,true);
 
   SetIsSurjective(hom2,true);
-  SetKernelOfMultiplicativeGeneralMapping(hom2,N);
+  if N<>false then
+    SetKernelOfMultiplicativeGeneralMapping(hom2,N);
+  fi;
 
   return hom2;
 end);

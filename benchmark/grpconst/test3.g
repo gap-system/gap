@@ -10,7 +10,7 @@ has_errors:=false;
 
 starttime:=Runtime();
 
-for i in [256..511] do
+for i in [257..511] do
     Print("Constructing and testing all groups of order ", i, "\n");
     ConstructAndTestAllGroups( i );
 od;

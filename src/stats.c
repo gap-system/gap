@@ -53,10 +53,6 @@ const char * Revision_stats_c =
 
 #include        <assert.h>
 
-#ifdef SYS_IS_MAC_MWC
-#include        "macintr.h"              /* Mac interrupt handlers	      */
-#endif
-
 /****************************************************************************
 **
 
@@ -1645,7 +1641,6 @@ UInt ExecIntrStat (
 **  'ExecStatFuncs'  to point to  'ExecIntrStat',  which changes  the entries
 **  back, calls 'Error', and redispatches after a return from the break-loop.
 */
-#if !SYS_MAC_MWC
 void InterruptExecStat ( void )
 {
     UInt                i;              /* loop variable                   */
@@ -1671,7 +1666,6 @@ void InterruptExecStat ( void )
         ExecStatFuncs[i] = ExecIntrStat;
     }
 }
-#endif
 
 /****************************************************************************
 **
@@ -1704,10 +1698,6 @@ void ClearError ( void )
           Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax, 0L);
         }
     }
-
-#ifdef SYS_IS_MAC_MWC
-	ReactivateIntr ();   /* re-enable Mac interrupt check */
-#endif
 
     /* reset <NrError>                                                     */
     NrError = 0;

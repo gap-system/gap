@@ -13,6 +13,10 @@
 **  The expressions  package is the  part  of the interpreter  that evaluates
 **  expressions to their values and prints expressions.
 */
+
+#ifndef GAP_EXPRS_H
+#define GAP_EXPRS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_exprs_h =
    "@(#)$Id$";
@@ -137,7 +141,7 @@ extern  void            PrintExpr (
 
 
 extern void PrintRecExpr1 ( Expr expr ); /* needed for printing
-					  function calls with options */
+                                          function calls with options */
 
 /****************************************************************************
 **
@@ -164,6 +168,8 @@ extern  void            (* PrintExprFuncs [256] ) ( Expr expr );
 */
 StructInitInfo * InitInfoExprs ( void );
 
+
+#endif // GAP_EXPRS_H
 
 /****************************************************************************
 **

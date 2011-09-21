@@ -157,6 +157,17 @@ end );
 
 #############################################################################
 ##
+#M  \^( <g>, <G> ) . . . . . . . . . conjugacy class of an element of a group
+##
+InstallOtherMethod( \^, "conjugacy class of an element of a group",
+                    IsElmsColls, [ IsMultiplicativeElement, IsGroup ], 0,
+
+  function ( g, G )
+    if g in G then return ConjugacyClass(G,g); else TryNextMethod(); fi;
+  end );
+
+#############################################################################
+##
 #M  HomeEnumerator( <cl> )  . . . . . . . . . . . . . . . . enumerator of <G>
 ##
 InstallMethod( HomeEnumerator, [ IsConjugacyClassGroupRep ],

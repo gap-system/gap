@@ -721,7 +721,6 @@ GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR(' ')) :=
 BindKeysToGAPHandler(" ");
 
 # C-i: Completion as GAP level function
-GAPInfo.LeastCompletionLength := 0;
 GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
   local cf, pos, word, idbnd, i, cmps, r, searchlist, cand, c, j;
   # check if Ctrl-i was hit repeatedly in a row
@@ -734,15 +733,19 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
     Unbind(cf.tabcompnam);
   fi;
   pos := l[4]-1;
+  # in whitespace in beginning of line \t is just inserted
+  while pos > 0 and l[3][pos] in " \t" do
+    pos := pos-1;
+  od;
+  if pos = 0 then
+     return ["\t"];
+  fi;
+  pos := l[4]-1;
   # find word to complete
   while pos > 0 and l[3][pos] in IdentifierLetters do 
     pos := pos-1;
   od;
   word := l[3]{[pos+1..l[4]-1]};
-  # hook to disable completion of short words
-  if Length(word) < GAPInfo.LeastCompletionLength then
-    return [];
-  fi;
   # see if we are in the case of a component name
   while pos > 0 and l[3][pos] in " \n\t\r" do
     pos := pos-1;

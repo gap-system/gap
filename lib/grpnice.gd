@@ -930,5 +930,28 @@ end );
 
 #############################################################################
 ##
+#A  SeedFaithfulAction( <grp> )
+##
+##  <#GAPDoc Label="SeedFaithfulAction">
+##  <ManSection>
+##  <Attr Name="SeedFaithfulAction" Arg='grp'/>
+##
+##  <Description>
+##  If this attribute does not hold the (default) value of <A>fail</A>, it
+##  is a record with components <A>points</A> (a list of orbit seeds
+##  and <A>ops</A> a list of action functions, such that the action of the
+##  group <A>grp</A> on the orbits specified this way is faithful and of
+##  minimal degree. In this case, a nice monomorphism for <A>grp</A> will be
+##  determined using this action, and no degree reduction attempt is made.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute(
+    "SeedFaithfulAction",
+    IsGroup );
+
+#############################################################################
+##
 #E
 

@@ -28,6 +28,10 @@
 **  'T_RANGE' might still be a vector over the rationals  or cyclotomics.  It
 **  is just that the kernel does not known this.
 */
+
+#ifndef GAP_VECTOR_H
+#define GAP_VECTOR_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_vector_h =
    "@(#)$Id$";
@@ -48,6 +52,8 @@ const char * Revision_vector_h =
 */
 StructInitInfo * InitInfoVector ( void );
 
+
+#endif // GAP_VECTOR_H
 
 /****************************************************************************
 **

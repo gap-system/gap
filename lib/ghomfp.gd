@@ -106,8 +106,8 @@ DeclareSynonym("IsToFpGroupHomomorphismByImages",
 ##  <Prop Name="IsWordDecompHomomorphism" Arg='map'/>
 ##
 ##  <Description>
-##  these homomorphsism contain a component <C>!.decompinfo</C> that provides
-##  functionality to decompose a word intio generators. They are primarily
+##  these homomorphism contain a component <C>!.decompinfo</C> that provides
+##  functionality to decompose a word into generators. They are primarily
 ##  used for <C>IsomorphismFpGroupBy...Series</C>.
 ##  </Description>
 ##  </ManSection>
@@ -159,7 +159,7 @@ DeclareGlobalFunction("SecondaryImagesAugmentedCosetTable");
 ##  <Description>
 ##  sets a component <C>secondaryImages</C> in the augmented coset table (seeded
 ##  to a ShallowCopy of the primary images) if having all these images
-##  wcannot become too memory extensive. (Call this function for augmented
+##  cannot become too memory extensive. (Call this function for augmented
 ##  coset tables for homomorphisms once -- the other functions make use of
 ##  the <C>secondaryImages</C> component if existing.)
 ##  </Description>
@@ -289,6 +289,44 @@ DeclareAttribute("IsomorphismSimplifiedFpGroup",IsSubgroupFpGroup);
 ##  <#/GAPDoc>
 ##
 DeclareAttribute("EpimorphismFromFreeGroup",IsGroup);
+
+#############################################################################
+##
+#F  LargerQuotientBySubgroupAbelianization( <hom>,<U> )
+##
+##  <#GAPDoc Label="LargerQuotientBySubgroupAbelianization">
+##  <ManSection>
+##  <Func Name="LargerQuotientBySubgroupAbelianization" Arg='hom, U'/>
+##
+##  <Description>
+##  Let <A>hom</A> a homomorphism from a finitely presented group <M>G</M>
+##  to a finite group <M>H</M> and <M><A>U</A>\le H</M>. This function will -- if it
+##  exists -- return a subgroup <M>S\le<A>G</A></M>, such that the core of
+##  <M>S</M> is properly
+##  contained in the kernel of <A>hom</A> as well as in <M>V'</M>, where <M>V</M> is the
+##  pre-image of <A>U</A> under <A>hom</A>.  Thus <M>S</M> exposes a larger quotient
+##  of <M>G</M>.
+##  If no such subgroup exists, <A>fail</A> is returned.
+##  <Example><![CDATA[
+##  gap> f:=FreeGroup("x","y","z");;
+##  gap> g:=f/ParseRelators(f,"x^3=y^3=z^5=(xyx^2y^2)^2=(xz)^2=(yz^3)^2=1");
+##  <fp group on the generators [ x, y, z ]>
+##  gap> l:=LowIndexSubgroupsFpGroup(g,6);;
+##  gap> List(l,IndexInWholeGroup);
+##  [ 1, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6 ]
+##  gap> q:=DefiningQuotientHomomorphism(l[6]);;p:=Image(q);Size(p);
+##  Group([ (4,5,6), (1,2,3)(4,6,5), (2,4,6,3,5) ])
+##  360
+##  gap> s:=LargerQuotientBySubgroupAbelianization(q,SylowSubgroup(p,3)); 
+##  Group(<fp, no generators known>)
+##  gap> Size(Image(DefiningQuotientHomomorphism(s))); 
+##  193273528320
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("LargerQuotientBySubgroupAbelianization");
 
 
 #############################################################################

@@ -26,6 +26,10 @@
 **  only reference the same value as the global variable if it is a function.
 **  Otherwise the internal copies reference functions that signal an error.
 */
+
+#ifndef GAP_GVARS_H
+#define GAP_GVARS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_gvars_h =
    "@(#)$Id$";
@@ -174,7 +178,7 @@ extern void MakeReadWriteGVar (
     UInt                gvar );
 
 extern Int IsReadOnlyGVar (
-    UInt                gvar );			   
+    UInt                gvar );
 
 /****************************************************************************
 **
@@ -344,6 +348,8 @@ extern void RestoreCopyFopyInfo( void );
 */
 StructInitInfo * InitInfoGVars ( void );
 
+
+#endif // GAP_GVARS_H
 
 /****************************************************************************
 **

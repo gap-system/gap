@@ -10,7 +10,7 @@ has_errors := false;
 Read("testprim.g");
 starttime:=Runtime();
 
-for s in [1..50] do
+for s in [1..30] do
     Print("Testing ", NrPrimitiveGroups(s), " primitive groups of degree ", s, "\n");
     TestAllPrimitiveGroups( s );
 od;

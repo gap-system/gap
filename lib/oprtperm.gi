@@ -1146,8 +1146,7 @@ InstallMethod( IsSemiRegular, "permgroup on numbers", true,
     fi;
 
     # compute the orbits and check that they all have the same length
-    orbs := Filtered( OrbitsDomain( G, D, gens, acts, OnPoints ),
-                      i -> Length(i) > 1 );
+    orbs := OrbitsDomain( G, D, gens, acts, OnPoints );
     if Length( Set( List( orbs, Length ) ) ) <> 1  then
         return false;
     fi;

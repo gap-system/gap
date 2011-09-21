@@ -592,8 +592,8 @@ local g,	# group
 		   IdentityMapping(g));
       IsGroupOfAutomorphismsFiniteGroup(funcs); # set filter
       if IsTrivial( funcs ) then
+	b:=ClosureGroup(Parent(g),List(func,x->ConjugatorOfConjugatorIsomorphism(x)));
 	func:=hom2;
-	b:=Parent(g);
       else
         if IsSolvableGroup(funcs) then
 	  a:=IsomorphismPcGroup(funcs);

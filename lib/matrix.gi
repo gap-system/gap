@@ -3858,6 +3858,26 @@ end);
 
 #############################################################################
 ##
+#F  OnSubspacesByCanonicalBasisConcatenations(<basvec>,<mat>)
+##
+InstallGlobalFunction(OnSubspacesByCanonicalBasisConcatenations,
+function( bvec, obj )
+  local n,a,mat,r;
+  n:=Length(obj); # acting dimension
+  mat:=[];
+  a:=1;
+  while a<Length(bvec) do
+    r:=bvec{[a..a+n-1]}*obj;
+    if not IsMutable(r) then r:=ShallowCopy(r);fi;
+    Add(mat,r);
+    a:=a+n;
+  od;
+  TriangulizeMat(mat);
+  return Concatenation(mat);
+end);
+  
+#############################################################################
+##
 #M  FieldOfMatrixList
 ##
 InstallMethod(FieldOfMatrixList,
@@ -3993,8 +4013,254 @@ InstallMethod( BaseOrthogonalSpaceMat,
     [ IsMatrix ],
     mat -> NullspaceMat( TransposedMat( mat ) ) );
 
+# simplex method, code by Ken Monks, AH
+
+#in matrix M, row reduce to get 1s
+#in exactly the columns given by 
+#L a list of indices
+BindGlobal("TriangulizeMatPivotColumns",function(M,L)
+local idx,i;
+
+   if L=[1..Length(L)] then
+     TriangulizeMat(M);
+   else
+     idx:=Concatenation(L,Filtered([1..Length(M[1])],x->not x in L));
+     for i in [1..Length(M)] do M[i]:=M[i]{idx}; od;
+     TriangulizeMat(M);
+     idx:=ListPerm(PermList(idx)^-1,Length(M[1]));
+     for i in [1..Length(M)] do M[i]:=M[i]{idx}; od;
+   fi;
+
+end);
+
+#inputs a linear form c and maximizes it subject to 
+#the constraints Ax <= b where all entries of b are nonnegative.
+InstallGlobalFunction(SimplexMethod,function(A,b,c)
+local M, n, p, vars, slackVars, i, id, bestMove,
+  newNonzero, len, ratios, newZero, positiveRatios, point, value,Val;
+
+  Val:=function(M,vars,slackVars,len,x) 
+      if x in vars then 
+	  return 0; 
+      else return M[Position(slackVars,x)+1][len]; 
+      fi; 
+  end;
+
+   #check the size of the data is legit
+
+   n:=Size(c);
+   p:=Size(b);
+   if not (IsMatrix(A) and Size(A)=p and ForAny(A,R->Size(R)=n)) then
+     Error( "usage: SimplexMethod( <A>, <b>, <c>)");
+   fi;
+
+   id:=IdentityMat(p,Rationals);
+
+   #build the augmented matrix
+   
+   #first row   
+   M:=[Concatenation([1],-c,List([1..p+1],x->0))];
+   #the rest of the rows
+   for i in [1..p] do 
+       Add(M,Concatenation([0],A[i],id[i],[b[i]]));
+   od;
+      
+   len:=Size(M[1]);
+
+   #initialize the feasible starting vertex
+   if ForAll(b,x->not x<0) then 
+      vars:=[2..2+n-1];      
+      slackVars:=[2+n..n+p+1];
+   else return "Invalid data: not all constraints nonnegative!";
+   fi;
+   
+   #Print("slackVars are ",slackVars ,"\n");
+   #Print("vars are ",vars,"\n");
+   #Display(M);
+   
+   TriangulizeMatPivotColumns(M,Concatenation([1],slackVars));
+   #Display(M);
+   #bestMove is the coeff var that will become nonzero
+   bestMove:=Minimum(List(vars,i->M[1][i]));
+   newNonzero:=vars[Position(List(vars,i->M[1][i]),bestMove)];
+   
+   #Print(newNonzero, " is the new nonzero guy \n");
+   
+   while bestMove<0  do
+        
+       #see if figure is unbounded
+       #Print("about to do some ratios \n");
+       #Print(List([1..p],x-> M[x+1][newNonzero]), " is what we're going to divide by \n");
+       ratios:=List([1..p], function(x) if M[x+1][newNonzero]=0 then return infinity; else return M[x+1][len]/M[x+1][newNonzero]; fi; end);
+       #Print("done doing some ratios");
+       positiveRatios:=Filtered(ratios,x -> x>0);
+       if Size(positiveRatios)=0 then return "Feasible region unbounded!"; fi;
+       
+       #Print("Feasible region still looks bounded. \n");
+
+       #figure out who will become zero
+       newZero:=slackVars[Position(ratios,Minimum(positiveRatios))];       
+       
+       #Print(newZero, " is the new zero guy \n");       
+       
+       Remove(slackVars,Position(slackVars,newZero));
+       Remove(vars,Position(vars,newNonzero));
+       Add(vars,newZero);
+       Add(slackVars,newNonzero);
+       
+       slackVars:=Set(slackVars);
+       vars:=Set(vars);
+
+       #Print("slackVars are ",slackVars,"\n");
+       #Print("vars are ",vars,"\n");
+
+       TriangulizeMatPivotColumns(M,Concatenation([1],slackVars));
+       #Display(M);
+       bestMove:=Minimum(List(vars,i->M[1][i]));
+       
+       newNonzero:=vars[Position(List(vars,i->M[1][i]),bestMove)];
+       #Print(newNonzero," is the new nonzero guy");
+
+   od;
+   
+   #calculate the original point and the max value there
+   
+   point:=List([2..2+n-1],x -> Val(M,vars,slackVars,len,x));
+   value:=point*c;
+   
+   return [point,value];
+end);
+
+
+# can do better for matrices and large exponents, preliminary improvement,
+# will be further improved (FL)
+##  InstallMethod( \^,
+##      "for matrices, use char. poly. for large exponents",
+##      [ IsMatrix, IsPosInt ],
+##  function(mat, n)
+##    local pol, indet;
+##    # generic method for small n, break even point probably a bit lower,
+##    # needs rethinking and some experiments.
+##    if n < 2^Length(mat) then
+##      return POW_OBJ_INT(mat, n);
+##    fi;
+##    pol := CharacteristicPolynomial(mat);
+##    indet := IndeterminateOfUnivariateRationalFunction(pol);
+##    # cost of this needs to be investigated
+##    pol := PowerMod(indet, n, pol);
+##    # now we are sure that we need at most Length(mat) matrix multiplications
+##    return Value(pol, mat);
+##  end);
+##  
+# next iteration, conjugate matrix such that it is often very sparse 
+# (a companion matrix), could still be improved, maybe with kernel functions
+# for compact matrices (FL)
+BindGlobal("POW_MAT_INT", function(mat, n)
+  local d, addb, trafo, value, t, ti, mm, pol, ind;
+  d := Length(mat);
+  # finding a better break even point probably also depends on q
+  if n < 2^QuoInt(3*d,4) then
+    return POW_OBJ_INT(mat, n);
+  fi;
+  # helper function to build up a semi-echelon basis
+  addb := function(seb, v)
+    local rows, pivots, len, vv, c, pos, i;
+    rows := seb.vectors;
+    pivots := seb.pivots;
+    len := Length(rows);
+    vv := ShallowCopy(v);
+    for i in [1..len] do
+      c := vv[pivots[i]];
+      if not IsZero(c) then
+        AddRowVector(vv, rows[i], -c);
+      fi;
+    od;
+    pos := PositionNonZero(vv);
+    if pos <= Length(vv) then
+      if not IsOne(vv[pos]) then
+        vv := vv/vv[pos];
+      fi;
+      Add(rows, vv);
+      Add(pivots, pos);
+      seb.heads[pos] := len + 1;
+      return true;
+    else
+      return false;
+    fi;
+  end;
+  # this returns a base change matrix such that t*m*t^-1 is block triangular
+  # with companion matrices along the diagonal
+  # (could/should? be improved to return t^-1, t*m*t^-1 and the
+  # characteristic polynomial of m at the same time)
+  trafo := function(m)
+    local id, b, t, r, a;
+    id := m^0;
+    b := rec(vectors := [], pivots := [], heads := []);
+    t := [];
+    # maybe better start with a random vector?
+    for a in id do
+      r := addb(b,a);
+      if r = true then
+        repeat 
+          Add(t, a);
+          a := a*m;
+          r := addb(b,a);
+        until r <> true;
+      fi;
+    od;
+    ConvertToMatrixRep(t);
+    return t;
+  end;
+  # compared to standard method, we avoid some zero or identity matrices
+  # and we multiply with mat from left to take advantage of sparseness of mat
+  value := function(pol, mat)
+    local f, c, i, val, j;
+    f := CoefficientsOfLaurentPolynomial(pol);
+    c := f[1];
+    i := Length(c);
+    if i = 0 then
+      return 0*mat;
+    fi;
+    if i = 1 then
+      val := POW_OBJ_INT(mat, f[2]);
+      return c[1] * val;
+    fi;
+    val := c[i] * mat;
+    if not IsMutable(val[1]) then
+      val := MutableCopyMat(val);
+    fi;
+    i := i-1;
+    for j in [1..Length(mat)] do
+      val[j][j] := val[j][j]+c[i];
+    od;
+    while 1 < i  do
+      val := mat * val;
+      i := i - 1;
+      for j in [1..Length(mat)] do
+        val[j][j] := val[j][j]+c[i];
+      od;
+    od;
+    if 0 <> f[2]  then
+      val := val * POW_OBJ_INT(mat, f[2]);
+    fi;
+    return val;
+  end;
+  t := trafo(mat);
+  ti := t^-1;
+  mm := t * mat * ti;
+  pol := CharacteristicPolynomial(mm);
+  ind := IndeterminateOfUnivariateRationalFunction(pol);
+  pol := PowerMod(ind, n, pol);
+  mm := value(pol, mm);
+  return ti * mm * t;
+end);
+InstallMethod( \^,
+    "for matrices, use char. poly. for large exponents",
+    [ IsMatrix, IsPosInt ], POW_MAT_INT );
+
+
 
 
 #############################################################################
-##
+##  
 #E

@@ -391,8 +391,10 @@ DeclareOperation( "[]", [IsMatrixObj,IsPosInt] );
 # A flat matrix has to create an intermediate object that refers to some
 # row within it to allow the old GAP syntax M[i][j] for read and write
 # access to work. Note that this will never be particularly efficient
-# for flat matrices. Efficient code will have to use ElmMatrix and
+# for flat matrices. Efficient code will have to use MatElm and
 # SetMatElm instead.
+
+# These should probably only be defined for RowListMatrices???
 
 DeclareOperation( "PositionNonZero", [IsMatrixObj] );
 DeclareOperation( "PositionNonZero", [IsMatrixObj, IsInt] );
@@ -471,8 +473,10 @@ DeclareOperation( "CopySubMatrix", [IsMatrixObj,IsMatrixObj,
 ############################################################################
 
 DeclareOperation( "MatElm", [IsMatrixObj,IsPosInt,IsPosInt] );
+# second and third arguments are row and column index
 
 DeclareOperation( "SetMatElm", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
+# second and third arguments are row and column index
 
 
 ############################################################################

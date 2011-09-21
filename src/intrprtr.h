@@ -16,6 +16,10 @@
 **  immediately, it switches into coding mode, and  delegates the work to the
 **  coder.
 */
+
+#ifndef GAP_INTRPRTR_H
+#define GAP_INTRPRTR_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_intrprtr_h =
    "@(#)$Id$";
@@ -499,6 +503,18 @@ extern  void            IntrLongIntExpr (
 
 /****************************************************************************
 **
+*F  IntrFloatExpr(<str>)  . . . . . . . .  interpret literal float expression
+**
+**  'IntrFloatExpr' is the action  to  interpret a literal  float expression.
+**  <str> is the float as a (null terminated) C character string.
+*/
+extern  void            IntrFloatExpr (
+            Char *              str );
+extern  void            IntrLongFloatExpr (
+            Obj                 string );
+
+/****************************************************************************
+**
 *F  IntrTrueExpr()  . . . . . . . . . . . . interpret literal true expression
 **
 **  'IntrTrueExpr' is the action to interpret a literal true expression.
@@ -918,6 +934,8 @@ extern void            PushVoidObj ( void );
 */
 StructInitInfo * InitInfoIntrprtr ( void );
 
+
+#endif // GAP_INTRPRTR_H
 
 /****************************************************************************
 **

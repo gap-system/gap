@@ -187,11 +187,11 @@ InstallGlobalFunction( Image, function ( arg )
            and IsSubset( Source( map ), elm ) then
 
         if IsDomain( elm ) or IsSSortedList( elm ) then
-	  if HasSource(map) and IsIdenticalObj(Source(map),elm) then
-	    return ImagesSource( map );
-	  else
-	    return ImagesSet( map, elm );
-	  fi;
+          if HasSource(map) and IsIdenticalObj(Source(map),elm) then
+            return ImagesSource( map );
+          else
+            return ImagesSet( map, elm );
+          fi;
         elif IsHomogeneousList( elm ) then
           return ImagesSet( map, Set( elm ) );
         fi;
@@ -421,12 +421,12 @@ InstallGlobalFunction( CompositionMapping, function ( arg )
 
         if     HasIsTotal( com ) and IsTotal( com )
            and HasIsTotal( nxt ) and IsTotal( nxt ) 
-	   and ((HasImagesSource(com) and
-	   CanComputeIsSubset(Source(nxt),ImagesSource(com)) and
-	   IsSubset(Source(nxt),ImagesSource(com)))
-	   or (HasRange(com) and
-	   CanComputeIsSubset(Source(nxt),Range(com)) and
-	   IsSubset(Source(nxt),Range(com))) ) then
+           and ((HasImagesSource(com) and
+           CanComputeIsSubset(Source(nxt),ImagesSource(com)) and
+           IsSubset(Source(nxt),ImagesSource(com)))
+           or (HasRange(com) and
+           CanComputeIsSubset(Source(nxt),Range(com)) and
+           IsSubset(Source(nxt),Range(com))) ) then
           SetIsTotal( new, true );
         fi;
 
@@ -869,7 +869,7 @@ InstallMethod( InverseOp,
     else
       Info(InfoWarning,1,
         "The mapping must be bijective and have source=range\n",
-	"#I  You might want to use `InverseGeneralMapping'");
+        "#I  You might want to use `InverseGeneralMapping'");
       return fail;
     fi;
     end );

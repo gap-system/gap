@@ -11,6 +11,10 @@
 **  This file declares a fast access  function for structure constants tables
 **  and the multiplication of two elements using a structure constants table.
 */
+
+#ifndef GAP_SCTABLE_H
+#define GAP_SCTABLE_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_sctable_h =
    "@(#)$Id$";
@@ -31,11 +35,10 @@ const char * Revision_sctable_h =
 StructInitInfo * InitInfoSCTable ( void );
 
 
+#endif // GAP_SCTABLE_H
+
 /****************************************************************************
 **
 
 *E  sctable.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

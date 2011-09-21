@@ -1149,9 +1149,6 @@ Obj DoTestReturnTrueFilter (
 Obj TesterReturnTrueFilter (
     Obj                 getter )
 {
-    Obj                 tester;
-
-    tester = getter;
     return getter;
 }
 
@@ -4862,13 +4859,11 @@ Obj DoTestProperty (
     Obj                 self,
     Obj                 obj )
 {
-    Int                 flag1;
     Int                 flag2;
     Obj                 kind;
     Obj                 flags;
 
     /* get the flags for the getter and the tester                         */
-    flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
     /* get kind of the object and its flags                                */
@@ -5287,14 +5282,6 @@ void InstallMethodArgs (
     /* clone the function                                                  */
     if ( SIZE_OBJ(oper) != SIZE_OBJ(func) ) {
         ErrorQuit( "size mismatch of function bags", 0L, 0L );
-    }
-
-    /* catch uncompleted functions                                         */
-    if ( IS_UNCOMPLETED_FUNC(func) ) {
-        for ( i = 0;  i < SIZE_OBJ(func)/sizeof(Obj);  i++ ) {
-            ADDR_OBJ(oper)[i] = ADDR_OBJ(func)[i];
-        }
-        BODY_FUNC(oper) = func;
     }
 
     /* clone the functions                                                 */

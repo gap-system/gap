@@ -58,6 +58,13 @@ end );
 
 #############################################################################
 ##
+#M  CanEasilyComputeWithIndependentGensAbelianGroup( <permgroup> )
+##
+InstallTrueMethod(CanEasilyComputeWithIndependentGensAbelianGroup,
+    IsPermGroup and IsAbelian);
+
+#############################################################################
+##
 #F  IndependentGeneratorsAbelianPPermGroup( <P>, <p> )  . . . nice generators
 ##
 InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
@@ -180,6 +187,9 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup, "for perm group",
 
       fi;
     od;
+
+    # Sort the independent generators by increasing order
+    Sort( inds, function (a,b) return Order(a) < Order(b); end );
 
     # return the independent generators
     return inds;

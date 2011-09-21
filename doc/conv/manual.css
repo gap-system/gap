@@ -19,13 +19,17 @@ body {
   text-align: justify;
 }
 
+body.wide {
+    width: auto;
+}
+
 h1 { font-size: 200%; }
 h2 { font-size: 160%; }
 h3 { font-size: 160%; }
 h4 { font-size: 130%; }
 h5 { font-size: 100%; }
 
-p.foot {
+div.foot {
   font-size: 60%;
   font-style: normal;
 }
@@ -58,7 +62,7 @@ a:active {
 
 /* layout for the Func-like elements  */
 div.func {
-  background-color: #e0e0e0; 
+  background-color: #dddddd; 
   margin: 0pt 0pt; 
 }
 
@@ -84,22 +88,17 @@ table.func {
 }
 
 /* Example elements */
-table.example {
-  background-color: #efefef; 
-  border-style: none; 
-  border-width: 0pt; 
-  padding: 0px;  
-  width: 100%
-}
-table.example td {
-  border-style: none;
-  border-width: 0pt;
-  padding: 0ex 1ex;
+
+div.example {
+    font-size: 90%;
+    background-color: #dddddd; 
+    overflow-x: auto;
 }
 
 /* links to chapters in all files */
 /* if there are too many chapters then use 'display: none' here */
 div.chlinktop {
+  display: none;
   background-color: #dddddd; 
   border-style: solid; 
   border-width: thin;  
@@ -109,7 +108,6 @@ div.chlinktop {
 }
 
 div.chlinktop a {
-  background-color: #e9e9e9;
 }
 
 div.chlinkbot {
@@ -122,7 +120,7 @@ div.chlinkbot {
 }
 
 div.chlinkbot a {
-  background-color: #e9e9e9;
+
 }
 
 span.chlink1 {
@@ -139,7 +137,7 @@ div.chlinkprevnexttop {
 }
 
 div.chlinkprevnexttop a {
-  background-color: #e9e9e9;
+  background-color: #dddddd;
 }
 
 div.chlinkprevnextbot {
@@ -152,7 +150,7 @@ div.chlinkprevnextbot {
 }
 
 div.chlinkprevnextbot a {
-  background-color: #e9e9e9;
+  background-color: #dddddd;
 }
 
 
@@ -166,69 +164,120 @@ div.ContSSBlock br {
 }
 
 /* this is for the main table of contents */
+
 div.ContChap {
 }
 
-div.ContChap div.ContSect:hover div.ContSSBlock {
-  display: block;
-  position: absolute;
-  background: #aaaaaa;
-  color: #5500ff;
-  left: 50%;
-  width: 50%;
+div.ContChap p, div.ContChapSectOff p {
+margin-top: 0.25em;
+margin-bottom: 0.25em;
+padding-left: 2.4em;
+text-indent: -2.4em;
 }
+
 
 div.ContChap a {
-  display: block;
   width: 100%;
 }
 
-div.ContChap a:hover {
-  display: block;
-  width: 100%;
-  background: #333333;
-  color: #ffffff;
-}
 
-/* and here for the side menu of contents in the chapter files */
-div.ChapSects {
-}
 
-div.ChapSects a {
-  display: block;
-  width: 100%;
-}
-
-div.ChapSects a:hover {
-  display: block;
-  width: 100%;
-  background: #333333;
-  color: #ffffff;
-}
-
-div.ContSect {
+div.ContSS {
   text-align: left;
-  margin-left: 1em;
+  margin-left: 3.4em;
 }
 
-div.ChapSects div.ContSect:hover div.ContSSBlock {
-  display: block;
-  position: fixed;
-  background: #aaaaaa;
-  color: #5500ff;
-  left: 53%;
-  width: 25%;
-  z-index: 10000;
+div.ContSect p , div.ContSectSubsectOn p {
+  text-align: left;
+  margin-left: 1.4em;
+  padding-left: 3.4em;
+  text-indent: -3.4em
+}
+
+
+div.ContSectSubsectOn div.ContSSBlock {
+    display: block;
+}
+
+
+div.ContChapSectOff > p > img.open {
+    display: none;
+}
+
+div.ContChapSectOff > p > img.closed {
+    display: inline;
+}
+
+div.ContSect > p > img.open {
+    display: none;
+}
+
+div.ContChap > p > img.closed {
+    display: none;
+}
+
+div.ContChap > p > img.open {
+    display: inline;
+}
+
+div.ContChapSectOff div {
+    display: none;
+}
+
+
+div.ContSect > p > img.closed {
+    display: inline;
+}
+
+div.ContSectSubsectOn > p > img.closed {
+    display: none;
+}
+
+div.ContSectSubsectOn > p >  img.open {
+    display: inline;
+}
+
+
+/* and for the side menu of contents in the chapter files */
+
+div.ChapSects {
+    background-color: #ffffff;
+    z-index: 100;
+}
+
+div.ChapSects div.ContSect, div.ChapSects div.ContSectSubsectOn {
+  margin-left: 0.5em;
+}
+
+div.ChapSects div.ContSS {
+  margin-left: 2.5em;
 }
 
 div.ChapSects {
   position: fixed;
   left: 75%;
   font-size: 80%;
-  overflow: auto;
+  overflow-y: auto;
   top: 10px;
   bottom: 0px;
 }
+
+div.ChapSects p {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    padding-left: 3em;
+    text-indent: -3em;
+}
+
+div.ChapSects > p > img.closed {
+    display: none;
+}
+
+div.ChapSects > p > img.open {
+    display: none;
+}
+
+
 
 /* Table elements */
 table.GAPDocTable {
@@ -291,18 +340,23 @@ td.tdcenter {
 
 /* general settings */
 pre { 
-  font-family: "Courier New",Courier,monospace; 
+  font-family: Courier,"Courier New",monospace; 
   font-size: 100%; 
-  color:#111111; 
+  margin: 1ex;
+  color:#000000; 
 }
 
-tt,code { 
-  font-family: "Courier New",Courier,monospace; 
-  font-size: 110%; 
-  color: #284d49; }
+tt,code, var { 
+  font-family: Courier,"Courier New",monospace; 
+  /* font-size: 110%; */
+}
 
-var {
-  color: #cf0000;
+code {
+/*  font-weight: bold; */
+}
+
+var, em {
+  color: #006633;
 }
 
 /* may be overwritten for some types of elements  */
@@ -313,17 +367,17 @@ pre.normal {
 
 /* Func-like  elements and Ref to Func-like */
 code.func {
-  color: #006500;
+  color: #000000;
 }
 
 /* K elements */
 code.keyw {
-  color: #ff0000;
+  color: #000000;
 }
 
 /* F elements */
 code.file {
-  color: #8e4510;
+  color: #000000;
 }
 
 /* C elements */
@@ -344,6 +398,8 @@ span.Heading {
 
 /* Arg elements */
 var.Arg {
+  font-family: Helvetica,Verdana,Arial,sans-serif;
+  font-style: italic;
 }
 
 /* Example elements, is in tables, see above */
@@ -356,6 +412,11 @@ strong.pkg {
 
 /* URL-like  elements */
 span.URL {
+}
+
+/* Lists with Mark elements */
+dl.List, dl.List p {
+   margin: 0px;
 }
 
 /* Mark elements */
@@ -377,4 +438,16 @@ div.index {
 /* ignore some text for non-css layout */
 span.nocss {
   display: none;
+}
+
+b.Bib_author {
+  font-weight: normal;
+}
+
+span.SimpleMath, span.Math {
+  font-style: italic;
+}
+
+em.Bib_volume {
+    color: #000000;
 }

@@ -72,33 +72,21 @@ is the subgroup of the direct product <M>G \times H</M> consisting of
 the elements <M>(g,h)</M> for which <M>g^{\varphi} = h^{\psi}</M>.
 It is the pull-back of the following diagram.
 <P/>
-<Alt Only="LaTeX">
+<Alt Not="Text,HTML"><Display>
 <![CDATA[
-\[
 \matrix{
 &&G&\cr
 &&\Big\downarrow&\varphi\cr
 H&\mathop{\longrightarrow}\limits^{\psi}&A&\cr
 }
-\]
 ]]>
-</Alt>
-<Alt Only="Text">
+</Display></Alt>
+<Alt Only="Text,HTML"><Verb>
                    G
                    | phi
              psi   V
           H  --->  A
-</Alt>
-<Alt Only="HTML">
-<![CDATA[
-<PRE>
-                   G
-                   | phi
-             psi   V
-          H  --->  A
-</PRE>
-]]>
-</Alt>
+</Verb></Alt>
 
 <#Include Label="SubdirectProduct">
 <#Include Label="SubdirectProducts">

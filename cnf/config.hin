@@ -433,6 +433,30 @@
 
 /****************************************************************************
 **
+*D  math
+*/
+
+/* define as 1 if you have `log2'                                        */
+#define HAVE_LOG2              0
+
+/* define as 1 if you have `log10'                                        */
+#define HAVE_LOG10              0
+
+/* define as 1 if you have `log1p'                                        */
+#define HAVE_LOG1p              0
+
+/* define as 1 if you have `exp2'                                        */
+#define HAVE_EXP2              0
+
+/* define as 1 if you have `expm1'                                        */
+#define HAVE_EXPM1              0
+
+/* define as 1 if you have `exp10'                                        */
+#define HAVE_EXP10              0
+
+
+/****************************************************************************
+**
 *D  miscellaneous
 */
 

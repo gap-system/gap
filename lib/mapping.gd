@@ -1463,7 +1463,7 @@ DeclareGlobalFunction( "CopyMappingAttributes" );
 ##  <Attr Name="MappingGeneratorsImages" Arg='map'/>
 ##
 ##  <Description>
-##  This attribute contains a list of length 2, the first enry being a list
+##  This attribute contains a list of length 2, the first entry being a list
 ##  of generators of the source of <A>map</A> and the second entry a list of
 ##  their images. This attribute is used (for example) by
 ##  <C>GroupHomomorphismByImages</C> to store generators and images.

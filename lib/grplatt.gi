@@ -100,6 +100,18 @@ end);
 
 #############################################################################
 ##
+#M  \^( <H>, <G> ) . . . . . . . . . conjugacy class of a subgroup of a group
+##
+InstallOtherMethod( \^, "conjugacy class of a subgroup of a group",
+                    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
+
+  function ( H, G )
+    if IsSubgroup(G,H) then return ConjugacyClassSubgroups(G,H);
+                       else TryNextMethod(); fi;
+  end );
+
+#############################################################################
+##
 #M  <clasa> = <clasb> . . . . . . . . . . . . . . . . . . by conjugacy test
 ##
 InstallMethod( \=, IsIdenticalObj, [ IsConjugacyClassSubgroupsRep,
@@ -2075,6 +2087,8 @@ local rt,op,a,l,i,j,u,max,subs;
   op:=Action(G,rt,OnRight); # use the special trick for right transversals
   a:=ShallowCopy(AllBlocks(op));
   l:=Length(a);
+
+  if l = 0 then return rec( inclusions := [ [0,1] ], subgroups := [] ); fi;
 
   # compute inclusion information among sets
   Sort(a,function(x,y)return Length(x)<Length(y);end);

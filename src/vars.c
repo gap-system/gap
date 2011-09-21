@@ -1155,28 +1155,28 @@ UInt            ExecAssList (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     if (IS_INTOBJ(pos))
-	{
-	  p = INT_INTOBJ(pos);
-	  
-	  /* special case for plain list                                         */
-	  if ( TNUM_OBJ(list) == T_PLIST ) {
-	    if ( LEN_PLIST(list) < p ) {
-	      GROW_PLIST( list, p );
-	      SET_LEN_PLIST( list, p );
-	    }
-	    SET_ELM_PLIST( list, p, rhs );
-	    CHANGED_BAG( list );
-	  }
-	  
-	  /* generic case                                                        */
-	  else
-	    {
-	      ASS_LIST( list, p, rhs );
-	    }
-	}
+        {
+          p = INT_INTOBJ(pos);
+          
+          /* special case for plain list                                         */
+          if ( TNUM_OBJ(list) == T_PLIST ) {
+            if ( LEN_PLIST(list) < p ) {
+              GROW_PLIST( list, p );
+              SET_LEN_PLIST( list, p );
+            }
+            SET_ELM_PLIST( list, p, rhs );
+            CHANGED_BAG( list );
+          }
+          
+          /* generic case                                                        */
+          else
+            {
+              ASS_LIST( list, p, rhs );
+            }
+        }
     else
       ASSB_LIST(list, pos, rhs);
-	  
+          
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -1396,24 +1396,24 @@ Obj             EvalElmList (
     
     if (IS_INTOBJ(pos) && (p = INT_INTOBJ( pos )) > 0)
       {
-	
-	/* special case for plain lists (use generic code to signal errors)    */
-	tnum = TNUM_OBJ(list);
-	if ( FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM )
-	  {
-	    if ( LEN_PLIST(list) < p ) {
-	      return ELM_LIST( list, p );
-	    }
-	    elm = ELM_PLIST( list, p );
-	    if ( elm == 0 ) {
-	      return ELM_LIST( list, p );
-	    }
-	  }
-	/* generic case                                                        */
-	else
-	  {
-	    elm = ELM_LIST( list, p );
-	  }
+        
+        /* special case for plain lists (use generic code to signal errors)    */
+        tnum = TNUM_OBJ(list);
+        if ( FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM )
+          {
+            if ( LEN_PLIST(list) < p ) {
+              return ELM_LIST( list, p );
+            }
+            elm = ELM_PLIST( list, p );
+            if ( elm == 0 ) {
+              return ELM_LIST( list, p );
+            }
+          }
+        /* generic case                                                        */
+        else
+          {
+            elm = ELM_LIST( list, p );
+          }
       }
     else
       elm = ELMB_LIST(list, pos);
@@ -1565,8 +1565,8 @@ Obj             EvalIsbList (
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
     if (IS_INTOBJ(pos))
       {
-	p = INT_INTOBJ( pos );
-	return (ISB_LIST( list, p ) ? True : False);
+        p = INT_INTOBJ( pos );
+        return (ISB_LIST( list, p ) ? True : False);
       }
     else
       return ISBB_LIST(list, pos) ? True : False;
@@ -2880,8 +2880,8 @@ static Int InitKernel (
     EqFuncs[T_LVARS][T_LVARS] = EqLVars;
     for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++)
       {
-	EqFuncs[T_LVARS][i] = EqLVarsX;
-	EqFuncs[i][T_LVARS] = EqLVarsX;
+        EqFuncs[T_LVARS][i] = EqLVarsX;
+        EqFuncs[i][T_LVARS] = EqLVarsX;
       }
    
 

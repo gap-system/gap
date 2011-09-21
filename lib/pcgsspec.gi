@@ -598,6 +598,11 @@ function( pcgs )
         # change to complement base
         Info(InfoSpecPcgs, 1, "exhibit complement system");
         pcgssys := PcgsSystemWithComplementSystem( pcgssys );
+	if IsBound(pcgssys.pcgs!.LGWeights) then
+	  # pcgs is reused -- force new one
+	  pcgssys.pcgs:=PcgsByPcSequence(FamilyObj(OneOfPcgs(pcgs)),
+	    pcgssys.pcgs!.pcSequence);
+	fi;
 
         # create the special pcgs
         newpcgs := pcgssys.pcgs;

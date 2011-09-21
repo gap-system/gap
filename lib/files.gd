@@ -86,7 +86,7 @@ DeclareOperation( "Directory", [ IsString ] );
 ##  The function is intended to provide a cross-platform interface to a
 ##  directory that is easily accessible by the user.
 ##
-##  Under Unix systems (as well as on the Mac) this will be the
+##  Under Unix systems (including Mac OS X) this will be the
 ##  usual user home directory. Under Windows it will the the users <C>My
 ##  Documents</C> folder (or the appropriate name under different
 ##  languages).
@@ -110,7 +110,7 @@ DeclareGlobalFunction( "DirectoryHome" );
 ##  The function is intended to provide a cross-platform interface to a
 ##  directory that is easily accessible by the user.
 ##
-##  Under Unix systems (as well as on the Mac) this will be the
+##  Under Unix systems (including Mac OS X) this will be the
 ##  <C>Desktop</C> directory in the users home directory if it exists, and
 ##  the users home directry otherwise. 
 ##  Under Windows it will the the users <C>Desktop</C> folder
@@ -436,24 +436,19 @@ end );
 
 #############################################################################
 ##
-#F  DirectoryTemporary( [<hint>] )  . . . . . .  create a temporary directory
+#F  DirectoryTemporary() . . . . . . . . . . . . create a temporary directory
 ##
 ##  <#GAPDoc Label="DirectoryTemporary">
 ##  <ManSection>
-##  <Func Name="DirectoryTemporary" Arg='[hint]'/>
+##  <Func Name="DirectoryTemporary" Arg=''/>
 ##
 ##  <Description>
 ##  returns a directory object in the category <C>IsDirectory</C>
 ##  for a <E>new</E> temporary directory.
 ##  This is guaranteed to be newly created and empty immediately after the
 ##  call to <Ref Func="DirectoryTemporary"/>.
-##  &GAP; will make a reasonable effort to <E>remove</E> this directory
-##  either when a garbage collection collects the directory object or upon
-##  termination of the &GAP; job that created the directory.
-##  <P/>
-##  <A>hint</A> can be used by <Ref Func="DirectoryTemporary"/> to construct
-##  the name of the directory but <Ref Func="DirectoryTemporary"/> is free
-##  to use only a part of <A>hint</A> or even ignore it completely.
+##  &GAP; will make a reasonable effort to remove this directory
+##  upon termination of the &GAP; job that created the directory.
 ##  <P/>
 ##  If <Ref Func="DirectoryTemporary"/> is unable to create a new directory,
 ##  <K>fail</K> is returned.
@@ -470,7 +465,7 @@ BIND_GLOBAL( "DirectoryTemporary", function( arg )
 
     # check arguments
     if 1 < Length(arg)  then
-        Error( "usage: DirectoryTemporary( [<hint>] )" );
+        Error( "usage: DirectoryTemporary( )" );
     fi;
 
   # create temporary directory
@@ -683,7 +678,15 @@ end );
 ##  You should set the &GAP; variable <C>GAPInfo.UserPreferences.Editor</C>
 ##  to the name of the editor that you usually use,
 ##  e.g., <F>/usr/bin/vim</F>.
-##  On Windows you can use <C>edit.com</C>.
+##  On Windows you can use <C>edit.com</C>. 
+##  ##  <P/>
+##  Under Mac OS X, you should use
+##  <C>GAPInfo.UserPreferences.Editor := "open"</C>; this will open 
+##  the file in the default editor. If you set 
+##  <C>GAPInfo.UserPreferences.EditorOptions := ["-t"]</C>, the file
+##  will open in TextEdit, and 
+##  <C>GAPInfo.UserPreferences.EditorOptions := ["-a", "&lt;appl&gt;"]</C>
+##  will open the file using the application <C>&lt;appl&gt;</C>.
 ##  <P/>
 ##  This can for example be done in your <F>gap.ini</F> file,
 ##  see Section <Ref Subsect="subsect:gap.ini file"/>.
@@ -754,6 +757,8 @@ BIND_GLOBAL("CHARS_UALPHA",
   Immutable(SSortedList("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
 BIND_GLOBAL("CHARS_LALPHA",
   Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz")));
+BIND_GLOBAL("CHARS_SYMBOLS",Immutable(SSortedList(
+  " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")));
 
 
 #############################################################################

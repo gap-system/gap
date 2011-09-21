@@ -10,13 +10,11 @@ gap> START_TEST("$Id$");
 
 gap> Filtered( NamesSystemGVars(), x -> not x in ALL_KEYWORDS() and
 >            ( Length(x)=1 or IsLowerAlphaChar(x[1]) ) );
-[ "*", "+", "-", ".", "/", "<", "=", "E", "P", "X", "Z", "^", "errorCount", 
-  "fail", "infinity", "last", "last2", "last3", "time" ]
+[ "*", "+", "-", ".", "/", "<", "=", "E", "X", "Z", "^", "fail", "infinity", 
+  "last", "last2", "last3", "time" ]
 gap> # Filtered(NamesSystemGVars(),name->IsSubset(LETTERS,name));;  
 gap> E;
 <Operation "E">
-gap> P;
-function( a ) ... end
 gap> X;
 <Operation "Indeterminate">
 gap> Z;

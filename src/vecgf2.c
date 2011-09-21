@@ -1683,8 +1683,7 @@ Obj FuncCONV_GF2VEC (
 **
 *F FuncCONV_GF2MAT (<self>, <list> ) . . . convert into a GF2 matrix rep
 **
-** We know from the library level that <list> is a list of 
-** compressed GF2 vectors
+** <list> should be a a list of compressed GF2 vectors
 **  
 */
 Obj FuncCONV_GF2MAT( Obj self, Obj list)
@@ -1701,6 +1700,16 @@ Obj FuncCONV_GF2MAT( Obj self, Obj list)
   for (i = len; i > 0 ; i--)
     {
       tmp = ELM_PLIST(list, i);
+      if (!IS_GF2VEC_REP(tmp))
+	{
+	  int j;
+	  for (j = i+1; j <= len; j++)
+	    {
+	      tmp = ELM_PLIST(list, j+1);
+	      SET_ELM_PLIST(list,j,tmp);
+	    }
+	  ErrorMayQuit("CONV_GF2MAT: argument must be a list of compressed GF2 vectors", 0L, 0L);
+	}
       TYPE_DATOBJ(tmp) = IS_MUTABLE_OBJ(tmp) ? TYPE_LIST_GF2VEC_LOCKED: TYPE_LIST_GF2VEC_IMM_LOCKED;
       SET_ELM_PLIST(list, i+1, tmp);
     }
@@ -3112,7 +3121,7 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
 
 Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
 {
-  UInt len,nd,i,nonz;
+  UInt len,nd,i;
   UInt head,a;
   UInt off,off2;		/* 0 based */
   Obj zahl;  /* the long number */
@@ -3147,7 +3156,6 @@ Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
     num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
 
     vp = (TypLimb *)ADDR_OBJ(zahl); /* the place we write to */
-    nonz=0; /* last non-zero position */ 
     i=1;
 
     if (off!=BIPEB) {
@@ -3160,31 +3168,20 @@ Obj FuncNUMBER_VECGF2( Obj self, Obj vec )
 	head = a>>off2; /* next head: trailing `off' bits */
 	a =a << off; /* the rest of the word */
 	*vp |=a;
-	if (*vp != 0) {nonz=i;} 
 	vp++;
 	i++;
       }
       *vp = head; /* last head bits */
       vp++;
-      if (head !=0) {
-	nonz=i; 
-      }
     }
     else {
       while (i<=nd) {
         *vp=revertbits(*num--,BIPEB);
-	if (*vp != 0) {nonz=i;} 
 	vp++;
 	i++;
       }
     }
 
-    /* findme - check this part (jjm)*/
-    i=nd%2; 
-    if (i==1) { 
-      *vp=0; /* erase the trailing two digits if existing */
-      nd++; /* point to the last position */
-    }
 
     zahl = GMP_NORMALIZE(zahl);
     zahl = GMP_REDUCE(zahl);

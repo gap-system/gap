@@ -1625,6 +1625,7 @@ InstallMethod( QuotientMod,
     true,
     [ IsIntegers, IsInt, IsInt, IsInt ], 0,
     function ( Integers, r, s, m )
+    if s>m then s:=s mod m;fi;
     if   m = 1 then
         return 0;
     elif r mod GcdInt( s, m ) = 0  then

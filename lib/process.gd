@@ -153,6 +153,15 @@ DeclareOperation( "Process",
 
 #############################################################################
 ##
+#F  TmpNameAllArchs( )
+##
+##  returns a temporary file name based on the output of a call to TmpName
+##  but with adjusted temporary directory path for Window architectures
+##
+DeclareGlobalFunction("TmpNameAllArchs");
+
+#############################################################################
+##
 #F ShortFileNameWindows(<name>)
 ##
 ##  returns a short file name (http://en.wikipedia.org/wiki/8.3_filename)

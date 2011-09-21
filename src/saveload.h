@@ -12,6 +12,10 @@
 **  the workspace. There are support functions in gasman.c and elsewhere
 **  throughout the kernel
 */
+
+#ifndef GAP_SAVELOAD_H
+#define GAP_SAVELOAD_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_saveload_h =
    "@(#)$Id$";
@@ -77,13 +81,10 @@ extern ObjFunc LoadHandler();
 StructInitInfo * InitInfoSaveLoad ( void );
 
 
+#endif // GAP_SAVELOAD_H
+
 /****************************************************************************
 **
 
 *E  saveload.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
-
-

@@ -13,6 +13,10 @@
 **  This package  provides a uniform  interface to  the functions that access
 **  records and the elements for the other packages in the GAP kernel.
 */
+
+#ifndef GAP_RECORDS_H
+#define GAP_RECORDS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_records_h =
    "@(#)$Id$";
@@ -42,7 +46,7 @@ extern  Obj             NamesRNam;
 **  string).
 */
 extern  UInt            RNamName (
-            Char *              name );
+            const Char *        name );
 
 
 /****************************************************************************
@@ -181,9 +185,10 @@ extern UInt completion_rnam (
 StructInitInfo * InitInfoRecords ( void );
 
 
+#endif // GAP_RECORDS_H
+
 /****************************************************************************
 **
 
 *E  records.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-

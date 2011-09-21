@@ -388,7 +388,7 @@ InstallGlobalFunction(ConvertToMatrixRep,
         od;
     fi;
     
-    if q < 256 then
+    if q <= 256 then
         ConvertToMatrixRepNC(m,q);
     fi;
     
@@ -397,7 +397,7 @@ end);
 
 
 InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)    
-    local   m,  q;
+    local   v, m,  q, result;
     if Length(arg) = 1 then
         return ConvertToMatrixRep(arg[1]);
     else 
@@ -410,14 +410,24 @@ InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)
     if not IsInt(q) then 
         q := Size(q);
     fi;
-    if Is8BitMatrixRep(m) or IsGF2MatrixRep(m) then
-        return;
+    if Is8BitMatrixRep(m) then
+        return Q_VEC8BIT(m[1]);
     fi;
+    if IsGF2MatrixRep(m) then
+        return 2;
+    fi;
+    for v in m do
+        result := ConvertToVectorRepNC(v,q);
+        if result <> q then
+            Error("ConvertToMatrixRep: Failed to convert a row");
+        fi;
+    od;
     if q = 2 then
         CONV_GF2MAT(m);
     elif q <= 256 then
         CONV_MAT8BIT(m, q);
     fi;
+    return q;
 end);
 
 #############################################################################

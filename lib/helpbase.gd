@@ -21,6 +21,7 @@ DeclareGlobalFunction("FILLED_LINE");
 DeclareGlobalFunction("SIMPLE_STRING");
 DeclareGlobalVariable("HELP_KNOWN_BOOKS");
 DeclareGlobalFunction("HELP_ADD_BOOK");
+DeclareGlobalFunction("HELP_REMOVE_BOOK");
 DeclareGlobalVariable("HELP_BOOK_HANDLER");
 DeclareGlobalVariable("HELP_BOOKS_INFO");
 DeclareGlobalFunction("HELP_BOOK_INFO");

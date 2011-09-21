@@ -577,6 +577,21 @@ InstallMethod( InverseOp,
     return inv;
     end );
 
+#############################################################################
+##
+#M  Order( <obj> )  . . . . . . . . . . . . . . . . . . . . for `IsZmodpZObj'
+##
+InstallMethod( Order,
+    "for element in Z/nZ (ModulusRep)",
+    [ IsZmodnZObj and IsModulusRep ],
+    function( elm )
+    local ord;
+    ord := OrderMod( elm![1], ModulusOfZmodnZObj( elm ) );
+    if ord = 0  then
+        Error( "<obj> is not invertible" );
+    fi;
+    return ord;
+    end );
 
 #############################################################################
 ##
@@ -809,6 +824,18 @@ InstallMethod( Size,
 
 #############################################################################
 ##
+#M  IsUnit( <obj> )  . . . . . . . . . . . . . . . . . . .  for `IsZmodpZObj'
+##
+InstallMethod( IsUnit,
+    "for element in Z/nZ (ModulusRep)",
+    IsCollsElms,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing, IsZmodnZObj and IsModulusRep ],
+    function( R, elm )
+    return GcdInt( elm![1], ModulusOfZmodnZObj( elm ) ) = 1;
+    end );
+
+#############################################################################
+##
 #M  Units( <R> )  . . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
 InstallMethod( Units,
@@ -824,7 +851,7 @@ InstallMethod( Units,
     gens := Flat( gens ) * One( R );
     G := GroupByGenerators( gens, One( R ) );
     SetIsAbelian( G, true );
-    SetIndependentGeneratorsOfAbelianGroup( G, gens );
+    SetSize( G, Product( List( gens, Order ) ) );
     SetIsHandledByNiceMonomorphism(G,true);
     return G;
 end );
@@ -980,7 +1007,7 @@ InstallGlobalFunction( ZmodnZ, function( n )
                      IsZmodnZObj,
                      IsZmodnZObjNonprime and CanEasilySortElements
                                          and IsNoImmediateMethodsObject,
-		     CanEasilySortElements);
+                     CanEasilySortElements);
 
       # Install the data.
       F!.modulus:= n;

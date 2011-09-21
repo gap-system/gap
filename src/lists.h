@@ -15,6 +15,10 @@
 **  example, 'ExecFor' can loop over the elements  in a list using the macros
 **  'LEN_LIST' and 'ELM_LIST' independently of the type of the list.
 */
+
+#ifndef GAP_LISTS_H
+#define GAP_LISTS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_lists_h =
    "@(#)$Id$";
@@ -1013,11 +1017,10 @@ extern void AsssListLevelCheck (
 StructInitInfo * InitInfoLists ( void );
 
 
+#endif // GAP_LISTS_H
+
 /****************************************************************************
 **
 
 *E  lists.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

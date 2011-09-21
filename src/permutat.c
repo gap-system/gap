@@ -189,8 +189,8 @@ void            PrintPermP (
     UInt2 *             ptPerm;         /* pointer to the permutation      */
     UInt                p,  q;          /* loop variables                  */
     UInt                isId;           /* permutation is the identity?    */
-    char *              fmt1;           /* common formats to print points  */
-    char *              fmt2;           /* common formats to print points  */
+    const char *        fmt1;           /* common formats to print points  */
+    const char *        fmt2;           /* common formats to print points  */
 
     /* set up the formats used, so all points are printed with equal width */
     degPerm = DEG_PERM2(perm);
@@ -234,8 +234,8 @@ void            PrintPermQ (
     UInt4 *             ptPerm;         /* pointer to the permutation      */
     UInt                p,  q;          /* loop variables                  */
     UInt                isId;           /* permutation is the identity?    */
-    char *              fmt1;           /* common formats to print points  */
-    char *              fmt2;           /* common formats to print points  */
+    const char *        fmt1;           /* common formats to print points  */
+    const char *        fmt2;           /* common formats to print points  */
 
     /* set up the formats used, so all points are printed with equal width */
     degPerm = DEG_PERM4(perm);

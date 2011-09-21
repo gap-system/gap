@@ -1251,11 +1251,11 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
   "test if known/try solvable factor for permutation groups",
   IsIdenticalObj, [ IsPermGroup, IsPermGroup ], 0,
 function( G, N )
-local   map,  pcgs,  A,h;
+local   map,  pcgs, A, filter;
     
-  h:=GetNaturalHomomorphismsPool(G,N);
-  if h<>fail then
-    return h;
+  map:=GetNaturalHomomorphismsPool(G,N);
+  if map<>fail then
+    return map;
   fi;
 
   if Index(G,N)=1 or Size(N)=1
@@ -1270,13 +1270,33 @@ local   map,  pcgs,  A,h;
       TryNextMethod();
   fi;
 
-  # Construct the pcp group <A> and the bijection between <A> and <G>.
+  # Construct the pcp group <A>.
   A := PermpcgsPcGroupPcgs( pcgs, pcgs!.permpcgsNormalSteps, false );
   UseFactorRelation( G, N, A );
-  map := EpiPcByModpcgs( G, A, pcgs, GeneratorsOfGroup( A ) );
 
-  SetIsSurjective( map, true );
-  SetKernelOfMultiplicativeGeneralMapping( map, N );
+  # Construct the epimorphism from <G> onto <A>.
+  map := rec();
+  filter := IsPermGroupGeneralMappingByImages and
+            IsToPcGroupGeneralMappingByImages and
+            IsGroupGeneralMappingByPcgs and
+            IsMapping and IsSurjective and
+            HasSource and HasRange and 
+            HasPreImagesRange and HasImagesSource and
+            HasKernelOfMultiplicativeGeneralMapping;
+
+  map.sourcePcgs       := pcgs;
+  map.sourcePcgsImages := GeneratorsOfGroup( A );
+
+  ObjectifyWithAttributes( map,
+  NewType( GeneralMappingsFamily
+	  ( ElementsFamily( FamilyObj( G ) ),
+	    ElementsFamily( FamilyObj( A ) ) ), filter ), 
+	    Source,G,
+	    Range,A,
+	    PreImagesRange,G,
+	    ImagesSource,A,
+	    KernelOfMultiplicativeGeneralMapping,N
+	    );
   
   return map;
 end );
@@ -1294,6 +1314,28 @@ local s,r,nat,k;
     AddNaturalHomomorphismsPool(s,PreImage(hom,k),nat);
   od;
 end);
+
+#############################################################################
+##
+#M  UseFactorRelation( <num>, <den>, <fac> )  . . . .  for perm group factors
+##
+InstallMethod( UseFactorRelation,
+   [ IsGroup and HasSize, IsObject, IsPermGroup ],
+   function( num, den, fac )
+   local limit;
+   if not HasSize( fac ) then
+     if HasSize(den) then
+       SetSize( fac, Size( num ) / Size( den ) );
+     else
+       limit := Size( num );
+       if IsBound( StabChainOptions(fac).limit ) then
+         limit := Minimum( limit, StabChainOptions(fac).limit );
+       fi;
+       StabChainOptions(fac).limit:=limit;
+     fi;
+   fi;
+   TryNextMethod();
+   end );
 
 #############################################################################
 ##

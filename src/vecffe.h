@@ -8,6 +8,10 @@
 *Y  Copyright (C) 2002 The GAP Group
 **
 */
+
+#ifndef GAP_VECFFE_H
+#define GAP_VECFFE_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_vecffe_h =
    "@(#)$Id$";
@@ -28,6 +32,8 @@ const char * Revision_vecffe_h =
 */
 StructInitInfo * InitInfoVecFFE ( void );
 
+
+#endif // GAP_VECFFE_H
 
 /****************************************************************************
 **

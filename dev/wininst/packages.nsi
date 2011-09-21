@@ -34,7 +34,7 @@ FunctionEnd
 # The name of the installer
 Name "GAP 4.4 packages"
 # The file to write
-OutFile "packages-2011_03_01-11_17_UTC.exe"
+OutFile "packages-2011_08_11-12_32_UTC.exe"
 # Set compressing method (for test compiling may be commented out)
 SetCompressor /SOLID lzma
 # In Linux, SOLID lzma may not work - just comment it out
@@ -470,8 +470,8 @@ Section "Crisp - Computing with Radicals, Injectors, Schunck classes and Project
   File pkg\crisp\*.*
   SetOutPath $INSTDIR\crisp\doc
   File pkg\crisp\doc\*.*
-  SetOutPath $INSTDIR\crisp\htm
-  File pkg\crisp\htm\*.*
+  SetOutPath $INSTDIR\crisp\html
+  File pkg\crisp\html\*.*
   SetOutPath $INSTDIR\crisp\lib
   File pkg\crisp\lib\*.*
   SetOutPath $INSTDIR\crisp\tst
@@ -874,6 +874,8 @@ Section "FR - Computations with functionally recursive groups"
 
   SetOutPath $INSTDIR\fr
   File pkg\fr\*.*
+  SetOutPath $INSTDIR\fr\cnf
+  File pkg\fr\cnf\*.*
   SetOutPath $INSTDIR\fr\doc
   File pkg\fr\doc\*.*
   SetOutPath $INSTDIR\fr\gap
@@ -930,18 +932,18 @@ Section "GAPDoc - A Meta Package for GAP Documentation"
   # Put file there
   File pkg\README.gapdoc
 
-  SetOutPath $INSTDIR\GAPDoc-1.2
-  File pkg\GAPDoc-1.2\*.*
-  SetOutPath $INSTDIR\GAPDoc-1.2\3k+1
-  File pkg\GAPDoc-1.2\3k+1\*.*
-  SetOutPath $INSTDIR\GAPDoc-1.2\doc
-  File pkg\GAPDoc-1.2\doc\*.*
-  SetOutPath $INSTDIR\GAPDoc-1.2\example
-  File pkg\GAPDoc-1.2\example\*.*
-  SetOutPath $INSTDIR\GAPDoc-1.2\lib
-  File pkg\GAPDoc-1.2\lib\*.*
-  SetOutPath $INSTDIR\GAPDoc-1.2\mathml
-  File pkg\GAPDoc-1.2\mathml\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3
+  File pkg\GAPDoc-1.3\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3\3k+1
+  File pkg\GAPDoc-1.3\3k+1\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3\doc
+  File pkg\GAPDoc-1.3\doc\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3\example
+  File pkg\GAPDoc-1.3\example\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3\lib
+  File pkg\GAPDoc-1.3\lib\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3\mathml
+  File pkg\GAPDoc-1.3\mathml\*.*
  
   # Restore output path
   SetOutPath $INSTDIR
@@ -1361,6 +1363,10 @@ Section "HAP - Homological Algebra Programming"
   File pkg\Hap1.9\lib\ResolutionsModP\*.*
   SetOutPath $INSTDIR\Hap1.9\lib\Rings
   File pkg\Hap1.9\lib\Rings\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\SimplicialGroups
+  File pkg\Hap1.9\lib\SimplicialGroups\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\SimplicialGroups\old
+  File pkg\Hap1.9\lib\SimplicialGroups\old\*.*
   SetOutPath $INSTDIR\Hap1.9\lib\Streams
   File pkg\Hap1.9\lib\Streams\*.*
   SetOutPath $INSTDIR\Hap1.9\lib\TDA
@@ -1678,8 +1684,8 @@ Section "IRREDSOL - A Library of irreducible solvable linear groups over finite 
   File pkg\irredsol\doc\*.*
   SetOutPath $INSTDIR\irredsol\fp
   File pkg\irredsol\fp\*.*
-  SetOutPath $INSTDIR\irredsol\htm
-  File pkg\irredsol\htm\*.*
+  SetOutPath $INSTDIR\irredsol\html
+  File pkg\irredsol\html\*.*
   SetOutPath $INSTDIR\irredsol\lib
   File pkg\irredsol\lib\*.*
   SetOutPath $INSTDIR\irredsol\tst
@@ -2300,12 +2306,8 @@ Section "Polycyclic - Computation with polycyclic groups"
   File pkg\polycyclic\gap\cover\const\*.*
   SetOutPath $INSTDIR\polycyclic\gap\cover\trees
   File pkg\polycyclic\gap\cover\trees\*.*
-  SetOutPath $INSTDIR\polycyclic\etc
-  File pkg\polycyclic\etc\*.*
   SetOutPath $INSTDIR\polycyclic\gap\exam
   File pkg\polycyclic\gap\exam\*.*
-  SetOutPath $INSTDIR\polycyclic\gap\matgrp
-  File pkg\polycyclic\gap\matgrp\*.*
   SetOutPath $INSTDIR\polycyclic\gap\matrep
   File pkg\polycyclic\gap\matrep\*.*
   SetOutPath $INSTDIR\polycyclic\gap\matrix
@@ -2450,14 +2452,12 @@ Section "RCWA - Residue Class-Wise Affine Groups"
   File pkg\rcwa\*.*
   SetOutPath $INSTDIR\rcwa\doc
   File pkg\rcwa\doc\*.*
-  SetOutPath $INSTDIR\rcwa\doc\test
-  File pkg\rcwa\doc\test\*.*
   SetOutPath $INSTDIR\rcwa\examples
   File pkg\rcwa\examples\*.*
   SetOutPath $INSTDIR\rcwa\gap
   File pkg\rcwa\gap\*.*
-  SetOutPath $INSTDIR\rcwa\thesis
-  File pkg\rcwa\thesis\*.*
+  SetOutPath $INSTDIR\rcwa\paper
+  File pkg\rcwa\paper\*.*
   SetOutPath $INSTDIR\rcwa\tst
   File pkg\rcwa\tst\*.*
 

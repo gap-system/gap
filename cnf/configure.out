@@ -602,8 +602,9 @@ ac_includes_default="\
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 ABI_CFLAGS
-BUILD_MODE
+ABI
 gapbin
+gp_configure_options
 ITANIUMOBJ
 C_DYNLIBS
 GMP_LIBS
@@ -677,6 +678,7 @@ enable_option_checking
 with_gmp
 with_abi
 with_readline
+with_configname
 '
       ac_precious_vars='build_alias
 host_alias
@@ -686,8 +688,7 @@ CFLAGS
 LDFLAGS
 LIBS
 CPPFLAGS
-CPP
-CPPFLAGS'
+CPP'
 
 
 # Initialize some variables set by options.
@@ -707,7 +708,7 @@ program_suffix=NONE
 program_transform_name=s,x,x,
 silent=
 site=
-srcdir=../../../src
+srcdir=../../src
 verbose=
 x_includes=NONE
 x_libraries=NONE
@@ -2326,7 +2327,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 ac_aux_dir=
-for ac_dir in ../../../cnf "$srcdir"/../../../cnf; do
+for ac_dir in ../../cnf "$srcdir"/../../cnf; do
   if test -f "$ac_dir/install-sh"; then
     ac_aux_dir=$ac_dir
     ac_install_sh="$ac_aux_dir/install-sh -c"
@@ -2342,7 +2343,7 @@ for ac_dir in ../../../cnf "$srcdir"/../../../cnf; do
   fi
 done
 if test -z "$ac_aux_dir"; then
-  as_fn_error $? "cannot find install-sh, install.sh, or shtool in ../../../cnf \"$srcdir\"/../../../cnf" "$LINENO" 5
+  as_fn_error $? "cannot find install-sh, install.sh, or shtool in ../../cnf \"$srcdir\"/../../cnf" "$LINENO" 5
 fi
 
 # These three variables are undocumented and unsupported,
@@ -2360,7 +2361,7 @@ if test "x$CFLAGS" = "x" ;  then
 fi
 
 
-ac_config_headers="$ac_config_headers config.h:../../../cnf/config.hin"
+ac_config_headers="$ac_config_headers config.h:../../cnf/config.hin"
 
 
 
@@ -4118,7 +4119,7 @@ test -n "$target_alias" &&
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
 cat >>confdefs.h <<_ACEOF
-#define SYS_ARCH "$target-$CC/$BUILD_MODE-bit"
+#define SYS_ARCH "$target-$CC-$CONFIGNAME"
 _ACEOF
 
 
@@ -4329,8 +4330,7 @@ else
     *-irix* )
         gp_cv_prog_cc_cdynoptions=" -O3 -woff 1110,1167,1174,1552";;
 
-    * )
-        gp_cv_prog_cc_cdynoptions="UNSUPPORTED";;
+    * )            gp_cv_prog_cc_cdynoptions="-fpic -Wall -O2 ${ABI_CFLAGS}";;
    esac
 
 fi
@@ -4360,8 +4360,8 @@ else
 	gp_cv_prog_cc_cdynlinker="cc";;
     *-irix* )
         gp_cv_prog_cc_cdynlinker="ld";;
-    * )
-        gp_cv_prog_cc_cdynlinker="echo";;
+
+    * )            gp_cv_prog_cc_cdynlinker="${CC}";;
    esac
 
 fi
@@ -4403,8 +4403,8 @@ else
         gp_cv_prog_cc_cdynlinking="-G -Bdynamic";;
     *sunos* )
         gp_cv_prog_cc_cdynlinking="-assert pure-text -Bdynamic -x";;
-    * )
-        gp_cv_prog_cc_cdynlinking="UNSUPPORTED";;
+
+    * )           gp_cv_prog_cc_cdynlinking="-shared -g ${ABI_CFLAGS}";;
    esac
 
 fi
@@ -5385,6 +5385,20 @@ fi
 done
 
 
+
+for ac_func in log2 log10 log1p exp2 expm1 exp10 trunc
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+
 if test "x$READLINEPREFIX" != "x"  ; then
    LDFLAGS="-L${READLINEPREFIX}/lib/"
 fi
@@ -5556,6 +5570,7 @@ case "$host" in
 esac
 
 
+gp_configure_options=$ac_configure_args
 
 
 
@@ -5564,7 +5579,7 @@ gapbin=`pwd`
 
 
 
-BUILD_MODE=$BUILD_MODE
+ABI=$ABI
 ABI_CFLAGS=$ABI_CFLAGS
 
 
@@ -5589,7 +5604,13 @@ if test "${with_readline+set}" = set; then :
 fi
 
 
-ac_config_files="$ac_config_files gac:../../../cnf/gac.in Makefile:../../../cnf/Makegap.in extern/Makefile:../../../extern/Makefile.in"
+# Check whether --with-configname was given.
+if test "${with_configname+set}" = set; then :
+  withval=$with_configname;
+fi
+
+
+ac_config_files="$ac_config_files sysinfo.gap:../../cnf/sysinfo.in gac:../../cnf/gac.in Makefile:../../cnf/Makegap.in extern/Makefile:../../extern/Makefile.in"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6293,10 +6314,11 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h:../../../cnf/config.hin" ;;
-    "gac") CONFIG_FILES="$CONFIG_FILES gac:../../../cnf/gac.in" ;;
-    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile:../../../cnf/Makegap.in" ;;
-    "extern/Makefile") CONFIG_FILES="$CONFIG_FILES extern/Makefile:../../../extern/Makefile.in" ;;
+    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h:../../cnf/config.hin" ;;
+    "sysinfo.gap") CONFIG_FILES="$CONFIG_FILES sysinfo.gap:../../cnf/sysinfo.in" ;;
+    "gac") CONFIG_FILES="$CONFIG_FILES gac:../../cnf/gac.in" ;;
+    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile:../../cnf/Makegap.in" ;;
+    "extern/Makefile") CONFIG_FILES="$CONFIG_FILES extern/Makefile:../../extern/Makefile.in" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

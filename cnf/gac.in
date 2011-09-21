@@ -59,11 +59,11 @@
 gap_bin=@gapbin@
 
 if [ "X${gap_bin}" = "X$0" ];  then
-    gap_dir="../../../";
+    gap_dir="../../";
     gap_compiler="./gap";
     gap_binary="./";
 else
-    gap_dir="${gap_bin}/../../..";
+    gap_dir="${gap_bin}/../..";
     gap_compiler="${gap_bin}/gap";
     gap_binary="${gap_bin}";
 fi
@@ -101,7 +101,7 @@ OBJECTS="\
     tietze.o    vars.o      vecgf2.o    vecffe.o     vec8bit.o   \
     vector.o    weakptr.o   iostream.o  macfloat.o "
 
-EXTOBJS=bin/@target@-@CC@/@BUILD_MODE@-bit/extern/jenkins/jhash.o
+EXTOBJS=
 
 
 #############################################################################

@@ -512,8 +512,12 @@ DeclareCategory( "IsFieldControlledByGaloisGroup", IsField );
 ##  (independent of the representation of their elements),
 ##  we know the Galois group and have a method for `Conjugates' that does
 ##  not use `MinimalPolynomial'.
+##  Currently fields created with `AlgebraicExtension' do not support this
+##  approach, so we do not install the implication from
+##  `IsField and IsFinite'.
 ##
-InstallTrueMethod( IsFieldControlledByGaloisGroup, IsField and IsFinite );
+InstallTrueMethod( IsFieldControlledByGaloisGroup,
+    IsField and IsFFECollection );
 
 
 #############################################################################

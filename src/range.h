@@ -22,6 +22,10 @@
 **  This package  also contains  the  list  functions  for ranges, which  are
 **  installed in the appropriate tables by 'InitRange'.
 */
+
+#ifndef GAP_RANGE_H
+#define GAP_RANGE_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_range_h =
    "@(#)$Id$";
@@ -195,6 +199,8 @@ extern Obj Range3Check (
 */
 StructInitInfo * InitInfoRange ( void );
 
+
+#endif // GAP_RANGE_H
 
 /****************************************************************************
 **

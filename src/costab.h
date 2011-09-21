@@ -12,6 +12,10 @@
 **
 **  This file contains the functions for coset tables.
 */
+
+#ifndef GAP_COSTAB_H
+#define GAP_COSTAB_H
+
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_costab_h =
    "@(#)$Id$";
@@ -31,6 +35,9 @@ const char * Revision_costab_h =
 */
 StructInitInfo * InitInfoCosetTable ( void );
 
+
+
+#endif // GAP_COSTAB_H
 
 /****************************************************************************
 **

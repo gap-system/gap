@@ -163,17 +163,22 @@ end );
 InstallMethod( NiceMonomorphism, "regular action", true,
         [ IsGroup and IsHandledByNiceMonomorphism ], 0,
     function( G )
-    local   mon;
-
     if not HasGeneratorsOfGroup( G )  then
-        TryNextMethod();
-    elif not HasOne( G ) and HasGeneratorsOfGroup(G) and
-      Length(GeneratorsOfGroup(G))>0  then
+      TryNextMethod();
+    elif not HasOne( G ) and Length(GeneratorsOfGroup(G))>0  then
       SetOne( G, One( GeneratorsOfGroup( G )[ 1 ] ) );
     fi;
-    mon := ActionHomomorphism( G, AsList( G ), OnRight,"surjective" );
-    SetIsInjective( mon, true );
-    return mon;
+    return RegularActionHomomorphism( G );
+end );
+
+#############################################################################
+##
+#M  NiceMonomorphism( <G> ) . . . . . . . . .  independent abelian generators
+##
+InstallMethod( NiceMonomorphism, "via IsomorphismAbelianGroupViaIndependentGenerators", true,
+        [ IsGroup and IsHandledByNiceMonomorphism and CanEasilyComputeWithIndependentGensAbelianGroup ], 0,
+    function( G )
+    return IsomorphismAbelianGroupViaIndependentGenerators( IsPermGroup, G );
 end );
 
 
@@ -919,6 +924,31 @@ function(G)
   else
     TryNextMethod();
   fi;
+end);
+
+#############################################################################
+##
+#M  SeedFaithfulAction( <group> )	. .
+##
+InstallMethod(SeedFaithfulAction,
+    "default: fail",
+    true,[ IsGroup ],0,
+    G->fail);
+
+#############################################################################
+##
+#M  NiceMonomorphism( <G> ) . . . . . . . . . . . . . . . . regular operation
+##
+InstallMethod( NiceMonomorphism, "SeedFaithfulAction supersedes", true,
+        [ IsGroup and IsHandledByNiceMonomorphism and
+	  HasSeedFaithfulAction], 1000,
+function(G)
+local b;
+  b:=SeedFaithfulAction(G);
+  if b=fail then
+    TryNextMethod();
+  fi;
+  return MultiActionsHomomorphism(G,b.points,b.ops);
 end);
 
 #############################################################################

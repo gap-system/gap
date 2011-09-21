@@ -45,12 +45,8 @@ Revision.pager_gi :=
 ##
 #F  PAGER_BUILTIN( <lines> )	. . . . . . . . . . . . . . . .  format lines
 ##
-# We take  into account a  variable from the  GAPDoc package. If  the text
-# contains ANSI color sequences we reset  the terminal before we print the
-# last line.
-if not IsBound(ANSI_COLORS) then
-  ANSI_COLORS := false;
-fi;
+# If  the text contains ANSI color sequences we reset  the terminal before 
+# we print the last line.
 BindGlobal("PAGER_BUILTIN", function( lines )
   local   formatted,  linepos,  size,  wd,  pl,  count,  i,  stream,  
           halt,  delhaltline,  from,  len,  char, out;
@@ -72,6 +68,8 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   
   if IsString(lines) then
     lines := SplitString(lines, "\n", "");
+  elif not formatted then
+    lines := ShallowCopy(lines);
   fi;
   
   size   := SizeScreen();
@@ -117,7 +115,8 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   count  := 0;
   halt   := 
     "  -- <space> page, <n> next line, <b> back, <p> back line, <q> quit --\c";
-  if IsBound(ANSI_COLORS) and ANSI_COLORS = true then
+  if IsBound(GAPInfo.UserPreferences.UseColorsInTerminal) and  
+             GAPInfo.UserPreferences.UseColorsInTerminal = true then
     halt := Concatenation("\033[0m", halt);
   fi;
   delhaltline := function()

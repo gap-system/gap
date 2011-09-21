@@ -10,6 +10,10 @@
 **
 **  This file declares the functions for plain records.
 */
+
+#ifndef GAP_PRECORD_H
+#define GAP_PRECORD_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_precord_h =
    "@(#)$Id$";
@@ -195,11 +199,10 @@ extern  void            SortPRecRNam (
 StructInitInfo * InitInfoPRecord ( void );
 
 
+#endif // GAP_PRECORD_H
+
 /****************************************************************************
 **
 
 *E  precord.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

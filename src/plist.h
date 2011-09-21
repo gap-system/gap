@@ -23,6 +23,10 @@
 **  This package also contains the list functions for  plain lists, which are
 **  installed in the appropriate tables by 'InitPlist'.
 */
+
+#ifndef GAP_PLIST_H
+#define GAP_PLIST_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_plist_h =
    "@(#)$Id$";
@@ -193,6 +197,8 @@ void            UnbPlistImm (
 */
 StructInitInfo * InitInfoPlist ( void );
 
+
+#endif // GAP_PLIST_H
 
 /****************************************************************************
 **

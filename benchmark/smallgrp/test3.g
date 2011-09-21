@@ -8,7 +8,7 @@ has_errors := false;
 Read("testgrps.g");
 starttime:=Runtime();
 
-for s in [257..513] do
+for s in [257..511] do
     Print("Testing groups of order ", s, " \n");
     TestAllGroups( s );
 od;

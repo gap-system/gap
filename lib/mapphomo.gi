@@ -274,7 +274,9 @@ InstallMethod( ImagesSet,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
       IsGroup ],
 function( map, elms )
-  local genimages,  img;
+  local genimages, img;
+  # Try to map a generating set of elms; this works if and only if map
+  # is defined on all of elms.
   genimages:= List( GeneratorsOfMagmaWithInverses( elms ),
 		    gen -> ImagesRepresentative( map, gen ) );
   if fail in genimages then
@@ -285,8 +287,15 @@ function( map, elms )
 	      GeneratorsOfMagmaWithInverses(
 		  CoKernelOfMultiplicativeGeneralMapping( map ) ),
 	      genimages ) );
-  if IsPermGroup(img) and HasSize(elms) then
-    StabChainOptions(img).limit:=Size(elms);
+  if IsSingleValued(map) then
+    # At this point we know that the restriction of map to elms is a
+    # group homomorphism. Hence we can transfer some knowledge about
+    # elms to img.
+    if HasIsInjective(map) and IsInjective(map) then
+      UseIsomorphismRelation( elms, img );
+    else
+      UseFactorRelation( elms, fail, img );
+    fi;
   fi;
   return img;
 end );

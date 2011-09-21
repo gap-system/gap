@@ -3229,6 +3229,9 @@ DeclareOperation( "CheapRandomizer", [IsCollection] );
 DeclareAttribute( "RandomizerAttr", IsCollection );
 DeclareAttribute( "CheapRandomizerAttr", IsCollection );
 
+# to allow for recusive calls
+DeclareGlobalFunction("JoinRanges");
+
 #############################################################################
 ##
 #E

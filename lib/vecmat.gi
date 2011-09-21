@@ -1321,14 +1321,15 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
         CONV_GF2VEC(v);
         return 2;
     elif q <= 256 then
-        Assert(2, ForAll(v, elm -> elm in GF(q)));
-        if common > q and q^LogInt(common,q) = common then
-            common := SMALLEST_FIELD_VECFFE(v);
+        if common <> q then 
+            Assert(2, ForAll(v, elm -> elm in GF(q)));
+            if IsPlistRep(v) and  GcdInt(common,q) > 1  then
+                common := SMALLEST_FIELD_VECFFE(v);
+            fi;
+            if common ^ LogInt(q, common) <> q then
+                Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
+            fi;
         fi;
-        if common ^ LogInt(q, common) <> q then
-            Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
-        fi;
-        
         CONV_VEC8BIT(v,q);
         return q;
     else    
@@ -1841,7 +1842,8 @@ InstallMethod(DomainForAction,"FFE vector/matrix",IsElmsCollCollsX,
 function(pnt,acts,act)
 local l,f;
   if (not ForAll(acts,IsMatrix)) or
-    (act<>OnPoints and act<>OnLines and act<>OnRight) or
+    (act<>OnPoints and act<>OnLines and act<>OnRight
+                   and act<>OnSubspacesByCanonicalBasisConcatenations) or
      CollectionsFamily(CollectionsFamily(FamilyObj(pnt)))<>FamilyObj(acts) then
     TryNextMethod(); # strange operation, might extend the domain
   fi;
@@ -1856,6 +1858,36 @@ local l,f;
 #    return fail;
 #  fi;
 #  return f^Length(pnt);
+end);
+
+#############################################################################
+##
+#M  DomainForAction( <pnt>, <acts> )
+##
+InstallMethod(DomainForAction,"matrix/matrix",IsElmsCollsX,
+  # for technical reasons a matrix list is not automatically
+  # IsMatrixCollection -- thus we cannot use this filter here. AH
+
+  #T this method is only installed for finite fields. There ought to be a
+  #T method for finite rings and there could be one for infinite fields. AH
+  [IsMatrix and IsFFECollColl,IsList,IsFunction],0,
+function(pnt,acts,act)
+local l,f,vkey;
+  if (not ForAll(acts,IsMatrix)) or
+    (act<>OnPoints and act<>OnSubspacesByCanonicalBasis and act<>OnRight) then
+    TryNextMethod(); # strange operation, might extend the domain
+  fi;
+  l:=NaturalActedSpace(acts,pnt);
+  f:=Size(LeftActingDomain(l));
+  l:=Size(l);
+  return rec(hashfun:=function(b)
+             local h,i;
+	       h:=0;
+	       for i in b do
+	         h:=h*l+NumberFFVector(i,f);
+	       od;
+	       return h;
+	      end);
 end);
 
 InstallMethod(DomainForAction,"vector/permgrp",true,
@@ -2033,11 +2065,17 @@ end);
 
 #############################################################################
 ##
-#M  ZeroVector( <vector>, len )
+#M  ZeroVector( len, <vector> )
 ##
 InstallMethod( ZeroVector, "for an int and a gf2 vector",
   [IsInt, IsGF2VectorRep],
   function( len, v )
+    return ZERO_GF2VEC_2(len);
+  end );
+
+InstallMethod( ZeroVector, "for an int and a gf2 matrix",
+  [IsInt, IsGF2MatrixRep],
+  function( len, m )
     return ZERO_GF2VEC_2(len);
   end );
 

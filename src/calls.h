@@ -42,6 +42,10 @@
 **  calling  another compiled function, which expects fewer than 4 arguments,
 **  with no profiling, the overhead is only a couple of instructions.
 */
+
+#ifndef GAP_CALLS_H
+#define GAP_CALLS_H
+
 #ifdef INCLUDE_DECLARATION_PART
 const char * Revision_calls_h =
    "@(#)$Id$";
@@ -377,6 +381,8 @@ extern Obj CallFuncListOper;
 */
 StructInitInfo * InitInfoCalls ( void );
 
+
+#endif // GAP_CALLS_H
 
 /****************************************************************************
 **

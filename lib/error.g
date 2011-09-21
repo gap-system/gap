@@ -13,7 +13,7 @@ Revision.error_g :=
 
 
 CallAndInstallPostRestore( function()
-    ASS_GVAR( "errorCount", 0 );
+    ASS_GVAR( "ERROR_COUNT", 0 );
     ASS_GVAR( "ErrorLevel", 0 );
     ASS_GVAR( "QUITTING", false );
 end);
@@ -36,22 +36,26 @@ ErrorLVars := fail;
 
 
 
-BIND_GLOBAL("WHERE", function( context, depth)
-    local   bottom;
+BIND_GLOBAL("WHERE", function( context, depth, outercontext)
+    local   bottom,  lastcontext,  f;
     if depth <= 0 then
         return;
     fi;
     bottom := GetBottomLVars();
+    lastcontext := outercontext;
     while depth > 0  and context <> bottom do
         PRINT_CURRENT_STATEMENT(context);
         Print(" called from\n");
+        lastcontext := context;
         context := ParentLVars(context);
         depth := depth-1;
     od;
     if depth = 0 then 
-        Print("...\n");
+        Print("...  ");
     else
-        Print("<function>( <arguments> ) called from read-eval loop\n");
+        f := ContentsLVars(lastcontext).func;
+        Print("<function \"",NAME_FUNC(f)
+              ,"\">( <arguments> )\n called from read-eval loop ");
     fi;
 end);
 
@@ -65,10 +69,11 @@ BIND_GLOBAL("Where", function(arg)
     fi;
     
     if ErrorLVars = fail or ErrorLVars = GetBottomLVars() then
-        Print("not in any function\n");
+        Print("not in any function ");
     else
-        WHERE(ParentLVars(ErrorLVars),depth);
+        WHERE(ParentLVars(ErrorLVars),depth, ErrorLVars);
     fi;
+    Print("at line ",INPUT_LINENUMBER()," of ",INPUT_FILENAME(),"\n");
 end);
 
 OnBreak := Where;
@@ -85,7 +90,7 @@ OnBreak := Where;
 #end;
 
 BIND_GLOBAL("ErrorCount", function()
-    return errorCount;
+    return ERROR_COUNT;
 end);
 
 
@@ -171,7 +176,7 @@ BIND_GLOBAL("ErrorInner",
     fi;
         
     ErrorLevel := ErrorLevel+1;
-    errorCount := errorCount+1;
+    ERROR_COUNT := ERROR_COUNT+1;
     errorLVars := ErrorLVars;
     ErrorLVars := context;
     if QUITTING or not BreakOnError then

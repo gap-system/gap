@@ -1498,6 +1498,41 @@ InstallGlobalFunction( PositionSet, function( arg )
 #M  PositionProperty(<list>,<func>) .  position of an element with a property
 #M  PositionProperty( <list>, <func>, <from> )
 ##
+
+InstallMethod( PositionProperty,
+    "for list and function",
+    [ IsList, IsFunction ],
+    function ( list, func )
+    local i;
+    for i in [ 1 .. Length( list ) ] do
+        if IsBound( list[i] ) then
+        	if func( list[ i ] ) then
+            	return i;
+            fi;	
+        fi;
+    od;
+    return fail;
+    end );
+
+InstallMethod( PositionProperty,
+    "for list, function, and integer",
+    [ IsList, IsFunction, IsInt ],
+    function( list, func, from )
+    local i;
+
+    if from < 1 then
+      from:= 1;
+    fi;
+    for i in [ from+1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        if func( list[i] ) then
+          return i;
+        fi;  
+      fi;
+    od;
+    return fail;
+    end );
+    
 InstallMethod( PositionProperty,
     "for dense list and function",
     [ IsDenseList, IsFunction ],

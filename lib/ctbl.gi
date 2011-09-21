@@ -2425,6 +2425,37 @@ InstallMethod( ClassPositionsOfSupersolvableResiduum,
 
 #############################################################################
 ##
+#F  ClassPositionsOfPCore( <ordtbl>, <p> )
+##
+InstallMethod( ClassPositionsOfPCore, 
+    "for an ordinary table and a pos. integer",
+    [ IsOrdinaryTable, IsPosInt ],
+    function( ordtbl, p )
+    local nsg, op, opsizeexp, classes, n, nsize;
+
+    if not IsPrimeInt( p ) then
+      Error( "<p> must be a prime" );
+    fi;
+
+    nsg:= ClassPositionsOfNormalSubgroups( ordtbl );
+    op:= [ 1 ];
+    opsizeexp:= 0;
+    classes:= SizesConjugacyClasses( ordtbl );
+    for n in nsg do
+      nsize:= Collected( Factors( Sum( classes{ n }, 0 ) ) );
+      if Length( nsize ) = 1 and nsize[1][1] = p
+                             and opsizeexp < nsize[1][2] then
+        op:= n;
+        opsizeexp:= nsize[1][2];
+      fi;
+    od;
+
+    return op;
+    end );
+
+
+#############################################################################
+##
 #M  ClassPositionsOfNormalClosure( <tbl>, <classes> )
 ##
 InstallMethod( ClassPositionsOfNormalClosure,
@@ -5980,11 +6011,11 @@ InstallOtherMethod( CharacterTableIsoclinic,
 ##  and do not want to create it anew.
 ##
 InstallOtherMethod( CharacterTableIsoclinic,
-    "for a Brauer table and an ordnary table",
+    "for a Brauer table and an ordinary table",
     [ IsBrauerTable, IsOrdinaryTable ],
     function( modtbl, ordiso )
     local p, reg, irreducibles, source, factorfusion, nsg, centre, xpos,
-          outer;
+          outer, pi, fus, inv;
 
     p:= UnderlyingCharacteristic( modtbl );
     reg:= CharacterTableRegular( ordiso, p );
@@ -6002,6 +6033,28 @@ InstallOtherMethod( CharacterTableIsoclinic,
       irreducibles:= IrreducibleCharactersOfIsoclinicGroup( Irr( modtbl ),
                         centre, outer, xpos ).all;
     fi;
+
+    # If the classes of the ordinary isoclinic table have been sorted then
+    # adjust the modular irreducibles accordingly.
+    # (Note that when an ordinary isoclinic table t2 is created from t1 with
+    # `CharacterTableIsoclinic' then t2 has no `ClassPermutation' value,
+    # and the attribute `SourceOfIsoclinicTable' is set in t2.
+    # When a sorted table t3 is created from t2 then a `ClassPermutation'
+    # value appears in t3, and the `SourceOfIsoclinicTable' value of t3
+    # is simply taken over from t2.
+    # Inside the current GAP function, `modtbl' equals the Brauer table
+    # for t1, and `ordiso' equals t3.
+    # With `IrreducibleCharactersOfIsoclinicGroup', we get irreducibles
+    # that fit to t2, thus we have to apply the permutation from t2 to t3.
+    if HasClassPermutation( ordiso ) then
+      pi:= ClassPermutation( ordiso );
+      fus:= GetFusionMap( reg, ordiso );
+      inv:= InverseMap( fus );
+      pi:= PermList( List( [ 1 .. Length( fus ) ],
+                           i -> inv[ fus[i]^pi ] ) );
+      irreducibles:= List( irreducibles, x -> Permuted( x, pi ) );
+    fi;
+
     SetIrr( reg, List( irreducibles, vals -> Character( reg, vals ) ) );
 
     # Return the result.

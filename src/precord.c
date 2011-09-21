@@ -24,6 +24,7 @@
 **  positive rnams and can thus be distinguished. Every read access will 
 **  clean up the mess by sorting the new part and then merging the two
 **  sorted areas. After that, all rnams are negative indicating sortedness.
+**
 */
 #include        <stdlib.h>              /* for qsort */
 #include        "system.h"              /* system dependent part           */
@@ -456,6 +457,7 @@ void UnbPRec (
         SET_RNAM_PREC( rec, len, 0 );
         SET_ELM_PREC( rec, len, 0L );
 
+
         /* resize the record                                               */
         SET_LEN_PREC(rec,LEN_PREC(rec)-1);
 
@@ -553,8 +555,8 @@ void PrintPRec (
 */
 static int PrecComparer(const void *a, const void *b)
 {
-    UInt *aa = (UInt *) a;
-    UInt *bb = (UInt *) b;
+    const UInt *aa = (const UInt *) a;
+    const UInt *bb = (const UInt *) b;
     if (*aa < *bb) return -1;
     else if (*aa == *bb) return 0;
     else return 1;
@@ -706,7 +708,7 @@ void SortPRec ( Obj rec )
 **  Otherwise it return 0.
 */
 UInt OperationsRNam;                    /* 'operations' record name        */
-UInt COMPONENTSRNam;		        /* COMPONENTS record name          */
+UInt COMPONENTSRNam;                    /* COMPONENTS record name          */
 
 Obj MethodPRec (
     Obj                 rec,
@@ -729,11 +731,11 @@ Obj MethodPRec (
     /* check for an Operations Record object */
     if ( TNUM_OBJ(opers) == T_COMOBJ)
       {
-	/* Make use of the fact the Component objects look like Precs */
+        /* Make use of the fact the Component objects look like Precs */
         if ( !FindPRec(opers,COMPONENTSRNam,&i,1) ) {
-	  return 0;
-	}
-	opers = GET_ELM_PREC( opers, i );
+          return 0;
+        }
+        opers = GET_ELM_PREC( opers, i );
       }
 
 
@@ -1216,8 +1218,8 @@ Obj FuncLT_PREC_DEFAULT (
         if ( LEN_PREC(left) < i )  return True;
 
         /* compare the names                                               */
-	/* The sense of this comparison is determined by the rule that
-	   unbound entries compare less than bound ones                    */
+        /* The sense of this comparison is determined by the rule that
+           unbound entries compare less than bound ones                    */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
             if ( SyStrcmp( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
                    NAME_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) ) > 0 ) {

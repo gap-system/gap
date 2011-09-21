@@ -333,7 +333,7 @@ DeclareGlobalFunction("AddRelator");
 ##  Nevertheless, a certain misuse of the command is still possible, and we
 ##  want to explicitly warn you from this.
 ##  The reason is that the Tietze option parameters described in
-##  Section <Ref Sect="Tietze Transformations"/> apply to
+##  Section <Ref Sect="Tietze Options"/> apply to
 ##  <Ref Func="DecodeTree"/> as well.
 ##  Hence, in case of inadequate values of these parameters, it may happen that
 ##  <Ref Func="DecodeTree"/> stops before all the secondary generators have

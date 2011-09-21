@@ -5,8 +5,9 @@
 ##  
 ##  To switch off the coloring of prompt and input call
 ##     ColorPrompt(false);
-##  To switch off use of colors completely say
-##     ANSI_COLORS := false;
+##  
+##  The variable ANSI_COLORS used in earlier versions is no longer
+##  supported, see GAPInfo.UserPreferences.UseColorsInTerminal.
 ##  
 Revision.colorprompt_g := 
     "$Id$";
@@ -37,8 +38,6 @@ EndLineHook := function() end;
 ##  <Description>
 ##  With  <C>ColorPrompt(true);</C> &GAP;  changes its  user interface:
 ##  The prompts and the user input are displayed in different colors.
-##  It also sets the variable <C>ANSI_COLORS</C> to <K>true</K>, which has
-##  the side effect that some help pages are also displayed with color markup.
 ##  Switch off the colored prompts with <C>ColorPrompt(false);</C>.
 ##  <P/>
 ##  Note that  this will only work  if your terminal emulation  in which
@@ -137,10 +136,8 @@ ColorPrompt := function(arg)
   if b <> true then
     Unbind(PrintPromptHook);
     Unbind(EndLineHook);
-    ANSI_COLORS := false;
     return;
   fi;
-  ANSI_COLORS := true;
 
   # The colored interface
   # We stored STDOut above to avoid overwriting the last system error with 

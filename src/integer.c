@@ -118,7 +118,7 @@ const char * Revision_integer_c =
 
 #include        "saveload.h"            /* saving and loading              */
 
-#include        <jhash.h>               /* Jenkins Hash function, from extern */
+#include        "intfuncs.h"
 
 #include <stdio.h>
 
@@ -3019,119 +3019,6 @@ Obj             FuncGCD_INT (
 
 
 
-/****************************************************************************
-**
-*F  FuncHASHKEY_BAG(<self>,<obj>,<factor>,<offset>,<maxlen>)
-**
-**  'FuncHASHKEY_BAG' implements the internal function 'HASHKEY_BAG'.
-**
-**  'HASHKEY_BAG( <obj>, <factor>,<offset>,<maxlen> )'
-**
-**  takes an non-immediate object and a small integer <int> and computes a
-**  hash value for the contents of the bag from these. (For this to be
-**  usable in algorithms, we need that objects of this kind are stored uniquely
-**  internally.
-**  The offset and the maximum number of bytes to process both count in
-**  bytes. The values passed to these parameters might depend on the word
-**  length of the computer.
-**  A <maxlen> value of -1 indicates infinity.
-*/
-Obj             FuncHASHKEY_BAG (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR,
-    Obj                 opO,
-    Obj			opM)
-{
-  UInt sum;
-  UChar* ptr;
-  Int n;
-  Int m;
-  Int i;
-  Int modulus;
-  Int offs;
-
-  modulus=1<<28; /* might want to change for 64 bit machines? */
-  /* check the arguments                                                 */
-  while ( TNUM_OBJ(opR) != T_INT ) {
-      opR = ErrorReturnObj(
-	  "HASHKEY_BAG: <factor> must be a small integer (not a %s)",
-	  (Int)TNAM_OBJ(opR), 0L,
-	  "you can replace <factor> via 'return <factor>;'" );
-  }
-
-  while ( TNUM_OBJ(opO) != T_INT ) {
-      opO = ErrorReturnObj(
-	  "HASHKEY_BAG: <offset> must be a small integer (not a %s)",
-	  (Int)TNAM_OBJ(opO), 0L,
-	  "you can replace <offset> via 'return <offset>;'" );
-  }
-
-  while ( TNUM_OBJ(opM) != T_INT ) {
-      opM = ErrorReturnObj(
-	  "HASHKEY_BAG: <maxlen> must be a small integer (not a %s)",
-	  (Int)TNAM_OBJ(opM), 0L,
-	  "you can replace <maxlen> via 'return <maxlen>;'" );
-  }
-
-  sum=0;
-  /* start byte plus offset */
-  offs=INT_INTOBJ(opO);
-  ptr=(UChar*)ADDR_OBJ(opL)+offs;
-  n=SIZE_OBJ(opL)-offs;
-
-  /* maximal number of bytes to read */
-  offs=INT_INTOBJ(opM);
-  if ((n>offs)&&(offs!=-1)) {n=offs;};
-
-  m=INT_INTOBJ(opR);
-
-  for (i=0;i<n;i++) {
-    sum=((sum*m)+(UInt)(*ptr++));
-    /*    if (i < 100)
-	  Pr("%d %d\n",(UInt)*(ptr-1),sum); */
-  }
-  sum=sum % modulus;
-
-  return INTOBJ_INT(sum);
-}
-
-Obj FuncJenkinsHash(Obj self, Obj op, Obj size)
-{
-   void *input;
-   uint32_t len;
-   uint32_t key;
-   uint32_t init = 0;
-
-   len = (uint32_t)INT_INTOBJ(size);
-   input = (void *)ADDR_OBJ(op);
-   if (len == -1)
-     len = (uint32_t)SIZE_OBJ(op);
-
-// Take advantage of endianness if possible
-#ifdef WORDS_BIGENDIAN
-   key = hashbig(input, len, init);
-#else
-   key = hashlittle(input, len, init);
-#endif
-
-   return INTOBJ_INT((Int)(key % (1 << 28)));
-}
-
-
-/****************************************************************************
-**
-*F  FuncSIZE_OBJ(<self>,<obj>)
-**
-**  'SIZE_OBJ( <obj> )' returns the size of a nonimmediate object. It can be
-**  used to debug memory use.
-*/
-Obj             FuncSIZE_OBJ (
-    Obj                 self,
-    Obj                 a)
-{
-  return INTOBJ_INT(SIZE_OBJ(a));
-}
 
 
 
@@ -3190,126 +3077,6 @@ void LoadInt( Obj bigint)
 **  We use the file mt19937ar.c, version 2002/1/26.
 */
 
-/****************************************************************************
-**
-*F  InitRandomMT( <initstr> )
-**
-**  Returns a string that can be used as data structure of a new MT random
-**  number generator. <initstr> can be an arbitrary string as seed.
-*/
-#define MATRIX_A 0x9908b0dfUL   /* constant vector a */
-#define UPPER_MASK 0x80000000UL /* most significant w-r bits */
-#define LOWER_MASK 0x7fffffffUL /* least significant r bits */
-
-void initGRMT(UInt4 *mt, UInt4 s)
-{
-    UInt4 mti;
-    mt[0]= s & 0xffffffffUL;
-    for (mti=1; mti<624; mti++) {
-        mt[mti] =
-	    (1812433253UL * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti);
-        mt[mti] &= 0xffffffffUL;
-    }
-    /* store mti as last entry of mt[] */
-    mt[624] = mti;
-}
-
-/* to read a seed string independently of endianness */
-static inline UInt4 uint4frombytes(UChar *s)
-{
-  UInt4 res;
-  res = s[3]; res <<= 8;
-  res += s[2]; res <<= 8;
-  res += s[1]; res <<= 8;
-  res += s[0];
-  return res;
-}
-
-Obj FuncInitRandomMT( Obj self, Obj initstr)
-{
-  Obj str;
-  UChar *init_key;
-  UInt4 *mt, key_length, i, j, k, N=624;
-
-  /* check the seed, given as string */
-  while (! IsStringConv(initstr)) {
-     initstr = ErrorReturnObj(
-         "<initstr> must be a string, not a %s)",
-         (Int)TNAM_OBJ(initstr), 0L,
-         "you can replace <initstr> via 'return <initstr>;'" );
-  }
-  init_key = CHARS_STRING(initstr);
-  key_length = GET_LEN_STRING(initstr) / 4;
-
-  /* store array of 624 UInt4 and one UInt4 as counter "mti" and an
-     endianness marker */
-  str = NEW_STRING(4*626);
-  SET_LEN_STRING(str, 4*626);
-  mt = (UInt4*) CHARS_STRING(str);
-  /* here the counter mti is set to 624 */
-  initGRMT(mt, 19650218UL);
-  i=1; j=0;
-  k = (N>key_length ? N : key_length);
-  for (; k; k--) {
-      mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
-        + uint4frombytes(init_key+4*j) + j;
-      mt[i] &= 0xffffffffUL;
-      i++; j++;
-      if (i>=N) { mt[0] = mt[N-1]; i=1; }
-      if (j>=key_length) j=0;
-  }
-  for (k=N-1; k; k--) {
-      mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL)) - i;
-      mt[i] &= 0xffffffffUL;
-      i++;
-      if (i>=N) { mt[0] = mt[N-1]; i=1; }
-  }
-  mt[0] = 0x80000000UL;
-  /* gives string "1234" in little endian as marker */
-  mt[625] = 875770417UL;
-  return str;
-}
-
-
-/*  internal, generates a random number on [0,0xffffffff]-interval
-**  argument <mt> is pointer to a string generated by InitRandomMT
-**  (the first 4*624 bytes are the random numbers, the last 4 bytes contain
-**  a counter)
-*/
-UInt4 nextrandMT_int32(UInt4* mt)
-{
-    UInt4 mti, y, N=624, M=397;
-    static UInt4 mag01[2]={0x0UL, MATRIX_A};
-
-    mti = mt[624];
-    if (mti >= N) {
-        int kk;
-
-        for (kk=0;kk<N-M;kk++) {
-            y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
-            mt[kk] = mt[kk+M] ^ (y >> 1) ^ mag01[y & 0x1UL];
-        }
-        for (;kk<N-1;kk++) {
-            y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
-            mt[kk] = mt[kk+(M-N)] ^ (y >> 1) ^ mag01[y & 0x1UL];
-        }
-        y = (mt[N-1]&UPPER_MASK)|(mt[0]&LOWER_MASK);
-        mt[N-1] = mt[M-1] ^ (y >> 1) ^ mag01[y & 0x1UL];
-
-        mti = 0;
-    }
-
-    y = mt[mti++];
-    mt[624] = mti;
-
-    /* Tempering */
-    y ^= (y >> 11);
-    y ^= (y << 7) & 0x9d2c5680UL;
-    y ^= (y << 15) & 0xefc60000UL;
-    y ^= (y >> 18);
-
-    return y;
-}
 
 
 /****************************************************************************
@@ -3419,33 +3186,6 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
   return res;
 }
 
-Obj FuncRandomListMT(Obj self, Obj mtstr, Obj list)
-{
-  Int len, a, lg;
-  UInt4 *mt;
-  while ((! IsStringConv(mtstr)) || GET_LEN_STRING(mtstr) < 2500) {
-     mtstr = ErrorReturnObj(
-         "<mtstr> must be a string with at least 2500 characters, ",
-         0L, 0L,
-         "you can replace <mtstr> via 'return <mtstr>;'" );
-  }
-  while (! IS_LIST(list)) {
-     list = ErrorReturnObj(
-         "<list> must be a list, not a %s",
-         (Int)TNAM_OBJ(list), 0L,
-         "you can replace <list> via 'return <list>;'" );
-  }
-  len = LEN_LIST(list);
-  if (len == 0) return Fail;
-  mt = (UInt4*) CHARS_STRING(mtstr);
-  lg = 31 - INT_INTOBJ(FuncLog2Int((Obj)0, INTOBJ_INT(len)));
-  for (a = nextrandMT_int32(mt) >> lg;
-       a >= len;
-       a = nextrandMT_int32(mt) >> lg
-    );
-  return ELM_LIST(list, a+1);
-}
-
 
 
 /****************************************************************************
@@ -3500,23 +3240,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "STRING_INT", 1, "int",
       FuncSTRING_INT, "src/integer.c:STRING_INT" },
 
-    { "HASHKEY_BAG", 4, "obj, int,int,int",
-      FuncHASHKEY_BAG, "src/integer.c:HASHKEY_BAG" },
-
-    { "JENKINS_HASH", 2, "obj, len",
-      FuncJenkinsHash, "src/integer.c:JENKINS_HASH" },
-
-    { "SIZE_OBJ", 1, "obj",
-      FuncSIZE_OBJ, "src/integer.c:SIZE_OBJ" },
-
-    { "InitRandomMT", 1, "initstr",
-      FuncInitRandomMT, "src/integer.c:InitRandomMT" },
 
     { "RandomIntegerMT", 2, "mtstr, nrbits",
       FuncRandomIntegerMT, "src/integer.c:RandomIntegerMT" },
 
-    { "RandomListMT", 2, "mtstr, list",
-      FuncRandomListMT, "src/integer.c:RandomListMT" },
 
     { 0 }
 

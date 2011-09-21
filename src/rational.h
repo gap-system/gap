@@ -18,6 +18,10 @@
 **  integer package.  We will use the  term fraction to  stress the fact that
 **  something must not be an integer.
 */
+
+#ifndef GAP_RATIONAL_H
+#define GAP_RATIONAL_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_rational_h =
    "@(#)$Id$";
@@ -38,9 +42,10 @@ const char * Revision_rational_h =
 StructInitInfo * InitInfoRat ( void );
 
 
+#endif // GAP_RATIONAL_H
+
 /****************************************************************************
 **
 
 *E  rational.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-

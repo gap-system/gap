@@ -121,7 +121,7 @@
 ##     - insert "Where" in <Cite ... />,
 ##     - distinguish LaTex/HTML/text objects where appropriate,
 ##     - introduce math mode in section headers where appropriate,
-##     - cgange the bibliography to the XML based format,
+##     - change the bibliography to the XML based format,
 ##     - introduce subsections (beyond <ManSection>) for structuring purposes,
 ##     - ...
 ## 

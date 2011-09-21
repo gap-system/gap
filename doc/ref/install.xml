@@ -15,6 +15,42 @@
 <!-- %%  for various operating systems. -->
 <!-- %% -->
 
+<!-- AK: This chapter was excluded from the manual 
+     following the message below on September 13th, 2011 
+
+Dear all,
+
+We (Steve, John and me) agreed about a proposal to gather all GAP installation 
+instructions in a single place.
+
+Currently there are two versions of them:
+
+1) linked from http://www.gap-system.org/Download/index.html
+under the section "Unpacking and Installing the Archives", leading to installation
+instructions under UNIX/Windows/Mac
+
+2) included in the reference manual, chapter 77. 
+
+This is prone to omissions/outdating/contradictions, since it's hard to maintain 
+two copies of these instructions. 
+
+The suggestion is to have a single text file called e.g. INSTALL (or INSTALL.txt)
+available on Web (so search engines will see it) and linked from the Download 
+section of the GAP website. We will be able to update it as soon as we need between
+releases, and also get it using GAP distribution wrapping scripts and put into the 
+GAP release in the top level gap4r5 directory. I personally think the canonical 
+location for the INSTALL file would be the CVS repository of the GAP website, but 
+there may be other options. Then, the Chapter 77 "Installing GAP" should be removed.
+
+If there are no objections, we would like to proceed with removing Chapter 77 shortly
+(on Wednesday?) in order to do this before GAP 4.5.2 will be out. Please let us know 
+if you have any objections.
+
+Thanks,
+Alexander
+
+-->
+
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="Installing GAP">
@@ -69,8 +105,8 @@ Install packages. (Some packages will only work under Unix and Mac OS X).
 </Item>
 </List>
 <P/>
-Installation will always install the full version of &GAP;. There is no
-<Q>Upgrade</Q> mode. If you are worried about losing the old version, you can
+Installation will always install the full version of &GAP;. 
+If you are worried about losing the old version, you can
 keep an existing installation of &GAP; in another directory, it will not be
 overwritten.
 <P/>

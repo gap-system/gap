@@ -166,7 +166,7 @@ function( dir, prg, input, output, args )
 	  PROCESS_INPUT_TEMPORARY:=fail;
 	fi;
         while PROCESS_INPUT_TEMPORARY = fail do
-            PROCESS_INPUT_TEMPORARY := TmpName();
+            PROCESS_INPUT_TEMPORARY := TmpNameAllArchs();
         od;
 	name_input := PROCESS_INPUT_TEMPORARY;
         new := OutputTextFile( name_input, true );
@@ -187,7 +187,7 @@ function( dir, prg, input, output, args )
 	  PROCESS_OUTPUT_TEMPORARY:=fail;
 	fi;
         while PROCESS_OUTPUT_TEMPORARY = fail do
-            PROCESS_OUTPUT_TEMPORARY := TmpName();
+            PROCESS_OUTPUT_TEMPORARY := TmpNameAllArchs();
         od;
         name_output := PROCESS_OUTPUT_TEMPORARY;
         new_output  := OutputTextFile( name_output, true );
@@ -219,6 +219,25 @@ function( dir, prg, input, output, args )
     return res;
 
 end );
+
+#############################################################################
+##
+#F  TmpNameAllArchs( )
+##
+InstallGlobalFunction( TmpNameAllArchs, function( )
+    local filename, a;
+
+    filename := TmpName( );
+    if ARCH_IS_WINDOWS( ) then
+        # replace leading /tmp/ by C:/WINDOWS/Temp/
+        a := SplitString(filename, "/");
+        a := a[Length(a)]; # is "/tmp/gaptempfile.kS4uyj", get rid of /tmp/ bit
+
+        filename := Concatenation("C:/WINDOWS/Temp/", a);
+    fi;
+
+    return filename;
+end);
 
 #############################################################################
 ##

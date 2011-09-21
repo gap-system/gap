@@ -11,6 +11,10 @@
 **  This file implements the arithmetic for elements from  cyclotomic  fields
 **  $Q(e^{{2 \pi i}/n}) = Q(e_n)$,  which  we  call  cyclotomics  for  short.
 */
+
+#ifndef GAP_CYCLOTOM_H
+#define GAP_CYCLOTOM_H
+
 #ifdef  INCLUDE_DECLARATION_PART
 const char * Revision_cyclotom_h =
    "@(#)$Id$";
@@ -32,10 +36,13 @@ const char * Revision_cyclotom_h =
 StructInitInfo * InitInfoCyc ( void );
 
 
+#endif // GAP_CYCLOTOM_H
+
 /****************************************************************************
 **
 
 *E  cyclotom.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
+
 
 

@@ -96,6 +96,7 @@ mentioned below may not be available on your installation.
 <#Include Label="SymplecticGroup">
 <#Include Label="GeneralOrthogonalGroup">
 <#Include Label="SpecialOrthogonalGroup">
+<#Include Label="Omega_orthogonal_groups">
 <#Include Label="GeneralSemilinearGroup">
 <#Include Label="SpecialSemilinearGroup">
 <#Include Label="ProjectiveGeneralLinearGroup">
@@ -103,6 +104,7 @@ mentioned below may not be available on your installation.
 <#Include Label="ProjectiveGeneralUnitaryGroup">
 <#Include Label="ProjectiveSpecialUnitaryGroup">
 <#Include Label="ProjectiveSymplecticGroup">
+<#Include Label="ProjectiveOmega">
 
 </Section>
 
@@ -428,7 +430,7 @@ The data occupies about 30 MB (storing over 400 million groups in about
 200 megabits). The group identification occupies about 47 MB of which
 18 MB is used for the groups in layer (6). More information on the Small 
 Groups library can be found on
-<URL>http://www.tu-bs.de/~hubesche/small.html</URL>
+<URL>http://www.icm.tu-bs.de/ag_algebra/software/small/</URL>
 <P/>
 This library has been constructed by Hans Ulrich Besche, Bettina Eick and 
 E.&nbsp;A.&nbsp;O'Brien. A survey on this topic and an account of the history of 
@@ -524,9 +526,10 @@ presentation, but, in  addition, a list  of  one or more subgroups  <M>S_1,
 representation of <M>G</M> of degree <M>\sum_{{i = 1}}^r [G:S_i]</M>
 on the set <M>\{ S_i g \mid 1 \leq i \leq r, g \in G \}</M>
 of the cosets of the <M>S_i</M>.
-This allows one to construct the groups as permutation groups. The
-<Ref Func="DisplayInformationPerfectGroups" Label="for group order (and index)"/> function displays only the
-available degree. The message
+This allows one to construct the groups as permutation groups.
+The function <Ref Func="DisplayInformationPerfectGroups"
+Label="for group order (and index)"/> displays only the available degree.
+The message
 <Log><![CDATA[
 orbit size = 8
 ]]></Log>
@@ -674,7 +677,7 @@ If such a group description has been given in the book for <M>G</M>
 (and, in fact, this is the case for most of the library groups),
 it is displayed by <Ref Func="DisplayInformationPerfectGroups"
 Label="for group order (and index)"/>.
-Otherwise this function provides a less explicit description of the
+Otherwise the function provides a less explicit description of the
 (in these cases unique) Holt-Plesken class to which <M>G</M> belongs,
 together with a serial number if this is necessary to make it unique.
 

@@ -2363,6 +2363,13 @@ InstallMethod( IsConjugatorIsomorphism,
 
 #############################################################################
 ##
+#M  CanEasilyComputeWithIndependentGensAbelianGroup( <pcgrp> )
+##
+InstallTrueMethod(CanEasilyComputeWithIndependentGensAbelianGroup,
+    IsGroup and CanEasilyComputePcgs and IsAbelian);
+
+#############################################################################
+##
 #M  IndependentGeneratorsOfAbelianGroup( <A> )
 ##
 InstallMethod(IndependentGeneratorsOfAbelianGroup,

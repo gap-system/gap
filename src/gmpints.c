@@ -41,8 +41,7 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
-#include        <jhash.h>             /* Jenkins Hash function,
-					   from extern                     */
+#include        "intfuncs.h"
 
 #include <stdio.h>
 
@@ -55,6 +54,7 @@
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
+
 
 #ifdef USE_GMP
 
@@ -272,13 +272,13 @@ Obj GMP_REDUCE( Obj gmp )
   }
   if ( SIZE_INT(gmp) == 1){
     if ( ( VAL_LIMB0(gmp) < (TypLimb)((1L<<NR_SMALL_INT_BITS)) ) ||
-	 ( IS_INTNEG(gmp) && 
-	   ( VAL_LIMB0(gmp) == (TypLimb)(1L<<NR_SMALL_INT_BITS) ) ) ) {
+         ( IS_INTNEG(gmp) && 
+           ( VAL_LIMB0(gmp) == (TypLimb)(1L<<NR_SMALL_INT_BITS) ) ) ) {
       if ( IS_INTNEG(gmp) ) {
-	return INTOBJ_INT( -(Int)VAL_LIMB0(gmp) );
+        return INTOBJ_INT( -(Int)VAL_LIMB0(gmp) );
       }
       else {
-	return INTOBJ_INT(  (Int)VAL_LIMB0(gmp) );
+        return INTOBJ_INT(  (Int)VAL_LIMB0(gmp) );
       }
     }
   }
@@ -372,7 +372,7 @@ Obj ObjInt_UInt( UInt i )
 void PrintInt ( Obj op )
 {
   Char buf[20000];
-
+  UInt signlength;
   /* print a small integer                                                 */
   if ( IS_INTOBJ(op) ) {
     Pr( "%>%d%<", INT_INTOBJ(op), 0L );
@@ -381,14 +381,16 @@ void PrintInt ( Obj op )
   /* print a large integer                                                 */
   else if ( SIZE_INT(op) < 1000 ) {
     /* use gmp func to print int to buffer                                 */
-    if IS_INTPOS(op) {
-      gmp_snprintf( buf, 19999, "%Ni", (TypLimb *)ADDR_INT(op),
-		   (TypGMPSize)SIZE_INT(op) );
+    if (!IS_INTPOS(op)) {
+      buf[0] ='-';
+      signlength = 1;
+    } else {
+      signlength = 0;
     }
-    else {
-      gmp_snprintf( buf, 19999, "-%Ni", (TypLimb *)ADDR_INT(op),
-		   (TypGMPSize)SIZE_INT(op) );
-    }
+    gmp_snprintf((char *)(buf+signlength),20000-signlength,
+                 "%Nd", (TypLimb *)ADDR_INT(op),
+                 (TypGMPSize)SIZE_INT(op));
+
     /* print the buffer, %> means insert '\' before a linebreak            */
     Pr("%>%s%<",(Int)buf, 0);
   }
@@ -471,7 +473,7 @@ Obj FuncHexStringInt( Obj self, Obj integer )
 
     for (j = 0; j < str_size-1; j++)
       if (s[j] != 0)
-	break;
+        break;
     
 
     for ( i = 0; i < str_size-j; i++ )
@@ -484,7 +486,7 @@ Obj FuncHexStringInt( Obj self, Obj integer )
     /* adjust length in case of trailing \0 characters */
     /* [Is there a way to get it right from the beginning? FL] */
     /*     while (s[alloc_size-1] == '\0') 
-	   alloc_size--; */
+           alloc_size--; */
     SET_LEN_STRING(res, str_size-j + (IS_INTNEG(integer)));
     /*  assert ( strlen( CSTR_STRING(res) ) == GET_LEN_STRING(res) ); */
     return res;
@@ -492,8 +494,8 @@ Obj FuncHexStringInt( Obj self, Obj integer )
 
   else 
     ErrorReturnObj("HexStringInt: argument must be a int, (not a %s)",
-		   (Int)TNAM_OBJ(integer), 0L,
-		   "");
+                   (Int)TNAM_OBJ(integer), 0L,
+                   "");
   /* please picky cc                                                       */
   return (Obj) 0L; 
 
@@ -510,8 +512,8 @@ Obj FuncIntHexString( Obj self,  Obj str )
   
   if (! IsStringConv(str))
     ErrorReturnObj("IntHexString: argument must be string (not a %s)",
-		   (Int)TNAM_OBJ(str), 0L,
-		   "");
+                   (Int)TNAM_OBJ(str), 0L,
+                   "");
 
   len = GET_LEN_STRING(str);
   if (len == 0) {
@@ -533,14 +535,14 @@ Obj FuncIntHexString( Obj self,  Obj str )
     for (; i<len; i++) {
       a = p[i];
       if (a>96) 
-	a -= 87;
+        a -= 87;
       else if (a>64) 
-	a -= 55;
+        a -= 55;
       else 
-	a -= 48;
+        a -= 48;
       if (a > 15)
-	ErrorReturnObj("IntHexString: non-valid character in hex-string",
-		       0L, 0L, "");
+        ErrorReturnObj("IntHexString: non-valid character in hex-string",
+                       0L, 0L, "");
       n = (n << 4) + a;
     }
     res = INTOBJ_INT(sign * n);
@@ -562,18 +564,18 @@ Obj FuncIntHexString( Obj self,  Obj str )
     /* the following destroys the supplied string - document this          */
     for (j=0;j<len-i;j++){
       c=p[j];
-      if (isdigit (c))
-	p[j] = c - '0';
-      else if (islower (c))
-	p[j] = c - 'a' + 10;
-      else if (isupper (c))
-	p[j] = c - 'A' + 10;
+      if (IsDigit(c))
+        p[j] = c - '0';
+      else if (islower((unsigned int)c))
+        p[j] = c - 'a' + 10;
+      else if (isupper((unsigned int)c))
+        p[j] = c - 'A' + 10;
       else
-	ErrorReturnObj("IntHexString: non-valid character in hex-string",
-		       0L, 0L, "");
+        ErrorReturnObj("IntHexString: non-valid character in hex-string",
+                       0L, 0L, "");
       if (p[j] >= 16)
-	ErrorReturnObj("IntHexString: non-valid character in hex-string",
-		       0L, 0L, "");
+        ErrorReturnObj("IntHexString: non-valid character in hex-string",
+                       0L, 0L, "");
     }
 
     mpn_set_str(ADDR_INT(res),p,len-i,16);
@@ -659,19 +661,19 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
     /* Case of zero                                                        */
     if (x == 0)
       {
-	CHARS_STRING(str)[0] = '0';
-	CHARS_STRING(str)[1] = '\0';
-	ResizeBag(str, SIZEBAG_STRINGLEN(1));
-	SET_LEN_STRING(str, 1);
-	
-	return str;
+        CHARS_STRING(str)[0] = '0';
+        CHARS_STRING(str)[1] = '\0';
+        ResizeBag(str, SIZEBAG_STRINGLEN(1));
+        SET_LEN_STRING(str, 1);
+        
+        return str;
       }
     /* Negative numbers                                                    */
     if (x < 0)
       {
-	CHARS_STRING(str)[len++] = '-';
-	x = -x;
-	neg = 1;
+        CHARS_STRING(str)[len++] = '-';
+        x = -x;
+        neg = 1;
       }
     else
       neg = 0;
@@ -679,17 +681,17 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
     /* Now the main case                                                   */
     while (x != 0)
       {
-	CHARS_STRING(str)[len++] = '0'+ x % 10;
-	x /= 10;
+        CHARS_STRING(str)[len++] = '0'+ x % 10;
+        x /= 10;
       }
     CHARS_STRING(str)[len] = '\0';
     
     /* finally, reverse the digits in place                                */
     for (i = neg; i < (neg+len)/2; i++)
       {
-	c = CHARS_STRING(str)[neg+len-1-i];
-	CHARS_STRING(str)[neg+len-1-i] = CHARS_STRING(str)[i];
-	CHARS_STRING(str)[i] = c;
+        c = CHARS_STRING(str)[neg+len-1-i];
+        CHARS_STRING(str)[neg+len-1-i] = CHARS_STRING(str)[i];
+        CHARS_STRING(str)[i] = c;
       }
     
     ResizeBag(str, SIZEBAG_STRINGLEN(len));
@@ -702,11 +704,11 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 
     if IS_INTNEG(integer) {
     len = gmp_snprintf( buf, 19999, "-%Ni", (TypLimb *)ADDR_INT(integer),
-	  (TypGMPSize)SIZE_INT(integer) );
+          (TypGMPSize)SIZE_INT(integer) );
     }
     else {
     len = gmp_snprintf( buf, 19999,  "%Ni", (TypLimb *)ADDR_INT(integer),
-	  (TypGMPSize)SIZE_INT(integer) );
+          (TypGMPSize)SIZE_INT(integer) );
     }
 
     assert (len <= 19999);
@@ -750,8 +752,8 @@ Int EqInt ( Obj gmpL, Obj gmpR )
   /* small ints fit into one limb of a GMP                                 */
   if IS_INTOBJ(gmpL) {
     if ( ( INT_INTOBJ(gmpL) <  0 && IS_INTPOS(gmpR) ) ||
-	 ( 0 <= INT_INTOBJ(gmpL) && IS_INTNEG(gmpR) ) ||
-	 ( SIZE_INT(gmpR) > (TypGMPSize)1 ) ) return 0L;
+         ( 0 <= INT_INTOBJ(gmpL) && IS_INTNEG(gmpR) ) ||
+         ( SIZE_INT(gmpR) > (TypGMPSize)1 ) ) return 0L;
     opL = FuncGMP_INTOBJ( (Obj)0, gmpL );
   }
   else {
@@ -760,8 +762,8 @@ Int EqInt ( Obj gmpL, Obj gmpR )
 
   if IS_INTOBJ(gmpR) {
     if ( ( INT_INTOBJ(gmpR) <  0 && IS_INTPOS(gmpL) ) ||
-	 ( 0 <= INT_INTOBJ(gmpR) && IS_INTNEG(gmpL) ) ||
-	 ( SIZE_INT(gmpL) > (TypGMPSize)1 ) ) return 0L;
+         ( 0 <= INT_INTOBJ(gmpR) && IS_INTNEG(gmpL) ) ||
+         ( SIZE_INT(gmpL) > (TypGMPSize)1 ) ) return 0L;
     opR = FuncGMP_INTOBJ( (Obj)0, gmpR );
   }
   else {
@@ -824,10 +826,10 @@ Int LtInt ( Obj gmpL, Obj gmpR )
   else if (   IS_INTPOS(opL) && IS_INTNEG(opR) )
     return 0L;
   else if ( ( IS_INTPOS(opR) && SIZE_INT(opL) < SIZE_INT(opR) ) ||
-	    ( IS_INTNEG(opR) && SIZE_INT(opL) > SIZE_INT(opR) ) )
+            ( IS_INTNEG(opR) && SIZE_INT(opL) > SIZE_INT(opR) ) )
     return 1L;
   else if ( ( IS_INTPOS(opL) && SIZE_INT(opL) > SIZE_INT(opR) ) ||
-	    ( IS_INTNEG(opL) && SIZE_INT(opL) < SIZE_INT(opR) ) )
+            ( IS_INTNEG(opL) && SIZE_INT(opL) < SIZE_INT(opR) ) )
     return 0L;
   else if ( IS_INTPOS(opL) ) {
     if ( mpn_cmp( ADDR_INT(opL), ADDR_INT(opR), SIZE_INT(opL) ) < 0 ) 
@@ -895,14 +897,12 @@ Obj SumOrDiffInt ( Obj gmpL, Obj gmpR, Int sign )
   Int  onesmall; /* set to 1 if one of args is a small int, 0 otherwise    */
   Int   swapped; /* set to 1 if args were swapped, 0 otherwise             */
   Int    resneg; /* set to 1 if result will be negative                    */
-  Int   compare; /* value of mpn_cmp for two large ints                    */
   TypLimb carry; /* hold any carry or borrow                               */
 
   twosmall = 0;
   onesmall = 0;
   swapped  = 0;
   resneg   = 0;
-  compare  = 0;
 
   /* findme - later change to put the non-overflow versions of these small
 int adds/subs into the caller funcs SumInt, DiffInt. Then remove check of
@@ -911,9 +911,9 @@ be called directly */
 
   if ( sign != 1 && sign != -1 ) {
     ErrorReturnObj(
-		   "SumOrDiffInt: <sign> must be +1 or -1. \nDo not call this function directly.",
-		   0L, 0L,
-		   "" );
+                   "SumOrDiffInt: <sign> must be +1 or -1. \nDo not call this function directly.",
+                   0L, 0L,
+                   "" );
   }
 
     /* adding two small integers                                           */
@@ -922,18 +922,18 @@ be called directly */
     /* add or subtract two small integers with a small sum                 */
     if (sign == 1) {
       if ( SUM_INTOBJS( res, gmpL, gmpR ) ) {
-	return res;
+        return res;
       }
       else {
-	twosmall = INT_INTOBJ(gmpL) + INT_INTOBJ(gmpR);
+        twosmall = INT_INTOBJ(gmpL) + INT_INTOBJ(gmpR);
       }
     }
     else if (sign == -1) {
       if ( DIFF_INTOBJS( res, gmpL, gmpR ) ) {
-	return res;
+        return res;
       }
       else {
-	twosmall = INT_INTOBJ(gmpL) - INT_INTOBJ(gmpR);
+        twosmall = INT_INTOBJ(gmpL) - INT_INTOBJ(gmpR);
       }
     }
 
@@ -962,7 +962,7 @@ be called directly */
       gmpR = GMP_NORMALIZE( gmpR );
       gmpR = GMP_REDUCE( gmpR );
       if ( IS_INTOBJ(gmpR) ) {
-	return INTOBJ_INT( INT_INTOBJ(gmpL) + sign*INT_INTOBJ(gmpR) );
+        return INTOBJ_INT( INT_INTOBJ(gmpL) + sign*INT_INTOBJ(gmpR) );
       }
       res = gmpL; gmpL = gmpR; gmpR = res;
       swapped = 1;
@@ -971,7 +971,7 @@ be called directly */
       gmpL = GMP_NORMALIZE( gmpL );
       gmpL = GMP_REDUCE( gmpL );
       if ( IS_INTOBJ(gmpL) ) {
-	return INTOBJ_INT( INT_INTOBJ(gmpL) + sign*INT_INTOBJ(gmpR) );
+        return INTOBJ_INT( INT_INTOBJ(gmpL) + sign*INT_INTOBJ(gmpR) );
       }
     }
   }
@@ -984,74 +984,74 @@ be called directly */
   }
 
   if      ( ( ( sign == +1 ) &&
-	      ( (  ( onesmall ) &&
-		  ( (IS_INTNEG(gmpL) && 0 <= INT_INTOBJ(gmpR)) ||
-		    (IS_INTPOS(gmpL) && 0 >  INT_INTOBJ(gmpR)) )  ) ||
-		( !( onesmall ) &&
-		  ( (IS_INTPOS(gmpL) &&       IS_INTNEG(gmpR)) ||
-		    (IS_INTNEG(gmpL) &&       IS_INTPOS(gmpR)) )  ) ) ) ||
-	    ( ( sign == -1 ) &&
-	      ( (  ( onesmall ) &&
-		  ( (IS_INTNEG(gmpL) && 0 >  INT_INTOBJ(gmpR)) ||
-		    (IS_INTPOS(gmpL) && 0 <= INT_INTOBJ(gmpR)) ) ) ||
-		( !( onesmall ) &&
-		  ( (IS_INTPOS(gmpL) &&       IS_INTPOS(gmpR)) ||
-		    (IS_INTNEG(gmpL) &&       IS_INTNEG(gmpR)) )  ) ) ) ) {
+              ( (  ( onesmall ) &&
+                  ( (IS_INTNEG(gmpL) && 0 <= INT_INTOBJ(gmpR)) ||
+                    (IS_INTPOS(gmpL) && 0 >  INT_INTOBJ(gmpR)) )  ) ||
+                ( !( onesmall ) &&
+                  ( (IS_INTPOS(gmpL) &&       IS_INTNEG(gmpR)) ||
+                    (IS_INTNEG(gmpL) &&       IS_INTPOS(gmpR)) )  ) ) ) ||
+            ( ( sign == -1 ) &&
+              ( (  ( onesmall ) &&
+                  ( (IS_INTNEG(gmpL) && 0 >  INT_INTOBJ(gmpR)) ||
+                    (IS_INTPOS(gmpL) && 0 <= INT_INTOBJ(gmpR)) ) ) ||
+                ( !( onesmall ) &&
+                  ( (IS_INTPOS(gmpL) &&       IS_INTPOS(gmpR)) ||
+                    (IS_INTNEG(gmpL) &&       IS_INTNEG(gmpR)) )  ) ) ) ) {
 
     /* the args have different sign (or same sign and this is a subtraction)
        - compare to see which to subtract                                  */
     if ( onesmall ) {
       if ( ( ( ( swapped == 1 && sign == +1 ) || swapped == 0 )
-	     && IS_INTNEG(gmpL) ) || 
-	   ( swapped == 1 && sign == -1 && IS_INTPOS(gmpL) ) ) {
-	res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
+             && IS_INTNEG(gmpL) ) || 
+           ( swapped == 1 && sign == -1 && IS_INTPOS(gmpL) ) ) {
+        res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
       }
       else {
-	res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
+        res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
       }
       gmpR = FuncGMP_INTOBJ( (Obj)0, gmpR );
       carry = mpn_sub_1( ADDR_INT(res), 
-			 ADDR_INT(gmpL), SIZE_INT(gmpL),
-			*ADDR_INT(gmpR) );
+                         ADDR_INT(gmpL), SIZE_INT(gmpL),
+                        *ADDR_INT(gmpR) );
     }
     /* this test correct since size(gmpL) >= size(gmpR)                    */
     else if ( SIZE_INT(gmpL) != SIZE_INT(gmpR) ) {
       if ( ( ( ( swapped == 1 && sign == +1 ) || swapped == 0 )
-	     && IS_INTNEG(gmpL) ) || 
-	   ( swapped == 1 && sign == -1 && IS_INTPOS(gmpL) ) ) {
-	res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
+             && IS_INTNEG(gmpL) ) || 
+           ( swapped == 1 && sign == -1 && IS_INTPOS(gmpL) ) ) {
+        res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
       }
       else {
-	res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
+        res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
       }
       carry = mpn_sub( ADDR_INT(res),
-		       ADDR_INT(gmpL), SIZE_INT(gmpL),
-		       ADDR_INT(gmpR), SIZE_INT(gmpR) );
+                       ADDR_INT(gmpL), SIZE_INT(gmpL),
+                       ADDR_INT(gmpR), SIZE_INT(gmpR) );
     }
     /* ok, so they're the same size in limbs - which is the bigger number? */
     else if ( mpn_cmp( ADDR_INT(gmpL),
-		       ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0 ) {
+                       ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0 ) {
       if ( IS_INTPOS(gmpL) ) {
-	res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
+        res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
       }
       else {
-	res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
+        res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
       }
       carry = mpn_sub_n( ADDR_INT(res),
-			 ADDR_INT(gmpR),
-			 ADDR_INT(gmpL), SIZE_INT(gmpR) );
+                         ADDR_INT(gmpR),
+                         ADDR_INT(gmpL), SIZE_INT(gmpR) );
     }
 
     else {
       if ( IS_INTNEG(gmpL) ) {
-	res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
+        res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
       }
       else {
-	res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
+        res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
       }
       carry = mpn_sub_n( ADDR_INT(res),
-			 ADDR_INT(gmpL),
-			 ADDR_INT(gmpR), SIZE_INT(gmpL) );
+                         ADDR_INT(gmpL),
+                         ADDR_INT(gmpR), SIZE_INT(gmpL) );
     }
 
     res = GMP_NORMALIZE( res );
@@ -1066,38 +1066,38 @@ be called directly */
 
     /* Will the result be negative?                                        */
     if ( ( sign ==  1 && IS_INTNEG(gmpL) ) ||
-	 ( sign == -1 &&
-	   ( ( swapped == 0 && IS_INTNEG(gmpL) ) ||
-	     ( swapped == 1 && IS_INTPOS(gmpL) ) ) ) ) {
+         ( sign == -1 &&
+           ( ( swapped == 0 && IS_INTNEG(gmpL) ) ||
+             ( swapped == 1 && IS_INTPOS(gmpL) ) ) ) ) {
       resneg = 1;
     }
-	 /*	   ( ( onesmall        && IS_INTNEG(gmpL) ) ||
-	     ( IS_INTNEG(gmpL) && IS_INTNEG(gmpR) ) ||
-	     ( SIZE_INT(gmpL) > SIZE_INT(gmpR) && IS_INTNEG(gmpL) ) ) ) ||
+         /*        ( ( onesmall        && IS_INTNEG(gmpL) ) ||
+             ( IS_INTNEG(gmpL) && IS_INTNEG(gmpR) ) ||
+             ( SIZE_INT(gmpL) > SIZE_INT(gmpR) && IS_INTNEG(gmpL) ) ) ) ||
     if ( resneg == 0 && sign == 1 && SIZE_INT(gmpL) == SIZE_INT(gmpR) ) {
       compare = mpn_cmp( ADDR_INT(gmpL), ADDR_INT(gmpR), SIZE_INT(gmpL) );
       if ( ( compare >= 0 && IS_INTNEG(gmpL) ) ||
-	   ( compare  < 0 && IS_INTNEG(gmpR) ) ) {
-	resneg = 1;
+           ( compare  < 0 && IS_INTNEG(gmpR) ) ) {
+        resneg = 1;
       }
     }
-	 */
+         */
     if ( onesmall ) {
       if ( resneg == 0 ) {
-	res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) + sizeof(TypLimb) );
+        res = NewBag( T_INTPOS, SIZE_OBJ(gmpL) + sizeof(TypLimb) );
       }
       else {
-	res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) + sizeof(TypLimb) );
+        res = NewBag( T_INTNEG, SIZE_OBJ(gmpL) + sizeof(TypLimb) );
       }
       gmpR = FuncGMP_INTOBJ( (Obj)0, gmpR );
       carry = mpn_add_1( ADDR_INT(res),
-			 ADDR_INT(gmpL),SIZE_INT(gmpL),
-			*ADDR_INT(gmpR) );
+                         ADDR_INT(gmpL),SIZE_INT(gmpL),
+                        *ADDR_INT(gmpR) );
       if ( carry == (TypLimb)0 ) {
-	ResizeBag( res, SIZE_OBJ(gmpL) );
+        ResizeBag( res, SIZE_OBJ(gmpL) );
       }
       else {
-	( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = (TypLimb)1; /* = carry ? */
+        ( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = (TypLimb)1; /* = carry ? */
       }
       /* findme - debugging 231107
       res = GMP_NORMALIZE( res );
@@ -1107,38 +1107,38 @@ be called directly */
     else {
       /* put the smaller one (in limbs) to the right                       */
       if ( SIZE_INT(gmpL) < SIZE_INT(gmpR) ) { 
-	res = gmpR; gmpR = gmpL; gmpL = res;
+        res = gmpR; gmpR = gmpL; gmpL = res;
       }
 
       /* allocate result bag                                               */
       if ( resneg == 0 ) {
-	res = NewBag( T_INTPOS, ( SIZE_OBJ(gmpL) + sizeof(TypLimb) ) );
+        res = NewBag( T_INTPOS, ( SIZE_OBJ(gmpL) + sizeof(TypLimb) ) );
       }
       else {
-	res = NewBag( T_INTNEG, ( SIZE_OBJ(gmpL) + sizeof(TypLimb) ) );
+        res = NewBag( T_INTNEG, ( SIZE_OBJ(gmpL) + sizeof(TypLimb) ) );
       }
       
       /* mpn_lshift is faster still than mpn_add_n for adding a TypLimb
-	 number to itself                                                  */
+         number to itself                                                  */
       if ( EqInt( gmpL, gmpR ) ) {
-	carry = mpn_lshift( ADDR_INT(res),
-			    ADDR_INT(gmpL), SIZE_INT(gmpL),
-			    1 );
+        carry = mpn_lshift( ADDR_INT(res),
+                            ADDR_INT(gmpL), SIZE_INT(gmpL),
+                            1 );
       }
       else {
-	carry =    mpn_add( ADDR_INT(res),
-			    ADDR_INT(gmpL), SIZE_INT(gmpL),
-			    ADDR_INT(gmpR), SIZE_INT(gmpR) );
+        carry =    mpn_add( ADDR_INT(res),
+                            ADDR_INT(gmpL), SIZE_INT(gmpL),
+                            ADDR_INT(gmpR), SIZE_INT(gmpR) );
       }
       if ( carry == (TypLimb)0 ){
-	ResizeBag( res, SIZE_OBJ(gmpL) );
+        ResizeBag( res, SIZE_OBJ(gmpL) );
       }
       else{
-	( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = (TypLimb)1;
+        ( ADDR_INT(res) )[ SIZE_INT(gmpL) ] = (TypLimb)1;
       }
       /* findme - don't need this after carry ? */
       /* res = GMP_NORMALIZE( res );
-	 res = GMP_REDUCE( res ); */
+         res = GMP_REDUCE( res ); */
     }
 
     return res;
@@ -1185,11 +1185,11 @@ Obj AInvInt ( Obj gmp )
     if ( IS_INTPOS(gmp) ) {
       /* special case                                                        */
       if ( ( SIZE_INT(gmp) == 1 ) 
-	   && ( VAL_LIMB0(gmp) == (TypLimb) (1L<<NR_SMALL_INT_BITS) ) ) {
-	return INTOBJ_INT( -(Int) (1L<<NR_SMALL_INT_BITS) );
+           && ( VAL_LIMB0(gmp) == (TypLimb) (1L<<NR_SMALL_INT_BITS) ) ) {
+        return INTOBJ_INT( -(Int) (1L<<NR_SMALL_INT_BITS) );
       }
       else {
-	inv = NewBag( T_INTNEG, SIZE_OBJ(gmp) );
+        inv = NewBag( T_INTNEG, SIZE_OBJ(gmp) );
       }
     }
     
@@ -1280,7 +1280,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
     
     /* multiply                                                            */
     mpn_mul_n( ADDR_INT( prd ), (TypLimb*)( &i ),
-	       (TypLimb*)( &k ), (TypGMPSize)1 );
+               (TypLimb*)( &k ), (TypGMPSize)1 );
   }
   
   /* multiply a small and a large integer                                  */
@@ -1303,16 +1303,16 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
     /* eg: for 32 bit systems, the large integer 1<<28 times -1 is the small
        integer -(1<<28)                                                    */
     if ( ( k == -1 ) && (SIZE_INT(gmpL)==1) 
-	 && ( VAL_LIMB0(gmpL) == (TypLimb)(1L<<NR_SMALL_INT_BITS) ) )
+         && ( VAL_LIMB0(gmpL) == (TypLimb)(1L<<NR_SMALL_INT_BITS) ) )
       return INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS));
     
     /* multiplication by -1 is easy, just switch the sign and copy         */
     if ( k == -1 ) {
       if ( TNUM_OBJ(gmpL) == T_INTPOS ) {
-	prd = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
+        prd = NewBag( T_INTNEG, SIZE_OBJ(gmpL) );
       }
       else {
-	prd = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
+        prd = NewBag( T_INTPOS, SIZE_OBJ(gmpL) );
       }
       memcpy( ADDR_OBJ(prd), ADDR_OBJ(gmpL), SIZE_OBJ(gmpL) );
       return prd;
@@ -1320,7 +1320,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
     
     /* allocate a bag for the result                                       */
     if ( (0 < k && TNUM_OBJ(gmpL) == T_INTPOS)
-	 || (k < 0 && TNUM_OBJ(gmpL) == T_INTNEG) ) {
+         || (k < 0 && TNUM_OBJ(gmpL) == T_INTNEG) ) {
       prd = NewBag( T_INTPOS, (SIZE_INT(gmpL)+1)*sizeof(TypLimb) );
     }
     else {
@@ -1331,7 +1331,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
     
     /* multiply                                                            */
     carry = mpn_mul_1( ADDR_INT(prd), ADDR_INT(gmpL),
-	       SIZE_INT(gmpL), (TypLimb)k );
+               SIZE_INT(gmpL), (TypLimb)k );
     if ( carry == (TypLimb)0 ) {
       ResizeBag( prd, SIZE_OBJ(gmpL) );
     }
@@ -1356,8 +1356,8 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
     
     /* multiply                                                            */
     mpn_mul( ADDR_INT(prd),
-	     ADDR_INT(gmpL), SIZE_INT(gmpL),
-	     ADDR_INT(gmpR), SIZE_INT(gmpR) );
+             ADDR_INT(gmpL), SIZE_INT(gmpL),
+             ADDR_INT(gmpR), SIZE_INT(gmpR) );
   }
   
   /* normalize and return the product                                      */
@@ -1399,13 +1399,13 @@ Obj ProdIntObj ( Obj n, Obj op )
   
   /* if the integer is negative, invert the operand and the integer        */
   else if ( ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) <  -1 )
-	    || IS_INTNEG(n) ) {
+            || IS_INTNEG(n) ) {
     res = AINV( op );
     if ( res == Fail ) {
       return ErrorReturnObj(
-			    "Operations: <obj> must have an additive inverse",
-			    0L, 0L,
-			    "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
+                            "Operations: <obj> must have an additive inverse",
+                            0L, 0L,
+                            "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
     }
     res = PROD( AINV( n ), res );
   }
@@ -1421,8 +1421,8 @@ Obj ProdIntObj ( Obj n, Obj op )
       res = (res == 0 ? res : SUM( res, res ));
       k = k / 2;
       if ( k <= l ) {
-	res = (res == 0 ? op : SUM( res, op ));
-	l = l - k;
+        res = (res == 0 ? op : SUM( res, op ));
+        l = l - k;
       }
     }
   }
@@ -1434,11 +1434,11 @@ Obj ProdIntObj ( Obj n, Obj op )
       k = 8*sizeof(TypLimb);
       l = ((TypLimb*) ADDR_INT(n))[i-1];
       while ( 0 < k ) {
-	res = (res == 0 ? res : SUM( res, res ));
-	k--;
-	if ( (l >> k) & 1 ) {
-	  res = (res == 0 ? op : SUM( res, op ));
-	}
+        res = (res == 0 ? res : SUM( res, res ));
+        k--;
+        if ( (l >> k) & 1 ) {
+          res = (res == 0 ? op : SUM( res, op ));
+        }
       }
     }
   }
@@ -1498,9 +1498,9 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
       pow = INTOBJ_INT(-1);
     else {
       gmpR = ErrorReturnObj(
-			    "Integer operands: <exponent> is too large",
-			    0L, 0L,
-			    "you can replace the integer <exponent> via 'return <exponent>;'" );
+                            "Integer operands: <exponent> is too large",
+                            0L, 0L,
+                            "you can replace the integer <exponent> via 'return <exponent>;'" );
       return POW( gmpL, gmpR );
     }
   }
@@ -1509,9 +1509,9 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
   else if ( INT_INTOBJ(gmpR) < 0 ) {
     if ( gmpL == INTOBJ_INT(0) ) {
       gmpL = ErrorReturnObj(
-			    "Integer operands: <base> must not be zero",
-			    0L, 0L,
-			    "you can replace the integer <base> via 'return <base>;'" );
+                            "Integer operands: <base> must not be zero",
+                            0L, 0L,
+                            "you can replace the integer <base> via 'return <base>;'" );
       return POW( gmpL, gmpR );
     }
     else if ( gmpL == INTOBJ_INT(1) )
@@ -1522,7 +1522,7 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
       pow = INTOBJ_INT(-1);
     else
       pow = QUO( INTOBJ_INT(1),
-		 PowInt( gmpL, INTOBJ_INT( -INT_INTOBJ(gmpR)) ) );
+                 PowInt( gmpL, INTOBJ_INT( -INT_INTOBJ(gmpR)) ) );
   }
   
   /* findme - can we use the gmp function mpz_n_pow_ui? */
@@ -1574,9 +1574,9 @@ Obj             PowObjInt ( Obj op, Obj n )
     res = INV_MUT( op );
     if ( res == Fail ) {
       return ErrorReturnObj(
-			    "Operations: <obj> must have an inverse",
-			    0L, 0L,
-			    "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
+                            "Operations: <obj> must have an inverse",
+                            0L, 0L,
+                            "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
     }
     res = POW( res, AINV( n ) );
   }
@@ -1586,9 +1586,9 @@ Obj             PowObjInt ( Obj op, Obj n )
     res = INV_MUT( op );
     if ( res == Fail ) {
       return ErrorReturnObj(
-			    "Operations: <obj> must have an inverse",
-			    0L, 0L,
-			    "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
+                            "Operations: <obj> must have an inverse",
+                            0L, 0L,
+                            "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
     }
     res = POW( res, AINV( n ) );
   }
@@ -1604,8 +1604,8 @@ Obj             PowObjInt ( Obj op, Obj n )
       res = (res == 0 ? res : PROD( res, res ));
       k = k / 2;
       if ( k <= l ) {
-	res = (res == 0 ? op : PROD( res, op ));
-	l = l - k;
+        res = (res == 0 ? op : PROD( res, op ));
+        l = l - k;
       }
     }
   }
@@ -1617,11 +1617,11 @@ Obj             PowObjInt ( Obj op, Obj n )
       k = 8*sizeof(TypLimb);
       l = ((TypLimb*) ADDR_INT(n))[i-1];
       while ( 0 < k ) {
-	res = (res == 0 ? res : PROD( res, res ));
-	k--;
-	if ( (l>>k) & 1 ) {
-	  res = (res == 0 ? op : PROD( res, op ));
-	}
+        res = (res == 0 ? res : PROD( res, res ));
+        k--;
+        if ( (l>>k) & 1 ) {
+          res = (res == 0 ? op : PROD( res, op ));
+        }
       }
     }
   }
@@ -1666,9 +1666,9 @@ Obj ModInt ( Obj opL, Obj opR )
     /* pathological case first                                             */
     if ( opR == INTOBJ_INT(0) ) {
       opR = ErrorReturnObj(
-			   "Integer operations: <divisor> must be nonzero",
-			   0L, 0L,
-			   "you can replace the integer <divisor> via 'return <divisor>;'" );
+                           "Integer operations: <divisor> must be nonzero",
+                           0L, 0L,
+                           "you can replace the integer <divisor> via 'return <divisor>;'" );
       return MOD( opL, opR );
     }
     
@@ -1690,9 +1690,9 @@ Obj ModInt ( Obj opL, Obj opR )
     
     /* the small int -(1<<28) mod the large int (1<<28) is 0               */
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS) )
-	 && ( TNUM_OBJ(opR) == T_INTPOS )
+         && ( TNUM_OBJ(opR) == T_INTPOS )
          && ( SIZE_INT(opR) == 1 )
-	 && ( VAL_LIMB0(opR) == (TypLimb)(1L<<NR_SMALL_INT_BITS) ) )
+         && ( VAL_LIMB0(opR) == (TypLimb)(1L<<NR_SMALL_INT_BITS) ) )
       mod = INTOBJ_INT(0);
     
     /* in all other cases the remainder is equal the left operand          */
@@ -1710,9 +1710,9 @@ Obj ModInt ( Obj opL, Obj opR )
     /* pathological case first                                             */
     if ( opR == INTOBJ_INT(0) ) {
       opR = ErrorReturnObj(
-			   "Integer operations: <divisor> must be nonzero",
-			   0L, 0L,
-			   "you can replace the integer <divisor> via 'return <divisor>;'" );
+                           "Integer operations: <divisor> must be nonzero",
+                           0L, 0L,
+                           "you can replace the integer <divisor> via 'return <divisor>;'" );
       return MOD( opL, opR );
     }
     
@@ -1747,11 +1747,11 @@ Obj ModInt ( Obj opL, Obj opR )
     /* trivial case first                                                  */
     if ( SIZE_INT(opL) < SIZE_INT(opR) ) {
       if ( TNUM_OBJ(opL) == T_INTPOS )
-	return opL;
+        return opL;
       else if ( TNUM_OBJ(opR) == T_INTPOS )
-	mod = SumOrDiffInt( opL, opR,  1 );
+        mod = SumOrDiffInt( opL, opR,  1 );
       else
-	mod = SumOrDiffInt( opL, opR, -1 );
+        mod = SumOrDiffInt( opL, opR, -1 );
       if IS_INTNEG(mod) return NEW_INTPOS(mod);
       else return mod;
     }
@@ -1759,12 +1759,12 @@ Obj ModInt ( Obj opL, Obj opR )
     mod = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(TypLimb) );
 
     quo = NewBag( T_INTPOS,
-		   (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
+                   (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
 
     /* and let gmp do the work                                             */
     mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(mod), 0,
-		 ADDR_INT(opL), SIZE_INT(opL),
-		 ADDR_INT(opR), SIZE_INT(opR)    );
+                 ADDR_INT(opL), SIZE_INT(opL),
+                 ADDR_INT(opR), SIZE_INT(opR)    );
       
     /* reduce to small integer if possible, otherwise shrink bag           */
     mod = GMP_NORMALIZE( mod );
@@ -1772,11 +1772,11 @@ Obj ModInt ( Obj opL, Obj opR )
     
     /* make the representative positive                                    */
     if ( (TNUM_OBJ(mod) == T_INT && INT_INTOBJ(mod) < 0)
-	 || TNUM_OBJ(mod) == T_INTNEG ) {
+         || TNUM_OBJ(mod) == T_INTNEG ) {
       if ( TNUM_OBJ(opR) == T_INTPOS )
-	mod = SumOrDiffInt( mod, opR,  1 );
+        mod = SumOrDiffInt( mod, opR,  1 );
       else
-	mod = SumOrDiffInt( mod, opR, -1 );
+        mod = SumOrDiffInt( mod, opR, -1 );
     }
     
   }
@@ -1815,15 +1815,15 @@ Obj QuoInt ( Obj opL, Obj opR )
     /* pathological case first                                             */
     if ( opR == INTOBJ_INT(0) ) {
       opR = ErrorReturnObj(
-			   "Integer operations: <divisor> must be nonzero",
-			   0L, 0L,
-			   "you can replace the integer <divisor> via 'return <divisor>;'" );
+                           "Integer operations: <divisor> must be nonzero",
+                           0L, 0L,
+                           "you can replace the integer <divisor> via 'return <divisor>;'" );
       return QUO( opL, opR );
     }
     
     /* the small int -(1<<28) divided by -1 is the large int (1<<28)       */
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS)) 
-	 && opR == INTOBJ_INT(-1) ) {
+         && opR == INTOBJ_INT(-1) ) {
       quo = NewBag( T_INTPOS, sizeof(TypLimb) );
       SET_VAL_LIMB0( quo, 1L<<NR_SMALL_INT_BITS );
       return quo;
@@ -1848,8 +1848,8 @@ Obj QuoInt ( Obj opL, Obj opR )
     /* the small int -(1<<28) divided by the large int (1<<28) is -1       */
     
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS))
-	 && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 1
-	 && VAL_LIMB0(opR) == 1L<<NR_SMALL_INT_BITS )
+         && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 1
+         && VAL_LIMB0(opR) == 1L<<NR_SMALL_INT_BITS )
       quo = INTOBJ_INT(-1);
     
     /* in all other cases the quotient is of course zero                   */
@@ -1864,15 +1864,15 @@ Obj QuoInt ( Obj opL, Obj opR )
     /* pathological case first                                             */
     if ( opR == INTOBJ_INT(0) ) {
       opR = ErrorReturnObj(
-			   "Integer operations: <divisor> must be nonzero",
-			   0L, 0L,
-			   "you can replace the integer <divisor> via 'return <divisor>;'" );
+                           "Integer operations: <divisor> must be nonzero",
+                           0L, 0L,
+                           "you can replace the integer <divisor> via 'return <divisor>;'" );
       return QUO( opL, opR );
     }
     
     /* allocate a bag for the result and set up the pointers               */
     if ( (TNUM_OBJ(opL)==T_INTPOS && 0 < INT_INTOBJ(opR))
-	 || (TNUM_OBJ(opL)==T_INTNEG && INT_INTOBJ(opR) < 0) )
+         || (TNUM_OBJ(opL)==T_INTNEG && INT_INTOBJ(opR) < 0) )
       quo = NewBag( T_INTPOS, SIZE_OBJ(opL) );
     else
       quo = NewBag( T_INTNEG, SIZE_OBJ(opL) );
@@ -1881,8 +1881,8 @@ Obj QuoInt ( Obj opL, Obj opR )
 
     /* use gmp function for dividing by a 1-limb number                    */
     mpn_divrem_1( ADDR_INT(quo), 0,
-		  ADDR_INT(opL), SIZE_INT(opL),
-		  *ADDR_INT(opR) );
+                  ADDR_INT(opL), SIZE_INT(opL),
+                  *ADDR_INT(opR) );
   }
   
   /* divide a large integer by a large integer                             */
@@ -1898,14 +1898,14 @@ Obj QuoInt ( Obj opL, Obj opR )
     /* allocate a bag for the quotient                                     */
     if ( TNUM_OBJ(opL) == TNUM_OBJ(opR) )
       quo = NewBag( T_INTPOS, 
-		    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
+                    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
     else
       quo = NewBag( T_INTNEG,
-		    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
+                    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
 
     mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(rem), 0,
-		 ADDR_INT(opL), SIZE_INT(opL),
-		 ADDR_INT(opR), SIZE_INT(opR) );
+                 ADDR_INT(opL), SIZE_INT(opL),
+                 ADDR_INT(opR), SIZE_INT(opR) );
   }
   
   /* normalize and return the result                                       */
@@ -1934,20 +1934,20 @@ Obj FuncQUO_INT ( Obj self, Obj opL, Obj opR )
 {
   /* check the arguments                                                   */
   while ( TNUM_OBJ(opL) != T_INT
-	  && TNUM_OBJ(opL) != T_INTPOS
-	  && TNUM_OBJ(opL) != T_INTNEG ) {
+          && TNUM_OBJ(opL) != T_INTPOS
+          && TNUM_OBJ(opL) != T_INTNEG ) {
     opL = ErrorReturnObj(
-			 "QuoInt: <left> must be a int (not a %s)",
-			 (Int)TNAM_OBJ(opL), 0L,
-			 "you can replace <left> via 'return <left>;'" );
+                         "QuoInt: <left> must be a int (not a %s)",
+                         (Int)TNAM_OBJ(opL), 0L,
+                         "you can replace <left> via 'return <left>;'" );
   }
   while ( TNUM_OBJ(opR) != T_INT
-	  && TNUM_OBJ(opR) != T_INTPOS
-	  && TNUM_OBJ(opR) != T_INTNEG ) {
+          && TNUM_OBJ(opR) != T_INTPOS
+          && TNUM_OBJ(opR) != T_INTNEG ) {
     opR = ErrorReturnObj(
-			 "QuoInt: <right> must be a int (not a %s)",
-			 (Int)TNAM_OBJ(opR), 0L,
-			 "you can replace <right> via 'return <right>;'" );
+                         "QuoInt: <right> must be a int (not a %s)",
+                         (Int)TNAM_OBJ(opR), 0L,
+                         "you can replace <right> via 'return <right>;'" );
   }
   
   /* return the quotient                                                   */
@@ -1980,9 +1980,9 @@ Obj RemInt ( Obj opL, Obj opR )
     /* pathological case first                                             */
     if ( opR == INTOBJ_INT(0) ) {
       opR = ErrorReturnObj(
-			   "Integer operations: <divisor> must be nonzero",
-			   0L, 0L,
-			   "you can replace the integer <divisor> via 'return <divisor>;'" );
+                           "Integer operations: <divisor> must be nonzero",
+                           0L, 0L,
+                           "you can replace the integer <divisor> via 'return <divisor>;'" );
       return QUO( opL, opR );
     }
     
@@ -2004,8 +2004,8 @@ Obj RemInt ( Obj opL, Obj opR )
     
     /* the small int -(1<<28) rem the large int (1<<28) is 0               */
     if ( opL == INTOBJ_INT(-(Int)(1L<<NR_SMALL_INT_BITS))
-	 && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 1
-	 && VAL_LIMB0(opR) == 1L<<NR_SMALL_INT_BITS )
+         && TNUM_OBJ(opR) == T_INTPOS && SIZE_INT(opR) == 1
+         && VAL_LIMB0(opR) == 1L<<NR_SMALL_INT_BITS )
       rem = INTOBJ_INT(0);
     
     /* in all other cases the remainder is equal the left operand          */
@@ -2019,9 +2019,9 @@ Obj RemInt ( Obj opL, Obj opR )
     /* pathological case first                                             */
     if ( opR == INTOBJ_INT(0) ) {
       opR = ErrorReturnObj(
-			   "Integer operations: <divisor> must be nonzero",
-			   0L, 0L,
-			   "you can replace the integer <divisor> via 'return <divisor>;'" );
+                           "Integer operations: <divisor> must be nonzero",
+                           0L, 0L,
+                           "you can replace the integer <divisor> via 'return <divisor>;'" );
       return QUO( opL, opR );
     }
     
@@ -2054,12 +2054,12 @@ Obj RemInt ( Obj opL, Obj opR )
     rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(TypLimb) );
     
     quo = NewBag( T_INTPOS,
-		  (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
+                  (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(TypLimb) );
     
     /* and let gmp do the work                                             */
     mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(rem), 0,
-		 ADDR_INT(opL), SIZE_INT(opL),
-		 ADDR_INT(opR), SIZE_INT(opR)    );
+                 ADDR_INT(opL), SIZE_INT(opL),
+                 ADDR_INT(opR), SIZE_INT(opR)    );
     
     /* reduce to small integer if possible, otherwise shrink bag           */
     rem = GMP_NORMALIZE( rem );
@@ -2091,20 +2091,20 @@ Obj FuncREM_INT ( Obj self, Obj opL, Obj opR )
 {
   /* check the arguments                                                   */
   while ( TNUM_OBJ(opL) != T_INT
-	  && TNUM_OBJ(opL) != T_INTPOS
-	  && TNUM_OBJ(opL) != T_INTNEG ) {
+          && TNUM_OBJ(opL) != T_INTPOS
+          && TNUM_OBJ(opL) != T_INTNEG ) {
     opL = ErrorReturnObj(
-			 "RemInt: <left> must be an integer (not a %s)",
-			 (Int)TNAM_OBJ(opL), 0L,
-			 "you can replace <left> via 'return <left>;'" );
+                         "RemInt: <left> must be an integer (not a %s)",
+                         (Int)TNAM_OBJ(opL), 0L,
+                         "you can replace <left> via 'return <left>;'" );
   }
   while ( TNUM_OBJ(opR) != T_INT
-	  && TNUM_OBJ(opR) != T_INTPOS
-	  && TNUM_OBJ(opR) != T_INTNEG ) {
+          && TNUM_OBJ(opR) != T_INTPOS
+          && TNUM_OBJ(opR) != T_INTNEG ) {
     opR = ErrorReturnObj(
-			 "RemInt: <right> must be an integer (not a %s)",
-			 (Int)TNAM_OBJ(opR), 0L,
-			 "you can replace <right> via 'return <right>;'" );
+                         "RemInt: <right> must be an integer (not a %s)",
+                         (Int)TNAM_OBJ(opR), 0L,
+                         "you can replace <right> via 'return <right>;'" );
   }
 
   /* return the remainder                                                  */
@@ -2135,7 +2135,7 @@ Obj GcdInt ( Obj opL, Obj opR )
   UInt                plimbs;         /* zero limbs to shift by */
   UInt                prest;          /* and remaining zero bits */
   UInt                overflow;       /* possible overflow from most 
-					 significant word */
+                                         significant word */
 
   /* compute the gcd of two small integers                                 */
   if ( ARE_INTOBJS( opL, opR ) ) {
@@ -2167,12 +2167,12 @@ Obj GcdInt ( Obj opL, Obj opR )
     /* maybe it's trivial                                                  */
     if ( opR == INTOBJ_INT(0) ) {
       if( TNUM_OBJ( opL ) == T_INTNEG ) {
-	/* If opL is negative, change the sign.  We do this by
-	   copying opL into a bag of type T_INTPOS.  Note that
-	   opL is a large negative number, so it cannot be the
-	   the negative of 1 << NR_SMALL_INT_BITS.                     */
-	gcd = NEW_INTPOS( opL );
-	return gcd;
+        /* If opL is negative, change the sign.  We do this by
+           copying opL into a bag of type T_INTPOS.  Note that
+           opL is a large negative number, so it cannot be the
+           the negative of 1 << NR_SMALL_INT_BITS.                     */
+        gcd = NEW_INTPOS( opL );
+        return gcd;
       }
       else return opL;
     }
@@ -2188,10 +2188,10 @@ Obj GcdInt ( Obj opL, Obj opR )
   else {
     if ( EqInt(opL,opR) ) {
       if IS_INTNEG(opL) {
-	return NEW_INTPOS(opL);
+        return NEW_INTPOS(opL);
       }
       else {
-	return opL;
+        return opL;
       }
     }
     gmpL = NEW_INT(opL); gmpR = NEW_INT(opR);
@@ -2202,13 +2202,13 @@ Obj GcdInt ( Obj opL, Obj opR )
       }
     }
     for ( bmask = (TypLimb)1, r = 0 ;
-	  ( (bmask & ADDR_INT(gmpL)[p]) == 0 ) && bmask != (TypLimb)0 ;
-	  bmask = bmask << 1, r++ ) {
+          ( (bmask & ADDR_INT(gmpL)[p]) == 0 ) && bmask != (TypLimb)0 ;
+          bmask = bmask << 1, r++ ) {
     }
     p = p*mp_bits_per_limb+r;
     for ( i = 0 ; i < p ; i++ ){
       mpn_rshift( ADDR_INT(gmpL), ADDR_INT(gmpL),
-		  SIZE_INT(gmpL), (UInt)1 );
+                  SIZE_INT(gmpL), (UInt)1 );
     }
     gmpL = GMP_NORMALIZE(gmpL);
 
@@ -2218,20 +2218,20 @@ Obj GcdInt ( Obj opL, Obj opR )
       }
     }
     for ( bmask = (TypLimb)1, s = 0 ;
-	  ( (bmask & ADDR_INT(gmpR)[q]) == 0 ) && bmask != (TypLimb)0 ;
-	  bmask=bmask << 1,  s++ ) {
+          ( (bmask & ADDR_INT(gmpR)[q]) == 0 ) && bmask != (TypLimb)0 ;
+          bmask=bmask << 1,  s++ ) {
     }
     q = q*mp_bits_per_limb+s;
     for (i=0;i<q;i++){
       mpn_rshift( ADDR_INT(gmpR), ADDR_INT(gmpR),
-		  SIZE_INT(gmpR), (UInt)1 );
+                  SIZE_INT(gmpR), (UInt)1 );
     }
     gmpR = GMP_NORMALIZE(gmpR);
 
     /* put smaller object to right */
     if ( SIZE_INT(gmpL) < SIZE_INT(gmpR) ||
-	 ( SIZE_INT(gmpL) == SIZE_INT(gmpR) &&
-	   mpn_cmp( ADDR_INT(gmpL), ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0 ) ) {
+         ( SIZE_INT(gmpL) == SIZE_INT(gmpR) &&
+           mpn_cmp( ADDR_INT(gmpL), ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0 ) ) {
       gcd = gmpR; gmpR = gmpL; gmpL = gcd;
     }
     
@@ -2254,21 +2254,21 @@ Obj GcdInt ( Obj opL, Obj opR )
        limbs used for the result */
 
     gcdsize = mpn_gcd( plimbs + ADDR_INT(gcd), 
-	     ADDR_INT(gmpL), SIZE_INT(gmpL),
-	     ADDR_INT(gmpR), SIZE_INT(gmpR) );
+             ADDR_INT(gmpL), SIZE_INT(gmpL),
+             ADDR_INT(gmpR), SIZE_INT(gmpR) );
     
     /* Now we do the rest of the power of two */
     if (prest != 0)
       {
-	overflow = mpn_lshift( plimbs + ADDR_INT(gcd), plimbs + ADDR_INT(gcd),
-		  gcdsize, (UInt)prest );
-	
-	/* which might extend the GCD to one more limb */
-	if (overflow != 0)
-	  {
-	    ADDR_INT(gcd)[gcdsize + plimbs] = overflow;
-	    gcdsize++;
-	  }
+        overflow = mpn_lshift( plimbs + ADDR_INT(gcd), plimbs + ADDR_INT(gcd),
+                  gcdsize, (UInt)prest );
+        
+        /* which might extend the GCD to one more limb */
+        if (overflow != 0)
+          {
+            ADDR_INT(gcd)[gcdsize + plimbs] = overflow;
+            gcdsize++;
+          }
       }
 
     /* if the bag is too big, reduce it (stuff in extra space may not be 0) */
@@ -2298,8 +2298,8 @@ Obj FuncIntDiv2( Obj self, Obj gmp )
       ;
     }
     for ( bmask = (TypLimb)1, r = 0 ;
-	  ( (bmask & ADDR_INT(gmp)[p]) == 0 ) && bmask != (TypLimb)0 ;
-	  bmask = bmask << 1, r++ ) {
+          ( (bmask & ADDR_INT(gmp)[p]) == 0 ) && bmask != (TypLimb)0 ;
+          bmask = bmask << 1, r++ ) {
       ;
     }
     res = INTOBJ_INT( p*1000 + r );
@@ -2323,20 +2323,20 @@ Obj FuncGCD_INT ( Obj self, Obj opL, Obj opR )
 {
   /* check the arguments                                                   */
   while ( TNUM_OBJ(opL) != T_INT
-	  && TNUM_OBJ(opL) != T_INTPOS
-	  && TNUM_OBJ(opL) != T_INTNEG ) {
+          && TNUM_OBJ(opL) != T_INTPOS
+          && TNUM_OBJ(opL) != T_INTNEG ) {
     opL = ErrorReturnObj(
-			 "GcdInt: <left> must be an integer (not a %s)",
-			 (Int)TNAM_OBJ(opL), 0L,
-			 "you can replace <left> via 'return <left>;'" );
+                         "GcdInt: <left> must be an integer (not a %s)",
+                         (Int)TNAM_OBJ(opL), 0L,
+                         "you can replace <left> via 'return <left>;'" );
   }
   while ( TNUM_OBJ(opR) != T_INT
-	  && TNUM_OBJ(opR) != T_INTPOS
-	  && TNUM_OBJ(opR) != T_INTNEG ) {
+          && TNUM_OBJ(opR) != T_INTPOS
+          && TNUM_OBJ(opR) != T_INTNEG ) {
     opR = ErrorReturnObj(
-			 "GcdInt: <right> must be an integer (not a %s)",
-			 (Int)TNAM_OBJ(opR), 0L,
-			 "you can replace <right> via 'return <right>;'" );
+                         "GcdInt: <right> must be an integer (not a %s)",
+                         (Int)TNAM_OBJ(opR), 0L,
+                         "you can replace <right> via 'return <right>;'" );
   }
   
   /* return the gcd                                                        */
@@ -2344,120 +2344,8 @@ Obj FuncGCD_INT ( Obj self, Obj opL, Obj opR )
 }
 
 
-/****************************************************************************
-**
-*F  FuncHASHKEY_BAG(<self>,<obj>,<factor>,<offset>,<maxlen>)
-**
-**  'FuncHASHKEY_BAG' implements the internal function 'HASHKEY_BAG'.
-**
-**  'HASHKEY_BAG( <obj>, <factor>,<offset>,<maxlen> )'
-**
-**  takes an non-immediate object and a small integer <int> and computes a
-**  hash value for the contents of the bag from these. (For this to be
-**  usable in algorithms, we need that objects of this kind are stored uniquely
-**  internally.
-**  The offset and the maximum number of bytes to process both count in
-**  bytes. The values passed to these parameters might depend on the word 
-**  length of the computer.
-**  A <maxlen> value of -1 indicates infinity.
-*/
-Obj             FuncHASHKEY_BAG (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR,
-    Obj                 opO,
-    Obj			opM)
-{
-  UInt sum;
-  UChar* ptr;
-  Int n;
-  Int m;
-  Int i;
-  Int modulus;
-  Int offs;
-
-  modulus=1<<28; /* might want to change for 64 bit machines? */
-  /* check the arguments                                                 */
-  while ( TNUM_OBJ(opR) != T_INT ) {
-      opR = ErrorReturnObj(
-	  "HASHKEY_BAG: <factor> must be a small integer (not a %s)",
-	  (Int)TNAM_OBJ(opR), 0L,
-	  "you can replace <factor> via 'return <factor>;'" );
-  }
-
-  while ( TNUM_OBJ(opO) != T_INT ) {
-      opO = ErrorReturnObj(
-	  "HASHKEY_BAG: <offset> must be a small integer (not a %s)",
-	  (Int)TNAM_OBJ(opO), 0L,
-	  "you can replace <offset> via 'return <offset>;'" );
-  }
-
-  while ( TNUM_OBJ(opM) != T_INT ) {
-      opM = ErrorReturnObj(
-	  "HASHKEY_BAG: <maxlen> must be a small integer (not a %s)",
-	  (Int)TNAM_OBJ(opM), 0L,
-	  "you can replace <maxlen> via 'return <maxlen>;'" );
-  }
-
-  sum=0;
-  /* start byte plus offset */
-  offs=INT_INTOBJ(opO);
-  ptr=(UChar*)ADDR_OBJ(opL)+offs;
-  n=SIZE_OBJ(opL)-offs;
-
-  /* maximal number of bytes to read */
-  offs=INT_INTOBJ(opM);
-  if ((n>offs)&&(offs!=-1)) {n=offs;}; 
-
-  m=INT_INTOBJ(opR);
-
-  for (i=0;i<n;i++) {
-    sum=((sum*m)+(UInt)(*ptr++));
-    /*    if (i < 100)
-	  Pr("%d %d\n",(UInt)*(ptr-1),sum); */
-  }
-  sum=sum % modulus;
-
-  return INTOBJ_INT(sum);
-}
-
-Obj FuncJenkinsHash(Obj self, Obj op, Obj size)
-{
-   void *input;
-   uint32_t len;
-   uint32_t key;
-   uint32_t init = 0;
-   
-   len = (uint32_t)INT_INTOBJ(size);
-   input = (void *)ADDR_OBJ(op);
-   if (len == -1)
-     len = (uint32_t)SIZE_OBJ(op);
-	
-// Take advantage of endianness if possible
-#ifdef WORDS_BIGENDIAN
-   key = hashbig(input, len, init);
-#else
-   key = hashlittle(input, len, init);
-#endif
-   
-   return INTOBJ_INT((Int)(key % (1 << 28)));
-}
 
 
-
-/****************************************************************************
-**
-*F  FuncSIZE_OBJ(<self>,<obj>)
-**
-**  'SIZE_OBJ( <obj> )' returns the size of a nonimmediate object. It can be
-**  used to debug memory use.
-*/
-Obj             FuncSIZE_OBJ (
-    Obj                 self,
-    Obj                 a)
-{
-  return INTOBJ_INT(SIZE_OBJ(a));
-}
 
 
 /****************************************************************************
@@ -2470,128 +2358,6 @@ Obj             FuncSIZE_OBJ (
 **          http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
 **  (Also look in Wikipedia for "Mersenne twister".)
 */
-
-/****************************************************************************
-**
-*F  InitRandomMT( <initstr> ) 
-**
-**  Returns a string that can be used as data structure of a new MT random 
-**  number generator. <initstr> can be an arbitrary string as seed.
-*/
-#define MATRIX_A 0x9908b0dfUL   /* constant vector a */
-#define UPPER_MASK 0x80000000UL /* most significant w-r bits */
-#define LOWER_MASK 0x7fffffffUL /* least significant r bits */
-
-void initGRMT(UInt4 *mt, UInt4 s)
-{
-    UInt4 mti;
-    mt[0]= s & 0xffffffffUL;
-    for (mti=1; mti<624; mti++) {
-        mt[mti] = 
-	    (1812433253UL * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti); 
-        mt[mti] &= 0xffffffffUL;
-    }
-    /* store mti as last entry of mt[] */
-    mt[624] = mti;
-}
-
-/* to read a seed string independently of endianness */
-static inline UInt4 uint4frombytes(UChar *s)
-{
-  UInt4 res;
-  res = s[3]; res <<= 8;
-  res += s[2]; res <<= 8;
-  res += s[1]; res <<= 8;
-  res += s[0];
-  return res;
-}
-
-Obj FuncInitRandomMT( Obj self, Obj initstr)
-{
-  Obj str;
-  UChar *init_key;
-  UInt4 *mt, key_length, i, j, k, N=624;
-
-  /* check the seed, given as string */
-  while (! IsStringConv(initstr)) {
-     initstr = ErrorReturnObj(
-         "<initstr> must be a string, not a %s)",
-         (Int)TNAM_OBJ(initstr), 0L,
-         "you can replace <initstr> via 'return <initstr>;'" );
-  }
-  init_key = CHARS_STRING(initstr);
-  key_length = GET_LEN_STRING(initstr) / 4;
-   
-  /* store array of 624 UInt4 and one UInt4 as counter "mti" and an
-     endianness marker */
-  str = NEW_STRING(4*626);
-  SET_LEN_STRING(str, 4*626);
-  mt = (UInt4*) CHARS_STRING(str);
-  /* here the counter mti is set to 624 */
-  initGRMT(mt, 19650218UL);
-  i=1; j=0;
-  k = (N>key_length ? N : key_length);
-  for (; k; k--) {
-      mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
-        + uint4frombytes(init_key+4*j) + j;
-      mt[i] &= 0xffffffffUL; 
-      i++; j++;
-      if (i>=N) { mt[0] = mt[N-1]; i=1; }
-      if (j>=key_length) j=0;
-  }
-  for (k=N-1; k; k--) {
-      mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL)) - i; 
-      mt[i] &= 0xffffffffUL; 
-      i++;
-      if (i>=N) { mt[0] = mt[N-1]; i=1; }
-  }
-  mt[0] = 0x80000000UL; 
-  /* gives string "1234" in little endian as marker */
-  mt[625] = 875770417UL;
-  return str; 
-}
-
-
-/*  internal, generates a random number on [0,0xffffffff]-interval 
-**  argument <mt> is pointer to a string generated by InitRandomMT
-**  (the first 4*624 bytes are the random numbers, the last 4 bytes contain
-**  a counter)
-*/
-UInt4 nextrandMT_int32(UInt4* mt)
-{
-    UInt4 mti, y, N=624, M=397;
-    static UInt4 mag01[2]={0x0UL, MATRIX_A};
-    
-    mti = mt[624];
-    if (mti >= N) { 
-        int kk;
-
-        for (kk=0;kk<N-M;kk++) {
-            y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
-            mt[kk] = mt[kk+M] ^ (y >> 1) ^ mag01[y & 0x1UL];
-        }
-        for (;kk<N-1;kk++) {
-            y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
-            mt[kk] = mt[kk+(M-N)] ^ (y >> 1) ^ mag01[y & 0x1UL];
-        }
-        y = (mt[N-1]&UPPER_MASK)|(mt[0]&LOWER_MASK);
-        mt[N-1] = mt[M-1] ^ (y >> 1) ^ mag01[y & 0x1UL];
-
-        mti = 0;
-    }
-  
-    y = mt[mti++];
-    mt[624] = mti;
-
-    /* Tempering */
-    y ^= (y >> 11);
-    y ^= (y << 7) & 0x9d2c5680UL;
-    y ^= (y << 15) & 0xefc60000UL;
-    y ^= (y >> 18);
-
-    return y;
-}
-
 
 /****************************************************************************
 **
@@ -2688,34 +2454,6 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
   return res;
 }
 
-Obj FuncRandomListMT(Obj self, Obj mtstr, Obj list)
-{
-  Int len, a, lg;
-  UInt4 *mt;
-  while ((! IsStringConv(mtstr)) || GET_LEN_STRING(mtstr) < 2500) {
-     mtstr = ErrorReturnObj(
-         "<mtstr> must be a string with at least 2500 characters, ",
-         0L, 0L,
-         "you can replace <mtstr> via 'return <mtstr>;'" );
-  }
-  while (! IS_LIST(list)) {
-     list = ErrorReturnObj(
-         "<list> must be a list, not a %s",
-         (Int)TNAM_OBJ(list), 0L,
-         "you can replace <list> via 'return <list>;'" );
-  }
-  len = LEN_LIST(list);
-  if (len == 0) return Fail;
-  mt = (UInt4*) CHARS_STRING(mtstr);
-  lg = 31 - INT_INTOBJ(FuncLog2Int((Obj)0, INTOBJ_INT(len)));
-  for (a = nextrandMT_int32(mt) >> lg; 
-       a >= len; 
-       a = nextrandMT_int32(mt) >> lg
-    );
-  return ELM_LIST(list, a+1);
-}
-
-
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
@@ -2779,24 +2517,10 @@ static StructGVarFunc GVarFuncs [] = {
 
   { "STRING_INT", 1, "gmp",
     FuncSTRING_INT, "src/gmpints.c:STRING_INT" },
-
-  { "HASHKEY_BAG", 4, "obj, gmp,gmp,gmp",
-    FuncHASHKEY_BAG, "src/gmpints.c:HASHKEY_BAG" },
-
-  { "JENKINS_HASH", 2, "obj, len",
-    FuncJenkinsHash, "src/gmpints.c:JENKINS_HASH" },
-  
-  { "SIZE_OBJ", 1, "obj",
-    FuncSIZE_OBJ, "src/gmpints.c:SIZE_OBJ" },
-  
-  { "InitRandomMT", 1, "initstr",
-    FuncInitRandomMT, "src/gmpints.c:InitRandomMT" },
   
   { "RandomIntegerMT", 2, "mtstr, nrbits",
     FuncRandomIntegerMT, "src/gmpints.c:RandomIntegerMT" },
   
-  { "RandomListMT", 2, "mtstr, list",
-    FuncRandomListMT, "src/gmpints.c:RandomListMT" },
   
   { 0 }
 
@@ -2828,7 +2552,7 @@ static Int InitKernel ( StructInitInfo * module )
 {
   UInt                t1,  t2;
 
-  mp_set_memory_functions( allocForGmp, reallocForGmp, freeForGmp);
+   mp_set_memory_functions( allocForGmp, reallocForGmp, freeForGmp); 
 
   /* init filters and functions                                            */
   InitHdlrFiltsFromTable( GVarFilts );

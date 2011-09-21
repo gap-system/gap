@@ -13,6 +13,9 @@
 **  This file declares the functions handling gmp integers.
 */
 
+#ifndef GAP_GMPINTS_H
+#define GAP_GMPINTS_H
+
 #ifdef USE_GMP
 
 #ifdef  INCLUDE_DECLARATION_PART
@@ -70,9 +73,9 @@ Obj ObjInt_UInt(UInt i);
 **
 */
 extern  Obj             GMP_REDUCE ( 
-			       Obj                 gmp );
+                               Obj                 gmp );
 extern  Obj             GMP_NORMALIZE ( 
-			       Obj                 gmp );
+                               Obj                 gmp );
 
 
 /****************************************************************************
@@ -94,8 +97,8 @@ extern  void            PrintInt (
 **  <gmpR> are equal and 0 otherwise.
 */
 extern  Int             EqInt ( 
-			       Obj                 opL,
-			       Obj                 opR );
+                               Obj                 opL,
+                               Obj                 opR );
 
 
 /****************************************************************************
@@ -106,8 +109,8 @@ extern  Int             EqInt (
 **  integer <gmpR> and 0 otherwise.
 */
 extern  Int             LtInt (
-			       Obj                 opL,
-			       Obj                 opR );
+                               Obj                 opL,
+                               Obj                 opR );
 
 
 /****************************************************************************
@@ -119,8 +122,8 @@ extern  Int             LtInt (
 **
 */
 extern  Obj             SumInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 /****************************************************************************
 **
@@ -131,9 +134,9 @@ extern  Obj             SumInt (
 **
 */
 extern  Obj             SumOrDiffInt (
-				Obj                 opL,
-				Obj                 opR,
-				Int                 sign );
+                                Obj                 opL,
+                                Obj                 opR,
+                                Int                 sign );
 
 
 /****************************************************************************
@@ -145,8 +148,8 @@ extern  Obj             SumOrDiffInt (
 **
 */
 extern  Obj             DiffInt (
-				 Obj                 opL,
-				 Obj                 opR );
+                                 Obj                 opL,
+                                 Obj                 opR );
 
 /****************************************************************************
 **
@@ -157,8 +160,8 @@ extern  Obj             DiffInt (
 **
 */
 extern  Obj             ProdInt (
-				 Obj                 opL,
-				 Obj                 opR );
+                                 Obj                 opL,
+                                 Obj                 opR );
 
 
 /****************************************************************************
@@ -170,8 +173,8 @@ extern  Obj             ProdInt (
 **
 */
 extern  Obj             ModInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 
 /****************************************************************************
@@ -183,8 +186,8 @@ extern  Obj             ModInt (
 **
 */
 extern  Obj             PowInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 
 /****************************************************************************
@@ -196,8 +199,8 @@ extern  Obj             PowInt (
 **
 */
 extern  Obj             QuoInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 
 /****************************************************************************
@@ -209,8 +212,8 @@ extern  Obj             QuoInt (
 **
 */
 extern  Obj             RemInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 
 /****************************************************************************
@@ -220,8 +223,11 @@ extern  Obj             RemInt (
 **  'GcdInt' returns the gcd of the two integers <gmpL> and <gmpR>.
 */
 extern  Obj             GcdInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
+
+
+extern Obj FuncLog2Int( Obj self, Obj intnum);
 
 
 /****************************************************************************
@@ -236,7 +242,9 @@ extern  Obj             GcdInt (
 */
 StructInitInfo * InitInfoInt ( void );
 
-#endif
+#endif // USE_GMP
+
+#endif // GAP_GMPINTS_H
 
 /****************************************************************************
 **

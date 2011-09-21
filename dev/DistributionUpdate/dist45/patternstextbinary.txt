@@ -19,11 +19,15 @@ Tsrc/*
 #
 # *** TEXT FILES ***
 #
-TCHANGES*
+T*CHANGES*
 T*configure*
+TCOPYING
 Tgap.shi
 Tgap.ini
-TREADME*
+TGPL
+TINSTALL
+TLICENSE
+T*README*
 TVERSION
 #
 # extensions pointing out that the file is text, in alphabetical order
@@ -64,7 +68,9 @@ B*.exe
 B*.gz
 B*.ico
 B*.jpg
+B*.js
 B*.m4
+B*.pif
 B*.pdf
 B*.ps
 B*.tar
