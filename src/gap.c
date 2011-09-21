@@ -2941,6 +2941,9 @@ Obj FuncGETPID(Obj self) {
   return INTOBJ_INT(getpid());
 }
 
+GVarDescriptor GVarTHREAD_INIT;
+GVarDescriptor GVarTHREAD_EXIT;
+
 void ThreadedInterpreter(void *funcargs) {
   Obj tmp, func;
   int i;
@@ -2974,7 +2977,12 @@ void ThreadedInterpreter(void *funcargs) {
   SET_LEN_PLIST(tmp, LEN_PLIST(tmp)-1);
 
   if (!READ_ERROR()) {
+    Obj init, exit;
+    init = GVarOptFunc(&GVarTHREAD_INIT);
+    if (init) CALL_0ARGS(init);
     FuncCALL_FUNC_LIST((Obj) 0, func, tmp);
+    exit = GVarOptFunc(&GVarTHREAD_EXIT);
+    if (exit) CALL_0ARGS(exit);
     PushVoidObj();
     /* end the interpreter                                                 */
     IntrEnd( 0UL );
@@ -3141,6 +3149,9 @@ static Int InitKernel (
     ImportFuncFromLibrary(  "ViewObj", 0L );
     ImportFuncFromLibrary(  "Error", &Error );
     ImportFuncFromLibrary(  "ErrorInner", &ErrorInner );
+
+    DeclareGVar(&GVarTHREAD_INIT, "THREAD_INIT");
+    DeclareGVar(&GVarTHREAD_EXIT, "THREAD_EXIT");
 
 
 #if HAVE_SELECT
