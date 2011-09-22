@@ -688,6 +688,16 @@ InstallGlobalFunction(Chomp, function(str)
   fi;
 end);
 
+InstallGlobalFunction(StartsWith, function(string, prefix)
+  return Length(prefix) <= Length(string) and
+    string{[1..Length(prefix)]} = prefix;
+end);
+
+InstallGlobalFunction(EndsWith, function(string, suffix)
+  return Length(suffix) <= Length(string) and
+    string{[Length(string)-Length(suffix)+1..Length(string)]} = suffix;
+end);
+
 
 #############################################################################
 ##

@@ -660,6 +660,24 @@ DeclareGlobalFunction( "JoinStringsWithSeparator" );
 ##
 DeclareGlobalFunction( "Chomp" );
 
+#############################################################################
+##
+#F  StartsWith( <string>, <prefix> ) . . . does <string> start with <prefix>?
+#F  EndsWith( <string>, <suffix> ) . . . . . does <string> end with <suffix>?
+#F  FileString( <name>, <string>[, <append> ] ) . . write <string> to <name> 
+##
+##  <ManSection>
+##  <Func Name="StartsWith" Arg='string, prefix'/>
+##  <Func Name="EndsWith" Arg='string, suffix'/>
+##
+##  <Description>
+##  Determines whether a string starts or ends with another string.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction( "StartsWith" );
+DeclareGlobalFunction( "EndsWith" );
+
 
 #############################################################################
 ##
