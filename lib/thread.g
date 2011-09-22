@@ -56,3 +56,15 @@ BindGlobal("AtThreadExit", function(func)
     Add(AT_THREAD_EXIT_LIST, func);
   fi;
 end);
+
+BindGlobal("StartHandShake", CreateSyncVar);
+
+BindGlobal("AcknowledgeHandShake", function(syncvar, obj)
+  if (IsThreadLocal(obj)) then
+    MakeReadOnly(obj);
+  fi;
+  SyncWrite(syncvar, obj);
+  return obj;
+end);
+
+BindGlobal("CompleteHandShake", SyncRead);

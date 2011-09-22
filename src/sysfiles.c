@@ -3462,13 +3462,13 @@ Char * readlineFgets (
   rl_num_chars_to_read = length-2;
   /* now do the real work */
   doingReadline = 1;
-  rlres = readline(Prompt);
+  rlres = readline(TLS->prompt);
   doingReadline = 0;
   /* we get a NULL pointer on EOF, say by pressing Ctr-d  */
   if (!rlres) {
     if (!SyCTRD) {
       while (!rlres)
-        rlres = readline(Prompt);
+        rlres = readline(TLS->prompt);
     } 
     else {
       printf("\n");fflush(stdout);

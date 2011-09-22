@@ -1686,6 +1686,7 @@ Obj FuncCreateBarrier(Obj self)
 
 Obj FuncDestroyBarrier(Obj self, Obj barrier)
 {
+  return (Obj) 0;
 }
 
 int IsBarrier(Obj obj)
@@ -2085,10 +2086,13 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
 Obj FuncMakeThreadLocal(Obj self, Obj var)
 {
   char *name;
+  UInt gvar;
   if (!IS_STRING(var))
     ArgumentError("MakeThreadLocal: Argument must be a variable name");
   name = CSTR_STRING(var);
-  MakeThreadLocalVar(GVarName(name), RNamName(name));
+  gvar = GVarName(name);
+  name = NameGVar(gvar); /* to apply namespace scopes where needed. */
+  MakeThreadLocalVar(gvar, RNamName(name));
   return (Obj) 0;
 }
 
