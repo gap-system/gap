@@ -1981,7 +1981,7 @@ Obj FuncFIND_ALL_IN_STRING(Obj self, Obj string, Obj chars)
   UInt i, len, matches;
   unsigned char table[1<<(8*sizeof(char))];
   unsigned char *s;
-  if (TNUM_OBJ(string) != T_STRING || TNUM_OBJ(chars) != T_STRING)
+  if (!IsStringConv(string) || !IsStringConv(chars))
     ErrorQuit("FIND_ALL_IN_STRING: Requires two string arguments", 0L, 0L);
   memset(table, 0, sizeof(table));
   len = GET_LEN_STRING(chars);
@@ -2018,8 +2018,8 @@ Obj FuncNORMALIZE_NEWLINES(Obj self, Obj string)
 {
   UInt i, j, len;
   Char *s;
-  if (TNUM_OBJ(string) != T_STRING)
-    ErrorQuit("NORMALIZE_NEWLINES: Requires a string argument", 0L, 0L);
+  if (!IsStringConv(string) || !DS_BAG(string))
+    ErrorQuit("NORMALIZE_NEWLINES: Requires a mutable string argument", 0L, 0L);
   len = GET_LEN_STRING(string);
   s = CSTR_STRING(string);
   for (i = j = 0; i < len; i++) {
