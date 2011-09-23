@@ -3345,7 +3345,7 @@ Obj WriteAllFunc;
   Obj FuncINPUT_FILENAME( Obj self) {
     UInt len;
     Obj s;
-    if (TLS->input->name) {
+    if (TLS->input && TLS->input->name) {
       len = SyStrlen(TLS->input->name);
       s = NEW_STRING(len);
       SyStrncat(CSTR_STRING(s),TLS->input->name, len);
@@ -3358,7 +3358,7 @@ Obj WriteAllFunc;
   }
 
   Obj FuncINPUT_LINENUMBER( Obj self) {
-    return INTOBJ_INT(TLS->input->number);
+    return INTOBJ_INT(TLS->input ? TLS->input->number : 0);
   }
 
   Obj FuncALL_KEYWORDS(Obj self) {

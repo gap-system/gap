@@ -1175,6 +1175,7 @@ Obj NewFunctionT (
     NAME_FUNC(func) = name;
     NARG_FUNC(func) = narg;
     NAMS_FUNC(func) = nams;
+    if (nams) MakeBagPublic(nams);
     CHANGED_BAG(func);
 
     /* enter the profiling bag                                             */

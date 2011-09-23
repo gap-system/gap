@@ -629,6 +629,7 @@ void CodeFuncExprBegin (
     NARG_FUNC( fexp ) = narg;
     NLOC_FUNC( fexp ) = nloc;
     NAMS_FUNC( fexp ) = nams;
+    if (nams) MakeBagPublic(nams);
     CHANGED_BAG( fexp );
 
     /* give it a functions expressions list                                */
@@ -664,7 +665,6 @@ void CodeFuncExprBegin (
     /* Make the function expression bag immutable and public               */
     /* TODO: Check if that's actually correct. */
     RetypeBag(fexs, T_PLIST + IMMUTABLE);
-    DS_BAG(fexs) = NULL;
 
     /* allocate the top level statement sequence                           */
     stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
