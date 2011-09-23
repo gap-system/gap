@@ -136,6 +136,11 @@ BindGlobal("UnregisterThread@", function(is_shell)
   SendControl@(UNREGISTER_THREAD@, is_shell);
 end);
 
+BindGlobal("UnregisterBackgroundThread@", function()
+  SendControl@(UNREGISTER_THREAD@, false);
+end);
+
+
 BindGlobal("ChannelInputStream@", function(channel)
   return InputTextCustom(channel, function(channel)
     Print("\c");
@@ -178,6 +183,7 @@ BindGlobal("DEFAULT_INPUT_STREAM", function()
       if not IsBound(ThreadInfo@) then
 	ThreadInfo@ := NewThreadInfo@();
 	RegisterThread@();
+	AtThreadExit(UnregisterBackgroundThread@);
       fi;
       InputStream@ :=
         ChannelInputStream@(ThreadInfo@.InputChannel);
@@ -195,6 +201,7 @@ BindGlobal("DEFAULT_OUTPUT_STREAM", function()
       if not IsBound(ThreadInfo@) then
 	ThreadInfo@ := NewThreadInfo@();
 	RegisterThread@();
+	AtThreadExit(UnregisterBackgroundThread@);
       fi;
       OutputStream@ :=
         ChannelOutputStream@();
@@ -221,10 +228,12 @@ BindGlobal("CompleteThreadRegistration@", function(threadinfo, waitfor)
   if not IsBound(ThreadName@[threadid]) then
     ThreadName@[threadid] := String(threadid-1);
   fi;
-  OutputHistory@[threadid] := "";
-  OutputHistoryIncompleteLine@[threadid] := false;
+  if not IsBound(OutputHistory@[threadid]) then
+    OutputHistory@[threadid] := "";
+    OutputHistoryIncompleteLine@[threadid] := false;
+    ShownOutput@[threadid] := 0;
+  fi;
   ShowBackgroundOutput@[threadid] := DefaultShowBackgroundOutput@;
-  ShownOutput@[threadid] := 0;
   Prompt@[threadid] := SubstituteVariables@(DefaultPrompt@, threadid);
   OutputPrefixRaw@[threadid] := DefaultOutputPrefix@;
   OutputPrefix@[threadid] :=
@@ -643,7 +652,11 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
       if StartsWith(data, "!") then
         ParseCommand@(Chomp(data));
       else
-        SendChannel(ThreadInputChannel@[ActiveThread@], data);
+	if IsBound(ThreadInputChannel@[ActiveThread@]) then
+          SendChannel(ThreadInputChannel@[ActiveThread@], data);
+	else
+	  SystemMessage@("Attempting to send input to dead background thread");
+	fi;
       fi;
     elif command = EXPECT_INPUT@ then
       AddOutput@(threadid, data, true);
@@ -653,13 +666,18 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
       if data then
         # shell thread
 	NumShellThreads@ := NumShellThreads@ - 1;
+	Unbind(ThreadNameToID@.(ThreadName@[threadid]));
+	Unbind(ThreadName@[threadid]);
+      else
+	if OutputHistoryIncompleteLine@[threadid] then
+	  AddOutput@(threadid, "\n", false);
+	fi;
+        AddOutput@(threadid, "### Background thread terminated. ###\n", false);
       fi;
       # enable garbage collector to collect channels
       Unbind(ThreadControlChannel@[threadid]);
       Unbind(ThreadInputChannel@[threadid]);
       # Make sure the thread can't be found anymore.
-      Unbind(ThreadNameToID@.(ThreadName@[threadid]));
-      Unbind(ThreadName@[threadid]);
       # wait for any threads we started ourselves
       if WaitForThread@[threadid] then
         WaitThread(threadid);
