@@ -65,6 +65,7 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       [ "e", false, "disable/enable quitting on <ctr>-D" ],
       [ "f", false, "force line editing" ],
       [ "n", false, "prevent line editing" ],
+      [ "t", false, "enable multi-threaded interface" ],
       [ "x", "", "<num>", "set line width" ],
       [ "y", "", "<num>", "set number of lines" ],
       ,
