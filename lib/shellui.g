@@ -146,13 +146,13 @@ BindGlobal("ChannelInputStream@", function(channel)
     Print("\c");
     SendControl@(EXPECT_INPUT@, CPROMPT());
     return ReceiveChannel(channel);
-  end, Ignore);
+  end, ReturnTrue);
 end);
 
 BindGlobal("ChannelOutputStream@", function()
   return OutputTextCustom([ ], function(state, string)
     SendControl@(HAVE_OUTPUT@, string);
-  end, Ignore);
+  end, ReturnTrue);
 end);
 
 BindGlobal("DirectChannelOutputStream@", function()
@@ -162,7 +162,7 @@ BindGlobal("DirectChannelOutputStream@", function()
   return OutputTextCustom(OutputChannel@, function(channel, string)
     SendChannel(channel,
       [ ThreadID@(), MyOutputPrefix@, string ] );
-  end, Ignore);
+  end, ReturnTrue);
 end);
 
 
@@ -174,40 +174,42 @@ BindGlobal("NewThreadInfo@", function()
   ));
 end);
 
-UnbindGlobal("DEFAULT_INPUT_STREAM");
-BindGlobal("DEFAULT_INPUT_STREAM", function()
-  if not IsBound(InputStream@) then
-    if ControlThread@ <> false then
-      InputStream@ := InputTextNone();
-    else
-      if not IsBound(ThreadInfo@) then
-	ThreadInfo@ := NewThreadInfo@();
-	RegisterThread@();
-	AtThreadExit(UnregisterBackgroundThread@);
+BindGlobal("SetupDefaultStreams@", function()
+  UnbindGlobal("DEFAULT_INPUT_STREAM");
+  BindGlobal("DEFAULT_INPUT_STREAM", function()
+    if not IsBound(InputStream@) then
+      if ControlThread@ <> false then
+	InputStream@ := InputTextNone();
+      else
+	if not IsBound(ThreadInfo@) then
+	  ThreadInfo@ := NewThreadInfo@();
+	  RegisterThread@();
+	  AtThreadExit(UnregisterBackgroundThread@);
+	fi;
+	InputStream@ :=
+	  ChannelInputStream@(ThreadInfo@.InputChannel);
       fi;
-      InputStream@ :=
-        ChannelInputStream@(ThreadInfo@.InputChannel);
     fi;
-  fi;
-  return InputStream@;
-end);
+    return InputStream@;
+  end);
 
-UnbindGlobal("DEFAULT_OUTPUT_STREAM");
-BindGlobal("DEFAULT_OUTPUT_STREAM", function()
-  if not IsBound(OutputStream@) then
-    if ControlThread@ then
-      OutputStream@ := DirectChannelOutputStream@();
-    else
-      if not IsBound(ThreadInfo@) then
-	ThreadInfo@ := NewThreadInfo@();
-	RegisterThread@();
-	AtThreadExit(UnregisterBackgroundThread@);
+  UnbindGlobal("DEFAULT_OUTPUT_STREAM");
+  BindGlobal("DEFAULT_OUTPUT_STREAM", function()
+    if not IsBound(OutputStream@) then
+      if ControlThread@ then
+	OutputStream@ := DirectChannelOutputStream@();
+      else
+	if not IsBound(ThreadInfo@) then
+	  ThreadInfo@ := NewThreadInfo@();
+	  RegisterThread@();
+	  AtThreadExit(UnregisterBackgroundThread@);
+	fi;
+	OutputStream@ :=
+	  ChannelOutputStream@();
       fi;
-      OutputStream@ :=
-        ChannelOutputStream@();
     fi;
-  fi;
-  return OutputStream@;
+    return OutputStream@;
+  end);
 end);
 
 BindGlobal("ThreadExit@", function()
@@ -702,7 +704,9 @@ BindGlobal("InputLoop@", function()
   stdin := INPUT_TEXT_FILE("*stdin*");
   while true do
     line := READ_LINE_FILE(stdin);
-    SendControl@(HAVE_INPUT@, line);
+    if line <> "" and line <> fail then
+      SendControl@(HAVE_INPUT@, line);
+    fi;
   od;
 end);
 
@@ -757,8 +761,9 @@ BindGlobal("OutputLoop@", function()
   od;
 end);
 
-BindGlobal("Initialize@", function()
+BindGlobal("MULTI_SESSION", function()
   local handshake;
+  SetupDefaultStreams@();
   BindGlobal("InputThreadID@", CreateThread(InputLoop@));
   BindGlobal("OutputThreadID@", CreateThread(OutputLoop@));
   handshake := StartHandShake();
@@ -772,5 +777,3 @@ BindGlobal("Initialize@", function()
 end);
 
 LEAVE_NAMESPACE();
-
-Initialize@ShellUI();

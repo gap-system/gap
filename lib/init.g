@@ -1227,7 +1227,11 @@ CallAndInstallPostRestore( function()
     od;
 end );
 
-SESSION();
+if THREAD_UI() then
+  MULTI_SESSION();
+else
+  SESSION();
+fi;
 
 PROGRAM_CLEAN_UP();
 

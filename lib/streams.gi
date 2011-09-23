@@ -649,7 +649,19 @@ InstallGlobalFunction( InputTextCustom,
 	) );
     end);
 
+#############################################################################
+##
+#M  CloseStream( <input-text-custom> )
+##
 
+InstallMethod( CloseStream,
+    "input text custom",
+    [ IsInputTextStream and IsInputTextCustomRep ],
+function( stream )
+    if not stream!.close(stream!.state) then
+      TryNextMethod();
+    fi;
+end );
 
 #############################################################################
 ##
@@ -1293,6 +1305,21 @@ function( state, write, close )
       formatting := false,
     ) );
 end );
+
+#############################################################################
+##
+#M  CloseStream( <output-text-custom> )
+##
+
+InstallMethod( CloseStream,
+    "output text custom",
+    [ IsOutputTextStream and IsOutputTextCustomRep ],
+function( stream )
+    if not stream!.close(stream!.state) then
+      TryNextMethod();
+    fi;
+end );
+
 
 
 #############################################################################
