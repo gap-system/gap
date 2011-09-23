@@ -633,6 +633,8 @@ UInt OpenDefaultInput( void )
   stream = CALL_0ARGS(func);
   if (!stream)
     ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0L, 0L);
+  if (IsStringConv(stream))
+    return OpenInput(CSTR_STRING(stream));
   TLS->defaultInput = stream;
   return OpenInputStream(stream);
 }
@@ -647,6 +649,8 @@ UInt OpenDefaultOutput( void )
   stream = CALL_0ARGS(func);
   if (!stream)
     ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0L, 0L);
+  if (IsStringConv(stream))
+    return OpenOutput(CSTR_STRING(stream));
   TLS->defaultOutput = stream;
   return OpenOutputStream(stream);
 }
@@ -2740,6 +2744,11 @@ Obj WriteAllFunc;
 
 
 
+    if (! stream) {
+      stream = TLS->output;
+      if (! stream) OpenDefaultOutput();
+      stream = TLS->output;
+    }
     /* '\01', increment indentation level                                  */
     if ( ch == '\01' ) {
 
@@ -3336,7 +3345,7 @@ Obj WriteAllFunc;
   Obj FuncINPUT_FILENAME( Obj self) {
     UInt len;
     Obj s;
-    if (TLS->input && TLS->input->name) {
+    if (TLS->input->name) {
       len = SyStrlen(TLS->input->name);
       s = NEW_STRING(len);
       SyStrncat(CSTR_STRING(s),TLS->input->name, len);

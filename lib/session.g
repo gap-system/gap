@@ -108,4 +108,15 @@ BindGlobal("POST_RESTORE", function()
 end);
 
 
+DEFAULT_INPUT_STREAM := function()
+  if CurrentThread() = 0 then
+    return "*stdin*";
+  else
+    return InputTextNone();
+  fi;
+end;
+
+DEFAULT_OUTPUT_STREAM := function()
+  return "*stdout*";
+end;
 
