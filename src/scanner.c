@@ -815,7 +815,7 @@ UInt CloseInput ( void )
 {
     /* refuse to close the initial input file                              */
     if ( TLS->inputFilesSP <= 1)
-        return 0;
+        return 1;
 
     /* refuse to close the test input file                                 */
     if ( TLS->input == TLS->testInput )
@@ -1426,7 +1426,7 @@ UInt CloseOutput ( void )
 
     /* refuse to close the initial output file '*stdout*'                  */
     if ( TLS->outputFilesSP <= 1 )
-      return 0;
+      return 1;
 
 
     /* flush output and close the file                                     */
@@ -3334,10 +3334,18 @@ Obj WriteAllFunc;
 
 
   Obj FuncINPUT_FILENAME( Obj self) {
-    UInt len = SyStrlen(TLS->input->name);
-    Obj s = NEW_STRING(len);
-    SyStrncat(CSTR_STRING(s),TLS->input->name, len);
-    return s;
+    UInt len;
+    Obj s;
+    if (TLS->input && TLS->input->name) {
+      len = SyStrlen(TLS->input->name);
+      s = NEW_STRING(len);
+      SyStrncat(CSTR_STRING(s),TLS->input->name, len);
+      return s;
+    } else {
+      char *s2 = "*defin*";
+      s = NEW_STRING(SyStrlen(s2));
+      SyStrncat(CSTR_STRING(s), s2, SyStrlen(s2));
+    }
   }
 
   Obj FuncINPUT_LINENUMBER( Obj self) {
