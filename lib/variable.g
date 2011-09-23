@@ -233,7 +233,7 @@ BIND_GLOBAL( "TYPE_LVARS", NewType(LVARS_FAMILY, IsLVarsBag));
 #
 # Namespaces:
 #
-BIND_GLOBAL( "NAMESPACES_STACK", [] );
+BIND_GLOBAL( "NAMESPACES_STACK", ShareObj([]) );
 
 BIND_GLOBAL( "ENTER_NAMESPACE",
   function( namesp )
@@ -241,41 +241,50 @@ BIND_GLOBAL( "ENTER_NAMESPACE",
         Error( "<namesp> must be a string" );
         return;
     fi;
-    NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)+1] := namesp;
+    namesp := MakeImmutable(CopyRegion(namesp));
+    atomic NAMESPACES_STACK do
+        NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)+1] := namesp;
+    od;
     SET_NAMESPACE(namesp);
   end );
 
 BIND_GLOBAL( "LEAVE_NAMESPACE",
   function( )
-    if LEN_LIST(NAMESPACES_STACK) = 0 then
-        SET_NAMESPACE("");
-        Error( "was not in any namespace" );
-    else
-        UNB_LIST(NAMESPACES_STACK,LEN_LIST(NAMESPACES_STACK));
-        if LEN_LIST(NAMESPACES_STACK) = 0 then
-            SET_NAMESPACE("");
-        else
-            SET_NAMESPACE(NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)]);
-        fi;
-    fi;
+    atomic NAMESPACES_STACK do
+      if LEN_LIST(NAMESPACES_STACK) = 0 then
+	  SET_NAMESPACE(MakeImmutable(""));
+	  Error( "was not in any namespace" );
+      else
+	  UNB_LIST(NAMESPACES_STACK,LEN_LIST(NAMESPACES_STACK));
+	  if LEN_LIST(NAMESPACES_STACK) = 0 then
+	      SET_NAMESPACE(MakeImmutable(""));
+	  else
+	      SET_NAMESPACE(NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)]);
+	  fi;
+      fi;
+    od;
   end );
 
 BIND_GLOBAL( "LEAVE_ALL_NAMESPACES",
   function( )
     local i;
-    SET_NAMESPACE("");
-    for i in [1..LEN_LIST(NAMESPACES_STACK)] do
-         UNB_LIST(NAMESPACES_STACK,i);
+    atomic NAMESPACES_STACK do
+      SET_NAMESPACE(MakeImmutable(""));
+      for i in [1..LEN_LIST(NAMESPACES_STACK)] do
+	   UNB_LIST(NAMESPACES_STACK,i);
+      od;
     od;
   end );
     
 BIND_GLOBAL( "CURRENT_NAMESPACE",
   function()
-    if LEN_LIST(NAMESPACES_STACK) > 0 then
-        return NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)];
-    else
-        return "";
-    fi;
+    atomic NAMESPACES_STACK do
+      if LEN_LIST(NAMESPACES_STACK) > 0 then
+	  return NAMESPACES_STACK[LEN_LIST(NAMESPACES_STACK)];
+      else
+	  return "";
+      fi;
+    od;
   end );
 
 #############################################################################
