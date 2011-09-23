@@ -725,7 +725,6 @@ void PrintString (
   UInt1 c;
   UInt len = GET_LEN_STRING(list);
   UInt off = 0;
-  LockOutput(TLS->output);
   Pr("\"", 0L, 0L);
   while (off < len)
     {
@@ -791,7 +790,6 @@ void PrintString (
       Pr( "%s", (Int)PrStrBuf, 0L );
     }
   Pr( "\"", 0L, 0L );
-  UnlockOutput(TLS->output);
 }
 /****************************************************************************
 **
@@ -810,7 +808,6 @@ void PrintString1 (
   UInt scanout, off = 0;
   UInt1  *p;
 
-  LockOutput(TLS->output);
   while (off < len)    {
     for (p = CHARS_STRING(list), scanout=0; 
          p[off] && off<len && scanout<10000; 
@@ -823,7 +820,6 @@ void PrintString1 (
       Pr("%c", 0L, 0L);
     }
   }
-  UnlockOutput(TLS->output);
 }
 
 

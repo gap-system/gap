@@ -879,23 +879,10 @@ typedef struct {
     Int         spos;
     Int         sindent;
     Obj         stream;
-    pthread_mutex_t lock;
-    pthread_cond_t signal;
-    void *      lock_owner;
-    int         lock_counter;
 } TypOutputFile;
 
 /* TL: extern TypOutputFile   OutputFiles [16]; */
 /* TL: extern TypOutputFile * Output; */
-
-/****************************************************************************
-**
-*F  LockOutput( <output> ) . . . . . . . .  lock mutex associated with output
-*F  UnlockOutput( <output> ) . . . . . .  unlock mutex associated with output
-*/
-
-void LockOutput( TypOutputFile * output );
-void UnlockOutput( TypOutputFile * output );
 
 
 /****************************************************************************

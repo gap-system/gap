@@ -553,71 +553,22 @@ void Match (
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
 
-void InitOutput(TypOutputFile *output)
-{
-  pthread_mutexattr_t attr;
-  pthread_mutexattr_init(&attr);
-  /* pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); */
-  pthread_mutex_init(&output->lock, &attr);
-  pthread_mutexattr_destroy(&attr);
-  pthread_cond_init(&output->signal, NULL);
-  output->lock_owner = NULL;
-  output->lock_counter = 0;
-}
-
-void DisposeOutput(TypOutputFile *output)
-{
-  pthread_mutex_destroy(&output->lock);
-  pthread_cond_destroy(&output->signal);
-  free(output);
-}
-void DisposeInput(TypInputFile *input)
-{
-  free(input);
-}
-
 TypOutputFile *NewOutput()
 {
   TypOutputFile *result;
-  result = malloc(sizeof(TypOutputFile));
+  result = GC_malloc(sizeof(TypOutputFile));
   if (!result)
     abort();
-  InitOutput(result);
   return result;
 }
 
 TypInputFile *NewInput()
 {
   TypInputFile *result;
-  result = malloc(sizeof(TypInputFile));
+  result = GC_malloc(sizeof(TypInputFile));
   if (!result)
     abort();
   return result;
-}
-
-void LockOutput(TypOutputFile *output)
-{
-#if 0
-  pthread_mutex_lock(&output->lock);
-  while (output->lock_owner != TLS && output->lock_counter > 0)
-    pthread_cond_wait(&output->signal, &output->lock);
-  output->lock_owner = TLS;
-  output->lock_counter++;
-  pthread_mutex_unlock(&output->lock);
-#endif
-}
-
-void UnlockOutput(TypOutputFile *output)
-{
-#if 0
-  pthread_mutex_lock(&output->lock);
-  if (--output->lock_counter <= 0)
-  {
-    output->lock_owner = NULL;
-    pthread_cond_signal(&output->signal);
-  }
-  pthread_mutex_unlock(&output->lock);
-#endif
 }
 
 GVarDescriptor DEFAULT_INPUT_STREAM;
@@ -3302,9 +3253,7 @@ Obj WriteAllFunc;
   {
     KOutputStream savedStream = TLS->theStream;
     TLS->theStream = stream;
-    LockOutput(stream);
     FormatOutput( putToTheStream, format, arg1, arg2);
-    UnlockOutput(stream);
     TLS->theStream = savedStream;
   }
 
@@ -3535,28 +3484,10 @@ static Int InitKernel (
 
 void InitScannerTLS()
 {
-  if (!IsMainThread())
-  {
-    TLS->outputFilesSP = 0;
-    TLS->inputFilesSP = 0;
-  }
 }
 
 void DestroyScannerTLS()
 {
-  int i;
-  for (i=0; i<sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]); i++)
-  {
-    if (!TLS->outputFiles[i])
-      break;
-    DisposeOutput(TLS->outputFiles[i]);
-  }
-  for (i=0; i<sizeof(TLS->inputFiles)/sizeof(TLS->inputFiles[0]); i++)
-  {
-    if (!TLS->inputFiles[i])
-      break;
-    DisposeInput(TLS->inputFiles[i]);
-  }
 }
 
 
