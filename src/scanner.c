@@ -303,7 +303,7 @@ typedef UInt            TypSymbolSet;
 /* TL: Char *          Prompt; */
 
 /* see scanner.h */
-/* TL: Obj  PrintPromptHook = 0; */
+Obj  PrintPromptHook = 0;
 Obj  EndLineHook = 0;
 
 /****************************************************************************
@@ -710,7 +710,7 @@ UInt OpenInput (
 **
 **  The same as 'OpenInput' but for streams.
 */
-/* TL: Obj IsStringStream; */
+Obj IsStringStream;
 
 UInt OpenInputStream (
     Obj                 stream )
@@ -735,7 +735,7 @@ UInt OpenInputStream (
     TLS->input = TLS->inputFiles[sp];
     TLS->input->isstream = 1;
     TLS->input->stream = stream;
-    TLS->input->isstringstream = (CALL_1ARGS(TLS->isStringStream, stream) == True);
+    TLS->input->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
     if (TLS->input->isstringstream) {
         TLS->input->sline = ADDR_OBJ(stream)[2];
         TLS->input->spos = INT_INTOBJ(ADDR_OBJ(stream)[1]);
@@ -1323,7 +1323,7 @@ UInt OpenOutput (
 **  The same as 'OpenOutput' but for streams.
 */
 
-/* TL: Obj PrintFormattingStatus; */
+Obj PrintFormattingStatus;
 
 UInt OpenOutputStream (
     Obj                 stream )
@@ -1342,8 +1342,8 @@ UInt OpenOutputStream (
 
     TLS->output = TLS->outputFiles[sp];
     TLS->output->stream   = stream;
-    TLS->output->isstringstream = (CALL_1ARGS(TLS->isStringStream, stream) == True);
-    TLS->output->format   = (CALL_1ARGS(TLS->printFormattingStatus, stream) == True);
+    TLS->output->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
+    TLS->output->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
     TLS->output->line[0]  = '\0';
     TLS->output->pos      = 0;
     TLS->output->indent   = 0;
@@ -1510,7 +1510,7 @@ UInt CloseAppend ( void )
 
 *V  ReadLineFunc  . . . . . . . . . . . . . . . . . . . . . . . .  'ReadLine'
 */
-/* TL: Obj ReadLineFunc; */
+Obj ReadLineFunc;
 
 
 /****************************************************************************
@@ -1527,7 +1527,7 @@ static Int GetLine2 (
         if ( input->sline == 0
           || GET_LEN_STRING(input->sline) <= input->spos )
         {
-            input->sline = CALL_1ARGS( TLS->readLineFunc, input->stream );
+            input->sline = CALL_1ARGS( ReadLineFunc, input->stream );
             input->spos  = 0;
         }
         if ( input->sline == Fail || ! IS_STRING(input->sline) ) {
@@ -1605,15 +1605,15 @@ Char GetLine ( void )
     Char *          q;
 
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
-    /* if the GAP function `TLS->printPromptHook' is defined then it is called  */
+    /* if the GAP function `PrintPromptHook' is defined then it is called  */
     /* for printing the prompt, see also `EndLineHook'                     */
     if ( ! TLS->input->isstream ) {
        if ( TLS->input->file == 0 ) {
             if ( ! SyQuiet ) {
                 if (TLS->output->pos > 0)
                     Pr("\n", 0L, 0L);
-                if ( TLS->printPromptHook )
-                     Call0ArgsInNewReader( TLS->printPromptHook );
+                if ( PrintPromptHook )
+                     Call0ArgsInNewReader( PrintPromptHook );
                 else
                      Pr( "%s%c", (Int)TLS->prompt, (Int)'\03' );
             } else             
@@ -1622,8 +1622,8 @@ Char GetLine ( void )
         else if ( TLS->input->file == 2 ) {
             if (TLS->output->pos > 0)
                 Pr("\n", 0L, 0L);
-            if ( TLS->printPromptHook )
-                 Call0ArgsInNewReader( TLS->printPromptHook );
+            if ( PrintPromptHook )
+                 Call0ArgsInNewReader( PrintPromptHook );
             else
                  Pr( "%s%c", (Int)TLS->prompt, (Int)'\03' );
         }
@@ -2537,7 +2537,7 @@ void GetNumber ( UInt StartingStatus )
 
    *V  WriteAllFunc  . . . . . . . . . . . . . . . . . . . . . . . .  'WriteAll'
    */
-/* TL: Obj WriteAllFunc; */
+Obj WriteAllFunc;
 
 
   /****************************************************************************
@@ -2578,7 +2578,7 @@ void GetNumber ( UInt StartingStatus )
       memcpy(CHARS_STRING(str),  line, len + 1 );
 
       /* now delegate to library level */
-      CALL_2ARGS( TLS->writeAllFunc, output->stream, str );
+      CALL_2ARGS( WriteAllFunc, output->stream, str );
     }
     else {
       SyFputs( line, output->file );
@@ -3412,12 +3412,12 @@ static Int InitKernel (
 
 
     /* import functions from the library                                   */
-    ImportFuncFromLibrary( "ReadLine", &TLS->readLineFunc );
-    ImportFuncFromLibrary( "WriteAll", &TLS->writeAllFunc );
-    ImportFuncFromLibrary( "IsInputTextStringRep", &TLS->isStringStream );
-    InitCopyGVar( "TLS->printPromptHook", &TLS->printPromptHook );
+    ImportFuncFromLibrary( "ReadLine", &ReadLineFunc );
+    ImportFuncFromLibrary( "WriteAll", &WriteAllFunc );
+    ImportFuncFromLibrary( "IsInputTextStringRep", &IsStringStream );
+    InitCopyGVar( "PrintPromptHook", &PrintPromptHook );
     InitCopyGVar( "EndLineHook", &EndLineHook );
-    InitFopyGVar( "TLS->printFormattingStatus", &TLS->printFormattingStatus);
+    InitFopyGVar( "PrintFormattingStatus", &PrintFormattingStatus);
 
     InitHdlrFuncsFromTable( GVarFuncs );
     /* return success                                                      */

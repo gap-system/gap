@@ -52,8 +52,6 @@ typedef struct ThreadLocalStorage
   UInt nrErrLine;
   UInt            symbol;
   Char *          prompt;
-  Obj  printPromptHook;
-  Obj  endLineHook;
   TypInputFile *  inputFiles[16];
   TypOutputFile* outputFiles[16];
   int inputFilesSP;
@@ -66,18 +64,14 @@ typedef struct ThreadLocalStorage
   TypInputFile *  testInput;
   TypOutputFile * testOutput;
   Char            testLine [256];
-  Obj isStringStream;
   TypOutputFile logFile;
   TypOutputFile logStream;
   TypOutputFile inputLogFile;
   TypOutputFile inputLogStream;
   TypOutputFile outputLogFile;
   TypOutputFile outputLogStream;
-  Obj printFormattingStatus;
-  Obj readLineFunc;
   Int helpSubsOn;
   Int dualSemicolon;
-  Obj writeAllFunc;
   Int noSplitLine;
   KOutputStream theStream;
   Char *theBuffer;
