@@ -222,7 +222,11 @@ BIND_GLOBAL("ErrorInner",
         prompt := "brk> ";
     fi;
     if not justQuit then
-        res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*errin*","*errout*",false);
+	if IsBound(DEFAULT_INPUT_STREAM) then
+          res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*defin*","*defout*",false);
+	else
+          res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*errin*","*errout*",false);
+	fi;
     else
         res := fail;
     fi;

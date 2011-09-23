@@ -1468,9 +1468,6 @@ Obj CallErrorInner (
   Obj r = NEW_PREC(0);
   Obj l;
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
-  /* TMPFIX */
-  if (!IsMainThread())
-    FuncJUMP_TO_CATCH(NULL, EarlyMsg);
   AssPRec(r, RNamName("context"), TLS->currLVars);
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
   AssPRec(r, RNamName("mayReturnObj"), mayReturnObj? True : False);
