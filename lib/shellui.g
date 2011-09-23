@@ -354,11 +354,15 @@ BindGlobal("CommandFork@", function(line)
 end);
 
 BindGlobal("CommandList@", function(line)
-  local threadid;
+  local threadid, pending;
   for threadid in [1..Length(ThreadName@)] do
     if IsBound(ThreadName@[threadid]) then
+      pending := "";
+      if ShownOutput@[threadid] < Length(OutputHistory@[threadid]) then
+        pending := " (pending output)";
+      fi;
       SystemMessage@("Thread ", ThreadName@[threadid],
-	" [", threadid-1, "]");
+	" [", threadid-1, "]", pending);
     fi;
   od;
 end);
