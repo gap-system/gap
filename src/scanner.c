@@ -597,16 +597,19 @@ TypInputFile *NewInput()
 
 void LockOutput(TypOutputFile *output)
 {
+#if 0
   pthread_mutex_lock(&output->lock);
   while (output->lock_owner != TLS && output->lock_counter > 0)
     pthread_cond_wait(&output->signal, &output->lock);
   output->lock_owner = TLS;
   output->lock_counter++;
   pthread_mutex_unlock(&output->lock);
+#endif
 }
 
 void UnlockOutput(TypOutputFile *output)
 {
+#if 0
   pthread_mutex_lock(&output->lock);
   if (--output->lock_counter <= 0)
   {
@@ -614,12 +617,44 @@ void UnlockOutput(TypOutputFile *output)
     pthread_cond_signal(&output->signal);
   }
   pthread_mutex_unlock(&output->lock);
+#endif
 }
+
+GVarDescriptor DEFAULT_INPUT_STREAM;
+GVarDescriptor DEFAULT_OUTPUT_STREAM;
+
+UInt OpenDefaultInput( void )
+{
+  Obj func, stream;
+  stream = TLS->defaultInput;
+  if (stream)
+    return OpenInputStream(stream);
+  func = GVarOptFunc(&DEFAULT_INPUT_STREAM);
+  stream = CALL_0ARGS(func);
+  if (!stream)
+    ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0L, 0L);
+  TLS->defaultInput = stream;
+  return OpenInputStream(stream);
+}
+
+UInt OpenDefaultOutput( void )
+{
+  Obj func, stream;
+  stream = TLS->defaultOutput;
+  if (stream)
+    return OpenOutputStream(stream);
+  func = GVarOptFunc(&DEFAULT_OUTPUT_STREAM);
+  stream = CALL_0ARGS(func);
+  if (!stream)
+    ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0L, 0L);
+  TLS->defaultOutput = stream;
+  return OpenOutputStream(stream);
+}
+
 
 
 /****************************************************************************
 **
-
 *F  OpenInput( <filename> ) . . . . . . . . . .  open a file as current input
 **
 **  'OpenInput' opens  the file with  the name <filename>  as  current input.
@@ -665,6 +700,8 @@ UInt OpenInput (
     if ( TLS->testInput != 0 && ! SyStrcmp( filename, "*errin*" ) )
         return 1;
 
+    if (! SyStrcmp(filename, "*defin*") )
+        return OpenDefaultInput();
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
     if ( file == -1 )
@@ -1288,6 +1325,9 @@ UInt OpenOutput (
     if ( TLS->testInput != 0 && ! SyStrcmp( filename, "*errout*" ) )
         return 1;
 
+    if ( ! SyStrcmp( filename, "*defout*" ) )
+        return OpenDefaultOutput();
+
     /* try to open the file                                                */
     file = SyFopen( filename, "w" );
     if ( file == -1 )
@@ -1522,6 +1562,11 @@ static Int GetLine2 (
     Char *                  buffer,
     UInt                    length )
 {
+    if ( ! input ) {
+      input = TLS->input;
+      if ( ! input ) OpenDefaultInput();
+      input = TLS->input;
+    }
 
     if ( input->isstream ) {
         if ( input->sline == 0
@@ -2557,6 +2602,11 @@ Obj WriteAllFunc;
   {
     Obj                     str;
     UInt                    lstr;
+    if ( ! output ) {
+      output = TLS->output;
+      if ( ! output ) OpenDefaultOutput();
+      output = TLS->output;
+    }
     if ( output->isstream ) {
       /* special handling of string streams, where we can copy directly */
       if (output->isstringstream) {
@@ -2769,7 +2819,9 @@ Obj WriteAllFunc;
     }
 
     /* normal character, room on the current line                          */
-    else if ( stream->pos < SyNrCols-2-TLS->noSplitLine ) {
+    /* TODO: This should be -2 instead of -8 and room for the prefix
+     * accounted for elswhere. */
+    else if ( stream->pos < SyNrCols-8-TLS->noSplitLine ) {
 
       /* put the character on this line                                  */
       stream->line[ stream->pos++ ] = ch;
@@ -3377,6 +3429,11 @@ static Int InitKernel (
     TLS->inputLog  = 0;  TLS->outputLog  = 0;
     TLS->testInput = 0;  TLS->testOutput = 0;
 
+    /* Initialize default stream functions */
+
+    DeclareGVar(&DEFAULT_INPUT_STREAM, "DEFAULT_INPUT_STREAM");
+    DeclareGVar(&DEFAULT_OUTPUT_STREAM, "DEFAULT_OUTPUT_STREAM");
+
     /* initialize cookies for streams                                      */ 
     /* also initialize the cookies for the GAP strings which hold the
        latest lines read from the streams  and the name of the current input file*/
@@ -3462,36 +3519,21 @@ void InitScannerTLS()
 {
   if (!IsMainThread())
   {
-    TLS->output = MainThreadTLS->output;
-    TLS->outputFiles[0] = TLS->output;
-    TLS->outputFilesSP = 1;
-    TLS->outputLog = MainThreadTLS->outputLog;
-    TLS->outputLogFile = MainThreadTLS->outputLogFile;
-    TLS->outputLogStream = MainThreadTLS->outputLogStream;
-    TLS->input = MainThreadTLS->input;
-    TLS->inputFiles[0] = TLS->input;
-    TLS->inputFilesSP = 1;
-    TLS->inputLog = MainThreadTLS->inputLog;
-    TLS->inputLogFile = MainThreadTLS->inputLogFile;
-    TLS->inputLogStream = MainThreadTLS->inputLogStream;
-    TLS->testInput = MainThreadTLS->testInput;
-    TLS->testOutput = MainThreadTLS->testOutput;
+    TLS->outputFilesSP = 0;
+    TLS->inputFilesSP = 0;
   }
 }
 
 void DestroyScannerTLS()
 {
   int i;
-  /* Skip file at index zero, which is reused storage from the main
-   * thread.
-   */
-  for (i=1; i<sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]); i++)
+  for (i=0; i<sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]); i++)
   {
     if (!TLS->outputFiles[i])
       break;
     DisposeOutput(TLS->outputFiles[i]);
   }
-  for (i=1; i<sizeof(TLS->inputFiles)/sizeof(TLS->inputFiles[0]); i++)
+  for (i=0; i<sizeof(TLS->inputFiles)/sizeof(TLS->inputFiles[0]); i++)
   {
     if (!TLS->inputFiles[i])
       break;
