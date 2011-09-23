@@ -2884,6 +2884,9 @@ static Int InitKernel (
     InfoBags[ T_LVARS ].name = "values bag";
     InitMarkFuncBags( T_LVARS, MarkAllSubBags );
 
+    /* Make T_LVARS bags public */
+    MakeBagTypePublic(T_LVARS);
+
     /* and the save restore functions */
     SaveObjFuncs[ T_LVARS ] = SaveLVars;
     LoadObjFuncs[ T_LVARS ] = LoadLVars;
