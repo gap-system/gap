@@ -169,6 +169,7 @@ BindGlobal("NewThreadInfo@", function()
   ));
 end);
 
+UnbindGlobal("DEFAULT_INPUT_STREAM");
 BindGlobal("DEFAULT_INPUT_STREAM", function()
   if not IsBound(InputStream@) then
     if ControlThread@ <> false then
@@ -185,6 +186,7 @@ BindGlobal("DEFAULT_INPUT_STREAM", function()
   return InputStream@;
 end);
 
+UnbindGlobal("DEFAULT_OUTPUT_STREAM");
 BindGlobal("DEFAULT_OUTPUT_STREAM", function()
   if not IsBound(OutputStream@) then
     if ControlThread@ then
