@@ -56,3 +56,5 @@ end;
 NewRegion := function()
   return RegionOf(ShareObj([]));
 end;
+
+HaveMultiThreadedUI := false;

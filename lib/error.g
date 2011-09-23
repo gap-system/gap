@@ -222,7 +222,7 @@ BIND_GLOBAL("ErrorInner",
         prompt := "brk> ";
     fi;
     if not justQuit then
-	if IsBound(DEFAULT_INPUT_STREAM) then
+	if HaveMultiThreadedUI then
           res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*defin*","*defout*",false);
 	else
           res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*errin*","*errout*",false);
