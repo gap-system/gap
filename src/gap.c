@@ -2927,6 +2927,18 @@ Obj FuncKERNEL_INFO(Obj self) {
   
 }
 
+/****************************************************************************
+**
+*F FuncTHREAD_UI  ... Whether we use a multi-threaded interface
+**
+*/
+
+Obj FuncTHREAD_UI(Obj self)
+{
+  extern UInt ThreadUI;
+  return ThreadUI ? True : False;
+}
+
 
 /****************************************************************************
 **
@@ -3099,6 +3111,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "KERNEL_INFO", 0, "",
       FuncKERNEL_INFO, "src/gap.c:KERNEL_INFO" },
+
+    { "THREAD_UI", 0, "",
+      FuncTHREAD_UI, "src/gap.c:THREAD_UI" },
 
     { "SetUserHasQuit", 1, "value",
       FuncSetUserHasQuit, "src/gap.c:SetUserHasQuit" },
