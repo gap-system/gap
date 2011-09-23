@@ -1,0 +1,201 @@
+</body>
+</html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+      "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head><title>The GAP Shell User Interface</title></head>
+<body>
+<h1>The GAP Shell User Interface</h1>
+
+<h2 id="s1.">1. Shell UI commands</h2>
+
+<p>The shell user interface provides the user with the option to control
+threads by commands prefixed with an exclamation mark (&quot;!&quot;).
+Those commands are listed below.</p>
+
+<p>For ease of use, users only need to type as many letters of each
+commands so that it can be unambiguously selected. Thus, the shell will
+recognize <tt>!l</tt> as an abbreviation for <tt>!list</tt>.</p>
+
+<h3 id="s1.1">1.1 !shell [&lt;name&gt;]</h3>
+
+<p>Starts a new shell thread and switches to it. Optionally, a name for
+the thread can be provided.</p>
+
+<h3 id="s1.2">1.2 !fork [&lt;name&gt;]</h3>
+
+<p>Starts a new background shell thread. Optionally, a name for the
+thread can be provided.</p>
+
+<h3 id="s1.3">1.3 !list</h3>
+
+<p>List all current threads that are interacting with the user. This
+does not list threads created with <tt>CreateThread()</tt> that have not
+entered a break loop.</p>
+
+<h3 id="s1.4">1.4 !name [&lt;id&gt;] &lt;name&gt;</h3>
+
+<p>Give the thread with the numerical identifier or name
+<tt>&lt;id&gt;</tt> the name name.</p>
+
+<h3 id="s1.5">1.5 !info &lt;id&gt;</h3>
+
+<p>Provide information about the thread with the numerical identifier or
+name <tt>&lt;id&gt;</tt>.</p>
+
+<h3 id="s1.6">1.6 !hide [&lt;id&gt;|*]</h3>
+
+<p>Hide output from the thread with the numerical identifier or name
+<tt>&lt;id&gt;</tt> when it is not the foreground thread. If no thread
+is specified, make this the default behavior for future threads.</p>
+
+<h3 id="s1.7">1.7 !show [&lt;id&gt;|*]</h3>
+
+<p>Show output from the thread with the numerical identifier or name
+<tt>&lt;id&gt;</tt> even when it is not the foreground thread. If no
+thread is specified, make this the default behavior for future
+threads.</p>
+
+<h3 id="s1.8">1.8 !keep [&lt;id&gt;] &lt;num&gt;</h3>
+
+<p>Keep <tt>&lt;num&gt;</tt> lines of output from the specified thread.
+If no thread was specified, make this the default.</p>
+
+<h3 id="s1.9">1.9 !prompt (&lt;id&gt;|*) &lt;string&gt;</h3>
+
+<p>Set the prompt for the specified thread (or for all newly created
+threads if <tt>*</tt> was specified) to be <tt>&lt;string&gt;</tt>. If
+the string contains the pattern <tt>%id%</tt>, it is replaced with the
+numerical id of the thread; if it contains the pattern <tt>%name%</tt>,
+it is replaced with the name of the thread; if the thread has no name,
+the numerical id is displayed instead.</p>
+
+<h3 id="s1.10">1.10 !prefix ([&lt;id&gt;]|*) &lt;string&gt;</h3>
+
+<p>Prefix the output from the specified thread (or for all newly created
+threads if <tt>*</tt> was specified) wiht <tt>&lt;string&gt;</tt>. The
+same substitution rules as for the <tt>!prompt</tt> command apply.</p>
+
+<h3 id="s1.11">1.11 !select &lt;id&gt;</h3>
+
+<p>Make the specified thread the foreground thread.</p>
+
+<h3 id="s1.12">1.12 !next</h3>
+
+<p>Make the next thread in numerical order the foreground thread.</p>
+
+<h3 id="s1.13">1.13 !previous</h3>
+
+<p>Make the previous thread in numerical order the foreground
+thread.</p>
+
+<h3 id="s1.14">1.14 !replay &lt;num&gt; [&lt;id&gt;]</h3>
+
+<p>Display the last <tt>&lt;num&gt;</tt> lines of output of the
+specified thread. If no thread was specified, display the last
+<tt>&lt;num&gt;</tt> lines of the current foreground thread.</p>
+
+<h3 id="s1.15">1.15 !&lt;id&gt;</h3>
+
+<p><tt>!&lt;id&gt;</tt> is a shortcut for <tt>!select
+&lt;id&gt;</tt>.</p>
+
+<h3 id="s1.16">1.16 !source &lt;file&gt;</h3>
+
+<p>Read commands from file <tt>&lt;file&gt;</tt>.</p>
+
+<h3 id="s1.17">1.17 !!&lt;file&gt;</h3>
+
+<p><tt>!!&lt;file&gt;</tt> is shortcut for <tt>!source
+&lt;file&gt;</tt>.</p>
+
+<h3 id="s1.18">1.18 !alias &lt;shortcut&gt; &lt;expansion&gt;</h3>
+
+<p>Create an alias. After defining the alias, <tt>!&lt;shortcut&gt;
+&lt;rest of line&gt;</tt> will be replaced with <tt>!&lt;expansion&gt;
+&lt;rest of line&gt;</tt>.</p>
+
+<h3 id="s1.19">1.19 !unalias &lt;shortcut&gt;</h3>
+
+<p>Removes the specified alias.</p>
+
+<h3 id="s1.20">1.20 !eval &lt;gap code&gt;</h3>
+
+<p>Evaluates <tt>&lt;gap code&gt;</tt> as a command.</p>
+
+<h3 id="s1.21">1.21 !run &lt;function&gt; &lt;string&gt;</h3>
+
+<p>Calls the function with name <tt>&lt;function&gt;</tt>, passing it
+the single argument <tt>&lt;string&gt;</tt> as a GAP string.</p>
+
+<hr>
+<h2 id="s2.">2. GAP functions to access the Shell UI</h2>
+
+<p><em>Note: These functions currently aren't available due to some
+necessary internal reorganization.</em></p>
+
+<p>There are several functions to access the basic functionality of the
+shell user interface. Other than <tt><a
+href="#s2.1">ShellUIRegisterCommand</a></tt>, they can only be called
+from within a registered command.</p>
+
+<p>Threads can be specified either by their numerical identifier or by
+their name (as a string). The empty string can be used to specify the
+current foreground thread.</p>
+
+<h3 id="s2.1">2.1 ShellUIRegisterCommand(name, func)</h3>
+
+<p>Registers the command <tt>!name</tt> with the shell UI. It will call
+&lt;func&gt; with the rest of the command line passed as a string
+argument when typed.</p>
+
+<h3 id="s2.2">2.2 ShellUIForegroundThread()</h3>
+
+<p>Returns the numerical identifier of the current foreground
+thread.</p>
+
+<h3 id="s2.3">2.3 ShellUIForegroundThreadName()</h3>
+
+<p>Returns the name of the current foreground thread or <tt>fail</tt> if
+the current foreground thread has no name.</p>
+
+<h3 id="s2.4">2.4 ShellUISelectThread(id)</h3>
+
+<p>Makes <tt>id</tt> the current foreground thread. Returns
+<tt>true</tt> or <tt>false</tt> to indicate success.</p>
+
+<h3 id="s2.5">2.5 ShellUIOutputHistory(id, count)</h3>
+
+<p>Returns the last <tt>count</tt> lines of the thread specified by
+<tt>id</tt> (which can be a numerical identifier or a name). Returns
+<tt>fail</tt> if there is no such thread.</p>
+
+<h3 id="s2.6">2.6 ShellUIOutputHistoryLength(id, length)</h3>
+
+<p>Retain <tt>length</tt> lines of output history from thread
+<tt>id</tt>.</p>
+
+<h3 id="s2.7">2.7 ShellUIOutputHistoryDefaultLength(length)</h3>
+
+<p>By default, retain <tt>length</tt> lines of output history from each
+thread.</p>
+
+<h3 id="s2.8">2.8 ShellUIAtomicRegion</h3>
+
+<p><tt>ShellUIAtomicRegion</tt> is a global variable to be used for
+synchronization when one wishes to perform multiple operations on the
+shell UI as one atomic step, as in:</p>
+
+<pre>
+atomic ShellUIAtomicRegion do
+  ...
+od;
+</pre>
+
+<h3 id="s2.9">2.9 ShellUINewSession(foreground, name)</h3>
+
+<p>Creates a new shell thread. Here, <tt>foreground</tt> is a boolean
+variable specifying whether it should be made the new foreground thread
+and <tt>name</tt> is the name of the thread. The empty string can be
+used to leave the thread without a name.</p>
+
