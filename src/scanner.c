@@ -3354,6 +3354,7 @@ Obj WriteAllFunc;
       char *s2 = "*defin*";
       s = NEW_STRING(SyStrlen(s2));
       SyStrncat(CSTR_STRING(s), s2, SyStrlen(s2));
+      return s;
     }
   }
 
