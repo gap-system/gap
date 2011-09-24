@@ -2610,7 +2610,7 @@ Obj Call0ArgsInNewReader(Obj f)
   readTop     = TLS->readTop;
   readTilde   = TLS->readTilde;
   currLHSGVar = TLS->currLHSGVar;
-  userHasQuit = UserHasQuit;
+  userHasQuit = TLS->UserHasQuit;
   intrCoding = TLS->intrCoding;
   intrIgnoring = TLS->intrIgnoring;
   nrError = TLS->nrError;
@@ -2622,7 +2622,7 @@ Obj Call0ArgsInNewReader(Obj f)
   TLS->readTop     = 0;
   TLS->readTilde   = 0;
   TLS->currLHSGVar = 0;
-  UserHasQuit = 0;
+  TLS->UserHasQuit = 0;
   TLS->intrCoding = 0;
   TLS->intrIgnoring = 0;
   TLS->nrError = 0;
@@ -2641,7 +2641,7 @@ Obj Call0ArgsInNewReader(Obj f)
   
   /* switch back to the old reader context                               */
   memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
-  UserHasQuit = userHasQuit;
+  TLS->UserHasQuit = userHasQuit;
   TLS->stackNams   = stackNams;
   TLS->countNams   = countNams;
   TLS->readTop     = readTop;
@@ -2682,7 +2682,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   readTop     = TLS->readTop;
   readTilde   = TLS->readTilde;
   currLHSGVar = TLS->currLHSGVar;
-  userHasQuit = UserHasQuit;
+  userHasQuit = TLS->UserHasQuit;
   intrCoding = TLS->intrCoding;
   intrIgnoring = TLS->intrIgnoring;
   nrError = TLS->nrError;
@@ -2694,7 +2694,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   TLS->readTop     = 0;
   TLS->readTilde   = 0;
   TLS->currLHSGVar = 0;
-  UserHasQuit = 0;
+  TLS->UserHasQuit = 0;
   TLS->intrCoding = 0;
   TLS->intrIgnoring = 0;
   TLS->nrError = 0;
@@ -2720,7 +2720,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   TLS->readTop     = readTop;
   TLS->readTilde   = readTilde;
   TLS->currLHSGVar = currLHSGVar;
-  UserHasQuit = userHasQuit;
+  TLS->UserHasQuit = userHasQuit;
   TLS->nrError = nrError;
   return result;
 }

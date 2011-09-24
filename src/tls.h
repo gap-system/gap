@@ -108,6 +108,8 @@ typedef struct ThreadLocalStorage
 
   /* From gap.c */
   Obj thrownObject;
+  UInt UserHasQuit;
+  UInt UserHasQUIT;
 
 } ThreadLocalStorage;
 

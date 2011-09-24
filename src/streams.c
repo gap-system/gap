@@ -79,7 +79,7 @@ Int READ_COMMAND ( void ) {
     if( status == STATUS_EOF )
         return 0;
 
-    if ( UserHasQuit || UserHasQUIT )
+    if ( TLS->UserHasQuit || TLS->UserHasQUIT )
         return 0;
     
     /* handle return-value or return-void command                          */
@@ -90,10 +90,10 @@ Int READ_COMMAND ( void ) {
     /* handle quit command                                 */
     else if (status == STATUS_QUIT) {
         TLS->recursionDepth = 0;
-        UserHasQuit = 1;
+        TLS->UserHasQuit = 1;
     }
     else if (status == STATUS_QQUIT) {
-        UserHasQUIT = 1;
+        TLS->UserHasQUIT = 1;
     }
     ClearError();
 
@@ -120,13 +120,13 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo ) {
 
     if( status == 0 ) return SFail;
 
-    if (UserHasQUIT) {
-      UserHasQUIT = 0;
+    if (TLS->UserHasQUIT) {
+      TLS->UserHasQUIT = 0;
       return SFail;
     }
 
-    if (UserHasQuit) {
-      UserHasQuit = 0;
+    if (TLS->UserHasQuit) {
+      TLS->UserHasQuit = 0;
     }
     
     return TLS->readEvalResult ? TLS->readEvalResult : SFail;
@@ -149,15 +149,15 @@ static Int READ_INNER ( UInt UseUHQ )
 
 
 
-    if (UserHasQuit)
+    if (TLS->UserHasQuit)
       {
 	Pr("Warning: Entering READ with UserHasQuit set, this should never happen, resetting",0,0);
-	UserHasQuit = 0;
+	TLS->UserHasQuit = 0;
       }
-    if (UserHasQUIT)
+    if (TLS->UserHasQUIT)
       {
 	Pr("Warning: Entering READ with UserHasQUIT set, this should never happen, resetting",0,0);
-	UserHasQUIT = 0;
+	TLS->UserHasQUIT = 0;
       }
     MakeReadWriteGVar(LastReadValueGVar);
     AssGVar( LastReadValueGVar, 0);
@@ -166,7 +166,7 @@ static Int READ_INNER ( UInt UseUHQ )
     while ( 1 ) {
         ClearError();
         status = ReadEvalCommand(TLS->bottomLVars);
-	if (UserHasQuit || UserHasQUIT)
+	if (TLS->UserHasQuit || TLS->UserHasQUIT)
 	  break;
         /* handle return-value or return-void command                      */
         if ( status &(STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
@@ -180,11 +180,11 @@ static Int READ_INNER ( UInt UseUHQ )
 	  break;
 	else if (status == STATUS_QUIT) {
           TLS->recursionDepth = 0;
-	  UserHasQuit = 1;
+	  TLS->UserHasQuit = 1;
 	  break;
 	}
 	else if (status == STATUS_QQUIT) {
-	  UserHasQUIT = 1;
+	  TLS->UserHasQUIT = 1;
 	  break;
 	}
 	if (TLS->readEvalResult)
@@ -205,8 +205,8 @@ static Int READ_INNER ( UInt UseUHQ )
     }
     ClearError();
 
-    if (!UseUHQ && UserHasQuit) {
-      UserHasQuit = 0; /* stop recovery here */
+    if (!UseUHQ && TLS->UserHasQuit) {
+      TLS->UserHasQuit = 0; /* stop recovery here */
       return 2;
     }
 
@@ -413,7 +413,7 @@ Int READ_GAP_ROOT ( Char * filename )
             while ( 1 ) {
                 ClearError();
                 type = ReadEvalCommand(TLS->bottomLVars);
-		if (UserHasQuit || UserHasQUIT)
+		if (TLS->UserHasQuit || TLS->UserHasQUIT)
 		  break;
                 if ( type == 1 || type == 2 ) {
                     Pr( "'return' must not be used in file", 0L, 0L );

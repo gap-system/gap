@@ -433,7 +433,8 @@ void            IntrFuncCallEnd (
       else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
       else                { val = CALL_XARGS( func, args ); }
       
-      if (UserHasQuit || UserHasQUIT) /* the procedure must have called
+      if (TLS->UserHasQuit || TLS->UserHasQUIT)
+                                         /* the procedure must have called
 					 READ() and the user quit from a break
 					 loop inside it */
 	ReadEvalError();

@@ -655,7 +655,10 @@ UInt OpenInput (
     if ( TLS->testInput != 0 && ! SyStrcmp( filename, "*errin*" ) )
         return 1;
 
-    if (! SyStrcmp(filename, "*defin*") )
+    /* Handle *defin*; redirect *errin* to *defin* if the default
+     * channel is already open. */
+    if (! SyStrcmp(filename, "*defin*") ||
+        ! SyStrcmp(filename, "*errin*") && TLS->defaultInput )
         return OpenDefaultInput();
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
@@ -1280,7 +1283,10 @@ UInt OpenOutput (
     if ( TLS->testInput != 0 && ! SyStrcmp( filename, "*errout*" ) )
         return 1;
 
-    if ( ! SyStrcmp( filename, "*defout*" ) )
+    /* Handle *defout* specially; also, redirect *errout* if we already
+     * have a default channel open. */
+    if ( ! SyStrcmp( filename, "*defout*" ) ||
+         ! SyStrcmp( filename, "*errout*" ) && TLS->defaultOutput )
         return OpenDefaultOutput();
 
     /* try to open the file                                                */
@@ -1420,6 +1426,9 @@ UInt OpenAppend (
     /* in test mode keep printing to test output file for breakloop output */
     if ( TLS->testInput != 0 && ! SyStrcmp( filename, "*errout*" ) )
         return 1;
+    
+    if ( ! SyStrcmp( filename, "*defout*") )
+        return OpenDefaultOutput();
 
     /* try to open the file                                                */
     file = SyFopen( filename, "a" );

@@ -316,7 +316,7 @@ Obj Shell ( Obj context,
 
     /* now  read and evaluate and view one command  */
     status = ReadEvalCommand(ShellContext);
-    if (UserHasQUIT)
+    if (TLS->UserHasQUIT)
       break;
 
 
@@ -356,13 +356,13 @@ Obj Shell ( Obj context,
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
       TLS->recursionDepth = 0;
-      UserHasQuit = 1;
+      TLS->UserHasQuit = 1;
       break;
     }
 	
     /* handle QUIT */
     else if (status & (STATUS_QQUIT)) {
-      UserHasQUIT = 1;
+      TLS->UserHasQUIT = 1;
       break;
     }
 	
@@ -370,10 +370,10 @@ Obj Shell ( Obj context,
     if (setTime)
       AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
 
-    if (UserHasQuit)
+    if (TLS->UserHasQuit)
       {
 	FlushRestOfInputLine();
-	UserHasQuit = 0;	/* quit has done its job if we are here */
+	TLS->UserHasQuit = 0;	/* quit has done its job if we are here */
       }
 
   }
@@ -384,11 +384,11 @@ Obj Shell ( Obj context,
   CloseOutput();
   BaseShellContext = oldBaseShellContext;
   ShellContext = oldShellContext;
-  if (UserHasQUIT)
+  if (TLS->UserHasQUIT)
     {
       if (catchQUIT)
 	{
-	  UserHasQUIT = 0;
+	  TLS->UserHasQUIT = 0;
 	  MakeReadWriteGVar(QUITTINGGVar);
 	  AssGVar(QUITTINGGVar, True);
 	  MakeReadOnlyGVar(QUITTINGGVar);
@@ -510,7 +510,7 @@ Obj FuncSHELL (Obj self, Obj args)
   res =  Shell(context, canReturnVoid, canReturnObj, lastDepth, setTime, promptBuffer, preCommandHook, catchQUIT,
                CSTR_STRING(infile), CSTR_STRING(outfile));
 
-  UserHasQuit = 0;
+  TLS->UserHasQuit = 0;
   return res;
 }
 
@@ -813,12 +813,12 @@ int realmain (
   NrImportedGVars = 0;
   NrImportedFuncs = 0;
   ErrorHandler = (Obj) 0;
-  UserHasQUIT = 0;
-  UserHasQuit = 0;
+  TLS->UserHasQUIT = 0;
+  TLS->UserHasQuit = 0;
     
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv );
-  if (!UserHasQUIT) {		/* maybe the user QUIT from the initial
+  if (!TLS->UserHasQUIT) {         /* maybe the user QUIT from the initial
 				   read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
     if ( SyCompilePlease ) {
@@ -1425,13 +1425,15 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
  }
   
 
-UInt UserHasQuit;
-UInt UserHasQUIT; 
+#if 0
+TL: UInt UserHasQuit;
+TL: UInt UserHasQUIT; 
+#endif
 
  Obj FuncSetUserHasQuit( Obj Self, Obj value)
    {
-     UserHasQuit = INT_INTOBJ(value);
-     if (UserHasQuit)
+     TLS->UserHasQuit = INT_INTOBJ(value);
+     if (TLS->UserHasQuit)
        TLS->recursionDepth = 0;
      return 0;
    }
@@ -1467,6 +1469,7 @@ Obj CallErrorInner (
   Obj EarlyMsg;
   Obj r = NEW_PREC(0);
   Obj l;
+  Obj result;
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
   AssPRec(r, RNamName("context"), TLS->currLVars);
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
@@ -1478,7 +1481,9 @@ Obj CallErrorInner (
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(TLS->currStat);
-  return CALL_2ARGS(ErrorInner,r,l);  
+  OpenDefaultOutput();
+  result = CALL_2ARGS(ErrorInner,r,l);  
+  CloseOutput();
 }
 
 void ErrorQuit (
@@ -2829,7 +2834,7 @@ Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
 
 Obj FuncQUIT_GAP( Obj self )
 {
-  UserHasQUIT = 1;
+  TLS->UserHasQUIT = 1;
   ReadEvalError();
   return (Obj)0; 
 }
@@ -2997,13 +3002,15 @@ void ThreadedInterpreter(void *funcargs) {
     IntrEnd( 0UL );
   } else {
     IntrEnd( 1UL );
-    /* TMPFIX: */
-    if (TLS->thrownObject) {
-      Pr("#Error (thread %d): %s\n", TLS->threadID, (UInt)(CHARS_STRING(TLS->thrownObject)));
-      TLS->thrownObject = NULL;
-    }
     ClearError();
   } 
+}
+
+Obj BREAKPOINT(Obj self, Obj arg) {
+  static volatile Int value;
+  if (IS_INTOBJ(arg))
+    value = INT_INTOBJ(arg);
+  return (Obj) 0;
 }
 
 
@@ -3120,6 +3127,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "GETPID", 0, "",
       FuncGETPID, "src/gap.c:GETPID" },
+
+    { "BREAKPOINT", 1, "num",
+      BREAKPOINT, "src/gap.c:BREAKPOINT" },
 
     { "MASTER_POINTER_NUMBER", 1, "ob",
       FuncMASTER_POINTER_NUMBER, "src/gap.c:MASTER_POINTER_NUMBER" },
