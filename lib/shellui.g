@@ -704,7 +704,9 @@ BindGlobal("InputLoop@", function()
   stdin := INPUT_TEXT_FILE("*stdin*");
   while true do
     line := READ_LINE_FILE(stdin);
-    if line <> "" and line <> fail then
+    if line = fail then
+      SendControl@(HAVE_INPUT@, "");
+    elif line <> "" then
       SendControl@(HAVE_INPUT@, line);
     fi;
   od;
