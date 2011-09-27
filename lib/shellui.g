@@ -151,7 +151,7 @@ end);
 
 BindGlobal("ChannelOutputStream@", function()
   return OutputTextCustom([ ], function(state, string)
-    SendControl@(HAVE_OUTPUT@, string);
+    SendControl@(HAVE_OUTPUT@, ShallowCopy(string));
   end, ReturnTrue);
 end);
 
@@ -161,7 +161,7 @@ BindGlobal("DirectChannelOutputStream@", function()
   Append(MyOutputPrefix@, "> ");
   return OutputTextCustom(OutputChannel@, function(channel, string)
     SendChannel(channel,
-      [ ThreadID@(), MyOutputPrefix@, string ] );
+      [ ThreadID@(), MyOutputPrefix@, ShallowCopy(string) ] );
   end, ReturnTrue);
 end);
 
@@ -290,6 +290,24 @@ BindGlobal("AddOutput@", function(threadid, text, is_prompt)
     CullHistory@(threadid);
     ShownOutput@[threadid] := Length(history);
   fi;
+end);
+
+BindGlobal("PrintContext@", function(lines, thread)
+  local history, incomplete, newlines, from;
+  history := OutputHistory@[thread];
+  incomplete := OutputHistoryIncompleteLine@[thread];
+  if incomplete then lines := lines - 1; fi;
+  newlines := FIND_ALL_IN_STRING(history, "\n");
+  if Length(newlines) > lines then
+    from := newlines[Length(newlines)-lines]+1;
+    if from > ShownOutput@[thread] then
+      from := ShownOutput@[thread];
+    fi;
+    history := history{[from..Length(history)]};
+  else
+    history := ShallowCopy(history);
+  fi;
+  SendChannel(OutputChannel@, [ thread, OutputPrefix@[thread], history ]);
 end);
 
 BindGlobal("SwitchToThread@", function(thread)
@@ -535,6 +553,9 @@ BindGlobal("CommandReplay@", function(line)
   if num > OutputHistoryLength@ then
     num := OutputHistoryLength@;
   fi;
+  if num = 0 then
+    num := 20;
+  fi;
   if values[2] = "" then
     thread := ActiveThread@;
   else
@@ -615,10 +636,10 @@ BindGlobal("ParseCommand@", function(string)
   values := GetArg@(string{[2..Length(string)]});
   command := values[1];
   if Length(command) > 0 and IsDigitChar(command[1]) then
-    CommandSelect@(command);
-    return;
+    arguments := command;
+  else
+    arguments := values[2];
   fi;
-  arguments := values[2];
   choices := [];
   i := 1;
   while i < Length(CommandTable@) do
@@ -635,6 +656,9 @@ BindGlobal("ParseCommand@", function(string)
       JoinStringsWithSeparator(choices, ", "), ")");
   else
     func(arguments);
+  fi;
+  if OutputHistoryIncompleteLine@[ActiveThread@] then
+    PrintContext@(1, ActiveThread@);
   fi;
 end);
 
@@ -692,6 +716,7 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
       fi;
       if threadid = ActiveThread@ then
         CommandNext@("");
+	PrintContext@(1, ActiveThread@);
       fi;
     else
       # should never get here
