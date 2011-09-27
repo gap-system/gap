@@ -226,10 +226,10 @@ BindGlobal("CompleteThreadRegistration@", function(threadinfo, waitfor)
   threadid := threadinfo.ThreadID;
   ThreadControlChannel@[threadid] := threadinfo.ControlChannel;
   ThreadInputChannel@[threadid] := threadinfo.InputChannel;
-  WaitForThread@[threadid] := waitfor;
   if not IsBound(ThreadName@[threadid]) then
     ThreadName@[threadid] := String(threadid-1);
   fi;
+  WaitForThread@[threadid] := waitfor;
   if not IsBound(OutputHistory@[threadid]) then
     OutputHistory@[threadid] := "";
     OutputHistoryIncompleteLine@[threadid] := false;
@@ -249,6 +249,7 @@ BindGlobal("StartInteractiveThread@", function()
   CreateThread(function(handshake)
     local threadinfo;
     threadinfo := NewThreadInfo@();
+    ThreadInfo@ := threadinfo;
     AcknowledgeHandShake(handshake, threadinfo);
     AtThreadExit(ThreadExit@);
     THREAD_SESSION();
@@ -682,7 +683,7 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
       # Make sure the thread can't be found anymore.
       # wait for any threads we started ourselves
       if WaitForThread@[threadid] then
-        WaitThread(threadid);
+        WaitThread(threadid-1);
       fi;
       if NumShellThreads@ = 0 then
         # say goodnight, Gracie
