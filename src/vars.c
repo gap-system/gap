@@ -1073,7 +1073,7 @@ Obj             EvalIsbGVar (
     Obj                 val;            /* value, result                   */
 
     /* get the value of the global variable                                */
-    val = VAL_GVAR( (UInt)(ADDR_EXPR(expr)[0]) );
+    val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) );
 
     /* return the value                                                    */
     return (val != (Obj)0 ? True : False);

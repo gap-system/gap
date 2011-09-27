@@ -322,11 +322,13 @@ Obj             ValAutoGVar (
     Obj			expr;
     Obj                 func;           /* function to call for automatic  */
     Obj                 arg;            /* argument to pass for automatic  */
+    Obj			val;
     UInt		gvar_bucket = GVAR_BUCKET(gvar);
     UInt		gvar_index  = GVAR_INDEX(gvar);
 
     /* if this is an automatic variable, make the function call            */
-    if ( VAL_GVAR(gvar) == 0 &&
+    val = ValGVar(gvar);
+    if ( val == 0 &&
          (expr = ELM_PLIST( ExprGVars[gvar_bucket], gvar_index )) != 0 ) {
 
 	if (IS_INTOBJ(expr)) {
@@ -339,17 +341,18 @@ Obj             ValAutoGVar (
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
-        while ( VAL_GVAR(gvar) == 0 ) {
+        while ( val  == 0 ) {
             ErrorReturnVoid(
        "Variable: automatic variable '%s' must get a value by function call",
             (Int)CSTR_STRING( ELM_PLIST(NameGVars[gvar_bucket],gvar_index)), 0L,
             "you can 'return;' after assigning a value" );
+	    val = ValGVar(gvar);
         }
 
     }
 
     /* return the value                                                    */
-    return ValGVar(gvar);
+    return val;
 }
 
 
@@ -889,6 +892,7 @@ Obj FuncISB_GVAR (
     Obj                 gvar )
 {
   UInt gv;
+  Obj expr;
     /* check the argument                                                  */
     while ( ! IsStringConv( gvar ) ) {
         gvar = ErrorReturnObj(
@@ -898,9 +902,14 @@ Obj FuncISB_GVAR (
     }
 
     gv = GVarName( CSTR_STRING(gvar) );
-    return ( VAL_GVAR( gv ) ||
-	     ELM_PLIST( ExprGVars[GVAR_BUCKET(gv)], GVAR_INDEX(gv) ))
-	       ? True : False;
+    if (VAL_GVAR(gv))
+      return True;
+    expr = ELM_PLIST( ExprGVars[GVAR_BUCKET(gv)], GVAR_INDEX(gv) );
+    if (expr && !IS_INTOBJ(expr)) /* auto gvar */
+      return True;
+    if (!expr || !TLVars)
+      return False;
+    return GetTLRecordField(TLVars, INT_INTOBJ(expr)) ? True : False;
 }
 
 
