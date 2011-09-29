@@ -609,7 +609,11 @@ BindGlobal("CommandRun@", function(line)
   fi;
 end);
 
-BindGlobal("CommandTable@", MakeImmutable([
+BindGlobal("CommandQUIT@", function(line)
+  FORCE_QUIT_GAP();
+end);
+
+BindGlobal("CommandTable@", MakeReadOnly([
   "shell", CommandShell@,
   "fork", CommandFork@,
   "list", CommandList@,
@@ -629,6 +633,7 @@ BindGlobal("CommandTable@", MakeImmutable([
   "unalias", CommandUnalias@,
   "eval", CommandEval@,
   "run", CommandRun@,
+  "QUIT", CommandQUIT@,
 ]));
 
 BindGlobal("ParseCommand@", function(string)
