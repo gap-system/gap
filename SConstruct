@@ -14,6 +14,7 @@ vars.Add(EnumVariable("gmp", "Use GMP: yes, no, or system", "yes",
 vars.Add(EnumVariable("gc", "Use GC: yes, no, or system", "yes",
   allowed_values=("yes", "no", "system")))
 vars.Add('preprocess', 'Use source preprocessor', "")
+vars.Add('ward', 'Specify Ward directory', "")
 
 GAP = DefaultEnvironment(variables=vars)
 
@@ -223,6 +224,8 @@ def SysInfoBuilder(target, source, env):
 # Building binary from source
 
 preprocess = string.replace(GAP["preprocess"], "%", " ")
+if GAP["ward"]:
+  preprocess = GAP["ward"] + "/bin/addguards2c -Ibin/current -I" + abi_path + "/include"
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
