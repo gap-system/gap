@@ -2740,6 +2740,10 @@ Region *NewRegion(void)
   return result;
 }
 
+void *AllocateMemoryBlock(UInt size) {
+  return GC_malloc(size);
+}
+
 
 /****************************************************************************
 **

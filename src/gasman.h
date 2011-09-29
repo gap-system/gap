@@ -1136,6 +1136,8 @@ static inline void Share(Bag bag)
   DS_BAG(bag) = NewRegion();
 }
 
+void *AllocateMemoryBlock(UInt size);
+
 
 /****************************************************************************
 **

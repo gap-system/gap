@@ -556,7 +556,7 @@ void Match (
 TypOutputFile *NewOutput()
 {
   TypOutputFile *result;
-  result = GC_malloc(sizeof(TypOutputFile));
+  result = AllocateMemoryBlock(sizeof(TypOutputFile));
   if (!result)
     abort();
   return result;
@@ -565,7 +565,7 @@ TypOutputFile *NewOutput()
 TypInputFile *NewInput()
 {
   TypInputFile *result;
-  result = GC_malloc(sizeof(TypInputFile));
+  result = AllocateMemoryBlock(sizeof(TypInputFile));
   if (!result)
     abort();
   return result;
