@@ -632,11 +632,12 @@ BindGlobal("CommandTable@", MakeImmutable([
 ]));
 
 BindGlobal("ParseCommand@", function(string)
-  local values, command, arguments, choices, func, line, i;
+  local values, command, arguments, choices, func, line, i, last;
   values := GetArg@(string{[2..Length(string)]});
   command := values[1];
   if Length(command) > 0 and IsDigitChar(command[1]) then
     arguments := command;
+    command := "select";
   else
     arguments := values[2];
   fi;
@@ -649,6 +650,7 @@ BindGlobal("ParseCommand@", function(string)
     fi;
     i := i + 2;
   od;
+  last := ActiveThread@;
   if Length(choices) = 0 then
     SystemMessage@("No such command: ", command, ".");
   elif Length(choices) > 1 then
@@ -658,7 +660,9 @@ BindGlobal("ParseCommand@", function(string)
     func(arguments);
   fi;
   if OutputHistoryIncompleteLine@[ActiveThread@] then
-    PrintContext@(1, ActiveThread@);
+    if last = ActiveThread@ then
+      PrintContext@(1, ActiveThread@);
+    fi;
   fi;
 end);
 
@@ -668,6 +672,7 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
   InitThreadTables@();
   CompleteThreadRegistration@(mainthreadinfo, false);
   ActiveThread@ := mainthreadinfo.ThreadID;
+  OutputPrefix@[ActiveThread@] := "";
   while true do
     packet := ReceiveChannel(ControlChannel@);
     command := packet[1];
