@@ -402,7 +402,7 @@ end );
 
 Unbind( Subtype );
 BIND_GLOBAL( "Subtype", function ( arg )
-
+atomic readonly arg do
     # check argument
     if not IsType( arg[1] )  then
         Error("<type> must be a type");
@@ -414,7 +414,7 @@ BIND_GLOBAL( "Subtype", function ( arg )
     else
         return Subtype3( arg[1], arg[2], arg[3] );
     fi;
-
+od;
 end );
 
 

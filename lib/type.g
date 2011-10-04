@@ -389,14 +389,14 @@ DeclareRepresentation( "IsTypeDefaultRep",
                             IsPositionalObjectRep,
                             "", IsType );
 
-BIND_GLOBAL( "FamilyOfFamilies", rec() );
+BIND_GLOBAL( "FamilyOfFamilies", AtomicRecord( rec() ) );
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
-BIND_GLOBAL( "TypeOfFamilies", [
+BIND_GLOBAL( "TypeOfFamilies", AtomicList( [
     FamilyOfFamilies,
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamily and IsFamilyDefaultRep ) ),
     false,
-    NEW_TYPE_NEXT_ID ] );
+    NEW_TYPE_NEXT_ID ] ) );
 
 FamilyOfFamilies!.NAME          := "FamilyOfFamilies";
 FamilyOfFamilies!.REQ_FLAGS     := FLAGS_FILTER( IsFamily );
@@ -419,7 +419,7 @@ BIND_GLOBAL( "TypeOfFamilyOfFamilies", [
     false,
     NEW_TYPE_NEXT_ID ] );
 
-BIND_GLOBAL( "FamilyOfTypes", rec() );
+BIND_GLOBAL( "FamilyOfTypes", AtomicRecord( rec() ) );
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
 BIND_GLOBAL( "TypeOfTypes", [

@@ -192,18 +192,16 @@ InstallGlobalFunction( FFEFamily, function( p )
             fi;
         od;
         
-        
-
         F:= NewFamily( "FFEFamily", IsFFE, 
                        CanEasilySortElements,
-                       CanEasilySortElements  );
+                       CanEasilySortElements );
         SetCharacteristic( F, p );
 
         # Store the type for the representation of prime field elements
         # via residues.
         ThreadVar.NEW_TYPE_READONLY := false;
         F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
-	  and IsModulusRep and IsZDFRE,p);
+	                                     and IsModulusRep and IsZDFRE,p);
         F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
         MakeReadOnlyObj( F!.typeOfZmodnZObj);
         ThreadVar.NEW_TYPE_READONLY := true;
@@ -230,7 +228,7 @@ InstallGlobalFunction( FFEFamily, function( p )
     else
 
       # small characteristic
-      # (The list `TYPE_FFE' is used to store the types.)
+      # (The list `TYPES_FFE' is used to store the types.)
       F:= FamilyType( TYPE_FFE( p ) );
       if not HasOne( F ) then
 

@@ -932,7 +932,7 @@ end );
 
 InstallGlobalFunction( ZmodpZNC, function( p )
     local pos, F;
-
+atomic Z_MOD_NZ do
     # Check whether this has been stored already.
     pos:= Position( Z_MOD_NZ[1], p );
     if pos = fail then
@@ -956,6 +956,7 @@ InstallGlobalFunction( ZmodpZNC, function( p )
 
     # Return the field.
     return F;
+od;    
 end );
 
 
