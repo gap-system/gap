@@ -1038,6 +1038,7 @@ void WriteGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
   ImpliedReadGuard(o);
   if (GVarValue(&DisableGuardsGVar) == True)
     return;
+  SetGVar(&LastInaccessibleGVar, o);
   PrintGuardError(buffer, "write", o, file, line, func, expr);
   ErrorMayQuit("%s", (UInt) buffer, 0L);
 }
