@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
@@ -14,6 +15,8 @@
 #include        "system.h"
 #include        "gasman.h"
 #include        "objects.h"
+#include        "bool.h"
+#include        "gvars.h"
 #include	"scanner.h"
 #include	"code.h"
 #include	"plist.h"
@@ -1015,5 +1018,60 @@ Obj CopyTraversed(Obj traversedList)
   EndTraversal();
   return copies[1];
 }
+
+extern GVarDescriptor LastInaccessibleGVar, DisableGuardsGVar;
+
+#ifdef VERBOSE_GUARDS
+
+static void PrintGuardError(char *buffer, char *mode,
+  Obj obj, char *file, unsigned line, char *func, char *expr)
+{
+  sprintf(buffer, "No %s access to object %lu of type %s\n"
+    "in %s, line %u, function %s(), accessing %s",
+      mode, (UInt) obj, TNAM_OBJ(obj),
+      file, line, func, expr);
+}
+void WriteGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
+{
+  char * buffer =
+    alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
+  ImpliedReadGuard(o);
+  if (GVarValue(&DisableGuardsGVar) == True)
+    return;
+  PrintGuardError(buffer, "write", o, file, line, func, expr);
+  ErrorMayQuit("%s", (UInt) buffer, 0L);
+}
+
+void ReadGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
+{
+  char * buffer =
+    alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
+  ImpliedReadGuard(o);
+  if (GVarValue(&DisableGuardsGVar) == True)
+    return;
+  SetGVar(&LastInaccessibleGVar, o);
+  PrintGuardError(buffer, "write", o, file, line, func, expr);
+  ErrorMayQuit("%s", (UInt) buffer, 0L);
+}
+
+#else
+void WriteGuardError(Obj o)
+{
+  ImpliedReadGuard(o);
+  if (GVarValue(&DisableGuardsGVar) == True)
+    return;
+  SetGVar(&LastInaccessibleGVar, o);
+  ErrorMayQuit("Attempt to write object %i of type %s without having write access", (Int)o, (Int)TNAM_OBJ(o));
+}
+
+void ReadGuardError(Obj o)
+{
+  ImpliedReadGuard(o);
+  if (GVarValue(&DisableGuardsGVar) == True)
+    return;
+  SetGVar(&LastInaccessibleGVar, o);
+  ErrorMayQuit("Attempt to read object %i of type %s without having read access", (Int)o, (Int)TNAM_OBJ(o));
+}
+#endif
 
 #endif

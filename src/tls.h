@@ -157,7 +157,22 @@ static inline ThreadLocalStorage *GetTLS()
 
 #define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
 
+#ifdef VERBOSE_GUARDS
+
+#define ReadGuard(bag) ReadGuardFull(bag, __FILE__, __LINE__, __FUNCTION__, #bag)
+#define WriteGuard(bag) WriteGuardFull(bag, __FILE__, __LINE__, __FUNCTION__, #bag)
+#define ReadGuardByRef(bag) ReadGuardByRefFull(bag, __FILE__, __LINE__, __FUNCTION__, #bag)
+#define WriteGuardByRef(bag) WriteGuardByRefFull(bag, __FILE__, __LINE__, __FUNCTION__, #bag)
+
+
+#endif
+
+#ifdef VERBOSE_GUARDS
+static inline Bag WriteGuardFull(Bag bag,
+  const char *file, unsigned line, const char *func, const char *expr)
+#else
 static inline Bag WriteGuard(Bag bag)
+#endif
 {
   extern void WriteGuardError();
   Region *region;
@@ -165,11 +180,20 @@ static inline Bag WriteGuard(Bag bag)
     return bag;
   region = DS_BAG(bag);
   if (region && region->owner != TLS)
-    WriteGuardError(bag);
+    WriteGuardError(bag
+#ifdef VERBOSE_GUARDS
+    , file, line, func, expr
+#endif
+    );
   return bag;
 }
 
+#ifdef VERBOSE_GUARDS
+static inline Bag *WriteGuardByRefFull(Bag *bagref,
+  const char *file, unsigned line, const char *func, const char *expr)
+#else
 static inline Bag *WriteGuardByRef(Bag *bagref)
+#endif
 {
   extern void WriteGuardError();
   Bag bag = *bagref;
@@ -178,7 +202,11 @@ static inline Bag *WriteGuardByRef(Bag *bagref)
     return bagref;
   region = DS_BAG(bag);
   if (region && region->owner != TLS)
-    WriteGuardError(bag);
+    WriteGuardError(bag
+#ifdef VERBOSE_GUARDS
+    , file, line, func, expr
+#endif
+    );
   return bagref;
 }
 
@@ -198,7 +226,12 @@ static inline int CheckWrite(Bag bag)
   return !(region && region->owner != TLS);
 }
 
+#ifdef VERBOSE_GUARDS
+static inline Bag ReadGuardFull(Bag bag,
+  const char *file, unsigned line, const char *func, const char *expr)
+#else
 static inline Bag ReadGuard(Bag bag)
+#endif
 {
   extern void ReadGuardError();
   Region *region;
@@ -207,11 +240,20 @@ static inline Bag ReadGuard(Bag bag)
   region = DS_BAG(bag);
   if (region && region->owner != TLS &&
       !region->readers[TLS->threadID])
-    ReadGuardError(bag);
+    ReadGuardError(bag
+#ifdef VERBOSE_GUARDS
+    , file, line, func, expr
+#endif
+    );
   return bag;
 }
 
+#ifdef VERBOSE_GUARDS
+static inline Bag *ReadGuardByRefFull(Bag *bagref,
+  const char *file, unsigned line, const char *func, const char *expr)
+#else
 static inline Bag *ReadGuardByRef(Bag *bagref)
+#endif
 {
   extern void ReadGuardError();
   Bag bag = *bagref;
@@ -221,7 +263,11 @@ static inline Bag *ReadGuardByRef(Bag *bagref)
   region = DS_BAG(bag);
   if (region && region->owner != TLS &&
       !region->readers[TLS->threadID])
-    ReadGuardError(bag);
+    ReadGuardError(bag
+#ifdef VERBOSE_GUARDS
+    , file, line, func, expr
+#endif
+    );
   return bagref;
 }
 

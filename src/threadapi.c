@@ -892,6 +892,9 @@ static void PrintBarrier(Obj);
 static void PrintSyncVar(Obj);
 static void PrintRegion(Obj);
 
+GVarDescriptor LastInaccessibleGVar;
+GVarDescriptor DisableGuardsGVar;
+
 /****************************************************************************
 **
 
@@ -916,6 +919,8 @@ static Int InitKernel (
     InitCopyGVar("TYPE_BARRIER", &TYPE_BARRIER);
     InitCopyGVar("TYPE_SYNCVAR", &TYPE_SYNCVAR);
     InitCopyGVar("TYPE_REGION", &TYPE_REGION);
+    DeclareGVar(&LastInaccessibleGVar,"LastInaccessible");
+    DeclareGVar(&DisableGuardsGVar,"DISABLE_GUARDS");
     /* install mark functions */
     InitMarkFuncBags(T_CHANNEL, MarkChannelBag);
     InitMarkFuncBags(T_BARRIER, MarkBarrierBag);

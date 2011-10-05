@@ -68,3 +68,15 @@ BindGlobal("AcknowledgeHandShake", function(syncvar, obj)
 end);
 
 BindGlobal("CompleteHandShake", SyncRead);
+
+BindGlobal("FindGVarHolding", function(val)
+  local s;
+  for s in IDENTS_GVAR() do
+    if IsBoundGlobal(s) and IsIdenticalObj(ValueGlobal(s), val) then
+      return s;
+    fi;
+  od;
+  return fail;
+end);
+
+DISABLE_GUARDS := false;

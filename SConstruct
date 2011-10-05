@@ -5,6 +5,7 @@ import commands, os, glob, sys, string
 vars = Variables()
 vars.Add('cflags', 'Supply additional CFLAGS', "")
 vars.Add(BoolVariable("debug", "Set for debug builds", 0))
+vars.Add(BoolVariable("debugguards", "Set for debugging guards", 0))
 vars.Add(BoolVariable("profile",
   "Set for profiling with google performance tools", 0))
 vars.Add(EnumVariable("abi", "Set to 32 or 64 depending on platform", 'auto',
@@ -139,6 +140,9 @@ if have_sigsetjmp:
   cflags += " -DHAVE_SIGSETJMP=1"
 if have__setjmp:
   cflags += " -DHAVE__SETJMP=1"
+
+if GAP["debugguards"]:
+  cflags += " -DVERBOSE_GUARDS"
 
 if GAP["cflags"]:
   cflags += " " + string.replace(GAP["cflags"], "%", " ")

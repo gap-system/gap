@@ -1448,10 +1448,10 @@ static Obj ErrorMessageToGAPString(
     Int                 arg1,
     Int                 arg2 )
 {
-  Char message[120];
+  Char message[500];
   Obj Message;
-  SPrTo(message, 120, msg, arg1, arg2);
-  message[119] = '\0';
+  SPrTo(message, sizeof(message), msg, arg1, arg2);
+  message[sizeof(message)-1] = '\0';
   C_NEW_STRING(Message, SyStrlen(message), message); 
   return Message;
 }
