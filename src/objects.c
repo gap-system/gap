@@ -725,6 +725,7 @@ Obj ImmutableCopyObjHandler (
     Obj                 self,
     Obj                 obj )
 {
+    WriteGuard(obj);
     return CopyObj( obj, 0 );
 }
 
@@ -737,6 +738,7 @@ Obj MutableCopyObjHandler (
     Obj                 self,
     Obj                 obj )
 {
+    WriteGuard(obj);
     return CopyObj( obj, 1 );
 }
 
