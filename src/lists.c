@@ -20,7 +20,7 @@
 **  'LEN_PLIST', 'SET_LEN_PLIST',   'ELM_PLIST', and 'SET_ELM_PLIST' exported
 **  by the plain list package to access and modify plain lists.
 */
-#include	<atomic_ops.h>
+#include	"global.h"		/* global includes */
 
 #include        "system.h"              /* Ints, UInts                     */
 

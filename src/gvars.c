@@ -28,8 +28,7 @@
 **  Otherwise the internal copies reference functions that signal an error.
 */
 #include        <stdio.h>
-#include        <pthread.h>
-#include        <atomic_ops.h>
+#include        "global.h"		/* global includes */
 
 #include        "system.h"              /* Ints, UInts                     */
 

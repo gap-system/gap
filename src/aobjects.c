@@ -12,8 +12,7 @@
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 #include        <string.h>              /* memcpy */
 #include        <stdlib.h>
-#include	<pthread.h>
-#include	<atomic_ops.h>
+#include	"global.h"		/* global includes */
 
 #include        "system.h"              /* system dependent part           */
 

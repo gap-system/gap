@@ -10,7 +10,7 @@
 #ifndef DISABLE_GC
 #include <gc/gc.h>
 #endif
-#include <atomic_ops.h>
+#include "global.h"
 
 #include        "system.h"
 #include        "gasman.h"
