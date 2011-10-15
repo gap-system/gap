@@ -932,31 +932,33 @@ end );
 
 InstallGlobalFunction( ZmodpZNC, function( p )
     local pos, F;
-atomic Z_MOD_NZ do
+    
     # Check whether this has been stored already.
-    pos:= Position( Z_MOD_NZ[1], p );
-    if pos = fail then
+    atomic readonly Z_MOD_NZ do
+      pos := Position( Z_MOD_NZ[1], p );
+      if pos <> fail then
+        return Z_MOD_NZ[2][ pos ];
+      fi;
+    od;
+    
+    # Get the family of element objects of our ring.
+    F:= FFEFamily( p );
 
-      # Get the family of element objects of our ring.
-      F:= FFEFamily( p );
+    # Make the domain.
+    F:= FieldOverItselfByGenerators( [ ZmodnZObj( F, 1 ) ] );
+    SetIsPrimeField( F, true );
+    SetIsWholeFamily( F, false );
 
-      # Make the domain.
-      F:= FieldOverItselfByGenerators( [ ZmodnZObj( F, 1 ) ] );
-      SetIsPrimeField( F, true );
-      SetIsWholeFamily( F, false );
-
-      # Store the field.
-      Add( Z_MOD_NZ[1], p );
-      Add( Z_MOD_NZ[2], F );
-      SortParallel( Z_MOD_NZ[1], Z_MOD_NZ[2] );
-
-    else
-      F:= Z_MOD_NZ[2][ pos ];
-    fi;
-
-    # Return the field.
-    return F;
-od;    
+    # Store and return the field.
+    atomic readwrite Z_MOD_NZ do  
+      pos := Position( Z_MOD_NZ[1], p );
+      if pos = fail then
+        Add( Z_MOD_NZ[1], p );
+        Add( Z_MOD_NZ[2], F );
+        SortParallel( Z_MOD_NZ[1], Z_MOD_NZ[2] );
+        return F;
+      fi;  
+    od;
 end );
 
 
@@ -974,52 +976,54 @@ InstallGlobalFunction( ZmodnZ, function( n )
     elif IsPrimeInt( n ) then
       return ZmodpZNC( n );
     fi;
-
+    
     # Check whether this has been stored already.
-    pos:= Position( Z_MOD_NZ[1], n );
-    if pos = fail then
+    atomic readonly Z_MOD_NZ do
+      pos:= Position( Z_MOD_NZ[1], n );
+      if pos <> fail then
+        return Z_MOD_NZ[2][ pos ];
+      fi;  
+    od;
 
-      # Construct the family of element objects of our ring.
-      F:= NewFamily( Concatenation( "Zmod", String( n ) ),
-                     IsZmodnZObj,
-                     IsZmodnZObjNonprime and CanEasilySortElements
-                                         and IsNoImmediateMethodsObject,
-		     CanEasilySortElements);
+    # Construct the family of element objects of our ring.
+    F:= NewFamily( Concatenation( "Zmod", String( n ) ),
+                   IsZmodnZObj,
+                   IsZmodnZObjNonprime and CanEasilySortElements
+                                       and IsNoImmediateMethodsObject,
+	    CanEasilySortElements);
 
-      # Install the data.
-      F!.modulus:= n;
+    # Install the data.
+    F!.modulus:= n;
 
-      SetCharacteristic(F,n);
+    SetCharacteristic(F,n);
 
-      # Store the objects type.
-      ThreadVar.NEW_TYPE_READONLY := false;
-      F!.typeOfZmodnZObj:= NewType( F,     IsZmodnZObjNonprime
-                                       and IsModulusRep );
-      SetDataType( F!.typeOfZmodnZObj, n );
-      F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
-      MakeReadOnlyObj(F!.typeOfZmodnZObj);
-      ThreadVar.NEW_TYPE_READONLY := true;
+    # Store the objects type.
+    ThreadVar.NEW_TYPE_READONLY := false;
+    F!.typeOfZmodnZObj:= NewType( F, IsZmodnZObjNonprime and IsModulusRep );
+    SetDataType( F!.typeOfZmodnZObj, n );
+    F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
+    MakeReadOnlyObj(F!.typeOfZmodnZObj);
+    ThreadVar.NEW_TYPE_READONLY := true;
 
-      # as n is no prime, the family is no UFD
-      SetIsUFDFamily(F,false);
+    # as n is no prime, the family is no UFD
+    SetIsUFDFamily(F,false);
 
-      # Make the domain.
-      R:= RingWithOneByGenerators( [ ZmodnZObj( F, 1 ) ] );
-      SetIsWholeFamily( R, true );
-      SetZero(F,Zero(R));
-      SetOne(F,One(R));
+    # Make the domain.
+    R:= RingWithOneByGenerators( [ ZmodnZObj( F, 1 ) ] );
+    SetIsWholeFamily( R, true );
+    SetZero(F,Zero(R));
+    SetOne(F,One(R));
 
-      # Store the ring.
-      Add( Z_MOD_NZ[1], n );
-      Add( Z_MOD_NZ[2], R );
-      SortParallel( Z_MOD_NZ[1], Z_MOD_NZ[2] );
-
-    else
-      R:= Z_MOD_NZ[2][ pos ];
-    fi;
-
-    # Return the ring.
-    return R;
+    # Store and return the ring.
+    atomic readwrite Z_MOD_NZ do
+      pos:= Position( Z_MOD_NZ[1], n );
+      if pos =  fail then
+        Add( Z_MOD_NZ[1], n );
+        Add( Z_MOD_NZ[2], R );
+        SortParallel( Z_MOD_NZ[1], Z_MOD_NZ[2] );
+        return R;
+      fi;
+    od;
 end );
 
 
