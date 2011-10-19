@@ -1175,8 +1175,10 @@ void            InitBags (
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
 #else
-    GC_all_interior_pointers = 1;
+    GC_all_interior_pointers = 0;
     GC_init();
+    GC_register_displacement(0);
+    GC_register_displacement(HEADER_SIZE*sizeof(Bag));
 #endif
     AddGCRoots();
     CreateMainRegion();

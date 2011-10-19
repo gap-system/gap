@@ -155,7 +155,7 @@ GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags)
 abi_path = "extern/"+GAP["abi"]+"bit"
 GAP.Append(RPATH=os.path.join(os.getcwd(), abi_path, "lib"))
 
-def build_external(libname):
+def build_external(libname, confargs=None):
   global abi_path
   if GetOption("help") or GetOption("clean"):
     return
@@ -164,10 +164,15 @@ def build_external(libname):
   except:
     pass
   jobs = GetOption("num_jobs")
+  if confargs:
+    confargs = " " + confargs
+  else:
+    confargs = ""
   if os.system("cd " + abi_path + ";"
           + "tar xzf ../" + libname + ".tar.gz;"
 	  + "cd " + libname + ";"
-	  + "./configure --prefix=$PWD/.. && make -j " + str(jobs) + " && make install") != 0:
+	  + "./configure --prefix=$PWD/.." + confargs
+	  + " && make -j " + str(jobs) + " && make install") != 0:
     print "=== Failed to build " + libname + " ==="
     sys.exit(1)
 
@@ -189,7 +194,7 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
     os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
   else:
     os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"] + " -D_XOPEN_SOURCE"
-  build_external("gc-7.2alpha5")
+  build_external("bdwgc-2011-10-10")
   del os.environ["CC"]
 
 
