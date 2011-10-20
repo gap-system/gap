@@ -171,6 +171,7 @@ end);
 #M  Read( <filename> )  . . . . . . . . . . . . . . . . . . .  read in a file
 ##
 READ_INDENT := "";
+MakeThreadLocal("READ_INDENT");
 
 InstallMethod( Read,
     "string",

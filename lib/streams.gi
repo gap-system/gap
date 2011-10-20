@@ -856,7 +856,7 @@ InputTextFileType := NewType(
 ##
 #V  InputTextFileStillOpen  . . . . . . . . . . . . . . .  list of open files
 ##
-InputTextFileStillOpen := [];
+InputTextFileStillOpen := ShareObj([]);
 
 
 #############################################################################
@@ -874,7 +874,9 @@ function( str )
     if fid = fail  then
         return fail;
     else
-        AddSet( InputTextFileStillOpen, fid );
+	atomic InputTextFileStillOpen do
+            AddSet( InputTextFileStillOpen, fid );
+	od;
         return Objectify( InputTextFileType, [fid,Immutable(str)] );
     fi;
 end );
@@ -890,7 +892,9 @@ InstallMethod( CloseStream,
     [ IsInputStream and IsInputTextFileRep ],
 function( stream )
     CLOSE_FILE(stream![1]);
-    RemoveSet( InputTextFileStillOpen, stream![1] );
+    atomic InputTextFileStillOpen do
+        RemoveSet( InputTextFileStillOpen, stream![1] );
+    od;
     SET_TYPE_POSOBJ( stream, ClosedStreamType );
 end );
 
@@ -898,8 +902,10 @@ end );
 InstallAtExit( function()
     local   i;
 
-    for i  in InputTextFileStillOpen  do
-        CLOSE_FILE(i);
+    atomic InputTextFileStillOpen do
+	for i  in InputTextFileStillOpen  do
+	    CLOSE_FILE(i);
+	od;
     od;
 
 end );
@@ -1432,7 +1438,7 @@ OutputTextFileType := NewType(
 ##
 #V  OutputTextFileStillOpen
 ##
-OutputTextFileStillOpen := [];
+OutputTextFileStillOpen := ShareObj([]);
 
 
 #############################################################################
@@ -1451,7 +1457,9 @@ function( str, append )
     if fid = fail  then
         return fail;
     else
-        AddSet( OutputTextFileStillOpen, fid );
+	atomic OutputTextFileStillOpen do
+            AddSet( OutputTextFileStillOpen, fid );
+	od;
         return Objectify( OutputTextFileType, [fid,Immutable(str), true] );
     fi;
 end );
@@ -1473,15 +1481,19 @@ InstallMethod( CloseStream,
     [ IsOutputStream and IsOutputTextFileRep ],
 function( stream )
     CLOSE_FILE(stream![1]);
-    RemoveSet( OutputTextFileStillOpen, stream![1] );
+    atomic OutputTextFileStillOpen do
+        RemoveSet( OutputTextFileStillOpen, stream![1] );
+    od;
     SET_TYPE_POSOBJ( stream, ClosedStreamType );
 end );
 
 InstallAtExit( function()
     local   i;
 
-    for i  in OutputTextFileStillOpen  do
-        CLOSE_FILE(i);
+    atomic OutputTextFileStillOpen do
+	for i  in OutputTextFileStillOpen  do
+	    CLOSE_FILE(i);
+	od;
     od;
 
 end );
