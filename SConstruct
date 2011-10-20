@@ -182,18 +182,12 @@ if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
   del os.environ["ABI"]
 
 if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
-  if commands.getoutput("uname -s") != "Darwin":
-    os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
-  else:
-    os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"] + " -D_XOPEN_SOURCE"
+  os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
   build_external("libatomic_ops-1.2")
   del os.environ["CC"]
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
-  if commands.getoutput("uname -s") != "Darwin":
-    os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
-  else:
-    os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"] + " -D_XOPEN_SOURCE"
+  os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
   build_external("bdwgc-2011-10-10")
   del os.environ["CC"]
 
