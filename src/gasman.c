@@ -1231,6 +1231,7 @@ Bag NewBag (
 {
     Bag                 bag;            /* identifier of the new bag       */
     Bag *               dst;            /* destination of the new bag      */
+    UInt		alloc_size;
 
 #ifndef BOEHM_GC
 #ifdef TREMBLE_HEAP
@@ -1262,24 +1263,25 @@ Bag NewBag (
     dst       = AllocBags;
     AllocBags = dst + HEADER_SIZE + WORDS_BAG(size);
 #else /* BOEHM_GC */
+    alloc_size = HEADER_SIZE*sizeof(Bag) + size;
 #ifndef DISABLE_GC
     bag = GC_malloc(2*sizeof(Bag *));
     if (size == 0)
-      size = 1;
+      alloc_size++;
     if (TabFinalizerFuncBags[type])
     {
-      dst = GC_malloc_atomic(HEADER_SIZE*sizeof(Bag) + size);
+      dst = GC_malloc_atomic(alloc_size);
       GC_register_finalizer(dst, StandardFinalizer, NULL, NULL, NULL);
     }
     else if (TabMarkFuncBags[type] == MarkNoSubBags) {
-      dst = GC_malloc_atomic(HEADER_SIZE*sizeof(Bag) + size);
+      dst = GC_malloc_atomic(alloc_size);
     } else {
-      dst = GC_malloc(HEADER_SIZE*sizeof(Bag) + size);
+      dst = GC_malloc(alloc_size);
     }
 #else
     bag = malloc(2*sizeof(Bag *));
-    dst = malloc(HEADER_SIZE*sizeof(Bag) + size);
-    memset(dst, 0, HEADER_SIZE*sizeof(Bag) + size);
+    dst = malloc(alloc_size);
+    memset(dst, 0, alloc_size);
 #endif /* DISABLE_GC */
 #endif /* BOEHM_GC */
 
@@ -1566,11 +1568,18 @@ void            RetypeBag (
         dst       = AllocBags;
         AllocBags = dst + HEADER_SIZE + WORDS_BAG(new_size);
 #else
+	alloc_size = HEADER_SIZE*sizeof(Bag) + new_size;
+	if (new_size == 0)
+	    alloc_size++;
 #ifndef DISABLE_GC
-        dst       = GC_malloc_ignore_off_page( HEADER_SIZE*sizeof(Bag) + new_size );
+	if (TabMarkFuncBags[type] == MarkNoSubBags) {
+	    dst = GC_malloc_atomic(alloc_size);
+	} else {
+	    dst = GC_malloc(alloc_size);
+	}
 #else
-        dst       = malloc( HEADER_SIZE*sizeof(Bag) + new_size );
-	memset(dst, 0, HEADER_SIZE*sizeof(Bag) + new_size);
+        dst       = malloc( alloc_size );
+	memset(dst, 0, alloc_size);
 #endif
 #endif
 	
