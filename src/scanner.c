@@ -581,6 +581,8 @@ UInt OpenDefaultInput( void )
   if (stream)
     return OpenInputStream(stream);
   func = GVarOptFunc(&DEFAULT_INPUT_STREAM);
+  if (!func)
+    return OpenInput("*stdin*");
   stream = CALL_0ARGS(func);
   if (!stream)
     ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0L, 0L);
@@ -597,6 +599,8 @@ UInt OpenDefaultOutput( void )
   if (stream)
     return OpenOutputStream(stream);
   func = GVarOptFunc(&DEFAULT_OUTPUT_STREAM);
+  if (!func)
+    return OpenOutput("*stdout*");
   stream = CALL_0ARGS(func);
   if (!stream)
     ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0L, 0L);
