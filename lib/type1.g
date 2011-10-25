@@ -695,7 +695,49 @@ BIND_GLOBAL( "SetTypeObj", function ( type, obj )
     return obj;
 end );
 
-BIND_GLOBAL( "Objectify", SetTypeObj );
+
+BIND_GLOBAL( "IsNonAtomicComponentObjectRepFlags", 
+        FLAGS_FILTER(IsNonAtomicComponentObjectRep));
+BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags", 
+        FLAGS_FILTER(IsAtomicPositionalObjectRep));
+BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags", 
+        FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
+
+BIND_GLOBAL( "Objectify", function(type, obj)
+    local flags;
+    if not IsType( type )  then
+        Error("<type> must be a type");
+    fi;
+    flags := FlagsType(type);
+    if IS_LIST( obj )  then
+        if IS_SUBSET_FLAGS(flags, IsAtomicPositionalObjectRepFlags) then
+            obj := FixedAtomicList(obj);
+        fi;
+        SET_TYPE_POSOBJ( obj, type );
+    elif IS_REC( obj )  then
+        Print("AAA\n");
+        if IS_ATOMIC_RECORD(obj) then
+            if IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
+                obj := FromAtomicRecord(obj);
+            fi;
+        elif not IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
+            Print("BBB\n");
+            obj := AtomicRecord(obj);
+            Print("CCC\n");
+        fi;
+        Print("DDD\n");
+
+        SET_TYPE_COMOBJ( obj, type );
+        Print("EEE\n"); 
+   fi;
+    if not IsNoImmediateMethodsObject(obj) then
+      RunImmediateMethods( obj, type![2] );
+  fi;
+  if IsReadOnlyPositionalObjectRep(obj) then
+      MakeReadOnlyObj(obj);
+  fi;
+  return obj;
+end );
 
 
 #############################################################################
