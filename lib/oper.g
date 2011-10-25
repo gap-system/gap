@@ -120,7 +120,7 @@ BIND_GLOBAL( "IMMEDIATES", AtomicList([]) );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "IMMEDIATE_METHODS", [] );
+BIND_GLOBAL( "IMMEDIATE_METHODS", AtomicList([]) );
 
 
 #############################################################################
@@ -313,9 +313,12 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     od;
 
     # We install the method for the requirements in `relev'.
-    ADD_LIST( IMMEDIATE_METHODS, method );
+    # 'pos' is saved for modifying 'imm' below.
+    # TODO: this way of changing IMMEDIATE_METHODS should be atomic
     pos:=LEN_LIST( IMMEDIATE_METHODS );
-
+    IMMEDIATE_METHODS[pos+1]:=method;
+    pos:=pos+1;
+    
     for j  in relev  do
 
       # adjust `IMM_FLAGS'
