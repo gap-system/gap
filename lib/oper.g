@@ -105,7 +105,7 @@ end);
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "IMMEDIATES", [] );
+BIND_GLOBAL( "IMMEDIATES", AtomicList([]) );
 
 
 #############################################################################
@@ -238,7 +238,9 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
             ignore,
             j,
             k,
-            replace;
+            replace,
+            pos,
+            imm;
 
     # Check whether <oper> really is an operation.
     if not IS_OPERATION(oper)  then
@@ -312,6 +314,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
 
     # We install the method for the requirements in `relev'.
     ADD_LIST( IMMEDIATE_METHODS, method );
+    pos:=LEN_LIST( IMMEDIATE_METHODS );
 
     for j  in relev  do
 
@@ -325,7 +328,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
 
       # Find the place to put the new method.
       if not IsBound( IMMEDIATES[j] ) then
-          IMMEDIATES[j]:= [];
+          IMMEDIATES[j]:= MakeImmutable([]);
       fi;
       i := 0;
       while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
@@ -350,20 +353,25 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       fi;
       
       # push the other functions back
+      
+      # ShallowCopy is not bound yet, so we take a sublist
+      imm:=IMMEDIATES[j]{[1..LEN_LIST(IMMEDIATES[j])]};
+      
       if not REREADING or not replace then
-          IMMEDIATES[j]{[i+8..7+LEN_LIST(IMMEDIATES[j])]}
-            := IMMEDIATES[j]{[i+1..LEN_LIST(IMMEDIATES[j])]};
+          imm{[i+8..7+LEN_LIST(imm)]} := imm{[i+1..LEN_LIST(imm)]};
       fi;
-
+      
       # install the new method
-      IMMEDIATES[j][i+1] := oper;
-      IMMEDIATES[j][i+2] := SETTER_FILTER( oper );
-      IMMEDIATES[j][i+3] := FLAGS_FILTER( TESTER_FILTER( oper ) );
-      IMMEDIATES[j][i+4] := FLAGS_FILTER( filter );
-      IMMEDIATES[j][i+5] := rank;
-      IMMEDIATES[j][i+6] := LEN_LIST( IMMEDIATE_METHODS );
-      IMMEDIATES[j][i+7] := IMMUTABLE_COPY_OBJ(name);
-
+      imm[i+1] := oper;
+      imm[i+2] := SETTER_FILTER( oper );
+      imm[i+3] := FLAGS_FILTER( TESTER_FILTER( oper ) );
+      imm[i+4] := FLAGS_FILTER( filter );
+      imm[i+5] := rank;
+      imm[i+6] := pos;
+      imm[i+7] := IMMUTABLE_COPY_OBJ(name);
+     
+      IMMEDIATES[j]:=MakeImmutable(imm);
+      
     od;
 
 end );
