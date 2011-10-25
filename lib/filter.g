@@ -264,7 +264,7 @@ BIND_GLOBAL( "NewFilter", function( arg )
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
     atomic FILTER_REGION do
         RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
-	INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
+	    INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
     od;
 
     # Return the filter.
