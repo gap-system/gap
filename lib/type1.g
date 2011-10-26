@@ -720,10 +720,6 @@ BIND_GLOBAL( "Objectify", function(type, obj)
         fi;
         SET_TYPE_POSOBJ( obj, type );
     elif IS_REC( obj )  then
-        #Print("Object is IS_REC\n");
-        #if IsBound( obj.GeneratorsOfMagmaWithInverses ) then
-          #Error("debug0");
-        #fi;
         if IS_ATOMIC_RECORD(obj) then
             if IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
                 #Print("FromAtomicRecord \c");
@@ -731,15 +727,11 @@ BIND_GLOBAL( "Objectify", function(type, obj)
                 #Print("done\n"); 
             fi;
         elif not IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
-            #Print("AtomicRecord \c");
             obj := AtomicRecord(obj);
-            #Print("done\n");         
         fi;
 
         #Print("SET_TYPE_COMOBJ \c");
         SET_TYPE_COMOBJ( obj, type );
-        #Print("done\n"); 
-
   fi;
     if not IsNoImmediateMethodsObject(obj) then
       #Print("RunImmediateMethods \c");    
