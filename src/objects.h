@@ -287,31 +287,31 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_POSOBJ                (FIRST_EXTERNAL_TNUM+ 1)
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
 #define T_WPOBJ                 (FIRST_EXTERNAL_TNUM+ 3)
-     /* #define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 4)
-        remove to get parity right */
-#define LAST_EXTERNAL_TNUM      T_WPOBJ
 
-#define FIRST_SHARED_TNUM	(LAST_EXTERNAL_TNUM+1)
+/* The next two TNUMA are BOTH external AND shared! */
+#define FIRST_SHARED_TNUM	(T_WPOBJ+1)
+#define T_APOSOBJ 		(FIRST_SHARED_TNUM+ 0)
+#define T_ACOMOBJ 		(FIRST_SHARED_TNUM+ 1)
+#define LAST_EXTERNAL_TNUM      T_ACOMOBJ
+
 /* Primitive types */
-#define T_MUTEX			(FIRST_SHARED_TNUM+ 0)
-#define T_CONDVAR		(FIRST_SHARED_TNUM+ 1)
-#define T_RWLOCK		(FIRST_SHARED_TNUM+ 2)
-#define T_MONITOR		(FIRST_SHARED_TNUM+ 3)
-#define T_REGION		(FIRST_SHARED_TNUM+ 4)
+#define T_MUTEX			(FIRST_SHARED_TNUM+ 2)
+#define T_CONDVAR		(FIRST_SHARED_TNUM+ 3)
+#define T_RWLOCK		(FIRST_SHARED_TNUM+ 4)
+#define T_MONITOR		(FIRST_SHARED_TNUM+ 5)
+#define T_REGION		(FIRST_SHARED_TNUM+ 6)
 /* User-programmable types */
-#define T_LOCK			(FIRST_SHARED_TNUM+ 5)
-#define T_CHANNEL		(FIRST_SHARED_TNUM+ 6)
-#define T_BARRIER		(FIRST_SHARED_TNUM+ 7)
-#define T_SYNCVAR		(FIRST_SHARED_TNUM+ 8)
-#define T_FIXALIST		(FIRST_SHARED_TNUM+ 9)
-#define T_ALIST			(FIRST_SHARED_TNUM+ 10)
-#define T_APOSOBJ 		(FIRST_SHARED_TNUM+ 11)
-#define T_AREC 			(FIRST_SHARED_TNUM+ 12)
-#define T_AREC_INNER 		(FIRST_SHARED_TNUM+ 13)
-#define T_TLREC 		(FIRST_SHARED_TNUM+ 14)
-#define T_TLREC_INNER 		(FIRST_SHARED_TNUM+ 15)
-#define T_ACOMOBJ 		(FIRST_SHARED_TNUM+ 16)
-#define LAST_SHARED_TNUM	(T_ACOMOBJ)
+#define T_LOCK			(FIRST_SHARED_TNUM+ 7)
+#define T_CHANNEL		(FIRST_SHARED_TNUM+ 8)
+#define T_BARRIER		(FIRST_SHARED_TNUM+ 9)
+#define T_SYNCVAR		(FIRST_SHARED_TNUM+ 10)
+#define T_FIXALIST		(FIRST_SHARED_TNUM+ 11)
+#define T_ALIST			(FIRST_SHARED_TNUM+ 12)
+#define T_AREC 			(FIRST_SHARED_TNUM+ 13)
+#define T_AREC_INNER 		(FIRST_SHARED_TNUM+ 14)
+#define T_TLREC 		(FIRST_SHARED_TNUM+ 15)
+#define T_TLREC_INNER 		(FIRST_SHARED_TNUM+ 16)
+#define LAST_SHARED_TNUM	(T_TLREC_INNER)
 
 #define LAST_REAL_TNUM          LAST_SHARED_TNUM
 #define LAST_VIRTUAL_TNUM 	LAST_SHARED_TNUM
