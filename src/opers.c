@@ -1616,7 +1616,8 @@ static inline Obj TYPE_OBJ_FEO (
   /* TODO: We need to be able to automatically derice this. */
   ImpliedWriteGuard(obj);
   if ( TNUM_OBJ(obj) >= FIRST_EXTERNAL_TNUM &&
-       TNUM_OBJ(obj) <= T_DATOBJ) /* avoid T_WPOBJ */
+       TNUM_OBJ(obj) <= LAST_EXTERNAL_TNUM &&
+       TNUM_OBJ(obj) != T_WPOBJ) /* avoid T_WPOBJ */
     return TYPE_ANYOBJ(obj);
   else
     return TYPE_OBJ(obj);
@@ -5057,25 +5058,25 @@ Obj DoSetProperty (
     case T_ACOMOBJ:
     case T_APOSOBJ:
     case T_POSOBJ:
-	case T_DATOBJ:
-	    flags = (val == True ? self : TESTR_FILT(self));
-	    CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-	    break;
-	default:
-	    if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
-		   || IS_BLIST_REP(obj) )  {
-		if ( val == True ) {
-		    FuncSET_FILTER_LIST( 0, obj, self );
-		}
-	    }
-	    else {
-		ErrorReturnVoid(
-		    "Value cannot be set for internal objects",
-		    0L, 0L,
-		    "you can 'return;' without setting it" );
-	    }
+    case T_DATOBJ:
+      flags = (val == True ? self : TESTR_FILT(self));
+      CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+      break;
+    default:
+      if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
+	   || IS_BLIST_REP(obj) )  {
+	if ( val == True ) {
+	  FuncSET_FILTER_LIST( 0, obj, self );
+	}
+      }
+      else {
+	ErrorReturnVoid(
+			"Value cannot be set for internal objects",
+			0L, 0L,
+			"you can 'return;' without setting it" );
+      }
     }
-
+    
     /* return the value                                                    */
     return 0;
 }
