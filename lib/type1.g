@@ -708,34 +708,50 @@ BIND_GLOBAL( "Objectify", function(type, obj)
     if not IsType( type )  then
         Error("<type> must be a type");
     fi;
+    #Print("Objectifying in type ", type, "\n");
     flags := FlagsType(type);
+    # Print("INPUT: ", obj, "\n");
     if IS_LIST( obj )  then
+        #Print("Object is IS_LIST\n");
         if IS_SUBSET_FLAGS(flags, IsAtomicPositionalObjectRepFlags) then
+            #Print("FixedAtomicList \c");
             obj := FixedAtomicList(obj);
+            #Print("done\n");
         fi;
         SET_TYPE_POSOBJ( obj, type );
     elif IS_REC( obj )  then
-        Print("AAA\n");
+        #Print("Object is IS_REC\n");
+        #if IsBound( obj.GeneratorsOfMagmaWithInverses ) then
+          #Error("debug0");
+        #fi;
         if IS_ATOMIC_RECORD(obj) then
             if IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
+                #Print("FromAtomicRecord \c");
                 obj := FromAtomicRecord(obj);
+                #Print("done\n"); 
             fi;
         elif not IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
-            Print("BBB\n");
+            #Print("AtomicRecord \c");
             obj := AtomicRecord(obj);
-            Print("CCC\n");
+            #Print("done\n");         
         fi;
-        Print("DDD\n");
 
+        #Print("SET_TYPE_COMOBJ \c");
         SET_TYPE_COMOBJ( obj, type );
-        Print("EEE\n"); 
-   fi;
+        #Print("done\n"); 
+
+  fi;
     if not IsNoImmediateMethodsObject(obj) then
+      #Print("RunImmediateMethods \c");    
       RunImmediateMethods( obj, type![2] );
-  fi;
+      #Print("done\n");    
+    fi;
   if IsReadOnlyPositionalObjectRep(obj) then
+      #Print("MakeReadOnlyObj \c");
       MakeReadOnlyObj(obj);
+      #Print("done\n");
   fi;
+  # Print("OUTPUT: ", obj, "\n");
   return obj;
 end );
 
@@ -1018,7 +1034,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
     local obj, type, flags, attr, val, i, extra,  nflags;
     obj := arg[1];
     type := arg[2];
-    flags := FlagsType( type);
+    flags := FlagsType(type);
     extra := [];
     
     if not IS_SUBSET_FLAGS(
@@ -1028,7 +1044,9 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
         extra := arg{[3..LEN_LIST(arg)]};
         INFO_OWA( "#W ObjectifyWithAttributes called ",
                   "for non-attribute storing rep\n" );
+        #Print("point1\n");          
         Objectify(type, obj);
+        #Error("DEBUG1");
     else
         nflags := EMPTY_FLAGS;
         for i in [3,5..LEN_LIST(arg)-1] do
@@ -1064,14 +1082,17 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
                     flags , 
                     DataType(type)), obj);
         else
-            Objectify( type, obj);
+            #Error("point2 - before calling Objectify\n");          
+            FORCE_SWITCH_OBJ( obj, Objectify( type, obj ) );
+            #Error("point3 - after calling Objectify\n");
         fi;
     fi;
+    #Error("DEBUG2");
     for i in [1,3..LEN_LIST(extra)-1] do
         if (Tester(extra[i])(obj)) then
-	  INFO_OWA( "#W  Supplied type has tester of ",NAME_FUNC(extra[i]),
-		    "with non-standard setter\n" );
-	  ResetFilterObj(obj, Tester(extra[i]));
+	        INFO_OWA( "#W  Supplied type has tester of ",NAME_FUNC(extra[i]),
+		              "with non-standard setter\n" );
+	        ResetFilterObj(obj, Tester(extra[i]));
 #T If there is an immediate method relying on an attribute
 #T whose tester is set to `true' in `type'
 #T and that has a special setter
