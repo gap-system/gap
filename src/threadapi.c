@@ -1125,8 +1125,8 @@ static Obj RetrieveFromChannel(Channel *channel)
   Obj children = ADDR_OBJ(channel->queue)[++channel->head];
   Region *ds = TLS->currentRegion;
   UInt i, len = children ? LEN_PLIST(children) : 0;
-  ADDR_OBJ(channel->queue)[channel->head-2] = 0;
   ADDR_OBJ(channel->queue)[channel->head-1] = 0;
+  ADDR_OBJ(channel->queue)[channel->head] = 0;
   if (channel->head == channel->capacity)
     channel->head = 0;
   for (i=1; i<= len; i++) {
