@@ -1023,9 +1023,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
         extra := arg{[3..LEN_LIST(arg)]};
         INFO_OWA( "#W ObjectifyWithAttributes called ",
                   "for non-attribute storing rep\n" );
-        #Print("point1\n");          
         Objectify(type, obj);
-        #Error("DEBUG1");
     else
         nflags := EMPTY_FLAGS;
         for i in [3,5..LEN_LIST(arg)-1] do
@@ -1061,12 +1059,9 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
                     flags , 
                     DataType(type)), obj);
         else
-            #Error("point2 - before calling Objectify\n");          
             FORCE_SWITCH_OBJ( obj, Objectify( type, obj ) );
-            #Error("point3 - after calling Objectify\n");
         fi;
     fi;
-    #Error("DEBUG2");
     for i in [1,3..LEN_LIST(extra)-1] do
         if (Tester(extra[i])(obj)) then
 	        INFO_OWA( "#W  Supplied type has tester of ",NAME_FUNC(extra[i]),
