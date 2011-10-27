@@ -267,5 +267,10 @@ Print( "Barrier test 2 ", x1=x2, "\n");
 
 Print("Passed example 10\n");
 
+Print("=======================\nChecking access.tst ...\n");
+tst := Filename( DirectoriesLibrary("tst"), "access.tst" );;
+ReadTest(tst);
+Print("Completed access.tst!!!\n");
+
 Print("*** END OF THE TEST ***\n");
 
