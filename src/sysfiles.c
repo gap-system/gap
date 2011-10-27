@@ -3492,6 +3492,30 @@ Char * readlineFgets (
 
 #endif
 
+GVarDescriptor GVarBeginEdit, GVarEndEdit;
+
+Int syBeginEdit(Int fid)
+{
+  Obj func = GVarFunc(&GVarBeginEdit);
+  Obj result;
+  if (!func)
+    return syStartraw(fid);
+  result = CALL_1ARGS(func, INTOBJ_INT(fid));
+  return result != False && result != Fail && result != INTOBJ_INT(0);
+}
+
+Int syEndEdit(Int fid)
+{
+  Obj func = GVarFunc(&GVarEndEdit);
+  Obj result;
+  if (!func) {
+    syStopraw(fid);
+    return 1;
+  }
+  result = CALL_1ARGS(func, INTOBJ_INT(fid));
+  return result != False && result != Fail && result != INTOBJ_INT(0);
+}
+
 
 Char * syFgets (
     Char *              line,
@@ -3531,7 +3555,7 @@ Char * syFgets (
 
     /* no line editing if the user disabled it
        or we can't make it into raw mode */
-    if ( SyLineEdit == 0 || ! syStartraw(fid) ) {
+    if ( SyLineEdit == 0 || ! syBeginEdit(fid) ) {
         SyStopTime = SyTime();
 	p = syFgetsNoEdit(line, length, fid, block );
         SyStartTime += SyTime() - SyStopTime;
@@ -3566,7 +3590,7 @@ Char * syFgets (
       line[len] = '\0';
       /* switch back to cooked mode                                          */
       if ( SyLineEdit == 1 )
-          syStopraw(fid);
+          syEndEdit(fid);
 
       /* return the line (or '0' at end-of-file)                             */
       if ( *line == '\0' )
@@ -4851,6 +4875,8 @@ static Int InitKernel(
   ImportFuncFromLibrary("LineEditKeyHandler", &LineEditKeyHandler);
   ImportGVarFromLibrary("LineEditKeyHandlers", &LineEditKeyHandlers);
 #endif
+  DeclareGVar(&GVarBeginEdit, "TERMINAL_BEGIN_EDIT");
+  DeclareGVar(&GVarEndEdit, "TERMINAL_END_EDIT");
   /* return success                                                      */
   return 0;
 

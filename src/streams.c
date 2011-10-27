@@ -1997,6 +1997,25 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
   return INTOBJ_INT(fdi);
 }
 
+Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
+{
+  Int fd;
+  int fdi;
+  while (fid == (Obj) 0 || !(IS_INTOBJ(fid)))
+  {
+    fid = ErrorReturnObj(
+           "<fid> must be a small integer (not a %s)",
+           (Int)TNAM_OBJ(fid),0L,
+           "you can replace <fid> via 'return <fid>;'" );
+  }
+  fd = INT_INTOBJ(fid);
+  fdi = syBuf[fd].fp;
+  if (onoff == False || onoff == Fail)
+    return INTOBJ_INT(syStopraw(fdi));
+  else
+    return INTOBJ_INT(syStartraw(fdi));
+}
+
 #if HAVE_SELECT
 Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
                    Obj timeoutsec, Obj timeoutusec)
@@ -2348,6 +2367,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "FD_OF_FILE", 1L, "fid",
       FuncFD_OF_FILE, "src/streams.c:FD_OF_FILE" },
+
+    { "RAW_MODE_FILE", 2L, "fid, bool",
+      FuncRAW_MODE_FILE, "src/streams.c:RAW_MODE_FILE" },
 
     { "UNIXSelect", 5L, "inlist, outlist, exclist, timeoutsec, timeoutusec",
       FuncUNIXSelect, "src/streams.c:UNIXSelect" },

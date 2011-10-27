@@ -610,6 +610,7 @@ BindGlobal("CommandRun@", function(line)
 end);
 
 BindGlobal("CommandQUIT@", function(line)
+  TERMINAL_CLOSE();
   FORCE_QUIT_GAP();
 end);
 
@@ -811,6 +812,7 @@ BindGlobal("MULTI_SESSION", function()
   UnregisterThread@(true);
   CompleteHandShake(ProgramShutdown@);
   PROGRAM_CLEAN_UP();
+  TERMINAL_CLOSE();
   QUIT_GAP();
 end);
 

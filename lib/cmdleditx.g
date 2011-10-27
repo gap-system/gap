@@ -390,3 +390,41 @@ GAPInfo.History.PrevLine := function(start)
   od;
 end;
 
+# Operations to enable and disable raw mode on terminals.
+
+# Set operations are not available yet, so we cheat by using
+# [] in lieu of Set([]); AddSet() and RemoveSet() accept the
+# empty list as a proper set because it is sorted.
+
+TERMINAL_REGION := ShareObj("TERMINAL_REGION");
+TERMINAL_FILE_IDS := LockAndMigrateObj([], TERMINAL_REGION);
+TERMINAL_EXITING := false;
+
+TERMINAL_BEGIN_EDIT := function(fid)
+  atomic TERMINAL_REGION do
+    while TERMINAL_EXITING do
+      Sleep(1); # idle wait until program exit
+    od;
+    AddSet(TERMINAL_FILE_IDS, fid);
+    return RAW_MODE_FILE(fid, true);
+  od;
+end;
+
+TERMINAL_END_EDIT := function(fid)
+  atomic TERMINAL_REGION do
+    if not TERMINAL_EXITING then
+      RemoveSet(TERMINAL_FILE_IDS, fid);
+      return RAW_MODE_FILE(fid, false);
+    fi;
+  od;
+end;
+
+TERMINAL_CLOSE := function()
+  local fid;
+  atomic TERMINAL_REGION do
+    TERMINAL_EXITING := true;
+    for fid in TERMINAL_FILE_IDS do
+      RAW_MODE_FILE(fid, false);
+    od;
+  od;
+end;
