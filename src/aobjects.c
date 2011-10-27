@@ -1487,9 +1487,8 @@ static Int InitKernel (
   /* install mutability functions */
   IsMutableObjFuncs [ T_ALIST ] = AlwaysMutable;
   IsMutableObjFuncs [ T_FIXALIST ] = AlwaysMutable;
-  IsMutableObjFuncs [ T_APOSOBJ ] = AlwaysMutable;
   IsMutableObjFuncs [ T_AREC ] = AlwaysMutable;
-  IsMutableObjFuncs [ T_ACOMOBJ ] = AlwaysMutable;
+  /* mutability for T_ACOMOBJ and T_APOSOBJ is set in objects.c */
   MakeBagTypePublic(T_ALIST);
   MakeBagTypePublic(T_FIXALIST);
   MakeBagTypePublic(T_APOSOBJ);
