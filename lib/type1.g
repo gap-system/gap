@@ -708,42 +708,29 @@ BIND_GLOBAL( "Objectify", function(type, obj)
     if not IsType( type )  then
         Error("<type> must be a type");
     fi;
-    #Print("Objectifying in type ", type, "\n");
     flags := FlagsType(type);
-    # Print("INPUT: ", obj, "\n");
     if IS_LIST( obj )  then
-        #Print("Object is IS_LIST\n");
         if IS_SUBSET_FLAGS(flags, IsAtomicPositionalObjectRepFlags) then
-            #Print("FixedAtomicList \c");
             obj := FixedAtomicList(obj);
-            #Print("done\n");
         fi;
         SET_TYPE_POSOBJ( obj, type );
     elif IS_REC( obj )  then
         if IS_ATOMIC_RECORD(obj) then
             if IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
-                #Print("FromAtomicRecord \c");
                 obj := FromAtomicRecord(obj);
-                #Print("done\n"); 
             fi;
         elif not IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
             obj := AtomicRecord(obj);
         fi;
 
-        #Print("SET_TYPE_COMOBJ \c");
         SET_TYPE_COMOBJ( obj, type );
   fi;
     if not IsNoImmediateMethodsObject(obj) then
-      #Print("RunImmediateMethods \c");    
       RunImmediateMethods( obj, type![2] );
-      #Print("done\n");    
     fi;
   if IsReadOnlyPositionalObjectRep(obj) then
-      #Print("MakeReadOnlyObj \c");
       MakeReadOnlyObj(obj);
-      #Print("done\n");
   fi;
-  # Print("OUTPUT: ", obj, "\n");
   return obj;
 end );
 
