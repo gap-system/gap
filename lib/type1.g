@@ -702,7 +702,7 @@ BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags",
         FLAGS_FILTER(IsAtomicPositionalObjectRep));
 BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags", 
         FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
-
+        
 BIND_GLOBAL( "Objectify", function(type, obj)
     local flags;
     if not IsType( type )  then
@@ -711,16 +711,16 @@ BIND_GLOBAL( "Objectify", function(type, obj)
     flags := FlagsType(type);
     if IS_LIST( obj )  then
         if IS_SUBSET_FLAGS(flags, IsAtomicPositionalObjectRepFlags) then
-            obj := FixedAtomicList(obj);
+            FORCE_SWITCH_OBJ( obj, FixedAtomicList(obj) );
         fi;
         SET_TYPE_POSOBJ( obj, type );
     elif IS_REC( obj )  then
         if IS_ATOMIC_RECORD(obj) then
             if IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
-                obj := FromAtomicRecord(obj);
+                FORCE_SWITCH_OBJ( obj, FromAtomicRecord(obj) );
             fi;
         elif not IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
-            obj := AtomicRecord(obj);
+            FORCE_SWITCH_OBJ( obj, AtomicRecord(obj) );
         fi;
 
         SET_TYPE_COMOBJ( obj, type );
@@ -1059,7 +1059,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
                     flags , 
                     DataType(type)), obj);
         else
-            FORCE_SWITCH_OBJ( obj, Objectify( type, obj ) );
+            Objectify( type, obj );
         fi;
     fi;
     for i in [1,3..LEN_LIST(extra)-1] do
