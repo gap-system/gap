@@ -106,6 +106,31 @@ end);
 
 #############################################################################
 ##
+#M  RemoveDictionary(<dict>,<obj>)
+##
+InstallOtherMethod(RemoveDictionary,"for lookup list dictionaries",true,
+  [IsListLookupDictionary and IsMutable,IsObject],0,
+function(d, key)
+  local pos;
+  pos := PositionFirstComponent(d!.entries, key);
+  if pos <= Length(d!.entries) and d!.entries[pos][1] = key then
+    Remove(d!.entries, pos);
+  fi;;
+end);
+
+InstallMethod(RemoveDictionary,"for list dictionaries",true,
+  [IsListDictionary and IsMutable,IsObject],0,
+function(d, key)
+  local pos;
+  pos := Position(d!.list, key);
+  if pos <= Length(d!.list) and d!.list[pos] = key then
+    Remove(d!.list, pos);
+  fi;;
+end);
+
+
+#############################################################################
+##
 #M  AddDictionary(<dict>,<obj>,<val>)
 ##
 InstallOtherMethod(AddDictionary,"for lookup sort dictionaries",true,
@@ -306,6 +331,34 @@ local hashfun,obj,dom,lookup;
   Info(InfoHash,1,obj," ",dom," List dictionary");
   return DictionaryByList(lookup);
 end);
+
+#############################################################################
+##
+#M  Enumerator( <dict> ) for list dictionaries
+##
+InstallMethod( Enumerator, "for list dictionaries",
+    [ IsListDictionary ], 0,
+    function( dict )
+      if IsListLookupDictionary(dict) then
+        return List(dict!.entries, pair -> pair[2]);
+      else
+        return ShallowCopy(dict!.list);
+      fi;
+    end );
+
+#############################################################################
+##
+#M  ListKeyEnumerator( <dict> ) for list dictionaries
+##
+InstallMethod( ListKeyEnumerator, "for list dictionaries",
+    [ IsListDictionary ], 0,
+    function( dict )
+      if IsListLookupDictionary(dict) then
+        return List(dict!.entries, pair -> pair[1]);
+      else
+        return ShallowCopy(dict!.list);
+      fi;
+    end );
 
 # here starts the hash table bit by Gene and Scott
 
