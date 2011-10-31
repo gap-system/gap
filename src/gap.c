@@ -243,9 +243,9 @@ static char **sysenviron;
 syJmp_buf SyRestartBuf;
 */
 
-Obj ShellContext = 0;
-Obj BaseShellContext = 0;
-UInt ShellContextDepth;
+/* TL: Obj ShellContext = 0; */
+/* TL: Obj BaseShellContext = 0; */
+/* TL: UInt ShellContextDepth; */
 
 
 Obj Shell ( Obj context, 
@@ -266,11 +266,11 @@ Obj Shell ( Obj context,
   Obj res;
   Obj oldShellContext;
   Obj oldBaseShellContext;
-  oldShellContext = ShellContext;
-  ShellContext = context;
-  oldBaseShellContext = BaseShellContext;
-  BaseShellContext = context;
-  ShellContextDepth = 0;
+  oldShellContext = TLS->ShellContext;
+  TLS->ShellContext = context;
+  oldBaseShellContext = TLS->BaseShellContext;
+  TLS->BaseShellContext = context;
+  TLS->ShellContextDepth = 0;
   
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
@@ -315,7 +315,7 @@ Obj Shell ( Obj context,
     }
 
     /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(ShellContext);
+    status = ReadEvalCommand(TLS->ShellContext);
     if (TLS->UserHasQUIT)
       break;
 
@@ -382,8 +382,8 @@ Obj Shell ( Obj context,
   TLS->output->indent = oldindent;
   CloseInput();
   CloseOutput();
-  BaseShellContext = oldBaseShellContext;
-  ShellContext = oldShellContext;
+  TLS->BaseShellContext = oldBaseShellContext;
+  TLS->ShellContext = oldShellContext;
   if (TLS->UserHasQUIT)
     {
       if (catchQUIT)
@@ -1212,11 +1212,10 @@ Obj FuncWindowCmd (
 
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
-UInt ErrorLevel;
 
-Obj  ErrorLVars0;    
+/* Obj  ErrorLVars0;    */
 /* TL: Obj  ErrorLVars; */
-Int  ErrorLLevel;
+/* TL: Int  ErrorLLevel; */
 
 /* TL: extern Obj BottomLVars; */
 
@@ -1224,19 +1223,19 @@ Int  ErrorLLevel;
 void DownEnvInner( Int depth )
 {
   /* if we really want to go up                                          */
-  if ( depth < 0 && -ErrorLLevel <= -depth ) {
+  if ( depth < 0 && -TLS->ErrorLLevel <= -depth ) {
     depth = 0;
-    TLS->errorLVars = ErrorLVars0;
-    ErrorLLevel = 0;
-    ShellContextDepth = 0;
-    ShellContext = BaseShellContext;
+    TLS->errorLVars = TLS->ErrorLVars0;
+    TLS->ErrorLLevel = 0;
+    TLS->ShellContextDepth = 0;
+    TLS->ShellContext = TLS->BaseShellContext;
   }
   else if ( depth < 0 ) {
-    depth = -ErrorLLevel + depth;
-    TLS->errorLVars = ErrorLVars0;
-    ErrorLLevel = 0;
-    ShellContextDepth = 0;
-    ShellContext = BaseShellContext;
+    depth = -TLS->ErrorLLevel + depth;
+    TLS->errorLVars = TLS->ErrorLVars0;
+    TLS->ErrorLLevel = 0;
+    TLS->ShellContextDepth = 0;
+    TLS->ShellContext = TLS->BaseShellContext;
   }
   
   /* now go down                                                         */
@@ -1244,9 +1243,9 @@ void DownEnvInner( Int depth )
 	  && TLS->errorLVars != TLS->bottomLVars
 	  && PTR_BAG(TLS->errorLVars)[2] != TLS->bottomLVars ) {
     TLS->errorLVars = PTR_BAG(TLS->errorLVars)[2];
-    ErrorLLevel--;
-    ShellContext = PTR_BAG(ShellContext)[2];
-    ShellContextDepth--;
+    TLS->ErrorLLevel--;
+    TLS->ShellContext = PTR_BAG(TLS->ShellContext)[2];
+    TLS->ShellContextDepth--;
     depth--;
   }
 }

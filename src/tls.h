@@ -110,6 +110,11 @@ typedef struct ThreadLocalStorage
   Obj thrownObject;
   UInt UserHasQuit;
   UInt UserHasQUIT;
+  Obj ShellContext;
+  Obj BaseShellContext;
+  UInt ShellContextDepth;
+  Int ErrorLLevel;
+  Obj ErrorLVars0;
 
 } ThreadLocalStorage;
 
