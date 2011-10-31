@@ -37,6 +37,9 @@ Region *GetRegionOf(Obj obj);
 extern Region *LimboRegion, *ReadOnlyRegion, *ProtectedRegion;
 extern Obj PublicRegion;
 
+void SetRegionName(Region *region, Obj name);
+Obj GetRegionName(Region *region);
+
 int IsSingleThreaded();
 void BeginSingleThreaded();
 void EndSingleThreaded();

@@ -273,6 +273,14 @@ extern Int IsStringConv (
     memcpy( CHARS_STRING(string), (cstr), (len) ); \
   } while ( 0 );
 
+Obj MakeString(Char *cstr);
+Obj MakeString2(Char *cstr1, Char *cstr2);
+Obj MakeString3(Char *cstr1, Char *cstr2, Char *cstr3);
+Obj MakeImmString(Char *cstr);
+Obj MakeImmString2(Char *cstr1, Char *cstr2);
+Obj MakeImmString3(Char *cstr1, Char *cstr2, Char *cstr3);
+
+
 /****************************************************************************
 **
 *F  SINT_CHAR(a)

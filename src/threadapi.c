@@ -459,6 +459,43 @@ Obj FuncRegionOf(Obj self, Obj obj) {
 
 /****************************************************************************
 **
+*F FuncSetRegionName ... set the name of an object's region
+*F FuncClearRegionName ... clear the name of an object's region
+*F FuncRegionName ... get the name of an object's region
+**
+*/
+
+
+Obj FuncSetRegionName(Obj self, Obj obj, Obj name) {
+  Region *region = GetRegionOf(obj);
+  if (!region)
+    ArgumentError("SetRegionName: Cannot change name of the public region");
+  if (!IsStringConv(name))
+    ArgumentError("SetRegionName: Region name must be a string");
+  SetRegionName(region, name);
+  return (Obj) 0;
+}
+
+Obj FuncClearRegionName(Obj self, Obj obj) {
+  Region *region = GetRegionOf(obj);
+  if (!region)
+    ArgumentError("ClearRegionName: Cannot change name of the public region");
+  SetRegionName(region, (Obj) 0);
+  return (Obj) 0;
+}
+
+Obj FuncRegionName(Obj self, Obj obj) {
+  Obj result;
+  Region *region = GetRegionOf(obj);
+  result = GetRegionName(region);
+  if (!result)
+    result = Fail;
+  return result;
+}
+
+
+/****************************************************************************
+**
 *F FuncIsShared ... return whether a region is shared
 **
 */
@@ -681,6 +718,15 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "RegionOf", 1, "object",
       FuncRegionOf, "src/threadapi.c:RegionOf" },
+
+    { "SetRegionName", 2, "obj, name",
+      FuncSetRegionName, "src/threadapi.c:SetRegionName" },
+
+    { "ClearRegionName", 1, "obj",
+      FuncClearRegionName, "src/threadapi.c:ClearRegionName" },
+
+    { "RegionName", 1, "obj",
+      FuncRegionName, "src/threadapi.c:RegionName" },
 
     { "IsShared", 1, "object",
       FuncIsShared, "src/threadapi.c:IsShared" },
@@ -1843,22 +1889,14 @@ static void PrintSyncVar(Obj obj)
 static void PrintRegion(Obj obj)
 {
   char buffer[32];
-  Region *ds = GetRegionOf(obj);
-  if (ds) {
-    if (ds == LimboRegion) {
-      Pr("<limbo region>", 0L, 0L);
-      return;
-    } else if (ds == ReadOnlyRegion) {
-      Pr("<read-only region>", 0L, 0L);
-      return;
-    } else if (ds == ProtectedRegion) {
-      Pr("<protected region>", 0L, 0L);
-      return;
-    }
+  Region *region = GetRegionOf(obj);
+  Obj name = GetRegionName(region);
+  if (name) {
+    Pr("<region: %s>", (Int)(CSTR_STRING(name)), 0L);
+  } else {
     sprintf(buffer, "<region %p>", GetRegionOf(obj));
     Pr(buffer, 0L, 0L);
-  } else
-    Pr("<public region>", 0L, 0L);
+  }
 }
 
 Obj FuncIS_LOCKED(Obj self, Obj obj)
@@ -2004,7 +2042,10 @@ Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
 
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj)
 {
-  if (!MigrateObjects(1, &obj, NewRegion()))
+  Region *region = NewRegion();
+  if (IS_STRING(obj))
+    SetRegionName(region, obj);
+  if (!MigrateObjects(1, &obj, region))
     ArgumentError("SHARE_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2050,9 +2091,12 @@ Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
 
 Obj FuncSHARE(Obj self, Obj obj)
 {
+  Region *region = NewRegion();
   Obj reachable = ReachableObjectsFrom(obj);
+  if (IS_STRING(obj))
+    SetRegionName(region, obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, NewRegion()))
+       ADDR_OBJ(reachable)+1, region))
     ArgumentError("SHARE: Thread does not have exclusive access to objects");
   return obj;
 }

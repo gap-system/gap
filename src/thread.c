@@ -20,6 +20,7 @@
 #include	"scanner.h"
 #include	"code.h"
 #include	"plist.h"
+#include	"string.h"
 #include	"precord.h"
 #include        "tls.h"
 #include        "thread.h"
@@ -36,6 +37,7 @@ typedef struct {
   void *tls;
   void (*start)(void *);
   void *arg;
+  Obj region_name;
   int next;
 } ThreadData;
 
@@ -56,6 +58,7 @@ typedef struct TraversalState {
 
 Region *LimboRegion, *ReadOnlyRegion, *ProtectedRegion;
 Obj PublicRegion;
+Obj PublicRegionName;
 
 static AO_t ThreadCounter = 1;
 
@@ -235,10 +238,15 @@ void CreateMainRegion()
   TLS->currentRegion = NewRegion();
   ((Region *)TLS->currentRegion)->fixed_owner = 1;
   RegionWriteLock(TLS->currentRegion);
+  ((Region *)TLS->currentRegion)->name = MakeImmString("thread region #0");
+  PublicRegionName = MakeImmString("public region");
   LimboRegion = NewRegion();
   LimboRegion->fixed_owner = 1;
+  LimboRegion->name = MakeImmString("limbo region");
   ReadOnlyRegion = NewRegion();
+  ReadOnlyRegion->name = MakeImmString("read-only region");
   ProtectedRegion = NewRegion();
+  ReadOnlyRegion->name = MakeImmString("protected region");
   ReadOnlyRegion->fixed_owner = 1;
   ProtectedRegion->fixed_owner = 1;
   for (i=0; i<=MAX_THREADS; i++) {
@@ -265,7 +273,13 @@ void *DispatchThread(void *arg)
   TLS->threadLock = &thread_mutex;
   TLS->threadSignal = &thread_cond;
   ((Region *)TLS->currentRegion)->fixed_owner = 1;
+  ((Region *)TLS->currentRegion)->name = this_thread->region_name;
   RegionWriteLock(TLS->currentRegion);
+  if (!this_thread->region_name) {
+    char buf[8];
+    sprintf(buf, "%d", TLS->threadID);
+    this_thread->region_name = MakeImmString2("thread #", buf);
+  }
   this_thread->start(this_thread->arg);
   RegionWriteUnlock(TLS->currentRegion);
   pthread_mutex_destroy(&thread_mutex);
@@ -470,6 +484,29 @@ Region *GetRegionOf(Obj obj)
   if (TNUM_OBJ(obj) == T_REGION)
     return *(Region **)(ADDR_OBJ(obj));
   return DS_BAG(obj);
+}
+
+void SetRegionName(Region *region, Obj name)
+{
+  if (name) {
+    if (!IS_STRING(name))
+      return;
+    if (IS_MUTABLE_OBJ(name))
+      name = CopyObj(name, 0);
+  }
+  AO_nop_write();
+  region->name = name;
+}
+
+Obj GetRegionName(Region *region)
+{
+  Obj result;
+  if (region)
+    result = region->name;
+  else
+    result = PublicRegionName;
+  AO_nop_read();
+  return result;
 }
 
 void GetLockStatus(int count, Obj *objects, int *status)

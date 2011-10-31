@@ -1095,6 +1095,7 @@ typedef struct
 {
   void *lock; /* void * so that we don't have to include pthread.h always */
   Bag obj; /* references a unique T_REGION object per region */
+  Bag name; /* name of the region, or a null pointer */
   int fixed_owner;
   void *owner; /* opaque thread descriptor */
   unsigned char readers[0];
