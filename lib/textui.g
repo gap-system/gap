@@ -374,6 +374,9 @@ BindGlobal("GetArg@", function(string)
   return [string, ""];
 end);
 
+DeclareGlobalFunction("RunCommand@");
+DeclareGlobalFunction("RunCommandQuietly@");
+
 BindGlobal("NameThread@", function(threadid, name)
   if IsBound(ThreadNameToID@.(name)) then
     SystemMessage@("The name '", name, "' is already in use by thread ",
@@ -605,7 +608,26 @@ BindGlobal("CommandReplay@", function(line)
 end);
 
 BindGlobal("CommandSource@", function(line)
-  SystemMessage@("Not yet implemented");
+  local file, command;
+  file := InputTextFile(line);
+  if file = fail then
+    SystemMessage@("Could not open ", line);
+  else
+    while true do
+      command := ReadLine(file);
+      if command = fail then
+        CloseStream(file);
+        return;
+      fi;
+      command := Chomp(command);
+      if not StartsWith(command, "#") then
+        while StartsWith(command, " ") or StartsWith(command, "\t") do
+	  command := command{[2..Length(command)]};
+	od;
+	RunCommandQuietly@(command);
+      fi;
+    od;
+  fi;
 end);
 
 BindGlobal("CommandAlias@", function(line)
@@ -709,11 +731,11 @@ atomic Region@ do
   InitializeCommands@();
 od;
 
-DeclareGlobalFunction("ParseCommandWithAliases@"); # Needed for recursion
+DeclareGlobalFunction("RunCommandWithAliases@"); # Needed for recursion
 
-InstallGlobalFunction("ParseCommandWithAliases@", function(string, aliases)
+InstallGlobalFunction("RunCommandWithAliases@", function(string, aliases)
   local values, command, arguments, choices, func, line, i, c, recursive;
-  values := GetArg@(string{[2..Length(string)]});
+  values := GetArg@(string);
   command := values[1];
   if Length(command) > 0 and IsDigitChar(command[1]) then
     arguments := command;
@@ -761,7 +783,7 @@ InstallGlobalFunction("ParseCommandWithAliases@", function(string, aliases)
         Add(command, ' ');
 	Append(command, arguments);
       fi;
-      ParseCommandWithAliases@(command, aliases);
+      RunCommandWithAliases@(command, aliases);
       RemoveSet(aliases, choices[1]);
     else
       func(arguments);
@@ -769,15 +791,25 @@ InstallGlobalFunction("ParseCommandWithAliases@", function(string, aliases)
   fi;
 end);
 
-BindGlobal("ParseCommand@", function(string)
+InstallGlobalFunction("RunCommand@", function(string)
   local originalThread;
+  if StartsWith(string, "!") then
+    string := string{[2..Length(string)]};
+  fi;
   originalThread := ActiveThread@;
-  ParseCommandWithAliases@(string, Set([]));
+  RunCommandWithAliases@(string, Set([]));
   if OutputHistoryIncompleteLine@[ActiveThread@] then
     if originalThread = ActiveThread@ then
       PrintContext@(1, ActiveThread@);
     fi;
   fi;
+end);
+
+InstallGlobalFunction("RunCommandQuietly@", function(string)
+  if StartsWith(string, "!") then
+    string := string{[2..Length(string)]};
+  fi;
+  RunCommandWithAliases@(string, Set([]));
 end);
 
 BindGlobal("MainLoop@", function(mainthreadinfo)
@@ -797,7 +829,7 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
     elif command = HAVE_INPUT@ then
       AddOutputCommand@(ActiveThread@, data);
       if StartsWith(data, "!") then
-        ParseCommand@(Chomp(data));
+        RunCommand@(Chomp(data));
       else
 	if IsBound(ThreadInputChannel@[ActiveThread@]) then
           SendChannel(ThreadInputChannel@[ActiveThread@], data);
