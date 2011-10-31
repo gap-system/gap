@@ -1228,7 +1228,7 @@ CallAndInstallPostRestore( function()
 end );
 
 if THREAD_UI() then
-  ReadLib("shellui.g");
+  ReadLib("textui.g");
   MULTI_SESSION();
 else
   SESSION();

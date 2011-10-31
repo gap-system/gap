@@ -1,6 +1,6 @@
 HaveMultiThreadedUI := true;
 
-ENTER_NAMESPACE("ShellUI");
+ENTER_NAMESPACE("TextUI");
 
 ControlThread@ := false;
 MakeThreadLocal("ControlThread@");
@@ -27,21 +27,21 @@ ThreadNameToID@ := fail;
 Prompt@ := fail;
 ShowBackgroundOutput@ := fail;
 ShownOutput@ := fail;
-BindGlobal("Region@", ShareObj("ShellUI"));
+BindGlobal("Region@", ShareObj("TextUI"));
 
 BindGlobal("InitThreadTables@", function()
-  ThreadControlChannel@ShellUI := [];
-  ThreadInputChannel@ShellUI := [];
-  WaitForThread@ShellUI := [];
-  OutputHistory@ShellUI := [];
-  OutputHistoryIncompleteLine@ShellUI := [];
-  OutputPrefix@ShellUI := [];
-  OutputPrefixRaw@ShellUI := [];
-  ThreadName@ShellUI := [];
-  ThreadNameToID@ShellUI := rec();
-  Prompt@ShellUI := [];
-  ShowBackgroundOutput@ShellUI := [];
-  ShownOutput@ShellUI := [];
+  ThreadControlChannel@TextUI := [];
+  ThreadInputChannel@TextUI := [];
+  WaitForThread@TextUI := [];
+  OutputHistory@TextUI := [];
+  OutputHistoryIncompleteLine@TextUI := [];
+  OutputPrefix@TextUI := [];
+  OutputPrefixRaw@TextUI := [];
+  ThreadName@TextUI := [];
+  ThreadNameToID@TextUI := rec();
+  Prompt@TextUI := [];
+  ShowBackgroundOutput@TextUI := [];
+  ShownOutput@TextUI := [];
 end);
 
 DefaultShowBackgroundOutput@ := false;
