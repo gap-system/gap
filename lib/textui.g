@@ -724,6 +724,7 @@ InstallGlobalFunction("ParseCommandWithAliases@", function(string, aliases)
   choices := Set([]);
   # This has to be a read-write lock for now or dynamic retyping of lists
   # will not work and create problems.
+  recursive := false;
   atomic Region@ do
     for c in ListKeyEnumerator(CommandTable@) do
       if StartsWith(c, command) then
