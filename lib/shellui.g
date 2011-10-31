@@ -27,6 +27,7 @@ ThreadNameToID@ := fail;
 Prompt@ := fail;
 ShowBackgroundOutput@ := fail;
 ShownOutput@ := fail;
+BindGlobal("Region@", ShareObj("ShellUI"));
 
 BindGlobal("InitThreadTables@", function()
   ThreadControlChannel@ShellUI := [];
@@ -273,7 +274,7 @@ end);
 
 BindGlobal("AddOutput@", function(threadid, text, is_prompt)
   local incomplete_line, old_incomplete_line, history;
-  text := CopyRegion(text);
+  text := ShallowCopy(text);
   NORMALIZE_NEWLINES(text);
   if is_prompt then
     Add(text, '\r');
@@ -287,6 +288,21 @@ BindGlobal("AddOutput@", function(threadid, text, is_prompt)
   if threadid = ActiveThread@ or ShowBackgroundOutput@[threadid] then
     SendChannel(OutputChannel@,
       [ threadid, OutputPrefix@[threadid], text ] );
+    CullHistory@(threadid);
+    ShownOutput@[threadid] := Length(history);
+  fi;
+end);
+
+BindGlobal("AddOutputCommand@", function(threadid, text)
+  local history;
+  if not StartsWith(text, "!") then
+    text := ShallowCopy(text);
+    if not EndsWith(text, "\n") then
+      Add(text, '\n');
+    fi;
+    history := OutputHistory@[threadid];
+    Append(history, text);
+    OutputHistoryIncompleteLine@[threadid] := false;
     CullHistory@(threadid);
     ShownOutput@[threadid] := Length(history);
   fi;
@@ -322,8 +338,17 @@ BindGlobal("SwitchToThread@", function(thread)
         history{[shown+1..Length(history)]} ] );
     CullHistory@(thread);
     ShownOutput@[thread] := Length(history);
+  elif OutputHistoryIncompleteLine@[thread] then
+    PrintContext@(1, thread);
   fi;
 end);
+
+BindGlobal("CommandTable@", DictionaryByList(true));
+BindGlobal("AliasTable@", DictionaryByList(true));
+atomic Region@ do
+  MigrateObj(CommandTable@, Region@);
+  MigrateObj(AliasTable@, Region@);
+od;
 
 BindGlobal("GetArg@", function(string)
   local arg, ch, i;
@@ -550,12 +575,13 @@ BindGlobal("CommandReplay@", function(line)
   local values, num, id, thread, history, newlines;
   values := GetArg@(line);
   num := SMALLINT_STR(values[1]);
-  if num > OutputHistoryLength@ then
-    num := OutputHistoryLength@;
-  fi;
   if num = 0 then
     num := 20;
   fi;
+  if num > OutputHistoryLength@ then
+    num := OutputHistoryLength@;
+  fi;
+  SystemMessage@("Last ", num, " lines of output");
   if values[2] = "" then
     thread := ActiveThread@;
   else
@@ -568,12 +594,12 @@ BindGlobal("CommandReplay@", function(line)
   if not EndsWith(history, "\n") and not EndsWith(history, "\r") then
     Add(history, '\n');
   fi;
-  newlines := FIND_ALL_IN_STRING(history, "\r\n");
+  history := ReplacedString(history, "\r", "");
+  newlines := FIND_ALL_IN_STRING(history, "\n");
   if num < Length(newlines) then
     history :=
       history{[newlines[Length(newlines)-num]+1 .. Length(history)]};
   fi;
-  NORMALIZE_NEWLINES(history);
   SendChannel(OutputChannel@,
     [ thread, OutputPrefix@[thread], history ] );
 end);
@@ -583,11 +609,48 @@ BindGlobal("CommandSource@", function(line)
 end);
 
 BindGlobal("CommandAlias@", function(line)
-  SystemMessage@("Not yet implemented");
+  local values, alias, list, header;
+  atomic Region@ do
+    values := GetArg@(line);
+    if values[1] = "" then
+      header := false;
+      for alias in SortedList(ListKeyEnumerator(AliasTable@)) do
+	if not header then
+	  SystemMessage@("Aliases:");
+	  header := true;
+	fi;
+	SystemMessage@("  ", alias, " = ",
+	  LookupDictionary(AliasTable@, alias));
+      od;
+      if not header then
+	SystemMessage@("No aliases have been defined.");
+      fi;
+    elif values[2] = "" then
+      if KnowsDictionary(AliasTable@, values[1]) then
+	SystemMessage@("Alias: ", values[1], " = ",
+	  LookupDictionary(AliasTable@, values[1]));
+      else
+	SystemMessage@("Unknown alias: ", values[1]);
+      fi;
+    else
+      RemoveDictionary(AliasTable@, values[1]);
+      AddDictionary(AliasTable@, values[1], MakeImmutable(values[2]));
+      SystemMessage@("Alias: ", values[1], " = ", values[2]);
+    fi;
+  od;
 end);
 
 BindGlobal("CommandUnalias@", function(line)
-  SystemMessage@("Not yet implemented");
+  local alias;
+  atomic Region@ do
+    if KnowsDictionary(AliasTable@, line) then
+      alias := LookupDictionary(AliasTable@, line);
+      RemoveDictionary(AliasTable@, line);
+      SystemMessage@("Removed alias: ", line, " = ", alias);
+    else
+      SystemMessage@("Unknown alias: ", line);
+    fi;
+  od;
 end);
 
 BindGlobal("CommandEval@", function(line)
@@ -614,31 +677,42 @@ BindGlobal("CommandQUIT@", function(line)
   FORCE_QUIT_GAP();
 end);
 
-BindGlobal("CommandTable@", MakeReadOnly([
-  "shell", CommandShell@,
-  "fork", CommandFork@,
-  "list", CommandList@,
-  "name", CommandName@,
-  "info", CommandInfo@,
-  "hide", CommandHide@,
-  "watch", CommandWatch@,
-  "keep", CommandKeep@,
-  #"prompt", CommandPrompt@,
-  "prefix", CommandPrefix@,
-  "select", CommandSelect@,
-  "next", CommandNext@,
-  "previous", CommandPrevious@,
-  "replay", CommandReplay@,
-  "source", CommandSource@,
-  "alias", CommandAlias@,
-  "unalias", CommandUnalias@,
-  "eval", CommandEval@,
-  "run", CommandRun@,
-  "QUIT", CommandQUIT@,
-]));
+BindGlobal("InitializeCommands@", function()
+  local commands, keyvalue;
+  commands := MakeImmutable([
+    [ "shell", CommandShell@ ],
+    [ "fork", CommandFork@ ],
+    [ "list", CommandList@ ],
+    [ "name", CommandName@ ],
+    [ "info", CommandInfo@ ],
+    [ "hide", CommandHide@ ],
+    [ "watch", CommandWatch@ ],
+    [ "keep", CommandKeep@ ],
+    [ "prefix", CommandPrefix@ ],
+    [ "select", CommandSelect@ ],
+    [ "next", CommandNext@ ],
+    [ "previous", CommandPrevious@ ],
+    [ "replay", CommandReplay@ ],
+    [ "source", CommandSource@ ],
+    [ "alias", CommandAlias@ ],
+    [ "unalias", CommandUnalias@ ],
+    [ "eval", CommandEval@ ],
+    [ "run", CommandRun@ ],
+    [ "QUIT", CommandQUIT@ ],
+  ]);
+  for keyvalue in commands do
+    AddDictionary(CommandTable@, keyvalue[1], keyvalue[2]);
+  od;
+end);
 
-BindGlobal("ParseCommand@", function(string)
-  local values, command, arguments, choices, func, line, i, last;
+atomic Region@ do
+  InitializeCommands@();
+od;
+
+DeclareGlobalFunction("ParseCommandWithAliases@"); # Needed for recursion
+
+InstallGlobalFunction("ParseCommandWithAliases@", function(string, aliases)
+  local values, command, arguments, choices, func, line, i, c, recursive;
   values := GetArg@(string{[2..Length(string)]});
   command := values[1];
   if Length(command) > 0 and IsDigitChar(command[1]) then
@@ -647,26 +721,59 @@ BindGlobal("ParseCommand@", function(string)
   else
     arguments := values[2];
   fi;
-  choices := [];
-  i := 1;
-  while i < Length(CommandTable@) do
-    if StartsWith(CommandTable@[i], command) then
-      Add(choices, CommandTable@[i]);
-      func := CommandTable@[i+1];
-    fi;
-    i := i + 2;
+  choices := Set([]);
+  # This has to be a read-write lock for now or dynamic retyping of lists
+  # will not work and create problems.
+  atomic Region@ do
+    for c in ListKeyEnumerator(CommandTable@) do
+      if StartsWith(c, command) then
+	AddSet(choices, c);
+	func := LookupDictionary(CommandTable@, c);
+      fi;
+    od;
+    for c in ListKeyEnumerator(AliasTable@) do
+      if StartsWith(c, command) then
+        if c in aliases then
+	  recursive := true;
+	else
+	  AddSet(choices, c);
+	  func := LookupDictionary(AliasTable@, c);
+	fi;
+      fi;
+    od;
   od;
-  last := ActiveThread@;
   if Length(choices) = 0 then
-    SystemMessage@("No such command: ", command, ".");
+    if recursive then
+      SystemMessage@("Recursive alias: ", command, ".");
+    else
+      SystemMessage@("No such command: ", command, ".");
+    fi;
   elif Length(choices) > 1 then
     SystemMessage@("Ambiguous command: ", command, " (",
       JoinStringsWithSeparator(choices, ", "), ")");
   else
-    func(arguments);
+    if IsString(func) then
+      AddSet(aliases, choices[1]);
+      command := "!";
+      Append(command, func);
+      if arguments <> "" then
+        Add(command, ' ');
+	Append(command, arguments);
+      fi;
+      ParseCommandWithAliases@(command, aliases);
+      RemoveSet(aliases, choices[1]);
+    else
+      func(arguments);
+    fi;
   fi;
+end);
+
+BindGlobal("ParseCommand@", function(string)
+  local originalThread;
+  originalThread := ActiveThread@;
+  ParseCommandWithAliases@(string, Set([]));
   if OutputHistoryIncompleteLine@[ActiveThread@] then
-    if last = ActiveThread@ then
+    if originalThread = ActiveThread@ then
       PrintContext@(1, ActiveThread@);
     fi;
   fi;
@@ -687,6 +794,7 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
     if command = HAVE_OUTPUT@ then
       AddOutput@(threadid, data, false);
     elif command = HAVE_INPUT@ then
+      AddOutputCommand@(ActiveThread@, data);
       if StartsWith(data, "!") then
         ParseCommand@(Chomp(data));
       else
