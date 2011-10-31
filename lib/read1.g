@@ -81,6 +81,7 @@ ReadLib( "cmdledit.g"  );
 
 ReadLib( "thread.g" );
 ReadLib( "tasks.g" );
+ReadLib( "altview.g" );
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
