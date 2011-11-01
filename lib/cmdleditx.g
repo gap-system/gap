@@ -64,7 +64,7 @@ Revision.cmdleditx_g :=
 ##  the number is `INT_CHAR(<k>) + 256'.
 ##  
 
-BindGlobal("CommandLineRegion", ShareObj(""));
+BindGlobal("CommandLineRegion", NewRegion("command line region"));
 
 BindGlobal("LineEditKeyHandlers", []);
 LockAndMigrateObj(LineEditKeyHandlers, CommandLineRegion);
