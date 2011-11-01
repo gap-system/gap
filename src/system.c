@@ -254,7 +254,7 @@ UInt SyLineEdit;
 *V  ThreadUI  . . . . . . . . . . . . . . . . . . . .  support UI for threads
 **
 */
-UInt ThreadUI;
+UInt ThreadUI = 1;
 
 
 /****************************************************************************
@@ -1650,7 +1650,7 @@ struct optInfo options[] = {
   { 'o',  storeMemory2, &SyStorMax, 1 }, /* library with new interface */
   { 'p',  toggle, &SyWindow, 0 }, /* ?? */
   { 'q',  toggle, &SyQuiet, 0 }, /* ?? */
-  { 't',  toggle, &ThreadUI, 0 }, /* Thread UI */
+  { 'S',  toggle, &ThreadUI, 0 }, /* Thread UI */
 #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 
   { 'z',  storeInteger, &syIsIntrFreq, 0},
 #endif
