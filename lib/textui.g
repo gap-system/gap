@@ -228,7 +228,7 @@ BindGlobal("CompleteThreadRegistration@", function(threadinfo, waitfor)
   ThreadControlChannel@[threadid] := threadinfo.ControlChannel;
   ThreadInputChannel@[threadid] := threadinfo.InputChannel;
   if not IsBound(ThreadName@[threadid]) then
-    ThreadName@[threadid] := String(threadid-1);
+    ThreadName@[threadid] := Immutable(String(threadid-1));
   fi;
   WaitForThread@[threadid] := waitfor;
   if not IsBound(OutputHistory@[threadid]) then
@@ -308,7 +308,7 @@ BindGlobal("AddOutputCommand@", function(threadid, text)
   fi;
 end);
 
-BindGlobal("PrintContext@", function(lines, thread)
+BindGlobal("OutputContext@", function(lines, thread)
   local history, incomplete, newlines, from;
   history := OutputHistory@[thread];
   incomplete := OutputHistoryIncompleteLine@[thread];
@@ -323,6 +323,12 @@ BindGlobal("PrintContext@", function(lines, thread)
   else
     history := ShallowCopy(history);
   fi;
+  return ReplacedString(history, "\r", "");
+end);
+
+BindGlobal("PrintContext@", function(lines, thread)
+  local history;
+  history := OutputContext@(lines, thread);
   SendChannel(OutputChannel@, [ thread, OutputPrefix@[thread], history ]);
 end);
 
@@ -386,7 +392,7 @@ BindGlobal("NameThread@", function(threadid, name)
   if IsBound(ThreadName@[threadid]) then
     Unbind(ThreadNameToID@.(ThreadName@[threadid]));
   fi;
-  ThreadName@[threadid] := name;
+  ThreadName@[threadid] := Immutable(ShallowCopy(name));
   ThreadNameToID@.(name) := threadid;
   OutputPrefix@[threadid] :=
     SubstituteVariables@(OutputPrefixRaw@[threadid], threadid);
@@ -957,4 +963,54 @@ BindGlobal("MULTI_SESSION", function()
   QUIT_GAP();
 end);
 
+BindGlobal("TextUIRegisterCommand", function(name, func)
+  atomic Region@ do
+    AddDictionary(CommandTable@, name, func);
+  od;
+end);
+
+BindGlobal("TextUIForegroundThread", function()
+  return ActiveThread@-1;
+end);
+
+BindGlobal("TextUIForegroundThreadName", function()
+  return ThreadName@[ActiveThread@];
+end);
+
+BindGlobal("TextUISelectThread", function(thread)
+  SwitchToThread@(thread+1);
+end);
+
+BindGlobal("TextUIOutputHistory", function(thread, lines)
+  local history;
+  if not IsBound(ThreadName@[thread+1]) then
+    return fail;
+  fi;
+  return OutputContext@(lines, thread+1);
+end);
+
+BindGlobal("TextUISetOutputHistoryLength", function(lines)
+  OutputHistoryLength@ := lines;
+end);
+
+BindGlobal("TextUINewSession", function(foreground, name)
+  if foreground then
+    CommandShell@(name);
+  else
+    CommandFork@(name);
+  fi;
+end);
+
+BindGlobal("TextUIRunCommand", function(command)
+  RunCommandQuietly@(command);
+end);
+
+BindGlobal("TextUIPrompt", function()
+  if OutputHistoryIncompleteLine@[ActiveThread@] then
+    PrintContext@(1, ActiveThread@);
+  fi;
+end);
+
+
 LEAVE_NAMESPACE();
+
