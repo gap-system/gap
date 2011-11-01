@@ -861,6 +861,27 @@ static inline UInt IS_MARKED( Obj obj )
       return 1;
   return 0;
 }
+
+void PrintInaccessibleObject(Obj obj)
+{
+  Char buffer[20];
+  Char *name;
+  Region *region;
+  Obj nameobj;
+  
+  region = DS_BAG(obj);
+  if (!region)
+    nameobj = PublicRegionName; /* this should not happen, but let's be safe */
+  else
+    nameobj = GetRegionName(region);
+  if (nameobj) {
+    name = CSTR_STRING(nameobj);
+  } else {
+    sprintf(buffer, "%p", region);
+    name = buffer;
+  }
+  Pr("<obj %d inaccessible in region: %s>", (Int) obj, (Int)name);
+}
      
 #define MARK(obj)
 #define UNMARK(obj)
@@ -895,9 +916,7 @@ void            PrintObj (
 
 #ifndef WARD_ENABLED
    if (IS_BAG_REF(obj) && !CheckRead(obj)) {
-     char buffer[64];
-     sprintf(buffer, "<obj %p inaccessible in region %p>", obj, DS_BAG(obj));
-     Pr(buffer, 0L, 0L);
+     PrintInaccessibleObject(obj);
      return;
    }
 #endif
@@ -1031,9 +1050,7 @@ void            ViewObj (
 
 #ifndef WARD_ENABLED
    if (IS_BAG_REF(obj) && !CheckRead(obj)) {
-     char buffer[64];
-     sprintf(buffer, "<obj %p inaccessible in region %p>", obj, DS_BAG(obj));
-     Pr(buffer, 0L, 0L);
+     PrintInaccessibleObject(obj);
      return;
    }
 #endif
