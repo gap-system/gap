@@ -661,6 +661,7 @@ Obj FuncTRYLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
 Obj FuncCURRENT_LOCKS(Obj self);
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj);
+Obj FuncNewRegion(Obj self, Obj args);
 Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj);
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj);
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target);
@@ -830,7 +831,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "CURRENT_LOCKS", 0, "",
       FuncCURRENT_LOCKS, "src/threadapi.c:FuncCURRENT_LOCKS" },
 
-    { "SHARE_NORECURSE", 1, "obj",
+    { "SHARE_NORECURSE", -1, "obj[, string]",
       FuncSHARE_NORECURSE, "src/threadapi.c:SHARE_NORECURSE" },
 
     { "ADOPT_NORECURSE", 1, "obj",
@@ -839,7 +840,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "MIGRATE_NORECURSE", 2, "obj, target",
       FuncMIGRATE_NORECURSE, "src/threadapi.c:MIGRATE_NORECURSE" },
 
-    { "SHARE", 1, "obj",
+    { "NewRegion", -1, "[string]",
+      FuncNewRegion, "src/threadapi.c:NewRegion" },
+
+    { "SHARE", -1, "obj[, string]",
       FuncSHARE, "src/threadapi.c:SHARE" },
 
     { "ADOPT", 1, "obj",
@@ -2040,13 +2044,27 @@ Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
   return obj;
 }
 
-Obj FuncSHARE_NORECURSE(Obj self, Obj obj)
+Obj FuncSHARE_NORECURSE(Obj self, Obj arg)
 {
   Region *region = NewRegion();
-  if (IS_STRING(obj))
-    SetRegionName(region, obj);
+  Obj obj, name;
+  switch (LEN_PLIST(arg)) {
+    case 1:
+      obj = ELM_PLIST(arg, 1);
+      name = (Obj) 0;
+      break;
+    case 2:
+      obj = ELM_PLIST(arg, 1);
+      name = ELM_PLIST(arg, 2);
+      if (!IsStringConv(name))
+        ArgumentError("SHARE_NORECURSE: Second argument must be a string");
+      break;
+    default:
+      ArgumentError("SHARE_NORECURSE: Requires one or two arguments");
+  }
   if (!MigrateObjects(1, &obj, region))
     ArgumentError("SHARE_NORECURSE: Thread does not have exclusive access to objects");
+  SetRegionName(region, name);
   return obj;
 }
 
@@ -2088,16 +2106,48 @@ Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
   return CopyReachableObjectsFrom(obj, 1, 0);
 }
 
-
-Obj FuncSHARE(Obj self, Obj obj)
+Obj FuncNewRegion(Obj self, Obj arg)
 {
   Region *region = NewRegion();
-  Obj reachable = ReachableObjectsFrom(obj);
-  if (IS_STRING(obj))
-    SetRegionName(region, obj);
+  Obj name;
+  switch (LEN_PLIST(arg)) {
+    case 0:
+      break;
+    case 1:
+      name = ELM_PLIST(arg, 1);
+      if (!IsStringConv(name))
+        ArgumentError("NewRegion: Optional argument must be a string");
+      SetRegionName(region, name);
+      break;
+    default:
+      ArgumentError("NewRegion: Takes at most one argument");
+  }
+  return region->obj;
+}
+
+Obj FuncSHARE(Obj self, Obj arg)
+{
+  Region *region = NewRegion();
+  Obj obj, name, reachable;
+  switch (LEN_PLIST(arg)) {
+    case 1:
+      obj = ELM_PLIST(arg, 1);
+      name = (Obj) 0;
+      break;
+    case 2:
+      obj = ELM_PLIST(arg, 1);
+      name = ELM_PLIST(arg, 2);
+      if (!IsStringConv(name))
+        ArgumentError("SHARE: Second argument must be a string");
+      break;
+    default:
+      ArgumentError("SHARE: Requires one or two arguments");
+  }
+  reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, region))
     ArgumentError("SHARE: Thread does not have exclusive access to objects");
+  SetRegionName(region, name);
   return obj;
 }
 
