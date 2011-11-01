@@ -280,6 +280,7 @@ void *DispatchThread(void *arg)
     sprintf(buf, "%d", TLS->threadID);
     this_thread->region_name = MakeImmString2("thread #", buf);
   }
+  SetRegionName(TLS->currentRegion, this_thread->region_name);
   this_thread->start(this_thread->arg);
   RegionWriteUnlock(TLS->currentRegion);
   pthread_mutex_destroy(&thread_mutex);
