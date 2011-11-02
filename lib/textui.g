@@ -14,6 +14,8 @@ ProgramShutdown@ := StartHandShake();
 
 ActiveThread@ := -1;
 NumShellThreads@ := 1;
+NeedPrompt@ := true;
+DelayedPrompt@ := Immutable("");
 
 ThreadControlChannel@ := fail;
 ThreadInputChannel@ := fail;
@@ -27,6 +29,7 @@ ThreadNameToID@ := fail;
 Prompt@ := fail;
 ShowBackgroundOutput@ := fail;
 ShownOutput@ := fail;
+PendingOutput@ := fail;
 BindGlobal("Region@", ShareObj("TextUI"));
 
 BindGlobal("InitThreadTables@", function()
@@ -42,6 +45,7 @@ BindGlobal("InitThreadTables@", function()
   Prompt@TextUI := [];
   ShowBackgroundOutput@TextUI := [];
   ShownOutput@TextUI := [];
+  PendingOutput@TextUI := [];
 end);
 
 DefaultShowBackgroundOutput@ := false;
@@ -235,6 +239,7 @@ BindGlobal("CompleteThreadRegistration@", function(threadinfo, waitfor)
     OutputHistory@[threadid] := "";
     OutputHistoryIncompleteLine@[threadid] := false;
     ShownOutput@[threadid] := 0;
+    PendingOutput@[threadid] := false;
   fi;
   ShowBackgroundOutput@[threadid] := DefaultShowBackgroundOutput@;
   Prompt@[threadid] := SubstituteVariables@(DefaultPrompt@, threadid);
@@ -272,42 +277,6 @@ BindGlobal("CullHistory@", function(threadid)
   fi;
 end);
 
-BindGlobal("AddOutput@", function(threadid, text, is_prompt)
-  local incomplete_line, old_incomplete_line, history;
-  text := ShallowCopy(text);
-  NORMALIZE_NEWLINES(text);
-  if is_prompt then
-    Add(text, '\r');
-  fi;
-  MakeImmutable(text);
-  incomplete_line := not EndsWith(text, "\n");
-  old_incomplete_line := OutputHistoryIncompleteLine@[threadid];
-  history := OutputHistory@[threadid];
-  Append(history, text);
-  OutputHistoryIncompleteLine@[threadid] := incomplete_line;
-  if threadid = ActiveThread@ or ShowBackgroundOutput@[threadid] then
-    SendChannel(OutputChannel@,
-      [ threadid, OutputPrefix@[threadid], text ] );
-    CullHistory@(threadid);
-    ShownOutput@[threadid] := Length(history);
-  fi;
-end);
-
-BindGlobal("AddOutputCommand@", function(threadid, text)
-  local history;
-  if not StartsWith(text, "!") then
-    text := ShallowCopy(text);
-    if not EndsWith(text, "\n") then
-      Add(text, '\n');
-    fi;
-    history := OutputHistory@[threadid];
-    Append(history, text);
-    OutputHistoryIncompleteLine@[threadid] := false;
-    CullHistory@(threadid);
-    ShownOutput@[threadid] := Length(history);
-  fi;
-end);
-
 BindGlobal("OutputContext@", function(lines, thread)
   local history, incomplete, newlines, from;
   history := OutputHistory@[thread];
@@ -332,8 +301,75 @@ BindGlobal("PrintContext@", function(lines, thread)
   SendChannel(OutputChannel@, [ thread, OutputPrefix@[thread], history ]);
 end);
 
+BindGlobal("AddOutput@", function(threadid, text, is_prompt, deferred)
+  local incomplete_line, old_incomplete_line, history;
+  text := ShallowCopy(text);
+  NORMALIZE_NEWLINES(text);
+  if is_prompt then
+    Add(text, '\r');
+  fi;
+  MakeImmutable(text);
+  incomplete_line := not EndsWith(text, "\n");
+  old_incomplete_line := OutputHistoryIncompleteLine@[threadid];
+  history := OutputHistory@[threadid];
+  Append(history, text);
+  OutputHistoryIncompleteLine@[threadid] := incomplete_line;
+  if not deferred then
+    if threadid = ActiveThread@ or ShowBackgroundOutput@[threadid] then
+      SendChannel(OutputChannel@,
+	[ threadid, OutputPrefix@[threadid], text ] );
+      CullHistory@(threadid);
+      ShownOutput@[threadid] := Length(history);
+      PendingOutput@[threadid] := false;
+    else
+      PendingOutput@[threadid] := true;
+    fi;
+  fi;
+end);
+
+BindGlobal("AddOutputCommand@", function(threadid, text)
+  local history, prompt;
+  if StartsWith(text, "!") and OutputHistoryIncompleteLine@[threadid] then
+    DelayedPrompt@ := OutputContext@(1, threadid);
+  fi;
+  text := ShallowCopy(text);
+  if not EndsWith(text, "\n") then
+    Add(text, '\n');
+  fi;
+  history := OutputHistory@[threadid];
+  Append(history, text);
+  if threadid = ActiveThread@ then
+    if OutputHistoryIncompleteLine@[threadid] then
+      SendChannel(OutputChannel@,
+	[ threadid, OutputPrefix@[threadid], 0 ]);
+    fi;
+    OutputHistoryIncompleteLine@[threadid] := false;
+    CullHistory@(threadid);
+    ShownOutput@[threadid] := Length(history);
+    PendingOutput@[threadid] := false;
+  fi;
+end);
+
+BindGlobal("WritePrompt@", function()
+  if NeedPrompt@ then
+    if OutputHistoryIncompleteLine@[ActiveThread@] then
+      PrintContext@(1, ActiveThread@);
+      DelayedPrompt@ := "";
+      NeedPrompt@ := false;
+    elif DelayedPrompt@ <> "" then
+      AddOutput@(ActiveThread@, DelayedPrompt@, true, false);
+      DelayedPrompt@ := "";
+      NeedPrompt@ := false;
+    fi;
+  fi;
+end);
+
 BindGlobal("SwitchToThread@", function(thread)
   local history, shown;
+  if DelayedPrompt@ <> "" then
+    AddOutput@(ActiveThread@, DelayedPrompt@, true, true);
+    DelayedPrompt@ := "";
+  fi;
   ActiveThread@ := thread;
   SystemMessage@("Switching to thread ", thread-1);
   shown := ShownOutput@[thread];
@@ -344,8 +380,7 @@ BindGlobal("SwitchToThread@", function(thread)
         history{[shown+1..Length(history)]} ] );
     CullHistory@(thread);
     ShownOutput@[thread] := Length(history);
-  elif OutputHistoryIncompleteLine@[thread] then
-    PrintContext@(1, thread);
+    NeedPrompt@ := false;
   fi;
 end);
 
@@ -422,7 +457,7 @@ BindGlobal("CommandList@", function(line)
   for threadid in [1..Length(ThreadName@)] do
     if IsBound(ThreadName@[threadid]) then
       pending := "";
-      if ShownOutput@[threadid] < Length(OutputHistory@[threadid]) then
+      if PendingOutput@[threadid] then
         pending := " (pending output)";
       fi;
       SystemMessage@("Thread ", ThreadName@[threadid],
@@ -804,11 +839,7 @@ InstallGlobalFunction("RunCommand@", function(string)
   fi;
   originalThread := ActiveThread@;
   RunCommandWithAliases@(string, Set([]));
-  if OutputHistoryIncompleteLine@[ActiveThread@] then
-    if originalThread = ActiveThread@ then
-      PrintContext@(1, ActiveThread@);
-    fi;
-  fi;
+  WritePrompt@();
 end);
 
 InstallGlobalFunction("RunCommandQuietly@", function(string)
@@ -831,9 +862,10 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
     threadid := packet[2];
     data := packet[3];
     if command = HAVE_OUTPUT@ then
-      AddOutput@(threadid, data, false);
+      AddOutput@(threadid, data, false, false);
     elif command = HAVE_INPUT@ then
       AddOutputCommand@(ActiveThread@, data);
+      NeedPrompt@ := true;
       if StartsWith(data, "!") then
         RunCommand@(Chomp(data));
       else
@@ -844,7 +876,7 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
 	fi;
       fi;
     elif command = EXPECT_INPUT@ then
-      AddOutput@(threadid, data, true);
+      AddOutput@(threadid, data, true, false);
     elif command = REGISTER_THREAD@ then
       CompleteThreadRegistration@(data, false);
     elif command = UNREGISTER_THREAD@ then
@@ -855,9 +887,10 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
 	Unbind(ThreadName@[threadid]);
       else
 	if OutputHistoryIncompleteLine@[threadid] then
-	  AddOutput@(threadid, "\n", false);
+	  AddOutput@(threadid, "\n", false, false);
 	fi;
-        AddOutput@(threadid, "### Background thread terminated. ###\n", false);
+        AddOutput@(threadid,
+	  "### Background thread terminated. ###\n", false, false);
       fi;
       # enable garbage collector to collect channels
       Unbind(ThreadControlChannel@[threadid]);
@@ -874,7 +907,7 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
       fi;
       if threadid = ActiveThread@ then
         CommandNext@("");
-	PrintContext@(1, ActiveThread@);
+	WritePrompt@();
       fi;
     else
       # should never get here
@@ -909,11 +942,15 @@ BindGlobal("OutputLoop@", function()
     prefix := packet[2];
     text := packet[3];
     # if we switched threads, then we may just have to break lines up
-    if threadid <> last_thread and not eol and text <> "" then
-      WRITE_STRING_FILE_NC(stdout, "\n");
+    if threadid <> last_thread and not eol and IsString(text) then
+      WRITE_STRING_FILE_NC(stdout, ">>\n");
       eol := true;
     fi;
     last_thread := threadid;
+    if not IsString(text) then
+      text := "";
+      eol := true;
+    fi;
     # process text line by line, prefixing each new line
     newlines := FIND_ALL_IN_STRING(text, "\r\n");
     last := 1;
@@ -1005,10 +1042,8 @@ BindGlobal("TextUIRunCommand", function(command)
   RunCommandQuietly@(command);
 end);
 
-BindGlobal("TextUIPrompt", function()
-  if OutputHistoryIncompleteLine@[ActiveThread@] then
-    PrintContext@(1, ActiveThread@);
-  fi;
+BindGlobal("TextUIWritePrompt", function()
+  WritePrompt@();
 end);
 
 
