@@ -1560,6 +1560,18 @@ Obj MakeImmString3(Char *cstr1, Char *cstr2, Char *cstr3)
   return result;
 }
 
+Obj ConvImmString(Obj str)
+{
+  Obj result;
+  if (!str || !IsStringConv(str))
+    return (Obj) 0;
+  if (!IS_MUTABLE_OBJ(str))
+    return str;
+  C_NEW_STRING(result, GET_LEN_STRING(str), CSTR_STRING(str))
+  MakeImmutableString(result);
+  return result;
+}
+
 
 
 /****************************************************************************

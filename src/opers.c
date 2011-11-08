@@ -5416,7 +5416,7 @@ void InstallMethodArgs (
             ADDR_OBJ(oper)[i] = ADDR_OBJ(func)[i];
         }
     }
-    NAME_FUNC(oper) = name;
+    NAME_FUNC(oper) = ConvImmString(name);
     CHANGED_BAG(oper);
 }
 

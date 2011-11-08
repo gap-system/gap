@@ -1172,7 +1172,7 @@ Obj NewFunctionT (
     }
 
     /* enter the the arguments and the names                               */
-    NAME_FUNC(func) = name;
+    NAME_FUNC(func) = ConvImmString(name);
     NARG_FUNC(func) = narg;
     NAMS_FUNC(func) = nams;
     if (nams) MakeBagPublic(nams);
@@ -1570,8 +1570,7 @@ Obj FuncNAME_FUNC (
         if ( name == 0 ) {
 	  /*CCC name = NEW_STRING(SyStrlen(deflt));
             SyStrncat( CSTR_STRING(name), deflt, SyStrlen(deflt) );CCC*/
-	    C_NEW_STRING(name, 7, "unknown");
-            RESET_FILT_LIST( name, FN_IS_MUTABLE );
+	    name = MakeImmString("unknown");
             NAME_FUNC(func) = name;
             CHANGED_BAG(func);
 
@@ -1593,7 +1592,7 @@ Obj FuncSET_NAME_FUNC(
 			  (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
   }
   if (TNUM_OBJ(func) == T_FUNCTION ) {
-    NAME_FUNC(func) = name;
+    NAME_FUNC(func) = ConvImmString(name);
     CHANGED_BAG(func);
   } else
     DoOperation2Args(SET_NAME_FUNC_Oper, func, name);
@@ -1740,7 +1739,7 @@ Obj FuncPROFILE_FUNC(
         HDLR_FUNC(copy,5) = HDLR_FUNC(func,5);
         HDLR_FUNC(copy,6) = HDLR_FUNC(func,6);
         HDLR_FUNC(copy,7) = HDLR_FUNC(func,7);
-        NAME_FUNC(copy)   = NAME_FUNC(func);
+        NAME_FUNC(copy)   = ConvImmString(NAME_FUNC(func));
         NARG_FUNC(copy)   = NARG_FUNC(func);
         NAMS_FUNC(copy)   = NAMS_FUNC(func);
         PROF_FUNC(copy)   = PROF_FUNC(func);
@@ -1912,7 +1911,7 @@ void LoadFunction ( Obj func )
   UInt i;
   for (i = 0; i <= 7; i++)
     HDLR_FUNC(func,i) = LoadHandler();
-  NAME_FUNC(func) = LoadSubObj();
+  NAME_FUNC(func) = ConvImmString(LoadSubObj());
   NARG_FUNC(func) = LoadUInt();
   NAMS_FUNC(func) = LoadSubObj();
   PROF_FUNC(func) = LoadSubObj();

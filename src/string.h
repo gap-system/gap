@@ -279,6 +279,7 @@ Obj MakeString3(Char *cstr1, Char *cstr2, Char *cstr3);
 Obj MakeImmString(Char *cstr);
 Obj MakeImmString2(Char *cstr1, Char *cstr2);
 Obj MakeImmString3(Char *cstr1, Char *cstr2, Char *cstr3);
+Obj ConvImmString(Obj str);
 
 
 /****************************************************************************
