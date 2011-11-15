@@ -222,7 +222,8 @@ DeclareRepresentation( "IsSyllableAssocWordRep", IsAssocWord, [] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareRepresentation( "IsLetterAssocWordRep", IsAssocWord, [] );
+DeclareRepresentation( "IsLetterAssocWordRep", 
+                       IsAssocWord and IsAtomicPositionalObjectRep, [] );
 
 #############################################################################
 ##
