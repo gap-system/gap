@@ -1616,7 +1616,7 @@ static inline Obj TYPE_OBJ_FEO (
   /* TODO: We need to be able to automatically derice this. */
   ImpliedWriteGuard(obj);
   if ( TNUM_OBJ(obj) >= FIRST_EXTERNAL_TNUM &&
-       TNUM_OBJ(obj) <= LAST_EXTERNAL_TNUM &&
+       TNUM_OBJ(obj) < FIRST_SHARED_TNUM &&
        TNUM_OBJ(obj) != T_WPOBJ) /* avoid T_WPOBJ */
     return TYPE_ANYOBJ(obj);
   else
