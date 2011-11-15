@@ -2152,6 +2152,15 @@ static Int InitLibrary (
     return 0;
 }
 
+void InitExprTLS()
+{
+  TLS->CurrEvalExprFuncs = EvalExprFuncs;
+}
+
+void DestroyExprTLS()
+{
+}
+
 /****************************************************************************
 **
 *F  InitInfoExprs() . . . . . . . . . . . . . . . . . table of init functions

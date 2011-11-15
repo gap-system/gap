@@ -78,7 +78,7 @@ const char * Revision_stats_c =
 **
 **  'EXEC_STAT' is defined in the declaration part of this package as follows:
 **
-#define EXEC_STAT(stat) ( (*ExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) )
+#define EXEC_STAT(stat) ( (*TLS->CurrExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) )
 */
 
 
@@ -1619,8 +1619,7 @@ UInt            ExecReturnVoid (
     return 2;
 }
 
-UInt (* RealExecStatFuncs[256]) ( Stat stat );
-UInt RealExecStatCopied;
+UInt (* IntrExecStatFuncs[256]) ( Stat stat );
 
 
 /****************************************************************************
@@ -1640,11 +1639,8 @@ UInt RealExecStatCopied;
 UInt TakeInterrupt() {
   UInt i;
   if (SyIsIntr()) {
-    assert(RealExecStatCopied);
-        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-            ExecStatFuncs[i] = RealExecStatFuncs[i];
-        }
-        RealExecStatCopied = 0;
+    assert(TLS->CurrExecStatFuncs != ExecStatFuncs);
+        TLS->CurrExecStatFuncs = ExecStatFuncs;
 	ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
 	return 1;
   }
@@ -1668,11 +1664,8 @@ UInt ExecIntrStat (
     UInt                i;              /* loop variable                   */
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    if ( RealExecStatCopied ) {
-        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-            ExecStatFuncs[i] = RealExecStatFuncs[i];
-        }
-        RealExecStatCopied = 0;
+    if ( TLS->CurrExecStatFuncs != ExecStatFuncs ) {
+        TLS->CurrExecStatFuncs = ExecStatFuncs;
     }
     SyIsIntr();
 
@@ -1710,27 +1703,24 @@ UInt ExecIntrStat (
 */
 void InterruptExecStat ( void )
 {
-    UInt                i;              /* loop variable                   */
-    /*    assert(reason > 0) */
-
     /* remember the original entries from the table 'ExecStatFuncs'        */
-    if ( ! RealExecStatCopied ) {
-        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-            RealExecStatFuncs[i] = ExecStatFuncs[i];
-        }
-        RealExecStatCopied = 1;
-    }
+    TLS->CurrExecStatFuncs = IntrExecStatFuncs;
 
+}
+
+void InitIntrExecStats ( void )
+{
+    UInt                i;              /* loop variable                   */
     /* change the entries in the table 'ExecStatFuncs' to 'ExecIntrStat'   */
     for ( i = 0;
           i < T_SEQ_STAT;
           i++ ) {
-        ExecStatFuncs[i] = ExecIntrStat;
+        IntrExecStatFuncs[i] = ExecIntrStat;
     }
     for ( i = T_RETURN_VOID;
           i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]);
           i++ ) {
-        ExecStatFuncs[i] = ExecIntrStat;
+        IntrExecStatFuncs[i] = ExecIntrStat;
     }
 }
 
@@ -1740,7 +1730,7 @@ void InterruptExecStat ( void )
 */
 
 Int BreakLoopPending( void ) {
-     return RealExecStatCopied;
+     return TLS->CurrExecStatFuncs == IntrExecStatFuncs;
 }
 
 void ClearError ( void )
@@ -1748,11 +1738,8 @@ void ClearError ( void )
     UInt        i;
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    if ( RealExecStatCopied ) {
-        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-            ExecStatFuncs[i] = RealExecStatFuncs[i];
-        }
-        RealExecStatCopied = 0;
+    if ( TLS->CurrExecStatFuncs == IntrExecStatFuncs ) {
+        TLS->CurrExecStatFuncs = ExecStatFuncs;
         /* check for user interrupt */
         if ( SyIsIntr() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
@@ -2161,8 +2148,6 @@ static Int InitKernel (
 {
     UInt                i;              /* loop variable                   */
 
-    RealExecStatCopied = 0;
-    
     /* make the global bags known to Gasman                                */
     /* 'InitGlobalBag( &CurrStat );' is not really needed, since we are in */
     /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
@@ -2253,8 +2238,19 @@ static Int InitKernel (
     PrintStatFuncs[ T_EMPTY          ] = PrintEmpty;
     PrintStatFuncs[ T_ATOMIC         ] = PrintAtomic;
 
+    InitIntrExecStats();
+
     /* return success                                                      */
     return 0;
+}
+
+void InitStatTLS()
+{
+  TLS->CurrExecStatFuncs = ExecStatFuncs;
+}
+
+void DestroyStatTLS()
+{
 }
 
 

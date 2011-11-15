@@ -79,9 +79,12 @@ typedef struct ThreadLocalStorage
   Char *theBuffer;
   UInt theCount;
   UInt theLimit;
+  /* From exprs.c */
+  Obj (**CurrEvalExprFuncs)(Expr);
   /* From stats.c */
   Stat currStat;
   Obj returnObjStat;
+  UInt (**CurrExecStatFuncs)(Stat);
   /* From code.c */
   Stat *ptrBody;
   Stat offsBody;

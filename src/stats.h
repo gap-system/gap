@@ -37,7 +37,7 @@ const char * Revision_stats_h =
 **  executor, i.e., to the  function that executes statements  of the type of
 **  <stat>.
 */
-#define EXEC_STAT(stat) ( (*ExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) )
+#define EXEC_STAT(stat) ( (*TLS->CurrExecStatFuncs[ TNUM_STAT(stat) ]) ( stat ) )
 
 
 /****************************************************************************

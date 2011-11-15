@@ -57,11 +57,15 @@ void RunTLSDestructors()
 void InitTLS()
 {
   void InitScannerTLS();
+  void InitStatTLS();
+  void InitExprTLS();
   void InitCoderTLS();
   void InitThreadAPITLS();
   void InitOpersTLS();
   void InitAObjectsTLS();
   InitScannerTLS();
+  InitStatTLS();
+  InitExprTLS();
   InitCoderTLS();
   InitThreadAPITLS();
   InitOpersTLS();
@@ -71,11 +75,15 @@ void InitTLS()
 void DestroyTLS()
 {
   void DestroyScannerTLS();
+  void DestroyStatTLS();
+  void DestroyExprTLS();
   void DestroyCoderTLS();
   void DestroyThreadAPITLS();
   void DestroyOpersTLS();
   void DestroyAObjectsTLS();
   DestroyScannerTLS();
+  DestroyStatTLS();
+  DestroyExprTLS();
   DestroyCoderTLS();
   DestroyThreadAPITLS();
   DestroyOpersTLS();
