@@ -663,6 +663,7 @@ Obj FuncCURRENT_LOCKS(Obj self);
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj);
 Obj FuncNewRegion(Obj self, Obj args);
 Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj);
+Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj);
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj);
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target);
 Obj FuncSHARE(Obj self, Obj obj);
@@ -854,8 +855,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "MAKE_PUBLIC_NORECURSE", 1, "obj",
       FuncMAKE_PUBLIC_NORECURSE, "src/threadapi.c:MAKE_PUBLIC_NORECURSE" },
+
     { "MAKE_PUBLIC", 1, "obj",
       FuncMAKE_PUBLIC, "src/threadapi.c:MAKE_PUBLIC" },
+
+    { "FORCE_MAKE_PUBLIC", 1, "obj",
+      FuncFORCE_MAKE_PUBLIC, "src/threadapi.c:FORCE_MAKE_PUBLIC" },
 
     { "REACHABLE", 1, "obj",
       FuncREACHABLE, "src/threadapi.c:REACHABLE" },
@@ -2043,6 +2048,15 @@ Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
     ArgumentError("MAKE_PUBLIC_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
+
+Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
+{
+  if (!IS_BAG_REF(obj))
+    ArgumentError("FORCE_MAKE_PUBLIC: Argument is a short integer or finite-field element");
+  MakeBagPublic(obj);
+  return obj;
+}
+
 
 Obj FuncSHARE_NORECURSE(Obj self, Obj arg)
 {
