@@ -921,7 +921,16 @@ Obj CopyARecord(Obj obj, Int mutable)
   return obj;
 }
 
+Obj CopyAList(Obj obj, Int mutable)
+{
+  return obj;
+}
+
 void CleanARecord(Obj obj)
+{
+}
+
+void CleanAList(Obj obj)
 {
 }
 
@@ -1511,6 +1520,8 @@ static Int InitKernel (
   AssListFuncs[T_FIXALIST] = AssFixAList;
   UnbListFuncs[T_FIXALIST] = UnbAList;
   IsbListFuncs[T_FIXALIST] = IsbAList;
+  CopyObjFuncs[ T_FIXALIST ] = CopyAList;
+  CleanObjFuncs[ T_FIXALIST ] = CleanAList;
   IsListFuncs[T_ALIST] = IsListAList;
   IsSmallListFuncs[T_ALIST] = IsSmallListAList;
   LenListFuncs[T_ALIST] = LenListAList;
@@ -1523,6 +1534,10 @@ static Int InitKernel (
   AssListFuncs[T_ALIST] = AssAList;
   UnbListFuncs[T_ALIST] = UnbAList;
   IsbListFuncs[T_ALIST] = IsbAList;
+  CopyObjFuncs[ T_ALIST ] = CopyAList;
+  CleanObjFuncs[ T_ALIST ] = CleanAList;
+  CopyObjFuncs[ T_APOSOBJ ] = CopyAList;
+  CleanObjFuncs[ T_APOSOBJ ] = CleanAList;
   /* AsssListFuncs[T_ALIST] = AsssAList; */
   /* install record functions */
   ElmRecFuncs[ T_AREC ] = ElmARecord;
