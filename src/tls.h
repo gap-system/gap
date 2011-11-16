@@ -119,6 +119,17 @@ typedef struct ThreadLocalStorage
   Int ErrorLLevel;
   Obj ErrorLVars0;
 
+  /* From objects.c */
+
+  Obj PrintObjThis;
+  Int PrintObjIndex;
+  Int PrintObjDepth;
+  Int PrintObjFull;
+  Obj PrintObjThissObj;
+  Obj *PrintObjThiss;
+  Obj PrintObjIndicesObj;
+  Int *PrintObjIndices;
+
 } ThreadLocalStorage;
 
 extern ThreadLocalStorage *MainThreadTLS;

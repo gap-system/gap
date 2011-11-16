@@ -740,9 +740,9 @@ syJmp_buf           readJmpError;
             PrintString1(arg);
         }
         else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-            PrintObjFull = 1;
+            TLS->PrintObjFull = 1;
             PrintFunction( arg );
-            PrintObjFull = 0;
+            TLS->PrintObjFull = 0;
         }
         else {
             memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
@@ -806,9 +806,9 @@ Obj FuncPRINT_TO_STREAM (
                 PrintString1(arg);
             }
             else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-                PrintObjFull = 1;
+                TLS->PrintObjFull = 1;
                 PrintFunction( arg );
-                PrintObjFull = 0;
+                TLS->PrintObjFull = 0;
             }
             else {
                 PrintObj( arg );
@@ -871,9 +871,9 @@ Obj FuncAPPEND_TO (
             PrintString1(arg);
         }
         else if ( TNUM_OBJ(arg) == T_FUNCTION ) {
-            PrintObjFull = 1;
+            TLS->PrintObjFull = 1;
             PrintFunction( arg );
-            PrintObjFull = 0;
+            TLS->PrintObjFull = 0;
         }
         else {
             memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
@@ -937,9 +937,9 @@ Obj FuncAPPEND_TO_STREAM (
                 PrintString1(arg);
             }
             else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-                PrintObjFull = 1;
+                TLS->PrintObjFull = 1;
                 PrintFunction( arg );
-                PrintObjFull = 0;
+                TLS->PrintObjFull = 0;
             }
             else {
                 PrintObj( arg );
