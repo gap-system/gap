@@ -50,8 +50,8 @@ DeclareInfoClass("InfoGlobal");
 ##  escapes
 ##
 
-IdentifierLetters := 
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_@";
+IdentifierLetters := MakeImmutable(
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_@" );
 
 #############################################################################
 ##
