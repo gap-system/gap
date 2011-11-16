@@ -12,7 +12,7 @@
 ##
 ##  This file initializes GAP.
 ##
-Revision := rec();
+Revision := AtomicRecord( rec() );
 Revision.init_g :=
     "@(#)$Id: init.g,v 4.280 2011/06/21 16:22:26 gap Exp $";
 
