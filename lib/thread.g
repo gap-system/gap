@@ -21,13 +21,13 @@ BindGlobal("SynchronizationFamily",
 BindGlobal("AtomicFamily", NewFamily("AtomicFamily", IsObject));
 BindGlobal("RegionFamily", NewFamily("DataSpaceFamily", IsObject));
 
-DeclareFilter("IsChannel", IsObject);
-DeclareFilter("IsBarrier", IsObject);
-DeclareFilter("IsSyncVar", IsObject);
-DeclareFilter("IsRegion", IsObject);
-DeclareFilter("IsAtomicList", IsObject);
-DeclareFilter("IsAtomicRecord", IsObject);
-DeclareFilter("IsThreadLocalRecord", IsObject);
+DeclareFilter("IsChannel", IsObject and IsInternalRep);
+DeclareFilter("IsBarrier", IsObject and IsInternalRep);
+DeclareFilter("IsSyncVar", IsObject and IsInternalRep);
+DeclareFilter("IsRegion", IsObject and IsInternalRep);
+DeclareFilter("IsAtomicList", IsObject and IsInternalRep);
+DeclareFilter("IsAtomicRecord", IsObject and IsInternalRep);
+DeclareFilter("IsThreadLocalRecord", IsObject and IsInternalRep);
 
 BindGlobal("TYPE_CHANNEL", NewType(SynchronizationFamily, IsChannel));
 BindGlobal("TYPE_BARRIER", NewType(SynchronizationFamily, IsBarrier));
@@ -78,5 +78,11 @@ BindGlobal("FindGVarHolding", function(val)
   od;
   return fail;
 end);
+
+DeclareAttribute( "RecNames", IsAtomicRecord);
+InstallMethod( RecNames,
+    "for an atomic record in internal representation",
+    [ IsAtomicRecord and IsInternalRep],
+    REC_NAMES );
 
 DISABLE_GUARDS := false;

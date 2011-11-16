@@ -282,8 +282,8 @@ Obj Shell ( Obj context,
       ErrorMayQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
   
-  oldPrintDepth = PrintObjDepth;
-  PrintObjDepth = 0;
+  oldPrintDepth = TLS->PrintObjDepth;
+  TLS->PrintObjDepth = 0;
   oldindent = TLS->output->indent;
   TLS->output->indent = 0;
 
@@ -296,7 +296,7 @@ Obj Shell ( Obj context,
     /* read and evaluate one command                                   */
     TLS->prompt = prompt;
     ClearError();
-    PrintObjDepth = 0;
+    TLS->PrintObjDepth = 0;
     TLS->output->indent = 0;
       
     /* here is a hook: */
@@ -378,7 +378,7 @@ Obj Shell ( Obj context,
 
   }
   
-  PrintObjDepth = oldPrintDepth;
+  TLS->PrintObjDepth = oldPrintDepth;
   TLS->output->indent = oldindent;
   CloseInput();
   CloseOutput();

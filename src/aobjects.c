@@ -782,13 +782,11 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   return result;
 }
 
-static Obj FuncFromAtomicRecord(Obj self, Obj record)
+Obj FromAtomicRecord(Obj record)
 {
   Obj result;
   AtomicObj *table, *data;
   UInt cap, i;
-  if (TNUM_OBJ(record) != T_AREC)
-    ArgumentError("FromAtomicRecord: First argument must be an atomic record");
   table = ARecordTable(record);
   data = table + AR_DATA;
   AO_nop_read(); /* memory barrier */
@@ -805,6 +803,13 @@ static Obj FuncFromAtomicRecord(Obj self, Obj record)
       AssPRec(result, key, value);
   }
   return result;
+}
+
+static Obj FuncFromAtomicRecord(Obj self, Obj record)
+{
+  if (TNUM_OBJ(record) != T_AREC)
+    ArgumentError("FromAtomicRecord: First argument must be an atomic record");
+  return FromAtomicRecord(record);
 }
 
 static Obj NewAtomicRecord(UInt capacity)

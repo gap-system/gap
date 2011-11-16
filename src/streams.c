@@ -740,9 +740,9 @@ syJmp_buf           readJmpError;
             PrintString1(arg);
         }
         else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-            PrintObjFull = 1;
+            TLS->PrintObjFull = 1;
             PrintFunction( arg );
-            PrintObjFull = 0;
+            TLS->PrintObjFull = 0;
         }
         else {
             memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
@@ -806,9 +806,9 @@ Obj FuncPRINT_TO_STREAM (
                 PrintString1(arg);
             }
             else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-                PrintObjFull = 1;
+                TLS->PrintObjFull = 1;
                 PrintFunction( arg );
-                PrintObjFull = 0;
+                TLS->PrintObjFull = 0;
             }
             else {
                 PrintObj( arg );
@@ -871,9 +871,9 @@ Obj FuncAPPEND_TO (
             PrintString1(arg);
         }
         else if ( TNUM_OBJ(arg) == T_FUNCTION ) {
-            PrintObjFull = 1;
+            TLS->PrintObjFull = 1;
             PrintFunction( arg );
-            PrintObjFull = 0;
+            TLS->PrintObjFull = 0;
         }
         else {
             memcpy( readJmpError, TLS->readJmpError, sizeof(syJmp_buf) );
@@ -937,9 +937,9 @@ Obj FuncAPPEND_TO_STREAM (
                 PrintString1(arg);
             }
             else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-                PrintObjFull = 1;
+                TLS->PrintObjFull = 1;
                 PrintFunction( arg );
-                PrintObjFull = 0;
+                TLS->PrintObjFull = 0;
             }
             else {
                 PrintObj( arg );
@@ -2011,9 +2011,9 @@ Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
   fd = INT_INTOBJ(fid);
   fdi = syBuf[fd].fp;
   if (onoff == False || onoff == Fail)
-    return INTOBJ_INT(syStopraw(fdi));
+    return syStopraw(fdi), False;
   else
-    return INTOBJ_INT(syStartraw(fdi));
+    return syStartraw(fdi) ? True : False;
 }
 
 #if HAVE_SELECT
