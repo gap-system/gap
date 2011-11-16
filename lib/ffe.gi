@@ -34,7 +34,7 @@ Revision.ffe_gi :=
 ##  the field of size $p^d$ is stored in `GALOIS_FIELDS[<p>][<d>]'.
 ##
 InstallFlushableValue( GALOIS_FIELDS, [] );
-
+ShareObj( GALOIS_FIELDS );
 
 #############################################################################
 ##
@@ -331,6 +331,7 @@ end );
 # in Finite field calculations we often ask again and again for the same GF.
 # Therefore cache the last entry.
 GFCACHE:=[0,0];
+MakeThreadLocal("GFCACHE");
 
 InstallGlobalFunction( GaloisField, function ( arg )
     local F,         # the field, result
@@ -344,10 +345,10 @@ InstallGlobalFunction( GaloisField, function ( arg )
     # if necessary split the arguments
     if Length( arg ) = 1 and IsPosInt( arg[1] ) then
 
-	if arg[1]=GFCACHE[1] then
-	  return GFCACHE[2];
-	fi;
-
+        if arg[1]=GFCACHE[1] then
+            return GFCACHE[2];
+        fi;
+    
         # `GF( p^d )'
         p := SmallestRootInt( arg[1] );
         d := LogInt( arg[1], p );
@@ -487,14 +488,17 @@ InstallGlobalFunction( GaloisField, function ( arg )
     if IsInt( subfield ) then
 
       # The standard field is required.  Look whether it is already stored.
-      if not IsBound( GALOIS_FIELDS[p] ) then
-        GALOIS_FIELDS[p]:= [];
-      elif IsBound( GALOIS_FIELDS[p][d] ) then
-	if Length(arg)=1 then
-	  GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
-	fi;
-        return GALOIS_FIELDS[p][d];
-      fi;
+      
+      atomic readonly GALOIS_FIELDS do
+        if IsBound( GALOIS_FIELDS[p] ) then
+          if IsBound( GALOIS_FIELDS[p][d] ) then
+	        if Length(arg)=1 then
+	            GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
+	        fi;
+            return GALOIS_FIELDS[p][d];
+          fi;
+        fi;
+      od;
 
       # Construct the finite field object.
       if d = 1 then
@@ -505,7 +509,15 @@ InstallGlobalFunction( GaloisField, function ( arg )
       fi;
 
       # Store the standard field.
-      GALOIS_FIELDS[p][d]:= F;
+      atomic readwrite GALOIS_FIELDS do
+        if not IsBound( GALOIS_FIELDS[p] ) then
+          GALOIS_FIELDS[p]:= MigrateObj([],GALOIS_FIELDS);
+          GALOIS_FIELDS[p][d]:= F;
+        elif not IsBound( GALOIS_FIELDS[p][d] ) then
+          GALOIS_FIELDS[p][d]:= F;
+        fi;
+        return GALOIS_FIELDS[p][d];
+      od;  
 
     else
 

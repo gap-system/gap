@@ -346,7 +346,6 @@ ShareObj( FAMS_FFE_LARGE );
 DeclareGlobalVariable( "GALOIS_FIELDS",
     "list of lists, GALOIS_FIELDS[p][n] = GF(p^n) if bound" );
 
-
 #############################################################################
 ##
 #O  LargeGaloisField( <p>^<n> )

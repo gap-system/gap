@@ -4,6 +4,9 @@ GF(3)
 gap> t:=RunTask(ZmodnZ,33);;
 gap> TaskResult(t);        
 (Integers mod 33)
+gap> t:=RunTask(GF,3);;
+gap> TaskResult(t);
+GF(3)
 gap> t:=RunTask(QuaternionAlgebra,Rationals);;
 gap> TaskResult(t);                          
 <algebra-with-one of dimension 4 over Rationals>
