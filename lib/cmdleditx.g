@@ -405,8 +405,12 @@ TERMINAL_BEGIN_EDIT := function(fid)
     while TERMINAL_EXITING do
       Sleep(1); # idle wait until program exit
     od;
-    AddSet(TERMINAL_FILE_IDS, fid);
-    return RAW_MODE_FILE(fid, true);
+    if RAW_MODE_FILE(fid, true) then
+      AddSet(TERMINAL_FILE_IDS, fid);
+      return true;
+    else
+      return false;
+    fi;
   od;
 end;
 

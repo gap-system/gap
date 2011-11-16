@@ -2011,9 +2011,9 @@ Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
   fd = INT_INTOBJ(fid);
   fdi = syBuf[fd].fp;
   if (onoff == False || onoff == Fail)
-    return INTOBJ_INT(syStopraw(fdi));
+    return syStopraw(fdi), False;
   else
-    return INTOBJ_INT(syStartraw(fdi));
+    return syStartraw(fdi) ? True : False;
 }
 
 #if HAVE_SELECT
