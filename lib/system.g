@@ -160,7 +160,7 @@ CallAndInstallPostRestore( function()
     GAPInfo.UserHome:= GAPInfo.SystemEnvironment.HOME;
 
     # directory caches
-    GAPInfo.DirectoriesLibrary:= rec();
+    GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
     GAPInfo.DirectoriesPrograms:= false;
     GAPInfo.DirectoriesTemporary:= [];
     GAPInfo.DirectoryCurrent:= false;

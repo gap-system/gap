@@ -258,7 +258,7 @@ GAPInfo.UseReadline := true;
 
 
 if not IsBound(GAPInfo.CommandLineEditFunctions) then
-  GAPInfo.CommandLineEditFunctions := rec(
+  GAPInfo.CommandLineEditFunctions := AtomicRecord( rec(
   # This is the GAP function called by the readline handler function
   # handled-by-GAP (GAP_rl_func in src/sysfiles.c).
   KeyHandler := function(l) 
@@ -284,7 +284,7 @@ if not IsBound(GAPInfo.CommandLineEditFunctions) then
   # here we save readline init lines for post restore
   RLInitLines := [],
   RLKeysGAPHandler := []
-  );
+  ));
 fi;
 
 # wrapper around kernel functions to store data for post restore function
@@ -418,6 +418,7 @@ BindKeysToGAPHandler("\007");
 
 # The history is stored within the GAPInfo record. Several GAP level
 # command line edit functions below deal with the history.
+# TODO: should it be made thread-local?
 if not IsBound(GAPInfo.History) then
   GAPInfo.History := rec(MaxLines := infinity, 
                          Lines := [], Pos := 0, Last := 0);

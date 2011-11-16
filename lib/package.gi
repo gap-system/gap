@@ -1424,7 +1424,7 @@ InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
       GAPInfo.RootPaths:= Immutable( Concatenation( GAPInfo.RootPaths,
           rootpaths ) );
       # Clear the cache.
-      GAPInfo.DirectoriesLibrary:= rec();
+      GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
       # Deal with an obsolete variable.
       if IsBoundGlobal( "GAP_ROOT_PATHS" ) then
         MakeReadWriteGlobal( "GAP_ROOT_PATHS" );
