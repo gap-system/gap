@@ -1483,6 +1483,7 @@ Obj CallErrorInner (
   OpenDefaultOutput();
   result = CALL_2ARGS(ErrorInner,r,l);  
   CloseOutput();
+  return result;
 }
 
 void ErrorQuit (
