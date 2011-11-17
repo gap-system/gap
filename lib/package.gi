@@ -1234,7 +1234,7 @@ InstallGlobalFunction( LoadPackage, function( arg )
     # in order to avoid that an occasional call of `LoadPackage'
     # inside the package code causes the files to be read more than once.
     for pair in depinfo.InstallationPaths do
-      GAPInfo.PackagesLoaded.( pair[1] ):= pair[2];
+      GAPInfo.PackagesLoaded.( pair[1] ):= MakeImmutable( pair[2] );
 #T Remove the following as soon as the obsolete variable has been removed!
 if IsBoundGlobal( "PACKAGES_VERSIONS" ) then
   ValueGlobal( "PACKAGES_VERSIONS" ).( pair[1] ):= pair[2][2];

@@ -1070,7 +1070,7 @@ BindGlobal( "ShowPackageInformation", function()
 
     if IsBound(GAPInfo.shortbanner) then
         indent := "  ";
-        if GAPInfo.PackagesLoaded <> rec() then
+        if RecNames( GAPInfo.PackagesLoaded ) <> [ ] then
             print_info( "Packages ",
                   List( RecNames( GAPInfo.PackagesLoaded ),
                         name -> Concatenation(
