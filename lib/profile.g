@@ -1069,7 +1069,7 @@ end);
 ##  <#/GAPDoc>
 ##
 START_TEST := function( name )
-    FlushCaches();
+    # FlushCaches();
     RANDOM_SEED(1);
     Reset(GlobalMersenneTwister, 1);
     GASMAN( "collect" );
