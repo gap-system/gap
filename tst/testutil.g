@@ -49,14 +49,14 @@ BindGlobal( "RunStandardTests", function( arg )
     renormalize:= Length( arg ) = 2 and arg[2] = true;
 
     # Initialize variables that must be global.
-    GAPInfo.TestData:= rec( results:= [] );
+    GAPInfo.TestData:= AtomicRecord( rec( results:= [] ) );
     sizescreen:= SizeScreen();
 
     # Replace the `STOP_TEST' function by one that collects statistical data.
     stop_TEST := STOP_TEST;
     STOP_TEST := function( file, fac )
       Add( GAPInfo.TestData.results,
-           [ file, fac, Runtime() - GAPInfo.TestData.START_TIME ] );
+           MakeImmutable( [ file, fac, Runtime() - GAPInfo.TestData.START_TIME ] ) );
     end;
 
     # Print a header.
@@ -155,7 +155,7 @@ BindGlobal( "RunStandardTests", function( arg )
     InfoRead1 := infoRead1;
     InfoRead2 := infoRead2;
     STOP_TEST := stop_TEST;
-    GAPInfo.TestData:= rec();
+    GAPInfo.TestData:= AtomicRecord( rec() );
     end );
 
 
