@@ -496,6 +496,7 @@ UInt GVarName (
         table = TableGVars;
         SizeGVars = 2 * SizeGVars + 1;
         TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
+	MakeBagPublic(TableGVars);
         SET_LEN_PLIST( TableGVars, SizeGVars );
         for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
             gvar2 = ELM_PLIST( table, i );
@@ -1451,6 +1452,7 @@ static Int InitLibrary (
     /* make the list of global variables                                   */
     SizeGVars  = 997;
     TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
+    MakeBagPublic(TableGVars);
     SET_LEN_PLIST( TableGVars, SizeGVars );
 
     /* fix C vars                                                          */
