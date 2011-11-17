@@ -1069,6 +1069,7 @@ end);
 ##  <#/GAPDoc>
 ##
 START_TEST := function( name )
+    # TODO: fix and uncomment this (cf. InstallFlushableValue)
     # FlushCaches();
     RANDOM_SEED(1);
     Reset(GlobalMersenneTwister, 1);
