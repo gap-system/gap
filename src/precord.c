@@ -62,6 +62,7 @@ const char * Revision_precord_c =
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */
 #include	"tls.h"			/* thread-local storage		   */
+#include	"aobjects.h"		/* thread-local storage		   */
 
 
 /****************************************************************************
