@@ -246,7 +246,7 @@ void CreateMainRegion()
   ReadOnlyRegion = NewRegion();
   ReadOnlyRegion->name = MakeImmString("read-only region");
   ProtectedRegion = NewRegion();
-  ReadOnlyRegion->name = MakeImmString("protected region");
+  ProtectedRegion->name = MakeImmString("protected region");
   ReadOnlyRegion->fixed_owner = 1;
   ProtectedRegion->fixed_owner = 1;
   for (i=0; i<=MAX_THREADS; i++) {
