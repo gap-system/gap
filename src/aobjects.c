@@ -290,6 +290,17 @@ static Obj FuncIS_ATOMIC_RECORD (Obj self, Obj obj)
 	return (TNUM_OBJ(obj) == T_AREC) ? True : False;
 }
 
+static Obj FuncIS_ATOMIC_LIST (Obj self, Obj obj) 
+{
+	return (TNUM_OBJ(obj) == T_ALIST) ? True : False;
+}
+
+static Obj FuncIS_FIXED_ATOMIC_LIST (Obj self, Obj obj) 
+{
+	return (TNUM_OBJ(obj) == T_FIXALIST) ? True : False;
+}
+
+
 static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
 {
   UInt n;
@@ -1412,6 +1423,12 @@ static StructGVarFunc GVarFuncs [] = {
     { "AtomicRecord", -1, "[capacity]",
       FuncAtomicRecord, "src/aobjects.c:AtomicRecord" },
    
+    { "IS_ATOMIC_LIST", 1, "object",
+      FuncIS_ATOMIC_LIST, "src/abjects.c:IS_ATOMIC_LIST" },
+
+    { "IS_FIXED_ATOMIC_LIST", 1, "object",
+      FuncIS_FIXED_ATOMIC_LIST, "src/abjects.c:IS_FIXED_ATOMIC_LIST" },
+
     { "IS_ATOMIC_RECORD", 1, "object",
       FuncIS_ATOMIC_RECORD, "src/abjects.c:IS_ATOMIC_RECORD" },
 
