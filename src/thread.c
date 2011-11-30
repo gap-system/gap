@@ -823,14 +823,15 @@ static int SeenDuringTraversal(Obj obj)
 {
   Int type;
   TraversalState *traversal = currentTraversal();
-  Obj *hashTable = ADDR_OBJ(traversal->hashTable)+1;
+  Obj *hashTable;
   unsigned long hash;
   if (!IS_BAG_REF(obj))
     return 0;
-  hash = ((unsigned long) obj) * TRAV_HASH_MULT;
-  hash >>= TRAV_HASH_BITS - traversal->hashBits;
   if (traversal->hashSize * 3 / 2 >= traversal->hashCapacity)
     TraversalRehash(traversal);
+  hash = ((unsigned long) obj) * TRAV_HASH_MULT;
+  hash >>= TRAV_HASH_BITS - traversal->hashBits;
+  hashTable = ADDR_OBJ(traversal->hashTable)+1;
   for (;;)
   {
     if (hashTable[hash] == NULL)
