@@ -163,7 +163,11 @@ end );
 ##     Note that the assignments of other global variables via
 ##     `DeclareOperation', `DeclareProperty' etc. would admit this already.
 ##
+
+BIND_GLOBAL( "FLUSHABLE_VALUE_REGION", NewRegion("FLUSHABLE_VALUE_REGION"));
+
 BIND_GLOBAL( "InstallValue", function ( gvar, value )
+    local tmp;
     if (not IsBound(REREADING) or REREADING = false) and not
        IsToBeDefinedObj( gvar ) then
         Error("InstallValue: a value has been installed already");
@@ -173,27 +177,66 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
           "please use `BindGlobal' for the family object ",
           value!.NAME, ", not `InstallValue'" );
     fi;
-    CLONE_OBJ (gvar, value);
+    if IsPublic(value) then
+      # TODO: We need to handle those cases more cleanly.
+      if IS_ATOMIC_RECORD(value) then
+        value := AtomicRecord(CopyRegion(FromAtomicRecord(value)));
+      elif IS_ATOMIC_LIST(value) then
+        value := AtomicList(CopyRegion(FromAtomicList(value)));
+      elif IS_FIXED_ATOMIC_LIST(value) then
+        value := FixedAtomicList(CopyRegion(FromAtomicList(value)));
+      else
+	if IS_MUTABLE_OBJ(value) then
+	  value := ShallowCopy(value);
+	else
+	  value := MakeImmutable(ShallowCopy(value));
+	fi;
+      fi;
+      FORCE_SWITCH_OBJ (gvar, value);
+    elif IsShared(value) then
+      atomic value do
+        tmp := CopyRegion(value);
+	MigrateObj(tmp, value);
+	FORCE_SWITCH_OBJ(gvar, tmp);
+      od;
+    else
+      value := CopyRegion(value);
+      FORCE_SWITCH_OBJ(gvar, value);
+    fi;
 end);
+
 
 BIND_GLOBAL( "InstallFlushableValue", function( gvar, value )
     local initval;
 
     if not ( IS_LIST( value ) or IS_REC( value ) ) then
-      Error( "<value> must be a list or a record" );
+      Error( "InstallFlushableValue: <value> must be a list or a record" );
     fi;
 
-    # Make a structural copy of the initial value.
-    initval:= DEEP_COPY_OBJ( value );
+    if IsPublic(value) then
+      Error( "InstallFlushableValue: <value> must not be in the public region" );
+    fi;
+
+
+    # Make a structural copy of the initial value and put it in a shared
+    # region.
+    initval:= CopyRegion( value );
+    LockAndMigrateObj(initval, FLUSHABLE_VALUE_REGION);
 
     # Initialize the variable.
+    # InstallValue() will always make a copy of value, so we
+    # can reuse it.
     InstallValue( gvar, value );
 
     # Install the method to flush the cache.
     InstallMethod( FlushCaches,
       [],
       function()
-          CLONE_OBJ( gvar, DEEP_COPY_OBJ( initval ) );
+	  if HaveWriteAccess(gvar) then
+	    atomic gvar, initval do
+	      SWITCH_OBJ( gvar, MigrateObj(CopyRegion( initval ), gvar) );
+	    od;
+	  fi;
           TryNextMethod();
       end );
 end );
