@@ -632,6 +632,7 @@ BindGlobal("CommandReplay@", function(line)
     thread := FindThread@(values[2]);
     if thread = fail then
       SystemMessage@("Unknown thread ", values[2]);
+      return;
     fi;
   fi;
   history := ShallowCopy(OutputHistory@[thread]);
