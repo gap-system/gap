@@ -33,10 +33,13 @@
 
 typedef struct {
   pthread_t pthread_id;
+  pthread_mutex_t *lock;
+  pthread_cond_t *cond;
   int joined;
   void *tls;
   void (*start)(void *);
   void *arg;
+  Obj thread_object;
   Obj region_name;
   int next;
 } ThreadData;
@@ -90,11 +93,22 @@ void EndSingleThreaded() {
 static ThreadData thread_data[MAX_THREADS];
 static int thread_free_list;
 
-static pthread_mutex_t master_lock;
+static pthread_rwlock_t master_lock;
 
 static pthread_rwlock_t ObjLock[NUM_LOCKS];
 
 int PreThreadCreation = 1;
+
+void LockThreadControl(int modify) {
+  if (modify)
+    pthread_rwlock_wrlock(&master_lock);
+  else
+    pthread_rwlock_rdlock(&master_lock);
+}
+
+void UnlockThreadControl(void) {
+  pthread_rwlock_unlock(&master_lock);
+}
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
@@ -178,6 +192,19 @@ static void SetupTLS()
 
 static void InitTraversal();
 
+Obj NewThreadObject(UInt id) {
+  Obj result = NewBag(T_THREAD, 3*sizeof(UInt));
+  ADDR_OBJ(result)[0] = (Bag) 0;
+  ADDR_OBJ(result)[1] = (Bag) id;
+  ADDR_OBJ(result)[2] = (Bag) 0;
+  return result;
+}
+
+void InitMainThread()
+{
+  TLS->threadObject = NewThreadObject(0);
+}
+
 static void RunThreadedMain2(
   int (*mainFunction)(int, char **, char **),
   int argc,
@@ -215,19 +242,21 @@ static void RunThreadedMain2(
   static pthread_mutex_t main_thread_mutex;
   static pthread_cond_t main_thread_cond;
   SetupTLS();
-  for (i=0; i<MAX_THREADS-1; i++)
+  for (i=1; i<MAX_THREADS-1; i++)
     thread_data[i].next = i+1;
   for (i=0; i<NUM_LOCKS; i++)
     pthread_rwlock_init(&ObjLock[i], 0);
   thread_data[MAX_THREADS-1].next = -1;
   for (i=0; i<MAX_THREADS; i++)
     thread_data[i].tls = 0;
-  thread_free_list = 0;
-  pthread_mutex_init(&master_lock, 0);
+  thread_free_list = 1;
+  pthread_rwlock_init(&master_lock, 0);
   pthread_mutex_init(&main_thread_mutex, 0);
   pthread_cond_init(&main_thread_cond, 0);
   TLS->threadLock = &main_thread_mutex;
   TLS->threadSignal = &main_thread_cond;
+  thread_data[0].lock = TLS->threadLock;
+  thread_data[0].cond = TLS->threadSignal;
   InitTraversal();
   exit((*mainFunction)(argc, argv, environ));
 }
@@ -258,8 +287,6 @@ void CreateMainRegion()
 
 void *DispatchThread(void *arg)
 {
-  pthread_mutex_t thread_mutex;
-  pthread_cond_t thread_cond;
   ThreadData *this_thread = arg;
   InitializeTLS();
   TLS->threadID = this_thread - thread_data + 1;
@@ -267,11 +294,9 @@ void *DispatchThread(void *arg)
   AddGCRoots();
 #endif
   InitTLS();
-  pthread_mutex_init(&thread_mutex, NULL);
-  pthread_cond_init(&thread_cond, NULL);
   TLS->currentRegion = NewRegion();
-  TLS->threadLock = &thread_mutex;
-  TLS->threadSignal = &thread_cond;
+  TLS->threadLock = this_thread->lock;
+  TLS->threadSignal = this_thread->cond;
   ((Region *)TLS->currentRegion)->fixed_owner = 1;
   ((Region *)TLS->currentRegion)->name = this_thread->region_name;
   RegionWriteLock(TLS->currentRegion);
@@ -281,10 +306,14 @@ void *DispatchThread(void *arg)
     this_thread->region_name = MakeImmString2("thread #", buf);
   }
   SetRegionName(TLS->currentRegion, this_thread->region_name);
+  TLS->threadObject = this_thread->thread_object;
+  pthread_mutex_lock(this_thread->lock);
+  *(ThreadLocalStorage **)(ADDR_OBJ(TLS->threadObject)) = TLS;
+  pthread_cond_broadcast(this_thread->cond);
+  pthread_mutex_unlock(this_thread->lock);
   this_thread->start(this_thread->arg);
+  *(UInt *)(ADDR_OBJ(TLS->threadObject)+2) |= THREAD_TERMINATED;
   RegionWriteUnlock(TLS->currentRegion);
-  pthread_mutex_destroy(&thread_mutex);
-  pthread_cond_destroy(&thread_cond);
   DestroyTLS();
 #ifndef DISABLE_GC
   RemoveGCRoots();
@@ -293,7 +322,7 @@ void *DispatchThread(void *arg)
   return 0;
 }
 
-int RunThread(void (*start)(void *), void *arg)
+Obj RunThread(void (*start)(void *), void *arg)
 {
   int result;
 #ifndef HAVE_NATIVE_TLS
@@ -301,14 +330,14 @@ int RunThread(void (*start)(void *), void *arg)
 #endif
   pthread_attr_t thread_attr;
   size_t pagesize = getpagesize();
-  pthread_mutex_lock(&master_lock);
+  LockThreadControl(1);
   PreThreadCreation = 0;
   /* allocate a new thread id */
   if (thread_free_list < 0)
   {
-    pthread_mutex_unlock(&master_lock);
+    UnlockThreadControl();
     errno = ENOMEM;
-    return -1;
+    return (Obj) 0;
   }
   result = thread_free_list;
   thread_free_list = thread_data[thread_free_list].next;
@@ -317,16 +346,23 @@ int RunThread(void (*start)(void *), void *arg)
     thread_data[result].tls = AllocateTLS();
   tls = thread_data[result].tls;
 #endif
+  if (!thread_data[result].lock) {
+    thread_data[result].lock = AllocateMemoryBlock(sizeof(pthread_mutex_t));
+    thread_data[result].cond = AllocateMemoryBlock(sizeof(pthread_cond_t));
+    pthread_mutex_init(thread_data[result].lock, 0);
+    pthread_cond_init(thread_data[result].cond, 0);
+  }
   thread_data[result].arg = arg;
   thread_data[result].start = start;
   thread_data[result].joined = 0;
+  thread_data[result].thread_object = NewThreadObject(result);
   /* set up the thread attribute to support a custom stack in our TLS */
   pthread_attr_init(&thread_attr);
 #ifndef HAVE_NATIVE_TLS
   pthread_attr_setstack(&thread_attr, (char *)tls + pagesize * 2,
       TLS_SIZE-pagesize*2);
 #endif
-  pthread_mutex_unlock(&master_lock);
+  UnlockThreadControl();
   /* fork the thread */
   EndSingleThreaded();
   IncThreadCounter();
@@ -334,18 +370,18 @@ int RunThread(void (*start)(void *), void *arg)
                      DispatchThread, thread_data+result) < 0) {
     /* No more threads available */
     DecThreadCounter();
-    pthread_mutex_lock(&master_lock);
+    LockThreadControl(1);
     thread_data[result].next = thread_free_list;
     thread_free_list = result;
-    pthread_mutex_unlock(&master_lock);
+    UnlockThreadControl();
     pthread_attr_destroy(&thread_attr);
 #ifndef HAVE_NATIVE_TLS
     FreeTLS(tls);
   #endif
-    return -1;
+    return (Obj)0;
   }
   pthread_attr_destroy(&thread_attr);
-  return result+1;
+  return thread_data[result].thread_object;
 }
 
 int JoinThread(int id)
@@ -355,10 +391,9 @@ int JoinThread(int id)
 #ifndef HAVE_NATIVE_TLS
   void *tls;
 #endif
-  id--;
   if (id < 0 || id >= MAX_THREADS)
     return 0;
-  pthread_mutex_lock(&master_lock);
+  LockThreadControl(1);
   pthread_id = thread_data[id].pthread_id;
   start = thread_data[id].start;
 #ifndef HAVE_NATIVE_TLS
@@ -366,13 +401,13 @@ int JoinThread(int id)
 #endif
   if (thread_data[id].joined || start == NULL)
   {
-    pthread_mutex_unlock(&master_lock);
+    UnlockThreadControl();
     return 0;
   }
   thread_data[id].joined = 1;
-  pthread_mutex_unlock(&master_lock);
+  UnlockThreadControl();
   pthread_join(pthread_id, NULL);
-  pthread_mutex_lock(&master_lock);
+  LockThreadControl(1);
   thread_data[id].next = thread_free_list;
   thread_free_list = id;
   /*
@@ -380,12 +415,23 @@ int JoinThread(int id)
   thread_data[id].tls = NULL;
   */
   thread_data[id].start = NULL;
-  pthread_mutex_unlock(&master_lock);
+  UnlockThreadControl();
 #ifndef HAVE_NATIVE_TLS
   FreeTLS(tls);
 #endif
   return 1;
 }
+
+Int ThreadID(Obj thread)
+{
+  return *(UInt *)(ADDR_OBJ(thread)+1);
+}
+
+void *ThreadTLS(Obj thread)
+{
+  return *(ThreadLocalStorage **)(ADDR_OBJ(thread)+1);
+}
+
 
 static UInt LockID(void *object) {
   UInt p = (UInt) object;

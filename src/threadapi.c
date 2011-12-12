@@ -398,7 +398,8 @@ void StopKeepAlive(Obj node)
 */
 
 Obj FuncCreateThread(Obj self, Obj funcargs) {
-  Int id, i, n;
+  Int i, n;
+  Obj thread;
   void ThreadedInterpreter(void *);
   Obj templist;
   n = LEN_PLIST(funcargs);
@@ -412,10 +413,10 @@ Obj FuncCreateThread(Obj self, Obj funcargs) {
   DS_BAG(templist) = NULL; /* make it public */
   for (i=1; i<=n; i++)
     SET_ELM_PLIST(templist, i, ELM_PLIST(funcargs, i));
-  id = RunThread(ThreadedInterpreter, KeepAlive(templist));
-  if (id < 0)
+  thread = RunThread(ThreadedInterpreter, KeepAlive(templist));
+  if (!thread)
     return Fail;
-  return INTOBJ_INT(id);
+  return thread;
 }
 
 /****************************************************************************
@@ -425,11 +426,21 @@ Obj FuncCreateThread(Obj self, Obj funcargs) {
 ** The function waits for an existing thread to finish.
 */
 
-Obj FuncWaitThread(Obj self, Obj id) {
-  int thread_num;
-  if (!IS_INTOBJ(id))
-    ArgumentError("WaitThread: Argument must be a thread id");
-  thread_num = INT_INTOBJ(id);
+Obj FuncWaitThread(Obj self, Obj thread) {
+  UInt thread_num;
+  UInt thread_status;
+  char *error = NULL;
+  if (TNUM_OBJ(thread) != T_THREAD)
+    ArgumentError("WaitThread: Argument must be a thread object");
+  LockThreadControl(1);
+  thread_num = *(UInt *)(ADDR_OBJ(thread)+1);
+  thread_status = *(UInt *)(ADDR_OBJ(thread)+2);
+  if (thread_status & THREAD_JOINED)
+    error = "Thread is already being waited for";
+  *(UInt *)(ADDR_OBJ(thread)+2) |= THREAD_JOINED;
+  UnlockThreadControl();
+  if (error)
+    ErrorQuit("WaitThread: %s", (UInt) error, 0L);
   if (!JoinThread(thread_num))
     ErrorQuit("WaitThread: Invalid thread id", 0L, 0L);
   return (Obj) 0;
@@ -437,13 +448,26 @@ Obj FuncWaitThread(Obj self, Obj id) {
 
 /****************************************************************************
 **
-*F FuncCurrentThread ... return id of current thread.
+*F FuncCurrentThread ... return thread object of current thread.
 **
 */
 
 Obj FuncCurrentThread(Obj self) {
-  return INTOBJ_INT(TLS->threadID);
+  return TLS->threadObject;
 }
+
+/****************************************************************************
+**
+*F FuncThreadID ... return numerical thread id of thread.
+**
+*/
+
+Obj FuncThreadID(Obj self, Obj thread) {
+  if (TNUM_OBJ(thread) != T_THREAD)
+    ArgumentError("ThreadID: Argument must be a thread object");
+  return INTOBJ_INT(ThreadID(thread));
+}
+
 
 /****************************************************************************
 **
@@ -646,6 +670,7 @@ Obj FuncTryTransmitChannel(Obj self, Obj channel, Obj obj);
 Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj defaultobj);
 Obj FuncCreateThread(Obj self, Obj funcargs);
 Obj FuncCurrentThread(Obj self);
+Obj FuncThreadID(Obj self, Obj thread);
 Obj FuncWaitThread(Obj self, Obj id);
 Obj FuncCreateBarrier(Obj self);
 Obj FuncStartBarrier(Obj self, Obj barrier, Obj count);
@@ -696,6 +721,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CurrentThread", 0, "",
       FuncCurrentThread, "src/threadapi.c:CurrentThread" },
+
+    { "ThreadID", 1, "thread",
+      FuncThreadID, "src/threadapi.c:ThreadID" },
 
     { "WaitThread", 1, "threadID",
       FuncWaitThread, "src/threadapi.c:WaitThread" },
@@ -908,10 +936,16 @@ static StructGVarFunc GVarFuncs [] = {
 
 };
 
+Obj TYPE_THREAD;
 Obj TYPE_CHANNEL;
 Obj TYPE_BARRIER;
 Obj TYPE_SYNCVAR;
 Obj TYPE_REGION;
+
+Obj TypeThread(Obj obj)
+{
+  return TYPE_THREAD;
+}
 
 Obj TypeChannel(Obj obj)
 {
@@ -938,10 +972,16 @@ static Int AlwaysMutable( Obj obj)
   return 1;
 }
 
+static Int NeverMutable(Obj obj)
+{
+  return 0;
+}
+
 static void MarkChannelBag(Bag);
 static void MarkBarrierBag(Bag);
 static void MarkSyncVarBag(Bag);
 static void FinalizeMonitor(Bag);
+static void PrintThread(Obj);
 static void PrintChannel(Obj);
 static void PrintBarrier(Obj);
 static void PrintSyncVar(Obj);
@@ -959,17 +999,20 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
   /* install info string */
+  InfoBags[T_THREAD].name = "thread";
   InfoBags[T_CHANNEL].name = "channel";
   InfoBags[T_BARRIER].name = "barrier";
   InfoBags[T_SYNCVAR].name = "syncvar";
   InfoBags[T_REGION].name = "region";
   
     /* install the kind methods */
+    TypeObjFuncs[ T_THREAD ] = TypeThread;
     TypeObjFuncs[ T_CHANNEL ] = TypeChannel;
     TypeObjFuncs[ T_BARRIER ] = TypeBarrier;
     TypeObjFuncs[ T_SYNCVAR ] = TypeSyncVar;
     TypeObjFuncs[ T_REGION ] = TypeRegion;
     /* install global variables */
+    InitCopyGVar("TYPE_THREAD", &TYPE_THREAD);
     InitCopyGVar("TYPE_CHANNEL", &TYPE_CHANNEL);
     InitCopyGVar("TYPE_BARRIER", &TYPE_BARRIER);
     InitCopyGVar("TYPE_SYNCVAR", &TYPE_SYNCVAR);
@@ -977,6 +1020,7 @@ static Int InitKernel (
     DeclareGVar(&LastInaccessibleGVar,"LastInaccessible");
     DeclareGVar(&DisableGuardsGVar,"DISABLE_GUARDS");
     /* install mark functions */
+    InitMarkFuncBags(T_THREAD, MarkNoSubBags);
     InitMarkFuncBags(T_CHANNEL, MarkChannelBag);
     InitMarkFuncBags(T_BARRIER, MarkBarrierBag);
     InitMarkFuncBags(T_SYNCVAR, MarkSyncVarBag);
@@ -984,15 +1028,18 @@ static Int InitKernel (
     InitMarkFuncBags(T_REGION, MarkNoSubBags);
     InitFinalizerFuncBags(T_MONITOR, FinalizeMonitor);
     /* install print functions */
+    PrintObjFuncs[ T_THREAD ] = PrintThread;
     PrintObjFuncs[ T_CHANNEL ] = PrintChannel;
     PrintObjFuncs[ T_BARRIER ] = PrintBarrier;
     PrintObjFuncs[ T_SYNCVAR ] = PrintSyncVar;
     PrintObjFuncs[ T_REGION ] = PrintRegion;
     /* install mutability functions */
+    IsMutableObjFuncs [ T_THREAD ] = NeverMutable;
     IsMutableObjFuncs [ T_CHANNEL ] = AlwaysMutable;
     IsMutableObjFuncs [ T_BARRIER ] = AlwaysMutable;
     IsMutableObjFuncs [ T_SYNCVAR ] = AlwaysMutable;
     IsMutableObjFuncs [ T_REGION ] = AlwaysMutable;
+    MakeBagTypePublic(T_THREAD);
     MakeBagTypePublic(T_CHANNEL);
     MakeBagTypePublic(T_REGION);
     MakeBagTypePublic(T_SYNCVAR);
@@ -1836,6 +1883,38 @@ Obj FuncSyncRead(Obj self, Obj var)
   if (!IsSyncVar(var))
     ArgumentError("SyncRead: Argument must be a synchronization variable");
   return SyncRead(ObjPtr(var));
+}
+
+static void PrintThread(Obj obj)
+{
+  char buf[100];
+  char *status_message;
+  Int status;
+  Int id;
+  LockThreadControl(0);
+  id = *(UInt *)(ADDR_OBJ(obj)+1);
+  status = *(UInt *)(ADDR_OBJ(obj)+2);
+  switch (status)
+  {
+    case 0:
+      status_message = "running";
+      break;
+    case THREAD_TERMINATED:
+      status_message = "terminated";
+      break;
+    case THREAD_JOINED:
+      status_message = "running, waited for";
+      break;
+    case THREAD_TERMINATED | THREAD_JOINED:
+      status_message = "terminated, waited for";
+      break;
+    default:
+      status_message = "unknown status";
+      break;
+  }
+  sprintf(buf, "<thread #%ld: %s>", id, status_message);
+  UnlockThreadControl();
+  Pr("%s", (Int) buf, 0L);
 }
 
 static void PrintChannel(Obj obj)

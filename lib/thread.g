@@ -16,11 +16,13 @@ Revision.thread_g :=
   "@(#)$Id: thread.g,v 4.50 2010/04/10 14:20:00 gap Exp $";
 
 
+BindGlobal("ThreadFamily", NewFamily("ThreadFamily", IsObject));
 BindGlobal("SynchronizationFamily",
     NewFamily("SynchronizationFamily", IsObject));
 BindGlobal("AtomicFamily", NewFamily("AtomicFamily", IsObject));
 BindGlobal("RegionFamily", NewFamily("DataSpaceFamily", IsObject));
 
+DeclareFilter("IsThread", IsObject and IsInternalRep);
 DeclareFilter("IsChannel", IsObject and IsInternalRep);
 DeclareFilter("IsBarrier", IsObject and IsInternalRep);
 DeclareFilter("IsSyncVar", IsObject and IsInternalRep);
@@ -29,6 +31,7 @@ DeclareFilter("IsAtomicList", IsObject and IsInternalRep);
 DeclareFilter("IsAtomicRecord", IsObject and IsInternalRep);
 DeclareFilter("IsThreadLocalRecord", IsObject and IsInternalRep);
 
+BindGlobal("TYPE_THREAD", NewType(ThreadFamily, IsThread));
 BindGlobal("TYPE_CHANNEL", NewType(SynchronizationFamily, IsChannel));
 BindGlobal("TYPE_BARRIER", NewType(SynchronizationFamily, IsBarrier));
 BindGlobal("TYPE_SYNCVAR", NewType(SynchronizationFamily, IsSyncVar));

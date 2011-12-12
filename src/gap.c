@@ -3568,6 +3568,7 @@ void InitializeGap (
         }
     }
 
+    InitMainThread();
     InitTLS();
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");

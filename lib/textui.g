@@ -20,6 +20,7 @@ DelayedPrompt@ := Immutable("");
 ThreadControlChannel@ := fail;
 ThreadInputChannel@ := fail;
 WaitForThread@ := fail;
+ThreadObject@ := fail;
 OutputHistory@ := fail;
 OutputHistoryIncompleteLine@ := fail;
 OutputPrefix@ := fail;
@@ -36,6 +37,7 @@ BindGlobal("InitThreadTables@", function()
   ThreadControlChannel@TextUI := [];
   ThreadInputChannel@TextUI := [];
   WaitForThread@TextUI := [];
+  ThreadObject@TextUI := [];
   OutputHistory@TextUI := [];
   OutputHistoryIncompleteLine@TextUI := [];
   OutputPrefix@TextUI := [];
@@ -72,7 +74,7 @@ BindGlobal("HAVE_INPUT@", 3);
 BindGlobal("EXPECT_INPUT@", 4);
 
 BindGlobal("ThreadID@", function()
-  return CurrentThread() + 1;
+  return ThreadID(CurrentThread()) + 1;
 end);
 
 BindGlobal("SubstituteVariables@", function(string, threadid)
@@ -176,6 +178,7 @@ BindGlobal("NewThreadInfo@", function()
     InputChannel := CreateChannel(),
     ControlChannel := CreateChannel(),
     ThreadID := ThreadID@(),
+    ThreadObject := CurrentThread(),
   ));
 end);
 
@@ -235,6 +238,7 @@ BindGlobal("CompleteThreadRegistration@", function(threadinfo, waitfor)
     ThreadName@[threadid] := Immutable(String(threadid-1));
   fi;
   WaitForThread@[threadid] := waitfor;
+  ThreadObject@[threadid] := threadinfo.ThreadObject;
   if not IsBound(OutputHistory@[threadid]) then
     OutputHistory@[threadid] := "";
     OutputHistoryIncompleteLine@[threadid] := false;
@@ -899,7 +903,7 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
       # Make sure the thread can't be found anymore.
       # wait for any threads we started ourselves
       if WaitForThread@[threadid] then
-        WaitThread(threadid-1);
+        WaitThread(ThreadObject@[threadid]);
       fi;
       if NumShellThreads@ = 0 then
         # say goodnight, Gracie
