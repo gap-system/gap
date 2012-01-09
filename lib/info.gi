@@ -273,12 +273,14 @@ BIND_GLOBAL( "InfoDecision", function(selectors, level)
     fi;
    
     # store the class an level
-#    if IsInfoClass(selectors) then
-#      InfoData.LastClass := selectors;
-#    else
-#      InfoData.LastClass := selectors[1];
-#    fi;
-#    InfoData.LastLevel := level;
+    atomic InfoData do
+	if IsInfoClass(selectors) then
+	  InfoData.LastClass := selectors;
+	else
+	  InfoData.LastClass := selectors[1];
+	fi;
+        InfoData.LastLevel := level;
+    od;
 
     if IsInfoClass(selectors) then
         return InfoLevel(selectors) >= level;
