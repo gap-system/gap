@@ -114,12 +114,14 @@ void SetTypeObjError ( Obj obj, Obj kind )
 **
 *F  TypeObjHandler( <self>, <obj> ) . . . . . . . . .  handler for 'TYPE_OBJ'
 */
+#ifndef WARD_ENABLED
 Obj TypeObjHandler (
     Obj                 self,
     Obj                 obj )
 {
     return TYPE_OBJ( obj );
 }
+#endif
 
 /****************************************************************************
 **
@@ -1159,14 +1161,19 @@ void PrintPathError (
 
 *F  TypeComObj( <obj> ) . . . . . . . . . . function version of 'TYPE_COMOBJ'
 */
+#ifndef WARD_ENABLED
 Obj             TypeComObj (
     Obj                 obj )
 {
-    return TYPE_COMOBJ( obj );
+    Obj result = TYPE_COMOBJ( obj );
+    AO_nop_read();
+    return result;
 }
+#endif
 
 void SetTypeComObj( Obj obj, Obj kind)
 {
+    AO_nop_write();
     TYPE_COMOBJ(obj) = kind;
     CHANGED_BAG(obj);
 }
@@ -1202,6 +1209,7 @@ Obj SET_TYPE_COMOBJ_Handler (
     switch (TNUM_OBJ(obj)) {
       case T_PREC:
       case T_COMOBJ:
+	AO_nop_write();
 	TYPE_COMOBJ( obj ) = kind;
 	RetypeBag( obj, T_COMOBJ );
 	CHANGED_BAG( obj );
@@ -1222,14 +1230,19 @@ Obj SET_TYPE_COMOBJ_Handler (
 
 *F  TypePosObj( <obj> ) . . . . . . . . . . function version of 'TYPE_POSOBJ'
 */
+#ifndef WARD_ENABLED
 Obj TypePosObj (
     Obj                 obj )
 {
-    return TYPE_POSOBJ( obj );
+    Obj result = TYPE_POSOBJ( obj );
+    AO_nop_read();
+    return result;
 }
+#endif
 
 void SetTypePosObj( Obj obj, Obj kind)
 {
+    AO_nop_write();
     TYPE_POSOBJ(obj) = kind;
     CHANGED_BAG(obj);
 }
@@ -1273,6 +1286,7 @@ Obj SET_TYPE_POSOBJ_Handler (
 	CHANGED_BAG( obj );
         break;
       default:
+	AO_nop_write();
 	TYPE_POSOBJ( obj ) = kind;
 	RetypeBag( obj, T_POSOBJ );
 	CHANGED_BAG( obj );
