@@ -55,6 +55,7 @@ const char * Revision_vars_c =
 #undef  INCLUDE_DECLARATION_PART
 
 
+#include        "aobjects.h"            /* atomic objects                  */
 #include        "saveload.h"            /* saving and loading              */
 
 
@@ -2327,11 +2328,16 @@ UInt            ExecAssComObjName (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        SetARecordField( record, rnam, rhs);
+	break;
+      default:
         ASS_REC( record, rnam, rhs );
+	break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2364,11 +2370,16 @@ UInt            ExecAssComObjExpr (
     rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        SetARecordField( record, rnam, rhs );
+	break;
+      default:
         ASS_REC( record, rnam, rhs );
+	break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2463,11 +2474,16 @@ Obj             EvalElmComObjName (
     rnam = (UInt)(ADDR_EXPR(expr)[1]);
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        elm = ElmPRec( record, rnam );
-    }
-    else {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        elm = ElmPRec(record, rnam);
+	break;
+      case T_ACOMOBJ:
+        elm = GetARecordField(record, rnam);
+	break;
+      default:
         elm = ELM_REC( record, rnam );
+	break;
     }
 
     /* return the element                                                  */
@@ -2496,15 +2512,13 @@ Obj             EvalElmComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        elm = ElmPRec( record, rnam );
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        return ElmPRec( record, rnam );
+      case T_ACOMOBJ:
+        return GetARecordField( record, rnam );
     }
-    else {
-        elm = ELM_REC( record, rnam );
-    }
-
-    /* return the element                                                  */
-    return elm;
+    return 0;
 }
 
 
@@ -2529,11 +2543,16 @@ Obj             EvalIsbComObjName (
     rnam = (UInt)(ADDR_EXPR(expr)[1]);
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        isb = (GetARecordField( record, rnam ) != (Obj) 0 ? True : False);
+	break;
+      default:
         isb = (ISB_REC( record, rnam ) ? True : False);
+	break;
     }
 
     /* return the result                                                   */
@@ -2562,11 +2581,16 @@ Obj             EvalIsbComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        isb = (GetARecordField( record, rnam ) != (Obj) 0 ? True : False);
+	break;
+      default:
         isb = (ISB_REC( record, rnam ) ? True : False);
+	break;
     }
 
     /* return the result                                                   */

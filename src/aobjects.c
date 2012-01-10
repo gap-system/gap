@@ -1568,9 +1568,6 @@ static Int InitKernel (
   CopyObjFuncs[ T_AREC ] = CopyARecord;
   CleanObjFuncs[ T_AREC ] = CleanARecord;
   IsRecFuncs[ T_AREC ] = IsRecYes;
-  ElmRecFuncs[ T_ACOMOBJ ] = ElmARecord;
-  IsbRecFuncs[ T_ACOMOBJ ] = IsbARecord;
-  AssRecFuncs[ T_ACOMOBJ ] = AssARecord;
   CopyObjFuncs[ T_ACOMOBJ ] = CopyARecord;
   CleanObjFuncs[ T_ACOMOBJ ] = CleanARecord;
   IsRecFuncs[ T_ACOMOBJ ] = IsRecNot;

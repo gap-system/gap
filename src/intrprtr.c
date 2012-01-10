@@ -59,6 +59,7 @@ const char * Revision_intrprtr_c =
 
 #include	"tls.h"
 #include	"thread.h"
+#include	"aobjects.h"		/* atomic objects		   */
 
 #include        "vars.h"                /* variables                       */
 
@@ -4229,11 +4230,16 @@ void            IntrAssComObjName (
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+      case T_ACOMOBJ:
+        SetARecordField( record, rnam, rhs );
+	break;
+      default:
         ASS_REC( record, rnam, rhs );
+	break;
     }
 
     /* push the assigned value                                             */
@@ -4262,11 +4268,16 @@ void            IntrAssComObjExpr ( void )
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         AssPRec( record, rnam, rhs );
-    }
-    else {
+        break;
+      case T_ACOMOBJ:
+        SetARecordField( record, rnam, rhs );
+	break;
+      default:
         ASS_REC( record, rnam, rhs );
+	break;
     }
 
     /* push the assigned value                                             */
@@ -4350,11 +4361,17 @@ void            IntrElmComObjName (
     record = PopObj();
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        elm = GetARecordField( record, rnam );
+	break;
+      default:
         elm = ELM_REC( record, rnam );
+	break;
     }
 
     /* push the element                                                    */
@@ -4380,12 +4397,18 @@ void            IntrElmComObjExpr ( void )
     record = PopObj();
 
     /* select the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         elm = ElmPRec( record, rnam );
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        elm = GetARecordField( record, rnam );
+	break;
+      default:
         elm = ELM_REC( record, rnam );
+	break;
     }
+
 
     /* push the element                                                    */
     PushObj( elm );
@@ -4407,11 +4430,16 @@ void            IntrIsbComObjName (
     record = PopObj();
 
     /* get the result                                                      */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        isb = (IsbPRec( record, rnam ) ? True : False);
-    }
-    else {
-        isb = (ISB_REC( record, rnam ) ? True : False);
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        isb = ElmPRec( record, rnam ) ? True : False;
+	break;
+      case T_ACOMOBJ:
+        isb = GetARecordField( record, rnam ) ? True : False;
+	break;
+      default:
+        isb = ISB_REC( record, rnam ) ? True : False;
+	break;
     }
 
     /* push the result                                                     */
@@ -4437,13 +4465,17 @@ void            IntrIsbComObjExpr ( void )
     record = PopObj();
 
     /* get the result                                                      */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
-        isb = (IsbPRec( record, rnam ) ? True : False);
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
+        isb = ElmPRec( record, rnam ) ? True : False;
+	break;
+      case T_ACOMOBJ:
+        isb = GetARecordField( record, rnam ) ? True : False;
+	break;
+      default:
+        isb = ISB_REC( record, rnam ) ? True : False;
+	break;
     }
-    else {
-        isb = (ISB_REC( record, rnam ) ? True : False);
-    }
-
     /* push the result                                                     */
     PushObj( isb );
 }
