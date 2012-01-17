@@ -698,6 +698,7 @@ static void TerminateCurrentThread(int locked) {
   ThreadData *thread = thread_data + TLS->threadID;
   if (locked)
     pthread_mutex_unlock(thread->lock);
+  PopRegionLocks(0);
   syLongjmp(TLS->threadExit, 1);
 }
 
