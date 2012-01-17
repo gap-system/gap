@@ -155,7 +155,13 @@ void SignalThread(ThreadLocalStorage *thread)
 
 void WaitThreadSignal()
 {
+  int id = TLS->threadID;
+  if (!UpdateThreadState(id, TSTATE_RUNNING, TSTATE_BLOCKED))
+    HandleInterrupts(1, T_NO_STAT);
   pthread_cond_wait(TLS->threadSignal, TLS->threadLock);
+  if (!UpdateThreadState(id, TSTATE_BLOCKED, TSTATE_RUNNING) &&
+    GetThreadState(id) != TSTATE_RUNNING)
+    HandleInterrupts(1, T_NO_STAT);
 }
 
 void LockMonitor(Monitor *monitor)
@@ -468,6 +474,21 @@ Obj FuncThreadID(Obj self, Obj thread) {
   return INTOBJ_INT(ThreadID(thread));
 }
 
+/****************************************************************************
+**
+*F FuncKillThread ... kill a given thread
+**
+*/
+
+
+Obj FuncKillThread(Obj self, Obj thread) {
+  if (TNUM_OBJ(thread) != T_THREAD)
+    ArgumentError("KillThread: Argument must be a thread object");
+  KillThread(ThreadID(thread));
+  return (Obj) 0;
+}
+
+
 
 /****************************************************************************
 **
@@ -671,6 +692,7 @@ Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj defaultobj);
 Obj FuncCreateThread(Obj self, Obj funcargs);
 Obj FuncCurrentThread(Obj self);
 Obj FuncThreadID(Obj self, Obj thread);
+Obj FuncKillThread(Obj self, Obj thread);
 Obj FuncWaitThread(Obj self, Obj id);
 Obj FuncCreateBarrier(Obj self);
 Obj FuncStartBarrier(Obj self, Obj barrier, Obj count);
@@ -727,6 +749,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "WaitThread", 1, "threadID",
       FuncWaitThread, "src/threadapi.c:WaitThread" },
+
+    { "KillThread", 1, "threadID",
+      FuncKillThread, "src/threadapi.c:KillThread" },
 
     { "HASH_LOCK", 1, "object",
       FuncHASH_LOCK, "src/threadapi.c:HASH_LOCK" },

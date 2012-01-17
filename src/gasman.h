@@ -1098,6 +1098,7 @@ typedef struct
   Bag name; /* name of the region, or a null pointer */
   int fixed_owner;
   void *owner; /* opaque thread descriptor */
+  void *alt_owner; /* for paused threads */
   unsigned char readers[0];
 } Region;
 

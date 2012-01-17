@@ -5,6 +5,8 @@
 #include	"code.h"
 #include 	"tls.h"
 
+#include	<string.h>
+
 static TLSHandler *firstHandler, *lastHandler;
 
 ThreadLocalStorage *MainThreadTLS;
@@ -17,8 +19,7 @@ __thread ThreadLocalStorage TLSInstance;
 
 void InitializeTLS()
 {
-  ThreadLocalStorage empty = { };
-  *TLS = empty;
+  memset((void *)(TLS), 0, sizeof(ThreadLocalStorage));
 }
 
 void InstallTLSHandler(

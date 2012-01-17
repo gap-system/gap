@@ -36,6 +36,7 @@ typedef struct ThreadLocalStorage
   Obj *ptrLVars;
   /* From read.c */
   syJmp_buf readJmpError;
+  syJmp_buf threadExit;
   Obj stackNams;
   UInt countNams;
   UInt readTop;

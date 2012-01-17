@@ -76,4 +76,30 @@ void HashLockShared(void *obj);
 void HashUnlock(void *obj);
 void HashUnlockShared(void *obj);
 
+/* Thread state constants and functions */
+
+#define TSTATE_SHIFT 3
+#define TSTATE_MASK ((1 << TSTATE_SHIFT) - 1)
+#define TSTATE_RUNNING 0
+#define TSTATE_TERMINATED 1
+#define TSTATE_BLOCKED 2
+#define TSTATE_SYSCALL 3
+
+#define TSTATE_INTERRUPT 4
+
+#define TSTATE_PAUSED 4
+#define TSTATE_BREAK 5
+#define TSTATE_KILLED 6
+
+
+int GetThreadState(int threadID);
+int UpdateThreadState(int threadID, int oldState, int newState);
+void KillThread(int threadID);
+void PauseThread(int threadID);
+void InterruptThread(int threadID);
+void ResumeThread(int threadID);
+void HandleInterrupts(int locked, Stat stat);
+int PauseAllThreads();
+void ResumeAllThreads();
+
 #endif /* _THREAD_H */

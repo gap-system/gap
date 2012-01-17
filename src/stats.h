@@ -51,6 +51,18 @@ const char * Revision_stats_h =
 */
 extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 
+/****************************************************************************
+**
+*V  IntrExecStatFuncs[<type>] . . . .  pseudo executor to handle interrupts
+**
+**  'IntrExecStatFuncs' is a dispatch table that dispatches to an interrupt
+**  function for every single entry; it is used in lieu of 'ExecStatFuncs'
+**  when the normal control flow needs to be interrupted by an external
+**  event.
+*/
+
+extern  UInt 		(* IntrExecStatFuncs[256]) ( Stat stat );
+
 
 /****************************************************************************
 **

@@ -22,6 +22,7 @@
 #include	"plist.h"
 #include	"string.h"
 #include	"precord.h"
+#include	"stats.h"
 #include        "tls.h"
 #include        "thread.h"
 #include	"fibhash.h"
@@ -31,17 +32,19 @@
 
 #ifndef WARD_ENABLED
 
-typedef struct {
+typedef struct ThreadData {
   pthread_t pthread_id;
   pthread_mutex_t *lock;
   pthread_cond_t *cond;
   int joined;
+  int system;
+  AO_t state;
   void *tls;
   void (*start)(void *);
   void *arg;
   Obj thread_object;
   Obj region_name;
-  int next;
+  struct ThreadData *next;
 } ThreadData;
 
 typedef struct TraversalState {
@@ -63,6 +66,7 @@ Region *LimboRegion, *ReadOnlyRegion, *ProtectedRegion;
 Obj PublicRegion;
 Obj PublicRegionName;
 
+static int GlobalPauseInProgress;
 static AO_t ThreadCounter = 1;
 
 static inline TraversalState *currentTraversal() {
@@ -91,7 +95,9 @@ void EndSingleThreaded() {
 }
 
 static ThreadData thread_data[MAX_THREADS];
-static int thread_free_list;
+static ThreadData *paused_threads[MAX_THREADS];
+static ThreadData *thread_free_list;
+static int num_paused_threads;
 
 static pthread_rwlock_t master_lock;
 
@@ -243,13 +249,17 @@ static void RunThreadedMain2(
   static pthread_cond_t main_thread_cond;
   SetupTLS();
   for (i=1; i<MAX_THREADS-1; i++)
-    thread_data[i].next = i+1;
+    thread_data[i].next = thread_data+i+1;
+  thread_data[0].next = NULL;
   for (i=0; i<NUM_LOCKS; i++)
     pthread_rwlock_init(&ObjLock[i], 0);
-  thread_data[MAX_THREADS-1].next = -1;
-  for (i=0; i<MAX_THREADS; i++)
+  thread_data[MAX_THREADS-1].next = NULL;
+  for (i=0; i<MAX_THREADS; i++) {
     thread_data[i].tls = 0;
-  thread_free_list = 1;
+    thread_data[i].state = TSTATE_TERMINATED;
+    thread_data[i].system = 0;
+  }
+  thread_free_list = thread_data+1;
   pthread_rwlock_init(&master_lock, 0);
   pthread_mutex_init(&main_thread_mutex, 0);
   pthread_cond_init(&main_thread_cond, 0);
@@ -289,7 +299,7 @@ void *DispatchThread(void *arg)
 {
   ThreadData *this_thread = arg;
   InitializeTLS();
-  TLS->threadID = this_thread - thread_data + 1;
+  TLS->threadID = this_thread - thread_data;
 #ifndef DISABLE_GC
   AddGCRoots();
 #endif
@@ -324,7 +334,7 @@ void *DispatchThread(void *arg)
 
 Obj RunThread(void (*start)(void *), void *arg)
 {
-  int result;
+  ThreadData *result;
 #ifndef HAVE_NATIVE_TLS
   void *tls;
 #endif
@@ -333,29 +343,36 @@ Obj RunThread(void (*start)(void *), void *arg)
   LockThreadControl(1);
   PreThreadCreation = 0;
   /* allocate a new thread id */
-  if (thread_free_list < 0)
+  if (thread_free_list == NULL)
   {
     UnlockThreadControl();
     errno = ENOMEM;
     return (Obj) 0;
   }
   result = thread_free_list;
-  thread_free_list = thread_data[thread_free_list].next;
+  thread_free_list = thread_free_list->next;
 #ifndef HAVE_NATIVE_TLS
-  if (!thread_data[result].tls)
-    thread_data[result].tls = AllocateTLS();
-  tls = thread_data[result].tls;
+  if (!result->tls)
+    result->tls = AllocateTLS();
+  tls = result->tls;
 #endif
-  if (!thread_data[result].lock) {
-    thread_data[result].lock = AllocateMemoryBlock(sizeof(pthread_mutex_t));
-    thread_data[result].cond = AllocateMemoryBlock(sizeof(pthread_cond_t));
-    pthread_mutex_init(thread_data[result].lock, 0);
-    pthread_cond_init(thread_data[result].cond, 0);
+  if (!result->lock) {
+    result->lock = AllocateMemoryBlock(sizeof(pthread_mutex_t));
+    result->cond = AllocateMemoryBlock(sizeof(pthread_cond_t));
+    pthread_mutex_init(result->lock, 0);
+    pthread_cond_init(result->cond, 0);
   }
-  thread_data[result].arg = arg;
-  thread_data[result].start = start;
-  thread_data[result].joined = 0;
-  thread_data[result].thread_object = NewThreadObject(result);
+  result->arg = arg;
+  result->start = start;
+  result->joined = 0;
+  if (GlobalPauseInProgress) {
+    /* New threads will be automatically paused */
+    result->state = TSTATE_PAUSED;
+    HandleInterrupts(0, T_NO_STAT);
+  } else {
+    result->state = TSTATE_RUNNING;
+  }
+  result->thread_object = NewThreadObject(result-thread_data);
   /* set up the thread attribute to support a custom stack in our TLS */
   pthread_attr_init(&thread_attr);
 #ifndef HAVE_NATIVE_TLS
@@ -366,12 +383,12 @@ Obj RunThread(void (*start)(void *), void *arg)
   /* fork the thread */
   EndSingleThreaded();
   IncThreadCounter();
-  if (pthread_create(&thread_data[result].pthread_id, &thread_attr,
-                     DispatchThread, thread_data+result) < 0) {
+  if (pthread_create(&result->pthread_id, &thread_attr,
+                     DispatchThread, result) < 0) {
     /* No more threads available */
     DecThreadCounter();
     LockThreadControl(1);
-    thread_data[result].next = thread_free_list;
+    result->next = thread_free_list;
     thread_free_list = result;
     UnlockThreadControl();
     pthread_attr_destroy(&thread_attr);
@@ -381,7 +398,7 @@ Obj RunThread(void (*start)(void *), void *arg)
     return (Obj)0;
   }
   pthread_attr_destroy(&thread_attr);
-  return thread_data[result].thread_object;
+  return result->thread_object;
 }
 
 int JoinThread(int id)
@@ -409,7 +426,7 @@ int JoinThread(int id)
   pthread_join(pthread_id, NULL);
   LockThreadControl(1);
   thread_data[id].next = thread_free_list;
-  thread_free_list = id;
+  thread_free_list = thread_data+id;
   /*
   FreeTLS(thread_data[id].tls);
   thread_data[id].tls = NULL;
@@ -613,6 +630,218 @@ void PopRegionLocks(int newSP) {
 
 int RegionLockSP() {
   return TLS->lockStackPointer;
+}
+
+int GetThreadState(int threadID) {
+  return (int)(thread_data[threadID].state);
+}
+
+int UpdateThreadState(int threadID, int oldState, int newState) {
+  return AO_compare_and_swap_full(&thread_data[threadID].state,
+    (AO_t) oldState, (AO_t) newState);
+}
+
+static int SetInterrupt(int threadID) {
+  ThreadLocalStorage *tls = thread_data[threadID].tls;
+  tls->CurrExecStatFuncs = IntrExecStatFuncs;
+}
+
+static int LockAndUpdateThreadState(int threadID, int oldState, int newState) {
+  if (pthread_mutex_trylock(thread_data[threadID].lock) < 0) {
+    return 0;
+  }
+  if (!UpdateThreadState(threadID, oldState, newState)) {
+    pthread_mutex_unlock(thread_data[threadID].lock);
+    return 0;
+  }
+  SetInterrupt(threadID);
+  pthread_cond_signal(thread_data[threadID].cond);
+  pthread_mutex_unlock(thread_data[threadID].lock);
+  return 1;
+}
+
+void PauseThread(int threadID) {
+  for (;;) {
+    int state = GetThreadState(threadID);
+    switch (state & TSTATE_MASK) {
+    case TSTATE_RUNNING:
+      if (UpdateThreadState(threadID,
+          TSTATE_RUNNING, TSTATE_PAUSED|(threadID << TSTATE_SHIFT))) {
+	SetInterrupt(threadID);
+        return;
+      }
+      break;
+    case TSTATE_BLOCKED:
+    case TSTATE_SYSCALL:
+      if (LockAndUpdateThreadState(threadID, 
+          state, TSTATE_PAUSED|(threadID << TSTATE_SHIFT))) {
+	return;
+      }
+    case TSTATE_PAUSED:
+    case TSTATE_TERMINATED:
+    case TSTATE_KILLED:
+    case TSTATE_BREAK:
+      return;
+    }
+  }
+}
+
+static void TerminateCurrentThread(int locked) {
+  ThreadData *thread = thread_data + TLS->threadID;
+  if (locked)
+    pthread_mutex_unlock(thread->lock);
+  syLongjmp(TLS->threadExit, 1);
+}
+
+static void PauseCurrentThread(int locked) {
+  ThreadData *thread = thread_data + TLS->threadID;
+  if (!locked)
+    pthread_mutex_lock(thread->lock);
+  for (;;) {
+    int state = GetThreadState(TLS->threadID);
+    if (state & TSTATE_MASK == TSTATE_KILLED)
+      TerminateCurrentThread(1);
+    if (state & TSTATE_MASK != TSTATE_PAUSED)
+      break;
+    ((Region *)(TLS->currentRegion))->alt_owner =
+      thread_data[state >> TSTATE_SHIFT].tls;
+    pthread_cond_wait(thread->cond, thread->lock);
+    // TODO: This really should go in ResumeThread()
+    ((Region *)(TLS->currentRegion))->alt_owner = NULL;
+  }
+  if (!locked)
+    pthread_mutex_unlock(thread->lock);
+}
+
+static void EnterBreakCurrentThread(int locked, Stat stat) {
+  ThreadData *thread = thread_data + TLS->threadID;
+  if (stat == T_NO_STAT)
+    return;
+  if (!locked)
+    pthread_mutex_lock(thread->lock);
+  TLS->CurrExecStatFuncs = ExecStatFuncs;
+  SET_BRK_CURR_STAT(stat);
+  UpdateThreadState(TLS->threadID, TSTATE_BREAK, TSTATE_RUNNING);
+  ErrorReturnVoid("system interrupt", 0L, 0L, "you can 'return;'");
+  if (!locked)
+    pthread_mutex_unlock(thread->lock);
+}
+
+void HandleInterrupts(int locked, Stat stat) {
+   switch (GetThreadState(TLS->threadID) & TSTATE_MASK) {
+     case TSTATE_PAUSED:
+       PauseCurrentThread(locked);
+       break;
+     case TSTATE_BREAK:
+       EnterBreakCurrentThread(locked, stat);
+       break;
+     case TSTATE_KILLED:
+       TerminateCurrentThread(locked);
+       break;
+   }
+}
+
+void KillThread(int threadID) {
+  for (;;) {
+    int state = GetThreadState(threadID);
+    switch (state & TSTATE_MASK) {
+    case TSTATE_RUNNING:
+      if (UpdateThreadState(threadID, TSTATE_RUNNING, TSTATE_KILLED)) {
+	SetInterrupt(threadID);
+        return;
+      }
+      break;
+    case TSTATE_BLOCKED:
+      if (LockAndUpdateThreadState(threadID, state, TSTATE_KILLED))
+        return;
+      break;
+    case TSTATE_SYSCALL:
+      if (UpdateThreadState(threadID, state, TSTATE_KILLED)) {
+	  return;
+      }
+      break;
+    case TSTATE_BREAK:
+      if (UpdateThreadState(threadID, state, TSTATE_KILLED)) {
+          SetInterrupt(threadID);
+	  return;
+      }
+      break;
+    case TSTATE_PAUSED:
+      if (LockAndUpdateThreadState(threadID, state, TSTATE_KILLED)) {
+        return;
+      }
+      break;
+    case TSTATE_TERMINATED:
+    case TSTATE_KILLED:
+      return;
+    }
+  }
+}
+
+void InterruptThread(int threadID) {
+  for (;;) {
+    int state = GetThreadState(threadID);
+    switch (state & TSTATE_MASK) {
+    case TSTATE_RUNNING:
+      if (UpdateThreadState(threadID,
+          TSTATE_RUNNING, TSTATE_PAUSED|(threadID << TSTATE_SHIFT))) {
+	SetInterrupt(threadID);
+        return;
+      }
+      break;
+    case TSTATE_BLOCKED:
+      if (LockAndUpdateThreadState(threadID, state, TSTATE_BREAK))
+        return;
+    case TSTATE_SYSCALL:
+      if (UpdateThreadState(threadID, state, TSTATE_BREAK)) {
+        return;
+      }
+    case TSTATE_PAUSED:
+    case TSTATE_TERMINATED:
+    case TSTATE_KILLED:
+    case TSTATE_BREAK:
+      /* We do not interrupt threads that are interrupted */
+      return;
+    }
+  }
+}
+
+void ResumeThread(int threadID) {
+  LockAndUpdateThreadState(threadID, TSTATE_PAUSED, TSTATE_RUNNING);
+}
+
+int PauseAllThreads() {
+  int i, n;
+  LockThreadControl(1);
+  if (GlobalPauseInProgress) {
+    UnlockThreadControl();
+    return 0;
+  }
+  GlobalPauseInProgress = 1;
+  for (i=0, n=0; i<MAX_THREADS; i++) {
+    switch (GetThreadState(i) & TSTATE_MASK) {
+      case TSTATE_TERMINATED:
+      case TSTATE_KILLED:
+        break;
+      default:
+	if (!thread_data[i].system)
+          paused_threads[n++] = thread_data + i;
+	break;
+    }
+  }
+  num_paused_threads = n;
+  UnlockThreadControl();
+  for (i=0; i<n; i++)
+    PauseThread(i);
+  return 1;
+}
+
+void ResumeAllThreads() {
+  int i, n;
+  n = num_paused_threads;
+  for (i=0; i<n; i++) {
+    ResumeThread(i);
+  }
 }
 
 int LockObjects(int count, Obj *objects, int *mode)

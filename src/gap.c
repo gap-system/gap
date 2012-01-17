@@ -3004,6 +3004,8 @@ void ThreadedInterpreter(void *funcargs) {
   SET_LEN_PLIST(tmp, LEN_PLIST(tmp)-1);
 
   if (!READ_ERROR()) {
+    if (sySetjmp(TLS->threadExit))
+      return;
     Obj init, exit;
     init = GVarOptFunc(&GVarTHREAD_INIT);
     if (init) CALL_0ARGS(init);

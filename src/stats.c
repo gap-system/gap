@@ -1664,23 +1664,10 @@ UInt ExecIntrStat (
     UInt                i;              /* loop variable                   */
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    if ( TLS->CurrExecStatFuncs != ExecStatFuncs ) {
-        TLS->CurrExecStatFuncs = ExecStatFuncs;
-    }
-    SyIsIntr();
+    TLS->CurrExecStatFuncs = ExecStatFuncs;
 
     /* and now for something completely different                          */
-    SET_BRK_CURR_STAT( stat );
-
-    if ( SyStorOverrun != 0 ) {
-      SyStorOverrun = 0; /* reset */
-      ErrorReturnVoid(
-        "exceeded the permitted memory (`-o' command line option)",
-	0L, 0L, "you can 'return;'" );
-    }
-    else {
-      ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-    }
+    HandleInterrupts(1, stat);
 
     /* continue at the interrupted statement                               */
     return EXEC_STAT( stat );
