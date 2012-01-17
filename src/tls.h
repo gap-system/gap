@@ -200,7 +200,7 @@ static inline Bag WriteGuard(Bag bag)
   if (!IS_BAG_REF(bag))
     return bag;
   region = DS_BAG(bag);
-  if (region && region->owner != TLS)
+  if (region && region->owner != TLS && region->alt_owner != TLS)
     WriteGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -222,7 +222,7 @@ static inline Bag *WriteGuardByRef(Bag *bagref)
   if (!IS_BAG_REF(bag))
     return bagref;
   region = DS_BAG(bag);
-  if (region && region->owner != TLS)
+  if (region && region->owner != TLS && region->alt_owner != TLS)
     WriteGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -244,7 +244,7 @@ static inline int CheckWrite(Bag bag)
   if (!IS_BAG_REF(bag))
     return 1;
   region = DS_BAG(bag);
-  return !(region && region->owner != TLS);
+  return !(region && region->owner != TLS && region->alt_owner != TLS);
 }
 
 #ifdef VERBOSE_GUARDS
@@ -260,7 +260,7 @@ static inline Bag ReadGuard(Bag bag)
     return bag;
   region = DS_BAG(bag);
   if (region && region->owner != TLS &&
-      !region->readers[TLS->threadID])
+      !region->readers[TLS->threadID] && region->alt_owner != TLS)
     ReadGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -283,7 +283,7 @@ static inline Bag *ReadGuardByRef(Bag *bagref)
     return bagref;
   region = DS_BAG(bag);
   if (region && region->owner != TLS &&
-      !region->readers[TLS->threadID])
+      !region->readers[TLS->threadID] && region->alt_owner != TLS)
     ReadGuardError(bag
 #ifdef VERBOSE_GUARDS
     , file, line, func, expr
@@ -307,7 +307,7 @@ static inline int CheckRead(Bag bag)
     return 1;
   region = DS_BAG(bag);
   return !(region && region->owner != TLS &&
-    !region->readers[TLS->threadID]);
+    !region->readers[TLS->threadID] && region->alt_owner != TLS);
 }
 
 static inline int IsMainThread()

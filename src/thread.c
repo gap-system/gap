@@ -652,9 +652,11 @@ static int SetInterrupt(int threadID) {
 
 static int LockAndUpdateThreadState(int threadID, int oldState, int newState) {
   if (pthread_mutex_trylock(thread_data[threadID].lock) < 0) {
+    printf("locked\n");
     return 0;
   }
   if (!UpdateThreadState(threadID, oldState, newState)) {
+    printf("update failed\n");
     pthread_mutex_unlock(thread_data[threadID].lock);
     return 0;
   }
@@ -670,7 +672,7 @@ void PauseThread(int threadID) {
     switch (state & TSTATE_MASK) {
     case TSTATE_RUNNING:
       if (UpdateThreadState(threadID,
-          TSTATE_RUNNING, TSTATE_PAUSED|(threadID << TSTATE_SHIFT))) {
+          TSTATE_RUNNING, TSTATE_PAUSED|(TLS->threadID << TSTATE_SHIFT))) {
 	SetInterrupt(threadID);
         return;
       }
@@ -678,7 +680,7 @@ void PauseThread(int threadID) {
     case TSTATE_BLOCKED:
     case TSTATE_SYSCALL:
       if (LockAndUpdateThreadState(threadID, 
-          state, TSTATE_PAUSED|(threadID << TSTATE_SHIFT))) {
+          state, TSTATE_PAUSED|(TLS->threadID << TSTATE_SHIFT))) {
 	return;
       }
     case TSTATE_PAUSED:
@@ -703,9 +705,9 @@ static void PauseCurrentThread(int locked) {
     pthread_mutex_lock(thread->lock);
   for (;;) {
     int state = GetThreadState(TLS->threadID);
-    if (state & TSTATE_MASK == TSTATE_KILLED)
+    if ((state & TSTATE_MASK) == TSTATE_KILLED)
       TerminateCurrentThread(1);
-    if (state & TSTATE_MASK != TSTATE_PAUSED)
+    if ((state & TSTATE_MASK) != TSTATE_PAUSED)
       break;
     ((Region *)(TLS->currentRegion))->alt_owner =
       thread_data[state >> TSTATE_SHIFT].tls;
@@ -811,7 +813,10 @@ void InterruptThread(int threadID) {
 }
 
 void ResumeThread(int threadID) {
-  LockAndUpdateThreadState(threadID, TSTATE_PAUSED, TSTATE_RUNNING);
+  int state = GetThreadState(threadID);
+  if ((state & TSTATE_MASK) == TSTATE_PAUSED) {
+    LockAndUpdateThreadState(threadID, state, TSTATE_RUNNING);
+  }
 }
 
 int PauseAllThreads() {

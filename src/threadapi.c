@@ -496,6 +496,52 @@ Obj FuncKillThread(Obj self, Obj thread) {
 }
 
 
+/****************************************************************************
+**
+*F FuncPauseThread ... pause a given thread
+**
+*/
+
+
+Obj FuncPauseThread(Obj self, Obj thread) {
+  int id;
+  if (IS_INTOBJ(thread)) {
+    id = INT_INTOBJ(thread);
+    if (id < 0 || id >= MAX_THREADS)
+      ArgumentError("PauseThread: Thread ID out of range");
+  } else if (TNUM_OBJ(thread) == T_THREAD) {
+    id = ThreadID(thread);
+  } else
+    ArgumentError("PauseThread: Argument must be a thread object");
+  PauseThread(id);
+  return (Obj) 0;
+}
+
+
+/****************************************************************************
+**
+*F FuncResumeThread ... resume a given thread
+**
+*/
+
+
+Obj FuncResumeThread(Obj self, Obj thread) {
+  int id;
+  if (IS_INTOBJ(thread)) {
+    id = INT_INTOBJ(thread);
+    if (id < 0 || id >= MAX_THREADS)
+      ArgumentError("ResumeThread: Thread ID out of range");
+  } else if (TNUM_OBJ(thread) == T_THREAD) {
+    id = ThreadID(thread);
+  } else
+    ArgumentError("ResumeThread: Argument must be a thread object");
+  ResumeThread(id);
+  return (Obj) 0;
+}
+
+
+
+
 
 /****************************************************************************
 **
@@ -588,7 +634,7 @@ Obj FuncIsThreadLocal(Obj self, Obj obj) {
 Obj FuncHaveWriteAccess(Obj self, Obj obj)
 {
   Region* ds = GetRegionOf(obj);
-  if (ds != NULL && ds->owner == TLS)
+  if (ds != NULL && (ds->owner == TLS || ds->alt_owner == TLS))
     return True;
   else
     return False;
@@ -603,7 +649,7 @@ Obj FuncHaveWriteAccess(Obj self, Obj obj)
 Obj FuncHaveReadAccess(Obj self, Obj obj)
 {
   Region* ds = GetRegionOf(obj);
-  if (ds != NULL && (ds->owner == TLS || ds->readers[TLS->threadID+1]))
+  if (ds != NULL && (ds->owner == TLS || ds->readers[TLS->threadID+1] || ds->alt_owner == TLS))
     return True;
   else
     return False;
@@ -700,6 +746,8 @@ Obj FuncCreateThread(Obj self, Obj funcargs);
 Obj FuncCurrentThread(Obj self);
 Obj FuncThreadID(Obj self, Obj thread);
 Obj FuncKillThread(Obj self, Obj thread);
+Obj FuncPauseThread(Obj self, Obj thread);
+Obj FuncResumeThread(Obj self, Obj thread);
 Obj FuncWaitThread(Obj self, Obj id);
 Obj FuncCreateBarrier(Obj self);
 Obj FuncStartBarrier(Obj self, Obj barrier, Obj count);
@@ -754,11 +802,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "ThreadID", 1, "thread",
       FuncThreadID, "src/threadapi.c:ThreadID" },
 
-    { "WaitThread", 1, "threadID",
+    { "WaitThread", 1, "thread",
       FuncWaitThread, "src/threadapi.c:WaitThread" },
 
-    { "KillThread", 1, "threadID",
+    { "KillThread", 1, "thread",
       FuncKillThread, "src/threadapi.c:KillThread" },
+
+    { "PauseThread", 1, "thread",
+      FuncPauseThread, "src/threadapi.c:PauseThread" },
+
+    { "ResumeThread", 1, "thread",
+      FuncResumeThread, "src/threadapi.c:ResumeThread" },
 
     { "HASH_LOCK", 1, "object",
       FuncHASH_LOCK, "src/threadapi.c:HASH_LOCK" },
