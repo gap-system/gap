@@ -88,7 +88,7 @@ void HashUnlockShared(void *obj);
 #define TSTATE_INTERRUPT 4
 
 #define TSTATE_PAUSED 4
-#define TSTATE_BREAK 5
+#define TSTATE_STOPPED 5
 #define TSTATE_KILLED 6
 
 
@@ -96,7 +96,7 @@ int GetThreadState(int threadID);
 int UpdateThreadState(int threadID, int oldState, int newState);
 void KillThread(int threadID);
 void PauseThread(int threadID);
-void InterruptThread(int threadID);
+void StopThread(int threadID);
 void ResumeThread(int threadID);
 void HandleInterrupts(int locked, Stat stat);
 int PauseAllThreads();

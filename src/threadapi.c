@@ -498,6 +498,28 @@ Obj FuncKillThread(Obj self, Obj thread) {
 
 /****************************************************************************
 **
+*F FuncStopThread ... stop a given thread
+**
+*/
+
+
+Obj FuncStopThread(Obj self, Obj thread) {
+  int id;
+  if (IS_INTOBJ(thread)) {
+    id = INT_INTOBJ(thread);
+    if (id < 0 || id >= MAX_THREADS)
+      ArgumentError("StopThread: Thread ID out of range");
+  } else if (TNUM_OBJ(thread) == T_THREAD) {
+    id = ThreadID(thread);
+  } else
+    ArgumentError("StopThread: Argument must be a thread object");
+  StopThread(id);
+  return (Obj) 0;
+}
+
+
+/****************************************************************************
+**
 *F FuncPauseThread ... pause a given thread
 **
 */
@@ -746,6 +768,7 @@ Obj FuncCreateThread(Obj self, Obj funcargs);
 Obj FuncCurrentThread(Obj self);
 Obj FuncThreadID(Obj self, Obj thread);
 Obj FuncKillThread(Obj self, Obj thread);
+Obj FuncStopThread(Obj self, Obj thread);
 Obj FuncPauseThread(Obj self, Obj thread);
 Obj FuncResumeThread(Obj self, Obj thread);
 Obj FuncWaitThread(Obj self, Obj id);
@@ -807,6 +830,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "KillThread", 1, "thread",
       FuncKillThread, "src/threadapi.c:KillThread" },
+
+    { "StopThread", 1, "thread",
+      FuncStopThread, "src/threadapi.c:StopThread" },
 
     { "PauseThread", 1, "thread",
       FuncPauseThread, "src/threadapi.c:PauseThread" },

@@ -682,13 +682,13 @@ void PauseThread(int threadID) {
     case TSTATE_BLOCKED:
     case TSTATE_SYSCALL:
       if (LockAndUpdateThreadState(threadID, 
-          state, TSTATE_PAUSED|(TLS->threadID << TSTATE_SHIFT))) {
+          state, TSTATE_PAUSED|(TLS->threadID << TSTATE_SHIFT)))
 	return;
-      }
+      break;
     case TSTATE_PAUSED:
     case TSTATE_TERMINATED:
     case TSTATE_KILLED:
-    case TSTATE_BREAK:
+    case TSTATE_STOPPED:
       return;
     }
   }
@@ -729,7 +729,7 @@ static void EnterBreakCurrentThread(int locked, Stat stat) {
     pthread_mutex_lock(thread->lock);
   TLS->CurrExecStatFuncs = ExecStatFuncs;
   SET_BRK_CURR_STAT(stat);
-  UpdateThreadState(TLS->threadID, TSTATE_BREAK, TSTATE_RUNNING);
+  UpdateThreadState(TLS->threadID, TSTATE_STOPPED, TSTATE_RUNNING);
   ErrorReturnVoid("system interrupt", 0L, 0L, "you can 'return;'");
   if (!locked)
     pthread_mutex_unlock(thread->lock);
@@ -740,7 +740,7 @@ void HandleInterrupts(int locked, Stat stat) {
      case TSTATE_PAUSED:
        PauseCurrentThread(locked);
        break;
-     case TSTATE_BREAK:
+     case TSTATE_STOPPED:
        EnterBreakCurrentThread(locked, stat);
        break;
      case TSTATE_KILLED:
@@ -768,7 +768,7 @@ void KillThread(int threadID) {
 	  return;
       }
       break;
-    case TSTATE_BREAK:
+    case TSTATE_STOPPED:
       if (UpdateThreadState(threadID, state, TSTATE_KILLED)) {
           SetInterrupt(threadID);
 	  return;
@@ -786,28 +786,28 @@ void KillThread(int threadID) {
   }
 }
 
-void InterruptThread(int threadID) {
+void StopThread(int threadID) {
   for (;;) {
     int state = GetThreadState(threadID);
     switch (state & TSTATE_MASK) {
     case TSTATE_RUNNING:
-      if (UpdateThreadState(threadID,
-          TSTATE_RUNNING, TSTATE_PAUSED|(threadID << TSTATE_SHIFT))) {
+      if (UpdateThreadState(threadID, TSTATE_RUNNING, TSTATE_STOPPED)) {
 	SetInterrupt(threadID);
         return;
       }
       break;
     case TSTATE_BLOCKED:
-      if (LockAndUpdateThreadState(threadID, state, TSTATE_BREAK))
+      if (LockAndUpdateThreadState(threadID, state, TSTATE_STOPPED))
         return;
+      break;
     case TSTATE_SYSCALL:
-      if (UpdateThreadState(threadID, state, TSTATE_BREAK)) {
+      if (UpdateThreadState(threadID, state, TSTATE_STOPPED))
         return;
-      }
+      break;
     case TSTATE_PAUSED:
     case TSTATE_TERMINATED:
     case TSTATE_KILLED:
-    case TSTATE_BREAK:
+    case TSTATE_STOPPED:
       /* We do not interrupt threads that are interrupted */
       return;
     }
