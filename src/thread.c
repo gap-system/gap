@@ -267,7 +267,11 @@ static void RunThreadedMain2(
   TLS->threadSignal = &main_thread_cond;
   thread_data[0].lock = TLS->threadLock;
   thread_data[0].cond = TLS->threadSignal;
+  thread_data[0].state = TSTATE_RUNNING;
+  thread_data[0].tls = TLS;
   InitTraversal();
+  if (sySetjmp(TLS->threadExit))
+    exit(0);
   exit((*mainFunction)(argc, argv, environ));
 }
 
