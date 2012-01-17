@@ -649,6 +649,7 @@ int UpdateThreadState(int threadID, int oldState, int newState) {
 
 static int SetInterrupt(int threadID) {
   ThreadLocalStorage *tls = thread_data[threadID].tls;
+  AO_nop_full();
   tls->CurrExecStatFuncs = IntrExecStatFuncs;
 }
 

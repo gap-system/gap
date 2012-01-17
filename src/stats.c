@@ -1704,6 +1704,8 @@ void InitIntrExecStats ( void )
           i++ ) {
         IntrExecStatFuncs[i] = ExecIntrStat;
     }
+    for (i = T_SEQ_STAT; i < T_RETURN_VOID; i++)
+      IntrExecStatFuncs[i] = ExecStatFuncs[i];
     for ( i = T_RETURN_VOID;
           i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]);
           i++ ) {
@@ -2234,6 +2236,11 @@ static Int InitKernel (
 void InitStatTLS()
 {
   TLS->CurrExecStatFuncs = ExecStatFuncs;
+  AO_nop_full();
+  if (GetThreadState(TLS->threadID) >= TSTATE_INTERRUPT) {
+    AO_nop_full();
+    TLS->CurrExecStatFuncs = IntrExecStatFuncs;
+  }
 }
 
 void DestroyStatTLS()
