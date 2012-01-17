@@ -482,9 +482,16 @@ Obj FuncThreadID(Obj self, Obj thread) {
 
 
 Obj FuncKillThread(Obj self, Obj thread) {
-  if (TNUM_OBJ(thread) != T_THREAD)
+  int id;
+  if (IS_INTOBJ(thread)) {
+    id = INT_INTOBJ(thread);
+    if (id < 0 || id >= MAX_THREADS)
+      ArgumentError("KillThread: Thread ID out of range");
+  } else if (TNUM_OBJ(thread) == T_THREAD) {
+    id = ThreadID(thread);
+  } else
     ArgumentError("KillThread: Argument must be a thread object");
-  KillThread(ThreadID(thread));
+  KillThread(id);
   return (Obj) 0;
 }
 
