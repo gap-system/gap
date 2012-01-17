@@ -302,24 +302,25 @@ void CreateMainRegion()
 void *DispatchThread(void *arg)
 {
   ThreadData *this_thread = arg;
+  Region *region;
   InitializeTLS();
   TLS->threadID = this_thread - thread_data;
 #ifndef DISABLE_GC
   AddGCRoots();
 #endif
   InitTLS();
-  TLS->currentRegion = NewRegion();
+  TLS->currentRegion = region = NewRegion();
   TLS->threadLock = this_thread->lock;
   TLS->threadSignal = this_thread->cond;
-  ((Region *)TLS->currentRegion)->fixed_owner = 1;
-  ((Region *)TLS->currentRegion)->name = this_thread->region_name;
-  RegionWriteLock(TLS->currentRegion);
+  region->fixed_owner = 1;
+  region->name = this_thread->region_name;
+  RegionWriteLock(region);
   if (!this_thread->region_name) {
     char buf[8];
     sprintf(buf, "%d", TLS->threadID);
     this_thread->region_name = MakeImmString2("thread #", buf);
   }
-  SetRegionName(TLS->currentRegion, this_thread->region_name);
+  SetRegionName(region, this_thread->region_name);
   TLS->threadObject = this_thread->thread_object;
   pthread_mutex_lock(this_thread->lock);
   *(ThreadLocalStorage **)(ADDR_OBJ(TLS->threadObject)) = TLS;
@@ -327,7 +328,8 @@ void *DispatchThread(void *arg)
   pthread_mutex_unlock(this_thread->lock);
   this_thread->start(this_thread->arg);
   *(UInt *)(ADDR_OBJ(TLS->threadObject)+2) |= THREAD_TERMINATED;
-  RegionWriteUnlock(TLS->currentRegion);
+  region->fixed_owner = 0;
+  RegionWriteUnlock(region);
   DestroyTLS();
 #ifndef DISABLE_GC
   RemoveGCRoots();
