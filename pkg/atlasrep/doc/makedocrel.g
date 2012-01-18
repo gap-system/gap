@@ -8,7 +8,9 @@ SetInfoLevel( InfoGAPDoc, 2 );
 LoadPackage( "ctbllib" );
 LoadPackage( "Browse" );
 
-SetGapDocLaTeXOptions( "pdf", "nocolor", "UTF-8" );
+SetGapDocLaTeXOptions( "nocolor", "utf8",
+      rec( Maintitlesize := "\\fontsize{50}{55}\\selectfont" ) );
+#T change the numbers!
 
 pathtodoc:= ".";
 main:= "main.xml";
@@ -25,12 +27,12 @@ files:= [
     "../gap/interfac.gd",
     "../gap/mindeg.gd",
     "../gap/scanmtx.gd",
-    "../gap/test.gd",
+    "../gap/test.g",
     "../tst/testinst.g",
     "../gap/types.g",
     "../gap/types.gd",
     "../gap/utils.gd",
-       ];
+  ];
 
 AddHandlerBuildRecBibXMLEntry( "Wrap:Package", "BibTeX",
   function( entry, r, restype, strings, options )
@@ -46,21 +48,20 @@ AddHandlerBuildRecBibXMLEntry( "Wrap:Package", "HTML",
 
 pathtotst:= "../tst";
 tstfilename:= "docxpl.tst";
-pkgname:= "`atlasrep'";
+pkgname:= "AtlasRep";
 authors:= [ "Thomas Breuer" ];
 copyrightyear:= "2001";
-tstheadertext:= Concatenation( "\
+tstheadertext:= "\
 This file contains the GAP code of the examples in the package\n\
 documentation files.\n\
 \n\
 In order to run the tests, one starts GAP from the `tst' subdirectory\n\
-of the `pkg/",
-pkgname,
-"' directory, and calls `ReadTest( \"docxpl.tst\" );'.\n\
-" );
+of the `pkg/atlasrep' directory, and calls `ReadTest( \"docxpl.tst\" );'.\n\
+";
 
 
-MakeGAPDocDoc( pathtodoc, main, files, bookname, pathtoroot );;
+tree:= MakeGAPDocDoc( pathtodoc, main, files, bookname, pathtoroot );;
+CopyHTMLStyleFiles( pathtodoc );
 
 if IsBound( GAPDocManualLabFromSixFile ) then
   GAPDocManualLabFromSixFile( "AtlasRep", "./manual.six" );
@@ -92,14 +93,14 @@ ExampleFileHeader:= function( filename, pkgname, authors, copyrightyear,
       Append( str, RepeatedString( " ", linelen - Length( authors[i] ) - 4 ) );
       Append( str, authors[i] );
     od;
-    Append( str, "\n##\n#H  @(#)$" );
-    Append( str, "Id: $\n##\n#Y  Copyright (C)  " );
+    Append( str, "\n##\n#Y  Copyright (C)  " );
     Append( str, String( copyrightyear ) );
     Append( str, ",  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany" );
     Append( str, "\n##\n##  " );
     Append( str, ReplacedString( text, "\n", "\n##  " ) );
-    Append( str, "\n\ngap> START_TEST(\"$" );
-    Append( str, "Id: $\");\n\n" );
+    Append( str, "\n\ngap> START_TEST( \"Input file: " );
+    Append( str, filename );
+    Append( str, "\" );\n\n" );
 
     return str;
 end;
@@ -135,13 +136,15 @@ CreateManualExamplesFile:= function( pkgname, authors, copyrightyear, text,
     tstfilename:= Concatenation( tstpath, "/", tstfilename );
     tstfilenameold:= Concatenation( tstfilename, "~" );
     if IsExistingFile( tstfilename ) then
+      Exec( Concatenation( "rm -f ", tstfilenameold ) );
       Exec( Concatenation( "mv ", tstfilename, " ", tstfilenameold ) );
     fi;
     FileString( tstfilename, str );
     if IsExistingFile( tstfilenameold ) then
       Print( "#I  differences in `", tstfilename, "':\n" );
-      Exec( Concatenation( "diff ", tstfilename, " ", tstfilenameold ) );
+      Exec( Concatenation( "diff ", tstfilenameold, " ", tstfilename ) );
     fi;
+    Exec( Concatenation( "chmod 444 ", tstfilename ) );
 end;
 
 

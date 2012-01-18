@@ -2,7 +2,7 @@
 **
 *A  iteration.c                 ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: iteration.c,v 1.4 2001/12/20 11:26:52 werner Exp $
+*A  @(#)$Id: iteration.c,v 1.6 2011/11/29 09:43:57 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -31,7 +31,7 @@ int call_depth;
 int *step_sequence;
 int subgroup_rank;
 struct pga_vars *flag;
-FILE_TYPE input_file;
+FILE * input_file;
 int nmr_of_descendants;
 int class_bound;
 int order_bound;
@@ -41,7 +41,7 @@ struct pcp_vars *pcp;
    int ***auts;
    register int group_nmr, first = 1;
    int next_class = 0;
-   FILE_TYPE descendant_file;
+   FILE * descendant_file;
    char name[MAXWORD];
    char *s, *t;
 
@@ -107,5 +107,5 @@ struct pcp_vars *pcp;
    else 
       adjoin = pcp->cc + 1;
 
-   sprintf (name + strlen (name), "%d\0", adjoin);
+   sprintf (name + strlen (name), "%d", adjoin);
 }

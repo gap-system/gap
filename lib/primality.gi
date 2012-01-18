@@ -2,14 +2,11 @@
 ##
 #W  primality.gi    GAP library          Jack Schmidt
 ##
-#H  @(#)$Id: primality.gi,v 4.9 2010/10/07 18:35:29 gap Exp $
 ##
 #Y  Copyright (C)  2005 Jack Schmidt
 ##
 ##  This file contains declarations for the primality test in the integers.
 ##
-Revision.primality_gi :=
-    "@(#)$Id: primality.gi,v 4.9 2010/10/07 18:35:29 gap Exp $";
 
 ##  This file is meant to improve the primality testing in GAP in two
 ##  significant ways. (1) IsProbablyPrimeInt has been sped up, and perhaps
@@ -706,7 +703,6 @@ function(N)
       if(ret[1]=fail) then 
         Print("\n\n");
         Print("# !!! Please email gapmethods@mowsey.org the following:\n");
-        Print("# !!! $Id: primality.gi,v 4.9 2010/10/07 18:35:29 gap Exp $\n");
         Print("# !!! PrimalityProof(",HexStringInt(N),") failed at F",p[2],"\n\n\n");
         Error("# !!! You have probably found a bug. Theoretically <n> is composite.");
         return fail;
@@ -726,7 +722,6 @@ function(N)
       if(ret[1]=fail) then 
         Print("\n\n");
         Print("# !!! Please email gapmethods@mowsey.org the following:\n");
-        Print("# !!! $Id: primality.gi,v 4.9 2010/10/07 18:35:29 gap Exp $\n");
         Print("# !!! PrimalityProof(",HexStringInt(N),") failed at L",p[2],"\n\n\n");
         Error("# !!! You have probably found a bug. Theoretically <n> is composite.");
         return fail;
@@ -1051,7 +1046,6 @@ elif ret = true and N < 10 ^ 13 then
     else
       Print("\n\n");
       Print("# !!! Please email gapmethods@mowsey.org the following:\n");
-      Print("# !!! $Id: primality.gi,v 4.9 2010/10/07 18:35:29 gap Exp $\n");
       Print("# !!! BPSW failed on ",HexStringInt(N),"\n\n\n");
       Error("# !!! You have probably found a bug. Theoretically <n> is composite.");
       return false;

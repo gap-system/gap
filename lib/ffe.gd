@@ -3,7 +3,6 @@
 #W  ffe.gd                      GAP library                     Werner Nickel
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: ffe.gd,v 4.49 2010/10/29 08:44:09 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file declares operations for `FFE's.
 ##
-Revision.ffe_gd :=
-    "@(#)$Id: ffe.gd,v 4.49 2010/10/29 08:44:09 gap Exp $";
 
 
 #############################################################################
@@ -266,7 +263,7 @@ DeclareCategoryCollections( "IsFFECollColl" );
 ##  see&nbsp;<Ref Sect="Comparisons"/>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> Z( 16 )^10 = Z( 4 )^2;  # this illustrates the embedding of GF(4) in GF(16)
+##  gap> Z( 16 )^10 = Z( 4 )^2;  # illustrates embedding of GF(4) in GF(16)
 ##  true
 ##  gap> 0 < 0*Z(101);
 ##  true

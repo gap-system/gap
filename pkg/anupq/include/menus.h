@@ -2,7 +2,7 @@
 **
 *A  menus.h                     ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: menus.h,v 1.3 2001/06/15 14:39:21 werner Exp $
+*A  @(#)$Id: menus.h,v 1.6 2011/12/02 16:42:14 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -52,7 +52,6 @@
 #define CLOSE_RELATIONS 19
 #define STRUCTURE 20
 #define LIST_AUTOMORPHISMS 21
-#define MAGMA_AUTOMORPHISMS 22
 #define DGEN_WORD 23
 #define DGEN_COMM 24
 #define OUTPUT_PRESENTATION 25
@@ -65,10 +64,6 @@
 #define ENGEL 29
 #define RELATIONS_FILE 30
 
-#endif 
-
-#if defined (LIE)
-#include "lie_menus.h"
 #endif 
 
 #define CAY_NOT_SET (-100)
@@ -102,11 +97,6 @@
 #define AUT_CLASSES 17 
 #define TEMP 19
 
-/* constants for quotpic menu */
-#define PQ_OPTIONS 1
-#define MATRIX 2
-#define MEATAXE 3
-
 /* constants for standard presentation menu */
 #define START_INFO 1
 #define CONSTRUCT 2
@@ -117,7 +107,6 @@
 #define PQ_MENU 7
 
 #define DEFAULT_MENU 0
-#define QUOTPIC_MENU 1
 #define ISOM_MENU 2
 
 #endif 

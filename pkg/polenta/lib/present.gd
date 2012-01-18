@@ -2,10 +2,10 @@
 ##
 #W present.gd              POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## pcp-presentations for matrix groups
 ##
-#H  @(#)$Id: present.gd,v 1.2 2011/05/31 13:10:57 gap Exp $
+#H  @(#)$Id: present.gd,v 1.4 2011/09/23 14:40:24 gap Exp $
 ##
 #Y 2003
 ##
@@ -21,8 +21,6 @@ DeclareProperty( "IsIsomorphismByFinitePolycyclicMatrixGroup",
 DeclareProperty( "IsIsomorphismByPolycyclicMatrixGroup",
                   IsMapping);
 
-DeclareGlobalFunction( "POL_IsMatGroupOverFiniteField" );
-          
 #############################################################################
 ##
 #E

@@ -3,7 +3,7 @@
 #W info.gd               POLENTA package                     Bjoern Assmann
 ##
 ##
-#H  @(#)$Id: info.gd,v 1.1 2003/11/04 14:07:05 gap Exp $
+#H  @(#)$Id: info.gd,v 1.2 2011/09/23 13:36:32 gap Exp $
 ##
 #Y 2003
 ##
@@ -11,7 +11,7 @@
 #############################################################################
 #I InfoClass
 ##
-DeclareInfoClass( "InfoPolenta" );         
+DeclareInfoClass( "InfoPolenta" );
 
 #############################################################################
 ##

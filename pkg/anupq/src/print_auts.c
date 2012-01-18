@@ -2,7 +2,7 @@
 **
 *A  print_auts.c                ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: print_auts.c,v 1.5 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: print_auts.c,v 1.6 2011/11/29 09:43:58 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -25,7 +25,7 @@ int ***auts;
 struct pcp_vars *pcp;
 {
    register int i, j, k, x;
-   FILE_TYPE output_file;
+   FILE * output_file;
    char *file_name;
   int image;
 

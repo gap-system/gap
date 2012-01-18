@@ -2,7 +2,7 @@
 **
 *A  tails.c                     ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: tails.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: tails.c,v 1.7 2011/12/02 16:42:15 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -26,7 +26,7 @@ int start_weight;
 int end_weight;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int structure = pcp->structure;
    register int class_end = pcp->clend;
@@ -151,7 +151,7 @@ int start_weight;
 int end_weight;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int structure = pcp->structure;
    register int class_end = pcp->clend;
@@ -198,21 +198,12 @@ struct pcp_vars *pcp;
    }
 #endif
 
-#if defined (LIE) 
-   final_class = MIN (start_weight + 1, final_class);
-   start_class = MAX (pcp->cc - final_class, 1);
-#endif
-
    /* calculate the non left-normed commutators of class work_class 
       in the order (work_class - 2, 2), (work_class - 3, 3) .. */
 
    class_end = pcp->clend;
    while (--final_class >= ++start_class) {
       
-#if defined (LIE) 
-      if (final_class < end_weight) return;
-#endif
-
       if (pcp->fullop || pcp->diagn) 
 	 printf ("Processing tails for generators of weight %d and %d\n", 
 		 final_class, start_class);
@@ -264,7 +255,7 @@ void create_tail (address, f, s, pcp)
 int address, f, s;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int bound;
@@ -317,7 +308,7 @@ void extend_tail (address, f, s, pcp)
 int address, f, s;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int start;

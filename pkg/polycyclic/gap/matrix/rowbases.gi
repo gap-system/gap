@@ -20,19 +20,12 @@ end;
 
 #############################################################################
 ##
-#F  DepthOfVec( vec )
-##
-InstallGlobalFunction( DepthOfVec, 
-   function( vec ) return PositionNonZero( vec ); end );
-
-#############################################################################
-##
 #F  SemiEchelonFactorBase( V, U )
 ##
 SemiEchelonFactorBase := function( V, U )
     local L1, L2;
-    L1 := List( V, DepthOfVec );
-    L2 := List( U, DepthOfVec );
+    L1 := List( V, PositionNonZero );
+    L2 := List( U, PositionNonZero );
     return V{Filtered( [1..Length(V)], i -> not L1[i] in L2 )};
 end;
 
@@ -43,11 +36,11 @@ end;
 MemberBySemiEchelonBase := function( v, U )
     local d, c, z, l, j;
     v := ShallowCopy(v);
-    d := List( U, DepthOfVec );
+    d := List( U, PositionNonZero );
     c := List( d, x -> 0 );
     z := 0 * v;
     while v <> z do
-        l := DepthOfVec(v); 
+        l := PositionNonZero(v); 
         j := Position( d, l );
         if IsBool( j ) then return false; fi;
         c[j] := v[l];
@@ -75,13 +68,13 @@ end );
 CoefficientsByNHSEB := function( v, hom )
     local df, dk, cf, ck, z, l, j;
     v  := ShallowCopy(v);
-    df := List( hom.factor, DepthOfVec );
-    dk := List( hom.kernel, DepthOfVec );
+    df := List( hom.factor, PositionNonZero );
+    dk := List( hom.kernel, PositionNonZero );
     cf := List( df, x -> 0 );
     ck := List( dk, x -> 0 );
     z := 0 * v;
     while v <> z do
-        l := DepthOfVec(v);
+        l := PositionNonZero(v);
         j := Position( df, l );
         if not IsBool( j ) then
             cf[j] := v[l];
@@ -167,9 +160,9 @@ AddVectorEchelonBase := function( base, vec )
     local d, l, j, i;
 
     # reduce vec
-    d := List( base, DepthOfVec );
+    d := List( base, PositionNonZero );
     repeat
-        l := DepthOfVec( vec );
+        l := PositionNonZero( vec );
         j := Position( d, l );
         if not IsBool( j ) then
             AddRowVector( vec, base[j], -vec[l] );
@@ -233,7 +226,7 @@ end );
 #F  IsSemiEchelonBase( base )  
 ##
 IsSemiEchelonBase := function( base )
-    return IsSSortedList( List( base, DepthOfVec ) );
+    return IsSSortedList( List( base, PositionNonZero ) );
 end;
 
 #############################################################################
@@ -242,8 +235,8 @@ end;
 ##
 IsEchelonBase := function( base )
     local d, i;
-    d := List( base, DepthOfVec );
-    if not IsSSortedList( List( base, DepthOfVec ) ) then return false; fi;
+    d := List( base, PositionNonZero );
+    if not IsSSortedList( List( base, PositionNonZero ) ) then return false; fi;
     for i in [1..Length(d)] do
         if base[i][d[i]] <> 1 then return false; fi;
     od;

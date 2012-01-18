@@ -2,15 +2,26 @@
 ##
 #W  utils.gi             GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: utils.gi,v 1.29 2008/11/12 12:54:29 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the implementations of utility functions for the
-##  {\ATLAS} of Group Representations.
+##  ATLAS of Group Representations.
 ##
-Revision.( "atlasrep/gap/utils_gi" ) :=
-    "@(#)$Id: utils.gi,v 1.29 2008/11/12 12:54:29 gap Exp $";
+
+
+#T remove this as soon as GAP 4.4 need not be supported anymore!
+AGR.IsAlmostSimpleCharacterTable:= function( ordtbl )
+    local nsg, orbs;
+
+    nsg:= ClassPositionsOfMinimalNormalSubgroups( ordtbl );
+    if Length( nsg ) <> 1 then
+      return false;
+    fi;
+    orbs:= SizesConjugacyClasses( ordtbl ){ nsg[1] };
+    nsg:= Sum( orbs );
+    return     ( not IsPrimeInt( nsg ) )
+           and IsomorphismTypeInfoFiniteSimpleGroup( nsg ) <> fail;
+    end;
 
 
 #############################################################################
@@ -99,34 +110,15 @@ InstallValue( AtlasClassNamesOffsetInfo, rec(
 #F  AtlasClassNames( <tbl> )
 ##
 InstallGlobalFunction( AtlasClassNames, function( tbl )
-    local centre,
-          simple,
-          factnames,
-          map,
-          names,    # list of classnames, result
-          i,        # loop variable
-          name,     # identifier of ...
-          nameparts,
-          pos,
-          solvres,  # table of the perfect normal subgroup
-          simplename,
-          F,
-          Finv,
-          info,
-          tbls,
-          classes,
-          tblname,
-          subtbl,
-          derclasses,
-          subF,
-          size,
+    local ordtbl, names, n, fact, factnames, map, i, j, name, pos,
+          solvres, simplename, F, Finv, info, tbls, classes, tblname,
+          subtbl, derclasses, subF, size,
           gens,
           fus,
           filt,
           special,
           subtblfustbl,
           Fproxies,
-          j,        # loop variable
           inv,
           proxies,
           orb,
@@ -152,74 +144,84 @@ InstallGlobalFunction( AtlasClassNames, function( tbl )
 
       Error( "<tbl> must be a character table" );
 
+    elif IsBrauerTable( tbl ) then
+
+      # Derive the class names from the names of the ordinary table.
+      ordtbl:= OrdinaryCharacterTable( tbl );
+      names:= AtlasClassNames( ordtbl );
+      if names = fail then
+        return fail;
+      fi;
+      return names{ GetFusionMap( tbl, ordtbl ) };
+
     elif IsSimpleCharacterTable( tbl ) then
 
       # For tables of simple groups, `ClassNames' is good enough.
       return ClassNames( tbl, "Atlas" );
 
-    elif IsPerfectCharacterTable( tbl ) then
+    fi;
 
-      # Derive the names for central extensions of simple groups
-      # from the names for the simple factor.
-      centre:= ClassPositionsOfCentre( tbl );
-      if Length( centre ) = 1 then
-        Error( "<tbl> is not the table of an almost simple group" );
+    # For not almost simple tables,
+    # derive the class names from the names for the almost simple factor.
+    n:= ClassPositionsOfFittingSubgroup( tbl );
+
+    if Length( n ) <> 1 then
+      fus:= First( ComputedClassFusions( tbl ),
+                   r -> ClassPositionsOfKernel( r.map ) = n );
+      if fus = fail then
+        return fail;
       fi;
-      simple:= tbl / centre;
-      if not IsSimpleCharacterTable( simple ) then
-        Error( "<tbl> is not a central extension of a simple group" );
+      fact:= CharacterTable( fus.name );
+      factnames:= AtlasClassNames( fact );
+      if factnames = fail then
+        Info( InfoAtlasRep, 2,
+              Identifier( tbl ),
+              " is not a downward extension of an almost simple table" );
+        return fail;
       fi;
 
-      factnames:= ClassNames( simple, "Atlas" );
-      map:= InverseMap( GetFusionMap( tbl, simple ) );
+      map:= InverseMap( GetFusionMap( tbl, fact ) );
       names:= [];
       for i in [ 1 .. Length( map ) ] do
         if IsInt( map[i] ) then
-          Add( names, Concatenation( factnames[i], "_0" ) );
+          names[ map[i] ]:= Concatenation( factnames[i], "_0" );
+        # Add( names, Concatenation( factnames[i], "_0" ) );
         else
-          Append( names, List( [ 0 .. Length( map[i] )-1 ],
-              j -> Concatenation( factnames[i], "_", String( j ) ) ) );
+          for j in [ 0 .. Length( map[i] )-1 ] do
+            names[ map[i][ j+1 ] ]:= Concatenation( factnames[i], "_",
+                                         String( j ) );
+          od;
+        # Append( names, List( [ 0 .. Length( map[i] )-1 ],
+        #     j -> Concatenation( factnames[i], "_", String( j ) ) ) );
         fi;
       od;
       return names;
-
+    elif not AGR.IsAlmostSimpleCharacterTable( tbl ) then
+      Info( InfoAtlasRep, 2,
+            Identifier( tbl ), " is not an almost simple table" );
+      return fail;
     fi;
 
-    # `tbl' has nontrivial commutator factor group.
+    # Now `tbl' is almost simple and not simple.
     # Find out which nonabelian simple group is involved,
-    # and which upward extension of which central extension is given.
+    # and which upward extension is given.
     # (We use the `Identifier' value of `tbl';
     # note that this function makes sense only for library tables.)
     name:= Identifier( tbl );
-    nameparts:= SplitString( name, "." );
-    if Length( nameparts ) = 1 then
-      Error( "the identifier `", name,
-             "' does not fit to an almost simple group" );
-    fi;
-    pos:= PositionProperty( nameparts, x -> ForAny( x, IsAlphaChar ) );
+    pos:= Position( name, '.' );
     if pos = fail then
-      Error( "strange name `", name, "'" );
+      Info( InfoAtlasRep, 2,
+            "strange name `", name, "'" );
+      return fail;
     fi;
 
     # Get the table of the solvable residuum.
-    solvres:= CharacterTable( JoinStringsWithSeparator(
-                                  nameparts{ [ 1 .. pos ] } ) );
+    solvres:= CharacterTable( name{ [ 1 .. pos-1 ] } );
     if solvres = fail then
-      Error( "the identifier `", name,
-             "' does not fit to an almost simple group" );
-    fi;
-
-    centre:= ClassPositionsOfCentre( solvres );
-    if 1 < Length( centre ) then
-      Error( "class names of downward extensions of nonsimple groups ",
-             "are not yet implemented, sorry." );
-#T missing code!
-    fi;
-
-    # Now we know that `solvres' has trivial centre.
-    # So it must be simple.
-    if not IsSimpleCharacterTable( solvres ) then
-      Error( "<tbl> is not the table of a nearly simple group" );
+      Info( InfoAtlasRep, 2,
+            "the identifier `", name,
+            "' does not fit to an almost simple group" );
+      return fail;
     fi;
 
     simplename:= Identifier( solvres );
@@ -356,7 +358,7 @@ InstallGlobalFunction( AtlasClassNames, function( tbl )
       # Check whether all necessary tables are available.
       if Union( List( Filtered( classes, x -> x[2] = true ), y -> y[1] ) )
              <> [ 1 .. NrConjugacyClasses( tbl ) ] then
-        Info( InfoCharacterTable, 2,
+        Info( InfoAtlasRep, 2,
               "AtlasClassNames: ",
               "not all necessary tables are available for ",
               Identifier( tbl ) );
@@ -365,7 +367,7 @@ InstallGlobalFunction( AtlasClassNames, function( tbl )
 
     fi;
 
-    # Define a function that creates class names in {\ATLAS} style.
+    # Define a function that creates class names in ATLAS style.
     alpha:= List( "ABCDEFGHIJKLMNOPQRSTUVWXYZ", x -> [ x ] );
     for i in alpha do
       ConvertToStringRep( i );
@@ -460,7 +462,7 @@ InstallGlobalFunction( AtlasClassNames, function( tbl )
               # Classes mapping to a proxy class in `F' are proxies also
               # in `subtbl'.
               # For the other classes,
-              # we make use of the convention that in {\GAP} tables
+              # we make use of the convention that in GAP tables
               # (of upward extensions of simple groups),
               # the follower classes come immediately after their proxies.
               k:= j;
@@ -555,50 +557,86 @@ end );
 
 #############################################################################
 ##
-#F  StringOfAtlasProgramCycToCcls( <filename>, <tbl>, <mode> )
+#F  AtlasCharacterNames( <tbl> )
+##
+InstallGlobalFunction( AtlasCharacterNames, function( tbl )
+    local alpha, i, lalpha, name, ordtbl, names, degrees, chi, pos;
+
+    if not IsCharacterTable( tbl ) then
+      Error( "<tbl> must be a character table" );
+    fi;
+
+    # Define a function that creates character names in ATLAS style.
+    alpha:= List( "abcdefghijlkmnopqrstuvwxyz", x -> [ x ] );
+    for i in alpha do
+      ConvertToStringRep( i );
+    od;
+    lalpha:= Length( alpha );
+    name:= function( n )
+      local m;
+      if n <= lalpha then
+        return alpha[n];
+      else
+        m:= (n-1) mod lalpha + 1;
+        n:= ( n - m ) / lalpha;
+        return Concatenation( alpha[m], String( n ) );
+      fi;
+    end;
+
+    if UnderlyingCharacteristic( tbl ) = 0 then
+      ordtbl:= tbl;
+    else
+      ordtbl:= OrdinaryCharacterTable( tbl );
+    fi;
+
+    if IsSimpleCharacterTable( ordtbl ) then
+
+      # For tables of simple groups, use the degrees.
+      names:= [];
+      degrees:= [ [], [] ];
+      for chi in Irr( tbl ) do
+        pos:= Position( degrees[1], chi[1] );
+        if pos = fail then
+          Add( degrees[1], chi[1] );
+          Add( degrees[2], 1 );
+          Add( names, Concatenation( String( chi[1] ), name( 1 ) ) );
+        else
+          degrees[2][ pos ]:= degrees[2][ pos ] + 1;
+          Add( names,
+               Concatenation( String( chi[1] ), name( degrees[2][ pos ] ) ) );
+        fi;
+      od;
+      return names;
+
+    else
+
+      Info( InfoAtlasRep, 2,
+            "AtlasCharacterNames: ",
+            "not available for ", Identifier( tbl ) );
+      return fail;
+
+    fi;
+end );
+
+
+#############################################################################
+##
+#F  StringOfAtlasProgramCycToCcls( <prgstring>, <tbl>, <mode> )
 ##
 InstallGlobalFunction( StringOfAtlasProgramCycToCcls,
-    function( filename, tbl, mode )
-    local file,
-          classnames,
-          labels,
-          numbers,
-          line,
-          string,
-          pos,
-          nrlabels,
-          inputline,
-          inline,
-          nccl,
-          result,
-          i,
-          dashedclassnames,
-          orders,
-          primes,
-          known,
-          unchanged,
-          p,
-          map,
-          img,
-          pp,
-          orb,
-          k,
-          j,
-          e,
-          namline,
+    function( prgstring, tbl, mode )
+    local classnames, labels, numbers, prgline, line, string, pos, nrlabels,
+          inputline, inline, nccl, result, i, dashedclassnames, orders,
+          primes, known, unchanged, p, map, img, pp, orb, k, j, e, namline,
           resline;
 
     # Check the input.
-    if not ( IsString( filename ) and IsOrdinaryTable( tbl ) ) then
-      Error("usage: StringOfAtlasProgramCycToCcls(<filename>,<tbl>,<mode>)");
+    if not ( IsString( prgstring ) and IsOrdinaryTable( tbl ) ) then
+      Error("usage: StringOfAtlasProgramCycToCcls(<prgstring>,<tbl>,<mode>)");
     fi;
 
-    # Read the data, and fetch the `echo' lines starting with `Classes';
-    # they serve as inputs for the result program.
-    file:= InputTextFile( filename );
-    if file = fail then
-      Error( "cannot create input stream for file <filename>" );
-    fi;
+    # Fetch the `echo' lines starting with `Classes'.
+    # They serve as inputs for the result program.
 
     # Compute the classnames.
     classnames:= AtlasClassNames( tbl );
@@ -610,16 +648,11 @@ InstallGlobalFunction( StringOfAtlasProgramCycToCcls,
     # given script (numbers or classnames, with dashes).
     labels:= [];
     numbers:= [];
-    InfoRead1( "#I  reading `", filename, "' started\n" );
-    line:= ReadLine( file );
-    while line <> fail do
-while not '\n' in line do
-  Append( line, ReadLine( file ) );
-od;
+    for prgline in SplitString( prgstring, "\n" ) do
 
       # Ignore lines that are neither `echo' nor `oup' statements.
-      if   5 < Length( line ) and line{ [ 1 .. 4 ] } = "echo" then
-        line:= SplitString( line, "", "\" \n" );
+      if   5 < Length( prgline ) and prgline{ [ 1 .. 4 ] } = "echo" then
+        line:= SplitString( prgline, "", "\" " );
         if   "classes" in line then
           Append( labels,
               line{ [ Position( line, "classes" )+1 .. Length( line ) ] } );
@@ -630,15 +663,12 @@ od;
           Append( labels,
               line{ [ Position( line, "echo" )+1 .. Length( line ) ] } );
         fi;
-      elif  4 < Length( line ) and line{ [ 1 .. 3 ] } = "oup" then
-        line:= SplitString( line, "", "\" \n" );
+      elif  4 < Length( prgline ) and prgline{ [ 1 .. 3 ] } = "oup" then
+        line:= SplitString( prgline, "", "\" \n" );
         Append( numbers, line{ [ 3 .. Length( line ) ] } );
       fi;
-      line:= ReadLine( file );
 
     od;
-    CloseStream( file );
-    InfoRead1( "#I  reading `", filename, "' done\n" );
 
     # Construct the list of class representatives from the labels.
     if   IsEmpty( labels ) then
@@ -820,14 +850,13 @@ end );
 
 #############################################################################
 ##
-#F  CurrentDateTimeString( )
-#F  CurrentDateTimeString( <options> )
+#F  CurrentDateTimeString( [<options>] )
 ##
 InstallGlobalFunction( CurrentDateTimeString, function( arg )
     local options, name, str, out;
 
     if Length( arg ) = 0 then
-      options:= [ "+%s", "-u" ];
+      options:= [ "-u", "+%s" ];
     elif Length( arg ) = 1 then
       options:= arg[1];
     fi;
@@ -1023,14 +1052,6 @@ end );
 
 #############################################################################
 ##
-#F  IsLowerAlphaOrDigitChar( <char> )
-##
-BindGlobal( "IsLowerAlphaOrDigitChar",
-    char -> IsLowerAlphaChar( char ) or IsDigitChar( char ) );
-
-
-#############################################################################
-##
 #F  IntegratedStraightLineProgramExt( <listofprogs> )
 ##
 ##  The idea is to concatenate the lists of lines of the programs in the list
@@ -1058,7 +1079,7 @@ BindGlobal( "IntegratedStraightLineProgramExt",
        or not ForAll( listofprogs, IsStraightLineProgram ) then
       Error( "<listofprogs> must be a nonempty list ",
              "of straight line programs" );
-    fi; 
+    fi;
     n:= NrInputsOfStraightLineProgram( listofprogs[1] );
     if not ForAll( listofprogs,
                    prog -> NrInputsOfStraightLineProgram( prog ) = n ) then
@@ -1084,7 +1105,7 @@ BindGlobal( "IntegratedStraightLineProgramExt",
       # If necessary protect the original generators from being replaced,
       # and work with a shifted copy.
       shiftgens:= false;
-      if ForAny( proglines, line ->     Length( line ) = 2 
+      if ForAny( proglines, line ->     Length( line ) = 2
                                     and IsList( line[1] )
                                     and line[2] in [ 1 .. n ] ) then
         Append( lines, List( [ 1 .. n ], i -> [ [ i, 1 ], i + offset ] ) );
@@ -1165,13 +1186,13 @@ BindGlobal( "IntegratedStraightLineProgramExt",
 
 #############################################################################
 ##
-#F  BrowseData_CompareAsNumbersAndNonnumbers( <nam1>, <nam2> )
+#F  AGR.CompareAsNumbersAndNonnumbers( <nam1>, <nam2> )
 ##
-##  It may be that the Browse package is not available,
-##  eventually move this function to a low level package ...
+##  This function is available as `BrowseData.CompareAsNumbersAndNonnumbers'
+##  if the Browse package is available.
+##  But we must deal also with the case that this package is not available.
 ##
-InstallGlobalFunction( BrowseData_CompareAsNumbersAndNonnumbers,
-    function( nam1, nam2 )
+AGR.CompareAsNumbersAndNonnumbers:= function( nam1, nam2 )
     local len1, len2, len, digit, comparenumber, i;
 
     # Essentially the code does the following, just more efficiently.
@@ -1252,7 +1273,7 @@ InstallGlobalFunction( BrowseData_CompareAsNumbersAndNonnumbers,
 
     # Now the longer string is larger.
     return len1 < len2;
-end );
+    end;
 
 
 #############################################################################

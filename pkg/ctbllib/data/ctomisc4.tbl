@@ -2,7 +2,7 @@
 ##
 #W  ctomisc4.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomisc4.tbl,v 4.5 2009/04/22 12:39:06 gap Exp $
+#H  @(#)$Id: ctomisc4.tbl,v 4.6 2011/09/28 14:32:22 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomisc4.tbl,v $
+#H  Revision 4.6  2011/09/28 14:32:22  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.5  2009/04/22 12:39:06  gap
 #H  added missing maxes of He.2, ON.2, HN.2, Fi24, and B
 #H      TB
@@ -62,11 +66,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctomisc4_tbl :=
-    "@(#)$Id: ctomisc4.tbl,v 4.5 2009/04/22 12:39:06 gap Exp $";
-
-SET_TABLEFILENAME("ctomisc4");
-ALN:= Ignore;
 
 MOT("P2L82",
 [
@@ -2713,7 +2712,6 @@ E(7)^3+E(7)^5+E(7)^6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 330)(326,331)(344,345)(347,350,349,352,348,351)(353,354)(355,356)]);
 
 LIBTABLE.LOADSTATUS.ctomisc4:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

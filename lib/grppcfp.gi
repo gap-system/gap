@@ -9,8 +9,6 @@
 ##  This file contains some functions to convert a pc group into an
 ##  fp group and vice versa.
 ##
-Revision.grppcfp_gi :=
-    "@(#)$Id: grppcfp.gi,v 4.51 2011/05/29 19:50:43 gap Exp $";
 
 #############################################################################
 ##

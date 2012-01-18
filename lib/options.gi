@@ -2,15 +2,12 @@
 ##
 #W  options.gi                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: options.gi,v 4.7 2010/02/23 15:13:21 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 
-Revision.options_gi :=
-    "@(#)$Id: options.gi,v 4.7 2010/02/23 15:13:21 gap Exp $";
 
 
 ##

@@ -2,7 +2,7 @@
 ##
 #W frelement.gd                                             Laurent Bartholdi
 ##
-#H   @(#)$Id: frelement.gd,v 1.33 2011/06/13 22:54:33 gap Exp $
+#H   @(#)$Id: frelement.gd,v 1.34 2011/06/29 13:38:34 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -854,15 +854,15 @@ DeclareOperation("State", [IsFRElement, IsInt]);
 DeclareOperation("State", [IsFRElement, IsList]);
 DeclareOperation("States", [IsFRElement]);
 DeclareOperation("States", [IsFRElementCollection]);
-DeclareOperation("FixedStates", [IsFRElement]);
-DeclareOperation("FixedStates", [IsFRElementCollection]);
-DeclareOperation("LimitStates", [IsFRElement]);
-DeclareOperation("LimitStates", [IsFRElementCollection]);
-DeclareOperation("LimitFRMachine", [IsFRObject]);
-DeclareOperation("LimitFRMachine", [IsFRElementCollection]);
+DeclareAttribute("FixedStates", IsFRElement);
+DeclareAttribute("FixedStates", IsFRElementCollection);
+DeclareAttribute("LimitStates", IsFRElement);
+DeclareAttribute("LimitStates", IsFRElementCollection);
+DeclareAttribute("LimitFRMachine", IsFRObject);
+DeclareAttribute("LimitFRMachine", IsFRElementCollection);
 DeclareProperty("IsFiniteStateFRElement", IsFRElement);
 DeclareProperty("IsFiniteStateFRMachine", IsFRMachine);
-DeclareOperation("NucleusOfFRMachine", [IsFRMachine]);
+DeclareAttribute("NucleusOfFRMachine", IsFRMachine);
 ##############################################################################
 
 ##############################################################################

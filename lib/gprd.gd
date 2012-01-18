@@ -2,14 +2,11 @@
 ##
 #W  gprd.gd                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: gprd.gd,v 4.45 2011/01/29 16:46:04 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.gprd_gd :=
-    "@(#)$Id: gprd.gd,v 4.45 2011/01/29 16:46:04 alexk Exp $";
 
 
 #############################################################################
@@ -65,7 +62,8 @@ Revision.gprd_gd :=
 ##  gap> Size(d);
 ##  216
 ##  gap> e:=Embedding(d,2);
-##  2nd embedding into Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8) ])
+##  2nd embedding into Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), 
+##    (7,8) ])
 ##  gap> Image(e,(1,2));
 ##  (4,5)
 ##  gap> Image(Projection(d,2),(1,2,3)(4,5)(8,9));
@@ -194,7 +192,7 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  gap> Size(au);
 ##  120
 ##  gap> p:=SemidirectProduct(au,n);
-##  <permutation group with 4 generators>
+##  <permutation group with 5 generators>
 ##  gap> Size(p);
 ##  3000
 ##  gap> n:=Group((1,2),(3,4));;
@@ -216,14 +214,14 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  gap> g:=Image(apc);
 ##  Group([ f1, f2 ])
 ##  gap> apci:=InverseGeneralMapping(apc);
-##   [ f1*f2^2, f1*f2 ] -> [ Pcgs([ f1, f2 ]) -> [ f1*f2, f2 ], 
-##     Pcgs([ f1, f2 ]) -> [ f2, f1 ] ]
+##  [ f1*f2^2, f1*f2 ] -> [ Pcgs([ f1, f2 ]) -> [ f1*f2, f2 ], 
+##    Pcgs([ f1, f2 ]) -> [ f2, f1 ] ]
 ##  gap> IsGroupHomomorphism(apci);
 ##  true
 ##  gap> p:=SemidirectProduct(g,apci,n);
 ##  <pc group of size 24 with 4 generators>
 ##  gap> IsomorphismGroups(p,Group((1,2,3,4),(1,2)));
-##  [ f1, f2, f3, f4 ] -> [ (1,3), (1,3,2), (1,3)(2,4), (1,2)(3,4) ]
+##  [ f1, f2, f3, f4 ] -> [ (3,4), (1,4,3), (1,2)(3,4), (1,3)(2,4) ]
 ##  gap> SemidirectProduct(SU(3,3),GF(9)^3);
 ##  <matrix group of size 4408992 with 3 generators>
 ##  gap> SemidirectProduct(Group((1,2,3),(2,3,4)),GF(5)^4);
@@ -315,13 +313,13 @@ DeclareOperation( "SemidirectProduct",
 ##  gap> p:=Group((1,2,3));
 ##  Group([ (1,2,3) ])
 ##  gap> w:=WreathProduct(g,p);
-##  Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), (1,4,7)(2,5,8)(3,6,9)
-##   ])
+##  Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), 
+##    (1,4,7)(2,5,8)(3,6,9) ])
 ##  gap> Size(w);
 ##  648
 ##  gap> Embedding(w,1);
-##  1st embedding into Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8),
-##    (1,4,7)(2,5,8)(3,6,9) ] )
+##  1st embedding into Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), 
+##    (7,8), (1,4,7)(2,5,8)(3,6,9) ] )
 ##  gap> Image(Embedding(w,3));
 ##  Group([ (7,8,9), (7,8) ])
 ##  gap> Image(Embedding(w,4));

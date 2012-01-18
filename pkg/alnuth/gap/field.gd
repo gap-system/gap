@@ -1,7 +1,7 @@
 #############################################################################
 ##
-#W   field.gd           Alnuth - Kant interface                  Bettina Eick
-#W                                                             Bjoern Assmann
+#W   field.gd       Alnuth - ALgebraic NUmber THeory           Bettina Eick
+#W                                                           Bjoern Assmann
 ##
 
 DeclareInfoClass( "InfoAlnuth" );
@@ -10,6 +10,8 @@ DeclareRepresentation( "IsBasisOfMatrixField",
                         IsBasis and IsAttributeStoringRep, [] );
 
 DeclareOperation( "ExponentsOfUnits", [IsNumberField, IsCollection] );
+DeclareOperation( "IsPrimitiveElementOfNumberField", 
+                  [ IsNumberField, IsObject ] );
 DeclareOperation( "RelationLattice", [IsNumberField, IsCollection] );
 
 DeclareProperty( "IsUnitGroup", IsGroup );
@@ -25,7 +27,6 @@ DeclareAttribute( "UnitGroup", IsNumberField );
 DeclareAttribute( "DefiningPolynomial", IsNumberFieldByMatrices );
 DeclareAttribute( "FieldOfUnitGroup", IsGroup );
 
-DeclareGlobalFunction( "FieldOfPolynomial" );
 DeclareGlobalFunction( "FieldByMatricesNC" );
 DeclareGlobalFunction( "FieldByMatrixBasisNC" );
 DeclareGlobalFunction( "FieldByPolynomialNC" );

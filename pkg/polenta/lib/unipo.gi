@@ -2,52 +2,17 @@
 ##
 #W unipo.gi               POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## constructive pc-sequences for unipotent matrix groups
 ##
-#H  @(#)$Id: unipo.gi,v 1.11 2011/05/31 13:10:58 gap Exp $
+#H  @(#)$Id: unipo.gi,v 1.13 2011/09/23 13:50:46 gap Exp $
 ##
 #Y 2003
 ##
 
 
-# check if Werner's code is available
-POL_WCA := IsBoundGlobal( "SiftUpperUnitriMat" );
-
-if POL_WCA then
-   POL_SiftUpperUnitriMatGroup := SiftUpperUnitriMatGroup;
-   POL_DecomposeUpperUnitriMat := DecomposeUpperUnitriMat;
-   POL_PolycyclicGenerators := PolycyclicGenerators;
-else
-   POL_SiftUpperUnitriMatGroup := 0;
-   POL_DecomposeUpperUnitriMat := 0;
-   POL_PolycyclicGenerators := 0;
-fi;
-
-
-#############################################################################
-##
-#F POL_DetermineMultiplier(gens )
-##
-## input is a list of generators of a rational matrix group 
-## output is an 'a' such that a*u in Gl(n,Z) for all u in gens
-##
-POL_DetermineMultiplier := function( gens )
-    local a,g,d,i,j;
-    d := Length( gens[1] ); 
-    a := 1;
-    for g in gens do
-        for i in [1..d] do
-            for j in [1..d] do
-                a := Lcm( a,DenominatorRat(g[i][j]) );
-             od;
-        od;
-    od;
-    return a;
-end;
-
 # We have to calculate a basis of Q^d
-# which exhibits a flag for all u in gens. 
+# which exhibits a flag for all u in gens.
 # we know that the matrices
 # in gens are unipotent. next we have to determine the nullspace of
 # (u-1)^1, (u-1)^2,...  we have to do that simultaneously for all
@@ -57,7 +22,7 @@ end;
 ##
 #F POL_BuildBigMatrix( modifiedGens )
 ##
-## writes the matrices of modifiedGens in matrix s.t. we can 
+## writes the matrices of modifiedGens in matrix s.t. we can
 ## apply NullspaceRatMat
 ## if modifiedGens=[g_1,...,g_n] then
 ## BigMatrix:=(g_1,...,g_n)
@@ -75,11 +40,11 @@ POL_BuildBigMatrix := function( modifiedGens )
 end;
 
 
-#For determining a flag you have to compute the nullspace W of a matrix u 
+#For determining a flag you have to compute the nullspace W of a matrix u
 #then you proceed by passing to the factor V/W an compute a new
 #nullspace.
 #this process will terminate, because u is unipotent which means that
-#u is conjugate to a upper triangular matrix with one's on the diagonal 
+#u is conjugate to a upper triangular matrix with one's on the diagonal
 
 #############################################################################
 ##
@@ -115,15 +80,15 @@ POL_DetermineFlag := function( gens )
     Append( flag, nullSpace );
     nath := NaturalHomomorphismBySemiEchelonBases( full, nullSpace  );
     indGens := List( gens, x-> InducedActionFactorByNHSEB(x,nath) );
- 
-    # recursive call 
+
+    # recursive call
     factorFlag := POL_DetermineFlag( indGens );
     if factorFlag = fail then return fail; fi;
     preImage := PreimagesRepresentativeByNHSEB( factorFlag,nath );
     Append( flag,preImage );
     return flag;
 end;
- 
+
 #############################################################################
 ##
 #F POL_DetermineConjugatorTriangular( gens )
@@ -135,7 +100,7 @@ POL_DetermineConjugatorTriangular := function( gens )
     flag := POL_DetermineFlag( gens );
     if flag = fail then return fail; fi;
     # POL_TestFlag( flag,gens );
-    d  :=  Length(  gens[1]  ); 
+    d  :=  Length(  gens[1]  );
     g := [];
     # for an upper triangular matrix we need a inversed flag
     for i in [1..d] do
@@ -146,37 +111,20 @@ end;
 
 #############################################################################
 ##
-#F POL_DetermineConjugatorIntegral_old( gens )
-##
-## brings gens in integer form
-##
-POL_DetermineConjugatorIntegral_old := function( gens )
-    local d,a,alpha,i,j,beta;
-    d  :=  Length( gens[1]  );  
-    a  := POL_DetermineMultiplier( gens );
-    alpha := IdentityMat(d );
-    for i in [1..d] do 
-        alpha[i][i] := a^(i-1);
-    od;   
-    return alpha;
-end;
-
-#############################################################################
-##
 #F POL_DetermineConjugatorIntegral( gens )
 ##
 ## brings gens in integer form
 ##
 POL_DetermineConjugatorIntegral := function( gens )
     local d,a,i,j,g,x,alpha;
-    d  :=  Length( gens[1]  );  
+    d  :=  Length( gens[1]  );
     alpha := IdentityMat(d );
     for i in [2..d] do
         a := 1;
         for g in gens do
             for j in [1..i-1] do
                 x := DenominatorRat( alpha[j][j]^-1*g[j][i] );
-                a := Lcm( a, x ); 
+                a := Lcm( a, x );
             od;
         od;
         alpha[i][i] := a;
@@ -217,7 +165,7 @@ POL_UpperTriangIntTest := function( gens )
            od;
        od;
    od;
-   return goodForm;              
+   return goodForm;
 end;
 
 #############################################################################
@@ -235,7 +183,7 @@ POL_DetermineRealConjugator := function( gens )
     # upper triangular integer form
     w := POL_DetermineConjugatorIntegral( gens_mod );
     conjugator := v*w;
-    # test if it is in uppertriangular and integer form
+    # test if it is in upper triangular and integer form
     return conjugator;
 end;
 
@@ -243,12 +191,12 @@ end;
 ##
 #F POL_UnipotentMats2Pcp( gens )
 ##
-## maps the unipotent group <gens> to a Pcp-Group, and saves the 
+## maps the unipotent group <gens> to a Pcp-Group, and saves the
 ## used conjugator
-## 
+##
 POL_UnipotentMats2Pcp := function( gens )
     local v,gens_mod,w,conjugator,pcp;
-     # determine conjugator 
+     # determine conjugator
        # upper triangular form
        v := POL_DetermineConjugatorTriangular( gens );
        if v = fail then return fail; fi;
@@ -260,12 +208,12 @@ POL_UnipotentMats2Pcp := function( gens )
      # conjugate group
        gens_mod := GeneratorsOfGroup( Group( gens )^conjugator );
 
-     # test if it is in uppertriangular and integer form
+     # test if it is in upper triangular and integer form
      Assert( 2, POL_UpperTriangIntTest( gens_mod ) );
-        
-     # converte the conjugated group to a pcp-group
+
+     # convert the conjugated group to a pcp-group
      pcp := SubgroupUnitriangularPcpGroup( gens_mod );
-    
+
      return rec( pcp := pcp,conjugator := conjugator,gens_mod := gens_mod );
 end;
 
@@ -277,7 +225,7 @@ end;
 ## the conjugator belonging to gens_U_p2 can be used also for the
 ## matrices of the form  gens_U_p2[i]^gens[j]
 ##
-POL_FirstCloseUnderConjugation := function( gens,gens_U_p ) 
+POL_FirstCloseUnderConjugation := function( gens,gens_U_p )
     local conjugator,found,g,h,matrix,newGens,rec1;
     conjugator := POL_DetermineRealConjugator( gens_U_p );
     if conjugator = fail then return fail; fi;
@@ -288,7 +236,7 @@ POL_FirstCloseUnderConjugation := function( gens,gens_U_p )
             if not POL_UpperTriangIntTest( [matrix^conjugator] ) then
                 # we have to extend our gens_U_p
                 newGens := Concatenation( gens_U_p,[matrix] );
-                Info( InfoPolenta, 3,  
+                Info( InfoPolenta, 3,
                       "Extending in FirstCloseUnderConjugation\n",
                       "newGens are",newGens,"\n" );
                 rec1 := POL_FirstCloseUnderConjugation( gens,newGens );
@@ -332,7 +280,7 @@ POL_UnitriangularPcpGroup :=  function( n, p )
 
     # read of pc presentation
     for i in [1..l] do
-  
+
           # commutators
         for j in [1..i-1] do
             #v := Comm( g[j], g[i] );
@@ -345,15 +293,15 @@ POL_UnitriangularPcpGroup :=  function( n, p )
                     k := Position( h, v );
                     o := [k, -1];
                 else
-                    Error("commutator out of range"); 
+                    Error("commutator out of range");
                 fi;
                 SetCommutator( c, i, j, o );
             fi;
         od;
 
         # powers
-        if p > 0 then 
-            SetRelativeOrder( c, i, p ); 
+        if p > 0 then
+            SetRelativeOrder( c, i, p );
             v := g[i]^p;
             if v <> v^0 then Error("power out of range"); fi;
         fi;
@@ -378,7 +326,7 @@ end;
 POL_SubgroupUnitriangularPcpGroup_Mod  :=  function(  mats  )
     local rec1,n, p, G, g, i, j, r, h, m, e, v, c;
 
-    # get the dimension, the char and the full unitriangluar group
+    # get the dimension, the char and the full unitriangular group
     n  :=  Length(  mats[1]  );
     p  :=  Characteristic(  mats[1][1][1]  );
     G  :=  POL_UnitriangularPcpGroup(  n, p  );
@@ -403,11 +351,11 @@ POL_SubgroupUnitriangularPcpGroup_Mod  :=  function(  mats  )
             r  :=  MappedVector(  v, g{[c+1..c+n-i]}  );
             m  :=  r^-1 * m;
             c  :=  c + n-i;
-            Append(  e, v  ); 
+            Append(  e, v  );
         od;
         Add(  h, MappedVector(  e, Pcp( G )  )  );
     od;
-    # Print( " h ist gleich ",h,"\n" );
+    # Print( " h = ",h,"\n" );
     return rec( pcp := Subgroup(  G, h  ),UT := G );
 end;
 
@@ -418,7 +366,7 @@ end;
 ##
 POL_MapToUnipotentPcp := function( matrix,pcp_record )
     local n,p,m,i,j,r,g,e,c,v;
-    # get the dimension, and the full unitriangluar group
+    # get the dimension, and the full unitriangular group
     n  :=  Length(  matrix  );
     p  :=  0;
     m :=  matrix;
@@ -441,7 +389,7 @@ POL_MapToUnipotentPcp := function( matrix,pcp_record )
             r  :=  MappedVector(  v, g{[c+1..c+n-i]}  );
             m  :=  r^-1 * m;
             c  :=  c + n-i;
-            Append(  e, v  ); 
+            Append(  e, v  );
         od;
     return  MappedVector( e,Pcp( pcp_record.UT ) ) ;
 end;
@@ -453,7 +401,7 @@ end;
 ##
 ## calculates a constructive pc-sequence for
 ## the unipotent group <gens_U_p>
-## 
+##
 CPCS_Unipotent := function( gens_U_p )
     local g,rec1,mats,A,dim,gens_U_p_mod,mat,mat3,h,
           mat2,pcpElement,conjugator,G,gensOfG,
@@ -467,24 +415,24 @@ CPCS_Unipotent := function( gens_U_p )
             Add( gens_U_p_mod,gens_U_p[i] );
         fi;
     od;
-   
-    #exclude the trivial case
-    if gens_U_p_mod=[] then 
+
+    # exclude the trivial case
+    if gens_U_p_mod=[] then
         return rec( rels := [],pcs := [] );
     fi;
 
-    # find a conjugator 
+    # find a conjugator
     conjugator := POL_DetermineRealConjugator( gens_U_p_mod );
     if conjugator = fail then return fail; fi;
-    #calculate a pcp for <gens_U_p_mod>^conjugaor
+    #calculate a pcp for <gens_U_p_mod>^conjugator
     G := Group( gens_U_p_mod );
     G := G^conjugator;
     gensOfG := GeneratorsOfGroup( G );
 
     # assert that <gensOfG> is in upper triangular and integer form
     Assert( 2, POL_UpperTriangIntTest( gensOfG ) );
-   
-    # converte the conjugated group to a Pcp-group
+
+    # convert the conjugated group to a Pcp-group
     Info( InfoPolenta, 3, "calculate the pcp-Group of the group\n",
                            gensOfG,"\n" );
     pcp_rec := POL_SubgroupUnitriangularPcpGroup_Mod( gensOfG );
@@ -495,113 +443,18 @@ CPCS_Unipotent := function( gens_U_p )
     mats := A!.mats;
     for g in GeneratorsOfPcp( Pcp( pcp_rec.pcp ) ) do
         #calculate preimage, i.e. convert it to a mat and conjugate it
-        mat := MappedVector( Exponents( g ), mats );   
+        mat := MappedVector( Exponents( g ), mats );
         mat := mat^( conjugator^-1 );
         Add( pcs,mat );
     od;
 
     # save the relative orders
     rels := Pcp( pcp_rec.pcp )!.rels;
-   
-    return rec( pcp_record := pcp_rec, 
+
+    return rec( pcp_record := pcp_rec,
                 conjugator := conjugator,
                 pcs := pcs,rels := rels );
 end;
-
-#############################################################################
-##
-#F POL_CPCS_Unipotent_Conjugation_old( gens, gens_U_p )
-##
-## calculates a constructive pc-sequence for
-## the unipotent group <gens_U_p>^<gens>
-## 
-POL_CPCS_Unipotent_Conjugation_old := function( gens, gens_U_p )
-    local g,rec1,mats,A,dim,gens_U_p_mod,mat,mat3,h,
-          mat2,pcpElement,conjugator,G,gensOfG,
-          pcp_rec,rels,pcs,newGens,i, gens2, image, testMembership;
-
-    dim := Length( gens[1] );
-
-    #check for trivial elements
-    gens_U_p_mod := [];
-    for i in [1..Length( gens_U_p )] do
-        if not gens_U_p[i]=gens_U_p[i]^0 then
-            Add( gens_U_p_mod,gens_U_p[i] );
-        fi;
-    od;
-   
-    #exclude the trivial case
-    if gens_U_p_mod=[] then 
-        return rec( rels := [],pcs := [] );
-    fi;
-
-    # find a good conjugator even for conjugated elements of gens_U_p
-    rec1 := POL_FirstCloseUnderConjugation( gens, gens_U_p_mod );
-    if rec1 = fail then return fail; fi;
-    gens_U_p_mod := rec1.gens_U_p;
-    conjugator := rec1.conjugator;     
-
-    #calculate a pcp for <gens_U_p_mod>^conjugaor;
-    G := Group( gens_U_p_mod );
-    G := G^conjugator;
-    gensOfG := GeneratorsOfGroup( G );
-
-    # assert that <gensOfG> is in upper triangular and integer form
-    Assert( 2, POL_UpperTriangIntTest( gensOfG ) );
-   
-    # converte the conjugated group to a Pcp-group
-    Info( InfoPolenta, 3, "calculate a constructive pc-sequence ",
-                          " of the group\n",
-                           gensOfG,"\n" );
-    pcp_rec := POL_SubgroupUnitriangularPcpGroup_Mod( gensOfG );
-
-    # check if <gens_U_p> is stable under conjugation 
-    Info( InfoPolenta, 3,"check if <gens_U_p> is stable under conjugation...");
-    for g in gens_U_p do
-        mat := g;  
-        gens2 := Concatenation( gens, List( gens, x-> x^-1 ));
-        for h in gens2 do
-            mat2 := mat^h;
-            mat3 := mat2^conjugator;
-            Info( InfoPolenta, 3, "compute image ..." );
-            image :=  POL_MapToUnipotentPcp( mat3,pcp_rec );
-            Info( InfoPolenta, 3, "... finished" );
-            Info( InfoPolenta, 3, "test membership ..." );
-            testMembership :=  (image in pcp_rec.pcp); 
-            Info( InfoPolenta, 3, "... finished" );
-            if not testMembership then
-                #extend gens_U_p
-                Info( InfoPolenta,3, "Extending gens_U_p \n" );
-                newGens := Concatenation( gens_U_p,[mat2] );
-                Info( InfoPolenta, 2,
-                "An extended list of the normal subgroup generators for the\n",
-                "    unipotent part is" );
-                Info( InfoPolenta, 2, newGens );  
-                return POL_CPCS_Unipotent_Conjugation_old( gens,newGens );
-            fi;
-        od;
-    od;        
-    Info( InfoPolenta, 3, "...finished" );
-
-    # calculate a pc-sequence for <gens_U_p>
-    pcs := [];
-    A := POL_UnitriangularPcpGroup( dim,0 );
-    mats := A!.mats;
-    for g in GeneratorsOfPcp( Pcp( pcp_rec.pcp ) ) do
-        #calculate preimage, i.e. convert it to a mat and conjugate it
-        mat := MappedVector( Exponents( g ),mats );   
-        mat := mat^( conjugator^-1 );
-        Add( pcs,mat );
-    od;
-
-    # save the relative orders
-    rels := Pcp( pcp_rec.pcp )!.rels;
-   
-    return rec( pcp_record := pcp_rec, 
-                conjugator := conjugator,
-                pcs := pcs,rels := rels );
-end;
-
 
 #############################################################################
 ##
@@ -609,7 +462,7 @@ end;
 ##
 ## calculate a constructive pc-sequence for
 ## the unipotent group <gens_U_p>^<gens>
-## 
+##
 CPCS_Unipotent_Conjugation_Version2 := function( gens, gens_U_p )
     local g,rec1,mats,A,dim,gens_U_p_mod,mat,mat3,h,
           mat2,pcpElement,conjugator,G,gensOfG,
@@ -623,27 +476,27 @@ CPCS_Unipotent_Conjugation_Version2 := function( gens, gens_U_p )
             Add( gens_U_p_mod,gens_U_p[i] );
         fi;
     od;
-   
-    #exclude the trivial case
-    if gens_U_p_mod=[] then 
-        return rec( rels := [],pcs := [] );
+
+    # exclude the trivial case
+    if gens_U_p_mod=[] then
+        return rec( rels := [], pcs := [] );
     fi;
 
     # find a good conjugator even for conjugated elements of gens_U_p
     rec1 := POL_FirstCloseUnderConjugation( gens, gens_U_p_mod );
     if rec1 = fail then return fail; fi;
     gens_U_p_mod := rec1.gens_U_p;
-    conjugator := rec1.conjugator;     
+    conjugator := rec1.conjugator;
 
-    #calculate a pcp for <gens_U_p_mod>^conjugaor;
+    #calculate a pcp for <gens_U_p_mod>^conjugator;
     G := Group( gens_U_p_mod );
     G := G^conjugator;
     gensOfG := GeneratorsOfGroup( G );
 
     # assert that <gensOfG> is in upper triangular and integer form
     Assert( 2, POL_UpperTriangIntTest( gensOfG ) );
-   
-    # converte the conjugated group to a Pcp-group
+
+    # convert the conjugated group to a Pcp-group
     Info( InfoPolenta, 3, "Unipotent: calculate the pcp-Group of the group\n",
                            gensOfG,"\n" );
     pcp_rec := POL_SubgroupUnitriangularPcpGroup_Mod( gensOfG );
@@ -654,8 +507,8 @@ CPCS_Unipotent_Conjugation_Version2 := function( gens, gens_U_p )
     mats := A!.mats;
     for g in GeneratorsOfGroup( pcp_rec.pcp ) do
         # calculate the preimage, i.e. convert it to a matrix and conjugate
-        mat := MappedVector( Exponents( g ),mats ); 
-        mat := mat^( conjugator^-1 ); 
+        mat := MappedVector( Exponents( g ),mats );
+        mat := mat^( conjugator^-1 );
         gens2 := Concatenation( gens, List( gens, x-> x^-1 ));
         for h in gens2 do
             mat2 := mat^h;
@@ -668,20 +521,20 @@ CPCS_Unipotent_Conjugation_Version2 := function( gens, gens_U_p )
                 return CPCS_Unipotent_Conjugation_Version2( gens,newGens );
             fi;
         od;
-    od;        
+    od;
 
     # calculate a pc-sequence for <gens_U_p>
     pcs := [];
     for g in GeneratorsOfPcp( Pcp( pcp_rec.pcp ) ) do
         #calculate preimage, i.e. convert it to a mat and conjugate it
-        mat := MappedVector( Exponents( g ),mats );   
+        mat := MappedVector( Exponents( g ),mats );
         mat := mat^( conjugator^-1 );
         Add( pcs,mat );
     od;
 
     # save the relative orders
     rels := Pcp( pcp_rec.pcp )!.rels;
-   
+
     return rec( pcp_record := pcp_rec,
                 conjugator := conjugator,
                 pcs := pcs,rels := rels );
@@ -689,15 +542,15 @@ end;
 
 #############################################################################
 ##
-#F POL_CPCS_Unipotent_Conjugation( gens, gens_U_p )
+#F CPCS_Unipotent_Conjugation( gens, gens_U_p )
 ##
 ## calculates a constructive pc-sequence for
 ## the unipotent group <gens_U_p>^<gens>
-## 
-POL_CPCS_Unipotent_Conjugation := function( gens, gens_U_p )
+##
+CPCS_Unipotent_Conjugation := function( gens, gens_U_p )
     local dim, gens_U_p_mod,rec1,conjugator,U,gensOfU, gensWithInverses,
           level, mat, h, mat2, mat3,P, rels, newGens,i,testMembership,
-          pcs, gensWithInversesConj, pcs_U_p;      
+          pcs, gensWithInversesConj, pcs_U_p;
 
     dim := Length( gens[1] );
 
@@ -708,40 +561,39 @@ POL_CPCS_Unipotent_Conjugation := function( gens, gens_U_p )
             Add( gens_U_p_mod,gens_U_p[i] );
         fi;
     od;
-   
+
     # exclude the trivial case
-    if Length( gens_U_p_mod ) = 0 then 
-        return rec( pcs := [],
-                       rels := [] ); ;
+    if gens_U_p_mod=[] then
+        return rec( rels := [], pcs := [] );
     fi;
 
     # find a good conjugator even for conjugated elements of gens_U_p
     rec1 := POL_FirstCloseUnderConjugation( gens, gens_U_p_mod );
     if rec1 = fail then return fail; fi;
     gens_U_p_mod := rec1.gens_U_p;
-    conjugator := rec1.conjugator;     
+    conjugator := rec1.conjugator;
 
-    #calculate a pcp for <gens_U_p_mod>^conjugaor;
+    #calculate a pcp for <gens_U_p_mod>^conjugator;
     U := Group( gens_U_p_mod );
     U := U^conjugator;
     gensOfU := GeneratorsOfGroup( U );
 
     # assert that <gensOfU> is in upper triangular and integer form
     Assert( 2, POL_UpperTriangIntTest( gensOfU ) );
-   
+
     # compute a  polycyclic sequence for U
     Info( InfoPolenta, 3, "calculate levels ",
                           " of the group...\n",
                            gensOfU,"\n" );
-    level := POL_SiftUpperUnitriMatGroup( U );
+    level := SiftUpperUnitriMatGroup( U );
     Info( InfoPolenta, 3, "... finished\n" );
-   
-    # check if <gens_U_p> is stable under conjugation 
+
+    # check if <gens_U_p> is stable under conjugation
       Info( InfoPolenta, 3,
             "check if <gens_U_p> is stable under conjugation...");
       gensWithInverses := Concatenation( gens, List( gens, x-> x^-1 ));
       gensWithInversesConj := List( gensWithInverses, x-> x^conjugator );
-      P :=  POL_PolycyclicGenerators( level );
+      P :=  PolycyclicGenerators( level );
       # maybe incomplete pcs of U^conjugator
       pcs_U_p := P.matrices;
       for mat in pcs_U_p do
@@ -749,32 +601,32 @@ POL_CPCS_Unipotent_Conjugation := function( gens, gens_U_p )
           for h in gensWithInversesConj do
               mat2 := mat^h;
               Info( InfoPolenta, 3, "test membership ..." );
-              testMembership :=  POL_DecomposeUpperUnitriMat( level, mat2 );
+              testMembership :=  DecomposeUpperUnitriMat( level, mat2 );
               Info( InfoPolenta, 3, "... finished" );
               if IsBool( testMembership ) then
                  #extend gens_U_p
-       Info(InfoPolenta,3,"Extending generator list of unipotent subgroup\n" );
+                 Info(InfoPolenta,3,"Extending generator list of unipotent subgroup\n" );
                  #newGens := Concatenation( gens_U_p,[mat2] );
                  newGens := Concatenation( pcs_U_p,[mat2] );
                  newGens := List( newGens, x-> x^( conjugator^-1 ) );
                  Info( InfoPolenta, 2,
-                "An extended list of the normal subgroup generators for the\n",
+                 "An extended list of the normal subgroup generators for the\n",
                  "    unipotent subgroup is" );
-                 Info( InfoPolenta, 2, newGens );  
-                 return POL_CPCS_Unipotent_Conjugation( gens,newGens );
+                 Info( InfoPolenta, 2, newGens );
+                 return CPCS_Unipotent_Conjugation( gens,newGens );
               fi;
            od;
-      od;        
+      od;
       Info( InfoPolenta, 3, "...finished" );
 
     # assemble necessary data for a constructive pcs of <gens_U_p>
-    #P :=  POL_PolycyclicGenerators( level );
+    #P :=  PolycyclicGenerators( level );
     rels := List(  [1..Length(P.gens)], x->0 );
     pcs := List( pcs_U_p, x-> x^( conjugator^-1 ) );
 
     #U := Group( P.matrices );
     #U := U^( conjugator^-1 );
-   
+
     return rec( level := level,
                 pcs := pcs,
                 gens := P.gens,
@@ -784,49 +636,10 @@ end;
 
 #############################################################################
 ##
-#F CPCS_Unipotent_Conjugation( gens, gens_U_p )
-##
-## calculates a constructive pc-sequence for
-## the unipotent group <gens_U_p>^<gens>
-## 
-CPCS_Unipotent_Conjugation := function( gens, gens_U_p )
-
-    # check if Werner's code is available
-    if POL_WCA then
-        return POL_CPCS_Unipotent_Conjugation( gens, gens_U_p );
-    else
-        return POL_CPCS_Unipotent_Conjugation_old( gens, gens_U_p );
-    fi;
-end;
-
-#############################################################################
-##
-#F POL_ExponentOfCPCS_Unipotent_old( matrix, conPcs )
+#F ExponentOfCPCS_Unipotent( matrix, conPcs )
 ##
 ##
-POL_ExponentOfCPCS_Unipotent_old := function( matrix, conPcs )
-    local matrix2,pcpElement,exp;
-    # exclude trivial case
-    if conPcs.pcs=[] then
-       return [];
-    fi;
-    matrix2 := matrix^conPcs.conjugator;
-    if not POL_UpperTriangIntTest( [matrix2] ) then
-        return fail;
-    fi;
-    pcpElement := POL_MapToUnipotentPcp( matrix2, conPcs.pcp_record );
-    exp := ExponentsByPcp( Pcp( conPcs.pcp_record.pcp ),pcpElement );
-    Assert( 1,  matrix = Exp2Groupelement( conPcs.pcs, exp ),
-            "Failure in the exponent calculation"  );
-    return exp;
-end;
-
-#############################################################################
-##
-#F POL_ExponentOfCPCS_Unipotent( matrix, conPcs )
-##
-##
-POL_ExponentOfCPCS_Unipotent := function( matrix, conPcs )
+ExponentOfCPCS_Unipotent := function( matrix, conPcs )
     local matrix2,exp,n,counter,i,e,decomp;
     # exclude trivial case
     if conPcs.rels=[] then
@@ -836,7 +649,7 @@ POL_ExponentOfCPCS_Unipotent := function( matrix, conPcs )
     if not POL_UpperTriangIntTest( [matrix2] ) then
         return fail;
     fi;
-    decomp := POL_DecomposeUpperUnitriMat( conPcs.level, matrix2 );
+    decomp := DecomposeUpperUnitriMat( conPcs.level, matrix2 );
     if IsBool( decomp ) then return fail; fi;
     n := Length( conPcs.gens );
     exp := [];
@@ -855,23 +668,8 @@ POL_ExponentOfCPCS_Unipotent := function( matrix, conPcs )
         fi;
     od;
     Assert( 1,  matrix = Exp2Groupelement( conPcs.pcs, exp ),
-            "Failure in POL_ExponentOfCPCS_Unipotent \n"  );
+            "Failure in ExponentOfCPCS_Unipotent \n"  );
     return exp;
-end;
-
-#############################################################################
-##
-#F ExponentOfCPCS_Unipotent( matrix, conPcs )
-##
-##
-ExponentOfCPCS_Unipotent := function( matrix, conPcs )
-
-    # check if Werner's code is available
-    if POL_WCA then
-        return POL_ExponentOfCPCS_Unipotent( matrix, conPcs );
-    else
-        return POL_ExponentOfCPCS_Unipotent_old( matrix, conPcs );
-    fi;
 end;
 
 #############################################################################
@@ -882,12 +680,12 @@ end;
 ##
 #F POL_TestCPCS_Unipotent( gens )
 ##
-## 
-POL_TestCPCS_Unipotent := 
+##
+POL_TestCPCS_Unipotent :=
                      function( gens )
      local con, i, g, exp;
 
-     con := CPCS_Unipotent( gens );        
+     con := CPCS_Unipotent( gens );
      Print( "START TESTING !!!\n" );
      SetAssertionLevel( 1 );
      for i in [1..10] do
@@ -898,24 +696,24 @@ POL_TestCPCS_Unipotent :=
      od;
      # SetAssertionLevel( 0 );
 end;
-     
+
 #############################################################################
 ##
 #F POL_TestCPCS_Unipotent2( dim, numberGens_U_p )
 ##
-## 
-POL_TestCPCS_Unipotent2 := 
+##
+POL_TestCPCS_Unipotent2 :=
                      function( dim, numberGens_U_p )
      local g2,exp,G,k,i,j,d,mats,h2,g,matrix,U,U2,h,v,gens2,gens_U_p,
            gens,con, numberOfTests;
 
      g := [];
      matrix := [];
-     d  :=  dim; 
+     d  :=  dim;
      k := numberGens_U_p;
      numberOfTests := 10;
 
-     # construct some Unipotent rational Matrixgroups
+     # construct some unipotent rational matrix groups
      G := POL_UnitriangularPcpGroup( dim,0 );
      mats := G!.mats;
      for i in [1..k] do
@@ -926,15 +724,15 @@ POL_TestCPCS_Unipotent2 :=
      od;
      Print( "matrix ist gleich ",matrix,"\n" );
      U := Group( matrix );
-     
+
      # we need a random element of GL( n,Q )
      h := RandomInvertibleMat( dim,Rationals );
      Print( "h ist gleich ",h,"\n" );
      U2 := U^h;
      gens_U_p := GeneratorsOfGroup( U2 );
      # gens_U_p := GeneratorsOfGroup( U );
-     Print( "gens_U_p ist gleich ", gens_U_p,"\n" ); 
-     con := CPCS_Unipotent( gens_U_p );        
+     Print( "gens_U_p ist gleich ", gens_U_p,"\n" );
+     con := CPCS_Unipotent( gens_U_p );
      Print( "START TESTING !!!\n" );
      SetAssertionLevel( 1 );
      for i in [1..numberOfTests] do
@@ -945,7 +743,7 @@ POL_TestCPCS_Unipotent2 :=
      od;
      # SetAssertionLevel( 0 );
 end;
-     
+
 #############################################################################
 ##
 #F POL_TestFlag(  flag,gens  )
@@ -980,8 +778,8 @@ POL_Test_UnipotentMats2Pcp := function( dim, k )
     SetAssertionLevel( 2 );
     g := [];
     matrices := [];
-    d  :=  dim; 
-    # construct some Unipotent rational Matrixgroups
+    d  :=  dim;
+    # construct some unipotent rational matrix groups
     G := POL_UnitriangularPcpGroup( dim,0 );
     mats := G!.mats;
     for i in [1..k] do
@@ -992,13 +790,13 @@ POL_Test_UnipotentMats2Pcp := function( dim, k )
     od;
     Print( "used matrices are ",matrices,"\n" );
     U := Group( matrices );
-   
+
     # random element of GL( n,Q )
     h := RandomInvertibleMat( dim,Rationals );
     Print( "h is ",h,"\n" );
     U2 := U^h;
     gens2 := GeneratorsOfGroup( U2 );
-    gens3 := POL_UnipotentMats2Pcp( gens2 ); 
+    gens3 := POL_UnipotentMats2Pcp( gens2 );
     if gens3 = fail then return fail; fi;
     SetAssertionLevel( 0 );
     return gens3;

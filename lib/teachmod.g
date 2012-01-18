@@ -2,7 +2,6 @@
 ##
 #W  teachmod.g                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: teachmod.g,v 4.5 2010/12/22 18:15:24 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -11,8 +10,6 @@
 ##  context. It is made part of the general system to ensure it will be
 ##  always installed with GAP.
 ##
-Revision.teachmod_g:=
-  "@(#)$Id: teachmod.g,v 4.5 2010/12/22 18:15:24 gap Exp $";
 
 
 ## FFE Display

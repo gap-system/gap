@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W setup.gi             Alnuth -  Kant interface             Andreas Distler
+#W setup.gd         Alnuth - ALgebraic NUmber THeory        Andreas Distler
 ##
 
 #############################################################################
@@ -26,6 +26,12 @@ DeclareGlobalFunction("SetAlnuthExternalExecutable");
 #F SuitablePariExecutable(path)
 ##
 DeclareGlobalFunction("SuitablePariExecutable");
+
+#############################################################################
+##
+#F PariVersion(path)
+##
+DeclareGlobalFunction("PariVersion");
 
 #############################################################################
 ##

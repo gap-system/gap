@@ -1,6 +1,6 @@
 
 <!-- %W  install.xml            GAP documentation                  Greg Gamble -->
-<!-- %H  $Id: install.xml,v 1.5 2011/02/25 16:39:14 alexk Exp $ -->
+<!-- %H                                                                        -->
 <!-- %Y  Copyright (C) 2001, School of Math & Comp. Sci., St Andrews, Scotland -->
 
 
@@ -20,23 +20,36 @@ Alternatively, the &Example; package may be installed using a separate archive,
 for example, for an update or an installation in a non-default location 
 (see <Ref Sect="GAP Root Directory" BookName="ref"/>).
 <P/>
+
 Below we describe the installation procedure for the <File>.tar.gz</File> 
 archive format. Installation using other archive formats is performed in a 
 similar way.
 <P/>
+
 To install the &Example; package, unpack the archive file, which  should
 have a name of form <C>example-<A>XXX</A>.tar.gz</C> for some version number 
 <A>XXX</A>, by typing
 <P/>
 &nbsp;&nbsp;<C>gzip -dc example-<A>XXX</A>.tar.gz | tar xpv</C>
 <P/>
-in the <File>pkg</File> directory of your &GAP;&nbsp;4 installation, 
+
+It may be unpacked in one of the following locations:
+<List>
+<Item>
+in the <File>pkg</File> directory of your &GAP;&nbsp;4 installation;
+</Item>
+<Item>
 or in a directory named <File>.gap/pkg</File> in your home directory
 (to be added to the &GAP; root directory unless &GAP; is started with
-<C>-r</C> option), or in a directory named <File>pkg</File> in another
-directory of your choice (e.g.&nbsp;in the directory <File>mygap</File> 
-in your home directory).
-<P/>
+<C>-r</C> option);
+</Item> 
+<Item>
+or in a directory named <File>pkg</File> in another directory of your 
+choice (e.g.&nbsp;in the directory <File>mygap</File> in your home 
+directory).
+</Item>
+</List>
+
 In the latter case one one must start &GAP; with the <C>-l</C> option,
 e.g.&nbsp;if your private <F>pkg</F> directory is a subdirectory of 
 <F>mygap</F> in your home directory you might type:
@@ -55,15 +68,18 @@ directory).
 <Heading>Compiling Binaries of the Example Package</Heading>
 
 After unpacking the archive, go to the newly created <F>example</F>  directory
-and call <C>./configure <A>path</A></C> where <A>path</A> is the path to the 
-&GAP; home directory. So for example if you install the package in  the  main  
-<F>pkg</F> directory call
+and call <C>./configure</C> to use the default <C>../..</C> path to the
+&GAP; home directory or <C>./configure <A>path</A></C> where <A>path</A> is 
+the path to the &GAP; home directory, if the package is being installed in a 
+non-default location. So for example if you install the package in the
+<F>~/.gap/pkg</F> directory and the &GAP; home directory is <F>~/gap4r5</F>
+then you have to call
 <P/>
 <Log><![CDATA[
-./configure ../..
+./configure ../../../gap4r5/
 ]]></Log>
 <P/>
-This will fetch the architecture type for which &GAP; has been  compiled
+This will fetch the architecture type for which &GAP; has been compiled
 last and create a <F>Makefile</F>. Now simply call
 <P/>
 <Log><![CDATA[
@@ -80,23 +96,20 @@ to compile the binary and to install it in the appropriate place.
 <Heading>Loading the Example Package</Heading>
 
 To use the &Example; Package you have to request it explicitly. This  is
-done by calling
+done by calling <Ref Func="LoadPackage" BookName="ref"/>:
 <P/>
 <Example><![CDATA[
 gap> LoadPackage("example");
 ----------------------------------------------------------------
-Loading  Example 3.0
-by Werner Nickel (http://www.mathematik.tu-darmstadt.de/~nickel)
-   Greg Gamble (http://www.math.rwth-aachen.de/~Greg.Gamble)
-   Alexander Konovalov (http://www.cs.st-andrews.ac.uk/~alexk/)
-For help, type: ?Example package 
+Loading  Example 3.3 (Example/Template of a GAP Package)
+by Werner Nickel (http://www.mathematik.tu-darmstadt.de/~nickel),
+   Greg Gamble (http://www.math.rwth-aachen.de/~Greg.Gamble), and
+   Alexander Konovalov (http://www.cs.st-andrews.ac.uk/~alexk/).
 ----------------------------------------------------------------
 true
 ]]></Example>
 <P/>
-The <C>LoadPackage</C> command is described  in  
-Section&nbsp;<Ref Func="LoadPackage" BookName="ref"/>.
-<P/>
+
 If &GAP; cannot find a working binary, the call  to  <C>LoadPackage</C>  will
 still succeed but a warning is issued informing that  the  <C>HelloWorld()</C>
 function will be unavailable.

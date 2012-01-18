@@ -3,7 +3,6 @@
 #W  function.g                   GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: function.g,v 4.29 2011/02/09 15:41:34 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file deals with functions.
 ##
-Revision.function_g :=
-    "@(#)$Id: function.g,v 4.29 2011/02/09 15:41:34 gap Exp $";
 
 
 #############################################################################
@@ -25,6 +22,17 @@ Revision.function_g :=
 ##
 ##  <Description>
 ##  is the category of functions.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsFunction(x->x^2);
+##  true
+##  gap> IsFunction(Factorial);
+##  true
+##  gap> f:=One(AutomorphismGroup(SymmetricGroup(3)));
+##  IdentityMapping( Sym( [ 1 .. 3 ] ) )
+##  gap> IsFunction(f);         
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -45,6 +53,19 @@ DeclareCategoryKernel( "IsFunction",
 ##  <Description>
 ##  is the category of operations.
 ##  Every operation is a function, but not vice versa.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> MinimalPolynomial;  
+##  <Operation "MinimalPolynomial">
+##  gap> IsOperation(MinimalPolynomial);
+##  true
+##  gap> IsFunction(MinimalPolynomial);         
+##  true
+##  gap> Factorial;
+##  function( n ) ... end
+##  gap> IsOperation(Factorial);
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -208,9 +229,9 @@ DeclareOperationKernel( "NumberArgumentsFunction", [IS_OBJECT], NARG_FUNC );
 ##  <Ref Func="NumberArgumentsFunction"/>.)
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> NamesLocalVariablesFunction( function( a, b ) local c; return 1; end );
+##  gap> NamesLocalVariablesFunction(function( a, b ) local c; return 1; end);
 ##  [ "a", "b", "c" ]
-##  gap> NamesLocalVariablesFunction( function( arg ) local a; return 1; end );
+##  gap> NamesLocalVariablesFunction(function( arg ) local a; return 1; end);
 ##  [ "arg", "a" ]
 ##  gap> NamesLocalVariablesFunction( Size );
 ##  fail
@@ -269,6 +290,14 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 ##  If <Ref Func="FilenameFunc"/> returns a filename for <A>func</A> then
 ##  <Ref Func="StartlineFunc"/> returns the line number in this file
 ##  where the definition of <A>func</A> starts.
+##  <P/>
+##  <Log><![CDATA[
+##  gap> meth:= ApplicableMethod( Size, [ Group( () ) ] );;
+##  gap> FilenameFunc( meth );
+##  "... some path ... gap4r5/lib/grpperm.gi"
+##  gap> StartlineFunc( meth );
+##  490
+##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -356,6 +385,15 @@ DeclareOperationKernel( "CallFuncList", [IS_OBJECT, IS_LIST], CALL_FUNC_LIST );
 ##  <Description>
 ##  This function takes any number of arguments,
 ##  and always returns <K>true</K>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> f:=ReturnTrue;  
+##  function( arg ) ... end
+##  gap> f();  
+##  true
+##  gap> f(42);
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -374,6 +412,15 @@ BIND_GLOBAL( "ReturnTrue", RETURN_TRUE );
 ##  <Description>
 ##  This function takes any number of arguments,
 ##  and always returns <K>false</K>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> f:=ReturnFalse;  
+##  function( arg ) ... end
+##  gap> f();  
+##  false
+##  gap> f("any_string");
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -392,6 +439,15 @@ BIND_GLOBAL( "ReturnFalse", RETURN_FALSE );
 ##  <Description>
 ##  This function takes any number of arguments,
 ##  and always returns <K>fail</K>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> oops:=ReturnFail;  
+##  function( arg ) ... end
+##  gap> oops();  
+##  fail
+##  gap> oops(-42);  
+##  fail
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -409,6 +465,19 @@ BIND_GLOBAL( "ReturnFail", RETURN_FAIL );
 ##
 ##  <Description>
 ##  returns <A>obj</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> id:=IdFunc;  
+##  function( object ) ... end
+##  gap> id(42);  
+##  42
+##  gap> f:=id(SymmetricGroup(3));                 
+##  Sym( [ 1 .. 3 ] )
+##  gap> s:=One(AutomorphismGroup(SymmetricGroup(3)));
+##  IdentityMapping( Sym( [ 1 .. 3 ] ) )
+##  gap> f=s;
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -2,7 +2,7 @@
 ##
 #W examples.gi                                              Laurent Bartholdi
 ##
-#H   @(#)$Id: examples.gi,v 1.62 2011/06/13 22:54:33 gap Exp $
+#H   @(#)$Id: examples.gi,v 1.66 2011/11/15 16:20:06 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -82,7 +82,7 @@ BindGlobal("LPGROUPIMAGE@", function(G,F,Ggens,Fgens,Sgens,Scoord)
         Ptop := AsList(TopVertexTransformations(G));
         Ftop := [];
         for x in Ptop do
-            Add(Ftop,MAPPEDWORD@(ShortGroupWordInSet(Group(Ggens),g->Activity(g)=x,infinity)[2],Fgens));
+            Add(Ftop,MAPPEDWORD@(ShortGroupWordInSet(Group(Ggens),g->ActivityPerm(g)=x,infinity)[2],Fgens));
         od;
         Gtop := List(Ftop,x->MAPPEDWORD@(x,Ggens));
 
@@ -130,7 +130,7 @@ BindGlobal("LPGROUPPREIMAGE@", function(Fgens,Sgens,Ggens,depth,Scoord)
                         g := VertexElement(Scoord,g);
                     fi;
                 elif i=-Sletter then
-                    if down>0 and Activity(g)=() then
+                    if down>0 and ActivityPerm(g)=() then
                         down := down-1;
                         g := State(g,Scoord);
                     else
@@ -327,7 +327,12 @@ InstallValue(GrigorchukMachine,
 InstallValue(GrigorchukGroup,SCGroup(GrigorchukMachine));
 GrigorchukGroup!.Name := "GrigorchukGroup";
 SETGENERATORNAMES@(GrigorchukGroup,["a","b","c","d"]);
-
+CallFuncList(function(a,b,c,d)
+    local x;
+    x := Comm(a,b);
+    SetBranchingSubgroup(GrigorchukGroup,Group(x,x^c,x^(c*a)));
+end, GeneratorsOfGroup(GrigorchukGroup));
+        
 BindGlobal("ITERATEMAP@", function(s,n,w)
     local r, i;
     r := [w];
@@ -630,7 +635,7 @@ InstallGlobalFunction(SunicMachine,
         function(phi)
     local k, p, A, B, d, f, g, gB, i, j;
 
-    k := FieldOfPolynomial(phi);
+    k := Field(CoefficientsOfUnivariatePolynomial(phi));
     p := Size(k);
     A := ElementaryAbelianGroup(IsPermGroup,p);
     d := DegreeOfUnivariateLaurentPolynomial(phi);
@@ -817,9 +822,11 @@ InstallGlobalFunction(GuptaSidkiMachines, function(n)
 end);
 
 InstallGlobalFunction(GuptaSidkiGroups, function(n)
-    local G;
+    local G, a, t;
     G := SCGroup(GuptaSidkiMachines(n));
     SETGENERATORNAMES@(G,["a","t"]);
+    a := G.1; t := G.2;
+    SetBranchingSubgroup(G,GroupByGenerators(ListX([0..n-1],[0..n-1],function(x,y) return Comm(a,t)^(a^x*t^y); end)));
     SetName(G,Concatenation("GuptaSidkiGroups(",String(n),")"));
     return G;
 end);
@@ -835,7 +842,7 @@ BindGlobal("GUPTASIDKIGROUPIMAGE@", function(g,f,Ggens,Fgens,Sgens,Scoord)
     Ptop := AsList(TopVertexTransformations(g));
     Ftop := [];
     for x in Ptop do
-        Add(Ftop,MAPPEDWORD@(ShortGroupWordInSet(Group(Ggens),g->Activity(g)=x,infinity)[2],Fgens));
+        Add(Ftop,MAPPEDWORD@(ShortGroupWordInSet(Group(Ggens),g->ActivityPerm(g)=x,infinity)[2],Fgens));
     od;
     Gtop := List(Ftop,x->MAPPEDWORD@(x,Ggens));
     GENREDUCE := function(h,w)
@@ -862,7 +869,7 @@ BindGlobal("GUPTASIDKIGROUPIMAGE@", function(g,f,Ggens,Fgens,Sgens,Scoord)
                 return fail;    # we reached a recurring state not in the nucleus
             fi;
             AddDictionary(todo,g);
-            w := Position(Ptop,Activity(g));
+            w := Position(Ptop,ActivityPerm(g));
             if w=fail then return fail; fi;
             w := Ftop[w];
             h := LeftQuotient(MAPPEDWORD@(w,Ggens),g);
@@ -955,14 +962,18 @@ BindGlobal("GUPTASIDKIFRDATA@", function(G,p,depth,fullgroup)
         Ggens := Concatenation([G.1],Ggens);
     fi;
     Sgens := List(MappingGeneratorsImages(sigma)[2],creator);
-    return rec(F:=F,
-               image:=GUPTASIDKIGROUPIMAGE@(G,F,Ggens,Fgens,Sgens,p),
-               preimage:=LPGROUPPREIMAGE@(Ggens,Fgens,Sgens,depth,p),
-               reduce:=w->w);
+    if fullgroup then
+        return rec(F:=F,
+                   image:=GUPTASIDKIGROUPIMAGE@(G,F,Ggens,Fgens,Sgens,p),
+                   preimage:=LPGROUPPREIMAGE@(Ggens,Fgens,Sgens,depth,p),
+                   reduce:=w->w);
+    else
+        return rec(F:=F);
+    fi;
 end);
 
 InstallGlobalFunction(GeneralizedGuptaSidkiGroups, function(p)
-    local P, G;
+    local P, G, a, t;
     P := CyclicGroup(IsPermGroup,p);
     P := MixerMachine(P,P,[List([1..p-1],i->GroupHomomorphismByImages(P,P,[P.1],[P.1^i]))]);
     G := Group(FRElement(P,2),FRElement(P,p+1));
@@ -970,6 +981,8 @@ InstallGlobalFunction(GeneralizedGuptaSidkiGroups, function(p)
     SetName(G,Concatenation("GeneralizedGuptaSidkiGroups(",String(p),")"));
     SetUnderlyingFRMachine(G,P);
     SetIsStateClosed(G,true);
+    a := G.1; t := G.2;
+    SetBranchingSubgroup(G,GroupByGenerators(ListX([0..p-1],[0..p-1],function(x,y) return Comm(a,t)^(a^x*t^y); end)));
 
     SetFRGroupPreImageData(G,function(depth)
         local r, s;
@@ -1324,8 +1337,8 @@ InstallGlobalFunction(CayleyGroup, function(g)
     fi;
     m := SCGroup(CayleyMachine(Range(h)));
     s := GeneratorsOfGroup(m);
-    id := First(s,x->Activity(x)=());
-    m!.Correspondence := [GroupHomomorphismByImages(g,m,GeneratorsOfGroup(g),List(GeneratorsOfGroup(g),x->First(s,y->Activity(y)=(x^h)^-1)^-1*id)),id];
+    id := First(s,x->ActivityPerm(x)=());
+    m!.Correspondence := [GroupHomomorphismByImages(g,m,GeneratorsOfGroup(g),List(GeneratorsOfGroup(g),x->First(s,y->ActivityPerm(y)=(x^h)^-1)^-1*id)),id];
     SetName(m,Concatenation("CayleyGroup(",STRINGGROUP@(g),")"));
     return m;
 end);
@@ -1499,6 +1512,7 @@ BindGlobal("BINARYKNEADINGMACHINE@", function(arg)
         G!.Correspondence := GeneratorsOfGroup(G);
     fi;
     SetKneadingSequence(G,PeriodicList(kseq[1],kseq[2]));
+    SetKneadingSequence(M,PeriodicList(kseq[1],kseq[2]));
     Append(name,")");
     return [M,G,name];
 end);
@@ -1652,7 +1666,7 @@ BindGlobal("PERIODICBKG_PREIMAGE@", function(G,depth)
                         g := VertexElement(1,g);
                     fi;
                 elif i=-2 then
-                    if down>0 and Activity(g)=() then
+                    if down>0 and ActivityPerm(g)=() then
                         down := down-1;
                         g := State(g,1);
                     else
@@ -1952,7 +1966,7 @@ BindGlobal("PREPERIODICBKG_PREIMAGE@", function(G,depth)
             if IsOddInt(Number(x[1],i)) then n := n+1; else n := n-1; fi;
         od;
         x := (b*a)^n;
-        if (Activity(g)=(1,2))=IsEvenInt(n) then x := x*b; fi;
+        if (ActivityPerm(g)=(1,2))=IsEvenInt(n) then x := x*b; fi;
         return reduce(x);
     end;
     if depth=infinity then
@@ -2016,7 +2030,7 @@ BindGlobal("PREPERIODICBKG_PREIMAGE@", function(G,depth)
                         g := VertexElement(1,g);
                     fi;
                 elif i=-3 then
-                    if down>0 and Activity(g)=() then
+                    if down>0 and ActivityPerm(g)=() then
                         down := down-1;
                         g := State(g,1);
                     else

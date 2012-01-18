@@ -2,7 +2,7 @@
 **
 *A  echelon.c                   ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: echelon.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: echelon.c,v 1.5 2011/12/31 19:36:23 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -23,10 +23,9 @@
    to by the appropriate y[structure + ..]; then remove all occurrences 
    of newly found redundant generator from the other equations */
 
-int echelon (pcp)
-struct pcp_vars *pcp;
+int echelon (struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int j;
@@ -221,7 +220,7 @@ Logical trivial;
 int redgen;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int k;
    int i, j, jj, exp;

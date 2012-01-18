@@ -2,7 +2,6 @@
 **
 *W  intrprtr.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: intrprtr.c,v 4.82 2011/06/06 16:28:08 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,6 @@
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_intrprtr_c =
-   "@(#)$Id: intrprtr.c,v 4.82 2011/06/06 16:28:08 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -4780,8 +4777,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoIntrprtr ( void )
 {
-    module.revision_c = Revision_intrprtr_c;
-    module.revision_h = Revision_intrprtr_h;
     FillInVersion( &module );
     return &module;
 }

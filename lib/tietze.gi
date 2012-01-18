@@ -2,7 +2,6 @@
 ##
 #W  tietze.gi                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id: tietze.gi,v 4.62 2010/11/01 09:23:37 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the methods for Tietze transformations of presentation
 ##  records (i.e., of presentations of finitely presented groups (fp groups).
 ##
-Revision.tietze_gi :=
-    "@(#)$Id: tietze.gi,v 4.62 2010/11/01 09:23:37 gap Exp $";
 
 #############################################################################
 ##

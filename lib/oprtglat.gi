@@ -2,7 +2,6 @@
 ##
 #W  oprtglat.gi                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: oprtglat.gi,v 4.19 2010/02/23 15:13:20 gap Exp $ 
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This  file  contains methods for orbits on subgroups
 ##
-Revision.oprtglat_gi:=
-  "@(#)$Id: oprtglat.gi,v 4.19 2010/02/23 15:13:20 gap Exp $";
 
 #############################################################################
 ##

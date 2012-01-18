@@ -4,7 +4,7 @@
 ##
 ## Methods for testing if a rational matrix group is polycyclic
 ##
-#H  @(#)$Id: ispoly.gi,v 1.5 2006/10/06 11:06:51 gap Exp $
+#H  @(#)$Id: ispoly.gi,v 1.7 2011/09/23 13:36:32 gap Exp $
 ##
 #Y 2005
 ##
@@ -13,7 +13,7 @@
 ##
 #F  POL_Logarithm( x )
 ##
-## IN: x ..... unipotent matrix 
+## IN: x ..... unipotent matrix
 ##
 ##  OUT: log(x)
 ##
@@ -34,8 +34,8 @@ end;
 ##
 #F POL_Exponential( v )
 ##
-## IN: v ..... matrix which is conjugated to an 
-##             upper or lower trinagular matrix with 0's on the diagonal
+## IN: v ..... matrix which is conjugated to an
+##             upper or lower triangular matrix with 0's on the diagonal
 ##
 ## OUT: exp(x)
 ##
@@ -70,22 +70,22 @@ POL_CloseMatrixSpaceUnderLieBracket := function( V )
     n := Length( basis );
 
     for i in [1..n] do
-	for j in [i+1..n] do
-	    com := basis[i]*basis[j]-basis[j]*basis[i];
-            if not com in V then 
-	       basis_ext := POL_CopyVectorList( basis );
-	       Add( basis_ext, com );
-	       V_ext := VectorSpace( Rationals, basis_ext, "basis" );
-	       return POL_CloseMatrixSpaceUnderLieBracket( V_ext );
-	    fi;
-	od;
+        for j in [i+1..n] do
+            com := basis[i]*basis[j]-basis[j]*basis[i];
+            if not com in V then
+               basis_ext := POL_CopyVectorList( basis );
+               Add( basis_ext, com );
+               V_ext := VectorSpace( Rationals, basis_ext, "basis" );
+               return POL_CloseMatrixSpaceUnderLieBracket( V_ext );
+            fi;
+        od;
     od;
     return V;
 end;
 
 #############################################################################
 ##
-#F 
+#F
 ##
 ## IN: unipo_gens ..... matrices that generate a unipotent matrix group
 ##
@@ -99,7 +99,7 @@ POL_LieAlgebra := function( unipo_gens )
 
     # compute Q-span
     V := VectorSpace( Rationals, logs );
-    
+
     # close under Lie bracket
     V_ext := POL_CloseMatrixSpaceUnderLieBracket( V );
 
@@ -118,19 +118,19 @@ end;
 POL_CloseLieAlgebraUnderGrpAction := function( gensG, L )
     local basis,b,g,exp,u,l,basis_ext,V_ext,L_ext;
     basis := Basis( L );
-    for b in basis do 
-	for g in gensG do
-	    exp := POL_Exponential( b );
-	    u := exp^g;
-	    l := POL_Logarithm( u );
-	    if not l in L then
-	       basis_ext := POL_CopyVectorList( basis );
-	       Add( basis_ext, l );
-	       V_ext := VectorSpace( Rationals, basis_ext, "basis" );
-	       L_ext := POL_CloseMatrixSpaceUnderLieBracket( V_ext );
-	       return POL_CloseLieAlgebraUnderGrpAction( gensG, L_ext );
-	    fi;  
-	od;
+    for b in basis do
+        for g in gensG do
+            exp := POL_Exponential( b );
+            u := exp^g;
+            l := POL_Logarithm( u );
+            if not l in L then
+               basis_ext := POL_CopyVectorList( basis );
+               Add( basis_ext, l );
+               V_ext := VectorSpace( Rationals, basis_ext, "basis" );
+               L_ext := POL_CloseMatrixSpaceUnderLieBracket( V_ext );
+               return POL_CloseLieAlgebraUnderGrpAction( gensG, L_ext );
+            fi;
+        od;
     od;
     return L;
 end;
@@ -138,26 +138,26 @@ end;
 #############################################################################
 ##
 #F
-## 
+##
 ## IN:  L ......... Lie algebra
-##      g ......... group element 
+##      g ......... group element
 ##
 ## OUT: Induced action of g on the Lie algebra, i.e. the linear mapping
 ##      which maps l to log( exp(l)^g )
 ##
 POL_InducedActionToLieAlgebra := function( g, L )
     local basis,n,inducedAction,i,exp,u,log,coeff;
-    
+
     basis := Basis( L );
     n := Length( basis );
     inducedAction := [];
 
-    for i in [1..n] do 
-	exp := POL_Exponential( basis[i] );
-	u := exp^g;
-	log := POL_Logarithm( u );
-	coeff := Coefficients( basis, log );
-	Add( inducedAction, coeff );
+    for i in [1..n] do
+        exp := POL_Exponential( basis[i] );
+        u := exp^g;
+        log := POL_Logarithm( u );
+        coeff := Coefficients( basis, log );
+        Add( inducedAction, coeff );
     od;
     return inducedAction;
 end;
@@ -169,10 +169,10 @@ end;
 ##
 POL_IsIntegerList := function( list )
     local z;
-    for z in list do 
-	if not z in Integers then
-	    return false;
-	fi;
+    for z in list do
+        if not z in Integers then
+            return false;
+        fi;
     od;
     return true;
 end;
@@ -181,10 +181,10 @@ end;
 ##
 #F POL_IsIntegralActionOnLieAlgebra( gens, L )
 ##
-## IN: gens ....... list of matrices 
-##     L ........... Lie algebra on which gens acts 
+## IN: gens ....... list of matrices
+##     L ........... Lie algebra on which gens acts
 ##                   via l^g = Log( Exp(l)^g )
-## 
+##
 ## OUT: returns true if for all g in gens, the minimal polynomial of
 ##      the induced action of  g,g^-1 to L is integral.
 ##      false otherwise.
@@ -192,9 +192,9 @@ end;
 POL_IsIntegralActionOnLieAlgebra := function( gens, L )
     local g,ind,pol,coeffs,constTerm,bool;
     Info( InfoPolenta, 3, "Testing whether action on Lie alg. is integral" );
-    for g in gens do 
+    for g in gens do
         Info( InfoPolenta, 3, "Generator that will be induced:" );
-        Info( InfoPolenta, 3, g ); 
+        Info( InfoPolenta, 3, g );
         ind := POL_InducedActionToLieAlgebra( g, L );
         Info( InfoPolenta, 3, "Induced action to Lie algebra:" );
         Info(InfoPolenta, 3, ind );
@@ -203,22 +203,22 @@ POL_IsIntegralActionOnLieAlgebra := function( gens, L )
             return false;
         fi;
         pol := CharacteristicPolynomial( Rationals, Rationals, ind );
- 	# pol := MinimalPolynomial( Rationals, ind );
+        # pol := MinimalPolynomial( Rationals, ind );
         Info( InfoPolenta, 3, "Characteristic polynomial:" );
         Info(InfoPolenta, 3, pol );
-	coeffs := CoefficientsOfLaurentPolynomial( pol );
+        coeffs := CoefficientsOfLaurentPolynomial( pol );
 
-	# test if pol_g in Z[x]
-	if not POL_IsIntegerList( coeffs[1] ) then 
-	    return false;
-	fi;
+        # test if pol_g in Z[x]
+        if not POL_IsIntegerList( coeffs[1] ) then
+            return false;
+        fi;
 
-	# test if pol_g^-1 in Z[X] 
+        # test if pol_g^-1 in Z[X]
         constTerm := Value( pol, 0 );
-	bool := (constTerm = 1 ) or ( constTerm = -1);
-	if not bool then
-	   return false;
-	fi;
+        bool := (constTerm = 1 ) or ( constTerm = -1);
+        if not bool then
+           return false;
+        fi;
     od;
     return true;
 end;
@@ -227,26 +227,26 @@ end;
 ##
 #F POL_IsIntegralActionOnLieAlgebra_Beals( gens, L )
 ##
-## IN: gens ....... list of matrices 
-##     L ........... Lie algebra on which gens acts 
+## IN: gens ....... list of matrices
+##     L ........... Lie algebra on which gens acts
 ##                   via l^g = Log( Exp(l)^g )
-## 
+##
 ## OUT: returns true if for all g in gens, the minimal polynomial of
 ##      the induced action of  g,g^-1 to L is integral.
 ##      false otherwise.
 ##
 POL_IsIntegralActionOnLieAlgebra_Beals := function( gens, L )
-    local gens_ind, G_ind, lat; 
-    
+    local gens_ind, G_ind, lat;
+
     gens_ind :=  List( gens, x-> POL_InducedActionToLieAlgebra( x, L ));
     G_ind := GroupByGenerators( gens_ind );
-    
+
     lat := InvariantLattice( G_ind );
-    if lat = fail then 
+    if lat = fail then
         return false;
-    else 
+    else
         return true;
-    fi; 
+    fi;
 
 end;
 
@@ -255,17 +255,17 @@ end;
 #F
 ##
 ## IN: gensU_p ...... normal subgroup generators for U_p
-##     gensG ........ the generatros of the parent group G
+##     gensG ........ the generators of the parent group G
 ##     gensGU ......  representatives of pc sequence of GU
 ##
 POL_IsFinitelgeneratedU_p := function( gensU_p, gensG, gensGU )
     local L,L_ext,isIntegral,gensU_p_mod,i,method;
 
     # catch trivial case G/U = 1
-    if Length( gensGU ) = 0 then 
+    if Length( gensGU ) = 0 then
        return true;
     fi;
-    
+
     # catch trivial case U_p = 1
     gensU_p_mod := [];
     for i in [1..Length( gensU_p )] do
@@ -288,9 +288,9 @@ POL_IsFinitelgeneratedU_p := function( gensU_p, gensG, gensGU )
 
     # test whether the action of gensGU on the Lie algebra is integral
     method := "beals";
-    if method = "char" then 
+    if method = "char" then
         isIntegral := POL_IsIntegralActionOnLieAlgebra_Beals( gensG, L_ext );
-    else 
+    else
         isIntegral := POL_IsIntegralActionOnLieAlgebra( gensGU, L_ext );
     fi;
 

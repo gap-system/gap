@@ -2,7 +2,6 @@
 ##
 #W  zlattice.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: zlattice.gi,v 4.19 2010/02/23 15:13:37 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains methods for lattices.
 ##
-Revision.zlattice_gi :=
-    "@(#)$Id: zlattice.gi,v 4.19 2010/02/23 15:13:37 gap Exp $";
 
 
 #############################################################################

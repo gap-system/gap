@@ -41,8 +41,6 @@
 ##  `IsUpToDatePolycyclicCollector' because it is reset when the presentation
 ##  is changed.
 ##
-Revision.rwspcclt_gd :=
-    "@(#)$Id: rwspcclt.gd,v 4.36 2010/02/23 15:13:28 gap Exp $";
 
 #############################################################################
 ##

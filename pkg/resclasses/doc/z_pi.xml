@@ -28,7 +28,7 @@ underlying &GAP; implementation of these rings themselves.
   <Func Name="Z_pi" Arg="pi" Label="by set of noninvertible primes"/>
   <Func Name="Z_pi" Arg="p" Label="by noninvertible prime"/>
   <Returns>
-    The ring <M>&ZZ;_{(\pi)}</M> or the ring <M>&ZZ;_{(p)}</M>,
+    the ring <M>&ZZ;_{(\pi)}</M> or the ring <M>&ZZ;_{(p)}</M>,
     respectively.
   </Returns>
   <Description>

@@ -8,8 +8,6 @@
 ##
 ##  This file contains the declarations of operations for factor group maps
 ##
-Revision.factgrp_gi:=
-  "@(#)$Id: factgrp.gi,v 4.71 2010/12/22 18:20:31 gap Exp $";
 
 #############################################################################
 ##
@@ -512,7 +510,7 @@ end);
 BADINDEX:=1000; # the index that is too big
 GenericFindActionKernel:=function(arg)
 local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, bv, badi,
-totalcnt, interupt, u, nu, cor, zzz,bigperm;
+totalcnt, interupt, u, nu, cor, zzz,bigperm,perm;
 
   G:=arg[1];
   N:=arg[2];
@@ -520,6 +518,14 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm;
     knowi:=arg[3];
   else
     knowi:=Index(G,N);
+  fi;
+
+  # special treatment for solvable groups. This will never be triggered for
+  # perm groups or nice groups
+  if Size(N)>1 and HasSolvableFactorGroup(G,N) then
+    perm:=ActionHomomorphism(G,RightCosets(G,N),OnRight,"surjective");
+    perm:=perm*IsomorphismPcGroup(Image(perm));
+    return perm;
   fi;
 
   bigperm:=IsPermGroup(G) and NrMovedPoints(G)>10000;
@@ -715,7 +721,14 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop, i,cheap;
       return s;
     fi;
     return IdentityMapping(G);
-  fi;
+  # simple test is comparatively cheap for permgrp
+  elif IsSimpleGroup(G) and not IsAbelian(G) then 
+    H:=SimpleGroup(ClassicalIsomorphismTypeFiniteSimpleGroup(G));
+    if IsPermGroup(H) and NrMovedPoints(H)>=NrMovedPoints(G) then
+      return IdentityMapping(G);
+    fi;
+  fi; # transitive/simple treatment
+
   # if the original group has no stabchain we probably do not want to keep
   # it (or a homomorphisms pool) there -- make a copy for working
   # intermediately with it.
@@ -1220,7 +1233,7 @@ local h;
   # check, whether we already know a factormap
   DoCheapActionImages(G);
   h:=GetNaturalHomomorphismsPool(G,N);
-  if h=fail and IsSolvableGroup(N) and not IsSolvableGroup(G) and N=RadicalGroup(G)
+  if h=fail and HasIsSolvableGroup(N) and HasIsSolvableGroup(G) and IsSolvableGroup(N) and not IsSolvableGroup(G) and N=RadicalGroup(G)
     then
     # did we just compute it?
     h:=GetNaturalHomomorphismsPool(G,N);
@@ -1251,11 +1264,11 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
   "test if known/try solvable factor for permutation groups",
   IsIdenticalObj, [ IsPermGroup, IsPermGroup ], 0,
 function( G, N )
-local   map,  pcgs,  A,h;
+local   map,  pcgs, A, filter;
     
-  h:=GetNaturalHomomorphismsPool(G,N);
-  if h<>fail then
-    return h;
+  map:=GetNaturalHomomorphismsPool(G,N);
+  if map<>fail then
+    return map;
   fi;
 
   if Index(G,N)=1 or Size(N)=1
@@ -1270,13 +1283,33 @@ local   map,  pcgs,  A,h;
       TryNextMethod();
   fi;
 
-  # Construct the pcp group <A> and the bijection between <A> and <G>.
+  # Construct the pcp group <A>.
   A := PermpcgsPcGroupPcgs( pcgs, pcgs!.permpcgsNormalSteps, false );
   UseFactorRelation( G, N, A );
-  map := EpiPcByModpcgs( G, A, pcgs, GeneratorsOfGroup( A ) );
 
-  SetIsSurjective( map, true );
-  SetKernelOfMultiplicativeGeneralMapping( map, N );
+  # Construct the epimorphism from <G> onto <A>.
+  map := rec();
+  filter := IsPermGroupGeneralMappingByImages and
+            IsToPcGroupGeneralMappingByImages and
+            IsGroupGeneralMappingByPcgs and
+            IsMapping and IsSurjective and
+            HasSource and HasRange and 
+            HasPreImagesRange and HasImagesSource and
+            HasKernelOfMultiplicativeGeneralMapping;
+
+  map.sourcePcgs       := pcgs;
+  map.sourcePcgsImages := GeneratorsOfGroup( A );
+
+  ObjectifyWithAttributes( map,
+  NewType( GeneralMappingsFamily
+	  ( ElementsFamily( FamilyObj( G ) ),
+	    ElementsFamily( FamilyObj( A ) ) ), filter ), 
+	    Source,G,
+	    Range,A,
+	    PreImagesRange,G,
+	    ImagesSource,A,
+	    KernelOfMultiplicativeGeneralMapping,N
+	    );
   
   return map;
 end );
@@ -1294,6 +1327,28 @@ local s,r,nat,k;
     AddNaturalHomomorphismsPool(s,PreImage(hom,k),nat);
   od;
 end);
+
+#############################################################################
+##
+#M  UseFactorRelation( <num>, <den>, <fac> )  . . . .  for perm group factors
+##
+InstallMethod( UseFactorRelation,
+   [ IsGroup and HasSize, IsObject, IsPermGroup ],
+   function( num, den, fac )
+   local limit;
+   if not HasSize( fac ) then
+     if HasSize(den) then
+       SetSize( fac, Size( num ) / Size( den ) );
+     else
+       limit := Size( num );
+       if IsBound( StabChainOptions(fac).limit ) then
+         limit := Minimum( limit, StabChainOptions(fac).limit );
+       fi;
+       StabChainOptions(fac).limit:=limit;
+     fi;
+   fi;
+   TryNextMethod();
+   end );
 
 #############################################################################
 ##

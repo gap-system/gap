@@ -2,7 +2,7 @@
 **
 *A  next_class.c                ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: next_class.c,v 1.5 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: next_class.c,v 1.9 2011/12/02 16:30:55 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -16,12 +16,6 @@
 #include "exp_vars.h"
 #define BOTH_TAILS 0 
 
-#if defined (QUOTPIC)
-#include "times.h"
-  int total_cpu_time = 0;
-  int cpu_time;
-#endif
-
 #if defined (GROUP) 
 
 /* calculate the next class of the group layer by layer */
@@ -32,36 +26,25 @@ int **head;
 int **list;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int class;
    struct exp_vars exp_flag;
    int prev = 1, new;
-
-#if defined (QUOTPIC)
-   cpu_time = runTime ();
-#endif
 
    /* if class 1 computation, setup has already been done -- 
       before relations are read */
    if (y[pcp->clend + 1] != 0)
       setup (pcp);
 
-   if (pcp->overflow || pcp->complete != 0 && !pcp->multiplicator)
+   if (pcp->overflow || (pcp->complete != 0 && !pcp->multiplicator))
       return;
 
    if (pcp->extra_relations != 0 || pcp->m != 0) 
       initialise_exponent (&exp_flag, pcp);
 
-#if defined (QUOTPIC)
-   is_timelimit_exceeded ();
-#endif
-
    for (class = pcp->cc; class > 1; --class) {
       tails (BOTH_TAILS, class, pcp->cc, 1, pcp);
-#if defined (QUOTPIC)
-      is_timelimit_exceeded ();
-#endif
       if (pcp->overflow)
 	 return;
       if (class != 2) {
@@ -72,10 +55,7 @@ struct pcp_vars *pcp;
 	    prev = new;
 	 }
 	 consistency (0, exp_flag.queue, &exp_flag.queue_length, class, pcp);
-#if defined (QUOTPIC)
-	 is_timelimit_exceeded ();
-#endif
-	 if (pcp->overflow || pcp->complete != 0 && !pcp->multiplicator)
+	 if (pcp->overflow || (pcp->complete != 0 && !pcp->multiplicator))
 	    return;
       }
    }
@@ -83,9 +63,6 @@ struct pcp_vars *pcp;
    if (!pcp->multiplicator) {
       if (pcp->cc > 1) {
 	 update_generators (pcp);
-#if defined (QUOTPIC)
-	 is_timelimit_exceeded ();
-#endif
 	 if (pcp->overflow)
 	    return;
 
@@ -102,33 +79,20 @@ struct pcp_vars *pcp;
 	       return;
 	 }
       }
-#if defined (QUOTPIC)
-      is_timelimit_exceeded ();
-#endif
 
       collect_relations (pcp);
-#if defined (QUOTPIC)
-      is_timelimit_exceeded ();
-#endif
       if (pcp->overflow || pcp->complete != 0 || !pcp->valid)
 	 return;
       if (pcp->extra_relations != 0) {
 	 if (pcp->m == 0) { 
 	    exp_flag.list = ALL_WORDS;
-#ifdef Magma
-	    extra_relations (&exp_flag, NULL_HANDLE, pcp);
-#else
 	    extra_relations (&exp_flag, pcp);
-#endif
 	 }
 	 else {
 	    exp_flag.list = REDUCED_LIST;
 	    enforce_exponent (report, &exp_flag, head, list, pcp);
 	    if (pcp->overflow) return;
 	 }
-#if defined (QUOTPIC)
-	 is_timelimit_exceeded ();
-#endif
       }
 
       if (pcp->overflow || pcp->complete != 0 || !pcp->valid)
@@ -146,9 +110,6 @@ struct pcp_vars *pcp;
    else 
       eliminate (FALSE, pcp);
 
-#if defined (QUOTPIC)
-   is_timelimit_exceeded ();
-#endif
 }
 
 #endif
@@ -164,7 +125,7 @@ int **head;
 int **list;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int t;
    int factor;
@@ -200,11 +161,7 @@ struct pcp_vars *pcp;
    pcp->start_wt = 1;
    pcp->end_wt = (2 * pcp->cc) / 3;
 
-#ifdef Magma
-   extra_relations (&exp_flag, NULL_HANDLE, pcp);
-#else
    extra_relations (exp_flag, pcp);
-#endif
    if (pcp->overflow) 
       return;
    queue = exp_flag->queue; 
@@ -286,7 +243,7 @@ int *long_queue;
 int long_queue_length;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int gen;
    int i, p1;
@@ -310,7 +267,7 @@ int *x;
 int len;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i, j, pointer, temp;
    Logical swap = TRUE; 
@@ -343,20 +300,3 @@ struct pcp_vars *pcp;
    free_vector (length, 1);
 }
 
-#if defined (QUOTPIC)
-
-/* is the total CPU time limit set for the computation exceeded? */
-
-void is_timelimit_exceeded ()
-{
-   if (time_limit == 0) return;
-
-   total_cpu_time += (runTime () - cpu_time);
-   if (total_cpu_time > time_limit) {
-      printf ("Time limit exceeded\n");
-      exit (CPU_TIME_LIMIT);
-   }
-   cpu_time = runTime ();
-
-}
-#endif

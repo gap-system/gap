@@ -2,7 +2,7 @@
 **
 *A  defaults_pga.c              ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: defaults_pga.c,v 1.5 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: defaults_pga.c,v 1.8 2011/11/29 13:59:50 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -212,7 +212,7 @@ struct pga_vars *pga;
    read_value (TRUE, "Automorphism group description of descendants? ",
 	       &pga->print_automorphisms, INT_MIN);
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    read_value (TRUE, "Automorphism group order of descendants? ",
 	       &pga->print_automorphism_order, INT_MIN);
 #endif 
@@ -254,7 +254,7 @@ struct pcp_vars *pcp;
    while (reading) {
       read_value (TRUE, "Input step size: ", &pga->step_size, 1);
       reading = (pga->step_size <= 0);
-      if (isatty ()) reading = (reading || (pga->step_size > pcp->newgen)); 
+      if (isatty (0)) reading = (reading || (pga->step_size > pcp->newgen)); 
       if (reading) 
 	 printf ("Error: step sizes range from 1 to %d only\n", pcp->newgen);
       /*
@@ -280,7 +280,7 @@ void read_order_bound (order_bound, pcp)
 int *order_bound;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int least_order = y[pcp->clend + pcp->cc - 1] + 1;
    read_value (TRUE, "Input order bound on descendants: ", 

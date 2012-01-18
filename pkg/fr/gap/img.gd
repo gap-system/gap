@@ -2,7 +2,7 @@
 ##
 #W img.gd                                                   Laurent Bartholdi
 ##
-#H   @(#)$Id: img.gd,v 1.51 2011/06/20 14:23:51 gap Exp $
+#H   @(#)$Id: img.gd,v 1.53 2011/08/14 20:55:25 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -1032,6 +1032,28 @@ DeclareOperation("Draw", [IsSphereTriangulation]);
 ##   </Description>
 ## </ManSection>
 ##
+## <ManSection>
+##   <Oper Name="Draw" Arg="s" Label="spider"/>
+##   <Description>
+##     This command plots the spider <A>s</A> in a separate X window.
+##     It displays the complex sphere, big dots at the post-critical
+##     set (feet of the spider), and the arcs and dual arcs
+##     of the triangulation connecting the feet.
+##
+##     <P/> If the option <K>julia:=&lt;gridsize&gt;</K> (if no grid size
+##     is specified, it is 500 by default), then the Julia set of the
+##     map associated with the spider is also displayed. Points attracted
+##     to attracting cycles are coloured in pastel tones, and unattracted
+##     points are coloured black.
+##
+##     <P/> If the option <K>noarcs</K> is specified, the printing of the
+##    arcs and dual arcs is disabled.
+##
+##     <P/> The options <K>upper</K>, <K>lower</K> and <K>detach</K>
+##     also apply.
+##   </Description>
+## </ManSection>
+
 ## <ManSection>
 ##   <Oper Name="FRMachine" Arg="f" Label="rational function"/>
 ##   <Oper Name="IMGMachine" Arg="f" Label="rational function"/>

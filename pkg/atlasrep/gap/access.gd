@@ -2,15 +2,29 @@
 ##
 #W  access.gd            GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: access.gd,v 1.56 2009/08/19 14:55:15 gap Exp $
-##
 #Y  Copyright (C)  2001,   Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains functions for low level access to data from the
-##  <Package>ATLAS</Package> of Group Representations.
+##  ATLAS of Group Representations.
 ##
-Revision.( "atlasrep/gap/access_gd" ) :=
-    "@(#)$Id: access.gd,v 1.56 2009/08/19 14:55:15 gap Exp $";
+
+
+#############################################################################
+##
+#V  AGR
+##
+##  <#GAPDoc Label="AGR">
+##  <ManSection>
+##  <Var Name="AGR"/>
+##
+##  <Description>
+##  is a record whose components are functions and data that are used by the
+##  higher level interface functions.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BindGlobal( "AGR", rec( GAPnamesRec:= rec() ) );
 
 
 #############################################################################
@@ -41,9 +55,9 @@ DeclareInfoClass( "InfoAtlasRep" );
 ##
 ##  <#GAPDoc Label="[1]{access}">
 ##  The data of each local &GAP; version of the <Package>ATLAS</Package> of
-##  Group Representations is either private
+##  Group Representations are either private
 ##  (see Chapter&nbsp;<Ref Chap="chap:Private Extensions"/>)
-##  or is stored in the two directories <F>datagens</F> and <F>dataword</F>.
+##  or are stored in the two directories <F>datagens</F> and <F>dataword</F>.
 ##  In the following, we describe the format of filenames in the latter two
 ##  directories, as a reference of the <Q>official</Q> part of the
 ##  <Package>ATLAS</Package>.
@@ -114,11 +128,11 @@ DeclareInfoClass( "InfoAtlasRep" );
 
 #############################################################################
 ##
-#F  AGRParseFilenameFormat( <string>, <format> )
+#F  AGR.ParseFilenameFormat( <string>, <format> )
 ##
 ##  <#GAPDoc Label="AGRParseFilenameFormat">
 ##  <ManSection>
-##  <Func Name="AGRParseFilenameFormat" Arg='string, format'/>
+##  <Func Name="AGR.ParseFilenameFormat" Arg='string, format'/>
 ##
 ##  <Returns>
 ##  a list of strings and integers if <A>string</A> matches <A>format</A>,
@@ -135,7 +149,7 @@ DeclareInfoClass( "InfoAtlasRep" );
 ##  <C>ParseBackwards</C>.
 ##  <!-- %T add a cross-reference to gpisotyp!-->
 ##  <P/>
-##  <Ref Func="AGRParseFilenameFormat"/> returns a list of strings and
+##  <Ref Func="AGR.ParseFilenameFormat"/> returns a list of strings and
 ##  integers such that the concatenation of their
 ##  <Ref Attr="String" BookName="ref"/> values yields <A>string</A> if
 ##  <A>string</A> matches <A>format</A>,
@@ -150,22 +164,20 @@ DeclareInfoClass( "InfoAtlasRep" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> format:= [ [ [ IsChar, "G", IsDigitChar ],
-##  >                 [ "p", IsDigitChar, IsLowerAlphaOrDigitChar,
+##  >                 [ "p", IsDigitChar, AGR.IsLowerAlphaOrDigitChar,
 ##  >                   "B", IsDigitChar, ".m", IsDigitChar ] ],
 ##  >               [ ParseBackwards, ParseForwards ] ];;
-##  gap> AGRParseFilenameFormat( "A6G1-p10B0.m1", format );
+##  gap> AGR.ParseFilenameFormat( "A6G1-p10B0.m1", format );
 ##  [ "A6", "G", 1, "p", 10, "", "B", 0, ".m", 1 ]
-##  gap> AGRParseFilenameFormat( "A6G1-p15aB0.m1", format );
+##  gap> AGR.ParseFilenameFormat( "A6G1-p15aB0.m1", format );
 ##  [ "A6", "G", 1, "p", 15, "a", "B", 0, ".m", 1 ]
-##  gap> AGRParseFilenameFormat( "A6G1-f2r16B0.m1", format );
+##  gap> AGR.ParseFilenameFormat( "A6G1-f2r16B0.m1", format );
 ##  fail
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "AGRParseFilenameFormat" );
-#T As soon as `gpisotyp' is released, use `ParseBackwardsWithPrefix' here!
 
 
 #############################################################################
@@ -205,11 +217,55 @@ DeclareGlobalFunction( "AtlasOfGroupRepresentationsLocalFilenameTransfer" );
 
 #############################################################################
 ##
-#F  AGRFileContents( <dirname>, <groupname>, <filename>, <type> )
+#F  AtlasOfGroupRepresentationsTestTableOfContentsRemoteUpdates()
+##
+##  <#GAPDoc Label="AGRTestTableOfContentsRemoteUpdates">
+##  <ManSection>
+##  <Func Name="AtlasOfGroupRepresentationsTestTableOfContentsRemoteUpdates"
+##  Arg=''/>
+##
+##  <Returns>
+##  the list of names of all locally available data files
+##  that should be removed.
+##  </Returns>
+##  <Description>
+##  This function fetches the file <F>changes.html</F> from the package's
+##  home page, extracts the times of changes for the data files in question,
+##  and compares them with the times of the last changes of the local data
+##  files.
+##  For that, the &GAP; package <Package>IO</Package>
+##  <Cite Key="IO"/><Index>IO package</Index>
+##  is needed;
+##  if it is not available then an error message is printed,
+##  and <K>fail</K> is returned.
+##  <P/>
+##  If the time of the last modification of a server file is later than
+##  that of the local copy then the local file must be updated.
+##  <Index Key="touch"><C>touch</C></Index>
+##  (This means that <C>touch</C>ing files in the local directories
+##  will cheat this function.)
+##  <P/>
+##  It is useful that a system administrator (i.&nbsp;e., someone who has
+##  the permission to remove files from the data directories)
+##  runs this function from time to time,
+##  and afterwards removes the files in the list that is returned.
+##  This way, new versions of these files will be fetched automatically
+##  from the servers when a user asks for their data.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction(
+    "AtlasOfGroupRepresentationsTestTableOfContentsRemoteUpdates" );
+
+
+#############################################################################
+##
+#F  AGR.FileContents( <dirname>, <groupname>, <filename>, <type> )
 ##
 ##  <#GAPDoc Label="AGRFileContents">
 ##  <ManSection>
-##  <Func Name="AGRFileContents" Arg='dirname, groupname, filename, type'/>
+##  <Func Name="AGR.FileContents" Arg='dirname, groupname, filename, type'/>
 ##
 ##  <Returns>
 ##  the &GAP; object obtained from reading and interpreting the file(s) with
@@ -218,7 +274,7 @@ DeclareGlobalFunction( "AtlasOfGroupRepresentationsLocalFilenameTransfer" );
 ##  <Description>
 ##  Let <A>dirname</A> and <A>groupname</A> be strings,
 ##  <A>filename</A> be a string or a list of strings,
-##  and <A>type</A> be a data type (see <Ref Func="AGRDeclareDataType"/>).
+##  and <A>type</A> be a data type (see <Ref Func="AGR.DeclareDataType"/>).
 ##  <A>dirname</A> must be one of <C>"datagens"</C>, <C>"dataword"</C>,
 ##  or the <A>dirid</A> value of a private directory,
 ##  see <Ref Func="AtlasOfGroupRepresentationsNotifyPrivateDirectory"/>.
@@ -229,7 +285,7 @@ DeclareGlobalFunction( "AtlasOfGroupRepresentationsLocalFilenameTransfer" );
 ##  <A>dirname</A> directory of the <Package>ATLAS</Package>,
 ##  or a list of such filenames,
 ##  with data concerning <M>G</M> and for the data type <C>type</C>,
-##  then <Ref Func="AGRFileContents"/> returns
+##  then <Ref Func="AGR.FileContents"/> returns
 ##  the contents of the corresponding file(s),
 ##  in the sense that the file(s) (or equivalent ones, see
 ##  Section <Ref Subsect="subsect:Customizing the Access to Data files"/>)
@@ -237,7 +293,7 @@ DeclareGlobalFunction( "AtlasOfGroupRepresentationsLocalFilenameTransfer" );
 ##  otherwise <K>fail</K> is returned.
 ##  <P/>
 ##  Note that if <A>filename</A> refers to file(s) already stored in the
-##  <A>dirname</A> directory then <Ref Func="AGRFileContents"/>
+##  <A>dirname</A> directory then <Ref Func="AGR.FileContents"/>
 ##  does <E>not</E> check whether the table of contents of the
 ##  <Package>ATLAS</Package> of Group Representations actually contains
 ##  <A>filename</A>.
@@ -245,7 +301,6 @@ DeclareGlobalFunction( "AtlasOfGroupRepresentationsLocalFilenameTransfer" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "AGRFileContents" );
 
 
 #############################################################################
@@ -275,8 +330,8 @@ DeclareGlobalFunction( "FilenameAtlas" );
 ##  the third one.
 ##  Therefore, the package provides the possibility to extend the default
 ##  behaviour by adding new records to the <C>accessFunctions</C>
-##  component of <Ref Var="AtlasOfGroupRepresentationsInfo"/>,
-##  the components of which are as follows.
+##  component of <Ref Var="AtlasOfGroupRepresentationsInfo"/>.
+##  Its components are as follows.
 ##  <P/>
 ##  <List>
 ##  <Mark>
@@ -292,7 +347,7 @@ DeclareGlobalFunction( "FilenameAtlas" );
 ##    <C>"dataword"</C>, or the <A>dirid</A> value of a private directory,
 ##    see <Ref Func="AtlasOfGroupRepresentationsNotifyPrivateDirectory"/>),
 ##    and <A>type</A> be the data type
-##    (see <Ref Func="AGRDeclareDataType"/>).
+##    (see <Ref Func="AGR.DeclareDataType"/>).
 ##    This function must return either the absolute path(s) where the
 ##    mechanism implemented by the current record expects the local version
 ##    of the given file(s),
@@ -337,24 +392,24 @@ DeclareGlobalFunction( "FilenameAtlas" );
 ##    in the sense that the &GAP; matrix, matrix list, permutation,
 ##    permutation list, or program described by the file(s) is returned.
 ##    This means that besides reading the file(s) via the appropriate
-##    function, it may be necessary to interpret the contents.
+##    function, interpreting the contents may be necessary.
 ##  </Item>
 ##  <Mark><C>description</C></Mark>
 ##  <Item>
 ##    This must be a short string that describes for which kinds of files
 ##    the functions in the current record are intended,
 ##    which file formats are supported etc.
-##    The value is shown when
-##    <Ref Func="AtlasOfGroupRepresentationsShowUserParameters"/> is called.
+##    The value is used by
+##    <Ref Func="AtlasOfGroupRepresentationsUserParameters"/>.
 ##  </Item>
 ##  <Mark><C>active</C></Mark>
 ##  <Item>
 ##    The current <C>accessFunctions</C> record is ignored
-##    by <Ref Func="AGRFileContents"/> if the value is not <K>true</K>.
+##    by <Ref Func="AGR.FileContents"/> if the value is not <K>true</K>.
 ##  </Item>
 ##  </List>
 ##  <P/>
-##  In <Ref Func="AGRFileContents"/>, the records in the
+##  In <Ref Func="AGR.FileContents"/>, the records in the
 ##  <C>accessFunctions</C> component of
 ##  <Ref Var="AtlasOfGroupRepresentationsInfo"/> are considered in reversed
 ##  order.
@@ -378,25 +433,13 @@ DeclareGlobalVariable( "AtlasOfGroupRepresentationsAccessFunctionsDefault" );
 ##
 ##  The Tables of Contents of the Atlas of Group Representations
 ##
-##  <#GAPDoc Label="[2]{access}">
+##  <#GAPDoc Label="toc">
 ##  The list of data currently available is stored in several
 ##  <E>tables of contents</E>,
 ##  one for the local &GAP; data, one for the data on remote servers,
 ##  and one for each private data directory.
 ##  These tables of contents are created by
 ##  <Ref Func="ReloadAtlasTableOfContents"/>.
-##  <!--
-##  <P/>
-##  The low level functions used by <Ref Func="ReloadAtlasTableOfContents"/>
-##  are <C>AtlasTableOfContents</C>,
-##  which actually fetches and composes the necessary information,
-##  and <C>StringOfAtlasTableOfContents</C>,
-##  which translates the filenames into appropriate function calls for
-##  notifying them, and creates the string that is to be printed to a file.
-##  These functions and the utilities for them can be found in the files
-##  <F>access.gd</F> and <F>access.gi</F> in the <F>gap</F> directory of the
-##  package.
-##  -->
 ##  <P/>
 ##  It is assumed that the local data directories contain only
 ##  files that are also available on servers.
@@ -415,123 +458,51 @@ DeclareGlobalVariable( "AtlasOfGroupRepresentationsAccessFunctionsDefault" );
 ##  (see Section&nbsp;<Ref Sect="sect:Data Types Used in the AGR"/>)
 ##  for which data are available.
 ##  <P/>
-##  Note that the name mapping between the <Package>ATLAS</Package>-file and
-##  &GAP; names of the groups is provided by the <C>groupnames</C> component
-##  of <Ref Var="AtlasOfGroupRepresentationsInfo"/>,
-##  and information about the base rings of matrix representations is
-##  provided by the <C>ringinfo</C> component.
-##  Group names are notified with <Ref Func="AGRGNAN"/>,
-##  and base ring information can be notified with <Ref Func="AGRRNG"/>;
-##  these two administrational functions may be useful for private extensions
-##  of the package (see Chapter&nbsp;<Ref Chap="chap:Private Extensions"/>).
-##  <#/GAPDoc>
-##
-
-
-#############################################################################
-##
-#F  AGRGNAN( <gapname>, <atlasname>[, <size>[, <maxessizes>[, "all"
-#F           [, <compatinfo>]]]] )
-##
-##  <#GAPDoc Label="AGRGNAN">
-##  <ManSection>
-##  <Func Name="AGRGNAN"
-##   Arg='gapname, atlasname[, size[, maxessize[, "all"[, compatinfo]]]]'/>
-##
-##  <Description>
-##  Let <A>gapname</A> be a string denoting a &GAP; group name,
-##  and <A>atlasname</A> be a string denoting the corresponding
-##  <Package>ATLAS</Package>-file name used in filenames of the
-##  <Package>ATLAS</Package> of Group Representations.
-##  The following optional arguments are supported.
+##  Here are the administrational functions that are used to build the tables
+##  of contents.
+##  Some of them may be useful also for private extensions of the package
+##  (see Chapter&nbsp;<Ref Chap="chap:Private Extensions"/>).
+##  <P/>
+##  The following functions define group names, available representations,
+##  and straight line programs.
+##  <P/>
 ##  <List>
-##  <Mark><A>size</A></Mark>
-##  <Item>
-##    the order of the corresponding group,
-##  </Item>
-##  <Mark><A>maxessizes</A></Mark>
-##  <Item>
-##    a (not necessarily dense) list of orders of the maximal subgroups of
-##    this group,
-##  </Item>
-##  <Mark><A>complete</A></Mark>
-##  <Item>
-##    the string <C>"all"</C> if the <A>maxessizes</A> list is known to be
-##    complete, or the string <C>"unknown"</C> if not,
-##  </Item>
-##  <Mark><A>compatinfo</A></Mark>
-##  <Item>
-##    a list of entries of the form <C>[ std, factname, factstd, flag ]</C>
-##    meaning that mapping standard generators of standardization <C>std</C>
-##    to the factor group with &GAP; group name <C>factname</C>, via the
-##    natural epimorphism, yields standard generators of standardization
-##    <C>factstd</C> if <C>flag</C> is <K>true</K>.
-##  </Item>
+##  <#Include Label="AGR.GNAN">
+##  <#Include Label="AGR.GRP">
+##  <#Include Label="AGR.TOC">
 ##  </List>
 ##  <P/>
-##  <Ref Func="AGRGNAN"/> adds the list of its arguments to the list stored
-##  in the <C>GAPnames</C> component of
-##  <Ref Var="AtlasOfGroupRepresentationsInfo"/>,
-##  making the <Package>ATLAS</Package> data involving <A>atlasname</A>
-##  accessible for the group with name <A>gapname</A>.
+##  The following functions add data about the groups and their
+##  standard generators.
+##  The function calls must be executed after the corresponding
+##  <C>AGR.GNAN</C> calls.
 ##  <P/>
-##  An example of a valid call is
-##  <C>AGRGNAN("A6.2_2","PGL29",360)</C>,
-##  see also
-##  Section&nbsp;<Ref Sect="sect:An Example of Extending AtlasRep"/>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareGlobalFunction( "AGRGNAN" );
-
-
-#############################################################################
-##
-#F  AGRRNG( <filename>, <descr> )
-##
-##  <#GAPDoc Label="AGRRNG">
-##  <ManSection>
-##  <Func Name="AGRRNG" Arg='filename, descr'/>
-##
-##  <Description>
-##  Let <A>filename</A> be a string denoting the name of a file containing
-##  the generators of a matrix representation over a ring that is not
-##  determined by the filename,
-##  and let <A>descr</A> be a string describing this ring <A>R</A>, say.
-##  <Ref Func="AGRRNG"/> adds the triple
-##  <C>[ <A>filename</A>, <A>descr</A>, <A>R</A> ]</C>
-##  to the list stored in the <C>ringinfo</C> component of
-##  <Ref Var="AtlasOfGroupRepresentationsInfo"/>.
+##  <List>
+##  <#Include Label="AGR.GRS">
+##  <#Include Label="AGR.MXN">
+##  <#Include Label="AGR.MXO">
+##  <#Include Label="AGR.MXS">
+##  <#Include Label="AGR.KERPRG">
+##  <#Include Label="AGR.STDCOMP">
+##  </List>
 ##  <P/>
-##  An example of a valid call is
-##  <C>AGRRNG("A5G1-Ar3aB0","Field([Sqrt(5)])")</C>.
-##  </Description>
-##  </ManSection>
+##  The following functions add data about representations or
+##  straight line programs that are already known.
+##  The function calls must be executed after the corresponding
+##  <C>AGR.TOC</C> calls.
+##  <P/>
+##  <List>
+##  <#Include Label="AGR.RNG">
+##  <#Include Label="AGR.TOCEXT">
+##  <#Include Label="AGR.API">
+##  <#Include Label="AGR.CHAR">
+##  </List>
+##  <P/>
+##  These functions are used to create the initial table of contents for the
+##  server data of the <Package>AtlasRep</Package> package when the file
+##  <F>gap/atlasprm.g</F> of the package is read.
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "AGRRNG" );
-
-
-#############################################################################
-##
-#F  AGRAPI( <repname>, <info> )
-##
-##  <#GAPDoc Label="AGRAPI">
-##  <ManSection>
-##  <Func Name="AGRAPI" Arg='repname, info'/>
-##
-##  <Description>
-##  Let <A>repname</A> be the name of a permutation representation and
-##  <A>info</A> be a description of the point stabilizers of this
-##  representation.
-##  <Ref Func="AGRAPI"/> binds the component <A>repname</A> of the record
-##  <C>AtlasOfGroupRepresentationsInfo.permrepinfo</C> to <A>info</A>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareGlobalFunction( "AGRAPI" );
 
 
 #############################################################################
@@ -664,7 +635,7 @@ DeclareGlobalFunction( "AtlasTableOfContents" );
 ##  <C>"local"</C>, or the name of a private data directory
 ##  (see Chapter&nbsp;<Ref Chap="chap:Private Extensions"/>).
 ##  <P/>
-##  In the case of <C>"remote"</C>, the file <C>atlasprm.g</C> is fetched
+##  In the case of <C>"remote"</C>, the file <F>atlasprm.g</F> is fetched
 ##  from the package's home page, and then read into &GAP;.
 ##  In the case of <C>"local"</C>, the subset of the data listed in the
 ##  <C>"remote"</C> table of contents is considered that are actually
@@ -725,55 +696,6 @@ DeclareGlobalFunction( "ReplaceAtlasTableOfContents" );
 
 #############################################################################
 ##
-#F  AGRGRP( <dirname>, <simpname>, <groupname> )
-#F  AGRTOC( <typename>, <filename>[, <nrgens>] )
-#F  AGRTOCEXT( <atlasname>, <factname>, <lines> )
-#F  AGRTOCEXT( <atlasname>, <std>, <maxnr>, <files> )
-##
-##  <ManSection>
-##  <Func Name="AGRGRP" Arg='dirname, simpname, groupname'/>
-##  <Func Name="AGRTOC" Arg='typename, filename[, nrgens]'/>
-##  <Func Name="AGRTOCEXT" Arg='atlasname, factname, lines'/>
-##  <Func Name="AGRTOCEXT" Arg='atlasname, std, maxnr, files'/>
-##
-##  <Description>
-##  These functions are used to create the initial table of contents for the
-##  server data of the <Package>AtlasRep</Package> package when the file
-##  <F>atlasprm.g</F> in the <F>gap</F> directory of the package is read.
-##  Encoding the table of contents in terms of calls to <Ref Func="AGRGRP"/>,
-##  <Ref Func="AGRTOC"/> and <Ref Func="AGRTOCEXT"/> is done by
-##  <Ref Func="StringOfAtlasTableOfContents"/>.
-##  <P/>
-##  Each call of <Ref Func="AGRGRP"/> notifies the group with name
-##  <A>groupname</A>,
-##  which is related to the simple group with name <A>simpname</A>
-##  and for which the data on the servers can be found in the directory
-##  with name <A>dirname</A>.
-##  <P/>
-##  Each call of <Ref Func="AGRTOC"/> notifies an entry to the
-##  <C>TableOfContents.remote</C> component of the global variable
-##  <Ref Var="AtlasOfGroupRepresentationsInfo"/>.
-##  The arguments must be the name <A>typename</A> of the data type to which
-##  the entry belongs, the prefix <A>filename</A> of the data file(s),
-##  and if given the number <A>nrgens</A> of generators, which are then
-##  located in separate files.
-##  <P/>
-##  Each call of <Ref Func="AGRTOCEXT"/> notifies an entry to the
-##  <C>maxext</C> or <C>maxextprg</C> component in the record for the group
-##  with &Atlas; name <A>atlasname</A> in the <C>TableOfContents.remote</C>
-##  component of <Ref Var="AtlasOfGroupRepresentationsInfo"/>.
-##  These entries concern straight line programs for computing generators of
-##  maximal subgroups of proper factor groups.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction( "AGRGRP" );
-DeclareGlobalFunction( "AGRTOC" );
-DeclareGlobalFunction( "AGRTOCEXT" );
-
-
-#############################################################################
-##
 #F  StringOfAtlasTableOfContents( "remote" )
 ##
 ##  <ManSection>
@@ -784,12 +706,10 @@ DeclareGlobalFunction( "AGRTOCEXT" );
 ##  this function returns a string that encodes the
 ##  currently stored value of the table of contents for the remote data
 ##  of the <Package>ATLAS</Package> of Group Representations,
-##  in terms of calls to <Ref Func="AGRGRP"/>, <Ref Func="AGRTOC"/>,
-##  and <Ref Func="AGRTOC"/>.
+##  in terms of calls to <C>AGR.GNAN</C>, <C>AGR.GRP</C>, etc.
 ##  <P/>
 ##  This function is used for automatically creating updates of the file
-##  <F>atlasprm.g</F> in the <F>gap</F> directory of the
-##  <Package>AtlasRep</Package> package.
+##  <F>gap/atlasprm.g</F> of the <Package>AtlasRep</Package> package.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -803,6 +723,7 @@ DeclareGlobalFunction( "StringOfAtlasTableOfContents" );
 ##  &GAP; session, one can add private data.
 ##  However, one should <E>not</E> add private files to the local data
 ##  directories of the package, or modify files in these directories.
+##  Instead, additional data should be put into separate directories.
 ##  It should be noted that a data file is fetched from a server only if
 ##  the local data directories do not contain a file with this name,
 ##  independent of the contents of the files.
@@ -814,12 +735,13 @@ DeclareGlobalFunction( "StringOfAtlasTableOfContents" );
 
 #############################################################################
 ##
-#F  AtlasOfGroupRepresentationsNotifyPrivateDirectory( <dir>[, <dirid>] )
+#F  AtlasOfGroupRepresentationsNotifyPrivateDirectory( <dir>[, <dirid>]
+#F     [, <test>] )
 ##
 ##  <#GAPDoc Label="AtlasOfGroupRepresentationsNotifyPrivateDirectory">
 ##  <ManSection>
 ##  <Func Name="AtlasOfGroupRepresentationsNotifyPrivateDirectory"
-##  Arg='dir[, dirid]'/>
+##  Arg='dir[, dirid][, test]'/>
 ##
 ##  <Returns>
 ##  <K>true</K> if none of the filenames with admissible format in the
@@ -840,7 +762,7 @@ DeclareGlobalFunction( "StringOfAtlasTableOfContents" );
 ##  <C>~</C>)
 ##  or a path relative to the directory where &GAP; was started.
 ##  <P/>
-##  If the second argument <A>dirid</A> is given, it must be a string.
+##  If the optional argument <A>dirid</A> is given, it must be a string.
 ##  This value will be used in the <C>identifier</C> components of the
 ##  records that are returned by interface functions (see
 ##  Section&nbsp;<Ref Sect="sect:Accessing Data of the AtlasRep Package"/>)
@@ -851,6 +773,14 @@ DeclareGlobalFunction( "StringOfAtlasTableOfContents" );
 ##  differences.
 ##  The default for <A>dirid</A> is <A>dirname</A>.
 ##  <P/>
+##  If the optional argument <A>test</A> is given, it must be <K>true</K> or
+##  <K>false</K>.
+##  In the <K>true</K> case, consistency checks are switched on while the
+##  file <F>toc.g</F> is read.
+##  This costs some extra time, but it is recommended after each extension of
+##  the file <F>toc.g</F>.
+##  The default for <A>test</A> is <K>false</K>.
+##  <P/>
 ##  <Ref Func="AtlasOfGroupRepresentationsNotifyPrivateDirectory"/> notifies
 ##  the data in the directory <A>dir</A> to the <Package>AtlasRep</Package>
 ##  package.
@@ -859,12 +789,9 @@ DeclareGlobalFunction( "StringOfAtlasTableOfContents" );
 ##  <Ref Var="AtlasOfGroupRepresentationsInfo"/>.
 ##  If the directory contains a file with the name <F>toc.g</F> then this
 ##  file is read;
-##  this file is useful for adding new group names
-##  (see&nbsp;<Ref Func="AGRGNAN"/>),
-##  for adding field information for characteristic zero representations
-##  (see&nbsp;<Ref Func="AGRRNG"/>),
-##  or for adding new data types
-##  (see Section&nbsp;<Ref Sect="sect:Data Types Used in the AGR"/>).
+##  this file is useful for adding new group names using <C>AGR.GNAN</C> and
+##  for adding describing data about the representations,
+##  see Section&nbsp;<Ref Sect="sect:The Tables of Contents of the AGR"/>.
 ##  Next the table of contents of the private directory is built from the
 ##  list of files contained in the private directory or in its subdirectories
 ##  (one layer deep).
@@ -885,8 +812,8 @@ DeclareGlobalFunction( "StringOfAtlasTableOfContents" );
 ##  is at least <M>1</M> then a message about these names is printed.
 ##  <P/>
 ##  For convenience, the user may collect the notifications of private data
-##  directories in the file <F>.gaprc</F>
-##  (see Section&nbsp;<Ref Sect="The .gaprc file" BookName="ref"/>).
+##  directories in the file <F>gaprc</F> (see
+##  Section&nbsp;<Ref Sect="The gap.ini and gaprc files" BookName="ref"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

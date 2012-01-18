@@ -2,7 +2,7 @@
 ##
 #W  ctomisc7.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomisc7.tbl,v 1.4 2010/05/05 13:20:07 gap Exp $
+#H  @(#)$Id: ctomisc7.tbl,v 1.5 2011/09/28 13:28:47 gap Exp $
 ##
 #Y  Copyright (C)  2008,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,12 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomisc7.tbl,v $
+#H  Revision 1.5  2011/09/28 13:28:47  gap
+#H  - removed revision entry and SET_TABLEFILENAME call,
+#H  - added fusions 2^6:3^(1+2).D8 -> 3^(1+2):D8, 2^6:3^(1+2).D8 -> M24,
+#H    2^6:3^(1+2).D8 -> He
+#H      TB
+#H
 #H  Revision 1.4  2010/05/05 13:20:07  gap
 #H  - added many class fusions,
 #H  - changed several class fusions according to consistency conditions,
@@ -37,11 +43,6 @@
 #H      TB
 #H
 ##
-Revision.ctomisc7_tbl :=
-    "@(#)$Id: ctomisc7.tbl,v 1.4 2010/05/05 13:20:07 gap Exp $";
-
-SET_TABLEFILENAME("ctomisc7");
-ALN:= Ignore;
 
 MOT("2^4:3^2:4",
 [
@@ -129,6 +130,16 @@ E(12)^7-E(12)^11,0,0,0,0,0,0,0,0,0,0,0,0],
 ,0,0]],
 [(17,18),
 ( 2, 3)( 6, 8)( 7, 9)(12,13)(19,25)(20,26)(21,27)(22,28)(23,29)(24,30)]);
+ALF("2^6:3^(1+2).D8","3^(1+2):D8",[1,1,1,1,5,6,6,7,7,2,2,2,2,9,8,8,12,13,
+3,3,3,3,10,10,4,4,4,4,11,11]);
+ALF("2^6:3^(1+2).D8","M24",[1,2,3,2,4,4,10,5,11,2,3,7,6,10,6,8,17,17,2,6,
+7,7,10,17,3,8,8,6,11,18],[
+"fusion map is unique up to table automorphisms"
+]);
+ALF("2^6:3^(1+2).D8","He",[1,2,3,3,4,4,10,5,11,2,3,7,8,10,6,8,19,19,2,6,6,
+7,10,19,3,7,8,8,11,20],[
+"fusion map is unique up to table automorphisms"
+]);
 
 MOT("3^(1+4):4S4",
 [
@@ -2009,7 +2020,6 @@ E(12)^7-E(12)^11,-E(12)^7+E(12)^11,E(12)^7-E(12)^11,-E(12)^7+E(12)^11,
 ]);
 
 LIBTABLE.LOADSTATUS.ctomisc7:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

@@ -1,0 +1,9 @@
+* Example of a dynamically loaded module (there is already src/hellod.c which 
+creates a loadable module, but this will also require pulling some parts from 
+the GAP developer's manual). Probably use a template prepared by Paul Smith
+in Summer 2011.
+
+* Example of the interfacing with the external binary while it is running 
+(the current HelloWorld example just starts the binary and continues after
+the binary finishes its work)
+

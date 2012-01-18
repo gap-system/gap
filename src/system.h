@@ -1,4 +1,3 @@
-
 /****************************************************************************
 **
 *W  system.h                    GAP source                   Martin Schönert
@@ -9,7 +8,6 @@
 *W                                                  & Burkhard Höfling (MAC)
 *W                                                    & Steve Linton (MS/DOS)
 **
-*H  @(#)$Id: system.h,v 4.75 2011/05/18 13:03:28 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,6 +16,10 @@
 **  The  file 'system.c'  declares  all operating system  dependent functions
 **  except file/stream handling which is done in "sysfiles.h".
 */
+
+#ifndef GAP_SYSTEM_H
+#define GAP_SYSTEM_H
+
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 
 /****************************************************************************
@@ -30,7 +32,7 @@
 #include "config.h"
 
 /* define stack align for gasman (from "config.h")                         */
-#define SYS_STACK_ALIGN		C_STACK_ALIGN
+#define SYS_STACK_ALIGN         C_STACK_ALIGN
 
 /* assume all prototypes are there                                         */
 #define SYS_HAS_CALLOC_PROTO
@@ -143,17 +145,17 @@
 # define HAVE_SIGNAL            0
 #endif
 
-#define HAVE_ACCESS		0
-#define HAVE_STAT		0
+#define HAVE_ACCESS             0
+#define HAVE_STAT               0
 #define HAVE_UNLINK             0
 #define HAVE_MKDIR              0
-#define HAVE_GETRUSAGE		0
-#define HAVE_DOTGAPRC		0
+#define HAVE_GETRUSAGE          0
+#define HAVE_DOTGAPRC           0
 #define HAVE_GAPRC              0
 
 #ifdef SYS_IS_BSD
 # undef  HAVE_ACCESS
-# define HAVE_ACCESS		1
+# define HAVE_ACCESS            1
 # undef  HAVE_STAT
 # define HAVE_STAT              1
 # undef  HAVE_UNLINK
@@ -161,14 +163,14 @@
 # undef  HAVE_MKDIR
 # define HAVE_MKDIR             1
 # undef  HAVE_GETRUSAGE
-# define HAVE_GETRUSAGE		1
+# define HAVE_GETRUSAGE         1
 # undef  HAVE_DOTGAPRC
 # define HAVE_DOTGAPRC          1
 #endif
 
 #ifdef SYS_IS_MACH
 # undef  HAVE_ACCESS
-# define HAVE_ACCESS		1
+# define HAVE_ACCESS            1
 # undef  HAVE_STAT
 # define HAVE_STAT              1
 # undef  HAVE_UNLINK
@@ -176,14 +178,14 @@
 # undef  HAVE_MKDIR
 # define HAVE_MKDIR             1
 # undef  HAVE_GETRUSAGE
-# define HAVE_GETRUSAGE		1
+# define HAVE_GETRUSAGE         1
 # undef  HAVE_DOTGAPRC
 # define HAVE_DOTGAPRC          1
 #endif
 
 #ifdef SYS_IS_USG
 # undef  HAVE_ACCESS
-# define HAVE_ACCESS		1
+# define HAVE_ACCESS            1
 # undef  HAVE_STAT
 # define HAVE_STAT              1
 # undef  HAVE_UNLINK
@@ -196,7 +198,7 @@
 
 #ifdef SYS_IS_OS2_EMX
 # undef  HAVE_ACCESS
-# define HAVE_ACCESS		1
+# define HAVE_ACCESS            1
 # undef  HAVE_STAT
 # define HAVE_STAT              1
 # undef  HAVE_UNLINK
@@ -209,7 +211,7 @@
 
 #ifdef SYS_HAS_NO_GETRUSAGE
 # undef  HAVE_GETRUSAGE
-# define HAVE_GETRUSAGE		0
+# define HAVE_GETRUSAGE         0
 #endif
 
 #endif
@@ -224,7 +226,7 @@
 /* Cygwin claims to have GETRUSAGE but child times are not given properly */
 #if SYS_IS_CYGWIN32
 #undef  HAVE_GETRUSAGE
-#define HAVE_GETRUSAGE		0
+#define HAVE_GETRUSAGE          0
 #endif
 
 
@@ -234,11 +236,7 @@
 *V  Revision_system_h . . . . . . . . . . . . . . . . . . . . revision number
 */
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_system_h =
-   "@(#)$Id: system.h,v 4.75 2011/05/18 13:03:28 sal Exp $";
 #endif
-extern const char * Revision_system_c;  /* gap.c uses this */
-extern const char * Revision_system_h;
 
 
 /****************************************************************************
@@ -352,7 +350,7 @@ extern const char * Revision_system_h;
 /* 64 bit machines -- well alphas anyway                                   */
 #ifdef SYS_IS_64_BIT
 typedef char                    Char;
-typedef char                    Int1;
+typedef signed char                    Int1;
 typedef short int               Int2;
 typedef int                     Int4;
 typedef long int                Int8;
@@ -367,7 +365,7 @@ typedef unsigned long int       UInt;
 /* 32bit machines                                                          */
 #else
 typedef char                    Char;
-typedef char                    Int1;
+typedef signed char                    Int1;
 typedef short int               Int2;
 typedef long int                Int4;
 typedef long int                Int;
@@ -895,7 +893,7 @@ extern UInt SyTimeChildrenSys ( void );
 **  the range 'a..zA..Z' and 0 otherwise.
 */
 #include <ctype.h>
-#define IsAlpha(ch)     (isalpha((int)ch))
+#define IsAlpha(ch)     (isalpha((unsigned int)ch))
 
 
 /****************************************************************************
@@ -905,7 +903,7 @@ extern UInt SyTimeChildrenSys ( void );
 **  'IsDigit' returns 1 if its character argument is a digit from  the  range
 **  '0..9' and 0 otherwise.
 */
-#define IsDigit(ch)     (isdigit((int)ch))
+#define IsDigit(ch)     (isdigit((unsigned int)ch))
 
 /****************************************************************************
 **
@@ -914,7 +912,7 @@ extern UInt SyTimeChildrenSys ( void );
 **  'IsDigit' returns 1 if its character argument is whitespace: ' ', tab,
 **  carriage return, linefeed or vertical tab
 */
-#define IsSpace(ch)     (isspace((int)ch))
+#define IsSpace(ch)     (isspace((unsigned int)ch))
 
 
 /****************************************************************************
@@ -1039,7 +1037,7 @@ extern UInt * * * SyAllocBags (
 **  'SyAbortBags' is the function called by Gasman in case of an emergency.
 */
 extern void SyAbortBags (
-            Char *              msg );
+            const Char *        msg );
 
 
 /****************************************************************************
@@ -1294,6 +1292,8 @@ extern void InitSystem (
             Int                 argc,
             Char *              argv [] );
 
+
+#endif // GAP_SYSTEM_H
 
 /****************************************************************************
 **

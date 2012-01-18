@@ -1,6 +1,9 @@
 
-<!--  @(#)$Id: construc.xml,v 1.3 2009/05/08 16:14:52 gap Exp $ -->
+<!-- %W  construc.xml    GAP 4 package CTblLib              Thomas Breuer -->
+<!-- %Y  Copyright 2011, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="chap:constructions">
 <Heading>Functions for Character Table Constructions</Heading>
 
@@ -8,17 +11,22 @@
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sec:construc:attrs">
-<Heading>Attributes for Character Table Constructions</Heading>
-
-<#Include Label="ConstructionInfoCharacterTable">
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="sec:construc:MGA">
 <Heading>Character Tables of Groups of Structure <M>M.G.A</M></Heading>
+
+For the functions in this section,
+let <M>H</M> be a group with normal subgroups <M>N</M> and <M>M</M>
+such that <M>H/N</M> is cyclic, <M>M \leq N</M> holds,
+and such that each irreducible character of <M>N</M>
+that does not contain <M>M</M> in its kernel
+induces irreducibly to <M>H</M>.
+(This is satisfied for example if <M>N</M> has prime index in <M>H</M>
+and <M>M</M> is a group of prime order that is central in <M>N</M>
+but not in <M>H</M>.)
+Let <M>G = N/M</M> and <M>A = H/N</M>,
+so <M>H</M> has the structure <M>M.G.A</M>.
+
+For some examples, see <Cite Key="Bre11"/>.
 
 <#Include Label="PossibleCharacterTablesOfTypeMGA">
 <#Include Label="BrauerTableOfTypeMGA">
@@ -29,7 +37,7 @@
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="sec:construc:GS3">
-<Heading>Character Tables of Groups of Structure <M>G.S_3</M>}</Heading>
+<Heading>Character Tables of Groups of Structure <M>G.S_3</M></Heading>
 
 <#Include Label="CharacterTableOfTypeGS3">
 <#Include Label="PossibleActionsForTypeGS3">
@@ -39,7 +47,7 @@
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="sec:construc:GV4">
-<Heading>Character Tables of Groups of Structure <M>G.V_4</M></Heading>
+<Heading>Character Tables of Groups of Structure <M>G.2^2</M></Heading>
 
 <#Include Label="construc:GV4">
 
@@ -51,7 +59,7 @@
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="sec:construc:V4G">
-<Heading>Character Tables of Groups of Structure <M>V_4.G</M></Heading>
+<Heading>Character Tables of Groups of Structure <M>2^2.G</M></Heading>
 
 <#Include Label="construc:V4G">
 
@@ -107,10 +115,12 @@
 <#Include Label="ConstructV4G">
 <#Include Label="ConstructProj">
 <#Include Label="ConstructDirectProduct">
+<#Include Label="ConstructCentralProduct">
 <#Include Label="ConstructSubdirect">
 <#Include Label="ConstructWreathSymmetric">
 <#Include Label="ConstructIsoclinic">
 <#Include Label="ConstructPermuted">
+<#Include Label="ConstructAdjusted">
 <#Include Label="ConstructFactor">
 <!-- ConstructClifford -->
 
@@ -128,8 +138,7 @@
 
 </Section>  -->
 
-</Chapter>
-
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
+</Chapter>
 

@@ -3,7 +3,6 @@
 #W  fieldfin.gi                 GAP library                     Werner Nickel
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: fieldfin.gi,v 4.51 2010/02/23 15:12:59 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -22,8 +21,6 @@
 ##  3. Bases of Finite Fields
 ##  4. Automorphisms of Finite Fields
 ##
-Revision.fieldfin_gi :=
-    "@(#)$Id: fieldfin.gi,v 4.51 2010/02/23 15:12:59 gap Exp $";
 
 
 #############################################################################
@@ -219,22 +216,107 @@ InstallMethod( \in,
 
 #############################################################################
 ##
-#M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . . . via `PrimitiveRoot'
+#M  Size( <G> ) . . . . . . . . . . . . . . . . . . . . . via `PrimitiveRoot'
 ##
-InstallMethod( Pcgs,
+InstallMethod( Size,
     "for groups of FFE",
     [ IsGroup and IsFFECollection ],
     function( G )
-    local   F;
+    local   gens, F, z, k;
 
     if IsTrivial( G )  then
-        TryNextMethod();
-    else
-        F := Field( Concatenation( GeneratorsOfGroup( G ), [ One( G ) ] ) );
-        SetIndependentGeneratorsOfAbelianGroup( G,
-                [ PrimitiveRoot( F ) ^ ( ( Size( F ) - 1 ) / Size( G ) ) ] );
-        return PcgsByIndependentGeneratorsOfAbelianGroup( G );
+        return 1;
     fi;
+
+    gens := GeneratorsOfGroup( G );
+    F := Field( gens );
+    z := PrimitiveRoot( F );
+    k := Gcd( Integers, List( gens, g -> LogFFE(g, z) ) );
+    return ( Size( F ) - 1 ) /  GcdInt(k, ( Size( F ) - 1 ));
+end );
+
+
+#############################################################################
+##
+#M  AbelianInvariants( <G> ) . . . . . . . . . . . . . .  via `PrimitiveRoot'
+##
+InstallMethod( AbelianInvariants,
+    "for groups of FFE",
+    [ IsGroup and IsFFECollection ],
+    G -> AbelianInvariantsOfList( [Size( G )] ) );
+
+#############################################################################
+##
+#M  CanEasilyComputeWithIndependentGensAbelianGroup( <G> )
+##
+InstallTrueMethod(CanEasilyComputeWithIndependentGensAbelianGroup,
+    IsGroup and IsFFECollection);
+
+#############################################################################
+##
+#M  IndependentGeneratorsOfAbelianGroup( <G> ) . . . . .  via `PrimitiveRoot'
+##
+InstallMethod( IndependentGeneratorsOfAbelianGroup,
+    "for groups of FFE",
+    [ IsGroup and IsFFECollection ],
+    function( G )
+    local   F, g, base, ord, o, cf, j;
+
+    if IsTrivial( G )  then
+        return [];
+    fi;
+
+    F := Field( GeneratorsOfGroup( G ) );
+    g := PrimitiveRoot( F ) ^ ( ( Size( F ) - 1 ) / Size( G ) );
+    base := [];
+    ord := [];
+    o := Order( g );
+    cf:=Collected( Factors( o ) );
+    for j in cf do
+        j := j[1]^j[2];
+        Add( base, g^(o/j) );
+        Add( ord, j );
+    od;
+    SortParallel(ord,base);
+    return base;
+end );
+
+#############################################################################
+##
+#M  IndependentGeneratorExponents( <G> ) . . . . . . . .  via `PrimitiveRoot'
+##
+InstallMethod( IndependentGeneratorExponents,
+    "for groups of FFE",
+    IsCollsElms,
+    [ IsGroup and IsFFECollection, IsFFE ],
+    function( G, elm )
+    local   F, z, gens, j, exps;
+
+    if IsTrivial( G )  then
+        return [];
+    fi;
+
+    F := Field( GeneratorsOfGroup( G ) );
+    z := PrimitiveRoot( F );
+    gens := IndependentGeneratorsOfAbelianGroup( G );
+
+    # We need to compute LogFFE for every element of gens, which is
+    # in general quite expensive. But if gens was computed by our
+    # IndependentGeneratorsOfAbelianGroup method, then we actually
+    # know the LogFFE value. Since verifying this is cheap, try that
+    # first before resorting to LogFFE.
+    exps := List( gens, g -> ( Size(F) - 1 ) / Order( g ) );
+
+    if ForAny( [ 1 .. Length(exps) ], i -> gens[i] <> z^exps[i] ) then
+        # We have to do it the hard way...
+        exps := List( gens, g -> LogFFE( g, z ) );
+    fi;
+
+    j := LogFFE( elm, z );
+    exps := List( [1..Length(exps)], i -> ( j / exps[i] ) mod Order( gens[i] ) );
+
+    Assert( 0, elm = Product( [1..Length(exps)], i -> gens[i]^exps[i]) );
+    return exps;
 end );
 
 

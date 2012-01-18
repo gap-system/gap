@@ -9,8 +9,6 @@
 ##
 ##  This file contains the declarations for functions for strings.
 ##
-Revision.string_gd :=
-    "@(#)$Id: string.gd,v 4.37 2010/11/12 14:44:29 alexk Exp $";
 
 
 #############################################################################

@@ -4,7 +4,6 @@
 #W                                                          Alexander Hulpke
 #W                                                          Greg Gamble
 ##  
-#H  @(#)$Id: helpt2t.gi,v 1.20 2011/06/04 19:24:09 gap Exp $
 ##  
 #Y  Copyright  (C)  1996-2001, Lehrstuhl  D  für  Mathematik, RWTH  Aachen,
 #Y  Germany (C) 2001 School Math and  Comp. Sci., University of St Andrews,
@@ -14,8 +13,6 @@
 ##  GAP library. It converts TeX source code written in `gapmacro.tex' style
 ##  into text for the "screen" online help viewer.
 ##  
-Revision.helpt2t_gi := 
-  "@(#)$Id: helpt2t.gi,v 1.20 2011/06/04 19:24:09 gap Exp $";
   
 #############################################################################
 ##

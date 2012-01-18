@@ -8,13 +8,11 @@
 ##  Declaration file for p-group generation of automorphism  group  functions
 ##  and variables.
 ##
-#H  @(#)$Id: anupga.gd,v 1.1 2002/02/15 08:53:47 gap Exp $
+#H  @(#)$Id: anupga.gd,v 1.2 2011/11/29 20:00:11 gap Exp $
 ##
 #Y  Copyright 1992-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  Copyright 1992-1994,  School of Mathematical Sciences, ANU,     Australia
 ##
-Revision.anupga_gd :=
-    "@(#)$Id: anupga.gd,v 1.1 2002/02/15 08:53:47 gap Exp $";
 
 #############################################################################
 ##

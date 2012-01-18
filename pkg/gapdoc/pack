@@ -1,5 +1,4 @@
 #!/bin/bash 
-#  $Id: pack,v 1.7 2011/03/03 11:14:13 gap Exp $
 
 echo ""
 echo "Start this script from a copy of GAPDoc within the GAP root you want"
@@ -25,10 +24,6 @@ cp -a ../../CVS .
 cvs update -d > /dev/null 2>&1
 echo building documentation
 ../../../../bin/gap.sh < makedocrel.g > /dev/null
-rm -f doc/manual.css example/manual.css 3k+1/manual.css
-cp gapdoc.css doc/manual.css 
-cp gapdoc.css example/manual.css 
-cp gapdoc.css 3k+1/manual.css 
 
 echo "removing unwanted files . . ."
 rm -r pack TODO clean index.html pkgreadme.css

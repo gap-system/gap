@@ -2,7 +2,6 @@
 **
 *W  objccoll.c                  GAP source                      Werner Nickel
 **
-*H  @(#)$Id: objccoll.c,v 4.7 2011/05/09 11:11:29 sal Exp $
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
@@ -16,8 +15,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_objccoll_c =
-   "@(#)$Id: objccoll.c,v 4.7 2011/05/09 11:11:29 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1470,8 +1467,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCombiCollector ( void )
 {
-    module.revision_c = Revision_objccoll_c;
-    module.revision_h = Revision_objccoll_h;
     FillInVersion( &module );
     return &module;
 }

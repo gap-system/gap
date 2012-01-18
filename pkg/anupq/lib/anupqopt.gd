@@ -6,12 +6,10 @@
 ##
 ##  Declares functions to do with option manipulation.
 ##    
-#H  @(#)$Id: anupqopt.gd,v 1.2 2002/03/01 14:06:09 gap Exp $
+#H  @(#)$Id: anupqopt.gd,v 1.3 2011/11/29 20:00:12 gap Exp $
 ##
 #Y  Copyright (C) 2001  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-Revision.anupqopt_gd :=
-    "@(#)$Id: anupqopt.gd,v 1.2 2002/03/01 14:06:09 gap Exp $";
 
 #############################################################################
 ##

@@ -3,7 +3,6 @@
 *W  permutat.h                  GAP source                   Martin Schönert
 **                                                           & Alice Niemeyer
 **
-*H  @(#)$Id: permutat.h,v 4.9 2010/02/23 15:13:46 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,9 +10,11 @@
 **
 **  This file defines the functions for permutations (small and large).
 */
+
+#ifndef GAP_PERMUTAT_H
+#define GAP_PERMUTAT_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_permutat_h =
-   "@(#)$Id: permutat.h,v 4.9 2010/02/23 15:13:46 gap Exp $";
 #endif
 
 
@@ -89,6 +90,8 @@ extern Obj Array2Perm (
 */
 StructInitInfo * InitInfoPermutat ( void );
 
+
+#endif // GAP_PERMUTAT_H
 
 /****************************************************************************
 **

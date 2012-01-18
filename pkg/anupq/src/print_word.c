@@ -2,7 +2,7 @@
 **
 *A  print_word.c                ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: print_word.c,v 1.3 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: print_word.c,v 1.5 2011/12/02 16:42:15 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -18,7 +18,7 @@ void print_word (ptr, pcp)
 int ptr;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int gen, exp;
    register int i;
@@ -52,7 +52,7 @@ int cp;
 int str;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
 #if defined (GROUP) 
    vector_to_string (cp, str, pcp);
@@ -65,17 +65,6 @@ struct pcp_vars *pcp;
       print_word (0, pcp);
    else
       print_word (-str + 1, pcp);
-
-#endif
-
-#if defined (LIE)
-   str = vector_to_string (cp, str, pcp);
-
-   printf ("The %s is ", type);
-   if (str == 0) 
-      print_word (0, pcp);
-   else
-      print_word (str, pcp);
 
 #endif
 }

@@ -3,7 +3,6 @@
 #W  combinat.gd                 GAP library                  Martin Schönert
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: combinat.gd,v 4.33 2011/04/19 02:51:45 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains declaration for combinatorics functions.
 ##
-Revision.combinat_gd :=
-  "@(#)$Id: combinat.gd,v 4.33 2011/04/19 02:51:45 gap Exp $";
 
 
 #############################################################################
@@ -80,10 +77,12 @@ DeclareGlobalFunction("Factorial");
 ##  hence the name.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> List( [0..4], k->Binomial( 4, k ) );  # Knuth calls this the trademark of Binomial
+##  gap> # Knuth calls this the trademark of Binomial:
+##  gap> List( [0..4], k->Binomial( 4, k ) );
 ##  [ 1, 4, 6, 4, 1 ]
 ##  gap> List( [0..6], n->List( [0..6], k->Binomial( n, k ) ) );;
-##  gap> PrintArray( last );  # the lower triangle is called Pascal's triangle
+##  gap> # the lower triangle is called Pascal's triangle:
+##  gap> PrintArray( last );
 ##  [ [   1,   0,   0,   0,   0,   0,   0 ],
 ##    [   1,   1,   0,   0,   0,   0,   0 ],
 ##    [   1,   2,   1,   0,   0,   0,   0 ],
@@ -207,10 +206,11 @@ DeclareGlobalFunction("Bell");
 ##  and Binomial coefficients.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> List( [0..4], k -> Stirling1( 4, k ) );  # Knuth calls this the trademark of S_1
+##  gap> # Knuth calls this the trademark of S_1:
+##  gap> List( [0..4], k -> Stirling1( 4, k ) );
 ##  [ 0, 6, 11, 6, 1 ]
 ##  gap> List( [0..6], n->List( [0..6], k->Stirling1( n, k ) ) );;
-##  gap> # note the similarity with Pascal's triangle for the Binomial numbers
+##  gap> # note the similarity with Pascal's triangle for Binomial numbers
 ##  gap> PrintArray( last );
 ##  [ [    1,    0,    0,    0,    0,    0,    0 ],
 ##    [    0,    1,    0,    0,    0,    0,    0 ],
@@ -261,10 +261,11 @@ DeclareGlobalFunction("Stirling1");
 ##  and Binomial coefficients.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> List( [0..4], k->Stirling2( 4, k ) );  # Knuth calls this the trademark of S_2
+##  gap> # Knuth calls this the trademark of S_2:
+##  gap> List( [0..4], k->Stirling2( 4, k ) );
 ##  [ 0, 1, 7, 6, 1 ]
 ##  gap> List( [0..6], n->List( [0..6], k->Stirling2( n, k ) ) );;
-##  gap> # note the similarity with Pascal's triangle for the Binomial numbers
+##  gap> # note the similarity with Pascal's triangle for Binomial numbers
 ##  gap> PrintArray( last );
 ##  [ [   1,   0,   0,   0,   0,   0,   0 ],
 ##    [   0,   1,   0,   0,   0,   0,   0 ],
@@ -378,9 +379,10 @@ DeclareGlobalFunction( "EnumeratorOfCombinations" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Combinations( [1,2,2,3] );
-##  [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 2 ], [ 1, 2, 2, 3 ], [ 1, 2, 3 ], [ 1, 3 ],
-##    [ 2 ], [ 2, 2 ], [ 2, 2, 3 ], [ 2, 3 ], [ 3 ] ]
-##  gap> NrCombinations( [1..52], 5 );  # number of different hands in a game of poker
+##  [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 2 ], [ 1, 2, 2, 3 ], [ 1, 2, 3 ], 
+##    [ 1, 3 ], [ 2 ], [ 2, 2 ], [ 2, 2, 3 ], [ 2, 3 ], [ 3 ] ]
+##  gap> # number of different hands in a game of poker:
+##  gap> NrCombinations( [1..52], 5 );
 ##  2598960
 ##  ]]></Example>
 ##  <P/>
@@ -669,8 +671,8 @@ DeclareGlobalFunction( "IteratorOfTuples" );
 ##  returns the number of <C>Tuples(<A>set</A>,<A>k</A>)</C>.
 ##  <Example><![CDATA[
 ##  gap> Tuples( [1,2,3], 2 );
-##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], 
-##    [ 3, 2 ], [ 3, 3 ] ]
+##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], 
+##    [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ]
 ##  gap> NrTuples( [1..10], 5 );
 ##  100000
 ##  ]]></Example>
@@ -802,17 +804,17 @@ DeclareGlobalFunction("Derangements");
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Derangements( [1,2,3,4] );
-##  [ [ 2, 1, 4, 3 ], [ 2, 3, 4, 1 ], [ 2, 4, 1, 3 ], [ 3, 1, 4, 2 ],
-##    [ 3, 4, 1, 2 ], [ 3, 4, 2, 1 ], [ 4, 1, 2, 3 ], [ 4, 3, 1, 2 ],
+##  [ [ 2, 1, 4, 3 ], [ 2, 3, 4, 1 ], [ 2, 4, 1, 3 ], [ 3, 1, 4, 2 ], 
+##    [ 3, 4, 1, 2 ], [ 3, 4, 2, 1 ], [ 4, 1, 2, 3 ], [ 4, 3, 1, 2 ], 
 ##    [ 4, 3, 2, 1 ] ]
 ##  gap> NrDerangements( [1..10] );
 ##  1334961
 ##  gap> Int( 10^7*NrPermutationsList([1..10])/last );
 ##  27182816
 ##  gap> Derangements( [1,1,2,2,3,3] );
-##  [ [ 2, 2, 3, 3, 1, 1 ], [ 2, 3, 1, 3, 1, 2 ], [ 2, 3, 1, 3, 2, 1 ],
-##    [ 2, 3, 3, 1, 1, 2 ], [ 2, 3, 3, 1, 2, 1 ], [ 3, 2, 1, 3, 1, 2 ],
-##    [ 3, 2, 1, 3, 2, 1 ], [ 3, 2, 3, 1, 1, 2 ], [ 3, 2, 3, 1, 2, 1 ],
+##  [ [ 2, 2, 3, 3, 1, 1 ], [ 2, 3, 1, 3, 1, 2 ], [ 2, 3, 1, 3, 2, 1 ], 
+##    [ 2, 3, 3, 1, 1, 2 ], [ 2, 3, 3, 1, 2, 1 ], [ 3, 2, 1, 3, 1, 2 ], 
+##    [ 3, 2, 1, 3, 2, 1 ], [ 3, 2, 3, 1, 1, 2 ], [ 3, 2, 3, 1, 2, 1 ], 
 ##    [ 3, 3, 1, 1, 2, 2 ] ]
 ##  gap> NrDerangements( [1,2,2,3,3,3,4,4,4,4] );
 ##  338
@@ -868,8 +870,9 @@ DeclareGlobalFunction("PartitionsSet");
 ##  [ [ [ 1 ], [ 2 ], [ 3 ] ], [ [ 1 ], [ 2, 3 ] ], [ [ 1, 2 ], [ 3 ] ], 
 ##    [ [ 1, 2, 3 ] ], [ [ 1, 3 ], [ 2 ] ] ]
 ##  gap> PartitionsSet( [1,2,3,4], 2 );
-##  [ [ [ 1 ], [ 2, 3, 4 ] ], [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 2, 3 ], [ 4 ] ], 
-##    [ [ 1, 2, 4 ], [ 3 ] ], [ [ 1, 3 ], [ 2, 4 ] ], [ [ 1, 3, 4 ], [ 2 ] ], 
+##  [ [ [ 1 ], [ 2, 3, 4 ] ], [ [ 1, 2 ], [ 3, 4 ] ], 
+##    [ [ 1, 2, 3 ], [ 4 ] ], [ [ 1, 2, 4 ], [ 3 ] ], 
+##    [ [ 1, 3 ], [ 2, 4 ] ], [ [ 1, 3, 4 ], [ 2 ] ], 
 ##    [ [ 1, 4 ], [ 2, 3 ] ] ]
 ##  gap> NrPartitionsSet( [1..6] );
 ##  203
@@ -944,8 +947,8 @@ DeclareGlobalFunction("Partitions");
 ##  gap> Partitions( 7 );
 ##  [ [ 1, 1, 1, 1, 1, 1, 1 ], [ 2, 1, 1, 1, 1, 1 ], [ 2, 2, 1, 1, 1 ], 
 ##    [ 2, 2, 2, 1 ], [ 3, 1, 1, 1, 1 ], [ 3, 2, 1, 1 ], [ 3, 2, 2 ], 
-##    [ 3, 3, 1 ], [ 4, 1, 1, 1 ], [ 4, 2, 1 ], [ 4, 3 ], [ 5, 1, 1 ], [ 5, 2 ], 
-##    [ 6, 1 ], [ 7 ] ]
+##    [ 3, 3, 1 ], [ 4, 1, 1, 1 ], [ 4, 2, 1 ], [ 4, 3 ], [ 5, 1, 1 ], 
+##    [ 5, 2 ], [ 6, 1 ], [ 7 ] ]
 ##  gap> Partitions( 8, 3 );
 ##  [ [ 3, 3, 2 ], [ 4, 2, 2 ], [ 4, 3, 1 ], [ 5, 2, 1 ], [ 6, 1, 1 ] ]
 ##  gap> NrPartitions( 7 );
@@ -1044,11 +1047,12 @@ DeclareGlobalFunction("OrderedPartitions");
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> OrderedPartitions( 5 );
-##  [ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 2 ], [ 1, 1, 2, 1 ], [ 1, 1, 3 ],
-##    [ 1, 2, 1, 1 ], [ 1, 2, 2 ], [ 1, 3, 1 ], [ 1, 4 ], [ 2, 1, 1, 1 ],
-##    [ 2, 1, 2 ], [ 2, 2, 1 ], [ 2, 3 ], [ 3, 1, 1 ], [ 3, 2 ], [ 4, 1 ], [ 5 ] ]
+##  [ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 2 ], [ 1, 1, 2, 1 ], [ 1, 1, 3 ], 
+##    [ 1, 2, 1, 1 ], [ 1, 2, 2 ], [ 1, 3, 1 ], [ 1, 4 ], [ 2, 1, 1, 1 ], 
+##    [ 2, 1, 2 ], [ 2, 2, 1 ], [ 2, 3 ], [ 3, 1, 1 ], [ 3, 2 ], 
+##    [ 4, 1 ], [ 5 ] ]
 ##  gap> OrderedPartitions( 6, 3 );
-##  [ [ 1, 1, 4 ], [ 1, 2, 3 ], [ 1, 3, 2 ], [ 1, 4, 1 ], [ 2, 1, 3 ],
+##  [ [ 1, 1, 4 ], [ 1, 2, 3 ], [ 1, 3, 2 ], [ 1, 4, 1 ], [ 2, 1, 3 ], 
 ##    [ 2, 2, 2 ], [ 2, 3, 1 ], [ 3, 1, 2 ], [ 3, 2, 1 ], [ 4, 1, 1 ] ]
 ##  gap> NrOrderedPartitions(20);
 ##  524288
@@ -1110,7 +1114,7 @@ DeclareGlobalFunction("RestrictedPartitions");
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> RestrictedPartitions( 8, [1,3,5,7] );
-##  [ [ 1, 1, 1, 1, 1, 1, 1, 1 ], [ 3, 1, 1, 1, 1, 1 ], [ 3, 3, 1, 1 ],
+##  [ [ 1, 1, 1, 1, 1, 1, 1, 1 ], [ 3, 1, 1, 1, 1, 1 ], [ 3, 3, 1, 1 ], 
 ##    [ 5, 1, 1, 1 ], [ 5, 3 ], [ 7, 1 ] ]
 ##  gap> NrRestrictedPartitions(50,[1,2,5,10,20,50]);
 ##  451
@@ -1266,7 +1270,8 @@ DeclareGlobalFunction("PartitionTuples");
 ##  gap> PartitionTuples(3, 2);
 ##  [ [ [ 1, 1, 1 ], [  ] ], [ [ 1, 1 ], [ 1 ] ], [ [ 1 ], [ 1, 1 ] ], 
 ##    [ [  ], [ 1, 1, 1 ] ], [ [ 2, 1 ], [  ] ], [ [ 1 ], [ 2 ] ], 
-##    [ [ 2 ], [ 1 ] ], [ [  ], [ 2, 1 ] ], [ [ 3 ], [  ] ], [ [  ], [ 3 ] ] ]
+##    [ [ 2 ], [ 1 ] ], [ [  ], [ 2, 1 ] ], [ [ 3 ], [  ] ], 
+##    [ [  ], [ 3 ] ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1468,13 +1473,14 @@ DeclareGlobalFunction("Bernoulli");
 ##  >      [1,1,0,1],
 ##  >      [1,1,1,0]] );  # inefficient way to compute NrDerangements([1..4])
 ##  9
+##  gap> # 24 permutations fit the projective plane of order 2:
 ##  gap> Permanent( [[1,1,0,1,0,0,0],
 ##  >      [0,1,1,0,1,0,0],
 ##  >      [0,0,1,1,0,1,0],
 ##  >      [0,0,0,1,1,0,1],
 ##  >      [1,0,0,0,1,1,0],
 ##  >      [0,1,0,0,0,1,1],
-##  >      [1,0,1,0,0,0,1]] );  # 24 permutations fit the projective plane of order 2
+##  >      [1,0,1,0,0,0,1]] );
 ##  24
 ##  ]]></Example>
 ##  </Description>

@@ -1,23 +1,23 @@
-<!-- $Id: manual.xml,v 1.11 2010/03/30 11:32:30 alexk Exp $ -->
-
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
-[<!ENTITY IO "<Package>IO</Package>">]
-[<!ENTITY OpenMath "<Package>OpenMath</Package>">]
-[<!ENTITY scscp1 "<Package>scscp1</Package>">]
-[<!ENTITY scscp2 "<Package>scscp2</Package>">]
-[<!ENTITY SCSCP "<Package>SCSCP</Package>">] >
+    [ <!ENTITY IO "<Package>IO</Package>">
+      <!ENTITY OpenMath "<Package>OpenMath</Package>">
+      <!ENTITY scscp1 "<Package>scscp1</Package>">
+      <!ENTITY scscp2 "<Package>scscp2</Package>">
+      <!ENTITY SCSCP "<Package>SCSCP</Package>">
+      <#Include Label="PKGVERSIONDATA">
+    ]>
 
 <Book Name="openmath">
 
 <TitlePage>
   <Title>&OpenMath;</Title>
   <Subtitle>&OpenMath; functionality in GAP</Subtitle>
-  <Version>Version 10.1.0</Version>
+  <Version>Version &VERSION;</Version>
 
   <Author>Marco Costantini
-          <Email>costanti at science dot unitn dot it</Email>
+          <!-- <Email>costanti at science dot unitn dot it</Email> -->
 	      <!-- <Homepage>http://www-math.science.unitn.it/&tilde;costanti/</Homepage> -->
 	      <Address>
             Department of Mathematics<Br/>
@@ -28,6 +28,16 @@
   <Author>Alexander Konovalov
           <Email>alexk at mcs dot st-andrews dot ac dot uk</Email>
 	      <Homepage>http://www.cs.st-andrews.ac.uk/&tilde;alexk/</Homepage>
+	      <Address>
+            School of Computer Science<Br/>
+            University of St Andrews<Br/>
+            Jack Cole Building, North Haugh,<Br/>
+            St Andrews, Fife, KY16 9SX, Scotland<Br/>
+          </Address> 
+  </Author>  
+  
+  <Author>Max Nicosia
+          <Email>ln73 at st-andrews dot ac dot uk</Email>
 	      <Address>
             School of Computer Science<Br/>
             University of St Andrews<Br/>
@@ -47,7 +57,7 @@
           </Address> 
   </Author>
   
-  <Date>30 March 2010</Date>
+  <Date>&RELEASEDATE;</Date>
 
 <Abstract>
 
@@ -61,19 +71,10 @@ encoded in &OpenMath;, for the purpose of exchanging them with other
 
 <Copyright>
 The &OpenMath; package is free software; 
-you can redistribute it and/or modify it 
-under the terms of the GNU General Public License as published by 
-the Free Software Foundation; either version 2 of the License, or 
-(at your option) any later version. For details, see the FSF's own site
-<URL>http://www.gnu.org/licenses/gpl.html</URL>.
-<P/>
-
-Additionally, the &OpenMath; package contains code developed at INRIA
-(copyright INRIA), under the ESPRIT project number 24969 (&OpenMath;).
-The user may not use the library in commercial products without seeking
-permission from the &GAP; group (support@gap-system.org) and the 
-CAFE team at INRIA SA (stephane.dalmas@sophia.inria.fr).
-
+you can redistribute it and/or modify it under the terms of the 
+<URL Text="GNU General Public License">http://www.fsf.org/licenses/gpl.html</URL> 
+as published by the Free Software Foundation; either version 2 of the License, 
+or (at your option) any later version.
 </Copyright>
   
 <Acknowledgements>

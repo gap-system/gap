@@ -2,10 +2,10 @@
 ##
 #W present.gi              POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## pcp-presentations for matrix groups
 ##
-#H  @(#)$Id: present.gi,v 1.8 2011/05/31 13:10:57 gap Exp $
+#H  @(#)$Id: present.gi,v 1.12 2011/09/23 14:40:24 gap Exp $
 ##
 #Y 2003
 ##
@@ -71,18 +71,22 @@ POL_SetPcPresentation_infinite:= function(pcgs)
     # Set the conjugation relations
     for i in [1..n] do
         for j in [1..(i-1)] do
-            # conjugtaion with g_j
+            # conjugation with g_j
             f_i:=pcgs.pcs[i];
             f_j:=pcgs.pcs[j];
             conj:=(pcsInv[j])*f_i*f_j;
+            Assert(0, conj=f_i^f_j );
             exp:=ExponentVector_CPCS_PRMGroup( conj,pcgs);
+            Assert(0, conj=Product(List([1..n],i->pcgs.pcs[i]^exp[i])) );
             if InfoLevel( InfoPolenta ) >= 2 then Print( "." ); fi;
             genList:=POL_Exp2GenList(exp);
             SetConjugate(ftl,i,j,genList);
             # conjugation with g_j^-1 if g_j has infinite order
             if ro[i] = 0 then
                 conj:= f_j* f_i *(pcsInv[j]);
+                Assert(0, conj=f_i^(f_j^-1) );
                 exp:=ExponentVector_CPCS_PRMGroup( conj,pcgs);
+                Assert(0, conj=Product(List([1..n],i->pcgs.pcs[i]^exp[i])) );
                 if InfoLevel( InfoPolenta ) >= 2 then Print( "." ); fi;
                 genList:=POL_Exp2GenList(exp);
                 SetConjugate(ftl,i,-j,genList);
@@ -96,12 +100,12 @@ POL_SetPcPresentation_infinite:= function(pcgs)
     UpdatePolycyclicCollector(ftl);
     Info( InfoPolenta, 1, "... finished." );
 
-    return ftl;    
+    return ftl;
 end;
-# remark: some of the information (i.e. parts of the exponens vectors)
+# remark: some of the information (i.e. parts of the exponents vectors)
 # which we need in the last algorithm,
-# arrise naturally in the computation of the normal subgroup
-# generators. It could be transfered from there. 
+# arise naturally in the computation of the normal subgroup
+# generators. It could be transferred from there.
 
 
 #############################################################################
@@ -117,7 +121,7 @@ POL_PcpGroupByMatGroup_infinite := function( arg )
     if Length(arg)=2 then
         p := arg[2];
         CPCS := CPCS_PRMGroup( G, p );
-    else 
+    else
         CPCS := CPCS_PRMGroup( G );
     fi;
     if CPCS = fail then return fail; fi;
@@ -139,7 +143,7 @@ POL_PcpGroupByMatGroup_infinite := function( arg )
     Info( InfoPolenta, 1, " " );
 
     return K;
-end;  
+end;
 
 #############################################################################
 ##
@@ -156,17 +160,17 @@ POL_SetPcPresentation_finite:= function(pcgs)
     n := Length(pcgs.gens);
     ftl := FromTheLeftCollector(n);
 
-    # Attention: In pcgs.gens we have the pc-Sequence in inversed order
-    # because we  built up  the structure bottom up
+    # Attention: In pcgs.gens we have the pc-sequence in inverse order
+    # because we built up the structure bottom up
     pcs := StructuralCopy(Reversed(pcgs.gens));
     pcsInv:=[];
     for i in [1..n] do
         pcsInv[i]:=pcs[i]^-1;
     od;
-    
+
     # calculate the relative orders
     ro := RelativeOrdersPcgs_finite( pcgs );
- 
+
     # set relative orders
     for i in [1..n] do
         SetRelativeOrder(ftl,i,ro[i]);
@@ -193,7 +197,7 @@ POL_SetPcPresentation_finite:= function(pcgs)
         od;
     od;
     UpdatePolycyclicCollector(ftl);
-    return ftl;    
+    return ftl;
 end;
 
 #############################################################################
@@ -211,7 +215,7 @@ POL_PcpGroupByMatGroup_finite := function( G )
     # setup
     gens := GeneratorsOfGroup( G );
     d := Length(gens[1][1]);
-    # determine un upperbound for the derived length of G
+    # determine an upper bound for the derived length of G
     bound_derivedLength := d+2;
     CPCS := CPCS_finite_word( gens, bound_derivedLength );
     if CPCS = fail then return fail; fi;
@@ -230,59 +234,42 @@ POL_PcpGroupByMatGroup_finite := function( G )
     Info( InfoPolenta, 1, " " );
 
     return K;
-end;  
-
-#############################################################################
-##
-#F POL_IsMatGroupOverFiniteField( G )
-##
-InstallGlobalFunction( POL_IsMatGroupOverFiniteField, function( G )
-    local gens, k, F, i,j,g,d;
-    gens := GeneratorsOfGroup( G );
-    F := Field( gens[1][1] );
-    k := Characteristic(  F );
-    if k = false then return false; fi;
-    return k;
-end );
+end;
 
 #############################################################################
 ##
 #M PcpGroupByMatGroup( G )
 ##
-## G is a matrix group over the Rationals or a finite field. 
-## Returned is PcpGroup ( polycyclicallly presented group) 
-## which is isomorphic to G. 
+## G is a matrix group over the Rationals or a finite field.
+## Returned is PcpGroup ( polycyclically presented group)
+## which is isomorphic to G.
 ##
-InstallMethod( PcpGroupByMatGroup, "for polycyclic matrix groups (Polenta)", true,
-               [ IsMatrixGroup ], 0, 
-function( G ) 
-        local test;
-        test := POL_IsMatGroupOverFiniteField( G );
-        if IsBool( test ) then
-            TryNextMethod();
-        elif test = 0 then
-            return POL_PcpGroupByMatGroup_infinite( G ); 
-        else
-            return POL_PcpGroupByMatGroup_finite( G );
-        fi;  
-end );
+InstallMethod( PcpGroupByMatGroup,
+               "for matrix groups over a finite field (Polenta)", true,
+               [ IsFFEMatrixGroup ], 0,
+               POL_PcpGroupByMatGroup_finite );
+
+InstallMethod( PcpGroupByMatGroup,
+               "for rational matrix groups (Polenta)", true,
+               [ IsRationalMatrixGroup ], 0,
+               POL_PcpGroupByMatGroup_infinite );
+
+## Enforce rationality check for cyclotomic matrix groups
+RedispatchOnCondition( PcpGroupByMatGroup, true,
+    [ IsCyclotomicMatrixGroup ], [ IsRationalMatrixGroup ],
+    RankFilter(IsCyclotomicMatrixGroup) );
 
 InstallOtherMethod( PcpGroupByMatGroup, "for polycyclic matrix groups (Polenta)", true,
-               [ IsMatrixGroup, IsInt], 0, 
-function( G, p ) 
-        local test;
-        test := POL_IsMatGroupOverFiniteField( G );
-        if IsBool( test ) then
-            TryNextMethod();
-        elif test = 0 then
-            if not IsPrime(p) then
-                Print( "Second argument must be a prime number.\n" );
-                return fail;
-            fi;    
-            return POL_PcpGroupByMatGroup_infinite( G,p ); 
-        else
-            return POL_PcpGroupByMatGroup_finite( G );
-        fi;  
+               [ IsCyclotomicMatrixGroup, IsInt ], 0,
+function( G, p )
+    if not IsPrime(p) then
+        Print( "Second argument must be a prime number.\n" );
+        return fail;
+    fi;
+    if IsRationalMatrixGroup(G) then
+        return POL_PcpGroupByMatGroup_infinite( G, p );
+    fi;
+    TryNextMethod();
 end );
 
 #############################################################################

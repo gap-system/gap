@@ -2,7 +2,6 @@
 ##
 #W  mgmring.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: mgmring.gd,v 4.43 2010/10/10 12:34:37 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -230,8 +229,6 @@
 ##  via <C>\&lt;</C>.
 ##  <#/GAPDoc>
 ##
-Revision.mgmring_gd :=
-    "@(#)$Id: mgmring.gd,v 4.43 2010/10/10 12:34:37 alexk Exp $";
 
 
 #############################################################################

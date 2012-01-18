@@ -2,14 +2,11 @@
 ##
 #W  error.g                    GAP library                 Steve Linton
 ##
-#H  @(#)$Id: error.g,v 4.14 2011/06/08 13:04:58 sal Exp $
 ##
 #Y  Copyright (C) 2007 The GAP Group
 ##
 ##  Error handling, break loop, etc. Now in GAP
 ##
-Revision.error_g :=
-    "@(#)$Id: error.g,v 4.14 2011/06/08 13:04:58 sal Exp $";
 
 
 CallAndInstallPostRestore( function()

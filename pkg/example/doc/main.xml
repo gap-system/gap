@@ -1,7 +1,10 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Reading PKGVERSIONDATA chunk from the PackageInfo.g file -->
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
    [ <!ENTITY Example "<Package>Example</Package>">
+     <#Include Label="PKGVERSIONDATA">
    ]>
 
 <!-- Documentation of the Example package. -->
@@ -9,11 +12,10 @@
 <Book Name="Example"> 
 
 <TitlePage>
-  <Title>&Example; -- A GAP 4 Package</Title>
-  <Version>( Version 
-<#Include SYSTEM "../VERSION">
- )
-  </Version>
+  <Title>&Example;</Title>
+  <Subtitle>Example/Template of a &GAP; Package and Guidelines for Package Authors</Subtitle>
+  <Version>Version &VERSION;</Version>
+  <Date>&RELEASEDATE;</Date>
   <Author> Werner Nickel
     <Email>nickel@mathematik.tu-darmstadt.de</Email>
     <Homepage>http://www.mathematik.tu-darmstadt.de/~nickel</Homepage>
@@ -23,9 +25,23 @@
     <Homepage>http://www.math.rwth-aachen.de/~Greg.Gamble</Homepage>
   </Author>
   <Author> Alexander Konovalov
-    <Email>konovalov@member.ams.org</Email>
+    <Email>alexk@mcs.st-andrews.ac.uk</Email>
     <Homepage>http://www.cs.st-andrews.ac.uk/~alexk/</Homepage>
   </Author>
+    <Copyright> 
+    <Index>License</Index>
+    &copyright; 1997-2011 by Werner Nickel, Greg Gamble and Alexander Konovalov<P/>
+    &Example; package is free software; 
+    you can redistribute it and/or modify it under the terms of the 
+    <URL Text="GNU General Public License">http://www.fsf.org/licenses/gpl.html</URL> 
+    as published by the Free Software Foundation; either version 2 of the License, 
+    or (at your option) any later version.
+  </Copyright>
+  <Acknowledgements>
+    We appreciate very much all past and future comments, suggestions and 
+    contributions to this package and its documentation provided by &GAP; 
+    users and developers.
+  </Acknowledgements>
 </TitlePage>
 
 <TableOfContents/>

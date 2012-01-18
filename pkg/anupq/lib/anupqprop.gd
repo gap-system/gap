@@ -6,12 +6,10 @@
 ##
 ##  Declares properties and attributes needed for ANUPQ.
 ##    
-#H  @(#)$Id: anupqprop.gd,v 1.1 2002/02/15 08:53:47 gap Exp $
+#H  @(#)$Id: anupqprop.gd,v 1.2 2011/11/29 20:00:13 gap Exp $
 ##
 #Y  Copyright (C) 2001  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-Revision.anupqprop_gd :=
-    "@(#)$Id: anupqprop.gd,v 1.1 2002/02/15 08:53:47 gap Exp $";
 
 #############################################################################
 ##

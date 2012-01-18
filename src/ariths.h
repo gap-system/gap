@@ -3,7 +3,6 @@
 *W  ariths.h                    GAP source                       Frank Celler
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id: ariths.h,v 4.20 2010/02/23 15:13:39 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,9 +10,11 @@
 **
 **  This file declares the functions of the  arithmetic  operations  package.
 */
+
+#ifndef GAP_ARITHS_H
+#define GAP_ARITHS_H
+
 #ifdef INCLUDE_DECLARATION_PART
-const char * Revision_ariths_h =
-   "@(#)$Id: ariths.h,v 4.20 2010/02/23 15:13:39 gap Exp $";
 #endif
 
 
@@ -707,6 +708,8 @@ extern void InstallModObject ( Int );
 */
 StructInitInfo * InitInfoAriths ( void );
 
+
+#endif // GAP_ARITHS_H
 
 /****************************************************************************
 **

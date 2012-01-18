@@ -8,8 +8,6 @@
 ##
 ##  This file contains the operations for process.
 ##
-Revision.process_gd :=
-    "@(#)$Id: process.gd,v 4.25 2011/06/15 16:48:48 gap Exp $";
 
 
 #############################################################################

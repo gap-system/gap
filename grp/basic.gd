@@ -2,15 +2,12 @@
 ##
 #W  basic.gd                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basic.gd,v 4.38 2011/04/05 02:30:34 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the operations for the construction of the basic group
 ##  types.
 ##
-Revision.basic_gd :=
-    "@(#)$Id: basic.gd,v 4.38 2011/04/05 02:30:34 gap Exp $";
 
 
 #############################################################################

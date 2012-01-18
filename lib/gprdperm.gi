@@ -2,14 +2,11 @@
 ##
 #W  gprdperm.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: gprdperm.gi,v 4.43 2011/04/13 14:33:08 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.gprdperm_gi :=
-    "@(#)$Id: gprdperm.gi,v 4.43 2011/04/13 14:33:08 gap Exp $";
 
 
 #############################################################################
@@ -605,6 +602,10 @@ local	G,H,	    # factors
     components:=[];
     gens := [];
     perms:= [];
+    
+    # force trivial group to act on 1 point
+    if degG = 0 then domG := [1]; degG := 1; fi;
+    
     for i  in [1..degI]  do
 	components[i]:=[(i-1)*degG+1..i*degG];
         shift := MappingPermListList( domG, components[i] );
@@ -617,7 +618,6 @@ local	G,H,	    # factors
 
     # add the generators of <I>
     hgens:=[];
-    if degG = 0 then degG := 1; fi;
     for gen  in Igens  do
         shift := [];
         for i  in [1..degI]  do

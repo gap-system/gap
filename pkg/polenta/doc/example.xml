@@ -1,0 +1,130 @@
+<Chapter Label="An example application">
+<Heading>An example application</Heading>
+
+In this section we outline three example computations with functions
+from the previous chapter.
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Presentation for rational matrix groups">
+<Heading>Presentation for rational matrix groups</Heading>
+
+<Example><![CDATA[
+gap> mats :=
+[ [ [ 1, 0, -1/2, 0 ], [ 0, 1, 0, 1 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 1/2, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 1 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 0, 0, 1 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -1/2, -3, 7/6 ], [ 0, 1, -1, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ -1, 3, 3, 0 ], [ 0, 0, 1, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 0, 1 ] ] ];
+
+gap> G := Group( mats );
+<matrix group with 5 generators>
+
+# calculate an isomorphism from G to a pcp-group
+gap> nat := IsomorphismPcpGroup( G );;
+
+gap> H := Image( nat );
+Pcp-group with orders [ 2, 2, 3, 5, 5, 5, 0, 0, 0 ]
+
+gap> h := GeneratorsOfGroup( H );
+[ g1, g2, g3, g4, g5, g6, g7, g8, g9]
+
+gap> mats2 := List( h, x -> PreImage( nat, x ) );;
+
+# take a random element of G
+gap> exp :=  [ 1, 1, 1, 1, 0, 0, 0, 0, 1 ];;
+gap> g := MappedVector( exp, mats2 );
+[ [ -1, 17/2, -1, 233/6 ],
+  [ 0, 1, 0, -2 ],
+  [ 0, 1, -1, 2 ],
+  [ 0, 0, 0, 1 ] ]
+
+# map g into the image of nat
+gap> i := ImageElm( nat, g );
+g1*g2*g3*g4*g9
+
+# exponent vector
+gap> Exponents( i );
+[ 1, 1, 1, 1, 0, 0, 0, 0, 1 ]
+
+# compare the preimage with g
+gap> PreImagesRepresentative( nat, i );
+[ [ -1, 17/2, -1, 233/6 ],
+  [ 0, 1, 0, -2 ],
+  [ 0, 1, -1, 2 ],
+  [ 0, 0, 0, 1 ] ]
+
+
+gap> last = g;
+true
+
+]]></Example>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Modules series">
+<Heading>Modules series</Heading>
+
+<Example><![CDATA[
+gap> gens :=
+[ [ [ 1746/1405, 524/7025, 418/1405, -77/2810 ],
+    [ 815/843, 899/843, -1675/843, 415/281 ],
+    [ -3358/4215, -3512/21075, 4631/4215, -629/1405 ],
+    [ 258/1405, 792/7025, 1404/1405, 832/1405 ] ],
+  [ [ -2389/2810, 3664/21075, 8942/4215, -35851/16860 ],
+    [ 395/281, 2498/2529, -5105/5058, 3260/2529 ],
+    [ 3539/2810, -13832/63225, -12001/12645, 87053/50580 ],
+    [ 5359/1405, -3128/21075, -13984/4215, 40561/8430 ] ] ];
+
+gap> H := Group( gens );
+<matrix group with 2 generators>
+
+gap> RadicalSeriesSolvableMatGroup( H );
+[ [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 0, 0, 79/138 ], [ 0, 1, 0, -275/828 ], [ 0, 0, 1, -197/414 ] ],
+  [ [ 1, 0, -3, 2 ], [ 0, 1, 55/4, -55/8 ] ],
+  [ [ 1, 4/15, 2/3, 1/6 ] ],
+  [  ] ]
+]]></Example>
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Triangularizable subgroups">
+<Heading>Triangularizable subgroups</Heading>
+
+<Example><![CDATA[
+gap> G := PolExamples(3);
+<matrix group with 2 generators>
+
+gap> GeneratorsOfGroup( G );
+[ [ [ 73/10, -35/2, 42/5, 63/2 ],
+    [ 27/20, -11/4, 9/5, 27/4 ],
+    [ -3/5, 1, -4/5, -9 ],
+    [ -11/20, 7/4, -2/5, 1/4 ] ],
+  [ [ -42/5, 423/10, 27/5, 479/10 ],
+    [ -23/10, 227/20, 13/10, 231/20 ],
+    [ 14/5, -63/5, -4/5, -79/5 ],
+    [ -1/10, 9/20, 1/10, 37/20 ] ] ]
+
+gap> subgroups := SubgroupsUnipotentByAbelianByFinite( G );
+rec( T := <matrix group with 2 generators>,
+  U := <matrix group with 4 generators> )
+
+gap> GeneratorsOfGroup( subgroups.T );
+[ [ [ 73/10, -35/2, 42/5, 63/2 ],
+    [ 27/20, -11/4, 9/5, 27/4 ],
+    [ -3/5, 1, -4/5, -9 ],
+    [ -11/20, 7/4, -2/5, 1/4 ] ],
+  [ [ -42/5, 423/10, 27/5, 479/10 ],
+    [ -23/10, 227/20, 13/10, 231/20 ],
+    [ 14/5, -63/5, -4/5, -79/5 ],
+    [ -1/10, 9/20, 1/10, 37/20 ] ] ]
+
+# so G is triangularizable!
+]]></Example>
+
+</Section>
+</Chapter>
+

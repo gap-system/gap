@@ -2,7 +2,7 @@
 **
 *A  read_relator_file.c         ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: read_relator_file.c,v 1.3 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: read_relator_file.c,v 1.5 2011/11/29 09:43:58 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -31,9 +31,9 @@ int *queue;
 int *queue_length;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
-   FILE_TYPE relation_file;
+   FILE * relation_file;
    int nmr_relations;
    int format = BASIC;
    char *name;

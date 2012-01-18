@@ -3,7 +3,6 @@
 #W  onecohom.gi                     GAP library                  Frank Celler
 ##                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: onecohom.gi,v 4.52 2011/04/20 09:20:16 gap Exp $
 ##
 #Y  Copyright (C)  1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci.,University of St Andrews,Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains the methods for operations for the 1-Cohomology
 ##
-Revision.onecohom_gi:=
-  "@(#)$Id: onecohom.gi,v 4.52 2011/04/20 09:20:16 gap Exp $";
 
 
 #############################################################################

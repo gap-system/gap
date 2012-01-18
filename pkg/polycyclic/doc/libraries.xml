@@ -1,0 +1,128 @@
+<Chapter Label="Libraries and examples of pcp-groups">
+<Heading>Libraries and examples of pcp-groups</Heading>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Libraries of various types of polycyclic groups">
+<Heading>Libraries of various types of polycyclic groups</Heading>
+
+There are the following generic pcp-groups available.
+<ManSection>
+<Func Name="AbelianPcpGroup" Arg="n, rels"/>
+<Description>
+      constructs the   abelian  group  on  <A>n</A>  generators  such  that
+      generator <M>i</M> has  order <M>rels[i]</M>. If  this  order is infinite,
+      then <M>rels[i]</M> should be either unbound or 0.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="DihedralPcpGroup" Arg="n"/>
+<Description>
+      constructs the dihedral  group of order <A>n</A>. If <A>n</A>  is an odd
+      integer, then 'fail' is returned.  If  <A>n</A> is zero or not an 
+      integer, then the infinite dihedral group is returned.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="UnitriangularPcpGroup" Arg="n, c"/>
+<Description>
+      returns a pcp-group isomorphic  to the group of upper triangular
+      in <M>GL(n, R)</M> where <M>R = &ZZ;</M> if <M>c = 0</M> and <M>R = \mathbb{F}_p</M> if <M>c = p</M>.
+      The natural unitriangular matrix representation of the returned 
+      pcp-group <M>G</M> can be obtained as <M>G!.isomorphism</M>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="SubgroupUnitriangularPcpGroup" Arg="mats"/>
+<Description>
+      <A>mats</A> should be a list of upper unitriangular <M>n \times n</M> 
+      matrices over <M>&ZZ;</M> or over <M>\mathbb{F}_p</M>. This function returns the 
+      subgroup of the corresponding 'UnitriangularPcpGroup' generated 
+      by the matrices in <A>mats</A>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="InfiniteMetacyclicPcpGroup" Arg="n, m, r"/>
+<Description>
+	Infinite metacyclic groups are classified in <Cite Key="B-K00"/>. Every 
+	infinite metacyclic group <M>G</M> is isomorphic to a finitely presented 
+	group <M>G(m,n,r)</M> with two generators <M>a</M> and <M>b</M> and relations of the 
+	form <M>a^n = b^m = 1</M> and <M>[a,b] = a^{1-r}</M>, where <M>m,n,r</M> are three
+	non-negative integers with <M>mn=0</M> and <M>r</M> relatively prime to <M>m</M>. 
+	If <M>r \equiv -1</M> mod <M>m</M> then <M>n</M> is even, and if <M>r \equiv 1</M> mod 
+	<M>m</M> then <M>m=0</M>. Also <M>m</M> and <M>n</M> must not be <M>1</M>.
+	<P/>
+
+	Moreover, <M>G(m,n,r)\cong G(m',n',s)</M> if and only if <M>m=m'</M>, <M>n=n'</M>, 
+	and either <M>r \equiv s</M> or <M>r \equiv s^{-1}</M> mod <M>m</M>. 
+	<P/>
+
+	This function returns the metacyclic group with parameters <A>n</A>,
+	<A>m</A> and <A>r</A> as a pcp-group with the pc-presentation <M>\langle
+	x,y | x^n, y^m, y^x = y^r\rangle</M>.  This presentation is easily
+	transformed into the one above via the mapping <M>x \mapsto b^{-1},
+	y \mapsto a</M>. 
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="HeisenbergPcpGroup" Arg="n"/>
+<Description>
+      returns the Heisenberg group on <M>2<A>n</A></M> generators as pcp-group.
+      This gives a group of Hirsch length <M>3<A>n</A></M>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="MaximalOrderByUnitsPcpGroup" Arg="f"/>
+<Description>
+      takes as input a normed, irreducible polynomial over the integers.
+      Thus <A>f</A> defines a field extension <A>F</A> over the rationals. This 
+      function returns the split extension of the maximal order <A>O</A> of <A>F</A> 
+      by the unit group <A>U</A> of <A>O</A>, where <A>U</A> acts by right multiplication
+      on <A>O</A>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="BurdeGrunewaldPcpGroup" Arg="s, t"/>
+<Description>
+      returns a nilpotent group of Hirsch length 11 which has been 
+      constructed by Burde und Grunewald. If <A>s</A> is not 0, then this 
+      group has no faithful 12-dimensional linear representation.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Some asorted example groups">
+<Heading>Some assorted example groups</Heading>
+
+The functions in this section provide some more example groups to play
+with. They come with no further description and their investigation is
+left to the interested user.
+<ManSection>
+<Func Name="ExampleOfMetabelianPcpGroup" Arg="a, k"/>
+<Description>
+      returns an example of a metabelian group. The input parameters must
+      be two positive integers greater than 1.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="ExamplesOfSomePcpGroups" Arg="n"/>
+<Description>
+      this function takes values <A>n</A> in 1 up to 16 and returns for each 
+      input an example of a pcp-group. The groups in this example list 
+      have been used as test groups for the functions in this package.
+</Description>
+</ManSection>
+
+</Section>
+</Chapter>
+

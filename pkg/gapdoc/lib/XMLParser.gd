@@ -2,7 +2,6 @@
 ##
 #W  XMLParser.gd                 GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: XMLParser.gd,v 1.5 2007/05/24 16:06:36 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -43,7 +42,5 @@ DeclareGlobalFunction("XMLElements");
 BindGlobal("InfoXMLParser", NewInfoClass("InfoXMLParser"));
 SetInfoLevel(InfoXMLParser, 1);
 if CompareVersionNumbers(GAPInfo.Version, "4.dev") then
-  SetInfoHandler(InfoXMLParser, function(cl, lev, l)
-    CallFuncList(Print, l);
-  end);
+  SetInfoHandler(InfoXMLParser, PlainInfoHandler);
 fi;

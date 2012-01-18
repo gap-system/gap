@@ -2,7 +2,6 @@
 **
 *W  intrprtr.h                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: intrprtr.h,v 4.26 2011/05/23 10:58:39 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,9 +15,11 @@
 **  immediately, it switches into coding mode, and  delegates the work to the
 **  coder.
 */
+
+#ifndef GAP_INTRPRTR_H
+#define GAP_INTRPRTR_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_intrprtr_h =
-   "@(#)$Id: intrprtr.h,v 4.26 2011/05/23 10:58:39 sal Exp $";
 #endif
 
 
@@ -974,6 +975,8 @@ extern void            PushVoidObj ( void );
 */
 StructInitInfo * InitInfoIntrprtr ( void );
 
+
+#endif // GAP_INTRPRTR_H
 
 /****************************************************************************
 **

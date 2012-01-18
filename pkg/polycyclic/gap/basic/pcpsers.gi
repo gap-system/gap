@@ -209,7 +209,7 @@ end );
 InstallGlobalFunction( RefinedDerivedSeries, function( G )
     local ser, ref, i, A, B, pcp, gens, rels, n, free, fini, U, s, t, f;
 
-    ser := DerivedSeries( G );
+    ser := DerivedSeriesOfGroup( G );
     ref := [G];
     for i in [1..Length( ser ) - 1] do
 
@@ -257,7 +257,7 @@ end );
 InstallGlobalFunction( RefinedDerivedSeriesDown, function( G )
     local ser, ref, i, A, B, pcp, gens, rels, n, free, fini, U, s, f, t;
 
-    ser := DerivedSeries( G );
+    ser := DerivedSeriesOfGroup( G );
     ref := [G];
     for i in [1..Length( ser ) - 1] do
 

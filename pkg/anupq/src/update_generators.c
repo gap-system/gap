@@ -2,7 +2,7 @@
 **
 *A  update_generators.c         ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: update_generators.c,v 1.3 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: update_generators.c,v 1.4 2011/11/28 17:47:22 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -25,7 +25,7 @@
 void update_generators (pcp)
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int f;
    register int i;

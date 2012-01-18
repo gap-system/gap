@@ -5,8 +5,6 @@
 #Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.ghomfp_gi :=
-    "@(#)$Id: ghomfp.gi,v 4.53 2011/06/14 19:29:19 gap Exp $";
 
 #############################################################################
 ##
@@ -1059,6 +1057,54 @@ local phi,m;
   m:=MaximalAbelianQuotient(Image(phi));
   SetAbelianInvariants(U,AbelianInvariants(Image(phi)));
   return phi*MaximalAbelianQuotient(Image(phi));
+end);
+
+# u must be a subgroup of the image of home
+InstallGlobalFunction(
+LargerQuotientBySubgroupAbelianization,function(hom,u)
+local v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel;
+  v:=PreImage(hom,u);
+  aiv:=AbelianInvariants(v);
+  aiu:=AbelianInvariants(u);
+  if aiu=aiv then
+    return fail;
+  fi;
+  # are there irrelevant primes?
+  primes:=Set(Factors(Product(aiu)*Product(aiv)));
+  irrel:=Filtered(primes,x->Filtered(aiv,z->IsInt(z/x))=
+                            Filtered(aiu,z->IsInt(z/x)));
+
+  Info(InfoFpGroup,1,"Larger by factor ",
+    Product(AbelianInvariants(v))/Product(AbelianInvariants(u)),"\n");
+  ma:=MaximalAbelianQuotient(v);
+  mau:=MaximalAbelianQuotient(u);
+  a:=Image(ma);
+  k:=TrivialSubgroup(a);
+  for primes in irrel do
+    k:=ClosureGroup(k,GeneratorsOfGroup(SylowSubgroup(a,primes)));
+  od;
+  if Size(k)>1 then
+    ma:=ma*NaturalHomomorphismByNormalSubgroup(a,k);
+    a:=Image(ma);
+    k:=TrivialSubgroup(Image(mau));
+    for primes in irrel do
+      k:=ClosureGroup(k,GeneratorsOfGroup(SylowSubgroup(Image(mau),primes)));
+    od;
+    mau:=mau*NaturalHomomorphismByNormalSubgroup(Image(mau),k);
+  fi;
+
+  gens:=SmallGeneratingSet(a);
+  imgs:=List(gens,x->Image(mau,Image(hom,PreImagesRepresentative(ma,x))));
+  q:=GroupHomomorphismByImages(a,Image(mau),gens,imgs);
+  k:=KernelOfMultiplicativeGeneralMapping(q);
+  co:=Complementclasses(a,k);
+  if Length(co)=0 then
+    co:=List(ConjugacyClassesSubgroups(a),Representative);
+    co:=Filtered(co,x->Size(Intersection(k,x))=1);
+    Sort(co,function(a,b) return Size(a)>Size(b);end);
+  fi;
+  Info(InfoFpGroup,2,"Degree larger ",Index(a,co[1]),"\n");
+  return PreImage(ma,co[1]);
 end);
 
 DeclareRepresentation("IsModuloPcgsFpGroupRep",

@@ -1,8 +1,6 @@
 #############################################################################
 ##
-#W  construc.gi           GAP 4 package `ctbllib'               Thomas Breuer
-##
-#H  @(#)$Id: construc.gi,v 1.22 2011/02/11 16:04:44 gap Exp $
+#W  construc.gi          GAP 4 package CTblLib                  Thomas Breuer
 ##
 #Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -16,8 +14,6 @@
 ##  8. Character Tables of Coprime Central Extensions
 ##  9. Miscellaneous
 ##
-Revision.( "ctbllib/gap4/construc_gi" ) :=
-    "@(#)$Id: construc.gi,v 1.22 2011/02/11 16:04:44 gap Exp $";
 
 
 #############################################################################
@@ -1321,21 +1317,24 @@ InstallGlobalFunction( PossibleCharacterTablesOfTypeGV4,
         # Check that the irreducibles are closed under multiplication
         # with linear characters,
         # and that the power maps are admissible.
-        # (Note that `PossiblePowerMaps' is not sufficient here,
+        # Note that `PossiblePowerMaps' is not sufficient here,
         # we check whether all symmetrizations decompose.
         # An example where this excludes a candidate table is
         # `2.U4(3).(2^2)_{133}'.
+        # Note that for large primes, constructing the symmetrizations
+        # is not feasible.
+        # An example where this happens is the table of `S4(9).2^2',
+        # the group order is divisible by 41.
         tblGV4:= ConvertToCharacterTableNC( ShallowCopy( tblrec ) );
         SetIrr( tblGV4, List( Concatenation( Compacted( poss[i] ) ),
                               chi -> Character( tblGV4, chi ) ) );
         if ForAll( Irr( tblGV4 ), x -> ForAll( LinearCharacters( tblGV4 ),
                    y -> y * x in Irr( tblGV4 ) ) )
            and ForAll( Set( Factors( Size( tblGV4 ) ) ),
-                 p -> ForAll( Symmetrizations( tblGV4, Irr( tblGV4 ), p ),
-                              x -> NonnegIntScalarProducts( tblGV4, Irr( tblGV4 ), x ) ) ) then
-             #   p -> not IsEmpty( PossiblePowerMaps( tblGV4, p,
-             #    rec( powermap:= ComputedPowerMaps( tblGV4 )[p] ) ) ) ) then
-#T is it possible to detect this earlier?
+                 p -> p > 20 or
+                      ForAll( Symmetrizations( tblGV4, Irr( tblGV4 ), p ),
+                              x -> NonnegIntScalarProducts( tblGV4,
+                                       Irr( tblGV4 ), x ) ) ) then
           SetInfoText( tblGV4,
               "constructed using `PossibleCharacterTablesOfTypeGV4'" );
           AutomorphismsOfTable( tblGV4 );
@@ -1922,6 +1921,33 @@ end );
 
 #############################################################################
 ##
+#F  ConstructCentralProduct( <tbl>, <factors>, <Dclasses>
+#F                           [, <permclasses>, <permchars>] )
+##
+InstallGlobalFunction( ConstructCentralProduct, function( arg )
+    local tbl, factors, Dclasses, t, i, perms;
+
+    tbl:= arg[1];
+    factors:= arg[2];
+    Dclasses:= arg[3];
+    t:= CallFuncList( CharacterTableFromLibrary, factors[1] );
+    for i in [ 2 .. Length( factors ) ] do
+      t:= CharacterTableDirectProduct( t,
+              CallFuncList( CharacterTableFromLibrary, factors[i] ) );
+    od;
+    t:= CharacterTableFactorGroup( t, Dclasses );
+    perms:= Filtered( arg, IsPerm );
+    if Length( perms ) = 2 then
+      t:= CharacterTableWithSortedClasses( t, perms[1] );
+      t:= CharacterTableWithSortedCharacters( t, perms[2] );
+    fi;
+    TransferComponentsToLibraryTableRecord( t, tbl );
+end );
+#T improve this function! (do not unpack the direct product!)
+
+
+#############################################################################
+##
 #F  ConstructSubdirect( <tbl>, <factors>, <choice> )
 ##
 InstallGlobalFunction( ConstructSubdirect, function( tbl, factors, choice  )
@@ -1969,7 +1995,7 @@ end );
 #F                      [, <permclasses>, <permchars>] )
 ##
 InstallGlobalFunction( ConstructIsoclinic, function( arg )
-    local tbl, factors, t, i, fld, perms;
+    local tbl, factors, t, i, perms;
 
     tbl:= arg[1];
     factors:= arg[2];
@@ -2612,7 +2638,7 @@ InstallGlobalFunction( ConstructGS3Info, function( tbl2, tbl3, tbls3 )
 
 #############################################################################
 ##
-#F  ConstructPermuted( <tbl>, <libnam>[, <prmclasses>, <prmchars>] )
+#F  ConstructPermuted( <tbl>, <libnam>[, <permclasses>, <permchars>] )
 ##
 InstallGlobalFunction( ConstructPermuted,
     function( arg )
@@ -2620,8 +2646,8 @@ InstallGlobalFunction( ConstructPermuted,
 
     tbl:= arg[1];
 
-    # There may be fusions into `tbl',
-    # so we must guarantee a trivial class permutation.
+    # There may be fusions into `tbl', so we must *NOT* transfer the
+    # class permutation from `t' in `TransferComponentsToLibraryTableRecord'.
     if not IsBound( tbl.ClassPermutation ) then
       tbl.ClassPermutation:= ();
     fi;
@@ -2641,6 +2667,46 @@ InstallGlobalFunction( ConstructPermuted,
     # Remove attribute values that may contradict the compatibility
     # between several tables.
     Unbind( tbl.FusionToTom );
+    end );
+
+
+#############################################################################
+##
+#F  ConstructAdjusted( <tbl>, <libnam>, <pairs>
+#F                     [, <permclasses>, <permchars>] )
+##
+InstallGlobalFunction( ConstructAdjusted,
+    function( arg )
+    local tbl, t, pair;
+
+    tbl:= arg[1];
+
+    # Get the permuted library table.
+    t:= CallFuncList( CharacterTableFromLibrary, arg[2] );
+    if 3 < Length( arg ) and not IsOne( arg[4] ) then
+      t:= CharacterTableWithSortedClasses( t, arg[4] );
+    fi;
+    if 4 < Length( arg ) and not IsOne( arg[5] ) then
+      t:= CharacterTableWithSortedCharacters( t, arg[5] );
+    fi;
+
+    # Set the components that shall be adjusted.
+    for pair in arg[3] do
+      tbl.( pair[1] ):= pair[2];
+    od;
+
+    # Transfer not adjusted defining components.
+    # We are *NOT* allowed to call `TransferComponentsToLibraryTableRecord',
+    # because `tbl' is expected to be *NOT* equivalent to `t'.
+    if not IsBound( tbl.SizesCentralizers ) then
+      tbl.SizesCentralizers:= SizesCentralizers( t );
+    fi;
+    if not IsBound( tbl.ComputedPowerMaps ) then
+      tbl.ComputedPowerMaps:= ComputedPowerMaps( t );
+    fi;
+    if not IsBound( tbl.Irr ) then
+      tbl.Irr:= List( Irr( t ), ValuesOfClassFunction );
+    fi;
     end );
 
 

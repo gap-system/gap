@@ -2,7 +2,7 @@
 **
 *A  global.h                    ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: global.h,v 1.4 2001/06/21 23:04:21 gap Exp $
+*A  @(#)$Id: global.h,v 1.6 2011/11/28 13:42:00 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -14,9 +14,7 @@
 #ifndef __GLOBALS__
 #define __GLOBALS__
 
-#define CAYLEY_LIBRARY 1
 #define GAP_LIBRARY 2
-#define Magma_LIBRARY 3
 
 int Group_library;
 int Compact_Description;

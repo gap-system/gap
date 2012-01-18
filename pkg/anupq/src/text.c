@@ -2,7 +2,7 @@
 **
 *A  text.c                      ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: text.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: text.c,v 1.6 2011/12/02 16:42:15 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -38,9 +38,6 @@ int arg4;
    case 5:
 #if defined (GROUP) 
       PRINT ("\nGroup completed.");
-#endif
-#if defined (LIE)
-      PRINT ("\nLie ring completed.");
 #endif
       PRINT (" Lower exponent-%d central class = %d,", arg2, arg1);
       PRINT (" Order = %d^%d\n", arg2, arg3);

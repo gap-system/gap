@@ -1,16 +1,10 @@
-############### Already Tested:
-#Small int
-#big int b10:OK b256:OK b16:ok isLong flag :OK all
-#applications 
-#iso strings
-# attributions
-# symbols
-#variables
-#binding
-#error
+###########################################################################
+##
+#W    binread.g                OpenMath Package                 Max Nicosia
+##                                                              
+###########################################################################
 
-
-#######################################################################
+###########################################################################
 ##
 #F  EnsureCompleteHexNum ( <hexNum> )
 ##

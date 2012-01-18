@@ -2,15 +2,16 @@
 **
 *W  objfgelm.h                  GAP source                       Frank Celler
 **
-*H  @(#)$Id: objfgelm.h,v 4.19 2010/02/23 15:13:45 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
+
+#ifndef GAP_OBJFGELM_H
+#define GAP_OBJFGELM_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_objfgelm_h =
-   "@(#)$Id: objfgelm.h,v 4.19 2010/02/23 15:13:45 gap Exp $";
 #endif
 
 
@@ -162,6 +163,8 @@ static inline Obj NewWord(Obj kind, UInt npairs) {
 */
 StructInitInfo * InitInfoFreeGroupElements ( void );
 
+
+#endif // GAP_OBJFGELM_H
 
 /****************************************************************************
 **

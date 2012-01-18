@@ -2,7 +2,6 @@
 ##
 #W  reread.g                   GAP Library                       Steve Linton
 ##
-#H  @(#)$Id: reread.g,v 4.12 2011/01/13 17:28:36 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  Seems rather little for a file by itself, but I can see no other
 ##  natural home
 ##
-Revision.reread_g :=
-    "@(#)$Id: reread.g,v 4.12 2011/01/13 17:28:36 alexk Exp $";
 
 
 #############################################################################

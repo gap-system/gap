@@ -25,8 +25,8 @@ DeclareRepresentation( "IsPcpRep",
 ##
 ## Create their family and their type
 ##
-PcpFamily := NewFamily( "PcpFamily", IsPcp, IsPcp );
-PcpType   := NewType( PcpFamily, IsPcpRep );
+BindGlobal( "PcpFamily", NewFamily( "PcpFamily", IsPcp, IsPcp ) );
+BindGlobal( "PcpType", NewType( PcpFamily, IsPcpRep ) );
 
 #############################################################################
 ##

@@ -2,10 +2,10 @@
 ##
 #W semi.gi               POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## constructive pc-sequences for rational abelian semisimple matrix groups
 ##
-#H  @(#)$Id: semi.gi,v 1.5 2011/05/31 13:10:58 gap Exp $
+#H  @(#)$Id: semi.gi,v 1.7 2011/09/23 13:36:32 gap Exp $
 ##
 #Y 2003
 ##
@@ -14,7 +14,7 @@
 ##
 #F CPCS_AbelianSSBlocks( gensOfBlockAction )
 ##
-## gensOfBlockAction is a list with the induced action of  K_p to the 
+## gensOfBlockAction is a list with the induced action of  K_p to the
 ## to the factors of the homogeneous series of G
 ##
 CPCS_AbelianSSBlocks := function( gensOfBlockAction )
@@ -22,7 +22,7 @@ CPCS_AbelianSSBlocks := function( gensOfBlockAction )
           module,r,module2,k,full,nath,realFactor,trivial, F,relOrders;
     k:=Length(gensOfBlockAction[1]);
     full:=IdentityMat(k);
-     
+
     # calculate the relations of the gensOfBlockAction
     module:=IdentityMat(k);
     for r in gensOfBlockAction do
@@ -35,41 +35,41 @@ CPCS_AbelianSSBlocks := function( gensOfBlockAction )
             fi;
         od;
         if not trivial then
-            F := FieldByMatricesNC( r ); 
-            if F = false then return fail; fi;   
-            r2 := RelationLattice( F, r );  
+            F := FieldByMatricesNC( r );
+            if F = false then return fail; fi;
+            r2 := RelationLattice( F, r );
             module:=LatticeIntersection(module,r2);
         fi;
     od;
- 
+
     # let k be the number of gens = Length(gensOfBlockAction[1])
     # compute a basis for Z^k/module
     # with this vectors we can calculate free gens
      # trivial check
      if Length( module ) = 0 then
          return rec( gensOfBlockAction := gensOfBlockAction,
-                     newGensOfBlockAction := gensOfBlockAction, 
-                     trsf := IdentityMat(k), 
-                     rels := module, 
+                     newGensOfBlockAction := gensOfBlockAction,
+                     trsf := IdentityMat(k),
+                     rels := module,
                      relOrders := List( [1..k] , x-> 0 )
                    );
      fi;
     realFactor := GeneratorLattice( module );
     relOrders := realFactor.relord;
     realFactor := realFactor.exps;
- 
+
     # calculate the new free generators blockwise
     newGensOfBlockAction:=[];
     for i in [1..Length(gensOfBlockAction)] do
         newGensOfBlockAction[i]:=[];
         for t in realFactor do
-            Add( newGensOfBlockAction[i], 
+            Add( newGensOfBlockAction[i],
                  Exp2Groupelement(gensOfBlockAction[i],t));
          od;
     od;
- 
+
     return rec( gensOfBlockAction := gensOfBlockAction,
-                newGensOfBlockAction := newGensOfBlockAction, 
+                newGensOfBlockAction := newGensOfBlockAction,
                 trsf := realFactor, rels := module, relOrders := relOrders);
 end;
 
@@ -83,7 +83,7 @@ POL_TestExponentVector_AbelianSS := function( CPCS_nue_K_p, g, exp )
     # n is the number of blocks
     n:=Length(newGens);
     for i in [1..n] do
-        test := MappedVector( exp, newGens[i]) = g[i][1]; 
+        test := MappedVector( exp, newGens[i]) = g[i][1];
         if test = false then
             return false;
         fi;
@@ -100,7 +100,7 @@ end;
 ##
 ExponentVector_AbelianSS:=function( CPCS_nue_K_p, g )
    local trivial,freeGens,n,A,m,rels3,v,exp,i,rels,r2,F,
-         rels2,r,newGens,a,ll; 
+         rels2,r,newGens,a,ll;
 
    # check if nue_K_p is trivial
     if Length( CPCS_nue_K_p.relOrders )=0 then
@@ -117,7 +117,7 @@ ExponentVector_AbelianSS:=function( CPCS_nue_K_p, g )
         fi;
     od;
     #if the action of g on the radical series is trivial we
-    #return an as the exponent vector [0 ... 0] of the length of the 
+    #return an as the exponent vector [0 ... 0] of the length of the
     #pc sequence of nue(K_p)
     if trivial then
        ll := Length( CPCS_nue_K_p.relOrders );
@@ -132,7 +132,7 @@ ExponentVector_AbelianSS:=function( CPCS_nue_K_p, g )
    A:=[];
    for i in [1..n] do
        a:=StructuralCopy(newGens[i]);
-       a := Concatenation( [g[i][1]], a );  
+       a := Concatenation( [g[i][1]], a );
        # Add(a,g[i][1]);
        Add(A,a);
    od;
@@ -148,14 +148,14 @@ ExponentVector_AbelianSS:=function( CPCS_nue_K_p, g )
             # fi;
             #od;
             #if not trivial then
-          F := FieldByMatricesNC( r );   
-          if F = false then return fail; fi; 
-          r2 := RelationLattice( F, r );  
+          F := FieldByMatricesNC( r );
+          if F = false then return fail; fi;
+          r2 := RelationLattice( F, r );
           rels:=LatticeIntersection(rels,r2);
             #fi;
    od;
             #if the action of g on the radical series is trivial we
-            #return an as the exponent vector [0 ... 0] of the length of the 
+            #return an as the exponent vector [0 ... 0] of the length of the
             #pc sequence of nue(K_p)
             #  if trivial then
             #  ll := Length( CPCS_nue_K_p.relOrders );
@@ -163,7 +163,19 @@ ExponentVector_AbelianSS:=function( CPCS_nue_K_p, g )
             # fi;
    rels := NormalFormIntMat(rels,0).normal;
    if not rels[1][1]=1 then return fail; fi;
-   exp := -rels[1]{ [2..(Length(rels[1]))] };
+
+   exp := -rels[1]; exp[1] := 0;
+   # Reduce exp by the remaining rows
+   for r in rels do
+     i := PositionNonZero(r);
+     if exp[i] < 0 then
+       exp := exp + QuoInt(-exp[i]+r[i]-1, r[i]) * r;
+     fi;
+   od;
+
+   # Remove the leading zero
+   Remove(exp, 1);
+
    Assert( 2,  POL_TestExponentVector_AbelianSS( CPCS_nue_K_p, g, exp ),
            "failure in ExponentVector_AbelianSS" );
    return exp;
@@ -176,13 +188,13 @@ end;
 ## g is a list which entries contains the induced action to a block
 ##
 Membership_AbelianSS:=function(CPCS_nue_K_p,g)
-    local exp; 
+    local exp;
     exp := ExponentVector_AbelianSS( CPCS_nue_K_p, g );
     if not IsBool( exp ) then
         return true;
-    else 
+    else
         return false;
-    fi; 
+    fi;
 end;
 
 #############################################################################
@@ -217,20 +229,20 @@ CPCS_AbelianSSBlocks_ClosedUnderConj := function(gens_K_p,gens,radicalSeries)
                    #the generators.
                    #don't forget to modify gens_K_p as well on a
                    #higher function level
-                   gensOfBlockAction := 
+                   gensOfBlockAction :=
                               POL_InducedActionToSeries(gens_K_p,radicalSeries);
-                   CPCS_nue_K_p := 
+                   CPCS_nue_K_p :=
                             CPCS_AbelianSSBlocks( gensOfBlockAction );
                    if CPCS_nue_K_p = fail then return fail; fi;
                fi;
                i := i+1;
             od;
         od;
-        if InfoLevel( InfoPolenta ) >= 1 then Print( "\n" ); fi;   
+        if InfoLevel( InfoPolenta ) >= 1 then Print( "\n" ); fi;
     fi;
-   
+
     Info( InfoPolenta, 3,
-          "loops inCPCS_AbelianSSBlocks_ClosedUnderConj  = ", 
+          "loops inCPCS_AbelianSSBlocks_ClosedUnderConj  = ",
           Length(gens_K_p)*Length(gens),"\n");
      return rec( pcgs_nue_K_p := CPCS_nue_K_p, gens_K_p := gens_K_p);
 end;

@@ -2,7 +2,6 @@
 **
 *W  sctable.c                   GAP source                     Marcel Roelofs
 **
-*H  @(#)$Id: sctable.c,v 4.22 2010/02/23 15:13:48 gap Exp $
 **
 *Y  Copyright (C)  1996,        CWI,        Amsterdam,        The Netherlands
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -39,8 +38,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_sctable_c =
-   "@(#)$Id: sctable.c,v 4.22 2010/02/23 15:13:48 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -445,8 +442,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSCTable ( void )
 {
-    module.revision_c = Revision_sctable_c;
-    module.revision_h = Revision_sctable_h;
     FillInVersion( &module );
     return &module;
 }

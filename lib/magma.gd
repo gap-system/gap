@@ -2,7 +2,6 @@
 ##
 #W  magma.gd                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: magma.gd,v 4.62 2010/02/23 15:13:12 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  three categories  magma,   magma-with-one, and    magma-with-inverses  is
 ##  different.
 ##
-Revision.magma_gd:=
-    "@(#)$Id: magma.gd,v 4.62 2010/02/23 15:13:12 gap Exp $";
 
 
 #############################################################################

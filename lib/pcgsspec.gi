@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.pcgsspec_gi :=
-    "@(#)$Id: pcgsspec.gi,v 4.65 2010/02/23 15:13:23 gap Exp $";
 
 
 #############################################################################
@@ -598,6 +596,11 @@ function( pcgs )
         # change to complement base
         Info(InfoSpecPcgs, 1, "exhibit complement system");
         pcgssys := PcgsSystemWithComplementSystem( pcgssys );
+	if IsBound(pcgssys.pcgs!.LGWeights) then
+	  # pcgs is reused -- force new one
+	  pcgssys.pcgs:=PcgsByPcSequence(FamilyObj(OneOfPcgs(pcgs)),
+	    pcgssys.pcgs!.pcSequence);
+	fi;
 
         # create the special pcgs
         newpcgs := pcgssys.pcgs;

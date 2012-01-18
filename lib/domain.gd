@@ -2,7 +2,6 @@
 ##
 #W  domain.gd                   GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: domain.gd,v 4.60 2011/04/14 23:10:36 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -94,8 +93,6 @@
 ##  subset relation, which can be decided with <Ref Oper="IsSubset"/>.)
 ##  <#/GAPDoc>
 ##
-Revision.domain_gd :=
-    "@(#)$Id: domain.gd,v 4.60 2011/04/14 23:10:36 alexk Exp $";
 
 
 #############################################################################

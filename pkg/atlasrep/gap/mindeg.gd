@@ -2,16 +2,12 @@
 ##
 #W  mindeg.gd            GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: mindeg.gd,v 1.5 2008/06/23 16:00:46 gap Exp $
-##
 #Y  Copyright (C)  2007,   Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains declarations for dealing with information about
 ##  permutation and matrix representations of minimal degree
 ##  for selected groups.
 ##
-Revision.( "atlasrep/gap/mindeg_gd" ) :=
-    "@(#)$Id: mindeg.gd,v 1.5 2008/06/23 16:00:46 gap Exp $";
 
 
 #############################################################################
@@ -20,8 +16,6 @@ Revision.( "atlasrep/gap/mindeg_gd" ) :=
 ##  <Subsection Label="subsect:minimality-criteria">
 ##  <Heading>Criteria Used to Compute Minimality Information</Heading>
 ##
-##  Let <A>grpname</A> be the &GAP; name of a group <M>G</M>, say.
-##  <P/>
 ##  The information about the minimal degree of a faithful <E>matrix
 ##  representation</E> of <M>G</M> in a given characteristic or over a given
 ##  field in positive characteristic is derived from the relevant (ordinary
@@ -37,23 +31,25 @@ Revision.( "atlasrep/gap/mindeg_gd" ) :=
 ##  <P/>
 ##  <List>
 ##  <Item>
-##    If <A>grpname</A> has the form <C>A<A>n</A></C> or <C>A<A>n</A>.2</C>
+##    If the name of <M>G</M> has the form <C>"A</C><M>n</M><C>"</C> or
+##    <C>"A</C><M>n</M><C>.2"</C>
 ##    (denoting alternating and symmetric groups, respectively)
-##    then the minimal degree is <A>n</A>, except if <A>n</A> is smaller than
+##    then the minimal degree is <M>n</M>, except if <M>n</M> is smaller than
 ##    <M>3</M> or <M>2</M>, respectively.
 ##  </Item>
 ##  <Item>
-##    If <A>grpname</A> has the form <C>L2(<A>q</A>)</C>
+##    If the name of <M>G</M> has the form <C>"L2(</C><M>q</M><C>)"</C>
 ##    (denoting projective special linear groups in dimension two)
-##    then the minimal degree is <M><A>q</A> + 1</M>,
-##    except if <M><A>q</A> \in \{ 2, 3, 5, 7, 9, 11 \}</M>,
+##    then the minimal degree is <M>q + 1</M>,
+##    except if <M>q \in \{ 2, 3, 5, 7, 9, 11 \}</M>,
 ##    see&nbsp;<Cite Key="Hup67" Where="Satz II.8.28"/>.
 ##  </Item>
 ##  <Item>
 ##    If the largest maximal subgroup of <M>G</M> is core-free
 ##    then the index of this subgroup is the minimal degree.
 ##    (This is used when the two character tables in question and the class
-##    fusion are available in the &GAP; Character Table Library;
+##    fusion are available in &GAP;'s Character Table Library
+##    (<Cite Key="CTblLib1.1.3"/>);
 ##    this happens for many character tables of simple groups.)
 ##  </Item>
 ##  <Item>
@@ -62,7 +58,7 @@ Revision.( "atlasrep/gap/mindeg_gd" ) :=
 ##    <P/>
 ##    In this case, the minimal degree can be computed directly from the
 ##    information in the table of marks of <M>G</M> if this is available in
-##    &GAP;'s library of tables of marks.
+##    &GAP;'s Library of Tables of Marks (<Cite Key="TomLib"/>).
 ##    <P/>
 ##    Suppose that the largest maximal subgroup of <M>G</M> is not core-free
 ##    but simple and normal in <M>G</M>, and that the other maximal subgroups
@@ -83,11 +79,11 @@ Revision.( "atlasrep/gap/mindeg_gd" ) :=
 ##    and <M>N \times U</M> occurs as a subgroup of <M>G</M>.)
 ##  </Item>
 ##  <Item>
-##    If we know a subgroup of <M>G</M> whose minimal degree is <A>n</A>,
+##    If we know a subgroup of <M>G</M> whose minimal degree is <M>n</M>,
 ##    say, and if we know either (a class fusion from) a core-free subgroup
-##    of index <A>n</A> in <M>G</M> or a faithful permutation representation
-##    of degree <A>n</A> for <M>G</M>
-##    then <A>n</A> is the minimal degree for <M>G</M>.
+##    of index <M>n</M> in <M>G</M> or a faithful permutation representation
+##    of degree <M>n</M> for <M>G</M>
+##    then <M>n</M> is the minimal degree for <M>G</M>.
 ##    (This happens often for tables of almost simple groups.)
 ##  </Item>
 ##  </List>
@@ -118,7 +114,7 @@ DeclareGlobalFunction( "MinimalPermutationRepresentationInfo" );
 ##  or <K>fail</K>
 ##  </Returns>
 ##  <Description>
-##  Let <A>groupname</A> be the &GAP; name of a group <M>G</M>, say.
+##  Let <A>grpname</A> be the &GAP; name of a group <M>G</M>, say.
 ##  If the information described by <A>conditions</A> about minimal
 ##  representations of this group can be computed or is stored
 ##  then <Ref Func="MinimalRepresentationInfo"/> returns a record with the
@@ -131,34 +127,36 @@ DeclareGlobalFunction( "MinimalPermutationRepresentationInfo" );
 ##  <Item>
 ##    If <A>conditions</A> is <Ref Attr="NrMovedPoints" BookName="ref"/>
 ##    then <C>value</C>, if known, is the degree of a minimal faithful
-##    permutation representation for <M>G</M>.
+##    (not necessarily transitive) permutation representation for <M>G</M>.
 ##  </Item>
 ##  <Item>
 ##    If <A>conditions</A> consists of
 ##    <Ref Attr="Characteristic" BookName="ref"/> and a prime integer
 ##    <A>p</A> then <C>value</C>, if known, is the dimension of a minimal
-##    faithful matrix representation in characteristic <A>p</A> for <A>G</A>.
+##    faithful (not necessarily irreducible) matrix representation
+##    in characteristic <A>p</A> for <M>G</M>.
 ##  </Item>
 ##  <Item>
 ##    If <A>conditions</A> consists of <Ref Attr="Size" BookName="ref"/> and
 ##    a prime power <A>q</A> then <C>value</C>, if known, is the dimension
-##    of a minimal faithful matrix representation over the field of size
-##    <A>q</A> for <A>G</A>.
+##    of a minimal faithful (not necessarily irreducible)
+##    matrix representation over the field of size <A>q</A> for <M>G</M>.
 ##  </Item>
 ##  </List>
 ##  <P/>
 ##  In all cases, the value of the component <C>source</C> is a list of
 ##  strings that describe sources of the information,
-##  which can be the ordinary or modular character table of <C>G</C>
+##  which can be the ordinary or modular character table of <M>G</M>
 ##  (see <Cite Key="CCN85"/>, <Cite Key="JLPW95"/>, <Cite Key="HL89"/>),
-##  the table of marks of <C>G</C>, or <Cite Key="Jan05"/>.
+##  the table of marks of <M>G</M>, or <Cite Key="Jan05"/>.
 ##  For an overview of minimal degrees of faithful matrix representations for
 ##  sporadic simple groups and their covering groups, see also
 ##  <P/>
 ##  <URL>http://www.math.rwth-aachen.de/~MOC/mindeg/</URL>.
 ##  <P/>
-##  Note that this function does not give any information about minimal
-##  representations over prescribed fields in characteristic zero.
+##  Note that <Ref Func="MinimalRepresentationInfo"/> cannot provide any
+##  information about minimal representations over prescribed fields in
+##  characteristic zero.
 ##  <P/>
 ##  Information about groups that occur in the <Package>AtlasRep</Package>
 ##  package is precomputed in <Ref Var="MinimalRepresentationInfoData"/>,
@@ -193,15 +191,14 @@ DeclareGlobalFunction( "MinimalPermutationRepresentationInfo" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> MinimalRepresentationInfo( "A5", NrMovedPoints );
-##  rec( value := 5,
-##    source := [ "computed (alternating group)", "computed (char. table)",
+##  rec( source := [ "computed (alternating group)", "computed (char. table)",
 ##        "computed (subgroup tables)",
 ##        "computed (subgroup tables, known repres.)",
-##        "computed (table of marks)" ] )
+##        "computed (table of marks)" ], value := 5 )
 ##  gap> MinimalRepresentationInfo( "A5", Characteristic, 2 );
-##  rec( value := 2, source := [ "computed (char. table)" ] )
+##  rec( source := [ "computed (char. table)" ], value := 2 )
 ##  gap> MinimalRepresentationInfo( "A5", Size, 2 );
-##  rec( value := 4, source := [ "computed (char. table)" ] )
+##  rec( source := [ "computed (char. table)" ], value := 4 )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -293,7 +290,7 @@ DeclareAutoreadableVariables( "atlasrep", "gap/mindeg.g",
 ##    <C>"NrMovedPoints"</C>
 ##    (see <Ref Attr="NrMovedPoints" BookName="ref"/>),
 ##    which means that <A>value</A> is the degree of minimal faithful
-##    permutation representations of <M>G</M>,
+##    (not necessarily transitive) permutation representations of <M>G</M>,
 ##  </Item>
 ##  <Item>
 ##    a list of length two with first entry
@@ -301,7 +298,8 @@ DeclareAutoreadableVariables( "atlasrep", "gap/mindeg.g",
 ##    (see <Ref Attr="Characteristic" BookName="ref"/>)
 ##    and second entry <A>char</A> either zero or a prime integer,
 ##    which means that <A>value</A> is the dimension of minimal faithful
-##    matrix representations of <M>G</M> in characteristic <A>char</A>,
+##    (not necessarily irreducible) matrix representations of <M>G</M>
+##    in characteristic <A>char</A>,
 ##  </Item>
 ##  <Item>
 ##    a list of length two with first entry
@@ -309,8 +307,8 @@ DeclareAutoreadableVariables( "atlasrep", "gap/mindeg.g",
 ##    (see <Ref Attr="Size" BookName="ref"/>)
 ##    and second entry a prime power <A>q</A>,
 ##    which means that <A>value</A> is the dimension of minimal faithful
-##    matrix representations of <M>G</M> over the field with <A>q</A>
-##    elements, and
+##    (not necessarily irreducible) matrix representations of <M>G</M>
+##    over the field with <A>q</A> elements, and
 ##  </Item>
 ##  <Item>
 ##    a list of length three with first entry
@@ -412,33 +410,6 @@ DeclareGlobalFunction( "ComputedMinimalRepresentationInfo" );
 ##  </ManSection>
 ##
 DeclareGlobalFunction( "StringOfMinimalRepresentationInfoData" );
-
-
-#############################################################################
-##
-#F  AGR_TestMinimalDegrees()
-##
-##  <#GAPDoc Label="AGR_TestMinimalDegrees">
-##  <ManSection>
-##  <Func Name="AGR_TestMinimalDegrees" Arg=''/>
-##
-##  <Returns>
-##  <K>true</K> if no contradiction was found, and <K>false</K> otherwise.
-##  </Returns>
-##  <Description>
-##  This function checks that the (permutation and matrix) representations
-##  available in the &ATLAS; of group representations do not have
-##  smaller degree than the claimed minimum.
-##  <P/>
-##  An error message is printed for each contradiction found.
-##  <!-- If an argument is given:
-##  An info message is printed for each group for which a representation
-##  is available but no minimal degree is stored. -->
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareGlobalFunction( "AGR_TestMinimalDegrees" );
 
 
 #############################################################################

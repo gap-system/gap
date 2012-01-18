@@ -2,29 +2,25 @@
 ##
 #W  types.gd             GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: types.gd,v 1.23 2009/03/31 16:52:34 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains declarations of the functions for administrating
 ##  the data types used in the &ATLAS; of Group Representations.
 ##
-Revision.( "atlasrep/gap/types_gd" ) :=
-    "@(#)$Id: types.gd,v 1.23 2009/03/31 16:52:34 gap Exp $";
 
 
 #############################################################################
 ##
-#F  AGRDeclareDataType( <kind>, <name>, <record> )
+#F  AGR.DeclareDataType( <kind>, <name>, <record> )
 ##
 ##  <#GAPDoc Label="AGRDeclareDataType">
 ##  <ManSection>
-##  <Func Name="AGRDeclareDataType" Arg='kind, name, record'/>
+##  <Func Name="AGR.DeclareDataType" Arg='kind, name, record'/>
 ##
 ##  <Description>
 ##  Let <A>kind</A> be one of the strings <C>"rep"</C> or <C>"prg"</C>,
 ##  and <A>record</A> be a record.
-##  <Ref Func="AGRDeclareDataType"/> declares a new data type of
+##  <Ref Func="AGR.DeclareDataType"/> declares a new data type of
 ##  representations (if <A>kind</A> is <C>"rep"</C>) or of
 ##  programs (if <A>kind</A> is <C>"prg"</C>).
 ##  For each group used in the <Package>AtlasRep</Package> package,
@@ -42,11 +38,10 @@ Revision.( "atlasrep/gap/types_gd" ) :=
 ##    This defines the format of the filenames containing data of the type
 ##    in question.
 ##    The value must be a list that can be used as the second argument of
-##    <Ref Func="AGRParseFilenameFormat"/>,
+##    <Ref Func="AGR.ParseFilenameFormat"/>,
 ##    such that only filenames of the type in question match.
 ##    (It is not checked whether this <Q>detection function</Q> matches
-##    exactly one type, so one must be very careful here when declaring
-##    a new type.)
+##    exactly one type, so declaring a new type needs care.)
 ##  </Item>
 ##  <Mark><C>AddFileInfo</C></Mark>
 ##  <Item>
@@ -54,7 +49,7 @@ Revision.( "atlasrep/gap/types_gd" ) :=
 ##    data of the type.
 ##    The value must be a function that takes three arguments (the current
 ##    list of data for the type and the given group, a list returned
-##    by <Ref Func="AGRParseFilenameFormat"/> for the given type,
+##    by <Ref Func="AGR.ParseFilenameFormat"/> for the given type,
 ##    and a filename).
 ##    This function adds the necessary parts of the data entry to the list,
 ##    and returns <K>true</K> if the data belongs to the type,
@@ -112,7 +107,7 @@ Revision.( "atlasrep/gap/types_gd" ) :=
 ##    <K>true</K> or <K>false</K>,
 ##    depending on whether private data is involved or not.
 ##    (The default is <K>fail</K>,
-##    indicating that no column for the data type shall be printed.)
+##    indicating that no new column shall be printed.)
 ##  </Item>
 ##  <Mark><C>DisplayPRG</C> (for <C>prg</C> only)</Mark>
 ##  <Item>
@@ -166,12 +161,18 @@ Revision.( "atlasrep/gap/types_gd" ) :=
 ##    this is not the case for example if the program is the composition of
 ##    several programs.)
 ##  </Item>
+##  <Mark><C>AtlasProgramInfo</C> (for <C>prg</C> only)</Mark>
+##  <Item>
+##    This is used in <Ref Func="AtlasProgramInfo"/> to create the
+##    result value from the identifier.
+##    (The default value is <C>AtlasProgramDefault</C>.)
+##  </Item>
 ##  <Mark><C>TOCEntryString</C></Mark>
 ##  <Item>
 ##    This is used in <Ref Func="StoreAtlasTableOfContents"/>.
 ##    The value must be a function that takes two arguments
 ##    (the name <A>name</A> of the type and a list as returned by
-##    <Ref Func="AGRParseFilenameFormat"/>
+##    <Ref Func="AGR.ParseFilenameFormat"/>
 ##    and returns a string that describes the appropriate function call.
 ##    (The default value is <C>TOCEntryStringDefault</C>.)
 ##  </Item>
@@ -192,34 +193,31 @@ Revision.( "atlasrep/gap/types_gd" ) :=
 ##    for sorting the entries after they have been added and after the
 ##    value of the component <C>PostprocessFileInfo</C> has been called.
 ##    The value must be a function that takes a list as returned by
-##    <Ref Func="AGRParseFilenameFormat"/>,
+##    <Ref Func="AGR.ParseFilenameFormat"/>,
 ##    and returns the sorting key.
 ##    (There is no default value, which means that no sorting is needed.)
 ##  </Item>
 ##  <Mark><C>TestFileHeaders</C> (for <C>rep</C> only)</Mark>
 ##  <Item>
-##    This is used in the function
-##    <Ref Func="AtlasOfGroupRepresentationsTestFileHeaders"/>.
+##    This is used in the function <C>AGR.Test.FileHeaders</C>.
 ##    The value must be a function that takes the same four arguments as
-##    <Ref Func="AGRFileContents"/>,
+##    <Ref Func="AGR.FileContents"/>,
 ##    except that the first argument <C>"datagens"</C> can be replaced by
 ##    <C>"local"</C> and that the third argument is a list as returned by
-##    <Ref Func="AGRParseFilenameFormat"/>.
+##    <Ref Func="AGR.ParseFilenameFormat"/>.
 ##    (The default value is <Ref Func="ReturnTrue" BookName="ref"/>.)
 ##  </Item>
 ##  <Mark><C>TestFiles</C> (for <C>rep</C> only)</Mark>
 ##  <Item>
-##    This is used in the function
-##    <Ref Func="AtlasOfGroupRepresentationsTestFiles"/>.
+##    This is used in the function <C>AGR.Test.Files</C>.
 ##    The format of the value and the default are the same as for
 ##    the value of the component <C>TestFileHeaders</C>.
 ##  </Item>
 ##  <Mark><C>TestWords</C> (for <C>prg</C> only)</Mark>
 ##  <Item>
-##    This is used in the function
-##    <Ref Func="AtlasOfGroupRepresentationsTestWords"/>.
+##    This is used in the function <C>AGR.Test.Words</C>.
 ##    The value must be a function that takes five arguments where the first
-##    four are the same arguments as for <Ref Func="AGRFileContents"/>,
+##    four are the same arguments as for <Ref Func="AGR.FileContents"/>,
 ##    except that the first argument <C>"dataword"</C> can be replaced by
 ##    <C>"local"</C>,
 ##    and the fifth argument is <K>true</K> or <K>false</K>,
@@ -230,23 +228,6 @@ Revision.( "atlasrep/gap/types_gd" ) :=
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "AGRDeclareDataType" );
-
-
-#############################################################################
-##
-#F  AGRDataTypes( <kind1>[, <kind2>] )
-##
-##  <ManSection>
-##  <Func Name="AGRDataTypes" Arg='kind1[, kind2]'/>
-##
-##  <Description>
-##  returns the list of pairs <C>[ <A>name</A>, <A>record</A> ]</C>
-##  as declared for the kinds in question.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction( "AGRDataTypes" );
 
 
 #############################################################################
@@ -288,8 +269,8 @@ DeclareGlobalFunction( "AGRDataTypes" );
 ##  </Item>
 ##  <Mark><C>wget</C></Mark>
 ##  <Item>
-##    a boolean that controls whether the &GAP; package
-##    <Package>IO</Package><Cite Key="IO"/><Index>IO package</Index>
+##    controls whether the &GAP; package
+##    <Package>IO</Package><Index>IO package</Index> <Cite Key="IO"/>
 ##    or the external program
 ##    <F>wget</F><Index Key="wget"><F>wget</F></Index>
 ##    is used to fetch data files,
@@ -314,16 +295,18 @@ DeclareGlobalFunction( "AGRDataTypes" );
 ##  <Item>
 ##    a list of records, each describing how to access the data files, see
 ##    Sections <Ref Subsect="subsect:Customizing the Access to Data files"/>
-##    and <Ref Sect="sect:How to Customize the Access to Data files"/>.
+##    and <Ref Sect="sect:How to Customize the Access to Data files"/>,
+##    and
 ##  </Item>
 ##  <Mark><C>markprivate</C></Mark>
 ##  <Item>
 ##    a string used in <Ref Func="DisplayAtlasInfo"/> to mark private data,
-##    see Section&nbsp; <Ref Sect="sect:Effect of Private Extensions"/>,
-##    and
+##    see Section&nbsp; <Ref Sect="sect:Effect of Private Extensions"/>.
 ##  </Item>
 ##  </List>
+##
 ##  <P/>
+##
 ##  <E>System components</E> (which are computed automatically) are
 ##  <P/>
 ##  <List>
@@ -343,17 +326,6 @@ DeclareGlobalFunction( "AGRDataTypes" );
 ##    and at the third position the &ATLAS;-file name used for <M>G</M>,
 ##    see Section&nbsp;<Ref Sect="sect:Filenames Used in the AGR"/>,
 ##  </Item>
-##  <Mark><C>ringinfo</C></Mark>
-##  <Item>
-##    a list of triples, each containing at the first position the name of
-##    a file with the matrix generators,
-##    at the second position a string describing the ring generated by the
-##    matrix entries, and at the third position this ring itself;
-##    <Ref Func="DisplayAtlasInfo"/> displays this information for example
-##    for representations over proper extensions of the rational number
-##    field only if the representation is mentioned in the <C>ringinfo</C>
-##    list,
-##  </Item>
 ##  <Mark><C>private</C></Mark>
 ##  <Item>
 ##    a list of pairs of strings used for administrating private data
@@ -362,6 +334,14 @@ DeclareGlobalFunction( "AGRDataTypes" );
 ##    <Ref Func="AtlasOfGroupRepresentationsNotifyPrivateDirectory"/>
 ##    and <Ref Func="AtlasOfGroupRepresentationsForgetPrivateDirectory"/>,
 ##  </Item>
+##  <Mark><C>characterinfo</C>, <C>permrepinfo</C>, <C>ringinfo</C></Mark>
+##  <Item>
+##    additional information about representations,
+##    concerning the characters afforded,
+##    the point stabilizers of permutation representations, and
+##    the ring of definition of matrix representations;
+##    this information is used by <Ref Func="DisplayAtlasInfo"/>,
+##  </Item>
 ##  <Mark><C>TableOfContents</C></Mark>
 ##  <Item>
 ##    a record with at most the components <C>local</C>, <C>remote</C>,
@@ -369,7 +349,7 @@ DeclareGlobalFunction( "AGRDataTypes" );
 ##    The values of the components <C>local</C> and <C>remote</C> can be
 ##    computed automatically by <Ref Func="ReloadAtlasTableOfContents"/>,
 ##    the value of the component <C>types</C> is set in
-##    <Ref Func="AGRDeclareDataType"/>,
+##    <Ref Func="AGR.DeclareDataType"/>,
 ##    and the values of the components for local data directories are
 ##    created by
 ##    <Ref Func="AtlasOfGroupRepresentationsNotifyPrivateDirectory"/>.

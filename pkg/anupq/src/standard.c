@@ -2,15 +2,12 @@
 **
 *A  standard.c                  ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: standard.c,v 1.7 2001/07/16 09:27:35 gap Exp $
+*A  @(#)$Id: standard.c,v 1.13 2011/11/29 09:43:58 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
-
-#if defined (GROUP) 
-#if defined (STANDARD_PCP)
 
 #include "pq_defs.h"
 #include "constants.h"
@@ -21,6 +18,9 @@
 #include "pq_functions.h"
 #include "menus.h"
 #include "standard.h"
+
+#if defined (GROUP) 
+#if defined (STANDARD_PCP)
 
 int map_array_size;
 int output;
@@ -88,7 +88,7 @@ struct pcp_vars *pcp;
 void enforce_exp_law (pcp)
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    struct exp_vars exp_flag;
 
@@ -96,11 +96,7 @@ struct pcp_vars *pcp;
 
       initialise_exponent (&exp_flag, pcp);
 
-#if defined (Magma)
-      extra_relations (&exp_flag, NULL_HANDLE, pcp);
-#else
       extra_relations (&exp_flag, pcp);
-#endif
 
       /* are there redundant defining generators? if so, be careful
 	 about elimination -- see next_class for further information */
@@ -121,9 +117,9 @@ int ***auts;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-   FILE_TYPE cover_file;        /* store complete p-cover of group */
-   FILE_TYPE cover_tmp_file;    /* store (reduced) p-cover of group */
-   FILE_TYPE group_file;        /* store class c + 1 quotient of group */
+   FILE * cover_file;        /* store complete p-cover of group */
+   FILE * cover_tmp_file;    /* store (reduced) p-cover of group */
+   FILE * group_file;        /* store class c + 1 quotient of group */
    int **map;                   /* automorphism to apply to presentation */
    int t;
 
@@ -207,8 +203,8 @@ int ***auts;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-   FILE_TYPE NextClass;
-   FILE_TYPE Status;
+   FILE * NextClass;
+   FILE * Status;
    int i, j, k;
    int **standard;
 
@@ -226,7 +222,7 @@ struct pcp_vars *pcp;
 
    fprintf (NextClass, "%d\n", pga->fixed);
    fprintf (NextClass, "%d\n", pga->soluble);
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    mpz_out_str (NextClass, 10, &pga->aut_order);
    fprintf (NextClass, "\n");
 #endif
@@ -251,8 +247,8 @@ struct pcp_vars *pcp;
 
 int **finish_pga_run (identity_map, cover_tmp_file, group_file, auts, pga, pcp)
 Logical *identity_map;
-FILE_TYPE cover_tmp_file;
-FILE_TYPE group_file;
+FILE * cover_tmp_file;
+FILE * group_file;
 int ***auts;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
@@ -351,12 +347,6 @@ struct pcp_vars *pcp;
 		    pga->nmr_of_perms == 0);
 
    if (!soluble_group) {
-#if defined (CAYLEY_LINK) 
-      start_CAYLEY_file (&LINK_input, auts, pga);
-#else
-#if defined (Magma_LINK) 
-      start_Magma_file (&LINK_input, auts, pga);
-#else
 #if defined (GAP_LINK)
       if (!process_fork) {
 	 start_GAP_file (auts, pga, pcp);
@@ -366,8 +356,6 @@ struct pcp_vars *pcp;
 #else
 #if defined (GAP_LINK_VIA_FILE)
       start_GAP_file (&LINK_input, auts, pga, pcp);
-#endif
-#endif
 #endif
 #endif
    }
@@ -394,7 +382,7 @@ struct pcp_vars *pcp;
    printf ("orbit length is %d \n", orbit_length);
 */
 
-#if defined (CAYLEY_LINK) || defined (Magma_LINK) || defined (GAP_LINK_VIA_FILE)
+#if defined (GAP_LINK_VIA_FILE)
    if (!soluble_group) { 
       CloseFile (LINK_input);
    }
@@ -408,7 +396,7 @@ struct pcp_vars *pcp;
       printf ("\nThe standard presentation for the class %d %d-quotient is\n",
 	      pcp->cc, pcp->p);
       print_presentation (TRUE, pcp);
-#if defined (LARGE_INT)
+#ifdef HAVE_GMP
       s = pga->upper_bound ? "at most " : "";
       /* Originally pq checked the whole automorphism group.
        * Now it checks only coset reps. of inner automorphisms
@@ -450,8 +438,8 @@ int *orbit_length;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-   FILE_TYPE Status;
-   FILE_TYPE OutputFile;
+   FILE * Status;
+   FILE * OutputFile;
    Logical soluble_group;
    int rep[2];
    int length[2];
@@ -622,7 +610,7 @@ int ***auts;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int nmr_of_generators = y[pcp->clend + pcp->cc - 1] + pga->s;
    register int pointer = pcp->lused + 1;
@@ -698,7 +686,7 @@ int ***stabiliser;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-   FILE_TYPE NextClass;
+   FILE * NextClass;
    int i, j, k;
 
    NextClass = OpenFile ("ISOM_NextClass", "w+");
@@ -723,7 +711,7 @@ struct pcp_vars *pcp;
    fprintf (NextClass, "%d\n", pga->fixed);
    fprintf (NextClass, "%d\n", pga->soluble);
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    mpz_out_str (NextClass, 10, &pga->aut_order);
    fprintf (NextClass, "\n");
 #endif
@@ -741,7 +729,7 @@ struct pcp_vars *pcp;
 {
    register int lastg = pcp->lastg;
    register int i, j, k;
-   FILE_TYPE Subgroup;
+   FILE * Subgroup;
    int word[MAXWORD];
    int *subset;
    int **S;
@@ -811,7 +799,7 @@ FILE *file;
 int *nmr_of_auts;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i, j, k;
    int ***auts;

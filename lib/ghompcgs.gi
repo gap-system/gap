@@ -1,14 +1,12 @@
 #############################################################################
 ##
 #W  ghompcgs.gi                 GAP library                      Bettina Eick
-#W							     Alexander Hulpke
+#W                                                           Alexander Hulpke
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.ghompcgs_gi :=
-    "@(#)$Id: ghompcgs.gi,v 4.56 2010/02/23 15:13:00 gap Exp $";
 
 # compute the powers of the source pcgs. We cache these to speed up frequent
 # mapping.
@@ -37,7 +35,7 @@ local hom, pcgs, pcgsimgs, H, filter, G;
     pcgs := hom2!.sourcePcgs;
 
     pcgsimgs := List( hom2!.sourcePcgsImages, 
-		      x -> ImageElm( hom1, x ) );
+                      x -> ImageElm( hom1, x ) );
 
     G := Source( hom2 );
     H := Range( hom1 );
@@ -60,19 +58,18 @@ local hom, pcgs, pcgsimgs, H, filter, G;
               HasImagesSource;
 
     hom:=rec( sourcePcgs       := pcgs,
-	      sourcePcgsImages := pcgsimgs);
+              sourcePcgsImages := pcgsimgs);
 
     ObjectifyWithAttributes(hom,
-	      NewType( 
-		GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
-					ElementsFamily( FamilyObj( H ) ) ),
-		filter ),
-	      Source,G,
-	      Range,H,
-	      MappingGeneratorsImages,[pcgs,pcgsimgs],
+              NewType( 
+                GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
+                                       ElementsFamily( FamilyObj( H ) ) ),
+                filter ),
+              Source,G,
+              Range,H,
               ImagesSource,SubgroupNC( H, pcgsimgs )
 #    ,CoKernelOfMultiplicativeGeneralMapping,TrivialSubgroup(H);
-		);
+                );
 
     return hom;
 end );
@@ -93,7 +90,7 @@ local fam,hom, pcgs, pcgsimgs, G;
 
   pcgs := hom2!.sourcePcgs;
   pcgsimgs := List( hom2!.sourcePcgsImages, 
-		    x -> ImageElm(hom1, x ) );
+                    x -> ImageElm(hom1, x ) );
 
   G := Source( hom2 );
 
@@ -106,16 +103,16 @@ local fam,hom, pcgs, pcgsimgs, G;
   fi;
 
   hom:=rec( sourcePcgs       := pcgs,
-	    sourcePcgsImages := pcgsimgs);
+            sourcePcgsImages := pcgsimgs);
 
   ObjectifyWithAttributes(hom,
             fam!.defaultAutomorphismType,
-	    Source,G,
-	    Range,G,
-	    ImagesSource,G,
-	    PreImagesRange,G,
-	    MappingGeneratorsImages,[pcgs,pcgsimgs]
-		  );
+            Source,G,
+            Range,G,
+            ImagesSource,G,
+            PreImagesRange,G,
+            MappingGeneratorsImages,[pcgs,pcgsimgs]
+                  );
 
   return hom;
 end );
@@ -162,7 +159,7 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,mapi;
     img  := o;
     for k in [1..Length(pcgsimg)] do
       if exp[k]>0 then
-	img := img * sp[k][exp[k]];
+        img := img * sp[k][exp[k]];
       fi;
     od;
     if img<>pcgsimg[i]^r[i] then
@@ -174,12 +171,12 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,mapi;
       exp  := ExponentsOfPcElement( pcgs, elm );
       img  := o;
       for k in [1..Length(pcgsimg)] do
-	if exp[k]>0 then
-	  img := img * sp[k][exp[k]];
-	fi;
+        if exp[k]>0 then
+          img := img * sp[k][exp[k]];
+        fi;
       od;
       if img<>pcgsimg[j]^pcgsimg[i] then
-	return false;
+        return false;
       fi;
     od;
   od;
@@ -192,9 +189,9 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,mapi;
       exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
       img  := o;
       for k in [1..Length(pcgsimg)] do
-	if exp[k]>0 then
-	  img := img * sp[k][exp[k]];
-	fi;
+        if exp[k]>0 then
+          img := img * sp[k][exp[k]];
+        fi;
       od;
       if img<>mapi[2][i] then
         return false; # the extra generator would be mapped inconsistently.
@@ -226,7 +223,7 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,R,C,mapi;
     img  := o;
     for k in [1..Length(pcgsimg)] do
       if exp[k]>0 then
-	img := img * sp[k][exp[k]];
+        img := img * sp[k][exp[k]];
       fi;
     od;
     #NC is safe (init with Triv(range))
@@ -237,9 +234,9 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,R,C,mapi;
       exp  := ExponentsOfPcElement( pcgs, elm );
       img  := o;
       for k in [1..Length(pcgsimg)] do
-	if exp[k]>0 then
-	  img := img * sp[k][exp[k]];
-	fi;
+        if exp[k]>0 then
+          img := img * sp[k][exp[k]];
+        fi;
       od;
       #NC is safe (init with Triv(range))
       C:=ClosureSubgroupNC(C,img/pcgsimg[j]^pcgsimg[i]);
@@ -254,9 +251,9 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,R,C,mapi;
       exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
       img  := o;
       for k in [1..Length(pcgsimg)] do
-	if exp[k]>0 then
-	  img := img * sp[k][exp[k]];
-	fi;
+        if exp[k]>0 then
+          img := img * sp[k][exp[k]];
+        fi;
       od;
       #NC is safe (init with Triv(range))
       C:=ClosureSubgroupNC(C,img/mapi[2][i]);
@@ -463,7 +460,7 @@ function( hom )
             sk[j] := y;
             im[j] := im[j+1];
         else
-    	    im[j] := ClosureGroup( im[j+1], Image( hom, ggens[j] ) );
+            im[j] := ClosureGroup( im[j+1], Image( hom, ggens[j] ) );
         fi;
     od;
     return SubgroupNC( S, sk );
@@ -498,7 +495,7 @@ function( hom, elm )
     pre := Identity( Source( hom ) );
     for i in [1..Length(exp)] do
       if exp[i]>0 then
-	pre := pre * imgs[i]^exp[i];
+        pre := pre * imgs[i]^exp[i];
       fi;
     od;
     return pre;
@@ -521,16 +518,16 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
       pcgsG := Pcgs( G );
       pcgsN := Pcgs( N );
       if IsInducedPcgs( pcgsN )  then
-	  if ParentPcgs( pcgsN ) = pcgsG  then
-	      pcgsK := pcgsN;
-	  elif     IsInducedPcgs( pcgsG )
-	      and ParentPcgs( pcgsN ) = ParentPcgs( pcgsG )  then
-	      pcgsK := NormalIntersectionPcgs( ParentPcgs( pcgsG ),
-			      pcgsN, pcgsG );
-	  fi;
+          if ParentPcgs( pcgsN ) = pcgsG  then
+              pcgsK := pcgsN;
+          elif     IsInducedPcgs( pcgsG )
+              and ParentPcgs( pcgsN ) = ParentPcgs( pcgsG )  then
+              pcgsK := NormalIntersectionPcgs( ParentPcgs( pcgsG ),
+                              pcgsN, pcgsG );
+          fi;
       fi;
       if not IsBound( pcgsK )  then
-	  pcgsK := InducedPcgsByGenerators( pcgsG, GeneratorsOfGroup( N ) );
+          pcgsK := InducedPcgsByGenerators( pcgsG, GeneratorsOfGroup( N ) );
       fi;
     fi;
 
@@ -538,19 +535,19 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
     F := PcGroupWithPcgs( pcgsF );
     pF:=Pcgs(F);
     imgs:=List(pcgsG,i->PcElementByExponents(pF,
-	      ExponentsOfPcElement(pcgsF,i)));
+              ExponentsOfPcElement(pcgsF,i)));
     hom:=Objectify( NewType( GeneralMappingsFamily
                   ( ElementsFamily( FamilyObj( G ) ),
                     ElementsFamily( FamilyObj( F ) ) ),
                   IsPcgsToPcgsHomomorphism ),
-	  rec(  sourcePcgs:= pcgsG,
-		sourcePcgsImages:= imgs,
+          rec(  sourcePcgs:= pcgsG,
+                sourcePcgsImages:= imgs,
 # the following components are not really needed but expensive to compute.
-#		generators:=pcgsG,
-#		genimages:=List(pcgsG,  i->
-#		  PcElementByExponentsNC(pF,ExponentsOfPcElement(pcgsF,i))),
-		rangePcgs:= pF,
-		rangePcgsPreImages:= pcgsF));
+#               generators:=pcgsG,
+#               genimages:=List(pcgsG,  i->
+#                 PcElementByExponentsNC(pF,ExponentsOfPcElement(pcgsF,i))),
+                rangePcgs:= pF,
+                rangePcgsPreImages:= pcgsF));
 
     SetSource( hom, G );
     SetRange ( hom, F );

@@ -2,7 +2,7 @@
 ##
 #W  ctoline9.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoline9.tbl,v 1.6 2010/05/05 13:20:03 gap Exp $
+#H  @(#)$Id: ctoline9.tbl,v 1.7 2011/09/28 14:32:14 gap Exp $
 ##
 #Y  Copyright (C)  2003,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoline9.tbl,v $
+#H  Revision 1.7  2011/09/28 14:32:14  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 1.6  2010/05/05 13:20:03  gap
 #H  - added many class fusions,
 #H  - changed several class fusions according to consistency conditions,
@@ -49,11 +53,6 @@
 #H      TB
 #H
 ##
-Revision.ctoline9_tbl :=
-    "@(#)$Id: ctoline9.tbl,v 1.6 2010/05/05 13:20:03 gap Exp $";
-
-SET_TABLEFILENAME("ctoline9");
-ALN:= Ignore;
 
 MOT("L8(2)",
 [
@@ -2627,7 +2626,6 @@ ARC("L3(11)","tomfusion",rec(name:="L3(11)",map:=[1,2,3,5,6,6,6,6,7,7,8,10,10,
 ]));
 
 LIBTABLE.LOADSTATUS.ctoline9:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

@@ -3,7 +3,6 @@
 #W  cyclotom.g                   GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: cyclotom.g,v 4.53 2011/05/25 16:00:29 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file deals with cyclotomics.
 ##
-Revision.cyclotom_g :=
-    "@(#)$Id: cyclotom.g,v 4.53 2011/05/25 16:00:29 gap Exp $";
 
 
 #############################################################################
@@ -26,6 +23,7 @@ Revision.cyclotom_g :=
 ##  <Filt Name="IsCyc" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
+##  <Index Key="CyclotomicsFamily"><C>CyclotomicsFamily</C></Index>
 ##  Every object in the family <C>CyclotomicsFamily</C> lies in the category
 ##  <Ref Func="IsCyclotomic"/>.
 ##  This covers integers, rationals, proper cyclotomics, the object
@@ -497,6 +495,65 @@ InstallMethod( \<,
     "for `infinity' and `infinity'",
     IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnFalse );
 
+DeclareCategory( "IsNegInfinity", IsCyclotomic );
+
+BIND_GLOBAL( "Ninfinity",
+    Objectify( NewType( CyclotomicsFamily, IsNegInfinity
+                        and IsPositionalObjectRep ), [] ) );
+
+InstallMethod( PrintObj,
+    "for -infinity",
+    [ IsNegInfinity ], function( obj ) Print( "-infinity" ); end );
+
+InstallMethod( \=,
+    "for cyclotomic and `-infinity'",
+    IsIdenticalObj, [ IsCyc, IsNegInfinity ], ReturnFalse );
+
+InstallMethod( \=,
+    "for `-infinity' and cyclotomic",
+    IsIdenticalObj, [ IsNegInfinity, IsCyc ], ReturnFalse );
+
+InstallMethod( \=,
+    "for `infinity' and `-infinity'",
+    IsIdenticalObj, [ IsInfinity, IsNegInfinity ], ReturnFalse );
+
+InstallMethod( \=,
+    "for `-infinity' and `infinity'",
+    IsIdenticalObj, [ IsNegInfinity, IsInfinity ], ReturnFalse );
+
+InstallMethod( \=,
+    "for `-infinity' and `-infinity'",
+    IsIdenticalObj, [ IsNegInfinity, IsNegInfinity ], ReturnTrue );
+
+InstallMethod( \<,
+    "for cyclotomic and `-infinity'",
+    IsIdenticalObj, [ IsCyc, IsNegInfinity ], ReturnFalse );
+
+InstallMethod( \<,
+    "for `-infinity' and cyclotomic",
+    IsIdenticalObj, [ IsNegInfinity, IsCyc ], ReturnTrue );
+
+InstallMethod( \<,
+    "for `infinity' and `-infinity'",
+    IsIdenticalObj, [ IsInfinity, IsNegInfinity ], ReturnFalse );
+
+InstallMethod( \<,
+    "for `-infinity' and `infinity'",
+    IsIdenticalObj, [ IsNegInfinity, IsInfinity ], ReturnTrue );
+
+InstallMethod( \<,
+    "for `infinity' and `infinity'",
+    IsIdenticalObj, [ IsInfinity, IsInfinity ], ReturnFalse );
+
+InstallMethod( AdditiveInverseOp,
+    "for `infinity'",
+    [ IsInfinity ], x -> Ninfinity  );
+
+InstallMethod( AdditiveInverseOp,
+    "for `-infinity'",
+    [ IsNegInfinity ], x -> infinity  );
+
+
 
 #############################################################################
 ##
@@ -661,9 +718,10 @@ InstallMethod( GaloisCyc,
 ##  <Example><![CDATA[
 ##  gap> NumeratorRat( 2/3 );
 ##  2
-##  gap> NumeratorRat( 66/123 );  # numerator and denominator are made relatively prime
+##  gap> # numerator and denominator are made relatively prime:
+##  gap> NumeratorRat( 66/123 );
 ##  22
-##  gap> NumeratorRat( 17/-13 );  # the numerator holds the sign of the rational
+##  gap> NumeratorRat( 17/-13 );  # numerator holds the sign of the rational
 ##  -17
 ##  gap> NumeratorRat( 11 );      # integers are rationals with denominator 1
 ##  11
@@ -695,11 +753,13 @@ BIND_GLOBAL( "NumeratorRat", NUMERATOR_RAT );
 ##  <Example><![CDATA[
 ##  gap> DenominatorRat( 2/3 );
 ##  3
-##  gap> DenominatorRat( 66/123 );  # numerator and denominator are made relatively prime
+##  gap> # numerator and denominator are made relatively prime:
+##  gap> DenominatorRat( 66/123 );
 ##  41
-##  gap> DenominatorRat( 17/-13 );  # the denominator holds the sign of the rational
+##  gap> # the denominator holds the sign of the rational:
+##  gap> DenominatorRat( 17/-13 );
 ##  13
-##  gap> DenominatorRat( 11 );      # integers are rationals with denominator 1
+##  gap> DenominatorRat( 11 ); # integers are rationals with denominator 1
 ##  1
 ##  ]]></Example>
 ##  </Description>

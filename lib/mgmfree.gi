@@ -3,7 +3,6 @@
 #W  mgmfree.gi                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: mgmfree.gi,v 4.15 2010/02/23 15:13:15 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,8 +16,6 @@
 ##  (Note that a free semigroup is not a free magma, so we must not deal
 ##  with objects in `IsWord' here but with objects in `IsNonassocWord'.)
 ##
-Revision.mgmfree_gi :=
-    "@(#)$Id: mgmfree.gi,v 4.15 2010/02/23 15:13:15 gap Exp $";
 
 
 #############################################################################

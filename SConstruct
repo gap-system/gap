@@ -115,11 +115,14 @@ if GAP["profile"]:
 
 have__setjmp = 0
 have_sigsetjmp = 0
+have_stdint_h = 0
 
 if conf.CheckFunc("sigsetjmp"):
   have_sigsetjmp = 1
 elif conf.CheckFunc("_setjmp"):
   have__setjmp = 1
+if conf.CheckCHeader("stdint.h"):
+  have_stdint_h = 1
 conf.Finish()
 
 # Construct command line options
@@ -140,6 +143,8 @@ if have_sigsetjmp:
   cflags += " -DHAVE_SIGSETJMP=1"
 if have__setjmp:
   cflags += " -DHAVE__SETJMP=1"
+if have_stdint_h:
+  cflags += " -DHAVE_STDINT_H=1"
 
 if GAP["debugguards"]:
   cflags += " -DVERBOSE_GUARDS"

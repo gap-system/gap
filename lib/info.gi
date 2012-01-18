@@ -2,7 +2,6 @@
 ##
 #W  info.gi                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: info.gi,v 4.34 2011/05/04 03:44:11 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -27,8 +26,6 @@
 ##
 ##  This file is the implementation  part of that package
 ##
-Revision.info_gi :=
-    "@(#)$Id: info.gi,v 4.34 2011/05/04 03:44:11 gap Exp $";
 
 
 #############################################################################
@@ -59,8 +56,40 @@ if not IsBound(InfoData) then
     InfoData.CurrentLevels := [];
     InfoData.ClassNames := [];
     InfoData.Handler := [];
+    InfoData.Output := [];
     SHARE(InfoData);
 fi;
+InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
+  if IsBound(DefaultInfoOutput) then
+    MakeReadWriteGlobal("DefaultInfoOutput");
+  fi;
+  DefaultInfoOutput := out;
+  MakeReadOnlyGlobal("DefaultInfoOutput");
+end);
+
+InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
+  local cl, out, s;
+  cl := InfoData.LastClass![1];
+  if IsBound(InfoData.Output[cl]) then
+    out := InfoData.Output[cl];
+  else
+    out := DefaultInfoOutput;
+  fi;
+  if out = "*Print*" then
+    Print("#I  ");
+    for s in list do
+      Print(s);
+    od;
+    Print("\n");
+  else
+    AppendTo(out, "#I  ");
+    for s in list do
+      AppendTo(out, s);
+    od;
+    AppendTo(out, "\n");
+  fi;
+end);
+
 
 
 #############################################################################
@@ -125,6 +154,14 @@ InstallGlobalFunction( DeclareInfoClass, function( name )
     fi;
 end );
 
+#F  SetInfoOutput( <class>, <handler> )
+##
+InstallGlobalFunction( SetInfoOutput, function(class, out)
+  InfoData.Output[class![1]] := out;
+end);
+
+#############################################################################
+##
 #############################################################################
 ##
 #F  SetInfoHandler( <class>, <handler> )
@@ -301,16 +338,15 @@ end );
 ##
 
 BIND_GLOBAL( "InfoDoPrint", function(arglist)
+    local fun;
     atomic readonly InfoData do
-       if IsBound(InfoData.Handler[InfoData.LastClass![1]]) then
-         InfoData.Handler[InfoData.LastClass![1]](InfoData.LastClass,
-                          InfoData.LastLevel, arglist);
-       else
-         Print("#I  ");
-         CallFuncList(Print, arglist);
-         Print("\n");
-     fi;
- od;
+      if IsBound(InfoData.Handler[InfoData.LastClass![1]]) then
+	fun := InfoData.Handler[InfoData.LastClass![1]];
+      else
+	fun := DefaultInfoHandler;
+      fi;
+      fun(InfoData.LastClass, InfoData.LastLevel, arglist);
+    od;
 end );
 
 

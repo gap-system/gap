@@ -2,7 +2,6 @@
 ##
 #W  matblock.gi                 GAP Library                  Alexander Hulpke
 ##
-#H  @(#)$Id: matblock.gi,v 4.18 2010/02/23 15:13:13 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the implementation of methods for block matrices.
 ##
-Revision.matblock_gi :=
-    "@(#)$Id: matblock.gi,v 4.18 2010/02/23 15:13:13 gap Exp $";
 
 
 #############################################################################

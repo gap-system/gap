@@ -2,7 +2,6 @@
 ##
 #W  vec8bit.gi                   GAP Library                     Steve Linton
 ##
-#H  @(#)$Id: vec8bit.gi,v 4.56 2010/06/16 16:31:38 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file mainly installs the kernel methods for 8 bit vectors
 ##
-Revision.vec8bit_gi :=
-    "@(#)$Id: vec8bit.gi,v 4.56 2010/06/16 16:31:38 gap Exp $";
 
 #############################################################################
 ##
@@ -967,13 +964,22 @@ end);
             
 #############################################################################
 ##
-#M  ZeroVector( <vector>, len )
+#M  ZeroVector( len, <vector> )
 ##
 InstallMethod( ZeroVector, "for an int and an 8bit vector",
   [IsInt, Is8BitVectorRep],
   function( len, v )
     local w;
     w := ZeroMutable(v);
+    RESIZE_VEC8BIT(w,len);
+    return w;
+  end );
+
+InstallMethod( ZeroVector, "for an int and an 8bit matrix",
+  [IsInt, Is8BitMatrixRep],
+  function( len, m )
+    local w;
+    w := ZeroMutable(m[1]);
     RESIZE_VEC8BIT(w,len);
     return w;
   end );

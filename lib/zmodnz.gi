@@ -2,7 +2,6 @@
 ##
 #W  zmodnz.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: zmodnz.gi,v 4.57 2010/02/23 15:13:37 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -26,8 +25,6 @@
 ##  internal finite field elements must be respected, for larger primes
 ##  again the ordering of representatives is chosen.
 ##
-Revision.zmodnz_gi :=
-    "@(#)$Id: zmodnz.gi,v 4.57 2010/02/23 15:13:37 gap Exp $";
 
 #T for small residue class rings, avoid constructing new objects by
 #T keeping an elements list, and change the constructor such that the
@@ -577,6 +574,21 @@ InstallMethod( InverseOp,
     if inv <> fail then
       inv:= ZmodnZObj( FamilyObj( elm ), inv );
     fi;
+#############################################################################
+##
+#M  Order( <obj> )  . . . . . . . . . . . . . . . . . . . . for `IsZmodpZObj'
+##
+InstallMethod( Order,
+    "for element in Z/nZ (ModulusRep)",
+    [ IsZmodnZObj and IsModulusRep ],
+    function( elm )
+    local ord;
+    ord := OrderMod( elm![1], ModulusOfZmodnZObj( elm ) );
+    if ord = 0  then
+        Error( "<obj> is not invertible" );
+    fi;
+    return ord;
+    end );
     return inv;
     end );
 
@@ -809,6 +821,27 @@ InstallMethod( Size,
     RankFilter( IsRing ),
     R -> ElementsFamily( FamilyObj( R ) )!.modulus );
 
+#M  IsIntegralRing( <obj> )  . . . . . . . . . .  method for subrings of Z/nZ
+##
+InstallImmediateMethod( IsIntegralRing,
+    IsZmodnZObjNonprimeCollection and IsRing, 0,
+    ReturnFalse );
+
+
+#############################################################################
+##
+#M  IsUnit( <obj> )  . . . . . . . . . . . . . . . . . . .  for `IsZmodpZObj'
+##
+InstallMethod( IsUnit,
+    "for element in Z/nZ (ModulusRep)",
+    IsCollsElms,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing, IsZmodnZObj and IsModulusRep ],
+    function( R, elm )
+    return GcdInt( elm![1], ModulusOfZmodnZObj( elm ) ) = 1;
+    end );
+
+#############################################################################
+##
 
 #############################################################################
 ##
@@ -827,7 +860,7 @@ InstallMethod( Units,
     gens := Flat( gens ) * One( R );
     G := GroupByGenerators( gens, One( R ) );
     SetIsAbelian( G, true );
-    SetIndependentGeneratorsOfAbelianGroup( G, gens );
+    SetSize( G, Product( List( gens, Order ) ) );
     SetIsHandledByNiceMonomorphism(G,true);
     return G;
 end );

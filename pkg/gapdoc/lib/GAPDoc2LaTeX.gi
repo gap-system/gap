@@ -2,7 +2,6 @@
 ##
 #W  GAPDoc2LaTeX.gi                GAPDoc                        Frank Lübeck
 ##
-#H  @(#)$Id: GAPDoc2LaTeX.gi,v 1.45 2011/05/27 12:28:14 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -53,36 +52,18 @@ InstallValue(GAPDoc2LaTeXProcs, rec());
 ##  In  particular, the  resulting  <C>pdf</C>-output (and 
 ##  <C>dvi</C>-output)  
 ##  contains  (internal and  external) hyperlinks  which can  be very
-##  useful for online browsing of the document.<P/>
+##  useful for onscreen browsing of the document.<P/>
 ##  
 ##  The  &LaTeX;  processing  also  produces a  file  with  extension
 ##  <C>.pnr</C> which is &GAP; readable and contains the page numbers
 ##  for  all (sub)sections  of  the  document. This  can  be used  by
 ##  &GAP;'s online help; see <Ref Func="AddPageNumbersToSix" />.
 ##  
-##  There is  support for  two types  of XML  processing instructions
-##  which allow to change the options  used for the document class or
-##  to add some extra lines to  the preamble of the &LaTeX; document.
-##  They can be specified as in the following examples:
-##  
-##  <Listing Type="in top level of XML document">
-##  <![CDATA[<?LaTeX Options="12pt"?>
-##  <?LaTeX ExtraPreamble="\usepackage{blabla}
-##  \newcommand{\bla}{blabla}
-##  "?>
-##  ]]></Listing>
-##  
 ##  Non-ASCII characters in the &GAPDoc; document are translated to 
 ##  &LaTeX; input in ASCII-encoding with the help of <Ref Oper="Encode"/>
 ##  and the option <C>"LaTeX"</C>. See the documentation of 
 ##  <Ref Oper="Encode"/> for how to proceed if you have a character which 
 ##  is not handled (yet).<P/>
-##  
-##  A hint for  large documents: In many &TeX;  installations one can
-##  easily reach some memory limitations with documents which contain
-##  many (cross-)references. In <Package>teTeX</Package> you can look
-##  for  a  file <F>texmf.cnf</F>  which  allows  to enlarge  certain
-##  memory sizes.<P/>
 ##  
 ##  This  function works  by  running recursively  through the  document
 ##  tree   and   calling   a   handler  function   for   each   &GAPDoc;
@@ -93,31 +74,37 @@ InstallValue(GAPDoc2LaTeXProcs, rec());
 ##  should be easy to adjust layout  details to your own taste by slight
 ##  modifications of the program. <P/>
 ##  
-##  A    few     settings    can    be    adjusted     by   the   function
-##  <Ref Func="SetGapDocLaTeXOptions"/>  which takes strings as
-##  arguments. If the  arguments contain one of  the strings <C>"pdf"</C>,
-##  <C>"dvi"</C>  or  <C>"ps"</C>  then &LaTeX;s  <C>hyperref</C>  package
-##  is  configured  for optimized  output  of  the given  format  (default
-##  is  <C>"pdf"</C>). If  <C>"color"</C>  or <C>"nocolor"</C>  is in  the
-##  argument  list then  colors are  used or  not used,  respectively. The
-##  default is  to use  colors but  <C>"nocolor"</C> can  be useful  for a
-##  printable version of a manual (but  who wants to print such manuals?).
-##  If "utf8" is an argument then the package <C>inputenc</C> is used with 
-##  <C>UTF-8</C> encoding, instead of the default <C>latin1</C>.
-##  If <C>"nopslatex"</C> is an argument then the package <C>psnfss</C>
-##  is not used, otherwise it is. If the arguments contain
-##  <C>"nobookmarks"</C> then navigation bookmarks for the pdf-viewer are
-##  not generated, by default these are generated but not opened
-##  in pdf-viewer.  If the arguments contain
-##  <C>"customoptions="</C> this must be followed by a further argument
-##  which is then inserted just before the <C>\begin{document}</C> in the
-##  &LaTeX; file; this can be used to change options of the loaded packages,
-##  to change colors and for many other purposes.
-##  <P/>
+##  Former   versions  of   &GAPDoc;  supported   some  XML   processing
+##  instructions to add some extra lines  to the preamble of the &LaTeX;
+##  document. Its use is now deprecated, use the much more flexible <Ref
+##  Func="SetGapDocLaTeXOptions" /> instead:
+##  
+##  The    default   layout    of    the    resulting   documents    can
+##  be   changed   with    <Ref   Func="SetGapDocLaTeXOptions"/>.   This
+##  changes    parts   of    the    header   of    the   &LaTeX;    file
+##  produced   by    &GAPDoc;.   You    can   see   the    header   with
+##  some   placeholders  by   <C>Page(GAPDoc2LaTeXProcs.Head);</C>.  The
+##  placeholders   are   filled   with  components   from   the   record
+##  <C>GAPDoc2LaTeXProcs.DefaultOptions</C>.   The  arguments   of  <Ref
+##  Func="SetGapDocLaTeXOptions"/>   can  be   records  with   the  same
+##  structure (or parts  of it) with different  values. As abbreviations
+##  there  are   also  three  strings  supported   as  arguments.  These
+##  are  <C>"nocolor"</C>  for  switching  all  colors  to  black;  then
+##  <C>"nopslatex"</C>  to   use  standard  &LaTeX;  fonts   instead  of
+##  postscript fonts; and finally <C>"utf8"</C> to choose UTF-8 as input
+##  encoding for the &LaTeX; document.
+##  
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##  
+##  <!--  seems to be no longer needed
+##  A hint for  large documents: In many &TeX;  installations one can
+##  easily reach some memory limitations with documents which contain
+##  many (cross-)references. In <Package>teTeX</Package> you can look
+##  for  a  file <F>texmf.cnf</F>  which  allows  to enlarge  certain
+##  memory sizes.<P/>
+##  -->
 
 
 # the basic call, used recursivly with a result r from GetElement 
@@ -219,153 +206,130 @@ GAPDoc2LaTeXProcs.StringNrs := function(ssnr)
   fi;
 end;
 
-##  standard head of LaTeX file - part 1
-GAPDoc2LaTeXProcs.Head1 := Concatenation([
-"% generated by GAPDoc2LaTeX from XML source (Frank Luebeck)\n",
-"\\documentclass["]);
-
-GAPDoc2LaTeXProcs.Head1xcolor := Concatenation([
-"]{report}\n",
-"\\usepackage{a4wide}\n",
-"\\sloppy\n",
-"\\pagestyle{myheadings}\n",
-"\\usepackage{amssymb}\n",
-"\\usepackage[INPUTENCENC]{inputenc}\n",
-"\\usepackage{makeidx}\n",
-"\\makeindex\n",
-"\\usepackage{color}\n",
-"\\definecolor{DarkOlive}{rgb}{0.1047,0.2412,0.0064}\n",
-"\\definecolor{FireBrick}{rgb}{0.5812,0.0074,0.0083}\n",
-"\\definecolor{RoyalBlue}{rgb}{0.0236,0.0894,0.6179}\n",
-"\\definecolor{RoyalGreen}{rgb}{0.0236,0.6179,0.0894}\n",
-"\\definecolor{RoyalRed}{rgb}{0.6179,0.0236,0.0894}\n",
-"\\definecolor{LightBlue}{rgb}{0.8544,0.9511,1.0000}\n",
-"\\definecolor{Black}{rgb}{0.0,0.0,0.0}\n",
-"\\definecolor{FuncColor}{rgb}{1.0,0.0,0.0}\n",
-"%% strange name because of pdflatex bug:\n",
-"\\definecolor{Chapter }{rgb}{0.0,0.0,1.0}\n",
-"\n",
-"\\usepackage{fancyvrb}\n",
-"\n",
-"PSLATEXPKG\n",
-"\n"]);
-GAPDoc2LaTeXProcs.Head1xblack := Concatenation([
-"]{report}\n",
-"\\usepackage{a4wide}\n",
-"\\sloppy\n",
-"\\pagestyle{myheadings}\n",
-"\\usepackage{amssymb}\n",
-"\\usepackage[INPUTENCENC]{inputenc}\n",
-"\\usepackage{makeidx}\n",
-"\\makeindex\n",
-"\\usepackage{color}\n",
-"\\definecolor{DarkOlive}{rgb}{0.0,0.0,0.0}\n",
-"\\definecolor{FireBrick}{rgb}{0.0,0.0,0.0}\n",
-"\\definecolor{RoyalBlue}{rgb}{0.0,0.0,0.0}\n",
-"\\definecolor{RoyalGreen}{rgb}{0.0,0.0,0.0}\n",
-"\\definecolor{RoyalRed}{rgb}{0.0,0.0,0.0}\n",
-"\\definecolor{LightBlue}{rgb}{0.0,0.0,0.0}\n",
-"\\definecolor{Black}{rgb}{0.0,0.0,0.0}\n",
-"\\definecolor{FuncColor}{rgb}{0.0,0.0,0.0}\n",
-"%% strange name because of pdflatex bug:\n",
-"\\definecolor{Chapter }{rgb}{0.0,0.0,0.0}\n",
-"\n",
-"\\usepackage{fancyvrb}\n",
-"\n",
-"PSLATEXPKG\n",
-"\n"]);
-##  default is with color, and latin1 encoding 
-GAPDoc2LaTeXProcs.Head1x := GAPDoc2LaTeXProcs.Head1xcolor;
-
-##  head - part 2 for dvi, ps and pdf output  (default is "pdf")
-GAPDoc2LaTeXProcs.Head2dvi := "\\usepackage[\n";
-GAPDoc2LaTeXProcs.Head2ps := "\\usepackage[dvips=true,\n";
-GAPDoc2LaTeXProcs.Head2pdf := "\\usepackage[pdftex=true,\n";
-
-##  head - part 3
-GAPDoc2LaTeXProcs.Head3 := Concatenation([
-"        a4paper=true,pdftitle={Written with GAPDoc},\n",
-"        pdfcreator={LaTeX with hyperref package / GAPDoc},\n",
-"        colorlinks=true,backref=page,breaklinks=true,linkcolor=RoyalBlue,\n",
-"        citecolor=RoyalGreen,filecolor=RoyalRed,\n",
-"        urlcolor=RoyalRed,pdfpagemode={UseNone}]{hyperref}\n",
-"\n",
-"% write page numbers to a .pnr log file for online help\n",
-"\\newwrite\\pagenrlog\n",
-"\\immediate\\openout\\pagenrlog =\\jobname.pnr\n",
-"\\immediate\\write\\pagenrlog{PAGENRS := [}\n",
-"\\newcommand{\\logpage}[1]{\\protect\\write\\pagenrlog{#1, \\thepage,}}\n",
-"%% were never documented, give conflicts with some additional packages\n",
-"MATHBBABBREVS\n",
-"\n",
-"\\newcommand{\\GAP}{\\textsf{GAP}}\n",
-"\n",
-"%% nicer description environments, allows long labels\n",
-"\\usepackage{enumitem}\n",
-"\\setdescription{style=nextline}\n",
-"CUSTOMOPTIONS\n",
-"\n",
-"\\begin{document}\n",
-"\n"]);
+GAPDoc2LaTeXProcs.Head := StringFile(
+            Filename(DirectoriesPackageLibrary("gapdoc"),"latexhead.tex"));
                                    
 GAPDoc2LaTeXProcs.Tail := Concatenation( 
 "\\newpage\n",
 "\\immediate\\write\\pagenrlog{[\"End\"], \\arabic{page}];}\n",
 "\\immediate\\closeout\\pagenrlog\n",
 "\\end{document}\n");
-                                   
+
+GAPDoc2LaTeXProcs.Options := rec();
+GAPDoc2LaTeXProcs.DefaultOptions := rec(
+  EarlyExtraPreamble := "",
+  LateExtraPreamble := "",
+  InputEncoding := "latin1",
+  ColorDefinitions := rec(
+             link := "0.0,0.0,0.554",
+             cite := "0.0,0.0,0.554",
+             file := "0.0,0.0,0.554",
+             url := "0.0,0.0,0.554",
+             prompt := "0.0,0.0,0.589",
+             brkprompt := "0.589,0.0,0.0",
+             gapinput := "0.589,0.0,0.0",
+             gapoutput := "0.0,0.0,0.0",
+             funcdefs := "0.0,0.0,0.0",
+             chapter := "0.0,0.0,0.0"
+             ),
+  MoreColors := "\\definecolor{DarkOlive}{rgb}{0.1047,0.2412,0.0064}\n",
+  FontPackages := "\\usepackage{mathptmx,helvet}\n\\usepackage[T1]{fontenc}\n\
+\\usepackage{textcomp}\n",
+  HyperrefOptions := rec(
+             pdftex := "true",
+             bookmarks := "true",
+             a4paper := "true",
+             pdftitle := "{Written with GAPDoc}",
+             pdfcreator := "{LaTeX with hyperref package / GAPDoc}",
+             colorlinks := "true",
+             backref := "page",
+             breaklinks := "true",
+             pdfpagemode := "{UseNone}",
+             MoreHyperrefOptions := "" 
+             ),
+  TocDepth := "\\setcounter{tocdepth}{1}",
+  Maintitlesize := "\\fontsize{50}{55}\\selectfont",
+);
+
+# helper function to apply the options to the generic LaTeX head
+GAPDoc2LaTeXProcs.HeadWithOptions := function(extra)
+  local head, opt, f, ff;
+  head := GAPDoc2LaTeXProcs.Head;
+  opt := GAPDoc2LaTeXProcs.Options;
+  for f in RecFields(opt) do
+    if f = "ColorDefinitions" then
+      for ff in RecFields(opt.(f)) do
+        head := SubstitutionSublist(head, 
+                               Concatenation("CONFIGCOLOR",ff), opt.(f).(ff));
+      od;
+    elif f = "HyperrefOptions" then
+      for ff in RecFields(opt.(f)) do
+        head := SubstitutionSublist(head, 
+                               Concatenation("CONFIGHR",ff), opt.(f).(ff));
+      od;
+    else
+      head := SubstitutionSublist(head, 
+                               Concatenation("CONFIG", f), opt.(f));
+    fi;
+  od;
+  head := SubstitutionSublist(head, "PIExtraPreamble", extra);
+  return head;
+end;
+
 ##  arg: a list of strings
 ##  for now only the output type (one of "dvi", "pdf" or "ps") is used
 # to be enhanced
 SetGapDocLaTeXOptions := function(arg)    
-  local   gdp, pos;
-  gdp := GAPDoc2LaTeXProcs;
-  if "dvi" in arg then
-    gdp.Head2 := gdp.Head2dvi;
-  elif "ps" in arg then
-    gdp.Head2 := gdp.Head2ps;
-  else
-    gdp.Head2 := gdp.Head2pdf;
-  fi;
-  if "nobookmarks" in arg then
-    gdp.Head2 := Concatenation(gdp.Head2, ",bookmarks=false,");
-  else
-    gdp.Head2 := Concatenation(gdp.Head2, ",bookmarks=true,");
-  fi;
-  if "color" in arg then
-    GAPDoc2LaTeXProcs.Head1x := GAPDoc2LaTeXProcs.Head1xcolor;
-  elif "nocolor" in arg then
-    GAPDoc2LaTeXProcs.Head1x := GAPDoc2LaTeXProcs.Head1xblack;
+  local new, recs, r, f, ff;
+  GAPDoc2LaTeXProcs.Options := StructuralCopy(GAPDoc2LaTeXProcs.DefaultOptions);
+  new := GAPDoc2LaTeXProcs.Options;
+  recs := Filtered(arg, IsRecord);
+  # handle some abbreviations
+  if "nocolor" in arg then
+    Add(recs, rec(
+           ColorDefinitions := rec(
+             link := "0.0,0.0,0.0",
+             cite := "0.0,0.0,0.0",
+             file := "0.0,0.0,0.0",
+             url := "0.0,0.0,0.0",
+             prompt := "0.0,0.0,0.0",
+             brkprompt := "0.0,0.0,0.0",
+             gapinput := "0.0,0.0,0.0",
+             gapoutput := "0.0,0.0,0.0",
+             funcdefs := "0.0,0.0,0.0",
+             chapter := "0.0,0.0,0.0"
+                        ) ) );
   fi;
   if "utf8" in arg then
-    GAPDoc2LaTeXProcs.INPUTENCENC := "utf8";
+    Add(recs, rec(InputEncoding := "utf8"));
+  fi;
+  if "nopslatex" in arg then
+    Add(recs, rec(FontPackages := "\n"));
+  fi;
+
+  # now overwrite the defaults
+  for r in recs do
+    for f in RecFields(r) do
+      if IsRecord(r.(f)) then
+        if IsBound(new.(f)) then
+          for ff in RecFields(r.(f)) do
+            if IsBound(new.(f).(ff)) then
+              new.(f).(ff) := r.(f).(ff);
+            fi;
+          od;
+        fi;
+      else
+        if IsBound(new.(f)) then
+          new.(f) := r.(f);
+        fi;
+      fi;
+    od;
+  od;
+  # set encoder accordingly
+  if new.InputEncoding = "utf8" then
     GAPDoc2LaTeXProcs.Encoder := "LaTeXUTF8";
   else
-    GAPDoc2LaTeXProcs.INPUTENCENC := "latin1";
     GAPDoc2LaTeXProcs.Encoder := "LaTeX";
-  fi;
-  GAPDoc2LaTeXProcs.pslatex :=
-              "\\usepackage{mathptmx,helvet}\\usepackage[T1]{fontenc}\\usepackage{textcomp}\n%\\usepackage{pslatex}";
-  if "nopslatex" in arg then
-    GAPDoc2LaTeXProcs.pslatex := Concatenation("%",GAPDoc2LaTeXProcs.pslatex);
-  fi;
-  if "usemathbbabbrevs" in arg then
-    GAPDoc2LaTeXProcs.MATHBBABBREVS := Concatenation(
-        "\\newcommand{\\Q}{\\mathbb{Q}}\n",
-        "\\newcommand{\\R}{\\mathbb{R}}\n",
-        "\\newcommand{\\C}{\\mathbb{C}}\n",
-        "\\newcommand{\\Z}{\\mathbb{Z}}\n",
-        "\\newcommand{\\N}{\\mathbb{N}}\n",
-        "\\newcommand{\\F}{\\mathbb{F}}\n"
-        );
-  else
-    GAPDoc2LaTeXProcs.MATHBBABBREVS := "";
-  fi;
-  pos := Position(arg,"customoptions=");
-  if pos <> fail and Length(arg) > pos and IsString(arg[pos+1]) then
-    GAPDoc2LaTeXProcs.CUSTOMOPTIONS := arg[pos+1];
-  else
-    GAPDoc2LaTeXProcs.CUSTOMOPTIONS := "";
   fi;
 end;
 # set defaults
@@ -442,28 +406,12 @@ end;
 ##    - extra entries in the preamble (\usepackage, macro definitions, ...)
 GAPDoc2LaTeXProcs.Book := function(r, str, pi)
   local   a;
-  
-  Append(str, GAPDoc2LaTeXProcs.Head1);
-  if IsBound(pi.Options) then
-    NormalizeWhitespace(pi.Options);
-    Append(str, pi.Options);
-  else
-    Append(str, "a4paper,11pt");
+ 
+  if not IsBound(pi.ExtraPreamble) then
+    pi.ExtraPreamble := "";
   fi;
-  a := SubstitutionSublist(GAPDoc2LaTeXProcs.Head1x, "INPUTENCENC", 
-                           GAPDoc2LaTeXProcs.INPUTENCENC);
-  a := SubstitutionSublist(a, "PSLATEXPKG", GAPDoc2LaTeXProcs.pslatex);
-  
-  Append(str, a);
 
-  if IsBound(pi.ExtraPreamble) then
-    Append(str, pi.ExtraPreamble);
-  fi;
-  Append(str, GAPDoc2LaTeXProcs.Head2);
-  a := SubstitutionSublist(GAPDoc2LaTeXProcs.Head3, "MATHBBABBREVS",
-                                  GAPDoc2LaTeXProcs.MATHBBABBREVS);
-  a := SubstitutionSublist(a, "CUSTOMOPTIONS", GAPDoc2LaTeXProcs.CUSTOMOPTIONS);
-  Append(str, a);
+  Append(str, GAPDoc2LaTeXProcs.HeadWithOptions(pi.ExtraPreamble));
   
   # and now the text of the document
   GAPDoc2LaTeXContent(r, str);
@@ -482,15 +430,15 @@ GAPDoc2LaTeXProcs.TitlePage := function(r, str)
   # page number info for online help
   Append(str, Concatenation("\\logpage{", 
           GAPDoc2LaTeXProcs.StringNrs(r.count{[1..3]}), "}\n"));
-  Append(str, "\\begin{titlepage}\n\\begin{center}");
+  Append(str, "\\begin{titlepage}\n\\mbox{}\\vfill\n\n\\begin{center}");
   
   # title
   l := Filtered(r.content, a-> a.name = "Title");
-  Append(str, "{\\Huge \\textbf{");
+  Append(str, "{\\maintitlesize \\textbf{");
   s := "";
   GAPDoc2LaTeXContent(l[1], s);
   Append(str, s);
-  Append(str, "\\mbox{}}}\\\\[1cm]\n");
+  Append(str, "\\mbox{}}}\\\\\n\\vfill\n\n");
   # set title in info part of PDF document
   Append(str, "\\hypersetup{pdftitle=");
   Append(str, s);
@@ -504,15 +452,15 @@ GAPDoc2LaTeXProcs.TitlePage := function(r, str)
   # subtitle
   l := Filtered(r.content, a-> a.name = "Subtitle");
   if Length(l)>0 then
-    Append(str, "{\\Large \\textbf{");
+    Append(str, "{\\Huge \\textbf{");
     GAPDoc2LaTeXContent(l[1], str);
-    Append(str, "\\mbox{}}}\\\\[1cm]\n");
+    Append(str, "\\mbox{}}}\\\\\n\\vfill\n\n");
   fi;
   
   # version
   l := Filtered(r.content, a-> a.name = "Version");
   if Length(l)>0 then
-    Append(str, "{");
+    Append(str, "{\\Huge ");
     GAPDoc2LaTeXContent(l[1], str);
     Append(str, "\\mbox{}}\\\\[1cm]\n");
   fi;
@@ -531,7 +479,7 @@ GAPDoc2LaTeXProcs.TitlePage := function(r, str)
   # collect author list for PDF info
   ll := [];
   for a in l do
-    Append(str, "{\\large \\textbf{");
+    Append(str, "{\\Large \\textbf{");
     s := "";
     GAPDoc2LaTeXContent(rec(content := Filtered(a.content, b->
                    not b.name in ["Email", "Homepage", "Address"])), s);
@@ -562,17 +510,17 @@ GAPDoc2LaTeXProcs.TitlePage := function(r, str)
                    not b.name in ["Email", "Homepage", "Address"])), str);
       Append(str, "}");
       if "Email" in cont then
-        Append(str, Concatenation(" --- ", GAPDocTexts.d.Email, ": "));
+        Append(str, Concatenation("  ", GAPDocTexts.d.Email, ": "));
         GAPDoc2LaTeX(a.content[Position(cont, "Email")], str);
       fi;
       if "Homepage" in cont then
         Append(str, "\\\\\n");
-        Append(str, Concatenation(" --- ", GAPDocTexts.d.Homepage, ": "));
+        Append(str, Concatenation("  ", GAPDocTexts.d.Homepage, ": "));
         GAPDoc2LaTeX(a.content[Position(cont, "Homepage")], str);
       fi;
       if "Address" in cont then
         Append(str, "\\\\\n");
-        Append(str, Concatenation(" --- ", GAPDocTexts.d.Address, 
+        Append(str, Concatenation("  ", GAPDocTexts.d.Address, 
                                   ": \\begin{minipage}[t]{8cm}\\noindent\n"));
         GAPDoc2LaTeX(a.content[Position(cont, "Address")], str);
         Append(str, "\\end{minipage}\n");
@@ -836,6 +784,10 @@ GAPDoc2LaTeXProcs.Bibliography := function(r, str)
   Append(str,"}\n\\bibliography{");
   Append(str, r.attributes.Databases);
   Append(str, "}\n\n");
+  # toc entry
+  Append(str, "\\addcontentsline{toc}{chapter}{");
+  Append(str, GAPDocTexts.d.References);
+  Append(str, "}\n\n");
 end;
 
 ##  as default we normalize white space in text and split the result 
@@ -903,7 +855,9 @@ end;
 GAPDoc2LaTeXProcs.A := function(r, str)
   Append(str, "\\mbox{");
 ##    GAPDoc2LaTeXProcs.WrapTT(r, str);
-  GAPDoc2LaTeXProcs.WrapMarkup(r, str, "\\texttt{\\slshape ", "}");
+  ## the \mdseries is necessary because there is no bold-sl which
+  ## LaTeX substitutes by bold-normal, but we want medium-sl
+  GAPDoc2LaTeXProcs.WrapMarkup(r, str, "\\texttt{\\mdseries\\slshape ", "}");
   Append(str, "}");
 end;
 
@@ -973,7 +927,7 @@ GAPDoc2LaTeXProcs.verbcontent := function(r, delfirst)
   # here we cannot use recoding, fall back to SimplifiedUnicodeString (latin1)
   # first collect content without recoding or reformatting
   cont := GetTextXMLTree(r);
-  if GAPDoc2LaTeXProcs.INPUTENCENC = "latin1" then
+  if GAPDoc2LaTeXProcs.Options.InputEncoding = "latin1" then
     cont := Encode(SimplifiedUnicodeString(Unicode(cont), "latin1"), "latin1");
   fi;
   cont := SplitString(cont, "\n", "");
@@ -993,26 +947,67 @@ GAPDoc2LaTeXProcs.Verb := function(r, str)
   Append(str, "\\end{verbatim}\n");
 end;
 
-GAPDoc2LaTeXProcs.ExampleLike := function(r, str, label)
-  local   cont,  a,  s;
-  Append(str, Concatenation("\n\\begin{Verbatim}[fontsize=\\small,",
+GAPDoc2LaTeXProcs.ExampleLike := function(r, str, label, findprompts)
+  local cont, comopt, comchars, sp, pos, c;
+  cont := GAPDoc2LaTeXProcs.verbcontent(r, true);
+  comopt := "";
+  if findprompts then
+    comchars := "";
+    for c in Concatenation("!@|", LETTERS) do
+      if not c in cont then
+        Add(comchars, c);
+        if Length(comchars) = 3 then
+          break;
+        fi;
+      fi;
+    od;
+    if Length(comchars) = 3 then
+      comopt := Concatenation("commandchars=",comchars,",");
+      sp := SplitString(cont, "\n", "");
+      cont := "";
+      for r in sp do
+        if Length(r) > 6 and r{[1..7]} = "  gap> " then
+          Append(cont, Concatenation("  ",comchars{[1]},
+                 "gapprompt",comchars{[2]},
+                 "gap>",comchars{[3]}," ",comchars{[1]},"gapinput",
+                 comchars{[2]},r{[8..Length(r)]},comchars{[3]},"\n"));
+        elif Length(r) > 3 and r{[1..4]} = "  > " then
+          Append(cont, Concatenation("  ",comchars{[1]},
+                 "gapprompt",comchars{[2]},
+                 ">",comchars{[3]}," ",comchars{[1]},"gapinput",
+                 comchars{[2]},r{[5..Length(r)]},comchars{[3]},"\n"));
+        elif Length(r) > 5 and r{[1..5]} = "  brk" then
+          pos := Position(r, '>');
+          Append(cont, Concatenation("  ",comchars{[1]},
+                 "gapbrkprompt",comchars{[2]},
+                 r{[3..pos]},comchars{[3]}," ",comchars{[1]},"gapinput",
+                 comchars{[2]},r{[pos+2..Length(r)]},comchars{[3]},"\n"));
+        else
+          Append(cont, r);
+          Add(cont, '\n');
+        fi;
+      od;
+    fi;
+  fi;
+  Append(str, Concatenation("\n\\begin{Verbatim}[",comopt,
+          "fontsize=\\small,",
           "frame=single,label=", label, "]\n"));
-  Append(str, GAPDoc2LaTeXProcs.verbcontent(r, true));  
+  Append(str, cont);
   Append(str, "\\end{Verbatim}\n");
 end;
 
 ##  log of session and GAP code is typeset the same way as <Example>
 GAPDoc2LaTeXProcs.Example := function(r, str)
-  GAPDoc2LaTeXProcs.ExampleLike(r, str, GAPDocTexts.d.Example);
+  GAPDoc2LaTeXProcs.ExampleLike(r, str, GAPDocTexts.d.Example, true);
 end;
 GAPDoc2LaTeXProcs.Log := function(r, str)
-  GAPDoc2LaTeXProcs.ExampleLike(r, str, GAPDocTexts.d.Log);
+  GAPDoc2LaTeXProcs.ExampleLike(r, str, GAPDocTexts.d.Log, true);
 end;
 GAPDoc2LaTeXProcs.Listing := function(r, str)
   if IsBound(r.attributes.Type) then
-    GAPDoc2LaTeXProcs.ExampleLike(r, str, r.attributes.Type);
+    GAPDoc2LaTeXProcs.ExampleLike(r, str, r.attributes.Type, false);
   else
-    GAPDoc2LaTeXProcs.ExampleLike(r, str, "");
+    GAPDoc2LaTeXProcs.ExampleLike(r, str, "", false);
   fi;
 end;
 
@@ -1067,14 +1062,14 @@ end;
 ##  this produces an implicit index entry and a label entry
 GAPDoc2LaTeXProcs.LikeFunc := function(r, str, typ)
   local nam, namclean, lab, inam, i;
-  Append(str, "\\noindent\\textcolor{FuncColor}{$\\Diamond$\\ \\texttt{");
+  Append(str, "\\noindent\\textcolor{FuncColor}{$\\triangleright$\\ \\ \\texttt{");
   nam := r.attributes.Name;
   namclean := GAPDoc2LaTeXProcs.DeleteUsBs(nam);
   # we allow _,  \ and so on here
   nam := GAPDoc2LaTeXProcs.EscapeAttrVal(nam);
   Append(str, nam);
   if IsBound(r.attributes.Arg) then
-    Append(str, "({\\slshape ");
+    Append(str, "({\\mdseries\\slshape ");
     Append(str, GAPDoc2LaTeXProcs.EscapeAttrVal(
                 NormalizedArgList(r.attributes.Arg)));
     Append(str, "})");
@@ -1207,7 +1202,8 @@ GAPDoc2LaTeXProcs.Ref := function(r, str)
       ref := Concatenation(" (\\ref{", GAPDoc2LaTeXProcs.DeleteUsBs(lab), "})");
     fi;
     # delete ref, if pointing to current subsection
-    if IsBound(GAPDoc2LaTeXProcs._currentSubsection) and 
+    if not IsBound(r.attributes.BookName) and 
+                 IsBound(GAPDoc2LaTeXProcs._currentSubsection) and 
                  lab in GAPDoc2LaTeXProcs._currentSubsection then
       ref := "";
     fi;
@@ -1239,8 +1235,8 @@ GAPDoc2LaTeXProcs.Ref := function(r, str)
       fi;
     elif IsBound(r.attributes.Style) and r.attributes.Style = "Text" then
       if IsBound(GAPDoc2LaTeXProcs._labeledSections.(lab)) then
-        ref := Concatenation("`", StripBeginEnd(
-                GAPDoc2LaTeXProcs._labeledSections.(lab), WHITESPACE), "'"); 
+        ref := Concatenation("\\hyperref[",lab,"]{`", StripBeginEnd(
+                GAPDoc2LaTeXProcs._labeledSections.(lab), WHITESPACE), "'}"); 
       else
         Info(InfoGAPDoc, 1, "#W WARNING: non resolved reference: ",
                             r.attributes, "\n");
@@ -1328,6 +1324,15 @@ GAPDoc2LaTeXProcs.ManSection := function(r, str)
   # page number info for online help
   Append(str, Concatenation("\\logpage{", 
           GAPDoc2LaTeXProcs.StringNrs(r.count{[1..3]}), "}\\nobreak\n"));
+  # label for references
+  if IsBound(r.attributes.Label) then
+    Append(str, "\\label{");
+    Append(str, r.attributes.Label);
+    Append(str, "}\n");
+    # save heading for "Text" style references to section
+    GAPDoc2LaTeXProcs._labeledSections.(r.attributes.Label) := Concatenation(
+                       GAPDoc2LaTeXProcs.EscapeAttrVal(f.attributes.Name), lab);
+  fi;
   if IsBound(r.root.six) then
 ##      a := First(r.root.six, x-> x[3] = r.count{[1..3]});
     a := GAPDoc2LaTeXProcs.firstsix(r, r.count);
@@ -1393,6 +1398,11 @@ GAPDoc2LaTeXProcs.TheIndex := function(r, str)
       Append(str, Concatenation("\\hyperdef{L}{", a[7], "}{}\n"));
     fi;
   fi;
+  Append(str, "}\n\n");
+  # toc entry
+  Append(str, "\\cleardoublepage\n\\phantomsection\n");
+  Append(str, "\\addcontentsline{toc}{chapter}{");
+  Append(str, GAPDocTexts.d.Index);
   Append(str, "}\n");
   Append(str, "\n\n\\printindex\n\n");
 end;

@@ -2,7 +2,6 @@
 **
 *W  objfgelm.c                  GAP source                       Frank Celler
 **
-*H  @(#)$Id: objfgelm.c,v 4.50 2011/05/23 10:58:40 sal Exp $
 *
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -75,8 +74,6 @@
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_objfgelm_c =
-   "@(#)$Id: objfgelm.c,v 4.50 2011/05/23 10:58:40 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1082,9 +1079,9 @@ Obj Func8Bits_LengthWord (
     {
       pair = data[i];
       if (pair & exps)
-	uexp = INTOBJ_INT(exps - (pair & expm));
+        uexp = INTOBJ_INT(exps - (pair & expm));
       else
-	uexp = INTOBJ_INT(pair & expm);
+        uexp = INTOBJ_INT(pair & expm);
       C_SUM_FIA(len,len,uexp);
     }
   return len;
@@ -2044,9 +2041,9 @@ Obj Func16Bits_LengthWord (
     {
       pair = data[i];
       if (pair & exps)
-	uexp = INTOBJ_INT(exps - (pair & expm));
+        uexp = INTOBJ_INT(exps - (pair & expm));
       else
-	uexp = INTOBJ_INT(pair & expm);
+        uexp = INTOBJ_INT(pair & expm);
       C_SUM_FIA(len,len,uexp);
     }
   return len;
@@ -3009,9 +3006,9 @@ Obj Func32Bits_LengthWord (
     {
       pair = data[i];
       if (pair & exps)
-	uexp = INTOBJ_INT(exps - (pair & expm));
+        uexp = INTOBJ_INT(exps - (pair & expm));
       else
-	uexp = INTOBJ_INT(pair & expm);
+        uexp = INTOBJ_INT(pair & expm);
       C_SUM_FIA(len,len,uexp);
     }
   return len;
@@ -3044,7 +3041,7 @@ Obj FuncNBits_NumberSyllables (
 Obj FuncMultWorLettrep (
     Obj         self,
     Obj         a,
-    Obj	        b)
+    Obj         b)
 {
   UInt l,m,i,j,newlen,as,bs,ae,be;
   Obj n;
@@ -3158,7 +3155,7 @@ Obj FuncMultWorLettrep (
 Obj FuncMultBytLettrep (
     Obj         self,
     Obj         a,
-    Obj	        b)
+    Obj         b)
 {
   UInt l,m,i,j,newlen,as,bs,ae,be;
   Obj n;
@@ -3494,8 +3491,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFreeGroupElements ( void )
 {
-    module.revision_c = Revision_objfgelm_c;
-    module.revision_h = Revision_objfgelm_h;
     FillInVersion( &module );
     return &module;
 }

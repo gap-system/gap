@@ -3,7 +3,6 @@
 #W  lierep.gd                   GAP library               Willem de Graaf
 #W                                                    and Craig A. Struble
 ##
-#H  @(#)$Id: lierep.gd,v 4.37 2011/04/13 23:25:07 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains the declaration of attributes, properties, and
 ##  operations for modules over Lie algebras.
 ##
-Revision.lierep_gd :=
-    "@(#)$Id: lierep.gd,v 4.37 2011/04/13 23:25:07 alexk Exp $";
 
 
 #############################################################################
@@ -105,8 +102,10 @@ DeclareCategoryCollections( "IsCochain" );
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
 ##  gap> V:= AdjointModule( L );
-##  <3-dimensional left-module over <Lie algebra of dimension 3 over Rationals>>
-##  gap> c1:= Cochain( V, 2, [ [ [ [ 1, 3 ], -1 ] ], [ ], [ [ [ 2, 3 ], 1/2 ] ] ]);
+##  <3-dimensional left-module over <Lie algebra of dimension 
+##  3 over Rationals>>
+##  gap> c1:= Cochain( V, 2, 
+##  >               [ [ [ [ 1, 3 ], -1 ] ], [ ], [ [ [ 2, 3 ], 1/2 ] ] ]);
 ##  <2-cochain>
 ##  gap> ExtRepOfObj( c1 );
 ##  [ [ [ [ 1, 3 ], -1 ] ], [  ], [ [ [ 2, 3 ], 1/2 ] ] ]
@@ -296,7 +295,8 @@ DeclareProperty( "IsWeylGroup", IsGroup );
 ##  true
 ##  gap> SparseCartanMatrix( W );
 ##  [ [ [ 1, 2 ], [ 3, -1 ] ], [ [ 2, 2 ], [ 4, -1 ] ], 
-##    [ [ 1, -1 ], [ 3, 2 ], [ 4, -1 ] ], [ [ 2, -1 ], [ 3, -2 ], [ 4, 2 ] ] ]
+##    [ [ 1, -1 ], [ 3, 2 ], [ 4, -1 ] ], 
+##    [ [ 2, -1 ], [ 3, -2 ], [ 4, 2 ] ] ]
 ##  gap> g:= GeneratorsOfGroup( W );;
 ##  gap> [ 1, 1, 1, 1 ]*g[2];
 ##  [ 1, -1, 1, 2 ]
@@ -822,13 +822,13 @@ DeclareCategory( "IsBasisOfWeightRepElementSpace", IsBasis );
 ##  output expressions fit into the lines.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> SizeScreen([ 81, ]);;
 ##  gap> K1:= SimpleLieAlgebra( "G", 2, Rationals );;
 ##  gap> K2:= SimpleLieAlgebra( "B", 2, Rationals );;
 ##  gap> L:= DirectSumOfAlgebras( K1, K2 );
 ##  <Lie algebra of dimension 24 over Rationals>
 ##  gap> V:= HighestWeightModule( L, [ 0, 1, 1, 1 ] );
-##  <224-dimensional left-module over <Lie algebra of dimension 24 over Rationals>>
+##  <224-dimensional left-module over <Lie algebra of dimension 
+##  24 over Rationals>>
 ##  gap> vv:= GeneratorsOfLeftModule( V );;
 ##  gap> vv[100];
 ##  y5*y7*y10*v0

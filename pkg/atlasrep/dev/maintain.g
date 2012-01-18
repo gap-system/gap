@@ -2,8 +2,6 @@
 ##
 #W  maintain.g           GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: maintain.g,v 1.32 2009/01/14 17:04:15 gap Exp $
-##
 #Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains &GAP; functions that are needed for maintaining the
@@ -28,8 +26,6 @@
 ##      (via <F>etc/mtog</F>)
 ##      are added here by <Ref Func="UpdateNewMagmaFormatFiles"/>.
 ##
-Revision.( "atlasrep/gap/maintain_g" ) :=
-    "@(#)$Id: maintain.g,v 1.32 2009/01/14 17:04:15 gap Exp $";
 
 
 #############################################################################
@@ -290,10 +286,14 @@ AtlasOfGroupRepresentationsInfo.ExclusionList:= [
     "Sz8G1-Zr105B0.g",        # not integral, name should be Sz8G1-Ar105B0.g
     "2J2d2G1-f7r448bB0.m1",   # the order is a little bit too large
     "2J2d2G1-f7r448bB0.m2",   # (other generator corrupted)
+    "2L219d2iG1-f19r2aB0.m1", # wrong generators orders
+    "2L219d2iG1-f19r2aB0.m2",
     "TF42d2G1-f3r54B0.m1",    # these are not standard generators
     "TF42d2G1-f3r54B0.m2",
     "4Sz8d3G1-f5r24B0.m1",
     "4Sz8d3G1-f5r24B0.m2",
+    "G24d2G1-f7r65B0.m1",     # ... because class reps have strange orders
+    "G24d2G1-f7r65B0.m2",
     "A10G1-f7r101B0.m1",      # the two generators are identical
     "A10G1-f7r101B0.m2",
     "L227G1-f27r2aB0.m1",     # these would belong to 2L227,
@@ -302,6 +302,14 @@ AtlasOfGroupRepresentationsInfo.ExclusionList:= [
     "L227G1-f27r2bB0.m2",     # ...
     "L227G1-f27r2cB0.m1",     # ...
     "L227G1-f27r2cB0.m2",     # (until here)
+    "L38d2G1-f2r512B0.m1",    # the orders are [ 8, 8 ] not [ 2, 3 ]
+    "L38d2G1-f2r512B0.m2",
+    "L38d2G1-f7r511B0.m1",    # the orders are [ 2, 6 ] not [ 2, 3 ]
+    "L38d2G1-f7r511B0.m2",
+    "L38d3G1-f2r512B0.m1",    # the orders are [ 7, 12 ] not [ 2, 12 ]
+    "L38d3G1-f2r512B0.m2",
+    "L38d6G1-f2r54cB0.m1",    # the orders are [ 18, 18 ] not [ 2, 18 ]
+    "L38d6G1-f2r54cB0.m2",
     "2O73d2G1-f3r8B0.m1",     # these would belong to 2O73d2i
     "2O73d2G1-f3r8B0.m2",     # (compute random elements, find order 60)
     "Mmax27wrongG0-p17B0.m1", # these should not be available ...
@@ -455,7 +463,7 @@ BindGlobal( "RecomputeAtlasTableOfContents", function( srcdir )
                     AtlasOfGroupRepresentationsInfo.subdirnames );
 
     # Create the group names information.
-    types:= AGRDataTypes( "rep", "prg" );
+    types:= AGR.DataTypes( "rep", "prg" );
     groupnames:= [];
     ignorenames:= [];
     identifications:= Set(
@@ -475,7 +483,7 @@ BindGlobal( "RecomputeAtlasTableOfContents", function( srcdir )
               "excluding file `", name, "' as desired" );
       else
         for type in types do
-          parsed:= AGRParseFilenameFormat( name, type[2].FilenameFormat );
+          parsed:= AGR.ParseFilenameFormat( name, type[2].FilenameFormat );
           if parsed <> fail then
             new:= [ entry[1], entry[2], parsed[1] ];
             if   new in ignorenames then
@@ -556,7 +564,7 @@ BindGlobal( "RecomputeAtlasTableOfContents", function( srcdir )
       if IsBound( result.( groupname ) ) then
 
         record:= result.( groupname );
-        for type in AGRDataTypes( "rep", "prg" ) do
+        for type in AGR.DataTypes( "rep", "prg" ) do
           if IsBound( record.( type[1] ) ) then
 
             type[2].PostprocessFileInfo( result, record );
@@ -706,7 +714,7 @@ BindGlobal( "AtlasOfGroupRepresentationsUpdateData", function( arg )
     for pair in groupnames do
       if IsBound( toc.( pair[2] ) ) then
         record:= toc.( pair[2] );
-        for name in AGRDataTypes( "rep" ) do
+        for name in AGR.DataTypes( "rep" ) do
           if IsBound( record.( name[1] ) ) then
             for entry in record.( name[1] ) do
               if not file( "datagens", pair[2], entry[ Length( entry ) ],
@@ -716,7 +724,7 @@ BindGlobal( "AtlasOfGroupRepresentationsUpdateData", function( arg )
             od;
           fi;
         od;
-        for name in AGRDataTypes( "prg" ) do
+        for name in AGR.DataTypes( "prg" ) do
           if IsBound( record.( name[1] ) ) then
             for entry in record.( name[1] ) do
               if not file( "dataword", pair[2], entry[ Length( entry ) ],
@@ -868,7 +876,7 @@ BindGlobal( "AtlasOfGroupRepresentationsMatalgInfo", function()
     # Compose the result string (sorted lexicographically).
     str:= "";
     for entry in Set( ringinfo ) do
-      Append( str, Concatenation( "AGRRNG(\"", entry[1], "\",\"", entry[2],
+      Append( str, Concatenation( "AGR.RNG(\"", entry[1], "\",\"", entry[2],
                                   "\");\n" ) );
     od;
 
@@ -897,12 +905,12 @@ BindGlobal( "AtlasOfGroupRepresentationsReplaceRingInfo", function()
 
     # Split the file with the remote table of contents into three parts.
     toc:= StringFile( tocfile );
-    pos:= PositionSublist( toc, "AGRRNG(" );
+    pos:= PositionSublist( toc, "AGR.RNG(" );
     header:= toc{ [ 1 .. pos-1 ] };
-    pos2:= PositionSublist( toc, "AGRRNG(", pos );
+    pos2:= PositionSublist( toc, "AGR.RNG(", pos );
     while pos2 <> fail do
       pos:= pos2;
-      pos2:= PositionSublist( toc, "AGRRNG(", pos );
+      pos2:= PositionSublist( toc, "AGR.RNG(", pos );
     od;
     pos:= PositionSublist( toc, "\n", pos );
     middle:= toc{ [ Length( header ) + 1 .. pos ] };
@@ -996,11 +1004,11 @@ BindGlobal( "UpdateNewMagmaFormatFiles", function( srcdir )
 
     # Take only those names that match one of the formats
     # `matmodn', `matalg', `matint'.
-    types:= Filtered( AGRDataTypes( "rep" ),
+    types:= Filtered( AGR.DataTypes( "rep" ),
                 pair -> pair[1] in [ "matmodn", "matalg", "matint" ] );
     diffs:= Filtered( diffs,
                 name -> ForAny( types,
-                            type -> AGRParseFilenameFormat( name,
+                            type -> AGR.ParseFilenameFormat( name,
                                         type[2].FilenameFormat ) <> fail ) );
 
     # Get the necessary executables.
@@ -1056,11 +1064,11 @@ BindGlobal( "UpdateNewMagmaFormatFiles", function( srcdir )
       # and try to translate them to {\GAP} format.
 
       # Get the group name.
-      parsed:= AGRParseFilenameFormat( name, nameformat );
+      parsed:= AGR.ParseFilenameFormat( name, nameformat );
 
       # Get the file.
-      for type in AGRDataTypes( "rep" ) do
-        if AGRParseFilenameFormat( filename, type[2].FilenameFormat )
+      for type in AGR.DataTypes( "rep" ) do
+        if AGR.ParseFilenameFormat( filename, type[2].FilenameFormat )
                <> fail then
           filename:= AtlasOfGroupRepresentationsLocalFilenameTransfer(
                          "datagens", parsed[1], name, type );
@@ -1210,9 +1218,9 @@ BindGlobal( "CompareFilesInDatagensAndDev", function()
     # Loop over the files in `dev/gap0'.
     dir:= DirectoriesPackageLibrary( "atlasrep", "dev/gap0" );
     datagens:= DirectoriesPackageLibrary( "atlasrep", "datagens" );
-    for name in DirectoryContents(
-                    Filename( DirectoriesPackageLibrary( "atlasrep",
-                                           "dev" ), "gap0" ) ) do
+    for name in Set( DirectoryContents(
+                         Filename( DirectoriesPackageLibrary( "atlasrep",
+                                       "dev" ), "gap0" ) ) ) do
       file1:= Filename( datagens, name );
       if file1 = fail then
         Info( InfoAtlasRep, 2,
@@ -1442,9 +1450,7 @@ BindGlobal( "AtlasRepCleanedGroupName",
 #F  AtlasRepCreateHTMLInfoForGroup( <name> )
 ##
 BindGlobal( "AtlasRepCreateHTMLInfoForGroup", function( name )
-    local tocs, str, dirinfo, link, info, list, entry;
-
-    tocs:= [ AtlasTableOfContents( "remote" ).TableOfContents ];
+    local str, dirinfo, link, inforeps, list, entry, infoprgs, i, pos, info;
 
     # Create the file header.
     str:= HTMLHeader( "GAP Package AtlasRep",
@@ -1466,64 +1472,99 @@ BindGlobal( "AtlasRepCreateHTMLInfoForGroup", function( name )
                AtlasOfGroupRepresentationsInfo.servers[1][2],
                dirinfo[1], "/", dirinfo[2], "/" );
     Append( str, Concatenation( "<a href=\"", link,
-                     "\">-> ATLAS page for ", DecMatName( name[1], "HTML" ),
+                     "\">-&gt; ATLAS page for ", DecMatName( name[1], "HTML" ),
                      "</a>\n" ) );
     Append( str, "</dt>\n" );
     Append( str, "<dt>\n" );
     Append( str, Concatenation( "<a href=\"overview.htm\">",
-                     "-> Overview of Groups</a>\n" ) );
+                     "-&gt; Overview of Groups</a>\n" ) );
     Append( str, "</dt>\n" );
+    Append( str, "</dl>\n" );
 
     # Append the information about representations.
-    info:= AtlasOfGroupRepresentationsInfoGroup( [ name[1] ] );
-
-    if not IsEmpty( info.list ) then
+    Append( str, "<dl>\n" );
+    inforeps:= AGR.InfoReps( [ name[1], "contents", "public" ] );
+    if not IsEmpty( inforeps.list ) then
       Append( str, "<dt>\n" );
+      Append( str, Concatenation( inforeps.header[1],
+                       DecMatName( inforeps.header[2], "HTML" ) ) );
       Append( str, Concatenation(
-                       info.header[1], DecMatName( info.header[2], "HTML" ) ) );
-      Append( str, Concatenation(
-                       info.header{ [ 3 .. Length( info.header ) ] } ) );
+                       inforeps.header{ [ 3 .. Length( inforeps.header ) ] } ) );
       Append( str, "\n" );
       Append( str, "</dt>\n" );
       Append( str, "<dd>\n" );
 
       list:= [];
-      for entry in info.list do
-        if entry[2][2] <> AtlasOfGroupRepresentationsInfo.markprivate then
-          entry[2][1]:= ReplacedString( entry[2][1], "<=", HTMLGlobals.leq );
-          if 4 <= Length( entry[2] ) then
-            entry[2][4]:= DecMatName2( entry[2][4], "HTML" );
-          fi;
-          Add( list, [ entry[1], entry[2][1],
-               Concatenation( entry[2]{ [ 2 .. Length( entry[2] ) ] } ) ] );
+      for entry in inforeps.list do
+        entry[2][1]:= ReplacedString( entry[2][1], "<=", HTMLGlobals.leq );
+        entry[2][1]:= ReplacedString( entry[2][1], ",Z)", ",ℤ)" );
+        if 3 <= Length( entry[3] ) then
+          entry[3][3]:= DecMatName2( entry[3][3], "HTML" );
         fi;
+        Add( list, [ entry[1][1], entry[2][1], Concatenation( entry[3] ) ] );
       od;
       Append( str, HTMLStandardTable( fail, list,
                                       "datatable",
                                       [ "pright", "pleft", "pleft" ] ) );
       Append( str, "</dd>\n" );
     fi;
+    Append( str, "</dl>\n" );
 
     # Append the information about programs.
-    info:= AtlasOfGroupRepresentationsInfoPRG( name[1], tocs, name[2],
-               true );
-    if not IsEmpty( info.list ) then
+    infoprgs:= AGR.InfoPrgs( [ name[1], "contents", "public" ] );
+    if ForAny( infoprgs.list, x -> not IsEmpty( x ) ) then
+      Append( str, "<dl>\n" );
       Append( str, "<dt>\n" );
+      Append( str, infoprgs.header[1] );
+      Append( str, DecMatName( infoprgs.header[2], "HTML" ) );
       Append( str, Concatenation(
-                       info.header[1], DecMatName( info.header[2], "HTML" ) ) );
-      Append( str, Concatenation(
-                       info.header{ [ 3 .. Length( info.header ) ] } ) );
+                       infoprgs.header{ [ 3 .. Length( infoprgs.header ) ] } ) );
       Append( str, "\n" );
       Append( str, "</dt>\n" );
       Append( str, "<dd>\n" );
-      Append( str, HTMLStandardTable( fail, List( info.list, x -> [ x ] ),
-                                      "datatable",
-                                      [ "pleft" ] ) );
+      Append( str, "<ul>\n" );
+      for entry in infoprgs.list do
+        if not IsEmpty( entry ) then
+          Append( str, "<li>\n" );
+          Append( str, entry[1] );
+          if 1 < Length( entry ) then
+            Append( str, ":" );
+          fi;
+          Append( str, "\n" );
+          if 1 < Length( entry ) then
+            list:= entry{ [ 2 .. Length( entry ) ] };
+            for i in [ 1 .. Length( list ) ] do
+              pos:= Position( list[i], ':' );
+              if pos = fail or
+                 Int( NormalizedWhitespace( list[i]{ [ 1 .. pos-1 ] } ) )
+                   = fail then
+                list[i]:= [ list[i], "" ];
+              else
+                # This happens currently only for `maxes'.
+                list[i]:= [ list[i]{ [ 1 .. pos-1 ] },
+                            DecMatName( NormalizedWhitespace(
+                                list[i]{ [ pos+1 .. Length( list[i] ) ] } ),
+                                "HTML" ) ];
+              fi;
+            od;
+            if ForAll( list, x -> x[2] = "" ) then
+              Append( str, HTMLStandardTable( fail, List( list, x -> [x[1]] ),
+                                        "datatable",
+                                        [ "pleft" ] ) );
+            else
+              Append( str, HTMLStandardTable( fail, list,
+                                        "datatable",
+                                        [ "pright", "pleft" ] ) );
+            fi;
+          fi;
+          Append( str, "</li>\n" );
+        fi;
+      od;
+      Append( str, "</ul>\n" );
       Append( str, "</dd>\n" );
+      Append( str, "</dl>\n" );
       Append( str, "\n" );
     fi;
-
-    Append( str, "</dl>" );
 
     # Append the footer string.
     Append( str, HTMLFooter() );
@@ -1545,24 +1586,14 @@ BindGlobal( "AtlasRepCreateHTMLInfoForGroup", function( name )
 #T  eventually this should be handled via `DisplayStringLabelledMatrix'.
 ##
 BindGlobal( "AtlasRepCreateHTMLOverview", function()
-    local tocs,
-          gapnames,
-          groupnames,
-          columns,
-          active,
-          str,
-          matrix,
-          alignments,
-          row,
-          i, j,
-          info,
-          dir,
-          name;
+    local conditions, tocs, gapnames, groupnames, columns, type, str, matrix, alignments,
+          row, i, col, info, dir, name;
 
+    conditions:= [ "contents", "public" ];
     tocs:= [ AtlasTableOfContents( "remote" ).TableOfContents ];
 
     # Consider only those names for which actually information is available.
-    gapnames:= Filtered( AtlasOfGroupRepresentationsInfo.GAPnames,
+    gapnames:= Filtered( AtlasOfGroupRepresentationsInfo.GAPnamesSortDisp,
                    x -> ForAny( tocs, toc -> IsBound( toc.( x[2] ) ) ) );
 
     # Construct the links for the names.
@@ -1575,15 +1606,16 @@ BindGlobal( "AtlasRepCreateHTMLOverview", function()
 
     # Compute the data of the columns.
     columns:= [ [ "group", "l", groupnames ] ];
-
-    Append( columns, List( AGRDataTypes( "rep", "prg" ),
-                    type ->
-           [ type[2].DisplayOverviewInfo[1],
+    for type in AGR.DataTypes( "rep", "prg" ) do
+      if type[2].DisplayOverviewInfo <> fail then
+        Add( columns, [
+             type[2].DisplayOverviewInfo[1],
              type[2].DisplayOverviewInfo[2],
              List( gapnames,
-                   n -> type[2].DisplayOverviewInfo[3]( tocs, n[2] )[1] ) ] ) );
-    active:= Filtered( [ 1 .. Length( columns ) ],
-                 i -> not IsEmpty( columns[i][1] ) );
+                   n -> type[2].DisplayOverviewInfo[3](
+                            Concatenation( [ n ], conditions ) )[1] ) ] );
+      fi;
+    od;
 
     # Create the file header.
     str:= HTMLHeader( "GAP Package AtlasRep",
@@ -1601,21 +1633,23 @@ BindGlobal( "AtlasRepCreateHTMLOverview", function()
     alignments:= [];
 
     # Add the table header line.
-    for j in active do
-      if columns[j][2] = "l" then
+    for col in columns do
+      Add( matrix[1], col[1] );
+      if col[2] = "l" then
         Add( alignments, "tdleft" );
-      else
+      elif col[2] = "r" then
         Add( alignments, "tdright" );
+      else
+        Add( alignments, "tdcenter" );
       fi;
-      Add( matrix[1], columns[j][1] );
     od;
 
     # Collect the information for each group.
     for i in [ 1 .. Length( gapnames ) ] do
       row:= [];
       Add( matrix, row );
-      for j in active do
-        Add( row, columns[j][3][i] );
+      for col in columns do
+        Add( row, col[3][i] );
       od;
 
       # Create the file for this group.
@@ -1737,6 +1771,33 @@ BindGlobal( "AtlasOfGroupRepresentationsCreateDataArchive", function()
     fi;
 
     return true;
+    end );
+
+
+#############################################################################
+##
+#F  AtlasOfGroupRepresentationsSortedAGRAPILines( lines )
+##
+BindGlobal( "AtlasOfGroupRepresentationsSortedAGRAPILines", function( lines )
+    local tosort, line, pos1, pos2, nam;
+
+    tosort:= [];
+    for line in lines do
+      pos1:= Position( line, '\"' );
+      pos2:= Position( line, '\"', pos1 );
+      nam:= line{ [ pos1+1 .. pos2-1 ] };
+      pos1:= PositionSublist( nam, "-p" );
+      pos2:= pos1+2;
+      while IsDigitChar( nam[ pos2 ] ) do
+        pos2:= pos2+1;
+      od;
+      Add( tosort,
+           [ nam{ [ 1 .. pos1-1 ] }, Int( nam{ [ pos1+2 .. pos2-1 ] } ) ] );
+    od;
+    lines:= ShallowCopy( lines );
+    SortParallel( tosort, lines );
+
+    return lines;
     end );
 
 

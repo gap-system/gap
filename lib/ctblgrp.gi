@@ -8,8 +8,6 @@
 ##
 ##  This file contains the implementation of the Dixon-Schneider algorithm
 ##
-Revision.ctblgrp_gi :=
-    "@(#)$Id: ctblgrp.gi,v 4.59 2010/02/23 15:12:53 gap Exp $";
 
 
 #############################################################################

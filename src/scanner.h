@@ -2,7 +2,6 @@
 **
 *W  scanner.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: scanner.h,v 4.37 2011/05/23 11:03:15 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -29,9 +28,10 @@
 
 #include <pthread.h>
 
+#ifndef GAP_SCANNER_H
+#define GAP_SCANNER_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_scanner_h =
-   "@(#)$Id: scanner.h,v 4.37 2011/05/23 11:03:15 sal Exp $";
 #endif
 
 
@@ -266,7 +266,7 @@ typedef UInt            TypSymbolSet;
 **  It is set to 'gap> ' or 'brk> ' in the  read-eval-print loops and changed
 **  to the partial prompt '> ' in 'Read' after the first symbol is read.
 */
-/* TL: extern  Char *          Prompt; */
+/* TL: extern  const Char *    Prompt; */
 
 /***************************************************************************** 
 **
@@ -323,7 +323,7 @@ extern void GetSymbol ( void );
 **  yet.  'NrErrLine' is reset to 0 if a new line is read in 'GetLine'.
 */
 extern  void            SyntaxError (
-            Char *              msg );
+            const Char *        msg );
 
 
 /****************************************************************************
@@ -373,7 +373,7 @@ extern  void            SyntaxError (
 
 extern void Match (
             UInt                symbol,
-            Char *              msg,
+            const Char *        msg,
             TypSymbolSet        skipto );
 
 
@@ -441,7 +441,7 @@ extern Int BreakLoopPending( void );
 **  closed by 'CloseInput'.
 */
 extern UInt OpenInput (
-    Char *              filename );
+    const Char *        filename );
 
 
 /****************************************************************************
@@ -526,7 +526,7 @@ extern UInt CloseInput ( void );
 **  The first symbol is read by 'Read' in the first call to 'Match' call.
 */
 extern UInt OpenTest (
-    Char *              filename );
+    const Char *        filename );
 
 
 /****************************************************************************
@@ -571,7 +571,7 @@ extern UInt CloseTest ( void );
 **  'OpenLog' will fail if there is already a current logfile.
 */
 extern UInt OpenLog (
-    Char *              filename );
+    const Char *        filename );
 
 
 /****************************************************************************
@@ -614,7 +614,7 @@ extern UInt CloseLog ( void );
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
 extern UInt OpenInputLog (
-    Char *              filename );
+    const Char *        filename );
 
 
 /****************************************************************************
@@ -657,7 +657,7 @@ extern UInt CloseInputLog ( void );
 **  Finally 'OpenOutputLog' will fail if there is already a current logfile.
 */
 extern UInt OpenOutputLog (
-    Char *              filename );
+    const Char *        filename );
 
 
 /****************************************************************************
@@ -706,13 +706,15 @@ extern UInt CloseOutputLog ( void );
 **  which is the terminal  even   if '*stdout*'  is  redirected to   a  file.
 **  'OpenOutput' passes  those  file names to 'SyFopen'  like any other name,
 **  they are just a convention between the main and the system package.
+**  The function does nothing and returns success for '*stdout*' and '*errout*'
+**  when IgnoreStdoutErrout is true (useful for testing purposes).
 **
 **  It is not neccessary to open the initial output file, 'InitScanner' opens
 **  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
 **  closed by 'CloseOutput'.
 */
 extern UInt OpenOutput (
-    Char *              filename );
+    const Char *        filename );
 
 
 /****************************************************************************
@@ -757,7 +759,7 @@ extern UInt CloseOutput ( void );
 **  description applies to 'OpenAppend' too.
 */
 extern UInt OpenAppend (
-    Char *              filename );
+    const Char *        filename );
 
 
 /****************************************************************************
@@ -867,7 +869,10 @@ typedef struct {
 **  'Output' is a pointer to the current output file.  It points to  the  top
 **  of the stack 'OutputFiles'.
 */
+/* the widest allowed screen width */
 #define MAXLENOUTPUTLINE  4096
+/* the maximal number of used line break hints */ 
+#define MAXHINTS 100
 typedef struct {
     UInt        isstream;
     UInt        isstringstream;
@@ -876,14 +881,15 @@ typedef struct {
     Int         pos;
     Int         format;
     Int         indent;
-    Int         spos;
-    Int         sindent;
+    /* each hint is a tripel (position, value, indent) */
+    Int         hints[3*MAXHINTS];
     Obj         stream;
 } TypOutputFile;
 
 /* TL: extern TypOutputFile   OutputFiles [16]; */
 /* TL: extern TypOutputFile * Output; */
 
+extern TypOutputFile* IgnoreStdoutErrout;
 
 /****************************************************************************
 **
@@ -1019,7 +1025,7 @@ extern  void            SPrTo (
 **  closed by 'CloseInput'.
 */
 extern  UInt            OpenInput (
-            Char *              filename );
+            const Char *        filename );
 
 
 /****************************************************************************
@@ -1075,7 +1081,7 @@ extern void FlushRestOfInputLine( void );
 **  closed by 'CloseOutput'.
 */
 extern  UInt            OpenOutput (
-            Char *              filename );
+            const Char *        filename );
 
 
 /****************************************************************************
@@ -1110,7 +1116,7 @@ extern  UInt            CloseOutput ( void );
 **  description applies to 'OpenAppend' too.
 */
 extern  UInt            OpenAppend (
-            Char *              filename );
+            const Char *              filename );
 
 
 /****************************************************************************
@@ -1142,7 +1148,7 @@ extern  UInt            CloseAppend ( void );
 **  'OpenLog' will fail if there is already a current logfile.
 */
 extern  UInt            OpenLog (
-            Char *              filename );
+            const Char *        filename );
 
 
 /****************************************************************************
@@ -1175,7 +1181,7 @@ extern  UInt            CloseLog ( void );
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
 extern  UInt            OpenInputLog (
-            Char *              filename );
+            const Char *        filename );
 
 
 
@@ -1242,7 +1248,7 @@ extern  UInt            CloseInputLog ( void );
 **  The first symbol is read by 'Read' in the first call to 'Match' call.
 */
 extern  UInt            OpenTest (
-            Char *              filename );
+            const Char *        filename );
 
 
 /****************************************************************************
@@ -1275,6 +1281,8 @@ extern  UInt            CloseTest ( void );
 */
 StructInitInfo * InitInfoScanner ( void );
 
+
+#endif // GAP_SCANNER_H
 
 /****************************************************************************
 **

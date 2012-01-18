@@ -2,7 +2,7 @@
 **
 *A  AllocateSpace.c             ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: AllocateSpace.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: AllocateSpace.c,v 1.4 2011/11/28 13:42:02 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -19,18 +19,11 @@ void Allocate_WorkSpace (work_space, pcp)
 int work_space;
 struct pcp_vars *pcp; 
 {
-#ifdef Magma
-   if ((pcp->y_handle = mem_alloc_words (work_space + 1)) == NULL_HANDLE) {
-      error_internal ("Not enough space to run p-Quotient Program");
-   }
-   *(mem_access (pcp->y_handle)) = 0;
-#else
    if ((y_address = 
 	(int *) malloc ((work_space + 1) * sizeof (int))) == (int *) 0) {
       perror ("malloc failed in Allocate_WorkSpace ()");
       exit (FAILURE);
    }
-#endif  
 
    /* initialise the pcp structure */
    pcp->fronty = 1;

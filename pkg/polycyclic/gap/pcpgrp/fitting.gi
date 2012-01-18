@@ -119,11 +119,7 @@ end;
 
 InstallMethod( IsNilpotentByFinite,
                "for pcp groups", true, [IsPcpGroup], 0,
-function( G ) return IsNilpotentByFinitePcpGroup( G ); end );
-
-InstallMethod( IsNilpotentByFinite,
-               "for pcp groups", true, [IsPcpGroup and IsNilpotentGroup], 0,
-function( G ) return true; end );
+               IsNilpotentByFinitePcpGroup );
 
 #############################################################################
 ##
@@ -174,7 +170,7 @@ end );
 
 #############################################################################
 ##
-#F UpperCentralSeries( G )
+#F UpperCentralSeriesOfGroup( G )
 ##
 UpperCentralSeriesPcpGroup := function( G )
     local C, upp, nat, N, H;

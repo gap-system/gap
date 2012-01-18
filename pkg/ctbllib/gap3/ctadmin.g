@@ -3,15 +3,11 @@
 #W  ctadmin.g           GAP character table library             Thomas Breuer
 #W                                                               Ute Schiffer
 ##
-#H  @(#)$Id: ctadmin.g,v 1.10 2004/02/02 08:08:47 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the data of the {\GAP} character table library that is
 ##  not automatically produced from the library files.
 ##
-Revision.ctadmin_g :=
-    "@(#)$Id: ctadmin.g,v 1.10 2004/02/02 08:08:47 gap Exp $";
 
 
 #############################################################################
@@ -26,7 +22,6 @@ TBLNAME:= Concatenation( List( PKGNAME,
 #F  MakeImmutable( <obj> )
 #F  MakeReadOnlyGlobal( <obj> )
 #F  TestPackageAvailability( ... )
-#V  fail
 #F  IsPosInt( <n> )
 #V  TOM_TBL_INFO
 #F  ListWithIdenticalEntries( <len>, <entry> )
@@ -50,8 +45,8 @@ fi;
 if not IsBound( TestPackageAvailability ) then
   TestPackageAvailability:= function( arg ) return true; end;
 fi;
-if not IsBound( fail ) then
-  fail:= false;
+if not IsBound( IsPackageMarkedForLoading ) then
+  IsPackageMarkedForLoading:= function( arg ) return true; end;
 fi;
 if not IsBound( IsPosInt ) then
   IsPosInt:= ( n -> IsInt( n ) and 0 < n );
@@ -62,6 +57,18 @@ fi;
 if not IsBound( ListWithIdenticalEntries ) then
   ListWithIdenticalEntries:= function( len, entry )
       return List( [ 1 .. len ], i -> entry );
+  end;
+fi;
+if not IsBound( DuplicateFreeList ) then
+  DuplicateFreeList:= function( list )
+    local l, i;
+    l:= [];
+    for i in list do
+      if not i in l then
+        Add( l, i );
+      fi;
+    od;
+    return l;
   end;
 fi;
 if not IsBound( BindGlobal ) then
@@ -75,24 +82,32 @@ if not IsBound( BindGlobal ) then
     fi;
   end;
 fi;
+ConstructIndexTwoSubdirectProduct:= 0;
 ConstructSubdirect:= 0;
 ConstructPermuted:= 0;
+ConstructAdjusted:= 0;
 ConstructFactor:= 0;
+ConstructWreathSymmetric:= 0;
 if not IsBound( ValueGlobal ) then
   ValueGlobal:= function( varname )
     local constr, pos;
-    constr:= [ "ConstructMixed", ConstructMixed,
+    constr:= [ "ConstructMGA", ConstructMixed,
+               "ConstructMixed", ConstructMixed,
                "ConstructProj",  ConstructProj,
                "ConstructDirectProduct",  ConstructDirectProduct,
                "ConstructSubdirect",  ConstructSubdirect,
+               "ConstructIndexTwoSubdirectProduct",
+                   ConstructIndexTwoSubdirectProduct,
+               "ConstructWreathSymmetric", ConstructWreathSymmetric,
                "ConstructIsoclinic",  ConstructIsoclinic,
                "ConstructV4G",  ConstructV4G,
                "ConstructGS3",  ConstructGS3,
                "ConstructPermuted",  ConstructPermuted,
+               "ConstructAdjusted", ConstructAdjusted,
                "ConstructFactor",  ConstructFactor,
                "ConstructClifford",  ConstructClifford ];
     pos:= Position( constr, varname );
-    if pos <> fail then
+    if pos <> false then
       return constr[ pos+1 ];
     else
       Error( "ValueGlobal is not fully available in GAP 3" );
@@ -229,6 +244,62 @@ end ],
 
 #############################################################################
 ##
+#F  IrreducibleCharactersOfIsoclinicGroup( <irr>, <center>, <outer>, <xpos> )
+##
+IrreducibleCharactersOfIsoclinicGroup:= function( irr, center, outer, xpos )
+    local nonfaith, faith, irreds, root1, chi, values, root2;
+
+    # Adjust faithful characters in outer classes.
+    nonfaith:= [];
+    faith:= [];
+    irreds:= [];
+    root1:= E(4);
+    if Length( center ) = 1 then
+      # The central subgroup has order two.
+      for chi in irr do
+        values:= chi;
+        if values[ center[1] ] = values[1] then
+          Add( nonfaith, values );
+        else
+          values:= ShallowCopy( values );
+          values{ outer }:= root1 * values{ outer };
+          Add( faith, values );
+        fi;
+        Add( irreds, values );
+      od;
+    else
+      # The central subgroup has order four.
+      root2:= E(8);
+      for chi in irr do
+        values:= chi;
+        if ForAll( center, i -> values[i] = values[1] ) then
+          Add( nonfaith, values );
+        else
+          values:= ShallowCopy( values );
+          if ForAny( center, i -> values[i] = values[1] ) then
+            values{ outer }:= root1 * values{ outer };
+          elif values[ xpos ] / values[1] = root1 then
+            values{ outer }:= root2 * values{ outer };
+          else
+            # If B is the matrix for g in G, the matrix for gz in H
+            # depends on the character value of z^2 = x;
+            # we have to choose the same square root for the whole character,
+            # so the two possibilities differ just by the ordering of the two
+            # extensions which we get.
+            values{ outer }:= root2^-1 * values{ outer };
+          fi;
+          Add( faith, values );
+        fi;
+        Add( irreds, values );
+      od;
+    fi;
+
+    return rec( all:= irreds, nonfaith:= nonfaith, faith:= faith );
+    end;
+
+
+#############################################################################
+##
 #F  CharTableIsoclinic( <tbl> )
 #F  CharTableIsoclinic( <tbl>, <classes_of_normal_subgroup> )
 #F  CharTableIsoclinic( <tbl>, <nsg>, <center> )
@@ -253,13 +324,13 @@ CharTableIsoclinic := function( arg )
           outer,       # classes outside the index 2 subgroup
           images,
           factorfusion,
-          reg;         # restriction to regular classes
+          reg,         # restriction to regular classes
+          half, kernel, xpos, irreds, invfusion, k, ypos, old;
 
     # check the argument
     if not ( Length( arg ) in [ 1 .. 3 ] and IsCharTable( arg[1] ) )
        or ( Length( arg ) = 2 and not IsList( arg[2] ) ) then
-      Error( "usage: CharTableIsoclinic( tbl ) resp.\n",
-             "       CharTableIsoclinic( tbl, classes_of_nsg )");
+      Error( "usage: CharTableIsoclinic( tbl[, classes_of_nsg] )");
     fi;
 
     # get the ordinary table if necessary
@@ -276,40 +347,88 @@ CharTableIsoclinic := function( arg )
 
     # Get the classes of the normal subgroup of index 2.
     if Length( arg ) = 1 then
-      linear:= Filtered( tbl.irreducibles, x -> x[1] = 1 );
-      for chi in linear do
-        if Sum( tbl.classes{ KernelChar( chi ) } ) <> tbl.size / 2 then
-          linear:= Difference( linear, [ chi ] );
-        fi;
-      od;
-      if Length( linear ) > 1 then
-        orders:= tbl.orders;
-        center:= Filtered( [ 1 .. Length( tbl.classes ) ],
-                           x -> tbl.classes[x] = 1 and orders[x] = 2 );
-        if Length( center ) = 1 then
-          center:= center[1];
-          linear:= Filtered( linear, lambda -> lambda[ center ] = 1 );
-        fi;
+      nsg:= false;
+      center:= false;
+    elif Length( arg ) = 2 then
+      # The 2nd argument describes the normal subgroup of index 2
+      # or the centre.
+      if IsList( arg[2] ) and Sum( tbl.classes{ arg[2] } ) = tbl.size / 2 then
+        nsg:= arg[2];
+        center:= false;
+      else
+        nsg:= false;
+        center:= arg[2];
       fi;
-      if Length( linear ) <> 1 then
-        Error( "normal subgroup of index 2 not uniquely determined,\n",
-               "use CharTableIsoclinic( tbl, classes_of_nsg )" );
-      fi;
-      nsg:= KernelChar( linear[1] );
     else
-      if Sum( tbl.classes{ arg[2] } ) <> tbl.size / 2 then
-        Error( "normal subgroup must have index 2" );
-      fi;
       nsg:= arg[2];
+      center:= arg[3];
+      if IsInt( center ) then
+        center:= [ center ];
+      fi;
     fi;
 
-    # Get the central subgroup of order 2 lying in the above normal subgroup.
-    center:= Filtered( nsg, x -> tbl.centralizers[1] = tbl.centralizers[x]
-                                 and tbl.orders[x] = 2 );
-    if Length( center ) <> 1 then
-      Error( "Central subgroup of order 2 must be unique" );
+    # Check `nsg'.
+    if nsg = false then
+      # Identify the unique normal subgroup of index 2.
+      half:= tbl.size / 2;
+      linear:= Filtered( tbl.irreducibles, x -> x[1] = 1 );
+      kernel:= Filtered( List( linear, KernelChar ),
+                         ker -> Sum( tbl.classes{ ker } ) = half );
+    elif IsList( nsg ) and Sum( tbl.classes{ nsg } ) = tbl.size / 2 then
+      kernel:= [ nsg ];
+    else
+      Error( "normal subgroup described by <nsg> must have index 2" );
     fi;
-    center:= center[1];
+
+    # Check `center'.
+    if center = false then
+      # Get the unique central subgroup of order 2 in the normal subgroup.
+      center:= Filtered( [ 1 .. Length( tbl.classes ) ],
+                         i -> tbl.classes[i] = 1 and tbl.orders[i] = 2
+                              and ForAny( kernel, n -> i in n ) );
+      if Length( center ) <> 1 then
+        Error( "central subgroup of order 2 not uniquely determined,\n",
+               "use CharacterTableIsoclinic( <tbl>, <classes>, <center> )" );
+      fi;
+    elif IsPosInt( center ) then
+      center:= [ center ];
+    else
+      center:= Difference( center, [ 1 ] );
+    fi;
+
+    # If there is more than one index 2 subgroup
+    # and if there is a unique central subgroup $Z$ of order 2 or 4
+    # then consider only those index 2 subgroups containing $Z$.
+    if 1 < Length( kernel ) then
+      kernel:= Filtered( kernel, ker -> IsSubset( ker, center ) );
+    fi;
+    if Length( kernel ) <> 1 then
+      Error( "normal subgroup of index 2 not uniquely determined,\n",
+             "use CharacterTableIsoclinic( <tbl>, <classes_of_nsg> )" );
+    fi;
+    nsg:= kernel[1];
+
+    if not IsSubset( nsg, center ) then
+      Error( "<center> must lie in <nsg>" );
+    elif ForAny( center, i -> tbl.classes[i] <> 1 ) then
+      Error( "<center> must be a list of positions of central classes" );
+    elif Length( center ) = 1 then
+      xpos:= center[1];
+      if tbl.orders[ xpos ] <> 2 then
+        Error( "<center> must list the classes of a central subgroup" );
+      fi;
+    elif Length( center ) = 3 and ForAny( center, i -> tbl.orders[i] = 4 ) then
+      xpos:= First( center, i -> tbl.orders[i] = 4 );
+    else
+      Error( "the central subgroup must have order 2 or 4" );
+    fi;
+
+    # classes outside the normal subgroup
+    outer:= Difference( [ 1 .. Length( tbl.classes ) ], nsg );
+
+    # Adjust faithful characters in outer classes.
+    irreds:= IrreducibleCharactersOfIsoclinicGroup( tbl.irreducibles, center,
+                 outer, xpos );
 
     # make the record of the isoclinic table
     isoclinic:= rec(
@@ -322,67 +441,55 @@ CharTableIsoclinic := function( arg )
                      fusions      := [],
                      fusionsource := [],
                      powermap     := Copy( tbl.powermap ),
-                     irreducibles := Copy( tbl.irreducibles ),
+                     irreducibles := irreds.all,
                      operations   := CharTableOps               );
 
     isoclinic.order:= isoclinic.size;
     isoclinic.name:= isoclinic.identifier;
 
-    # classes outside the normal subgroup
-    outer:= Difference( [ 1 .. Length( tbl.classes ) ], nsg );
-
-    # adjust faithful characters in outer classes
-    i:= E(4);
-    for chi in Filtered( isoclinic.irreducibles,
-                         x -> x[ center ] <> x[1] ) do
-      for class in outer do
-        chi[ class ]:= i * chi[ class ];
-      od;
-    od;
-
     # get the fusion map onto the factor group modulo the center
-    CharTableFactorGroup( isoclinic, [ 1, center ] );   # very strange ...
-    factorfusion:= isoclinic.fusions[1].map;
-    isoclinic.fusions:= [];
+    factorfusion:= CollapsedMat( irreds.nonfaith, [] ).fusion;
+    invfusion:= InverseMap( factorfusion );
 
     # adjust the power maps
     for j in [ 1 .. Length( isoclinic.powermap ) ] do
       if IsBound( isoclinic.powermap[j] ) then
         map:= isoclinic.powermap[j];
-        if j mod 4 = 2 then
 
-          # The squares lie in 'nsg'; for $g^2 = h$,
-          # we have $(gi)^2 = hz$, so we must take the other
-          # preimage under the factorfusion, if exists.
+        # For $p \bmod |z| = 1$, the map remains unchanged,
+        # since $g^p = h$ implies $(gz)^p = hz^p = hz$ then.
+        # So we have to deal with the cases $p = 2$ and $p$ congruent
+        # to the other odd positive integers up to $|z| - 1$.
+        k:= j mod ( 2 * Length( center ) + 2 );
+        if j = 2 then
+          ypos:= xpos;
+        elif k <> 1 then
+          ypos:= Powmap( tbl.powermap, (k-1)/2, xpos );
+        fi;
 
+        if k <> 1 then
           for class in outer do
-            images:= Filtered( Difference( nsg, [ map[class] ] ),
-                              x -> factorfusion[x]
-                                   = factorfusion[ map[ class ] ] );
-            if Length( images ) = 1 then
+            old:= map[ class ];
+            images:= invfusion[ factorfusion[ old ] ];
+            if IsList( images ) then
+              if Length( center ) = 1 then
+                # The image is ``the other'' class.
+                images:= Difference( images, [ old ] );
+              else
+                # It can happen that the class powers to itself.
+                # Use the character values for the decision.
+                images:= Filtered( images,
+                         x -> ForAll( irreds.faith,
+                                chi -> chi[ old ] = 0 or
+                                chi[x] / chi[ old ] = chi[ ypos ] / chi[1] ) );
+              fi;
               map[ class ]:= images[1];
-              isoclinic.orders[ class ]:= 2 * isoclinic.orders[ images[1] ];
+              if j = 2 then
+                isoclinic.orders[ class ]:= 2 * tbl.orders[ images[1] ];
+              fi;
             fi;
           od;
-
-        elif j mod 4 = 3 then
-    
-          # For $g^p = h$, we have $(gi)^p = hi^p = hiz$, so again
-          # we must choose the other preimage under the
-          # factorfusion, if exists; the 'p'-th powers lie outside
-          # 'nsg' in this case.
-
-          for class in outer do
-            images:= Filtered( Difference( outer, [ map[ class ] ] ),
-                              x -> factorfusion[x]
-                                   = factorfusion[ map[ class ] ] );
-            if Length( images ) = 1 then
-              map[ class ]:= images[1];
-            fi;
-          od;
-
-        fi;        # For j mod 4 in { 0, 1 } the map remains unchanged,
-                   # since $g^p = h$ and $(gi)^p = hi^p = hi$ then.
+        fi;
       fi;
     od;
 
@@ -421,36 +528,13 @@ CharTableIsoclinic := function( arg )
 
 #############################################################################
 ##
-#V  Revision
-##
-##  This global variable is used throughout {\GAP}~4, and thus also in the
-##  data files of the table library.
-##
-if not IsBound( Revision ) then
-  Revision:= rec();
-fi;
-
-
-#############################################################################
-##
-#V  TABLEFILENAME
 #V  LIBTABLE
 ##
-TABLEFILENAME       := "";
-LIBTABLE            := rec();
-LIBTABLE.LOADSTATUS := rec();
-LIBTABLE.clmelab    := [];
-LIBTABLE.clmexsp    := [];
-
-
-#############################################################################
-##
-#F  SET_TABLEFILENAME( <filename> )
-##
-SET_TABLEFILENAME := function( filename )
-    TABLEFILENAME:= filename;
-    LIBTABLE.( filename ):= rec();
-end;
+LIBTABLE:= rec(
+    TABLEFILENAME := "",
+    LOADSTATUS    := rec(),
+    clmelab       := [],
+    clmexsp       := []  );
 
 
 #############################################################################
@@ -543,7 +627,7 @@ MBT := function( arg )
         record.(i):= arg[12].(i);
       od;
     fi;
-    LIBTABLE.( TABLEFILENAME ).(
+    LIBTABLE.( LIBTABLE.TABLEFILENAME ).(
                  Concatenation( arg[1], "mod", String( arg[2] ) ) ):= record;
     end;
 
@@ -567,7 +651,7 @@ MBT := function( arg )
 ##  added individually via 'ARC( <identifier>, <compname>, <compval> )'.
 ##
 ##  'MOT' constructs a (preliminary) table record, and puts it into the
-##  component 'TABLEFILENAME' of 'LIBTABLE'.
+##  component 'LIBTABLE.TABLEFILENAME' of 'LIBTABLE'.
 ##  The 'fusionsource' and 'projections' are dealt with when the table is
 ##  constructed by 'CharTableLibrary'.
 ##  Admissible names are notified by 'ALN( <name>, <othernames> )'.
@@ -596,7 +680,8 @@ MOT := function( arg )
     fi;
 
     # Store the table record.
-    LIBTABLE.( TABLEFILENAME ).( arg[1] ):= record;
+    LIBTABLE.( LIBTABLE.TABLEFILENAME ).( arg[1] ):= record;
+#Print( "stored for ", arg[1], " in ", LIBTABLE.TABLEFILENAME, "\n" );
     end;
 
 
@@ -807,9 +892,9 @@ ALF := function( arg )
       # A file is read that does not belong to the official library.
       # Check that the names are valid.
       pos:= Position( LIBLIST.firstnames, arg[2] );
-      if not arg[1] in RecFields( LIBTABLE.( TABLEFILENAME ) ) then
+      if not arg[1] in RecFields( LIBTABLE.( LIBTABLE.TABLEFILENAME ) ) then
         Error( "source '", arg[1], "' is not stored in 'LIBTABLE.",
-               TABLEFILENAME, "'" );
+               LIBTABLE.TABLEFILENAME, "'" );
       elif pos = false then
         Error( "destination '", arg[2], "' is not a valid first name" );
       fi;
@@ -826,11 +911,11 @@ ALF := function( arg )
     fi;
 
     if Length( arg ) = 4 then
-      Add( LIBTABLE.( TABLEFILENAME ).( arg[1] ).fusions,
+      Add( LIBTABLE.( LIBTABLE.TABLEFILENAME ).( arg[1] ).fusions,
            rec( name:= arg[2], map:= arg[3],
                 text:= Concatenation( arg[4] ) ) );
     else
-      Add( LIBTABLE.( TABLEFILENAME ).( arg[1] ).fusions,
+      Add( LIBTABLE.( LIBTABLE.TABLEFILENAME ).( arg[1] ).fusions,
            rec( name:= arg[2], map:= arg[3] ) );
     fi;
 end;
@@ -858,7 +943,7 @@ end;
 #F  ARC( <name>, <comp>, <val> ) . . . . . . . add component of library table
 ##
 ARC := function( name, comp, val )
-    LIBTABLE.( TABLEFILENAME ).( name ).( comp ):= val;
+    LIBTABLE.( LIBTABLE.TABLEFILENAME ).( name ).( comp ):= val;
 end;
 
 
@@ -925,7 +1010,7 @@ ConstructProj := function( tbl, irrinfo )
     mult:= tbl.centralizers[1] / factor.centralizers[1];
     irreds:= List( factor.irreducibles, x -> x{ fus } );
     linear:= Filtered( irreds, x -> x[1] = 1 );
-    linear:= linear{ [ 2 .. Length( linear ) ] };
+    linear:= Filtered( linear, x -> ForAny( x, y -> y <> 1 ) );
 
     # some roots of unity
     omegasquare:= E(3)^2;
@@ -1120,12 +1205,12 @@ end;
 
 #############################################################################
 ##
-#F  ConstructIsoclinic( <tbl>, <factors> )
-#F  ConstructIsoclinic( <tbl>, <factors>, <nsg> )
+#F  ConstructIsoclinic( <tbl>, <factors>[, <nsg>[, <centre>]]
+#F                      [, <permclasses>, <permchars>] )
 ##
 ConstructIsoclinic := function( arg )
 
-    local tbl, factors, t, i, fld;
+    local tbl, factors, t, i, perms, fld;
 
     tbl:= arg[1];
     factors:= arg[2];
@@ -1135,8 +1220,19 @@ ConstructIsoclinic := function( arg )
     od;
     if Length( arg ) = 2 then
       t:= CharTableIsoclinic( t );
-    else
+    elif Length( arg ) = 3 then
       t:= CharTableIsoclinic( t, arg[3] );
+    elif Length( arg ) = 4 then
+      t:= CharTableIsoclinic( t, arg[3], arg[4] );
+    elif Length( arg ) = 6 then
+      t:= CharTableIsoclinic( t, arg[3], arg[4], arg[5], arg[6] );
+    else
+      Error( "invalid arguments <arg>" );
+    fi;
+    perms:= Filtered( arg, IsPerm );
+    if Length( perms ) = 2 then
+      SortClassesCharTable( t, perms[1] );
+      SortCharactersCharTable( t, perms[2] );
     fi;
     for fld in RecFields( t ) do
       if not IsBound( tbl.( fld ) ) then
@@ -1161,24 +1257,38 @@ end;
 ##
 ConstructV4G := function( arg )
 
-    local tbl, facttbl, aut, ker, fus, chars;
+    local tbl, facttbls, aut, ker, fus, i, chars;
 
     tbl:= arg[1];
-    facttbl:= arg[2];
-    aut:= arg[3];
-    ker:= 2;
-    if Length( arg ) = 4 then
-      ker:= arg[4];
+    if Length( arg ) = 2 then
+      facttbls:= arg[2];
+    else
+      facttbls:= [ arg[2] ];
+      aut:= arg[3];
+      ker:= 2;
+      if Length( arg ) = 4 then
+        ker:= arg[4];
+      fi;
     fi;
 
-    fus:= First( tbl.fusions, fus -> fus.name = facttbl ).map;
-    ker:= Position( fus, ker );
-    facttbl:= CharTable( facttbl );
-    tbl.irreducibles:= Restricted( facttbl.irreducibles, fus );
-    chars:= List( Filtered( tbl.irreducibles, x -> x[1] <> x[ ker ] ),
-                  x -> Permuted( x, aut ) );
-    Append( tbl.irreducibles, chars );
-    Append( tbl.irreducibles, List( chars, x -> Permuted( x, aut ) ) );
+    fus:= List( facttbls, x -> First( tbl.fusions,
+                                      fus -> fus.name = x ).map );
+    facttbls:= List( facttbls, CharTable );
+    tbl.irreducibles:= List( facttbls[1].irreducibles, x -> x{ fus[1] } );
+
+    if Length( arg ) = 2 then
+      for i in [ 2 .. Length( facttbls ) ] do
+        Append( tbl.irreducibles, Filtered( List( facttbls[i].irreducibles,
+                                          x -> x{ fus[i] } ),
+                                      x -> not x in tbl.irreducibles ) );
+      od;
+    else
+      ker:= Position( fus[1], ker );
+      chars:= List( Filtered( tbl.irreducibles, x -> x[1] <> x[ ker ] ),
+                    x -> Permuted( x, aut ) );
+      Append( tbl.irreducibles, chars );
+      Append( tbl.irreducibles, List( chars, x -> Permuted( x, aut ) ) );
+    fi;
 end;
 
 
@@ -1319,6 +1429,48 @@ end;
 
 #############################################################################
 ##
+#F  ConstructAdjusted( <tbl>, <libnam>, <pairs>
+#F                     [, <permclasses>, <permchars>] )
+##
+ConstructAdjusted:= function( arg )
+    local tbl, t, pair;
+
+    tbl:= arg[1];
+
+    # Get the permuted library table.
+    t:= CharTableLibrary( arg[2] );
+    if 3 < Length( arg ) and arg[4] <> () then
+      SortClassesCharTable( t, arg[4] );
+    fi;
+    if 4 < Length( arg ) and arg[5] <> () then
+      SortCharactersCharTable( t, arg[5] );
+    fi;
+
+    # Set the components that shall be adjusted.
+    for pair in arg[3] do
+      if pair[1] = "ComputedPowerMaps" then
+        tbl.powermaps:= pair[2];
+      else
+        Error( "transfer of component `", pair[1],
+               "' is not yet supported by `ConstructAdjusted'" );
+      fi;
+    od;
+
+    # Transfer not adjusted defining components.
+    if not IsBound( tbl.centralizers ) then
+      tbl.centralizers:= t.centralizers;
+    fi;
+    if not IsBound( tbl.powerpaps ) then
+      tbl.powermap:= t.powermap;
+    fi;
+    if not IsBound( tbl.irreducibles ) then
+      tbl.irreducibles:= t.irreducibles;
+    fi;
+    end;
+
+
+#############################################################################
+##
 #F  ConstructFactor( <tbl>, <libnam>, <kernel> )
 ##
 ##  The library table <tbl> is completed with help of the library table with
@@ -1355,6 +1507,290 @@ ConstructSubdirect := function( tbl, factors, choice  )
       if not IsBound( tbl.( fld ) ) then
         tbl.( fld ):= t.( fld );
       fi;
+    od;
+end;
+
+
+#############################################################################
+##
+#F  IrreducibleCharactersOfIndexTwoSubdirectProduct( <irrH1xH2>, <irrG1xG2>,
+#F      <H1xH2fusG>, <GfusG1xG2> )
+##
+##  We do not want to use the table head of the subdirect product because
+##  this function is also called by `ConstructIndexTwoSubdirectProduct',
+##  and there just a record is available from which the table is computed
+##  later.
+##
+IrreducibleCharactersOfIndexTwoSubdirectProduct:=
+    function( irrH1xH2, irrG1xG2, H1xH2fusG, GfusG1xG2 )
+    local H1xH2fusG1xG2, restpos, i, rest, pos, irr, zero, proj1, perm,
+          proj2, chi, ind, j;
+
+    H1xH2fusG1xG2:= CompositionMaps( GfusG1xG2, H1xH2fusG );
+
+    # Compute which irreducibles of H1xH2 extend to G1xG2.
+    restpos:= List( irrH1xH2, x -> [] );
+    for i in [ 1 .. Length( irrG1xG2 ) ] do
+      rest:= irrG1xG2[i]{ H1xH2fusG1xG2 };
+      pos:= Position( irrH1xH2, rest );
+      if pos <> false then
+        Add( restpos[ pos ], i );
+      fi;
+    od;
+    irr:= [];
+    zero:= 0 * GfusG1xG2;
+    proj1:= ProjectionMap( H1xH2fusG );
+    perm:= Product( List( Filtered( InverseMap( H1xH2fusG ), IsList ),
+                          l -> ( l[1], l[2] ) ) );
+    if perm = 1 then
+      perm:= ();
+    fi;
+    proj2:= [];
+    for i in [ 1 .. Length( proj1 ) ] do
+      if IsBound( proj1[i] ) then
+        proj2[i]:= proj1[i]^perm;
+      fi;
+    od;
+    for i in [ 1 .. Length( irrH1xH2 ) ] do
+      if not IsEmpty( restpos[i] ) then
+        # The i-th irreducible of H1xH2 extends to G1xG2.
+        # Restrict these extensions to G.
+        Append( irr, DuplicateFreeList( List( irrG1xG2{ restpos[i] },
+                                              chi -> chi{ GfusG1xG2 } ) ) );
+      else
+        # The i-th irreducible character of H1xH2 has inertia subgroup one of
+        # H1xG2 or G1xH2, so it induces irreducibly to G.
+        # Compute the induced character (without using the table head).
+        chi:= irrH1xH2[i];
+
+        # The curly bracket operator works only for dense sublists.
+        # ind:= ShallowCopy( zero ) + chi{ proj1 } + chi{ proj2 };
+        ind:= ShallowCopy( zero );
+        for j in [ 1 .. Length( proj1 ) ] do
+          if IsBound( proj1[j] ) then
+            ind[j]:= ind[j] + chi[ proj1[j] ];
+          fi;
+        od;
+        for j in [ 1 .. Length( proj2 ) ] do
+          if IsBound( proj2[j] ) then
+            ind[j]:= ind[j] + chi[ proj2[j] ];
+          fi;
+        od;
+
+        if not ind in irr then
+          Add( irr, ind );
+        fi;
+      fi;
+    od;
+
+    return irr;
+end;
+
+
+#############################################################################
+##
+#F  ClassFusionsForIndexTwoSubdirectProduct( <tblH1>, <tblG1>, <tblH2>,
+#F                                           <tblG2> )
+##
+##  It is assumed that all tables are either ordinary tables or Brauer tables
+##  for the same characteristic.
+##
+##  Note that the components `GfusG1xG2', `Gclasses', `Gorders' refer only to
+##  the classes inside the normal subgroup `<tblH1> * <tblH2>'.
+##
+ClassFusionsForIndexTwoSubdirectProduct:= 0;
+
+ClassFusionsForIndexTwoSubdirectProduct:=
+    function( tblH1, tblG1, tblH2, tblG2 )
+    local p, H1classes, H2classes, H1orders, H2orders, H1fusG1, H2fusG2,
+          inv1, inv2, ncclH2, ncclG2, H1xH2fusG, GfusG1xG2,
+          Gclasses, Gorders, i1, i2, posG1xG2, len, pos,
+          ordH1, ordG1, ordH2, ordG2, info, modGfusordG, modfus2,
+          modG1xG2fusordG1xG2, modH1xH2fusordH1xH2;
+
+    if IsBound( tblH1.prime ) then
+      p:= tblH1.prime;
+    else
+      p:= 0;
+    fi;
+
+    if p = 0 then
+
+      H1classes:= tblH1.classes;
+      H2classes:= tblH2.classes;
+      H1orders:= tblH1.orders;
+      H2orders:= tblH2.orders;
+      H1fusG1:= GetFusionMap( tblH1, tblG1 );
+      if H1fusG1 = false then
+        H1fusG1:= RepresentativesFusions( tblH1,
+                      SubgroupFusions( tblH1, tblG1 ), tblG1 );
+        if Length( H1fusG1 ) <> 1 then
+          Error( "fusion <tblH1> to <tblG1> is not determined" );
+        fi;
+      fi;
+      H2fusG2:= GetFusionMap( tblH2, tblG2 );
+      if H2fusG2 = false then
+        H2fusG2:= RepresentativesFusions( tblH2,
+                      SubgroupFusions( tblH2, tblG2 ), tblG2 );
+        if Length( H2fusG2 ) <> 1 then
+          Error( "fusion <tblH2> to <tblG2> is not determined" );
+        fi;
+      fi;
+      inv1:= InverseMap( H1fusG1 );
+      inv2:= InverseMap( H2fusG2 );
+      ncclH2:= Length( H2classes );
+      ncclG2:= Length( tblG2.classes );
+      H1xH2fusG:= [];
+      GfusG1xG2:= [];
+      Gclasses:= [];
+      Gorders:= [];
+
+      for i1 in [ 1 .. Length( inv1 ) ] do
+        if IsBound( inv1[ i1 ] ) then
+          for i2 in [ 1 .. Length( inv2 ) ] do
+            if IsBound( inv2[ i2 ] ) then
+              posG1xG2:= ( i1 - 1 ) * ncclG2 + i2;
+              if IsInt( inv1[ i1 ] ) then
+                if IsInt( inv2[ i2 ] ) then
+                  # no fusion
+                  len:= Length( GfusG1xG2 ) + 1;
+                  H1xH2fusG[ ( inv1[ i1 ] - 1 ) * ncclH2 + inv2[ i2 ] ]:= len;
+                  GfusG1xG2[ len ]:= posG1xG2;
+                  Gclasses[ len ]:= H1classes[ inv1[ i1 ] ]
+                                    * H2classes[ inv2[ i2 ] ];
+                  Gorders[ len ]:= LcmInt( H1orders[ inv1[ i1 ] ],
+                                           H2orders[ inv2[ i2 ] ] );
+                else
+                  # fusion from H2 to G2
+                  len:= Length( GfusG1xG2 ) + 1;
+                  for pos in inv2[ i2 ] do
+                    H1xH2fusG[ ( inv1[ i1 ] - 1 ) * ncclH2 + pos ]:= len;
+                  od;
+                  GfusG1xG2[ len ]:= posG1xG2;
+                  Gclasses[ len ]:= 2 * H1classes[ inv1[ i1 ] ]
+                                      * H2classes[ inv2[ i2 ][1] ];
+                  Gorders[ len ]:= LcmInt( H1orders[ inv1[ i1 ] ],
+                                           H2orders[ inv2[ i2 ][1] ] );
+                fi;
+              elif IsInt( inv2[ i2 ] ) then
+                # fusion from H1 to G1
+                len:= Length( GfusG1xG2 ) + 1;
+                for pos in inv1[ i1 ] do
+                  H1xH2fusG[ ( pos - 1 ) * ncclH2 + inv2[ i2 ] ]:= len;
+                od;
+                GfusG1xG2[ len ]:= posG1xG2;
+                Gclasses[ len ]:= 2 * H1classes[ inv1[ i1 ][1] ]
+                                    * H2classes[ inv2[ i2 ] ];
+                Gorders[ len ]:= LcmInt( H1orders[ inv1[ i1 ][1] ],
+                                         H2orders[ inv2[ i2 ] ] );
+              else
+                # fusion in both factors (get two classes)
+                len:= Length( GfusG1xG2 ) + 1;
+                H1xH2fusG[ ( inv1[ i1 ][1]-1 ) * ncclH2 + inv2[i2][1] ]:= len;
+                H1xH2fusG[ ( inv1[ i1 ][2]-1 ) * ncclH2 + inv2[i2][2] ]:= len;
+                GfusG1xG2[ len ]:= posG1xG2;
+                Gclasses[ len ]:= 2 * H1classes[ inv1[ i1 ][1] ]
+                                    * H2classes[ inv2[ i2 ][1] ];
+                Gorders[ len ]:= LcmInt( H1orders[ inv1[ i1 ][1] ],
+                                         H2orders[ inv2[ i2 ][1] ] );
+                H1xH2fusG[ ( inv1[i1][1]-1 ) * ncclH2 + inv2[i2][2] ]:= len + 1;
+                H1xH2fusG[ ( inv1[i1][2]-1 ) * ncclH2 + inv2[i2][1] ]:= len + 1;
+                GfusG1xG2[ len + 1 ]:= posG1xG2;
+                Gclasses[ len + 1 ]:= Gclasses[ len ];
+                Gorders[ len + 1 ]:= Gorders[ len ];
+              fi;
+            fi;
+          od;
+        fi;
+      od;
+
+    else
+
+      ordH1:= tblH1.ordinary;
+      ordG1:= tblG1.ordinary;
+      ordH2:= tblH2.ordinary;
+      ordG2:= tblG2.ordinary;
+
+      # Compute the maps for the underlying ordinary tables.
+      info:= ClassFusionsForIndexTwoSubdirectProduct( ordH1, ordG1,
+                                                      ordH2, ordG2 );
+
+      # Compute the embeddings of `p'-regular classes of G, H1xH2, G1xG2,
+      # without actually constructing these tables.
+      modGfusordG:= Filtered( [ 1 .. Length( info.Gorders ) ],
+                              i -> info.Gorders[i] mod p <> 0 );
+      modfus2:= GetFusionMap( tblG2, ordG2 );
+      modG1xG2fusordG1xG2:= Concatenation(
+          List( GetFusionMap( tblG1, ordG1 ),
+                i -> modfus2 + ( i - 1 ) * Length( ordG2.classes ) ) );
+      modfus2:= GetFusionMap( tblH2, ordH2 );
+      modH1xH2fusordH1xH2:= Concatenation(
+          List( GetFusionMap( tblH1, ordH1 ),
+                i -> modfus2 + ( i - 1 ) * Length( ordH2.classes ) ) );
+
+      # Compute the maps for the Brauer tables.
+      H1xH2fusG:= CompositionMaps( InverseMap( modGfusordG ),
+                      CompositionMaps( info.H1xH2fusG, modH1xH2fusordH1xH2 ) );
+      GfusG1xG2:= CompositionMaps( InverseMap( modG1xG2fusordG1xG2 ),
+                      CompositionMaps( info.GfusG1xG2, modGfusordG ) );
+      Gclasses:= info.Gclasses{ modGfusordG };
+      Gorders:= info.Gorders{ modGfusordG };
+    fi;
+
+    return rec( H1xH2fusG:= H1xH2fusG,
+                GfusG1xG2:= GfusG1xG2,
+                Gclasses:= Gclasses,
+                Gorders:= Gorders
+              );
+end;
+
+
+#############################################################################
+##
+#F  ConstructIndexTwoSubdirectProduct( <tbl>, <tblH1>, <tblG1>, <tblH2>,
+#F      <tblG2>, <outerfus>, <permclasses>, <permchars> )
+##
+ConstructIndexTwoSubdirectProduct:= function( tbl, tblH1, tblG1, tblH2, tblG2,
+    outerfus, permclasses, permchars )
+    local info, irreds;
+
+    tblH1:= CharTable( tblH1 );
+    tblG1:= CharTable( tblG1 );
+    tblH2:= CharTable( tblH2 );
+    tblG2:= CharTable( tblG2 );
+    info:= ClassFusionsForIndexTwoSubdirectProduct(
+               tblH1, tblG1, tblH2, tblG2 );
+    irreds:= IrreducibleCharactersOfIndexTwoSubdirectProduct(
+                 KroneckerProduct( tblH1.irreducibles, tblH2.irreducibles ),
+                 KroneckerProduct( tblG1.irreducibles, tblG2.irreducibles ),
+                 info.H1xH2fusG, Concatenation( info.GfusG1xG2, outerfus ) );
+    tbl.irreducibles:= Permuted(
+                         List( irreds, chi -> Permuted( chi, permclasses ) ),
+                         permchars );
+end;
+
+
+#############################################################################
+##
+#F  ConstructWreathSymmetric( <tbl>, <subname>, <n>
+#F                            [, <permclasses>, <permchars>] )
+##
+ConstructWreathSymmetric:= function( arg )
+    local tbl, sub, t, fld;
+
+    tbl:= arg[1];
+    sub:= CharTableLibrary( arg[2] );
+    t:= CharTableWreathSymmetric( sub, arg[3] );
+    if 3 < Length( arg ) then
+      SortClassesCharTable( t, arg[4] );
+      SortCharactersCharTable( t, arg[5] );
+      if not IsBound( tbl.permutation ) then
+        # Do *not* inherit the permutation from the construction!
+        tbl.permutation:= ();
+      fi;
+    fi;
+    for fld in Difference( RecFields( t ), RecFields( tbl ) ) do
+      tbl.( fld ):= t.( fld );
     od;
 end;
 
@@ -2076,7 +2512,7 @@ BrauerTable := function( name, ordtbl )
 ##
 LibraryTables := function( filename )
 
-    local file;
+    local file, found;
 
     if not IsBound( LIBTABLE.LOADSTATUS.( filename ) )
        or LIBTABLE.LOADSTATUS.( filename ) = "unloaded" then
@@ -2096,9 +2532,13 @@ LibraryTables := function( filename )
 
       # Try to read the file.
       LIBTABLE.( filename ):= rec();
-      TABLEFILENAME:= filename;
+      LIBTABLE.TABLEFILENAME:= filename;
 #T allow to read files in other directories if the tables were notified there!
-      if not ReadPath( TBLNAME, filename, ".tbl", "ReadTbl" ) then
+
+      ALN:= Ignore;
+      found:= ReadPath( TBLNAME, filename, ".tbl", "ReadTbl" );
+      ALN:= NotifyCharTableName;
+      if not found then
         Print( "#E ReadTbl: no file with name '", filename,
                "' in the GAP table collection\n" );
         return false;

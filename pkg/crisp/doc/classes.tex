@@ -2,7 +2,7 @@
 %%
 %%  classes.tex              CRISP documentation            Burkhard Höfling
 %%
-%%  @(#)$Id: classes.tex,v 1.10 2011/05/26 10:08:56 gap Exp $
+%%  @(#)$Id: classes.tex,v 1.11 2011/11/22 15:14:17 gap Exp $
 %%
 %%  Copyright (C) 2000, 2011 Burkhard Höfling
 %%
@@ -71,10 +71,11 @@ end))
 
 For classes, `Display' works exactly as `Print'.
 
-\>`<obj> in <class>'{element test}!{for classes}
-
 \indextt{in!for classes}% 
 \index{membership test!for classes}%
+
+\>`<obj> in <class>'{element test!for classes}
+
 returns true or false, depending upon whether <obj> belongs to <class> or
 not. If <obj> can store attributes, the outcome of the membership test is
 stored in an attribute `ComputedIsMembers' of <obj>.

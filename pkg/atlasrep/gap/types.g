@@ -2,15 +2,11 @@
 ##
 #W  types.g              GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: types.g,v 1.56 2009/08/19 14:53:40 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains implementations of the actual data types used in the
 ##  &ATLAS; of Group Representations.
 ##
-Revision.( "atlasrep/gap/types_g" ) :=
-    "@(#)$Id: types.g,v 1.56 2009/08/19 14:53:40 gap Exp $";
 
 
 #############################################################################
@@ -45,12 +41,15 @@ BindGlobal( "AtlasOfGroupRepresentationsInfo", rec(
 
     permrepinfo := rec(),
 
+    characterinfo := rec(),
+
     private := [],
 
     TableOfContents := rec( remote := rec(),
-                            types := rec( rep   := [],
-                                          prg   := [],
-                                          cache := [] ) ),
+                            types  := rec( rep   := [],
+                                           prg   := [],
+                                           cache := [] ),
+                            merged := rec() ),
 
     TOC_Cache := rec(),
     ) );
@@ -70,25 +69,38 @@ BindGlobal( "AtlasOfGroupRepresentationsInfo", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "rep", "perm", rec(
+AGR.DeclareDataType( "rep", "perm", rec(
 
     # `<groupname>G<i>-p<n><id>B<m>.m<nr>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
-                          [ "p", IsDigitChar, IsLowerAlphaOrDigitChar,
+                          [ "p", IsDigitChar, AGR.IsLowerAlphaOrDigitChar,
                             "B", IsDigitChar, ".m", IsDigitChar ] ],
                         [ ParseBackwards, ParseForwards ] ],
 
     AddDescribingComponents := function( record, type )
-      local repid, parsed, comp;
+      local repid, parsed, comp, info, pos;
 
       repid:= record.identifier[2][1];
-      parsed:= AGRParseFilenameFormat( repid, type[2].FilenameFormat );
+      parsed:= AGR.ParseFilenameFormat( repid, type[2].FilenameFormat );
       record.p:= Int( parsed[5] );
       record.id:= parsed[6];
       repid:= repid{ [ 1 .. Position( repid, '.' ) - 1 ] };
+      if IsBound( AtlasOfGroupRepresentationsInfo.characterinfo.(
+                      record.groupname ) ) then
+        info:= AtlasOfGroupRepresentationsInfo.characterinfo.(
+                   record.groupname );
+        if IsBound( info[1] ) then
+          info:= info[1];
+          pos:= Position( info[2], repid );
+          if pos <> fail and info[3][ pos ] <> fail then
+            record.charactername:= info[3][ pos ];
+          fi;
+
+        fi;
+      fi;
       if IsBound( AtlasOfGroupRepresentationsInfo.permrepinfo.( repid ) ) then
         repid:= AtlasOfGroupRepresentationsInfo.permrepinfo.( repid );
-        for comp in [ "isPrimitive", "rankAction", "stabilizer",
+        for comp in [ "isPrimitive", "orbits", "rankAction", "stabilizer",
                       "transitivity", "maxnr" ] do
           if IsBound( repid.( comp ) ) and repid.( comp ) <> "???" then
             record.( comp ):= repid.( comp );
@@ -113,126 +125,98 @@ AGRDeclareDataType( "rep", "perm", rec(
       return false;
     end,
 
-    DisplayOverviewInfo := [ "#", "r", function( tocs, groupname )
+    DisplayOverviewInfo := [ "#", "r", function( conditions )
       # Put *all* types of representations together, in particular
-      # assume that the functions for the other types are trivial!
-      local types, info, no, private, j, toc, record, new, type;
+      # assume that the functions for the other "rep" kind types are trivial!
+      local info, no;
 
-      types:= AGRDataTypes( "rep" );
-      if IsString( groupname[1] ) and 1 < Length( groupname ) then
-        # Evaluate the conditions.
-        info:= AtlasGeneratingSetInfo( tocs, groupname, types );
-        no:= Length( info );
-        private:= ForAny( info, x -> x.private );
-      else
-        # Just count the available entries.
-        if IsString( groupname[1] ) then
-          groupname:= groupname[1];
-        fi;
-        no:= 0;
-        private:= false;
-        for j in [ 1 .. Length( tocs ) ] do
-          toc:= tocs[j];
-          if IsBound( toc.( groupname ) ) then
-            record:= toc.( groupname );
-            new:= 0;
-            for type in types do
-              if IsBound( record.( type[1] ) ) then
-                new:= new + Length( record.( type[1] ) );
-              fi;
-            od;
-            if IsBound( toc.diridPrivate ) and 0 < new then
-              private:= true;
-            fi;
-            no:= no + new;
-          fi;
-        od;
-      fi;
+      conditions:= ShallowCopy( conditions );
+      conditions[1]:= conditions[1][1];
+      info:= CallFuncList( AllAtlasGeneratingSetInfos, conditions );
+      no:= Length( info );
       if no = 0 then
         no:= "";
       fi;
-      return [ String( no ), private ];
+      return [ String( no ),
+               ForAny( info, x -> not IsString( x.identifier[1] ) ) ];
     end ],
 
     AccessGroupCondition := function( info, cond )
-      return  AGRCheckOneCondition( IsPermGroup, x -> x = true, cond )
-          and AGRCheckOneCondition( IsPermGroup, cond )
-          and AGRCheckOneCondition( IsMatrixGroup, x -> x = false, cond )
-          and AGRCheckOneCondition( NrMovedPoints,
+      return  AGR.CheckOneCondition( IsPermGroup, x -> x = true, cond )
+          and AGR.CheckOneCondition( IsPermGroup, cond )
+          and AGR.CheckOneCondition( IsMatrixGroup, x -> x = false, cond )
+          and AGR.CheckOneCondition( NrMovedPoints,
                   x -> ( IsFunction( x ) and x( info.p ) = true )
                        or info.p = x, cond )
-          and AGRCheckOneCondition( IsTransitive,
+          and AGR.CheckOneCondition( IsTransitive,
                   x -> IsBound( info.transitivity ) and
                        ( IsFunction( x ) and x( info.transitivity > 0 ) = true )
                        or ( info.transitivity > 0 ) = x, cond )
-          and AGRCheckOneCondition( Transitivity,
+          and AGR.CheckOneCondition( Transitivity,
                   x -> IsBound( info.transitivity ) and
                        ( IsFunction( x ) and x( info.transitivity ) = true )
                        or info.transitivity = x, cond )
-          and AGRCheckOneCondition( IsPrimitive,
+          and AGR.CheckOneCondition( IsPrimitive,
                   x -> IsBound( info.isPrimitive ) and
                        ( IsFunction( x ) and x( info.isPrimitive ) = true )
                        or info.isPrimitive = x, cond )
-          and AGRCheckOneCondition( RankAction,
+          and AGR.CheckOneCondition( RankAction,
                   x -> IsBound( info.rankAction ) and
                        ( IsFunction( x ) and x( info.rankAction ) = true )
                        or info.rankAction = x, cond )
-          and AGRCheckOneCondition( Identifier,
+          and AGR.CheckOneCondition( Identifier,
                   x -> ( IsFunction( x ) and x( info.id ) = true )
                        or info.id = x, cond )
           and IsEmpty( cond );
     end,
 
-    DisplayGroup := function( entry )
-      local disp, repname, info, sep;
+    DisplayGroup := function( r )
+      local disp, sep;
 
-      disp:= Concatenation( "G <= Sym(",String(entry[2]),entry[3],")" );
-      repname:= entry[5][1];
-      repname:= repname{ [ 1 .. Position( repname, '.' )-1 ] };
-      if IsBound( AtlasOfGroupRepresentationsInfo.permrepinfo.( repname ) ) then
-        info:= AtlasOfGroupRepresentationsInfo.permrepinfo.( repname );
+      disp:= Concatenation( "G <= Sym(", String( r.p ), r.id, ")" );
+      if IsBound( r.transitivity ) then
         disp:= [ disp ];
-        if info.transitivity = 0 then
+        if   r.transitivity = 0 then
           # For intransitive repres., show the orbit lengths.
           Add( disp, Concatenation( "orbit lengths ",
-            JoinStringsWithSeparator( List( info.orbits, String ), ", " ) ) );
+            JoinStringsWithSeparator( List( r.orbits, String ), ", " ) ) );
           sep:= ", ";
-        elif info.transitivity = 1 then
+        elif r.transitivity = 1 then
           # For transitivity 1, show the rank (if known).
-          if IsBound( info.rankAction ) and info.rankAction <> "???" then
-            Add( disp, Concatenation( "rank ", String( info.rankAction ) ) );
+          if IsBound( r.rankAction ) and r.rankAction <> "???" then
+            Add( disp, Concatenation( "rank ", String( r.rankAction ) ) );
             sep:= ", ";
           fi;
-        elif IsInt( info.transitivity ) then
+        elif IsInt( r.transitivity ) then
           # For transitivity at least 2, show the transitivity.
-          Add( disp, Concatenation( String( info.transitivity ), "-trans." ) );
+          Add( disp, Concatenation( String( r.transitivity ), "-trans." ) );
           sep:= ", ";
         else
           # The transitivity is not known.
           Add( disp, "" );
           sep:= "";
         fi;
-        if 0 < info.transitivity then
+        if 0 < r.transitivity then
           # For transitive representations, more info may be available.
-          if info.isPrimitive then
-            if info.stabilizer <> "???" then
+          if r.isPrimitive then
+            if IsBound( r.stabilizer ) and r.stabilizer <> "???" then
               Add( disp, Concatenation( sep, "on cosets of " ) );
-              Add( disp, info.stabilizer );
-              if info.maxnr <> "???" then
+              Add( disp, r.stabilizer );
+              if IsBound( r.maxnr ) and r.maxnr <> "???" then
                 Add( disp, Concatenation( " (",
-                                          Ordinal( info.maxnr ), " max.)" ) );
+                                          Ordinal( r.maxnr ), " max.)" ) );
               else
                 Add( disp, "" );
               fi;
-            elif info.maxnr <> "???" then
+            elif IsBound( r.maxnr ) and r.maxnr <> "???" then
               Add( disp, Concatenation( sep, "on cosets of ",
-                                        Ordinal( info.maxnr ), " max." ) );
+                                        Ordinal( r.maxnr ), " max." ) );
             else
               Add( disp, "primitive" );
             fi;
-          elif info.stabilizer <> "???" then
+          elif IsBound( r.stabilizer ) and r.stabilizer <> "???" then
             Add( disp, Concatenation( sep, "on cosets of " ) );
-            Add( disp, info.stabilizer );
+            Add( disp, r.stabilizer );
           fi;
         fi;
       fi;
@@ -302,7 +286,7 @@ od;
       return true;
     end,
 
-    TestFiles := AGRTestFilesMTX,
+    TestFiles := AGR.TestFilesMTX,
 
     # Permutation representations are sorted according to
     # degree and identification string.
@@ -327,7 +311,7 @@ od;
     # We store the stem of the filename and the number of generators.
     TOCEntryString := function( typename, entry )
       return Concatenation( [
-          "AGRTOC(\"", typename, "\",\"",
+          "AGR.TOC(\"", typename, "\",\"",
           entry[5][1]{ [ 1 .. Length( entry[5][1] ) - 1 ] },
           "\",",
           String( Length( entry[5] ) ),
@@ -355,23 +339,37 @@ od;
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "rep", "matff",   rec(
+AGR.DeclareDataType( "rep", "matff",   rec(
 
     # `<groupname>G<i>-f<q>r<dim><id>B<m>.m<nr>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
                           [ "f", IsDigitChar, "r", IsDigitChar,
-                            IsLowerAlphaOrDigitChar,
+                            AGR.IsLowerAlphaOrDigitChar,
                             "B", IsDigitChar, ".m", IsDigitChar ] ],
                         [ ParseBackwards, ParseForwards ] ],
 
     AddDescribingComponents := function( record, type )
-      local parsed;
+      local repid, parsed, info, char, pos;
 
-      parsed:= AGRParseFilenameFormat( record.identifier[2][1], 
-                                       type[2].FilenameFormat );
+      repid:= record.identifier[2][1];
+      parsed:= AGR.ParseFilenameFormat( repid, type[2].FilenameFormat );
       record.dim:= Int( parsed[7] );
       record.id:= parsed[8];
       record.ring:= GF( parsed[5] );
+      if IsBound( AtlasOfGroupRepresentationsInfo.characterinfo.(
+                      record.groupname ) ) then
+        info:= AtlasOfGroupRepresentationsInfo.characterinfo.(
+                   record.groupname );
+        char:= Characteristic( record.ring );
+        if IsBound( info[ char ] ) then
+          info:= info[ char ];
+          pos:= Position( info[2], repid{ [ 1 .. Position( repid, '.' ) - 1 ] } );
+          if pos <> fail and info[3][ pos ] <> fail then
+            record.charactername:= info[3][ pos ];
+          fi;
+
+        fi;
+      fi;
     end,
 
     # `[ <i>, <q>, <dim>, <id>, <m>, <filenames> ]'
@@ -392,35 +390,43 @@ AGRDeclareDataType( "rep", "matff",   rec(
     end,
 
     AccessGroupCondition := function( info, cond )
-      return  AGRCheckOneCondition( IsMatrixGroup, x -> x = true, cond )
-          and AGRCheckOneCondition( IsMatrixGroup, cond )
-          and AGRCheckOneCondition( IsPermGroup, x -> x = false, cond )
-          and AGRCheckOneCondition( Characteristic,
+      return  AGR.CheckOneCondition( IsMatrixGroup, x -> x = true, cond )
+          and AGR.CheckOneCondition( IsMatrixGroup, cond )
+          and AGR.CheckOneCondition( IsPermGroup, x -> x = false, cond )
+          and AGR.CheckOneCondition( Characteristic,
                   function( p )
                     local char;
                     char:= SmallestRootInt( Size( info.ring ) );
                     return char = p or IsFunction( p ) and p( char ) = true;
                   end,
                   cond )
-          and AGRCheckOneCondition( Dimension,
+          and AGR.CheckOneCondition( Dimension,
                   x -> ( IsFunction( x ) and x( info.dim ) )
                        or info.dim = x, cond )
-          and AGRCheckOneCondition( Ring,
+          and AGR.CheckOneCondition( Ring,
                   R -> ( IsFunction( R ) and R( info.ring ) ) or
                        ( IsField( R ) and IsFinite( R )
                          and Size( info.ring ) mod Characteristic( R ) = 0
                          and DegreeOverPrimeField( R )
                             mod LogInt( Size( info.ring ),
                                         Characteristic( R ) ) = 0 ),
-                         cond )
-          and AGRCheckOneCondition( Identifier,
+                  cond )
+          and AGR.CheckOneCondition( Identifier,
                   x -> ( IsFunction( x ) and x( info.id ) = true )
                        or info.id = x, cond )
           and IsEmpty( cond );
     end,
 
-    DisplayGroup := x -> Concatenation( "G <= GL(",String(x[3]),x[4],",",
-                                        String(x[2]),")" ),
+    DisplayGroup := function( r )
+      local disp;
+
+      disp:= Concatenation( "G <= GL(", String( r.dim ), r.id,
+                            ",", String( r.identifier[4] ), ")" );
+      if IsBound( r.charactername ) then
+        disp:= [ disp, Concatenation( "character ", r.charactername ) ];
+      fi;
+      return disp;
+    end,
 
     TestFileHeaders := function( tocid, groupname, entry, type )
       local name, filename, len, file, line, errors;
@@ -492,7 +498,7 @@ od;
       return true;
     end,
 
-    TestFiles := AGRTestFilesMTX,
+    TestFiles := AGR.TestFilesMTX,
 
     # Matrix representations over finite fields are sorted according to
     # field size, dimension, and identification string.
@@ -517,7 +523,7 @@ od;
     # We store the stem of the filename and the number of generators.
     TOCEntryString := function( typename, entry )
       return Concatenation( [
-          "AGRTOC(\"", typename, "\",\"",
+          "AGR.TOC(\"", typename, "\",\"",
           entry[6][1]{ [ 1 .. Length( entry[6][1] ) - 1 ] },
           "\",",
           String( Length( entry[6] ) ),
@@ -543,22 +549,34 @@ od;
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "rep", "matint",  rec(
+AGR.DeclareDataType( "rep", "matint",  rec(
 
     # `<groupname>G<i>-Zr<dim><id>B<m>.g'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
-                        [ "Zr", IsDigitChar, IsLowerAlphaOrDigitChar,
+                        [ "Zr", IsDigitChar, AGR.IsLowerAlphaOrDigitChar,
                           "B", IsDigitChar, ".g" ] ],
                         [ ParseBackwards, ParseForwards ] ],
 
     AddDescribingComponents := function( record, type )
-      local parsed;
+      local repid, parsed, info, pos;
 
-      parsed:= AGRParseFilenameFormat( record.identifier[2],
-                                       type[2].FilenameFormat );
+      repid:= record.identifier[2];
+      parsed:= AGR.ParseFilenameFormat( repid, type[2].FilenameFormat );
       record.dim:= Int( parsed[5] );
       record.id:= parsed[6];
       record.ring:= Integers;
+      if IsBound( AtlasOfGroupRepresentationsInfo.characterinfo.( 
+                      record.groupname ) ) then
+        info:= AtlasOfGroupRepresentationsInfo.characterinfo.( 
+                   record.groupname );
+        if IsBound( info[1] ) then
+          info:= info[1];
+          pos:= Position( info[2], repid{ [ 1 .. Position( repid, '.' ) - 1 ] } );
+          if pos <> fail and info[3][ pos ] <> fail then
+            record.charactername:= info[3][ pos ];
+          fi;
+        fi;
+      fi;
     end,
 
     # `[ <i>, <dim>, <id>, <m>, <filename> ]'
@@ -571,26 +589,26 @@ AGRDeclareDataType( "rep", "matint",  rec(
     end,
 
     AccessGroupCondition := function( info, cond )
-      return  AGRCheckOneCondition( IsMatrixGroup, x -> x = true, cond )
-          and AGRCheckOneCondition( IsMatrixGroup, cond )
-          and AGRCheckOneCondition( IsPermGroup, x -> x = false, cond )
-          and AGRCheckOneCondition( Characteristic,
+      return  AGR.CheckOneCondition( IsMatrixGroup, x -> x = true, cond )
+          and AGR.CheckOneCondition( IsMatrixGroup, cond )
+          and AGR.CheckOneCondition( IsPermGroup, x -> x = false, cond )
+          and AGR.CheckOneCondition( Characteristic,
                   p -> p = 0 or ( IsFunction( p ) and p( 0 ) = true ),
                   cond )
-          and AGRCheckOneCondition( Dimension,
+          and AGR.CheckOneCondition( Dimension,
                   x -> ( IsFunction( x ) and x( info.dim ) )
                        or info.dim = x, cond ) 
-          and AGRCheckOneCondition( Ring,
+          and AGR.CheckOneCondition( Ring,
                   R -> ( IsFunction( R ) and R( Integers ) ) or
                        ( IsRing( R ) and IsCyclotomicCollection( R ) ), cond )
-          and AGRCheckOneCondition( Identifier,
+          and AGR.CheckOneCondition( Identifier,
                   x -> ( IsFunction( x ) and x( info.id ) = true )
                        or info.id = x, cond )
           and IsEmpty( cond );
     end,
 
     TestFileHeaders := function( tocid, groupname, entry, type )
-      return AGRTestFileHeadersDefault( tocid, groupname, entry, type,
+      return AGR.TestFileHeadersDefault( tocid, groupname, entry, type,
                entry[2],
                function( entry, mats, filename )
                  if not ForAll( mats, mat -> ForAll( mat,
@@ -602,7 +620,19 @@ AGRDeclareDataType( "rep", "matint",  rec(
                end );
     end,
 
-    DisplayGroup := x -> Concatenation( "G <= GL(",String(x[2]),x[3],",Z)" ),
+    DisplayGroup := function( r )
+      local disp;
+
+      if AGR.ShowOnlyASCII() then
+        disp:= Concatenation( "G <= GL(", String( r.dim ), r.id, ",Z)" );
+      else
+        disp:= Concatenation( "G <= GL(", String( r.dim ), r.id, ",ℤ)" );
+      fi;
+      if IsBound( r.charactername ) then
+        disp:= [ disp, Concatenation( "character ", r.charactername ) ];
+      fi;
+      return disp;
+    end,
 
     # Matrix representations over the integers are sorted according to
     # dimension and identification string.
@@ -627,19 +657,19 @@ AGRDeclareDataType( "rep", "matint",  rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "rep", "matalg",  rec(
+AGR.DeclareDataType( "rep", "matalg",  rec(
 
     # `<groupname>G<i>-Ar<dim><id>B<m>.g'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
-                        [ "Ar", IsDigitChar, IsLowerAlphaOrDigitChar,
+                        [ "Ar", IsDigitChar, AGR.IsLowerAlphaOrDigitChar,
                           "B", IsDigitChar, ".g" ] ],
                         [ ParseBackwards, ParseForwards ] ],
 
     AddDescribingComponents := function( record, type )
-      local parsed, info;
+      local repid, parsed, info, pos;
 
-      parsed:= AGRParseFilenameFormat( record.identifier[2],
-                                       type[2].FilenameFormat );
+      repid:= record.identifier[2];
+      parsed:= AGR.ParseFilenameFormat( repid, type[2].FilenameFormat );
       record.dim:= Int( parsed[5] );
       record.id:= parsed[6];
       info:= record.identifier[2];
@@ -648,6 +678,18 @@ AGRDeclareDataType( "rep", "matalg",  rec(
                     x -> x[1] = info );
       if info <> fail then
         record.ring:= info[3];
+      fi;
+      if IsBound( AtlasOfGroupRepresentationsInfo.characterinfo.(
+                      record.groupname ) ) then
+        info:= AtlasOfGroupRepresentationsInfo.characterinfo.(
+                   record.groupname );
+        if IsBound( info[1] ) then 
+          info:= info[1];
+          pos:= Position( info[2], repid{ [ 1 .. Position( repid, '.' ) - 1 ] } );
+          if pos <> fail and info[3][ pos ] <> fail then
+            record.charactername:= info[3][ pos ];
+          fi;
+        fi;
       fi;
     end,
 
@@ -661,29 +703,29 @@ AGRDeclareDataType( "rep", "matalg",  rec(
     end,
 
     AccessGroupCondition := function( info, cond )
-      return  AGRCheckOneCondition( IsMatrixGroup, x -> x = true, cond )
-          and AGRCheckOneCondition( IsMatrixGroup, cond )
-          and AGRCheckOneCondition( IsPermGroup, x -> x = false, cond )
-          and AGRCheckOneCondition( Characteristic,
+      return  AGR.CheckOneCondition( IsMatrixGroup, x -> x = true, cond )
+          and AGR.CheckOneCondition( IsMatrixGroup, cond )
+          and AGR.CheckOneCondition( IsPermGroup, x -> x = false, cond )
+          and AGR.CheckOneCondition( Characteristic,
                   p -> p = 0 or ( IsFunction( p ) and p( 0 ) = true ),
                   cond )
-          and AGRCheckOneCondition( Dimension,
+          and AGR.CheckOneCondition( Dimension,
                   x -> ( IsFunction( x ) and x( info.dim ) = true )
                        or info.dim = x, cond )
-          and AGRCheckOneCondition( Ring,
+          and AGR.CheckOneCondition( Ring,
                   x -> IsIdenticalObj( x, Cyclotomics )
                        or ( IsBound( info.ring ) and
                             ( ( IsFunction( x ) and x( info.ring ) = true )
                              or ( IsRing( x ) and IsCyclotomicCollection( x )
                                   and IsSubset( x, info.ring ) ) ) ), cond )
-          and AGRCheckOneCondition( Identifier,
+          and AGR.CheckOneCondition( Identifier,
                   x -> ( IsFunction( x ) and x( info.id ) = true )
                        or info.id = x, cond )
           and IsEmpty( cond );
     end,
 
     TestFileHeaders := function( tocid, groupname, entry, type )
-      return AGRTestFileHeadersDefault( tocid, groupname, entry, type,
+      return AGR.TestFileHeadersDefault( tocid, groupname, entry, type,
                entry[2],
                function( entry, mats, filename )
                  local info;
@@ -710,18 +752,26 @@ AGRDeclareDataType( "rep", "matalg",  rec(
                end );
     end,
 
-    DisplayGroup := function( x )
-      local fieldstring;
-      fieldstring:= x[5]{ [ 1 .. Length( x[5] )-2 ] };
-      fieldstring:= First( AtlasOfGroupRepresentationsInfo.ringinfo,
-                           p -> p[1] = fieldstring );
-      if fieldstring = fail then
-        fieldstring:= "C";
+    DisplayGroup := function( r )
+      local fld, disp;
+
+      fld:= r.identifier[2];
+      fld:= fld{ [ 1 .. Length( fld )-2 ] };
+      fld:= First( AtlasOfGroupRepresentationsInfo.ringinfo,
+                   p -> p[1] = fld );
+      if fld <> fail then
+        fld:= fld[2];
+      elif AGR.ShowOnlyASCII() then
+        fld:= "C";
       else
-        fieldstring:= fieldstring[2];
+        fld:= "ℂ";
       fi;
-      return Concatenation( "G <= GL(",String(x[2]),x[3],",",fieldstring,
-                            ")" );
+      disp:= Concatenation( "G <= GL(", String( r.dim ), r.id, ",",
+                            fld, ")" );
+      if IsBound( r.charactername ) then
+        disp:= [ disp, Concatenation( "character ", r.charactername ) ];
+      fi;
+      return disp;
     end,
 
     # Matrix representations over algebraic extension fields are sorted
@@ -747,19 +797,19 @@ AGRDeclareDataType( "rep", "matalg",  rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "rep", "matmodn", rec(
+AGR.DeclareDataType( "rep", "matmodn", rec(
 
     # `<groupname>G<i>-Z<n>r<dim><id>B<m>.g'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
                           [ "Z", IsDigitChar, "r", IsDigitChar,
-                            IsLowerAlphaOrDigitChar,
+                            AGR.IsLowerAlphaOrDigitChar,
                             "B", IsDigitChar, ".g" ] ],
                         [ ParseBackwards, ParseForwards ] ],
 
     AddDescribingComponents := function( record, type )
       local parsed;
 
-      parsed:= AGRParseFilenameFormat( record.identifier[2],
+      parsed:= AGR.ParseFilenameFormat( record.identifier[2],
                                        type[2].FilenameFormat );
       record.dim:= Int( parsed[7] );
       record.id:= parsed[8];
@@ -776,32 +826,39 @@ AGRDeclareDataType( "rep", "matmodn", rec(
     end,
 
     AccessGroupCondition := function( info, cond )
-      return  AGRCheckOneCondition( IsMatrixGroup, x -> x = true, cond )
-          and AGRCheckOneCondition( IsMatrixGroup, cond )
-          and AGRCheckOneCondition( IsPermGroup, x -> x = false, cond )
-          and AGRCheckOneCondition( Characteristic,
+      return  AGR.CheckOneCondition( IsMatrixGroup, x -> x = true, cond )
+          and AGR.CheckOneCondition( IsMatrixGroup, cond )
+          and AGR.CheckOneCondition( IsPermGroup, x -> x = false, cond )
+          and AGR.CheckOneCondition( Characteristic,
                   p -> p = fail or ( IsFunction( p ) and p( fail ) = true ),
                   cond )
-          and AGRCheckOneCondition( Dimension,
+          and AGR.CheckOneCondition( Dimension,
                   x -> ( IsFunction( x ) and x( info.dim ) )
                        or info.dim = x, cond )
-          and AGRCheckOneCondition( Ring,
+          and AGR.CheckOneCondition( Ring,
                   R -> ( IsFunction( R ) and R( info.ring ) ) or
                        ( IsRing( R )
                   and IsZmodnZObjNonprimeCollection( R )
                   and ModulusOfZmodnZObj( One( R ) ) = Size( info.ring ) ),
                   cond )
-          and AGRCheckOneCondition( Identifier,
+          and AGR.CheckOneCondition( Identifier,
                   x -> ( IsFunction( x ) and x( info.id ) = true )
                        or info.id = x, cond )
           and IsEmpty( cond );
     end,
 
-    DisplayGroup := x -> Concatenation( "G <= GL(",String(x[3]),x[4],",Z/",
-                                        String(x[2]),"Z)" ),
+    DisplayGroup := function( r )
+      if AGR.ShowOnlyASCII() then
+        return Concatenation( "G <= GL(",String( r.dim ), r.id,
+                              ",Z/", String( r.identifier[4] ),"Z)" );
+      else
+        return Concatenation( "G <= GL(",String( r.dim ), r.id,
+                              ",ℤ/", String( r.identifier[4] ),"ℤ)" );
+      fi;
+    end,
 
     TestFileHeaders := function( tocid, groupname, entry, type )
-      return AGRTestFileHeadersDefault( tocid, groupname, entry, type,
+      return AGR.TestFileHeadersDefault( tocid, groupname, entry, type,
                entry[3],
                function( entry, mats, filename )
                  if   not IsZmodnZObjNonprimeCollCollColl( mats ) then
@@ -839,18 +896,18 @@ AGRDeclareDataType( "rep", "matmodn", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "rep", "quat",  rec(
+AGR.DeclareDataType( "rep", "quat",  rec(
 
     # `<groupname>G<i>-Hr<dim><id>B<m>.g'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
-                          [ "Hr", IsDigitChar, IsLowerAlphaOrDigitChar,
+                          [ "Hr", IsDigitChar, AGR.IsLowerAlphaOrDigitChar,
                             "B", IsDigitChar, ".g" ] ],
                         [ ParseBackwards, ParseForwards ] ],
 
     AddDescribingComponents := function( record, type )
       local parsed, info;
 
-      parsed:= AGRParseFilenameFormat( record.identifier[2],
+      parsed:= AGR.ParseFilenameFormat( record.identifier[2],
                                        type[2].FilenameFormat );
       record.dim:= Int( parsed[5] );
       record.id:= parsed[6];
@@ -873,28 +930,28 @@ AGRDeclareDataType( "rep", "quat",  rec(
     end,
 
     AccessGroupCondition := function( info, cond )
-      return  AGRCheckOneCondition( IsMatrixGroup, x -> x = true, cond )
-          and AGRCheckOneCondition( IsMatrixGroup, cond )
-          and AGRCheckOneCondition( IsPermGroup, x -> x = false, cond )
-          and AGRCheckOneCondition( Characteristic,
+      return  AGR.CheckOneCondition( IsMatrixGroup, x -> x = true, cond )
+          and AGR.CheckOneCondition( IsMatrixGroup, cond )
+          and AGR.CheckOneCondition( IsPermGroup, x -> x = false, cond )
+          and AGR.CheckOneCondition( Characteristic,
                   p -> p = 0 or ( IsFunction( p ) and p( 0 ) = true ),
                   cond )
-          and AGRCheckOneCondition( Dimension,
+          and AGR.CheckOneCondition( Dimension,
                   x -> ( IsFunction( x ) and x( info.dim ) = true )
                        or info.dim = x, cond )
-          and AGRCheckOneCondition( Ring,
+          and AGR.CheckOneCondition( Ring,
                   x -> IsBound( info.ring ) and
                        ( ( IsFunction( x ) and x( info.ring ) = true )
                           or ( IsRing( x ) and IsQuaternionCollection( x ) 
                                and IsSubset( x, info.ring ) ) ), cond )
-          and AGRCheckOneCondition( Identifier,
+          and AGR.CheckOneCondition( Identifier,
                   x -> ( IsFunction( x ) and x( info.id ) = true )
                        or info.id = x, cond )
           and IsEmpty( cond );
     end,
 
     TestFileHeaders := function( tocid, groupname, entry, type )
-      return AGRTestFileHeadersDefault( tocid, groupname, entry, type,
+      return AGR.TestFileHeadersDefault( tocid, groupname, entry, type,
                entry[2],
                function( entry, mats, filename )
                  local info;
@@ -922,17 +979,19 @@ AGRDeclareDataType( "rep", "quat",  rec(
                end );
     end,
 
-    DisplayGroup := function( x )
-      local fieldstring;
-      fieldstring:= x[5]{ [ 1 .. Length( x[5] )-2 ] };
-      fieldstring:= First( AtlasOfGroupRepresentationsInfo.ringinfo,
-                           p -> p[1] = fieldstring );
-      if fieldstring = fail then
-        fieldstring:= "QuaternionAlgebra(C)";
+    DisplayGroup := function( r )
+      local fld;
+
+      fld:= r.identifier[2];
+      fld:= fld{ [ 1 .. Length( fld )-2 ] };
+      fld:= First( AtlasOfGroupRepresentationsInfo.ringinfo,
+                   p -> p[1] = fld );
+      if fld = fail then
+        fld:= "QuaternionAlgebra(C)";
       else
-        fieldstring:= fieldstring[2];
+        fld:= fld[2];
       fi;
-      return Concatenation( "G <= GL(",String(x[2]),x[3],",",fieldstring,
+      return Concatenation( "G <= GL(", String( r.dim ), r.id, ",", fld,
                             ")" );
     end,
 
@@ -963,7 +1022,7 @@ AGRDeclareDataType( "rep", "quat",  rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "maxes", rec(
+AGR.DeclareDataType( "prg", "maxes", rec(
 
     # `<groupname>G<i>-max<k>W<n>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
@@ -979,18 +1038,31 @@ AGRDeclareDataType( "prg", "maxes", rec(
       return false;
     end,
 
-    DisplayOverviewInfo := [ "maxes", "r", function( tocs, groupname )
-      local value, private, j, toc, record, comp, new, type;
+    DisplayOverviewInfo := [ "maxes", "r", function( conditions )
+      local groupname, tocs, std, value, private, toc, record, comp, new;
+
+      groupname:= conditions[1][2];
+      tocs:= AGR.TablesOfContents( conditions );
+      if Length( conditions ) = 1 or
+         not ( IsInt( conditions[2] ) or IsList( conditions[2] ) ) then
+        std:= true;
+      else
+        std:= conditions[2];
+        if IsInt( std ) then
+          std:= [ std ];
+        fi;
+      fi;
 
       value:= [];
       private:= false;
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( groupname ) ) then
           record:= toc.( groupname );
           for comp in [ "maxes", "maxext" ] do
             if IsBound( record.( comp ) ) then
-              new:= List( record.( comp ), x -> x[2] );
+              new:= List( Filtered( record.( comp ),
+                                    x -> std = true or x[1] in std ),
+                          x -> x[2] );
               if IsBound( toc.diridPrivate ) and not IsEmpty( new ) then
                 private:= true;
               fi;
@@ -1008,15 +1080,14 @@ AGRDeclareDataType( "prg", "maxes", rec(
     end ],
 
     DisplayPRG := function( tocs, name, std, stdavail )
-      local maxes, maxstd, private, j, toc, record, comp, i, result, line,
-            entry;
+      local maxes, maxstd, maxprv, j, toc, record, comp, i, private, pos,
+            pi, result, entry, line, width;
 
       maxes   := [];
       maxstd  := [];
-      private := "";
+      maxprv  := [];
 
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( name ) ) then
           record:= toc.( name );
           for comp in [ "maxes", "maxext" ] do
@@ -1025,12 +1096,17 @@ AGRDeclareDataType( "prg", "maxes", rec(
                 if std = true or i[1] in std then
                   if IsBound( toc.diridPrivate ) then
                     private:= AtlasOfGroupRepresentationsInfo.markprivate;
+                  else
+                    private := "";
                   fi;
                   if i[2] in maxes then
-                    AddSet( maxstd[ Position( maxes, i[2] ) ], i[1] );
+                    pos:= Position( maxes, i[2] );
+                    Add( maxstd[ pos ], i[1] );
+                    Add( maxprv[ pos ], private );
                   else
                     Add( maxes, i[2] );
                     Add( maxstd, [ i[1] ] );
+                    Add( maxprv, [ private ] );
                   fi;
                 fi;
               od;
@@ -1038,79 +1114,123 @@ AGRDeclareDataType( "prg", "maxes", rec(
           od;
         fi;
       od;
-      SortParallel( maxes, maxstd );
-      if 2 < Length( maxes ) then
-        ConvertToRangeRep( maxes );
-      fi;
+      pi:= Sortex( maxes );
+      maxstd:= Permuted( maxstd, pi );
+      maxprv:= Permuted( maxprv, pi );
 
       result:= [];
       if not IsEmpty( maxes ) then
-        line:= "available maxes of G:";
         entry:= First( AtlasOfGroupRepresentationsInfo.GAPnames,
                        x -> x[2] = name );
-        if Length( stdavail ) <= 1 then
-          Append( line, "  " );
-          Append( line, String( maxes ) );
-          if IsBound( entry[5] ) and entry[5] = "all" then
-            if Length( maxes ) = Length( entry[4] ) then
-              Append( line, " (all)" );
-            else
-              Append( line, Concatenation( " (out of ",
-                                String( Length( entry[4] ) ), ")" ) );
-            fi;
+        if IsBound( entry[3].nrMaxes ) then
+          line:= "maxes (";
+          if Length( Set( maxes ) ) = entry[3].nrMaxes then
+            Append( line, "all " );
+          else
+            Append( line, String( Length( Set( maxes ) ) ) );
+            Append( line, " out of " );
           fi;
-          Append( line, private );
-          Append( line, "\n" );
-          Add( result, line );
+          Append( line, String( entry[3].nrMaxes ) );
+          Append( line, ")" );
         else
-          if IsBound( entry[5] ) and entry[5] = "all" then
-            if Length( Set( maxes ) ) = Length( entry[4] ) then
-              Append( line, Concatenation( " (all ",
-                                String( Length( entry[4] ) ), ")\n" ) );
-            else
-              Append( line, Concatenation( " (out of ",
-                                String( Length( entry[4] ) ), ")\n" ) );
-            fi;
-          fi;
-          Append( line, "\n" );
-          Add( result, line );
-          for i in Union( maxstd ) do
-            Add( result, Concatenation( "  ",
-                String( maxes{ Filtered( [ 1 .. Length( maxes ) ],
-                                         x -> i in maxstd[x] ) } ),
-                private,
-                "    (w.r.t. std. generators ", String( i ), ")\n" ) );
-          od;
+          line:= "maxes";
         fi;
+        Add( result, line );
+        width:= Length( String( maxes[ Length( maxes ) ] ) );
+        for i in [ 1 .. Length( maxes ) ] do
+          if 1 < Length( stdavail ) then
+            for j in [ 1 .. Length( maxstd[i] ) ] do
+              line:= "";
+              Append( line, String( maxes[i], width ) );
+              Append( line, " (w.r.t. std. gen. " );
+              Append( line, String( maxstd[i][j] ) );
+              Append( line, maxprv[i][j] );
+              Append( line, ")" );
+              Add( result, line );
+            od;
+          else
+            line:= "";
+            Append( line, String( maxes[i], width ) );
+            Append( line, maxprv[i][1] );
+            if IsBound( entry[3].structureMaxes ) and
+               IsBound( entry[3].structureMaxes[ maxes[i] ] ) then
+              Append( line, ":  " );
+              Append( line, entry[3].structureMaxes[ maxes[i] ] );
+            fi;
+            Add( result, line );
+          fi;
+        od;
       fi;
+      return result;
+    end,
+
+    # Create the program info from the identifier.
+    AtlasProgramInfo := function( type, identifier, prefix, groupname )
+      local i, result, gapname;
+
+      i:= identifier[2];
+      if not IsString( i ) then
+        i:= i[1];
+      fi;
+      i:= AGR.ParseFilenameFormat( i, type[2].FilenameFormat );
+      if i = fail then
+        return fail;
+      fi;
+      i:= i[5];
+
+      result:= rec( standardization := identifier[3],
+                    identifier      := identifier );
+
+      # Set the size if available.
+      gapname:= First( AtlasOfGroupRepresentationsInfo.GAPnames,
+                       pair -> pair[2] = groupname );
+      if IsBound( gapname[3].sizesMaxes )
+         and IsBound( gapname[3].sizesMaxes[i] ) then
+        result.size:= gapname[3].sizesMaxes[i];
+      fi;
+      if IsBound( gapname[3].structureMaxes ) and
+         IsBound( gapname[3].structureMaxes[i] ) then
+        result.subgroupname:= gapname[3].structureMaxes[i];
+      fi;
+
       return result;
     end,
 
     # Create the program from the identifier.
     AtlasProgram := function( type, identifier, prefix, groupname )
-      local prog, toc, entry, result, i, gapname;
+      local i, prog, info, entry, result, gapname;
+
+      i:= identifier[2];
+      if not IsString( i ) then
+        i:= i[1];
+      fi;
+      i:= AGR.ParseFilenameFormat( i, type[2].FilenameFormat );
+      if i = fail then
+        return fail;
+      fi;
+      i:= i[5];
 
       # The second entry is either a filename or a filename plus info about
       # additional generators.
       if ForAll( identifier[2], IsString ) then
-        # One program and some generators must be integrated.
-        prog:= AGRFileContents( prefix, groupname, identifier[2][1], type );
+        # One program for a factor group and some kernel generators
+        # must be integrated.
+        prog:= AGR.FileContents( prefix, groupname, identifier[2][1], type );
         if prog = fail then
           return fail;
         fi;
         prog:= [ prog.program ];
-        toc:= AtlasOfGroupRepresentationsInfo.TableOfContents.remote;
-        if not IsBound( toc.( groupname ) ) or
-           not IsBound( toc.( groupname ).maxextprg ) then
-          return fail;
+        info:= AGR.InfoForName( identifier[1] );
+        if IsBound( info[3].kernelPrograms ) then
+          for entry in info[3].kernelPrograms do
+            if entry[1] = identifier[3] and
+               entry[2] = identifier[2][2] then
+              Add( prog, StraightLineProgram( entry[3],
+                             NrInputsOfStraightLineProgram( prog[1] ) ) );
+              break;
+            fi;
+          od;
         fi;
-        for entry in toc.( groupname ).maxextprg do
-          if entry[1] = identifier[2][2] then
-            Add( prog, StraightLineProgram( entry[2],
-                           NrInputsOfStraightLineProgram( prog[1] ) ) );
-            break;
-          fi;
-        od;
         if Length( prog ) = 1 then
           return fail;
         fi;
@@ -1122,19 +1242,17 @@ AGRDeclareDataType( "prg", "maxes", rec(
         result:= AtlasProgramDefault( type, identifier, prefix, groupname );
       fi;
 
-      # Set the size if available.
+      # Set subgroup size and subgroup name if available.
       if result <> fail then
         gapname:= First( AtlasOfGroupRepresentationsInfo.GAPnames,
                          pair -> pair[2] = groupname );
-        if IsBound( gapname[4] ) then
-          i:= identifier[2];
-          if not IsString( i ) then
-            i:= identifier[2][1];
-          fi;
-          i:= AGRParseFilenameFormat( i, type[2].FilenameFormat )[5];
-          if IsBound( gapname[4][i] ) then
-            result.size:= gapname[4][i];
-          fi;
+        if IsBound( gapname[3].sizesMaxes ) and
+           IsBound( gapname[3].sizesMaxes[i] ) then
+          result.size:= gapname[3].sizesMaxes[i];
+        fi;
+        if IsBound( gapname[3].structureMaxes ) and
+           IsBound( gapname[3].structureMaxes[i] ) then
+          result.subgroupname:= gapname[3].structureMaxes[i];
         fi;
       fi;
 
@@ -1174,7 +1292,7 @@ AGRDeclareDataType( "prg", "maxes", rec(
     # Maxes are sorted according to their natural position.
     SortTOCEntries := entry -> entry[2],
 
-    # In addition to the tests in `AGRTestWordsSLPDefault',
+    # In addition to the tests in `AGR.TestWordsSLPDefault',
     # compute the images in a representation if available,
     # and compare the group order with that stored in the
     # GAP Character Table Library (if available).
@@ -1186,7 +1304,7 @@ AGRDeclareDataType( "prg", "maxes", rec(
         if tocid = "local" then
           tocid:= "dataword";
         fi;
-        prog:= AGRFileContents( tocid, name, file, type );
+        prog:= AGR.FileContents( tocid, name, file, type );
         if prog = fail then
           Print( "#E  file `", file, "' is corrupted\n" );
           return false;
@@ -1279,7 +1397,7 @@ AGRDeclareDataType( "prg", "maxes", rec(
         # Get a representation if available, and map the generators.
         gapname:= gapname[1];
         gens:= OneAtlasGeneratingSetInfo( gapname, std, NrMovedPoints,
-                   [ 2 .. AtlasOfGroupRepresentationsInfo.MaxTestDegree ] );
+                   [ 2 .. AGR.Test.MaxTestDegree ] );
         if gens = fail then
           if verbose then
             Print( "#I  no perm. repres. for `", gapname,
@@ -1301,7 +1419,7 @@ AGRDeclareDataType( "prg", "maxes", rec(
             Print( "#E  program `", file, "' for group of order ", size,
                    " not ", storedsize, "\n" );
             if subtbl <> fail then
-              Print( "#E  (contradicts charatcer table of `",
+              Print( "#E  (contradicts character table of `",
                      Identifier( subtbl ), "')\n" );
             fi;
             return false;
@@ -1329,7 +1447,7 @@ AGRDeclareDataType( "prg", "maxes", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "classes", rec(
+AGR.DeclareDataType( "prg", "classes", rec(
 
     # `<groupname>G<i>-cclsW<n>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
@@ -1342,49 +1460,64 @@ AGRDeclareDataType( "prg", "classes", rec(
       return true;
     end,
 
-    DisplayOverviewInfo := [ "cl", "r", function( tocs, groupname )
-    local value, private, j, toc, record, i, pos, rel;
+    DisplayOverviewInfo := [ "cl", "c", function( conditions )
+      local groupname, tocs, std, value, private, toc, record, i, pos, rel;
 
-    value:= false;
-    private:= false;
-    for j in [ 1 .. Length( tocs ) ] do
-      toc:= tocs[j];
-      if IsBound( toc.( groupname ) ) then
-        record:= toc.( groupname );
-        if IsBound( record.classes ) and not IsEmpty( record.classes ) then
-          value:= true;
-        elif IsBound( record.cyc2ccl ) and IsBound( record.cyclic ) then
-          for i in record.cyc2ccl do
-            # Check that for scripts of the form
-            # `<groupname>G<i>cycW<n>-cclsW<m>',
-            # a script of the form `<groupname>G<i>-cycW<n>' is available.
-            pos:= PositionSublist( i[2], "cycW" );
-            rel:= Concatenation( i[2]{ [ 1 .. pos-1 ] }, "-",
-                      i[2]{ [ pos .. Position( i[2], '-' ) - 1 ] } );
-            if ForAny( record.cyclic, x -> x[2] = rel ) then
-              value:= true;
-              break;
-            fi;
-          od;
-        fi;
-        if value then
-          if IsBound( toc.diridPrivate ) then
-            private:= true;
-          fi;
-          break;
+      groupname:= conditions[1][2];
+      tocs:= AGR.TablesOfContents( conditions );
+      if Length( conditions ) = 1 or
+         not ( IsInt( conditions[2] ) or IsList( conditions[2] ) ) then
+        std:= true;
+      else
+        std:= conditions[2];
+        if IsInt( std ) then
+          std:= [ std ];
         fi;
       fi;
-    od;
-    if value then
-      value:= "+";
-    else
-      value:= "-";
-    fi;
-    return [ value, private ];
+
+      value:= false;
+      private:= false;
+      for toc in tocs do
+        if IsBound( toc.( groupname ) ) then
+          record:= toc.( groupname );
+          if IsBound( record.classes ) and
+             ( ( std = true and not IsEmpty( record.classes ) ) or
+               ForAny( record.classes, l -> l[1] in std ) ) then
+            value:= true;
+          elif IsBound( record.cyc2ccl ) and IsBound( record.cyclic ) then
+            for i in record.cyc2ccl do
+              # Check that for scripts of the form
+              # `<groupname>G<i>cycW<n>-cclsW<m>',
+              # a script of the form `<groupname>G<i>-cycW<n>' is available.
+              pos:= PositionSublist( i[2], "cycW" );
+              rel:= Concatenation( i[2]{ [ 1 .. pos-1 ] }, "-",
+                        i[2]{ [ pos .. Position( i[2], '-' ) - 1 ] } );
+              if ( std = true or i[1] in std ) and
+                 ForAny( record.cyclic,
+                     x -> x[2] = rel and ( std = true or x[1] in std ) ) then
+                value:= true;
+                break;
+              fi;
+            od;
+          fi;
+          if value then
+            if IsBound( toc.diridPrivate ) then
+              private:= true;
+            fi;
+            break;
+          fi;
+        fi;
+      od;
+      if value then
+        value:= "+";
+      else
+        value:= "";
+      fi;
+      return [ value, private ];
     end ],
 
     DisplayPRG := function( tocs, name, std, stdavail )
-      local ccl, c2c, cyc, private, j, toc, record, i, pos, rel;
+      local ccl, c2c, cyc, private, toc, record, i, pos, rel;
 
       # (The information can be stored either directly or via two scripts
       # in `cyclic' and `cyc2ccl'.)
@@ -1392,8 +1525,7 @@ AGRDeclareDataType( "prg", "classes", rec(
       c2c:= [];
       cyc:= [];
       private:= "";
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( name ) ) then
           record:= toc.( name );
           if IsBound( record.classes ) then
@@ -1443,13 +1575,12 @@ AGRDeclareDataType( "prg", "classes", rec(
       if IsEmpty( ccl ) then
         return [];
       elif 1 < Length( stdavail ) then
-        return [ Concatenation( "class repres. of G available",
+        return [ Concatenation( "class repres.",
                                 " for std. generators ",
                                 String( Set( List( ccl, x -> x[1] ) ) ),
-                                private, "\n" ) ];
+                                private ) ];
       else
-        return [ Concatenation( "class repres. of G available",
-                                private, "\n" ) ];
+        return [ Concatenation( "class repres.", private ) ];
       fi;
     end,
 
@@ -1459,8 +1590,7 @@ AGRDeclareDataType( "prg", "classes", rec(
       local entry, pos, rel, entry2;
       if not ( Length( conditions ) = 1 and conditions[1] = "classes" ) then
         return fail;
-      fi;
-      if IsBound( record.classes ) then
+      elif IsBound( record.classes ) then
         for entry in record.classes do
           if std = true or entry[1] in std then
             return entry{ [ 2, 1 ] };
@@ -1488,6 +1618,18 @@ AGRDeclareDataType( "prg", "classes", rec(
       return fail;
     end,
 
+    # Create the program info from the identifier.
+    AtlasProgramInfo := function( type, identifier, prefix, groupname )
+      # The second entry is either a filename or a pair of filenames.
+      if ForAll( identifier[2], IsString ) then
+        return rec( standardization := identifier[3],
+                    identifier      := identifier );
+      elif IsString( identifier[2] ) then
+        return AtlasProgramInfoDefault( type, identifier, prefix, groupname );
+      fi;
+      return fail; 
+    end,
+
     # Create the program from the identifier.
     AtlasProgram := function( type, identifier, prefix, groupname )
       local progs, prog, i, result;
@@ -1496,7 +1638,7 @@ AGRDeclareDataType( "prg", "classes", rec(
       if ForAll( identifier[2], IsString ) then
         # Two programs have to be composed.
         progs:= List( identifier[2],
-                  name -> AGRFileContents( prefix, groupname, name, type ) );
+                  name -> AGR.FileContents( prefix, groupname, name, type ) );
         if fail in progs then
           return fail;
         fi;
@@ -1523,7 +1665,7 @@ AGRDeclareDataType( "prg", "classes", rec(
     end,
 
     TestWords := function( tocid, name, file, type, verbose )
-      return AGRTestWordsSLPDefault( tocid, name, file, type, true, verbose );
+      return AGR.TestWordsSLPDefault( tocid, name, file, type, true, verbose );
     end,
 
     ReadAndInterpretDefault := ScanStraightLineProgram,
@@ -1544,7 +1686,7 @@ AGRDeclareDataType( "prg", "classes", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "cyclic", rec(
+AGR.DeclareDataType( "prg", "cyclic", rec(
     # `<groupname>G<i>-cycW<n>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
                           [ "cycW", IsDigitChar ] ],
@@ -1556,14 +1698,13 @@ AGRDeclareDataType( "prg", "cyclic", rec(
       return true;
     end,
 
-    DisplayOverviewInfo := DisplayOverviewInfoDefault( "cyc", "r", "cyclic" ),
+    DisplayOverviewInfo := AGR.DisplayOverviewInfoDefault( "cyc", "c", "cyclic" ),
 
     DisplayPRG := function( tocs, name, std, stdavail )
-      local cyc, private, j, toc, record, i;
+      local cyc, private, toc, record, i;
       cyc:= [];
       private:= "";
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( name ) ) then
           record:= toc.( name );
           if IsBound( record.cyclic ) then
@@ -1582,13 +1723,12 @@ AGRDeclareDataType( "prg", "cyclic", rec(
       if IsEmpty( cyc ) then
         return [];
       elif 1 < Length( stdavail ) then
-        return [ Concatenation( "repres. of cyclic subgroups of G available",
+        return [ Concatenation( "repr. cyc. subg.",
                                 " for std. generators ",
                                 String( Set( List( cyc, x -> x[1] ) ) ),
-                                private, "\n" ) ];
+                                private ) ];
       else
-        return [ Concatenation( "repres. of cyclic subgroups of G available",
-                                private, "\n" ) ];
+        return [ Concatenation( "repr. cyc. subg.", private ) ];
       fi;
     end,
 
@@ -1608,7 +1748,7 @@ AGRDeclareDataType( "prg", "cyclic", rec(
     end,
 
     TestWords := function( tocid, name, file, type, verbose )
-      return AGRTestWordsSLPDefault( tocid, name, file, type, true, verbose );
+      return AGR.TestWordsSLPDefault( tocid, name, file, type, true, verbose );
     end,
 
     ReadAndInterpretDefault := ScanStraightLineProgram,
@@ -1632,7 +1772,7 @@ AGRDeclareDataType( "prg", "cyclic", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "cyc2ccl", rec(
+AGR.DeclareDataType( "prg", "cyc2ccl", rec(
 
     # `<groupname>G<i>cycW<n>-cclsW<m>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar, "cycW", IsDigitChar ],
@@ -1661,7 +1801,7 @@ AGRDeclareDataType( "prg", "cyc2ccl", rec(
     end,
 
     TestWords := function( tocid, name, file, type, verbose )
-      return AGRTestWordsSLPDefault( tocid, name, file, type, true, verbose );
+      return AGR.TestWordsSLPDefault( tocid, name, file, type, true, verbose );
     end,
 
     ReadAndInterpretDefault := ScanStraightLineProgram,
@@ -1694,7 +1834,7 @@ AGRDeclareDataType( "prg", "cyc2ccl", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "maxstd", rec(
+AGR.DeclareDataType( "prg", "maxstd", rec(
     # `<groupname>G<i>max<k>W<n>-<subgroupname>G<j>W<m>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar, "max", IsDigitChar,
                             "W", IsDigitChar ],
@@ -1723,7 +1863,7 @@ AGRDeclareDataType( "prg", "maxstd", rec(
     end,
 
     TestWords := function( tocid, name, file, type, verbose )
-      return AGRTestWordsSLPDefault( tocid, name, file, type, false, verbose );
+      return AGR.TestWordsSLPDefault( tocid, name, file, type, false, verbose );
     end,
 
     ReadAndInterpretDefault := ScanStraightLineProgram,
@@ -1772,7 +1912,7 @@ AGRDeclareDataType( "prg", "maxstd", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "out", rec(
+AGR.DeclareDataType( "prg", "out", rec(
     # `<groupname>G<i>-a<outname>W<n>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
                           [  "a", IsChar, "W", IsDigitChar ] ],
@@ -1818,17 +1958,30 @@ AGRDeclareDataType( "prg", "out", rec(
       return true;
     end,
 
-    DisplayOverviewInfo := [ "out", "r", function( tocs, groupname )
-      local value, private, j, toc, record, new;
+    DisplayOverviewInfo := [ "out", "r", function( conditions )
+      local groupname, tocs, std, value, private, toc, record, new;
+
+      groupname:= conditions[1][2];
+      tocs:= AGR.TablesOfContents( conditions );
+      if Length( conditions ) = 1 or
+         not ( IsInt( conditions[2] ) or IsList( conditions[2] ) ) then
+        std:= true;
+      else
+        std:= conditions[2];
+        if IsInt( std ) then
+          std:= [ std ];
+        fi;
+      fi;
 
       value:= [];;
       private:= false;
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( groupname ) ) then
           record:= toc.( groupname );
           if IsBound( record.out ) then
-            new:= Set( List( record.out, x -> x[2] ) );
+            new:= Set( List( Filtered( record.out,
+                                       x -> std = true or x[1] in std ),
+                             x -> x[2] ) );
             if IsBound( toc.diridPrivate ) and not IsEmpty( new ) then
               private:= true;
             fi;
@@ -1841,30 +1994,29 @@ AGRDeclareDataType( "prg", "out", rec(
     end ],
 
     DisplayPRG := function( tocs, name, std, stdavail )
-      local out, private, j, toc, record, i;
+      local out, private, toc, record, i;
 
       out:= [];
-      private:= "";
+      private:= AtlasOfGroupRepresentationsInfo.markprivate;
 
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( name ) ) then
           record:= toc.( name );
           if IsBound( record.out ) then
             for i in record.out do
               if std = true or i[1] in std then
                 if IsBound( toc.diridPrivate ) then
-                  private:= AtlasOfGroupRepresentationsInfo.markprivate;
+                  Add( out, Concatenation( i[2], private ) );
+                else
+                  Add( out, i[2] );
                 fi;
-                Add( out, i[2] );
               fi;
             od;
           fi;
         fi;
       od;
       if not IsEmpty( out ) then
-        out:= [ Concatenation( "available automorphisms:  ", String( out ),
-                    private, "\n" ) ];
+        out:= Concatenation( [ "automorphisms" ], out );
       fi;
       return out;
     end,
@@ -1892,7 +2044,7 @@ AGRDeclareDataType( "prg", "out", rec(
     # automorphism; how could we check this with reasonable effort?)
     # Thus we check just whether the name fits to the structure of the
     # outer automorphism group and to the order of the automorphism.
-    # (We copy the relevant part of the code of `AGRTestWordsSLPDefault'
+    # (We copy the relevant part of the code of `AGR.TestWordsSLPDefault'
     # into this function.)
     TestWords := function( tocid, name, file, type, verbose )
       local filename, prog, prg, gens, gapname, pos, claimedorder, tbl,
@@ -1902,7 +2054,7 @@ AGRDeclareDataType( "prg", "out", rec(
       if tocid = "local" then
         tocid:= "dataword";
       fi;
-      prog:= AGRFileContents( tocid, name, file, type );
+      prog:= AGR.FileContents( tocid, name, file, type );
       if prog = fail then
         Print( "#E  file `", file, "' is corrupted\n" );
         return false;
@@ -1961,8 +2113,9 @@ AGRDeclareDataType( "prg", "out", rec(
       # Get the structure of the automorphism group.
       # If this group is cyclic then we compare orders.
       tbl:= CharacterTable( gapname );
-      if tbl <> fail and HasExtensionInfoCharacterTable( tbl ) then
-        outinfo:= ExtensionInfoCharacterTable( tbl )[2];
+      if tbl <> fail and IsBound( AGR.HasExtensionInfoCharacterTable )
+                     and AGR.HasExtensionInfoCharacterTable( tbl ) then
+        outinfo:= AGR.ExtensionInfoCharacterTable( tbl )[2];
         if    outinfo = "" then
           Print( "#E  automorphism `", file,
                  "' for group without outer automorphisms\n" );
@@ -2033,7 +2186,7 @@ AGRDeclareDataType( "prg", "out", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "switch", rec(
+AGR.DeclareDataType( "prg", "switch", rec(
     # `<groupname>G<i>-G<j>W<n>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
                           [  "G", IsDigitChar, "W", IsDigitChar ] ],
@@ -2046,31 +2199,31 @@ AGRDeclareDataType( "prg", "switch", rec(
     end,
 
     DisplayPRG := function( tocs, name, std, stdavail )
-      local switch, private, j, toc, record, i;
+      local switch, private, toc, record, i;
 
       switch:= [];
-      private:= "";
+      private:= AtlasOfGroupRepresentationsInfo.markprivate;
 
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( name ) ) then
           record:= toc.( name );
           if IsBound( record.switch ) then
             for i in record.switch do
               if std = true or i[1] in std then
                 if IsBound( toc.diridPrivate ) then
-                  private:= AtlasOfGroupRepresentationsInfo.markprivate;
+                  Add( switch, Concatenation( String( i[1] ), " -> ",
+                                   String( i[2] ), private ) );
+                else
+                  Add( switch, Concatenation( String( i[1] ), " -> ",
+                                   String( i[2] ) ) );
                 fi;
-                Add( switch, Concatenation( String( i[1] ), " -> ",
-                                 String( i[2] ) ) );
               fi;
             od;
           fi;
         fi;
       od;
       if not IsEmpty( switch ) then
-        switch:= [ Concatenation( "available restandardizations:  ",
-                       String( switch ), private, "\n" ) ];
+        switch:= Concatenation( [ "restandardizations" ], switch );
       fi;
       return switch;
     end,
@@ -2092,7 +2245,7 @@ AGRDeclareDataType( "prg", "switch", rec(
     end,
 
     TestWords := function( tocid, name, file, type, verbose )
-      return AGRTestWordsSLPDefault( tocid, name, file, type, false, verbose );
+      return AGR.TestWordsSLPDefault( tocid, name, file, type, false, verbose );
     end,
 
     ReadAndInterpretDefault := ScanStraightLineProgram,
@@ -2114,7 +2267,7 @@ AGRDeclareDataType( "prg", "switch", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "find", rec(
+AGR.DeclareDataType( "prg", "find", rec(
     # `<groupname>G<i>-find<j>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
                           [ "find", IsDigitChar ] ],
@@ -2126,17 +2279,15 @@ AGRDeclareDataType( "prg", "find", rec(
       return true;
     end,
 
-    DisplayOverviewInfo := DisplayOverviewInfoDefault( "fnd", "r", "find" ),
-#T better number of pres.!
+    DisplayOverviewInfo := AGR.DisplayOverviewInfoDefault( "fnd", "c", "find" ),
 
     DisplayPRG := function( tocs, name, std, stdavail )
-      local find, private, j, toc, record, i;
+      local find, private, toc, record, i;
 
       find:= [];
       private:= "";
 
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( name ) ) then
           record:= toc.( name );
           if IsBound( record.find ) then
@@ -2154,13 +2305,12 @@ AGRDeclareDataType( "prg", "find", rec(
       if IsEmpty( find ) then
         return [];
       elif 1 < Length( stdavail ) then
-        return [ Concatenation( "standard generators finder available",
+        return [ Concatenation( "std. gen. finder",
                                 " for std. generators ",
                                 JoinStringsWithSeparator( find, ", " ),
-                                private, "\n" ) ];
+                                private ) ];
       else
-        return [ Concatenation( "standard generators finder available",
-                                private, "\n" ) ];
+        return [ Concatenation( "std. gen. finder", private ) ];
       fi;
     end,
 
@@ -2193,7 +2343,7 @@ AGRDeclareDataType( "prg", "find", rec(
       if tocid = "local" then
         tocid:= "dataword";
       fi;
-      prog:= AGRFileContents( tocid, name, file, type );
+      prog:= AGR.FileContents( tocid, name, file, type );
       if prog = fail then
         Print( "#E  file `", file, "' is corrupted\n" );
         return false;
@@ -2215,8 +2365,8 @@ AGRDeclareDataType( "prg", "find", rec(
         if gens <> fail then
           gens:= gens.generators;
           G:= Group( gens );
-          if IsBound( gapname[3] ) then
-            SetSize( G, gapname[3] );
+          if IsBound( gapname[3].size ) then
+            SetSize( G, gapname[3].size );
           fi;
           res:= ResultOfBBoxProgram( prg, G );
           if IsList( res ) and not IsString( res ) then
@@ -2272,7 +2422,7 @@ AGRDeclareDataType( "prg", "find", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "check", rec(
+AGR.DeclareDataType( "prg", "check", rec(
     # `<groupname>G<i>-check<j>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
                           [ "check", IsDigitChar ] ],
@@ -2284,36 +2434,48 @@ AGRDeclareDataType( "prg", "check", rec(
       return true;
     end,
 
-    DisplayOverviewInfo := [ "chk", "r", function( tocs, groupname )
-    local value, private, j, toc, record, i, pos, rel;
+    DisplayOverviewInfo := [ "chk", "c", function( conditions )
+      local groupname, tocs, std, value, private, toc, record;
 
-    value:= "-";
-    private:= false;
-    for j in [ 1 .. Length( tocs ) ] do
-      toc:= tocs[j];
-      if IsBound( toc.( groupname ) ) then
-        record:= toc.( groupname );
-        if ( IsBound( record.check ) and not IsEmpty( record.check ) ) or
-           ( IsBound( record.pres ) and not IsEmpty( record.pres ) ) then
-          value:= "+";
-          if IsBound( toc.diridPrivate ) then
-            private:= true;
-          fi;
-          break;
+      groupname:= conditions[1][2];
+      tocs:= AGR.TablesOfContents( conditions );
+      if Length( conditions ) = 1 or
+         not ( IsInt( conditions[2] ) or IsList( conditions[2] ) ) then
+        std:= true;
+      else
+        std:= conditions[2];
+        if IsInt( std ) then
+          std:= [ std ];
         fi;
       fi;
-    od;
-    return [ value, private ];
+
+      value:= "";
+      private:= false;
+      for toc in tocs do
+        if IsBound( toc.( groupname ) ) then
+          record:= toc.( groupname );
+          if ( IsBound( record.check ) and
+               ForAny( record.check, x -> std = true or x[1] in std ) ) or
+             ( IsBound( record.pres ) and
+               ForAny( record.pres, x -> std = true or x[1] in std ) ) then
+            value:= "+";
+            if IsBound( toc.diridPrivate ) then
+              private:= true;
+            fi;
+            break;
+          fi;
+        fi;
+      od;
+      return [ value, private ];
     end ],
 
     DisplayPRG := function( tocs, name, std, stdavail )
-      local check, private, j, toc, record, comp, i;
+      local check, private, toc, record, comp, i;
 
       check:= [];
-      private:= "";
+      private:= AtlasOfGroupRepresentationsInfo.markprivate;
 
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( name ) ) then
           record:= toc.( name );
           for comp in [ "check", "pres" ] do
@@ -2321,9 +2483,10 @@ AGRDeclareDataType( "prg", "check", rec(
               for i in record.( comp ) do
                 if std = true or i[1] in std then
                   if IsBound( toc.diridPrivate ) then
-                    private:= AtlasOfGroupRepresentationsInfo.markprivate;
+                    AddSet( check, Concatenation( i[1], private ) );
+                  else
+                    AddSet( check, i[1] );
                   fi;
-                  AddSet( check, String( i[1] ) );
                 fi;
               od;
             fi;
@@ -2333,13 +2496,11 @@ AGRDeclareDataType( "prg", "check", rec(
       if IsEmpty( check ) then
         return [];
       elif 1 < Length( stdavail ) then
-        return [ Concatenation( "standard generators checker available",
+        return [ Concatenation( "std. gen. checker",
                                 " for std. generators ",
-                                JoinStringsWithSeparator( check, ", " ),
-                                private, "\n" ) ];
+                                JoinStringsWithSeparator( check, ", " ) ) ];
       else
-        return [ Concatenation( "standard generators checker available",
-                                private, "\n" ) ];
+        return [ "std. gen. checker" ];
       fi;
     end,
 
@@ -2364,7 +2525,7 @@ AGRDeclareDataType( "prg", "check", rec(
     end,
 
     TestWords := function( tocid, name, file, type, verbose )
-        return AGRTestWordsSLDDefault( tocid, name, file, type,
+        return AGR.TestWordsSLDDefault( tocid, name, file, type,
                  [ IsChar, "G", IsDigitChar, "-check", IsDigitChar ],
                  verbose ); end,
 
@@ -2389,7 +2550,7 @@ AGRDeclareDataType( "prg", "check", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "pres", rec(
+AGR.DeclareDataType( "prg", "pres", rec(
     # `<groupname>G<i>-P<j>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
                           [ "P", IsDigitChar ] ],
@@ -2401,27 +2562,25 @@ AGRDeclareDataType( "prg", "pres", rec(
       return true;
     end,
 
-
-    DisplayOverviewInfo := DisplayOverviewInfoDefault( "prs", "r", "pres" ),
-#T better number of pres.!
+    DisplayOverviewInfo := AGR.DisplayOverviewInfoDefault( "prs", "c", "pres" ),
 
     DisplayPRG := function( tocs, name, std, stdavail )
-      local pres, private, j, toc, record, i;
+      local pres, private, toc, record, i;
 
       pres:= [];
-      private:= "";
+      private:= AtlasOfGroupRepresentationsInfo.markprivate;
 
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( name ) ) then
           record:= toc.( name );
           if IsBound( record.pres ) then
             for i in record.pres do
               if std = true or i[1] in std then
                 if IsBound( toc.diridPrivate ) then
-                  private:= AtlasOfGroupRepresentationsInfo.markprivate;
+                  AddSet( pres, Concatenation( String( i[1] ), private ) );
+                else
+                  AddSet( pres, String( i[1] ) );
                 fi;
-                AddSet( pres, String( i[1] ) );
               fi;
             od;
           fi;
@@ -2430,13 +2589,11 @@ AGRDeclareDataType( "prg", "pres", rec(
       if IsEmpty( pres ) then
         return [];
       elif 1 < Length( stdavail ) then
-        return [ Concatenation( "presentation available",
+        return [ Concatenation( "presentation",
                                 " for std. generators ",
-                                JoinStringsWithSeparator( pres, ", " ),
-                                private, "\n" ) ];
+                                JoinStringsWithSeparator( pres, ", " ) ) ];
       else
-        return [ Concatenation( "presentation available",
-                                private, "\n" ) ];
+        return [ "presentation" ];
       fi;
     end,
 
@@ -2457,7 +2614,7 @@ AGRDeclareDataType( "prg", "pres", rec(
     end,
 
     TestWords := function( tocid, name, file, type, verbose )
-        return AGRTestWordsSLDDefault( tocid, name, file, type,
+        return AGR.TestWordsSLDDefault( tocid, name, file, type,
                  [ IsChar, "G", IsDigitChar, "-P", IsDigitChar ],
                  verbose ); end,
 
@@ -2483,7 +2640,7 @@ AGRDeclareDataType( "prg", "pres", rec(
 ##  </Item>
 ##  <#/GAPDoc>
 ##
-AGRDeclareDataType( "prg", "otherscripts", rec(
+AGR.DeclareDataType( "prg", "otherscripts", rec(
 
     # `<groupname>G<i>-X<descr>W<n>'
     FilenameFormat := [ [ [ IsChar, "G", IsDigitChar ],
@@ -2497,29 +2654,27 @@ AGRDeclareDataType( "prg", "otherscripts", rec(
     end,
 
     DisplayPRG := function( tocs, name, std, stdavail )
-      local result, other, private, j, toc, record, i;
+      local result, other, private, toc, record, i;
       other:= [];
-      private:= "";
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      private:= AtlasOfGroupRepresentationsInfo.markprivate;
+      for toc in tocs do
         if IsBound( toc.( name ) ) then
           record:= toc.( name );
           if IsBound( record.otherscripts ) then
             for i in record.otherscripts do
               if std = true or i[1] in std then
                 if IsBound( toc.diridPrivate ) then
-                  private:= AtlasOfGroupRepresentationsInfo.markprivate;
+                  Add( other, Concatenation( "\"", i[2], "\"", private ) );
+                else
+                  Add( other, Concatenation( "\"", i[2], "\"" ) );
                 fi;
-                Add( other, Concatenation( "\"", i[2], "\"", private ) );
               fi;
             od;
           fi;
         fi;
       od;
       if not IsEmpty( other ) then
-        other:= [ Concatenation( "available other scripts:\n   ",
-                      JoinStringsWithSeparator( other, "\n   " ),
-                      "\n" ) ];
+        other:= Concatenation( [ "other scripts" ], other );
       fi;
       return other;
     end,
@@ -2541,7 +2696,7 @@ AGRDeclareDataType( "prg", "otherscripts", rec(
     end,
 
     TestWords := function( tocid, name, file, type, verbose )
-      return AGRTestWordsSLPDefault( tocid, name, file, type, false, verbose );
+      return AGR.TestWordsSLPDefault( tocid, name, file, type, false, verbose );
     end,
 
     ReadAndInterpretDefault := ScanStraightLineProgram,
@@ -2559,8 +2714,8 @@ AGRDeclareDataType( "prg", "otherscripts", rec(
 ##  in order to delay the evaluation of the data.
 ##
 ##  <#GAPDoc Label="ATLASREP_TOCFILE">
-##  Alternatively, one can add a line to the user's <F>.gaprc</F> file
-##  (see&nbsp;<Ref Sect="The .gaprc file" BookName="ref"/>),
+##  Alternatively, one can add a line to the user's <F>gaprc</F> file
+##  (see&nbsp;<Ref Sect="The gap.ini and gaprc files" BookName="ref"/>),
 ##  which assigns the filename of the current <F>gap/atlasprm.g</F> file
 ##  (as an absolute path or relative to the user's home directory,
 ##  cf.&nbsp;<Ref Func="Directory" BookName="ref"/>)

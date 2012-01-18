@@ -2,7 +2,6 @@
 ##  
 #W  helpbase.gi                 GAP Library                      Frank Lübeck
 ##  
-#H  @(#)$Id: helpbase.gi,v 1.31 2011/06/10 09:26:55 gap Exp $
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ## The files helpbase.g{d,i} contain the interface between GAP's online help
 ## and the actual help books.
 ##  
-Revision.helpbase_gi := 
-  "@(#)$Id: helpbase.gi,v 1.31 2011/06/10 09:26:55 gap Exp $";
 
 #############################################################################
 ##  

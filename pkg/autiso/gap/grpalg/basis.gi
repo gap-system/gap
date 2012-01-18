@@ -136,7 +136,7 @@ InstallMethod( TablePowerBasis,
         for i in [1..n] do
             if l[i] = s then 
                 e := C.exps[i];
-                r := DepthVector(e);
+                r := PositionNonZero(e);
                 f := Position( C.exps, e-I[r] );
                 g := Position( C.exps, I[r] );
                 for j in [1..n] do

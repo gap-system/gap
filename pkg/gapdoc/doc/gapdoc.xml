@@ -2,7 +2,6 @@
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd">
 
-<!-- $Id: gapdoc.xml,v 1.17 2011/03/03 09:52:10 gap Exp $ -->
 
 <!-- The documentation to the GAPDoc system. 
      Copyright 2000-2007 by Frank Lübeck and Max Neunhöffer
@@ -24,11 +23,16 @@
     <Email>neunhoef at mcs.st-and.ac.uk</Email>
     <Homepage>http://www-groups.mcs.st-and.ac.uk/~neunhoef/</Homepage>
   </Author>
-  <Date>March 2011</Date>
+  <Date>September 2011</Date>
   <Copyright> <Index>License</Index>
               &copyright; 2000-2011 by Frank Lübeck and Max Neunhöffer <P/>
-              We adopt the copyright regulations of &GAP; as detailed in the 
-              copyright notice in the &GAP; manual. </Copyright>
+              &GAPDoc;  is free software; you can redistribute it
+              and/or modify it under the terms of the <URL Text="GNU
+              General Public License">http://www.fsf.org/licenses/gpl.html</URL>              as published by the Free Software Foundation;
+              either version 2 of the License, or (at your option) any
+              later version.
+  </Copyright>
+
 </TitlePage>
 
 <TableOfContents/>

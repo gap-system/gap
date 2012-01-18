@@ -2,7 +2,6 @@
 ##
 #W  grppclat.gi                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: grppclat.gi,v 4.71 2011/06/17 15:58:04 gap Exp $
 ##
 #Y  Copyright (C)  1997  
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This  file contains declarations for the subgroup lattice functions for
 ##  pc groups.
 ##
-Revision.grppclat_gi:=
-  "@(#)$Id: grppclat.gi,v 4.71 2011/06/17 15:58:04 gap Exp $";
 
 #############################################################################
 ##

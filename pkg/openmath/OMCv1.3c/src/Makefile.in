@@ -8,8 +8,6 @@
 # email:
 #          Olivier.Arsac@sophia.inria.fr
 #
-# $Id:
-#
 
 SHELL      = /bin/sh
 

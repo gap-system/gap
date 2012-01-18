@@ -2,7 +2,6 @@
 ##
 #W  vspchom.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: vspchom.gi,v 4.43 2010/02/23 15:13:36 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -32,8 +31,6 @@
 ##  4. methods for algebras of linear mappings
 ##  5. methods for full hom spaces
 ##
-Revision.vspchom_gi :=
-    "@(#)$Id: vspchom.gi,v 4.43 2010/02/23 15:13:36 gap Exp $";
 
 #T TODO:
 #T
@@ -215,7 +212,7 @@ InstallGlobalFunction( LeftModuleHomomorphismByImages,
     function( S, R, gens, imgs )
     local hom;
     hom:= LeftModuleGeneralMappingByImages( S, R, gens, imgs );
-    if IsMapping( hom ) and IsTotal( hom ) then
+    if IsMapping( hom ) then
       return LeftModuleHomomorphismByImagesNC( S, R, gens, imgs );
     else
       return fail;

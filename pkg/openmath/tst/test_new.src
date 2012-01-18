@@ -158,38 +158,6 @@ OMPutObject( w, false );
 OMPutObject( w, "OutputTextNone" );
 CloseStream( s );
 
-## InputOutputLocalProcess (doesn't work with Gap 4.2 or earlier)
-
-# stream returns XML encoding
-
-tpipe_exec := Filename( DirectoriesPackageLibrary( "openmath", "OMCv1.3c/src" ), "tpipe" );;
-s := InputOutputLocalProcess( OMDirectoryTemporary, tpipe_exec, [ "-ux", "-", "-", ] );
-w := OpenMathXMLWriter( s );;
-
-OMPutObject( w, 123 );
-OMPutObject( w, false );
-OMPutObject( w, "InputOutputLocalProcess, XML encoding" );
-
-OMGetObject( s );
-OMGetObject( s );
-OMGetObject( s );
-CloseStream( s );
-
-# stream returns binary encoding
-
-tpipe_exec := Filename( DirectoriesPackageLibrary( "openmath", "OMCv1.3c/src" ), "tpipe" );;
-s := InputOutputLocalProcess( OMDirectoryTemporary, tpipe_exec, [ "-ub", "-", "-", ] );
-w := OpenMathXMLWriter( s );;
-
-OMPutObject( w, 123 );
-OMPutObject( w, false );
-OMPutObject( w, "InputOutputLocalProcess, binary encoding" );
-
-OMGetObject( s );
-OMGetObject( s );
-OMGetObject( s );
-CloseStream( s );
-
 ### miscellaneous tests
 
 # test with binary encoding and InputTextString

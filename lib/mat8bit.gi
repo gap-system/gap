@@ -2,7 +2,6 @@
 ##
 #W  mat8bit.gi                   GAP Library                     Steve Linton
 ##
-#H  @(#)$Id: mat8bit.gi,v 4.40 2011/05/05 09:31:04 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##
 ##  all rows must be the same length and written over the same field
 ##
-Revision.mat8bit_gi :=
-    "@(#)$Id: mat8bit.gi,v 4.40 2011/05/05 09:31:04 sal Exp $";
 
 #############################################################################
 ##
@@ -388,7 +385,7 @@ InstallGlobalFunction(ConvertToMatrixRep,
         od;
     fi;
     
-    if q < 256 then
+    if q <= 256 then
         ConvertToMatrixRepNC(m,q);
     fi;
     
@@ -410,8 +407,11 @@ InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)
     if not IsInt(q) then 
         q := Size(q);
     fi;
-    if Is8BitMatrixRep(m) or IsGF2MatrixRep(m) then
-        return;
+    if Is8BitMatrixRep(m) then
+        return Q_VEC8BIT(m[1]);
+    fi;
+    if IsGF2MatrixRep(m) then
+        return 2;
     fi;
     for v in m do
         result := ConvertToVectorRepNC(v,q);
@@ -424,6 +424,7 @@ InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)
     elif q <= 256 then
         CONV_MAT8BIT(m, q);
     fi;
+    return q;
 end);
 
 #############################################################################

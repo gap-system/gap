@@ -2,7 +2,6 @@
 **
 *W  precord.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: precord.h,v 4.14 2010/02/23 15:13:46 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,9 +9,11 @@
 **
 **  This file declares the functions for plain records.
 */
+
+#ifndef GAP_PRECORD_H
+#define GAP_PRECORD_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_precord_h =
-   "@(#)$Id: precord.h,v 4.14 2010/02/23 15:13:46 gap Exp $";
 #endif
 
 
@@ -209,11 +210,10 @@ extern  void            SortPRecRNam (
 StructInitInfo * InitInfoPRecord ( void );
 
 
+#endif // GAP_PRECORD_H
+
 /****************************************************************************
 **
 
 *E  precord.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

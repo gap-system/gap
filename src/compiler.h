@@ -3,7 +3,6 @@
 *W  compiler.h                  GAP source                   Ferenc Ràkòczi
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id: compiler.h,v 4.11 2010/02/23 15:13:40 gap Exp $
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,9 +10,11 @@
 **
 **  This file declares the functions of the GAP to C compiler.
 */
+
+#ifndef GAP_COMPILER_H
+#define GAP_COMPILER_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_compiler_h =
-   "@(#)$Id: compiler.h,v 4.11 2010/02/23 15:13:40 gap Exp $";
 #endif
 
 
@@ -52,11 +53,10 @@ extern void SetCompileOpts( Char *opts );
 StructInitInfo * InitInfoCompiler ( void );
 
 
+#endif // GAP_COMPILER_H
+
 /****************************************************************************
 **
 
 *E  compiler.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

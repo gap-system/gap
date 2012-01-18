@@ -1,7 +1,7 @@
 
 AdjustPresentation := function( G )
     G := G / TorsionSubgroup(G);
-    return PcpGroupBySeries( UpperCentralSeries(G), "snf" );
+    return PcpGroupBySeries( UpperCentralSeriesOfGroup(G), "snf" );
 end;
 
 if not IsBound( FULL ) then FULL := false; fi;
@@ -37,7 +37,7 @@ NextStepRepresentation := function( G, i, mats )
     # choose a cocycle
     rc := List( cc.gcc, Reversed );
     rc := NormalFormIntMat( rc, 2 ).normal;
-    rc := Filtered( rc, x -> DepthOfVec(x) <= Length(mats[1]) );
+    rc := Filtered( rc, x -> PositionNonZero(x) <= Length(mats[1]) );
     if Length(rc) = 0 then return false; fi;
     co := Reversed( rc[Length(rc)] );
 

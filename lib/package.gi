@@ -3,7 +3,6 @@
 #W  package.gi                  GAP Library                      Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: package.gi,v 4.33 2011/06/01 16:22:24 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,9 +10,31 @@
 ##
 ##  This file contains support for &GAP; packages.
 ##
-Revision.package_gi :=
-    "@(#)$Id: package.gi,v 4.33 2011/06/01 16:22:24 gap Exp $";
 
+
+# recode string to GAPInfo.TermEncoding, assuming input is UTF-8 or latin1
+# (if useful this may become documented for general use)
+BindGlobal( "RecodeForCurrentTerminal", function( str )
+    local fun, u;
+    if IsBoundGlobal( "Unicode" ) and IsBoundGlobal( "Encode" ) then
+      # The GAPDoc package is completely loaded.
+      fun:= ValueGlobal( "Unicode" );
+      u:= fun( str, "UTF-8" );
+      if u = fail then
+        u:= fun( str, "ISO-8859-1");
+      fi;
+      if GAPInfo.TermEncoding <> "UTF-8" then
+        fun:= ValueGlobal( "SimplifiedUnicodeString" );
+        u:= fun( u, GAPInfo.TermEncoding );
+      fi;
+      fun:= ValueGlobal( "Encode" );
+      u:= fun( u, GAPInfo.TermEncoding );
+      return u;
+    else
+      # GAPDoc is not available, do nothing in this case.
+      return str;
+    fi;
+  end );
 
 #############################################################################
 ##
@@ -488,8 +509,10 @@ InstallGlobalFunction( LogPackageLoadingMessage, function( arg )
     if IsString( message ) then
       message:= [ message ];
     fi;
-    if severity <= PACKAGE_WARNING and IsBound( ANSI_COLORS )
-       and ANSI_COLORS = true and IsBound( TextAttr )
+    if severity <= PACKAGE_WARNING 
+       and IsBound( GAPInfo.UserPreferences.UseColorsInTerminal )
+       and GAPInfo.UserPreferences.UseColorsInTerminal = true 
+       and IsBound( TextAttr )
        and IsRecord( TextAttr ) then
       if severity = PACKAGE_ERROR then
         message:= List( message,
@@ -850,12 +873,24 @@ InstallGlobalFunction( IsPackageMarkedForLoading, function( name, version )
 #F  DefaultPackageBannerString( <inforec> )
 ##
 InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
-    local sep, str, authors, role, fill, i, person;
+    local len, sep, i, str, authors, role, fill, person;
 
     # Start with a row of `-' signs.
-    sep:= ListWithIdenticalEntries( SizeScreen()[1] - 3, '-' );
+    len:= SizeScreen()[1] - 3;
+    if GAPInfo.TermEncoding = "UTF-8" then
+      sep:= "─";
+      i:= 1;
+      while 2 * i <= len do
+        Append( sep, sep );
+        i:= 2 * i;
+      od;
+      Append( sep, sep{ [ 1 .. 3 * ( len - i ) ] } );
+    else
+      sep:= ListWithIdenticalEntries( len, '-' );
+    fi;
     Add( sep, '\n' );
-    str:= ShallowCopy( sep );
+    
+    str:= "";
 
     # Add package name and version number.
     if IsBound( inforec.PackageName ) and IsBound( inforec.Version ) then
@@ -881,7 +916,7 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
         authors:= Filtered( inforec.Persons, x -> x.IsMaintainer );
         role:= "maintained by ";
       fi;
-      fill:= List( role, x -> ' ' );
+      fill:= ListWithIdenticalEntries( Length(role), ' ' );
       Append( str, role );
       for i in [ 1 .. Length( authors ) ] do
         person:= authors[i];
@@ -910,17 +945,17 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
     fi;
 
     # Add info about the home page of the package.
-    if IsBound( inforec.WWWHome ) then
-      Append( str, "(See also " );
+    if IsBound( inforec.PackageWWWHome ) then
+      Append( str, "Homepage: " );
       Append( str, inforec.PackageWWWHome );
-      Append( str, ".)\n" );
+      Append( str, "\n" );
     fi;
-
-    Append( str, sep );
-
-    str:= ReplacedString( str, "&auml;", "\"a" );
-    str:= ReplacedString( str, "&ouml;", "\"o" );
-    str:= ReplacedString( str, "&uuml;", "\"u" );
+    
+    # temporary hack, in some package names with umlauts are in HTML encoding
+    str := Concatenation(sep, RecodeForCurrentTerminal(str), sep);
+    str:= ReplacedString( str, "&auml;", RecodeForCurrentTerminal("ä") );
+    str:= ReplacedString( str, "&ouml;", RecodeForCurrentTerminal("ö") );
+    str:= ReplacedString( str, "&uuml;", RecodeForCurrentTerminal("ü") );
 
     return str;
     end );
@@ -1110,7 +1145,6 @@ InstallGlobalFunction( LoadPackageDocumentation, function( arg )
     od;
     end );
 
-
 #############################################################################
 ##
 #F  LoadPackage( <name>[, <version>][, <banner>] )
@@ -1120,19 +1154,21 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
     local pair, info, bannerstring, fun, u, pkgname, namespace;
 
     for pair in secondrun do
-      GAPInfo.PackageCurrent:= pair[1];
-      namespace := pair[1].PackageName;
-      pkgname := LowercaseString( namespace );
-      LogPackageLoadingMessage( PACKAGE_DEBUG,
-          "start reading file read.g",
-          namespace );
-      ENTER_NAMESPACE(namespace);
-      Read( pair[2] );
-      LEAVE_NAMESPACE();
-      GAPInfo.PackageCurrent  := fail;
-      LogPackageLoadingMessage( PACKAGE_DEBUG,
-          "finish reading file read.g",
-          namespace );
+      if pair[2] <> fail then
+        GAPInfo.PackageCurrent:= pair[1];
+        namespace := pair[1].PackageName;
+        pkgname := LowercaseString( namespace );
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            "start reading file read.g",
+            namespace );
+        ENTER_NAMESPACE(namespace);
+        Read( pair[2] );
+        LEAVE_NAMESPACE();
+        GAPInfo.PackageCurrent  := fail;
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            "finish reading file read.g",
+            namespace );
+      fi;
     od;
 
     # Show the banners.
@@ -1143,7 +1179,7 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
         # If the component `BannerString' is bound in `info' then we print
         # this string, otherwise we print the default banner string.
         if IsBound( info.BannerString ) then
-          bannerstring:= info.BannerString;
+          bannerstring:= RecodeForCurrentTerminal(info.BannerString);
         else
           bannerstring:= DefaultPackageBannerString( info );
         fi;
@@ -1151,13 +1187,8 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
         # Be aware of umlauts, accents etc. in the banner.
         if IsBoundGlobal( "Unicode" ) and IsBoundGlobal( "Encode" ) then
           # The GAPDoc package is completely loaded.
-          fun:= ValueGlobal( "Unicode" );
-          u:= fun( bannerstring, "UTF-8" );
-          if u = fail then
-            u:= fun( bannerstring, "ISO-8859-1");
-          fi;
-          fun:= ValueGlobal( "Encode" );
-          Print( fun( u, GAPInfo.TermEncoding ) );
+          fun:= ValueGlobal( "PrintFormattedString" );
+          fun( bannerstring );
         else
           # GAPDoc is not available, simply print the banner string as is.
           Print( bannerstring );
@@ -1317,9 +1348,7 @@ fi;
 
         filename:= Filename( [ Directory( info.InstallationPath ) ],
                              "read.g" );
-        if filename <> fail then
-          Add( secondrun, [ info, filename ] );
-        fi;
+        Add( secondrun, [ info, filename ] );
       od;
 
       if IsBound( GAPInfo.LibraryLoaded )
@@ -1760,6 +1789,18 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     TestMandat( record, "ArchiveFormats", IsString, "a string" );
     TestOption( record, "TextFiles", IsStringList, "a list of strings" );
     TestOption( record, "BinaryFiles", IsStringList, "a list of strings" );
+    TestOption( record, "TextBinaryFilesPatterns", 
+        x -> IsStringList(x) and 
+             ForAll( x, i -> Length(i) > 0 ) and
+             ForAll( x, i -> i[1] in ['T','B'] ),  
+        "a list of strings, each started with 'T' or 'B'" );
+    if Number( [ IsBound(record.TextFiles), 
+                 IsBound(record.BinaryFiles), 
+                 IsBound(record.TextBinaryFilesPatterns) ],
+               a -> a=true ) > 1 then
+      Print("#W  only one of TextFiles, BinaryFiles or TextBinaryFilesPatterns\n");
+      Print("#W  components must be bound\n");
+    fi;
     if     TestOption( record, "Persons", IsRecordList, "a list of records" )
        and IsBound( record.Persons ) then
       for subrec in record.Persons do
@@ -1774,12 +1815,15 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestOption( subrec, "IsAuthor", IsProperBool, "`true' or `false'" );
         TestOption( subrec, "IsMaintainer", IsProperBool,
             "`true' or `false'" );
-
-        if not (    IsBound( subrec.Email ) or IsBound( subrec.WWWHome )
-                 or IsBound( subrec.PostalAddress ) ) then
-          Print( "#E  one of the components `Email', `WWWHome', ",
-                 "`PostalAddress' must be bound\n" );
-          result:= false;
+        if IsBound( subrec.IsMaintainer ) then
+          if subrec.IsMaintainer = true and 
+               not ( IsBound( subrec.Email ) or 
+                     IsBound( subrec.WWWHome ) or
+                     IsBound( subrec.PostalAddress ) ) then
+            Print( "#E  one of the components `Email', `WWWHome', `PostalAddress'\n",
+                   "#E  must be bound for each package maintainer \n" );
+            result:= false;
+          fi;
         fi;
         TestOption( subrec, "Email", IsString, "a string" );
         TestOption( subrec, "WWWHome", IsString, "a string" );
@@ -1790,7 +1834,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     fi;
 
     if TestMandat( record, "Status",
-           x -> x in [ "accepted", "deposited", "dev", "other" ],
+           x -> x in [ "accepted", "submitted", "deposited", "dev", "other" ],
            "one of \"accepted\", \"deposited\", \"dev\", \"other\"" )
        and record.Status = "accepted" then
       TestMandat( record, "CommunicatedBy",
@@ -1824,7 +1868,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         fi;
         TestOption( subrec, "Archive", IsString, "a string" );
         TestOption( subrec, "ArchiveURLSubset", IsFilenameList,
-            "a list of strings denoting relative paths to readable files" );
+            "a list of strings denoting relative paths to readable files or directories" );
         TestMandat( subrec, "HTMLStart", IsFilename,
                     "a string denoting a relative path to a readable file" );
         TestMandat( subrec, "PDFFile", IsFilename,
@@ -2172,10 +2216,6 @@ Encode:= "dummy";
 InstallGlobalFunction( BibEntry, function( arg )
     local key, pkgname, pkginfo, GAP, ps, months, val, entry, author;
 
-    if LoadPackage( "GAPDoc" ) <> true then
-      return fail;
-    fi;
-
     key:= false;
     if   Length( arg ) = 1 and IsString( arg[1] ) then
       pkgname:= arg[1];
@@ -2198,11 +2238,11 @@ InstallGlobalFunction( BibEntry, function( arg )
       if pkgname = "GAP" then
         GAP:= true;
       else
-        pkginfo:= PackageInfo( pkgname );
-        if pkginfo = [] then
+        pkginfo:= InstalledPackageVersion( pkgname );
+        pkginfo:= First( PackageInfo( pkgname ), r -> r.Version = pkginfo );
+        if pkginfo = fail then
           return "";
         fi;
-        pkginfo:= pkginfo[1];
       fi;
     fi;
 
@@ -2338,10 +2378,12 @@ InstallGlobalFunction( BibEntry, function( arg )
         fi;
       fi;
       if IsBound( pkginfo.Status ) and pkginfo.Status = "accepted" then
-        Append( entry, "  <note>Refereed GAP package</note>\n" );
+        Append( entry, "  <note>Refereed " );
       else
-        Append( entry, "  <note>GAP package</note>\n" );
+        Append( entry, "  <note>" );
       fi;
+#     Append( entry, "<Package>GAP</Package> package</note>\n" );
+      Append( entry, "GAP package</note>\n" );
       if IsBound( pkginfo.Keywords ) then
         Append( entry, Concatenation(
           "  <keywords>",
@@ -2362,39 +2404,49 @@ Unbind( Encode );
 
 #############################################################################
 ##
-#F  PackageVariablesInfo( <pkgname>[, <version>] )
+#F  PackageVariablesInfo( <pkgname>, <version> )
 ##
 NamesSystemGVars := "dummy";   # is not yet defined when this file is read
 NamesUserGVars   := "dummy";
 
-InstallGlobalFunction( PackageVariablesInfo, function( arg )
-    local pkgname, version, test, PkgName, realname, new, new_up_to_case,
-          redeclared, newmethod, rules, localBindGlobal, rule, loaded, pkg,
-          args, docmark, done, result, subrule, added, prev, subresult,
-          entry, isrelevant, guesssource, protected;
+InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
+    local test, cache, cache2, PkgName, realname, new, new_up_to_case,
+          redeclared, newmethod, key_dependent_operation, rules,
+          localBindGlobal, rule, loaded, pkg, args, docmark, done, result,
+          subrule, added, prev, subresult, entry, isrelevant, guesssource,
+          protected;
 
-    # Get and check the arguments.
-    if   Length( arg ) = 1 and IsString( arg[1] ) then
-      pkgname:= LowercaseString( arg[1] );
-      version:= "";
-    elif Length( arg ) = 2 and IsString( arg[1] ) and IsString( arg[2] ) then
-      pkgname:= LowercaseString( arg[1] );
-      version:= arg[2];
-    else
-      Error( "usage: ShowPackageVariables( <pkgname>[ <version>] )" );
+    test:= TestPackageAvailability( pkgname, version );
+
+    # If the function has been called for this package then
+    # return the stored value.
+    cache:= Concatenation( pkgname, ":", version );
+    if not IsBound( GAPInfo.PackageVariablesInfo ) then
+      GAPInfo.PackageVariablesInfo:= rec();
+    elif IsBound( GAPInfo.PackageVariablesInfo.( cache ) ) then
+      return GAPInfo.PackageVariablesInfo.( cache );
+    elif version = "" and test = true then
+      cache2:= Concatenation( pkgname, ":",
+                   InstalledPackageVersion( pkgname ) );
+      if IsBound( GAPInfo.PackageVariablesInfo.( cache2 ) ) then
+        return GAPInfo.PackageVariablesInfo.( cache2 );
+      fi;
     fi;
 
     # Check that the package is available but not yet loaded.
-    test:= TestPackageAvailability( pkgname, version );
     if test = true then
-      Print( "#E  the package `", pkgname, "' is already loaded\n" );
+      Info( InfoWarning, 1,
+            "the package `", pkgname, "' is already loaded" );
       return [];
     elif test = fail then
-      Print( "#E  the package `", pkgname, "' cannot be loaded" );
-      if version <> "" then
-        Print( " in version `", version, "'" );
+      if version = "" then
+        Info( InfoWarning, 1,
+              "the package `", pkgname, "' cannot be loaded" );
+      else
+        Info( InfoWarning, 1,
+              "the package `", pkgname, "' cannot be loaded in version `",
+              version, "'" );
       fi;
-      Print( "\n" );
       return [];
     fi;
 
@@ -2413,6 +2465,23 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
 
         name:= realname( entry[1][1] );
         if not name in GAPInfo.data.varsThisPackage then
+          return fail;
+        elif Length( entry[1] ) = 3 and entry[1][3] = "mutable"
+             and Length( name  ) > 9 and name{ [ 1 .. 8 ] } = "Computed"
+             and name[ Length( name ) ] = 's'
+             and IsBoundGlobal( name{ [ 9 .. Length( name ) - 1 ] } ) then
+          return fail;
+        elif Length( entry[1] ) = 2
+             and Length( name  ) > 3 and name{ Length( name ) - [1,0] } = "Op"
+             and IsBoundGlobal( name{ [ 1 .. Length( name ) - 2 ] } )
+             and ForAny( GAPInfo.data.KeyDependentOperation[2],
+                         x -> x[1][1] = name{ [ 1 .. Length( name ) - 2 ] }
+                              and x[2] = entry[2]
+                              and x[3] = entry[3] ) then
+          # Ignore the declaration of the operation created by
+          # `KeyDependentOperation'.
+          # (We compare filename and line number in the file with these values
+          # for the call of `KeyDependentOperation'.)
           return fail;
         else
           return [ name, ValueGlobal( name ), entry[2], entry[3] ];
@@ -2444,18 +2513,52 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
       end;
 
     newmethod:= function( entry )
-      local setter;
+      local setter, getter, name;
 
-      if IsString( entry[1][2] ) and entry[1][2] in
-             [ "system setter", "default method, does nothing" ] then
-        setter:= entry[1][1];
-        if ForAny( ATTRIBUTES,
-                   attr -> IsIdenticalObj( setter, attr[4] ) ) then
-          return fail;
+      if IsString( entry[1][2] ) then
+        if entry[1][2] in [ "system setter", "system mutable setter",
+                            "default method, does nothing" ] then
+          setter:= entry[1][1];
+          if ForAny( ATTRIBUTES,
+                     attr -> IsIdenticalObj( setter, attr[4] ) ) then
+            return fail;
+          fi;
+        elif entry[1][2] in [ "system getter",
+          "default method requiring categories and checking properties" ] then
+          getter:= entry[1][1];
+          if ForAny( ATTRIBUTES,
+                     attr -> IsIdenticalObj( getter, attr[3] ) ) then
+            return fail;
+          fi;
+        elif entry[1][2] in [ "default method" ] then
+          # Ignore the default methods (for attribute and operation)
+          # that are installed in calls to `KeyDependentOperation'.
+          # (We compare filename and line number in the file with these values
+          # for the call of `KeyDependentOperation'.)
+          name:= NameFunction( entry[1][1] );
+          if 9 < Length( name  ) and name{ [ 1 .. 8 ] } = "Computed"
+             and name[ Length( name ) ] = 's'
+             and IsBoundGlobal( name{ [ 9 .. Length( name ) - 1 ] } )
+             and ForAny( GAPInfo.data.KeyDependentOperation[2],
+                         x -> x[1][1] = name{ [ 9 .. Length( name ) - 1 ] }
+                              and x[2] = entry[2]
+                              and x[3] = entry[3] ) then
+            return fail;
+          elif IsBoundGlobal( name )
+               and ForAny( GAPInfo.data.KeyDependentOperation[2],
+                           x -> x[1][1] = name
+                                and x[2] = entry[2]
+                                and x[3] = entry[3] ) then
+            return fail;
+          fi;
         fi;
       fi;
       return [ NameFunction( entry[1][1] ), entry[1][ Length( entry[1] ) ],
                entry[2], entry[3] ];
+      end;
+
+    key_dependent_operation:= function( entry )
+      return entry;
       end;
 
     # List the cases to be dealt with.
@@ -2505,6 +2608,8 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
         [ "globals that are new only up to case", new_up_to_case ] ],
       [ "DeclareInfoClass",
         [ "new info classes", new ] ],
+      [ "KeyDependentOperation",
+        [ "KeyDependentOperation", key_dependent_operation ] ],
       ];
 
     # Save the relevant global variables, and replace them.
@@ -2542,7 +2647,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
     UnbindGlobal( "ReadPackage" );
     localBindGlobal( "ReadPackage", EvalString( Concatenation(
         "function( arg ) ",
-        "local pos, pkgname, before, after; ",
+        "local pos, pkgname, before, res, after; ",
         "if Length( arg ) = 1 then ",
         "  pos:= Position( arg[1], '/' ); ",
         "  pkgname:= LowercaseString( arg[1]{[ 1 .. pos - 1 ]} ); ",
@@ -2554,12 +2659,13 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
         "if pkgname = GAPInfo.data.pkgname then ",
         "  before:= NamesUserGVars(); ",
         "fi; ",
-        "CallFuncList( GAPInfo.data.ReadPackage, arg ); ",
+        "res:= CallFuncList( GAPInfo.data.ReadPackage, arg ); ",
         "if pkgname = GAPInfo.data.pkgname then ",
         "  after:= NamesUserGVars(); ",
         "  UniteSet( GAPInfo.data.varsThisPackage, ",
         "    Filtered( Difference( after, before ), IsBoundGlobal ) ); ",
         "fi; ",
+        "return res; ",
         "end" ) ) );
 
     # Load the package `pkgname'.
@@ -2611,6 +2717,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
     # Prepare the output.
     done:= [];
     result:= [];
+    rules:= Filtered( rules, x -> x[1] <> "KeyDependentOperation" );
     for rule in rules do
       for subrule in rule{ [ 2 .. Length( rule ) ] } do
         added:= Filtered( List( GAPInfo.data.( rule[1] )[2],
@@ -2634,22 +2741,43 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
     od;
 
     # Mention the remaining new globals.
-    # (Omit `Set<attr>' and `Has<attr>' type variables.)
     isrelevant:= function( name )
-      local attr;
+      local name2, attr;
 
-      if Length( name ) <= 3
-         or not ( name{ [ 1 .. 3 ] } in [ "Has", "Set" ] ) then
-        return true;
-      fi;
-      name:= name{ [ 4 .. Length( name ) ] };
+      # Omit variables that are not bound anymore.
+      # (We have collected the new variables file by file, and it may happen
+      # that some of them become unbound in the meantime.)
       if not IsBoundGlobal( name ) then
-        return true;
-      fi;
-      attr:= ValueGlobal( name );
-      if ForAny( ATTRIBUTES, entry -> IsIdenticalObj( attr, entry[3] ) ) then
         return false;
       fi;
+
+      # Omit `Set<attr>' and `Has<attr>' type variables.
+      if 3 < Length( name ) and name{ [ 1 .. 3 ] } in [ "Has", "Set" ] then
+        name2:= name{ [ 4 .. Length( name ) ] };
+        if not IsBoundGlobal( name2 ) then
+          return true;
+        fi;
+        attr:= ValueGlobal( name2 );
+        if ForAny( ATTRIBUTES, entry -> IsIdenticalObj( attr, entry[3] ) ) then
+          return false;
+        fi;
+      fi;
+
+      # Omit operation and attribute created by `KeyDependentOperation'.
+      if 9 < Length( name  ) and name{ [ 1 .. 8 ] } = "Computed"
+         and name[ Length( name ) ] = 's'
+         and IsBoundGlobal( name{ [ 9 .. Length( name ) - 1 ] } )
+         and ForAny( GAPInfo.data.KeyDependentOperation[2],
+                     x -> x[1][1] = name{ [ 9 .. Length( name ) - 1 ] } ) then
+        return false;
+      fi;
+      if 3 < Length( name  ) and name{ Length( name ) - [1,0] } = "Op"
+         and IsBoundGlobal( name{ [ 1 .. Length( name ) - 2 ] } )
+         and ForAny( GAPInfo.data.KeyDependentOperation[2],
+                     x -> x[1][1] = name{ [ 1 .. Length( name ) - 2 ] } ) then
+        return false;
+      fi;
+
       return true;
     end;
 
@@ -2688,6 +2816,13 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
     # Delete the auxiliary component from `GAPInfo'.
     GAPInfo.data := fail;
 
+    # Store the data.
+    GAPInfo.PackageVariablesInfo.( cache ):= result;
+    if version = "" then
+      Append( cache, InstalledPackageVersion( pkgname ) );
+      GAPInfo.PackageVariablesInfo.( cache ):= result;
+    fi;
+
     return result;
     end );
 
@@ -2697,18 +2832,82 @@ Unbind( NamesUserGVars );
 
 #############################################################################
 ##
-#F  ShowPackageVariables( <pkgname>[, <version>] )
+#F  ShowPackageVariables( <pkgname>[, <version>][, <arec>] )
 ##
 InstallGlobalFunction( ShowPackageVariables, function( arg )
-    local entry, subentry;
+    local version, arec, pkgname, info, show, documented, undocumented,
+          private, result, entry, first, subentry, str;
 
-    for entry in CallFuncList( PackageVariablesInfo, arg ) do
-      Print( entry[1], ":\n" );
-      for subentry in entry[2] do
-        Print( "  ", Concatenation( subentry[1] ), "\n" );
-      od;
-      Print( "\n" );
+    # Get and check the arguments.
+    version:= "";
+    arec:= rec();
+    if   Length( arg ) = 1 and IsString( arg[1] ) then
+      pkgname:= LowercaseString( arg[1] );
+    elif Length( arg ) = 2 and IsString( arg[1] ) and IsString( arg[2] ) then
+      pkgname:= LowercaseString( arg[1] );
+      version:= arg[2];
+    elif Length( arg ) = 2 and IsString( arg[1] ) and IsRecord( arg[2] ) then
+      pkgname:= LowercaseString( arg[1] );
+      arec:= arg[2];
+    elif Length( arg ) = 3 and IsString( arg[1] ) and IsString( arg[2] )
+                           and IsRecord( arg[3] ) then
+      pkgname:= LowercaseString( arg[1] );
+      version:= arg[2];
+      arec:= arg[3];
+    else
+      Error( "usage: ShowPackageVariables( <pkgname>[, <version>]",
+             "[, <arec>] )" );
+    fi;
+
+    # Compute the data.
+    info:= PackageVariablesInfo( pkgname, version );
+
+    # Evaluate the optional record.
+    if IsBound( arec.show ) and IsList( arec.show ) then
+      show:= arec.show;
+    else
+      show:= List( info, entry -> entry[1] );
+    fi;
+    documented:= not IsBound( arec.showDocumented )
+                 or arec.showDocumented <> false;
+    undocumented:= not IsBound( arec.showUndocumented )
+                   or arec.showUndocumented <> false;
+    private:= not IsBound( arec.showPrivate )
+              or arec.showPrivate <> false;
+
+    # Render the relevant data.
+    result:= "";
+    for entry in info do
+      if entry[1] in show then
+        first:= true;
+        for subentry in entry[2] do
+          if ( ( documented and subentry[1][3] = "" ) or
+               ( undocumented and subentry[1][3] = "*" ) ) and
+             ( private or not '@' in subentry[1][1] ) then
+            if first then
+              Append( result, entry[1] );
+              Append( result, ":\n" );
+              first:= false;
+            fi;
+            Append( result, "  " );
+            for str in subentry[1] do
+              Append( result, str );
+            od;
+            Append( result, "\n" );
+          fi;
+        od;
+        if not first then
+          Append( result, "\n" );
+        fi;
+      fi;
     od;
+
+    # Show the relevant data.
+    if IsBound( arec.Display ) then
+      arec.Display( result );
+    else
+      Print( result );
+    fi;
     end );
 
 

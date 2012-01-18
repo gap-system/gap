@@ -2,7 +2,7 @@
 **
 *A  stabiliser.c                ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: stabiliser.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: stabiliser.c,v 1.10 2011/11/29 09:43:58 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -30,7 +30,7 @@ int ***auts;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int*** stabiliser;
    int pointer = pcp->lused + 1;
@@ -47,27 +47,18 @@ struct pcp_vars *pcp;
    pga->nmr_stabilisers = 0;
 
    /* if necessary, compute the stabiliser of the representative 
-      in the insoluble portion using a system call to CAYLEY, Magma, or GAP -- 
+      in the insoluble portion using a system call to GAP -- 
       this is done before setting up the remainder of the automorphisms 
       to minimise the size of the workspace created by the system call */
 
    if (!soluble_group) { 
 
-#if defined (VMS)
-      printf ("Link to GAP/Magma for insoluble stabiliser computation");
-      printf (" is not available\nin VMS version of this program --");
-      printf (" see release notes\n");
-      exit (FAILURE);
-
-#else
-#if defined (CAYLEY_LINK) || defined (Magma_LINK) || defined (GAP_LINK) || defined (GAP_LINK_VIA_FILE)
+#if defined (GAP_LINK) || defined (GAP_LINK_VIA_FILE)
       insoluble_stab_gens (rep, orbit_length, pga, pcp);
 #else
       printf ("To compute stabilisers in insoluble automorphism groups, ");
-      printf ("you must compile pq\nwith one of the compiler flags, ");
-      printf ("GAP_LINK, or Magma_LINK, set\n"); 
+      printf ("you must compile pq\nwith the compiler flag GAP_LINK set\n"); 
       exit (FAILURE);
-#endif
 #endif
    }
 
@@ -92,7 +83,7 @@ struct pcp_vars *pcp;
       /* read in the generators of the stabiliser in the insoluble case -- 
           these were computed using GAP */
 
-#if defined (CAYLEY_LINK) || defined (Magma_LINK) || defined (GAP_LINK) || defined (GAP_LINK_VIA_FILE)
+#if defined (GAP_LINK) || defined (GAP_LINK_VIA_FILE)
       stabiliser = read_stabiliser_gens (nmr_of_generators, stabiliser, pga, pcp);
 #endif
    }
@@ -137,7 +128,7 @@ int ***auts;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int alpha, k, next;
    register int word_length;
@@ -200,7 +191,7 @@ int ***auts;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i, j;
    register int gamma;
@@ -232,7 +223,7 @@ int ***auts;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i, j, k, l;
    register int alpha, letter;
@@ -326,7 +317,7 @@ struct pga_vars *pga;
    return stabiliser;
 }
 
-#if defined (CAYLEY_LINK) || defined (Magma_LINK) || defined (GAP_LINK_VIA_FILE)
+#if defined (GAP_LINK_VIA_FILE)
 
 /* read the insoluble stabiliser generators from LINK file;
    each list of stabilisers is preceded by a list of integers -- 
@@ -341,11 +332,11 @@ int ***soluble_generators;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int ndgen = pga->ndgen;
    register int gamma, i, j;
-   FILE_TYPE LINK_output;
+   FILE * LINK_output;
    int ***stabiliser;
    int nmr_items;
    int temp;

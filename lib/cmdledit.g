@@ -2,7 +2,6 @@
 ##
 #W  cmdledit.g                    GAP library                    Frank Lübeck 
 ##
-#H  @(#)$Id: cmdledit.g,v 4.26 2011/05/27 11:39:58 gap Exp $
 ##
 #Y  Copyright (C)  2010 The GAP Group
 ##
@@ -10,11 +9,9 @@
 ##  It is only used if the GAP kernel was compiled to use the GNU
 ##  readline library.
 ##  
-##  Using 'make COPTS="-DNO_READLINE"' when compiling GAP avoids using 
-##  this library.
+##  To avoid using the readline library, pass '--without-readline' to
+##  the configure script when compiling GAP.
 ##
-Revision.cmdledit_g :=
-    "@(#)$Id: cmdledit.g,v 4.26 2011/05/27 11:39:58 gap Exp $";
 
 
 if IsBound(BINDKEYSTOGAPHANDLER) then
@@ -658,7 +655,7 @@ BindGlobal("SaveCommandLineHistory", function(arg)
   fi;
   SetPrintFormattingStatus(out, false);
   for i in [1..Length(hist)] do
-    AppendTo(fnam, hist[i], "\n");
+    AppendTo(out, hist[i], "\n");
   od;
   CloseStream(out);
   return Length(hist);

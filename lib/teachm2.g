@@ -2,14 +2,11 @@
 ##
 #W  teachm2.g                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: teachm2.g,v 4.4 2010/10/29 09:02:47 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
 ##  This  file contains rotines for turning teaching mode on and off.
 ##
-Revision.teachm2_g:=
-  "@(#)$Id: teachm2.g,v 4.4 2010/10/29 09:02:47 gap Exp $";
 
 TEACHMODE:=fail;
 

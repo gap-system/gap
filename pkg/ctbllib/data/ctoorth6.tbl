@@ -2,7 +2,7 @@
 ##
 #W  ctoorth6.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoorth6.tbl,v 1.4 2009/03/31 16:35:45 gap Exp $
+#H  @(#)$Id: ctoorth6.tbl,v 1.5 2011/09/28 14:32:23 gap Exp $
 ##
 #Y  Copyright (C)  2003,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,6 +10,10 @@
 ##  orthogonal groups $O_7(5)$ and $O_9(3)$.
 ##
 #H  $Log: ctoorth6.tbl,v $
+#H  Revision 1.5  2011/09/28 14:32:23  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 1.4  2009/03/31 16:35:45  gap
 #H  added table of 2.O9(3) (contributed by Max)
 #H      TB
@@ -27,11 +31,6 @@
 #H      TB
 #H
 ##
-Revision.ctoorth6_tbl :=
-    "@(#)$Id: ctoorth6.tbl,v 1.4 2009/03/31 16:35:45 gap Exp $";
-
-SET_TABLEFILENAME("ctoorth6");
-ALN:= Ignore;
 
 MOT("O7(5)",
 [
@@ -4524,7 +4523,6 @@ ALF("2.O9(3)","O9(3)",[1,1,2,3,4,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,
 217,217,218,218]);
 
 LIBTABLE.LOADSTATUS.ctoorth6:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

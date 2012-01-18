@@ -1,6 +1,6 @@
 ############################################################################
 ##
-#W  factors.gi         Alnuth - PARI/GP interface          Andreas Distler
+#W  factors.gi     Alnuth - ALgebraic NUmber THeory        Andreas Distler
 ##
 
 
@@ -34,7 +34,7 @@ end);
 InstallGlobalFunction( FactorsPolynomialAlgExt, function( H, poly )
     local faktoren, irf, i;
 
-    if FieldOfPolynomial( poly ) <> Rationals then
+    if not ForAll( CoefficientsOfUnivariatePolynomial( poly ), IsRat ) then
         Error( "polynomial has to be defined over the Rationals" );
     fi;
 

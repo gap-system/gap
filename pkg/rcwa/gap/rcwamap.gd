@@ -715,6 +715,22 @@ DeclareProperty( "IsTame", IsRcwaMonoid );
 
 #############################################################################
 ##
+#O  CheckForWildness( <f> )
+#O  CheckForWildness( <M>, <max_r>, <cheap> )
+##
+##  Performs checks for wildness, and sets `IsTame' to `false' if wildness
+##  can be established. It is not guaranteed that a wild mapping or monoid
+##  is always recognized as such. In the operation for rcwa monoids, <max_r>
+##  is the search radius, i.e. it is attempted to find a wild element within
+##  the ball of radius <max_r> around 1. If <cheap> is true, the elements of
+##  the ball are only checked for balancedness and loops, whereas if <cheap>
+##  is false, `IsTame' is applied to them. 
+##
+DeclareOperation( "CheckForWildness", [ IsRcwaMapping ] );
+DeclareOperation( "CheckForWildness", [ IsRcwaMonoid, IsPosInt, IsBool ] );
+
+#############################################################################
+##
 #S  Support, images, preimages and the action of an rcwa mapping on R. //////
 ##
 #############################################################################
@@ -771,6 +787,34 @@ DeclareOperation( "ShortCycles", [ IsRcwaMapping, IsListOrCollection,
 DeclareOperation( "ShortCycles", [ IsRcwaMapping, IsListOrCollection,
                                    IsPosInt, IsPosInt ] );
 DeclareOperation( "ShortCycles", [ IsRcwaMapping, IsPosInt ] );
+
+#############################################################################
+##
+#O  ShortResidueClassCycles( <g>, <modulusbound>, <maxlng> )
+##
+##  Returns a list of all cycles of residue classes of the rcwa
+##  permutation <g> which contain a residue class r(m) such that m divides
+##  <modulusbound>, and which are not longer than <maxlng>.
+## 
+##  Note that we are only talking about a cycle of residue classes
+##  of an rcwa permutation g if the restrictions of g to all contained
+##  residue classes are affine.
+##
+DeclareOperation( "ShortResidueClassCycles", [ IsRcwaMapping, IsRingElement,
+                                               IsPosInt ] );
+
+#############################################################################
+##
+#O  CycleRepresentativesAndLengths( <g>, <S> )
+##
+##  Returns a list of pairs (cycle representative, length of cycle) for all
+##  cycles of the rcwa permutation <g> which have a nontrivial intersection
+##  with the set <S>, where fixed points are omitted. The rcwa permutation
+##  <g> is assumed to have only finite cycles. If <g> has an infinite cycle
+##  which intersects nontrivially with <S>, this may cause an infinite loop.
+##
+DeclareOperation( "CycleRepresentativesAndLengths",
+                  [ IsRcwaMapping, IsListOrCollection ] );
 
 #############################################################################
 ##
@@ -1085,19 +1129,21 @@ DeclareAttribute( "LaTeXString", IsObject );
 
 #############################################################################
 ##
-#O  LaTeXAndXDVI( <obj> ) .  write LaTeX string to file, LaTeX & show by xdvi
+#O  LaTeXStringRcwaMapping( <f> )
+#O  LaTeXStringRcwaGroup( <G> )
 ##
-DeclareOperation( "LaTeXAndXDVI", [ IsObject ] );
+##  Returns a LaTeX string for an rcwa mapping <f>, resp. an rcwa group <G>.
+##  Methods for `LaTeXStringRcwaMapping' recognize options "Factorization",
+##  "Indentation", "German" and "VarName" / "VarNames".
+##
+DeclareOperation( "LaTeXStringRcwaMapping", [ IsRcwaMapping ] );
+DeclareOperation( "LaTeXStringRcwaGroup", [ IsRcwaGroup ] );
 
 #############################################################################
 ##
-#O  RcwaMappingToLaTeX( <f> )
+#O  LaTeXAndXDVI( <obj> ) .  write LaTeX string to file, LaTeX & show by xdvi
 ##
-##  Returns a LaTeX string for an rcwa mapping <f>.
-##  Methods recognize options "Factorization", "Indentation", "German" and
-##  "VarName" / "VarNames".
-##
-DeclareOperation( "RcwaMappingToLaTeX", [ IsRcwaMapping ] );
+DeclareOperation( "LaTeXAndXDVI", [ IsObject ] );
 
 #############################################################################
 ##

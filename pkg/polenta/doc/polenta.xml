@@ -1,0 +1,282 @@
+<Chapter Label="Methods for matrix groups">
+<Heading>Methods for matrix groups</Heading>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Polycyclic presentations of matrix groups">
+<Heading>Polycyclic presentations of matrix groups</Heading>
+
+Groups defined by polycyclic presentations are called PcpGroups in
+&GAP;.
+We refer to the Polycyclic manual <Cite Key="Polycyclic"/> for further
+background.
+<P/>
+
+Suppose that a collection <M>X</M> of
+matrices of <M>GL(d,R)</M> is given, where the ring <M>R</M>
+is either <M>&QQ;,&ZZ;</M> or a finite field.  Let <M>G= \langle X \rangle</M>.
+If the group <M>G</M> is polycyclic, then the
+following functions determine a PcpGroup isomorphic to <M>G</M>.
+
+<ManSection>
+<Oper Name="PcpGroupByMatGroup" Arg="G"/>
+<Description>
+<A>G</A> is  a subgroup of <M>GL(d,R)</M> where <M>R=&QQ;,&ZZ; </M> or <M>\mathbb{F}_q</M>.
+If <A>G</A> is polycyclic, then
+this function determines a PcpGroup isomorphic to <A>G</A>.
+If <A>G</A> is not polycyclic, then
+this function returns <C>fail</C>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="IsomorphismPcpGroup" Arg="G"/>
+<Description>
+<A>G</A> is  a subgroup of <M>GL(d,R)</M> where <M>R=&QQ;,&ZZ; </M> or <M>\mathbb{F}_q</M>.
+If <A>G</A> is polycyclic, then
+this function determines  an isomorphism
+onto a PcpGroup.
+If <A>G</A> is not polycyclic, then
+this function returns <C>fail</C>.
+<P/>
+
+Note that the method <C>IsomorphismPcpGroup</C>,
+installed in this package, cannot be
+applied directly to a group given by the function <C>AlmostCrystallographicGroup</C>.
+Please use  <C>POL_AlmostCrystallographicGroup</C> (with the same
+parameters as <C>AlmostCrystallographicGroup</C>) instead.
+</Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="ImagesRepresentative" Arg="map, elm"/>
+<Meth Name="ImageElm" Arg="map, elm"/>
+<Meth Name="ImagesSet" Arg="map, elms"/>
+<Description>
+Here <A>map</A> is an isomorphism from a polycyclic matrix group <A>G</A>
+onto a PcpGroup <A>H</A> calculated
+by <Ref Attr="IsomorphismPcpGroup"/>.
+These methods can be used to compute with such an isomorphism.
+If the input <A>elm</A>  is an element of <A>G</A>, then the function <C>ImageElm</C>
+ can be used to compute the image of <A>elm</A> under <A>map</A>.
+If <A>elm</A> is not contained in <A>G</A>
+then the function <C>ImageElm</C> returns <C>fail</C>.
+The input <A>pcpelm</A> is an element
+of <A>H</A>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="IsSolvableGroup" Arg="G"/>
+<Description>
+<A>G</A> is  a subgroup of <M>GL(d,R)</M> where <M>R=&QQ;,&ZZ; </M> or <M>\mathbb{F}_q</M>.
+This function tests if <A>G</A> is
+solvable and returns <C>true</C> or <C>false</C>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Prop Name="IsTriangularizableMatGroup" Arg="G"/>
+<Description>
+<A>G</A> is  a subgroup of <M>GL(d,&QQ;)</M>.
+ This function tests if <A>G</A> is triangularizable
+(possibly over a finite field extension)
+and returns <C>true</C> or <C>false</C>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Meth Name="IsPolycyclicGroup" Arg="G"/>
+<Description>
+<A>G</A> is  a subgroup of <M>GL(d,R)</M> where <M>R=&QQ;,&ZZ; </M> or <M>\mathbb{F}_q</M>.
+This function tests if <A>G</A> is
+polycyclic and returns <C>true</C> or <C>false</C>.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Module series">
+<Heading>Module series</Heading>
+
+Let <M>G</M> be a finitely generated solvable subgroup of <M>GL(d,&QQ;)</M>. The vector
+space <M>&QQ;^d</M> is a module for the algebra <M>&QQ;[G]</M>. The following
+functions provide the possibility to compute certain module series of
+<M>&QQ;^d</M>. Recall that the radical <M>Rad_G(&QQ;^d)</M> is defined to be the
+intersection of maximal <M>&QQ;[G]</M>-submodules of <M>&QQ;^d</M>. Also recall that the
+radical series
+<Display>
+0=R_n &lt; R_{n-1} &lt; \dots &lt; R_1 &lt; R_0=&QQ;^d
+</Display>
+is defined by <M>R_{i+1}:= Rad_G(R_i)</M>.
+
+<ManSection>
+<Oper Name="RadicalSeriesSolvableMatGroup" Arg="G"/>
+<Description>
+This function returns a
+radical series for the <M>&QQ;[G]</M>-module <M>&QQ;^d</M>, where <A>G</A> is a
+solvable subgroup of <M>GL(d,&QQ;)</M>.
+<P/>
+A radical series of <M>&QQ;^d</M> can be refined to a homogeneous series.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="HomogeneousSeriesAbelianMatGroup" Arg="G"/>
+<Description>
+A module is said to be homogeneous if it is the direct sum of pairwise
+irreducible isomorphic submodules. A homogeneous series of a module
+is a submodule series such that the factors are homogeneous.
+This function returns a
+homogeneous series for the <M>&QQ;[G]</M>-module <M>&QQ;^d</M>, where <A>G</A> is an
+abelian subgroup of <M>GL(d,&QQ;)</M>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="HomogeneousSeriesTriangularizableMatGroup" Arg="G"/>
+<Description>
+A module is said to be homogeneous if it is the direct sum of pairwise
+irreducible isomorphic submodules. A homogeneous series of a module
+is a submodule series such that the factors are homogeneous.
+This function returns a
+homogeneous series for the <M>&QQ;[G]</M>-module <M>&QQ;^d</M>, where <A>G</A> is a
+triangularizable subgroup of <M>GL(d,&QQ;)</M>.
+<P/>
+A homogeneous series can be refined to a composition series.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="CompositionSeriesAbelianMatGroup" Arg="G"/>
+<Description>
+A composition series of a module is a submodule series such that
+the factors are irreducible. This function returns a
+composition series for the <M>&QQ;[G]</M>-module <M>&QQ;^d</M>, where <A>G</A> is an
+abelian subgroup of <M>GL(d,&QQ;)</M>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="CompositionSeriesTriangularizableMatGroup" Arg="G"/>
+<Description>
+A composition series of a module is a submodule series such that
+the factors are irreducible. This function returns a
+composition series for the <M>&QQ;[G]</M>-module <M>&QQ;^d</M>, where <A>G</A> is a
+triangularizable subgroup of <M>GL(d,&QQ;)</M>.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Subgroups">
+<Heading>Subgroups</Heading>
+
+<!-- %\>TriangNormalSubgroupFiniteInd( <A>G</A> ) O -->
+<!-- % -->
+<!-- %<A>G</A> is  a subgroup of <M>GL(d,&QQ;)</M>. If <M>G</M> is solvable then -->
+<!-- %this function computes a triangularizable normal subgroup of <A>G</A>, -->
+<!-- %which is of finite index in <A>G</A>. If <M>G</M> is not solvable, then the -->
+<!-- %function returns <C>fail</C>. -->
+
+<ManSection>
+<Oper Name="SubgroupsUnipotentByAbelianByFinite" Arg="G"/>
+<Description>
+<A>G</A> is  a subgroup of <M>GL(d,R)</M> where <M>R=&QQ;</M> or <M>&ZZ;</M>.
+If <A>G</A> is polycyclic, then
+this function returns a record containing two normal subgroups
+<M>T</M> and <M>U</M> of <M>G</M>.
+The group <M>T</M> is unipotent-by-abelian
+(and thus triangularizable) and
+of finite index in <A>G</A>.
+The group <M>U</M> is unipotent and is such that <M>T/U</M> is abelian.
+If <A>G</A> is not polycyclic,
+then the algorithm returns <C>fail</C>.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Examples">
+<Heading>Examples</Heading>
+
+<ManSection>
+<Func Name="PolExamples" Arg="l"/>
+<Description>
+Returns some examples for polycyclic rational matrix groups, where <A>l</A>
+is an integer
+between 1 and 24.
+These can be used to test the functions in this package.
+Some of the
+properties of the examples are summarised in the following table.
+
+<!--
+<Table Align="rrrr">
+<Row><Item>PolExamples</Item><Item> number generators</Item><Item>subgroup of</Item><Item>   Hirsch length</Item></Row>
+<Row><Item>          1</Item><Item>                 3</Item><Item>    GL(4,Z)</Item><Item>              6</Item></Row>
+<Row><Item>          2</Item><Item>                 2</Item><Item>    GL(5,Z)</Item><Item>              6</Item></Row>
+<Row><Item>          3</Item><Item>                 2</Item><Item>    GL(4,Q)</Item><Item>              4</Item></Row>
+<Row><Item>          4</Item><Item>                 2</Item><Item>    GL(5,Q)</Item><Item>              6</Item></Row>
+<Row><Item>          5</Item><Item>                 9</Item><Item>   GL(16,Z)</Item><Item>              3</Item></Row>
+<Row><Item>          6</Item><Item>                 6</Item><Item>    GL(4,Z)</Item><Item>              3</Item></Row>
+<Row><Item>          7</Item><Item>                 6</Item><Item>    GL(4,Z)</Item><Item>              3</Item></Row>
+<Row><Item>          8</Item><Item>                 7</Item><Item>    GL(4,Z)</Item><Item>              3</Item></Row>
+<Row><Item>          9</Item><Item>                 5</Item><Item>    GL(4,Q)</Item><Item>              3</Item></Row>
+<Row><Item>         10</Item><Item>                 4</Item><Item>    GL(4,Q)</Item><Item>              3</Item></Row>
+<Row><Item>         11</Item><Item>                 5</Item><Item>    GL(4,Q)</Item><Item>              3</Item></Row>
+<Row><Item>         12</Item><Item>                 5</Item><Item>    GL(4,Q)</Item><Item>              3</Item></Row>
+<Row><Item>         13</Item><Item>                 5</Item><Item>    GL(5,Q)</Item><Item>              4</Item></Row>
+<Row><Item>         14</Item><Item>                 6</Item><Item>    GL(5,Q)</Item><Item>              4</Item></Row>
+<Row><Item>         15</Item><Item>                 6</Item><Item>    GL(5,Q)</Item><Item>              4</Item></Row>
+<Row><Item>         16</Item><Item>                 5</Item><Item>    GL(5,Q)</Item><Item>              4</Item></Row>
+<Row><Item>         17</Item><Item>                 5</Item><Item>    GL(5,Q)</Item><Item>              4</Item></Row>
+<Row><Item>         18</Item><Item>                 5</Item><Item>    GL(5,Q)</Item><Item>              4</Item></Row>
+<Row><Item>         19</Item><Item>                 5</Item><Item>    GL(5,Q)</Item><Item>              4</Item></Row>
+<Row><Item>         20</Item><Item>                 7</Item><Item>   GL(16,Z)</Item><Item>              3</Item></Row>
+<Row><Item>         21</Item><Item>                 5</Item><Item>   GL(16,Q)</Item><Item>              3</Item></Row>
+<Row><Item>         22</Item><Item>                 4</Item><Item>   GL(16,Q)</Item><Item>              3</Item></Row>
+<Row><Item>         23</Item><Item>                 5</Item><Item>   GL(16,Q)</Item><Item>              3</Item></Row>
+<Row><Item>         24</Item><Item>                 5</Item><Item>   GL(16,Q)</Item><Item>              3</Item></Row>
+</Table>
+-->
+
+<Log><![CDATA[
+PolExamples      number generators      subgroup of      Hirsch length
+          1                      3           GL(4,Z)                 6
+          2                      2           GL(5,Z)                 6
+          3                      2           GL(4,Q)                 4
+          4                      2           GL(5,Q)                 6
+          5                      9          GL(16,Z)                 3
+          6                      6           GL(4,Z)                 3
+          7                      6           GL(4,Z)                 3
+          8                      7           GL(4,Z)                 3
+          9                      5           GL(4,Q)                 3
+         10                      4           GL(4,Q)                 3
+         11                      5           GL(4,Q)                 3
+         12                      5           GL(4,Q)                 3
+         13                      5           GL(5,Q)                 4
+         14                      6           GL(5,Q)                 4
+         15                      6           GL(5,Q)                 4
+         16                      5           GL(5,Q)                 4
+         17                      5           GL(5,Q)                 4
+         18                      5           GL(5,Q)                 4
+         19                      5           GL(5,Q)                 4
+         20                      7          GL(16,Z)                 3
+         21                      5          GL(16,Q)                 3
+         22                      4          GL(16,Q)                 3
+         23                      5          GL(16,Q)                 3
+         24                      5          GL(16,Q)                 3
+
+]]></Log>
+</Description>
+</ManSection>
+
+</Section>
+
+</Chapter>
+

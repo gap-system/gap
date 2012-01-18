@@ -2,7 +2,6 @@
 **
 *W  weakptr.h                   GAP source                       Steve Linton
 **
-*H  @(#)$Id: weakptr.h,v 4.7 2010/02/23 15:13:50 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,9 +16,11 @@
 **
 **
 */
+
+#ifndef GAP_WEAKPTR_H
+#define GAP_WEAKPTR_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_weakptr_h =
-   "@(#)$Id: weakptr.h,v 4.7 2010/02/23 15:13:50 gap Exp $";
 #endif
 
 
@@ -37,6 +38,8 @@ const char * Revision_weakptr_h =
 */
 StructInitInfo * InitInfoWeakPtr ( void );
 
+
+#endif // GAP_WEAKPTR_H
 
 /****************************************************************************
 **

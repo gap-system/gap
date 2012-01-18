@@ -2,7 +2,7 @@
 ##
 #W  ctoorth5.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoorth5.tbl,v 4.4 2009/04/22 12:39:07 gap Exp $
+#H  @(#)$Id: ctoorth5.tbl,v 4.5 2011/09/28 14:32:23 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoorth5.tbl,v $
+#H  Revision 4.5  2011/09/28 14:32:23  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.4  2009/04/22 12:39:07  gap
 #H  added missing maxes of He.2, ON.2, HN.2, Fi24, and B
 #H      TB
@@ -54,11 +58,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctoorth5_tbl :=
-    "@(#)$Id: ctoorth5.tbl,v 4.4 2009/04/22 12:39:07 gap Exp $";
-
-SET_TABLEFILENAME("ctoorth5");
-ALN:= Ignore;
 
 MOT("O12+(2).2",
 [
@@ -3317,7 +3316,6 @@ E(63)^4+E(63)^10-E(63)^13+E(63)^17-E(63)^19-E(63)^22-E(63)^26+E(63)^31
 ALN("O12+(2).2",["o12p2"]);
 
 LIBTABLE.LOADSTATUS.ctoorth5:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

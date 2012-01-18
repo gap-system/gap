@@ -2,7 +2,6 @@
 ##
 #W  combinat.gi                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: combinat.gi,v 4.33 2011/04/19 02:51:45 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,17 +9,33 @@
 ##
 ##  This file contains method for combinatorics.
 ##
-Revision.combinat_gi :=
-    "@(#)$Id: combinat.gi,v 4.33 2011/04/19 02:51:45 gap Exp $";
 
 
 #############################################################################
 ##
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer
 ##
+# can be much further improved, together with Binomial ... (FL)
+# but for the moment this is huge improvement over Product([1..n]) for large n
+# Factorial(1000000) is no problem now
 InstallGlobalFunction(Factorial,function ( n )
+    local pr;
     if n < 0  then Error("<n> must be nonnegative");  fi;
-    return Product( [1..n] );
+    pr := function(l, i, j)
+      local bound, len, res, l2, k;
+      bound := 30;
+      len := j+1-i;
+      if len < bound then
+        res := 1;
+        for k in [i..j] do
+          res := res*l[k];
+        od;
+        return res;
+      fi;   
+      l2 := QuoInt(len,2);
+      return pr(l,i,i+l2)*pr(l,i+l2+1,j);
+    end;
+    return pr( [1..n], 1, n );
 end);
 
 

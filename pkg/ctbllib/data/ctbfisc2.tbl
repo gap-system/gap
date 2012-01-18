@@ -2,8 +2,6 @@
 ##
 #W  ctbfisc2.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbfisc2.tbl,v 4.7 2007/07/25 10:45:34 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables related to the Fischer
@@ -13,6 +11,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbfisc2.tbl,v $
+#H  Revision 4.8  2011/09/28 12:12:36  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.7  2007/07/25 10:45:34  gap
 #H  added table of Fi23 mod 17 (by J. M"uller)
 #H      TB
@@ -96,10 +98,7 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctbfisc2_tbl :=
-    "@(#)$Id: ctbfisc2.tbl,v 4.7 2007/07/25 10:45:34 gap Exp $";
 
-SET_TABLEFILENAME("ctbfisc2");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("3.F3+",11,
@@ -586,6 +585,7 @@ rec(version:=1,
 date:="28.07.92"));
 
 LIBTABLE.LOADSTATUS.ctbfisc2:="userloaded";
+
 #############################################################################
 ##
 #E

@@ -2,7 +2,6 @@
 ##
 #W  clashom.gi                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id: clashom.gi,v 4.66 2010/02/23 15:12:48 gap Exp $
 ##
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -12,8 +11,6 @@
 ##  Literature: A.H: Conjugacy classes in finite permutation groups via
 ##  homomorphic images, MathComp, to appear.
 ##
-Revision.clashom_gi :=
-    "@(#)$Id: clashom.gi,v 4.66 2010/02/23 15:12:48 gap Exp $";
 
 
 #############################################################################

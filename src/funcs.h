@@ -2,7 +2,6 @@
 **
 *W  funcs.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: funcs.h,v 4.10 2010/02/23 15:13:42 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,9 +13,11 @@
 **  calls, the  evaluators  for function calls,  the   evaluator for function
 **  expressions, and the handlers for the execution of function bodies.
 */
+
+#ifndef GAP_FUNCS_H
+#define GAP_FUNCS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_funcs_h =
-   "@(#)$Id: funcs.h,v 4.10 2010/02/23 15:13:42 gap Exp $";
 #endif
 
 
@@ -60,11 +61,10 @@ extern  void            ExecEnd (
 StructInitInfo * InitInfoFuncs ( void );
 
 
+#endif // GAP_FUNCS_H
+
 /****************************************************************************
 **
 
 *E  funcs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

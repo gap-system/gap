@@ -2,14 +2,11 @@
 ##
 #W  primality.gd                GAP library                      Jack Schmidt
 ##
-#H  @(#)$Id: primality.gd,v 4.7 2011/01/29 23:06:06 gap Exp $
 ##
 #Y  Copyright (C)  2005 Jack Schmidt
 ##
 ##  This file contains declarations for the primality test in the integers.
 ##
-Revision.primality_gd :=
-    "@(#)$Id: primality.gd,v 4.7 2011/01/29 23:06:06 gap Exp $";
 
 ##############################################################################
 ##

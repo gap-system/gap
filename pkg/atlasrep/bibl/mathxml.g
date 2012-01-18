@@ -2,15 +2,11 @@
 ##
 #W  mathxml.g            GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: mathxml.g,v 1.3 2008/08/20 15:48:22 gap Exp $
-##
 #Y  Copyright (C)  2008,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains some utilities for checking and improving math mode
 ##  pieces in GAPDoc manuals and BibXMLext format bibliographies.
 ##
-Revision.( "atlasrep/bibl/mathxml_g" ) :=
-    "@(#)$Id: mathxml.g,v 1.3 2008/08/20 15:48:22 gap Exp $";
 
 
 #############################################################################

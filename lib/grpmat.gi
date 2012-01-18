@@ -2,7 +2,6 @@
 ##
 #W  grpmat.gi                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: grpmat.gi,v 4.74 2010/06/19 10:01:17 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the methods for matrix groups.
 ##
-Revision.grpmat_gi :=
-    "@(#)$Id: grpmat.gi,v 4.74 2010/06/19 10:01:17 gap Exp $";
 
 
 #############################################################################
@@ -33,7 +30,7 @@ InstallMethod( DefaultFieldOfMatrixGroup,
 
 InstallMethod( DefaultFieldOfMatrixGroup,
     "for matrix group over the cyclotomics",
-    [ IsMatrixGroup and IsCyclotomicCollCollColl ],
+    [ IsCyclotomicMatrixGroup ],
     grp -> Cyclotomics );
 
 InstallMethod( DefaultFieldOfMatrixGroup,
@@ -227,7 +224,7 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
       i, lo, imgs, xset, hom, R;
 
   field:=DefaultFieldOfMatrixGroup(G);
-  dict := NewDictionary( One(G)[1], true , field ^ Length( One( G ) ) );
+  #dict := NewDictionary( One(G)[1], true , field ^ Length( One( G ) ) );
   acts:=GeneratorsOfGroup(G);
 
   if Length(acts)=0 then
@@ -253,7 +250,7 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   delay:=[]; # Vectors we delay later, because they are potentially very
              # expensive.
   permimg:=List(acts,i->[]);
-  maxlim:=2000;
+  maxlim:=200000;
 
   starti:=1;
   while Length(partbas)<dim or 
@@ -288,7 +285,7 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
     fi;
 
     if not IsZero(v) then
-      dict := NewDictionary( One(G)[1], true , field ^ Length( One( G ) ) );
+      dict := NewDictionary( v, true , field ^ Length( One( G ) ) );
       Add(orb,img);
       p:=Length(orb);
       AddDictionary(dict,img,Length(orb));
@@ -442,49 +439,58 @@ end);
 ##
 #M  IsomorphismPermGroup( <mat-grp> )
 ##
+
 BindGlobal( "NicomorphismOfGeneralMatrixGroup", function( grp,canon,sort )
-local   nice,img,module;
+local   nice,img,module,b;
+  b:=SeedFaithfulAction(grp);
+  if canon=false and b<>fail then
+    Info(InfoGroup,1,"using predefined action seed");
+    # the user (or code) gave a seed for a faithful action
+    nice:=MultiActionsHomomorphism(grp,b.points,b.ops);
   # don't be too clever if it is a matrix over a non-field domain
-  if not IsField(DefaultFieldOfMatrixGroup(grp)) then
+  elif not IsField(DefaultFieldOfMatrixGroup(grp)) then
+    Info(InfoGroup,1,"over nonfield");
     #nice:=ActionHomomorphism( grp,AsSSortedList(grp),OnRight,"surjective");
-    nice:=SortedSparseActionHomomorphism( grp, One( grp ) );
     if canon then
+      nice:=SortedSparseActionHomomorphism( grp, One( grp ) );
       SetIsCanonicalNiceMonomorphism(nice,true);
     else
+      nice:=SparseActionHomomorphism( grp, One( grp ) );
       nice:=nice*SmallerDegreePermutationRepresentation(Image(nice));
     fi;
-    SetIsInjective( nice, true );
-  # avoid a recursion due to the translation of homomorphisms for nice
-  # groups
+  elif IsFinite(grp) and ( (HasIsNaturalGL(grp) and IsNaturalGL(grp)) or
+             (HasIsNaturalSL(grp) and IsNaturalSL(grp)) ) then
+    # for full GL/SL we get never better than the full vector space as domain
+    Info(InfoGroup,1,"is GL/SL");
+    return NicomorphismFFMatGroupOnFullSpace(grp);
   elif canon then
+    Info(InfoGroup,1,"canonical niceo");
     nice:=SortedSparseActionHomomorphism( grp, One( grp ) );
-    SetIsInjective( nice, true ); # surjectivity is ensured by `SortedSparse..
     SetIsCanonicalNiceMonomorphism(nice,true);
   else
+    Info(InfoGroup,1,"act to find base");
     nice:=DoSparseLinearActionOnFaithfulSubset( grp, OnRight, sort);
-    SetIsInjective( nice, true );
     SetIsSurjective( nice, true );
-    if not ( (HasIsNaturalGL(grp) and IsNaturalGL(grp)) or
-             (HasIsNaturalSL(grp) and IsNaturalSL(grp)) ) then
-      img:=Image(nice);
-      if not IsFinite(FieldOfMatrixGroup(grp)) or
-      Length(GeneratorsOfGroup(grp))=0 then
-        module:=fail;
-      else
-	module:=GModuleByMats(GeneratorsOfGroup(grp),FieldOfMatrixGroup(grp));
-      fi;
-      #improve,
-      # try hard, unless absirr and orbit lengths at least 1/q^2 of domain --
-      #then we expect improvements to be of little help
-      if module<>fail and not (NrMovedPoints(img)>=
-        Size(FieldOfMatrixGroup(grp))^(Length(One(grp))-2)
-	and MTX.IsAbsolutelyIrreducible(module)) then
-	  nice:=nice*SmallerDegreePermutationRepresentation(img);
-      else
-	nice:=nice*SmallerDegreePermutationRepresentation(img:cheap:=true);
-      fi;
+
+    img:=Image(nice);
+    if not IsFinite(FieldOfMatrixGroup(grp)) or
+    Length(GeneratorsOfGroup(grp))=0 then
+      module:=fail;
+    else
+      module:=GModuleByMats(GeneratorsOfGroup(grp),FieldOfMatrixGroup(grp));
+    fi;
+    #improve,
+    # try hard, unless absirr and orbit lengths at least 1/q^2 of domain --
+    #then we expect improvements to be of little help
+    if module<>fail and not (NrMovedPoints(img)>=
+      Size(FieldOfMatrixGroup(grp))^(Length(One(grp))-2)
+      and MTX.IsAbsolutelyIrreducible(module)) then
+	nice:=nice*SmallerDegreePermutationRepresentation(img);
+    else
+      nice:=nice*SmallerDegreePermutationRepresentation(img:cheap:=true);
     fi;
   fi;
+  SetIsInjective( nice, true );
 
   return nice;
 end );
@@ -495,13 +501,18 @@ function(G)
 local map;
   if HasNiceMonomorphism(G) and IsPermGroup(Range(NiceMonomorphism(G))) then
     map:=NiceMonomorphism(G);
+    if IsIdenticalObj(Source(map),G) then
+      return map;
+    fi;
     return GeneralRestrictedMapping(map,G,Image(map,G));
   else
     if not HasIsFinite(G) then
       Info(InfoWarning,1,
            "IsomorphismPermGroup: The group is not known to be finite");
     fi;
-    return NicomorphismOfGeneralMatrixGroup(G,false,false);
+    map:=NicomorphismOfGeneralMatrixGroup(G,false,false);
+    SetNiceMonomorphism(G,map);
+    return map;
   fi;
 end);
 
@@ -511,7 +522,7 @@ end);
 ##
 InstallMethod( NiceMonomorphism,"use NicomorphismOfGeneralMatrixGroup",
   [ IsMatrixGroup and IsFinite ],
-  G->NicomorphismOfGeneralMatrixGroup(G,false,true));
+  G->NicomorphismOfGeneralMatrixGroup(G,false,false));
 
 #############################################################################
 ##

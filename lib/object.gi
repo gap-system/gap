@@ -2,7 +2,6 @@
 ##
 #W  object.gi                   GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: object.gi,v 4.50 2011/05/05 09:47:46 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains some methods applicable to objects in general.
 ##
-Revision.object_gi :=
-    "@(#)$Id: object.gi,v 4.50 2011/05/05 09:47:46 gap Exp $";
 
 
 #############################################################################
@@ -164,7 +161,7 @@ InstallMethod(String, [IsObject], o-> "<object>");
 ##      
 InstallMethod(PrintObj, "default method delegating to PrintString",
   [IsObject], function(o) Print(PrintString(o)); end );
-
+  
 #############################################################################
 ##
 #M  PrintString( <obj> ) . . . . . . . . . . . . default delegating to String
@@ -172,6 +169,30 @@ InstallMethod(PrintObj, "default method delegating to PrintString",
 ##
 InstallMethod(PrintString, "default method delegating to String",
   [IsObject], -1, String);
+
+# this command is useful to construct strings made of objects. It calls
+# PrintString to its arguments and concatenates them. It is used in the
+# library, but is not meant to be documented. (LB)
+#
+BIND_GLOBAL("STRINGIFY", function(arg)
+    local s, i;
+    s := ShallowCopy(String(arg[1]));
+    for i in [2..Length(arg)] do
+        Append(s,String(arg[i]));
+    od;
+    return s;
+end);
+
+BIND_GLOBAL("PRINT_STRINGIFY", function(arg)
+    local s, i;
+    s := ShallowCopy(PrintString(arg[1]));
+    for i in [2..Length(arg)] do
+        Append(s,"\>");
+        Append(s,PrintString(arg[i]));
+        Append(s,"\<");
+    od;
+    return s;
+end);
 
 #############################################################################
 ##
@@ -418,7 +439,8 @@ InstallMethod( ViewObj,
 #M  ViewString( <obj> ) . . . . . . . . . . . . . . . for an object with name
 ##
 InstallMethod( ViewString, "for an object with name", true,
-               [ IsObject and HasName ], 1 , Name );
+               [ HasName ], SUM_FLAGS,  # override anything specific
+	       Name );
 
 
 #############################################################################

@@ -2,8 +2,6 @@
 ##
 #W  ctbfisc1.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbfisc1.tbl,v 4.7 2005/09/23 08:05:18 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables related to the
@@ -13,6 +11,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbfisc1.tbl,v $
+#H  Revision 4.8  2011/09/28 12:12:36  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.7  2005/09/23 08:05:18  gap
 #H  added 2- and 3-modular tables of 6.Fi22 and 6.Fi22.2
 #H  (contributed by Felix Noeske)
@@ -107,10 +109,7 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctbfisc1_tbl :=
-    "@(#)$Id: ctbfisc1.tbl,v 4.7 2005/09/23 08:05:18 gap Exp $";
 
-SET_TABLEFILENAME("ctbfisc1");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("6.Fi22",11,
@@ -987,6 +986,7 @@ rec(version:=1,
 date:="21.02.94"));
 
 LIBTABLE.LOADSTATUS.ctbfisc1:="userloaded";
+
 #############################################################################
 ##
 #E

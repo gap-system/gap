@@ -2,7 +2,7 @@
 **
 *A  power.c                     ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: power.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: power.c,v 1.5 2011/11/29 09:55:06 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -12,8 +12,8 @@
 #include "pq_defs.h"
 #include "pcp_vars.h"
 
-void zero_array ();
-void copy_array ();
+static void zero_array (int ptr, int length, struct pcp_vars *pcp);
+static void copy_array (int old, int length, int new, struct pcp_vars *pcp);
 
 /* power routine - written by M J Smith, May 1991.
 
@@ -37,12 +37,9 @@ void copy_array ();
    B - Is used only in binary expansion to square the string A.
        A is unpacked into B, then collected onto B, then packed from B. */
 
-void power (exp, cp, pcp)
-int exp;
-int cp;
-struct pcp_vars *pcp; 
+void power (int exp, int cp, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int p = pcp->p;
    register int lastg = pcp->lastg;
@@ -175,12 +172,9 @@ struct pcp_vars *pcp;
 
 /* zero a section of the array, y */
 
-void zero_array (ptr, length, pcp)
-int ptr;
-int length;
-struct pcp_vars *pcp; 
+static void zero_array (int ptr, int length, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
 
@@ -190,13 +184,9 @@ struct pcp_vars *pcp;
 
 /* copy a section of the array, y */
 
-void copy_array (old, length, new, pcp)
-int old;
-int length;
-int new;
-struct pcp_vars *pcp; 
+static void copy_array (int old, int length, int new, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
 

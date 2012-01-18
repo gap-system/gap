@@ -7,8 +7,9 @@ fi
 
    
 
-# this suppresses resouce forks in tarballs
-COPY_EXTENDED_ATTRIBUTES_DISABLE=1
+# this suppresses extended attributes in tarballs
+export COPY_EXTENDED_ATTRIBUTES_DISABLE=1
+export COPYFILE_DISABLE=1
 
 cd ../
 rm -f $tarfile
@@ -47,7 +48,7 @@ for file in $testfiles
    do tar -r -f $tarfile irredsol/tst/$file 
 done
 
-for file in irredsol/html/*.html
+for file in irredsol/html/*.htm
 	do tar -r -f $tarfile $file 
 done
 

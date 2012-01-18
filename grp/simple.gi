@@ -2,15 +2,12 @@
 ##
 #W  simple.gi                 GAP Library                    Alexander Hulpke
 ##
-#H  @(#)$Id: simple.gi,v 1.3 2011/06/13 17:16:09 gap Exp $
 ##
 #Y  Copyright (C) 2011 The GAP Group
 ##
 ##  This file contains basic constructions for simple groups of bounded size,
 ##  if necessary by calling the `atlasrep' package.
 ##
-Revision.simple_gi :=
-    "@(#)$Id: simple.gi,v 1.3 2011/06/13 17:16:09 gap Exp $";
 
 # data for simple groups of order up to 10^18 that are not L_2(q)
 BindGlobal("SIMPLEGPSNONL2", 
@@ -122,10 +119,12 @@ BindGlobal("SIMPLEGPSNONL2",
   [270269262714825600,"U",3,151],[273457218604953600,"S",6,7],
   [273457218604953600,"O",7,7],[351309192845176800,"U",3,179],
   [356575576421678400,"S",4,61],[369130313886677616,"U",3,157],
-  [498292774007829408,"U",3,163],
-  [604945295112210528,"L",3,167],[665393448951722400,"U",3,169],
-  [712975930219192320,"L",4,17],[796793353927300800,"G",2,19],
-  [802332214764045216,"L",3,173],[911215823217986880,"S",4,67]]));
+  [383967100578952800,"L",3,181],[498292774007829408,"U",3,163],
+  [590382996204625920,"U",3,191],[604945295112210528,"L",3,167],
+  [641690334200143872,"L",3,193],[665393448951722400,"U",3,169],
+  [712975930219192320,"L",4,17],[756131656307437872,"U",3,197],
+  [796793353927300800,"G",2,19],[802332214764045216,"L",3,173],
+  [819770591880266400,"L",3,199],[911215823217986880,"S",4,67]]));
 
 # call atlasrep, possibly with extra parameters, but only if atlasrep is available
 BindGlobal("DoAtlasrepGroup",function(params)
@@ -139,8 +138,18 @@ local g;
 end);
 
 InstallGlobalFunction(SimpleGroup,function(arg)
-local str,p,a,param,g,s,small;
-  str:=arg[1];
+local brg,str,p,a,param,g,s,small;
+  if IsRecord(arg[1]) then
+    p:=arg[1];
+    if p.series="Spor" then
+      brg:=p.parameter;
+    else
+      brg:=Concatenation([p.series],p.parameter);
+    fi;
+  else
+    brg:=arg;
+  fi;
+  str:=brg[1];
   # Case x(y gets replaced by x,y for x,y digits
   p:=Position(str,'(');
   if p>1 and p<Length(str) and str[p-1] in CHARS_DIGITS and str[p+1] in CHARS_DIGITS
@@ -182,7 +191,7 @@ local str,p,a,param,g,s,small;
       Add(param,Int(a));
     fi;
   fi;
-  param:=Concatenation(param,arg{[2..Length(arg)]});
+  param:=Concatenation(param,brg{[2..Length(brg)]});
   if ForAny(param,x->not IsInt(x)) then
     Error("parameters must be integral");
   fi;
@@ -316,19 +325,19 @@ local str,p,a,param,g,s,small;
   elif str="O" or str="SO" or str="PSO" then
     if Length(param)=2 and IsOddInt(param[1]) then
       g:=SO(param[1],param[2]);
-      g:=Action(g,NormedVectors(GF(param[2])^param[1]),OnLines);
+      g:=Action(g,NormedRowVectors(GF(param[2])^param[1]),OnLines);
       g:=DerivedSubgroup(g);
       s:=Concatenation("O(",String(param[1]),",",String(param[2]),")");
       small:=true;
     elif Length(param)=3 and param[1]=1 and IsEvenInt(param[2]) then
       g:=SO(1,param[2],param[3]);
-      g:=Action(g,NormedVectors(GF(param[3])^param[2]),OnLines);
+      g:=Action(g,NormedRowVectors(GF(param[3])^param[2]),OnLines);
       g:=DerivedSubgroup(g);
       s:=Concatenation("O+(",String(param[2]),",",String(param[3]),")");
       small:=true;
     elif Length(param)=3 and param[1]=-1 and IsEvenInt(param[2]) then
       g:=SO(-1,param[2],param[3]);
-      g:=Action(g,NormedVectors(GF(param[3])^param[2]),OnLines);
+      g:=Action(g,NormedRowVectors(GF(param[3])^param[2]),OnLines);
       g:=DerivedSubgroup(g);
       s:=Concatenation("O-(",String(param[2]),",",String(param[3]),")");
       small:=true;
@@ -536,4 +545,62 @@ InstallGlobalFunction(SimpleGroupsIterator,function(arg)
     done:=(SizeL2Q(b)>ende or nopsl2) and SIMPLEGPSNONL2[pos][1]>ende
   ));
 
+end);
+
+InstallGlobalFunction(ClassicalIsomorphismTypeFiniteSimpleGroup,function(G)
+local t,r;
+  t:=IsomorphismTypeInfoFiniteSimpleGroup(G);
+  r:=rec();
+  if t.series in ["Z","A"] then
+    r.series:=t.series;
+    r.parameter:=[t.parameter];
+  elif t.series in ["L","E"] then
+    r.series:=t.series;
+    r.parameter:=t.parameter;
+  elif t.series="Spor" then
+    r.series:=t.series;
+    r.parameter:=[t.name];
+  elif t.series="B" then
+    r.series:="O";
+    r.parameter:=[t.parameter[1]*2+1,t.parameter[2]];
+  elif t.series="C" then
+    r.series:="S";
+    r.parameter:=[t.parameter[1]*2,t.parameter[2]];
+  elif t.series="D" then
+    r.series:="O+";
+    r.parameter:=[t.parameter[1]*2,t.parameter[2]];
+  elif t.series="F" then
+    r.series:="F";
+    r.parameter:=[4,t.parameter];
+  elif t.series="G" then
+    r.series:="G";
+    r.parameter:=[2,t.parameter];
+  elif t.series="2A" then
+    r.series:="U";
+    r.parameter:=[t.parameter[1]+1,t.parameter[2]];
+  elif t.series="2B" then
+    r.series:="Sz";
+    r.parameter:=[t.parameter];
+  elif t.series="2D" then
+    r.series:="O-";
+    r.parameter:=[t.parameter[1]*2,t.parameter[2]];
+  elif t.series="3D" then
+    r.series:="3D";
+    r.parameter:=[4,t.parameter];
+  elif t.series="2E" then
+    r.series:="2E";
+    r.parameter:=[6,t.parameter];
+  elif t.series="2F" then
+    if t.parameter=2 then
+      r.series:="Spor";
+      r.parameter:="T";
+    else
+      r.series:="2F";
+      r.parameter:=[t.parameter];
+    fi;
+  elif t.series="2G" then
+    r.series:="2G";
+    r.parameter:=[t.parameter];
+  fi;
+  return r;
 end);

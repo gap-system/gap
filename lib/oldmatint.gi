@@ -2,7 +2,6 @@
 ##
 #A  oldmatint.gi                   GAP library                 Robert Wainwright
 ##
-#H  $Id: oldmatint.gi,v 1.3 2010/10/10 12:34:37 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  St Andrews
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,8 +16,6 @@
 ##  on (and in parts identical to) code written by Bohdan Majewski.
 
 ##
-Revision.oldmatint_gi :=
-    "$Id: oldmatint.gi,v 1.3 2010/10/10 12:34:37 alexk Exp $";
 
 
 ##############################################################################

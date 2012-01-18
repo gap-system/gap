@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.grppcfp_gd :=
-    "@(#)$Id: grppcfp.gd,v 4.24 2010/02/23 15:13:07 gap Exp $"; 
 
 #############################################################################
 ##
@@ -38,8 +36,9 @@ DeclareInfoClass( "InfoSQ" );
 ##  gap> a := F.1;; b := F.2;; c := F.3;; d := F.4;;
 ##  gap> rels := [a^2, b^3, c^2, d^2, Comm(b,a)/b, Comm(c,a)/d, Comm(d,a),
 ##  >             Comm(c,b)/(c*d), Comm(d,b)/c, Comm(d,c)];
-##  [ a^2, b^3, c^2, d^2, b^-1*a^-1*b*a*b^-1, c^-1*a^-1*c*a*d^-1, d^-1*a^-1*d*a, 
-##    c^-1*b^-1*c*b*d^-1*c^-1, d^-1*b^-1*d*b*c^-1, d^-1*c^-1*d*c ]
+##  [ a^2, b^3, c^2, d^2, b^-1*a^-1*b*a*b^-1, c^-1*a^-1*c*a*d^-1, 
+##    d^-1*a^-1*d*a, c^-1*b^-1*c*b*d^-1*c^-1, d^-1*b^-1*d*b*c^-1, 
+##    d^-1*c^-1*d*c ]
 ##  gap> G := F / rels;
 ##  <fp group on the generators [ a, b, c, d ]>
 ##  gap> H := PcGroupFpGroup( G );

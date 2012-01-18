@@ -2,7 +2,7 @@
 **
 *A  exponent_auts.c             ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: exponent_auts.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: exponent_auts.c,v 1.4 2011/11/29 09:43:56 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -16,7 +16,7 @@
 /* save description of automorphisms used in exponent checking to file */
 
 void save_auts (ofp, head, list, pcp)
-FILE_TYPE ofp;
+FILE * ofp;
 int *head;
 int *list; 
 struct pcp_vars *pcp;
@@ -107,7 +107,7 @@ struct pcp_vars *pcp;
    new_index = index of last used position in array list */
 
 int restore_auts (ifp, offset, nmr_saved, retain, new_index, head, list)
-FILE_TYPE ifp;
+FILE * ifp;
 int offset;
 int nmr_saved;
 int retain;
@@ -139,7 +139,7 @@ int *list;
 /* restore automorphisms used in exponent checking from file */
 
 void restore_automorphisms (ifp, head, list, pcp)
-FILE_TYPE ifp;
+FILE * ifp;
 int **head;
 int **list;
 struct pcp_vars *pcp;

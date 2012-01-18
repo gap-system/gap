@@ -70,7 +70,7 @@ a p-group. The algorithm implemented here is described in O'Brien (1995).
 #
 ###############################################################################
 
-Access to parts of this program is provided via GAP, Magma, and Quotpic.
+Access to parts of this program is provided via GAP.
 
 This program is supplied as a package within GAP, both GAP 3.4 and  GAP4.
 The link from GAP to pq is described in the manual for GAP  3.4,  and  is
@@ -203,41 +203,16 @@ J. Symbolic Comput. 9, 725-733.
    the binary but excluding the object files) is about 3 MB.
 
 6. In p-group generation, if the automorphism group of the 
-   starting group is insoluble, then pq calls one of 
-   GAP or Magma to perform particular stabiliser computations 
+   starting group is insoluble, then pq calls GAP to perform
+   particular stabiliser computations 
    (see the User Guide for more details).
    The user of pq may choose which of these systems is to 
    be called --  however, the choice for this link MUST be 
-   made by the user at compilation time by setting one of the
-   GAP_LINK or Magma_LINK flags in the Makefile.
+   made by the user at compilation time by setting the
+   GAP_LINK flag in the Makefile.
    Points 7 and 8 below discuss each of these links in turn.
    
-7. The magma directory contains a cshell file, Magma_script, and 
-   one Magma library file, stabcalc.m 
-   
-   If you plan to use the link from this program to the system Magma, 
-   you will need to take the following action:
-
-   a. An environment variable, Magma_DIR, must be set to have as its
-      value the path to the directory cayley. If you wish to alter
-      the name of this environment variable, edit the occurrence
-      of this variable in the src file Magma.c, its occurrence
-      in Magma_script, and remake the binary.
-
-   b. The cshell file, Magma_script, executes magma. 
-      The binary for magma must be in your path.
-
-   The "egrep -v" commands in the Magma_script file are used to
-   remove certain output which occurs in the Magma log file.
-   In order that the Magma_output file is processed correctly
-   by pq, it is necessary that no text occurs before the listing 
-   of two integers and the generators of the stabiliser. 
-   On certain machines, the output file Magma_output may contain 
-   other junk before these entries -- if such is the case on your 
-   machine, you will need to add additional "egrep -v" command to 
-   remove such material.
-
-8. The link from pq to GAP assumes that you use GAP 3.4 or GAP4
+7. The link from pq to GAP assumes that you use GAP 3.4 or GAP4
    *with* the *ANUPQ package* installed.
 
    If the binary for GAP 3.4 or GAP4 is called gap and is in your 
@@ -245,7 +220,7 @@ J. Symbolic Comput. 9, 725-733.
    you must set an environment variable ANUPQ_EXEC_GAP to 
    point to the GAP executable.
 
-9. The TEST subdirectory of standalone contains a number of log files, 
+8. The TEST subdirectory of standalone contains a number of log files, 
    with extension .orig, together with a cshell file called TEST.
    This test program runs through a number of the examples 
    in the examples directory and compares the results generated with 
@@ -262,6 +237,6 @@ J. Symbolic Comput. 9, 725-733.
    The total time taken for the test on a SPARCstation 10/51 is
    about 30 seconds of user time.
 
-10. See the documentation for information on run-time parameters.
+9. See the documentation for information on run-time parameters.
 
-11. Please report bugs/problems/feedback to obrien@math.auckland.ac.nz
+10. Please report bugs/problems/feedback to obrien@math.auckland.ac.nz

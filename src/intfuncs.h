@@ -4,7 +4,6 @@
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
-*H  @(#)$Id: intfuncs.h,v 4.1 2011/05/10 16:04:51 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,9 +12,10 @@
 **  This file declares some representation nonspecific integer functions
 */
 
+#ifndef GAP_INTFUNCS_H
+#define GAP_INTFUNCS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_intfuncs_h =
-   "@(#)$Id: intfuncs.h,v 4.1 2011/05/10 16:04:51 sal Exp $";
 #endif
 
 /* link between Mersenne Twister randim numbers and
@@ -47,6 +47,8 @@ extern void MurmurHash3_x64_128 ( const void * key, const int len,
 */
 StructInitInfo * InitInfoIntFuncs ( void );
 
+
+#endif // GAP_INTFUNCS_H
 
 /****************************************************************************
 **

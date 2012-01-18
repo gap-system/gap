@@ -7,7 +7,7 @@
 <TitlePage>
   <Title><Package>singular</Package></Title>
   <Subtitle>the &GAP; interface to <Package>Singular</Package></Subtitle>
-  <Version>Version 06.07.23</Version>
+  <Version>Version 11.08.11</Version>
   <Author>Marco Costantini
    <Email>costanti@science.unitn.it</Email>
    <Homepage>http://www-math.science.unitn.it/~costanti/</Homepage>
@@ -17,7 +17,7 @@
     <Homepage>http://www.science.unitn.it/~degraaf/</Homepage>
   </Author>
 
-  <Date>23 July 2006</Date>
+  <Date>11 August 2011</Date>
   <Copyright>&copyright; 2003, 2004, 2005, 2006 Marco Costantini and Willem A. 
 de Graaf
   </Copyright>
@@ -1081,8 +1081,8 @@ false
 </ManSection>
 
 <ManSection>
-<Func Name="GcdUsingSingular" Arg = "pol_1, pol_2, ..., pol_n"/>
-<Func Name="GcdUsingSingular" Arg = "[pol_1, pol_2, ..., pol_n]"/>
+<Func Name="GcdUsingSingular" Arg="pol_1, pol_2, ..., pol_n" Label="for polynomials" />
+<Func Name="GcdUsingSingular" Arg="[pol_1, pol_2, ..., pol_n]" Label="for a list of polynomials" />
 <Description>
 
 The arguments of this function are (possibly multivariate) polynomials
@@ -1411,7 +1411,7 @@ send a bug report according to this text.
 
 If the report is about the manual, please cite also its revision:
 <P/>
-<Code>@(#)$Id: singular.xml,v 1.31 2011/06/14 10:31:33 pas Exp $</Code>.
+<Code>@(#)$Id: singular.xml,v 1.33 2011/09/10 16:35:13 alexk Exp $</Code>.
 
 
 </Subsection>

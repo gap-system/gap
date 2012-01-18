@@ -2,7 +2,6 @@
 ##
 #W  fldabnum.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: fldabnum.gd,v 4.35 2010/02/23 15:12:59 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,8 +16,6 @@
 ##  but its elements are not cyclotomics since this would be a property given
 ##  by their family.)
 ##
-Revision.fldabnum_gd :=
-    "@(#)$Id: fldabnum.gd,v 4.35 2010/02/23 15:12:59 gap Exp $";
 
 
 #T add rings of integers in abelian number fields!
@@ -512,7 +509,8 @@ DeclareSynonym( "NumberField", AbelianNumberField );
 ##  gap> f:= AsField( Field( [ Sqrt(-2) ] ), CF(8) );;
 ##  gap> # a cycl. field over a non-cycl. field
 ##  gap> b:= CanonicalBasis( f );;  BasisVectors( b );
-##  [ 1/2+1/2*E(8)-1/2*E(8)^2-1/2*E(8)^3, 1/2-1/2*E(8)+1/2*E(8)^2+1/2*E(8)^3 ]
+##  [ 1/2+1/2*E(8)-1/2*E(8)^2-1/2*E(8)^3, 
+##    1/2-1/2*E(8)+1/2*E(8)^2+1/2*E(8)^3 ]
 ##  gap> Coefficients( b, Sqrt(-2) );
 ##  [ E(8)+E(8)^3, E(8)+E(8)^3 ]
 ##  gap> f:= Field( [ Sqrt(-2) ] );   # a non-cycl. field over the rationals

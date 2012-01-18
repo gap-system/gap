@@ -4,7 +4,6 @@
 *W                                                         & Martin Schönert
 *W                                                  & Burkhard Höfling (MAC)
 **
-*H  @(#)$Id: sysfiles.h,v 4.39 2011/05/15 18:39:18 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,9 +12,11 @@
 **  The  file 'system.c'  declares  all operating system  dependent functions
 **  except file/stream handling which is done in "sysfiles.h".
 */
+
+#ifndef GAP_SYSFILES_H
+#define GAP_SYSFILES_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_sysfiles_h =
-   "@(#)$Id: sysfiles.h,v 4.39 2011/05/15 18:39:18 gap Exp $";
 #endif
 
 
@@ -50,7 +51,7 @@ typedef union {
 } TypGRF_Data;
 
 extern Int SyFindOrLinkGapRootFile (
-            Char *          filename,
+            const Char *    filename,
             Int4            crc_gap,
             TypGRF_Data *          result,
             Int             len );
@@ -64,7 +65,7 @@ extern Int SyFindOrLinkGapRootFile (
 **  one has to certain that such characters are not ignored in strings.
 */
 extern Int4 SyGAPCRC(
-            Char *          name );
+            const Char *    name );
 
 
 /****************************************************************************
@@ -72,7 +73,7 @@ extern Int4 SyGAPCRC(
 *F  SyLoadModule( <name> )  . . . . . . . . . . . . .  load a compiled module
 */
 extern InitInfoFunc SyLoadModule(
-            Char *          name );
+            const Char *    name );
 
 
 /****************************************************************************
@@ -193,8 +194,8 @@ extern UInt SySetBuffering( UInt fid );
 **  'SyFopen' must adjust the mode argument to open the file in binary  mode.
 */
 extern Int SyFopen (
-            Char *              name,
-            Char *              mode );
+            const Char *        name,
+            const Char *        mode );
 
 
 /****************************************************************************
@@ -296,7 +297,7 @@ extern Char * SyFgets (
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
 extern void SyFputs (
-            Char *              line,
+            const Char *        line,
             Int                 fid );
 
 
@@ -485,7 +486,7 @@ extern UInt SyExecuteProcess (
 **  is a system dependent description of the file.
 */
 extern Int SyIsExistingFile(
-            Char * name );
+            const Char * name );
 
 
 /****************************************************************************
@@ -496,7 +497,7 @@ extern Int SyIsExistingFile(
 **  otherwise. <name> is a system dependent description of the file.
 */
 extern Int SyIsReadableFile(
-            Char * name );
+            const Char * name );
 
 
 /****************************************************************************
@@ -507,7 +508,7 @@ extern Int SyIsReadableFile(
 **  otherwise. <name> is a system dependent description of the file.
 */
 extern Int SyIsWritableFile(
-            Char * name );
+            const Char * name );
 
 
 /****************************************************************************
@@ -518,7 +519,7 @@ extern Int SyIsWritableFile(
 **  otherwise. <name> is a system dependent description of the file.
 */
 extern Int SyIsExecutableFile(
-            Char * name );
+            const Char * name );
 
 
 /****************************************************************************
@@ -528,14 +529,16 @@ extern Int SyIsExecutableFile(
 **  'SyIsDirectoryPath' returns 1 if the  file <name>  is a directory  and  0
 **  otherwise. <name> is a system dependent description of the file.
 */
-extern Int SyIsDirectoryPath ( Char * name );
+extern Int SyIsDirectoryPath (
+            const Char * name );
 
 
 /****************************************************************************
 **
 *F  SyRemoveFile( <name> )  . . . . . . . . . . . . . . .  remove file <name>
 */
-extern Int SyRemoveFile ( Char * name );
+extern Int SyRemoveFile (
+            const Char * name );
 
 
 /****************************************************************************
@@ -543,7 +546,7 @@ extern Int SyRemoveFile ( Char * name );
 *F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
 */
 extern Char * SyFindGapRootFile (
-            Char *          filename );
+            const Char *    filename );
 
 
 /****************************************************************************
@@ -575,7 +578,7 @@ extern Char * SyTmpname ( void );
 **  would   usually   represent   '/usr/tmp/<hint>_<proc_id>_<cnt>/',   e.g.,
 **  '/usr/tmp/guava_17188_1/'.
 */
-extern Char * SyTmpdir ( Char * hint );
+extern Char * SyTmpdir ( const Char * hint );
 
 /****************************************************************************
 **
@@ -629,6 +632,8 @@ extern void syWinPut (
 */
 StructInitInfo * InitInfoSysFiles ( void );
 
+
+#endif // GAP_SYSFILES_H
 
 /****************************************************************************
 **

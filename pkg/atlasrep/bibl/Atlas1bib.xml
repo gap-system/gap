@@ -9,7 +9,7 @@
   <title>Geometric algebra</title>
   <publisher>Interscience Publishers, Inc., New York-London</publisher>
   <year>1957</year>
-  <mrnumber>MR0082463 (18,553e)</mrnumber>
+  <mrnumber>0082463 (18,553e)</mrnumber>
   <mrclass>15.0X</mrclass>
   <mrreviewer>J. Dieudonné</mrreviewer>
   <other type="pages">x+214</other>
@@ -27,7 +27,7 @@
   <note>Reprint of <Wrap Name="IntRef">the 1957 original</Wrap>,
       A Wiley-Interscience Publication</note>
   <isbn>0-471-60839-4</isbn>
-  <mrnumber>MR1009557 (90h:51003)</mrnumber>
+  <mrnumber>1009557 (90h:51003)</mrnumber>
   <mrclass>51-02 (11Exx)</mrclass>
   <other type="pages">x+214</other>
   <other type="intref">Art57</other>
@@ -41,7 +41,7 @@
   <publisher>John Wiley &amp; Sons, London-New York-Sydney</publisher>
   <year>1972</year>
   <note>Pure and Applied Mathematics, Vol. 28</note>
-  <mrnumber>MR0407163 (53 #10946)</mrnumber>
+  <mrnumber>0407163 (53 #10946)</mrnumber>
   <mrclass>20G15 (20D05 22E20)</mrclass>
   <mrreviewer>Louis Solomon</mrreviewer>
   <other type="pages">viii+331</other>
@@ -59,7 +59,7 @@
   <note>Reprint of <Wrap Name="IntRef">the 1972 original</Wrap>,
       A Wiley-Interscience Publication</note>
   <isbn>0-471-50683-4</isbn>
-  <mrnumber>MR1013112 (90g:20001)</mrnumber>
+  <mrnumber>1013112 (90g:20001)</mrnumber>
   <mrclass>20-02 (20D05 20E32 20G15 20G40 22-02)</mrclass>
   <other type="pages">x+335</other>
   <other type="intref">Car72</other>
@@ -77,7 +77,7 @@
   <note>Conjugacy classes and complex characters,
       A Wiley-Interscience Publication</note>
   <isbn>0-471-90554-2</isbn>
-  <mrnumber>MR794307 (87d:20060)</mrnumber>
+  <mrnumber>794307 (87d:20060)</mrnumber>
   <mrclass>20G40 (20-02 20C15)</mrclass>
   <mrreviewer>David B. Surowski</mrreviewer>
   <other type="pages">xii+544</other>
@@ -96,7 +96,7 @@
       Reprint of <Wrap Name="IntRef">the 1985 original</Wrap>,
       A Wiley-Interscience Publication</note>
   <isbn>0-471-94109-3</isbn>
-  <mrnumber>MR1266626 (94k:20020)</mrnumber>
+  <mrnumber>1266626 (94k:20020)</mrnumber>
   <mrclass>20C33 (20-02 20G40)</mrclass>
   <other type="pages">xii+544</other>
   <other type="intref">Car85</other>
@@ -112,7 +112,7 @@
   <volume>7</volume>
   <pages>14&ndash;66</pages>
   <issn>0040-8735</issn>
-  <mrnumber>MR0073602 (17,457c)</mrnumber>
+  <mrnumber>0073602 (17,457c)</mrnumber>
   <mrclass>20.0X</mrclass>
   <mrreviewer>F. I. Mautner</mrreviewer>
   <other type="fjournal">The Tohoku Mathematical Journal. Second
@@ -130,7 +130,7 @@
   <series>Second edition. Ergebnisse der Mathematik und ihrer
       Grenzgebiete, Neue Folge, Band 14</series>
   <address>Berlin</address>
-  <mrnumber>MR0174618 (30 #4818)</mrnumber>
+  <mrnumber>0174618 (30 #4818)</mrnumber>
   <mrclass>20.10</mrclass>
   <other type="pages">ix+161</other>
 </book></entry>
@@ -146,7 +146,7 @@
   <address>New York</address>
   <edition>Third</edition>
   <note>Ergebnisse der Mathematik und ihrer Grenzgebiete, Band 14</note>
-  <mrnumber>MR0349820 (50 #2313)</mrnumber>
+  <mrnumber>0349820 (50 #2313)</mrnumber>
   <mrclass>20-02 (05-02)</mrclass>
   <other type="pages">ix+161</other>
 </book></entry>
@@ -165,7 +165,7 @@
   <address>Berlin</address>
   <edition>Fourth</edition>
   <isbn>3-540-09212-9</isbn>
-  <mrnumber>MR562913 (81a:20001)</mrnumber>
+  <mrnumber>562913 (81a:20001)</mrnumber>
   <mrclass>20-01</mrclass>
   <other type="pages">ix+169</other>
 </book></entry>
@@ -179,7 +179,7 @@
   <publisher>Courant Institute of Mathematical Sciences, New York Univ.,
       New York</publisher>
   <year>1969</year>
-  <mrnumber>MR0248203 (40 #1457)</mrnumber>
+  <mrnumber>0248203 (40 #1457)</mrnumber>
   <mrclass>20.00</mrclass>
   <mrreviewer>A. P. Street</mrreviewer>
   <other type="pages">xxi+209</other>
@@ -195,7 +195,7 @@
   <year>1958</year>
   <series>with an introduction by W. Magnus</series>
   <address>New York</address>
-  <mrnumber>MR0104735 (21 #3488)</mrnumber>
+  <mrnumber>0104735 (21 #3488)</mrnumber>
   <mrclass>20.00</mrclass>
   <other type="pages">xvi+312</other>
 </book></entry>
@@ -209,7 +209,7 @@
   <year>1963</year>
   <series>Seconde édition, revue et corrigée</series>
   <address>Berlin</address>
-  <mrnumber>MR0158011 (28 #1239)</mrnumber>
+  <mrnumber>0158011 (28 #1239)</mrnumber>
   <mrclass>20.70</mrclass>
   <other type="pages">viii+125</other>
 </book></entry>
@@ -224,7 +224,7 @@
   <address>Berlin</address>
   <note>Troisième édition,
   Ergebnisse der Mathematik und ihrer Grenzgebiete, Band 5</note>
-  <mrnumber>MR0310083 (46 #9186)</mrnumber>
+  <mrnumber>0310083 (46 #9186)</mrnumber>
   <mrclass>20G15 (15A63 15A66)</mrclass>
   <mrreviewer>J. Burlak</mrreviewer>
   <other type="pages">viii+129</other>
@@ -240,7 +240,7 @@
   <address>Providence, R.I.</address>
   <note>Reviews reprinted from Mathematical Reviews, Vols. 1-40,
       published during 1940&ndash;1970, Classified by Daniel Gorenstein</note>
-  <mrnumber>MR0349819 (50 #2312)</mrnumber>
+  <mrnumber>0349819 (50 #2312)</mrnumber>
   <mrclass>20-XX (00A15)</mrclass>
   <other type="pages">xi+706</other>
   <other type="zblnumber">0282.00024</other>
@@ -257,7 +257,7 @@
   <address>New York</address>
   <note>An introduction to their classification</note>
   <isbn>0-306-40779-5</isbn>
-  <mrnumber>MR698782 (84j:20002)</mrnumber>
+  <mrnumber>698782 (84j:20002)</mrnumber>
   <mrclass>20-02 (20D05)</mrclass>
   <mrreviewer>R. Solomon</mrreviewer>
   <other type="pages">x+333</other>
@@ -275,7 +275,7 @@
   <address>Berlin</address>
   <note>A survey</note>
   <isbn>3-540-09716-3</isbn>
-  <mrnumber>MR551499 (83a:20054)</mrnumber>
+  <mrnumber>551499 (83a:20054)</mrnumber>
   <mrclass>20G05 (14L30 20C15 20G40)</mrclass>
   <mrreviewer>G. I. Lehrer</mrreviewer>
   <other type="pages">x+177</other>
@@ -291,7 +291,7 @@
   <volume>9</volume>
   <pages>875&ndash;891</pages>
   <issn>0030-8730</issn>
-  <mrnumber>MR0109191 (22 #79)</mrnumber>
+  <mrnumber>0109191 (22 #79)</mrnumber>
   <mrclass>22.00 (20.00)</mrclass>
   <mrreviewer>Rimhak Ree</mrreviewer>
   <other type="fjournal">Pacific Journal of Mathematics</other>

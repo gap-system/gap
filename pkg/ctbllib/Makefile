@@ -2,8 +2,6 @@
 ##
 #W  Makefile            GAP character table library             Thomas Breuer
 ##
-#H  @(#)$Id: Makefile,v 1.46 2006/06/07 16:50:51 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file is the make file for packing the distribution of the library,
@@ -12,9 +10,12 @@
 ##  1. Targets
 ##  ----------
 ##
+##     The "toc" target:
+##       - creates the file `data/ctprimar.tbl'
+##
 ##     The "manual" target:
 ##       - creates the `tex' files from the `msk' files,
-##         and uses them to create the files `manual.dvi' and `manual.pdf'.
+##         and uses them to create the file `manual.pdf'.
 ##
 ##     The "test" target:
 ##       - creates the file `tst/docxpl.tst' from the manual files,
@@ -102,8 +103,6 @@
 ##         `ctoc'       (directory with programs to convert CAS format
 ##                       data files to GAP readable format),
 ##         `dehist'     (removes the history lines from data files),
-##         `maketbl'    (creates `data/ctprimar.tbl' from the data files),
-##         `makexpl'    (creates `tst/docxpl.tst' from the manual files),
 ##         `periphery'  (checks peripheral information),
 ##         `posttth'    (corrects `tth' output for `ctbldiff.tex').
 ##
@@ -147,6 +146,8 @@
 ##     - If new functionality has been added,
 ##       check that examples and tests for all new variants are provided.
 ##
+##     - Update the database attribute files `data/grp*.dat'.
+##
 ##
 ##  5. What is to do additionally in the case of a new release?
 ##  -----------------------------------------------------------
@@ -188,7 +189,8 @@ PKGNAME = ctbllib
 
 ARCHIVE = $(PKGNAME)/$(PKGNAME)$(VERSION)
 
-GAP = gap4dev
+#GAP = gap4dev
+GAP = ~sam/gap/4.0/bin/i686-pc-linux-gnu-gcc/gap -b -l ~sam/gap/4.0/
 
 HOMEPAGE = /usr/local/www-homes/Thomas.Breuer/$(PKGNAME)
 
@@ -202,9 +204,9 @@ OBJECTST = $(PKGNAME)/dlnames/*.g* \
            $(PKGNAME)/doc/ctocenex.pdf \
            $(PKGNAME)/doc/multfree.pdf \
            $(PKGNAME)/doc/multfre2.pdf \
+           $(PKGNAME)/doc/o8p2s3_o8p5s3.pdf \
            $(PKGNAME)/doc/probgen.pdf \
            $(PKGNAME)/doc/manual.lab \
-           $(PKGNAME)/doc/manual.pdf \
            $(PKGNAME)/doc/manual.six \
            $(PKGNAME)/doc/manual.tex \
            $(PKGNAME)/doc/manual.toc \
@@ -212,10 +214,14 @@ OBJECTST = $(PKGNAME)/dlnames/*.g* \
            $(PKGNAME)/doc/ctblothe.tex \
            $(PKGNAME)/doc/introduc.tex \
            $(PKGNAME)/doc/construc.tex \
+           $(PKGNAME)/doc/manual.css \
+           `find $(PKGNAME)/doc -maxdepth 1 -name "*.txt" -print` \
+           `find $(PKGNAME)/doc -maxdepth 1 -name "*.html" -print` \
+           `find $(PKGNAME)/doc -maxdepth 1 -name "*.xml" -print` \
            `find $(PKGNAME)/htm -maxdepth 1 -name "*.htm" -print` \
            `find $(PKGNAME)/htm -maxdepth 1 -name "*.png" -print` \
            `find $(PKGNAME)/data -name "*.tbl" -print` \
-           $(PKGNAME)/etc/maketbl \
+           `find $(PKGNAME)/data -name "grp_*.dat" -print` \
            $(PKGNAME)/gap3/ctadmin.g \
            $(PKGNAME)/gap4/construc.g? \
            $(PKGNAME)/gap4/ctadmin.tb? \
@@ -230,11 +236,12 @@ OBJECTST = $(PKGNAME)/dlnames/*.g* \
            `find $(PKGNAME)/tst -name "*.tst" -print` \
            $(PKGNAME)/tst/multfree.dat \
            $(PKGNAME)/tst/multfre2.dat \
+           $(PKGNAME)/tst/hamilcyc.g \
            $(PKGNAME)/tst/multfree.g \
+           $(PKGNAME)/tst/o8p2s3_o8p5s3.g \
            $(PKGNAME)/tst/probgen.g
 
-OBJECTSB = $(PKGNAME)/doc/manual.dvi \
-# get rid of the DVI file?
+OBJECTSB = $(PKGNAME)/doc/manual.pdf
 
 OBJECTS = $(OBJECTST) $(OBJECTSB)
 
@@ -246,19 +253,13 @@ OBJECTS = $(OBJECTST) $(OBJECTSB)
 periphery:
 	etc/periphery
 
-mainmanual: doc/ctbllibr.msk doc/ctblothe.msk doc/introduc.msk doc/manual.bib
-	@( cd doc; ../../../etc/buildman.pe -f buildman.config; \
-	   tex manual; bibtex manual; tex manual; \
-	   ../../../doc/manualindex manual; \
-	   tex manual; tex manual; \
-	   pdftex manual; \
-	   pdftex manual )
-	@( cd doc; echo 'FileString("manual.bbl", \
-           ReplacedString(ReplacedString(StringFile("manual.bbl"),"%\n",""), \
-           "\\~{}","~"));' > tmp; \
-           $(GAP) < tmp; \
-           cp tmp tmp2; rm tmp )
-	@( cd doc; ../../../etc/convert.pl -t -c -n CTblLib . ../htm )
+toc: dev/maketbl.g
+	@( echo 'LoadPackage( "ctbllib" );; ReadPackage( "ctbllib", "dev/maketbl.g" );; CTblLibRecomputeTOC();;' | $(GAP) -A -N )
+
+mainmanual:
+	@( cd doc; echo 'Read( "makedocrel.g" );' \
+          | $(GAP) -o 500m -A -N -q > /dev/null )
+	@( grep -e "exceeded\|undefined" doc/main.log; exit 0 )
 
 manual: mainmanual
 	etc/processxpl ambigfus
@@ -269,15 +270,13 @@ manual: mainmanual
 	etc/processxpl ctocenex
 	etc/processxpl multfree
 	etc/processxpl multfre2
+	etc/processxpl o8p2s3_o8p5s3
 	etc/processxpl probgen
 	@( cd doc; tex ctbldiff; pdftex ctbldiff )
 	@( tth -u < doc/ctbldiff.tex > tmp; \
            etc/posttth tmp htm/ctbldiff.htm; \
            rm tmp )
 	@( grep -e "exceeded\|undefined" doc/*.log; exit 0 )
-
-doc/manual.dvi: mainmanual
-	@( exit 0 )
 
 tst/docxpl.tst: tst/docxpl.hea
 	etc/makexpl
@@ -306,12 +305,15 @@ tst/multfre2.tst: xpl/multfre2.xpl
 tst/ctocenex.tst: xpl/ctocenex.xpl
 	etc/processxpl ctocenex
 
+tst/o8p2s3_o8p5s3.tst: xpl/o8p2s3_o8p5s3.xpl
+	etc/processxpl o8p2s3_o8p5s3
+
 tst/probgen.tst: xpl/probgen.xpl
 	etc/processxpl probgen
 
 test: tst/docxpl.tst tst/ambigfus.tst tst/ctblcons.tst tst/ctbldeco.tst \
       tst/ctblj4.tst tst/ctblpope.tst tst/multfree.tst tst/multfre2.tst \
-      tst/ctocenex.tst tst/probgen.tst
+      tst/ctocenex.tst tst/o8p2s3_o8p5s3.tst tst/probgen.tst
 	( cd tst; echo 'Read( "testall.g" ); ReadTest( "hardtest.tst" ); \
            Exec( "date -u +../dev/log/test_%Y-%m-%d-%H-%M | \
                   xargs -n 1 cp test.out" ); \
@@ -335,11 +337,10 @@ commt:
           echo 'EOF' >> commt; \
           chmod +x commt )
 
-dist: doc/manual.dvi doc/manual.pdf doc/manual.lab doc/manual.six \
-      doc/manual.toc \
+dist: doc/manual.pdf doc/manual.lab doc/manual.six doc/manual.css \
       tst/docxpl.tst tst/ambigfus.tst tst/ctblcons.tst tst/ctbldeco.tst \
       tst/ctblj4.tst tst/ctblpope.tst tst/multfree.tst tst/multfre2.tst \
-      tst/ctocenex.tst tst/probgen.tst \
+      tst/ctocenex.tst tst/o8p2s3_o8p5s3 tst/probgen.tst \
       commb commt
 	@( cd ..; \
         echo $(OBJECTST) | xargs -n 1 $(PKGNAME)/commt $(ARCHIVE).zoo; \
@@ -354,22 +355,25 @@ clean:
            tst/docxpl.tst
 	( cd tst; rm -f ambigfus.tst ctblcons.tst ctbldeco.tst ctblj4.tst \
           ctblpope.tst ctocenex.tst docxpl.tst multfree.tst multfre2.tst \
-          multfree.g probgen.tst probgen.g )
+          multfree.g o8p2s3_o8p5s3.tst o8p2s3_o8p5s3.g \
+          probgen.tst probgen.g )
 	( cd doc; rm -f construc.tex ctbllibr.tex ctblothe.tex introduc.tex \
 	 ambigfus.* ctblcons.* ctbldeco.* ctblj4.* ctblpope.* ctocenex.* \
-         multfree.* multfre2.* probgen.* ctbldiff.dvi ctbldiff.log \
-         ctbldiff.pdf manual.aux manual.bbl manual.blg manual.dvi manual.idl \
+         multfree.* multfre2.* o8p2s3_o8p5s3.* probgen.* \
+         ctbldiff.log \
+         ctbldiff.pdf manual.aux manual.bbl manual.blg manual.idl \
          manual.idx manual.ilg manual.ind manual.lab manual.log manual.pdf \             manual.six manual.toc )
 	( cd htm; rm -f *.png \
          ambigfus.htm ctblcons.htm ctbldeco.htm ctblj4.htm ctblpope.htm \
-         ctocenex.htm multfree.htm multfre2.htm probgen.htm ctbldiff.htm )
+         ctocenex.htm multfree.htm multfre2.htm o8p2s3_o8p5s3.htm \
+         probgen.htm ctbldiff.htm )
 
 webrefresh:
 	( if ! test -d $(HOMEPAGE)/htm; then mkdir $(HOMEPAGE)/htm; fi )
 
 release: webrefresh \
          index.html PackageInfo.g README \
-         doc/manual.dvi doc/manual.pdf doc/ctbldiff.pdf \
+         doc/manual.pdf doc/ctbldiff.pdf \
          ../$(ARCHIVE).zoo ../$(ARCHIVE).tar.gz \
          htm/chapters.htm
 	( cp index.html PackageInfo.g README \
@@ -384,13 +388,14 @@ webrefreshsub:
           cp doc/ctbldeco.pdf $(HOMEPAGE)/doc; \
           cp doc/ctblpope.pdf $(HOMEPAGE)/doc; \
           cp doc/ctocenex.pdf $(HOMEPAGE)/doc; \
+          cp doc/o8p2s3_o8p5s3.pdf $(HOMEPAGE)/doc; \
           cp doc/probgen.pdf $(HOMEPAGE)/doc; \
           cp doc/multfree.pdf $(HOMEPAGE)/doc; \
           cp doc/multfre2.pdf $(HOMEPAGE)/doc )
 
 #T multfre2: needs replacement of multfre2.dat, multfree.g into directory data,
 #T           replacement of multfre2.pdf in doc, multfre2.htm in htm
-#T and what about probgen.g? (cf. \URL call in probgen.xpl!)
+#T and what about probgen.g, o8p2s3_o8p5s3.g? (cf. \URL call in probgen.xpl!)
 
 #############################################################################
 ##

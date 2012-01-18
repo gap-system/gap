@@ -8,8 +8,6 @@
 ##
 ##  This file contains the methods for process.
 ##
-Revision.process_gi :=
-    "@(#)$Id: process.gi,v 4.22 2011/06/15 16:48:49 gap Exp $";
 
 
 #############################################################################

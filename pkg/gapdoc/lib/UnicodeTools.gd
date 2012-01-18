@@ -2,7 +2,6 @@
 ##
 #W  UnicodeTools.gd                GAPDoc                     Frank Lübeck
 ##
-#H  @(#)$Id: UnicodeTools.gd,v 1.7 2008/05/26 16:53:15 gap Exp $
 ##
 #Y  Copyright (C)  2007,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen

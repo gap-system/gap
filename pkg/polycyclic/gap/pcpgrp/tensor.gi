@@ -675,6 +675,7 @@ end );
 ## This is the group nu(G) in our paper.  The following function computes the
 ## epimorphisms of nu(G) onto tau(G).
 ##
+# FIXME: This function is documented and should be turned into an attribute
 NonAbelianTensorSquarePlusEpimorphism := function(G)
     local   n,  embed,  S,  coll,  y,  sys,  T,  lift;
 
@@ -717,6 +718,7 @@ NonAbelianTensorSquarePlusEpimorphism := function(G)
     return lift;
 end;
 
+# FIXME: This function is documented and should be turned into an attribute
 NonAbelianTensorSquarePlus := function( G )
 
     return Source( NonAbelianTensorSquarePlusEpimorphism( G ) );
@@ -727,6 +729,7 @@ end;
 ##
 #F NonAbelianTensorSquare(G). . . . . . . . . . . . . . . . . . .(G otimes G)
 ##
+# FIXME: This function is documented and should be turned into an attribute
 NonAbelianTensorSquareEpimorphism := function( G )
     local   n,  epi,  T,  U,  t,  r,  c,  i,  j,  GoG,  gens,  embed,  
             imgs,  alpha;
@@ -781,6 +784,7 @@ end );
 ##
 #F WhiteheadQuadraticFunctor(G) . . . . . . . . . . . . . . . . .  (Gamma(G))
 ##
+# FIXME: This function is documented and should be turned into an attribute
 WhiteheadQuadraticFunctor := function(G)
     local invs, news, i;
     invs := AbelianInvariants(G);

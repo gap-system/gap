@@ -4,7 +4,6 @@
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
-*H  @(#)$Id: intfuncs.c,v 4.7 2011/05/24 11:55:34 alexk Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_intfuncs_c =
-   "@(#)$Id: intfuncs.c,v 4.7 2011/05/24 11:55:34 alexk Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -269,21 +266,8 @@ Obj FuncRandomListMT(Obj self, Obj mtstr, Obj list)
 integrate with GAP  SL*/
 
 
-#ifndef _UINT8_T
-typedef UInt1 uint8_t;
-#endif
-#ifndef __int8_t_defined
-#ifndef _INT8_T
-typedef Int1 int8_t;
-#endif
-#endif
-#ifndef __uint32_t_defined
-#ifndef _UINT32_T
-typedef UInt4 uint32_t;
-#endif
-#endif
-#ifndef _UINT64_T
-typedef UInt8 uint64_t;
+#if HAVE_STDINT_H
+#include <stdint.h>
 #endif
 
 
@@ -758,8 +742,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoIntFuncs ( void )
 {
-    module.revision_c = Revision_intfuncs_c;
-    module.revision_h = Revision_intfuncs_h;
     FillInVersion( &module );
     return &module;
 }

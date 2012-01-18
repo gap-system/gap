@@ -177,6 +177,9 @@ function( g )
         return r / Gcd( r, l );
     fi;
 end );
+# TODO: Replace this by something like DeclareSynonymAttr.
+# However, we cannot use DeclareSynonymAttr directly, because for
+# collectors there is already an operation SetRelativeOrder.
 RelativeOrder := function( g ) return RelativeOrderPcp(g); end;
 
 #############################################################################
@@ -222,6 +225,7 @@ end );
 ##
 ## Note that g is normed, if the LeadingExponent of g is its RelativeIndex.
 ## 
+# FIXME: This function is documented and should be turned into a GlobalFunction
 NormingExponent := function( g )
     local r, l, e;
     r := FactorOrder( g );
@@ -244,6 +248,7 @@ end;
 ##
 #F NormedPcpElement( g )
 ## 
+# FIXME: This function is documented and should be turned into a GlobalFunction
 NormedPcpElement := function( g )
     local h;
     h := g^NormingExponent( g );
@@ -280,7 +285,34 @@ function( elm )
         fi;
     od;
 end );
- 
+
+InstallMethod( String, 
+               "for pcp elements", 
+               true, 
+               [IsPcpElement], 
+               0,
+function( elm )
+    local g, l, e, d, str;
+    g := NameTag( elm );
+    e := Exponents( elm );
+    d := Depth( elm );
+    if d > Length( e ) then
+        return "id";
+    fi;
+	str := Concatenation(g,String(d));
+    if e[d] <> 1 then
+        Append(str, Concatenation("^",String(e[d])));
+    fi;
+    for l in [d+1..Length(e)] do
+    	if e[l] = 0 then continue; fi;
+        Append(str, Concatenation("*",g,String(l)));
+		if e[l] <> 1 then
+			Append(str, Concatenation("^",String(e[l])));
+		fi;
+    od;
+    return str;
+end );
+
 #############################################################################
 ##
 #M g * h 

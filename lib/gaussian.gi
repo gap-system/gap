@@ -2,7 +2,6 @@
 ##
 #W  gaussian.gi                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: gaussian.gi,v 4.14 2010/02/23 15:13:00 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,6 @@
 ##  $a + b * I$ where $a,b$ are integers, forms a Euclidean Ring.
 ##  It follows that this ring is a Unique Factorization Domain.
 ##
-Revision.gaussian_gi :=
-    "@(#)$Id: gaussian.gi,v 4.14 2010/02/23 15:13:00 gap Exp $";
 
 
 #############################################################################
@@ -131,16 +128,18 @@ InstallMethod( Quotient,
 
 #############################################################################
 ##
-#M  StandardAssociate( GaussianIntegers, <x> )  . . . for Gaussian integers
+#M  StandardAssociateUnit( GaussianIntegers, <x> )  . . for Gaussian integers
 ##
 ##  The standard associate of <x> is an associated element <y> of <x> that
 ##  lies in the  first quadrant of the complex plane.
 ##  That is <y> is that element from `<x> * [1,-1,E(4),-E(4)]' that has
 ##  positive real part and nonnegative imaginary part.
-##
 ##  (This is the generalization of `Abs' (see "Abs") for Gaussian integers.)
 ##
-InstallMethod( StandardAssociate,
+##  This function returns the unit <z> equal to <y> / <x>. The default
+##  StandardAssociate method then uses this to compute the standard associate.
+##
+InstallMethod( StandardAssociateUnit,
     "for Gaussian integers",
     IsCollsElms,
     [ IsGaussianIntegers, IsCyc ],
@@ -148,17 +147,17 @@ InstallMethod( StandardAssociate,
     if not IsGaussInt( x )  then
         Error( "<x> must lie in <GaussianIntegers>" );
     elif IsRat(x)  and 0 <= x  then
-        return x;
+        return 1;
     elif IsRat(x)  then
-        return -x;
+        return -1;
     elif 0 <  COEFFS_CYC(x)[1]       and 0 <= COEFFS_CYC(x)[2]       then
-        return x;
+        return 1;
     elif      COEFFS_CYC(x)[1] <= 0  and 0 <  COEFFS_CYC(x)[2]       then
-        return - E(4) * x;
+        return -E(4);
     elif      COEFFS_CYC(x)[1] <  0  and      COEFFS_CYC(x)[2] <= 0  then
-        return - x;
+        return -1;
     else
-        return E(4) * x;
+        return E(4);
     fi;
     end );
 

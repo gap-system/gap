@@ -2,7 +2,6 @@
 ##
 #A  makedoc.g                             GAPDoc                 Frank Lübeck
 ##  
-#H  @(#)$Id: makedoc.g,v 1.5 2003/11/20 22:02:15 gap Exp $
 ##  
 ##  Rebuild the whole documentation, provided sufficiently good (pdf)LaTeX
 ##  is available. 

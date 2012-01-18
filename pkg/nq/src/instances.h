@@ -7,4 +7,4 @@
 
 extern word    *Instances;
 
-extern void    EvalIdenticalRelation();
+extern void    EvalIdenticalRelation(node *r);

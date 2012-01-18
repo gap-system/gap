@@ -2,10 +2,10 @@
 ##
 #W cpcs.gi               POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## constructive pc-sequences for rational matrix groups
 ##
-#H  @(#)$Id: cpcs.gi,v 1.10 2011/05/31 13:10:57 gap Exp $
+#H  @(#)$Id: cpcs.gi,v 1.12 2011/09/23 13:36:31 gap Exp $
 ##
 #Y 2003
 ##
@@ -16,7 +16,7 @@
 ##
 ## arg[1] = G is a rational polycyclic rational matrix group
 ##
-InstallGlobalFunction( CPCS_PRMGroup , function( arg ) 
+InstallGlobalFunction( CPCS_PRMGroup , function( arg )
     local G;
     G := arg[1];
     if IsAbelian( G ) then
@@ -24,7 +24,7 @@ InstallGlobalFunction( CPCS_PRMGroup , function( arg )
     else
         if IsBound( arg[2] ) then
              return CPCS_NonAbelianPRMGroup( arg[1], arg[2] );
-        else 
+        else
              return CPCS_NonAbelianPRMGroup( G );
         fi;
     fi;
@@ -41,14 +41,14 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
             gens_K_p_m, gens, gens_K_p_mutableCopy, pcgs,
             gensOfBlockAction, pcgs_nue_K_p, pcgs_GU, gens_U_p, pcgs_U_p,
             radSeries, comSeries, recordSeries, isTriang, isFiniteGen,
-	    testIsPoly;
+            testIsPoly;
     # setup
     G := arg[1];
     gens := GeneratorsOfGroup( G );
     d := Length(gens[1][1]);
 
     Info( InfoPolenta, 1, "Determine a constructive polycyclic sequence\n",
-          "    for the input group ..." );    
+          "    for the input group ..." );
     Info( InfoPolenta, 1, " " );
 
     # determine an admissible prime or take the wished one
@@ -64,7 +64,7 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
     testIsPoly := false;
     if Length( arg ) = 3 then
        if arg[3] = "testIsPoly" then
-	  testIsPoly := true;
+          testIsPoly := true;
        fi;
     fi;
 
@@ -72,9 +72,9 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
     # natural homomorphism to GL(d,p)
     gens_p := InducedByField( gens, GF(p) );
 
-    # determine un upperbound for the derived length of G
+    # determine an upper bound for the derived length of G
     bound_derivedLength := d+2;
- 
+
     # finite part
     Info( InfoPolenta, 1,"Determine a constructive polycyclic sequence\n",
           "    for the image under the p-congruence homomorphism ..." );
@@ -84,13 +84,13 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
     Info( InfoPolenta, 1, "Finite image has relative orders ",
                            RelativeOrdersPcgs_finite( pcgs_I_p ), "." );
     Info( InfoPolenta, 1, " " );
- 
+
     # compute the normal the subgroup gens. for the kernel of phi_p
     Info( InfoPolenta, 1,"Compute normal subgroup generators for the kernel\n",
-          "    of the p-congruence homomorphism ...");      
+          "    of the p-congruence homomorphism ...");
     gens_K_p := POL_NormalSubgroupGeneratorsOfK_p( pcgs_I_p, gens );
     gens_K_p := Filtered( gens_K_p, x -> not x = IdentityMat(d) );
-    Info( InfoPolenta, 1,"finished.");   
+    Info( InfoPolenta, 1,"finished.");
     Info( InfoPolenta, 2,"The normal subgroup generators are" );
     Info( InfoPolenta, 2, gens_K_p );
     Info( InfoPolenta, 1, "  " );
@@ -101,25 +101,25 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
     # radical series
     Info( InfoPolenta, 1, "Compute the radical series ...");
     gens_K_p_mutableCopy := CopyMatrixList( gens_K_p );
-    recordSeries := POL_RadicalSeriesNormalGensFullData( gens, 
+    recordSeries := POL_RadicalSeriesNormalGensFullData( gens,
                                                       gens_K_p_mutableCopy,
                                                       d );
     if recordSeries = fail then return fail; fi;
     radSeries := recordSeries.sers;
-    Info( InfoPolenta, 1,"finished.");   
-    Info( InfoPolenta, 1, "The radical series has length ", 
+    Info( InfoPolenta, 1,"finished.");
+    Info( InfoPolenta, 1, "The radical series has length ",
                           Length( radSeries ), "." );
     Info( InfoPolenta, 2, "The radical series is" );
     Info( InfoPolenta, 2, radSeries );
-    Info( InfoPolenta, 1, " " );    
+    Info( InfoPolenta, 1, " " );
 
     # test if G is unipotent by abelian
     isTriang := POL_TestIsUnipotenByAbelianGroupByRadSeries( gens, radSeries );
     if isTriang then
         Info( InfoPolenta, 1, "Group is triangularizable!" );
         return CPCS_UnipotentByAbelianGroupByRadSeries( gens,
-							recordSeries,
-							testIsPoly );  
+                                                        recordSeries,
+                                                        testIsPoly );
     fi;
 
     # compositions series
@@ -129,9 +129,9 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
                                                    recordSeries.sersFullData,
                                                        1  );
     if comSeries=fail then return fail; fi;
-    
-    Info( InfoPolenta, 1,"finished.");   
-    Info( InfoPolenta, 1, "The composition series has length ", 
+
+    Info( InfoPolenta, 1,"finished.");
+    Info( InfoPolenta, 1, "The composition series has length ",
                           Length( comSeries ), "." );
     Info( InfoPolenta, 2, "The composition series is" );
     Info( InfoPolenta, 2, comSeries );
@@ -139,15 +139,15 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
 
     # induce K_p to the factors of the composition series
     gensOfBlockAction := POL_InducedActionToSeries(gens_K_p, comSeries);
-   
+
     # let nue be the homomorphism which induces the action of K_p to
     # the factors of the series
-    Info( InfoPolenta, 1, "Compute a constructive polycyclic sequence\n", 
+    Info( InfoPolenta, 1, "Compute a constructive polycyclic sequence\n",
     "    for the induced action of the kernel to the composition series ...");
     pcgs_nue_K_p := CPCS_AbelianSSBlocks_ClosedUnderConj( gens_K_p,
                                                        gens, comSeries );
     if pcgs_nue_K_p = fail then return fail; fi;
-    Info(InfoPolenta,1,"finished.");   
+    Info(InfoPolenta,1,"finished.");
 
     # update generators of K_p
     gens_K_p := pcgs_nue_K_p.gens_K_p;
@@ -159,7 +159,7 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
     # constructive pc-sequence for G/U_p
     pcgs_GU := CPCS_FactorGU_p( gens, pcgs_I_p, gens_K_p,
                                 pcgs_nue_K_p, comSeries, p );
-  
+
     # normal subgroup generators for  U_p
     Info( InfoPolenta, 1, "Calculate normal subgroup generators for the",
                           "\n    unipotent part ..." );
@@ -170,7 +170,7 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
     Info( InfoPolenta, 2, gens_U_p );
     Info( InfoPolenta, 1, " " );
 
-    # test whether U_p is finitely generated. 
+    # test whether U_p is finitely generated.
     Info( InfoPolenta, 3, "Testing wheter U_p is finitely generated ..." );
     isFiniteGen := POL_IsFinitelgeneratedU_p( gens_U_p, gens, pcgs_GU.pcs );
     Info( InfoPolenta, 3, "... finished" );
@@ -183,7 +183,7 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
     Info( InfoPolenta, 3, " " );
 
     # determine a constructive pc-sequence for the unipotent group U_p
-    Info( InfoPolenta, 1 ,"Determine a constructive polycyclic  sequence\n", 
+    Info( InfoPolenta, 1 ,"Determine a constructive polycyclic  sequence\n",
                           "    for the unipotent part ...");
     pcgs_U_p := CPCS_Unipotent_Conjugation( gens, gens_U_p );
     if pcgs_U_p = fail then return fail; fi;
@@ -197,9 +197,9 @@ InstallGlobalFunction( CPCS_NonAbelianPRMGroup , function( arg )
 
     Info( InfoPolenta, 1, "... computation of a constructive \n",
           "    polycyclic sequence for the whole group finished." );
- 
+
     return pcgs;
-end ); 
+end );
 
 #############################################################################
 ##
@@ -227,17 +227,17 @@ InstallGlobalFunction( CPCS_AbelianPRMGroup , function( G )
      Info( InfoPolenta, 1, "Compute the composition series ...");
     gens_mutableCopy := CopyMatrixList( gens );
     comSeries := POL_CompositionSeriesAbelianRMGroup( gens_mutableCopy, d );
-    if comSeries = fail then return fail; fi; 
+    if comSeries = fail then return fail; fi;
      Info( InfoPolenta, 1,"finished.");
     Info( InfoPolenta, 1, "The composition series has length ",
                           Length( comSeries ), "." );
     Info( InfoPolenta, 2, "The composition series is" );
     Info( InfoPolenta, 2, comSeries );
     Info( InfoPolenta, 1, " " );
- 
+
     # induce gens to the factors of the composition series
     gensOfBlockAction := POL_InducedActionToSeries(gens, comSeries);
-   
+
     # let nue be the homomorphism which induces the action of G to
     # the factors of the series
     Info( InfoPolenta, 1, "Compute a constructive polycyclic sequence\n",
@@ -248,11 +248,11 @@ InstallGlobalFunction( CPCS_AbelianPRMGroup , function( G )
                            pcgs_nue_K_p.relOrders, "."  );
     Info( InfoPolenta, 1, " " );
 
-  
+
     # constructive pc-sequence for G/U_p
     pcgs_GU := CPCS_FactorGU_p( gens, pcgs_I_p, gens,
                                 pcgs_nue_K_p, comSeries, p );
-  
+
     # normal subgroup generators for  U_p
     Info( InfoPolenta, 1, "Calculate normal subgroup generators for the",
                           "\n    unipotent part ..." );
@@ -279,9 +279,9 @@ InstallGlobalFunction( CPCS_AbelianPRMGroup , function( G )
 
     Info( InfoPolenta, 1, "... computation of a constructive \n",
           "    polycyclic sequence for the whole group finished." );
- 
+
     return pcgs;
-end ); 
+end );
 
 #############################################################################
 ##
@@ -289,31 +289,31 @@ end );
 ##
 ## G is an abelian rational polycyclic rational matrix group
 ##
-InstallGlobalFunction( CPCS_UnipotentByAbelianGroupByRadSeries , 
+InstallGlobalFunction( CPCS_UnipotentByAbelianGroupByRadSeries ,
                        function( gens, recordSeries, testIsPoly )
     local   p, d, gens_p, bound_derivedLength, pcgs_I_p, gens_K_p,
             comSeries, gens_mutableCopy, pcgs,
             gensOfBlockAction, pcgs_nue_K_p, pcgs_GU, gens_U_p, pcgs_U_p,
-	    isFiniteGen;
+            isFiniteGen;
     # setup
     d := Length(gens[1][1]);
 
     # skip the the p-congruence homomorphism
     pcgs_I_p := rec( gens := [], relOrders := [], wordGens := []);
     p := 0;
-  
+
     gens_mutableCopy := CopyMatrixList( gens );
-  
+
     # compositions series
     Info( InfoPolenta, 1, "Compute the composition series ...");
-    comSeries := POL_CompositionSeriesByRadicalSeriesRecalAlg( 
+    comSeries := POL_CompositionSeriesByRadicalSeriesRecalAlg(
                                                       gens_mutableCopy,
                                                        d,
                                                    recordSeries.sersFullData,
                                                        1  );
     if comSeries=fail then return fail; fi;
-    Info( InfoPolenta, 1,"finished.");   
-    Info( InfoPolenta, 1, "The composition series has length ", 
+    Info( InfoPolenta, 1,"finished.");
+    Info( InfoPolenta, 1, "The composition series has length ",
                           Length( comSeries ), "." );
     Info( InfoPolenta, 2, "The composition series is" );
     Info( InfoPolenta, 2, comSeries );
@@ -321,7 +321,7 @@ InstallGlobalFunction( CPCS_UnipotentByAbelianGroupByRadSeries ,
 
     # induce gens to the factors of the composition series
     gensOfBlockAction := POL_InducedActionToSeries(gens, comSeries);
-   
+
     # let nue be the homomorphism which induces the action of G to
     # the factors of the series
     Info( InfoPolenta, 1, "Compute a constructive polycyclic sequence\n",
@@ -335,7 +335,7 @@ InstallGlobalFunction( CPCS_UnipotentByAbelianGroupByRadSeries ,
     # constructive pc-sequence for G/U_p
     pcgs_GU := CPCS_FactorGU_p( gens, pcgs_I_p, gens,
                                 pcgs_nue_K_p, comSeries, p );
-  
+
     # normal subgroup generators for  U_p
     Info( InfoPolenta, 1, "Calculate normal subgroup generators for the",
                           "\n    unipotent part ..." );
@@ -374,52 +374,52 @@ InstallGlobalFunction( CPCS_UnipotentByAbelianGroupByRadSeries ,
 
     Info( InfoPolenta, 1, "... computation of a constructive \n",
           "    polycyclic sequence for the whole group finished." );
- 
+
     return pcgs;
-end ); 
-  
+end );
+
 #############################################################################
 ##
 #F CPCS_FactorGU_p( gens, pcgs_I_p, gens_K_p, pcgs_nue_K_p, radicalSeries,p)
 ##
 ## calculates a constructive pcs for the G/U_p(G)
 ##
-InstallGlobalFunction( CPCS_FactorGU_p , 
+InstallGlobalFunction( CPCS_FactorGU_p ,
     function( gens, pcgs_I_p, gens_K_p, pcgs_nue_K_p, radicalSeries,p)
     local i,preImgsNue,preImgsI_p,pcs;
 
     # calculate preimages of the pcs of K_p(G)/U_p(G) which is
-    # isomorph to nue(K_p(G))
+    # isomorphic to nue(K_p(G))
     preImgsNue := POL_PreImagesPcsNueK_p_G( gens_K_p, pcgs_nue_K_p);
-  
-    # calculate the preimages of the pcs of G/K_p(G) which is isomorph
+
+    # calculate the preimages of the pcs of G/K_p(G) which is isomorphic
     # to I_p_G
     preImgsI_p := POL_PreImagesPcsI_p_G( pcgs_I_p, gens);
     # Attention in preImgsI_p we have a reversed order of the pcs so
     preImgsI_p := Reversed( preImgsI_p );
-    Assert( 2,  TestPOL_PreImagesPcsI_p_G( preImgsI_p, p, pcgs_I_p ), 
+    Assert( 2,  TestPOL_PreImagesPcsI_p_G( preImgsI_p, p, pcgs_I_p ),
             "error in the calculation of the preimages of I_p");
 
     # now we have the new pcs for G/U_p
     pcs := Concatenation( preImgsI_p, preImgsNue);
- 
+
     return  rec( preImgsI_p := preImgsI_p,
-                 preImgsNue := preImgsNue, 
-                 pcs := pcs, 
-                 p := p, 
+                 preImgsNue := preImgsNue,
+                 pcs := pcs,
+                 p := p,
                  radicalSeries := radicalSeries,
                  pcgs_I_p := pcgs_I_p,
-                 pcgs_nue_K_p := pcgs_nue_K_p ); 
+                 pcgs_nue_K_p := pcgs_nue_K_p );
 end );
 
 #############################################################################
 ##
 #F POL_PreImagesPcsNueK_p_G( gens_K_p, pcgs_nue_K_p )
 ##
-InstallGlobalFunction( POL_PreImagesPcsNueK_p_G , 
+InstallGlobalFunction( POL_PreImagesPcsNueK_p_G ,
                        function( gens_K_p, pcgs_nue_K_p )
     local preImages,i,l1,g,l;
- 
+
     preImages := [];
     l1 := pcgs_nue_K_p.trsf;
     for l in l1 do
@@ -431,14 +431,14 @@ InstallGlobalFunction( POL_PreImagesPcsNueK_p_G ,
     od;
     return preImages;
 end );
- 
+
 #############################################################################
 ##
 #F POL_PreImagesPcsI_p_G( pcgs_I_p, gens )
 ##
 InstallGlobalFunction( POL_PreImagesPcsI_p_G , function( pcgs_I_p, gens )
     local preImages,m,l,list,k;
- 
+
     preImages := [];
     list := pcgs_I_p.wordGens;
     for l in list do
@@ -469,39 +469,39 @@ InstallGlobalFunction( TestPOL_PreImagesPcsI_p_G ,
     od;
     return true;
 end );
- 
+
 #############################################################################
 ##
 #F ExponentVector_CPCS_FactorGU_p(pcgs_GU,g)
 ##
-InstallGlobalFunction( ExponentVector_CPCS_FactorGU_p , 
+InstallGlobalFunction( ExponentVector_CPCS_FactorGU_p ,
                        function( pcgs_GU, g )
     local h,exp_h,k,l,exp_l,exp,test;
- 
+
     # if G is abelian skip the I_p part
     if pcgs_GU.p=0 then
         k := g;
         exp_h := [];
-    else 
+    else
         # first we have to compute the part related to preImgs_I_p
         # compute the image in I_p
         h := g*One(GF(pcgs_GU.p));
         exp_h :=  ExponentvectorPcgs_finite( pcgs_GU.pcgs_I_p, h );
         if exp_h = fail then return fail; fi;
-  
+
         # divide off to get the part of g which is in K_p
         k := POL_GetPartinK_P( g, exp_h, pcgs_GU.preImgsI_p );
-  
+
         # assert that k is in K_p
         Assert( 2,  k*One( GF(pcgs_GU.p) ) = ( k*One(GF(pcgs_GU.p)) )^0,
             "Failure in ExponentVector_CPCS_FactorGU_p(pcgs_GU,g)\n");
- 
+
     fi;
     # now compute the image under nue
     l:= POL_InducedActionToSeries( [k], pcgs_GU.radicalSeries );
- 
+
     exp_l:=ExponentVector_AbelianSS( pcgs_GU.pcgs_nue_K_p, l );
-    if exp_l = fail then return fail; fi; 
+    if exp_l = fail then return fail; fi;
     # merge the exponents
     exp:=Concatenation(exp_h,exp_l);
     return exp;
@@ -520,7 +520,7 @@ InstallGlobalFunction( POL_GetPartinK_P, function( g, exp_h, preImgsI_p )
     od;
     return k;
 end );
- 
+
 #############################################################################
 ##
 #F RelativeOrders_CPCS_FactorGU_p( pcgs_GU )
@@ -541,17 +541,17 @@ end );
 ##
 InstallGlobalFunction( POL_MergeCPCS , function( pcgs_U_p, pcgs_GU )
     local pcs,rels1,rels2,rels3,rels;
- 
+
     pcs := Concatenation( pcgs_GU.pcs, pcgs_U_p.pcs );
     rels1 := RelativeOrders_CPCS_FactorGU_p( pcgs_GU );
     rels2 := pcgs_U_p.rels;
     rels:=Concatenation(rels1,rels2);
     return rec( pcgs_U_p := pcgs_U_p,
-                pcgs_GU := pcgs_GU, 
+                pcgs_GU := pcgs_GU,
                 pcs := pcs,
                 rels := rels);
 end );
- 
+
 #############################################################################
 ##
 #F ExponentVector_CPCS_PRMGroup( matrix, pcgs )
@@ -567,7 +567,7 @@ InstallGlobalFunction( ExponentVector_CPCS_PRMGroup, function(matrix,pcgs)
     if Length( exp1 ) = 0 then
         #divide off nothing
         m2 := matrix;
-    else  
+    else
        m1 := Exp2Groupelement( pcgs.pcgs_GU.pcs, exp1 );
        m2 := (m1^-1)*matrix;
     fi;
@@ -591,7 +591,7 @@ ind := POL_InducedActionToSeries( gens, radSers );
 
 n := Length( ind );
 
-for i in [1..n] do 
+for i in [1..n] do
    G := Group( ind[i] );
    if not IsAbelian( G ) then
        return false;

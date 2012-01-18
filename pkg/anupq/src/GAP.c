@@ -3,32 +3,19 @@
 *A  GAP.c                      ANUPQ source                    Eamonn O'Brien
 *A                                                             & Frank Celler
 **
-*A  @(#)$Id: GAP.c,v 1.6 2002/02/15 15:08:49 gap Exp $
+*A  @(#)$Id: GAP.c,v 1.9 2011/11/29 19:56:22 gap Exp $
 **
 *Y  Copyright 1995-1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1997-1997,  School of Mathematical Sciences, ANU,     Australia
 **
-*H  $Log: GAP.c,v $
-*H  Revision 1.6  2002/02/15 15:08:49  gap
-*H  Included -r option in GAP call as per suggestion by SL. - GG
-*H
-*H  Revision 1.5  2001/06/15 14:31:51  werner
-*H  fucked up revision numbers.   WN
-*H
-*H  Revision 1.3  2001/06/15 07:43:14  werner
-*H  Fixing revision number. WN
-*H
-*H  Revision 1.1.1.1  2001/04/15 15:09:32  werner
-*H  Try again to import ANUPQ. WN
-*H
 */
-#if defined (GAP_LINK) 
-
 #include "pq_defs.h"
 #include "pga_vars.h"
 #include "pcp_vars.h"
 #include "pq_functions.h"
 #include "constants.h"
+
+#if defined (GAP_LINK) 
 
 
 /****************************************************************************
@@ -130,7 +117,7 @@ void    start_GAP_file (auts, pga)
 
    pipe(p1);
    pipe(p2);
-#if defined(SPARC) || defined(NeXT)
+#ifdef HAVE_WORKING_VFORK
    if ( (pid = vfork()) == 0 )
 #else
       if ( (pid = fork()) == 0 )

@@ -28,11 +28,14 @@ their principal ideals have infinite index. Therefore as moduli of
 residue-class-wise affine mappings we can only use lattices of full rank,
 for these are precisely the ideals of <M>&ZZ;^d</M> of finite index.
 However, on the other hand we can also be more permissive and look at
-<M>&ZZ;^d</M> not only as a ring, but also as a free &ZZ;-module.
+<M>&ZZ;^d</M> not as a ring, but rather as a free &ZZ;-module.
 The consequence of this is that then an affine mapping of <M>&ZZ;^d</M>
 is not just given by <M>v \mapsto (av+b)/c</M> for some
 <M>a, b, c \in &ZZ;^d</M>, but rather by <M>v \mapsto (vA+b)/c</M>,
-where <M>A \in &ZZ;^{d \times d}</M>.
+where <M>A \in &ZZ;^{d \times d}</M>. Also for technical reasons concerning
+the implementation in &GAP;, looking at <M>&ZZ;^d</M> as a free &ZZ;-module
+is preferable -- in &GAP;, <C>Integers^d</C> is not a ring, and
+multiplying lists of integers means forming their scalar product.
 
 <!-- #################################################################### -->
 
@@ -108,7 +111,7 @@ or the more specialized functions
         Label="of Z x Z, by residue class cycles"/>
   <Meth Name="RcwaMapping" Arg="f, g"
         Label="of Z x Z, by projections to coordinates"/>
-  <Returns> An rcwa mapping of <M>&ZZ;^2</M>. </Returns>
+  <Returns> an rcwa mapping of <M>&ZZ;^2</M>. </Returns>
   <Description>
     The above methods return
     <List>
@@ -186,19 +189,11 @@ gap> Display(hyperbolic);
 
 Bijective rcwa mapping of Z^2 with modulus (1,0)Z+(0,2)Z
 
-   [m,n] mod (1,0)Z+(0,2)Z   |              Image of [m,n]
------------------------------+-------------------------------------------
- [0,0]                       | [2m,n/2]
- [0,1]                       | [2m+1,(n-1)/2]
-
-gap> Display(hyperbolic:varnames:="v");
-
-Rcwa mapping of Z^2 with modulus (1,0)Z+(0,2)Z
-
-     v mod (1,0)Z+(0,2)Z     |                Image of v
------------------------------+-------------------------------------------
- [0,0]                       | v * [[4,0],[0,1]]/2
- [0,1]                       | (v * [[4,0],[0,1]] + [2,-1])/2
+            /
+            | (2m,n/2)       if (m,n) in (0,0)+(1,0)Z+(0,2)Z
+ (m,n) |-> <  (2m+1,(n-1)/2) if (m,n) in (0,1)+(1,0)Z+(0,2)Z
+            |
+            \
 
 gap> Trajectory(hyperbolic,[0,10000],20);
 [ [ 0, 10000 ], [ 0, 5000 ], [ 0, 2500 ], [ 0, 1250 ], [ 0, 625 ], 
@@ -215,7 +210,7 @@ gap> g := RcwaMapping(P1,P2);                                 # method (b)
 <bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,2)Z>
 gap> P1^g = P2;
 true
-gap> Display(g);
+gap> Display(g:table);
 
 Bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,2)Z
 
@@ -239,14 +234,13 @@ gap> Display(g);
 
 Bijective rcwa mapping of Z^2 with modulus (4,2)Z+(0,4)Z, of order 3
 
-   [m,n] mod (4,2)Z+(0,4)Z   |              Image of [m,n]
------------------------------+-------------------------------------------
- [0,0] [0,2] [2,1] [2,3]     | [m+1,(-m+4n)/2]
- [0,1] [0,3] [1,2] [1,3]     |
- [2,0] [2,2] [3,0] [3,2]     |
- [3,3]                       | [m,n]
- [1,0] [3,1]                 | [2m-1,(m+2n+1)/2]
- [1,1]                       | [(m-1)/2,(n-1)/2]
+            /
+            | (m+1,(-m+4n)/2)   if (m,n) in (0,0)+(2,1)Z+(0,2)Z
+            | (2m-1,(m+2n+1)/2) if (m,n) in (1,0)+(2,1)Z+(0,4)Z
+ (m,n) |-> <  ((m-1)/2,(n-1)/2) if (m,n) in (1,1)+(4,2)Z+(0,4)Z
+            | (m,n)             otherwise
+            |
+            \
 
 gap> g := RcwaMapping(ClassTransposition(0,2,1,2),
 >                     ClassReflection(0,2));                  # method (d)
@@ -255,12 +249,13 @@ gap> Display(g);
 
 Rcwa mapping of Z^2 with modulus (2,0)Z+(0,2)Z
 
-   [m,n] mod (2,0)Z+(0,2)Z   |              Image of [m,n]
------------------------------+-------------------------------------------
- [0,0]                       | [m+1,-n]
- [0,1]                       | [m+1,n]
- [1,0]                       | [m-1,-n]
- [1,1]                       | [m-1,n]
+            /
+            | (m+1,-n) if (m,n) in (0,0)+(2,0)Z+(0,2)Z
+            | (m+1,n)  if (m,n) in (0,1)+(2,0)Z+(0,2)Z
+ (m,n) |-> <  (m-1,-n) if (m,n) in (1,0)+(2,0)Z+(0,2)Z
+            | (m-1,n)  if (m,n) in (1,1)+(2,0)Z+(0,2)Z
+            |
+            \
 
 gap> g^2;
 IdentityMapping( ( Integers^2 ) )
@@ -278,7 +273,7 @@ gap> List(ProjectionsToCoordinates(g),Factorization);
   <Func Name="ClassTransposition" Arg="cl1, cl2"
                                   Label="cl1, cl2 (for Z x Z)"/>
   <Returns>
-    The class transposition <M>\tau_{r_1+&ZZ;^2L_1,r_2+&ZZ;^2L_2}</M>.
+    the class transposition <M>\tau_{r_1+&ZZ;^2L_1,r_2+&ZZ;^2L_2}</M>.
   </Returns>
   <Description>
     Let <M>d \in &NN;</M>, and let <M>L_1, L_2 \in &ZZ;^{d \times d}</M> be
@@ -333,12 +328,11 @@ gap> Display(ct);
 
 Bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,4)Z, of order 2
 
-   [m,n] mod (2,1)Z+(0,4)Z   |              Image of [m,n]
------------------------------+-------------------------------------------
- [0,0] [0,2]                 | [m+1,(-m+4n)/2]
- [0,1] [0,3] [1,1] [1,2]     |
- [1,3]                       | [m,n]
- [1,0]                       | [m-1,(m+2n-1)/4]
+            /
+            | (m+1,(-m+4n)/2)  if (m,n) in (0,0)+(2,1)Z+(0,2)Z
+ (m,n) |-> <  (m-1,(m+2n-1)/4) if (m,n) in (1,0)+(2,1)Z+(0,4)Z
+            | (m,n)            otherwise
+            \
 
 gap> TransposedClasses(ct);
 [ (1,0)+(2,0)Z+(0,4)Z, (0,0)+(2,1)Z+(0,2)Z ]
@@ -363,7 +357,7 @@ false
   <Heading> ClassRotation (for <M>&ZZ;^2</M>) </Heading>
   <Func Name="ClassRotation" Arg="r, L, u" Label="r, L, u; for Z x Z"/>
   <Func Name="ClassRotation" Arg="cl, u" Label="cl, u; for Z x Z"/>
-  <Returns> The class rotation <M>\rho_{r(m),u}</M>. </Returns>
+  <Returns> the class rotation <M>\rho_{r(m),u}</M>. </Returns>
   <Description>
     Let <M>d \in &NN;</M>. Given a residue class <M>r+&ZZ;^dL</M>
     and a matrix <M>u \in {\rm GL}(d,&ZZ;)</M>, the <E>class rotation</E>
@@ -394,11 +388,11 @@ gap> Display(transvection);
 
 Tame bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,3)Z, of order infinity
 
-   [m,n] mod (2,1)Z+(0,3)Z   |              Image of [m,n]
------------------------------+-------------------------------------------
- [0,0] [0,1] [0,2] [1,0]     |
- [1,2]                       | [m,n]
- [1,1]                       | [m,(3m+2n-3)/2]
+            /
+            | (m,(3m+2n-3)/2) if (m,n) in (1,1)+(2,1)Z+(0,3)Z
+ (m,n) |-> <  (m,n)           otherwise
+            |
+            \
 
 ]]>
 </Example>
@@ -409,7 +403,7 @@ Tame bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,3)Z, of order infinity
   <Heading> ClassShift (for <M>&ZZ;^2</M>) </Heading>
   <Func Name="ClassShift" Arg="r, L, k" Label="r, L, k; for Z x Z"/>
   <Func Name="ClassShift" Arg="cl, k" Label="cl, k; for Z x Z"/>
-  <Returns> The class shift <M>\nu_{r+&ZZ;^dL,k}</M>. </Returns>
+  <Returns> the class shift <M>\nu_{r+&ZZ;^dL,k}</M>. </Returns>
   <Description>
     Let <M>d \in &NN;</M>. Given a residue class <M>r+&ZZ;^dL</M> and
     an integer <M>k \in \{1, \dots, d\}</M>, the <E>class shift</E>
@@ -433,10 +427,11 @@ gap> Display(s);
 
 Tame bijective rcwa mapping of Z^2 with modulus (2,1)Z+(0,2)Z, of order infinity
 
-   [m,n] mod (2,1)Z+(0,2)Z   |              Image of [m,n]
------------------------------+-------------------------------------------
- [0,0] [0,1] [1,0]           | [m,n]
- [1,1]                       | [m,n+2]
+            /
+            | (m,n+2) if (m,n) in (1,1)+(2,1)Z+(0,2)Z
+ (m,n) |-> <  (m,n)   if (m,n) in (0,0)+(2,0)Z+(0,1)Z U 
+            |                     (1,0)+(2,1)Z+(0,2)Z
+            \
 
 ]]>
 </Example>
@@ -482,8 +477,8 @@ following general operations:
 <Index Key="String" Subkey="for an rcwa mapping of Z x Z">
   <C>String</C>
 </Index>
-<Index Key="RcwaMappingToLaTeX" Subkey="for an rcwa mapping of Z x Z">
-  <C>RcwaMappingToLaTeX</C>
+<Index Key="LaTeXStringRcwaMapping" Subkey="for an rcwa mapping of Z x Z">
+  <C>LaTeXStringRcwaMapping</C>
 </Index>
 <Index Key="LaTeXAndXDVI" Subkey="for an rcwa mapping of Z x Z">
   <C>LaTeXAndXDVI</C>
@@ -570,7 +565,7 @@ following general operations:
   <Mark> Output </Mark>
   <Item>
     <C>View</C>, <C>Display</C>, <C>Print</C>, <C>String</C>,
-    <C>RcwaMappingToLaTeX</C>, <C>LaTeXAndXDVI</C>.
+    <C>LaTeXStringRcwaMapping</C>, <C>LaTeXAndXDVI</C>.
   </Item> 
   <Mark> Access to components </Mark>
   <Item> <C>Modulus</C>, <C>Coefficients</C>. </Item>
@@ -610,7 +605,7 @@ of&nbsp;<M>&ZZ;^2</M> are described in the sequel. <P/>
   <Attr Name="ProjectionsToCoordinates" Arg="f"
         Label="for an rcwa mapping of Z x Z"/>
   <Returns>
-    The projections of the rcwa mapping <A>f</A> of <M>&ZZ;^2</M> to the
+    the projections of the rcwa mapping <A>f</A> of <M>&ZZ;^2</M> to the
     coordinates if such projections exist, and <C>fail</C> otherwise.
   </Returns>
   <Description>
@@ -625,12 +620,13 @@ gap> Display(f);
 
 Rcwa mapping of Z^2 with modulus (2,0)Z+(0,2)Z
 
-    [m,n] mod (2,0)Z+(0,2)Z    |               Image of [m,n]
--------------------------------+----------------------------------------------
- [0,0]                         | [m+1,-n]
- [0,1]                         | [m+1,n]
- [1,0]                         | [m-1,-n]
- [1,1]                         | [m-1,n]
+            /
+            | (m+1,-n) if (m,n) in (0,0)+(2,0)Z+(0,2)Z
+            | (m+1,n)  if (m,n) in (0,1)+(2,0)Z+(0,2)Z
+ (m,n) |-> <  (m-1,-n) if (m,n) in (1,0)+(2,0)Z+(0,2)Z
+            | (m-1,n)  if (m,n) in (1,1)+(2,0)Z+(0,2)Z
+            |
+            \
 
 gap> List(ProjectionsToCoordinates(f),Factorization);
 [ [ ClassTransposition(0,2,1,2) ], [ ClassReflection(0,2) ] ]
@@ -709,7 +705,7 @@ of the image is a specified residue class:
   <Attr Name="IsomorphismRcwaGroup"
         Arg="gl2z, cl" Label="for GL(2,Z) and a residue class"/>
   <Returns>
-    A monomorphism from <A>sl2z</A> respectively <A>gl2z</A>
+    a monomorphism from <A>sl2z</A> respectively <A>gl2z</A>
     to&nbsp;RCWA(<M>&ZZ;^2</M>), such that the support of the image
     is the residue class&nbsp;<A>cl</A> and the generators
     are affine on&nbsp;<A>cl</A>.
@@ -735,7 +731,7 @@ gap> phi := IsomorphismRcwaGroup(gl,ResidueClass([1,0],[[2,2],[0,3]]));
   ClassRotation((1,0)+(2,2)Z+(0,3)Z,[[1,1],[0,1]]) ]
 gap> [[-47,-37],[61,48]]^phi;
 ClassRotation((1,0)+(2,2)Z+(0,3)Z,[[-47,-37],[61,48]])
-gap> Display(last);
+gap> Display(last:table);
 
 Bijective rcwa mapping of Z^2 with modulus (2,2)Z+(0,3)Z, of order 6
 
@@ -770,7 +766,7 @@ of&nbsp;<M>&ZZ;^2</M> into such:
         Arg="P, yrange, xrange, filename"
         Label="P, yrange, xrange, filename"/>
   <Returns>
-    Nothing.
+    nothing.
   </Returns>
   <Description>
     This function depicts the residue class union <A>U</A>

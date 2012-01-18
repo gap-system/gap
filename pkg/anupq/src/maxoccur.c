@@ -2,7 +2,7 @@
 **
 *A  maxoccur.c                  ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: maxoccur.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: maxoccur.c,v 1.5 2011/11/28 17:47:20 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -13,22 +13,12 @@
 #include "pcp_vars.h"
 #include "constants.h"
 
-#ifdef Magma
-#include "eseq.e"
-#endif
-
 /* set maximal occurrences for pcp generators of weight one */
 
-#ifdef Magma
-void set_maxoccur (seq, pcp)
-t_handle seq;
-struct pcp_vars *pcp;
-#else
 void set_maxoccur (pcp)
 struct pcp_vars *pcp;
-#endif
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int ndgen = pcp->ndgen;
    register int dgen = pcp->dgen;
@@ -38,19 +28,6 @@ struct pcp_vars *pcp;
    register int i;
    Logical zero = FALSE;
    Logical flag;
-#ifdef Magma
-   t_handle    s;
-   t_int       e, it;
-
-   for (i = 1; i <= nmr_of_generators; i++)
-   {
-      eseq_old_get(seq, i, &s, &e, &it);
-      y[moccur + i] = e;
-      sum += y[moccur + i];
-      zero |= y[moccur + i] == 0;
-   }
-
-#else
 
    printf ("Input occurrence limits for each of the %d", nmr_of_generators);
    printf (" pcp generators of weight one: ");
@@ -61,7 +38,6 @@ struct pcp_vars *pcp;
       sum += y[moccur + i];
       zero |= (y[moccur + i] == 0);
    }
-#endif
 
    if (sum == 0)
       pcp->nocset = 0;

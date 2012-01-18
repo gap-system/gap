@@ -2,7 +2,6 @@
 ##  
 #W  pager.gd                     GAP Library                     Frank Lübeck
 ##  
-#H  @(#)$Id: pager.gd,v 1.6 2010/10/10 12:34:38 alexk Exp $
 ##  
 #Y  Copyright  (C) 2001, Lehrstuhl  D  für  Mathematik, RWTH  Aachen, Germany 
 #Y (C) 2001 School Math and  Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  version of this  was integrated in first versions of  GAP's help system.
 ##  But this utility is certainly useful for other purposes as well.
 ##  
-Revision.pager_gd := 
-  "@(#)$Id: pager.gd,v 1.6 2010/10/10 12:34:38 alexk Exp $";
 
 #############################################################################
 ##  

@@ -9,25 +9,14 @@ SetPackageInfo( rec(
 
 PackageName := "nq",
 Subtitle := "Nilpotent Quotients of Finitely Presented Groups",
-Version := "2.2.1",
-Date    := "01/07/2011",
+Version := "2.4dev",
+Date    := "12/01/2012",
+##  <#GAPDoc Label="PKGVERSIONDATA">
+##  <!ENTITY VERSION "2.4dev">
+##  <!ENTITY RELEASEDATE "12 January 2012">
+##  <#/GAPDoc>
 
 Persons := [
-  rec( LastName      := "Nickel",
-       FirstNames    := "Werner",
-       IsAuthor      := true,
-       IsMaintainer  := false,
-       Email         := "nickel@mathematik.tu-darmstadt.de",
-       WWWHome       := "http://www.mathematik.tu-darmstadt.de/~nickel",
-       PostalAddress := Concatenation( 
-               "Fachbereich Mathematik\n",
-               "TU Darmstadt\n",
-               "Schlossgartenstr. 7\n",
-               "64289 Darmstadt\n",
-               "Germany" ),
-       Place         := "Darmstadt, Germany",
-       Institution   := "Fachbereich Mathematik, TU Darmstadt"),
-
   rec( LastName      := "Horn",
        FirstNames    := "Max",
        IsAuthor      := false,
@@ -42,25 +31,38 @@ Persons := [
                "D-38106 Braunschweig\n",
                "Germany" ),
        Place         := "Braunschweig",
-       Institution   := "TU Braunschweig")
+       Institution   := "TU Braunschweig"
+     ),
+
+  rec( LastName      := "Nickel",
+       FirstNames    := "Werner",
+       IsAuthor      := true,
+       IsMaintainer  := false,
+       # MH: Werner rarely (if at all) replies to emails sent to this
+       # old email address. To discourage users from sending bug reports
+       # there, I have disabled it here.
+       #Email         := "nickel@mathematik.tu-darmstadt.de",
+       WWWHome       := "http://www.mathematik.tu-darmstadt.de/~nickel/",
+     )
+
 ],
 
 Status         := "accepted",
 CommunicatedBy := "Joachim Neubüser (RWTH Aachen)",
 AcceptDate     := "01/2003",
 
-PackageWWWHome := 
-        "http://www.mathematik.tu-darmstadt.de/~nickel/software/NQ/",
+PackageWWWHome := "http://www.icm.tu-bs.de/ag_algebra/software/NQ/",
 
-ArchiveFormats := ".tar.gz",
-ArchiveURL     := Concatenation( ~.PackageWWWHome, "nq" ),
+ArchiveFormats := ".tar.gz .tar.bz2",
+ArchiveURL     := Concatenation( ~.PackageWWWHome, "nq-", ~.Version ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README" ),
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
 
 AbstractHTML   := Concatenation( 
-               "This package provides access to the ANU nilpotent quotient ",
-               "program for computing nilpotent factor groups of finitely ",
-               "presented groups." ),
+  "This package provides access to the ANU nilpotent quotient ",
+  "program for computing nilpotent factor groups of finitely ",
+  "presented groups."
+  ),
 
                   
 PackageDoc := rec(
@@ -76,7 +78,7 @@ PackageDoc := rec(
 Dependencies := rec(
   GAP                    := ">= 4.4",
   NeededOtherPackages    := [ ["polycyclic", "1.0"] ],
-  SuggestedOtherPackages := [ ["GAPDoc", "0.99"] ],
+  SuggestedOtherPackages := [ ["GAPDoc", "1.3"] ],
   ExternalConditions     := [ "needs a UNIX system with C-compiler",
                               "needs GNU multiple precision library" ]
 ),
@@ -95,20 +97,29 @@ AvailabilityTest := function()
     return true;
 end,
 
+BannerString     := Concatenation(
+  "Loading nq ", ~.Version, " (Nilpotent Quotient Algorithm)\n",
+  "  by Werner Nickel\n",
+  "  maintained by Max Horn (mhorn@tu-bs.de)\n"
+  ),
+
 Autoload := false,
 
-Keywords := [ "nilpotent quotient algorithm",
-              "nilpotent presentations",
-              "finitely presented groups",
-              "finite presentations   ",
-              "commutators",
-              "lower central series",
-              "identical relations",
-              "expression trees",
-              "nilpotent Engel groups",
-              "right and left Engel elements",
-              "computational"
-              ]
+TestFile := "gap/nq.tst",
+
+Keywords := [
+  "nilpotent quotient algorithm",
+  "nilpotent presentations",
+  "finitely presented groups",
+  "finite presentations   ",
+  "commutators",
+  "lower central series",
+  "identical relations",
+  "expression trees",
+  "nilpotent Engel groups",
+  "right and left Engel elements",
+  "computational"
+  ]
 ));
 
 

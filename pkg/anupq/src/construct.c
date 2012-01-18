@@ -2,7 +2,7 @@
 **
 *A  construct.c                 ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: construct.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: construct.c,v 1.7 2011/11/29 13:48:18 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -15,24 +15,19 @@
 #include "exp_vars.h"
 #include "constants.h"
 #include "pq_functions.h"
+
+
 #define ITERATION 6
 #define SINGLE_STAGE 5
+
+static Logical select_group (int *min_step, int *max_step, int order_bound, struct pga_vars *pga, struct pcp_vars *pcp);
+
 
 /* prepare to construct, partially or completely, some or all of the 
    immediate descendants of group group_nmr stored on start_file */
 
-int construct (call_depth, flag, option, output_file, start_file, k, 
-               order_bound, group_nmr, pga, pcp)
-int call_depth;
-struct pga_vars *flag;
-int option;
-FILE_TYPE output_file;
-FILE_TYPE start_file;
-int k;
-int order_bound;
-int group_nmr;
-struct pga_vars *pga;
-struct pcp_vars *pcp;
+int construct (int call_depth, struct pga_vars *flag, int option, FILE *output_file, FILE *start_file, int k, 
+               int order_bound, int group_nmr, struct pga_vars *pga, struct pcp_vars *pcp)
 {
    int ***auts;
    char *name;
@@ -42,7 +37,7 @@ struct pcp_vars *pcp;
    int nmr_of_capables = 0; 
    int nmr_of_covers;
    int x_dim, y_dim;
-   FILE_TYPE tmp_file;
+   FILE * tmp_file;
    Logical change;
 
    if (option == ITERATION) {
@@ -129,15 +124,12 @@ struct pcp_vars *pcp;
 
 /* report on the number immediate descendants and on those capable */
 
-void report (nmr_of_capables, nmr_of_descendants, nmr_of_covers, pga, pcp)
-int nmr_of_capables, nmr_of_descendants, nmr_of_covers;
-struct pga_vars *pga;
-struct pcp_vars *pcp;
+void report (int nmr_of_capables, int nmr_of_descendants, int nmr_of_covers, struct pga_vars *pga, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
 /* 
-  FILE_TYPE COUNT;
+  FILE * COUNT;
   COUNT = OpenFile ("COUNT", "a+");
   fprintf (COUNT, "%d,\n", nmr_of_descendants);
 */
@@ -154,11 +146,9 @@ struct pcp_vars *pcp;
 
 /* print out basic information about the starting group */
 
-void print_group_details (pga, pcp)
-struct pga_vars *pga;
-struct pcp_vars *pcp;
+void print_group_details (struct pga_vars *pga, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
    int order;
 
    printf ("\n**************************************************\n");
@@ -171,14 +161,9 @@ struct pcp_vars *pcp;
 
 /* check if the group is a valid starting group */
 
-Logical select_group (min_step, max_step, order_bound, pga, pcp)
-int *min_step;
-int *max_step;
-int order_bound;
-struct pga_vars *pga;
-struct pcp_vars *pcp;
+static Logical select_group (int *min_step, int *max_step, int order_bound, struct pga_vars *pga, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int max_extension = order_bound - y[pcp->clend + pcp->cc - 1];
    Logical select = TRUE;
@@ -207,8 +192,7 @@ struct pcp_vars *pcp;
 
 /* print a message that the group is not a valid starting group */
 
-void invalid_group (pcp)
-struct pcp_vars *pcp;
+void invalid_group (struct pcp_vars *pcp)
 {
    printf ("Group %s is an invalid starting group\n", pcp->ident); 
 }
@@ -216,21 +200,14 @@ struct pcp_vars *pcp;
 /* enforce laws on p-covering group of starting group --
    these include exponent and metabelian laws */
 
-void enforce_laws (flag, pga, pcp)
-struct pga_vars *flag;
-struct pga_vars *pga;
-struct pcp_vars *pcp;
+void enforce_laws (struct pga_vars *flag, struct pga_vars *pga, struct pcp_vars *pcp)
 {
    struct exp_vars exp_flag;
 
    if (flag->exponent_law != 0) {
       initialise_exponent (&exp_flag, pcp);
       pcp->extra_relations = flag->exponent_law;
-#ifdef Magma
-      extra_relations (&exp_flag, NULL_HANDLE, pcp);
-#else
       extra_relations (&exp_flag, pcp);
-#endif
       eliminate (FALSE, pcp);
       set_values (pga, pcp);
    }

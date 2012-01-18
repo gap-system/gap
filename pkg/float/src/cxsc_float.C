@@ -2,93 +2,101 @@
 **
 *W  cxsc_float.C                    GAP source              Laurent Bartholdi
 **
-*H  @(#)$Id: cxsc_float.C,v 1.2 2010/02/22 19:25:24 gap Exp $
+*H  @(#)$Id: cxsc_float.C,v 1.11 2011/12/05 08:41:48 gap Exp $
 **
 *Y  Copyright (C) 2008 Laurent Bartholdi
 **
 **  This file contains the main dll of the CXSC float package.
 */
 static const char *Revision_cxsc_float_c =
-   "@(#)$Id: cxsc_float.C,v 1.2 2010/02/22 19:25:24 gap Exp $";
+   "@(#)$Id: cxsc_float.C,v 1.11 2011/12/05 08:41:48 gap Exp $";
 
 #define BANNER_CXSC_FLOAT_H
 
-#include <string.h>
-#include <malloc.h>
-#include <stdio.h>
+#include <gmp.h>
 
 extern "C" {
-#include "src/system.h"
-#include "src/gap.h"
-#include "src/objects.h"
-#include "src/gasman.h"
-#include "src/string.h"
-#include "src/bool.h"
-#include "src/plist.h"
-#define NR_SMALL_INT_BITS (8*sizeof(long)-4)
+#include "src/compiled.h"
+#include "src/macfloat.h"
 }
+#undef ZERO // clashes with ZERO in cxsc
 #include "cxsc_float.h"
+#undef ZERO // make sure we use neither
 
 #include "cpoly.hpp"
 #include "cipoly.hpp"
 #include "cpzero.hpp"
+#include "rpoly.hpp"
+#include "rpeval.hpp"
+
+// this function is missing from CXSC 2.5.1
+cxsc::complex cxsc::sqr(const cxsc::complex&z) throw() { return z*z; }
+
+// this function is missing from CXSC 2.5.1
+bool Disjoint(cxsc::cinterval &a, cxsc::cinterval &b) {
+  return Disjoint(Re(a),Re(b)) || Disjoint(Im(a),Im(b)); }
 
 Obj TYPE_CXSC_RP, TYPE_CXSC_CP, TYPE_CXSC_RI, TYPE_CXSC_CI;
-Obj FAMILY_CXSC_RP, FAMILY_CXSC_CP, FAMILY_CXSC_RI, FAMILY_CXSC_CI;
+Obj IS_CXSC_RP, IS_CXSC_CP, IS_CXSC_RI, IS_CXSC_CI;
+Obj FAMILY_CXSC;
 
 /****************************************************************
  * creators
  ****************************************************************/
-inline Obj NEW_RP (void)
+static inline Obj NEW_RP (void)
 {
-  return NewBag(T_DATOBJ,sizeof(Obj)+sizeof(cxsc::real));
+  Obj o = NewBag(T_DATOBJ,sizeof(Obj)+sizeof(cxsc::real));
+  SET_TYPE_DATOBJ(o, TYPE_CXSC_RP);
+  return o;
 }
-inline Obj NEW_CP (void)
+static inline Obj NEW_CP (void)
 {
-  return NewBag(T_DATOBJ,sizeof(Obj)+sizeof(cxsc::complex));
+  Obj o = NewBag(T_DATOBJ,sizeof(Obj)+sizeof(cxsc::complex));
+  SET_TYPE_DATOBJ(o, TYPE_CXSC_CP);
+  return o;
 }
-inline Obj NEW_RI (void)
+static inline Obj NEW_RI (void)
 {
-  return NewBag(T_DATOBJ,sizeof(Obj)+sizeof(cxsc::interval));
+  Obj o = NewBag(T_DATOBJ,sizeof(Obj)+sizeof(cxsc::interval));
+  SET_TYPE_DATOBJ(o, TYPE_CXSC_RI);
+  return o;
 }
-inline Obj NEW_CI (void)
+static inline Obj NEW_CI (void)
 {
-  return NewBag(T_DATOBJ,sizeof(Obj)+sizeof(cxsc::cinterval));
+  Obj o = NewBag(T_DATOBJ,sizeof(Obj)+sizeof(cxsc::cinterval));
+  SET_TYPE_DATOBJ(o, TYPE_CXSC_CI);
+  return o;
 }
 
-inline Obj OBJ_RP (cxsc::real i)
+static inline Obj OBJ_RP (cxsc::real i)
 {
   Obj f = NEW_RP();
   RP_OBJ(f) = i;
-  SET_TYPE_DATOBJ(f, TYPE_CXSC_RP);
   return f;
 }
-inline Obj OBJ_CP (cxsc::complex i)
+static inline Obj OBJ_CP (cxsc::complex i)
 {
   Obj f = NEW_CP();
   CP_OBJ(f) = i;
-  SET_TYPE_DATOBJ(f, TYPE_CXSC_CP);
   return f;
 }
-inline Obj OBJ_RI (cxsc::interval i)
+static inline Obj OBJ_RI (cxsc::interval i)
 {
   Obj f = NEW_RI();
   RI_OBJ(f) = i;
-  SET_TYPE_DATOBJ(f, TYPE_CXSC_RI);
   return f;
 }
-inline Obj OBJ_CI (cxsc::cinterval i)
+static inline Obj OBJ_CI (cxsc::cinterval i)
 {
   Obj f = NEW_CI();
   CI_OBJ(f) = i;
-  SET_TYPE_DATOBJ(f, TYPE_CXSC_CI);
   return f;
 }
   
-inline cxsc::real RP_GET(cxsc::real x) { return x; }
-inline cxsc::complex CP_GET(cxsc::real x) { return _complex(x); }
-inline cxsc::interval RI_GET(cxsc::real x) { return _interval(x); }
-inline cxsc::cinterval CI_GET(cxsc::real x) { return _cinterval(x); }
+static inline cxsc::real RP_GET(cxsc::real x) { return x; }
+static inline cxsc::complex CP_GET(cxsc::real x) { return _complex(x); }
+static inline cxsc::interval RI_GET(cxsc::real x) { return _interval(x); }
+static inline cxsc::cinterval CI_GET(cxsc::real x) { return _cinterval(x); }
 
 /****************************************************************
  * 1-argument functions
@@ -167,6 +175,19 @@ static Obj CXSC_INT (Obj self, Obj f)
 {
   TEST_IS_INTOBJ(CXSC_INT,f);
   return OBJ_RP(INT_INTOBJ(f));
+}
+
+#define VAL_MACFLOAT(obj) (*(Double *)ADDR_OBJ(obj))
+#define IS_MACFLOAT(obj) (TNUM_OBJ(obj) == T_MACFLOAT)
+
+static Obj CXSC_IEEE754 (Obj self, Obj f)
+{
+  while (!IS_MACFLOAT(f)) {
+    f = ErrorReturnObj("CXSC_IEEE754: object must be a float, not a %s",
+                       (Int)(InfoBags[TNUM_OBJ(f)].name),0,
+                       "You can return a float to continue");
+  }
+  return OBJ_RP(VAL_MACFLOAT(f));
 }
 
 static Obj CP_CXSC_RP_RP (Obj self, Obj f, Obj g)
@@ -305,6 +326,86 @@ static Obj INT_CXSC (Obj self, Obj f)
     return INTOBJ_INT(sign*n);
 }
 
+static Obj SIGN_CXSC_RP (Obj self, Obj f)
+{
+  TEST_IS_RP(SIGN_CXSC_RP,f);
+  return INTOBJ_INT(sign(RP_OBJ(f)));
+}
+
+static Obj SIGN_CXSC_RI (Obj self, Obj f)
+{
+  TEST_IS_RI(SIGN_CXSC_RI,f);
+  if (Inf(RI_OBJ(f))>0.0)
+    return INTOBJ_INT(1);
+  if (Sup(RI_OBJ(f))<0.0)
+    return INTOBJ_INT(-1);
+  if (RI_OBJ(f)==0.0)
+    return INTOBJ_INT(0);
+  return Fail;
+}
+
+#define Func1c_CXSC(gap_name,cxsc_name)				\
+  static Obj gap_name##_RP(Obj self, Obj f)			\
+  {								\
+    TEST_IS_RP(gap_name##_RP,f);				\
+    return cxsc_name(RP_OBJ(f)) ? True : False;			\
+  }								\
+  static Obj gap_name##_CP(Obj self, Obj f)			\
+  {								\
+    TEST_IS_CP(gap_name##_CP,f);				\
+    return cxsc_name(CP_OBJ(f)) ? True : False;			\
+  }								\
+  static Obj gap_name##_RI(Obj self, Obj f)			\
+  {								\
+    TEST_IS_RI(gap_name##_RI,f);				\
+    return cxsc_name(RI_OBJ(f)) ? True : False;			\
+  }								\
+  static Obj gap_name##_CI(Obj self, Obj f)			\
+  {								\
+    TEST_IS_CI(gap_name##_CI,f);				\
+    return cxsc_name(CI_OBJ(f)) ? True : False;			\
+  }
+
+bool IsQuietNaN(cxsc::complex &x) {
+  return IsQuietNaN(Re(x)) || IsQuietNaN(Im(x)); }
+bool IsQuietNaN(cxsc::interval &x) {
+  return IsQuietNaN(Inf(x)) || IsQuietNaN(Sup(x)); }
+bool IsQuietNaN(cxsc::cinterval &x) {
+  return IsQuietNaN(Re(x)) || IsQuietNaN(Im(x)); }
+Func1c_CXSC(ISNAN_CXSC,IsQuietNaN)
+bool IsInfinity(cxsc::complex &x) {
+  return IsInfinity(Re(x)) || IsInfinity(Im(x)); }
+bool IsInfinity(cxsc::interval &x) {
+  return IsInfinity(Inf(x)) || IsInfinity(Sup(x)); }
+bool IsInfinity(cxsc::cinterval &x) {
+  return IsInfinity(Re(x)) || IsInfinity(Im(x)); }
+Func1c_CXSC(ISXINF_CXSC,IsInfinity)
+bool IsPInfinity(cxsc::real &x) { return IsInfinity(x) && x > 0.0; }
+bool IsPInfinity(cxsc::interval &x) { return IsInfinity(x) && x > 0.0; }
+bool IsPInfinity(cxsc::complex &x) { return IsInfinity(x); }
+bool IsPInfinity(cxsc::cinterval &x) { return IsInfinity(x); }
+Func1c_CXSC(ISPINF_CXSC,IsPInfinity)
+bool IsNInfinity(cxsc::real &x) { return IsInfinity(x) && x < 0.0; }
+bool IsNInfinity(cxsc::interval &x) { return IsInfinity(x) && x < 0.0; }
+bool IsNInfinity(cxsc::complex &x) { return IsInfinity(x); }
+bool IsNInfinity(cxsc::cinterval &x) { return IsInfinity(x); }
+Func1c_CXSC(ISNINF_CXSC,IsNInfinity)
+bool IsZero(cxsc::real &x) { return x == 0.0; }
+bool IsZero(cxsc::interval &x) { return x == 0.0; }
+bool IsZero(cxsc::complex &x) { return x == 0.0; }
+bool IsZero(cxsc::cinterval &x) { return x == 0.0; }
+Func1c_CXSC(ISZERO_CXSC,IsZero)
+bool IsOne(cxsc::real &x) { return x == 1.0; }
+bool IsOne(cxsc::interval &x) { return x == 1.0; }
+bool IsOne(cxsc::complex &x) { return x == 1.0; }
+bool IsOne(cxsc::cinterval &x) { return x == 1.0; }
+Func1c_CXSC(ISONE_CXSC,IsOne)
+bool IsNumber(cxsc::real &x) { return !IsInfinity(x) && !IsQuietNaN(x); }
+bool IsNumber(cxsc::interval &x) { return !IsInfinity(x) && !IsQuietNaN(x); }
+bool IsNumber(cxsc::complex &x) { return !IsInfinity(x) && !IsQuietNaN(x); }
+bool IsNumber(cxsc::cinterval &x) { return !IsInfinity(x) && !IsQuietNaN(x); }
+Func1c_CXSC(ISNUMBER_CXSC,IsNumber)
+
 static Obj STRING_CXSC (Obj self, Obj f, Obj precision, Obj digits)
 {
   std::string s;
@@ -368,10 +469,18 @@ static Obj ISEMPTY_CXSC_CI (Obj self, Obj f)
   return IsEmpty(Re(CI_OBJ(f))) || IsEmpty(Im(CI_OBJ(f))) ? True : False;
 }
 
+cxsc::complex RelDiam(cxsc::cinterval z)
+{
+  if (z == 0.0)
+    return cxsc::complex(0.0);
+  return diam(z) / Sup(abs(z));
+}
+
 Func1b_CXSC(INF_CXSC,Inf);
 Func1b_CXSC(SUP_CXSC,Sup);
 Func1b_CXSC(MID_CXSC,mid);
 Func1b_CXSC(DIAM_CXSC,diam);
+Func1b_CXSC(DIAM_REL_CXSC,RelDiam);
 
 static Obj RP_CXSC_STRING (Obj self, Obj str)
 {
@@ -389,7 +498,17 @@ static Obj CP_CXSC_STRING (Obj self, Obj str)
 
   std::string s = CSTR_STRING(str);
   Obj f = NEW_CP();
-  s >> CP_OBJ(f);
+  if (s[0] == '(')
+    s >> CP_OBJ(f);
+  else {
+    real r;
+    char last = s[s.length()-1];
+    s >> r;
+    if (last == 'i' || last == 'I')
+      CP_OBJ(f) = complex(0.0,r);
+    else
+      CP_OBJ(f) = r;
+  } 
   return f;
 }
 
@@ -399,7 +518,15 @@ static Obj RI_CXSC_STRING (Obj self, Obj str)
 
   std::string s = CSTR_STRING(str);
   Obj f = NEW_RI();
-  s >> RI_OBJ(f);
+  if (s[0] == '[')
+    s >> RI_OBJ(f);
+  else {
+    real l, r;
+    std::string t = CSTR_STRING(str);
+    s >> RndDown >> l;
+    t >> RndUp >> r;
+    RI_OBJ(f) = interval(l,r);
+  }
   return f;
 }
 
@@ -409,7 +536,26 @@ static Obj CI_CXSC_STRING (Obj self, Obj str)
 
   std::string s = CSTR_STRING(str);
   Obj f = NEW_CI();
-  s >> CI_OBJ(f);
+  if (s[0] == '[')
+    s >> CI_OBJ(f);
+  else if (s[0] == '(') {
+    complex l, r;
+    std::string t = CSTR_STRING(str);
+    s >> RndDown >> l;
+    t >> RndUp >> r;
+    CI_OBJ(f) = cinterval(l,r);
+  } else {
+    real l, r;
+    std::string t = CSTR_STRING(str);
+    char last = s[s.length()-1];
+    s >> RndDown >> l;
+    t >> RndUp >> r;
+    if (last == 'i' || last == 'I')
+      CI_OBJ(f) = cinterval(complex(0.0,l),complex(0.0,r));
+    else
+      CI_OBJ(f) = cinterval(complex(l),complex(r));
+  } 
+    
   return f;
 }
 
@@ -434,7 +580,11 @@ Func1_CXSC(ACOTH_CXSC,cxsc::acoth);
 Func1_CXSC(SQR_CXSC,cxsc::sqr);
 Func1_CXSC(SQRT_CXSC,cxsc::sqrt);
 Func1_CXSC(EXP_CXSC,cxsc::exp);
+Func1_CXSC(EXPM1_CXSC,cxsc::expm1);
 Func1_CXSC(LOG_CXSC,cxsc::ln);
+Func1_CXSC(LOG1P_CXSC,cxsc::lnp1);
+Func1_CXSC(LOG2_CXSC,cxsc::log2);
+Func1_CXSC(LOG10_CXSC,cxsc::log10);
 
 static Obj ABS_CXSC_RP (Obj self, Obj f)
 {
@@ -447,60 +597,146 @@ static Obj ABS_CXSC_RI (Obj self, Obj f)
   return OBJ_RI(cxsc::abs(RI_OBJ(f)));
 }
 
-static Obj ROOTPOLY_CXSC(Obj self, Obj coeffs, Obj intervals)
+#pragma GCC diagnostic ignored "-Wuninitialized"
+static Obj ROOTPOLY_CXSC(Obj self, Obj gapcoeffs, Obj gapintervals)
 {
-  Obj result, heap;
-  int degree, numroots;
-#define opr ((double *)ADDR_OBJ(heap))
-#define opi (opr+degree+1)
-#define zeror (opr+2*degree+2)
-#define zeroi (opr+3*degree+2)
-#define cpolyheap (opr+4*degree+2)
+  int degree = LEN_PLIST(gapcoeffs)-1, numroots;
+  bool intervals = false, real = true, complex = false;
 
-  degree = LEN_PLIST(coeffs)-1;
-
-  heap = NewBag(T_DATOBJ, (14*degree+12)*sizeof(double));
+  CPolynomial poly(degree);
+  cxsc::complex coeffs[degree+1], roots[degree];
 
   for (int i = 0; i <= degree; i++) {
-    Obj c = ELM_PLIST(coeffs,i+1);
+    Obj c = ELM_PLIST(gapcoeffs,i+1);
     cxsc::complex z;
     if (IS_RP(c))
       z = RP_OBJ(c);
-    else if (IS_CP(c))
-      z = CP_OBJ(c);
+    else if (IS_CP(c)) 
+      z = CP_OBJ(c), complex = true, real &= (Im(z) == 0.0);
     else if (IS_RI(c))
-      z = cxsc::mid(RI_OBJ(c));
+      z = cxsc::mid(RI_OBJ(c)), intervals = true;
     else if (IS_CI(c))
-      z = cxsc::mid(CI_OBJ(c));
+      z = cxsc::mid(CI_OBJ(c)), complex = intervals = true,
+	real &= (Im(CI_OBJ(c)) == 0.0);
     else ERROR_CXSC(ROOTPOLY_CXSC,c);
-
-    opr[degree-i] = _double(Re(z));
-    opi[degree-i] = _double(Im(z));
+    poly[i] = coeffs[degree-i] = z;
   }
   
-  numroots = cpoly (opr, opi, degree, zeror, zeroi, cpolyheap);
+  numroots = cpoly_CXSC (degree, coeffs, roots, 53);
 
   if (numroots == -1)
     return Fail;
 
-  result = NEW_PLIST(T_PLIST, numroots);
-  SET_LEN_PLIST(result, numroots);
-  if (intervals != True) {
-    for (int i = 1; i <= numroots; i++)
-      SET_ELM_PLIST(result,i,OBJ_CP(cxsc::complex(zeror[i-1],zeroi[i-1])));
-  } else {
-    CPolynomial op(degree);
-    for (int i = 0; i <= degree; i++)
-      op[degree-i] = cxsc::complex(opr[i],opi[i]);
-    for (int i = 1; i <= numroots; i++) {
-      cxsc::cinterval z;
+  Obj result = NEW_PLIST(T_PLIST, degree);
+  SET_LEN_PLIST(result, degree);
+  if (intervals) {
+    cxsc::cinterval iroots[numroots];
+
+    for (int i = 0; i < numroots; i++) {
       CIPolynomial rp(degree);
       int error;
-      CPolyZero(op,cxsc::complex(zeror[i-1],zeroi[i-1]),rp,z,error);
-      SET_ELM_PLIST(result,i,OBJ_CI(z));
+      CPolyZero(poly,roots[i],rp,iroots[i],error);
+      if (error) {
+	iroots[i] = roots[i];
+	Pr("#W CPOLYZERO failed to find enclosure for root %d; returning approximate root\n",i+1,0);
+      }
+    }
+
+    // now, if the polynomial was real, force all isolated roots to be real
+    if (real)
+      for (int i = 0; i < numroots; i++)
+	if (in(0.0,Im(iroots[i]))) { 
+	  bool lone = true;
+	  for (int j = 0; j < numroots; j++)
+	    if (j != i && !Disjoint(iroots[i],iroots[j])) {
+	      lone = false; break;
+	    }
+	  if (lone)
+	    iroots[i] = cinterval(Re(iroots[i]));
+	}
+
+    for (int i = 1; i <= numroots; i++) {
+      Obj gapz;
+      if (!complex && Im(iroots[i-i]) == 0.0)
+	gapz = OBJ_RI(Re(iroots[i-1]));
+      else
+	gapz = OBJ_CI(iroots[i-1]);
+      SET_ELM_PLIST(result,i,gapz);
+    }
+  } else {
+    // if the polynomial is real, and there doesn't exist a root at distance
+    // <= 3*imaginarypart, force the imaginary part to be 0.
+    if (real) 
+      for (int i = 0; i < numroots; i++) {
+	cxsc::real r = 10.0*sqr(Im(roots[i]));
+	bool lone = true;
+	for (int j = 0; j < numroots; j++)
+	  if (j != i && abs2(roots[i]-roots[j]) <= r) {
+	    lone = false; break;
+	  }
+	if (lone)
+	  roots[i] = cxsc::complex(Re(roots[i]));
+      }
+
+    for (int i = 1; i <= numroots; i++) {
+      Obj gapz;
+      if (!complex && Im(roots[i-1])==0.0)
+	gapz = OBJ_RP(Re(roots[i-1]));
+      else
+	gapz = OBJ_CP(roots[i-1]);
+      SET_ELM_PLIST(result,i,gapz);
     }
   }
+  // some roots we missed
+  for (int i = numroots+1; i <= degree; i++)
+    SET_ELM_PLIST(result,i,Fail);
+
   return result;
+}
+
+static Obj EVALPOLY_CXSC(Obj self, Obj gapcoeffs, Obj gapt)
+{
+  TEST_IS_RP(EVALPOLY_CXSC,gapt);
+
+  int degree = LEN_PLIST(gapcoeffs)-1, k, err;
+  RPolynomial polyr(degree), polyi(degree);
+  bool complex = false;
+
+  for (int i = 0; i <= degree; i++) {
+    Obj c = ELM_PLIST(gapcoeffs,i+1);
+    if (IS_RP(c))
+      polyr[i] = RP_OBJ(c);
+    else if (IS_CP(c))
+      polyr[i] = Re(CP_OBJ(c)), polyi[i] = Im(CP_OBJ(c)), complex = true;
+    else
+      ERROR_CXSC(EVALPOLY_CXSC,c);
+  }
+
+  interval intz[2];
+  real z[2];
+
+  RPolyEval (polyr, RP_OBJ(gapt), z[0], intz[0], k, err);
+  if (err)
+    return Fail;
+
+  if (complex) {
+    RPolyEval (polyi, RP_OBJ(gapt), z[1], intz[1], k, err);
+    if (err)
+      return Fail;
+  }
+    
+  Obj list = NEW_PLIST(T_PLIST,2);
+  SET_LEN_PLIST(list,2);
+  Obj gapz, gapintz;
+  if (complex)
+    gapz = OBJ_CP(cxsc::complex(z[0],z[1])), gapintz = OBJ_CI(cxsc::cinterval(intz[0],intz[1]));
+  else
+    gapz = OBJ_RP(z[0]), gapintz = OBJ_RI(intz[0]);
+
+  SET_ELM_PLIST(list,1,gapz);
+  SET_ELM_PLIST(list,2,gapintz);
+
+  return list;
 }
 
 /****************************************************************
@@ -673,6 +909,221 @@ static Obj ROOT_CXSC_CI (Obj self, Obj f, Obj g)
   return OBJ_CI(sqrt(CI_OBJ(f), INT_INTOBJ(g)));
 }
 
+static inline real ldexp (real f, int s)
+{
+  real g = f; times2pown(g, s); return g;
+}
+
+static inline complex ldexp (complex f, int s)
+{
+  return complex(ldexp(Re(f),s),ldexp(Im(f),s));
+}
+static inline interval ldexp (interval f, int s)
+{
+  return interval(ldexp(Inf(f),s),ldexp(Sup(f),s));
+}
+static inline cinterval ldexp (cinterval f, int s)
+{
+  return cinterval(ldexp(Re(f),s),ldexp(Re(f),s));
+}
+
+static Obj LDEXP_CXSC_RP (Obj self, Obj f, Obj i)
+{
+  TEST_IS_INTOBJ(LDEXP_CXSC_RP,i);
+  TEST_IS_RP(LDEXP_CXSC_RP,f);
+  return OBJ_RP(ldexp(RP_OBJ(f), INT_INTOBJ(i)));
+}
+
+static Obj LDEXP_CXSC_CP (Obj self, Obj f, Obj i)
+{
+  TEST_IS_INTOBJ(LDEXP_CXSC_CP,i);
+  TEST_IS_CP(LDEXP_CXSC_CP,f);
+  return OBJ_CP(ldexp(CP_OBJ(f),INT_INTOBJ(i)));
+}
+
+static Obj LDEXP_CXSC_RI (Obj self, Obj f, Obj i)
+{
+  TEST_IS_INTOBJ(LDEXP_CXSC_RI,i);
+  TEST_IS_RI(LDEXP_CXSC_RI,f);
+  return OBJ_RI(ldexp(RI_OBJ(f),INT_INTOBJ(i)));
+}
+
+static Obj LDEXP_CXSC_CI (Obj self, Obj f, Obj i)
+{
+  TEST_IS_INTOBJ(LDEXP_CXSC_CI,i);
+  TEST_IS_CI(LDEXP_CXSC_CI,f);
+  return OBJ_CI(ldexp(CI_OBJ(f),INT_INTOBJ(i)));
+}
+
+static Obj FREXP_CXSC_RP (Obj self, Obj f)
+{
+  TEST_IS_RP(FREXP_CXSC_RP,f);
+  Obj l = NEW_PLIST(T_PLIST,2);
+  SET_ELM_PLIST(l,1,OBJ_RP(mant(RP_OBJ(f))));
+  SET_ELM_PLIST(l,2,INTOBJ_INT(expo(RP_OBJ(f))));
+  SET_LEN_PLIST(l,2);
+  return l;
+}
+
+static Obj FREXP_CXSC_CP (Obj self, Obj f)
+{
+  TEST_IS_CP(FREXP_CXSC_CP,f);
+  Obj l = NEW_PLIST(T_PLIST,2);
+  int e0 = expo(Re(CP_OBJ(f))), e1 = expo(Im(CP_OBJ(f))), e = (e0 > e1 ? e0 : e1);
+  SET_ELM_PLIST(l,1,OBJ_CP(ldexp(CP_OBJ(f),-e)));
+  SET_ELM_PLIST(l,2,INTOBJ_INT(e));
+  SET_LEN_PLIST(l,2);
+  return l;
+}
+
+static Obj FREXP_CXSC_RI (Obj self, Obj f)
+{
+  TEST_IS_RI(FREXP_CXSC_RI,f);
+  Obj l = NEW_PLIST(T_PLIST,2);
+  int e0 = expo(Inf(RI_OBJ(f))), e1 = expo(Sup(RI_OBJ(f))), e = (e0 > e1 ? e0 : e1);
+  SET_ELM_PLIST(l,1,OBJ_RI(ldexp(RI_OBJ(f),-e)));
+  SET_ELM_PLIST(l,2,INTOBJ_INT(e));
+  SET_LEN_PLIST(l,2);
+  return l;
+}
+
+static Obj FREXP_CXSC_CI (Obj self, Obj f)
+{
+  TEST_IS_CI(FREXP_CXSC_CI,f);
+  Obj l = NEW_PLIST(T_PLIST,2);
+  int e00 = expo(Inf(Re(CI_OBJ(f)))), e01 = expo(Sup(Re(CI_OBJ(f)))), e0 = (e00 > e01 ? e00 : e01);
+  int e10 = expo(Inf(Im(CI_OBJ(f)))), e11 = expo(Sup(Im(CI_OBJ(f)))), e1 = (e10 > e11 ? e10 : e11);
+  int e = (e0 > e1 ? e0 : e1);
+  SET_ELM_PLIST(l,1,OBJ_CI(ldexp(CI_OBJ(f),-e)));
+  SET_ELM_PLIST(l,2,INTOBJ_INT(e));
+  SET_LEN_PLIST(l,2);
+  return l;
+}
+
+static void put_real (Obj list, int pos, cxsc::real f)
+{
+  SET_ELM_PLIST(list,pos,INTOBJ_INT(0));
+  if (f == 0.0) {
+    if (1.0/f > 0.0)
+      SET_ELM_PLIST(list,pos+1,INTOBJ_INT(0));
+    else
+      SET_ELM_PLIST(list,pos+1,INTOBJ_INT(1));
+    return;
+  }
+  if (IsInfinity(f)) {
+    if (f > 0.0)
+      SET_ELM_PLIST(list,pos+1,INTOBJ_INT(2));
+    else
+      SET_ELM_PLIST(list,pos+1,INTOBJ_INT(3));
+    return;
+  }
+  if (IsQuietNaN(f)) {
+    SET_ELM_PLIST(list,pos+1,INTOBJ_INT(4));
+    return;
+  }
+
+  cxsc::real m = mant(f);
+  cxsc::times2pown(m,26);
+  int m0 = _double(m);
+  Obj gapm = INTOBJ_INT(m0);
+  m -= m0;
+  cxsc::times2pown(m,27);
+  gapm = SumInt(ProdInt(gapm,INTOBJ_INT(1 << 27)),INTOBJ_INT(_double(m)));
+
+  while (!INT_INTOBJ(RemInt(gapm,INTOBJ_INT(2))))
+    gapm = QuoInt(gapm,INTOBJ_INT(2));
+
+  SET_ELM_PLIST(list,pos,gapm);
+  SET_ELM_PLIST(list,pos+1,INTOBJ_INT(expo(f)));
+}
+
+static Obj EXTREPOFOBJ_CXSC_RP(Obj self, Obj f)
+{
+  TEST_IS_RP(EXTREPOBJOBJ_CXSC_RP,f);
+  Obj l = NEW_PLIST(T_PLIST,2);
+  SET_LEN_PLIST(l,2);
+  put_real (l,1,RP_OBJ(f));
+  return l;
+}
+
+static Obj EXTREPOFOBJ_CXSC_RI(Obj self, Obj f)
+{
+  TEST_IS_RI(EXTREPOBJOBJ_CXSC_RI,f);
+  Obj l = NEW_PLIST(T_PLIST,4);
+  SET_LEN_PLIST(l,4);
+  put_real (l,1,Inf(RI_OBJ(f)));
+  put_real (l,3,Sup(RI_OBJ(f)));
+  return l;
+}
+
+static Obj EXTREPOFOBJ_CXSC_CP(Obj self, Obj f)
+{
+  TEST_IS_CP(EXTREPOBJOBJ_CXSC_CP,f);
+  Obj l = NEW_PLIST(T_PLIST,4);
+  SET_LEN_PLIST(l,4);
+  put_real (l,1,Re(CP_OBJ(f)));
+  put_real (l,3,Im(CP_OBJ(f)));
+  return l;
+}
+
+static Obj EXTREPOFOBJ_CXSC_CI(Obj self, Obj f)
+{
+  TEST_IS_CI(EXTREPOBJOBJ_CXSC_CI,f);
+  Obj l = NEW_PLIST(T_PLIST,8);
+  SET_LEN_PLIST(l,8);
+  put_real (l,1,InfRe(CI_OBJ(f)));
+  put_real (l,3,SupRe(CI_OBJ(f)));
+  put_real (l,5,InfIm(CI_OBJ(f)));
+  put_real (l,7,SupIm(CI_OBJ(f)));
+  return l;
+}
+
+static cxsc::real get_real (Obj l, int pos)
+{
+  Obj mant = ELM_PLIST(l,pos);
+  int exp = INT_INTOBJ(ELM_PLIST(l,pos+1));
+
+  if (EqInt(mant,INTOBJ_INT(0)))
+    switch (exp) {
+    case 0: return 0.0;
+    case 1: return 1.0 / (-1.0 / 0.0);
+    case 2: return 1.0 / 0.0;
+    case 3: return -1.0 / 0.0;
+    case 4: return cxsc::QuietNaN;
+    }
+
+  cxsc::real m = INT_INTOBJ(RemInt(mant,INTOBJ_INT(1 << 27)));
+  cxsc::times2pown(m,-27);
+  m += INT_INTOBJ(QuoInt(mant,INTOBJ_INT(1 << 27)));
+  cxsc::times2pown(m,exp+27-INT_INTOBJ(FuncLog2Int(Fail,mant)));
+  return m;
+}
+
+static Obj OBJBYEXTREP_CXSC_RP(Obj self, Obj l)
+{
+  return OBJ_RP(get_real(l,1));
+}
+
+static cxsc::interval get_interval(Obj l, int pos)
+{
+  return interval(get_real(l,pos),get_real(l,pos+2));
+}
+
+static Obj OBJBYEXTREP_CXSC_RI(Obj self, Obj l)
+{
+  return OBJ_RI(get_interval(l,1));
+}
+
+static Obj OBJBYEXTREP_CXSC_CP(Obj self, Obj l)
+{
+  return OBJ_CP(cxsc::complex(get_real(l,1),get_real(l,3)));
+}
+
+static Obj OBJBYEXTREP_CXSC_CI(Obj self, Obj l)
+{
+  return OBJ_CI(cxsc::cinterval(get_interval(l,1),get_interval(l,5)));
+}
+
 static Obj BLOW_CXSC_RI (Obj self, Obj f, Obj g)
 {
   TEST_IS_RP(BLOW_CXSC_RI,g);
@@ -693,9 +1144,6 @@ static Obj DISJOINT_CXSC_RI_RI (Obj self, Obj f, Obj g)
   TEST_IS_RI(DISJOINT_CXSC_RI_RI,g);
   return Disjoint(RI_OBJ(f),RI_OBJ(g)) ? True : False;
 }
-
-bool Disjoint(cxsc::cinterval &a, cxsc::cinterval &b) {
-  return Disjoint(Re(a),Re(b)) || Disjoint(Im(a),Im(b)); }
 
 static Obj DISJOINT_CXSC_CI_CI (Obj self, Obj f, Obj g)
 {
@@ -770,11 +1218,19 @@ static Obj ATAN2_CXSC_CI (Obj self, Obj f)
   return OBJ_RI(Im(cxsc::ln(CI_OBJ(f))));
 }
 
+static Obj HYPOT_CXSC_RP2 (Obj self, Obj f, Obj g)
+{
+  TEST_IS_RP(HYPOT_CXSC_RP2,f);
+  TEST_IS_RP(HYPOT_CXSC_RP2,g);
+  return OBJ_RP(cxsc::sqrtx2y2(RP_OBJ(f),RP_OBJ(g)));
+}
+
 /****************************************************************
  * export functions
  ****************************************************************/
 static StructGVarFunc GVarFuncs [] = {  
   Inc1_CXSC_arg(CXSC_INT,"int"),
+  Inc1_CXSC_arg(CXSC_IEEE754,"float"),
   Inc1_CXSC_arg(CXSC_NEWCONSTANT,"int"),
   Inc1_CXSC_arg(RP_CXSC_STRING,"string"),
   Inc1_CXSC_arg(RI_CXSC_STRING,"string"),
@@ -795,6 +1251,7 @@ static StructGVarFunc GVarFuncs [] = {
   Inc1a_CXSC(CONJ_CXSC),
 
   Inc1b_CXSC(DIAM_CXSC),
+  Inc1b_CXSC(DIAM_REL_CXSC),
   Inc1b_CXSC(ISEMPTY_CXSC),
   Inc1b_CXSC(MID_CXSC),
   Inc1b_CXSC(INF_CXSC),
@@ -821,11 +1278,28 @@ static StructGVarFunc GVarFuncs [] = {
   Inc1_CXSC(SQR_CXSC),
   Inc1_CXSC(SQRT_CXSC),
   Inc1_CXSC(EXP_CXSC),
+  Inc1_CXSC(EXPM1_CXSC),
+  Inc1_CXSC(FREXP_CXSC),
+  Inc1_CXSC(EXTREPOFOBJ_CXSC),
+  Inc1_CXSC(OBJBYEXTREP_CXSC),
   Inc1_CXSC(LOG_CXSC),
+  Inc1_CXSC(LOG1P_CXSC),
+  Inc1_CXSC(LOG2_CXSC),
+  Inc1_CXSC(LOG10_CXSC),
   Inc1_CXSC(ABS_CXSC),
+  Inc1_CXSC(ISNAN_CXSC),
+  Inc1_CXSC(ISXINF_CXSC),
+  Inc1_CXSC(ISPINF_CXSC),
+  Inc1_CXSC(ISNINF_CXSC),
+  Inc1_CXSC(ISZERO_CXSC),
+  Inc1_CXSC(ISONE_CXSC),
+  Inc1_CXSC(ISNUMBER_CXSC),
   Inc1_CXSC_arg(ATAN2_CXSC_CP,"cxsc::cp"),
   Inc1_CXSC_arg(ATAN2_CXSC_CI,"cxsc::ci"),
 
+  Inc2_CXSC_arg(HYPOT_CXSC_RP2,"x, y"),
+  Inc1_CXSC_arg(SIGN_CXSC_RP,"cxsc::rp"),
+  Inc1_CXSC_arg(SIGN_CXSC_RI,"cxsc::ri"),
   Inc2_CXSC(SUM_CXSC),
   Inc2_CXSC(DIFF_CXSC),
   Inc2_CXSC(PROD_CXSC),
@@ -844,6 +1318,10 @@ static StructGVarFunc GVarFuncs [] = {
   Inc2_CXSC_arg(ROOT_CXSC_CP,"cxsc::cp,int"),
   Inc2_CXSC_arg(ROOT_CXSC_RI,"cxsc::ri,int"),
   Inc2_CXSC_arg(ROOT_CXSC_CI,"cxsc::ci,int"),
+  Inc2_CXSC_arg(LDEXP_CXSC_RP,"cxsc::rp,int"),
+  Inc2_CXSC_arg(LDEXP_CXSC_CP,"cxsc::cp,int"),
+  Inc2_CXSC_arg(LDEXP_CXSC_RI,"cxsc::ri,int"),
+  Inc2_CXSC_arg(LDEXP_CXSC_CI,"cxsc::ci,int"),
   Inc2_CXSC_arg(BLOW_CXSC_RI,"cxsc::ri,cxsc::rp"),
   Inc2_CXSC_arg(BLOW_CXSC_CI,"cxsc::ci,cxsc::rp"),
   Inc2_CXSC_arg(DISJOINT_CXSC_RI_RI,"cxsc::ri,cxsc::ri"),
@@ -855,6 +1333,7 @@ static StructGVarFunc GVarFuncs [] = {
   Inc2_CXSC_arg(IN_CXSC_RI_CI,"ccxsc::ri,ccxsc::ci"),
   Inc2_CXSC_arg(IN_CXSC_CI_CI,"ccxsc::ci,ccxsc::ci"),
   Inc2_CXSC_arg(ROOTPOLY_CXSC,"cxsc::c*[],bool"),
+  Inc2_CXSC_arg(EVALPOLY_CXSC,"cxsc::rp[],cxsc::rp"),
   { "STRING_CXSC", 3, "cxsc:**,int,int", (ObjFunc) STRING_CXSC, "src/cxsc_float.c:STRING_CXSC" },
   {0}
 };
@@ -874,15 +1353,19 @@ void cxsc_terminate (void)
  ****************************************************************/
 static Int InitKernel (StructInitInfo *module)
 {
+  InitHdlrFuncsFromTable (GVarFuncs);
+
   ImportGVarFromLibrary ("TYPE_CXSC_RP", &TYPE_CXSC_RP);
   ImportGVarFromLibrary ("TYPE_CXSC_CP", &TYPE_CXSC_CP);
   ImportGVarFromLibrary ("TYPE_CXSC_RI", &TYPE_CXSC_RI);
   ImportGVarFromLibrary ("TYPE_CXSC_CI", &TYPE_CXSC_CI);
 
-  ImportGVarFromLibrary ("CXSCRealFamily", &FAMILY_CXSC_RP);
-  ImportGVarFromLibrary ("CXSCComplexFamily", &FAMILY_CXSC_CP);
-  ImportGVarFromLibrary ("CXSCIntervalFamily", &FAMILY_CXSC_RI);
-  ImportGVarFromLibrary ("CXSCBoxFamily", &FAMILY_CXSC_CI);
+  ImportGVarFromLibrary ("IsCXSCReal", &IS_CXSC_RP);
+  ImportGVarFromLibrary ("IsCXSCComplex", &IS_CXSC_CP);
+  ImportGVarFromLibrary ("IsCXSCInterval", &IS_CXSC_RI);
+  ImportGVarFromLibrary ("IsCXSCBox", &IS_CXSC_CI);
+
+  ImportGVarFromLibrary ("CXSCFloatsFamily", &FAMILY_CXSC);
 
   set_unexpected (cxsc_unexpected);
   set_terminate (cxsc_terminate);

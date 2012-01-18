@@ -2,8 +2,6 @@
 ##
 #W  testinst.g          GAP 4 package AtlasRep                  Thomas Breuer
 ##
-#H  @(#)$Id: testinst.g,v 1.12 2008/06/23 16:07:47 gap Exp $
-##
 #Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains those tests for the AtlasRep package that are
@@ -14,10 +12,8 @@
 ##  called.
 ##
 ##  <#GAPDoc Label="[1]{testinst.g}">
-##  For checking the installation of the package, you should start &GAP;,
-##  load the package
-##  (see Section&nbsp;<Ref Sect="sect:Loading the AtlasRep Package"/>),
-##  and then call
+##  For checking the installation of the package, you should start &GAP;
+##  and call
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> ReadPackage( "atlasrep", "tst/testinst.g" );
@@ -29,10 +25,11 @@
 ##  <P/>
 ##  More test files are available in the <F>tst</F> directory of the package,
 ##  see Section&nbsp;
-##  <Ref Sect="sect:Sanity Checks for the Atlas of Group Representations"/>
-##  for details.
+##  <Ref Sect="sect:AGR Sanity Checks"/> for details.
 ##  <#/GAPDoc>
 ##
+
+LoadPackage( "atlasrep" );
 
 if AtlasOfGroupRepresentationsInfo.remote = true then
 
@@ -49,7 +46,7 @@ if AtlasOfGroupRepresentationsInfo.remote = true then
   fi;
 
   # Check whether the requirements for transferring files are satisfied.
-  io:= LoadPackage( "io" );
+  io:= LoadPackage( "io" ) = true;
   wgetpath:= Filename( DirectoriesSystemPrograms(), "wget" );
   wget:= IsExecutableFile( wgetpath );
   bad:= false;
@@ -69,12 +66,14 @@ if AtlasOfGroupRepresentationsInfo.remote = true then
           "#I  Please remove the component ",
           "`AtlasOfGroupRepresentationsInfo.wget'\n" );
       fi;
-    elif not io then
-      bad:= true;
-      msg:= Concatenation(
-        "#I  The GAP package `IO' is not available.\n",
-        "#I  Please remove the component ",
-        "`AtlasOfGroupRepresentationsInfo.wget'\n" );
+    elif AtlasOfGroupRepresentationsInfo.wget = false then
+      if not io then
+        bad:= true;
+        msg:= Concatenation(
+          "#I  The GAP package `IO' is not available.\n",
+          "#I  Please remove the component ",
+          "`AtlasOfGroupRepresentationsInfo.wget'\n" );
+      fi;
     fi;
   fi;
 
@@ -121,7 +120,7 @@ if AtlasOfGroupRepresentationsInfo.remote = true then
         # Print information about data files to be removed/updated.
         # (This is for those who had installed an earlier package version.)
         upd:= AtlasOfGroupRepresentationsTestTableOfContentsRemoteUpdates();
-        if not IsEmpty( upd ) then
+        if upd <> fail and not IsEmpty( upd ) then
           Print( "#I  Remove the following files:\n", upd, "\n" );
         fi;
       fi;

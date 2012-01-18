@@ -2,7 +2,6 @@
 **
 *W  calls.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: calls.c,v 4.60 2011/05/12 06:46:22 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -36,8 +35,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_calls_c =
-   "@(#)$Id: calls.c,v 4.60 2011/05/12 06:46:22 gap Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -1235,9 +1232,9 @@ Obj NewFunctionCT (
         while ( nams_c[l]!=' ' && nams_c[l]!=',' && nams_c[l]!='\0' ) {
             l++;
         }
-	/*CCC        name_o = NEW_STRING((l-k) );
-	  SyStrncat( CSTR_STRING(name_o), nams_c+k, (UInt)(l-k) );CCC*/
-	C_NEW_STRING(name_o, l-k, nams_c+k);
+        /*CCC        name_o = NEW_STRING((l-k) );
+          SyStrncat( CSTR_STRING(name_o), nams_c+k, (UInt)(l-k) );CCC*/
+        C_NEW_STRING(name_o, l-k, nams_c+k);
         RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
         SET_ELM_PLIST( nams_o, i, name_o );
         k = l;
@@ -1512,28 +1509,28 @@ Obj FuncCALL_FUNC_LIST (
       }
       else if ( LEN_LIST(list) == 3 ) {
         result = CALL_3ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-			     ELMV_LIST(list,3) );
+                             ELMV_LIST(list,3) );
       }
       else if ( LEN_LIST(list) == 4 ) {
         result = CALL_4ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-			     ELMV_LIST(list,3), ELMV_LIST(list,4) );
+                             ELMV_LIST(list,3), ELMV_LIST(list,4) );
       }
       else if ( LEN_LIST(list) == 5 ) {
         result = CALL_5ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-			     ELMV_LIST(list,3), ELMV_LIST(list,4),
-			     ELMV_LIST(list,5) );
+                             ELMV_LIST(list,3), ELMV_LIST(list,4),
+                             ELMV_LIST(list,5) );
       }
       else if ( LEN_LIST(list) == 6 ) {
         result = CALL_6ARGS( func, ELMV_LIST(list,1), ELMV_LIST(list,2),
-			     ELMV_LIST(list,3), ELMV_LIST(list,4),
-			     ELMV_LIST(list,5), ELMV_LIST(list,6) );
+                             ELMV_LIST(list,3), ELMV_LIST(list,4),
+                             ELMV_LIST(list,5), ELMV_LIST(list,6) );
       }
       else {
         list2 = NEW_PLIST( T_PLIST, LEN_LIST(list) );
         SET_LEN_PLIST( list2, LEN_LIST(list) );
         for ( i = 1; i <= LEN_LIST(list); i++ ) {
-	  arg = ELMV_LIST( list, (Int)i );
-	  SET_ELM_PLIST( list2, i, arg );
+          arg = ELMV_LIST( list, (Int)i );
+          SET_ELM_PLIST( list2, i, arg );
         }
         result = CALL_XARGS( func, list2 );
       }
@@ -1568,9 +1565,9 @@ Obj FuncNAME_FUNC (
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
         if ( name == 0 ) {
-	  /*CCC name = NEW_STRING(SyStrlen(deflt));
+          /*CCC name = NEW_STRING(SyStrlen(deflt));
             SyStrncat( CSTR_STRING(name), deflt, SyStrlen(deflt) );CCC*/
-	    name = MakeImmString("unknown");
+            name = MakeImmString("unknown");
             NAME_FUNC(func) = name;
             CHANGED_BAG(func);
 
@@ -1583,13 +1580,13 @@ Obj FuncNAME_FUNC (
 }
 
 Obj FuncSET_NAME_FUNC(
-		      Obj self,
-		      Obj func,
-		      Obj name )
+                      Obj self,
+                      Obj func,
+                      Obj name )
 {
   while (!IsStringConv(name)) {
     name = ErrorReturnObj("SET_NAME_FUNC( <func>, <name> ): <name> must be a string, not a %s",
-			  (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
+                          (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
   }
   if (TNUM_OBJ(func) == T_FUNCTION ) {
     NAME_FUNC(func) = ConvImmString(name);
@@ -1632,7 +1629,7 @@ Obj FuncNAMS_FUNC (
   Obj nams;
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         nams = NAMS_FUNC(func);
-	return (nams != (Obj)0) ? nams : Fail;
+        return (nams != (Obj)0) ? nams : Fail;
     }
     else {
         return DoOperation1Args( self, func );
@@ -1776,41 +1773,50 @@ Obj FuncIS_PROFILED_FUNC(
 }
 
 Obj FuncFILENAME_FUNC(Obj self, Obj func) {
-  if (BODY_FUNC(func))
-    {
-      Obj fn =  FILENAME_BODY(BODY_FUNC(func));
-      if (fn)
-	return fn;
-      else
-	return Fail;
+
+    /* check the argument                                                  */
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
+        ErrorQuit( "<func> must be a function", 0L, 0L );
+        return 0;
     }
-  else
+
+    if (BODY_FUNC(func)) {
+        Obj fn =  FILENAME_BODY(BODY_FUNC(func));
+        if (fn)
+            return fn;
+    }
     return Fail;
 }
 
 Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
-  if (BODY_FUNC(func)) 
-    {
-      Obj sl = STARTLINE_BODY(BODY_FUNC(func));
-      if (sl)
-	return sl;
-      else
-	return Fail;
+
+    /* check the argument                                                  */
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
+        ErrorQuit( "<func> must be a function", 0L, 0L );
+        return 0;
     }
-  else
+
+    if (BODY_FUNC(func)) {
+        Obj sl = STARTLINE_BODY(BODY_FUNC(func));
+        if (sl)
+            return sl;
+    }
     return Fail;
 }
 
 Obj FuncENDLINE_FUNC(Obj self, Obj func) {
-  if (BODY_FUNC(func)) 
-    {
-      Obj el = ENDLINE_BODY(BODY_FUNC(func));
-      if (el)
-	return el;
-      else
-	return Fail;
+
+    /* check the argument                                                  */
+    if ( TNUM_OBJ(func) != T_FUNCTION ) {
+        ErrorQuit( "<func> must be a function", 0L, 0L );
+        return 0;
     }
-  else
+
+    if (BODY_FUNC(func)) {
+        Obj el = ENDLINE_BODY(BODY_FUNC(func));
+        if (el)
+            return el;
+    }
     return Fail;
 }
 
@@ -2117,8 +2123,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCalls ( void )
 {
-    module.revision_c = Revision_calls_c;
-    module.revision_h = Revision_calls_h;
     FillInVersion( &module );
     return &module;
 }

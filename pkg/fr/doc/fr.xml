@@ -2,7 +2,7 @@
 
 <?LaTeX ExtraPreamble="\usepackage{graphicx}"?>
 
-<!-- $Id: fr.xml,v 1.56 2011/06/20 14:14:30 gap Exp $ -->
+<!-- $Id: fr.xml,v 1.58 2012/01/11 10:49:23 gap Exp $ -->
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
  [ <!ENTITY see '<Alt Only="LaTeX">$\to$</Alt><Alt Not="LaTeX">--&tgt;</Alt>'>]>
@@ -20,7 +20,7 @@
 		 <Alt Not="HTML">laurent.bartholdi@gmail.com</Alt></Email>
 	  <Homepage>http://www.uni-math.gwdg.de/laurent/</Homepage>
   </Author>
-  <Date>$Date: 2011/06/20 14:14:30 $</Date>
+  <Date>$Date: 2012/01/11 10:49:23 $</Date>
   <Address>
   Mathematisches Institut<Br/>Bunsenstraße 3-5<Br/>D-37073 Göttingen<Br/>Germany
   </Address>
@@ -40,7 +40,10 @@
   <P/>
   The latest source of the package may be downloaded as
   <URL>http://www.uni-math.gwdg.de/laurent/FR/fr.tar.gz</URL> (tar, gzipped), or
-  explored at <URL>http://www.uni-math.gwdg.de/laurent/FR/fr</URL>).
+  explored at <URL>http://www.uni-math.gwdg.de/laurent/FR/fr</URL>.
+  <P/>
+  The last source compatible with GAP 4.4.12 may be downloaded as
+  <URL>http://www.uni-math.gwdg.de/laurent/FR/fr-1.1.2.tar.gz</URL> (tar, gzipped).
   </Alt>
   <P/>
     Groups defined by a recursive action on a rooted tree can

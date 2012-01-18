@@ -44,9 +44,11 @@ BindGlobal( "ResClassesBuildManual",
     local  ResClassesDir;
 
     ResClassesDir := GAPInfo.PackagesInfo.("resclasses")[1].InstallationPath;
-    MakeGAPDocDoc( Concatenation( ResClassesDir, "/doc/" ), "resclasses.xml",
-                   [ "../gap/resclaux.g", "../gap/z_pi.gd", "../gap/z_pi.gi",
-                     "../gap/resclass.gd", "../gap/resclass.gi" ],
+    MakeGAPDocDoc( Concatenation( ResClassesDir, "/doc/" ), "main.xml",
+                   [ "../gap/resclaux.g", "../gap/general.g",
+                     "../gap/z_pi.gd", "../gap/z_pi.gi",
+                     "../gap/resclass.gd", "../gap/resclass.gi",
+                     "../gap/fixedrep.gd", "../gap/fixedrep.gi" ],
                      "ResClasses", "../../../" );
   end );
 

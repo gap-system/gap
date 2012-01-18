@@ -2,7 +2,7 @@
 **
 *A  collect.c                   ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: collect.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: collect.c,v 1.7 2011/11/29 09:55:06 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -12,10 +12,7 @@
 #include "pq_defs.h"
 #include "pcp_vars.h"
 #include "constants.h"
-#define MAXEXP two_to_the_n(30) 
-#if defined (NEXT) 
-#define STACK_SIZE 5000
-#endif
+#define MAXEXP (1 << 30) 
 
 void stack_overflow ();
 void integer_overflow ();
@@ -78,12 +75,9 @@ void add_string ();
    /* if Lie program, use different collect routine */ 
 #if defined (GROUP) 
 
-void collect (pointer, collected_part, pcp)
-int pointer;
-int collected_part;
-struct pcp_vars *pcp;
+void collect (int pointer, int collected_part, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int p1;             /* string pointer */
    register int ce;             /* collected exponent */
@@ -390,7 +384,7 @@ int exponent;
 int collected_part;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int cp = collected_part;
    register int exp = exponent;

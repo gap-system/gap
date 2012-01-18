@@ -1,11 +1,6 @@
 #############################################################################
 ##
-#W  setup.gi            Alnuth -  Kant interface            Andreas Distler
-##
-##  An installation of a suitable version of either PARI/GP or KANT/KASH is
-##  necessary to use most of the functionality in Alnuth.
-##  Normally if you managed to install either of the two programs you should
-##  have no need to use any of the functions here.
+#W setup.gi         Alnuth - ALgebraic NUmber THeory        Andreas Distler
 ##
 
 #############################################################################
@@ -52,7 +47,7 @@ InstallGlobalFunction( SetAlnuthExternalExecutable, function( path )
     if not IsExecutableFile( path ) then
         path := Filename( DirectoriesSystemPrograms( ), path );
         if not IsExecutableFile( path ) then
-            Info( InfoWarning, 1, "No rights to execute ", path );
+            Info( InfoWarning, 1, "No permission to execute ", path );
             return fail;
         fi;
     fi;
@@ -71,34 +66,56 @@ end );
 #F SuitablePariExecutable( path )
 ##
 InstallGlobalFunction( SuitablePariExecutable, function( path )
-    local str, pos, libstr;
+    local str, pos, version;
 
     # try to find out, if it is a suitable version of PARI/GP
     str := "";
     Process( DirectoryCurrent( ), path, InputTextNone( ),
              OutputTextString( str, false ), [ "-f" ] );
     if PositionSublist( str, "PARI" ) = fail then
-        Info(InfoAlnuth, 1, 
-             "<path> does not seem to be an executable for PARI/GP");
+        Info(InfoWarning, 1, path,
+             " does not seem to be an executable for PARI/GP.");
         return false;
     fi;
 
-    # check version number, must be at least 2.3.X
     pos := PositionSublist( str, "Version " );
     if pos = fail then
-        Info(InfoAlnuth, 1,
-             "<path> does not seem to be an executable for PARI/GP");
+        Info(InfoWarning, 1, path,
+             " does not seem to be an executable for PARI/GP.");
         return false;
+    else
+        # go to beginning of version number
+        pos := pos + 8;
     fi;
-    if Int([str[pos+8]]) < 2 or Int([str[pos+10]]) < 3 then
-        Info(InfoAlnuth, 1, 
-             "<path> seems to be an executable for PARI/GP Version ",
-             str{[pos+8..pos+12]},
-             ", but Alnuth needs PARI/GP Version 2.3 or higher");
+
+    # check version number, should be 2.5.X, has to be at least 2.3.X 
+    version := str{[ pos..pos+PositionProperty(str{[ pos..Length(str) ]},
+                                               char-> char = ' ') - 2 ]};
+    if not CompareVersionNumbers(version, "2.5") then
+        Info( InfoWarning, 1, path,
+             " seems to be an executable for PARI/GP Version ",
+             version, ", but Alnuth needs PARI/GP Version 2.5 or higher." );
         return false;
     fi;
 
     return true;
+end );
+
+
+#############################################################################
+##
+#F PariVersion( )
+##
+InstallGlobalFunction( PariVersion, function( )
+    local str;
+
+    if IsExecutableFile(AL_EXECUTABLE) then
+        # use the command line option to obtain version number of PARI/GP
+        str := "";
+        Process( DirectoryCurrent( ), AL_EXECUTABLE, InputTextNone( ),
+                 OutputTextString( str, false ), [ "--version-short" ] );
+        Print( str );
+    fi;
 end );
 
 #############################################################################
@@ -107,6 +124,12 @@ end );
 ##
 InstallGlobalFunction( SetAlnuthExternalExecutablePermanently, function( path )
     SetAlnuthExternalExecutable( path );
+    if not IsWritableFile(Filename(DirectoriesPackageLibrary("alnuth", ""),
+                          "defs.g")) then
+        Info(InfoWarning, 1, "No write access to file <defs.g>.");
+        return AL_EXECUTABLE;
+    fi;
+
     PrintTo(Filename(DirectoriesPackageLibrary("alnuth", ""), "defs.g"),
             "###########################################################",
             "##################\n##\n##  AL_EXECUTABLE\n##\n##  ",
@@ -116,7 +139,7 @@ InstallGlobalFunction( SetAlnuthExternalExecutablePermanently, function( path )
             "executable for PARI/GP' for details.\n##\n",
             "if not IsBound(AL_EXECUTABLE) then\n",
             "    BindGlobal( \"AL_EXECUTABLE\", \"", AL_EXECUTABLE,"\" );\n",
-            "fi;");
+            "fi;\n");
 
     return AL_EXECUTABLE;
 end );
@@ -126,6 +149,11 @@ end );
 #F RestoreAlnuthExternalExecutablePermanently( )
 ##
 InstallGlobalFunction( RestoreAlnuthExternalExecutablePermanently, function( )
+    if not IsWritableFile(Filename(DirectoriesPackageLibrary("alnuth", ""),
+                          "defs.g")) then
+        Info(InfoWarning, 1, "No write access to file <defs.g>.");
+        return fail;
+    fi;
     PrintTo(Filename(DirectoriesPackageLibrary("alnuth", ""), "defs.g"),
             "###########################################################",
             "##################\n##\n##  AL_EXECUTABLE\n##\n##  ",
@@ -136,7 +164,7 @@ InstallGlobalFunction( RestoreAlnuthExternalExecutablePermanently, function( )
             "if not IsBound(AL_EXECUTABLE) then\n",
             "    BindGlobal(\"AL_EXECUTABLE\", ",
             "Filename(DirectoriesSystemPrograms(), \"gp\"));\n",
-            "fi;");
+            "fi;\n");
 end );
 
 #############################################################################

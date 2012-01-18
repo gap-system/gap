@@ -2,7 +2,7 @@
 ##
 #W frelement.gi                                             Laurent Bartholdi
 ##
-#H   @(#)$Id: frelement.gi,v 1.59 2011/04/04 19:52:34 gap Exp $
+#H   @(#)$Id: frelement.gi,v 1.60 2011/08/13 00:06:36 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -57,7 +57,7 @@ InstallMethod(FREFamily, "(FR) for an FR machine family",
     for i in FR_FAMILIES do
         if fam in i{[2..Length(i)]} then
             if IsBound(i[3]) then return i[3]; fi;
-            f := NewFamily(Concatenation("FRElement(",STRING@(i[1]),")"), IsFRElement and IsAssociativeElement);
+            f := NewFamily(Concatenation("FRElement(",String(i[1]),")"), IsFRElement and IsAssociativeElement);
             f!.alphabet := i[1];
 	    if IsVectorSpace(i[1]) then # so LieObject works
 		SetCharacteristic(f,Characteristic(i[1]));

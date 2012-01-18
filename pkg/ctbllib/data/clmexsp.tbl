@@ -2,8 +2,6 @@
 ##
 #W  clmexsp.tbl                 GAP table library                Ute Schiffer
 ##
-#H  @(#)$Id: clmexsp.tbl,v 4.2 2001/05/04 17:03:11 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains Clifford matrices for the extension of an extraspecial
@@ -12,6 +10,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: clmexsp.tbl,v $
+#H  Revision 4.3  2011/09/28 12:12:35  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.2  2001/05/04 17:03:11  gap
 #H  first revision for ctbllib
 #H
@@ -44,8 +46,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.clmexsp_tbl :=
-    "@(#)$Id: clmexsp.tbl,v 4.2 2001/05/04 17:03:11 gap Exp $";
 
 LIBTABLE.clmexsp:=[];
 
@@ -112,6 +112,8 @@ ACM("exsp",10,[[1,1,1,1,1,1,1,1,1,1],[9,9,0,9,0,0,0,9*E(3),9*E(3)^2,9],[9,9,0,
 0,0,72],[432,432,0,0,9,0,-18,0,0,-216],[54,-27,0,0,0,0,0,0,0,0]]);
 
 LIBTABLE.LOADSTATUS.clmexsp := "userloaded";
+
 #############################################################################
 ##
-#E  clmexsp.tbl . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

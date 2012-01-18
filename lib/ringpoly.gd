@@ -2,7 +2,6 @@
 ##
 #W  ringpoly.gd                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: ringpoly.gd,v 4.51 2011/05/16 22:22:06 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains  the categories, attributes, properties and operations
 ##  for polynomial rings and function fields.
 ##
-Revision.ringpoly_gd :=
-    "@(#)$Id: ringpoly.gd,v 4.51 2011/05/16 22:22:06 alexk Exp $";
 
 
 #############################################################################

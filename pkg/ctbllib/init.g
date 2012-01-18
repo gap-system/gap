@@ -1,8 +1,6 @@
 #############################################################################
 ##
-#W  init.g                GAP 4 package `ctbllib'               Thomas Breuer
-##
-#H  @(#)$Id: init.g,v 1.15 2005/05/17 08:52:14 gap Exp $
+#W  init.g               GAP 4 package CTblLib                  Thomas Breuer
 ##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,10 +11,14 @@ if IsBound( GAPInfo ) then
   ReadPackage( "ctbllib", "gap4/ctadmin.tbd" );
   ReadPackage( "ctbllib", "gap4/construc.gd" );
   ReadPackage( "ctbllib", "gap4/ctblothe.gd" );
-  ReadPackage( "ctbllib", "gap4/test.gd" );
 
   # Read functions concerning Deligne-Lusztig names.
   ReadPackage( "ctbllib", "dlnames/dlnames.gd" );
+
+  # Read obsolete variable names if this happens also in the GAP library.
+  if GAPInfo.UserPreferences.ReadObsolete <> false then
+    ReadPackage( "ctbllib", "gap4/obsolete.gd" );
+  fi;
 
 else
 

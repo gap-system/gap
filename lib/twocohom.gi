@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.twocohom_gi :=
-    "@(#)$Id: twocohom.gi,v 4.21 2010/06/16 16:31:38 gap Exp $";
 
 #############################################################################
 ##

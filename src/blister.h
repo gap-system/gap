@@ -2,7 +2,6 @@
 **
 *W  blister.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: blister.h,v 4.17 2010/02/23 15:13:39 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,9 +16,11 @@
 **  Lists" in the {\GAP} Manual.  Read  also the section "More  about Boolean
 **  Lists" about the different internal representations of such lists.
 */
+
+#ifndef GAP_BLISTER_H
+#define GAP_BLISTER_H
+
 #ifdef INCLUDE_DECLARATION_PART
-const char * Revision_blister_h =
-   "@(#)$Id: blister.h,v 4.17 2010/02/23 15:13:39 gap Exp $";
 #endif
 
 
@@ -261,6 +262,8 @@ extern void ConvBlist (
 */
 StructInitInfo * InitInfoBlist ( void );
 
+
+#endif // GAP_BLISTER_H
 
 /****************************************************************************
 **

@@ -2,7 +2,6 @@
 ##
 #W  options.gd                     GAP library                   Steve Linton
 ##
-#H  @(#)$Id: options.gd,v 4.15 2010/06/16 13:43:51 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -53,8 +52,6 @@
 ##  call are in fact used.
 ##  <#/GAPDoc>
 ##
-Revision.options_gd :=
-    "@(#)$Id: options.gd,v 4.15 2010/06/16 13:43:51 gap Exp $";
 
 
 #############################################################################

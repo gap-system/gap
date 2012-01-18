@@ -1,9 +1,8 @@
-#############################################################################
+###########################################################################
 ##
-#W  gap.g               OpenMath Package               Andrew Solomon
-#W                                                     Marco Costantini
-##
-#H  @(#)$Id: gap.g,v 1.63 2010/11/12 13:18:23 alexk Exp $
+#W  gap.g                  OpenMath Package                  Andrew Solomon
+#W                                                         Marco Costantini
+#W                                                      Alexander Konovalov
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -13,11 +12,8 @@
 ##  symbols to GAP objects.
 ##
 
-Revision.("openmath/gap/gap.g") :=
-    "@(#)$Id: gap.g,v 1.63 2010/11/12 13:18:23 alexk Exp $";
 
-
-######################################################################
+###########################################################################
 ##
 #F  OMgapId( <obj> )
 ##
@@ -26,7 +22,7 @@ Revision.("openmath/gap/gap.g") :=
 BindGlobal("OMgapId",  x->x);
 
 
-######################################################################
+###########################################################################
 ##
 #F  OMgap1ARGS( <obj> )
 #F  OMgap2ARGS( <obj> )
@@ -48,7 +44,7 @@ BindGlobal("OMgap2ARGS", function(x)
 end);
 
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from arith1.cd
 ## 
@@ -58,7 +54,7 @@ BindGlobal("OMgapDivide", x-> OMgapId([OMgap2ARGS(x), x[1]/x[2]])[2]);
 BindGlobal("OMgapPower", x-> OMgapId([OMgap2ARGS(x), x[1]^x[2]])[2]);
 
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from field3.cd
 ##
@@ -71,7 +67,7 @@ BindGlobal("OMgap_field_by_poly", function( x )
 	end);	
 	
 	
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from field4.cd
 ##
@@ -86,7 +82,7 @@ BindGlobal("OMgap_field_by_poly_vector", function( x )
 	return ObjByExtRep( FamilyObj( One( x[1] ) ), x[2] );
 	end);
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from groupname1.cd
 ##
@@ -98,7 +94,7 @@ BindGlobal("OMquaternion_group", function()
 	return Image( EpimorphismQuotientSystem( PQuotient( Q, 2, 3 ) ) );
 	end);
 	
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from relation.cd
 ## 
@@ -109,7 +105,7 @@ BindGlobal("OMgapLe",x-> OMgapId([OMgap2ARGS(x), x[1]<=x[2]])[2]);
 BindGlobal("OMgapGt", x-> OMgapId([OMgap2ARGS(x), x[1]>x[2]])[2]);
 BindGlobal("OMgapGe", x-> OMgapId([OMgap2ARGS(x), x[1]>=x[2]])[2]);
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from integer.cd
 ## 
@@ -119,7 +115,7 @@ BindGlobal("OMgapRem",
 	x-> OMgapId([OMgap2ARGS(x), EuclideanRemainder(x[1],x[2])])[2]);
 BindGlobal("OMgapGcd", Gcd);
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from logic1.cd
 ## 
@@ -134,7 +130,7 @@ BindGlobal("OMgapAnd", function(x) local t; return ForAll( x, t -> t = true ); e
 #	x-> OMgapId([OMgap2ARGS(x), (x[1] or x[2]) and not (x[1] and x[2])])[2]);
 # BindGlobal("OMgapAnd", x-> OMgapId([OMgap2ARGS(x), x[1] and x[2]])[2]);
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from list1.cd
 ## 
@@ -143,7 +139,7 @@ BindGlobal("OMgapMap", x -> List( x[2], x[1] ) );
 BindGlobal("OMgapSuchthat", x -> Filtered( x[1], x[2] ) );
 
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from set1.cd
 ## 
@@ -158,20 +154,20 @@ BindGlobal("OMgapSetDiff",
 # BindGlobal("OMgapIntersect", 
 #	x-> OMgapId([OMgap2ARGS(x), Intersection(x[1], x[2])])[2]);
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from linalg1.cd
 ## 
 BindGlobal("OMgapMatrixRow", OMgapId);
 BindGlobal("OMgapMatrix", OMgapId);
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from permut1.cd
 ## 
 BindGlobal("OMgapPermutation", PermList );
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from group1.cd
 ## 
@@ -194,7 +190,7 @@ BindGlobal("OMgapQuotientGroup",
 BindGlobal("OMgapSylowSubgroup", 
 	x->OMgapId([OMgap2ARGS(x), SylowSubgroup(x[1], x[2])])[2]);
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from permgrp.cd
 ## 
@@ -207,7 +203,7 @@ BindGlobal("OMgapIsTransitive",
 	x->OMgapId([OMgap1ARGS(x), IsTransitive(x[1])])[2]);
 
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from polyd1.cd
 ##
@@ -275,7 +271,7 @@ BindGlobal("OMgap_DMP",	function( x )
 	end);
 
 
-######################################################################
+###########################################################################
 ##
 ##  Semantic mappings for symbols from polyu.cd
 ##
@@ -301,7 +297,7 @@ BindGlobal("OMgap_poly_u_rep", function( x )
 BindGlobal("OMgap_term", x->x );
 		
 
-#####################################################################
+###########################################################################
 ##
 ##  The Symbol Table for supported symbols from official OpenMath CDs
 ##
@@ -456,7 +452,8 @@ finfield1 := rec(
 	primitive_element := 
 		function(x)
 		if IsBound(x[2]) then
-			Error("OpenMath: 2-argument version of finfield1.primitive_element is not supported \n");
+			Error("OpenMath: 2-argument version ", 
+			      "of finfield1.primitive_element is not supported \n");
 		else
 			return Z(x[1]);
 		fi;	 
@@ -497,17 +494,21 @@ graph2 := rec(
 
 group1 := rec(
 	carrier := OMgapElementSet,
-	expression := fail, # might be useful to embed the result of the 2nd argument into the 1st argument,
-	                    # but single expression from arith1 CD will work too
-	group := fail,      # our private symbol group1.group_by_generators is installed in private/private.g
+	expression := fail, # might be useful to embed the result of the 2nd 
+	                    # argument into the 1st argument, but single 
+	                    # expression from arith1 CD will work too
+	group := fail,      # our private symbol group1.group_by_generators 
+	                    # is installed in private/private.g
 	identity := x -> One( x[1] ),
 	inversion := x -> MappingByFunction( x[1], x[1], a->a^-1, a->a^-1 ),
 	is_commutative := OMgapIsAbelian,
 	is_normal := OMgapIsNormal,
 	is_subgroup := OMgapIsSubgroup,
 	monoid := x -> AsMonoid( x[1] ),
-	multiplication := fail, # represents a unary function, whose argument should be a group G.  
-	                        # It returns the multiplication map on G. We allow for the map to be n-ary. 
+	multiplication := fail, # represents a unary function, whose argument 
+	                        # should be a group G. It returns the 
+	                        # multiplication map on G. 
+	                        # We allow for the map to be n-ary. 
 	normal_closure := OMgapNormalClosure,
 	power := fail, # using just arith1 CD will work too   
 	subgroup := x-> Subgroup( x[2], x[1] )
@@ -530,7 +531,8 @@ group3 := rec(
 	alternatingn := x -> AlternatingGroup( x[1] ),
 	automorphism_group := x -> AutomorphismGroup( x[1] ),
 	center := x -> Center( x[1] ),
-	centralizer := x -> Centralizer( x[1], x[2] ), # 2nd argument as list not supported yet
+	centralizer := x -> Centralizer( x[1], x[2] ), # 2nd argument as list 
+	                                               # not supported yet
 	derived_subgroup := OMgapDerivedSubgroup,      
 	direct_power := x -> DirectProduct( ListWithIdenticalEntries( x[1], x[2] ) ),
 	direct_product := x -> DirectProduct( x[1] ),
@@ -655,7 +657,8 @@ monoid1 := rec(
 	is_commutative := fail, 
 	is_invertible := fail, 
 	is_submonoid := fail, 
-	monoid := fail, # our private symbol monoid1.monoid_by_generators is installed in private/private.g
+	monoid := fail, # our private symbol monoid1.monoid_by_generators 
+	                # is installed in private/private.g
 	multiplication := fail, 
 	semigroup := fail, 
 	submonoid := fail
@@ -716,10 +719,12 @@ permgp1 := rec(
 		function(x)
 		local i;
 		if x[1] = "left_compose" then
-			Error( "GAP does not accept permutation groups with permutation1.left_compose multiplication \n" );
+			Error( "GAP does not accept permutation groups with ",
+			       "permutation1.left_compose multiplication \n" );
 		elif not x[1] = "right_compose" then
 			if not IsPerm(x[1]) then
-				Error( "The first argument must be permutation1.left_compose or permutation1.right_compose \n" ); 
+				Error( "The first argument must be permutation1.left_compose ",
+				       "or permutation1.right_compose \n" ); 
 			fi;
 		else
 			return Group( x{ [ 2 .. Length(x) ] } );
@@ -805,8 +810,10 @@ permutation1 := rec(
 			if IsTransformation(x[1]) then
 				return DegreeOfTransformation(x[1]) = RankOfTransformation(x[1]);
 			else
-				# the example in the CD is_bijective(endomap(2,3,5)) contradicts to the endomap definition
-				Error( "permutation1.is_bijective: the argument must be a transformation!!!!\n" );
+				# the example in the CD is_bijective(endomap(2,3,5)) 
+				# contradicts to the endomap definition
+				Error( "permutation1.is_bijective: the argument ",
+				       "must be a transformation!!!!\n" );
 			fi;		
 		end,
 	is_endomap := 
@@ -863,7 +870,8 @@ permutation1 := rec(
 			local c, i;
 			c := CycleStructurePerm( x[1] );
 			if ForAny( [ 1 .. Length(c)-1 ], i -> IsBound(c[i])) then
-				Error( "permutation1.lenght requires a cycle, not a product of cycles!!!\n");
+				Error( "permutation1.lenght requires a cycle, ",
+				       "not a product of cycles!!!\n");
 			else
 				return Length(c)+1;
 			fi;
@@ -1092,7 +1100,8 @@ semigroup2 := rec(
 ),
 
 semigroup3 := rec(
-	automorphism_group := AutomorphismGroup, # requires MONOID package and GRAPE, duplicated in semigroup4 CD
+	automorphism_group := AutomorphismGroup, # requires MONOID package and 
+	                                         # GRAPE, duplicated in semigroup4 CD
 	cyclic_semigroup := fail, 
 	direct_power := fail, 
 	direct_product := fail, 
@@ -1170,17 +1179,20 @@ setname2 := rec(
 
 ));
  
-
-OMsymRecord.semigroup4 := rec(
-	automorphism_group := AutomorphismGroup, # requires MONOID package and GRAPE, duplicated in semigroup3 CD
+if not CompareVersionNumbers( GAPInfo.Version, "4.5.0") then
+# this requires MONOID so will not work in GAP 4.5
+  OMsymRecord.semigroup4 := rec(
+	automorphism_group := AutomorphismGroup, # requires MONOID package and GRAPE, 
+	                                         # duplicated in semigroup3 CD
 	homomorphism_by_generators :=            # requires MONOID
         function(x)
         local g;
-        # we use NC method trusting that the client send valid input (this must be the case for the GAP client)
+        # we use NC method trusting that the client send valid input 
+        # (this must be the case for the GAP client)
         return SemigroupHomomorphismByImagesOfGensNC( x[1], x[2], List( x[3], g -> g[2] ) );
         end);
+fi;
 
- 
 ######################################################################
 ##
 #F  OMsymLookup( [<cd>, <name>] )

@@ -1,6 +1,60 @@
                        CHANGES of the GAPDoc package
 
+1.4 -> 1.5
+
+- Substituted the TestManual functions by new ones based on the new
+  'Test' functionality in the GAP library: ExtractExamples, RunExamples.
+  (Used this to adjust all manual examples.)
+
+- Added a copy of GPL text.
+
+
 1.3 -> 1.4
+
+- Made license statement more direct.
+
+- Slight change of the dtd: The <C> elements now permit <A> elements in 
+  their content. The converters were adjusted accordingly.
+
+- Several layout changes in text version: More unicode characters are used,
+  e.g., for fill strings and table borders (see BOXCHARS). Also mathematical
+  symbols from unicode are used more often.
+  Less colors are used in default text theme.
+
+- Several text themes are available in the distribution (more by others
+  are welcome). The preferred theme can be configured by the user via
+  GAPInfo.UserPreferences.TextTheme in gap.ini.
+
+- Improved markup of <Arg> elements in function definitions in Text and
+  HTML conversion.
+
+- The text version of the manuals now contains more hooks (by pseudo
+  escape sequences) for preprocessing before display. Paragraphs are now
+  reformatted to current screen width. Unicode to latinX translation is
+  now done with multi-character substitution. And markup with visible
+  characters becomes possible, e.g. the "old" text theme (tables are not
+  reformatted which can lead to some problems). 
+
+- Slightly changed layout of the title page in LaTeX/PDF manuals.
+
+- The LaTeX/PDF manuals use less colors by default.
+
+- The tables of content contain now references and index (not convinced
+  that this is ok, but was often requested). 
+
+- Preferred style for viewing the HTML manuals can be configured by the user
+  via GAPInfo.UserPreferences.HTMLStyle and
+  GAPInfo.UserPreferences.UseMathJax.
+
+- The HTML manuals support style switching (via URL and cookie) with
+  javascript and cookie enabled browsers. Several styles (and combinations)
+  are offered in the distribution (more by others are welcome).
+
+- The HTML manuals contain now a hook to use javascript and a few more hooks 
+  for CSS style sheets.
+
+- All output versions contain now markup for coloring GAP examples as with
+  ColorPrompt(true). (Easy to switch off for text and HTML in user config.)
 
 - Link from MathJax HTML manuals to central server http://cdn.mathjax.org
   to get scripts and fonts.
@@ -10,9 +64,11 @@
 - For LaTeX/PDF conversion of manuals we use now the "psnfss" for postscript
   fonts.
 
-- Added more hooks for customization of LaTeX/PDF manuals
-  ("SetGapDocLaTeXOptions"). Now bookmarks (for acroread and other viewers) 
-  are generated but not opened by default.
+- Added more hooks and simplified customization of LaTeX/PDF manuals
+  (see "SetGapDocLaTeXOptions"). 
+  
+- PDF-verison is now by default generated with bookmarks (for acroread and 
+  other viewers), but such that they are not opened by default.
 
 - Fixed a bug when displaying multiple hits while ANSI_COLORS=false.
 

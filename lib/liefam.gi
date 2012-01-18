@@ -2,7 +2,6 @@
 ##
 #W  liefam.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: liefam.gi,v 4.31 2010/02/23 15:13:11 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  3. methods for FLMLORs (and ideals) of Lie elements
 ##     (there are special methods for Lie matrix spaces)
 ##
-Revision.liefam_gi :=
-    "@(#)$Id: liefam.gi,v 4.31 2010/02/23 15:13:11 gap Exp $";
 
 
 #############################################################################

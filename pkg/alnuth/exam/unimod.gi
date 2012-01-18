@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W unithom.gi            Alnuth -  Kant Interface              Bjoern Assmann
+#W unithom.gi          Alnuth -  Kant Interface              Bjoern Assmann
 ##
 
 #############################################################################

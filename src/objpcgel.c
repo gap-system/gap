@@ -2,7 +2,6 @@
 **
 *W  objpcgel.c                  GAP source                       Frank Celler
 **
-*H  @(#)$Id: objpcgel.c,v 4.29 2010/02/23 15:13:45 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_objpcgel_c =
-   "@(#)$Id: objpcgel.c,v 4.29 2010/02/23 15:13:45 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -755,8 +752,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPcElements ( void )
 {
-    module.revision_c = Revision_objpcgel_c;
-    module.revision_h = Revision_objpcgel_h;
     FillInVersion( &module );
     return &module;
 }

@@ -2,14 +2,11 @@
 ##
 #W  clas.gi                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: clas.gi,v 4.78 2011/06/12 08:33:26 stefan Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.clas_gi :=
-    "@(#)$Id: clas.gi,v 4.78 2011/06/12 08:33:26 stefan Exp $";
 
 
 #############################################################################

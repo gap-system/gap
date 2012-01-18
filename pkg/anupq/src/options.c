@@ -2,7 +2,7 @@
 **
 *A  options.c                   ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: options.c,v 1.4 2001/06/21 23:04:21 gap Exp $
+*A  @(#)$Id: options.c,v 1.6 2011/11/29 09:43:57 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -30,7 +30,7 @@ struct pcp_vars *pcp;
    int option;
    int t;
    char *name;
-   FILE_TYPE FileName;
+   FILE * FileName;
 
    int output_level = DEFAULT_PRINT;
    Logical group_present = FALSE;
@@ -56,9 +56,6 @@ struct pcp_vars *pcp;
 
       case COMPUTE_PCP:
 	 t = runTime ();
-#ifdef Magma
-	 format = Magma_FORMAT;
-#endif
 	 exit_value = pquotient (0, 0, stdin, format, pcp);
 	 if (exit_value == SUCCESS)
 	    group_present = TRUE;

@@ -1,15 +1,14 @@
 
 <!-- %W  utils.xml    GAP 4 package AtlasRep             Thomas Breuer -->
-<!-- %H  $Id: utils.xml,v 1.4 2008/06/16 17:35:33 gap Exp $ -->
 <!-- %Y  Copyright 2001, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="chap:utilities">
-<Heading>New Objects and Utility Functions Provided by the
+<Heading>New &GAP; Objects and Utility Functions Provided by the
 <Package>AtlasRep</Package> Package</Heading>
 
-This chapter describes &GAP; objects and functions that are provided in the
+This chapter describes &GAP; objects and functions that are provided by the
 <Package>AtlasRep</Package> package but that might be of general interest.
 
 <P/>
@@ -66,48 +65,23 @@ representations.
 We do not provide an algorithm that computes these degrees for an arbitrary
 group,
 we only provide some tools for evaluating known databases,
-mainly concerning nearly simple groups,
+mainly concerning <Q>bicyclic extensions</Q>
+(see <Cite Key="CCN85" Where="Section&nbsp;6.5"/>) of simple groups,
 in order to derive the minimal degrees,
 see Section&nbsp;<Ref Subsect="subsect:minimality-criteria"/>.
 <P/>
-In the <Package>AtlasRep</Package> package, this information is used in
+In the <Package>AtlasRep</Package> package,
+this information can be used for prescribing <Q>minimality conditions</Q> in
 <Ref Func="DisplayAtlasInfo"/>,
 <Ref Func="OneAtlasGeneratingSetInfo"/>, and
 <Ref Func="AllAtlasGeneratingSetInfos"/>.
+An overview of the stored minimal degrees can be shown with
+<Ref Func="BrowseMinimalDegrees"/>.
 
 <#Include Label="MinimalRepresentationInfo">
 <#Include Label="MinimalRepresentationInfoData">
 <#Include Label="SetMinimalRepresentationInfo">
 <#Include Label="subsect:minimality-criteria">
-<#Include Label="AGR_TestMinimalDegrees">
-<#Include Label="BrowseMinimalDegrees">
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sect:Bibliographies of Sporadic Simple Groups">
-<Heading>Bibliographies of Sporadic Simple Groups</Heading>
-
-The bibliographies contained in the &ATLAS; of Finite Groups
-<Cite Key="CCN85"/> and in the &ATLAS; of Brauer Characters
-<Cite Key="JLPW95"/> are available online in HTML format, see
-<URL>http://www.gap-system.org/Manuals/pkg/atlasrep/bibl/index.html</URL>.
-<P/>
-The source data in BibXMLext format is part of the <Package>AtlasRep</Package>
-package,
-in four files with suffix <F>xml</F> in the package's <F>bibl</F> directory.
-Note that each of the two books contains two bibliographies.
-<P/>
-Details about the BibXMLext format, including information how to
-transform the data into other formats such as BibTeX,
-can be found in the &GAP; package
-<Package>GAPDoc</Package> (see <Cite Key="GAPDoc"/>).
-<P/>
-These source files are used also by the function
-<Ref Func="BrowseBibliographySporadicSimple"/>.
-
-<#Include Label="BrowseBibliographySporadicSimple">
 
 </Section>
 

@@ -2,7 +2,6 @@
 ##
 #W  random.g                    GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: random.g,v 4.5 2010/02/23 15:13:25 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the random number generator
 ##
-Revision.random_g :=
-    "@(#)$Id: random.g,v 4.5 2010/02/23 15:13:25 gap Exp $";
 
 #############################################################################
 ##

@@ -2,7 +2,7 @@
 ##
 #W  ctoinert.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoinert.tbl,v 4.26 2010/12/01 17:47:55 gap Exp $
+#H  @(#)$Id: ctoinert.tbl,v 4.27 2011/09/28 14:32:12 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,6 +13,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoinert.tbl,v $
+#H  Revision 4.27  2011/09/28 14:32:12  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.26  2010/12/01 17:47:55  gap
 #H  renamed "Sym(4)" to "Symm(4)";
 #H  note that the table constructed with `CharacterTable( "Symmetric", 4 )'
@@ -184,11 +188,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctoinert_tbl :=
-    "@(#)$Id: ctoinert.tbl,v 4.26 2010/12/01 17:47:55 gap Exp $";
-
-SET_TABLEFILENAME("ctoinert");
-ALN:= Ignore;
 
 MOT("S3",
 0,
@@ -200,6 +199,9 @@ ARC("S3","ClassParameters",[[1,[1,1,1]],[1,[3]],[1,[2,1]]]);
 ARC("S3","projectives",["2.S3",[[1,1,E(4)],[2,-1,0]],]);
 ALF("S3","A5",[1,3,2],[
 "fusion map is unique"
+]);
+ALF("S3","(S5xS5xS5):S3",[1,134,85],[
+"determined as the fusion from a complement"
 ]);
 ALN("S3",["A5N3"]);
 
@@ -302,7 +304,10 @@ ALF("7:3","L3(2)",[1,5,6,3,3],[
 "fusion map is unique up to table autom."
 ]);
 ALF("7:3","M22",[1,8,9,3,3]);
-ALN("7:3",["A7N7","L3(2)N7","M22N7"]);
+ALF("7:3","U3(3)",[1,9,10,4,4],[
+"fusion map is unique up to table autom."
+]);
+ALN("7:3",["A7N7","L3(2)N7","M22N7","U3(3)N7"]);
 
 MOT("2x7:3",
 0,
@@ -707,7 +712,6 @@ MOT("2.2^4:3",
 [(8,10)(9,11),(3,4),(6,7),(5,6)]);
 
 LIBTABLE.LOADSTATUS.ctoinert:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

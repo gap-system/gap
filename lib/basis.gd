@@ -2,7 +2,6 @@
 ##
 #W  basis.gd                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: basis.gd,v 4.66 2010/02/23 15:12:47 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -76,8 +75,6 @@
 ##  fields and abelian number fields that are themselves not fields.
 ##  <#/GAPDoc>
 ##
-Revision.basis_gd :=
-    "@(#)$Id: basis.gd,v 4.66 2010/02/23 15:12:47 gap Exp $";
 
 
 #############################################################################
@@ -416,14 +413,15 @@ DeclareAttribute( "EnumeratorByBasis", IsBasis );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> A:= QuaternionAlgebra( Rationals );;
-##  gap> SizeScreen([ 83, ]);;
 ##  gap> StructureConstantsTable( Basis( A ) );
-##  [ [ [ [ 1 ], [ 1 ] ], [ [ 2 ], [ 1 ] ], [ [ 3 ], [ 1 ] ], [ [ 4 ], [ 1 ] ] ],
-##    [ [ [ 2 ], [ 1 ] ], [ [ 1 ], [ -1 ] ], [ [ 4 ], [ 1 ] ], [ [ 3 ], [ -1 ] ] ],
-##    [ [ [ 3 ], [ 1 ] ], [ [ 4 ], [ -1 ] ], [ [ 1 ], [ -1 ] ], [ [ 2 ], [ 1 ] ] ],
-##    [ [ [ 4 ], [ 1 ] ], [ [ 3 ], [ 1 ] ], [ [ 2 ], [ -1 ] ], [ [ 1 ], [ -1 ] ] ],
-##    0, 0 ]
-##  gap> SizeScreen([ 80, ]);;
+##  [ [ [ [ 1 ], [ 1 ] ], [ [ 2 ], [ 1 ] ], [ [ 3 ], [ 1 ] ], 
+##        [ [ 4 ], [ 1 ] ] ], 
+##    [ [ [ 2 ], [ 1 ] ], [ [ 1 ], [ -1 ] ], [ [ 4 ], [ 1 ] ], 
+##        [ [ 3 ], [ -1 ] ] ], 
+##    [ [ [ 3 ], [ 1 ] ], [ [ 4 ], [ -1 ] ], [ [ 1 ], [ -1 ] ], 
+##        [ [ 2 ], [ 1 ] ] ], 
+##    [ [ [ 4 ], [ 1 ] ], [ [ 3 ], [ 1 ] ], [ [ 2 ], [ -1 ] ], 
+##        [ [ 1 ], [ -1 ] ] ], 0, 0 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -624,7 +622,8 @@ DeclareOperation( "IteratorByBasis", [ IsBasis ] );
 ##  <Example><![CDATA[
 ##  gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
 ##  gap> B:= Basis( V );
-##  SemiEchelonBasis( <vector space over Rationals, with 2 generators>, ... )
+##  SemiEchelonBasis( <vector space over Rationals, with 
+##  2 generators>, ... )
 ##  gap> BasisVectors( B );
 ##  [ [ 1, 2, 7 ], [ 0, 1, -9/4 ] ]
 ##  gap> B:= Basis( V, [ [ 1, 2, 7 ], [ 3, 2, 30 ] ] );

@@ -5,12 +5,10 @@
 ##
 ##  This file installs core functions used with iostreams.
 ##    
-#H  @(#)$Id: anupqios.gi,v 1.7 2003/04/13 18:07:47 gap Exp $
+#H  @(#)$Id: anupqios.gi,v 1.8 2011/11/29 20:00:12 gap Exp $
 ##
 #Y  Copyright (C) 2001  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-Revision.anupqios_gi :=
-    "@(#)$Id: anupqios.gi,v 1.7 2003/04/13 18:07:47 gap Exp $";
 
 #############################################################################
 ##

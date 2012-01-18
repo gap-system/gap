@@ -2,7 +2,7 @@
 **
 *A  pq_functions.h              ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: pq_functions.h,v 1.3 2001/06/15 14:39:21 werner Exp $
+*A  @(#)$Id: pq_functions.h,v 1.8 2011/12/31 19:36:23 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -10,6 +10,12 @@
 */
 
 /* prototypes for functions used in the p-Quotient Program */
+
+#ifndef PQ_FUNCTIONS
+#define PQ_FUNCTIONS
+
+#include "pq_defs.h"
+#include "pcp_vars.h"
 
 void autgp_order ();
 void collect_defining_generator ();
@@ -27,7 +33,6 @@ int **find_stabiliser ();
 int **start_pga_run ();
 int **finish_pga_run ();
 int*** determine_action ();
-void write_Magma_matrix ();
 void check_input ();
 FILE *OpenTemporaryFile ();
 void close_queue ();
@@ -45,7 +50,7 @@ void collect_image_of_string ();
 int ***reallocate_array ();
 int *reallocate_vector ();
 void next_class ();
-FILE *OpenSystemFile ();
+FILE *OpenSystemFile (const char *file_name, const char *mode);
 void create_tail ();
 int ***setup_identity_auts ();
 void extend_tail ();
@@ -53,8 +58,7 @@ void enforce_laws ();
 void orbit_option ();
 void stabiliser_option ();
 void calculate_tails ();
-void calculate_power ();
-void write_CAYLEY_matrix ();
+void calculate_power (int exp, int ptr, int cp, struct pcp_vars *pcp);
 void write_GAP_matrix ();
 int *bitstring_to_subset ();
 int ***allocate_array ();
@@ -68,8 +72,8 @@ void invalid_group ();
 void report ();
 void print_group_details ();
 int*** restore_pga ();
-FILE_TYPE OpenFile ();
-FILE_TYPE OpenFileOutput ();
+FILE *OpenFile (const char *file_name, const char *mode);
+FILE *OpenFileOutput (const char *file_name);
 void set_defaults ();
 void read_subgroup_rank ();
 void read_step_size ();
@@ -111,8 +115,8 @@ void compute_permutation ();
 void find_available_positions ();
 void compute_images ();
 void start_group ();
-FILE_TYPE OpenFileInput ();
-FILE_TYPE TemporaryFile ();
+FILE *OpenFileInput (const char *file_name);
+FILE *TemporaryFile ();
 int*** read_auts ();
 int ***invert_automorphisms ();
 int ***read_stabiliser_gens ();
@@ -134,3 +138,21 @@ char *GetString ();
 void trace_relation ();
 void output_information();
 int *compact_description ();
+void CloseFile (FILE* file);
+void power (int exp, int cp, struct pcp_vars *pcp);
+int vector_to_string (int cp, int str, struct pcp_vars *pcp);
+int vector_to_word (int cp, int ptr, struct pcp_vars *pcp);
+void string_to_vector (int str, int cp, struct pcp_vars *pcp);
+
+#if defined (GROUP) 
+void collect (int pointer, int collected_part, struct pcp_vars *pcp);
+#endif
+
+
+void print_message (int work_space); /* system.c */
+int choose (int r, int s); /* store_definition_sets.c */
+int echelon (struct pcp_vars *pcp); /* echelon.c */
+void report_error (int a, int b, int c); /* report_error.c */
+
+
+#endif

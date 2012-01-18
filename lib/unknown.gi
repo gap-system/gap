@@ -2,7 +2,6 @@
 ##
 #W  unknown.gi                 GAP Library                   Martin Schönert
 ##
-#H  @(#)$Id: unknown.gi,v 4.10 2010/02/23 15:13:34 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -25,8 +24,6 @@
 ##  an  error, not an unknown.  Also  division by an  unknown gives an error,
 ##  because the unknown could stand for 0.
 ##
-Revision.unknown_gi :=
-    "@(#)$Id: unknown.gi,v 4.10 2010/02/23 15:13:34 gap Exp $";
 
 
 #############################################################################

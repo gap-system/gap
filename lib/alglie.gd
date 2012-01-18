@@ -3,7 +3,6 @@
 #W  alglie.gd                   GAP library                     Thomas Breuer
 #W                                                        and Willem de Graaf
 ##
-#H  @(#)$Id: alglie.gd,v 4.66 2010/11/11 23:34:39 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains the declaration of attributes, properties, and
 ##  operations for Lie algebras.
 ##
-Revision.alglie_gd :=
-    "@(#)$Id: alglie.gd,v 4.66 2010/11/11 23:34:39 alexk Exp $";
 
 
 #############################################################################
@@ -229,7 +226,8 @@ DeclareAttribute( "LieLowerCentralSeries", IsAlgebra and IsLieAlgebra );
 ##  gap> L:=LieAlgebra( Rationals, mats );;
 ##  gap> LieUpperCentralSeries( L );
 ##  [ <two-sided ideal in <Lie algebra of dimension 3 over Rationals>, 
-##        (dimension 1)>, <Lie algebra over Rationals, with 0 generators> ]
+##        (dimension 1)>, <Lie algebra over Rationals, with 0 generators> 
+##   ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -262,7 +260,8 @@ DeclareAttribute( "LieUpperCentralSeries", IsAlgebra and IsLieAlgebra );
 ##  gap> L:= FullMatrixLieAlgebra( GF(3), 3 );
 ##  <Lie algebra over GF(3), with 5 generators>
 ##  gap> LieCentre( L );
-##  <two-sided ideal in <Lie algebra of dimension 9 over GF(3)>, (dimension 1)>
+##  <two-sided ideal in <Lie algebra of dimension 9 over GF(3)>, 
+##    (dimension 1)>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -385,7 +384,8 @@ DeclareAttribute( "CartanSubalgebra",
 ##  gap> B:= Basis( L );
 ##  CanonicalBasis( <Lie algebra of dimension 11 over GF(11)> )
 ##  gap> PthPowerImages( B );
-##  [ 0*v.1, v.2, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1 ]
+##  [ 0*v.1, v.2, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 
+##    0*v.1 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -471,10 +471,9 @@ DeclareOperation( "AdjointAssociativeAlgebra",
 ##  <Example><![CDATA[
 ##  gap> mats:= [ [[1,0],[0,0]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
 ##  gap> L:= LieAlgebra( Rationals, mats );;
-##  gap> SizeScreen([ 81, ]);;
 ##  gap> LieNilRadical( L );
-##  <two-sided ideal in <Lie algebra of dimension 3 over Rationals>, (dimension 2)>
-##  gap> SizeScreen([ 80, ]);;
+##  <two-sided ideal in <Lie algebra of dimension 3 over Rationals>, 
+##    (dimension 2)>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -495,10 +494,9 @@ DeclareAttribute( "LieNilRadical", IsAlgebra and IsLieAlgebra );
 ##  Returns the (Lie) solvable radical of the Lie algebra <A>L</A>.
 ##  <Example><![CDATA[
 ##  gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
-##  gap> SizeScreen([ 81, ]);;
 ##  gap> LieSolvableRadical( L );
-##  <two-sided ideal in <Lie algebra of dimension 9 over Rationals>, (dimension 1)>
-##  gap> SizeScreen([ 80, ]);;
+##  <two-sided ideal in <Lie algebra of dimension 9 over Rationals>, 
+##    (dimension 1)>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -523,7 +521,7 @@ DeclareAttribute( "LieSolvableRadical", IsAlgebra and IsLieAlgebra );
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "E", 8, Rationals );;
 ##  gap> b:= BasisVectors( Basis( L ) );;
-##  gap> K:= LieCentralizer( L, Subalgebra( L, [ b[61]+b[79]+b[101]+b[102] ] ) );
+##  gap> K:= LieCentralizer(L, Subalgebra(L, [ b[61]+b[79]+b[101]+b[102] ]));
 ##  <Lie algebra of dimension 102 over Rationals>
 ##  gap> lev:= LeviMalcevDecomposition(K);;
 ##  gap> SemiSimpleType( lev[1] );
@@ -1111,8 +1109,8 @@ DeclareAttribute( "CanonicalGenerators", IsRootSystemFromLieAlgebra );
 ##  gap> L:= SimpleLieAlgebra( "G", 2, Rationals );
 ##  <Lie algebra of dimension 14 over Rationals>
 ##  gap> ChevalleyBasis( L );
-##  [ [ v.1, v.2, v.3, v.4, v.5, v.6 ], [ v.7, v.8, v.9, v.10, v.11, v.12 ], 
-##    [ v.13, v.14 ] ]
+##  [ [ v.1, v.2, v.3, v.4, v.5, v.6 ], 
+##    [ v.7, v.8, v.9, v.10, v.11, v.12 ], [ v.13, v.14 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1391,9 +1389,11 @@ DeclareGlobalFunction( "FpLieAlgebraEnumeration" );
 ##  gap> g:= GeneratorsOfAlgebra(L);; x:= g[1]; y:= g[2];
 ##  (1)*x
 ##  (1)*y
-##  gap> rr:=[((y*x)*x)*x-6*(y*x)*y, 3*((((y*x)*x)*x)*x)*x-20*(((y*x)*x)*x)*y ];
+##  gap> rr:=[ ((y*x)*x)*x-6*(y*x)*y, 
+##  >          3*((((y*x)*x)*x)*x)*x-20*(((y*x)*x)*x)*y ];
 ##  [ (-1)*(x*(x*(x*y)))+(6)*((x*y)*y), 
-##    (-3)*(x*(x*(x*(x*(x*y)))))+(20)*(x*(x*((x*y)*y)))+(-20)*((x*(x*y))*(x*y)) ]
+##    (-3)*(x*(x*(x*(x*(x*y)))))+(20)*(x*(x*((x*y)*y)))+(
+##      -20)*((x*(x*y))*(x*y)) ]
 ##  gap> K:= L/rr;
 ##  <Lie algebra over Rationals, with 2 generators>
 ##  gap> h:=NilpotentQuotientOfFpLieAlgebra(K, 50, [1,2] );
@@ -1401,7 +1401,7 @@ DeclareGlobalFunction( "FpLieAlgebraEnumeration" );
 ##  gap> L:= Range( h );
 ##  <Lie algebra of dimension 50 over Rationals>
 ##  gap> Grading( L );
-##  rec( hom_components := function( d ) ... end, max_degree := 50,
+##  rec( hom_components := function( d ) ... end, max_degree := 50, 
 ##    min_degree := 1, source := Integers )
 ##  ]]></Example>
 ##  </Description>

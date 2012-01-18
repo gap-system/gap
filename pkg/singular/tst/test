@@ -106,13 +106,13 @@ gap> pols:= [i[1]+i[2]+i[3], i[1]*i[2]+i[1]*i[3]+i[2]*i[3], i[1]*i[2]*i[3]];
 gap> o:= MonomialLexOrdering();
 MonomialLexOrdering()
 gap> GBASIS:= GAPGBASIS;
-rec( name := "naive GAP version of Buchberger's algorithm", 
-  GroebnerBasis := function( elms, order ) ... end )
+rec( GroebnerBasis := function( elms, order ) ... end, 
+  name := "naive GAP version of Buchberger's algorithm" )
 gap> gg:=GroebnerBasis( pols, o );   # This is the internal GAP method.
 [ x+y+z, x*y+x*z+y*z, x*y*z, -y^2-y*z-z^2, z^3 ]
 gap> GBASIS:= SINGULARGBASIS;
-rec( name := "singular interface for GroebnerBasis", 
-  GroebnerBasis := function( pols, O ) ... end )
+rec( GroebnerBasis := function( pols, O ) ... end, 
+  name := "singular interface for GroebnerBasis" )
 gap> gs:=GroebnerBasis( pols, o );
 #I  running GroebnerBasis...
 #I  done GroebnerBasis.
@@ -182,8 +182,9 @@ gap> m:=[[1,1,1],[0,1,1],[0,0,1]]*One(GF(3));
   [ 0*Z(3), 0*Z(3), Z(3)^0 ] ]
 gap> G:= Group( [m] );
 Group(
-[ [ [ Z(3)^0, Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0, Z(3)^0 ], [ 0*Z(3), 0*Z(3),
-           Z(3)^0 ] ] ])
+[ 
+  [ [ Z(3)^0, Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0, Z(3)^0 ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0 ] ] ])
 gap> R:= PolynomialRing( GF(3), 3 );
 GF(3)[x_1,x_2,x_3]
 gap> GeneratorsOfInvariantRing( R, G );
@@ -286,14 +287,14 @@ Z(32003)^0
 gap> 
 gap> x:=Indeterminate(Rationals);;
 gap> F1:=AlgebraicExtension(Rationals, x^5+4*x+1);
-<field in characteristic 0>
+<algebraic extension over the Rationals of degree 5>
 gap> e1:=RootOfDefiningPolynomial(F1);
-(a)
+a
 gap> x:=Indeterminate(GF(5));;
 gap> F2:=AlgebraicExtension(GF(5), x^5+4*x+1);
 <field of size 3125>
 gap> e2:=RootOfDefiningPolynomial(F2);
-(a)
+a
 gap> 
 gap> field_element := [ 
 > [ Rationals, 23 ],

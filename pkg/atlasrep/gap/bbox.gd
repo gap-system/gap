@@ -3,8 +3,6 @@
 #W  bbox.gd              GAP 4 package AtlasRep                 Thomas Breuer
 #W                                                            Simon Nickerson
 ##
-#H  @(#)$Id: bbox.gd,v 1.6 2008/11/13 11:26:43 gap Exp $
-##
 #Y  Copyright (C)  2005,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declarations of the operations
@@ -13,8 +11,6 @@
 ##  1. Functions for black box algorithms
 ##  2. Functions for straight line decisions
 ##
-Revision.( "atlasrep/gap/bbox_gd" ) :=
-    "@(#)$Id: bbox.gd,v 1.6 2008/11/13 11:26:43 gap Exp $";
 
 
 #############################################################################
@@ -77,7 +73,7 @@ Revision.( "atlasrep/gap/bbox_gd" ) :=
 ##  the possibility to read an existing program via
 ##  <Ref Func="ScanBBoxProgram"/>,
 ##  and to run the program using <Ref Func="RunBBoxProgram"/>.
-##  The aim is not to write such programs in &GAP;.
+##  It is not our aim to write such programs in &GAP;.
 ##  <P/>
 ##  The special case of the <Q>find</Q> scripts mentioned above is also
 ##  admissible as an argument of <Ref Func="ResultOfBBoxProgram"/>,
@@ -146,7 +142,7 @@ DeclareInfoClass( "InfoBBox" );
 ##  <Filt Name="IsBBoxProgram" Arg='obj' Type="Category"/>
 ##
 ##  <Description>
-##  Each black box program in &GAP; lies in the category
+##  Each black box program in &GAP; lies in the filter
 ##  <Ref Func="IsBBoxProgram"/>.
 ##  </Description>
 ##  </ManSection>
@@ -312,17 +308,19 @@ DeclareGlobalFunction( "BBoxPerformInstruction" );
 ##  </Item>
 ##  <Mark><C>quiet</C></Mark>
 ##  <Item>
-##    ignore <C>echo</C> statements (default <K>false</K>),
+##    if <K>true</K> then ignore <C>echo</C> statements
+##    (default <K>false</K>),
 ##  </Item>
 ##  <Mark><C>verbose</C></Mark>
 ##  <Item>
-##    print information about the line that is currently processed,
-##    and about order checks (default <K>false</K>),
+##    if <K>true</K> then print information about the line that is currently
+##    processed, and about order checks (default <K>false</K>),
 ##  </Item>
 ##  <Mark><C>allowbreaks</C></Mark>
 ##  <Item>
-##    call <Ref Func="Error" BookName="ref"/> when a <C>break</C>
-##    statement is reached (default <K>true</K>).
+##    if <K>true</K> then call <Ref Func="Error" BookName="ref"/> when a
+##    <C>break</C> statement is reached, otherwise ignore <C>break</C>
+##    statements (default <K>true</K>).
 ##  </Item>
 ##  </List>
 ##  <P/>
@@ -420,7 +418,7 @@ DeclareGlobalFunction( "ResultOfBBoxProgram" );
 ##  for this group.
 ##  <P/>
 ##  A straight line decision in &GAP; is represented by an object in the
-##  category <Ref Filt="IsStraightLineDecision"/>
+##  filter <Ref Filt="IsStraightLineDecision"/>
 ##  that stores a list of <Q>lines</Q>
 ##  each of which has one of the following three forms.
 ##  <P/>
@@ -483,7 +481,7 @@ DeclareGlobalFunction( "ResultOfBBoxProgram" );
 ##  <Filt Name="IsStraightLineDecision" Arg='obj' Type="Category"/>
 ##
 ##  <Description>
-##  Each straight line decision in &GAP; lies in the category
+##  Each straight line decision in &GAP; lies in the filter
 ##  <Ref Func="IsStraightLineDecision"/>.
 ##  </Description>
 ##  </ManSection>
@@ -760,20 +758,24 @@ DeclareOperation( "ResultOfStraightLineDecision",
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> check:= AtlasProgram( "L2(8)", "check" );
-##  rec( program := <straight line decision>, standardization := 1, 
-##    identifier := [ "L2(8)", "L28G1-check1", 1, 1 ], groupname := "L2(8)" )
+##  rec( groupname := "L2(8)", identifier := [ "L2(8)", "L28G1-check1", 1, 1 ], 
+##    program := <straight line decision>, standardization := 1 )
 ##  gap> gens:= AtlasGenerators( "L2(8)", 1 );
-##  rec( generators := [ (1,2)(3,4)(6,7)(8,9), (1,3,2)(4,5,6)(7,8,9) ], 
-##    groupname := "L2(8)", standardization := 1, repnr := 1, 
+##  rec( charactername := "1a+8a", 
+##    generators := [ (1,2)(3,4)(6,7)(8,9), (1,3,2)(4,5,6)(7,8,9) ], 
+##    groupname := "L2(8)", id := "", 
 ##    identifier := [ "L2(8)", [ "L28G1-p9B0.m1", "L28G1-p9B0.m2" ], 1, 9 ], 
-##    p := 9, id := "", stabilizer := "2^3:7", size := 504 )
+##    isPrimitive := true, maxnr := 1, p := 9, rankAction := 2, 
+##    repname := "L28G1-p9B0", repnr := 1, size := 504, stabilizer := "2^3:7", 
+##    standardization := 1, transitivity := 3, type := "perm" )
 ##  gap> ResultOfStraightLineDecision( check.program, gens.generators );
 ##  true
 ##  gap> gens:= AtlasGenerators( "L3(2)", 1 );
 ##  rec( generators := [ (2,4)(3,5), (1,2,3)(5,6,7) ], groupname := "L3(2)", 
-##    standardization := 1, repnr := 1, 
-##    identifier := [ "L3(2)", [ "L27G1-p7aB0.m1", "L27G1-p7aB0.m2" ], 1, 7 ], 
-##    p := 7, id := "a", stabilizer := "S4", size := 168 )
+##    id := "a", identifier := [ "L3(2)", [ "L27G1-p7aB0.m1", "L27G1-p7aB0.m2" ], 
+##        1, 7 ], isPrimitive := true, maxnr := 1, p := 7, rankAction := 2, 
+##    repname := "L27G1-p7aB0", repnr := 1, size := 168, stabilizer := "S4", 
+##    standardization := 1, transitivity := 2, type := "perm" )
 ##  gap> ResultOfStraightLineDecision( check.program, gens.generators );
 ##  true
 ##  ]]></Example>

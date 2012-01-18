@@ -8,12 +8,9 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-#H  @(#)$Id: wordass.gi,v 4.39 2010/12/20 22:48:20 gap Exp $
 ##
 ##  This file contains generic methods for associative words.
 ##
-Revision.wordass_gi :=
-    "@(#)$Id: wordass.gi,v 4.39 2010/12/20 22:48:20 gap Exp $";
 
 #############################################################################
 ##

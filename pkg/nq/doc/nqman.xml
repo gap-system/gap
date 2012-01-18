@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<!DOCTYPE Book SYSTEM "gapdoc.dtd">
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+   [ <#Include Label="PKGVERSIONDATA">
+   ]>
 
 <Book Name="nq">                                        <!-- REQUIRED -->
 
@@ -8,38 +10,47 @@
                           The title page
                                                                       -->
   <TitlePage>                                           <!-- REQUIRED -->
-    <Title>                                             <!-- REQUIRED -->
-        <Package>NQ</Package>
-    </Title>
+    <Title><Package>NQ</Package></Title>
     <Subtitle>                                          <!-- OPTIONAL -->
-        A &GAP; 4 Package<Br></Br>
+        A &GAP; 4 Package<Br/>
         computing nilpotent factor groups of finitely
-        presented groups<Br></Br>
-        &nbsp;<Br></Br>
+        presented groups<Br/>
+        &nbsp;<Br/>
         Based on the ANU Nilpotent Quotient Program
     </Subtitle>
-    <Version>Version 2.2</Version>                      <!-- OPTIONAL -->
+    <Version>Version &VERSION;</Version>
     <Author>
-        Werner Nickel<Br></Br>                          <!-- REQUIRED -->
-        &nbsp;
+        Max Horn                          <!-- REQUIRED -->
         <Address>
-            Fachbereich Mathematik, AG 2<Br></Br>
-            TU Darmstadt<Br></Br>
-            Schlossgartenstr. 7<Br></Br>
-            64289 Darmstadt<Br></Br>
+            AG Algebra und Diskrete Mathematik<Br/>
+            Institut Computational Mathematics<Br/>
+            TU Braunschweig<Br/>
+            Pockelsstr. 14<Br/>
+            D-38106 Braunschweig<Br/>
             Germany
         </Address>
         <Email>
-            nickel at mathematik.tu-darmstadt.de
+            mhorn@tu-bs.de
         </Email>
+        <Homepage>http://www.icm.tu-bs.de/~mhorn</Homepage>
+    </Author>
+    <Author>
+        Werner Nickel                          <!-- REQUIRED -->
+<!--        In November 2007 Werner took up a position at the Hesse Ministry
+        of Science and Art. Any inquiries regarding nq should be
+        directed at Max Horn (see below) for the time being.<Br/>
+-->
+<!--        <Email>nickel at mathematik.tu-darmstadt.de</Email> -->
         <Homepage>http://www.mathematik.tu-darmstadt.de/~nickel</Homepage>
     </Author>
-    <Date>February 2007</Date>                          <!-- OPTIONAL -->
+    <Date>&RELEASEDATE;</Date>                          <!-- OPTIONAL -->
     <Copyright>                                         <!-- OPTIONAL -->
         &copyright; 1992-2007 Werner Nickel.
     </Copyright>
     <Acknowledgements> <!-- OPTIONAL --> 
-    The development of this program was started while the
+    The author of ANU NQ is Werner Nickel.
+
+    <P/>The development of this program was started while the
     author was supported by an Australian National University PhD
     scholarship and an Overseas Postgraduate Research Scholarship.
 
@@ -47,11 +58,17 @@
     DFG-Schwerpunkt-Projekt "`Algorithmische Zahlentheorie und
     Algebra"'.
 
+    <P/>Since then, maintenance of ANU NQ has been taken over by Max Horn. All
+    credit for creating ANU NQ still goes to Werner Nickel as sole author.
+    However, bug reports and other  inquiries should be sent to Max  Horn.
+
+    <P/>The following are the original acknowledgements by Werner Nickel.
+
     <P/>Over the years a number of people have made useful suggestions
     that found their way into the code:  Mike Newman, Michael
     Vaughan-Lee, Joachim Neubüser, Charles Sims.
 
-    <P/>I thank Volkmar Felsch and Joachim Neubüser for their careful
+    <P/>Thanks to Volkmar Felsch and Joachim Neubüser for their careful
     examination of the package prior to its release for GAP 4.
 
     <P/>This documentation was prepared with the <Package>GAPDoc</Package>
@@ -235,7 +252,7 @@
 
   <P/>In a group given by a polycyclic presentation each element in
   the group can be written as a <E>normal word</E> <M>a_1^{e_1}\ldots
-  a_n^{e_n}</M> with <M>e_i \in \Z</M> and <M>0 \leq e_i &lt; m_i</M>
+  a_n^{e_n}</M> with <M>e_i \in \mathbb{Z}</M> and <M>0 \leq e_i &lt; m_i</M>
   for <M>i \in I</M>.  A procedure called <E>collection</E> can be
   used to convert an arbitrary word in the generators into an
   equivalent normal word.  In general, the resulting normal word need
@@ -1266,25 +1283,21 @@ need not be a left 5-Engel element.
   Installation of the package requires the GNU multiple precision
   library (GNU MP <Cite Key="GNUMP"/>).  If this library is not
   available on your system, it has to be installed first.  A copy of
-  GNU MP can be obtained via anonymous ftp from many file servers
-  around the world, for example: <URL>www.swox.com/gmp/</URL>.
+  GNU MP can be obtained from <URL>http://gmplib.org/</URL>.
 
   Installation of the ANU NQ is done in two steps.  First the
   configure script is run:
   <Listing Type="Installation"> ./configure  </Listing>
-  Among other things it will check whether it succeeds in locating
-  the GNU MP library and the corresponding include files.  If
-  configure reports no problems, the next step is to start the
+  Among other things it will tell you whether it succeeded in locating
+  the GNU MP library and the corresponding include files. If it tells
+  you that it could not find the GNU MP include files or the GNU MP
+  libraries, you have to run configure with additional parameters. For
+  example, if you have installed GNU MP yourself in your home directory,
+  you would type something like the following
+  <Listing Type="Installation"> ./configure --with-gmp=/home/me/gmp </Listing>
+  If configure reports no problems, the next step is to start the
   compilation:
   <Listing Type="Installation"> make </Listing>
-  If the configure script told you that it could not find the GNU MP
-  include files or the GNU MP libraries, you have to run make with
-  additional parameters.  For example, if you have installed GNU MP
-  yourself in your home directory, you would type something like the
-  following
-  <Listing Type="Installation"> 
-  make GNU_MP_INC=/home/me/gmp-4.1.1 GNU_MP_LIB=/home/me/gmp-4.1.1/.libs
-  </Listing>
 
   <P/> A compiled version of the program named `nq' is then placed
   into the directory `bin/&tlt;complicated name&tgt;'.  The
@@ -1297,7 +1310,7 @@ need not be a left 5-Engel element.
   compilation process, please send a copy to the address at the end of
   this document together with information about your operating system,
   the compiler you used and any changes you might have made to the
-  source code.  I will have a look at your problems and try to fix
+  source code.  We will have a look at your problems and try to fix
   them.
  
   <P/> After the compilation is finished you can check if the ANU NQ
@@ -1305,12 +1318,12 @@ need not be a left 5-Engel element.
 
   <Listing Type="Installation"> make test </Listing>
   
-  The file runs some computations and compares their output with the
-  output files in the directory `examples'.  If testNq reports any
-  errors, please follow the instruction that testNq prints out.
+  This runs some computations and compares their output with the output
+  files in the directory `examples'. If any errors are reported, please
+  follow the instruction that are printed out.
 
   <P/>The installation is completed by compiling the manual of the
-  package.  This is done from within <Package>GAP</Package>.
+  package.  This is done from within &GAP;.
 
   <Listing Type="Installation">
 gap> NqBuildManual();
@@ -1346,6 +1359,6 @@ gap>
 
   </Body>
 
-  <Bibliography Databases="nq" />
+  <Bibliography Databases="nqbib.xml" />
   <TheIndex/>                                               
 </Book>

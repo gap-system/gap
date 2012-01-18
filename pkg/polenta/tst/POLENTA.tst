@@ -29,22 +29,3 @@ gap> Size( G_f );
 162
 gap> STOP_TEST( "POLENTA.tst", 100000);   
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

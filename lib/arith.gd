@@ -2,7 +2,6 @@
 ##
 #W  arith.gd                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: arith.gd,v 4.88 2011/01/13 23:01:05 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -21,8 +20,6 @@
 ##  family allows a multiplication of *some* of its  elements.  It does *not*
 ##  mean that the the product of *any* two elements in the family is defined,
 ##
-Revision.arith_gd :=
-    "@(#)$Id: arith.gd,v 4.88 2011/01/13 23:01:05 gap Exp $";
 
 
 #############################################################################
@@ -1148,7 +1145,7 @@ InstallTrueMethod( IsAssociativeElement,
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory( "IsAdditivelyCommutativeElement", IsNearAdditiveElement );
+DeclareCategory( "IsAdditivelyCommutativeElement", IsAdditiveElement );
 DeclareCategoryCollections( "IsAdditivelyCommutativeElement" );
 DeclareCategoryCollections( "IsAdditivelyCommutativeElementCollection" );
 

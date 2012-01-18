@@ -1,13 +1,11 @@
 #############################################################################
 ##
-#W  ctadmin.tbi         GAP character table library             Thomas Breuer
+#W  ctadmin.tbi          GAP 4 package CTblLib                  Thomas Breuer
 #W                                                               Ute Schiffer
 ##
-#H  @(#)$Id: ctadmin.tbi,v 4.102 2011/02/11 16:09:27 gap Exp $
+#Y  Copyright (C)  1997,   Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-##
-##  This file contains the implementation part of the data of the {\GAP}
+##  This file contains the implementation part of the data of the GAP
 ##  character table library that is not automatically produced from the
 ##  library files.
 ##
@@ -21,8 +19,6 @@
 ##  Note that in all construction functions, the table under construction is
 ##  a plain record, *not* a table object.
 ##
-Revision.( "ctbllib/gap4/ctadmin_tbi" ) :=
-    "@(#)$Id: ctadmin.tbi,v 4.102 2011/02/11 16:09:27 gap Exp $";
 
 
 #############################################################################
@@ -65,41 +61,53 @@ BindGlobal( "PParseBackwards", function( string, format )
 
 #############################################################################
 ##
-#F  ClassPositionsOfLargestNormalPSubgroup( <ordtbl>, <p> )
-##
-BindGlobal( "ClassPositionsOfLargestNormalPSubgroup", function( ordtbl, p )
-    local nsg, op, opsizeexp, classes, n, nsize;
-
-    nsg:= ClassPositionsOfNormalSubgroups( ordtbl );
-    op:= [ 1 ];
-    opsizeexp:= 0;
-    classes:= SizesConjugacyClasses( ordtbl );
-    for n in nsg do
-      nsize:= Collected( Factors( Sum( classes{ n }, 0 ) ) );
-      if Length( nsize ) = 1 and nsize[1][1] = p
-                             and opsizeexp < nsize[1][2] then
-        op:= n;
-        opsizeexp:= nsize[1][2];
-      fi;
-    od;
-
-    return op;
-    end );
-
-
-#############################################################################
-##
-#F  ReadTbl( <name> ) . . . . . . . . . . . . . . . .  character tables files
+#F  CTblLib.ReadTbl( [<filename>, ]<id> ) . . . . read character tables files
 ##
 ##  This function is used to read data files of the character table library.
-##  If the initial part of <name> is one of `~/', `/' or `./' then we
+##  If the initial part of <filename> is one of `~/', `/' or `./' then we
 ##  interpret the name as *absolute*, and try to read the file analogous to
 ##  `Read'; otherwise we interpret the name as *relative* to the `data'
-##  directory of the `ctbllib' package.
+##  directory of the CTblLib package.
 ##
-BindGlobal( "ReadTbl",
-    function( name )
-    local readIndent, found;
+CTblLib.ReadTbl:= function( arg )
+    local name, id, var, readIndent, found;
+
+    if Length( arg ) = 1 then
+      id:= arg[1];
+      name:= Concatenation( id, ".tbl" );
+    else
+      name:= arg[1];
+      id:= arg[2];
+    fi;
+
+    # `LIBTABLE.TABLEFILENAME' is used in `MOT', `ALF', `ALN'.
+    LIBTABLE.TABLEFILENAME:= id;
+    if not IsBound( LIBTABLE.( id ) ) then
+      LIBTABLE.( id ):= rec();
+    fi;
+
+    # Make some variables available that are used in data files.
+    # Save perhaps available user variables with these names.
+    if 2 <= Length( name )
+       and ( name[1] = '/' or name{ [ 1, 2 ] } in [ "~/", "./" ] ) then
+      # `name' is an absolute filename.
+      CTblLib.ALN:= NotifyNameOfCharacterTable;
+    else
+      # The names in ``official'' table files are already stored.
+      CTblLib.ALN:= Ignore;
+    fi;
+    for var in [ "ACM", "ALF", "ALN", "ARC", "MBT", "MOT" ] do
+      if IsBoundGlobal( var ) then
+        if IsReadOnlyGlobal( var ) then
+          MakeReadWriteGlobal( var );
+          CTblLib.( Concatenation( "GlobalR_", var ) ):= ValueGlobal( var );
+        else
+          CTblLib.( Concatenation( "GlobalW_", var ) ):= ValueGlobal( var );
+        fi;
+        UnbindGlobal( var );
+      fi;
+      ASS_GVAR( var, CTblLib.( var ) );
+    od;
 
     if 2 <= Length( name )
        and ( name[1] = '/' or name{ [ 1, 2 ] } in [ "~/", "./" ] ) then
@@ -112,11 +120,24 @@ BindGlobal( "ReadTbl",
       if found and READ_INDENT = "" then
         InfoRead1( "#I  Read( \"", name, "\" ) done\n" );
       fi;
-      return found;
     else
-      return RereadPackage( "ctbllib", Concatenation( "data/", name ) );
+      found:= RereadPackage( "ctbllib", Concatenation( "data/", name ) );
     fi;
-    end );
+
+    # Unbind the variables again that have been assigned above.
+    for var in [ "ACM", "ALF", "ALN", "ARC", "MBT", "MOT" ] do
+      UnbindGlobal( var );
+      if IsBound( CTblLib.( Concatenation( "GlobalR_", var ) ) ) then
+        BindGlobal( var, CTblLib.( Concatenation( "GlobalR_", var ) ) );
+        Unbind( CTblLib.( Concatenation( "GlobalR_", var ) ) );
+      elif IsBound( CTblLib.( Concatenation( "GlobalW_", var ) ) ) then
+        ASS_GVAR( var, CTblLib.( Concatenation( "GlobalW_", var ) ) );
+        Unbind( CTblLib.( Concatenation( "GlobalW_", var ) ) );
+      fi;
+    od;
+
+    return found;
+    end;
 
 
 #############################################################################
@@ -136,39 +157,107 @@ InstallFlushableValue( LIBTABLE, rec(
 ##
 #V  LIBLIST
 ##
-##  is a record with information about admissible names, fusion sources
-##  etc. of all library tables;
-##  the components are mainly computed by the function `CTblLibRecomputeTOC',
-##  and they are stored in the file `ctprimar.tbl',
+##  <#GAPDoc Label="LIBLIST">
+##  <ManSection>
+##  <Var Name="LIBLIST"/>
 ##
-#V  TOM_TBL_INFO
+##  <Description>
+##  &GAP;'s knowledge about the ordinary character tables in the
+##  &GAP; Character Table Library is given by the file <F>ctprimar.tbl</F>
+##  (the <Q>primary file</Q> of the character table library).
+##  This file can be produced from the library files using the function
+##  <C>CTblLib.RecomputeTOC</C> in the file <F>dev/maketbl.g</F> of the
+##  &CTblLib; package.
+##  <P/>
+##  The information is stored in the global variable <Ref Var="LIBLIST"/>,
+##  which is a record with the following components.
+##  <P/>
+##  <List>
+##  <Mark><C>firstnames</C></Mark>
+##  <Item>
+##    the list of
+##    <Ref Func="Identifier" Label="for character tables" BookName="ref"/>
+##    values of the ordinary tables,
+##  </Item>
+##  <Mark><C>files</C></Mark>
+##  <Item>
+##    the list of filenames containing the data of ordinary tables,
+##  </Item>
+##  <Mark><C>filenames</C></Mark>
+##  <Item>
+##    a list of positive integers, value <M>j</M> at position <M>i</M> means
+##    that the table whose identifier is the <M>i</M>-th in the
+##    <C>firstnames</C> list is contained in the <M>j</M>-th file of the
+##    <C>files</C> component,
+##  </Item>
+##  <Mark><C>fusionsource</C></Mark>
+##  <Item>
+##    a list containing at position <M>i</M> the list of names of tables that
+##    store a fusion into the table whose identifier is the <M>i</M>-th in
+##    the <C>firstnames</C> list,
+##  </Item>
+##  <Mark><C>allnames</C></Mark>
+##  <Item>
+##    a list of all admissible names of ordinary library tables,
+##  </Item>
+##  <Mark><C>position</C></Mark>
+##  <Item>
+##    a list that stores at position <M>i</M> the position in
+##    <C>firstnames</C> of the identifier of the table with the <M>i</M>-th
+##    admissible name in <C>allnames</C>,
+##  </Item>
+##  <Mark><C>projections</C></Mark>
+##  <Item>
+##    a list of triples <M>[ <A>name</A>, <A>factname</A>, <A>map</A> ]</M>
+##    describing a factor fusion <A>map</A> from the table with identifier
+##    <A>name</A> to the table with identifier <A>factname</A>
+##    (this is used to construct the table of <A>name</A> using the data of
+##    the table of <A>factname</A>),
+##  </Item>
+##  <Mark><C>simpleinfo</C></Mark>
+##  <Item>
+##    a list of triples <M>[ <A>m</A>, <A>name</A>, <A>a</A> ]</M> describing
+##    the tables of simple groups in the library;
+##    <A>name</A> is the identifier of the table,
+##    <A>m</A><C>.</C><A>name</A> and <A>name</A><C>.</C><A>a</A> are
+##    admissible names for its Schur multiplier and automorphism group,
+##    respectively, if these tables are available at all,
+##  </Item>
+##  <Mark><C>sporadicSimple</C></Mark>
+##  <Item>
+##    a list of identifiers of the tables of the <M>26</M> sporadic simple
+##    groups, and
+##  </Item>
+##  <Mark><C>GENERIC</C></Mark>
+##  <Item>
+##    a record with information about generic tables
+##    (see Section&nbsp;<Ref Sect="sec:generictables"/>).
+##  </Item>
+##  </List>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
+DeclareAutoreadableVariables( "ctbllib", "data/ctprimar.tbl",
+    [ "LIBLIST" ] );
+
+
+#############################################################################
+##
+##  `LIBLIST.TOM_TBL_INFO'
 ##  is a list of length two, the first entry being the list of identifiers of
 ##  tables of marks, the second entry being the list of corresponding
 ##  identifiers of library character tables.
 ##
-##  (We delete the information in `TOM_TBL_INFO' if not both the library of
-##  character tables and the library of tables of marks are installed.
+##  (We delete the information in `LIBLIST.TOM_TBL_INFO' if not both the
+##  library of character tables and the library of tables of marks are
+##  installed.
 ##  In order to avoid an error message, we also define a dummy filter
 ##  `IsLibTomRep' here.)
 ##
 if not IsPackageMarkedForLoading( "tomlib", "1.0" ) then
   DeclareFilter( "IsLibTomRep" );
 fi;
-DeclareAutoreadableVariables( "ctbllib", "data/ctprimar.tbl",
-    [ "LIBLIST", "TOM_TBL_INFO" ] );
-
-
-#############################################################################
-##
-#F  SET_TABLEFILENAME( <filename> )
-##
-InstallGlobalFunction( SET_TABLEFILENAME, function( filename )
-    LIBTABLE.TABLEFILENAME:= filename;
-    if not IsBound( LIBTABLE.( filename ) ) then
-      LIBTABLE.( filename ):= rec();
-    fi;
-end );
 
 
 #############################################################################
@@ -202,12 +291,12 @@ end );
 
 #############################################################################
 ##
-#F  ALF( <from>, <to>, <map>[, <text>, <spec>] ) .  add library table fusions
+#F  CTblLib.ALF( <from>, <to>, <map>[, <text>, <spec>] )  add library fusions
 ##
-InstallGlobalFunction( ALF, function( arg )
+CTblLib.ALF:= function( arg )
     local pos, fus, text;
 
-    if ALN <> Ignore then
+    if CTblLib.ALN <> Ignore then
 
       # A file is read that does not belong to the official library.
       # Check that the names are valid.
@@ -250,29 +339,29 @@ InstallGlobalFunction( ALF, function( arg )
 
     Add( LIBTABLE.( LIBTABLE.TABLEFILENAME ).( arg[1] ).ComputedClassFusions,
          fus );
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  ACM( <spec>, <dim>, <val> ) . . . . . . . . . . . . . add Clifford matrix
+#F  CTblLib.ACM( <spec>, <dim>, <val> ) . . . . . . . . . add Clifford matrix
 ##
-InstallGlobalFunction( ACM, function( spec, dim, val )
+CTblLib.ACM:= function( spec, dim, val )
     spec:= LIBTABLE.( Concatenation( "clm", spec ) );
     if not IsBound( spec[ dim ] ) then
       spec[ dim ]:= [];
     fi;
     Add( spec[ dim ], val );
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  ARC( <name>, <comp>, <val> ) . . . . . . . add component of library table
+#F  CTblLib.ARC( <name>, <comp>, <val> ) . . . add component of library table
 ##
-InstallGlobalFunction( ARC, function( name, comp, val )
+CTblLib.ARC:= function( name, comp, val )
     LIBTABLE.( LIBTABLE.TABLEFILENAME ).( name ).( comp ):= val;
-end );
+    end;
 
 
 #############################################################################
@@ -365,9 +454,9 @@ end );
 
 #############################################################################
 ##
-#F  MBT( <arg> )
+#F  CTblLib.MBT( <arg> )
 ##
-InstallGlobalFunction( MBT, function( arg )
+CTblLib.MBT:= function( arg )
     local i, record;
 
     record:= rec(
@@ -395,14 +484,14 @@ InstallGlobalFunction( MBT, function( arg )
     fi;
     LIBTABLE.( LIBTABLE.TABLEFILENAME ).(
                  Concatenation( arg[1], "mod", String( arg[2] ) ) ):= record;
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  MOT( <arg> )
+#F  CTblLib.MOT( <arg> )
 ##
-InstallGlobalFunction( MOT, function( arg )
+CTblLib.MOT:= function( arg )
     local record, i;
 
     # Construct the record.
@@ -429,7 +518,7 @@ InstallGlobalFunction( MOT, function( arg )
 
     # Store the table record.
     LIBTABLE.( LIBTABLE.TABLEFILENAME ).( arg[1] ):= record;
-end );
+    end;
 
 
 #############################################################################
@@ -553,7 +642,7 @@ InstallGlobalFunction( LibraryTables, function( filename )
       LIBTABLE.( suffix ):= rec();
 
       # Try to read the file.
-      if not ReadTbl( Concatenation( filename, ".tbl" ) ) then
+      if not CTblLib.ReadTbl( Concatenation( filename, ".tbl" ), suffix ) then
         Info( InfoCharacterTable, 1,
               "no file `", filename,
               ".tbl' in the GAP Character Table Library" );
@@ -571,11 +660,11 @@ end );
 
 ############################################################################
 ##
-#V  CTblLibSupportedGenericIdentifiers
+#V  CTblLib.SupportedGenericIdentifiers
 ##
 ##  Make generic identifiers admissible.
 ##
-BindGlobal( "CTblLibSupportedGenericIdentifiers", [
+CTblLib.SupportedGenericIdentifiers:= [
     [ PParseBackwards, [ "c", IsDigitChar ],
                        "Cyclic", [ 2 ] ],
     [ PParseBackwards, [ "alt(", IsDigitChar, ")" ],
@@ -588,18 +677,18 @@ BindGlobal( "CTblLibSupportedGenericIdentifiers", [
                        "DoubleCoverSymmetric", [ 2 ] ],
     [ PParseBackwards, [ "2.alt(", IsDigitChar, ")" ],
                        "DoubleCoverAlternating", [ 2 ] ],
-    ] );
+    ];
 
 
 #############################################################################
 ##
-#F  CTblLibTrySpecialization( <tblname> )
+#F  CTblLib.TrySpecialization( <tblname> )
 ##
-BindGlobal( "CTblLibTrySpecialization", function( tblname )
+CTblLib.TrySpecialization:= function( tblname )
     local entry, scan;
 
     tblname:= LowercaseString( tblname );
-    for entry in CTblLibSupportedGenericIdentifiers do
+    for entry in CTblLib.SupportedGenericIdentifiers do
       scan:= entry[1]( tblname, entry[2] );
       if scan <> fail then
         return CallFuncList( CharacterTableFromLibrary,
@@ -607,7 +696,7 @@ BindGlobal( "CTblLibTrySpecialization", function( tblname )
       fi;
     od;
     return fail;
-    end );
+    end;
 
 
 #############################################################################
@@ -616,19 +705,8 @@ BindGlobal( "CTblLibTrySpecialization", function( tblname )
 #F  CharacterTableFromLibrary( <series>, <param1>[, <param2>] )
 ##
 InstallGlobalFunction( CharacterTableFromLibrary, function( arg )
-    local i,
-          j,
-          tblname,
-          firstname,
-          filename,
-          libtbl,
-          librarytables,
-          file,
-          info,
-          pos,
-          fld,
-          name,
-          fus;
+    local tblname, firstname, filename, suffix, pos, librarytables, name,
+          libtbl, fld, i, fus;
 
     if IsEmpty( arg ) or not IsString( arg[1] ) then
 
@@ -642,7 +720,7 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arg )
       firstname:= LibInfoCharacterTable( tblname );
       if firstname = fail then
         # Perhaps it is the identifier of a generic table.
-        libtbl:= CTblLibTrySpecialization( tblname );
+        libtbl:= CTblLib.TrySpecialization( tblname );
         if libtbl <> fail then
           return libtbl;
         fi;
@@ -652,13 +730,19 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arg )
       fi;
       filename  := firstname.fileName;
       firstname := firstname.firstName;
+      suffix:= filename;
+      pos:= Position( suffix, '/' );
+      while pos <> fail do
+        suffix:= suffix{ [ pos+1 .. Length( suffix ) ] };
+        pos:= Position( suffix, '/' );
+      od;
 
-      if filename{ [ 1 .. 3 ] } = "ctb" then
+      if suffix{ [ 1 .. 3 ] } = "ctb" then
 
         # Brauer table, call `BrauerTable'
         # (First get the ordinary table.)
         name:= PartsBrauerTableName( firstname );
-        return BrauerTableFromLibrary(
+        return BrauerTable(
                    CharacterTableFromLibrary( name.ordname ),
                    name.prime );
 
@@ -733,9 +817,7 @@ InstallGlobalFunction( CharacterTableFromLibrary, function( arg )
         fi;
 
         # initialize some components
-        if IsBound( libtbl.orders ) then
-          libtbl.OrdersClassRepresentatives:= libtbl.orders;
-        elif   IsBound( libtbl.ComputedPowerMaps )
+        if     IsBound( libtbl.ComputedPowerMaps )
            and not IsEmpty( libtbl.ComputedPowerMaps )
            and not IsBound( libtbl.OrdersClassRepresentatives ) then
           libtbl.OrdersClassRepresentatives:=
@@ -923,18 +1005,6 @@ end );
 
 #############################################################################
 ##
-#F  CharTableLibrary( <arglist> )
-##
-##  for compatibility with GAP 3 ...
-#T move this to the compat. mode files! (packed into an if IsBound statement)
-##
-BindGlobal( "CharTableLibrary", function( arglist )
-    return CallFuncList( CharacterTableFromLibrary, arglist );
-end );
-
-
-#############################################################################
-##
 #F  PartsBrauerTableName( <modname> )
 ##
 InstallGlobalFunction( PartsBrauerTableName, function( modname )
@@ -977,11 +1047,7 @@ end );
 #F  BasicSetBrauerTree( <brauertree> )
 ##
 InstallGlobalFunction( BasicSetBrauerTree, function( brauertree )
-    local i,
-          degrees,
-          basicset,
-          edge,
-          elm;
+    local i, degrees, basicset, edge, elm;
 
     brauertree:= Set( brauertree );
     basicset:= [];
@@ -1126,7 +1192,8 @@ InstallGlobalFunction( BrauerTableFromLibrary, function( ordtbl, prime )
           factinfo,
           ordchars,
           offset,
-          decinv;
+          decinv,
+          suffix;
 
     # Get the library file of the Brauer table if possible.
     name:= Concatenation( Identifier( ordtbl ), "mod", String( prime ) );
@@ -1142,7 +1209,7 @@ InstallGlobalFunction( BrauerTableFromLibrary, function( ordtbl, prime )
 
       # Maybe we have to factor out a normal $p$-subgroup before
       # we find the table (name) in the library.
-      op:= ClassPositionsOfLargestNormalPSubgroup( ordtbl, prime );
+      op:= ClassPositionsOfPCore( ordtbl, prime );
       if Length( op ) = 1 then
         Info( InfoCharacterTable, 1,
               "No library table with name `", name, "'" );
@@ -1265,10 +1332,17 @@ InstallGlobalFunction( BrauerTableFromLibrary, function( ordtbl, prime )
     # tables that hold the blocks and the offset of basic set characters.
     if IsBound( libtbl.factorblocks ) then
 
+      suffix:= filename;
+      pos:= Position( suffix, '/' );
+      while pos <> fail do
+        suffix:= suffix{ [ pos+1 .. Length( suffix ) ] };
+        pos:= Position( suffix, '/' );
+      od;
+
       for i in libtbl.factorblocks do
         facttbl:= Concatenation( i[1], "mod", String( prime ) );
-        if IsBound( LIBTABLE.( filename ).( facttbl ) ) then
-          facttbl:= LIBTABLE.( filename ).( facttbl );
+        if IsBound( LIBTABLE.( suffix ).( facttbl ) ) then
+          facttbl:= LIBTABLE.( suffix ).( facttbl );
         else
           # The factor table is in another file (hopefully a rare case),
           # or it is obtained from a construction.
@@ -1403,6 +1477,10 @@ InstallGlobalFunction( BrauerTableFromLibrary, function( ordtbl, prime )
     SetBlocksInfo( reg, result_blocks );
     SetIrr( reg, irreducibles );
 
+    if IsBound( libtbl.CharacterParameters ) then
+      SetCharacterParameters( reg, libtbl.CharacterParameters );
+    fi;
+
     # decode the `IrredInfo' value
     # (contains 2nd indicator if the prime is 2, else nothing)
     if IsBound( libtbl.indicator ) then
@@ -1438,16 +1516,16 @@ end );
 ##  Otherwise fall back to the generic method.
 ##
 InstallMethod( BrauerTableOp,
-    "for a library character table and a positive integer",
-    [ IsOrdinaryTable and IsLibraryCharacterTableRep, IsPosInt ], SUM_FLAGS,
+    [ "IsOrdinaryTable and IsLibraryCharacterTableRep", "IsPosInt" ], SUM_FLAGS,
     function( tbl, p )
-    local modtbl, info, t, orig, result, fus, rest, modtblMG, modtblGA,
+    local result, modtbl, info, t, orig, fus, rest, modtblMG, modtblGA,
           modtblH1, modtblG1, modtblH2, modtblG2, perm,
           ordfacttbls, modfacttbls, modfacttbl;
 
+    result:= fail;
     modtbl:= BrauerTableFromLibrary( tbl, p );
     if modtbl <> fail then
-      return modtbl;
+      result:= modtbl;
     elif HasConstructionInfoCharacterTable( tbl ) then
       info:= ConstructionInfoCharacterTable( tbl );
       if IsList( info ) and info[1] = "ConstructPermuted" then
@@ -1465,7 +1543,6 @@ InstallMethod( BrauerTableOp,
           SetIrr( result, List( Irr( orig ),
                         chi -> Character( result,
                                  ValuesOfClassFunction( chi ){ rest } ) ) );
-          return result;
         fi;
       elif IsList( info ) and info[1] = "ConstructMGA" then
         modtblMG:= CharacterTable( info[2] ) mod p;
@@ -1473,7 +1550,7 @@ InstallMethod( BrauerTableOp,
         if ForAll( [ modtblMG, modtblGA ], IsCharacterTable ) then
           result:= BrauerTableOfTypeMGA( modtblMG, modtblGA, tbl );
           if result <> fail then
-            return result.table;
+            result:= result.table;
           fi;
         fi;
       elif IsList( info ) and info[1] = "ConstructIndexTwoSubdirectProduct"
@@ -1491,7 +1568,7 @@ InstallMethod( BrauerTableOp,
                        modtblH1, modtblG1, modtblH2, modtblG2,
                        [ tbl, perm ] );
           if result <> fail then
-            return result.table;
+            result:= result.table;
           fi;
         fi;
       elif IsList( info ) and info[1] = "ConstructV4G" then
@@ -1510,10 +1587,15 @@ InstallMethod( BrauerTableOp,
                              info{ [ 3 .. Length( info ) ] } ) );
           fi;
         fi;
-        if result <> fail then
-          return result;
-        fi;
       fi;
+    fi;
+
+    if result <> fail then
+      if HasClassParameters( tbl ) then
+        SetClassParameters( result,
+            ClassParameters( tbl ){ GetFusionMap( result, tbl ) } );
+      fi;
+      return result;
     fi;
 
     TryNextMethod();
@@ -1911,10 +1993,10 @@ InstallGlobalFunction( OfThose,
 
 #############################################################################
 ##
-#F  CTblLibAccessFunction( [ {<func>, <val>} ], <mode> )
-#F  CTblLibAccessFunction( [ <func>, <val>, ...{, OfThose, <func>}], <mode> )
+#F  CTblLib.AccessFunction( [ {<func>, <val>} ], <mode> )
+#F  CTblLib.AccessFunction( [ <func>, <val>, ...{, OfThose, <func>}], <mode> )
 ##
-BindGlobal( "CTblLibAccessFunction", function( args, mode )
+CTblLib.AccessFunction:= function( args, mode )
     local sporsimp, multinfo, simpinfo, autoinfo,
           result, list, startpos, name, vals, pos, newvals, val, resul,
           ident, pp, ext, attrs, data, nam, attr, apos;
@@ -1978,12 +2060,10 @@ BindGlobal( "CTblLibAccessFunction", function( args, mode )
         for val in vals do
 
           if args[ pos ] = OfThose then
-
-            # Supported special cases are `SchurCover', `AutomorphismGroup',
-            # `CompleteGroup'.
             if args[ pos + 1 ] in
                 [ SchurCover, AutomorphismGroup, CompleteGroup ] then
 
+              # These cases are supported via `ExtensionInfoCharacterTable'.
               ident:= val;
               if IsCharacterTable( ident ) then
                 ident:= Identifier( ident );
@@ -2020,11 +2100,41 @@ BindGlobal( "CTblLibAccessFunction", function( args, mode )
 
             else
 
-              # generic `OfThose' case
-              if not IsCharacterTable( val ) then
-                val:= CharacterTable( val );
+              # If a database attribute is available for the mapping
+              # then use it (`Maxes', `NamesOfFusionSources').
+              if IsBoundGlobal( "CTblLibData" ) then
+                # Preprocessing for accessing database attributes ...
+                if not IsBound( attrs ) then
+                  attrs:= [ [], [] ];
+                  data:= ValueGlobal( "CTblLibData" );
+                  for nam in RecNames( data.IdEnumerator.attributes ) do
+                    attr:= data.IdEnumerator.attributes.( nam );
+                    if IsBound( attr.name ) then
+                      Add( attrs[1], ValueGlobal( attr.name ) );
+                      Add( attrs[2], attr );
+                    fi;
+                  od;
+                fi;
+                apos:= Position( attrs[1], args[ pos ] );
+              else
+                apos:= fail;
               fi;
-              resul:= args[ pos+1 ]( val );
+
+              if apos = fail then
+                # generic `OfThose' case
+                if not IsCharacterTable( val ) then
+                  val:= CharacterTable( val );
+                fi;
+                resul:= args[ pos+1 ]( val );
+              else
+                attr:= attrs[2][ apos ];
+                if IsCharacterTable( val ) then
+                  resul:= attr.attributeValue( attr, Identifier( val ) );
+                else
+                  resul:= attr.attributeValue( attr, val );
+                fi;
+              fi;
+
               if   IsString( resul ) then
                 Add( newvals, resul );
               elif ForAll( resul, IsString ) then
@@ -2032,7 +2142,6 @@ BindGlobal( "CTblLibAccessFunction", function( args, mode )
               else
                 Error( "<args>[", pos+1, "] must return a (list of) strings" );
               fi;
-
             fi;
 
           else
@@ -2105,7 +2214,7 @@ BindGlobal( "CTblLibAccessFunction", function( args, mode )
     else
       return fail;
     fi;
-end );
+    end;
 
 
 #############################################################################
@@ -2114,7 +2223,7 @@ end );
 #F  AllCharacterTableNames( <func>, <val>, ...{, OfThose, <func>} )
 ##
 InstallGlobalFunction( AllCharacterTableNames, function( arg )
-    return CTblLibAccessFunction( arg, "all" );
+    return CTblLib.AccessFunction( arg, "all" );
     end );
 
 
@@ -2124,7 +2233,65 @@ InstallGlobalFunction( AllCharacterTableNames, function( arg )
 #F  OneCharacterTableName( <func>, <val>, ...{, OfThose, <func>} )
 ##
 InstallGlobalFunction( OneCharacterTableName, function( arg )
-    return CTblLibAccessFunction( arg, "one" );
+    return CTblLib.AccessFunction( arg, "one" );
+    end );
+
+
+#############################################################################
+##
+#F  NameOfEquivalentLibraryCharacterTable( <ordtbl> )
+#F  NamesOfEquivalentLibraryCharacterTables( <ordtbl> )
+##
+CTblLib.AccessNamesOfEquivalentLibraryCharacterTables:=
+    function( ordtbl, mode )
+    local conditions, init, result, name, trans;
+
+    # Test cheap attributes first.
+    conditions:= [ Size, Size( ordtbl ),
+                   NrConjugacyClasses, NrConjugacyClasses( ordtbl ) ];
+    init:= CTblLib.AccessFunction( conditions, "all" );
+#T admit excluding duplicates?
+
+    # Do the hard test.
+    result:= [];
+    for name in init do
+      trans:= TransformingPermutationsCharacterTables(
+                  CharacterTable( name ), ordtbl );
+      if trans <> fail then
+        if mode = "all" then
+          AddSet( result, name );
+        else
+          return name;
+        fi;
+      fi;
+    od;
+
+    # Return the result.
+    if mode = "all" then
+      return result;
+    else
+      return fail;
+    fi;
+    end;
+
+
+InstallGlobalFunction( NameOfEquivalentLibraryCharacterTable,
+    function( ordtbl )
+    if not IsOrdinaryTable( ordtbl ) then
+      Error( "usage: NameOfEquivalentLibraryCharacterTable( <ordtbl> )" );
+    fi;
+    return CTblLib.AccessNamesOfEquivalentLibraryCharacterTables( ordtbl,
+                       "one" );
+    end );
+
+
+InstallGlobalFunction( NamesOfEquivalentLibraryCharacterTables,
+    function( ordtbl )
+    if not IsOrdinaryTable( ordtbl ) then
+      Error( "usage: NameOfEquivalentLibraryCharacterTable( <ordtbl> )" );
+    fi;
+    return CTblLib.AccessNamesOfEquivalentLibraryCharacterTables( ordtbl,
+                       "all" );
     end );
 
 
@@ -2511,9 +2678,9 @@ end );
 
 #############################################################################
 ##
-#F  ConsiderFactorBlocks( <tbl> )
+#F  CTblLib.ConsiderFactorBlocks( <tbl> )
 ##
-##  (This is a utility for `CTblLibStringBrauer'.)
+##  (This is a utility for `CTblLib.StringBrauer'.)
 ##
 ##  Let <A>tbl</A> be the Brauer character table of a group <M>G</M>, say.
 ##  If the &GAP; Character Table Library contains the tables of factor groups
@@ -2523,9 +2690,9 @@ end );
 ##  in the library version of <A>tbl</A>,
 ##  and references to the factors are stored instead.
 ##  <P/>
-##  <Ref Func="ConsiderFactorBlocks"/> returns an empty record if no such
-##  replacement is possible because no table of a relevant factor group was
-##  found.
+##  <Ref Func="CTblLib.ConsiderFactorBlocks"/> returns an empty record
+##  if no such replacement is possible because no table of a relevant
+##  factor group was found.
 ##  If some factor fusion is missing or if the irreducibles of a factor table
 ##  are sorted incompatibly then a record with the component <C>error</C>
 ##  is returned, whose value is a string.
@@ -2545,7 +2712,7 @@ end );
 ##  divisible by <M>12</M>, and the ordering of characters in the tables of
 ##  the factor groups must coincide with the ordering for the table given.
 ##
-BindGlobal( "ConsiderFactorBlocks", function( tbl )
+CTblLib.ConsiderFactorBlocks:= function( tbl )
     local p, ordinary, factfus, classes, nsg, pos, mult, sizes, kernels, i,
           kernel, size, name, facttbl, map, modfacttbl,
           info,
@@ -2759,7 +2926,7 @@ BindGlobal( "ConsiderFactorBlocks", function( tbl )
     # Return the ``shrink'' information.
     return rec( offset := nonfaith,
                 info   := info );
-end );
+    end;
 
 
 #############################################################################
@@ -2864,9 +3031,9 @@ end );
 
 #############################################################################
 ##
-#F  CTblLibBasicSet( <decmat> )
+#F  CTblLib.BasicSet( <decmat> )
 ##
-BindGlobal( "CTblLibBasicSet", function( decmat )
+CTblLib.BasicSet:= function( decmat )
     local lic, other, k, comb, old, diff, new, bs;
 
     lic:= LinearIndependentColumns( TransposedMat( decmat ) );
@@ -2879,7 +3046,7 @@ BindGlobal( "CTblLibBasicSet", function( decmat )
     other:= Difference( [ 1 .. Length( decmat ) ], lic );
     for k in [ 1 .. Minimum( Length( lic ), Length( other ) ) ] do
       Info( InfoCharacterTable, 2,
-            "CTblLibBasicSet: exchange ", k, " members" );
+            "CTblLib.BasicSet: exchange ", k, " members" );
       comb:= Combinations( other, k );
       for old in Combinations( lic, k ) do
         diff:= Difference( lic, old );
@@ -2895,18 +3062,18 @@ BindGlobal( "CTblLibBasicSet", function( decmat )
     # There is no basic set that consists of ordinary irreducibles.
     Info( InfoWarning, 1, "no basic set of irreducibles found" );
     return fail;
-    end );
+    end;
 
 
 #############################################################################
 ##
-#F  CTblLibAppendSpecial( <stream>, <ncols>, <chars>, <used> )  
+#F  CTblLib.AppendSpecial( <stream>, <ncols>, <chars>, <used> )  
 ##
 ##  Special cases are `Irr( tbl )' and `ProjectivesInfo( tbl )' since
 ##  after the call of `ShrinkChars' they may
 ##  contain strings, which shall be printed without `"'
 ##
-BindGlobal( "CTblLibAppendSpecial", function( stream, ncols, chars, used )  
+CTblLib.AppendSpecial:= function( stream, ncols, chars, used )  
     local j;
 
     used:= BlanklessPrintTo( stream, "[", ncols, used, false );
@@ -2924,14 +3091,14 @@ BindGlobal( "CTblLibAppendSpecial", function( stream, ncols, chars, used )
       fi;
     od; 
     return BlanklessPrintTo( stream, "]", ncols, used, false );
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  CTblLibStringOfProjectivesInfo( <projinfo>, <name> )
+#F  CTblLib.StringOfProjectivesInfo( <projinfo>, <name> )
 ##
-BindGlobal( "CTblLibStringOfProjectivesInfo", function( projinfo, name )
+CTblLib.StringOfProjectivesInfo:= function( projinfo, name )
     local ncols, string, stream, used, j;
 
     ncols:= 78;
@@ -2946,7 +3113,7 @@ BindGlobal( "CTblLibStringOfProjectivesInfo", function( projinfo, name )
       used:= BlanklessPrintTo( stream,
                  Concatenation( "\"", j.name, "\"," ), ncols, used, false );
       EvalChars( j.chars );
-      used:= CTblLibAppendSpecial( stream, ncols, ShrinkChars( j.chars ), used );
+      used:= CTblLib.AppendSpecial( stream, ncols, ShrinkChars( j.chars ), used );
       used:= BlanklessPrintTo( stream, ",", ncols, used, false );
     od;
     BlanklessPrintTo( stream, "]);", ncols, used, false );
@@ -2955,16 +3122,16 @@ BindGlobal( "CTblLibStringOfProjectivesInfo", function( projinfo, name )
     # Return the string.
     CloseStream( stream );
     return string;
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  CTblLibStringOrdinary( <tbl> )
-#F  CTblLibStringBrauer( <tbl> )
+#F  CTblLib.StringOrdinary( <tbl> )
+#F  CTblLib.StringBrauer( <tbl> )
 #F  PrintToLib( <file>, <tbl> )
 ##
-BindGlobal( "CTblLibStringOrdinary", function( tbl )
+CTblLib.StringOrdinary:= function( tbl )
     local ncols,
           used,
           string,
@@ -2990,7 +3157,6 @@ BindGlobal( "CTblLibStringOrdinary", function( tbl )
     string:= "";
     stream:= OutputTextString( string, true );
     SetPrintFormattingStatus( stream, true );
-    primes:= Set( Factors( Size( tbl ) ) );
 
     name:= Identifier( tbl );
 
@@ -3008,7 +3174,7 @@ Error( "handling of Clifford tables not yet installed!" );
       fi;
     elif HasUnderlyingGroup( tbl ) then
       Irr( tbl );
-      for i in primes do
+      for i in Set( Factors( Size( tbl ) ) ) do
         PowerMap( tbl, i );
       od;
       AutomorphismsOfTable( tbl );
@@ -3039,6 +3205,7 @@ Error( "handling of Clifford tables not yet installed!" );
         Unbind( powermap[1] );
       fi;
       if HasIrr( tbl ) then
+        primes:= Set( Factors( Size( tbl ) ) );
         for i in [ 2 .. Length( powermap ) ] do
           if IsBound( powermap[i] ) and not i in primes then
             Unbind( powermap[i] );
@@ -3053,7 +3220,7 @@ Error( "handling of Clifford tables not yet installed!" );
     fi;
 
     if HasIrr( tbl ) then
-      used:= CTblLibAppendSpecial( stream, ncols, ShrinkChars( Irr( tbl ) ), 0 );
+      used:= CTblLib.AppendSpecial( stream, ncols, ShrinkChars( Irr( tbl ) ), 0 );
       BlanklessPrintTo( stream, ",", ncols, used, false );
       PrintTo( stream, "\n" );
     else
@@ -3109,12 +3276,12 @@ Error( "handling of Clifford tables not yet installed!" );
     # Shrink and print the projectives.
     if HasProjectivesInfo( tbl ) then
       PrintTo( stream,
-          CTblLibStringOfProjectivesInfo( ProjectivesInfo( tbl ), name ) );
+          CTblLib.StringOfProjectivesInfo( ProjectivesInfo( tbl ), name ) );
     fi;
 
     # Print remaining supported components of library tables.
     for fld in SupportedLibraryTableComponents do
-#T CTblLibStringOrdinary also for ``tables with group'' !!
+#T CTblLib.StringOrdinary also for ``tables with group'' !!
       if IsBound( tbl!.( fld ) ) then
         used:= BlanklessPrintTo( stream,
                    Concatenation( "ARC(\"", name, "\",\"", fld, "\"," ),
@@ -3194,8 +3361,14 @@ Error( "handling of Clifford tables not yet installed!" );
       PrintTo( stream, LibraryFusionTblToTom( tbl, FusionToTom( tbl ) ) );
     fi;
 
-    # Add the fusion assignments.
-    for fus in ComputedClassFusions( tbl ) do
+    # Add the fusion assignments
+    # (first the factor fusions, then the subgroup fusions).
+    for fus in Filtered( ComputedClassFusions( tbl ),
+                   r -> Length( ClassPositionsOfKernel( r.map ) ) > 1 ) do
+      PrintTo( stream, LibraryFusion( name, fus ) );
+    od;
+    for fus in Filtered( ComputedClassFusions( tbl ),
+                   r -> Length( ClassPositionsOfKernel( r.map ) ) = 1 ) do
       PrintTo( stream, LibraryFusion( name, fus ) );
     od;
 
@@ -3228,9 +3401,9 @@ Error( "handling of Clifford tables not yet installed!" );
     # Return the string.
     CloseStream( stream );
     return string;
-end );
+    end;
 
-BindGlobal( "CTblLibStringBrauer", function( tbl )
+CTblLib.StringBrauer:= function( tbl )
     local ordtbl,
           ordname,
           prime,
@@ -3263,7 +3436,7 @@ BindGlobal( "CTblLibStringBrauer", function( tbl )
 
     # Check whether tables of factors groups are available
     # that allow one to omit some of the blocks.
-    factorblocks:= ConsiderFactorBlocks( tbl );
+    factorblocks:= CTblLib.ConsiderFactorBlocks( tbl );
 
     # `block' component (position 4)
     block:= InverseMap( List( info, r -> r.modchars ) );
@@ -3306,7 +3479,7 @@ BindGlobal( "CTblLibStringBrauer", function( tbl )
           decinv[i]:= info[i].decinv;
         else
           decmat:= DecompositionMatrix( tbl, i + offset );
-          lic:= CTblLibBasicSet( decmat );
+          lic:= CTblLib.BasicSet( decmat );
           basicset[i]:= info[i].ordchars{ lic };
           decinv[i]:= Inverse( decmat{ lic } );
         fi;
@@ -3370,7 +3543,7 @@ BindGlobal( "CTblLibStringBrauer", function( tbl )
     # Close the stream.
     CloseStream( stream );
     return string;
-end );
+    end;
 
 InstallGlobalFunction( PrintToLib, function( file, tbl )
     local suffix, pos, string, oldsize;
@@ -3392,13 +3565,11 @@ InstallGlobalFunction( PrintToLib, function( file, tbl )
       suffix:= suffix{ [ pos+1 .. Length( suffix ) ] };
       pos:= Position( suffix, '/' );
     od;
-    string:= Concatenation( "SET_TABLEFILENAME(\"",
-                 suffix{ [ 1 .. Length( suffix )-4 ] }, "\");\n" );
 
     if IsOrdinaryTable( tbl ) then
-      Append( string, CTblLibStringOrdinary( tbl ) );
+      string:= CTblLib.StringOrdinary( tbl );
     elif IsBrauerTable( tbl ) then
-      Append( string, CTblLibStringBrauer( tbl ) );
+      string:= CTblLib.StringBrauer( tbl );
     fi;
 
     oldsize:= SizeScreen();
@@ -3408,7 +3579,7 @@ InstallGlobalFunction( PrintToLib, function( file, tbl )
 end );
 
 
-#T ################################################################################
+#T #############################################################################
 #T ##
 #T #F  PrintClmsToLib( <file>, <clms> )
 #T ##
@@ -3497,20 +3668,17 @@ end );
 #F  OrbitsResidueClass( <pq>, <set> )
 ##
 InstallGlobalFunction( OrbitsResidueClass, function( pq, set )
-    local gen,
-          orbs,
-          pnt,
-          orb,
-          i;
+    local gen, orbs, pnt, orb, i;
 
-    # If `pq' is a pair `[ <p>, <q> ]' then take a residue class mod <p>
-    # of order <q>.
-    # If `pq' is a triple `[ <p>, <q>, <k> ]' then take the orbits of the
-    # automorphism $\ast <k>$ modulo <p>, which is assumed to have order <q>.
     if Length( pq ) = 2 then
+      # `pq' is a pair `[ <p>, <q> ]' where <p> is an odd prime power;
+      # take a residue class mod <p> of order <q>.
       gen:= PowerModInt( PrimitiveRootMod( pq[1] ), Phi( pq[1] ) / pq[2],
                 pq[1] );
     else
+      # We know that <k> has order <q> modulo <p>.
+      # `pq' is a triple `[ <p>, <q>, <k> ]' where <k> has order <q> modulo
+      # <p> and acts semiregularly on the nonidentity residue classes mod <p>.
       gen:= pq[3];
     fi;
 
@@ -3529,18 +3697,16 @@ InstallGlobalFunction( OrbitsResidueClass, function( pq, set )
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  GroupInfoForCharacterTable( <tbl> )
 ##
 InstallMethod( GroupInfoForCharacterTable,
-    "for an ordinary library character table",
-    [ IsOrdinaryTable and IsLibraryCharacterTableRep ],
+    [ "IsOrdinaryTable and IsLibraryCharacterTableRep" ],
     tbl -> GroupInfoForCharacterTable( Identifier( tbl ) ) );
 
 InstallOtherMethod( GroupInfoForCharacterTable,
-    "for the identifier of an ordinary library character table",
-    [ IsString ],
+    [ "IsString" ],
     function( id )
     local result, data, name, attr;
 
@@ -3548,23 +3714,24 @@ InstallOtherMethod( GroupInfoForCharacterTable,
 
     if IsBoundGlobal( "CTblLibData" ) then
       data:= ValueGlobal( "CTblLibData" );
-      for name in RecNames( data.IdEnumerator.attributes ) do
+      for name in data.attributesRelevantForGroupInfoForCharacterTable do
         attr:= data.IdEnumerator.attributes.( name );
-        if attr.identifier in
-             data.attributesRelevantForGroupInfoForCharacterTable then
-          Append( result, attr.attributeValue( attr, id ) );
-        fi;
+        Append( result, attr.attributeValue( attr, id ) );
       od;
     else
       Info( InfoWarning, 1,
             "GroupInfoForCharacterTable: CTblLibData is not bound" );
     fi;
 
+    # If the character table is (stored as) a direct product and if
+    # a group is known for all factors that occur then return a value.
+#T problem with argument a string!
+#T how to call the function:  DirectProductX ???
     return SortedList( result );
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  CharacterTableForGroupInfo( <info> )
 ##
@@ -3601,7 +3768,271 @@ InstallGlobalFunction( CharacterTableForGroupInfo, function( info )
     end );
 
 
-##############################################################################
+#############################################################################
+##
+#F  GroupForGroupInfo( <info> )
+##  
+InstallGlobalFunction( GroupForGroupInfo, function( info )
+    local func;
+
+    if not ( IsList( info ) and Length( info ) = 2 and IsString( info[1] )
+                            and IsList( info[2] ) ) then
+      return fail;
+    fi;
+    if not IsBoundGlobal( info[1] ) then
+      return fail;
+    fi;
+
+    func:= ValueGlobal( info[1] );
+    if not IsFunction( func ) then
+      return fail;
+    fi;
+
+    return CallFuncList( func, info[2] );
+    end );
+
+
+#############################################################################
+##
+#F  GroupForTom( <tomidentifier>[, <repnr>] )
+##
+InstallGlobalFunction( GroupForTom, function( arg )
+    local tom;
+
+    if   Length( arg ) = 1 and IsString( arg[1] ) then
+      tom:= TableOfMarks( arg[1] );
+      if tom <> fail and HasUnderlyingGroup( tom ) then
+        return UnderlyingGroup( tom );
+      fi;
+    elif Length( arg ) = 2 and IsString( arg[1] ) and IsPosInt( arg[2] ) then
+      tom:= TableOfMarks( arg[1] );
+      if tom <> fail and IsTableOfMarksWithGens( tom ) then
+        return RepresentativeTom( tom, arg[2] );
+      fi;
+    fi;
+
+    return fail;
+    end );
+
+
+#############################################################################
+##
+#V  LIBTABLE.NameReplacements
+##
+LIBTABLE.NameReplacements:= TransposedMat( [
+   [ "(2^2x3).U6(2)M3", "2^10:6.L3(4)" ],
+   [ "(2x3^3).S4`", "(2x3^3).S4" ],
+   [ "(3^2:4xa6).2", "(3^2:4xA6).2" ],
+   [ "(a4xpsl(3,4)):2", "(A4xL3(4)):2_1" ],
+   [ "(A6xA4).2", "(A6xA4):2" ],
+   [ "(a6xa5).2", "(A6xA5).2" ],
+   [ "(A7x3).2", "(A7x3):2" ],
+   [ "(A8x3).2", "(A8x3):2" ],
+   [ "11^(1+2)+:40", "11^(1+2)_+:40" ],
+   [ "12.M22M2", "2.2^5:3A6" ],
+   [ "12.M22M7", "(4x3.A6).2_3" ],
+   [ "2.2^8.f20", "2.[2^8]:5:4" ],
+   [ "2.2^4+6:S5", "2.2^(4+6):S5" ],
+   [ "2.Fi22M5", "2^11.M22" ],
+   [ "2.HS.2N5", "5^(1+2)_+:[2^6]" ],
+   [ "2.HSM10", "2.4.2^4.S5" ],
+   [ "2.HSM11", "2.(2xA6.2^2)" ],
+   [ "2.J2M8", "2.(5^2:D12)" ],
+   [ "2.M12M8", "4Y(2xA5):2" ],
+   [ "2.M12M9", "(2xQ8).S4" ],
+   [ "2.M12M10", "2.(4^2:D12)" ],
+   [ "2.M22M2", "2^5:A6" ],
+   [ "2.M22M5", "2^5:S5" ],
+   [ "2.O7(3)M9", "2.3^(1+6)_+.(2A4xA4).2" ],
+   [ "2.RuM1", "(2x2F4(2)').2" ],
+   [ "2.Symm(4)", "2.S4" ],
+   [ "2.SuzM4", "2.2^(1+6)_-.U4(2)" ],
+   [ "2.SuzM7", "(2.2^4.2^6):3A6" ],
+   [ "2.SuzM9", "2.(2^(2+8):(A5xS3))" ],
+   [ "2.SuzM11", "2.(3^(2+4):2(A4x2^2).2)" ],
+   [ "2.U6(2)M3", "2^10:L3(4)" ],
+   [ "2xa6.2^2", "2xA6.2^2" ],
+   [ "2xm12","2xM12" ],
+   [ "2xSymm(4)", "2xS4" ],
+   [ "2^(1+8)+:L2(8)", "2^(1+8)_+:L2(8)" ],
+   [ "2^1+24.Co1", "2^(1+24).Co1" ],
+   [ "2^1+4+6.a8", "(2^(1+6)_+x2^4).A8" ],
+   [ "2^1+4b:a5", "2^(1+4)_-:A5" ],
+   [ "2^1+6.psl(3,2)", "2^(1+6)_+.L3(2)" ],
+   [ "2^1+6.u4q2", "2^(1+6)_-.U4(2)" ],
+   [ "2^1+8.a9", "2^(1+8)_+.A9" ],
+   [ "2^1+8:s6f2", "2^(1+8)_+:S6(2)" ],
+   [ "M24C2B", "2^2.2^4.S5" ],
+   [ "2^2.U6(2)M3", "2^10:2.L3(4)" ],
+   [ "2^2+8(a5xs3)", "2^(2+8):(A5xS3)" ],
+   [ "2^10:m22", "2^10:M22" ],
+   [ "2^10:m22:2", "2^10:M22:2" ],
+   [ "2^2+4.3xs3", "2^(2+4):(3xS3)" ],
+   [ "2^2.(2^7.3^2).s3", "2^2.[2^7.3^2].S3" ],
+   [ "2^2.2^8:s3", "2^2.[2^8]:S3" ],
+   [ "2^2.psl(3,4).s3", "2^2.L3(4).S3" ],
+   [ "2^3:sl(3,2)", "2^3:L3(2)" ],
+   [ "2^3.7.3", "2^3:7:3" ],
+   [ "2^4+6:3a6", "2^(4+6):3A6" ],
+   [ "2^4:(3xA5).2", "2^4:(3xA5):2" ],
+   [ "2^4:a6", "2^4:A6" ],
+   [ "2^4:a7", "2^4:A7" ],
+   [ "2^4.a8", "2^4.A8" ],
+   [ "2^4:a8", "2^4:A8" ],
+   [ "2^4:s5","2^4:S5" ],
+   [ "2^4.s6", "2^4.S6" ],
+   [ "2^5.psl(5,2)", "2^5.L5(2)" ],
+   [ "2^6:3.s6", "2^6:3.S6" ],
+   [ "2^6:u3(3):2", "(2^6:U3(3)):2" ],
+   [ "2^6:(psl(3,2)xs3)", "2^6:(L3(2)xS3)" ],
+   [ "2^6:s6f2", "2^6:S6(2)" ],
+   [ "2..11.m23", "2^11.M23" ],
+   [ "3^(1+4):2S5", "3^(1+4)_+:2S5" ],
+   [ "3^(1+4).2U4(2)", "3^(1+4)_+.2U4(2)" ],
+   [ "3^1+4:2^1+4.s5", "3^(1+4)_+:2^(1+4)_-.S5" ],
+   [ "3^1+4:4s6", "3^(1+4)_+:4S6" ],
+   [ "3^2+4:2(2^2xa4)2", "3^(2+4):2(A4x2^2).2" ],
+   [ "3^2.3^(1+2):8", "3^2.3^(1+2)_+:8" ],
+   [ "3^3:S4`", "3^3:S4" ],
+   [ "3^4:2^3.S4(a)", "3^4:2^3.S4" ],
+   [ "3^4:m10", "3^4:M10" ],
+   [ "3^5:(2xm11)", "3^5:(2xM11)" ],
+   [ "3x2.M22M5", "3x2^5:S5" ],
+   [ "3x2.SuzM4", "3x2.2^(1+6)_-.U4(2)" ],
+   [ "3x2.SuzM7", "3x(2.2^4.2^6):3A6" ],
+   [ "3x2.SuzM9", "3x2.(2^(2+8):(A5xS3))" ],
+   [ "3x2.Symm(4)", "3x2.S4" ],
+   [ "3xSymm(4)", "3xS4" ],
+   [ "3x2^4:s5", "3x2^4:S5" ],
+   [ "3x4.M22M5", "3x2.(2^5:S5)" ],
+   [ "3x4.M22M6", "3x2.(2x2^3:L3(2))" ],
+   [ "3.3^4:m10", "3.3^4:M10" ],
+   [ "3.2^4:a7", "3.2^4:A7" ],
+   [ "3.O7(3)M9", "3.3^(1+6)_+.(2A4xA4).2" ],
+   [ "3.ON.2M4", "3.(3^2:4xA6).2^2" ],
+   [ "3.s7x2", "3.S7x2" ],
+   [ "3.Fi22M5", "2^10:3M22" ],
+   [ "3.M22M2", "2^4:3A6" ],
+   [ "3.ONM5", "3.(3^2:4xA6).2" ],
+   [ "3.ONM6", "3^(1+4)_+:2^(1+4)_-D10" ],
+   [ "3.U6(2)M3", "2^9:3.L3(4)" ],
+   [ "4.M22M2", "2.2^5:A6" ],
+   [ "4.M22M5", "2.(2^5:S5)" ],
+   [ "4.M22M6", "2.(2x2^3:L3(2))" ],
+   [ "4^2:s3", "4^2:S3" ],
+   [ "4^3:psl(3,2)", "4^3:L3(2)" ],
+   [ "5^(1+2):(8.2)", "5^(1+2)_+:8:2" ],
+   [ "5^(1+2):3:8", "5^(1+2)_+:3:8" ],
+   [ "5^(1+2)+:4A5", "5^(1+2)_+:4A5" ],
+   [ "5^(1+4):GL(2,5)", "5^(1+4)_+:GL(2,5)" ],
+   [ "5^2:4s5", "5^2:4S5" ],
+   [ "5^3.psl(3,5)", "5^3.L3(5)" ],
+   [ "5:4xa5", "5:4xA5" ],
+   [ "6.A6M3", "3^(1+2)_+:8" ],
+   [ "6.Fi22M5", "2^11.3M22" ],
+   [ "6.M22M2", "2^5:3A6" ],
+   [ "6.M22M7", "(2x3.A6).2_3" ],
+   [ "6.O7(3)M9", "6.3^(1+6)_+.(2A4xA4).2" ],
+   [ "6.SuzM11", "6.(3^(2+4):2(A4x2^2).2)" ],
+   [ "6.SuzM8", "2.(A4x3.L3(4)).2" ],
+   [ "6.U6(2)M3", "2^10:3.L3(4)" ],
+   [ "7^2:2psl(2,7)", "7^2:2L2(7)" ],
+   [ "7:3xpsl(3,2)", "7:3xL3(2)" ],
+   [ "a4", "A4" ],
+   [ "a4xa5", "A4xA5" ],
+   [ "a4xs5", "A4xS5" ],
+   [ "a5wc2", "(A5xA5):2" ],
+   [ "a5xd10", "A5xD10" ],
+   [ "A5.2", "S5" ],
+   [ "A6.2_1", "S6" ],
+   [ "A7.2", "S7" ],
+   [ "A8.2", "S8" ],
+   [ "A9.2", "S9" ],
+   [ "A10.2", "S10" ],
+   [ "A11.2", "S11" ],
+   [ "A12.2", "S12" ],
+   [ "b33141", "2.(A4xA4).2" ],
+   [ "bd10", "2.D10" ],
+   [ "c2aj4", "2^(1+12)_+.3M22.2" ],
+   [ "F3+M7", "2^11.M24" ],
+   [ "Fi22.2M4", "2^10:M22:2" ],
+   [ "Fi22N5", "5^2:4S4" ],
+   [ "Fi23M8", "3^3.[3^7].(2xL3(3))" ],
+   [ "frob", "29:28" ],
+   [ "h4", "2.(A5xA5).2" ],
+   [ "HN.2M13", "3^(1+4)_+:4S5" ],
+   [ "HS.2N5", "5^(1+2)_+:[2^5]" ],
+   [ "j3m4", "2^4:(3xA5)" ],
+   [ "j3m6", "(3xA6):2_2" ],
+   [ "J4M4", "2^(3+12).(S5xL3(2))" ],
+   [ "LyM6", "3^5:(2xM11)" ],
+   [ "M22.2M3", "2^4:S6" ],
+   [ "M22.2M4", "2^5:S5" ],
+   [ "mo61", "(S4xS4):2" ],
+   [ "mo62", "2^4:S5" ],
+   [ "mx1j4", "2^11:M24" ],
+   [ "O7(3)N3A", "3^(1+6)_+:(2A4xA4).2" ],
+   [ "O8+(3)M14", "3^(1+8)_+:2(A4xA4xA4).2" ],
+   [ "O8+(3)M27", "2((A4wr2^2):2)" ],
+   [ "ONM5", "(3^2:4xA6).2" ],
+   [ "P1/G1/L1/V1/ext2", "2^4:A5" ],
+   [ "P1/G2/L1/V1/ext2", "2^5:A5" ],
+   [ "P1/G3/L2/V1/ext2", "2^6.A5" ],
+   [ "P31/G1/L1/V1/ext2", "2^7.A8" ],
+   [ "s2wrs3", "S4x2" ],
+   [ "s2wrs4", "2^4:S4" ],
+   [ "s2wrs5", "2^5:S5" ],
+   [ "s3wrs2", "3^2:D8" ],
+   [ "s3xpsl(2,8).3", "S3xL2(8).3" ],
+   [ "s3wrs3", "3^3:(S4x2)" ],
+   [ "s4", "S4" ],
+   [ "s4xpsl(3,2)", "S4xL3(2)" ],
+   [ "s5wrs2", "(S5xS5):2" ],
+   [ "S8(2)M3", "2^7:S6(2)" ],
+   [ "Symm(4)", "S4" ],
+   [ "ThN3B", "[3^9].2S4" ],
+   [ "ThM7", "3^2.[3^7].2S4" ],
+   [ "twd5a", "2.(2^4:S5)" ],
+   [ "w(f4)", "W(F4)" ],
+  ] );;
+
+
+#############################################################################
+##
+#F  StructureDescriptionCharacterTableName( <name> )
+##
+InstallGlobalFunction( StructureDescriptionCharacterTableName,
+    function( name )
+    local parts, tbl, pos;
+
+    parts:= PParseBackwards( name, [ IsChar, "M", IsDigitChar ] );
+    if parts <> fail then
+      # If the table has a `ConstructPermuted' description then
+      # replace the name.
+      tbl:= CharacterTable( name );
+      if HasConstructionInfoCharacterTable( tbl ) and
+         IsList( ConstructionInfoCharacterTable( tbl ) ) and
+         ConstructionInfoCharacterTable( tbl )[1] = "ConstructPermuted" and
+         Length( ConstructionInfoCharacterTable( tbl )[2] ) = 1 then
+        name:= ConstructionInfoCharacterTable( tbl )[2][1];
+      fi;
+    fi;
+
+    # Replace {} by ().
+    name:= ReplacedString( name, "{", "(" );
+    name:= ReplacedString( name, "}", ")" );
+
+    # Replace individual values.
+    pos:= Position( LIBTABLE.NameReplacements[1], name );
+    if pos <> fail then
+      name:= LIBTABLE.NameReplacements[2][ pos ];
+    fi;
+
+    return name;
+    end );
+
+
+#############################################################################
 ##
 #F  GaloisPartnersOfIrreducibles( <tbl>, <characters>, <n> )
 ##
@@ -3662,8 +4093,8 @@ InstallGlobalFunction( GaloisPartnersOfIrreducibles,
         fi;
         NN:= N / ( 2part * 3part );
 
-        # The automorphism $\ast k^\prime$ that carries to the
-        # partner in the cohort given by $\ast k$
+        # The automorphism $*k^\prime$ that carries to the
+        # partner in the cohort given by $*k$
         # is determined by the conditions that
         # $k^\prime \equiv k \pmod{n}$,
         # $k^\prime \equiv 1$ modulo each divisor of $N$ coprime to $n$,
@@ -3726,7 +4157,7 @@ InstallGlobalFunction( GaloisPartnersOfIrreducibles,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  AtlasLabelsOfIrreducibles( <tbl>[, <short>] )
 ##
@@ -4049,7 +4480,7 @@ InstallGlobalFunction( AtlasLabelsOfIrreducibles, function( arg )
 
       # Start with the labels for `der'.
       # They are of the form `i' (for $\chi_i$)
-      # or `[ i, j ]' (for $\chi_i^{\ast j}$).
+      # or `[ i, j ]' (for $\chi_i^{*j}$).
       derlabels:= labels;
       labels:= [];
 
@@ -4090,11 +4521,11 @@ InstallGlobalFunction( AtlasLabelsOfIrreducibles, function( arg )
       # Let `outprime' be the $p^\prime$ part of `out'.
       # The following labels occur.
       # - If $n = 1$ then the labels are of the form
-      #   $\chi_{i,k}$ and $\chi_{i,k}^{\ast j}$, respectively,
+      #   $\chi_{i,k}$ and $\chi_{i,k}^{*j}$, respectively,
       #   where $0 \leq k < `outprime'$.
       # - If $n$ equals `out' then the labels are of the form
       #   $\chi_{i1+i2+...+iout}$ or
-      #   $\chi_{i1\ast j1 + i2\ast j2 +...+ iout\ast jout}$ .
+      #   $\chi_{i1* j1 + i2* j2 +...+ iout* jout}$ .
       # - In all other cases, `outprime' is either $4$ or $6$,
       #   and we need the intermediate tables.
 
@@ -4331,36 +4762,7 @@ end );
 
 #############################################################################
 ##
-#F  FirstNameCharTable( <tblname> )
-#F  FileNameCharTable( <tblname> )
-##
-##  Add some harmless functions of the {\GAP}~3 compatibility mode
-##  that are related to the character table library.
-##
-BindGlobal( "FirstNameCharTable",
-    function( name )
-    name:= LibInfoCharacterTable( name );
-    if name = fail then
-      return false;
-    else
-      return name.firstName;
-    fi;
-    end );
-
-BindGlobal( "FileNameCharTable",
-    function( name )
-    name:= LibInfoCharacterTable( name );
-    if name = fail then
-      return false;
-    else
-      return name.fileName;
-    fi;
-    end );
-
-
-#############################################################################
-##
-##  The rest of this file contains the interface between the {\GAP} libraries
+##  The rest of this file contains the interface between the GAP libraries
 ##  of character tables and of tables of marks.
 ##
 ##  The interface consists of methods for the operations `CharacterTable' and
@@ -4373,9 +4775,10 @@ BindGlobal( "FileNameCharTable",
 ##  and if no group is available from which this information can be computed
 ##  then `fail' returned.
 ##
-##  The availability of the required information is looked up in the global
-##  variable `TOM_TBL_INFO'.
-##  (If not both libraries are installed then `TOM_TBL_INFO' is trivial,
+##  The availability of the required information is looked up in
+##  `LIBLIST.TOM_TBL_INFO'.
+##  (If not both libraries are installed then the entries in
+##  `LIBLIST.TOM_TBL_INFO' are trivial,
 ##  hence the methods mentioned above become trivial.)
 ##
 
@@ -4384,14 +4787,44 @@ BindGlobal( "FileNameCharTable",
 ##
 #M  FusionCharTableTom( <tbl>, <tom> )  . . . . . . . . . . .  element fusion
 ##
+##  <#GAPDoc Label="FusionCharTableTom">
+##  <ManSection>
+##  <Meth Name="FusionCharTableTom" Arg="tbl, tom"/>
+##
+##  <Description>
+##  Let <A>tbl</A> be an ordinary character table from the
+##  &GAP; Character Table Library
+##  with the attribute <Ref Attr="FusionToTom"/>,
+##  and let <A>tom</A> be the table of marks from the &GAP; package
+##  <Package>TomLib</Package> that corresponds to <A>tbl</A>.
+##  In this case,
+##  a method for <Ref Oper="FusionCharTableTom" BookName="ref"/>
+##  is available that returns the fusion from <A>tbl</A> to <A>tom</A> that
+##  is given by the <Ref Attr="FusionToTom"/> value of <A>tbl</A>.
+##  <P/>
+##  <Example>
+##  gap> tbl:= CharacterTable( "A5" );
+##  CharacterTable( "A5" )
+##  gap> tom:= TableOfMarks( "A5" );
+##  TableOfMarks( "A5" )
+##  gap> FusionCharTableTom( tbl, tom );
+##  [ 1, 2, 3, 5, 5 ]
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 InstallMethod( FusionCharTableTom,
-    "for library character table and library table of marks",
-    [ IsOrdinaryTable and IsLibraryCharacterTableRep and HasFusionToTom,
-      IsTableOfMarks and IsLibTomRep ],
+    [ "IsOrdinaryTable and IsLibraryCharacterTableRep and HasFusionToTom",
+      "IsTableOfMarks and IsLibTomRep" ],
     function( tbl, tom )
     local fus;
 
-    fus:= FusionToTom( tbl ).map;
+    fus:= FusionToTom( tbl );
+    if fus.name <> Identifier( tom ) then
+      TryNextMethod();
+    fi;
+    fus:= fus.map;
     if HasPermutationTom( tom ) then
       fus:= OnTuples( fus, PermutationTom( tom ) );
     fi;
@@ -4414,14 +4847,12 @@ InstallMethod( FusionCharTableTom,
 ##  known ordinary character table.
 ##
 InstallOtherMethod( TableOfMarks,
-    "for a character table with underlying group",
-    [ IsCharacterTable and HasUnderlyingGroup ],
+    [ "IsCharacterTable and HasUnderlyingGroup" ],
     tbl -> TableOfMarks( UnderlyingGroup( tbl ) ) );
 
 
 InstallOtherMethod( TableOfMarks,
-    "for a group with known ordinary character table",
-    [ IsGroup and HasOrdinaryCharacterTable ], 100,
+    [ "IsGroup and HasOrdinaryCharacterTable" ], 100,
 #T ?
     function( G )
     local tbl;
@@ -4438,20 +4869,40 @@ InstallOtherMethod( TableOfMarks,
 ##
 #M  TableOfMarks( <tbl> ) . . . . . . . . . . . for a library character table
 ##
-##  If <tbl> is a library character table then we check whether there is a
-##  corresponding table of marks in the library.
-##  If there is no such table of marks but <tbl> knows a group then we
-##  delegate to this group.
-##  Otherwise we return `fail'.
+##  <#GAPDoc Label="TableOfMarks">
+##  <ManSection>
+##  <Meth Name="TableOfMarks" Arg="tbl"/>
+##
+##  <Description>
+##  Let <A>tbl</A> be an ordinary character table from the
+##  &GAP; Character Table Library,
+##  for the group <M>G</M>, say.
+##  If the <Package>TomLib</Package> package is loaded and contains the
+##  table of marks of <M>G</M> then there is a method based on
+##  <Ref Oper="TableOfMarks" Label="for a string" BookName="ref"/>
+##  that returns this table of marks.
+##  If there is no such table of marks but <A>tbl</A> knows its underlying
+##  group then this method delegates to the group.
+##  Otherwise <K>fail</K> is returned.
+##  <P/>
+##  <Example>
+##  gap> TableOfMarks( CharacterTable( "A5" ) );
+##  TableOfMarks( "A5" )
+##  gap> TableOfMarks( CharacterTable( "M" ) );
+##  fail
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 InstallOtherMethod( TableOfMarks,
-    "for a library character table",
-    [ IsOrdinaryTable and IsLibraryCharacterTableRep ],
+    [ "IsOrdinaryTable and IsLibraryCharacterTableRep" ],
     function( tbl )
     local pos;
-    pos:= Position( TOM_TBL_INFO[2], LowercaseString( Identifier( tbl ) ) );
+    pos:= Position( LIBLIST.TOM_TBL_INFO[2],
+                    LowercaseString( Identifier( tbl ) ) );
     if pos <> fail then
-      return TableOfMarks( TOM_TBL_INFO[1][ pos ] );
+      return TableOfMarks( LIBLIST.TOM_TBL_INFO[1][ pos ] );
     elif HasUnderlyingGroup( tbl ) then
       TryNextMethod();
     fi;
@@ -4467,8 +4918,7 @@ InstallOtherMethod( TableOfMarks,
 ##  known table table of marks.
 ##
 InstallOtherMethod( CharacterTable,
-    "for a group with known table of marks",
-    [ IsGroup and HasTableOfMarks ], 100,
+    [ "IsGroup and HasTableOfMarks" ], 100,
 #T ?
     function( G )
     local tom;
@@ -4491,20 +4941,45 @@ InstallOtherMethod( CharacterTable,
 ##  then we delegate to this group.
 ##  Otherwise we return `fail'.
 ##
+##  <#GAPDoc Label="CharacterTable_for_tom">
+##  <ManSection>
+##  <Meth Name="CharacterTable" Arg="tom" Label="for a table of marks"/>
+##
+##  <Description>
+##  For a table of marks <A>tom</A>, this method for
+##  <Ref Oper="CharacterTable" Label="for a group" BookName="ref"/>
+##  returns the character table corresponding to <A>tom</A>.
+##  <P/>
+##  If <A>tom</A> comes from the <Package>TomLib</Package>
+##  package, the character table comes from the
+##  &GAP; Character Table Library.
+##  Otherwise, if <A>tom</A> stores an
+##  <Ref Func="UnderlyingGroup" BookName="ref"/> value then
+##  the task is delegated to a
+##  <Ref Oper="CharacterTable" Label="for a group" BookName="ref"/> method
+##  for this group,
+##  and if no underlying group is available then <K>fail</K> is returned.
+##  <P/>
+##  <Example>
+##  gap> CharacterTable( TableOfMarks( "A5" ) );
+##  CharacterTable( "A5" )
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 InstallOtherMethod( CharacterTable,
-    "for a table of marks",
-    [ IsTableOfMarks ],
+    [ "IsTableOfMarks" ],
     function( tom )
     local pos;
 
     if IsLibTomRep( tom ) then
-      pos:= Position( TOM_TBL_INFO[1],
+      pos:= Position( LIBLIST.TOM_TBL_INFO[1],
                       LowercaseString( Identifier( tom ) ) );
       if pos <> fail then
-        return CharacterTable( TOM_TBL_INFO[2][ pos ] );
+        return CharacterTable( LIBLIST.TOM_TBL_INFO[2][ pos ] );
       fi;
-    fi;
-    if HasUnderlyingGroup( tom ) then
+    elif HasUnderlyingGroup( tom ) then
       return CharacterTable( UnderlyingGroup( tom ) );
     fi;
     return fail;
@@ -4518,9 +4993,9 @@ InstallOtherMethod( CharacterTable,
 InstallGlobalFunction( NameOfLibraryCharacterTable, function( tomname )
     local pos;
 
-    pos:= Position( TOM_TBL_INFO[1], LowercaseString( tomname ) );
+    pos:= Position( LIBLIST.TOM_TBL_INFO[1], LowercaseString( tomname ) );
     if pos <> fail then
-      pos:= LibInfoCharacterTable( TOM_TBL_INFO[2][ pos ] );
+      pos:= LibInfoCharacterTable( LIBLIST.TOM_TBL_INFO[2][ pos ] );
       if IsRecord( pos ) then
         return pos.firstName;
       fi;

@@ -2,7 +2,6 @@
 **
 *W  precord.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: precord.c,v 4.54 2011/05/23 10:58:40 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -30,8 +29,6 @@
 #include        <sys/time.h>            /* for gettimeofday() */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_precord_c =
-   "@(#)$Id: precord.c,v 4.54 2011/05/23 10:58:40 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -575,8 +572,8 @@ void PrintPRec (
 */
 static int PrecComparer(const void *a, const void *b)
 {
-    UInt *aa = (UInt *) a;
-    UInt *bb = (UInt *) b;
+    const UInt *aa = (const UInt *) a;
+    const UInt *bb = (const UInt *) b;
     if (*aa < *bb) return -1;
     else if (*aa == *bb) return 0;
     else return 1;
@@ -728,7 +725,7 @@ void SortPRec ( Obj rec )
 **  Otherwise it return 0.
 */
 UInt OperationsRNam;                    /* 'operations' record name        */
-UInt COMPONENTSRNam;		        /* COMPONENTS record name          */
+UInt COMPONENTSRNam;                    /* COMPONENTS record name          */
 
 Obj MethodPRec (
     Obj                 rec,
@@ -751,11 +748,11 @@ Obj MethodPRec (
     /* check for an Operations Record object */
     if ( TNUM_OBJ(opers) == T_COMOBJ)
       {
-	/* Make use of the fact the Component objects look like Precs */
+        /* Make use of the fact the Component objects look like Precs */
         if ( !FindPRec(opers,COMPONENTSRNam,&i,1) ) {
-	  return 0;
-	}
-	opers = GET_ELM_PREC( opers, i );
+          return 0;
+        }
+        opers = GET_ELM_PREC( opers, i );
       }
 
 
@@ -1241,8 +1238,8 @@ Obj FuncLT_PREC_DEFAULT (
         if ( LEN_PREC(left) < i )  return True;
 
         /* compare the names                                               */
-	/* The sense of this comparison is determined by the rule that
-	   unbound entries compare less than bound ones                    */
+        /* The sense of this comparison is determined by the rule that
+           unbound entries compare less than bound ones                    */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
             if ( SyStrcmp( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
                    NAME_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) ) > 0 ) {
@@ -1600,8 +1597,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPRecord ( void )
 {
-    module.revision_c = Revision_precord_c;
-    module.revision_h = Revision_precord_h;
     FillInVersion( &module );
     return &module;
 }

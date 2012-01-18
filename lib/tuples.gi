@@ -2,7 +2,6 @@
 ##
 #W  tuples.gi                   GAP library                      Steve Linton
 ##
-#H  @(#)$Id: tuples.gi,v 4.34 2010/05/19 14:43:21 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file declares the operations for direct product elements.
 ##
-Revision.tuples_gi :=
-  "@(#)$Id: tuples.gi,v 4.34 2010/05/19 14:43:21 gap Exp $";
 
 
 #############################################################################

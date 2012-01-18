@@ -2,7 +2,7 @@
 ##
 #W  ctomaxi9.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomaxi9.tbl,v 4.21 2010/12/01 17:47:57 gap Exp $
+#H  @(#)$Id: ctomaxi9.tbl,v 4.22 2011/09/28 14:32:22 gap Exp $
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,6 +13,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomaxi9.tbl,v $
+#H  Revision 4.22  2011/09/28 14:32:22  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.21  2010/12/01 17:47:57  gap
 #H  renamed "Sym(4)" to "Symm(4)";
 #H  note that the table constructed with `CharacterTable( "Symmetric", 4 )'
@@ -206,11 +210,6 @@
 #H      TB
 #H  ==========================================================================
 ##
-Revision.ctomaxi9_tbl :=
-    "@(#)$Id: ctomaxi9.tbl,v 4.21 2010/12/01 17:47:57 gap Exp $";
-
-SET_TABLEFILENAME("ctomaxi9");
-ALN:= Ignore;
 
 MOT("O8+(3)M14",
 [
@@ -2868,7 +2867,6 @@ ALF("2^8.A9","A9",[1,1,1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,4,4,5,
 18]);
 
 LIBTABLE.LOADSTATUS.ctomaxi9:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

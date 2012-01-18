@@ -2,7 +2,6 @@
 **
 *W  read.c                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: read.c,v 4.85 2011/06/06 16:28:08 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 #include        <string.h>              /* memcpy */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_read_c =
-   "@(#)$Id: read.c,v 4.85 2011/06/06 16:28:08 sal Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -730,7 +727,7 @@ void ReadLongNumber(
 
 	 case S_PARTIALINT:
 	   len = appendToString(string, len);
-	   Match(S_PARTIALINT, "integer", follow);
+	   /*	   Match(S_PARTIALINT, "integer", follow);*/
 	   break;
 	   
 	 case S_PARTIALFLOAT1:
@@ -743,7 +740,7 @@ void ReadLongNumber(
 	 case S_PARTIALFLOAT4:
 	   status = TLS->symbol;
 	   len = appendToString(string, len);
-	   Match(TLS->symbol, "float", follow);
+	   /* Match(TLS->symbol, "float", follow); */
 	   break;
 	   
 	 case S_FLOAT:
@@ -778,7 +775,7 @@ void ReadLongNumber(
 	 case S_PARTIALFLOAT4:
 	   status = TLS->symbol;
 	   len = appendToString(string, len);
-	   Match(TLS->symbol, "float", follow);
+	   /* Match(TLS->symbol, "float", follow); */
 	   break;
 	   
 	 case S_FLOAT:
@@ -808,7 +805,7 @@ void ReadLongNumber(
 	 case S_PARTIALFLOAT4:
 	   status = TLS->symbol;
 	   len = appendToString(string, len);
-	   Match(TLS->symbol, "float", follow);
+	   /* Match(TLS->symbol, "float", follow); */
 	   break;
 	   
 	 case S_FLOAT:
@@ -844,7 +841,7 @@ void ReadLongNumber(
 	 case S_PARTIALFLOAT4:
 	   status = TLS->symbol;
 	   len = appendToString(string, len);
-	   Match(TLS->symbol, "float", follow);
+	   /* Match(TLS->symbol, "float", follow); */
 	   break;
 	   
 	 case S_FLOAT:
@@ -875,7 +872,7 @@ void ReadLongNumber(
 	 case S_PARTIALFLOAT4:
 	   status = TLS->symbol;
 	   len = appendToString(string, len);
-	   Match(TLS->symbol, "float", follow);
+	   /* Match(TLS->symbol, "float", follow); */
 	   break;
 	   
 	 case S_FLOAT:
@@ -2335,7 +2332,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     UInt                readTilde;
     UInt                currLHSGVar;
     Obj                 errorLVars;
-    syJmp_buf             readJmpError;
+    syJmp_buf           readJmpError;
     int			lockSP;
 
     /* get the first symbol from the input                                 */
@@ -2770,8 +2767,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRead ( void )
 {
-    module.revision_c = Revision_read_c;
-    module.revision_h = Revision_read_h;
     FillInVersion( &module );
     return &module;
 }

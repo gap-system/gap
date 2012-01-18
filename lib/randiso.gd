@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.randiso_gd :=
-    "@(#)$Id: randiso.gd,v 1.19 2011/01/07 01:05:21 alexk Exp $";
 
 DeclareInfoClass( "InfoRandIso" );
 DeclareAttribute( "OmegaAndLowerPCentralSeries", IsGroup );

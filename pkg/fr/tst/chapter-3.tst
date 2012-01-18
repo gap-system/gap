@@ -2,7 +2,7 @@
 ##
 #W  chapter-3.tst                  FR Package               Laurent Bartholdi
 ##
-#H  @(#)$Id: chapter-3.tst,v 1.6 2010/06/04 11:55:35 gap Exp $
+#H  @(#)$Id: chapter-3.tst,v 1.7 2011/09/20 11:45:34 gap Exp $
 ##
 #Y  Copyright (C) 2008,  Laurent Bartholdi
 ##
@@ -190,12 +190,12 @@ gap> Info(InfoFR,1,"3.3.5 ChangeFRMachineBasis");
 #I  3.3.5 ChangeFRMachineBasis
 gap> 
 gap> m := mg[1][1];
-<FR machine with alphabet [ 1, 2 ] on Group( [ f1, f2, f3, f4, f5 ] )>
+<FR machine with alphabet [ 1 .. 2 ] on Group( [ f1, f2, f3, f4, f5 ] )>
 gap> f := StateSet(m);;
 gap> l := [f.3,f.2];
 [ f3, f2 ]
 gap> ChangeFRMachineBasis(m, l);
-<FR machine with alphabet [ 1, 2 ] on Group( [ f1, f2, f3, f4, f5 ] )>
+<FR machine with alphabet [ 1 .. 2 ] on Group( [ f1, f2, f3, f4, f5 ] )>
 gap> Display(last);
  G  |            1               2   
 ----+---------------+---------------+
@@ -387,7 +387,7 @@ true
 true
 gap> 
 gap> m := mg[1][1];
-<FR machine with alphabet [ 1, 2 ] on Group( [ f1, f2, f3, f4, f5 ] )>
+<FR machine with alphabet [ 1 .. 2 ] on Group( [ f1, f2, f3, f4, f5 ] )>
 gap> f := StateSet(m);
 <free group on the generators [ f1, f2, f3, f4, f5 ]>
 gap> Transition(m, f.3, ListWithIdenticalEntries(30, 2));
@@ -395,8 +395,7 @@ f3
 gap> Transition(m, f.3, Concatenation(ListWithIdenticalEntries(31, 2), [1]));
 f2
 gap> m := mg[2][1];
-<FR machine with alphabet [ 1, 2, 3, 4, 5, 6, 7, 8 ] on Group( 
-[ f1, f2, f3 ] )>
+<FR machine with alphabet [ 1 .. 8 ] on Group( [ f1, f2, f3 ] )>
 gap> f := StateSet(m);
 <free group on the generators [ f1, f2, f3 ]>
 gap> Transition(m, f.3, ListWithIdenticalEntries(30, 8));
@@ -408,8 +407,7 @@ gap> Info(InfoFR,1,"3.4.5 WreathRecursion");
 #I  3.4.5 WreathRecursion
 gap> 
 gap> m := mg[2][1];
-<FR machine with alphabet [ 1, 2, 3, 4, 5, 6, 7, 8 ] on Group( 
-[ f1, f2, f3 ] )>
+<FR machine with alphabet [ 1 .. 8 ] on Group( [ f1, f2, f3 ] )>
 gap> f := StateSet(m);
 <free group on the generators [ f1, f2, f3 ]>
 gap> wr := WreathRecursion(m);
@@ -426,7 +424,7 @@ gap> wr(l[1][6]);
   [ 3, 4, 1, 2, 5, 6, 7, 8 ] ]
 gap> 
 gap> m := ms[9][1];
-<FR machine with alphabet [ 1, 2, 3 ] on Semigroup( [ s1, s2 ] )>
+<FR machine with alphabet [ 1 .. 3 ] on Semigroup( [ s1, s2 ] )>
 gap> f := StateSet(m);
 <free semigroup on the generators [ s1, s2 ]>
 gap> wr := WreathRecursion(m);
@@ -484,7 +482,7 @@ gap> Display(m);
  b2 | <id>,1     b1,2  
 ----+--------+--------+
 gap> m := mm[7][1] + mg[3][3];
-<FR machine with alphabet [ 1, 2 ] on Monoid( 
+<FR machine with alphabet [ 1 .. 2 ] on Monoid( 
 [ m1, m2, m3, a^-1, a, b1^-1, b1, b2^-1, b2 ], ... )>
 gap> Size(GeneratorsOfMonoid(StateSet(m))) = 9 and IsFreeMonoid(StateSet(m));
 true
@@ -506,7 +504,7 @@ gap> Display(m);
     b2 | <id>,1      b1,2  
 -------+--------+---------+
 gap> m := mm[9][1] + ms[9][2];
-<FR machine with alphabet [ 1, 2, 3 ] on Semigroup( 
+<FR machine with alphabet [ 1 .. 3 ] on Semigroup( 
 [ <identity ...>, m1, m2, s1, s2 ] )>
 gap> Size(GeneratorsOfSemigroup(StateSet(m))) = 5 and IsFreeSemigroup(StateSet(m));
 true
@@ -629,8 +627,7 @@ true
 gap> Size(PermGroup(SCGroup(m),2)) = Size(PermGroup(SCGroup(mg[1][1]),2))*Size(PermGroup(SCGroup(mg[2][1]),2));
 true
 gap> m := DirectSum(mm[4][1],mm[7][3]);
-<FR machine with alphabet [ 1, 2, 3, 4, 5, 6, 7 ] on Monoid( 
-[ m1, z, y, x ], ... )>
+<FR machine with alphabet [ 1 .. 7 ] on Monoid( [ m1, z, y, x ], ... )>
 gap> Size(AlphabetOfFRObject(m)) = 7;
 true
 gap> Size(GeneratorsOfMonoid(StateSet(m))) = 4;
@@ -644,7 +641,7 @@ true
 gap> Size(TransMonoid(SCMonoid(m),2)) = Size(TransMonoid(SCMonoid(mm[4][1]),2))*Size(TransMonoid(SCMonoid(mm[7][1]),2));
 true
 gap> m := DirectSum(ms[1][1],ms[9][2]);
-<FR machine with alphabet [ 1, 2, 3, 4, 5 ] on Semigroup( 
+<FR machine with alphabet [ 1 .. 5 ] on Semigroup( 
 [ s1.1, s2.1, s3, s4, s5, s1.2, s2.2 ] )>
 gap> Size(AlphabetOfFRObject(m)) = 5;
 true
@@ -863,9 +860,9 @@ gap> Info(InfoFR,1,"3.5.11 Correspondence");
 #I  3.5.11 Correspondence
 gap> 
 gap> m := mg[1][1];
-<FR machine with alphabet [ 1, 2 ] on Group( [ f1, f2, f3, f4, f5 ] )>
+<FR machine with alphabet [ 1 .. 2 ] on Group( [ f1, f2, f3, f4, f5 ] )>
 gap> min := Minimized(m);
-<FR machine with alphabet [ 1, 2 ] on Group( [ f1, f2, f3, f4 ] )>
+<FR machine with alphabet [ 1 .. 2 ] on Group( [ f1, f2, f3, f4 ] )>
 gap> map := Correspondence(min);
 [ f1, f2, f3, f4, f5 ] -> [ <identity ...>, f1, f2, f3, f4 ]
 gap> f := StateSet(m);
@@ -874,13 +871,13 @@ gap> f.1^map = One(StateSet(min));
 true
 gap> 
 gap> m2 := m + m;
-<FR machine with alphabet [ 1, 2 ] on Group( [ f1.1, f2.1, f3.1, f4.1, f5.1, 
-  f1.2, f2.2, f3.2, f4.2, f5.2 ] )>
+<FR machine with alphabet [ 1 .. 2 ] on Group(
+[ f1.1, f2.1, f3.1, f4.1, f5.1, f1.2, f2.2, f3.2, f4.2, f5.2 ] )>
 gap> map2 := Correspondence(m2);
 [ [ f1, f2, f3, f4, f5 ] -> [ f1.1, f2.1, f3.1, f4.1, f5.1 ], 
   [ f1, f2, f3, f4, f5 ] -> [ f1.2, f2.2, f3.2, f4.2, f5.2 ] ]
 gap> min := Minimized(m2);
-<FR machine with alphabet [ 1, 2 ] on Group( [ f1, f2, f3, f4 ] )>
+<FR machine with alphabet [ 1 .. 2 ] on Group( [ f1, f2, f3, f4 ] )>
 gap> map := Correspondence(min);
 [ f1.1, f2.1, f3.1, f4.1, f5.1, f1.2, f2.2, f3.2, f4.2, f5.2 ] -> 
 [ <identity ...>, f1, f2, f3, f4, <identity ...>, f1, f2, f3, f4 ]
@@ -892,7 +889,7 @@ gap> (f.1^map2[2])^map = One(StateSet(min));
 true
 gap> 
 gap> m := AsGroupFRMachine(mm[5][1]);
-<FR machine with alphabet [ 1, 2, 3, 4, 5, 6, 7 ] on Group( [ f1, f2, f3 ] )>
+<FR machine with alphabet [ 1 .. 7 ] on Group( [ f1, f2, f3 ] )>
 gap> Correspondence(m);
 MappingByFunction( <free monoid on the generators 
 [ x, y, z ]>, <free group on the generators 

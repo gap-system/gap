@@ -2,7 +2,6 @@
 ##
 #W  type.g                      GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: type.g,v 4.56 2011/01/12 17:38:31 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file defines the format of families and types. Some functions 
 ##  are moved to type1.g, which is compiled
 ##
-Revision.type_g :=
-    "@(#)$Id: type.g,v 4.56 2011/01/12 17:38:31 alexk Exp $";
 
 
 #############################################################################

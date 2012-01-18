@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- $Id: example.xml,v 1.23 2011/03/03 09:52:10 gap Exp $ -->
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
- [ <!ENTITY see '<Alt Only="LaTeX">$\to$</Alt><Alt Not="LaTeX">--&gt;</Alt>'>
+ [ <!ENTITY see '<Alt Only="LaTeX">$\to$</Alt><Alt Not="LaTeX">&#8594;</Alt>'>
  ]>
 
 <Book Name="GAPDoc Example">
@@ -22,7 +21,7 @@
   <Author> Max Neunhöffer 
           <Email>neunhoef at mcs.st-and.ac.uk</Email>
   </Author>
-  <Date>March 2011</Date>
+  <Date>September 2011</Date>
   <Address>
   Lehrstuhl D für Mathematik<Br/> Templergraben 
   64<Br/> 52062 Aachen<Br/> (Germany)
@@ -63,7 +62,7 @@
   </Subsection>
 
   <Subsection Label="Another"><Heading>Another subsection</Heading>
-   
+  
    This is text in the second subsection. This subsection 
    has a label, such that one can reference it.
 
@@ -507,24 +506,37 @@ This is an appendix.
 
 <Listing>
 <![CDATA[<TitlePage>
-  <Title>A Complete Example</Title>
+  <Title>A Complete Example (&see; <Ref Sect="One"/>)</Title>
   <Subtitle>Every element shows up</Subtitle>
-  <Version>Version 1.0</Version>
+  <Version>Version <#Include SYSTEM "../version"></Version>
+  <TitleComment>
+  If the subtitle ist not sufficient, this &lt;TitleComment> 
+  element can be used for a slightly longer text on the front page.
+  </TitleComment>
   <Author>Frank Lübeck 
-          <Email>Frank.Luebeck@Math.RWTH-Aachen.De</Email></Author>
+          <Email>Frank.Luebeck@Math.RWTH-Aachen.De</Email> 
+  </Author>
   <Author> Max Neunhöffer 
           <Email>neunhoef at mcs.st-and.ac.uk</Email>
   </Author>
-  <Date>December 2000</Date>
+  <Date>September 2011</Date>
+  <Address>
+  Lehrstuhl D für Mathematik<Br/> Templergraben 
+  64<Br/> 52062 Aachen<Br/> (Germany)
+  </Address>
   <Abstract>This document tries to use all elements that exist in &GAPDoc;.
             In addition, the final output not only contains the usual
             content, but also an appendix with the source text. There
             are also links from the usual content to the corresponding
             source text. This should enable new users to learn &GAPDoc;
-            quickly.</Abstract>
-  <Copyright>&copyright; 2000 by Frank Lübeck and Max Neunhöffer</Copyright>
-  <Acknowledgements>We thank Lehrstuhl D für Mathematik.</Acknowledgements>
-  <Colophon>This is the Colophon page.</Colophon>
+            quickly.
+  </Abstract>
+  <Copyright>&copyright; 2000-2011 by Frank Lübeck and Max Neunhöffer
+  </Copyright>
+  <Acknowledgements>We thank Lehrstuhl D für Mathematik.
+  </Acknowledgements>
+  <Colophon>This is the Colophon page.
+  </Colophon>
 </TitlePage>]]>
 </Listing>
 

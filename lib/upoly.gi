@@ -9,8 +9,6 @@
 ##
 ##  This file contains methods for univariate polynomials
 ##
-Revision.upoly_gi:=
-  "@(#)$Id: upoly.gi,v 4.54 2010/06/16 16:31:38 gap Exp $";
 
 #############################################################################
 ##
@@ -43,7 +41,7 @@ local d;
     TryNextMethod();
   fi;
   d:=DegreeOfLaurentPolynomial(f);
-  if d=infinity then
+  if d=DEGREE_ZERO_LAURPOL then
     # the zero polynomial: irreducible elements are nonzero
     return false;
   elif d=0 then

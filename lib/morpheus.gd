@@ -2,7 +2,6 @@
 ##
 #W  morpheus.gd                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: morpheus.gd,v 4.44 2011/01/29 16:46:04 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This  file  contains declarations for Morpheus
 ##
-Revision.morpheus_gd:=
-  "@(#)$Id: morpheus.gd,v 4.44 2011/01/29 16:46:04 alexk Exp $";
 
 DeclareInfoClass("InfoMorph");
 
@@ -121,10 +118,12 @@ DeclareAttribute( "AutomorphismDomain", IsGroupOfAutomorphisms );
 ##  gap> au:=AutomorphismGroup(g);
 ##  <group of size 8 with 3 generators>
 ##  gap> GeneratorsOfGroup(au);
-##  [ Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) ->
-##      [ (1,2)(3,4), (1,2,3,4), (1,3)(2,4) ],
-##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> [ (1,3), (1,2,3,4), (1,3)(2,4) ],
-##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> [ (2,4), (1,4,3,2), (1,3)(2,4) ] ]
+##  [ Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> 
+##      [ (1,2)(3,4), (1,2,3,4), (1,3)(2,4) ], 
+##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> 
+##      [ (1,3), (1,2,3,4), (1,3)(2,4) ], 
+##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> 
+##      [ (2,4), (1,4,3,2), (1,3)(2,4) ] ]
 ##  gap> NiceObject(au);
 ##  Group([ (1,2,3,4), (1,3)(2,4), (2,4) ])
 ##  ]]></Example>
@@ -326,6 +325,11 @@ DeclareGlobalFunction("MorMaxFusClasses");
 ##  <Item>
 ##   Subgroup of already known automorphisms.
 ##  </Item>
+##  <Mark><C>condition</C></Mark>
+##  <Item>
+##   A function that will be applied to the homomorphism and must return
+##  <C>true</C> for the homomorphism to be accepted.
+##  </Item>
 ##  </List>
 ##  <P/>
 ##  <A>action</A> is a number whose bit-representation indicates
@@ -492,7 +496,7 @@ DeclareGlobalFunction("IsomorphismGroups");
 ##  gap> h:=Group((1,2,3),(1,2));
 ##  Group([ (1,2,3), (1,2) ])
 ##  gap> quo:=GQuotients(g,h);
-##  [ [ (1,2,3,4), (1,2,3) ] -> [ (2,3), (1,2,3) ] ]
+##  [ [ (1,2,4,3), (1,2,3) ] -> [ (2,3), (1,2,3) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -536,7 +540,7 @@ DeclareOperation("GQuotients",[IsGroup,IsGroup]);
 ##  Group([ (1,2,3,4), (1,2) ])
 ##  gap> h:=Group((3,4),(1,2));;
 ##  gap> emb:=IsomorphicSubgroups(g,h);
-##  [ [ (3,4), (1,2) ] -> [ (3,4), (1,2) ],
+##  [ [ (3,4), (1,2) ] -> [ (3,4), (1,2) ], 
 ##    [ (3,4), (1,2) ] -> [ (1,3)(2,4), (1,2)(3,4) ] ]
 ##  ]]></Example>
 ##  </Description>

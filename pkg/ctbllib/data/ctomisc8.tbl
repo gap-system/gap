@@ -2,7 +2,7 @@
 ##
 #W  ctomisc8.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomisc8.tbl,v 1.1 2010/08/02 16:01:44 gap Exp $
+#H  @(#)$Id: ctomisc8.tbl,v 1.2 2011/09/28 14:32:22 gap Exp $
 ##
 #Y  Copyright (C)  2010,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,16 +12,15 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomisc8.tbl,v $
+#H  Revision 1.2  2011/09/28 14:32:22  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 1.1  2010/08/02 16:01:44  gap
 #H  some tables of split extensions (G. Navarro had asked for them)
 #H      TB
 #H
 ##
-Revision.ctomisc8_tbl :=
-    "@(#)$Id: ctomisc8.tbl,v 1.1 2010/08/02 16:01:44 gap Exp $";
-
-SET_TABLEFILENAME("ctomisc8");
-ALN:= Ignore;
 
 MOT("2^12:Sz(8)",
 [
@@ -325,7 +324,6 @@ ALF("2^12:J2","J2",[1,1,1,2,2,2,2,3,3,3,3,3,3,3,3,4,5,5,5,6,6,6,6,6,7,7,8,
 21]);
 
 LIBTABLE.LOADSTATUS.ctomisc8:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

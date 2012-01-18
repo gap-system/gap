@@ -2,10 +2,10 @@
 ##
 #W basic.gi               POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## constructive pc-sequences for polycyclic rational matrix groups
 ##
-#H  @(#)$Id: basic.gi,v 1.3 2011/05/31 13:10:57 gap Exp $
+#H  @(#)$Id: basic.gi,v 1.4 2011/09/23 13:36:31 gap Exp $
 ##
 #Y 2003
 ##
@@ -13,11 +13,11 @@
 #############################################################################
 ##
 #F DetermineAdmissiblePrime(gensOfG)
-## 
+##
 ## determines a prime number which does not divide  the denominators
-## of the entries of the matrices in gensOfG and which does not divide the 
+## of the entries of the matrices in gensOfG and which does not divide the
 ## the entries of the inverses of the matrices in gensOfG
-##                      
+##
 ## input is a list of generators of a rational polycyclic matrix group
 ##
 InstallGlobalFunction( DetermineAdmissiblePrime , function(gensOfG)
@@ -25,14 +25,14 @@ InstallGlobalFunction( DetermineAdmissiblePrime , function(gensOfG)
         d := Length( gensOfG[1] );
        list1:=[];
        list2:=[];
- 
+
        # construct a list of all elements in gensOfG and their inverses
        for g in gensOfG do
            Add(list1,g);
            Add(list1,g^-1);
        od;
- 
-       #write denomiators of all matrix entries in list
+
+       #write denominators of all matrix entries in list
        for g in list1 do
            for i in [1..d] do
                for j in [1..d] do
@@ -57,17 +57,17 @@ end );
 ##
 #F POL_NormalSubgroupGeneratorsOfK_p(pcgs,gensOfRealG)
 ##
-## pcgs is a constructive pc-Sequence for I_p(G) 
+## pcgs is a constructive pc-Sequence for I_p(G)
 ## (image of G under the p-congruence hom.).
-## This function calculates  normal subgroupgenerators for K_p(G)
+## This function calculates  normal subgroup generators for K_p(G)
 ## (the kernel of the p-congruence hom.)
 ##
 InstallGlobalFunction( POL_NormalSubgroupGeneratorsOfK_p ,
                        function( pcgs, gensOfRealG )
-   local g, relations, rightSide, leftSide, preimages, revPreimages, 
-         preimage, genList, ftl, n, ro, i, j, exp, conj, f_i, f_j, 
-         r_i, pcSeq;             
-  
+   local g, relations, rightSide, leftSide, preimages, revPreimages,
+         preimage, genList, ftl, n, ro, i, j, exp, conj, f_i, f_j,
+         r_i, pcSeq;
+
    n := Length(pcgs.gens);
    preimages := [];
    relations := [];
@@ -76,22 +76,22 @@ InstallGlobalFunction( POL_NormalSubgroupGeneratorsOfK_p ,
    if Length(pcgs.gens)=0 then
        return gensOfRealG;
    fi;
- 
+
    # calcuclate all preimages of pcgs.gens
    for i in [1..n] do
        preimage := SubsWord( pcgs.wordGens[i], gensOfRealG );
        Add( preimages, preimage);
    od;
- 
-   # Attention: In pcgs.gens we have the pc-sequence in inversed order,
+
+   # Attention: In pcgs.gens we have the pc-sequence in inverse order,
    # because we built up  the structure bottom up
    pcSeq := StructuralCopy(Reversed(pcgs.gens));
    revPreimages := StructuralCopy(Reversed(preimages));
- 
+
    # calculate the relative orders
    ro := RelativeOrdersPcgs_finite( pcgs );
- 
-   # exprime the power relations in terms of gensOfRealG
+
+   # express the power relations in terms of gensOfRealG
    for i in [1..n] do
        f_i := pcSeq[i];
        r_i := ro[i];
@@ -100,7 +100,7 @@ InstallGlobalFunction( POL_NormalSubgroupGeneratorsOfK_p ,
        rightSide := Exp2Groupelement(revPreimages,exp);
        Add(relations,leftSide*(rightSide^-1));
    od;
- 
+
    # conjugation relations
    for i in [1..n] do
        for j in [1..(i-1)] do
@@ -124,7 +124,7 @@ InstallGlobalFunction( POL_NormalSubgroupGeneratorsOfK_p ,
    od;
    return relations;
 end );
-  
+
 #############################################################################
 ##
 #F Exp2Groupelement(list,exp)
@@ -137,7 +137,7 @@ InstallGlobalFunction( Exp2Groupelement, function(list,exp)
    od;
    return g;
 end );
-  
+
 #############################################################################
 ##
 #F CopyMatrixList(list)
@@ -187,31 +187,31 @@ InstallGlobalFunction( POL_NormalSubgroupGeneratorsU_p ,
                        function( pcgs_GU, gens, gens_K_p )
    local relations,rightSide,leftSide,preimages,revPreimages,
          preimage,genList,ftl,n,ro,i,j,exp,conj,f_i,f_j,r_i,pcs, g, k;
- 
+
    # setup
    pcs := pcgs_GU.pcs;
    n:=Length(pcs);
    preimages:=[];
    relations:=[];
    k := Length( pcgs_GU.pcgs_I_p.gens );
- 
+
    # catch the trivial case (G/U trivial)
    if Length(pcgs_GU.pcs)=0 then
       return gens;
    fi;
- 
+
    # catch the trivial case (U_p = 1)
    if Length(pcgs_GU.radicalSeries)=2 then
       return [];
    fi;
- 
+
    # calculate the relative orders
    #ro:= RelativeOrdersPcgs( pcgs );
    ro := RelativeOrders_CPCS_FactorGU_p( pcgs_GU );
 
    # the elements stored in gens_K_p where found by evaluating
    # the pcp-relations of G/I_p. So we don't have to calculate them
-   # again. 
+   # again.
    for g in gens_K_p do
        exp := ExponentVector_CPCS_FactorGU_p( pcgs_GU, g );
        leftSide := g;
@@ -219,7 +219,7 @@ InstallGlobalFunction( POL_NormalSubgroupGeneratorsU_p ,
        Add( relations, leftSide*(rightSide^-1) );
    od;
 
-   # Exprime the power relations in terms of gens
+   # Express the power relations in terms of gens
    for i in [ (k+1)..n ] do
        f_i:=pcs[i];
        r_i:=ro[i];
@@ -232,8 +232,8 @@ InstallGlobalFunction( POL_NormalSubgroupGeneratorsU_p ,
            Add( relations, leftSide*(rightSide^-1) );
        fi;
    od;
- 
-   # conjugation relations 
+
+   # conjugation relations
    for i in [ (k+1)..n ] do
        for j in [1..(i-1)] do
            f_i := pcs[i];
@@ -245,7 +245,7 @@ InstallGlobalFunction( POL_NormalSubgroupGeneratorsU_p ,
            Add( relations, leftSide*(rightSide^-1) );
        od;
    od;
-   relations := Filtered( relations,x -> not x=x^0 );  
+   relations := Filtered( relations,x -> not x=x^0 );
    if Length( relations ) = 0 then relations[1] := gens[1]^0; fi;
    return relations;
 end );

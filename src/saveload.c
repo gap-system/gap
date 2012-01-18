@@ -2,7 +2,6 @@
 **
 *W  saveload.c                  GAP source                       Steve Linton
 **
-*H  @(#)$Id: saveload.c,v 4.62 2011/05/15 18:39:16 gap Exp $
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_saveload_c =
-   "@(#)$Id: saveload.c,v 4.62 2011/05/15 18:39:16 gap Exp $";
 
 #include        <unistd.h>              /* write, read                     */
    
@@ -129,7 +126,7 @@ void SAVE_BYTE_BUF( void )
 #define SAVE_BYTE(byte) {if (LBPointer >= LBEnd) {SAVE_BYTE_BUF();} \
                           *LBPointer++ = (UInt1)(byte);}
 
-Char * LoadByteErrorMessage = "Unexpected End of File in Load\n";
+const Char * LoadByteErrorMessage = "Unexpected End of File in Load\n";
 
 UInt1 LOAD_BYTE_BUF( void )
 {
@@ -1074,8 +1071,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSaveLoad ( void )
 {
-    module.revision_c = Revision_saveload_c;
-    module.revision_h = Revision_saveload_h;
     FillInVersion( &module );
     return &module;
 }

@@ -2,12 +2,9 @@
 ##  
 #W  pquot.gd                    GAP Library                     Werner Nickel
 ##
-#H  $Id: pquot.gd,v 4.21 2008/09/22 16:22:30 gap Exp $
 ##
 #Y  Copyright (C) 1998, . . . . . . . . .  University of St Andrews, Scotland
 ##
-Revision.pquot_gd :=
-    "$Id: pquot.gd,v 4.21 2008/09/22 16:22:30 gap Exp $";
 
 
 #############################################################################
@@ -174,7 +171,7 @@ DeclareOperation( "EpimorphismQuotientSystem", [IsQuotientSystem] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> GQuotients(fp,Group((1,2,3),(1,2)));
-##  [ [ f1, f2 ] -> [ (2,3), (1,2) ], [ f1, f2 ] -> [ (2,3), (1,2,3) ],
+##  [ [ f1, f2 ] -> [ (2,3), (1,2) ], [ f1, f2 ] -> [ (2,3), (1,2,3) ], 
 ##    [ f1, f2 ] -> [ (1,2,3), (1,2) ] ]
 ##  ]]></Example>
 ##  </Description>

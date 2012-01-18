@@ -3,7 +3,6 @@
 #W  boolean.g                    GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: boolean.g,v 4.10 2010/02/23 15:12:48 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file deals with booleans.
 ##
-Revision.boolean_g :=
-    "@(#)$Id: boolean.g,v 4.10 2010/02/23 15:12:48 gap Exp $";
 
 
 #############################################################################

@@ -2,7 +2,7 @@
 ##
 #W vector.gi                                                Laurent Bartholdi
 ##
-#H   @(#)$Id: vector.gi,v 1.29 2011/04/04 19:52:37 gap Exp $
+#H   @(#)$Id: vector.gi,v 1.30 2011/08/13 00:06:36 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -25,7 +25,7 @@ BindGlobal("FRJFAMILY@",
     for i in FR_FAMILIES do
         if fam in i{[2..Length(i)]} then
             if IsBound(i[4]) then return i[4]; fi;
-            f := NewFamily(Concatenation("FRElement(",STRING@(i[1]),")"), IsFRElement and IsJacobianElement);
+            f := NewFamily(Concatenation("FRElement(",String(i[1]),")"), IsFRElement and IsJacobianElement);
             f!.alphabet := i[1];
 	    if IsVectorSpace(i[1]) then # so LieObject works
 		SetCharacteristic(f,Characteristic(i[1]));

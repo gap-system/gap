@@ -2,7 +2,6 @@
 ##
 #W  vecmat.gi                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: vecmat.gi,v 4.113 2011/05/10 21:23:49 sal Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains  the basic methods for  creating and doing  arithmetic
 ##  with GF2 vectors and matrices.
 ##
-Revision.vecmat_gi :=
-    "@(#)$Id: vecmat.gi,v 4.113 2011/05/10 21:23:49 sal Exp $";
 
 #############################################################################
 ##
@@ -2065,11 +2062,17 @@ end);
 
 #############################################################################
 ##
-#M  ZeroVector( <vector>, len )
+#M  ZeroVector( len, <vector> )
 ##
 InstallMethod( ZeroVector, "for an int and a gf2 vector",
   [IsInt, IsGF2VectorRep],
   function( len, v )
+    return ZERO_GF2VEC_2(len);
+  end );
+
+InstallMethod( ZeroVector, "for an int and a gf2 matrix",
+  [IsInt, IsGF2MatrixRep],
+  function( len, m )
     return ZERO_GF2VEC_2(len);
   end );
 

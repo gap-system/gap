@@ -2,7 +2,6 @@
 ##
 #W  semigrp.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: semigrp.gd,v 4.44 2010/02/23 15:13:29 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the declaration of operations for semigroups.
 ##
-Revision.semigrp_gd :=
-    "@(#)$Id: semigrp.gd,v 4.44 2010/02/23 15:13:29 gap Exp $";
 
 
 #############################################################################
@@ -264,7 +261,8 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 ##  gap> f1 := FreeSemigroup( 3 );
 ##  <free semigroup on the generators [ s1, s2, s3 ]>
 ##  gap> f2 := FreeSemigroup( 3 , "generator" );
-##  <free semigroup on the generators [ generator1, generator2, generator3 ]>
+##  <free semigroup on the generators 
+##  [ generator1, generator2, generator3 ]>
 ##  gap> f3 := FreeSemigroup( "gen1" , "gen2" );
 ##  <free semigroup on the generators [ gen1, gen2 ]>
 ##  gap> f4 := FreeSemigroup( ["gen1" , "gen2"] );

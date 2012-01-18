@@ -4,7 +4,7 @@
 ##
 ## examples for polycyclic rational matrix groups
 ##
-#H  @(#)$Id: test.gi,v 1.12 2011/05/31 13:10:58 gap Exp $
+#H  @(#)$Id: test.gi,v 1.13 2011/09/23 14:41:31 gap Exp $
 ##
 #Y 2003
 ##
@@ -266,7 +266,7 @@ POL_AbelianTestGroup := function( i )
     # natural homomorphism to GL(d,p)
     gens_p := InducedByField( gens, GF(p) );
  
-    # determine un upperbound for the derived length of G
+    # determine an upper bound for the derived length of G
     bound_derivedLength := d+2;
  
     # finite part

@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.grppcext_gd :=
-    "@(#)$Id: grppcext.gd,v 4.25 2010/02/23 15:13:06 gap Exp $";
 
 #############################################################################
 ##
@@ -178,7 +176,7 @@ DeclareOperation( "Extensions", [ CanEasilyComputePcgs, IsObject ] );
 ##  gap> A := AutomorphismGroup( G );;
 ##  gap> B := GL( 1, 2 );;
 ##  gap> D := DirectProduct( A, B );
-##  <group with 6 generators>
+##  <group of size 6 with 4 generators>
 ##  gap> P := CompatiblePairs( G, M, D );
 ##  <group of size 6 with 2 generators>
 ##  gap> ExtensionRepresentatives( G, M, P );

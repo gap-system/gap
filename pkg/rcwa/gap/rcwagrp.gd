@@ -274,6 +274,53 @@ DeclareOperation( "IsPrimitive",  [ IsRcwaGroup, IsListOrCollection ] );
 
 #############################################################################
 ##
+#P  IsTransitiveOnNonnegativeIntegersInSupport( <G> )
+##
+##  Returns true or false, depending on whether the action of the rcwa group
+##  G < RCWA(Z) on the set of its nonnegative moved points is transitive.
+##  As such transitivity test is a computationally hard problem, methods may
+##  fail or run into an infinite loop.
+##
+DeclareProperty( "IsTransitiveOnNonnegativeIntegersInSupport",
+                 IsRcwaGroupOverZ );
+
+#############################################################################
+##
+#O  TryIsTransitiveOnNonnegativeIntegersInSupport( <G>, <maxmod>, <maxeq> )
+##
+##  This operation tries to figure out whether the action of the group
+##  G < RCWA(Z) on the set of its nonnegative moved points is transitive.
+##  It returns a string briefly describing the situation. If the determina-
+##  tion of transitivity is successful, the property `IsTransitiveOnNonnega-
+##  tiveIntegersInSupport' is set accordingly. The arguments <maxmod> and
+##  <maxeq> are bounds on the efforts to be made.
+##  
+DeclareOperation( "TryIsTransitiveOnNonnegativeIntegersInSupport",
+                  [ IsRcwaGroupOverZ, IsPosInt, IsPosInt ] );
+
+#############################################################################
+##
+#O  DistanceToNextSmallerPointInOrbit( <G>, <n> )
+##
+##  Returns the smallest number d such that there is a product g of d genera-
+##  tors or inverses of generators of <G> which maps <n> to an integer with
+##  absolute value less than |<n>|.
+##
+DeclareOperation( "DistanceToNextSmallerPointInOrbit", [ IsGroup, IsInt ] );
+
+#############################################################################
+##
+#O  ShortResidueClassOrbits( <G>, <modulusbound>, <maxlng> )
+##
+##  Returns a list of all orbits of residue classes of the rcwa group <G>
+##  which contain a residue class r(m) such that m divides <modulusbound>,
+##  and which are not longer than <maxlng>.
+##
+DeclareOperation( "ShortResidueClassOrbits", [ IsRcwaGroup, IsRingElement,
+                                               IsPosInt ] );
+
+#############################################################################
+##
 #O  StabilizerOp( <G>, <n> ) . . . . . . .  point stabilizer in an rcwa group
 #O  StabilizerOp( <G>, <S>, <action> ) . . .  set stabilizer in an rcwa group
 #A  StabilizerInfo( <G> ) . .  info. on what is stabilized under which action
@@ -329,6 +376,16 @@ DeclareOperation( "OrbitUnion", [ IsRcwaGroup, IsListOrCollection ] );
 ##  <filename>. The filename should include the entire pathname.
 ##
 DeclareGlobalFunction( "DrawOrbitPicture" );
+
+#############################################################################
+##
+#O  CollatzLikeMappingByOrbitTree( <G>, <root>, <max_r> )
+##
+##  This operation is so far undocumented since its meaning has yet to be
+##  settled.
+##
+DeclareOperation( "CollatzLikeMappingByOrbitTree",
+                  [ IsRcwaGroup, IsRingElement, IsPosInt ] );
 
 #############################################################################
 ##
@@ -457,10 +514,73 @@ DeclareOperation( "CompatibleConjugate", [ IsRcwaMapping, IsRcwaMapping ] );
 
 #############################################################################
 ##
+#F  CommonRefinementOfPartitionsOfR_NC( <partitions> ) . . . . . general case
+#F  CommonRefinementOfPartitionsOfZ_NC( <partitions> ) . . special case R = Z
+##
+##  Returns the coarsest common refinement of the list <partitions> of
+##  partitions of Z, respectively a ring R, into unions of residue classes.
+##  Here the term "common refinement" means that each set in the returned
+##  partition is a subset of exactly one set in each of the partitions in
+##  <partitions>. The ring R may be any base ring supported by RCWA.
+##  For R = Z the last-mentioned function is more efficient.
+##
+DeclareGlobalFunction( "CommonRefinementOfPartitionsOfR_NC" );
+DeclareGlobalFunction( "CommonRefinementOfPartitionsOfZ_NC" );
+
+#############################################################################
+##
 #P  IsNaturalRcwaRepresentationOfGLOrSL
 ##
 DeclareProperty( "IsNaturalRcwaRepresentationOfGLOrSL",
                   IsGroupHomomorphism and IsBijective );
+
+#############################################################################
+##
+#S  Data libraries. /////////////////////////////////////////////////////////
+##
+#############################################################################
+
+#############################################################################
+##
+#F  RCWALoadExamples( ) . . . . . . . . . . . . . . . load examples database 
+##
+##  This function loads RCWA's collection of examples.
+##  It returns a record containing the individual examples as components.
+##
+DeclareGlobalFunction( "RCWALoadExamples" );
+
+#############################################################################
+##
+#F  RCWALoadDatabaseOfProductsOf2ClassTranspositions( )
+##
+##  This function loads the data library of products of 2 class transposi-
+##  tions which interchange residue classes with moduli <= 6.
+##  It returns a record containing all data in the library.
+##
+DeclareGlobalFunction( "RCWALoadDatabaseOfProductsOf2ClassTranspositions" );
+
+#############################################################################
+##
+#F  RCWALoadDatabaseOfNonbalancedProductsOfClassTranspositions( )
+##
+##  This function loads the data library of nonbalanced products of class
+##  transpositions. It returns a record containing all data in the library.
+##  Note that name and contents of this library will likely be changed in
+##  the future.
+##
+DeclareGlobalFunction(
+  "RCWALoadDatabaseOfNonbalancedProductsOfClassTranspositions" );
+
+#############################################################################
+##
+#F  RCWALoadDatabaseOfGroupsGeneratedBy3ClassTranspositions( )
+##
+##  This function loads the data library of groups generated by 3 class
+##  transpositions which interchange residue classes with moduli <= 6.
+##  It returns a record containing all data in the library.
+##
+DeclareGlobalFunction(
+  "RCWALoadDatabaseOfGroupsGeneratedBy3ClassTranspositions" );
 
 #############################################################################
 ##

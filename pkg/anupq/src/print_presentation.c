@@ -2,7 +2,7 @@
 **
 *A  print_presentation.c        ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: print_presentation.c,v 1.3 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: print_presentation.c,v 1.5 2011/12/02 16:42:15 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -19,17 +19,13 @@
 void print_map (pcp)
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int ndgen = pcp->ndgen;
    int dgen = pcp->dgen;
    int p2;
    int i;
 
-#if defined (LIE)
-   printf ("\nRelationship between ring defining generators and ");
-   printf ("consistent\nproduct presentation generators: \n");
-#endif 
 #if defined (GROUP)
    printf ("\nRelationship between group defining generators and ");
    printf ("consistent\npower-commutator presentation generators:\n");
@@ -58,7 +54,7 @@ void print_presentation (full, pcp)
 Logical full;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int k;
@@ -73,10 +69,6 @@ struct pcp_vars *pcp;
 
    char *s;
 
-#if defined (LIE) 
-   printf ("\nRing: %s to lower central class %d has order %d^%d\n",
-	   pcp->ident, pcp->cc, pcp->p, pcp->lastg);
-#endif 
 #if defined (GROUP)
    printf ("\nGroup: %s to lower exponent-%d central class %d has order %d^%d\n", 
 	   pcp->ident, pcp->p, pcp->cc, pcp->p, pcp->lastg);
@@ -90,9 +82,6 @@ struct pcp_vars *pcp;
     
 #if defined (GROUP) 
       s = "Group";
-#endif
-#if defined (LIE) 
-      s = "Ring";
 #endif
       if (pcp->ndrel != 0)
 	 printf ("\n%s defining relations:\n", s);
@@ -122,9 +111,6 @@ struct pcp_vars *pcp;
       /* print map from defining generators to pcp generators */
       print_map (pcp);
 
-#if defined (LIE)
-      printf ("\nValues of product presentation generators\n");
-#endif 
 #if defined (GROUP)
       printf ("\nValues of power-commutator presentation generators\n");
 #endif
@@ -140,7 +126,7 @@ struct pcp_vars *pcp;
 void print_pcp_relations (pcp)
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int j;
@@ -174,9 +160,6 @@ struct pcp_vars *pcp;
 
    printf ("\nNon-trivial commutators:\n");
 #endif
-#if defined (LIE)
-   printf ("\nNon-trivial products:\n");
-#endif   
 
    /*
      for (i = start; i <= finish; i++) {

@@ -2,18 +2,18 @@
 **
 *A  multiply_word.c             ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: multiply_word.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: multiply_word.c,v 1.5 2011/11/28 17:47:20 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
 
-#if defined (GROUP)
-
 #include "pq_defs.h"
 #include "pcp_vars.h"
     
+#if defined (GROUP)
+
 /* post-multiply exponent vector with base address cp 
    by word with base address ptr */
 
@@ -22,7 +22,7 @@ int ptr;
 int cp;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
     
    register int i;
    register int gen;

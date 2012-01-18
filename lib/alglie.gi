@@ -3,7 +3,6 @@
 #W  alglie.gi                   GAP library                     Thomas Breuer
 #W                                                        and Willem de Graaf
 ##
-#H  @(#)$Id: alglie.gi,v 4.97 2010/02/23 15:12:46 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains methods for Lie algebras.
 ##
-Revision.alglie_gi :=
-    "@(#)$Id: alglie.gi,v 4.97 2010/02/23 15:12:46 gap Exp $";
 
 
 #############################################################################

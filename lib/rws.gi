@@ -2,7 +2,6 @@
 ##
 #W  rws.gi                      GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: rws.gi,v 4.30 2010/02/23 15:13:27 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains generic methods for rewriting systems.
 ##
-Revision.rws_gi :=
-    "@(#)$Id: rws.gi,v 4.30 2010/02/23 15:13:27 gap Exp $";
 
 
 #############################################################################

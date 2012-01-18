@@ -2,7 +2,6 @@
 **
 *W  gpipe.c               OpenMath for GAP source     Andrew Solomon
 **
-*H  @(#)$Id: gpipe.c,v 1.8 2006/08/03 10:16:30 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland

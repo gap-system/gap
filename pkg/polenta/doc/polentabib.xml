@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE file SYSTEM "bibxmlext.dtd">
+<file>
+<entry id="Ostheimer"><phdthesis>
+  <author>
+    <name><first>Gretchen</first><last>Ostheimer</last></name>
+  </author>  
+  <title>Algorithms for Polycyclic-by-finite groups</title>
+  <school>Rutgers University</school>
+  <year>1996</year>
+</phdthesis></entry>
+
+<entry id="Segal"><book>
+  <author>
+    <name><first>Daniel</first><last>Segal</last></name>
+  </author>  
+  <title>Polycyclic groups</title>
+  <publisher>Cambridge University Press</publisher>
+  <year>1983</year>
+</book></entry>
+
+<entry id="Sims"><book>
+  <author>
+    <name><first>Charles C.</first><last>Sims</last></name>
+  </author>  
+  <title>Computation with finitely presented groups</title>
+  <publisher>Cambridge University Press</publisher>
+  <year>1994</year>
+</book></entry>
+
+<entry id="Eick"><mastersthesis>
+  <author>
+    <name><first>Bettina</first><last>Eick</last></name>
+  </author>  
+  <title>Algorithms for Polycyclic Groups</title>
+  <school>Gesamthochschule Kassel</school>
+  <year>2001</year>
+  <type>Habilitationsschrift</type>
+</mastersthesis></entry>
+
+<entry id="Assmann"><mastersthesis>
+  <author>
+    <name><first>Björn</first><last>Assmann</last></name>
+  </author>  
+  <title>Polycyclic presentations for matrix groups</title>
+  <school>TU Braunschweig</school>
+  <year>2003</year>
+  <type>Diplomarbeit</type>
+  <note><URL>http://www.icm.tu-bs.de/ag_algebra/software/assmann</URL></note>
+</mastersthesis></entry>
+
+<entry id="Polycyclic"><manual>
+  <author>
+    <name><first>Bettina</first><last>Eick</last></name>
+    <name><first>Werner</first><last>Nickel</last></name>
+  </author>  
+  <title>Polycyclic</title>
+  <year>2000</year>
+  <note><Wrap Name="Package">GAP</Wrap> package</note>
+</manual></entry>
+
+<entry id="AEi05"><article>
+  <author>
+    <name><first>Björn</first><last>Assmann</last></name>
+    <name><first>Bettina</first><last>Eick</last></name>
+  </author>  
+  <title>Computing polycyclic presentations for polycyclic rational matrix
+      groups</title>
+  <journal>J. Symbolic Comput.</journal>
+  <year>2005</year>
+  <volume>40</volume>
+  <number>6</number>
+  <pages>1269--1284</pages>
+</article></entry>
+</file>

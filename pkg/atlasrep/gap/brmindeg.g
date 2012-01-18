@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  brmindeg.g           GAP 4 package `atlasrep'               Thomas Breuer
+#W  brmindeg.g           GAP 4 package AtlasRep                 Thomas Breuer
 ##
 #Y  Copyright (C)  2007,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -21,17 +21,16 @@
 ##  the list of info records for the clicked representations.
 ##  </Returns>
 ##  <Description>
-##  If the &GAP; package <Package>Browse</Package>
-##  (see <Cite Key="Browse1.2"/>) is loaded then the function
-##  <Ref Func="BrowseMinimalDegrees"/> is available.
+##  If the &GAP; package <Package>Browse</Package> (see <Cite Key="Browse"/>)
+##  is loaded then this function is available.
 ##  It opens a browse table whose rows correspond to the groups for which the
 ##  <Package>ATLAS</Package> of Group Representations contains
-##  some information about minimal degrees, whose columns correspond to the
-##  characteristics that occur,
+##  some information about minimal degrees,
+##  whose columns correspond to the characteristics that occur,
 ##  and whose entries are the known minimal degrees.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> if LoadPackage( "browse", "1.2" ) = true then
+##  gap> if IsBound( BrowseMinimalDegrees ) then
 ##  >   down:= NCurses.keys.DOWN;;  DOWN:= NCurses.keys.NPAGE;;
 ##  >   right:= NCurses.keys.RIGHT;;  END:= NCurses.keys.END;;
 ##  >   enter:= NCurses.keys.ENTER;;  nop:= [ 14, 14, 14 ];;
@@ -57,7 +56,7 @@
 ##  This table can be shown as follows.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> if LoadPackage( "browse", "1.2" ) = true then
+##  gap> if IsBound( BrowseMinimalDegrees ) then
 ##  >   # just scroll in the table
 ##  >   BrowseData.SetReplay( Concatenation( [ DOWN, DOWN, DOWN, END ],
 ##  >          "rrrrrrrrrrrrrr", nop, nop, "Q" ) );
@@ -65,7 +64,7 @@
 ##  > fi;
 ##  ]]></Example>
 ##  <P/>
-##  (The browse table does not contain rows for the groups
+##  The browse table does not contain rows for the groups
 ##  <M>6.M_{22}</M>, <M>12.M_{22}</M>, <M>6.Fi_{22}</M>.
 ##  Note that in spite of the title of <Cite Key="Jan05"/>, the entries in
 ##  Table 1 of this paper are in fact the minimal degrees of faithful
@@ -73,7 +72,7 @@
 ##  these degrees are larger than the minimal degrees of faithful
 ##  representations.
 ##  The underlying data of the browse table is about the minimal faithful
-##  degrees.)
+##  (but not necessarily irreducible) degrees.
 ##  <P/>
 ##  The return value of <Ref Func="BrowseMinimalDegrees"/> is the list of
 ##  <Ref Func="OneAtlasGeneratingSetInfo"/> values for those representations
@@ -167,8 +166,8 @@ BindGlobal( "BrowseMinimalDegrees", function( arg )
                     x -> x[1] = labelsrow[i] );
       for j in [ 1 .. Length( char ) ] do
         if not IsBound( mat[i][j] ) then
-          if char[j] = 0 or ( IsList( info ) and IsBound( info[3] )
-                              and info[3] mod char[j] = 0 ) then
+          if char[j] = 0 or ( IsList( info ) and IsBound( info[3].size )
+                              and info[3].size mod char[j] = 0 ) then
             mat[i][j]:= "?";
           fi;
         fi;

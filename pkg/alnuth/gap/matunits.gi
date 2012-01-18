@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  matunits.gi             Alnuth - Kant interface              Bettina Eick
+#W  matunits.gi     Alnuth - ALgebraic NUmber THeory           Bettina Eick
 ##
 
 #############################################################################

@@ -4,7 +4,6 @@
 #W                                                             & Frank Celler
 #W                                                         & Alexander Hulpke
 ##
-#H  @(#)$Id: wordrep.gi,v 4.51 2010/02/23 15:13:37 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -32,8 +31,6 @@
 ##  Otherwise `ObjByExtRep' will choose the smallest possible representation.
 ##  In all cases the representation of the operands is *not* changed.
 ##
-Revision.wordrep_gi :=
-    "@(#)$Id: wordrep.gi,v 4.51 2010/02/23 15:13:37 gap Exp $";
 
 
 #############################################################################

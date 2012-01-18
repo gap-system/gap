@@ -2,7 +2,6 @@
 ##
 #W  string.gi                   GAP library                      Frank Celler
 ##
-#H  @(#)$Id: string.gi,v 4.40 2010/02/23 15:13:32 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains functions for strings.
 ##
-Revision.string_gi :=
-    "@(#)$Id: string.gi,v 4.40 2010/02/23 15:13:32 gap Exp $";
 
 
 #############################################################################
@@ -464,6 +461,8 @@ function(x)
 end);
 
 InstallMethod(ViewObj, "IsString", true, [IsString and IsFinite],0,
+# we overwrite this in GAPDoc such that Unicode can be used depending on string
+# and terminal encoding
 function(s)
     local  x, pos;
     Print("\"");

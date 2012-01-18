@@ -2,8 +2,6 @@
 ##
 #W  ctbmaxi6.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbmaxi6.tbl,v 1.1 2002/06/25 16:47:51 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables for which the ordinary
@@ -12,15 +10,16 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbmaxi6.tbl,v $
+#H  Revision 1.2  2011/09/28 12:12:37  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 1.1  2002/06/25 16:47:51  gap
 #H  added table of J4M1 mod 3 and 11 (constructed by Christoph Jansen)
 #H      TB
 #H
 ##
-Revision.ctbmaxi6_tbl :=
-    "@(#)$Id: ctbmaxi6.tbl,v 1.1 2002/06/25 16:47:51 gap Exp $";
 
-SET_TABLEFILENAME("ctbmaxi6");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("mx1j4",3,

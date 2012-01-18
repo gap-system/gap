@@ -2,15 +2,11 @@
 ##
 #W  bibutils.g           GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: bibutils.g,v 1.1 2008/06/16 17:30:41 gap Exp $
-##
 #Y  Copyright (C)  2008,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains some utilities for creating HTML bibliographies from
 ##  BibXMLext format bibliographies.
 ##
-Revision.( "atlasrep/bibl/bibutils_g" ) :=
-    "@(#)$Id: bibutils.g,v 1.1 2008/06/16 17:30:41 gap Exp $";
 
 
 #############################################################################
@@ -309,7 +305,8 @@ BindGlobal( "CreateAtlasBibliographyHTML", function()
     dirs:= DirectoriesPackageLibrary( "atlasrep", "bibl" );
     srcfile1:= Filename( dirs, "Atlas1bib.xml" );
     srcfile2:= Filename( dirs, "Atlas2bib.xml" );
-    targetfile:= Filename( dirs[1], "Atlasbib.html" );
+#   targetfile:= Filename( dirs[1], "Atlasbib.html" );
+    targetfile:= Filename( dirs[1], "Atlasbibnew.html" );
 
     # Read the data.
     entries1:= BibEntries( srcfile1 );
@@ -416,7 +413,8 @@ BindGlobal( "CreateABCBibliographyHTML", function()
     dirs:= DirectoriesPackageLibrary( "atlasrep", "bibl" );
     srcfile1:= Filename( dirs, "ABCbiblbib.xml" );
     srcfile2:= Filename( dirs, "ABCapp2bib.xml" );
-    targetfile:= Filename( dirs[1], "ABCbibl.html" );
+#   targetfile:= Filename( dirs[1], "ABCbibl.html" );
+    targetfile:= Filename( dirs[1], "ABCbiblnew.html" );
 
     # Read the data.
     entries1:= BibEntries( srcfile1 );

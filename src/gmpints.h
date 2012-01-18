@@ -4,7 +4,6 @@
 **                                                           
 **                                                           
 **
-*H  @(#)$Id: gmpints.h,v 4.5 2011/05/10 17:08:28 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,11 +12,12 @@
 **  This file declares the functions handling gmp integers.
 */
 
+#ifndef GAP_GMPINTS_H
+#define GAP_GMPINTS_H
+
 #ifdef USE_GMP
 
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_gmpints_h =
-   "@(#)$Id: gmpints.h,v 4.5 2011/05/10 17:08:28 gap Exp $";
 #endif
 
 #include <gmp.h>
@@ -37,12 +37,27 @@ typedef UInt4           TypDigit;
 #define NR_HEX_DIGITS         8
 #define SaveLimb SaveUInt8
 #define LoadLimb LoadUInt8
+#define INTEGER_UNIT_SIZE 8
+#define INTEGER_ALLOCATION_SIZE 8
 #else
 typedef UInt2           TypDigit;
 #define NR_HEX_DIGITS         4
 #define SaveLimb SaveUInt4
 #define LoadLimb LoadUInt4
+#define INTEGER_UNIT_SIZE 4
+#define INTEGER_ALLOCATION_SIZE 4
 #endif
+
+#if GMP_LIMB_BITS != NR_HEX_DIGITS * 8
+#error Aborting compile: unexpected GMP limb size
+#endif
+#if GMP_NAIL_BITS != 0
+#error Aborting compile: GAP does not support non-zero GMP nail size
+#endif
+#if __GMP_MP_RELEASE < 50002
+#error Aborting compile: GAP requires GMP 5.0.2 or newer
+#endif
+
 
 #define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
 #define INTBASE            (1L << NR_DIGIT_BITS)
@@ -70,9 +85,9 @@ Obj ObjInt_UInt(UInt i);
 **
 */
 extern  Obj             GMP_REDUCE ( 
-			       Obj                 gmp );
+                               Obj                 gmp );
 extern  Obj             GMP_NORMALIZE ( 
-			       Obj                 gmp );
+                               Obj                 gmp );
 
 
 /****************************************************************************
@@ -94,8 +109,8 @@ extern  void            PrintInt (
 **  <gmpR> are equal and 0 otherwise.
 */
 extern  Int             EqInt ( 
-			       Obj                 opL,
-			       Obj                 opR );
+                               Obj                 opL,
+                               Obj                 opR );
 
 
 /****************************************************************************
@@ -106,8 +121,8 @@ extern  Int             EqInt (
 **  integer <gmpR> and 0 otherwise.
 */
 extern  Int             LtInt (
-			       Obj                 opL,
-			       Obj                 opR );
+                               Obj                 opL,
+                               Obj                 opR );
 
 
 /****************************************************************************
@@ -119,8 +134,8 @@ extern  Int             LtInt (
 **
 */
 extern  Obj             SumInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 /****************************************************************************
 **
@@ -131,9 +146,9 @@ extern  Obj             SumInt (
 **
 */
 extern  Obj             SumOrDiffInt (
-				Obj                 opL,
-				Obj                 opR,
-				Int                 sign );
+                                Obj                 opL,
+                                Obj                 opR,
+                                Int                 sign );
 
 
 /****************************************************************************
@@ -145,8 +160,8 @@ extern  Obj             SumOrDiffInt (
 **
 */
 extern  Obj             DiffInt (
-				 Obj                 opL,
-				 Obj                 opR );
+                                 Obj                 opL,
+                                 Obj                 opR );
 
 /****************************************************************************
 **
@@ -157,8 +172,8 @@ extern  Obj             DiffInt (
 **
 */
 extern  Obj             ProdInt (
-				 Obj                 opL,
-				 Obj                 opR );
+                                 Obj                 opL,
+                                 Obj                 opR );
 
 
 /****************************************************************************
@@ -170,8 +185,8 @@ extern  Obj             ProdInt (
 **
 */
 extern  Obj             ModInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 
 /****************************************************************************
@@ -183,8 +198,8 @@ extern  Obj             ModInt (
 **
 */
 extern  Obj             PowInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 
 /****************************************************************************
@@ -196,8 +211,8 @@ extern  Obj             PowInt (
 **
 */
 extern  Obj             QuoInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 
 /****************************************************************************
@@ -209,8 +224,8 @@ extern  Obj             QuoInt (
 **
 */
 extern  Obj             RemInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 
 /****************************************************************************
@@ -220,12 +235,13 @@ extern  Obj             RemInt (
 **  'GcdInt' returns the gcd of the two integers <gmpL> and <gmpR>.
 */
 extern  Obj             GcdInt (
-				Obj                 opL,
-				Obj                 opR );
+                                Obj                 opL,
+                                Obj                 opR );
 
 
 extern Obj FuncLog2Int( Obj self, Obj intnum);
 
+extern Obj AInvInt ( Obj gmp );
 
 /****************************************************************************
 **
@@ -239,7 +255,9 @@ extern Obj FuncLog2Int( Obj self, Obj intnum);
 */
 StructInitInfo * InitInfoInt ( void );
 
-#endif
+#endif // USE_GMP
+
+#endif // GAP_GMPINTS_H
 
 /****************************************************************************
 **

@@ -2,14 +2,11 @@
 ##
 #W  oprtperm.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: oprtperm.gi,v 4.80 2010/02/23 15:13:20 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.oprtperm_gi :=
-    "@(#)$Id: oprtperm.gi,v 4.80 2010/02/23 15:13:20 gap Exp $";
 
 
 #############################################################################
@@ -97,7 +94,7 @@ end );
 InstallOtherMethod( CycleOp,"perm, int", true,
   [ IsPerm and IsInternalRep, IsInt ], 0,
     function( g, pnt )
-    return Immutable( CyclePermInt( g, pnt ) );
+    return Immutable( CYCLE_PERM_INT( g, pnt ) );
 end );
 
 #############################################################################
@@ -114,7 +111,7 @@ InstallOtherMethod( CycleLengthOp, "perm, int, act", true,
 end );
 
 InstallOtherMethod( CycleLengthOp, "perm, int", true,
-  [ IsPerm and IsInternalRep, IsInt ],0, CycleLengthPermInt);
+  [ IsPerm and IsInternalRep, IsInt ],0, CYCLE_LENGTH_PERM_INT);
 
 #############################################################################
 ##
@@ -1146,8 +1143,7 @@ InstallMethod( IsSemiRegular, "permgroup on numbers", true,
     fi;
 
     # compute the orbits and check that they all have the same length
-    orbs := Filtered( OrbitsDomain( G, D, gens, acts, OnPoints ),
-                      i -> Length(i) > 1 );
+    orbs := OrbitsDomain( G, D, gens, acts, OnPoints );
     if Length( Set( List( orbs, Length ) ) ) <> 1  then
         return false;
     fi;

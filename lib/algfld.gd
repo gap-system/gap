@@ -2,7 +2,6 @@
 ##
 #W  algfld.gd                   GAP Library                  Alexander Hulpke
 ##
-#H  @(#)$Id: algfld.gd,v 4.27 2010/10/02 16:40:58 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St  Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the categories,  attributes, properties and operations
 ##  for algebraic extensions of fields and their elements
-Revision.algfld_gd:=
-  "@(#)$Id: algfld.gd,v 4.27 2010/10/02 16:40:58 alexk Exp $";
 
 #############################################################################
 ##
@@ -27,7 +24,9 @@ Revision.algfld_gd:=
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory( "IsAlgebraicElement", IsScalar);
+DeclareCategory( "IsAlgebraicElement", IsScalar and IsZDFRE and 
+                    IsAssociativeElement and IsAdditivelyCommutativeElement
+                    and IsCommutativeElement);
 DeclareCategoryCollections( "IsAlgebraicElement");
 DeclareCategoryCollections( "IsAlgebraicElementCollection");
 DeclareCategoryCollections( "IsAlgebraicElementCollColl");

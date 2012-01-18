@@ -34,7 +34,7 @@ only distinct.
   <Func Name="ResidueClassWithFixedRepresentative"
         Arg="m, r" Label="of Z, by modulus and residue"/>
   <Returns>
-    The residue class <A>r</A>&nbsp;mod&nbsp;<A>m</A> of the
+    the residue class <A>r</A>&nbsp;mod&nbsp;<A>m</A> of the
     ring&nbsp;<A>R</A>, with the fixed representative&nbsp;<A>r</A>.
   </Returns>
   <Description>
@@ -64,7 +64,7 @@ gap> ResidueClassWithFixedRepresentative(Integers,2,1);
   <Func Name="UnionOfResidueClassesWithFixedReps" Arg="classes"
         Label="of Z, by list of classes"/>
   <Returns>
-    The union of the residue classes <A>classes</A>[<M>i</M>][2] mod
+    the union of the residue classes <A>classes</A>[<M>i</M>][2] mod
     <A>classes</A>[<M>i</M>][1] of the ring <A>R</A>, with fixed
     representatives <A>classes</A>[<M>i</M>][2].
   </Returns>
@@ -113,7 +113,7 @@ with fixed representatives.
   <Func Name="AllResidueClassesWithFixedRepsModulo"
         Arg="m" Label="by modulus, of the default ring of that modulus"/>
   <Returns>
-    A sorted list of all residue classes (mod&nbsp;<A>m</A>)
+    a sorted list of all residue classes (mod&nbsp;<A>m</A>)
     of the ring&nbsp;<A>R</A>, with fixed representatives.
   </Returns>
   <Description>
@@ -154,7 +154,7 @@ Elements and residue classes can be contained with multiplicities:
   <Meth Name="Multiplicity" Arg="cl, U"
         Label="of a residue class in a union of residue classes with fixed rep's"/>
   <Returns>
-    The multiplicity of <A>x</A> in&nbsp;<A>U</A> regarded as a multiset
+    the multiplicity of <A>x</A> in&nbsp;<A>U</A> regarded as a multiset
     of ring elements, resp. the multiplicity of the residue class <A>cl</A>
     in&nbsp;<A>U</A> regarded as a multiset of residue classes.
   </Returns>
@@ -251,7 +251,7 @@ gap> V/2;
   <Meth Name="Union" Arg="U1, U2"
         Label="for unions of residue classes with fixed representatives"/>
   <Returns>
-    The union of <A>U1</A> and&nbsp;<A>U2</A>.
+    the union of <A>U1</A> and&nbsp;<A>U2</A>.
   </Returns>
   <Description>
     The multiplicity of any ring element or residue class in
@@ -275,7 +275,7 @@ gap> Union(U,U);
   <Meth Name="Intersection" Arg="U1, U2"
         Label="for unions of residue classes with fixed representatives"/>
   <Returns>
-    The intersection of <A>U1</A> and&nbsp;<A>U2</A>.
+    the intersection of <A>U1</A> and&nbsp;<A>U2</A>.
   </Returns>
   <Description>
     The multiplicity of any residue class in the intersection
@@ -297,7 +297,7 @@ Empty union of residue classes of Z with fixed representatives
   <Meth Name="Difference" Arg="U1, U2"
         Label="for unions of residue classes with fixed representatives"/>
   <Returns>
-    The difference of <A>U1</A> and&nbsp;<A>U2</A>.
+    the difference of <A>U1</A> and&nbsp;<A>U2</A>.
   </Returns>
   <Description>
     The multiplicity of any residue class in the difference is its
@@ -335,7 +335,7 @@ gap> Difference(U,V);
   <Attr Name="Delta" Arg="U"
         Label="for a union of residue classes with fixed representatives"/>
   <Returns>
-    The value of the invariant <M>\delta</M> of the
+    the value of the invariant <M>\delta</M> of the
     residue class union&nbsp;<A>U</A>.
   </Returns>
   <Description>
@@ -371,7 +371,7 @@ E(12)^11
   <Meth Name="RepresentativeStabilizingRefinement" Arg="U, k"
         Label="of a union of res.-classes with fixed rep's"/>
   <Returns>
-    The representative stabilizing refinement of <A>U</A>
+    the representative stabilizing refinement of <A>U</A>
     into <A>k</A>&nbsp;parts.
   </Returns>
   <Description>

@@ -395,7 +395,7 @@ InstallMethod( ShortOrbits,
 
     local  gens, finite, orbs, orb, oldlength, remaining, f;
 
-    # Option "finite": Assume finiteness of all orbits.
+    # Option "finite": assume finiteness of all orbits.
     # If "finite" is set and <maxlng> is < 0, a list of all orbits
     # which have nontrivial intersection with <S> is returned.
 
@@ -450,14 +450,14 @@ InstallMethod( Ball,
                "for a monoid and an element thereof (RCWA)", ReturnTrue,
                [ IsMonoid, IsMultiplicativeElement, IsInt ], 0,
 
-  function ( G, g, r )
+  function ( G, f, r )
 
     local  ball, gens, k, spheres;
 
-    if   not IsCollsElms(FamilyObj(G),FamilyObj(g)) or r < 0
+    if   not IsCollsElms(FamilyObj(G),FamilyObj(f)) or r < 0
     then TryNextMethod(); fi;
     spheres := true in List(["spheres","Spheres"],ValueOption);
-    if spheres then ball := [[g]]; else ball := [g]; fi;
+    if spheres then ball := [[f]]; else ball := [f]; fi;
     if IsGroup(G) then gens := Set(GeneratorsAndInverses(G));
                   else gens := Set(GeneratorsOfMonoid(G)); fi;
     for k in [1..r] do
@@ -503,35 +503,49 @@ InstallMethod( Ball,
 
 #############################################################################
 ##
-#M  RestrictedBall( <M>, <f>, <r> ) . . . . . . . . . for rcwa monoids over Z
+#M  Ball( <M>, <p>, <r> ) . for a transf.-monoid and a point, action OnPoints
+##
+InstallMethod( Ball,
+               "for a transf.-monoid and a point, action OnPoints (RCWA)",
+               ReturnTrue, [ IsMonoid, IsObject, IsInt ], 0,
+  function ( G, p, r )
+    if   IsCollsElms(FamilyObj(G),FamilyObj(p)) or r < 0
+    then TryNextMethod(); fi;
+    return Ball(G,p,r,OnPoints);
+  end );
+
+#############################################################################
+##
+#M  RestrictedBall( <M>, <f>, <r>, <modulusbound> ) . . . .  for rcwa monoids
 ##
 ##  As element tests can be expensive, this method does not check whether <f>
 ##  is indeed an element of <M>.
 ##
 InstallMethod( RestrictedBall,
-               "for an rcwa monoid over Z and an element thereof (RCWA)",
-               ReturnTrue, [ IsRcwaMonoid, IsRcwaMapping, IsInt ], 0,
+               "for an rcwa monoid and an element thereof (RCWA)",
+               ReturnTrue, [ IsRcwaMonoid, IsRcwaMapping,
+                             IsInt, IsPosInt ], 0,
 
-  function ( G, g, r )
+  function ( G, f, r, modulusbound )
 
-    local  R, gens, ball, new, h1, h2, h, k, spheres;
+    local  R, gens, ball, old, new, h1, h2, h, k, spheres;
 
-    R := Source(g);
-    if   not IsCollsElms(FamilyObj(G),FamilyObj(g))
+    R := Source(f);
+    if   not IsCollsElms(FamilyObj(G),FamilyObj(f))
       or not IsRing(R) or r < 0
     then TryNextMethod(); fi;
     spheres := true in List(["spheres","Spheres"],ValueOption);
-    if spheres then ball := [[g]]; else ball := [g]; fi;
+    if spheres then ball := [[f]]; else ball := [f]; fi;
     if IsGroup(G) then gens := Set(GeneratorsAndInverses(G));
                   else gens := Set(GeneratorsOfMonoid(G)); fi;
     for k in [1..r] do
+      if spheres then old := ball[Length(ball)];
+                 else old := ball; fi;
       new := [];
-      for h1 in ball do
+      for h1 in old do
         for h2 in gens do
           h := h1 * h2;
-          if   NumberOfResidues(R,Mod(h))
-            <= Maximum(NumberOfResidues(R,Mod(h1)),
-                       NumberOfResidues(R,Mod(h2)))
+          if   NumberOfResidues(R,Mod(h)) <= modulusbound
           then Add(new,h); fi;
         od;
       od;
@@ -541,7 +555,7 @@ InstallMethod( RestrictedBall,
         ball := Union(ball,new);
       fi;
     od;
-    return ball; 
+    return ball;
   end );
 
 #############################################################################

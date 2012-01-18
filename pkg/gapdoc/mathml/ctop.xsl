@@ -5,7 +5,6 @@
 >
 
 <!--
-$Id: ctop.xsl,v 1.1 2002/05/23 15:41:37 gap Exp $
 
 Copyright David Carlisle 2001, 2002.
 

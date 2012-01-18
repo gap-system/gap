@@ -2,7 +2,6 @@
 ##
 #W  pcgsperm.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: pcgsperm.gi,v 4.127 2010/06/20 15:13:34 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file  contains    functions which deal with   polycyclic  generating
 ##  systems of solvable permutation groups.
 ##
-Revision.pcgsperm_gi :=
-    "@(#)$Id: pcgsperm.gi,v 4.127 2010/06/20 15:13:34 gap Exp $";
 
 #############################################################################
 ##
@@ -1029,45 +1026,6 @@ InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     SetIsBijective( iso, true );
     
     return iso;
-end );
-
-#############################################################################
-##
-#M  EpiPcByModpcgs( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
-##
-BindGlobal("EpiPcByModpcgs",function( G, H, gens, imgs )
-local   filter,  hom,pcgs,imgso;
-  
-  hom := rec();
-  filter := HasSource and HasRange and IsGroupGeneralMappingByPcgs
-            and IsToPcGroupGeneralMappingByImages and IsTotal;
-
-  if IsPermGroup( G )  then
-    filter := filter and IsPermGroupGeneralMappingByImages;
-  fi;
-
-  pcgs:=[gens,imgs];
-
-  hom.sourcePcgs       := gens;
-  hom.sourcePcgsImages := imgs;
-
-  if HasGeneratorsOfGroup(H) 
-      and IsIdenticalObj(GeneratorsOfGroup(H),imgs) then
-    imgso:=H;
-  else
-    imgso:=SubgroupNC( H, imgs);
-  fi;
-  # we can also get the ImagesSource quickly
-  ObjectifyWithAttributes( hom,
-  NewType( GeneralMappingsFamily
-	  ( ElementsFamily( FamilyObj( G ) ),
-	    ElementsFamily( FamilyObj( H ) ) ), filter and HasImagesSource ), 
-	    Source,G,
-	    Range,H,
-	    ImagesSource,imgso);
-
-  SetIsMapping(hom,true);
-  return hom;
 end );
 
 #############################################################################

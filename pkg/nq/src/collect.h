@@ -7,12 +7,12 @@
 extern  int     UseCombiCollector;
 extern  int     UseSimpleCollector;
 
-extern	int	SimpleCollect( );
-extern	int	CombiCollect( );
-extern	int	Collect( );
+extern  int     SimpleCollect(expvec lhs, word rhs, expo e);
+extern  int     CombiCollect(expvec lhs, word rhs, expo e);
+extern  int     Collect(expvec lhs, word rhs, expo e);
 
-extern	word	Solve( );
-extern	word	Invert( );
-extern	word	Multiply( );
-extern	word	Exponentiate( );
-extern	word	Commutator( );
+extern  word    Solve(word u, word v);
+extern  word    Invert(word u);
+extern  word    Multiply(word u, word v);
+extern  word    Exponentiate(word u, int n);
+extern  word    Commutator(word u, word v);

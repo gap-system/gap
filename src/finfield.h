@@ -3,7 +3,6 @@
 *W  finfield.h                  GAP source                      Werner Nickel
 **                                                         & Martin Schönert
 **
-*H  @(#)$Id: finfield.h,v 4.14 2010/02/23 15:13:42 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -50,9 +49,11 @@
 **  Zech-Logarithm  table.  The zeroth  entry in the  finite field bag is the
 **  order of the finite field minus one.
 */
+
+#ifndef GAP_FINFIELD_H
+#define GAP_FINFIELD_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_finfield_h =
-   "@(#)$Id: finfield.h,v 4.14 2010/02/23 15:13:42 gap Exp $";
 #endif
 
 
@@ -414,6 +415,8 @@ extern  Obj             TypeFFE (
 */
 StructInitInfo * InitInfoFinfield ( void );
 
+
+#endif // GAP_FINFIELD_H
 
 /****************************************************************************
 **

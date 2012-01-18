@@ -2,7 +2,6 @@
 **
 *W  rational.h                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: rational.h,v 4.8 2010/02/23 15:13:47 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,9 +17,11 @@
 **  integer package.  We will use the  term fraction to  stress the fact that
 **  something must not be an integer.
 */
+
+#ifndef GAP_RATIONAL_H
+#define GAP_RATIONAL_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_rational_h =
-   "@(#)$Id: rational.h,v 4.8 2010/02/23 15:13:47 gap Exp $";
 #endif
 
 
@@ -38,9 +39,10 @@ const char * Revision_rational_h =
 StructInitInfo * InitInfoRat ( void );
 
 
+#endif // GAP_RATIONAL_H
+
 /****************************************************************************
 **
 
 *E  rational.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-

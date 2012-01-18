@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W rationals.gi          Alnuth -  Kant Interface              Bjoern Assmann
+#W rationals.gi    Alnuth -  ALgebraic NUmber THeory         Bjoern Assmann
 ##
 
 #############################################################################

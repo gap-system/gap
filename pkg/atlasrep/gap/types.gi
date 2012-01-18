@@ -2,15 +2,11 @@
 ##
 #W  types.gi             GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: types.gi,v 1.28 2009/07/29 14:18:33 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains implementations of the functions for administrating
 ##  the data types used in the {\ATLAS} of Group Representations.
 ##
-Revision.( "atlasrep/gap/types_gi" ) :=
-    "@(#)$Id: types.gi,v 1.28 2009/07/29 14:18:33 gap Exp $";
 
 
 #############################################################################
@@ -19,28 +15,39 @@ Revision.( "atlasrep/gap/types_gi" ) :=
 ##
 BindGlobal( "TOCEntryStringDefault", function( typename, entry )
     return Concatenation( [
-    "AGRTOC(\"", typename, "\",\"", entry[ Length( entry ) ], "\");\n" ] );
+    "AGR.TOC(\"", typename, "\",\"", entry[ Length( entry ) ], "\");\n" ] );
 end );
 
 
 #############################################################################
 ##
-#F  DisplayOverviewInfoDefault( <dispname>, <align>, <compname> )
+#F  AGR.DisplayOverviewInfoDefault( <dispname>, <align>, <compname> )
 ##
-BindGlobal( "DisplayOverviewInfoDefault",
-    function( dispname, align, compname )
-    return [ dispname, align, function( tocs, groupname )
-      local value, private, j, toc, record, new;
+AGR.DisplayOverviewInfoDefault:= function( dispname, align, compname )
+    return [ dispname, align, function( conditions )
+      local groupname, tocs, std, value, private, toc, record, new;
+
+      groupname:= conditions[1][2];
+      tocs:= AGR.TablesOfContents( conditions );
+      if Length( conditions ) = 1 or
+         not ( IsInt( conditions[2] ) or IsList( conditions[2] ) ) then
+        std:= true;
+      else
+        std:= conditions[2];
+        if IsInt( std ) then
+          std:= [ std ];
+        fi;
+      fi;
 
       value:= false;
       private:= false;
-      for j in [ 1 .. Length( tocs ) ] do
-        toc:= tocs[j];
+      for toc in tocs do
         if IsBound( toc.( groupname ) ) then
           record:= toc.( groupname );
           if IsBound( record.( compname ) ) then
-            new:= not IsEmpty( record.( compname ) );
-            if 1 < j and new then
+            new:= ForAny( record.( compname ),
+                          x -> std = true or x[1] in std );
+            if IsBound( toc.diridPrivate ) and new then
               private:= true;
             fi;
             value:= value or new;
@@ -50,20 +57,20 @@ BindGlobal( "DisplayOverviewInfoDefault",
       if value then
         value:= "+";
       else
-        value:= "-";
+        value:= "";
       fi;
       return [ value, private ];
     end ];
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  AGRTestWordsSLPDefault( <tocid>, <name>, <file>, <type>, <outputs>,
-#F                          <verbose> )
+#F  AGR.TestWordsSLPDefault( <tocid>, <name>, <file>, <type>, <outputs>,
+#F                           <verbose> )
 ##
 ##  For the straight line program that is returned by
-##  <Ref Func="AGRFileContents"/> when this is called
+##  <Ref Func="AGR.FileContents"/> when this is called
 ##  with the first four arguments,
 ##  it is checked that it is internally consistent and that it can be
 ##  evaluated at the right number of arguments.
@@ -74,15 +81,14 @@ end );
 ##  in other <C>TestWords</C> functions the value <K>true</K> triggers that
 ##  more statements may be printed than just error messages.
 ##
-BindGlobal( "AGRTestWordsSLPDefault",
-    function( tocid, name, file, type, outputs, verbose )
+AGR.TestWordsSLPDefault:= function( tocid, name, file, type, outputs, verbose )
     local filename, prog, prg, gens;
 
     # Read the program.
     if tocid = "local" then
       tocid:= "dataword";
     fi;
-    prog:= AGRFileContents( tocid, name, file, type );
+    prog:= AGR.FileContents( tocid, name, file, type );
     if prog = fail then
       Print( "#E  file `", file, "' is corrupted\n" );
       return false;
@@ -115,29 +121,28 @@ BindGlobal( "AGRTestWordsSLPDefault",
     fi;
 
     return true;
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  AGRTestWordsSLDDefault( <tocid>, <name>, <file>, <type>, <format>,
-#F                          <verbose> )
+#F  AGR.TestWordsSLDDefault( <tocid>, <name>, <file>, <type>, <format>,
+#F                           <verbose> )
 ##
 ##  For the straight line decision that is returned by
-##  <Ref Func="AGRFileContents"/> when this is called
+##  <Ref Func="AGR.FileContents"/> when this is called
 ##  with the same arguments,
 ##  it is checked that it is internally consistent and that it can be
 ##  evaluated in all relevant representations.
 ##
-BindGlobal( "AGRTestWordsSLDDefault",
-    function( tocid, name, file, type, format, verbose )
+AGR.TestWordsSLDDefault:= function( tocid, name, file, type, format, verbose )
     local filename, prog, result, gapname, orderfunc, std, entry, gens;
 
     # Read the program.
     if tocid = "local" then
       tocid:= "dataword"; 
     fi;
-    prog:= AGRFileContents( tocid, name, file, type );
+    prog:= AGR.FileContents( tocid, name, file, type );
     if prog = fail then
       Print( "#E  file `", file, "' is corrupted\n" );
       return false;
@@ -183,16 +188,15 @@ BindGlobal( "AGRTestWordsSLDDefault",
     od;
 
     return result;
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  AGRTestFileHeadersDefault( <tocid>, <groupname>, <entry>, <type>, <dim>,
-#F                             <special> )
+#F  AGR.TestFileHeadersDefault( <tocid>, <groupname>, <entry>, <type>, <dim>,
+#F                              <special> )
 ##
-BindGlobal( "AGRTestFileHeadersDefault",
-    function( tocid, groupname, entry, type, dim, special )
+AGR.TestFileHeadersDefault:= function( tocid, groupname, entry, type, dim, special )
     local filename, name, mats;
 
     # Try to read the file.
@@ -201,7 +205,7 @@ BindGlobal( "AGRTestFileHeadersDefault",
     fi;
     dim:= [ dim, dim ];
     filename:= entry[ Length( entry ) ];
-    mats:= AGRFileContents( tocid, groupname, filename, type );
+    mats:= AGR.FileContents( tocid, groupname, filename, type );
 
     # Check that the file contains a list of matrices of the right dimension.
     if   mats = fail then
@@ -224,26 +228,44 @@ BindGlobal( "AGRTestFileHeadersDefault",
     fi;
 
     return true;
-end );
+    end;
 
 
 #############################################################################
 ##
 #F  AGRTestFilesMTX( <tocid>, <groupname>, <entry>, <type> )
 ##
-BindGlobal( "AGRTestFilesMTX", function( tocid, groupname, entry, type )
+AGR.TestFilesMTX:= function( tocid, groupname, entry, type )
     local result;
 
     if tocid = "local" then
       tocid:= "datagens";
     fi;
     # Read the file(s).
-    result:= AGRFileContents( tocid, groupname, entry[ Length( entry ) ],
+    result:= AGR.FileContents( tocid, groupname, entry[ Length( entry ) ],
                               type ) <> fail;
     if not result then
       Print( "#E  file(s) `", entry[ Length( entry ) ], "' corrupted\n" );
     fi;
     return result;
+    end;
+
+
+#############################################################################
+##
+#F  AtlasProgramInfoDefault( <type>, <identifier>, <prefix>, <groupname> )
+##
+BindGlobal( "AtlasProgramInfoDefault",
+    function( type, identifier, prefix, groupname )
+    local prog, result;
+
+    if IsString( identifier[2] ) and
+       AGR.ParseFilenameFormat( identifier[2], type[2].FilenameFormat )
+           <> fail then
+      return rec( standardization := identifier[3],
+                  identifier      := identifier );
+    fi;
+    return fail;  
 end );
 
 
@@ -256,9 +278,9 @@ BindGlobal( "AtlasProgramDefault",
     local prog, result;
 
     if IsString( identifier[2] ) and
-       AGRParseFilenameFormat( identifier[2], type[2].FilenameFormat )
+       AGR.ParseFilenameFormat( identifier[2], type[2].FilenameFormat )
            <> fail then
-      prog:= AGRFileContents( prefix, groupname, identifier[2], type );
+      prog:= AGR.FileContents( prefix, groupname, identifier[2], type );
       if prog <> fail then
         result:= rec( program         := prog.program,
                       standardization := identifier[3],
@@ -275,9 +297,11 @@ end );
 
 #############################################################################
 ##
-#F  AGRCheckOneCondition( <func>[, <detect>], <condlist> )
+#F  AGR.CheckOneCondition( <func>[, <detect>], <condlist> )
 ##
-BindGlobal( "AGRCheckOneCondition", function( arg )
+##  This function always returns `true'; it changes <condlist> in place.
+##
+AGR.CheckOneCondition:= function( arg )
     local func, detect, condlist, pos, val;
 
     func:= arg[1];
@@ -289,33 +313,42 @@ BindGlobal( "AGRCheckOneCondition", function( arg )
     fi;
     pos:= Position( condlist, func );
     if   pos = fail then
-      return true;
-    elif Length( arg ) = 2 then
-      Unbind( condlist[ pos ] );
-      return true;
-    elif pos = Length( condlist ) then
+      # The function does not occur as a condition.
       return true;
     fi;
-    val:= condlist[ pos+1 ];
-    if    ( IsString( val ) and detect( val ) )
-       or ( not IsList( val ) and detect( val ) )
-       or ( IsList( val ) and ForAny( val, detect ) ) then
-      Unbind( condlist[ pos ] );
-      Unbind( condlist[ pos+1 ] );
-      return true;
-    fi;
+
+    while pos <> fail do
+      if Length( arg ) = 2 then
+        # Support `IsPermGroup' etc. *without* subsequent `true'.
+        Unbind( condlist[ pos ] );
+      else
+        if pos = Length( condlist ) then
+          # Keep `condlist' unchanged.
+          # If there is a call without <detect> then it will remove the entry.
+          return true;
+        fi;
+        val:= condlist[ pos+1 ];
+        if    ( IsString( val ) and detect( val ) )
+           or ( not IsList( val ) and detect( val ) )
+           or ( IsList( val ) and ForAny( val, detect ) ) then
+          Unbind( condlist[ pos ] );
+          Unbind( condlist[ pos+1 ] );
+        fi;
+      fi;
+      pos:= Position( condlist, func, pos );
+    od;
     return true;
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  AGRDeclareDataType( <kind>, <name>, <record> )
+#F  AGR.DeclareDataType( <kind>, <name>, <record> )
 ##
 ##  Check that the necessary components are bound,
 ##  and add default values if necessary.
 ##
-InstallGlobalFunction( AGRDeclareDataType, function( kind, name, record )
+AGR.DeclareDataType:= function( kind, name, record )
     local types, nam;
 
     # Check that the type does not yet exist.
@@ -371,6 +404,9 @@ InstallGlobalFunction( AGRDeclareDataType, function( kind, name, record )
       if not IsBound( record.AtlasProgram ) then
         record.AtlasProgram := AtlasProgramDefault;
       fi;
+      if not IsBound( record.AtlasProgramInfo ) then
+        record.AtlasProgramInfo := AtlasProgramInfoDefault;
+      fi;
     else
       Error( "<kind> must be one of \"rep\", \"prg\"" );
     fi;
@@ -380,14 +416,16 @@ InstallGlobalFunction( AGRDeclareDataType, function( kind, name, record )
 
     # Clear the cache.
     types.cache:= [];
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  AGRDataTypes( <kind1>[, <kind2>] )
+#F  AGR.DataTypes( <kind1>[, <kind2>] )
 ##
-InstallGlobalFunction( AGRDataTypes, function( arg )
+##  returns the list of pairs <C>[ <A>name</A>, <A>record</A> ]</C>
+##  as declared for the kinds in question.
+AGR.DataTypes:= function( arg )
     local types, result, kind;
 
     types:= AtlasOfGroupRepresentationsInfo.TableOfContents.types;
@@ -405,7 +443,7 @@ InstallGlobalFunction( AGRDataTypes, function( arg )
     fi;
 
     return result[2];
-end );
+    end;
 
 
 #############################################################################

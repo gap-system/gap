@@ -4,7 +4,6 @@
 #W                                                             Andrew Solomon
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: ratfunul.gi,v 4.99 2011/05/14 17:00:18 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  This file contains the methods for rational functions that know that they
 ##  are univariate.
 ##
-Revision.ratfunul_gi :=
-    "@(#)$Id: ratfunul.gi,v 4.99 2011/05/14 17:00:18 gap Exp $";
 
 #############################################################################
 ##
@@ -164,7 +161,7 @@ function( obj )
 
     cofs := CoefficientsOfLaurentPolynomial(obj);
     if IsEmpty(cofs[1])  then
-        return infinity;
+        return DEGREE_ZERO_LAURPOL;
     else
         return cofs[2] + Length(cofs[1]) - 1;
     fi;
@@ -217,12 +214,12 @@ local d,x;
     # is either polynomial constant? if yes we must permit different
     # indeterminate numbers
     d:=DegreeOfLaurentPolynomial(f);
-    if d=0 or d=infinity then
+    if d=0 or d=DEGREE_ZERO_LAURPOL then
       return IndeterminateNumberOfLaurentPolynomial(g);
     fi;
     x:=IndeterminateNumberOfLaurentPolynomial(f);
     d:=DegreeOfLaurentPolynomial(g);
-    if d<>0 and d<>infinity and 
+    if d<>0 and d<>DEGREE_ZERO_LAURPOL and 
        x<>IndeterminateNumberOfLaurentPolynomial(g) then
       return fail;
     fi;
@@ -898,6 +895,15 @@ end);
 InstallOtherMethod(EuclideanDegree,"univariate",true,
 	      [IsUnivariatePolynomial],0,DegreeOfLaurentPolynomial);
 
+InstallOtherMethod(EuclideanDegree,"laurent,ring",IsCollsElms,
+  [IsPolynomialRing,IsLaurentPolynomial],0,
+function(R,a) 
+  return DegreeOfLaurentPolynomial(a);
+end);
+
+InstallOtherMethod(EuclideanDegree,"laurent",true,
+  [IsLaurentPolynomial],0,DegreeOfLaurentPolynomial);
+
 #############################################################################
 ##
 #M  EuclideanRemainder( <pring>, <upol>, <upol> )
@@ -993,20 +999,13 @@ RedispatchOnCondition( GcdOp,IsIdenticalObj,
 
 #############################################################################
 ##
-#M  StandardAssociate( <pring>, <lpol> )
+#M  StandardAssociateUnit( <pring>, <lpol> )
 ##
-InstallMethod(StandardAssociate,"laurent",
+InstallMethod(StandardAssociateUnit,"laurent",
   IsCollsElms,[IsPolynomialRing, IsLaurentPolynomial],0,
 function(R,f)
-local l;
-
-  l:=LeadingCoefficient(f);
-  if not IsZero(l) then
-    # get standard associate of leading term
-    f:=f*Quotient(CoefficientsRing(R),
-                  StandardAssociate(CoefficientsRing(R),l),l);
-  fi;
-  return f;
+  # get standard associate of leading term
+  return StandardAssociateUnit(CoefficientsRing(R), LeadingCoefficient(f));
 end);
 
 #############################################################################
@@ -1507,6 +1506,17 @@ InstallMethod( \*, "univariate * coeff", IsElmsCoeffs,
   [ IsPolynomialFunction and IsUnivariateRationalFunction,IsRingElement ],
     3, # The method for rational functions is higher ranked
   function(l,c) return ProdCoeffUnivfunc(c,l);end);
+
+# special convenience: permit to multiply by rationals
+InstallMethod( \*, "rat * univariate", true,
+    [ IsRat, IsPolynomialFunction and IsUnivariateRationalFunction ],
+    -RankFilter(IsRat),#fallback method is low ranked
+  function(c,r) return ProdCoeffUnivfunc(c*FamilyObj(r)!.oneCoefficient,r); end);
+
+InstallMethod( \*, "univariate * rat", true,
+    [ IsPolynomialFunction and IsUnivariateRationalFunction, IsRat ],
+    -RankFilter(IsRat),#fallback method is low ranked
+  function(l,c) return ProdCoeffUnivfunc(c*FamilyObj(l)!.oneCoefficient,l); end);
 
 #############################################################################
 ##

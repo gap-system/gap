@@ -2,7 +2,6 @@
 ##
 #W  grpramat.gd                 GAP Library                     Franz Gähler
 ##
-#H  @(#)$Id: grpramat.gd,v 4.16 2010/02/23 15:13:08 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,16 +9,14 @@
 ##
 ##  This file contains the declarations for matrix groups over the rationals
 ##
-Revision.grpramat_gd :=
-    "@(#)$Id: grpramat.gd,v 4.16 2010/02/23 15:13:08 gap Exp $";
 
 #############################################################################
 ##
-#P  IsCyclotomicMatrixGroup( <G> )
+#C  IsCyclotomicMatrixGroup( <G> )
 ##
 ##  <#GAPDoc Label="IsCyclotomicMatrixGroup">
 ##  <ManSection>
-##  <Prop Name="IsCyclotomicMatrixGroup" Arg='G'/>
+##  <Filt Name="IsCyclotomicMatrixGroup" Arg='G' Type='Category'/>
 ##
 ##  <Description>
 ##  tests whether all matrices in <A>G</A> have cyclotomic entries.
@@ -27,7 +24,7 @@ Revision.grpramat_gd :=
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-IsCyclotomicMatrixGroup := IsCyclotomicCollCollColl and IsMatrixGroup;
+DeclareSynonym( "IsCyclotomicMatrixGroup", IsCyclotomicCollCollColl and IsMatrixGroup );
 
 #############################################################################
 ##
@@ -43,7 +40,7 @@ IsCyclotomicMatrixGroup := IsCyclotomicCollCollColl and IsMatrixGroup;
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty("IsRationalMatrixGroup", IsCyclotomicMatrixGroup);
+DeclareProperty( "IsRationalMatrixGroup", IsCyclotomicMatrixGroup );
 
 #############################################################################
 ##
@@ -61,7 +58,7 @@ DeclareProperty("IsRationalMatrixGroup", IsCyclotomicMatrixGroup);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty("IsIntegerMatrixGroup", IsCyclotomicMatrixGroup);
+DeclareProperty( "IsIntegerMatrixGroup", IsCyclotomicMatrixGroup );
 
 #############################################################################
 ##
@@ -83,7 +80,7 @@ DeclareProperty("IsIntegerMatrixGroup", IsCyclotomicMatrixGroup);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-IsNaturalGLnZ := IsNaturalGL and IsIntegerMatrixGroup;
+DeclareSynonym( "IsNaturalGLnZ", IsNaturalGL and IsIntegerMatrixGroup );
 
 #############################################################################
 ##
@@ -105,7 +102,7 @@ IsNaturalGLnZ := IsNaturalGL and IsIntegerMatrixGroup;
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-IsNaturalSLnZ := IsNaturalSL and IsIntegerMatrixGroup;
+DeclareSynonym( "IsNaturalSLnZ", IsNaturalSL and IsIntegerMatrixGroup );
 
 #############################################################################
 ##

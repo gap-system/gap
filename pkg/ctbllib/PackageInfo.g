@@ -6,22 +6,20 @@ SetPackageInfo( rec(
 PackageName :=
   "CTblLib",
 MyVersion :=
-  "1r1p4",
+  "1r2p0",
 MyWWWHome :=
   "http://www.math.rwth-aachen.de/~Thomas.Breuer",
 Subtitle :=
   "The GAP Character Table Library",
 Version :=
   JoinStringsWithSeparator( SplitString( ~.MyVersion, "rp" ), "." ),
-Autoload :=
-  true,
 Date :=
   # "21/01/2002" -- Version 1.0
   # "18/11/2003" -- Version 1.1.0
   # "20/11/2003" -- Version 1.1.1
   # "27/11/2003" -- Version 1.1.2
   # "31/03/2004" -- Version 1.1.3
-  "??/??/????",
+  "31/10/2011",
 PackageWWWHome :=
   Concatenation( ~.MyWWWHome, "/", LowercaseString( ~.PackageName ) ),
 ArchiveURL :=
@@ -38,17 +36,17 @@ Persons := [
     Email := "sam@math.rwth-aachen.de",
     WWWHome := ~.MyWWWHome,
     Place := "Aachen",
-    Institution := "Lehrstuhl D f&uuml;r Mathematik, RWTH Aachen",
+    Institution := "Lehrstuhl D für Mathematik, RWTH Aachen",
     PostalAddress := Concatenation( [
       "Thomas Breuer\n",
-      "Lehrstuhl D f&uuml;r Mathematik\n",
+      "Lehrstuhl D für Mathematik\n",
       "Templergraben 64\n",
       "52062 Aachen\n",
       "Germany"
       ] ),
   ),
 #   rec(  
-#     LastName      := "Cla�en-Houben",
+#     LastName      := "Claßen-Houben",
 #     FirstNames    := "Michael",
 #     IsAuthor      := true, 
 #     IsMaintainer  := false,
@@ -77,24 +75,26 @@ PackageDoc := rec(
   ArchiveURLSubset :=
     [ "doc", "htm" ],
   HTMLStart :=
-    "htm/chapters.htm",
+    "doc/chap0.html",
   PDFFile :=
     "doc/manual.pdf",
   SixFile :=
     "doc/manual.six",
   LongTitle :=
     "The GAP Character Table Library",
-  Autoload :=
-    true,
   ),
 Dependencies := rec(
   GAP :=
     ">= 4.4",
+  OtherPackagesLoadedInAdvance :=
+    [],
   NeededOtherPackages :=
-    [ [ "gapdoc", ">= 0.9" ] ], # [["gpisotyp", ">= 1.0"]],
+    [ [ "gapdoc", ">= 0.9" ] ],
+   # [["gpisotyp", ">= 1.0"]],
   SuggestedOtherPackages :=
-    [ [ "tomlib", ">= 1.0" ],
-      [ "Browse", ">= 1.1" ] ],
+    [ [ "tomlib", ">= 1.0" ],     # because of the interface
+      [ "Browse", ">= 1.1" ],     # because of database attributes and overview functions
+      [ "chevie", ">= 1.0" ] ],   # because of Deligne-Lusztig names
   ExternalConditions :=
     [],
   ),

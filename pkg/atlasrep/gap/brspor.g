@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  brspor.g             GAP 4 package `atlasrep'               Thomas Breuer
+#W  brspor.g             GAP 4 package AtlasRep                 Thomas Breuer
 ##
 #Y  Copyright (C)  2007,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -63,6 +63,9 @@ InstallValue( BibliographySporadicSimple, rec(
     ],
     groupnames:= Concatenation( [ ~.emptycategory ],
                    List( ~.groupnameinfo, x -> x[1] ) ),
+
+    # The following component is used in the manual example for
+    # `BrowseMinimalDegrees'.
     groupNamesJan05:= [
       "M11", "M12", "2.M12", "J1", "M22", "2.M22", "3.M22", "4.M22", "6.M22",
       "12.M22", "J2", "2.J2", "M23", "HS", "2.HS", "J3", "3.J3", "M24",
@@ -121,40 +124,7 @@ InstallValue( BibliographySporadicSimple, rec(
       ) ],
     choice:= [ "authors", "title", "year", "journal", "sporsimp",
                "sourcefilename" ],
-    sortKeyFunction:= function( r )
-#T this will be available as `BrowseData.SortKeyFunctionBibRec'
-#T in the next version
-      local key;
-
-      key:= [];
-      if IsBound( r.authorAsList ) then
-  #     Add( key,  List( r.authorAsList, a -> LowercaseString( a[1] ) ) );
-        Add( key,  List( r.authorAsList, a -> ( a[1] ) ) );
-      elif IsBound( r.editorAsList ) then
-  #     Add( key,  List( r.editorAsList, a -> LowercaseString( a[1] ) ) );
-        Add( key,  List( r.editorAsList, a -> ( a[1] ) ) );
-      else
-        Add( key, [ "zzz" ] );
-      fi;
-key[1]:= List( key[1], x -> LowercaseString( BrowseData.SimplifiedString( x ) ) );
-#T why??
-      if IsBound( r.year ) then
-        Add( key, r.year );
-      else
-        Add( key, "" );
-      fi;
-      if IsAlphaChar( r.Label[ Length( r.Label ) ] ) then
-        Add( key, r.Label{ [ Length( r.Label ) ] } );
-      else
-        Add( key, "" );
-      fi;
-      if IsBound( r.title ) then
-        Add( key, LowercaseString( NormalizedWhitespace( r.title ) ) );
-      else
-        Add( key, "" );
-      fi;
-      return key;
-    end,
+    sortKeyFunction:= BrowseData.SortKeyFunctionBibRec,
  ) );
 
 
@@ -171,11 +141,11 @@ key[1]:= List( key[1], x -> LowercaseString( BrowseData.SimplifiedString( x ) ) 
 ##  <Ref Func="ParseBibXMLExtString" BookName="gapdoc"/>.
 ##  </Returns>
 ##  <Description>
-##  If the &GAP; package <Package>Browse</Package>
-##  (see <Cite Key="Browse1.2"/>) is loaded then this function is available.
+##  If the &GAP; package <Package>Browse</Package> (see <Cite Key="Browse"/>)
+##  is loaded then this function is available.
 ##  It opens a browse table whose rows correspond to the entries of the
-##  bibliographies of the &ATLAS; of Finite Groups <Cite Key="CCN85"/>
-##  and the &ATLAS; of Brauer Characters <Cite Key="JLPW95"/>.
+##  bibliographies in the &ATLAS; of Finite Groups <Cite Key="CCN85"/>
+##  and in the &ATLAS; of Brauer Characters <Cite Key="JLPW95"/>.
 ##  <P/>
 ##  The function is based on
 ##  <Ref Func="BrowseBibliography" BookName="browse"/>,
@@ -193,7 +163,7 @@ key[1]:= List( key[1], x -> LowercaseString( BrowseData.SimplifiedString( x ) ) 
 ##  the menu shown by <Ref Func="BrowseGapData" BookName="Browse"/>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> if LoadPackage( "browse", "1.2" ) = true then
+##  gap> if IsBound( BrowseBibliographySporadicSimple ) then
 ##  >   enter:= NCurses.keys.ENTER;;  nop:= [ 14, 14, 14 ];;
 ##  >   BrowseData.SetReplay( Concatenation(
 ##  >     # choose the application
@@ -206,6 +176,23 @@ key[1]:= List( key[1], x -> LowercaseString( BrowseData.SimplifiedString( x ) ) 
 ##  >   BrowseData.SetReplay( false );
 ##  > fi;
 ##  ]]></Example>
+##  <P/>
+##  The bibliographies contained in the &ATLAS; of Finite Groups
+##  <Cite Key="CCN85"/> and in the &ATLAS; of Brauer Characters
+##  <Cite Key="JLPW95"/> are available online in HTML format, see
+##  <URL>http://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep/bibl/index.html</URL>.
+##  <P/>
+##  The source data in BibXMLext format, which are used by
+##  <Ref Func="BrowseBibliographySporadicSimple"/>,
+##  is part of the <Package>AtlasRep</Package> package,
+##  in four files with suffix <F>xml</F> in the package's <F>bibl</F>
+##  directory.
+##  Note that each of the two books contains two bibliographies.
+##  <P/>
+##  Details about the BibXMLext format, including information how to
+##  transform the data into other formats such as BibTeX,
+##  can be found in the &GAP; package
+##  <Package>GAPDoc</Package> (see <Cite Key="GAPDoc"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -233,7 +220,8 @@ BrowseGapDataAdd( "Bibliography of Sporadic Simple Groups",
 the contents of the bibliographies contained in the Atlas of Finite Groups \
 and in the Atlas of Brauer Characters, \
 based on the same Browse application as the menu entry \
-``GAP Bibliography''" );
+``GAP Bibliography''; \
+try ?BrowseBibliographySporadicSimple for details" );
 
 
 #############################################################################

@@ -4,15 +4,12 @@
 #W                                                              R. Wainwright
 #W                                                                  A. Hulpke
 ##
-#H  @(#)$Id: matint.gd,v 4.34 2010/09/28 16:47:45 alexk Exp $
 ##
 #Y  Copyright (C) 2003 The GAP Group
 ##
 ##  This file contains declarations for the operations of normal forms for
 ##  integral matrices.
 ##
-Revision.matint_gd:=
-  "@(#)$Id: matint.gd,v 4.34 2010/09/28 16:47:45 alexk Exp $";
 
 #############################################################################
 ##
@@ -63,10 +60,11 @@ DeclareOperation("TriangulizedIntegerMat",[IsMatrix]);
 ##  gap> TriangulizedIntegerMat(m);
 ##  [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]
 ##  gap> n:=TriangulizedIntegerMatTransform(m);
-##  rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], rank := 3, 
-##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##  rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
+##    rank := 3, rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
 ##    rowQ := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
-##    rowtrans := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], signdet := 1 )
+##    rowtrans := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+##    signdet := 1 )
 ##  gap> n.rowtrans*m=n.normal;
 ##  true
 ##  gap> TriangulizeIntegerMat(m); m;
@@ -284,15 +282,15 @@ DeclareGlobalFunction( "DiagonalizeIntMat" );
 ##  <Example><![CDATA[
 ##  gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
 ##  gap> NormalFormIntMat(m,0);  # Triangular, no transforms
-##  rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], rank := 3, 
-##    signdet := 1 )
+##  rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
+##    rank := 3, signdet := 1 )
 ##  gap> NormalFormIntMat(m,6);  # Hermite Normal Form with row transforms
 ##  rec( normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], rank := 3, 
 ##    rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
 ##    rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
 ##    rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
 ##    signdet := 1 )
-##  gap> NormalFormIntMat(m,13); # Smith Normal Form with both transforms       
+##  gap> NormalFormIntMat(m,13); # Smith Normal Form with both transforms
 ##  rec( colC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
 ##    colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], 
 ##    coltrans := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], 
@@ -505,12 +503,12 @@ DeclareOperation( "SolutionNullspaceIntMat",
 ##  <Attr Name="AbelianInvariantsOfList" Arg='list'/>
 ##
 ##  <Description>
-##  Given a list of positive integers, this routine returns a list of prime
-##  powers, such that the prime power factors of the entries in the list are
-##  returned in sorted form.
+##  Given a list of nonnegative integers, this routine returns a sorted
+##  list containing the prime power factors of the positive entries in the
+##  original list, as well as all zeroes of the original list.
 ##  <Example><![CDATA[
-##  gap> AbelianInvariantsOfList([4,6,2,12]);
-##  [ 2, 2, 3, 3, 4, 4 ]
+##  gap> AbelianInvariantsOfList([4,6,2,0,12]);
+##  [ 0, 2, 2, 3, 3, 4, 4 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

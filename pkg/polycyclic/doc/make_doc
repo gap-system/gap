@@ -1,5 +1,11 @@
 #!/bin/sh
 
-make all
-make clean
+GAPROOT=${1:-../../..}
+GAP=${2:-$GAPROOT/bin/gap.sh}
 
+$GAP -A -q -T <<GAPDOC_SCRIPT
+LoadPackage("gapdoc");;
+MakeGAPDocDoc( ".", "polycyclic", [ "../PackageInfo.g" ], "polycyclic", "$GAPROOT", "MathJax" );;
+MakeGAPDocDoc( ".", "polycyclic", [ "../PackageInfo.g" ], "polycyclic", "$GAPROOT", "MathJax" );;
+CopyHTMLStyleFiles(".");
+GAPDOC_SCRIPT

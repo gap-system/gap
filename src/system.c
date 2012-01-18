@@ -8,7 +8,6 @@
 *W                                                  & Burkhard Höfling (MAC)
 *W                                                    & Steve Linton (MS/DOS)
 **
-*H  @(#)$Id: system.c,v 4.154 2011/05/20 22:20:35 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -37,8 +36,6 @@
 
 #undef  INCLUDE_DECLARATION_PART
 
-const char * Revision_system_c =
-   "@(#)$Id: system.c,v 4.154 2011/05/20 22:20:35 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 #include        "gasman.h"            
@@ -777,7 +774,7 @@ Int SyIntString( const Char *string) {
 Int SyIntString( const Char *string) {
   Int x = 0;
   Int sign = 1;
-  while (isspace(*string))
+  while (IsSpace(*string))
     string++;
   if (*string == '-')
     {
@@ -788,7 +785,7 @@ Int SyIntString( const Char *string) {
     {
       string++;
     }
-  while (isdigit(*string)) {
+  while (IsDigit(*string)) {
     x *= 10;
     x += (*string - '0');
     string++;
@@ -872,28 +869,28 @@ void SyMsgsBags (
     UInt                i;              /* loop variable                   */
     Int                 copynr;         /* copy of <nr>                    */
     UInt                shifted;        /* non-zero if nr > 10^6 and so
-					                       has to be shifted down          */
+                                           has to be shifted down          */
     static UInt         tstart = 0;
 
     /* remember the numbers */
     if (phase > 0)
       {
-	SyGasmanNumbers[full][phase] = nr;
-	
-	/* in a full GC clear the partial numbers */
-	if (full)
-	  SyGasmanNumbers[0][phase] = 0;
+        SyGasmanNumbers[full][phase] = nr;
+        
+        /* in a full GC clear the partial numbers */
+        if (full)
+          SyGasmanNumbers[0][phase] = 0;
       }
     else
       {
-	SyGasmanNumbers[full][0]++;
-	tstart = SyTime();
+        SyGasmanNumbers[full][0]++;
+        tstart = SyTime();
       }
     if (phase == 6) 
       {
-	UInt x = SyTime() - tstart;
-	SyGasmanNumbers[full][7] = x;
-	SyGasmanNumbers[full][8] += x;
+        UInt x = SyTime() - tstart;
+        SyGasmanNumbers[full][7] = x;
+        SyGasmanNumbers[full][8] += x;
       }
 
     /* convert <nr> into a string with leading blanks                      */
@@ -902,16 +899,16 @@ void SyMsgsBags (
     shifted = (nr >= ((phase % 2) ? 10000000 : 1000000)) ? 1 : 0;
     if (shifted)
       {
-	nr /= 1024;
+        nr /= 1024;
       }
     if ((phase % 2) == 1 && shifted && nr > 1000000)
       {
-	shifted++;
-	nr /= 1024;
+        shifted++;
+        nr /= 1024;
       }
       
     for ( i = ((phase % 2) == 1 && shifted) ? 6 : 7 ;
-	  i != 0; i-- ) {
+          i != 0; i-- ) {
         if      ( 0 < nr ) { str[i-1] = '0' + ( nr) % 10;  ch = ' '; }
         else if ( nr < 0 ) { str[i-1] = '0' + (-nr) % 10;  ch = '-'; }
         else               { str[i-1] = ch;                ch = ' '; }
@@ -951,17 +948,17 @@ void SyMsgsBags (
     if ( phase != 0 ) {
       shifted =   3 <= phase && nr >= (1 << 21);
       if (shifted)
-	nr *= 1024;
+        nr *= 1024;
       cmd[0] = '@';
       cmd[1] = ( full ? '0' : ' ' ) + phase;
       cmd[2] = '\0';
       i = 0;
       for ( ; 0 < nr; nr /=10 )
-	str[i++] = '0' + (nr % 10);
+        str[i++] = '0' + (nr % 10);
       str[i++] = '+';
       str[i++] = '\0';
       if (shifted)
-	str[i++] = 'k';
+        str[i++] = 'k';
       syWinPut( 1, cmd, str );
     }
 }
@@ -1100,6 +1097,7 @@ UInt * * * SyAllocBags (
                   }
                 if (ret == (UInt ***)-1)
                   break;
+                memset((void *)((char *)syWorkspace + syWorksize*1024), 0, 1024*1024*1024);
                 size -= 1024*1024;
                 syWorksize += 1024*1024;
                 adjust++;
@@ -1111,6 +1109,8 @@ UInt * * * SyAllocBags (
                 sbrk(-size*1024);
                 ret = (UInt ***)-1;
               }
+            if (ret != (UInt ***)-1)
+              memset((void *)((char *)syWorkspace + syWorksize*1024), 0, 1024*size);
             
           }
         else if  (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size))  {
@@ -1135,17 +1135,17 @@ UInt * * * SyAllocBags (
     /* update the size info                                                */
     if ( ret != (UInt***)-1 ) {
         syWorksize += size;
-       /* set the overrun flag if we became larger than SyStorMax */
-       if ( SyStorMax != 0 && syWorksize  > SyStorMax)  {
-	 SyStorOverrun = -1;
-	 SyStorMax=syWorksize*2; /* new maximum */
-	 InterruptExecStat(); /* interrupt at the next possible point */
-       }
+        /* set the overrun flag if we became larger than SyStorMax */
+        if ( SyStorMax != 0 && syWorksize  > SyStorMax)  {
+          SyStorOverrun = -1;
+          SyStorMax=syWorksize*2; /* new maximum */
+          InterruptExecStat(); /* interrupt at the next possible point */
+        }
     }
 
     /* test if the allocation failed                                       */
     if ( ret == (UInt***)-1 && need ) {
-        fputs("gap: cannot extend the workspace any more\n",stderr);
+        fputs("gap: cannot extend the workspace any more!\n",stderr);
         SyExit( 1 );
     }
     /* if we de-allocated the whole workspace then remember this */
@@ -1156,7 +1156,9 @@ UInt * * * SyAllocBags (
     if ( ret == (UInt***)-1 )
         return 0;
     else
+      {
         return (UInt***)(((Char *)ret) - 1024*1024*1024*adjust);
+      }
 
 }
 
@@ -1183,7 +1185,7 @@ UInt * * * SyAllocBags (
     UInt                need )
 {
     UInt * * *          ret = (UInt***)-1;
-    vm_address_t        adr;	    
+    vm_address_t        adr;    
 
     if (SyAllocPool > 0) {
       if (POOL == NULL) {
@@ -1270,7 +1272,7 @@ UInt * * * SyAllocBags (
 
         /* test if the allocation failed                                       */
         if ( ret == (UInt***)-1 && need ) {
-            fputs("gap: cannot extend the workspace any more\n",stderr);
+            fputs("gap: cannot extend the workspace any more!!\n",stderr);
             SyExit(1);
         }
     }
@@ -1278,7 +1280,7 @@ UInt * * * SyAllocBags (
     /* otherwise return the result (which could be 0 to indicate failure)  */
     if ( ret == (UInt***)-1 ){
         if (need) { 
-            fputs("gap: cannot extend the workspace any more\n",stderr);
+            fputs("gap: cannot extend the workspace any more!!!\n",stderr);
             SyExit( 1 );
         }
         return (UInt***) 0;
@@ -1303,7 +1305,7 @@ UInt * * * SyAllocBags (
 **  'SyAbortBags' is the function called by Gasman in case of an emergency.
 */
 void SyAbortBags (
-    Char *              msg )
+    const Char *        msg )
 {
     SyFputs( msg, 3 );
     SyExit( 2 );
@@ -1350,7 +1352,7 @@ void SyExit (
     Int c;
     fputs("gap: Press <Enter> to end program\n",stderr);
     do {
-	    c=SyGetch(1);   /* wait for the user to type <return> */
+      c=SyGetch(1);   /* wait for the user to type <return> */
     } while (c!='\n' && c!=' ');
   }
 
@@ -1438,12 +1440,12 @@ void SySetGapRootPath( const Char * string )
             *q = *p++;
 
 #if  SYS_IS_CYGWIN32
-	    /* fix up for DOS */
-	    if (*q == '\\')
-	      *q = '/';
+            /* fix up for DOS */
+            if (*q == '\\')
+              *q = '/';
 #endif
-	    
-	    q++;
+            
+            q++;
         }
         if ( q == SyGapRootPaths[n] ) {
             SyGapRootPaths[n][0] = '\0';
@@ -1542,13 +1544,13 @@ static UInt ParseMemory( Char * s)
     if (symbol == memoryUnits[i].symbol) {
       UInt value = memoryUnits[i].value;
       if (size > maxmem/value)
-	size = maxmem;
+        size = maxmem;
       else
-	size *= value;
+        size *= value;
       return size;
     }      
   }
-  if (!isdigit(symbol))
+  if (!IsDigit(symbol))
     FPUTS_TO_STDERR("Unrecognised memory unit ignored");
   return size;
 }
@@ -1626,8 +1628,8 @@ static Int preAllocAmount;
    recognised and handled in the library */
 
 struct optInfo options[] = {
-   { 'B',  storeString, &SyArchitecture, 1}, /* default architecture needs to be passed from kernel 
-					       to library. Might be needed for autoload of compiled files */
+  { 'B',  storeString, &SyArchitecture, 1}, /* default architecture needs to be passed from kernel 
+                                               to library. Might be needed for autoload of compiled files */
   { 'C',  processCompilerArgs, 0, 4}, /* must handle in kernel */
   { 'D',  toggle, &SyDebugLoading, 0}, /* must handle in kernel */
   { 'K',  storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
@@ -1638,8 +1640,8 @@ struct optInfo options[] = {
   { 'U',  storeString, SyCompileOptions, 1}, /* kernel */
   { 'a',  storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
   { 'c',  storeMemory, &SyCacheSize, 1 }, /* kernel, unless we provided a hook to set it from library, 
-					   never seems to be useful */
-  { 'e',  toggle, &SyCTRD, 0 },	/* kernel */
+                                           never seems to be useful */
+  { 'e',  toggle, &SyCTRD, 0 }, /* kernel */
   { 'f',  forceLineEditing, (void *)2, 0 }, /* probably library now */
   { 'i',  storeString, SySystemInitFile, 1}, /* kernel */
   { 'l',  setGapRootPath, 0, 1}, /* kernel */
@@ -1669,55 +1671,58 @@ void InitSystem (
     Char *              *ptrlist;
     UInt                i;             /* loop variable                   */
     Int res;                       /* return from option processing function */
-	/* Initialize global and static variables. Do it here rather than
-	   with initializers to allow for restart */
-	/*	SyBanner = 1; */
-	SyCTRD = 1;             
-	SyCacheSize = 0;
-	SyCheckCRCCompiledModule = 0;
-	SyCompilePlease = 0;
-	SyDebugLoading = 0;
-	SyHasUserHome = 0;
-	SyLineEdit = 1;
-	/*	SyAutoloadPackages = 1; */
-	/* 	SyBreakSuppress = 0; */
-	SyMsgsFlagBags = 0;
-	SyNrCols = 0;
-	SyNrColsLocked = 0;
-	SyNrRows = 0;
-	SyNrRowsLocked = 0;
-	SyQuiet = 0;
-	SyInitializing = 0;
-	SyStorMax = 512*1024L;
-        SyAllocPool = 0;
-	SyStorOverrun = 0;
-	SyStorKill = 0;
-	SyStorMin = SY_STOR_MIN;
-	SyUseModule = 1;
-	SyWindow = 0;
+
+    /* Initialize global and static variables. Do it here rather than
+       with initializers to allow for restart */
+    /* SyBanner = 1; */
+    SyCTRD = 1;             
+    SyCacheSize = 0;
+    SyCheckCRCCompiledModule = 0;
+    SyCompilePlease = 0;
+    SyDebugLoading = 0;
+    SyHasUserHome = 0;
+    SyLineEdit = 1;
+    /* SyAutoloadPackages = 1; */
+    /*  SyBreakSuppress = 0; */
+    SyMsgsFlagBags = 0;
+    SyNrCols = 0;
+    SyNrColsLocked = 0;
+    SyNrRows = 0;
+    SyNrRowsLocked = 0;
+    SyQuiet = 0;
+    SyInitializing = 0;
+    SyStorMax = 512*1024L;
+    SyAllocPool = 0;
+    SyStorOverrun = 0;
+    SyStorKill = 0;
+    SyStorMin = SY_STOR_MIN;
+    SyUseModule = 1;
+    SyWindow = 0;
 #if SYS_TOS_GCC2
 # define __NO_INLINE__
-	_stksize = 64 * 1024;   /* GNU C, amount of stack space    */
-	syStackSpace = 64 * 1024;
+    _stksize = 64 * 1024;   /* GNU C, amount of stack space    */
+    syStackSpace = 64 * 1024;
 #endif
 
-	{ UInt i,j;
-	  for (i = 0; i < 2; i++) for (j=0; j < 7; j++)
-	    SyGasmanNumbers[i][j] = 0;
-	}
+    for (i = 0; i < 2; i++) {
+      UInt j;
+      for (j = 0; j < 7; j++) {
+        SyGasmanNumbers[i][j] = 0;
+      }
+    }
 
 #if SYS_BSD||SYS_USG||SYS_OS2_EMX||SYS_MSDOS_DJGPP||SYS_TOS_GCC2||SYS_VMS||HAVE_SBRK
-	syWorkspace = (UInt ***)0;
+    syWorkspace = (UInt ***)0;
 #endif
 #if SYS_MACH || HAVE_VM_ALLOCATE
-	syBase = 0;
-	sySize = 0;
+    syBase = 0;
+    sySize = 0;
 #endif
-	/* 	nopts = 0;
-	noptvals = 0;
-	lenoptvalsbuff = 0;
-	gaprc = 1; */
-	
+    /*  nopts = 0;
+    noptvals = 0;
+    lenoptvalsbuff = 0;
+    gaprc = 1; */
+
     preAllocAmount = 4*1024*1024;
     
     /* open the standard files                                             */
@@ -1730,11 +1735,11 @@ void InitSystem (
             syBuf[0].echo = fileno(stdout);
         else
             syBuf[0].echo = open( ttyname(fileno(stdin)), O_WRONLY );
-	syBuf[0].isTTY = 1;
+        syBuf[0].isTTY = 1;
     }
     else {
         syBuf[0].echo = fileno(stdout);
-	syBuf[0].isTTY = 0;
+        syBuf[0].isTTY = 0;
     }
     syBuf[1].echo = syBuf[1].fp = fileno(stdout); 
     syBuf[1].bufno = -1;
@@ -1745,7 +1750,7 @@ void InitSystem (
         else
             syBuf[2].fp = open( ttyname(fileno(stderr)), O_RDONLY );
         syBuf[2].echo = fileno(stderr);
-	syBuf[2].isTTY = 1;
+        syBuf[2].isTTY = 1;
     }
     else
       syBuf[2].isTTY = 0;
@@ -1793,7 +1798,7 @@ void InitSystem (
       syBuf[i].fp = -1;
     
     for (i = 0; i < sizeof(syBuffers)/sizeof(syBuffers[0]); i++)
-	  syBuffers[i].inuse = 0;
+          syBuffers[i].inuse = 0;
 
 #if HAVE_LIBREADLINE
     rl_initialize ();
@@ -1824,59 +1829,59 @@ void InitSystem (
     /* anything else will presumably be dealt with in the library */
     while ( argc > 1 )
       {
-	if (argv[1][0] == '-' ) {
+        if (argv[1][0] == '-' ) {
 
-	  if ( SyStrlen(argv[1]) != 2 ) {
+          if ( SyStrlen(argv[1]) != 2 ) {
             FPUTS_TO_STDERR("gap: sorry, options must not be grouped '");
             FPUTS_TO_STDERR(argv[1]);  FPUTS_TO_STDERR("'.\n");
             goto usage;
-	  }
+          }
 
 
-	  for (i = 0; options[i].key != argv[1][1] && options[i].key; i++)
-	    ;
+          for (i = 0; options[i].key != argv[1][1] && options[i].key; i++)
+            ;
 
-	
+        
 
 
-	  if (argc < 2 + options[i].minargs)
-	    {
-	      Char buf[2];
-	      FPUTS_TO_STDERR("gap: option "); FPUTS_TO_STDERR(argv[1]);
-	      FPUTS_TO_STDERR(" requires at least ");
-	      buf[0] = options[i].minargs + '0';
-	      buf[1] = '\0';
-	      FPUTS_TO_STDERR(buf); FPUTS_TO_STDERR(" arguments\n");
-	      goto usage;
-	    }
-	  if (options[i].handler) {
-	    res = (*options[i].handler)(argv+2, options[i].otherArg);
-	    
-	    switch (res)
-	      {
-	      case -1: goto usage;
-		/* 	      case -2: goto fullusage; */
-	      default: ;     /* fall through and continue */
-	      }
-	  }
-	  else
-	    res = options[i].minargs;
-	  /* 	recordOption(argv[1][1], res,  argv+2); */
-	  argv += 1 + res;
-	  argc -= 1 + res;
-	  
-	}
-	else {
-	  argv++;
-	  argc--;
-	}
-	  
+          if (argc < 2 + options[i].minargs)
+            {
+              Char buf[2];
+              FPUTS_TO_STDERR("gap: option "); FPUTS_TO_STDERR(argv[1]);
+              FPUTS_TO_STDERR(" requires at least ");
+              buf[0] = options[i].minargs + '0';
+              buf[1] = '\0';
+              FPUTS_TO_STDERR(buf); FPUTS_TO_STDERR(" arguments\n");
+              goto usage;
+            }
+          if (options[i].handler) {
+            res = (*options[i].handler)(argv+2, options[i].otherArg);
+            
+            switch (res)
+              {
+              case -1: goto usage;
+                /*            case -2: goto fullusage; */
+              default: ;     /* fall through and continue */
+              }
+          }
+          else
+            res = options[i].minargs;
+          /*    recordOption(argv[1][1], res,  argv+2); */
+          argv += 1 + res;
+          argc -= 1 + res;
+          
+        }
+        else {
+          argv++;
+          argc--;
+        }
+          
       }
 
 
     /* now that the user has had a chance to give -x and -y,
        we determine the size of the screen ourselves */
-	getwindowsize();
+    getwindowsize();
 
     /* fix max if it is lower than min                                     */
     if ( SyStorMax != 0 && SyStorMax < SyStorMin ) {
@@ -1886,7 +1891,7 @@ void InitSystem (
     /* when running in package mode set ctrl-d and line editing            */
     if ( SyWindow ) {
       /*         SyLineEdit   = 1;
-		 SyCTRD       = 1; */
+                 SyCTRD       = 1; */
         syBuf[2].fp = fileno(stdin);  syBuf[2].echo = fileno(stdout);
         syBuf[3].fp = fileno(stdout);
         syWinPut( 0, "@p", "1." );
@@ -1931,7 +1936,7 @@ void InitSystem (
         SyStrncat(SyUserHome, getenv("HOME"), sizeof(SyUserHome)-1);
         SyHasUserHome = 1;
         if (!IgnoreGapRC) {
-# if SYS_DARWIN
+# if SYS_IS_DARWIN
             DotGapPath[0] = '\0';
             SyStrncat(DotGapPath, getenv("HOME"), sizeof(DotGapPath)-26);
             SyStrncat(DotGapPath+SyStrlen(DotGapPath), "/Library/Preferences/GAP;", 26);

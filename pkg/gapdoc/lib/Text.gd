@@ -2,7 +2,6 @@
 ##
 #W  Text.gd                      GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: Text.gd,v 1.6 2011/02/18 11:23:52 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -18,11 +17,14 @@ DeclareGlobalVariable("SMALLLETTERS");
 DeclareGlobalVariable("LETTERS");
 DeclareGlobalVariable("HEXDIGITS");
 DeclareGlobalVariable("DIGITS");
+DeclareGlobalVariable("BOXCHARS");
 
 ##  record containing ANSI terminal text attributes
 DeclareGlobalVariable("TextAttr");
 
 ##  some utility functions for strings
+DeclareGlobalFunction("PositionLinenumber");
+DeclareGlobalFunction("NumberOfLines");
 DeclareGlobalFunction("RepeatedString");
 DeclareGlobalFunction("RepeatedUTF8String");
 DeclareGlobalFunction("PositionMatchingDelimiter");

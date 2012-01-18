@@ -2,7 +2,7 @@
 **
 *A  constants.h                 ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: constants.h,v 1.3 2001/06/15 14:39:21 werner Exp $
+*A  @(#)$Id: constants.h,v 1.4 2011/11/28 13:42:00 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -19,7 +19,7 @@
 
 #define STACK_SIZE 50000       /* dimension of collection stack */
 #define DEFAULT_CLASS 10       /* default class bound for computation */
-#define LINK_SOLUBLE_FLAG -1   /* flag in Magma or GAP output file indicating
+#define LINK_SOLUBLE_FLAG -1   /* flag in GAP output file indicating
                                   soluble stabiliser */
 #define ALL 999                /* step size flag to indicate that all
 				  descendants should be constructed */

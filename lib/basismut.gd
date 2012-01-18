@@ -2,7 +2,6 @@
 ##
 #W  basismut.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: basismut.gd,v 4.20 2010/02/23 15:12:48 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -71,8 +70,6 @@
 ##  tasks; examples are mutable bases of Gaussian row and matrix spaces.
 ##  <#/GAPDoc>
 ##
-Revision.basismut_gd :=
-    "@(#)$Id: basismut.gd,v 4.20 2010/02/23 15:12:48 gap Exp $";
 
 
 #############################################################################
@@ -196,7 +193,8 @@ DeclareOperation( "NrBasisVectors", [ IsMutableBasis ] );
 ##  <Example><![CDATA[
 ##  gap> MB:= MutableBasis( Rationals, [ [ 1, 1 ], [ 2, 2 ] ] );;
 ##  gap> B:= ImmutableBasis( MB );
-##  SemiEchelonBasis( <vector space of dimension 1 over Rationals>, [ [ 1, 1 ] ] )
+##  SemiEchelonBasis( <vector space of dimension 1 over Rationals>, 
+##  [ [ 1, 1 ] ] )
 ##  gap> UnderlyingLeftModule( B );
 ##  <vector space of dimension 1 over Rationals>
 ##  ]]></Example>

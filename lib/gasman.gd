@@ -2,7 +2,6 @@
 ##
 #W  gasman.gd                   GAP Library                       Steve Linton
 ##
-#H  @(#)$Id: gasman.gd,v 4.7 2010/05/28 16:06:38 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains declarations of functions that report information from
 ##  the GASMAN garbage collector.
 ##
-Revision.gasman_gd :=
-    "@(#)$Id: gasman.gd,v 4.7 2010/05/28 16:06:38 gap Exp $";
 
 #############################################################################
 ##

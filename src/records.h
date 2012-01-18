@@ -2,7 +2,6 @@
 **
 *W  records.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: records.h,v 4.10 2010/02/23 15:13:47 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,9 +12,11 @@
 **  This package  provides a uniform  interface to  the functions that access
 **  records and the elements for the other packages in the GAP kernel.
 */
+
+#ifndef GAP_RECORDS_H
+#define GAP_RECORDS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_records_h =
-   "@(#)$Id: records.h,v 4.10 2010/02/23 15:13:47 gap Exp $";
 #endif
 
 
@@ -42,7 +43,7 @@ extern  Obj             NamesRNam;
 **  string).
 */
 extern  UInt            RNamName (
-            Char *              name );
+            const Char *        name );
 
 
 /****************************************************************************
@@ -186,9 +187,10 @@ extern UInt completion_rnam (
 StructInitInfo * InitInfoRecords ( void );
 
 
+#endif // GAP_RECORDS_H
+
 /****************************************************************************
 **
 
 *E  records.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-

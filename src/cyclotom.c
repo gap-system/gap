@@ -2,7 +2,6 @@
 **
 *W  cyclotom.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: cyclotom.c,v 4.46 2010/10/06 08:58:51 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -91,8 +90,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_cyclotom_c =
-   "@(#)$Id: cyclotom.c,v 4.46 2010/10/06 08:58:51 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -765,6 +762,101 @@ Obj             Cyclotomic (
     return cyc;
 }
 
+/****************************************************************************
+**
+*F  find smallest field size containing CF(nl) and CF(nr)
+** Also adjusts the results bag to ensure that it is big enough 
+** returns the field size n, and sets *ml and *mr to n/nl and n/nr 
+** respectively.
+*/
+
+UInt4 CyclotomicsLimit = 1000000;
+
+static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
+{
+  UInt n,i,a,b,c;
+  UInt8 n8;
+  Obj *res;
+  
+  /* get the smallest field that contains both cyclotomics               */
+  /* First Euclid's Algorithm for gcd */
+  if (nl > nr) {
+    a = nl;
+    b = nr;
+  } else {
+    a = nr;
+    b = nl;
+  }
+  while (b > 0) {
+    c = a % b;
+    a = b;
+    b = c;
+  }
+  *ml = nr/a;
+  /* Compute the result (lcm) in 64 bit */
+  n8 = (UInt8)nl * ((UInt8)*ml);  
+  /* Check if it is too large for a small int */
+  if (n8 > ((UInt8)(1) << NR_SMALL_INT_BITS))
+    ErrorMayQuit("This computation would require a cyclotomic field larger too large to be handled",0L, 0L);
+
+  /* Switch to UInt now we know we can*/
+  n = (UInt)n8;
+
+  /* Handle the soft limit */
+  while (n > CyclotomicsLimit) {
+    ErrorReturnVoid("This computation requires a cyclotomic field of degree %d, larger than the current limit of %d", n, (Int)CyclotomicsLimit, "You may return after raising the limit with SetCyclotomicsLimit");
+  }
+  
+  /* Finish up */
+  *mr = n/nr;
+
+  /* make sure that the result back is large enough                      */
+  if ( LEN_PLIST(TLS->ResultCyc) < n ) {
+    GROW_PLIST( TLS->ResultCyc, n );
+    SET_LEN_PLIST( TLS->ResultCyc, n );
+    res = &(ELM_PLIST( TLS->ResultCyc, 1 ));
+    for ( i = 0; i < n; i++ ) { res[i] = INTOBJ_INT(0); }
+  }
+  return n;
+}
+
+Obj FuncSetCyclotomicsLimit(Obj self, Obj NewLimit) {
+  UInt ok;
+  Int limit;
+  UInt ulimit;
+  do {
+    ok = 1;
+    if (!IS_INTOBJ(NewLimit)) {
+      ok = 0;
+      NewLimit = ErrorReturnObj("Cyclotomic Field size limit must be a small integer, not a %s ",(Int)TNAM_OBJ(NewLimit), 0L, "You can return a new value");
+    } else {
+      limit = INT_INTOBJ(NewLimit);
+      if (limit <= 0) {
+	ok = 0;
+	NewLimit = ErrorReturnObj("Cyclotomic Field size limit must be positive",0L, 0L, "You can return a new value");
+      } else {
+	ulimit = limit;
+	if (ulimit < CyclotomicsLimit) {
+	  ok = 0;
+	NewLimit = ErrorReturnObj("Cyclotomic Field size limit must not be less than old limit of %d",CyclotomicsLimit, 0L, "You can return a new value");
+	}
+#ifdef SYS_IS_64_BIT
+	else if (ulimit > (1L << 32)) {
+	  ok = 0;
+	  NewLimit = ErrorReturnObj("Cyclotomic field size limit must be less than 2^32", 0L, 0L,  "You can return a new value");
+	}
+#endif
+	
+      }
+    }
+  } while (!ok);
+  CyclotomicsLimit = ulimit;
+  return (Obj) 0L;
+}
+
+Obj FuncGetCyclotomicsLimit( Obj self) {
+  return INTOBJ_INT(CyclotomicsLimit);
+}
 
 /****************************************************************************
 **
@@ -796,17 +888,12 @@ Obj             SumCyc (
         sum = opL;  opL = opR;  opR = sum;
     }
 
-    /* get the smallest field that contains both cyclotomics               */
     nl = (TNUM_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
     nr = (TNUM_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
-    n  = nl;  while ( n % nr != 0 )  n += nl;
-    ml = n / nl;
-    mr = n / nr;
 
-    /* make sure that the result back is large enough                      */
-    GrowResultCyc(n);
-
-    /* copy the left operand into the result                               */
+    n = FindCommonField(nl, nr, &ml, &mr);
+ 
+    /* Copy the left operand into the result                               */
     if ( TNUM_OBJ(opL) != T_CYC ) {
         res = &(ELM_PLIST( TLS->ResultCyc, 1 ));
         res[0] = opL;
@@ -947,12 +1034,7 @@ Obj             DiffCyc (
     /* get the smallest field that contains both cyclotomics               */
     nl = (TNUM_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
     nr = (TNUM_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
-    n  = nl;  while ( n % nr != 0 )  n += nl;
-    ml = n / nl;
-    mr = n / nr;
-
-    /* make sure that the result back is large enough                      */
-    GrowResultCyc(n);
+    n = FindCommonField(nl, nr, &ml, &mr);
 
     /* copy the left operand into the result                               */
     if ( TNUM_OBJ(opL) != T_CYC ) {
@@ -1150,12 +1232,7 @@ Obj             ProdCyc (
     /* get the smallest field that contains both cyclotomics               */
     nl = (TNUM_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
     nr = (TNUM_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
-    n  = nl;  while ( n % nr != 0 )  n += nl;
-    ml = n / nl;
-    mr = n / nr;
-
-    /* make sure that the result bag is large enough                       */
-    GrowResultCyc(n);
+    n = FindCommonField(nl, nr, &ml, &mr);
 
     /* loop over the terms of the right operand                            */
     for ( k = 1; k < SIZE_CYC(opR); k++ ) {
@@ -1732,23 +1809,23 @@ Obj FuncGALOIS_CYC (
     tnumord = TNUM_OBJ(ord);
     tnumcyc = TNUM_OBJ(cyc);
     if ( FIRST_EXTERNAL_TNUM <= tnumcyc
-	 || FIRST_EXTERNAL_TNUM <= tnumord 
-	 || (tnumord != T_INT && tnumord != T_INTNEG && tnumord != T_INTPOS)
-	 || ( tnumcyc != T_INT    && tnumcyc != T_RAT
-	      && tnumcyc != T_INTPOS && tnumcyc != T_INTNEG
-	      && tnumcyc != T_CYC )
-	 )
+         || FIRST_EXTERNAL_TNUM <= tnumord 
+         || (tnumord != T_INT && tnumord != T_INTNEG && tnumord != T_INTPOS)
+         || ( tnumcyc != T_INT    && tnumcyc != T_RAT
+              && tnumcyc != T_INTPOS && tnumcyc != T_INTNEG
+              && tnumcyc != T_CYC )
+         )
       {
         return DoOperation2Args( self, cyc, ord );
       }
 
     /* get and check <ord>                                                 */
     if ( TNAM_OBJ(ord) == T_INT ) {
-	o = INT_INTOBJ(ord);
+        o = INT_INTOBJ(ord);
     }
     else {
-	ord = MOD( ord, FuncCONDUCTOR( 0, cyc ) );
-	o = INT_INTOBJ(ord);
+        ord = MOD( ord, FuncCONDUCTOR( 0, cyc ) );
+        o = INT_INTOBJ(ord);
     }
 
     /* every galois automorphism fixes the rationals                       */
@@ -1906,7 +1983,7 @@ Obj FuncCycList (
     if ( ! ( T_PLIST <= TNUM_OBJ( list )
              && TNUM_OBJ( list ) <= LAST_PLIST_TNUM )
          || ! IS_DENSE_LIST( list ) ) {
-	ErrorQuit( "CycList: <list> must be a dense plain list (not a %s)",
+        ErrorQuit( "CycList: <list> must be a dense plain list (not a %s)",
                    (Int)TNAM_OBJ( list ), 0L );
     }
 
@@ -2060,10 +2137,25 @@ static StructGVarOper GVarOpers [] = {
     { "CycList", 1, "list", &CycListOper,
       FuncCycList, "src/cyclotom.c:CycList" },
 
+
     { 0 }
 
 };
 
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . .  list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+  { "SetCyclotomicsLimit", 1, "newlimit",
+    FuncSetCyclotomicsLimit, "src/cyclotomics.c:SetCyclotomicsLimit" },
+
+  { "GetCyclotomicsLimit", 0, "",
+    FuncGetCyclotomicsLimit, "src/cyclotomics.c:GetCyclotomicsLimit" },
+
+  {0}
+};
 
 /****************************************************************************
 **
@@ -2086,6 +2178,7 @@ static Int InitKernel (
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrAttrsFromTable( GVarAttrs );
     InitHdlrOpersFromTable( GVarOpers );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* and the saving function                                             */
     SaveObjFuncs[ T_CYC ] = SaveCyc;
@@ -2166,6 +2259,7 @@ static Int InitLibrary (
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarAttrsFromTable( GVarAttrs );
     InitGVarOpersFromTable( GVarOpers );
+    InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
     return 0;
@@ -2193,8 +2287,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCyc ( void )
 {
-    module.revision_c = Revision_cyclotom_c;
-    module.revision_h = Revision_cyclotom_h;
     FillInVersion( &module );
     return &module;
 }

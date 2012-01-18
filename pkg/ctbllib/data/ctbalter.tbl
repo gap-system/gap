@@ -2,8 +2,6 @@
 ##
 #W  ctbalter.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbalter.tbl,v 4.16 2011/03/02 09:00:22 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables related to the
@@ -13,6 +11,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbalter.tbl,v $
+#H  Revision 4.17  2011/09/28 12:12:36  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.16  2011/03/02 09:00:22  gap
 #H  added a remark to the InfoText of the 3-modular table of 2.A11.2
 #H  that a paper by Morris/Yaseen states an incorrect decomposition matrix
@@ -167,10 +169,7 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctbalter_tbl :=
-    "@(#)$Id: ctbalter.tbl,v 4.16 2011/03/02 09:00:22 gap Exp $";
 
-SET_TABLEFILENAME("ctbalter");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("2.A10.2",3,

@@ -2,15 +2,11 @@
 ##
 #W  mindeg.g             GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: mindeg.g,v 1.5 2008/06/23 16:00:46 gap Exp $
-##
 #Y  Copyright (C)  2007,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the data concerning representations of minimal degree
 ##  for the groups that occur in the &ATLAS; of Group Representations.
 ##
-Revision.( "atlasrep/gap/mindeg_g" ) :=
-    "@(#)$Id: mindeg.g,v 1.5 2008/06/23 16:00:46 gap Exp $";
 
 
 #############################################################################

@@ -2,14 +2,11 @@
 ##
 #W  set.gi                        GAP library                Martin Schönert
 ##
-#H  @(#)$Id: set.gi,v 4.5 2010/02/23 15:13:30 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.set_gi :=
-    "@(#)$Id: set.gi,v 4.5 2010/02/23 15:13:30 gap Exp $";
 
 
 #############################################################################

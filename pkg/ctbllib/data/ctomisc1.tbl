@@ -2,7 +2,7 @@
 ##
 #W  ctomisc1.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomisc1.tbl,v 4.35 2010/12/01 17:47:57 gap Exp $
+#H  @(#)$Id: ctomisc1.tbl,v 4.36 2011/09/28 13:23:58 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,12 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomisc1.tbl,v $
+#H  Revision 4.36  2011/09/28 13:23:58  gap
+#H  - removed revision entry and SET_TABLEFILENAME call,
+#H  - added fusions 2.2^8.f20 -> 2.[2^9]:5:4, 2^2.2^8:s3 -> 2^2.[2^9]:S3,
+#H    c3d2 -> Co3
+#H      TB
+#H
 #H  Revision 4.35  2010/12/01 17:47:57  gap
 #H  renamed "Sym(4)" to "Symm(4)";
 #H  note that the table constructed with `CharacterTable( "Symmetric", 4 )'
@@ -249,11 +255,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctomisc1_tbl :=
-    "@(#)$Id: ctomisc1.tbl,v 4.35 2010/12/01 17:47:57 gap Exp $";
-
-SET_TABLEFILENAME("ctomisc1");
-ALN:= Ignore;
 
 MOT("2..11.m23",
 [
@@ -469,6 +470,8 @@ ALF("2.2^8.f20","2F4(2)'",[1,2,2,2,3,3,3,5,5,5,6,6,7,7,7,7,8,10,10,11,11,
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
 ]);
+ALF("2.2^8.f20","2.[2^9]:5:4",[1,2,3,19,4,7,20,11,36,37,8,24,12,26,38,39,
+15,28,42,27,43,31,31,16,47,46,46,47]);
 ALN("2.2^8.f20",["2F4(2)'C2a","2F4(2)'N2a"]);
 
 MOT("2^10:(2^5:s5)",
@@ -1004,6 +1007,8 @@ ALF("2^2.2^8:s3","2F4(2)'",[1,2,2,3,3,3,3,4,5,5,5,6,6,7,7,7,9,10,11,12,13,
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
 ]);
+ALF("2^2.2^8:s3","2^2.[2^9]:S3",[1,2,7,3,8,4,28,23,18,5,35,9,33,12,19,34,
+24,20,21,37,37,25,25,42,41,41,42]);
 
 MOT("2.[2^9]:5:4",
 [
@@ -1979,6 +1984,10 @@ E(7)^3+E(7)^5+E(7)^6,E(7)+E(7)^2+E(7)^4],
 [TENSOR,[22,3]],
 [TENSOR,[22,5]]],
 [(19,20)(21,22)(23,24),( 6, 7)( 8, 9)(11,12)(13,14)(15,16)(17,18)]);
+ALF("c3d2","Co3",[1,2,3,3,6,5,5,6,6,15,14,14,15,15,13,13,14,14,16,16,29,
+29,35,35],[
+"fusion map is unique"
+]);
 ALN("c3d2",["co3d2"]);
 
 MOT("D120",
@@ -1994,12 +2003,8 @@ MOT("D120",
 "relations: a^60 = b^2 = (ab)^2 = 1 \n",
 "tests: 1.o.r., pow[2,3,5]"
 ],
-[120,4,120,4,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,
-60,60,60,60,60,60,60,60],
-[,[1,1,1,1,5,3,8,7,5,7,8,9,9,15,17,14,16,10,10,11,11,16,14,15,17,23,22,24,23,
-25,25,22,24],[1,2,3,4,1,6,8,7,3,11,10,6,6,7,8,8,7,20,21,19,18,11,10,11,10,19,
-21,20,18,19,18,20,21],,[1,2,3,4,5,6,1,1,9,3,3,13,12,5,5,5,5,6,6,6,6,9,9,9,9,
-12,12,12,13,13,12,13,13]],
+0,
+0,
 0,
 [(12,13)(18,19)(20,21)(26,29)(27,32)(28,33)(30,31),(12,13)(14,17)(15,16)
 (22,24)(23,25)(26,30)(27,33)(28,32)(29,31),( 7, 8)(10,11)(14,16,17,15)
@@ -2295,7 +2300,6 @@ MOT("j2nd2",
 ALN("j2nd2",["j2d2"]);
 
 LIBTABLE.LOADSTATUS.ctomisc1:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

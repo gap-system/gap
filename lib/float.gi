@@ -3,7 +3,6 @@
 #W  float.gi                       GAP library                   Steve Linton
 ##                                                          Laurent Bartholdi 
 ##
-#H  @(#)$Id: float.gi,v 4.7 2011/06/20 21:55:23 gap Exp $
 ##
 #Y  Copyright (C) 2011 The GAP Group
 ##
@@ -11,8 +10,6 @@
 ##  to deal with floateans.
 ##
 
-Revision.float_gi :=
-  "@(#)$Id: float.gi,v 4.7 2011/06/20 21:55:23 gap Exp $";
 
 
 MAX_FLOAT_LITERAL_CACHE_SIZE := 0; # cache all float literals by default.
@@ -20,36 +17,41 @@ MAX_FLOAT_LITERAL_CACHE_SIZE := 0; # cache all float literals by default.
 FLOAT_DEFAULT_REP := fail;
 FLOAT_STRING := fail;
 FLOAT := fail; # holds the constants
+FLOAT_OBJBYEXTREP := fail;
 BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", rec());
 
-InstallGlobalFunction(InstallFloatsHandler, function(arg)
+InstallGlobalFunction(SetFloats, function(arg)
     local i, r;
-    if Length(arg)=1 and IsRecord(arg[1]) then
-        r := arg[1];
-        if IsBound(r.filter) then
-            FLOAT_DEFAULT_REP := r.filter;
-        fi;
-        if IsBound(r.constants) then
-            FLOAT := r.constants;
-        fi;
-        if IsBound(r.creator) then
-            FLOAT_STRING := r.creator;
-            if IsBound(r.eager) then
-               EAGER_FLOAT_LITERAL_CONVERTERS.([r.eager]) := r.creator;
-            fi;
-        fi;
-    else
-        for i in arg do
-            if IsFilter(i) then
-                FLOAT_DEFAULT_REP := i;
-            elif IsFunction(i) then
-                FLOAT_STRING := i;
-            else
-                Error("Unknown argument to InstallFloatsHandler: ",i);
-            fi;
-        od;
+    if arg=[] or not IsRecord(arg[1]) or Length(arg)>2 or (Length(arg)=2 and not IsPosInt(arg[2])) then
+        Error("Unknown argument to SetFloats: ",arg);
     fi;
+    r := arg[1];
+    if IsBound(r.filter) then
+        FLOAT_DEFAULT_REP := r.filter;
+    fi;
+    if IsBound(r.objbyextrep) then
+        FLOAT_OBJBYEXTREP := r.objbyextrep;
+    else
+        FLOAT_OBJBYEXTREP := fail;
+    fi;
+    if IsBound(r.constants) then
+        FLOAT := r.constants;
+    fi;
+    if IsBound(r.creator) then
+        FLOAT_STRING := r.creator;
+        if IsBound(r.eager) then
+            EAGER_FLOAT_LITERAL_CONVERTERS.([r.eager]) := r.creator;
+        fi;
+    fi;
+    
     UNBIND_GLOBAL("FLOAT_LITERAL_CACHE");
+
+    if Length(arg)=2 then
+        FLOAT.MANT_DIG := arg[2];
+        if IsBound(FLOAT.recompute) then
+            FLOAT.recompute(FLOAT,arg[2]);
+        fi;
+    fi;
 end);
 
 ################################################################
@@ -63,7 +65,7 @@ InstallGlobalFunction(Float, function(obj)
     fi;
 end);
 
-InstallGlobalFunction(InstallFloatsConstructors, function(arg)
+BindGlobal("INSTALLFLOATCONSTRUCTORS", function(arg)
     local filter, float, constants, i;
     
     if IsRecord(arg[1]) then
@@ -71,20 +73,53 @@ InstallGlobalFunction(InstallFloatsConstructors, function(arg)
     else
         filter := arg[1];
     fi;
+    
     InstallMethod(NewFloat, [filter,IsRat], -1, function(filter,obj)
         return NewFloat(filter,NumeratorRat(obj))/NewFloat(filter,DenominatorRat(obj));
     end);
     
-    InstallMethod(NewFloat, [filter,IsCyclotomic], -10, function(filter,obj)
-        Error("NewFloat(Cyclotomic): implement using complex roots of unity");
+    InstallMethod(NewFloat, [filter,IsInfinity], -1, function(filter,obj)
+        return Inverse(NewFloat(filter,0));
     end);
     
     InstallMethod(NewFloat, [filter,IsList], -1, function(filter,mantexp)
-        return NewFloat(filter,mantexp[1])*2^(mantexp[2]-LogInt(mantexp[1],2)-1);
+        if mantexp[1]=0 then
+            if mantexp[2]=0 then return NewFloat(filter,0);
+            elif mantexp[2]=1 then return Inverse(-Inverse(NewFloat(filter,0)));
+            elif mantexp[2]=2 then return Inverse(NewFloat(filter,0));
+            elif mantexp[2]=3 then return -Inverse(NewFloat(filter,0));
+            else return NewFloat(filter,0)/NewFloat(filter,0);
+            fi;
+        fi;
+        return NewFloat(filter,mantexp[1])*2^(mantexp[2]-LogInt(AbsoluteValue(mantexp[1]),2)-1);
     end);
     
     InstallMethod(NewFloat, [filter,filter], -1, function(filter,obj)
-        return obj;
+        return obj; # floats are immutable, no harm to return the same one
+    end);
+    
+    InstallMethod(MakeFloat, [filter,IsRat], -1, function(filter,obj)
+        return MakeFloat(filter,NumeratorRat(obj))/MakeFloat(filter,DenominatorRat(obj));
+    end);
+    
+    InstallMethod(MakeFloat, [filter,IsInfinity], -1, function(filter,obj)
+        return Inverse(MakeFloat(filter,0));
+    end);
+    
+    InstallMethod(MakeFloat, [filter,IsList], -1, function(filter,mantexp)
+        if mantexp[1]=0 then 
+            if mantexp[2]=0 then return MakeFloat(filter,0); 
+            elif mantexp[2]=1 then return Inverse(-Inverse(MakeFloat(filter,0)));
+            elif mantexp[2]=2 then return Inverse(MakeFloat(filter,0));
+            elif mantexp[2]=3 then return -Inverse(MakeFloat(filter,0));
+            else return MakeFloat(filter,0)/MakeFloat(filter,0);
+            fi;
+        fi;
+        return MakeFloat(filter,mantexp[1])*2^(mantexp[2]-LogInt(AbsoluteValue(mantexp[1]),2)-1);
+    end);
+    
+    InstallMethod(MakeFloat, [filter,filter], -1, function(filter,obj)
+        return obj; # floats are immutable, no harm to return the same one
     end);
     
     if IsRecord(arg[1]) and IsBound(arg[1].constants) then
@@ -95,6 +130,7 @@ InstallGlobalFunction(InstallFloatsConstructors, function(arg)
                       ["LN2", "0.69314718055994530942"],
                       ["LN10", "2.30258509299404568402"],
                       ["PI", "3.14159265358979323846"],
+                      ["2PI", "6.28318530717958647692"],
                       ["PI_2", "1.57079632679489661923"],
                       ["PI_4", "0.78539816339744830962"],
                       ["1_PI", "0.31830988618379067154"],
@@ -154,7 +190,7 @@ end);
 #############################################################################
 InstallMethod( AbsoluteValue, "for floats", [ IsFloat ], -1,
         function ( x )
-    if x < 0.0 then return -x; else return x; fi;
+    if x < Zero(x) then return -x; else return x; fi;
 end );
 
 InstallMethod( Norm, "for floats", [ IsFloat ], -1,
@@ -164,32 +200,43 @@ end );
 
 InstallMethod( Argument, "for floats", [ IsFloat ], -1,
         function ( x )
-    return 0.0;
+    return Zero(x);
 end );
 
 InstallMethod( SignFloat, "for floats", [ IsFloat ], -1,
         function ( x )
-    if x < 0.0 then return -1; elif x > 0.0 then return 1; else return 0; fi;
+    if x < Zero(x) then return -1; elif IsZero(x) then return 0; else return 1; fi;
 end );
 
 InstallMethod( Exp2, "for floats", [ IsFloat ], -1,
         function ( x )
-    return Exp(Log(2.0)*x);
+    return Exp(Log(MakeFloat(x,2))*x);
 end );
 
 InstallMethod( Exp10, "for floats", [ IsFloat ], -1,
         function ( x )
-    return Exp(Log(10.0)*x);
+    return Exp(Log(MakeFloat(x,10))*x);
 end );
+
+InstallMethod( Expm1, "for floats", [ IsFloat ], -1,
+        function ( x )
+    return Exp(x)-MakeFloat(x,1);
+end );
+
 
 InstallMethod( Log2, "for floats", [ IsFloat ], -1,
         function ( x )
-    return Log(x) / Log(2.0);
+    return Log(x) / Log(MakeFloat(x,2));
 end );
 
 InstallMethod( Log10, "for floats", [ IsFloat ], -1,
         function ( x )
-    return Log(x) / Log(10.0);
+    return Log(x) / Log(MakeFloat(x,10));
+end );
+
+InstallMethod( Log1p, "for floats", [ IsFloat ], -1,
+        function ( x )
+    return Log(MakeFloat(x,1)+x);
 end );
 
 InstallMethod( Sec, "for floats", [ IsFloat ], -1,
@@ -224,12 +271,12 @@ end );
 
 InstallMethod( CubeRoot, "for floats", [ IsFloat ], -1,
         function ( x )
-    if x>0.0 then
-        return Exp(Log(x)/3.0);
-    elif x=0.0 then
-        return 0.0;
+    if x>Zero(x) then
+        return Exp(Log(x)/3);
+    elif IsZero(x) then
+        return x;
     else
-        return -Exp(Log(-x)/3.0);
+        return -Exp(Log(-x)/3);
     fi;
 end );
 
@@ -250,12 +297,12 @@ end );
 
 InstallMethod( Round, "for floats", [ IsFloat ], -1,
         function ( x )
-    return Floor(x+0.5);
+    return Floor(x+MakeFloat(x,1/2));
 end );
 
 InstallMethod( Trunc, "for floats", [ IsFloat ], -1,
         function ( x )
-    if x>0.0 then
+    if x>Zero(x) then
         return Floor(x);
     else
         return -Floor(-x);
@@ -280,12 +327,11 @@ end );
 InstallMethod( FrExp, "for floats", [ IsFloat ], -1,
         function(obj)
     local m, e, s;
-    if obj=0.0 then return [0,0]; fi;
-    if obj>0.0 then s := 1; else s := -1; obj := -obj; fi;
+    if IsZero(obj) then return [0,0]; fi;
+    if obj>Zero(obj) then s := 1; else s := -1; obj := -obj; fi;
     e := Int(Log2(obj))+1;
     m := obj/2^e;
-    while m<>Int(m) do m := m*2.0; od;
-    return [Int(m),e];
+    return [m,e];
 end);
 
 InstallMethod( LdExp, "for floats", [ IsFloat, IsInt ], -1,
@@ -295,16 +341,49 @@ end);
     
 InstallMethod( ExtRepOfObj, "for floats", [ IsFloat ], -1,
         function(obj)
-    local p, v, i, sgn;
+    local p, v, sgn;
+    if IsZero(obj) then # special treatment for 0 and -0
+        if 1/obj > Zero(obj) then
+            return [0,0];
+        else
+            return [0,1];
+        fi;
+    elif IsPInfinity(obj) then
+        return [0,2];
+    elif IsNInfinity(obj) then
+        return [0,3];
+    elif IsNaN(obj) then
+        return [0,4];
+    fi;
+            
     p := FrExp(obj);
     v := p[1];
-    while v mod 1.0 <> 0.0 do v := 2.0*v; od;
-    p[1] := Int(v);
-    return p;
+    while v mod One(v) <> Zero(v) do v := 2*v; od;
+    return [Int(v),p[2]];
 end);
     
 InstallMethod( ObjByExtRep, "for floats", [ IsFloatFamily, IsList ], -1,
         function(fam,obj)
+    if FLOAT_OBJBYEXTREP<>fail then
+        return FLOAT_OBJBYEXTREP(obj);
+    fi;
+    if obj[1]=0 then
+        if obj[2]=0 then
+            return 0.0; # 0
+        elif obj[2]=1 then
+            return 1/(-(1.0/0.0)); # -0
+        elif obj[2]=2 then
+            return 1.0/0.0; # inf
+        elif obj[2]=3 then
+            return -1.0/0.0; # -inf
+        elif obj[2]=4 then
+            return 0.0/0.0; # NaN
+        elif obj[2]=5 then
+            return -0.0/0.0; # -NaN
+        else
+            Error("Unknown external float representation ",obj);
+        fi;
+    fi;
     return LdExp(Float(obj[1]),obj[2]-LogInt(obj[1],2)-1);
 end);
 
@@ -328,25 +407,39 @@ InstallMethod( DisplayString, "for floats", [ IsFloat ], f->Concatenation(String
 InstallMethod( ViewString, "for floats", [ IsFloat ], String );
 
 InstallMethod( IsPInfinity, "for floats", [ IsFloat ], -1,
-        x->x>FLOAT.MAX);
+        x->x=x+x and x>-x);
 
 InstallMethod( IsNInfinity, "for floats", [ IsFloat ], -1,
-        x->x<-FLOAT.MAX);
+        x->x=x+x and x<-x);
 
 InstallMethod( IsXInfinity, "for floats", [ IsFloat ], -1,
-        x->x<-FLOAT.MAX or x>FLOAT.MAX);
+        x->x=x+x and x<>-x);
 
 InstallMethod( IsFinite, "for floats", [ IsFloat ], -1,
-        x->x>=-FLOAT.MAX and x<=FLOAT.MAX);
+        x->not IsXInfinity(x) and not IsNaN(x));
 
-InstallMethod( IsNaN, "for floats", [ IsFloat ], -1,
-        x->x<>x+0.0);
+InstallMethod( IsNaN, "for floats", [ IsFloat ], -1, # IEEE754, not GAP standard
+        x->x<>x+Zero(x));
 
+InstallMethod( EqFloat, "for floats", [ IsFloat, IsFloat ], -1,
+        function(x,y)
+    return (not IsNaN(x)) and x=y;
+end);
+
+InstallMethod( Zero, "for floats", [ IsFloat ], -1,
+        function(x)
+    return MakeFloat(x,0);
+end);
+
+InstallMethod( One, "for floats", [ IsFloat ], -1,
+        function(x)
+    return MakeFloat(x,1);
+end);
 #############################################################################
 ##
 #M  Rat( x ) . . . . . . . . . . . . . . . . . . . . . . . . . . . for macfloats
 ##
-InstallOtherMethod( Rat, "for macfloats", [ IsFloat ],
+InstallOtherMethod( Rat, "for floats", [ IsFloat ],
         function ( x )
 
     local  M, a_i, i, sign, maxdenom, maxpartial;
@@ -355,19 +448,171 @@ InstallOtherMethod( Rat, "for macfloats", [ IsFloat ],
     maxdenom := ValueOption("maxdenom");
     maxpartial := ValueOption("maxpartial");
     if maxpartial=fail then maxpartial := 10000; fi;
-    if maxdenom=fail then maxdenom := 10^FLOAT.DECIMAL_DIG; fi;
+    if maxdenom=fail then maxdenom := 10^QuoInt(FLOAT.DECIMAL_DIG,2); fi;
 
-    if x < 0.0 then sign := -1; x := -x; else sign := 1; fi;
+    if x < Zero(x) then sign := -1; x := -x; else sign := 1; fi;
     repeat
       a_i := Int(x);
-      if i > 0 and M[1][1] * a_i > maxpartial then break; fi;
+      if i >= 2 and M[1][1] * a_i > maxpartial then break; fi;
       M := M * [[a_i,1],[1,0]];
       if x = Float(a_i) then break; fi;
-      x := 1.0 / (x - a_i);
+      x := 1 / (x - a_i);
       i := i+1;
     until M[2][1] > maxdenom;
     return sign * M[1][1]/M[2][1];
 end );
+
+InstallOtherMethod( Rat, "for float intervals", [ IsFloatInterval ],
+        function ( x )
+    local M, a;
+
+    if x < Zero(x) then
+        M := [[-1,0],[0,1]]; x := -x;
+    else
+        M := [[1,0],[0,1]];
+    fi;
+    repeat
+        a := Int(Sup(x));
+        M := M * [[a,1],[1,0]];
+        x := x-a;
+        if Zero(x) in x then break; fi;
+        x := Inverse(x);
+    until AbsoluteDiameter(x) >= One(x);
+    return M[1][1]/M[2][1];
+end);
+
+BindGlobal("CYC_FLOAT_DEGREE", function(x,n,prec)
+    local i, m, b, phi;
+    
+    phi := Phi(n);
+    m := IdentityMat(phi+1);
+    b := [];
+    for i in [1..phi] do
+        Add(m[i],Int(LdExp(Cos(FLOAT.2PI*(i-1)/n),prec)));
+        Add(m[i],Int(LdExp(Sin(FLOAT.2PI*(i-1)/n),prec)));
+        b[i] := E(n)^(i-1);
+    od;
+    Add(m[phi+1],Int(LdExp(RealPart(x),prec)));
+    Add(m[phi+1],Int(LdExp(ImaginaryPart(x),prec)));
+
+    m := First(LLLReducedBasis(m).basis,r->r[phi+1]<>0);
+
+    return -b*m{[1..phi]}/m[phi+1];
+end);
+    
+BindGlobal("CYC_FLOAT", function(x,prec)
+    local n, len, e, minlen, minn, mine;
+    
+    n := 2;
+    minlen := infinity;
+    repeat
+        e := CYC_FLOAT_DEGREE(x,n,prec);
+        len := n*Norm(DenominatorCyc(e)*e)^2;
+        if len < minlen then
+            Info(InfoWarning,2,"Degree ",n,": ",e);
+            minlen := len;
+            minn := n;
+            mine := e;
+        fi;
+        n := n+1;
+    until n > 2*minn+4;
+    return mine;
+end);
+
+InstallMethod( Cyc, "for floats, degree", [ IsFloat, IsPosInt ], -1,
+        function(x,n)
+    local prec;
+    
+    prec := ValueOption("bits");
+    if not IsPosInt(prec) then prec := PrecisionFloat(x); fi;
+    
+    return CYC_FLOAT_DEGREE(x,n,prec);
+end);
+
+InstallMethod( Cyc, "for intervals, degree", [ IsFloatInterval, IsPosInt ], -1,
+        function(x,n)
+    local diam;
+    
+    diam := AbsoluteDiameter(x);
+    if IsZero(diam) then
+        return CYC_FLOAT_DEGREE(Mid(x),n,PrecisionFloat(x));
+    else
+        return CYC_FLOAT_DEGREE(Mid(x),n,1+LogInt(1+Int(Inverse(diam)),2));
+    fi;
+end);
+
+InstallMethod( Cyc, "for floats", [ IsFloat ], -1,
+        function(x)
+    local n, len, e, minlen, minn, mine, prec;
+    
+    prec := ValueOption("bits");
+    if not IsPosInt(prec) then prec := PrecisionFloat(x); fi;
+    
+    return CYC_FLOAT(x,prec);
+end);
+
+InstallMethod( Cyc, "for intervals", [ IsFloatInterval ], -1,
+        function(x)
+    local diam;
+    
+    diam := AbsoluteDiameter(x);
+    if IsZero(diam) then
+        return CYC_FLOAT(Mid(x),PrecisionFloat(x));
+    else
+        return CYC_FLOAT(Mid(x),1+LogInt(1+Int(Inverse(diam)),2));
+    fi;
+end);
+
+BindGlobal("FLOAT_MINIMALPOLYNOMIAL", function(x,n,ind,prec)
+    local z, i, m;
+    
+    m := IdentityMat(n);
+    z := LdExp(One(x),prec);
+    for i in [1..n] do
+        Add(m[i],Int(RealPart(z)));
+        Add(m[i],Int(ImaginaryPart(z)));
+        z := z*x;
+    od;
+
+    m := LLLReducedBasis(m).basis[1];
+
+    return UnivariatePolynomialByCoefficients(CyclotomicsFamily,m{[n,n-1..1]},ind);
+end);
+
+InstallMethod( MinimalPolynomial, "for floats", [ IsRationals, IsFloat, IsPosInt ],
+        function(ring,x,ind)
+    local n, len, p, lastlen, lastp, prec;
+    
+    prec := ValueOption("bits");
+    if not IsPosInt(prec) then
+        prec := PrecisionFloat(x);
+        if IsFloatInterval(x) then
+            p := AbsoluteDiameter(x);
+            if not IsZero(x) then
+                prec := 1+LogInt(1+Int(Inverse(p)),2);
+            fi;
+        fi;
+    fi;
+    if IsFloatInterval(x) then
+        x := Mid(x);
+    fi;
+    
+    n := ValueOption("degree");
+    if IsPosInt(n) then
+        return FLOAT_MINIMALPOLYNOMIAL(x,n+1,ind,prec);
+    fi;
+    n := 1;
+    len := infinity;
+    p := fail;
+    repeat
+        lastlen := len;
+        lastp := p;
+        p := FLOAT_MINIMALPOLYNOMIAL(x,n+1,ind,prec);
+        len := (CoefficientsOfUnivariatePolynomial(p)^2)^n;
+        n := n+1;
+    until len > lastlen;
+    return lastp;
+end);
 
 #############################################################################
 ##
@@ -375,58 +620,66 @@ end );
 ##
 
 # we say that all floateans are after all rationals, to sort them
-InstallMethod( \<, "for rational and float", ReturnTrue, [ IsRat, IsFloat ],
-        function ( x, y )
-    Info(InfoWarning, 1, "Potentially dangerous comparison of rational and float");
-    return true;
-    return Float(x) < y;
-end );
-InstallMethod( \<, "for float and rational", ReturnTrue, [ IsFloat, IsRat ],
-        function ( x, y )
-    Info(InfoWarning, 1, "Potentially dangerous comparison of float and rational");
-    return false;
-    return x < Float(y);
-end );
-InstallMethod( \=, "for rational and float", ReturnTrue, [ IsRat, IsFloat ],
-        function ( x, y )
-    Info(InfoWarning, 1, "Potentially dangerous comparison of rational and float");
-    return false;
-    return Float(x) = y;
+BindGlobal("COMPARE_FLOAT_ANY", function(x,y)
+    local z;
+    if IsFloat(x) then z := y; else z := x; fi;
+    Error("Comparison of float and ",z," is not supported. Please refer to the manual section on floats for details");
 end);
-InstallMethod( \=, "for float and rational", ReturnTrue, [ IsFloat, IsCyc ],
-        function ( x, y )
-    Info(InfoWarning, 1, "Potentially dangerous comparison of float and rational");
-    return false;
-    return x = Float(y);
-end);
-InstallMethod( \+, "for rational and float", ReturnTrue, [ IsRat, IsFloat ],
-        function ( x, y ) return Float(x) + y; end );
-InstallMethod( \+, "for float and rational", ReturnTrue, [ IsFloat, IsRat ],
-        function ( x, y ) return x + Float(y); end );
-InstallMethod( \-, "for rational and float", ReturnTrue, [ IsRat, IsFloat ],
-        function ( x, y ) return Float(x) - y; end );
-InstallMethod( \-, "for float and rational", ReturnTrue, [ IsFloat, IsRat ],
-        function ( x, y ) return x - Float(y); end );
-InstallMethod( \*, "for rational and float", ReturnTrue, [ IsRat, IsFloat ],
-        function ( x, y ) return Float(x) * y; end );
-InstallMethod( \*, "for float and rational", ReturnTrue, [ IsFloat, IsRat ],
-        function ( x, y ) return x * Float(y); end );
-InstallMethod( \/, "for rational and float", ReturnTrue, [ IsRat, IsFloat ],
-        function ( x, y ) return Float(x) / y; end );
-InstallMethod( \/, "for float and rational", ReturnTrue, [ IsFloat, IsRat ],
-        function ( x, y ) return x / Float(y); end );
-InstallMethod( LQUO, "for rational and float", ReturnTrue, [ IsRat, IsFloat ],
-        function ( x, y ) return LQUO(Float(x),y); end );
-InstallMethod( LQUO, "for float and rational", ReturnTrue, [ IsFloat, IsRat ],
-        function ( x, y ) return LQUO(x,Float(y)); end );
-InstallMethod( \^, "for rational and float", ReturnTrue, [ IsRat, IsFloat ],
-        function ( x, y ) return Float(x) ^ y; end );
-InstallMethod( \^, "for float and rational", ReturnTrue, [ IsFloat, IsRat ],
-        function ( x, y ) return x ^ Float(y); end );
+
+InstallMethod( \<, "for rational and float", [ IsRat, IsFloat ], -1, COMPARE_FLOAT_ANY );
+InstallMethod( \<, "for float and rational", [ IsFloat, IsRat ], -1, COMPARE_FLOAT_ANY );
+InstallMethod( \<, "for floats", [ IsFloat, IsFloat ], -1,
+        function(x,y) return x < MakeFloat(x,y); end);
+
+InstallMethod( \=, "for rational and float", [ IsRat, IsFloat ], -1, COMPARE_FLOAT_ANY );
+InstallMethod( \=, "for float and rational", [ IsFloat, IsRat ], -1, COMPARE_FLOAT_ANY );
+InstallMethod( \=, "for floats", [ IsFloat, IsFloat ], -1,
+        function(x,y) return x = MakeFloat(x,y); end);
+
+InstallMethod( \+, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
+        function ( x, y ) return MakeFloat(y,x) + y; end );
+InstallMethod( \+, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
+        function ( x, y ) return x + MakeFloat(x,y); end );
+InstallMethod( \+, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return x + MakeFloat(x,y); end );
         
-# install the default floateans
-InstallFloatsHandler(IEEE754FLOAT);
-InstallFloatsConstructors(IEEE754FLOAT);
+InstallMethod( \-, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
+        function ( x, y ) return MakeFloat(y,x) - y; end );
+InstallMethod( \-, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
+        function ( x, y ) return x - MakeFloat(x,y); end );
+InstallMethod( \-, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return x - MakeFloat(x,y); end );
+        
+InstallMethod( \*, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
+        function ( x, y ) return MakeFloat(y,x) * y; end );
+InstallMethod( \*, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
+        function ( x, y ) return x * MakeFloat(x,y); end );
+InstallMethod( \*, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return x * MakeFloat(x,y); end );
+
+InstallMethod( \/, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
+        function ( x, y ) return MakeFloat(y,x) / y; end );
+InstallMethod( \/, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
+        function ( x, y ) return x / MakeFloat(x,y); end );
+InstallMethod( \/, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return x / MakeFloat(x,y); end );
+
+InstallMethod( LQUO, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
+        function ( x, y ) return LQUO(MakeFloat(y,x),y); end );
+InstallMethod( LQUO, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
+        function ( x, y ) return LQUO(x,MakeFloat(x,y)); end );
+InstallMethod( LQUO, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return LQUO(x,MakeFloat(x,y)); end );
+
+InstallMethod( \^, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
+        function ( x, y ) return MakeFloat(y,x) ^ y; end );
+InstallMethod( \^, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
+        function ( x, y )
+    if IsInt(y) then TryNextMethod(); fi;
+    return x ^ MakeFloat(x,y);
+end );
+InstallMethod( \^, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return x ^ MakeFloat(x,y); end );
         
 #############################################################################
 ##

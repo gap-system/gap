@@ -3,7 +3,6 @@
 #W  polyconw.gi                 GAP library                     Thomas Breuer
 #W                                                              Frank Lübeck
 ##
-#H  @(#)$Id: polyconw.gi,v 4.27 2010/06/16 16:31:38 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains the implementation part of functions and data around
 ##  Conway polynomials.
 ##
-Revision.polyconw_gi :=
-    "@(#)$Id: polyconw.gi,v 4.27 2010/06/16 16:31:38 gap Exp $";
 
 
 ###############################################################################
@@ -21,19 +18,25 @@ Revision.polyconw_gi :=
 #F  PowerModEvalPol( <f>, <g>, <xpownmodf> )
 ##
 InstallGlobalFunction( PowerModEvalPol, function( f, g, xpownmodf )
-
-    local l,    # length of coefficients of `g'
-          res,  # result
-          i;    # loop over coefficients of `g'
+    local l, res, reslen, powlen, i;
 
     l:= Length( g );
     res:= [ g[l] ];
+    reslen:= 1;
+    powlen:= Length( xpownmodf );
+    ConvertToVectorRep( res );
     for i in [ 1 .. l-1 ] do
-      res:= ProductCoeffs( res, xpownmodf );   # `res:= res * x^n;'
-      ReduceCoeffs( res, f );                  # `res:= res mod f;'
-      res[1]:= res[1] + g[l-i];                # `res:= res + g_{l-i+1};'
-      ShrinkRowVector( res );
+      res:= ProductCoeffs( res, reslen, xpownmodf,
+                powlen );                      # `res:= res * x^n;'
+      reslen:= ReduceCoeffs( res, f );         # `res:= res mod f;'
+      if reslen = 0 then
+        res[1]:= g[l-i];                       # `res:= res + g_{l-i+1};'
+        reslen:= 1;
+      else
+        res[1]:= res[1] + g[l-i];              # `res:= res + g_{l-i+1};'
+      fi;
     od;
+    ShrinkRowVector( res );
     return res;
 end );
 

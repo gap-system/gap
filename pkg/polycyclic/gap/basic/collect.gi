@@ -306,7 +306,7 @@ function( coll, h, g, w )
                 Unbind( coll![ PC_CONJUGATESINVERSE ][h][-g] );
             else
                 coll![ PC_CONJUGATESINVERSE ][h][-g] := w;
-            fi;
+            fi;	
         else
             if w = coll![ PC_INVERSES ][-h] then
                 Unbind( coll![ PC_INVERSECONJUGATESINVERSE ][-h][-g] );
@@ -851,17 +851,17 @@ InstallGlobalFunction( IsPcpNormalFormObj,
   local k; # loop variable
   
   if not IsSortedList( w{[1,3..Length(w)-1]} ) then 
-    return(false);
+    return false;
   fi;
   for k in [1,3..Length(w)-1] do
     if IsBound( ftl![ PC_EXPONENTS ][ w[k] ]) and 
       ( not w[k+1] < ftl![ PC_EXPONENTS ][ w[k] ] or
         not w[k+1] >= 0 ) then 
-      return(false);
+      return false;
     fi;
   od;
 
-  return(true);
+  return true;
   end);
 
 ############################################################################
@@ -884,7 +884,9 @@ InstallMethod( IsPolycyclicPresentation,
   for i in [1..n] do
     if IsBound( ftl![ PC_POWERS ][i] ) and 
        not IsPcpNormalFormObj( ftl, ftl![ PC_POWERS ][i]) then 
-      return( false );
+       Info( InfoFromTheLeftCollector, 1, "bad power relation g",i,"^",ftl![ PC_EXPONENTS ][i],
+            " = ", ftl![ PC_POWERS ][i] );
+      return false;
     fi;
   od;
   
@@ -893,16 +895,24 @@ InstallMethod( IsPolycyclicPresentation,
     for j in [ i+1 .. n ] do
       if IsBound( ftl![ PC_CONJUGATES ][j][i] ) and
          not IsPcpNormalFormObj( ftl, ftl![ PC_CONJUGATES ][j][i] ) then
-        return( false );
+        Info( InfoFromTheLeftCollector, 1, "bad conjugacy relation g",j,"^g",i,
+              " = ", ftl![ PC_CONJUGATES ][j][i] );
+        return false;
       elif IsBound( ftl![ PC_INVERSECONJUGATES ][j][i] ) and
          not IsPcpNormalFormObj( ftl, ftl![ PC_INVERSECONJUGATES ][j][i] ) then
-        return( false );
+        Info( InfoFromTheLeftCollector, 1, "bad conjugacy relation g",j,"^-g",i,
+              " = ", ftl![ PC_INVERSECONJUGATES ][j][i] );
+        return false;
       elif IsBound( ftl![ PC_CONJUGATESINVERSE ][j][i] ) and
         not IsPcpNormalFormObj( ftl, ftl![ PC_CONJUGATESINVERSE ][j][i] ) then
-        return( false );
+        Info( InfoFromTheLeftCollector, 1, "bad conjugacy relation -g",j,"^g",i,
+              " = ", ftl![ PC_CONJUGATESINVERSE ][j][i] );
+        return false;
       elif IsBound( ftl![ PC_INVERSECONJUGATESINVERSE ][j][i] ) and
         not IsPcpNormalFormObj( ftl, ftl![PC_INVERSECONJUGATESINVERSE][j][i] ) then
-        return( false );
+        Info( InfoFromTheLeftCollector, 1, "bad conjugacy relation -g",j,"^-g",i,
+              " = ", ftl![ PC_INVERSECONJUGATESINVERSE ][j][i] );
+        return false;
       fi;
     od;
   od;
@@ -912,21 +922,21 @@ InstallMethod( IsPolycyclicPresentation,
     for j in [ i+1 .. n ] do 
       if IsBound( ftl![ PC_COMMUTATORS ][j][i] ) and
          not IsPcpNormalFormObj( ftl, ftl![ PC_COMMUTATORS ][j][i] ) then
-        return( false );
+        return false;
       elif IsBound( ftl![ PC_INVERSECOMMUTATORS ][j][i] ) and
          not IsPcpNormalFormObj( ftl, ftl![ PC_INVERSECOMMUTATORS ][j][i] ) then
-        return( false );
+        return false;
       elif IsBound( ftl![ PC_COMMUTATORSINVERSE ][j][i] ) and
         not IsPcpNormalFormObj( ftl, ftl![ PC_COMMUTATORSINVERSE ][j][i] ) then
-        return( false );
+        return false;
       elif IsBound( ftl![ PC_INVERSECOMMUTATORSINVERSE ][j][i] ) and
         not IsPcpNormalFormObj( ftl, ftl![PC_INVERSECOMMUTATORSINVERSE][j][i] ) then
-        return( false );
+        return false;
       fi;
     od;
   od;
 
-  return( true );
+  return true;
   end);
 
 #############################################################################

@@ -1,6 +1,7 @@
 ##
 ## Covers
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 SchurCovers := function(G)
     local p, GG, K, R, M, D, Z, k, H, C, T, P, e, O, bij, f, t, m, A, c, 
           l, n, i;

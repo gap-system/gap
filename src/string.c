@@ -3,7 +3,6 @@
 *W  string.c                    GAP source                     Frank Lübeck,
 *W                                            Frank Celler & Martin Schönert
 **
-*H  @(#)$Id: string.c,v 4.80 2011/05/23 10:58:40 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -53,8 +52,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_string_c =
-   "@(#)$Id: string.c,v 4.80 2011/05/23 10:58:40 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1682,12 +1679,12 @@ Obj FuncPOSITION_SUBSTRING(
     return FuncPOSITION_SUBSTRING( self, string, substr, off );
   }
 
-  /* check wether pos is a non-negative integer  */
+  /* check wether <off> is a non-negative integer  */
   if ( ! IS_INTOBJ(off) || (ipos = INT_INTOBJ(off)) < 0 ) {
     off = ErrorReturnObj(
-          "POSITION_SUBSTRING: <pos> must be  non-negative integer (not a %s)",
-          (Int)TNAM_OBJ(substr), 0L,
-          "you can replace <pos> via 'return <pos>;'");
+          "POSITION_SUBSTRING: <off> must be a non-negative integer (not a %s)",
+          (Int)TNAM_OBJ(off), 0L,
+          "you can replace <off> via 'return <off>;'");
     return FuncPOSITION_SUBSTRING( self, string, substr, off );
   }
   
@@ -2533,7 +2530,7 @@ static Int InitKernel (
     UInt                t1;
     UInt                t2;
     Int                 i, j;
-    Char *              cookie_base = "src/string.c:Char";
+    const Char *        cookie_base = "src/string.c:Char";
 
     /* check dependencies                                                  */
     RequireModule( module, "lists", 403600000UL );
@@ -2751,8 +2748,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoString ( void )
 {
-    module.revision_c = Revision_string_c;
-    module.revision_h = Revision_string_h;
     FillInVersion( &module );
     return &module;
 }

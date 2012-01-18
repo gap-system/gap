@@ -2,14 +2,11 @@
 ##
 #W  grpprmcs.gi                 GAP library                       Ákos Seress
 ##
-#H  @(#)$Id: grpprmcs.gi,v 4.58 2011/02/13 21:24:28 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.grpprmcs_gi :=
-    "@(#)$Id: grpprmcs.gi,v 4.58 2011/02/13 21:24:28 gap Exp $";
 
 
 #############################################################################

@@ -2,7 +2,6 @@
 ##
 #W  ctblmaps.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblmaps.gi,v 4.49 2010/02/23 15:12:53 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 ##  5. Subroutines for the Construction of Power Maps
 ##  6. Subroutines for the Construction of Class Fusions
 ##
-Revision.ctblmaps_gi :=
-    "@(#)$Id: ctblmaps.gi,v 4.49 2010/02/23 15:12:53 gap Exp $";
 
 
 #############################################################################

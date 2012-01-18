@@ -1,18 +1,8 @@
 #############################################################################
 ##
-#W  polfield.gi        Alnuth -  Kant interface                  Bettina Eick
-#W                                                             Bjoern Assmann
+#W  polfield.gi     Alnuth - ALgebraic NUmber THeory           Bettina Eick
+#W                                                           Bjoern Assmann
 ##
-
-#############################################################################
-##
-#F FieldOfPolynomial(f)
-##
-InstallGlobalFunction( FieldOfPolynomial, function( f )
-    local c;
-    c := CoefficientsOfUnivariatePolynomial(f);
-    return Field(c);
-end );
 
 #############################################################################
 ##
@@ -31,7 +21,7 @@ InstallGlobalFunction( FieldByPolynomial, function( f )
         Print("polynomial must be irreducible\n");
         return fail;
     fi;
-    if FieldOfPolynomial(f) <> Rationals then 
+    if not ForAll( CoefficientsOfUnivariatePolynomial( f ), IsRat ) then
         Print("polynomial must be defined over Q \n");
         return fail; 
     fi;

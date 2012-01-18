@@ -3,7 +3,6 @@
 #W  grplatt.gi                GAP library                   Martin Schönert,
 #W                                                          Alexander Hulpke
 ##
-#H  @(#)$Id: grplatt.gi,v 4.93 2011/06/12 08:34:30 stefan Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This  file  contains declarations for subgroup latices
 ##
-Revision.grplatt_gi:=
-  "@(#)$Id: grplatt.gi,v 4.93 2011/06/12 08:34:30 stefan Exp $";
 
 #############################################################################
 ##

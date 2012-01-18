@@ -4,7 +4,6 @@
 #W                                                             & Frank Celler
 #W                                                          & Martin Schönert
 ##
-#H  @(#)$Id: oper.g,v 4.115 2011/03/25 12:24:38 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  This file defines operations and such. Some functions have moved
 ##  to oper1.g so as to be compiled in the default kernel
 ##
-Revision.oper_g :=
-    "@(#)$Id: oper.g,v 4.115 2011/03/25 12:24:38 alexk Exp $";
 
 
 INSTALL_METHOD := false;
@@ -477,6 +474,8 @@ end );
 
 
 #############################################################################
+##  #I  immediate: IsFreeAbelian
+##  #I  immediate: IsTorsionFree
 ##
 #F  TraceImmediateMethods( <flag> )
 ##
@@ -1408,8 +1407,7 @@ end );
 ##  in particular <E>not</E> necessarily detailed enough for defining <A>obj</A>,
 ##  an in general <E>not</E> &GAP; readable.
 ##  <P/>
-##  More detailed information can be obtained by <Ref Func="PrintObj"/>,
-##  and &GAP; readable data can be produced with <Ref Func="SaveObj"/>.
+##  More detailed information can be obtained by <Ref Func="PrintObj"/>
 ##  </Description>
 ##  </ManSection>
 ##

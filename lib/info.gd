@@ -2,7 +2,6 @@
 ##
 #W  info.gd                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id: info.gd,v 4.18 2010/02/23 15:13:10 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -35,8 +34,6 @@
 ##
 ##  This file is the declarations part of that package
 ##
-Revision.info_gd :=
-    "@(#)$Id: info.gd,v 4.18 2010/02/23 15:13:10 gap Exp $";
 
 #############################################################################
 ##
@@ -131,6 +128,17 @@ DeclareOperation("InfoLevel", [IsInfoClass]);
 ##  <handler> must be of the form  function(selector, level, moreargsfrominfo)
 ##  
 DeclareGlobalFunction("SetInfoHandler");
+DeclareGlobalFunction("DefaultInfoHandler");
+
+#############################################################################
+##
+#O  SetInfoOutput( <selector>, <out> )
+##  
+##  <out> must be output file name or stream
+##  
+DeclareGlobalFunction("SetInfoOutput");
+DeclareGlobalFunction("SetDefaultInfoOutput");
+BIND_GLOBAL("DefaultInfoOutput", "*Print*");
 
 #############################################################################
 ##

@@ -1,0 +1,39 @@
+#############################################################################
+#
+# $Id: patternscolor.txt,v 1.1 2011/09/20 16:49:00 alexk Exp $
+#
+# patternscolor.txt
+#
+# These are patterns to classify files in a checked out GAP root
+# directory according to whether they are shipped with the main 
+# archive, with the tools archive or not at all.
+# Lines starting with # are ignored, lines starting with - are
+# patterns for files not to be shipped, lines starting with + 
+# are patterns files to be shipped with the main archive and
+# lines starting with a T are patterns for files to be shipped
+# with the tools archive. The first match decides about the class.
+#
+# some problematic files which we need:
+# (in particular there are files with extension .o and .a)
+# files and directories we never include
+-*.o
+-*.cvsignore*
+-*CVS/*
+-*.git/*
+# excluded directories 
+-bin/*
+-gap/*
+-htm/*
+# included directories
++doc/*
++lib/*
++tst/*
+# individual files
++CHANGES
++README
++configure
++Makefile.in
++*.g
++src/hello.c
+# the rest is excluded
+-*

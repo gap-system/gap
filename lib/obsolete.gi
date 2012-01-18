@@ -2,7 +2,6 @@
 ##
 #W  obsolete.gi                  GAP library                     Steve Linton
 ##
-#H  @(#)$Id: obsolete.gi,v 4.4 2011/02/03 12:49:57 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  See the comments in `lib/obsolete.gd'.
 ##
-Revision.obsolete_gi :=
-    "@(#)$Id: obsolete.gi,v 4.4 2011/02/03 12:49:57 gap Exp $";
 
 
 #############################################################################
@@ -724,6 +721,18 @@ end);
 ##  This is now stored in GAPInfo.ProfileThreshold
 ##
 PROFILETHRESHOLD := GAPInfo.ProfileThreshold;
+
+
+#############################################################################
+##
+#F  CharacterTableDisplayPrintLegendDefault( <data> )
+##
+##  for backwards compatibility only ...
+##
+BindGlobal( "CharacterTableDisplayPrintLegendDefault",
+    function( data )
+    Print( CharacterTableDisplayLegendDefault( data ) );
+    end );
 
 
 #############################################################################

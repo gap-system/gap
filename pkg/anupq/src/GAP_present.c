@@ -4,34 +4,11 @@
 *A                                                             & Frank Celler
 *A                                                           & Benedikt Rothe
 **
-*A  @(#)$Id: GAP_present.c,v 1.8 2004/01/26 20:01:53 werner Exp $
+*A  @(#)$Id: GAP_present.c,v 1.11 2011/11/29 19:56:22 gap Exp $
 **
 *Y  Copyright 1995-1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-1997,  School of Mathematical Sciences, ANU,     Australia
 **
-*H  $Log: GAP_present.c,v $
-*H  Revision 1.8  2004/01/26 20:01:53  werner
-*H  Fixed outstanding bug, reported by Boris Girnat
-*H
-*H  Revision 1.7  2001/09/22 20:20:33  gap
-*H  Now we don't lose the IsCapable, NuclearRank and MultiplicatorRank info. - GG
-*H
-*H  Revision 1.6  2001/06/15 14:31:51  werner
-*H  fucked up revision numbers.   WN
-*H
-*H  Revision 1.4  2001/06/15 07:43:30  werner
-*H  Fixing revision number. WN
-*H
-*H  Revision 1.2  2001/04/16 11:04:04  werner
-*H  Incorporated Eamonn's changes to report the rank of the
-*H  p-multiplicator.						WN
-*H
-*H  Revision 1.1.1.1  2001/04/15 15:09:32  werner
-*H  Try again to import ANUPQ. WN
-*H
-*H  Revision 1.1.1.1  1998/08/12 18:51:00  gap
-*H  First attempt at adapting the ANU pq to GAP 4. 
-*H
 */
 #include "pq_defs.h"
 #include "pcp_vars.h"
@@ -47,11 +24,11 @@
 **                                     print out a word of a pcp presentation
 */
 void print_GAP_word ( file, ptr, pcp )
-    FILE_TYPE           file;
+    FILE *           file;
     int                 ptr;
     struct pcp_vars   * pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int                 gen,  exp;
    int                 i;
@@ -88,11 +65,11 @@ void print_GAP_word ( file, ptr, pcp )
 **                                write pq presentation to file in GAP format
 */
 void GAP_presentation ( file, pcp, aspcgroup )
-    FILE_TYPE           file;
+    FILE *           file;
     struct pcp_vars   * pcp;
     int                 aspcgroup;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int                 i;
    int                 j;
@@ -188,7 +165,7 @@ char * nextnumber ( ident )
 }
 
 void MakeNameList ( file, ident )
-    FILE_TYPE   file;
+    FILE *   file;
     char      * ident;
 {
    int         first = 1;
@@ -225,7 +202,7 @@ void MakeNameList ( file, ident )
 int countcall = 0;
 
 void write_GAP_library ( file, pcp )
-    FILE_TYPE         file;
+    FILE *         file;
     struct pcp_vars * pcp;
 {
    /* if this is the first call initialise 'ANUgroups'                    */
@@ -271,13 +248,13 @@ void write_GAP_library ( file, pcp )
 **                      group to a file in a format suitable for input to GAP
 */
 void GAP_auts ( file, central, stabiliser, pga, pcp )
-    FILE_TYPE           file;
+    FILE *           file;
     int             *** central;
     int             *** stabiliser;
     struct pga_vars   * pga;
     struct pcp_vars   * pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int                 i, j, k, ngens,  first;
 

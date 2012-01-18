@@ -1,0 +1,219 @@
+<Chapter Label="Information Messages">
+<Heading>Information Messages</Heading>
+
+It is possible to get informations about the status of the computation of the
+functions of Chapter <Ref Chap="Methods for matrix groups"/> of this manual.
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Info Class">
+<Heading>Info Class</Heading>
+
+<ManSection>
+<InfoClass Name="InfoPolenta"/>
+<Description>
+
+is the Info class of the &Polenta; package (for more details on the Info mechanism
+see Section <Ref Sect="Info Functions" BookName="Reference"/> of the &GAP; Reference Manual).
+With the help of the function
+<C>SetInfoLevel(InfoPolenta,<A>level</A>)</C> you can change
+the info level of <C>InfoPolenta</C>.
+
+<List>
+<Item>
+  If  <C>InfoLevel( InfoPolenta )</C> is equal to 0
+ then no information
+  messages are displayed.
+</Item>
+
+<Item>
+  If <C>InfoLevel( InfoPolenta )</C> is equal to 1 then basic informations
+  about the process are provided. For further background on the displayed
+  informations we refer to  <Cite Key="Assmann"/> (publicly available via the
+  Internet address <URL>http://www.icm.tu-bs.de/ag_algebra/software/assmann/diploma.pdf</URL>).
+</Item>
+
+<Item>
+  If <C>InfoLevel( InfoPolenta )</C> is equal to 2 then, in addition to the
+  basic information, the generators of computed subgroups and module series
+  are displayed.
+</Item>
+</List>
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Example">
+<Heading>Example</Heading>
+
+<Example><![CDATA[
+gap> SetInfoLevel( InfoPolenta, 1 );
+
+gap> PcpGroupByMatGroup( PolExamples(11) );
+#I  Determine a constructive polycyclic sequence
+    for the input group ...
+#I
+#I  Chosen admissible prime: 3
+#I
+#I  Determine a constructive polycyclic sequence
+    for the image under the p-congruence homomorphism ...
+#I  finished.
+#I  Finite image has relative orders [ 3, 2, 3, 3, 3 ].
+#I
+#I  Compute normal subgroup generators for the kernel
+    of the p-congruence homomorphism ...
+#I  finished.
+#I
+#I  Compute the radical series ...
+#I  finished.
+#I  The radical series has length 4.
+#I
+#I  Compute the composition series ...
+#I  finished.
+#I  The composition series has length 5.
+#I
+#I  Compute a constructive polycyclic sequence
+    for the induced action of the kernel to the composition series ...
+#I  finished.
+#I  This polycyclic sequence has relative orders [  ].
+#I
+#I  Calculate normal subgroup generators for the
+    unipotent part ...
+#I  finished.
+#I
+#I  Determine a constructive polycyclic  sequence
+    for the unipotent part ...
+#I  finished.
+#I  The unipotent part has relative orders
+#I  [ 0, 0, 0 ].
+#I
+#I  ... computation of a constructive
+    polycyclic sequence for the whole group finished.
+#I
+#I  Compute the relations of the polycyclic
+    presentation of the group ...
+#I  Compute power relations ...
+#I  ... finished.
+#I  Compute conjugation relations ...
+#I  ... finished.
+#I  Update polycyclic collector ...
+#I  ... finished.
+#I  finished.
+#I
+#I  Construct the polycyclic presented group ...
+#I  finished.
+#I
+Pcp-group with orders [ 3, 2, 3, 3, 3, 0, 0, 0 ]
+
+
+gap> SetInfoLevel( InfoPolenta, 2 );
+
+gap> PcpGroupByMatGroup( PolExamples(11) );
+#I  Determine a constructive polycyclic sequence
+    for the input group ...
+#I
+#I  Chosen admissible prime: 3
+#I
+#I  Determine a constructive polycyclic sequence
+    for the image under the p-congruence homomorphism ...
+#I  finished.
+#I  Finite image has relative orders [ 3, 2, 3, 3, 3 ].
+#I
+#I  Compute normal subgroup generators for the kernel
+    of the p-congruence homomorphism ...
+#I  finished.
+#I  The normal subgroup generators are
+#I  [ [ [ 1, -3/2, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 3 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 0, 0, 24 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 3, 3, 15 ], [ 0, 1, 0, 6 ], [ 0, 0, 1, -6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 3, 3, 9 ], [ 0, 1, 0, 6 ], [ 0, 0, 1, -6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 3/2, 3/2, 3/2 ], [ 0, 1, 0, 3 ], [ 0, 0, 1, -3 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3/2, 9/2, -69/2 ], [ 0, 1, 0, 9 ], [ 0, 0, 1, 3 ], [ 0, 0, 0, 1 ] ]
+    , [ [ 1, 0, 0, -24 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3, -3, -9 ], [ 0, 1, 0, -6 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3, -3, -15 ], [ 0, 1, 0, -6 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3, 0, 9 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3, -3, -9 ], [ 0, 1, 0, -6 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3, 0, 9 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3/2, -3/2, -9/2 ], [ 0, 1, 0, -3 ], [ 0, 0, 1, 3 ], [ 0, 0, 0, 1 ]
+     ],
+  [ [ 1, -3, -3, -12 ], [ 0, 1, 0, -6 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 3, -3/2, -21 ], [ 0, 1, 0, -3 ], [ 0, 0, 1, -6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 3/2, 3/2, 9/2 ], [ 0, 1, 0, 3 ], [ 0, 0, 1, -3 ], [ 0, 0, 0, 1 ] ] ]
+#I
+#I  Compute the radical series ...
+#I  finished.
+#I  The radical series has length 4.
+#I  The radical series is
+#I  [ [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ], [ [ 0, 0, 0, 1 ] ],
+  [  ] ]
+#I
+#I  Compute the composition series ...
+#I  finished.
+#I  The composition series has length 5.
+#I  The composition series is
+#I  [ [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ], [ [ 0, 0, 0, 1 ] ], [  ] ]
+#I
+#I  Compute a constructive polycyclic sequence
+    for the induced action of the kernel to the composition series ...
+#I  finished.
+#I  This polycyclic sequence has relative orders [  ].
+#I
+#I  Calculate normal subgroup generators for the
+    unipotent part ...
+#I  finished.
+#I  The normal subgroup generators for the unipotent part are
+#I  [ [ [ 1, -3/2, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 3 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 0, 0, 24 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 3, 3, 15 ], [ 0, 1, 0, 6 ], [ 0, 0, 1, -6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 3, 3, 9 ], [ 0, 1, 0, 6 ], [ 0, 0, 1, -6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 3/2, 3/2, 3/2 ], [ 0, 1, 0, 3 ], [ 0, 0, 1, -3 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3/2, 9/2, -69/2 ], [ 0, 1, 0, 9 ], [ 0, 0, 1, 3 ], [ 0, 0, 0, 1 ] ]
+    , [ [ 1, 0, 0, -24 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3, -3, -9 ], [ 0, 1, 0, -6 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3, -3, -15 ], [ 0, 1, 0, -6 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3, 0, 9 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3, -3, -9 ], [ 0, 1, 0, -6 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3, 0, 9 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, -3/2, -3/2, -9/2 ], [ 0, 1, 0, -3 ], [ 0, 0, 1, 3 ], [ 0, 0, 0, 1 ]
+     ],
+  [ [ 1, -3, -3, -12 ], [ 0, 1, 0, -6 ], [ 0, 0, 1, 6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 3, -3/2, -21 ], [ 0, 1, 0, -3 ], [ 0, 0, 1, -6 ], [ 0, 0, 0, 1 ] ],
+  [ [ 1, 3/2, 3/2, 9/2 ], [ 0, 1, 0, 3 ], [ 0, 0, 1, -3 ], [ 0, 0, 0, 1 ] ] ]
+#I
+#I  Determine a constructive polycyclic  sequence
+    for the unipotent part ...
+#I  finished.
+#I  The unipotent part has relative orders
+#I  [ 0, 0, 0 ].
+#I
+#I  ... computation of a constructive
+    polycyclic sequence for the whole group finished.
+#I
+#I  Compute the relations of the polycyclic
+    presentation of the group ...
+#I  Compute power relations ...
+.....
+#I  ... finished.
+#I  Compute conjugation relations ...
+..............................................
+#I  ... finished.
+#I  Update polycyclic collector ...
+#I  ... finished.
+#I  finished.
+#I
+#I  Construct the polycyclic presented group ...
+#I  finished.
+#I
+Pcp-group with orders [ 3, 2, 3, 3, 3, 0, 0, 0 ]
+]]></Example>
+
+</Section>
+</Chapter>
+

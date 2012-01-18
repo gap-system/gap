@@ -72,15 +72,15 @@ ReadLib( "options.gi"  );
 ReadLib( "attr.gd"     );
 ReadLib( "attr.gi"     );
 
-ReadLib( "float.gd"    );
-ReadLib( "macfloat.g"  );
-
 ReadLib( "string.gd"   );
 
 ReadLib( "cmdledit.g"  );
 
 ReadLib( "thread.g" );
 ReadLib( "tasks.g" );
+
+ReadLib( "float.gd"    );
+ReadLib( "macfloat.g"  );
 ReadLib( "altview.g" );
 
 ReadLib( "error.g"   );

@@ -1,12 +1,11 @@
 #############################################################################
 ##
-#W    read.g         Alnuth - Kant Interface                     Bettina Eick
-##                                                            Andreas Distler
+#W  read.g          Alnuth - ALgebraic NUmber THeory           Bettina Eick
+##                                                          Andreas Distler
 ##
 ##  The files with GAP code are read here and global variables are defined.
 ##  Note that in Alnuth we cannot do this in completely arbitrary order.
-##  Globals used in code should be known to avoid warnings. The function
-##  'SetExternalExecutableAlnuthNC' has to be installed before use.
+##  Globals used in code should be known to avoid warnings.
 ##    
 
 #############################################################################

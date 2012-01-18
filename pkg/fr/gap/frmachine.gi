@@ -2,7 +2,7 @@
 ##
 #W frmachine.gi                                             Laurent Bartholdi
 ##
-#H   @(#)$Id: frmachine.gi,v 1.58 2011/04/04 19:52:35 gap Exp $
+#H   @(#)$Id: frmachine.gi,v 1.60 2011/09/20 11:45:34 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -20,7 +20,12 @@
 ##
 InstallMethod(AlphabetOfFRObject, "(FR) for an FR object",
         [IsFRObject],
-        M->FamilyObj(M)!.alphabet);
+        function(M)
+    local a;
+    a := FamilyObj(M)!.alphabet;
+    IsRange(a);
+    return a;
+end);
 
 INSTALLPRINTERS@(IsFRObject);
 
@@ -31,7 +36,7 @@ InstallMethod(FRMFamily, "(FR) for an alphabet",
     for i in FR_FAMILIES do
         if i[1] = d then return i[2]; fi;
     od;
-    i := NewFamily(Concatenation("FRMachine(",STRING@(d),")"), IsFRMachine);
+    i := NewFamily(Concatenation("FRMachine(",String(d),")"), IsFRMachine);
     i!.standard := Size(d)<2^28 and d=[1..Size(d)];
     if i!.standard then
         i!.alphabet := [1..Size(d)];

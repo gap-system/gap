@@ -27,7 +27,7 @@ RCWABitmapGraphicsTest := function ( directory )
                    [[255,0,0],[0,255,0],[0,0,255]],fname[5]);
   DrawOrbitPicture(PSL2Z,[0,1],20,237,278,true,
                    [[255,0,0],[0,255,0],[0,0,255]],fname[6]);
-  examples := List(fname,ReadFromBitmapPicture);
+  examples := List(fname,LoadBitmapPicture);
   for i in [1..6] do SaveAsBitmapPicture(examples[i],fname[i]); od;
 end;
 

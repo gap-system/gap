@@ -3,7 +3,6 @@
 #W  ffe.gi                      GAP library                     Werner Nickel
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id: ffe.gi,v 4.78 2011/03/25 12:14:02 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -22,8 +21,6 @@
 ##  The implementation of elements of rings `Integers mod <n>' can be found
 ##  in the file `zmodnz.gi'.
 ##
-Revision.ffe_gi :=
-    "@(#)$Id: ffe.gi,v 4.78 2011/03/25 12:14:02 gap Exp $";
 
 
 #############################################################################

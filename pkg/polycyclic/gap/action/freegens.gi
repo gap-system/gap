@@ -15,7 +15,7 @@ FreeGensByRelationMat := function( gens, mat )
 
     # first try to simplify mat
     mat := ShallowCopy( mat );
-    Sort( mat, function( a, b ) return DepthOfVec(a)<DepthOfVec(b); end);
+    Sort( mat, function( a, b ) return PositionNonZero(a)<PositionNonZero(b); end);
 
     # fill up mat
     if Length(mat) < Length(mat[1]) then

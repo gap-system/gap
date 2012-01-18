@@ -1,26 +1,22 @@
 #############################################################################
 ##
-#W  atlasrep.tst        GAP 4 package `atlasrep'                Thomas Breuer
-##
-#H  @(#)$Id: atlasrep.tst,v 1.40 2008/06/25 12:48:58 gap Exp $
+#W  atlasrep.tst         GAP 4 package AtlasRep                 Thomas Breuer
 ##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file contains among others the function calls needed to perform the
-##  sanity checks mentioned in Section~"Sanity Checks" of the manual of the
-##  ATLAS of Group Representations.
+##  This file contains among others the function calls needed to perform some
+##  of the sanity checks mentioned in the manual section about sanity checks.
 ##
 ##  In order to run the tests, one starts GAP from the `tst' subdirectory
 ##  of the `pkg/atlasrep' directory, and calls `ReadTest( "atlasrep.tst" );'.
 ##
-##  If one of the functions `AtlasOfGroupRepresentationsTestWords',
-##  `AtlasOfGroupRepresentationsTestFileHeaders' reports an error
-##  then detailed information can be obtained by increasing the
-##  info level of `InfoAtlasRep' to at least $1$ and then running the tests
+##  If one of the functions `AGR.Test.Words', `AGR.Test.FileHeaders' reports
+##  an error then detailed information can be obtained by increasing the
+##  info level of `InfoAtlasRep' to at least 1 and then running the tests
 ##  again.
 ##
 
-gap> START_TEST("$Id: atlasrep.tst,v 1.40 2008/06/25 12:48:58 gap Exp $");
+gap> START_TEST( "Input file: atlasrep.tst" );
 
 
 # Load the package.
@@ -28,18 +24,19 @@ gap> LoadPackage( "atlasrep" );
 true
 gap> LoadPackage( "ctbllib" );
 true
+gap> ReadPackage( "atlasrep", "gap/test.g" );
+true
 
 # Test whether the locally stored straight line programs
 # can be read and processed.
-gap> if not AtlasOfGroupRepresentationsTestWords() then
->      Print( "#I  Error in `AtlasOfGroupRepresentationsTestWords'\n" );
+gap> if not AGR.Test.Words() then
+>      Print( "#I  Error in `AGR.Test.Words'\n" );
 > fi;
 
 # Test whether the locally stored generators are consistent
 # with their filenames.
-gap> if not AtlasOfGroupRepresentationsTestFileHeaders() then
->      Print( "#I  Error in ",
->          "`AtlasOfGroupRepresentationsTestFileHeaders'\n" );
+gap> if not AGR.Test.FileHeaders() then
+>      Print( "#I  Error in `AGR.Test.FileHeaders'\n" );
 > fi;
 
 # Test the standardization of the available generators.
@@ -307,28 +304,29 @@ gap> OneAtlasGeneratingSetInfo( IsPermGroup, true );;
 gap> OneAtlasGeneratingSetInfo( [ "A5", "A6" ], IsPermGroup, true );;
 gap> AllAtlasGeneratingSetInfos( IsPermGroup, true );;
 gap> AllAtlasGeneratingSetInfos( [ "A5", "A6" ], IsPermGroup, true );;
+gap> OneAtlasGeneratingSetInfo( Identifier, "a" );;
+gap> OneAtlasGeneratingSetInfo( Position, 1 );;
+gap> OneAtlasGeneratingSetInfo( Position, 10^6 );
+fail
+gap> chi:= PermChars( CharacterTable( "M11" ), [ 11 ] )[1];;
+gap> OneAtlasGeneratingSetInfo( Character, chi );;
+gap> OneAtlasGeneratingSetInfo( "M11", Character, chi );;
 
 # Check that the function `StringOfAtlasTableOfContents' works.
 gap> StringOfAtlasTableOfContents( "remote" );;
 
-# Check whether reading the file `atlasprm.g' reports inconsistencies.
+# Check whether reading the file `atlasprm.g' reports inconsistencies,
+# and whether store/replace of a table of contents works.
 gap> level:= InfoLevel( InfoAtlasRep );;
 gap> SetInfoLevel( InfoAtlasRep, 3 );
-gap> MakeReadWriteGlobal( "AtlasOfGroupRepresentationsInfo" );
-gap> RereadPackage( "atlasrep", "gap/types.g" );;
-gap> RereadPackage( "atlasrep", "gap/test.gi" );;
-gap> SetInfoLevel( InfoAtlasRep, level );
-
-# Check whether store/replace of a table of contents works.
-gap> tmpname:= "atlastoc.tmp";;
+gap> tmpname:= Filename( DirectoryTemporary(), "atlastoc.tmp" );;
 gap> StoreAtlasTableOfContents( tmpname );
 gap> oldval:= AtlasOfGroupRepresentationsInfo.TableOfContents.( "remote" );;
 gap> ReplaceAtlasTableOfContents( tmpname );
 gap> newval:= AtlasOfGroupRepresentationsInfo.TableOfContents.( "remote" );;
 gap> newval = oldval;
 true
-gap> RemoveFile( tmpname );
-true
+gap> SetInfoLevel( InfoAtlasRep, level );
 
 gap> STOP_TEST( "atlasrep.tst", 10000000 );
 

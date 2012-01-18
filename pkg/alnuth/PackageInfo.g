@@ -9,13 +9,15 @@ SetPackageInfo( rec(
 PackageName := "Alnuth",
 Subtitle := "Algebraic number theory and an interface to PARI/GP",
 Version := "3.0.0",
-Date := "10/06/2011",
+Date := "26/10/2011",
 
 PackageWWWHome := "http://www.icm.tu-bs.de/ag_algebra/software/Alnuth/",
 
-ArchiveURL := Concatenation([~.PackageWWWHome, "archives/Alnuth-", ~.Version]),
-ArchiveFormats := ".tar.gz",
+ArchiveURL := Concatenation([~.PackageWWWHome, "Archives/Alnuth-", ~.Version]),
+ArchiveFormats := ".tar.gz -win.zip",
 
+BinaryFiles := ["doc/manual.pdf", "doc/manual.ps"],
+ 
 Persons := [
 
   rec(
@@ -62,7 +64,7 @@ README_URL := Concatenation( ~.PackageWWWHome, "README" ),
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
 
 AbstractHTML := 
-"The <span class=\"pkgname\">Alnuth</span> package provides various methods to compute with number fields which are given by a defining polynomial or by generators. Some of the methods provided in this package are written in <span class=\"pkgname\">GAP</span> code. The other part of the methods is imported from the computer algebra system PARI/GP. Hence this package contains some <span class=\"pkgname\">GAP</span> functions and an interface to some functions in the computer algebra system PARI/GP. The main methods included in this package are: creating a number field, computing its maximal order (using PARI/GP), computing its unit group (using PARI/GP) and a presentation of this unit group, computing the elements of a given norm of the number field (using PARI/GP) and determining a presentation for a finitely generated multiplicative subgroup (using PARI/GP).",
+"The <span class=\"pkgname\">Alnuth</span> package provides various methods to compute with number fields which are given by a defining polynomial or by generators. Some of the methods provided in this package are written in <span class=\"pkgname\">GAP</span> code. The other part of the methods is imported from the computer algebra system PARI/GP. Hence this package contains some <span class=\"pkgname\">GAP</span> functions and an interface to some functions in the computer algebra system PARI/GP. The main methods included in <span class=\"pkgname\">Alnuth</span> are: creating a number field, computing its maximal order (using PARI/GP), computing its unit group (using PARI/GP) and a presentation of this unit group, computing the elements of a given norm of the number field (using PARI/GP), determining a presentation for a finitely generated multiplicative subgroup (using PARI/GP), and factoring polynomials defined over number fields (using PARI/GP).",
 
 PackageDoc := rec(
   BookName  := "Alnuth",
@@ -74,11 +76,11 @@ PackageDoc := rec(
   Autoload  := true),
 
 Dependencies := rec(
-  GAP := ">= 4.3fix4",
+  GAP := ">= 4.5",
   NeededOtherPackages := [[ "polycyclic", ">=1.1" ]],
   SuggestedOtherPackages := [], 
   ExternalConditions := 
-[["needs the PARI/GP computer algebra system Version 2.3.4 or higher",
+[["needs the PARI/GP computer algebra system Version 2.5 or higher",
 "http://pari.math.u-bordeaux.fr/" ] ]
 ),
 
@@ -88,7 +90,7 @@ BannerString := Concatenation([
 ~.Version,
 " ... \n" ]),     
 Autoload := false,
-TestFile := "tst/testall.g",
+TestFile := "tst/testinstall.g",
 Keywords := ["algebraic number theory", "number field" , "maximal order",
 "interface to PARI/GP", "unit group", "elements of given norm" ]
 ));

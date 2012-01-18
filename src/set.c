@@ -2,7 +2,6 @@
 **
 *W  set.c                       GAP source                   Martin Schönert
 **
-*H  @(#)$Id: set.c,v 4.50 2010/09/16 14:29:16 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -23,8 +22,6 @@
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_set_c =
-   "@(#)$Id: set.c,v 4.50 2010/09/16 14:29:16 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1182,8 +1179,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSet ( void )
 {
-    module.revision_c = Revision_set_c;
-    module.revision_h = Revision_set_h;
     FillInVersion( &module );
     return &module;
 }

@@ -2,22 +2,21 @@
 ##
 #W  utils.gd             GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: utils.gd,v 1.25 2008/11/12 12:54:29 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declarations of utility functions for the
 ##  &ATLAS; of Group Representations.
 ##
-Revision.( "atlasrep/gap/utils_gd" ) :=
-    "@(#)$Id: utils.gd,v 1.25 2008/11/12 12:54:29 gap Exp $";
 
 
 #############################################################################
 ##
 ##  Class Names Used in the AtlasRep Package
 ##
-##  <#GAPDoc Label="[1]{utils}">
+##  <#GAPDoc Label="classnames">
+##  <Subsection Label="subsect:Definition of ATLAS Class Names">
+##  <Heading>Definition of &ATLAS; Class Names</Heading>
+##
 ##  For the definition of class names of an almost simple group,
 ##  we assume that the ordinary character tables of all nontrivial normal
 ##  subgroups are shown in
@@ -129,10 +128,11 @@ Revision.( "atlasrep/gap/utils_gd" ) :=
 ##      (these classes lie outside the simple group <M>Sz</M>).
 ##  </Item>
 ##  <Item>
-##      For a central <E>downward extension</E> <M>m.G</M> of a simple group
-##      <M>G</M> by a cyclic group of order <M>m</M>, let <M>\pi</M> denote
-##      the natural epimorphism from <M>m.G</M> onto <M>G</M>.
-##      Each class name of <M>m.G</M> has the form <C>nX_0</C>,
+##      For a <E>downward extension</E> <M>m.G.A</M> of an almost simple
+##      group <M>G.A</M> by a cyclic group of order <M>m</M>,
+##      let <M>\pi</M> denote the natural epimorphism from <M>m.G.A</M>
+##      onto <M>G.A</M>.
+##      Each class name of <M>m.G.A</M> has the form <C>nX_0</C>,
 ##      <C>nX_1</C> etc.,
 ##      where <C>nX</C> is the class name of the image under <M>\pi</M>,
 ##      and the indices <C>0</C>, <C>1</C> etc. are chosen according to the
@@ -144,17 +144,13 @@ Revision.( "atlasrep/gap/utils_gd" ) :=
 ##      the classes containing the generators of the kernel of <M>\pi</M>,
 ##      that is, central elements of order <M>6</M>.
 ##  </Item>
-##  <!-- #T  
-##  <Item>
-##  #T  general central downward extensions
-##  #T  (<M>2^2</M>, <M>2 \times 4</M>, ...)?
-##  </Item>
-##  <Item>
-##  #T  mixed cases ($m.G.a$): `1A_1A_5'? (order followed by the
-##  #T  concatenation of names of classes in $m.G$ that are fused in $m.G.a$)
-##  </Item> -->
 ##  </Enum>
+##
+##  </Subsection>
 ##  <#/GAPDoc>
+##
+#T  missing:
+#T  general central downward extensions (<M>2^2</M>, <M>2 \times 4</M>, ...)
 ##
 
 
@@ -170,11 +166,11 @@ Revision.( "atlasrep/gap/utils_gd" ) :=
 ##  a list of class names.
 ##  </Returns>
 ##  <Description>
-##  Let <A>tbl</A> be the ordinary character table of a group <M>G</M>
-##  that is simple or an automorphic or a central extension of a simple group
-##  and such that <A>tbl</A> is an &ATLAS; table from the &GAP; Character
-##  Table Library, according to its <Ref Func="InfoText" BookName="ref"/>
-##  value.
+##  Let <A>tbl</A> be the ordinary or modular character table of a group
+##  <M>G</M>, say, that is almost simple or a downward extension of an
+##  almost simple group and such that <A>tbl</A> is an &ATLAS; table
+##  from the &GAP; Character Table Library,
+##  according to its <Ref Func="InfoText" BookName="ref"/> value.
 ##  Then <Ref Func="AtlasClassNames"/> returns the list of class names for
 ##  <M>G</M>, as defined
 ##  in Section&nbsp;<Ref Subsect="subsect:Definition of ATLAS Class Names"/>.
@@ -202,6 +198,9 @@ Revision.( "atlasrep/gap/utils_gd" ) :=
 ##  gap> AtlasClassNames( CharacterTable( "3.A6" ) );
 ##  [ "1A_0", "1A_1", "1A_2", "2A_0", "2A_1", "2A_2", "3A_0", "3B_0", "4A_0", 
 ##    "4A_1", "4A_2", "5A_0", "5A_1", "5A_2", "5B_0", "5B_1", "5B_2" ]
+##  gap> AtlasClassNames( CharacterTable( "2.A5.2" ) );
+##  [ "1A_0", "1A_1", "2A_0", "3A_0", "3A_1", "5AB_0", "5AB_1", "2B_0", "4A_0", 
+##    "4A_1", "6A_0", "6A_1" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -230,25 +229,55 @@ DeclareGlobalVariable( "AtlasClassNamesOffsetInfo" );
 
 #############################################################################
 ##
-#F  StringOfAtlasProgramCycToCcls( <filename>, <tbl>, <mode> )
+#F  AtlasCharacterNames( <tbl> )
+##
+##  <#GAPDoc Label="AtlasCharacterNames">
+##  <ManSection>
+##  <Func Name="AtlasCharacterNames" Arg='tbl'/>
+##
+##  <Returns>
+##  a list of character names.
+##  </Returns>
+##  <Description>
+##  Let <A>tbl</A> be the ordinary or modular character table of a simple
+##  group.
+##  <Ref Func="AtlasCharacterNames"/> returns a list of strings,
+##  the <M>i</M>-th entry being the name of the <M>i</M>-th irreducible
+##  character of <A>tbl</A>;
+##  this name consists of the degree of this character followed by
+##  distinguishing lowercase letters.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> AtlasCharacterNames( CharacterTable( "A5" ) );                   
+##  [ "1a", "3a", "3b", "4a", "5a" ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "AtlasCharacterNames" );
+
+
+#############################################################################
+##
+#F  StringOfAtlasProgramCycToCcls( <prgstring>, <tbl>, <mode> )
 ##
 ##  <ManSection>
-##  <Func Name="StringOfAtlasProgramCycToCcls" Arg='filename, tbl, mode'/>
+##  <Func Name="StringOfAtlasProgramCycToCcls" Arg='prgstring, tbl, mode'/>
 ##
 ##  <Description>
 ##  The purpose of this utility program is to construct a straight line
 ##  program for computing conjugacy class representatives of a group <M>G</M>
 ##  from a straight line program for computing representatives of classes
 ##  of maximally cyclic subgroups of <M>G</M>;
-##  the latter program is assumed to be stored in the file with name
-##  <A>filename</A>.
+##  the latter program is assumed to be given by the string <A>prgstring</A>.
 ##  The second argument <A>tbl</A> must be the ordinary character table of
 ##  <M>G</M>.
 ##  The third argument <A>mode</A> must be one of the strings <C>"names"</C>
 ##  or <C>"numbers"</C>; in the former case, the labels used are class names,
 ##  in the latter case they are numbers.
 ##  (Note that the labels used for the inputs are the outputs of the program
-##  stored in <A>filename</A>, which may be names even if <C>"numbers"</C> is
+##  given by <A>prgstring</A>, which may be names even if <C>"numbers"</C> is
 ##  chosen for <A>mode</A>.)
 ##  <P/>
 ##  <M>G</M> must be an &ATLAS; group, and the classes of <A>tbl</A> must be
@@ -327,16 +356,6 @@ DeclareGlobalFunction( "ParseBackwards" );
 DeclareGlobalFunction( "ParseBackwardsWithPrefix" );
 DeclareGlobalFunction( "ParseForwards" );
 DeclareGlobalFunction( "ParseForwardsWithSuffix" );
-
-
-#############################################################################
-##
-#F  BrowseData_CompareAsNumbersAndNonnumbers( <nam1>, <nam2> )
-##
-##  It may be that the Browse package is not available,
-##  eventually move this function to a low level package ...
-##
-DeclareGlobalFunction( "BrowseData_CompareAsNumbersAndNonnumbers" );
 
 
 #############################################################################

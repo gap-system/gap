@@ -64,11 +64,11 @@ gap> Display(a);
 
 Rcwa mapping of Z_( 2 ) with modulus 4
 
-                n mod 4                |             Image of n
----------------------------------------+--------------------------------------
-  0 2                                  | 3 n / 2
-  1                                    | (3 n + 1) / 4
-  3                                    | (3 n - 1) / 4
+        /
+        | 3 n / 2       if n in 0(2)
+ n |-> <  (3 n + 1) / 4 if n in 1(4)
+        | (3 n - 1) / 4 if n in 3(4)
+        \
 
 gap> One(a);
 IdentityMapping( Z_( 2 ) )
@@ -86,17 +86,17 @@ gap> Display(a2);
 
 Surjective rcwa mapping of Z_( 2 ) with modulus 16
 
-               n mod 16                |             Image of n
----------------------------------------+--------------------------------------
-   0  4  8 12                          | 9 n / 4
-   1                                   | (9 n + 7) / 16
-   2 10                                | (9 n - 2) / 8
-   3 11                                | (9 n - 3) / 8
-   5 13                                | (9 n + 3) / 8
-   6 14                                | (9 n + 2) / 8
-   7                                   | (9 n + 1) / 16
-   9                                   | (9 n - 1) / 16
-  15                                   | (9 n - 7) / 16
+        /
+        | 9 n / 4        if n in 0(4)
+        | (9 n - 2) / 8  if n in 2(8)
+        | (9 n - 3) / 8  if n in 3(8)
+        | (9 n + 3) / 8  if n in 5(8)
+ n |-> <  (9 n + 2) / 8  if n in 6(8)
+        | (9 n + 7) / 16 if n in 1(16)
+        | (9 n + 1) / 16 if n in 7(16)
+        | (9 n - 1) / 16 if n in 9(16)
+        | (9 n - 7) / 16 if n in 15(16)
+        \
 
 gap> b := RcwaMapping([2,3],ShallowCopy(Coefficients(a)));
 <rcwa mapping of Z_( 2, 3 ) with modulus 4>
@@ -104,11 +104,11 @@ gap> Display(b);
 
 Rcwa mapping of Z_( 2, 3 ) with modulus 4
 
-                n mod 4                |             Image of n
----------------------------------------+--------------------------------------
-  0 2                                  | 3 n / 2
-  1                                    | (3 n + 1) / 4
-  3                                    | (3 n - 1) / 4
+        /
+        | 3 n / 2       if n in 0(2)
+ n |-> <  (3 n + 1) / 4 if n in 1(4)
+        | (3 n - 1) / 4 if n in 3(4)
+        \
 
 gap> a = b;
 false
@@ -124,11 +124,11 @@ gap> Display(c);
 
 Bijective rcwa mapping of Z_( 2, 3 ) with modulus 3
 
-                n mod 3                |             Image of n
----------------------------------------+--------------------------------------
-  0                                    | 2 n / 3
-  1                                    | (4 n - 1) / 3
-  2                                    | (4 n + 1) / 3
+        /
+        | 2 n / 3       if n in 0(3)
+ n |-> <  (4 n - 1) / 3 if n in 1(3)
+        | (4 n + 1) / 3 if n in 2(3)
+        \
 
 gap> b*c;
 IdentityMapping( Z_( 2, 3 ) )
@@ -140,11 +140,11 @@ gap> Display(b+b);
 
 Rcwa mapping of Z_( 2, 3 ) with modulus 4
 
-                n mod 4                |             Image of n
----------------------------------------+--------------------------------------
-  0 2                                  | 3 n
-  1                                    | (3 n + 1) / 2
-  3                                    | (3 n - 1) / 2
+        /
+        | 3 n           if n in 0(2)
+ n |-> <  (3 n + 1) / 2 if n in 1(4)
+        | (3 n - 1) / 2 if n in 3(4)
+        \
 
 gap> w := RcwaMapping([2],[[1,0,2],[2,-1,1],[1,1,1],[2,-1,1]]);
 <rcwa mapping of Z_( 2 ) with modulus 4>
@@ -154,11 +154,11 @@ gap> Display(w);
 
 Bijective rcwa mapping of Z_( 2 ) with modulus 4
 
-                n mod 4                |             Image of n
----------------------------------------+--------------------------------------
-  0                                    | n / 2
-  1 3                                  | 2 n - 1
-  2                                    | n + 1
+        /
+        | 2 n - 1 if n in 1(2)
+ n |-> <  n / 2   if n in 0(4)
+        | n + 1   if n in 2(4)
+        \
 
 gap> (w*f^-1)*((g*a)*w^-1) = w*((f^-1*g)*a)*w^-1;
 true
@@ -173,11 +173,11 @@ gap> Display(c);
 
 Bijective rcwa mapping of Z_( 2, 3 ) with modulus 3, of order 2
 
-                n mod 3                |             Image of n
----------------------------------------+--------------------------------------
-  0                                    | n
-  1                                    | n - 1/5
-  2                                    | n + 1/5
+        /
+        | n - 1/5 if n in 1(3)
+ n |-> <  n + 1/5 if n in 2(3)
+        | n       if n in 0(3)
+        \
 
 gap> c = a^-1*f^-1*a*f;
 true
@@ -207,10 +207,11 @@ gap> Display(cs);
 
 Tame bijective rcwa mapping of Z_( 2 ) with modulus 2, of order infinity
 
-                n mod 2                |             Image of n
----------------------------------------+--------------------------------------
-  0                                    | n + 2
-  1                                    | n
+        /
+        | n + 2 if n in 0(2)
+ n |-> <  n     if n in 1(2)
+        |
+        \
 
 gap> cr := ClassReflection(Z_pi(2));
 ClassReflection(0,1)
@@ -222,10 +223,11 @@ gap> Display(ClassReflection(ResidueClass(Z_pi(2),2,1)));
 
 Bijective rcwa mapping of Z_( 2 ) with modulus 2, of order 2
 
-                n mod 2                |             Image of n
----------------------------------------+--------------------------------------
-  0                                    | n
-  1                                    | -n + 2
+        /
+        | -n + 2 if n in 1(2)
+ n |-> <  n      if n in 0(2)
+        |
+        \
 
 gap> ct := ClassTransposition(ResidueClass(Z_pi([2,3]),2,1),
 >                             ResidueClass(Z_pi([2,3]),6,4));
@@ -234,11 +236,11 @@ gap> Display(ct);
 
 Bijective rcwa mapping of Z_( 2, 3 ) with modulus 6, of order 2
 
-                n mod 6                |             Image of n
----------------------------------------+--------------------------------------
-  0 2                                  | n
-  1 3 5                                | 3 n + 1
-  4                                    | (n - 1) / 3
+        /
+        | 3 n + 1     if n in 1(2)
+ n |-> <  (n - 1) / 3 if n in 4(6)
+        | n           if n in 0(6) U 2(6)
+        \
 
 gap> ct^2;
 IdentityMapping( Z_( 2, 3 ) )

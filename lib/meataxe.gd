@@ -4,7 +4,6 @@
 #W                                                                 Sarah Rees
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: meataxe.gd,v 4.6 2010/02/23 15:13:14 gap Exp $ 
 ##
 #Y  (C) 1998-2001 School Math. Sci., University of St Andrews, Scotland
 ##
@@ -12,8 +11,6 @@
 ##  GAP4 and using the standard MeatAxe interface.  It defines the MeatAxe
 ##  SMTX.
 ##
-Revision.meataxe_gd:=
-  "@(#)$Id: meataxe.gd,v 4.6 2010/02/23 15:13:14 gap Exp $";
 
 #############################################################################
 ##

@@ -3,7 +3,7 @@
 %W  guide.tex        ANUPQ standalone documentation        Eamonn O'Brien
 %%
 %%
-%H  $Id: guide.tex,v 1.9 2006/01/24 04:50:24 gap Exp $
+%H  $Id: guide.tex,v 1.11 2011/11/28 13:42:06 gap Exp $
 %%
 %W  Greg Gamble made a number of modifications: updated it  for  LaTeX2e;
 %W  added a table of contents, cross-references and an examples appendix;
@@ -107,8 +107,7 @@ It was developed in a SUN OS environment and has been ported successfully
 to each of Solaris, AIX and Ultrix environments.  The interface and 
 input/output facilities of the program are rudimentary.  Interfaces 
 have been developed which allow parts of this program to be called
-from within the computational group theory systems, 
-{\sc Magma} and {\sf GAP}.  
+from within the computational group theory system {\sf GAP}.  
 This program is supplied as a package within {\sf GAP}.
 The link from {\sf GAP} to pq is described in the manual
 for {\sf GAP} 3.4 or in the manual found in the \texttt{doc} directory
@@ -232,13 +231,6 @@ The program may be invoked with the following runtime parameters:
       A ``basic" format can be used to input a group presentation.
       See~\ref{sec:basic-fmt}.
 
-\item[\texttt{-C}\hspace*{1em}]
-      If groups are generated using $p$-group generation, then 
-      their presentations are written to a file
-      in a CAYLEY compatible format.
-      The name of the file may be selected using the \texttt{-w} option;
-      the default is \texttt{CAYLEY\_library}.
-
 \item[\texttt{-G}\hspace*{1em}]
       This option is used by {\sf GAP} 4. It is essentially equivalent
       to setting the switches \texttt{-g -i -k} simultaneously, except
@@ -263,13 +255,6 @@ The program may be invoked with the following runtime parameters:
       files in the \texttt{examples} directory whose names commence with 
       \texttt{keywords\_}. This option cannot be used with \texttt{-b}.
 
-\item[\texttt{-m}\hspace*{1em}]
-      If groups are generated using $p$-group generation, then 
-      their presentations are written to a file
-      in a {\sc Magma} compatible format.
-      The name of the file may be selected using the \texttt{-w} option;
-      the default is \texttt{Magma\_library}.
-
 \item[\texttt{-s} {\it integer}]\ \\
       All computations of power-commutator presentations occur
       in an integer array, $y$ -- the space of this array,  by 
@@ -280,8 +265,8 @@ The program may be invoked with the following runtime parameters:
       Gives the version of the ANU {\it p}-Quotient program and exits.
 
 \item[\texttt{-w} {\it file}]\ \\
-      Group descriptions are written in CAYLEY, {\sc Magma} or {\sf GAP} 
-      format to {\em file}. One of \texttt{-C} or \texttt{-m} or \texttt{-g}
+      Group descriptions are written in {\sf GAP} 
+      format to {\em file}. \texttt{-g}
       must be used in conjunction with this parameter.
 
 \end{description}
@@ -603,10 +588,9 @@ Advanced p-Quotient Menu
 19. Close relations under automorphism actions
 20. Print structure of a range of pcp generators
 21. Display automorphism actions on generators
-22. Write automorphism actions on generators in Magma format
 23. Collect word in defining generators
 24. Compute commutator of defining generators
-25. Write presentation to file in CAYLEY/GAP/Magma format
+25. Write presentation to file in GAP format
 26. Write compact description of group to file
 27. Evaluate certain formulae
 28. Evaluate action specified on defining generators
@@ -645,12 +629,11 @@ group machinery is selected by the user, but a PAG-generating system is
 not supplied, then the program will give wrong information.
 
 If the automorphism group is insoluble or a PAG-generating sequence 
-is not supplied, a call is made by the program to one of 
-CAYLEY, {\sc Magma} or {\sf GAP}, which computes stabilisers of particular 
-orbit representatives.
+is not supplied, a call is made by the program to one {\sf GAP},
+which computes stabilisers of particular orbit representatives.
 If the automorphism group of any of the intermediate (reduced) 
 {\it p}-covering groups is found to be soluble, a PAG-generating sequence 
-is computed by CAYLEY/{\sc Magma}/{\sf GAP} and handed back to pq.  The soluble machinery 
+is computed by {\sf GAP} and handed back to pq.  The soluble machinery 
 is now automatically invoked for the rest of the computation.
 
 \subsection{Saving group descriptions}

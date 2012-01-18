@@ -2,111 +2,109 @@
 ##
 ##    Makefile.in                     NQ                         Werner Nickel
 ##
-##    $Id: Makefile.in,v 1.23 2007/02/06 18:44:55 werner Exp $
+##    $Id: Makefile.in,v 1.36 2012/01/16 13:55:49 gap Exp $
 ##
 
 ##
 ##    Values imported from the configure script
 ##
-BINDIR=bin/@target@-@BASECC@
-GAP_ROOT=$(PWD)/../..
-GNU_MP_INC=.
-GNU_MP_LIB=$(GNU_MP_INC)
-CURRENT_VERSION=2.2
-CURRENT_VER=2_2
+top_srcdir = @top_srcdir@
+top_builddir = @top_builddir@
+srcdir = @srcdir@
+VPATH = @srcdir@
+subdir = .
 
-WEB_DIR  = /www/homepages/nickel/software/NQ/
-HTML_DOC = nq-$(CURRENT_VERSION)/doc/chap0.html   nq-$(CURRENT_VERSION)/doc/chap1.html \
-	   nq-$(CURRENT_VERSION)/doc/chap2.html   nq-$(CURRENT_VERSION)/doc/chap3.html \
-	   nq-$(CURRENT_VERSION)/doc/chap4.html   nq-$(CURRENT_VERSION)/doc/chap5.html \
-	   nq-$(CURRENT_VERSION)/doc/chapBib.html nq-$(CURRENT_VERSION)/doc/chapInd.html \
-	   nq-$(CURRENT_VERSION)/doc/manual.css   nq-$(CURRENT_VERSION)/doc/manual.pdf
+GAP_ROOT=@GAP_ROOT@
+BINDIR=bin/@GAPARCH@
 
 all: compile
 
 gap: compile gapmanual
 
 compile:
-	(cd src; make GNU_MP_LIB=$(GNU_MP_LIB) GNU_MP_INC=$(GNU_MP_INC))
-	@if test ! -d bin;  then mkdir bin; fi
-	@if test ! -d $(BINDIR);  then mkdir $(BINDIR); fi
+	(cd src; make)
+	mkdir -p $(BINDIR)
 	mv src/nq $(BINDIR)
 
 gapmanual:
 	cd doc; make
 
 release-2.0:
+	rm -rf nq-2.0
 	cvs export -D 'February 11, 2003 11:00' -d nq-2.0 GAP/4.0/pkg/nq
 
 	find nq-2.0 -name .cvsignore -exec rm "{}" ";"
 
-	rm -f nq-2_0.zoo nq-2_0.tgz nq-2_0.tar
-	tar cf nq-2_0.tar nq-2.0
-	find nq-2.0 -type f -exec zoo ah nq-2_0.zoo "{}" ";"
-	gzip < nq-2_0.tar > nq-2_0.tgz
+	rm -f nq-2.0.tar.gz nq-2.0.tar.bz2
+	tar czf nq-2.0.tar.gz nq-2.0
+	tar cjf nq-2.0.tar.bz2 nq-2.0
 
-release-2.1: clean
+release-2.1:
+	rm -rf nq-2.1
 	cvs export -D 'October 20, 2003 11:00' -d nq-2.1 GAP/4.0/pkg/nq
 
 	find nq-2.1 -name .cvsignore -exec rm "{}" ";"
 
 	cd nq-2.1/doc; make; make clean
 
-	rm -f nq-2_1.zoo nq-2_1.tgz nq-2_1.tar
-	tar cf nq-2_1.tar nq-2.1
-	find nq-2.1 -type f -exec zoo ah nq-2_1.zoo "{}" ";"
-	gzip < nq-2_1.tar > nq-2_1.tgz
+	rm -f nq-2.1.tar.gz nq-2.1.tar.bz2
+	tar czf nq-2.1.tar.gz nq-2.1
+	tar cjf nq-2.1.tar.bz2 nq-2.1
 
-release-2.2: clean
+release-2.2:
+	rm -rf nq-2.2
 	cvs export -D 'February 7, 2007 12:00' -d nq-2.2 GAP/4.0/pkg/nq
 
 	find nq-2.2 -name .cvsignore -exec rm "{}" ";"
 
 	cd nq-2.2/doc; make; make clean
 
-	rm -f nq-2_2.zoo nq-2_2.tgz nq-2_2.tar
-	tar cf nq-2_2.tar nq-2.2
-	find nq-2.2 -type f -exec zoo ah nq-2_2.zoo "{}" ";"
-	gzip < nq-2_2.tar > nq-2_2.tgz
+	rm -f nq-2.2.tar.gz nq-2.2.tar.bz2
+	tar czf nq-2.2.tar.gz nq-2.2
+	tar cjf nq-2.2.tar.bz2 nq-2.2
 
-WWW: release-$(CURRENT_VERSION)
-	if [ ! -d $(WEB_DIR) ]; then mkdir $(WEB_DIR); fi
+release-2.3:
+	rm -rf nq-2.3
+	cvs export -D 'September 15, 2011 20:30' -d nq-2.3 GAP/4.0/pkg/nq
 
-	@echo '--> Moving archive files'
-	cp nq-$(CURRENT_VER).tar $(WEB_DIR)/nq.tar
-	cp nq-$(CURRENT_VER).tgz $(WEB_DIR)/nq.tar.gz
-	cp nq-$(CURRENT_VER).tgz $(WEB_DIR)/nq.tgz
-	cp nq-$(CURRENT_VER).zoo $(WEB_DIR)/nq.zoo
+	find nq-2.3 -name .cvsignore -exec rm "{}" ";"
 
-	@echo 'Copying README file'
-	cp README $(WEB_DIR) 
+	# TODO: Insert code which (re-)generates the docs without
+	# having to run configure / without a Makefile
+	# For example by having a makedoc script in there...
 
-	@echo '--> Preparing HTML manual'
-	if [ ! -d $(WEB_DIR)/doc ]; then mkdir $(WEB_DIR)/doc; fi
-	cp $(HTML_DOC) $(WEB_DIR)/doc
-
-	@echo '--> Preparing PDF- and PS-manuals'
-	cp nq-$(CURRENT_VERSION)/doc/manual.pdf $(WEB_DIR)/nqman.pdf
-	cp nq-$(CURRENT_VERSION)/doc/manual.ps $(WEB_DIR)/nqman.ps
-	cp nq-$(CURRENT_VERSION)/doc/manual.six $(WEB_DIR)/nqman.six
-	@echo '--> Copying Package info'
-	cp PackageInfo.g $(WEB_DIR)
+	rm -f nq-2.3.tar.gz nq-2.3.tar.bz2
+	tar czf nq-2.3.tar.gz nq-2.3
+	tar cjf nq-2.3.tar.bz2 nq-2.3
 
 test:
 	(cd examples; make)
 
 clean:
-	rm -rf nq-2.? nq-2_?.tar nq-2_?.tgz nq-2_?.zoo
-	rm -f *~ */*~ config.cache config.log config.status
 	(cd src;      make clean)
 	(cd doc;      make clean)
 	(cd examples; make clean)
 
-spotless: clean
+distclean: clean
 	rm -f Makefile
 	rm -rf bin
 	rm -rf .\#*
-	(cd src;      make spotless)
-	(cd doc;      make spotless)
-	(cd examples; make spotless)
+	rm -f *~ */*~
+	rm -rf nq-2.? nq-2_?.tar nq-2_?.tar.gz
+	rm -f config.cache config.log config.status
+	(cd src;      make distclean)
+	(cd doc;      make distclean)
+	(cd examples; make distclean)
 
+
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+
+$(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+
+$(top_srcdir)/configure: $(top_srcdir)/configure.in
+	cd $(top_srcdir) && autoreconf
+
+.PHONY: all gap compile gapmanual WWW test clean distclean

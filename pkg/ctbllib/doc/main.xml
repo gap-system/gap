@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
    [ <!ENTITY CTblLib "<Package>CTblLib</Package>">
@@ -6,16 +6,14 @@
      <!ENTITY MOC "<Package>MOC</Package>">
      <!ENTITY CAS "<Package>CAS</Package>">
 
-     <!ENTITY VERSIONNUMBER "1.1.3">
-     <!ENTITY RELEASEMONTH "March">
-     <!ENTITY RELEASEYEAR "2004">
+     <!ENTITY AUTHOREMAIL "<Email>sam@Math.RWTH-Aachen.De</Email>">
+
+     <!ENTITY mdash "<Alt Only='HTML'>&#8212;</Alt><Alt Not='HTML'>---</Alt>">
+
+     <!ENTITY VERSIONNUMBER "1.2.0">
+     <!ENTITY RELEASEMONTH "December">
+     <!ENTITY RELEASEYEAR "2011">
    ]>
-
-<!--  @(#)$Id: main.xml,v 1.2 2008/11/14 17:00:26 gap Exp $ -->
-
-<!-- Documentation of the CTblLib package.
-     Copyright 2006 maintained by Thomas Breuer
-     Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
 <Book Name="CTblLib">
 
@@ -24,18 +22,17 @@
   <Version>(Version &VERSIONNUMBER;)
   </Version>
   <Author>Thomas Breuer
-    <Email>sam@Math.RWTH-Aachen.De</Email>
+    &AUTHOREMAIL;
+  <!--   <Email>sam@Math.RWTH-Aachen.De</Email>   -->
     <Homepage>http://www.math.rwth-aachen.de/~Thomas.Breuer</Homepage>
   </Author>
-<!-- ...
-  \centerline{\secfont maintained by}\vfill
-  \centerline{\secfont Thomas Breuer}\vfill
-  \centerline{Lehrstuhl D f{\accent127 u}r Mathematik,}\medskip
-  \centerline{RWTH Aachen, Germany}\vfill
-...  -->
-  <Copyright> &copyright; 2003<P/>
-              We adopt the copyright regulations of &GAP; as detailed in the
-              copyright notice in the &GAP; Reference Manual. </Copyright>
+  <Copyright>
+    &copyright; 2003&ndash;2011
+    <P/>
+    This package may be distributed under the terms and conditions of the
+    GNU Public License Version 3 or later,
+    see <URL>http://www.gnu.org/licenses</URL>.
+  </Copyright>
 </TitlePage>
 
 <TableOfContents/>
@@ -43,6 +40,10 @@
 <Body>
 
 <#Include SYSTEM "introduc.xml">
+
+<#Include SYSTEM "tutorial.xml">
+
+<#Include SYSTEM "interfac.xml">
 
 <#Include SYSTEM "ctbllibr.xml">
 

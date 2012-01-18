@@ -2,7 +2,6 @@
 ##
 #W  upoly.gd                 GAP Library                     Alexander Hulpke
 ##
-#H  @(#)$Id: upoly.gd,v 4.33 2010/02/23 15:13:35 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains attributes, properties and operations for univariate
 ##  polynomials
 ##
-Revision.upoly_gd:=
-  "@(#)$Id: upoly.gd,v 4.33 2010/02/23 15:13:35 gap Exp $";
 
 #############################################################################
 ##
@@ -73,7 +70,7 @@ DeclareGlobalFunction("StoreFactorsPol");
 ##
 ##  <Description>
 ##  returns a factorization of the squarefree, monic, univariate polynomial
-##  <A>upoly</A> in the polynomial ring <A>pring</A>;
+##  <A>upol</A> in the polynomial ring <A>pring</A>;
 ##  <A>opt</A> must be a (possibly empty) record of options.
 ##  <A>upol</A> must not have zero as a root.
 ##  This function is used by the factoring algorithms.

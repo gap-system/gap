@@ -1,5 +1,3 @@
-<!-- $Id: intro.xml,v 1.7 2009/05/26 16:42:08 alexk Exp $ -->
-
 <Chapter Label="Intro">
 <Heading>Introduction and installation</Heading>    
 
@@ -58,26 +56,22 @@ by unpacking it inside a directory <File>MYGAPDIR/pkg</File>.
 Then to be able to load &OpenMath; you need to call GAP with the 
 <C>-l ";MYGAPDIR"</C> option.
 <P/>
-
-The package comes together with the &OpenMath; C library developed at INRIA
-and the program <File>gpipe</File> which should be compiled to parse the binary &OpenMath; 
-format. The compilation should be performed in two stages: first the INRIA 
-library, and then <File>gpipe</File>. To do this, change to the package 
-directory <File>gap4r4/pkg/openmath</File> and enter the following commands:
-
-<Example>
+When the &OpenMath; package is installed, it may be loaded as shown below 
+(possibly loading required packages at the same time):
+<Log>
 <![CDATA[
-cd OMCv1.3c/src/
-./configure
-make
-cd ../../
-./configure ../../
-make
+gap> LoadPackage("openmath");
+-----------------------------------------------------------------------------
+Loading  OpenMath 11.0.0 (OpenMath functionality in GAP)
+by Marco Costantini,
+   Alexander Konovalov (http://www.cs.st-andrews.ac.uk/~alexk/),
+   Nicosia Max (ln73@st-andrews.ac.uk), and
+   Andrew Solomon (http://www.illywhacker.net/).
+Homepage: http://www.cs.st-andrews.ac.uk/~alexk/openmath/
+-----------------------------------------------------------------------------
+true
 ]]>
-</Example>
-
-However, it is possible to ignore this step if the binary &OpenMath; 
-format will not be used.
+</Log>
 
 </Section>
 

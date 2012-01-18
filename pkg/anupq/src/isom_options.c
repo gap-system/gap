@@ -2,15 +2,13 @@
 **
 *A  isom_options.c              ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: isom_options.c,v 1.5 2001/06/21 23:04:21 gap Exp $
+*A  @(#)$Id: isom_options.c,v 1.11 2011/12/02 16:30:20 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
 
-#if defined (GROUP)
-#if defined (STANDARD_PCP)
 #include "constants.h"
 #include "pq_defs.h"
 #include "pretty_filterfns.h"
@@ -21,12 +19,16 @@
 #include "pq_functions.h"
 #include "word_types.h"
 
-#ifdef __386BSD__
+#if defined (GROUP)
+#if defined (STANDARD_PCP)
+
+static Logical setup_start_info (Logical identity_map, Logical status, FILE *file, int format, struct pga_vars *pga, struct pcp_vars *pcp);
+static Logical compare_sequences (int *s, int *t, int length);
+
+
 static char FileBuffer[1024];
 
-copy_file ( from , to )
-    char*   from;
-    char*   to;
+static void copy_file ( const char *from , const char *to )
 {
    FILE*   in;
    FILE*   out;
@@ -65,9 +67,7 @@ copy_file ( from , to )
    fclose(out);
 }
 
-append_file ( from , to )
-    char*   from;
-    char*   to;
+static void append_file ( const char *from , const char *to )
 {
    FILE*   in;
    FILE*   out;
@@ -106,8 +106,6 @@ append_file ( from , to )
    fclose(out);
 }
 
-#endif
-
 #define ISOM_OPTION 8
 #define MAXOPTION 9           /* maximum number of menu options */
 
@@ -119,7 +117,7 @@ void isom_options (format, pcp)
 int format;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    FILE *Status;
    FILE *FileName;
@@ -147,7 +145,7 @@ struct pcp_vars *pcp;
    int nmr_items;
    int ***auts;
    int x_dim, y_dim;
-   FILE_TYPE GAP_library;
+   FILE * GAP_library;
    char *name;
    char *command;
    int nmr_of_exponents;
@@ -240,7 +238,7 @@ struct pcp_vars *pcp;
 		  pga.fixed = 0;
 		  query_solubility (&pga);
 		  user_supplied = FALSE;
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
 		  autgp_order (&pga, pcp);
 #endif 
 	       }
@@ -251,7 +249,7 @@ struct pcp_vars *pcp;
 		  nmr_items = fscanf (FileName, "%d", &pga.soluble);
 		  verify_read (nmr_items, 1);
 
-#if defined (LARGE_INT)
+#ifdef HAVE_GMP
 		  fscanf (FileName, "\n");
 		  mpz_init (&pga.aut_order);
 		  mpz_inp_str (&pga.aut_order, FileName, 10);
@@ -282,7 +280,6 @@ struct pcp_vars *pcp;
 	       /* organise to write modified presentation + automorphisms 
 		  to file ISOM_PP */
               
-#ifdef __386BSD__
 	       if (!identity_map || finished)  
 	       {
 		  copy_file( "ISOM_present", "ISOM_PP" );
@@ -290,12 +287,6 @@ struct pcp_vars *pcp;
 	       }
 	       else
 		  copy_file( "ISOM_NextClass", "ISOM_PP" );
-#else
-	       if (!identity_map || finished)  
-		  system ("cat ISOM_present ISOM_NextClass > ISOM_PP");
-	       else
-		  system ("cat ISOM_NextClass > ISOM_PP");
-#endif
 
 	       if (finished) break;
 
@@ -344,16 +335,8 @@ struct pcp_vars *pcp;
 
 	 if (iteration == 0) break;
 
-	 /* copy file ISOM_PP containing iteration info to nominated file */
-#ifdef __386BSD__
+	 /* rename file ISOM_PP containing iteration info to nominated file */
 	 rename( "ISOM_PP", name );
-#else
-	 command = (char *) malloc ((strlen (name) + 15) * sizeof (char));
-	 strcpy (command, "mv ISOM_PP ");
-	 strcat (command, name);
-	 system (command);
-	 free (command);
-#endif
 
 	 break;
 
@@ -420,7 +403,7 @@ struct pcp_vars *pcp;
         
 	 printf ("Images of user-supplied generators are listed last below\n"); 
 	 print_map (pcp);
-#if defined (LARGE_INT)
+#ifdef HAVE_GMP
 	 fscanf (FileName, "\n");
 	 mpz_init (&pga.aut_order);
 	 mpz_inp_str (&pga.aut_order, FileName, 10);
@@ -437,7 +420,6 @@ struct pcp_vars *pcp;
 	 break;
 
       case EXIT: case MAXOPTION:
-#ifdef __386BSD__
 	 unlink( "ISOM_present" );
 	 unlink( "ISOM_Subgroup" );
 	 unlink( "ISOM_cover_file" );
@@ -445,10 +427,6 @@ struct pcp_vars *pcp;
 	 unlink( "ISOM_XX" );
 	 unlink( "ISOM_NextClass" );
 	 unlink( "ISOM_Status" );
-#else
-	 system ("rm -f ISOM_present ISOM_Subgroup ISOM_cover_file");
-	 system ("rm -f ISOM_group_file ISOM_XX ISOM_NextClass ISOM_Status");
-#endif
 	 printf ("Exiting from ANU p-Quotient Program\n");
 	 break;
 
@@ -478,18 +456,12 @@ void list_isom_menu ()
    was the identity; status indicates whether we are end of class;
    the presentation is read from file using indicated format */
 
-Logical setup_start_info (identity_map, status, file, format, pga, pcp)
-Logical identity_map;
-Logical status;
-FILE *file;
-int format;
-struct pga_vars *pga;
-struct pcp_vars *pcp;
+static Logical setup_start_info (Logical identity_map, Logical status, FILE *file, int format, struct pga_vars *pga, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
-   FILE_TYPE FileName;
-   FILE_TYPE presentation_file;
+   FILE * FileName;
+   FILE * presentation_file;
    Logical group_present = FALSE;
    int exit_value;
    int *list, *head;
@@ -581,9 +553,9 @@ struct pcp_vars *pcp;
 void factor_subgroup (pcp)
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
-   FILE_TYPE Subgroup;
+   FILE * Subgroup;
    int flag;
    int cp;
    int i;
@@ -628,11 +600,9 @@ Logical group_present;
 
 /* compare two sequences, s and t, of length length */
 
-Logical compare_sequences (s, t, length)
-int *s;
-int *t;
-int length;
+static Logical compare_sequences (int *s, int *t, int length)
 {
+   /* TODO: Replace this by memcmp? */
    register int i;
    Logical equal = TRUE;
 

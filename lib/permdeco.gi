@@ -2,7 +2,6 @@
 ##
 #W  permdeco.gi                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id: permdeco.gi,v 1.9 2011/04/28 23:53:09 gap Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -10,8 +9,6 @@
 ##  composition factors and the representation of such groups in a nice way
 ##  as permutation groups.
 ##
-Revision.permdeco_gi :=
-    "@(#)$Id: permdeco.gi,v 1.9 2011/04/28 23:53:09 gap Exp $";
 
 InstallMethod( FittingFreeLiftSetup, "permutation", true, [ IsPermGroup ],0,
 function( G )
@@ -139,7 +136,7 @@ local ffs,hom,U,rest,ker,r;
 	    serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
 	    );
 
-  U!.cachedFFS:=[ffs,r];
+  U!.cachedFFS:=[[ffs,r]];
   return U;
 
 end);
@@ -165,6 +162,16 @@ local G0,a0,cnt,iso,Gi,ai,dom,s,u,a,red,degs,degs2,v,w;
   repeat
     Gi:=ImagesSet(iso,G);
     AddSet(degs,NrMovedPoints(Gi));
+
+    # if the degree is optimal don't try to reduce
+    if red and IsPermGroup(Gi) and IsSimpleGroup(G0) and not IsAbelian(G0) then
+      ai:=ClassicalIsomorphismTypeFiniteSimpleGroup(G0);
+      ai:=SimpleGroup(ai);
+      if IsPermGroup(ai) and NrMovedPoints(ai)>=NrMovedPoints(Gi) then
+	red:=false;
+      fi;
+    fi;
+
     if red then
       # reduce degree
       Info(InfoHomClass,3,"reduce degree");

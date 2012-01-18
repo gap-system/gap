@@ -2,7 +2,6 @@
 ##
 #W  fampred.g                    GAP library                    Etaoin Shrdlu
 ##
-#H  @(#)$Id: fampred.g,v 4.26 2010/02/23 15:12:58 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file defines all family predicates
 ##
-Revision.fampred_g :=
-    "@(#)$Id: fampred.g,v 4.26 2010/02/23 15:12:58 gap Exp $";
 
 IsFamFamX := function(a,b,c)
   return IsIdenticalObj(a,b);

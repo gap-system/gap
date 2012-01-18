@@ -1,313 +1,34 @@
-##############################################################################
+#############################################################################
 ##
-#W README                   The OpenMath package              Marco Costantini
-#W                                                         Alexander Konovalov
-#W                                                              Andrew Solomon
-##
-#H $Id: README,v 1.67 2010/09/22 11:03:47 alexk Exp $
+#W README                   The OpenMath package             Marco Costantini
+#W                                                        Alexander Konovalov
+#W                                                                Max Nicosia
+#W                                                             Andrew Solomon
 ##
 
                            The OpenMath Package
-                           --------------------
-
+                           
+              http://www.cs.st-andrews.ac.uk/~alexk/openmath.htm
+              --------------------------------------------------
+                           
 The package provides an OpenMath phrasebook for GAP: it allows GAP users to
-import and export mathematical objects encoded in OpenMath, for the purpose of
-exchanging them with other OpenMath-enabled applications. 
+import and export mathematical objects encoded in OpenMath, for the purpose 
+of exchanging them with other OpenMath-enabled applications. 
 
-The OpenMath package is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option) any
-later version. For details, see the FSF's own site
-
-	              http://www.gnu.org/licenses/gpl.html
+The OpenMath package is free software; you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by the Free 
+Software Foundation; either version 2 of the License, or (at your option) any 
+later version. See the FSF's own site http://www.gnu.org/licenses/gpl.html
+for the details.
 
 The installation of the package is standard: for details, see Gap reference
-manual, chapter "74 GAP Packages" (and if you don't have write access to the
-Gap installation see also section "9.2 GAP Root Directory").
-
-To contact developers, please write to:
-
-                 alexk at mcs dot st-andrews dot ac dot uk
+manual, chapter "GAP Packages" (and if you don't have write access to the
+Gap installation, type in GAP "?GAP root directory" to see another relevant
+part of the manual).
 
 
 Alexander Konovalov
 
-September 2010
+alexk at mcs dot st-andrews dot ac dot uk
 
-##############################################################################
-
-          Historical notes from previous releases and changelogs
-
-##############################################################################
-
-The first release of the package was produced in March 2000 by Andrew Solomon 
-when he worked at the School of Computer Science, University of St Andrews. 
-
-In June 2004 Marco Costantini made some modifications in this package in order
-to make it usable again:
-* provided a PackageInfo.g file as needed by GAP 4.4;
-* changed "share package" to "package" as the term "share" became obsolete;
-* made slight modifications in the file doc/make_doc;
-* added the warning about non-standard compilation.
-
-After agreement with Andrew Solomon, Marco Costantini became the maintainer of
-this package. He made the modifications listed below, which were necessary in 
-order to extend the functionality and to fix the bugs, and because both 
-OpenMath and the package mechanism of GAP have evolved in the meantime.
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-This package performs the conversion from GAP to OpenMath, using only GAP
-code, and this part is expected to work on each machine on which GAP works.
-This package performs also the conversion from OpenMath to GAP, either using a
-function from the GAP package ``GapDoc'', or using an external program (which
-is included in the package, is written in C, and needs to be compiled);
-autodetection is used.
-
-The list of supported OpenMath Content Dictionaries (CDs) is implicit in the 
-code. 
-
-For the supported CDs and symbols when converting from OpenMath to GAP, see
-the files gap/gap.g, variables OMsymTable and OMnullarySymbolToGAP, and
-gap/new.g.
-
-/* Remark: from version 9.4.0, OMnullarySymbolToGAP no longer exists, and
-OMsymTable was converted into OMsymRecord */
-
-For the supported CDs and symbols when converting from GAP to OpenMath, see
-the files gap/omput.gi, method for OMPut (and hasse/hasse.g for the Hasse
-diagram).
-
-If you modify the code to add support for other CDs, please inform me, so that
-your modifications can be included in a new version of this package.
-
-
-The websites of this package are:
-
-	http://www-math.science.unitn.it/~costanti/#openmath 
-
-and
-
-	http://www.gap-system.org/Packages/openmath.html .
-
-For contacts, write to costanti@science.unitn.it .
-
-The content of the subdirectories is:
-
-openmath/
-|-- OMCv1.3c    the OpenMath C library by the CAFE team at INRIA
-|-- bin         the compiled gpipe program
-|-- cds         some (out-of-date) OpenMath content dictionaries
-|-- doc         documentation in TeX, dvi, ps, pdf, txt
-|-- gap         GAP code
-|-- hasse       GAP code for Hasse diagrams
-|-- htm         documentation in html
-|-- include     file gap_tokens.h
-|-- src         source of the gpipe program
-|-- tst         test files and examples
-
-
-List of main modifications made by Marco Costantini to the original
-package by Andrew Solomon (technical).
-
-* file pkg/openmath/gap/gap.g
-  - Updated function ``OMnullarySymbolToGAP'' according to the
-    current OpenMath CDs.
-
-* added file pkg/openmath/gap/new.g that contains
-  - Update to function OMsymTable, according to the current
-    OpenMath CDs (for converting from OpenMath to GAP).
-
-* file pkg/openmath/gap/lex.g
-  - Added support for XML escaped characters.
-
-* file pkg/openmath/gap/parse.gi
-  - Added support for the new OpenMath 2.0 objects that contain
-    information inside the OMOBJ tag.
-  - Now ``gpipe'' is called using Process instead of Exec 
-    (this increases both the performance and the portability).
-
-* added files xmltree.gd and xmltree.gi that contain
-  - A function that converts the OpenMath XML into a tree and
-    parses it.
-
-* file pkg/openmath/gap/pipeobj.g
-  - Added support for conversion of OpenMath objects with binary
-    encoding, from OpenMath to GAP.
-  - Added support for comment along the streams, between
-    OpenMath objects.
-
-* file pkg/openmath/gap/omget.g
-  - Now OMGetObject doesn't hang any more when OpenMath object is
-    not retrieved.
-  - Now OMGetObject closes the files that is has opened.
-  - Modified also to avoid using a new temporary directory for
-    each call of OMGetObject.
-
-* file pkg/openmath/gap/omput.gi 
-  - Updated and fixed functions ``OMPut'' and related, according
-    to the current OpenMath CDs.
-  - Simplified the code for the OMPutby methods, by introducing
-    OMPutApplication and using OMPutSymbol.
-  - Added OMPut methods for infinity, a range, a float, Rationals,
-    Integers, NonnegativeIntegers (for converting from GAP to OpenMath).
-  - Fixed OMPut method for cyclotomics. Now it is correct for
-    GaussianRationals and infinity.
-  - Added a SetPrintFormattingStatus in OMWriteLine, to fix
-    conversion of long objects.
-  - Fixed some typos.
-
-* Added file pkg/openmath/hasse/config.g
-  - Removed unnecessay INSTALLATION_PATH 
-  - Warning about SERVLET
-
-* file pkg/openmath/PackageInfo.g
-  - Provided an up-to-date, informative, complete and working 
-    PackageInfo.g file.
-
-* file pkg/openmath/init.g
-  - Moved here reading of \*.gd files from read.g
-  - Removed the outdated stuff
-
-* file pkg/openmath/read.g
-  - Now the is clearly indiceted which is the interdependence 
-    of the files in the package.
-  - Reads the file pkg/openmath/gap/new.g above.
-  - Moved reading of \*.gd files to file init.g
-  - Converted ReadPkg to ReadPackage
-  - Removed banner (moved to PackageInfo.g file)
-
-* added files pkg/openmath/tst/test_new, pkg/openmath/tst/test_new.src, 
-  pkg/openmath/tst/test_new.omt
-  - Provided a test file.
-
-* file pkg/openmath/doc/openmath.msk
-  - Fixed the examples, to make them to look exactly like in GAP.
-
-* file pkg/openmath/README (this file)
-  - Updated, added more information and the list of
-    modifications.
-
-* files pkg/openmath/examples and pkg/openmath/hasse/example
-  - Converted RequirePackage to LoadPackage
-  - Added some notes
-
-* in various files
-  - Refactored the code, so that the code is splitted into
-    several independent modules (see file read.g).
-  - Added commands to close all the streams.
-  - Modified to fit with the file structure prescribed in the
-    ``ext'' manual.
-  - various minor changes.
-
-* Now the package loads, and provides conversion from GAP to
-  OpenMath, even if the external binary has not been compiled. 
-  In this case, if the conversion from OpenMath to GAP is 
-  attempted, an informative error message is issued.
-
-Marco Costantini
-
-December 2005, January and July 2006
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-Since 2007 Alexander Konovalov made several further changes in this package
-and after an agreement with Andrew Solomon became its maintainer. The list of
-major updates is below:
-
-* Fixes of names of symbols and their distribution across CDs following recent
-  changes in OpenMath CDs. * Multiple additions and updates to support various
-  symbols from CDs alg1, algnums, arith1, arith2, arith3, calculus1, 
-  comnbinat1, fieldname1, group1, group2, group, groupname1, integer1, 
-  integer2, list1, logic1, permgp1, set1. 
-  
-* Extended support of polynomial CDs.
-
-* Fixed and extended support of OpenMath references.
-
-* Fixed error messages for unexpected_symbol, unhandled_symbol, unsupported_CD
-  as required by the 'error' OM CD.
-    
-* Changes in conversion from GAP to OpenMath:
-- introduced OMINT_LIMIT and fixed OMput for integers too large to be printed.
-- commented out method for OMPut( <stream>,  <vector> ) to have the default 
-  output as list1.list.
-  
-* OMsymTable turned from the list of nested lists into a record and renamed it 
-  to OMsymRecord.
-
-* Removed OMnullarySymbolToGAP, now all lookup is performed by OMsymLookup 
-  with no distinction between nullary and n-ary OpenMath symbols.
-  
-* New functionality:
-  - New function OMPutObjectNoOMOBJtags, a variation of the function 
-    OMPutObject to write to the stream the OpenMath object without enclosing 
-    <OMOBJ> .. </OMOBJ> tags, which may be useful for combining complex 
-    objects.
-  - New objects OMPlainString which are strings of OpenMath code that are 
-    plainly substituted into the output while printing/writing into stream 
-    instead of converting to OMSTR, which may be useful for composing OpenMath
-    code from GAP.
-  - New function OMString to return a string with the OpenMath representation 
-    of a GAP object.     
-    
-* Better organising of handling private CDs/symbols:
-  - created directory 'openmath/private' to store implementations of our 
-    private CDs and private/experimental symbols (this is also the place where
-    users may put their code if they will need to addsupport for their own 
-    private CDs)
-  - moved to 'openmath/private/private.{g,gi}' code for algnums and cas CDs 
-    and for private symbols groups1.group_by_generators, 
-    groups1.character_table and groups1.character_table_of_group
-  - transformed OM_append into two functions OM_append_new and 
-    OM_append_private.
-
-* multiple rearrangements of declaring and assigning global variables and 
-  moving of reading *.g files from read.g to init.g to fix errors when 
-  OpenMath is loaded as required package from other package.
-  
-* Converted the manual into GAPDoc format and extended it.
-
-* Various technical changes:
-  - updated PackageInfo.g file
-  - removed the non-standard banner 
-  - removed INSTALL file containig duplicated information
-  - added openmatj/gap/buildman.g with utility functions to build the manual
-  - rewrote the README file which is also the changelog
-  - changed the system of version numbers
-  - removed printutil.g since now GAPDoc has printutil.{gd,gi} and replaced in 
-    private.g ViewString by StringView as it was renamed in printutil.*
-  
-Alexander Konovalov                               April 2009  
-      
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-
-10.0.4 (May 2009):
-
-* Added official symbols semigroup4.automorphism_group and 
-  semigroup4.homomorphism_by_generators, and and private 
-  monoid1.monoid_by_generators, semigroup1.semigroup_by_generators,
-  transform1.transformation to support two-sided conversion of
-  transformations, transformation semigroups and their automorphism groups; 
-  private symbols record1.record for records and pcgroup1.pcgroup_by_pcgscode 
-  for PcGroups.
-  
-10.1.0 (March 2010)
-* Switched dev/random -> dev/urandom to prevent the server from blocking
-  and waiting for additional entropy to be collected.
-* Added permutation1.{action, are_distinct, cycle, cycle_type, domain, 
-  endomap, endomap_left_compose, endomap_right_compose, inverse, is_bijective, 
-  is_endomap, is_list_perm, is_permutation, length, list_perm, listendomap, 
-  order, permutation, permutationsn, sign, support}.
-* OpenMath to GAP support for finfield1.{conway_polynomial, discrete_log, 
-  field_by_conway, is_primitive, primitive_element} and 
-  setname2.{Boolean, GFp, GFpn, Zm}.
-* Method to print finite field element as a power of a primitive element 
-  of a given field, and adjustment of output for polynomials over finite 
-  fields.
-* Introduced OpenMathDefaultPolynomialRing to output collections of 
-  polynomials.
-* OMPrint may accept 1 or 2 arguments to be compatible with 3-argument 
-  version of OMPut.
-* OMPut for a finite field element using finfield1 CD.
-* OMPut for a finite field using setname2.{GFp,GFpn}.
+October 2011

@@ -7,12 +7,10 @@
 ##  Declares functions to do recursive development of a descendants tree.
 ##  If ANUPQ is loaded from XGAP the development is seen graphically.
 ##    
-#H  @(#)$Id: anupqxdesc.gd,v 1.1 2002/03/25 15:16:25 gap Exp $
+#H  @(#)$Id: anupqxdesc.gd,v 1.2 2011/11/29 20:00:13 gap Exp $
 ##
 #Y  Copyright (C) 2001  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-Revision.anupqxdesc_gd :=
-    "@(#)$Id: anupqxdesc.gd,v 1.1 2002/03/25 15:16:25 gap Exp $";
 
 #############################################################################
 ##

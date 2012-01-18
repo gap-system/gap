@@ -66,15 +66,8 @@ end;
 ##
 #F AddEquationsCR( sys, t1, t2, flag )
 ##
-AddEquationsCR := function( sys, t1, t2, flag  )
-    local t, i, j, v, mat;
-
-    # the trivial case
-    if t1 = t2 and flag then return; fi;
-
-    # subtract t1 - t2 into t
-    t := ShallowCopy(t1);
-    SubtractTailVectors( t, t2 );
+AddEquationsCRNorm := function( sys, t, flag  )
+    local i, j, v, mat;
 
     # create a matrix
     mat := [];
@@ -97,7 +90,67 @@ AddEquationsCR := function( sys, t1, t2, flag  )
         Append( sys.base, mat );
     fi;
 end;
+
+AddEquationsCREndo := function( sys, t )
+    local i, l;
+    for i in [1..Length(sys)] do
+        l := List(t, x -> x[i]);
+        AddEquationsCRNorm( sys[i], l, true );
+    od;
+end;
     
+AddEquationsCR := function( sys, t1, t2, flag  )
+    local t;
+
+    # the trivial case
+    if t1 = t2 and flag then return; fi;
+
+    # subtract t1 - t2 into t
+    t := ShallowCopy(t1);
+    SubtractTailVectors( t, t2 );
+
+    # check case
+    if IsList(sys) then 
+        AddEquationsCREndo( sys, t );
+    else 
+        AddEquationsCRNorm( sys, t, flag );
+    fi;
+end;
+     
+#############################################################################
+##
+## Some small helpers
+##
+MatPerm := function( d, e )
+    local k, t, l, i, f, n, r;
+    if d = 1 then return (); fi;
+    k := Length(e);
+    t := Set(SeriesSteps(e)); Add(t, k);
+    l := [];
+    for i in [1..Length(t)-1] do
+        f := t[i]+1;
+        n := t[i+1];
+        r := List([1..d], x -> (x-1)*k+[f..n]);
+        Append(l, Concatenation(r));
+    od;
+    return PermListList([1..d*k], l)^-1;
+end;
+
+PermuteMat := function( M, rho, sig )
+    local N, i, j;
+    N := MutableCopyMat(M);
+    for i in [1..Length(M)] do
+        for j in [1..Length(M[1])] do
+            N[i][j] := M[i^sig][j^rho];
+        od;
+    od;
+    return N;
+end;
+
+PermuteVec := function( v, rho )
+    return List([1..Length(v)], i -> v[i^rho]); 
+end;
+
 #############################################################################
 ##
 ## ImageCR( A, sys )
@@ -106,7 +159,7 @@ end;
 ## transformation from the given generating set and the nullspace of the
 ## given generating set.
 ##
-ImageCR := function( A, sys )
+ImageCRNorm := function( A, sys )
     local mat, new, tmp;
 
     mat := sys.base;
@@ -132,8 +185,35 @@ ImageCR := function( A, sys )
 
     # return 
     return rec( basis := tmp.basis, 
-                transf := tmp.transformation,
+                transf := tmp.transformation, 
                 fixpts := tmp.relations );
+end;
+
+ImageCREndo := function( A, sys )
+    local i, mat, K, e, p, n, m, rho, sig;
+    K := [];
+    for i in [1..Length(sys)] do
+        mat := sys[i].base;
+        p := A.endosys[i][1];
+        e := A.mats[1][i]!.exp;
+        n := Length(mat)/Length(e);
+        m := Length(mat[1])/Length(e);
+        rho := MatPerm(m, e)^-1; 
+        sig := MatPerm(n, e)^-1;
+        mat := PermuteMat( mat, rho, sig );
+        K[i] := KernelSystemGauss( mat, e, p );
+        K[i] := ImageSystemGauss( mat, K[i], e, p );
+        K[i] := List(K[i], x -> PermuteVec( x, rho^-1));
+    od;
+    return K;
+end;
+
+ImageCR := function( A, sys )
+    if IsList(sys) then 
+        return ImageCREndo( A, sys );
+    else
+        return ImageCRNorm( A, sys );
+    fi;
 end;
 
 #############################################################################
@@ -142,7 +222,7 @@ end;
 ##
 ## returns the kernel of the system
 ##
-KernelCR := function( A, sys )
+KernelCRNorm := function( A, sys )
     local mat, null;
 
     if sys.len = 0 then return []; fi;
@@ -162,6 +242,33 @@ KernelCR := function( A, sys )
     fi;
 
     return null;
+end;
+
+
+KernelCREndo := function( A, sys )
+    local i, mat, K, e, p, n, m, rho, sig;
+    K := [];
+    for i in [1..Length(sys)] do
+        mat := TransposedMat( sys[i].base );
+        p := A.endosys[i][1];
+        e := A.mats[1][i]!.exp;
+        n := Length(mat)/Length(e);
+        m := Length(mat[1])/Length(e);
+        rho := MatPerm(m, e); 
+        sig := MatPerm(n, e);
+        mat := PermuteMat( mat, rho, sig );
+        K[i] := KernelSystemGauss( mat, e, p );
+        K[i] := List(K[i], x -> PermuteVec( x, rho^-1));
+    od;
+    return K;
+end;
+
+KernelCR := function( A, sys )
+    if IsList(sys) then 
+        return KernelCREndo( A, sys );
+    else
+        return KernelCRNorm( A, sys );
+    fi;
 end;
 
 #############################################################################

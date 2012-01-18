@@ -2,7 +2,7 @@
 ##
 #W  ctomisc6.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomisc6.tbl,v 4.31 2010/12/01 17:47:57 gap Exp $
+#H  @(#)$Id: ctomisc6.tbl,v 4.32 2011/09/28 14:32:22 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomisc6.tbl,v $
+#H  Revision 4.32  2011/09/28 14:32:22  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.31  2010/12/01 17:47:57  gap
 #H  renamed "Sym(4)" to "Symm(4)";
 #H  note that the table constructed with `CharacterTable( "Symmetric", 4 )'
@@ -225,11 +229,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctomisc6_tbl :=
-    "@(#)$Id: ctomisc6.tbl,v 4.31 2010/12/01 17:47:57 gap Exp $";
-
-SET_TABLEFILENAME("ctomisc6");
-ALN:= Ignore;
 
 MOT("L3(4)Syl2",
 [
@@ -3504,7 +3503,6 @@ ALN("w(f4)",["weylf(4)"]);
 
 
 LIBTABLE.LOADSTATUS.ctomisc6:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

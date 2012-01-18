@@ -2,11 +2,9 @@
 ##
 #W  maketbl.g           GAP character table library             Thomas Breuer
 ##
-#H  @(#)$Id: maketbl.g,v 1.5 2010/12/01 17:34:32 gap Exp $
-##
 #Y  Copyright (C)  2007,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file contains the function `CTblLibRecomputeTOC', which produces
+##  This file contains the function `CTblLib.RecomputeTOC', which produces
 ##  the file 'data/ctprimar.tbl' of the CTblLib package of GAP 4
 ##  from the data files 'data/ct[go]*'.
 ##  (In earlier versions,
@@ -40,7 +38,7 @@
 ##
 
 #T local function, eventually should be available in IO!
-CTblLibCurrentDateTimeString:= function( options )
+CTblLib.CurrentDateTimeString:= function( options )
     local name, str, out;
 
     name:= Filename( DirectoriesSystemPrograms(), "date" );
@@ -58,19 +56,28 @@ end;
 
 #############################################################################
 ##
-#F  CTblLibRecomputeTOC()
+#F  CTblLib.RecomputeTOC( ["attributes"] )
 ##
-##  replaces the file `data/ctprimar.tbl' by an updated version,
-##  according to the data files `data/cto*.tbl' and `data/ctg*.tbl',
-##  saves the old contents in `data/ctprimar.tbl~'
+##  - replaces the file `data/ctprimar.tbl' by an updated version,
+##    according to the data files `data/cto*.tbl' and `data/ctg*.tbl',
+##    saves a backup of the old contents in `data/ctprimar.tbl~'
 ##
-CTblLibRecomputeTOC:= function()
+##  - updates the attributes listed in `CTblLib.SupportedAttributes'
+##    if necessary
+##
+##  If the optional argument `"attributes"' is given then the data files of
+##  the attributes listed in
+##  `CTblLibData.attributesRelevantForGroupInfoForCharacterTable' are
+##  recomputed and replaced.
+##
+CTblLib.RecomputeTOC:= function( arg )
     local match, matchstart, matchend, app, amend, setnewname, dir, infiles,
           ordinfiles, modinfiles, clminfiles, outfile, bakfile, outstr,
           firstnames, allnames, lowerposition, simplenames, extinfo, tbltom,
           projectivesinfo, fusions, currname, infile, lines, i, line, nam,
           tolo, spl, k, entry, l, map, known, currfile, count, filecounts,
-          pair, oldcontents, pos, diff, str, out;
+          pair, oldcontents, pos, noupdate, diff, str, out, idenum, attrid,
+          attrnames, attr;
 
     match:= function( str, substr )
       return PositionSublist( str, substr ) <> fail;
@@ -457,8 +464,7 @@ CTblLibRecomputeTOC:= function()
 
     # Print the map to the identifiers of tables of marks.
     app( "BindGlobal( \"TOM_TBL_INFO\", [ [], [] ] );\n",
-         "if TestPackageAvailability(\"tomlib\",\"1.0\") <> fail then\n" );
-#T Call `IsPackageMarkedForLoading' instead!
+         "if IsPackageMarkedForLoading(\"tomlib\",\"1.2\") then\n" );
     for i in [ 1, 2 ] do
       app( "  TOM_TBL_INFO[", String( i ), "]:= [\n" );
       line:= "  ";
@@ -518,12 +524,13 @@ CTblLibRecomputeTOC:= function()
     # Compare the file with the current contents.
     oldcontents:= StringFile( outfile );
     pos:= PositionSublist( oldcontents, "LIBLIST.lastupdated:= \"" );
-    if pos <> fail and outstr = oldcontents{ [ 1 .. pos-1 ] } then
+    noupdate:= pos <> fail and outstr = oldcontents{ [ 1 .. pos-1 ] };
+    if noupdate then
       Print( "no update of ctprimar.tbl is necessary\n" );
     else
       # Add a timestamp.
       app( "LIBLIST.lastupdated:= \"",
-           CTblLibCurrentDateTimeString( [ "-u", "+%d-%b-%Y, %T UTC" ] ),
+           CTblLib.CurrentDateTimeString( [ "-u", "+%d-%b-%Y, %T UTC" ] ),
            "\";\n\n" );
 
       # Add the info about the end of the file ...
@@ -545,6 +552,9 @@ CTblLibRecomputeTOC:= function()
       Print( str );
     fi;
 
+#T o.k.?
+    if IsExecutableFile( "~sam/gap/3.5/bin/gap-ibm-i386-linux-gcc2" ) then
+
     # Call GAP without library functions, and check that the table files
     # 'clm*', 'ctb*', and 'cto*' can be read and do contain only admissible
     # function calls.
@@ -553,24 +563,20 @@ CTblLibRecomputeTOC:= function()
     outstr:= "";
     app( "LIBTABLE:=\n",
          "rec( LOADSTATUS:= rec(), clmelab:= [], clmexsp:= [] );;\n",
-         "Ignore:= function( arg ) return arg; end;;\n",
-         "SET_TABLEFILENAME:= Ignore;;\n",
          "GALOIS:= ( x -> x );;\n",
          "TENSOR:= ( x -> x );;\n",
-         "EvalChars:= Ignore;;\n",
          "ALF:= function( arg ); end;;\n",
          "ACM:= function( arg ); end;;\n",
          "ARC:= function( arg ); end;;\n",
-         "NotifyNameOfCharacterTable:= function( arg ); end;;\n",
          "ALN:= function( arg ); end;;\n",
          "MBT:= function( arg ); end;;\n",
          "MOT:= function( arg ); end;;\n",
          "Concatenation:= function( arg ) return 0; end;;\n",
-         "TransposedMat:= function( arg ) return 0; end;;\n",
-         "if not IsBound( Revision ) then Revision:= rec(); fi;\n" );
+         "TransposedMat:= function( arg ) return 0; end;;\n" );
     for infile in Concatenation( clminfiles, ordinfiles, modinfiles ) do
       app( "READ(\"", Filename( dir, infile ), "\");\n" );
     od;
+
     FileString( "maketbl.checkin", outstr );
     Exec( "~sam/gap/3.5/bin/gap-ibm-i386-linux-gcc2 -b -l ~ ",
           "< maketbl.checkin > maketbl.checkout" );
@@ -578,11 +584,77 @@ CTblLibRecomputeTOC:= function()
     RemoveFile( "maketbl.checkin" );
     RemoveFile( "maketbl.checkout" );
 
+    fi;
+
     # Load the updated table of contents.
     RereadPackage( "ctbllib", "data/ctprimar.tbl" );
     for nam in RecNames( LIBTABLE.LOADSTATUS ) do
       Unbind( LIBTABLE.LOADSTATUS.( nam ) );
     od;
+
+    # Update the supported attributes if necessary.
+#T always recomputing all attributes would be too expensive
+    if Length( arg ) = 1 and arg[1] = "attributes" or not noupdate then
+      idenum:= CTblLibData.IdEnumerator;
+
+      DatabaseIdEnumeratorUpdate( idenum );
+      attrnames:= Filtered( RecNames( idenum.attributes ),
+                      nam -> IsBound( idenum.attributes.( nam ).name ) and
+                             idenum.attributes.( nam ).name in
+                                 CTblLib.SupportedAttributes );
+      if Length( arg ) = 1 and arg[1] = "attributes" then
+        Append( attrnames,
+            CTblLibData.attributesRelevantForGroupInfoForCharacterTable );
+      fi;
+
+      SetInfoLevel( InfoDatabaseAttribute, 1 );
+
+      for attrid in attrnames do
+        attr:= idenum.attributes.( attrid );
+        if IsBound( attr.datafile ) then
+          DatabaseAttributeCompute( idenum, attr.identifier, "automatic" );
+          outstr:= DatabaseAttributeString( idenum,
+                       "CTblLibData.IdEnumerator", attr.identifier );
+
+          # Compare the file with the current contents.
+          outfile:= attr.datafile;
+          oldcontents:= StringFile( outfile );
+          pos:= PositionSublist( oldcontents, "DatabaseAttributeSetData" );
+          if pos <> fail and 1 < pos then
+            outstr:= Concatenation( oldcontents{ [ 1 .. pos-1 ] }, outstr );
+            pos:= PositionSublist( oldcontents, "\n\n", pos );
+            if pos <> fail then
+              outstr:= Concatenation( outstr,
+                         oldcontents{ [ pos+1 .. Length( oldcontents ) ] } );
+            fi;
+          fi;
+            
+          if oldcontents = outstr then
+            Print( "#I  no update necessary for attribute ", attrid, "\n" );
+          else
+            # Save the old file.
+            bakfile:= Concatenation( outfile, "~" );
+            Exec( "mv", outfile, bakfile );
+  
+            # Create the new file (without trailing backslashes).
+            FileString( outfile, outstr );
+  
+            # Print the differences between old and new version.
+            diff:= Filename( DirectoriesSystemPrograms(), "diff" );
+            str:= "";
+            out:= OutputTextString( str, true );
+            Process( DirectoryCurrent(), diff, InputTextNone(), out,
+                     [ bakfile, outfile ] );
+            CloseStream( out );
+            if not IsEmpty( str ) then
+              Print( "#I  differences for ", outfile, ":\n" );
+              Print( str );
+            fi;
+          fi;
+        fi;
+      od;
+    fi;
+
 end;
 
 

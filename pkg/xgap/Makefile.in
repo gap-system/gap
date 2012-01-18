@@ -2,7 +2,7 @@
 ##
 #W  Makefile                    GAP source                       Frank Celler
 ##
-#H  @(#)$Id: Makefile.in,v 1.5 1999/07/01 15:32:24 gap Exp $
+#H  @(#)$Id: Makefile.in,v 1.7 2011/11/24 11:49:43 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -30,26 +30,26 @@
 SHELL=/bin/sh
 CC=@CC@
 @SET_MAKE@
+GAParch=@target@-@CC@
 
 default: config compile
 
-config: bin/@target@-@CC@/configure bin/@target@-@CC@/Makefile
+config: bin/$(GAParch)/configure bin/$(GAParch)/Makefile
 
-bin/@target@-@CC@/configure: cnf/configure.out
-	if test ! -d bin;  then mkdir bin;  fi
-	if test ! -d bin/@target@-@CC@;  then mkdir bin/@target@-@CC@;  fi
-	@rm -f bin/@target@-@CC@/configure
-	cp cnf/configure.out bin/@target@-@CC@/configure
+bin/$(GAParch)/configure: cnf/configure.out
+	mkdir -p bin/$(GAParch)
+	@rm -f bin/$(GAParch)/configure
+	cp cnf/configure.out bin/$(GAParch)/configure
 
-bin/@target@-@CC@/Makefile: bin/@target@-@CC@/configure cnf/config.hin
-	( cd bin/@target@-@CC@ ; CC=$(CC) ./configure --target=@target@ @gp_configure_options@ )
+bin/$(GAParch)/Makefile: bin/$(GAParch)/configure cnf/config.hin
+	( cd bin/$(GAParch) ; CC=$(CC) ./configure @gp_configure_options@ )
 
-compile: bin/@target@-@CC@/configure bin/@target@-@CC@/Makefile
-	( cd bin/@target@-@CC@ ; $(MAKE) CC=$(CC) )
+compile: bin/$(GAParch)/configure bin/$(GAParch)/Makefile
+	( cd bin/$(GAParch) ; $(MAKE) CC=$(CC) )
 	chmod +x xgap.sh
 	cp xgap.sh bin/xgap.sh
 
 clean:
-	rm -rf bin/@target@-@CC@
+	rm -rf bin/$(GAParch)
 	rm -f xgap.sh bin/xgap.sh
 	rm -f config.cache config.log config.status Makefile

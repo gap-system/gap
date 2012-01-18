@@ -6,12 +6,9 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-#H  @(#)$Id: word.gi,v 4.32 2010/02/23 15:13:36 gap Exp $
 ##
 ##  This file contains generic methods for nonassociative words.
 ##
-Revision.word_gi :=
-    "@(#)$Id: word.gi,v 4.32 2010/02/23 15:13:36 gap Exp $";
 
 
 #############################################################################

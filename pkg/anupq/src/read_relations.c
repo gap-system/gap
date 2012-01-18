@@ -2,7 +2,7 @@
 **
 *A  read_relations.c            ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: read_relations.c,v 1.3 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: read_relations.c,v 1.5 2011/11/28 17:47:21 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -17,7 +17,7 @@
 void read_relations (pcp)
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int relp = pcp->relp;
    register int ndrel = pcp->ndrel;
@@ -36,11 +36,7 @@ struct pcp_vars *pcp;
 	 type = l;
                 
 	 ++relp;
-#ifdef Magma
-	 pq_cay_word_to_pq(k, disp, type, pcp);
-#else
 	 read_word (stdin, disp, type, pcp);
-#endif
 
 	 /* note length of relation */
 	 length = abs (y[pcp->lused + disp + 1]);

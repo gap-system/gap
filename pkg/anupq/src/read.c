@@ -2,14 +2,13 @@
 **
 *A  read.c                      ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: read.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: read.c,v 1.9 2011/11/28 17:47:21 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
 
-#ifndef Magma
 #include "pq_defs.h"
 #include "pcp_vars.h"
 #include "pga_vars.h"
@@ -35,7 +34,7 @@ void restore_pcp (ifp, pcp)
 FILE *ifp;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i, j, l; 
    int new_workspace = pcp->backy;
@@ -112,14 +111,14 @@ FILE *ifp;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i, j;
    int ***auts;
    int nmr_generators; 
    int nmr_items;
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    MP_INT aut_ord;
 
    mpz_init (&aut_ord);
@@ -129,7 +128,7 @@ struct pcp_vars *pcp;
    nmr_items = fread (pga, sizeof (struct pga_vars), 1, ifp);
    verify_read (nmr_items, 1);
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    mpz_init_set (&pga->aut_order, &aut_ord);
    mpz_clear (&aut_ord);
 #endif 
@@ -153,4 +152,3 @@ struct pcp_vars *pcp;
    fread (pga->relative + 1, sizeof (int), pga->nmr_soluble, ifp);                 
    return auts;
 }
-#endif

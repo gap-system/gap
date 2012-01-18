@@ -2,7 +2,6 @@
 ##
 #W  GAPDoc.gi                    GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: GAPDoc.gi,v 1.29 2011/02/08 00:31:51 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -233,10 +232,10 @@ end);
 ##  <Description>
 ##  Here   <A>tree</A>  must   be  the   XML  tree   of  a   &GAPDoc;
 ##  document,   returned   by  <Ref   Func="ParseTreeXMLString"   />.
-##  Running <C>latex</C>  on the  result of  <Ref Func="GAPDoc2LaTeX"
-##  /><C>(<A>tree</A>)</C>  produces  a   file  <A>pnrfile</A>  (with
-##  extension  <C>.pnr</C>).  The   command  <Ref  Func="GAPDoc2Text"
-##  /><C>(<A>tree</A>)</C> creates a component <C><A>tree</A>.six</C>
+##  Running <C>latex</C>  on the  result of  <C>GAPDoc2LaTeX(<A>tree</A>)</C>  
+##  produces  a   file  <A>pnrfile</A>  (with
+##  extension  <C>.pnr</C>).  The   command  <C>GAPDoc2Text(<A>tree</A>)</C>
+##  creates a component <C><A>tree</A>.six</C>
 ##  which contains all  information about the document  for the &GAP;
 ##  online  help,  except  the  page numbers  in  the  <C>.dvi,  .ps,
 ##  .pdf</C> versions of the document.  This command adds the missing
@@ -309,6 +308,8 @@ InstallGlobalFunction(PrintGAPDocElementTemplates, function ( file )
   return;
 end);
 
+# these are simple translations from former GAPDoc version, below we add
+# more using unicode characters
 BindGlobal("TEXTMTRANSLATIONS",
   rec(
      ldots := "...",
@@ -360,6 +361,41 @@ BindGlobal("TEXTMTRANSLATIONS",
      )
 );
 
+# add more text M translations using unicode characters, for those of these
+# unicode characters which do not yet have a simplification, we add their
+# LaTeX code as simplification to SimplifiedUnicodeTable (sometimes without
+# the leading backslash)
+GAPInfo.addMoreTEXTMUnicode := function()
+  local hash, s, str, pos, a;
+  hash := List(SimplifiedUnicodeTable, a-> a[1]);
+  # the candidates to add are found in the LaTeXUnicodeTable
+  for a in LaTeXUnicodeTable do
+    if a[1] < 100000 and PositionSublist(a[2], "\\ensuremath") <> fail then
+      s := ShallowCopy(a[2]);
+      s := SubstitutionSublist(s, "\\ensuremath", "");
+      RemoveCharacters(s, "{}");
+      if not (s[1] <> '\\' or (Length(Positions(s, '\\')) > 1 and
+                                        s{[1..5]}<>"\\not\\") or ' ' in s)  then
+        str := Encode(Unicode([a[1]]), "UTF-8");
+        pos := Position(hash, a[1]);
+        TEXTMTRANSLATIONS.(s{[2..Length(s)]}) := str;
+        if pos = fail then
+          # for greek letters and a few more we simplify without backslash
+          if (913 <= a[1] and 1014 >= a[1]) or a[1] in [8465,8476,8501,8502,
+              8503,8504,8707,8710,8711,8712] then
+            s := s{[2..Length(s)]};
+          fi;
+          Add(SimplifiedUnicodeTable, [a[1], IntListUnicodeString(Unicode(s))]);
+
+        fi;
+      fi;
+    fi;
+  od;
+  Sort(SimplifiedUnicodeTable);
+end;
+GAPInfo.addMoreTEXTMUnicode();
+# Unbind(GAPInfo.addMoreTEXTMUnicode);
+GAPInfo.addMoreTEXTMUnicode := fail;
 
 InstallGlobalFunction(TextM, function(str)
   local subs, res, i, j;
@@ -373,6 +409,14 @@ InstallGlobalFunction(TextM, function(str)
       while j <= Length(str) and str[j] in LETTERS do
         j := j+1;
       od;
+      # we go on if we have a \not so far
+      if j = i+4 and j <= Length(str) and str[j] = '\\' and 
+                                     str{[i+1..i+3]} = "not" then
+        j := j+1;
+        while j <= Length(str) and str[j] in LETTERS do
+          j := j+1;
+        od;
+      fi;
       # some spacing macros and braces
       if j = i+1 and str[j] in ";,!{}" then
         j := j+1;

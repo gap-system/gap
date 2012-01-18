@@ -2,7 +2,7 @@
 ##
 #W group.gd                                                 Laurent Bartholdi
 ##
-#H   @(#)$Id: group.gd,v 1.45 2011/06/20 14:14:30 gap Exp $
+#H   @(#)$Id: group.gd,v 1.46 2011/11/15 16:20:07 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -1710,12 +1710,33 @@ DeclareOperation("WeaklyBranchedEmbedding", [IsFRSemigroup]);
 ## ]]></Example>
 ##   </Description>
 ## </ManSection>
+##
+## <ManSection>
+##   <Attr Name="BranchStructure" Arg="G"/>
+##   <Returns>A record describing the branching of <A>G</A>.</Returns>
+##   <Description>
+##     This function constructs a record with fields
+##    <C>group,quo,set,top,wreath,epi</C> giving respectively
+##    a group isomorphic to <C>G/K</C>,
+##    the quotient map from <C>G</C> to it,
+##    the alphabet of <C>G</C>,
+##    the group of permutations of the alphabet,
+##    the wreath product of <C>group</C> with its top permutations,
+##    and an epimorphism from a subgroup of <C>wreath</C> to <C>group</C>.
+##
+##    <P/> This information is used as essential data on the branch group,
+##    and are used to construct e.g. its Zeta function.
+##   </Description>
+## </ManSection>
 ## <#/GAPDoc>
 ##
 DeclareAttribute("BranchingSubgroup", IsFRGroup);
 DeclareProperty("IsBranchingSubgroup", IsFRGroup);
 DeclareProperty("IsBranched", IsFRGroup);
+DeclareProperty("IsWeaklyBranched", IsFRGroup);
+
 DeclareOperation("FindBranchingSubgroup", [IsFRGroup, IsObject, IsPosInt]);
+DeclareAttribute("BranchStructure", IsFRGroup);
 #############################################################################
 
 #############################################################################

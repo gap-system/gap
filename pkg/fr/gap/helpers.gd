@@ -2,7 +2,7 @@
 ##
 #W helpers.gd                                               Laurent Bartholdi
 ##
-#H   @(#)$Id: helpers.gd,v 1.53 2011/06/20 14:23:51 gap Exp $
+#H   @(#)$Id: helpers.gd,v 1.57 2011/11/15 16:20:07 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -54,6 +54,90 @@ DeclareGlobalFunction("TensorSum");
 
 #############################################################################
 ##
+#F SolutionMatModN
+##
+## <#GAPDoc Label="solutionmatmodn">
+## <ManSection>
+##   <Oper Name="SolutionMatModN" Arg="mat,vec,N"/>
+##   <Description>
+##     Solve the linear system <C>sol*mat=vec</C> modulo <A>N</A>.
+##     The arguments are assumed to be an integer matrix and vector.
+##     Either returns an integer solution, or <K>fail</K> if no such
+##     solution exists.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="SolutionMatMod1" Arg="mat,vec"/>
+##   <Description>
+##     Solve the linear system <C>sol*mat=vec</C> in <M>Q/Z</M>.
+##     The arguments are assumed to be rational matrices.
+##     Assuming there are finitely many solutions, returns them all.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="CyclotomicByArgument" Arg="q"/>
+##   <Returns>The cyclotomic field element equal to <M>\exp(2\pi i q)</M>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="ArgumentOfCyclotomic" Arg="z"/>
+##   <Returns>The rational <M>q</M> such that <M>\exp(2\pi i q)=z</M>.</Returns>
+## </ManSection>
+## <#/GAPDoc>
+##
+DeclareOperation("SolutionMatModN", [IsMatrix,IsVector,IsPosInt]);
+DeclareOperation("SolutionMatMod1", [IsMatrix,IsVector]);
+
+DeclareOperation("CyclotomicByArgument", [IsRat]);
+DeclareOperation("ArgumentOfCyclotomic", [IsCyc]);
+#############################################################################
+
+#############################################################################
+##
+#F Projective representations
+##
+## <#GAPDoc Label="projreps">
+## <ManSection>
+##   <Oper Name="SolutionMatMod1" Arg="mat,vec"/>
+##   <Description>
+##     Solve the linear system <C>sol*mat=vec</C> in <M>Q/Z</M>.
+##     The arguments are assumed to be rational matrices.
+##     Assuming there are finitely many solutions, returns them all.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="ArgumentOfCyclotomic" Arg="z"/>
+##   <Returns>The rational <M>q</M> such that <M>\exp(2\pi i q)=z</M>.</Returns>
+## </ManSection>
+## <#/GAPDoc>
+##
+DeclareProperty("IsProjectiveRepresentation", IsMapping);
+DeclareProperty("IsLinearRepresentation", IsProjectiveRepresentation);
+InstallTrueMethod(IsProjectiveRepresentation, IsLinearRepresentation);
+
+DeclareAttribute("IrreducibleRepresentations@", IsGroup);
+
+DeclareOperation("ProjectiveRepresentationByFunction", [IsDomain,IsDomain,IsFunction]);
+DeclareOperation("LinearRepresentationByImages", [IsDomain,IsDomain,IsList,IsList]);
+
+DeclareAttribute("DegreeOfProjectiveRepresentation", IsProjectiveRepresentation);
+DeclareOperation("TensorProductOp", [IsProjectiveRepresentation,IsProjectiveRepresentation]);
+
+DeclareOperation("ProjectiveExtension", [IsProjectiveRepresentation,IsGroup]);
+DeclareOperation("ProjectiveQuotient", [IsProjectiveRepresentation,IsGroupHomomorphism]);
+
+DeclareAttribute("CoboundaryMatrix", IsGroup);
+DeclareOperation("AreCohomologous", [IsList,IsList,IsGroup]);
+
+DeclareAttribute("EpimorphismSchurCover@", IsGroup);
+
+#############################################################################
+
+#############################################################################
+##
 #H WordGrowth(g)
 ##
 ## <#GAPDoc Label="WordGrowth">
@@ -99,10 +183,14 @@ DeclareGlobalFunction("TensorSum");
 ##       in <K>dot</K> format, to that file. Otherwise, the output is converted
 ##       to Postscript using the program <K>neato</K> from the
 ##       <Package>graphviz</Package> package, and displayed in a separate
-##       X window using the program <Package>display</Package>.
+##       X window using the program <Package>display</Package> or
+##       <Package>rsvg-view</Package>.
 ##       This works on UNIX systems.
 ##       <P/> It is assumed, but not checked, that <Package>graphviz</Package>
-##       and <Package>display</Package> are properly installed on the system.
+##       and <Package>display</Package>/<Package>rsvg-view</Package> are
+##       properly installed on the system. The option <K>usesvg</K> requests
+##       the use of <Package>rsvg-view</Package>; by default,
+##       <Package>display</Package> is used.
 ##       </Item>
 ##     <Mark><C>point:=p</C></Mark> <Item> to compute the
 ##       growth of the orbit of <C>p</C> under <A>g</A>, rather than the growth
@@ -722,9 +810,9 @@ DeclareOperation("DimensionSeries",[IsAlgebra,IsInt]);
 ## <ManSection>
 ##   <Filt Name="IsP1Map"/>
 ##   <Fam Name="P1MapsFamily"/>
-##   <Func Name="P1Map" Arg="p, q, r, P, Q, R"/>
-##   <Func Name="P1Map" Arg="p, q, r" Label="3"/>
-##   <Func Name="P1Map" Arg="p, q" Label="2"/>
+##   <Func Name="MoebiusMap" Arg="p, q, r, P, Q, R"/>
+##   <Func Name="MoebiusMap" Arg="p, q, r" Label="3"/>
+##   <Func Name="MoebiusMap" Arg="p, q" Label="2"/>
 ##   <Description>
 ##     P1 maps are efficiently-coded rational maps with complex coefficients.
 ##     <P/>
@@ -841,9 +929,9 @@ BindGlobal("TYPE_P1MAP", NewType(P1MapsFamily, IsP1Map and IsDataObjectRep));
 
 DeclareGlobalFunction("P1Point");
 DeclareGlobalVariable("P1infinity");
-DeclareOperation("P1Map",[IsP1Point,IsP1Point]);
-DeclareOperation("P1Map",[IsP1Point,IsP1Point,IsP1Point]);
-DeclareOperation("P1Map",[IsP1Point,IsP1Point,IsP1Point,IsP1Point,IsP1Point,IsP1Point]);
+DeclareOperation("MoebiusMap",[IsP1Point,IsP1Point]);
+DeclareOperation("MoebiusMap",[IsP1Point,IsP1Point,IsP1Point]);
+DeclareOperation("MoebiusMap",[IsP1Point,IsP1Point,IsP1Point,IsP1Point,IsP1Point,IsP1Point]);
 DeclareOperation("P1Barycentre",[IsList]);
 DeclareOperation("P1Barycentre",[IsP1Point]);
 DeclareOperation("P1Barycentre",[IsP1Point,IsP1Point]);
@@ -856,6 +944,67 @@ DeclareGlobalFunction("P1MapSL2");
 DeclareGlobalFunction("SL2P1Map");
 DeclareGlobalFunction("P1MapByCoefficients");
 DeclareGlobalFunction("CoefficientsOfP1Map");
+#############################################################################
+
+#############################################################################
+## <#GAPDoc Label="dirichlet">
+## <ManSection>
+##   <Oper Name="DirichletSeries" Arg=""/>
+##   <Oper Name="DirichletSeries" Arg="maxdeg"/>
+##   <Oper Name="DirichletSeries" Arg="indices, coeffs [maxdeg]"/>
+##   <Oper Name="DirichletSeries" Arg="series, maxdeg"/>
+##   <Description>
+##     Creates a new Dirichlet series, namely, a formal power series
+##     of the form <M>f(s)=\sum_{n\ge1} a(n) n^{-s}</M>. Such series have
+##     a maximal degree, which may be <K>infinity</K>, and may be added
+##     or multiplied as polynomials.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Attr Name="DegreeDirichletSeries" Arg="f"/>
+##   <Returns>The maximal degree of a non-zero coefficient of <A>f</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Attr Name="SpreadDirichletSeries" Arg="f,n"/>
+##   <Returns>The series <M>f(ns)</M>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Attr Name="ShiftDirichletSeries" Arg="s,n"/>
+##   <Returns>The series <M>n^{-s}f(s)</M>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Attr Name="ShrunkDirichletSeries" Arg="f"/>
+##   <Returns>The series <A>f</A>, with maximal precision set to its maximal degree.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Attr Name="ZetaSeriesOfGroup" Arg="G"/>
+##   <Returns>The series <A>\sum_{\chi\in\widehat G}(\dim G)^{-s}</A>.</Returns>
+## </ManSection>
+##
+## <ManSection>
+##   <Attr Name="ValueOfDirichletSeries" Arg="f, s"/>
+##   <Returns>The evaluation of <A>f</A> at <A>s</A>. Synonym for <C>Value</C>.</Returns>
+## </ManSection>
+##
+## <#/GAPDoc>
+DeclareCategory("IsDirichletSeries",IsRingElementWithOne);
+BindGlobal("DS_FAMILY", NewFamily("DS_FAMILY", IsDirichletSeries));
+DeclareOperation("DirichletSeries", [IsInt]);
+DeclareOperation("DirichletSeries", []);
+DeclareOperation("DirichletSeries", [IsList,IsList]);
+DeclareOperation("DirichletSeries", [IsList,IsList,IsInt]);
+DeclareOperation("DirichletSeries", [IsDirichletSeries,IsInt]);
+DeclareAttribute("DegreeOfDirichletSeries", IsDirichletSeries);
+DeclareOperation("SpreadDirichletSeries", [IsDirichletSeries,IsInt]);
+DeclareOperation("ShiftDirichletSeries", [IsDirichletSeries,IsInt]);
+DeclareOperation("ShrunkDirichletSeries", [IsDirichletSeries]);
+DeclareOperation("ZetaSeriesOfGroup", [IsGroup]);
+DeclareOperation("ValueDirichletSeries", [IsDirichletSeries,IsRingElement]);
 #############################################################################
 
 #############################################################################

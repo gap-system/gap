@@ -1,6 +1,5 @@
 
 <!-- %W  interfac.xml    GAP 4 package AtlasRep             Thomas Breuer -->
-<!-- %H  $Id: interfac.xml,v 1.16 2009/01/19 17:11:23 gap Exp $ -->
 <!-- %Y  Copyright 2001, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
 
@@ -27,24 +26,16 @@ Chapter&nbsp;<Ref Chap="chap:Technicalities of the AtlasRep Package"/>.
 
 <P/>
 
-As stated in Section&nbsp;<Ref Sect="sect:The GAP Interface to the Atlas of Group Representations"/>,
-the user interface is preliminary.
-It will be extended when the &GAP; version of the &ATLAS; of Group
-Representations is connected to other &GAP; databases such as the
-libraries of character tables and tables of marks.
-
-<P/>
-
 For some of the examples in this chapter,
-the &GAP; packages <Package>CTblLib</Package> <Cite Key="CTblLib1.1.3"/>
-and <Package>TomLib</Package> are needed.
+the &GAP; packages <Package>CTblLib</Package> and <Package>TomLib</Package>
+are needed, so we load them.
 
 <P/>
 
 <Example><![CDATA[
-gap> LoadPackage( "ctbllib" );
+gap> LoadPackage( "CTblLib" );
 true
-gap> LoadPackage( "tomlib" );
+gap> LoadPackage( "TomLib" );
 true
 ]]></Example>
 
@@ -75,23 +66,37 @@ which in turn can be constructed from any permutation representation.
 <!-- The section title is referenced in htm/data/overview.htm. -->
 <Alt Only="HTML"><![CDATA[<a id="sect:groupnames"/>]]></Alt>
 
-The <Package>AtlasRep</Package> package refers to data of the
-&ATLAS; of Group Representations
-by the <E>name</E> of the group in question plus additional information.
-Thus it is essential to know this name,
-which is called <E>the &GAP; name</E> of the group in the following.
+When you access data via the <Package>AtlasRep</Package> package,
+you specify the group in question by an admissible <E>name</E>.
+Thus it is essential to know these names,
+which are called <E>the &GAP; names</E> of the group in the following.
 
 <P/>
 
-For an almost simple group, the &GAP; name is equal to the 
+For a group <M>G</M>, say, whose character table is available in
+&GAP;'s Character Table Library,
+the admissible names of <M>G</M> are the admissible names
+of this character table.
+If <M>G</M> is almost simple, one such name is the 
 <Ref Attr="Identifier" Label="for character tables" BookName="ref"/> value
-of the character table of this group in the &GAP; library
-(see&nbsp;<Ref Func="Access to Library Character Tables" BookName="ctbllib"/>);
-this name is usually very similar to the name used in the
+of the character table,
+see&nbsp;<Ref Func="Access to Library Character Tables" BookName="ctbllib"/>.
+This name is usually very similar to the name used in the
 &ATLAS; of Finite Groups <Cite Key="CCN85"/>.
 For example,
-<C>"M22"</C> is the &GAP; name of the Mathieu group <M>M_{22}</M>,
-and <C>"12_1.U4(3).2_1"</C> is the &GAP; name of <M>12_1.U_4(3).2_1</M>.
+<C>"M22"</C> is a &GAP; name of the Mathieu group <M>M_{22}</M>,
+<C>"12_1.U4(3).2_1"</C> is a &GAP; name of <M>12_1.U_4(3).2_1</M>,
+the two names <C>"S5"</C> and <C>"A5.2"</C> are &GAP; names of
+the symmetric group <M>S_5</M>,
+and the two names <C>"F3+"</C> and <C>"Fi24'"</C> are &GAP; names of
+the simple Fischer group <M>Fi_{24}^\prime</M>.
+
+<P/>
+
+When a &GAP; name is required as an input of a package function,
+this input is case insensitive.
+For example, both <C>"A5"</C> and <C>"a5"</C> are valid arguments of
+<Ref Func="DisplayAtlasInfo"/>.
 
 <P/>
 
@@ -99,10 +104,10 @@ Internally, for example as part of filenames
 (see Section&nbsp;<Ref Sect="sect:Filenames Used in the AGR"/>),
 the package uses names that may differ from the &GAP; names;
 these names are called <E>&ATLAS;-file names</E>.
-For example, <C>A5</C>, <C>TE62</C>, and <C>F24</C> are possible values for
-<A>groupname</A>.
-Of these, only <C>A5</C> is also a &GAP; name, but the other two are not;
-the corresponding &GAP; names are <C>2E6(2)</C> and <C>Fi24'</C>,
+For example, <C>"A5"</C>, <C>"TE62"</C>, and <C>"F24"</C> are
+&ATLAS;-file names.
+Of these, only <C>"A5"</C> is also a &GAP; name, but the other two are not;
+corresponding &GAP; names are <C>"2E6(2)"</C> and <C>"Fi24'"</C>,
 respectively.
 
 </Section>
@@ -114,8 +119,9 @@ respectively.
 </Heading>
 
 For the general definition of <E>standard generators</E> of a group,
-see Section&nbsp;<Ref Sect="Standard Generators of Groups" BookName="ref"/>;
-details can be found in&nbsp;<Cite Key="Wil96"/>.
+see <Cite Key="Wil96"/>.
+<!-- or
+Section&nbsp;<Ref Sect="Standard Generators of Groups" BookName="tomlib"/>. -->
 
 <P/>
 
@@ -158,23 +164,14 @@ with value a list of <E>class names</E>.
 <P/>
 
 Currently we define these class names only for simple groups and
-automorphic extensions and central extensions of simple groups,
+certain extensions of simple groups,
 see Section&nbsp;<Ref Subsect="subsect:Definition of ATLAS Class Names"/>.
-
 The function <Ref Func="AtlasClassNames"/> can be used to compute the list
 of class names from the character table in the &GAP; Library.
 
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Subsection Label="subsect:Definition of ATLAS Class Names">
-<Heading>Definition of &ATLAS; Class Names</Heading>
-
-<#Include Label="[1]{utils}">
-
-</Subsection>
-
-
+<#Include Label="classnames">
 <#Include Label="AtlasClassNames">
+<#Include Label="AtlasCharacterNames">
 
 </Section>
 
@@ -183,1196 +180,41 @@ of class names from the character table in the &GAP; Library.
 <Section Label="sect:Accessing Data of the AtlasRep Package">
 <Heading>Accessing Data of the <Package>AtlasRep</Package> Package</Heading>
 
-(Note that the output of the examples in this section refers to a perhaps
+Note that the output of the examples in this section refers to a perhaps
 outdated table of contents;
 the current version of the database may contain more information
-than is shown here.)
+than is shown here.
 
 <P/>
 
 <#Include Label="DisplayAtlasInfo">
-
-<P/>
-
-
-<P/>
-
-The above output means that the &ATLAS; of Group Representations contains
-<M>42</M> representations of the Mathieu group <M>M_{11}</M>,
-straight line programs for computing generators of representatives
-of all five classes of maximal subgroups,
-for computing representatives of the conjugacy classes of elements
-and of generators of maximally cyclic subgroups,
-contains no straight line program for applying outer automorphisms
-(well, in fact <M>M_{11}</M> admits no nontrivial outer automorphism),
-and contains a straight line decision that checks generators for being
-standard generators.
-Analogously,
-<M>18</M> representations of the alternating group <M>A_5</M> are available,
-straight line programs for computing generators of representatives
-of all three classes of maximal subgroups,
-and no straight line programs for computing representatives
-of the conjugacy classes of elements,
-of generators of maximally cyclic subgroups,
-and no for computing images under outer automorphisms;
-a straight line decision for checking the standardization of generators
-is contained.
-
-<P/>
-
-<Example><![CDATA[
-gap> DisplayAtlasInfo( "A5", IsPermGroup, true );
-Representations for G = A5:    (all refer to std. generators 1)
----------------------------
-1: G <= Sym(5)      on cosets of A4 (1st max.)
-2: G <= Sym(6)      on cosets of D10 (2nd max.)
-3: G <= Sym(10)     on cosets of S3 (3rd max.)
-gap> DisplayAtlasInfo( "A5", NrMovedPoints, [ 4 .. 9 ] );
-Representations for G = A5:    (all refer to std. generators 1)
----------------------------
-1: G <= Sym(5)     on cosets of A4 (1st max.)
-2: G <= Sym(6)     on cosets of D10 (2nd max.)
-]]></Example>
-
-<P/>
-
-The first three representations stored for <M>A_5</M> are (in fact primitive)
-permutation representations.
-
-<P/>
-
-<Example><![CDATA[
-gap> DisplayAtlasInfo( "A5", Dimension, [ 1 .. 3 ] );
-Representations for G = A5:    (all refer to std. generators 1)
----------------------------
- 8: G <= GL(2a,4)
- 9: G <= GL(2b,4)
-10: G <= GL(3,5)
-12: G <= GL(3a,9)
-13: G <= GL(3b,9)
-17: G <= GL(3a,Field([Sqrt(5)]))
-18: G <= GL(3b,Field([Sqrt(5)]))
-gap> DisplayAtlasInfo( "A5", Characteristic, 0 );
-Representations for G = A5:    (all refer to std. generators 1)
----------------------------
-14: G <= GL(4,Z)
-15: G <= GL(5,Z)
-16: G <= GL(6,Z)
-17: G <= GL(3a,Field([Sqrt(5)]))
-18: G <= GL(3b,Field([Sqrt(5)]))
-]]></Example>
-
-<P/>
-
-The representations with number between <M>4</M> and <M>13</M> are
-(in fact irreducible) matrix representations over various finite fields,
-those with numbers <M>14</M> to <M>16</M> are integral matrix
-representations,
-and the last two are matrix representations over the field generated by
-<M>\sqrt{{5}}</M> over the rational number field.
-
-<P/>
-
-<Example><![CDATA[
-gap> DisplayAtlasInfo( "A5", NrMovedPoints, IsPrimeInt );
-Representations for G = A5:    (all refer to std. generators 1)
----------------------------
-1: G <= Sym(5)     on cosets of A4 (1st max.)
-gap> DisplayAtlasInfo( "A5", Characteristic, IsOddInt ); 
-Representations for G = A5:    (all refer to std. generators 1)
----------------------------
- 6: G <= GL(4,3)
- 7: G <= GL(6,3)
-10: G <= GL(3,5)
-11: G <= GL(5,5)
-12: G <= GL(3a,9)
-13: G <= GL(3b,9)
-gap> DisplayAtlasInfo( "A5", Dimension, IsPrimeInt );     
-Representations for G = A5:    (all refer to std. generators 1)
----------------------------
- 8: G <= GL(2a,4)
- 9: G <= GL(2b,4)
-10: G <= GL(3,5)
-11: G <= GL(5,5)
-12: G <= GL(3a,9)
-13: G <= GL(3b,9)
-15: G <= GL(5,Z)
-17: G <= GL(3a,Field([Sqrt(5)]))
-18: G <= GL(3b,Field([Sqrt(5)]))
-gap> DisplayAtlasInfo( "A5", Ring, IsFinite and IsPrimeField );
-Representations for G = A5:    (all refer to std. generators 1)
----------------------------
- 4: G <= GL(4a,2)
- 5: G <= GL(4b,2)
- 6: G <= GL(4,3)
- 7: G <= GL(6,3)
-10: G <= GL(3,5)
-11: G <= GL(5,5)
-]]></Example>
-
-<P/>
-
-The above examples show how the output can be restricted using a property
-(a unary function that returns either <K>true</K> or <K>false</K>)
-that follows <Ref Func="NrMovedPoints" BookName="ref"/>,
-<Ref Func="Characteristic" BookName="ref"/>,
-<Ref Func="Dimension" BookName="ref"/>,
-or <Ref Func="Ring" BookName="ref"/>
-in the argument list of <Ref Func="DisplayAtlasInfo"/>.
-
-<P/>
-
-<Example><![CDATA[
-gap> DisplayAtlasInfo( "A5", IsStraightLineProgram, true );
-Programs for G = A5:    (all refer to std. generators 1)
---------------------
-available maxes of G:  [ 1 .. 3 ] (all)
-standard generators checker available
-presentation available
-]]></Example>
-
-<P/>
-
-Straight line programs are available for computing generators of
-representatives of the three classes of maximal subgroups of <M>A_5</M>,
-and a straight line decision for checking whether given generators are
-in fact standard generators ia available as well as a presentation
-in terms of standard generators,
-see&nbsp;<Ref Func="AtlasProgram"/>.
-
-<P/>
-
 <#Include Label="AtlasGenerators">
-
-<P/>
-
-
-<P/>
-
-Each of the above pairs of elements generates a group isomorphic to <M>A_5</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> gens1max2:= AtlasGenerators( "A5", 1, 2 );
-rec( generators := [ (1,2)(3,4), (2,3)(4,5) ], standardization := 1, 
-  repnr := 1, identifier := [ "A5", [ "A5G1-p5B0.m1", "A5G1-p5B0.m2" ], 1, 5, 
-      2 ], p := 5, id := "", stabilizer := "A4", size := 10 )
-gap> id:= gens1max2.identifier;;
-gap> gens1max2 = AtlasGenerators( id );
-true
-gap> max2:= Group( gens1max2.generators );;
-gap> Size( max2 );
-10
-gap> IdGroup( max2 ) = IdGroup( DihedralGroup( 10 ) );
-true
-]]></Example>
-
-<P/>
-
-The elements stored in <C>gens1max2.generators</C> describe the restriction
-of the first representation of <M>A_5</M> to a group in the second class of
-maximal subgroups of <M>A_5</M> according to the list in the &ATLAS; of
-Finite Groups&nbsp;<Cite Key="CCN85"/>;
-this subgroup is isomorphic to the dihedral group <M>D_{10}</M>.
-
-<P/>
-
 <#Include Label="AtlasProgram">
-
-<P/>
-
-
-<P/>
-
-The above example shows that for restricting representations given by
-standard generators to a maximal subgroup of <M>A_5</M>,
-we can also fetch and apply the appropriate straight line program.
-Such a program (see&nbsp;<Ref Sect="Straight Line Programs" BookName="ref"/>)
-takes standard generators of a group --in this example <M>A_5</M>--
-as its input, and returns a list of elements in this group
---in this example generators of the <M>D_{10}</M> subgroup we had met above--
-which are computed essentially by evaluating structured words in terms of
-the standard generators.
-
-<P/>
-
-<Example><![CDATA[
-gap> prog:= AtlasProgram( "J1", "cyclic" );
-rec( program := <straight line program>, standardization := 1, 
-  identifier := [ "J1", "J1G1-cycW1", 1 ],
-  outputs := [ "6A", "7A", "10B", "11A", "15B", "19A" ], groupname := "J1" )
-gap> gens:= GeneratorsOfGroup( FreeGroup( "x", "y" ) );;
-gap> ResultOfStraightLineProgram( prog.program, gens );
-[ x*y*x*y^2*x*y*x*y^2*x*y*x*y*x*y^2*x*y^2, x*y, x*y*x*y^2*x*y*x*y*x*y^2*x*y^2,
-  x*y*x*y*x*y^2*x*y^2*x*y*x*y^2*x*y*x*y*x*y^2*x*y^2*x*y*x*y^2*x*y*x*y*x*y^
-    2*x*y^2, x*y*x*y*x*y^2*x*y^2, x*y*x*y^2 ]
-]]></Example>
-
-<P/>
-
-The above example shows how to fetch and use straight line programs for
-computing generators of representatives of maximally cyclic subgroups
-of a given group.
-
-<P/>
-
+<#Include Label="AtlasProgramInfo">
 <#Include Label="OneAtlasGeneratingSetInfo">
-
-<P/>
-
-In the following example, we try to access information about
-permutation representations for the alternating group <M>A_5</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> info:= OneAtlasGeneratingSetInfo( "A5" );
-rec( groupname := "A5", standardization := 1, 
-  identifier := [ "A5", [ "A5G1-p5B0.m1", "A5G1-p5B0.m2" ], 1, 5 ], p := 5, 
-  id := "", stabilizer := "A4", size := 60, repnr := 1 )
-gap> gens:= AtlasGenerators( info.identifier );
-rec( generators := [ (1,2)(3,4), (1,3,5) ], groupname := "A5",
-  standardization := 1, repnr := 1, 
-  identifier := [ "A5", [ "A5G1-p5B0.m1", "A5G1-p5B0.m2" ], 1, 5 ], p := 5, 
-  id := "", stabilizer := "A4", size := 60 )
-gap> info = OneAtlasGeneratingSetInfo( "A5", IsPermGroup, true );
-true
-gap> info = OneAtlasGeneratingSetInfo( "A5", NrMovedPoints, "minimal" );
-true
-gap> info = OneAtlasGeneratingSetInfo( "A5", NrMovedPoints, [ 1 .. 10 ] );
-true
-gap> OneAtlasGeneratingSetInfo( "A5", NrMovedPoints, 20 );
-fail
-]]></Example>
-
-<P/>
-
-Note that a permutation representation of degree <M>20</M> could be obtained
-by taking twice the primitive representation on <M>10</M> points;
-however, the &ATLAS; of Group Representations does not store this
-imprimitive representation (cf.
-Section&nbsp;<Ref Sect="sect:Accessing vs. Constructing Representations"/>). 
-
-<P/>
-
-We continue this example a little.
-Next we access matrix representations of <M>A_5</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> info:= OneAtlasGeneratingSetInfo( "A5", IsMatrixGroup, true );
-rec( groupname := "A5", standardization := 1, 
-  identifier := [ "A5", [ "A5G1-f2r4aB0.m1", "A5G1-f2r4aB0.m2" ], 1, 2 ], 
-  dim := 4, id := "a", ring := GF(2), size := 60, repnr := 4 )
-gap> gens:= AtlasGenerators( info.identifier );
-rec( 
-  generators := [ <an immutable 4x4 matrix over GF2>, <an immutable 4x4 matrix\
- over GF2> ], groupname := "A5", standardization := 1, repnr := 4, 
-  identifier := [ "A5", [ "A5G1-f2r4aB0.m1", "A5G1-f2r4aB0.m2" ], 1, 2 ], 
-  dim := 4, id := "a", ring := GF(2), size := 60 )
-gap> info = OneAtlasGeneratingSetInfo( "A5", Dimension, 4 );
-true
-gap> info = OneAtlasGeneratingSetInfo( "A5", Characteristic, 2 );
-true
-gap> info = OneAtlasGeneratingSetInfo( "A5", Ring, GF(2) );
-true
-gap> OneAtlasGeneratingSetInfo( "A5", Characteristic, [2,5], Dimension, 2 );
-rec( groupname := "A5", standardization := 1, 
-  identifier := [ "A5", [ "A5G1-f4r2aB0.m1", "A5G1-f4r2aB0.m2" ], 1, 4 ], 
-  dim := 2, id := "a", ring := GF(2^2), size := 60, repnr := 8 )
-gap> OneAtlasGeneratingSetInfo( "A5", Characteristic, [2,5], Dimension, 1 );
-fail
-gap> info:= OneAtlasGeneratingSetInfo( "A5", Characteristic, 0, Dimension, 4 );
-rec( groupname := "A5", standardization := 1, 
-  identifier := [ "A5", "A5G1-Zr4B0.g", 1, 4 ], dim := 4, id := "", 
-  ring := Integers, size := 60, repnr := 14 )
-gap> gens:= AtlasGenerators( info.identifier );
-rec( 
-  generators := [ [ [ 1, 0, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 1, 0, 0 ], [ -1, -1, 
-              -1, -1 ] ], 
-      [ [ 0, 1, 0, 0 ], [ 0, 0, 0, 1 ], [ 0, 0, 1, 0 ], [ 1, 0, 0, 0 ] ] ], 
-  groupname := "A5", standardization := 1, repnr := 14, 
-  identifier := [ "A5", "A5G1-Zr4B0.g", 1, 4 ], dim := 4, id := "", 
-  ring := Integers, size := 60 )
-gap> info = OneAtlasGeneratingSetInfo( "A5", Ring, Integers );
-true
-gap> info = OneAtlasGeneratingSetInfo( "A5", Ring, CF(37) );
-true
-gap> OneAtlasGeneratingSetInfo( "A5", Ring, Integers mod 77 );
-fail
-gap> info:= OneAtlasGeneratingSetInfo( "A5", Ring, CF(5), Dimension, 3 );
-rec( groupname := "A5", standardization := 1, 
-  identifier := [ "A5", "A5G1-Ar3aB0.g", 1, 3 ], dim := 3, id := "a", 
-  ring := NF(5,[ 1, 4 ]), size := 60, repnr := 17 )
-gap> gens:= AtlasGenerators( info.identifier );
-rec( 
-  generators := [ [ [ -1, 0, 0 ], [ 0, -1, 0 ], [ -E(5)-E(5)^4, -E(5)-E(5)^4, 
-              1 ] ], [ [ 0, 1, 0 ], [ 0, 0, 1 ], [ 1, 0, 0 ] ] ], 
-  groupname := "A5", standardization := 1, repnr := 17, 
-  identifier := [ "A5", "A5G1-Ar3aB0.g", 1, 3 ], dim := 3, id := "a", 
-  ring := NF(5,[ 1, 4 ]), size := 60 )
-gap> OneAtlasGeneratingSetInfo( "A5", Ring, GF(17) );
-fail
-]]></Example>
-
 <#Include Label="AllAtlasGeneratingSetInfos">
-
 <#Include Label="AtlasGroup">
-
 <#Include Label="AtlasSubgroup">
+<#Include Label="AtlasRepInfoRecord">
 
 </Section>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sect:Examples of Using the AtlasRep Package">
-<Heading>Examples of Using the <Package>AtlasRep</Package> Package</Heading>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Subsection Label="subsect:Example: Class Representatives">
-<Heading>Example: Class Representatives</Heading>
-
-First we show the computation of class representatives of the Mathieu group
-<M>M_{11}</M>, in a <M>2</M>-modular matrix representation.
-We start with the ordinary and Brauer character tables of this group.
-
-<P/>
-
-<Example><![CDATA[
-gap> tbl:= CharacterTable( "M11" );;
-gap> modtbl:= tbl mod 2;;
-gap> CharacterDegrees( modtbl );
-[ [ 1, 1 ], [ 10, 1 ], [ 16, 2 ], [ 44, 1 ] ]
-]]></Example>
-
-<P/>
-
-The output of <Ref Func="CharacterDegrees" BookName="ref"/>
-means that the <M>2</M>-modular irreducibles of <M>M_{11}</M>
-have degrees <M>1</M>, <M>10</M>, <M>16</M>, <M>16</M>, and <M>44</M>.
-
-<P/>
-
-Using <Ref Func="DisplayAtlasInfo"/>,
-we find out that matrix generators for the irreducible <M>10</M>-dimensional
-representation are available in the database.
-
-<P/>
-
-<Example><![CDATA[
-gap> DisplayAtlasInfo( "M11", Characteristic, 2 );
-Representations for G = M11:    (all refer to std. generators 1)
-----------------------------
- 6: G <= GL(10,2)
- 7: G <= GL(32,2)
- 8: G <= GL(44,2)
-16: G <= GL(16a,4)
-17: G <= GL(16b,4)
-]]></Example>
-
-<P/>
-
-So we decide to work with this representation.
-We fetch the generators and compute the list of class representatives
-of <M>M_{11}</M> in the representation.
-The ordering of class representatives is the same as that in the character
-table of the &ATLAS; of Finite Groups (<Cite Key="CCN85"/>),
-which coincides with the ordering of columns in the &GAP; table we have
-fetched above.
-
-<P/>
-
-<Example><![CDATA[
-gap> info:= OneAtlasGeneratingSetInfo( "M11", Characteristic, 2,
->                                             Dimension, 10 );;
-gap> gens:= AtlasGenerators( info.identifier );;
-gap> ccls:= AtlasProgram( "M11", gens.standardization, "classes" );
-rec( program := <straight line program>, standardization := 1,
-  identifier := [ "M11", "M11G1-cclsW1", 1 ],
-  outputs := [ "1A", "2A", "3A", "4A", "5A", "6A", "8A", "8B", "11A", "11B" ],
-  groupname := "M11" )
-gap> reps:= ResultOfStraightLineProgram( ccls.program, gens.generators );;
-]]></Example>
-
-<P/>
-
-If we would need only a few class representatives, we could use
-the &GAP; library function <Ref Func="RestrictOutputsOfSLP" BookName="ref"/>
-to create a straight line program that computes only specified outputs.
-Here is an example where only the class representatives of order eight are
-computed.
-
-<P/>
-
-<Example><![CDATA[
-gap> ord8prg:= RestrictOutputsOfSLP( ccls.program,
->                   Filtered( [ 1 .. 10 ], i -> ccls.outputs[i][1] = '8' ) );
-<straight line program>
-gap> ord8reps:= ResultOfStraightLineProgram( ord8prg, gens.generators );;
-gap> List( ord8reps, m -> Position( reps, m ) );
-[ 7, 8 ]
-]]></Example>
-
-<P/>
-
-Let us check that the class representatives have the right orders.
-
-<P/>
-
-<Example><![CDATA[
-gap> List( reps, Order ) = OrdersClassRepresentatives( tbl );
-true
-]]></Example>
-
-<P/>
-
-From the class representatives, we can compute the Brauer character
-we had started with.
-This Brauer character is defined on all classes of the <M>2</M>-modular
-table.
-So we first pick only those representatives,
-using the &GAP; function <Ref Func="GetFusionMap" BookName="ref"/>;
-in this situation, it returns the class fusion from the Brauer table into
-the ordinary table.
-
-<P/>
-
-<Example><![CDATA[
-gap> fus:= GetFusionMap( modtbl, tbl );
-[ 1, 3, 5, 9, 10 ]
-gap> modreps:= reps{ fus };;
-]]></Example>
-
-<P/>
-
-Then we call the &GAP; function
-<Ref Func="BrauerCharacterValue" BookName="ref"/>,
-which computes the Brauer character value from the matrix given.
-
-<P/>
-
-<Example><![CDATA[
-gap> char:= List( modreps, BrauerCharacterValue );
-[ 10, 1, 0, -1, -1 ]
-gap> Position( Irr( modtbl ), char );
-2
-]]></Example>
-
-</Subsection>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Subsection Label="subsect:Example: Permutation and Matrix Representations">
-<Heading>Example: Permutation and Matrix Representations</Heading>
-
-The second example shows the computation of a permutation representation
-from a matrix representation.
-We work with the <M>10</M>-dimensional representation used above,
-and consider the action on the <M>2^{10}</M> vectors of the underlying row
-space.
-
-<P/>
-
-<Example><![CDATA[
-gap> grp:= Group( gens.generators );;
-gap> v:= GF(2)^10;;
-gap> orbs:= Orbits( grp, AsList( v ) );;
-gap> List( orbs, Length );
-[ 1, 396, 55, 330, 66, 165, 11 ]
-]]></Example>
-
-<P/>
-
-We see that there are six nontrivial orbits,
-and we can compute the permutation actions on these orbits directly
-using <Ref Func="Action" BookName="ref"/>.
-However, for larger examples, one cannot write down all orbits on the
-row space, so one has to use another strategy if one is interested in
-a particular orbit.
-
-<P/>
-
-Let us assume that we are interested in the orbit of length <M>11</M>.
-The point stabilizer is the first maximal subgroup of <M>M_{11}</M>,
-thus the restriction of the representation to this subgroup has a
-nontrivial fixed point space.
-This restriction can be computed using the <Package>AtlasRep</Package>
-package.
-
-<P/>
-
-<Example><![CDATA[
-gap> gens:= AtlasGenerators( "M11", 6, 1 );;
-]]></Example>
-<P/>
-Now computing the fixed point space is standard linear algebra.
-<P/>
-<Example><![CDATA[
-gap> id:= IdentityMat( 10, GF(2) );;
-gap> sub1:= Subspace( v, NullspaceMat( gens.generators[1] - id ) );;
-gap> sub2:= Subspace( v, NullspaceMat( gens.generators[2] - id ) );;
-gap> fix:= Intersection( sub1, sub2 );
-<vector space of dimension 1 over GF(2)>
-]]></Example>
-
-<P/>
-
-The final step is of course the computation of the permutation action
-on the orbit.
-
-<P/>
-
-<Example><![CDATA[
-gap> orb:= Orbit( grp, Basis( fix )[1] );;
-gap> act:= Action( grp, orb );;  Print( act, "\n" );
-Group( [ ( 1, 2)( 4, 6)( 5, 8)( 7,10), ( 1, 3, 5, 9)( 2, 4, 7,11) ] )
-]]></Example>
-
-<P/>
-
-Note that this group is <E>not</E> equal to the group obtained by fetching
-the permutation representation from the database.
-This is due to a different numbering of the points,
-so the groups are permutation isomorphic.
-
-<P/>
-
-<Example><![CDATA[
-gap> permgrp:= Group( AtlasGenerators( "M11", 1 ).generators );;
-gap> Print( permgrp, "\n" );
-Group( [ ( 2,10)( 4,11)( 5, 7)( 8, 9), ( 1, 4, 3, 8)( 2, 5, 6, 9) ] )
-gap> permgrp = act;
-false
-gap> IsConjugate( SymmetricGroup(11), permgrp, act );
-true
-]]></Example>
-
-</Subsection>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Subsection Label="subsect:Example: Outer Automorphisms">
-<Heading>Example: Outer Automorphisms</Heading>
-
-The straight line programs for applying outer automorphisms to
-standard generators can of course be used to define the automorphisms
-themselves as &GAP; mappings.
-
-<P/>
-
-<Example><![CDATA[
-gap> DisplayAtlasInfo( "G2(3)", IsStraightLineProgram );
-Programs for G = G2(3):    (all refer to std. generators 1)
------------------------
-available maxes of G:  [ 1 .. 10 ] (all)
-class repres. of G available
-repres. of cyclic subgroups of G available
-available automorphisms:  [ "2" ]
-standard generators checker available
-presentation available
-gap> prog:= AtlasProgram( "G2(3)", "automorphism", "2" ).program;;
-gap> info:= OneAtlasGeneratingSetInfo( "G2(3)", Dimension, 7 );;
-gap> gens:= AtlasGenerators( info ).generators;;
-gap> imgs:= ResultOfStraightLineProgram( prog, gens );;
-]]></Example>
-
-<P/>
-
-If we are not suspicious whether the script really describes an
-automorphism then we should tell this to &GAP;,
-in order to avoid the expensive checks of the properties of being a
-homomorphism and bijective
-(see Section&nbsp;<Ref Sect="Creating Group Homomorphisms" BookName="ref"/>).
-This looks as follows.
-
-<P/>
-
-<Example><![CDATA[
-gap> g:= Group( gens );;
-gap> aut:= GroupHomomorphismByImagesNC( g, g, gens, imgs );;
-gap> SetIsBijective( aut, true );
-]]></Example>
-
-<P/>
-
-If we are suspicious whether the script describes an automorphism
-then we might have the idea to check it with &GAP;, as follows.
-
-<P/>
-
-<Example><![CDATA[
-gap> aut:= GroupHomomorphismByImages( g, g, gens, imgs );;
-gap> IsBijective( aut );
-true
-]]></Example>
-
-<P/>
-
-(Note that even for a comparatively small group such as <M>G_2(3)</M>,
-this was a difficult task for &GAP; before version&nbsp;4.3.)
-
-<P/>
-
-Often one can form images under an automorphism <M>\alpha</M>, say,
-without creating the homomorphism object.
-This is obvious for the standard generators of the group <M>G</M> themselves,
-but also for generators of a maximal subgroup <M>M</M> computed from standard
-generators of <M>G</M>, provided that the straight line programs in question
-refer to the same standard generators.
-Note that the generators of <M>M</M> are given by evaluating words in terms
-of standard generators of <M>G</M>,
-and their images under <M>\alpha</M> can be obtained by evaluating the same
-words at the images under <M>\alpha</M> of the standard generators of
-<M>G</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> max1:= AtlasProgram( "G2(3)", 1 ).program;;
-gap> mgens:= ResultOfStraightLineProgram( max1, gens );;
-gap> comp:= CompositionOfStraightLinePrograms( max1, prog );;
-gap> mimgs:= ResultOfStraightLineProgram( comp, gens );;
-]]></Example>
-
-<P/>
-
-The list <C>mgens</C> is the list of generators of the first maximal subgroup
-of <M>G_2(3)</M>, <C>mimgs</C> is the list of images under the automorphism
-given by the straight line program <C>prog</C>.
-Note that applying the program returned by
-<Ref Func="CompositionOfStraightLinePrograms" BookName="ref"/>
-means to apply first <C>prog</C> and then <C>max1</C>,
-Since we have already constructed the &GAP; object representing the
-automorphism, we can check whether the results are equal.
-
-<P/>
-
-<Example><![CDATA[
-gap> mimgs = List( mgens, x -> x^aut );
-true
-]]></Example>
-
-<P/>
-
-However, it should be emphasized that using <C>aut</C> requires a huge
-machinery of computations behind the scenes, whereas applying the
-straight line programs <C>prog</C> and <C>max1</C> involves only elementary
-operations with the generators.
-The latter is feasible also for larger groups,
-for which constructing the &GAP; automorphism might be impossible.
-
-</Subsection>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Subsection Label="subsect:Example: Semi-presentations">
-<Heading>Example: Using Semi-presentations and Black Box Programs</Heading>
-
-Let us suppose that we want to restrict a representation of the
-Mathieu group <M>M_{12}</M> to a non-maximal subgroup of the type
-<M>L_2(11)</M>.
-The idea is that this subgroup can be found as a maximal subgroup of a
-maximal subgroup of the type <M>M_{11}</M>,
-which is itself maximal in <M>M_{12}</M>.
-For that,
-we fetch a representation of <M>M_{12}</M> and use a straight line program
-for restricting it to the first maximal subgroup,
-which has the type <M>M_{11}</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> info:= OneAtlasGeneratingSetInfo( "M12", NrMovedPoints, 12 );
-rec( groupname := "M12", standardization := 1, 
-  identifier := [ "M12", [ "M12G1-p12aB0.m1", "M12G1-p12aB0.m2" ], 1, 12 ], 
-  p := 12, id := "a", stabilizer := "M11", size := 95040, repnr := 1 )
-gap> gensM12:= AtlasGenerators( info.identifier );;
-gap> restM11:= AtlasProgram( "M12", "maxes", 1 );;
-gap> gensM11:= ResultOfStraightLineProgram( restM11.program,
->                                           gensM12.generators );
-[ (3,9)(4,12)(5,10)(6,8), (1,4,11,5)(2,10,8,3) ]
-]]></Example>
-
-<P/>
-
-Now we cannot simply apply a straight line program for <M>M_{11}</M> to these
-generators of <M>M_{11}</M>, since they are not necessarily <E>standard</E>
-generators of <M>M_{11}</M>.
-We check this using a semi-presentation for <M>M_{11}</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> checkM11:= AtlasProgram( "M11", "check" );
-rec( program := <straight line decision>, standardization := 1, 
-  identifier := [ "M11", "M11G1-check1", 1, 1 ], groupname := "M11" )
-gap> ResultOfStraightLineDecision( checkM11.program, gensM11 );
-true
-]]></Example>
-
-<P/>
-
-So we are lucky that applying the appropriate program for <M>M_{11}</M>
-will give us the required generators for <M>L_2(11)</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> restL211:= AtlasProgram( "M11", "maxes", 2 );;
-gap> gensL211:= ResultOfStraightLineProgram( restL211.program, gensM11 );
-[ (3,9)(4,12)(5,10)(6,8), (1,11,9)(2,12,8)(3,6,10) ]
-gap> G:= Group( gensL211 );;  Size( G );  IsSimple( G );
-660
-true
-]]></Example>
-
-<P/>
-
-Usually representations are not given in terms of standard generators.
-For example, let us take the <M>M_{11}</M> type group returned by the &GAP;
-function <Ref Func="MathieuGroup" BookName="ref"/>.
-
-<P/>
-
-<Example><![CDATA[
-gap> G:= MathieuGroup( 11 );;
-gap> gens:= GeneratorsOfGroup( G );
-[ (1,2,3,4,5,6,7,8,9,10,11), (3,7,11,8)(4,10,5,6) ]
-gap> ResultOfStraightLineDecision( checkM11.program, gens );   
-false
-]]></Example>
-
-<P/>
-
-If we want to compute an <M>L_2(11)</M> type subgroup of this group,
-we can use a black box program for computing standard generators,
-and then apply the straight line program for computing the restriction.
-
-<P/>
-
-<Example><![CDATA[
-gap> find:= AtlasProgram( "M11", "find" );
-rec( program := <black box program>, standardization := 1, 
-  identifier := [ "M11", "M11G1-find1", 1, 1 ], groupname := "M11" )
-gap> stdgens:= ResultOfBBoxProgram( find.program, Group( gens ) );;
-gap> List( stdgens, Order );
-[ 2, 4 ]
-gap> ResultOfStraightLineDecision( checkM11.program, stdgens );
-true
-gap> gensL211:= ResultOfStraightLineProgram( restL211.program, stdgens );;
-gap> List( gensL211, Order );
-[ 2, 3 ]
-gap> G:= Group( gensL211 );;  Size( G );  IsSimple( G );
-660
-true
-]]></Example>
-
-</Subsection>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Subsection Label="subsect:Example: Using the GAP Library of Tables of Marks">
-<Heading>Example: Using the &GAP; Library of Tables of Marks</Heading>
-
-The &GAP; Library of Tables of Marks provides,
-for many almost simple groups, information for constructing representatives
-of all conjugacy classes of subgroups.
-If this information is compatible with the standard generators of the
-&ATLAS; of Group Representations then we can use it to restrict any
-representation from the &ATLAS; to prescribed subgroups.
-This is useful in particular for those subgroups for which the &ATLAS;
-of Group Representations itself does not contain a straight line program.
-
-<P/>
-
-<Example><![CDATA[
-gap> tom:= TableOfMarks( "A5" );
-TableOfMarks( "A5" )
-gap> info:= StandardGeneratorsInfo( tom );
-[ rec( generators := "a, b", description := "|a|=2, |b|=3, |ab|=5", 
-      script := [ [ 1, 2 ], [ 2, 3 ], [ 1, 1, 2, 1, 5 ] ], ATLAS := true ) ]
-]]></Example>
-
-<P/>
-
-The <K>true</K> value of the component <C>ATLAS</C> indicates
-that the information stored on <C>tom</C> refers to the standard generators
-of type <M>1</M> in the &ATLAS; of Group Representations.
-
-<P/>
-
-We want to restrict a <M>4</M>-dimensional integral representation of
-<M>A_5</M> to a Sylow <M>2</M> subgroup of <M>A_5</M>,
-and use <Ref Func="RepresentativeTomByGeneratorsNC" BookName="ref"/>
-for that.
-
-<P/>
-
-<Example><![CDATA[
-gap> info:= OneAtlasGeneratingSetInfo( "A5", Ring, Integers, Dimension, 4 );;
-gap> stdgens:= AtlasGenerators( info.identifier );
-rec( 
-  generators := [ [ [ 1, 0, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 1, 0, 0 ], [ -1, -1, 
-              -1, -1 ] ], 
-      [ [ 0, 1, 0, 0 ], [ 0, 0, 0, 1 ], [ 0, 0, 1, 0 ], [ 1, 0, 0, 0 ] ] ], 
-  groupname := "A5", standardization := 1, repnr := 14, 
-  identifier := [ "A5", "A5G1-Zr4B0.g", 1, 4 ], dim := 4, id := "", 
-  ring := Integers, size := 60 )
-gap> orders:= OrdersTom( tom );
-[ 1, 2, 3, 4, 5, 6, 10, 12, 60 ]
-gap> pos:= Position( orders, 4 );
-4
-gap> sub:= RepresentativeTomByGeneratorsNC( tom, pos, stdgens.generators );
-<matrix group of size 4 with 2 generators>
-gap> GeneratorsOfGroup( sub );
-[ [ [ 1, 0, 0, 0 ], [ -1, -1, -1, -1 ], [ 0, 0, 0, 1 ], [ 0, 0, 1, 0 ] ], 
-  [ [ 1, 0, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 1, 0, 0 ], [ -1, -1, -1, -1 ] ] ]
-]]></Example>
-
-</Subsection>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Subsection Label="subsect:Example: Index 770 Subgroups in M22">
-<Heading>Example: Index <M>770</M> Subgroups in <M>M_{22}</M></Heading>
-
-The sporadic simple Mathieu group <M>M_{22}</M> contains a unique class of
-subgroups of index <M>770</M> (and order <M>576</M>).
-This can be seen for example using &GAP;'s Library of Tables of Marks.
-
-<P/>
-
-<Example><![CDATA[
-gap> tom:= TableOfMarks( "M22" );
-TableOfMarks( "M22" )
-gap> subord:= Size( UnderlyingGroup( tom ) ) / 770;
-576
-gap> ord:= OrdersTom( tom );;
-gap> tomstabs:= Filtered( [ 1 .. Length( ord ) ], i -> ord[i] = subord );
-[ 144 ]
-]]></Example>
-
-<P/>
-
-The permutation representation of <M>M_{22}</M> on the right cosets of such
-a subgroup <M>S</M> is contained in the &ATLAS; of Group Representations.
-
-<P/>
-
-<Example><![CDATA[
-gap> DisplayAtlasInfo( "M22", NrMovedPoints, 770 );
-Representations for G = M22:    (all refer to std. generators 1)
-----------------------------
-12: G <= Sym(770)     on cosets of (A4xA4):4 < 2^4:A6
-]]></Example>
-
-<P/>
-
-We now verify the information shown about the point stabilizer and
-about the maximal overgroups of <M>S</M> in <M>M_{22}</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> maxtom:= MaximalSubgroupsTom( tom );
-[ [ 155, 154, 153, 152, 151, 150, 146, 145 ], 
-  [ 22, 77, 176, 176, 231, 330, 616, 672 ] ]
-gap> List( tomstabs, i -> List( maxtom[1], j -> ContainedTom( tom, i, j ) ) );
-[ [ 0, 10, 0, 0, 0, 0, 0, 0 ] ]
-]]></Example>
-
-<P/>
-
-We see that the only maximal subgroups of <M>M_{22}</M> that contain <M>S</M>
-have index <M>77</M> in <M>M_{22}</M>.
-According to the &ATLAS; of Finite Groups, these maximal subgroups have the
-structure <M>2^4:A_6</M>.  From that and from the structure of <M>A_6</M>,
-we conclude that <M>S</M> has the structure <M>2^4:(3^2:4)</M>.
-
-<P/>
-
-Alternatively, we look at the permutation representation of degree <M>770</M>.
-We fetch it from the &ATLAS; of Group Representations.
-There is exactly one nontrivial block system for this representation,
-with <M>77</M> blocks of length <M>10</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> g:= AtlasGroup( "M22", NrMovedPoints, 770 );
-<permutation group of size 443520 with 2 generators>
-gap> allbl:= AllBlocks( g );;
-gap> List( allbl, Length );
-[ 10 ]
-]]></Example>
-
-<P/>
-
-Furthermore, &GAP; computes that the point stabilizer <M>S</M> has the
-structure <M>(A_4 \times A_4):4</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> stab:= Stabilizer( g, 1 );
-<permutation group of size 576 with 4 generators>
-gap> StructureDescription( stab );
-"(A4 x A4) : C4"
-gap> blocks:= Orbit( g, allbl[1], OnSets );;
-gap> act:= Action( g, blocks, OnSets );;
-gap> StructureDescription( Stabilizer( act, 1 ) );
-"(C2 x C2 x C2 x C2) : A6"
-]]></Example>
-
-
-</Subsection>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Subsection Label="subsect:Example: Index 462 Subgroups in M22">
-<Heading>Example: Index <M>462</M> Subgroups in <M>M_{22}</M></Heading>
-
-The &ATLAS; of Group Representations contains three
-degree <M>462</M> permutation representations of the group <M>M_{22}</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> DisplayAtlasInfo( "M22", NrMovedPoints, 462 );
-Representations for G = M22:    (all refer to std. generators 1)
-----------------------------
-7: G <= Sym(462a)     on cosets of 2^4:A5 < 2^4:A6
-8: G <= Sym(462b)     on cosets of 2^4:A5 < L3(4), 2^4:S5
-9: G <= Sym(462c)     on cosets of 2^4:A5 < L3(4), 2^4:A6
-]]></Example>
-
-<P/>
-
-The point stabilizers in these three representations have the structure
-<M>2^4:A_5</M>.
-Using &GAP;'s Library of Tables of Marks,
-we can show that these stabilizers are exactly the three classes of subgroups
-of order <M>960</M> in <M>M_{22}</M>.
-For that, we first verify that the group generators stored in &GAP;'s
-table of marks coincide with the standard generators used by the
-&ATLAS; of Group Representations.
-
-<P/>
-
-<Example><![CDATA[
-gap> tom:= TableOfMarks( "M22" );
-TableOfMarks( "M22" )
-gap> genstom:= GeneratorsOfGroup( UnderlyingGroup( tom ) );;
-gap> checkM22:= AtlasProgram( "M22", "check" );
-rec( program := <straight line decision>, standardization := 1, 
-  identifier := [ "M22", "M22G1-check1", 1, 1 ], groupname := "M22" )
-gap> ResultOfStraightLineDecision( checkM22.program, genstom );
-true
-]]></Example>
-
-<P/>
-
-There are indeed three classes of subgroups of order <M>960</M>
-in <M>M_{22}</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> ord:= OrdersTom( tom );;
-gap> tomstabs:= Filtered( [ 1 .. Length( ord ) ], i -> ord[i] = 960 );
-[ 147, 148, 149 ]
-]]></Example>
-
-<P/>
-
-Now we compute representatives of these three classes in the three
-representations <C>462a</C>, <C>462b</C>, and <C>462c</C>.
-We see that each of the three classes occurs as a point stabilizer
-in exactly one of the three representations.
-
-<P/>
-
-<Example><![CDATA[
-gap> atlasreps:= AllAtlasGeneratingSetInfos( "M22", NrMovedPoints, 462 );
-[ rec( groupname := "M22", standardization := 1, 
-      identifier := [ "M22", [ "M22G1-p462aB0.m1", "M22G1-p462aB0.m2" ], 1, 
-          462 ], p := 462, id := "a", stabilizer := "2^4:A5 < 2^4:A6", 
-      size := 443520, repnr := 7 ), 
-  rec( groupname := "M22", standardization := 1, 
-      identifier := [ "M22", [ "M22G1-p462bB0.m1", "M22G1-p462bB0.m2" ], 1, 
-          462 ], p := 462, id := "b", size := 443520, repnr := 8 ), 
-  rec( groupname := "M22", standardization := 1, 
-      identifier := [ "M22", [ "M22G1-p462cB0.m1", "M22G1-p462cB0.m2" ], 1, 
-          462 ], p := 462, id := "c", size := 443520, repnr := 9 ) ]
-gap> atlasreps:= List( atlasreps, AtlasGroup );;
-gap> tomstabreps:= List( atlasreps, G -> List( tomstabs,
-> i -> RepresentativeTomByGenerators( tom, i, GeneratorsOfGroup( G ) ) ) );;
-gap> List( tomstabreps, x -> List( x, NrMovedPoints ) );
-[ [ 462, 462, 461 ], [ 460, 462, 462 ], [ 462, 461, 462 ] ]
-]]></Example>
-
-<P/>
-
-More precisely, we see that the point stabilizers in the three
-representations <C>462a</C>, <C>462b</C>, <C>462c</C> lie in the
-subgroup classes <M>149</M>, <M>147</M>, <M>148</M>, respectively,
-of the table of marks.
-
-<P/>
-
-The point stabilizers in the representations <C>462b</C> and <C>462c</C>
-are isomorphic, but not isomorphic with the point stabilizer in <C>462a</C>.
-
-<P/>
-
-<Example><![CDATA[
-gap> stabs:= List( atlasreps, G -> Stabilizer( G, 1 ) );;
-gap> List( stabs, IdGroup );
-[ [ 960, 11358 ], [ 960, 11357 ], [ 960, 11357 ] ]
-gap> List( stabs, PerfectIdentification );
-[ [ 960, 2 ], [ 960, 1 ], [ 960, 1 ] ]
-]]></Example>
-
-<P/>
-
-The three representations are imprimitive.
-The containment of the point stabilizers in maximal subgroups of
-<M>M_{22}</M> can be computed using the table of marks of <M>M_{22}</M>.
-
-<P/>
-
-<Example><![CDATA[
-gap> maxtom:= MaximalSubgroupsTom( tom );
-[ [ 155, 154, 153, 152, 151, 150, 146, 145 ], 
-  [ 22, 77, 176, 176, 231, 330, 616, 672 ] ]
-gap> List( tomstabs, i -> List( maxtom[1], j -> ContainedTom( tom, i, j ) ) );
-[ [ 21, 0, 0, 0, 1, 0, 0, 0 ], [ 21, 6, 0, 0, 0, 0, 0, 0 ], 
-  [ 0, 6, 0, 0, 0, 0, 0, 0 ] ]
-]]></Example>
-
-<P/>
-
-We see:
-
-<List>
-<Item>
-  The point stabilizers in <C>462a</C> (subgroups in the class
-  <M>149</M> of the table of marks) are contained only in maximal subgroups
-  in class <M>154</M>; these groups have the structure <M>2^4:A_6</M>.
-</Item>
-<Item>
-  The point stabilizers in <C>462b</C> (subgroups in the class <M>147</M>)
-  are contained in maximal subgroups in the classes <M>155</M> and <M>151</M>;
-  these groups have the structures <M>L_3(4)</M> and <M>2^4:S_5</M>,
-  respectively.
-</Item>
-<Item>
-  The point stabilizers in <C>462c</C> (subgroups in the class <M>148</M>)
-  are contained in maximal subgroups in the classes <M>155</M> and <M>154</M>.
-</Item>
-</List>
-
-<P/>
-
-We identify the supergroups of the point stabilizers by computing the
-block systems.
-
-<P/>
-
-<Example><![CDATA[
-gap> bl:= List( atlasreps, AllBlocks );;
-gap> List( bl, Length );
-[ 1, 3, 2 ]
-gap> List( bl, l -> List( l, Length ) );
-[ [ 6 ], [ 21, 21, 2 ], [ 21, 6 ] ]
-]]></Example>
-
-<P/>
-
-Note that the two block systems with blocks of length <M>21</M> for
-<C>462b</C> belong to the same supergroups (of the type <M>L_3(4)</M>);
-each of these subgroups fixes two different subsets of <M>21</M> points.
-
-<P/>
-
-The representation <C>462a</C> is <E>multiplicity-free</E>,
-that is, it splits into a sum of pairwise nonisomorphic irreducible
-representations.
-This can be seen from the fact that the rank of this permutation
-representation (that is, the number of orbits of the point stabilizer)
-is five; each permutation representation with this property is
-multiplicity-free.
-
-<P/>
-
-The other two representations have rank eight;
-they are not multiplicity-free.
-In fact these two representations have the same permutation character.
-We check this by computing the possible permutation characters
-of degree <M>462</M> for <M>M_{22}</M>,
-and decomposing them into irreducible characters,
-using the character table from &GAP;'s Character Table Library.
-
-<P/>
-
-<Example><![CDATA[
-gap> t:= CharacterTable( "M22" );;
-gap> perms:= PermChars( t, 462 );        
-[ Character( CharacterTable( "M22" ), [ 462, 30, 3, 2, 2, 2, 3, 0, 0, 0, 0, 0 
-     ] ), Character( CharacterTable( "M22" ), 
-    [ 462, 30, 12, 2, 2, 2, 0, 0, 0, 0, 0, 0 ] ) ]
-gap> MatScalarProducts( t, Irr( t ), perms );
-[ [ 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0 ], 
-  [ 1, 2, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0 ] ]
-]]></Example>
-
-</Subsection>
-
-<!--
-I need an example for the following:
-
-As the point stabilizers in the three representations are not conjugate,
-the three representations are pairwise inequivalent as
-<E>permutation representations</E>,
-that is, there is no renumbering of the <M>462</M> points that maps the
-chosen generators of one of the three representations to another one.
-(Of course this is obvious for representations with nonisomorphic
-point stabilizers.)
-For the representations <C>462b</C> and <C>462c</C>,
-we can confirm this also directly.
-
-<P/>
-
-<Example><![CDATA[
-gap> sym:= SymmetricGroup( [ 1 .. 462 ] );;
-gap> RepresentativeAction( sym, GeneratorsOfGroup( atlasreps[2] ),
->        GeneratorsOfGroup( atlasreps[3] ), OnTuples );
-fail
-]]></Example>
-
-On the other hand, the <E>permutation groups</E> obtained from the
-representations <C>462b</C> and <C>462c</C> are conjugate
-in the symmetric group on <M>462</M> points.
-
-<P/>
-
-<Example><![CDATA[
-RepresentativeAction( ... )
-
-IsConjugate
-
-...
-]]></Example>
--->
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- %Section{The Atlas as Part of the GAP Database of Groups} -->
-<!-- % -->
-<!-- % missing ... -->
+<Section Label="sect:Browse and AtlasRep">
+<Heading><Package>Browse</Package> Applications Provided by
+<Package>AtlasRep</Package></Heading>
+
+The functions <Ref Func="BrowseMinimalDegrees"/>,
+<Ref Func="BrowseBibliographySporadicSimple"/>,
+and <Ref Func="BrowseAtlasInfo" BookName="Browse"/> 
+(an alternative to <Ref Func="DisplayAtlasInfo"/>)
+are available only if
+the &GAP; package <Package>Browse</Package> (see <Cite Key="Browse"/>)
+is loaded.
+
+<#Include Label="BrowseMinimalDegrees">
+<#Include Label="BrowseBibliographySporadicSimple">
 
 </Section>
 

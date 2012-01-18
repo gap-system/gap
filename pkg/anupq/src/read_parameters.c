@@ -2,7 +2,7 @@
 **
 *A  read_parameters.c           ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: read_parameters.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: read_parameters.c,v 1.6 2011/12/02 16:42:15 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -25,11 +25,6 @@ struct pcp_vars *pcp;
 
 #if defined (GROUP) 
    ident = GetString ("Input group identifier: ");
-#endif 
-
-#if defined (LIE)
-   int mlin, i;
-   ident = GetString ("Input ring identifier: ");
 #endif 
 
    strcpy (pcp->ident, ident);
@@ -66,24 +61,6 @@ struct pcp_vars *pcp;
 		  &pcp->extra_relations, 0);
 #endif
 
-#if defined (LIE)
-      pcp->ndrel = 0;
-      if (pcp->p != 2)
-	 read_value (TRUE, "Input degree of multilinear condition (0 if none): ",
-		     &pcp->mlin_relations[0], 0); 
-      else {
-	 read_value (TRUE, "Enter number of multilinear relations to be imposed: ", 
-		     &mlin, 0); 
-	 if (!mlin)
-	    pcp->mlin_relations[0] = mlin;
-	 else 
-	    for (i = 0; i < mlin; ++i) {
-	       read_value (TRUE, "Input degree of multilinear condition (0 if none): ", 
-			   &pcp->mlin_relations[i], 0);
-	    }
-      }
-#endif
-      
       /* initialise pcp structure */
       initialise_pcp (*output, pcp);
       setup (pcp);

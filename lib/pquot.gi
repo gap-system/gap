@@ -2,12 +2,9 @@
 ##  
 #W  pquot.gi                    GAP Library                     Werner Nickel
 ##
-#H  $Id: pquot.gi,v 4.49 2011/05/05 19:27:18 gap Exp $
 ##
 #Y  Copyright (C) 1998  . . . . . . . . .  University of St Andrews, Scotland
 ##
-Revision.pquot_gi :=
-    "$Id: pquot.gi,v 4.49 2011/05/05 19:27:18 gap Exp $";
 
 CHECK := false;
 NumberOfCommutators := function( ranks )

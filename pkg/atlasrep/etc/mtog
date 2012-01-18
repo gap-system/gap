@@ -1,9 +1,7 @@
 #!/bin/sh
 #############################################################################
 ##
-#W  mtog               GAP 4 package `atlasrep'                 Thomas Breuer
-##
-#H  @(#)$Id: mtog,v 1.8 2002/06/03 15:29:05 gap Exp $
+#W  mtog                 GAP 4 package AtlasRep                 Thomas Breuer
 ##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##

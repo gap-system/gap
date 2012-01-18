@@ -2,10 +2,10 @@
 ##
 #W subgroups.gi            POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## certain subgroups of matrix groups
 ##
-#H  @(#)$Id: subgroups.gi,v 1.8 2006/07/17 15:46:10 gap Exp $
+#H  @(#)$Id: subgroups.gi,v 1.9 2011/09/23 13:36:33 gap Exp $
 ##
 #Y 2004
 ##
@@ -24,12 +24,12 @@ end;
 ##
 #F POL_TriangNSGFI_NonAbelianPRMGroup( arg )
 ##
-## 
+##
 ##
 ## IN: arg[1] ..... G is an non-abelian  polycyclic rational matrix group
 ##     arg[2] ..... optional prime p
 ##
-## OUT: Normal subgroup of finite index, 
+## OUT: Normal subgroup of finite index,
 ##      actually the p-congruence subgroup
 ##
 InstallGlobalFunction( POL_TriangNSGFI_NonAbelianPRMGroup , function( arg )
@@ -55,9 +55,9 @@ InstallGlobalFunction( POL_TriangNSGFI_NonAbelianPRMGroup , function( arg )
     # natural homomorphism to GL(d,p)
     gens_p := InducedByField( gens, GF(p) );
 
-    # determine un upperbound for the derived length of G
+    # determine an upper bound for the derived length of G
     bound_derivedLength := d+2;
- 
+
     # finite part
     Info( InfoPolenta, 1,"Determine a constructive polycyclic sequence\n",
           "    for the image under the p-congruence homomorphism ..." );
@@ -67,38 +67,38 @@ InstallGlobalFunction( POL_TriangNSGFI_NonAbelianPRMGroup , function( arg )
     Info( InfoPolenta, 1, "Finite image has relative orders ",
                            RelativeOrdersPcgs_finite( pcgs_I_p ), "." );
     Info( InfoPolenta, 1, " " );
- 
+
     # compute the normal the subgroup gens. for the kernel of phi_p
     Info( InfoPolenta, 1,"Compute normal subgroup generators for the kernel\n",
-          "    of the p-congruence homomorphism ...");      
+          "    of the p-congruence homomorphism ...");
     gens_K_p := POL_NormalSubgroupGeneratorsOfK_p( pcgs_I_p, gens );
     gens_K_p := Filtered( gens_K_p, x -> not x = IdentityMat(d) );
-    Info( InfoPolenta, 1,"finished.");   
-   
+    Info( InfoPolenta, 1,"finished.");
+
        Info( InfoPolenta, 2,"The normal subgroup generators are" );
     Info( InfoPolenta, 2, gens_K_p );
     Info( InfoPolenta, 1, "  " );
- 
+
     # radical series
     Info( InfoPolenta, 1, "Compute the radical series ...");
     gens_K_p_mutableCopy := CopyMatrixList( gens_K_p );
-    recordSeries := POL_RadicalSeriesNormalGensFullData( gens, 
+    recordSeries := POL_RadicalSeriesNormalGensFullData( gens,
                                                          gens_K_p_mutableCopy,
                                                          d );
-    
+
     if recordSeries=fail then return fail; fi;
     radSeries := recordSeries.sers;
-    Info( InfoPolenta, 1,"finished.");   
-    Info( InfoPolenta, 1, "The radical series has length ", 
+    Info( InfoPolenta, 1,"finished.");
+    Info( InfoPolenta, 1, "The radical series has length ",
                           Length( radSeries ), "." );
     Info( InfoPolenta, 2, "The radical series is" );
     Info( InfoPolenta, 2, radSeries );
-    Info( InfoPolenta, 1, " " );    
+    Info( InfoPolenta, 1, " " );
 
     # test if G is unipotent by abelian
     isTriang := POL_TestIsUnipotenByAbelianGroupByRadSeries( gens, radSeries );
     if isTriang then
-        return G;  
+        return G;
     fi;
 
     # compositions series
@@ -108,8 +108,8 @@ InstallGlobalFunction( POL_TriangNSGFI_NonAbelianPRMGroup , function( arg )
                                                    recordSeries.sersFullData,
                                                        1  );
     if comSeries=fail then return fail; fi;
-    Info( InfoPolenta, 1,"finished.");   
-    Info( InfoPolenta, 1, "The composition series has length ", 
+    Info( InfoPolenta, 1,"finished.");
+    Info( InfoPolenta, 1, "The composition series has length ",
                           Length( comSeries ), "." );
     Info( InfoPolenta, 2, "The composition series is" );
     Info( InfoPolenta, 2, comSeries );
@@ -117,15 +117,15 @@ InstallGlobalFunction( POL_TriangNSGFI_NonAbelianPRMGroup , function( arg )
 
     # induce K_p to the factors of the composition series
     gensOfBlockAction := POL_InducedActionToSeries(gens_K_p, comSeries);
-   
+
     # let nue be the homomorphism which induces the action of K_p to
     # the factors of the series
-    Info( InfoPolenta, 1, "Compute a constructive polycyclic sequence\n", 
+    Info( InfoPolenta, 1, "Compute a constructive polycyclic sequence\n",
      "    for the induced action of the kernel to the composition series ...");
     pcgs_nue_K_p := CPCS_AbelianSSBlocks_ClosedUnderConj( gens_K_p,
                                                        gens, comSeries );
     if pcgs_nue_K_p = fail then return fail; fi;
-    Info(InfoPolenta,1,"finished.");   
+    Info(InfoPolenta,1,"finished.");
 
     # update generators of K_p
     gens_K_p := pcgs_nue_K_p.gens_K_p;
@@ -134,7 +134,7 @@ InstallGlobalFunction( POL_TriangNSGFI_NonAbelianPRMGroup , function( arg )
                            pcgs_nue_K_p.relOrders, "."  );
     Info( InfoPolenta, 1, " " );
 
-    return POL_Group( gens_K_p, G );   
+    return POL_Group( gens_K_p, G );
 
 end );
 
@@ -144,7 +144,7 @@ end );
 ##
 ## arg[1] = G is a rational polycyclic rational matrix group
 ##
-InstallGlobalFunction( POL_TriangNSGFI_PRMGroup , function( arg ) 
+InstallGlobalFunction( POL_TriangNSGFI_PRMGroup , function( arg )
     local G;
     G := arg[1];
     if IsAbelian( G ) then
@@ -152,7 +152,7 @@ InstallGlobalFunction( POL_TriangNSGFI_PRMGroup , function( arg )
     else
         if IsBound( arg[2] ) then
              return POL_TriangNSGFI_NonAbelianPRMGroup( arg[1], arg[2] );
-        else 
+        else
              return POL_TriangNSGFI_NonAbelianPRMGroup( G );
         fi;
     fi;
@@ -165,13 +165,13 @@ end );
 ##
 #M TriangNormalSubgroupFiniteInd( G )
 ##
-## G is a matrix group over the Rationals. 
+## G is a matrix group over the Rationals.
 ## Returned is triangularizable normal subgroup of finite index
 ##
 ##
-#InstallMethod( TriangNormalSubgroupFiniteInd, "for polycyclic matrix groups", 
-#                true, [ IsMatrixGroup ], 0, 
-#function( G ) 
+#InstallMethod( TriangNormalSubgroupFiniteInd, "for polycyclic matrix groups",
+#                true, [ IsMatrixGroup ], 0,
+#function( G )
 #        local test;
 #        test := POL_IsMatGroupOverFiniteField( G );
 #        if IsBool( test ) then
@@ -183,10 +183,10 @@ end );
 #        fi;
 #end) ;
 #
-#InstallOtherMethod( TriangNormalSubgroupFiniteInd, 
+#InstallOtherMethod( TriangNormalSubgroupFiniteInd,
 #               "for polycyclic matrix groups", true,
-#               [ IsMatrixGroup, IsInt], 0, 
-#function( G, p ) 
+#               [ IsMatrixGroup, IsInt], 0,
+#function( G, p )
 #        local test;
 #        test := POL_IsMatGroupOverFiniteField( G );
 #        if IsBool( test ) then
@@ -195,8 +195,8 @@ end );
 #            if not IsPrime(p) then
 #                Print( "Second argument must be a prime number.\n" );
 #                return fail;
-#            fi;    
-#            return POL_TriangNSGFI_PRMGroup(G ); 
+#            fi;
+#            return POL_TriangNSGFI_PRMGroup(G );
 #         else
 #            TryNextMethod();
 #         fi;
@@ -207,15 +207,15 @@ end );
 ##
 #M SubgroupsUnipotentByAbelianByFinite( G )
 ##
-## G is a matrix group over the Rationals. 
+## G is a matrix group over the Rationals.
 ## Returned is triangularizable normal subgroup K of finite index
 ## and an unipotent normal subgroup U of K such that K/U is abelian.
 ##
-InstallMethod( SubgroupsUnipotentByAbelianByFinite, 
-               "for polycyclic matrix groups (Polenta)", 
-                true, [ IsMatrixGroup ], 0, 
-function( G ) 
-    local cpcs, U_p, K_p; 
+InstallMethod( SubgroupsUnipotentByAbelianByFinite,
+               "for polycyclic matrix groups (Polenta)",
+                true, [ IsMatrixGroup ], 0,
+function( G )
+    local cpcs, U_p, K_p;
     if not IsRationalMatrixGroup( G ) then
        TryNextMethod( );
     fi;
@@ -229,8 +229,8 @@ function( G )
         # check if G is triangularizable
         if Length( cpcs.pcgs_GU.pcgs_I_p.gens ) = 0 then
             #G triangularizable
-            return rec( T := G, U := POL_Group( U_p, G ));   
-        else 
+            return rec( T := G, U := POL_Group( U_p, G ));
+        else
             #G not triangularizable
             K_p := cpcs.pcgs_GU.preImgsNue;
             K_p := Concatenation( K_p, U_p );
@@ -239,11 +239,11 @@ function( G )
     fi;
 end );
 
-InstallOtherMethod( SubgroupsUnipotentByAbelianByFinite , 
+InstallOtherMethod( SubgroupsUnipotentByAbelianByFinite ,
                "for polycyclic matrix groups (Polenta)", true,
-               [ IsMatrixGroup, IsInt], 0, 
-function( G,p ) 
-    local cpcs, U_p, K_p; 
+               [ IsMatrixGroup, IsInt], 0,
+function( G,p )
+    local cpcs, U_p, K_p;
     if not IsRationalMatrixGroup( G ) then
        TryNextMethod( );
     fi;
@@ -257,8 +257,8 @@ function( G,p )
         # check if G is triangularizable
         if Length( cpcs.pcgs_GU.pcgs_I_p.gens ) = 0 then
             #G triangularizable
-            return rec( T := G, U := POL_Group( U_p, G ));   
-        else 
+            return rec( T := G, U := POL_Group( U_p, G ));
+        else
             #G not triangularizable
             K_p := cpcs.pcgs_GU.preImgsNue;
             K_p := Concatenation( K_p, U_p );
@@ -266,7 +266,7 @@ function( G,p )
         fi;
     fi;
 end );
- 
+
 
 #############################################################################
 ##

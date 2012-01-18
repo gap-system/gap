@@ -2,8 +2,6 @@
 ##
 #W  ctomonst.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomonst.tbl,v 4.8 2009/04/22 12:39:06 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the ordinary character tables of the groups $2.B$,
@@ -12,6 +10,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomonst.tbl,v $
+#H  Revision 4.9  2011/09/28 14:32:22  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.8  2009/04/22 12:39:06  gap
 #H  added missing maxes of He.2, ON.2, HN.2, Fi24, and B
 #H      TB
@@ -126,11 +128,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctomonst_tbl :=
-    "@(#)$Id: ctomonst.tbl,v 4.8 2009/04/22 12:39:06 gap Exp $";
-
-SET_TABLEFILENAME("ctomonst");
-ALN:= Ignore;
 
 MOT("2.B",
 [
@@ -3736,7 +3733,6 @@ ARC("M","extInfo",["",""]);
 ALN("M",["F1"]);
 
 LIBTABLE.LOADSTATUS.ctomonst:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

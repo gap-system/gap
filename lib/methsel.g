@@ -3,7 +3,6 @@
 #W  methsel.g                   GAP library                      Frank Celler
 #W                                                           Martin Schönert
 ##
-#H  @(#)$Id: methsel.g,v 4.21 2010/02/23 15:13:15 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  select methods. More frequently used functions are in methsel1.g, which
 ##  is compiled in the default setup
 ##
-Revision.methsel_g :=
-    "@(#)$Id: methsel.g,v 4.21 2010/02/23 15:13:15 gap Exp $";
 
 
 #############################################################################

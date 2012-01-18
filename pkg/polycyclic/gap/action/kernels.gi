@@ -96,7 +96,7 @@ RelationLatticeMod := function( gens, f )
 
     # determine lattice basis
     base := NormalFormIntMat( null, 2 ).normal;
-    base := Filtered( base, x -> DepthOfVec(x) <= l );
+    base := Filtered( base, x -> PositionNonZero(x) <= l );
 
     ## do a temporary check
     #for i in [1..Length(base)] do
@@ -344,7 +344,7 @@ MemberByCongruenceMatrixAction := function( G, mats, m )
 
     # check if m is in G
     r := RelationLatticeOfTFUnits( F, Concatenation( [m], mats ) )[1];
-    if DepthOfVec( r ) > 1 or AbsInt( r[1] ) <> 1 then return false; fi;
+    if PositionNonZero( r ) > 1 or AbsInt( r[1] ) <> 1 then return false; fi;
 
     # now translate to G
     e := -r{[2..Length(r)]} * r[1];

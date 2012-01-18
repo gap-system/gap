@@ -2,7 +2,6 @@
 **
 *W  lists.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: lists.h,v 4.39 2010/04/28 14:02:26 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,9 +14,11 @@
 **  example, 'ExecFor' can loop over the elements  in a list using the macros
 **  'LEN_LIST' and 'ELM_LIST' independently of the type of the list.
 */
+
+#ifndef GAP_LISTS_H
+#define GAP_LISTS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_lists_h =
-   "@(#)$Id: lists.h,v 4.39 2010/04/28 14:02:26 sal Exp $";
 #endif
 
 
@@ -1013,11 +1014,10 @@ extern void AsssListLevelCheck (
 StructInitInfo * InitInfoLists ( void );
 
 
+#endif // GAP_LISTS_H
+
 /****************************************************************************
 **
 
 *E  lists.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

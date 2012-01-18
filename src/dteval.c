@@ -2,7 +2,6 @@
 **
 *W  dteval.c                    GAP source                  Wolfgang Merkwitz
 **
-*H  @(#)$Id: dteval.c,v 4.27 2010/02/23 15:13:41 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -26,8 +25,6 @@
 */
 #include       "system.h"
 
-const char * Revision_dteval_c =
-   "@(#)$Id: dteval.c,v 4.27 2010/02/23 15:13:41 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1175,8 +1172,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoDTEvaluation ( void )
 {
-    module.revision_c = Revision_dteval_c;
-    module.revision_h = Revision_dteval_h;
     FillInVersion( &module );
     return &module;
 }

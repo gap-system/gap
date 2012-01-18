@@ -1,20 +1,20 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- %W  main.xml        GAP 4 package AtlasRep             Thomas Breuer -->
-<!-- %H  $Id: main.xml,v 1.12 2008/11/13 11:20:41 gap Exp $ -->
 <!-- %Y  Copyright 2006, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
    [ <!ENTITY ATLAS "<Package>ATLAS</Package>">
 
      <!ENTITY ATLASSERVER "<URL>http://brauer.maths.qmul.ac.uk/Atlas</URL>">
+     <!ENTITY ATLASREPHOME "http://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep">
      <!ENTITY WILSONMAIL "<Email>R.A.Wilson@qmul.ac.uk</Email>">
 
      <!ENTITY mdash "<Alt Only='HTML'>&#8212;</Alt><Alt Not='HTML'>---</Alt>">
 
-     <!ENTITY VERSIONNUMBER "1.4.1">
-     <!ENTITY RELEASEMONTH "November">
-     <!ENTITY RELEASEYEAR "2008">
+     <!ENTITY VERSIONNUMBER "1.5">
+     <!ENTITY RELEASEMONTH "July">
+     <!ENTITY RELEASEYEAR "2011">
    ]>
 
 <Book Name="AtlasRep">
@@ -28,8 +28,7 @@
     <Homepage>http://www.maths.qmw.ac.uk/~raw</Homepage>
   </Author>
   <Author>Richard A. Parker
-    <Email>richard@ukonline.co.uk</Email>
-    <Homepage>http://web.ukonline.co.uk/richard</Homepage>
+    <Email>richpark@gmx.co.uk</Email>
   </Author>
   <Author>Simon Nickerson
     <Email>simonn@maths.bham.ac.uk</Email>
@@ -43,20 +42,26 @@
     <Email>sam@Math.RWTH-Aachen.De</Email>
     <Homepage>http://www.math.rwth-aachen.de/~Thomas.Breuer</Homepage>
   </Author>
-  <Copyright> &copyright; 2002<P/>
-              We adopt the copyright regulations of &GAP; as detailed in the
-              copyright notice in the &GAP; Reference Manual. </Copyright>
+  <Copyright>
+    &copyright; 2002&ndash;2011
+    <P/>
+    This package may be distributed under the terms and conditions of the
+    GNU Public License Version 3 or later,
+    see <URL>http://www.gnu.org/licenses</URL>.
+  </Copyright>
 </TitlePage>
 
 <TableOfContents/>
 
 <Body>
 
+<#Include SYSTEM "introduc.xml">
+
 <#Include SYSTEM "tutorial.xml">
 
-<#Include SYSTEM "atlasrep.xml">
-
 <#Include SYSTEM "interfac.xml">
+
+<#Include SYSTEM "atlasrep.xml">
 
 <#Include SYSTEM "extend.xml">
 

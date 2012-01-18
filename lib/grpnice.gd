@@ -2,7 +2,6 @@
 ##
 #W  grpnice.gd                  GAP library                      Frank Celler
 ##
-#H  @(#)$Id: grpnice.gd,v 4.34 2010/02/23 15:13:05 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This  file  contains generic     methods   for groups handled    by  nice
 ##  monomorphisms..
 ##
-Revision.grpnice_gd :=
-    "@(#)$Id: grpnice.gd,v 4.34 2010/02/23 15:13:05 gap Exp $";
 
 
 #############################################################################
@@ -927,6 +924,29 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollElm",
             return list;
         end );
 end );
+
+#############################################################################
+##
+#A  SeedFaithfulAction( <grp> )
+##
+##  <#GAPDoc Label="SeedFaithfulAction">
+##  <ManSection>
+##  <Attr Name="SeedFaithfulAction" Arg='grp'/>
+##
+##  <Description>
+##  If this attribute does not hold the (default) value of <A>fail</A>, it
+##  is a record with components <A>points</A> (a list of orbit seeds
+##  and <A>ops</A> a list of action functions, such that the action of the
+##  group <A>grp</A> on the orbits specified this way is faithful and of
+##  minimal degree. In this case, a nice monomorphism for <A>grp</A> will be
+##  determined using this action, and no degree reduction attempt is made.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute(
+    "SeedFaithfulAction",
+    IsGroup );
 
 #############################################################################
 ##

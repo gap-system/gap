@@ -1,5 +1,3 @@
-<!-- $Id: extend.xml,v 1.7 2009/05/26 16:42:08 alexk Exp $ -->
-
 <Chapter Label="ExtendingOpenMath">
 <Heading>Extending the &OpenMath; package</Heading>    
 
@@ -19,20 +17,20 @@ for the conversion from &OpenMath; to &GAP;, explore the global record
 and subcomponents of each component have names of symbols from the
 corresponding CD. If the value of the component is not equal to
 <K>fail</K>, then it contains the function or the object which is used 
-for conversion. The following example of the entry for the nums1 CD
+for conversion. The following example of the entry for the <C>nums1</C> CD
 demonstrates a combination of all possible cases:
 
 <Example>
 <![CDATA[
-gap> Print(OMsymRecord.nums1,"\n");
+gap> Display( OMsymRecord.nums1 );          
 rec(
-  e := fail,
-  i := E(4),
-  pi := fail,
+  NaN := "nan",
   based_integer := fail,
+  e := fail,
   gamma := fail,
+  i := E(4),
   infinity := infinity,
-  NaN := fail,
+  pi := fail,
   rational := function ( x )
         return OMgapId( [ OMgap2ARGS( x ), x[1] / x[2] ] )[2];
     end )
@@ -47,17 +45,16 @@ are treated separately.
 
 To check quickly if &GAP; can parse a given &OpenMath; object,
 copy the &OpenMath; code and paste it directly into standard input
-after the following commands:
+after the following command:
 
-<Example>
+<Log>
 <![CDATA[
-gap> stream := InputTextUser();;
-gap> g := OMGetObject(stream);CloseStream(stream);
+gap> s:= InputTextUser();; g := OMGetObject(s); CloseStream(s);
 ]]>
-</Example>
+</Log>
 
 The main tool for the conversion from &GAP; to &OpenMath; is 
-<C>OMPut( &lt;stream>, &lt;object> )</C>. A number of methods for
+<C>OMPut( &lt;writer>, &lt;object> )</C>. A number of methods for
 <C>OMPut</C> are installed in the file <File>openmath/gap/omput.gi</File>.
 <P/>
 
@@ -72,18 +69,18 @@ gap> OMPrint( [ [1..10], ZmodnZObj(2,6), (1,2) ] );
 		<OMS cd="list1" name="list"/>
 		<OMA>
 			<OMS cd="interval1" name="integer_interval"/>
-			<OMI> 1</OMI>
-			<OMI> 10</OMI>
+			<OMI>1</OMI>
+			<OMI>10</OMI>
 		</OMA>
 		<OMA>
 			<OMS cd="integer2" name="class"/>
-			<OMI> 2</OMI>
-			<OMI> 6</OMI>
+			<OMI>2</OMI>
+			<OMI>6</OMI>
 		</OMA>
 		<OMA>
 			<OMS cd="permut1" name="permutation"/>
-			<OMI> 2</OMI>
-			<OMI> 1</OMI>
+			<OMI>2</OMI>
+			<OMI>1</OMI>
 		</OMA>
 	</OMA>
 </OMOBJ>
@@ -92,7 +89,7 @@ gap> OMPrint( [ [1..10], ZmodnZObj(2,6), (1,2) ] );
 
 The package is in the continuous development and will support even more symbols in the future.
 In the meantime, if you will have any requests for the support for particular symbols, please
-write to Alexander Konovalov who currently develops and maintains the package.
+contact Alexander Konovalov.
 
 </Section>
 

@@ -196,10 +196,7 @@ BindGlobal( "RCWAMAPPING_COMPRESS_COEFFICIENT_LIST",
 
     local  cset, i;
 
-    if   Length(coeffs) >= 10 and Length(Set(coeffs{[1..10]})) > 3
-    then return; fi; # Compress only if likely one can save much memory.
     cset := Set(coeffs);
-    if Length(cset) > 64 then return; fi; # Bad complexity for large sets.
     for i in [1..Length(coeffs)] do
       coeffs[i] := cset[PositionSorted(cset,coeffs[i])];
     od;
@@ -1427,8 +1424,10 @@ InstallMethod( ViewString, "for class shifts (RCWA)", true,
 
   function ( cs )
     if   IsRing(Source(cs)) then
-      return Concatenation(List(["ClassShift(",Residue(Support(cs)),",",
-                                 Modulus(Support(cs)),")"],BlankFreeString));
+      return BlankFreeString(Concatenation(List(["ClassShift(",
+                                                 Residue(Support(cs)),",",
+                                                 Modulus(Support(cs)),")"],
+                                                ViewString)));
     elif IsRcwaMappingOfZxZ(cs) then
       return Concatenation(List(["ClassShift(",ViewString(Support(cs)),",",
                                  PositionNonZero(Residue(Support(cs))^cs
@@ -1558,8 +1557,10 @@ InstallMethod( ViewString, "for class reflections (RCWA)", true,
 
   function ( cr )
     if   IsRing(Source(cr)) then
-      return Concatenation(List(["ClassReflection(",Residue(Support(cr)),",",
-                                 Modulus(Support(cr)),")"],BlankFreeString));
+      return BlankFreeString(Concatenation(List(["ClassReflection(",
+                                                 Residue(Support(cr)),",",
+                                                 Modulus(Support(cr)),")"],
+                                                ViewString)));
     elif IsRcwaMappingOfZxZ(cr) then
       return Concatenation(List(["ClassReflection(",ViewString(Support(cr)),
                                  ")"],BlankFreeString));
@@ -1767,9 +1768,11 @@ InstallMethod( ViewString, "for class rotations (RCWA)", true,
 
   function ( cr )
     if   IsRing(Source(cr)) then
-      return Concatenation(List(["ClassRotation(",Residue(Support(cr)),",",
-                                 Modulus(Support(cr)),",",RotationFactor(cr),
-                                 ")"],BlankFreeString));
+      return BlankFreeString(Concatenation(List(["ClassRotation(",
+                                                 Residue(Support(cr)),",",
+                                                 Modulus(Support(cr)),",",
+                                                 RotationFactor(cr),")"],
+                                                ViewString)));
     elif IsRcwaMappingOfZxZ(cr) then
       return Concatenation(List(["ClassRotation(",
                                  ViewString(Support(cr:OnlyClasses)),
@@ -2069,17 +2072,18 @@ InstallMethod( ViewString, "for class transpositions (RCWA)", true,
 
   function ( ct )
 
-    local  type, cls;
+    local  type, cls, str;
 
     cls := TransposedClasses(ct);
     if   ForAll(cls,IsResidueClass)
     then type := "ClassTransposition(";
     else type := "GeneralizedClassTransposition("; fi;
     if   IsRing(Source(ct)) then
-      return Concatenation(List([type,
+      str := Concatenation(List([type,
                                  Residue(cls[1]),",",Modulus(cls[1]),",",
                                  Residue(cls[2]),",",Modulus(cls[2]),")"],
-                                BlankFreeString));
+                                ViewString));
+      return BlankFreeString(str);
     elif IsRcwaMappingOfZxZ(ct) then
       return Concatenation(List([type,ViewString(cls[1]),",",
                                       ViewString(cls[2]),")"],
@@ -2545,8 +2549,350 @@ InstallMethod( ViewObj,
 ##
 #M  Display( <f> ) . . . . . . . . . . . . . . . . . . . .  for rcwa mappings
 ##
-##  Displays the rcwa mapping <f> as a nice, human-readable table.
+##  Displays the rcwa mapping <f> in nice human-readable form.
 ##
+InstallMethod( Display,
+               "for rcwa mappings (RCWA)", true, [ IsRcwaMapping ], 10,
+
+  function ( f )
+
+    local  StringAffineMapping, StringAffineMappingOfZ, 
+           StringAffineMappingOfZxZ, StringAffineMappingOfZ_pi,
+           StringAffineMappingOfGFqx, IdChars,
+
+           R, F, F_el, F_elints, m, c, res,
+           P, D, affs, affstrings, maxafflng, lines, line, maxlinelng,
+           cl, str, ustr, ringname, varname, prefix, i, j;
+
+    IdChars := function ( n, ch )
+      return Concatenation( ListWithIdenticalEntries( n, ch ) );
+    end;
+
+    StringAffineMappingOfZ := function ( t )
+
+      local  append, str, a, b, c, n;
+
+      append := function ( arg )
+        str := CallFuncList(Concatenation,
+                            Concatenation([str],List(arg,String)));
+      end;
+
+      a := t[1]; b := t[2]; c := t[3];
+      str := ""; n := varname;
+
+      if c > 1 and Number([a,b],n->n<>0) > 1 then append("("); fi;
+      if a <> 0 then
+        if a = -1 then append("-"); elif a <> 1 then append(a); fi;
+        append(n);
+        if b > 0 then
+          if m = 1 then append(" + "); else append("+"); fi;
+        fi;
+      fi;
+      if a = 0 or b <> 0 then
+        if a = 0 or b > 0 then append(b); else
+          if m = 1 then append(" - ",-b);
+                   else append(b); fi;
+        fi;
+      fi;
+      if c > 1 and Number([a,b],n->n<>0) > 1 then append(")"); fi;
+      if c > 1 then append("/",c); fi;
+
+      return str;
+    end;
+
+    StringAffineMappingOfZxZ := function ( t )
+
+      local  Stringaff, append, str,
+             a, b, c, d, e, f, g, d1, d2, g1, g2, m, n;
+
+      Stringaff := function ( a, b, c, d )
+        if d > 1 and Number([a,b,c],n->n<>0) > 1 then append("("); fi;
+        if a <> 0 then
+          if a = -1 then append("-"); elif a <> 1 then append(a); fi;
+          append(m);
+          if b > 0 or (b = 0 and c > 0) then append("+"); fi;
+        fi;
+        if b <> 0 then
+          if b = -1 then append("-"); elif b <> 1 then append(b); fi;
+          append(n);
+          if c > 0 then append("+"); fi;
+        fi;
+        if (a = 0 and b = 0) or c <> 0 then append(c); fi;
+        if d > 1 and Number([a,b,c],n->n<>0) > 1 then append(")"); fi;
+        if d > 1 then append("/",d); fi;
+      end;
+
+      append := function ( arg )
+        str := CallFuncList(Concatenation,
+                            Concatenation([str],List(arg,String)));
+      end;
+
+      str := "";
+      m := varname{[2]}; n := varname{[4]};
+      a := t[1][1][1]; b := t[1][1][2];
+      c := t[1][2][1]; d := t[1][2][2];
+      e := t[2][1];    f := t[2][2];
+      g := t[3];
+      d1 := Gcd(a,c,e,g); d2 := Gcd(b,d,f,g);
+      a := a/d1; c := c/d1; e := e/d1; g1 := g/d1;
+      b := b/d2; d := d/d2; f := f/d2; g2 := g/d2;
+      append("(");
+      Stringaff(a,c,e,g1); append(","); Stringaff(b,d,f,g2);
+      append(")");
+
+      return str;
+    end;
+
+    StringAffineMappingOfZ_pi := function ( t )
+
+      local  append, str, a, b, c, n;
+
+      append := function ( arg )
+        str := CallFuncList(Concatenation,
+                            Concatenation([str],List(arg,String)));
+      end;
+
+      a := t[1]; b := t[2]; c := t[3];
+      str := ""; n := varname;
+
+      if   c = 1
+      then if   a = 0
+           then append(b);
+           else if   AbsInt(a) <> 1 then append(a," ");
+                elif a = -1         then append("-");
+                fi;
+                append(n);
+                if   b > 0 then append(" + ", b);
+                elif b < 0 then append(" - ",-b);
+                fi;
+           fi;
+      elif b = 0 then if   AbsInt(a) <> 1 then append(a," ");
+                      elif a = -1         then append("-");
+                      fi;
+                      append(n," / ",c);
+      else append("(");
+           if   AbsInt(a) <> 1 then append(a," ");
+           elif a = -1         then append("-");
+           fi;
+           append(n);
+           if   b > 0 then append(" + ", b);
+           elif b < 0 then append(" - ",-b);
+           fi;
+           append(") / ",c);
+      fi;
+
+      return str;
+    end;
+
+    StringAffineMappingOfGFqx := function ( t )
+
+      local  append, factorstr, str, a, b, c, P, one, zero, x;
+
+      append := function ( arg )
+        str := CallFuncList(Concatenation,
+                            Concatenation([str],List(arg,String)));
+      end;
+
+      factorstr := function ( p )
+        if   Length(CoefficientsOfLaurentPolynomial(p)[1]) <= 1
+        then return String(p);
+        else return Concatenation("(",String(p),")"); fi;
+      end;
+
+      a := t[1]; b := t[2]; c := t[3];
+      str := ""; P := varname;
+
+      one := One(a); zero := Zero(a);
+      x := IndeterminateOfLaurentPolynomial(a);
+ 
+      if   c = one
+      then if   a = zero
+           then append(b);
+           else if   not a in [-one,one] then append(factorstr(a),"*",P);
+                elif a = one then append(P); else append("-",P); fi;
+                if b <> zero then append(" + ",b); fi;
+           fi;
+      elif b = zero then if   not a in [-one,one]
+                         then append(factorstr(a),"*",P);
+                         elif a = one then append(P);
+                         else append("-",P); fi;
+                         append("/",factorstr(c));
+      else append("(");
+           if   not a in [-one,one]
+           then append(factorstr(a),"*",P," + ",b,")/",factorstr(c));
+           elif a <> one and a = -one
+           then append("-",P," + ",b,")/",factorstr(c));
+           else append(P," + ",b,")/",factorstr(c));
+           fi;
+      fi;
+
+      return str;
+    end;
+
+    R := Source(f);
+
+    if   ValueOption("xdvi") = true and IsIntegers(R)
+    then LaTeXAndXDVI(f); return; fi;
+
+    # If option "table" is set, use old-style format:
+    if ValueOption("table") = true then TryNextMethod(); fi;
+
+    if   IsRcwaMappingOfZ(f)
+    then StringAffineMapping := StringAffineMappingOfZ;
+    elif IsRcwaMappingOfZxZ(f)
+    then StringAffineMapping := StringAffineMappingOfZxZ;
+    elif IsRcwaMappingOfZ_pi(f)
+    then StringAffineMapping := StringAffineMappingOfZ_pi;
+    elif IsRcwaMappingOfGFqx(f)
+    then StringAffineMapping := StringAffineMappingOfGFqx; fi;
+
+    m := Modulus(f); c := Coefficients(f); res := AllResidues(R,m);
+
+    prefix := false; ringname := RingToString(Source(f));
+
+    if   IsRcwaMappingOfGFqx(f) then varname := "P";
+    elif IsRcwaMappingOfZxZ(f)  then
+      varname := First(List(["varnames","VarNames"],ValueOption),
+                       names->names<>fail);
+      if varname = fail then varname := "mn"; fi;
+      if Length(varname) = 2 then
+        varname := Concatenation("(",varname{[1]},",",varname{[2]},")");
+      fi;
+    else varname := "n"; fi;
+
+    if   IsOne(f)  then Print("Identity rcwa mapping of ",ringname);
+    elif IsZero(f) then Print("Zero rcwa mapping of ",ringname);
+    elif IsOne(m) and IsZero(c[1][1])
+    then Print("Constant rcwa mapping of ",ringname," with value ",c[1][2]);
+    else
+      if not IsOne(m) then Print("\n"); fi;
+
+      if HasIsTame(f) and not (HasOrder(f) and IsInt(Order(f))) then
+        if IsTame(f) then Print("Tame "); else Print("Wild "); fi;
+        prefix := true;
+      fi;
+      if   HasIsBijective(f) and IsBijective(f)
+      then if prefix then Print("bijective ");
+                     else Print("Bijective "); fi;
+           prefix := true;
+      elif HasIsInjective(f) and IsInjective(f)
+      then if prefix then Print("injective ");
+                     else Print("Injective "); fi;
+           prefix := true;
+      elif HasIsSurjective(f) and IsSurjective(f)
+      then if prefix then Print("surjective ");
+                     else Print("Surjective "); fi;
+           prefix := true;
+      fi;
+      if prefix then Print("rcwa"); else Print("Rcwa"); fi;
+      Print(" mapping of ",ringname);
+
+      if IsOne(m) then
+
+        Print(": ",varname," -> ",StringAffineMapping(c[1]));
+
+      else
+
+        Print(" with modulus ",ModulusAsFormattedString(m));
+        if   HasOrder(f) and not (HasIsTame(f) and not IsTame(f))
+        then Print(", of order ",Order(f)); fi;
+        Print("\n\n");
+
+        P := ShallowCopy(LargestSourcesOfAffineMappings(f));
+        D := List(P,cl->1/Density(cl));
+        i := First([1..Length(P)],j->IsOne(RestrictedMapping(f,P[j])));
+        if i <> fail then D[i] := infinity; fi;
+
+        SortParallel(D,P);
+
+        affs := List(P,preimg->c[First([1..Length(res)],
+                                       i->res[i] in preimg)]);
+        P    := List(P,AsUnionOfFewClasses);
+
+        affstrings := List(affs,StringAffineMapping);
+
+        if IsRcwaMappingOfGFqx(f) and IsPrimeField(LeftActingDomain(R)) then
+          F        := LeftActingDomain(R);
+          F_el     := List(AsList(F),String);
+          F_elints := List(List(AsList(F),Int),String);
+          for i in [1..Length(affstrings)] do
+            for j in [1..Length(F_el)] do
+              affstrings[i] := ReplacedString(affstrings[i],
+                                              F_el[j],F_elints[j]);
+            od;
+          od;
+        fi;
+
+        maxafflng  := Maximum(List(affstrings,Length));
+
+        maxlinelng := SizeScreen()[1] - Length(varname) - 11;
+        lines      := [String("/",Length(varname)+8)];
+
+        for i in [1..Length(affs)] do
+          line := String(affstrings[i],-maxafflng);
+          if i < Length(affs) or Length(P[i]) <= 2
+            or (IsRcwaMappingOfZOrZ_pi(f) and Length(P[i]) <= 4)
+          then
+            Append(line," if ");
+            Append(line,varname);
+            Append(line," in ");
+            for j in [1..Length(P[i])] do
+              str := ViewString(P[i][j]);
+              if j = Length(P[i]) then ustr := ""; else ustr := " U "; fi;
+              if Length(line) + Length(str) + Length(ustr) > maxlinelng
+                and j > 1
+              then
+                Add(lines,line);
+                line := String(" ",maxafflng+Length(" if ")+Length(varname)
+                                            +Length(" in "));
+              fi;
+              Append(line,str);
+              Append(line,ustr);
+            od;
+          else
+            Append(line," otherwise");
+          fi;
+          Add(lines,line);
+        od;
+        if   Length(lines) mod 2 = 1
+        then Add(lines,String("|",Length(varname)+8)); fi;
+        Add(lines,String("\\",Length(varname)+8));
+
+        for i in [2..Length(lines)-1] do
+          if i = (Length(lines)+1)/2 then
+            lines[i] := Concatenation(" ",varname," |-> <  ",lines[i]);
+          elif not '|' in lines[i] then
+            lines[i] := Concatenation(String("|",Length(varname)+8)," ",
+                                      lines[i]);
+          fi;
+        od;
+
+        if IsRcwaMappingOfGFqx(f) and IsPrimeField(LeftActingDomain(R)) then
+          for i in [1..Length(lines)] do
+            for j in [1..Length(F_el)] do
+              lines[i] := ReplacedString(lines[i],F_el[j],F_elints[j]);
+            od;
+          od;
+        fi;
+
+        for i in [1..Length(lines)] do
+          Print(lines[i],"\n");
+        od;
+
+      fi;
+
+    fi;
+
+    if ValueOption("NoLineFeed") <> true then Print("\n"); fi;
+  end );
+
+#############################################################################
+##
+#M  Display( <f> ) . . . . . . . . . . . . . . . . . . . .  for rcwa mappings
+##
+##  Displays the rcwa mapping <f> as a table, in the "old-style" format used
+##  by RCWA since its first release in 2005.
+##  
 InstallMethod( Display,
                "for rcwa mappings (RCWA)",
                true, [ IsRcwaMappingInStandardRep ], 0,
@@ -2845,9 +3191,9 @@ InstallMethod( Display,
 
 #############################################################################
 ##
-#M  RcwaMappingToLaTeX( <f> ) . . . . . . . . . . . .  for rcwa mappings of Z
+#M  LaTeXStringRcwaMapping( <f> ) . . . . . . . . . .  for rcwa mappings of Z
 ##
-InstallMethod( RcwaMappingToLaTeX,
+InstallMethod( LaTeXStringRcwaMapping,
                "for rcwa mappings of Z (RCWA)",
                true, [ IsRcwaMappingOfZ ], 0,
 
@@ -2950,9 +3296,9 @@ InstallMethod( RcwaMappingToLaTeX,
 
 #############################################################################
 ##
-#M  RcwaMappingToLaTeX( <f> ) . . . . . . . . . . .  for rcwa mappings of Z^2
+#M  LaTeXStringRcwaMapping( <f> ) . . . . . . . . .  for rcwa mappings of Z^2
 ##
-InstallMethod( RcwaMappingToLaTeX,
+InstallMethod( LaTeXStringRcwaMapping,
                "for rcwa mappings of Z^2 (RCWA)",
                true, [ IsRcwaMappingOfZxZ ], 0,
 
@@ -3113,7 +3459,7 @@ InstallMethod( LaTeXAndXDVI,
              String(Modulus(f)),", multiplier ",String(Multiplier(f)),
              " and divisor ",String(Divisor(f)),", given by\n");
     AppendTo(stream,"\\begin{align*}\n");
-    str := RcwaMappingToLaTeX(f:Indentation:=2);
+    str := LaTeXStringRcwaMapping(f:Indentation:=2);
     AppendTo(stream,str,"\\end{align*}");
     if HasIsTame(f) then
       if IsTame(f) then AppendTo(stream,"\nThis mapping is tame.");
@@ -3178,7 +3524,7 @@ InstallMethod( LaTeXAndXDVI,
                                                            "\\mathbb{Z}"),
              "\\), given by\n");
     AppendTo(stream,"\\begin{align*}\n");
-    str := RcwaMappingToLaTeX(f:Indentation:=2);
+    str := LaTeXStringRcwaMapping(f:Indentation:=2);
     AppendTo(stream,str,"\\end{align*}");
     if HasIsTame(f) then
       if IsTame(f) then AppendTo(stream,"\nThis mapping is tame.");
@@ -5562,6 +5908,30 @@ InstallMethod( \^,
 
 #############################################################################
 ##
+#M  IsCommuting( <g>, <h> ) . . . . . . . . . . . . . . . . for rcwa mappings
+##
+InstallMethod( IsCommuting,
+               "for rcwa mappings (RCWA)", IsIdenticalObj,
+               [ IsRcwaMapping, IsRcwaMapping ], 0,
+
+  function ( g, h )
+
+    local  R, a, b;
+
+    if g = h then return true; fi;
+    if HasInverse(g) and h = Inverse(g) then return true; fi;
+
+    R := Source(g);
+    if   NumberOfResidues(R,Mod(h)) > NumberOfResidues(R,Mod(g))
+    then a := g; b := h; else a := h; b := g; fi;
+    if   not ForAll(AllResidues(R,Mod(a)),r->(r^a)^b=(r^b)^a)
+    then return false; fi;
+
+    return g*h = h*g;
+  end );
+
+#############################################################################
+##
 #M  \^( <perm>, <g> ) . . . . . .  for a permutation and an rcwa mapping of Z
 ##
 ##  Returns the conjugate of the GAP permutation <perm> under the
@@ -5685,13 +6055,13 @@ InstallMethod( IsTame,
     if IsRing(Source(f))
       and not IsSubset(Factors(Multiplier(f)),Factors(Divisor(f)))
     then
-      Info(InfoRCWA,3,"IsTame: <f> is wild, by Balancedness Criterion.");
+      Info(InfoRCWA,3,"IsTame: <f> is wild, by balancedness criterion.");
       if IsBijective(f) then SetOrder(f,infinity); fi;
       return false;
     fi;
 
     if IsBijective(f) and not IsBalanced(f) then
-      Info(InfoRCWA,3,"IsTame: <f> is wild, by Balancedness Criterion.");
+      Info(InfoRCWA,3,"IsTame: <f> is wild, by balancedness criterion.");
       SetOrder(f,infinity); return false;
     fi;
 
@@ -5702,7 +6072,7 @@ InstallMethod( IsTame,
     fi;
 
     if IsRcwaMappingOfZOrZ_pi(f) and IsBijective(f) then
-      Info(InfoRCWA,3,"IsTame: Sources-and-Sinks Criterion.");
+      Info(InfoRCWA,3,"IsTame: sources-and-sinks criterion.");
       gamma := TransitionGraph(f,Modulus(f));
       for r in [1..Modulus(f)] do RemoveSet(gamma.adjacencies[r],r); od;
       delta := UnderlyingGraph(gamma);
@@ -5710,13 +6080,13 @@ InstallMethod( IsTame,
       if Position(List(C,V->Diameter(InducedSubgraph(gamma,V))),-1) <> fail
       then
         Info(InfoRCWA,3,"IsTame: <f> is wild, ",
-                        "by Sources-and-Sinks Criterion.");
+                        "by sources-and-sinks criterion.");
         SetOrder(f,infinity); return false;
       fi;
     fi;
 
     if IsBijective(f) then
-      Info(InfoRCWA,3,"IsTame: Loop Criterion.");
+      Info(InfoRCWA,3,"IsTame: loop criterion.");
       m := Modulus(f);
       if IsRcwaMappingOfZ(f) then
         coeffs := Coefficients(f);
@@ -5725,7 +6095,7 @@ InstallMethod( IsTame,
           if AbsInt(c[1]) <> 1 or c[3] <> 1 then
             d := Gcd(m,c[1]*m/c[3]);
             if (r - (c[1]*r+c[2])/c[3]) mod d = 0 then
-              Info(InfoRCWA,3,"IsTame: <f> is wild, by Loop Criterion.");
+              Info(InfoRCWA,3,"IsTame: <f> is wild, by loop criterion.");
               SetOrder(f,infinity); return false;
             fi;
           fi;
@@ -5742,7 +6112,8 @@ InstallMethod( IsTame,
     fi;
 
     Info(InfoRCWA,3,"IsTame: `finite order or integral power' criterion.");
-    pow := f; exp := [2,2,3,5,2,7,3,2,11,13,5,3,17,19,2]; e := 1;
+    pow := f;
+    exp := [2,2,3,5,2,7,3,2,11,13,5,3,17,2,19,2,2,3,5,7,11,2,23]; e := 1;
     for e in exp do
       pow := pow^e;
       if IsIntegral(pow) then
@@ -5750,7 +6121,8 @@ InstallMethod( IsTame,
                         "hence is tame.");
         return true;
       fi;
-      if   IsRcwaMappingOfZOrZ_pi(f) and Modulus(pow) > 6 * Modulus(f)
+      if       IsRcwaMappingOfZOrZ_pi(f)
+           and Modulus(pow) > Minimum(Modulus(f)^2,2^16)
         or IsRcwaMappingOfGFqx(f)
            and   DegreeOfLaurentPolynomial(Modulus(pow))
                > DegreeOfLaurentPolynomial(Modulus(f)) + 2
@@ -6207,6 +6579,57 @@ InstallMethod( Loops,
     return loops;
   end );
 
+############################################################################
+##
+#M  Loops( <f> ) . . . . . . . . . . . . .  for bijective rcwa mappings of Z
+##
+InstallMethod( Loops,
+               "for bijective rcwa mappings of Z (RCWA)",
+               true, [ IsRcwaMappingOfZ and IsBijective ], 0,
+
+  function ( f )
+
+    local  c, i, r, m, r_img, m_img, loops;
+
+    m     := Mod(f);
+    c     := Coefficients(f);
+    loops := [];
+    for r in [0..Mod(f)-1] do
+      m_img := AbsInt(c[r+1][1]/c[r+1][3])*m;
+      r_img := ((c[r+1][1]*r+c[r+1][2])/c[r+1][3]) mod m_img;
+      if   [r_img,m_img] <> [r,m] and (r_img - r) mod Gcd(m,m_img) = 0
+      then Add(loops,ResidueClass(r,m)); fi;
+    od;
+    return loops;
+  end );
+
+############################################################################
+##
+#M  Loops( <f> ) . . . . . . . . . . for bijective rcwa mappings of GF(q)[x]
+##
+InstallMethod( Loops,
+               "for bijective rcwa mappings of GF(q)[x] (RCWA)",
+               true, [ IsRcwaMappingOfGFqx and IsBijective ], 0,
+
+  function ( f )
+
+    local  R, m, c, res, r, r_img, m_img, loops, i;
+
+    R     := Source(f);
+    m     := Mod(f);
+    c     := Coefficients(f);
+    res   := AllResidues(R,m);
+    loops := [];
+    for i in [1..Length(res)] do
+      r     := res[i];
+      m_img := (c[i][1]/c[i][3])*m;
+      r_img := ((c[i][1]*r+c[i][2])/c[i][3]) mod m_img;
+      if   [r_img,m_img] <> [r,m] and IsZero((r_img - r) mod Gcd(R,m,m_img))
+      then Add(loops,ResidueClass(R,m,r)); fi;
+    od;
+    return loops;
+  end );
+
 #############################################################################
 ##
 #S  Trajectories. ///////////////////////////////////////////////////////////
@@ -6588,6 +7011,73 @@ InstallMethod( ShortCycles,
       fi;
     od;
     return cycles;
+  end );
+
+#############################################################################
+##
+#M  ShortResidueClassCycles( <g>, <modulusbound>, <maxlng> )
+##
+InstallMethod( ShortResidueClassCycles,
+               "for an rcwa permutation of Z and 2 positive integers (RCWA)",
+               ReturnTrue, [ IsRcwaMappingOfZ, IsPosInt, IsPosInt ], 0,
+
+  function ( g, modulusbound, maxlng )
+
+    local  cycles, cycle, cl, affsrc, covered, m, r; 
+
+    affsrc := LargestSourcesOfAffineMappings(g);
+
+    cycles := []; covered := [];
+    for m in DivisorsInt(modulusbound) do
+      Info(InfoRCWA,2,"ShortResidueClassCycles: checking modulus m = ",m);
+      for r in Difference([0..m-1],covered) do
+        if    Position(Trajectory(g,r,maxlng+1),r,1) <> fail
+          and r = Minimum(Cycle(g,r))
+        then
+          cycle := []; cl := ResidueClass(r,m);
+          if  m mod Mod(g) <> 0
+            and Number(affsrc,src->Intersection(src,cl)<>[]) > 1
+          then continue; fi;
+          repeat
+            Add(cycle,cl);
+            cl := cl^g;
+          until not IsResidueClass(cl) or cl = cycle[1];
+          if cl = cycle[1] then
+            Add(cycles,cycle);
+            covered := Union(covered,Union(cycle));
+          fi;
+        fi;
+      od;
+    od;
+
+    return cycles;
+  end );
+
+#############################################################################
+##
+#M  CycleRepresentativesAndLengths( <g>, <S> ) . . . . . . . . default method
+##
+InstallMethod( CycleRepresentativesAndLengths,
+               "default method (RCWA)", ReturnTrue,
+               [ IsRcwaMapping, IsListOrCollection ], 0,
+
+  function ( g, S )
+
+    local  replng, rem, cyc, rep, i, j;
+
+    replng := [];
+    rem    := List(S,n->n^g<>n);
+    for i in [1..Length(S)] do
+      if rem[i] = false then continue; fi;
+      rep := S[i];
+      cyc := Cycle(g,rep);
+      Add(replng,[rep,Length(cyc)]);
+      for j in [1..Length(cyc)] do
+        if   cyc[j] in S
+        then rem[PositionSorted(S,cyc[j])] := false; fi;
+      od;
+    od;
+    return replng;
   end );
 
 #############################################################################

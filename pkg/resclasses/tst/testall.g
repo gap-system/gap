@@ -119,7 +119,7 @@ for i  in [ 1 .. Length(TEST_FILES) ]  do
         next := 0;
     fi;
     Print("testing: ",name,"\n");
-    ReadTest(name);
+    Test(name);
     SHOW_STONES(next);
 od;
 

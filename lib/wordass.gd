@@ -3,7 +3,6 @@
 #W  wordass.gd                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: wordass.gd,v 4.52 2010/05/20 07:07:36 gap Exp $
 ##
 #Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,6 @@
 ##  6. External Representation for Associative Words
 ##  7. Some Undocumented Functions
 ##
-Revision.wordass_gd :=
-    "@(#)$Id: wordass.gd,v 4.52 2010/05/20 07:07:36 gap Exp $";
 
 
 #############################################################################

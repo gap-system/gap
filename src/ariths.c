@@ -3,7 +3,6 @@
 *W  ariths.c                    GAP source                       Frank Celler
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id: ariths.c,v 4.38 2010/02/23 15:13:39 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_ariths_c =
-   "@(#)$Id: ariths.c,v 4.38 2010/02/23 15:13:39 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -71,7 +68,7 @@ Obj ZeroObject (
   val = DoOperation1Args( ZEROOp, obj );
   while (val == 0)
     val = ErrorReturnObj("ZEROOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -88,7 +85,7 @@ Obj VerboseZeroObject (
   val = DoVerboseOperation1Args( ZEROOp, obj );
   while (val == 0)
     val = ErrorReturnObj("ZEROOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -143,7 +140,7 @@ Obj ZeroMutObject (
   val = DoOperation1Args( ZeroOp, obj );
   while (val == 0)
     val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -160,7 +157,7 @@ Obj VerboseZeroMutObject (
   val = DoVerboseOperation1Args( ZeroOp, obj );
   while (val == 0)
     val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -218,7 +215,7 @@ Obj AInvObject (
   val = DoOperation1Args( AInvOp, obj );
   while (val == 0)
     val = ErrorReturnObj("AInvOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -234,7 +231,7 @@ Obj VerboseAInvObject (
   val = DoVerboseOperation1Args( AInvOp, obj );
   while (val == 0)
     val = ErrorReturnObj("AInvOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -281,7 +278,7 @@ Obj AInvMutObject (
   val = DoOperation1Args( AdditiveInverseOp, obj );
   while (val == 0)
     val = ErrorReturnObj("AdditiveInverseOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -297,7 +294,7 @@ Obj VerboseAInvMutObject (
   val = DoVerboseOperation1Args( AdditiveInverseOp, obj );
   while (val == 0)
     val = ErrorReturnObj("AdditiveInverseOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -353,7 +350,7 @@ Obj OneObject (
   val = DoOperation1Args( OneOp, obj );
   while (val == 0)
     val = ErrorReturnObj("OneOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -369,7 +366,7 @@ Obj VerboseOneObject (
   val = DoVerboseOperation1Args( OneOp, obj );
   while (val == 0)
     val = ErrorReturnObj("OneOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -424,7 +421,7 @@ Obj OneMutObject (
   val = DoOperation1Args( OneMutOp, obj );
   while (val == 0)
     val = ErrorReturnObj("ONEOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -440,7 +437,7 @@ Obj VerboseOneMutObject (
   val = DoVerboseOperation1Args( OneMutOp, obj );
   while (val == 0)
     val = ErrorReturnObj("ONEOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -496,7 +493,7 @@ Obj InvObject (
   val = DoOperation1Args( InvOp, obj );
   while (val == 0)
     val = ErrorReturnObj("InvOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -512,7 +509,7 @@ Obj VerboseInvObject (
   val = DoVerboseOperation1Args( InvOp, obj );
   while (val == 0)
     val = ErrorReturnObj("InvOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -567,7 +564,7 @@ Obj InvMutObject (
   val = DoOperation1Args( InvMutOp, obj );
   while (val == 0)
     val = ErrorReturnObj("INVOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -583,7 +580,7 @@ Obj VerboseInvMutObject (
   val = DoVerboseOperation1Args( InvMutOp, obj );
   while (val == 0)
     val = ErrorReturnObj("INVOp: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -706,6 +703,13 @@ Obj FuncEQ (
     Obj                 opL,
     Obj                 opR )
 {
+  /* if both operands are T_MACFLOAT, we use the comparison method in all cases,
+     even if the objects are identical. In this manner, we can have 0./0. != 0./0. as
+     the IEEE754 standard requires.
+    if (TNUM_OBJ(opL) == T_MACFLOAT && TNUM_OBJ(opR) == T_MACFLOAT)
+      return (*EqFuncs[T_MACFLOAT][T_MACFLOAT])(opL,opR) ? True : False;
+  */
+
     return (EQ( opL, opR ) ? True : False);
 }
 
@@ -900,7 +904,7 @@ Obj SumObject (
   val = DoOperation2Args( SumOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("SUM: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -917,7 +921,7 @@ Obj VerboseSumObject (
   val = DoVerboseOperation2Args( SumOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("SUM: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -982,7 +986,7 @@ Obj DiffDefault (
 
     tmp = AINV( opR );
     return SUM( opL, tmp );
-}    
+}
 
 
 /****************************************************************************
@@ -999,7 +1003,7 @@ Obj DiffObject (
   val = DoOperation2Args( DiffOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("DIFF: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1016,7 +1020,7 @@ Obj VerboseDiffObject (
   val = DoVerboseOperation2Args( DiffOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("DIFF: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1098,7 +1102,7 @@ Obj ProdObject (
   val = DoOperation2Args( ProdOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("PROD: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1115,7 +1119,7 @@ Obj VerboseProdObject (
   val = DoVerboseOperation2Args( ProdOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("PROD: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1196,7 +1200,7 @@ Obj QuoObject (
   val = DoOperation2Args( QuoOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("QUO: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1213,7 +1217,7 @@ Obj VerboseQuoObject (
   val = DoVerboseOperation2Args( QuoOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("QUO: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1309,7 +1313,7 @@ Obj LQuoObject (
   val = DoOperation2Args( LQuoOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("LeftQuotient: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1326,7 +1330,7 @@ Obj VerboseLQuoObject (
   val = DoOperation2Args( LQuoOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("LeftQuotient: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1349,7 +1353,6 @@ void InstallLQuoObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
-	
         LQuoFuncs[ t2 ][ T_PREC            ] = func;
         LQuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
         LQuoFuncs[ T_PREC            ][ t2 ] = func;
@@ -1422,7 +1425,7 @@ Obj PowObject (
   val = DoOperation2Args( PowOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("POW: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1440,7 +1443,7 @@ Obj VerbosePowObject (
   val = DoVerboseOperation2Args( PowOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("POW: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1538,7 +1541,7 @@ Obj CommObject (
   val = DoOperation2Args( CommOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("Comm: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1555,7 +1558,7 @@ Obj VerboseCommObject (
   val = DoVerboseOperation2Args( CommOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("Comm: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1638,7 +1641,7 @@ Obj ModObject (
   val = DoOperation2Args( ModOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("mod: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1655,7 +1658,7 @@ Obj VerboseModObject (
   val = DoVerboseOperation2Args( ModOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("mod: method should have returned a value", 0L, 0L,
-			 "you can supply one by 'return <value>;'");
+                         "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -2010,8 +2013,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoAriths ( void )
 {
-    module.revision_c = Revision_ariths_c;
-    module.revision_h = Revision_ariths_h;
     FillInVersion( &module );
     return &module;
 }

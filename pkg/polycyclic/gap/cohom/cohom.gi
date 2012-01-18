@@ -285,6 +285,7 @@ end );
 ##
 #F CRRecordBySubgroup( G, N )
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 CRRecordBySubgroup := function( G, N )
     local A;
 
@@ -304,6 +305,7 @@ end;
 ##
 #F CRRecordByPcp( G, pcp )  
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 CRRecordByPcp := function( G, pcp )
     local A;
 

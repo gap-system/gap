@@ -2,14 +2,11 @@
 ##
 #W  pcgsnice.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: pcgsnice.gi,v 4.10 2010/02/23 15:13:23 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.pcgsnice_gi :=
-    "@(#)$Id: pcgsnice.gi,v 4.10 2010/02/23 15:13:23 gap Exp $";
 
 #############################################################################
 ##

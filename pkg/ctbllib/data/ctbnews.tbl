@@ -2,8 +2,6 @@
 ##
 #W  ctbnews.tbl                 GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbnews.tbl,v 4.1 2001/11/14 16:01:08 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables for which the ordinary
@@ -12,16 +10,16 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbnews.tbl,v $
+#H  Revision 4.2  2011/09/28 12:12:37  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.1  2001/11/14 16:01:08  gap
 #H  first Brauer tables of maximal subgroups that are themselves
 #H  not ATLAS groups
 #H      TB
 #H
 ##
-Revision.ctbnews_tbl :=
-    "@(#)$Id: ctbnews.tbl,v 4.1 2001/11/14 16:01:08 gap Exp $";
-
-SET_TABLEFILENAME("ctbnews");
 
 MBT("3^7.O7(3)",2,
 "computed by G. Hiss, Oct. 2001",

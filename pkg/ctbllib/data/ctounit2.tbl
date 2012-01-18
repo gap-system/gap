@@ -2,7 +2,7 @@
 ##
 #W  ctounit2.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctounit2.tbl,v 4.32 2010/09/15 08:08:25 gap Exp $
+#H  @(#)$Id: ctounit2.tbl,v 4.33 2011/09/28 14:18:04 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,11 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctounit2.tbl,v $
+#H  Revision 4.33  2011/09/28 14:18:04  gap
+#H  - removed revision entry and SET_TABLEFILENAME call,
+#H  - added maxes entry for U3(3)
+#H      TB
+#H
 #H  Revision 4.32  2010/09/15 08:08:25  gap
 #H  adjusted the "tom:<n>" information in some fusions
 #H      TB
@@ -207,11 +212,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctounit2_tbl :=
-    "@(#)$Id: ctounit2.tbl,v 4.32 2010/09/15 08:08:25 gap Exp $";
-
-SET_TABLEFILENAME("ctounit2");
-ALN:= Ignore;
 
 MOT("3.U3(5)",
 [
@@ -280,7 +280,7 @@ ALF("3.U3(5).2","G2(5)",[1,3,2,12,4,5,22,7,24,9,25,10,26,27,13,14,15,31,
 "fusion map is unique up to table automorphisms,\n",
 "compatible with Brauer tables"
 ]);
-ALN("3.U3(5).2",["G2(5)M3","G2(5)N3A"]);
+ALN("3.U3(5).2",["G2(5)N3A"]);
 
 MOT("3.U3(5).3",
 [
@@ -875,6 +875,7 @@ ARC("U3(3)","tomfusion",rec(name:="U3(3)",map:=[1,2,3,4,6,6,7,8,10,10,14,
 14,17,17],text:=[
 "fusion map is unique"
 ]));
+ARC("U3(3)","maxes",["3^(1+2):8","L3(2)","4.s4","4^2:s3"]);
 ALF("U3(3)","U3(3).2",[1,2,3,4,5,5,6,7,8,8,9,9,10,10]);
 ALF("U3(3)","U4(3)",[1,2,3,6,7,7,7,10,13,14,15,15,20,20],[
 "fusion is unique up to table automorphisms,\n",
@@ -960,7 +961,7 @@ ALF("U3(3).2","F3+",[1,3,7,8,11,11,22,25,28,50,3,11,23,28,50,50],[
 ALF("U3(3).2","U4(3).2_3",[1,2,3,5,6,6,9,11,12,15,16,17,18,20,23,23],[
 "fusion map is unique"
 ]);
-ALN("U3(3).2",["u3q3a","u332","G2(5)M6","3D4(2)M3"]);
+ALN("U3(3).2",["u3q3a","u332","3D4(2)M3"]);
 
 MOT("G2(3)M2",
 [
@@ -2810,7 +2811,6 @@ E(80)^19-E(80)^21+E(80)^47-E(80)^51+E(80)^57-E(80)^63+E(80)^69-E(80)^73,
 (41,42)(43,44)(45,46)(47,50)(48,49),(18,19)(26,29,28,27)]);
 
 LIBTABLE.LOADSTATUS.ctounit2:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

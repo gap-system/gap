@@ -63,7 +63,7 @@ InstallGlobalFunction( InitQSystem, function( G )
     S := NormalFormIntMat( A, 2 ).normal;
     H := NullMat( n, n );
     for i in [1..Length(S)] do
-        j := DepthVector( S[i] );
+        j := PositionNonZero( S[i] );
         if j <= n then H[j] := S[i]; fi;
     od;
     

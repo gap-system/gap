@@ -2,7 +2,6 @@
 ##
 #W  semiring.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: semiring.gd,v 4.10 2010/02/23 15:13:30 gap Exp $
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file declares the operations for semirings.
 ##
-Revision.semiring_gd :=
-    "@(#)$Id: semiring.gd,v 4.10 2010/02/23 15:13:30 gap Exp $";
 
 
 #############################################################################

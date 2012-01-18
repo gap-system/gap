@@ -2,7 +2,7 @@
 **
 *A  CloseFile.c                 ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: CloseFile.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: CloseFile.c,v 1.4 2011/11/29 09:43:56 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -14,10 +14,9 @@
 
 /* close file */
 
-void CloseFile (file)
-FILE_TYPE file;
+void CloseFile (FILE* file)
 {
-   if (CLOSE(file) != 0) {
+   if (fclose(file) != 0) {
       perror (NULL);
       exit (FAILURE);
    }

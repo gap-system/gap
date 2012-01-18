@@ -2,7 +2,6 @@
 **
 *W  plist.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: plist.h,v 4.20 2010/02/23 15:13:46 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -23,9 +22,11 @@
 **  This package also contains the list functions for  plain lists, which are
 **  installed in the appropriate tables by 'InitPlist'.
 */
+
+#ifndef GAP_PLIST_H
+#define GAP_PLIST_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_plist_h =
-   "@(#)$Id: plist.h,v 4.20 2010/02/23 15:13:46 gap Exp $";
 #endif
 
 
@@ -193,6 +194,8 @@ void            UnbPlistImm (
 */
 StructInitInfo * InitInfoPlist ( void );
 
+
+#endif // GAP_PLIST_H
 
 /****************************************************************************
 **

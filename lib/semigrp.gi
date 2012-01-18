@@ -2,7 +2,6 @@
 ##
 #W  semigrp.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: semigrp.gi,v 4.48 2010/02/23 15:13:29 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains generic methods for semigroups.
 ##
-Revision.semigrp_gi :=
-    "@(#)$Id: semigrp.gi,v 4.48 2010/02/23 15:13:29 gap Exp $";
 
 
 #############################################################################
@@ -62,6 +59,13 @@ InstallMethod( PrintObj,
     Print( "Semigroup( ... )" );
     end );
 
+InstallMethod( String,
+    "for a semigroup",
+    [ IsSemigroup ],
+    function( S )
+    return "Semigroup( ... )";
+    end );
+
 InstallMethod( PrintObj,
     "for a semigroup with known generators",
     [ IsSemigroup and HasGeneratorsOfMagma ],
@@ -69,6 +73,19 @@ InstallMethod( PrintObj,
     Print( "Semigroup( ", GeneratorsOfMagma( S ), " )" );
     end );
 
+InstallMethod( String,
+    "for a semigroup with known generators",
+    [ IsSemigroup and HasGeneratorsOfMagma ],
+    function( S )
+    return STRINGIFY( "Semigroup( ", GeneratorsOfMagma( S ), " )" );
+    end );
+
+InstallMethod( PrintString,
+    "for a semigroup with known generators",
+    [ IsSemigroup and HasGeneratorsOfMagma ],
+    function( S )
+    return PRINT_STRINGIFY( "Semigroup( ", GeneratorsOfMagma( S ), " )" );
+    end );
 
 #############################################################################
 ##

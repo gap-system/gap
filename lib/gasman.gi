@@ -2,7 +2,6 @@
 ##
 #W  gasman.gi                   GAP Library                       Steve Linton
 ##
-#H  @(#)$Id: gasman.gi,v 4.4 2010/02/23 15:13:00 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains implementations of functions that report information from the
 ##  GASMAN garbage collector
 ##
-Revision.gasman_gi :=
-    "@(#)$Id: gasman.gi,v 4.4 2010/02/23 15:13:00 gap Exp $";
 #############################################################################
 ##
 #F  GasmanStatistics( )

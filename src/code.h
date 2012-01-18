@@ -2,7 +2,6 @@
 **
 *W  code.h                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: code.h,v 4.28 2011/05/23 10:58:39 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,9 +12,11 @@
 **  The  coder package  is   the part of   the interpreter  that creates  the
 **  expressions.  Its functions are called from the reader.
 */
+
+#ifndef GAP_CODE_H
+#define GAP_CODE_H
+
 #ifdef INCLUDE_DECLARATION_PART
-const char * Revision_code_h =
-   "@(#)$Id: code.h,v 4.28 2011/05/23 10:58:39 sal Exp $";
 #endif
 
 
@@ -534,7 +535,7 @@ extern  void            CodeFuncCallBegin ( void );
 
 extern  void            CodeFuncCallEnd (
             UInt                funccall,
-	    UInt                options,
+            UInt                options,
             UInt                nr );
 
 
@@ -558,7 +559,7 @@ extern void CodeFuncExprBegin (
             Int                 narg,
             Int                 nloc,
             Obj                 nams,
-	    Int startLine);
+            Int startLine);
 
 extern void CodeFuncExprEnd (
             UInt                nr,
@@ -1327,11 +1328,11 @@ extern  void            CodeContinue ( void );
 StructInitInfo * InitInfoCode ( void );
 
 
+
+#endif // GAP_CODE_H
+
 /****************************************************************************
 **
 
 *E  code.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-

@@ -2,15 +2,12 @@
 ##
 #W  ringsc.gi                   GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id: ringsc.gi,v 1.7 2010/12/28 00:28:37 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
 ##  This file contains methods for elements of rings, given as Z-modules with
 ##  structure constants for multiplication. It is based on algsc.gi
 ##
-Revision.ringsc_gi :=
-    "@(#)$Id: ringsc.gi,v 1.7 2010/12/28 00:28:37 gap Exp $";
 
 
 BindGlobal("SCRingReducedModuli",function(moduli,l)

@@ -2,7 +2,6 @@
 ##  
 #W  helpview.gi                 GAP Library                      Frank Lübeck
 ##  
-#H  @(#)$Id: helpview.gi,v 1.23 2011/05/22 08:53:36 gap Exp $
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  The  files  helpview.g{d,i} contain the configuration mechanism  for  the
 ##  different help viewer.
 ##  
-Revision.helpview_gi := 
-  "@(#)$Id: helpview.gi,v 1.23 2011/05/22 08:53:36 gap Exp $";
 
 #############################################################################
 ##  

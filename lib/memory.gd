@@ -9,8 +9,6 @@
 ##
 #############################################################################
 
-Revision.memory_gd :=
-  "@(#)$Id: memory.gd,v 1.3 2010/02/23 15:13:14 gap Exp $";
 
 DeclareFilter("IsObjWithMemoryRankFilter",100); 
 

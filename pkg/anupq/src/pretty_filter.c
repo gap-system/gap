@@ -2,7 +2,7 @@
 **
 *A  pretty_filter.c             ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: pretty_filter.c,v 1.5 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: pretty_filter.c,v 1.8 2011/12/02 16:42:15 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -43,7 +43,7 @@ int *max_class;
 int *output; 
 struct pcp_vars *pcp;
 {
-#include "define_y.h" 
+   register int *y = y_address;
 
    int prime = 0;
    int exponent = 0;
@@ -76,11 +76,6 @@ struct pcp_vars *pcp;
    
    pcp->cover = 0;
 
-#if defined (LIE) 
-   strcpy (gpname, "R");
-   pcp->mlin_relations[0] = 0; 
-#endif 
-
    while (read_next_string (label, SIGNIFICANT, rfile)) {
       if (strcmp (label, "nam")==0) {
 	 read_next_string (gpname, end, rfile);
@@ -103,16 +98,10 @@ struct pcp_vars *pcp;
       else if (strcmp (label, "exp") == 0) {
 	 read_next_int (&exponent, rfile);
       }
-#if defined (LIE)
-      else if (strcmp (label, "deg") == 0) {
-	 read_next_int (&degree, rfile);
-	 pcp->mlin_relations[0] = degree; 
-      }
-#endif 
       else if (strcmp (label, "gen") == 0) {
 	 read_gen_name_array (rfile);
 	 default_inverse_array ();
-	 pairnumber = valloc (int, num_gens + 1);
+	 pairnumber = anu_valloc (int, num_gens + 1);
 	 for (i = 1; i <= num_gens; i++){ 
 	    if (i <= inv (i)){
 	       paired_gens++;
@@ -305,7 +294,7 @@ struct pcp_vars *pcp;
       inv_of = 0;                  /* bug fix */
       read_gen_name_array (rfile);
       default_inverse_array ();
-      pairnumber = valloc (int, num_gens + 1);
+      pairnumber = anu_valloc (int, num_gens + 1);
       for (i = 1; i <= num_gens; i++) { 
 	 if (i <= inv (i)){
 	    paired_gens++;
@@ -328,7 +317,7 @@ int output;
 int *max_class;
 struct pcp_vars *pcp;
 {
-#include "define_y.h" 
+   register int *y = y_address;
 
    int ptr, relp, length;
    int i = 1;
@@ -399,24 +388,6 @@ struct pcp_vars *pcp;
 #if defined (GROUP) 
    read_value (TRUE, "Input exponent law (0 if none): ",
 	       &pcp->extra_relations, 0);
-#endif
-
-#if defined (LIE)
-   if (pcp->p != 2)
-      read_value (TRUE, "Input degree of multilinear condition (0 if none): ", 
-		  &pcp->mlin_relations[0], 0); 
-   else {
-      for (i = 0; i <= 3; i++)
-	 pcp->mlin_relations[i] = 0;
-      read_value (TRUE, "Enter number of multilinear relations to be imposed: ",
-		  &mlin, 0); 
-      if (mlin == 0)
-	 pcp->mlin_relations[0] = mlin;
-      else 
-	 for (i = 0; i <= mlin - 1; ++i)
-	    read_value (TRUE, "Input degree of multilinear condition (0 if none): ", 
-			&pcp->mlin_relations[i], 0);
-   }
 #endif
 
    initialise_pcp (output, pcp);

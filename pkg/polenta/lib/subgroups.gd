@@ -2,10 +2,10 @@
 ##
 #W subgroups.gd            POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## certain subgroups of matrix groups
 ##
-#H  @(#)$Id: subgroups.gd,v 1.3 2011/05/31 13:10:58 gap Exp $
+#H  @(#)$Id: subgroups.gd,v 1.4 2011/09/23 13:36:33 gap Exp $
 ##
 #Y 2004
 ##
@@ -30,7 +30,7 @@ DeclareGlobalFunction( "POL_TriangNSGFI_PRMGroup" );
 ##
 #M TriangNormalSubgroupFiniteInd( G )
 ##
-## G is a matrix group over the Rationals. 
+## G is a matrix group over the Rationals.
 ## Returned is triangularizable normal subgroup of finite index
 ##
 #DeclareOperation( "TriangNormalSubgroupFiniteInd", [ IsMatrixGroup ] );
@@ -39,7 +39,7 @@ DeclareGlobalFunction( "POL_TriangNSGFI_PRMGroup" );
 ##
 #M SubgroupsUnipotentByAbelianByFinite( G )
 ##
-## G is a matrix group over the Rationals. 
+## G is a matrix group over the Rationals.
 ## Returned is triangularizable normal subgroup K of finite index
 ## and an unipotent normal subgroup U of K such that K/U is abelian.
 ##

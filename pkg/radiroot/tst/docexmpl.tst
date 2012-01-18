@@ -4,9 +4,9 @@ x_1^3+4*x_1^2+3*x_1+1
 gap> L := SplittingField( f );
 <algebraic extension over the Rationals of degree 6>
 gap> FactorsPolynomialAlgExt( L, f );
-[ x_1+((-168/47-535/94*a-253/94*a^2-24/47*a^3-3/94*a^4)), 
-  x_1+((20/47-441/94*a-253/94*a^2-24/47*a^3-3/94*a^4)), 
-  x_1+((336/47+488/47*a+253/47*a^2+48/47*a^3+3/47*a^4)) ]
+[ x_1+(-3/94*a^4-24/47*a^3-253/94*a^2-535/94*a-168/47),
+  x_1+(-3/94*a^4-24/47*a^3-253/94*a^2-441/94*a+20/47),
+  x_1+(3/47*a^4+48/47*a^3+253/47*a^2+488/47*a+336/47) ]
 gap> IsomorphicMatrixField( L );
 <rational matrix field of degree 6>
 gap> Display(RootsAsMatrices(f)[1]);
@@ -23,9 +23,9 @@ MappingByFunction( <algebraic extension over the Rationals of degree
 6>, <rational matrix field of degree
 6>, function( x ) ... end, function( mat ) ... end )
 gap> PreImages( iso, RootsAsMatrices( f ) );
-[ (-336/47-488/47*a-253/47*a^2-48/47*a^3-3/47*a^4),
-  (-20/47+441/94*a+253/94*a^2+24/47*a^3+3/94*a^4), 
-  (168/47+535/94*a+253/94*a^2+24/47*a^3+3/94*a^4) ]
+[ -3/47*a^4-48/47*a^3-253/47*a^2-488/47*a-336/47,
+  3/94*a^4+24/47*a^3+253/94*a^2+441/94*a-20/47,
+  3/94*a^4+24/47*a^3+253/94*a^2+535/94*a+168/47 ]
 gap> GaloisGroupOnRoots(f);
 Group([ (2,3), (1,2) ])
 gap> g := UnivariatePolynomial( Rationals, [1,1,-1,-1,1] );

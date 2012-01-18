@@ -3,7 +3,6 @@
 *W  blister.c                   GAP source                       Frank Celler
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id: blister.c,v 4.60 2010/02/23 15:13:39 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -72,8 +71,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_blister_c =
-   "@(#)$Id: blister.c,v 4.60 2010/02/23 15:13:39 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -829,30 +826,30 @@ Obj PosBlist (
 
        x = ptr[firstblock];
        if (firstblock == lastblock) 
-	 {
-	   if (x != 0)
-	     for (j = firstoffset; j <= lastoffset; j++)
-	       if ((x & (1UL << j)) != 0)
-		 return INTOBJ_INT(BIPEB*firstblock + j + 1);
-	   return Fail;
-	 }
+         {
+           if (x != 0)
+             for (j = firstoffset; j <= lastoffset; j++)
+               if ((x & (1UL << j)) != 0)
+                 return INTOBJ_INT(BIPEB*firstblock + j + 1);
+           return Fail;
+         }
        if (x != 0)
-	 for (j = firstoffset; j < BIPEB; j++)
-	   if ((x & (1UL << j)) != 0)
-	     return INTOBJ_INT(BIPEB*firstblock + j + 1);
+         for (j = firstoffset; j < BIPEB; j++)
+           if ((x & (1UL << j)) != 0)
+             return INTOBJ_INT(BIPEB*firstblock + j + 1);
        for (i  = firstblock + 1; i < lastblock; i++)
-	 {
-	   x = ptr[i];
-	   if (x != 0)
-	     for (j = 0; j < BIPEB; j++)
-	       if ((x & (1UL << j)) != 0)
-		 return INTOBJ_INT(BIPEB*i + j + 1);
-	 }
+         {
+           x = ptr[i];
+           if (x != 0)
+             for (j = 0; j < BIPEB; j++)
+               if ((x & (1UL << j)) != 0)
+                 return INTOBJ_INT(BIPEB*i + j + 1);
+         }
        x = ptr[lastblock];
        if (x != 0)
-	 for (j = 0; j <= lastoffset; j++)
-	   if ((x & (1UL << j)) != 0)
-	     return INTOBJ_INT(BIPEB*lastblock + j + 1);
+         for (j = 0; j <= lastoffset; j++)
+           if ((x & (1UL << j)) != 0)
+             return INTOBJ_INT(BIPEB*lastblock + j + 1);
        return Fail;
     }
 
@@ -860,30 +857,30 @@ Obj PosBlist (
     else if ( val == False ) {
       x = ptr[firstblock];
       if (firstblock == lastblock) 
-	{
-	  if (x != ~0UL)
-	    for (j = firstoffset; j <= lastoffset; j++)
-	      if ((x & (1UL << j)) == 0)
-		return INTOBJ_INT(BIPEB*firstblock + j + 1);
-	   return Fail;
-	 }
+        {
+          if (x != ~0UL)
+            for (j = firstoffset; j <= lastoffset; j++)
+              if ((x & (1UL << j)) == 0)
+                return INTOBJ_INT(BIPEB*firstblock + j + 1);
+           return Fail;
+         }
        if (x != ~0UL)
-	 for (j = firstoffset; j < BIPEB; j++)
-	   if ((x & (1UL << j)) == 0)
-	     return INTOBJ_INT(BIPEB*firstblock + j + 1);
+         for (j = firstoffset; j < BIPEB; j++)
+           if ((x & (1UL << j)) == 0)
+             return INTOBJ_INT(BIPEB*firstblock + j + 1);
        for (i  = firstblock + 1; i < lastblock; i++)
-	 {
-	   x = ptr[i];
-	   if (x != ~0UL)
-	     for (j = 0; j < BIPEB; j++)
-	       if ((x & (1UL << j)) == 0)
-		 return INTOBJ_INT(BIPEB*i + j + 1);
-	 }
+         {
+           x = ptr[i];
+           if (x != ~0UL)
+             for (j = 0; j < BIPEB; j++)
+               if ((x & (1UL << j)) == 0)
+                 return INTOBJ_INT(BIPEB*i + j + 1);
+         }
        x = ptr[lastblock];
        if (x != ~0UL)
-	 for (j = 0; j <= lastoffset; j++)
-	   if ((x & (1UL << j)) == 0)
-	     return INTOBJ_INT(BIPEB*lastblock + j + 1);
+         for (j = 0; j <= lastoffset; j++)
+           if ((x & (1UL << j)) == 0)
+             return INTOBJ_INT(BIPEB*lastblock + j + 1);
        return Fail;
     }
 
@@ -1433,10 +1430,10 @@ Obj FuncBLIST_LIST (
       * FL  */
                 /* otherwise it may be a record, let 'PosRange' handle it  */
               /*  else {
-		    Obj pos;
+                    Obj pos;
                     pos = PosRange( list, ptrSub[l], 0L );
-		    if (pos != Fail) {
-		      k = INT_INTOBJ(pos);
+                    if (pos != Fail) {
+                      k = INT_INTOBJ(pos);
                       ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
                     }  
                 } */
@@ -1903,7 +1900,7 @@ Obj FuncUNITE_BLIST (
 Obj FuncUNITE_BLIST_LIST (
     Obj                 self,
     Obj                 list,
-    Obj			blist,
+    Obj                 blist,
     Obj                 sub )
 {
     UInt  *             ptrBlist;       /* pointer to the boolean list     */
@@ -1942,13 +1939,13 @@ Obj FuncUNITE_BLIST_LIST (
         /* allocate the boolean list and get pointer                       */
         lenList  = GET_LEN_RANGE( list );
 
-	/* check length */
-	while ( LEN_BLIST(blist) != lenList ) {
-	    blist = ErrorReturnObj(
-	      "UniteBlistList: <blist> must have the same length as <list> (%d)",
-		lenList, 0L,
-		"you can replace <blist> via 'return <blist>;'" );
-	}
+        /* check length */
+        while ( LEN_BLIST(blist) != lenList ) {
+            blist = ErrorReturnObj(
+              "UniteBlistList: <blist> must have the same length as <list> (%d)",
+                lenList, 0L,
+                "you can replace <blist> via 'return <blist>;'" );
+        }
 
         lenSub   = GET_LEN_RANGE( sub );
         ptrBlist = BLOCKS_BLIST(blist);
@@ -1980,13 +1977,13 @@ Obj FuncUNITE_BLIST_LIST (
         /* allocate the boolean list and get pointer                       */
         lenList  = GET_LEN_RANGE( list );
 
-	/* check length */
-	while ( LEN_BLIST(blist) != lenList ) {
-	    blist = ErrorReturnObj(
-	      "UniteBlistList: <blist> must have the same length as <list> (%d)",
-		lenList, 0L,
-		"you can replace <blist> via 'return <blist>;'" );
-	}
+        /* check length */
+        while ( LEN_BLIST(blist) != lenList ) {
+            blist = ErrorReturnObj(
+              "UniteBlistList: <blist> must have the same length as <list> (%d)",
+                lenList, 0L,
+                "you can replace <blist> via 'return <blist>;'" );
+        }
 
         lenSub   = LEN_LIST( sub );
         ptrBlist = BLOCKS_BLIST(blist);
@@ -2007,11 +2004,11 @@ Obj FuncUNITE_BLIST_LIST (
        /* see comment where PosRange was used above   FL */         
                 /* otherwise it may be a record, let 'PosRange' handle it  */
               /*  else {
-		  Obj pos;
+                  Obj pos;
                     pos = PosRange( list, ptrSub[l], 0L );
-		    if (pos != Fail)
-		      k = INT_INTOBJ(pos);
-		    ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
+                    if (pos != Fail)
+                      k = INT_INTOBJ(pos);
+                    ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
                 }    */
 
             }
@@ -2025,13 +2022,13 @@ Obj FuncUNITE_BLIST_LIST (
         /* get the length of <list> and its logarithm                      */
         lenList = LEN_PLIST( list );
 
-	/* check length */
-	while ( LEN_BLIST(blist) != lenList ) {
-	    blist = ErrorReturnObj(
-	      "UniteBlistList: <blist> must have the same length as <list> (%d)",
-		lenList, 0L,
-		"you can replace <blist> via 'return <blist>;'" );
-	}
+        /* check length */
+        while ( LEN_BLIST(blist) != lenList ) {
+            blist = ErrorReturnObj(
+              "UniteBlistList: <blist> must have the same length as <list> (%d)",
+                lenList, 0L,
+                "you can replace <blist> via 'return <blist>;'" );
+        }
 
         for ( i = lenList, l = 0; i != 0; i >>= 1, l++ ) ;
         PLAIN_LIST( sub );
@@ -2117,13 +2114,13 @@ Obj FuncUNITE_BLIST_LIST (
         /* allocate the boolean list and get pointer                       */
         lenList  = LEN_LIST( list );
 
-	/* check length */
-	while ( LEN_BLIST(blist) != lenList ) {
-	    blist = ErrorReturnObj(
-	      "UniteBlistList: <blist> must have the same length as <list> (%d)",
-		lenList, 0L,
-		"you can replace <blist> via 'return <blist>;'" );
-	}
+        /* check length */
+        while ( LEN_BLIST(blist) != lenList ) {
+            blist = ErrorReturnObj(
+              "UniteBlistList: <blist> must have the same length as <list> (%d)",
+                lenList, 0L,
+                "you can replace <blist> via 'return <blist>;'" );
+        }
 
         lenSub   = LEN_PLIST( sub );
 
@@ -2737,7 +2734,7 @@ static Int InitKernel (
         PosListFuncs    [ t1 +IMMUTABLE ] = PosBlist;
         PlainListFuncs  [ t1            ] = PlainBlist;
         PlainListFuncs  [ t1 +IMMUTABLE ] = PlainBlist;
-	MakeImmutableObjFuncs [ t1      ] = MakeImmutableBlist;
+        MakeImmutableObjFuncs [ t1      ] = MakeImmutableBlist;
     }
     IsSSortListFuncs[ T_BLIST_NSORT            ] = IsSSortBlistNot;
     IsSSortListFuncs[ T_BLIST_NSORT +IMMUTABLE ] = IsSSortBlistNot;
@@ -2796,8 +2793,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoBlist ( void )
 {
-    module.revision_c = Revision_blister_c;
-    module.revision_h = Revision_blister_h;
     FillInVersion( &module );
     return &module;
 }

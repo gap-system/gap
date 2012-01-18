@@ -2,7 +2,7 @@
 **
 *A  pga_vars.h                  ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: pga_vars.h,v 1.4 2003/12/01 11:08:28 werner Exp $
+*A  @(#)$Id: pga_vars.h,v 1.5 2011/11/28 12:02:08 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -100,7 +100,7 @@ struct pga_vars {
    Logical upper_bound;     /* only automorphism group order upper 
                                bound stored */
 
-#ifdef LARGE_INT 
+#ifdef HAVE_GMP 
    MP_INT aut_order;        /* order of automorphism group */
 #endif 
 };

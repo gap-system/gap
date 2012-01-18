@@ -8,7 +8,7 @@ InfoMatrixNq := Ignore;
 ##
 ##   Test if a matrix is the identity matrix.
 ##
-##   For non-identity matrices this is faster than comparing with an idntity
+##   For non-identity matrices this is faster than comparing with an identity
 ##   matrix. 
 ##
 InstallGlobalFunction( "IsIdentityMat", function( M )

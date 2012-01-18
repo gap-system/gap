@@ -2,7 +2,7 @@
 ##
 #W  ctoline5.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoline5.tbl,v 4.15 2010/05/05 13:20:01 gap Exp $
+#H  @(#)$Id: ctoline5.tbl,v 4.16 2011/09/28 14:32:13 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoline5.tbl,v $
+#H  Revision 4.16  2011/09/28 14:32:13  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.15  2010/05/05 13:20:01  gap
 #H  - added many class fusions,
 #H  - changed several class fusions according to consistency conditions,
@@ -171,11 +175,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctoline5_tbl :=
-    "@(#)$Id: ctoline5.tbl,v 4.15 2010/05/05 13:20:01 gap Exp $";
-
-SET_TABLEFILENAME("ctoline5");
-ALN:= Ignore;
 
 MOT("2.L4(3)",
 [
@@ -2205,7 +2204,6 @@ E(31)^3+E(31)^6+E(31)^7+E(31)^12+E(31)^14+E(31)^17+E(31)^19+E(31)^24+E(31)^25
 [(67,68),(42,43,44),(39,41,40)]);
 
 LIBTABLE.LOADSTATUS.ctoline5:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

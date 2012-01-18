@@ -2,7 +2,6 @@
 ##  
 #W  pager.gi                     GAP Library                     Frank Lübeck
 ##  
-#H  @(#)$Id: pager.gi,v 1.8 2011/04/18 23:05:29 gap Exp $
 ##  
 #Y  Copyright  (C) 2001, Lehrstuhl  D  für  Mathematik, RWTH  Aachen, Germany 
 #Y (C) 2001 School Math and  Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  version of this  was integrated in first versions of  GAP's help system.
 ##  But this utility is certainly useful for other purposes as well.
 ##  
-Revision.pager_gi := 
-  "@(#)$Id: pager.gi,v 1.8 2011/04/18 23:05:29 gap Exp $";
 ##  
 ##  There is a builtin pager `PAGER_BUILTIN', but  at least under UNIX one
 ##  should use an external one.  This can be  set via the variable
@@ -45,12 +42,8 @@ Revision.pager_gi :=
 ##
 #F  PAGER_BUILTIN( <lines> )	. . . . . . . . . . . . . . . .  format lines
 ##
-# We take  into account a  variable from the  GAPDoc package. If  the text
-# contains ANSI color sequences we reset  the terminal before we print the
-# last line.
-if not IsBound(ANSI_COLORS) then
-  ANSI_COLORS := false;
-fi;
+# If  the text contains ANSI color sequences we reset  the terminal before 
+# we print the last line.
 BindGlobal("PAGER_BUILTIN", function( lines )
   local   formatted,  linepos,  size,  wd,  pl,  count,  i,  stream,  
           halt,  delhaltline,  from,  len,  char, out;
@@ -119,7 +112,8 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   count  := 0;
   halt   := 
     "  -- <space> page, <n> next line, <b> back, <p> back line, <q> quit --\c";
-  if IsBound(ANSI_COLORS) and ANSI_COLORS = true then
+  if IsBound(GAPInfo.UserPreferences.UseColorsInTerminal) and  
+             GAPInfo.UserPreferences.UseColorsInTerminal = true then
     halt := Concatenation("\033[0m", halt);
   fi;
   delhaltline := function()

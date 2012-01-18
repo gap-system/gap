@@ -8,20 +8,21 @@
 ##
 ##  This file contains the operations for files and directories.
 ##
-Revision.files_gd :=
-    "@(#)$Id: files.gd,v 4.68 2011/06/15 16:48:46 gap Exp $";
 
 
 #############################################################################
 ##
 #C  IsDirectory	. . . . . . . . . . . . . . . . . . . category of directories
 ##
+##  <#GAPDoc Label="IsDirectory">
 ##  <ManSection>
 ##  <Filt Name="IsDirectory" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
+##  <Ref Filt="IsDirectory"/> is a category of directories. 
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareCategory( "IsDirectory", IsObject );
 
@@ -319,14 +320,20 @@ DeclareOperation( "ReadAsFunction", [ IsString ] );
 ##
 ##  <#GAPDoc Label="DirectoryContents">
 ##  <ManSection>
-##  <Func Name="DirectoryContents" Arg='name'/>
+##  <Func Name="DirectoryContents" Arg='dir'/>
 ##
 ##  <Description>
 ##  This function returns a list of filenames/directory names that reside in
-##  the directory with name <A>name</A> (given as a string).
+##  the directory <A>dir</A>. The argument <A>dir</A> can either be given as 
+##  a string indicating the name of the directory or as a directory object
+##  (see <Ref Filt="IsDirectory"/>).
 ##  It is an error, if such a directory does not exist. 
 ##  <P/>
 ##  The ordering of the list entries can depend on the operating system.
+##  <P/>
+##  An interactive way to show the contents of a directory is provided by the
+##  function <Ref Func="BrowseDirectory" BookName="browse"/> from the
+##  &GAP; package <Package>Browse</Package>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -443,7 +450,7 @@ end );
 ##  <Func Name="DirectoryTemporary" Arg=''/>
 ##
 ##  <Description>
-##  returns a directory object in the category <C>IsDirectory</C>
+##  returns a directory object in the category <Ref Filt="IsDirectory"/>
 ##  for a <E>new</E> temporary directory.
 ##  This is guaranteed to be newly created and empty immediately after the
 ##  call to <Ref Func="DirectoryTemporary"/>.
@@ -757,6 +764,8 @@ BIND_GLOBAL("CHARS_UALPHA",
   Immutable(SSortedList("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
 BIND_GLOBAL("CHARS_LALPHA",
   Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz")));
+BIND_GLOBAL("CHARS_SYMBOLS",Immutable(SSortedList(
+  " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")));
 
 
 #############################################################################

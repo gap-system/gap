@@ -6,10 +6,7 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-#H  @(#)$Id: grpprmcs.gd,v 4.9 2010/02/23 15:13:08 gap Exp $
 ##
-Revision.grpprmcs_gd :=
-    "@(#)$Id: grpprmcs.gd,v 4.9 2010/02/23 15:13:08 gap Exp $";
 
 DeclareGlobalFunction( "NonPerfectCSPG" );
 DeclareGlobalFunction( "PerfectCSPG" );

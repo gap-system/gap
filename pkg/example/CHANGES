@@ -1,3 +1,58 @@
+Version 3.3.2: 2011/11/23
+* Improved the description of .ArchiveURLSubset component, which also 
+  allows directories, in the PackageInfo.g file
+
+Version 3.3.1: 2011/11/22
+* Clarified that the standard test file of the package has to be specified
+  in the .TestFile component of the PackageInfo.g file as suggested by Max
+  Horn.
+* Updated guidelines regarding the name of the directory of the package.
+
+Version 3.3.0: 2011/11/11
+* Implemented a series of suggestions by Chris Wensley
+  (improved explanations, fixed typos, extended index)
+
+Version 3.2.0: 2011/10/28
+* If a package distribution contains an empty directory, advised to put 
+  README there.
+* Added ValidatePackageInfo and ShowPackageVariables to the index
+* Put a proper reference to the document "The gapmacro.tex Manual Format" 
+  (the file gap4r5/doc/gapmacrodoc.pdf included in the tools archive 
+  described in Section "Writing Documentation and Tools Needed").
+  
+Version 3.1.1: 2011/09/20
+* Documented classifyfiles.py script as a part of the tools archive.
+
+Version 3.1: 2011/09/15
+
+Appendix which was renamed from "Hints..." to "Guidelines..." and 
+incorporated many advices to package authors and feedback on the 
+previous announcements of the first GAP 4.5 beta release and its 
+subsequent update. It has new sections about package testing, 
+licensing, upgrading the package to work with GAP 4.5 and, finally, 
+two checklists (for package in general and for its upgrade to GAP 4.5). 
+The package is now distributed under GPL 2 or higher.
+
+Other changes include:
+* Better Makefile.in and configure files provided by Max Horn
+* Using CopyHTMLStyleFiles("doc") instead of keeping own style files
+* Removing revision entries from files
+* Removing old gapmacro.tex-based manual from version control
+* Using 'lib' directory for the library, not 'gap'
+* Documenting TextBinaryFilesPatterns as an alternative to specify 
+  text/binary files
+* Demonstrating how to create a test file
+* Demonstrating how to distribute parts of the manual across source 
+  code files
+* Demonstrating MathJax support in the HTML version of the manual.
+
+Version 3.0: 2011/03/15
+* First attempt of upgrading the package for GAP 4.5, released as 
+  a part of GAP 4.5.1 (first beta release). Appendix is merged with
+  the former "Writing a GAP package" chapter from the reference 
+  manual in order to consolidate most of the guidelines for writing 
+  a GAP package in a single location. 
+
 Version 2.0: 2006/01/31
   o PackageInfo.g:
     - added field `PreloadFile TB

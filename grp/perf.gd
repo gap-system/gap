@@ -2,15 +2,12 @@
 ##
 #W  perf.gd               GAP Groups Library                 Alexander Hulpke
 ##
-#H  @(#)$Id: perf.gd,v 4.23 2011/01/30 00:13:04 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declarations for the Holt/Plesken library of
 ##  perfect groups
 ##
-Revision.perf_gd :=
-    "@(#)$Id: perf.gd,v 4.23 2011/01/30 00:13:04 gap Exp $";
 
 
 PERFRec := fail; # indicator that perf0.grp is not loaded

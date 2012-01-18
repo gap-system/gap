@@ -3,7 +3,6 @@
 **
 *W  vecffe.c                    GAP source                      Werner Nickel
 **
-*H  @(#)$Id: vecffe.c,v 4.23 2010/02/23 15:13:50 gap Exp $
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
@@ -11,8 +10,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_vecffe_c =
-   "@(#)$Id: vecffe.c,v 4.23 2010/02/23 15:13:50 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1246,8 +1243,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoVecFFE ( void )
 {
-    module.revision_c = Revision_vecffe_c;
-    module.revision_h = Revision_vecffe_h;
     FillInVersion( &module );
     return &module;
 }

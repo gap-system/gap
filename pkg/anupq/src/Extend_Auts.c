@@ -2,7 +2,7 @@
 **
 *A  Extend_Auts.c               ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: Extend_Auts.c,v 1.5 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: Extend_Auts.c,v 1.10 2011/12/31 19:36:23 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -37,21 +37,18 @@ int **list;
 int start;
 struct pcp_vars *pcp;
 {
-#include "define_y.h" 
    register int lastg = pcp->lastg;
    register int offset; 
    register int alpha;
    int index = 0;
    int max_length;
-   FILE_TYPE fp;
+   FILE * fp;
    int nmr_saved;
    int list_length;
 
    int saved_length;            /* total length of description saved to file */
    int restored_length = 0;     /* amount of description restored from file */
    int new;                     /* new storage requirement */
-
-   int i, total, gen;
 
    /* this used to be 5 * lastg + 4 -- April 1994 */
    if (is_space_exhausted (7 * lastg + 4, pcp))
@@ -108,13 +105,6 @@ struct pcp_vars *pcp;
 #ifdef DEBUG1
    printf ("*** Final allocated space for automorphisms is %d\n", list_length);
    printf ("*** Final amount used is %d\n", index);
-#if defined (LIE) 
-   /* appoximate space used to store images of generators of highest weight */
-   total = 0; gen = y[pcp->clend + pcp->cc - 1];
-   for (alpha = 1; alpha <= pcp->m; ++alpha)
-       total += ((*head)[alpha * lastg] - (*head)[(alpha - 1) * lastg + gen]);
-   printf ("*** Space for automorphism action on last class is %d\n", total);
-#endif
 #endif
 }
 
@@ -146,49 +136,6 @@ struct pcp_vars *pcp;
    }
 }
 
-/* write out action of each automorphism on each of the pcp generators, 
-   first .. last, as an exponent matrix in Magma format */
-
-void Magma_Auts (head, list, start, first, last, pcp)
-int *head;
-int *list;
-int start;
-int first;
-int last;
-struct pcp_vars *pcp;
-{
-   register int alpha, i, j, k, ptr, length;
-   int lastg = pcp->lastg;
-   int offset = 0;
-   int *vec;
-   FILE *Magma_Auts;
-#include "access.h"
-
-   Magma_Auts = OpenFile ("Magma_Auts", "a+");
-   for (alpha = 1; alpha <= pcp->m; ++alpha) {
-      fprintf (Magma_Auts, "A%d := \\[", alpha);
-      for (i = first; i <= MIN(last, lastg); ++i) {
-	 ptr = head[offset + i];
-	 length = list[ptr + 1];
-	 vec = allocate_vector (lastg, 1, TRUE);
-	 for (j = ptr + 2; j <= ptr + length + 1; ++j) {
-	    vec[FIELD2 (list[j])] = FIELD1 (list[j]);
-	 }
-	 for (k = start; k <= lastg; ++k) {
-	    if ((i == MIN(last, lastg)) && (k == lastg)) 
-	       fprintf (Magma_Auts, "%d", vec[k]); 
-	    else 
-	       fprintf (Magma_Auts, "%d,", vec[k]);
-	    if (k % 40 == 0) fprintf (Magma_Auts, "\n");
-	 }
-	 free_vector (vec, 1);
-      }
-      fprintf (Magma_Auts, "];\n");
-      offset += lastg;
-   }
-   CloseFile (Magma_Auts);
-}
-
 /* set up description of action of automorphisms on defining generators */
 
 void Setup_Action (head, list, auts, nmr_of_exponents, pcp)
@@ -198,7 +145,7 @@ int ***auts;
 int nmr_of_exponents;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i, generator;
    int position, max_length, exp, alpha, offset;
@@ -248,7 +195,7 @@ int offset;
 int *index;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i, generator;
    register int lastg = pcp->lastg;
@@ -337,7 +284,7 @@ int ptr;
 int cp;
 struct pcp_vars *pcp;
 { 
-#include "define_y.h"
+   register int *y = y_address;
 
    int lastg = pcp->lastg;
    int i, j, start, u;
@@ -403,7 +350,7 @@ int *head;
 int *list;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int value;
@@ -444,7 +391,7 @@ int *head;
 int *list;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int pointer, value;
@@ -484,7 +431,7 @@ int head;
 int *list;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int lused = pcp->lused;
    int str = lused + pcp->lastg;
@@ -509,7 +456,7 @@ int head;
 int *list;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int lused = pcp->lused;
    register int length = list[++head];
@@ -534,7 +481,7 @@ int *head;
 int *list;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int generator, exp;

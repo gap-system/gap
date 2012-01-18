@@ -2,7 +2,6 @@
 **
 *W  compstat.c                  GAP source                       Frank Celler
 **
-*H  @(#)$Id: compstat.c,v 4.15 2010/02/23 15:13:40 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland

@@ -9,8 +9,6 @@
 ##  This file contains the implementation of the methods for SchurMultiplier
 ##  and Darstellungsgruppen.
 ##  
-Revision.schur_gi :=
-    "@(#)$Id: schur.gi,v 4.27 2010/02/23 15:13:29 gap Exp $";
 
 ##    Take a finite presentation F/R for a group G and compute a presentation
 ##    of one of G's representation groups (Darstellungsgruppen, Schur covers).

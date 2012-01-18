@@ -2,8 +2,6 @@
 ##
 #W  ctbatres.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbatres.tbl,v 4.6 2005/08/10 14:40:41 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables related to the groups
@@ -14,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbatres.tbl,v $
+#H  Revision 4.7  2011/09/28 12:12:36  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.6  2005/08/10 14:40:41  gap
 #H  added modular tables of 2^2.Sz(8)
 #H      TB
@@ -124,10 +126,7 @@
 #H      TB
 #H  ==========================================================================
 ##
-Revision.ctbatres_tbl :=
-    "@(#)$Id: ctbatres.tbl,v 4.6 2005/08/10 14:40:41 gap Exp $";
 
-SET_TABLEFILENAME("ctbatres");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("2.F4(2).2",13,
@@ -1373,6 +1372,7 @@ TEXT1,
 0);
 
 LIBTABLE.LOADSTATUS.ctbatres:="userloaded";
+
 #############################################################################
 ##
 #E

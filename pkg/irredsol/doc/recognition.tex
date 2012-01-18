@@ -2,7 +2,7 @@
 %%
 %%  recognition.tex        IRREDSOL documentation           Burkhard Höfling
 %%
-%%  @(#)$Id: recognition.tex,v 1.6 2011/05/18 16:24:30 gap Exp $
+%%  @(#)$Id: recognition.tex,v 1.7 2011/07/17 12:03:33 gap Exp $
 %%
 %%  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 %%
@@ -82,7 +82,8 @@ They return a record which has the following entries:
     `RepresentationIsomorphism(<G>)' to the source of `RepresentationIsomorphism(<H>)'.
     
 \enditems
-Note that in most cases, `RecognitionIrreducibleSolvableMatrixGroup' and `RecognitionIrreducibleSolvableMatrixGroupNC' are 
+Note that in most cases, `Recog\-nition\-Irreducible\-Solvable\-Matrix\-Group' and 
+`Recog\-nition\-Irreducible\-Sol\-vable\-Matrix\-Group\-NC' are 
 much slower if <wantmat> is set to true.   
 
 `RecognitionIrreducibleSolvableMatrixGroupNC' does not check its arguments. If
@@ -108,13 +109,13 @@ true
 \>`RecognitionAbsolutelyIrreducibleSolvableMatrixGroupNC(%
    <G>, <wantmat>,<wantgroup>)'%
 {RecognitionAbsolutelyIrreducibleSolvableMatrixGroupNC}%
-@{`RecognitionAbsolutelyIrreducibleSolvable\\MatrixGroupNC'} F
+@{`RecognitionAbsolutelyIrreducibleSolvable\\Matrix\\Group\\NC'} F
 
 These functions are no longer available. These functions have been replaced by the
 functions 
 `IdIrreducibleSolvableMatrixGroup' ("IdIrreducibleSolvableMatrixGroup"), 
 `RecognitionIrreducibleSolvableMatrixGroup' ("RecognitionIrreducibleSolvableMatrixGroup"), or
-`RecognitionIrreducibleSolvableMatrixGroupNC' ("RecognitionIrreducibleSolvableMatrixGroupNC").
+`Recognition\-Irre\-du\-ci\-bleSolvableMatrixGroupNC' ("RecognitionIrreducibleSolvableMatrixGroupNC").
 
 Note that the ids returned by the functions for absolutely irreducible groups was a triple `[<n>, <d>, <k>]', while the replacement functions use ids of the form `[<n>, <d>, <d>, <k>]', where $<d> = 1$ in the absolutely irreducible case.
 
@@ -191,7 +192,7 @@ memory.
 
 \>`UnloadAbsolutelyIrreducibleSolvableGroupFingerprints([n [,q]])'%
 {UnloadAbsolutelyIrreducibleSolvableGroupFingerprints}%
-@{`UnloadAbsolutelyIrreducibleSolvableGroup\\Fingerprints'} F
+@{`UnloadAbsolutelyIrreducibleSolvableGroup\\Finger\\prints'} F
 
 This function can be used to delete recognition data for irreducible groups from the {\GAP} workspace. If no
 argument is given, all data will be deleted. If only <n> is given, all data for degree <n> (and any

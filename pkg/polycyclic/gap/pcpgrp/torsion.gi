@@ -111,6 +111,9 @@ function( G )
     return U;
 end );
 
+InstallMethod( TorsionSubgroup, [IsGroup and IsFinite], IdFunc );
+InstallMethod( TorsionSubgroup, [IsGroup and IsTorsionFree], G -> TrivialSubgroup(G) );
+
 #############################################################################
 ##
 #F NormalTorsionSubgroup( G )
@@ -179,6 +182,9 @@ function( G )
     fi; 
 end );
 
+InstallMethod( NormalTorsionSubgroup, [IsGroup and IsFinite], IdFunc );
+InstallMethod( NormalTorsionSubgroup, [IsGroup and IsTorsionFree], G -> TrivialSubgroup(G) );
+
 #############################################################################
 ##
 #F IsTorsionFree( G )
@@ -216,8 +222,24 @@ IsTorsionFreePcpGroup := function( G )
     return true;
 end;
 
-InstallMethod( IsTorsionFree, true, [IsPcpGroup], 0,
-function( G ) return IsTorsionFreePcpGroup(G); end );
+InstallMethod( IsTorsionFree, true, [IsPcpGroup], 0, IsTorsionFreePcpGroup );
+
+# Finite groups are torsion free if and only if they are trivial
+InstallImmediateMethod( IsTorsionFree,
+    IsGroup and IsFinite and HasIsTrivial,
+    0,
+    grp -> IsTrivial( grp ) );
+
+# Finite groups are free abelian if and only if they are trivial
+InstallImmediateMethod( IsFreeAbelian,
+    IsGroup and IsFinite and HasIsTrivial,
+    0,
+    grp -> IsTrivial( grp ) );
+
+# In general, a group is free abelian if it is abelian and its abelian invariants are all 0.
+InstallMethod( IsFreeAbelian, [IsGroup],
+    grp -> IsAbelian(grp) and ForAll( AbelianInvariants( grp ), x -> x = 0 )
+    );
 
 #############################################################################
 ##
@@ -380,6 +402,7 @@ end;
 ##
 #F FiniteSubgroupClassesBySeries( N, G, pcps, avoid )
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 FiniteSubgroupClassesBySeries := function( arg )
     local N, G, pcps, avoid, pcpG, grps, pcp, act, new, grp, C, tmp, i, 
           rels, U;

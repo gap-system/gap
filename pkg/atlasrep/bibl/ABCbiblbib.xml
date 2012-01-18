@@ -12,7 +12,7 @@
   <number>2</number>
   <pages>398&ndash;408</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR801275 (87c:20030)</mrnumber>
+  <mrnumber>801275 (87c:20030)</mrnumber>
   <mrclass>20C25 (20C20)</mrclass>
   <mrreviewer>John F. Humphreys</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -31,7 +31,7 @@
   <number>2</number>
   <pages>329&ndash;350</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR866779 (88b:20021)</mrnumber>
+  <mrnumber>866779 (88b:20021)</mrnumber>
   <mrclass>20C20 (20C11)</mrclass>
   <mrreviewer>S. B. Conlon</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -64,7 +64,7 @@
   <volume>42</volume>
   <pages>556&ndash;590</pages>
   <issn>0003-486X</issn>
-  <mrnumber>MR0004042 (2,309c)</mrnumber>
+  <mrnumber>0004042 (2,309c)</mrnumber>
   <mrclass>20.0X</mrclass>
   <mrreviewer>G. de B. Robinson</mrreviewer>
   <other type="fjournal">Annals of Mathematics. Second Series</other>
@@ -82,7 +82,7 @@
   <number>1</number>
   <pages>75&ndash;96</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR0480710 (58 #864)</mrnumber>
+  <mrnumber>0480710 (58 #864)</mrnumber>
   <mrclass>20C20</mrclass>
   <mrreviewer>P. Donovan</mrreviewer>
   <other type="fjournal">Journal of Algebra</other>
@@ -100,7 +100,7 @@
   <number>2</number>
   <pages>421&ndash;433</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR543261 (81a:20018)</mrnumber>
+  <mrnumber>543261 (81a:20018)</mrnumber>
   <mrclass>20C99</mrclass>
   <mrreviewer>Karin Erdmann</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -119,7 +119,7 @@
   <number>2</number>
   <pages>548&ndash;581</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR559855 (81a:20055)</mrnumber>
+  <mrnumber>559855 (81a:20055)</mrnumber>
   <mrclass>20H05 (20C20 20C30)</mrclass>
   <mrreviewer>Ulrich Dempwolff</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -141,7 +141,7 @@
   <note>Maximal subgroups and ordinary characters for simple groups,
       With computational assistance from J. G. Thackray</note>
   <isbn>0-19-853199-0</isbn>
-  <mrnumber>MR827219 (88g:20025)</mrnumber>
+  <mrnumber>827219 (88g:20025)</mrnumber>
   <mrclass>20D05 (20-02)</mrclass>
   <mrreviewer>R. L. Griess</mrreviewer>
   <other type="pages">xxxiv+252</other>
@@ -159,7 +159,7 @@
   <note>With applications to finite groups and orders,
       Pure and Applied Mathematics, A Wiley-Interscience Publication</note>
   <isbn>0-471-18994-4</isbn>
-  <mrnumber>MR632548 (82i:20001)</mrnumber>
+  <mrnumber>632548 (82i:20001)</mrnumber>
   <mrclass>20-02 (10C30 12A57 20Cxx)</mrclass>
   <mrreviewer>J. L. Alperin</mrreviewer>
   <other type="pages">xxi+819</other>
@@ -179,7 +179,7 @@
       Reprint of <Wrap Name="IntRef">the 1981 original</Wrap>,
       A Wiley-Interscience Publication</note>
   <isbn>0-471-52367-4</isbn>
-  <mrnumber>MR1038525 (90k:20001)</mrnumber>
+  <mrnumber>1038525 (90k:20001)</mrnumber>
   <mrclass>20-02 (01A75 11R33 20Cxx)</mrclass>
   <other type="pages">xxiv+819</other>
   <other type="intref">CR81</other>
@@ -197,7 +197,7 @@
   <number>1</number>
   <pages>35&ndash;44</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR808838 (86m:20012)</mrnumber>
+  <mrnumber>808838 (86m:20012)</mrnumber>
   <mrclass>20C20 (20-04)</mrclass>
   <mrreviewer>P. Fong</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -215,7 +215,7 @@
   <series>North-Holland Mathematical Library</series>
   <address>Amsterdam</address>
   <isbn>0-444-86155-6</isbn>
-  <mrnumber>MR661045 (83g:20001)</mrnumber>
+  <mrnumber>661045 (83g:20001)</mrnumber>
   <mrclass>20-02 (20C20)</mrclass>
   <mrreviewer>J. L. Alperin</mrreviewer>
   <other type="pages">xiv+502</other>
@@ -234,7 +234,7 @@
   <pages>25&ndash;63</pages>
   <address>Berlin</address>
   <crossref>DGM86</crossref>
-  <mrnumber>MR842477 (87e:20023)</mrnumber>
+  <mrnumber>842477 (87e:20023)</mrnumber>
   <mrclass>20C20 (20D08)</mrclass>
   <mrreviewer>J. L. Alperin</mrreviewer>
 </incollection></entry>
@@ -251,7 +251,7 @@
   <year>1974</year>
   <pages>415&ndash;422</pages>
   <address>London</address>
-  <mrnumber>MR0357578 (50 #10046)</mrnumber>
+  <mrnumber>0357578 (50 #10046)</mrnumber>
   <mrclass>20C20</mrclass>
   <mrreviewer>I. M. Isaacs</mrreviewer>
 </incollection></entry>
@@ -269,7 +269,7 @@
   <number>3</number>
   <pages>1041&ndash;1044</pages>
   <issn>0002-9904</issn>
-  <mrnumber>MR585186 (81k:20019)</mrnumber>
+  <mrnumber>585186 (81k:20019)</mrnumber>
   <mrclass>20C20 (20G40)</mrclass>
   <mrreviewer>Karin Erdmann</mrreviewer>
   <other type="coden">BAMOAD</other>
@@ -289,7 +289,7 @@
   <number>1</number>
   <pages>109&ndash;153</pages>
   <issn>0020-9910</issn>
-  <mrnumber>MR671655 (83k:20013)</mrnumber>
+  <mrnumber>671655 (83k:20013)</mrnumber>
   <mrclass>20C20 (20G05)</mrclass>
   <mrreviewer>P. Donovan</mrreviewer>
   <other type="coden">INVMBH</other>
@@ -308,7 +308,7 @@
   <number>1</number>
   <pages>179&ndash;225</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR1055005 (91i:20008)</mrnumber>
+  <mrnumber>1055005 (91i:20008)</mrnumber>
   <mrclass>20C20 (20G40)</mrclass>
   <mrreviewer>Gerhard Hiss</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -339,7 +339,7 @@
   <pages>407&ndash;416</pages>
   <note>Geometries and groups (Noordwijkerhout, 1986)</note>
   <issn>0046-5755</issn>
-  <mrnumber>MR925845 (89h:20056)</mrnumber>
+  <mrnumber>925845 (89h:20056)</mrnumber>
   <mrclass>20G05 (17B25)</mrclass>
   <mrreviewer>G. E. Wall</mrreviewer>
   <other type="coden">GEMDAT</other>
@@ -355,7 +355,7 @@
   <year>1980</year>
   <address>Wilmington, Del.</address>
   <isbn>0-914098-17-9</isbn>
-  <mrnumber>MR575526 (81f:20001)</mrnumber>
+  <mrnumber>575526 (81f:20001)</mrnumber>
   <mrclass>20-02 (20C10 20C15)</mrclass>
   <mrreviewer>Stephen D. Smith</mrreviewer>
   <other type="pages">249 pp. (not consecutively paged)</other>
@@ -373,7 +373,7 @@
   <number>1</number>
   <pages>125&ndash;154</pages>
   <issn>0092-7872</issn>
-  <mrnumber>MR814141 (87c:20029)</mrnumber>
+  <mrnumber>814141 (87c:20029)</mrnumber>
   <mrclass>20C20</mrclass>
   <mrreviewer>Wolfgang Knapp</mrreviewer>
   <other type="coden">COALDM</other>
@@ -391,7 +391,7 @@
   <number>2</number>
   <pages>339&ndash;360</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR989902 (90j:20011)</mrnumber>
+  <mrnumber>989902 (90j:20011)</mrnumber>
   <mrclass>20C05 (16A26 20C20)</mrclass>
   <mrreviewer>Reiner Staszewski</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -421,7 +421,7 @@
   <number>206</number>
   <pages>851&ndash;863</pages>
   <issn>0025-5718</issn>
-  <mrnumber>MR1212267 (94g:20013)</mrnumber>
+  <mrnumber>1212267 (94g:20013)</mrnumber>
   <mrclass>20C20 (20C34 20D08)</mrclass>
   <mrreviewer>P. Fong</mrreviewer>
   <other type="coden">MCMPAF</other>
@@ -441,7 +441,7 @@
   <number>2</number>
   <pages>357&ndash;398</pages>
   <issn>0092-7872</issn>
-  <mrnumber>MR929124 (89d:20011)</mrnumber>
+  <mrnumber>929124 (89d:20011)</mrnumber>
   <mrclass>20C20</mrclass>
   <mrreviewer>Karin Erdmann</mrreviewer>
   <other type="coden">COALDM</other>
@@ -459,7 +459,7 @@
   <series>Oxford Science Publications</series>
   <address>New York</address>
   <isbn>0-19-853381-0</isbn>
-  <mrnumber>MR1033265 (91k:20018)</mrnumber>
+  <mrnumber>1033265 (91k:20018)</mrnumber>
   <mrclass>20C20 (20-02 20D08)</mrclass>
   <mrreviewer>Harvey Blau</mrreviewer>
   <other type="pages">x+526</other>
@@ -480,7 +480,7 @@
   <pages>3563&ndash;3590</pages>
   <note>With an appendix by Thomas Breuer</note>
   <issn>0092-7872</issn>
-  <mrnumber>MR1278806 (95e:20020)</mrnumber>
+  <mrnumber>1278806 (95e:20020)</mrnumber>
   <mrclass>20C34 (20C40)</mrclass>
   <mrreviewer>A. S. Kondratʹev</mrreviewer>
   <other type="coden">COALDM</other>
@@ -500,7 +500,7 @@
   <number>12</number>
   <pages>4633&ndash;4667</pages>
   <issn>0092-7872</issn>
-  <mrnumber>MR1352561 (96h:20027)</mrnumber>
+  <mrnumber>1352561 (96h:20027)</mrnumber>
   <mrclass>20C34 (20C20)</mrclass>
   <mrreviewer>Donald L. White</mrreviewer>
   <other type="coden">COALDM</other>
@@ -521,7 +521,7 @@
   <number>9</number>
   <pages>3591&ndash;3611</pages>
   <issn>0092-7872</issn>
-  <mrnumber>MR1278807 (95e:20021)</mrnumber>
+  <mrnumber>1278807 (95e:20021)</mrnumber>
   <mrclass>20C34 (20C40)</mrclass>
   <mrreviewer>A. S. Kondratʹev</mrreviewer>
   <other type="coden">COALDM</other>
@@ -542,7 +542,7 @@
   <number>1</number>
   <pages>91&ndash;114</pages>
   <issn>0025-2611</issn>
-  <mrnumber>MR1124313 (92g:20017)</mrnumber>
+  <mrnumber>1124313 (92g:20017)</mrnumber>
   <mrclass>20C20 (20D08)</mrclass>
   <mrreviewer>David Benson</mrreviewer>
   <other type="coden">MSMHB2</other>
@@ -564,7 +564,7 @@
   <number>6</number>
   <pages>585&ndash;600</pages>
   <issn>0747-7171</issn>
-  <mrnumber>MR1370624 (96m:20023)</mrnumber>
+  <mrnumber>1370624 (96m:20023)</mrnumber>
   <mrclass>20C34 (20C40)</mrclass>
   <mrreviewer>Peter Fleischmann</mrreviewer>
   <other type="fjournal">Journal of Symbolic Computation</other>
@@ -593,7 +593,7 @@
   <number>3</number>
   <pages>401&ndash;412</pages>
   <issn>0305-0041</issn>
-  <mrnumber>MR556920 (81k:20021)</mrnumber>
+  <mrnumber>556920 (81k:20021)</mrnumber>
   <mrclass>20C25 (20C30)</mrclass>
   <mrreviewer>V. D. Mazurov</mrreviewer>
   <other type="coden">MPCPCO</other>
@@ -613,7 +613,7 @@
   <number>3-4</number>
   <pages>319&ndash;335</pages>
   <issn>0308-2105</issn>
-  <mrnumber>MR677491 (83m:20017)</mrnumber>
+  <mrnumber>677491 (83m:20017)</mrnumber>
   <mrclass>20C20 (20D08)</mrclass>
   <mrreviewer>M. Herzog</mrreviewer>
   <other type="coden">PEAMDU</other>
@@ -630,7 +630,7 @@
   <year>1976</year>
   <address>New York</address>
   <note>Pure and Applied Mathematics, No. 69</note>
-  <mrnumber>MR0460423 (57 #417)</mrnumber>
+  <mrnumber>0460423 (57 #417)</mrnumber>
   <mrclass>20-02</mrclass>
   <mrreviewer>Stephen D. Smith</mrreviewer>
   <other type="pages">xii+303</other>
@@ -647,7 +647,7 @@
   <note>Corrected reprint of <Wrap Name="IntRef">the 1976 original
       [Academic Press, New York; MR0460423 (57 #417)]</Wrap></note>
   <isbn>0-486-68014-2</isbn>
-  <mrnumber>MR1280461</mrnumber>
+  <mrnumber>1280461</mrnumber>
   <mrclass>20C15</mrclass>
   <other type="pages">xii+303</other>
   <other type="intref">Isa76</other>
@@ -663,7 +663,7 @@
   <note>Corrected reprint of <Wrap Name="IntRef">the 1976 original
       [Academic Press, New York; MR0460423]</Wrap></note>
   <isbn>978-0-8218-4229-4; 0-8218-4229-3</isbn>
-  <mrnumber>MR2270898</mrnumber>
+  <mrnumber>2270898</mrnumber>
   <mrclass>20-02 (20C05 20C15 20C20 20C25)</mrclass>
   <other type="pages">xii+310</other>
   <other type="intref">Isa76</other>
@@ -679,7 +679,7 @@
   <volume>27</volume>
   <pages>57&ndash;111</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR0330277 (48 #8614)</mrnumber>
+  <mrnumber>0330277 (48 #8614)</mrnumber>
   <mrclass>20C20</mrclass>
   <mrreviewer>J. S. Frame</mrreviewer>
   <other type="fjournal">Journal of Algebra</other>
@@ -697,7 +697,7 @@
   <number>2</number>
   <pages>280&ndash;308</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR0396734 (53 #595)</mrnumber>
+  <mrnumber>0396734 (53 #595)</mrnumber>
   <mrclass>20C30</mrclass>
   <mrreviewer>G. de B. Robinson</mrreviewer>
   <other type="fjournal">Journal of Algebra</other>
@@ -715,7 +715,7 @@
   <number>1</number>
   <pages>42&ndash;44</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR0430049 (55 #3057a)</mrnumber>
+  <mrnumber>0430049 (55 #3057a)</mrnumber>
   <mrclass>20C30</mrclass>
   <mrreviewer>A. Kerber</mrreviewer>
   <other type="fjournal">Journal of Algebra</other>
@@ -733,7 +733,7 @@
   <number>1</number>
   <pages>45&ndash;54</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR0430050 (55 #3057b)</mrnumber>
+  <mrnumber>0430050 (55 #3057b)</mrnumber>
   <mrclass>20C30</mrclass>
   <mrreviewer>A. Kerber</mrreviewer>
   <other type="fjournal">Journal of Algebra</other>
@@ -751,7 +751,7 @@
   <number>2</number>
   <pages>410&ndash;411</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR502639 (80a:20005)</mrnumber>
+  <mrnumber>502639 (80a:20005)</mrnumber>
   <mrclass>20B10 (20C15)</mrclass>
   <mrreviewer>H. Nagao</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -769,7 +769,7 @@
   <series>Lecture Notes in Mathematics</series>
   <address>Berlin</address>
   <isbn>3-540-08948-9</isbn>
-  <mrnumber>MR513828 (80g:20019)</mrnumber>
+  <mrnumber>513828 (80g:20019)</mrnumber>
   <mrclass>20C30 (20-02)</mrclass>
   <mrreviewer>Dragomir Ž. Ðoković</mrreviewer>
   <other type="pages">v+156</other>
@@ -788,7 +788,7 @@
   <note>With a foreword by P. M. Cohn,
               With an introduction by Gilbert de B. Robinson</note>
   <isbn>0-201-13515-9</isbn>
-  <mrnumber>MR644144 (83k:20003)</mrnumber>
+  <mrnumber>644144 (83k:20003)</mrnumber>
   <mrclass>20-02 (20C30)</mrclass>
   <mrreviewer>A. O. Morris</mrreviewer>
   <other type="pages">xxviii+510</other>
@@ -806,7 +806,7 @@
   <number>3</number>
   <pages>579&ndash;583</pages>
   <issn>0024-6107</issn>
-  <mrnumber>MR1610479 (98m:20022)</mrnumber>
+  <mrnumber>1610479 (98m:20022)</mrnumber>
   <mrclass>20D08</mrclass>
   <other type="coden">JLMSAK</other>
   <other type="fjournal">Journal of the London Mathematical Society. Second
@@ -827,7 +827,7 @@
   <number>1</number>
   <pages>71&ndash;90</pages>
   <issn>0024-6107</issn>
-  <mrnumber>MR1624797 (99g:20025)</mrnumber>
+  <mrnumber>1624797 (99g:20025)</mrnumber>
   <mrclass>20C34 (20C20 20C40)</mrclass>
   <mrreviewer>Gerhard Hiss</mrreviewer>
   <other type="coden">JLMSAK</other>
@@ -848,7 +848,7 @@
   <number>3</number>
   <pages>873&ndash;879</pages>
   <issn>0092-7872</issn>
-  <mrnumber>MR1374641 (97a:20021)</mrnumber>
+  <mrnumber>1374641 (97a:20021)</mrnumber>
   <mrclass>20C34 (20C40 20D08)</mrclass>
   <mrreviewer>Herbert Pahlings</mrreviewer>
   <other type="coden">COALDM</other>
@@ -867,7 +867,7 @@
   <number>2</number>
   <pages>390&ndash;409</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR769582 (86h:20011)</mrnumber>
+  <mrnumber>769582 (86h:20011)</mrnumber>
   <mrclass>20C20</mrclass>
   <mrreviewer>Richard Dipper</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -887,7 +887,7 @@
   <number>2</number>
   <pages>525&ndash;531</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR778465 (86m:20013)</mrnumber>
+  <mrnumber>778465 (86m:20013)</mrnumber>
   <mrclass>20C20</mrclass>
   <mrreviewer>Richard Dipper</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -912,7 +912,7 @@
       <Wrap Name="Bib_pages">333&ndash;349</Wrap>
       (<Wrap Name="Bib_year">1989</Wrap>)</note>
   <issn>0373-9252</issn>
-  <mrnumber>MR1047503 (91g:20017)</mrnumber>
+  <mrnumber>1047503 (91g:20017)</mrnumber>
   <mrclass>20D08</mrclass>
   <mrreviewer>È. M. Palʹchik</mrreviewer>
   <other type="fjournal">Akademiya Nauk SSSR. Sibirskoe Otdelenie. Institut
@@ -938,7 +938,7 @@
       <Wrap Name="Bib_pages">429&ndash;444</Wrap>
       (<Wrap Name="Bib_year">1989</Wrap>)</note>
   <issn>0373-9252</issn>
-  <mrnumber>MR1038106 (91b:20024)</mrnumber>
+  <mrnumber>1038106 (91b:20024)</mrnumber>
   <mrclass>20D08</mrclass>
   <mrreviewer>È. M. Palʹchik</mrreviewer>
   <other type="fjournal">Akademiya Nauk SSSR. Sibirskoe Otdelenie. Institut
@@ -956,7 +956,7 @@
   <series>London Mathematical Society Lecture Note Series</series>
   <address>Cambridge</address>
   <isbn>0-521-27487-7</isbn>
-  <mrnumber>MR737910 (85h:20002)</mrnumber>
+  <mrnumber>737910 (85h:20002)</mrnumber>
   <mrclass>20-02 (16A26 20C05 20C20)</mrclass>
   <mrreviewer>J. L. Alperin</mrreviewer>
   <other type="pages">x+274</other>
@@ -974,7 +974,7 @@
   <number>12</number>
   <pages>4311&ndash;4351</pages>
   <issn>0092-7872</issn>
-  <mrnumber>MR1242834 (94i:20032)</mrnumber>
+  <mrnumber>1242834 (94i:20032)</mrnumber>
   <mrclass>20D08</mrclass>
   <mrreviewer>Jonathan I. Hall</mrreviewer>
   <other type="coden">COALDM</other>
@@ -994,7 +994,7 @@
   <number>5</number>
   <pages>1611&ndash;1629</pages>
   <issn>0092-7872</issn>
-  <mrnumber>MR1213977 (94a:20027)</mrnumber>
+  <mrnumber>1213977 (94a:20027)</mrnumber>
   <mrclass>20C34 (20D08)</mrclass>
   <mrreviewer>P. Fong</mrreviewer>
   <other type="coden">COALDM</other>
@@ -1015,7 +1015,7 @@
   <note>Computational linear algebra in algebraic and related problems
       (Essen, 1992)</note>
   <issn>0024-3795</issn>
-  <mrnumber>MR1236744 (94k:20015)</mrnumber>
+  <mrnumber>1236744 (94k:20015)</mrnumber>
   <mrclass>20C20</mrclass>
   <mrreviewer>V. D. Mazurov</mrreviewer>
   <other type="coden">LAAPAW</other>
@@ -1038,7 +1038,7 @@
   <pages>37&ndash;64</pages>
   <address>Basel</address>
   <crossref>MR91</crossref>
-  <mrnumber>MR1112157 (92g:20025)</mrnumber>
+  <mrnumber>1112157 (92g:20025)</mrnumber>
   <mrclass>20C40</mrclass>
   <mrreviewer>Wolfgang Knapp</mrreviewer>
 </incollection></entry>
@@ -1054,7 +1054,7 @@
   <volume>6</volume>
   <pages>153&ndash;160</pages>
   <issn>0024-6107</issn>
-  <mrnumber>MR0369498 (51 #5731)</mrnumber>
+  <mrnumber>0369498 (51 #5731)</mrnumber>
   <mrclass>20C20</mrclass>
   <mrreviewer>A. O. Morris</mrreviewer>
   <other type="fjournal">Journal of the London Mathematical Society. Second
@@ -1074,7 +1074,7 @@
   <number>4</number>
   <pages>519&ndash;535</pages>
   <issn>0025-5831</issn>
-  <mrnumber>MR742897 (85k:20038)</mrnumber>
+  <mrnumber>742897 (85k:20038)</mrnumber>
   <mrclass>20C20 (20D08 51E20)</mrclass>
   <mrreviewer>Stephen D. Smith</mrreviewer>
   <other type="coden">MAANA</other>
@@ -1095,7 +1095,7 @@
   <number>1</number>
   <pages>29&ndash;39</pages>
   <issn>0025-5831</issn>
-  <mrnumber>MR794089 (86i:20025)</mrnumber>
+  <mrnumber>794089 (86i:20025)</mrnumber>
   <mrclass>20D08</mrclass>
   <mrreviewer>R. W. Carter</mrreviewer>
   <other type="coden">MAANA</other>
@@ -1124,7 +1124,7 @@
   <pages>267&ndash;274</pages>
   <address>London</address>
   <crossref>Atk84</crossref>
-  <mrnumber>MR760660 (85k:20041)</mrnumber>
+  <mrnumber>760660 (85k:20041)</mrnumber>
   <mrclass>20C20 (20-04)</mrclass>
   <mrreviewer>Leo J. Alex</mrreviewer>
 </incollection></entry>
@@ -1150,7 +1150,7 @@
   <number>1</number>
   <pages>240&ndash;255</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR955602 (89g:20026)</mrnumber>
+  <mrnumber>955602 (89g:20026)</mrnumber>
   <mrclass>20C20 (20D08)</mrclass>
   <mrreviewer>David Benson</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -1170,7 +1170,7 @@
   <number>2</number>
   <pages>137&ndash;145</pages>
   <issn>1058-6458</issn>
-  <mrnumber>MR1313878 (95k:20017)</mrnumber>
+  <mrnumber>1313878 (95k:20017)</mrnumber>
   <mrclass>20C34 (20C40 20D08)</mrclass>
   <mrreviewer>Wujie Shi</mrreviewer>
   <other type="fjournal">Experimental Mathematics</other>
@@ -1195,7 +1195,7 @@
   <volume>22</volume>
   <pages>33&ndash;56</pages>
   <issn>0027-7630</issn>
-  <mrnumber>MR0155937 (27 #5870)</mrnumber>
+  <mrnumber>0155937 (27 #5870)</mrnumber>
   <mrclass>22.90 (14.50)</mrclass>
   <mrreviewer>H. K. Farahat</mrreviewer>
   <other type="fjournal">Nagoya Mathematical Journal</other>
@@ -1223,7 +1223,7 @@
   <number>1</number>
   <pages>107&ndash;117</pages>
   <issn>0025-5513</issn>
-  <mrnumber>MR1261343 (94m:20038)</mrnumber>
+  <mrnumber>1261343 (94m:20038)</mrnumber>
   <mrclass>20C33 (20C20 20C40)</mrclass>
   <mrreviewer>Donald L. White</mrreviewer>
   <other type="coden">MAJAA9</other>
@@ -1243,7 +1243,7 @@
   <number>1</number>
   <pages>219&ndash;224</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR1161573 (93d:20029)</mrnumber>
+  <mrnumber>1161573 (93d:20029)</mrnumber>
   <mrclass>20C34 (20C20 20C40)</mrclass>
   <mrreviewer>Wolfgang Knapp</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -1264,7 +1264,7 @@
   <number>1</number>
   <pages>225&ndash;242</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR1161574 (93d:20030)</mrnumber>
+  <mrnumber>1161574 (93d:20030)</mrnumber>
   <mrclass>20C34 (20C20 20C40)</mrclass>
   <mrreviewer>Wolfgang Knapp</mrreviewer>
   <other type="coden">JALGA4</other>
@@ -1287,7 +1287,7 @@
   <pages>422&ndash;437</pages>
   <address>Cambridge</address>
   <crossref>LS92a</crossref>
-  <mrnumber>MR1200279 (94c:20031)</mrnumber>
+  <mrnumber>1200279 (94c:20031)</mrnumber>
   <mrclass>20C34 (20C20)</mrclass>
   <mrreviewer>Peter Fleischmann</mrreviewer>
 </incollection></entry>
@@ -1305,7 +1305,7 @@
   <number>1</number>
   <pages>11&ndash;14</pages>
   <issn>1058-6458</issn>
-  <mrnumber>MR1246480 (94h:20022)</mrnumber>
+  <mrnumber>1246480 (94h:20022)</mrnumber>
   <mrclass>20C34</mrclass>
   <other type="fjournal">Experimental Mathematics</other>
 </article></entry>
@@ -1323,7 +1323,7 @@
   <number>2</number>
   <pages>275&ndash;283</pages>
   <issn>0305-0041</issn>
-  <mrnumber>MR1281546 (95e:20024)</mrnumber>
+  <mrnumber>1281546 (95e:20024)</mrnumber>
   <mrclass>20C40 (20C34)</mrclass>
   <mrreviewer>Herbert Pahlings</mrreviewer>
   <other type="coden">MPCPCO</other>
@@ -1355,7 +1355,7 @@
   <pages>210&ndash;230</pages>
   <address>Berlin</address>
   <crossref>Dua86</crossref>
-  <mrnumber>MR842445 (87i:11160)</mrnumber>
+  <mrnumber>842445 (87i:11160)</mrnumber>
   <mrclass>11R32 (12F10 20C99)</mrclass>
   <mrreviewer>Richard Massy</mrreviewer>
 </incollection></entry>
@@ -1371,7 +1371,7 @@
   <number>11</number>
   <pages>3353&ndash;3368</pages>
   <issn>0092-7872</issn>
-  <mrnumber>MR1186712 (93i:20009)</mrnumber>
+  <mrnumber>1186712 (93i:20009)</mrnumber>
   <mrclass>20C20 (20C33)</mrclass>
   <mrreviewer>Stefan Heiss</mrreviewer>
   <other type="coden">COALDM</other>
@@ -1400,7 +1400,7 @@
   <number>6</number>
   <pages>647&ndash;656</pages>
   <issn>0747-7171</issn>
-  <mrnumber>MR1087984 (92b:20016)</mrnumber>
+  <mrnumber>1087984 (92b:20016)</mrnumber>
   <mrclass>20C20 (20C40 20D08)</mrclass>
   <mrreviewer>Wolfgang Knapp</mrreviewer>
   <other type="fjournal">Journal of Symbolic Computation</other>
@@ -1418,7 +1418,7 @@
   <number>1</number>
   <pages>5&ndash;8</pages>
   <issn>0305-0041</issn>
-  <mrnumber>MR1188814 (93j:20042)</mrnumber>
+  <mrnumber>1188814 (93j:20042)</mrnumber>
   <mrclass>20D08</mrclass>
   <mrreviewer>Ulrich Meierfrankenfeld</mrreviewer>
   <other type="coden">MPCPCO</other>
@@ -1438,7 +1438,7 @@
   <number>5</number>
   <pages>431&ndash;437</pages>
   <issn>0024-6093</issn>
-  <mrnumber>MR1233405 (94k:20027)</mrnumber>
+  <mrnumber>1233405 (94k:20027)</mrnumber>
   <mrclass>20D08 (20C34 20C40)</mrclass>
   <mrreviewer>Richard Lyons</mrreviewer>
   <other type="coden">LMSBBT</other>
@@ -1458,7 +1458,7 @@
   <number>3</number>
   <pages>325&ndash;330</pages>
   <issn>0747-7171</issn>
-  <mrnumber>MR1229639 (94g:20021)</mrnumber>
+  <mrnumber>1229639 (94g:20021)</mrnumber>
   <mrclass>20C34 (68Q40)</mrclass>
   <mrreviewer>Jamshid Moori</mrreviewer>
   <other type="fjournal">Journal of Symbolic Computation</other>
@@ -1476,7 +1476,7 @@
   <number>2</number>
   <pages>277&ndash;291</pages>
   <issn>0092-7872</issn>
-  <mrnumber>MR817046 (87a:20007)</mrnumber>
+  <mrnumber>817046 (87a:20007)</mrnumber>
   <mrclass>20C20 (20D08)</mrclass>
   <mrreviewer>J. L. Alperin</mrreviewer>
   <other type="coden">COALDM</other>
@@ -1493,7 +1493,7 @@
   <publisher>Academic Press Inc. [Harcourt Brace Jovanovich
       Publishers]</publisher>
   <isbn>0-12-066270-1</isbn>
-  <mrnumber>MR760641 (85g:20001)</mrnumber>
+  <mrnumber>760641 (85g:20001)</mrnumber>
   <mrclass>20-06 (68-06)</mrclass>
   <other type="booktitle">Proceedings of the London Mathematical Society
       symposium held in Durham, July 30&ndash;August 9, 1982</other>
@@ -1514,7 +1514,7 @@
   <publisher>Springer-Verlag</publisher>
   <note>Groups and orders</note>
   <isbn>3-540-16433-2</isbn>
-  <mrnumber>MR842475 (87b:20003)</mrnumber>
+  <mrnumber>842475 (87b:20003)</mrnumber>
   <mrclass>20-06 (16-06 20Cxx)</mrclass>
   <other type="booktitle">Proceedings of the fourth international conference
       on representations of algebras held at Carleton University,
@@ -1535,7 +1535,7 @@
   <address>Basel</address>
   <publisher>Birkhäuser Verlag</publisher>
   <isbn>3-7643-2604-2</isbn>
-  <mrnumber>MR1112154 (91m:20005)</mrnumber>
+  <mrnumber>1112154 (91m:20005)</mrnumber>
   <mrclass>20-06 (00B25 16-06 20Cxx)</mrclass>
   <other type="booktitle">Proceedings of the conference held at the University
       of Bielefeld, Bielefeld, May 15&ndash;17, 1991</other>
@@ -1554,7 +1554,7 @@
   <address>Cambridge</address>
   <publisher>Cambridge University Press</publisher>
   <isbn>0-521-40685-4</isbn>
-  <mrnumber>MR1200244 (93g:20001)</mrnumber>
+  <mrnumber>1200244 (93g:20001)</mrnumber>
   <mrclass>20-06 (00B25 20Dxx)</mrclass>
   <other type="booktitle">Proceedings of the L.M.S.  Symposium on Groups and
   Combinatorics held in Durham, July 5&ndash;15, 1990</other>
@@ -1572,7 +1572,7 @@
   <address>Berlin</address>
   <publisher>Springer-Verlag</publisher>
   <isbn>3-540-16456-1</isbn>
-  <mrnumber>MR842438 (87d:20004)</mrnumber>
+  <mrnumber>842438 (87d:20004)</mrnumber>
   <mrclass>20-06</mrclass>
   <other type="booktitle">Proceedings of an international symposium held at
       Beijing University, Beijing, August 27&ndash;September 8, 1984</other>

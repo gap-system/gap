@@ -2,7 +2,7 @@
 ##
 #W  ctotwis2.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctotwis2.tbl,v 4.17 2010/05/05 13:20:09 gap Exp $
+#H  @(#)$Id: ctotwis2.tbl,v 4.18 2011/09/28 14:32:24 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctotwis2.tbl,v $
+#H  Revision 4.18  2011/09/28 14:32:24  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.17  2010/05/05 13:20:09  gap
 #H  - added many class fusions,
 #H  - changed several class fusions according to consistency conditions,
@@ -176,11 +180,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctotwis2_tbl :=
-    "@(#)$Id: ctotwis2.tbl,v 4.17 2010/05/05 13:20:09 gap Exp $";
-
-SET_TABLEFILENAME("ctotwis2");
-ALN:= Ignore;
 
 MOT("2.2E6(2)",
 [
@@ -8484,7 +8483,6 @@ ALF("(2^2x3).2E6(2).2","2.2E6(2).2",[1,1,2,2,2,1,1,3,3,4,4,4,3,3,5,5,6,6,
 318,319,320]);
 
 LIBTABLE.LOADSTATUS.ctotwis2:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

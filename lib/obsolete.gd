@@ -2,7 +2,6 @@
 ##
 #W  obsolete.gd                  GAP library                     Steve Linton
 ##
-#H  @(#)$Id: obsolete.gd,v 4.9 2011/05/29 22:24:35 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -73,8 +72,6 @@
 ##  were used to control this behaviour.)
 ##  <#/GAPDoc>
 ##
-Revision.obsolete_gd :=
-    "@(#)$Id: obsolete.gd,v 4.9 2011/05/29 22:24:35 alexk Exp $";
 
 
 #############################################################################
@@ -371,6 +368,13 @@ end);
 
 # older documentation referred to `StatusRandom'. 
 DeclareSynonym("StatusRandom",StateRandom);
+
+# synonym formerly declared in factgrp.gd
+DeclareSynonym( "FactorCosetOperation",FactorCosetAction);
+
+# synonyms formerly declared in grppc.gd
+DeclareSynonym( "AffineOperation", AffineAction );
+DeclareSynonym( "AffineOperationLayer",AffineActionLayer );
 
 
 #############################################################################

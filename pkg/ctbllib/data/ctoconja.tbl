@@ -2,7 +2,7 @@
 ##
 #W  ctoconja.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoconja.tbl,v 4.27 2010/05/05 13:20:00 gap Exp $
+#H  @(#)$Id: ctoconja.tbl,v 4.28 2011/09/28 14:32:11 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -14,6 +14,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoconja.tbl,v $
+#H  Revision 4.28  2011/09/28 14:32:11  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.27  2010/05/05 13:20:00  gap
 #H  - added many class fusions,
 #H  - changed several class fusions according to consistency conditions,
@@ -249,11 +253,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctoconja_tbl :=
-    "@(#)$Id: ctoconja.tbl,v 4.27 2010/05/05 13:20:00 gap Exp $";
-
-SET_TABLEFILENAME("ctoconja");
-ALN:= Ignore;
 
 MOT("2.Co1",
 [
@@ -437,6 +436,7 @@ ALF("3.J3","3.J3.2",[1,2,2,3,4,4,5,6,6,7,8,9,9,10,11,12,10,12,11,13,14,14,
 "fusion map is unique up to table autom.,\n",
 "compatible with Brauer tables"
 ]);
+ALN("3.J3",["3.J3.2M1"]);
 
 MOT("3.J3.2",
 [
@@ -1947,7 +1947,6 @@ ARC("J4","maxes",["mx1j4","c2aj4","2^10:L5(2)","J4M4","U3(11).2","M22.2",
 "11+^(1+2):(5x2S4)","L2(32).5","L2(23).2","U3(3)","frob","43:14","37:12"]);
 
 LIBTABLE.LOADSTATUS.ctoconja:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

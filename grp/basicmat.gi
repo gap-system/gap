@@ -2,15 +2,12 @@
 ##
 #W  basicmat.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basicmat.gi,v 4.19 2011/04/12 16:12:08 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file  contains the methods for the  construction of the basic matrix
 ##  group types.
 ##
-Revision.basicmat_gi :=
-    "@(#)$Id: basicmat.gi,v 4.19 2011/04/12 16:12:08 gap Exp $";
 
 
 #############################################################################
@@ -139,7 +136,7 @@ end);
 #M  GeneralLinearGroupCons( <IsMatrixGroup>, <d>, <F> )
 ##
 InstallMethod( GeneralLinearGroupCons,
-    "matrix group for dimension and finite field size",
+    "matrix group for dimension and finite field",
     [ IsMatrixGroup and IsFinite,
       IsInt and IsPosRat,
       IsField and IsFinite ],
@@ -150,6 +147,7 @@ function( filter, n, f )
 
     # small cases
     if q = 2 and 1 < n  then
+#T why 1 < n?
         return SL( n, 2 );
     fi;
 
@@ -187,7 +185,7 @@ end );
 #M  SpecialLinearGroupCons( <IsMatrixGroup>, <d>, <q> )
 ##
 InstallMethod( SpecialLinearGroupCons,
-    "matrix group for dimension and finite field size",
+    "matrix group for dimension and finite field",
     [ IsMatrixGroup and IsFinite,
       IsInt and IsPosRat,
       IsField and IsFinite ],

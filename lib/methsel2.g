@@ -4,7 +4,6 @@
 ##                                                         Hans Ulrich Besche
 ##                                                           Max Neuenhoeffer
 ##
-#H  @(#)$Id: methsel2.g,v 4.19 2010/02/23 15:13:15 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  which do not need to be compiled by default. More performance critical
 ##  functions are found in methsel1.g
 ##
-Revision.methsel2_g :=
-  "@(#)$Id: methsel2.g,v 4.19 2010/02/23 15:13:15 gap Exp $";
 
 
 ##  This is a dirty hack, because this function is defined only later:

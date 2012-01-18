@@ -2,7 +2,6 @@
 ##
 #W  tuples.gd                   GAP library                      Steve Linton
 ##
-#H  @(#)$Id: tuples.gd,v 4.25 2010/05/19 14:43:21 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##
 ##  Direct product elements are immutable finite type-safe lists.
 ##
-Revision.tuples_gd :=
-    "@(#)$Id: tuples.gd,v 4.25 2010/05/19 14:43:21 gap Exp $";
 
 
 #############################################################################

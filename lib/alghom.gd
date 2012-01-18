@@ -2,7 +2,6 @@
 ##
 #W  alghom.gd                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: alghom.gd,v 4.24 2010/02/23 15:12:45 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -20,8 +19,6 @@
 ##  in certain cases.
 ##  <#/GAPDoc>
 ##
-Revision.alghom_gd :=
-    "@(#)$Id: alghom.gd,v 4.24 2010/02/23 15:12:45 gap Exp $";
 
 
 #############################################################################
@@ -53,7 +50,7 @@ Revision.alghom_gd :=
 ##  [ e, i, j, k ] -> [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 1 ], [ 0, 0 ] ], 
 ##    [ [ 0, 0 ], [ 1, 0 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ]
 ##  gap> Images( f, bA[1] );
-##  <add. coset of <algebra over Rationals, with 60 generators>>
+##  <add. coset of <algebra over Rationals, with 16 generators>>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -154,7 +151,7 @@ DeclareOperation( "AlgebraHomomorphismByImagesNC",
 ##  gap> A:= QuaternionAlgebra( Rationals );;
 ##  gap> B:= FullMatrixAlgebra( Rationals, 2 );;
 ##  gap> bA:= BasisVectors( Basis( A ) );; bB:= BasisVectors( Basis( B ) );;
-##  gap> f:= AlgebraWithOneGeneralMappingByImages(A,B,bA{[2,3,4]},bB{[1,2,3]});
+##  gap> f:=AlgebraWithOneGeneralMappingByImages(A,B,bA{[2,3,4]},bB{[1,2,3]});
 ##  [ i, j, k, e ] -> [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 1 ], [ 0, 0 ] ], 
 ##    [ [ 0, 0 ], [ 1, 0 ] ], [ [ 1, 0 ], [ 0, 1 ] ] ]
 ##  ]]></Example>
@@ -295,7 +292,8 @@ DeclareOperation( "AlgebraWithOneHomomorphismByImagesNC",
 ##  ( Rationals^2 )
 ##  gap> f:=OperationAlgebraHomomorphism( B, Basis( V ), OnRight );
 ##  <op. hom. Algebra( Rationals, 
-##  [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ] ) -> matrices of dim. 2>
+##  [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 0 ], [ 0, 1 ] ] 
+##   ] ) -> matrices of dim. 2>
 ##  gap> Image( f, m1 );
 ##  [ [ 1, 0 ], [ 0, 0 ] ]
 ##  ]]></Example>
@@ -425,11 +423,11 @@ DeclareSynonymAttr( "IsomorphismMatrixAlgebra", IsomorphismMatrixFLMLOR );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IsomorphismSCAlgebra( GF(8) );
-##  CanonicalBasis( GF(2^3) ) -> CanonicalBasis( <algebra of dimension 3 over GF(
-##  2)> )
+##  CanonicalBasis( GF(2^3) ) -> CanonicalBasis( <algebra of dimension 
+##  3 over GF(2)> )
 ##  gap> IsomorphismSCAlgebra( GF(2)^[2,2] );
-##  CanonicalBasis( ( GF(2)^[ 2, 2 ] ) ) -> CanonicalBasis( <algebra of dimension 
-##  4 over GF(2)> )
+##  CanonicalBasis( ( GF(2)^
+##  [ 2, 2 ] ) ) -> CanonicalBasis( <algebra of dimension 4 over GF(2)> )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

@@ -5,39 +5,27 @@ Development notes file:
 This file contains notes for development and for releasing a new version; 
 it is not intended to be a part of the release.
 
-######################################################################
+###########################################################################
 
 MAKING A CHANGE:
 
-* test the package functionality:
+* update the local GAP.dev installation
 
-ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" ) );
-
-* update the local gap dev version:
-cd /usr/local/gap_dev/4.0/
-make
-cd
-gap_dev -A -N
-CreateCompletionFiles();
+* build the manual and manual test files with 
+  
+ReadPackage("openmath/gap/buildman.g");
 
 * test the package functionality:
 
-ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" ) );
+Read( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "testall.g" ) );
 
 * do the changes.
 
-* if a new file is added, add lines like
-Revision.("openmath/dev_notes.txt") :=
-    "@(#)$Id: dev_notes.txt,v 1.48 2010/09/22 11:03:47 alexk Exp $"; see
-also the file structure at
-/usr/local/gap_dev/4.0/doc/htm/ext/CHAP003.htm#SECT002
-
 * check that new features or bug fixes are included in the test file, 
-and, if test file is modified, test the package functionality.
+  and, if test file is modified, test the package functionality.
 
 cd /usr/local/gap_dev/4.0/pkg/openmath/tst
 nano test_new.src
-
 mv test_new test_new.bak
 gap -T -r -A -b < test_new.src
 nano +30000 test_new
@@ -45,98 +33,39 @@ nano +30000 test_new
 (to remove lines after STOP_TEST)
 
 diff test_new test_new.bak
-
 rm test_new.bak
-gap_dev
-ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" ) );
+  
+Read( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "testall.g" ) );
 
 * check that the README files and the manual contain the changes.
-
-* test that the manual still compiles, and that the content is OK, using
-
-ReadPackage("openmath/gap/buildman.g");
-
-and
-
-OPENMATHBuildManual();
-
-or 
-
-OPENMATHBuildManualHTML();
-
 * commit the various changes to the CVS repository.
 
+###########################################################################
 
 PREPARING A NEW RELEASE:
 
-* check the functionality, also with gpipe method, and with an older
-version of Gap.
+* check the functionality
 
-* modify date and version number in PackageInfo.g and doc/manual.xml,
-  and version number in doc/openmath.xml and init.g
+* modify date and version number in PackageInfo.g 
+  and in the example of a banner in doc/intro.xml
+  
+* build the manual and manual test files with 
+  
+  ReadPackage("openmath/gap/buildman.g");  
 
-* test the PackageInfo.g, and that the documentation is available in Gap:
+* test the PackageInfo.g, and that the documentation is available in GAP:
 
 ValidatePackageInfo( Filename( DirectoriesPackageLibrary( "openmath", "" ), "PackageInfo.g" ) );
 ?OMPrint
 
-* commit PackageInfo.g and doc/manual.xml
+* commit PackageInfo.g and doc/intro.xml
 
-* copy the package directory to some place to create the tarball
+* check file permissions, doing chmod 755 for directories and chmod 644 
+  for files when necessary
 
-* remove "phantom" and obsolete directories:
-
-rm -rf OMCv1.3c OMlib bin htm include protos src
-
-* remove obsolete files:
-
-rm Makefile.in configure
-
-* remove the various *.bak, *~ and files from compilation doing make clean in both
-locations, otherwise get a fresh copy from CVS repository
-
-* remove dev_notes.txt and Makefile from the package's root directory
-
-* remove possibly hidden files left e.g. '.DS_Store' left by Mac OS
-
-* do chmod -x:
-cd /usr/local/gap_dev/4.0/pkg/openmath
-chmod -x tst/test5.omt
-
-* compile the documentation:
-
-ReadPackage("openmath/gap/buildman.g");
-OPENMATHBuildManual();
-
-* remove CVS subdirectories:
-rm -r CVS/ */CVS/ */*/CVS/
-
-* prepare the archive, with the right version number:
-cd ..
-tar cfvz openmath-10.1.0.tar.gz openmath/
-tar cjvf openmath-10.1.0.tar.bz2 openmath/
-
-* copy archive, PackageInfo.g, README to web page:
-scp openmath-* openmath/PackageInfo.g openmath/README alexk@shell.cs.st-and.ac.uk:~/public_html/openmath/
-
-* copy manual to the web page:
-scp openmath/doc/*.html openmath/doc/*.css openmath/doc/*.pdf alexk@shell.cs.st-and.ac.uk:~/public_html/openmath/
-
-* check the PackageInfo.g, README, archive and the manual online:
-http://www.cs.st-andrews.ac.uk/~alexk/openmath.htm
+* edit variables in the "publish" script and then call it to wrap an archive
 
 * update the web-page: modify version and links.
-
-* get a fresh copy of CVS repository, with CVS directories.
-
-* do chmod -x:
-
-chmod -x tst/test5.omt
-
-* test again:
-
-?OMTest
-ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" ) );
 
 * Send a mail about the new release to the GAP Support to include it in the
   next update of the packages archive
@@ -148,43 +77,22 @@ ReadTest( Filename( DirectoriesPackageLibrary( "openmath", "tst" ), "test_new" )
 
 ######################################################################
 
-ENCODING AND CONVERSIONS (OUTDATED):
+ENCODING AND CONVERSIONS
 
-OpenMath objects can be encoded into various formats:
-
-XML	(as defined by OpenMath standard)
-binary	(as defined by OpenMath standard)
-gpipe	(defined as the output of the program 'gpipe', included in the package)
-
+OpenMath objects can be encoded into various formats, as defined by the
+OpenMath standard:
+- XML OpenMath
+- binary OpenMath
 
 Conversion from OpenMath to Gap:
-
-* 'OMgetObjectByteStream' takes a stream in gpipe encoding and returns a
-Gap object. 
-
-* 'gpipe' takes a file in XML or binary encoding, autodetects, and
-produces a gpipe encoded file. 
-
-* 'OMpipeObject' takes a string in XML or binary encoding, pipes it to
-'gpipe', and calls 'OMgetObjectByteStream'.
 
 * 'OMgetObjectXMLTree' converts the OpenMath XML into a tree (using the
 function ParseTreeXMLString from package GapDoc) and parses it.
 
-* 'OMGetObject' takes a stream in XML or binary encoding, pipes it to
-'gpipe', and calls either OMpipeObject or OMgetObjectXMLTree.
-
-
 Conversion from Gap to OpenMath:
 
-OMPutObject takes a Gap object and puts into a stream, with XML
+OMPutObject takes a Gap object and puts into a stream, with XML or binary
 encoding.
-
-This package includes the external program 'tpipe' (OMCv1.3c/src/tpipe)
-that converts an OpenMath object with unknown/binary/XML encoding to
-binary or XML encoding, and 'gpipe' (bin/*/gpipe), that converts an
-OpenMath object with unknown/binary/XML encoding to gpipe.
-
 
 ######################################################################
 
@@ -279,9 +187,6 @@ stream := InputTextUser(); g := OMGetObject(stream);CloseStream(stream);
 * OMPut: for a Hasse diagram creates OpenMath variables like <OMV name="1"/>
 which are invalid OpenMath variables names.
 
-* Having different compiled versions of the OMCv1.3c library for
-different architectures is not supported.
-
 ######################################################################
 
 TODO:
@@ -318,13 +223,6 @@ removed by AK in April 2009, now all is done by OMsymLookup function).
 
 TODO:
 
-* Check the file permissions: in some case -rw-rw-r-- should be replaced
-with -rw-r--r-- .
-
-######################################################################
-
-TODO:
-
 * In function OMgapNativeStatementFunc, of gap/gap.g, is it necessary to
 use READ_COMMAND (instead e.g. of Read) ?
 
@@ -335,10 +233,6 @@ GapDoc package, and to remove the file gap/printutil.g?
 
 The only purpose of gap/printutil.g is to provide ViewString to
 OMgapNativeStatementFunc. 
-
-Is Gap is started with -A, openmath is loaded, and thereafter GapDoc is
-loaded, then an error occurs, because IsObjToBePrinted is defined in
-both.
 
 ######################################################################
 
@@ -358,240 +252,6 @@ lib/relation.gd:
 DeclareProperty("IsHasseDiagram", IsBinaryRelation);
 
 Something from hasse/hasse.g could be removed.
-
-######################################################################
-
-TODO:
-
-Maybe the top-level makefile can be changed, in order to automatically
-compile the OMCv1.3c library. Maybe not, in order to point that the Gap
-code and the OMCv1.3c library are two different products.
-
-TODO:
-
-* update OMCv1.3c library
-
----> The library is available from:
-ftp://ftp-sop.inria.fr/safir/OM
-
-The package contains the OMCv1.3c library, it could be updated to
-OMCv1.4a. It is available also at
-http://www.openmath.org/software/OMCv1.4a.tgz
-
-There is file with a wrong name: this is fixed with (compare also with
-OMCv1.3c):
-
-cd OMCv1.4a/src
-mv test1.omx test1.omt
-
-
-After compiling, I get 
-
---- doing some auto-tests for OpenMath lib libOM.a ...
-
-auto testing general IO...
-ok: test pipe1
-ok: test pipe2
-failed: test pipe3 (please check file BUGREP)
-
-auto testing automatic encoding detection...
-failed: test binary encoding auto detect (please check file BUGREP)
-ok: test XML encoding auto detect
-
-Hence it is not clear to me whether it works correctly or not.
-
-
-Mail about this.
-
-OpenMath INRIA C library
-
-Da: 
-Marco Costantini <costanti@science.unitn.it>
-
-A: 
-olivier.arsac@sophia.inria.fr, stephane.dalmas@sophia.inria.fr
-
-Data: 
-19:09, 20/12/2005
-
-Dear Olivier Arsac and Stéphane Dalmas,
-I have downloaded the file "OpenMath INRIA C library" 
-http://www.openmath.org/cocoon/openmath/software/OMCv1.4a.tgz
-
-Is there a newer version, or is the latest version available at 
-http://www.openmath.org/cocoon/openmath/software/ ?
-
-In src directory there is a file test1.omx , but the test in Makefile requires 
-test1.omt .
-
-
-However, the test fails: I get (on a Linux 2.4.21-0.13mdk i686 machine)
-
---- doing some auto-tests for OpenMath lib libOM.a ...
-
-auto testing general IO...
-ok: test pipe1
-ok: test pipe2
-failed: test pipe3 (please check file BUGREP)
-
-auto testing automatic encoding detection...
-failed: test binary encoding auto detect (please check file BUGREP)
-ok: test XML encoding auto detect
-
-auto testing encodings...
-ok: test enc string XML
-ok: test enc string binary
-ok: test enc wide char string XML
-ok: test enc wide char string binary
-ok: test enc array XML
-ok: test enc array binary
-ok: test enc double XML
-ok: test enc double binary
-
---- auto-tests done.
-
-What can I do to solve/further investigate  this problem? I cannot find any 
-"file BUGREP".
-
-Best regards,
-Marco Costantini
-
-
-
-Re: OpenMath INRIA C library
-
-Da: 
-Stephane Dalmas <Stephane.Dalmas@sophia.inria.fr>
-
-A: 
-costanti@science.unitn.it
-
-Data: 
-venerdì 15:14:00
-
-> Dear Olivier Arsac and Stéphane Dalmas,
->   
-Dear Marco (Olivier is no longer here, he works for a company now),
-> I have downloaded the file "OpenMath INRIA C library" 
-> http://www.openmath.org/cocoon/openmath/software/OMCv1.4a.tgz
->
-> Is there a newer version, or is the latest version available at 
-> http://www.openmath.org/cocoon/openmath/software/ ?
->   
-I'm afraid it is the latest version...  It dates back from a time when 
-there was no readily available XML library.
-> In src directory there is a file test1.omx , but the test in Makefile requires 
-> test1.omt .
->   
-It's attached at the end of this message.
->
-> However, the test fails: I get (on a Linux 2.4.21-0.13mdk i686 machine)
->
->   
-I checked here and it works right (on a Fedora Core 3 Linux 
-distribution, first time I tried to compile the library in 3 years...). 
-Maybe it is because "test1.omt" is missing ?
-> What can I do to solve/further investigate  this problem? I cannot find any 
-> "file BUGREP".
->   
-The file says that there is no know bug ! and that you should mail us if 
-you find one.
-
-I'm no more working on that and thus won't be able to help you a lot...
-
-Best regards,
-   
-    Stéphane.
-
-The home-page of Olivier Arsac is now http://www.arsac.org/olivier/
-
-######################################################################
-
-Descriptions of utilities (copied from their output):
-
-omproxy 
-   OpenMath proxy.
-   Repeats an incoming stream.
-   (stream may be socket or file).
-   when going through, OpenMath objects may be traced.
-
-   eg: omproxy -o received.om
-   eg: omproxy -i tosend.om -h server.com -p 8000
-   eg: omproxy -l 8000 -d routed.om -h server.com -p 8000
-   eg: omproxy -i in.om -o out.om -v3
-
-   -l --inport: int (7007)
-      port to listen to for connection to proxy.
-   -p --outport: int (7007)
-      port to use for host connection.
-   -h --host: string (res08-obk1.resnet.st-andrews.ac.uk)
-      host to connect to.
-   -i --infile: string
-      file to read from (instead of socket).
-   -o --outfile: string
-      file to write to (instead of socket).
-   -d --dupfile: string
-      duplicate output into this file.
-   -e --encoding: string (mimic)
-      encoding used for output. (mimic, binary or xml)
-   --tracefile: string
-      file to write log to (default is stdout).
-   -v --verbosity: int (0)
-      verbosity level (0 nothing, 1 only tokens, 2 tokens+time, 3 2+values).
-
-
-tenc -[bt] -[swad]
-   Test some encode/decode functions,
-   in binary or text mode depending on option switch -b or -t).
-   -s for string utf7 encoding.
-   -w for wide char string utf7 encoding.
-   -a for byte arrays encoding.
-   -d for portable double encoding.
-   Exit status is 0 if test has run smoothly, 1 otherwise.
-
-
-tpipe -[ubx][bx] inFile outFile
-   Pipe OpenMath inFile into OpenMath outFile
-   in/outFile may be replaced by - for stdin/out.
-   Used mainly for tests or sample purpose
-   May also be used as a conversion tool,
-   or as a basic pretty printer for XML OpenMath files.
-   u/b/x means unknown/binary/xml encoding.
-   u: creates an input device that will try to autodetect its encoding type.
-   eg: tpipe -bx A B
-         Converts binary file A into XML text file B.
-         (pretty printing it by the way).
-       tpipe -ub A B
-         Converts an unknown encoding type OpenMath file A into a binary file B.
-
-
-gpipe -[ubx] inFile outFile
-   Pipe OpenMath inFile into GAP-stream outFile
-   in/outFile may be replaced by - for stdin/out.
-   Used mainly for tests or sample purpose
-   May also be used as a conversion tool,
-   or as a basic pretty printer for XML OpenMath files.
-   u/b/x means unknown/binary/xml encoding.
-   u: creates an input device that will try to autodetect its encoding type.
-   eg: tpipe -b A B
-         Converts binary file A into GAP input file B.
-       tpipe -u A B
-         Converts an unknown encoding type OpenMath file A into a GAP input file B.
-
-######################################################################
-
-How to produce binary test files:
-
-1) *.bin is the binary file produced by tpipe, for example:
-
-../OMCv1.3c/src/tpipe -xb test3.omt test3.bin
-
-2) *.out is the output file produced from *.bin by gpipe, for example:
-
-../OMCv1.3c/src/tpipe -xb test4.omt test4.bin
-../bin/i686-apple-darwin9.6.0-gcc/gpipe -b test4.bin test4.out
-
-######################################################################
 
 ######################################################################
 

@@ -2,7 +2,6 @@
 **
 *W  scanner.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: scanner.c,v 4.97 2011/05/23 10:58:40 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl  für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -35,8 +34,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_scanner_c =
-   "@(#)$Id: scanner.c,v 4.97 2011/05/23 10:58:40 sal Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -68,6 +65,8 @@ const char * Revision_scanner_c =
 
 #include	"tls.h"
 #include	"thread.h"
+
+#include <limits.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -306,6 +305,8 @@ typedef UInt            TypSymbolSet;
 Obj  PrintPromptHook = 0;
 Obj  EndLineHook = 0;
 
+
+
 /****************************************************************************
 **
 
@@ -440,7 +441,7 @@ Obj  EndLineHook = 0;
 **  yet.  'NrErrLine' is reset to 0 if a new line is read in 'GetLine'.
 */
 void            SyntaxError (
-    Char *              msg )
+    const Char *        msg )
 {
     Int                 i;
 
@@ -456,21 +457,21 @@ void            SyntaxError (
     if ( TLS->nrErrLine == 1 )
 
       {
-	/* print the message and the filename, unless it is '*stdin*'          */
-	Pr( "Syntax error: %s", (Int)msg, 0L );
-	if ( SyStrcmp( "*stdin*", TLS->input->name ) != 0 )
-	  Pr( " in %s line %d", (Int)TLS->input->name, (Int)TLS->input->number );
-	Pr( "\n", 0L, 0L );
+        /* print the message and the filename, unless it is '*stdin*'          */
+        Pr( "Syntax error: %s", (Int)msg, 0L );
+        if ( SyStrcmp( "*stdin*", TLS->input->name ) != 0 )
+          Pr( " in %s line %d", (Int)TLS->input->name, (Int)TLS->input->number );
+        Pr( "\n", 0L, 0L );
 
-	/* print the current line                                              */
-	Pr( "%s", (Int)TLS->input->line, 0L );
+        /* print the current line                                              */
+        Pr( "%s", (Int)TLS->input->line, 0L );
 
-	/* print a '^' pointing to the current position                        */
-	for ( i = 0; i < TLS->in - TLS->input->line - 1; i++ ) {
-	  if ( TLS->input->line[i] == '\t' )  Pr("\t",0L,0L);
-	  else  Pr(" ",0L,0L);
-	}
-	Pr( "^\n", 0L, 0L );
+        /* print a '^' pointing to the current position                        */
+        for ( i = 0; i < TLS->in - TLS->input->line - 1; i++ ) {
+          if ( TLS->input->line[i] == '\t' )  Pr("\t",0L,0L);
+          else  Pr(" ",0L,0L);
+        }
+        Pr( "^\n", 0L, 0L );
       }
     /* close error output                                                  */
     assert(TLS->output);
@@ -524,7 +525,7 @@ void            SyntaxError (
 */
 void Match (
     UInt                symbol,
-    Char *              msg,
+    const Char *        msg,
     TypSymbolSet        skipto )
 {
     Char                errmsg [256];
@@ -646,7 +647,7 @@ UInt OpenDefaultOutput( void )
 **  closed by 'CloseInput'.
 */
 UInt OpenInput (
-    Char *              filename )
+    const Char *        filename )
 {
     Int                 file;
     int sp;
@@ -812,7 +813,7 @@ UInt CloseInput ( void )
 void FlushRestOfInputLine( void )
 {
   TLS->in[0] = TLS->in[1] = '\0';
-  TLS->input->number = 1;
+  /* TLS->input->number = 1; */
   TLS->symbol = S_ILLEGAL;
 }
 
@@ -872,7 +873,7 @@ void FlushRestOfInputLine( void )
 **  The first symbol is read by 'Read' in the first call to 'Match' call.
 */
 UInt OpenTest (
-    Char *              filename )
+    const Char *        filename )
 {
     /* do not allow to nest test files                                     */
     if ( TLS->testInput != 0 )
@@ -976,7 +977,7 @@ UInt CloseTest ( void )
 /* TL: static TypOutputFile logFile; */
 
 UInt OpenLog (
-    Char *              filename )
+    const Char *        filename )
 {
 
     /* refuse to open a logfile if we already log to one                   */
@@ -1073,7 +1074,7 @@ UInt CloseLog ( void )
 /* TL: static TypOutputFile inputLogFile; */
 
 UInt OpenInputLog (
-    Char *              filename )
+    const Char *        filename )
 {
 
     /* refuse to open a logfile if we already log to one                   */
@@ -1168,7 +1169,7 @@ UInt CloseInputLog ( void )
 /* TL: static TypOutputFile outputLogFile; */
 
 UInt OpenOutputLog (
-    Char *              filename )
+    const Char *        filename )
 {
 
     /* refuse to open a logfile if we already log to one                   */
@@ -1215,6 +1216,7 @@ UInt OpenOutputLogStream (
     return 1;
 }
 
+TypOutputFile*  IgnoreStdoutErrout = NULL;
 
 /****************************************************************************
 **
@@ -1274,10 +1276,17 @@ UInt CloseOutputLog ( void )
 **  closed by 'CloseOutput'.
 */
 UInt OpenOutput (
-    Char *              filename )
+    const Char *        filename )
 {
     Int                 file;
     int sp;
+
+    /* do nothing for stdout and errout if catched */
+    if ( TLS->output != NULL && IgnoreStdoutErrout == TLS->output && 
+          ( SyStrcmp( filename, "*errout*" ) == 0
+           || SyStrcmp( filename, "*stdout*" ) == 0 ) ) {
+        return 1;
+    }
 
     /* fail if we can not handle another open output file                  */
     if ( TLS->outputFilesSP == sizeof(TLS->outputFiles)/sizeof(TLS->outputFiles[0]))
@@ -1313,8 +1322,7 @@ UInt OpenOutput (
     TLS->output->format   = 1;
 
     /* variables related to line splitting, very bad place to split        */
-    TLS->output->spos    = 0;
-    TLS->output->sindent = 666;
+    TLS->output->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -1355,8 +1363,7 @@ UInt OpenOutputStream (
     TLS->output->isstream = 1;
 
     /* variables related to line splitting, very bad place to split        */
-    TLS->output->spos    = 0;
-    TLS->output->sindent = 666;
+    TLS->output->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -1384,9 +1391,12 @@ UInt CloseOutput ( void )
 {
 
     /* silently refuse to close the test output file this is probably
-	 an attempt to close *errout* which is silently not opened, so
-	 lets silently not close it  */
+         an attempt to close *errout* which is silently not opened, so
+         lets silently not close it  */
     if ( TLS->output == TLS->testOutput )
+        return 1;
+    /* and similarly */
+    if ( IgnoreStdoutErrout == TLS->output )
         return 1;
 
     /* refuse to close the initial output file '*stdout*'                  */
@@ -1418,7 +1428,7 @@ UInt CloseOutput ( void )
 **  description applies to 'OpenAppend' too.
 */
 UInt OpenAppend (
-    Char *              filename )
+    const Char *        filename )
 {
     Int                 file;
     int sp;
@@ -1454,8 +1464,7 @@ UInt OpenAppend (
     TLS->output->isstream = 0;
 
     /* variables related to line splitting, very bad place to split        */
-    TLS->output->spos    = 0;
-    TLS->output->sindent = 666;
+    TLS->output->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -1683,17 +1692,17 @@ Char GetLine ( void )
         }
 
         /* if necessary echo the line to the logfile                      */
-	if( TLS->inputLog != 0 && TLS->input->echo == 1)
+        if( TLS->inputLog != 0 && TLS->input->echo == 1)
             if ( !(TLS->in[0] == '\377' && TLS->in[1] == '\0') )
-	    PutLine2( TLS->inputLog, TLS->in, SyStrlen(TLS->in) );
+            PutLine2( TLS->inputLog, TLS->in, SyStrlen(TLS->in) );
 
-		/*	if ( ! TLS->input->isstream ) {
-	  if ( TLS->inputLog != 0 && ! TLS->input->isstream ) {
-	    if ( TLS->input->file == 0 || TLS->input->file == 2 ) {
-	      PutLine2( TLS->inputLog, TLS->in );
-	    }
-	    }
-	    } */
+                /*      if ( ! TLS->input->isstream ) {
+          if ( TLS->inputLog != 0 && ! TLS->input->isstream ) {
+            if ( TLS->input->file == 0 || TLS->input->file == 2 ) {
+              PutLine2( TLS->inputLog, TLS->in );
+            }
+            }
+            } */
 
     }
 
@@ -1727,13 +1736,13 @@ Char GetLine ( void )
 
             /* if the line is not empty or a comment, print it             */
             else if ( TLS->in[0] != '\n' && TLS->in[0] != '#' && TLS->in[0] != '\377' ) {
-	      char obuf[8];
-	      /* Commented out by AK
-	      sprintf(obuf,"-%5i:\n- ", (int)TLS->testInput->number++);
-	      PutLine2( TLS->testOutput, obuf, 7 );
-	      */
-	      sprintf(obuf,"- ");
-	      PutLine2( TLS->testOutput, obuf, 2 );
+              char obuf[8];
+              /* Commented out by AK
+              sprintf(obuf,"-%5i:\n- ", (int)TLS->testInput->number++);
+              PutLine2( TLS->testOutput, obuf, 7 );
+              */
+              sprintf(obuf,"- ");
+              PutLine2( TLS->testOutput, obuf, 2 );
                 PutLine2( TLS->testOutput, TLS->in, SyStrlen(TLS->in) );
                 TLS->in[0] = '\0';
             }
@@ -1815,7 +1824,7 @@ static inline void UNGET_CHAR( Char c) {
 */
 extern void GetSymbol ( void );
 
-typedef struct {Char *name; UInt sym;} s_keyword;
+typedef struct {const Char *name; UInt sym;} s_keyword;
 
 s_keyword AllKeywords[] = {
   {"and",       S_AND},
@@ -1996,11 +2005,11 @@ static Char GetCleanedChar( UInt *wasEscaped ) {
     else if ( *TLS->in == '\r' )  {
       GET_CHAR();
       if  ( *TLS->in == '\n' ) 
-	return GetCleanedChar(wasEscaped);
+        return GetCleanedChar(wasEscaped);
       else {
-	UNGET_CHAR(*TLS->in);
-	*wasEscaped = 1;
-	return '\r';
+        UNGET_CHAR(*TLS->in);
+        *wasEscaped = 1;
+        return '\r';
       }
     }
     else {
@@ -2043,14 +2052,14 @@ void GetNumber ( UInt StartingStatus )
       TLS->value[i++] = c;
       c = GetCleanedChar(&wasEscaped);
       for (; wasEscaped || IsAlpha(c) || IsDigit(c) || c == '$' || c == '@' || c =='_'; i++) {
-	if (i < SAFE_VALUE_SIZE -1)
-	  TLS->value[i] = c;
-	c = GetCleanedChar(&wasEscaped);
+        if (i < SAFE_VALUE_SIZE -1)
+          TLS->value[i] = c;
+        c = GetCleanedChar(&wasEscaped);
       }
       if (i < SAFE_VALUE_SIZE -1)
-	TLS->value[i] = '\0';
+        TLS->value[i] = '\0';
       else
-	TLS->value[SAFE_VALUE_SIZE-1] = '\0';
+        TLS->value[SAFE_VALUE_SIZE-1] = '\0';
       TLS->symbol = S_IDENT;
       return;
     } 
@@ -2069,24 +2078,24 @@ void GetNumber ( UInt StartingStatus )
       /* peek ahead to decide which */
       GET_CHAR();
       if (*TLS->in == '.') {
-	/* It was .. */
-	UNGET_CHAR(*TLS->in);
-	TLS->symbol = S_INT;
-	TLS->value[i] = '\0';
-	return;
+        /* It was .. */
+        UNGET_CHAR(*TLS->in);
+        TLS->symbol = S_INT;
+        TLS->value[i] = '\0';
+        return;
       } 
       
       
       /* Not .. Put back the character we peeked at */
       UNGET_CHAR(*TLS->in);
       /* Now the . must be part of our number 
-	 store it and move on */
+         store it and move on */
       TLS->value[i++] = c;
       c = GetCleanedChar(&wasEscaped);
     }
     
     else {
-      /* Anything else we see tells us that the token is done */	
+      /* Anything else we see tells us that the token is done */        
       TLS->value[i]  = '\0';
       TLS->symbol = S_INT;
       return;
@@ -2114,32 +2123,32 @@ void GetNumber ( UInt StartingStatus )
     /* If we found an identifier type character in this context could be an error 
       or the start of one of the allowed trailing marker sequences */
     if (wasEscaped || (IsAlpha(c)  && c != 'e' && c != 'E' && c != 'D' && c != 'q' &&
-		       c != 'Q') || c == '$' || c == '@' || c == '_') {
+                       c != 'd' && c != 'Q') || c == '$' || c == '@' || c == '_') {
       
       /* We allow one letter on the end of the numbers -- could be an i,
        C99 style */
       if (!wasEscaped) {
-	if (IsAlpha(c)) {
-	  TLS->value[i++] = c;
-	  c = GetCleanedChar(&wasEscaped);
-	}
-	/* independently of that, we allow an _ signalling immediate conversion */
-	if (c == '_') {
-	  TLS->value[i++] = c;
-	  c = GetCleanedChar(&wasEscaped);
-	  /* After which there may be one character signifying the conversion style */
-	  if (IsAlpha(c)) {
-	    TLS->value[i++] = c;
-	    c = GetCleanedChar(&wasEscaped);	  
-	  }
-	}
-	/* Now if the next character is alphanumerical, or an identifier type symbol then we 
-	   really do have an error, otherwise we return a result */
-	if (!IsAlpha(c) && !IsDigit(c) && c != '$' && c != '@' && c != '_') {
-	  TLS->value[i] = '\0';
-	  TLS->symbol = S_FLOAT;
-	  return;
-	}
+        if (IsAlpha(c)) {
+          TLS->value[i++] = c;
+          c = GetCleanedChar(&wasEscaped);
+        }
+        /* independently of that, we allow an _ signalling immediate conversion */
+        if (c == '_') {
+          TLS->value[i++] = c;
+          c = GetCleanedChar(&wasEscaped);
+          /* After which there may be one character signifying the conversion style */
+          if (IsAlpha(c)) {
+            TLS->value[i++] = c;
+            c = GetCleanedChar(&wasEscaped);      
+          }
+        }
+        /* Now if the next character is alphanumerical, or an identifier type symbol then we 
+           really do have an error, otherwise we return a result */
+        if (!IsAlpha(c) && !IsDigit(c) && c != '$' && c != '@' && c != '_') {
+          TLS->value[i] = '\0';
+          TLS->symbol = S_FLOAT;
+          return;
+        }
       }
       SyntaxError("Badly formed number");
     }
@@ -2148,16 +2157,16 @@ void GetNumber ( UInt StartingStatus )
        left the previous loop because of overflow */
     if (IsAlpha(c))
       {
-	if (!seenADigit)
-	  SyntaxError("Badly formed number, need a digit before or after the decimal point");
-	seenExp = 1;
-	TLS->value[i++] = c;
-	c = GetCleanedChar(&wasEscaped);
-	if (!wasEscaped && (c == '+' || c == '-'))
-	  {
-	    TLS->value[i++] = c;
-	    c = GetCleanedChar(&wasEscaped);
-	  }
+        if (!seenADigit)
+          SyntaxError("Badly formed number, need a digit before or after the decimal point");
+        seenExp = 1;
+        TLS->value[i++] = c;
+        c = GetCleanedChar(&wasEscaped);
+        if (!wasEscaped && (c == '+' || c == '-'))
+          {
+            TLS->value[i++] = c;
+            c = GetCleanedChar(&wasEscaped);
+          }
       }
       
     /* Now deal with full buffer case */
@@ -2171,29 +2180,29 @@ void GetNumber ( UInt StartingStatus )
        deal with the end of token case */
     if (!seenExp) {
       if (!seenADigit)
-	SyntaxError("Badly formed number, need a digit before or after the decimal point");
+        SyntaxError("Badly formed number, need a digit before or after the decimal point");
       /* Might be a conversion marker */
       if (!wasEscaped) {
-	if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' && c != 'q' && c != 'Q') {
-	  TLS->value[i++] = c;
-	  c = GetCleanedChar(&wasEscaped);
-	}
-	/* independently of that, we allow an _ signalling immediate conversion */
-	if (c == '_') {
-	  TLS->value[i++] = c;
-	  c = GetCleanedChar(&wasEscaped);
-	  /* After which there may be one character signifying the conversion style */
-	  if (IsAlpha(c))
-	    TLS->value[i++] = c;
-	  c = GetCleanedChar(&wasEscaped);	  
-	}
-	/* Now if the next character is alphanumerical, or an identifier type symbol then we 
-	   really do have an error, otherwise we return a result */
-	if (!IsAlpha(c) && !IsDigit(c) && c != '$' && c != '@' && c != '_') {
-	  TLS->value[i] = '\0';
-	  TLS->symbol = S_FLOAT;
-	  return;
-	}
+        if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' && c != 'q' && c != 'Q') {
+          TLS->value[i++] = c;
+          c = GetCleanedChar(&wasEscaped);
+        }
+        /* independently of that, we allow an _ signalling immediate conversion */
+        if (c == '_') {
+          TLS->value[i++] = c;
+          c = GetCleanedChar(&wasEscaped);
+          /* After which there may be one character signifying the conversion style */
+          if (IsAlpha(c))
+            TLS->value[i++] = c;
+          c = GetCleanedChar(&wasEscaped);        
+        }
+        /* Now if the next character is alphanumerical, or an identifier type symbol then we 
+           really do have an error, otherwise we return a result */
+        if (!IsAlpha(c) && !IsDigit(c) && c != '$' && c != '@' && c != '_') {
+          TLS->value[i] = '\0';
+          TLS->symbol = S_FLOAT;
+          return;
+        }
       }
       SyntaxError("Badly Formed Number");
     }
@@ -2238,1156 +2247,1218 @@ void GetNumber ( UInt StartingStatus )
 
 
 
-  /****************************************************************************
-   **
-   *F  GetStr()  . . . . . . . . . . . . . . . . . . . . . . get a string, local
-   **
-   **  'GetStr' reads  a  string from the  current input file into  the variable
-   **  'TLS->value' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
-   **  of the string is the current character pointed to by 'In'.
-   **
-   **  A string is a sequence of characters delimited  by double quotes '"'.  It
-   **  must not include  '"' or <newline>  characters, but the  escape sequences
-   **  '\"' or '\n' can  be used instead.  The  escape sequence  '\<newline>' is
-   **  ignored, making it possible to split long strings over multiple lines.
-   **
-   **  An error is raised if the string includes a <newline> character or if the
-   **  file ends before the closing '"'.
-   **
-   **  When TLS->value is  completely filled we have to check  if the reading of
-   **  the string is  complete or not to decide  between Symbol=S_STRING or
-   **  S_PARTIALSTRING.
-   */
-  void GetStr ( void )
-  {
-    Int                 i = 0, fetch;
-    Char                a, b, c;
+/****************************************************************************
+ **
+ *F  GetStr()  . . . . . . . . . . . . . . . . . . . . . . get a string, local
+ **
+ **  'GetStr' reads  a  string from the  current input file into  the variable
+ **  'TLS->value' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
+ **  of the string is the current character pointed to by 'In'.
+ **
+ **  A string is a sequence of characters delimited  by double quotes '"'.  It
+ **  must not include  '"' or <newline>  characters, but the  escape sequences
+ **  '\"' or '\n' can  be used instead.  The  escape sequence  '\<newline>' is
+ **  ignored, making it possible to split long strings over multiple lines.
+ **
+ **  An error is raised if the string includes a <newline> character or if the
+ **  file ends before the closing '"'.
+ **
+ **  When TLS->value is  completely filled we have to check  if the reading of
+ **  the string is  complete or not to decide  between Symbol=S_STRING or
+ **  S_PARTIALSTRING.
+ */
+void GetStr ( void )
+{
+  Int                 i = 0, fetch;
+  Char                a, b, c;
 
-    /* Avoid substitution of '?' in beginning of GetLine chunks */
-    TLS->helpSubsOn = 0;
+  /* Avoid substitution of '?' in beginning of GetLine chunks */
+  TLS->helpSubsOn = 0;
 
-    /* read all characters into 'TLS->value'                                    */
-    for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS->in != '"'
-	    /* && *TLS->in != '\n'*/ && *TLS->in != '\377'; i++ ) {
+  /* read all characters into 'TLS->value'                                    */
+  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *TLS->in != '"'
+           && *TLS->in != '\n' && *TLS->in != '\377'; i++ ) {
 
-      fetch = 1;
-      /* handle escape sequences                                         */
-      if ( *TLS->in == '\\' ) {
-	GET_CHAR();
-	if      ( *TLS->in == '\n' )  i--;
-	else if ( *TLS->in == '\r' )  {
-	  GET_CHAR();
-	  if  ( *TLS->in == '\n' )  i--;
-	  else  {TLS->value[i] = '\r'; fetch = 0;}
-	}
-	else if ( *TLS->in == 'n'  )  TLS->value[i] = '\n';
-	else if ( *TLS->in == 't'  )  TLS->value[i] = '\t';
-	else if ( *TLS->in == 'r'  )  TLS->value[i] = '\r';
-	else if ( *TLS->in == 'b'  )  TLS->value[i] = '\b';
-	else if ( *TLS->in == '>'  )  TLS->value[i] = '\01';
-	else if ( *TLS->in == '<'  )  TLS->value[i] = '\02';
-	else if ( *TLS->in == 'c'  )  TLS->value[i] = '\03';
-	else if ( IsDigit( *TLS->in ) ) {
-	  a = *TLS->in; GET_CHAR(); b = *TLS->in; GET_CHAR(); c = *TLS->in;
-	  if (!( IsDigit(b) && IsDigit(c) )){
-	    SyntaxError("expecting three octal digits after \\ in string");
-	  }
-	  TLS->value[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
-	}
-	else  TLS->value[i] = *TLS->in;
-      }
-
-      /* put normal chars into 'TLS->value' but only if there is room         */
-      else {
-	TLS->value[i] = *TLS->in;
-      }
-
-      /* read the next character                                         */
-      if (fetch) GET_CHAR();
-
-    }
-
-    /* XXX although we have TLS->valueLen we need trailing \000 here,
-       in gap.c, function FuncMAKE_INIT this is still used as C-string
-       and long integers and strings are not yet supported!    */
-    TLS->value[i] = '\0';
-
-    /* check for error conditions                                          */
-    if ( *TLS->in == '\n'  )
-      SyntaxError("string must not include <newline>");
-    if ( *TLS->in == '\377' )
-      SyntaxError("string must end with \" before end of file");
-
-    /* set length of string, set 'TLS->symbol' and skip trailing '"'            */
-    TLS->valueLen = i;
-    if ( i < SAFE_VALUE_SIZE-1 )  {
-      TLS->symbol = S_STRING;
-      if ( *TLS->in == '"' )  GET_CHAR();
-    }
-    else
-      TLS->symbol = S_PARTIALSTRING;
-
-    /* switching on substitution of '?' */
-    TLS->helpSubsOn = 1;
-  }
-
-
-  /****************************************************************************
-   **
-   *F  GetChar() . . . . . . . . . . . . . . . . . get a single character, local
-   **
-   **  'GetChar' reads the next  character from the current input file  into the
-   **  variable 'TLS->value' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
-   **  '\'' of the character is the current character pointed to by 'In'.
-   **
-   **  A  character is  a  single character delimited by single quotes '\''.  It
-   **  must not  be '\'' or <newline>, but  the escape  sequences '\\\'' or '\n'
-   **  can be used instead.
-   */
-  void GetChar ( void )
-  {
-    Char c;
-
-    /* skip '\''                                                           */
-    GET_CHAR();
-
-    /* handle escape equences                                              */
+    fetch = 1;
+    /* handle escape sequences                                         */
     if ( *TLS->in == '\\' ) {
       GET_CHAR();
-      if ( *TLS->in == 'n'  )       TLS->value[0] = '\n';
-      else if ( *TLS->in == 't'  )  TLS->value[0] = '\t';
-      else if ( *TLS->in == 'r'  )  TLS->value[0] = '\r';
-      else if ( *TLS->in == 'b'  )  TLS->value[0] = '\b';
-      else if ( *TLS->in == '>'  )  TLS->value[0] = '\01';
-      else if ( *TLS->in == '<'  )  TLS->value[0] = '\02';
-      else if ( *TLS->in == 'c'  )  TLS->value[0] = '\03';
-      else if ( *TLS->in >= '0' && *TLS->in <= '7' ) {
-	/* escaped three digit octal numbers are allowed in input */
-	c = 64 * (*TLS->in - '0');
-	GET_CHAR();
-	if ( *TLS->in < '0' || *TLS->in > '7' )
-	  SyntaxError("expecting octal digit in character constant");
-	c = c + 8 * (*TLS->in - '0');
-	GET_CHAR();
-	if ( *TLS->in < '0' || *TLS->in > '7' )
-	  SyntaxError("expecting 3 octal digits in character constant");
-	c = c + (*TLS->in - '0');
-	TLS->value[0] = c;
+      /* if next is another '\\' followed by '\n' it must be ignored */
+      while ( *TLS->in == '\\' ) {
+        GET_CHAR();
+        if ( *TLS->in == '\n' )
+          GET_CHAR();
+        else {
+          UNGET_CHAR( '\\' );
+          break;
+        }
       }
-      else                     TLS->value[0] = *TLS->in;
+      if      ( *TLS->in == '\n' )  i--;
+      else if ( *TLS->in == '\r' )  {
+        GET_CHAR();
+        if  ( *TLS->in == '\n' )  i--;
+        else  {TLS->value[i] = '\r'; fetch = 0;}
+      }
+      else if ( *TLS->in == 'n'  )  TLS->value[i] = '\n';
+      else if ( *TLS->in == 't'  )  TLS->value[i] = '\t';
+      else if ( *TLS->in == 'r'  )  TLS->value[i] = '\r';
+      else if ( *TLS->in == 'b'  )  TLS->value[i] = '\b';
+      else if ( *TLS->in == '>'  )  TLS->value[i] = '\01';
+      else if ( *TLS->in == '<'  )  TLS->value[i] = '\02';
+      else if ( *TLS->in == 'c'  )  TLS->value[i] = '\03';
+      else if ( IsDigit( *TLS->in ) ) {
+        a = *TLS->in; GET_CHAR(); b = *TLS->in; GET_CHAR(); c = *TLS->in;
+        if (!( IsDigit(b) && IsDigit(c) )){
+          SyntaxError("expecting three octal digits after \\ in string");
+        }
+        TLS->value[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
+      }
+      else  TLS->value[i] = *TLS->in;
     }
 
-    /* put normal chars into 'TLS->value'                                       */
+    /* put normal chars into 'TLS->value' but only if there is room         */
     else {
-      TLS->value[0] = *TLS->in;
+      TLS->value[i] = *TLS->in;
     }
 
-    /* read the next character                                             */
-    GET_CHAR();
-
-    /* check for terminating single quote                                  */
-    if ( *TLS->in != '\'' )
-      SyntaxError("missing single quote in character constant");
-
-    /* skip the closing quote                                              */
-    TLS->symbol = S_CHAR;
-    if ( *TLS->in == '\'' )  GET_CHAR();
+    /* read the next character                                         */
+    if (fetch) GET_CHAR();
 
   }
 
+  /* XXX although we have TLS->valueLen we need trailing \000 here,
+     in gap.c, function FuncMAKE_INIT this is still used as C-string
+     and long integers and strings are not yet supported!    */
+  TLS->value[i] = '\0';
 
-  /****************************************************************************
-   **
-   *F  GetSymbol() . . . . . . . . . . . . . . . . .  get the next symbol, local
-   **
-   **  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
-   **  variable 'Symbol'.  If 'Symbol' is  'S_IDENT', 'S_INT' or 'S_STRING'  the
-   **  value of the symbol is stored in the variable 'TLS->value'.  'GetSymbol' first
-   **  skips all <space>, <tab> and <newline> characters and comments.
-   **
-   **  After reading  a  symbol the current  character   is the first  character
-   **  beyond that symbol.
-   */
+  /* check for error conditions                                          */
+  if ( *TLS->in == '\n'  )
+    SyntaxError("string must not include <newline>");
+  if ( *TLS->in == '\377' )
+    SyntaxError("string must end with \" before end of file");
+
+  /* set length of string, set 'TLS->symbol' and skip trailing '"'            */
+  TLS->valueLen = i;
+  if ( i < SAFE_VALUE_SIZE-1 )  {
+    TLS->symbol = S_STRING;
+    if ( *TLS->in == '"' )  GET_CHAR();
+  }
+  else
+    TLS->symbol = S_PARTIALSTRING;
+
+  /* switching on substitution of '?' */
+  TLS->helpSubsOn = 1;
+}
+
+
+/****************************************************************************
+ **
+ *F  GetChar() . . . . . . . . . . . . . . . . . get a single character, local
+ **
+ **  'GetChar' reads the next  character from the current input file  into the
+ **  variable 'TLS->value' and sets 'Symbol' to 'S_CHAR'.  The opening single quote
+ **  '\'' of the character is the current character pointed to by 'In'.
+ **
+ **  A  character is  a  single character delimited by single quotes '\''.  It
+ **  must not  be '\'' or <newline>, but  the escape  sequences '\\\'' or '\n'
+ **  can be used instead.
+ */
+void GetChar ( void )
+{
+  Char c;
+
+  /* skip '\''                                                           */
+  GET_CHAR();
+
+  /* handle escape equences                                              */
+  if ( *TLS->in == '\\' ) {
+    GET_CHAR();
+    if ( *TLS->in == 'n'  )       TLS->value[0] = '\n';
+    else if ( *TLS->in == 't'  )  TLS->value[0] = '\t';
+    else if ( *TLS->in == 'r'  )  TLS->value[0] = '\r';
+    else if ( *TLS->in == 'b'  )  TLS->value[0] = '\b';
+    else if ( *TLS->in == '>'  )  TLS->value[0] = '\01';
+    else if ( *TLS->in == '<'  )  TLS->value[0] = '\02';
+    else if ( *TLS->in == 'c'  )  TLS->value[0] = '\03';
+    else if ( *TLS->in >= '0' && *TLS->in <= '7' ) {
+      /* escaped three digit octal numbers are allowed in input */
+      c = 64 * (*TLS->in - '0');
+      GET_CHAR();
+      if ( *TLS->in < '0' || *TLS->in > '7' )
+        SyntaxError("expecting octal digit in character constant");
+      c = c + 8 * (*TLS->in - '0');
+      GET_CHAR();
+      if ( *TLS->in < '0' || *TLS->in > '7' )
+        SyntaxError("expecting 3 octal digits in character constant");
+      c = c + (*TLS->in - '0');
+      TLS->value[0] = c;
+    }
+    else                     TLS->value[0] = *TLS->in;
+  }
+
+  /* put normal chars into 'TLS->value'                                       */
+  else {
+    TLS->value[0] = *TLS->in;
+  }
+
+  /* read the next character                                             */
+  GET_CHAR();
+
+  /* check for terminating single quote                                  */
+  if ( *TLS->in != '\'' )
+    SyntaxError("missing single quote in character constant");
+
+  /* skip the closing quote                                              */
+  TLS->symbol = S_CHAR;
+  if ( *TLS->in == '\'' )  GET_CHAR();
+
+}
+
+
+/****************************************************************************
+ **
+ *F  GetSymbol() . . . . . . . . . . . . . . . . .  get the next symbol, local
+ **
+ **  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
+ **  variable 'Symbol'.  If 'Symbol' is  'S_IDENT', 'S_INT' or 'S_STRING'  the
+ **  value of the symbol is stored in the variable 'TLS->value'.  'GetSymbol' first
+ **  skips all <space>, <tab> and <newline> characters and comments.
+ **
+ **  After reading  a  symbol the current  character   is the first  character
+ **  beyond that symbol.
+ */
 /* TL: Int DualSemicolon = 0; */
 
-  void GetSymbol ( void )
-  {
-    /* special case if reading of a long token is not finished */
-    if (TLS->symbol == S_PARTIALSTRING) {
-      GetStr();
-      return;
-    }
-    if (TLS->symbol == S_PARTIALINT) {
-      if (TLS->value[0] == '\0')
-	GetNumber(0);
-      else
-	GetNumber(1);
-      return;
-    }
-    if (TLS->symbol == S_PARTIALFLOAT1) {
-      GetNumber(2);
-      return;
-    }
+void GetSymbol ( void )
+{
+  /* special case if reading of a long token is not finished */
+  if (TLS->symbol == S_PARTIALSTRING) {
+    GetStr();
+    return;
+  }
+  if (TLS->symbol == S_PARTIALINT) {
+    if (TLS->value[0] == '\0')
+      GetNumber(0);
+    else
+      GetNumber(1);
+    return;
+  }
+  if (TLS->symbol == S_PARTIALFLOAT1) {
+    GetNumber(2);
+    return;
+  }
 
-    if (TLS->symbol == S_PARTIALFLOAT2) {
-      GetNumber(3);
-      return;
-    }
-    if (TLS->symbol == S_PARTIALFLOAT3) {
-      GetNumber(4);
-      return;
-    }
+  if (TLS->symbol == S_PARTIALFLOAT2) {
+    GetNumber(3);
+    return;
+  }
+  if (TLS->symbol == S_PARTIALFLOAT3) {
+    GetNumber(4);
+    return;
+  }
 
-    if (TLS->symbol == S_PARTIALFLOAT4) {
-      GetNumber(5);
-      return;
-    }
+  if (TLS->symbol == S_PARTIALFLOAT4) {
+    GetNumber(5);
+    return;
+  }
 
 
-    /* if no character is available then get one                           */
-    if ( *TLS->in == '\0' )
-      { TLS->in--;
-        GET_CHAR();
-      }
-
-    /* skip over <spaces>, <tabs>, <newlines> and comments                 */
-    while (*TLS->in==' '||*TLS->in=='\t'||*TLS->in=='\n'||*TLS->in=='\r'||*TLS->in=='\f'||*TLS->in=='#') {
-      if ( *TLS->in == '#' ) {
-	while ( *TLS->in != '\n' && *TLS->in != '\r' && *TLS->in != '\377' )
-	  GET_CHAR();
-      }
+  /* if no character is available then get one                           */
+  if ( *TLS->in == '\0' )
+    { TLS->in--;
       GET_CHAR();
     }
 
-    /* switch according to the character                                   */
-    switch ( *TLS->in ) {
-
-    case '.':   TLS->symbol = S_DOT;                         GET_CHAR();
-      /*            if ( *TLS->in == '\\' ) { GET_CHAR();
-		    if ( *TLS->in == '\n' ) { GET_CHAR(); } }   */
-      if ( *TLS->in == '.' ) { TLS->symbol = S_DOTDOT;  GET_CHAR();  break; }
-      break;
-
-    case '!':   TLS->symbol = S_ILLEGAL;                     GET_CHAR();
-      if ( *TLS->in == '\\' ) { GET_CHAR();
-	if ( *TLS->in == '\n' ) { GET_CHAR(); } }
-      if ( *TLS->in == '.' ) { TLS->symbol = S_BDOT;    GET_CHAR();  break; }
-      if ( *TLS->in == '[' ) { TLS->symbol = S_BLBRACK; GET_CHAR();  break; }
-      if ( *TLS->in == '{' ) { TLS->symbol = S_BLBRACE; GET_CHAR();  break; }
-      break;
-    case '[':   TLS->symbol = S_LBRACK;                      GET_CHAR();  break;
-    case ']':   TLS->symbol = S_RBRACK;                      GET_CHAR();  break;
-    case '{':   TLS->symbol = S_LBRACE;                      GET_CHAR();  break;
-    case '}':   TLS->symbol = S_RBRACE;                      GET_CHAR();  break;
-    case '(':   TLS->symbol = S_LPAREN;                      GET_CHAR();  break;
-    case ')':   TLS->symbol = S_RPAREN;                      GET_CHAR();  break;
-    case ',':   TLS->symbol = S_COMMA;                       GET_CHAR();  break;
-
-    case ':':   TLS->symbol = S_COLON;                       GET_CHAR();
-      if ( *TLS->in == '\\' ) {
-	GET_CHAR();
-	if ( *TLS->in == '\n' )
-	  { GET_CHAR(); }
-      }
-      if ( *TLS->in == '=' ) { TLS->symbol = S_ASSIGN;  GET_CHAR(); break; }
-      break;
-
-    case ';':   TLS->symbol = S_SEMICOLON;                   GET_CHAR();  break;
-
-    case '=':   TLS->symbol = S_EQ;                          GET_CHAR();  break;
-    case '<':   TLS->symbol = S_LT;                          GET_CHAR();
-      if ( *TLS->in == '\\' ) { GET_CHAR();
-	if ( *TLS->in == '\n' ) { GET_CHAR(); } }
-      if ( *TLS->in == '=' ) { TLS->symbol = S_LE;      GET_CHAR();  break; }
-      if ( *TLS->in == '>' ) { TLS->symbol = S_NE;      GET_CHAR();  break; }
-      break;
-    case '>':   TLS->symbol = S_GT;                          GET_CHAR();
-      if ( *TLS->in == '\\' ) { GET_CHAR();
-	if ( *TLS->in == '\n' ) { GET_CHAR(); } }
-      if ( *TLS->in == '=' ) { TLS->symbol = S_GE;      GET_CHAR();  break; }
-      break;
-
-    case '+':   TLS->symbol = S_PLUS;                        GET_CHAR();  break;
-    case '-':   TLS->symbol = S_MINUS;                       GET_CHAR();
-      if ( *TLS->in == '\\' ) { GET_CHAR();
-	if ( *TLS->in == '\n' ) { GET_CHAR(); } }
-      if ( *TLS->in == '>' ) { TLS->symbol=S_MAPTO;     GET_CHAR();  break; }
-      break;
-    case '*':   TLS->symbol = S_MULT;                        GET_CHAR();  break;
-    case '/':   TLS->symbol = S_DIV;                         GET_CHAR();  break;
-    case '^':   TLS->symbol = S_POW;                         GET_CHAR();  break;
-
-    case '"':                               GET_CHAR(); GetStr();    break;
-    case '\'':                                          GetChar();   break;
-    case '\\':                                          GetIdent();  break;
-    case '_':                                           GetIdent();  break;
-    case '$':                                           GetIdent();  break;
-    case '@':                                           GetIdent();  break;
-    case '~':   TLS->value[0] = '~';  TLS->value[1] = '\0';
-      TLS->symbol = S_IDENT;                       GET_CHAR();  break;
-
-    case '0': case '1': case '2': case '3': case '4':
-    case '5': case '6': case '7': case '8': case '9':   
-      GetNumber(0);    break;
-
-    case '\377': TLS->symbol = S_EOF;                        *TLS->in = '\0';  break;
-
-    default :   if ( IsAlpha(*TLS->in) )                   { GetIdent();  break; }
-      TLS->symbol = S_ILLEGAL;                     GET_CHAR();  break;
+  /* skip over <spaces>, <tabs>, <newlines> and comments                 */
+  while (*TLS->in==' '||*TLS->in=='\t'||*TLS->in=='\n'||*TLS->in=='\r'||*TLS->in=='\f'||*TLS->in=='#') {
+    if ( *TLS->in == '#' ) {
+      while ( *TLS->in != '\n' && *TLS->in != '\r' && *TLS->in != '\377' )
+        GET_CHAR();
     }
+    GET_CHAR();
   }
 
+  /* switch according to the character                                   */
+  switch ( *TLS->in ) {
 
-  /****************************************************************************
-   **
+  case '.':   TLS->symbol = S_DOT;                         GET_CHAR();
+    /*            if ( *TLS->in == '\\' ) { GET_CHAR();
+            if ( *TLS->in == '\n' ) { GET_CHAR(); } }   */
+    if ( *TLS->in == '.' ) { TLS->symbol = S_DOTDOT;  GET_CHAR();  break; }
+    break;
 
-   *F * * * * * * * * * * * * *  output functions  * * * * * * * * * * * * * * *
-   */
+  case '!':   TLS->symbol = S_ILLEGAL;                     GET_CHAR();
+    if ( *TLS->in == '\\' ) { GET_CHAR();
+      if ( *TLS->in == '\n' ) { GET_CHAR(); } }
+    if ( *TLS->in == '.' ) { TLS->symbol = S_BDOT;    GET_CHAR();  break; }
+    if ( *TLS->in == '[' ) { TLS->symbol = S_BLBRACK; GET_CHAR();  break; }
+    if ( *TLS->in == '{' ) { TLS->symbol = S_BLBRACE; GET_CHAR();  break; }
+    break;
+  case '[':   TLS->symbol = S_LBRACK;                      GET_CHAR();  break;
+  case ']':   TLS->symbol = S_RBRACK;                      GET_CHAR();  break;
+  case '{':   TLS->symbol = S_LBRACE;                      GET_CHAR();  break;
+  case '}':   TLS->symbol = S_RBRACE;                      GET_CHAR();  break;
+  case '(':   TLS->symbol = S_LPAREN;                      GET_CHAR();  break;
+  case ')':   TLS->symbol = S_RPAREN;                      GET_CHAR();  break;
+  case ',':   TLS->symbol = S_COMMA;                       GET_CHAR();  break;
+
+  case ':':   TLS->symbol = S_COLON;                       GET_CHAR();
+    if ( *TLS->in == '\\' ) {
+      GET_CHAR();
+      if ( *TLS->in == '\n' )
+        { GET_CHAR(); }
+    }
+    if ( *TLS->in == '=' ) { TLS->symbol = S_ASSIGN;  GET_CHAR(); break; }
+    break;
+
+  case ';':   TLS->symbol = S_SEMICOLON;                   GET_CHAR();  break;
+
+  case '=':   TLS->symbol = S_EQ;                          GET_CHAR();  break;
+  case '<':   TLS->symbol = S_LT;                          GET_CHAR();
+    if ( *TLS->in == '\\' ) { GET_CHAR();
+      if ( *TLS->in == '\n' ) { GET_CHAR(); } }
+    if ( *TLS->in == '=' ) { TLS->symbol = S_LE;      GET_CHAR();  break; }
+    if ( *TLS->in == '>' ) { TLS->symbol = S_NE;      GET_CHAR();  break; }
+    break;
+  case '>':   TLS->symbol = S_GT;                          GET_CHAR();
+    if ( *TLS->in == '\\' ) { GET_CHAR();
+      if ( *TLS->in == '\n' ) { GET_CHAR(); } }
+    if ( *TLS->in == '=' ) { TLS->symbol = S_GE;      GET_CHAR();  break; }
+    break;
+
+  case '+':   TLS->symbol = S_PLUS;                        GET_CHAR();  break;
+  case '-':   TLS->symbol = S_MINUS;                       GET_CHAR();
+    if ( *TLS->in == '\\' ) { GET_CHAR();
+      if ( *TLS->in == '\n' ) { GET_CHAR(); } }
+    if ( *TLS->in == '>' ) { TLS->symbol=S_MAPTO;     GET_CHAR();  break; }
+    break;
+  case '*':   TLS->symbol = S_MULT;                        GET_CHAR();  break;
+  case '/':   TLS->symbol = S_DIV;                         GET_CHAR();  break;
+  case '^':   TLS->symbol = S_POW;                         GET_CHAR();  break;
+
+  case '"':                               GET_CHAR(); GetStr();    break;
+  case '\'':                                          GetChar();   break;
+  case '\\':                                          GetIdent();  break;
+  case '_':                                           GetIdent();  break;
+  case '$':                                           GetIdent();  break;
+  case '@':                                           GetIdent();  break;
+  case '~':   TLS->value[0] = '~';  TLS->value[1] = '\0';
+    TLS->symbol = S_IDENT;                       GET_CHAR();  break;
+
+  case '0': case '1': case '2': case '3': case '4':
+  case '5': case '6': case '7': case '8': case '9':   
+    GetNumber(0);    break;
+
+  case '\377': TLS->symbol = S_EOF;                        *TLS->in = '\0';  break;
+
+  default :   if ( IsAlpha(*TLS->in) )                   { GetIdent();  break; }
+    TLS->symbol = S_ILLEGAL;                     GET_CHAR();  break;
+  }
+}
 
 
-  /****************************************************************************
-   **
+/****************************************************************************
+ **
 
-   *V  WriteAllFunc  . . . . . . . . . . . . . . . . . . . . . . . .  'WriteAll'
-   */
+ *F * * * * * * * * * * * * *  output functions  * * * * * * * * * * * * * * *
+ */
+
+
+/****************************************************************************
+ **
+
+ *V  WriteAllFunc  . . . . . . . . . . . . . . . . . . . . . . . .  'WriteAll'
+ */
 Obj WriteAllFunc;
 
 
-  /****************************************************************************
-   **
-   *F  PutLine2( <output>, <line>, <len> )  . . . . . . . . . print a line, local
-   **
-   **  Introduced  <len> argument. Actually in all cases where this is called one
-   **  knows the length of <line>, so it is not necessary to compute it again
-   **  with the inefficient C- SyStrlen.  (FL)
-   */
+/****************************************************************************
+ **
+ *F  PutLine2( <output>, <line>, <len> )  . . . . . . . . . print a line, local
+ **
+ **  Introduced  <len> argument. Actually in all cases where this is called one
+ **  knows the length of <line>, so it is not necessary to compute it again
+ **  with the inefficient C- SyStrlen.  (FL)
+ */
 
 
-  void PutLine2(
-		TypOutputFile *         output,
-		Char *                  line,
-		UInt                    len )
-  {
-    Obj                     str;
-    UInt                    lstr;
-    if ( ! output ) {
-      output = TLS->output;
-      if ( ! output ) OpenDefaultOutput();
-      output = TLS->output;
+void PutLine2(
+        TypOutputFile *         output,
+        Char *                  line,
+        UInt                    len )
+{
+  Obj                     str;
+  UInt                    lstr;
+  if ( ! output ) {
+    output = TLS->output;
+    if ( ! output ) OpenDefaultOutput();
+    output = TLS->output;
+  }
+  if ( output->isstream ) {
+    /* special handling of string streams, where we can copy directly */
+    if (output->isstringstream) {
+      str = ADDR_OBJ(output->stream)[1];
+      lstr = GET_LEN_STRING(str);
+      GROW_STRING(str, lstr+len);
+      memcpy((void *) (CHARS_STRING(str) + lstr), (void *)line, len);
+      SET_LEN_STRING(str, lstr + len);
+      *(CHARS_STRING(str) + lstr + len) = '\0';
+      CHANGED_BAG(str);
+      return;
     }
-    if ( output->isstream ) {
-      /* special handling of string streams, where we can copy directly */
-      if (output->isstringstream) {
-	str = ADDR_OBJ(output->stream)[1];
-	lstr = GET_LEN_STRING(str);
-	GROW_STRING(str, lstr+len);
-	memcpy((void *) (CHARS_STRING(str) + lstr), (void *)line, len);
-	SET_LEN_STRING(str, lstr + len);
-	*(CHARS_STRING(str) + lstr + len) = '\0';
-	CHANGED_BAG(str);
-	return;
+    /* Space for the null is allowed for in GAP strings */
+    str = NEW_STRING( len );
+
+    /* But we have to allow for it in SyStrncat */
+    /*    XXX SyStrncat( CSTR_STRING(str), line, len + 1 );    */
+    /* this contains trailing zero character */
+    memcpy(CHARS_STRING(str),  line, len + 1 );
+
+    /* now delegate to library level */
+    CALL_2ARGS( WriteAllFunc, output->stream, str );
+  }
+  else {
+    SyFputs( line, output->file );
+  }
+}
+
+
+/****************************************************************************
+ **
+ *F  PutLineTo ( stream, len ) . . . . . . . . . . . . . . print a line, local
+ **
+ **  'PutLineTo'  prints the first len characters of the current output
+ **  line   'stream->line' to <stream>
+ **  It  is  called from 'PutChrTo'.
+ **
+ **  'PutLineTo' also compares the output line with the  next line from the test
+ **  input file 'TestInput' if 'TestInput' is not 0.  If  this input line does
+ **  not starts with 'gap>' and the rest  of the line  matches the output line
+ **  then the output line is not printed and the input line is discarded.
+ **
+ **  'PutLineTo'  also echoes the  output  line  to the  logfile 'OutputLog' if
+ **  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
+ **
+ **  Finally 'PutLineTo' checks whether the user has hit '<ctr>-C' to  interrupt
+ **  the printing.
+ */
+void PutLineTo ( KOutputStream stream, UInt len )
+{
+  Char *          p;
+  UInt lt,ls;     /* These are supposed to hold string lengths */
+
+  /* if in test mode and the next input line matches print nothing       */
+  if ( TLS->testInput != 0 && TLS->testOutput == stream ) {
+    if ( TLS->testLine[0] == '\0' ) {
+      if ( ! GetLine2( TLS->testInput, TLS->testLine, sizeof(TLS->testLine) ) ) {
+        TLS->testLine[0] = '\0';
       }
-      /* Space for the null is allowed for in GAP strings */
-      str = NEW_STRING( len );
+      TLS->testInput->number++;
+    }
 
-      /* But we have to allow for it in SyStrncat */
-      /*    XXX SyStrncat( CSTR_STRING(str), line, len + 1 );    */
-      /* this contains trailing zero character */
-      memcpy(CHARS_STRING(str),  line, len + 1 );
+    /* Note that TLS->testLine is ended by a \n, but stream->line need not! */
 
-      /* now delegate to library level */
-      CALL_2ARGS( WriteAllFunc, output->stream, str );
+    lt = SyStrlen(TLS->testLine);   /* this counts including the newline! */
+    p = TLS->testLine + (lt-2);    
+    /* this now points to the last char before \n in the line! */
+    while ( TLS->testLine <= p && ( *p == ' ' || *p == '\t' ) ) {
+      p[1] = '\0';  p[0] = '\n';  p--; lt--;
+    }
+    /* lt is still the correct string length including \n */
+    ls = SyStrlen(stream->line);
+    p = stream->line + (ls-1);
+    /* this now points to the last char of the string, could be a \n */
+    if (*p == '\n') {
+      p--;   /* now we point before that newline character */
+      while ( stream->line <= p && ( *p == ' ' || *p == '\t' ) ) {
+        p[1] = '\0';  p[0] = '\n';  p--; ls--;
+      }
+    }
+    /* ls is still the correct string length including a possible \n */
+    if ( ! SyStrncmp( TLS->testLine, stream->line, ls ) ) {
+      if (ls < lt) 
+        memmove(TLS->testLine,TLS->testLine + ls,lt-ls+1);
+      else
+        TLS->testLine[0] = '\0';
     }
     else {
-      SyFputs( line, output->file );
+      char obuf[80];
+      /* sprintf(obuf,"+ 5%i bad example:\n+ ", (int)TLS->testInput->number); */
+      sprintf(obuf,"Line %i : \n+ ", (int)TLS->testInput->number);
+      PutLine2( stream, obuf, SyStrlen(obuf) );
+      PutLine2( stream, TLS->output->line, SyStrlen(TLS->output->line) );
     }
   }
 
-
-  /****************************************************************************
-   **
-   *F  PutLineTo ( stream, len ) . . . . . . . . . . . . . . print a line, local
-   **
-   **  'PutLineTo'  prints the first len characters of the current output
-   **  line   'stream->line' to <stream>
-   **  It  is  called from 'PutChrTo'.
-   **
-   **  'PutLineTo' also compares the output line with the  next line from the test
-   **  input file 'TestInput' if 'TestInput' is not 0.  If  this input line does
-   **  not starts with 'gap>' and the rest  of the line  matches the output line
-   **  then the output line is not printed and the input line is discarded.
-   **
-   **  'PutLineTo'  also echoes the  output  line  to the  logfile 'OutputLog' if
-   **  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
-   **
-   **  Finally 'PutLineTo' checks whether the user has hit '<ctr>-C' to  interrupt
-   **  the printing.
-   */
-  void PutLineTo ( KOutputStream stream, UInt len )
-  {
-    Char *          p;
-    UInt lt,ls;     /* These are supposed to hold string lengths */
-
-    /* if in test mode and the next input line matches print nothing       */
-    if ( TLS->testInput != 0 && TLS->testOutput == stream ) {
-      if ( TLS->testLine[0] == '\0' ) {
-	if ( ! GetLine2( TLS->testInput, TLS->testLine, sizeof(TLS->testLine) ) ) {
-	  TLS->testLine[0] = '\0';
-	}
-	TLS->testInput->number++;
-      }
-
-      /* Note that TLS->testLine is ended by a \n, but stream->line need not! */
-
-      lt = SyStrlen(TLS->testLine);   /* this counts including the newline! */
-      p = TLS->testLine + (lt-2);    
-      /* this now points to the last char before \n in the line! */
-      while ( TLS->testLine <= p && ( *p == ' ' || *p == '\t' ) ) {
-	p[1] = '\0';  p[0] = '\n';  p--; lt--;
-      }
-      /* lt is still the correct string length including \n */
-      ls = SyStrlen(stream->line);
-      p = stream->line + (ls-1);
-      /* this now points to the last char of the string, could be a \n */
-      if (*p == '\n') {
-	p--;   /* now we point before that newline character */
-	while ( stream->line <= p && ( *p == ' ' || *p == '\t' ) ) {
-	  p[1] = '\0';  p[0] = '\n';  p--; ls--;
-	}
-      }
-      /* ls is still the correct string length including a possible \n */
-      if ( ! SyStrncmp( TLS->testLine, stream->line, ls ) ) {
-	if (ls < lt) 
-	  memmove(TLS->testLine,TLS->testLine + ls,lt-ls+1);
-	else
-	  TLS->testLine[0] = '\0';
-      }
-      else {
-	char obuf[80];
-	/* sprintf(obuf,"+ 5%i bad example:\n+ ", (int)TLS->testInput->number); */
-	sprintf(obuf,"Line %i : \n+ ", (int)TLS->testInput->number);
-	PutLine2( stream, obuf, SyStrlen(obuf) );
-	PutLine2( stream, TLS->output->line, SyStrlen(TLS->output->line) );
-      }
-    }
-
-    /* otherwise output this line                                          */
-    else {
-      PutLine2( stream, stream->line, len );
-    }
-
-    /* if neccessary echo it to the logfile                                */
-    if ( TLS->outputLog != 0 && ! stream->isstream ) {
-      if ( stream->file == 1 || stream->file == 3 ) {
-	PutLine2( TLS->outputLog, stream->line, len );
-      }
-    }
+  /* otherwise output this line                                          */
+  else {
+    PutLine2( stream, stream->line, len );
   }
 
+  /* if neccessary echo it to the logfile                                */
+  if ( TLS->outputLog != 0 && ! stream->isstream ) {
+    if ( stream->file == 1 || stream->file == 3 ) {
+      PutLine2( TLS->outputLog, stream->line, len );
+    }
+  }
+}
 
-  /****************************************************************************
-   **
-   *F  PutChrTo( <stream>, <ch> )  . . . . . . . . . print character <ch>, local
-   **
-   **  'PutChrTo' prints the single character <ch> to the stream <stream>
-   **
-   **  'PutChrTo' buffers the  output characters until  either <ch> is  <newline>,
-   **  <ch> is '\03' (<flush>) or the buffer fills up.
-   **
-   **  In the later case 'PutChrTo' has to decide where to  split the output line.
-   **  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
-   */
+
+/****************************************************************************
+ **
+ *F  PutChrTo( <stream>, <ch> )  . . . . . . . . . print character <ch>, local
+ **
+ **  'PutChrTo' prints the single character <ch> to the stream <stream>
+ **
+ **  'PutChrTo' buffers the  output characters until  either <ch> is  <newline>,
+ **  <ch> is '\03' (<flush>) or the buffer fills up.
+ **
+ **  In the later case 'PutChrTo' has to decide where to  split the output line.
+ **  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
+ */
 /* TL: Int NoSplitLine = 0; */
 
-  void PutChrTo (
-		 KOutputStream stream,
-		 Char                ch )
+/* helper function to add a hint about a possible line break;
+   a triple (pos, value, indent), such that the minimal (value-pos) wins */
+void addLineBreakHint( KOutputStream stream, Int pos, Int val, Int indentdiff )
+{
+  Int nr, i;
+  /* find next free slot */
+  for (nr = 0; nr < MAXHINTS && stream->hints[3*nr] != -1; nr++);
+  if (nr == MAXHINTS) {
+    /* forget the first stored hint */
+    for (i = 0; i < 3*MAXHINTS - 3; i++)
+       stream->hints[i] =  stream->hints[i+3];
+    nr--;
+  }
+  /* if pos is same as before only relevant if new entry has higher
+     priority */
+  if ( nr > 0 && stream->hints[3*(nr-1)] == pos ) 
+    nr--;
+
+  if ( stream->indent < pos && 
+       (stream->hints[3*nr] == -1 || val < stream->hints[3*(nr)+1]) ) {
+    stream->hints[3*nr] = pos;
+    stream->hints[3*nr+1] = val;
+    stream->hints[3*nr+2] = stream->indent;
+    stream->hints[3*nr+3] = -1;
+  }
+  stream->indent += indentdiff;
+}
+/* helper function to find line break position,
+   returns position nr in stream[hints] or -1 if none found */
+Int nrLineBreak( KOutputStream stream )
+{
+  Int nr=-1, min, i;
+  for (i = 0, min = INT_MAX; stream->hints[3*i] != -1; i++)
   {
-    Int                 i;
-    Char                str [MAXLENOUTPUTLINE];
-
-
-
-    if (! stream) {
-      stream = TLS->output;
-      if (! stream) OpenDefaultOutput();
-      stream = TLS->output;
+    if (stream->hints[3*i] > 0 && 
+        stream->hints[3*i+1] - stream->hints[3*i] <= min)
+    {      
+      nr = i;
+      min = stream->hints[3*i+1] - stream->hints[3*i];
     }
-    /* '\01', increment indentation level                                  */
-    if ( ch == '\01' ) {
+  }
+  if (min < INT_MAX)
+    return nr;
+  else
+    return -1;
+}
 
-      if (!stream->format)
-	return;
+    
 
-      /* if this is a better place to split the line remember it         */
-      if ( stream->indent < stream->pos
-	   && SyNrCols-stream->pos  + 16*stream->indent
-	   <= SyNrCols-stream->spos + 16*stream->sindent ) {
-	stream->spos     = stream->pos;
-	stream->sindent  = stream->indent;
-      }
+void PutChrTo (
+         KOutputStream stream,
+         Char                ch )
+{
+  Int                 i, hint, spos;
+  Char                str [MAXLENOUTPUTLINE];
 
-      stream->indent++;
 
-    }
 
-    /* '\02', decrement indentation level                                  */
-    else if ( ch == '\02' ) {
+  if (! stream) {
+    stream = TLS->output;
+    if (! stream) OpenDefaultOutput();
+    stream = TLS->output;
+  }
+  /* '\01', increment indentation level                                  */
+  if ( ch == '\01' ) {
 
-      if (!stream -> format)
-	return;
+    if (!stream->format)
+      return;
 
-      /* if this is a better place to split the line remember it         */
-      if ( stream->indent < stream->pos
-	   && SyNrCols-stream->pos  + 16*stream->indent
-	   <= SyNrCols-stream->spos + 16*stream->sindent ) {
-	stream->spos     = stream->pos;
-	stream->sindent  = stream->indent;
-      }
-      stream->indent--;
+    /* add hint to break line  */
+    addLineBreakHint(stream, stream->pos, 16*stream->indent, 1);
+  }
 
-    }
+  /* '\02', decrement indentation level                                  */
+  else if ( ch == '\02' ) {
 
-    /* '\03', print line                                                   */
-    else if ( ch == '\03' ) {
+    if (!stream -> format)
+      return;
 
-      /* print the line                                                  */
-      if (stream->pos != 0)
-	{
-	  stream->line[ stream->pos ] = '\0';
-	  PutLineTo(stream, stream->pos );
+    /* if this is a better place to split the line remember it         */
+    addLineBreakHint(stream, stream->pos, 16*stream->indent, -1);
+  }
 
-	  /* start the next line                                         */
-	  stream->pos      = 0;
-	}
-      /* first character is a very bad place to split                    */
-      stream->spos     = 0;
-      stream->sindent  = 666;
+  /* '\03', print line                                                   */
+  else if ( ch == '\03' ) {
 
-    }
-
-    /* <newline> or <return>, print line, indent next                      */
-    else if ( ch == '\n' || ch == '\r' ) {
-
-      /* put the character on the line and terminate it                  */
-      stream->line[ stream->pos++ ] = ch;
-      stream->line[ stream->pos   ] = '\0';
-
-      /* print the line                                                  */
-      PutLineTo( stream, stream->pos );
-
-      /* and dump it from the buffer */
-      stream->pos = 0;
-      if (stream -> format)
-	{
-	  /* indent for next line                                         */
-	  for ( i = 0;  i < stream->indent; i++ )
-	    stream->line[ stream->pos++ ] = ' ';
-
-	  /* set up new split positions                                   */
-	  stream->spos     = 0;
-	  stream->sindent  = 666;
-	}
-
-    }
-
-    /* normal character, room on the current line                          */
-    /* TODO: This should be -2 instead of -8 and room for the prefix
-     * accounted for elswhere. */
-    else if ( stream->pos < SyNrCols-8-TLS->noSplitLine ) {
-
-      /* put the character on this line                                  */
-      stream->line[ stream->pos++ ] = ch;
-
-    }
-
-    else
+    /* print the line                                                  */
+    if (stream->pos != 0)
       {
-        /* if we are going to split at the end of the line, and we are
-	   formatting discard blanks */
-	if ( stream->format && stream->spos == stream->pos && ch == ' ' ) {
-	  ;
-	}
+        stream->line[ stream->pos ] = '\0';
+        PutLineTo(stream, stream->pos );
 
-	/* full line, acceptable split position                                */
-	else if ( stream->format && stream->spos != 0 ) {
-
-	  /* add character to the line, terminate it                         */
-	  stream->line[ stream->pos++ ] = ch;
-	  stream->line[ stream->pos++ ] = '\0';
-
-	  /* copy the rest after the best split position to a safe place     */
-	  for ( i = stream->spos; i < stream->pos; i++ )
-            str[ i-stream->spos ] = stream->line[ i ];
-
-	  /* print line up to the best split position                        */
-	  stream->line[ stream->spos++ ] = '\n';
-	  stream->line[ stream->spos   ] = '\0';
-	  PutLineTo( stream, stream->spos );
-
-	  /* indent for the rest                                             */
-	  stream->pos = 0;
-	  for ( i = 0; i < stream->sindent; i++ )
-            stream->line[ stream->pos++ ] = ' ';
-
-	  /* copy the rest onto the next line                                */
-	  for ( i = 0; str[ i ] != '\0'; i++ )
-            stream->line[ stream->pos++ ] = str[ i ];
-
-	  /* set new split position                                          */
-	  stream->spos     = 0;
-	  stream->sindent  = 666;
-
-	}
-
-	/* full line, no splitt position                                       */
-	else {
-
-	  if (stream->format)
-	    {
-	      /* append a '\',*/
-	      stream->line[ stream->pos++ ] = '\\';
-	      stream->line[ stream->pos++ ] = '\n';
-	    }
-	  /* and print the line                                */
-	  stream->line[ stream->pos   ] = '\0';
-	  PutLineTo( stream, stream->pos );
-
-	  /* add the character to the next line                              */
-	  stream->pos = 0;
-	  stream->line[ stream->pos++ ] = ch;
-
-	  if (stream->format)
-	    {
-	      /* the first character is a very bad place to split                */
-	      stream->spos     = 0;
-	      stream->sindent  = 666;
-	    }
-	}
-
+        /* start the next line                                         */
+        stream->pos      = 0;
       }
+    /* reset line break hints                                          */
+    stream->hints[0] = -1;
+
   }
 
-  /****************************************************************************
-   **
-   *F  FuncToggleEcho( )
-   **
- cxq*/
+  /* <newline> or <return>, print line, indent next                      */
+  else if ( ch == '\n' || ch == '\r' ) {
 
-  Obj FuncToggleEcho( Obj self)
-  {
-    TLS->input->echo = 1 - TLS->input->echo;
-    return (Obj)0;
+    /* put the character on the line and terminate it                  */
+    stream->line[ stream->pos++ ] = ch;
+    stream->line[ stream->pos   ] = '\0';
+
+    /* print the line                                                  */
+    PutLineTo( stream, stream->pos );
+
+    /* and dump it from the buffer */
+    stream->pos = 0;
+    if (stream -> format)
+      {
+        /* indent for next line                                         */
+        for ( i = 0;  i < stream->indent; i++ )
+          stream->line[ stream->pos++ ] = ' ';
+      }
+    /* reset line break hints                                       */
+    stream->hints[0] = -1;
+
   }
 
-  /****************************************************************************
-   **
-   *F  FuncCPROMPT( )
-   **
-   **  returns the current `Prompt' as GAP string.
-   */
-  Obj FuncCPROMPT( Obj self)
-  {
-    Obj p;
-    p = NEW_STRING(SyStrlen( TLS->prompt ));
-    SyStrncat( CSTR_STRING(p), TLS->prompt, SyStrlen( TLS->prompt ) );
-    return p;
+  /* normal character, room on the current line                          */
+  /* TODO: This should be -2 instead of -8 and room for the prefix
+   * accounted for elswhere. */
+  else if ( stream->pos < SyNrCols-8-TLS->noSplitLine ) {
+
+    /* put the character on this line                                  */
+    stream->line[ stream->pos++ ] = ch;
+
   }
 
-  /****************************************************************************
-   **
-   *F  FuncPRINT_CPROMPT( <prompt> )
-   **
-   **  prints current `Prompt' if argument <prompt> is not in StringRep, otherwise
-   **  uses the content of <prompt> as `Prompt'.
-   **  (important is the flush character without resetting the cursor column)
-   */
-  /* TODO: Eliminate race condition */
-  Char promptBuf[81];
-  Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
-  {
-    if (IS_STRING_REP(prompt)) {
-      /* by assigning to Prompt we also tell readline (if used) what the
-	 current prompt is  */
-      promptBuf[0] = '\0';
-      SyStrncat(promptBuf, CSTR_STRING(prompt), 80);
-      TLS->prompt = promptBuf;
-    }
-    Pr("%s%c", (Int)TLS->prompt, (Int)'\03' );
-    return (Obj) 0;
-  }
+  else
+    {
+      /* position to split                                              */
+      if ( (hint = nrLineBreak(stream)) != -1 )
+        spos = stream->hints[3*hint];
+      else
+        spos = 0;
 
-  /****************************************************************************
-   **
-   *F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
-   *F  PrTo( <stream>, <format>, <arg1>, <arg2> )  . . .  print formatted output
-   **
-   **  'Pr' is the output function. The first argument is a 'printf' like format
-   **  string containing   up   to 2  '%'  format   fields,   specifing  how the
-   **  corresponding arguments are to be  printed.  The two arguments are passed
-   **  as  'Int'   integers.   This  is possible  since every  C object  ('int',
-   **  'char', pointers) except 'float' or 'double', which are not used  in GAP,
-   **  can be converted to a 'Int' without loss of information.
-   **
-   **  The function 'Pr' currently support the following '%' format  fields:
-   **  '%c'    the corresponding argument represents a character,  usually it is
-   **          its ASCII or EBCDIC code, and this character is printed.
-   **  '%s'    the corresponding argument is the address of  a  null  terminated
-   **          character string which is printed.
-   **  '%S'    the corresponding argument is the address of  a  null  terminated
-   **          character string which is printed with escapes.
-   **  '%C'    the corresponding argument is the address of  a  null  terminated
-   **          character string which is printed with C escapes.
-   **  '%d'    the corresponding argument is a signed integer, which is printed.
-   **          Between the '%' and the 'd' an integer might be used  to  specify
-   **          the width of a field in which the integer is right justified.  If
-   **          the first character is '0' 'Pr' pads with '0' instead of <space>.
-   **  '%i'    is a synonym of %d, in line with recent C library developements
-   **  '%I'    print an identifier
-   **  '%>'    increment the indentation level.
-   **  '%<'    decrement the indentation level.
-   **  '%%'    can be used to print a single '%' character. No argument is used.
-   **
-   **  You must always  cast the arguments to  '(Int)'  to avoid  problems  with
-   **  those compilers with a default integer size of 16 instead of 32 bit.  You
-   **  must pass 0L if you don't make use of an argument to please lint.
-   */
-
-  void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int arg2 ) {
-    const Char *    p;
-    Char *              q;
-    Int                 prec,  n;
-    Char                fill;
-
-    /* loop over the characters of the <format> string                     */
-    for ( p = format; *p != '\0'; p++ ) {
-
-      /* if the character is '%' do something special                    */
-      if ( *p == '%' ) {
-
-	/* first look for a precision field                            */
-	p++;
-	prec = 0;
-	fill = (*p == '0' ? '0' : ' ');
-	while ( IsDigit(*p) ) {
-	  prec = 10 * prec + *p - '0';
-	  p++;
-	}
-
-	/* '%d' print an integer                                       */
-	if ( *p == 'd'|| *p == 'i' ) {
-	  if ( arg1 < 0 ) {
-	    prec--;
-	    for ( n=1; n <= -(arg1/10); n*=10 )
-	      prec--;
-	    while ( --prec > 0 )  put_a_char(fill);
-	    put_a_char('-');
-	    for ( ; n > 0; n /= 10 )
-	      put_a_char((Char)(-((arg1/n)%10) + '0') );
-	    arg1 = arg2;
-	  }
-	  else {
-	    for ( n=1; n<=arg1/10; n*=10 )
-	      prec--;
-	    while ( --prec > 0 )  put_a_char(  fill);
-	    for ( ; n > 0; n /= 10 )
-	      put_a_char( (Char)(((arg1/n)%10) + '0') );
-	    arg1 = arg2;
-	  }
-	}
-
-	/* '%s' print a string                                         */
-	else if ( *p == 's' ) {
-
-	  /* handle the case of a missing argument                     */
-	  if (arg1 == 0)
-	    {
-	      put_a_char('<');
-	      put_a_char('n');
-	      put_a_char('u');
-	      put_a_char('l');
-	      put_a_char('l');
-	      put_a_char('>');
-	    }
-	  else
-	    {
-	      /* compute how many characters this identifier requires    */
-	      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		prec--;
-	      }
-
-	      /* if wanted push an appropriate number of <space>-s       */
-	      while ( prec-- > 0 )  put_a_char(' ');
-
-	      /* print the string                                        */
-	      /* must be careful that line breaks don't go inside
-		 escaped sequences \n or \123 or similar */
-	      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		if (*q == '\\' && TLS->noSplitLine == 0) {
-		  if (*(q+1) < '8' && *(q+1) >= '0')
-		    TLS->noSplitLine = 3;
-		  else
-		    TLS->noSplitLine = 1;
-		}
-		else if (TLS->noSplitLine > 0)
-		  TLS->noSplitLine--;
-		put_a_char( *q );
-	      }
-	    }
-	  /* on to the next argument                                 */
-	  arg1 = arg2;
-	}
-
-	/* '%S' print a string with the necessary escapes              */
-	else if ( *p == 'S' ) {
-
-	  /* handle the case of a missing argument                     */
-	  if (arg1 == 0)
-	    {
-	      put_a_char( '<');
-	      put_a_char( 'n');
-	      put_a_char( 'u');
-	      put_a_char( 'l');
-	      put_a_char( 'l');
-	      put_a_char( '>');
-	    }
-	  else
-	    {
-	      /* compute how many characters this identifier requires    */
-	      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		if      ( *q == '\n'  ) { prec -= 2; }
-		else if ( *q == '\t'  ) { prec -= 2; }
-		else if ( *q == '\r'  ) { prec -= 2; }
-		else if ( *q == '\b'  ) { prec -= 2; }
-		else if ( *q == '\01' ) { prec -= 2; }
-		else if ( *q == '\02' ) { prec -= 2; }
-		else if ( *q == '\03' ) { prec -= 2; }
-		else if ( *q == '"'   ) { prec -= 2; }
-		else if ( *q == '\\'  ) { prec -= 2; }
-		else                    { prec -= 1; }
-	      }
-
-	      /* if wanted push an appropriate number of <space>-s       */
-	      while ( prec-- > 0 )  put_a_char(' ');
-
-	      /* print the string                                        */
-	      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
-		else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
-		else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
-		else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
-		else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('>');  }
-		else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('<');  }
-		else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('c');  }
-		else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
-		else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
-		else                    { put_a_char( *q );               }
-	      }
-	    }
-
-	  /* on to the next argument                                 */
-	  arg1 = arg2;
-	}
-
-	/* '%C' print a string with the necessary C escapes            */
-	else if ( *p == 'C' ) {
-
-	  /* handle the case of a missing argument                     */
-	  if (arg1 == 0)
-	    {
-	      put_a_char('<');
-	      put_a_char('n');
-	      put_a_char('u');
-	      put_a_char('l');
-	      put_a_char('l');
-	      put_a_char('>');
-	    }
-	  else
-	    {
-	      /* compute how many characters this identifier requires    */
-	      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		if      ( *q == '\n'  ) { prec -= 2; }
-		else if ( *q == '\t'  ) { prec -= 2; }
-		else if ( *q == '\r'  ) { prec -= 2; }
-		else if ( *q == '\b'  ) { prec -= 2; }
-		else if ( *q == '\01' ) { prec -= 3; }
-		else if ( *q == '\02' ) { prec -= 3; }
-		else if ( *q == '\03' ) { prec -= 3; }
-		else if ( *q == '"'   ) { prec -= 2; }
-		else if ( *q == '\\'  ) { prec -= 2; }
-		else                    { prec -= 1; }
-	      }
-
-	      /* if wanted push an appropriate number of <space>-s       */
-	      while ( prec-- > 0 )  put_a_char(' ');
-
-	      /* print the string                                        */
-	      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
-		else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
-		else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
-		else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
-		else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('0');
-		  put_a_char('1');                }
-		else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('0');
-		  put_a_char('2');                }
-		else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('0');
-		  put_a_char('3');                }
-		else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
-		else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
-		else                    { put_a_char( *q );               }
-	      }
-	    }
-	  /* on to the next argument                                 */
-	  arg1 = arg2;
-	}
-
-	/* '%I' print an identifier                                    */
-	else if ( *p == 'I' ) {
-
-	  /* handle the case of a missing argument                     */
-	  if (arg1 == 0)
-	    {
-	      put_a_char('<');
-	      put_a_char('n');
-	      put_a_char('u');
-	      put_a_char('l');
-	      put_a_char('l');
-	      put_a_char('>');
-	    }
-	  else
-	    {
-	      /* compute how many characters this identifier requires    */
-	      q = (Char*)arg1;
-	      if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
-		   || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
-		   || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
-		   || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
-		   || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
-		   || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
-		   || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
-		   || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
-		   || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
-		   || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
-		   || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
-		   || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
-		prec--;
-	      }
-	      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_'  && *q != '$' && *q != '@') {
-		  prec--;
-		}
-		prec--;
-	      }
-
-	      /* if wanted push an appropriate number of <space>-s       */
-	      while ( prec-- > 0 ) { put_a_char(' '); }
-
-	      /* print the identifier                                    */
-	      q = (Char*)arg1;
-	      if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
-		   || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
-		   || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
-		   || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
-		   || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
-		   || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
-		   || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
-		   || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
-		   || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
-		   || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
-		   || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
-		   || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
-		put_a_char( '\\' );
-	      }
-	      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' && *q != '$' && *q != '@') {
-		  put_a_char( '\\' );
-		}
-		put_a_char( *q );
-	      }
-	    }
-	  /* on to the next argument                                 */
-	  arg1 = arg2;
-	}
-
-	/* '%c' print a character                                      */
-	else if ( *p == 'c' ) {
-	  put_a_char( (Char)arg1 );
-	  arg1 = arg2;
-	}
-
-	/* '%%' print a '%' character                                  */
-	else if ( *p == '%' ) {
-	  put_a_char( '%' );
-	}
-
-	/* '%>' increment the indentation level                        */
-	else if ( *p == '>' ) {
-	  put_a_char( '\01' );
-	  while ( --prec > 0 )
-	    put_a_char( '\01' );
-	}
-
-	/* '%<' decrement the indentation level                        */
-	else if ( *p == '<' ) {
-	  put_a_char( '\02' );
-	  while ( --prec > 0 )
-	    put_a_char( '\02' );
-	}
-
-	/* else raise an error                                         */
-	else {
-	  for ( p = "%format error"; *p != '\0'; p++ )
-	    put_a_char( *p );
-	}
-
+      /* if we are going to split at the end of the line, and we are
+         formatting discard blanks */
+      if ( stream->format && spos == stream->pos && ch == ' ' ) {
+        ;
       }
 
-      /* not a '%' character, simply print it                            */
+      /* full line, acceptable split position                              */
+      else if ( stream->format && spos != 0 ) {
+
+        /* add character to the line, terminate it                         */
+        stream->line[ stream->pos++ ] = ch;
+        stream->line[ stream->pos++ ] = '\0';
+
+        /* copy the rest after the best split position to a safe place     */
+        for ( i = spos; i < stream->pos; i++ )
+          str[ i-spos ] = stream->line[ i ];
+        str[ i-spos] = '\0';
+
+        /* print line up to the best split position                        */
+        stream->line[ spos++ ] = '\n';
+        stream->line[ spos   ] = '\0';
+        PutLineTo( stream, spos );
+        spos--;
+
+        /* indent for the rest                                             */
+        stream->pos = 0;
+        for ( i = 0; i < stream->hints[3*hint+2]; i++ )
+          stream->line[ stream->pos++ ] = ' ';
+        spos -= stream->hints[3*hint+2];
+
+        /* copy the rest onto the next line                                */
+        for ( i = 0; str[ i ] != '\0'; i++ )
+          stream->line[ stream->pos++ ] = str[ i ];
+        /* recover line break hints for copied rest                      */
+        for ( i = hint+1; stream->hints[3*i] != -1; i++ )
+        {
+          stream->hints[3*(i-hint-1)] = stream->hints[3*i]-spos;
+          stream->hints[3*(i-hint-1)+1] = stream->hints[3*i+1];
+          stream->hints[3*(i-hint-1)+2] = stream->hints[3*i+2];
+        }
+        stream->hints[3*(i-hint-1)] = -1;
+      }
+
+      /* full line, no split position                                       */
       else {
-	put_a_char( *p );
+
+        if (stream->format)
+          {
+            /* append a '\',*/
+            stream->line[ stream->pos++ ] = '\\';
+            stream->line[ stream->pos++ ] = '\n';
+          }
+        /* and print the line                                */
+        stream->line[ stream->pos   ] = '\0';
+        PutLineTo( stream, stream->pos );
+
+        /* add the character to the next line                              */
+        stream->pos = 0;
+        stream->line[ stream->pos++ ] = ch;
+
+        if (stream->format)
+          stream->hints[0] = -1;
       }
 
     }
+}
+
+/****************************************************************************
+ **
+ *F  FuncToggleEcho( )
+ **
+*/
+
+Obj FuncToggleEcho( Obj self)
+{
+  TLS->input->echo = 1 - TLS->input->echo;
+  return (Obj)0;
+}
+
+/****************************************************************************
+ **
+ *F  FuncCPROMPT( )
+ **
+ **  returns the current `Prompt' as GAP string.
+ */
+Obj FuncCPROMPT( Obj self)
+{
+  Obj p;
+  p = NEW_STRING(SyStrlen( TLS->prompt ));
+  SyStrncat( CSTR_STRING(p), TLS->prompt, SyStrlen( TLS->prompt ) );
+  return p;
+}
+
+/****************************************************************************
+ **
+ *F  FuncPRINT_CPROMPT( <prompt> )
+ **
+ **  prints current `Prompt' if argument <prompt> is not in StringRep, otherwise
+ **  uses the content of <prompt> as `Prompt'.
+ **  (important is the flush character without resetting the cursor column)
+ */
+/* TODO: Eliminate race condition */
+Char promptBuf[81];
+
+Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
+{
+  if (IS_STRING_REP(prompt)) {
+    /* by assigning to Prompt we also tell readline (if used) what the
+       current prompt is  */
+    promptBuf[0] = '\0';
+    SyStrncat(promptBuf, CSTR_STRING(prompt), 80);
+    TLS->prompt = promptBuf;
   }
+  Pr("%s%c", (Int)TLS->prompt, (Int)'\03' );
+  return (Obj) 0;
+}
+
+/****************************************************************************
+ **
+ *F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
+ *F  PrTo( <stream>, <format>, <arg1>, <arg2> )  . . .  print formatted output
+ **
+ **  'Pr' is the output function. The first argument is a 'printf' like format
+ **  string containing   up   to 2  '%'  format   fields,   specifing  how the
+ **  corresponding arguments are to be  printed.  The two arguments are passed
+ **  as  'Int'   integers.   This  is possible  since every  C object  ('int',
+ **  'char', pointers) except 'float' or 'double', which are not used  in GAP,
+ **  can be converted to a 'Int' without loss of information.
+ **
+ **  The function 'Pr' currently support the following '%' format  fields:
+ **  '%c'    the corresponding argument represents a character,  usually it is
+ **          its ASCII or EBCDIC code, and this character is printed.
+ **  '%s'    the corresponding argument is the address of  a  null  terminated
+ **          character string which is printed.
+ **  '%S'    the corresponding argument is the address of  a  null  terminated
+ **          character string which is printed with escapes.
+ **  '%C'    the corresponding argument is the address of  a  null  terminated
+ **          character string which is printed with C escapes.
+ **  '%d'    the corresponding argument is a signed integer, which is printed.
+ **          Between the '%' and the 'd' an integer might be used  to  specify
+ **          the width of a field in which the integer is right justified.  If
+ **          the first character is '0' 'Pr' pads with '0' instead of <space>.
+ **  '%i'    is a synonym of %d, in line with recent C library developements
+ **  '%I'    print an identifier
+ **  '%>'    increment the indentation level.
+ **  '%<'    decrement the indentation level.
+ **  '%%'    can be used to print a single '%' character. No argument is used.
+ **
+ **  You must always  cast the arguments to  '(Int)'  to avoid  problems  with
+ **  those compilers with a default integer size of 16 instead of 32 bit.  You
+ **  must pass 0L if you don't make use of an argument to please lint.
+ */
+
+void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int arg2 ) {
+  const Char *    p;
+  Char *              q;
+  Int                 prec,  n;
+  Char                fill;
+
+  /* loop over the characters of the <format> string                     */
+  for ( p = format; *p != '\0'; p++ ) {
+
+    /* if the character is '%' do something special                    */
+    if ( *p == '%' ) {
+
+      /* first look for a precision field                            */
+      p++;
+      prec = 0;
+      fill = (*p == '0' ? '0' : ' ');
+      while ( IsDigit(*p) ) {
+        prec = 10 * prec + *p - '0';
+        p++;
+      }
+
+      /* '%d' print an integer                                       */
+      if ( *p == 'd'|| *p == 'i' ) {
+        if ( arg1 < 0 ) {
+          prec--;
+          for ( n=1; n <= -(arg1/10); n*=10 )
+            prec--;
+          while ( --prec > 0 )  put_a_char(fill);
+          put_a_char('-');
+          for ( ; n > 0; n /= 10 )
+            put_a_char((Char)(-((arg1/n)%10) + '0') );
+          arg1 = arg2;
+        }
+        else {
+          for ( n=1; n<=arg1/10; n*=10 )
+            prec--;
+          while ( --prec > 0 )  put_a_char(  fill);
+          for ( ; n > 0; n /= 10 )
+            put_a_char( (Char)(((arg1/n)%10) + '0') );
+          arg1 = arg2;
+        }
+      }
+
+      /* '%s' print a string                                         */
+      else if ( *p == 's' ) {
+
+        /* handle the case of a missing argument                     */
+        if (arg1 == 0)
+          {
+            put_a_char('<');
+            put_a_char('n');
+            put_a_char('u');
+            put_a_char('l');
+            put_a_char('l');
+            put_a_char('>');
+          }
+        else
+          {
+            /* compute how many characters this identifier requires    */
+            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+              prec--;
+            }
+
+            /* if wanted push an appropriate number of <space>-s       */
+            while ( prec-- > 0 )  put_a_char(' ');
+
+            /* print the string                                        */
+            /* must be careful that line breaks don't go inside
+         escaped sequences \n or \123 or similar */
+            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+        if (*q == '\\' && TLS->noSplitLine == 0) {
+          if (*(q+1) < '8' && *(q+1) >= '0')
+            TLS->noSplitLine = 3;
+          else
+            TLS->noSplitLine = 1;
+        }
+        else if (TLS->noSplitLine > 0)
+          TLS->noSplitLine--;
+        put_a_char( *q );
+            }
+          }
+        /* on to the next argument                                 */
+        arg1 = arg2;
+      }
+
+      /* '%S' print a string with the necessary escapes              */
+      else if ( *p == 'S' ) {
+
+        /* handle the case of a missing argument                     */
+        if (arg1 == 0)
+          {
+            put_a_char( '<');
+            put_a_char( 'n');
+            put_a_char( 'u');
+            put_a_char( 'l');
+            put_a_char( 'l');
+            put_a_char( '>');
+          }
+        else
+          {
+            /* compute how many characters this identifier requires    */
+            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+              if      ( *q == '\n'  ) { prec -= 2; }
+              else if ( *q == '\t'  ) { prec -= 2; }
+              else if ( *q == '\r'  ) { prec -= 2; }
+              else if ( *q == '\b'  ) { prec -= 2; }
+              else if ( *q == '\01' ) { prec -= 2; }
+              else if ( *q == '\02' ) { prec -= 2; }
+              else if ( *q == '\03' ) { prec -= 2; }
+              else if ( *q == '"'   ) { prec -= 2; }
+              else if ( *q == '\\'  ) { prec -= 2; }
+              else                    { prec -= 1; }
+            }
+
+            /* if wanted push an appropriate number of <space>-s       */
+            while ( prec-- > 0 )  put_a_char(' ');
+
+            /* print the string                                        */
+            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+              if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
+              else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
+              else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
+              else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
+              else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('>');  }
+              else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('<');  }
+              else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('c');  }
+              else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
+              else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
+              else                    { put_a_char( *q );               }
+            }
+          }
+
+        /* on to the next argument                                 */
+        arg1 = arg2;
+      }
+
+      /* '%C' print a string with the necessary C escapes            */
+      else if ( *p == 'C' ) {
+
+        /* handle the case of a missing argument                     */
+        if (arg1 == 0)
+          {
+            put_a_char('<');
+            put_a_char('n');
+            put_a_char('u');
+            put_a_char('l');
+            put_a_char('l');
+            put_a_char('>');
+          }
+        else
+          {
+            /* compute how many characters this identifier requires    */
+            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+              if      ( *q == '\n'  ) { prec -= 2; }
+              else if ( *q == '\t'  ) { prec -= 2; }
+              else if ( *q == '\r'  ) { prec -= 2; }
+              else if ( *q == '\b'  ) { prec -= 2; }
+              else if ( *q == '\01' ) { prec -= 3; }
+              else if ( *q == '\02' ) { prec -= 3; }
+              else if ( *q == '\03' ) { prec -= 3; }
+              else if ( *q == '"'   ) { prec -= 2; }
+              else if ( *q == '\\'  ) { prec -= 2; }
+              else                    { prec -= 1; }
+            }
+
+            /* if wanted push an appropriate number of <space>-s       */
+            while ( prec-- > 0 )  put_a_char(' ');
+
+            /* print the string                                        */
+            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+              if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
+              else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
+              else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
+              else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
+              else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('0');
+                put_a_char('1');                }
+              else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('0');
+                put_a_char('2');                }
+              else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('0');
+                put_a_char('3');                }
+              else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
+              else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
+              else                    { put_a_char( *q );               }
+            }
+          }
+        /* on to the next argument                                 */
+        arg1 = arg2;
+      }
+
+      /* '%I' print an identifier                                    */
+      else if ( *p == 'I' ) {
+
+        /* handle the case of a missing argument                     */
+        if (arg1 == 0)
+          {
+            put_a_char('<');
+            put_a_char('n');
+            put_a_char('u');
+            put_a_char('l');
+            put_a_char('l');
+            put_a_char('>');
+          }
+        else
+          {
+            /* compute how many characters this identifier requires    */
+            q = (Char*)arg1;
+            if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
+                 || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
+                 || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
+                 || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
+                 || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
+                 || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
+                 || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
+                 || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
+                 || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
+                 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
+                 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
+                 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
+              prec--;
+            }
+            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+              if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_'  && *q != '$' && *q != '@') {
+                prec--;
+              }
+              prec--;
+            }
+
+            /* if wanted push an appropriate number of <space>-s       */
+            while ( prec-- > 0 ) { put_a_char(' '); }
+
+            /* print the identifier                                    */
+            q = (Char*)arg1;
+            if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
+                 || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
+                 || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
+                 || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
+                 || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
+                 || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
+                 || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
+                 || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
+                 || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
+                 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
+                 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
+                 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
+              put_a_char( '\\' );
+            }
+            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+              if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' && *q != '$' && *q != '@') {
+                put_a_char( '\\' );
+              }
+              put_a_char( *q );
+            }
+          }
+        /* on to the next argument                                 */
+        arg1 = arg2;
+      }
+
+      /* '%c' print a character                                      */
+      else if ( *p == 'c' ) {
+        put_a_char( (Char)arg1 );
+        arg1 = arg2;
+      }
+
+      /* '%%' print a '%' character                                  */
+      else if ( *p == '%' ) {
+        put_a_char( '%' );
+      }
+
+      /* '%>' increment the indentation level                        */
+      else if ( *p == '>' ) {
+        put_a_char( '\01' );
+        while ( --prec > 0 )
+          put_a_char( '\01' );
+      }
+
+      /* '%<' decrement the indentation level                        */
+      else if ( *p == '<' ) {
+        put_a_char( '\02' );
+        while ( --prec > 0 )
+          put_a_char( '\02' );
+      }
+
+      /* else raise an error                                         */
+      else {
+        for ( p = "%format error"; *p != '\0'; p++ )
+          put_a_char( *p );
+      }
+
+    }
+
+    /* not a '%' character, simply print it                            */
+    else {
+      put_a_char( *p );
+    }
+
+  }
+}
 
 
 /* TL: static KOutputStream theStream; */
 
-  static void putToTheStream( Char c) {
-    PutChrTo(TLS->theStream, c);
-  }
+static void putToTheStream( Char c) {
+  PutChrTo(TLS->theStream, c);
+}
 
-  void PrTo (
-	     KOutputStream     stream,
-	     const Char *      format,
-	     Int                 arg1,
-	     Int                 arg2 )
-  {
-    KOutputStream savedStream = TLS->theStream;
-    TLS->theStream = stream;
-    FormatOutput( putToTheStream, format, arg1, arg2);
-    TLS->theStream = savedStream;
-  }
+void PrTo (
+           KOutputStream     stream,
+           const Char *      format,
+           Int                 arg1,
+           Int                 arg2 )
+{
+  KOutputStream savedStream = TLS->theStream;
+  TLS->theStream = stream;
+  FormatOutput( putToTheStream, format, arg1, arg2);
+  TLS->theStream = savedStream;
+}
 
-  void Pr (
-	   const Char *      format,
-	   Int                 arg1,
-	   Int                 arg2 )
-  {
-    PrTo(TLS->output, format, arg1, arg2);
-  }
+void Pr (
+         const Char *      format,
+         Int                 arg1,
+         Int                 arg2 )
+{
+  PrTo(TLS->output, format, arg1, arg2);
+}
 
 /* TL: static Char *theBuffer; */
 /* TL: static UInt theCount; */
 /* TL: static UInt theLimit; */
 
-  static void putToTheBuffer( Char c)
-  {
-    if (TLS->theCount < TLS->theLimit)
-      TLS->theBuffer[TLS->theCount++] = c;
+static void putToTheBuffer( Char c)
+{
+  if (TLS->theCount < TLS->theLimit)
+    TLS->theBuffer[TLS->theCount++] = c;
+}
+
+void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
+{
+  Char *savedBuffer = TLS->theBuffer;
+  UInt savedCount = TLS->theCount;
+  UInt savedLimit = TLS->theLimit;
+  TLS->theBuffer = buffer;
+  TLS->theCount = 0;
+  TLS->theLimit = maxlen;
+  FormatOutput(putToTheBuffer, format, arg1, arg2);
+  putToTheBuffer('\0');
+  TLS->theBuffer = savedBuffer;
+  TLS->theCount = savedCount;
+  TLS->theLimit = savedLimit;
+}
+
+
+Obj FuncINPUT_FILENAME( Obj self) {
+  UInt len;
+  Obj s;
+  if (TLS->input && TLS->input->name) {
+    len = SyStrlen(TLS->input->name);
+    s = NEW_STRING(len);
+    SyStrncat(CSTR_STRING(s),TLS->input->name, len);
+    return s;
+  } else {
+    char *s2 = "*defin*";
+    s = NEW_STRING(SyStrlen(s2));
+    SyStrncat(CSTR_STRING(s), s2, SyStrlen(s2));
+    return s;
   }
+}
 
-  void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
-  {
-    Char *savedBuffer = TLS->theBuffer;
-    UInt savedCount = TLS->theCount;
-    UInt savedLimit = TLS->theLimit;
-    TLS->theBuffer = buffer;
-    TLS->theCount = 0;
-    TLS->theLimit = maxlen;
-    FormatOutput(putToTheBuffer, format, arg1, arg2);
-    putToTheBuffer('\0');
-    TLS->theBuffer = savedBuffer;
-    TLS->theCount = savedCount;
-    TLS->theLimit = savedLimit;
-  }
+Obj FuncINPUT_LINENUMBER( Obj self) {
+  return INTOBJ_INT(TLS->input ? TLS->input->number : 0);
+}
 
+Obj FuncALL_KEYWORDS(Obj self) {
+  Obj l;
 
-  Obj FuncINPUT_FILENAME( Obj self) {
-    UInt len;
-    Obj s;
-    if (TLS->input && TLS->input->name) {
-      len = SyStrlen(TLS->input->name);
-      s = NEW_STRING(len);
-      SyStrncat(CSTR_STRING(s),TLS->input->name, len);
-      return s;
-    } else {
-      char *s2 = "*defin*";
-      s = NEW_STRING(SyStrlen(s2));
-      SyStrncat(CSTR_STRING(s), s2, SyStrlen(s2));
-      return s;
+  Obj s;
+  UInt i;
+  l = NEW_PLIST(T_PLIST_EMPTY, 0);  
+  SET_LEN_PLIST(l,0);
+  for (i = 0; i < sizeof(AllKeywords)/sizeof(AllKeywords[0]); i++)
+    {
+      C_NEW_STRING(s,SyStrlen(AllKeywords[i].name),AllKeywords[i].name);
+      ASS_LIST(l, i+1, s);
     }
-  }
+  MakeImmutable(l);
+  return l;
+}
 
-  Obj FuncINPUT_LINENUMBER( Obj self) {
-    return INTOBJ_INT(TLS->input ? TLS->input->number : 0);
-  }
-
-  Obj FuncALL_KEYWORDS(Obj self) {
-    Obj l;
-
-    Obj s;
-    UInt i;
-    l = NEW_PLIST(T_PLIST_EMPTY, 0);  
-    SET_LEN_PLIST(l,0);
-    for (i = 0; i < sizeof(AllKeywords)/sizeof(AllKeywords[0]); i++)
-      {
-	C_NEW_STRING(s,SyStrlen(AllKeywords[i].name),AllKeywords[i].name);
-	ASS_LIST(l, i+1, s);
-      }
-    MakeImmutable(l);
-    return l;
-  }
+Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
+  if (val == False)
+    (TLS->outputFiles[1])->format = 0;
+  else
+    (TLS->outputFiles[1])->format = 1;
+  return val;
+}
 
 
 
-  /****************************************************************************
-   **
-   *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
-   */
+/****************************************************************************
+ **
+ *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+ */
 
-  /****************************************************************************
-   **
-   *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
-   */
-  static StructGVarFunc GVarFuncs [] = {
+/****************************************************************************
+ **
+ *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+ */
+static StructGVarFunc GVarFuncs [] = {
 
-    { "ToggleEcho", 0, "",
-      FuncToggleEcho, "src/scanner.c:ToggleEcho" },
+  { "ToggleEcho", 0, "",
+    FuncToggleEcho, "src/scanner.c:ToggleEcho" },
 
-    { "CPROMPT", 0, "",
-      FuncCPROMPT, "src/scanner.c:CPROMPT" },
+  { "CPROMPT", 0, "",
+    FuncCPROMPT, "src/scanner.c:CPROMPT" },
 
-    { "PRINT_CPROMPT", 1, "prompt",
-      FuncPRINT_CPROMPT, "src/scanner.c:PRINT_CPROMPT" },
+  { "PRINT_CPROMPT", 1, "prompt",
+    FuncPRINT_CPROMPT, "src/scanner.c:PRINT_CPROMPT" },
 
-    { "INPUT_FILENAME", 0 , "",
-      FuncINPUT_FILENAME, "src/scanner.c:INPUT_FILENAME" },
+  { "INPUT_FILENAME", 0 , "",
+    FuncINPUT_FILENAME, "src/scanner.c:INPUT_FILENAME" },
 
-    { "INPUT_LINENUMBER", 0 , "",
-      FuncINPUT_LINENUMBER, "src/scanner.c:INPUT_LINENUMBER" },
+  { "INPUT_LINENUMBER", 0 , "",
+    FuncINPUT_LINENUMBER, "src/scanner.c:INPUT_LINENUMBER" },
 
-    { "ALL_KEYWORDS", 0 , "",
-      FuncALL_KEYWORDS, "src/scanner.c:ALL_KEYWORDS"},
+  { "ALL_KEYWORDS", 0 , "",
+    FuncALL_KEYWORDS, "src/scanner.c:ALL_KEYWORDS"},
 
-    { 0 }
+  { "SET_PRINT_FORMATTING_STDOUT", 1 , "format",
+    FuncSET_PRINT_FORMATTING_STDOUT, 
+    "src/scanner.c:SET_PRINT_FORMATTING_STDOUT"},
 
-  };
+  { 0 }
 
-  /****************************************************************************
-   **
-   *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
-   */
-  static Int InitLibrary (
-			  StructInitInfo *    module )
-  {
-    /* init filters and functions                                          */
-    InitGVarFuncsFromTable( GVarFuncs );
+};
 
-    /* return success                                                      */
-    return 0;
-  }
+/****************************************************************************
+ **
+ *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+ */
+static Int InitLibrary (
+                        StructInitInfo *    module )
+{
+  /* init filters and functions                                          */
+  InitGVarFuncsFromTable( GVarFuncs );
+
+  /* return success                                                      */
+  return 0;
+}
 
 /****************************************************************************
  **
@@ -3459,35 +3530,33 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
     /* return success                                                      */
     return 0;
-  }
+}
 
 
-  /****************************************************************************
-   **
-   *F  InitInfoScanner() . . . . . . . . . . . . . . . . table of init functions
-   */
-  static StructInitInfo module = {
-    MODULE_BUILTIN,                     /* type                           */
-    "scanner",                          /* name                           */
-    0,                                  /* revision entry of c file       */
-    0,                                  /* revision entry of h file       */
-    0,                                  /* version                        */
-    0,                                  /* crc                            */
-    InitKernel,                         /* initKernel                     */
-    InitLibrary,                        /* initLibrary                    */
-    0,                                  /* checkInit                      */
-    0,                                  /* preSave                        */
-    0,                                  /* postSave                       */
-    0                                   /* postRestore                    */
-  };
+/****************************************************************************
+ **
+ *F  InitInfoScanner() . . . . . . . . . . . . . . . . table of init functions
+ */
+static StructInitInfo module = {
+  MODULE_BUILTIN,                     /* type                           */
+  "scanner",                          /* name                           */
+  0,                                  /* revision entry of c file       */
+  0,                                  /* revision entry of h file       */
+  0,                                  /* version                        */
+  0,                                  /* crc                            */
+  InitKernel,                         /* initKernel                     */
+  InitLibrary,                        /* initLibrary                    */
+  0,                                  /* checkInit                      */
+  0,                                  /* preSave                        */
+  0,                                  /* postSave                       */
+  0                                   /* postRestore                    */
+};
 
-  StructInitInfo * InitInfoScanner ( void )
-  {
-    module.revision_c = Revision_scanner_c;
-    module.revision_h = Revision_scanner_h;
-    FillInVersion( &module );
-    return &module;
-  }
+StructInitInfo * InitInfoScanner ( void )
+{
+  FillInVersion( &module );
+  return &module;
+}
 
 /****************************************************************************
 **

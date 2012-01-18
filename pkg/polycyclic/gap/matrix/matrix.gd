@@ -1,4 +1,3 @@
-
 DeclareGlobalFunction("PcpNullspaceIntMat");
 DeclareGlobalFunction("PcpSolutionIntMat");
 DeclareGlobalFunction("LatticeIntersection");
@@ -12,5 +11,3 @@ DeclareGlobalFunction("OnMatVector");
 DeclareGlobalFunction("PreimageByNHSEB");
 DeclareGlobalFunction("InducedActionFactorByNHSEB");
 DeclareGlobalFunction("InducedActionSubspaceByNHSEB");
-DeclareGlobalFunction("DepthOfVec");
-

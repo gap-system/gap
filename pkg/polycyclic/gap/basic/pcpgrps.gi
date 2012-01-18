@@ -331,7 +331,7 @@ InstallMethod( IsNilpotentGroup,
 function( G )
     local   lcs;
     
-    lcs := LowerCentralSeries( G );
+    lcs := LowerCentralSeriesOfGroup( G );
     return IsTrivial( lcs[ Length(lcs) ] );
 end );
 
@@ -389,16 +389,6 @@ end );
 
 #############################################################################
 ##
-#F IsFreeAbelian( <pcpgrp> )
-##
-IsFreeAbelian := function( G )
-    local pcp;
-    if not IsAbelian(G) then return false; fi;
-    return ForAll( RelativeOrdersOfPcp( Pcp( G, "snf" ) ), x -> x = 0 );
-end;
-
-#############################################################################
-##
 #F AbelianInvariants( <pcpgrp > )
 ##
 InstallMethod( AbelianInvariants, true, [IsPcpGroup], 0,
@@ -412,8 +402,18 @@ function( G )
 end );
 
 
-ComputeIndependentGeneratorsOfAbelianPcpGroup := function ( G )
-	local pcp, id, mat, base, ord, i, g, o, cf, j;
+#############################################################################
+##
+#M  CanEasilyComputeWithIndependentGensAbelianGroup( <pcpgrp> )
+##
+if IsBound(CanEasilyComputeWithIndependentGensAbelianGroup) then
+# CanEasilyComputeWithIndependentGensAbelianGroup was introduced in GAP 4.5.x
+InstallTrueMethod(CanEasilyComputeWithIndependentGensAbelianGroup,
+    IsPcpGroup and IsAbelian);
+fi;
+
+BindGlobal( "ComputeIndependentGeneratorsOfAbelianPcpGroup", function ( G )
+    local pcp, id, mat, base, ord, i, g, o, cf, j;
 
 	# Get a pcp in Smith normal form
 	if not IsBound( G!.snfpcp ) then
@@ -465,7 +465,7 @@ ComputeIndependentGeneratorsOfAbelianPcpGroup := function ( G )
 
 	G!.indgens := base;
 	G!.indgenmat := mat;
-end;
+end );
 
 #############################################################################
 ##
@@ -473,7 +473,9 @@ end;
 ##
 InstallMethod(IndependentGeneratorsOfAbelianGroup, true, [IsPcpGroup and IsAbelian], 0,
 function( G )
-	ComputeIndependentGeneratorsOfAbelianPcpGroup( G );
+	if not IsBound( G!.indgens ) then
+		ComputeIndependentGeneratorsOfAbelianPcpGroup( G );
+	fi;
 	return G!.indgens;
 end );
 
@@ -482,13 +484,18 @@ end );
 ##
 #O  IndependentGeneratorExponents( <G>, <g> )
 ##
+if IsBound( IndependentGeneratorExponents ) then
+# IndependentGeneratorExponents was introduced in GAP 4.5.x
+
 InstallMethod(IndependentGeneratorExponents, IsCollsElms,
   [IsPcpGroup and IsAbelian, IsMultiplicativeElementWithInverse], 0,
 function(G,elm)
 	local exp, rels, i;
 
 	# Ensure everything has been set up
-	ComputeIndependentGeneratorsOfAbelianPcpGroup( G );
+	if not IsBound( G!.indgenmat ) then
+		ComputeIndependentGeneratorsOfAbelianPcpGroup( G );
+	fi;
 
 	# Convert elm into an exponent vector with respect to a snf pcp
 	exp := ExponentsByPcp( G!.snfpcp, elm );
@@ -503,6 +510,7 @@ function(G,elm)
 	return exp;
 end);
 
+fi;
 
 #############################################################################
 ##

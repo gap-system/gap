@@ -2,7 +2,7 @@
 ##
 #W  ctoorth3.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoorth3.tbl,v 4.17 2010/11/15 16:48:28 gap Exp $
+#H  @(#)$Id: ctoorth3.tbl,v 4.18 2011/09/28 12:55:44 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,17 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoorth3.tbl,v $
+#H  Revision 4.18  2011/09/28 12:55:44  gap
+#H  - removed revision entry and SET_TABLEFILENAME call,
+#H  - renamed (6x2.U4(2)):2 and (6xU4(2)):2 to 2x(3x2.U4(2)):2 and
+#H    2x(3xU4(2)):2, respectively (and changed the constructions accordingly)
+#H  - renamed 2.(3^(1+2)+:2S4), 2^2.(7:3xS3), and 2^2.(L2(7)x2)
+#H    to 2x3^(1+2)_+:2S4, 7:3xS4, and D8xL3(2), respectively
+#H    (and changed the construction accordingly)
+#H  - added tables of 2^{3+6}:(L3(2)x3), 2^{1+8}_+:(S3xA5),
+#H  - added maxes entry for O8-(2)
+#H      TB
+#H
 #H  Revision 4.17  2010/11/15 16:48:28  gap
 #H  added missing maxes (fusions) of S8(2)
 #H      TB
@@ -126,11 +137,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctoorth3_tbl :=
-    "@(#)$Id: ctoorth3.tbl,v 4.17 2010/11/15 16:48:28 gap Exp $";
-
-SET_TABLEFILENAME("ctoorth3");
-ALN:= Ignore;
 
 MOT("O10+(2)",
 [
@@ -503,7 +509,7 @@ ALF("O10+(2)","O10+(2).2",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,
 43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,58,59,60,60,61,62,63,64,
 65,66,67,68,69,69,70,71,72,73,73,74,74,75,76,77,77,78,78,79,79,80,80,81,
 81,82,82,83,83,84,84]);
-ALN("O10+(2)",["o10p2c"]);
+ALN("O10+(2)",["o10p2c","O10+(2).2M1"]);
 
 MOT("O10+(2).2",
 [
@@ -1617,6 +1623,7 @@ ALF("O10-(2)","2E6(2)",[1,2,3,3,4,6,5,5,5,6,7,9,8,10,15,14,15,20,19,22,23,
 123,125,126],[
 "fusion map is unique up to table automorphisms"
 ]);
+ALN("O10-(2)",["O10-(2).2M1"]);
 
 MOT("O10-(2).2",
 [
@@ -2345,6 +2352,8 @@ ARC("O8-(2)","tomfusion",rec(name:="O8-(2)",map:=[1,2,3,4,5,6,7,26,25,27,
 201,705,705,705,705,732,732,834,834],text:=[
 "fusion map is unique"
 ]));
+ARC("O8-(2)","maxes",["2^6:U4(2)","S6(2)","2^{3+6}:(L3(2)x3)",
+"2^{1+8}_+:(S3xA5)","(A8x3).2","L2(16).2","(S3xS3xA5):2","L3(2)"]);
 ALF("O8-(2)","O8-(2).2",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,
 20,21,22,23,23,24,25,26,27,28,28,29,30,30,31,31,32,32,33,33],[
 "fusion map is unique up to table autom.,\n",
@@ -2356,6 +2365,7 @@ ALF("O8-(2)","2^8:O8-(2)",[1,4,8,13,17,20,23,27,31,35,41,44,47,52,55,60,
 "fusion map is unique up to table autom.,\n",
 "compatible with Brauer tables"
 ]);
+ALN("O8-(2)",["O8-(2).2M1"]);
 
 MOT("O8-(2).2",
 [
@@ -2478,6 +2488,12 @@ ALF("O8-(2).2","S8(2)",[1,3,4,7,8,10,11,15,14,19,22,24,27,29,28,35,37,41,
 33,40,39,44,43,47,51,57,56,61,66,64,68,74,75,79,80],[
 "fusion is unique up to table automorphisms,\n",
 "unique map that is compatible with Brauer tables"
+]);
+ALF("O8-(2).2","2^8:O8-(2):2",[1,4,8,13,17,20,23,26,31,34,40,43,46,50,53,
+58,61,64,67,70,73,75,78,80,83,86,91,93,94,96,97,98,99,100,104,110,114,118,
+122,126,130,134,136,140,144,146,150,154,157,159,163,166,170,173,174,176,
+178,180,182,184],[
+"fusion map is unique up to table automorphisms"
 ]);
 ALN("O8-(2).2");
 
@@ -5755,7 +5771,6 @@ E(28)^3-E(28)^11-E(28)^15+E(28)^19-E(28)^23+E(28)^27,
 ( 70, 71, 72, 73, 74)(150,151,152,154,153),( 64, 65)(147,148)(183,184)]);
 
 LIBTABLE.LOADSTATUS.ctoorth3:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

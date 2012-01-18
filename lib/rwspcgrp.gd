@@ -2,7 +2,6 @@
 ##
 #W  rwspcgrp.gd                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: rwspcgrp.gd,v 4.25 2010/02/23 15:13:28 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file   contains the operations  for groups   defined by a polycyclic
 ##  collector.
 ##
-Revision.rwspcgrp_gd :=
-    "@(#)$Id: rwspcgrp.gd,v 4.25 2010/02/23 15:13:28 gap Exp $";
 
 
 #############################################################################

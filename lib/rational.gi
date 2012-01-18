@@ -2,7 +2,6 @@
 ##
 #W  rational.gi                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: rational.gi,v 4.41 2010/10/02 22:47:27 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains methods for rationals.
 ##
-Revision.rational_gi :=
-    "@(#)$Id: rational.gi,v 4.41 2010/10/02 22:47:27 alexk Exp $";
 
 
 #############################################################################
@@ -449,6 +446,10 @@ InstallMethod( PadicValuation,
   end );
 
 
+InstallMethod( ViewString, "for rationals", [IsRat], function(r)
+  return Concatenation(ViewString(NumeratorRat(r)), "/\>\<",
+                       ViewString(DenominatorRat(r)));
+end);
 #############################################################################
 ##
 #E

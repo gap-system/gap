@@ -12,9 +12,7 @@ InstallMethod( TrivialGroupCons,
     "pcp group",
     [ IsPcpGroup ],
 function( filter )
-    filter:= PcpGroupByCollectorNC( FromTheLeftCollector( 0 ) );
-    SetIsTrivial( filter, true );
-    return filter;
+    return PcpGroupByCollectorNC( FromTheLeftCollector( 0 ) );
 end );
 
    
@@ -49,12 +47,6 @@ function( filter, ints )
     UpdatePolycyclicCollector(coll);
     grp := PcpGroupByCollectorNC( coll );
     SetIsAbelian( grp, true );
-
-    n := Product(ints);
-    if n > 0 then
-        SetSize( grp, n );
-    fi;
-
     return grp;
 end );
 
@@ -96,8 +88,6 @@ function( filter, n )
     UpdatePolycyclicCollector(coll);
     grp := PcpGroupByCollectorNC( coll );
 
-    SetSize( grp, n );
-    SetIsCyclic( grp, true );
     if n > 1 then
         SetMinimalGeneratingSet(grp, [grp.1]);
     else
@@ -121,8 +111,6 @@ function( filter, n )
     UpdatePolycyclicCollector(coll);
     grp := PcpGroupByCollectorNC( coll );
 
-    SetSize( grp, infinity );
-    SetIsCyclic( grp, true );
     SetMinimalGeneratingSet(grp, [grp.1]);
     return grp;
 end );
@@ -149,7 +137,6 @@ function( filter, n )
     SetConjugate( coll, 2,  1, [2,n/2-1] );
     UpdatePolycyclicCollector(coll);
     grp := PcpGroupByCollectorNC( coll );
-    SetSize( grp, n );
     return grp;
 end );
 
@@ -169,7 +156,6 @@ function( filter, n )
     SetConjugate( coll, 2, -1, [2,-1] );
     UpdatePolycyclicCollector(coll);
     grp := PcpGroupByCollectorNC( coll );
-    SetSize( grp, infinity );
     return grp;
 end );
 
@@ -199,7 +185,6 @@ function( filter, n )
     SetConjugate( coll, 2,  1, [2,n/2-1] );
     UpdatePolycyclicCollector(coll);
     grp := PcpGroupByCollectorNC( coll );
-    SetSize( grp, n );
     return grp;
 end );
 

@@ -11,6 +11,7 @@
 ##
 #F ComplementsCR( C ) . . . . . . . . . . . . . . . . . . . . all complements
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 ComplementsCR := function( C )
     local B, cc, elm, rel, new;
 

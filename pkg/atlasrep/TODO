@@ -10,12 +10,28 @@ where is the class "pkg" defined?
 
 tst/testinst.g: check the permissions! (how?)
 
+provide MathJax in HTML pages
+
 -----------------------------------------------------------------------
 
 for the next release
 ====================
 
 -----------------------------------------------------------------------
+
+- Provide a function that does not just database access
+  but derives the repres. by applying an outer autom., a Galois
+  autom., or by switching to a factor group.
+  see gap/charfeat.g
+
+- MonomorphismAtlasSubgroup ??
+
+- OneAtlasGeneratingSetInfo( ..., Character, IsIrreducible, ... ) ???
+
+- add a check for `AtlasTableOfContents( "remote" )';
+  this way, compare the current `atlasprm.g' with the file available
+  on the package's homepage
+  (and this tests `AtlasOfGroupRepresentationsUpdateTableOfContentsFile')
 
 - in SLD: replace order function by order check?
   (with desired order as an argument, which can be given to `OrderMatTrial')
@@ -40,8 +56,6 @@ for the next release
 - add missing group order info: 557 names, 171 have no character table
 
 - (which of the restrictions yield standard generators?)
-
-- alternative group names!
 
 - add a test for integral repres.:
   reduce mod a few primes, test group order!
@@ -90,6 +104,7 @@ AGRGNAN("4bM20","4bM20");
 - ask Rob again for Tilman Schulz' data files!
 
 - new function: isoclinic group
+  (missing: info for isoclinisation! (inner/outer generators))
 
 - new script: check for unused locals
   (also other packages)
@@ -121,43 +136,6 @@ AGRGNAN("4bM20","4bM20");
 - Make standardization definitions explicitly accessible in GAP.
   (crossref. to HumanReadable..., IsStandardGener...)
 
-  code for AtlasOfGroupRepresentationsTestStandardization:
-
-      tbl:= CharacterTable( gapname );
-      if tbl = fail then
-        Print( "#I  no ord. table of `", gapname, "' available\n" );
-        return result;
-      fi;
-      tom:= TableOfMarks( tbl );
-      if tom = fail then
-        Print( "#I  no t.o.m. of `", gapname, "' available\n" );
-        return result;
-      fi;
-      info:= StandardGeneratorsInfo( tom );
-      if info = fail then
-        Print( "#I  no std. gen. info for `", gapname, "' available\n" );
-        return result;
-      fi;
-
-      for i in [ 1 .. Length( info ) ] do
-
-        # Take one representation if available.
-        gens:= OneAtlasGeneratingSet( name, i );
-#T what do we want: check *all* representations or check the coincidence
-#T of standardization definitions?
-        if gens <> fail then
-          gens:= gens.generators;
-          coincides:= IsStandardGeneratorsOfGroup( info[i], Group( gens ), gens );
-          if coincides and info[i].ATLAS = false then
-            Print( "#I  coincides for ", Ordinal( i ), " std. gen. of `",
-                   name, "'!\n" );
-          elif not coincides and info[i].ATLAS = true then
-            Print( "#I  wrong for ", Ordinal( i ), " std. gen. of `", name,
-                   "'\n" );
-            result:= false;
-          fi;
-        fi;
-
 - When `InfoRead1' is ``cleaned'' then mention this in the documentation.
 
 - store/replace of t.o.c. also for private t.o.c.s!
@@ -176,20 +154,8 @@ AGRGNAN("4bM20","4bM20");
 - finish the treatment of prime fields in `scanmtx.gi' as soon as the streams
   stuff is efficient again
 
-- which tests do currently not work for private directories?
-
 - explicit standardization info: `DisplayStandardizationInfo' (for isom. type)
   (and compare with that in `tomlib')
-
-- create a *common* table of contents, in order to sort the data across
-  the tocs; rebuild after each Notify or Forget or Reload!
-  (``JoinPrivateTOCs''?)
-  [maintain a list of *all* filenames, for checking whether a new file
-  exists already?]
-
-- the common TOC is needed:
-  for example, if I put new cyc2ccls scripts into a private directory,
-  I want to run the tests on the union of all TOCs
 
 - add new functionality:
   - ``total number of data'' (representations, scripts, files, ...)
@@ -199,11 +165,6 @@ AGRGNAN("4bM20","4bM20");
 - manual: - section 2.5: is the info about ``irreducible'' or ``primitive''
             available?
             [note that also the AGRRNG info is more than the filenames say]
-
-- display the t.o.c. via the ``browse'' matrix:
-  DisplayStringLabelledMatrix as default, ``browse'' as option);
-  use this also in genus, ctbllib, ...
-  [see gap/4.0/pkg/ctbllib/irrats/gap/dispmat.g]
 
 - other (precalculated) format for the t.o.c. easier (faster) readable?
 

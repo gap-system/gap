@@ -2,7 +2,7 @@
 **
 *A  setup_reps.c                ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: setup_reps.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: setup_reps.c,v 1.10 2011/11/29 09:43:58 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -30,20 +30,20 @@ int **perms;
 int *a, *b;
 char *c;
 int ***auts;
-FILE_TYPE descendant_file;
-FILE_TYPE covers_file;
+FILE * descendant_file;
+FILE * covers_file;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 { 
 
    char *d;                     /* used in stabiliser computation */
-   FILE_TYPE tmp_file;
+   FILE * tmp_file;
    struct pga_vars original;    /* copy of pga structure */
    register int i, ii;
    Logical soluble_group;       /* indicates that stabilisers may 
 				   be computed using soluble machinery */
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    MP_INT original_aut;         /* copy of automorphism order */
 #endif 
 
@@ -60,7 +60,7 @@ struct pcp_vars *pcp;
       }
    }
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    /* first record current automorphism group order */
    mpz_init_set (&original_aut, &pga->aut_order);
    mpz_clear (&pga->aut_order);
@@ -69,7 +69,7 @@ struct pcp_vars *pcp;
    /* keep copy of pga */
    original = *pga;
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    /* now reset automorphism order in pga */
    mpz_init_set (&pga->aut_order, &original_aut);
 #endif 
@@ -94,13 +94,13 @@ struct pcp_vars *pcp;
 
       /* revert to original pga structure */
       if (!StandardPresentation) {
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
 	 mpz_clear (&pga->aut_order);
 #endif 
 
          *pga = original;                                                       
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
 	 mpz_init_set (&pga->aut_order, &original_aut);
 #endif 
       }
@@ -109,7 +109,7 @@ struct pcp_vars *pcp;
    if (soluble_group)
       free (++d);
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    mpz_clear (&original_aut);
 #endif 
 
@@ -127,23 +127,21 @@ char *c, *d;
 int ***auts;
 int rep;
 int orbit_length;
-FILE_TYPE tmp_file;
-FILE_TYPE descendant_file;
-FILE_TYPE covers_file;
+FILE * tmp_file;
+FILE * descendant_file;
+FILE * covers_file;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"                                                           
+   register int *y = y_address;
    int index;
    int *subset;
    int ***central;
    int ***stabiliser;
    int **S;
    int *seq;
-   FILE_TYPE file;
-   FILE_TYPE GAP_library; 
-   FILE_TYPE CAYLEY_library; 
-   FILE_TYPE Magma_library; 
+   FILE * file;
+   FILE * GAP_library; 
    int lused, rank_of_cover;
    int p = pga->p;
    int j;
@@ -177,7 +175,7 @@ struct pcp_vars *pcp;
 	 free_vector (seq, 1);
       }
 
-      /* should we write a description of group to CAYLEY/GAP/Magma file? */
+      /* should we write a description of group to GAP file? */
       if (pga->capable || pga->terminal) {
 	 if (Group_library == GAP_LIBRARY) {
 	    if (Group_library_file != NULL) 
@@ -186,25 +184,6 @@ struct pcp_vars *pcp;
 	       GAP_library = OpenFile ("GAP_library", "a+");
 	    write_GAP_library (GAP_library, pcp);
 	    CloseFile (GAP_library);
-	 }
-
-	 if (Group_library == CAYLEY_LIBRARY) {
-	    if (Group_library_file != NULL) 
-	       CAYLEY_library = OpenFile (Group_library_file, "a+");
-	    else 
-	       CAYLEY_library = OpenFile ("CAYLEY_library", "a+");
-	    write_CAYLEY_library (CAYLEY_library, pcp);
-	    CloseFile (CAYLEY_library);
-	 }
-
-	 if (Group_library == Magma_LIBRARY) {
-	    if (Group_library_file != NULL) 
-	       Magma_library = OpenFile (Group_library_file, "a+");
-	    else 
-	       Magma_library = OpenFile ("Magma_library", "a+");
-            setbuf (Magma_library, NULL);  
-	    write_Magma_library (Magma_library, pcp);
-	    CloseFile (Magma_library);
 	 }
       }
 
@@ -226,7 +205,7 @@ struct pcp_vars *pcp;
       pga->nmr_centrals = 0;
    }
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    update_autgp_order (orbit_length, pga, pcp);
 #endif 
 
@@ -241,7 +220,7 @@ struct pcp_vars *pcp;
    stabiliser = stabiliser_of_rep (perms, rep, orbit_length,
 				   a, b, c, d, auts, pga, pcp);
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    if (pga->final_stage) 
       report_autgp_order (pga, pcp);
 #endif 

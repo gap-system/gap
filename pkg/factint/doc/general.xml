@@ -19,7 +19,7 @@ the &GAP; Library:
 <ManSection>
   <Meth Name="Factors" Arg="n" Label="FactInt's method, for integers"/>
   <Returns>
-    A sorted list of the prime factors of <A>n</A>.
+    a sorted list of the prime factors of <A>n</A>.
   </Returns>
   <Description>
     <Index Key="primality of the factors">primality of the factors</Index>
@@ -166,7 +166,7 @@ which is the actual <Q>working horse</Q> of this package:
 <ManSection>
   <Func Name="FactInt" Arg="n" Label="factorization of an integer"/>
   <Returns>
-    A list of two lists, where the first list contains the determined
+    a list of two lists, where the first list contains the determined
     prime factors of&nbsp;<A>n</A> and the second list contains the
     remaining unfactored parts of&nbsp;<A>n</A>, if there are any.
   </Returns>

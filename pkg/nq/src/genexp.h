@@ -14,30 +14,35 @@
 **
 **    A word is a generator exponent string terminated by 0.
 */
-#ifndef GENEXP_INCLUDED
-#define GENEXP_INCLUDED
+#ifndef GENEXP_H
+#define GENEXP_H
 
-typedef	short	gen;
+#include "config.h"
+
+typedef short   gen;
 
 /*
 **    GNU cc has the data type long long.  We can switch it on by
-**    defining the macro LONGLONG in the Makefile.
+**    defining the macro HAVE_LONG_LONG_INT in the Makefile.
 */
-#ifdef LONGLONG
-typedef	long long	exp;
+#ifdef HAVE_LONG_LONG_INT
+typedef long long       expo;
+#define EXP_FORMAT	"%lld"
 #else
-typedef long     	exp;
+typedef long            expo;
+#define EXP_FORMAT	"%ld"
 #endif
 
-typedef exp	        *expvec;
+typedef expo             *expvec;
 
-#define EOW	((gen)0)
+#define EOW     ((gen)0)
 
 struct  gpower {
-	gen	g;	/* the generator */
-	exp	e;	/* its exponent  */
+	gen     g;      /* the generator */
+	expo    e;      /* its exponent  */
 };
-typedef struct gpower	gpower;
+typedef struct gpower   gpower;
 
-typedef	gpower	*word;
+typedef gpower  *word;
+
 #endif

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W rels.gi             Alnuth -  Kant Interface                Bjoern Assmann
+#W rels.gi          Alnuth - ALgebraic NUmber THeory         Bjoern Assmann
 ##
 
 #############################################################################

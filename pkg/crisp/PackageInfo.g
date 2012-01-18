@@ -11,25 +11,25 @@ SetPackageInfo( rec(
 
 PackageName := "CRISP",
 Subtitle := "Computing with Radicals, Injectors, Schunck classes and Projectors",
-BannerString := "\
-----------------------------------------------------------------------\n\
-                        CRISP Version 1.3.4\n\
-  Computing with Radicals, Injectors, Schunck classes and Projectors\n\
-                         by Burkhard Höfling\n\
-----------------------------------------------------------------------\n",
-
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers.
-Version := "1.3.4",
+Version := "1.3.5",
 
 ##  Release date of the current version in dd/mm/yyyy format.
-Date := "26/05/2011",
+Date := "22/11/2011",
+
+BannerString := Concatenation ("\
+----------------------------------------------------------------------\n\
+                        CRISP Version ", ~.Version, "\n\
+  Computing with Radicals, Injectors, Schunck classes and Projectors\n\
+                         by Burkhard Höfling\n\
+----------------------------------------------------------------------\n"),
 
 ##  URL of the archive(s) of the current package release, but *without*
 ##  the format extension(s), like '.zoo', which are given next.
 ##  The archive file name *must be changed* with each version of the archive
 ##  (and probably somehow contain the package name and version).
-ArchiveURL := "http://www-public.tu-bs.de:8080/~bhoeflin/crisp/crisp-1r3n4",
+ArchiveURL := "http://www.icm.tu-bs.de/~bhoeflin/crisp/crisp-1r3n5",
 
 ##  All provided formats as list of file extensions, separated by white
 ##  space or commas.
@@ -106,7 +106,7 @@ Persons := [
   FirstNames := "Burkhard",
   IsAuthor := true,
   IsMaintainer := true,
-  WWWHome := "http://www-public.tu-bs.de:8080/~bhoeflin",
+  WWWHome := "http://www.icm.tu-bs.de/~bhoeflin",
   Email := "b.hoefling@tu-bs.de"
   )
 # provide such a record for each author and/or maintainer ...
@@ -139,8 +139,8 @@ AcceptDate := "12/2000",
 ##  the updating of package information on the GAP Website, and inclusion
 ##  and updating of the package in the GAP distribution.
 ##  
-README_URL := "http://www-public.tu-bs.de:8080/~bhoeflin/crisp/README",
-PackageInfoURL := "http://www-public.tu-bs.de:8080/~bhoeflin/crisp/PackageInfo.g",
+README_URL := "http://www.icm.tu-bs.de/~bhoeflin/crisp/README",
+PackageInfoURL := "http://www.icm.tu-bs.de/~bhoeflin/crisp/PackageInfo.g",
 
 ##  Here you  must provide a short abstract explaining the package content 
 ##  in HTML format (used on the package overview Web page) and an URL 
@@ -169,7 +169,7 @@ normal subgroups of a finite solvable group, its characteristic \
 subgroups, minimal normal subgroups and the socle and \
 <i>p</i>-socles for given primes <i>p</i>.",
 
-PackageWWWHome := "http://www-public.tu-bs.de:8080/~bhoeflin/crisp/index.html",
+PackageWWWHome := "http://www.icm.tu-bs.de/~bhoeflin/crisp/index.html",
                   
 ##  On the GAP Website there is an online version of all manuals in the
 ##  GAP distribution. To handle the documentation of a package it is
@@ -193,8 +193,8 @@ PackageDoc := rec(
   BookName := "CRISP",
   # format/extension can be one of .zoo, .tar.gz, .tar.bz2, -win.zip
   # Archive := "http://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM/edimdoc-1p1.tar.bz2",
-  ArchiveURLSubset := ["doc", "htm"],
-  HTMLStart := "htm/chapters.htm",
+  ArchiveURLSubset := ["doc", "html"],
+  HTMLStart := "html/chapters.htm",
   PDFFile := "doc/manual.pdf",
   # the path to the .six file used by GAP's help system
   SixFile := "doc/manual.six",

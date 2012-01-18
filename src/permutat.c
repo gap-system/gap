@@ -3,7 +3,6 @@
 *W  permutat.c                  GAP source                   Martin Schönert
 **                                                           & Alice Niemeyer
 **
-*H  @(#)$Id: permutat.c,v 4.63 2010/02/23 15:13:46 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -40,8 +39,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_permutat_c =
-   "@(#)$Id: permutat.c,v 4.63 2010/02/23 15:13:46 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -201,8 +198,8 @@ void            PrintPermP (
     UInt2 *             ptPerm;         /* pointer to the permutation      */
     UInt                p,  q;          /* loop variables                  */
     UInt                isId;           /* permutation is the identity?    */
-    char *              fmt1;           /* common formats to print points  */
-    char *              fmt2;           /* common formats to print points  */
+    const char *        fmt1;           /* common formats to print points  */
+    const char *        fmt2;           /* common formats to print points  */
 
     /* set up the formats used, so all points are printed with equal width */
     degPerm = DEG_PERM2(perm);
@@ -246,8 +243,8 @@ void            PrintPermQ (
     UInt4 *             ptPerm;         /* pointer to the permutation      */
     UInt                p,  q;          /* loop variables                  */
     UInt                isId;           /* permutation is the identity?    */
-    char *              fmt1;           /* common formats to print points  */
-    char *              fmt2;           /* common formats to print points  */
+    const char *        fmt1;           /* common formats to print points  */
+    const char *        fmt2;           /* common formats to print points  */
 
     /* set up the formats used, so all points are printed with equal width */
     degPerm = DEG_PERM4(perm);
@@ -4614,16 +4611,16 @@ static StructGVarFunc GVarFuncs [] = {
     { "LARGEST_MOVED_POINT_PERM", 1, "perm",
       FuncLARGEST_MOVED_POINT_PERM, "src/permutat.c:LARGEST_MOVED_POINT_PERM" },
 
-    { "CycleLengthPermInt", 2, "perm, point",
+    { "CYCLE_LENGTH_PERM_INT", 2, "perm, point",
       FuncCycleLengthPermInt, "src/permutat.c:CycleLengthPermInt" },
 
-    { "CyclePermInt", 2, "perm, point",
+    { "CYCLE_PERM_INT", 2, "perm, point",
       FuncCyclePermInt, "src/permutat.c:CyclePermInt" },
 
-    { "CycleStructPerm", 1, "perm",
+    { "CYCLE_STRUCT_PERM", 1, "perm",
       FuncCycleStructurePerm, "src/permutat.c:CycleStructPerm" },
 
-    { "OrderPerm", 1, "perm",
+    { "ORDER_PERM", 1, "perm",
       FuncOrderPerm, "src/permutat.c:OrderPerm" },
 
     { "SIGN_PERM", 1, "perm",
@@ -4825,8 +4822,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPermutat ( void )
 {
-    module.revision_c = Revision_permutat_c;
-    module.revision_h = Revision_permutat_h;
     FillInVersion( &module );
     return &module;
 }

@@ -8,10 +8,10 @@ SetPackageInfo( rec(
 
 PackageName      := "ResClasses",
 Subtitle         := "Set-Theoretic Computations with Residue Classes",
-Version          := "3.0.1",
-Date             := "08/05/2011",
+Version          := "3.0.4",
+Date             := "01/11/2011",
 ArchiveURL       := Concatenation("http://www.gap-system.org/DevelopersPages/StefanKohl/",
-                                  "resclasses/resclasses-3.0.1"),
+                                  "resclasses/resclasses-3.0.4"),
 ArchiveFormats   := "-win.zip", # ".tar.gz" when providing text files with UNIX-style line breaks
 Persons          := [
                       rec( LastName      := "Kohl",
@@ -19,13 +19,13 @@ Persons          := [
                            IsAuthor      := true,
                            IsMaintainer  := true,
                            Email         := "stefan@mcs.st-and.ac.uk",
-                           WWWHome       := "http://www.gap-system.org/DevelopersPages/StefanKohl/",
-                           PostalAddress := Concatenation("Department of Mathematics\n",
-                                                          "University of Vlora\n",
-                                                          "Lagjja: Pavaresia\n",
-                                                          "Vlore / Albania"),
-                           Place         := "Vlore / Albania",
-                           Institution   := "University of Vlora"
+                           WWWHome       := "http://www.gap-system.org/DevelopersPages/StefanKohl/"
+                           # , PostalAddress := Concatenation("Department of Mathematics\n",
+                           #                                "University of Vlora\n",
+                           #                                "Lagjja: Pavaresia\n",
+                           #                                "Vlore / Albania"),
+                           # Place         := "Vlore / Albania",
+                           # Institution   := "University of Vlora"
                          )
                     ],
 Status           := "deposited",
@@ -49,8 +49,8 @@ PackageDoc       := rec(
                          Autoload         := true
                        ),
 Dependencies     := rec(
-                         GAP                    := ">=4.4.12",
-                         NeededOtherPackages    := [ ["GAPDoc",">=1.1"], ["Polycyclic",">=2.6"] ],
+                         GAP                    := ">=4.5.2",
+                         NeededOtherPackages    := [ ["GAPDoc",">=1.4"], ["Polycyclic",">=2.6"] ],
                          SuggestedOtherPackages := [ ],
                          ExternalConditions     := [ ]
                        ),
@@ -58,7 +58,7 @@ AvailabilityTest := ReturnTrue,
 BannerString     := Concatenation( "\nLoading ResClasses ", ~.Version,
                                    " (Computations with Residue Classes)",
                                    "\nby Stefan Kohl, stefan@mcs.st-and.ac.uk\n\n" ),
-Autoload         := true,
+Autoload         := false,
 TestFile         := "tst/testall.g",
 Keywords         := [ "residue classes", "integers", "number theory" ]
 

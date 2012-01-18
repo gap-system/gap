@@ -14,8 +14,6 @@
 ##  1. Functions for straight line programs
 ##  2. Functions for elements represented by straight line programs
 ##
-Revision.straight_gi :=
-    "@(#)$Id: straight.gi,v 4.43 2011/02/17 14:10:11 gap Exp $";
 
 
 #############################################################################

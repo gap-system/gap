@@ -2,7 +2,6 @@
 ##
 #W  global.gd                   GAP library                      Steve Linton
 ##
-#H  @(#)$Id: global.gd,v 4.15 2010/02/23 15:13:01 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -27,8 +26,6 @@
 ##  contains characters not recognised as part of identifiers by the
 ##  GAP parser
 ##
-Revision.global_gd :=
-    "@(#)$Id: global.gd,v 4.15 2010/02/23 15:13:01 gap Exp $";
 
 #############################################################################
 ##
@@ -192,6 +189,8 @@ DeclareGlobalFunction("MakeReadWriteGlobal");
 ##  17
 ##  gap> IsReadOnlyGlobal("xx");
 ##  true
+##  gap> MakeReadWriteGlobal("xx");
+##  gap> Unbind(xx);
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

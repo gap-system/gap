@@ -2,7 +2,6 @@
 ##
 #W  rws.gd                      GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: rws.gd,v 4.52 2010/02/23 15:13:27 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -91,8 +90,6 @@
 ##  the appropriate method to determine confluence is called. 
 ##  <#/GAPDoc>
 ##
-Revision.rws_gd :=
-    "@(#)$Id: rws.gd,v 4.52 2010/02/23 15:13:27 gap Exp $";
 
 
 #############################################################################

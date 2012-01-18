@@ -2,7 +2,7 @@
 **
 *W  mpd.c                       GAP source                  Laurent Bartholdi
 **
-*H  @(#)$Id: mpd.c,v 1.1 2008/06/14 15:45:40 gap Exp $
+*H  @(#)$Id: mpd.c,v 1.2 2011/12/05 08:41:49 gap Exp $
 **
 *Y  Copyright (C) 2008 Laurent Bartholdi
 **
@@ -10,14 +10,14 @@
 **  complex floats are implemented using the MPD package.
 */
 const char * Revision_mpd_c =
-   "@(#)$Id: mpd.c,v 1.1 2008/06/14 15:45:40 gap Exp $";
+   "@(#)$Id: mpd.c,v 1.2 2011/12/05 08:41:49 gap Exp $";
 
-#define USE_GMP
 #define BANNER_FLOAT_H
 
 #include <string.h>
 #include <malloc.h>
 #include <stdio.h>
+#include <gmp.h>
 
 #include "src/system.h"
 #include "src/gasman.h"
@@ -27,7 +27,7 @@ const char * Revision_mpd_c =
 #include "src/bool.h"
 #include "src/string.h"
 #include "src/plist.h"
-#include "float.h"
+#include "mp_float.h"
 
 /****************************************************************
  * mpd's are stored as follows:

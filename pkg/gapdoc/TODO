@@ -1,12 +1,10 @@
 
            Some reminders for the authors
 
-         $Id: TODO,v 1.22 2011/05/04 16:21:46 gap Exp $
-
-
-- should the bibliography and the index appear in the table of contents?
-  (if yes, in all output versions) 
-  [use: \addcontentsline{toc}{section}{References}   ?]
+- Can TestManualExamples be changed such that only call of
+  TestExamplesString is necessary. Current version doesn't work when
+  the examples depend on each other, variables may be different on
+  second call of TestExamplesString.
 
 - allow the distribution of different output documents (html, text, pdf,...)
   into different directories (needs to change the handler for GAPDoc books).
@@ -15,13 +13,6 @@
   (e.g., a function with several types of arguments, where the entries are
   only distinguished by the 'Label' attribute and are explained in the same
   man section).
-
-- add colors to "Example"s as with ColorPrompt("true"); (use 'commandchars'
-  option in Verbatim from fancyvrb for LaTeX version). (use  CSS in XHTML:
-  set monospace fonts and colors, see output of TOhtml in vim)
-
-- with GAP 4.5 substitute the 'POST_RESTORE_FUNCS' in init.g by
-  GAPInfo.PostRestoreFuncs.
 
 - investigate using xelatex and direct unicode input for the LaTeX version.
 

@@ -1,4 +1,3 @@
-<!-- $Id: conv.xml,v 1.29 2010/11/03 00:13:17 gap Exp $ -->
 
 <Chapter Label="ch:conv">
 <Heading>The Converters and an XML Parser</Heading>
@@ -139,8 +138,8 @@ Finally  we  produce  an  HTML-version  of the  document  and  write  it
 so  on.  They  can  be  read with  any  Web-browser.  The  commands  are
 <Ref  Func="GAPDoc2HTML"/> and  <Ref Func="GAPDoc2HTMLPrintHTMLFiles"/>.
 We  also  add  a  link  from  <F>manual.html</F>  to  <F>chap0.html</F>.
-You  probably   want  to   add  a   file  <F>manual.css</F>,   see  <Ref
-Func="GAPDoc2HTMLPrintHTMLFiles"/>  for   more  details.   The  argument
+You  probably   want  to  copy stylesheet   files into the same directory,
+see  <Ref Subsect="StyleSheets"/>  for   more  details.   The  argument
 <C>path</C>  of   <Ref  Func="GAPDoc2HTML"/>  specifies   the  directory
 containing the &BibTeX; database files.
 
@@ -242,6 +241,10 @@ documents.
 
 <#Include Label="GAPDoc2HTMLPrintHTMLFiles">
 
+<#Include Label="HTMLStyleSheets">
+
+<#Include Label="SetGAPDocHTMLStyle">
+
 <#Include Label="InfoGAPDoc">
 
 <#Include Label="SetGapDocLanguage">
@@ -249,13 +252,18 @@ documents.
 </Section>
 
 <Section Label="Sec:TestExample">
+<Index><C>ManualExamples</C></Index>
+<Index><C>TestManualExamples</C></Index>
 <Heading>Testing Manual Examples</Heading>
-We also provide some tools to check the examples given in
-<C>&lt;Example></C>-elements. 
+We also provide some tools to check and adjust the examples given in
+<C>&lt;Example></C>-elements. <P/>
+Former versions of &GAPDoc; provided functions <C>ManualExamples</C>
+and <C>TestManualExamples</C>. These functions are still available,
+but no longer documented. Their use is deprecated.
 
-<#Include Label="ManualExamples">
+<#Include Label="ExtractExamples">
 
-<#Include Label="TestExamples">
+<#Include Label="RunExamples">
 
 </Section>
 

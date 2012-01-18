@@ -1,10 +1,9 @@
 #############################################################################
 ##
 #W  dict.gi                   GAP Library                      Gene Cooperman
-#W							         Scott Murray
+#W                                                               Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: dict.gi,v 4.42 2011/04/19 02:53:49 gap Exp $
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##
 ##  This file contains the implementations for dictionaries.
 ##
-Revision.dict_gi :=
-    "@(#)$Id: dict.gi,v 4.42 2011/04/19 02:53:49 gap Exp $";
 
 ##
 ## List and Sort dictionaries
@@ -298,9 +295,18 @@ local hashfun,obj,dom,lookup;
     (IsQuickPositionList(dom) or 
       (not IsMutable(dom) and IsSSortedList(dom) and
        CanEasilySortElements(dom[1]) )  )
-      and Length(dom)<2^17 then
+       #2^22 plist (for position lookup) is 16MB size
+      and Length(dom)<2^22 then
     Info(InfoHash,1,obj," Position dictionary");
     return DictionaryByPosition(dom,lookup);
+  elif dom<>fail and IsFreeLeftModule(dom) and
+    IsFFECollection(LeftActingDomain(dom)) and
+    Size(LeftActingDomain(dom))<=256 
+    #2^22 plist (for position lookup) is 16MB size
+    and Size(dom)<2^22 then
+    # FF vector space: use enumerator for position
+    Info(InfoHash,1,obj," Position dictionary for vector space");
+    return DictionaryByPosition(Enumerator(dom),lookup);
   fi;
 
   # can we try hashing? Only if domain is given and not for small perms.
@@ -400,10 +406,10 @@ LastHashIndex := -1;
 ##
 InstallGlobalFunction( DenseHashTable, 
     function( )
-	local Type, Rec;
+        local Type, Rec;
 
-	Type := NewType( DictionariesFamily, IsDenseHashRep and IsMutable );
-	Rec := rec( KeyArray := [], ValueArray := [] );
+        Type := NewType( DictionariesFamily, IsDenseHashRep and IsMutable );
+        Rec := rec( KeyArray := [], ValueArray := [] );
         return Objectify( Type, Rec );
     end );
 
@@ -414,23 +420,23 @@ InstallGlobalFunction( DenseHashTable,
 InstallMethod( ViewObj, "for dense hash tables", true,
     [ IsDenseHashRep ], 0,
     function( hash )
-	if Size( hash ) > MaxHashViewSize then
-	    Print("< dense hash table of size ", Size( hash ), " >");
-	else
+        if Size( hash ) > MaxHashViewSize then
+            Print("< dense hash table of size ", Size( hash ), " >");
+        else
             PrintHashWithNames( hash, "Keys", "Values" );
-	fi;
+        fi;
     end );
 
 #############################################################################
 ##
 #M  PrintHashWithNames( <hash>, <keyName>, <valueName> )
-#M	for dense hash tables
+#M      for dense hash tables
 ##
 InstallMethod( PrintHashWithNames, "for dense hash tables", true,
     [ IsDenseHashRep, IsString, IsString ], 0,
     function( hash, keyName, valueName )
-	local key;
-	Print(keyName, ": ", hash!.KeyArray, "\n");
+        local key;
+        Print(keyName, ": ", hash!.KeyArray, "\n");
         Print(valueName, ": ", List( hash!.KeyArray, 
                key -> hash!.ValueArray[key] ));
     end );
@@ -442,7 +448,7 @@ InstallMethod( PrintHashWithNames, "for dense hash tables", true,
 InstallMethod( PrintObj, "for dense hash tables", true,
     [ IsDenseHashRep ], 0,
     function( hash )
-	PrintHashWithNames( hash, "Keys", "Values" ); Print("\n");
+        PrintHashWithNames( hash, "Keys", "Values" ); Print("\n");
     end );
 
 #############################################################################
@@ -452,7 +458,7 @@ InstallMethod( PrintObj, "for dense hash tables", true,
 InstallMethod( Size, "for dense hash tables", true,
     [ IsDenseHashRep ], 0,
     function( hash )
-	return Length( hash!.KeyArray );
+        return Length( hash!.KeyArray );
     end );
 
 #############################################################################
@@ -462,7 +468,7 @@ InstallMethod( Size, "for dense hash tables", true,
 InstallMethod( Enumerator, "for dense hash tables", true,
     [ IsDenseHashRep ], 0,
     function( hash )
-	return List( hash!.KeyArray, key -> GetHashEntry( hash, key ) );
+        return List( hash!.KeyArray, key -> GetHashEntry( hash, key ) );
     end );
 
 #############################################################################
@@ -472,7 +478,7 @@ InstallMethod( Enumerator, "for dense hash tables", true,
 InstallMethod( HashKeyEnumerator, "for dense hash tables", true,
     [ IsDenseHashRep ], 0,
     function( hash )
-	return hash!.KeyArray;
+        return hash!.KeyArray;
     end );
 
 #############################################################################
@@ -484,7 +490,7 @@ InstallMethod( HashKeyEnumerator, "for dense hash tables", true,
 InstallMethod( Random, "for dense hash tables", true,
     [ IsHash and IsDenseHashRep ], 100,    
     function( hash ) 
-	return GetHashEntry( hash, RandomHashKey( hash ) );
+        return GetHashEntry( hash, RandomHashKey( hash ) );
     end );
         
 #############################################################################
@@ -496,7 +502,7 @@ InstallMethod( Random, "for dense hash tables", true,
 InstallMethod( RandomHashKey, "for dense hash tables", true,
     [ IsHash and IsDenseHashRep ], 100,    
     function( hash ) 
-    	return Random(hash!.KeyArray);
+        return Random(hash!.KeyArray);
     end );
 
 
@@ -515,6 +521,7 @@ InstallMethod( RandomHashKey, "for dense hash tables", true,
 ##  Default starting hash table size
 ##
 DefaultHashLength := 2^7; 
+BindGlobal("HASH_RANGE",[0..DefaultHashLength-2]);
 
 #############################################################################
 ##
@@ -525,7 +532,7 @@ function(arg)
       local Rec,T;
 
   Rec := rec( KeyArray := ListWithIdenticalEntries( DefaultHashLength, fail ), 
-	  ValueArray := [], LengthArray := DefaultHashLength, NumberKeys := 0 );
+          ValueArray := [], LengthArray := DefaultHashLength, NumberKeys := 0 );
     
   if Length(arg)>0 then
     T:=Objectify( DefaultSparseHashWithIKRepType, Rec );
@@ -577,24 +584,24 @@ end);
 InstallMethod( ViewObj, "for sparse hash tables", true,
     [ IsSparseHashRep ], 0,
     function( hash )
-	if Size( hash ) > MaxHashViewSize then
-	    Print("< sparse hash table of size ", Size( hash ), " >");
-	else
-	    PrintHashWithNames( hash, "Keys", "Values" );
+        if Size( hash ) > MaxHashViewSize then
+            Print("< sparse hash table of size ", Size( hash ), " >");
+        else
+            PrintHashWithNames( hash, "Keys", "Values" );
         fi;
     end );
 
 #############################################################################
 ##
 #M  PrintHashWithNames( <hash>, <keyName>, <valueName> ) 
-##	for sparse hash table
+##      for sparse hash table
 ##
 InstallMethod( PrintHashWithNames, "for sparse hash tables", true,
     [ IsSparseHashRep, IsString, IsString ], 0,
     function( hash, keyName, valueName )
-	local key;
-	Print(keyName, ": ", HashKeyEnumerator( hash ), "\n");
-	Print(valueName, ": ", Enumerator( hash ));
+        local key;
+        Print(keyName, ": ", HashKeyEnumerator( hash ), "\n");
+        Print(valueName, ": ", Enumerator( hash ));
     end );
 
 #############################################################################
@@ -604,7 +611,7 @@ InstallMethod( PrintHashWithNames, "for sparse hash tables", true,
 InstallMethod( PrintObj, "for sparse hash tables", true,
     [ IsSparseHashRep ], 0,
     function( hash )
-	PrintHashWithNames(hash, "Keys", "Values" ); Print("\n");
+        PrintHashWithNames(hash, "Keys", "Values" ); Print("\n");
     end );
 
 #############################################################################
@@ -622,7 +629,7 @@ InstallMethod( Size, "for sparse hash tables", true,
 InstallMethod( Enumerator, "for sparse hash tables", true,
     [ IsHash and IsSparseHashRep ], 0,
     hash -> List( Filtered( hash!.KeyArray, x -> x <> fail ), 
-		  key -> GetHashEntry( hash, key ) ) );
+                  key -> GetHashEntry( hash, key ) ) );
 
 #############################################################################
 ##
@@ -641,7 +648,7 @@ InstallMethod( HashKeyEnumerator, "for sparse hash tables", true,
 InstallMethod( Random, "for sparse hash tables", true,
     [ IsHash and IsSparseHashRep ], 100,
     function( hash )        
-    	return GetHashEntry( hash, RandomHashKey( hash ) );
+        return GetHashEntry( hash, RandomHashKey( hash ) );
     end );
 
 #############################################################################
@@ -653,13 +660,13 @@ InstallMethod( Random, "for sparse hash tables", true,
 InstallMethod( RandomHashKey, "for sparse hash tables", true,
     [ IsHash and IsSparseHashRep ], 100,    
     function( hash ) 
-    	local i;
+        local i;
     
-    	if Size( hash ) = 0 then return fail; fi; 
-    	repeat
+        if Size( hash ) = 0 then return fail; fi; 
+        repeat
             i := Random( [1..hash!.LengthArray] );
-    	until hash!.KeyArray[i] <> fail;
-    	return hash!.KeyArray[i];
+        until hash!.KeyArray[i] <> fail;
+        return hash!.KeyArray[i];
     end );
 
 
@@ -673,100 +680,106 @@ InstallMethod( RandomHashKey, "for sparse hash tables", true,
 
 #############################################################################
 ##
-#F  HashFunct( <key>, <i>, <size> )
+#F  IntegerHashFunction( <key>, <i>, <size> )
 ##
-InstallGlobalFunction( HashFunct,
+InstallGlobalFunction( IntegerHashFunction,
     function( key, i, size )
         # return ( (1+key) + i*(1+2*(key mod size/2)) ) mod size;
         return 1+( (1+key) + i*(1+2*(key mod QuoInt(size,2))) ) mod size;
-        #return 1 + ( key + i * (1 + (key mod 2) + (key mod size)) ) mod size;	
-	#return 1 + ( key + (i-1) * (QuoInt(size,17))) mod size;
+        #return 1 + ( key + i * (1 + (key mod 2) + (key mod size)) ) mod size;
+        #return 1 + ( key + (i-1) * (QuoInt(size,17))) mod size;
     end );
 
+BindGlobal("HashClashFct",function(intkey,i,len)
+  return 1+((intkey+i) mod len);
+  #return 1+(intkey mod (len-i));
+end);
 
-#############################################################################
-#############################################################################
-##
-##  Fast access to last hash index
-##
-#############################################################################
-#############################################################################
 
-#############################################################################
-##
-#M  GetHashEntryAtLastIndex( <hash> )
-##
-InstallMethod( GetHashEntryAtLastIndex, "for hash table", true,
-    [ IsHash ], 0, 
-    function( hash )
-        if IsBound( hash!.ValueArray[ LastHashIndex ] ) then
-            return( hash!.ValueArray[ LastHashIndex ] );
-    	else 
-	    return fail;
-    	fi;
-    end );
-
-#############################################################################
-##
-#M  SetHashEntryAtLastIndex( <hash>, <newValue> )
-##
-InstallMethod( SetHashEntryAtLastIndex, "for hash table", true,
-    [ IsHash and IsMutable, IsObject ], 0, 
-    function( hash, newvalue )
-	hash!.ValueArray[ LastHashIndex ] := newvalue;
-        return newvalue;
-    end );
+# old obsolete code
+# #############################################################################
+# ##
+# #M  GetHashEntryAtLastIndex( <hash> )
+# ##
+# InstallMethod( GetHashEntryAtLastIndex, "for hash table", true,
+#     [ IsHash ], 0, 
+#     function( hash )
+#         if IsBound( hash!.ValueArray[ LastHashIndex ] ) then
+#             return( hash!.ValueArray[ LastHashIndex ] );
+#       else 
+#           return fail;
+#       fi;
+#     end );
+# 
+# #############################################################################
+# ##
+# #M  SetHashEntry( <hash>, <key>, <value> )
+# ##
+# InstallMethod( SetHashEntry, "for hash table", true,
+#     [ IsHash and IsMutable, IsObject, IsObject ], 0,
+# function( hash, intkey, value )
+# local index, i;
+#   for i in HASH_RANGE do
+#     index := IntegerHashFunction( intkey, i, hash!.LengthArray );
+#     if hash!.KeyArray[index] = fail then
+#       hash!.ValueArray[ LastHashIndex ] := value;
+#       return value;
+#     fi;
+#   od;
+#   Error("hash table in infinite loop");
+# end );
+# 
+# #############################################################################
+# ##
+# #M  SetHashEntryAtLastIndex( <hash>, <newValue> )
+# ##
+# InstallMethod( SetHashEntryAtLastIndex, "for hash table", true,
+#     [ IsHash and IsMutable, IsObject ], 0, 
+#     function( hash, newvalue )
+#       hash!.ValueArray[ LastHashIndex ] := newvalue;
+#         return newvalue;
+#     end );
 
 # dictionary type interface for hash tables. As we want these to be really
 # fast, the code has been stripped down.
-BindGlobal("HASH_RANGE",[0..500]);
 
-#############################################################################
-##
-#M  SetHashEntry( <hash>, <key>, <value> )
-##
-InstallMethod( SetHashEntry, "for hash table", true,
-    [ IsHash and IsMutable, IsObject, IsObject ], 0,
-function( hash, intkey, value )
-local index, i;
-  for i in HASH_RANGE do
-    index := HashFunct( intkey, i, hash!.LengthArray );
-    if hash!.KeyArray[index] = fail then
-      hash!.ValueArray[ LastHashIndex ] := value;
-      return value;
-    fi;
-  od;
-  Error("hash table in infinite loop");
-end );
+#MAXCLASH:=0;
 
 #############################################################################
 ##
 #M  AddDictionary(<dict>,<key>,<val>)
 ##
 BindGlobal("HashDictAddDictionary",function(hash,key,value)
-local index,intkey,i,j,cnt;
+local index,intkey,i,cnt;
   intkey := hash!.intKeyFun(key);
-  cnt:=1;
-  j:=0;
+#  cnt:=0;
   repeat
     for i in HASH_RANGE do
-      index := HashFunct( intkey, j, hash!.LengthArray );
-      j:=j+1;
+      index:=HashClashFct(intkey,i,hash!.LengthArray);
       if hash!.KeyArray[index] = fail then
-	hash!.KeyArray[ index ] := key;
-	hash!.ValueArray[ index ] := value;
-	hash!.NumberKeys := hash!.NumberKeys + 1;
-	# was: if 2 * hash!.NumberKeys > Length( hash!.KeyArray ) then
-	# The length of the key array is just hash!.lengthArray. Thus
-	# this looks like an unnecessary multiplication.
-	if hash!.NumberKeys > hash!.LengthArrayHalf then
-	  DoubleHashDictSize( hash );
-	fi;
-	return;
+#if cnt>MAXCLASH then MAXCLASH:=cnt;
+#Print("found after ",cnt," clashes, ", Length(Set(
+#  List([0..i-1],x->hash!.intKeyFun(hash!.KeyArray[HashClashFct(intkey,x,hash!.LengthArray)]))   )), " different keys\n");
+#fi;
+        hash!.KeyArray[ index ] := key;
+        hash!.ValueArray[ index ] := value;
+        hash!.NumberKeys := hash!.NumberKeys + 1;
+        # was: if 2 * hash!.NumberKeys > Length( hash!.KeyArray ) then
+        # The length of the key array is just hash!.lengthArray. Thus
+        # this looks like an unnecessary multiplication.
+        if hash!.NumberKeys > hash!.LengthArrayHalf then
+          DoubleHashDictSize( hash );
+        fi;
+        return;
       fi;
+#      cnt:=cnt+1;
     od;
-    Info(InfoWarning,1,"hash table in ",cnt,"-infinite loop?");
-    cnt:=cnt+1;
+    # failed: Double size
+    #Error("Failed/double ",intkey," ",key," ",Maximum(HASH_RANGE),"\n");
+    MakeReadWriteGlobal("HASH_RANGE");
+    HASH_RANGE:=[1..2*Maximum(HASH_RANGE)];
+    MakeReadOnlyGlobal("HASH_RANGE");
+    DoubleHashDictSize( hash );
   until false;
 end );
 
@@ -781,7 +794,7 @@ function(hash,key,value)
 local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
   for i in HASH_RANGE do
-    index := HashFunct( intkey, i, hash!.LengthArray );
+    index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = fail then
       hash!.KeyArray[ index ] := key;
       hash!.ValueArray[ index ] := value;
@@ -790,7 +803,7 @@ local index,intkey,i;
       # The length of the key array is just hash!.lengthArray. Thus
       # this looks like an unnecessary multiplication.
       if hash!.NumberKeys > hash!.LengthArrayHalf then
-	DoubleHashDictSize( hash );
+        DoubleHashDictSize( hash );
       fi;
       return;
     fi;
@@ -801,6 +814,8 @@ end );
 InstallGlobalFunction(DoubleHashDictSize,
 function( hash )
   local oldKeyArray, oldValueArray, i,j,l;
+
+  #Print("Double from ",hash!.LengthArray,"\n");
   oldKeyArray := hash!.KeyArray;
   oldValueArray := hash!.ValueArray;
   # compact
@@ -810,8 +825,8 @@ function( hash )
   while i<=l do
     if oldKeyArray[i]<>fail then
       if i>j then
-	oldKeyArray[j]:=oldKeyArray[i];
-	oldValueArray[j]:=oldValueArray[i];
+        oldKeyArray[j]:=oldKeyArray[i];
+        oldValueArray[j]:=oldValueArray[i];
       fi;
       j:=j+1;
     fi;
@@ -832,7 +847,7 @@ function( hash )
   if IsBound(hash!.intKeyFun) then
     for i in [l,l-1..1] do
       if oldKeyArray[i] <> fail then
-	HashDictAddDictionary( hash, oldKeyArray[i], oldValueArray[i] );
+        HashDictAddDictionary( hash, oldKeyArray[i], oldValueArray[i] );
       fi;
       Unbind(oldKeyArray[i]);
       Unbind(oldValueArray[i]);
@@ -840,7 +855,7 @@ function( hash )
   else
     for i in [l,l-1..1] do
       if oldKeyArray[i] <> fail then
-	AddDictionary( hash, oldKeyArray[i], oldValueArray[i] );
+        AddDictionary( hash, oldKeyArray[i], oldValueArray[i] );
       fi;
       Unbind(oldKeyArray[i]);
       Unbind(oldValueArray[i]);
@@ -875,24 +890,19 @@ end);
 InstallMethod(LookupDictionary,"for hash tables that know their int key",true,
   [IsHash and IsSparseHashRep and TableHasIntKeyFun,IsObject],0,
 function( hash, key )
-local index,intkey,i,cnt,j;
+local index,intkey,i,cnt;
   intkey := hash!.intKeyFun(key);
-  cnt:=1;
-  j:=0;
-  repeat
-    for i in HASH_RANGE do
-      index := HashFunct( intkey, j, hash!.LengthArray );
-      j:=j+1;
-      if hash!.KeyArray[index] = key then
-        LastHashIndex := index;
-	return hash!.ValueArray[ index ]; 
-      elif hash!.KeyArray[index] = fail then
-	return fail;
-      fi;
-    od;
-    Info(InfoWarning,1,"hash table in ",cnt,"-infinite loop?");
-    cnt:=cnt+1;
-  until false;
+  for i in HASH_RANGE do
+    index:=HashClashFct(intkey,i,hash!.LengthArray);
+    if hash!.KeyArray[index] = key then
+      #LastHashIndex := index;
+      return hash!.ValueArray[ index ]; 
+    elif hash!.KeyArray[index] = fail then
+      return fail;
+    fi;
+  od;
+  # the entry could not have been added, as we would have found it by now
+  return fail;
 end );
 
 ############################################################################
@@ -905,9 +915,9 @@ function( hash, key )
 local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
   for i in HASH_RANGE do
-    index := HashFunct( intkey, i, hash!.LengthArray );
+    index:=HashClashFct(intkey,i,hash!.LengthArray);
     if hash!.KeyArray[index] = key then
-        LastHashIndex := index;
+        #LastHashIndex := index;
         return hash!.ValueArray[ index ]; 
     elif hash!.KeyArray[index] = fail then
       return fail;
@@ -930,33 +940,98 @@ InstallMethod(DenseIntKey,"default fail",true,[IsObject,IsObject],
 InstallMethod(SparseIntKey,"defaults to DenseIntKey",true,[IsObject,IsObject],
   0,DenseIntKey);
 
-InstallMethod(DenseIntKey,"for finite Gaussian row spaces",true,
+InstallMethod(SparseIntKey,"for finite Gaussian row spaces",true,
     [ IsFFECollColl and IsGaussianRowSpace,IsObject ], 0,
 function(m,v)
-local f,n;
+local f,n,bytelen,data,qq,i;
   f:=LeftActingDomain(m);
   n:=Size(f);
-  if n < 256 then
-    return x->NumberFFVector(x,n);
+  if n=2 then
+    bytelen:=QuoInt(Length(v),8);
+    if bytelen<=8 then
+      # short GF2
+      return x->NumberFFVector(x,2);
+    else
+      # long GF2
+      data:=[2*GAPInfo.BytesPerVariable,bytelen];
+      return function(x)
+             if not IsGF2VectorRep(x) then
+                 Info(InfoWarning,1,"uncompressed vector");
+                 x:=ShallowCopy(x);
+                 ConvertToGF2VectorRep(x);
+               fi;
+               return HASHKEY_BAG(x,101,data[1],data[2]);
+             end;
+    fi;
+  elif n < 256 then
+    qq:=n; # log
+    i:=0;
+    while qq<=256 do
+        qq:=qq*n;
+        i:=i+1;
+    od;
+    # i is now the number of field elements per byte
+    bytelen := QuoInt(Length(v),i);
+    if bytelen<=8 then
+      # short 8-bit
+      return x->NumberFFVector(x,n);
+    else
+      # long 8 bit
+      data:=[3*GAPInfo.BytesPerVariable,bytelen];
+      return x->HASHKEY_BAG(x,101,data[1],data[2]);
+      return function(x)
+             if not Is8BitVectorRep(x) then
+                 Info(InfoWarning,1,"uncompressed vector");
+                 x:=ShallowCopy(x);
+                 ConvertToVectorRep(x,n);
+               fi;
+               return HASHKEY_BAG(x,101,data[1],data[2]);
+             end;
+
+    fi;
   else
+    # large field -- vector represented as plist.
     f:=AsSSortedList(f);
     return function(v)
-	   local x,sy,p;
-	      sy := 0;
-	      for x in v do
-		p := Position(f, x);
+           local x,sy,p;
+              sy := 0;
+              for x in v do
+                p := Position(f, x);
 # want to be quick: Assume no failures
-#		if p = fail then
-#		    Error("NumberFFVector: Vector not over specified field");
-#		fi;
-		sy := n*sy + (p-1);
-	      od;
-	    return sy;
+#               if p = fail then
+#                   Error("NumberFFVector: Vector not over specified field");
+#               fi;
+                sy := n*sy + (p-1);
+              od;
+            return sy;
            end;
   fi;
 end);
 
-InstallMethod(DenseIntKey,"for lists of vectors",true,
+SparseIntKeyVecListAndMatrix:=function(d,m)
+local f,n,pow,fct;
+  if IsList(d) and Length(d)>0 and IsMatrix(d[1]) then
+    f:=FieldOfMatrixList(d);
+  else
+    f:=FieldOfMatrixList([m]);
+  fi;
+
+  fct:=SparseIntKey(f^Length(m[1]),m[1]);
+
+  n:=Minimum(Size(f),11)^Minimum(12,QuoInt(Length(m[1]),2));
+  #pow:=n^Length(m[1]);
+  pow:=NextPrimeInt(n); # otherwise we produce huge numbers which take time
+  return function(x)
+          local i,gsy;
+            gsy:=0;
+            for i in x do
+              gsy:=pow*gsy+fct(i);
+            od;
+            return gsy;
+          end;
+end;
+
+InstallMethod(SparseIntKey,"for lists of vectors",true,
     [ IsFFECollColl,IsObject ], 0,
 function(m,v)
 local f,n;
@@ -964,97 +1039,18 @@ if not (IsList(m) and IS_PLIST_REP(m) and ForAll(m,i->IsRowVector(i))) then
     TryNextMethod();
   fi;
   f:=DefaultFieldOfMatrix(m);
-  return DenseIntKey(f^Length(v),v);
-end);
-
-InstallMethod(DenseIntKey,
-  "for matrices over finite field vector spaces",true,
-  [IsObject,IsFFECollColl and IsMatrix],0,
-function(d,m)
-local f,n,pow;
-  if IsList(d) and Length(d)>0 and IsMatrix(d[1]) then
-    f:=FieldOfMatrixList(d);
-  else
-    f:=FieldOfMatrixList([m]);
-  fi;
-
-  n:=Size(f);
-  pow:=n^Length(m[1]);
-  if Size(f)<256 then
-    return function(x)
-	   local i,gsy;
-	     gsy:=0;
-	     for i in x do
-	       gsy:=pow*gsy+NumberFFVector(i,n);
-	     od;
-	     return gsy;
-           end;
-  else
-    f:=AsSSortedList(f);
-    return function(ma)
-	   local x,y,sy,gsy,p;
-	      gsy:=0;
-	      for y in ma do
-		sy := 0;
-		for x in y do
-		  p := Position(f, x);
-# want to be quick: Assume no failures
-#		if p = fail then
-#		    Error("NumberFFVector: Vector not over specified field");
-#		fi;
-		  sy := n*sy + (p-1);
-		od;
-		gsy := pow*gsy + sy;
-	      od;
-	      return gsy;
-           end;
-  fi;
+  return SparseIntKey(f^Length(v),v);
 end);
 
 InstallMethod(SparseIntKey,
   "for matrices over finite field vector spaces",true,
   [IsObject,IsFFECollColl and IsMatrix],0,
-function(d,m)
-local f,n,pow;
-  if IsList(d) and Length(d)>0 and IsMatrix(d[1]) then
-    f:=FieldOfMatrixList(d);
-  else
-    f:=FieldOfMatrixList([m]);
-  fi;
+SparseIntKeyVecListAndMatrix);
 
-  n:=Size(f);
-  pow:=NextPrimeInt(n); # otherwise we produce big numbers which take time
-			# and can produce very bad results when hashing.
-  if Size(f)<256 then
-    return function(x)
-	   local i,gsy;
-	     gsy:=0;
-	     for i in x do
-	       gsy:=pow*gsy+NumberFFVector(i,n);
-	     od;
-	     return gsy;
-           end;
-  else
-    f:=AsSSortedList(f);
-    return function(ma)
-	   local x,y,sy,gsy,p;
-	      gsy:=0;
-	      for y in ma do
-		sy := 0;
-		for x in y do
-		  p := Position(f, x);
-# want to be quick: Assume no failures
-#		if p = fail then
-#		    Error("NumberFFVector: Vector not over specified field");
-#		fi;
-		  sy := n*sy + (p-1);
-		od;
-		gsy := pow*gsy + sy;
-	      od;
-	      return gsy;
-           end;
-  fi;
-end);
+InstallMethod(SparseIntKey,
+  "for vector listsover finite field vector spaces",true,
+  [IsObject,IsFFECollColl and IsList],0,
+SparseIntKeyVecListAndMatrix);
 
 #############################################################################
 ##
@@ -1072,7 +1068,7 @@ function( key, dom )
     n := sz ^ Length( key[1] );
     ret := 1;
     for k in key do
-	ret := ret * n + NumberFFVector( k, sz );
+        ret := ret * n + NumberFFVector( k, sz );
     od;
     return ret;
   end;
@@ -1091,22 +1087,22 @@ InstallMethod(SparseIntKey,"permutations, arbitrary domain",true,
   [IsObject,IsInternalRep and IsPerm],0,
 function(d,pe)
   return function(p)
-	 local l;
-	   l:=LARGEST_MOVED_POINT_PERM(p);
-	   if IsPerm4Rep(p) then
-	     # is it a proper 4byte perm?
-	     if l>65536 then
-	       return HashKeyBag(p,255,0,4*l);
-	     else
-	       # the permutation does not require 4 bytes. Trim in two
-	       # byte representation (we need to do this to get consistent
-	       # hash keys, regardless of representation.)
-	       TRIM_PERM(p,l);
-	     fi;
-	    fi;
-	    # now we have a Perm2Rep:
-	    return HashKeyBag(p,255,0,2*l);
-	  end;
+         local l;
+           l:=LARGEST_MOVED_POINT_PERM(p);
+           if IsPerm4Rep(p) then
+             # is it a proper 4byte perm?
+             if l>65536 then
+               return HashKeyBag(p,255,0,4*l);
+             else
+               # the permutation does not require 4 bytes. Trim in two
+               # byte representation (we need to do this to get consistent
+               # hash keys, regardless of representation.)
+               TRIM_PERM(p,l);
+             fi;
+            fi;
+            # now we have a Perm2Rep:
+            return HashKeyBag(p,255,0,2*l);
+          end;
 end);
 
 #T Still to do: Permutation values based on base images: Method if the
@@ -1145,16 +1141,16 @@ local o,e;
   o:=DefiningPcgs(FamilyObj(o));
   o:=Product(RelativeOrders(o)); # order of group
   return function(x)
-	 local i,h;
-	   h:=0;
-	   for i in x do
-	     h:=h*o+e(i);
-	   od;
-	   return h;
+         local i,h;
+           h:=0;
+           for i in x do
+             h:=h*o+e(i);
+           od;
+           return h;
          end;
 end);
 
-InstallMethod(DenseIntKey,"transformations, arbitrary domain",true,
+InstallMethod(SparseIntKey,"transformations, arbitrary domain",true,
   [IsObject,IsTransformationRep],0,
 function(d,t)
 local n,l;

@@ -2,7 +2,6 @@
 ##
 #W  ring.gd                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ring.gd,v 4.68 2010/10/08 22:34:59 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file declares the operations for rings.
 ##
-Revision.ring_gd :=
-    "@(#)$Id: ring.gd,v 4.68 2010/10/08 22:34:59 alexk Exp $";
 
 
 #############################################################################
@@ -231,8 +228,10 @@ DeclareOperation( "RingByGenerators", [ IsCollection ] );
 ##  <#GAPDoc Label="DefaultRingByGenerators">
 ##  <ManSection>
 ##  <Oper Name="DefaultRingByGenerators" Arg='coll'/>
-##
+##  
 ##  <Description>
+##  For a collection <A>coll</A>, returns a default ring in which
+##  <A>coll</A> is contained.
 ##  <Example><![CDATA[
 ##  gap> DefaultRingByGenerators([ 2, E(4) ]);
 ##  GaussianIntegers
@@ -964,6 +963,39 @@ DeclareOperation( "StandardAssociate", [ IsRing, IsRingElement ] );
 
 #############################################################################
 ##
+#O  StandardAssociateUnit( [<R>, ]<r> )
+##
+##  <#GAPDoc Label="StandardAssociateUnit">
+##  <ManSection>
+##  <Oper Name="StandardAssociateUnit" Arg='[R, ]r'/>
+##
+##  <Description>
+##  <Ref Oper="StandardAssociateUnit"/> returns a unit in the ring <A>R</A>
+##  such that the ring element <A>r</A> times this unit equals the
+##  standard associate of <A>r</A> in <A>R</A>.
+##  <P/>
+##  If <A>R</A> is not given, the default ring of <A>r</A> is used instead.
+##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  <P/>
+##  <P/>
+##  <Example><![CDATA[
+##  gap> y:= Indeterminate( Rationals, "y" );;
+##  gap> r:= -y^2-y+1;
+##  -y^2-y+1
+##  gap> StandardAssociateUnit( r );
+##  -1
+##  gap> StandardAssociateUnit( r ) * r = StandardAssociate( r );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "StandardAssociateUnit", [ IsRing, IsRingElement ] );
+
+
+#############################################################################
+##
 #O  IsPrime( [<R>, ]<r> )
 ##
 ##  <#GAPDoc Label="IsPrime">
@@ -1237,18 +1269,20 @@ DeclareOperation( "PowerMod",
 ##  in the ring <A>R</A>, if given, and otherwise in their default ring,
 ##  see <Ref Func="DefaultRing" Label="for ring elements"/>.
 ##  <P/>
-##  <A>R</A> must be a Euclidean ring (see <Ref Oper="IsEuclideanRing"/>)
-##  so that <Ref Oper="QuotientRemainder"/> can be applied to its elements.
 ##  <Ref Func="Gcd" Label="for (a ring and) several elements"/> returns
 ##  the standard associate (see <Ref Oper="StandardAssociate"/>) of the
 ##  greatest common divisors.
 ##  <P/>
-##  A greatest common divisor of the elements <M>r_1, r_2, \ldots</M> in the
-##  ring <M>R</M> is an element of largest Euclidean degree
-##  (see <Ref Func="EuclideanDegree"/>)
-##  that is a divisor of <M>r_1, r_2, \ldots</M> .
+##  A divisor of an element <M>r</M> in the ring <M>R</M> is an element
+##  <M>d\in R</M> such that <M>r</M> is a multiple of <M>d</M>.
+##  A common divisor of the elements <M>r_1, r_2, \ldots</M> in the
+##  ring <M>R</M> is an element <M>d\in R</M> which is a divisor of
+##  each <M>r_1, r_2, \ldots</M>.
+##  A greatest common divisor <M>d</M> in addition has the property that every
+##  other common divisor of <M>r_1, r_2, \ldots</M> is a divisor of <M>d</M>.
 ##  <P/>
-##  For the zero element <M>z</M> of <A>R</A>, we define 
+##  Note that this in particular implies the following:
+##  For the zero element <M>z</M> of <A>R</A>, we have 
 ##  <C>Gcd( <A>r</A>, </C><M>z</M><C> ) = Gcd( </C><M>z</M><C>, <A>r</A> )
 ##  = StandardAssociate( <A>r</A> )</C>
 ##  and <C>Gcd( </C><M>z</M><C>, </C><M>z</M><C> ) = </C><M>z</M>.
@@ -1280,7 +1314,7 @@ DeclareGlobalFunction( "Gcd" );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "GcdOp",
-    [ IsEuclideanRing, IsRingElement, IsRingElement ] );
+    [ IsUniqueFactorizationRing, IsRingElement, IsRingElement ] );
 
 
 #############################################################################
@@ -1298,28 +1332,28 @@ DeclareOperation( "GcdOp",
 ##
 ##  <Description>
 ##  <Ref Func="GcdRepresentation" Label="for (a ring and) several elements"/>
-##  returns the representation of
+##  returns a representation of
 ##  the greatest common divisor of the ring elements
 ##  <A>r1</A>, <A>r2</A>, <M>\ldots</M> resp. of the ring elements
-##  in the list <A>list</A> in the ring <A>R</A>, if given,
+##  in the list <A>list</A> in the Euclidean ring <A>R</A>, if given,
 ##  and otherwise in their default ring,
 ##  see <Ref Func="DefaultRing" Label="for ring elements"/>.
 ##  <P/>
-##  <A>R</A> must be a Euclidean ring (see <Ref Func="IsEuclideanRing"/>)
-##  so that <Ref Func="Gcd" Label="for (a ring and) several elements"/>
-##  can be applied to its elements.
-##  <P/>
-##  The representation of the gcd <M>g</M> of the elements
+##  A representation of the gcd <M>g</M> of the elements
 ##  <M>r_1, r_2, \ldots</M> of a ring <M>R</M> is a list of ring elements
 ##  <M>s_1, s_2, \ldots</M> of <M>R</M>,
 ##  such that <M>g = s_1 r_1 + s_2  r_2 + \cdots</M>.
-##  That this representation exists can be shown using the Euclidean
-##  algorithm, which in fact can compute those coefficients.
+##  Such representations do not exist in all rings, but they
+##  do exist in Euclidean rings (see <Ref Func="IsEuclideanRing"/>),
+##  which can be shown using the Euclidean algorithm, which in fact can
+##  compute those coefficients.
 ##  <Example><![CDATA[
 ##  gap> a:= Indeterminate( Rationals, "a" );;
 ##  gap> GcdRepresentation( a^2+1, a^3+1 );
 ##  [ -1/2*a^2-1/2*a+1/2, 1/2*a+1/2 ]
 ##  ]]></Example>
+##  <P/>
+##  <Ref Func="Gcdex"/> provides similar functionality over the integers.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1338,7 +1372,7 @@ DeclareGlobalFunction( "GcdRepresentation" );
 ##  <Description>
 ##  <Ref Oper="GcdRepresentationOp"/> is the operation to compute
 ##  the representation of the greatest common divisor of two ring elements
-##  <A>r</A>, <A>s</A> in the ring <A>R</A> or in their default ring,
+##  <A>r</A>, <A>s</A> in the Euclidean ring <A>R</A> or in their default ring,
 ##  respectively.
 ##  </Description>
 ##  </ManSection>
@@ -1362,7 +1396,6 @@ DeclareOperation( "GcdRepresentationOp",
 ##   Label="for (a ring and) a list of elements"/>
 ##
 ##  <Description>
-##  <!-- optional <Q>1</Q> in list version?-->
 ##  <Ref Func="Lcm" Label="for (a ring and) several elements"/> returns
 ##  the least common multiple of the ring elements
 ##  <A>r1</A>, <A>r2</A>, <M>\ldots</M> resp. of the ring elements
@@ -1370,26 +1403,19 @@ DeclareOperation( "GcdRepresentationOp",
 ##  and otherwise in their default ring,
 ##  see <Ref Func="DefaultRing" Label="for ring elements"/>.
 ##  <P/>
-##  <A>R</A> must be a Euclidean ring (see <Ref Func="IsEuclideanRing"/>)
-##  so that <Ref Func="Gcd" Label="for (a ring and) several elements"/>
-##  can be applied to its elements.
 ##  <Ref Func="Lcm" Label="for (a ring and) several elements"/> returns
 ##  the standard associate (see&nbsp;<Ref Func="StandardAssociate"/>)
 ##  of the least common multiples.
 ##  <P/>
 ##  A least common multiple of the elements <M>r_1, r_2, \ldots</M> of the
-##  ring <M>R</M> is an element of smallest Euclidean degree
-##  (see&nbsp;<Ref Func="EuclideanDegree"/>)
-##  that is a multiple of <M>r_1, r_2, \ldots</M> .
+##  ring <M>R</M> is an element <M>m</M> that is a multiple of <M>r_1, r_2, \ldots</M>,
+##  and every other multiple of these elements is a multiple of <M>m</M>.
 ##  <P/>
-##  For the zero element <M>z</M> of <A>R</A>, we define 
+##  Note that this in particular implies the following:
+##  For the zero element <M>z</M> of <A>R</A>, we have 
 ##  <C>Lcm( <A>r</A>, </C><M>z</M><C> ) = Lcm( </C><M>z</M><C>, <A>r</A> )
 ##  = StandardAssociate( <A>r</A> )</C>
 ##  and <C>Lcm( </C><M>z</M><C>, </C><M>z</M><C> ) = </C><M>z</M>.
-##  <P/>
-##  <Ref Func="Lcm" Label="for (a ring and) several elements"/>
-##  uses the equality <M>lcm( m, n ) = m*n / gcd( m, n )</M>
-##  (see&nbsp;<Ref Func="Gcd" Label="for (a ring and) several elements"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1409,12 +1435,15 @@ DeclareGlobalFunction( "Lcm" );
 ##  <Ref Oper="LcmOp"/> is the operation to compute the least common multiple
 ##  of two ring elements <A>r</A>, <A>s</A> in the ring <A>R</A>
 ##  or in their default ring, respectively.
+##  <P/>
+##  The default methods for this uses the equality
+##  <M>lcm( m, n ) = m*n / gcd( m, n )</M> (see&nbsp;<Ref Func="GcdOp"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "LcmOp",
-    [ IsEuclideanRing, IsRingElement, IsRingElement ] );
+    [ IsUniqueFactorizationRing, IsRingElement, IsRingElement ] );
 
 
 #############################################################################

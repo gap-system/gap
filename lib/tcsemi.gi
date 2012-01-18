@@ -5,7 +5,6 @@
 ##
 ##	Installed in GAP4 by Andrew Solomon for Semigroups instead of Monoids.
 ##
-#H  @(#)$Id: tcsemi.gi,v 4.9 2010/02/23 15:13:33 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 ##  fp semigroups. This uses the code written by Götz Pfeiffer
 ##  based on the thesis of T. Walker.
 ##
-Revision.tcsemi_gi :=
-    "@(#)$Id: tcsemi.gi,v 4.9 2010/02/23 15:13:33 gap Exp $";
 
 
 #############################################################################

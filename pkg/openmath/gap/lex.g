@@ -1,9 +1,7 @@
-#############################################################################
+###########################################################################
 ##
-#W  lex.g               OpenMath Package              Andrew Solomon
-#W                                                    Marco Costantini
-##
-#H  @(#)$Id: lex.g,v 1.18 2010/11/12 13:18:23 alexk Exp $
+#W  lex.g               OpenMath Package                     Andrew Solomon
+#W                                                         Marco Costantini
 ##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -15,47 +13,37 @@
 ##  and the "get" functions which get tokens and values from streams.
 ##
 
-Revision.("openmath/gap/lex.g") :=
-    "@(#)$Id: lex.g,v 1.18 2010/11/12 13:18:23 alexk Exp $";
 
-
-
-#################################################################
+###########################################################################
 ##
-##  OMDefineTokens()
+##  Defining OpenMath tokens
 ##
-##  Look through the include file binding "gapOM..." names to values,
-##  but deleting the "gap" prefix.
-##
-
-OMDefineTokens := function()
-
-  local inf, s, sp, infile;
-  
-  infile := Filename(DirectoriesPackageLibrary("openmath","include"), "gap_tokens.h");
-  inf := InputTextFile(infile);
-
-
-  s := ReadLine(inf);
-  while s <> fail do
-    # if it is a definition line, then read the definition
-    if Length(s) >= 3 and s{[1..3]} = "gap" then
-      sp := SplitString(s,','," \t\n");
-      #Print("Operation : BindGlobal(",sp[1]{[4 .. Length(sp[1])]},",",
-				#Int(sp[3]),")\n");
-      BindGlobal(sp[1]{[4 .. Length(sp[1])]}, Int(sp[3]));
-    fi;
-    s := ReadLine(inf);
-  od;
-  CloseStream(inf);
-end;
-
-OMDefineTokens();
-Unbind(OMDefineTokens);
+BindGlobal("OMtokenDelimiter",255);
+BindGlobal("OMtokenInteger",2);
+BindGlobal("OMtokenFloat",3);
+BindGlobal("OMtokenByteArray",4);
+BindGlobal("OMtokenVar",5);
+BindGlobal("OMtokenString",6);
+BindGlobal("OMtokenWCString",7);
+BindGlobal("OMtokenSymbol",8);
+BindGlobal("OMtokenComment",15);
+BindGlobal("OMtokenApp",16);
+BindGlobal("OMtokenEndApp",17);
+BindGlobal("OMtokenAttr",18);
+BindGlobal("OMtokenEndAttr",19);
+BindGlobal("OMtokenAtp",20);
+BindGlobal("OMtokenEndAtp",21);
+BindGlobal("OMtokenError",22);
+BindGlobal("OMtokenEndError",23);
+BindGlobal("OMtokenObject",24);
+BindGlobal("OMtokenEndObject",25);
+BindGlobal("OMtokenBind",26);
+BindGlobal("OMtokenEndBind",27);
+BindGlobal("OMtokenBVar",28);
+BindGlobal("OMtokenEndBVar",29);
 
 
-
-######################################################################
+###########################################################################
 ##
 #C  BTWOBJ
 ##
@@ -66,7 +54,7 @@ Unbind(OMDefineTokens);
 BindGlobal("BTWOBJ", "IN_BETWEEN_OBJECTS");
 
 
-######################################################################
+###########################################################################
 ##
 ##  OMinstream functions
 ##
@@ -74,7 +62,7 @@ BindGlobal("BTWOBJ", "IN_BETWEEN_OBJECTS");
 ##  which is a GAP level stream together with info about the next byte.
 ##
 
-######################################################################
+###########################################################################
 ##
 #F  OMinstreamNextByte( <stream> ) 
 ##
@@ -90,7 +78,7 @@ BindGlobal("OMinstreamNextByte", function(stream)
   return stream.next;
 end);
 
-######################################################################
+###########################################################################
 ##
 #F  OMinstreamPopByte( <stream> ) 
 ##
@@ -110,7 +98,7 @@ BindGlobal("OMinstreamPopByte", function(stream)
 	return next;
 end);
 
-######################################################################
+###########################################################################
 ##
 #F  OMinstreamPopString( <stream> ) 
 ##
@@ -131,12 +119,12 @@ BindGlobal("OMinstreamPopString", function(stream)
 end);
 		
 	
-######################################################################
+###########################################################################
 ##
 ##  token level functions
 ##
 
-######################################################################
+###########################################################################
 ##
 #F  OMnextToken( <stream> )
 ##
@@ -146,7 +134,7 @@ BindGlobal("OMnextToken", function(stream)
 	return OMinstreamNextByte(stream);
 end);
 
-######################################################################
+###########################################################################
 ##
 #F  OMgetToken( <stream> )
 ##
@@ -166,7 +154,7 @@ BindGlobal("OMgetToken", function(stream, token)
 	return otok;
 end);
 
-######################################################################
+###########################################################################
 ##
 #F  OMgetInteger( <str> )
 ## 
@@ -233,7 +221,7 @@ BindGlobal("OMgetInteger", function(stream)
 	fi;
 end);
 
-######################################################################
+###########################################################################
 ##
 #F  OMgetSymbol( <stream> )
 ## 
@@ -258,7 +246,7 @@ BindGlobal("OMgetVar", function(stream)
 end);
 
 
-######################################################################
+###########################################################################
 ##
 #F  OMgetString( <stream> )
 ##
@@ -280,5 +268,5 @@ BindGlobal("OMgetString", function(stream)
 end);
 
 
-#############################################################################
+###########################################################################
 #E

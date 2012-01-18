@@ -2,7 +2,7 @@
 ##
 #W  ctomax11.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomax11.tbl,v 1.13 2011/02/09 16:06:28 gap Exp $
+#H  @(#)$Id: ctomax11.tbl,v 1.14 2011/09/28 14:32:15 gap Exp $
 ##
 #Y  Copyright (C)  2003,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomax11.tbl,v $
+#H  Revision 1.14  2011/09/28 14:32:15  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 1.13  2011/02/09 16:06:28  gap
 #H  replaced tables: 27:2^2 -> D108, 28.2^2 -> D112, D62x2 -> D124;
 #H  the old names (used in the library of tables of marks) are still
@@ -134,11 +138,6 @@
 #H      TB
 #H
 ##
-Revision.ctomax11_tbl :=
-    "@(#)$Id: ctomax11.tbl,v 1.13 2011/02/09 16:06:28 gap Exp $";
-
-SET_TABLEFILENAME("ctomax11");
-ALN:= Ignore;
 
 MOT("13:3",
 0,
@@ -1359,7 +1358,6 @@ ALF("A4x7:3","2^2.L3(4).3",[1,13,15,5,5,2,14,16,6,6,19,27,29,19,19,20,28,
 ]);
 
 LIBTABLE.LOADSTATUS.ctomax11:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

@@ -1,6 +1,6 @@
 ############################################################################
 ##
-#W  field.gi            Alnuth - PARI/GP interface            Bettina Eick
+#W  field.gi       Alnuth - ALgebraic NUmber THeory           Bettina Eick
 #W       					            Bjoern Assmann
 #W       					           Andreas Distler
 ##
@@ -40,11 +40,28 @@ function( F )
                                           IntegerPrimitiveElement( F ) ) ) ;
 end );
 
+
+InstallMethod( IsPrimitiveElementOfNumberField, 
+"for number field and algebraic element", true, [ IsNumberField, IsObject ], 0, 
+function( F, elm )
+    local d, g;
+
+    if not elm in F then
+        Info( InfoAlnuth, 1, "Element does not lie in the field." );
+        return false;
+    fi;
+
+    d := DegreeOverPrimeField( F );
+    g := MinimalPolynomial( Rationals, elm );
+
+    return Degree(g) = d;
+end );
+ 
+
 InstallOtherMethod( EquationOrderBasis,
-"for number field and primitive element", 
-true, [IsNumberField, IsObject ], 0, 
+"for number field and primitive element", true, [IsNumberField, IsObject ], 0, 
 function( F , elm )
-    if not IsPrimitiveElement( F, elm ) then
+    if not IsPrimitiveElementOfNumberField( F, elm ) then
         return fail;
     fi; 
     return RelativeBasisNC(Basis( F ), 
@@ -101,10 +118,8 @@ AddNaturalHomomorphismOfUnitGroup := function( G )
 
     # add infos
     SetIsBijective( nat, true );
-    SetIsMapping( nat, true );
-    SetKernelOfMultiplicativeGeneralMapping( nat, true );
     SetIsUnitGroupIsomorphism( nat, true );
-    G!.nathom := nat;
+    SetIsomorphismPcpGroup( G, nat );
 end;
 
 AddUnitGroupOfNumberField := function( F, units )

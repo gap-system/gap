@@ -1,8 +1,16 @@
 #############################################################################
 ##
-#W  matfield.gi         Alnuth -  Kant interface                Bettina Eick
-#W       					  	       Bjoern Assmann
+#W  matfield.gi     Alnuth - ALgebraic NUmber THeory           Bettina Eick
+#W       					             Bjoern Assmann
+#W                                                          Andreas Distler
 ##
+
+#############################################################################
+##
+#P  IsNumberFieldByMatrices( <F> )
+##
+InstallSubsetMaintenance( IsNumberFieldByMatrices,
+    IsField and IsNumberFieldByMatrices, IsField  );
 
 #############################################################################
 ##
@@ -137,9 +145,9 @@ end;
 
 #############################################################################
 ##
-#F IsFieldByMatrices( gens )
+#F AL_MatricesGeneratingNumberField( gens )
 ##
-IsFieldByMatrices := function( gens )
+AL_MatricesGeneratingNumberField := function( gens )
     local d, series, G;
     d := Length(gens[1]);
     if ForAny( gens, x -> Length(x) <> d ) then 
@@ -172,16 +180,15 @@ end;
 ##
 InstallGlobalFunction( FieldByMatricesNC, function( gens ) 
     local F;
-    F := FieldByGenerators(gens);
+    F := FieldByGenerators( gens);
     SetIsNumberField( F, true );
     SetIsNumberFieldByMatrices( F, true );
-    SetPrimeField( F, Rationals );
     return F;
 end );  
 
 InstallGlobalFunction( FieldByMatrices, function( gens )
     local F;
-    if not IsFieldByMatrices( gens ) then return fail; fi;
+    if not AL_MatricesGeneratingNumberField( gens ) then return fail; fi;
     F := FieldByMatricesNC( gens );
     DegreeOverPrimeField( F );
     return F;
@@ -205,7 +212,7 @@ end );
 
 InstallGlobalFunction( FieldByMatrixBasis, function( gens )
     local V;
-    if not IsFieldByMatrices( gens ) then return fail; fi;
+    if not AL_MatricesGeneratingNumberField( gens ) then return fail; fi;
     V := VectorSpace( Rationals, gens );
     # test linear independence
     if Length( Basis( V )) < Length( gens ) then
@@ -272,21 +279,6 @@ return Length( Basis( F ) ); end);
 
 #############################################################################
 ##
-#F IsPrimitiveElement( F, k )
-##
-IsPrimitiveElement := function( F, k )
-    local d, g;
-    d := DegreeOverPrimeField( F );
-    g := MinimalPolynomial( PrimeField(F), k );
-    if Degree(g) = d then
-        return true;
-    else
-        return false;
-    fi;
-end; 
-
-#############################################################################
-##
 #F IntegralMatrix
 #F SuitablePrimitiveElementCheck( F, k )
 ##
@@ -306,7 +298,7 @@ end;
 SuitablePrimitiveElementCheck := function( F, k )
     local d, g, sumCoef;
     d := DegreeOverPrimeField( F );
-    g := MinimalPolynomial( PrimeField(F), k );
+    g := MinimalPolynomial( Rationals, k );
     if not Degree(g) = d then
         return false;
     elif ForAll( CoefficientsOfUnivariatePolynomial(g), IsInt ) then
@@ -318,7 +310,7 @@ SuitablePrimitiveElementCheck := function( F, k )
         return rec( prim := k, min := g, sumCoef := sumCoef);
     else
         k := IntegralMatrix( k );
-        g := MinimalPolynomial( PrimeField(F), k );  
+        g := MinimalPolynomial( Rationals, k );  
         sumCoef := Sum(
 	        List(CoefficientsOfUnivariatePolynomial(g),x->AbsInt(x)) 
                 ); 
@@ -400,7 +392,7 @@ end);
 ##
 #M IntegerDefiningPolynomial( F )
 ##
-InstallMethod( IntegerDefiningPolynomial, "for algebraic extension", true,
+InstallMethod( IntegerDefiningPolynomial, "for matrix field", true,
 [IsNumberFieldByMatrices], 0, 
 function( F )
     return MinimalPolynomial( Rationals, IntegerPrimitiveElement( F ) );

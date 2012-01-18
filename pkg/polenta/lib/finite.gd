@@ -2,10 +2,10 @@
 ##
 #W finite.gd               POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## constructive pc-sequences for finite matrix groups
 ##
-#H  @(#)$Id: finite.gd,v 1.3 2011/05/31 13:10:57 gap Exp $
+#H  @(#)$Id: finite.gd,v 1.4 2011/09/23 13:36:32 gap Exp $
 ##
 #Y 2003
 ##
@@ -13,14 +13,14 @@
 #############################################################################
 ##
 #F ClosureBasePcgs_word(pcgsN, g, gens, lim)
-## 
+##
 ## Calculates a conPCS for <N,g>^gens
 ##
-## Every arrising groupelement is realized as a record 
+## Every arising group element is realized as a record
 ## containing the real element
 ## and the wordinformation corresponding to gens
 ##
-DeclareGlobalFunction( "ClosureBasePcgs_word" ); 
+DeclareGlobalFunction( "ClosureBasePcgs_word" );
 
 #############################################################################
 ##
@@ -36,63 +36,63 @@ DeclareGlobalFunction( "POL_Comm" );
 ## Returns a constructive polycyclic sequence for G if G is polycyclic
 ## of derived length at most b and it returns fail if G is not
 ## polycyclic
-## 
-## Every generator is a record which contains in 
+##
+## Every generator is a record which contains in
 ## .groupElement the group element and in
 ## .word the wordinformation corresponding to the gensOfG list
-## This feature is important if gensOfG arrise as the image under 
-## the p-congruence homomorphism.  
+## This feature is important if gensOfG arise as the image under
+## the p-congruence homomorphism.
 ##
-## 
-DeclareGlobalFunction( "CPCS_finite_word" ); 
+##
+DeclareGlobalFunction( "CPCS_finite_word" );
 
 #############################################################################
 ##
 #F CPCS_FinitePart(gens)........... constructive pc-sequ. for image of <gens>
 ##                                  under the p-congr. hom.
 ##
-DeclareGlobalFunction( "CPCS_FinitePart" ); 
+DeclareGlobalFunction( "CPCS_FinitePart" );
 
 #############################################################################
 ##
 #F POL_InverseWord(word)
 ##
 ##
-DeclareGlobalFunction( "POL_InverseWord" ); 
- 
+DeclareGlobalFunction( "POL_InverseWord" );
+
 #############################################################################
 ##
 #F  ExtendedBasePcgsMod( pcgs, g, d ) . . . . . .. . . . . extend a base pcgs
 ##
 ##  g normalizes <pcgs> and we compute a new pcgs for <pcgs, g>.
 ##
-DeclareGlobalFunction( "ExtendedBasePcgsMod" ); 
+DeclareGlobalFunction( "ExtendedBasePcgsMod" );
 
 #############################################################################
 ##
 #F  RelativeOrdersPcgs_finite( pcgs )
 ##
-DeclareGlobalFunction( "RelativeOrdersPcgs_finite" ); 
- 
+DeclareGlobalFunction( "RelativeOrdersPcgs_finite" );
+
 #############################################################################
 ##
 #F  ExponentvectorPcgs_finite( pcgs, g )
-## 
-DeclareGlobalFunction( "ExponentvectorPcgs_finite" ); 
-  
+##
+DeclareGlobalFunction( "ExponentvectorPcgs_finite" );
+
 #############################################################################
 ##
 #F  ExponentvectorPartPcgs( pcgs, g , index)
-## 
+##
 ##  g = ...* pcgs.gens[index]^ExponentvectorPartPcgs * ...
-##  
-DeclareGlobalFunction( "ExponentvectorPartPcgs" ); 
+##
+DeclareGlobalFunction( "ExponentvectorPartPcgs" );
 
 #############################################################################
 ##
 #F ExtractIndexPart( word, index)
 ##
-DeclareGlobalFunction( "ExtractIndexPart" ); 
+DeclareGlobalFunction( "ExtractIndexPart" );
 
 #############################################################################
 ##
@@ -103,12 +103,12 @@ DeclareGlobalFunction( "ExtractIndexPart" );
 ## this function calculates a PcPresentation for the Group described
 ## by pcgs
 ##
-DeclareGlobalFunction( "POL_SetPcPresentation" ); 
+DeclareGlobalFunction( "POL_SetPcPresentation" );
 
 #############################################################################
 ##
 #F  POL_TestExpVector_finite( pcgs, g )
-## 
+##
 DeclareGlobalFunction( "POL_TestExpVector_finite" );
 
 #############################################################################

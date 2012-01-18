@@ -2,7 +2,6 @@
 ##
 #W  imf.gd                    GAP group library                Volkmar Felsch
 ##
-#H  @(#)$Id: imf.gd,v 1.2 2010/02/23 15:12:40 gap Exp $
 ##
 #Y  Copyright (C)  1995,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##  This file contains  the declarations of operations for the GAP library of
 ##  irreducible maximal finite integral matrix groups.
 ##
-Revision.imf_gd :=
-    "@(#)$Id: imf.gd,v 1.2 2010/02/23 15:12:40 gap Exp $";
 
 
 #############################################################################

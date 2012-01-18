@@ -2,7 +2,7 @@
 %%
 %%  schunck.tex              CRISP documentation            Burkhard Höfling
 %%
-%%  @(#)$Id: schunck.tex,v 1.15 2011/05/26 10:08:56 gap Exp $
+%%  @(#)$Id: schunck.tex,v 1.16 2011/07/17 11:52:11 gap Exp $
 %%
 %%  Copyright (C) 2000 Burkhard Höfling
 %%
@@ -116,24 +116,19 @@ Note that projectors and covering subgroups coincide for Schunck classes of
 finite solvable groups. At present, methods are only available for finite
 solvable groups <grp>.
 
-\>BoundaryFunction(<grpclass>)                                  A
+\>BoundaryFunction(<grpclass>) A
 
-This attribute stores a function <func> which has been set by the 
-user to define <grpclass>, either as an argument to `SchunckClass', 
-`SaturatedFormation', or `FittingFormation' (see "SchunckClass", 
-"SaturatedFormation", or "FittingFormation"), or has been set directly
-(see "ref:Setter"). <func> must be a function taking one argument.
-If the argument is a finite solvable group $G$ having attributes 
-`Socle' and `SocleComplement' (see Section "Additional attributes for 
-primitive solvable groups" below), <func> must  return `true' if $G$ 
-is in the boundary of <grpclass>, and `false' if $G$ belongs to 
+If bound, this attribute stores a function <func> which has been set by the 
+user to define <grpclass>. <func> must be a function taking one argument.
+If the argument is a finite primitive solvable group $G$, <func> must  return 
+`true' if $G$ is in the boundary of <grpclass>, and `false' if $G$ belongs to 
 <grpclass>. The behaviour for arguments which are not primitive 
 solvable groups, or which  belong neither to <grpclass> nor to the 
 boundary of <grpclass> need not be defined. Note that 
 `BoundaryFunction' should *not* be used to test whether a given group 
 belongs to the boundary of <grpclass>. `Boundary' and/or `Basis' (see 
 "Boundary" and "Basis"), which are defined independently of the way 
-<grpclass> is defined.
+<grpclass> is defined and will work for all finite solvable groups.
 
 
 \>ProjectorFunction(<grpclass>) A
@@ -152,8 +147,6 @@ rather than `ProjectorFunction', should be used by the user to compute
 
 \index{primitive solvable group!attributes of}
 \index{attributes!of primitive solvable group}
-
-
 
 \>IsPrimitiveSolvableGroup(<grp>) P
 \>IsPrimitiveSolvable(<grp>) P

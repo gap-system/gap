@@ -3,14 +3,11 @@
 #W   random.gd                     GAP library                    Frank Lübeck
 #W                                                              Max Neunhöffer
 ##
-#H  @(#)$Id: random.gd,v 4.11 2011/01/21 15:19:02 alexk Exp $
 ##
 #Y  Copyright (C) 2006 The GAP Group
 ##
 ##  This file declares variables for random sources.
 ##
-Revision.random_gd :=
-    "@(#)$Id: random.gd,v 4.11 2011/01/21 15:19:02 alexk Exp $";
 
 
 #############################################################################
@@ -110,12 +107,12 @@ DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 ##  <Example><![CDATA[
 ##  gap> seed := State(GlobalMersenneTwister);;
 ##  gap> List([1..10],i->Random(Integers));
-##  [ -1, -4, -1, -3, -2, 1, -2, -1, 0, 1 ]
+##  [ -1, -3, -2, 1, -2, -1, 0, 1, 0, 1 ]
 ##  gap> List([1..10],i->Random(Integers));
-##  [ 0, 1, -1, 0, 2, 0, 4, -1, -3, 1 ]
+##  [ -1, 0, 2, 0, 4, -1, -3, 1, -4, -1 ]
 ##  gap> Reset(GlobalMersenneTwister, seed);;
 ##  gap> List([1..10],i->Random(Integers));
-##  [ -1, -4, -1, -3, -2, 1, -2, -1, 0, 1 ]
+##  [ -1, -3, -2, 1, -2, -1, 0, 1, 0, 1 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

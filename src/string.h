@@ -2,7 +2,6 @@
 **
 *W  string.h                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id: string.h,v 4.20 2010/02/23 15:13:49 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -21,10 +20,13 @@
 **  and `SET_ELM_STRING'.
 **  
 **  This  package also contains the   list  function  for ranges, which   are
-**  installed in the appropriate tables by 'InitString'.  */
+**  installed in the appropriate tables by 'InitString'.
+*/
+
+#ifndef GAP_STRING_H
+#define GAP_STRING_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_string_h =
-   "@(#)$Id: string.h,v 4.20 2010/02/23 15:13:49 gap Exp $";
 #endif
 
 #include <string.h>  /* for memcpy */
@@ -311,6 +313,8 @@ Obj ConvImmString(Obj str);
 */
 StructInitInfo * InitInfoString ( void );
 
+
+#endif // GAP_STRING_H
 
 /****************************************************************************
 **

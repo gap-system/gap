@@ -2,7 +2,7 @@
 ##
 #W  chapter-5-b.tst                FR Package               Laurent Bartholdi
 ##
-#H  @(#)$Id: chapter-5-b.tst,v 1.2 2008/11/14 11:13:25 gap Exp $
+#H  @(#)$Id: chapter-5-b.tst,v 1.3 2011/09/20 11:45:35 gap Exp $
 ##
 #Y  Copyright (C) 2008,  Laurent Bartholdi
 ##
@@ -126,7 +126,7 @@ gap>
 gap> Info(InfoFR,1,"5.2.8 StateGrowth");
 #I  5.2.8 StateGrowth
 gap> 
-gap> x := Indeterminate(Rationals, "x");
+gap> x := Indeterminate(Rationals, "x" : old);
 x
 gap> AsSet(List(Flat(mealym), StateGrowth));
 [ (3)/(-x+1), (2*x+3)/(-x^2-x+1), (1)/(-x+1),
@@ -412,10 +412,10 @@ gap>
 gap> Collected(List(Flat(mealyel{[1..4]}[2]), HasOpenSetConditionFRElement)) = [[true, 8], [false, 7]];
 true
 gap> 
-gap> Info(InfoFR,1,"5.2.26 LimitMachine");
-#I  5.2.26 LimitMachine
+gap> Info(InfoFR,1,"5.2.26 LimitFRMachine");
+#I  5.2.26 LimitFRMachine
 gap> 
-gap> List(List(mealym{[1,2,3,4,5,7,8]}[2], LimitMachine), x -> Size(StateSet(x))) = [5,4,4,2,4,4,2];
+gap> List(List(mealym{[1,2,3,4,5,7,8]}[2], LimitFRMachine), x -> Size(StateSet(x))) = [5,4,4,2,4,4,2];
 true
 gap> 
 gap> Info(InfoFR,1,"5.2.27 NucleusMachine");
@@ -428,9 +428,9 @@ function( m, n ) ... end
 gap> 
 gap> ForAll(Flat(mealym{[1,2,3,4]}{[1,2]}), x -> isoMealyMachine(NucleusMachine(x), NucleusMachine(SCSemigroup(x))) <> fail);
 true
-gap> ForAll(Flat(mealym{[1,2,3,4]}{[1,2]}), x -> isoMealyMachine(Minimized(LimitMachine(x*NucleusMachine(x))), NucleusMachine(x)) <> fail);
+gap> ForAll(Flat(mealym{[1,2,3,4]}{[1,2]}), x -> isoMealyMachine(Minimized(LimitFRMachine(x*NucleusMachine(x))), NucleusMachine(x)) <> fail);
 true
-gap> ForAll(Flat(mealym{[1,2,3,4]}{[1,2]}), x -> isoMealyMachine(Minimized(LimitMachine(NucleusMachine(x)*x)), NucleusMachine(x)) <> fail);
+gap> ForAll(Flat(mealym{[1,2,3,4]}{[1,2]}), x -> isoMealyMachine(Minimized(LimitFRMachine(NucleusMachine(x)*x)), NucleusMachine(x)) <> fail);
 true
 gap> 
 gap> Info(InfoFR,1,"5.2.28 GuessMealyElement");

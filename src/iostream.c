@@ -2,7 +2,6 @@
 **
 *W  iostream.c                  GAP source                       Steve Linton
 **
-*H  @(#)$Id: iostream.c,v 4.38 2011/05/15 18:39:13 gap Exp $
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
@@ -26,8 +25,6 @@
 
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_iostream_c =
-   "@(#)$Id: iostream.c,v 4.38 2011/05/15 18:39:13 gap Exp $";
 
 #define INCLUDE_DECLARATION_PART
 #include        "iostream.h"            /* file input/output               */
@@ -894,8 +891,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoIOStream ( void )
 {
-    module.revision_c = Revision_iostream_c;
-    module.revision_h = Revision_iostream_h;
     FillInVersion( &module );
     return &module;
 }

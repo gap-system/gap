@@ -6,8 +6,8 @@
 ##
 #############################################################################
 
-ReadPackage( "rcwa", "gap/general.g" );
 ReadPackage( "rcwa", "gap/rcwaaux.g" );
+ReadPackage( "rcwa", "gap/general.gi" );
 ReadPackage( "rcwa", "gap/rcwamap.gi" );
 ReadPackage( "rcwa", "gap/rcwamono.gi" );
 ReadPackage( "rcwa", "gap/rcwagrp.gi" );

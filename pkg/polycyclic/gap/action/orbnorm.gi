@@ -483,6 +483,7 @@ end;
 ##
 #F NormalizerIntegralAction( G, linG, U ) . . . . . . . . . . . . . . .N_G(U)
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 NormalizerIntegralAction := function( G, linG, U )
     local gensU, d, e, F, t, I, S, linS, K, linK, ser, T, orbf, N;
 
@@ -554,6 +555,7 @@ end;
 ## returns N_G(U) and g in G with U^g = W if g exists.
 ## returns false otherwise.
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 ConjugacyIntegralAction := function( G, linG, U, W )
     local F, t, I, J, os, j, g, L, S, linS, K, linK, ser, orbf, h, T; 
 

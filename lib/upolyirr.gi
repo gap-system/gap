@@ -2,7 +2,6 @@
 ##
 #W  upolyirr.gi                     GAP Library                 Frank Lübeck
 ##
-#H  @(#)$Id: upolyirr.gi,v 4.9 2010/06/16 16:31:38 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file  contains methods to compute irreducible univariate polynomials
 ##
-Revision.upolyirr_gi:=
-  "@(#)$Id: upolyirr.gi,v 4.9 2010/06/16 16:31:38 gap Exp $";
 
 #############################################################################
 ##

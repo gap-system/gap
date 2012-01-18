@@ -1,22 +1,16 @@
-#############################################################################
+###########################################################################
 ##
 #W  xmltree.gi          OpenMath Package              Andrew Solomon
 #W                                                    Marco Costantini
 ##
-#H  @(#)$Id: xmltree.g,v 1.15 2010/09/20 14:16:41 alexk Exp $
-##
-#Y    Copyright (C) 1999, 2000, 2001, 2006
-#Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
-#Y    Copyright (C) 2004, 2005, 2006 Marco Costantini
+#Y  Copyright (C) 1999, 2000, 2001, 2006
+#Y  School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2004, 2005, 2006 Marco Costantini
 ##
 ##  The main function in this file converts the OpenMath XML into a tree
 ##  (using the function ParseTreeXMLString from package GapDoc) and
 ##  parses it.
 ##
-
-Revision.("openmath/gap/xmltree.gi") :=
-    "@(#)$Id: xmltree.g,v 1.15 2010/09/20 14:16:41 alexk Exp $";
-
 
 BindGlobal( "OMTempVars", 
 	rec( OMBIND := rec(  ), OMREF := rec(  ) ) );
@@ -28,7 +22,8 @@ BindGlobal( "OMIsNotDummyLeaf",
     node -> not node.name = "PCDATA" and not node.name = "XMLCOMMENT");
 
 
-if VERSION <> "4.dev" and not IsBoundGlobal( "MACFLOAT_STRING" ) then
+if not CompareVersionNumbers( GAPInfo.Version, "4.5.0") and 
+   not IsBoundGlobal( "MACFLOAT_STRING" ) then
     MACFLOAT_STRING := Float;
     IS_MACFLOAT := IsFloat;
 fi;
@@ -49,7 +44,7 @@ BindGlobal( "OMObjects",
         if not IsBound( node.attributes.dec )  then
             Error( "hexadecimal encoding of floats is not supported" );
         fi;
-        if VERSION="4.dev" then
+        if CompareVersionNumbers( GAPInfo.Version, "4.5.0") then
         	return MACFLOAT_STRING( node.attributes.dec );
         else
         	return Float( node.attributes.dec );
@@ -211,7 +206,7 @@ OMSTR := function ( node )
 
 MakeReadWriteGlobal("OMObjects"); 
 
-if VERSION = "4.dev" then 
+if CompareVersionNumbers( GAPInfo.Version, "4.5.0") then 
 
 OMObjects.OMF := 
     function ( node )

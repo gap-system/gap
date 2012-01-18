@@ -2,15 +2,12 @@
 ##
 #W  basicprm.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basicprm.gi,v 4.34 2011/04/05 02:30:34 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file  contains the methods  for  the construction  of the basic perm
 ##  group types.
 ##
-Revision.basicprm_gi :=
-    "@(#)$Id: basicprm.gi,v 4.34 2011/04/05 02:30:34 gap Exp $";
 
 
 #############################################################################
@@ -54,9 +51,6 @@ function( filter, ints )
     grp  := CallFuncList( DirectProduct, grps );
     SetSize( grp, Product(ints) );
     SetIsAbelian( grp, true );
-    if ForAll(ints,IsPrimePowerInt) then
-      SetIndependentGeneratorsOfAbelianGroup(grp,GeneratorsOfGroup(grp));
-    fi;
     return grp;
 end );
 

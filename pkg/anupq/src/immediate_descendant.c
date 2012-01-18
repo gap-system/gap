@@ -2,7 +2,7 @@
 **
 *A  immediate_descendant.c      ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: immediate_descendant.c,v 1.7 2001/09/25 13:30:49 gap Exp $
+*A  @(#)$Id: immediate_descendant.c,v 1.10 2011/11/29 09:43:57 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -21,11 +21,11 @@
    compute required central automorphisms */
 
 int*** immediate_descendant (descendant_file, pga, pcp)
-FILE_TYPE descendant_file;
+FILE * descendant_file;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int ***central;
    int **auts;
@@ -46,11 +46,7 @@ struct pcp_vars *pcp;
    if (pga->exponent_law) {
       pcp->extra_relations = pga->exponent_law;
       initialise_exponent (&exp_flag, pcp);
-#ifdef Magma
-      extra_relations (&exp_flag, NULL_HANDLE, pcp);
-#else
       extra_relations (&exp_flag, pcp);
-#endif
       eliminate (0, pcp);
    }
 

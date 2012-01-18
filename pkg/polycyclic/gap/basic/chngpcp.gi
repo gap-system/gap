@@ -50,6 +50,7 @@ end;
 ## defining pcp of H is refined. H!.bijection contains the bijection between
 ## H and G.
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 RefinedPcpGroup := function( G )
     local refExponents, pcs, rel, new, ord, map, i, f, g, j, n, c, t, H, h;
 
@@ -235,6 +236,7 @@ end;
 ## Computes a new pcp presentation through series. If two arguments are
 ## given, then the factors will be reduced to SNF.
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 PcpGroupBySeries := function( arg )
     local   ser,  r,  G,  pcps;
 

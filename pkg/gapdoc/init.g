@@ -2,11 +2,31 @@
 ##
 #A  init.g                  GAPDoc              Frank Lübeck / Max Neunhöffer
 ##
-#H  @(#)$Id: init.g,v 1.17 2007/10/04 22:02:12 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck and Max Neunhöffer,  
 #Y  Lehrstuhl D für Mathematik,  RWTH Aachen
 ##
+
+# An alternative Info handler which does not print implicit "#I " and "\n"
+BindGlobal("PlainInfoHandler",
+function ( infoclass, level, list )
+    local cl, out, s;
+    cl := InfoData.LastClass![1];
+    if IsBound(InfoData.Output[cl]) then
+      out := InfoData.Output[cl];
+    else
+      out := DefaultInfoOutput;
+    fi;
+    if out = "*Print*" then
+      for s in list do
+        Print(s);
+      od;
+    else
+      for s  in list  do
+          AppendTo( out, s );
+      od;
+    fi;
+end);
 
 ReadPackage("GAPDoc", "lib/UnicodeTools.gd");
 ReadPackage("GAPDoc", "lib/PrintUtil.gd");
@@ -22,8 +42,6 @@ ReadPackage("GAPDoc", "lib/GAPDoc2HTML.gd");
 ReadPackage("GAPDoc", "lib/Make.g");
 ReadPackage("GAPDoc", "lib/Examples.gd");
 
-# The handler functions for GAP's help system are read now:
-ReadPackage("GAPDoc", "lib/HelpBookHandler.g");
 
 # try to find terminal encoding
 GAPInfo.tmpfunc := function()
@@ -66,5 +84,6 @@ GAPInfo.tmpfunc := function()
   fi;
 end;
 GAPInfo.tmpfunc();
-Add(POST_RESTORE_FUNCS, GAPInfo.tmpfunc);
+Add(GAPInfo.PostRestoreFuncs, GAPInfo.tmpfunc);
 GAPInfo.tmpfunc := fail;
+

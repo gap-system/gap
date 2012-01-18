@@ -4,7 +4,6 @@
 #W                                                           Alexander Hulpke
 #W                                                             Max Neunhöffer
 ##
-#H  @(#)$Id: straight.gd,v 4.36 2011/04/13 13:55:08 gap Exp $
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,8 +15,6 @@
 ##  1. Functions for straight line programs
 ##  2. Functions for elements represented by straight line programs
 ##
-Revision.straight_gd :=
-    "@(#)$Id: straight.gd,v 4.36 2011/04/13 13:55:08 gap Exp $";
 
 
 #############################################################################
@@ -460,9 +457,9 @@ DeclareGlobalFunction( "CompositionOfStraightLinePrograms" );
 ##  <C>List( <A>listofprogs</A>, <A>p</A> -&tgt; ResultOfStraightLineProgram( <A>p</A>, <A>gens</A> )</C>.
 ##  <Example><![CDATA[
 ##  gap> f:= FreeGroup( "x", "y" );;  gens:= GeneratorsOfGroup( f );;
-##  gap> prg1:= StraightLineProgram( [ [ [ 1, 2 ], 1 ], [ 1, 2, 2, -1 ] ], 2 );;
-##  gap> prg2:= StraightLineProgram( [ [ [ 2, 2 ], 3 ], [ 1, 3, 3, 2 ] ], 2 );;
-##  gap> prg3:= StraightLineProgram( [ [ 2, 2 ], [ 1, 3, 3, 2 ] ], 2 );;
+##  gap> prg1:= StraightLineProgram([ [ [ 1, 2 ], 1 ], [ 1, 2, 2, -1 ] ], 2);;
+##  gap> prg2:= StraightLineProgram([ [ [ 2, 2 ], 3 ], [ 1, 3, 3, 2 ] ], 2);;
+##  gap> prg3:= StraightLineProgram([ [ 2, 2 ], [ 1, 3, 3, 2 ] ], 2);;
 ##  gap> prg:= IntegratedStraightLineProgram( [ prg1, prg2, prg3 ] );;
 ##  gap> ResultOfStraightLineProgram( prg, gens );
 ##  [ x^4*y^-1, x^3*y^4, x^3*y^4 ]
@@ -640,9 +637,11 @@ DeclareGlobalFunction("StraightLineProgGens");
 ##  gap> Size(g);
 ##  24
 ##  gap> Random(g);
-##  <[ [ 1, -1, 2, -1, 1, 1, 2, -1, 1, -1, 2, 1, 1, 1, 2, 1, 1, -1, 2, 2, 1, 1 ], 
-##    [ 3, -2, 2, -2, 1, -1, 2, -2, 1, 1, 2, -1, 1, -1, 2, -2, 1, 1, 2, -1, 1,
-##        -1, 2, -1, 1, 1, 2, 1, 1, -1, 2, 1, 1, 1 ] ]>
+##  <
+##  [ [ 1, -1, 2, -1, 1, 1, 2, -1, 1, -1, 2, 1, 1, 1, 2, 1, 1, -1, 2, 2, 
+##        1, 1 ], 
+##    [ 3, -2, 2, -2, 1, -1, 2, -2, 1, 1, 2, -1, 1, -1, 2, -2, 1, 1, 2, 
+##        -1, 1, -1, 2, -1, 1, 1, 2, 1, 1, -1, 2, 1, 1, 1 ] ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

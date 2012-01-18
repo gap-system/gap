@@ -5,7 +5,6 @@
 #W                                                            Juergen Mueller
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: ratfun.gi,v 4.121 2010/12/28 00:24:52 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  This file  contains    methods  for    rational  functions,  laurent
 ##  polynomials and polynomials and their families.
 ##
-Revision.ratfun_gi :=
-    "@(#)$Id: ratfun.gi,v 4.121 2010/12/28 00:24:52 gap Exp $";
 
 #############################################################################
 ##
@@ -1591,7 +1588,9 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
   #  may not work
   m:=DegreeIndeterminate(f,ind);
   n:=DegreeIndeterminate(g,ind);
-  if n=infinity or m=infinity then return Zero(CoefficientsFamily(fam));fi;
+  if n=DEGREE_ZERO_LAURPOL or m=DEGREE_ZERO_LAURPOL then
+    return Zero(CoefficientsFamily(fam));
+  fi;
 
   if n>m then
     # force f to be of larger degee

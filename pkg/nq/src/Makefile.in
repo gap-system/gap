@@ -1,0 +1,125 @@
+##############################################################################
+##
+##    Makefile                      NQ                         Werner Nickel
+##
+##    $Id: Makefile.in,v 1.19 2012/01/16 13:55:50 gap Exp $
+##
+
+top_srcdir = @top_srcdir@
+top_builddir = @top_builddir@
+srcdir = @srcdir@
+VPATH = @srcdir@
+subdir = src
+
+GAP_ROOT=@GAP_ROOT@
+BINDIR=bin/@GAPARCH@
+GMP_CPPFLAGS=@GMP_CPPFLAGS@
+GMP_LIBS=@GMP_LIBS@
+ABI_CFLAGS=@ABI_CFLAGS@
+
+CC=@CC@
+#CFLAGS += -g -pg $(COPTS)
+CFLAGS += -O3 -Wuninitialized
+
+CFLAGS += $(ABI_CFLAGS) 
+
+# Enable lots of warnings
+CFLAGS += \
+ -Wall \
+ -Wpointer-arith\
+ -Wcast-qual\
+ -Wshadow\
+ -Wwrite-strings\
+ -W\
+ -Wc++-compat\
+ -Wold-style-definition\
+ -Wmissing-prototypes\
+ -Wstrict-prototypes\
+ -pedantic\
+ -Wno-unused-parameter\
+ -Wno-long-long
+#  -Wno-conversion\
+#  -Wno-missing-field-initializers\
+#  -Wno-sign-compare \
+# -Werror
+
+OBJ = nq.o consistency.o pc.o relations.o word.o system.o time.o \
+      addgen.o tails.o eliminate.o engel.o glimt.o instances.o \
+      presentation.o mem.o pcarith.o collect.o combicol.o trmetab.o gap.o
+
+all: nq
+
+nq : $(OBJ)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(OBJ) $(LDFLAGS) $(GMP_LIBS) -o nq
+
+glimt.o: glimt.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GMP_CPPFLAGS) -c glimt.c
+
+clean :
+	rm -f *.o nq *~
+distclean : clean
+	rm -f config.h
+
+
+# Some header dependencies, possibly incomplete / outdated.
+# Generated using the GNU C -MMD command line option.
+addgen.o: addgen.c config.h nq.h system.h mem.h genexp.h pc.h pcarith.h \
+  collect.h macro.h presentation.h relations.h
+collect.o: collect.c config.h mem.h pc.h genexp.h pcarith.h macro.h \
+  collect.h time.h system.h
+combicol.o: combicol.c config.h mem.h pc.h genexp.h pcarith.h macro.h \
+  collect.h time.h system.h
+consistency.o: consistency.c nq.h config.h system.h mem.h genexp.h pc.h \
+  pcarith.h collect.h macro.h glimt.h
+eliminate.o: eliminate.c nq.h config.h system.h mem.h genexp.h pc.h \
+  pcarith.h collect.h macro.h glimt.h relations.h presentation.h
+engel.o: engel.c nq.h config.h system.h mem.h genexp.h pc.h pcarith.h \
+  collect.h macro.h engel.h presentation.h glimt.h
+gap.o: gap.c nq.h config.h system.h mem.h genexp.h pc.h pcarith.h \
+  collect.h macro.h presentation.h relations.h
+glimt.o: glimt.c nq.h config.h system.h mem.h genexp.h pc.h pcarith.h \
+  collect.h macro.h time.h glimt.h
+instances.o: instances.c presentation.h mem.h genexp.h pc.h nq.h config.h \
+  system.h pcarith.h collect.h macro.h instances.h relations.h
+mem.o: mem.c mem.h
+nq.o: nq.c nq.h config.h system.h mem.h genexp.h pc.h pcarith.h collect.h \
+  macro.h engel.h glimt.h presentation.h relations.h time.h
+pc.o: pc.c nq.h config.h system.h mem.h genexp.h pc.h pcarith.h collect.h \
+  macro.h
+pcarith.o: pcarith.c config.h presentation.h mem.h genexp.h pc.h \
+  pcarith.h collect.h engel.h
+presentation.o: presentation.c config.h presentation.h mem.h genexp.h \
+  pc.h
+relations.o: relations.c relations.h genexp.h presentation.h mem.h pc.h \
+  nq.h config.h system.h pcarith.h collect.h macro.h glimt.h instances.h
+system.o: system.c config.h nq.h system.h mem.h genexp.h pc.h pcarith.h \
+  collect.h macro.h
+tails.o: tails.c nq.h config.h system.h mem.h genexp.h pc.h pcarith.h \
+  collect.h macro.h glimt.h
+time.o: time.c config.h time.h
+trmetab.o: trmetab.c nq.h config.h system.h mem.h genexp.h pc.h pcarith.h \
+  collect.h macro.h engel.h glimt.h
+word.o: word.c nq.h config.h system.h mem.h genexp.h pc.h pcarith.h \
+  collect.h macro.h
+
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+
+$(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+
+$(top_srcdir)/configure: $(top_srcdir)/configure.in
+	cd $(top_srcdir) && autoreconf
+
+# TODO: The following rule is problematic: If config.status detects that config.h won't be
+# changed, it does not rewrite it, which is fine. But as a result, Make will try again
+# and a gain to rebuild config.h. On the other hand, if we force a "touch" of config.h
+# this will shut up make, but will cause all files #including config.h to be rebuilt,
+# even though nothing really changed.
+# GNU automake solves this by using a "stamp" file. But before I copy that, I'd rather
+# switch to GNU automake.
+# config.h: $(top_srcdir)/src/config.hin $(top_builddir)/config.status
+# 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ && touch src/config.h
+
+.PHONY: all clean distclean

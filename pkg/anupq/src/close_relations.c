@@ -2,7 +2,7 @@
 **
 *A  close_relations.c           ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: close_relations.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: close_relations.c,v 1.4 2011/11/28 17:47:16 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -42,7 +42,7 @@ int *long_queue;
 int *long_queue_length;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    char *s;
    char *t;
@@ -152,7 +152,7 @@ int *list;
 int cp;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int value;
    register int length = list[++head];

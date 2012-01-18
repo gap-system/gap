@@ -2,8 +2,6 @@
 ##
 #W  ctbline3.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbline3.tbl,v 4.10 2010/09/15 08:23:18 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables related to the linear
@@ -12,6 +10,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbline3.tbl,v $
+#H  Revision 4.11  2011/09/28 12:12:36  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.10  2010/09/15 08:23:18  gap
 #H  do not use `factorblocks' encoding in some Brauer tables where the ordering
 #H  of ordinary irreducibles does not fit to that in the factors
@@ -113,10 +115,7 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctbline3_tbl :=
-    "@(#)$Id: ctbline3.tbl,v 4.10 2010/09/15 08:23:18 gap Exp $";
 
-SET_TABLEFILENAME("ctbline3");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("12_1.L3(4).2_1",5,
@@ -2148,6 +2147,7 @@ TEXT1,
 0);
 
 LIBTABLE.LOADSTATUS.ctbline3:="userloaded";
+
 #############################################################################
 ##
 #E

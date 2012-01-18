@@ -4,15 +4,13 @@
 #A  anusp.gd                    ANUPQ package                  Eamonn O'Brien
 #A                                                             Alice Niemeyer 
 ##
-#A  @(#)$Id: anusp.gd,v 1.1 2002/02/15 08:53:47 gap Exp $
+#A  @(#)$Id: anusp.gd,v 1.2 2011/11/29 20:00:13 gap Exp $
 ##
 #Y  Copyright 1993-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  Copyright 1993-2001,  School of Mathematical Sciences, ANU,     Australia
 ##
-#A  @(#)$Id: anusp.gd,v 1.1 2002/02/15 08:53:47 gap Exp $
+#A  @(#)$Id: anusp.gd,v 1.2 2011/11/29 20:00:13 gap Exp $
 ##
-Revision.anusp_gd :=
-    "@(#)$Id: anusp.gd,v 1.1 2002/02/15 08:53:47 gap Exp $";
 
 #############################################################################
 ##

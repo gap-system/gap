@@ -2,7 +2,6 @@
 ##
 #W  files.gi                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: files.gi,v 4.38 2011/04/06 15:29:49 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the methods for files and directories.
 ##
-Revision.files_gi :=
-    "@(#)$Id: files.gi,v 4.38 2011/04/06 15:29:49 gap Exp $";
 
 
 #############################################################################
@@ -137,8 +134,12 @@ end );
 ## 
 InstallGlobalFunction(DirectoryContents, function(dirname)
   local str;
-  # to make ~/mydir work
-  dirname := USER_HOME_EXPAND(dirname);
+  if IsDirectory(dirname) then
+    dirname := dirname![1];
+  else
+    # to make ~/mydir work
+    dirname := USER_HOME_EXPAND(dirname);
+  fi;
   str := STRING_LIST_DIR(dirname);
   if str = fail then
     Error("Could not open ", dirname, " as directory,\nsee LastSystemError();");

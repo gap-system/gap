@@ -2,7 +2,6 @@
 ##
 #W  magma.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: magma.gi,v 4.63 2010/02/23 15:13:12 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains generic methods for magmas.
 ##
-Revision.magma_gi :=
-    "@(#)$Id: magma.gi,v 4.63 2010/02/23 15:13:12 gap Exp $";
 
 
 #############################################################################
@@ -351,9 +348,6 @@ InstallGlobalFunction( Magma, function( arg )
     elif Length( arg ) = 2 and IsFamily( arg[1] ) and IsList( arg[2] ) then
       return MagmaByGenerators( arg[1], arg[2] );
 
-		# Changed IsList(arg[1]) to IsList(arg[2]) in the above 
-		# if statement AS 10/3/99
-
     # generators
     elif 0 < Length( arg ) then
       return MagmaByGenerators( arg );
@@ -527,8 +521,8 @@ local M,gens,S;
     fi;
     if Length(arg)=1 then
       S:=Objectify(NewType( FamilyObj(M),
-			    IsMagmaWithInverses
-			    and IsAttributeStoringRep), rec() );
+                            IsMagmaWithInverses
+                            and IsAttributeStoringRep), rec() );
       SetParent(S,M);
       return S;
     else
@@ -563,7 +557,7 @@ InstallGlobalFunction( SubmagmaWithInversesNC, function( M, gens )
                        IsMagmaWithInverses
                    and IsTrivial
                    and IsAttributeStoringRep
-		   and HasGeneratorsOfMagmaWithInverses);
+                   and HasGeneratorsOfMagmaWithInverses);
       S:=rec();
       ObjectifyWithAttributes(S, K, GeneratorsOfMagmaWithInverses, [] );
     else
@@ -661,9 +655,9 @@ local M;
   if not IsBound(family!.defaultMagmaWithInversesByGeneratorsType) then
     family!.defaultMagmaWithInversesByGeneratorsType :=
       NewType( FamilyObj( gens ),
-		IsMagmaWithInverses and IsAttributeStoringRep 
-		and HasGeneratorsOfMagmaWithInverses 
-		and IsFinitelyGeneratedGroup);
+                IsMagmaWithInverses and IsAttributeStoringRep 
+                and HasGeneratorsOfMagmaWithInverses 
+                and IsFinitelyGeneratedGroup);
   fi;
 
   M:=rec();
@@ -746,8 +740,8 @@ InstallMethod( GeneratorsOfMagma,
 function(M)
 local c;
   c:=Concatenation( GeneratorsOfMagmaWithInverses( M ),
-	      [ One( M ) ],
-	      List( GeneratorsOfMagmaWithInverses( M ), Inverse ) );
+              [ One( M ) ],
+              List( GeneratorsOfMagmaWithInverses( M ), Inverse ) );
   if CanEasilyCompareElements(One(M)) then
     return Set(c);
   else
@@ -814,7 +808,7 @@ InstallMethod( GeneratorsOfMagmaWithOne,
 function(M)
 local c;
   c:=Concatenation( GeneratorsOfMagmaWithInverses( M ),
-	      List( GeneratorsOfMagmaWithInverses( M ), Inverse ) );
+              List( GeneratorsOfMagmaWithInverses( M ), Inverse ) );
   if CanEasilyCompareElements(One(M)) then
     return Set(c);
   else
@@ -925,19 +919,19 @@ InstallTrueMethod(HasMultiplicativeNeutralElement, IsMagmaWithOne);
 #M  MultiplicativeNeutralElement( <M> ) . . . . . . . .  for a magma-with-one
 ##
 InstallMethod(MultiplicativeNeutralElement,
-	"for a magma-with-one",
-	true,
-	[HasMultiplicativeNeutralElement and IsMagmaWithOne], GETTER_FLAGS+1, 
-	One );
+    "for a magma-with-one",
+    true,
+    [HasMultiplicativeNeutralElement and IsMagmaWithOne], GETTER_FLAGS+1, 
+    One );
 
 InstallMethod(SetMultiplicativeNeutralElement,
-	"for a magma-with-one",
-	true,
-	[IsMagma, IsBool], 0, 
+    "for a magma-with-one",
+    true,
+    [IsMagma, IsBool], 0, 
 function(m, b)
-	if b<>fail then
-		TryNextMethod();
-	fi;
+    if b<>fail then
+      TryNextMethod();
+    fi;
 end);
 
 
@@ -1069,6 +1063,11 @@ BindGlobal( "EnumeratorOfMagma", function( M )
     local   gens,       # magma generators of <M>
             H,          # submagma of the first generators of <M>
             gen;        # generator of <M>
+
+    # The following code only does not work infinite magmas.
+    if HasIsFinite( M ) and not IsFinite( M ) then
+      TryNextMethod();
+    fi;
 
     # handle the case of an empty magma
     gens:= GeneratorsOfMagma( M );

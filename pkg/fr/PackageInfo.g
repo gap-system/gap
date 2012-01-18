@@ -2,16 +2,16 @@
 ##
 ##  PackageInfo.g for the package `FR'                    Laurent Bartholdi
 ##
-## $Id: PackageInfo.g,v 1.49 2011/06/20 14:14:29 gap Exp $
+## $Id: PackageInfo.g,v 1.53 2011/11/03 07:39:25 gap Exp $
 ##
 SetPackageInfo( rec(
 PackageName := "FR",
 Subtitle := "Computations with functionally recursive groups",
-Version := "1.2.2",
+Version := "1.2.4.2",
 ## <#GAPDoc Label="Version">
-## 1.2.2
+## 1.2.4.2
 ## <#/GAPDoc>
-Date := "20.06.2011",
+Date := "24/08/2011",
 ArchiveURL := Concatenation("http://www.uni-math.gwdg.de/laurent/FR/fr-",~.Version),
 ArchiveFormats := ".tar.gz",
 Persons := [
@@ -32,7 +32,7 @@ Persons := [
   )
 ],
 
-Status := "submitted",
+Status := "deposited",
 CommunicatedBy := "Götz Pfeiffer (NUI Galway)",
 AcceptDate := "",
 

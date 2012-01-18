@@ -4,7 +4,6 @@
 ##                                                             Markus Püschel
 ##                                                            Sebastian Egner
 ##
-#H  @(#)$Id: grpnames.gi,v 4.22 2011/01/23 16:29:42 gap Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -20,8 +19,6 @@
 ##  The code has been translated, simplified and extended by Stefan Kohl
 ##  from GAP3 code written by Markus Püschel and Sebastian Egner.
 ##
-Revision.grpnames_gi :=
-  "@(#)$Id: grpnames.gi,v 4.22 2011/01/23 16:29:42 gap Exp $";
 
 #############################################################################
 ##
@@ -374,11 +371,14 @@ InstallMethod( IsAlternatingGroup,
 
     if not IsFinite(G) then TryNextMethod(); fi;
 
+    if IsNaturalAlternatingGroup(G) then return true;fi;
     if Size(G) < 60 then
-      ids := [ [ 1, 1 ], [ 1, 1 ], [ 3, 1 ], [ 12, 3 ] ];
-      n := Position(ids,IdGroup(G));
-      if   IsInt(n)
-      then SetAlternatingDegree(G,n); return true;
+      if Size(G) = 1 then
+        SetAlternatingDegree(G,0); return true;
+      elif Size(G) = 3 then
+        SetAlternatingDegree(G,3); return true;
+      elif Size(G) = 12 and IdGroup(G) = [ 12, 3 ] then
+        SetAlternatingDegree(G,4); return true;
       else return false; fi;
     fi;
 
@@ -431,10 +431,18 @@ InstallMethod( IsSymmetricGroup,
 
     local  G1;
 
+    if IsNaturalSymmetricGroup(G) then return true;fi;
     if not IsFinite(G) then TryNextMethod(); fi;
-    if IsTrivial(G) then SetSymmetricDegree(G,1); return true; fi;
+
+    # special treatment of small cases
+    if Size(G)<=2 then SetSymmetricDegree(G,Size(G)); return true;
+    elif Size(G)=6 and not IsAbelian(G) then
+      SetSymmetricDegree(G,3);return true;
+    fi;
+
     G1 := DerivedSubgroup(G);
     if   not (IsAlternatingGroup(G1) and Index(G,G1) = 2)
+      # this requires deg>=4
       or not IsTrivial(Centralizer(G,G1))
       or Size(G) = 720 and IdGroup(G) <> [ 720, 763 ]
     then return false; fi;

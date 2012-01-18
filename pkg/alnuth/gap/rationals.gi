@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  rationals.gi        Alnuth -  Kant interface              Andreas Distler
+#W  rationals.gi    Alnuth - ALgebraic NUmber THeory        Andreas Distler
 ##
 
 #############################################################################

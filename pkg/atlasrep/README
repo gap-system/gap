@@ -5,7 +5,7 @@ The GAP 4 Package `AtlasRep'
 Description
 -----------
 
-This is Version 1.4 of the package `AtlasRep' written for GAP 4,
+This is Version 1.5 of the package `AtlasRep' written for GAP 4,
 whose aim is to provide an interface between GAP
 and the Atlas of Group Representations,
 a database that comprises representations of many almost simple groups
@@ -27,7 +27,7 @@ The package has been developed on Linux,
 a few tests on Windows suggest that is works also there,
 it may or may not work on other platforms.
 
-The package requires GAP 4.4 (or a newer version of GAP).
+The package requires GAP 4.4.12 (or a newer version of GAP).
 
 
 Authors
@@ -96,19 +96,19 @@ the archive.
 
 On UNIX systems the zoo archive may be unpacked by
 
-    zoo x atlasrep1r4p0.zoo
+    zoo x atlasrep1r5p0.zoo
 
 which will unpack the archive into a directory `atlasrep' in the
 current directory.
 
 On UNIX systems the compressed tar archive may be unpacked by
 
-    tar xzf atlasrep1r4p0.tar.gz
+    tar xzf atlasrep1r5p0.tar.gz
 
 or, if tar on your system does not understand the option z, by
 
-    gunzip atlasrep1r4p0.tar.gz
-    tar xf atlasrep1r4p0.tar
+    gunzip atlasrep1r5p0.tar.gz
+    tar xf atlasrep1r5p0.tar
 
 which will in each case unpack the code into a directory `atlasrep'
 in the current directory.
@@ -118,7 +118,7 @@ C-code for unzoo from the GAP web page and compile it on your system.
 For this your system needs to have a C-compiler.
 unzoo can be used to unpack the zoo archive, as follows:
 
-    unzoo -x atlasrep1r4p0.zoo
+    unzoo -x atlasrep1r5p0.zoo
 
 unpacks the archive into a directory `atlasrep' in the current directory.
 
@@ -159,7 +159,7 @@ For Windows users, `wget' seems to be not available in a standard
 operating system.
 Information about `wget' for Windows (and executables) can be found at
 
-    href=http://www.interlog.com/~tcharron/wgetwin.html
+    http://www.interlog.com/~tcharron/wgetwin.html
 
 
 News
@@ -173,8 +173,8 @@ Besides package archives and introductory package information, it provides
 
 - the current table of contents (the file `gap/atlasprm.g') of the package
   and the list of changes of server files
-  (see the section "Maintaining the Local Data of the AtlasRep Package"
-  of the package manual) and
+  (see the chapter "Customizations of the AtlasRep Package" of the package
+  manual) and
 
 - an overview of the data available via the GAP interface to the
   ATLAS of Group Representations,

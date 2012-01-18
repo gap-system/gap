@@ -9,9 +9,9 @@ if not IsBound( CHECK_NORM ) then CHECK_NORM := false; fi;
 
 #############################################################################
 ##
-#F AffineOperationOnH1( CR, cc )
+#F AffineActionOnH1( CR, cc )
 ##
-AffineOperationOnH1 := function( CR, cc )
+AffineActionOnH1 := function( CR, cc )
     local aff, l, i, lin, trl, j;
     aff := OperationOnH1( CR, cc );
     l   := Length( cc.factor.rels );
@@ -117,7 +117,7 @@ StabilizerOfCocycle := function( CR, cc, C, elm )
     local aff, s, l, D, nat, act, e, oper, stb;
 
     # determine operation and catch trivial case
-    aff := AffineOperationOnH1( CR, cc );
+    aff := AffineActionOnH1( CR, cc );
     if ForAll( aff, x -> x = x^0 ) then return C; fi;
 
     # determine stabilizer of free abelian part

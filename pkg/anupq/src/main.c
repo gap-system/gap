@@ -2,16 +2,12 @@
 **
 *A  main.c                      ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: main.c,v 1.6 2001/06/21 23:04:21 gap Exp $
+*A  @(#)$Id: main.c,v 1.12 2011/12/02 16:40:44 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
-
-#ifdef NEEDS_TYPES_H
-#include <sys/types.h>
-#endif
 
 #include "pq_defs.h"
 #include "pcp_vars.h"
@@ -22,10 +18,6 @@
 #include "global.h"
 #include "standard.h"
 
-#if defined (QUOTPIC)
-#include "times.h"
-#endif 
-
 #if defined (RUN_TIME)
 #include "runtime.h"
 #endif
@@ -33,21 +25,18 @@
 /* main routine for p-quotient program; the run-time parameters are 
 
    -b to choose basic format for input of presentation; 
-   -C to write CAYLEY group library;
    -G used by GAP 4, essentially equivalent to: -i -g -k simultaneously
       except that it also sends requests back via GAP's iostream when
       it needs GAP to compute stabilisers;
    -g to write GAP group library and to run pq from within GAP;
-   -m to write Magma group library;
    -i to choose standard presentation menu;
    -k to read from file using key words; 
-   -q to choose quotpic menu; 
    -s <integer> to allocate array of size <integer> for workspace y;
    -t to pass time limit in CPU seconds for computation 
       where t = 0 implies infinite time;
    -v prints the version of the pq binary and exits;
-   -w <filename> to write group descriptions in CAYLEY/GAP/Magma format 
-      to <filename> -- used in conjunction with -C or -g or -m
+   -w <filename> to write group descriptions in GAP format 
+      to <filename> -- used in conjunction -g
 
    if compiled with RUN_TIME flag then there are two additional options:
    -c to set class bound;
@@ -65,52 +54,31 @@ main (argc, argv)
 int argc;
 char *argv[];
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int t;
    struct pcp_vars pcp;
 #include "access.h" 
 
-#ifdef MALLOC_DEBUG
-   malloc_debug (8);   
-#endif
-
-#ifndef VMS
    setbuf (stdout, NULL);
-#endif
-
-#if defined (QUOTPIC)
-   time_limit = 0;
-#endif 
 
    Compact_Description = FALSE;
 
    /* process run-time parameters */
    if (process_parameters (argc, argv) == 0) {
 #if defined (RUN_TIME) 
-      printf ("Usage: pq [-b] [-c] [-C] [-d] [-G] [-g] [-i] [-k] [-m] [-s <integer>] [-v] [-w <filename>]\n");
+      printf ("Usage: pq [-b] [-c] [-d] [-G] [-g] [-i] [-k] [-s <integer>] [-v] [-w <filename>]\n");
 #else 
-      printf ("Usage: pq [-b] [-C] [-G] [-g] [-i] [-k] [-m] [-s <integer>] [-v] [-w <filename>]\n");
+      printf ("Usage: pq [-b] [-G] [-g] [-i] [-k] [-s <integer>] [-v] [-w <filename>]\n");
 #endif
       exit (INPUT_ERROR);
    }
 
-#ifdef Magma
-   y = (int *) allocate_vector (work_space + 1000, 0, FALSE);
-   bh_initialize (y, work_space + 1000, NULL);
-   bh_set_no_zeroing (1);
-#endif
-       
    Allocate_WorkSpace (work_space, &pcp);
 
    /* print startup message */
    print_message (work_space);
 
-#if defined (QUOTPIC)
-   if (menu == QUOTPIC_MENU)
-      quotpic_menu (format, &pcp);
-   else 
-#endif
 #if defined (GROUP) 
 #if defined (STANDARD_PCP)
       if (menu == ISOM_MENU) 
@@ -156,14 +124,6 @@ char *argv[];
       }
       else if (strcmp (argv[i], "-b") == 0)  
 	 format = BASIC;
-#if defined (QUOTPIC)
-      else if (strcmp (argv[i], "-t") == 0) {
-	 if (i == argc - 1) 
-	    return (0);
-	 time_limit = (string_to_int (argv[++i], &error)) * CLK_TCK;
-	 if (error) return (0);
-      }
-#endif 
 #if defined (RUN_TIME) 
       else if (strcmp (argv[i], "-d") == 0) { 
 	 if (i == argc - 1) return (0);
@@ -182,8 +142,6 @@ char *argv[];
 #endif
       else if (strcmp (argv[i], "-k") == 0)  
 	 format = FILE_INPUT;
-      else if (strcmp (argv[i], "-C") == 0)  
-	 Group_library = CAYLEY_LIBRARY;
       else if (strcmp (argv[i], "-G") == 0)  
 	{Group_library = GAP_LIBRARY;
 	 menu = ISOM_MENU;
@@ -191,12 +149,6 @@ char *argv[];
          GAP4iostream = TRUE;}
       else if (strcmp (argv[i], "-g") == 0)  
 	 Group_library = GAP_LIBRARY;
-      else if (strcmp (argv[i], "-m") == 0)  
-	 Group_library = Magma_LIBRARY;
-#if defined (QUOTPIC)
-      else if (strcmp (argv[i], "-q") == 0)  
-	 menu = QUOTPIC_MENU;
-#endif 
       else if (strcmp (argv[i], "-v") == 0)  
 	{printf ("%s\n", PQ_VERSION);
          exit (SUCCESS);}

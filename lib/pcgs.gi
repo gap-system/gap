@@ -2,7 +2,6 @@
 ##
 #W  pcgs.gi                     GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: pcgs.gi,v 4.106 2010/06/20 11:52:59 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the methods for polycylic generating systems.
 ##
-Revision.pcgs_gi :=
-    "@(#)$Id: pcgs.gi,v 4.106 2010/06/20 11:52:59 gap Exp $";
 
 #############################################################################
 ##
@@ -38,6 +35,16 @@ end );
 
 InstallMethod( Pcgs, "from independent generators of abelian group", true,
     [ IsGroup and IsAbelian and HasIndependentGeneratorsOfAbelianGroup ], 0,
+function(A)
+  if HasHomePcgs(A) then
+    TryNextMethod();
+  else
+    return PcgsByIndependentGeneratorsOfAbelianGroup(A);
+  fi;
+end);
+
+InstallMethod( Pcgs, "from independent generators of abelian group", true,
+    [ IsGroup and IsAbelian and CanEasilyComputeWithIndependentGensAbelianGroup ], 0,
 function(A)
   if HasHomePcgs(A) then
     TryNextMethod();

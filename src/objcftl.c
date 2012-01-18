@@ -8,8 +8,6 @@
 */
 #include "system.h"
 
-const char * Revision_objcftl_c =
-   "@(#)$Id: objcftl.c,v 4.23 2001/12/20 12:35:27 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -278,7 +276,7 @@ Obj CollectPolycyc (
               if( LtInt( INTOBJ_INT(0), e ) ) x = ELM_PLIST(  gens, h );
               else                            x = ELM_PLIST( igens, h );
             
-	    }
+            }
             if( LtInt( e, INTOBJ_INT(0) ) ) {
               C_PROD_FIA( ee, e, INTOBJ_INT(-1) );  e = ee;
             }
@@ -454,8 +452,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPcc ( void )
 {
-    module.revision_c = Revision_objcftl_c;
-    module.revision_h = Revision_objcftl_h;
     FillInVersion( &module );
     return &module;
 }

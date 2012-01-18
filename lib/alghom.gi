@@ -2,7 +2,6 @@
 ##
 #W  alghom.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: alghom.gi,v 4.29 2010/12/28 00:26:45 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -20,8 +19,6 @@
 ##  4. methods for isomorphisms to matrix algebras
 ##  5. methods for isomorphisms to f.p. algebras
 ##
-Revision.alghom_gi :=
-    "@(#)$Id: alghom.gi,v 4.29 2010/12/28 00:26:45 gap Exp $";
 
 
 #############################################################################
@@ -182,7 +179,7 @@ InstallGlobalFunction( AlgebraHomomorphismByImages,
     function( S, R, gens, imgs )
     local hom;
     hom:= AlgebraGeneralMappingByImages( S, R, gens, imgs );
-    if IsMapping( hom ) and IsTotal( hom ) then
+    if IsMapping( hom ) then
       return AlgebraHomomorphismByImagesNC( S, R, gens, imgs );
     else
       return fail;
@@ -198,7 +195,7 @@ InstallGlobalFunction( AlgebraWithOneHomomorphismByImages,
     function( S, R, gens, imgs )
     local hom;
     hom:= AlgebraWithOneGeneralMappingByImages( S, R, gens, imgs );
-    if IsMapping( hom ) and IsTotal( hom ) then
+    if IsMapping( hom ) then
       return AlgebraWithOneHomomorphismByImagesNC( S, R, gens, imgs );
     else
       return fail;
@@ -226,7 +223,7 @@ end );
 #M  PrintObj( <map> ) . . . . . . . . . . . . . . . . .  for algebra g.m.b.i.
 ##
 InstallMethod( PrintObj, "for an algebra-with-one hom. b.i", true,
-    [     IsMapping and IsTotal and RespectsOne
+    [     IsMapping and RespectsOne
       and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
 function( map )
 local mapi;
@@ -237,7 +234,7 @@ local mapi;
 end );
 
 InstallMethod( PrintObj, "for an algebra hom. b.i.", true,
-    [     IsMapping and IsTotal
+    [     IsMapping
       and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
 function( map )
 local mapi;
@@ -299,7 +296,8 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
           len,             # number of algebra generators
           i, j,            # loop variables
           gen,             # loop over generators
-          prod;            #
+          prod,            #
+          result;          #
 
     A:=MappingGeneratorsImages(alg_gen_map);
     origgenerators := A[1];
@@ -332,7 +330,7 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
       dim:= 0;
       len:= Length( origgenerators );
 
-      while dim < NrBasisVectors( MB ) and dim < maxdim do
+      while dim < NrBasisVectors( MB ) and NrBasisVectors( MB ) < maxdim do
 
         # `MB' is a mutable basis of $A_i$.
         dim:= NrBasisVectors( MB );
@@ -371,115 +369,36 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
 
     fi;
 
-    # Add the products of basis vectors to `generators',
-    # and the products of their images to `genimages'.
-    for i in [ 1 .. Length( generators ) ] do
-      for j in [ 1 .. Length( generators ) ] do
-        Add( generators, generators[i] * generators[j] );
-        Add( genimages, genimages[i] * genimages[j] );
-      od;
-    od;
-
-    # Construct and return the left module general mapping.
-    return LeftModuleGeneralMappingByImages( A, Range( alg_gen_map ),
-               generators, genimages );
-    end );
-
-
-InstallMethod( AsLeftModuleGeneralMappingByImages,
-    "for an algebra homomorphism by images",
-    [     IsAlgebraHomomorphism
-      and IsAlgebraGeneralMappingByImagesDefaultRep ],
-    function( alghom )
-
-    local origgenerators,  # list of algebra generators of the preimage
-          origgenimages,   # list of images of `origgenerators'
-          generators,      # list of left module generators of the preimage
-          genimages,       # list of images of `generators'
-          A,               # source of the general mapping
-          left,            # is it necessary to multiply also from the left?
-                           # (not if `A' is associative or a Lie algebra)
-          maxdim,          # upper bound on the dimension
-          MB,              # mutable basis of the preimage
-          dim,             # dimension of the actual left module
-          len,             # number of algebra generators
-          i, j,            # loop variables
-          gen,             # loop over generators
-          prod;            #
-
-    A:=MappingGeneratorsImages(alghom);
-    origgenerators := A[1];
-    origgenimages  := A[2];
-
-    if IsBasis( origgenerators ) then
-
-      generators := origgenerators;
-      genimages  := origgenimages;
-
-    else
-
-      generators := ShallowCopy( origgenerators );
-      genimages  := ShallowCopy( origgenimages );
-
-      A:= Source( alghom );
-
-      left:= not (    ( HasIsAssociative( A ) and IsAssociative( A ) )
-                   or ( HasIsLieAlgebra( A ) and IsLieAlgebra( A ) ) );
-
-      if HasDimension( A ) then
-        maxdim:= Dimension( A );
-      else
-        maxdim:= infinity;
-      fi;
-
-      # $A_1$
-      MB:= MutableBasis( LeftActingDomain( A ), generators,
-                                     Zero( A ) );
-      dim:= 0;
-      len:= Length( origgenerators );
-
-      while dim < NrBasisVectors( MB ) and dim < maxdim do
-
-        # `MB' is a mutable basis of $A_i$.
-        dim:= NrBasisVectors( MB );
-
-        # Compute $\bigcup_{g \in S} ( A_i g \cup A_i g )$.
-        for i in [ 1 .. len ] do
-          gen:= origgenerators[i];
-          for j in [ 1 .. Length( generators ) ] do
-            prod:= generators[j] * gen;
-            if not IsContainedInSpan( MB, prod ) then
-              Add( generators, prod );
-              Add( genimages, genimages[j] * origgenimages[i] );
-              CloseMutableBasis( MB, prod );
-            fi;
-          od;
+    # If it is not known whether alg_gen_map is single valued, we need to
+    # perform some extra work.
+    if not (HasIsSingleValued( alg_gen_map ) and IsSingleValued( alg_gen_map )) then
+      # TODO: This code below is far from optimal. Indeed, it would suffice to
+      # loop over a basis; and we don't need to record all generator / image
+      # pairs we obtain below, but rather only those that are not linearly
+      # dependent on the already known pairs.
+      len := Length( generators );
+      for i in [ 1 .. len ] do
+        for j in [ 1 .. len ] do
+          Add( generators, generators[i] * generators[j] );
+          Add( genimages, genimages[i] * genimages[j] );
         od;
-
-        if left then
-
-          # Compute $\bigcup_{g \in S} ( A_i g \cup g A_i )$.
-          for i in [ 1 .. len ] do
-            gen:= origgenerators[i];
-            for j in [ 1 .. Length( generators ) ] do
-              prod:= gen * generators[j];
-              if not IsContainedInSpan( MB, prod ) then
-                Add( generators, prod );
-                Add( genimages, origgenimages[i] * genimages[j] );
-                CloseMutableBasis( MB, prod );
-              fi;
-            od;
-          od;
-
-        fi;
-
       od;
-
     fi;
 
-    # Construct and return the left module mapping.
-    return LeftModuleHomomorphismByImagesNC( A, Range( alghom ),
+    # Construct the left module (general) mapping.
+    result := LeftModuleGeneralMappingByImages( A, Range( alg_gen_map ),
                generators, genimages );
+
+    # Transfer properties of alg_gen_map to result (in particular whether this is
+    # a homomorphism).
+    if HasIsSingleValued( alg_gen_map ) then
+      SetIsSingleValued( result, IsSingleValued( alg_gen_map ) );
+    fi;
+    if HasIsTotal( alg_gen_map ) then
+      SetIsTotal( result, IsTotal( alg_gen_map ) );
+    fi;
+
+    return result;
     end );
 
 
@@ -932,7 +851,7 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
     dim:= 0;
     len:= Length( origgenimages );
 
-    while dim < NrBasisVectors( MB ) and dim < maxdim do
+    while dim < NrBasisVectors( MB ) and NrBasisVectors( MB ) < maxdim do
 
       # `MB' is a mutable basis of $A_i$.
       dim:= NrBasisVectors( MB );
@@ -1107,7 +1026,7 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
     dim:= 0;
     len:= Length( origgenimages );
 
-    while dim < NrBasisVectors( MB ) and dim < maxdim do
+    while dim < NrBasisVectors( MB ) and NrBasisVectors( MB ) < maxdim do
 
       # `MB' is a mutable basis of $A_i$.
       dim:= NrBasisVectors( MB );
@@ -1402,8 +1321,8 @@ InstallOtherMethod( RepresentativeLinearOperation,
 ##  <Example><![CDATA[
 ##  gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
 ##  gap> C:= LieCentre( L );
-##  <two-sided ideal in <Lie algebra of dimension 9 over Rationals>, (dimension 1
-##   )>
+##  <two-sided ideal in <Lie algebra of dimension 9 over Rationals>, 
+##    (dimension 1)>
 ##  gap> hom:= NaturalHomomorphismByIdeal( L, C );
 ##  <linear mapping by matrix, <Lie algebra of dimension 
 ##  9 over Rationals> -> <Lie algebra of dimension 8 over Rationals>>
@@ -1719,7 +1638,7 @@ InstallMethod( IsomorphismFpFLMLOR,
     dim:= 0;
     len:= Length( Agens );
 
-    while dim < NrBasisVectors( MB ) and dim < maxdim do
+    while dim < NrBasisVectors( MB ) and NrBasisVectors( MB ) < maxdim do
 
       # `MB' is a mutable basis of $A_i$.
       dim:= NrBasisVectors( MB );

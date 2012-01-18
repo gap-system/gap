@@ -2,7 +2,7 @@
 ##
 #W  ctoorth7.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoorth7.tbl,v 1.1 2009/03/31 16:36:05 gap Exp $
+#H  @(#)$Id: ctoorth7.tbl,v 1.2 2011/09/28 14:32:23 gap Exp $
 ##
 #Y  Copyright (C)  2009,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,16 +10,15 @@
 ##  orthogonal group $O^-_{10}(3)$.
 ##
 #H  $Log: ctoorth7.tbl,v $
+#H  Revision 1.2  2011/09/28 14:32:23  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 1.1  2009/03/31 16:36:05  gap
 #H  added tables of O10-(3), 2.O10-(3) (contributed by Eamonn)
 #H      TB
 #H
 ##
-Revision.ctoorth7_tbl :=
-    "@(#)$Id: ctoorth7.tbl,v 1.1 2009/03/31 16:36:05 gap Exp $";
-
-SET_TABLEFILENAME("ctoorth7");
-ALN:= Ignore;
 
 MOT("O10-(3)",
 [
@@ -3520,7 +3519,6 @@ ALF("2.O10-(3)","O10-(3)",[1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,
 226,226]);
 
 LIBTABLE.LOADSTATUS.ctoorth7:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

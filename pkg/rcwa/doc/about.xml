@@ -56,7 +56,7 @@ the author felt that this is a gap which is worth to be filled.
 <Section Label="sec:Purpose">
 <Heading>Purpose of this package</Heading>
 
-So far, research in computational group theory focussed mainly on finite
+Most research in computational group theory focusses mainly on finite
 permutation groups, matrix groups, finitely presented groups, polycyclically
 presented groups and automata groups.
 For details, we refer to&nbsp;<Cite Key="HoltEickOBrien05"/>. <P/>
@@ -71,11 +71,10 @@ The purpose of this package is twofold:
   </Item>
 
   <Item>
-    On the other, residue-class-wise affine groups are interesting
-    mathematical objects in their own right, and this package is
-    intended to serve as a tool for obtaining a better understanding of
-    their rich and often complicated group theoretical and combinatorial
-    structure.
+    On the other, residue-class-wise affine groups appear to be interesting
+    mathematical objects in their own right, and this package is intended
+    to serve as a tool to obtain a better understanding of their rich and
+    often complicated group theoretical and combinatorial structure.
   </Item>
 
 </List>
@@ -136,7 +135,7 @@ It is countable, but it has an uncountable series of simple subgroups
 which is parametrized by the sets of odd primes. <P/>
 
 Proofs of most of the results mentioned here can be found
-in&nbsp;<Cite Key="Kohl09"/>. Descriptions of many of the algorithms
+in&nbsp;<Cite Key="Kohl09"/>. Descriptions of a part of the algorithms
 and methods which are implemented in this package can be found
 in&nbsp;<Cite Key="Kohl08b"/>.
 
@@ -150,8 +149,7 @@ in&nbsp;<Cite Key="Kohl08b"/>.
 This package can be applied in various ways to various different problems,
 and it is simply not possible to say what can be found out with its help
 about which groups. The best way to get an idea about this is likely to
-experiment with the examples discussed in this manual and included in the
-file <File>pkg/rcwa/examples/examples.g</File>. <P/>
+experiment with the examples discussed in this manual. <P/>
 
 Of course this package often does not provide an out-of-the-box solution
 for a given problem. Quite often it is possible to find an answer for

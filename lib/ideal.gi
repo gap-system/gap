@@ -2,15 +2,12 @@
 ##
 #W  ideal.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ideal.gi,v 4.15 2010/12/28 00:28:05 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##
-Revision.ideal_gi :=
-    "@(#)$Id: ideal.gi,v 4.15 2010/12/28 00:28:05 gap Exp $";
 
 
 #############################################################################

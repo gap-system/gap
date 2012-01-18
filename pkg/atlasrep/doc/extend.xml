@@ -1,6 +1,5 @@
 
 <!-- %W  extend.xml      GAP 4 package AtlasRep             Thomas Breuer -->
-<!-- %H  $Id: extend.xml,v 1.8 2008/11/28 09:00:29 gap Exp $ -->
 <!-- %Y  Copyright 2002, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
 
@@ -21,7 +20,7 @@ The main idea is that users can notify directories containing the
 
 <Enum>
 <Item>
-  new representations and programs for groups
+  new faithful representations and programs for groups
   that are declared already in the <Q>official</Q>
   &ATLAS; of Group Representations,
 </Item>
@@ -37,7 +36,7 @@ The main idea is that users can notify directories containing the
 
 <P/>
 
-The first two kinds are dealt with in
+The first two issues are dealt with in
 Section&nbsp;<Ref Sect="sect:Adding a Private Data Directory"/>
 and Section&nbsp;<Ref Sect="sect:Effect of Private Extensions"/>.
 The last is described in
@@ -52,7 +51,7 @@ Section&nbsp;<Ref Sect="sect:An Example of Extending AtlasRep"/>.
 
 Several of the sanity checks for the official part of the
 <Package>AtlasRep</Package> package make sense also for private extensions,
-see Section&nbsp;<Ref Sect="sect:Sanity Checks for the Atlas of Group Representations"/>
+see Section&nbsp;<Ref Sect="sect:AGR Sanity Checks"/>
 for more information.
 
 
@@ -61,13 +60,7 @@ for more information.
 <Heading>Adding a Private Data Directory</Heading>
 
 <#Include Label="[3]{access}">
-
-<P/>
-
 <#Include Label="AtlasOfGroupRepresentationsNotifyPrivateDirectory">
-
-<P/>
-
 <#Include Label="AtlasOfGroupRepresentationsForgetPrivateDirectory">
 
 </Section>
@@ -131,7 +124,7 @@ gap> SetInfoLevel( InfoAtlasRep, 1 );
 
 Let us assume that the directory <F>privdir</F> contains
 data for the cyclic group <M>C_4</M> of order <M>4</M>
-and for the symmetric group <M>S_5</M> on <M>5</M> points, respectively.
+and for the alternating group <M>A_5</M> on <M>5</M> points, respectively.
 Note that it is obvious what the term <Q>standard generators</Q> means for
 the group <M>C_4</M>.
 
@@ -150,17 +143,16 @@ Further let us assume that <F>privdir</F> contains the following files.
 </Item>
 <Mark><F>C4G1-a2W1</F></Mark>
 <Item>
-    the straight line program that applies an outer automorphism to its
-    unique input,
+    the straight line program that raises its unique input to the third
+    power,
 </Item>
 <Mark><F>C4G1-XtestW1</F></Mark>
 <Item>
     the straight line program that returns the square of its unique input,
 </Item>
-<Mark><F>S5G1-p2B0.m1</F> and <F>S5G1-p2B0.m2</F></Mark>
+<Mark><F>A5G1-p60B0.m1</F> and <F>A5G1-p60B0.m2</F></Mark>
 <Item>
-    the permutation representation of the commutator factor group
-    of <M>S_5</M>, on <M>2</M> points.
+    the regular permutation representation of <M>A_5</M>.
 </Item>
 </List>
 
@@ -171,7 +163,6 @@ The directory and the files can be created as follows.
 <P/>
 
 <Example><![CDATA[
-gap> pkg:= Filename( DirectoriesPackageLibrary( "atlasrep", "" ), "" );;
 gap> prv:= DirectoryTemporary( "privdir" );;
 gap> FileString( Filename( prv, "C4G1-p4B0.m1" ),
 >                MeatAxeString( [ (1,2,3,4) ], 4 ) );;
@@ -183,45 +174,45 @@ gap> FileString( Filename( prv, "C4G1-a2W1" ),
 >                "inp 1\npwr 3 1 2\noup 1 2\n" );;
 gap> FileString( Filename( prv, "C4G1-Ar1aB0.g" ),
 >                "return rec( generators:= [ [[E(4)]] ] );\n" );;
-gap> FileString( Filename( prv, "S5G1-p2B0.m1" ),
->                MeatAxeString( [ (1,2) ], 2 ) );;
-gap> FileString( Filename( prv, "S5G1-p2B0.m2" ),
->                MeatAxeString( [ (1,2) ], 2 ) );;
+gap> points:= Elements( AlternatingGroup( 5 ) );;
+gap> FileString( Filename( prv, "A5G1-p60B0.m1" ),
+>      MeatAxeString( [ Permutation( (1,2)(3,4), points, OnRight ) ], 60 ) );;
+gap> FileString( Filename( prv, "A5G1-p60B0.m2" ),
+>      MeatAxeString( [ Permutation( (1,3,5), points, OnRight ) ], 60 ) );;
 ]]></Example>
 
 <P/>
 
-(We could also introduce intermediate directories <F>C4</F> and <F>S5</F>,
+(We could also introduce intermediate directories <F>C4</F> and <F>A5</F>,
 say, each with the data for one group only.
-Here we do not show this because creating directories seems to be not
-possible without the &GAP; package <Package>IO</Package>.)
-
-<P/>
-
-Now we create a file whose name is not admissible
-because it occurs already in the official part of the database.
-(This will cause an info line below.)
-
-<P/>
-
-<Example><![CDATA[
-gap> FileString( Filename( prv, "S5G1-p5B0.m1" ),
->                MeatAxeString( [ (1,2) ], 5 ) );;
-]]></Example>
+Here we do not show this because creating directories programmatically
+seems to be possible only with the &GAP; package <Package>IO</Package>.)
 
 <P/>
 
 The official part of the <Package>AtlasRep</Package> package does not contain
 information about <M>C_4</M>,
 so we first notify this group, in the file <F>privdir/toc.g</F>.
-(The group <M>S_5</M> is known with name <C>A5.2</C> in the official part
-of the <Package>AtlasRep</Package> package, so it cannot be notified.)
+Besides the name of the group, we store the following information:
+the group order, the number of (classes of) maximal subgroups,
+their orders, their structures, and describing data about the two
+permutation representations.
+(The group <M>A_5</M> is known with name <C>A5</C> in the official part
+of the <Package>AtlasRep</Package> package,
+so it cannot be notified again.)
 
 <P/>
 
 <Example><![CDATA[
-gap> FileString( Filename( prv, "toc.g" ),
->                "AGRGNAN(\"C4\",\"C4\");\n" );;
+gap> FileString( Filename( prv, "toc.g" ), Concatenation( [
+>        "AGR.GNAN(\"C4\",\"C4\");\n",
+>        "AGR.GRS(\"C4\",4);\n",
+>        "AGR.MXN(\"C4\",1);\n",
+>        "AGR.MXO(\"C4\",[2]);\n",
+>        "AGR.MXS(\"C4\",[\"C2\"]);\n",
+>        "AGR.API(\"C4G1-p4B0\",[1,4,\"imprim\",\"1 < C2\"]);\n",
+>        "AGR.API(\"A5G1-p60B0\",[1,60,\"imprim\",\"1 < A4\"]);\n",
+>        ] ) );;
 ]]></Example>
 
 <P/>
@@ -231,17 +222,11 @@ Then we notify the private directory.
 <P/>
 
 <Example><![CDATA[
-gap> AtlasOfGroupRepresentationsNotifyPrivateDirectory( prv, "priv" );
-#I  file `S5G1-p5B0.m1' was already in another t.o.c.
-false
+gap> AtlasOfGroupRepresentationsNotifyPrivateDirectory( prv, "priv", true );
+true
 ]]></Example>
 
 <P/>
-
-(The nonadmissible filename <C>S5G1-p5B0.m1</C> was ignored for the private
-directory.
-If this file would not be present then the return value would be
-<K>true</K>.)
 
 Now we can use the interface functions for accessing the data in the
 private directory.
@@ -250,77 +235,114 @@ private directory.
 
 <Example><![CDATA[
 gap> DisplayAtlasInfo( [ "C4" ] );
-group    #  maxes  cl  cyc  out  find  check  pres
---------------------------------------------------
-C4*      2      1   -    -    2     -      -     -
+group | # | maxes | cl | cyc | out | fnd | chk | prs
+------+---+-------+----+-----+-----+-----+-----+----
+C4*   | 2 |     1 |    |     |   2 |     |     |    
 gap> DisplayAtlasInfo( "C4" );
 Representations for G = C4:    (all refer to std. generators 1)
 ---------------------------
-1: G <= Sym(4)*
+1: G <= Sym(4)*   rank 4, on cosets of 1 < C2
 2: G <= GL(1a,C)*
 
 Programs for G = C4:    (all refer to std. generators 1)
 --------------------
-available maxes of G:  [ 1 ]*
-available automorphisms:  [ "2" ]*
-available other scripts:
-   "test"*
+automorphisms:
+  2*
+maxes (all 1):
+  1*:  C2
+other scripts:
+  "test"*
 gap> DisplayAtlasInfo( "C4", IsPermGroup, true );
 Representations for G = C4:    (all refer to std. generators 1)
 ---------------------------
-1: G <= Sym(4)*
+1: G <= Sym(4)* rank 4, on cosets of 1 < C2
 gap> DisplayAtlasInfo( "C4", IsMatrixGroup );
 Representations for G = C4:    (all refer to std. generators 1)
 ---------------------------
 2: G <= GL(1a,C)*
 gap> DisplayAtlasInfo( "C4", Dimension, 2 );
-gap> DisplayAtlasInfo( "A5.2", NrMovedPoints, 2 );
-Representations for G = A5.2:    (all refer to std. generators 1)
------------------------------
-1: G <= Sym(2)*
+gap> DisplayAtlasInfo( "A5", NrMovedPoints, 60 );
+Representations for G = A5:    (all refer to std. generators 1)
+---------------------------
+4: G <= Sym(60)* rank 60, on cosets of 1 < A4
 gap> info:= OneAtlasGeneratingSetInfo( "C4" );
-rec( groupname := "C4", standardization := 1, 
-  identifier := [ [ "priv", "C4" ], [ "C4G1-p4B0.m1" ], 1, 4 ], p := 4, 
-  id := "", repnr := 1 )
+rec( groupname := "C4", id := "", 
+  identifier := [ [ "priv", "C4" ], [ "C4G1-p4B0.m1" ], 1, 4 ],
+  isPrimitive := false, p := 4, rankAction := 4, repname := "C4G1-p4B0",
+  repnr := 1, size := 4, stabilizer := "1 < C2", standardization := 1,
+  transitivity := 1, type := "perm" )
 gap> AtlasGenerators( info.identifier );
-rec( generators := [ (1,2,3,4) ], groupname := "C4", standardization := 1,
-  repnr := 1, identifier := [ [ "priv", "C4" ], [ "C4G1-p4B0.m1" ], 1, 4 ], 
-  p := 4, id := "" )
+rec( generators := [ (1,2,3,4) ], groupname := "C4", id := "",
+  identifier := [ [ "priv", "C4" ], [ "C4G1-p4B0.m1" ], 1, 4 ],
+  isPrimitive := false, p := 4, rankAction := 4, repname := "C4G1-p4B0",
+  repnr := 1, size := 4, stabilizer := "1 < C2", standardization := 1,
+  transitivity := 1, type := "perm" )
 gap> AtlasProgram( "C4", 1 );
-rec( program := <straight line program>, standardization := 1, 
-  identifier := [ [ "priv", "C4" ], "C4G1-max1W1", 1 ], groupname := "C4" )
+rec( groupname := "C4", identifier := [ [ "priv", "C4" ], "C4G1-max1W1", 1 ], 
+  program := <straight line program>, size := 2, standardization := 1, 
+  subgroupname := "C2" )
 gap> AtlasProgram( "C4", "maxes", 1 );
-rec( program := <straight line program>, standardization := 1, 
-  identifier := [ [ "priv", "C4" ], "C4G1-max1W1", 1 ], groupname := "C4" )
+rec( groupname := "C4", identifier := [ [ "priv", "C4" ], "C4G1-max1W1", 1 ],
+  program := <straight line program>, size := 2, standardization := 1, 
+  subgroupname := "C2" )
 gap> AtlasProgram( "C4", "maxes", 2 );
 fail
 gap> AtlasGenerators( "C4", 1 );
-rec( generators := [ (1,2,3,4) ], groupname := "C4", standardization := 1,
-  repnr := 1, identifier := [ [ "priv", "C4" ], [ "C4G1-p4B0.m1" ], 1, 4 ], 
-  p := 4, id := "" )
+rec( generators := [ (1,2,3,4) ], groupname := "C4", id := "", 
+  identifier := [ [ "priv", "C4" ], [ "C4G1-p4B0.m1" ], 1, 4 ],
+  isPrimitive := false, p := 4, rankAction := 4, repname := "C4G1-p4B0",
+  repnr := 1, size := 4, stabilizer := "1 < C2", standardization := 1,
+  transitivity := 1, type := "perm" )
 gap> AtlasGenerators( "C4", 2 );
-rec( generators := [ [ [ E(4) ] ] ], groupname := "C4", standardization := 1,
-  repnr := 2, identifier := [ [ "priv", "C4" ], "C4G1-Ar1aB0.g", 1, 1 ], 
-  dim := 1, id := "a" )
+rec( dim := 1, generators := [ [ [ E(4) ] ] ], groupname := "C4", id := "a", 
+  identifier := [ [ "priv", "C4" ], "C4G1-Ar1aB0.g", 1, 1 ], 
+  repname := "C4G1-Ar1aB0", repnr := 2, size := 4, standardization := 1, 
+  type := "matalg" )
 gap> AtlasGenerators( "C4", 3 );
 fail
 gap> AtlasProgram( "C4", "other", "test" );
-rec( program := <straight line program>, standardization := 1, 
-  identifier := [ [ "priv", "C4" ], "C4G1-XtestW1", 1 ], groupname := "C4" )
+rec( groupname := "C4", identifier := [ [ "priv", "C4" ], "C4G1-XtestW1", 1 ],
+  program := <straight line program>, standardization := 1 )
+]]></Example>
+
+<P/>
+
+We can restrict the data shown by <Ref Func="DisplayAtlasInfo"/> to the
+private directory, as follows.
+
+<P/>
+
+<Example><![CDATA[
+gap> DisplayAtlasInfo( "contents", "priv" );
+group                    | # | maxes | cl | cyc | out | fnd | chk | prs
+-------------------------+---+-------+----+-----+-----+-----+-----+----
+A5*                      | 1 |       |    |     |     |     |     |
+C4*                      | 2 |     1 |    |     |   2 |     |     |
 ]]></Example>
 
 <P/>
 
 For checking the data in the private directory,
-we apply some of the sanity checks
-(see Section&nbsp;<Ref Sect="sect:Sanity Checks for the Atlas of Group Representations"/>).
+we apply the relevant sanity checks
+(see Section&nbsp;<Ref Sect="sect:AGR Sanity Checks"/>).
 
 <P/>
 
 <Example><![CDATA[
-gap> AtlasOfGroupRepresentationsTestWords( "priv" );
+gap> if not IsBound( AGR.Test ) then
+>      ReadPackage( "atlasrep", "gap/test.g" );
+>    fi;
+gap> AGR.Test.Words( "priv" );
 true
-gap> AtlasOfGroupRepresentationsTestFileHeaders( "priv" );
+gap> AGR.Test.FileHeaders( "priv" );
+true
+gap> AGR.Test.Files( "priv" );
+true
+gap> AGR.Test.BinaryFormat( "priv" );
+true
+gap> AGR.Test.Primitivity( "priv" );
+true
+gap> AGR.Test.Characters( "priv" );
 true
 ]]></Example>
 
@@ -329,7 +351,7 @@ true
 Finally, we <Q>uninstall</Q> the private directory,
 and reset the info level that had been set to <M>1</M> in the beginning.
 (Also the group name <C>C4</C> is removed this way, which is an advantage of
-using a <F>toc.g</F> file over calling <Ref Func="AGRGNAN"/> directly.),
+using a <F>toc.g</F> file over calling <C>AGRGNAN</C> directly.),
 Note that we need not remove the data in the temporary directory,
 &GAP; will do this automatically.
 

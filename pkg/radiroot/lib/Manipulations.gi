@@ -7,7 +7,7 @@
 ##  to special elements of a splitting field and to the permutations
 ##  in its Galois group   
 ##
-#H  $Id: Manipulations.gi,v 1.2 2006/10/30 13:51:30 gap Exp $
+#H  $Id: Manipulations.gi,v 1.3 2011/10/27 18:23:30 gap Exp $
 ##
 #Y  2006
 ##
@@ -25,6 +25,10 @@ InstallMethod( GaloisGroupOnRoots, "for rational polynomial",
 [ IsUnivariateRationalFunction and IsPolynomial ], function( f )
     local erw, galgrp;
     
+    if not ForAll( CoefficientsOfUnivariatePolynomial( f ), IsRat ) then
+        TryNextMethod( );
+    fi;
+
     if not IsSeparablePolynomial( f ) then
         Error("f must be separable");
     fi;

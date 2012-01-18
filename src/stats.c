@@ -2,7 +2,6 @@
 **
 *W  stats.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: stats.c,v 4.47 2011/05/15 18:39:16 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_stats_c =
-   "@(#)$Id: stats.c,v 4.47 2011/05/15 18:39:16 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -2269,8 +2266,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoStats ( void )
 {
-    module.revision_c = Revision_stats_c;
-    module.revision_h = Revision_stats_h;
     FillInVersion( &module );
     return &module;
 }

@@ -147,8 +147,13 @@ InstallGlobalFunction( TwoCocyclesCR, function( A )
     n := Length( A.mats );
     e := RelativeOrdersOfPcp( A.factor );
     l := Length( A.enumrels );
-    d := A.dim;
-    sys := CRSystem( d, l, A.char );
+
+    if IsBound(A.endosys) then 
+        sys := List( A.endosys, x -> CRSystem( x[2], l, 0 ) );
+        for i in [1..Length(sys)] do sys[i].full := true; od;
+    else
+        sys := CRSystem( A.dim, l, A.char );
+    fi;
 
     # set up for equations 
     id := IdentityMat(n);
@@ -298,12 +303,19 @@ end );
 #F TwoCoboundariesCR( A )
 ##
 InstallGlobalFunction( TwoCoboundariesCR, function( A )
-    local n, c, sys, R, i, j, tail, z, k, v, mat, l;
+    local n, e, l, sys, R, c, tail, i, t, j;
 
     # set up system of length d
-    n   := Length( A.mats );
-    l   := Length( A.enumrels );
-    sys := CRSystem( A.dim, l, A.char );
+    n := Length( A.mats );
+    e := RelativeOrdersOfPcp( A.factor );
+    l := Length( A.enumrels );
+
+    if IsBound(A.endosys) then 
+        sys := List( A.endosys, x -> CRSystem( x[2], l, 0 ) );
+        for i in [1..Length(sys)] do sys[i].full := true; od;
+    else
+        sys := CRSystem( A.dim, l, A.char );
+    fi;
 
     # loop over relators
     R := [];
@@ -314,21 +326,16 @@ InstallGlobalFunction( TwoCoboundariesCR, function( A )
     od;
 
     # shift into system
-    z := sys.zero;
     for i in [1..n] do
-        mat := [];
-        for k in [1..A.dim] do
-            v := [];
-            for j in [1..l] do
-                if IsBound( R[j][i] ) then 
-                    Append( v, R[j][i][k] );
-                else
-                    Append( v, z );
-                fi;
-            od;
-            Add( mat, v );
+        t := [];
+        for j in [1..l] do 
+            if IsBound(R[j][i]) then t[i] := R[j][i]; fi;
         od;
-        AddToCRSystem( sys, mat );
+        if IsList(sys) then 
+            AddEquationsCREndo( sys, t );
+        else 
+            AddEquationsCRNorm( sys, t, true );
+        fi;
     od;
 
     # return
@@ -340,11 +347,26 @@ end );
 #F TwoCohomologyCR( A ) 
 ##
 InstallGlobalFunction( TwoCohomologyCR, function( A )
-    local cc, cb;
+    local cc, cb, exp, l, B, b, Q, U, V, i;
     cc := TwoCocyclesCR( A );
     cb := TwoCoboundariesCR( A );
-    return rec( gcc := cc, gcb := cb, 
-                factor := AdditiveFactorPcp( cc, cb, A.char ));
+    if not IsBound(A.endosys) then 
+        return rec( gcc := cc, gcb := cb, 
+                    factor := AdditiveFactorPcp( cc, cb, A.char ));
+    fi;
+
+    Q := [];
+    for i in [1..Length(cc)] do
+        if Length(cc[i]) = 0 then Add( Q, AbelianPcpGroup([])); fi;
+        exp := A.mats[1][i]!.exp;
+        l := Length(cc[i][1])/Length(exp);
+        B := AbelianPcpGroup( Concatenation(List([1..l], x -> exp)) );
+        b := Igs(B);
+        U := Subgroup( B, List(cc[i], x -> MappedVector(x,b)));
+        V := Subgroup( B, List(cb[i], x -> MappedVector(x,b)));
+        Add(Q, U/V);
+     od;
+     return Q;
 end );
 
 #############################################################################

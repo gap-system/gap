@@ -3,8 +3,6 @@
 #W  xmltree.gi          OpenMath Package              Andrew Solomon
 #W                                                    Marco Costantini
 ##
-#H  @(#)$Id: xmltree.gi,v 1.8 2010/11/12 13:18:24 alexk Exp $
-##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y    Copyright (C) 2004, 2005, 2006 Marco Costantini
@@ -13,9 +11,6 @@
 ##  (using the function ParseTreeXMLString from package GapDoc) and
 ##  parses it.
 ##
-
-Revision.("openmath/gap/xmltree.gi") :=
-    "@(#)$Id: xmltree.gi,v 1.8 2010/11/12 13:18:24 alexk Exp $";
 
 
 InstallGlobalFunction( OMParseXmlObj, function ( node )

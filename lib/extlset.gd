@@ -2,7 +2,6 @@
 ##
 #W  extlset.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: extlset.gd,v 4.13 2010/02/23 15:12:57 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file declares the operations for external left sets.
 ##
-Revision.extlset_gd :=
-    "@(#)$Id: extlset.gd,v 4.13 2010/02/23 15:12:57 gap Exp $";
 
 
 #############################################################################

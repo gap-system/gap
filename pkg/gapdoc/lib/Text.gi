@@ -2,7 +2,6 @@
 ##
 #W  Text.gi                      GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: Text.gi,v 1.18 2011/03/03 09:39:59 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -20,6 +19,7 @@
 ##  <Var Name="LETTERS" />
 ##  <Var Name="DIGITS" />
 ##  <Var Name="HEXDIGITS" />
+##  <Var Name="BOXCHARS" />
 ##  <Description>
 ##  These variables contain sets of characters which are useful for
 ##  text processing. They are defined as follows.<P/>
@@ -34,6 +34,13 @@
 ##  <Item>concatenation of <C>CAPITALLETTERS</C> and <C>SMALLLETTERS</C></Item>
 ##  <Mark><C>DIGITS</C></Mark><Item><C>"0123456789"</C></Item>
 ##  <Mark><C>HEXDIGITS</C></Mark><Item><C>"0123456789ABCDEFabcdef"</C></Item>
+##  <Mark><C>BOXCHARS</C></Mark>
+##     <Item><Alt Not="LaTeX"><C>"─│┌┬┐├┼┤└┴┘━┃┏┳┓┣╋┫┗┻┛═║╔╦╗╠╬╣╚╩╝"</C></Alt>
+##     <Alt Only="LaTeX"><C>Encode(Unicode(9472 + [ 0, 2, 12, 44, 16, 28,
+##     60, 36, 20, 52, 24, 1, 3, 15, 51, 19, 35, 75, 43, 23, 59, 27, 80, 81,
+##     84, 102, 87, 96, 108, 99, 90, 105, 93 ]), "UTF-8")</C></Alt>, 
+##  these are  in UTF-8 encoding,  the <C>i</C>-th unicode  character is
+##  <C>BOXCHARS{[3*i-2..3*i]}</C>.</Item>
 ##  </List>
 ##  </Description>
 ##  </ManSection>
@@ -48,13 +55,40 @@ InstallValue(LETTERS, Concatenation(CAPITALLETTERS, SMALLLETTERS));
 IsSet(LETTERS);
 InstallValue(DIGITS, "0123456789");
 InstallValue(HEXDIGITS, "0123456789ABCDEFabcdef");
+InstallValue(BOXCHARS, "─│┌┬┐├┼┤└┴┘━┃┏┳┓┣╋┫┗┻┛═║╔╦╗╠╬╣╚╩╝");
 
-MakeImmutable(WHITESPACE);
-MakeImmutable(CAPITALLETTERS);
-MakeImmutable(SMALLLETTERS);
-MakeImmutable(LETTERS);
-MakeImmutable(DIGITS);
-MakeImmutable(HEXDIGITS);
+# utilities to find lines
+InstallGlobalFunction(PositionLinenumber, function(str, nr)
+  local pos, i;
+  pos := 0;
+  i := 1;
+  while i < nr and pos <> fail do
+    pos := Position(str, '\n', pos);
+    i := i+1;
+  od;
+  if i = nr and IsInt(pos) then
+    return pos+1;
+  else
+    return fail;
+  fi;
+end);
+InstallGlobalFunction(NumberOfLines, function(str)
+  local pos, i;
+  if Length(str) = 0 then
+    return 0;
+  fi;
+  pos := 0;
+  i := 1;
+  while pos <> fail do
+    pos := Position(str, '\n', pos);
+    i := i+1;
+  od;
+  if str[Length(str)] = '\n' then
+    return i-2;
+  else
+    return i-1;
+  fi;
+end);
 
 ##  
 ##  <#GAPDoc Label="TextAttr">
@@ -67,7 +101,7 @@ MakeImmutable(HEXDIGITS);
 ##  ANSI escape sequences.  Try the following example to see  if this is
 ##  the case for the terminal you are  using. It shows the effect of the
 ##  foreground and background color  attributes and of the <C>.bold</C>,
-##  <C>.blink</C>, <C>.normal</C>, <C>.reverse</C> and<C>.underscore</C>
+##  <C>.blink</C>, <C>.normal</C>, <C>.reverse</C> and <C>.underscore</C>
 ##  which can partly be mixed.
 ##  
 ##  <Listing Type="Example">
@@ -92,10 +126,11 @@ MakeImmutable(HEXDIGITS);
 ##  od;
 ##  </Listing>
 ##  
-##  <Index>ANSI_COLORS</Index> 
+##  <Index>UseColorsInTerminal</Index> 
 ##  Whenever  you  use  this  in   some  printing  routines  you  should
-##  make  it optional.  Use  these attributes  only,  when the  variable
-##  <C>ANSI_COLORS</C> has the value <K>true</K>.
+##  make  it optional.  Use  these attributes  only,  when the  entry
+##  <C>GAPInfo.UserPreferences.UseColorsInTerminal</C> is bound and 
+##  has the value <K>true</K>.
 ##  </Description>
 ##  </ManSection>
 ##  
@@ -132,6 +167,12 @@ TextAttr.b7 := Concatenation(TextAttr.CSI, "47m");
 TextAttr.delline := Concatenation(TextAttr.CSI, "2K");
 TextAttr.home := Concatenation(TextAttr.CSI, "1G");
 
+MakeImmutable(WHITESPACE);
+MakeImmutable(CAPITALLETTERS);
+MakeImmutable(SMALLLETTERS);
+MakeImmutable(LETTERS);
+MakeImmutable(DIGITS);
+MakeImmutable(HEXDIGITS);
 
 
 ##  <#GAPDoc Label="RepeatedString">
@@ -493,9 +534,9 @@ end);
 ##  gap> str := Concatenation("XXX",TextAttr.2, "BLUB", TextAttr.reset,"YYY");
 ##  "XXX\033[32mBLUB\033[0mYYY"
 ##  gap> str2 := WrapTextAttribute(str, TextAttr.1);
-##  "\033[31mXXX\033[32mBLUB\033[0m\033[31mYYY\033[0m"
+##  "\033[31mXXX\033[32mBLUB\033[0m\033[31m\027YYY\033[0m"
 ##  gap> str3 := WrapTextAttribute(str, TextAttr.underscore);
-##  "\033[4mXXX\033[32mBLUB\033[0m\033[4mYYY\033[0m"
+##  "\033[4mXXX\033[32mBLUB\033[0m\033[4m\027YYY\033[0m"
 ##  gap> # use Print(str); and so on to see how it looks like.
 ##  </Example>
 ##  </Description>
@@ -503,9 +544,25 @@ end);
 ##  
 ##  <#/GAPDoc>
 InstallGlobalFunction(WrapTextAttribute, function(str, attr)
-  str := SubstitutionSublist(str, TextAttr.reset, Concatenation(
-            TextAttr.reset, attr));
-  return Concatenation(attr, str, TextAttr.reset);
+  if IsList(attr) and Length(attr) > 0 and IsString(attr[1]) and
+     Length(attr[1]) > 1 and attr[1]{[1,2]} = TextAttr.CSI and
+                            attr[2] = TextAttr.reset then
+    attr := attr[1];
+  fi;
+  if IsString(attr) and Length(attr) > 1 and attr{[1,2]} = TextAttr.CSI then
+    # we mark inner attribute starters by appending a char 23
+    str := SubstitutionSublist(str, TextAttr.reset, Concatenation(
+                                              TextAttr.reset, attr, "\027"));
+    str := Concatenation(attr, str, TextAttr.reset);
+  elif IsString(attr) then
+    str := Concatenation(attr,str,attr);
+  elif IsList(attr) and Length(attr) = 2 and IsString(attr[1]) and
+    IsString(attr[2]) then
+    str := Concatenation(attr[1], str, attr[2]);
+  else
+    Error("WrapTextAttribute: argument attr must be string or list of two strings.\n");
+  fi;
+  return str;
 end);
 
 ##  <#GAPDoc Label="FormatParagraph">
@@ -725,6 +782,8 @@ InstallGlobalFunction(FormatParagraph, function(arg)
     Add(s, '\n');
     Append(res, s);
   od;
+##  if PositionSublist(res,"\033[33X")<> fail and PositionSublist(res,"\033[133X")= fail then Error("FP"); fi;
+##  if PositionSublist(res,"Emph")<> fail then Error("FP"); fi;
   return res;
 end);
 
@@ -774,7 +833,37 @@ InstallGlobalFunction(StripEscapeSequences, function(str)
   return res;
 end);
 InstallGlobalFunction(SubstituteEscapeSequences, function(str, subs)
-  local esc, res, i, ls, seq, pos, p;
+  local orig, special, hash, esc, res, i, ls, seq, pos, p, b, e, width, 
+        cont, nb, ne, flush, pY, indlen, par, j, row, a, l, n, k, widthfun;
+
+  # maybe we need to simplify some substitution strings because
+  # of the current encoding, we cache the result
+  if GAPInfo.TermEncoding <> "UTF-8" then
+    if IsBound(subs.(GAPInfo.TermEncoding)) then
+      subs := subs.(GAPInfo.TermEncoding);
+    else
+      orig := subs;
+      subs := ShallowCopy(subs);
+      for a in RecFields(subs) do
+        if IsList(subs.(a)) then
+          subs.(a) := [subs.(a)[1], List(subs.(a)[2], x-> 
+                                Encode(
+                                SimplifiedUnicodeString(Unicode(x, "UTF-8"), 
+                                GAPInfo.TermEncoding),
+                                GAPInfo.TermEncoding))];
+        fi;
+      od;
+      orig.(GAPInfo.TermEncoding) := subs;
+    fi;
+  fi;
+  # we need a special handling of tags to reformat paragraphs and to
+  # fill lines
+  special := [];
+  for a in ["format", "FillString"] do
+    Add(special, Position(subs.hash[1], subs.(a)[1][1]));
+    Add(special, Position(subs.hash[1], subs.(a)[1][2]));
+  od;
+  hash := subs.hash;
   esc := CHAR_INT(27);
   res := "";
   i := 1;
@@ -789,9 +878,19 @@ InstallGlobalFunction(SubstituteEscapeSequences, function(str, subs)
       od;
       # first letter is last character of escape sequence
       i := i+1; 
-      pos := PositionSet(subs[1], seq);
-      if pos <> fail then
-        seq := subs[2][pos];
+      if IsBound(str[i]) and str[i] = '\027' then
+        cont := true;
+        i := i+1;
+      else
+        cont := false;
+      fi;
+      pos := PositionSet(hash[1], seq);
+      if pos <> fail and not pos in special then
+        if cont and (Length(hash[2][pos]) = 0 or hash[2][pos][1] <> esc) then
+          seq := "";
+        else
+          seq := hash[2][pos];
+        fi;
       else
         Add(res, esc);
         Add(res, '[');
@@ -805,7 +904,7 @@ InstallGlobalFunction(SubstituteEscapeSequences, function(str, subs)
           return str;
         else
           Append(res, str{[i..ls]});
-          return res;
+          i := ls+1;
         fi;
       else
         Append(res, str{[i..p-1]});
@@ -813,6 +912,113 @@ InstallGlobalFunction(SubstituteEscapeSequences, function(str, subs)
       fi;
     fi;
   od;
+  # now we reformat paragraphs
+  if GAPInfo.TermEncoding = "UTF-8" then
+    widthfun := WidthUTF8String;
+  else
+    widthfun := Length;
+  fi;
+  str := res;
+  res := "";
+  pos := 0;
+  b := Concatenation(TextAttr.CSI, subs.format[1][1]);
+  e := Concatenation(TextAttr.CSI, subs.format[1][2]);
+  width := SizeScreen()[1] - 2;
+  while pos <> fail do
+    nb := PositionSublist(str, b, pos);
+    if nb = fail then
+      Append(res, str{[pos+1..Length(str)]});
+      pos := fail;
+    else
+      ne := PositionSublist(str, e, nb);
+      # find flush mode
+      if str[nb+Length(b)+2] = '0' then
+        flush := subs.flush[2][1];
+      elif str[nb+Length(b)+2] = '1' then
+        flush := "left";
+      elif str[nb+Length(b)+2] = '2' then
+        flush := "center";
+      else
+        flush := "both";
+      fi;
+      Append(res, str{[pos+1..nb-1]});
+      # find indent
+      pY := Position(str, 'Y', nb);
+      # the +2 because all help text has additional indentation of 2
+      indlen := Int(str{[nb+Length(b)+4..pY-1]}) + 2;
+      par := FormatParagraph(str{[pY+1..ne-1]}, width - indlen, flush,
+                          [RepeatedString(" ", indlen), ""], widthfun);
+      # remove leading blanks if there is already something on this line
+      # (e.g., initial indentation or a list mark)
+      i := Length(res);
+      while i > 0 and res[i] <> '\n' do
+        i := i-1;
+      od;
+      i := widthfun(StripEscapeSequences(res{[i+1..Length(res)]}));
+      while i > 0 and par[1] = ' ' do
+        Remove(par,1);
+        i := i-1;
+      od;
+      if Length(par) > 1 and par[Length(par)] = '\n' then
+        Unbind(par[Length(par)]);
+      fi;
+      Append(res, par);
+      pos := ne + Length(e) - 1;
+    fi;
+  od;
+  # a finally we expand the fill strings
+  b := Concatenation(TextAttr.CSI, subs.FillString[1][1]);
+  if PositionSublist(res, b) <> fail then
+    str := res;
+    res := "";
+    pos := 0;
+    nb := PositionSublist(str, b, pos);
+    while nb <> fail do
+      # find row
+      i := nb-1;
+      while i>0 and str[i] <> '\n' do
+        i := i-1;
+      od;
+      j := nb+1;
+      while Length(str) >= j and str[j] <> '\n' do
+        j := j+1;
+      od;
+      Append(res, str{[pos+1..i]});
+      # split row into pieces to fill
+      row := [str{[i+1..nb-1]}, str{[nb+Length(b)..j-1]}];
+      nb := PositionSublist(row[Length(row)], b);
+      while nb <> fail do
+        a := row[Length(row)];
+        row[Length(row)] := a{[1..nb-1]};
+        Add(row, a{[nb+Length(b)..Length(a)]});
+        nb := PositionSublist(row[Length(row)], b);
+      od;
+      # lengths of the fillings
+      l := width - Sum(row, a-> widthfun(StripEscapeSequences(a)));
+      n := Length(row)-1;
+      ls := [];
+      for k in [1..n] do
+        Add(ls, QuoInt(l,n));
+      od;
+      k := n;
+      while Sum(ls) < l do
+        ls[k] := ls[k]+1;
+        k := k-1;
+      od;
+      # cannot do much when line already too long
+      if l < 0 then
+        ls := 0*ls;
+      fi;
+      for i in [1..n] do
+        Append(res, row[i]);
+        Append(res, RepeatedUTF8String(subs.FillString[2][1], ls[i]));
+      od;
+      Append(res, row[n+1]);
+      pos := j-1;
+      nb := PositionSublist(str, b, pos);
+    od;
+    Append(res, str{[pos+1..Length(str)]});
+  fi;
   return res;
 end);
 

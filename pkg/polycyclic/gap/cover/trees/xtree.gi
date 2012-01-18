@@ -60,7 +60,7 @@ end;
 CoclassPGroup := function(G)
     local n,c;
     n := Length(Factors(Size(G)));
-    c := Length(LowerCentralSeries(G))-1;
+    c := Length(LowerCentralSeriesOfGroup(G))-1;
     return n-c;
 end;
 

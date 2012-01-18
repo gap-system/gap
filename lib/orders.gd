@@ -2,7 +2,6 @@
 ##
 #W  orders.gd           GAP library                           Isabel Araújo
 ##
-#H  @(#)$Id: orders.gd,v 4.20 2010/02/23 15:13:21 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  These file contains declarations for orderings.
 ##
-Revision.orders_gd :=
-    "@(#)$Id: orders.gd,v 4.20 2010/02/23 15:13:21 gap Exp $";
 
 
 ##  <#GAPDoc Label="[1]{orders}">

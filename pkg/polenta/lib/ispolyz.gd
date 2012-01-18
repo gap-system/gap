@@ -3,7 +3,7 @@
 #W ispolyz.gd           POLENTA package                     Bjoern Assmann
 ##
 ##
-#H  @(#)$Id: 
+#H  @(#)$Id:
 ##
 #Y 2006
 ##

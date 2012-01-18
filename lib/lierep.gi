@@ -3,7 +3,6 @@
 #W  lierep.gi                   GAP library                Willem de Graaf
 #W                                                     and Craig A. Struble
 ##
-#H  @(#)$Id: lierep.gi,v 4.40 2011/05/15 15:26:49 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains methods for modules over Lie algebras.
 ##
-Revision.lierep_gi :=
-    "@(#)$Id: lierep.gi,v 4.40 2011/05/15 15:26:49 gap Exp $";
 
 
 ###########################################################################

@@ -2,7 +2,6 @@
 **
 *W  saveload.h                  GAP source                   Steve Linton
 **
-*H  @(#)$Id: saveload.h,v 4.14 2010/02/23 15:13:47 gap Exp $
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,9 +11,11 @@
 **  the workspace. There are support functions in gasman.c and elsewhere
 **  throughout the kernel
 */
+
+#ifndef GAP_SAVELOAD_H
+#define GAP_SAVELOAD_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_saveload_h =
-   "@(#)$Id: saveload.h,v 4.14 2010/02/23 15:13:47 gap Exp $";
 #endif
 
 /***************************************************************************
@@ -77,13 +78,10 @@ extern ObjFunc LoadHandler();
 StructInitInfo * InitInfoSaveLoad ( void );
 
 
+#endif // GAP_SAVELOAD_H
+
 /****************************************************************************
 **
 
 *E  saveload.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-
-
-
-

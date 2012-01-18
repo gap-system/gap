@@ -6,13 +6,10 @@
 ##
 ##  `Head' file for the GAP interface to the ANU pq binary by Eamonn O'Brien.
 ##    
-#H  @(#)$Id: anupqhead.gi,v 1.1 2006/01/24 04:42:40 gap Exp $
+#H  @(#)$Id: anupqhead.gi,v 1.2 2011/11/29 20:00:12 gap Exp $
 ##
 #Y  Copyright (C) 2006  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-Revision.anupqhead_gi :=
-    "@(#)$Id: anupqhead.gi,v 1.1 2006/01/24 04:42:40 gap Exp $";
-
 
 #############################################################################
 ##

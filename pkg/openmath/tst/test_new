@@ -3,10 +3,6 @@ gap> SizeScreen([80]);;
 gap> ValidatePackageInfo( Filename( DirectoriesPackageLibrary( "openmath", "" ), "PackageInfo.g" ) );
 true
 gap> LoadPackage("openmath");
-#I  Package `GRAPE': non-Unix architecture or binaries not compiled
-#I  Package `GRAPE': functions depending on nauty will not work
-#I  the `grape' package is not fully installed and so some of the functions
-#I  in MONOID will not work. Type `?the monoid package' for more infomation.
 true
 gap> 
 gap> ### Some examples from file openmath/examples
@@ -261,46 +257,6 @@ gap> OMPutObject( w, false );
 gap> OMPutObject( w, "OutputTextNone" );
 gap> CloseStream( s );
 gap> 
-gap> ## InputOutputLocalProcess (doesn't work with Gap 4.2 or earlier)
-gap> 
-gap> # stream returns XML encoding
-gap> 
-gap> tpipe_exec := Filename( DirectoriesPackageLibrary( "openmath", "OMCv1.3c/src" ), "tpipe" );;
-gap> s := InputOutputLocalProcess( OMDirectoryTemporary, tpipe_exec, [ "-ux", "-", "-", ] );
-< input/output stream to tpipe >
-gap> w := OpenMathXMLWriter( s );;
-gap> 
-gap> OMPutObject( w, 123 );
-gap> OMPutObject( w, false );
-gap> OMPutObject( w, "InputOutputLocalProcess, XML encoding" );
-gap> 
-gap> OMGetObject( s );
-123
-gap> OMGetObject( s );
-false
-gap> OMGetObject( s );
-"InputOutputLocalProcess, XML encoding"
-gap> CloseStream( s );
-gap> 
-gap> # stream returns binary encoding
-gap> 
-gap> tpipe_exec := Filename( DirectoriesPackageLibrary( "openmath", "OMCv1.3c/src" ), "tpipe" );;
-gap> s := InputOutputLocalProcess( OMDirectoryTemporary, tpipe_exec, [ "-ub", "-", "-", ] );
-< input/output stream to tpipe >
-gap> w := OpenMathXMLWriter( s );;
-gap> 
-gap> OMPutObject( w, 123 );
-gap> OMPutObject( w, false );
-gap> OMPutObject( w, "InputOutputLocalProcess, binary encoding" );
-gap> 
-gap> OMGetObject( s );
-123
-gap> OMGetObject( s );
-false
-gap> OMGetObject( s );
-"InputOutputLocalProcess, binary encoding"
-gap> CloseStream( s );
-gap> 
 gap> ### miscellaneous tests
 gap> 
 gap> # test with binary encoding and InputTextString
@@ -384,8 +340,9 @@ gap> h := HasseDiagram(p);
 gap> 
 gap> # the bug was here.
 gap> Elements(UnderlyingRelation(h));
-[ Tuple( [ 0, a ] ), Tuple( [ 0, b ] ), Tuple( [ 0, c ] ), Tuple( [ a, 1 ] ), 
-  Tuple( [ b, 1 ] ), Tuple( [ c, 1 ] ) ]
+[ DirectProductElement( [ 0, a ] ), DirectProductElement( [ 0, b ] ),
+  DirectProductElement( [ 0, c ] ), DirectProductElement( [ a, 1 ] ),
+  DirectProductElement( [ b, 1 ] ), DirectProductElement( [ c, 1 ] ) ]
 gap> 
 gap> ### test for the various supported objects
 gap> 
@@ -591,58 +548,58 @@ gap>
 gap> OMPrint(h);
 <OMOBJ>
 	<OMBIND>
-		<OMS cd="fns2" name="constant"/>
-		<OMBVAR>
-			<OMV name="0"/>
-			<OMV name="a"/>
-			<OMV name="b"/>
-			<OMV name="c"/>
-			<OMV name="1"/>
-		</OMBVAR>
-		<OMA>
-			<OMS cd="relation2" name="hasse_diagram"/>
-			<OMA>
-				<OMS cd="list1" name="list"/>
-				<OMV name="0"/>
-				<OMA>
-					<OMS cd="list1" name="list"/>
+			<OMS cd="fns2" name="constant"/>
+			<OMBVAR>
+					<OMV name="0"/>
 					<OMV name="a"/>
 					<OMV name="b"/>
 					<OMV name="c"/>
-				</OMA>
-			</OMA>
+					<OMV name="1"/>
+			</OMBVAR>
 			<OMA>
-				<OMS cd="list1" name="list"/>
-				<OMV name="a"/>
+				<OMS cd="relation2" name="hasse_diagram"/>
+				<OMA>
+					<OMS cd="list1" name="list"/>
+					<OMV name="0"/>
+					<OMA>
+						<OMS cd="list1" name="list"/>
+						<OMV name="a"/>
+						<OMV name="b"/>
+						<OMV name="c"/>
+					</OMA>
+				</OMA>
+				<OMA>
+					<OMS cd="list1" name="list"/>
+					<OMV name="a"/>
+					<OMA>
+						<OMS cd="list1" name="list"/>
+						<OMV name="1"/>
+					</OMA>
+				</OMA>
+				<OMA>
+					<OMS cd="list1" name="list"/>
+					<OMV name="b"/>
+					<OMA>
+						<OMS cd="list1" name="list"/>
+						<OMV name="1"/>
+					</OMA>
+				</OMA>
+				<OMA>
+					<OMS cd="list1" name="list"/>
+					<OMV name="c"/>
+					<OMA>
+						<OMS cd="list1" name="list"/>
+						<OMV name="1"/>
+					</OMA>
+				</OMA>
 				<OMA>
 					<OMS cd="list1" name="list"/>
 					<OMV name="1"/>
+					<OMA>
+						<OMS cd="list1" name="list"/>
+					</OMA>
 				</OMA>
 			</OMA>
-			<OMA>
-				<OMS cd="list1" name="list"/>
-				<OMV name="b"/>
-				<OMA>
-					<OMS cd="list1" name="list"/>
-					<OMV name="1"/>
-				</OMA>
-			</OMA>
-			<OMA>
-				<OMS cd="list1" name="list"/>
-				<OMV name="c"/>
-				<OMA>
-					<OMS cd="list1" name="list"/>
-					<OMV name="1"/>
-				</OMA>
-			</OMA>
-			<OMA>
-				<OMS cd="list1" name="list"/>
-				<OMV name="1"/>
-				<OMA>
-					<OMS cd="list1" name="list"/>
-				</OMA>
-			</OMA>
-		</OMA>
 	</OMBIND>
 </OMOBJ>
 gap> 
@@ -761,16 +718,16 @@ gap>
 gap> #I  Method 19: ``OMPut: for a float'', value: 3
 gap> 
 gap> floats := List( [ 0, "-0", 1, 1/2, -1, "inf", "-inf" ], Float );
-[ 0, 0, 1, 0.5, -1, inf, -inf ]
+[ 0., -0., 1., 0.5, -1., inf, -inf ]
 gap> OMPrint(floats);
 <OMOBJ>
 	<OMA>
 		<OMS cd="list1" name="list"/>
 		<OMF dec="0"/>
 		<OMF dec="0"/>
-		<OMF dec="1"/>
+		<OMF dec="1."/>
 		<OMF dec="0.5"/>
-		<OMF dec="-1"/>
+		<OMF dec="-1."/>
 		<OMF dec="INF"/>
 		<OMF dec="-INF"/>
 	</OMA>
@@ -783,12 +740,13 @@ gap> OMPrint(floats);
 <OMOBJ>
 	<OMA>
 		<OMS cd="list1" name="list"/>
-		<OMF dec="1.94872e07"/>
-		<OMF dec="5.13158e-08"/>
-		<OMF dec="-1.94872e07"/>
-		<OMF dec="-5.13158e-08"/>
+		<OMF dec="19487171."/>
+		<OMF dec="5.1315811823070673e-08"/>
+		<OMF dec="-19487171."/>
+		<OMF dec="-5.1315811823070673e-08"/>
 		<OMF dec="NaN"/>
 	</OMA>
 </OMOBJ>
-gap> 
-gap> STOP_TEST( "test", 10000 );
+gap> List(floats,OMTest);
+[ true, true, true, true, false ]
+gap> STOP_TEST( "test", 10000000 );

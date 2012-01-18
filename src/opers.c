@@ -3,7 +3,6 @@
 *W  opers.c                     GAP source                       Frank Celler
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id: opers.c,v 4.112 2011/05/09 11:11:30 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,8 +15,6 @@
 #include        "system.h"              /* Ints, UInts                     */
 
 
-const char * Revision_opers_c =
-   "@(#)$Id: opers.c,v 4.112 2011/05/09 11:11:30 sal Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -6542,8 +6539,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoOpers ( void )
 {
-    module.revision_c = Revision_opers_c;
-    module.revision_h = Revision_opers_h;
     FillInVersion( &module );
     return &module;
 }

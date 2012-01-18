@@ -2,7 +2,7 @@
 **
 *A  central_auts.c              ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: central_auts.c,v 1.5 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: central_auts.c,v 1.6 2011/11/28 17:47:16 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -22,7 +22,7 @@ int*** central_automorphisms (pga, pcp)
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 { 
-#include "define_y.h"
+   register int *y = y_address;
 
    int ***central;  
    int **commutator;            /* result of commutator calculations */
@@ -109,7 +109,7 @@ int** commutator_matrix (pga, pcp)
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    /* first and last generator of last class of parent */
    int first = y[pcp->clend + pcp->cc - 2] + 1;

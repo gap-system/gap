@@ -4,7 +4,6 @@
      By Frank Lübeck and Max Neunhöffer
      ================================================================== -->
 
-<!-- $Id: gapdoc.dtd,v 1.18 2008/09/03 09:19:38 gap Exp $ -->
 
 <!-- Note that this definition goes "bottom-up" because entities can only
      be used after their definition in the file. -->

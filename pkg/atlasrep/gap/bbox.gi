@@ -3,8 +3,6 @@
 #W  bbox.gi              GAP 4 package AtlasRep                 Thomas Breuer
 #W                                                            Simon Nickerson
 ##
-#H  @(#)$Id: bbox.gi,v 1.5 2007/05/29 08:39:35 gap Exp $
-##
 #Y  Copyright (C)  2005,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the implementations of the operations
@@ -13,8 +11,6 @@
 ##  1. Functions for black box algorithms
 ##  2. Functions for straight line decisions
 ##
-Revision.( "atlasrep/gap/bbox_gi" ) :=
-    "@(#)$Id: bbox.gi,v 1.5 2007/05/29 08:39:35 gap Exp $";
 
 
 #############################################################################
@@ -36,11 +32,9 @@ BindGlobal( "BBoxProgramsDefaultType",
 #############################################################################
 ##
 #M  Display( <prog> )
-#M  Display( <prog>, <record> )
 ##
 InstallMethod( Display,
-    "for a black box program",
-    [ IsBBoxProgram ],
+    [ "IsBBoxProgram" ],
     function( prog )
     local line;
 
@@ -55,8 +49,7 @@ InstallMethod( Display,
 #M  PrintObj( <prog> )
 ##
 InstallMethod( PrintObj,
-    "for a black box program",
-    [ IsBBoxProgram ],
+    [ "IsBBoxProgram" ],
     function( prog )
     Print( "<black box program>" );
     end );
@@ -67,8 +60,7 @@ InstallMethod( PrintObj,
 #M  ViewObj( <prog> )
 ##
 InstallMethod( ViewObj,
-    "for a black box program",
-    [ IsBBoxProgram ],
+    [ "IsBBoxProgram" ],
     function( prog )
     Print( "<black box program>" );
     end ); 
@@ -672,8 +664,7 @@ end );
 #T  (Unify this!)
 ##
 InstallMethod( NrInputsOfStraightLineDecision,
-    "for a straight line decision",
-    [ IsStraightLineDecision ],
+    [ "IsStraightLineDecision" ],
     function( prog )
     local defined,    # list of currently assigned positions
           maxinput,   # current maximum of input needed
@@ -732,15 +723,13 @@ end );
 #M  ResultOfStraightLineDecision( <prog>, <gens>[, <orderfunc>] )
 ##
 InstallMethod( ResultOfStraightLineDecision,
-    "for a straight line decision, and a homogeneous list",
-    [ IsStraightLineDecision, IsHomogeneousList ],
+    [ "IsStraightLineDecision", "IsHomogeneousList" ],
     function( prog, gens )
     return ResultOfStraightLineDecision( prog, gens, Order );
     end );
 
 InstallMethod( ResultOfStraightLineDecision,
-    "for a straight line decision, a homogeneous list, and a function",
-    [ IsStraightLineDecision, IsHomogeneousList, IsFunction ],
+    [ "IsStraightLineDecision", "IsHomogeneousList", "IsFunction" ],
     function( prog, gens, orderfunc )
     local r,         # list of intermediate results
           line,      # loop over the lines
@@ -790,8 +779,7 @@ InstallMethod( ResultOfStraightLineDecision,
 #M  StraightLineProgramFromStraightLineDecision( <dec> )
 ##
 InstallMethod( StraightLineProgramFromStraightLineDecision,
-    "for a straight line decision",
-    [ IsStraightLineDecision ],
+    [ "IsStraightLineDecision" ],
     function( dec )
     local lines, checkpos, maxslot, line, i, result;
 
@@ -822,9 +810,8 @@ InstallMethod( StraightLineProgramFromStraightLineDecision,
     Add( lines, result );
 
     # Return the result.
-    return StraightLineProgram( lines,
-#T NC?
-                                NrInputsOfStraightLineDecision( dec ) );
+    return StraightLineProgramNC( lines,
+                                  NrInputsOfStraightLineDecision( dec ) );
     end );
 
 
@@ -834,15 +821,13 @@ InstallMethod( StraightLineProgramFromStraightLineDecision,
 #M  Display( <dec>, <record> )
 ##
 InstallMethod( Display,
-    "for a straight line decision",
-    [ IsStraightLineDecision ],
+    [ "IsStraightLineDecision" ],
     function( dec )
     Display( dec, rec() );
     end );
 
 InstallOtherMethod( Display,
-    "for a straight line decision, and a record",
-    [ IsStraightLineDecision, IsRecord ],
+    [ "IsStraightLineDecision", "IsRecord" ],
     function( prog, record )
     local gensnames,
           listname,
@@ -936,8 +921,7 @@ InstallOtherMethod( Display,
 #M  IsInternallyConsistent( <prog> )
 ##
 InstallMethod( IsInternallyConsistent,
-    "for a straight line decision",
-    [ IsStraightLineDecision ],
+    [ "IsStraightLineDecision" ],
     function( prog )
     local lines, nrgens, defined, testline, len, i, line;
 
@@ -1016,8 +1000,7 @@ InstallMethod( IsInternallyConsistent,
 #M  PrintObj( <prog> )
 ##
 InstallMethod( PrintObj,
-    "for a straight line decision",
-    [ IsStraightLineDecision ],
+    [ "IsStraightLineDecision" ],
     function( prog )
     Print( "StraightLineDecision( ",
            LinesOfStraightLineDecision( prog ) );
@@ -1033,8 +1016,7 @@ InstallMethod( PrintObj,
 #M  ViewObj( <prog> )
 ##
 InstallMethod( ViewObj,
-    "for a straight line decision",
-    [ IsStraightLineDecision ],
+    [ "IsStraightLineDecision" ],
     function( prog )
     Print( "<straight line decision>" );
     end );
@@ -1045,8 +1027,7 @@ InstallMethod( ViewObj,
 #M  AsBBoxProgram( <prog> )
 ##
 InstallMethod( AsBBoxProgram,
-    "for a straight line program",
-    [ IsStraightLineProgram ],
+    [ "IsStraightLineProgram" ],
     function( prog )
     prog:= AtlasStringOfProgram( prog );
     # Straight line programs use `iv', black box programs use `inv'.
@@ -1064,8 +1045,7 @@ InstallMethod( AsBBoxProgram,
 #M  AsBBoxProgram( <dec> )
 ##
 InstallMethod( AsBBoxProgram,
-    "for a straight line decision",
-    [ IsStraightLineDecision ],
+    [ "IsStraightLineDecision" ],
     function( dec )
     dec:= AtlasStringOfProgram( dec );
     # Straight line programs use `iv', black box programs use `inv'.
@@ -1083,8 +1063,7 @@ InstallMethod( AsBBoxProgram,
 #M  AsStraightLineProgram( <bbox> )
 ##
 InstallMethod( AsStraightLineProgram,
-    "for a black box program",
-    [ IsBBoxProgram ],
+    [ "IsBBoxProgram" ],
     function( bbox )
     local lines;
 
@@ -1106,8 +1085,7 @@ InstallMethod( AsStraightLineProgram,
 #M  AsStraightLineDecision( <bbox> )
 ##
 InstallMethod( AsStraightLineDecision,
-    "for a black box program",
-    [ IsBBoxProgram ],
+    [ "IsBBoxProgram" ],
     function( bbox )
     local lines;
 

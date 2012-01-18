@@ -1,6 +1,5 @@
 
 <!-- %W  technica.xml    GAP 4 package AtlasRep             Thomas Breuer -->
-<!-- %H  $Id: technica.xml,v 1.6 2008/04/16 16:03:34 gap Exp $ -->
 <!-- %Y  Copyright 2001, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
 
@@ -15,7 +14,7 @@ This chapter describes those parts of the &GAP; interface to the
 Besides global variables used for administrational purposes
 (see Section&nbsp;<Ref Sect="sect:Global Variables Used by the AtlasRep Package"/>)
 and several sanity checks
-(see Section&nbsp;<Ref Sect="sect:Sanity Checks for the Atlas of Group Representations"/>),
+(see Section&nbsp;<Ref Sect="sect:AGR Sanity Checks"/>),
 they can be regarded as
 the interface between the data actually contained in the files and
 the corresponding &GAP; objects
@@ -94,6 +93,7 @@ matrices over finite fields are read.
 
 <P/>
 
+<#Include Label="AGR">
 <#Include Label="AtlasOfGroupRepresentationsInfo">
 
 </Section>
@@ -170,7 +170,7 @@ The idea is that for each data type, there can be
 <Item>
   specific tests for the data of this data type;
   these functions are used by the global tests described in
-  Section&nbsp;<Ref Sect="sect:Sanity Checks for the Atlas of Group Representations"/>.
+  Section&nbsp;<Ref Sect="sect:AGR Sanity Checks"/>.
 </Item>
 </List>
 
@@ -204,26 +204,16 @@ The details are described in the following.
 <Heading>The Tables of Contents of the &ATLAS; of Group Representations
 </Heading>
 
-<#Include Label="[2]{access}">
-<#Include Label="AGRGNAN">
-<#Include Label="AGRRNG">
+<#Include Label="toc">
 
 </Section>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sect:Sanity Checks for the Atlas of Group Representations">
+<Section Label="sect:AGR Sanity Checks">
 <Heading>Sanity Checks for the &ATLAS; of Group Representations</Heading>
 
-<#Include Label="[1]{test}">
-<#Include Label="AtlasOfGroupRepresentationsTestGroupOrders">
-<#Include Label="AtlasOfGroupRepresentationsTestSubgroupOrders">
-<#Include Label="AtlasOfGroupRepresentationsTestStdCompatibility">
-<#Include Label="AtlasOfGroupRepresentationsTestCompatibleMaxes">
-<#Include Label="AtlasOfGroupRepresentationsTestFileHeaders">
-<#Include Label="AtlasOfGroupRepresentationsTestWords">
-<#Include Label="AtlasOfGroupRepresentationsTestFiles">
-<#Include Label="AtlasOfGroupRepresentationsTestClassScripts">
+<#Include Label="tests">
 
 </Section>
 

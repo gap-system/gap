@@ -3,7 +3,6 @@
 #W  grppccom.gd                  GAP Library                     Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: grppccom.gd,v 4.16 2010/02/23 15:13:06 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains the operations for the computation of complements in
 ##  pc groups
 ##
-Revision.grppccom_gd :=
-    "@(#)$Id: grppccom.gd,v 4.16 2010/02/23 15:13:06 gap Exp $";
 
 #############################################################################
 ##

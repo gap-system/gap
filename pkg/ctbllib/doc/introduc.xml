@@ -1,6 +1,9 @@
 
-<!--  @(#)$Id: introduc.xml,v 1.2 2008/11/14 17:02:55 gap Exp $ -->
+<!-- %W  introduc.xml    GAP 4 package CTblLib              Thomas Breuer -->
+<!-- %Y  Copyright 2011, Lehrstuhl D fÃ¼r Mathematik, RWTH Aachen, Germany -->
 
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="ch:introduction">
 <Heading>Introduction to the &GAP; Character Table Library</Heading>
 
@@ -11,8 +14,7 @@ Of course, this library is <Q>open</Q> in the sense that it shall be extended.
 So we would be grateful for any further tables of interest
 sent to us for inclusion into our library.
 Please offer interesting new character tables via e-mail
-to <Email>sam@math.rwth-aachen.de</Email>.
-<!-- A cross-reference to this address is at the end of another chapter! -->
+to &AUTHOREMAIL;.
 
 <P/>
 
@@ -32,7 +34,7 @@ true
 If the result is <K>false</K> then the library is not installed,
 and you may ask your system administrator for installing it,
 or install the library in your home directory,
-see&nbsp;<Ref Sect="sec:install"/>.
+see Section&nbsp;<Ref Subsect="subsect:install"/>.
 
 <P/>
 
@@ -50,15 +52,29 @@ Currently these are <F>ambigfus.pdf</F>, <F>ctbldeco.pdf</F>,
 <P/>
 
 If you use the &GAP; Character Table Library to solve a problem then
-please send a short email to <Email>sam@math.rwth-aachen.de</Email> about it.
+please send a short e-mail to &AUTHOREMAIL; about it.
 The &GAP; Character Table Library database should be referenced
-with the entry&nbsp;<Cite Key="CTblLib1.1.3"/>
-in the bibliography of this manual.
+as follows.
+
+<Listing>
+@misc{ CTblLib&VERSIONNUMBER;,
+  author =       {Breuer, T.},
+  title =        {The \textsf{GAP} {C}haracter {T}able {L}ibrary,
+                  {V}ersion &VERSIONNUMBER;},
+  month =        {&RELEASEMONTH;},
+  year =         {&RELEASEYEAR;},
+  note =         {\textsf{GAP} package},
+  howpublished = {http://www.math.rwth-aachen.de/\~{}Thomas.Breuer/ctbllib}
+}
+</Listing>
 
 <P/>
 
 For referencing the &GAP; system in general,
-use the entry&nbsp;<Cite Key="GAP4"/> in the bibliography of this manual.
+use the entry&nbsp;<Cite Key="GAP4412"/> in the bibliography of this manual,
+see also
+<P/>
+<URL>http://www.gap-system.org</URL>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -101,6 +117,7 @@ of Brauer Characters <Cite Key="JLPW95"/>.
 One of the roles of &GAP; was again to perform systematic checks.
 
 <P/>
+
 Besides these projects, many individual character tables have been added
 to the &GAP; Character Table Library since the times of &GAP;&nbsp;3.1.
 They were computed from groups or with character theoretic methods
@@ -115,27 +132,26 @@ The changes in the &GAP; Character Table Library since the release of
 <F>ctbldiff.pdf</F>
 which can be found in the <F>doc</F> directory of the package.
 
-<P/>
-
-In the meantime, a rudimentary interface between groups in &GAP; and the
-tables in the &GAP; Character Table Library has been provided,
-see&nbsp;<Ref Sect="The Interface between Character Tables and Groups"
-BookName="ref"/>.
-Similarly, there is an interface to the &GAP; Libary of Tables of Marks,
-see&nbsp;<Ref
-Sect="The Interface between Tables of Marks and Character Tables"
-BookName="ref"/>.
+<!-- and in the web -->
 
 <P/>
 
 Currently the main focus in the development of the &GAP; Character Table
-Library is --besides the addition of tables that appear to be interesting--
+Library is
+&ndash;besides the addition of tables that appear to be interesting&ndash;
 the better interaction with other databases,
-such as the &ATLAS; of Group Representations
-(see the &GAP;&nbsp;4 package <Package>AtlasRep</Package>),
+such as the &ATLAS; of Group Representations and the
+&GAP; Library of Tables of Marks 
+(see the &GAP; packages <Package>AtlasRep</Package> and
+<Package>TomLib</Package>),
 and an improvement of the <Q>database</Q> aspect
 of the character table library itself,
-for example by providing a <Q>WWW table of contents</Q>.
+see the sections <Ref Sect="sect:accessdata"/> and
+<Ref Sect="sect:ctbllib-browse"/>.
+
+<!-- mention also the <Q>WWW table of contents</Q> -->
+
+<!-- mention also the interface to group libraries -->
 
 <P/>
 
@@ -148,72 +164,59 @@ With &GAP;&nbsp;4.3, it was <Q>split off</Q> as a &GAP; package.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sec:install">
-<Heading>Installing the &GAP; Character Table Library</Heading>
+<Section Label="sect:What's New in CTblLib?">
+<Heading>What's New in <Package>CTblLib</Package>,
+Compared to Older Versions?</Heading>
 
-To install the package unpack the archive file in a
-directory in the <F>pkg</F> directory of your local copy of &GAP;&nbsp;4.
-This might be the <F>pkg</F> directory of the &GAP;&nbsp;4 home directory,
-see Section&nbsp;<Ref Sect="Installing a GAP Package" BookName="ref"/>
-for details.
-It is however also possible to keep an additional <F>pkg</F> directory
-in your private directories,
-see&nbsp;<Ref Sect="GAP Root Directory" BookName="ref"/>.
-The latter possibility <E>must</E> be chosen if you do not have write access
-to the &GAP; root directory.
+<!-- The section title is referenced in index.html. -->
+<Alt Only="HTML"><![CDATA[<a id="sect:news"/>]]></Alt>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="sec:new1.2">
+<Heading>What's New in Version 1.2?</Heading>
 
-<P/>
+<List>
+<Item>
+  Many new character tables have been added.
+</Item>
+<Item>
+  The consistency checks for character tables have been improved
+  (see Section&nbsp;<Ref Sect="sec:CTblLib Sanity Checks"/>) and are now
+  documented.
+  Due to these checks, several class fusions had to be replaced.
+</Item>
+<Item>
+  A tutorial for beginners was added to the package manual,
+  see Chapter <Ref Chap="ch:tutorial"/>,
+  and the manual was restructured.
+  The manual is now based on the <Package>GAPDoc</Package> package.
+</Item>
+<Item>
+  Several attribute values for character tables,
+  such as <Ref Attr="Size" BookName="ref"/> and
+  <Ref Attr="NrConjugacyClasses" BookName="ref"/> are now available
+  without reading the character table data files.
+  This makes <Ref Func="AllCharacterTableNames"/> much faster if only these
+  attributes appear in the conditions given;
+  so it is now more reasonable to use <Ref Func="AllCharacterTableNames"/>
+  for searches in the table library.
+</Item>
+<Item>
+  An interactive overview of the contents is now available
+  that is based on the <Package>Browse</Package> package
+  (see Section <Ref Sect="sect:ctbllib-browse"/>).
+</Item>
+<Item>
+  Information about Deligne-Lusztig names of unipotent characters of finite
+  groups of Lie type is now available,
+  see Section <Ref Sect="sec:unipotsec"/>.
+</Item>
+</List>
 
-The package consists entirely of &GAP; code,
-no external binaries need to be compiled.
-
-<P/>
-
-<#Include Label="testinst">
-
-<!-- %T add a section "Sanity Checks for ..."! -->
-
-PDF and HTML versions of the package manual are available
-in the <F>doc</F> directory of the package.
-
-</Section>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sec:loading">
-<Heading>Loading the &GAP; Character Table Library</Heading>
-
-The &GAP; Character Table Library may be loaded automatically when &GAP;
-is started,
-or it has to be loaded within &GAP; as follows.
-
-<P/>
-
-<Example>
-gap> LoadPackage( "ctbllib" );
-true
-</Example>
-
-<P/>
-
-See&nbsp;<Ref Sect="Loading a GAP Package" BookName="ref"/>
-for details about these alternatives;
-also the possibility to disable automatic loading of the package
-is described in this manual section.
-The default is that the &GAP; Character Table Library is loaded
-automatically.
-
-<P/>
-
-If the main memory of your computer is large enough then it may save time
-to keep all data in memory once they have been loaded,
-see&nbsp;<Ref Func="CTblLibSetUnload"/>.
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sec:new1.1">
+<Subsection Label="sec:new1.1">
 <Heading>What's New in Version 1.1?</Heading>
 
 First of all, of course several character tables were added; for an overview,
@@ -245,7 +248,7 @@ Second, more information has been made more explicit, in the following sense.
 </Item>
 <Item>
   Attributes have been introduced that replace more or less hidden
-  components (see&nbsp;<Ref Sect="sec:access"/>);
+  components (see&nbsp;<Ref Sect="sec:attributes"/>);
   in particular, the way how many ordinary tables are encoded
   via the construction from other tables is no longer encapsulated
   in a function call but instead the name of the function and the
@@ -294,8 +297,8 @@ For example, there are four possible class fusion from <M>M_{23}</M> into <M>Co_
 which lie in one orbit under the relevant groups of table automorphisms;
 two of these maps are not compatible with the <M>3</M>-modular Brauer tables of
 <M>M_{23}</M> and <M>Co_3</M>, and unfortunately the class fusion that was stored on
-the &CAS; tables --and that was available in version&nbsp;1.0 of the &GAP;
-Character Table Library-- was one of the not compatible maps.
+the &CAS; tables &ndash;and that was available in version&nbsp;1.0 of the &GAP;
+Character Table Library&ndash; was one of the not compatible maps.
 One could argue that the class fusion has older rights,
 and that the Brauer tables should be adjusted to them, but the Brauer tables
 are published in the &ATLAS; of Brauer Characters&nbsp;<Cite Key="JLPW95"/>,
@@ -304,26 +307,20 @@ which is an accepted standard.
 <P/>
 
 Finally, the &GAP; functions for reading and writing other formats of
-character tables have been moved here from the main &GAP; library
+character tables have been moved from the main &GAP; library to this package
 (see Chapter&nbsp;<Ref Chap="chap:interfaces"/>),
 because they are useful only for library tables.
 The &GAP;&nbsp;3 format is now also supported, mainly for documentation
 purposes (see Section&nbsp;<Ref Sect="sec:interface-gap3"/>).
+
+</Subsection>
 
 </Section>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="sec:acknowledgments">
-<Heading>Acknowledgements</Heading>
-
-The functions for the conversion of &CAS; tables
-to &GAP; format have been written by Götz Pfeiffer.
-The functions for converting the <Q>Cambridge format</Q>
-(in which the original data of the &ATLAS; of Finite Groups had been stored)
-to &GAP; format have been written by Christoph Jansen.
-
-<P/>
+<Heading>Acknowledgments</Heading>
 
 The development of the &GAP; Character Table Library has been supported
 by several DFG grants,
@@ -335,7 +332,31 @@ and the Schwerpunkt <Q>Algorithmische Zahlentheorie und Algebra</Q>
 
 <P/>
 
-Thanks to Frank Lübeck and Max Neunhöffer for
+The functions for the conversion of &CAS; tables
+to &GAP; format have been written by GÃ¶tz Pfeiffer.
+The functions for converting the so-called <Q>Cambridge format</Q>
+(in which the original data of the &ATLAS; of Finite Groups had been stored)
+to &GAP; format have been written by Christoph Jansen.
+
+<P/>
+
+The functions in Section&nbsp;<Ref Sect="sec:unipotsec"/>
+(<Ref Func="DeligneLusztigName"/>, <Ref Func="DeligneLusztigNames"/>,
+and <Ref Func="UnipotentCharacter"/>)
+as well as the corresponding data for the finite groups of Lie type
+in the &GAP; Character Table Library
+have been contributed by Michael ClaÃŸen-Houben, see&nbsp;<Cite Key="Cla05"/>.
+
+<P/>
+
+Several character tables of maximal subgroups of covering groups of
+simple groups have been computed by Sebastian Dany,
+see&nbsp;<Cite Key="Dan06"/>.
+<!-- now complete: maxes of 2.A5, A9, 2.A9, A10, 2.A10, ... -->
+
+<P/>
+
+Thanks to Frank LÃ¼beck and Max NeunhÃ¶ffer for
 their help with solving technical problems concerning the HMTL part of the
 example files that belong to the package documentation,
 and to Ian Hutchinson whose &TeX; to HTML translator <C>TtH</C> was used to
@@ -343,18 +364,10 @@ provide these HTML files.
 
 <P/>
 
-The functions <Ref Func="DeligneLusztigName"/>,
-<Ref Func="DeligneLusztigNames"/>, and <Ref Func="UnipotentCharacter"/>,
-as well as the corresponding data for the finite groups of Lie type
-in the &GAP; Character Table Library
-(see Section&nbsp;<Ref Sect="sec:unipotsec"/>)
-have been contributed by Michael Claßen-Houben, see&nbsp;<Cite Key="Cla05"/>.
-
-<P/>
-
-Several newly added character tables have been computed by Sebastian Dany,
-see&nbsp;<Cite Key="Dan06"/>.
-<!-- now complete: maxes of 2.A5, A9, 2.A9, A10, 2.A10, ... -->
+Thanks to Frank LÃ¼beck and Max NeunhÃ¶ffer also for developing the
+<Package>GAPDoc</Package> package,
+on which the manual of the &CTblLib; package is based.
+The previously available documentation format had been not appropriate.
 
 </Section>
 </Chapter>

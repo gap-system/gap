@@ -4,7 +4,6 @@
 #W                                                                 Sarah Rees
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: meataxe.gi,v 4.79 2010/02/23 15:13:14 gap Exp $ 
 ##
 #Y  Copyright 1994 -- School of Mathematical Sciences, ANU   
 #Y  (C) 1998-2001 School Math. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  This file contains the 'Smash'-MeatAxe modified for GAP4 and using the 
 ##  standard MeatAxe interface.  It defines the MeatAxe SMTX.
 ##
-Revision.meataxe_gi:=
-  "@(#)$Id: meataxe.gi,v 4.79 2010/02/23 15:13:14 gap Exp $";
 
 InstallGlobalFunction(GModuleByMats,function(arg)
 local l,f,dim,m;
@@ -2149,43 +2146,50 @@ SMTX_CollectedFactors:= function ( module )
          Info(InfoMeatAxe,2,"Reducible.");
          #module is reducible. Add sub- and quotient-modules to queue.
          lq:=Length (queue);
-         q:=SMTX.InducedAction(cmod,
-                  SMTX.Subbasis (cmod),3);
+	 q:=SMTX.InducedAction(cmod,
+		  SMTX.Subbasis (cmod),3);
          smod:=q[1];
          ds:=SMTX.Dimension(smod);
          if ds < d/10 and SMTX.IsIrreducible(smod) then
            #Small dimensional submodule
            #test for repeated occurrences.
-           homs:=SMTX.Homomorphisms( smod, cmod);
+           homs:=SMTX.Homomorphisms( smod, cmod); # must have length >0
+
+	   # build the submodule formed by their images
+	   mat:=homs[1];
+	   for i in [2..Length(homs)] do
+	     mat:=Concatenation(mat,homs[i]);
+	   od;
+	   TriangulizeMat(mat);
+	   mat:=Filtered(mat,i->not IsZero(i));
+	   mat:=ImmutableMatrix(field,mat);
+	   if Length(mat)<cmod.dimension then
+	     # there is still some factor left
+	     queue[lq+1]:=SMTX.InducedActionFactorModule(cmod, mat);
+	   fi;
+
            Info(InfoMeatAxe,2,
-              "Small irreducible submodule X ",Length(homs),":");
+              "Small irreducible submodule X ",Length(homs),
+	      " subdim :",Length(mat)/smod.dimension,":");
+
            #module is irreducible. See if it is already on the list.
            new:=true;
            lf:=Length (factors[ds]);
            i:=1;
            while new and i <= lf do
               if SMTX.IsEquivalent(factors[ds][i][1], smod) then
+		 Info(InfoMeatAxe,2," old.");
                  new:=false;
-                 factors[ds][i][2]:=factors[ds][i][2] + Length(homs);
+                 factors[ds][i][2]:=factors[ds][i][2] +
+		  Length(mat)/smod.dimension;
               fi;
               i:=i + 1;
            od;
            if new then
               Info(InfoMeatAxe,2," new.");
-              factors[ds][lf + 1]:=[smod, Length(homs)];
-           else
-              Info(InfoMeatAxe,2," old.");
+              factors[ds][lf + 1]:=[smod, Length(mat)/smod.dimension];
            fi;
-           if Length(homs) * ds < d then
-             mat:=homs[1];
-             for i in [2..Length(homs)] do
-               mat:=Concatenation(mat,homs[i]);
-             od;
-             TriangulizeMat(mat);
-	     mat:=Filtered(mat,i->not IsZero(i));
-	     mat:=ImmutableMatrix(field,mat);
-             queue[lq + 1]:=SMTX.InducedActionFactorModule(cmod, mat);
-           fi;
+	   
          else
            queue[lq + 1]:=smod; queue[lq + 2]:=q[2];
          fi;

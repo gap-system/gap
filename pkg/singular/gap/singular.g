@@ -3,14 +3,14 @@
 #W    singular.g           Package singular            Willem de Graaf
 #W                                                     Marco Costantini
 ##
-#H    @(#)$Id: singular.g,v 1.58 2011/05/19 15:51:55 pas Exp $
+#H    @(#)$Id: singular.g,v 1.59 2011/09/10 16:35:13 alexk Exp $
 ##
 #Y    Copyright (C) 2003 Willem de Graaf and Marco Costantini
 #Y    Copyright (C) 2004, 2005, 2006 Marco Costantini
 ##
 
 Revision.("singular/gap/singular.g") :=
-    "@(#)$Id: singular.g,v 1.58 2011/05/19 15:51:55 pas Exp $";
+    "@(#)$Id: singular.g,v 1.59 2011/09/10 16:35:13 alexk Exp $";
 
 ##############################################################################
 ##############################################################################
@@ -28,23 +28,24 @@ if not IsBound( Sing_Proc ) then
 # The full path to the Singular executable file
 
 # Here in this file must be added a line with the full path to the
-# Singular executable file on your system (without the '#'),
-# sing_exec := "";
-# in place of the following example;
+# Singular executable file on your system (without the '#'), e.g.
+# sing_exec := "/home/graaf/Singular/2-0-3/ix86-Linux/Singular";
+# or, if the executable is in the system $PATH and has a name which
+# is non-standard (e.g. singular in lowercase), just with its name
+# as below:
 
-sing_exec := "/home/graaf/Singular/2-0-3/ix86-Linux/Singular";
+sing_exec := "singular";
 
 # The directory separator is always '/', even under DOS/Windows or
 # MacOS, as in the following example:
 # sing_exec := "/usr/local/Singular/2-0-4/ix86-Win/Singular.exe";
 
-# If the Singular executable file is the the system $PATH, it is not
+# If the Singular executable file is the the system $PATH and has
+# the standard name "Singular" started in uppercase, then it is not
 # necessary adding this line, because the interface should be able to
-# find the executable file (provided that its name is "Singular").
-# You can get this path, from within Singular, with the command 
+# find the executable file itself. You can get this path, from within 
+# Singular, with the command 
 # system( "Singular" );
-
-
 
 # Singular command line options
 

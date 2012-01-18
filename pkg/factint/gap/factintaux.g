@@ -22,7 +22,7 @@ BindGlobal( "FactIntBuildManual",
     local  FactIntDir;
 
     FactIntDir := GAPInfo.PackagesInfo.("factint")[1].InstallationPath;
-    MakeGAPDocDoc( Concatenation( FactIntDir, "/doc/" ), "factint.xml",
+    MakeGAPDocDoc( Concatenation( FactIntDir, "/doc/" ), "main.xml",
                    [ "../gap/factintaux.g", "../gap/factint.gd",
                      "../gap/general.gi", "../gap/pminus1.gi",
                      "../gap/pplus1.gi", "../gap/ecm.gi",

@@ -1,8 +1,6 @@
 #############################################################################
 ##
-#W  testall.g              GAP 4 package `atlasrep'             Thomas Breuer
-##
-#H  @(#)$Id: testall.g,v 1.7 2007/02/28 17:33:57 gap Exp $
+#W  testall.g            GAP 4 package AtlasRep                 Thomas Breuer
 ##
 #Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##

@@ -4,7 +4,6 @@
 #W                                                           Alexander Hulpke
 #W                                                           Martin Schönert
 ##
-#H  @(#)$Id: gpprmsya.gi,v 4.56 2010/02/23 15:13:01 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##
 ##  This file contains the methods for symmetric and alternating groups
 ##
-Revision.gpprmsya_gi :=
-    "@(#)$Id: gpprmsya.gi,v 4.56 2010/02/23 15:13:01 gap Exp $";
 
 # xref to transgrp library
 if not IsBound(TRANSDEGREES) then
@@ -577,7 +574,7 @@ local bound, n, i, p, cycles, l, pnt;
   repeat
     i:=i+1;
     p:=PseudoRandom(g);
-    l:=CycleLengthPermInt(p,pnt);
+    l:=CYCLE_LENGTH_PERM_INT(p,pnt);
   until (i>bound) or (l> n/2 and l<n-2 and IsPrime(l));
   if i>bound then
     return fail;
@@ -1382,14 +1379,24 @@ end);
 ##
 #M  ViewObj( <nat-sym-grp> )
 ##
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
+    "for natural alternating group",
+    true,
+    [ IsNaturalAlternatingGroup ], 0,
+function(alt)
+    alt:=MovedPoints(alt);
+    IsRange(alt);
+    return Concatenation( "Alt( ", String(alt), " )" );
+end );
+
+InstallMethod( ViewString,
     "for natural symmetric group",
     true,
     [ IsNaturalSymmetricGroup ], 0,
 function(sym)
     sym:=MovedPoints(sym);
     IsRange(sym);
-    Print( "Sym( ",sym, " )" );
+    return Concatenation( "Sym( ",String(sym), " )" );
 end );
 
 InstallMethod( ViewObj,
@@ -1397,24 +1404,39 @@ InstallMethod( ViewObj,
     true,
     [ IsNaturalAlternatingGroup ], 0,
 function(alt)
-    alt:=MovedPoints(alt);
-    IsRange(alt);
-    Print( "Alt( ", alt, " )" );
+    Print(ViewString(alt));
 end );
 
+InstallMethod( ViewObj,
+    "for natural symmetric group",
+    true,
+    [ IsNaturalSymmetricGroup ], 0,
+function(sym)
+    Print(ViewString(sym));
+end );
 
 #############################################################################
 ##
 #M  PrintObj( <nat-sym-grp> )
 ##
-InstallMethod( PrintObj,
+InstallMethod( String,
     "for natural symmetric group",
     true,
     [ IsNaturalSymmetricGroup ], 0,
 function(sym)
     sym:=MovedPoints(sym);
     IsRange(sym);
-    Print( "SymmetricGroup( ",sym, " )" );
+    return Concatenation( "SymmetricGroup( ",String(sym), " )" );
+end );
+
+InstallMethod( String,
+    "for natural alternating group",
+    true,
+    [ IsNaturalAlternatingGroup ], 0,
+function(alt)
+    alt:=MovedPoints(alt);
+    IsRange(alt);
+    return Concatenation( "AlternatingGroup( ",String(alt), " )" );
 end );
 
 InstallMethod( PrintObj,
@@ -1422,11 +1444,16 @@ InstallMethod( PrintObj,
     true,
     [ IsNaturalAlternatingGroup ], 0,
 function(alt)
-    alt:=MovedPoints(alt);
-    IsRange(alt);
-    Print( "AlternatingGroup( ", alt, " )" );
+    Print(String(alt));
 end );
 
+InstallMethod( PrintObj,
+    "for natural symmetric group",
+    true,
+    [ IsNaturalSymmetricGroup ], 0,
+function(sym)
+    Print(String(sym));
+end );
 
 #############################################################################
 ##

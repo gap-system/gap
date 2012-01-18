@@ -2,7 +2,6 @@
 ##
 #W  GAPDoc2HTML.gi                 GAPDoc                        Frank Lübeck
 ##
-#H  @(#)$Id: GAPDoc2HTML.gi,v 1.61 2011/05/30 15:24:33 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -81,8 +80,15 @@ GAPDoc2HTMLProcs.TextAttr.F := ["<code class=\"file\">", "</code>"];
 GAPDoc2HTMLProcs.TextAttr.I := ["<code class=\"i\">", "</code>"];
 GAPDoc2HTMLProcs.TextAttr.B := ["<strong class=\"button\">", "</strong>"];
 GAPDoc2HTMLProcs.TextAttr.Emph := ["<em>", "</em>"];
-
-GAPDoc2HTMLProcs.TextAttr.Ref := ["<b class=\"Ref\">", "</b>"];
+GAPDoc2HTMLProcs.TextAttr.Ref := ["<span class=\"RefLink\">", "</span>"];
+GAPDoc2HTMLProcs.TextAttr.M := ["<span class=\"SimpleMath\">", "</span>"];
+GAPDoc2HTMLProcs.TextAttr.Math := ["<span class=\"Math\">", "</span>"];
+GAPDoc2HTMLProcs.TextAttr.GAPprompt := 
+                                ["<span class=\"GAPprompt\">", "</span>"];
+GAPDoc2HTMLProcs.TextAttr.GAPbrkprompt := 
+                                ["<span class=\"GAPbrkprompt\">", "</span>"];
+GAPDoc2HTMLProcs.TextAttr.GAPinput := 
+                                ["<span class=\"GAPinput\">", "</span>"];
 
 # like in Text converter, but a heading and an address are not a paragraph here
 GAPDoc2HTMLProcs.ParEls := 
@@ -125,8 +131,6 @@ GAPDoc2HTMLProcs.Head1MathJax := "\
   src=\"MATHJAXURL\">\n\
 </script>\n\
 <title>GAP (";
-GAPDoc2HTMLProcs.Head1MathJax := SubstitutionSublist(
-  GAPDoc2HTMLProcs.Head1MathJax, "MATHJAXURL", GAPDoc2HTMLProcs.MathJaxURL);
 
 GAPDoc2HTMLProcs.Head1Trans := "\
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
@@ -157,7 +161,9 @@ GAPDoc2HTMLProcs.Head2 := "\
 <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n\
 <meta name=\"generator\" content=\"GAPDoc2HTML\" />\n\
 <link rel=\"stylesheet\" type=\"text/css\" href=\"manual.css\" />\n\
-</head>\n<body>\n";
+<script src=\"manual.js\" type=\"text/javascript\"></script>\n\
+<script type=\"text/javascript\">overwriteStyle();</script>\n\
+</head>\n<body onload=\"jscontent()\">\n";
 
 GAPDoc2HTMLProcs.Tail := "\n\
 <hr />\n\
@@ -187,23 +193,23 @@ GAPDoc2HTMLProcs.PutFilesTogether := function(l, r)
   Append(chlink, "</div>\n");
   
   toplink := Concatenation( "&nbsp;<a href=\"chap0", GAPDoc2HTMLProcs.ext, 
-             "\">", GAPDocTexts.d.TopofBook, "</a>&nbsp;  ",
+             "\">[", GAPDocTexts.d.TopofBook, "]</a>&nbsp;  ",
              "<a href=\"chap0", GAPDoc2HTMLProcs.ext, "#contents",
-             "\">", GAPDocTexts.d.Contents, "</a>&nbsp;  " );
+             "\">[", GAPDocTexts.d.Contents, "]</a>&nbsp;  " );
   prev := [];
   next := [];
   for i in [1..Length(chnrs)] do
     if i > 1 then
       Add(prev, Concatenation("&nbsp;<a href=\"chap", String(chnrs[i-1]),
-                  GAPDoc2HTMLProcs.ext, "\">", GAPDocTexts.d.PreviousChapter,
-                  "</a>&nbsp;  "));
+                  GAPDoc2HTMLProcs.ext, "\">[", GAPDocTexts.d.PreviousChapter,
+                  "]</a>&nbsp;  "));
     else
       Add(prev, "");
     fi;
     if i < Length(chnrs) then
       Add(next, Concatenation("&nbsp;<a href=\"chap", String(chnrs[i+1]),
-                        GAPDoc2HTMLProcs.ext, "\">", GAPDocTexts.d.NextChapter,
-                        "</a>&nbsp;  "));
+                        GAPDoc2HTMLProcs.ext, "\">[", GAPDocTexts.d.NextChapter,
+                        "]</a>&nbsp;  "));
     else
       Add(next, "");
     fi;
@@ -219,8 +225,9 @@ GAPDoc2HTMLProcs.PutFilesTogether := function(l, r)
       files.(n) := rec(text :=
                    ShallowCopy(GAPDoc2HTMLProcs.Head1Trans), ssnr := []);
     elif r.root.mathmode = "MathJax" then
-      files.(n) := rec(text :=
-                   ShallowCopy(GAPDoc2HTMLProcs.Head1MathJax), ssnr := []);
+      files.(n) := rec(text := SubstitutionSublist(
+                               GAPDoc2HTMLProcs.Head1MathJax, "MATHJAXURL", 
+                               GAPDoc2HTMLProcs.MathJaxURL), ssnr := []);
     else
       files.(n) := rec(text := ShallowCopy(GAPDoc2HTMLProcs.Head1), ssnr := []);
     fi;
@@ -240,6 +247,9 @@ GAPDoc2HTMLProcs.PutFilesTogether := function(l, r)
     fi;
     Append(files.(n).text, tt);
     Append(files.(n).text, GAPDoc2HTMLProcs.Head2);
+    # allow for chapter-wise CSS config
+    files.(n).text := SubstitutionSublist(files.(n).text, "<body", 
+                        Concatenation("<body class=\"chap", String(n), "\" "));
     Append(files.(n).text, Concatenation("\n", chlink));
     Append(files.(n).text, Concatenation(
            "\n<div class=\"chlinkprevnexttop\">",
@@ -247,12 +257,14 @@ GAPDoc2HTMLProcs.PutFilesTogether := function(l, r)
     if IsBound(r.root.LinkToMathJax) then
       # cross link to same chapter with MathJax enabled
       Append(files.(n).text,
-                Concatenation("<p class=\"pcenter\"><a href=\"chap",
+                Concatenation("<p id=\"mathjaxlink\" ",
+                "class=\"pcenter\"><a href=\"chap",
                 String(n), "_mj.html\">[MathJax on]</a></p>\n"));
     elif r.root.mathmode = "MathJax" then
       # cross link to non-MathJax version
       Append(files.(n).text,
-                Concatenation("<p class=\"pcenter\"><a href=\"chap",
+                Concatenation("<p id=\"mathjaxlink\" ",
+                "class=\"pcenter\"><a href=\"chap",
                 String(n), ".html\">[MathJax off]</a></p>\n"));
     fi;
   od;
@@ -341,20 +353,10 @@ end;
 ##  Func="SetHelpViewer"  />, which  runs  inside  the same  terminal
 ##  windows as &GAP;.<P/>
 ##  
-##  <Emph>Using a stylesheet file</Emph><P/>
-##  
-##  The  layout information  for  a browser  should  be specified  in
-##  a  cascading  style  sheet   (CSS)  file.  The  &GAPDoc;  package
-##  contains  an  example  of  such  a  style  sheet,  see  the  file
-##  <File>gapdoc.css</File>  in the  root directory  of the  package.
-##  This  file  conforms  to  the  W3C  specification  CSS  2.0,  see
-##  <URL>http://www.w3.org/TR/REC-CSS2</URL>. You may  just copy that
-##  file as <File>manual.css</File> into the directory which contains
-##  the HTML version  of your documentation. But, of  course, you are
-##  free to adjust it for your  package, e.g., change colors or other
-##  layout  details, add  a background  image, ...  Each of  the HTML
-##  files produced  by the converters  contains a link to  this local
-##  style sheet file called <File>manual.css</File>.<P/>
+##  To view the generated files in graphical browsers, stylesheet files
+##  with layout configuration should be copied into the directory
+##  with the generated HTML files, see <Ref Subsect="StyleSheets"/>.
+##  <P/>
 ##  
 ##  <Label Name="mtransarg"/>
 ##  <Emph>Output format with</Emph> <A>mtrans</A> argument <P/>
@@ -375,11 +377,15 @@ end;
 ##  the  <Package>MathJax</Package>  script  and  fonts.  This  means
 ##  that  they   can  only  be   used  on  computers   with  internet
 ##  access.   An  alternative   URL   can  be   set  by   overwriting
-##  <C>GAPDoc2LaTeXProcs.MathJaxURL</C>  before   building  the  HTML
+##  <C>GAPDoc2HTMLProcs.MathJaxURL</C>   before   building  the  HTML
 ##  version   of   a   manual.   This  way   a   local   installation
 ##  of   <Package>MathJax</Package>   could   be   used.   See   <URL
 ##  Text="http://www.mathjax.org/">http://www.mathjax.org/</URL>  for
 ##  more details.<P/>
+##  
+##  The following  possibilities for <A>mtrans</A> are  still supported,
+##  but since the <Package>MathJax</Package> approach seems much better,
+##  their use is deprecated.<P/>
 ##  
 ##  If  the  argument <A>mtrans</A>  is  set  to <C>"Tth"</C>  it  is
 ##  assumed that you  have installed the &LaTeX;  to HTML translation
@@ -423,6 +429,50 @@ end;
 ##  The result  of this converter  can be  written to files  with the
 ##  command <Ref Func="GAPDoc2HTMLPrintHTMLFiles" />.<P/>
 ##  
+##  Readers  of the  HTML manuals  can choose  their preferred  style by
+##  setting the  variable <C>GAPInfo.UserPreferences.GAPDocHTMLStyle</C>
+##  (e.g.,    in     their    <F>gap.ini</F>    file).     By    setting
+##  <C>GAPInfo.UserPreferences.UseMathJax</C>   to    <K>true</K>,   the
+##  <Package>MathJax</Package> version is preferred.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##  
+##  <#GAPDoc Label="HTMLStyleSheets">
+##  <Subsection Label="StyleSheets">
+##  <Heading>Stylesheet files</Heading>
+##  <Index>CSS stylesheets</Index>
+##  
+##  For graphical  browsers the layout  of the generated HTML manuals  can be
+##  highly  configured  by  cascading stylesheet  (CSS)  and  javascript
+##  files. Such files are provided in the <F>styles</F> directory of the
+##  &GAPDoc; package.<P/>
+##  
+##  We recommend that these files  are copied into each manual directory
+##  (such  that each  of  them  is selfcontained).  There  is a  utility
+##  function  <Ref  Func="CopyHTMLStyleFiles"  /> which  does  this.  Of
+##  course, these files  may be changed or new styles  may be added. New
+##  styles  may  also be  sent  to  the  &GAPDoc; authors  for  possible
+##  inclusion in future versions.<P/>
+##  
+##  The  generated   HTML  files refer to  the   file  <F>manual.css</F>
+##  which   conforms   to   the   W3C   specification   CSS   2.0,   see
+##  <URL>http://www.w3.org/TR/REC-CSS2</URL>,  and  the javascript  file
+##  <F>manual.js</F> (only in browsers  which support CSS or javascript,
+##  respectively;  but   the  HTML  files  are   also  readable  without
+##  any  of  them).  To  add  a style  <C>mystyle</C>  one  or  both  of
+##  <F>mystyle.css</F> and <F>mystyle.js</F> must be provided; these can
+##  overwrite  default settings  and add  new javascript  functions. For
+##  more details see the comments in <F>manual.js</F>.<P/>
+##  </Subsection>
+##  <ManSection >
+##  <Func Arg="dir" Name="CopyHTMLStyleFiles" />
+##  <Returns>nothing</Returns>
+##  <Description>
+##  This utility function copies  the <F>*.css</F> and <F>*.js</F> files
+##  from the  <F>styles</F> directory of  the &GAPDoc; package  into the
+##  directory
+##  <A>dir</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -960,7 +1010,7 @@ end;
 ##  the sectioning commands are just translated and labels are
 ##  generated, if given as attribute  
 GAPDoc2HTMLProcs.ChapSect := function(r, par, sect)
-  local   num, posh, s, ind, strn, lab, types, nrs, hord, a, pos;
+  local   num, posh, s, ind, strn, lab, types, nrs, hord, a, pos, l, i;
   
   types := ["Chapter", "Appendix", "Section", "Subsection"];
   nrs := ["3", "3", "4", "5"];
@@ -1015,7 +1065,7 @@ GAPDoc2HTMLProcs.ChapSect := function(r, par, sect)
       if r.count[2] >= 1 then
         Append(ind, "<div class=\"ContSect\">");
       fi;
-      Append(ind, "<span class=\"nocss\">&nbsp;</span>");
+      Append(ind, "<span class=\"tocline\"><span class=\"nocss\">&nbsp;</span>");
     elif sect="Subsection" then
       ind := "<span class=\"ContSS\"><br /><span class=\"nocss\">&nbsp;&nbsp;</span>";
     else
@@ -1024,7 +1074,7 @@ GAPDoc2HTMLProcs.ChapSect := function(r, par, sect)
     Append(r.root.toc, Concatenation(ind, "<a href=\"", 
                                         lab, "\">", s, "</a>\n"));
     if sect="Section" then
-      Append(r.root.toc, "<div class=\"ContSSBlock\">\n");
+      Append(r.root.toc, "</span>\n<div class=\"ContSSBlock\">\n");
     fi;
   fi;
   
@@ -1036,7 +1086,14 @@ GAPDoc2HTMLProcs.ChapSect := function(r, par, sect)
     if sect in ["Chapter", "Appendix" ] then
       Append(r.root.toc, "</div>\n");
     elif sect="Section" then
-      Append(r.root.toc, "</div></div>\n");
+      # remove last line if no subsections
+      l := Length(r.root.toc);
+      if r.root.toc{[l-25..l]} = "<div class=\"ContSSBlock\">\n" then
+        for i in [0..25] do Unbind(r.root.toc[l-i]); od;
+        Append(r.root.toc, "</div>\n");
+      else
+        Append(r.root.toc, "</div></div>\n");
+      fi;
     elif sect="Subsection" then
       Append(r.root.toc, "</span>\n");
     fi;
@@ -1092,6 +1149,10 @@ end;
 ##  bibliography, just "BIB" in first run, store databases in root
 GAPDoc2HTMLProcs.Bibliography := function(r, par)
   local   s;
+  # add references to TOC
+  Append(r.root.toc, Concatenation("<div class=\"ContChap\"><a href=\"chapBib",
+                        GAPDoc2HTMLProcs.ext, "\"><span class=\"Heading\">", 
+                        GAPDocTexts.d.References, "</span></a></div>\n")); 
   r.root.bibdata := r.attributes.Databases;
   Add(par, r.count);
   if IsBound(r.root.bibtext) then
@@ -1227,7 +1288,7 @@ GAPDoc2HTMLProcs.M := function(r, str)
     ss := SubstitutionSublist(ss, "TEXTaTTRvARBEGIN", save[1]);
     ss := SubstitutionSublist(ss, "TEXTaTTRvAREND", save[2]);
   fi;
-  Append(str, ss);
+  Append(str, WrapTextAttribute(ss, GAPDoc2HTMLProcs.TextAttr.M));
 end;
 
 ##  in HTML this is shown in TeX format
@@ -1243,11 +1304,9 @@ GAPDoc2HTMLProcs.Math := function(r, str)
     Append(str, s);
     return;
   fi;
-  Add(str, '$');
-##    GAPDoc2HTMLProcs.PCDATA := GAPDoc2HTMLProcs.PCDATANOFILTER;
-  GAPDoc2HTMLContent(r, str);
-##    GAPDoc2HTMLProcs.PCDATA := GAPDoc2HTMLProcs.PCDATAFILTER;
-  Add(str, '$');
+  s := "";
+  GAPDoc2HTMLContent(r, s);
+  Append(str, WrapTextAttribute(s, GAPDoc2HTMLProcs.TextAttr.Math));
 end;
 
 ##  displayed maths (also in TeX format, but centered paragraph in itself)
@@ -1302,9 +1361,42 @@ GAPDoc2HTMLProcs.I := function(r, str)
   GAPDoc2HTMLProcs.WrapAttr(r, str, "I");
 end;
 
-GAPDoc2HTMLProcs.ExampleLike := function(r, par, label)
+GAPDoc2HTMLProcs.AddColorPromptMarkup := function(cont)
+  local patt, batt, iatt, res, pos, s, rows;
+  patt := GAPDoc2HTMLProcs.TextAttr.GAPprompt;
+  batt := GAPDoc2HTMLProcs.TextAttr.GAPbrkprompt;
+  iatt := GAPDoc2HTMLProcs.TextAttr.GAPinput;
+  res := "";
+  rows := SplitString(cont, "\n", "");
+  for s in rows do
+    if Length(s) > 7 and s{[1..8]} = "gap&gt; " then
+      Append(res, Concatenation(WrapTextAttribute("gap&gt;", patt),
+                       " ", WrapTextAttribute(s{[9..Length(s)]}, iatt)));
+    elif Length(s) > 4 and s{[1..5]} = "&gt; " then
+      Append(res, Concatenation(WrapTextAttribute("&gt;", patt),
+                       " ", WrapTextAttribute(s{[6..Length(s)]}, iatt)));
+    elif Length(s) > 2 and s{[1..3]} = "brk" then
+      pos := Position(s, ' ');
+      if pos <> fail then
+        Append(res, Concatenation(WrapTextAttribute(s{[1..pos-1]}, batt),
+                        " ", WrapTextAttribute(s{[pos+1..Length(s)]}, iatt)));
+      else
+        Append(res, WrapTextAttribute(s, batt));
+      fi;
+    else
+      Append(res, WrapTextAttribute(s, ["",""]));
+    fi;
+    Add(res, '\n');
+  od;
+  if Length(cont) > 0 and cont[Length(cont)] <> '\n' then
+    Unbind(res[Length(res)]);
+  fi;
+  return res;
+end;
+
+GAPDoc2HTMLProcs.ExampleLike := function(r, par, label, colorpr)
   local   str,  cont,  a,  s;
-  str := "\n<table class=\"example\">\n<tr><td><pre>";
+  str := "\n<div class=\"example\"><pre>";
   cont := "";
   for a in r.content do 
     # here we try to avoid reformatting
@@ -1316,21 +1408,24 @@ GAPDoc2HTMLProcs.ExampleLike := function(r, par, label)
       Append(cont, s);
     fi;
   od;
+  if colorpr then
+    cont := GAPDoc2HTMLProcs.AddColorPromptMarkup(cont);
+  fi;
   Append(str, cont);
-  Append(str, "</pre></td></tr></table>\n\n");
+  Append(str, "</pre></div>\n\n");
   Add(par, r.count);
   Add(par, str);
 end;
 
 ##  log of session and GAP code is typeset the same way as <Example>
 GAPDoc2HTMLProcs.Example := function(r, par)
-  GAPDoc2HTMLProcs.ExampleLike(r, par, "Example");
+  GAPDoc2HTMLProcs.ExampleLike(r, par, "Example", true);
 end;
 GAPDoc2HTMLProcs.Log := function(r, par)
-  GAPDoc2HTMLProcs.ExampleLike(r, par, "Log");
+  GAPDoc2HTMLProcs.ExampleLike(r, par, "Log", true);
 end;
 GAPDoc2HTMLProcs.Listing := function(r, par)
-  GAPDoc2HTMLProcs.ExampleLike(r, par, "Code");
+  GAPDoc2HTMLProcs.ExampleLike(r, par, "Code", false);
 end;
 
 GAPDoc2HTMLProcs.Verb := function(r, par)
@@ -1419,17 +1514,39 @@ GAPDoc2HTMLProcs.Index := function(r, str)
   Add(r.root.index, entry);
 end;
 
+##  helper to add markup to the args
+GAPDoc2HTMLProcs.WrapArgs := function(argstr)
+  local res, noletter, c;
+  res := "";
+  noletter := true;
+  for c in argstr do
+    if noletter then
+      if not c in ", []" then
+        noletter := false;
+        Append(res, GAPDoc2HTMLProcs.TextAttr.Arg[1]);
+      fi;
+    elif c in ", []" then
+      noletter := true;
+      Append(res, GAPDoc2HTMLProcs.TextAttr.Arg[2]);
+    fi;
+    Add(res, c);
+  od;
+  if not noletter then
+    Append(res, GAPDoc2HTMLProcs.TextAttr.Arg[2]);
+  fi;
+  return res;
+end;
+
 ##  this produces an implicit index entry and a label entry
 GAPDoc2HTMLProcs.LikeFunc := function(r, par, typ)
   local   attr,  s,  name,  lab, url;
   attr := GAPDoc2HTMLProcs.TextAttr.Func;
   name := GAPDoc2HTMLProcs.EscapeAttrVal(r.attributes.Name);
-  s := Concatenation(attr[1], "&gt; ", name, attr[2]);
+  s := Concatenation(attr[1], "&#8227; ", name, attr[2]);
   if IsBound(r.attributes.Arg) then
-    attr := GAPDoc2HTMLProcs.TextAttr.Arg;
-    Append(s, Concatenation("( ", attr[1],
-            GAPDoc2HTMLProcs.EscapeAttrVal(NormalizedArgList(r.attributes.Arg)),
-            attr[2], " )"));
+    Append(s, Concatenation("( ", GAPDoc2HTMLProcs.WrapArgs(
+              GAPDoc2HTMLProcs.EscapeAttrVal(
+              NormalizedArgList(r.attributes.Arg))), " )"));
   fi;
   # index entry
   attr := GAPDoc2HTMLProcs.TextAttr.Func;
@@ -1523,10 +1640,43 @@ GAPDoc2HTMLProcs.ResolveExternalRef := function(bookname,  label, nr)
   return res;
 end;
 
+##  helper for external URLs, remove GAPDocStyle part and maybe add "_mj"
+GAPDoc2HTMLProcs.AdjustExtURL := function(r, url)
+  local pos, pos2, res, fnam, mjnam;
+  pos := PositionSublist(url, "?GAPDocStyle=");
+  if pos <> fail then
+    pos2 := Position(url, '#', pos);
+    if pos2 = fail then
+      pos2 := Length(url)+1;
+    fi;
+    res := url{[1..pos-1]};
+    Append(res, url{[pos2..Length(url)]});
+  else
+    res :=url;
+  fi;
+  if r.root.mathmode = "MathJax" then
+    pos := Position(res, '#');
+    if pos <> fail then
+      fnam := res{[1..pos-1]};
+    else
+      pos := Length(res)+1;
+      fnam := res;
+    fi;
+    if Length(fnam) >= 5 and fnam{[Length(fnam)-4..Length(fnam)]} = ".html" then
+      mjnam := Concatenation(fnam{[1..Length(fnam)-5]}, "_mj.html");
+      if IsExistingFile(mjnam) then
+        res := Concatenation(mjnam, res{[pos..Length(res)]});
+      fi;
+    fi;
+  fi;
+  return res;
+end;
+
 ##  a try to make it somewhat shorter than for the Text and LaTeX conversions
 GAPDoc2HTMLProcs.Ref := function(r, str)
-  local int,  txt,  ref,  lab,  attr,  sectlike;
+  local int,  txt,  ref,  lab,  attr,  sectlike, rattr;
   
+  rattr := GAPDoc2HTMLProcs.TextAttr.Ref;
   int := Difference(NamesOfComponents(r.attributes), ["BookName", "Label",
          "Style"]);
   if Length(int)>0 and int[1] <> "Text" then
@@ -1544,45 +1694,47 @@ GAPDoc2HTMLProcs.Ref := function(r, str)
   if IsBound(r.attributes.BookName) then
     ref := GAPDoc2HTMLProcs.ResolveExternalRef(r.attributes.BookName, lab, 1);
     if ref <> fail and ref[6] <> fail then
+      ref[6] := GAPDoc2HTMLProcs.AdjustExtURL(r, ref[6]);
       if IsBound(GAPDoc2HTMLProcs.RelPath) and 
          PositionSublist(ref[6], GAPInfo.MainRootPath) = 1 then
          ref[6] := Concatenation(GAPDoc2HTMLProcs.RelPath, "/", 
                    ref[6]{[Length(GAPInfo.MainRootPath)+1..Length(ref[6])]});
       fi;
       if IsBound(r.attributes.Style) and r.attributes.Style = "Number" then
-        ref := Concatenation("<a href=\"", ref[6], "\"><b>",
-               r.attributes.BookName, " ", ref[2], "</b></a>");
+        ref := Concatenation("<a href=\"", ref[6], "\">",rattr[1],
+               r.attributes.BookName, " ", ref[2], rattr[2],"</a>");
       elif IsBound(r.attributes.Text) then
-        ref := Concatenation("<a href=\"", ref[6], "\"><b>", r.attributes.Text,
-               "</b></a>");
+        ref := Concatenation("<a href=\"", ref[6], "\">", rattr[1], 
+               r.attributes.Text, rattr[2], "</a>");
       else
-        ref := Concatenation("<a href=\"", ref[6], "\"><b>", ref[1],
-               "</b></a>");
+        ref := Concatenation("<a href=\"", ref[6], "\">", rattr[1], ref[1],
+               rattr[2], "</a>");
       fi;
     elif ref <> fail then
-      ref := Concatenation("<b>", ref[1], "</b>");
+      ref := Concatenation(rattr[1], ref[1], rattr[2]);
     else
       if GAPDoc2HTMLProcs.FirstRun <> true then
         Info(InfoGAPDoc, 1, "#W WARNING: non resolved reference: ",
                             r.attributes, "\n");
       fi;
-      ref := Concatenation("<b>", "???", "</b>");
+      ref := Concatenation(rattr[1], "???", rattr[2]);
     fi;
   else
     if IsBound(r.root.labels.(lab)) then
       if not IsBound(r.attributes.Text) then
         ref := Concatenation("<a href=\"", r.root.labels.(lab)[2], "\">",
-                             "<b>", r.root.labels.(lab)[1], "</b></a>");
+                             rattr[1], r.root.labels.(lab)[1], rattr[2],
+                             "</a>");
       else
         ref := Concatenation("<a href=\"", r.root.labels.(lab)[2], "\">",
-                             "<b>", r.attributes.Text, "</b></a>");
+                             rattr[1], r.attributes.Text, rattr[2], "</a>");
       fi;
     else
       if GAPDoc2HTMLProcs.FirstRun <> true then
         Info(InfoGAPDoc, 1, "#W WARNING: non resolved reference: ",
                             r.attributes, "\n");
       fi;
-      ref := "<b>???</b>";
+      ref := Concatenation(rattr[1], "???", rattr[2]);
     fi;
   fi;
   if Length(int)>0 and int[1] in [ "Func", "Oper", "Meth", "Filt", "Prop", 
@@ -1591,8 +1743,9 @@ GAPDoc2HTMLProcs.Ref := function(r, str)
     txt := Concatenation(attr[1], 
              GAPDoc2HTMLProcs.EscapeAttrVal(r.attributes.(int[1])), attr[2]);
     # avoid reference to current subsection
-    if not IsBound(r.root.labels.(lab)) or GAPDoc2HTMLProcs.SectionNumber(
-                        r.count, "Subsection") <> r.root.labels.(lab)[1] then
+    if IsBound(r.attributes.BookName) or not IsBound(r.root.labels.(lab)) 
+      or GAPDoc2HTMLProcs.SectionNumber(r.count, "Subsection") <> 
+                                                r.root.labels.(lab)[1] then
       Append(txt, Concatenation(" (", ref, ")"));
     fi;
   elif Length(int)>0 and 
@@ -1600,15 +1753,15 @@ GAPDoc2HTMLProcs.Ref := function(r, str)
        IsBound(r.attributes.Style) and
        r.attributes.Style = "Text" then
     if IsBound(r.root.labeltexts.(lab)) then
-      txt := Concatenation("<b>", r.root.labeltexts.(lab), "</b>");
+      txt := Concatenation("<a href=\"",r.root.labels.(lab)[2],
+             "\">",rattr[1],r.root.labeltexts.(lab),rattr[2],"</a>");
     else
       if GAPDoc2HTMLProcs.FirstRun <> true then
         Info(InfoGAPDoc, 1, "#W WARNING: non resolved reference: ",
                             r.attributes, "\n");
       fi;
-      txt := "<b>???</b>";
+      txt := Concatenation(rattr[1], "???", rattr[2]);
     fi;
-    Append(txt, Concatenation(" (", ref, ")"));
   else
     txt := ref;
   fi;
@@ -1622,8 +1775,8 @@ GAPDoc2HTMLProcs.Returns := function(r, par)
   l := [];
   GAPDoc2HTMLContent(r, l);
   if Length(l) > 0 then
-    l[2] := Concatenation("<p><b>", GAPDocTexts.d.Returns, 
-                          ": </b>", l[2]{[4..Length(l[2])]});
+    l[2] := Concatenation("<p>", GAPDocTexts.d.Returns, 
+                          ": ", l[2]{[4..Length(l[2])]});
   fi;
   Append(par, l);
 end;
@@ -1659,6 +1812,13 @@ GAPDoc2HTMLProcs.ManSection := function(r, par)
   ind := "<span class=\"ContSS\"><br /><span class=\"nocss\">&nbsp;&nbsp;</span>";
   Append(r.root.toc, Concatenation(ind, "<a href=\"", lab, "\">", s, 
           "</a></span>\n"));
+
+  # label entry, if present
+  if IsBound(r.attributes.Label) then
+    r.root.labels.(r.attributes.Label) := [num, lab];
+    r.root.labeltexts.(r.attributes.Label) := s;
+  fi;
+
   GAPDoc2HTMLContent(r, par);
 end;
 
@@ -1732,6 +1892,10 @@ end;
 GAPDoc2HTMLProcs.TheIndex := function(r, par)
   local   s;
   
+  # add index to TOC
+  Append(r.root.toc, Concatenation("<div class=\"ContChap\"><a href=\"chapInd",
+                        GAPDoc2HTMLProcs.ext, "\"><span class=\"Heading\">", 
+                        GAPDocTexts.d.Index, "</span></a></div>\n")); 
   # the text, if available
   Add(par, r.count);
   if IsBound(r.root.indextext) then
@@ -1896,6 +2060,9 @@ end;
 ##  of  each  chapter is  written  into  a  separate file  with  name
 ##  <F>chap0.html</F>,  <F>chap1.html</F>,  ...,  <F>chapBib.html</F>,
 ##  and <F>chapInd.html</F>.<P/>
+## 
+##  The <Package>MathJax</Package> versions are written to files
+##  <F>chap0_mj.html</F>, ..., <F>chapInd_mj.html</F>. <P/>
 ##  
 ##  The  experimental versions  which  are  produced with  <C>tth</C>
 ##  or  <C>ttm</C>   use  different  names  for   the  files,  namely
@@ -1903,11 +2070,8 @@ end;
 ##  symbol  fonts  and  <F>chap0_mml.xml</F>  for  files  with
 ##  MathML translations.<P/>
 ##  
-##  You may also want to place a style sheet file <F>manual.css</F> into 
-##  the same directory as the HTML files. You can copy for example the 
-##  file <F>gapdoc.css</F> in the root directory of the &GAPDoc; package
-##  (<C>Filename( Directory( PackageInfo( "gapdoc" )[1].InstallationPath),
-##  "gapdoc.css");</C>).
+##  You should also add stylesheet files to the directory with the HTML
+##  files, see <Ref Subsect="StyleSheets"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1921,6 +2085,36 @@ InstallGlobalFunction(GAPDoc2HTMLPrintHTMLFiles, function(t, path)
   for a in NamesOfComponents(t) do
     if IsRecord(t.(a)) and IsBound(t.(a).text) then
       FileString(Filename(path, Concatenation("chap", a, t.ext)), t.(a).text);
+    fi;
+  od;
+end);
+
+InstallGlobalFunction(CopyHTMLStyleFiles, function(dir)
+  local d, todo, l, s, e, f;
+  d := Filename(DirectoriesPackageLibrary("GAPDoc","styles"),"");
+  todo := [];
+  for f in DirectoryContents(d) do
+    if f = "chooser.html" then
+      Add(todo, f);
+    else
+      l := Length(f);
+      if l > 3 and f{[l-2..l]} = ".js" then
+        Add(todo, f);
+      elif l > 4 and f{[l-3..l]} = ".css" then
+        Add(todo, f);
+      fi;
+    fi;
+  od;
+  for f in todo do
+    s := StringFile(Filename(Directory(d),f));
+    if s = fail then
+      Info(InfoGAPDoc, 1, "Cannot read file ", Filename(Directory(d),f), "\n");
+    else
+      e := FileString(Filename(Directory(dir),f), s);
+      if e = fail then
+        Info(InfoGAPDoc, 1, "Cannot write file ", 
+                                             Filename(Directory(dir),f), "\n");
+      fi;
     fi;
   od;
 end);

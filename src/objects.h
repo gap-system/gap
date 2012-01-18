@@ -2,7 +2,6 @@
 **
 *W  objects.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: objects.h,v 4.56 2011/05/23 10:58:39 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,9 +13,11 @@
 **  types  (i.e., the numbers  that  Gasman needs  to distinguish types), the
 **  dispatcher for the printing of objects, etc.
 */
+
+#ifndef GAP_OBJECTS_H
+#define GAP_OBJECTS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_objects_h =
-   "@(#)$Id: objects.h,v 4.56 2011/05/23 10:58:39 sal Exp $";
 #endif
 
 
@@ -31,6 +32,45 @@ const char * Revision_objects_h =
 **
 #define Obj             Bag
 */
+
+/****************************************************************************
+**
+*F OVERFLOW_INT( <i> ) . . . . test if the result of an operation overflowed
+*F LSL_INT( <i> ) . . . . . . . . . . logical left shift of signed integers
+*F LSR_INT( <i> ) . . . . . . . . . . logical right shift of signed integers
+*F ASL_INT( <i> ) . . . . . . . . . arithmetic left shift of signed integers
+*F ASR_INT( <i> ) . . . . . . . . . arithmetic right shift of signed integers
+*F CPL_IF_NEG( <i>, <s> ) . . . logical complement if second argument is < 0
+**
+** These macros define various useful operations on signed integers in a
+** portable way. The only assumption is that the integers use two's
+** complement representation, which should be the case on all modern
+** processors
+*/
+
+#define OVERFLOW_INT(x) \
+  ((Int)((UInt)(x) ^ (((UInt)(x)) << 1)) < 0)
+
+#define HAVE_ASR ((-1L >> 1) == -1L)
+
+/* For testing:        */
+/* #define HAVE_ASR 0  */
+
+#define LSL_INT(x, y) \
+  ((Int)(((UInt)(x)) << (y)))
+
+#define LSR_INT(x, y) \
+  ((Int)(((UInt)(x)) >> (y)))
+
+#define ASL_INT(x, y) \
+  ((Int)(((UInt)(x)) << (y)))
+
+#define CPL_IF_NEG(x, y) ((x) ^ -((y)<0))
+
+#define ASR_INT(x, y) \
+  ((HAVE_ASR) ? (((Int)(x)) >> (y)) : \
+    CPL_IF_NEG(LSR_INT(CPL_IF_NEG((x), (x)), (y)), (x)))
+
 
 
 /****************************************************************************
@@ -64,7 +104,7 @@ const char * Revision_objects_h =
 **  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
 */
 #define INTOBJ_INT(i) \
-    ((Obj)(((Int)(i) << 2) + 0x01))
+    ((Obj)(ASL_INT(i,2)+1))
 
 
 /****************************************************************************
@@ -73,8 +113,10 @@ const char * Revision_objects_h =
 **
 **  'INT_INTOBJ' converts the (immediate) integer object <o> to a C integer.
 */
-#define INT_INTOBJ(o) \
-    ((Int)(o) >> 2)
+/* Note that the C standard does not define what >> does here if the
+ * value is negative. So we have to be careful if the C compiler
+ * chooses to do a logical right shift. */
+#define INT_INTOBJ(o) ASR_INT((Int)(o), 2)
 
 
 
@@ -112,7 +154,7 @@ const char * Revision_objects_h =
 */
 #define SUM_INTOBJS(o,l,r)             \
     ((o) = (Obj)((Int)(l)+(Int)(r)-1), \
-    (((Int)(o) << 1) >> 1) == (Int)(o) )
+    (!OVERFLOW_INT((Int)(o))))
 
 
 /****************************************************************************
@@ -125,7 +167,7 @@ const char * Revision_objects_h =
 */
 #define DIFF_INTOBJS(o,l,r)            \
     ((o) = (Bag)((Int)(l)-(Int)(r)+1), \
-    (((Int)(o) << 1) >> 1) == (Int)(o) )
+    (!OVERFLOW_INT((Int)(o))))
 
 
 /****************************************************************************
@@ -152,13 +194,13 @@ static inline Obj prod_intobjs(Int l, Int r)
     return (Obj)r;
   if (r == (Int)INTOBJ_INT(1))
     return (Obj)l;
-  prod = ((Int)((UInt)l >> 2) * ((UInt)r-1)+1);
-  if ((prod << 1)>> 1 !=  prod)
+  prod = (Int)(LSR_INT(l, 2) * ((UInt)r-1)+1);
+  if (OVERFLOW_INT(prod))
     return (Obj) 0;
-  if ((((Int)l)<<HALF_A_WORD)>>HALF_A_WORD == (Int) l &&
-      (((Int)r)<<HALF_A_WORD)>>HALF_A_WORD == (Int) r)
+  if (ASR_INT(ASL_INT(l, HALF_A_WORD), HALF_A_WORD) == l &&
+      ASR_INT(ASL_INT(r, HALF_A_WORD), HALF_A_WORD) == r)
     return (Obj) prod;
-  if ((prod -1) / (l >> 2) == r-1)
+  if ((prod -1) / ASR_INT(l, 2) == r-1)
     return (Obj) prod;
   else
     return (Obj) 0;
@@ -824,6 +866,8 @@ extern void (* PrintPathFuncs [ LAST_REAL_TNUM  +1 ]) (
 */
 StructInitInfo * InitInfoObjects ( void );
 
+
+#endif // GAP_OBJECTS_H
 
 /****************************************************************************
 **

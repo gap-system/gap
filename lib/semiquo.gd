@@ -2,7 +2,6 @@
 ##
 #W  semiquo.gd           GAP library          Andrew Solomon and Isabel Araújo
 ##
-#H  @(#)$Id: semiquo.gd,v 4.13 2010/02/23 15:13:29 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -29,8 +28,6 @@
 ##  being compared.
 ##  <#/GAPDoc>
 ##
-Revision.semiquo_gd :=
-    "@(#)$Id: semiquo.gd,v 4.13 2010/02/23 15:13:29 gap Exp $";
 
 
 #############################################################################

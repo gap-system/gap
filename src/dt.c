@@ -2,7 +2,6 @@
 **
 *W  dt.c                        GAP source                  Wolfgang Merkwitz
 **
-*H  @(#)$Id: dt.c,v 4.31 2011/05/09 11:11:29 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -54,8 +53,6 @@
 */
 #include       "system.h"
 
-const char * Revision_dt_c =
-   "@(#)$Id: dt.c,v 4.31 2011/05/09 11:11:29 sal Exp $";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -774,7 +771,7 @@ Int     Leftof(
                 return   ( DT_POS(tree1, index1) < DT_POS(tree2, index2) );
             else
                 return   ( DT_GEN(tree1, index1) < DT_GEN(tree2, index2) );
-	}
+        }
     }
     if( Earlier(tree1, index1, tree2, index2)  )
         return  !Leftof2( tree2, index2, tree1, index1);
@@ -1872,8 +1869,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoDeepThought ( void )
 {
-    module.revision_c = Revision_dt_c;
-    module.revision_h = Revision_dt_h;
     FillInVersion( &module );
     return &module;
 }

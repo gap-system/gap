@@ -2,35 +2,21 @@
 ##
 #W  mpc.gi                        GAP library               Laurent Bartholdi
 ##
-#H  @(#)$Id: mpc.gi,v 1.2 2011/04/11 13:17:21 gap Exp $
+#H  @(#)$Id: mpc.gi,v 1.14 2011/09/27 15:42:04 gap Exp $
 ##
 #Y  Copyright (C) 2008 Laurent Bartholdi
 ##
 ##  This file deals with complex floats
 ##
-Revision.mpc_gi :=
-  "@(#)$Id: mpc.gi,v 1.2 2011/04/11 13:17:21 gap Exp $";
+Revision.float.mpc_gi :=
+  "@(#)$Id: mpc.gi,v 1.14 2011/09/27 15:42:04 gap Exp $";
 
 ################################################################
 # viewers
 ################################################################
-InstallMethod(ViewObj, "float", [IsMPCFloat],
+InstallMethod(ViewString, "float", [IsMPCFloat],
         function(obj)
-    if IsInt(ValueOption("FloatViewLength")) then
-        Print(VIEWSTRING_MPC(obj,ValueOption("FloatViewLength")));
-    else
-        Print(VIEWSTRING_MPC(obj,0));
-    fi;
-end);
-
-InstallMethod(PrintObj, "float", [IsMPCFloat],
-        function(obj)
-    Print(String(obj));
-end);
-
-InstallMethod(Display, "float", [IsMPCFloat],
-        function(obj)
-    Display(String(obj));
+    return VIEWSTRING_MPC(obj,FLOAT.VIEW_DIG);
 end);
 
 InstallMethod(String, "float, int", [IsMPCFloat, IsInt],
@@ -41,136 +27,191 @@ end);
 InstallMethod(String, "float", [IsMPCFloat],
         obj->STRING_MPC(obj,0));
 
+BindGlobal("MPCBITS@", function(obj)
+    local s;
+    s := ValueOption("bits");
+    if IsInt(s) then return s; fi;
+    if IsMPCFloat(obj) then return PrecisionFloat(obj); fi;
+    return MPC.constants.MANT_DIG;
+end);
+
+BindGlobal("MPCFLOAT_STRING", s->MPC_STRING(s,MPCBITS@(fail)));
+
 ################################################################
 # constants
 ################################################################
-InstallValue(MPC, rec(0 := MPC_INT(0),
-    _0 := AINV_MPC(MPC_INT(0)),
-    1 := MPC_INT(1),
-    _1 := MPC_INT(-1),
-    2 := MPC_INT(2),
-    i := MPC_2MPFR(MPFR.0,MPFR.1),
-    _i := MPC_2MPFR(MPFR.0,MPFR._1),
-    infinity := MPC_MAKEINFINITY(1),
-    _infinity := MPC_MAKEINFINITY(-1),
-    NaN := MPC_MAKENAN(1),
-    makePi := prec->MPC_MPFR(MPFR_PI(prec)),
-    make2Pi := prec->MPC_MPFR(MPFR.2*MPFR_PI(prec)),
-    make2IPi := prec->MPC_2MPFR(MPFR.0,MPFR.2*MPFR_PI(prec)),
-    New := MPCFloat
-));
+EAGER_FLOAT_LITERAL_CONVERTERS.c := MPCFLOAT_STRING;
+
+InstallValue(MPC, rec(
+    creator := MPCFLOAT_STRING,
+    objbyextrep := OBJBYEXTREP_MPFI,
+    eager := 'c',
+    filter := IsMPCFloat,
+    constants := rec(INFINITY := MPC_MAKEINFINITY(1),
+                     VIEW_DIG := 6,
+                     DECIMAL_DIG := 30,
+                     MANT_DIG := 100,
+                     NAN := MPC_MAKENAN(1),
+                     recompute := function(r,prec)
+    r.PI := MPC_MPFR(MPFR_PI(prec));
+    r.1_PI := Inverse(r.PI);
+    r.2PI := MPC_INT(2)*r.PI;
+    r.2_PI := Inverse(r.2PI);
+    r.2_SQRTPI := MPC_INT(2)/Sqrt(r.PI);
+    r.PI_2 := r.PI/MPC_INT(2);
+    r.PI_4 := r.PI_2/MPC_INT(2);
+    
+    r.SQRT2 := Sqrt(MPC_INTPREC(2,prec));
+    r.1_SQRT2 := Inverse(r.SQRT2);
+    
+    r.E := Exp(MPC_INTPREC(1,prec));
+    r.LN2 := Log(MPC_INTPREC(2,prec));
+    r.LN10 := Log(MPC_INTPREC(10,prec));
+    r.LOG10E := Inverse(r.LN10);
+    r.LOG2E := Inverse(r.LN2);
+    
+    r.I := MPC_2MPFR(MPFR_INT(0),MPFR_INTPREC(1,prec));
+    r.2IPI := r.I*r.2PI;
+    r.OMEGA := MPC_2MPFR(MPFR_INT(1),Sqrt(MPFR_INTPREC(3,prec)))/MPC_INT(2);
+end)));
 
 ################################################################
 # unary operations
 ################################################################
-for __i in [["AINV",AINV_MPC],
+CallFuncList(function(arg)
+    local i;
+    for i in arg do
+        InstallOtherMethod(VALUE_GLOBAL(i[1]), "MPC float", [IsMPCFloat], i[2]);
+    od;
+end,   [["AINV",AINV_MPC],
         ["INV",INV_MPC],
         ["AbsoluteValue",ABS_MPC],
-        ["ZERO",ZERO_MPC],
-        ["ONE",ONE_MPC],
+        ["ZeroMutable",ZERO_MPC],
+        ["ZeroImmutable",ZERO_MPC],
+        ["ZeroSameMutability",ZERO_MPC],
+        ["OneMutable",ONE_MPC],
+        ["OneImmutable",ONE_MPC],
+        ["OneSameMutability",ONE_MPC],
         ["Sqrt",SQRT_MPC],
+        ["Cos",COS_MPC],
         ["Sin",SIN_MPC],
+        ["Tan",TAN_MPC],
+        ["Asin",ASIN_MPC],
+        ["Acos",ACOS_MPC],
+        ["Atan",ATAN_MPC],
+        ["Cosh",COSH_MPC],
+        ["Sinh",SINH_MPC],
+        ["Tanh",TANH_MPC],
+        ["Asinh",ASINH_MPC],
+        ["Acosh",ACOSH_MPC],
+        ["Atanh",ATANH_MPC],
+        ["Log",LOG_MPC],
         ["Exp",EXP_MPC],
         ["Square",SQR_MPC],
+        ["SphereProject",PROJ_MPC],
+        ["FrExp",FREXP_MPC],
+        ["Norm",NORM_MPC],
+        ["Argument",ZERO_MPC],
+        ["IsXInfinity",ISINF_MPC],
+        ["IsPInfinity",ISINF_MPC],
+        ["IsNInfinity",ISINF_MPC],
+        ["IsFinite",ISNUMBER_MPC],
+        ["IsNaN",ISNAN_MPC],
+        ["ExtRepOfObj",EXTREPOFOBJ_MPC],
         ["RealPart",REAL_MPC],
         ["ImaginaryPart",IMAG_MPC],
-        ["Norm",NORM_MPC],
-        ["PrecisionFloat",PREC_MPC]] do
-    InstallOtherMethod(VALUE_GLOBAL(__i[1]), "float", [IsMPCFloat], __i[2]);
-od;
-Unbind(__i);
+        ["PrecisionFloat",PREC_MPC]]);
 
 ################################################################
 # binary operations
 ################################################################
-for __i in ["SUM","DIFF","QUO","PROD","LQUO","EQ","LT"] do
-    InstallMethod(VALUE_GLOBAL(__i), "float",
-            [IsMPCFloat, IsMPCFloat], VALUE_GLOBAL(Concatenation(__i,"_MPC")));
-od;
-Unbind(__i);
+CallFuncList(function(arg)
+    local i;
+    for i in arg do
+        InstallMethod(VALUE_GLOBAL(i), "MPC float, MPC float", [IsMPCFloat, IsMPCFloat],
+                VALUE_GLOBAL(Concatenation(i,"_MPC")));
+        InstallMethod(VALUE_GLOBAL(i), "MPC float, MPFR float", [IsMPCFloat, IsMPFRFloat],
+                VALUE_GLOBAL(Concatenation(i,"_MPC_MPFR")));
+        InstallMethod(VALUE_GLOBAL(i), "MPFR float, MPC float", [IsMPFRFloat, IsMPCFloat],
+                VALUE_GLOBAL(Concatenation(i,"_MPFR_MPC")));
+    od;
+end, ["SUM","DIFF","QUO","PROD","LQUO","POW","EQ","LT"]);
 
-InstallMethod(SUM, "float, scalar", [IsMPCFloat,IsScalar],
-        function(x,y) return SUM(x,MPCFloat(y)); end);
-InstallMethod(SUM, "scalar, float", [IsScalar,IsMPCFloat],
-        function(x,y) return SUM(MPCFloat(x),y); end);
-InstallMethod(DIFF, "float, scalar", [IsMPCFloat,IsScalar],
-        function(x,y) return DIFF(x,MPCFloat(y)); end);
-InstallMethod(DIFF, "scalar, float", [IsScalar,IsMPCFloat],
-        function(x,y) return DIFF(MPCFloat(x),y); end);
-InstallMethod(PROD, "float, scalar", [IsMPCFloat,IsScalar],
-        function(x,y) return PROD(x,MPCFloat(y)); end);
-InstallMethod(PROD, "scalar, float", [IsScalar,IsMPCFloat],
-        function(x,y) return PROD(MPCFloat(x),y); end);
-InstallMethod(QUO, "float, scalar", [IsMPCFloat,IsScalar],
-        function(x,y) return QUO(x,MPCFloat(y)); end);
-InstallMethod(QUO, "scalar, float", [IsScalar,IsMPCFloat],
-        function(x,y) return QUO(MPCFloat(x),y); end);
-InstallMethod(POW, "float, scalar", [IsMPCFloat,IsScalar],
-        function(x,y) return POW(x,MPCFloat(y)); end);
-InstallMethod(POW, "scalar, float", [IsScalar,IsMPCFloat],
-        function(x,y) return POW(MPCFloat(x),y); end);
-InstallMethod(LQUO, "float, scalar", [IsMPCFloat,IsScalar],
-        function(x,y) return LQUO(x,MPCFloat(y)); end);
-InstallMethod(LQUO, "scalar, float", [IsScalar,IsMPCFloat],
-        function(x,y) return LQUO(MPCFloat(x),y); end);
-InstallMethod(MOD, "float, scalar", [IsMPCFloat,IsScalar],
-        function(x,y) return MOD(x,MPCFloat(y)); end);
-InstallMethod(MOD, "scalar, float", [IsScalar,IsMPCFloat],
-        function(x,y) return MOD(MPCFloat(x),y); end);
-InstallMethod(EQ, "float, scalar", [IsMPCFloat,IsScalar],
-        function(x,y) return EQ(x,MPCFloat(y)); end);
-InstallMethod(EQ, "scalar, float", [IsScalar,IsMPCFloat],
-        function(x,y) return EQ(MPCFloat(x),y); end);
-InstallMethod(LT, "float, scalar", [IsMPCFloat,IsScalar],
-        function(x,y) return LT(x,MPCFloat(y)); end);
-InstallMethod(LT, "scalar, float", [IsScalar,IsMPCFloat],
-        function(x,y) return LT(MPCFloat(x),y); end);
-        
+InstallMethod(LdExp, "MPC float, int", [IsMPCFloat, IsInt], LDEXP_MPC);
+
+InstallMethod(RootsFloatOp, "MPC float list, MPC float",
+        [IsList,IsMPCFloat],
+        function(coeff,tag)
+    if ForAll(coeff,x->IsMPCFloat(x)) then
+        return COMPLEXROOTS_MPC(coeff,MPCBITS@(fail));
+    fi;
+    TryNextMethod();
+end);
+
 ################################################################
 # constructor
 ################################################################
-InstallMethod(MPCFloat, "for integers", [IsInt],
-        function(int)
-    if IsInt(ValueOption("PrecisionFloat")) then
-        return MPC_INTPREC(int,ValueOption("PrecisionFloat"));
-    else
-        return MPC_INT(int);
-    fi;
+  
+INSTALLFLOATCREATOR("for list", [IsMPCFloat,IsList],
+        function(filter,list)
+    return OBJBYEXTREP_MPC(list);
 end);
-InstallMethod(MPCFloat, "for rationals", [IsRat],
-        function(rat)
+
+INSTALLFLOATCREATOR("for integers", [IsMPCFloat,IsInt],
+        function(filter,int)
+    return MPC_INTPREC(int,MPCBITS@(filter));
+end);
+
+INSTALLFLOATCREATOR("for rationals", [IsMPCFloat,IsRat], -1,
+        function(filter,rat)
     local n, d, prec;
     n := NumeratorRat(rat);
     d := DenominatorRat(rat);
-    if IsInt(ValueOption("PrecisionFloat")) then
-        prec := ValueOption("PrecisionFloat");
-    elif n=0 then
-        return MPC.0;
-    else
-        prec := Maximum(64,2+LogInt(AbsInt(n),2),2+LogInt(d,2));
-    fi;
+    prec := MPCBITS@(filter);
     return MPC_INTPREC(n,prec)/MPC_INTPREC(d,prec);
 end);
-InstallMethod(MPCFloat, "for lists", [IsList],
-        l->List(l,MPCFloat));
-InstallMethod(MPCFloat, "for macfloats", [IsFloat], #!!!
-        x->MPCFloat(String(x)));
-InstallMethod(MPCFloat, "for strings", [IsString],
-        function(s)
-    if IsInt(ValueOption("PrecisionFloat")) then
-        return MPC_STRING(s,ValueOption("PrecisionFloat"));
-    else
-        return MPC_STRING(s,Maximum(64,Int(Length(s)*100000/30103)));
-    fi;
+
+INSTALLFLOATCREATOR("for strings", [IsMPCFloat,IsString],
+        function(filter,s)
+    return MPC_STRING(s,MPCBITS@(filter));
 end);
-InstallMethod(MPCFloat, "for float", [IsMPCFloat],
-        function(obj)
-    if IsInt(ValueOption("PrecisionFloat")) then
-        return MPC_MPCPREC(obj,ValueOption("PrecisionFloat"));
-    else
-        return obj;
-    fi;
+
+INSTALLFLOATCREATOR("for MPC float", [IsMPCFloat,IsMPCFloat],
+        function(filter,obj)
+    return MPC_MPCPREC(obj,MPCBITS@(filter));
 end);
+
+INSTALLFLOATCREATOR("for MPFR float", [IsMPCFloat,IsMPFRFloat],
+        function(filter,obj)
+    return MPC_MPFR(obj);
+end);
+
+DECLAREFLOATCREATOR(IsMPCFloat,IsMPFRFloat,IsMPFRFloat);
+INSTALLFLOATCREATOR("for 2 MPFR floats", [IsMPCFloat,IsMPFRFloat,IsMPFRFloat],
+        function(filter,re,im)
+    return MPC_2MPFR(re,im);
+end);
+
+DECLAREFLOATCREATOR(IsMPCFloat,IsInt,IsInt);
+INSTALLFLOATCREATOR("for 2 ints", [IsMPCFloat,IsInt,IsInt],
+        function(filter,re,im)
+    return MPC_2MPFR(MPFR_INT(re),MPFR_INT(im));
+end);
+
+INSTALLFLOATCREATOR("for macfloat", [IsMPCFloat,IsIEEE754FloatRep],
+        function(filter,obj)
+    return MPC_MPFR(MPFR_MACFLOAT(obj));
+end);
+
+INSTALLFLOATCREATOR("for cyc", [IsMPCFloat,IsCyc], -2,
+        function(filter,obj)
+    local l, z;
+    l := ExtRepOfObj(obj);
+    z := MPC_2MPFR(0.0_r,2.0_r*MPFR_PI(MPCBITS@(filter)))/Length(l);
+    return l*List([0..Length(l)-1],i->Exp(z*i));
+end);    
+
+INSTALLFLOATCONSTRUCTORS(MPC);
 
 #############################################################################
 ##

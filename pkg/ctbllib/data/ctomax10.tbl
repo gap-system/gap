@@ -2,7 +2,7 @@
 ##
 #W  ctomax10.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomax10.tbl,v 4.6 2010/11/15 16:35:30 gap Exp $
+#H  @(#)$Id: ctomax10.tbl,v 4.7 2011/09/28 14:32:14 gap Exp $
 ##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomax10.tbl,v $
+#H  Revision 4.7  2011/09/28 14:32:14  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.6  2010/11/15 16:35:30  gap
 #H  added a comment to the fusion 3^7.O7(3):2 -> F3+.2
 #H  (finally resolved the ambiguity)
@@ -46,11 +50,6 @@
 #H      TB
 #H
 ##
-Revision.ctomax10_tbl :=
-    "@(#)$Id: ctomax10.tbl,v 4.6 2010/11/15 16:35:30 gap Exp $";
-
-SET_TABLEFILENAME("ctomax10");
-ALN:= Ignore;
 
 MOT("3^7.O7(3):2",
 [
@@ -15079,9 +15078,9 @@ E(28)^3-E(28)^11-E(28)^15+E(28)^19-E(28)^23+E(28)^27,0,0],
 ALF("7^(1+2)_+:(6xS3).2","F3+.2",[1,25,24,25,8,8,3,23,23,52,3,6,14,52,69,
 95,8,8,23,23,23,23,68,68,99,103,114,114,112,112,114,114,114,114,134,134,
 136,159,160,173,173]);
+ALN("7^(1+2)_+:(6xS3).2",["F3+.2N7"]);
 
 LIBTABLE.LOADSTATUS.ctomax10:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

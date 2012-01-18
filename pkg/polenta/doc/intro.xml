@@ -1,0 +1,73 @@
+<Chapter Label="Introduction">
+<Heading>Introduction</Heading>
+
+<Index>Polenta</Index><!-- @Polenta -->
+<Index>Polycyclic</Index><!-- @Polycyclic -->
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="The package">
+<Heading>The package</Heading>
+
+This package provides functions for computation with matrix
+groups. Let <M>G</M> be a subgroup of <M>GL(d,R)</M> where the ring <M>R</M> is
+either equal to <M>&QQ;,&ZZ;</M> or a finite field <M>\mathbb{F}_q</M>.
+Then:
+<List>
+<Item>
+    We can test whether <M>G</M> is solvable.
+</Item>
+<Item>
+    We can test whether <M>G</M> is polycyclic.
+</Item>
+<Item>
+    If <M>G</M> is polycyclic, then we can determine a polycyclic
+    presentation for <M>G</M>.
+</Item>
+</List>
+
+A group <M>G</M> which is given by a polycyclic presentation can be largely
+investigated by algorithms implemented in the &GAP;-package
+<Package>Polycyclic</Package> <Cite Key="Polycyclic"/>. For example
+we can determine if <M>G</M> is torsion-free
+and calculate the torsion subgroup. Further we can compute the derived
+series and the Hirsch length of the group <M>G</M>. Also various methods for
+computations with subgroups, factor groups and extensions are
+available.
+<P/>
+
+As a by-product, the &Polenta; package
+provides some functionality to compute certain module series for
+modules of solvable groups. For example, if
+<M>G</M> is a rational polycyclic matrix group, then we can compute the
+radical series of the natural
+<M>&QQ;[G]</M>-module <M>&QQ;^d</M>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Polycyclic groups">
+<Heading>Polycyclic groups</Heading>
+
+A group <M>G</M> is called polycyclic if it has a finite subnormal
+series with cyclic
+factors. It is a well-known fact that every polycyclic group is
+finitely presented by a so-called polycyclic presentation (see
+for example Chapter 9 in <Cite Key="Sims"/> or Chapter 2 in <Cite Key="Polycyclic"/> ).
+In &GAP;, groups which are defined by polycyclic
+ presentations are called
+polycyclically presented groups, abbreviated PcpGroups.
+ <P/>
+
+The overall idea of the algorithm implemented in this package was
+first introduced
+by Ostheimer in 1996 <Cite Key="Ostheimer"/>.
+In 2001 Eick presented a more detailed
+version <Cite Key="Eick"/>. This package contains an implementation of Eick's
+algorithm. A description of this implementation together with some
+refinements and extensions can be
+found in <Cite Key="AEi05"/> and <Cite Key="Assmann"/>.
+
+</Section>
+</Chapter>
+

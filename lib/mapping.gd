@@ -4,7 +4,6 @@
 #W                                                         & Martin Schönert
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: mapping.gd,v 4.70 2011/04/14 23:10:37 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -203,8 +202,6 @@
 ##  which then delegate to the operations listed above.
 ##  <#/GAPDoc>
 ##
-Revision.mapping_gd :=
-    "@(#)$Id: mapping.gd,v 4.70 2011/04/14 23:10:37 alexk Exp $";
 
 
 #############################################################################
@@ -1463,7 +1460,7 @@ DeclareGlobalFunction( "CopyMappingAttributes" );
 ##  <Attr Name="MappingGeneratorsImages" Arg='map'/>
 ##
 ##  <Description>
-##  This attribute contains a list of length 2, the first enry being a list
+##  This attribute contains a list of length 2, the first entry being a list
 ##  of generators of the source of <A>map</A> and the second entry a list of
 ##  their images. This attribute is used (for example) by
 ##  <C>GroupHomomorphismByImages</C> to store generators and images.

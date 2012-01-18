@@ -18,24 +18,24 @@ false
 gap> R := PolynomialRing(GF(7),1);;
 gap> x := Indeterminate(GF(7),1);; SetName(x,"x");
 gap> cl3 := ResidueClass(R,x+One(R),3*One(R));
-The residue class Z(7) ( mod x+Z(7)^0 ) of GF(7)[x]
+The residue class 3 ( mod x+1 ) of GF(7)[x]
 gap> U1 := ResidueClassUnion(Integers,6,[2,4]);
 Union of the residue classes 2(6) and 4(6) of Z
 gap> U2 := ResidueClassUnion(Integers,5,[1,2],[3,8],[-4,1]);
 (Union of the residue classes 1(5) and 2(5) of Z) U [ 3, 8 ] \ [ -4, 1 ]
 gap> U3 := ResidueClassUnion(R,x,[One(R),5*One(R),6*One(R)],
 >                               [Zero(R)],[One(R)]);
-<union of 3 residue classes (mod x) of GF(7)[x]> U [ 0*Z(7) ] \ [ Z(7)^0 ]
+<union of 3 residue classes (mod x) of GF(7)[x]> U [ 0 ] \ [ 1 ]
 gap> U4 := ResidueClassUnion(Z_pi([2,3]),8,[3,5]);
 Union of the residue classes 3(8) and 5(8) of Z_( 2, 3 )
 gap> List([U1,U2,U3,U4],Modulus);
 [ 6, 5, x, 8 ]
 gap> List([cl1,U2,U3,U4],Residues);
-[ [ 2 ], [ 1, 2 ], [ Z(7)^0, -Z(7)^0, Z(7)^5 ], [ 3, 5 ] ]
+[ [ 2 ], [ 1, 2 ], [ 1, -1, 5 ], [ 3, 5 ] ]
 gap> List([U1,U2,U3,U4],IncludedElements);
-[ [  ], [ 3, 8 ], [ 0*Z(7) ], [  ] ]
+[ [  ], [ 3, 8 ], [ 0 ], [  ] ]
 gap> List([U1,U2,U3,U4],ExcludedElements);
-[ [  ], [ -4, 1 ], [ Z(7)^0 ], [  ] ]
+[ [  ], [ -4, 1 ], [ 1 ], [  ] ]
 gap> String(cl3);
 "ResidueClassUnion( PolynomialRing( GF(7), [ x ] ), x+Z(7)^0, [ Z(7) ] )"
 gap> String(U2);
@@ -51,8 +51,8 @@ ResidueClassUnion( Z_pi( [ 2, 3 ] ), 8, [ 3, 5 ] )
 gap> Display(U2);
 (Union of the residue classes 1(5) and 2(5) of Z) U [ 3, 8 ] \ [ -4, 1 ]
 gap> Display(U3);
-(Union of the residue classes Z(7)^0 ( mod x ), -Z(7)^0 ( mod x )
- and Z(7)^5 ( mod x ) of GF(7)[x]) U [ 0*Z(7) ] \ [ Z(7)^0 ]
+(Union of the residue classes 1 ( mod x ), -1 ( mod x ) and 5 ( mod x ) of GF(\
+7)[x]) U [ 0 ] \ [ 1 ]
 gap> Display(U4);
 Union of the residue classes 3(8) and 5(8) of Z_( 2, 3 )
 gap> 20 in cl1;
@@ -86,14 +86,14 @@ gap> Residues(K);
 gap> L := Intersection(I,J);
 <union of 8 residue classes (mod 30) of Z>
 gap> Display(L);
-Union of the residue classes 1(30), 7(30), 11(30), 13(30), 17(30), 19(30),
+Union of the residue classes 1(30), 7(30), 11(30), 13(30), 17(30), 19(30), 
 23(30) and 29(30) of Z
 gap> M := Difference(I,J);
 Union of the residue classes 5(30) and 25(30) of Z
 gap> N := Difference(J,I);
 <union of 16 residue classes (mod 30) of Z>
 gap> Display(N);
-Union of the residue classes 2(10), 4(10), 6(10), 8(10), 3(30), 9(30),
+Union of the residue classes 2(10), 4(10), 6(10), 8(10), 3(30), 9(30), 
 21(30) and 27(30) of Z
 gap> Difference(Integers,[1,2,3]);
 Z \ [ 1, 2, 3 ]
@@ -184,13 +184,13 @@ gap> Modulus(Integers);
 gap> Modulus(Z_pi([2]));
 1
 gap> Modulus(R);
-Z(7)^0
+1
 gap> Residues(Integers);
 [ 0 ]
 gap> Residues(Z_pi([2,7]));
 [ 0 ]
 gap> Residues(R);
-[ 0*Z(7) ]
+[ 0 ]
 gap> IncludedElements(Integers);
 [  ]
 gap> IncludedElements(R);
@@ -208,7 +208,7 @@ Z_( 2 )
 gap> Z_pi(2)*2;
 The residue class 0(2) of Z_( 2 )
 gap> x*R;
-The residue class 0*Z(7) ( mod x ) of GF(7)[x]
+The residue class 0 ( mod x ) of GF(7)[x]
 gap> R+One(R);
 GF(7)[x]
 gap> Integers+1;
@@ -238,28 +238,28 @@ gap> Difference(ResidueClass(Integers,2,1),[1..100]);
 gap> Difference(Union(ResidueClass(Integers,2,1),[1..100]),[-5..-1]);
 (The residue class 1(2) of Z) U <set of cardinality 50> \ [ -5, -3, -1 ]
 gap> AllResidueClassesModulo(3);
-[ The residue class 0(3) of Z, The residue class 1(3) of Z,
+[ The residue class 0(3) of Z, The residue class 1(3) of Z, 
   The residue class 2(3) of Z ]
 gap> AllResidueClassesModulo(Z_pi(2),4);
-[ The residue class 0(4) of Z_( 2 ), The residue class 1(4) of Z_( 2 ),
+[ The residue class 0(4) of Z_( 2 ), The residue class 1(4) of Z_( 2 ), 
   The residue class 2(4) of Z_( 2 ), The residue class 3(4) of Z_( 2 ) ]
 gap> AllResidueClassesModulo(Z_pi(2),3);
 [ Z_( 2 ) ]
 gap> R := PolynomialRing(GF(7),1);;
 gap> x := Indeterminate(GF(7),1);; SetName(x,"x");
 gap> AllResidueClassesModulo(R,x);
-[ The residue class 0*Z(7) ( mod x ) of GF(7)[x],
-  The residue class Z(7)^0 ( mod x ) of GF(7)[x],
-  The residue class Z(7) ( mod x ) of GF(7)[x],
-  The residue class Z(7)^2 ( mod x ) of GF(7)[x],
-  The residue class -Z(7)^0 ( mod x ) of GF(7)[x],
-  The residue class Z(7)^4 ( mod x ) of GF(7)[x],
-  The residue class Z(7)^5 ( mod x ) of GF(7)[x] ]
+[ The residue class 0 ( mod x ) of GF(7)[x], 
+  The residue class 1 ( mod x ) of GF(7)[x], 
+  The residue class 3 ( mod x ) of GF(7)[x], 
+  The residue class 2 ( mod x ) of GF(7)[x], 
+  The residue class -1 ( mod x ) of GF(7)[x], 
+  The residue class 4 ( mod x ) of GF(7)[x], 
+  The residue class 5 ( mod x ) of GF(7)[x] ]
 gap> AllResidueClassesModulo(R,One(R));
 [ GF(7)[x] ]
 gap> SplittedClass(ResidueClass(2,3),5);
-[ The residue class 2(15) of Z, The residue class 5(15) of Z,
-  The residue class 8(15) of Z, The residue class 11(15) of Z,
+[ The residue class 2(15) of Z, The residue class 5(15) of Z, 
+  The residue class 8(15) of Z, The residue class 11(15) of Z, 
   The residue class 14(15) of Z ]
 gap> SplittedClass(ResidueClass(Z_pi([2,3]),3,2),2);
 [ The residue class 2(6) of Z_( 2, 3 ), The residue class 5(6) of Z_( 2, 3 ) ]
@@ -278,35 +278,65 @@ gap> R := PolynomialRing(GF(2),1);;
 gap> U := ResidueClassUnion(R,x^3,[Zero(R),One(R),x,x^2,x^2+x]);
 GF(2)[x] \ <union of 3 residue classes (mod x^3) of GF(2)[x]>
 gap> AsUnionOfFewClasses(U);
-[ The residue class 0*Z(2) ( mod x ) of GF(2)[x], 
-  The residue class Z(2)^0 ( mod x^3 ) of GF(2)[x] ]
+[ The residue class 0 ( mod x ) of GF(2)[x], 
+  The residue class 1 ( mod x^3 ) of GF(2)[x] ]
 gap> SplittedClass(R,1);
 [ GF(2)[x] ]
 gap> SplittedClass(R,2);
-[ The residue class 0*Z(2) ( mod x ) of GF(2)[x],
-  The residue class Z(2)^0 ( mod x ) of GF(2)[x] ]
+[ The residue class 0 ( mod x ) of GF(2)[x], 
+  The residue class 1 ( mod x ) of GF(2)[x] ]
 gap> SplittedClass(R,3);
 fail
 gap> SplittedClass(R,x+1);
-[ The residue class 0*Z(2) ( mod x+Z(2)^0 ) of GF(2)[x], 
-  The residue class Z(2)^0 ( mod x+Z(2)^0 ) of GF(2)[x] ]
+[ The residue class 0 ( mod x+1 ) of GF(2)[x], 
+  The residue class 1 ( mod x+1 ) of GF(2)[x] ]
 gap> Union(last);
 GF(2)[x]
 gap> cl := ResidueClass(R,x,Zero(R));;
 gap> SplittedClass(cl,1);
-[ The residue class 0*Z(2) ( mod x ) of GF(2)[x] ]
+[ The residue class 0 ( mod x ) of GF(2)[x] ]
 gap> SplittedClass(cl,2);
-[ The residue class 0*Z(2) ( mod x^2 ) of GF(2)[x],
+[ The residue class 0 ( mod x^2 ) of GF(2)[x], 
   The residue class x ( mod x^2 ) of GF(2)[x] ]
 gap> SplittedClass(cl,3);
 fail
 gap> SplittedClass(cl,x^2+x+1);
-[ The residue class 0*Z(2) ( mod x^3+x^2+x ) of GF(2)[x], 
+[ The residue class 0 ( mod x^3+x^2+x ) of GF(2)[x], 
   The residue class x ( mod x^3+x^2+x ) of GF(2)[x], 
   The residue class x^2 ( mod x^3+x^2+x ) of GF(2)[x], 
   The residue class x^2+x ( mod x^3+x^2+x ) of GF(2)[x] ]
 gap> Union(last);
-The residue class 0*Z(2) ( mod x ) of GF(2)[x]
+The residue class 0 ( mod x ) of GF(2)[x]
+gap> cl := ResidueClass(1,x);
+The residue class 1 ( mod x ) of GF(2)[x]
+gap> cl = ResidueClass(Z(2),x);
+true
+gap> cl = ResidueClass(x,1); 
+true
+gap> ViewString(cl);
+"1(x)"
+gap> 2*cl;
+[ 0 ]
+gap> 3*cl;
+The residue class 1 ( mod x ) of GF(2)[x]
+gap> Z(2)*cl;
+The residue class 1 ( mod x ) of GF(2)[x]
+gap> 0*Z(2)*cl;   
+[ 0 ]
+gap> cl*3;
+The residue class 1 ( mod x ) of GF(2)[x]
+gap> cl*Z(2);
+The residue class 1 ( mod x ) of GF(2)[x]
+gap> cl*Z(2)*0;
+[ 0 ]
+gap> 2*R;
+[ 0 ]
+gap> 3*R;
+GF(2)[x]
+gap> Z(2)*R;
+GF(2)[x]
+gap> R*Z(2);
+GF(2)[x]
 gap> ResidueClassUnionViewingFormat("short");;
 gap> PartitionsIntoResidueClasses(Integers,1);
 [ [ Integers ] ]
@@ -333,17 +363,12 @@ gap> PartitionsIntoResidueClasses(Z_pi(2),4);
 gap> PartitionsIntoResidueClasses(R,1);
 [ [ GF(2)[x] ] ]
 gap> PartitionsIntoResidueClasses(R,2);
-[ [ 0*Z(2)(mod x), Z(2)^0(mod x) ], 
-  [ 0*Z(2)(mod x+Z(2)^0), Z(2)^0(mod x+Z(2)^0) ] ]
+[ [ 0(x), 1(x) ], [ 0(x+1), 1(x+1) ] ]
 gap> PartitionsIntoResidueClasses(R,3);
-[ [ 0*Z(2)(mod x), Z(2)^0(mod x^2), x+Z(2)^0(mod x^2) ], 
-  [ 0*Z(2)(mod x), Z(2)^0(mod x^2+x), x+Z(2)^0(mod x^2+x) ], 
-  [ Z(2)^0(mod x), 0*Z(2)(mod x^2), x(mod x^2) ], 
-  [ Z(2)^0(mod x), 0*Z(2)(mod x^2+x), x(mod x^2+x) ], 
-  [ 0*Z(2)(mod x+Z(2)^0), Z(2)^0(mod x^2+Z(2)^0), x(mod x^2+Z(2)^0) ], 
-  [ 0*Z(2)(mod x+Z(2)^0), Z(2)^0(mod x^2+x), x(mod x^2+x) ], 
-  [ Z(2)^0(mod x+Z(2)^0), 0*Z(2)(mod x^2+Z(2)^0), x+Z(2)^0(mod x^2+Z(2)^0) ], 
-  [ Z(2)^0(mod x+Z(2)^0), 0*Z(2)(mod x^2+x), x+Z(2)^0(mod x^2+x) ] ]
+[ [ 0(x), 1(x^2), x+1(x^2) ], [ 0(x), 1(x^2+x), x+1(x^2+x) ], 
+  [ 1(x), 0(x^2), x(x^2) ], [ 1(x), 0(x^2+x), x(x^2+x) ], 
+  [ 0(x+1), 1(x^2+1), x(x^2+1) ], [ 0(x+1), 1(x^2+x), x(x^2+x) ], 
+  [ 1(x+1), 0(x^2+1), x+1(x^2+1) ], [ 1(x+1), 0(x^2+x), x+1(x^2+x) ] ]
 gap> 0 * Integers;
 [ 0 ]
 gap> Integers * 0;
@@ -351,7 +376,7 @@ gap> Integers * 0;
 gap> 0 * Z_pi(2,3);
 [ 0 ]
 gap> Zero(R) * R;
-[ 0*Z(2) ]
+[ 0 ]
 gap> [1,2,3] > ResidueClass(0,2);
 true
 gap> Integers < ResidueClass(0,2);

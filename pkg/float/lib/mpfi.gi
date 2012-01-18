@@ -2,35 +2,21 @@
 ##
 #W  mpfi.gi                        GAP library              Laurent Bartholdi
 ##
-#H  @(#)$Id: mpfi.gi,v 1.2 2011/04/11 13:17:21 gap Exp $
+#H  @(#)$Id: mpfi.gi,v 1.10 2011/09/27 14:46:01 gap Exp $
 ##
 #Y  Copyright (C) 2008 Laurent Bartholdi
 ##
 ##  This file deals with interval floats
 ##
-Revision.mpfi_gi :=
-  "@(#)$Id: mpfi.gi,v 1.2 2011/04/11 13:17:21 gap Exp $";
+Revision.float.mpfi_gi :=
+  "@(#)$Id: mpfi.gi,v 1.10 2011/09/27 14:46:01 gap Exp $";
 
 ################################################################
 # viewers
 ################################################################
-InstallMethod(ViewObj, "float", [IsMPFIFloat],
+InstallMethod(ViewString, "float", [IsMPFIFloat],
         function(obj)
-    if IsInt(ValueOption("FloatViewLength")) then
-        Print(VIEWSTRING_MPFI(obj,ValueOption("FloatViewLength")));
-    else
-        Print(VIEWSTRING_MPFI(obj,0));
-    fi;
-end);
-
-InstallMethod(PrintObj, "float", [IsMPFIFloat],
-        function(obj)
-    Print(String(obj));
-end);
-
-InstallMethod(Display, "float", [IsMPFIFloat],
-        function(obj)
-    Display(String(obj));
+    return VIEWSTRING_MPFI(obj,FLOAT.VIEW_DIG);
 end);
 
 InstallMethod(String, "float, int", [IsMPFIFloat, IsInt],
@@ -41,41 +27,84 @@ end);
 InstallMethod(String, "float", [IsMPFIFloat],
         obj->STRING_MPFI(obj,0));
 
+BindGlobal("MPFIBITS@", function(obj)
+    local s;
+    s := ValueOption("bits");
+    if IsInt(s) then return s; fi;
+    if IsMPFIFloat(obj) then return PrecisionFloat(obj); fi;
+    return MPFI.constants.MANT_DIG;
+end);
+
+BindGlobal("MPFIFLOAT_STRING", s->MPFI_STRING(s,MPFIBITS@(fail)));
+
 ################################################################
 # constants
 ################################################################
-InstallValue(MPFI, rec(0 := MPFI_INT(0),
-    _0 := AINV_MPFI(MPFI_INT(0)),
-    1 := MPFI_INT(1),
-    _1 := MPFI_INT(-1),
-    2 := MPFI_INT(2),
-    infinity := MPFI_MAKEINFINITY(1),
-    _infinity := MPFI_MAKEINFINITY(-1),
-    NaN := MPFI_MAKENAN(1),
-    makePi := MPFI_PI,
-    New := MPFIFloat
-));
-MPFI.make2Pi := prec->MPFI.2*MPFI_PI(prec);
+EAGER_FLOAT_LITERAL_CONVERTERS.i := MPFIFLOAT_STRING;
+
+InstallValue(MPFI, rec(
+    creator := MPFIFLOAT_STRING,
+    objbyextrep := OBJBYEXTREP_MPFI,
+    eager := 'i',
+    filter := IsMPFIFloat,
+    constants := rec(INFINITY := MPFI_MAKEINFINITY(1),
+                     NINFINITY := MPFI_MAKEINFINITY(-1),
+                     VIEW_DIG := 6,
+                     MANT_DIG := 100,
+                     NAN := MPFI_MAKENAN(1),
+                     recompute := function(r,prec)
+    r.PI := MPFI_PI(prec);
+    r.1_PI := Inverse(r.PI);
+    r.2PI := MPFI_INT(2)*r.PI;
+    r.2_PI := Inverse(r.2PI);
+    r.2_SQRTPI := MPFI_INT(2)/Sqrt(r.PI);
+    r.PI_2 := r.PI/MPFI_INT(2);
+    r.PI_4 := r.PI_2/MPFI_INT(2);
+    
+    r.SQRT2 := Sqrt(MPFI_INTPREC(2,prec));
+    r.1_SQRT2 := Inverse(r.SQRT2);
+    
+    r.E := Exp(MPFI_INTPREC(1,prec));
+    r.LN2 := Log(MPFI_INTPREC(2,prec));
+    r.LN10 := Log(MPFI_INTPREC(10,prec));
+    r.LOG10E := Inverse(r.LN10);
+    r.LOG2E := Inverse(r.LN2);
+end)));
 
 ################################################################
 # unary operations
 ################################################################
-for __i in [["AINV",AINV_MPFI],
+CallFuncList(function(arg)
+    local i;
+    for i in arg do
+        InstallOtherMethod(VALUE_GLOBAL(i[1]), "MPFI float", [IsMPFIFloat], i[2]);
+    od;
+end,   [["AINV",AINV_MPFI],
         ["INV",INV_MPFI],
         ["Int",INT_MPFI],
         ["AbsoluteValue",ABS_MPFI],
-        ["ZERO",ZERO_MPFI],
-        ["ONE",ONE_MPFI],
+        ["ZeroMutable",ZERO_MPFI],
+        ["ZeroImmutable",ZERO_MPFI],
+        ["ZeroSameMutability",ZERO_MPFI],
+        ["OneMutable",ONE_MPFI],
+        ["OneImmutable",ONE_MPFI],
+        ["OneSameMutability",ONE_MPFI],
         ["Sqrt",SQRT_MPFI],
         ["Cos",COS_MPFI],
         ["Sin",SIN_MPFI],
         ["Tan",TAN_MPFI],
+        ["Sec",SEC_MPFI],
+        ["Csc",CSC_MPFI],
+        ["Cot",COT_MPFI],
         ["Asin",ASIN_MPFI],
         ["Acos",ACOS_MPFI],
         ["Atan",ATAN_MPFI],
         ["Cosh",COSH_MPFI],
         ["Sinh",SINH_MPFI],
         ["Tanh",TANH_MPFI],
+        ["Sech",SECH_MPFI],
+        ["Csch",CSCH_MPFI],
+        ["Coth",COTH_MPFI],
         ["Asinh",ASINH_MPFI],
         ["Acosh",ACOSH_MPFI],
         ["Atanh",ATANH_MPFI],
@@ -84,52 +113,54 @@ for __i in [["AINV",AINV_MPFI],
         ["Log10",LOG10_MPFI],
         ["Exp",EXP_MPFI],
         ["Exp2",EXP2_MPFI],
-        ["Square",SQR_MPFI],
-        ["PrecisionFloat",PREC_MPFI]] do
-    InstallOtherMethod(VALUE_GLOBAL(__i[1]), "float", [IsMPFIFloat], __i[2]);
-od;
-Unbind(__i);
-
-if false then
-return [        ["Sec",SEC_MPFI],
-        ["Csc",CSC_MPFI],
-        ["Cot",COT_MPFI],
-        ["Sech",SECH_MPFI],
-        ["Csch",CSCH_MPFI],
-        ["Coth",COTH_MPFI],
         ["Exp10",EXP10_MPFI],
         ["CubeRoot",CBRT_MPFI],
-        ["Ceil",CEIL_MPFI],
-        ["Floor",FLOOR_MPFI],
-        ["Round",ROUND_MPFI],
-               ["Trunc",TRUNC_MPFI],
-               ["MOD",MOD_MPFI],
-               ["POW",POW_MPFI],
-               0];
-InstallMethod(Atan2, "float", [IsMPFIFloat, IsMPFIFloat], ATAN2_MPFI);
-fi;
-  
-InstallMethod(SignFloat, "float", [IsMPFIFloat], function(x)
-    if x>MPFI.0 then
-        return 1;
-    elif x < MPFI.0 then
-        return -1;
-    else
-        return 0;
-    fi;
-end);
-
-InstallMethod(Inf, "float", [IsMPFIFloat], LEFT_MPFI);
-InstallMethod(Sup, "float", [IsMPFIFloat], RIGHT_MPFI);
+        ["Square",SQR_MPFI],
+        ["Inf", LEFT_MPFI],
+        ["Sup", RIGHT_MPFI],
+        ["Mid", MID_MPFI],
+        ["AbsoluteDiameter", DIAM_MPFI],
+        ["RelativeDiameter", DIAM_REL_MPFI],
+        ["BisectInterval", BISECT_MPFI],
+#        ["Ceil",CEIL_MPFI],
+#        ["Floor",FLOOR_MPFI],
+#        ["Round",ROUND_MPFI],
+#        ["Trunc",TRUNC_MPFI],
+#        ["Frac",FRAC_MPFI],
+        ["FrExp",FREXP_MPFI],
+        ["Norm",SQR_MPFI],
+        ["Argument",ZERO_MPFI],
+        ["SignFloat",SIGN_MPFI],
+        ["IsXInfinity",ISXINF_MPFI],
+        ["IsPInfinity",ISPINF_MPFI],
+        ["IsNInfinity",ISNINF_MPFI],
+        ["IsFinite",ISNUMBER_MPFI],
+        ["IsNaN",ISNAN_MPFI],
+        ["IsZero",ISZERO_MPFI],
+        ["IsEmpty",ISEMPTY_MPFI],
+        ["ExtRepOfObj",EXTREPOFOBJ_MPFI],
+        ["RealPart",x->x],
+        ["ImaginaryPart",ZERO_MPFI],
+        ["ComplexConjugate",x->x],
+        ["PrecisionFloat",PREC_MPFI]]);
 
 ################################################################
 # binary operations
 ################################################################
-for __i in ["SUM","DIFF","QUO","PROD","LQUO","EQ","LT"] do
-    InstallMethod(VALUE_GLOBAL(__i), "float",
-            [IsMPFIFloat, IsMPFIFloat], VALUE_GLOBAL(Concatenation(__i,"_MPFI")));
-od;
-Unbind(__i);
+CallFuncList(function(arg)
+    local i;
+    for i in arg do
+        InstallMethod(VALUE_GLOBAL(i), "MPFI float, MPFI float", [IsMPFIFloat, IsMPFIFloat],
+                VALUE_GLOBAL(Concatenation(i,"_MPFI")));
+        InstallMethod(VALUE_GLOBAL(i), "MPFI float, MPFR float", [IsMPFIFloat, IsMPFRFloat],
+                VALUE_GLOBAL(Concatenation(i,"_MPFI_MPFR")));
+        InstallMethod(VALUE_GLOBAL(i), "MPFR float, MPFI float", [IsMPFRFloat, IsMPFIFloat],
+                VALUE_GLOBAL(Concatenation(i,"_MPFR_MPFI")));
+    od;
+end, ["SUM","DIFF","QUO","PROD","LQUO","EQ","LT"]);
+
+InstallMethod(LdExp, "MPFI float, int", [IsMPFIFloat, IsInt], LDEXP_MPFI);
+InstallMethod(Atan2, "float", [IsMPFIFloat, IsMPFIFloat], ATAN2_MPFI);  
 
 InstallMethod(POW, "float, rat", [IsMPFIFloat, IsRat], 
         function(f,r)
@@ -142,103 +173,74 @@ InstallMethod(POW, "float, rat", [IsMPFIFloat, IsRat],
     return ROOT_MPFI(f,DenominatorRat(r));
 end);
 
-
-InstallMethod(SUM, "float, scalar", [IsMPFIFloat,IsScalar],
-        function(x,y) return SUM(x,MPFIFloat(y)); end);
-InstallMethod(SUM, "scalar, float", [IsScalar,IsMPFIFloat],
-        function(x,y) return SUM(MPFIFloat(x),y); end);
-InstallMethod(DIFF, "float, scalar", [IsMPFIFloat,IsScalar],
-        function(x,y) return DIFF(x,MPFIFloat(y)); end);
-InstallMethod(DIFF, "scalar, float", [IsScalar,IsMPFIFloat],
-        function(x,y) return DIFF(MPFIFloat(x),y); end);
-InstallMethod(PROD, "float, scalar", [IsMPFIFloat,IsScalar],
-        function(x,y) return PROD(x,MPFIFloat(y)); end);
-InstallMethod(PROD, "scalar, float", [IsScalar,IsMPFIFloat],
-        function(x,y) return PROD(MPFIFloat(x),y); end);
-InstallMethod(QUO, "float, scalar", [IsMPFIFloat,IsScalar],
-        function(x,y) return QUO(x,MPFIFloat(y)); end);
-InstallMethod(QUO, "scalar, float", [IsScalar,IsMPFIFloat],
-        function(x,y) return QUO(MPFIFloat(x),y); end);
-InstallMethod(POW, "float, scalar", [IsMPFIFloat,IsScalar],
-        function(x,y) return POW(x,MPFIFloat(y)); end);
-InstallMethod(POW, "scalar, float", [IsScalar,IsMPFIFloat],
-        function(x,y) return POW(MPFIFloat(x),y); end);
-InstallMethod(LQUO, "float, scalar", [IsMPFIFloat,IsScalar],
-        function(x,y) return LQUO(x,MPFIFloat(y)); end);
-InstallMethod(LQUO, "scalar, float", [IsScalar,IsMPFIFloat],
-        function(x,y) return LQUO(MPFIFloat(x),y); end);
-InstallMethod(MOD, "float, scalar", [IsMPFIFloat,IsScalar],
-        function(x,y) return MOD(x,MPFIFloat(y)); end);
-InstallMethod(MOD, "scalar, float", [IsScalar,IsMPFIFloat],
-        function(x,y) return MOD(MPFIFloat(x),y); end);
-InstallMethod(EQ, "float, scalar", [IsMPFIFloat,IsScalar],
-        function(x,y) return EQ(x,MPFIFloat(y)); end);
-InstallMethod(EQ, "scalar, float", [IsScalar,IsMPFIFloat],
-        function(x,y) return EQ(MPFIFloat(x),y); end);
-InstallMethod(LT, "float, scalar", [IsMPFIFloat,IsScalar],
-        function(x,y) return LT(x,MPFIFloat(y)); end);
-InstallMethod(LT, "scalar, float", [IsScalar,IsMPFIFloat],
-        function(x,y) return LT(MPFIFloat(x),y); end);
-        
+InstallMethod(IsSubset, [IsMPFIFloat, IsMPFIFloat], ISINSIDE_MPFI);
+InstallMethod(IN, [IsMPFIFloat, IsMPFIFloat], SUM_FLAGS, ISINSIDE_MPFI);
+InstallMethod(IN, [IsMPFRFloat, IsMPFIFloat], SUM_FLAGS, ISINSIDE_MPFRMPFI);
+InstallMethod(Intersection2, [IsMPFIFloat, IsMPFIFloat], INTERSECT_MPFI);
+InstallMethod(Union2, [IsMPFIFloat, IsMPFIFloat], UNION_MPFI);
+InstallMethod(IncreaseInterval, [IsMPFIFloat, IsMPFRFloat], BLOWUP_MPFI);
+InstallMethod(IncreaseInterval, [IsMPFIFloat, IsMPFIFloat],
+        function(x,y) return INCREASE_MPFI(x,Sup(y)); end);
+InstallMethod(BlowupInterval, [IsMPFIFloat, IsMPFIFloat], BLOWUP_MPFI);
+InstallMethod(BlowupInterval, [IsMPFIFloat, IsMPFIFloat],
+        function(x,y) return BLOWUP_MPFI(x,Sup(y)); end);
+  
 ################################################################
 # constructor
 ################################################################
-InstallMethod(MPFIFloat, "for integers", [IsInt],
-        function(int)
-    if IsInt(ValueOption("PrecisionFloat")) then
-        return MPFI_INTPREC(int,ValueOption("PrecisionFloat"));
-    else
-        return MPFI_INT(int);
-    fi;
+
+INSTALLFLOATCREATOR("for list", [IsMPFIFloat,IsList],
+        function(filter,list)
+    return OBJBYEXTREP_MPFI(list);
 end);
-InstallMethod(MPFIFloat, "for rationals", [IsRat],
-        function(rat)
+
+INSTALLFLOATCREATOR("for integers", [IsMPFIFloat,IsInt], 20,
+        function(filter,int)
+    return MPFI_INTPREC(int,MPFIBITS@(filter));
+end);
+
+INSTALLFLOATCREATOR("for rationals", [IsMPFIFloat,IsRat], 10,
+        function(filter,rat)
     local n, d, prec;
     n := NumeratorRat(rat);
     d := DenominatorRat(rat);
-    if IsInt(ValueOption("PrecisionFloat")) then
-        prec := ValueOption("PrecisionFloat");
-    elif n=0 then
-        return MPFI.0;
-    else
-        prec := Maximum(64,2+LogInt(AbsInt(n),2),2+LogInt(d,2));
-    fi;
+    prec := MPFIBITS@(filter);
     return MPFI_INTPREC(n,prec)/MPFI_INTPREC(d,prec);
 end);
-InstallMethod(MPFIFloat, "for lists", [IsList],
-        l->List(l,MPFIFloat));
-InstallMethod(MPFIFloat, "for macfloats", [IsFloat], #!!!
-        x->MPFIFloat(String(x)));
-InstallMethod(MPFIFloat, "for strings", [IsString],
-        function(s)
-    if IsInt(ValueOption("PrecisionFloat")) then
-        return MPFI_STRING(s,ValueOption("PrecisionFloat"));
-    else
-        return MPFI_STRING(s,Maximum(64,Int(Length(s)*100000/30103)));
-    fi;
-end);
-InstallMethod(MPFIFloat, "for float", [IsMPFIFloat],
-        function(obj)
-    if IsInt(ValueOption("PrecisionFloat")) then
-        return MPFI_MPFIPREC(obj,ValueOption("PrecisionFloat"));
-    else
-        return obj;
-    fi;
+
+INSTALLFLOATCREATOR("for strings", [IsMPFIFloat,IsString],
+        function(filter,s)
+    return MPFI_STRING(s,MPFIBITS@(filter));
 end);
 
-InstallMethod(Rat, "float", [IsMPFIFloat],
-        function (x)
-    local M, a;
-
-    M := [[SignFloat(x),0],[0,1]];
-    repeat
-        a := Int(Sup(x));
-        M := M * [[a,1],[1,0]];
-        if x = a then break; fi;
-        x := MPFI.1/(x - a);
-    until Sup(x)-Inf(x) >= MPFR.1;
-    return M[1][1]/M[2][1];
+INSTALLFLOATCREATOR("for MPFI float", [IsMPFIFloat,IsMPFIFloat],
+        function(filter,obj)
+    return MPFI_MPFIPREC(obj,MPFIBITS@(filter));
 end);
+
+INSTALLFLOATCREATOR("for MPFR float", [IsMPFIFloat,IsMPFRFloat],
+        function(filter,obj)
+    return MPFI_MPFR(obj);
+end);
+
+DECLAREFLOATCREATOR(IsMPFIFloat,IsMPFRFloat,IsMPFRFloat);
+INSTALLFLOATCREATOR("for 2 MPFR floats", [IsMPFIFloat,IsMPFRFloat,IsMPFRFloat],
+        function(filter,re,im)
+    return MPFI_2MPFR(re,im);
+end);
+
+DECLAREFLOATCREATOR(IsMPFIFloat,IsInt,IsInt);
+INSTALLFLOATCREATOR("for 2 ints", [IsMPFIFloat,IsInt,IsInt],
+        function(filter,re,im)
+    return MPFI_2MPFR(MPFR_INT(re),MPFR_INT(im));
+end);
+
+INSTALLFLOATCREATOR("for macfloat", [IsMPFIFloat,IsIEEE754FloatRep],
+        function(filter,obj)
+    return MPFI_MPFR(MPFR_MACFLOAT(obj));
+end);
+
+INSTALLFLOATCONSTRUCTORS(MPFI);
 
 #############################################################################
 ##

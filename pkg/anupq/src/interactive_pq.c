@@ -2,7 +2,7 @@
 **
 *A  interactive_pq.c            ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: interactive_pq.c,v 1.9 2001/09/24 20:31:13 gap Exp $
+*A  @(#)$Id: interactive_pq.c,v 1.13 2011/11/29 09:43:57 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -21,83 +21,13 @@
 #include "global.h"
 
 #define MAXOPTION 31          /* maximum number of menu options */
-#define CAYLEY_PRES_FORMAT 1
 #define GAP_PRES_FORMAT 2 
-#define MAGMA_PRES_FORMAT 3
 
 #define BOTH_TAILS 0 
 #define NEW_TAILS 1
 #define COMPUTE_TAILS 2
 
 #if defined (GROUP) 
-
-int option_collect_word (format, start_gen, final_gen, pcp)
-int format;
-int start_gen;
-int final_gen;
-struct pcp_vars *pcp;
-{
-#include "define_y.h"
-
-   int t, cp, i;
-   int type;
-   FILE *Magma_Auts;
-
-   t = runTime ();
-   if (format != BASIC)
-      setup_symbols (pcp);
-   type = WORD;
-   if (!is_space_exhausted (3 * pcp->lastg + 2, pcp)) {
-      Magma_Auts = OpenFile ("Magma_Auts", "a+");
-      cp = pcp->lused; 
-      setup_word_to_collect (stdin, format, type, cp, pcp);
-      t = runTime () - t;
-      printf ("Collection took %.2f seconds\n", t * CLK_SCALE);
-      fprintf (Magma_Auts, "v := \\[");
-      for (i = start_gen; i < final_gen; ++i) { 
-	 if (i % 20 == 0) fprintf (Magma_Auts, "\n");
-	 fprintf (Magma_Auts, "%d, ", y[cp + i]);
-      }
-      fprintf (Magma_Auts, "%d];\n", y[cp + final_gen]);
-      fprintf (Magma_Auts, "v := V!v;\n");
-      CloseFile (Magma_Auts);
-      return TRUE;
-   }
-       
-   return FALSE;
-}
-
-int option_commute_word (format, start_gen, final_gen, pcp)
-int format;
-int start_gen;
-int final_gen;
-struct pcp_vars *pcp;
-{
-#include "define_y.h"
-   int cp, t, i;
-   FILE *Magma_Auts;
-
-   t = runTime ();
-   if (format != BASIC)
-      setup_symbols (pcp);
-   if (!is_space_exhausted (7 * pcp->lastg + 2, pcp)) {
-      cp = pcp->lused; 
-      Magma_Auts = OpenFile ("Magma_Auts", "a+");
-      calculate_commutator (format, pcp);
-      fprintf (Magma_Auts, "v := \\[");
-      for (i = start_gen; i < final_gen; ++i) {
-	 if (i % 20 == 0) fprintf (Magma_Auts, "\n");
-	 fprintf (Magma_Auts, "%d, ", y[cp + i]);
-      }
-      fprintf (Magma_Auts, "%d];\n", y[cp + final_gen]);
-      fprintf (Magma_Auts, "v := V!v;\n");
-      CloseFile (Magma_Auts);
-      t = runTime () - t;
-      printf ("Commutator calculation took %.2f seconds\n", t * CLK_SCALE);
-      return TRUE;
-   }
-   return FALSE;
-}
 
 /* interactive menu for p-quotient calculation */
 
@@ -109,7 +39,7 @@ int **head;
 int **list; 
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int option, t, class;
    register int cp;
@@ -120,8 +50,7 @@ struct pcp_vars *pcp;
    int ***auts;
    char *s;
    char *name;
-   FILE_TYPE FileName;
-   FILE_TYPE MAGMA_Auts;
+   FILE * FileName;
 
    int *queue, *long_queue;
    int start_length;
@@ -490,31 +419,6 @@ struct pcp_vars *pcp;
 	 List_Auts (*head, *list, start_gen, final_gen, pcp);
 	 break;
 
-      case MAGMA_AUTOMORPHISMS:
-	 /*
-	   read_value (TRUE, "Input start position: ", &start, 1);
-	   */
-	 read_value (TRUE, "Input start generator: ", &start_gen, 1);
-	 read_value (TRUE, "Input final generator: ", &final_gen, start_gen);
-	 final_gen = MIN (final_gen, pcp->lastg);
-	 MAGMA_Auts = OpenFile ("Magma_Auts", "w+");
-	 fprintf (MAGMA_Auts, "G := GL (%d, GF (%d));\n",
-		  final_gen - start_gen + 1, pcp->p);
-	 fprintf (MAGMA_Auts, "V := VectorSpace (GF (%d), %d);\n",
-		  pcp->p, final_gen - start_gen + 1);
-	 CloseFile (MAGMA_Auts);
-	 Magma_Auts (*head, *list, start_gen, start_gen, final_gen, pcp);
-/* 
-	 type = 0;
-	 do {
-	    read_value (TRUE, "Collect word (1) or commutator (3) (0 to finish): ", 
-			&type, 0);
-	    if (type == 1) 
-	       option_collect_word (format, start_gen, final_gen, pcp);
-	    if (type == 3) 
-	       option_commute_word (format, start_gen, final_gen, pcp);
-	 } while (type != 0); 
-*/
 	 break;
 
       case RELATIONS_FILE:
@@ -596,26 +500,20 @@ struct pcp_vars *pcp;
 	 break;
 
       case OUTPUT_PRESENTATION:
+      /* TODO: We used to support more output formats, but now only
+      GAP output is supported. As such, the following query is no redundant.
+      We keep it for backward compatibility only. */
 	 name = GetString ("Enter output file name: ");
-	 read_value (TRUE, "Output file in CAYLEY (1) or GAP (2) or Magma (3) format? ", 
-		     &file_format, CAYLEY_PRES_FORMAT);
+	 read_value (TRUE, "Output file in GAP (2) format? ", 
+		     &file_format, GAP_PRES_FORMAT);
 	 FileName = OpenFile (name, "a+");
 	 if (FileName != NULL) {
-	    if (file_format == CAYLEY_PRES_FORMAT) {
-	       CAYLEY_presentation (FileName, pcp);
-	       printf ("Group presentation written in CAYLEY format to file\n");
-	    }
-	    else if (file_format == GAP_PRES_FORMAT) {
+	    if (file_format == GAP_PRES_FORMAT) {
 	       GAP_presentation (FileName, pcp, 1);
 	       printf ("Group presentation written in GAP format to file\n");
 	    }
-	    else if (file_format == MAGMA_PRES_FORMAT) {
-	       Magma_presentation (FileName, pcp);
-	       printf ("Group presentation written in Magma format to file\n");
-	    }
 	    else
-	       printf ("Format must be %d or %d or %d\n", 
-		       CAYLEY_PRES_FORMAT, GAP_PRES_FORMAT, MAGMA_PRES_FORMAT);
+	       printf ("Format must be %d\n", GAP_PRES_FORMAT);
 	 }
 	 CloseFile (FileName);
 	 break;
@@ -666,11 +564,9 @@ void list_interactive_pq_menu ()
    printf ("%d. Print structure of a range of pcp generators\n", STRUCTURE);
    printf ("%d. Display automorphism actions on generators\n", 
 	   LIST_AUTOMORPHISMS);
-   printf ("%d. Write automorphism actions on generators in Magma format\n", 
-	   MAGMA_AUTOMORPHISMS);
    printf ("%d. Collect word in defining generators\n", DGEN_WORD);
    printf ("%d. Compute commutator of defining generators\n", DGEN_COMM);
-   printf ("%d. Write presentation to file in CAYLEY/GAP/Magma format\n", 
+   printf ("%d. Write presentation to file in GAP format\n", 
 	   OUTPUT_PRESENTATION);
    printf ("%d. Write compact description of group to file\n", 
 	   COMPACT_PRESENTATION);

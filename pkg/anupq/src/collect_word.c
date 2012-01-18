@@ -2,7 +2,7 @@
 **
 *A  collect_word.c              ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: collect_word.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: collect_word.c,v 1.6 2011/11/29 09:55:06 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -18,12 +18,9 @@
 /* collect word in pcp generators of group; word has base address ptr; 
    set up the result as exponent vector with base address cp */
 
-void collect_word (ptr, cp, pcp)
-int ptr;
-int cp;
-struct pcp_vars *pcp;
+void collect_word (int ptr, int cp, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int temp;
    int gen, exp;
@@ -52,13 +49,9 @@ struct pcp_vars *pcp;
 
 /* calculate the exp power of word stored as exponent-vector at cp;
    ptr is index of free position for temporary storage in y */
-void calculate_power (exp, ptr, cp, pcp)
-int exp;
-int ptr;
-int cp;
-struct pcp_vars *pcp;
+void calculate_power (int exp, int ptr, int cp, struct pcp_vars *pcp)
 { 
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int lastg = pcp->lastg;
@@ -80,12 +73,7 @@ struct pcp_vars *pcp;
    as an exponent vector at cp; convert exponent vector
    to string with base address ptr; and print out result */
 
-void setup_word_to_collect (file, format, type, cp, pcp)
-FILE_TYPE file;
-int format;
-int type;
-int cp; 
-struct pcp_vars *pcp;
+void setup_word_to_collect (FILE *file, int format, int type, int cp, struct pcp_vars *pcp)
 {
    int disp = pcp->lastg + 2;
    register int ptr;

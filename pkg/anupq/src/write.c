@@ -2,7 +2,7 @@
 **
 *A  write.c                     ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: write.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: write.c,v 1.7 2011/11/28 17:47:22 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -20,7 +20,7 @@ void save_pcp (ofp, pcp)
 FILE *ofp;
 struct pcp_vars *pcp;
 {   
-#include "define_y.h"
+   register int *y = y_address;
 
    compact (pcp);
 
@@ -41,7 +41,7 @@ struct pcp_vars *pcp;
 {
    register int i, j;
 
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
    mpz_out_str (ofp, 10, &pga->aut_order);
 #endif
 

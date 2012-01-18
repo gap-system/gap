@@ -19,24 +19,23 @@ and -groups in detail. All of them show different aspects of the package,
 and the order in which they appear is entirely arbitrary. In particular
 they are not ordered by degree of difficulty or interest. <P/>
 
-<Index Key="RCWAReadExamples"><C>RCWAReadExamples</C></Index>
-<Index Key="RCWAExamples"><C>RCWAExamples</C></Index>
-<Index Key="UnwrapExample"><C>UnwrapExample</C></Index>
+<Index Key="RCWALoadExamples"><C>RCWALoadExamples</C></Index>
+<Index Key="AssignGlobals"><C>AssignGlobals</C></Index>
 
 The rcwa mappings, rcwa groups and other objects defined in this chapter can
 be found in the file <F>pkg/rcwa/examples/examples.g</F>. This file can be
-read into the current &GAP; session by issueing <C>RCWAReadExamples( );</C>.
-Afterwards, the examples are stored in a record <C>RCWAExamples</C> of
-records. The global variable assignments made in a section of this chapter
-can be performed by issueing <C>UnwrapExample(<A>name</A>)</C>, where
-<A>name</A> is given at the end of the corresponding section. Assignments
-which do not need much typing are omitted. The names of the variables which
-are actually assigned are listed by the function <C>UnwrapExample</C>. <P/>
+read into the current &GAP; session by the function
+<Ref Func="RCWALoadExamples"/> which takes no arguments and returns
+a record containing all examples.
+The global variable assignments made in a section of this chapter can be
+made by applying the function <C>AssignGlobals</C> to the respective
+component of the record returned by <C>RCWALoadExamples</C>. The component
+names are given at the end of the corresponding sections. <P/>
 
-The examples are typically far from discussing the respective aspects
-exhaustively. It is quite likely that in many instances by just a few
-little modifications or additional easy commands you can find out
-interesting things yourself -- have fun!
+The discussions of the examples are typically far from being exhaustive.
+It is quite likely that in many instances by just a few little modifications
+or additional easy commands you can find out interesting things yourself
+-- have fun!
 
 <!-- #################################################################### -->
 
@@ -59,7 +58,7 @@ gap> G := Group(List([[0,2,1,4],[0,4,1,4],[1,4,2,4],[2,4,3,4]],
 </Example>
 
 is isomorphic to the Higman-Thompson group. 
-This isomorphy has been pointed out by John P. McDermott.
+This isomorphism has been pointed out by John P. McDermott.
 We take a slightly different set of generators
 
 <Example>
@@ -226,8 +225,8 @@ gap> G := Group(k,l,m,n);
 The correctness of this representation can likewise be verified by simply
 checking the defining relations given above. <P/>
 
-Issue <C>UnwrapExample("HigmanThompson");</C>
-in order to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().HigmanThompson);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -247,10 +246,11 @@ gap> Display(T);
 
 Rcwa mapping of Z with modulus 2
 
-              n mod 2               |            Image of n
-------------------------------------+------------------------------------
-  0                                 | n/2
-  1                                 | (3n + 1)/2
+        /
+        | n/2      if n in 0(2)
+ n |-> <  (3n+1)/2 if n in 1(2)
+        |
+        \
 
 gap> IsInjective(T); IsSurjective(T);
 false
@@ -281,21 +281,25 @@ gap> Display(Sigma_T);
 
 Bijective rcwa mapping of Z^2 with modulus (1,0)Z+(0,6)Z
 
-   [m,n] mod (1,0)Z+(0,6)Z   |              Image of [m,n]
------------------------------+-------------------------------------------
- [0,0] [0,2]                 | [m,n/2]
- [0,1] [0,3] [0,5]           | [2m+1,(3n+1)/2]
- [0,4]                       | [2m,n/2]
+            /
+            | (2m+1,(3n+1)/2) if (m,n) in (0,1)+(1,0)Z+(0,2)Z
+            | (m,n/2)         if (m,n) in (0,0)+(1,0)Z+(0,6)Z U 
+ (m,n) |-> <                              (0,2)+(1,0)Z+(0,6)Z
+            | (2m,n/2)        if (m,n) in (0,4)+(1,0)Z+(0,6)Z
+            |
+            \
 
 gap> Display(Sigma_T^-1);
 
 Bijective rcwa mapping of Z^2 with modulus (2,0)Z+(0,3)Z
 
-   [m,n] mod (2,0)Z+(0,3)Z   |              Image of [m,n]
------------------------------+-------------------------------------------
- [0,0] [0,1] [1,0] [1,1]     | [m,2n]
- [0,2]                       | [m/2,2n]
- [1,2]                       | [(m-1)/2,(2n-1)/3]
+            /
+            | (m,2n)             if (m,n) in (0,0)+(1,0)Z+(0,3)Z U 
+            |                                (0,1)+(1,0)Z+(0,3)Z
+ (m,n) |-> <  (m/2,2n)           if (m,n) in (0,2)+(2,0)Z+(0,3)Z
+            | ((m-1)/2,(2n-1)/3) if (m,n) in (1,2)+(2,0)Z+(0,3)Z
+            |
+            \
 
 ]]>
 </Example>
@@ -358,20 +362,23 @@ gap> Display(a);
 
 Bijective rcwa mapping of Z^2 with modulus (1,0)Z+(0,2)Z
 
-   [m,n] mod (1,0)Z+(0,2)Z   |              Image of [m,n]
------------------------------+-------------------------------------------
- [0,0]                       | [2m,n/2]
- [0,1]                       | [2m+1,(n-1)/2]
+            /
+            | (2m,n/2)       if (m,n) in (0,0)+(1,0)Z+(0,2)Z
+ (m,n) |-> <  (2m+1,(n-1)/2) if (m,n) in (0,1)+(1,0)Z+(0,2)Z
+            |
+            \
 
 gap> Display(b);
 
 Bijective rcwa mapping of Z^2 with modulus (2,0)Z+(0,3)Z
 
-   [m,n] mod (2,0)Z+(0,3)Z   |              Image of [m,n]
------------------------------+-------------------------------------------
- [0,0] [0,1]                 | [m/2,n]
- [0,2]                       | [m,n]
- [1,0] [1,1] [1,2]           | [m,3n+2]
+            /
+            | (m,3n+2) if (m,n) in (1,0)+(2,0)Z+(0,1)Z
+            | (m/2,n)  if (m,n) in (0,0)+(2,0)Z+(0,3)Z U 
+ (m,n) |-> <                       (0,1)+(2,0)Z+(0,3)Z
+            | (m,n)    if (m,n) in (0,2)+(2,0)Z+(0,3)Z
+            |
+            \
 
 ]]>
 </Example>
@@ -401,8 +408,8 @@ gap> Trajectory(a^-1,[1000,1000],15);
 It is left as an easy exercise to the reader to find out how the cycles
 of&nbsp;<C>b</C> look like. <P/>
 
-Issue <C>UnwrapExample("ZxZ");</C>
-in order to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().ZxZ);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -423,11 +430,11 @@ gap> Display(Collatz);
 
 Rcwa mapping of Z with modulus 3
 
-              n mod 3               |            Image of n
-------------------------------------+------------------------------------
-  0                                 | 2n/3
-  1                                 | (4n - 1)/3
-  2                                 | (4n + 1)/3
+        /
+        | 2n/3     if n in 0(3)
+ n |-> <  (4n-1)/3 if n in 1(3)
+        | (4n+1)/3 if n in 2(3)
+        \
 
 gap> ShortCycles(Collatz,[-50..50],50); # There are some finite cycles:
 [ [ -111, -74, -99, -66, -44, -59, -79, -105, -70, -93, -62, -83 ], 
@@ -524,8 +531,8 @@ true
 The factors <C>PrimeSwitch(3)</C> are products of 6 class transpositions
 (cf.&nbsp;<Ref Func="PrimeSwitch" Label="p"/>). <P/>
 
-Issue <C>UnwrapExample("CollatzlikePerms");</C>
-to assign the global variable <C>Collatz</C> defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().CollatzlikePerms);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -574,14 +581,15 @@ gap> Display(f6);
 
 Rcwa mapping of Z with modulus 6
 
-              n mod 6               |            Image of n
-------------------------------------+------------------------------------
-  0                                 | n/6
-  1                                 | (5n + 1)/6
-  2                                 | (7n - 2)/6
-  3                                 | (11n + 3)/6
-  4                                 | (11n - 2)/6
-  5                                 | (11n - 1)/6
+        /
+        | n/6       if n in 0(6)
+        | (5n+1)/6  if n in 1(6)
+        | (7n-2)/6  if n in 2(6)
+ n |-> <  (11n+3)/6 if n in 3(6)
+        | (11n-2)/6 if n in 4(6)
+        | (11n-1)/6 if n in 5(6)
+        |
+        \
 
 gap> S0 := LikelyContractionCentre(f6,1000,100000);;
 #I  Warning: `LikelyContractionCentre' is highly probabilistic.
@@ -622,8 +630,8 @@ in trivial cases, i.e. for example when there is some <M>k</M> such that
 applying the <M>k</M>th power of the respective mapping to any integer
 decreases its absolute value. <P/>
 
-Issue <C>UnwrapExample("SlowlyContractingMappings");</C>
-to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().SlowlyContractingMappings);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -675,8 +683,8 @@ Integers
 Further similar computations are shown in
 Section&nbsp;<Ref Label="sec:CollatzImagesAndPreImages"/>. <P/>
 
-Issue <C>UnwrapExample("CollatzMapping");</C>
-to assign the global variable&nbsp;<C>T</C> defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().CollatzMapping);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -701,39 +709,40 @@ gap> Display(ML1);
 
 Rcwa mapping of GF(2)[x] with modulus x
 
-        P mod x         |                  Image of P
-------------------------+------------------------------------------------
- 0*Z(2)                 | P/x
- Z(2)^0                 | ((x^3+x^2+x+Z(2)^0)*P + Z(2)^0)/x
+        /
+        | P/x                     if P in 0(x)
+ P |-> <  ((x^3+x^2+x+1)*P + 1)/x if P in 1(x)
+        |
+        \
 
 gap> Display(ML2);
 
 Rcwa mapping of GF(2)[x] with modulus x
 
-        P mod x         |                  Image of P
-------------------------+------------------------------------------------
- 0*Z(2)                 | P/x
- Z(2)^0                 | ((x^2+Z(2)^0)*P + Z(2)^0)/x
+        /
+        | P/x               if P in 0(x)
+ P |-> <  ((x^2+1)*P + 1)/x if P in 1(x)
+        |
+        \
 
 gap> List([ML1,ML2],IsSurjective);
 [ true, true ]
 gap> List([ML1,ML2],IsInjective);
 [ false, false ]
 gap> traj1 := Trajectory(ML1,One(R),16);
-[ Z(2)^0, x^2+x+Z(2)^0, x^4+x^2+x, x^3+x+Z(2)^0, x^5+x^4+x^2, x^4+x^3+x, 
-  x^3+x^2+Z(2)^0, x^5+x^2+Z(2)^0, x^7+x^6+x^5+x^3+Z(2)^0, 
-  x^9+x^7+x^6+x^5+x^3+x+Z(2)^0, x^11+x^10+x^8+x^7+x^6+x^5+x^2, 
-  x^10+x^9+x^7+x^6+x^5+x^4+x, x^9+x^8+x^6+x^5+x^4+x^3+Z(2)^0, 
-  x^11+x^8+x^7+x^6+x^4+x+Z(2)^0, x^13+x^12+x^11+x^8+x^7+x^6+x^4, 
-  x^12+x^11+x^10+x^7+x^6+x^5+x^3 ]
+[ 1, x^2+x+1, x^4+x^2+x, x^3+x+1, x^5+x^4+x^2, x^4+x^3+x, x^3+x^2+1, 
+  x^5+x^2+1, x^7+x^6+x^5+x^3+1, x^9+x^7+x^6+x^5+x^3+x+1, 
+  x^11+x^10+x^8+x^7+x^6+x^5+x^2, x^10+x^9+x^7+x^6+x^5+x^4+x, 
+  x^9+x^8+x^6+x^5+x^4+x^3+1, x^11+x^8+x^7+x^6+x^4+x+1, 
+  x^13+x^12+x^11+x^8+x^7+x^6+x^4, x^12+x^11+x^10+x^7+x^6+x^5+x^3 ]
 gap> traj2 := Trajectory(ML2,(x^3+x+1)*One(R),16);
-[ x^3+x+Z(2)^0, x^4+x+Z(2)^0, x^5+x^3+x^2+x+Z(2)^0, x^6+x^3+Z(2)^0, 
-  x^7+x^5+x^4+x^2+x, x^6+x^4+x^3+x+Z(2)^0, x^7+x^4+x^3+x+Z(2)^0, 
-  x^8+x^6+x^5+x^4+x^3+x+Z(2)^0, x^9+x^6+x^3+x+Z(2)^0, 
-  x^10+x^8+x^7+x^5+x^4+x+Z(2)^0, x^11+x^8+x^7+x^5+x^4+x^3+x^2+x+Z(2)^0, 
-  x^12+x^10+x^9+x^8+x^7+x^5+Z(2)^0, x^13+x^10+x^7+x^4+x, 
-  x^12+x^9+x^6+x^3+Z(2)^0, x^13+x^11+x^10+x^8+x^7+x^5+x^4+x^2+x, 
-  x^12+x^10+x^9+x^7+x^6+x^4+x^3+x+Z(2)^0 ]
+[ x^3+x+1, x^4+x+1, x^5+x^3+x^2+x+1, x^6+x^3+1, x^7+x^5+x^4+x^2+x, 
+  x^6+x^4+x^3+x+1, x^7+x^4+x^3+x+1, x^8+x^6+x^5+x^4+x^3+x+1, 
+  x^9+x^6+x^3+x+1, x^10+x^8+x^7+x^5+x^4+x+1, 
+  x^11+x^8+x^7+x^5+x^4+x^3+x^2+x+1, x^12+x^10+x^9+x^8+x^7+x^5+1, 
+  x^13+x^10+x^7+x^4+x, x^12+x^9+x^6+x^3+1, 
+  x^13+x^11+x^10+x^8+x^7+x^5+x^4+x^2+x, 
+  x^12+x^10+x^9+x^7+x^6+x^4+x^3+x+1 ]
 ]]>
 </Example>
 
@@ -796,8 +805,8 @@ Needless to say however that this computational evidence does not replace
 the proof along these lines given in the article cited above, but just
 sheds a light on the idea behind it. <P/>
 
-Issue <C>UnwrapExample("MatthewsLeigh");</C>
-to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().MatthewsLeigh);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -816,13 +825,13 @@ gap> Display(u);
 
 Wild bijective rcwa mapping of Z with modulus 5
 
-              n mod 5               |            Image of n
-------------------------------------+------------------------------------
-  0                                 | 3n/5
-  1                                 | (9n + 1)/5
-  2                                 | (3n - 1)/5
-  3                                 | (9n - 2)/5
-  4                                 | (9n + 4)/5
+        /
+        | 3n/5     if n in 0(5)
+        | (9n+1)/5 if n in 1(5)
+ n |-> <  (3n-1)/5 if n in 2(5)
+        | (9n-2)/5 if n in 3(5)
+        | (9n+4)/5 if n in 4(5)
+        \
 
 ]]>
 </Example>
@@ -878,8 +887,8 @@ gap> List([Comm(u2,nu^20),Comm(u2,nu^25),Comm(u2,nu^30)],Order);
 We observe that our commutators have various different orders, and
 that the prime factors of these orders are not all <Q>very small</Q>. <P/>
 
-Issue <C>UnwrapExample("CollatzlikePerms");</C>
-to assign the global variable&nbsp;<C>u</C> defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().CollatzlikePerms);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -909,21 +918,22 @@ Rcwa group over GF(2)[x], generated by
 [
 Bijective rcwa mapping of GF(2)[x]: P -> P + Z(2)^0
 
-Bijective rcwa mapping of GF(2)[x] with modulus x^2+Z(2)^0, of order 2
+Bijective rcwa mapping of GF(2)[x] with modulus x^2+1, of order 2
 
-    P mod x^2+Z(2)^0    |                  Image of P
-------------------------+------------------------------------------------
- 0*Z(2)   Z(2)^0        | P + Z(2)^0
- x        x+Z(2)^0      | P
+        /
+        | P + 1 if P in 0(x^2+1) U 1(x^2+1)
+ P |-> <  P     if P in x(x^2+1) U x+1(x^2+1)
+        |
+        \
 
 
 Bijective rcwa mapping of GF(2)[x] with modulus x^2+x, of order 2
 
-      P mod x^2+x       |                  Image of P
-------------------------+------------------------------------------------
- 0*Z(2)                 | (P + x+Z(2)^0)/(x+Z(2)^0)
- Z(2)^0   x+Z(2)^0      | (x+Z(2)^0)*P + x+Z(2)^0
- x                      | P
+        /
+        | (x+1)*P + x+1   if P in 1(x)
+ P |-> <  (P + x+1)/(x+1) if P in 0(x^2+x)
+        | P               if P in x(x^2+x)
+        \
 
 ]
 
@@ -1003,9 +1013,9 @@ Now let's compute the possible orders of products of 3, 5, 7 or 9 generators:
 <![CDATA[
 gap> F := FreeGroup("a","b","c");;
 gap> phi := EpimorphismByGenerators(F,G);
-[ a, b, c ] -> [ ClassTransposition(0*Z(2),x,Z(2)^0,x), 
-  ClassTransposition(0*Z(2),x^2+Z(2)^0,Z(2)^0,x^2+Z(2)^0), 
-  ClassTransposition(Z(2)^0,x,0*Z(2),x^2+x) ]
+[ a, b, c ] -> 
+[ ClassTransposition(0,x,1,x), ClassTransposition(0,x^2+1,1,x^2+1), 
+  ClassTransposition(1,x,0,x^2+x) ]
 gap> B3 := NormedWords(F,3);
 [ a*b*c ]
 gap> B3 := List(B3,g->g^phi);
@@ -1038,8 +1048,8 @@ gap> List(B9,Order);
 ]]>
 </Log>
 
-Issue <C>UnwrapExample("OddNumberOfGens_FiniteOrder");</C>
-in order to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().OddNumberOfGens_FiniteOrder);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -1061,7 +1071,7 @@ gap> r := x^2 + x + Z(4);; s := x^2 + x + Z(4)^2;;
 gap> cg := List( AllResidues(R,x^2), pol -> [ p, p * pol mod q, q ] );;
 gap> ch := List( AllResidues(R,x^2), pol -> [ r, r * pol mod s, s ] );;
 gap> g := RcwaMapping( R, q, cg );
-<rcwa mapping of GF(2^2)[x] with modulus x^2+Z(2)^0>
+<rcwa mapping of GF(2^2)[x] with modulus x^2+1>
 gap> h := RcwaMapping( R, s, ch );
 <rcwa mapping of GF(2^2)[x] with modulus x^2+x+Z(2^2)^2>
 gap> List([g,h],IsTame);
@@ -1085,11 +1095,11 @@ degree less than&nbsp;4:
 <Example>
 <![CDATA[
 gap> orb := Orbit(G,x^5);
-[ x^5, x^5+x^4+x^2+Z(2)^0, x^5+x^3+x^2+Z(2^2)*x+Z(2)^0, x^5+x^3, 
+[ x^5, x^5+x^4+x^2+1, x^5+x^3+x^2+Z(2^2)*x+Z(2)^0, x^5+x^3, 
   x^5+x^4+x^3+x^2+Z(2^2)^2*x+Z(2^2)^2, x^5+x, x^5+x^4+x^3, 
   x^5+x^2+Z(2^2)^2*x, x^5+x^4+x^2+x, x^5+x^3+x^2+Z(2^2)^2*x+Z(2)^0, 
   x^5+x^4+Z(2^2)*x+Z(2^2), x^5+x^3+x, x^5+x^4+x^3+x^2+Z(2^2)*x+Z(2^2), 
-  x^5+x^4+x^3+x+Z(2)^0, x^5+x^2+Z(2^2)*x, x^5+x^4+Z(2^2)^2*x+Z(2^2)^2 ]
+  x^5+x^4+x^3+x+1, x^5+x^2+Z(2^2)*x, x^5+x^4+Z(2^2)^2*x+Z(2^2)^2 ]
 gap> H := Action(G,orb);
 Group([ (1,2,4,7,6,9,12,14)(3,5,8,11,10,13,15,16), 
   (1,3,6,10)(2,5,9,13)(4,8,12,15)(7,11,14,16) ])
@@ -1117,7 +1127,7 @@ gap> G := Group(g,h);
 gap> IsAbelian(G);
 false
 gap> Support(G);
-GF(2^2)[x] \ [ Z(2)^0, Z(2^2), Z(2^2)^2 ]
+GF(2^2)[x] \ [ 1, Z(2^2), Z(2^2)^2 ]
 gap> orb := Orbit(G,Zero(R));;
 gap> Length(orb);
 87
@@ -1144,8 +1154,8 @@ gap> List(Blocks(H,MovedPoints(H)),Length);
 ]]>
 </Example>
 
-Issue <C>UnwrapExample("AbelianGroupOverPolynomialRing");</C>
-to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().AbelianGroupOverPolynomialRing);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -1202,9 +1212,8 @@ true
 ]]>
 </Example>
 
-Issue <C>UnwrapExample("CheckingForSolvability");</C>
-to assign the global variables <C>a</C>, <C>b</C> and <C>G</C>
-defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().CheckingForSolvability);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -1285,12 +1294,13 @@ gap> Display(v);
 
 Rcwa mapping of Z with modulus 8
 
-              n mod 8               |            Image of n
-------------------------------------+------------------------------------
-  0 2 4 6                           | 6n
-  1                                 | (n - 7)/2
-  3 7                               | n - 1
-  5                                 | (n + 1)/2
+        /
+        | 6n      if n in 0(2)
+        | n-1     if n in 3(4)
+ n |-> <  (n-7)/2 if n in 1(8)
+        | (n+1)/2 if n in 5(8)
+        |
+        \
 
 gap> IsInjective(v);
 true
@@ -1308,12 +1318,13 @@ gap> Display(v2^-1);
 
 Bijective rcwa mapping of Z_( 2 ) with modulus 4
 
-              n mod 4               |            Image of n
-------------------------------------+------------------------------------
-  0                                 | 1/3 n / 2
-  1                                 | 2 n + 7
-  2                                 | n + 1
-  3                                 | 2 n - 1
+        /
+        | 1/3 n / 2 if n in 0(4)
+        | 2 n + 7   if n in 1(4)
+ n |-> <  n + 1     if n in 2(4)
+        | 2 n - 1   if n in 3(4)
+        |
+        \
 
 gap> S := ResidueClass(Z_pi(2),2,0);; l := [S];;
 gap> for i in [1..10] do Add(l,l[Length(l)]^v2); od;
@@ -1326,12 +1337,13 @@ gap> Display(v2w2);
 
 Bijective rcwa mapping of Z_( 2 ) with modulus 8
 
-              n mod 8               |            Image of n
-------------------------------------+------------------------------------
-  0 3 4 7                           | n
-  1                                 | n + 4
-  2 6                               | 3 n
-  5                                 | n - 4
+        /
+        | 3 n   if n in 2(4)
+        | n + 4 if n in 1(8)
+ n |-> <  n - 4 if n in 5(8)
+        | n     if n in 0(4) U 3(4)
+        |
+        \
 
 ]]>
 </Example>
@@ -1339,8 +1351,8 @@ Bijective rcwa mapping of Z_( 2 ) with modulus 8
 Again, viewed as an rcwa mapping of the integers the commutator given at
 the end of the example would not be surjective. <P/>
 
-Issue <C>UnwrapExample("Semilocals");</C>
-to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().Semilocals);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -1370,23 +1382,25 @@ gap> Order(x_257);; Display(x_257);
 
 Bijective rcwa mapping of Z with modulus 32, of order 257
 
-              n mod 32              |             Image of n
-------------------------------------+------------------------------------
-   0                                | 16n + 2
-   1  3  5  7  9 11 13 15 17 19 21  |
-  23 25 27 29                       | 16n + 18
-   2  4  6  8 10 12 14              | n + 16
-  16                                | n/16
-  18 20 22 24 26 28 30              | n - 14
-  31                                | n - 31
+        /
+        | 16n+18 if n in 1(4) U 3(8) U 7(16) U 15(32)
+        | n+16   if n in 2(32) U 4(32) U 6(32) U 8(32) U 10(32) U 
+        |                12(32) U 14(32)
+        | n-14   if n in 18(32) U 20(32) U 22(32) U 24(32) U 26(32) U 
+ n |-> <                 28(32) U 30(32)
+        | 16n+2  if n in 0(32)
+        | n/16   if n in 16(32)
+        | n-31   if n in 31(32)
+        |
+        \
 
 gap> Length(Cycle(x_257,0));
 257
 ]]>
 </Example>
 
-Issue <C>UnwrapExample("LongCyclesOfPrimeLength");</C>
-to assign the global variable <C>x&uscore;257</C> defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().LongCyclesOfPrimeLength);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -1416,12 +1430,13 @@ gap> Display(e2);
 
 Bijective rcwa mapping of Z with modulus 8, of order infinity
 
-              n mod 8               |            Image of n
-------------------------------------+------------------------------------
-  0 4                               | n + 4
-  1 5                               | 2n
-  2                                 | n/2
-  3 6 7                             | n
+        /
+        | n+4 if n in 0(4)
+        | 2n  if n in 1(4)
+ n |-> <  n/2 if n in 2(8)
+        | n   if n in 3(4) U 6(8)
+        |
+        \
 
 gap> e2^2 = Restriction(RcwaMapping([[1,2,1]]),RcwaMapping([[4,0,1]]));
 true
@@ -1452,8 +1467,8 @@ gap> List([0..25],i->Modulus(z^i));
 ]]>
 </Example>
 
-Issue <C>UnwrapExample("ModuliOfPowers");</C>
-to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().ModuliOfPowers);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -1567,8 +1582,8 @@ gap>  List(S,Si->Float(Density(Si)));
 ]]>
 </Example>
 
-Issue <C>UnwrapExample("CollatzMapping");</C>
-to assign the global variable&nbsp;<C>T</C> defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().CollatzMapping);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -2032,8 +2047,8 @@ gap> List([5..20],
 ]]>
 </Example>
 
-Issue <C>UnwrapExample("CollatzlikePerms");</C> to assign the
-global variables&nbsp;<C>a</C> and&nbsp;<C>u</C> defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().CollatzlikePerms);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -2065,11 +2080,11 @@ Tame bijective rcwa mapping of Z: n -> n + 1
 
 Bijective rcwa mapping of Z with modulus 4, of order 2
 
-              n mod 4               |            Image of n
-------------------------------------+------------------------------------
-  0                                 | (n + 2)/2
-  1 3                               | 2n - 2
-  2                                 | n
+        /
+        | 2n-2    if n in 1(2)
+ n |-> <  (n+2)/2 if n in 0(4)
+        | n       if n in 2(4)
+        \
 
 ]
 
@@ -2329,8 +2344,8 @@ gap> List(H,NilpotencyClassOfGroup);
 ]]>
 </Example>
 
-Issue <C>UnwrapExample("GrigorchukQuotients");</C>
-to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().GrigorchukQuotients);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -2361,11 +2376,11 @@ it seems likely that <Q>most</Q> trajectories of the two mappings
        alt = "T5+/-: Z -> Z, n |-> (n/2 if n even, (5n+/-1)/2 if n odd)" />
 </center>]]></Alt>
 <Alt Only="Text"><Verb><![CDATA[
-                                       /
+                                      /
                                       | n/2          if n even,
           T_5+/-:  Z -> Z,   n  |->  <
                                       | (5n +/- 1)/2 if n odd
-                                       \
+                                      \
 ]]></Verb></Alt>
 diverge.
 However we can show by means of computation that the forward orbit of any
@@ -2439,8 +2454,8 @@ gap> k;
 ]]>
 </Example>
 
-Issue <C>UnwrapExample("CollatzMapping");</C>
-to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().CollatzMapping);</C>
+in order to assign the global variables defined in this section.
 
 </Section>
 
@@ -2580,8 +2595,8 @@ gap> List(GeneratorsOfGroup(G),Factorization);
 ]]>
 </Example>
 
-Issue <C>UnwrapExample("F2_PSL2Z");</C>
-to assign the global variables defined in this example.
+Enter <C>AssignGlobals(RCWALoadExamples().F2_PSL2Z);</C>
+in order to assign the global variables defined in this section.
 
 <Alt Only="HTML">&nbsp;</Alt>
 

@@ -3,7 +3,7 @@
 *W  selfile.c                   XGAP Source              Erik M. van der Poel
 *W                                                   modified by Frank Celler
 **
-*H  @(#)$Id: selfile.c,v 1.5 2004/01/30 16:16:05 gap Exp $
+*H  @(#)$Id: selfile.c,v 1.6 2011/11/24 11:44:23 gap Exp $
 **
 **  This file is based on the file selector  distributed with  ghostview,  it
 **  contained the following notice:
@@ -2213,7 +2213,7 @@ static void SFcreateWidgets ( toplevel )
 	          "XGap",                    "FileSelector",
 		  transientShellWidgetClass, SFdisplay,
 		  XtNtransientFor,           toplevel,
-		  0 );
+		  NULL );
 
     /* Add WM_DELETE_WINDOW protocol */
     XtAppAddActions( XtWidgetToApplicationContext(selFile),
@@ -2225,7 +2225,7 @@ static void SFcreateWidgets ( toplevel )
     selFileForm = XtVaCreateManagedWidget(
 		      "selFileForm", formWidgetClass, selFile,
 		      XtNdefaultDistance, 30,
-		      0);
+		      NULL);
 
     selFilePrompt = XtVaCreateManagedWidget(
 		      "selFilePrompt", labelWidgetClass, selFileForm,
@@ -2236,11 +2236,11 @@ static void SFcreateWidgets ( toplevel )
                       XtNleft,            XtChainLeft,
                       XtNright,           XtChainLeft,
                       XtNborderWidth,     0,
-                      0 );
+                      NULL );
     XtVaGetValues( selFilePrompt,
 		      XtNforeground,      &SFfore,
 	              XtNbackground,      &SFback,
-		      0 );
+		      NULL );
 
     /* initialize fonts */
     SFinitFont();
@@ -2306,7 +2306,7 @@ static void SFcreateWidgets ( toplevel )
                      XtNwrap,             XawtextWrapWord,
                      XtNresize,           XawtextResizeHeight,
                      XtNuseStringInPlace, True,
-		     0 );
+		     NULL );
     XtOverrideTranslations( selFileField,
         XtParseTranslationTable(oneLineTextEditTranslations) );
     XtSetKeyboardFocus(selFileForm, selFileField);
@@ -2323,7 +2323,7 @@ static void SFcreateWidgets ( toplevel )
                      XtNbottom,            XtChainTop,
                      XtNleft,              XtChainLeft,
                      XtNright,             XtChainLeft,
-		     0 );
+		     NULL );
     XtAddCallback( selFileHScroll, XtNjumpProc,
 		   SFpathSliderMovedCallback, (XtPointer) NULL);
     XtAddCallback( selFileHScroll, XtNscrollProc,
@@ -2340,7 +2340,7 @@ static void SFcreateWidgets ( toplevel )
                      XtNbottom,            XtChainTop,
                      XtNleft,              XtChainLeft,
                      XtNright,             XtChainLeft,
-		     0 );
+		     NULL );
 
     selFileLists[1] = XtVaCreateManagedWidget(
 		     "selFileList2", compositeWidgetClass, selFileForm,
@@ -2355,7 +2355,7 @@ static void SFcreateWidgets ( toplevel )
                      XtNbottom,            XtChainTop,
                      XtNleft,              XtChainLeft,
                      XtNright,             XtChainLeft,
-		     0 );
+		     NULL );
     selFileLists[2] = XtVaCreateManagedWidget(
 		     "selFileList3", compositeWidgetClass, selFileForm,
                      XtNwidth,             listWidth,
@@ -2369,7 +2369,7 @@ static void SFcreateWidgets ( toplevel )
                      XtNbottom,            XtChainTop,
                      XtNleft,              XtChainLeft,
                      XtNright,             XtChainLeft,
-		     0 );
+		     NULL );
 
     for ( n = 0;  n < 3;  n++ )
     {
@@ -2380,7 +2380,7 @@ static void SFcreateWidgets ( toplevel )
                      XtNwidth,             scrollThickness,
                      XtNheight,            SFvScrollHeight,
                      XtNborderColor,       SFfore,
-		     0 );
+		     NULL );
 	XtAddCallback( selFileVScrolls[n], XtNjumpProc,
 		       SFvFloatSliderMovedCallback, (XtPointer) n );
 	XtAddCallback( selFileVScrolls[n], XtNscrollProc,
@@ -2394,7 +2394,7 @@ static void SFcreateWidgets ( toplevel )
                      XtNwidth,             SFhScrollWidth,
                      XtNheight,            scrollThickness,
                      XtNborderColor,       SFfore,
-                     0 );
+                     NULL );
 	XtAddCallback( selFileHScrolls[n], XtNjumpProc,
 		       SFhSliderMovedCallback, (XtPointer) n );
 	XtAddCallback( selFileHScrolls[n], XtNscrollProc,
@@ -2412,7 +2412,7 @@ static void SFcreateWidgets ( toplevel )
                      XtNbottom,            XtChainTop,
                      XtNleft,              XtChainLeft,
                      XtNright,             XtChainLeft,
-                     0 );
+                     NULL );
     selFileCancel = XtVaCreateManagedWidget(
 		     "selFileCancel", commandWidgetClass, selFileForm,
                      XtNresizable,         True,
@@ -2426,7 +2426,7 @@ static void SFcreateWidgets ( toplevel )
                      XtNbottom,            XtChainTop,
                      XtNleft,              XtChainLeft,
                      XtNright,             XtChainLeft,
-                     0 );
+                     NULL );
     selFileHome = XtVaCreateManagedWidget(
 		     "selFileHome", commandWidgetClass, selFileForm,
                      XtNresizable,         True,
@@ -2440,7 +2440,7 @@ static void SFcreateWidgets ( toplevel )
                      XtNbottom,            XtChainTop,
                      XtNleft,              XtChainLeft,
                      XtNright,             XtChainLeft,
-                     0 );
+                     NULL );
 
     /* realise toplevel */
     XtSetMappedWhenManaged( selFile, False );

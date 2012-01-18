@@ -3,7 +3,6 @@
 #W  coll.gi                     GAP library                  Martin Schönert
 #W                                                            & Thomas Breuer
 ##
-#H  @(#)$Id: coll.gi,v 4.110 2011/05/09 20:44:46 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains methods for collections in general.
 ##
-Revision.coll_gi :=
-    "@(#)$Id: coll.gi,v 4.110 2011/05/09 20:44:46 gap Exp $";
 
 
 #############################################################################
@@ -738,11 +735,20 @@ InstallGlobalFunction( List,
       else
         func:= arg[2];
         res := EmptyPlist(Length(C));
-        i   := 0;
-        for elm in C do
-          i:= i+1;
-          res[i]:= func( elm );
-        od;
+        # hack to save type adjustments and conversions (e.g. to blist)
+        if Length(C) > 0 then res[Length(C)] := 1; fi;
+        if IsDenseList(C) then
+          # save the IsBound tests from general case
+          for i in [1..Length(C)] do
+            res[i] := func( C[i] );
+          od;
+        else
+          for i in [1..Length(C)] do
+            if IsBound(C[i]) then
+              res[i] := func( C[i] );
+            fi;
+          od;
+        fi;
         return res;
       fi;
     else
@@ -823,9 +829,10 @@ InstallMethod( SortedList, "for a list or collection",
     true, [ IsListOrCollection ], 0,
 function(C)
 local l;
-  l:=List(C);
-  if not IsDenseList(l) then
-    l:=List(l,i->i);
+  if IsList(C) then
+    l := Compacted(C);
+  else
+    l := List(C);
   fi;
   Sort(l);
   return l;
@@ -2525,7 +2532,7 @@ AbsInt:="2b defined";
 
 # join ranges
 # [a0,a+da..a1] with [b0,db,b1]
-JoinRanges:=function(a0,da,a1,b0,db,b1)
+InstallGlobalFunction(JoinRanges,function(a0,da,a1,b0,db,b1)
 local x;
 
   # ensure a0<=b0
@@ -2617,7 +2624,8 @@ local x;
     # distances are incompatible and length is at least 2 for both, no range
     return fail;
   fi;
-end;
+end);
+
 Unbind(AbsInt);
 
 # Test routine for joining random ranges.
@@ -2692,7 +2700,7 @@ InstallGlobalFunction( Union, function ( arg )
   other:= [];
   ranges:=[];
   for D in arg do
-    if (IsPlistRep(D) and Length(D)=1 and IsInt(D[1])) then
+    if (IsPlistRep(D) and Length(D)=1 and IsSmallIntRep(D[1])) then
       # detect lists that could be ranges
       Add(ranges,[D[1],0,D[1]]);
     elif IS_RANGE_REP(D) then
@@ -2705,7 +2713,7 @@ InstallGlobalFunction( Union, function ( arg )
   od;
 
   # if lists is long processing would take long
-  if Length(ranges)>0 and Length(lists)<50 and ForAll(lists,IsInt) then
+  if Length(ranges)>0 and Length(lists)<50 and ForAll(lists,IsSmallIntRep) then
     # is lists also a range?
     lists:=Set(lists);
     if Length(lists)>0 and IS_RANGE(lists) then

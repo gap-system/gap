@@ -2,7 +2,7 @@
 **
 *W  mpfi.c                       GAP source                 Laurent Bartholdi
 **
-*H  @(#)$Id: mpfi.c,v 1.1 2008/06/14 15:45:40 gap Exp $
+*H  @(#)$Id: mpfi.c,v 1.8 2011/12/05 08:41:49 gap Exp $
 **
 *Y  Copyright (C) 2008 Laurent Bartholdi
 **
@@ -10,13 +10,11 @@
 **  interval floats are implemented using the MPFI package.
 */
 const char * Revision_mpfi_c =
-   "@(#)$Id: mpfi.c,v 1.1 2008/06/14 15:45:40 gap Exp $";
-
-#define USE_GMP
+   "@(#)$Id: mpfi.c,v 1.8 2011/12/05 08:41:49 gap Exp $";
 
 #include <string.h>
-#include <malloc.h>
 #include <stdio.h>
+#include <gmp.h>
 
 #include "src/system.h"
 #include "src/gasman.h"
@@ -92,10 +90,16 @@ Func1_MPFI(TAN_MPFI,mpfi_tan);
 Func1_MPFI(ACOS_MPFI,mpfi_acos);
 Func1_MPFI(ASIN_MPFI,mpfi_asin);
 Func1_MPFI(ATAN_MPFI,mpfi_atan);
+Func1_MPFI(SEC_MPFI,mpfi_sec);
+Func1_MPFI(CSC_MPFI,mpfi_csc);
+Func1_MPFI(COT_MPFI,mpfi_cot);
 
 Func1_MPFI(COSH_MPFI,mpfi_cosh);
 Func1_MPFI(SINH_MPFI,mpfi_sinh);
 Func1_MPFI(TANH_MPFI,mpfi_tanh);
+Func1_MPFI(SECH_MPFI,mpfi_sech);
+Func1_MPFI(CSCH_MPFI,mpfi_csch);
+Func1_MPFI(COTH_MPFI,mpfi_coth);
 Func1_MPFI(ACOSH_MPFI,mpfi_acosh);
 Func1_MPFI(ASINH_MPFI,mpfi_asinh);
 Func1_MPFI(ATANH_MPFI,mpfi_atanh);
@@ -103,16 +107,129 @@ Func1_MPFI(ATANH_MPFI,mpfi_atanh);
 Func1_MPFI(LOG_MPFI,mpfi_log);
 Func1_MPFI(LOG2_MPFI,mpfi_log2);
 Func1_MPFI(LOG10_MPFI,mpfi_log10);
+Func1_MPFI(LOG1P_MPFI,mpfi_log1p);
 Func1_MPFI(EXP_MPFI,mpfi_exp);
 Func1_MPFI(EXP2_MPFI,mpfi_exp2);
+Func1_MPFI(EXPM1_MPFI,mpfi_expm1);
 
 Func1_MPFI(INV_MPFI,mpfi_inv);
 Func1_MPFI(AINV_MPFI,mpfi_neg);
 Func1_MPFI(SQRT_MPFI,mpfi_sqrt);
+Func1_MPFI(CBRT_MPFI,mpfi_cbrt);
 Func1_MPFI(SQR_MPFI,mpfi_sqr);
 Func1_MPFI(ABS_MPFI,mpfi_abs);
-Func1_MPFI(LOG1P_MPFI,mpfi_log1p);
-Func1_MPFI(EXPM1_MPFI,mpfi_expm1);
+
+static Obj EXTREPOFOBJ_MPFI(Obj self, Obj f)
+{
+  mp_prec_t prec = mpfi_get_prec(GET_MPFI(f));
+  int i;
+  Obj l = NEW_PLIST(T_PLIST,4);
+  SET_LEN_PLIST(l,4);
+  Obj g = NEW_MPFR(prec);
+
+  mpz_t z;
+  mpz_init2 (z, prec);
+
+  for (i = 0; i < 1; i++) {
+    Obj ig;
+    mp_exp_t e;
+
+    if (i == 0)
+      mpfr_set (MPFR_OBJ(g), &GET_MPFI(f)->left, GMP_RNDN);
+    else
+      mpfr_set (MPFR_OBJ(g), &GET_MPFI(f)->right, GMP_RNDN);
+
+    if (mpfr_zero_p(MPFR_OBJ(g))) {
+      ig = INTOBJ_INT(0);
+      mpfr_ui_div(MPFR_OBJ(g), 1, MPFR_OBJ(g), GMP_RNDN);
+      e = (mpfr_sgn(MPFR_OBJ(g))<0);
+    } else if (!mpfr_number_p(MPFR_OBJ(g))) {
+      ig = INTOBJ_INT(0);
+      if (mpfr_inf_p(MPFR_OBJ(g)))
+	e = 2 + (mpfr_sgn(MPFR_OBJ(f))<0);
+      else if (mpfr_nan_p(MPFR_OBJ(g)))
+	e = 4;
+    } else {
+      e = mpfr_get_exp(MPFR_OBJ(g));
+      mpfr_set_exp(MPFR_OBJ(g), prec);
+      mpfr_get_z (z, MPFR_OBJ(g), GMP_RNDZ);
+      ig = INT_mpz(z);
+    }
+    SET_ELM_PLIST(l,2*i+1, ig);
+    SET_ELM_PLIST(l,2*i+2, ObjInt_Int(e));
+  }
+  mpz_clear(z);
+
+  return l;
+}
+
+#pragma GCC diagnostic ignored "-Wuninitialized"
+static Obj OBJBYEXTREP_MPFI(Obj self, Obj list)
+{
+  int i;
+  mp_prec_t prec = 0;
+
+  for (i = 0; i < 4; i += 2) {
+    Obj m = ELM_PLIST(list,i+1);
+    mp_prec_t newprec;
+    if (IS_INTOBJ(m))
+      newprec = 8*sizeof(long);
+    else
+      newprec = 8*sizeof(mp_limb_t)*SIZE_INT(m);
+    if (newprec > prec)
+      prec = newprec;
+  }
+  Obj f = NEW_MPFI(prec);
+
+  for (i = 0; i < 4; i++) {
+    Obj m = ELM_PLIST(list,i+1);
+    Int iarg;
+    mpz_ptr zarg;
+    int argtype;
+
+    if (IS_INTOBJ(m))
+      iarg = INT_INTOBJ(m), argtype = 0;
+    else
+      zarg = mpz_MPZ(MPZ_LONGINT(m)), argtype = 1;
+
+    if (i & 1 && argtype) /* exponent, must be small int */
+      iarg = mpz_get_si(zarg), argtype = 0;
+
+    mpfr_ptr leftright;
+    if (i < 2)
+      leftright = &GET_MPFI(f)->left;
+    else
+      leftright = &GET_MPFI(f)->right;
+
+    if (i & 1)
+      mpfr_set_exp(leftright, iarg);
+    else if (argtype)
+      mpfr_set_z(leftright, zarg, GMP_RNDN);
+    else {
+      if (iarg == 0) { /* special case */
+	switch (INT_INTOBJ(ELM_PLIST(list,i+2))) {
+	case 0: /* 0 */
+	case 1: /* -0 */
+	  mpfr_set_si(leftright, 0, GMP_RNDN); break;
+	case 2: /* inf */
+	case 3: /* -inf */
+	  mpfr_set_inf (leftright, 1); break;
+	case 4: /* nan */
+	case 5: /* -nan */
+	  mpfr_set_nan (leftright); break;
+	default:
+	  while(1)
+	    ErrorReturnObj("OBJBYEXTREP_MPFI: invalid argument [%d,%d]",
+			   iarg, INT_INTOBJ(ELM_PLIST(list,i+2)),"");
+	}
+	i++; /* skip "exponent" */
+	continue;
+      }
+      mpfr_set_si(leftright, iarg, GMP_RNDN);
+    }
+  }
+  return f;
+}
 
 static Obj ZERO_MPFI(Obj self, Obj f)
 {
@@ -229,25 +346,68 @@ static Obj MPFI_INTPREC(Obj self, Obj i, Obj prec)
 }
 
 static Obj INT_MPFI(Obj self, Obj f)
+/* if there's an integer in the interval, return the one of smallest absolute
+   value.
+   else, if the interval is positive, return the largest integer not in it
+   else, if the interval is negative, the smallest integer not in it
+   else, if the interval is empty, return fail. */
 {
   mpz_t y, z;
   Obj res;
 
+  if (mpfi_is_empty(GET_MPFI(f)))
+    return Fail;
+
   mpz_init2 (y, mpfr_get_exp(&GET_MPFI(f)->left)+1);
   mpz_init2 (z, mpfr_get_exp(&GET_MPFI(f)->right)+1);
 
-  mpfr_get_z (y, &GET_MPFI(f)->left, GMP_RNDZ);
-  mpfr_get_z (z, &MPFI_OBJ(f)->right, GMP_RND_MAX);
+  mpfr_get_z (y, &GET_MPFI(f)->left, GMP_RNDU);
+  mpfr_get_z (z, &MPFI_OBJ(f)->right, GMP_RNDD);
 
-  if (mpz_cmp(y, z) == 0)
-    res = INT_mpz(y);
-  else
-    res = Fail;
+  if (mpz_cmp(y, z) <= 0) { /* Ceil(Inf(f)) <= Floor(Sup(f)) */
+    if (mpz_cmp_si(y, 0) >= 0)
+      res = INT_mpz(y);
+    else if (mpz_cmp_si(z, 0) <= 0)
+      res = INT_mpz(z);
+    else res = INTOBJ_INT(0);
+  } else { /* y = z+1 */
+    if (mpz_cmp_si(y, 0) >= 0)
+      res = INT_mpz(z);
+    else
+      res = INT_mpz(y);
+  }
 
   mpz_clear(y);
   mpz_clear(z);
 
   return res;
+}
+
+static Obj SIGN_MPFI(Obj self, Obj f)
+{
+  if (mpfr_sgn(&GET_MPFI(f)->left) > 0)
+    return INTOBJ_INT(1);
+  if (mpfr_sgn(&GET_MPFI(f)->right) < 0)
+    return INTOBJ_INT(-1);
+  return INTOBJ_INT(0);
+}
+
+static Obj ISPINF_MPFI(Obj self, Obj f)
+{
+  if (!mpfi_inf_p(GET_MPFI(f)))
+    return False;
+  if (mpfr_sgn(&MPFI_OBJ(f)->left) > 0)
+    return True;
+  return False;
+}
+
+static Obj ISNINF_MPFI(Obj self, Obj f)
+{
+  if (!mpfi_inf_p(GET_MPFI(f)))
+    return False;
+  if (mpfr_sgn(&MPFI_OBJ(f)->right) < 0)
+    return True;
+  return False;
 }
 
 static Obj PREC_MPFI(Obj self, Obj f)
@@ -265,18 +425,50 @@ Func1_MPFRMPFI(ALEA_MPFI,mpfi_alea);
 Func1_MPFRMPFI(LEFT_MPFI,mpfi_get_left);
 Func1_MPFRMPFI(RIGHT_MPFI,mpfi_get_right);
 
-Func1_BOOLMPFI(IS_POS_MPFI,mpfi_is_pos);
-Func1_BOOLMPFI(IS_STRICTLY_POS_MPFI,mpfi_is_strictly_pos);
-Func1_BOOLMPFI(IS_NONNEG_MPFI,mpfi_is_nonneg);
-Func1_BOOLMPFI(IS_NEG_MPFI,mpfi_is_neg);
-Func1_BOOLMPFI(IS_STRICTLY_NEG_MPFI,mpfi_is_strictly_neg);
-Func1_BOOLMPFI(IS_NONPOS_MPFI,mpfi_is_nonpos);
-Func1_BOOLMPFI(IS_ZERO_MPFI,mpfi_is_zero);
-Func1_BOOLMPFI(HAS_ZERO_MPFI,mpfi_has_zero);
-Func1_BOOLMPFI(IS_NAN_MPFI,mpfi_nan_p);
-Func1_BOOLMPFI(IS_INF_MPFI,mpfi_inf_p);
-Func1_BOOLMPFI(IS_BOUNDED_MPFI,mpfi_bounded_p);
-Func1_BOOLMPFI(IS_EMPTY_MPFI,mpfi_is_empty);
+Func1_BOOLMPFI(ISPOS_MPFI,mpfi_is_pos);
+Func1_BOOLMPFI(ISSTRICTLY_POS_MPFI,mpfi_is_strictly_pos);
+Func1_BOOLMPFI(ISNONNEG_MPFI,mpfi_is_nonneg);
+Func1_BOOLMPFI(ISNEG_MPFI,mpfi_is_neg);
+Func1_BOOLMPFI(ISSTRICTLY_NEG_MPFI,mpfi_is_strictly_neg);
+Func1_BOOLMPFI(ISNONPOS_MPFI,mpfi_is_nonpos);
+Func1_BOOLMPFI(ISZERO_MPFI,mpfi_is_zero);
+Func1_BOOLMPFI(HASZERO_MPFI,mpfi_has_zero);
+Func1_BOOLMPFI(ISNAN_MPFI,mpfi_nan_p);
+Func1_BOOLMPFI(ISXINF_MPFI,mpfi_inf_p);
+Func1_BOOLMPFI(ISNUMBER_MPFI,mpfi_bounded_p);
+Func1_BOOLMPFI(ISEMPTY_MPFI,mpfi_is_empty);
+
+static Obj FREXP_MPFI(Obj self, Obj f)
+{
+  mp_prec_t prec = mpfi_get_prec(GET_MPFI(f));
+  Obj g = NEW_MPFI(prec);
+  mpfi_set (MPFI_OBJ(g), GET_MPFI(f));
+  mp_exp_t eleft = mpfr_get_exp(&MPFI_OBJ(f)->left),
+    eright = mpfr_get_exp(&MPFI_OBJ(f)->right);
+  mp_exp_t e = eleft > eright ? eleft : eright;
+  mpfr_set_exp(&MPFI_OBJ(g)->left, eleft-e);
+  mpfr_set_exp(&MPFI_OBJ(g)->right, eright-e);
+  Obj l = NEW_PLIST(T_PLIST,2);
+  SET_ELM_PLIST(l,1,g);
+  SET_ELM_PLIST(l,2, ObjInt_Int(e));
+  SET_LEN_PLIST(l,2);
+  return l;
+}
+
+static Obj LDEXP_MPFI(Obj self, Obj f, Obj exp)
+{
+  mp_exp_t e;
+  if (IS_INTOBJ(exp))
+    e = INT_INTOBJ(exp);
+  else {
+    Obj f = MPZ_LONGINT(exp);
+    e = mpz_get_si(mpz_MPZ(f));
+  }
+  mp_prec_t prec = mpfi_get_prec(GET_MPFI(f));
+  Obj g = NEW_MPFI(prec);
+  mpfi_mul_2si (MPFI_OBJ(g), GET_MPFI(f), e);
+  return g;
+}
 
 static Obj MPFI_MPFIPREC(Obj self, Obj f, Obj prec)
 {
@@ -312,59 +504,38 @@ static Obj STRING_MPFI(Obj self, Obj f, Obj digits)
 static Obj VIEWSTRING_MPFI(Obj self, Obj f, Obj digits)
 {
   mp_prec_t prec = mpfi_get_prec(GET_MPFI(f));
-  Obj str1 = NEW_STRING(prec*302/1000+20),
-    str2 = NEW_STRING(prec*302/1000+20);
-  mp_exp_t exp1, exp2;
+  Obj str = NEW_STRING(prec*302/1000+20);
+  mp_exp_t exp;
 
   TEST_IS_INTOBJ("VIEWSTRING_MPFI",digits);
 
   int n = INT_INTOBJ(digits);
   if (n == 1) n = 2;
 
-  char *c1 = CSTR_STRING(str1);
-  char *c2 = CSTR_STRING(str2);
-  int slen1 = PRINT_MPFR(c1, &exp1, n, &GET_MPFI(f)->left, GMP_RNDD);
-  int slen2 = PRINT_MPFR(c2, &exp2, n, &MPFI_OBJ(f)->right, GMP_RNDU);
-  
-  int match = 0;
-  if (exp1 == exp2) {
-    while (c1[match] == c2[match] && c1[match])
-      match++;
-  } else if (exp1 == exp2-1) {
-    if (c1[match] == '-' && c1[match] == '-')
-      match++;
-    if (c1[match] != '.' || c2[match++] != '.')
-      goto skip;
-    if (c1[match] != '9' || c2[match++] != '1')
-      goto skip;
-    while (c1[match] == '9' && c2[match] == '0')
-      match++;
-  }
- skip:
-  if (match <= 3) {
-    Obj str = NEW_STRING(slen1+slen2+3);
-    char *c = CSTR_STRING(str);
-    *c++ = '(';
-    strcpy(c,c1);
-    *(c += slen1) = ':';
-    strcpy(++c,c2);
-    c[slen2] = ')';
-    return str;
+  if (mpfi_is_empty(GET_MPFI(f)))
+    return FLOAT_EMPTYSET_STRING;
+
+  Obj g = NEW_MPFR(prec);
+  mpfi_mid (MPFR_OBJ(g), GET_MPFI(f));
+
+  char *c = CSTR_STRING(str);
+  int slen = PRINT_MPFR(c, &exp, n, MPFR_OBJ(g), GMP_RNDN);
+
+  mpfi_diam (MPFR_OBJ(g), GET_MPFI(f));
+
+  if (mpfr_zero_p (MPFR_OBJ(g)))
+    sprintf(c+slen, "(%s)", CSTR_STRING(FLOAT_INFINITY_STRING));
+  else {
+    exp = mpfr_get_exp(MPFR_OBJ(g));
+    if (exp < -1) /* at least 2 bits */
+      sprintf(c+slen, "(%ld)", -exp);
+    else /* restart, print interval */
+      return STRING_MPFI(self,f,digits);
   }
 
-  if (c1[match] || c2[match]) /* didn't match everything */
-    n = match - (c1[0] == '-');
-
-  for (c1 = c2+match; *c1 && *c1 != 'e'; c1++, slen2--); /* part to skip */
-
-  while (c2[match-1] == '0' && c2[match-2] != '.') /* remove trailing 0s */
-    match--, slen2--;
-  while (*c1) /* copy exponent */
-    c2[match++] = *c1++;
-  sprintf(c2+slen2, "(%d)", n);
-  SET_LEN_STRING(str2, strlen(c2));
-  SHRINK_STRING(str2);
-  return str2;
+  SET_LEN_STRING(str, strlen(c));
+  SHRINK_STRING(str);
+  return str;
 }
 
 static Obj MPFI_STRING(Obj self, Obj s, Obj prec)
@@ -413,7 +584,7 @@ static Obj BISECT_MPFI(Obj self, Obj f)
 **
 */
 #define Func2_MPFI(name,mpfi_name)					\
-  static Obj name(Obj self, Obj fl, Obj fr)				\
+  static Obj name##_MPFI(Obj self, Obj fl, Obj fr)			\
   {									\
     mp_prec_t precl = mpfi_get_prec(GET_MPFI(fl)),			\
       precr = mpfi_get_prec(GET_MPFI(fr));				\
@@ -422,30 +593,76 @@ static Obj BISECT_MPFI(Obj self, Obj f)
     mpfi_name (MPFI_OBJ(g), GET_MPFI(fl), GET_MPFI(fr));		\
     return g;								\
   }
+#define Func2_MPFI_MPFR(name,mpfi_name)					\
+  static Obj name##_MPFI_MPFR(Obj self, Obj fl, Obj fr)			\
+  {									\
+    mp_prec_t precl = mpfi_get_prec(GET_MPFI(fl)),			\
+      precr = mpfr_get_prec(GET_MPFR(fr));				\
+									\
+    Obj g = NEW_MPFI(precl > precr ? precl : precr);			\
+    mpfi_name (MPFI_OBJ(g), GET_MPFI(fl), MPFR_OBJ(fr));		\
+    return g;								\
+  }
+#define Func2_MPFR_MPFI(name,mpfi_name)					\
+  static Obj name##_MPFR_MPFI(Obj self, Obj fl, Obj fr)			\
+  {									\
+    mp_prec_t precl = mpfr_get_prec(GET_MPFR(fl)),			\
+      precr = mpfi_get_prec(GET_MPFI(fr));				\
+									\
+    Obj g = NEW_MPFI(precl > precr ? precl : precr);			\
+    mpfi_name (MPFI_OBJ(g), MPFR_OBJ(fl), GET_MPFI(fr));		\
+    return g;								\
+  }
 #define Inc2_MPFI_arg(name,arg)			\
   { #name, 2, arg, name, "src/mpfi.c:" #name }
 #define Inc2_MPFI(name) Inc2_MPFI_arg(name,"interval, interval")
+#define Inc2_MPFIX(name) Inc2_MPFI_arg(name##_MPFI,"interval, interval"), \
+    Inc2_MPFI_arg(name##_MPFI_MPFR,"interval, real"),			\
+    Inc2_MPFI_arg(name##_MPFR_MPFI,"real, interval")			\
+    
+Func2_MPFI(SUM,mpfi_add);
+Func2_MPFI(DIFF,mpfi_sub);
+Func2_MPFI(PROD,mpfi_mul);
+Func2_MPFI(QUO,mpfi_div);
+#define mpfi_pow(a,b,c) mpfi_log(a,b), mpfi_mul(a,a,c), mpfi_exp(a,a)
+Func2_MPFI(POW,mpfi_pow);
 
-Func2_MPFI(SUM_MPFI,mpfi_add);
-Func2_MPFI(DIFF_MPFI,mpfi_sub);
-Func2_MPFI(PROD_MPFI,mpfi_mul);
-Func2_MPFI(QUO_MPFI,mpfi_div);
-Func2_MPFI(INTERSECT_MPFI,mpfi_intersect);
-Func2_MPFI(UNION_MPFI,mpfi_union);
-/*
-Func2_MPFI(POW_MPFI,mpfi_pow);
-Func2_MPFI(MOD_MPFI,mpfi_remainder);
-Func2_MPFI(ATAN2_MPFI,mpfi_atan2);
-*/
+Func2_MPFI_MPFR(SUM,mpfi_add_fr);
+Func2_MPFI_MPFR(DIFF,mpfi_sub_fr);
+Func2_MPFI_MPFR(PROD,mpfi_mul_fr);
+Func2_MPFI_MPFR(QUO,mpfi_div_fr);
+#define mpfi_pow_fr(a,b,c) mpfi_log(a,b), mpfi_mul_fr(a,a,c), mpfi_exp(a,a)
+Func2_MPFI_MPFR(POW,mpfi_pow_fr);
+
+#define mpfi_fr_add(a,b,c) mpfi_add_fr(a,c,b)
+Func2_MPFR_MPFI(SUM,mpfi_fr_add);
+Func2_MPFR_MPFI(DIFF,mpfi_fr_sub);
+#define mpfi_fr_mul(a,b,c) mpfi_mul_fr(a,c,b)
+Func2_MPFR_MPFI(PROD,mpfi_fr_mul);
+Func2_MPFR_MPFI(QUO,mpfi_fr_div);
+#define mpfi_fr_pow(a,b,c) mpfi_set_fr(a,b), mpfi_log(a,a), mpfi_mul(a,a,c), mpfi_exp(a,a)
+Func2_MPFR_MPFI(POW,mpfi_fr_pow);
+
+Func2_MPFI(INTERSECT,mpfi_intersect);
+Func2_MPFI(UNION,mpfi_union);
+Func2_MPFI(ATAN2,mpfi_atan2);
+Func2_MPFI(HYPOT,mpfi_hypot);
+
+/*Func2_MPFI(MOD,mpfi_remainder);*/
 
 static Obj LQUO_MPFI(Obj self, Obj fl, Obj fr)
 {
-  mp_prec_t precl = mpfi_get_prec(GET_MPFI(fl)),
-    precr = mpfi_get_prec(GET_MPFI(fr));
-  
-  Obj g = NEW_MPFI(precl > precr ? precl : precr);
-  mpfi_div (MPFI_OBJ(g), GET_MPFI(fr), GET_MPFI(fl));
-  return g;
+  return QUO_MPFI(self, fr, fl);
+}
+
+static Obj LQUO_MPFI_MPFR(Obj self, Obj fl, Obj fr)
+{
+  return QUO_MPFR_MPFI(self, fr, fl);
+}
+
+static Obj LQUO_MPFR_MPFI(Obj self, Obj fl, Obj fr)
+{
+  return QUO_MPFI_MPFR(self, fr, fl);
 }
 
 static Obj ROOT_MPFI(Obj self, Obj fl, Obj fr) /* strangely not in mpfi */
@@ -461,7 +678,17 @@ static Obj ROOT_MPFI(Obj self, Obj fl, Obj fr) /* strangely not in mpfi */
 
 static Obj EQ_MPFI (Obj self, Obj fl, Obj fr)
 {
-  return mpfi_cmp(GET_MPFI(fr),GET_MPFI(fl)) == 0 ? True : False;
+  return mpfi_cmp(GET_MPFI(fl),GET_MPFI(fr)) == 0 ? True : False;
+}
+
+static Obj EQ_MPFI_MPFR (Obj self, Obj fl, Obj fr)
+{
+  return mpfi_cmp_fr(GET_MPFI(fl),GET_MPFR(fr)) == 0 ? True : False;
+}
+
+static Obj EQ_MPFR_MPFI (Obj self, Obj fl, Obj fr)
+{
+  return mpfi_cmp_fr(GET_MPFI(fr),GET_MPFR(fl)) == 0 ? True : False;
 }
 
 static Obj LT_MPFI (Obj self, Obj fl, Obj fr)
@@ -469,12 +696,27 @@ static Obj LT_MPFI (Obj self, Obj fl, Obj fr)
   return mpfi_cmp(GET_MPFI(fl),GET_MPFI(fr)) < 0 ? True : False;
 }
 
-static Obj IS_INSIDE_MPFI (Obj self, Obj fl, Obj fr)
+static Obj LT_MPFI_MPFR (Obj self, Obj fl, Obj fr)
+{
+  return mpfi_cmp_fr(GET_MPFI(fl),GET_MPFR(fr)) < 0 ? True : False;
+}
+
+static Obj LT_MPFR_MPFI (Obj self, Obj fl, Obj fr)
+{
+  return mpfi_cmp_fr(GET_MPFI(fr),GET_MPFR(fl)) > 0 ? True : False;
+}
+
+static Obj ISINSIDE_MPFI (Obj self, Obj fl, Obj fr)
 {
   return mpfi_is_inside(GET_MPFI(fl),GET_MPFI(fr)) ? True : False;
 }
 
-static Obj IS_INSIDE_ZMPFI (Obj self, Obj fl, Obj fr)
+static Obj ISSTRICTLY_INSIDE_MPFI (Obj self, Obj fl, Obj fr)
+{
+  return mpfi_is_strictly_inside(GET_MPFI(fl),GET_MPFI(fr)) ? True : False;
+}
+
+static Obj ISINSIDE_ZMPFI (Obj self, Obj fl, Obj fr)
 {
   if (IS_INTOBJ(fr)) {
     return mpfi_is_inside_si (INT_INTOBJ(fl), GET_MPFI(fr)) ? True : False;
@@ -484,7 +726,7 @@ static Obj IS_INSIDE_ZMPFI (Obj self, Obj fl, Obj fr)
   }
 }
 
-static Obj IS_INSIDE_MPFRMPFI (Obj self, Obj fl, Obj fr)
+static Obj ISINSIDE_MPFRMPFI (Obj self, Obj fl, Obj fr)
 {
   return mpfi_is_inside_fr(GET_MPFR(fl),GET_MPFI(fr)) ? True : False;
 }
@@ -500,6 +742,27 @@ static Obj MPFI_2MPFR (Obj self, Obj fl, Obj fr)
   return g;
 }
 
+static Obj INCREASE_MPFI (Obj self, Obj fl, Obj fr)
+{
+  mp_prec_t prec = mpfi_get_prec(GET_MPFI(fl));
+  
+  Obj g = NEW_MPFI(prec);
+  mpfi_set(MPFI_OBJ(g), GET_MPFI(fl));
+  mpfi_increase(MPFI_OBJ(g), GET_MPFR(fr));
+
+  return g;
+}
+
+static Obj BLOWUP_MPFI (Obj self, Obj fl, Obj fr)
+{
+  mp_prec_t prec = mpfi_get_prec(GET_MPFI(fl));
+  
+  Obj g = NEW_MPFI(prec);
+  mpfi_blow(MPFI_OBJ(g), MPFI_OBJ(fl), mpfr_get_d(GET_MPFR(fr), GMP_RNDN));
+
+  return g;
+}
+
 /****************************************************************
  * export functions
  ****************************************************************/
@@ -511,6 +774,9 @@ static StructGVarFunc GVarFuncs [] = {
   Inc1_MPFI(COS_MPFI),
   Inc1_MPFI(SIN_MPFI),
   Inc1_MPFI(TAN_MPFI),
+  Inc1_MPFI(SEC_MPFI),
+  Inc1_MPFI(CSC_MPFI),
+  Inc1_MPFI(COT_MPFI),
   Inc1_MPFI(ASIN_MPFI),
   Inc1_MPFI(ACOS_MPFI),
   Inc1_MPFI(ATAN_MPFI)
@@ -518,6 +784,9 @@ static StructGVarFunc GVarFuncs [] = {
   Inc1_MPFI(COSH_MPFI),
   Inc1_MPFI(SINH_MPFI),
   Inc1_MPFI(TANH_MPFI),
+  Inc1_MPFI(SECH_MPFI),
+  Inc1_MPFI(CSCH_MPFI),
+  Inc1_MPFI(COTH_MPFI),
   Inc1_MPFI(ASINH_MPFI),
   Inc1_MPFI(ACOSH_MPFI),
   Inc1_MPFI(ATANH_MPFI),
@@ -532,6 +801,7 @@ static StructGVarFunc GVarFuncs [] = {
   Inc1_MPFI(EXPM1_MPFI),
 
   Inc1_MPFI(SQRT_MPFI),
+  Inc1_MPFI(CBRT_MPFI),
   Inc1_MPFI(SQR_MPFI),
 
   Inc1_MPFI(ZERO_MPFI),
@@ -556,49 +826,60 @@ static StructGVarFunc GVarFuncs [] = {
   Inc1_MPFI(MID_MPFI),
   Inc1_MPFI(BISECT_MPFI),
   Inc1_MPFI(ALEA_MPFI),
-  Inc1_MPFI(IS_POS_MPFI),
-  Inc1_MPFI(IS_NEG_MPFI),
-  Inc1_MPFI(IS_STRICTLY_POS_MPFI),
-  Inc1_MPFI(IS_STRICTLY_NEG_MPFI),
-  Inc1_MPFI(IS_NONPOS_MPFI),
-  Inc1_MPFI(IS_NONNEG_MPFI),
-  Inc1_MPFI(IS_ZERO_MPFI),
-  Inc1_MPFI(HAS_ZERO_MPFI),
-  Inc1_MPFI(IS_NAN_MPFI),
-  Inc1_MPFI(IS_INF_MPFI),
-  Inc1_MPFI(IS_BOUNDED_MPFI),
-  Inc1_MPFI(IS_EMPTY_MPFI),
+  Inc1_MPFI(SIGN_MPFI),
+  Inc1_MPFI(ISPOS_MPFI),
+  Inc1_MPFI(ISNEG_MPFI),
+  Inc1_MPFI(ISSTRICTLY_POS_MPFI),
+  Inc1_MPFI(ISSTRICTLY_NEG_MPFI),
+  Inc1_MPFI(ISNONPOS_MPFI),
+  Inc1_MPFI(ISNONNEG_MPFI),
+  Inc1_MPFI(ISZERO_MPFI),
+  Inc1_MPFI(HASZERO_MPFI),
+  Inc1_MPFI(ISNAN_MPFI),
+  Inc1_MPFI(ISXINF_MPFI),
+  Inc1_MPFI(ISNINF_MPFI),
+  Inc1_MPFI(ISPINF_MPFI),
+  Inc1_MPFI(ISNUMBER_MPFI),
+  Inc1_MPFI(ISEMPTY_MPFI),
   
-  Inc2_MPFI(SUM_MPFI),
-  Inc2_MPFI(DIFF_MPFI),
-  Inc2_MPFI(PROD_MPFI),
-  Inc2_MPFI(QUO_MPFI),
-  Inc2_MPFI(LQUO_MPFI),
-  /*
-  Inc2_MPFI(POW_MPFI),
-  Inc2_MPFI(MOD_MPFI),
+  Inc2_MPFIX(SUM),
+  Inc2_MPFIX(DIFF),
+  Inc2_MPFIX(PROD),
+  Inc2_MPFIX(QUO),
+  Inc2_MPFIX(POW),
+  Inc2_MPFIX(LQUO),
+  Inc2_MPFIX(EQ),
+  Inc2_MPFIX(LT),
+  /*Inc2_MPFI(MOD_MPFI),*/
   Inc2_MPFI(ATAN2_MPFI),
-  */
-  Inc2_MPFI(EQ_MPFI),
-  Inc2_MPFI(LT_MPFI),
+  Inc2_MPFI(HYPOT_MPFI),
   Inc2_MPFI(INTERSECT_MPFI),
   Inc2_MPFI(UNION_MPFI),
-  Inc2_MPFI(IS_INSIDE_MPFI),
-  Inc2_MPFI_arg(IS_INSIDE_ZMPFI,"int, interval"),
-  Inc2_MPFI_arg(IS_INSIDE_MPFRMPFI,"float, interval"),
+  Inc2_MPFI(ISINSIDE_MPFI),
+  Inc2_MPFI(ISSTRICTLY_INSIDE_MPFI),
+  Inc2_MPFI_arg(ISINSIDE_ZMPFI,"int, interval"),
+  Inc2_MPFI_arg(ISINSIDE_MPFRMPFI,"float, interval"),
   Inc2_MPFI_arg(MPFI_STRING,"string, int"),
   Inc2_MPFI_arg(STRING_MPFI,"interval, int"),
   Inc2_MPFI_arg(VIEWSTRING_MPFI,"interval, int"),
   Inc2_MPFI_arg(ROOT_MPFI,"interval, int"),
   Inc2_MPFI_arg(MPFI_INTPREC,"int, int"),
   Inc2_MPFI_arg(MPFI_MPFIPREC,"interval, int"),
+  Inc2_MPFI_arg(LDEXP_MPFI,"interval, int"),
+  Inc1_MPFI(EXTREPOFOBJ_MPFI),
+  Inc1_MPFI(FREXP_MPFI),
+  Inc1_MPFI(OBJBYEXTREP_MPFI),
   Inc2_MPFI(MPFI_2MPFR),
+  Inc2_MPFI_arg(INCREASE_MPFI,"interval, MPFR real"),
+  Inc2_MPFI_arg(BLOWUP_MPFI,"interval, MPFR real"),
 
   {0}
 };
 
 int InitMPFIKernel (void)
 {
+  InitHdlrFuncsFromTable (GVarFuncs);
+
   ImportGVarFromLibrary ("TYPE_MPFI", &TYPE_MPFI);
   return 0;
 }

@@ -3,6 +3,21 @@
 ===========================================================================
 
 ==========================
+ Changes from 2.5 -> 2.6:
+==========================
+
+  - replacing the archive that mistakenly became public as 2.5 
+
+==========================
+ Changes from 2.4 -> 2.5:
+==========================
+
+  - adjusted package to GAP 4.5 and new location of homepage
+  - fixed bug reported by Max Horn, regarding method selection,
+    added TryNextMethod in various methods which are for rational
+    polynomials, to delegate other polynomials to appropriate methods
+
+==========================
  Changes from 2.3 -> 2.4:
 ==========================
 

@@ -2,14 +2,15 @@
 **
 *W  objccoll.h                  GAP source                      Werner Nickel
 **
-*H  @(#)$Id: objccoll.h,v 4.3 2010/02/23 15:13:45 gap Exp $
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
+
+#ifndef GAP_OBJCCOLL_H
+#define GAP_OBJCCOLL_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_objccoll_h =
-   "@(#)$Id: objccoll.h,v 4.3 2010/02/23 15:13:45 gap Exp $";
 #endif
 
 /****************************************************************************
@@ -67,6 +68,8 @@ Int C32Bits_CombiCollectWord ( Obj, Obj, Obj );
 
 StructInitInfo * InitInfoCombiCollector ( void );
 
+
+#endif // GAP_OBJCCOLL_H
 
 /****************************************************************************
 **

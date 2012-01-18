@@ -1,7 +1,6 @@
-
 <!-- %W  example.xml            GAP documentation                Werner Nickel -->
 <!-- %W                                                            Greg Gamble -->
-<!-- %H  $Id: example.xml,v 1.4 2011/02/25 16:39:13 alexk Exp $ -->
+<!-- %H                                                                        -->
 <!-- %Y  Copyright (C) 1997, School of Math & Comp. Sci., St Andrews, Scotland -->
 
 
@@ -18,8 +17,8 @@ See Sections&nbsp;<Ref Sect="Unpacking the Example Package"/>,
 <Ref Sect="Compiling Binaries of the Example Package"/>
 and&nbsp;<Ref Sect="Loading the Example Package"/>
 for  how  to  install, compile and  load  the  &Example;  package,  or
-Appendix&nbsp;<Ref Chap="Hints for Writing a GAP Package"/>
-for hints on how  to  write  a &GAP; package.
+Appendix&nbsp;<Ref Chap="Guidelines for Writing a GAP Package"/>
+for guidelines on how  to  write  a &GAP; package.
 <P/>
 If you are viewing this with on-line help, type: 
 <P/>
@@ -36,98 +35,24 @@ to see the functions provided by the &Example; package.
 
 The following functions are available:
 
-<ManSection>
-<Func Name="ListDirectory" Arg="[dir]"/>
+<#Include Label="ListDirectory">
 
-<Description>
-lists the files in directory <A>dir</A> (a string) or the current directory if
-called with no arguments.
-</Description>
-</ManSection>
+<#Include Label="FindFile">
 
-<ManSection>
-<Func Name="FindFile" Arg="directory_name, file_name"/>
+<#Include Label="LoadedPackages">
 
-<Description>
-searches  for the  file   <A>file_name</A> in  the  directory  tree  rooted at
-<A>directory_name</A> and returns the absolute path names of  all  occurrences
-of this file as a list of strings.
-</Description>
-</ManSection>
-
-<ManSection>
-<Func Name="LoadedPackages" Arg=""/>
-
-<Description>
-returns a list with the names of the packages that have  been  loaded  so
-far. All this does is execute
-
-<Example><![CDATA[
-gap> RecNames( GAPInfo.PackagesLoaded );
-]]></Example>
-</Description>
-</ManSection>
-<P/>
 You might like to check out some of the other information in the <C>GAPInfo</C>
 record (see <Ref Sect="GAPInfo" BookName="ref"/>).
-<ManSection>
-<Func Name="Which" Arg="prg"/>
 
-<Description>
-returns the path of the program executed if <C>Exec(<A>prg</A>);</C> is called, e.g.
-<P/>
-<Example><![CDATA[
-gap> Which("date");         
-"/bin/date"
-gap> Exec("date");
-Fri 28 Jan 2011 16:22:53 GMT
-]]></Example>
-</Description>
-</ManSection>
+<#Include Label="Which">
 
-<ManSection>
-<Func Name="WhereIsPkgProgram" Arg="prg"/>
+<#Include Label="WhereIsPkgProgram">
 
-<Description>
-returns a list of paths of  programs  with  name  <A>prg</A>  in  the  current
-packages loaded. Try:
-<P/>
-<Example><![CDATA[
-gap> WhereIsPkgProgram( "hello" );
-]]></Example>
-</Description>
-</ManSection>
+<#Include Label="HelloWorld">
 
-<ManSection>
-<Func Name="HelloWorld" Arg=""/>
+<#Include Label="FruitCake">
 
-<Description>
-executes the C program <C>hello</C> provided by the &Example; package.
-</Description>
-</ManSection>
-
-<ManSection>
-<Var Name="FruitCake"/>
-
-<Description>
-is a record with the bits and pieces needed to make a boiled fruit  cake.
-Its fields satisfy the criteria for <Ref Func="Recipe"/>.
-</Description>
-</ManSection>
-
-<ManSection>
-<Oper Name="Recipe" Arg="cake"/>
-
-<Description>
-displays the recipe for cooking <A>cake</A>, where <A>cake</A>  is  a  record.  The
-fields of <A>cake</A> recognised are <C>name</C> (a string giving the type of  cake
-or  cooked  item),  <C>ovenTemp</C>  (a  string),  <C>cookingTime</C>  (a  string),
-<C>ingredients</C> (a list of strings each containing an <C>_</C> which is used  to
-line up the entries and is replaced by a  blank),  <C>method</C>  (a  list  of
-steps, each of which is a string or list of strings), and <C>notes</C> (a list
-of strings).
-</Description>
-</ManSection>
+<#Include Label="Recipe">
 
 </Section>
 </Chapter>

@@ -4,12 +4,12 @@
 ##
 ##  Methods for homomorphisms of free groups
 ##
-#H  @(#)$Id: Hom.gi,v 1.5 2010/04/13 09:56:55 gap Exp $
+#H  @(#)$Id: Hom.gi,v 1.7 2011/09/20 11:45:46 gap Exp $
 ##
 #Y  2003 - 2010
 ##
 Revision.("fga/lib/Hom_gi") :=
-    "@(#)$Id: Hom.gi,v 1.5 2010/04/13 09:56:55 gap Exp $";
+    "@(#)$Id: Hom.gi,v 1.7 2011/09/20 11:45:46 gap Exp $";
 
 
 InstallMethod( PreImagesRepresentative,
@@ -35,6 +35,8 @@ InstallMethod( ImagesRepresentative,
     function( hom, x )
     local w, mgi;
     mgi := MappingGeneratorsImages( hom );
+    if mgi[1]=[] then return One(Range(hom)); fi;
+    
     w := AsWordLetterRepInGenerators( x, Group( mgi[1] ));
     if w = fail then
         return fail;
@@ -49,6 +51,9 @@ InstallMethod( IsSingleValued,
    function( hom )
    local mgi, g, imgs;
    mgi := MappingGeneratorsImages( hom );
+
+   if mgi[1]=[] then return true; fi; # map on trivial group
+
    g := Group( mgi[1] );
    if not IsFreeGroup( g ) then
       TryNextMethod();

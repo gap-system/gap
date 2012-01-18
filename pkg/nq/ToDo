@@ -1,3 +1,49 @@
+* Release process:
+  - add script which automates updating the version in all places:
+     PackageInfo.g, configure.in, configure, ...
+    this is currently quite easy to forget. Also, the release date
+    should be updated in files as necessary, including
+      PackageInfo.g, CHANGES, ...
+  - automate packaging release tarball automatic via a script
+  - do *not* prebuild docs anymore, instead, ensure that docs are automatically
+    built when the user builds nq.
+
+* Choose a license! Say, GPL
+  - add license file
+  - mention license in source files
+  - mention it in docs
+  - mention on website
+
+* Buildsystem:
+  - consider using a single Makefile, or alternatively automake
+    (automake now has a single-Makefile mode!)
+  - add dependency tracking
+  - Rename configure.in to configure.ac
+  - add description in the manual of how to use CONFIGNAME, ABI, --with-gap, --with-gmp, etc
+
+* Resolve potential discrepancy between actual config.guess result, and the
+  gap config (sysconfig.*) the user chose.
+
+  Maybe we need to fake GAParch ? And what is GAParch_system meant to be in contrast?
+  Note that ABI is irrelevant for nq, since we only have an external binary anyway
+
+  GAParch=@target@-@CC@-@CONFIGNAME@
+  GAParch_system=@target@-@CC@-@CONFIGNAME@
+  GAParch_abi=@ABI@-bit
+
+* Test suite:
+  - Add a "proper" test suite in tst
+  - Take a look at gap/nq.tst, possibly move this into tst/
+  - Maybe example should become part of tst/ respective part
+    of the test suite
+
+
+=======================================================================
+THE FOLLOWING TODOS ARE TAKEN FROM WERNER'S OLD TODO FILE. SOME OF
+THESE MAY NO LONGER BE RELEVANT. READ WITH CAUTION.
+=======================================================================
+
+
 
 This is a list of tasks which need to be done before nq is released as
 a GAP 4 package.

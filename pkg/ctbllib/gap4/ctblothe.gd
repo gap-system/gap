@@ -1,30 +1,43 @@
 #############################################################################
 ##
-#W  ctblothe.gd                 GAP library                     Thomas Breuer
+#W  ctblothe.gd          GAP 4 package CTblLib                  Thomas Breuer
 ##
-#H  @(#)$Id: ctblothe.gd,v 1.7 2008/11/14 17:21:21 gap Exp $
-##
-#Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright 1990-1992,   Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declarations of functions for interfaces to
 ##  other data formats of character tables.
 ##
-##  1. Interface to {\sf CAS}
-##  2. Interface to {\sf MOC}
-##  3. Interface to {\GAP}~3
+##  1. Interface to CAS
+##  2. Interface to MOC
+##  3. Interface to GAP 3
 ##  4. Interface to the Cambridge format
+##  5. Interface to the MAGMA display format
 ##
 ##  <#GAPDoc Label="interfaces">
 ##  This chapter describes data formats for character tables that can be read
 ##  or created by &GAP;.
 ##  Currently these are the formats used by
-##  the &CAS; system (see&nbsp;<Ref Sect="sec:interface-cas"/>),
-##  the &MOC; system (see&nbsp;<Ref Sect="sec:interface-moc"/>),
-##  and &GAP;&nbsp;3 (see&nbsp;<Ref Sect="sec:interface-gap3"/>).
+##  <List>
+##  <Item>
+##    the &CAS; system (see&nbsp;<Ref Sect="sec:interface-cas"/>),
+##  </Item>
+##  <Item>
+##    the &MOC; system (see&nbsp;<Ref Sect="sec:interface-moc"/>),
+##  </Item>
+##  <Item>
+##    &GAP;&nbsp;3 (see&nbsp;<Ref Sect="sec:interface-gap3"/>),
+##  </Item>
+##  <Item>
+##    the so-called <E>Cambridge format</E>
+##    (see&nbsp;<Ref Sect="sec:interface-cambridge"/>), and
+##  </Item>
+##  <Item>
+##    the <Package>MAGMA</Package> system
+##    (see&nbsp;<Ref Sect="sec:interface-magma"/>).
+##  </Item>
+##  </List>
 ##  <#/GAPDoc>
 ##
-Revision.ctblothe_gd :=
-    "@(#)$Id: ctblothe.gd,v 1.7 2008/11/14 17:21:21 gap Exp $";
 
 
 #############################################################################
@@ -40,7 +53,7 @@ Revision.ctblothe_gd :=
 
 #############################################################################
 ##
-##  1. Interface to {\sf CAS}
+##  1. Interface to CAS
 ##
 ##  <#GAPDoc Label="interface_CAS">
 ##  The interface to &CAS; is thought just for printing the
@@ -62,7 +75,7 @@ Revision.ctblothe_gd :=
 ##  <#GAPDoc Label="CASString">
 ##  <ManSection>
 ##  <Func Name="CASString" Arg="tbl"/>
-##  
+##
 ##  <Description>
 ##  is a string that encodes the &CAS; library format
 ##  of the character table <A>tbl</A>.
@@ -117,7 +130,7 @@ DeclareGlobalFunction( "CASString" );
 
 #############################################################################
 ##
-##  2. Interface to {\sf MOC}
+##  2. Interface to MOC
 ##
 ##  <#GAPDoc Label="interface_MOC">
 ##  The interface to &MOC; can be used to print &MOC; input.
@@ -174,7 +187,7 @@ DeclareGlobalFunction( "CASString" );
 ##  <#GAPDoc Label="MAKElb11">
 ##  <ManSection>
 ##  <Func Name="MAKElb11" Arg="listofns"/>
-##  
+##
 ##  <Description>
 ##  For a list <A>listofns</A> of positive integers,
 ##  <Ref Func="MAKElb11"/> prints field information for all number fields
@@ -204,7 +217,7 @@ DeclareGlobalFunction( "MAKElb11" );
 ##  <#GAPDoc Label="MOCTable">
 ##  <ManSection>
 ##  <Func Name="MOCTable" Arg="gaptbl[, basicset]"/>
-##  
+##
 ##  <Description>
 ##  <Ref Func="MOCTable"/> returns the &MOC; table record of the
 ##  &GAP; character table <A>gaptbl</A>.
@@ -298,19 +311,19 @@ DeclareGlobalFunction( "MAKElb11" );
 ##    &MOC; (as computed by <C>fct</C>) is either <M>1</M>
 ##    (for rational classes)
 ##    or a sequence
-##    <Display>
+##    <Display Mode="M">
 ##    n x_{1,1} y_{1,1} z_{1,1} x_{1,2} y_{1,2} z_{1,2}
 ##    \ldots x_{1,m_1} y_{1,m_1} z_{1,m_1} 0 x_{2,1} y_{2,1}
 ##    z_{2,1} x_{2,2} y_{2,2} z_{2,2} \ldots x_{2,m_2}
 ##    y_{2,m_2} z_{2,m_2} 0 \ldots z_{n,m_n} 0
 ##    </Display>
 ##    which means that the coefficient of <M>v_k</M> in the product
-##    <Display>
+##    <Display Mode="M">
 ##    \left( \sum_{i=1}^{n} a_i v_i \right)
 ##    \left( \sum_{j=1}^{n} b_j v_j \right)
 ##    </Display>
 ##    is equal to
-##    <Display>
+##    <Display Mode="M">
 ##    \sum_{i=1}^{m_k} x_{k,i} a_{y_{k,i}} b_{z_{k,i}} .
 ##    </Display>
 ##    On a &MOC; table in &GAP;,
@@ -492,7 +505,7 @@ DeclareGlobalFunction( "MOCChars" );
 
 #############################################################################
 ##
-##  3. Interface to {\GAP}~3
+##  3. Interface to GAP 3
 ##
 ##  <#GAPDoc Label="interface_GAP3">
 ##  The following functions are used to read and write character tables in
@@ -508,7 +521,7 @@ DeclareGlobalFunction( "MOCChars" );
 ##  <#GAPDoc Label="GAP3CharacterTableData">
 ##  <ManSection>
 ##  <Var Name="GAP3CharacterTableData"/>
-##  
+##
 ##  <Description>
 ##  This is a list of pairs,
 ##  the first entry being the name of a component in a &GAP;&nbsp;3
@@ -531,7 +544,7 @@ DeclareGlobalVariable( "GAP3CharacterTableData",
 ##  <#GAPDoc Label="GAP3CharacterTableScan">
 ##  <ManSection>
 ##  <Func Name="GAP3CharacterTableScan" Arg="string"/>
-##  
+##
 ##  <Description>
 ##  Let <A>string</A> be a string that contains the output of the
 ##  &GAP;&nbsp;3 function <C>PrintCharTable</C>.
@@ -556,7 +569,7 @@ DeclareGlobalFunction( "GAP3CharacterTableScan" );
 ##  <#GAPDoc Label="GAP3CharacterTableString">
 ##  <ManSection>
 ##  <Func Name="GAP3CharacterTableString" Arg="tbl"/>
-##  
+##
 ##  <Description>
 ##  For an ordinary character table <A>tbl</A>,
 ##  <Ref Func="GAP3CharacterTableString"/> returns
@@ -567,6 +580,7 @@ DeclareGlobalFunction( "GAP3CharacterTableScan" );
 ##  <P/>
 ##  The supported record components are given by the list
 ##  <Ref Var="GAP3CharacterTableData"/>.
+##  <P/>
 ##  <Example>
 ##  gap> tbl:= CharacterTable( "Alternating", 5 );;
 ##  gap> str:= GAP3CharacterTableString( tbl );;
@@ -603,18 +617,261 @@ DeclareGlobalFunction( "GAP3CharacterTableString" );
 ##
 ##  4. Interface to the Cambridge format
 ##
+##  <#GAPDoc Label="interface_cambridge">
+##  ...
+##  definition of the Cambridge format:
+##  ...
+##  see ~/gap/4.0/pkg/ctbllib/jansen/gap/convert.g
+##  and ~/gap/4.0/pkg/ctbllib/gap4/convert.g
+##  and ~/gap/4.0/pkg/ctbllib/jansen/gap/cambform.g
+##  <#/GAPDoc>
+##
 
 
 #############################################################################
 ##
 #F  CambridgeMaps( <tbl> )
 ##
-##  For a character table <tbl>, `CambridgeMaps' returns a record with the
-##  following components.
+##  <#GAPDoc Label="CambridgeMaps">
+##  <ManSection>
+##  <Func Name="CambridgeMaps" Arg="tbl"/>
 ##
+##  <Description>
+##  For a character table <A>tbl</A>, <Ref Func="CambridgeMaps"/> returns
+##  a record with the following components.
 ##  ...
+##  <P/>
+##  <Example>
+##  ...
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "CambridgeMaps" );
+
+
+#############################################################################
+##
+##  5. Interface to the MAGMA display format
+##
+##  <#GAPDoc Label="interface_magma">
+##  This interface is intended to convert character tables given in
+##  <Package>MAGMA</Package>'s display format into &GAP; character tables.
+##  <P/>
+##  The function <Ref Func="BosmaBase"/> is used for the translation of
+##  irrational values; this function may be of interest independent of the
+##  conversion of character tables.
+##  <#/GAPDoc>
+##
+
+
+#############################################################################
+##
+#F  BosmaBase( <n> )
+##
+##  <#GAPDoc Label="BosmaBase">
+##  <ManSection>
+##  <Func Name="BosmaBase" Arg="n"/>
+##
+##  <Description>
+##  For a positive integer <A>n</A> that is not congruent to <M>2</M> modulo
+##  <M>4</M>, <Ref Func="BosmaBase"/> returns the list of exponents <M>i</M>
+##  for which <C>E(<A>n</A>)^</C><M>i</M> belongs to the canonical basis of
+##  the <A>n</A>-th cyclotomic field that is defined in
+##  <Cite Key="Bos90" Where="Section&nbsp;5"/>.
+##  <P/>
+##  As a set, this basis is defined as follows.
+##  Let <M>P</M> denote the set of prime divisors of <A>n</A> and
+##  <A>n</A> <M>= \prod_{{p \in P}} n_p</M>.
+##  Let <M>e_l = </M><C>E</C><M>(l)</M> for any positive integer <M>l</M>,
+##  and
+##  <M>\{ e_{{m_1}}^j \}_{{j \in J}} \otimes \{ e_{{m_2}}^k \}_{{k \in K}} =
+##  \{ e_{{m_1}}^j \cdot e_{{m_2}}^k \}_{{j \in J, k \in K}}</M>
+##  for any positive integers <M>m_1</M>, <M>m_2</M>.
+##  (This notation is the same as the one used in the description of
+##  <Ref Func="ZumbroichBase" BookName="ref"/>.)
+##  <P/>
+##  Then the basis is
+##  <Display Mode="M">
+##  B_n = \bigotimes_{{p \in P}} B_{{n_p}}
+##  </Display>
+##  where
+##  <Display Mode="M">
+##  B_{{n_p}} = \{ e_{{n_p}}^k; 0 \leq k \leq \varphi(n_p)-1 \};
+##  </Display>
+##  here <M>\varphi</M> denotes Euler's function,
+##  see <Ref Func="Phi" BookName="ref"/>.
+##  <P/>
+##  <M>B_n</M> consists of roots of unity, it is an integral basis
+##  (that is, exactly the integral elements in <M>&QQ;_n</M> have integral
+##  coefficients w.r.t.&nbsp;<M>B_n</M>,
+##  cf.&nbsp;<Ref Func="IsIntegralCyclotomic"/>),
+##  and for any divisor <M>m</M> of <A>n</A> that is not congruent to
+##  <M>2</M> modulo <M>4</M>, <M>B_m</M> is a subset of <M>B_n</M>.
+##  <P/>
+##  Note that the list <M>l</M>, say, that is returned by
+##  <Ref Func="BosmaBase"/> is in general not a set.
+##  The ordering of the elements in <M>l</M> fits to the coefficient lists
+##  for irrational values used by <Package>MAGMA</Package>'s display format.
+##  <P/>
+##  <Example>
+##  gap> b:= BosmaBase( 8 );
+##  [ 0, 1, 2, 3 ]
+##  gap> b:= Basis( CF(8), List( b, i -> E(8)^i ) );
+##  Basis( CF(8), [ 1, E(8), E(4), E(8)^3 ] )
+##  gap> Coefficients( b, Sqrt(2) );
+##  [ 0, 1, 0, -1 ]
+##  gap> Coefficients( b, Sqrt(-2) );
+##  [ 0, 1, 0, 1 ]
+##  gap> b:= BosmaBase( 15 );
+##  [ 0, 5, 3, 8, 6, 11, 9, 14 ]
+##  gap> b:= List( b, i -> E(15)^i );
+##  [ 1, E(3), E(5), E(15)^8, E(5)^2, E(15)^11, E(5)^3, E(15)^14 ]
+##  gap> Coefficients( Basis( CF(15), b ), EB(15) );
+##  [ -1, -1, 0, 0, -1, -2, -1, -2 ]
+##  gap> BosmaBase( 48 );
+##  [ 0, 3, 6, 9, 12, 15, 18, 21, 16, 19, 22, 25, 28, 31, 34, 37 ]
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "BosmaBase" );
+
+
+#############################################################################
+##
+#F  GAPTableOfMagmaFile( <file>, <identifier> )
+##
+##  <#GAPDoc Label="GAPTableOfMagmaFile">
+##  <ManSection>
+##  <Func Name="GAPTableOfMagmaFile" Arg="file, identifier"/>
+##
+##  <Description>
+##  Let <A>file</A> be the name of a file that contains a character table in
+##  <Package>MAGMA</Package>'s display format,
+##  and <A>identifier</A> be a string.
+##  <Ref Func="GAPTableOfMagmaFile"/> returns the corresponding &GAP;
+##  character table.
+##  <P/>
+##  <Example>
+##  gap> str:= "\
+##  > Character Table of Group G\n\
+##  > --------------------------\n\
+##  > \n\
+##  > ---------------------------\n\
+##  > Class |   1  2  3    4    5\n\
+##  > Size  |   1 15 20   12   12\n\
+##  > Order |   1  2  3    5    5\n\
+##  > ---------------------------\n\
+##  > p  =  2   1  1  3    5    4\n\
+##  > p  =  3   1  2  1    5    4\n\
+##  > p  =  5   1  2  3    1    1\n\
+##  > ---------------------------\n\
+##  > X.1   +   1  1  1    1    1\n\
+##  > X.2   +   3 -1  0   Z1 Z1#2\n\
+##  > X.3   +   3 -1  0 Z1#2   Z1\n\
+##  > X.4   +   4  0  1   -1   -1\n\
+##  > X.5   +   5  1 -1    0    0\n\
+##  > \n\
+##  > Explanation of Character Value Symbols\n\
+##  > --------------------------------------\n\
+##  > \n\
+##  > # denotes algebraic conjugation, that is,\n\
+##  > #k indicates replacing the root of unity w by w^k\n\
+##  > \n\
+##  > Z1     = (CyclotomicField(5: Sparse := true)) ! [\n\
+##  > RationalField() | 1, 0, 1, 1 ]\n\
+##  > ";;
+##  gap> tmpdir:= DirectoryTemporary();;
+##  gap> file:= Filename( tmpdir, "magmatable" );;
+##  gap> FileString( file, str );;
+##  gap> tbl:= GAPTableOfMagmaFile( file, "MagmaA5" );;
+##  gap> Display( tbl );
+##  MagmaA5
+##  
+##       2  2  2  .  .  .
+##       3  1  .  1  .  .
+##       5  1  .  .  1  1
+##  
+##         1a 2a 3a 5a 5b
+##      2P 1a 1a 3a 5b 5a
+##      3P 1a 2a 1a 5b 5a
+##      5P 1a 2a 3a 1a 1a
+##  
+##  X.1     1  1  1  1  1
+##  X.2     3 -1  .  A *A
+##  X.3     3 -1  . *A  A
+##  X.4     4  .  1 -1 -1
+##  X.5     5  1 -1  .  .
+##  
+##  A = -E(5)-E(5)^4
+##    = (1-Sqrt(5))/2 = -b5
+##  gap> str:= "\
+##  > Character Table of Group G\n\
+##  > --------------------------\n\
+##  > \n\
+##  > ------------------------------\n\
+##  > Class |   1  2   3   4   5   6\n\
+##  > Size  |   1  1   1   1   1   1\n\
+##  > Order |   1  2   3   3   6   6\n\
+##  > ------------------------------\n\
+##  > p  =  2   1  1   4   3   3   4\n\
+##  > p  =  3   1  2   1   1   2   2\n\
+##  > ------------------------------\n\
+##  > X.1   +   1  1   1   1   1   1\n\
+##  > X.2   +   1 -1   1   1  -1  -1\n\
+##  > X.3   0   1  1   J-1-J-1-J   J\n\
+##  > X.4   0   1 -1   J-1-J 1+J  -J\n\
+##  > X.5   0   1  1-1-J   J   J-1-J\n\
+##  > X.6   0   1 -1-1-J   J  -J 1+J\n\
+##  > \n\
+##  > \n\
+##  > Explanation of Character Value Symbols\n\
+##  > --------------------------------------\n\
+##  > \n\
+##  > J = RootOfUnity(3)\n\
+##  > ";;
+##  gap> file:= Filename( tmpdir, "magmatable" );;
+##  gap> FileString( file, str );;
+##  gap> tbl:= GAPTableOfMagmaFile( file, "MagmaC6" );;
+##  gap> Display( tbl );
+##  MagmaC6
+##  
+##       2  1  1  1  1   1   1
+##       3  1  1  1  1   1   1
+##  
+##         1a 2a 3a 3b  6a  6b
+##      2P 1a 1a 3b 3a  3a  3b
+##      3P 1a 2a 1a 1a  2a  2a
+##  
+##  X.1     1  1  1  1   1   1
+##  X.2     1 -1  1  1  -1  -1
+##  X.3     1  1  A /A  /A   A
+##  X.4     1 -1  A /A -/A  -A
+##  X.5     1  1 /A  A   A  /A
+##  X.6     1 -1 /A  A  -A -/A
+##  
+##  A = E(3)
+##    = (-1+Sqrt(-3))/2 = b3
+##  </Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+##  The MAGMA output for the above two examples is obtained by the following
+##  commands.
+##
+##  > G := Alt(5);
+##  > CT := CharacterTable(G);
+##  > CT;
+##
+##  > G:= CyclicGroup(6);    
+##  > CT:= CharacterTable(G);
+##  > CT;
+##
+DeclareGlobalFunction( "GAPTableOfMagmaFile" );
 
 
 #############################################################################

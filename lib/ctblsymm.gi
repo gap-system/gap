@@ -3,7 +3,6 @@
 #W  ctblsymm.gi                 GAP library                    Götz Pfeiffer
 #W                                                               Felix Noeske
 ##
-#H  @(#)$Id: ctblsymm.gi,v 4.18 2010/02/23 15:12:55 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  the  character values of  wreath  products  of a  group  $G$  with $S_n$,
 ##  the   symmetric group  on   n points.
 ##  
-Revision.ctblsymm_gi :=
-     "@(#)$Id: ctblsymm.gi,v 4.18 2010/02/23 15:12:55 gap Exp $";
 
 
 #############################################################################

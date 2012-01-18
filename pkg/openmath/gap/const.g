@@ -1,4 +1,10 @@
-#######################################################################
+###########################################################################
+##
+#W    binread.g                OpenMath Package                 Max Nicosia
+##                                                              
+###########################################################################
+
+###########################################################################
 ##
 #F  ToBlist ( <token> )
 ##
@@ -8,7 +14,8 @@
 ##  Output: bit list	
 ##
 ToBlist := function(token)
-	#ensuring that the string to be converted has 2 hex digits, otherwise the conversion fails
+	# ensuring that the string to be converted has 2 hex digits, 
+	# otherwise the conversion fails
 	 local val;
 	 val := token;
 	 token := HexStringInt(token);
@@ -83,5 +90,4 @@ BindGlobal("FOR_TAG", "OMFOREIGN");
 
 DeclareGlobalFunction("GetNextTagObject");
 DeclareGlobalFunction("GetNextObject");
-
 

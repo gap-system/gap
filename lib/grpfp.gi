@@ -13,8 +13,6 @@
 ##  1. methods for elements of f.p. groups
 ##  2. methods for f.p. groups
 ##
-Revision.grpfp_gi :=
-    "@(#)$Id: grpfp.gi,v 4.259 2011/06/20 15:40:22 gap Exp $";
 
 
 #############################################################################

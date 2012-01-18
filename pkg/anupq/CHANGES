@@ -1,7 +1,16 @@
 In this file we record the changes since the first GAP 4 release of
 the ANUPQ package.
 
-Version 3.0:
+Version 3.? (YYYY-MM-DD)
+   o Improved the build system: It now makes use of GNU autoconf, and
+     the various Makefiles are now more robust, and compatible with
+     both GAP 4.4 and 4.5. This should simplify building anupq for
+     many users.
+   o Werner Nickel is no longer maintainer.
+   o Max Horn is new (co-)maintainer.
+   o Fixed some warnings in the C code.
+
+Version 3.0 (2006-01-24)
    o lib/{anupga.gi,anupq.gi,anupqprop.gi,anupqxdesc.gi}:
        deprecated `PrimeOfPGroup' replaced by `PrimePGroup'
    o lib/anusp.gi:
@@ -36,10 +45,12 @@ Version 3.0:
        - AutPGrp package (at least 1.2) is now essential, not just
          recommended
        - pq program now version 1.8
+
 Version 2.2:
    o PackageInfo.g, README, VERSION, doc/{intro,infra,install}.tex:
        - fixed typo. in PackageInfo.g: test file is tst/anupqeg.tst
        - package version changed from 2.1 to 2.2
+
 Version 2.1:
    o lib/anupqi, tst/anupqeg.tst
        fix for a bug discovered by Tobias Roﬂmann: this bug was caused
@@ -64,6 +75,7 @@ Version 2.1:
      doc/{manual,intro,infra,anupq,options,install}.tex:
        - package version changed from 2.0 to 2.1
        - pq program version changed from 1.6 to 1.7
+
 Version 2.0:
    o include/pq_author.h:
        pq program is now version 1.6
@@ -116,6 +128,7 @@ Version 2.0:
        now includes doc/manual.{lab,toc}
    o tst/anupqeg.tst:
        modified for `PqSupplementInnerAutomorphisms' change
+
 Version 1.5:
    o lib/anupqios.gi:
        typo. (and bug!) on line 541 fixed (1 changed to i);
@@ -125,6 +138,7 @@ Version 1.5:
        record, rather than by lib/anupqhead.g for GAP 4.4+.
    o README, VERSION, PkgInfo.g, doc/{install,intro,infra}.tex
        1.4 changed to 1.5
+
 Version 1.4:
    o src/malloc.h: 
        debugging file removed
@@ -135,6 +149,7 @@ Version 1.4:
    o testPq.in:
        Added more bullet-proofing, and more intelligent messages when 
        things go wrong
+
 Version 1.3:
    o init.g:
        - now use `StringFile' rather than iostreams to read `VERSION' 
@@ -153,6 +168,7 @@ Version 1.3:
        Fixed typo.
    o README, VERSION, PkgInfo.g, doc/{install,intro,infra}.tex
        1.2 changed to 1.3
+
 Version 1.2:
    A number of bugs to do with the input of generators/relations were
    identified by Robert Morse (thanks Robert):

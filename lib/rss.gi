@@ -3,7 +3,6 @@
 #W  rss.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id: rss.gi,v 4.7 2010/02/23 15:13:27 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -34,8 +33,6 @@
 ##  Requires: chain, eigen
 ##  Exports: functions RandomSchreierSims and ChangedBaseGroup
 ##
-Revision.rss_gi :=
-    "@(#)$Id: rss.gi,v 4.7 2010/02/23 15:13:27 gap Exp $";
 
 
 #############################################################################

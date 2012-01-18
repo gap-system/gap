@@ -3,18 +3,12 @@
 #W  parse.gi           OpenMath Package         Andrew Solomon
 #W                                                     Marco Costantini
 ##
-#H  @(#)$Id: parse.gi,v 1.15 2010/11/12 13:18:23 alexk Exp $
-##
 #Y    Copyright (C) 1999, 2000, 2001, 2006
 #Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y    Copyright (C) 2004, 2005, 2006 Marco Costantini
 ##
 ##  The parser reads token/values off the stream and builds GAP objects.
 ##  
-
-Revision.("openmath/gap/parse.gi") :=
-    "@(#)$Id: parse.gi,v 1.15 2010/11/12 13:18:23 alexk Exp $";
-
 
 
 InstallGlobalFunction(OMgetObjectByteStream, function(inputstream)

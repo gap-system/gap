@@ -3,7 +3,6 @@
 #W  gptransv.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id: gptransv.gi,v 4.8 2010/02/23 15:13:03 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -22,8 +21,6 @@
 ##  A consequence of this is that the test file gptransv.tst does not 
 ##  currently work.
 ##
-Revision.gptransv_gi :=
-    "@(#)$Id: gptransv.gi,v 4.8 2010/02/23 15:13:03 gap Exp $";
 
 
 #############################################################################

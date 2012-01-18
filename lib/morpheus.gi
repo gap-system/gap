@@ -2,7 +2,6 @@
 ##
 #W  morpheus.gi                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: morpheus.gi,v 4.127 2011/06/17 21:11:55 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This  file  contains declarations for Morpheus
 ##
-Revision.morpheus_gi:=
-  "@(#)$Id: morpheus.gi,v 4.127 2011/06/17 21:11:55 gap Exp $";
 
 #############################################################################
 ##
@@ -629,6 +626,7 @@ end);
 ##  rels  some relations that hold in from, given as list [word,order]
 ##  dom   a set of elements on which automorphisms act faithful
 ##  aut   Subgroup of already known automorphisms
+##  condition function that must return `true' on the homomorphism.
 ##
 ##  action is a number whose bit-representation indicates the action to be
 ##  taken:
@@ -696,7 +694,7 @@ end;
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       mp,cen,i,j,imgs,ok,size,l,hom,cenis,reps,repspows,sortrels,genums,wert,p,
-      e,offset,pows,TestRels,pop,mfw,derhom,skip;
+      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond;
 
   len:=Length(clali);
   if ForAny(clali,i->Length(i)=0) then
@@ -715,6 +713,13 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
   else
     result:=[];
     rig:=false;
+  fi;
+
+  # extra condition?
+  if IsBound(params.condition) then
+    cond:=params.condition;
+  else
+    cond:=fail;
   fi;
 
   tall:=action>7; # try all
@@ -978,6 +983,10 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 	    if ok and tinj then
 	      ok:=IsInjective(imgs);
 	    fi;
+	  fi;
+
+	  if ok and cond<>fail then
+	    ok:=cond(imgs);
 	  fi;
 	  
 	  if ok then
@@ -1399,23 +1408,11 @@ InstallGlobalFunction(IsomorphismAbelianGroups,function(G,H)
 local o,p,gens,hens;
 
   # get standard generating system
-  if not IsPermGroup(G) then
-    p:=IsomorphismPermGroup(G);
-    gens:=IndependentGeneratorsOfAbelianGroup(Image(p));
-    gens:=List(gens,i->PreImagesRepresentative(p,i));
-  else
-    gens:=IndependentGeneratorsOfAbelianGroup(G);
-  fi;
+  gens:=IndependentGeneratorsOfAbelianGroup(G);
   gens:=ShallowCopy(gens);
 
   # get standard generating system
-  if not IsPermGroup(H) then
-    p:=IsomorphismPermGroup(H);
-    hens:=IndependentGeneratorsOfAbelianGroup(Image(p));
-    hens:=List(hens,i->PreImagesRepresentative(p,i));
-  else
-    hens:=IndependentGeneratorsOfAbelianGroup(H);
-  fi;
+  hens:=IndependentGeneratorsOfAbelianGroup(H);
   hens:=ShallowCopy(hens);
 
   o:=List(gens,i->Order(i));
@@ -1954,6 +1951,10 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   if not IsInt(Size(G)/Size(H)) then
     Info(InfoMorph,1,"sizes do not permit embedding");
     return [];
+  fi;
+
+  if IsTrivial(H) then
+    return [GroupHomomorphismByImagesNC(H,G,[],[])];
   fi;
 
   if IsAbelian(G) then

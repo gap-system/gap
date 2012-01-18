@@ -3,14 +3,11 @@
 #W  gprd.gi                     GAP library                      Bettina Eick
 ##                                                             Heiko Theißen
 ##
-#H  @(#)$Id: gprd.gi,v 4.62 2010/06/22 08:53:34 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.gprd_gi :=
-    "@(#)$Id: gprd.gi,v 4.62 2010/06/22 08:53:34 gap Exp $";
 
 
 #############################################################################
@@ -18,7 +15,7 @@ Revision.gprd_gi :=
 #F  DirectProduct( <arg> )
 ##
 InstallGlobalFunction( DirectProduct, function( arg )
-local d;
+local d, prop;
   if Length( arg ) = 0 then
     Error( "<arg> must be nonempty" );
   elif Length( arg ) = 1 and IsList( arg[1] ) then
@@ -28,6 +25,15 @@ local d;
     arg:= arg[1];
   fi;
   d:=DirectProductOp( arg, arg[1] );
+
+  # test/set a few properties and attributes from factors
+
+  for prop in [IsFinite, IsNilpotentGroup, IsAbelian, IsSolvableGroup] do
+    if ForAll(arg, Tester(prop)) then
+      Setter(prop)(d, ForAll(arg, prop));
+    fi;
+  od;
+    
   if ForAll(arg,HasSize) then
     if   ForAll(arg,IsFinite)
     then SetSize(d,Product(List(arg,Size)));
@@ -46,7 +52,7 @@ InstallMethod( DirectProductOp,
     [ IsList, IsGroup ],
     function( list, gp )
 
-    local ids, tup, first, i, G, gens, g, new, D, prop;
+    local ids, tup, first, i, G, gens, g, new, D;
 
     # Check the arguments.
     if IsEmpty( list ) then
@@ -72,24 +78,14 @@ InstallMethod( DirectProductOp,
 
     D := GroupByGenerators( tup, DirectProductElement( ids ) );
 
-    # test/set a few properties and attributes from factors
-    
-    for prop in [IsFinite, IsNilpotentGroup, IsAbelian, IsSolvableGroup] do
-        if ForAll (list, Tester (prop)) then
-            Setter (prop)(D, ForAll (list, prop));
-        fi;
-    od;
-    
-    if ForAll(list,HasSize) then
-        if   ForAll(list,IsFinite)
-        then SetSize(D,Product(List(list,Size)));
-        else SetSize(D,infinity); fi;
-    fi;
-            
     SetDirectProductInfo( D, rec( groups := list,
                                   first  := first,
                                   embeddings := [],
                                   projections := [] ) );
+    
+    if ForAll( list, CanEasilyComputeWithIndependentGensAbelianGroup ) then
+      SetFilterObj( D, CanEasilyComputeWithIndependentGensAbelianGroup );
+    fi;
 
     return D;
     end );        
@@ -273,6 +269,61 @@ function( D )
     Assert (1, ForAll (DirectProductInfo( D ).groups, G -> PrimePGroup (G) in [fail, p]));
     return PrimePGroup(p);
 end );
+
+#############################################################################
+##
+#F AbelianInvariants( <D > )
+##
+InstallMethod( AbelianInvariants, "for direct products", 
+               [IsGroup and HasDirectProductInfo],
+function( D )
+    local info, ai;
+    info := DirectProductInfo( D );
+    ai := Concatenation( List( info.groups, AbelianInvariants ) );
+    Sort(ai);
+    return ai;
+end );
+
+#############################################################################
+##
+#A  IndependentGeneratorsOfAbelianGroup( <D> )
+##
+InstallMethod( IndependentGeneratorsOfAbelianGroup, "for direct products", 
+               [IsGroup and HasDirectProductInfo and IsAbelian],
+function(D)
+    local info, ai, gens, i, phi;
+    info := DirectProductInfo( D );
+    ai := Concatenation( List( info.groups, AbelianInvariants ) );
+    gens := [];
+    for i in [ 1..Length(info.groups) ] do
+        phi := Embedding( D, i );
+        Append( gens, List( IndependentGeneratorsOfAbelianGroup( info.groups[i] ),
+                                g -> ImageElm( phi, g ) ) );
+    od;
+    SortParallel(ai, gens);
+    return gens;
+end );
+
+#############################################################################
+##
+#O  IndependentGeneratorExponents( <D>, <g> )
+##
+InstallMethod( IndependentGeneratorExponents, "for direct products",
+               IsCollsElms,
+               [IsGroup and HasDirectProductInfo and IsAbelian,
+                IsMultiplicativeElementWithInverse and IsDirectProductElement],
+function(D,g)
+    local info, ai, exps, i, phi;
+    info := DirectProductInfo( D );
+    ai := Concatenation( List( info.groups, AbelianInvariants ) );
+    exps := [];
+    for i in [ 1..Length(info.groups) ] do
+        phi := Projection( D, i );
+        Append( exps, IndependentGeneratorExponents(info.groups[i], ImageElm( phi, g )) );
+    od;
+    SortParallel(ai, exps);
+    return exps;
+end);
 
 
 #############################################################################

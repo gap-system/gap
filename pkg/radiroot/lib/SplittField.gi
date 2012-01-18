@@ -5,7 +5,7 @@
 ##
 ##  Installs the functions to compute the splitting field of a polynomial
 ##
-#H  $Id: SplittField.gi,v 1.4 2008/01/22 11:57:43 gap Exp $
+#H  $Id: SplittField.gi,v 1.5 2011/10/27 18:23:30 gap Exp $
 ##
 #Y  2006
 ##
@@ -22,6 +22,10 @@ InstallMethod( SplittingField, "rational polynomials",
 [ IsUnivariateRationalFunction and IsPolynomial ],
 function( f )
     local splitt;
+
+    if not ForAll( CoefficientsOfUnivariatePolynomial( f ), IsRat ) then
+        TryNextMethod( );
+    fi;
 
     if not IsSeparablePolynomial( f ) then
         # make polynomial separable

@@ -2,14 +2,11 @@
 ##
 #W  oprt.gd                     GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id: oprt.gd,v 4.116 2011/06/10 17:06:58 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.oprt_gd :=
-    "@(#)$Id: oprt.gd,v 4.116 2011/06/10 17:06:58 gap Exp $";
 
 DeclareInfoClass( "InfoAction" );
 DeclareSynonym( "InfoOperation",InfoAction );
@@ -159,8 +156,8 @@ DeclareAttribute( "ActingDomain", IsExternalSet );
 ##  gap> FunctionAction(e)=OnRight;
 ##  true
 ##  gap> HomeEnumerator(e);
-##  [ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2), (1,3,4),
-##    (1,3)(2,4), (1,4,2), (1,4,3), (1,4)(2,3) ]
+##  [ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2), 
+##    (1,3,4), (1,3)(2,4), (1,4,2), (1,4,3), (1,4)(2,3) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -911,9 +908,10 @@ end );
 ##  gap> hom:=ActionHomomorphism(g,Arrangements([1..4],3),OnTuples);
 ##  <action homomorphism>
 ##  gap> Image(hom);
-##  Group([ (1,9,13)(2,10,14)(3,7,15)(4,8,16)(5,12,17)(6,11,18)(19,22,23)(20,21,
-##      24), (1,7)(2,8)(3,9)(4,10)(5,11)(6,12)(13,15)(14,16)(17,18)(19,21)(20,
-##      22)(23,24) ])
+##  Group(
+##  [ (1,9,13)(2,10,14)(3,7,15)(4,8,16)(5,12,17)(6,11,18)(19,22,23)(20,21,
+##      24), (1,7)(2,8)(3,9)(4,10)(5,11)(6,12)(13,15)(14,16)(17,18)(19,
+##      21)(20,22)(23,24) ])
 ##  gap> Size(Range(hom));Size(Image(hom));
 ##  620448401733239439360000
 ##  6
@@ -974,8 +972,8 @@ DeclareAttribute( "SurjectiveActionHomomorphismAttr", IsExternalSet );
 ##  gap> hom:=ActionHomomorphism(g,Arrangements([1..4],3),OnTuples);;
 ##  gap> s:=UnderlyingExternalSet(hom);
 ##  <xset:[[ 1, 2, 3 ],[ 1, 2, 4 ],[ 1, 3, 2 ],[ 1, 3, 4 ],[ 1, 4, 2 ],
-##  [ 1, 4, 3 ],[ 2, 1, 3 ],[ 2, 1, 4 ],[ 2, 3, 1 ],[ 2, 3, 4 ],[ 2, 4, 1 ],
-##  [ 2, 4, 3 ],[ 3, 1, 2 ],[ 3, 1, 4 ],[ 3, 2, 1 ], ...]>
+##  [ 1, 4, 3 ],[ 2, 1, 3 ],[ 2, 1, 4 ],[ 2, 3, 1 ],[ 2, 3, 4 ],
+##  [ 2, 4, 1 ],[ 2, 4, 3 ],[ 3, 1, 2 ],[ 3, 1, 4 ],[ 3, 2, 1 ], ...]>
 ##  gap> Print(s,"\n");
 ##  [ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 3, 2 ], [ 1, 3, 4 ], [ 1, 4, 2 ], 
 ##    [ 1, 4, 3 ], [ 2, 1, 3 ], [ 2, 1, 4 ], [ 2, 3, 1 ], [ 2, 3, 4 ], 
@@ -1009,6 +1007,8 @@ DeclareAttribute( "UnderlyingExternalSet", IsActionHomomorphism );
 ##  </ManSection>
 ##
 DeclareGlobalFunction("DoSparseActionHomomorphism");
+
+DeclareGlobalFunction("MultiActionsHomomorphism");
 
 #############################################################################
 ##
@@ -1143,11 +1143,11 @@ DeclareGlobalFunction( "Action" );
 ##  gap> e:=ExternalSet(g,[1..4]);
 ##  <xset:[ 1, 2, 3, 4 ]>
 ##  gap> e:=ExternalSet(g,g,OnRight);
-##  <xset:[ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2), (1,3,4),
-##    (1,3)(2,4), (1,4,2), (1,4,3), (1,4)(2,3) ]>
+##  <xset:[ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2), 
+##    (1,3,4), (1,3)(2,4), (1,4,2), (1,4,3), (1,4)(2,3) ]>
 ##  gap> Orbits(e);
-##  [ [ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,4,2), (1,2,3), 
-##        (1,3,4), (2,3,4), (1,3,2), (1,4,3), (1,2,4) ] ]
+##  [ [ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,4,2), 
+##        (1,2,3), (1,3,4), (2,3,4), (1,3,2), (1,4,3), (1,2,4) ] ]
 ##  ]]></Example>
 ##  
 ##  </Description>
@@ -1309,16 +1309,17 @@ OrbitsishOperation( "Orbits", OrbitsishReq, false, NewAttribute );
 ##  [ [ 1, 3, 2, 4 ], [ 5 ] ]
 ##  gap> OrbitsDomain(g,Arrangements([1..4],3),OnTuples);
 ##  [ [ [ 1, 2, 3 ], [ 3, 1, 2 ], [ 1, 4, 2 ], [ 2, 3, 1 ], [ 2, 1, 4 ], 
-##        [ 3, 4, 1 ], [ 1, 3, 4 ], [ 4, 2, 1 ], [ 4, 1, 3 ], [ 2, 4, 3 ], 
-##        [ 3, 2, 4 ], [ 4, 3, 2 ] ], 
+##        [ 3, 4, 1 ], [ 1, 3, 4 ], [ 4, 2, 1 ], [ 4, 1, 3 ], 
+##        [ 2, 4, 3 ], [ 3, 2, 4 ], [ 4, 3, 2 ] ], 
 ##    [ [ 1, 2, 4 ], [ 3, 1, 4 ], [ 1, 4, 3 ], [ 2, 3, 4 ], [ 2, 1, 3 ], 
-##        [ 3, 4, 2 ], [ 1, 3, 2 ], [ 4, 2, 3 ], [ 4, 1, 2 ], [ 2, 4, 1 ], 
-##        [ 3, 2, 1 ], [ 4, 3, 1 ] ] ]
+##        [ 3, 4, 2 ], [ 1, 3, 2 ], [ 4, 2, 3 ], [ 4, 1, 2 ], 
+##        [ 2, 4, 1 ], [ 3, 2, 1 ], [ 4, 3, 1 ] ] ]
 ##  gap> OrbitsDomain(g,GF(2)^2,[(1,2,3),(1,4)(2,3)],
 ##  > [[[Z(2)^0,Z(2)^0],[Z(2)^0,0*Z(2)]],[[Z(2)^0,0*Z(2)],[0*Z(2),Z(2)^0]]]);
 ##  [ [ <an immutable GF2 vector of length 2> ], 
-##    [ <an immutable GF2 vector of length 2>, <an immutable GF2 vector of length 
-##          2>, <an immutable GF2 vector of length 2> ] ]
+##    [ <an immutable GF2 vector of length 2>, 
+##        <an immutable GF2 vector of length 2>, 
+##        <an immutable GF2 vector of length 2> ] ]
 ##  ]]></Example>
 ##  <P/>
 ##  (See Section&nbsp;<Ref Sect="Basic Actions"/>
@@ -1629,7 +1630,8 @@ OrbitishFO( "MaximalBlocks",
 ##  action. 
 ##  <Example><![CDATA[
 ##  gap> RepresentativesMinimalBlocks(g,[1..8]);
-##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], [ 1, 6 ], [ 1, 7 ], [ 1, 8 ] ]
+##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], [ 1, 6 ], [ 1, 7 ], 
+##    [ 1, 8 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2110,8 +2112,9 @@ DeclareOperation( "RepresentativeActionOp",
 ##  gap> Stabilizer(g,[1,2],OnTuples);
 ##  Group(())
 ##  gap> OrbitStabilizer(g,[1,2],OnSets);
-##  rec( orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], [ 2, 4 ] ], 
-##    stabilizer := Group([ (1,2)(3,4) ]) )
+##  rec( 
+##    orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], 
+##        [ 2, 4 ] ], stabilizer := Group([ (1,2)(3,4) ]) )
 ##  ]]></Example>
 ##  <P/>
 ##  (See Section&nbsp;<Ref Sect="Basic Actions"/>
@@ -2163,7 +2166,9 @@ DeclareGlobalFunction( "StabilizerPcgs" );
 ##
 ##  <Description>
 ##  This operation should not be called by a user. It is documented however
-##  for purposes to extend or maintain the group actions package.
+##  for purposes to extend or maintain the group actions package
+##  (the word <Q>package</Q> here refers to the &GAP; functionality for 
+##  group actions, not to a &GAP; package).
 ##  <P/>
 ##  <Ref Func="OrbitStabilizerAlgorithm"/> performs an orbit stabilizer
 ##  algorithm for the group <A>G</A> acting with the generators <A>gens</A>
@@ -2238,7 +2243,8 @@ DeclareGlobalFunction( "StabilizerOfBlockNC" );
 ##  Note: If only matrices for the action are needed,
 ##  <Ref Func="LinearActionLayer"/> might be faster.
 ##  <Example><![CDATA[
-##  gap> g:=Group((1,8,10,7,3,5)(2,4,12,9,11,6),(1,9,5,6,3,10)(2,11,12,8,4,7));;
+##  gap> g:=Group((1,8,10,7,3,5)(2,4,12,9,11,6),
+##  >             (1,9,5,6,3,10)(2,11,12,8,4,7));;
 ##  gap> c:=ChiefSeries(g);;List(c,Size);
 ##  [ 96, 48, 16, 4, 1 ]
 ##  gap> HasElementaryAbelianFactorGroup(c[3],c[4]);
@@ -2246,8 +2252,9 @@ DeclareGlobalFunction( "StabilizerOfBlockNC" );
 ##  gap> SetName(c[3],"my_group");;
 ##  gap> a:=AbelianSubfactorAction(g,c[3],c[4]);
 ##  [ [ (1,8,10,7,3,5)(2,4,12,9,11,6), (1,9,5,6,3,10)(2,11,12,8,4,7) ] -> 
-##      [ <an immutable 2x2 matrix over GF2>, <an immutable 2x2 matrix over GF2> ]
-##      , MappingByFunction( my_group, ( GF(2)^
+##      [ <an immutable 2x2 matrix over GF2>, 
+##        <an immutable 2x2 matrix over GF2> ], 
+##    MappingByFunction( my_group, ( GF(2)^
 ##      2 ), function( e ) ... end, function( r ) ... end ), 
 ##    Pcgs([ (2,9,3,8)(4,11,5,10), (1,6,12,7)(4,10,5,11) ]) ]
 ##  gap> mat:=Image(a[1],g);
@@ -2536,26 +2543,31 @@ DeclareGlobalFunction("OnTuplesSets");
 ##  gap> Orbit(g,1,OnPoints);
 ##  [ 1, 2, 3, 4 ]
 ##  gap> Orbit(g,(),OnRight);
-##  [ (), (1,2,3), (2,3,4), (1,3,2), (1,3)(2,4), (1,2)(3,4), (2,4,3), (1,4,2), 
-##    (1,4,3), (1,3,4), (1,2,4), (1,4)(2,3) ]
+##  [ (), (1,2,3), (2,3,4), (1,3,2), (1,3)(2,4), (1,2)(3,4), (2,4,3), 
+##    (1,4,2), (1,4,3), (1,3,4), (1,2,4), (1,4)(2,3) ]
 ##  gap> Orbit(g,[1,2],OnPairs);
-##  [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 3, 1 ], [ 3, 4 ], [ 2, 1 ], [ 1, 4 ], 
-##    [ 4, 1 ], [ 4, 2 ], [ 3, 2 ], [ 2, 4 ], [ 4, 3 ] ]
+##  [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 3, 1 ], [ 3, 4 ], [ 2, 1 ], 
+##    [ 1, 4 ], [ 4, 1 ], [ 4, 2 ], [ 3, 2 ], [ 2, 4 ], [ 4, 3 ] ]
 ##  gap> Orbit(g,[1,2],OnSets);
 ##  [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 3, 4 ], [ 1, 4 ], [ 2, 4 ] ]
 ##  gap> Orbit(g,[[1,2],[3,4]],OnSetsSets);
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], [ [ 1, 3 ], [ 2, 4 ] ] ]
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
+##    [ [ 1, 3 ], [ 2, 4 ] ] ]
 ##  gap> Orbit(g,[[1,2],[3,4]],OnTuplesSets);
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ], [ [ 1, 3 ], [ 2, 4 ] ], 
-##    [ [ 3, 4 ], [ 1, 2 ] ], [ [ 1, 4 ], [ 2, 3 ] ], [ [ 2, 4 ], [ 1, 3 ] ] ]
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ], 
+##    [ [ 1, 3 ], [ 2, 4 ] ], [ [ 3, 4 ], [ 1, 2 ] ], 
+##    [ [ 1, 4 ], [ 2, 3 ] ], [ [ 2, 4 ], [ 1, 3 ] ] ]
 ##  gap> Orbit(g,[[1,2],[3,4]],OnSetsTuples);
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], [ [ 1, 3 ], [ 4, 2 ] ], 
-##    [ [ 2, 4 ], [ 3, 1 ] ], [ [ 2, 1 ], [ 4, 3 ] ], [ [ 3, 2 ], [ 4, 1 ] ] ]
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
+##    [ [ 1, 3 ], [ 4, 2 ] ], [ [ 2, 4 ], [ 3, 1 ] ], 
+##    [ [ 2, 1 ], [ 4, 3 ] ], [ [ 3, 2 ], [ 4, 1 ] ] ]
 ##  gap> Orbit(g,[[1,2],[3,4]],OnTuplesTuples);
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ], [ [ 1, 3 ], [ 4, 2 ] ], 
-##    [ [ 3, 1 ], [ 2, 4 ] ], [ [ 3, 4 ], [ 1, 2 ] ], [ [ 2, 1 ], [ 4, 3 ] ], 
-##    [ [ 1, 4 ], [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 2 ] ], [ [ 4, 2 ], [ 1, 3 ] ], 
-##    [ [ 3, 2 ], [ 4, 1 ] ], [ [ 2, 4 ], [ 3, 1 ] ], [ [ 4, 3 ], [ 2, 1 ] ] ]
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ], 
+##    [ [ 1, 3 ], [ 4, 2 ] ], [ [ 3, 1 ], [ 2, 4 ] ], 
+##    [ [ 3, 4 ], [ 1, 2 ] ], [ [ 2, 1 ], [ 4, 3 ] ], 
+##    [ [ 1, 4 ], [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 2 ] ], 
+##    [ [ 4, 2 ], [ 1, 3 ] ], [ [ 3, 2 ], [ 4, 1 ] ], 
+##    [ [ 2, 4 ], [ 3, 1 ] ], [ [ 4, 3 ], [ 2, 1 ] ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

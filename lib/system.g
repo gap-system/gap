@@ -2,7 +2,6 @@
 ##
 #W  system.g                   GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id: system.g,v 4.51 2011/05/20 22:01:15 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 ##  just some dedicated components are modified via the
 ##  ``post restore functions'' mechanism.
 ##  
-Revision.system_g :=
-    "@(#)$Id: system.g,v 4.51 2011/05/20 22:01:15 gap Exp $";
 
 BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
 
@@ -45,6 +42,9 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
     ),
 
     HasReadGAPRC:= false,
+    
+    # list of all reserved keywords
+    Keywords:=ALL_KEYWORDS(),
 
     # the maximal number of arguments a method can have
     MaxNrArgsMethod:= 6,
@@ -301,13 +301,6 @@ end );
 ##
 
 
-#############################################################################
-##
-##  identifier that will recognize the Windows and the Mac version
-##
-BIND_GLOBAL("WINDOWS_ARCHITECTURE",
-  IMMUTABLE_COPY_OBJ("i686-pc-cygwin-gcc/32-bit"));
-
 #T the following functions eventually should be more clever. This however
 #T will require kernel support and thus is something for later.  AH
 
@@ -326,7 +319,7 @@ BIND_GLOBAL("WINDOWS_ARCHITECTURE",
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ARCH_IS_WINDOWS",function()
-  return GAPInfo.Architecture = WINDOWS_ARCHITECTURE;
+  return POSITION_SUBSTRING (GAPInfo.Architecture, "cygwin", 0) <> fail;
 end);
 
 #############################################################################

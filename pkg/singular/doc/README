@@ -6,7 +6,6 @@
 # The manual can be produced in GAP (when GAPDoc is loaded) with the
 # following command:
 
-LoadPackage("guava");
 MakeGAPDocDoc( DirectoriesPackageLibrary( "singular", "doc" )[1], "singular", [], "singular", "../../.." );;
 
 # this command produces the 'manual.lab' file

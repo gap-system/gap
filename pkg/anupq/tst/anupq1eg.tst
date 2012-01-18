@@ -29,8 +29,7 @@ gap> R := [x^3 / w, y^3 / w * a^2 * b^2, w^3 / b,
   F3^-1*F1^-1*F3*F1, F3^-1*F2^-1*F3*F2*F5^-1, F3^3 ]
 gap> Q := F / R;
 <fp group on the generators [ F1, F2, F3, F4, F5, F6 ]>
-gap> procId := PqStart( Q );
-1
+gap> procId := PqStart( Q );;
 gap> G := Pq( procId : Prime := 3, ClassBound := 3 );
 <pc group of size 729 with 6 generators>
 gap> lev := InfoLevel(InfoANUPQ); # Save current InfoANUPQ level
@@ -46,7 +45,7 @@ gap> phi := EpimorphismStandardPresentation( procId : ClassBound := 3 );
 #I    dim U = 1  dim N = 3  dim M = 3
 #I    nice stabilizer with perm rep
 #I  Computing standard presentation for class 2 took 0.00 seconds
-#I  Computing standard presentation for class 3 took 0.01 seconds
+#I  Computing standard presentation for class 3 took 0.00 seconds
 [ F1, F2, F3, F4, F5, F6 ] -> [ f1*f2^2*f3*f4^2*f5^2, f1*f2*f3*f5, f3^2, 
   f4*f6^2, f5, f6 ]
 gap> # Image of phi should be isomorphic to G ...

@@ -2,7 +2,6 @@
 ##
 #W  algfld.gi                   GAP Library                  Alexander Hulpke
 ##
-#H  @(#)$Id: algfld.gi,v 4.68 2011/05/14 20:44:11 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the methods for algebraic elements and their families
 ##
-Revision.algfld_gi:=
-  "@(#)$Id: algfld.gi,v 4.68 2011/05/14 20:44:11 alexk Exp $";
 
 #############################################################################
 ##

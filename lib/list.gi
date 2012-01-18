@@ -2,7 +2,6 @@
 ##
 #W  list.gi                     GAP library                  Martin Schönert
 ##
-#H  @(#)$Id: list.gi,v 4.233 2011/05/11 12:05:00 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains methods for lists in general.
 ##
-Revision.list_gi :=
-    "@(#)$Id: list.gi,v 4.233 2011/05/11 12:05:00 alexk Exp $";
 
 
 #############################################################################
@@ -1911,6 +1908,9 @@ InstallMethod( Compacted,
     function ( list )
     local   res,        # compacted of <list>, result
             elm;        # element of <list>
+    if IsDenseList(list) then
+      return ShallowCopy(list);
+    fi;
     res := [];
     for elm in list do
         Add( res, elm );

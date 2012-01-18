@@ -3,7 +3,6 @@
 #W  ctblmono.gd                 GAP library                     Thomas Breuer
 #W                                                         & Erzsébet Horváth
 ##
-#H  @(#)$Id: ctblmono.gd,v 4.26 2010/09/29 14:38:05 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -90,8 +89,6 @@
 ##  often.
 ##  <#/GAPDoc>
 ##
-Revision.ctblmono_gd :=
-    "@(#)$Id: ctblmono.gd,v 4.26 2010/09/29 14:38:05 alexk Exp $";
 
 
 #############################################################################
@@ -273,9 +270,9 @@ DeclareProperty( "IsBergerCondition", IsClassFunction );
 ##  rec( character := Character( CharacterTable( Group(
 ##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
 ##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
-##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ), 
-##    comment := "restriction checked", isHomogeneous := false, multiplicity := 1 
-##   )
+##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] )
+##      , comment := "restriction checked", isHomogeneous := false, 
+##    multiplicity := 1 )
 ##  gap> chi:= Irr( Sl23 )[4];
 ##  Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
 ##  gap> cln:= ClassPositionsOfNormalSubgroup( CharacterTable( Sl23 ), n );
@@ -356,8 +353,8 @@ DeclareProperty( "IsPrimitiveCharacter", IsClassFunction );
 ##  rec( character := Character( CharacterTable( Group(
 ##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
 ##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
-##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ), 
-##    comment := "restriction checked", isQuasiPrimitive := false )
+##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] )
+##      , comment := "restriction checked", isQuasiPrimitive := false )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -407,9 +404,10 @@ DeclareProperty( "IsQuasiPrimitive", IsClassFunction );
 ##  [ rec( comment := "linear character", isInduced := false ), 
 ##    rec( character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), 
 ##          [ 1, 1, E(3)^2, E(3) ] ), 
-##        comment := "induced from component '.character'", isInduced := true ), 
-##    rec( comment := "all maximal normal subgroups checked", isInduced := false 
-##       ) ]
+##        comment := "induced from component '.character'", 
+##        isInduced := true ), 
+##    rec( comment := "all maximal normal subgroups checked", 
+##        isInduced := false ) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -650,7 +648,8 @@ DeclareAttribute( "TestMonomialQuick", IsGroup );
 ##  gap> TestMonomial( S4 );
 ##  rec( comment := "abelian by supersolvable group", isMonomial := true )
 ##  gap> TestMonomial( Sl23 );
-##  rec( comment := "list Delta( G ) contains entry > 1", isMonomial := false )
+##  rec( comment := "list Delta( G ) contains entry > 1", 
+##    isMonomial := false )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -722,13 +721,15 @@ TestMonomialUseLattice := 1000;
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> TestSubnormallyMonomial( S4 );
-##  rec( character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
-##    comment := "found non-SM character", isSubnormallyMonomial := false )
+##  rec( character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 
+##       ] ), comment := "found non-SM character", 
+##    isSubnormallyMonomial := false )
 ##  gap> TestSubnormallyMonomial( Irr( S4 )[4] );
-##  rec( comment := "all subnormal subgroups checked",
+##  rec( comment := "all subnormal subgroups checked", 
 ##    isSubnormallyMonomial := false )
 ##  gap> TestSubnormallyMonomial( DerivedSubgroup( S4 ) );
-##  rec( comment := "all irreducibles checked", isSubnormallyMonomial := true )
+##  rec( comment := "all irreducibles checked", 
+##    isSubnormallyMonomial := true )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -801,8 +802,9 @@ DeclareProperty( "IsSubnormallyMonomial", IsClassFunction );
 ##  gap> IsSubnormallyMonomial( DerivedSubgroup( S4 ) );
 ##  true
 ##  gap> TestRelativelySM( DerivedSubgroup( S4 ) );
-##  rec( comment := "normal subgroups are abelian or have nilpotent factor group",
-##    isRelativelySM := true )
+##  rec( 
+##    comment := "normal subgroups are abelian or have nilpotent factor gr\
+##  oup", isRelativelySM := true )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

@@ -2,7 +2,7 @@
 ##
 #W group.gi                                                 Laurent Bartholdi
 ##
-#H   @(#)$Id: group.gi,v 1.85 2011/06/13 22:54:34 gap Exp $
+#H   @(#)$Id: group.gi,v 1.86 2011/11/15 16:20:07 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -2444,11 +2444,15 @@ else
 InstallMethod(FindActionKernel, "(FR) for two FR groups",
         [IsFRGroup,IsFRGroup],
         function(G,N)
-    local t;
-    t := RightTransversal(G,N);
-    return GroupHomomorphismByFunction(G,SymmetricGroup(Length(t)),function(g)
+    local t, hom;
+    t := RightCosets(G,N);
+    hom := GroupHomomorphismByFunction(G,SymmetricGroup(Length(t)),function(g)
         return PermList(List(t,x->PositionCanonical(t,x*g)));
     end);
+    if IsSolvable(Image(hom)) then
+        hom := hom*IsomorphismPcGroup(Image(hom));
+    fi;
+    return hom;
 end);
 fi;
 
@@ -2575,6 +2579,10 @@ InstallMethod(IsBranched, "(FR) for an FR group",
         [IsFRGroup],
         G->Index(G,BranchingSubgroup(G))<infinity);
 
+InstallTrueMethod(IsWeaklyBranched, IsBranched);
+InstallTrueMethod(IsWeaklyBranched, HasBranchingSubgroup);
+InstallImmediateMethod(IsSolvableGroup,IsWeaklyBranched,0,ReturnFalse);
+
 InstallMethod(BranchingSubgroup, "(FR) for an FR group",
         [IsFRGroup],
         function(G)
@@ -2623,6 +2631,58 @@ InstallMethod(FindBranchingSubgroup, "(FR) for an FR group, a level and a radius
     SetIsBranchingSubgroup(K,true);
     return K;
 end);
+
+InstallMethod(BranchStructure, [IsFRGroup and HasFullSCData],
+        function(G)
+    local X, Q;
+    
+    X := AlphabetOfFRSemigroup(G);
+    Q := TopVertexTransformations(G);
+    return rec(group := TrivialSubgroup(Q),
+               quo := GroupHomomorphismByFunction(G,~.group,x->One(~.group)),
+               set := X,
+               top := Q,
+               wreath := WreathProduct(~.group,Q),
+               epi := GroupHomomorphismByImages(~.wreath,~.group,GeneratorsOfGroup(~.wreath),List(GeneratorsOfGroup(~.wreath),x->One(Q))));
+end);
+
+InstallMethod(BranchStructure, [IsFRGroup],
+        function(G)
+    local pi, K, Q, W, S, SS, g, d, set, i;
+    
+    K := BranchingSubgroup(G);
+    
+    # a shortcut in case it's difficult to compute coset actions
+    if false and HasHasCongruenceProperty(G) and HasCongruenceProperty(G) then
+        d := 1;
+        i := Index(G,K);
+        repeat
+            pi := EpimorphismPermGroup(G,d);
+            d := d+1;
+        until Index(Image(pi),Image(pi,K))=i;
+        pi := pi*NaturalHomomorphismByNormalSubgroup(Image(pi),Image(pi,K));
+    else
+        pi := NaturalHomomorphismByNormalSubgroup(G,K);
+    fi;
+
+    Q := Image(pi);
+    W := WreathProduct(Q,TopVertexTransformations(G));
+    S := GeneratorsOfGroup(G);
+    set := AlphabetOfFRSemigroup(G);
+    SS := [];
+    for g in S do
+        d := DecompositionOfFRElement(g);
+        Add(SS,Product(set,i->(d[1][i]^pi)^Embedding(W,i))*PermList(d[2])^Embedding(W,Length(set)+1));
+    od;
+    return rec(group := Q,
+               quo := pi,
+               set := set,
+               top := TopVertexTransformations(G),
+               wreath := W,
+               epi := GroupHomomorphismByImages(Group(SS),Range(pi),SS,List(S,x->x^pi))
+               );
+end);
+
 #############################################################################
 
 BindGlobal("ASSIGNGENERATORVARIABLES@", function(gens)

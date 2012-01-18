@@ -2,7 +2,7 @@
 **
 *W  mp_float.c                     GAP source               Laurent Bartholdi
 **
-*H  @(#)$Id: mp_float.c,v 1.2 2010/02/22 19:25:24 gap Exp $
+*H  @(#)$Id: mp_float.c,v 1.6 2012/01/17 10:57:03 gap Exp $
 **
 *Y  Copyright (C) 2008 Laurent Bartholdi
 **
@@ -10,15 +10,15 @@
 **  It defers to mpfr.c, mpfi.c etc. for initialization
 */
 static const char *Revision_mp_float_c =
-   "@(#)$Id: mp_float.c,v 1.2 2010/02/22 19:25:24 gap Exp $";
+   "@(#)$Id: mp_float.c,v 1.6 2012/01/17 10:57:03 gap Exp $";
 
 #undef TRACE_ALLOC
-#define USE_GMP
+
 #define BANNER_MP_FLOAT_H
 
 #include <string.h>
-#include <malloc.h>
 #include <stdio.h>
+#include <gmp.h>
 
 #include "src/system.h"
 #include "src/gasman.h"
@@ -28,6 +28,11 @@ static const char *Revision_mp_float_c =
 #include "src/bool.h"
 #include "src/string.h"
 #include "mp_float.h"
+
+Obj FLOAT_INFINITY_STRING, /* pretty strings */
+  FLOAT_EMPTYSET_STRING,
+  FLOAT_REAL_STRING,
+  FLOAT_I_STRING;
 
 /****************************************************************
  * convert long GAP integer to gmp signed integers and back:
@@ -71,6 +76,7 @@ Obj INT_mpz(mpz_ptr z)
   return res;
 }
 
+#if 0
 /****************************************************************
  * debug allocation / deallocation
  ****************************************************************/
@@ -99,12 +105,18 @@ static void free_func (void *p, size_t s)
   printf("#W gmp_default_free called on bag of size %d at %x\n", s, (int) p);
 #endif
 }
+#endif
 
 /****************************************************************
  * initialize package
  ****************************************************************/
 static Int InitKernel (StructInitInfo *module)
 {
+  ImportGVarFromLibrary("FLOAT_INFINITY_STRING", &FLOAT_INFINITY_STRING);
+  ImportGVarFromLibrary("FLOAT_EMPTYSET_STRING", &FLOAT_EMPTYSET_STRING);
+  ImportGVarFromLibrary("FLOAT_REAL_STRING", &FLOAT_REAL_STRING);
+  ImportGVarFromLibrary("FLOAT_I_STRING", &FLOAT_I_STRING);
+
 #ifdef WITH_MPFR
   InitMPFRKernel();
 #endif
@@ -113,6 +125,9 @@ static Int InitKernel (StructInitInfo *module)
 #endif
 #ifdef WITH_MPC
   InitMPCKernel();
+#endif
+#ifdef WITH_FPLLL
+  InitFPLLLKernel();
 #endif
 #ifdef WITH_MPD
   InitMPDKernel();
@@ -131,10 +146,15 @@ static Int InitLibrary (StructInitInfo *module)
 #ifdef WITH_MPC
   InitMPCLibrary();
 #endif
+#ifdef WITH_FPLLL
+  InitFPLLLLibrary();
+#endif
 #ifdef WITH_MPD
   InitMPDLibrary();
 #endif
+#if 0
   mp_set_memory_functions (alloc_func, realloc_func, free_func);
+#endif
 
   return 0;
 }

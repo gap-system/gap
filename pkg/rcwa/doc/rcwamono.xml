@@ -71,7 +71,7 @@ be constructed as described above. It is handled as a special case:
   <Func Name="Rcwa" Arg="R"
         Label="the monoid formed by all rcwa mappings of a ring"/>
   <Returns>
-    The monoid Rcwa(<A>R</A>) of all residue-class-wise affine
+    the monoid Rcwa(<A>R</A>) of all residue-class-wise affine
     mappings of the ring&nbsp;<A>R</A>.
   </Returns>
   <Description>
@@ -214,7 +214,7 @@ by the operation <C>ShortOrbits</C>:
   <Meth Name="ShortOrbits" Arg="M, S, maxlng"
         Label="for rcwa monoid, set of points and bound on length"/>
   <Returns>
-    A list of finite forward orbits of the rcwa monoid&nbsp;<A>M</A>
+    a list of finite forward orbits of the rcwa monoid&nbsp;<A>M</A>
     of length at most&nbsp;<A>maxlng</A> which start at points in
     the set&nbsp;<A>S</A>.
   </Returns>
@@ -253,7 +253,7 @@ forward orbits or subsets of such under the action of an rcwa monoid:
   <Meth Name ="Ball"
         Arg="M, p, r, action" Label="for monoid, point, radius and action"/>
   <Returns>
-    The ball of radius&nbsp;<A>r</A> around the element&nbsp;<A>f</A> in
+    the ball of radius&nbsp;<A>r</A> around the element&nbsp;<A>f</A> in
     the monoid&nbsp;<A>M</A>, respectively
     the ball of radius&nbsp;<A>r</A> around the point&nbsp;<A>p</A> under
     the action&nbsp;<A>action</A> of the monoid&nbsp;<A>M</A>.

@@ -2,7 +2,6 @@
 ##
 #W  permdeco.gd                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id: permdeco.gd,v 1.6 2011/04/19 03:07:21 gap Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -10,8 +9,6 @@
 ##  composition factors and the representation of such groups in a nice way
 ##  as permutation groups.
 ##
-Revision.permdeco_gd :=
-    "@(#)$Id: permdeco.gd,v 1.6 2011/04/19 03:07:21 gap Exp $";
 
 #############################################################################
 ##

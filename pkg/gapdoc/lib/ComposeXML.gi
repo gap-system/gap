@@ -2,7 +2,6 @@
 ##
 #W  ComposeXML.gi                GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: ComposeXML.gi,v 1.12 2010/10/14 23:06:32 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen

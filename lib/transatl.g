@@ -2,7 +2,6 @@
 ##
 #W  transatl.g                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id: transatl.g,v 4.2 2005/08/06 12:59:53 gap Exp $
 ##
 #Y  Copyright (C) 2005 The GAP Group
 ##
@@ -10,8 +9,6 @@
 ##  differently on different sides of the Atlantic, such as
 ##  `Stabilizer/Stabiliser' and `Solvable/Soluble'.
 ##
-Revision.transatl_g :=
-    "@(#)$Id: transatl.g,v 4.2 2005/08/06 12:59:53 gap Exp $";
 
 #############################################################################
 ##

@@ -2,7 +2,6 @@
 **
 *W  objscoll.c                  GAP source                       Frank Celler
 **
-*H  @(#)$Id: objscoll.c,v 4.41 2011/05/09 11:11:30 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -24,8 +23,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_objscoll_c =
-   "@(#)$Id: objscoll.c,v 4.41 2011/05/09 11:11:30 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -2552,8 +2549,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSingleCollector ( void )
 {
-    module.revision_c = Revision_objscoll_c;
-    module.revision_h = Revision_objscoll_h;
     FillInVersion( &module );
     return &module;
 }

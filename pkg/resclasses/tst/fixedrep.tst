@@ -29,7 +29,7 @@ gap> String(cl1);
 gap> Print(cl1,"\n");
 ResidueClassWithFixedRepresentative( Integers, 3, 2 )
 gap> Print(U,"\n");
-UnionOfResidueClassesWithFixedRepresentatives( Integers, [ [ 2, 1 ], [ 7, 4 ]
+UnionOfResidueClassesWithFixedRepresentatives( Integers, [ [ 2, 1 ], [ 7, 4 ] 
  ] )
 gap> p := List([1..25],i->[Primes[i],i]);;
 gap> P := UnionOfResidueClassesWithFixedRepresentatives(Integers,p);
@@ -50,7 +50,7 @@ true
 gap> IsOverlappingFree(U);
 false
 gap> List([cl1,cl2,U],AsOrdinaryUnionOfResidueClasses);
-[ The residue class 2(3) of Z, The residue class 1(2) of Z,
+[ The residue class 2(3) of Z, The residue class 1(2) of Z, 
   Union of the residue classes 1(2) and 4(14) of Z ]
 gap> cl1 in U;
 false

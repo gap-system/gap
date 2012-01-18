@@ -6,12 +6,10 @@
 ##
 ##  Installs methods for properties and attributes needed for ANUPQ.
 ##    
-#H  @(#)$Id: anupqprop.gi,v 1.2 2005/08/16 18:48:50 gap Exp $
+#H  @(#)$Id: anupqprop.gi,v 1.3 2011/11/29 20:00:13 gap Exp $
 ##
 #Y  Copyright (C) 2001  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-Revision.anupqprop_gi :=
-    "@(#)$Id: anupqprop.gi,v 1.2 2005/08/16 18:48:50 gap Exp $";
 
 #############################################################################
 ##

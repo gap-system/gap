@@ -2,7 +2,7 @@
 ##
 #W  ctosymp3.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctosymp3.tbl,v 1.4 2009/04/22 12:39:08 gap Exp $
+#H  @(#)$Id: ctosymp3.tbl,v 1.5 2011/09/28 14:32:23 gap Exp $
 ##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctosymp3.tbl,v $
+#H  Revision 1.5  2011/09/28 14:32:23  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 1.4  2009/04/22 12:39:08  gap
 #H  added missing maxes of He.2, ON.2, HN.2, Fi24, and B
 #H      TB
@@ -30,11 +34,6 @@
 #H      TB
 #H
 ##
-Revision.ctosymp3_tbl :=
-    "@(#)$Id: ctosymp3.tbl,v 1.4 2009/04/22 12:39:08 gap Exp $";
-
-SET_TABLEFILENAME("ctosymp3");
-ALN:= Ignore;
 
 MOT("S12(2)",
 [
@@ -8588,7 +8587,6 @@ ARC("S12(2)","isSimple",true);
 ARC("S12(2)","extInfo",["",""]);
 
 LIBTABLE.LOADSTATUS.ctosymp3:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

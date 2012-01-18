@@ -2,7 +2,6 @@
 ##
 #W  BibTeX.gi                    GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: BibTeX.gi,v 1.42 2011/03/03 09:22:03 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -205,9 +204,9 @@ end);
 ##  
 ##  <Example>
 ##  gap> bib := ParseBibFiles("doc/test.bib");
-##  [ [ rec( From := rec( BibTeX := true ), Type := "article", 
-##            Label := "AB2000", author := "Fritz A. First and Sec, X. Y."
-##              , title := "Short", journal := "Important Journal", 
+##  [ [ rec( From := rec( BibTeX := true ), Label := "AB2000", 
+##            Type := "article", author := "Fritz A. First and Sec, X. Y."
+##              , journal := "Important Journal", title := "Short", 
 ##            year := "2000" ) ], [ "j" ], [ "Important Journal" ] ]
 ##  </Example>
 ##  </Description>
@@ -387,11 +386,11 @@ end);
 ##    [ [ "First", "F. A.", "Fritz A." ], [ "Sec", "X. Y.", "X. Y." ] ] ]
 ##  gap> NormalizeNameAndKey(bib[1][1]);
 ##  gap> bib[1][1];
-##  rec( From := rec( BibTeX := true ), Type := "article", 
-##    Label := "AB2000", author := "First, F. A. and Sec, X. Y.", 
-##    title := "Short", journal := "Important Journal", year := "2000", 
-##    authororig := "Fritz A. First and Sec, X. Y.", printedkey := "FS00",
-##    keylong := "firstsec2000" )
+##  rec( From := rec( BibTeX := true ), Label := "AB2000", 
+##    Type := "article", author := "First, F. A. and Sec, X. Y.", 
+##    authororig := "Fritz A. First and Sec, X. Y.", 
+##    journal := "Important Journal", keylong := "firstsec2000", 
+##    printedkey := "FS00", title := "Short", year := "2000" )
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
@@ -531,7 +530,8 @@ InstallGlobalFunction(StringBibAsBib, function(arg)
         Append(res, abbrevs[pos]);
       else
         Append(res, "{");
-        lines := FormatParagraph(r.(comp), 54, "both", [ind, ""]);
+        lines := FormatParagraph(r.(comp), SizeScreen()[1]-26, 
+                                 "both", [ind, ""]);
         Append(res, lines{[Length(ind)+1..Length(lines)-1]});
         Append(res, "}");
       fi;
@@ -741,10 +741,10 @@ InstallGlobalFunction(StringBibAsHTML, function(arg)
       mrnumber:= mrnumber{ [ 1 .. Position( mrnumber, ' ' ) - 1 ] };
     fi;
     Append(res, Concatenation(
-      "<p class='Bib_entry'>\n[<span class='Bib_keyLink'><a href=\"http://www.ams.org/mathscinet-getitem?mr=",
+      "<p class='BibEntry'>\n[<span class='BibKeyLink'><a href=\"http://www.ams.org/mathscinet-getitem?mr=",
       mrnumber, "\">", key, "</a></span>]   "));
   else
-    Append(res, Concatenation("<p class='Bib_entry'>\n[<span class='Bib_key' style=\"color: #8e0000;\">", 
+    Append(res, Concatenation("<p class='BibEntry'>\n[<span class='BibKey'>", 
                     key, "</span>]   "));
   fi;
   # standard BibTeX-styles typeset a type if not given
@@ -758,15 +758,15 @@ InstallGlobalFunction(StringBibAsHTML, function(arg)
   # we assume with the "," delimiters that at least one of .author,
   # .editor or .title exist
   if IsBound(r.author) then
-    Append(res, Concatenation("<b class='Bib_author'>", 
+    Append(res, Concatenation("<b class='BibAuthor'>", 
                 AndToCommaNames(r.author),"</b>"));
   fi;
   if IsBound(r.editor) then
   if PositionSublist( r.editor, " and " ) = fail then
-      Append(res, Concatenation(" (<span class='Bib_editor'>", 
+      Append(res, Concatenation(" (<span class='BibEditor'>", 
                   AndToCommaNames(r.editor), "</span>, Ed.)"));
   else
-      Append(res, Concatenation(" (<span class='Bib_editor'>", 
+      Append(res, Concatenation(" (<span class='BibEditor'>", 
                   AndToCommaNames(r.editor), "</span>, Eds.)"));
   fi;
   fi;
@@ -774,90 +774,90 @@ InstallGlobalFunction(StringBibAsHTML, function(arg)
     if ForAny(["author", "editor"], a-> IsBound(r.(a))) then
       Add(res, ',');
     fi;
-    Append(res, Concatenation("\n <i class='Bib_title'>", r.title, "</i>"));
+    Append(res, Concatenation("\n <i class='BibTitle'>", r.title, "</i>"));
   fi;
   if IsBound(r.booktitle) then
     Append( res, ",\n " );
     if r.Type in ["inproceedings", "incollection"] then
       Append(res, " in ");
     fi;
-    Append(res, Concatenation(" <i class='Bib_booktitle'>", 
+    Append(res, Concatenation(" <i class='BibBooktitle'>", 
                 r.booktitle, "</i>"));
   fi;
   if IsBound(r.subtitle) then
-    Append(res, Concatenation("\n <i class='Bib_subtitle'>&ndash;", 
+    Append(res, Concatenation("\n <i class='BibSubtitle'>&ndash;", 
                 r.subtitle, "</i>"));
   fi;
   if IsBound(r.journal) then
-    Append(res, Concatenation(",\n <span class='Bib_journal'>", 
+    Append(res, Concatenation(",\n <span class='BibJournal'>", 
                 r.journal, "</span>"));
   fi;
   if IsBound(r.type) then
-    Append(res, Concatenation(",\n <span class='Bib_type'>", 
+    Append(res, Concatenation(",\n <span class='BibType'>", 
                 r.type, "</span>"));
   fi;
   if IsBound(r.organization) then
-    Append(res, Concatenation(",\n <span class='Bib_organization'>", 
+    Append(res, Concatenation(",\n <span class='BibOrganization'>", 
                 r.organization, "</span>"));
   fi;
   if IsBound(r.institution) then
-    Append(res, Concatenation(",\n <span class='Bib_organization'>", 
+    Append(res, Concatenation(",\n <span class='BibOrganization'>", 
                 r.institution, "</span>"));
   fi;
   if IsBound(r.publisher) then
-    Append(res, Concatenation(",\n <span class='Bib_publisher'>", 
+    Append(res, Concatenation(",\n <span class='BibPublisher'>", 
                 r.publisher, "</span>"));
   fi;
   if IsBound(r.school) then
-    Append(res, Concatenation(",\n <span class='Bib_school'>", r.school, "</span>"));
+    Append(res, Concatenation(",\n <span class='BibSchool'>", r.school, "</span>"));
   fi;
   if IsBound(r.edition) then
-    Append(res, Concatenation(",\n <span class='Bib_edition'>", 
+    Append(res, Concatenation(",\n <span class='BibEdition'>", 
                 r.edition, " edition", "</span>"));
   fi;
   if IsBound(r.series) then
-    Append(res, Concatenation(",\n <span class='Bib_series'>", 
+    Append(res, Concatenation(",\n <span class='BibSeries'>", 
                 r.series, "</span>"));
   fi;
   if IsBound(r.volume) then
-    Append(res, Concatenation(",\n <em class='Bib_volume'>", 
+    Append(res, Concatenation(",\n <em class='BibVolume'>", 
                 r.volume, "</em>"));
   fi;
   if IsBound(r.number) then
-    Append(res, Concatenation(" (<span class='Bib_number'>", 
+    Append(res, Concatenation(" (<span class='BibNumber'>", 
                 r.number, "</span>)"));
   fi;
   if IsBound(r.address) then
-    Append(res, Concatenation(",\n <span class='Bib_address'>", 
+    Append(res, Concatenation(",\n <span class='BibAddress'>", 
                 r.address, "</span>"));
   fi;
   if IsBound(r.year) then
-    Append(res, Concatenation("\n (<span class='Bib_year'>", 
+    Append(res, Concatenation("\n (<span class='BibYear'>", 
                 r.year, "</span>)"));
   fi;
   if IsBound(r.pages) then
     if booklike then
-      Append(res, Concatenation(",\n <span class='Bib_pages'>", 
+      Append(res, Concatenation(",\n <span class='BibPages'>", 
                   r.pages, " pages</span>"));
     else
-      Append(res, Concatenation(",\n <span class='Bib_pages'>", 
+      Append(res, Concatenation(",\n <span class='BibPages'>", 
                   r.pages, "</span>"));
     fi;
   fi;
   if IsBound(r.chapter) then
-    Append(res, Concatenation(",\n <span class='Bib_chapter'>Chapter ", 
+    Append(res, Concatenation(",\n <span class='BibChapter'>Chapter ", 
                 r.chapter, "</span>"));
   fi;
   if IsBound(r.note) then
-    Append(res, Concatenation("<br />\n(<span class='Bib_note'>", 
+    Append(res, Concatenation("<br />\n(<span class='BibNote'>", 
                 r.note, "</span>", ")"));
   fi;
   if IsBound(r.notes) then
-    Append(res, Concatenation("<br />\n(<span class='Bib_notes'>", 
+    Append(res, Concatenation("<br />\n(<span class='BibNotes'>", 
                 r.notes, "</span>", ")"));
   fi;
   if IsBound(r.howpublished) then
-    Append(res, Concatenation(",\n<span class='Bib_howpublished'>", 
+    Append(res, Concatenation(",\n<span class='BibHowpublished'>", 
                 r.howpublished, "</span>"));
   fi;
  
@@ -1057,9 +1057,9 @@ InstallGlobalFunction(StringBibAsText, function(arg)
 ##    str := FormatParagraph(Filtered(str, x-> not x in "{}"), 72);
   Add(str, '.');
   if Unicode(str, "UTF-8") <> fail then
-    str := FormatParagraph(str, 72, WidthUTF8String);
+    str := FormatParagraph(str, SizeScreen()[1]-4, WidthUTF8String);
   else
-    str := FormatParagraph(str, 72);
+    str := FormatParagraph(str, SizeScreen()[1]-4);
   fi;
   Add(str, '\n');
   return str;
@@ -1126,21 +1126,23 @@ end);
 ##  gap> bibxml := List(bib[1], StringBibAsXMLext);;
 ##  gap> bib2 := ParseBibXMLextString(Concatenation(bibxml));;
 ##  gap> for b in bib2.entries do 
-##  gap>          PrintFormattedString(StringBibXMLEntry(b, "Text")); od;     
-##  [Gau95]  Gauss,  C. F., Disquisitiones arithmeticae, Academia Colombiana
-##  de  Ciencias  Exactas  Físicas  y  Naturales,  Colección  Enrique  Pérez
-##  Arbeláez   [Enrique  Pérez  Arbeláez  Collection],  10,  Bogotá  (1995),
-##  xliv+495  pages,  (Translated  from  the Latin by Hugo Barrantes Campos,
-##  Michael Josephy and Ángel Ruiz Zúñiga, With a preface by Ruiz Zúñiga).
+##  >          PrintFormattedString(StringBibXMLEntry(b, "Text")); od;     
+##  [Gau95]   Gauss,   C.   F.,  Disquisitiones  arithmeticae,  Academia
+##  Colombiana  de  Ciencias  Exactas  Físicas  y  Naturales,  Colección
+##  Enrique  Pérez  Arbeláez  [Enrique  Pérez  Arbeláez Collection], 10,
+##  Bogotá  (1995),  xliv+495  pages, (Translated from the Latin by Hugo
+##  Barrantes  Campos,  Michael  Josephy  and  Ángel Ruiz Zúñiga, With a
+##  preface by Ruiz Zúñiga).
 ##  
-##  [Gau86]  Gauss, C. F., Disquisitiones arithmeticae, Springer-Verlag, New
-##  York  (1986),  xx+472 pages, (Translated and with a preface by Arthur A.
-##  Clarke,  Revised  by William C. Waterhouse, Cornelius Greither and A. W.
-##  Grootendorst and with a preface by Waterhouse).
+##  [Gau86]  Gauss, C. F., Disquisitiones arithmeticae, Springer-Verlag,
+##  New  York  (1986),  xx+472  pages, (Translated and with a preface by
+##  Arthur  A.  Clarke,  Revised  by  William  C.  Waterhouse, Cornelius
+##  Greither and A. W. Grootendorst and with a preface by Waterhouse).
 ##  
-##  [Gau66]  Gauss,  C.  F.,  Disquisitiones  arithmeticae,  Yale University
-##  Press,  Translated  into  English  by Arthur A. Clarke, S. J, New Haven,
+##  [Gau66]  Gauss,  C. F., Disquisitiones arithmeticae, Yale University
+##  Press, Translated into English by Arthur A. Clarke, S. J, New Haven,
 ##  Conn. (1966), xx+472 pages.
+##  
 ##  </Example>
 ##  </Description>
 ##  
@@ -1152,124 +1154,132 @@ end);
 ##  <#/GAPDoc>
 
 
-if LoadPackage("IO") = true then
-  SEARCHMRHOST := "ams.org";
-  ##  SEARCHMRHOST := "ams.math.uni-bielefeld.de";
-  InstallGlobalFunction(SearchMR, function(r)
-    local trans, uri, i, l, res, extr, a, b;
-    trans := [["Author", "AUCN"], ["AuthorRelated","ICN"], ["Title","TI"],
-              ["ReviewText","RT"],["Journal","JOUR"],["InstitutionCode","IC"],
-              ["Series","SE"],["MSCPrimSec","CC"],["MSCPrimary","PC"],
-              ["MRNumber","MR"],["Anywhere","ALLF"],["References","REFF"]];
-    if not IsBound(r.type) then
-      r.type := "bibtex";
-    fi;
-    uri := Concatenation("/mathscinet/search/publications.html?fmt=", 
-                         r.type);
-    if IsBound(r.Year) then
-      if '-' in r.Year then
-        extr := SplitString(r.Year,"","- ");
-        Append(uri, "&dr=yearrange&yearRangeFirst=");
-        Append(uri, extr[1]);
-        Append(uri, "&yearRangeSecond=");
-        Append(uri, extr[2]);
-      else 
-        Append(uri, "&dr=pubyear&arg3=");
-        Append(uri, Filtered(r.Year, c-> not c in "<>="));
-        if r.Year[1] = '<' then
-          Append(uri, "&yrop=lt");
-        elif r.Year[1] = '>' then
-          Append(uri, "&yrop=gt");
-        else
-          Append(uri, "&yrop=eq");
-        fi;
-      fi;
-    fi;
-    i := 4;
-    for a in trans do
-      if IsBound(r.(a[1])) then
-        if IsString(r.(a[1])) then
-          l := [r.(a[1])];
-        else
-          l := r.(a[1]);
-        fi;
-        for b in l do 
-          Append(uri, Concatenation("&pg", String(i), "=", a[2], "&s",
-                        String(i), "=", Encode(Unicode(b),"URL")));
-          if i = 9 then
-            break;
-          else
-            i := i+1;
-          fi;
-        od;
-      fi;
-      if i = 9 then
-        break;
-      fi;
-    od;
-    # get all entries
-    Append(uri, "&extend=1");
-    res := SingleHTTPRequest(SEARCHMRHOST, 80, "GET", uri, rec(), false, false);
-    while res.statuscode = 302 do
-      res := SingleHTTPRequest(SEARCHMRHOST, 80, "GET", res.header.location, 
-             rec(), false, false);
-    od;
-    if not IsBound(res.body) then
-      Info(InfoBibTools, 1, "Cannot reach MathSciNet service.");
-      return fail;
-    fi;
-    if r.type = "bibtex" then
-      i := PositionSublist(res.body, "<pre>\n@", i);
-      extr := [];
-      while i <> fail do
-        Add(extr, res.body{[i+5..PositionSublist(res.body, "</pre>", i)-1]});
-        i := PositionSublist(res.body, "<pre>\n@", i);
-      od;
-      return extr;
-    else
-      return res.body;
-    fi;
-  end);
-  # args: record[, type]
-  # records like entry from ParseBibStrings/Files, default for type is "bibtex"
-  InstallGlobalFunction(SearchMRBib, function(arg)
-    local nn, tt, r, a, f;
-    a := arg[1];
-    if IsBound(a.mrnumber) then
-      r := rec(MRNumber := a.mrnumber);
-      if ' ' in r.MRNumber then
-        r.MRNumber := r.MRNumber{[1..Position(r.MRNumber, ' ')-1]};
-      fi;
-    else
-      a := ShallowCopy(a);
-      for f in RecFields(a) do
-        if IsString(a.(f)) then
-          a.(f) := HeuristicTranslationsLaTeX2XML.Apply(a.(f));
-        fi;
-      od;
-      if IsBound(a.author) then
-        a.author := SubstitutionSublist(a.author, "~", " ");
-        nn := NormalizedNameAndKey(a.author)[4];
-      elif IsBound(a.editor) then
-        a.editor := SubstitutionSublist(a.editor, "~", " ");
-        nn := NormalizedNameAndKey(a.editor)[4];
+SEARCHMRHOST := "ams.org";
+##  SEARCHMRHOST := "ams.math.uni-bielefeld.de";
+if not IsBound(SingleHTTPRequest) then
+  SingleHTTPRequest := 0;
+fi;
+InstallGlobalFunction(SearchMR, function(r)
+  local trans, uri, i, l, res, extr, a, b;
+  trans := [["Author", "AUCN"], ["AuthorRelated","ICN"], ["Title","TI"],
+            ["ReviewText","RT"],["Journal","JOUR"],["InstitutionCode","IC"],
+            ["Series","SE"],["MSCPrimSec","CC"],["MSCPrimary","PC"],
+            ["MRNumber","MR"],["Anywhere","ALLF"],["References","REFF"]];
+  if LoadPackage("IO") <> true then
+    Print("SearchMR not available because IO package not available.\n");
+    return fail;
+  fi;
+  if not IsBound(r.type) then
+    r.type := "bibtex";
+  fi;
+  uri := Concatenation("/mathscinet/search/publications.html?fmt=", 
+                       r.type);
+  if IsBound(r.Year) then
+    if '-' in r.Year then
+      extr := SplitString(r.Year,"","- ");
+      Append(uri, "&dr=yearrange&yearRangeFirst=");
+      Append(uri, extr[1]);
+      Append(uri, "&yearRangeSecond=");
+      Append(uri, extr[2]);
+    else 
+      Append(uri, "&dr=pubyear&arg3=");
+      Append(uri, Filtered(r.Year, c-> not c in "<>="));
+      if r.Year[1] = '<' then
+        Append(uri, "&yrop=lt");
+      elif r.Year[1] = '>' then
+        Append(uri, "&yrop=gt");
       else
-        nn := [[""]];
+        Append(uri, "&yrop=eq");
       fi;
-      # up to three longest words from title
-      tt := SubstitutionSublist(a.title, "{", "");
-      tt := SubstitutionSublist(tt, "}", "");
-      tt := NormalizedWhitespace(tt);
-      tt := WordsString(tt);
-      SortParallel(List(tt, w-> 1000-Length(w)), tt);
-      tt := tt{[1..Minimum(3, Length(tt))]};
-      r := rec( Author := List(nn, a->a[1]),
-                                    Title := tt);
     fi;
-    if Length(arg) > 1 then
-      r.type := arg[2];
+  fi;
+  i := 4;
+  for a in trans do
+    if IsBound(r.(a[1])) then
+      if IsString(r.(a[1])) then
+        l := [r.(a[1])];
+      else
+        l := r.(a[1]);
+      fi;
+      for b in l do 
+        Append(uri, Concatenation("&pg", String(i), "=", a[2], "&s",
+                      String(i), "=", Encode(Unicode(b),"URL")));
+        if i = 9 then
+          break;
+        else
+          i := i+1;
+        fi;
+      od;
     fi;
-    return SearchMR(r);
-  end);
+    if i = 9 then
+      break;
+    fi;
+  od;
+  # get all entries
+  Append(uri, "&extend=1");
+  res := SingleHTTPRequest(SEARCHMRHOST, 80, "GET", uri, rec(), false, false);
+  while res.statuscode = 302 do
+    res := SingleHTTPRequest(SEARCHMRHOST, 80, "GET", res.header.location, 
+           rec(), false, false);
+  od;
+  if not IsBound(res.body) then
+    Info(InfoBibTools, 1, "Cannot reach MathSciNet service.");
+    return fail;
+  fi;
+  if r.type = "bibtex" then
+    i := PositionSublist(res.body, "<pre>\n@", i);
+    extr := [];
+    while i <> fail do
+      Add(extr, res.body{[i+5..PositionSublist(res.body, "</pre>", i)-1]});
+      i := PositionSublist(res.body, "<pre>\n@", i);
+    od;
+    return extr;
+  else
+    return res.body;
+  fi;
+end);
+# args: record[, type]
+# records like entry from ParseBibStrings/Files, default for type is "bibtex"
+InstallGlobalFunction(SearchMRBib, function(arg)
+  local nn, tt, r, a, f;
+  a := arg[1];
+  if IsBound(a.mrnumber) then
+    r := rec(MRNumber := a.mrnumber);
+    if ' ' in r.MRNumber then
+      r.MRNumber := r.MRNumber{[1..Position(r.MRNumber, ' ')-1]};
+    fi;
+  else
+    a := ShallowCopy(a);
+    for f in RecFields(a) do
+      if IsString(a.(f)) then
+        a.(f) := HeuristicTranslationsLaTeX2XML.Apply(a.(f));
+      fi;
+    od;
+    if IsBound(a.author) then
+      a.author := SubstitutionSublist(a.author, "~", " ");
+      nn := NormalizedNameAndKey(a.author)[4];
+    elif IsBound(a.editor) then
+      a.editor := SubstitutionSublist(a.editor, "~", " ");
+      nn := NormalizedNameAndKey(a.editor)[4];
+    else
+      nn := [[""]];
+    fi;
+    # up to three longest words from title
+    tt := SubstitutionSublist(a.title, "{", "");
+    tt := SubstitutionSublist(tt, "}", "");
+    tt := NormalizedWhitespace(tt);
+    tt := WordsString(tt);
+    SortParallel(List(tt, w-> 1000-Length(w)), tt);
+    tt := tt{[1..Minimum(3, Length(tt))]};
+    r := rec( Author := List(nn, a->a[1]),
+                                  Title := tt);
+  fi;
+  if Length(arg) > 1 then
+    r.type := arg[2];
+  fi;
+  return SearchMR(r);
+end);
+if SingleHTTPRequest = 0 then
+  Unbind(SingleHTTPRequest);
 fi;
 

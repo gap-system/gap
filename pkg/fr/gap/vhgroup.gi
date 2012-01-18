@@ -2,7 +2,7 @@
 ##
 #W vhgroup.gi                                               Laurent Bartholdi
 ##
-#H   @(#)$Id: vhgroup.gi,v 1.14 2011/06/13 22:54:36 gap Exp $
+#H   @(#)$Id: vhgroup.gi,v 1.15 2011/09/20 11:45:34 gap Exp $
 ##
 #Y Copyright (C) 2007, Laurent Bartholdi
 ##
@@ -591,9 +591,9 @@ InstallGlobalFunction(GammaPQMachine, function(p,q)
     local i, j, k, pset, qset, trans, out;
 
     if QUATERNIONBASIS@=fail then
-        MakeReadWriteGlobal("QUATERNIONBASIS@");
+        MakeReadWriteGlobal("QUATERNIONBASIS@FR");
         QUATERNIONBASIS@ := Basis(QuaternionAlgebra(Rationals));
-        MakeReadOnlyGlobal("QUATERNIONBASIS@");
+        MakeReadOnlyGlobal("QUATERNIONBASIS@FR");
     fi;
 
     pset := QUATERNIONNORMP@(p);

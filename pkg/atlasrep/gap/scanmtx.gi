@@ -3,8 +3,6 @@
 #W  scanmtx.gi     GAP 4 packages AtlasRep and MeatAxe          Thomas Breuer
 #W                                                              Frank L"ubeck
 ##
-#H  @(#)$Id: scanmtx.gi,v 1.43 2010/05/19 16:28:04 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Whenever this file is changed in one of the packages
@@ -18,12 +16,6 @@
 ##  The functions `CMtxBinaryFFMatOrPerm' and `FFMatOrPermCMtxBinary'
 ##  were contributed by Frank L"ubeck.
 ##
-if IsBound( Revision ) then
-  Revision.( "atlasrep/gap/scanmtx_gi" ) :=
-    "@(#)$Id: scanmtx.gi,v 1.43 2010/05/19 16:28:04 gap Exp $";
-  Revision.( "cmeataxe/gap/scanmtx_gi" ) :=
-    "@(#)$Id: scanmtx.gi,v 1.43 2010/05/19 16:28:04 gap Exp $";
-fi;
 
 
 ############################################################################
@@ -696,8 +688,7 @@ end );
 #M  MeatAxeString( <mat>, <q> )
 ##
 InstallMethod( MeatAxeString,
-    "for matrix over a finite field, and field order",
-    [ IsTable and IsFFECollColl, IsPosInt ],
+    [ "IsTable and IsFFECollColl", "IsPosInt" ],
     function( mat, q )
     local nrows,     # number of rows of `mat'
           ncols,     # number of columns of `mat'
@@ -858,8 +849,7 @@ InstallMethod( MeatAxeString,
 #M  MeatAxeString( <perms>, <degree> )
 ##
 InstallMethod( MeatAxeString,
-    "for list of permutations, and degree",
-    [ IsPermCollection and IsList, IsPosInt ],
+    [ "IsPermCollection and IsList", "IsPosInt" ],
     function( perms, degree )
     local str, perm, i;
 
@@ -888,8 +878,7 @@ InstallMethod( MeatAxeString,
 #M  MeatAxeString( <perm>, <q>, <dims> )
 ##
 InstallMethod( MeatAxeString,
-    "for permutation, field order, and dimensions",
-    [ IsPerm, IsPosInt, IsList ],
+    [ "IsPerm", "IsPosInt", "IsList" ],
     function( perm, q, dims )
     local str, i;
 

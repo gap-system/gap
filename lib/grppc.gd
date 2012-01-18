@@ -2,7 +2,6 @@
 ##
 #W  grppc.gd                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: grppc.gd,v 4.65 2011/01/07 01:05:19 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -25,8 +24,6 @@
 ##  HasHomePcgs
 ##    a group that knows a pcgs of a super group
 ##
-Revision.grppc_gd :=
-    "@(#)$Id: grppc.gd,v 4.65 2011/01/07 01:05:19 alexk Exp $";
 
 
 #############################################################################
@@ -334,12 +331,10 @@ DeclareOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
 #############################################################################
 ##
 #O  AffineAction( <gens>, <basisvectors>, <linear>, <transl> )
-#O  AffineOperation( <gens>, <basisvectors>, <linear>, <transl> )
 ##
 ##  <#GAPDoc Label="AffineAction">
 ##  <ManSection>
 ##  <Oper Name="AffineAction" Arg='gens, basisvectors, linear, transl'/>
-##  <Oper Name="AffineOperation" Arg='gens, basisvectors, linear, transl'/>
 ##
 ##  <Description>
 ##  return a list of matrices, one for each element of <A>gens</A>, which
@@ -352,7 +347,6 @@ DeclareOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
 ##
 DeclareOperation( "AffineAction", 
     [ IsList, IsMatrix, IsFunction, IsFunction ] );
-DeclareSynonym( "AffineOperation", AffineAction );
 
 
 #############################################################################
@@ -389,12 +383,10 @@ InstallTrueMethod(
 #############################################################################
 ##
 #F  AffineActionLayer( <G>, <gens>, <pcgs>, <transl> )
-#F  AffineOperationLayer( <G>, <gens>, <pcgs>, <transl> )
 ##
 ##  <#GAPDoc Label="AffineActionLayer">
 ##  <ManSection>
 ##  <Func Name="AffineActionLayer" Arg='G, gens, pcgs, transl'/>
-##  <Func Name="AffineOperationLayer" Arg='G, gens, pcgs, transl'/>
 ##
 ##  <Description>
 ##  returns a list of matrices, one for each element of <A>gens</A>,
@@ -416,7 +408,8 @@ InstallTrueMethod(
 ##  gap> modu := mpcgs mod npcgs;
 ##  [ f4, f5 ]
 ##  gap> mat:=LinearActionLayer( G, spec{[1,2,3]}, modu );
-##  [ <an immutable 2x2 matrix over GF2>, <an immutable 2x2 matrix over GF2>, 
+##  [ <an immutable 2x2 matrix over GF2>, 
+##    <an immutable 2x2 matrix over GF2>, 
 ##    <an immutable 2x2 matrix over GF2> ]
 ##  gap> Print( mat, "\n" );
 ##  [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], 
@@ -428,7 +421,6 @@ InstallTrueMethod(
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "AffineActionLayer" );
-DeclareSynonym( "AffineOperationLayer",AffineActionLayer );
 
 
 #############################################################################
@@ -511,6 +503,7 @@ DeclareGlobalFunction(
 ##  false
 ##  gap> IdSmallGroup( H ) = IdSmallGroup( G );
 ##  true
+##  gap> RemoveFile( "save" );;
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

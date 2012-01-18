@@ -2,15 +2,12 @@
 ##
 #W  simple.gd                 GAP Library                    Alexander Hulpke
 ##
-#H  @(#)$Id: simple.gd,v 1.2 2011/06/13 17:16:09 gap Exp $
 ##
 #Y  Copyright (C) 2011 The GAP Group
 ##
 ##  This file contains basic constructions for simple groups of bounded size,
 ##  if necessary by calling the `atlasrep' package.
 ##
-Revision.simple_gd :=
-    "@(#)$Id: simple.gd,v 1.2 2011/06/13 17:16:09 gap Exp $";
 
 
 #############################################################################
@@ -63,7 +60,8 @@ DeclareGlobalFunction("SimpleGroup");
 ##  gap> it:=SimpleGroupsIterator(20000);
 ##  <iterator>
 ##  gap> List([1..8],x->NextIterator(it)); 
-##  [ A8, PSL(3,4), PSL(2,37), PSp(4,3), Sz(8), PSL(2,32), PSL(2,41), PSL(2,43) ]
+##  [ A8, PSL(3,4), PSL(2,37), PSp(4,3), Sz(8), PSL(2,32), PSL(2,41), 
+##    PSL(2,43) ]
 ##  gap> it:=SimpleGroupsIterator(1,2000);;
 ##  gap> l:=[];;for i in it do Add(l,i);od;l;
 ##  [ A5, PSL(2,7), A6, PSL(2,8), PSL(2,11), PSL(2,13) ]
@@ -75,3 +73,29 @@ DeclareGlobalFunction("SimpleGroup");
 ##  </ManSection>
 ##  <#/GAPDoc>
 DeclareGlobalFunction("SimpleGroupsIterator");
+
+
+#############################################################################
+##
+#F  ClassicalIsomorphismTypeFiniteSimpleGroup(<G>] )
+##
+##  <#GAPDoc Label="ClassicalIsomorphismTypeFiniteSimpleGroup">
+##  <ManSection>
+##  <Func Name="ClassicalIsomorphismTypeFiniteSimpleGroup" Arg='G'/>
+##  This function returns a result equivalent to (and based on)
+##  <Ref Func="IsomorphismTypeInfoFiniteSimpleGroup"/>, but returns a
+##  classically names series (consistent with
+##  <Ref Func="SimpleGroup"/>) and the parameter always in a list. This makes it
+##  easier to parse the result.
+##  <Description>
+##  <Example><![CDATA[
+##  gap> ClassicalIsomorphismTypeFiniteSimpleGroup(SimpleGroup("O+",8,2));
+##  rec( parameter := [ 8, 2 ], series := "O+" )
+##  gap> IsomorphismTypeInfoFiniteSimpleGroup(SimpleGroup("O+",8,2));     
+##  rec( name := "D(4,2) = O+(8,2)", parameter := [ 4, 2 ], series := "D" )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+DeclareGlobalFunction("ClassicalIsomorphismTypeFiniteSimpleGroup");
+

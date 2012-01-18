@@ -3,7 +3,6 @@
 #W  ctblmono.gi                 GAP library                     Thomas Breuer
 #W                                                         & Erzsébet Horváth
 ##
-#H  @(#)$Id: ctblmono.gi,v 4.21 2010/02/23 15:12:54 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,8 +16,6 @@
 ##  3. Testing Monomiality
 ##  4. Minimal Nonmonomial Groups
 ##
-Revision.ctblmono_gi :=
-    "@(#)$Id: ctblmono.gi,v 4.21 2010/02/23 15:12:54 gap Exp $";
 
 
 #############################################################################

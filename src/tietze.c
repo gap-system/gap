@@ -3,7 +3,6 @@
 *W  tietze.c                    GAP source                       Frank Celler
 *W                                                           & Volkmar Felsch
 **
-*H  @(#)$Id: tietze.c,v 4.34 2010/06/14 15:56:26 sal Exp $
 **
 *Y  Copyright 1990-1992,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 #include        "code.h"
 #include        "stats.h"               /* for TakeInterrupt */
 
-const char * Revision_tietze_c = 
-  "@(#)$Id: tietze.c,v 4.34 2010/06/14 15:56:26 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -590,16 +587,16 @@ Obj FuncTzSubstituteGen (
             continue;
         }
 
-	/* mark that the relator changed */
-	if (len>=alen) {
-	  alen+=100; /* more relators changed */
-	  GROW_PLIST(Idx,alen);
-	  SET_LEN_PLIST(Idx,alen);
-	  ptIdx=ADDR_OBJ(Idx);
-	}
-	len+=1;
-	ptIdx[len]=INTOBJ_INT(i);
-	CHANGED_BAG(Idx);
+        /* mark that the relator changed */
+        if (len>=alen) {
+          alen+=100; /* more relators changed */
+          GROW_PLIST(Idx,alen);
+          SET_LEN_PLIST(Idx,alen);
+          ptIdx=ADDR_OBJ(Idx);
+        }
+        len+=1;
+        ptIdx[len]=INTOBJ_INT(i);
+        CHANGED_BAG(Idx);
 
 
 
@@ -1614,8 +1611,8 @@ Obj  FuncReduceLetterRepWordsRewSys (
        nw=NEW_PLIST(T_PLIST_EMPTY,0);
      }
      else {
-	/* make space for the new word */
-	nw = NEW_PLIST(TNUM_OBJ(w),newlen);
+        /* make space for the new word */
+        nw = NEW_PLIST(TNUM_OBJ(w),newlen);
 
        /* addresses */
        wa=ADDR_OBJ(w);
@@ -1626,7 +1623,7 @@ Obj  FuncReduceLetterRepWordsRewSys (
        /* for a in [ 1 .. p ] do */
        /* Add( nw, w[a] ); */
        for (a=1; a<=p;a++) {
- 	 *nwa++=*wa++;
+         *nwa++=*wa++;
        }
        /* od */
 
@@ -1639,7 +1636,7 @@ Obj  FuncReduceLetterRepWordsRewSys (
        /* for a in [ 1 .. Length( rul ) ] do */
        /* Add( nw, rul[a] ); */
        for (a=1;a<=rlen;a++) {
-	 *nwa++=*wa++;
+         *nwa++=*wa++;
        }
        /* od */
 
@@ -1648,7 +1645,7 @@ Obj  FuncReduceLetterRepWordsRewSys (
        wa=(Obj*) &(ADDR_OBJ(w)[i+1]);
        /* Add( nw, w[a] ); */
        for (a=i+1;a<=n;a++) {
-	 *nwa++=*wa++;
+         *nwa++=*wa++;
        }
        /* od */
 
@@ -1786,8 +1783,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoTietze ( void )
 {
-    module.revision_c = Revision_tietze_c;
-    module.revision_h = Revision_tietze_h;
     FillInVersion( &module );
     return &module;
 }

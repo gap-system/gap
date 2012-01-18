@@ -2,7 +2,7 @@
 **
 *W  mpfr.c                       GAP source                 Laurent Bartholdi
 **
-*H  @(#)$Id: mpfr.c,v 1.1 2008/06/14 15:45:40 gap Exp $
+*H  @(#)$Id: mpfr.c,v 1.9 2012/01/17 10:57:03 gap Exp $
 **
 *Y  Copyright (C) 2008 Laurent Bartholdi
 **
@@ -10,13 +10,11 @@
 **  floats are implemented using the MPFR package.
 */
 const char * Revision_mpfr_c =
-   "@(#)$Id: mpfr.c,v 1.1 2008/06/14 15:45:40 gap Exp $";
-
-#define USE_GMP
+   "@(#)$Id: mpfr.c,v 1.9 2012/01/17 10:57:03 gap Exp $";
 
 #include <string.h>
-#include <malloc.h>
 #include <stdio.h>
+#include <gmp.h>
 
 #include <mpfr.h>
 #include "src/system.h"
@@ -26,14 +24,18 @@ const char * Revision_mpfr_c =
 #include "src/gmpints.h"
 #include "src/bool.h"
 #include "src/string.h"
+#include "src/macfloat.h"
+#include "src/plist.h"
+#include "src/calls.h"
+#include "src/opers.h"
 #include "mp_float.h"
 
-Obj TYPE_MPFR;
+Obj TYPE_MPFR, IsMPFRFloat, INFINITY;
 
 #define MANTISSA_MPFR(p) ((mp_limb_t *) ((p)+1))
 
 inline mpfr_ptr GET_MPFR(Obj obj) {
-  while (TYPE_DATOBJ(obj) != TYPE_MPFR) {
+  while (!IS_DATOBJ(obj) || DoFilter(IsMPFRFloat, obj) != True) {
     obj = ErrorReturnObj("GET_MPFR: object must be an MPFR, not a %s",
 		       (Int)(InfoBags[TNUM_OBJ(obj)].name),0,
 		       "You can return an MPFR float to continue");
@@ -91,9 +93,11 @@ Func1_MPFR(ATANH_MPFR,mpfr_atanh);
 Func1_MPFR(LOG_MPFR,mpfr_log);
 Func1_MPFR(LOG2_MPFR,mpfr_log2);
 Func1_MPFR(LOG10_MPFR,mpfr_log10);
+Func1_MPFR(LOG1P_MPFR,mpfr_log1p);
 Func1_MPFR(EXP_MPFR,mpfr_exp);
 Func1_MPFR(EXP2_MPFR,mpfr_exp2);
 Func1_MPFR(EXP10_MPFR,mpfr_exp10);
+Func1_MPFR(EXPM1_MPFR,mpfr_expm1);
 
 Func1_MPFR(AINV_MPFR,mpfr_neg);
 Func1_MPFR(SQRT_MPFR,mpfr_sqrt);
@@ -105,6 +109,20 @@ Func1_MPFR(CEIL_MPFR,mpfr_rint_ceil);
 Func1_MPFR(FLOOR_MPFR,mpfr_rint_floor);
 Func1_MPFR(ROUND_MPFR,mpfr_rint_round);
 Func1_MPFR(TRUNC_MPFR,mpfr_rint_trunc);
+Func1_MPFR(FRAC_MPFR,mpfr_frac);
+
+static Obj SINCOS_MPFR(Obj self, Obj f)
+{
+  mp_prec_t prec = mpfr_get_prec(GET_MPFR(f));
+  Obj g = NEW_MPFR(prec);
+  Obj h = NEW_MPFR(prec);
+  mpfr_sin_cos(MPFR_OBJ(g), MPFR_OBJ(h), GET_MPFR(f), GMP_RNDN);
+  Obj l = NEW_PLIST(T_PLIST,2);
+  SET_ELM_PLIST(l,1,g);
+  SET_ELM_PLIST(l,2,h);
+  SET_LEN_PLIST(l,2);
+  return l;
+}
 
 static Obj INV_MPFR(Obj self, Obj f)
 {
@@ -218,12 +236,16 @@ static Obj MPFR_INTPREC(Obj self, Obj i, Obj prec)
 static Obj INT_MPFR(Obj self, Obj f)
 {
   mpz_t z;
+  if (mpfr_zero_p(GET_MPFR(f)))
+    return INTOBJ_INT(0);
+  if (mpfr_inf_p(GET_MPFR(f)))
+    return INFINITY;
+  if (!mpfr_number_p(GET_MPFR(f)))
+    return Fail;
+
   mpz_init2 (z, mpfr_get_exp(GET_MPFR(f))+1);
-
   mpfr_get_z (z, GET_MPFR(f), GMP_RNDZ);
-
   Obj res = INT_mpz(z);
-
   mpz_clear(z);
 
   return res;
@@ -234,6 +256,43 @@ static Obj PREC_MPFR(Obj self, Obj f)
   return INTOBJ_INT(mpfr_get_prec(GET_MPFR(f)));
 }
 
+static Obj SIGN_MPFR(Obj self, Obj f)
+{
+  return INTOBJ_INT(mpfr_sgn(GET_MPFR(f)));
+}
+
+static Obj ISNAN_MPFR(Obj self, Obj f)
+{
+  return mpfr_nan_p(GET_MPFR(f)) ? True : False;
+}
+
+static Obj ISXINF_MPFR(Obj self, Obj f)
+{
+  return mpfr_inf_p(GET_MPFR(f)) ? True : False;
+}
+
+static Obj ISPINF_MPFR(Obj self, Obj f)
+{
+  if (!mpfr_inf_p(GET_MPFR(f))) return False;
+  return mpfr_sgn(MPFR_OBJ(f)) > 0 ? True : False;
+}
+
+static Obj ISNINF_MPFR(Obj self, Obj f)
+{
+  if (!mpfr_inf_p(GET_MPFR(f))) return False;
+  return mpfr_sgn(MPFR_OBJ(f)) < 0 ? True : False;
+}
+
+static Obj ISZERO_MPFR(Obj self, Obj f)
+{
+  return mpfr_zero_p(GET_MPFR(f)) ? True : False;
+}
+
+static Obj ISNUMBER_MPFR(Obj self, Obj f)
+{
+  return mpfr_number_p(GET_MPFR(f)) ? True : False;
+}
+
 static Obj MPFR_MPFRPREC(Obj self, Obj f, Obj prec)
 {
   TEST_IS_INTOBJ("MPFR_MPFRPREC",prec);
@@ -241,6 +300,135 @@ static Obj MPFR_MPFRPREC(Obj self, Obj f, Obj prec)
   Obj g = NEW_MPFR(INT_INTOBJ(prec));
   mpfr_set (MPFR_OBJ(g), GET_MPFR(f), GMP_RNDN);
   return g;
+}
+
+static Obj MPFR_MACFLOAT(Obj self, Obj f)
+{
+  while (!IS_MACFLOAT(f)) {
+    f = ErrorReturnObj("MPFR_MACFLOAT: object must be a float, not a %s",
+		       (Int)(InfoBags[TNUM_OBJ(f)].name),0,
+		       "You can return a float to continue");
+  }
+  Obj g = NEW_MPFR(64);
+  mpfr_set_d (MPFR_OBJ(g), VAL_MACFLOAT(f), GMP_RNDN);
+  return g;
+}
+
+static Obj MACFLOAT_MPFR(Obj self, Obj f)
+{
+  Obj g = NewBag(T_MACFLOAT,sizeof(Double));
+  VAL_MACFLOAT(g) = mpfr_get_d(GET_MPFR(f), GMP_RNDN);
+  return g;
+}
+
+static Obj FREXP_MPFR(Obj self, Obj f)
+{
+  mp_prec_t prec = mpfr_get_prec(GET_MPFR(f));
+  Obj g = NEW_MPFR(prec);
+  mpfr_set (MPFR_OBJ(g), MPFR_OBJ(f), GMP_RNDN);
+  mp_exp_t e = mpfr_get_exp(MPFR_OBJ(f));
+  mpfr_set_exp(MPFR_OBJ(g), 0);
+  Obj l = NEW_PLIST(T_PLIST,2);
+  SET_ELM_PLIST(l,1,g);
+  SET_ELM_PLIST(l,2, ObjInt_Int(e));
+  SET_LEN_PLIST(l,2);
+  return l;
+}
+
+static Obj LDEXP_MPFR(Obj self, Obj f, Obj exp)
+{
+  mp_exp_t e;
+  if (IS_INTOBJ(exp))
+    e = INT_INTOBJ(exp);
+  else {
+    Obj f = MPZ_LONGINT(exp);
+    e = mpz_get_si(mpz_MPZ(f));
+  }
+  mp_prec_t prec = mpfr_get_prec(GET_MPFR(f));
+  Obj g = NEW_MPFR(prec);
+  mpfr_mul_2si (MPFR_OBJ(g), MPFR_OBJ(f), e, GMP_RNDN);
+  return g;
+}
+
+static Obj EXTREPOFOBJ_MPFR(Obj self, Obj f)
+{
+  mp_prec_t prec = mpfr_get_prec(GET_MPFR(f));
+  Obj g = NEW_MPFR(prec);
+  mpfr_set (MPFR_OBJ(g), MPFR_OBJ(f), GMP_RNDN);
+
+  Obj l = NEW_PLIST(T_PLIST,2);
+  SET_LEN_PLIST(l,2);
+
+  if (mpfr_zero_p(MPFR_OBJ(f))) {
+    SET_ELM_PLIST(l,1, INTOBJ_INT(0));
+    mpfr_ui_div(MPFR_OBJ(g), 1, MPFR_OBJ(f), GMP_RNDN);
+    SET_ELM_PLIST(l,2, INTOBJ_INT(mpfr_sgn(MPFR_OBJ(g))<0));
+    return l;
+  }
+  if (!mpfr_number_p(MPFR_OBJ(f))) {
+    SET_ELM_PLIST(l,1, INTOBJ_INT(0));
+    if (mpfr_inf_p(MPFR_OBJ(f)))
+      SET_ELM_PLIST(l,2, INTOBJ_INT(2 + (mpfr_sgn(MPFR_OBJ(f))<0)));
+    else if (mpfr_nan_p(MPFR_OBJ(f)))
+      SET_ELM_PLIST(l,2, INTOBJ_INT(4));
+    return l;
+  }
+
+  mp_exp_t e = mpfr_get_exp(MPFR_OBJ(f));
+  mpfr_set_exp(MPFR_OBJ(g), prec);
+
+  mpz_t z;
+  mpz_init2 (z, prec);
+  mpfr_get_z (z, MPFR_OBJ(g), GMP_RNDZ);
+  g = INT_mpz(z);
+  mpz_clear(z);
+
+  SET_ELM_PLIST(l,1, g);
+  SET_ELM_PLIST(l,2, ObjInt_Int(e));
+  return l;
+}
+
+static Obj OBJBYEXTREP_MPFR(Obj self, Obj list)
+{
+  Obj f, m = ELM_PLIST(list,1), e = ELM_PLIST(list,2);
+  if (IS_INTOBJ(m)) {
+    f = NEW_MPFR(8*sizeof(long));
+
+    if (INT_INTOBJ(m) == 0) /* special cases */
+      switch (INT_INTOBJ(e)) {
+      case 0: /* 0 */
+	mpfr_set_si(MPFR_OBJ(f), 0, GMP_RNDN); return f;
+      case 1: /* -0 */
+	mpfr_set_inf(MPFR_OBJ(f), -1);
+	mpfr_ui_div(MPFR_OBJ(f), 1, MPFR_OBJ(f), GMP_RNDN);
+	return f;
+      case 2: /* inf */
+	mpfr_set_inf (MPFR_OBJ(f), 1); return f;
+      case 3: /* -inf */
+	mpfr_set_inf (MPFR_OBJ(f), -1); return f;
+      case 4: /* nan */
+      case 5: /* -nan */
+	mpfr_set_nan (MPFR_OBJ(f)); return f;
+      default:
+	while(1)
+	  ErrorReturnObj("OBJBYEXTREP_MPFR: invalid argument [%d,%d]",
+			 INT_INTOBJ(m), INT_INTOBJ(e),"");
+      }
+
+    mpfr_set_si(MPFR_OBJ(f), INT_INTOBJ(m), GMP_RNDN);
+  } else {
+    Obj mantissa = MPZ_LONGINT(m);
+    f = NEW_MPFR(8*sizeof(mp_limb_t)*SIZE_INT(m));
+    mpfr_set_z(MPFR_OBJ(f), mpz_MPZ(mantissa), GMP_RNDN);
+  }
+
+  if (IS_INTOBJ(e)) {
+    mpfr_set_exp(MPFR_OBJ(f), INT_INTOBJ(e));
+  } else {
+    Obj exponent = MPZ_LONGINT(e);
+    mpfr_set_exp(MPFR_OBJ(f), mpz_get_si(mpz_MPZ(exponent)));
+  }
+  return f;
 }
 
 /****************************************************************
@@ -335,6 +523,7 @@ Func2_MPFR(QUO_MPFR,mpfr_div);
 Func2_MPFR(POW_MPFR,mpfr_pow);
 Func2_MPFR(MOD_MPFR,mpfr_remainder);
 Func2_MPFR(ATAN2_MPFR,mpfr_atan2);
+Func2_MPFR(HYPOT_MPFR,mpfr_hypot);
 
 static Obj LQUO_MPFR(Obj self, Obj fl, Obj fr)
 {
@@ -376,6 +565,7 @@ static StructGVarFunc GVarFuncs [] = {
 
   Inc1_MPFR(COS_MPFR),
   Inc1_MPFR(SIN_MPFR),
+  Inc1_MPFR(SINCOS_MPFR),
   Inc1_MPFR(TAN_MPFR),
   Inc1_MPFR(SEC_MPFR),
   Inc1_MPFR(CSC_MPFR),
@@ -397,9 +587,11 @@ static StructGVarFunc GVarFuncs [] = {
   Inc1_MPFR(LOG_MPFR),
   Inc1_MPFR(LOG2_MPFR),
   Inc1_MPFR(LOG10_MPFR),
+  Inc1_MPFR(LOG1P_MPFR),
   Inc1_MPFR(EXP_MPFR),
   Inc1_MPFR(EXP2_MPFR),
   Inc1_MPFR(EXP10_MPFR),
+  Inc1_MPFR(EXPM1_MPFR),
   Inc1_MPFR(SQRT_MPFR),
   Inc1_MPFR(CBRT_MPFR),
   Inc1_MPFR(SQR_MPFR),
@@ -413,12 +605,29 @@ static StructGVarFunc GVarFuncs [] = {
   Inc1_MPFR_arg(MPFR_EULER,"int"),
   Inc1_MPFR_arg(MPFR_CATALAN,"int"),
   Inc1_MPFR_arg(MPFR_INT,"int"),
+
   Inc1_MPFR(CEIL_MPFR),
   Inc1_MPFR(FLOOR_MPFR),
   Inc1_MPFR(ROUND_MPFR),
   Inc1_MPFR(TRUNC_MPFR),
+  Inc1_MPFR(FRAC_MPFR),
+
   Inc1_MPFR(INT_MPFR),
   Inc1_MPFR(PREC_MPFR),
+  Inc1_MPFR(MPFR_MACFLOAT),
+  Inc1_MPFR(MACFLOAT_MPFR),
+  Inc1_MPFR(SIGN_MPFR),
+  Inc1_MPFR(ISNAN_MPFR),
+  Inc1_MPFR(ISXINF_MPFR),
+  Inc1_MPFR(ISPINF_MPFR),
+  Inc1_MPFR(ISNINF_MPFR),
+  Inc1_MPFR(ISZERO_MPFR),
+  Inc1_MPFR(ISNUMBER_MPFR),
+
+  Inc1_MPFR(FREXP_MPFR),
+  Inc2_MPFR_arg(LDEXP_MPFR,"float, int"),
+  Inc1_MPFR(EXTREPOFOBJ_MPFR),
+  Inc1_MPFR_arg(OBJBYEXTREP_MPFR,"list"),
 
   Inc2_MPFR(SUM_MPFR),
   Inc2_MPFR(DIFF_MPFR),
@@ -428,6 +637,7 @@ static StructGVarFunc GVarFuncs [] = {
   Inc2_MPFR(POW_MPFR),
   Inc2_MPFR(MOD_MPFR),
   Inc2_MPFR(ATAN2_MPFR),
+  Inc2_MPFR(HYPOT_MPFR),
   Inc2_MPFR(EQ_MPFR),
   Inc2_MPFR(LT_MPFR),
   Inc2_MPFR_arg(MPFR_STRING,"string, int"),
@@ -440,7 +650,11 @@ static StructGVarFunc GVarFuncs [] = {
 
 int InitMPFRKernel (void)
 {
+  InitHdlrFuncsFromTable (GVarFuncs);
+
   ImportGVarFromLibrary ("TYPE_MPFR", &TYPE_MPFR);
+  ImportGVarFromLibrary ("IsMPFRFloat", &IsMPFRFloat);
+  ImportGVarFromLibrary ("infinity", &INFINITY);
   return 0;
 }
 

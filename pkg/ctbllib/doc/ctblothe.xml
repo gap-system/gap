@@ -1,6 +1,9 @@
 
-<!--  @(#)$Id: ctblothe.xml,v 1.2 2008/11/14 17:02:55 gap Exp $ -->
+<!-- %W  ctblothe.xml    GAP 4 package CTblLib              Thomas Breuer -->
+<!-- %Y  Copyright 2011, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="chap:interfaces">
 <Heading>Interfaces to Other Data Formats for Character Tables</Heading>
 

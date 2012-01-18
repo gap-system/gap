@@ -16,14 +16,19 @@
 ##  Max Neunh\"offer.
 ##
 InstallGlobalFunction( NqBuildManual,
-function ( ) local  NqDir;
+function ( ) local  NqDocDir;
 
   ##  We take the first package directory.  In most cases this is the one 
   ##  loaded by RequirePackage().
-  NqDir := DirectoriesPackageLibrary( "nq", "gap" )[1];
+  NqDocDir := DirectoriesPackageLibrary( "nq", "doc" )[1];
 
-  MakeGAPDocDoc( Filename( NqDir, "../doc/" ), "nqman",
-                 [ "nq.bib" ], "nq", "../../../" );
+  MakeGAPDocDoc( NqDocDir, "nqman", [ "../PackageInfo.g" ],
+                 "nq", "../../../", "MathJax" );
+
+  ##  Copy CSS files into the doc directory.
+  ##  TODO: This function is new in GAPDoc 1.4, which is not yet released,
+  ##  hence this call is disabled for now.
+  #CopyHTMLStyleFiles( NqDocDir );
 end );
 
 #############################################################################

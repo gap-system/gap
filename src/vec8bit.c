@@ -1,7 +1,5 @@
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_vec8bit_c =
-   "@(#)$Id: vec8bit.c,v 4.114 2011/05/11 11:40:51 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -17,7 +15,6 @@ const char * Revision_vec8bit_c =
 #include        "finfield.h"            /* finite fields and ff elements   */
 
 #include        "bool.h"                /* booleans                        */
-
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
 
@@ -2585,7 +2582,7 @@ Obj FuncNUMBER_VEC8BIT (Obj self, Obj vec)
 */
 
 
-
+#include <stdio.h>
 
 UInt CosetLeadersInner8Bits( Obj veclis,
 			   Obj v,
@@ -2623,7 +2620,7 @@ UInt CosetLeadersInner8Bits( Obj veclis,
     {
       for (i = pos; i <= len; i++)
 	{
-	  vp = ELM_PLIST(veclis, i);
+                          vp = ELM_PLIST(veclis, i);
 	  u = ELM_PLIST(vp,1);
 	  AddVec8BitVec8BitInner(w,w,u,1,lenw);
 	  ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
@@ -2631,8 +2628,10 @@ UInt CosetLeadersInner8Bits( Obj veclis,
 	  sy = 0;
 	  for (j = 0; j < lenw; j++)
 	    {
-	      sy *= q;
-	      sy += gettab[ptrw[j / elts] + 256* (j % elts)];
+		      UInt xxxx;
+		      sy *= q;
+		      xxxx = gettab[ptrw[j / elts] + 256* (j % elts)];
+		      sy += xxxx;
 	    }
 	  if ((Obj) 0 == ELM_PLIST(leaders,sy+1))
 	    {
@@ -2646,18 +2645,20 @@ UInt CosetLeadersInner8Bits( Obj veclis,
 	      wc = ZeroVec8Bit(q,lenw,1);
 	      settab = SETELT_FIELDINFO_8BIT(info);
 	      gettab = GETELT_FIELDINFO_8BIT(info);
-	      ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
+                     ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
 	      ptrw = BYTES_VEC8BIT(w);
-	      for (k = 1; k < q; k++)
+	      for (k = 2; k < q; k++)
 		{		  
 		  qk = FFE_FELT_FIELDINFO_8BIT(info)[k];
 		  MultVec8BitFFEInner(wc,w,qk,1,lenw);
-		  ptrw = BYTES_VEC8BIT(wc);
+                          ptrw = BYTES_VEC8BIT(wc);
 		  sy = 0;
 		  for (j = 0; j < lenw; j++)
 		    {
+		      UInt xxxx;
 		      sy *= q;
-		      sy += gettab[ptrw[j / elts] + 256* (j % elts)];
+		      xxxx = gettab[ptrw[j / elts] + 256* (j % elts)];
+		      sy += xxxx;
 		    }
 		  vc = ZeroVec8Bit(q, len, 0);
 		  settab = SETELT_FIELDINFO_8BIT(info);
@@ -2681,7 +2682,7 @@ UInt CosetLeadersInner8Bits( Obj veclis,
     {
       if (pos + weight <= len)
 	{
-	  found += CosetLeadersInner8Bits(veclis, v, w, weight, pos+1, leaders, tofind, felts);
+	    found += CosetLeadersInner8Bits(veclis, v, w, weight, pos+1, leaders, tofind, felts);
 	  if (found == tofind)
 	    return found;
 	}
@@ -2699,13 +2700,14 @@ UInt CosetLeadersInner8Bits( Obj veclis,
 	  found += CosetLeadersInner8Bits(veclis,v,w,weight-1,pos+1,leaders,tofind-found,felts);
 	  if (found == tofind)
 	    return found;
-	  settab = SETELT_FIELDINFO_8BIT(info);
+	}
+	     settab = SETELT_FIELDINFO_8BIT(info);
 	  feltffe = FELT_FFE_FIELDINFO_8BIT(info);
-	  ptr = BYTES_VEC8BIT(v) + (pos-1)/elts;
 	  u = ELM_PLIST(vp,q);
 	  AddVec8BitVec8BitInner(w,w,u,1,lenw);
-	  *ptr = settab[*ptr + 256 * ((pos-1) % elts)];
-	}
+	
+      ptr = BYTES_VEC8BIT(v) + (pos-1)/elts;
+      *ptr = settab[*ptr + 256 * ((pos-1) % elts)];
       
     }
   TakeInterrupt();
@@ -6239,8 +6241,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoVec8bit ( void )
 {
-    module.revision_c = Revision_vec8bit_c;
-    module.revision_h = Revision_vec8bit_h;
     FillInVersion( &module );
     return &module;
 }

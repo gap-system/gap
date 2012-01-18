@@ -7,5 +7,5 @@
 ##  See '4.3 Adjust the path of the executable for PARI/GP' for details.
 ##
 if not IsBound(AL_EXECUTABLE) then
-    BindGlobal( "AL_EXECUTABLE", "/usr/bin/gp-2.3" );
+    BindGlobal("AL_EXECUTABLE", Filename(DirectoriesSystemPrograms(), "gp"));
 fi;

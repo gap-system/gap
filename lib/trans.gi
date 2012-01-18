@@ -2,7 +2,6 @@
 ##
 #W  trans.gi           GAP library                    Andrew Solomon
 ##
-#H  @(#)$Id: trans.gi,v 4.24 2010/02/23 15:13:34 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  James D. Mitchell
 ##
 
-Revision.trans_gi :=
-    "@(#)$Id: trans.gi,v 4.24 2010/02/23 15:13:34 gap Exp $";
 
 ## Functions altered JDM
 ## 1) KernelOfTransformation

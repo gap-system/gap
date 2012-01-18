@@ -2,8 +2,6 @@
 ##
 #W  ctborth3.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctborth3.tbl,v 4.3 2001/05/04 16:46:11 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables related to the
@@ -14,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctborth3.tbl,v $
+#H  Revision 4.4  2011/09/28 12:12:37  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.3  2001/05/04 16:46:11  gap
 #H  first revision for ctbllib
 #H
@@ -52,10 +54,7 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctborth3_tbl :=
-    "@(#)$Id: ctborth3.tbl,v 4.3 2001/05/04 16:46:11 gap Exp $";
 
-SET_TABLEFILENAME("ctborth3");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("O10+(2).2",17,
@@ -766,6 +765,7 @@ rec(version:=1,
 date:="30.12.92"));
 
 LIBTABLE.LOADSTATUS.ctborth3:="userloaded";
+
 #############################################################################
 ##
 #E

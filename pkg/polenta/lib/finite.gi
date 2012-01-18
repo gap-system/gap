@@ -2,10 +2,10 @@
 ##
 #W finite.gi               POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## constructive pc-sequences for finite matrix groups
 ##
-#H  @(#)$Id: finite.gi,v 1.4 2011/05/31 13:10:57 gap Exp $
+#H  @(#)$Id: finite.gi,v 1.7 2011/09/23 13:36:32 gap Exp $
 ##
 #Y 2003
 ##
@@ -18,26 +18,26 @@
 ## we calculate suitable orbit points for a stabilizer chain
 ## of <gens>, i.e. points with small orbits
 ##
-POL_SuitableOrbitPoints := function( gens)
+POL_SuitableOrbitPoints := function( gens )
     local MM,cs,l,i,x,fac,F,n,csR;
 
     # calculate the module
-    F := Field( gens[1][1][1] );
+    F := FieldOfMatrixList( gens );
     MM := GModuleByMats(gens, F);
 
     # use the meataxe to calculate a decomposition series
     cs := SMTX.BasesCompositionSeries(MM);
     csR := Reversed( cs );
 
-    # build a basis through this series 
+    # build a basis through this series
     n := Length( cs );
     l := [];
-    for i in [1..(n-1)] do 
+    for i in [1..(n-1)] do
         x :=  BaseSteinitzVectors(csR[i],csR[i+1]).factorspace;
-        Append( l, x );       
+        Append( l, x );
         #l:=List([1..(n-1)],
         #x->BaseSteinitzVectors(csR[x],csR[x+1]).factorspace[1]);
-    od;   
+    od;
     return l ;
 end;
 
@@ -51,8 +51,8 @@ POL_NextOrbitPoint := function( pcgs, h )
         p :=  pcgs.suitableOrbitPoints[i];
         i := i+1;
     od;
-    #Print( "genommenes i ist",i,"\n");
-    return p;   
+    #Print( "chosen i is",i,"\n");
+    return p;
 end;
 
 POL_NextOrbitPoint2 := function( pcgs, h )
@@ -65,8 +65,8 @@ POL_NextOrbitPoint2 := function( pcgs, h )
         p :=  pcgs.suitableOrbitPoints[k-i];
         i := i+1;
     od;
-    #Print( "genommenes i ist",i,"\n");
-    return p;   
+    #Print( "chosen i is",i,"\n");
+    return p;
 end;
 
 POL_NextOrbitPoint3 := function( pcgs, h )
@@ -75,17 +75,17 @@ POL_NextOrbitPoint3 := function( pcgs, h )
     #Print( "pcgs.suitableOrbitPoints", pcgs.suitableOrbitPoints, "\n" );
     p := pcgs.suitableOrbitPoints[k];
     Unbind( pcgs.suitableOrbitPoints[k] );
-    return p;   
+    return p;
 end;
 
 
 #############################################################################
 ##
 #F ClosureBasePcgs_word(pcgsN, g, gens, lim)
-## 
+##
 ## Calculates a constructive pc-sequence for <N,g>^gens
 ##
-## Every arrising group element is realized as a record 
+## Every arising group element is realized as a record
 ## containing the real element
 ## and the word information corresponding to gens
 ##
@@ -114,7 +114,7 @@ InstallGlobalFunction( ClosureBasePcgs_word,function( pcgsN, g, gens, lim )
       # g as corresponding to pcgsN.gens
       ExtendedBasePcgsMod( pcgsU, g.groupElement, [i,1] );
       listU:=[g];
- 
+
     # loop over listU
     while Length( listU ) >= 1 do
         u := listU[Length( listU )];
@@ -130,27 +130,27 @@ InstallGlobalFunction( ClosureBasePcgs_word,function( pcgsN, g, gens, lim )
               Append( tempWord, [[j,1]] );
               a:=rec( groupElement:=u.groupElement^x,
                       word:=tempWord);
-              Add(c,a); 
+              Add(c,a);
           od;
           c := Filtered(c,x -> not
-	                MemberTestByBasePcgs(pcgsU,x.groupElement));
+                        MemberTestByBasePcgs(pcgsU,x.groupElement));
 
         # recurse, if <U,c>/N is not abelian
           l := Length( pcgsN.pcref );
-          for i in [1..Length(c)] do 
+          for i in [1..Length(c)] do
               comm := POL_Comm( g, c[i] );
-              pcgsN := ClosureBasePcgs_word(pcgsN,comm,gens,lim-1);  
-              if pcgsN = fail then return fail; fi;      
+              pcgsN := ClosureBasePcgs_word(pcgsN,comm,gens,lim-1);
+              if pcgsN = fail then return fail; fi;
               for j in [(i+1)..Length(c)] do
                   comm := POL_Comm( c[j], c[i] );
-                  pcgsN := ClosureBasePcgs_word(pcgsN,comm,gens,lim-1); 
-                  if pcgsN = fail then return fail; fi;   
+                  pcgsN := ClosureBasePcgs_word(pcgsN,comm,gens,lim-1);
+                  if pcgsN = fail then return fail; fi;
               od;
           od;
-    
+
         # reset U and listU
-          #check if pcgsN was modificated
-          if Length( pcgsN.pcref) > l then 
+          #check if pcgsN was modified
+          if Length( pcgsN.pcref) > l then
               pcgsU := StructuralCopy(pcgsN);
               for i in [1..Length(listU)] do
                   u2 := listU[i].groupElement;
@@ -200,27 +200,26 @@ end );
 ## Returns a constructive polycyclic sequence for G if G is polycyclic
 ## of derived length at most b and it returns fail if G is not
 ## polycyclic
-## 
-## Every generator is a record which contains in 
+##
+## Every generator is a record which contains in
 ## .groupElement the group element and in
 ## .word the wordinformation corresponding to the gensOfG list
-## This feature is important if gensOfG arrise as the image under 
-## the p-congruence homomorphism.  
+## This feature is important if gensOfG arise as the image under
+## the p-congruence homomorphism.
 ##
-## 
+##
 InstallGlobalFunction( CPCS_finite_word , function( gensOfG , b)
-    local c,f,d,trv,pcgsOfN,x,epsilon,h,H,i,n,
+    local c,f,d,pcgsOfN,x,epsilon,h,H,i,n,
           suitableOrbitPoints,pcgsOfN_hilf,j,k;
-    Info( InfoPolenta, 5, "determining a constructive pcgs for the finite part...");  
+    Info( InfoPolenta, 5, "determining a constructive pcgs for the finite part...");
 
     # Setup of N
-    f := Field( gensOfG[1][1][1] );
-    d := Length( gensOfG[1] );   
-    trv := function( x ) return x = x^0; end; 
+    f := FieldOfMatrixList( gensOfG );
+    d := Length( gensOfG[1] );
     suitableOrbitPoints := POL_SuitableOrbitPoints( gensOfG );
     pcgsOfN := rec( orbit := [], trans := [], trels := [], defns := [],
-                 pcref := [], 
-                 acton := f^d, oper := OnRight, trivl := trv, 
+                 pcref := [],
+                 acton := f^d, oper := OnRight, trivl := IsOne,
                  gens:= [], wordGens:=[], gensOfG:=gensOfG,
                  suitableOrbitPoints := suitableOrbitPoints );
     c :=0;
@@ -234,7 +233,7 @@ InstallGlobalFunction( CPCS_finite_word , function( gensOfG , b)
          h := epsilon[Length(epsilon)];
          Unbind(epsilon[Length(epsilon)]);
          pcgsOfN := ClosureBasePcgs_word(pcgsOfN,h,gensOfG ,b);
-         if pcgsOfN = fail then return fail; fi;  
+         if pcgsOfN = fail then return fail; fi;
     od;
     Info(InfoPolenta,5,"finished");
     return pcgsOfN;
@@ -260,13 +259,13 @@ InstallGlobalFunction( CPCS_FinitePart , function(gens )
    #gens_p := gens*One(GF(p));
    gens_p := InducedByField(gens,GF(p));
 
-   # determine un upperbound for the derived length of G
+   # determine an upper bound for the derived length of G
    # it could be sharper !
    bound_derivedLength :=  d+2;
-    
+
    # determine a constructive polycyclic sequence for phi_p(<gens>)
    pcgs_I_p := CPCS_finite_word(gens_p,bound_derivedLength);
-  
+
    return pcgs_I_p;
 end );
 
@@ -281,7 +280,7 @@ InstallGlobalFunction( POL_InverseWord , function(word)
     for wordPart in Reversed(word) do
         Add(tempWord,[wordPart[1],wordPart[2]*-1]);
     od;
-    return tempWord; 
+    return tempWord;
 end );
 
 #############################################################################
@@ -305,7 +304,7 @@ InstallGlobalFunction( ExtendedBasePcgsMod , function( pcgs, g, d )
     # loop over base and divide off
     while not pcgs.trivl( h ) do
         i := i + 1;
-        #Print(" i ist gleich",i,"\n");
+        #Print(" i=",i,"\n");
 
         # take base point (if necessary, add new base point)
         if i > Length( pcgs.orbit ) then
@@ -348,7 +347,7 @@ InstallGlobalFunction( ExtendedBasePcgsMod , function( pcgs, g, d )
             h := h^m;
             e := [e,m];
         fi;
-    od;    
+    od;
 end );
 
 #############################################################################
@@ -358,29 +357,29 @@ end );
 InstallGlobalFunction( RelativeOrdersPcgs_finite , function( pcgs )
     local t,g,order,i;
 
-    if IsBound( pcgs.relOrders ) 
-        then return pcgs.relOrders; 
+    if IsBound( pcgs.relOrders )
+        then return pcgs.relOrders;
     fi;
     pcgs.relOrders := [];
-   
+
     #catch the trivial case
     if Length(pcgs.gens)=0 then
        return pcgs.relOrders;
     fi;
 
     g := pcgs.pcref[Length(pcgs.pcref)][3];
-    order := 1; 
+    order := 1;
     i := 1;
     for t in Reversed( pcgs.pcref ) do
         if t[3]=g then
             order := order*pcgs.trels[t[1]][t[2]];
-            pcgs.relOrders[i] := order;  
+            pcgs.relOrders[i] := order;
         else
             i := i+1;
-            order := 1; 
+            order := 1;
             g := t[3];
             order := order*pcgs.trels[t[1]][t[2]];
-            pcgs.relOrders[i] := order;  
+            pcgs.relOrders[i] := order;
         fi;
     od;
     return pcgs.relOrders;
@@ -389,7 +388,7 @@ end );
 #############################################################################
 ##
 #F  ExponentvectorPcgs_finite( pcgs, g )
-## 
+##
 InstallGlobalFunction( ExponentvectorPcgs_finite , function( pcgs, g )
    local exp,h,index,part;
    exp := [];
@@ -408,21 +407,21 @@ end );
 #############################################################################
 ##
 #F  ExponentvectorPartPcgs( pcgs, g , index)
-## 
+##
 ##  g = ...* pcgs.gens[index]^ExponentvectorPartPcgs * ...
-##  
+##
 InstallGlobalFunction( ExponentvectorPartPcgs , function( pcgs, g, index )
-    local h, e,part, i, o, b, m, c, l, w, j, k; 
+    local h, e,part, i, o, b, m, c, l, w, j, k;
 
     # set up
     h  :=  g;
     i := 0;
-    e := [0,0];  
+    e := [0,0];
 
     # loop over base and divide off
     while not pcgs.trivl( h ) do
         i := i + 1;
-        # take base point 
+        # take base point
         if i > Length( pcgs.orbit ) then
             # Print(g , " is not contained in Pcgs\n");
             return fail;
@@ -440,7 +439,7 @@ InstallGlobalFunction( ExponentvectorPartPcgs , function( pcgs, g, index )
             # Print(g , " is not contained in Pcgs\n");
             return fail;
         fi;
-   
+
         # divide off
         j := Position( pcgs.orbit[i], c );
         if j > 1 then
@@ -460,27 +459,27 @@ end );
 InstallGlobalFunction( ExtractIndexPart , function(word, index)
     local x;
 
-    # case: word=Integer 
-    if word in Integers then 
+    # case: word=Integer
+    if word in Integers then
         if word=index then
             return 1;
-        else 
+        else
             return 0;
        fi;
     fi;
-    
+
     # case: word=[]
-    if IsEmpty(word) then 
+    if IsEmpty(word) then
         return 0;
     fi;
 
     # case: word=[something,Integer]
-    if Length(word) >1 then 
+    if Length(word) >1 then
         if word[2] in Integers then
             return word[2]*ExtractIndexPart(word[1],index);
         fi;
     fi;
-       
+
     # case [something,something,..]
     x :=  ExtractIndexPart(word[1],index);
     x :=  x+ExtractIndexPart(word{[2..Length(word)]},index);
@@ -490,7 +489,7 @@ end );
 #############################################################################
 ##
 #F  POL_TestExpVector_finite( pcgs, g )
-## 
+##
 InstallGlobalFunction( POL_TestExpVector_finite , function( pcgs, g )
    local exp,h,n,i;
    exp := ExponentvectorPcgs_finite( pcgs, g );
@@ -518,7 +517,7 @@ POL_Test_CPCS_FinitePart := function( gens )
            Error( "Failure in the exponent calculation in CPCS_FinitePart" );
         fi;
         Print(i);
-    od;   
+    od;
     Print("\n");
 end;
 
@@ -534,17 +533,17 @@ end;
 InstallGlobalFunction( POL_SetPcPresentation, function(pcgs)
    local genList,ftl,n,ro,i,j,exp,conj,f_i,f_j,r_i,pcSeq;
 
-   # Attention: In pcgs.gens we have the pc-Sequence in inversed order
+   # Attention: In pcgs.gens we have the pc-Sequence in inverse order
    # because we  built up  the structure bottom up
    pcSeq := StructuralCopy(Reversed(pcgs.gens));
 
    # Setup
    n := Length(pcgs.gens);
    ftl := FromTheLeftCollector(n);
-   
+
    # calculate the relative orders
    ro :=  RelativeOrdersPcgs_finite( pcgs );
-   
+
    for i in [1..n] do
        SetRelativeOrder(ftl,i,ro[i]);
    od;

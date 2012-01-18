@@ -1,12 +1,21 @@
-@(#)$Id: README,v 1.17 2006/07/23 17:56:56 gap Exp $
+@(#)$Id: README,v 1.18 2011/09/10 16:35:12 alexk Exp $
 
             singular: the GAP interface to Singular
-(http://www-math.science.unitn.it/~costanti/#singular)
+   ( http://www.gap-system.org/HostedGapPackages/singular/ )
+   
 ===========================================================================
 
 This is the README file for the package `singular'; a GAP interface
-to the computer algebra system Singular (see
-http://www.singular.uni-kl.de/).
+to the computer algebra system Singular (http://www.singular.uni-kl.de/).
+
+===========================================================================
+
+The package has no maintainer at the moment. To make a version of the 
+Singular package working under GAP 4.5, in 2011 a bug in the interface
+was fixed by Paul Smith and a new package archive was prepared by 
+by Alexander Konovalov. Currently we do not plan any further development 
+of this package. The rest of this file belongs to the README of the package
+in the state of its previous revision as on 2006/07/23.
 
 ===========================================================================
 

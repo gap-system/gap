@@ -4,7 +4,6 @@
 *W                                                         & Martin Schönert
 *W                                                  & Burkhard Höfling (MAC)
 **
-*H  @(#)$Id: sysfiles.c,v 4.167 2011/05/15 18:39:17 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_sysfiles_c =
-   "@(#)$Id: sysfiles.c,v 4.167 2011/05/15 18:39:17 gap Exp $";
 
 #define INCLUDE_DECLARATION_PART
 #include        "sysfiles.h"            /* file input/output               */
@@ -188,7 +185,7 @@ ssize_t writeandcheck(int fd, const char *buf, size_t count) {
 
 
 Int SyFindOrLinkGapRootFile (
-    Char *              filename,
+    const Char *        filename,
     Int4                crc_gap,
     TypGRF_Data *       result,
     Int                 len )
@@ -206,8 +203,8 @@ Int SyFindOrLinkGapRootFile (
     Int                 k;
 
 #if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY) || HAVE_DLOPEN
-    Char *              p;
-    Char *              dot;
+    const Char *        p;
+    const Char *        dot;
     Int                 pos;
     Int                 pot = 0;
     InitInfoFunc        init;
@@ -298,7 +295,8 @@ Int SyFindOrLinkGapRootFile (
     if (!tmp && !SyStrncmp(filename, "pkg", 3))
       {
 	Char pkgname[16];
-	Char *p2, *p1;
+	const Char *p2;
+	Char *p1;
 	p2 = filename + 4; /* after the pkg/ */
 	p1 = pkgname;
 	while (*p2 != '\0' && *p2 != '/')
@@ -445,7 +443,7 @@ static UInt4 syCcitt32[ 256 ] =
 0x2a6f2b94L, 0xb40bbe37L, 0xc30c8ea1L, 0x5a05df1bL, 0x2d02ef8dL
 };
 
-Int4 SyGAPCRC( Char * name )
+Int4 SyGAPCRC( const Char * name )
 {
     UInt4       crc;
     UInt4       old;
@@ -493,7 +491,11 @@ Int4 SyGAPCRC( Char * name )
     /* and close it again                                                  */
     SyFclose( fid );
     fclose(f);
-    return ((Int4) crc) >> 4;
+    /* Emulate a signed shift: */
+    if (crc & 0x80000000L)
+        return (Int4) ((crc >> 4) | 0xF0000000L);
+    else
+        return (Int4) (crc >> 4);
 }
 
 
@@ -583,7 +585,7 @@ Obj FuncCrcString( Obj self, Obj str ) {
 #define RTLD_LAZY               1
 #endif
 
-InitInfoFunc SyLoadModule ( Char * name )
+InitInfoFunc SyLoadModule ( const Char * name )
 {
     void *          init;
     void *          handle;
@@ -608,7 +610,7 @@ InitInfoFunc SyLoadModule ( Char * name )
 
 #include <mach-o/rld.h>
 
-InitInfoFunc SyLoadModule ( Char * name )
+InitInfoFunc SyLoadModule ( const Char * name )
 {
     const Char *    names[2];
     unsigned long   init;
@@ -637,7 +639,7 @@ InitInfoFunc SyLoadModule ( Char * name )
 #if !defined(SYS_HAS_RLD_LIBRARY) && !defined(SYS_HAS_DL_LIBRARY) \
 	&& !HAVE_DLOPEN && !HAVE_RLD_LOAD 
 
-InitInfoFunc SyLoadModule ( Char * name )
+InitInfoFunc SyLoadModule ( const Char * name )
 {
     return (InitInfoFunc) 7;
 }
@@ -892,8 +894,8 @@ SYS_SY_BUFFER syBuffers [ 32];
 */
 
 Int SyFopen (
-    Char *              name,
-    Char *              mode )
+    const Char *        name,
+    const Char *        mode )
 {
     Int                 fid;
     Char                namegz [1024];
@@ -908,7 +910,7 @@ Int SyFopen (
           return 0;
     }
     else if ( SyStrcmp( name, "*stdout*" ) == 0 ) {
-        if ( SyStrcmp( mode, "w" ) != 0 )
+        if ( SyStrcmp( mode, "w" ) != 0 && SyStrcmp( mode, "a" ) != 0 )
           return -1;
         else
           return 1;
@@ -922,7 +924,7 @@ Int SyFopen (
           return 2;
     }
     else if ( SyStrcmp( name, "*errout*" ) == 0 ) {
-        if ( SyStrcmp( mode, "w" ) != 0 )
+        if ( SyStrcmp( mode, "w" ) != 0 && SyStrcmp( mode, "a" ) != 0 )
           return -1;
         else
           return 3;
@@ -2257,7 +2259,7 @@ Int SyEchoch (
 #if (SYS_BSD || SYS_MACH || HAVE_SGTTY_H) && !HAVE_TERMIOS_H
 
 void syEchos (
-    Char *              str,
+    const Char *        str,
     Int                 fid )
 {
     /* if running under a window handler, send the line to it              */
@@ -2279,7 +2281,7 @@ void syEchos (
 #if SYS_USG || HAVE_TERMIO_H || HAVE_TERMIOS_H
 
 void syEchos (
-    Char *              str,
+    const Char *        str,
     Int                 fid )
 {
     /* if running under a window handler, send the line to it              */
@@ -2301,7 +2303,7 @@ void syEchos (
 #if SYS_OS2_EMX
 
 void syEchos (
-    Char *              str,
+    const Char *        str,
     Int                 fid )
 {
     /* if running under a window handler, send the line to it              */
@@ -2323,10 +2325,10 @@ void syEchos (
 #if SYS_MSDOS_DJGPP
 
 void syEchos (
-    Char *              str,
+    const Char *        str,
     Int                 fid )
 {
-    Char *              s;
+    const Char *        s;
 
     /* handle stopped output                                               */
     while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
@@ -2346,10 +2348,10 @@ void syEchos (
 #if SYS_TOS_GCC2
 
 void syEchos (
-    Char *              str,
+    const Char *        str,
     Int                 fid )
 {
-    Char *              s;
+    const Char *        s;
 
     /* handle stopped output                                               */
     while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
@@ -2369,7 +2371,7 @@ void syEchos (
 #if SYS_VMS
 
 void            syEchos (
-    Char *              str,
+    const Char *        str,
     Int                 fid )
 {
     writeandcheck( syBuf[fid].echo, str, SyStrlen(str) );
@@ -2396,7 +2398,7 @@ Char   syPrompt [256];                  /* characters already on the line   */
 #if SYS_BSD||SYS_MACH||SYS_USG||SYS_OS2_EMX||SYS_VMS||HAVE_SGTTY_H||HAVE_TERMIO_H||HAVE_TERMIOS_H
 
 void SyFputs (
-    Char *              line,
+    const Char *        line,
     Int                 fid )
 {
     UInt                i;
@@ -2436,7 +2438,7 @@ void SyFputs (
 #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2
 
 void SyFputs (
-    Char *              line,
+    const Char *        line,
     Int                 fid )
 {
     UInt                i;
@@ -3635,16 +3637,16 @@ Char * syFgets (
             if ( ch2==0        && ch==CTR('[') ) {             ch2=ch; ch=0;}
             if ( ch2==0        && ch==CTR('U') ) {             ch2=ch; ch=0;}
             if ( ch2==CTR('[') && ch==CTR('V') ) { ch2=ESC(CTR('V'));  ch=0;}
-            if ( ch2==CTR('[') && isdigit(ch)  ) { rep=ch-'0'; ch2=ch; ch=0;}
+            if ( ch2==CTR('[') && IsDigit(ch)  ) { rep=ch-'0'; ch2=ch; ch=0;}
             if ( ch2==CTR('[') && ch=='['      ) {             ch2=ch; ch=0;}
             if ( ch2==CTR('U') && ch==CTR('V') ) { rep=4*rep;  ch2=ch; ch=0;}
             if ( ch2==CTR('U') && ch==CTR('[') ) { rep=4*rep;  ch2=ch; ch=0;}
             if ( ch2==CTR('U') && ch==CTR('U') ) { rep=4*rep;  ch2=ch; ch=0;}
-            if ( ch2==CTR('U') && isdigit(ch)  ) { rep=ch-'0'; ch2=ch; ch=0;}
-            if ( isdigit(ch2)  && ch==CTR('V') ) {             ch2=ch; ch=0;}
-            if ( isdigit(ch2)  && ch==CTR('[') ) {             ch2=ch; ch=0;}
-            if ( isdigit(ch2)  && ch==CTR('U') ) {             ch2=ch; ch=0;}
-            if ( isdigit(ch2)  && isdigit(ch)  ) { rep=10*rep+ch-'0';  ch=0;}
+            if ( ch2==CTR('U') && IsDigit(ch)  ) { rep=ch-'0'; ch2=ch; ch=0;}
+            if ( IsDigit(ch2)  && ch==CTR('V') ) {             ch2=ch; ch=0;}
+            if ( IsDigit(ch2)  && ch==CTR('[') ) {             ch2=ch; ch=0;}
+            if ( IsDigit(ch2)  && ch==CTR('U') ) {             ch2=ch; ch=0;}
+            if ( IsDigit(ch2)  && IsDigit(ch)  ) { rep=10*rep+ch-'0';  ch=0;}
 	    /* get rid of tilde in windows commands */
 	    if (rubdel==1) {
 	      if ( ch==126 ) {ch2=0;ch=0;};
@@ -4319,6 +4321,7 @@ int SyExec (
 
 extern char ** environ;
 
+SYS_SIG_T NullSignalHandler(int scratch) {}
 
 UInt SyExecuteProcess (
     Char *                  dir,
@@ -4348,6 +4351,13 @@ UInt SyExecuteProcess (
        meantime. This resets the handler */
     
     func2 = signal( SIGCHLD, SIG_DFL );
+
+    /* This may return SIG_DFL (0x0) or SIG_IGN (0x1) if the previous handler
+     * was set to the default or 'ignore'. In these cases (or if SIG_ERR is 
+     * returned), just use a null signal hander - the default on most systems
+     * is to do nothing */
+    if(func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
+      func2 = &NullSignalHandler;
 
     /* clone the process                                                   */
     pid = SYS_MY_FORK();
@@ -4471,7 +4481,7 @@ UInt SyExecuteProcess (
 */
 #if HAVE_ACCESS
 
-Int SyIsExistingFile ( Char * name )
+Int SyIsExistingFile ( const Char * name )
 {
     Int         res;
 
@@ -4500,7 +4510,7 @@ Int SyIsExistingFile ( Char * name )
 */
 #if HAVE_ACCESS
 
-Int SyIsReadableFile ( Char * name )
+Int SyIsReadableFile ( const Char * name )
 {
     Int         res;
 
@@ -4539,7 +4549,7 @@ Int SyIsReadableFile ( Char * name )
 */
 #if HAVE_ACCESS
 
-Int SyIsWritableFile ( Char * name )
+Int SyIsWritableFile ( const Char * name )
 {
     Int         res;
 
@@ -4569,7 +4579,7 @@ Int SyIsWritableFile ( Char * name )
 */
 #if HAVE_ACCESS
 
-Int SyIsExecutableFile ( Char * name )
+Int SyIsExecutableFile ( const Char * name )
 {
     Int         res;
 
@@ -4605,7 +4615,7 @@ Int SyIsExecutableFile ( Char * name )
 
 #include <sys/stat.h>
 
-Int SyIsDirectoryPath ( Char * name )
+Int SyIsDirectoryPath ( const Char * name )
 {
     struct stat     buf;                /* buffer for `stat'               */
 
@@ -4632,7 +4642,7 @@ Int SyIsDirectoryPath ( Char * name )
 */
 #if HAVE_UNLINK
 
-Int SyRemoveFile ( Char * name )
+Int SyRemoveFile ( const Char * name )
 {
     return unlink(name);
 }
@@ -4644,7 +4654,7 @@ Int SyRemoveFile ( Char * name )
 **
 *F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
 */
-Char * SyFindGapRootFile ( Char * filename )
+Char * SyFindGapRootFile ( const Char * filename )
 {
     static Char     result [256];
     Int             k;
@@ -4694,7 +4704,7 @@ extern  char * tmpnam ( char * );
 Char *SyTmpname ( void )
 {
   static char name[1024];
-  static char *base = "/tmp/gaptempfile.XXXXXX";
+  static const char *base = "/tmp/gaptempfile.XXXXXX";
   name[0] = 0;
   SyStrncat(name, base, SyStrlen(base)+1);
   close(mkstemp(name));
@@ -4767,10 +4777,10 @@ Char * SyTmpname ( void )
 
 
 #if HAVE_MKDTEMP
-Char * SyTmpdir( Char * hint )
+Char * SyTmpdir( const Char * hint )
 {
   static char name[1024];
-  static char *base = TMPDIR_BASE;
+  static const char *base = TMPDIR_BASE;
   name[0] = 0;
   SyStrncat(name, base, SyStrlen(base)+1);
   if (hint)
@@ -4783,7 +4793,7 @@ Char * SyTmpdir( Char * hint )
 #else
 #if HAVE_MKDIR
 
-Char * SyTmpdir ( Char * hint )
+Char * SyTmpdir ( const Char * hint )
 {
     Char *      tmp;
     int         res;                    /* result of `mkdir'               */
@@ -4917,8 +4927,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSysFiles ( void )
 {
-    module.revision_c = Revision_sysfiles_c;
-    module.revision_h = Revision_sysfiles_h;
     FillInVersion( &module );
     return &module;
 }

@@ -2,7 +2,7 @@
 ##
 #W  ctoline8.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoline8.tbl,v 4.5 2009/04/22 12:39:03 gap Exp $
+#H  @(#)$Id: ctoline8.tbl,v 4.6 2011/09/28 14:32:14 gap Exp $
 ##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -11,6 +11,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoline8.tbl,v $
+#H  Revision 4.6  2011/09/28 14:32:14  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.5  2009/04/22 12:39:03  gap
 #H  added missing maxes of He.2, ON.2, HN.2, Fi24, and B
 #H      TB
@@ -50,11 +54,6 @@
 #H      TB
 #H  ==========================================================================
 ##
-Revision.ctoline8_tbl :=
-    "@(#)$Id: ctoline8.tbl,v 4.5 2009/04/22 12:39:03 gap Exp $";
-
-SET_TABLEFILENAME("ctoline8");
-ALN:= Ignore;
 
 MOT("L4(5)",
 [
@@ -2248,7 +2247,6 @@ ARC("L4(9)","isSimple",true);
 ARC("L4(9)","extInfo",["4","(2xD8)"]);
 
 LIBTABLE.LOADSTATUS.ctoline8:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

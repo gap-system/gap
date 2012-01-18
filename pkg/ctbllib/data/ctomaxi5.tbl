@@ -2,7 +2,7 @@
 ##
 #W  ctomaxi5.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomaxi5.tbl,v 4.20 2010/05/05 13:20:06 gap Exp $
+#H  @(#)$Id: ctomaxi5.tbl,v 4.21 2011/09/28 14:32:21 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,6 +13,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomaxi5.tbl,v $
+#H  Revision 4.21  2011/09/28 14:32:21  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.20  2010/05/05 13:20:06  gap
 #H  - added many class fusions,
 #H  - changed several class fusions according to consistency conditions,
@@ -210,11 +214,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctomaxi5_tbl :=
-    "@(#)$Id: ctomaxi5.tbl,v 4.20 2010/05/05 13:20:06 gap Exp $";
-
-SET_TABLEFILENAME("ctomaxi5");
-ALN:= Ignore;
 
 MOT("2.[2^6]:(S3xS3)",
 [
@@ -2505,7 +2504,6 @@ ALF("2xU3(3).2","U4(3).(2^2)_{133}",[1,2,3,5,6,6,9,11,12,14,27,28,29,31,
 ALN("2xU3(3).2",["S6(3)C2B","S6(3)N2B"]);
 
 LIBTABLE.LOADSTATUS.ctomaxi5:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

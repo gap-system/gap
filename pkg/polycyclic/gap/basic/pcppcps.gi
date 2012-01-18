@@ -178,6 +178,7 @@ end );
 ## factor. Typically, <pcs1> is induced wrt to a pcp and <pcs2> is the 
 ## denominator of this pcp.
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 AddIgsToIgs := function( pcs1, pcs2 )
     local coll, rels, n, ind, todo, g, c, h, eg, eh, e, d;
 
@@ -655,6 +656,7 @@ end;
 ##
 #M Print pcp presentation
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 PrintPcpPresentation := function( arg )
     local G, flag;
     G := arg[1];
@@ -716,6 +718,7 @@ end;
 ##
 #M PcpGroupByPcp( pcp )  . . . . . . . . . . . . . . . . . create a new group
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 PcpGroupByPcp := function( pcp )
     local g, r, n, coll, i, j, h, e, w, G;
 

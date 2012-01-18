@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W kantin.gi            Alnuth -  Kant interface               Bettina Eick
+#W kantin.gi        Alnuth - ALgebraic NUmber THeory           Bettina Eick
 #W                                                           Bjoern Assmann
 #W                                                          Andreas Distler
 ##

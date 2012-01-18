@@ -1,5 +1,5 @@
 ===========================================================================
- This file describes changes in 'polycyclic'.
+ This file describes changes in the GAP package 'polycyclic'.
  
  This file was added after the 2.8.1 release. Any information pertaining
  older polycyclic versions may not be complete accurate, as it was
@@ -7,7 +7,7 @@
  us know.
 ===========================================================================
 
-2.9 (XXXX-XX-XX)
+2.9 (2012-01-12)
 	o Updated README
 	o Added GPL license text
 	o Added this CHANGES file
@@ -15,6 +15,7 @@
 	o Removed Werner Nickel from maintainer list
 	o Removed compatibility with GAP versions before 4.4
 	o Removed redundant IsomorphismPermGroup method
+	o Removed redundant IsPcpGHBI group mapping representation
 	o Added various group constructors (TrivialGroupCons etc.),
 	  so that it is now possible to construct Pcp groups with e.g.
 	  TrivialGroup(IsPcpGroup) or DihedralGroup(IsPcpGroup, infinity).
@@ -22,19 +23,30 @@
 	  dihedral, and quaternion groups
 	o Added implementations of IndependentGeneratorsOfAbelianGroup and
 	  IndependentGeneratorExponents for pcp groups
+	o Improved handling of homomorphisms between pcp groups and non-pcp
+	  groups
 	o Improved validation of input for various functions / methods
 	o Improved AbelianPcpGroup to flag the constructed group as abelian
 	o Fixed AbelianInvariants to return values that match what the GAP
 	  documentation promises the user
-	o Fixed a long-standing bug that caused TwoCohomologyCR and many
-	  related operations to error out if the cohomology record was
-	  obtained using CRRecordBySubgroup or CRRecordByPcp
-	o Fixed bug comparing homomorphisms between Pcp groups by removing
-	  the incorrect \= method for this; the default method provided by
-	  GAP is now used
+	o Fixed a bug that caused TwoCohomologyCR and many related operations
+	  to error out if the cohomology record was obtained using
+	  CRRecordBySubgroup or CRRecordByPcp
+	o Fixed bug comparing homomorphisms between pcp groups by removing
+	  the (incorrect) method for this; the default method provided by
+	  GAP is now used and returns correct results
 	o Fixed ClosureGroup method to not make invalid assumptions about
 	  a group's Parent (and thus no longer return incorrect results)
-	
+	o Fixed bug causing general mappings from/to pcp groups to be
+	  always marked as total, even if they were in fact not
+	o Added IsNilpotentByFinite methods for finite and nilpotent groups
+	o Added immediate IsTorsionFree method for finite groups
+	o Added IsFreeAbelian method for arbitrary groups, turned it into
+	  a property
+	o Converted documentation to GAPDoc format
+	o Replaced internal function DepthOfVec by GAP's PositionNonZero
+	o Added (trivial) IsomorphismPcpGroup method for pcp groups
+	o Added a String method for pcp elements
 
 2.8.1 (2011-05-24)
 	o Use Calcreps2 instead of calcreps2 for compatibility with GAP 4.5

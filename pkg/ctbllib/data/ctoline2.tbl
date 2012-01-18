@@ -2,7 +2,7 @@
 ##
 #W  ctoline2.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoline2.tbl,v 4.13 2010/05/05 13:20:01 gap Exp $
+#H  @(#)$Id: ctoline2.tbl,v 4.14 2011/09/28 14:32:12 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoline2.tbl,v $
+#H  Revision 4.14  2011/09/28 14:32:12  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.13  2010/05/05 13:20:01  gap
 #H  - added many class fusions,
 #H  - changed several class fusions according to consistency conditions,
@@ -164,11 +168,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctoline2_tbl :=
-    "@(#)$Id: ctoline2.tbl,v 4.13 2010/05/05 13:20:01 gap Exp $";
-
-SET_TABLEFILENAME("ctoline2");
-ALN:= Ignore;
 
 MOT("2.L2(49)",
 [
@@ -1683,7 +1682,7 @@ ALF("L2(81).4_1","O8-(3).2_1",[1,4,10,11,13,18,39,48,78,92,92,93,94,95,96,
 97,3,2,17,31,30,40,50,49,107,107,110,110,139,139,157,157,158,158],[
 "fusion map is unique up to table automorphisms"
 ]);
-ALN("L2(81).4_1",["O8-(3).2_1M9"]);
+ALN("L2(81).4_1",["O8-(3).2_1M10"]);
 
 MOT("L2(81).4_2",
 [
@@ -1820,7 +1819,6 @@ E(80)^3+E(80)^9-E(80)^31-E(80)^37-E(80)^41+E(80)^53-E(80)^67+E(80)^79,0,0,0,0,
 
 
 LIBTABLE.LOADSTATUS.ctoline2:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

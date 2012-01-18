@@ -2,8 +2,6 @@
 ##
 #W  ctbunit4.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbunit4.tbl,v 4.8 2010/09/15 08:23:19 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables related to the unitary
@@ -13,6 +11,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbunit4.tbl,v $
+#H  Revision 4.9  2011/09/28 12:12:38  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.8  2010/09/15 08:23:19  gap
 #H  do not use `factorblocks' encoding in some Brauer tables where the ordering
 #H  of ordinary irreducibles does not fit to that in the factors
@@ -100,10 +102,7 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctbunit4_tbl :=
-    "@(#)$Id: ctbunit4.tbl,v 4.8 2010/09/15 08:23:19 gap Exp $";
 
-SET_TABLEFILENAME("ctbunit4");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("2.U6(2).2",11,
@@ -1885,6 +1884,7 @@ MBT("(2^2x3).U6(2).3",11,
 0);
 
 LIBTABLE.LOADSTATUS.ctbunit4:="userloaded";
+
 #############################################################################
 ##
 #E

@@ -2,7 +2,7 @@
 **
 *A  FreeSpace.c                 ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: FreeSpace.c,v 1.5 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: FreeSpace.c,v 1.6 2011/11/28 13:42:03 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -12,18 +12,6 @@
 #include "pq_defs.h"
 #include "pga_vars.h"
 #include "pcp_vars.h"
-
-#ifdef Magma
-
-/* free work space */
-
-void pq_free_WorkSpace (pcp)
-struct pcp_vars *pcp;
-{
-   mem_delete_hptr(&pcp->y_handle);
-}
-
-#endif  /* Magma */
 
 /* free space used by vector, a, whose first index is start */
 

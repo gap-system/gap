@@ -2,7 +2,6 @@
 **
 *W  code.c                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: code.c,v 4.49 2011/06/06 16:28:07 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,12 +13,10 @@
 **  expressions.  Its functions are called from the reader.
 */
 #include        <stdio.h>               /* on SunOS, assert.h uses stderr
-					   but does not include stdio.h    */
+                                           but does not include stdio.h    */
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_code_c =
-   "@(#)$Id: code.c,v 4.49 2011/06/06 16:28:07 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -575,11 +572,11 @@ void CodeFuncCallEnd (
     /* wrap up the call with the options */
     if (options)
       {
-	wrapper = NewExpr( funccall ? T_FUNCCALL_OPTS : T_PROCCALL_OPTS, 
-			   2*sizeof(Expr));
-	ADDR_EXPR(wrapper)[0] = opts;
-	ADDR_EXPR(wrapper)[1] = call;
-	call = wrapper;
+        wrapper = NewExpr( funccall ? T_FUNCCALL_OPTS : T_PROCCALL_OPTS, 
+                           2*sizeof(Expr));
+        ADDR_EXPR(wrapper)[0] = opts;
+        ADDR_EXPR(wrapper)[1] = call;
+        call = wrapper;
       }
 
     /* push the function call                                              */
@@ -652,7 +649,7 @@ void CodeFuncExprBegin (
     FILENAME_BODY(body) = TLS->input->gapname;
     STARTLINE_BODY(body) = INTOBJ_INT(startLine);
     /*    Pr("Coding begin at %s:%d ",(Int)(TLS->input->name),TLS->input->number);
-	  Pr(" Body id %d\n",(Int)(body),0L); */
+          Pr(" Body id %d\n",(Int)(body),0L); */
     TLS->offsBody = 0;
 
     /* give it an environment                                              */
@@ -661,6 +658,7 @@ void CodeFuncExprBegin (
 
     /* switch to this function                                             */
     SWITCH_TO_NEW_LVARS( fexp, (narg != -1 ? narg : 1), nloc, old );
+    (void) old; /* please picky compilers. */
 
     /* Make the function expression bag immutable and public               */
     /* TODO: Check if that's actually correct. */
@@ -1502,10 +1500,7 @@ void CodeIntExpr (
     else {
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
-	memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
-	/*        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
-            ((UInt2*)ADDR_EXPR(expr))[i] = ((UInt2*)ADDR_OBJ(val))[i-1];
-	    } */
+        memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
     }
 
     /* push the expression                                                 */
@@ -1814,10 +1809,10 @@ static UInt CheckForCommonFloat(Char *str) {
       str++;
       /* skip more zeroes */
       while (*str == '0')
-	str++;
+        str++;
       /* if we've got to end of string we've got zero. */
-      if (!isdigit(*str))
-	return FLOAT_0_INDEX;
+      if (!IsDigit(*str))
+        return FLOAT_0_INDEX;
     }
   if (*str++ !='1')
     return 0;
@@ -1829,10 +1824,10 @@ static UInt CheckForCommonFloat(Char *str) {
     str++;
   if (*str == '\0')
     return FLOAT_1_INDEX;
-  if (isdigit(*str))
+  if (IsDigit(*str))
     return 0;
   /* must now be an exponent character */
-  assert(isalpha(*str));
+  assert(IsAlpha(*str));
   /* skip it */
   str++;
   /*skip + and - in exponent */
@@ -1851,11 +1846,12 @@ static UInt CheckForCommonFloat(Char *str) {
 
 static void CodeLazyFloatExpr( Char *str, UInt len) {
     UInt ix;
+
     /* Lazy case, store the string for conversion at run time */
     Expr fl = NewExpr( T_FLOAT_EXPR_LAZY, 2*sizeof(UInt) +len+1  );
     /* copy the string                                                     */
     memcpy( (void *)((char *)ADDR_EXPR(fl)+2*sizeof(UInt)), (void *)str, 
-	    len+1 );
+            len+1 );
       
     *(UInt *)ADDR_EXPR(fl) = len;
     ix = CheckForCommonFloat(str);
@@ -3351,8 +3347,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCode ( void )
 {
-    module.revision_c = Revision_code_c;
-    module.revision_h = Revision_code_h;
     FillInVersion( &module );
     return &module;
 }

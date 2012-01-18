@@ -2,7 +2,7 @@
 ##
 #W  ctoexce1.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoexce1.tbl,v 4.4 2009/04/22 12:39:00 gap Exp $
+#H  @(#)$Id: ctoexce1.tbl,v 4.5 2011/09/28 14:32:11 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoexce1.tbl,v $
+#H  Revision 4.5  2011/09/28 14:32:11  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.4  2009/04/22 12:39:00  gap
 #H  added missing maxes of He.2, ON.2, HN.2, Fi24, and B
 #H      TB
@@ -46,11 +50,6 @@
 #H      TB
 #H  ==========================================================================
 ##
-Revision.ctoexce1_tbl :=
-    "@(#)$Id: ctoexce1.tbl,v 4.4 2009/04/22 12:39:00 gap Exp $";
-
-SET_TABLEFILENAME("ctoexce1");
-ALN:= Ignore;
 
 MOT("E6(2)",
 [
@@ -1417,7 +1416,6 @@ ARC("E6(2)","isSimple",true);
 ARC("E6(2)","extInfo",["","2"]);
 
 LIBTABLE.LOADSTATUS.ctoexce1:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

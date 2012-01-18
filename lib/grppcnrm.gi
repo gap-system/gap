@@ -2,7 +2,6 @@
 ##
 #W  grppcnrm.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: grppcnrm.gi,v 4.28 2010/02/23 15:13:07 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the methods for normalizers of polycylic groups.
 ##
-Revision.grppcnrm_gi :=
-    "@(#)$Id: grppcnrm.gi,v 4.28 2010/02/23 15:13:07 gap Exp $";
 
 
 #############################################################################

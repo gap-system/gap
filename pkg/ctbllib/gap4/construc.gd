@@ -1,8 +1,6 @@
 #############################################################################
 ##
-#W  construc.gd           GAP 4 package `ctbllib'               Thomas Breuer
-##
-#H  @(#)$Id: construc.gd,v 1.25 2011/02/11 16:04:44 gap Exp $
+#W  construc.gd          GAP 4 package CTblLib                  Thomas Breuer
 ##
 #Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -16,15 +14,13 @@
 ##  8. Character Tables of Coprime Central Extensions
 ##  9. Miscellaneous
 ##
-Revision.( "ctbllib/gap4/construc_gd" ) :=
-    "@(#)$Id: construc.gd,v 1.25 2011/02/11 16:04:44 gap Exp $";
 
 
 #############################################################################
 ##
 ##  <#GAPDoc Label="construc:intro">
-##  The functions in this chapter deal with the construction of character
-##  tables from other character tables.
+##  The functions described in this chapter deal with the construction
+##  of character tables from other character tables.
 ##  So they fit to the functions in
 ##  Section&nbsp;<Ref Sect="Constructing Character Tables from Others"
 ##  BookName="ref"/>.
@@ -209,6 +205,7 @@ DeclareGlobalFunction( "PossibleActionsForTypeMGA" );
 ##
 ##  <#GAPDoc Label="CharacterTableOfTypeGS3">
 ##  <ManSection>
+##  <Heading>CharacterTableOfTypeGS3</Heading>
 ##  <Func Name="CharacterTableOfTypeGS3"
 ##  Arg="tbl, tbl2, tbl3, aut, identifier"/>
 ##  <Func Name="CharacterTableOfTypeGS3"
@@ -322,6 +319,7 @@ DeclareGlobalFunction( "PossibleActionsForTypeGS3" );
 ##
 ##  <#GAPDoc Label="PossibleCharacterTablesOfTypeGV4">
 ##  <ManSection>
+##  <Heading>PossibleCharacterTablesOfTypeGV4</Heading>
 ##  <Func Name="PossibleCharacterTablesOfTypeGV4"
 ##  Arg="tblG, tblsG2, acts, identifier[, tblGfustblsG2]"/>
 ##  <Func Name="PossibleCharacterTablesOfTypeGV4"
@@ -938,19 +936,19 @@ DeclareGlobalFunction( "ConstructV4GInfo" );
 ##  and returns a record with the components
 ##  <P/>
 ##  <List>
-##  <Mark>tbl</Mark>
+##  <Mark><C>tbl</C></Mark>
 ##  <Item>
 ##    a character table that is permutation isomorphic with <A>tbl</A>,
 ##    and sorted such that classes that differ only by multiplication with
 ##    elements in the classes of <A>kernel</A> are consecutive,
 ##  </Item>
-##  <Mark>projectives</Mark>
+##  <Mark><C>projectives</C></Mark>
 ##  <Item>
 ##    a record being the entry for the <C>projectives</C> list of the table
 ##    of the factor of <A>tbl</A> by <A>kernel</A>,
 ##    describing this part of the irreducibles of <A>tbl</A>, and
 ##  </Item>
-##  <Mark>info</Mark>
+##  <Mark><C>info</C></Mark>
 ##  <Item>
 ##    the value of <A>irrinfo</A>.
 ##  </Item>
@@ -1014,6 +1012,31 @@ DeclareGlobalFunction( "ConstructProjInfo" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ConstructDirectProduct" );
+
+
+#############################################################################
+##
+#F  ConstructCentralProduct( <tbl>, <factors>, <Dclasses>
+#F                           [, <permclasses>, <permchars>] )
+##
+##  <#GAPDoc Label="ConstructCentralProduct">
+##  <ManSection>
+##  <Func Name="ConstructCentralProduct"
+##   Arg="tbl, factors, Dclasses[, permclasses, permchars]"/>
+##
+##  <Description>
+##  The library table <A>tbl</A> is completed with help of the table
+##  obtained by taking the direct product of the tables with names in the
+##  list <A>factors</A>, and then factoring out the normal subgroup that is
+##  given by the list <A>Dclasses<A> of class positions.
+##  <P/>
+##  If the optional arguments <A>permclasses</A>, <A>permchars</A> are given
+##  then the classes and characters of the result are sorted accordingly.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "ConstructCentralProduct" );
 
 
 #############################################################################
@@ -1095,23 +1118,78 @@ DeclareGlobalFunction( "ConstructIsoclinic" );
 
 #############################################################################
 ##
-#F  ConstructPermuted( <tbl>, <libnam>[, <prmclasses>, <prmchars>] )
+#F  ConstructPermuted( <tbl>, <libnam>[, <permclasses>, <permchars>] )
 ##
 ##  <#GAPDoc Label="ConstructPermuted">
 ##  <ManSection>
 ##  <Func Name="ConstructPermuted"
-##  Arg="tbl, libnam[, prmclasses, prmchars]"/>
+##  Arg="tbl, libnam[, permclasses, permchars]"/>
 ##
 ##  <Description>
 ##  The library table <A>tbl</A> is computed from
 ##  the library table with the name <A>libnam</A>,
 ##  by permuting the classes and the characters by the permutations
-##  <A>prmclasses</A> and <A>prmchars</A>, respectively.
+##  <A>permclasses</A> and <A>permchars</A>, respectively.
+##  <P/>
+##  So <A>tbl</A> and the library table with the name <A>libnam</A> are
+##  permutation equivalent.
+##  With the more general function <Ref Func="ConstructAdjusted"/>,
+##  one can derive character tables that are not necessarily permutation
+##  equivalent, by additionally replacing some defining data.
+##  <P/>
+##  The two permutations are optional.
+##  If they are missing then the lists of irreducible characters
+##  and the power maps of the two character tables coincide.
+##  However, different class fusions may be stored on the two tables.
+##  This is used for example in situations where a group has several classes
+##  of isomorphic maximal subgroups whose class fusions are different;
+##  different character tables (with different identifiers) are stored for
+##  the different classes, each with appropriate class fusions,
+##  and all these tables except the one for the first class of subgroups can
+##  be derived from this table via <Ref Func="ConstructPermuted"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ConstructPermuted" );
+
+
+#############################################################################
+##
+#F  ConstructAdjusted( <tbl>, <libnam>, <pairs>
+#F                     [, <permclasses>, <permchars>] )
+##
+##  <#GAPDoc Label="ConstructAdjusted">
+##  <ManSection>
+##  <Func Name="ConstructAdjusted"
+##  Arg="tbl, libnam, pairs[, permclasses, permchars]"/>
+##
+##  <Description>
+##  The defining attribute values of the library table <A>tbl</A> are given
+##  by the attribute values described by the list <A>pairs</A> and
+##  &ndash;for those attributes which do not appear in <A>pairs</A>&ndash;
+##  by the attribute values of the library table with the name <A>libnam</A>,
+##  whose classes and characters have been permuted by the optional
+##  permutations <A>prmclasses</A> and <A>prmchars</A>, respectively.
+##  <P/>
+##  This construction can be used to derive a character table from another
+##  library table (the one with the name <A>libnam</A>) that is <E>not</E>
+##  permutation equivalent to this table.
+##  For example, it may happen that the character tables of a split and a
+##  nonsplit extension differ only by some power maps and element orders.
+##  In this case, one can encode one of the tables via
+##  <Ref Func="ConstructAdjusted"/>, by prescribing just the power maps in
+##  the list <A>pairs</A>.
+##  <P/>
+##  If no replacement of components is needed then one should better use
+##  <Ref Func="ConstructPermuted"/>,
+##  because the system can then exploit the fact that the two tables are
+##  permutation equivalent.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "ConstructAdjusted" );
 
 
 #############################################################################

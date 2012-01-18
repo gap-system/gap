@@ -8,8 +8,6 @@
 ##  This file contains the implementation for Schur covers of symmetric and
 ##  alternating groups on Coxeter or standard generators.
 ##
-Revision.schursym_gi :=
-    "@(#)$Id: schursym.gi,v 4.2 2011/01/26 05:28:38 gap Exp $";
 
 #############################################################################
 ##
@@ -586,8 +584,10 @@ function( n, p )
   Assert( 3, AbelianInvariants( Center( grp ) ) = [ 2 ] );
   SetAbelianInvariants( Center( grp ), [ 2 ] );
 
-  Assert( 3, IsPerfectGroup( grp ) );
-  SetIsPerfectGroup( grp, true );
+  if n >= 5 then
+    Assert( 3, IsPerfectGroup( grp ) );
+    SetIsPerfectGroup( grp, true );
+  fi;
 
   return grp;
 end );

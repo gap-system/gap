@@ -17,7 +17,12 @@ is used. Note that <Q>trivial</Q> and <Q>straightforward</Q> are to be read
 as <E>mathematically</E> trivial respectively straightforward, and that the
 code of a function or method attributed in this way can still be reasonably
 long and complicated. Longer and better descriptions of many of the
-algorithms and methods can be found in&nbsp;<Cite Key="Kohl08b"/>.
+algorithms and methods can be found in&nbsp;<Cite Key="Kohl08b"/>. <P/>
+
+Finally please note that the descriptions given here represent the
+functionality of &RCWA; in May 2007. Since then, a lot of code has been
+added to this package, and much of the older code has been improved
+and uses now better algorithms than in 2007.
 
 <List>
 
@@ -45,11 +50,11 @@ algorithms and methods can be found in&nbsp;<Cite Key="Kohl08b"/>.
   </Item>
 
   <Mark>
-    <C>ClassPairs</C>
+    <C>ClassPairs(<A>m</A>)</C>
   </Mark>
   <Item>
-    Run over all 4-tuples, and filter by divisibility criteria,
-    size comparisons, ordering of the entries etc.
+    Runs over all 4-tuples of nonnegative integers less than <A>m</A>,
+    and filters by congruence criteria and ordering of the entries.
   </Item>
 
   <Mark>
@@ -800,7 +805,7 @@ algorithms and methods can be found in&nbsp;<Cite Key="Kohl08b"/>.
   </Item>
 
   <Mark>
-    <C>LaTeXObj(<A>f</A>)</C>
+    <C>LaTeXStringRcwaMapping(<A>f</A>)</C>
   </Mark>
   <Item>
     Collects residue classes those corresponding coefficient triples
@@ -950,7 +955,7 @@ algorithms and methods can be found in&nbsp;<Cite Key="Kohl08b"/>.
     <C>PreImagesRepresentatives(<A>phi</A>,<A>g</A>)</C>
   </Mark>
   <Item>
-    As indicated in the documentation of these methods.
+    As described in the documentation of these methods.
     The underlying idea to successively compute two balls around&nbsp;1
     and&nbsp;<A>g</A> until they intersect nontrivially is standard
     in computational group theory. For rcwa groups it would mean wasting
@@ -1046,7 +1051,7 @@ algorithms and methods can be found in&nbsp;<Cite Key="Kohl08b"/>.
     <C>RepresentativeActionPreImage</C>
   </Mark>
   <Item>
-    As indicated in the documentation of these methods.
+    As described in the documentation of these methods.
     The underlying idea to successively compute two balls around
     <A>src</A> and <A>dest</A> until they intersect nontrivially
     is standard in computational group theory. Words standing for
@@ -1089,7 +1094,7 @@ algorithms and methods can be found in&nbsp;<Cite Key="Kohl08b"/>.
   </Item>
 
   <Mark>
-    <C>RestrictedPerm(<A>g</A>,<A>S</A></C>
+    <C>RestrictedPerm(<A>g</A>,<A>S</A>)</C>
   </Mark>
   <Item>
     <Q>Straightforward</Q>.

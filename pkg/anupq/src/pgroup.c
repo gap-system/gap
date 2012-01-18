@@ -2,7 +2,7 @@
 **
 *A  pgroup.c                    ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: pgroup.c,v 1.6 2004/02/03 18:36:20 gap Exp $
+*A  @(#)$Id: pgroup.c,v 1.9 2011/11/29 09:43:57 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -32,7 +32,7 @@ void pgroup_generation (group_present, pcp)
 Logical *group_present;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    struct pga_vars pga;
    struct pga_vars flag;
@@ -40,7 +40,7 @@ struct pcp_vars *pcp;
    int subgroup_rank;
 
    char *StartName; 
-   FILE_TYPE StartFile;
+   FILE * StartFile;
 
    int ***auts;
    int t;
@@ -78,7 +78,7 @@ struct pcp_vars *pcp;
 
         auts = read_auts (PGA, &pga.m, &nmr_of_exponents, pcp);
 
-#if defined (LARGE_INT)
+#ifdef HAVE_GMP
         autgp_order (&pga, pcp);
 #endif
 

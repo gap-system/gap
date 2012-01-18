@@ -2,7 +2,6 @@
 ##
 #W  global.gi                   GAP library                      Steve Linton
 ##
-#H  @(#)$Id: global.gi,v 4.17 2011/02/08 14:37:15 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -31,8 +30,6 @@
 ##  Functions that change data give Info messages at level 2 for InfoGlobal
 ##
 
-Revision.global_gi :=
-    "@(#)$Id: global.gi,v 4.17 2011/02/08 14:37:15 gap Exp $";
 
 #############################################################################
 ##

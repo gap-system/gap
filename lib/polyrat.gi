@@ -2,7 +2,6 @@
 ##
 #W  polyrat.gi                 GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id: polyrat.gi,v 4.50 2011/06/10 17:06:30 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains functions for polynomials over the rationals
 ##
-Revision.polyrat_gi:=
-  "@(#)$Id: polyrat.gi,v 4.50 2011/06/10 17:06:30 gap Exp $";
 
 #############################################################################
 ##

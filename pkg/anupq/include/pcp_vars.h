@@ -2,7 +2,7 @@
 **
 *A  pcp_vars.h                  ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: pcp_vars.h,v 1.4 2001/06/15 14:39:21 werner Exp $
+*A  @(#)$Id: pcp_vars.h,v 1.6 2011/12/02 16:42:14 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -78,24 +78,8 @@ struct pcp_vars {
    Logical multiplicator;	/* p-multiplicator is to be computed */
    Logical cover;		/* p-covering group is to be computed */
 
-#if defined (LIE) 
-#define NRELS 3                    /* number of multilinear relations */
-   int     mlin_relations[NRELS];  /* array storing degree of multilinear
-                                      conditions to be imposed */
-#endif
-
-   /* variables that Magma needs */
-#ifdef Magma
-   t_handle group;		/* the group fed in at the top */
-   t_handle y_handle;		/* handle to the work space */
-   t_int output_level;		/* the actual output level */
-   t_int group_type;            /* type of the group */
-#endif
-
 };
 
-#ifndef Magma
 int     *y_address;     /* definition of storage for presentation */
-#endif
 
 #endif

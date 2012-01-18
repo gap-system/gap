@@ -2,7 +2,11 @@ In this file we record the changes since the 3.xxx versions of the ACE
 package. Also look at gap/CHANGES  for  a  history  of  the  pre-3.xxx
 development.
 
-Version 5.0:
+Version 5.? (YYYY-MM-DD)
+   o Made configure and Makefile.in more robust, to ensure that they
+     work well with both GAP 4.4 and 4.5.
+
+Version 5.0 (2006-01-26)
   o pre-GAP 4.4 compatibility features removed:
     - gap/ace.g:
       . banner removed ... this role is performed by PackageInfo.g

@@ -8,8 +8,6 @@
 ##
 ##  This file contains generic methods polycyclic rewriting systems.
 ##
-Revision.rwspcclt_gi :=
-    "@(#)$Id: rwspcclt.gi,v 4.33 2010/02/23 15:13:28 gap Exp $";
 
 
 #############################################################################

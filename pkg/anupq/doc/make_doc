@@ -3,7 +3,7 @@
 ##
 #W  make_doc        make ANUPQ Package documentation          Greg Gamble
 ##
-#H  $Id: make_doc,v 1.2 2002/02/18 17:06:46 gap Exp $
+#H  $Id: make_doc,v 1.3 2011/11/29 19:52:09 gap Exp $
 ##
 ##  This shell script uses TeX, BibTeX and MakeIndex to  build  the  .dvi
 ##  PostScript (commented out), PDF (commented out), and  HTML  (provided
@@ -20,7 +20,7 @@ tex manual
 # Create the PostScript version (uncomment next line, if needed)
 #dvips -D300 manual -o
 # Create the PDF version (uncomment next line, if needed)
-#pdftex manual; pdftex manual
+pdftex manual; pdftex manual
 
 # The HTML version of the manual
 mkdir -p ../htm

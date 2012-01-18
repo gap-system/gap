@@ -2,7 +2,6 @@
 ##
 #W  algebra.gd                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: algebra.gd,v 4.97 2011/01/23 12:48:50 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file declares the operations for `FLMLOR's and algebras.
 ##
-Revision.algebra_gd :=
-    "@(#)$Id: algebra.gd,v 4.97 2011/01/23 12:48:50 alexk Exp $";
 
 
 #############################################################################
@@ -347,9 +344,12 @@ DeclareAttribute( "PowerSubalgebraSeries", IsAlgebra );
 ##  gap> AdjointBasis( Basis( A ) );
 ##  Basis( <vector space over Rationals, with 4 generators>, 
 ##  [ [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ], 
-##    [ [ 0, -1, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, -1 ], [ 0, 0, 1, 0 ] ], 
-##    [ [ 0, 0, -1, 0 ], [ 0, 0, 0, 1 ], [ 1, 0, 0, 0 ], [ 0, -1, 0, 0 ] ], 
-##    [ [ 0, 0, 0, -1 ], [ 0, 0, -1, 0 ], [ 0, 1, 0, 0 ], [ 1, 0, 0, 0 ] ] ] )
+##    [ [ 0, -1, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, -1 ], [ 0, 0, 1, 0 ] ]
+##      , 
+##    [ [ 0, 0, -1, 0 ], [ 0, 0, 0, 1 ], [ 1, 0, 0, 0 ], [ 0, -1, 0, 0 ] ]
+##      , 
+##    [ [ 0, 0, 0, -1 ], [ 0, 0, -1, 0 ], [ 0, 1, 0, 0 ], [ 1, 0, 0, 0 ] 
+##       ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -430,15 +430,20 @@ DeclareAttribute( "RadicalOfAlgebra", IsAlgebra );
 ##  gap> A:= GroupRing( Rationals, G );
 ##  <algebra-with-one over Rationals, with 2 generators>
 ##  gap> dd:= DirectSumDecomposition( A );
-##  [ <two-sided ideal in <algebra-with-one of dimension 24 over Rationals>, 
+##  [ <two-sided ideal in 
+##        <algebra-with-one of dimension 24 over Rationals>, 
 ##        (1 generators)>, 
-##    <two-sided ideal in <algebra-with-one of dimension 24 over Rationals>, 
+##    <two-sided ideal in 
+##        <algebra-with-one of dimension 24 over Rationals>, 
 ##        (1 generators)>, 
-##    <two-sided ideal in <algebra-with-one of dimension 24 over Rationals>, 
+##    <two-sided ideal in 
+##        <algebra-with-one of dimension 24 over Rationals>, 
 ##        (1 generators)>, 
-##    <two-sided ideal in <algebra-with-one of dimension 24 over Rationals>, 
+##    <two-sided ideal in 
+##        <algebra-with-one of dimension 24 over Rationals>, 
 ##        (1 generators)>, 
-##    <two-sided ideal in <algebra-with-one of dimension 24 over Rationals>, 
+##    <two-sided ideal in 
+##        <algebra-with-one of dimension 24 over Rationals>, 
 ##        (1 generators)> ]
 ##  gap> List( dd, Dimension );
 ##  [ 1, 1, 4, 9, 9 ]
@@ -447,11 +452,11 @@ DeclareAttribute( "RadicalOfAlgebra", IsAlgebra );
 ##  gap> L:= FullMatrixLieAlgebra( Rationals, 5 );;
 ##  gap> DirectSumDecomposition( L );
 ##  [ <two-sided ideal in 
-##        <two-sided ideal in <Lie algebra of dimension 25 over Rationals>, 
-##            (dimension 1)>, (dimension 1)>, 
-##    <two-sided ideal in <two-sided ideal in 
-##            <Lie algebra of dimension 25 over Rationals>, (dimension 24)>, 
-##        (dimension 24)> ]
+##        <two-sided ideal in <Lie algebra of dimension 25 over Rationals>
+##              , (dimension 1)>, (dimension 1)>, 
+##    <two-sided ideal in 
+##        <two-sided ideal in <Lie algebra of dimension 25 over Rationals>
+##              , (dimension 24)>, (dimension 24)> ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -751,8 +756,8 @@ DeclareSynonym( "AsSubalgebraWithOne", AsSubFLMLORWithOne );
 ##  see <Ref Func="SetEntrySCTable"/>.
 ##  <Example><![CDATA[
 ##  gap> EmptySCTable( 2, Zero( GF(5) ), "antisymmetric" );
-##  [ [ [ [  ], [  ] ], [ [  ], [  ] ] ], [ [ [  ], [  ] ], [ [  ], [  ] ] ], -1, 
-##    0*Z(5) ]
+##  [ [ [ [  ], [  ] ], [ [  ], [  ] ] ], 
+##    [ [ [  ], [  ] ], [ [  ], [  ] ] ], -1, 0*Z(5) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -833,8 +838,8 @@ DeclareGlobalFunction( "ReducedSCTable" );
 ##  gap> SetEntrySCTable( T, 1, 2, [ 1, 2 ] );
 ##  gap> SetEntrySCTable( T, 2, 1, [ 1, 2 ] );
 ##  gap> GapInputSCTable( T, "T" );
-##  "T:= EmptySCTable( 2, 0 );\nSetEntrySCTable( T, 1, 2, [1,2] );\nSetEntrySCTabl\
-##  e( T, 2, 1, [1,2] );\n"
+##  "T:= EmptySCTable( 2, 0 );\nSetEntrySCTable( T, 1, 2, [1,2] );\nSetEnt\
+##  rySCTable( T, 2, 1, [1,2] );\n"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1041,7 +1046,8 @@ DeclareSynonym( "ClosureAlgebra", ClosureLeftOperatorRing );
 ##  <Example><![CDATA[
 ##  gap> A:= QuaternionAlgebra( Rationals );;
 ##  gap> g:= GeneratorsOfAlgebra( A );;
-##  gap> B:= MutableBasisOfClosureUnderAction( Rationals, g, "left", [ g[1] ], \*, Zero(A), 4 );
+##  gap> B:= MutableBasisOfClosureUnderAction( Rationals, 
+##  >                                g, "left", [ g[1] ], \*, Zero(A), 4 );
 ##  <mutable basis over Rationals, 4 vectors>
 ##  gap> BasisVectors( B );
 ##  [ e, i, j, k ]
@@ -1077,8 +1083,8 @@ DeclareGlobalFunction( "MutableBasisOfClosureUnderAction" );
 ##  gap> L:= FullMatrixLieAlgebra( Rationals, 4 );;
 ##  gap> m1:= Random( L );;
 ##  gap> m2:= Random( L );;
-##  gap> MutableBasisOfNonassociativeAlgebra( Rationals, [ m1, m2 ], Zero( L ),
-##  > 16 );
+##  gap> MutableBasisOfNonassociativeAlgebra( Rationals, [ m1, m2 ], 
+##  > Zero( L ), 16 );
 ##  <mutable basis over Rationals, 16 vectors>
 ##  ]]></Example>
 ##  </Description>
@@ -1420,7 +1426,8 @@ DeclareSynonym( "SubalgebraWithOneNC", SubFLMLORWithOneNC );
 ##  gap> A:= FullMatrixAlgebra( GF( 7 ), 4 );;
 ##  gap> L:= LieAlgebra( A );
 ##  <Lie algebra of dimension 16 over GF(7)>
-##  gap> mats:= [ [[ 1, 0 ], [ 0, -1 ]], [[ 0, 1 ], [ 0, 0 ]], [[ 0, 0 ], [ 1, 0]] ];;
+##  gap> mats:= [ [ [ 1, 0 ], [ 0, -1 ] ], [ [ 0, 1 ], [ 0, 0 ] ], 
+##  >             [ [ 0, 0 ], [ 1, 0] ] ];;
 ##  gap> L:= LieAlgebra( Rationals, mats );
 ##  <Lie algebra over Rationals, with 3 generators>
 ##  ]]></Example>
@@ -1476,7 +1483,7 @@ DeclareOperation( "AsLieAlgebra", [ IsDivisionRing, IsCollection ] );
 ##
 ##  <Description>
 ##  is a free (nonassociative) algebra of rank <A>rank</A>
-##  over the ring <A>R</A>.
+##  over the division ring <A>R</A>.
 ##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional strings
 ##  that can be used to provide names for the generators.
 ##  <Example><![CDATA[
@@ -1508,7 +1515,7 @@ DeclareGlobalFunction( "FreeAlgebra" );
 ##
 ##  <Description>
 ##  is a free (nonassociative) algebra-with-one of rank <A>rank</A>
-##  over the ring <A>R</A>.
+##  over the division ring <A>R</A>.
 ##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional strings
 ##  that can be used to provide names for the generators.
 ##  <Example><![CDATA[
@@ -1539,8 +1546,9 @@ DeclareGlobalFunction( "FreeAlgebraWithOne" );
 ##   Label="for ring and several names"/>
 ##
 ##  <Description>
-##  is a free associative algebra of rank <A>rank</A> over the ring <A>R</A>.
-##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>,... are optional strings
+##  is a free associative algebra of rank <A>rank</A> over the
+##  division ring <A>R</A>.
+##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional strings
 ##  that can be used to provide names for the generators.
 ##  <Example><![CDATA[
 ##  gap> A:= FreeAssociativeAlgebra( GF( 5 ), 4, "a" );
@@ -1566,9 +1574,9 @@ DeclareGlobalFunction( "FreeAssociativeAlgebra" );
 ##   Label="for ring and several names"/>
 ##
 ##  <Description>
-##  is a free associative algebra-with-one of rank <A>rank</A>
-##  over the ring <A>R</A>.
-##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>,... are optional strings
+##  is a free associative algebra-with-one of rank <A>rank</A> over the
+##  division ring <A>R</A>.
+##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional strings
 ##  that can be used to provide names for the generators.
 ##  <Example><![CDATA[
 ##  gap> A:= FreeAssociativeAlgebraWithOne( Rationals, "a", "b", "c" );
@@ -1594,7 +1602,7 @@ DeclareGlobalFunction( "FreeAssociativeAlgebraWithOne" );
 ##  <Func Name="AlgebraByStructureConstants" Arg='R, sctable[, nameinfo]'/>
 ##
 ##  <Description>
-##  returns a free left module <M>A</M> over the ring <A>R</A>,
+##  returns a free left module <M>A</M> over the division ring <A>R</A>,
 ##  with multiplication defined by the structure constants table
 ##  <A>sctable</A>.
 ##  The optional argument <A>nameinfo</A> can be used to prescribe names for
@@ -1691,7 +1699,8 @@ DeclareGlobalFunction( "LieAlgebraByStructureConstants" );
 ##  goes to zero).
 ##  <Example><![CDATA[
 ##  gap> T:= EmptySCTable( 3, Zero(GF(5)), "antisymmetric" );;
-##  gap> L:= RestrictedLieAlgebraByStructureConstants( GF(5), T, [[1,2],[1,3],[]] );
+##  gap> L:= RestrictedLieAlgebraByStructureConstants( 
+##  >                                     GF(5), T, [[1,2],[1,3],[]] );
 ##  <Lie algebra of dimension 3 over GF(5)>
 ##  gap> List(Basis(L),PthPowerImage);
 ##  [ v.2, v.3, 0*v.1 ]

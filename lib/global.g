@@ -2,7 +2,6 @@
 ##
 #W  global.g                    GAP library                      Steve Linton
 ##
-#H  @(#)$Id: global.g,v 4.11 2010/02/23 15:13:01 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -23,8 +22,6 @@
 ##  functions and can be read later (once Info, DeclareGlobalFunction,
 ##  etc are there)
 ##
-Revision.global_g :=
-    "@(#)$Id: global.g,v 4.11 2010/02/23 15:13:01 gap Exp $";
 
 
 #############################################################################

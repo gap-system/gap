@@ -2,7 +2,7 @@
 **
 *A  setup.c                     ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: setup.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: setup.c,v 1.6 2011/11/28 17:47:21 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -25,7 +25,7 @@ void class_setup ();
 void setup (pcp)
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int e;
    register int i;
@@ -343,7 +343,7 @@ void class_setup (new_space, pcp)
 int new_space;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int bound = pcp->lastg;

@@ -2,7 +2,6 @@
 ##
 #A  imf30.grp                   GAP group library              Volkmar Felsch
 ##
-#H  @(#)$Id: imf30.grp,v 1.2 2010/02/23 15:12:42 gap Exp $
 ##
 #Y  Copyright (C)  1995,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,8 +11,6 @@
 ##  [1]  a quadratic form (as lower triangle of the Gram matrix),
 ##  [2]  a list of matrix generators.
 ##
-Revision.imf30_grp :=
-    "@(#)$Id: imf30.grp,v 1.2 2010/02/23 15:12:42 gap Exp $";
 
 
 #############################################################################

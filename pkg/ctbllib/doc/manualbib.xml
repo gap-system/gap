@@ -12,7 +12,9 @@
 <string key="bulllond" value="Bull. London Math. Soc."/>
 <string key="comma2" value="Comm. Algebra"/>
 <string key="geomd2" value="Geom. Dedicata"/>
+<string key="invem" value="Invent. Math."/>
 <string key="jalge" value="J. Algebra"/>
+<string key="jausma" value="J. Austral. Math. Soc. Ser. A"/>
 <string key="jlonm1" value="J. London Math. Soc."/>
 <string key="jsymc" value="J. Symbolic Comput."/>
 <string key="micmj" value="Michigan Math. J."/>
@@ -88,6 +90,18 @@
          probabilistic generation of finite simple groups</title>
   <howpublished>arXiv:0710.3267</howpublished>
 </misc></entry>
+
+<entry id="Bre11"><article>
+  <author>
+    <name><first>Thomas</first><last>Breuer</last></name>
+  </author>
+  <title>Computing character tables of groups of type
+         <C><M>M.G.A</M></C></title>
+  <journal>LMS J. Comput. Math.</journal>
+  <year>2011</year>
+  <volume>14</volume>
+  <pages>173&ndash;178</pages>
+</article></entry>
 
 <entry id="Be00"><article>
   <author>
@@ -202,12 +216,15 @@
   <author>
     <name><first>Walter</first><last>Feit</last></name>
   </author>  
-  <title>The Representation Theory of Finite Groups</title>
-  <publisher>North-Holland Publishing Company</publisher>
+  <title>The representation theory of finite groups</title>
+  <publisher>North-Holland Publishing Co.</publisher>
   <year>1982</year>
   <volume>25</volume>
   <series>North-Holland Mathematical Library</series>
   <note>xiv+502 pp., ISBN 0-444-86155-6</note>
+  <mrnumber>661045 (83g:20001)</mrnumber>
+  <mrclass>20-02 (20C20)</mrclass>
+  <mrreviewer>J. L. Alperin</mrreviewer>
 </book></entry>
 
 <entry id="GK"><article>
@@ -255,6 +272,10 @@
     <name><first>Gabor P.</first><last>Nagy</last></name>
   </author>
   <title>Hamiltonian cycles in the generating graphs of finite groups</title>
+  <journal><value key="bulllond"/></journal>
+  <year>2010</year>
+  <volume>42</volume>
+  <pages>621&ndash;633</pages>
 </article></entry>
 
 <entry id="GPPS"><article>
@@ -371,7 +392,7 @@
   <volume>63</volume>
   <number>1</number>
   <pages>113&ndash;164</pages>
-  <other type="reviews">MR 92h:20031</other>
+  <other type="reviews">92h:20031</other>
 </article></entry>
 
 <entry id="MSW94"><article>
@@ -403,7 +424,7 @@
     <name><first>Jürgen</first><last>Müller</last></name>
   </author>
   <title>On the multiplicity-free actions of the sporadic simple groups</title>
-  <journal>J. Algebra</journal>
+  <journal><value key="jalge"/></journal>
   <year>2008</year>
   <volume>320</volume>
   <pages>910&ndash;926</pages>
@@ -415,17 +436,56 @@
     <name><first>Herbert</first><last>Pahlings</last></name>
   </author>
   <title>The character table of <C><M>2^{1+22}_+.{\rm Co}_2</M></C></title>
-  <journal>J. Algebra</journal>
+  <journal><value key="jalge"/></journal>
   <year>2007</year>
   <volume>315</volume>
   <number>1</number>
   <pages>301&ndash;325</pages>
   <issn>0021-8693</issn>
-  <mrnumber>MR2344348 (2008g:20023)</mrnumber>
+  <mrnumber>2344348 (2008g:20023)</mrnumber>
   <mrclass>20C34</mrclass>
   <mrreviewer>Shigeo Koshitani</mrreviewer>
   <other type="coden">JALGA4</other>
   <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
+<entry id="Wilson87"><article>
+  <author>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>
+  <title>Some subgroups of the <C>B</C>aby <C>M</C>onster</title>
+  <journal><value key="invem"/></journal>
+  <year>1987</year>
+  <volume>89</volume>
+  <number>1</number>
+  <pages>197&ndash;218</pages>
+  <issn>0020-9910</issn>
+  <mrnumber>892191 (88d:20030)</mrnumber>
+  <mrclass>20D08 (20E28)</mrclass>
+  <mrreviewer>Bernd Baumann</mrreviewer>
+  <other type="coden">INVMBH</other>
+  <other type="doi">10.1007/BF01404677</other>
+  <other type="fjournal">Inventiones Mathematicae</other>
+  <other type="url">http://dx.doi.org/10.1007/BF01404677</other>
+</article></entry>
+
+<entry id="Wilson88"><article>
+  <author>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>
+  <title>The odd-local subgroups of the <C>M</C>onster</title>
+  <journal><value key="jausma"/></journal>
+  <year>1988</year>
+  <volume>44</volume>
+  <number>1</number>
+  <pages>1&ndash;16</pages>
+  <issn>0263-6115</issn>
+  <mrnumber>914399 (88k:20038)</mrnumber>
+  <mrclass>20D08</mrclass>
+  <mrreviewer>Gernot Stroth</mrreviewer>
+  <other type="coden">JAMADS</other>
+  <other type="fjournal">Australian Mathematical Society. Journal. Series A.
+              Pure Mathematics and Statistics</other>
 </article></entry>
 
 <entry id="Wilson93"><article>
@@ -451,11 +511,32 @@
   <number>6</number>
   <pages>497&ndash;507</pages>
   <issn>0003-889X</issn>
-  <mrnumber>MR1254061 (95i:20021)</mrnumber>
+  <mrnumber>1254061 (95i:20021)</mrnumber>
   <mrclass>20D08</mrclass>
   <mrreviewer>David C. Hunt</mrreviewer>
   <other type="coden">ACVMAL</other>
   <other type="fjournal">Archiv der Mathematik</other>
+</article></entry>
+
+<entry id="Wil98"><article>
+  <author>
+    <name><first>Robert A.</first><last>Wilson</last></name>
+  </author>  
+  <title>The <C>M</C>c<C>K</C>ay conjecture is true for the sporadic simple
+              groups</title>
+  <journal><value key="jalge"/></journal>
+  <year>1998</year>
+  <volume>207</volume>
+  <number>1</number>
+  <pages>294&ndash;305</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>1643110 (99h:20016)</mrnumber>
+  <mrclass>20C34 (20D08 20D20)</mrclass>
+  <mrreviewer>Jian Bei An</mrreviewer>
+  <other type="coden">JALGA4</other>
+  <other type="doi">10.1006/jabr.1998.7450</other>
+  <other type="fjournal">Journal of Algebra</other>
+  <other type="url">http://dx.doi.org/10.1006/jabr.1998.7450</other>
 </article></entry>
 
 <entry id="Wil99"><article>

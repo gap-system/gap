@@ -33,16 +33,22 @@ PackageName := "Example",
 
 ##  This may be used by a default banner or on a Web page, should fit on
 ##  one line.
-Subtitle := "A Demo for Package Authors",
+Subtitle := "Example/Template of a GAP Package and Guidelines for Package Authors",
 
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers. For an automatic package distribution update
 ##  you must provide a new version number even after small changes.
-Version := "3.0",
-
+Version := "3.3.2",
 ##  Release date of the current version in dd/mm/yyyy format.
 ##
-Date := "16/03/2011",
+Date := "23/11/2011",
+##  Optional: if the package manual uses GAPDoc, you may duplicate the 
+##  version and the release date as shown below to read them while building
+##  the manual using GAPDoc facilities to distibute documents across files.
+##  <#GAPDoc Label="PKGVERSIONDATA">
+##  <!ENTITY VERSION "3.3.2">
+##  <!ENTITY RELEASEDATE "23 November 2011">
+##  <#/GAPDoc>
 
 PackageWWWHome :=
   Concatenation( "http://www.cs.st-andrews.ac.uk/~alexk/",
@@ -54,9 +60,9 @@ PackageWWWHome :=
 ##  (and probably somehow contain the package name and version).
 ##  The paths of the files in the archive must begin with the name of the
 ##  directory containing the package (in our "example" probably:
-##  example/init.g, ...    or  example-3.0/init.g, ...  )
+##  example/init.g, ...    or example-3.3/init.g, ...  )
 # 
-ArchiveURL := Concatenation( ~.PackageWWWHome, "example-3.0" ),
+ArchiveURL := Concatenation( ~.PackageWWWHome, "example-", ~.Version ),
 
 ##  All provided formats as list of file extensions, separated by white
 ##  space or commas.
@@ -75,19 +81,22 @@ ArchiveFormats := ".tar.gz",
 ##  If not all of the archive formats mentioned above are provided, these 
 ##  can be produced at the GAP side. Therefore it is necessary to know which
 ##  files of the package distribution are text files which should be unpacked
-##  with operating system specific line breaks. There are the following 
-##  possibilities to specify the text files:
+##  with operating system specific line breaks. 
+##  The package wrapping tools for the GAP distribution and web pages will
+##  use a sensible list of file extensions to decide if a file 
+##  is a text file (being conservative, it may miss a few text files). 
+##  These rules may be optionally prepended by the application of rules 
+##  from the PackageInfo.g file. For this, there are the following three
+##  mutually exclusive possibilities to specify the text files:
 ##  
 ##    - specify below a component 'TextFiles' which is a list of names of the 
-##      text files, relative to the package root directory (e.g., "lib/bla.g")
+##      text files, relative to the package root directory (e.g., "lib/bla.g"),
+##      then all other files are taken as binary files.
 ##    - specify below a component 'BinaryFiles' as list of names, then all other
 ##      files are taken as text files.
-##    - if no 'TextFiles' or 'BinaryFiles' are given and a .zoo archive is
-##      provided, then the files in that archive with a "!TEXT!" comment are
-##      taken as text files
-##    - otherwise: exactly the files with names matching the regular expression
-##      ".*\(\.txt\|\.gi\|\.gd\|\.g\|\.c\|\.h\|\.htm\|\.html\|\.xml\|\.tex\|\.six\|\.bib\|\.tst\|README.*\|INSTALL.*\|Makefile\)"
-##      are taken as text files
+##    - specify below a component 'TextBinaryFilesPatterns' as a list of names
+##      and/or wildcards, prepended by 'T' for text files and by 'B' for binary
+##      files.
 ##  
 ##  (Remark: Just providing a .tar.gz file will often result in useful
 ##  archives)
@@ -95,6 +104,7 @@ ArchiveFormats := ".tar.gz",
 ##  These entries are *optional*.
 #TextFiles := ["init.g", ......],
 #BinaryFiles := ["doc/manual.dvi", ......],
+#TextBinaryFilesPatterns := [ "TGPLv3", "Texamples/*", "B*.in", ......],
 
 
 ##  Information about authors and maintainers is contained in the `Persons'
@@ -133,7 +143,7 @@ Persons := [
     LastName      := "Nickel",
     FirstNames    := "Werner",
     IsAuthor      := true,
-    IsMaintainer  := true,
+    IsMaintainer  := false,
     Email         := "nickel@mathematik.tu-darmstadt.de",
     WWWHome       := "http://www.mathematik.tu-darmstadt.de/~nickel",
     PostalAddress := Concatenation( [
@@ -163,9 +173,9 @@ Persons := [
   rec( 
     LastName      := "Konovalov",
     FirstNames    := "Alexander",
-    IsAuthor      := false,
+    IsAuthor      := true,
     IsMaintainer  := true,
-    Email         := "konovalov@member.ams.org",
+    Email         := "alexk@mcs.st-andrews.ac.uk",
     WWWHome       := "http://www.cs.st-andrews.ac.uk/~alexk/",
     PostalAddress := Concatenation( [
                      "School of Computer Science\n",
@@ -181,6 +191,7 @@ Persons := [
 
 ##  Status information. Currently the following cases are recognized:
 ##    "accepted"      for successfully refereed packages
+##    "submitted"     for packages submitted for the refereeing
 ##    "deposited"     for packages for which the GAP developers agreed 
 ##                    to distribute them with the core GAP system
 ##    "dev"           for development versions of packages 
@@ -209,7 +220,7 @@ Status := "deposited",
 ##  and updating of the package in the GAP distribution.
 #
 README_URL := 
-  Concatenation( ~.PackageWWWHome, "README.example" ),
+  Concatenation( ~.PackageWWWHome, "README" ),
 PackageInfoURL := 
   Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
 
@@ -226,7 +237,8 @@ PackageInfoURL :=
 AbstractHTML := 
   "The <span class=\"pkgname\">Example</span> package, as its name suggests, \
    is an example of how to create a <span class=\"pkgname\">GAP</span> \
-   package. It has little functionality except for being a package",
+   package. It has little functionality except for being a package, however, \
+   it contains an extensive appendix with guidelines for package authors.",
 
 ##  Here is the information on the help books of the package, used for
 ##  loading into GAP's online help and maybe for an online copy of the 
@@ -246,8 +258,9 @@ AbstractHTML :=
 ##      - give the paths to the files inside your package directory
 ##        which are needed for the online manual (either as URL .Archive
 ##        if you pack them into a separate archive, or as list 
-##        .ArchiveURLSubset of directory and file names which should be 
-##        copied from your package archive, given in .ArchiveURL above
+##        .ArchiveURLSubset of names of directories and/or files which 
+##        should be copied from your package archive, given in .ArchiveURL 
+##        above (in most cases, ["doc"] or ["doc","htm"] suffices).
 ##  
 ##  For links to other GAP or package manuals you can assume a relative 
 ##  position of the files as in a standard GAP installation.
@@ -258,8 +271,8 @@ PackageDoc := rec(
   BookName  := "Example",
   # format/extension can be one of .tar.gz, .tar.bz2, -win.zip, .zoo.
   Archive := 
-      Concatenation( ~.PackageWWWHome, "exampledoc-3.0.tar.gz" ),
-  ArchiveURLSubset := ["doc", "htm"],
+      Concatenation( ~.PackageWWWHome, "exampledoc-", ~.Version, ".tar.gz" ),
+  ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
   # the path to the .six file used by GAP's help system
@@ -281,8 +294,8 @@ Dependencies := rec(
   # list of pairs [package name, version], package name is case
   # insensitive, exact version denoted with '=' prepended to version string.
   # without these, the package will not load
-  # NeededOtherPackages := [["GAPDoc", "0.99"]],
-  NeededOtherPackages := [["GAPDoc", "0.99"]],
+  # NeededOtherPackages := [["GAPDoc", "1.3"]],
+  NeededOtherPackages := [["GAPDoc", "1.3"]],
 
   # list of pairs [package name, version] as above,
   # these package are will be loaded if they are available,
@@ -311,13 +324,17 @@ Dependencies := rec(
 ),
 
 ##  Provide a test function for the availability of this package.
-##  For packages which will not fully work,
-##  use 'LogPackageLoadingMessage( PACKAGE_WARNING, ... )' statements,
-##  do not call `Print'.
 ##  For packages containing nothing but GAP code, just say 'ReturnTrue' here.
+##  For packages which may not work or will have only partial functionality,
+##  use 'LogPackageLoadingMessage( PACKAGE_WARNING, ... )' statements to
+##  store messages which may be viewed later with `DisplayPackageLoadingLog'.
+##  Do not call `Print' or `Info' in the `AvailabilityTest' function of the 
+##  package.
+##
 ##  With the package loading mechanism of GAP >=4.4, the availability
 ##  tests of other packages, as given under .Dependencies above, will be 
 ##  done automatically and need not be included in this function.
+##
 #AvailabilityTest := ReturnTrue,
 AvailabilityTest := function()
   local path, file;
@@ -333,7 +350,7 @@ AvailabilityTest := function()
     fi;
     # if the hello binary was vital to the package we would return
     # the following ...
-    #return file <> fail;
+    # return file <> fail;
     # since the hello binary is not vital we return ...
     return true;
   end,
@@ -347,28 +364,28 @@ AvailabilityTest := function()
 ##  a string here that is used as a banner. GAP decides when the banner is 
 ##  shown and when it is not shown (note the ~-syntax in this example).
 BannerString := Concatenation( 
-  "----------------------------------------------------------------\n",
-  "Loading  Example ", ~.Version, "\n",
-  "by ",
-  JoinStringsWithSeparator( List( Filtered( ~.Persons, r -> r.IsAuthor ),
-                                  r -> Concatenation(
-      r.FirstNames, " ", r.LastName, " (", r.WWWHome, ")\n" ) ), "   " ),
-  "For help, type: ?Example package \n",
-  "----------------------------------------------------------------\n" ),
+    "----------------------------------------------------------------\n",
+    "Loading  Example ", ~.Version, "\n",
+    "by ",
+    JoinStringsWithSeparator( List( Filtered( ~.Persons, r -> r.IsAuthor ),
+                                    r -> Concatenation(
+        r.FirstNames, " ", r.LastName, " (", r.WWWHome, ")\n" ) ), "   " ),
+    "For help, type: ?Example package \n",
+    "----------------------------------------------------------------\n" ),
 
 ##  *Optional*, but recommended: path relative to package root to a file which 
 ##  contains as many tests of the package functionality as sensible.
 ##  The file can either consist of 'ReadTest' calls or it is itself read via
 ##  'ReadTest'; it is assumed that the latter case occurs if and only if
 ##  the file contains the string 'gap> START_TEST('.
-##  For submitted packages, these tests are run regularly, as a part of the
+##  For deposited packages, these tests are run regularly, as a part of the
 ##  standard GAP test suite.
-#TestFile := "tst/testall.g",
+TestFile := "tst/testall.tst",
 
 ##  *Optional*: Here you can list some keyword related to the topic 
 ##  of the package.
 # Keywords := ["Smith normal form", "p-adic", "rational matrix inversion"]
-Keywords := ["package example", "package template", "package creation hints"]
+Keywords := ["package example", "package template", "package creation guidelines"]
 
 ));
 

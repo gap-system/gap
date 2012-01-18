@@ -2,7 +2,6 @@
 ##
 #W  ring.gi                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ring.gi,v 4.51 2010/02/23 15:13:27 gap Exp $
 ##
 #Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains generic methods for rings.
 ##
-Revision.ring_gi :=
-    "@(#)$Id: ring.gi,v 4.51 2010/02/23 15:13:27 gap Exp $";
 
 
 #############################################################################
@@ -666,7 +663,9 @@ InstallMethod( IsIntegralRing,
         elms := Enumerator( R );
         zero := Zero( R );
         for i  in [1..Length(elms)]  do
+            if elms[i] = zero then continue; fi;
             for k  in [i+1..Length(elms)]  do
+                if elms[k] = zero then continue; fi;
                 if elms[i] * elms[k] = zero then
                     return false;
                 fi;
@@ -883,13 +882,53 @@ InstallMethod( Units,
 
 #############################################################################
 ##
-#M  StandardAssociate( <r> )  . . . . . . . . .  delegate to the default ring
+#M  StandardAssociate( <r> )
 ##
 InstallOtherMethod( StandardAssociate,
     "for a ring element",
     true,
-    [ IsRingElement ], 0,
+    [ IsRingElement ],
     r -> StandardAssociate( DefaultRing( [ r ] ), r ) );
+
+InstallMethod( StandardAssociate,
+    "for a ring and its zero element",
+    IsCollsElms,
+    [ IsRing, IsRingElement and IsZero ],
+    SUM_FLAGS, # can't do better
+    function ( R, r )
+    return r;
+    end );
+
+InstallMethod( StandardAssociate,
+    "for a ring and a ring element (using StandardAssociateUnit)",
+    IsCollsElms,
+    [ IsRing, IsRingElement ],
+    function ( R, r )
+      local u;
+      u := StandardAssociateUnit( R, r );
+      if u <> fail then return u * r; fi;
+      TryNextMethod();
+    end );
+
+
+#############################################################################
+##
+#M  StandardAssociateUnit( <r> )
+##
+InstallOtherMethod( StandardAssociateUnit,
+    "for a ring element",
+    true,
+    [ IsRingElement ],
+    r -> StandardAssociateUnit( DefaultRing( [ r ] ), r ) );
+
+InstallMethod( StandardAssociateUnit,
+    "for a ring and its zero element",
+    IsCollsElms,
+    [ IsRing, IsRingElement and IsZero ],
+    SUM_FLAGS, # can't do better
+    function ( R, r )
+    return One( R );
+    end );
 
 
 #############################################################################
@@ -907,7 +946,7 @@ InstallMethod( Associates,
     "for a ring and a ring element",
     IsCollsElms,
     [ IsRing, IsRingElement ], 0,
-    function( R, r );
+    function( R, r )
     return AsSSortedList( Enumerator( Units( R ) ) * r );
     end );
 
@@ -1037,7 +1076,7 @@ InstallMethod( QuotientMod,
     f := s;  fs := 1;
     g := m;  gs := 0;
     while g <> Zero( R ) do
-    	t := QuotientRemainder( R, f, g );
+        t := QuotientRemainder( R, f, g );
         h := g;          hs := gs;
         g := t[2];       gs := fs - t[1] * gs;
         f := h;          fs := hs;
@@ -1277,12 +1316,12 @@ InstallMethod( GcdRepresentationOp,
     f := x;  fx := One( R );
     g := y;  gx := Zero( R );
     while g <> Zero( R ) do
-    	t := QuotientRemainder( R, f, g );
+        t := QuotientRemainder( R, f, g );
         h := g;          hx := gx;
         g := t[2];       gx := fx - t[1] * gx;
         f := h;          fx := hx;
     od;
-    q := Quotient(R, StandardAssociate(R, f), f);
+    q := StandardAssociateUnit(R, f);
     if y = Zero( R ) then
         return [ q * fx, Zero( R ) ];
     else
@@ -1362,7 +1401,7 @@ InstallOtherMethod( LcmOp,
 InstallMethod( LcmOp,
     "for a Euclidean ring and two ring elements",
     IsCollsElmsElms,
-    [ IsEuclideanRing, IsRingElement, IsRingElement ], 0,
+    [ IsUniqueFactorizationRing, IsRingElement, IsRingElement ], 0,
     function( R, r, s )
 
     # compute the least common multiple

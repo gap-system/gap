@@ -2,7 +2,7 @@
 **
 *A  interactive_pga.c           ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: interactive_pga.c,v 1.6 2001/06/21 23:04:21 gap Exp $
+*A  @(#)$Id: interactive_pga.c,v 1.10 2011/11/29 09:43:57 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -26,7 +26,7 @@
 
 void interactive_pga (group_present, StartFile, group_nmr, auts, pga, pcp)
 Logical group_present;
-FILE_TYPE StartFile;
+FILE * StartFile;
 int group_nmr;
 int ***auts;
 struct pga_vars *pga;
@@ -36,7 +36,7 @@ struct pcp_vars *pcp;
    int option;
    Logical soluble_group = TRUE;
 
-   FILE_TYPE OutputFile;
+   FILE * OutputFile;
    FILE *LINK_input;
 
    char *StartName; 
@@ -58,13 +58,6 @@ struct pcp_vars *pcp;
    int rep;
    int i;
 
-   /*
-     int l;
-     FILE *CAYLEY_input;
-     Logical x;
-     int i, l, u;
-     */
-
    list_interactive_pga_menu ();
 
    do {
@@ -77,7 +70,7 @@ struct pcp_vars *pcp;
 
       case SUPPLY_AUTS:
 	 auts = read_auts (PGA, &pga->m, &nmr_of_exponents, pcp);
-#if defined (LARGE_INT) 
+#ifdef HAVE_GMP
 	 autgp_order (pga, pcp);
 #endif 
 	 pga->soluble = TRUE; 
@@ -158,12 +151,6 @@ struct pcp_vars *pcp;
 	    soluble_group = (pga->soluble || pga->Degree == 1 || 
 			     pga->nmr_of_perms == 0);
 	    if (!soluble_group) {
-#if defined (CAYLEY_LINK)
-	       start_CAYLEY_file (&LINK_input, auts, pga);
-#else 
-#if defined (Magma_LINK)
-	       start_Magma_file (&LINK_input, auts, pga);
-#else
 #if defined (GAP_LINK)
 	       StartGapFile (pga);
 #else
@@ -171,13 +158,11 @@ struct pcp_vars *pcp;
 	       start_GAP_file (&LINK_input, auts, pga, pcp);
 #endif
 #endif
-#endif
-#endif
 	    }
 	    perms = permute_subgroups (LINK_input, &a, &b, &c, 
 				       auts, pga, pcp); 
 
-#if defined (CAYLEY_LINK) || defined (Magma_LINK) || defined (GAP_LINK_VIA_FILE)
+#if defined (GAP_LINK_VIA_FILE)
 	    if (!soluble_group)
 	       CloseFile (LINK_input);
 #endif 
@@ -187,12 +172,6 @@ struct pcp_vars *pcp;
 	 else
 	    printf ("You must first select option %d\n", DEGREE);
 
-	 /*
-           
-	   CAYLEY_input = OpenFile ("CAYLEY_perms", "w");
-	   for (i = 1; i <= pga->nmr_of_perms; ++i)
-	   write_CAYLEY_permutation (CAYLEY_input, i, perms[i], pga);
-	   */
 	 break;
          
       case ORBITS: 
@@ -358,7 +337,7 @@ struct pga_vars *pga;
 {
    int t; 
    Logical soluble_group;
-    FILE_TYPE file;
+    FILE * file;
 
 
    if (option != COMBINATION && option != STANDARDISE) {
@@ -419,7 +398,7 @@ struct pcp_vars *pcp;
    int t;
    int i;
    Logical soluble_group;
-   FILE_TYPE OutputFile;
+   FILE * OutputFile;
    char *StartName; 
    int *rep;
    int *length;

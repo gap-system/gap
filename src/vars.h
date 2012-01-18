@@ -2,7 +2,6 @@
 **
 *W  vars.h                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: vars.h,v 4.17 2011/06/06 16:28:09 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,9 +16,11 @@
 **  locals), higher variables (i.e., local variables of enclosing functions),
 **  global variables, list elements, and record elements.
 */
+
+#ifndef GAP_VARS_H
+#define GAP_VARS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_vars_h =
-   "@(#)$Id: vars.h,v 4.17 2011/06/06 16:28:09 sal Exp $";
 #endif
 
 
@@ -101,8 +102,8 @@ extern Obj True;
 
 static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
   if (STEVES_TRACING == True) {
-    fprintf(stderr,"SBCT: %i %x %s %i\n", 
-	    (int)expr, (int)TLS->currLVars, file, line);
+    fprintf(stderr,"SBCT: %i %x %s %i\n",
+            (int)expr, (int)TLS->currLVars, file, line);
   }
   (TLS->ptrLVars[1] = (Obj)(Int)(expr));
 }
@@ -155,27 +156,27 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 , char * file, int line
 #endif
 )
-{	
-  Obj old = TLS->currLVars;							
-  CHANGED_BAG( old );                       
-  TLS->currLVars = NewBag( T_LVARS,                
-		      sizeof(Obj)*(3+narg+nloc) );
-  TLS->ptrLVars  = PTR_BAG( TLS->currLVars );               
-  CURR_FUNC = func;                             
-  TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); 
-  SET_BRK_CALL_FROM( old );                       
+{
+  Obj old = TLS->currLVars;
+  CHANGED_BAG( old );
+  TLS->currLVars = NewBag( T_LVARS,
+                      sizeof(Obj)*(3+narg+nloc) );
+  TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
+  CURR_FUNC = func;
+  TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+  SET_BRK_CALL_FROM( old );
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     Obj n = NAME_FUNC(func);
     Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
     fprintf(stderr,"STNL: %s %i\n   func %lx narg %i nloc %i function name %s\n     old lvars %lx new lvars %lx\n",
-	    file, line, (UInt) func, (int)narg, (int)nloc,s,(UInt)old, (UInt)TLS->currLVars);
+            file, line, (UInt) func, (int)narg, (int)nloc,s,(UInt)old, (UInt)TLS->currLVars);
   }
 #endif
   return old;
 }
 
-#ifdef TRACEFRAMES    
+#ifdef TRACEFRAMES
 #define SWITCH_TO_NEW_LVARS(func, narg, nloc, old)     (old) = SwitchToNewLvars((func), (narg), (nloc), __FILE__, __LINE__)
 #else
 #define SWITCH_TO_NEW_LVARS(func, narg, nloc, old)     (old) = SwitchToNewLvars((func), (narg), (nloc))
@@ -198,13 +199,13 @@ static inline void SwitchToOldLVars( Obj old
 #ifdef TRACEFRAMES
   if (STEVES_TRACING == True) {
     fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
-	   file, line, (UInt)TLS->currLVars,(UInt)old);
+           file, line, (UInt)TLS->currLVars,(UInt)old);
   }
 #endif
-  CHANGED_BAG( TLS->currLVars );                       
-  TLS->currLVars = (old);                              
-  TLS->ptrLVars  = PTR_BAG( TLS->currLVars );               
-  TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); 
+  CHANGED_BAG( TLS->currLVars );
+  TLS->currLVars = (old);
+  TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
+  TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 }
 
 #ifdef TRACEFRAMES
@@ -288,6 +289,8 @@ extern  Char *          NAME_HVAR (
 */
 StructInitInfo * InitInfoVars ( void );
 
+
+#endif // GAP_VARS_H
 
 /****************************************************************************
 **

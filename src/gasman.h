@@ -2,7 +2,6 @@
 **
 *W  gasman.h                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gasman.h,v 4.28 2011/05/11 11:40:07 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -33,12 +32,12 @@
 **  information to distinguish true references to bags from other values that
 **  happen to  look like references.
 */
+
+#ifndef GAP_GASMAN_H
+#define GAP_GASMAN_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_gasman_h =
-   "@(#)$Id: gasman.h,v 4.28 2011/05/11 11:40:07 sal Exp $";
 #endif
-extern const char * Revision_gasman_h;  /* gap.c uses this. */
-extern const char * Revision_gasman_c;
 
 #define BOEHM_GC 1
 
@@ -1059,7 +1058,7 @@ typedef Bag *           (* TNumAllocFuncBags) (
 typedef void            (* TNumStackFuncBags) ( void );
 
 typedef void            (* TNumAbortFuncBags) (
-                                Char *          msg );
+                                const Char *    msg );
 
 extern  void            InitBags (
             TNumAllocFuncBags   alloc_func,
@@ -1140,6 +1139,8 @@ static inline void Share(Bag bag)
 
 void *AllocateMemoryBlock(UInt size);
 
+
+#endif // GAP_GASMAN_H
 
 /****************************************************************************
 **

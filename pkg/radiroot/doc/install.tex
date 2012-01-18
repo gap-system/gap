@@ -2,7 +2,7 @@
 %%
 %W  install.tex          Radiroot documentation           Andreas Distler
 %%
-%H  $Id: install.tex,v 1.7 2008/01/22 11:57:43 gap Exp $
+%H  $Id: install.tex,v 1.10 2011/11/04 12:21:38 gap Exp $
 %%
 %Y  2005
 %%
@@ -16,7 +16,7 @@
 This package is available at
 
 \begintt
-http://www.icm.tu-bs.de/ag_algebra/software/distler/radiroot
+http://www.icm.tu-bs.de/ag_algebra/software/radiroot
 \endtt
 
 in form of a gzipped tar-archive. For installation instructions see
@@ -25,7 +25,7 @@ Normally you will unpack the archive in the `pkg' directory of your
 {\GAP} version by typing:
 
 \beginexample
-    bash> tar xfz radiroot.tar.gz        # for the gzipped tar-archive
+    bash> tar xfz radiroot-2.6.tar.gz        # for the gzipped tar-archive
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,7 +37,7 @@ done by calling
 \beginexample
 gap> LoadPackage("radiroot");
 -----------------------------------------------------------------------------
-Loading  RadiRoot 2.4 (Roots of a Polynomial as Radicals)
+Loading  RadiRoot 2.6 (Roots of a Polynomial as Radicals)
 by Andreas Distler (a.distler@tu-bs.de).
 -----------------------------------------------------------------------------
 true
@@ -47,8 +47,8 @@ The `LoadPackage' command is described  in  Section~"ref:LoadPackage"  in
 the {\GAP} reference manual.
 
 If you want to load the {\Radiroot} package by default, you  can  put  the
-`LoadPackage' command  into  your  `.gaprc'  file  (see  Section~"ref:The
-.gaprc file" in the {\GAP} reference manual).
+`LoadPackage' command  into  your  `gaprc'  file  (see  Section~"ref:The
+gaprc file" in the {\GAP} reference manual).
 
 Once the package is loaded, it is possible to check the correct
     installation by running the test suite of the package with the command
@@ -60,9 +60,8 @@ Once the package is loaded, it is possible to check the correct
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Additional Requirements}
 
-To use {\Radiroot} the package {\Alnuth} 2.2.2 or higher has to be
-loaded with its full functionality available. This means in particular
-that KANT \cite{KANT} in version 2.4 or 2.5 needs to be installed.
+To use {\Radiroot} the package {\Alnuth} in version 2.2.3 or higher
+has to be loaded with its interface fully functional.
 
 In the standard mode a dvi file is created to display the roots of a
 polynomial. As default the package uses the command `latex' searched

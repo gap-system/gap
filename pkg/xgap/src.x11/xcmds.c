@@ -2,7 +2,7 @@
 **
 *W  xcmds.c                     XGAP Source                      Frank Celler
 **
-*H  @(#)$Id: xcmds.c,v 1.6 1999/03/11 17:25:04 gap Exp $
+*H  @(#)$Id: xcmds.c,v 1.7 2011/11/24 11:44:24 gap Exp $
 **
 *Y  Copyright 1995-1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1997,       Frank Celler,                 Huerth,       Germany
@@ -546,12 +546,12 @@ static Boolean FunOpenSelector (
 
     /* create a "paned" for the menu and text window */
     paned = XtVaCreateManagedWidget(
-	        "textSelector", panedWidgetClass, selector->top, 0 );
+	        "textSelector", panedWidgetClass, selector->top, NULL );
 
     /* create a headline */
     XtVaCreateManagedWidget(
         "textSelectorTitle", labelWidgetClass, paned,
-        XtNlabel, name, 0 );
+        XtNlabel, name, NULL );
 				    
 
     /* create a viewport for the text selectors */
@@ -561,7 +561,7 @@ static Boolean FunOpenSelector (
 		   XtNallowVert,        True,
 		   XtNuseBottom,        True,
 		   XtNshowGrip,         False,
-		   0 );
+		   NULL );
 
     /* compute number of entries */
     for ( i = 2, qtr = arg->sargs[1];  *qtr;  qtr++ )
@@ -598,7 +598,7 @@ static Boolean FunOpenSelector (
 			 XtNlist,           selector->text,
 			 XtNdefaultColumns, 1,
 			 XtNforceColumns,   True,
-			 0 );
+			 NULL );
     XtOverrideTranslations( selector->list, 
 			    XtParseTranslationTable(ButtonPressTrans) );
     XtAddCallback( selector->list, XtNcallback, TextSelected,
@@ -611,7 +611,7 @@ static Boolean FunOpenSelector (
        	      XtNshowGrip,              False,
 	      XtNskipAdjust,            True,
 	      XtNresizeToPreferred, 	True,
-	      0 );
+	      NULL );
 
     /* parse buttons */
     selector->buttons = List(0);
@@ -627,7 +627,7 @@ static Boolean FunOpenSelector (
 	             "textSelectorButton", commandWidgetClass, box,
 	             XtNlabel,      buf,
 	             XtNshapeStyle, XmuShapeOval,
-	             0 );
+	             NULL );
 	XtAddCallback(button,XtNcallback,ButtonSelected,
 		      (XtPointer)((i+n*256)&0xffffL));
 	AddList( selector->buttons, button );
@@ -748,9 +748,9 @@ static Boolean FunEnableButton (
 
     /* enable/disable */
     if ( arg->iargs[2] )
-	XtVaSetValues( entry, XtNsensitive, True, 0 );
+	XtVaSetValues( entry, XtNsensitive, True, NULL );
     else
-	XtVaSetValues( entry, XtNsensitive, False, 0 );
+	XtVaSetValues( entry, XtNsensitive, False, NULL );
 
     /* return OK */
     return AnswerGap( "o", 0, 0, 0, 0 );
@@ -838,7 +838,7 @@ static Boolean FunPopupShell (
 
     /* create a shell */
     pshell = XtVaCreatePopupShell( "pshell", simpleMenuWidgetClass,
-    	    	    	    	   XGap, XtNcursor, CursorTL, 0 );
+    	    	    	    	   XGap, XtNcursor, CursorTL, NULL );
     XtOverrideTranslations( pshell, 
 			    XtParseTranslationTable(PopingDownTrans) );
 
@@ -847,8 +847,8 @@ static Boolean FunPopupShell (
     XtVaCreateManagedWidget( "menulabel", smeBSBObjectClass, pshell,
     	    	    	     XtNsensitive, False,
     	    	    	     XtNlabel,     arg->sargs[0],
-    	    	    	     0 );
-    XtVaCreateManagedWidget( "line", smeLineObjectClass, pshell, 0 );
+    	    	    	     NULL );
+    XtVaCreateManagedWidget( "line", smeLineObjectClass, pshell, NULL );
 
     /* add popdown callback */
     XtAddCallback( pshell, XtNpopdownCallback, PopingDown, 0 );
@@ -870,7 +870,7 @@ static Boolean FunPopupShell (
     	if ( *ptr )  ptr++;
     	DEBUG( D_XCMD, ( "  entry = \"%s\"\n", buf ) );
     	pane = XtVaCreateManagedWidget( "menupane", smeBSBObjectClass,
-    	    	    	    	    	pshell, XtNlabel, buf, 0 );
+    	    	    	    	    	pshell, XtNlabel, buf, NULL );
     	pd = (TypePaneData*) XtMalloc( sizeof(TypePaneData) );
     	pd->pane   = i;
     	pd->popup  = LEN(PopupMenus);
@@ -910,7 +910,7 @@ static Boolean FunShowPopup (
                    XtNwidth,       &w1,
                    XtNheight,      &h1,
                    XtNborderWidth, &bw,
-                   0,              0 );
+                   0,              NULL );
 
     /* compute screen position */
     XQueryPointer( GapDisplay, MyRootWindow,
@@ -923,7 +923,7 @@ static Boolean FunShowPopup (
 	y = tmp-h1;
 
     /* popup the popup shell */
-    XtVaSetValues( popup, XtNx, x-10, XtNy, y-10, 0 );
+    XtVaSetValues( popup, XtNx, x-10, XtNy, y-10, NULL );
     XawSimpleMenuClearActiveEntry( popup );
     XtPopupSpringLoaded( popup );
     XtGrabPointer( popup, True, ButtonPressMask|ButtonReleaseMask,
@@ -1127,7 +1127,7 @@ static Widget CreateTitleWindow (
 		       XtNlabel,             "GAP window",
  		       XtNskipAdjust,        True,
 		       XtNshowGrip,          False,
-		       0 );
+		       NULL );
 }
 
 
@@ -1161,17 +1161,17 @@ static Boolean FunOpenWindow (
     window->text       = 0;
 
     /* find title position */
-    XtVaGetValues( GapTalk, XtNtitlePosition, &title, 0 );
+    XtVaGetValues( GapTalk, XtNtitlePosition, &title, NULL );
 
     /* create a new top level shell */
     window->top = XtVaAppCreateShell(
 		      "XGap", "GraphicSheet",
 		      topLevelShellWidgetClass, GapDisplay,
-		      0 );
+		      NULL );
 
     /* create a "paned" for the menu and text window */
     paned = XtVaCreateManagedWidget(
-	        "xgapWindow", panedWidgetClass, window->top, 0 );
+	        "xgapWindow", panedWidgetClass, window->top, NULL );
 
     /* add TOP tile */
     if ( *title == 'T' || *title == 't' )
@@ -1183,11 +1183,11 @@ static Boolean FunOpenWindow (
  		      XtNskipAdjust,   		True,
 		      XtNresizeToPreferred, 	True,
 		      XtNshowGrip,     		False,
-		      0 );
+		      NULL );
 
     /* create a dummy menu button */
     button = XtVaCreateManagedWidget( "dummy", commandWidgetClass,
-				      window->box, XtNx, 0, 0 );
+				      window->box, XtNx, 0, NULL );
 
     /* add MIDDLE tile */
     if ( *title == 'M' || *title == 'm' )
@@ -1202,7 +1202,7 @@ static Boolean FunOpenWindow (
 			  XtNuseBottom,        True,
 			  XtNshowGrip,         False,
                           XtNresizable,        True,
-			  0 );
+			  NULL );
 
     /* create a drawable */
     window->draw = XtVaCreateManagedWidget(
@@ -1210,15 +1210,15 @@ static Boolean FunOpenWindow (
 		       gapGraphicWidgetClass, window->viewport,
                        XtNwidth,              w,
 	               XtNheight,             h,
-		       0 );
+		       NULL );
     window->width  = w;
     window->height = h;
 
     /* fix dimensions of viewport */
-    XtVaGetValues( window->viewport, XtNwidth, &w1, XtNheight, &h1, 0 );
+    XtVaGetValues( window->viewport, XtNwidth, &w1, XtNheight, &h1, NULL );
     w1 = ( w1 < w ) ? w1 : w;
     h1 = ( h1 < h ) ? h1 : h;
-    XtVaSetValues( window->viewport, XtNwidth, w1, XtNheight, h1, 0 );
+    XtVaSetValues( window->viewport, XtNwidth, w1, XtNheight, h1, NULL );
 
     /* add BOTTOM tile */
     if ( window->text == 0 )
@@ -1240,7 +1240,7 @@ static Boolean FunOpenWindow (
 
     /* remove dummy button and dummy text */
     XtDestroyWidget(button);
-    XtVaSetValues( window->text, XtNlabel, name, 0 );
+    XtVaSetValues( window->text, XtNlabel, name, NULL );
 
     /* define cursor */
     XDefineCursor( GapDisplay, XtWindow(window->top), SleepCursor );
@@ -1275,7 +1275,7 @@ static Boolean FunCloseWindow (
 static Boolean FunAddTitle (
     TypeArg   * arg )
 {
-    XtVaSetValues( arg->win->text, XtNlabel, arg->sargs[0], 0 );
+    XtVaSetValues( arg->win->text, XtNlabel, arg->sargs[0], NULL );
     return ANSWER_GAP( "o", 0, 0, 0, 0 );
 }
 
@@ -1397,7 +1397,7 @@ static Boolean FunResize (
 		       gapGraphicWidgetClass, (Widget)viewport,
                        XtNwidth,              arg->win->width,
 	               XtNheight,             arg->win->height,
-		       0 );
+		       NULL );
     XtUnmanageChild(dummy);
     XtManageChild(arg->win->draw);
     XtDestroyWidget(dummy);
@@ -1454,11 +1454,11 @@ static Boolean FunMenu (
 				      XtNlabel,      arg->sargs[0],
 				      XtNshapeStyle, XmuShapeOval,
 				      XtNleftBitmap, MenuSymbol,
-				      0 );
+				      NULL );
 
     /* create a shell */
     pshell = XtVaCreatePopupShell( "menu", simpleMenuWidgetClass,
-    	    	    	    	   button, XtNcursor, CursorTL, 0 );
+    	    	    	    	   button, XtNcursor, CursorTL, NULL );
 
     /* create menu entries */
     menu = (TypeMenu*) XtMalloc( sizeof(TypeMenu) );
@@ -1474,7 +1474,7 @@ static Boolean FunMenu (
     	if ( *ptr )  ptr++;
     	DEBUG( D_XCMD, ( "  entry = \"%s\"\n", buf ) );
 	if ( *buf == '-' )
-	    XtVaCreateManagedWidget( "line", smeLineObjectClass, pshell, 0 );
+	    XtVaCreateManagedWidget( "line", smeLineObjectClass, pshell, NULL );
 	else
 	{
 	    pane = XtVaCreateManagedWidget( buf, smeBSBObjectClass,
@@ -1482,7 +1482,7 @@ static Boolean FunMenu (
 					    XtNlabel,       buf,
 					    XtNrightMargin, 14,
                                             XtNrightBitmap, EmptyMarkSymbol,
-	                                    0 );
+	                                    NULL );
 	    pd = (TypeMenuData*) XtMalloc( sizeof(TypeMenuData) );
 	    pd->window = arg->iargs[0];
 	    pd->pane   = i;
@@ -1561,9 +1561,9 @@ static Boolean FunCheckMenuEntry (
 
     /* set or clear check mark */
     if ( arg->iargs[3] )
-	XtVaSetValues( entry, XtNrightBitmap, CheckMarkSymbol, 0 );
+	XtVaSetValues( entry, XtNrightBitmap, CheckMarkSymbol, NULL );
     else
-	XtVaSetValues( entry, XtNrightBitmap, EmptyMarkSymbol, 0 );
+	XtVaSetValues( entry, XtNrightBitmap, EmptyMarkSymbol, NULL );
     return ANSWER_GAP( "o", 0, 0, 0, 0 );
 }
 
@@ -1596,9 +1596,9 @@ static Boolean FunEnableMenuEntry (
 
     /* set or clear check mark */
     if ( arg->iargs[3] )
-	XtVaSetValues( entry, XtNsensitive, True, 0 );
+	XtVaSetValues( entry, XtNsensitive, True, NULL );
     else
-	XtVaSetValues( entry, XtNsensitive, False, 0 );
+	XtVaSetValues( entry, XtNsensitive, False, NULL );
     return ANSWER_GAP( "o", 0, 0, 0, 0 );
 }
 
@@ -2020,7 +2020,7 @@ void InitXCMDS ()
 		   XtNnormalFont,   &NormalFont,
 		   XtNlargeFont,    &LargeFont,
                    XtNhugeFont,     &HugeFont,
-		   0 );
+		   NULL );
 
     /* create lists for windows, popups, and selectors */
     GapWindows    = List(0);

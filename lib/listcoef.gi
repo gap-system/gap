@@ -20,8 +20,6 @@
 ##  The '<Something>Coeffs' functions operate on row vectors which might have
 ##  different lengths, the returned result will have trailing zeros removed.
 ##
-Revision.listcoef_gi :=
-    "@(#)$Id: listcoef.gi,v 4.63 2010/10/20 19:01:57 sal Exp $";
 
 
 #############################################################################
@@ -1271,8 +1269,7 @@ AClosVecLib:=function(veclis,vec,sum,pos,l,m,cnt,stop,bd,bv,coords,bcoords)
     return bd;
 end;
 
-AClosestVectorDriver :=
-  function(mat,f,vec,cnt,stop,coords)
+AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
     local b,fdi,i,j,veclis,mult,mults,fdip, q, ok8,c,bc;
 
     # special case: combination of 0 vectors

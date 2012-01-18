@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.oprt_gi :=
-    "@(#)$Id: oprt.gi,v 4.204 2011/06/12 08:32:33 stefan Exp $";
 
 
 #############################################################################
@@ -740,6 +738,66 @@ local name;
   fi;
   Print( "<action ",name,"morphism>" );
 end;
+
+
+#############################################################################
+##
+#F  MultiActionsHomomorphism(G,pnts,ops)
+##
+InstallGlobalFunction(MultiActionsHomomorphism,function(G,pnts,ops)
+  local gens,homs,trans,n,d,gs,i,j,mgi,ran,hom,imgs,c;
+  gens:=GeneratorsOfGroup(G);
+  homs:=[];
+  trans:=[];
+  n:=1;
+
+  if Length(pnts)=1 then
+    return DoSparseActionHomomorphism(G,[pnts[1]],gens,gens,ops[1],false);
+  fi;
+
+  imgs:=List(gens,x->());
+  c:=0;
+  for i in [1..Length(pnts)] do
+    if ForAny(homs,x->FunctionAction(UnderlyingExternalSet(x))=ops[i] and 
+                   pnts[i] in HomeEnumerator(UnderlyingExternalSet(x))) then
+      Info(InfoGroup,1,"point ",i," already covered");
+    else
+      hom:=DoSparseActionHomomorphism(G,[pnts[i]],gens,gens,ops[i],false);
+      d:=NrMovedPoints(Range(hom));
+      if d>0 then 
+	c:=c+1;
+	homs[c]:=hom;
+	trans[c]:=MappingPermListList([1..d],[n..n+d-1]);
+	mgi:=MappingGeneratorsImages(hom)[2];
+	for j in [1..Length(gens)] do
+	  imgs[j]:=imgs[j]*mgi[j]^trans[c];
+	od;
+	n:=n+d;
+      fi;
+    fi;
+  od;
+  ran:=Group(imgs,());
+  hom:=GroupHomomorphismByFunction(G,ran,
+	function(elm)
+	local i,p;
+	  p:=();
+	  for i in [1..Length(homs)] do
+	    p:=p*(ImagesRepresentative(homs[i],elm)^trans[i]);
+	  od;
+	  return p;
+	end);
+  hom!.trans:=trans;
+  hom!.homs:=homs;
+
+  SetRange(hom,ran);
+  SetImagesSource(hom,ran);
+  SetMappingGeneratorsImages(hom,[gens,imgs]);
+  SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImagesNC
+            ( G, ran, gens, imgs ) );
+
+  return hom;
+end);
+
 
 
 #############################################################################
@@ -1559,7 +1617,7 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
   fi;
   dict:=NewDictionary(start[1],true,D);
 
-  orb:=ShallowCopy(start);
+  orb:=List(start,x->x); # do force list rep.
   for i in [1..Length(orb)] do
     AddDictionary(dict,orb[i],i);
   od;
@@ -1606,20 +1664,42 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
     Error("not permutations");
   fi;
 
+  imgs:=permimg;
+  ran:= Group( imgs, () );  # `imgs' has been created with `PermList'
+
   xset := ExternalSet( G, orb, gens, acts, act);
-  SetBaseOfGroup( xset, start );
+  if IsMatrix(start) and (act=OnPoints or act=OnRight or act=OnLines) then
+    # act on vectors -- if we have a basis we have a base
+    p:=RankMat(start);
+    if p=Length(start[1]) then
+      SetBaseOfGroup( xset, start );
+    elif RankMat(orb{[1..Minimum(Length(orb),200)]})=Length(start[1]) then
+      start:=ShallowCopy(start);
+      i:=0;
+      # we know we will be successful
+      while p<Length(start[1]) do
+	i:=i+1;
+	if RankMat(Concatenation(start,[orb[i]]))>p then
+	  Add(start,orb[i]);
+	  p:=p+1;
+	fi;
+      od;
+      SetBaseOfGroup( xset, start );
+    fi;
+  fi;
 
   p:=RUN_IN_GGMBI; # no niceomorphism translation here
   RUN_IN_GGMBI:=true;
   hom := ActionHomomorphism( xset,"surjective" );
-  imgs:=permimg;
-    ran:= Group( imgs, () );  # `imgs' has been created with `PermList'
   SetRange(hom,ran);
   SetImagesSource(hom,ran);
+  SetMappingGeneratorsImages(hom,[gens,imgs]);
   SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImagesNC
             ( G, ran, gens, imgs ) );
 
-  SetFilterObj( hom, IsActionHomomorphismByBase );
+  if HasBaseOfGroup(xset) then
+    SetFilterObj( hom, IsActionHomomorphismByBase );
+  fi;
   RUN_IN_GGMBI:=p;
 
   return hom;

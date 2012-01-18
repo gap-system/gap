@@ -3,7 +3,6 @@
 #W  mapphomo.gd                 GAP library                     Thomas Breuer
 #W                                                         and Heiko Theißen
 ##
-#H  @(#)$Id: mapphomo.gd,v 4.31 2010/02/23 15:13:12 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -22,8 +21,6 @@
 ##  6. properties and attributes of gen. mappings that transform addition
 ##     into multiplication
 ##
-Revision.mapphomo_gd :=
-    "@(#)$Id: mapphomo.gd,v 4.31 2010/02/23 15:13:12 gap Exp $";
 
 
 #############################################################################

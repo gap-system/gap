@@ -6,13 +6,11 @@
 ##
 ##  Declaration file for ``general'' group functions and variables.
 ##
-#A  @(#)$Id: anupq.gd,v 1.1 2002/02/15 08:53:47 gap Exp $
+#A  @(#)$Id: anupq.gd,v 1.2 2011/11/29 20:00:11 gap Exp $
 ##
 #Y  Copyright 1992-1994,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  Copyright 1992-1994,  School of Mathematical Sciences, ANU,     Australia
 ##
-Revision.anupq_gd :=
-    "@(#)$Id: anupq.gd,v 1.1 2002/02/15 08:53:47 gap Exp $";
 
 #############################################################################
 ##

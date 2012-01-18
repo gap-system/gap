@@ -2,7 +2,6 @@
 ##
 #W  algliess.gi                 GAP library                   Willem de Graaf
 ##
-#H  @(#)$Id: algliess.gi,v 4.27 2010/04/27 17:57:17 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 ##  Theory and Algorithms.
 ##
 ##
-Revision.algliess_gi :=
-    "@(#)$Id: algliess.gi,v 4.27 2010/04/27 17:57:17 gap Exp $";
 
 
 ##############################################################################

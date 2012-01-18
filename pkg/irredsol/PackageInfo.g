@@ -2,7 +2,7 @@
 ##  
 ##  PackageInfo.g                 IRREDSOL                 Burkhard Höfling
 ##
-##  @(#)$Id: PackageInfo.g,v 1.19 2011/05/18 14:32:28 gap Exp $
+##  @(#)$Id: PackageInfo.g,v 1.22 2011/11/22 15:16:28 gap Exp $
 ##
 ##  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 ##
@@ -15,25 +15,25 @@ SetPackageInfo( rec(
 PackageName := "IRREDSOL",
 Subtitle := "A Library of irreducible solvable linear groups over finite fields \
           and of finite primivite soluble groups",
-BannerString := "\
+##  See '?Extending: Version Numbers' in GAP help for an explanation
+##  of valid version numbers.
+Version := "1.2.1",
+
+##  Release date of the current version in dd/mm/yyyy format.
+Date := "22/11/2011",
+
+BannerString := Concatenation("\
 ----------------------------------------------------------------------\n\
-                          IRREDSOL Version 1.2\n\
+                          IRREDSOL Version ", ~.Version, "\n\
   A library of irreducible solvable linear groups over finite fields\n\
                 and of finite primivite soluble groups\n\
                          by Burkhard Höfling\n\
-----------------------------------------------------------------------\n",
-##  See '?Extending: Version Numbers' in GAP help for an explanation
-##  of valid version numbers.
-Version := "1.2",
-
-##  Release date of the current version in dd/mm/yyyy format.
-Date := "18/05/2011",
-
+----------------------------------------------------------------------\n"),
 ##  URL of the archive(s) of the current package release, but *without*
 ##  the format extension(s), like '.zoo', which are given next.
 ##  The archive file name *must be changed* with each version of the archive
 ##  (and probably somehow contain the package name and version).
-ArchiveURL := "http://www-public.tu-bs.de:8080/~bhoeflin/irredsol/irredsol-1r2",
+ArchiveURL := "http://www.icm.tu-bs.de/~bhoeflin/irredsol/irredsol-1r2n1",
 
 ##  All provided formats as list of file extensions, separated by white
 ##  space or commas.
@@ -109,7 +109,7 @@ Persons := [
   FirstNames := "Burkhard",
   IsAuthor := true,
   IsMaintainer := true,
-  WWWHome := "http://www-public.tu-bs.de:8080/~bhoeflin",
+  WWWHome := "http://www.icm.tu-bs.de/~bhoeflin",
   Email := "b.hoefling@tu-bs.de"
   )
 # provide such a record for each author and/or maintainer ...
@@ -142,8 +142,8 @@ AcceptDate := "08/2006",
 ##  the updating of package information on the GAP Website, and inclusion
 ##  and updating of the package in the GAP distribution.
 ##  
-README_URL := "http://www-public.tu-bs.de:8080/~bhoeflin/irredsol/README",
-PackageInfoURL := "http://www-public.tu-bs.de:8080/~bhoeflin/irredsol/PackageInfo.g",
+README_URL := "http://www.icm.tu-bs.de/~bhoeflin/irredsol/README",
+PackageInfoURL := "http://www.icm.tu-bs.de/~bhoeflin/irredsol/PackageInfo.g",
 
 ##  Here you  must provide a short abstract explaining the package content 
 ##  in HTML format (used on the package overview Web page) and an URL 
@@ -158,7 +158,7 @@ irreducible soluble subgroups of <i>GL(n,q)</i>, up to conjugacy, \
 for <i>q<sup>n</sup></i> up to 1000000, \
 and a library of the primitive soluble groups of degree up to 1000000.",
 
-PackageWWWHome := "http://www-public.tu-bs.de:8080/~bhoeflin/irredsol/index.html",
+PackageWWWHome := "http://www.icm.tu-bs.de/~bhoeflin/irredsol/index.html",
                   
 ##  On the GAP Website there is an online version of all manuals in the
 ##  GAP distribution. To handle the documentation of a package it is
@@ -183,7 +183,7 @@ PackageDoc := rec(
   # format/extension can be one of .zoo, .tar.gz, .tar.bz2, -win.zip
   # Archive := "http://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM/edimdoc-1p1.tar.bz2",
   ArchiveURLSubset := ["doc", "html"],
-  HTMLStart := "html/chapters.html",
+  HTMLStart := "html/chapters.htm",
   PDFFile := "doc/manual.pdf",
   # the path to the .six file used by GAP's help system
   SixFile := "doc/manual.six",

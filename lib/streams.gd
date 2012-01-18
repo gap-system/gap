@@ -2,7 +2,6 @@
 ##
 #W  streams.gd                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: streams.gd,v 4.53 2010/09/10 15:44:55 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the operations for streams.
 ##
-Revision.streams_gd :=
-    "@(#)$Id: streams.gd,v 4.53 2010/09/10 15:44:55 gap Exp $";
 
 
 ##  <#GAPDoc Label="[1]{streams}">
@@ -659,9 +656,10 @@ DeclareOperation( "CloseStream", [ IsStream ] );
 ##  <Oper Name="InputTextString" Arg='string'/>
 ##
 ##  <Description>
-##  <C>InputTextString( <A>string</A> )</C>returns an input stream that delivers the
-##  characters from the string <A>string</A>.  The <A>string</A> is not changed when
-##  reading characters from it and changing the <A>string</A> after the call to
+##  <C>InputTextString(  <A>string</A>  )</C>  returns an  input  stream
+##  that  delivers the  characters  from the  string <A>string</A>.  The
+##  <A>string</A> is  not changed  when reading  characters from  it and
+##  changing the <A>string</A> after the call to
 ##  <Ref Oper="InputTextString"/> has no influence on the input stream.
 ##  </Description>
 ##  </ManSection>
@@ -973,7 +971,7 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  <P/>
 ##  When the stream is closed, the signal SIGTERM is delivered to the child
 ##  process, which is expected to exit.
-##  <Example><![CDATA[
+##  <Log><![CDATA[
 ##  gap> d := DirectoryCurrent();
 ##  dir("./")
 ##  gap> f := Filename(DirectoriesSystemPrograms(), "rev");
@@ -996,7 +994,7 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  gap> CloseStream(s);
 ##  gap> s;
 ##  < closed input/output stream to rev >
-##  ]]></Example>
+##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1017,7 +1015,7 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  <Description>
 ##  When text is being sent to an output text stream via
 ##  <Ref Func="PrintTo"/>, <Ref Func="AppendTo"/>,
-##  <Ref Oper="LogTo" Label="for streams"/>, etc., it is,
+##  <Ref Oper="LogTo" Label="for streams"/>, etc., it is
 ##  by default formatted just as it would be were it being printed to the
 ##  screen.
 ##  Thus, it is broken into lines of reasonable length at (where possible)
@@ -1034,8 +1032,7 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  <Ref Func="SetPrintFormattingStatus"/> sets whether output sent to the
 ##  output stream <A>stream</A> via <Ref Oper="PrintTo"/>,
 ##  <Ref Oper="AppendTo"/>, etc. 
-##  (but not <Ref Func="WriteByte"/>, <Ref Func="WriteLine"/> 
-##  or <Ref Func="WriteAll"/>) will be formatted with line breaks and 
+##  will be formatted with line breaks and 
 ##  indentation.  If  the  second  argument <A>newstatus</A> is <K>true</K> 
 ##  then output will be so formatted, and if <K>false</K> then it will not. 
 ##  If the stream is not a text stream, only <K>false</K> is allowed.
@@ -1043,33 +1040,38 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  <Ref Func="PrintFormattingStatus"/> returns <K>true</K> if output sent to
 ##  the output text stream <A>stream</A>  via <Ref Oper="PrintTo"/>,
 ##  <Ref Oper="AppendTo"/>, etc.  
-##  (but not <Ref Func="WriteByte"/>, <Ref Func="WriteLine"/> or
-##  <Ref Func="WriteAll"/>) will be formatted with line breaks and
-##  indentation, and <K>false</K> otherwise
-##  (see&nbsp;<Ref Func="SetPrintFormattingStatus"/>).
+##  will be formatted with line breaks and
+##  indentation, and <K>false</K> otherwise.
 ##  For non-text streams, it returns <K>false</K>.
+##  If as argument <A>stream</A> the string <C>"*stdout*"</C> is given, these
+##  functions refer to the formatting status of the standard output (so usually
+##  the users terminal screen).<P/>
+##  These functions do not influence the behaviour of the low level functions 
+##  <Ref Func="WriteByte"/>, 
+##  <Ref Func="WriteLine"/> or  <Ref Func="WriteAll"/> which always write
+##  without formatting.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> s := "";; str := OutputTextString(s,false);;
 ##  gap> PrintTo(str,Primes{[1..30]});
 ##  gap> s;
-##  "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,\
-##   \n  73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]"
+##  "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,\
+##   \n  67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]"
 ##  gap> Print(s,"\n");
-##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 
-##    73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]
+##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 
+##    67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]
 ##  gap> SetPrintFormattingStatus(str, false);
 ##  gap> PrintTo(str,Primes{[1..30]});
 ##  gap> s;
-##  "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,\
-##   \n  73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7, 11, 13, 17, 19\
-##  , 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103\
-##  , 107, 109, 113 ]"
+##  "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,\
+##   \n  67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7\
+##  , 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, \
+##  79, 83, 89, 97, 101, 103, 107, 109, 113 ]"
 ##  gap> Print(s,"\n");
-##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 
-##    73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7, 11, 13, 17, 19, 2\
-##  3, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 1\
-##  07, 109, 113 ]
+##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 
+##    67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7, 1\
+##  1, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79,\
+##   83, 89, 97, 101, 103, 107, 109, 113 ]
 ##  ]]></Example>
 ##  <P/>
 ##  </Description>

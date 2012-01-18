@@ -2,7 +2,6 @@
 **
 *W  funcs.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: funcs.c,v 4.47 2011/06/06 16:28:08 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,13 +16,11 @@
 **  It uses the function call mechanism defined by the calls package.
 */
 #include        <stdio.h>               /* on SunOS, assert.h uses stderr
-					   but does not include stdio.h    */
+                                           but does not include stdio.h    */
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 #include        "bool.h"
 
-const char * Revision_funcs_c =
-   "@(#)$Id: funcs.c,v 4.47 2011/06/06 16:28:08 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -71,7 +68,7 @@ static Obj PushOptions;
 static Obj PopOptions;
 
 UInt ExecProccallOpts(
-		      Stat call )
+    Stat                call )
 {
   Obj opts;
   
@@ -149,8 +146,8 @@ UInt            ExecProccall0args (
       CALL_0ARGS( func );
     }
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -178,9 +175,9 @@ UInt            ExecProccall1args (
       SET_BRK_CALL_TO( call );
       CALL_1ARGS( func, arg1 );
     } 
-   if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+    if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -204,15 +201,15 @@ UInt            ExecProccall2args (
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
 
     /* call the function                                                   */
-   if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 2, (Obj) arg1,  (Obj) arg2,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);    
-   else {
-     SET_BRK_CALL_TO( call );
-     CALL_2ARGS( func, arg1, arg2 );
-   }
+    if (TNUM_OBJ(func) != T_FUNCTION)
+       DispatchFuncCall(func, 2, (Obj) arg1,  (Obj) arg2,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);    
+    else {
+      SET_BRK_CALL_TO( call );
+      CALL_2ARGS( func, arg1, arg2 );
+    }
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -243,8 +240,8 @@ UInt            ExecProccall3args (
       CALL_3ARGS( func, arg1, arg2, arg3 );
     }
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -278,8 +275,8 @@ UInt            ExecProccall4args (
       CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
     }
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -320,8 +317,8 @@ UInt            ExecProccall5args (
       CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
     }
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-					 READ() and the user quit from a break
-				       loop inside it */
+                                         READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -358,8 +355,8 @@ UInt            ExecProccall6args (
       CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
     }
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -396,8 +393,8 @@ UInt            ExecProccallXargs (
     }
 
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -412,7 +409,7 @@ UInt            ExecProccallXargs (
 */
 
 Obj EvalFunccallOpts(
-		      Expr call )
+    Expr                call )
 {
   Obj opts;
   Obj res;
@@ -460,8 +457,8 @@ Obj             EvalFunccall0args (
     SET_BRK_CALL_TO( call );
     result = CALL_0ARGS( func );
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
@@ -485,7 +482,7 @@ Obj             EvalFunccall1args (
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
 
  
-   if (TNUM_OBJ(func) != T_FUNCTION) {
+    if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 1, (Obj) arg1, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
@@ -493,8 +490,8 @@ Obj             EvalFunccall1args (
     SET_BRK_CALL_TO( call );
     result = CALL_1ARGS( func, arg1 );
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
@@ -520,7 +517,7 @@ Obj             EvalFunccall2args (
     arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
 
-   if (TNUM_OBJ(func) != T_FUNCTION) {
+    if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 2, (Obj) arg1, (Obj) arg2, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
@@ -528,8 +525,8 @@ Obj             EvalFunccall2args (
     SET_BRK_CALL_TO( call );
     result = CALL_2ARGS( func, arg1, arg2 );
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
@@ -557,7 +554,7 @@ Obj             EvalFunccall3args (
     arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
 
-   if (TNUM_OBJ(func) != T_FUNCTION) {
+    if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 1, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
@@ -565,8 +562,8 @@ Obj             EvalFunccall3args (
     SET_BRK_CALL_TO( call );
     result = CALL_3ARGS( func, arg1, arg2, arg3 );
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
@@ -595,7 +592,7 @@ Obj             EvalFunccall4args (
     arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
 
-   if (TNUM_OBJ(func) != T_FUNCTION) {
+    if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 4, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) 0, (Obj) 0 );
     }
 
@@ -603,8 +600,8 @@ Obj             EvalFunccall4args (
     SET_BRK_CALL_TO( call );
     result = CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
@@ -636,7 +633,7 @@ Obj             EvalFunccall5args (
     arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
 
-  if (TNUM_OBJ(func) != T_FUNCTION) {
+    if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 5, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) 0 );
     }
 
@@ -644,8 +641,8 @@ Obj             EvalFunccall5args (
     SET_BRK_CALL_TO( call );
     result = CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
@@ -679,7 +676,7 @@ Obj             EvalFunccall6args (
     arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
     arg6 = EVAL_EXPR( ARGI_CALL( call, 6 ) );
 
-  if (TNUM_OBJ(func) != T_FUNCTION) {
+    if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, 6, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) arg6 );
     }
 
@@ -687,8 +684,8 @@ Obj             EvalFunccall6args (
     SET_BRK_CALL_TO( call );
     result = CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
@@ -720,7 +717,7 @@ Obj             EvalFunccallXargs (
         CHANGED_BAG( args );
     }
 
-  if (TNUM_OBJ(func) != T_FUNCTION) {
+    if (TNUM_OBJ(func) != T_FUNCTION) {
       return DispatchFuncCall(func, -1, (Obj) args, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
     }
 
@@ -729,8 +726,8 @@ Obj             EvalFunccallXargs (
     SET_BRK_CALL_TO( call );
     result = CALL_XARGS( func, args );
     if (TLS->UserHasQuit || TLS->UserHasQUIT) /* the procedure must have called
-				       READ() and the user quit from a break
-				       loop inside it */
+                                       READ() and the user quit from a break
+                                       loop inside it */
       ReadEvalError();
     while ( result == 0 ) {
         result = ErrorReturnObj(
@@ -797,7 +794,7 @@ static inline void CheckRecursionBefore( void )
 {
     TLS->recursionDepth++;                                           
     if ( RecursionTrapInterval &&                                
-	 0 == (TLS->recursionDepth % RecursionTrapInterval) )
+         0 == (TLS->recursionDepth % RecursionTrapInterval) )
       RecursionDepthTrap();
 }
 
@@ -842,10 +839,10 @@ Obj DoExecFunc0args (
 
       /* return the result                                                   */
       {
-	Obj                 returnObjStat;
-	returnObjStat = TLS->returnObjStat;
-	TLS->returnObjStat = (Obj)0;
-	return returnObjStat;
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
       }
 }
 
@@ -880,10 +877,10 @@ Obj             DoExecFunc1args (
 
     /* return the result                                                   */
       {
-	Obj                 returnObjStat;
-	returnObjStat = TLS->returnObjStat;
-	TLS->returnObjStat = (Obj)0;
-	return returnObjStat;
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
       }
 }
 
@@ -920,10 +917,10 @@ Obj             DoExecFunc2args (
 
     /* return the result                                                   */
       {
-	Obj                 returnObjStat;
-	returnObjStat = TLS->returnObjStat;
-	TLS->returnObjStat = (Obj)0;
-	return returnObjStat;
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
       }
 }
 
@@ -962,10 +959,10 @@ Obj             DoExecFunc3args (
 
     /* return the result                                                   */
       {
-	Obj                 returnObjStat;
-	returnObjStat = TLS->returnObjStat;
-	TLS->returnObjStat = (Obj)0;
-	return returnObjStat;
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
       }
 }
 
@@ -1006,10 +1003,10 @@ Obj             DoExecFunc4args (
 
     /* return the result                                                   */
       {
-	Obj                 returnObjStat;
-	returnObjStat = TLS->returnObjStat;
-	TLS->returnObjStat = (Obj)0;
-	return returnObjStat;
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
       }
 }
 
@@ -1052,10 +1049,10 @@ Obj             DoExecFunc5args (
 
     /* return the result                                                   */
       {
-	Obj                 returnObjStat;
-	returnObjStat = TLS->returnObjStat;
-	TLS->returnObjStat = (Obj)0;
-	return returnObjStat;
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
       }
 }
 
@@ -1100,10 +1097,10 @@ Obj             DoExecFunc6args (
 
     /* return the result                                                   */
       {
-	Obj                 returnObjStat;
-	returnObjStat = TLS->returnObjStat;
-	TLS->returnObjStat = (Obj)0;
-	return returnObjStat;
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
       }
 }
 
@@ -1152,10 +1149,10 @@ Obj             DoExecFuncXargs (
 
     /* return the result                                                   */
       {
-	Obj                 returnObjStat;
-	returnObjStat = TLS->returnObjStat;
-	TLS->returnObjStat = (Obj)0;
-	return returnObjStat;
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
       }
 }
 
@@ -1311,7 +1308,7 @@ void            PrintFunccall (
 
 
 void             PrintFunccallOpts (
-				    Expr call )
+    Expr                call )
 {
   PrintFunccall1( ADDR_STAT( call )[1]);
   Pr(" :%2> ", 0L, 0L);
@@ -1384,8 +1381,8 @@ Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
 {
   while (!IS_INTOBJ(interval) || INT_INTOBJ(interval) < 0)
     interval = ErrorReturnObj( "SetRecursionTrapInterval( <interval> ): "
-			       "<interval> must be a non-negative small integer",
-			       0L, 0L, 
+                               "<interval> must be a non-negative small integer",
+                               0L, 0L, 
                                "you can replace <interval> via 'return <interval>;'");
   RecursionTrapInterval = INT_INTOBJ( interval);
   return 0;
@@ -1529,8 +1526,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFuncs ( void )
 {
-    module.revision_c = Revision_funcs_c;
-    module.revision_h = Revision_funcs_h;
     FillInVersion( &module );
     return &module;
 }

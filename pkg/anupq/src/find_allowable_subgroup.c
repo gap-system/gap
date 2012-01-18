@@ -2,20 +2,21 @@
 **
 *A  find_allowable_subgroup.c   ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: find_allowable_subgroup.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: find_allowable_subgroup.c,v 1.6 2011/11/29 09:43:57 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
 
-#if defined (STANDARD_PCP)
 #include "pq_defs.h"
 #include "pcp_vars.h"
 #include "pga_vars.h"
 #include "constants.h"
 #include "pq_functions.h"
 #include "standard.h"
+
+#if defined (STANDARD_PCP)
 
 /* given a presentation for the p-covering group of a 
    class c p-quotient; find the allowable subgroup which 
@@ -25,14 +26,14 @@
 int **find_allowable_subgroup (option, cover_tmp_file, group_tmp_file, 
                                bit_string, subset, pga, pcp)
 int option;
-FILE_TYPE cover_tmp_file;
-FILE_TYPE group_tmp_file;
+FILE * cover_tmp_file;
+FILE * group_tmp_file;
 int *bit_string;
 int **subset;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 { 
-#include "define_y.h"
+   register int *y = y_address;
 
    register int generator, exp, r, i;
    register int structure, lastg; 

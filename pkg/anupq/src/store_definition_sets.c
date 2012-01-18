@@ -2,7 +2,7 @@
 **
 *A  store_definition_sets.c     ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: store_definition_sets.c,v 1.5 2005/06/21 17:02:53 gap Exp $
+*A  @(#)$Id: store_definition_sets.c,v 1.6 2011/12/31 19:36:23 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -34,7 +34,7 @@ struct pga_vars *pga;
 
 /* calculate r choose s */
 
-int choose (r, s)
+int choose (int r, int s)
 {
    register int i;
    int binom = 1;

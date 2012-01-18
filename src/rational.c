@@ -2,7 +2,6 @@
 **
 *W  rational.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: rational.c,v 4.33 2010/02/23 15:13:47 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -45,8 +44,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_rational_c =
-   "@(#)$Id: rational.c,v 4.33 2010/02/23 15:13:47 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 
@@ -91,7 +88,7 @@ const char * Revision_rational_c =
 
 #if 0
 #define CHECK_RAT(rat) if (TNUM_OBJ(rat) == T_RAT && \
-			   GcdInt(NUM_RAT(rat),DEN_RAT(rat)) != INTOBJ_INT(1)) \
+                           GcdInt(NUM_RAT(rat),DEN_RAT(rat)) != INTOBJ_INT(1)) \
                              ErrorQuit("bad rational",0L,0L)
 #else
 #define CHECK_RAT(rat)
@@ -1048,8 +1045,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRat ( void )
 {
-    module.revision_c = Revision_rational_c;
-    module.revision_h = Revision_rational_h;
     FillInVersion( &module );
     return &module;
 }

@@ -2,7 +2,7 @@
 ##
 #W init.g                                                   Laurent Bartholdi
 ##
-#H   @(#)$Id: init.g,v 1.5 2011/04/07 16:12:40 gap Exp $
+#H   @(#)$Id: init.g,v 1.8 2011/09/27 21:26:05 gap Exp $
 ##
 #Y Copyright (C) 2008, Laurent Bartholdi
 ##
@@ -18,12 +18,26 @@
 ##
 InfoFloat := NewInfoClass("InfoFloat");
 SetInfoLevel(InfoFloat, 1);
+
+Revision.float := rec();
+
 #############################################################################
-FLOAT_MAKEDOC := function()
+BindGlobal("MAKEDOC@", function()
     MakeGAPDocDoc(Concatenation(GAPInfo.PackagesLoaded.float[1],"/doc"),"float",
-            ["../lib/float.gd","../lib/mpfr.gd","../lib/mpfi.gd",
-             "../lib/mpc.gd","../lib/cxsc.gd","../PackageInfo.g"],"float");
-end;
+            ["../lib/float.gd","../PackageInfo.g"],"float");
+end);
+
+if GAPInfo.TermEncoding = "UTF-8" then
+    BindGlobal("FLOAT_INFINITY_STRING","∞"); # UChar(8734)
+    BindGlobal("FLOAT_EMPTYSET_STRING","∅"); # UChar(8709)
+    BindGlobal("FLOAT_REAL_STRING","ℂ"); # UChar(8450) or UChar(8477)
+    BindGlobal("FLOAT_I_STRING","ⅈ"); # UChar(8520)
+else
+    BindGlobal("FLOAT_INFINITY_STRING","inf");
+    BindGlobal("FLOAT_EMPTYSET_STRING","empty");
+    BindGlobal("FLOAT_REAL_STRING","reals");
+    BindGlobal("FLOAT_I_STRING","i");
+fi;
 
 CallFuncList(function()
     local f;
@@ -52,18 +66,6 @@ end,[]);
 ##
 ReadPackage("float", "lib/float.gd");
 
-if IsBound(MPFR_INT) then
-    ReadPackage("float", "lib/mpfr.gd");
-fi;
-if IsBound(MPFI_INT) then
-    ReadPackage("float", "lib/mpfi.gd");
-fi;
-if IsBound(MPC_INT) then
-    ReadPackage("float", "lib/mpc.gd");
-fi;
-if IsBound(CXSC_INT) then
-    ReadPackage("float", "lib/cxsc.gd");
-fi;
 #############################################################################
 
 #E init.g . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

@@ -3,7 +3,6 @@
 #W  csetperm.gi                     GAP library              Alexander Hulpke
 #W                                                             Heiko Theißen
 ##
-#H  @(#)$Id: csetperm.gi,v 4.18 2011/04/11 22:39:57 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains the operations for cosets of permutation groups
 ##
-Revision.csetperm_gi:=
-  "@(#)$Id: csetperm.gi,v 4.18 2011/04/11 22:39:57 gap Exp $";
 
 #############################################################################
 ##

@@ -1,4 +1,3 @@
-<!-- $Id: refdtd.xml,v 1.29 2011/02/07 23:03:40 gap Exp $ -->
 <Chapter Label="DTD">
 <Heading>The Document Type Definition</Heading>
 
@@ -1230,15 +1229,15 @@ of functions. No further markup elements are allowed within this element.
 <Index Key="C"><C>C</C></Index>
 
 <Listing Type="From gapdoc.dtd">
-<![CDATA[<!ELEMENT Code (#PCDATA|Alt)*>     <!-- GAP code -->
-<!ELEMENT C (#PCDATA|Alt)*>        <!-- GAP code (shortcut) -->]]>
+<![CDATA[<!ELEMENT Code (#PCDATA|Arg|Alt)*>     <!-- GAP code -->
+<!ELEMENT C (#PCDATA|Arg|Alt)*>        <!-- GAP code (shortcut) -->]]>
 </Listing>
 
 This element is  used to mark something  as a piece of  <E>code</E> like for
 example a  &GAP; expression.  It is guaranteed  that the  converters typeset
 this  exactly  as  in  the  <C>Listing</C>  element  (compare  section  <Ref
-Subsect="Listing"/>.  No further  markup  elements are  allowed within  this
-element.
+Subsect="Listing"/>).  The only further markup elements  allowed within  this
+element are <C>&lt;Arg></C> elements (see <Ref Subsect="Arg"/>).
 
 </Subsection>
 
@@ -1329,8 +1328,13 @@ These two elements behave exactly  like the <C>Listing</C> element (see <Ref
 Subsect="Listing"/>). They are thought for protocols  of &GAP; sessions. The
 only difference between the two is that <C>Example</C> sections are intended
 to be subject  to an automatic manual checking mechanism  used to ensure the
-correctness of the &GAP; manual whereas <C>Log</C> is not touched by this.
-
+correctness of the &GAP; manual whereas <C>Log</C> is not touched by this
+(see section <Ref Sect="Sec:TestExample"/> for checking tools).
+<P/>
+To get a good layout of the examples for display in a standard terminal we
+suggest to use <C>SizeScreen([72]);</C> (see <Ref Func="SizeScreen" 
+BookName="Reference"/>) in your &GAP; session before producing the content
+of <C>Example</C> elements.
 </Subsection>
 
 <Subsection Label="Verb"><Heading><C>&lt;Verb></C></Heading>
@@ -1418,15 +1422,23 @@ text  substitutes  for  complicated  formulae  via  <C>Alt</C>  elements
 </Listing>
 
 The <Q><C>M</C></Q>  element type  is intended for  formulae in  the running
-text for which there is a sensible ASCII version. For the &LaTeX; version of
+text for which there is a sensible text version. For the &LaTeX; version of
 a &GAPDoc;  document the <C>M</C>  and <C>Math</C> elements  are equivalent.
 The  remarks in  <Ref Subsect="Math"  />  about special  characters and  the
 <C>Arg</C> element  apply here as  well. A  document which has  all formulae
 enclosed in <C>M</C>  elements can be well readable in  text terminal output
 and printed output versions.<P/>
 
-The  following &LaTeX;  macros have  a  sensible ASCII  translation and  are
-guaranteed to be translated accordingly by text (and HTML) converters:
+Compared to former versions of &GAPDoc; many more formulae can be put into
+<C>M</C> elements. Most modern terminal emulations support unicode characters
+and many mathematical symbols can now be represented by such characters.
+But even if a terminal can only display ASCII characters, the user will see
+some not too bad representation of a formula.<P/>
+
+As examples, here are some  &LaTeX;  macros which have  a  sensible 
+ASCII  translation and  are
+guaranteed to be translated accordingly by text (and HTML) converters 
+(for a full list of handled Macros see <C>RecFields(TEXTMTRANSLATIONS)</C>):
 
 <Table Align="|l|l|">
  <Caption>&LaTeX; macros with special text translation</Caption>
@@ -1514,7 +1526,8 @@ guaranteed to be translated accordingly by text (and HTML) converters:
 
 </Table>
 
-In all other macros only the  backslash is removed. Whitespace is normalized
+In all other macros only the  backslash is removed (except for some macros
+describing more exotic symbols). Whitespace is normalized
 (to one blank)  but not removed. Note  that whitespace is not  added, so you
 may  want to  add a  few more  spaces than  you usually  do in  your &LaTeX;
 documents.<P/>

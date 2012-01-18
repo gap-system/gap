@@ -5,7 +5,7 @@
 
 #############################################################################
 ##
-## Convert finite pcp groups to pcp groups.
+## Convert finite pcp groups to pc groups.
 ##
 PcpGroupToPcGroup := function( G )
     local pcp, rel, n, F, f, i, rws, h, e, w, j;
@@ -18,7 +18,7 @@ PcpGroupToPcGroup := function( G )
     F := FreeGroup( n );
     f := GeneratorsOfGroup( F );
     
-    rws := SingleCollector( f, rel );
+    rws := SingleCollector( F, rel );
     for i in [1..n] do
 
         # set power
@@ -48,7 +48,6 @@ function( G )
     k := List(g, x -> Image(K!.bijection,x));
     h := List(k, x -> MappedVector(Exponents(x), Pcgs(H)));
     hom := GroupHomomorphismByImagesNC( G, H, g, h);
-    SetIsInjective( hom, true );
     SetIsBijective( hom, true );
     SetIsGroupHomomorphism( hom, true );
     return hom;
@@ -100,7 +99,6 @@ function( G )
     H := PcpGroupToFpGroup( G );
     hom := GroupHomomorphismByImagesNC( G, H, AsList(Pcp(G)), 
            GeneratorsOfGroup(H));
-    SetIsInjective( hom, true );
     SetIsBijective( hom, true );
     return hom;
 end );
@@ -143,21 +141,25 @@ PcGroupToPcpGroup := function( G )
     return PcpGroupByCollector( coll );
 end;
 
-InstallMethod( IsomorphismPcpGroup, true, [IsPcGroup], 0,
+InstallMethod( IsomorphismPcpGroup, [IsPcGroup],
 function( G )
     local H, hom;
     H := PcGroupToPcpGroup( G );
     hom := GroupHomomorphismByImagesNC( G, H, AsList(Pcgs(G)), AsList(Pcp(H)));
-    SetIsInjective( hom, true );
     SetIsBijective( hom, true );
     return hom;
 end );
+
+InstallMethod( IsomorphismPcpGroup,
+    [ IsPcpGroup ],
+    IdentityMapping );
+
 
 #############################################################################
 ##
 ## Convert perm groups to pcp groups.
 ##
-InstallMethod( IsomorphismPcpGroup, true, [IsPermGroup], 0,
+InstallMethod( IsomorphismPcpGroup, [IsPermGroup],
 function( G )
     local iso, F,H, gens, hom;
     if not IsSolvableGroup( G ) then return fail; fi;
@@ -166,11 +168,26 @@ function( G )
     H    := PcGroupToPcpGroup( F );
     gens := List( Pcgs(F), x -> PreImagesRepresentative( iso, x ) );
     hom  := GroupHomomorphismByImagesNC( G, H, gens, AsList(Pcp(H)) );
-    SetIsInjective( hom, true );
     SetIsBijective( hom, true );
     return hom;
 end );
-                      
+
+#############################################################################
+##
+## Convert abelian groups to pcp groups.
+##
+if IsBound(CanEasilyComputeWithIndependentGensAbelianGroup) then
+# CanEasilyComputeWithIndependentGensAbelianGroup was introduced in GAP 4.5.x
+
+InstallMethod( IsomorphismPcpGroup,
+    [ IsGroup and IsAbelian and CanEasilyComputeWithIndependentGensAbelianGroup ],
+    # this method is better than the one for perm groups
+    RankFilter(IsPermGroup),
+    G -> IsomorphismAbelianGroupViaIndependentGenerators( IsPcpGroup, G )
+    );
+
+fi;
+
 #############################################################################
 ##
 ## Convert special fp groups to pcp groups.

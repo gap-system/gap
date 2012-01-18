@@ -2,7 +2,6 @@
 **
 *W  listoper.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id: listoper.c,v 4.92 2011/05/15 18:39:14 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_listoper_c =
-   "@(#)$Id: listoper.c,v 4.92 2011/05/15 18:39:14 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -216,18 +213,18 @@ Obj             SumSclList (
     /* make the result list                                                */
     len = LEN_LIST( listR );
     listS = NEW_PLIST( IS_MUTABLE_OBJ(listL) ||  IS_MUTABLE_OBJ(listR) ?
-		       T_PLIST : (T_PLIST + IMMUTABLE), len );
+                       T_PLIST : (T_PLIST + IMMUTABLE), len );
     SET_LEN_PLIST( listS, len );
 
     /* loop over the entries and add                                       */
     for ( i = 1; i <= len; i++ ) {
         elmR = ELMV0_LIST( listR, i );
-	if (elmR)
-	  {
-	    elmS = SUM( listL, elmR );
-	    SET_ELM_PLIST( listS, i, elmS );
-	    CHANGED_BAG( listS );
-	  }
+        if (elmR)
+          {
+            elmS = SUM( listL, elmR );
+            SET_ELM_PLIST( listS, i, elmS );
+            CHANGED_BAG( listS );
+          }
     }
 
     /* return the result                                                   */
@@ -247,18 +244,18 @@ Obj             SumListScl (
     /* make the result list                                                */
     len = LEN_LIST( listL );
     listS = NEW_PLIST( IS_MUTABLE_OBJ(listR) || IS_MUTABLE_OBJ(listL) ?
-		       T_PLIST : T_PLIST+IMMUTABLE, len );
+                       T_PLIST : T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listS, len );
 
     /* loop over the entries and add                                       */
     for ( i = 1; i <= len; i++ ) {
         elmL = ELMV0_LIST( listL, i );
-	if (elmL)
-	  {
-	    elmS = SUM( elmL, listR );
-	    SET_ELM_PLIST( listS, i, elmS );
-	    CHANGED_BAG( listS );
-	  }
+        if (elmL)
+          {
+            elmS = SUM( elmL, listR );
+            SET_ELM_PLIST( listS, i, elmS );
+            CHANGED_BAG( listS );
+          }
     }
 
     /* return the result                                                   */
@@ -282,35 +279,35 @@ Obj             SumListList (
     lenR = LEN_LIST( listR );
     lenS = (lenR > lenL) ? lenR : lenL;
     listS = NEW_PLIST( (IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR)) ?
-		       T_PLIST : T_PLIST+IMMUTABLE, lenS );
+                       T_PLIST : T_PLIST+IMMUTABLE, lenS );
     SET_LEN_PLIST( listS, lenS );
 
     /* Sort out mutability */
     mutS = 0;
     for (i = 1; i <= lenL; i++)
       if ((elmL = ELM0_LIST( listL, i)))
-	{
-	  mutS = IS_MUTABLE_OBJ(elmL);
-	  break;
-	}
+        {
+          mutS = IS_MUTABLE_OBJ(elmL);
+          break;
+        }
     for (i = 1; i <= lenR; i++)
       if ((elmR = ELM0_LIST( listR, i)))
-	{
-	  mutS = mutS || IS_MUTABLE_OBJ(elmR);
-	  break;
-	}
+        {
+          mutS = mutS || IS_MUTABLE_OBJ(elmR);
+          break;
+        }
     
     /* loop over the entries and add                                       */
     for ( i = 1; i <= lenS; i++ ) {
       elmL = ELM0_LIST( listL, i ) ;
       elmR = ELM0_LIST( listR, i ) ;
       elmS =  elmL ? (elmR ? SUM( elmL, elmR ) : mutS ? SHALLOW_COPY_OBJ(elmL): elmL) :
-	elmR ? (mutS ? SHALLOW_COPY_OBJ(elmR): elmR) : 0;
+        elmR ? (mutS ? SHALLOW_COPY_OBJ(elmR): elmR) : 0;
       if (elmS)
-	{
-	  SET_ELM_PLIST( listS, i, elmS );
-	  CHANGED_BAG( listS );
-	}
+        {
+          SET_ELM_PLIST( listS, i, elmS );
+          CHANGED_BAG( listS );
+        }
     }
 
     /* return the result                                                   */
@@ -375,12 +372,12 @@ Obj             ZeroListDefault (
     /* For now, lets just do the simplest and safest thing */
     for (i = 1; i <= len; i++ )
       {
-	Obj tmp = ELM0_LIST( list, i);
-	if (tmp) {
-	  tmp = ZERO(tmp);
-	  SET_ELM_PLIST( res, i,tmp );
-	  CHANGED_BAG( res);
-	}
+        Obj tmp = ELM0_LIST( list, i);
+        if (tmp) {
+          tmp = ZERO(tmp);
+          SET_ELM_PLIST( res, i,tmp );
+          CHANGED_BAG( res);
+        }
       }
     /* Now adjust the result TNUM info */
 
@@ -388,28 +385,28 @@ Obj             ZeroListDefault (
       SET_FILT_LIST( res, FN_IS_EMPTY );
     else if (IS_PLIST( list ))
       {
-	if (TNUM_OBJ(list) == T_PLIST_FFE ||
-	    TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
-	  RetypeBag(res, TNUM_OBJ(list));
-	else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
-		 TNUM_OBJ(list) < T_PLIST_FFE)
-	  RetypeBag(res, IS_MUTABLE_OBJ(list) ? T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE);
-	else if (HAS_FILT_LIST(list, FN_IS_DENSE))
-	  {
-	    SET_FILT_LIST( res, FN_IS_DENSE );
-	    if (HAS_FILT_LIST (list, FN_IS_HOMOG))
-	      {
-		SET_FILT_LIST( res, FN_IS_HOMOG);
-		if (HAS_FILT_LIST( list, FN_IS_TABLE))
-		  {
-		    SET_FILT_LIST( res, FN_IS_TABLE);
-		    if (HAS_FILT_LIST( list, FN_IS_RECT))
-		      SET_FILT_LIST( res, FN_IS_RECT);
-		  }
-	      }
-	  }
-	else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
-	  SET_FILT_LIST( res, FN_IS_NDENSE );
+        if (TNUM_OBJ(list) == T_PLIST_FFE ||
+            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+          RetypeBag(res, TNUM_OBJ(list));
+        else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
+                 TNUM_OBJ(list) < T_PLIST_FFE)
+          RetypeBag(res, IS_MUTABLE_OBJ(list) ? T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE);
+        else if (HAS_FILT_LIST(list, FN_IS_DENSE))
+          {
+            SET_FILT_LIST( res, FN_IS_DENSE );
+            if (HAS_FILT_LIST (list, FN_IS_HOMOG))
+              {
+                SET_FILT_LIST( res, FN_IS_HOMOG);
+                if (HAS_FILT_LIST( list, FN_IS_TABLE))
+                  {
+                    SET_FILT_LIST( res, FN_IS_TABLE);
+                    if (HAS_FILT_LIST( list, FN_IS_RECT))
+                      SET_FILT_LIST( res, FN_IS_RECT);
+                  }
+              }
+          }
+        else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
+          SET_FILT_LIST( res, FN_IS_NDENSE );
       }
 
     /* return the result                                                   */
@@ -441,12 +438,12 @@ Obj             ZeroListMutDefault (
     /* For now, lets just do the simplest and safest thing */
     for (i = 1; i <= len; i++ )
       {
-	Obj tmp = ELM0_LIST( list, i);
-	if (tmp) {
-	  tmp = ZERO_MUT(tmp);
-	  SET_ELM_PLIST( res, i,tmp );
-	  CHANGED_BAG( res);
-	}
+        Obj tmp = ELM0_LIST( list, i);
+        if (tmp) {
+          tmp = ZERO_MUT(tmp);
+          SET_ELM_PLIST( res, i,tmp );
+          CHANGED_BAG( res);
+        }
       }
     /* Now adjust the result TNUM info */
 
@@ -454,23 +451,23 @@ Obj             ZeroListMutDefault (
       SET_FILT_LIST( res, FN_IS_EMPTY );
     else if (IS_PLIST( list ))
       {
-	if (TNUM_OBJ(list) == T_PLIST_FFE ||
-	    TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
-	  RetypeBag(res, T_PLIST_FFE);
-	else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
-		 TNUM_OBJ(list) < T_PLIST_FFE)
-	  RetypeBag(res, T_PLIST_CYC);
-	else if (HAS_FILT_LIST(list, FN_IS_DENSE))
-	  {
-	    SET_FILT_LIST( res, FN_IS_DENSE );
-	    if (HAS_FILT_LIST (list, FN_IS_HOMOG) &&
-		!IS_MUTABLE_OBJ(ELM_PLIST(res,1)))
-	      {
-		SET_FILT_LIST( res, FN_IS_HOMOG);
-	      }
-	  }
-	else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
-	  SET_FILT_LIST( res, FN_IS_NDENSE );
+        if (TNUM_OBJ(list) == T_PLIST_FFE ||
+            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+          RetypeBag(res, T_PLIST_FFE);
+        else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
+                 TNUM_OBJ(list) < T_PLIST_FFE)
+          RetypeBag(res, T_PLIST_CYC);
+        else if (HAS_FILT_LIST(list, FN_IS_DENSE))
+          {
+            SET_FILT_LIST( res, FN_IS_DENSE );
+            if (HAS_FILT_LIST (list, FN_IS_HOMOG) &&
+                !IS_MUTABLE_OBJ(ELM_PLIST(res,1)))
+              {
+                SET_FILT_LIST( res, FN_IS_HOMOG);
+              }
+          }
+        else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
+          SET_FILT_LIST( res, FN_IS_NDENSE );
       }
 
     /* return the result                                                   */
@@ -541,11 +538,11 @@ Obj AInvMutListDefault (
     /* enter the additive inverses everywhere                              */
     for ( i = 1; i <= len; i++ ) {
         elm = ELM0_LIST( list, i );
-	if (elm) {
-	  elm = AINV_MUT( elm );
-	  SET_ELM_PLIST( res, i, elm );
-	  CHANGED_BAG( res );
-	}
+        if (elm) {
+          elm = AINV_MUT( elm );
+          SET_ELM_PLIST( res, i, elm );
+          CHANGED_BAG( res );
+        }
     }
 
     /* Now adjust the result TNUM info */
@@ -554,24 +551,24 @@ Obj AInvMutListDefault (
       SET_FILT_LIST( res, FN_IS_EMPTY );
     else if (IS_PLIST( list ))
       {
-	if (TNUM_OBJ(list) == T_PLIST_FFE ||
-	    TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
-	  RetypeBag(res, T_PLIST_FFE);
-	else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
-		 TNUM_OBJ(list) < T_PLIST_FFE)
-	  RetypeBag(res, T_PLIST_CYC );
-	else if (HAS_FILT_LIST(list, FN_IS_DENSE))
-	  {
-	    SET_FILT_LIST( res, FN_IS_DENSE );
-	    if (HAS_FILT_LIST (list, FN_IS_HOMOG) &&
-		!IS_MUTABLE_OBJ(ELM_PLIST(res,1)))
-	      {
-		SET_FILT_LIST( res, FN_IS_HOMOG);
-		
-	      }
-	  }
-	else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
-	  SET_FILT_LIST( res, FN_IS_NDENSE );
+        if (TNUM_OBJ(list) == T_PLIST_FFE ||
+            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+          RetypeBag(res, T_PLIST_FFE);
+        else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
+                 TNUM_OBJ(list) < T_PLIST_FFE)
+          RetypeBag(res, T_PLIST_CYC );
+        else if (HAS_FILT_LIST(list, FN_IS_DENSE))
+          {
+            SET_FILT_LIST( res, FN_IS_DENSE );
+            if (HAS_FILT_LIST (list, FN_IS_HOMOG) &&
+                !IS_MUTABLE_OBJ(ELM_PLIST(res,1)))
+              {
+                SET_FILT_LIST( res, FN_IS_HOMOG);
+                
+              }
+          }
+        else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
+          SET_FILT_LIST( res, FN_IS_NDENSE );
       }
     /* return the result                                                   */
     return res;
@@ -600,11 +597,11 @@ Obj AInvListDefault (
     /* enter the additive inverses everywhere                              */
     for ( i = 1; i <= len; i++ ) {
         elm = ELM0_LIST( list, i );
-	if (elm) {
-	  elm = AINV( elm );
-	  SET_ELM_PLIST( res, i, elm );
-	  CHANGED_BAG( res );
-	}
+        if (elm) {
+          elm = AINV( elm );
+          SET_ELM_PLIST( res, i, elm );
+          CHANGED_BAG( res );
+        }
     }
 
     /* Now adjust the result TNUM info */
@@ -613,29 +610,29 @@ Obj AInvListDefault (
       SET_FILT_LIST( res, FN_IS_EMPTY );
     else if (IS_PLIST( list ))
       {
-	if (TNUM_OBJ(list) == T_PLIST_FFE ||
-	    TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
-	  RetypeBag(res, TNUM_OBJ(list));
-	else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
-		 TNUM_OBJ(list) < T_PLIST_FFE)
-	  RetypeBag(res, IS_MUTABLE_OBJ(list) ? T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE );
-	else if (HAS_FILT_LIST(list, FN_IS_DENSE))
-	  {
-	    SET_FILT_LIST( res, FN_IS_DENSE );
-	    if (HAS_FILT_LIST (list, FN_IS_HOMOG) &&
-		!IS_MUTABLE_OBJ(ELM_PLIST(res,1)))
-	      {
-		SET_FILT_LIST( res, FN_IS_HOMOG);
-		if (HAS_FILT_LIST( list, FN_IS_TABLE))
-		  {
-		    SET_FILT_LIST( res, FN_IS_TABLE);
-		    if (HAS_FILT_LIST( list, FN_IS_RECT))
-		      SET_FILT_LIST( res, FN_IS_RECT);
-		  }
-	      }
-	  }
-	else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
-	  SET_FILT_LIST( res, FN_IS_NDENSE );
+        if (TNUM_OBJ(list) == T_PLIST_FFE ||
+            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+          RetypeBag(res, TNUM_OBJ(list));
+        else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
+                 TNUM_OBJ(list) < T_PLIST_FFE)
+          RetypeBag(res, IS_MUTABLE_OBJ(list) ? T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE );
+        else if (HAS_FILT_LIST(list, FN_IS_DENSE))
+          {
+            SET_FILT_LIST( res, FN_IS_DENSE );
+            if (HAS_FILT_LIST (list, FN_IS_HOMOG) &&
+                !IS_MUTABLE_OBJ(ELM_PLIST(res,1)))
+              {
+                SET_FILT_LIST( res, FN_IS_HOMOG);
+                if (HAS_FILT_LIST( list, FN_IS_TABLE))
+                  {
+                    SET_FILT_LIST( res, FN_IS_TABLE);
+                    if (HAS_FILT_LIST( list, FN_IS_RECT))
+                      SET_FILT_LIST( res, FN_IS_RECT);
+                  }
+              }
+          }
+        else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
+          SET_FILT_LIST( res, FN_IS_NDENSE );
       }
     /* return the result                                                   */
     return res;
@@ -686,18 +683,18 @@ Obj             DiffSclList (
     /* make the result list                                                */
     len = LEN_LIST( listR );
     listD = NEW_PLIST(IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR) ? T_PLIST :
-		      T_PLIST+IMMUTABLE, len );
+                      T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listD, len );
 
     /* loop over the entries and subtract                                  */
     for ( i = 1; i <= len; i++ ) {
         elmR = ELMV0_LIST( listR, i );
-	if (elmR)
-	  {
-	    elmD = DIFF( listL, elmR );
-	    SET_ELM_PLIST( listD, i, elmD );
-	    CHANGED_BAG( listD );
-	  }
+        if (elmR)
+          {
+            elmD = DIFF( listL, elmR );
+            SET_ELM_PLIST( listD, i, elmD );
+            CHANGED_BAG( listD );
+          }
     }
 
     /* Now adjust the result TNUM info */
@@ -706,10 +703,10 @@ Obj             DiffSclList (
       SET_FILT_LIST( listD, FN_IS_EMPTY );
     else if (IS_PLIST( listR ))
       {
-	 if (HAS_FILT_LIST(listR, FN_IS_DENSE))
-	   SET_FILT_LIST( listD, FN_IS_DENSE );
-	 else if (HAS_FILT_LIST(listR, FN_IS_NDENSE))
-	   SET_FILT_LIST( listD, FN_IS_NDENSE );
+         if (HAS_FILT_LIST(listR, FN_IS_DENSE))
+           SET_FILT_LIST( listD, FN_IS_DENSE );
+         else if (HAS_FILT_LIST(listR, FN_IS_NDENSE))
+           SET_FILT_LIST( listD, FN_IS_NDENSE );
       }
     /* return the result                                                   */
     return listD;
@@ -728,19 +725,19 @@ Obj             DiffListScl (
     /* make the result list                                                */
     len = LEN_LIST( listL );
     listD = NEW_PLIST( IS_MUTABLE_OBJ(listL)|| IS_MUTABLE_OBJ(listR) ? T_PLIST :
-		       T_PLIST+IMMUTABLE, len );
+                       T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listD, len );
 
     /* loop over the entries and subtract                                  */
     for ( i = 1; i <= len; i++ ) {
         elmL = ELMV0_LIST( listL, i );
-	if (elmL)
-	  {
-	    elmD = DIFF( elmL, listR );
-	    SET_ELM_PLIST( listD, i, elmD );
-	    CHANGED_BAG( listD );
-	  }
-	  
+        if (elmL)
+          {
+            elmD = DIFF( elmL, listR );
+            SET_ELM_PLIST( listD, i, elmD );
+            CHANGED_BAG( listD );
+          }
+          
     }
 
     /* Now adjust the result TNUM info */
@@ -749,10 +746,10 @@ Obj             DiffListScl (
       SET_FILT_LIST( listD, FN_IS_EMPTY );
     else if (IS_PLIST( listL ))
       {
-	 if (HAS_FILT_LIST(listL, FN_IS_DENSE))
-	   SET_FILT_LIST( listD, FN_IS_DENSE );
-	 else if (HAS_FILT_LIST(listL, FN_IS_NDENSE))
-	   SET_FILT_LIST( listD, FN_IS_NDENSE );
+         if (HAS_FILT_LIST(listL, FN_IS_DENSE))
+           SET_FILT_LIST( listD, FN_IS_DENSE );
+         else if (HAS_FILT_LIST(listL, FN_IS_NDENSE))
+           SET_FILT_LIST( listD, FN_IS_NDENSE );
       }
     /* return the result                                                   */
     return listD;
@@ -775,56 +772,56 @@ Obj             DiffListList (
     lenR = LEN_LIST( listR );
     lenD = (lenR > lenL) ? lenR : lenL;
     listD = NEW_PLIST( (IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR)) ?
-		       T_PLIST : T_PLIST+IMMUTABLE, lenD );
+                       T_PLIST : T_PLIST+IMMUTABLE, lenD );
     SET_LEN_PLIST( listD, lenD );
 
     /* Sort out mutability */
     mutD = 0;
     for (i = 1; i <= lenL; i++)
       if ((elmL = ELM0_LIST( listL, i)))
-	{
-	  mutD = IS_MUTABLE_OBJ(elmL);
-	  break;
-	}
+        {
+          mutD = IS_MUTABLE_OBJ(elmL);
+          break;
+        }
     for (i = 1; i <= lenR; i++)
       if ((elmR = ELM0_LIST( listR, i)))
-	{
-	  mutD = mutD || IS_MUTABLE_OBJ(elmR);
-	  break;
-	}    
+        {
+          mutD = mutD || IS_MUTABLE_OBJ(elmR);
+          break;
+        }    
            
     
     /* loop over the entries and subtract                                  */
     for ( i = 1; i <= lenD; i++ ) {
         elmL = ELM0_LIST( listL, i );
         elmR = ELM0_LIST( listR, i );
-	
+        
 
-	/* Now compute the result 6 different cases! */
-	if (elmL)
-	  {
-	    if (elmR)
-	      elmD= DIFF(elmL,elmR);
-	    else if ( mutD)
-	      elmD = SHALLOW_COPY_OBJ(elmL);
-	    else
-	      elmD = elmL;
-	  }
-	else if (elmR)
-	  {
-	    if (mutD)
-	      elmD = AINV_MUT(elmR);
-	    else
-	      elmD = AINV(elmR);
-	  }
-	else
-	  elmD = 0;
-	  
-	if (elmD)
-	  {
-	    SET_ELM_PLIST( listD, i, elmD );
-	    CHANGED_BAG( listD );
-	  }
+        /* Now compute the result 6 different cases! */
+        if (elmL)
+          {
+            if (elmR)
+              elmD= DIFF(elmL,elmR);
+            else if ( mutD)
+              elmD = SHALLOW_COPY_OBJ(elmL);
+            else
+              elmD = elmL;
+          }
+        else if (elmR)
+          {
+            if (mutD)
+              elmD = AINV_MUT(elmR);
+            else
+              elmD = AINV(elmR);
+          }
+        else
+          elmD = 0;
+          
+        if (elmD)
+          {
+            SET_ELM_PLIST( listD, i, elmD );
+            CHANGED_BAG( listD );
+          }
     }
     /* Now adjust the result TNUM info. There's not so much we
        can say here with total reliability */
@@ -832,8 +829,8 @@ Obj             DiffListList (
     if (lenD == 0)
       SET_FILT_LIST( listD, FN_IS_EMPTY );
     else if (IS_PLIST( listR ) && IS_PLIST(listL) &&
-	     HAS_FILT_LIST(listR, FN_IS_DENSE) &&
-	     HAS_FILT_LIST(listL, FN_IS_DENSE))
+             HAS_FILT_LIST(listR, FN_IS_DENSE) &&
+             HAS_FILT_LIST(listL, FN_IS_DENSE))
       SET_FILT_LIST( listD, FN_IS_DENSE );
     
     /* return the result                                                   */
@@ -907,27 +904,27 @@ Obj             ProdSclList (
     /* make the result list                                                */
     len = LEN_LIST( listR );
     listP = NEW_PLIST( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR) ?
-		       T_PLIST :T_PLIST+IMMUTABLE, len );
+                       T_PLIST :T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listP, len );
 
     /* loop over the entries and multiply                                  */
     for ( i = 1; i <= len; i++ ) {
         elmR = ELMV0_LIST( listR, i );
-	if (elmR)
-	  {
-	    elmP = PROD( listL, elmR );
-	    SET_ELM_PLIST( listP, i, elmP );
-	    CHANGED_BAG( listP );
-	  }
+        if (elmR)
+          {
+            elmP = PROD( listL, elmR );
+            SET_ELM_PLIST( listP, i, elmP );
+            CHANGED_BAG( listP );
+          }
     }
     if (len == 0)
       SET_FILT_LIST( listP, FN_IS_EMPTY );
     else if (IS_PLIST( listR ))
       {
-	 if (HAS_FILT_LIST(listR, FN_IS_DENSE))
-	   SET_FILT_LIST( listP, FN_IS_DENSE );
-	 else if (HAS_FILT_LIST(listR, FN_IS_NDENSE))
-	   SET_FILT_LIST( listP, FN_IS_NDENSE );
+         if (HAS_FILT_LIST(listR, FN_IS_DENSE))
+           SET_FILT_LIST( listP, FN_IS_DENSE );
+         else if (HAS_FILT_LIST(listR, FN_IS_NDENSE))
+           SET_FILT_LIST( listP, FN_IS_NDENSE );
       }
 
     /* return the result                                                   */
@@ -947,27 +944,27 @@ Obj             ProdListScl (
     /* make the result list                                                */
     len = LEN_LIST( listL );
     listP = NEW_PLIST( (IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR))
-		       ? T_PLIST :T_PLIST+IMMUTABLE, len );
+                       ? T_PLIST :T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listP, len );
 
     /* loop over the entries and multiply                                  */
     for ( i = 1; i <= len; i++ ) {
         elmL = ELMV0_LIST( listL, i );
-	if (elmL) {
-	  elmP = PROD( elmL, listR );
-	  SET_ELM_PLIST( listP, i, elmP );
-	  CHANGED_BAG( listP );
-	}
+        if (elmL) {
+          elmP = PROD( elmL, listR );
+          SET_ELM_PLIST( listP, i, elmP );
+          CHANGED_BAG( listP );
+        }
     }
 
     if (len == 0)
       SET_FILT_LIST( listP, FN_IS_EMPTY );
     else if (IS_PLIST( listL ))
       {
-	 if (HAS_FILT_LIST(listL, FN_IS_DENSE))
-	   SET_FILT_LIST( listP, FN_IS_DENSE );
-	 else if (HAS_FILT_LIST(listL, FN_IS_NDENSE))
-	   SET_FILT_LIST( listP, FN_IS_NDENSE );
+         if (HAS_FILT_LIST(listL, FN_IS_DENSE))
+           SET_FILT_LIST( listP, FN_IS_DENSE );
+         else if (HAS_FILT_LIST(listL, FN_IS_NDENSE))
+           SET_FILT_LIST( listP, FN_IS_NDENSE );
       }
     /* return the result                                                   */
     return listP;
@@ -996,17 +993,17 @@ Obj             ProdListList (
       {
         elmL = ELM0_LIST( listL, i );
         elmR = ELM0_LIST( listR, i );
-	if (elmL && elmR)
-	  {
-	    elmP = PROD( elmL, elmR );
-	    if (listP)
-	      listP = SUM( listP, elmP );
-	    else
-	      {
-		listP = elmP;
-		imm = !IS_MUTABLE_OBJ(listP);
-	      }
-	  }
+        if (elmL && elmR)
+          {
+            elmP = PROD( elmL, elmR );
+            if (listP)
+              listP = SUM( listP, elmP );
+            else
+              {
+                listP = elmP;
+                imm = !IS_MUTABLE_OBJ(listP);
+              }
+          }
     }
 
     if (imm && IS_MUTABLE_OBJ(listP))
@@ -1049,20 +1046,20 @@ Obj             ProdListListHandler (
     switch (INT_INTOBJ(depthdiff)) {
     case -1:
       if (IS_MUTABLE_OBJ(listL))
-	prod = SHALLOW_COPY_OBJ(prod);
+        prod = SHALLOW_COPY_OBJ(prod);
       break;
     case 1:
       if (IS_MUTABLE_OBJ(listR))
-	prod = SHALLOW_COPY_OBJ(prod);
+        prod = SHALLOW_COPY_OBJ(prod);
       break;
     case 0:
       break;
     default:
       ErrorReturnVoid("PROD_LIST_LIST_DEFAULT: depth difference should be -1, 0 or 1, not %i",
-		      INT_INTOBJ(depthdiff),0L,"you can return to carry on anyway");
+                      INT_INTOBJ(depthdiff),0L,"you can return to carry on anyway");
     }
   return prod;
-	
+        
 }
 
 
@@ -1112,12 +1109,12 @@ Obj             OneMatrix (
       zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
       one  = ONE_MUT( zero );
       if (IS_MUTABLE_OBJ(mat))
-	{
-	  ctype = T_PLIST;
-	  rtype = IS_MUTABLE_OBJ(ELM_LIST(mat, 1)) ? T_PLIST : T_PLIST + IMMUTABLE;
-	}
+        {
+          ctype = T_PLIST;
+          rtype = IS_MUTABLE_OBJ(ELM_LIST(mat, 1)) ? T_PLIST : T_PLIST + IMMUTABLE;
+        }
       else
-	ctype = rtype = T_PLIST + IMMUTABLE;
+        ctype = rtype = T_PLIST + IMMUTABLE;
       break;
 
     case 2:
@@ -1214,30 +1211,30 @@ Obj             InvMatrix (
     switch(mut)
       {
       case 0:
-	zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
-	one  = ONE_MUT( zero );
-	ctype = rtype = T_PLIST+IMMUTABLE;
-	MakeImmutable(zero);
-	MakeImmutable(one);
-	break;
-	
+        zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+        one  = ONE_MUT( zero );
+        ctype = rtype = T_PLIST+IMMUTABLE;
+        MakeImmutable(zero);
+        MakeImmutable(one);
+        break;
+        
       case 1:
-	zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
-	one  = ONE_MUT( zero );
-	if (IS_MUTABLE_OBJ(mat))
-	  {
-	    ctype = T_PLIST;
-	    rtype = IS_MUTABLE_OBJ(ELM_LIST(mat, 1)) ? T_PLIST : T_PLIST+IMMUTABLE;
-	  }
-	else
-	  ctype = rtype = T_PLIST+IMMUTABLE;
-	break;
+        zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+        one  = ONE_MUT( zero );
+        if (IS_MUTABLE_OBJ(mat))
+          {
+            ctype = T_PLIST;
+            rtype = IS_MUTABLE_OBJ(ELM_LIST(mat, 1)) ? T_PLIST : T_PLIST+IMMUTABLE;
+          }
+        else
+          ctype = rtype = T_PLIST+IMMUTABLE;
+        break;
 
       case 2:
-	zero = ZERO( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
-	one  = ONE( zero );
-	ctype = rtype = T_PLIST;
-	break;
+        zero = ZERO( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+        one  = ONE( zero );
+        ctype = rtype = T_PLIST;
+        break;
       }
 
     /* make a matrix of the form $ ( Id_<len> | <mat> ) $                  */
@@ -1281,10 +1278,10 @@ Obj             InvMatrix (
         row = ELM_PLIST( res, i );
         SET_ELM_PLIST( res, i, ELM_PLIST( res, k-len ) );
         SET_ELM_PLIST( res, k-len, row );
-	if (mut < 2)
-	  elm2 = INV_MUT( ELM_PLIST( row, k ) );
-	else
-	  elm2 = INV( ELM_PLIST( row, k ) );
+        if (mut < 2)
+          elm2 = INV_MUT( ELM_PLIST( row, k ) );
+        else
+          elm2 = INV( ELM_PLIST( row, k ) );
         for ( l = 1; l <= 2*len; l++ ) {
             elm = PROD( elm2, ELM_PLIST( row, l ) );
             SET_ELM_PLIST( row, l, elm );
@@ -1294,10 +1291,10 @@ Obj             InvMatrix (
         /* clear all entries in this column                                */
         for ( i = 1; i <= len; i++ ) {
             row2 = ELM_PLIST( res, i );
-	    if (mut < 2)
-	      elm = AINV_MUT( ELM_PLIST( row2, k ) );
-	    else
-	      elm = AINV( ELM_PLIST( row2, k ) );
+            if (mut < 2)
+              elm = AINV_MUT( ELM_PLIST( row2, k ) );
+            else
+              elm = AINV( ELM_PLIST( row2, k ) );
             if ( i != k-len && ! EQ(elm,zero) ) {
                 for ( l = 1; l <= 2*len; l++ ) {
                     elm2 = PROD( elm, ELM_PLIST( row, l ) );
@@ -1461,17 +1458,17 @@ static Obj AddRowVectorOp;   /* BH changed to static */
 static Obj MultRowVectorOp;  /* BH changed to static */
 
 Obj FuncADD_ROW_VECTOR_5( Obj self,
-			  Obj list1,
-			  Obj list2,
-			  Obj mult,
-			  Obj from,
-			  Obj to )
+                          Obj list1,
+                          Obj list2,
+                          Obj mult,
+                          Obj from,
+                          Obj to )
 {
   UInt i;
   Obj el1,el2;
   while (!IS_INTOBJ(to) ||
-	 INT_INTOBJ(to) > LEN_LIST(list1) ||
-	 INT_INTOBJ(to) > LEN_LIST(list2))
+         INT_INTOBJ(to) > LEN_LIST(list1) ||
+         INT_INTOBJ(to) > LEN_LIST(list2))
     to = ErrorReturnObj("AddRowVector: Upper limit too large", 0L, 0L, 
                         "you can replace limit by <lim> via 'return <lim>;'");
   for (i = INT_INTOBJ(from); i <= INT_INTOBJ(to); i++)
@@ -1497,17 +1494,17 @@ Obj FuncADD_ROW_VECTOR_5( Obj self,
 **  plain lists of cyclotomics and mult is a small integers
 */
 Obj FuncADD_ROW_VECTOR_5_FAST ( Obj self,
-				Obj list1,
-				Obj list2,
-				Obj mult,
-				Obj from,
-				Obj to )
+                                Obj list1,
+                                Obj list2,
+                                Obj mult,
+                                Obj from,
+                                Obj to )
 {
   UInt i;
   Obj e1,e2, prd, sum;
   while (!IS_INTOBJ(to) ||
-	 INT_INTOBJ(to) > LEN_LIST(list1) ||
-	 INT_INTOBJ(to) > LEN_LIST(list2))
+         INT_INTOBJ(to) > LEN_LIST(list1) ||
+         INT_INTOBJ(to) > LEN_LIST(list2))
     to = ErrorReturnObj("AddRowVector: Upper limit too large", 0L, 0L, 
                         "you can replace limit by <lim> via 'return <lim>;'");
   for (i = INT_INTOBJ(from); i <= INT_INTOBJ(to); i++)
@@ -1515,17 +1512,17 @@ Obj FuncADD_ROW_VECTOR_5_FAST ( Obj self,
       e1 = ELM_PLIST(list1,i);
       e2 = ELM_PLIST(list2,i);
       if ( !ARE_INTOBJS( e2, mult ) || !PROD_INTOBJS( prd, e2, mult ))
-	{
-	  prd = PROD(e2,mult);
-	}
+        {
+          prd = PROD(e2,mult);
+        }
       if ( !ARE_INTOBJS(e1, prd) || !SUM_INTOBJS( sum, e1, prd) )
-	{
-	  sum = SUM(e1,prd);
-	  SET_ELM_PLIST(list1,i,sum);
-	  CHANGED_BAG(list1);
-	}
+        {
+          sum = SUM(e1,prd);
+          SET_ELM_PLIST(list1,i,sum);
+          CHANGED_BAG(list1);
+        }
       else
-	  SET_ELM_PLIST(list1,i,sum);
+          SET_ELM_PLIST(list1,i,sum);
     }
   return 0;
 }
@@ -1541,9 +1538,9 @@ Obj FuncADD_ROW_VECTOR_5_FAST ( Obj self,
 **  types of list -- this version just uses generic list ops
 */
 Obj FuncADD_ROW_VECTOR_3( Obj self,
-			  Obj list1,
-			  Obj list2,
-			  Obj mult)
+                          Obj list1,
+                          Obj list2,
+                          Obj mult)
 {
   UInt i;
   UInt len = LEN_LIST(list1);
@@ -1551,7 +1548,7 @@ Obj FuncADD_ROW_VECTOR_3( Obj self,
   if (LEN_LIST(list2) != len)
     {
       list2 = ErrorReturnObj("AddRowVector: lists must be the same length",
-			     0L, 0L, 
+                             0L, 0L, 
                              "you can replace second list <list2> via 'return <list2>;'");
       return CALL_3ARGS(AddRowVectorOp, list1, list2,mult);
     }
@@ -1578,9 +1575,9 @@ Obj FuncADD_ROW_VECTOR_3( Obj self,
 **  plain lists of cyclotomics and mult is a small integers
 */
 Obj FuncADD_ROW_VECTOR_3_FAST ( Obj self,
-				Obj list1,
-				Obj list2,
-				Obj mult )
+                                Obj list1,
+                                Obj list2,
+                                Obj mult )
 {
   UInt i;
   Obj e1,e2, prd, sum;
@@ -1588,7 +1585,7 @@ Obj FuncADD_ROW_VECTOR_3_FAST ( Obj self,
   if (LEN_PLIST(list2) != len)
     {
       list2 = ErrorReturnObj("AddRowVector: lists must be the same length",
-			     0L, 0L, 
+                             0L, 0L, 
                              "you can replace second list <list2> via 'return <list2>;'");
       return CALL_3ARGS(AddRowVectorOp, list1, list2, mult);
     }
@@ -1598,17 +1595,17 @@ Obj FuncADD_ROW_VECTOR_3_FAST ( Obj self,
       e1 = ELM_PLIST(list1,i);
       e2 = ELM_PLIST(list2,i);
       if ( !ARE_INTOBJS( e2, mult ) || !PROD_INTOBJS( prd, e2, mult ))
-	{
-	  prd = PROD(e2,mult);
-	}
+        {
+          prd = PROD(e2,mult);
+        }
       if ( !ARE_INTOBJS(e1, prd) || !SUM_INTOBJS( sum, e1, prd) )
-	{
-	  sum = SUM(e1,prd);
-	  SET_ELM_PLIST(list1,i,sum);
-	  CHANGED_BAG(list1);
-	}
+        {
+          sum = SUM(e1,prd);
+          SET_ELM_PLIST(list1,i,sum);
+          CHANGED_BAG(list1);
+        }
       else
-	  SET_ELM_PLIST(list1,i,sum);
+          SET_ELM_PLIST(list1,i,sum);
     }
   return 0;
 }
@@ -1624,8 +1621,8 @@ Obj FuncADD_ROW_VECTOR_3_FAST ( Obj self,
 **  types of list -- this version just uses generic list ops
 */
 Obj FuncADD_ROW_VECTOR_2( Obj self,
-			  Obj list1,
-			  Obj list2)
+                          Obj list1,
+                          Obj list2)
 {
   UInt i;
   Obj el1,el2;
@@ -1633,7 +1630,7 @@ Obj FuncADD_ROW_VECTOR_2( Obj self,
   if (LEN_LIST(list2) != len)
     {
       list2 = ErrorReturnObj("AddRowVector: lists must be the same length",
-			     0L, 0L, 
+                             0L, 0L, 
                              "you can replace second list <list2> via 'return <list2>;'");
       return CALL_2ARGS(AddRowVectorOp, list1, list2);
     }
@@ -1659,8 +1656,8 @@ Obj FuncADD_ROW_VECTOR_2( Obj self,
 **  plain lists of cyclotomics 
 */
 Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
-				Obj list1,
-				Obj list2 )
+                                Obj list1,
+                                Obj list2 )
 {
   UInt i;
   Obj e1,e2, sum;
@@ -1668,7 +1665,7 @@ Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
   if (LEN_PLIST(list2) != len)
     {
       list2 = ErrorReturnObj("AddRowVector: lists must be the same length",
-			     0L, 0L, 
+                             0L, 0L, 
                              "you can replace second list <list2> via 'return <list2>;'");
       return CALL_2ARGS(AddRowVectorOp, list1, list2);
     }
@@ -1677,13 +1674,13 @@ Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
       e1 = ELM_PLIST(list1,i);
       e2 = ELM_PLIST(list2,i);
       if ( !ARE_INTOBJS(e1, e2) || !SUM_INTOBJS( sum, e1, e2) )
-	{
-	  sum = SUM(e1,e2);
-	  SET_ELM_PLIST(list1,i,sum);
-	  CHANGED_BAG(list1);
-	}
+        {
+          sum = SUM(e1,e2);
+          SET_ELM_PLIST(list1,i,sum);
+          CHANGED_BAG(list1);
+        }
       else
-	  SET_ELM_PLIST(list1,i,sum);
+          SET_ELM_PLIST(list1,i,sum);
     }
   return 0;
 }
@@ -1698,8 +1695,8 @@ Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
 */
 
 Obj FuncMULT_ROW_VECTOR_2( Obj self,
-			   Obj list,
-			   Obj mult )
+                           Obj list,
+                           Obj mult )
 {
   UInt i;
   Obj prd;
@@ -1726,8 +1723,8 @@ Obj FuncMULT_ROW_VECTOR_2( Obj self,
 */
 
 Obj FuncMULT_ROW_VECTOR_2_FAST( Obj self,
-				Obj list,
-				Obj mult )
+                                Obj list,
+                                Obj mult )
 {
   UInt i;
   Obj el,prd;
@@ -1736,13 +1733,13 @@ Obj FuncMULT_ROW_VECTOR_2_FAST( Obj self,
     {
       el = ELM_PLIST(list,i);
       if (!ARE_INTOBJS(el, mult) || !PROD_INTOBJS(prd,el,mult))
-	{
-	  prd = PROD(el,mult);
-	  SET_ELM_PLIST(list,i,prd);
-	  CHANGED_BAG(list);
-	}
+        {
+          prd = PROD(el,mult);
+          SET_ELM_PLIST(list,i,prd);
+          CHANGED_BAG(list);
+        }
       else
-	  SET_ELM_PLIST(list,i,prd);
+          SET_ELM_PLIST(list,i,prd);
     }
   return 0;
 }
@@ -1757,8 +1754,8 @@ Obj FuncMULT_ROW_VECTOR_2_FAST( Obj self,
 
 
 Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
-			      Obj vec,
-			      Obj mat )
+                              Obj vec,
+                              Obj mat )
 {
   Obj res;
   Obj elt;
@@ -1771,7 +1768,7 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
   if (len != LEN_LIST(mat))
     {
       mat = ErrorReturnObj("<vec> * <mat>: vector and matrix must have same length", 0L, 0L,
-			   "you can replace <mat> via 'return <mat>;'");
+                           "you can replace <mat> via 'return <mat>;'");
       return PROD(vec,mat);
     }
   elt = ELMW_LIST(vec,1);
@@ -1780,16 +1777,16 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
     {
       elt = ELMW_LIST(vec,i);
       if (!EQ(elt,z))
-	{
-	  vecr = ELMW_LIST(mat,i);
-	  if (res == (Obj)0)
-	    {
-	      res = SHALLOW_COPY_OBJ(vecr);
-	      CALL_2ARGS(MultRowVectorOp,res,elt);
-	    }
-	  else
-	    CALL_3ARGS(AddRowVectorOp, res, vecr, elt);
-	}
+        {
+          vecr = ELMW_LIST(mat,i);
+          if (res == (Obj)0)
+            {
+              res = SHALLOW_COPY_OBJ(vecr);
+              CALL_2ARGS(MultRowVectorOp,res,elt);
+            }
+          else
+            CALL_3ARGS(AddRowVectorOp, res, vecr, elt);
+        }
     }
   if (res == (Obj)0)
     res = ZERO(ELMW_LIST(mat,1));
@@ -1830,9 +1827,9 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
   len = LEN_LIST( mat );
   if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
     mat = ErrorReturnObj(
-			 "Matrix INV: <mat> must be square (not %d by %d)",
-			 (Int)len, (Int)LEN_LIST( ELM_LIST( mat, 1 ) ),
-			 "you can replace <mat> via 'return <mat>;'" );
+                         "Matrix INV: <mat> must be square (not %d by %d)",
+                         (Int)len, (Int)LEN_LIST( ELM_LIST( mat, 1 ) ),
+                         "you can replace <mat> via 'return <mat>;'" );
     switch( mut) {
     case 0:
       res = INV(mat);
@@ -1878,60 +1875,60 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
     {
       /* Find a non-zero leading entry that is in that column */
       for (j = i; j <= len; j++)
-	{
-	  row = ELM_PLIST(matcopy,j);
-	  x = ELMW_LIST(row,i);
-	  if (!EQ(x,zero))
-	    break;
-	}
+        {
+          row = ELM_PLIST(matcopy,j);
+          x = ELMW_LIST(row,i);
+          if (!EQ(x,zero))
+            break;
+        }
 
       /* if there isn't one then the matrix is not invertible */
       if (j > len)
-	return Fail;
+        return Fail;
 
       /* Maybe swap two rows */
       /* But I will want this value anyway */
       row2 = ELM_PLIST(res,j);
       if (j != i)
-	{
-	  SET_ELM_PLIST(matcopy,j,ELM_PLIST(matcopy,i));
-	  SET_ELM_PLIST(res,j,ELM_PLIST(res,i));
-	  SET_ELM_PLIST(matcopy,i,row);
-	  SET_ELM_PLIST(res,i,row2);
-	}
+        {
+          SET_ELM_PLIST(matcopy,j,ELM_PLIST(matcopy,i));
+          SET_ELM_PLIST(res,j,ELM_PLIST(res,i));
+          SET_ELM_PLIST(matcopy,i,row);
+          SET_ELM_PLIST(res,i,row2);
+        }
 
       /*Maybe rescale the row */
       if (!EQ(x, one))
-	{
-	  xi = INV(x);
-	  CALL_2ARGS(MultRowVectorOp, row, xi);
-	  CALL_2ARGS(MultRowVectorOp, row2, xi);
-	}
+        {
+          xi = INV(x);
+          CALL_2ARGS(MultRowVectorOp, row, xi);
+          CALL_2ARGS(MultRowVectorOp, row2, xi);
+        }
 
       /* Clear the entries. We know that we can ignore the entries in rows i..j */
       for (k = 1; k < i; k++)
-	{
-	  row3 = ELM_PLIST(matcopy,k);
-	  y = ELMW_LIST(row3,i);
-	  if (!EQ(y,zero))
-	    {
-	      yi = AINV(y);
-	      CALL_3ARGS(AddRowVectorOp, row3, row, yi);
-	      CALL_3ARGS(AddRowVectorOp, ELM_PLIST(res,k), row2, yi);
-	    }
-	}
+        {
+          row3 = ELM_PLIST(matcopy,k);
+          y = ELMW_LIST(row3,i);
+          if (!EQ(y,zero))
+            {
+              yi = AINV(y);
+              CALL_3ARGS(AddRowVectorOp, row3, row, yi);
+              CALL_3ARGS(AddRowVectorOp, ELM_PLIST(res,k), row2, yi);
+            }
+        }
       for (k = j+1; k <= len; k++)
-	{
-	  row3 = ELM_PLIST(matcopy,k);
-	  y = ELMW_LIST(row3,i);
-	  if (!EQ(y,zero))
-	    {
-	      yi = AINV(y);
-	      CALL_3ARGS(AddRowVectorOp, row3, row, yi);
-	      CALL_3ARGS(AddRowVectorOp, ELM_PLIST(res,k), row2, yi);
-	    }
-	}
-				 
+        {
+          row3 = ELM_PLIST(matcopy,k);
+          y = ELMW_LIST(row3,i);
+          if (!EQ(y,zero))
+            {
+              yi = AINV(y);
+              CALL_3ARGS(AddRowVectorOp, row3, row, yi);
+              CALL_3ARGS(AddRowVectorOp, ELM_PLIST(res,k), row2, yi);
+            }
+        }
+                                 
     }
 
   /* Now we adjust mutability. Couldn't do it earlier, because AddRowVector, etc.
@@ -1944,13 +1941,13 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
       
     case 1:
       if (IS_MUTABLE_OBJ(mat))
-	{
-	  if (!IS_MUTABLE_OBJ(ELM_LIST(mat,1)))
-	    for (i = 1; i <= len; i++)
-	      MakeImmutable(ELM_LIST(res,i));
-	}
+        {
+          if (!IS_MUTABLE_OBJ(ELM_LIST(mat,1)))
+            for (i = 1; i <= len; i++)
+              MakeImmutable(ELM_LIST(res,i));
+        }
       else
-	MakeImmutable(res);
+        MakeImmutable(res);
       break;
     case 2:
       break;
@@ -1989,10 +1986,10 @@ Obj FuncINV_MAT_DEFAULT_IMMUTABLE ( Obj self, Obj mat)
 */
 
 Obj FuncADD_TO_LIST_ENTRIES_PLIST_RANGE ( 
-			      Obj self,
-			      Obj list,
-			      Obj range,
-			      Obj x)
+                              Obj self,
+                              Obj list,
+                              Obj range,
+                              Obj x)
 {
   UInt low, high, incr;
   Obj y,z;
@@ -2006,15 +2003,15 @@ Obj FuncADD_TO_LIST_ENTRIES_PLIST_RANGE (
     {
       y = ELM_PLIST(list,i);
       if (!IS_INTOBJ(y) ||
-	  !SUM_INTOBJS(z,x,y))
-	{
-	  z = SUM(x,y);
-	  SET_ELM_PLIST(list,i,z);
-	  CHANGED_BAG(list);
-	}
+          !SUM_INTOBJS(z,x,y))
+        {
+          z = SUM(x,y);
+          SET_ELM_PLIST(list,i,z);
+          CHANGED_BAG(list);
+        }
       else
-	SET_ELM_PLIST(list,i,z);
-	
+        SET_ELM_PLIST(list,i,z);
+        
     }
   return (Obj) 0;
 }
@@ -2040,13 +2037,13 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
   Obj  lexico;
  
   while ( !(T_PLIST<=TNUM_OBJ(u) && TNUM_OBJ(u)<=LAST_PLIST_TNUM)
-	  || !IS_DENSE_LIST(u)) {
+          || !IS_DENSE_LIST(u)) {
       u = ErrorReturnObj(
       "MONOM_TOT_DEG_LEX: first <list> must be a dense plain list (not a %s)", 
       (Int)TNAM_OBJ(u), 0L, "you can replace <list> via 'return <list>;'" );
   }
   while ( !(T_PLIST<=TNUM_OBJ(v) && TNUM_OBJ(v)<=LAST_PLIST_TNUM) ||
-	  !IS_DENSE_LIST(v)) {
+          !IS_DENSE_LIST(v)) {
       v = ErrorReturnObj(
       "MONOM_TOT_DEG_LEX: first <list> must be a dense plain list (not a %s)", 
       (Int)TNAM_OBJ(v), 0L, "you can replace <list> via 'return <list>;'" );
@@ -2122,13 +2119,13 @@ static Obj  FuncMONOM_GRLEX( Obj self, Obj u, Obj  v ) {
   Obj  total,ai,bi;
  
   while ( !(T_PLIST<=TNUM_OBJ(u) && TNUM_OBJ(u)<=LAST_PLIST_TNUM)
-	  || !IS_DENSE_LIST(u)) {
+          || !IS_DENSE_LIST(u)) {
       u = ErrorReturnObj(
       "MONOM_TOT_DEG_LEX: first <list> must be a dense plain list (not a %s)", 
       (Int)TNAM_OBJ(u), 0L, "you can replace <list> via 'return <list>;'" );
   }
   while ( !(T_PLIST<=TNUM_OBJ(v) && TNUM_OBJ(v)<=LAST_PLIST_TNUM) ||
-	  !IS_DENSE_LIST(v)) {
+          !IS_DENSE_LIST(v)) {
       v = ErrorReturnObj(
       "MONOM_TOT_DEG_LEX: first <list> must be a dense plain list (not a %s)", 
       (Int)TNAM_OBJ(v), 0L, "you can replace <list> via 'return <list>;'" );
@@ -2216,8 +2213,8 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
       c=CALL_2ARGS(sumfun,x,y);
       if (!(EQ(c,zero))) {
 /* Pr("Added %d\n",INT_INTOBJ(c),0L); */
-	AddList(sum,a);
-	AddList(sum,c);
+        AddList(sum,a);
+        AddList(sum,c);
       }
       i1=i1+2;
       i2=i2+2;
@@ -2231,19 +2228,19 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
 /* Pr("C= %d %d\n",c,0L); */
 
       if ( /* this construct is taken from the compiler */
-	  (Obj)(UInt)(c != False) ) {
-	a=ELM_PLIST(z1,i1); 
-	AddList(sum,a);
-	c=ELM_PLIST(z1,i1+1);
-	AddList(sum,c);
-	i1=i1+2;
+          (Obj)(UInt)(c != False) ) {
+        a=ELM_PLIST(z1,i1); 
+        AddList(sum,a);
+        c=ELM_PLIST(z1,i1+1);
+        AddList(sum,c);
+        i1=i1+2;
       }
       else {
-	b=ELM_PLIST(z2,i2); 
-	AddList(sum,b);
-	c=ELM_PLIST(z2,i2+1);
-	AddList(sum,c);
-	i2=i2+2;
+        b=ELM_PLIST(z2,i2); 
+        AddList(sum,b);
+        c=ELM_PLIST(z2,i2+1);
+        AddList(sum,c);
+        i2=i2+2;
       } /* else */
     } /*else (elif)*/
   } /* while */
@@ -2294,14 +2291,14 @@ static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
      }
      else {
        if (a<b) {
-	 AddList(prod,INTOBJ_INT(a));
-	 AddList(prod,e);
-	 i1+=2;
+         AddList(prod,INTOBJ_INT(a));
+         AddList(prod,e);
+         i1+=2;
        }
        else {
-	 AddList(prod,INTOBJ_INT(b));
-	 AddList(prod,f);
-	 i2+=2;
+         AddList(prod,INTOBJ_INT(b));
+         AddList(prod,f);
+         i2+=2;
        }
      }
 
@@ -2502,12 +2499,12 @@ static Int InitKernel (
 
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1 ++ ) {
             ZeroFuncs[t1] = ZeroListDefault;
-	    ZeroMutFuncs[t1] = ZeroListMutDefault;
+            ZeroMutFuncs[t1] = ZeroListMutDefault;
     }
 
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1 ++ ) {
             AInvFuncs[t1] = AInvListDefault;
-	    AInvMutFuncs[t1] = AInvMutListDefault;
+            AInvMutFuncs[t1] = AInvMutListDefault;
     }
 
     /* No kernel installations for One or Inverse any more */
@@ -2527,36 +2524,36 @@ static Int InitKernel (
        
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
       for (t2 = FIRST_REAL_TNUM; t2 < FIRST_LIST_TNUM; t2++ ) {
-	SumFuncs[t1][t2] = SumListScl;
-	SumFuncs[t2][t1] = SumSclList;
+        SumFuncs[t1][t2] = SumListScl;
+        SumFuncs[t2][t1] = SumSclList;
       }
-	
+        
     }
     for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
       for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
-	SumFuncs[t1][t2] = SumListList;
+        SumFuncs[t1][t2] = SumListList;
       }
       for (t2 = T_PLIST_TAB; t2 <= T_PLIST_TAB_RECT_SSORT+IMMUTABLE; t2++) {
-	SumFuncs[t1][t2] = SumSclList;
-	SumFuncs[t2][t1] = SumListScl;
+        SumFuncs[t1][t2] = SumSclList;
+        SumFuncs[t2][t1] = SumListScl;
       }
     }
-	
+        
     /* Diff is just like Sum */
     
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
       for (t2 = FIRST_REAL_TNUM; t2 < FIRST_LIST_TNUM; t2++ ) {
-	DiffFuncs[t1][t2] = DiffListScl;
-	DiffFuncs[t2][t1] = DiffSclList;
+        DiffFuncs[t1][t2] = DiffListScl;
+        DiffFuncs[t2][t1] = DiffSclList;
       }
     }
     for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
       for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
-	DiffFuncs[t1][t2] = DiffListList;
+        DiffFuncs[t1][t2] = DiffListList;
       }
       for (t2 = T_PLIST_TAB; t2 <= T_PLIST_TAB_RECT_SSORT+IMMUTABLE; t2++) {
-	DiffFuncs[t1][t2] = DiffSclList;
-	DiffFuncs[t2][t1] = DiffListScl;
+        DiffFuncs[t1][t2] = DiffSclList;
+        DiffFuncs[t2][t1] = DiffListScl;
       }
     }
 
@@ -2571,13 +2568,13 @@ static Int InitKernel (
     
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
       for (t2 = FIRST_REAL_TNUM; t2 < FIRST_LIST_TNUM; t2++ ) {
-	ProdFuncs[t1][t2] = ProdListScl;
-	ProdFuncs[t2][t1] = ProdSclList;
+        ProdFuncs[t1][t2] = ProdListScl;
+        ProdFuncs[t2][t1] = ProdSclList;
       }
     }
     for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
       for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
-	ProdFuncs[t1][t2] = ProdListList;
+        ProdFuncs[t1][t2] = ProdListList;
       }
     }
     
@@ -2624,8 +2621,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoListOper ( void )
 {
-    module.revision_c = Revision_listoper_c;
-    module.revision_h = Revision_listoper_h;
     FillInVersion( &module );
     return &module;
 }

@@ -2,7 +2,6 @@
 **
 *W  gvars.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gvars.c,v 4.56 2011/02/08 12:33:32 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -32,8 +31,6 @@
 
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_gvars_c =
-   "@(#)$Id: gvars.c,v 4.56 2011/02/08 12:33:32 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -214,7 +211,7 @@ Obj             ErrorMustHaveAssObjHandler (
 **  'AssGVar' assigns the value <val> to the global variable <gvar>.
 */
 
-static Obj REREADING;			/* Copy of GAP global variable REREADING */
+static Obj REREADING;                   /* Copy of GAP global variable REREADING */
 
 void            AssGVar (
     UInt                gvar,
@@ -231,7 +228,7 @@ void            AssGVar (
 
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
-	    (ELM_PLIST( WriteGVars[gvar_bucket], gvar_index )
+            (ELM_PLIST( WriteGVars[gvar_bucket], gvar_index )
 	      == INTOBJ_INT(0)) ) {
         ErrorReturnVoid(
             "Variable: '%s' is read only",
@@ -466,13 +463,13 @@ UInt GVarName (
 	gvar_index = GVAR_INDEX(CountGVars);
         gvar = INTOBJ_INT(CountGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
-	/*CCC        namx[0] = '\0';
+        /*CCC        namx[0] = '\0';
         SyStrncat( namx, name, 1023 );
         string = NEW_STRING( SyStrlen(namx) );
         SyStrncat( CSTR_STRING(string), namx, SyStrlen(namx) );CCC*/
-	len = SyStrlen(name);
-	memcpy(namx, name, len+1);
-	C_NEW_STRING(string, len, namx);
+        len = SyStrlen(name);
+        memcpy(namx, name, len+1);
+        C_NEW_STRING(string, len, namx);
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
 	if (!ValGVars[gvar_bucket]) {
 	   ValGVars[gvar_bucket] = NewGVarBucket();
@@ -936,8 +933,8 @@ Obj FuncVAL_GVAR (
 
     while (val == (Obj) 0)
       val = ErrorReturnObj("VAL_GVAR: No value bound to %s",
-			   (Int)CSTR_STRING(gvar), (Int) 0,
-			   "you can return a value" );
+                           (Int)CSTR_STRING(gvar), (Int) 0,
+                           "you can return a value" );
     return val;
 }
 
@@ -1506,8 +1503,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGVars ( void )
 {
-    module.revision_c = Revision_gvars_c;
-    module.revision_h = Revision_gvars_h;
     FillInVersion( &module );
     return &module;
 }

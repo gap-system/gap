@@ -3,7 +3,6 @@
 *W  streams.h                   GAP source                       Frank Celler
 *W                                                  & Burkhard Höfling (MAC)
 **
-*H  @(#)$Id: streams.h,v 4.12 2010/04/27 09:27:45 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,9 +11,11 @@
 **  This file contains the  various read-eval-print loops and streams related
 **  stuff.  The system depend part is in "sysfiles.c".
 */
+
+#ifndef GAP_STREAMS_H
+#define GAP_STREAMS_H
+
 #ifdef INCLUDE_DECLARATION_PART
-const char * Revision_streams_h =
-   "@(#)$Id: streams.h,v 4.12 2010/04/27 09:27:45 sal Exp $";
 #endif
 
 
@@ -88,10 +89,10 @@ extern Int READ_GAP_ROOT ( Char * filename );
 StructInitInfo * InitInfoStreams ( void );
 
 
+#endif // GAP_STREAMS_H
+
 /****************************************************************************
 **
 
 *E  streams.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-

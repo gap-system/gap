@@ -2,7 +2,6 @@
 ##
 #W  teaching.g                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id: teaching.g,v 4.12 2011/05/16 21:49:07 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -10,8 +9,6 @@
 ##  context. It is made part of the general system to ensure it will be
 ##  always installed with GAP.
 ##
-Revision.teaching_g:=
-  "@(#)$Id: teaching.g,v 4.12 2011/05/16 21:49:07 gap Exp $";
 
 #############################################################################
 ##
@@ -189,8 +186,9 @@ DeclareGlobalFunction("CosetDecomposition");
 ##  <A>H</A>-conjugacy.
 ##  <Example><![CDATA[
 ##  gap> AllHomomorphismClasses(SymmetricGroup(4),SymmetricGroup(3)); 
-##  [ [ (1,2,3,4), (1,2) ] -> [ (), () ], [ (1,2,3,4), (1,2) ] -> [ (2,3), (1,2) ]
-##      , [ (1,2,3,4), (1,2) ] -> [ (1,2), (1,2) ] ]
+##  [ [ (1,3,4,2), (1,2,4) ] -> [ (), () ], 
+##    [ (1,3,4,2), (1,2,4) ] -> [ (1,2), () ], 
+##    [ (1,3,4,2), (1,2,4) ] -> [ (2,3), (1,2,3) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -218,8 +216,10 @@ DeclareGlobalFunction("AllHomomorphismClasses");
 ##  <Ref Func="AllAutomorphisms"/> returns all bijective endomorphisms.
 ##  <Example><![CDATA[
 ##  gap> AllHomomorphisms(SymmetricGroup(3),SymmetricGroup(3));
-##  [ [ (1,2,3), (1,2) ] -> [ (), () ], [ (1,2,3), (1,2) ] -> [ (), (1,2) ], 
-##    [ (1,2,3), (1,2) ] -> [ (), (2,3) ], [ (1,2,3), (1,2) ] -> [ (), (1,3) ], 
+##  [ [ (1,2,3), (1,2) ] -> [ (), () ], 
+##    [ (1,2,3), (1,2) ] -> [ (), (1,2) ], 
+##    [ (1,2,3), (1,2) ] -> [ (), (2,3) ], 
+##    [ (1,2,3), (1,2) ] -> [ (), (1,3) ], 
 ##    [ (1,2,3), (1,2) ] -> [ (1,2,3), (1,2) ], 
 ##    [ (1,2,3), (1,2) ] -> [ (1,2,3), (2,3) ], 
 ##    [ (1,2,3), (1,2) ] -> [ (1,3,2), (1,2) ], 
@@ -283,7 +283,7 @@ BindGlobal("AllSubgroups",
 ##  gap> isbntest("038794680");
 ##  Check Digit is 2
 ##  2
-#  ]]></Example>
+## ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -364,8 +364,8 @@ DeclareGlobalFunction("CheckDigitTestFunction");
 ##  it is used instead for encoding).
 ##  <Example><![CDATA[
 ##  gap> l:=NumbersString("Twas brillig and the slithy toves",1000000);
-##  [ 303311, 291012, 281922, 221917, 101124, 141030, 181510, 292219, 301835, 
-##    103025, 321529 ]
+##  [ 303311, 291012, 281922, 221917, 101124, 141030, 181510, 292219, 
+##    301835, 103025, 321529 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -792,8 +792,11 @@ InstallGlobalFunction(NumbersString,function(arg)
     table:=arg[3];
   else
     table:=Concatenation(ListWithIdenticalEntries(9,0)," ",
-	     CHARS_UALPHA,CHARS_DIGITS);
+	     CHARS_UALPHA,CHARS_DIGITS,CHARS_SYMBOLS);
     message:=UppercaseString(message);
+  fi;
+  if modulus<Length(table) then
+    Error("modulus must be at least as large as the translation table");
   fi;
   tenpow:=10^(LogInt(Length(table),10)+1);
   bound:=Int(modulus/tenpow);
@@ -823,7 +826,10 @@ InstallGlobalFunction(StringNumbers,function(arg)
     table:=arg[3];
   else
     table:=Concatenation(ListWithIdenticalEntries(9,0)," ",
-	     CHARS_UALPHA,CHARS_DIGITS);
+	     CHARS_UALPHA,CHARS_DIGITS,CHARS_SYMBOLS);
+  fi;
+  if modulus<Length(table) then
+    Error("modulus must be at least as large as the translation table");
   fi;
   message:="";
   tenpow:=10^(LogInt(Length(table),10)+1);

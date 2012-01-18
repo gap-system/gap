@@ -4,7 +4,6 @@
 ##                                                             Markus Püschel
 ##                                                            Sebastian Egner
 ##
-#H  @(#)$Id: grpnames.gd,v 4.17 2010/12/22 22:28:38 alexk Exp $
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -14,8 +13,6 @@
 ##  It also includes comments from corresponding GAP3 code written by
 ##  Markus Püschel and Sebastian Egner.
 ##
-Revision.grpnames_gd :=
-  "@(#)$Id: grpnames.gd,v 4.17 2010/12/22 22:28:38 alexk Exp $";
 
 #############################################################################
 ##
@@ -431,16 +428,20 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  <Attr Name="StructureDescription" Arg="G"/>
 ##
 ##  <Description>
-##  The method for <Ref Func="StructureDescription"/> exhibits the structure
-##  of the given group <A>G</A> to some extent using the strategy outlined
+##  The method for <Ref Func="StructureDescription"/> exhibits a structure
+##  of the given group <A>G</A> to some extent, using the strategy outlined
 ##    below. The idea is to return a possibly short string which gives some
-##    insight in the structure of the considered group. <P/>
+##    insight in the structure of the considered group. It is intended
+##  primarily for small groups (order less than 100) or groups with few normal
+##  subgroups, in other cases, in particular large <M>p</M>-groups, it can
+##  be very costly. Furthermore, the string returned is -- as the action on
+##  chief factors is not described -- often not the most useful way to describe
+##  a group.<P/>
 ##
-##    Note that non-isomorphic groups can have the same
-##  <Ref Func="StructureDescription"/> value, since the structure description
-##  might not exhibit the structure of the considered groups in all detail.
-##  However, isomorphic groups in different representation will always obtain
-##  the same structure description. <P/>
+##  The string returned by <Ref Func="StructureDescription"/> is
+##  <B>not</B> an isomorphism invariant: non-isomorphic groups can have the
+##  same string value, and two isomorphic groups in different representations
+##  can produce different strings.
 ##
 ##  The value returned by <Ref Func="StructureDescription"/> is a string of
 ##  the following form: <P/>
@@ -611,12 +612,12 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  gap> List(l,StructureDescription);; l;
 ##  [ C3 : C4, C12, A4, D12, C6 x C2 ]
 ##  gap> List(AllSmallGroups(40),G->StructureDescription(G:short));
-##  [ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "(10x2):2", "20x2", 
-##    "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
+##  [ "5:8", "40", "5:8", "5:Q8", "4xD10", "D40", "2x(5:4)", "(10x2):2", 
+##    "20x2", "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
 ##  gap> List(AllTransitiveGroups(DegreeAction,6),
 ##  >         G->StructureDescription(G:short));
-##  [ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", "(3^2):4", 
-##    "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
+##  [ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", 
+##    "(3^2):4", "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
 ##  gap> StructureDescription(PSL(4,2));
 ##  "A8"
 ##  ]]></Example>

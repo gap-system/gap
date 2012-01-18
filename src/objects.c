@@ -2,7 +2,6 @@
 **
 *W  objects.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: objects.c,v 4.62 2010/04/26 14:14:22 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 */
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
 
-const char * Revision_objects_c =
-   "@(#)$Id: objects.c,v 4.62 2010/04/26 14:14:22 gap Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -885,8 +882,8 @@ void PrintInaccessibleObject(Obj obj)
   Pr("<obj %d inaccessible in region: %s>", (Int) obj, (Int)name);
 }
      
-#define MARK(obj)
-#define UNMARK(obj)
+#define MARK(obj)     do {} while (0)
+#define UNMARK(obj)   do {} while (0)
 
 /* This variable is used to allow a ViewObj method to call PrintObj on
    the same object without triggering use of ~ */
@@ -2046,8 +2043,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoObjects ( void )
 {
-    module.revision_c = Revision_objects_c;
-    module.revision_h = Revision_objects_h;
     FillInVersion( &module );
     return &module;
 }

@@ -2,8 +2,6 @@
 ##
 #W  ctborth2.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctborth2.tbl,v 4.13 2010/12/01 17:38:05 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables related to the
@@ -13,6 +11,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctborth2.tbl,v $
+#H  Revision 4.14  2011/09/28 12:12:37  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.13  2010/12/01 17:38:05  gap
 #H  fixed the table of 2^2.O8+(2).3.2 mod 5
 #H  (the old table had been computed with a version of the GS3 construction
@@ -123,10 +125,7 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctborth2_tbl :=
-    "@(#)$Id: ctborth2.tbl,v 4.13 2010/12/01 17:38:05 gap Exp $";
 
-SET_TABLEFILENAME("ctborth2");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("2.O8+(2).2",3,

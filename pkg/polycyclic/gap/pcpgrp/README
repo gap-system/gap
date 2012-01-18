@@ -24,7 +24,7 @@ Intersection
 A SemiSimpleEfaSeries (this is not unique for G!)
 A FittingSubgroup
 A Centre
-A UpperCentralSeries 
+A UpperCentralSeriesOfGroup 
 A FCCentre
 F NilpotentByAbelianByFiniteStructure
 A IsNilpotentByFinite

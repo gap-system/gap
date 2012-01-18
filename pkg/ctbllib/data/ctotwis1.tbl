@@ -2,7 +2,7 @@
 ##
 #W  ctotwis1.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctotwis1.tbl,v 4.14 2009/07/29 14:01:10 gap Exp $
+#H  @(#)$Id: ctotwis1.tbl,v 4.15 2011/09/28 14:15:56 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,11 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctotwis1.tbl,v $
+#H  Revision 4.15  2011/09/28 14:15:56  gap
+#H  - fixed the maxes entry for 2F4(2)'.2,
+#H  - added fusion from 2F4(2)'.2 to the table of marks
+#H      TB
+#H
 #H  Revision 4.14  2009/07/29 14:01:10  gap
 #H  added maxes of 2F4(2)'.2
 #H      TB
@@ -114,11 +119,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctotwis1_tbl :=
-    "@(#)$Id: ctotwis1.tbl,v 4.14 2009/07/29 14:01:10 gap Exp $";
-
-SET_TABLEFILENAME("ctotwis1");
-ALN:= Ignore;
 
 MOT("2F4(2)'",
 [
@@ -233,7 +233,12 @@ text:=Concatenation(
 "       correctly    \n",
 ""))]);
 ARC("2F4(2)'.2","maxes",["2F4(2)'","2.[2^9]:5:4","L2(25).2_3",
-"2^2.[2^9]:S3","Fi22N5","13:12"]);
+"2^2.[2^9]:S3","Fi22N5","3^(1+2):SD16","13:12"]);
+ARC("2F4(2)'.2","tomfusion",rec(name:="2F4(2)",map:=[1,2,3,4,11,13,12,14,
+16,42,42,43,47,51,52,102,102,351,351,353,352,363,362,364,364,401,401,404,
+404],text:=[
+"fusion map is unique"
+]));
 ALF("2F4(2)'.2","Ru",[1,2,2,4,5,7,8,9,11,14,14,15,16,18,20,26,25,5,5,6,8,
 14,13,19,19,25,26,27,27],[
 "fusion is unique up to table automorphisms,\n",
@@ -427,7 +432,6 @@ ALF("3D4(2).3","Th",[1,2,2,3,4,6,6,7,11,10,12,12,13,13,17,21,23,24,28,31,
 ALN("3D4(2).3",["st2.3"]);
 
 LIBTABLE.LOADSTATUS.ctotwis1:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

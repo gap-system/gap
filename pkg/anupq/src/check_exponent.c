@@ -2,7 +2,7 @@
 **
 *A  check_exponent.c            ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: check_exponent.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: check_exponent.c,v 1.4 2011/11/28 13:42:04 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -35,11 +35,7 @@ struct pcp_vars *pcp;
    pcp->extra_relations = trial_exponent;
 
    /* now generate and power all test words */
-#ifdef Magma
-   extra_relations (exp_flag, NH, pcp);
-#else
    extra_relations (exp_flag, pcp);
-#endif
 
    /* restore existing exponent law */
    pcp->extra_relations = known_exponent;

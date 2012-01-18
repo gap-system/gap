@@ -2,7 +2,7 @@
 **
 *A  collectp2.c                 ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: collectp2.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: collectp2.c,v 1.5 2011/11/28 17:47:17 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -12,9 +12,6 @@
 #include "pq_defs.h"
 #include "pcp_vars.h"
 #include "constants.h"
-#if defined (NEXT)
-#define STACK_SIZE 5000
-#endif
 
 void add_p2string ();
 
@@ -26,7 +23,7 @@ int pointer;
 int collected_part;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int p1;             /* string pointer */
    register int cg;             /* collected generator */
@@ -199,7 +196,7 @@ int length;
 int collected_part;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int cp = collected_part;
    register int str = string;

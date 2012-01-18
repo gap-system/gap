@@ -10,8 +10,9 @@ rm -f $tarfile
 rm -f $tarfile.bz2
 chmod -R a+rX crisp
 
-# this suppresses resouce forks in tarballs
-COPY_EXTENDED_ATTRIBUTES_DISABLE=1
+# this suppresses extended attributes in tarballs
+export COPY_EXTENDED_ATTRIBUTES_DISABLE=1
+export COPYFILE_DISABLE=1
 
 libfiles="classes.gd classes.gi compl.gd compl.gi \
        fitting.gd fitting.gi form.gd form.gi grpclass.gd grpclass.gi \

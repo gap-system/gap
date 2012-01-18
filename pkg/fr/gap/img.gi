@@ -2,7 +2,7 @@
 ##
 #W img.gi                                                   Laurent Bartholdi
 ##
-#H   @(#)$Id: img.gi,v 1.90 2011/06/20 14:14:31 gap Exp $
+#H   @(#)$Id: img.gi,v 1.96 2011/09/28 12:51:16 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -376,7 +376,7 @@ BindGlobal("IMGOPTIMIZE@", function(trans, perm, relator, canfail)
             # ok, now we want to change the last <>1 entry of trans[i]{c} so
             # that the product really is a conjugate of a generator.
             j := First(Reversed(c),j->not IsOne(trans[i][j]));
-            trans[i][j] := trans[i][j]/h*nf(y^z);
+            trans[i][j] := trans[i][j]/h * y^z;
         od;
     od;
     return true;
@@ -827,7 +827,7 @@ BindGlobal("ISTREELIKEPERMUTATIONLIST@", function(S,A)
     return Set(S[1])=A;
 end);
 
-InstallMethod(IsKneadingMachine, "(FR) for an FR machine",
+InstallMethod(IsKneadingMachine, "(FR) for a Mealy machine",
         [IsMealyMachine],
         function(M)
     local S, s, t;
@@ -931,18 +931,38 @@ InstallMethod(SupportingRays, "(FR) for a group FR machine",
         function(M)
     local e;
     e := SPIDERALGORITHM@(M);
+    if e=fail then
+        return fail;
+    elif e.minimal=false then
+        return e;
+    fi;
+    return [Length(AlphabetOfFRObject(M)),e.supportingangles[1],e.supportingangles[2]];
+end);
+
+InstallMethod(SupportingRays, "(FR) for a polynomial FR machine",
+        [IsPolynomialFRMachine],
+        function(M)
+    local e;
+    
+    # put the adding element in standard form
+    M := NormalizedPolynomialFRMachine(M);
+    
+    e := SPIDERALGORITHM@(M);
     if e.minimal = false then
         return e;
     fi;
     return [Length(AlphabetOfFRObject(M)),e.supportingangles[1],e.supportingangles[2]];
 end);
 
-InstallMethod(SupportingRays, "(FR) for a group FR machine",
+InstallMethod(SupportingRays, "(FR) for a polynomial IMG machine",
         [IsPolynomialIMGMachine],
         function(M)
-    local e, trans, out, nf, newM, i;
+    local e, trans, nf, newM, i;
     
-    # first remove all occurrences of the adding element, if possible
+    # put the adding element in standard form
+    M := NormalizedPolynomialIMGMachine(M);
+    
+    # first remove all occurrences of the adding element
     e := InitialState(AddingElement(M));
     nf := REMOVEADDER@(StateSet(M),IMGRelator(M),e);
     trans := List(M!.transitions,r->List(r,nf));
@@ -951,10 +971,18 @@ InstallMethod(SupportingRays, "(FR) for a group FR machine",
     newM := IMGMachineNC(FamilyObj(M),StateSet(M),trans,M!.output,IMGRelator(M));
     
     e := SPIDERALGORITHM@(newM);
-    if e.minimal = false then
+    if e=fail then
+        return fail;
+    elif e.minimal=false then
         return e;
     fi;
     return [Length(AlphabetOfFRObject(M)),e.supportingangles[1],e.supportingangles[2]];
+end);
+
+InstallOtherMethod(SupportingRays, "(FR) for a Mealy machine",
+        [IsMealyMachine],
+        function(M)
+    return SupportingRays(AsPolynomialFRMachine(M));
 end);
 
 InstallMethod(AsPolynomialFRMachine, "(FR) for a group FR machine",
@@ -1026,10 +1054,10 @@ InstallMethod(AsPolynomialIMGMachine, "(FR) for a polynomial machine",
     i := GroupHomomorphismByImages(StateSet(M),f,GeneratorsOfFRMachine(M),GeneratorsOfGroup(f){[1..n]});
     trans := List(M!.transitions,r->List(r,x->x^i));
     perm := ShallowCopy(M!.output);
-    newM := WreathRecursion(M)(InitialState(AddingElement(M)));
+    newM := WreathRecursion(M)(InitialState(AddingElement(M))^-1);
     Add(trans,List(newM[1],x->x^i));
     Add(perm,newM[2]);
-    rel := InitialState(AddingElement(M))^i/GeneratorsOfGroup(f)[n+1];
+    rel := InitialState(AddingElement(M))^i*GeneratorsOfGroup(f)[n+1];
     IMGOPTIMIZE@(trans,perm,rel,true);
     newM := FRMachineNC(FamilyObj(M),f,trans,perm);
     SetAddingElement(newM,FRElement(newM,n+1));
@@ -1155,48 +1183,42 @@ BindGlobal("MATCHMARKINGS@", function(M,group,recur)
     return GroupHomomorphismByImagesNC(StateSet(M),group,gens,dst);
 end);
 
-BindGlobal("NORMALIZEADDINGMACHINE@", function(model,trans,out,adder)
-    # conjugate the recursion so that element adder, which is checked to
-    # be an adding machine, becomes of the form (t,...,1)s,
+InstallMethod(NormalizedPolynomialFRMachine, "(FR) for a polynomial FR machine",
+        [IsPolynomialFRMachine],
+        function(M)
+    # conjugate the recursion so that the adding element t becomes of the form (t,...,1)s,
     # where s is the cycle i|->i-1 mod d.
-    # adder is the position of the adding element.
+    # adder is an element of <model>.
     # model is the ambient fundamental group.
-    local cycle, deg, perm, x, i, j, basis;
+    local model, trans, out, adder, N, deg, perm, x, i, j, basis;
     
+    model := StateSet(M);
+    trans := List(M!.transitions,ShallowCopy);
     deg := Length(trans[1]);
-    cycle := Cycles(PermList(out[adder]),[1..deg]);
-    while Length(cycle)<>1 or not IsConjugate(model,Product(trans[adder]{cycle[1]}),model.(adder)) do
-        Error("Element #",adder," is not an adding element");
+    out := List(M!.output,ShallowCopy);
+    adder := InitialState(AddingElement(M));
+    
+    while not ISADDER@(M,adder) do
+        Error("Element ",adder," is not an adding element");
     od;
     
     perm := PermList(Concatenation([deg],[1..deg-1]));
-    perm := RepresentativeAction(SymmetricGroup(deg),PermList(out[adder]),perm);
+    perm := RepresentativeAction(SymmetricGroup(deg),PermList(Output(M,adder)),perm);
     REORDERREC@([trans,out],perm);
 
     basis := [];
     x := One(model);
     for i in [deg,deg-1..1] do
         basis[i] := x;
-        x := x*trans[adder][i];
+        x := x*Transition(M,adder,i);
     od;
-    basis := RepresentativeAction(model,model.(adder),x)*basis;
+    basis := RepresentativeAction(model,adder,x)*basis;
     for i in [1..Length(trans)] do
         for j in [1..deg] do
             trans[i][j] := basis[j]*trans[i][j]/basis[out[i][j]];
         od;
     od;
-end);
 
-InstallMethod(NormalizedPolynomialFRMachine, "(FR) for a polynomial FR machine",
-        [IsPolynomialFRMachine],
-        function(M)
-    local trans, out, adder, N;
-    
-    trans := List(M!.transitions,ShallowCopy);
-    out := List(M!.output,ShallowCopy);
-    adder := Position(GeneratorsOfFRMachine(M),InitialState(AddingElement(M)));
-    if adder=fail then return fail; fi;
-    NORMALIZEADDINGMACHINE@(M!.free,trans,out,adder);
     N := FRMachineNC(FamilyObj(M),M!.free,trans,out);
     COPYADDER@(N,M);
     return N;
@@ -1432,7 +1454,6 @@ BindGlobal("POLYNOMIALMACHINE@", function(d,F,J,machtype,inner,formal)
         Add(out,[1..d]);
         machine := MealyMachine(trans,out);
         SetCorrespondence(machine,pcp);
-        #!!! Product(Reversed(g)) should be faster, but buggy in 4.dev
         SetAddingElement(machine,Product(Reversed(g),i->FRElement(machine,i)));
     elif machtype=2 then
         machine := FRMachine(f,trans,out);
@@ -1551,7 +1572,7 @@ InstallMethod(PolynomialIMGMachine, "(FR) for a degree, preangles, and formal",
 end);
 
 BindGlobal("MATING@", function(machines,adders,formal)
-    local w, i, j, k, states, gen, sgen, sum, f, c, trans, out, deg;
+    local w, i, j, states, gen, sgen, sum, f, c, trans, out, deg;
     
     if not formal then
         Error("Non-formal matings are not yet implemented. Complain to laurent.bartholdi@gmail.com");
@@ -1567,15 +1588,13 @@ BindGlobal("MATING@", function(machines,adders,formal)
     for i in [1..2] do
         j := PositionWord(w[i],adders[i]);
         if j=fail then
-            Assert(0,false); # this should not happen, adders are normalized
-            w[i] := w[i]^-1;
-            j := PositionWord(w[i],adders[i]);
-        fi;
-        if j=fail then
             Error("Cannot find adding machine in ",machines[i]);
         fi;
         w[i] := Subword(w[i],j+1,Length(w[i]))*Subword(w[i],1,j-1);
     od;
+    
+    machines := List(machines,NormalizedPolynomialFRMachine);
+    machines[2] := ChangeFRMachineBasis(machines[2],PermList([deg,deg-1..1]));
 
     states := List(machines,StateSet);
     gen := []; c := [];
@@ -1605,13 +1624,6 @@ BindGlobal("MATING@", function(machines,adders,formal)
         Add(sgen[i],fail,c[i]);
         w[i] := MappedWord(w[i],GeneratorsOfGroup(states[i]),sgen[i]);
         sgen[i][c[i]] := w[i]^-1;
-        trans := List(machines[i]!.transitions,ShallowCopy);
-        out := List(machines[i]!.output,ShallowCopy);
-        NORMALIZEADDINGMACHINE@(StateSet(machines[i]),trans,out,c[i]);
-        if i=2 then
-            FLIPSPIDER@([trans,out],GeneratorsOfGroup(states[i])[c[i]]);
-        fi;
-        machines[i] := FRMachineNC(FamilyObj(machines[i]),StateSet(machines[i]),trans,out);
         c[i] := GroupHomomorphismByImagesNC(states[i],f,GeneratorsOfGroup(states[i]),sgen[i]);
     od;
     
@@ -2089,14 +2101,10 @@ InstallGlobalFunction(Mandel, function(arg)
     od;
     cmd := "mandel";
     if arg<>[] then
-        f := RationalP1Map(IndeterminateOfUnivariateRationalFunction(arg[1]),NORMALIZEV@(P1MapRational(arg[1]),0,false)); # (az^2+b)/(cz^2+d)
+        f := RationalP1Map(IndeterminateOfUnivariateRationalFunction(arg[1]),NORMALIZEV@(P1MapRational(arg[1]),0,IsBicritical)[1]); # (az^2+b)/(cz^2+d)
         if IsPolynomial(f) then
             f := CoefficientsOfUnivariatePolynomial(f);
-            if f[1]=COMPLEX_0 then # z^2
-                a := COMPLEX_0;
-            else # az^2+1
-                a := f[3];
-            fi;
+            a := f[1]*f[3];
             Add(cmd,' '); Append(cmd, String(RealPart(a)));
             Add(cmd,' '); Append(cmd, String(ImaginaryPart(a)));
         else
@@ -2253,10 +2261,7 @@ InstallGlobalFunction(AllInternalAddresses, function(n)
         set := [];
         s := [[]];
         for i in [2..n] do
-            b := [];
-            for j in [1..2^i-2] do
-                Add(b,j/(2^i-1));
-            od;
+            b := [1..2^i-2]/(2^i-1);
             SubtractSet(b,a);
             UniteSet(a,b);
             c := SEPARATION@(set,[b]);
@@ -2298,5 +2303,77 @@ InstallGlobalFunction(AllInternalAddresses, function(n)
     return s;
 end);
 #############################################################################
+
+BindGlobal("NRINTERSECTIONS@", function(free,rel,u,v)
+    # group is "free/[rel]".
+    # u, v are words in "free".
+    # returns the intersection number of u and v, following Cohen-Lustig.
+    local rank, iso, order, redro, i, j, U, V, m, n, pairs;
+    
+    # 1. convert u,v to lists over [1,...,2*rank];
+    rank := RankOfFreeGroup(free)-1;
+    iso := ISOMORPHISMSIMPLIFIEDIMGGROUP@FR(free,rel); # removes last generator
+    u := CyclicallyReducedWord(u^iso);
+    v := CyclicallyReducedWord(v^iso);
+    order := [];
+    for i in LetterRepAssocWord(rel) do
+        if i<=rank then
+            Add(order,i);
+            Add(order,-i);
+        fi;
+    od;
+    redro := [];
+    redro{order+rank+1} := [0..2*rank-1];
+    u := redro{LetterRepAssocWord(u)+rank+1};
+    v := redro{LetterRepAssocWord(v)+rank+1};
+    m := Length(u);
+    n := Length(v);
+    
+    U := List([1..m],i->u{Concatenation([i..m],[1..i-1])});
+    Append(U,List(U,u->Reversed(u+List(u,x->(-1)^x))));
+    
+    V := List([1..n],i->v{Concatenation([i..n],[1..i-1])});
+    Append(V,List(V,v->Reversed(v+List(v,x->(-1)^x))));
+    
+    # 2. compute the cyclic permutations, sort them;
+    order := Concatenation(List([1..m],i->[1,i]),List([1..m],i->[1,-i]),
+                     List([1..n],i->[2,i]),List([1..n],i->[2,-i]));
+    SortParallel(Concatenation(U,V),order,
+            function(x,y)
+        local l, ix, iy;
+        if x=y then return false; fi;
+        ix := 1; iy := 1; l := -1;
+        while x[ix]=y[iy] do
+            l := x[ix]; l := l+(-1)^l; # inverse of last letter
+            ix := ix+1; if ix>Length(x) then ix := 1; fi;
+            iy := iy+1; if iy>Length(y) then iy := 1; fi;
+        od;
+        return ((l<x[ix]) = (y[iy]<l)) <> (x[ix]<y[iy]);
+    end);
+
+    # 3. find linking pairs, reduce using equivalence.
+    pairs := [];
+    rel := [];
+    for i in [1..m] do
+        for j in [1..n] do
+            if Position(order,[1,i]) < Position(order,[2,j]) and Position(order,[2,j]) < Position(order,[1,-i]) and Position(order,[1,-i]) < Position(order,[2,-j]) then
+                AddSet(pairs,[i,j]);
+            fi;
+            if Position(order,[1,i]) < Position(order,[2,-j]) and Position(order,[2,-j]) < Position(order,[1,-i]) and Position(order,[1,-i]) < Position(order,[2,j]) then
+                AddSet(pairs,[i,j]);
+            fi;
+            if u[i]=v[j] then
+                Add(rel,[[i,j],[1+i mod m,1+j mod n]]);
+            fi;
+            if u[i]+(-1)^u[i]=v[1+j mod n] then
+                Add(rel,[[i,1+j mod n],[1+i mod m,j]]);
+            fi;
+        od;
+    od;
+
+    rel := EquivalenceRelationByPairs(Domain(Cartesian([1..m],[1..n])),rel);
+    
+    return Size(EquivalenceClasses(rel,Domain(pairs)));
+end);
 
 #E img.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

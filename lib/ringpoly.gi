@@ -9,8 +9,6 @@
 ##  This file contains the methods  for attributes, properties and operations
 ##  for polynomial rings and function fields.
 ##
-Revision.ringpoly_gi :=
-    "@(#)$Id: ringpoly.gi,v 4.61 2011/05/16 22:22:06 alexk Exp $";
 
 
 #############################################################################
@@ -27,7 +25,13 @@ local opt, idn, nbound, p, i,str;
     opt:= GAPInfo.UserPreferences.IndeterminateNameReuse;
   fi;
 
-  avoid:=List(avoid,IndeterminateNumberOfLaurentPolynomial);
+  #avoid:=List(avoid,IndeterminateNumberOfLaurentPolynomial);
+  avoid:=ShallowCopy(avoid);
+  for i in [1..Length(avoid)] do
+    if not IsInt(avoid[i]) then
+      avoid[i]:=IndeterminateNumberOfLaurentPolynomial(avoid[i]);
+    fi;
+  od;
   idn:=[];
   i:=1;
   while Length(idn)<cnt do
@@ -543,7 +547,7 @@ function( ogens )
 
     univ:=Filtered(ogens{g},
 	     i->DegreeOfUnivariateLaurentPolynomial(i)>=0 and
-		DegreeOfUnivariateLaurentPolynomial(i)<infinity);
+		DegreeOfUnivariateLaurentPolynomial(i)<>DEGREE_ZERO_LAURPOL);
 
     gens:=ogens{Difference([1..Length(ogens)],g)};
 
@@ -622,14 +626,16 @@ end);
 
 #############################################################################
 ##
-#M  StandardAssociate( <pring>, <upol> )
+#M  StandardAssociateUnit( <pring>, <upol> )
 ##
-InstallMethod(StandardAssociate,"normalize leading coefficient",IsCollsElms,
-  [IsPolynomialRing, IsPolynomial],0,
+InstallMethod(StandardAssociateUnit,
+  "for a polynomial ring and a polynomial",
+  IsCollsElms,
+  [IsPolynomialRing, IsPolynomial],
 function(R,f)
-local c;
+  local c;
   c:=LeadingCoefficient(f);
-  return f*StandardAssociate(CoefficientsRing(R),c)/c;
+  return StandardAssociateUnit(CoefficientsRing(R),c);
 end);
 
 InstallMethod(FunctionField,"indetlist",true,[IsRing,IsList],
@@ -665,13 +671,21 @@ function(r,n)
   type := IsFunctionField and IsAttributeStoringRep and IsLeftModule 
           and IsAlgebraWithOne;
 
-
-  # Polynomial rings over commutative rings are themselves commutative.
-  if HasIsCommutative(r) and IsCommutative(r) then
-    type:= type and IsCommutative;
+  # If the coefficients form an integral ring, then the function field is also a field
+  if HasIsIntegralRing(r) and IsIntegralRing(r) then
+    type:= type and IsField;
   fi;
 
-  fcfl := Objectify(NewType(CollectionsFamily(rfun),type),rec());
+  fcfl := Objectify(NewType(CollectionsFamily(rfun),type),rec());;
+
+  # The function field is commutative if and only if the coefficient ring is.
+  if HasIsCommutative(r) then
+    SetIsCommutative(fcfl, IsCommutative(r));
+  fi;
+  # ... same for associative ...
+  if HasIsAssociative(r) then
+    SetIsAssociative(fcfl, IsAssociative(r));
+  fi;
 
   # set the left acting domain
   SetLeftActingDomain(fcfl,r);
@@ -680,7 +694,6 @@ function(r,n)
   Setter(IndeterminatesOfFunctionField)(fcfl,ind);
 
   # set known properties
-  SetIsFinite(fcfl,false);
   SetIsFiniteDimensional(fcfl,false);
   SetSize(fcfl,infinity);
 

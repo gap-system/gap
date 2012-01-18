@@ -2,7 +2,7 @@
 ##
 #W Makefile                                                 Laurent Bartholdi
 ##
-#H   @(#)$Id: Makefile.in,v 1.9 2011/06/19 22:34:19 gap Exp $
+#H   @(#)$Id: Makefile.in,v 1.10 2012/01/11 10:49:23 gap Exp $
 ##
 #Y Copyright (C) 2007, Laurent Bartholdi
 ##
@@ -43,7 +43,7 @@ $(LOCALBIN)/findrat.o: src/findrat.c src/fr_dll.h
 	$(CC) -c $< -o $@ -I@GAPDIR@ -I@GAPDIR@/$(LOCALBIN) -DCONFIG_H
 
 $(LOCALBIN)/fr_dll.so: $(LOCALBIN)/fr_dll.o $(LOCALBIN)/findrat.o $(LOCALBIN)/rpoly.o $(LOCALBIN)/p1.o
-	$(GAC) -d -o $@ $+ -L "@LIBS@"
+	$(GAC) -d -o $@ $+ @GACFLAGS@
 
 java/javaplot.class: src/javaplot.java
 	$(JAVAC) -cp java/javaview.jar $< -d java

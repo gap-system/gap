@@ -531,6 +531,7 @@ end;
 ##
 #F StabilizerIntegralAction( G, mats, e ) . . . . . . . . . . . . . Stab_G(e)
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 StabilizerIntegralAction := function( G, mats, e )
     local p, S, actS, K, actK, T, stab, ser, orbf;
 
@@ -600,6 +601,7 @@ end;
 ## returns Stab_G(e) and g in G with e^g = f if g exists.
 ## returns false otherwise.
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 OrbitIntegralAction := function( G, mats, e, f )
     local c, F, t, os, j, g, S, actS, K, actK, ser, orbf, h, T, l;
 

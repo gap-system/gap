@@ -3,7 +3,6 @@
 #W  list.gd                     GAP library                  Martin Schönert
 #W                                                            & Werner Nickel
 ##
-#H  @(#)$Id: list.gd,v 4.122 2011/05/11 12:05:00 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains the definition of operations and functions for lists.
 ##
-Revision.list_gd :=
-    "@(#)$Id: list.gd,v 4.122 2011/05/11 12:05:00 alexk Exp $";
 
 
 #############################################################################
@@ -354,7 +351,7 @@ DeclareOperation( "AsPlist", [IsListOrCollection] );
 ##  brk> l[4] := 16;;  # assigning a value
 ##  brk> return;       # to escape the break-loop
 ##  16
-##  gap>
+##  gap> 
 ##  ]]></Log>
 ##  <P/>
 ##  Observe that requesting the value of <C>l[4]</C>, which was not
@@ -446,6 +443,10 @@ InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 ##  <P/>
 ##  In sorted lists, membership test and computing of positions can be done
 ##  by binary search, see&nbsp;<Ref Sect="Sorted Lists and Sets"/>.
+##  <P/>
+##  Note that  &GAP; cannot  compare (by  less than)  arbitrary objects.
+##  This can cause  that <Ref Func="IsSortedList"/> runs  into an error,
+##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -481,6 +482,10 @@ DeclareProperty( "IsSortedList", IsList);
 ##  but not strictly sorted.
 ##  In particular, internally represented lists will <E>not</E> store
 ##  that they are sorted but not strictly sorted.)
+##  <P/>
+##  Note that  &GAP; cannot  compare (by  less than)  arbitrary objects.
+##  This can cause  that <Ref Func="IsSSortedList"/> runs  into an error,
+##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -523,6 +528,10 @@ InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 ##  A list is <E>duplicate free</E> if it is dense and does not contain equal
 ##  entries in different positions.
 ##  Every domain (see&nbsp;<Ref Sect="Domains"/>) is duplicate free.
+##  <P/>
+##  Note that  &GAP; cannot  compare arbitrary objects (by equality).
+##  This can cause  that <Ref Func="IsDuplicateFree"/> runs  into an error,
+##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -564,9 +573,9 @@ DeclarePropertyKernel( "IsPositionsList", IsDenseList, IS_POSS_LIST );
 ##  Typical examples of tables are matrices
 ##  (see&nbsp;<Ref Chap="Matrices"/>).
 ##  <Example><![CDATA[
-##  gap> IsTable( [ [ 1, 2 ], [ 3, 4 ] ] );        # in fact a matrix
+##  gap> IsTable( [ [ 1, 2 ], [ 3, 4 ] ] );    # in fact a matrix
 ##  true
-##  gap> IsTable( [ [ 1 ], [ 2, 3 ] ] );           # not rectangular but a table
+##  gap> IsTable( [ [ 1 ], [ 2, 3 ] ] );       # not rectangular but a table
 ##  true
 ##  gap> IsTable( [ [ 1, 2 ], [ () , (1,2) ] ] );  # not homogeneous
 ##  false
@@ -724,6 +733,7 @@ DeclareOperation( "PositionNthOccurrence", [ IsList, IsObject, IS_INT ] );
 ##  <Func Name="PositionSorted" Arg='list, elm[, func]'/>
 ##
 ##  <Description>
+##  <Index Key="PositionSortedOp"><C>PositionSortedOp</C></Index>
 ##  Called with two arguments, <Ref Func="PositionSorted"/> returns
 ##  the position of the element <A>elm</A> in the sorted list <A>list</A>.
 ##  <P/>
@@ -1069,7 +1079,7 @@ DeclareOperation( "Add", [ IsList and IsMutable, IsObject,  IS_INT ]);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "Remove", [IsList and IsMutable]);
+DeclareOperationKernel( "Remove", [IsList and IsMutable], REM_LIST);
 DeclareOperation( "Remove", [IsList and IsMutable, IS_INT]);
 
 DeclareSynonym( "CopyListEntries", COPY_LIST_ENTRIES );
@@ -1424,12 +1434,14 @@ DeclareOperation( "ReversedOp", [ IsDenseList ] );
 ##  gap> l := [1..20];
 ##  [ 1 .. 20 ]
 ##  gap> m := Shuffle(ShallowCopy(l));
-##  [ 15, 13, 3, 19, 8, 11, 14, 7, 16, 4, 17, 18, 5, 1, 10, 6, 2, 9, 12, 20 ]
+##  [ 15, 13, 3, 19, 8, 11, 14, 7, 16, 4, 17, 18, 5, 1, 10, 6, 2, 9, 12, 
+##    20 ]
 ##  gap> l;
 ##  [ 1 .. 20 ]
 ##  gap> Shuffle(l);;
 ##  gap> l;
-##  [ 3, 4, 18, 13, 10, 7, 9, 8, 14, 17, 16, 6, 19, 12, 1, 11, 20, 2, 15, 5 ]
+##  [ 3, 4, 18, 13, 10, 7, 9, 8, 14, 17, 16, 6, 19, 12, 1, 11, 20, 2, 15, 
+##    5 ]
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
@@ -1502,7 +1514,8 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  [ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 3, 4 ], [ 1, 5 ], [ 0, 6 ] ]
 ##  gap> list := [ [0,6], [1,3], [3,4], [1,5], [1,2], [0,4], ];;
 ##  gap> Sort( list, function(v,w) return v[1] < w[1]; end );
-##  gap> list;  # note the random order of the elements with equal first component
+##  gap> # note the random order of the elements with equal first component:
+##  gap> list;
 ##  [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -1688,7 +1701,8 @@ DeclareGlobalFunction("LengthComparison");
 ##  700
 ##  gap> Maximum( [ -123, 700, 123, 0, -1000 ] );
 ##  700
-##  gap> Maximum( [1,2], [0,15], [1,5], [2,-11] );  # lists are compared elementwise
+##  gap> # lists are compared elementwise:
+##  gap> Maximum( [1,2], [0,15], [1,5], [2,-11] );  
 ##  [ 2, -11 ]
 ##  ]]></Example>
 ##  </Description>
@@ -1820,8 +1834,8 @@ DeclareOperation( "MinimumList", [ IsList ] );
 ##  [ [ 1, 3, 5 ], [ 1, 3, 6 ], [ 1, 4, 5 ], [ 1, 4, 6 ], [ 2, 3, 5 ], 
 ##    [ 2, 3, 6 ], [ 2, 4, 5 ], [ 2, 4, 6 ] ]
 ##  gap> Cartesian( [1,2,2], [1,1,2] );
-##  [ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ], [ 2, 1 ], 
-##    [ 2, 1 ], [ 2, 2 ] ]
+##  [ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ], 
+##    [ 2, 1 ], [ 2, 1 ], [ 2, 2 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

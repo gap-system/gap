@@ -2,7 +2,6 @@
 ##
 #W  streams.gi                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: streams.gi,v 4.63 2010/07/28 15:45:21 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the methods for streams.
 ##
-Revision.streams_gi :=
-    "@(#)$Id: streams.gi,v 4.63 2010/07/28 15:45:21 gap Exp $";
 
 
 #############################################################################
@@ -1205,6 +1202,31 @@ end );
 
 
 #############################################################################
+##  formatting status for stdout
+GAPInfo.FormattingStatusStdout := true;
+InstallOtherMethod( PrintFormattingStatus, "for stdout", [IsString],
+function(str)
+  if str <> "*stdout*" then
+    Error("Only the string \"*stdout*\" is recognized by this method.");
+  fi;
+  return GAPInfo.FormattingStatusStdout;
+end);
+
+InstallOtherMethod( SetPrintFormattingStatus, "for stdout", [IsString, IsBool],
+function(str, status)
+  if str <> "*stdout*" then
+    Error("Only the string \"*stdout*\" is recognized by this method.");
+  fi;
+  if status = false then
+    SET_PRINT_FORMATTING_STDOUT(false);
+    GAPInfo.FormattingStatusStdout := false;
+  else
+    SET_PRINT_FORMATTING_STDOUT(true);
+    GAPInfo.FormattingStatusStdout := true;
+  fi;
+end);
+
+
 ##
 #M  PrintObj( <output-text-string> )
 ##

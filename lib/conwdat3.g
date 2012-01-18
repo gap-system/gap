@@ -3,7 +3,6 @@
 #W  conwdat3.g                  GAP library                     Thomas Breuer
 #W                                                              Frank Lübeck
 ##
-#H  @(#)$Id: conwdat3.g,v 4.2 2005/07/21 08:08:09 gap Exp $
 ##
 #Y  Copyright (C) 2005 The GAP Group
 ##
@@ -11,8 +10,6 @@
 ##  primes
 ##                     1000 < p < 110000
 ##  (File is only read by 'ConwayPolynomial' if needed.)     
-Revision.conwdat3_g :=
-    "@(#)$Id: conwdat3.g,v 4.2 2005/07/21 08:08:09 gap Exp $";
 
 atomic readwrite CONWAYPOLDATA do
 CONWAYPOLDATA[1009]:= PREPARE_CONWAY_DATA([

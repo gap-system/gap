@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W fields.gi              Alnuth -  Kant Interface             Bjoern Assmann
+#W fields.gi       Alnuth -  ALgebraic NUmber THeory         Bjoern Assmann
 ##
 
 #############################################################################

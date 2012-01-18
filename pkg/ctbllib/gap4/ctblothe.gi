@@ -1,26 +1,23 @@
 #############################################################################
 ##
-#W  ctblothe.gi                 GAP library                     Thomas Breuer
+#W  ctblothe.gi          GAP 4 package CTblLib                  Thomas Breuer
 ##
-#H  @(#)$Id: ctblothe.gi,v 1.2 2003/10/16 08:28:04 gap Exp $
-##
-#Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright 1990-1992,   Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declarations of functions for interfaces to
 ##  other data formats of character tables.
 ##
-##  1. interface to {\sf CAS}
-##  2. interface to {\sf MOC}
-##  3. interface to {\GAP}~3
+##  1. interface to CAS
+##  2. interface to MOC
+##  3. interface to GAP 3
 ##  4. interface to the Cambridge format
+##  5. Interface to the MAGMA display format
 ##
-Revision.ctblothe_gi :=
-    "@(#)$Id: ctblothe.gi,v 1.2 2003/10/16 08:28:04 gap Exp $";
 
 
 #############################################################################
 ##
-##  1. interface to {\sf CAS}
+##  1. interface to CAS
 ##
 
 
@@ -250,7 +247,7 @@ end );
 
 #############################################################################
 ##
-##  2. interface to {\sf MOC}
+##  2. interface to MOC
 ##
 
 
@@ -819,7 +816,7 @@ end );
 ##
 #F  MOCTable0( <gaptbl> )
 ##
-##  {\MOC}~3 format table of ordinary {\GAP} table <gaptbl>
+##  MOC 3 format table of ordinary GAP table <gaptbl>
 ##
 BindGlobal( "MOCTable0", function( gaptbl )
     local i, j, k, d, n, p, result, trans, gal, extendedfields, entry,
@@ -995,7 +992,7 @@ end );
 ##
 #F  MOCTableP( <gaptbl>, <basicset> )
 ##
-##  {\MOC}~3 format table of {\GAP} Brauer table <gaptbl>,
+##  MOC 3 format table of GAP Brauer table <gaptbl>,
 ##  with basic set of ordinary irreducibles at positions in
 ##  `Irr( OrdinaryCharacterTable( <gaptbl> ) )' given in the list <basicset>
 ##
@@ -1513,7 +1510,7 @@ end );
 
 #############################################################################
 ##
-##  3. interface to {\GAP}~3
+##  3. interface to GAP 3
 ##
 
 
@@ -1704,6 +1701,241 @@ InstallGlobalFunction( CambridgeMaps, function( tbl )
     return rec( power := power,
                 prime := prime,
                 names := classnames );
+end );
+
+
+#############################################################################
+##
+##  5. Interface to the MAGMA display format
+##
+
+
+#############################################################################
+##
+#F  BosmaBase( <n> )
+##
+InstallGlobalFunction( BosmaBase, function( n )
+    local first, pair, p, pk, phi, q, basis, newbasis, i;
+
+    if ( not IsPosInt( n ) ) or n mod 4 = 2 then
+      return fail;
+    elif n = 1 then
+      return [ 0 ];
+    fi;
+
+    first:= true;
+    for pair in Collected( Factors( n ) ) do
+      p:= pair[1];
+      pk:= p^pair[2];
+      phi:= ( pk / p ) * (p-1);
+      q:= n / pk;
+      if first then
+        basis:= [ 0, q .. (phi-1)*q ];
+      else
+        newbasis:= ShallowCopy( basis );
+        for i in [ q, 2*q .. (phi-1)*q ] do
+          Append( newbasis, basis + i );
+        od;
+        basis:= newbasis;
+      fi;
+      first:= false;
+    od;
+
+    return List( basis, x -> x mod n );
+end );
+
+
+#############################################################################
+##
+#F  GAPTableOfMagmaFile( <file>, <identifier> )
+##
+##  MAGMA's display format for character tables is assumed to start with a
+##  series of parts showing for a bunch of columns the class lengths,
+##  element orders, power maps, and character values;
+##  afterwards follows the definition of the symbols used to denote
+##  irrational character values.
+##
+##  Unfortunately, it cannot be assumed that character values in adjacent
+##  columns are separated by at least one blank --this feature would have
+##  simplified the function below considerably.
+##  We assume that
+##  - the class numbers are in fact seperated by at least one blank,
+##  - all values are right-aligned,
+##  - class numbers occur in lines starting with `Class |',
+##    and are consecutive positive integers starting at `1',
+##  - class lengths occur in lines starting with `Size ',
+##  - element orders occur in lines starting with `Order ',
+##  - power maps occur in lines starting with `p', followed by at least one
+##    blank, followed by `=', followed by at least one blank and then the
+##    prime in question,
+##  - the irrational values have names of the form `Z<i>' or `Z<i>#<k>' or
+##    `I' or `J' or their negatives or an integer followed by such a symbol.
+##
+InstallGlobalFunction( GAPTableOfMagmaFile, function( file, identifier )
+    local split, orders, classlengths, powermaps, irr, irrats, str, line, i,
+          istr, columns, pos, pos2, p, spl, val, N, coeffs, basis, chi, int,
+          pair, k, tbl;
+
+#T -> cache the BosmaBase results!
+
+    split:= function( line, columns )
+      local result, range;
+
+      result:= [];
+      for range in columns do
+        Add( result, NormalizedWhitespace( line{ range } ) );
+      od;
+      return result;
+    end;
+
+    orders:= [];
+    classlengths:= [];
+    powermaps:= [];
+    irr:= [];
+    irrats:= [];
+
+    # Run once over the lines of the file.
+    str:= InputTextFile( file );
+    line:= ReadLine( str );
+    i:= 1;
+    istr:= String( i );
+    while line <> fail do
+      if 5 < Length( line ) then
+        if   line{ [ 1 .. 5 ] } = "Class" then
+          # some class numbers; use them to define the columns
+          columns:= [];
+          pos:= Position( line, '|' );
+          pos2:= PositionSublist( line, istr, pos );
+          while pos2 <> fail do
+            pos2:= pos2 + Length( istr ) - 1;
+            Add( columns, [ pos+1 .. pos2 ] );
+            pos:= pos2;
+            i:= i+1;
+            istr:= String( i );
+            pos2:= PositionSublist( line, istr, pos );
+          od;
+        elif line{ [ 1 .. 4 ] } = "Size" then
+          # some class lengths
+          Append( classlengths, List( split( line, columns ), Int ) );
+        elif line{ [ 1 .. 5 ] } = "Order" then
+          # some element orders
+          Append( orders, List( split( line, columns ), Int ) );
+        elif line{ [ 1 .. 2 ] } = "p " then
+          # some power map values
+          p:= Int( NormalizedWhitespace( line{
+                       [ Position( line, '=' ) + 1 .. columns[1][1] ] } ) );
+          if not IsBound( powermaps[p] ) then
+            powermaps[p]:= [];
+          fi;
+          Append( powermaps[p], List( split( line, columns ), Int ) );
+        elif line{ [ 1 .. 2 ] } = "X." then
+          # some character values
+          pos:= Int( line{ [ 3 .. Position( line, ' ' ) - 1 ] } );
+          if not IsBound( irr[ pos ] ) then
+            irr[ pos ]:= [];
+          fi;
+          Append( irr[ pos ], split( line, columns ) );
+        elif line[1] = 'Z' then
+          # definition of an irrational value that is not a root of unity;
+          # the line has the form
+          # `Z<m> = (CyclotomicField(<n>: Sparse := true)) ! [
+          # RationalField() | <coeffs> ]'
+          # where <m> and <n> are positive integers and <coeffs> is a
+          # sequence of comma separated integers;
+          # this information may be extended over several lines
+          NormalizeWhitespace( line );
+          spl:= SplitString( line, " " );
+          val:= "Unknown()";
+          pos:= PositionSublist( line, "CyclotomicField(" );
+          if pos <> fail then
+            pos2:= Position( line, ':', pos );
+            if pos2 <> fail then
+              N:= Int( line{ [ pos+16 .. pos2-1 ] } );
+              while line[ Length( line ) ] <> ']' do
+                Append( line, NormalizedWhitespace( ReadLine( str ) ) );
+              od;
+              pos2:= PositionSublist( line, "RationalField() |" );
+              if pos2 <> fail then
+                pos2:= Position( line, '|', pos ) + 1;
+                coeffs:= EvalString( Concatenation( "[",
+                             line{ [ pos2 .. Length( line ) ] } ) );
+                basis:= List( BosmaBase( N ), i -> E(N)^i );
+                val:= Concatenation( "(", String( coeffs * basis ), ")" );
+              fi;
+            fi;
+          fi;
+          if val = "Unknown()" then
+            Print( "#E cannot identify irrationality ", spl[1], "\n" );
+          fi;
+          Add( irrats, [ spl[1], val ] );
+        elif PositionSublist( line, "RootOfUnity(" ) <> fail then
+          # definition of an irrational value that is a root of unity;
+          # the line has the form `<nam> = RootOfUnity(<n>)',
+          # for a string <nam> and a positive integer <n>
+          NormalizeWhitespace( line );
+          spl:= SplitString( line, " " );
+          N:= EvalString( ReplacedString( spl[3], "RootOfUnity", "" ) );
+          Add( irrats, [ spl[1], Concatenation( "(E(", String(N), "))" ) ] );
+        fi;
+      fi;
+
+      line:= ReadLine( str );
+    od;
+    CloseStream( str );
+
+    # Run over the character values, replace irrationalities by their values.
+    irrats:= Reversed( irrats );
+    for chi in irr do
+      for i in [ 1 .. Length( chi ) ] do
+        val:= chi[i];
+        int:= Int( val );
+        if int <> fail then
+          chi[i]:= int;
+        else
+          # Identify the irrationality.
+          pos:= Position( val, '#' );
+          if pos = fail then
+            for pair in irrats do
+              val:= ReplacedString( val, pair[1], pair[2] );
+            od;
+          else
+            k:= "";
+            pos2:= pos + 1;
+            while pos2 <= Length( val ) and IsDigitChar( val[ pos2 ] ) do
+              Add( k, val[ pos2 ] );
+              pos2:= pos2 + 1;
+            od;
+            pos2:= pos - 1;
+            while IsDigitChar( val[ pos2 ] ) do
+              pos2:= pos2 - 1;
+            od;
+            val:= val{ [ pos2 .. pos - 1 ] };
+            pair:= First( irrats, pair -> pair[1] = val );
+            if pair[2] = "Unknown()" then
+              val:= ReplacedString( chi[i], Concatenation( pair[1], "#", k ),
+                           pair[2] );
+            else
+              val:= ReplacedString( chi[i], Concatenation( pair[1], "#", k ),
+                      Concatenation( "GaloisCyc(", pair[2], ",", k, ")" ) );
+            fi;
+          fi;
+          chi[i]:= EvalString( val );
+        fi;
+      od;
+    od;
+
+    # Create the GAP character table object.
+    tbl:= rec(
+      UnderlyingCharacteristic:= 0,
+      Identifier:= identifier,
+      ComputedPowerMaps:= powermaps,
+      Irr:= irr,
+      NrConjugacyClasses:= Length( orders ),
+      SizesConjugacyClasses:= classlengths,
+      OrdersClassRepresentatives:= orders,
+    );
+
+    return ConvertToLibraryCharacterTableNC( tbl );
 end );
 
 

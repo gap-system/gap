@@ -2,7 +2,6 @@
 ##
 #W  sgpres.gi                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id: sgpres.gi,v 4.70 2010/06/11 19:01:28 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file  contains  the methods for  subgroup presentations  in finitely
 ##  presented groups (fp groups).
 ##
-Revision.sgpres_gi :=
-    "@(#)$Id: sgpres.gi,v 4.70 2010/06/11 19:01:28 gap Exp $";
 
 
 #############################################################################

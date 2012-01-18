@@ -2,7 +2,6 @@
 **
 *W  calls.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: calls.h,v 4.26 2010/09/19 09:27:58 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -42,9 +41,11 @@
 **  calling  another compiled function, which expects fewer than 4 arguments,
 **  with no profiling, the overhead is only a couple of instructions.
 */
+
+#ifndef GAP_CALLS_H
+#define GAP_CALLS_H
+
 #ifdef INCLUDE_DECLARATION_PART
-const char * Revision_calls_h =
-   "@(#)$Id: calls.h,v 4.26 2010/09/19 09:27:58 sal Exp $";
 #endif
 
 
@@ -377,6 +378,8 @@ extern Obj CallFuncListOper;
 */
 StructInitInfo * InitInfoCalls ( void );
 
+
+#endif // GAP_CALLS_H
 
 /****************************************************************************
 **

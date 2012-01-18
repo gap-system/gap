@@ -2,14 +2,13 @@
 **
 *A  map_relations.c             ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: map_relations.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: map_relations.c,v 1.7 2011/11/29 13:48:18 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
 
-#if defined (STANDARD_PCP) 
 #include "pq_defs.h"
 #include "pcp_vars.h"
 #include "pga_vars.h"
@@ -17,9 +16,19 @@
 #include "constants.h"
 #include "pq_functions.h"
 
+#if defined (STANDARD_PCP) 
+
 #define POWER -100
 #undef COMMUTATOR 
 #define COMMUTATOR -200
+
+
+static Logical is_ident (int *map, int i, int lastg);
+static Logical is_identity_map (int **map, int ndgen, int lastg);
+static int length_of_image (int gen, Logical *defn, int **map, struct pcp_vars *pcp);
+static void print_image_under_aut (FILE *present, int *preimage, int gen, Logical *defn, int **map, struct pcp_vars *pcp);
+static void print_definition (FILE *present, int *preimage, int gen, int *definition, struct pcp_vars *pcp);
+
 
 /* modify the stored relations under the action of the standard 
    automorphism and print out the result -- this code is complex 
@@ -32,12 +41,9 @@
 
 /* find the structure of pcp generator gen and store it in definition */ 
 
-int find_structure (gen, definition, pcp)
-int gen;
-int *definition;
-struct pcp_vars *pcp;
+static void find_structure (int gen, int *definition, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int structure = pcp->structure;
    register int lastg = pcp->lastg;
@@ -86,12 +92,9 @@ struct pcp_vars *pcp;
 /* print the defining relations of the group after applying
    the standard automorphism described in map */
 
-void map_relations (map, pga, pcp)
-int **map;
-struct pga_vars *pga;
-struct pcp_vars *pcp;
+void map_relations (int **map, struct pga_vars *pga, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int ndgen = pcp->ndgen;
    register int ndrel = pcp->ndrel;
@@ -103,7 +106,7 @@ struct pcp_vars *pcp;
    register int i, j, k, l;
    register int pointer, length;
    int exp, absgen;
-   FILE_TYPE present;
+   FILE * present;
    Logical *defn;
    int *preimage;
    int *image;
@@ -300,10 +303,7 @@ struct pcp_vars *pcp;
 
 /* is pcp generator i mapped to the identity? its image is supplied as map */
 
-Logical is_ident (map, i, lastg)
-int *map;
-int i;
-int lastg;
+static Logical is_ident (int *map, int i, int lastg)
 {
    register int j;
    Logical identity = TRUE;
@@ -318,10 +318,7 @@ int lastg;
 
 /* is the map the identity on the pcp generators of the Frattini quotient */
 
-Logical is_identity_map (map, ndgen, lastg)
-int **map;
-int ndgen;
-int lastg;
+static Logical is_identity_map (int **map, int ndgen, int lastg)
 {
    Logical identity = TRUE;
    register int i;
@@ -335,11 +332,7 @@ int lastg;
 
 /* find length of image of gen under map */
 
-int length_of_image (gen, defn, map, pcp)
-int gen;
-Logical *defn;
-int **map;
-struct pcp_vars *pcp;
+static int length_of_image (int gen, Logical *defn, int **map, struct pcp_vars *pcp)
 {
    register int lastg = pcp->lastg;
    register int i;
@@ -357,13 +350,7 @@ struct pcp_vars *pcp;
 
 /* print image of gen under map */
 
-int print_image_under_aut (present, preimage, gen, defn, map, pcp)
-FILE *present;
-int *preimage;
-int gen;
-Logical *defn;
-int **map;
-struct pcp_vars *pcp;
+static void print_image_under_aut (FILE *present, int *preimage, int gen, Logical *defn, int **map, struct pcp_vars *pcp)
 {
    register int lastg = pcp->lastg;
    register int i;
@@ -393,14 +380,9 @@ struct pcp_vars *pcp;
 
 /* print definition of pcp generator, gen */
 
-int print_definition (present, preimage, gen, definition, pcp)
-FILE *present;
-int *preimage;
-int gen;
-int *definition;
-struct pcp_vars *pcp;
+static void print_definition (FILE *present, int *preimage, int gen, int *definition, struct pcp_vars *pcp)
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int start = y[pcp->clend + 1] + 1;
    register int exponent;

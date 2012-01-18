@@ -5,7 +5,6 @@
 ##
 ##  Installed in GAP4 by Andrew Solomon for Semigroups instead of Monoids.
 ##
-#H  @(#)$Id: tcsemi.gd,v 4.10 2010/02/23 15:13:33 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  This file contains declarations for Todd-Coxeter procedure for
 ##  fp semigroups.
 ##
-Revision.tcsemi_gd :=
-    "@(#)$Id: tcsemi.gd,v 4.10 2010/02/23 15:13:33 gap Exp $";
 
 ############################################################################
 ##

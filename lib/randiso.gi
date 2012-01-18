@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.randiso_gi :=
-    "@(#)$Id: randiso.gi,v 1.25 2010/02/23 15:13:25 gap Exp $";
 
 #############################################################################
 ##

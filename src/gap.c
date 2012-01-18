@@ -3,7 +3,6 @@
 *W  gap.c                       GAP source                       Frank Celler
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id: gap.c,v 4.234 2011/05/15 18:39:12 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -21,9 +20,6 @@
 #ifdef HAVE_SYS_STAT_H
 #include        <sys/stat.h>
 #endif
-
-const char * Revision_gap_c =
-"@(#)$Id: gap.c,v 4.234 2011/05/15 18:39:12 gap Exp $";
 
 /* TL: extern char * In; */
 
@@ -67,7 +63,7 @@ const char * Revision_gap_c =
 #include        "string.h"              /* strings                         */
 #include        "vecgf2.h"              /* functions for GF2 vectors       */
 #include        "vec8bit.h"             /* functions for other compressed
-					   GF(q) vectors                   */
+                                           GF(q) vectors                   */
 
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
@@ -102,7 +98,7 @@ const char * Revision_gap_c =
 #include        "weakptr.h"             /* weak pointers                   */
 
 #ifdef GAPMPI
-#include        "gapmpi.h"              /* ParGAP/MPI			   */
+#include        "gapmpi.h"              /* ParGAP/MPI                      */
 #endif
 
 #include        "thread.h"
@@ -214,7 +210,7 @@ UInt QUITTINGGVar;
 
 Obj OnGapPromptHook;
 
-Obj ErrorHandler;		/* not yet settable from GAP level */
+Obj ErrorHandler;               /* not yet settable from GAP level */
 
 
 typedef struct {
@@ -249,15 +245,15 @@ syJmp_buf SyRestartBuf;
 
 
 Obj Shell ( Obj context, 
-	    UInt canReturnVoid,
-	    UInt canReturnObj,
-	    UInt lastDepth,
-	    UInt setTime,
-	    Char *prompt,
-	    Obj preCommandHook,
-	    UInt catchQUIT,
-	   Char *inFile,
-	    Char *outFile)
+            UInt canReturnVoid,
+            UInt canReturnObj,
+            UInt lastDepth,
+            UInt setTime,
+            Char *prompt,
+            Obj preCommandHook,
+            UInt catchQUIT,
+            Char *inFile,
+            Char *outFile)
 {
   UInt time = 0;
   UInt status;
@@ -302,9 +298,9 @@ Obj Shell ( Obj context,
     /* here is a hook: */
     if (preCommandHook) {
       if (!IS_FUNC(preCommandHook))
-	{
-	  	  Pr("#E CommandHook was non-function, ignoring\n",0L,0L);
-	}
+        {
+                  Pr("#E CommandHook was non-function, ignoring\n",0L,0L);
+        }
       else
         {
           Call0ArgsInNewReader(preCommandHook);
@@ -325,33 +321,33 @@ Obj Shell ( Obj context,
 
       /* remember the value in 'last'    */
       if (lastDepth >= 3)
-	AssGVar( Last3, ValGVar( Last2 ) );
+        AssGVar( Last3, ValGVar( Last2 ) );
       if (lastDepth >= 2)
-	AssGVar( Last2, ValGVar( Last  ) );
+        AssGVar( Last2, ValGVar( Last  ) );
       if (lastDepth >= 1)
-	AssGVar( Last,  TLS->readEvalResult   );
+        AssGVar( Last,  TLS->readEvalResult   );
 
       /* print the result                                            */
       if ( ! TLS->dualSemicolon ) {
-	ViewObjHandler( TLS->readEvalResult );
+        ViewObjHandler( TLS->readEvalResult );
       }
-	    
+            
     }
 
     /* handle return-value or return-void command                      */
     else if (status & STATUS_RETURN_VAL) 
       if(canReturnObj)
-	break;
+        break;
       else
-	Pr( "'return <object>' cannot be used in this read-eval-print loop\n",
-	    0L, 0L );
+        Pr( "'return <object>' cannot be used in this read-eval-print loop\n",
+            0L, 0L );
 
     else if (status & STATUS_RETURN_VOID) 
       if(canReturnVoid ) 
-	break;
+        break;
       else
-	Pr( "'return' cannot be used in this read-eval-print loop\n",
-	    0L, 0L );
+        Pr( "'return' cannot be used in this read-eval-print loop\n",
+            0L, 0L );
     
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
@@ -359,21 +355,21 @@ Obj Shell ( Obj context,
       TLS->UserHasQuit = 1;
       break;
     }
-	
+        
     /* handle QUIT */
     else if (status & (STATUS_QQUIT)) {
       TLS->UserHasQUIT = 1;
       break;
     }
-	
+        
     /* stop the stopwatch                                          */
     if (setTime)
       AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
 
     if (TLS->UserHasQuit)
       {
-	FlushRestOfInputLine();
-	TLS->UserHasQuit = 0;	/* quit has done its job if we are here */
+        FlushRestOfInputLine();
+        TLS->UserHasQuit = 0;        /* quit has done its job if we are here */
       }
 
   }
@@ -387,15 +383,15 @@ Obj Shell ( Obj context,
   if (TLS->UserHasQUIT)
     {
       if (catchQUIT)
-	{
-	  TLS->UserHasQUIT = 0;
-	  MakeReadWriteGVar(QUITTINGGVar);
-	  AssGVar(QUITTINGGVar, True);
-	  MakeReadOnlyGVar(QUITTINGGVar);
-	  return Fail;
-	}
+        {
+          TLS->UserHasQUIT = 0;
+          MakeReadWriteGVar(QUITTINGGVar);
+          AssGVar(QUITTINGGVar, True);
+          MakeReadOnlyGVar(QUITTINGGVar);
+          return Fail;
+        }
       else
-	ReadEvalError();
+        ReadEvalError();
     }
 
   if (status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))
@@ -420,7 +416,6 @@ Obj Shell ( Obj context,
 }
 
 
-	   
 
 Obj FuncSHELL (Obj self, Obj args)
 {
@@ -516,7 +511,7 @@ Obj FuncSHELL (Obj self, Obj args)
 
 
 
-static void StrAppend(char **st,char *st2)
+static void StrAppend(char **st, const char *st2)
 {
     Int len,len2;
     if (*st == NULL)
@@ -529,6 +524,9 @@ static void StrAppend(char **st,char *st2)
         printf("Extremely unexpected out of memory error. Giving up.\n");
         exit(1);
     }
+    /* If *st was initially NULL, we must zero-terminate the
+       newly allocated string. */
+    if (len == 0) **st = 0;
     SyStrncat(*st,st2,len2);
 }
 
@@ -549,7 +547,7 @@ static void DoFindMyself(char *myself, char **mypath, char **gappath)
     p = tmppath+SyStrlen(tmppath);
     while (*p != '/') p--;
     *p = 0;
-    StrAppend(&tmppath,"/../../..");
+    StrAppend(&tmppath,"/../..");
     *gappath = realpath(tmppath,NULL);
     if (*gappath == NULL) {
         printf("Could not determine GAP path, giving up.\n");
@@ -588,10 +586,10 @@ int DoCreateStartupScript(int argc, char *argv[], int withws)
     tmppath = NULL;
     StrAppend(&tmppath,SYS_ARCH);
     p = tmppath;
-    while (*p != '/') p++;
+    while (*p != 0 && *p != '/') p++;
     *p++ = 0;
     fprintf(f,"GAP_ARCH_SYS=\"%s\"\n",tmppath);
-    fprintf(f,"GAP_ARCH_ABI=\"%s\"\n",p);
+    fprintf(f,"GAP_ARCH_ABI=\"%s\"\n",p);	// FIXME: WRONG
     fprintf(f,"exec %s -l %s",mypath,gappath);
     if (withws) {
         tmppath[0] = 0;
@@ -771,9 +769,11 @@ int main (
   return 0;
 }
 
-int realmain (
-	  int                 argc,
-	  char *              argv [],
+#define main realmain
+
+int main (
+          int                 argc,
+          char *              argv [],
           char *              environ [] )
 {
   UInt                type;                   /* result of compile       */
@@ -819,24 +819,24 @@ int realmain (
   /* initialize everything and read init.g which runs the GAP session */
   InitializeGap( &argc, argv );
   if (!TLS->UserHasQUIT) {         /* maybe the user QUIT from the initial
-				   read of init.g  somehow*/
+                                   read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
     if ( SyCompilePlease ) {
       if ( ! OpenInput(SyCompileInput) ) {
-	SyExit(1);
+        SyExit(1);
       }
       func = READ_AS_FUNC();
       crc  = SyGAPCRC(SyCompileInput);
       if (SyStrlen(SyCompileOptions) != 0)
-	SetCompileOpts(SyCompileOptions);
+        SetCompileOpts(SyCompileOptions);
       type = CompileFunc(
-			 SyCompileOutput,
-			 func,
-			 SyCompileName,
-			 crc,
-			 SyCompileMagic1 );
+                         SyCompileOutput,
+                         func,
+                         SyCompileName,
+                         crc,
+                         SyCompileMagic1 );
       if ( type == 0 )
-	SyExit( 1 );
+        SyExit( 1 );
       SyExit( 0 );
     }
   }
@@ -860,8 +860,8 @@ Obj FuncRESTART_GAP( Obj self, Obj cmdline )
   while (!IsStringConv(cmdline))
     {
       cmdline = ErrorReturnObj("RESTART_GAP: <cmdline> must be a string, not a %s",
-			       (Int) TNAM_OBJ(cmdline), (Int) 0,
-			       "You can resturn a string to continue");
+                               (Int) TNAM_OBJ(cmdline), (Int) 0,
+                               "You can resturn a string to continue");
     }
   s = CSTR_STRING(cmdline);
   /* Pr("%s\n",(Int)s, 0); */
@@ -869,9 +869,9 @@ Obj FuncRESTART_GAP( Obj self, Obj cmdline )
   v = restart_argv_buffer;
   while (*s) {
     *v++ = s;
-    while (*s && !isspace(*s))
+    while (*s && !IsSpace(*s))
       s++;
-    while (isspace(*s))
+    while (IsSpace(*s))
       *s++ = '\0';
   }
   *v = (Char *)0;
@@ -890,8 +890,8 @@ Obj FuncRESTART_GAP( Obj self, Obj cmdline )
 *F  FuncID_FUNC( <self>, <val1> ) . . . . . . . . . . . . . . . return <val1>
 */
 Obj FuncID_FUNC (
-		 Obj                 self,
-		 Obj                 val1 )
+                 Obj                 self,
+                 Obj                 val1 )
 {
   return val1;
 }
@@ -910,7 +910,7 @@ Obj FuncID_FUNC (
 **  The accuracy of this number is also system dependent.
 */
 Obj FuncRuntime (
-		 Obj                 self )
+                 Obj                 self )
 {
   return INTOBJ_INT( SyTime() );
 }
@@ -957,8 +957,8 @@ Obj FuncRUNTIMES( Obj     self)
 **  set with the command line options '-x <x>' and '-y <y>'.
 */
 Obj FuncSizeScreen (
-		    Obj                 self,
-		    Obj                 args )
+                    Obj                 self,
+                    Obj                 args )
 {
   Obj                 size;           /* argument and result list        */
   Obj                 elm;            /* one entry from size             */
@@ -968,9 +968,9 @@ Obj FuncSizeScreen (
   /* check the arguments                                                 */
   while ( ! IS_SMALL_LIST(args) || 1 < LEN_LIST(args) ) {
     args = ErrorReturnObj(
-			  "Function: number of arguments must be 0 or 1 (not %d)",
-			  LEN_LIST(args), 0L,
-			  "you can replace the argument list <args> via 'return <args>;'" );
+                          "Function: number of arguments must be 0 or 1 (not %d)",
+                          LEN_LIST(args), 0L,
+                          "you can replace the argument list <args> via 'return <args>;'" );
   }
 
   /* get the arguments                                                   */
@@ -984,9 +984,9 @@ Obj FuncSizeScreen (
     size = ELM_LIST( args, 1 );
     while ( ! IS_SMALL_LIST(size) || 2 < LEN_LIST(size) ) {
       size = ErrorReturnObj(
-			    "SizeScreen: <size> must be a list of length 2",
-			    0L, 0L,
-			    "you can replace <size> via 'return <size>;'" );
+                            "SizeScreen: <size> must be a list of length 2",
+                            0L, 0L,
+                            "you can replace <size> via 'return <size>;'" );
     }
   }
 
@@ -998,9 +998,9 @@ Obj FuncSizeScreen (
     elm = ELMW_LIST(size,1);
     while ( TNUM_OBJ(elm) != T_INT ) {
       elm = ErrorReturnObj(
-			   "SizeScreen: <x> must be an integer",
-			   0L, 0L,
-			   "you can replace <x> via 'return <x>;'" );
+                           "SizeScreen: <x> must be an integer",
+                           0L, 0L,
+                           "you can replace <x> via 'return <x>;'" );
     }
     len = INT_INTOBJ( elm );
     if ( len < 20  )  len = 20;
@@ -1015,9 +1015,9 @@ Obj FuncSizeScreen (
     elm = ELMW_LIST(size,2);
     while ( TNUM_OBJ(elm) != T_INT ) {
       elm = ErrorReturnObj(
-			   "SizeScreen: <y> must be an integer",
-			   0L, 0L,
-			   "you can replace <y> via 'return <y>;'" );
+                           "SizeScreen: <y> must be an integer",
+                           0L, 0L,
+                           "you can replace <y> via 'return <y>;'" );
     }
     nr = INT_INTOBJ( elm );
     if ( nr < 10 )  nr = 10;
@@ -1052,11 +1052,11 @@ Obj FuncSizeScreen (
 static Obj WindowCmdString;
 
 Obj FuncWindowCmd (
-		   Obj	      	    self,
-		   Obj             args )
+                   Obj              self,
+                   Obj             args )
 {
   Obj             tmp;
-  Obj       	    list;
+  Obj               list;
   Int             len;
   Int             n,  m;
   Int             i;
@@ -1066,21 +1066,21 @@ Obj FuncWindowCmd (
   /* check arguments                                                     */
   while ( ! IS_SMALL_LIST(args) ) {
     args = ErrorReturnObj( "argument list must be a list (not a %s)",
-			   (Int)TNAM_OBJ(args), 0L,
-			   "you can replace the argument list <args> via 'return <args>;'" );
+                           (Int)TNAM_OBJ(args), 0L,
+                           "you can replace the argument list <args> via 'return <args>;'" );
 
   }
   tmp = ELM_LIST(args,1);
   while ( ! IsStringConv(tmp) || 3 != LEN_LIST(tmp) ) {
     while ( ! IsStringConv(tmp) ) {
       tmp = ErrorReturnObj( "<cmd> must be a string (not a %s)",
-			    (Int)TNAM_OBJ(tmp), 0L,
-			    "you can replace <cmd> via 'return <cmd>;'" );
+                            (Int)TNAM_OBJ(tmp), 0L,
+                            "you can replace <cmd> via 'return <cmd>;'" );
     }
     if ( 3 != LEN_LIST(tmp) ) {
       tmp = ErrorReturnObj( "<cmd> must be a string of length 3",
-			    0L, 0L,
-			    "you can replace <cmd> via 'return <cmd>;'" );
+                            0L, 0L,
+                            "you can replace <cmd> via 'return <cmd>;'" );
     }
   }
 
@@ -1090,16 +1090,16 @@ Obj FuncWindowCmd (
     {
       tmp = ELM_LIST( args, i );
       while ( TNUM_OBJ(tmp) != T_INT && ! IsStringConv(tmp) ) {
-	tmp = ErrorReturnObj(
-			     "%d. argument must be a string or integer (not a %s)",
-			     i, (Int)TNAM_OBJ(tmp),
-			     "you can replace the argument <arg> via 'return <arg>;'" );
-	SET_ELM_PLIST( args, i, tmp );
+        tmp = ErrorReturnObj(
+                             "%d. argument must be a string or integer (not a %s)",
+                             i, (Int)TNAM_OBJ(tmp),
+                             "you can replace the argument <arg> via 'return <arg>;'" );
+        SET_ELM_PLIST( args, i, tmp );
       }
       if ( TNUM_OBJ(tmp) == T_INT )
-	len += 12;
+        len += 12;
       else
-	len += 12 + LEN_LIST(tmp);
+        len += 12 + LEN_LIST(tmp);
     }
   if ( SIZE_OBJ(WindowCmdString) <= len ) {
     ResizeBag( WindowCmdString, 2*len+1 );
@@ -1119,24 +1119,24 @@ Obj FuncWindowCmd (
       tmp = ELM_LIST(args,i);
 
       if ( TNUM_OBJ(tmp) == T_INT ) {
-	*ptr++ = 'I';
-	m = INT_INTOBJ(tmp);
-	for ( m = (m<0)?-m:m;  0 < m;  m /= 10 )
-	  *ptr++ = (m%10) + '0';
-	if ( INT_INTOBJ(tmp) < 0 )
-	  *ptr++ = '-';
-	else
-	  *ptr++ = '+';
+        *ptr++ = 'I';
+        m = INT_INTOBJ(tmp);
+        for ( m = (m<0)?-m:m;  0 < m;  m /= 10 )
+          *ptr++ = (m%10) + '0';
+        if ( INT_INTOBJ(tmp) < 0 )
+          *ptr++ = '-';
+        else
+          *ptr++ = '+';
       }
       else {
-	*ptr++ = 'S';
-	m = LEN_LIST(tmp);
-	for ( ; 0 < m;  m/= 10 )
-	  *ptr++ = (m%10) + '0';
-	*ptr++ = '+';
-	qtr = CSTR_STRING(tmp);
-	for ( m = LEN_LIST(tmp);  0 < m;  m-- )
-	  *ptr++ = *qtr++;
+        *ptr++ = 'S';
+        m = LEN_LIST(tmp);
+        for ( ; 0 < m;  m/= 10 )
+          *ptr++ = (m%10) + '0';
+        *ptr++ = '+';
+        qtr = CSTR_STRING(tmp);
+        for ( m = LEN_LIST(tmp);  0 < m;  m-- )
+          *ptr++ = *qtr++;
       }
     }
   *ptr = 0;
@@ -1154,16 +1154,16 @@ Obj FuncWindowCmd (
     if ( *ptr == 'I' ) {
       ptr++;
       for ( n=0,m=1; '0' <= *ptr && *ptr <= '9'; ptr++,m *= 10,len-- )
-	n += (*ptr-'0') * m;
+        n += (*ptr-'0') * m;
       if ( *ptr++ == '-' )
-	n *= -1;
+        n *= -1;
       len -= 2;
       AssPlist( list, i, INTOBJ_INT(n) );
     }
     else if ( *ptr == 'S' ) {
       ptr++;
       for ( n=0,m=1;  '0' <= *ptr && *ptr <= '9';  ptr++,m *= 10,len-- )
-	n += (*ptr-'0') * m;
+        n += (*ptr-'0') * m;
       ptr++; /* ignore the '+' */
       /*CCC tmp = NEW_STRING(n);
       *CSTR_STRING(tmp) = '\0';
@@ -1240,8 +1240,8 @@ void DownEnvInner( Int depth )
   
   /* now go down                                                         */
   while ( 0 < depth
-	  && TLS->errorLVars != TLS->bottomLVars
-	  && PTR_BAG(TLS->errorLVars)[2] != TLS->bottomLVars ) {
+          && TLS->errorLVars != TLS->bottomLVars
+          && PTR_BAG(TLS->errorLVars)[2] != TLS->bottomLVars ) {
     TLS->errorLVars = PTR_BAG(TLS->errorLVars)[2];
     TLS->ErrorLLevel--;
     TLS->ShellContext = PTR_BAG(TLS->ShellContext)[2];
@@ -1251,8 +1251,8 @@ void DownEnvInner( Int depth )
 }
   
 Obj FuncDownEnv (
-		 Obj                 self,
-		 Obj                 args )
+                 Obj                 self,
+                 Obj                 args )
 {
   Int                 depth;
 
@@ -1278,8 +1278,8 @@ Obj FuncDownEnv (
 }
 
 Obj FuncUpEnv (
-	       Obj                 self,
-	       Obj                 args )
+               Obj                 self,
+               Obj                 args )
 {
   Int                 depth;
   if ( LEN_LIST(args) == 0 ) {
@@ -1315,14 +1315,14 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
   }
 #if T_PROCCALL_0ARGS
     else if ( FIRST_STAT_TNUM <= TNUM_STAT(call)
-	      && TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
+              && TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
 #else
      else if ( TNUM_STAT(call)  <= LAST_STAT_TNUM ) {
 #endif
       PrintStat( call );
     }
     else if ( FIRST_EXPR_TNUM <= TNUM_EXPR(call)
-	      && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) {
+              && TNUM_EXPR(call)  <= LAST_EXPR_TNUM ) {
       PrintExpr( call );
     }
     SWITCH_TO_OLD_LVARS( currLVars );
@@ -1339,9 +1339,9 @@ Obj FuncPrintExecutingStatement(Obj self, Obj context)
 /* TL: Obj ThrownObject = 0; */
 
 Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
-  {
-    Obj plain_args;
+{
     syJmp_buf readJmpError;
+    Obj plain_args;
     Obj res;
     Obj currLVars;
     Obj result;
@@ -1353,8 +1353,8 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <args> must be a list",0,0);
     if (!IS_PLIST(args))
       {
-	plain_args = SHALLOW_COPY_OBJ(args);
-	PLAIN_LIST(plain_args);
+        plain_args = SHALLOW_COPY_OBJ(args);
+        PLAIN_LIST(plain_args);
       }
     else 
       plain_args = args;
@@ -1377,51 +1377,52 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     } else {
       switch (LEN_PLIST(plain_args)) {
       case 0: result = CALL_0ARGS(func);
-	break;
+        break;
       case 1: result = CALL_1ARGS(func, ELM_PLIST(plain_args,1));
-	break;
+        break;
       case 2: result = CALL_2ARGS(func, ELM_PLIST(plain_args,1),
-				  ELM_PLIST(plain_args,2));
-	break;
+                                  ELM_PLIST(plain_args,2));
+        break;
       case 3: result = CALL_3ARGS(func, ELM_PLIST(plain_args,1),
-				  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3));
-	break;
+                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3));
+        break;
       case 4: result = CALL_4ARGS(func, ELM_PLIST(plain_args,1),
-				  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-				  ELM_PLIST(plain_args,4));
-	break;
+                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
+                                  ELM_PLIST(plain_args,4));
+        break;
       case 5: result = CALL_5ARGS(func, ELM_PLIST(plain_args,1),
-				  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-				  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5));
-	break;
+                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
+                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5));
+        break;
       case 6: result = CALL_6ARGS(func, ELM_PLIST(plain_args,1),
-				  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
-				  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5),
-				  ELM_PLIST(plain_args,6));
-	break;
+                                  ELM_PLIST(plain_args,2), ELM_PLIST(plain_args,3),
+                                  ELM_PLIST(plain_args,4), ELM_PLIST(plain_args,5),
+                                  ELM_PLIST(plain_args,6));
+        break;
       default: result = CALL_XARGS(func, plain_args);
       }
       /* There should be no locks to pop off the stack, but better safe than sorry. */
       PopRegionLocks(lockSP);
       SET_ELM_PLIST(res,1,True);
       if (result)
-	{
-	  SET_LEN_PLIST(res,2);
-	  SET_ELM_PLIST(res,2,result);
-	  CHANGED_BAG(res);
-	}
+        {
+          SET_LEN_PLIST(res,2);
+          SET_ELM_PLIST(res,2,result);
+          CHANGED_BAG(res);
+        }
       else
-	SET_LEN_PLIST(res,1);
+        SET_LEN_PLIST(res,1);
     }
     memcpy((void *)&TLS->readJmpError, (void *)&readJmpError, sizeof(syJmp_buf));
-    return res;      
-  }
+    return res;
+}
 
- Obj FuncJUMP_TO_CATCH( Obj self, Obj payload) {
-   TLS->thrownObject = payload;
-   syLongjmp(TLS->readJmpError, 1);
-   return 0;
- }
+Obj FuncJUMP_TO_CATCH( Obj self, Obj payload)
+{
+  TLS->thrownObject = payload;
+  syLongjmp(TLS->readJmpError, 1);
+  return 0;
+}
   
 
 #if 0
@@ -1429,13 +1430,13 @@ TL: UInt UserHasQuit;
 TL: UInt UserHasQUIT; 
 #endif
 
- Obj FuncSetUserHasQuit( Obj Self, Obj value)
-   {
-     TLS->UserHasQuit = INT_INTOBJ(value);
-     if (TLS->UserHasQuit)
-       TLS->recursionDepth = 0;
-     return 0;
-   }
+Obj FuncSetUserHasQuit( Obj Self, Obj value)
+{
+  TLS->UserHasQuit = INT_INTOBJ(value);
+  if (TLS->UserHasQuit)
+    TLS->recursionDepth = 0;
+  return 0;
+}
 
 /****************************************************************************
 **
@@ -1500,7 +1501,7 @@ void ErrorQuit (
 *F  ErrorQuitBound( <name> )  . . . . . . . . . . . . . . .  unbound variable
 */
 void ErrorQuitBound (
-    Char *              name )
+    const Char *        name )
 {
     ErrorQuit(
         "variable '%s' must have an assigned value",
@@ -1602,9 +1603,9 @@ void ErrorQuitNrArgs (
 *F  ErrorQuitRange3( <first>, <second>, <last> ) . . divisibility
 */
 void ErrorQuitRange3 (
-		      Obj                 first,
-		      Obj                 second,
-		      Obj                 last)
+                      Obj                 first,
+                      Obj                 second,
+                      Obj                 last)
 {
     ErrorQuit(
         "Range expression <last>-<first> must be divisible by <second>-<first>, not %d %d",
@@ -1895,9 +1896,9 @@ Obj FuncSHOW_STAT (
             continue;
         }
         /*CCC name = NEW_STRING( SyStrlen(info->name) );
-	  SyStrncat( CSTR_STRING(name), info->name, SyStrlen(info->name) );CCC*/
-	len = SyStrlen(info->name);
-	C_NEW_STRING(name, len, info->name);
+          SyStrncat( CSTR_STRING(name), info->name, SyStrlen(info->name) );CCC*/
+        len = SyStrlen(info->name);
+        C_NEW_STRING(name, len, info->name);
 
         SET_ELM_PLIST( modules, im, name );
 
@@ -1929,26 +1930,26 @@ Obj FuncLoadedModules (
         m = Modules[i];
         if ( m->type == MODULE_BUILTIN ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'b'] );
-	    CHANGED_BAG(list);
+            CHANGED_BAG(list);
             C_NEW_STRING( str, SyStrlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             SET_ELM_PLIST( list, 3*i+3, INTOBJ_INT(m->version) );
         }
         else if ( m->type == MODULE_DYNAMIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
-	    CHANGED_BAG(list);
+            CHANGED_BAG(list);
             C_NEW_STRING( str, SyStrlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
-	    CHANGED_BAG(list);
+            CHANGED_BAG(list);
             C_NEW_STRING( str, SyStrlen(m->filename), m->filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
         else if ( m->type == MODULE_STATIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
-	    CHANGED_BAG(list);
+            CHANGED_BAG(list);
             C_NEW_STRING( str, SyStrlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
-	    CHANGED_BAG(list);
+            CHANGED_BAG(list);
             C_NEW_STRING( str, SyStrlen(m->filename), m->filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
@@ -2111,17 +2112,19 @@ Obj FuncGASMAN_STATS(Obj self)
       CHANGED_BAG(res);
       SET_LEN_PLIST(row, 9);
       for (j = 1; j <= 8; j++)
-	{
-	  x = SyGasmanNumbers[i-1][j];
+        {
+          x = SyGasmanNumbers[i-1][j];
 
-	  /* convert x to GAP integer. x may be too big to be a small int */
-	  if (x < (1L << NR_SMALL_INT_BITS))
-	    entry = INTOBJ_INT(x);
-	  else
-	    entry = SUM( PROD(INTOBJ_INT(x >> (NR_SMALL_INT_BITS/2)), INTOBJ_INT(1 << (NR_SMALL_INT_BITS/2))), INTOBJ_INT( x % ( 1 << (NR_SMALL_INT_BITS/2))));
-	  SET_ELM_PLIST(row, j, entry);
-	}
-      SET_ELM_PLIST(row, 9, INTOBJ_INT(SyGasmanNumbers[i-1][0]));	
+          /* convert x to GAP integer. x may be too big to be a small int */
+          if (x < (1L << NR_SMALL_INT_BITS))
+            entry = INTOBJ_INT(x);
+          else
+            entry = SUM( PROD(INTOBJ_INT(x >> (NR_SMALL_INT_BITS/2)),
+                              INTOBJ_INT(1 << (NR_SMALL_INT_BITS/2))),
+                         INTOBJ_INT( x % ( 1 << (NR_SMALL_INT_BITS/2))));
+          SET_ELM_PLIST(row, j, entry);
+        }
+      SET_ELM_PLIST(row, 9, INTOBJ_INT(SyGasmanNumbers[i-1][0]));       
     }
   return res;      
 }
@@ -2330,87 +2333,9 @@ Obj FuncSWAP_MPTR (
 
 *F  FillInVersion( <module>, <rev_c>, <rev_h> ) . . .  fill in version number
 */
-static UInt ExtractRevision (
-    const Char *                rev,
-    const Char * *              name )
-{
-    const Char *                p;
-    const Char *                major;
-    const Char *                minor;
-    UInt                        ver1;
-    UInt                        ver2;
-
-    /* store the revision strings                                          */
-    
-    /* the revision string is "@(#)Id: filename.x,v major.minor ..."       */
-    p = rev;
-    while ( *p && *p != ':' )  p++;
-    if ( *p )  p++;
-    while ( *p && *p == ' ' )  p++;
-    *name = p;
-    while ( *p && *p != ' ' )  p++;
-    while ( *p && *p == ' ' )  p++;
-    major = p;
-    while ( *p && *p != '.' )  p++;
-    if ( *p )  p++;
-    while ( *p && *p == '.' )  p++;
-    minor = p;
-
-    /* the version is MMmmm, that is 2 digits major, 3 digits minor        */
-    ver1 = 0;
-    while ( '0' <= *major && *major <= '9' ) {
-        ver1 = ver1 * 10 + (UInt)( *major - '0' );
-        major++;
-    }
-    ver2 = 0;
-    while ( '0' <= *minor && *minor <= '9' ) {
-        ver2 = ver2 * 10 + (UInt)( *minor - '0' );
-        minor++;
-    }
-
-    return ver1 * 1000 + ver2;
-}
-
-
 void FillInVersion (
     StructInitInfo *            module )
 {
-    const Char *                p;
-    const Char *                q;
-    const Char *                name;
-    const Char *                rev_c;
-    const Char *                rev_h;
-    UInt                        c_ver;
-    UInt                        h_ver;
-
-    /* store revision entries                                              */
-    rev_c = module->revision_c;
-    rev_h = module->revision_h;
-
-    /* extract the filename and version entry from <rev_c>                 */
-    c_ver = ExtractRevision( rev_c, &name );
-    if ( module->name ) {
-        p = name;
-        q = module->name;
-        while ( *p && *q && *p == *q ) { p++; q++; }
-        if ( *q || *p != '.' ) {
-            FPUTS_TO_STDERR( "#W  corrupt version info '" );
-            FPUTS_TO_STDERR( rev_c );
-            FPUTS_TO_STDERR( "'\n" );
-        }
-    }
-    h_ver = ExtractRevision( rev_h, &name );
-    if ( module->name ) {
-        p = name;
-        q = module->name;
-        while ( *p && *q && *p == *q ) { p++; q++; }
-        if ( *q || *p != '.' ) {
-            FPUTS_TO_STDERR( "#W  corrupt version info '" );
-            FPUTS_TO_STDERR( rev_h );
-            FPUTS_TO_STDERR( "'\n" );
-        }
-    }
-    module->version = c_ver*100000+h_ver;
 }
 
 
@@ -2800,7 +2725,7 @@ Obj FuncSleep( Obj self, Obj secs )
     {
       ClearError(); /* The interrupt may still be pending */
       ErrorReturnVoid("user interrupt in sleep", 0L, 0L,
-		    "you can 'return;' as if the sleep was finished");
+                    "you can 'return;' as if the sleep was finished");
     }
   
   return (Obj) 0;
@@ -2855,13 +2780,6 @@ Obj FuncFORCE_QUIT_GAP( Obj self )
 
 /****************************************************************************
 **
-*V  Revisions . . . . . . . . . . . . . . . . . .  record of revision numbers
-*/
-Obj Revisions;
-
-
-/****************************************************************************
-**
 *F  KERNEL_INFO() ......................record of information from the kernel
 ** 
 ** The general idea is to put all kernel-specific info in here, and clean up
@@ -2905,11 +2823,6 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("GAP_ROOT_PATHS");
   AssPRec(res,r,list);
       
-    /* create a revision record                                            */
-
-    r = RNamName("Revision");
-    AssPRec(res, r, Revisions);
-
     
     /* make command line and environment available to GAP level       */
     for (lenvec=0; SyOriginalArgv[lenvec]; lenvec++);
@@ -2929,7 +2842,7 @@ Obj FuncKERNEL_INFO(Obj self) {
     tmp = NEW_PREC(0);
     for (i = 0; sysenviron[i]; i++) {
       for (p = sysenviron[i]; *p != '='; p++)
-	;
+        ;
       *p++ = '\0';
       lenstr = SyStrlen(p);
       str = NEW_STRING(lenstr);
@@ -2940,6 +2853,17 @@ Obj FuncKERNEL_INFO(Obj self) {
     }
     r = RNamName("ENVIRONMENT");
     AssPRec(res,r, tmp);
+
+#ifdef CONFIGNAME
+    /* and also the CONFIGNAME of the running  GAP kernel  */
+    p = CONFIGNAME;
+    lenstr = SyStrlen(p);
+    str = NEW_STRING(lenstr);
+    SyStrncat(CSTR_STRING(str), p, lenstr);
+    SET_LEN_STRING(str, lenstr);
+    r = RNamName("CONFIGNAME");
+    AssPRec(res, r, str);
+#endif
    
     return res;
   
@@ -3174,7 +3098,6 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* init the completion function                                        */
-    InitGlobalBag( &Revisions,         "src/gap.c:Revisions"         );
     /* InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      ); */
 
     /* list of exit functions                                              */
@@ -3224,9 +3147,6 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
       UInt var;
-
-    /* create a revision record                                            */
-    Revisions = NEW_PREC(0);
 
     /* library name and other stuff                                        */
     var = GVarName( "DEBUG_LOADING" );
@@ -3292,9 +3212,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGap ( void )
 {
-    module.revision_c = Revision_gap_c;
-    module.revision_h = Revision_gap_h;
-    FillInVersion( &module );
     return &module;
 }
 
@@ -3385,7 +3302,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoAObjects,
 
 #ifdef GAPMPI
-    /* ParGAP/MPI module						   */
+    /* ParGAP/MPI module                                                   */
     InitInfoGapmpi,
 #endif
 
@@ -3430,7 +3347,7 @@ void RecordLoadedModule (
     }
     len = SyStrlen(filename);
     if (NextLoadedModuleFilename + len + 1
-	> LoadedModuleFilenames+MAX_MODULE_FILENAMES) {
+        > LoadedModuleFilenames+MAX_MODULE_FILENAMES) {
       Pr( "panic: no room for module filename\n", 0L, 0L );
     }
     *NextLoadedModuleFilename = '\0';
@@ -3439,22 +3356,6 @@ void RecordLoadedModule (
     NextLoadedModuleFilename += len +1;
     Modules[NrModules++] = info;
 }
-
-
-/****************************************************************************
-**
-
-*F  SET_REVISION( <file>, <revision> )  . . . . . . . . . enter revision info
-*/
-#define SET_REVISION( file, revision ) \
-  do { \
-      UInt                    rev_rnam; \
-      Obj                     rev_str; \
-      rev_rnam = RNamName(file); \
-      C_NEW_STRING( rev_str, SyStrlen(revision), (revision) ); \
-      RESET_FILT_LIST( rev_str, FN_IS_MUTABLE ); \
-      AssPRec( Revisions, rev_rnam, rev_str ); \
-  } while (0)
 
 
 /****************************************************************************
@@ -3486,33 +3387,6 @@ extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
 
 static Obj POST_RESTORE;
 
-/* needed in two places below */
-void CreateRevisionRecord()
-{
-    int i;
-
-    /* create a revision record / overwrite a restored one           */
-    for ( i = 0;  i < NrBuiltinModules;  i++ ) {
-        Char buf[30];
-        buf[0] = 0;
-        SyStrncat( buf, Modules[i]->name, 27 );
-        SyStrncat( buf, "_c", 2 );
-        SET_REVISION( buf, Modules[i]->revision_c );
-        buf[0] = 0;
-        SyStrncat( buf, Modules[i]->name, 27 );
-        SyStrncat( buf, "_h", 2 );
-        SET_REVISION( buf, Modules[i]->revision_h );
-    }
-
-    /* add revisions for files which are not modules                       */
-    {
-        SET_REVISION( "system_c", Revision_system_c );
-        SET_REVISION( "system_h", Revision_system_h );
-        SET_REVISION( "gasman_c", Revision_gasman_c );
-        SET_REVISION( "gasman_h", Revision_gasman_h );
-    }
-}
-
 void InitializeGap (
     int *               pargc,
     char *              argv [] )
@@ -3534,7 +3408,7 @@ void InitializeGap (
     InitBags( SyAllocBags, SyStorMin,
               0, (Bag*)(((UInt)pargc/SyStackAlign)*SyStackAlign), SyStackAlign,
               SyCacheSize, 0, SyAbortBags );
-	      InitMsgsFuncBags( SyMsgsBags ); 
+              InitMsgsFuncBags( SyMsgsBags ); 
 
 
     /* get info structures for the build in modules                        */
@@ -3601,10 +3475,10 @@ void InitializeGap (
 
 #ifndef BOEHM_GC
     /* and now for a special hack                                          */
-	for ( i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
-	  if (TabMarkFuncBags[i + COPYING] == MarkAllSubBagsDefault)
-	    TabMarkFuncBags[ i+COPYING ] = TabMarkFuncBags[ i ];
-	}
+    for ( i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
+      if (TabMarkFuncBags[i + COPYING] == MarkAllSubBagsDefault)
+        TabMarkFuncBags[ i+COPYING ] = TabMarkFuncBags[ i ];
+    }
 #endif
 
     /* if we are restoring, load the workspace and call the post restore   */
@@ -3625,18 +3499,15 @@ void InitializeGap (
                 }
             }
         }
-	SyRestoring = NULL;
+        SyRestoring = NULL;
 
-
-        /* overwrite revision record of kernel modules */
-        CreateRevisionRecord();
 
         /* Call POST_RESTORE which is a GAP function that now takes control, 
-	   calls the post restore functions and then runs a GAP session */
-	if (POST_RESTORE != (Obj) 0 &&
-	    IS_FUNC(POST_RESTORE))
-	  if (!READ_ERROR())
-	    CALL_0ARGS(POST_RESTORE);
+           calls the post restore functions and then runs a GAP session */
+        if (POST_RESTORE != (Obj) 0 &&
+            IS_FUNC(POST_RESTORE))
+          if (!READ_ERROR())
+            CALL_0ARGS(POST_RESTORE);
     }
 
 
@@ -3647,7 +3518,7 @@ void InitializeGap (
             CheckAllHandlers();
 #       endif
 
-	SyInitializing = 1;    
+        SyInitializing = 1;    
         for ( i = 0;  i < NrBuiltinModules;  i++ ) {
             if ( Modules[i]->initLibrary ) {
 #               ifdef DEBUG_LOADING
@@ -3683,9 +3554,6 @@ void InitializeGap (
         }
     }
 
-    /* create revision record of kernel modules */
-    CreateRevisionRecord();
-
     /* read the init files      
        this now actually runs the GAP session, we only get 
        past here when we're about to exit. 
@@ -3693,19 +3561,20 @@ void InitializeGap (
     if ( SySystemInitFile[0] ) {
       if (!READ_ERROR()) {
         if ( READ_GAP_ROOT(SySystemInitFile) == 0 ) {
-	  /*             if ( ! SyQuiet ) { */
+          /*             if ( ! SyQuiet ) { */
                 Pr( "gap: hmm, I cannot find '%s' maybe",
                     (Int)SySystemInitFile, 0L );
-                Pr( " use option '-l <gaproot>'?\n If you ran the GAP\
- binary directly, try running the 'gap.sh' or 'gap.bat' script instead.", 0L, 0L );
+                Pr( " use option '-l <gaproot>'?\n If you ran the GAP"
+                    " binary directly, try running the 'gap.sh' or 'gap.bat'"
+                    " script instead.", 0L, 0L );
             }
       }
       else
-	{
-	  Pr("Caught error at top-most level, probably quit from library loading",0L,0L);
-	  SyExit(1);
-	}
-	/*         } */
+        {
+          Pr("Caught error at top-most level, probably quit from library loading",0L,0L);
+          SyExit(1);
+        }
+        /*         } */
     }
 
 }

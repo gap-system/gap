@@ -6,12 +6,10 @@
 ##  This file installs interactive functions that execute individual pq  menu
 ##  options.
 ##
-#H  @(#)$Id: anupqi.gi,v 1.15 2005/08/25 14:20:13 werner Exp $
+#H  @(#)$Id: anupqi.gi,v 1.16 2011/11/29 20:00:12 gap Exp $
 ##
 #Y  Copyright (C) 2001  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-Revision.anupqi_gi :=
-    "@(#)$Id: anupqi.gi,v 1.15 2005/08/25 14:20:13 werner Exp $";
 
 #############################################################################
 ##

@@ -3,8 +3,8 @@
 #W  testall.g                GAP4 Package `RCWA'                 Frank Celler
 ##                                                                Stefan Kohl
 ##
-##  This is an adaptation of the test file for the GAP library to the
-##  RCWA package.
+##  This file contains the code to run the test suite of the RCWA package. It
+##  is an adaptation of the file running the test suite of the GAP Library.
 ##
 #############################################################################
 
@@ -120,8 +120,9 @@ Print(FormatParagraph(Concatenation(
   "objects are printed, and which are therefore harmless. However ",
   "if the correct and the actual output look different mathematically ",
   "or if you see error messages or if GAP crashes, then something ",
-  "went wrong. Also, run times which are much longer than ",
-  "predicted may indicate a problem.")),"\n");
+  "went wrong. Also, reports about significantly increased runtimes ",
+  "as well as runtimes which are much longer than predicted may ",
+  "indicate a problem.")),"\n");
 Print(FormatParagraph(Concatenation(
   "The runtime of the following tests (in general) increases. ",
   "The `next' time is an approximation of the running time for ",
@@ -137,10 +138,10 @@ Print("-------------------------------------------\n");
 infoRead1 := InfoRead1;  InfoRead1 := Ignore;
 infoRead2 := InfoRead2;  InfoRead2 := Ignore;
 
-TestDir := Concatenation(PackageInfo("rcwa")[1].InstallationPath,"/tst/");
-TestDir := [ Directory(TestDir) ];
+TestDirStr := Concatenation(PackageInfo("rcwa")[1].InstallationPath,"/tst/");
+TestDir    := [ Directory(TestDirStr) ];
 
-for i  in [ 1 .. Length(TEST_FILES) ]  do
+for i in [ 1 .. Length(TEST_FILES) ] do
     name := Filename( TestDir, TEST_FILES[i][1] );
     if i < Length(TEST_FILES)  then
         next := TEST_FILES[i+1][2] / 10^4;
@@ -148,7 +149,7 @@ for i  in [ 1 .. Length(TEST_FILES) ]  do
         next := 0;
     fi;
     Print("testing: ",name,"\n");
-    ReadTest(name);
+    ReadTestCompareRuntimes(name,Concatenation(TestDirStr,"timings/"));
     SHOW_STONES(next);
 od;
 

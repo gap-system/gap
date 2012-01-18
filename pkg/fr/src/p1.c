@@ -2,7 +2,7 @@
  *
  * p1.c                                                     Laurent Bartholdi
  *
- *   @(#)$Id: p1.c,v 1.27 2011/06/21 14:11:48 gap Exp $
+ *   @(#)$Id: p1.c,v 1.29 2011/11/10 08:33:38 gap Exp $
  *
  * Copyright (c) 2009, 2010, Laurent Bartholdi
  *
@@ -260,11 +260,12 @@ void clean_complex (ldcomplex *v, ldouble prec)
 static Obj CLEANEDP1POINT(Obj self, Obj objp, Obj objprec)
 {
   ldcomplex p = GET_P1POINT(objp);
-  clean_complex(&p, VAL_FLOAT(objprec));
+  ldouble prec = VAL_FLOAT(objprec);
+  clean_complex(&p, prec);
   ldouble n = cnorm(p);
-  if (n > 0.5/(LDBL_EPSILON*LDBL_EPSILON))
+  if (n > 0.5/(prec*prec))
     return P1infinity;
-  if (n < 2.0*LDBL_EPSILON*LDBL_EPSILON)
+  if (n < 2.0*prec*prec)
     p = 0.0;
   return NEW_P1POINT(p);
 }
@@ -870,6 +871,8 @@ static StructGVarFunc GVarFuncs[] = {
 
 void InitP1Kernel(void)
 {
+  InitHdlrFuncsFromTable (GVarFuncs);
+
   ImportGVarFromLibrary ("TYPE_P1POINT", &TYPE_P1POINT);
   ImportGVarFromLibrary ("TYPE_P1MAP", &TYPE_P1MAP);  
   ImportGVarFromLibrary ("IsP1Point", &IsP1Point);

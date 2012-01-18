@@ -2,7 +2,7 @@
 ##
 #W helpers.gi                                               Laurent Bartholdi
 ##
-#H   @(#)$Id: helpers.gi,v 1.112 2011/06/20 14:23:51 gap Exp $
+#H   @(#)$Id: helpers.gi,v 1.118 2012/01/11 10:49:23 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -144,12 +144,19 @@ BindGlobal("EXECINSHELL@", function(input,command,detach)
     return outs;
 end);
 
-BindGlobal("DOT2DISPLAY@", function(str,prog,args)
-    CHECKEXEC@("display");
+BindGlobal("DOT2DISPLAY@", function(str,prog)
+    local command;
+    
     CHECKEXEC@(prog);
     CHECKEXEC@("sh");
-
-    return EXECINSHELL@(str,Concatenation(EXEC@.(prog)," ",args," | ",EXEC@.display," -flatten -"),ValueOption("detach"));
+    if ValueOption("usesvg")<>fail then
+        CHECKEXEC@("rsvg-view");
+        command := Concatenation(EXEC@.(prog)," -Tsvg 2>/dev/null | ",EXEC@.("rsvg-view")," --stdin");
+    else
+        CHECKEXEC@("display");
+        command := Concatenation(EXEC@.(prog)," -Gbgcolor=white -Tps 2>/dev/null | ",EXEC@.display," -flatten -");
+    fi;
+    return EXECINSHELL@(str,command,ValueOption("detach"));
 end);
 
 BindGlobal("JAVAPLOT@", function(input)
@@ -502,7 +509,7 @@ InstallGlobalFunction(WordGrowth, function(arg)
         if IsString(draw) then
             AppendTo(draw,S);
         else
-            DOT2DISPLAY@(S, "neato", "-Gbgcolor=white -Tps 2>/dev/null");
+            DOT2DISPLAY@(S, "neato");
         fi;
     else
         return result; # by default, same as 'spheresizes'
@@ -587,7 +594,7 @@ end);
 InstallMethod(Draw, "(FR) for a binary relation",
         [IsBinaryRelation],
         function(R)
-    DOT2DISPLAY@(ORDER2DOT@(R),"dot","-Gbgcolor=white -Tps 2>/dev/null");
+    DOT2DISPLAY@(ORDER2DOT@(R),"dot");
 end);
 
 InstallMethod(Draw, "(FR) for a binary relation and a filename",
@@ -914,7 +921,7 @@ BindGlobal("SHORTWORDINSET@", function(f,fgen,fone,ggen,gone,set,result,n)
             return set(elm);
         elif FamilyObj(elm)=FamilyObj(set) and elm=set then
             return true;    
-        elif IsList(set) then
+        elif IsListOrCollection(set) then
             return elm in set;
         fi;
         return false;
@@ -1311,14 +1318,6 @@ BindGlobal("INSTALLPRINTERS@", function(filter)
     InstallMethod(Display, [filter], function(x) Print(DisplayString(x)); end);
 end);
 
-BindGlobal("STRING@", function(x) # try to avoid this as much as possible
-    local s;
-    Info(InfoFR,2,"Deprecated STRING@ called on ",x);
-    s := "";
-    PrintTo(OUTPUTTEXTSTRING@(s),x);
-    return s;
-end);
-
 INSTALLPRINTERS@(IS_COMPLEX);
 
 InstallOtherMethod(SUM, IsIdenticalObj, [IS_COMPLEX, IS_COMPLEX],
@@ -1591,15 +1590,15 @@ InstallMethod(P1Barycentre, [IsP1Point,IsP1Point,IsP1Point], function(arg) retur
 #############################################################################
 # P1 maps
 #############################################################################
-InstallMethod(P1Map, "(FR) for images of 0,1,infinity",
+InstallMethod(MoebiusMap, "(FR) for images of 0,1,infinity",
         [IsP1Point,IsP1Point,IsP1Point],
         P1MAP3);
 
-InstallMethod(P1Map, "(FR) for images of 0,infinity",
+InstallMethod(MoebiusMap, "(FR) for images of 0,infinity",
         [IsP1Point,IsP1Point],
         P1MAP2);
 
-InstallMethod(P1Map, "(FR) for 3 points and their 3 images",
+InstallMethod(MoebiusMap, "(FR) for 3 points and their 3 images",
         [IsP1Point,IsP1Point,IsP1Point,IsP1Point,IsP1Point,IsP1Point],
         function(a,b,c,A,B,C)
     # map a to A, b to B, c to C
@@ -1945,6 +1944,228 @@ BindGlobal("MINSPANTREE@", function(node,cost)
     Add(tree,tree_cost);
     return tree;
 end);
+#############################################################################
+
+#############################################################################
+# Dirichlet series
+#############################################################################
+BindGlobal("NEWDIRICHLETSERIES@", function(arg)
+    return Objectify(NewType(DS_FAMILY,IsDirichletSeries),arg);
+end);
+
+InstallMethod(DirichletSeries, [], function()
+    return NEWDIRICHLETSERIES@([],[],infinity);
+end);
+
+InstallMethod(DirichletSeries, [IsInt], function(n)
+    return NEWDIRICHLETSERIES@([],[],n);
+end);
+
+InstallMethod(DirichletSeries, [IsList,IsList], function(ind,coeff)
+    return NEWDIRICHLETSERIES@(ind,coeff,Maximum(ind));
+end);
+
+InstallMethod(DirichletSeries, [IsList,IsList,IsInt], function(ind,coeff,n)
+    return NEWDIRICHLETSERIES@(ind,coeff,n);
+end);
+      
+InstallMethod(DirichletSeries, [IsDirichletSeries,IsInt],
+        function(s,n)
+    local p;
+    p := First([1..Length(s![1])+1],i->not IsBound(s![1][i]) or s![1][i] > n);
+    return NEWDIRICHLETSERIES@(s![1]{[1..p-1]},s![2]{[1..p-1]},n);
+end);
+
+InstallMethod(ShrunkDirichletSeries, [IsDirichletSeries],
+        function(s)
+    local p, n;
+    n := DegreeOfDirichletSeries(s);
+    p := First([1..Length(s![1])+1],i->not IsBound(s![1][i]) or s![1][i] > n);
+    return NEWDIRICHLETSERIES@(s![1]{[1..p-1]},s![2]{[1..p-1]},n);
+end);
+
+InstallMethod(String,[IsDirichletSeries],
+        function(s)
+    local n, first, v;
+    v := "";
+    for n in [1..Length(s![1])] do
+        if s![2][n]<>0 then
+            if s![2][n]>0 and v<>"" then
+                Append(v,"+");
+            fi;
+            Append(v,String(s![2][n]));
+            Append(v,"*"); Append(v,String(s![1][n])); Append(v,"^-s");
+        fi;
+    od;
+    if v<>"" then Append(v,"+"); fi;
+    Append(v,"o("); Append(v,String(s![3])); Append(v,"^-s)");
+    return v;
+end);
+
+InstallMethod(ViewString, [IsDirichletSeries], String);
+
+InstallMethod(DegreeOfDirichletSeries, [IsDirichletSeries],
+        function(s)
+    local i;
+    i := Length(s![1]);
+    while i>0 do
+        if s![2][i]=0 then
+            i := i-1;
+        else
+            return s![1][i];
+        fi;
+    od;
+    return 0;
+end);
+
+InstallMethod(SUM, [IsDirichletSeries,IsDirichletSeries],
+        function(s1,s2)
+    local i, p, maxdeg, coeff, val;
+    
+    maxdeg := Maximum(s1![3],s2![3]);
+    
+    coeff := ShallowCopy(s1![1]);
+    val := ShallowCopy(s1![2]);
+    
+    for i in [1..Length(s2![1])] do
+        p := PositionSorted(coeff,s2![1][i]);
+        if p>Length(coeff) or coeff[p]<>s2![1][i] then
+            Add(coeff,s2![1][i],p);
+            Add(val,0,p);
+        fi;
+        val[p] := val[p] + s2![2][i];
+    od;
+    return NEWDIRICHLETSERIES@(coeff,val,maxdeg);
+end);
+
+InstallMethod(AINV, [IsDirichletSeries],
+        function(s)
+    return NEWDIRICHLETSERIES@(s![1],-s![2],s![3]);
+end);
+
+InstallMethod(Zero, [IsDirichletSeries],
+        function(s)
+    return NEWDIRICHLETSERIES@([],[],s![3]);
+end);
+
+InstallMethod(ONE, [IsDirichletSeries],
+        function(s)
+    return NEWDIRICHLETSERIES@([1],[1],s![3]);
+end);
+
+InstallMethod(PROD, [IsDirichletSeries,IsScalar],
+        function(s,x)
+    return NEWDIRICHLETSERIES@(s![1],s![2]*x,s![3]);
+end);
+
+InstallMethod(PROD, [IsScalar,IsDirichletSeries],
+        function(x,s)
+    return NEWDIRICHLETSERIES@(s![1],x*s![2],s![3]);
+end);
+
+InstallMethod(PROD, [IsDirichletSeries,IsDirichletSeries],
+        function(s1,s2)
+    local coeff, val, i, j, degree, p, maxdeg;
+    
+    maxdeg := Maximum(s1![3],s2![3]);
+
+    coeff := [];
+    val := [];
+ 
+    for i in [1..Length(s1![1])] do
+        for j in [1..Length(s2![1])] do
+            degree := s1![1][i]*s2![1][j];
+            if degree > maxdeg then break; fi;
+            p := PositionSorted(coeff,degree);
+            if p>Length(coeff) or coeff[p]<>degree then
+                Add(coeff,degree,p);
+                Add(val,0,p);
+            fi;
+            val[p] := val[p] + s1![2][i]*s2![2][j];
+        od;
+    od;
+    return NEWDIRICHLETSERIES@(coeff,val,maxdeg);
+end);
+
+InstallMethod(EQ, [IsDirichletSeries,IsDirichletSeries],
+        function(s1,s2)
+    local i1, i2;
+    if s1![3]<>s2![3] then return false; fi;
+    i1 := 1;
+    i2 := 1;
+    while i1<=Length(s1![1]) or i2<=Length(s2![1]) do
+        if i1<=Length(s1![1]) and (i2>Length(s2![1]) or s1![1][i1]<s2![1][i2]) then
+            if s1![2][i1]<>0 then return false; fi;
+            i1 := i1+1;
+        elif i2<=Length(s2![1]) and (i1>Length(s1![1]) or s1![1][i1]>s2![1][i2]) then
+            if s2![2][i2]<>0 then return false; fi;
+            i2 := i2+1;
+        else
+            if s1![2][i1]<>s2![2][i2] then return false; fi;
+            i1 := i1+1; i2 := i2+1;
+        fi;
+    od;
+    return true;
+end);
+
+InstallMethod(LT, [IsDirichletSeries,IsDirichletSeries],
+        function(s1,s2)
+    local i1, i2;
+    if s1![3]<s2![3] then return true; fi;
+    if s1![3]>s2![3] then return false; fi;
+    i1 := 1;
+    i2 := 1;
+    while i1<=Length(s1![1]) or i2<=Length(s2![1]) do
+        if i1<=Length(s1![1]) and (i2>Length(s2![1]) or s1![1][i1]<s2![1][i2]) then
+            if s1![2][i1]<0 then return true; fi;
+            if s1![2][i1]>0 then return false; fi;
+            i1 := i1+1;
+        elif i2<=Length(s2![1]) and (i1>Length(s1![1]) or s1![1][i1]>s2![1][i2]) then
+            if s2![2][i2]>0 then return true; fi;
+            if s2![2][i2]<0 then return false; fi;
+            i2 := i2+1;
+        else
+            if s1![2][i1]<s2![2][i2] then return true; fi;
+            if s1![2][i1]>s2![2][i2] then return false; fi;
+            i1 := i1+1; i2 := i2+1;
+        fi;
+    od;
+    return false;
+end);
+
+InstallMethod(SpreadDirichletSeries, [IsDirichletSeries, IsInt],
+        function(s,n)
+    local p;
+    p := First([1..Length(s![1])+1],i->not IsBound(s![1][i]) or s![1][i]^n > s![3]);
+    return NEWDIRICHLETSERIES@(List(s![1]{[1..p-1]},i->i^n),s![2]{[1..p-1]},s![3]);
+end);
+
+InstallMethod(ShiftDirichletSeries, [IsDirichletSeries,IsInt],
+        function(s,n)
+    local p;
+    p := First([1..Length(s![1])+1],i->not IsBound(s![1][i]) or s![1][i]*n > s![3]);
+    return NEWDIRICHLETSERIES@(n*s![1]{[1..p-1]},s![2]{[1..p-1]},s![3]);
+end);
+
+InstallMethod(ZetaSeriesOfGroup, [IsGroup],
+        function(G)
+    local m;
+    m := TransposedMat(CharacterDegrees(G));
+    return DirichletSeries(m[1],m[2]);
+end);
+
+InstallMethod(ValueDirichletSeries, [IsDirichletSeries,IsRingElement],
+        function(s,z)
+    local v, i;
+    v := Zero(z);
+    for i in [1..Length(s![1])] do
+        v := v+s![2][i]*s![1][i]^(-z);
+    od;
+    return v;
+end);
+
+InstallOtherMethod(Value, [IsDirichletSeries,IsRingElement],
+        ValueDirichletSeries);
 #############################################################################
 
 #############################################################################
@@ -2361,4 +2582,245 @@ end,
 end));
 #############################################################################
 
-#E helpers.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+# solve linear system mod N.
+# returns x such that x*mat = vec mod N, or "fail".
+# note that x could be rational, non-integer.
+InstallMethod(SolutionMatModN, [IsMatrix,IsVector,IsPosInt],
+        function(mat,vec,N)
+    local sol, i, p, s0, M, row;
+    
+    sol := List(mat,row->0);
+    if N=1 then return sol; fi; # bug with FactorsInt containing 1
+    
+    mat := SmithNormalFormIntegerMatTransforms(mat);
+    vec := vec*mat.coltrans;
+    row := mat.rowtrans;
+    mat := mat.normal;
+    for i in [1..Minimum(Length(mat),Length(mat[1]))] do
+        p := AbsoluteValue(mat[i][i]);
+        if p>1 then
+            row[i] := row[i] / p;
+            mat[i][i] := mat[i][i] / p;
+        fi;
+    od;
+
+    M := 1;
+    for p in FactorsInt(N) do
+        s0 := SolutionMat(mat*Z(p),vec*Z(p));
+        if s0=fail then return fail; fi;
+        s0 := List(s0,IntFFE);
+        vec := (vec - s0*mat)/p;
+        sol := sol + M*s0;
+        M := M*p;
+    od;
+    
+    return sol*row;
+end);
+
+BindGlobal("FRAC@", function(x)
+    x := x-Int(x);
+    if x>=0 then return x; else return x+1; fi;
+end);
+
+# solve rational linear equation in Q/Z.
+# for now, only treat integer matrix.
+
+# overlaps with SolveHomEquationsModZ in package Cryst.
+InstallMethod(SolutionMatMod1, [IsMatrix, IsVector],
+        function(mat,vec)
+    local sol, N, d, i, snf, row;
+    
+    # non-optimal: should store the Smith normal form as an attribute
+    snf := SmithNormalFormIntegerMatTransforms(mat);
+    vec := vec*snf.coltrans;
+    row := ShallowCopy(snf.rowtrans);
+    sol := [];
+
+    for i in [1..Length(vec)] do
+        # diagonal term
+        if i<=Length(snf.normal) then
+            d := snf.normal[i][i];
+        else
+            d := 0;
+        fi;
+        
+        if d=0 then
+            if FRAC@(vec[i])<>0 then return fail; fi; # no solution
+            
+            if i<=Length(snf.normal) then
+                Add(sol,[0]); # infinite set of solutions, this is one
+            fi;
+        else
+            Add(sol,(vec[i]+[0..d-1])/d);
+        fi;
+    od;
+    return Set(Cartesian(sol)*row,x->List(x,FRAC@));
+end);
+
+# argument of a cyclotomic number, assumed to be a multiple of a root of unity.
+# returns a rational number in [0,1).
+InstallMethod(CyclotomicByArgument, [IsRat], function(q)
+    return E(DenominatorRat(q))^NumeratorRat(q);
+end);
+
+InstallMethod(ArgumentOfCyclotomic, [IsCyc], function(z)
+    local q;
+    q := DescriptionOfRootOfUnity(z);
+    q := q[2]/q[1];
+    q := q-Int(q);
+    if z<>CyclotomicByArgument(q) then
+        TryNextMethod(); # do floating-point approximations, probably
+    fi;
+    return q;
+end);
+
+################################################################
+InstallMethod(IrreducibleRepresentations@, [IsGroup], function(G)
+    local reps, r;
+    reps := IrreducibleRepresentations(G);
+    for r in reps do SetIsLinearRepresentation(r,true); od;
+    return reps;
+end);
+
+InstallMethod(ProjectiveRepresentationByFunction, [IsGroup,IsGroup,IsFunction],
+        function(g,h,f)
+    local r;
+    r := MappingByFunction(g,h,f);
+    SetIsProjectiveRepresentation(r,true);
+    return r;
+end);
+
+InstallMethod(LinearRepresentationByImages, [IsGroup,IsGroup,IsList,IsList],
+        function(g,h,src,img)
+    local r;
+    r := GroupHomomorphismByImages(g,h,src,img);
+    SetIsLinearRepresentation(r,true);
+    return r;
+end);
+
+InstallMethod(DegreeOfProjectiveRepresentation, [IsProjectiveRepresentation],
+        function(rep)
+    return Length(Image(rep,One(Source(rep))));
+end);
+        
+InstallMethod(Degree, [IsProjectiveRepresentation],
+        DegreeOfProjectiveRepresentation);
+
+# the projective representation extending the linear representation "rep".
+# returns a group homomorphism (which is not really a homomorphism! only
+# up to scalars) with source "group".
+InstallMethod(ProjectiveExtension, [IsLinearRepresentation, IsGroup],
+        function(rep, group)
+    local n, rank, transversal, mat, res, t, g, P, m, a, b;
+     
+    n := Source(rep);
+    
+    if n=group then # special cases, which GAP doesn't handle well
+        return rep;
+    elif IsTrivial(n) then
+        return LinearRepresentationByImages(group,Range(rep),GeneratorsOfGroup(group),List(GeneratorsOfGroup(group),x->One(Range(rep))));
+    fi;
+    
+    rank := Length(Image(rep,One(n)));
+ 
+    res := [];
+    transversal := List(RightTransversal(group,n),x->CanonicalRightCosetElement(n,x));
+    for t in transversal do
+        P := [];
+        for g in GeneratorsOfGroup(n) do
+            a := Image(rep, g);
+            b := Image(rep, g^t);
+            for m in Basis(MatrixAlgebra(Rationals,rank)) do
+                Add(P, Concatenation(TransposedMat(a)*m - m*TransposedMat(b)));
+            od;
+        od;
+        mat := NullspaceMat(TransposedMat(P));
+        if Length(mat)<>1 then
+            Error("Solution is not 1-dimensional!");
+        fi;
+        mat := List([0..rank-1], i->mat[1]{rank*i+[1..rank]});
+        if AbsoluteValue(Norm(DeterminantMat(mat)))<>1 then
+            Print("# warning: got a matrix with determinant not of norm 1\n");
+            mat := mat / DeterminantMat(mat)^(1/rank);
+        fi;
+        Add(res, mat);
+    od;
+    return ProjectiveRepresentationByFunction(group,Range(rep),function(x)
+        local t;
+        t := CanonicalRightCosetElement(n,x);
+        return Image(rep,x/t)*res[Position(transversal,t)];
+    end);
+end);    
+
+InstallMethod(ProjectiveQuotient, [IsProjectiveRepresentation,IsGroupHomomorphism],
+        function(rep, epi)
+    return ProjectiveRepresentationByFunction(Image(epi),Range(rep),
+                   x->CanonicalRightCosetElement(Kernel(epi),PreImagesRepresentative(epi,x))^rep);
+end);
+        
+InstallMethod(CoboundaryMatrix, [IsGroup], function(G)
+    local mat, i, j, k, m, elements;
+    
+    elements := AsSortedList(G);
+    mat := [];
+    for i in [1..Length(elements)] do
+        m := NullMat(Length(elements),Length(elements));
+        for j in [1..Length(elements)] do
+            m[i][j] := m[i][j] + 1;
+            m[j][i] := m[j][i] + 1;
+            k := Position(elements,elements[j]^-1*elements[i]);
+            m[j][k] := m[j][k] - 1;
+        od;
+        Add(mat,Concatenation(m));
+    od;
+    return mat;
+end);
+
+InstallMethod(EpimorphismSchurCover@, [IsGroup], EpimorphismSchurCover);
+
+InstallMethod(EpimorphismSchurCover@, [IsPcGroup],
+        function(G)
+    local c;
+    c := EpimorphismSchurCover(G);
+    return InverseGeneralMapping(IsomorphismPcGroup(Source(c)))*c;
+end);
+
+InstallMethod(EpimorphismSchurCover@, [IsPermGroup],
+        function(G)
+    local c;
+    c := EpimorphismSchurCover(G);
+    return InverseGeneralMapping(IsomorphismPermGroup(Source(c)))*c;
+end);
+
+InstallMethod(TensorProductOp, [IsLinearRepresentation,IsLinearRepresentation],
+        function(r1,r2)
+    local range, g, gens, img;
+    
+    g := Source(r1);
+    gens := GeneratorsOfGroup(g);
+    img := List(gens,x->KroneckerProduct(x^r1,x^r2));
+    range := GroupByGenerators(img,KroneckerProduct(One(Range(r1)),One(Range(r2))));
+    return LinearRepresentationByImages(g,range,gens,img);
+end);
+
+InstallMethod(TensorProductOp, [IsProjectiveRepresentation,IsProjectiveRepresentation],
+        function(r1,r2)
+    local range, g, img;
+    
+    g := Source(r1);
+    img := List(AsSortedList(g),x->KroneckerProduct(x^r1,x^r2));
+    
+    return ProjectiveRepresentationByFunction(g,Group(img),x->KroneckerProduct(x^r1,x^r2));
+end);
+
+# compares two cocycles QxQ->Q/Z, and says if they differ by a coboundary.
+InstallMethod(AreCohomologous, [IsList,IsList,IsGroup],
+        function(c1,c2,Q)
+    local elements, diff, i, j, k, m, denom;
+    
+    if c1=c2 then return true; fi; # speedup
+    
+    return SolutionMatMod1(CoboundaryMatrix(Q),c1-c2)<>fail;
+end);
+
+#E helpers.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

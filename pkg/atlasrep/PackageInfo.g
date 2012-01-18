@@ -6,15 +6,13 @@ SetPackageInfo( rec(
 PackageName :=
   "AtlasRep",
 MyVersion :=
-  "1r4p0",
+  "1r5p0",
 MyWWWHome :=
   "http://www.math.rwth-aachen.de/~Thomas.Breuer",
 Subtitle :=
   "A GAP Interface to the Atlas of Group Representations",
 Version :=
   JoinStringsWithSeparator( SplitString( ~.MyVersion, "rp" ), "." ),
-Autoload :=
-  false,
 Date :=
   # "03/04/2001" -- Version 1.0
   # "23/10/2002" -- Version 1.1
@@ -22,7 +20,8 @@ Date :=
   # "05/04/2004" -- Version 1.2.1
   # "06/06/2007" -- Version 1.3
   # "01/10/2007" -- Version 1.3.1
-  "23/06/2008", # -- Version 1.4
+  # "23/06/2008" -- Version 1.4
+  "12/07/2011", # -- Version 1.5.0
 PackageWWWHome :=
   Concatenation( ~.MyWWWHome, "/", LowercaseString( ~.PackageName ) ),
 ArchiveURL :=
@@ -49,19 +48,17 @@ Persons := [
     FirstNames := "Richard A.",
     IsAuthor := true,
     IsMaintainer := false,
-    Email := "richard@ukonline.co.uk",
-    WWWHome := "http://web.ukonline.co.uk/richard",
+    Email := "richpark@gmx.co.uk",
   ),
   rec(
     LastName := "Nickerson",
     FirstNames := "Simon",
     IsAuthor := true,
     IsMaintainer := false,
-    Email := "simonn@maths.bham.ac.uk",
-    WWWHome := "http://web.mat.bham.ac.uk/S.Nickerson",
+    WWWHome := "http://nickerson.org.uk/groups",
     Institution := Concatenation( [
       "School of Mathematics, ",
-      "University of Birmiingham",
+      "University of Birmingham",
       ] ),
   ),
   rec(
@@ -85,10 +82,10 @@ Persons := [
     Email := "sam@math.rwth-aachen.de",
     WWWHome := ~.MyWWWHome,
     Place := "Aachen",
-    Institution := "Lehrstuhl D f&uuml;r Mathematik, RWTH Aachen",
+    Institution := "Lehrstuhl D für Mathematik, RWTH Aachen",
     PostalAddress := Concatenation( [
       "Thomas Breuer\n",
-      "Lehrstuhl D f&uuml;r Mathematik\n",
+      "Lehrstuhl D für Mathematik\n",
       "Templergraben 64\n",
       "52062 Aachen\n",
       "Germany"
@@ -123,21 +120,20 @@ PackageDoc := rec(
     "doc/manual.six",
   LongTitle :=
     "An Atlas of Group Representations",
-  Autoload :=
-    true,
   ),
 Dependencies := rec(
   GAP :=
-    ">= 4.4.10",
+    ">= 4.4.12",                 # do not really need GAP 4.5 features
   NeededOtherPackages :=
     [ [ "gapdoc", ">= 1.2" ],
-    # ["gpisotyp", ">= 1.0"],
+#     [ "gpisotyp", ">= 1.0" ],
     ],
   SuggestedOtherPackages :=
-    [ [ "browse", ">= 1.2" ],
-      [ "ctbllib", ">= 1.0" ],
-      [ "tomlib", ">= 1.0" ],
-      [ "io", ">= 2.1" ] ],
+    [ [ "browse", ">= 1.4" ],    # want `BrowseData.SortKeyFunctionBibRec'
+      [ "ctbllib", ">= 1.1.4" ], # want `LIBTABLE.NameReplacements'
+      [ "tomlib", ">= 1.2.1" ],
+      [ "io", ">= 3.3" ] ],
+#T suggest also mfer! -> yields data extensions
   # needed external conditions (programs, operating system, ...)  provide
   # just strings as text or
   # pairs [text, URL] where URL  provides further information
@@ -154,6 +150,7 @@ TestFile :=
 Keywords :=
   ["group representations", "finite simple groups"]
 ) );
+
 
 #############################################################################
 ##

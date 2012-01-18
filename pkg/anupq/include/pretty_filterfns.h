@@ -2,7 +2,7 @@
 **
 *A  pretty_filterfns.h          ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: pretty_filterfns.h,v 1.3 2001/06/15 14:39:21 werner Exp $
+*A  @(#)$Id: pretty_filterfns.h,v 1.5 2011/11/29 10:16:01 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -14,12 +14,9 @@
 #ifndef __PRETTY_FILTER__
 #define __PRETTY_FILTER__
 
-extern char *malloc_value;
-/*
-extern char * calloc();
-*/
+#include <stdlib.h>
 typedef int gen_type; /*name for generator*/
-#define valloc(A,N) (A *)malloc((unsigned)(sizeof(A)*(N)))
+#define anu_valloc(A,N) (A *)malloc((unsigned)(sizeof(A)*(N)))
 #define vzalloc(A,N) (A *)calloc((unsigned)N,(unsigned)sizeof(A))
 #define inv(g)          inv_of[(g)]
 extern char word_delget_first(); 
@@ -49,7 +46,16 @@ typedef struct word_link {
    struct word_link * next;
 } word_link;
 
-word_link * word_link_create();
+word_link * word_link_create(void);
+void word_link_init (word_link * wlp);
+void word_link_clear (word_link * wlp);
+
+void word_expand (word *wp);
+void word2prog_word (word *user_wordp, word *prog_wordp);
+
+void default_inverse_array (void);
+int read_char (FILE *rfile);
+void find_char (char c, FILE *rfile);
 
 typedef struct word_traverser {
    word * wp;
@@ -64,5 +70,6 @@ extern gen_type * inv_of;
 extern int * pairnumber;
 extern word * user_gen_name;
 extern int gen_array_size;
+
 
 #endif 

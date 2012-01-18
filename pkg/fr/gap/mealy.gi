@@ -2,7 +2,7 @@
 ##
 #W mealy.gi                                                 Laurent Bartholdi
 ##
-#H   @(#)$Id: mealy.gi,v 1.72 2011/06/13 22:54:35 gap Exp $
+#H   @(#)$Id: mealy.gi,v 1.73 2011/06/29 13:38:35 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -1176,7 +1176,7 @@ BindGlobal("MM2DOT@", function(M)
 end);
 
 BindGlobal("DRAWMEALY@", function(M)
-    DOT2DISPLAY@(MM2DOT@(M),"dot","-Gbgcolor=white -Tps 2>/dev/null");
+    DOT2DISPLAY@(MM2DOT@(M),"dot");
 end);
 
 InstallMethod(Draw, "(FR) draws a Mealy machine using graphviz",

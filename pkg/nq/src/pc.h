@@ -4,6 +4,8 @@
 **                                         nickel@mathematik.tu-darmstadt.de
 */
 
+#ifndef PC_H
+#define PC_H
 
 #include <stdio.h>
 #include "genexp.h"
@@ -11,7 +13,7 @@
 /*
 **    This variable switches the Debug mode on.
 */
-extern	int	Debug;
+extern  int     Debug;
 
 /*
 **    A polycyclic presentation has several components which are defined
@@ -42,24 +44,24 @@ extern	int	Debug;
 **            of the conjugate relations for each pair (j,i) of generators
 **            with j > i.
 */
-extern int	NrPcGens;
-extern int	NrCenGens;
-extern int	IsFinite;
-extern int	IsWeighted;
-extern int	Class;
+extern int      NrPcGens;
+extern int      NrCenGens;
+extern int      IsFinite;
+extern int      IsWeighted;
+extern int      Class;
 
-extern gen	*Commute;
-extern gen	*Commute2;
-extern gen	**CommuteList;
-extern gen	**Commute2List;
+extern gen      *Commute;
+extern gen      *Commute2;
+extern gen      **CommuteList;
+extern gen      **Commute2List;
 extern int      *NrPcGensList;
 
-extern exp	*Exponent;
-extern word	*Power;
-extern word	**Conjugate;
-extern char	**PcGenName;
+extern expo     *Exponent;
+extern word     *Power;
+extern word     **Conjugate;
+extern char     **PcGenName;
 
-extern int	*Weight;
+extern int      *Weight;
 #define Wt(x)   Weight[(x)]
 
 /*
@@ -75,10 +77,18 @@ extern int	*Weight;
 **    number of that generator and the second component is zero.
 */
 struct  def {
-	gen	h;
-	gen	g;
+	gen     h;
+	gen     g;
 };
-typedef	struct def  def;
+typedef struct def  def;
 
-extern def	*Definition;
-extern void     PrintDefs();
+extern def      *Definition;
+
+
+extern void InitPcPres(void);
+extern void ExtPcPres(void);
+extern void PrintPcPres(void);
+extern void PrintDefs(void);
+
+
+#endif

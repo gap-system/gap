@@ -2,14 +2,11 @@
 ##
 #W  grpperm.gi                  GAP library                   Heiko Theißen
 ##
-#H  @(#)$Id: grpperm.gi,v 4.173 2011/01/25 17:51:04 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.grpperm_gi :=
-    "@(#)$Id: grpperm.gi,v 4.173 2011/01/25 17:51:04 gap Exp $";
 
 
 #############################################################################
@@ -55,6 +52,13 @@ InstallMethod( AsSubgroup,"perm groups",
     fi;
     return S;
 end );
+
+#############################################################################
+##
+#M  CanEasilyComputeWithIndependentGensAbelianGroup( <permgroup> )
+##
+InstallTrueMethod(CanEasilyComputeWithIndependentGensAbelianGroup,
+    IsPermGroup and IsAbelian);
 
 #############################################################################
 ##
@@ -180,6 +184,9 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup, "for perm group",
 
       fi;
     od;
+
+    # Sort the independent generators by increasing order
+    Sort( inds, function (a,b) return Order(a) < Order(b); end );
 
     # return the independent generators
     return inds;

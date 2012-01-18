@@ -4,7 +4,7 @@
 ##
 ## examples for polycyclic rational matrix groups
 ##
-#H  @(#)$Id: exam.gi,v 1.15 2011/05/31 13:10:58 gap Exp $
+#H  @(#)$Id: exam.gi,v 1.17 2011/09/23 12:48:20 gap Exp $
 ##
 #Y 2003
 ##
@@ -42,6 +42,7 @@ fi;
 ##
 #F PolExamples( n ) .............. .. Examples for polycyc rat. matrix groups
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 PolExamples := function( n )
     local i,M,P, nat, G, gens, d, l,r,s;
 
@@ -757,6 +758,7 @@ PolExamples := function( n )
        gens := GeneratorsOfGroup( MatExamples(4) );
        return Group( gens{[1,2]} );
     fi;
+    return fail;
 end;
 
 
@@ -1546,8 +1548,7 @@ POL_PolExamples2 := function( n )
             return Group( gens );
        fi;
 
-        
-
+    return fail;
 
   end;
 

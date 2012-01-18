@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.grppcaut_gi :=
-    "@(#)$Id: grppcaut.gi,v 4.57 2011/06/17 21:11:55 gap Exp $";
 
 #############################################################################
 ##
@@ -252,11 +250,10 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
       mats:=List(stabm,i->MappedWord(i,freegens,mats));
       shadows:=List(stabm,i->MappedWord(i,freegens,shadows));
       if AssertionLevel()>0 then
-	ind:=[dims[bp]+1..dim];
-	acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
-	nv:=vec{ind};
-	Assert(1,ForAll(acts,i->nv*i=nv));
-	Print("Assertion 1 passed\n");
+	    ind:=[dims[bp]+1..dim];
+	    acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
+	    nv:=vec{ind};
+	    Assert(1,ForAll(acts,i->nv*i=nv));
       fi;
 
       # should we try to refine the next step?
@@ -297,7 +294,6 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 	  acts:=List(mats,x->ImmutableMatrix(f,x{ind}{ind}));
 	  nv:=vec{ind};
 	  Assert(1,ForAll(acts,i->nv*i=nv));
-	  Print("Assertion 2 passed\n");
 	fi;
 
       fi;

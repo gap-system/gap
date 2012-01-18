@@ -2,7 +2,6 @@
 ##
 #W  rwsgrp.gi                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: rwsgrp.gi,v 4.33 2010/02/23 15:13:28 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file  contains the generic methods for  groups  defined by rewriting
 ##  systems.
 ##
-Revision.rwsgrp_gi :=
-    "@(#)$Id: rwsgrp.gi,v 4.33 2010/02/23 15:13:28 gap Exp $";
 
 
 #############################################################################

@@ -31,7 +31,7 @@ PcpNextStepCentralizer := function( gens, cent, pcp )
     rels := [];
     for i in [1..Length(pcpgens)] do
         if pcpros[i] > 0 then
-	    r := ExponentsByPcp( pcp, pcpgens[i]^pcpros[i] );
+            r := ExponentsByPcp( pcp, pcpgens[i]^pcpros[i] );
             r[i] := -pcpros[i];
             Add( rels, r );
         fi;
@@ -65,7 +65,7 @@ PcpNextStepCentralizer := function( gens, cent, pcp )
 #Print("  solved matrix \n");
 
             # calculate elements corresponding to null
-	    l := Length( notcentral );
+            l := Length( notcentral );
             for j  in [1..Length(null)]  do
                 elm := MappedVector( null[j]{[1..l]}, notcentral );
                 if elm <> elm^0 then
@@ -87,7 +87,7 @@ CentralizeByCentralSeries := function( G, gens, ser )
 
     cent := ShallowCopy( GeneratorsOfPcp( Pcp( ser[1], ser[2] ) ) );
     for i in [2..Length(ser)-1] do
-	pcp  := Pcp( ser[i], ser[i+1] );
+        pcp  := Pcp( ser[i], ser[i+1] );
         cent := PcpNextStepCentralizer( gens, cent, pcp );
         Append( cent, GeneratorsOfPcp( pcp ) );
     od;
@@ -102,7 +102,7 @@ end;
 CentreNilpotentPcpGroup := function(G)
     local  ser, gens, cent;
     if Length(Igs(G)) = 0 then return G; fi;
-    ser  := LowerCentralSeries(G);
+    ser  := LowerCentralSeriesOfGroup(G);
     gens := Reversed(GeneratorsOfPcp( Pcp( ser[1], ser[2] ) ));
     cent := CentralizeByCentralSeries( G, gens, ser );
     return Subgroup( G, cent );
@@ -117,12 +117,12 @@ CentralizerNilpotentPcpGroup := function( G, g )
     if Length(Igs(G)) = 0 then return G; fi;
     if IsPcpElement(g) then 
         if not g in G then TryNextMethod(); fi;
-        sers := LowerCentralSeries(G);
+        sers := LowerCentralSeriesOfGroup(G);
         cent := CentralizeByCentralSeries( G, [g], sers );
     elif IsPcpGroup(g) then 
         if not IsSubgroup( G, g ) then TryNextMethod(); fi;
         SetIsNilpotentGroup( g, true );
-        sers := LowerCentralSeries(G);
+        sers := LowerCentralSeriesOfGroup(G);
         cent := CentralizeByCentralSeries( G, MinimalGeneratingSet(g), sers );
     fi;
     return Subgroup( G, cent );
@@ -135,15 +135,15 @@ end;
 UpperCentralSeriesNilpotentPcpGroup := function( G )
     local ser, gens, C, upp;
 
-    ser  := LowerCentralSeries(G);
+    ser  := LowerCentralSeriesOfGroup(G);
     gens := GeneratorsOfPcp( Pcp( ser[1], ser[2] ) );
     C    := TrivialSubgroup( G );
     upp  := [C];
     while IndexNC( G, C ) > 1 do
         ser := ModuloSeries( ser, C );
-	C   := CentralizeByCentralSeries( G, gens, ser );
+        C   := CentralizeByCentralSeries( G, gens, ser );
         C   := Subgroup( G, C );
-	Add( upp, C );
+        Add( upp, C );
     od;
     upp[ Length(upp) ] := G;
     return Reversed( upp );

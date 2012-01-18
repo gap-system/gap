@@ -2,13 +2,14 @@
 
 This is the README file for the GAP package "Example".
 
-This package serves as an example of how to create a GAP 4 package.
-This release (3.0) has been updated for the changes in the package 
+This package serves  as an example of how to create a GAP 4 package.
+This release (3.X.Y) has been updated for the changes in the package 
 loading mechanism introduced in GAP 4.5. 
 
-The package is distributed with the main GAP archive.  For updates
-between releases of GAP itself check the package Web page
+The package is distributed with the main GAP archive. For updates
+between releases of GAP itself check the package Web pages
 
+    http://www.cs.st-andrews.ac.uk/~alexk/example/
     http://www.math.rwth-aachen.de/~Greg.Gamble/Example
   
 or the Australian mirrors
@@ -28,7 +29,7 @@ or the GAP ftp server, dependently on the preferred archive format:
 
 The Example package uses an external binary and therefore  a  complete
 installation only works on UNIX systems  or  systems  that  support  a
-UNIX-like environment, e.g. Macintosh OSX,  or  Windows  with  Cygwin.
+UNIX-like   environment,  e.g.  Mac OS X,   or  Windows  with  Cygwin.
 However,  a  partial  installation  without  the  external  binary  is
 possible on any system.
 
@@ -65,12 +66,13 @@ not compiled the external binary, you  should  receive  a  warning  of
 this.
 
 For details on  how  to  use  the  Example  package  see  the  package
-documentation in the `doc' subdirectory (view either `manual.dvi'  via
-`xdvi' or or `manual.pdf' via a PDF viewer). You will find  additional
-information on how to create a GAP package  in  the  Appendix  of  the
-manual.
+documentation  in  the  `doc'  subdirectory  (view its HTML version or 
+`manual.pdf'  via a PDF viewer). You will find  additional information 
+on how to create a GAP package in the Appendix of the manual.
 
   Werner Nickel,
   Greg Gamble -- 12 February, 2002; 13 January, 2003; 20 June, 2003;
                  31 January, 2006.
-  Alexander Konovalov -- March 2011.               
+  Alexander Konovalov -- March 2011; September-November 2011;      
+  
+  Contact: alexk at mcs.st-andrews.ac.uk

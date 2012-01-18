@@ -2,7 +2,7 @@
 ##
 #W  chapter-5-a.tst                FR Package               Laurent Bartholdi
 ##
-#H  @(#)$Id: chapter-5-a.tst,v 1.3 2010/06/04 11:55:35 gap Exp $
+#H  @(#)$Id: chapter-5-a.tst,v 1.4 2011/09/20 11:45:35 gap Exp $
 ##
 #Y  Copyright (C) 2008,  Laurent Bartholdi
 ##
@@ -753,7 +753,7 @@ true
 gap> Transition(m, f[3], Concatenation(ListWithIdenticalEntries(31, 2), [1])) = 2;
 true
 gap> m := mealym[2][1];
-<Mealy machine on alphabet [ 1, 2, 3, 4, 5, 6, 7, 8 ] with 4 states>
+<Mealy machine on alphabet [ 1 .. 8 ] with 4 states>
 gap> f := StateSet(m);
 [ 1 .. 4 ]
 gap> Transition(m, f[3], ListWithIdenticalEntries(30, 8)) = 3;
@@ -818,7 +818,7 @@ gap> Display(m);
  aa | aa,1   aa,2  
 ----+------+------+
 gap> m := mealym[7][1] + mealym[3][2];
-<Mealy machine on alphabet [ 1, 2 ] with 8 states>
+<Mealy machine on alphabet [ 1 .. 2 ] with 8 states>
 gap> Size(StateSet(m)) = 8;
 true
 gap> SubFRMachine(m, mealym[7][1]) <> fail;
@@ -838,7 +838,7 @@ gap> Display(m);
   h |  h,1    h,2  
 ----+------+------+
 gap> m := mealym[8][1] + mealym[8][2];
-<Mealy machine on alphabet [ 1, 2, 3, 4, 5, 6, 7 ] with 4 states>
+<Mealy machine on alphabet [ 1 .. 7 ] with 4 states>
 gap> Size(StateSet(m)) = 4;
 true
 gap> SubFRMachine(m, mealym[8][1]) <> fail;
@@ -966,7 +966,7 @@ true
 gap> Size(PermGroup(SCGroup(m),2)) = Size(PermGroup(SCGroup(mealym[1][1]),2))*Size(PermGroup(SCGroup(mealym[2][1]),2));
 true
 gap> m := DirectSum(mealym[4][1],mealym[7][2]);
-<Mealy machine on alphabet [ 1, 2, 3, 4, 5, 6, 7 ] with 6 states>
+<Mealy machine on alphabet [ 1 .. 7 ] with 6 states>
 gap> Size(AlphabetOfFRObject(m)) = 7;
 true
 gap> Size(StateSet(m)) = 6;
@@ -1079,21 +1079,21 @@ gap>
 gap> m := mealym[1][1];
 <Mealy machine on alphabet [ 1 .. 2 ] with 5 states>
 gap> min := Minimized(m);
-<Mealy machine on alphabet [ 1, 2 ] with 5 states>
+<Mealy machine on alphabet [ 1 .. 2 ] with 5 states>
 gap> Permuted([1..5],Correspondence(min)) = [2,4,1,3,5];
 true
 gap> 
 gap> m2 := m + m;
-<Mealy machine on alphabet [ 1, 2 ] with 10 states>
+<Mealy machine on alphabet [ 1 .. 2 ] with 10 states>
 gap> Correspondence(m2) = [(),Trans([6..10])];
 true
 gap> min := Minimized(m2);
-<Mealy machine on alphabet [ 1, 2 ] with 5 states>
+<Mealy machine on alphabet [ 1 .. 2 ] with 5 states>
 gap> Correspondence(min) = Trans([3,1,4,2,5,3,1,4,2,5]);
 true
 gap> 
 gap> m := AsGroupFRMachine(mealym[5][1]);
-<FR machine with alphabet [ 1, 2, 3, 4, 5, 6, 7 ] on Group( [ f1, f2, f3 ] )>
+<FR machine with alphabet [ 1 .. 7 ] on Group( [ f1, f2, f3 ] )>
 gap> List([1..4], i -> i^Correspondence(m)) = Concatenation(GeneratorsOfGroup(StateSet(m)), [One(StateSet(m))]);
 true
 gap> 

@@ -3,7 +3,6 @@
 #W  grpchain.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id: grpchain.gi,v 4.11 2010/02/23 15:13:03 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -35,8 +34,6 @@
 ##  this means that creating mixed chains (with different kinds of 
 ##  transversal), may have unpredictable results.
 ##
-Revision.grpchain_gi :=
-    "@(#)$Id: grpchain.gi,v 4.11 2010/02/23 15:13:03 gap Exp $";
 
 ##
 ##  For debugging only:

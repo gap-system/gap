@@ -2,13 +2,17 @@
 ##
 #W  ctomax17.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomax17.tbl,v 4.2 2009/04/27 08:27:23 gap Exp $
+#H  @(#)$Id: ctomax17.tbl,v 4.3 2011/09/28 14:32:19 gap Exp $
 ##
 #Y  Copyright (C)  2007,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomax17.tbl,v $
+#H  Revision 4.3  2011/09/28 14:32:19  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.2  2009/04/27 08:27:23  gap
 #H  removed some superfluous explicit <nam>M<n> names,
 #H  which are created automatically
@@ -19,11 +23,6 @@
 #H      TB
 #H
 ##
-Revision.ctomax17_tbl :=
-    "@(#)$Id: ctomax17.tbl,v 4.2 2009/04/27 08:27:23 gap Exp $";
-
-SET_TABLEFILENAME("ctomax17");
-ALN:= Ignore;
 
 MOT("2^(2+10+20).(M22.2xS3)",
 [
@@ -15695,7 +15694,6 @@ ALF("2^(2+10+20).(M22.2xS3)","B",[1,3,2,3,5,2,5,3,5,3,5,5,4,5,5,8,9,8,9,8,
 ]);
 
 LIBTABLE.LOADSTATUS.ctomax17:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

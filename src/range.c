@@ -2,7 +2,6 @@
 **
 *W  range.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: range.c,v 4.45 2010/02/23 15:13:46 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -52,8 +51,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_range_c =
-   "@(#)$Id: range.c,v 4.45 2010/02/23 15:13:46 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1802,8 +1799,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRange ( void )
 {
-    module.revision_c = Revision_range_c;
-    module.revision_h = Revision_range_h;
     FillInVersion( &module );
     return &module;
 }

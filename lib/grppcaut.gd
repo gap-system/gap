@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.grppcaut_gd :=
-    "@(#)$Id: grppcaut.gd,v 4.12 2011/06/17 21:11:55 gap Exp $";
 
 #############################################################################
 ##

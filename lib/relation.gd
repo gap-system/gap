@@ -2,7 +2,6 @@
 ##
 #W  relation.gd                  GAP library                   Andrew Solomon
 ##
-#H  @(#)$Id: relation.gd,v 4.43 2010/05/20 07:08:02 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 ##  Robert F. Morse
 ##  Andrew Solomon
 ##
-Revision.relation_gd :=
-    "@(#)$Id: relation.gd,v 4.43 2010/05/20 07:08:02 gap Exp $";
 
 
 #############################################################################

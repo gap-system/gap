@@ -2,7 +2,6 @@
 **
 *W  set.h                       GAP source                   Martin Schönert
 **
-*H  @(#)$Id: set.h,v 4.8 2010/02/23 15:13:48 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,9 +13,11 @@
 **  For the full definition  of sets see chapter "Sets" in the {\GAP} Manual.
 **  Read also section "More about Sets" about the internal flag for sets.
 */
+
+#ifndef GAP_SET_H
+#define GAP_SET_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_set_h =
-   "@(#)$Id: set.h,v 4.8 2010/02/23 15:13:48 gap Exp $";
 #endif
 
 
@@ -68,6 +69,8 @@ extern  Int             IsSet (
 */
 StructInitInfo * InitInfoSet ( void );
 
+
+#endif // GAP_SET_H
 
 /****************************************************************************
 **

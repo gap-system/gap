@@ -14,7 +14,7 @@ primId=eval(Set(concat(vector(#elms-1,i,idealfactor(nf,Polrev(elms[i]))[,1]))));
 mat = matrix(#elms-1,#primId,i,j,idealval(nf,Polrev(elms[i]),primId[j]));
 print("[ ");
 {
-  for(i=1,#mat,
+  for(i=1,matsize(mat)[1],
     print(mat[i,],",");
   );
   print("];");

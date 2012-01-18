@@ -1,0 +1,245 @@
+<Chapter Label="Pcp-groups - polycyclically presented groups">
+<Heading>Pcp-groups - polycyclically presented groups</Heading>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Pcp-elements -- elements of a pc-presented group">
+<Heading>Pcp-elements -- elements of a pc-presented group</Heading>
+
+A <E>pcp-element</E> is an element of a group defined by a consistent
+pc-presentation given by a collector. Suppose that <M>g_1, \ldots, g_n</M>
+are the defining generators of the collector. Recall that each element
+<M>g</M> in this group can be written uniquely as a collected word <M>g_1^{e_1}
+\cdots g_n^{e_n}</M> with <M>e_i \in &ZZ;</M> and <M>0 \leq e_i &lt; r_i</M> for <M>i \in
+I</M>. The integer vector <M>[e_1, \ldots, e_n]</M> is called the <E>exponent
+vector</E> of <M>g</M>.  The following functions can be used to define
+pcp-elements via their exponent vector or via an arbitrary generator
+exponent word as introduced in Chapter <Ref Chap="Collectors"/>.
+
+<ManSection>
+<Func Name="PcpElementByExponentsNC" Arg="coll, exp"/>
+<Func Name="PcpElementByExponents" Arg="coll, exp"/>
+<Description>
+	returns the pcp-element with exponent vector <A>exp</A>. The exponent vector
+	is considered relative to the defining generators of the pc-presentation.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="PcpElementByGenExpListNC" Arg="coll, word"/>
+<Func Name="PcpElementByGenExpList" Arg="coll, word"/>
+<Description>
+	returns the pcp-element with generators exponent list <A>word</A>. This list
+	<A>word</A> consists of a sequence of generator numbers and their corresponding
+	exponents and is of the form <M>[i_1, e_{i_1}, i_2, e_{i_2}, \ldots, i_r, 
+	e_{i_r}]</M>. The 
+	generators exponent list is considered relative to the defining generators
+	of the pc-presentation. 
+	<P/>
+
+	These functions return pcp-elements in the category <C>IsPcpElement</C>.
+	Presently,  the  only representation  implemented for this category
+	is <C>IsPcpElementRep</C>.  
+	(This allows us  to be a  little sloppy right now.  The basic  set of 
+	operations for  <C>IsPcpElement</C> has  not been defined yet.  This is 
+	going to happen in one of the next version, certainly as soon as the 
+	need for different representations arises.)
+</Description>
+</ManSection>
+
+<ManSection>
+<Filt Name="IsPcpElement" Arg="obj" Type='Category'/>
+<Description>
+	returns true if the object <A>obj</A> is a pcp-element.
+</Description>
+</ManSection>
+
+<ManSection>
+<Filt Name="IsPcpElementRep" Arg="obj" Type='Representation'/>
+<Description>
+	returns true if the object <A>obj</A> is represented as a pcp-element.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Methods for pcp-elements">
+<Heading>Methods for pcp-elements</Heading>
+
+Now we can describe attributes and functions for pcp-elements. The
+four basic attributes of a pcp-element, <C>Collector</C>, <C>Exponents</C>,
+<C>GenExpList</C> and <C>NameTag</C> are computed at the creation of the
+pcp-element. All other attributes are determined at runtime.
+<P/>
+
+Let <A>g</A> be a pcp-element and <M>g_1, \ldots, g_n</M> a polycyclic generating
+sequence of the underlying pc-presented group. Let <M>C_1, \ldots, C_n</M>
+be the polycyclic series defined by <M>g_1, \ldots, g_n</M>.
+<P/>
+
+The <E>depth</E> of a non-trivial element <M>g</M> of  a pcp-group (with respect 
+to the defining generators) is the integer <M>i</M> such that <M>g \in C_i  
+\setminus C_{i+1}</M>. The depth  of the trivial element is defined to 
+be <M>n+1</M>. If <M>g\not=1</M> has depth <M>i</M> and <M>g_i^{e_i} \cdots g_n^{e_n}</M>
+is the collected word for <M>g</M>, then <M>e_i</M> is the <E>leading exponent</E> of
+<M>g</M>.
+<P/>
+
+If  <M>g</M> has  depth <M>i</M>, then we call <M>r_i = [C_i:C_{i+1}]</M> the <E>factor
+order</E> of <M>g</M>. If <M>r &lt; \infty</M>, then the  smallest positive integer <M>l</M>
+with <M>g^l  \in C_{i+1}</M>  is the called  <E>relative  order</E> of  <M>g</M>.  If
+<M>r=\infty</M>, then the relative order  of <M>g</M> is defined  to be <M>0</M>. The
+index <M>e</M>   of <M>\langle g,C_{i+1}\rangle</M>  in  <M>C_i</M> is called <E>relative  
+index</E>   of  <M>g</M>.   We   have that   <M>r  =  el</M>. 
+<P/>
+
+We  call a pcp-element <E>normed</E>, if its leading  exponent is equal to
+its relative index. For  each pcp-element <M>g</M>  there exists an integer
+<M>e</M>  such   that <M>g^e</M>  is  normed.  
+
+<ManSection>
+<Oper Name="Collector" Arg="g"/>
+<Description>
+	the collector to  which the pcp-element  <A>g</A> belongs.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="Exponents" Arg="g"/>
+<Description>
+	returns the exponent vector of the pcp-element <A>g</A> with respect to the defining
+	generating set of the underlying collector.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="GenExpList" Arg="g"/>
+<Description>
+	returns the generators  exponent  list  of the  pcp-element  <A>g</A> with respect to 
+	the defining generating set of the underlying collector.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="NameTag" Arg="g"/>
+<Description>
+	the name used for  printing the pcp-element <A>g</A>.   Printing is done by
+	using the name tag and appending the generator number of <A>g</A>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="Depth" Arg="g"/>
+<Description>
+	returns  the  depth of the  pcp-element  <A>g</A> relative to  the defining
+	generators.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="LeadingExponent" Arg="g"/>
+<Description>
+	returns  the  leading exponent  of  pcp-element  <A>g</A>  relative to  the
+	defining generators.  If  <A>g</A> is the  identity element, the  functions
+	returns 'fail'
+</Description>
+</ManSection>
+
+<ManSection>
+<Attr Name="RelativeOrder" Arg="g"/>
+<Description>
+	returns the relative order of the  pcp-element <A>g</A> with respect to the
+	defining generators.
+</Description>
+</ManSection>
+
+<ManSection>
+<Attr Name="RelativeIndex" Arg="g"/>
+<Description>
+	returns the relative index of the pcp-element <A>g</A>  with respect to the
+	defining generators.
+</Description>
+</ManSection>
+
+<ManSection>
+<Attr Name="FactorOrder" Arg="g"/>
+<Description>
+	returns  the factor order  of the pcp-element <A>g</A>  with respect to the
+	defining generators.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="NormingExponent" Arg="g"/>
+<Description>
+	returns a positive integer <M>e</M> such that the pcp-element <A>g</A> raised to
+	the power of <M>e</M> is normed.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="NormedPcpElement" Arg="g"/>
+<Description>
+	returns the normed element corresponding to the pcp-element <A>g</A>.
+</Description>
+</ManSection>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="pcpgroup">
+<Heading>Pcp-groups - groups of pcp-elements</Heading>
+
+A  <E>pcp-group</E> is a  group consisting of pcp-elements such that all 
+pcp-elements in  the group share  the same collector. Thus the group 
+<M>G</M>  defined by a polycyclic presentation and all its subgroups are 
+pcp-groups. 
+
+<ManSection>
+<Func Name="PcpGroupByCollector" Arg="coll"/>
+<Func Name="PcpGroupByCollectorNC" Arg="coll"/>
+<Description>
+	returns a pcp-group build from the collector <A>coll</A>.  
+	<P/>
+
+	The function calls <Ref Func="UpdatePolycyclicCollector"/>
+	 and checks the confluence (see
+	<Ref Func="IsConfluent"/>) of the collector.
+	<P/>
+
+	The non-check version bypasses these checks.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="Group" Arg="gens, id"/>
+<Description>
+	returns the group generated by the pcp-elements <A>gens</A> with identity
+	<A>id</A>. 
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="Subgroup" Arg="G, gens"/>
+<Description>
+	returns a subgroup of the pcp-group <A>G</A> generated by the list <A>gens</A> of
+	pcp-elements from <A>G</A>.
+
+<Example><![CDATA[
+gap>  ftl := FromTheLeftCollector( 2 );;
+gap>  SetRelativeOrder( ftl, 1, 2 );
+gap>  SetConjugate( ftl, 2, 1, [2,-1] );
+gap>  UpdatePolycyclicCollector( ftl );
+gap>  G:= PcpGroupByCollectorNC( ftl );
+Pcp-group with orders [ 2, 0 ]
+gap> Subgroup( G, GeneratorsOfGroup(G){[2]} );
+Pcp-group with orders [ 0 ]
+]]></Example>
+</Description>
+</ManSection>
+
+</Section>
+</Chapter>
+

@@ -2,15 +2,12 @@
 ##
 #W  basicpcg.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: basicpcg.gi,v 4.20 2011/04/05 02:30:34 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the methods for the construction of the basic pc group
 ##  types.
 ##
-Revision.basicpcg_gi :=
-    "@(#)$Id: basicpcg.gi,v 4.20 2011/04/05 02:30:34 gap Exp $";
 
 
 #############################################################################
@@ -84,10 +81,6 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
     k:=GroupWithGenerators(k,One(f));
     SetSize(k,Size(f));
     SetIsAbelian( k, true );
-
-    if ForAll(ints,IsPrimePowerInt) then
-      SetIndependentGeneratorsOfAbelianGroup(k,GeneratorsOfGroup(k));
-    fi;
 
     if Size(Set(Filtered(Flat(pis),p->p<>1))) = 1 then
         SetIsPGroup( k, true );

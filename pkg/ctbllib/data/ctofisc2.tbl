@@ -2,7 +2,7 @@
 ##
 #W  ctofisc2.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctofisc2.tbl,v 4.20 2010/05/05 13:20:01 gap Exp $
+#H  @(#)$Id: ctofisc2.tbl,v 4.21 2011/09/28 14:32:11 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctofisc2.tbl,v $
+#H  Revision 4.21  2011/09/28 14:32:11  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.20  2010/05/05 13:20:01  gap
 #H  - added many class fusions,
 #H  - changed several class fusions according to consistency conditions,
@@ -195,11 +199,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctofisc2_tbl :=
-    "@(#)$Id: ctofisc2.tbl,v 4.20 2010/05/05 13:20:01 gap Exp $";
-
-SET_TABLEFILENAME("ctofisc2");
-ALN:= Ignore;
 
 MOT("3.F3+",
 [
@@ -2563,7 +2562,6 @@ ARC("Fi23","maxes",["2.Fi22","O8+(3).3.2","2^2.U6(2).2","S8(2)","S3xO7(3)",
 "L2(23)"]);
 
 LIBTABLE.LOADSTATUS.ctofisc2:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

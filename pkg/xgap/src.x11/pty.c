@@ -2,7 +2,7 @@
 **
 *W  pty.c                       XGAP source                      Frank Celler
 **
-*H  @(#)$Id: pty.c,v 1.13 2004/05/02 14:16:19 gap Exp $
+*H  @(#)$Id: pty.c,v 1.14 2011/11/24 11:44:23 gap Exp $
 **
 *Y  Copyright 1995-1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1997,       Frank Celler,                 Huerth,       Germany
@@ -593,7 +593,7 @@ int PlaybackFile ( str )
     return PlayingBack;
 }
 
-int ResumePlayback ()
+int ResumePlayback ( void )
 {
     if ( PlayingBack || Playback == 0 )
 	return False;

@@ -2,7 +2,6 @@
 ##
 #W  ringhom.gd                   GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id: ringhom.gd,v 1.2 2009/01/27 17:10:18 gap Exp $
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -10,8 +9,6 @@
 ##  and homomorphisms. It is based on alghom.gd
 ##
 ##
-Revision.ringhom_gd :=
-    "@(#)$Id: ringhom.gd,v 1.2 2009/01/27 17:10:18 gap Exp $";
 
 
 DeclareInfoClass("InfoRingHom");

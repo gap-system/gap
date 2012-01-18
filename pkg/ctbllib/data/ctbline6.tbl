@@ -2,8 +2,6 @@
 ##
 #W  ctbline6.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbline6.tbl,v 4.3 2009/01/23 09:23:25 gap Exp $
-##
 #Y  Copyright (C)  2000,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables related to the
@@ -13,6 +11,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbline6.tbl,v $
+#H  Revision 4.4  2011/09/28 12:12:37  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.3  2009/01/23 09:23:25  gap
 #H  added the 2-modular table of L4(4) (contributed by Frank L"ubeck)
 #H  and of its automorphic extensions
@@ -76,10 +78,7 @@
 #H      TB
 #H  ==========================================================================
 ##
-Revision.ctbline6_tbl :=
-    "@(#)$Id: ctbline6.tbl,v 4.3 2009/01/23 09:23:25 gap Exp $";
 
-SET_TABLEFILENAME("ctbline6");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("L4(4)",2,
@@ -489,6 +488,7 @@ MBT("L4(4)",17,
 0);
 
 LIBTABLE.LOADSTATUS.ctbline6:="userloaded";
+
 #############################################################################
 ##
 #E

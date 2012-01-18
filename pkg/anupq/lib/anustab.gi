@@ -4,7 +4,7 @@
 #A  anustab.gi                  ANUPQ package                  Eamonn O'Brien
 #A                                                              Werner Nickel
 ##
-#A  @(#)$Id: anustab.gi,v 1.4 2006/01/24 04:42:40 gap Exp $
+#A  @(#)$Id: anustab.gi,v 1.5 2011/11/29 20:00:13 gap Exp $
 ##
 #Y  Copyright 1993-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  Copyright 1993-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -15,8 +15,6 @@
 ##  Install file for function to  compute  the  stabiliser  of  an  allowable
 ##  subgroup; description is written to file LINK_output.
 ##
-Revision.anustab_gi :=
-    "@(#)$Id: anustab.gi,v 1.4 2006/01/24 04:42:40 gap Exp $";
 
 #############################################################################
 ##

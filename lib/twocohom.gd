@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.twocohom_gd :=
-    "@(#)$Id: twocohom.gd,v 4.21 2011/01/21 17:05:39 alexk Exp $";
 
 
 #############################################################################
@@ -176,8 +174,8 @@ DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 ##    [ 0*Z(2), 0*Z(2), Z(2)^0 ] ]
 ##  gap> cc := TwoCohomology( G, M );;
 ##  gap> cc.cohom;
-##  <linear mapping by matrix, <vector space of dimension 3 over GF(2)> -> ( GF(
-##  2)^3 )>
+##  <linear mapping by matrix, <vector space of dimension 3 over GF(
+##  2)> -> ( GF(2)^3 )>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

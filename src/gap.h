@@ -2,7 +2,6 @@
 **
 *W  gap.h                       GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gap.h,v 4.41 2011/05/09 09:24:22 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,9 +9,11 @@
 **
 **  This file declares the various read-eval-print loops and  related  stuff.
 */
+
+#ifndef GAP_GAP_H
+#define GAP_GAP_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_gap_h =
-   "@(#)$Id: gap.h,v 4.41 2011/05/09 09:24:22 sal Exp $";
 #endif
 
 
@@ -105,7 +106,7 @@ extern void ErrorMayQuit (
 *F  ErrorQuitBound( <name> )  . . . . . . . . . . . . . . .  unbound variable
 */
 extern void ErrorQuitBound (
-    Char *              name );
+    const Char *        name );
 
 
 /****************************************************************************
@@ -529,10 +530,10 @@ extern void InitializeGap (
             char *              argv [] );
 
 
+#endif // GAP_GAP_H
+
 /****************************************************************************
 **
 
 *E  gap.h . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
-
-

@@ -1,8 +1,6 @@
 #############################################################################
 ##
-#W  Makefile               GAP 4 package `atlasrep'             Thomas Breuer
-##
-#H  @(#)$Id: Makefile,v 1.53 2008/06/25 13:46:44 gap Exp $
+#W  Makefile             GAP 4 package AtlasRep                 Thomas Breuer
 ##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -156,13 +154,14 @@
 ##       and consistent in
 ##       - this Makefile (variable `VERSION'),
 ##       - `README' (only version number),
-##       - `index.html' (version number, archive names),
+##       - `index.html' (date, version number, archive names),
 ##       - `doc/main.xml' (entities `VERSIONNUMBER', `RELEASEMONTH',
-##          `RELEASEYEAR'), and
+##          `RELEASEYEAR'),
+##       - the manual section about citing the package, and
 ##       - `PackageInfo.g' (components `MyVersion', `Date').
 ##
 ##     - Update the sizes of the archive files mentioned in `index.html',
-##       and the numbers of data files in Chapter 1 of the manual.
+##       and the numbers/sizes of data files in the manual.
 ##
 ##     - Create the archives with the "dist" target.
 ##       Be careful to create the manual w.r.t. the current release of GAP,
@@ -186,14 +185,14 @@
 ##
 ##  Global Variables
 ##
-VERSION = 1r4p0
+VERSION = 1r5p0
 
 PKGNAME = atlasrep
 
 ARCHIVE = $(PKGNAME)/$(PKGNAME)$(VERSION)
 
 #GAP = gap4dev
-GAP = ~sam/gap/4.0/bin/i686-pc-linux-gnu-gcc/gap -b -l ~sam/gap/4.0/
+GAP = ~sam/gap/4.0/bin/i686-pc-linux-gnu-gcc/32-bit/gap -b -l ~sam/gap/4.0/
 
 HOMEPAGE = /usr/local/www-homes/Thomas.Breuer/$(PKGNAME)
 
@@ -202,15 +201,16 @@ OBJECTST = $(PKGNAME)/bibl/Atlas1bib.xml \
            $(PKGNAME)/bibl/ABCbiblbib.xml \
            $(PKGNAME)/bibl/ABCapp2bib.xml \
            $(PKGNAME)/bibl/mindegbib.xml \
+           $(PKGNAME)/doc/manual.css \
            $(PKGNAME)/doc/manual.lab \
            $(PKGNAME)/doc/manual.six \
            `find $(PKGNAME)/doc -maxdepth 1 -name "*.txt" -print` \
            `find $(PKGNAME)/doc -maxdepth 1 -name "*.html" -print` \
+           `find $(PKGNAME)/doc -maxdepth 1 -name "*.xml" -print` \
            $(PKGNAME)/datagens/dummy \
            $(PKGNAME)/dataword/dummy \
            $(PKGNAME)/etc/maketoc \
            `find $(PKGNAME)/gap -maxdepth 1 -name "*.g*" -print` \
-           $(PKGNAME)/doc/manual.css \
            $(PKGNAME)/init.g \
            $(PKGNAME)/read.g \
            $(PKGNAME)/PackageInfo.g \
@@ -228,8 +228,9 @@ OBJECTS = $(OBJECTST) $(OBJECTSB)
 ##
 ##  Targets
 ##
-manual: doc/main.xml doc/atlasrep.xml doc/extend.xml doc/interfac.xml \
-        doc/utils.xml doc/technica.xml doc/manualbib.xml
+manual: doc/main.xml doc/introduc.xml doc/tutorial.xml doc/interfac.xml \
+        doc/atlasrep.xml doc/extend.xml doc/utils.xml doc/technica.xml \
+        doc/manualbib.xml
 	@( cd doc; echo 'Read( "makedocrel.g" );' \
           | $(GAP) -o 500m -A -N -q > /dev/null )
 	@( grep -e "exceeded\|undefined" doc/main.log; exit 0 )
@@ -298,9 +299,10 @@ release: webrefresh \
         index.html atlasrep.css PackageInfo.g README \
         doc/manual.pdf doc/manual.css \
         ../$(ARCHIVE).zoo ../$(ARCHIVE).tar.gz
-	( cp index.html atlasrep.css PackageInfo.g README doc/manual.pdf \
+	( cp index.html atlasrep.css PackageInfo.g README \
           ../$(ARCHIVE).zoo ../$(ARCHIVE).tar.gz \
           $(HOMEPAGE); \
+          cp doc/manual.pdf $(HOMEPAGE)/doc \
           cp doc/*.html $(HOMEPAGE)/doc \
           cp doc/*.txt $(HOMEPAGE)/doc \
           cp doc/manual.css $(HOMEPAGE)/doc )

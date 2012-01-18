@@ -2,7 +2,6 @@
 ##
 #W  grpffmat.gd                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id: grpffmat.gd,v 4.25 2010/02/23 15:13:04 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,20 +9,21 @@
 ##
 ##  This file contains the operations for matrix groups over finite fields.
 ##
-Revision.grpffmat_gd :=
-    "@(#)$Id: grpffmat.gd,v 4.25 2010/02/23 15:13:04 gap Exp $";
 
 
 #############################################################################
 ##
-#C  IsFFEMatrixGroup
+#C  IsFFEMatrixGroup( <G> )
 ##
+##  <#GAPDoc Label="IsFFEMatrixGroup">
 ##  <ManSection>
-##  <Filt Name="IsFFEMatrixGroup" Arg='obj' Type='Category'/>
+##  <Filt Name="IsFFEMatrixGroup" Arg='G' Type='Category'/>
 ##
 ##  <Description>
+##  tests whether all matrices in <A>G</A> have finite field element entries.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareSynonym( "IsFFEMatrixGroup", IsFFECollCollColl and IsMatrixGroup );
 
@@ -41,16 +41,17 @@ InstallTrueMethod( IsFinite,
 
 #############################################################################
 ##
-#F  NicomorphismOfFFEMatrixGroup
+#F  NicomorphismFFMatGroupOnFullSpace
 ##
 ##  <ManSection>
-##  <Func Name="NicomorphismOfFFEMatrixGroup" Arg='obj'/>
+##  <Func Name="NicomorphismFFMatGroupOnFullSpace" Arg='obj'/>
 ##
 ##  <Description>
+##  Compute the permutation action on the full vector space
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "NicomorphismOfFFEMatrixGroup" );
+DeclareGlobalFunction( "NicomorphismFFMatGroupOnFullSpace" );
 
 
 #############################################################################

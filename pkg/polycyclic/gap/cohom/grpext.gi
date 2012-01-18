@@ -66,6 +66,7 @@ end );
 ##
 #F ExtensionsCR( C ) . . . . . . . . . . . . . . . . . . . . . all extensions
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 ExtensionsCR := function( C )
     local cc, new, elm, rel;
 
@@ -96,6 +97,7 @@ end;
 ##
 #F ExtensionClassesCR( C ) . . . . . . . . . . . . . .  all up to equivalence
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 ExtensionClassesCR := function( C )
     local cc, elms;
 
@@ -128,6 +130,7 @@ end;
 ##
 #F SplitExtensionPcpGroup( G, mats ) . . . . . . . . . . . . . . .G split Z^n
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 SplitExtensionPcpGroup := function( G, mats )
     return ExtensionCR( CRRecordByMats( G, mats ), false );
 end;

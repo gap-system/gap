@@ -5,7 +5,7 @@
 ##
 ##  Installation file for the main function of the RADIROOT package
 ##
-#H  @(#)$Id: Radicals.gi,v 1.5 2008/01/22 11:57:43 gap Exp $
+#H  @(#)$Id: Radicals.gi,v 1.6 2011/10/27 18:23:30 gap Exp $
 ##
 #Y  2006
 ##
@@ -69,6 +69,10 @@ InstallMethod( IsSolvablePolynomial, "for a rational polynomial",
 [ IsUnivariateRationalFunction and IsPolynomial ], 0,
 function( f )
 
+    if not ForAll( CoefficientsOfUnivariatePolynomial( f ), IsRat ) then
+        TryNextMethod( );
+    fi;
+
     f := RR_SimplifiedPolynomial( f );
     return ForAll( Filtered( List( Factors(f), RR_SimplifiedPolynomial ),
                              ff -> Degree(ff) <> 1 ),
@@ -89,8 +93,11 @@ InstallMethod( IsSolvable, "rational polynomials", [ IsPolynomial ],
 InstallMethod( IsSeparablePolynomial, "for rational polynomial", 
 [ IsUnivariateRationalFunction and IsPolynomial ], 0,
 function( f )
-    if Degree(Gcd( f, Derivative( f ))) = 0 then return true; fi;
-    return false;
+    if not ForAll( CoefficientsOfUnivariatePolynomial( f ), IsRat ) then
+        TryNextMethod( );
+    fi;
+
+    return Degree(Gcd( f, Derivative( f ))) = 0;
 end );
 
 #############################################################################
@@ -106,8 +113,13 @@ InstallMethod( RootsAsMatrices, "rational polynomials",
 [ IsUnivariateRationalFunction and IsPolynomial ], function( f )
     local L, roots, erw;
 
+    if not ForAll( CoefficientsOfUnivariatePolynomial( f ), IsRat ) then
+        TryNextMethod( );
+    fi;
+
     if not IsSeparablePolynomial( f ) then
-        Info( InfoWarning, 1, "polynomial is not separable, list contains every root only once" );
+        Info(InfoWarning, 1, 
+             "polynomial is not separable, list contains every root only once");
         # make polynomial separable
         f := f / Gcd( f, Derivative( f ) );    
     fi;

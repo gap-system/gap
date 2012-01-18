@@ -22,7 +22,7 @@ in the preface.
 <ManSection>
   <Func Name="FactorsTD" Arg="n [, Divisors ]" Label="trial division"/>
   <Returns>
-    A list of two lists: The first list contains the prime factors found,
+    a list of two lists: The first list contains the prime factors found,
     and the second list contains remaining unfactored parts of <A>n</A>,
     if there are any.
   </Returns>
@@ -52,7 +52,7 @@ gap> FactorsTD(12^25+25^12);
   <Func Name="FactorsPminus1" Arg="n [, [ a, ] Limit1 [, Limit2 ] ]"
         Label="Pollard's p-1"/>
   <Returns>
-    A list of two lists: The first list contains the prime factors found,
+    a list of two lists: The first list contains the prime factors found,
     and the second list contains remaining unfactored parts of <A>n</A>,
     if there are any.
   </Returns>
@@ -109,7 +109,7 @@ gap> List( last[ 1 ]{[ 3, 4, 5 ]}, p -> Factors( p - 1 ) );
   <Func Name="FactorsPplus1" Arg="n [, [ Residues, ] Limit1 [, Limit2 ] ]"
         Label="Williams' p+1"/>
   <Returns>
-    A list of two lists: The first list contains the prime factors found,
+    a list of two lists: The first list contains the prime factors found,
     and the second list contains remaining unfactored parts of <A>n</A>,
     if there are any.
   </Returns>
@@ -164,7 +164,7 @@ gap> List( last[ 1 ], p -> [ Factors( p - 1 ), Factors( p + 1 ) ] );
         Arg="n [, Curves [, Limit1 [, Limit2 [, Delta ] ] ] ]"
         Label="shorthand for FactorsECM"/>
   <Returns>
-    A list of two lists: The first list contains the prime factors found,
+    a list of two lists: The first list contains the prime factors found,
     and the second list contains remaining unfactored parts of <A>n</A>,
     if there are any.
   </Returns>
@@ -296,7 +296,7 @@ gap> FactorsECM(2^256+1,100,10000,1000000,100);
   <Func Name="CFRAC" Arg="n"
         Label="shorthand for FactorsCFRAC"/>  
   <Returns>
-    A list of the prime factors of&nbsp;<A>n</A>.
+    a list of the prime factors of&nbsp;<A>n</A>.
   </Returns>
   <Description>
     This function tries to factor <A>n</A> using the Continued Fraction
@@ -373,7 +373,7 @@ gap> FactorsCFRAC( Factorial(34) - 1 );
   <Func Name="MPQS" Arg="n"
         Label="shorthand for FactorsMPQS"/>  
   <Returns>
-    A list of the prime factors of&nbsp;<A>n</A>.
+    a list of the prime factors of&nbsp;<A>n</A>.
   </Returns>
   <Description>
     This function tries to factor <A>n</A> using the Single Large Prime

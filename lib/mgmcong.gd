@@ -2,7 +2,6 @@
 ##
 #W  mgmcong.gd                  GAP library                   Andrew Solomon
 ##
-#H  @(#)$Id: mgmcong.gd,v 4.9 2010/02/23 15:13:15 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  Robert F. Morse
 ##  Andrew Solomon
 ##
-Revision.mgmcong_gd :=
-    "@(#)$Id: mgmcong.gd,v 4.9 2010/02/23 15:13:15 gap Exp $";
 
 #############################################################################
 ##

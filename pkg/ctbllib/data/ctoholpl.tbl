@@ -2,7 +2,7 @@
 ##
 #W  ctoholpl.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoholpl.tbl,v 4.17 2011/02/09 15:55:37 gap Exp $
+#H  @(#)$Id: ctoholpl.tbl,v 4.18 2011/09/28 14:32:11 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,6 +13,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoholpl.tbl,v $
+#H  Revision 4.18  2011/09/28 14:32:11  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.17  2011/02/09 15:55:37  gap
 #H  P1/G2/L1/V1/ext2 is also 2aM20, P1/G2/L1/V2/ext2 is also 2cM20
 #H  (names used in AtlasRep)
@@ -127,11 +131,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctoholpl_tbl :=
-    "@(#)$Id: ctoholpl.tbl,v 4.17 2011/02/09 15:55:37 gap Exp $";
-
-SET_TABLEFILENAME("ctoholpl");
-ALN:= Ignore;
 
 MOT("P1/G1/L1/V1/ext2",
 [
@@ -3489,7 +3488,6 @@ ALF("P50/G1/L1/V1/ext4","U4(2)",[1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,
 ALN("P50/G1/L1/V1/ext4",["4^6.U4(2)"]);
 
 LIBTABLE.LOADSTATUS.ctoholpl:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

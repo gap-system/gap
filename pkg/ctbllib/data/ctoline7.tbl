@@ -2,7 +2,7 @@
 ##
 #W  ctoline7.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctoline7.tbl,v 4.17 2011/02/09 16:06:27 gap Exp $
+#H  @(#)$Id: ctoline7.tbl,v 4.18 2011/09/28 14:32:13 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -16,6 +16,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctoline7.tbl,v $
+#H  Revision 4.18  2011/09/28 14:32:13  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.17  2011/02/09 16:06:27  gap
 #H  replaced tables: 27:2^2 -> D108, 28.2^2 -> D112, D62x2 -> D124;
 #H  the old names (used in the library of tables of marks) are still
@@ -141,11 +145,6 @@
 #H          TB
 #H  ==========================================================================
 ##
-Revision.ctoline7_tbl :=
-    "@(#)$Id: ctoline7.tbl,v 4.17 2011/02/09 16:06:27 gap Exp $";
-
-SET_TABLEFILENAME("ctoline7");
-ALN:= Ignore;
 
 MOT("L2(37)",
 0,
@@ -594,7 +593,6 @@ ARC("L2(125)","isSimple",true);
 ARC("L2(125)","extInfo",["2","6"]);
 
 LIBTABLE.LOADSTATUS.ctoline7:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

@@ -2,7 +2,7 @@
 **
 *A  update_name.c               ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: update_name.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: update_name.c,v 1.6 2011/09/17 07:29:39 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -23,5 +23,5 @@ int step_size;
 {
    register int length;
    if ((length = strlen (string)) < MAXIDENT - 15)
-      sprintf (string + length, " #%d;%d\0", x, step_size);
+      sprintf (string + length, " #%d;%d", x, step_size);
 }

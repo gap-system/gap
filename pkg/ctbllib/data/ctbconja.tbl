@@ -2,8 +2,6 @@
 ##
 #W  ctbconja.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbconja.tbl,v 4.9 2004/08/31 11:51:19 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables related to the
@@ -13,6 +11,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbconja.tbl,v $
+#H  Revision 4.10  2011/09/28 12:12:36  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.9  2004/08/31 11:51:19  gap
 #H  added 3.A6.2^2 mod 2, 5,
 #H        A6.2^2 mod 2, 5,
@@ -111,10 +113,7 @@
 #H      TB
 #H  ==========================================================================
 ##
-Revision.ctbconja_tbl :=
-    "@(#)$Id: ctbconja.tbl,v 4.9 2004/08/31 11:51:19 gap Exp $";
 
-SET_TABLEFILENAME("ctbconja");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("2.Co1",11,
@@ -1008,6 +1007,7 @@ rec(version:=1,
 date:="23.07.93"));
 
 LIBTABLE.LOADSTATUS.ctbconja:="userloaded";
+
 #############################################################################
 ##
 #E

@@ -5,7 +5,6 @@
 *W                                                         & Martin Schönert
 *W                                                         & Alexander Hulpke
 **
-*H  @(#)$Id: costab.c,v 4.45 2011/05/09 11:11:29 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_costab_c =
-   "@(#)$Id: costab.c,v 4.45 2011/05/09 11:11:29 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -87,6 +84,22 @@ static Int      dedprint;               /* print flag for warning          */
 static Int      wordList [1024];        /* coset rep word buffer           */
 static Int      wordSize = 1023;        /* maximal no. of coset rep words  */
 
+/* clean out global Obj-type variables  to avoid hogging memory*/
+static void CleanOut()
+{
+  objRel = (Obj) 0;
+  objNums = (Obj) 0;
+  objTable = (Obj) 0;
+  objTable2 = (Obj) 0;
+  objNext = (Obj) 0;
+  objPrev = (Obj) 0;
+  objFactor = (Obj) 0;
+  objTree = (Obj) 0;
+  objTree1 = (Obj) 0;
+  objTree2 = (Obj) 0;
+  objExponent = (Obj) 0;
+  objWordValue = (Obj) 0;
+}
 
 /****************************************************************************
 **
@@ -562,6 +575,9 @@ Obj FuncMakeConsequences (
     SET_ELM_PLIST( list, 8, INTOBJ_INT( firstDef  ) );
     SET_ELM_PLIST( list, 9, INTOBJ_INT( lastDef   ) );
 
+    /* clean out  */
+    CleanOut();
+
     return INTOBJ_INT( nrdel );
 }
 
@@ -653,9 +669,9 @@ Obj FuncMakeConsequencesPres (
                 if ( INT_INTOBJ(ELM_PLIST(ptRel[rp],rc)) <= 0 ) {
                     SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( lc ) );
                     undefined--;
-		}
+                }
                 ndefs++;
-		if ( ndefs > ndefsMax ) {
+                if ( ndefs > ndefsMax ) {
                     ErrorQuit( "inconsistent definitions lists", 0L, 0L );
                     return 0;
                 }
@@ -669,6 +685,9 @@ Obj FuncMakeConsequencesPres (
 
         apply++;
     }
+
+    /* clean out  */
+    CleanOut();
 
     return INTOBJ_INT( undefined );
 }
@@ -789,6 +808,9 @@ Obj FuncStandardizeTableC (
         SET_LEN_PLIST( ptTable[2*j-1], lcos );
         SET_LEN_PLIST( ptTable[2*j  ], lcos );
     }
+
+    /* clean out  */
+    CleanOut();
 
     /* return void                                                         */
     return 0;
@@ -2760,6 +2782,10 @@ Obj FuncMakeConsequences2 (
     if ( treeType == 1 ) {
         SET_ELM_PLIST( list, 16, objExponent );
     }
+
+    /* clean out  */
+    CleanOut();
+
     return INTOBJ_INT(nrdel);
 }
 
@@ -3047,19 +3073,19 @@ UInt RelatorScan (
     }
     else {
       if (j==i) {
-	a=rp[i];
-	if ((a%2)==0) {
-	  p=a-1;
-	  ret1=pb;
-	  ret2=p;
-	}
-	else {
-	  p=a+1;
-	  ret1=pa;
-	  ret2=a;
-	}
-	SET_ELM_PLIST(ELM_PLIST(t,a),pa,INTOBJ_INT(pb));
-	SET_ELM_PLIST(ELM_PLIST(t,p),pb,INTOBJ_INT(pa));
+        a=rp[i];
+        if ((a%2)==0) {
+          p=a-1;
+          ret1=pb;
+          ret2=p;
+        }
+        else {
+          p=a+1;
+          ret1=pa;
+          ret2=a;
+        }
+        SET_ELM_PLIST(ELM_PLIST(t,a),pa,INTOBJ_INT(pb));
+        SET_ELM_PLIST(ELM_PLIST(t,p),pb,INTOBJ_INT(pa));
 
         return 2;
       }
@@ -3107,20 +3133,20 @@ Obj FuncLOWINDEX_COSET_SCAN (
     while ((ok==1)&&(i<=l)) {
       ok=RelatorScan(t,d,ELM_PLIST(rx,i));
       if (ok==2) {
-	j++;
-	if (j>sd) {
-	  sd=2*sd;
-	  GROW_PLIST(s1,sd);
-	  SET_LEN_PLIST(s1,sd);
-	  CHANGED_BAG(s1);
-	  GROW_PLIST(s2,sd);
-	  SET_LEN_PLIST(s2,sd);
-	  CHANGED_BAG(s2);
-	  s1a=(UInt*)ADDR_OBJ(s1);
-	  s2a=(UInt*)ADDR_OBJ(s2);
-	}
-	s1a[j]=ret1;
-	s2a[j]=ret2;
+        j++;
+        if (j>sd) {
+          sd=2*sd;
+          GROW_PLIST(s1,sd);
+          SET_LEN_PLIST(s1,sd);
+          CHANGED_BAG(s1);
+          GROW_PLIST(s2,sd);
+          SET_LEN_PLIST(s2,sd);
+          CHANGED_BAG(s2);
+          s1a=(UInt*)ADDR_OBJ(s1);
+          s2a=(UInt*)ADDR_OBJ(s2);
+        }
+        s1a[j]=ret1;
+        s2a[j]=ret2;
         ok=1;
       }
       i++;
@@ -3133,16 +3159,16 @@ Obj FuncLOWINDEX_COSET_SCAN (
     while ((ok==1)&&(i<=l)) {
       ok=RelatorScan(t,e,ELM_PLIST(rx,i));
       if (ok==2) {
-	j++;
-	if (j>sd) {
-	  sd=2*sd;
-	  GROW_PLIST(s1,sd);
-	  GROW_PLIST(s2,sd);
-	  s1a=(UInt*)ADDR_OBJ(s1);
-	  s2a=(UInt*)ADDR_OBJ(s2);
-	}
-	s1a[j]=ret1;
-	s2a[j]=ret2;
+        j++;
+        if (j>sd) {
+          sd=2*sd;
+          GROW_PLIST(s1,sd);
+          GROW_PLIST(s2,sd);
+          s1a=(UInt*)ADDR_OBJ(s1);
+          s2a=(UInt*)ADDR_OBJ(s2);
+        }
+        s1a[j]=ret1;
+        s2a[j]=ret2;
         ok=1;
       }
       i++;
@@ -3191,25 +3217,25 @@ Obj FuncLOWINDEX_IS_FIRST (
     while ((ok==1) && (b<=n)) {
       g=1;
       while ((ok==1)&&(g<=mm)) {
-	ga=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),b));
-	de=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),mu[b]));
-	if ((ga==0)||(de==0)) 
-	  ok=0;
-	else {
-	  if (nu[de]==0) {
-	    l++;
-	    mu[l]=de;
-	    nu[de]=l;
-	  }
-	  if (nu[de]<ga) 
-	    return False;
-	  else {
-	    if (nu[de]>ga) {
-	      ok=0;
-	    }
-	  }
-	}
-	g=g+2;
+        ga=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),b));
+        de=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),mu[b]));
+        if ((ga==0)||(de==0)) 
+          ok=0;
+        else {
+          if (nu[de]==0) {
+            l++;
+            mu[l]=de;
+            nu[de]=l;
+          }
+          if (nu[de]<ga) 
+            return False;
+          else {
+            if (nu[de]>ga) {
+              ok=0;
+            }
+          }
+        }
+        g=g+2;
       }
       b=b+1;
     }
@@ -3237,7 +3263,7 @@ Obj FuncLOWINDEX_PREPARE_RELS (
       l=LEN_PLIST(rel);
       rp=(UInt*)ADDR_OBJ(rel);
       for (k=1;k<=l;k++) 
-	rp[k]=INT_INTOBJ(rp[k]); /* convert relator entries to C-integers */
+        rp[k]=INT_INTOBJ(rp[k]); /* convert relator entries to C-integers */
       /* change type */
       TYPE_DATOBJ(rel) = TYPE_LOWINDEX_DATA;
       RetypeBag(rel,T_DATOBJ);
@@ -3376,8 +3402,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCosetTable ( void )
 {
-    module.revision_c = Revision_costab_c;
-    module.revision_h = Revision_costab_h;
     FillInVersion( &module );
     return &module;
 }

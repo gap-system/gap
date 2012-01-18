@@ -209,6 +209,7 @@ end;
 ##
 #F TwoCohomologyModCR( A, lat )
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 TwoCohomologyModCR := function( A, lat )
     local cb, cc, bat;
 

@@ -142,6 +142,7 @@ end;
 ##
 #A SchurExtension(G) . . . . . . . . . . . . . . . . . . . . . . . .  F/[R,F]
 ##
+# FIXME: This function is documented and should be turned into a attribute
 SchurExtension := function(G)
     local g, r, n, y, coll, k, i, j, e, sys, T;
 
@@ -188,6 +189,8 @@ SchurExtension := function(G)
     return T;
 end;
 
+# FIXME: This function is documented and should be turned into a attribute
+# FIXME: Compare with EpimorphismSchurCover
 SchurExtensionEpimorphism := function( G )
     local   ext,  extgens,  Ggens,  images,  epi;
 
@@ -242,6 +245,8 @@ end);
 ##
 #A SchurCovering(G) . . . . . . . . . . . . . . . . . . . .M(G) extended by G
 ##
+# FIXME: This function is documented and should be turned into an attribute
+# FIXME: Compare this to the GAP attribute SchurCover..
 SchurCovering := function(G)
     local g, H, h, m, M, I, C;
 
@@ -274,6 +279,7 @@ end;
 ##
 #A NonAbelianExteriorSquareEpimorphism(G) . . . . . . . . .  G wegde G --> G'
 ##
+# FIXME: This function is documented and should be turned into a attribute
 NonAbelianExteriorSquareEpimorphism := function( G )
     local   lift,  D,  gens,  imgs,  epi,  lambda;
 
@@ -318,6 +324,7 @@ end );
 ## The follwoing function comutes the embedding of the non-abelian exterior
 ## square of G into tau(G).
 ##
+# FIXME: This function is documented and should be turned into an attribute
 NonAbelianExteriorSquarePlusEmbedding := function(G)
     local   g,  n,  r,  w,  extlift,  F,  f,  D,  d,  m,  s,  c,  i,  
             e,  j,  gens,  imgs,  k,  alpha,  S,  embed;

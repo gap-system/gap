@@ -2,7 +2,6 @@
 ##
 #W  liefam.gd                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: liefam.gd,v 4.31 2010/11/11 23:34:39 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -77,8 +76,6 @@
 ##  </List>
 ##  <#/GAPDoc>
 ##
-Revision.liefam_gd :=
-    "@(#)$Id: liefam.gd,v 4.31 2010/11/11 23:34:39 alexk Exp $";
 
 
 #############################################################################

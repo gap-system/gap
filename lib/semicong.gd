@@ -2,7 +2,6 @@
 ##
 #W  semicong.gd                  GAP library                 Andrew Solomon
 ##
-#H  @(#)$Id: semicong.gd,v 4.13 2010/02/23 15:13:29 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  Robert F. Morse
 ##  Andrew Solomon
 ##
-Revision.semicong_gd :=
-    "@(#)$Id: semicong.gd,v 4.13 2010/02/23 15:13:29 gap Exp $";
 
 ###########################################################################
 ##

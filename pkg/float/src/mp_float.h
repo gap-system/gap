@@ -2,7 +2,7 @@
 **
 *W  mp_float.h                    GAP source                Laurent Bartholdi
 **
-*H  @(#)$Id: mp_float.h,v 1.1 2008/06/14 15:45:40 gap Exp $
+*H  @(#)$Id: mp_float.h,v 1.4 2012/01/17 10:57:03 gap Exp $
 **
 *Y  Copyright (C) 2008 Laurent Bartholdi
 **
@@ -10,18 +10,30 @@
 */
 #ifdef BANNER_MP_FLOAT_H
 static const char *Revision_mp_float_h =
-   "@(#)$Id: mp_float.h,v 1.1 2008/06/14 15:45:40 gap Exp $";
+   "@(#)$Id: mp_float.h,v 1.4 2012/01/17 10:57:03 gap Exp $";
+#endif
+
+#ifndef USE_GMP
+#error Float requires a GAP version with built-in GMP support
 #endif
 
 #define mpz_MPZ(obj) ((__mpz_struct *) ADDR_OBJ(obj))
 Obj MPZ_LONGINT (Obj obj);
 Obj INT_mpz(mpz_ptr z);
 
+#define VAL_MACFLOAT(obj) (*(Double *)ADDR_OBJ(obj))
+#define IS_MACFLOAT(obj) (TNUM_OBJ(obj) == T_MACFLOAT)
+
 #define TEST_IS_INTOBJ(mp_name,obj)					\
   while (!IS_INTOBJ(obj))						\
     obj = ErrorReturnObj(mp_name ": expected a small integer, not a %s", \
 			 (Int)(InfoBags[TNUM_OBJ(obj)].name),0,		\
 			 "You can return an integer to continue");
+
+extern Obj FLOAT_INFINITY_STRING,
+  FLOAT_EMPTYSET_STRING,
+  FLOAT_REAL_STRING,
+  FLOAT_I_STRING;
 
 /****************************************************************
  * mpfr
@@ -79,6 +91,14 @@ int InitMPFILibrary (void);
 
 int InitMPCKernel (void);
 int InitMPCLibrary (void);
+#endif
+
+/****************************************************************
+ * fplll
+ ****************************************************************/
+#ifdef WITH_FPLLL
+int InitFPLLLKernel (void);
+int InitFPLLLLibrary (void);
 #endif
 
 /****************************************************************

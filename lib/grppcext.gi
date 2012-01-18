@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.grppcext_gi :=
-    "@(#)$Id: grppcext.gi,v 4.65 2011/01/25 17:51:36 gap Exp $";
 
 #############################################################################
 ##
@@ -1286,7 +1284,7 @@ function( G, aut, p )
 
     pcgs := Pcgs( G );
     n    := Length( pcgs );
-    R    := Range( IsomorphismFpGroupByPcgs( G, "g" ) );
+    R    := Range( IsomorphismFpGroupByPcgs( pcgs, "g" ) );
     gensR := GeneratorsOfGroup( FreeGroupOfFpGroup( R ) );
     
     F := FreeGroup(IsSyllableWordsFamily, n + 1 );

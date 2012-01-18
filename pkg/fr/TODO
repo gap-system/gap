@@ -1,5 +1,5 @@
 These are the things I'll get to do when I get to do them:
-$Id: TODO,v 1.22 2010/11/04 04:03:11 gap Exp $
+$Id: TODO,v 1.23 2011/07/24 21:05:48 gap Exp $
 
 ALL:
   * extend alphabet by natural embedding, "skip levels" in tree
@@ -42,6 +42,7 @@ img:
   * actual matings
   * given obstruction, compute quotient machine. More generally, find a common format for obstructions
   * canonical decompositions
+  * recode properly rpoly, maybe have higher precision?
 
 linear, vector:
   * stategrowth limitmachine nucleus nucleusmachine

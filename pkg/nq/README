@@ -64,8 +64,8 @@ presented groups.  DIMACS Workshop on Groups  and Computation, AMS-ACM
 This directory contains the following directories and files:
 
         README          this file
-        History         a history of changes to the program
-        ToDo            what else needs to be done
+        CHANGES         a history of changes to the program
+        TODO            what else needs to be done
 
         configure       run this to compile NQ and then run `make'
         configure.in    configure was made from this file by autoconf
@@ -81,8 +81,7 @@ This directory contains the following directories and files:
         doc/            documentation of the GAP interface
         init.g          part of the GAP interface
         read.g          part of the GAP interface
-
-        testNq          a shell script to test the compiled program
+        PackageInfo.g   part of the GAP interface
 
 
 How to install the ANU NQ
@@ -99,18 +98,18 @@ You start compiling NQ by running the configure script:
 
         ./configure
 
-Among other things  it will tell you  whether it succeeded in locating
-the GNU MP library and the  corresponding include files.  If configure
-reports no problems, you proceed by typing
+Among other things it will tell you whether it succeeded in locating
+the GNU MP library and the corresponding include files. If it tells
+you that it could not find the GNU MP include files or the GNU MP
+libraries, you have to run configure with additional parameters. For
+example, if you have installed GNU MP yourself in your home directory,
+you would type something like the following
+
+        ./configure --with-gmp=/home/me/gmp
+
+If configure reports no problems, you proceed by typing
 
         make
-
-If it tells you that it could not find the GNU MP include files or the
-GNU MP  libraries,  you have to run   make with additional parameters.
-For example,  if you  have  installed GNU  MP  yourself in   your home
-directory, you would type something like the following
-
-    make GNU_MP_INC=/home/me/gmp-2.0.2 GNU_MP_LIB=/home/me/gmp-2.0.2
 
 A compiled version of the program named  `nq'  is then placed into the
 directory `bin/<complicated name>'.   The <complicated name> component
@@ -121,16 +120,16 @@ If there are  any  warnings or  even  fatal error messages  during the
 compilation process, please send  a copy to the address  at the end of
 this  document together with  information about your operating system,
 the compiler you  used  and any  changes you  might have  made  to the
-source code. I will have a look at your problems and try to fix them.
+source code. We will have a look at your problems and try to fix them.
  
 After the compilation  is finished you   can  check if the ANU  NQ  is
 running properly on your system.  Simply type
 
-    testNq
+    make test
 
-The file testNq runs some  computations and compares their output with
-the output files in  the directory `examples'.  If testNq reports  any
-errors, please follow the instruction that testNq prints out.
+This runs some computations and compares their output with the  output
+files in the directory `examples'. If any errors are reported,  please
+follow the instruction that are printed out.
  
 How to use the ANU NQ
 ---------------------
@@ -301,29 +300,32 @@ Computing the class 3 quotient with the ANU NQ by typing
 
 produces the following output:
 #
-#    The ANU Nilpotent Quotient Program (Version 1.1d, 18 May 1994)
+#    The ANU Nilpotent Quotient Program (Version 2.3)
 #    Calculating a nilpotent quotient
 #    Input: free2.fp
 #    Nilpotency class: 3
-#    Program: nq     Machine: astoria
+#    Program: nq
+#    Size of exponents: 8 bytes
 #
 #    Calculating the abelian quotient ...
 #    The abelian quotient has 2 generators
 #        with the following exponents: 0 0
 #
 #    Calculating the class 2 quotient ...
+##  Sizes:  2  3
 #    Layer 2 of the lower central series has 1 generators
 #          with the following exponents: 0
 #
 #    Calculating the class 3 quotient ...
+##  Sizes:  2  3  5
 #    Layer 3 of the lower central series has 2 generators
 #          with the following exponents: 0 0
 #
 
 
 #    The epimorphism :
-#    a|---> A
-#    b|---> B
+#    x |---> A
+#    y |---> B
 
 
 #    The nilpotent quotient :
@@ -339,8 +341,14 @@ produces the following output:
 #    Class : 3
 #    Nr of generators of each class : 2 1 2
 
-#    total runtime : 0 msec
-#    total size    : 35900 byte
+
+#    The definitions:
+#    C := [ B, A ]
+#    D := [ B, A, A ]
+#    E := [ B, A, B ]
+#    total runtime : 1 msec
+#    total size    : 0 byte
+##  Total time spent on integer matrices: 0
 
 Most of the comments are fairly self-explanatory. One  note of caution
 is necessary:  The  number of generators for each  factor of the lower
@@ -380,18 +388,18 @@ Some improvements planned for further versions
 On the agenda for  future versions  of  the program are  the following
 items :
 
-	Use combinatorial collection
-	Improve the speed of checking the Engel conditions
-	Avoid consistency tests used for tail computations
-	Speed up elimination of generators and extending the pc pres
-	Use column permutations in the Kannan-Bachem algorithm
-	Add more comments to the code
-	Use the mpz-interface of the GNU multiple precision package
-	Find a more satisfying solution for generating sets for each
-	     central factor.
-	Multiple precision integers as exponents of generators
-	Better control over the output
-	Output computed nilpotent quotient if the program times out
+    Use combinatorial collection
+    Improve the speed of checking the Engel conditions
+    Avoid consistency tests used for tail computations
+    Speed up elimination of generators and extending the pc pres
+    Use column permutations in the Kannan-Bachem algorithm
+    Add more comments to the code
+    Use the mpz-interface of the GNU multiple precision package
+    Find a more satisfying solution for generating sets for each
+         central factor.
+    Multiple precision integers as exponents of generators
+    Better control over the output
+    Output computed nilpotent quotient if the program times out
 
 
 Acknowledgements
@@ -402,15 +410,17 @@ The   development of this  program  was started  while  the author was
 supported by an Australian National University  PhD scholarship and an
 Overseas Postgraduate Research Scholarship.
 
-Further development of  this program  was done  while the  author  was
-supported       by     the DFG-Schwerpunkt-Projekt    "`Algorithmische
+Further  development  of  this  program  was  done  while  the  author
+was  supported   by   the   DFG-Schwerpunkt-Projekt   "`Algorithmische
 Zahlentheorie und Algebra"'.
 
 Since then, maintenance of ANU NQ has been taken over by Max Horn. All
 credit for creating ANU NQ still goes to Werner Nickel as sole author.
+However, bug reports and other  inquiries should be sent to Max  Horn.
+
 
 Contact addresses
 -----------------
 Comments, bug reports and suggestions are welcome, please email to
 
-		Max Horn <mhorn@tu-bs.de>
+        Max Horn <mhorn@tu-bs.de>

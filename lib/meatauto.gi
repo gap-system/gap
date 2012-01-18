@@ -3,7 +3,6 @@
 #W  meatauto.gi                  GAP Library                    Michael Smith
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: meatauto.gi,v 1.4 2004/07/17 00:34:48 gap Exp $ 
 ##
 #Y  Copyright 1996 -- School of Mathematical Sciences, ANU   
 #Y  Copyright (C)  2004,  The GAP Group
@@ -13,8 +12,6 @@
 ##  conversion of the module routines in the GAP3 package `autag' by the
 ##  first author.
 ##
-Revision.meatauto_gi:=
-  "@(#)$Id: meatauto.gi,v 1.4 2004/07/17 00:34:48 gap Exp $";
 
 InstallGlobalFunction(TestModulesFitTogether,function(m1,m2);
   if m1.field<>m2.field then

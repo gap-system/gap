@@ -2,18 +2,18 @@
 ##  
 ##  PackageInfo.g for the package `float'                   Laurent Bartholdi
 ##
-## $Id: PackageInfo.g,v 1.2 2011/04/08 14:26:30 gap Exp $
+## $Id: PackageInfo.g,v 1.9 2012/01/17 10:57:01 gap Exp $
 ##
 SetPackageInfo( rec(
 PackageName := "Float",
-Subtitle := "Integration of mpfr and mpfi in GAP",
-Version := "0.1",
+Subtitle := "Integration of mpfr, mpfi, mpc, fplll and cxsc in GAP",
+Version := "0.4.4",
 ## <#GAPDoc Label="Version">
-## 0.1
+## 0.4.4
 ## <#/GAPDoc>
-Date := "08/03/2011",
+Date := "11/29/2011",
 ArchiveURL := Concatenation("http://www.uni-math.gwdg.de/laurent/Float/float-",~.Version),
-ArchiveFormats := ".tar.gz .zoo",
+ArchiveFormats := ".tar.gz",
 Persons := [
   rec( 
     LastName      := "Bartholdi",
@@ -32,7 +32,7 @@ Persons := [
   )
 ],
 
-Status := "started",
+Status := "distributed",
 
 README_URL := "http://www.uni-math.gwdg.de/laurent/Float/README.float",
 PackageInfoURL := "http://www.uni-math.gwdg.de/laurent/Float/PackageInfo.g",
@@ -59,6 +59,8 @@ Dependencies := rec(
 ),
 
 AvailabilityTest := ReturnTrue,
+                    
+BannerString := Concatenation("Loading FLOAT ", String( ~.Version ), " ...\n"),
 
 Autoload := false,
 TestFile := "tst/testall.g",

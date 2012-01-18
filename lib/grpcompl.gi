@@ -2,7 +2,6 @@
 ##
 #W  grpcompl.gi                  GAP Library                 Alexander Hulpke
 ##
-#H  @(#)$Id: grpcompl.gi,v 4.18 2010/02/23 15:13:04 gap Exp $
 ##
 #Y  Copyright (C)  1997
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the operations for the computation of complements in
 ##  'white box groups'
 ##
-Revision.grpcompl_gi :=
-    "@(#)$Id: grpcompl.gi,v 4.18 2010/02/23 15:13:04 gap Exp $";
 
 
 BindGlobal("COCohomologyAction",function(oc,actgrp,auts,orbs)

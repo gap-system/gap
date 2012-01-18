@@ -2,12 +2,14 @@
 **
 *A  print_arrays.c              ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: print_arrays.c,v 1.5 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: print_arrays.c,v 1.6 2011/09/17 07:29:39 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
+
+#include "pq_defs.h"
 
 /* procedure to print out integer array */
 

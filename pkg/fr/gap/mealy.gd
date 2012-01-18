@@ -2,7 +2,7 @@
 ##
 #W mealy.gd                                                 Laurent Bartholdi
 ##
-#H   @(#)$Id: mealy.gd,v 1.37 2011/06/13 22:54:35 gap Exp $
+#H   @(#)$Id: mealy.gd,v 1.39 2011/08/02 22:36:10 gap Exp $
 ##
 #Y Copyright (C) 2006, Laurent Bartholdi
 ##
@@ -264,7 +264,14 @@ DeclareOperation("MealyElementNC", [IsFamily, IsList, IsList, IsInt]);
 ##     filename; otherwise it is converted to Postscript using the program
 ##     <K>dot</K> from the <Package>graphviz</Package> package, and
 ##     is displayed in a separate X window using the program
-##     <Package>display</Package>. This works on UNIX systems.
+##     <Package>display</Package> or <Package>rsvg-view</Package>.
+##     This works on UNIX systems.
+##
+##     <P/> It is assumed, but not checked, that <Package>graphviz</Package>
+##     and <Package>display</Package>/<Package>rsvg-view</Package> are
+##     properly installed on the system. The option <K>usesvg</K> requests
+##     the use of <Package>rsvg-view</Package>; by default,
+##     <Package>display</Package> is used.
 ##
 ##     <P/> A circle is displayed for every state of <A>m</A>, and there is
 ##     an edge for every transition in <A>m</A>. It has label of the form
@@ -281,7 +288,9 @@ DeclareOperation("MealyElementNC", [IsFamily, IsList, IsList, IsInt]);
 ##     it is started, in the syntax <C>Draw(M:detach)</C>.
 ##
 ##     <P/> It is assumed that <Package>graphviz</Package>
-##     and <Package>display</Package> are properly installed on the system.
+##     and <Package>display</Package>/<Package>rsvg-view</Package> are properly
+##     installed on the system. The option <K>usesvg</K> requests the use of
+##     <Package>rsvg-view</Package>; by default, <Package>display</Package> is used.
 ##
 ##     <P/> For example, the command
 ##     <C>Draw(NucleusMachine(BasilicaGroup));</C> produces (in a new
@@ -1198,7 +1207,7 @@ DeclareProperty("IsWeaklyFinitaryFRElement", IsFRElement);
 ## </ManSection>
 ## <#/GAPDoc>
 ##
-DeclareOperation("LimitStates", [IsFRMachine]);
+DeclareAttribute("LimitStates", IsFRMachine);
 DeclareAttribute("NucleusMachine", IsFRMachine);
 #############################################################################
 

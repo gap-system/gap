@@ -2,7 +2,6 @@
 **
 *W  stats.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: stats.h,v 4.9 2010/06/14 15:56:26 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,9 +12,11 @@
 **  The  statements package  is the  part  of  the interpreter that  executes
 **  statements for their effects and prints statements.
 */
+
+#ifndef GAP_STATS_H
+#define GAP_STATS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_stats_h =
-   "@(#)$Id: stats.h,v 4.9 2010/06/14 15:56:26 sal Exp $";
 #endif
 
 
@@ -159,6 +160,8 @@ extern  void            (* PrintStatFuncs[256] ) ( Stat stat );
 */
 StructInitInfo * InitInfoStats ( void );
 
+
+#endif // GAP_STATS_H
 
 /****************************************************************************
 **

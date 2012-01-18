@@ -61,6 +61,7 @@ end;
 ##
 ## Warning: this function runs forever, if the orbit is infinite!
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 PcpOrbitStabilizer := function( e, pcp, act, op )
     local  rels, orbit, trans, trels, tword, stab, word, w, i, f, j, n, t, s;
 
@@ -142,6 +143,7 @@ end;
 ##
 ##  Warning: this function runs forever, if one of the orbits is infinite!
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 PcpOrbitsStabilizers := function( dom, pcp, act, op )
     local todo, orbs, e, o;
     todo := [1..Length(dom)];
@@ -226,6 +228,7 @@ end;
 ##
 #F RandomCentralizerPcpGroup( G, g )
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 RandomCentralizerPcpGroup := function( G, g )
     local gens, stab, h;
     gens := Igs( G );
@@ -246,6 +249,7 @@ end;
 ##
 #F RandomNormalizerPcpGroup( G, N )
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 RandomNormalizerPcpGroup := function( G, N )
     local gens, stab;
     gens := Igs(G);

@@ -1,16 +1,22 @@
 # sample makefile
 CC=cc
+GAPARCH=@GAPARCH@
 
-targets: default
+all: default
 
-# this target creates a bin-directory
-bindir:
-	if test ! -d bin;  then mkdir bin;  fi
-	if test ! -d bin/@GAPARCH@;  then mkdir -p bin/@GAPARCH@;  fi
+default: bin/$(GAPARCH)/hello
 
-
-default: bindir src/hello.c
-	$(CC) -o bin/@GAPARCH@/hello src/hello.c
+bin/$(GAPARCH)/hello: src/hello.c
+	mkdir -p bin/$(GAPARCH)
+	$(CC) -o bin/$(GAPARCH)/hello src/hello.c
 
 clean:
-	rm -rf bin Makefile
+	rm -rf bin
+
+distclean: clean
+	rm -rf Makefile
+
+doc:
+	gap -A -q -T < makedocrel.g
+
+.PHONY: all default clean distclean doc

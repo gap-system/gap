@@ -2,14 +2,12 @@
 **
 *A  autgp_order.c               ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: autgp_order.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: autgp_order.c,v 1.7 2011/11/28 17:47:16 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
-
-#if defined (LARGE_INT) 
 
 #include "pq_defs.h"
 #include "pcp_vars.h"
@@ -19,6 +17,8 @@
 #include "global.h"
 #include "standard.h"
 
+#ifdef HAVE_GMP
+
 /* update the order of the automorphism group */
 
 void update_autgp_order (orbit_length, pga, pcp)
@@ -26,7 +26,7 @@ int orbit_length;
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int d, nmr_cent;
    MP_INT prime, nmr_centrals, orbit_size;
@@ -88,28 +88,13 @@ struct pcp_vars *pcp;
    }
 }
 
-
-/* report the group and automorphism group order */
-
-void Magma_report_autgp_order (Magma_rep, pga, pcp)
-FILE *Magma_rep;
-struct pga_vars *pga;
-struct pcp_vars *pcp;
-{
-   fprintf (Magma_rep, "ANUPQsize := ");
-   mpz_out_str (Magma_rep, 10, &(pga->aut_order));
-   fprintf (Magma_rep, ";\n");
-   fprintf (Magma_rep, "ANUPQagsize := ");
-   fprintf (Magma_rep, "%d;;\n", pga->nmr_soluble);
-}
-
 /* compute (an upper bound for) the order of the automorphism group */
 
 void autgp_order (pga, pcp)
 struct pga_vars *pga;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    MP_INT diff, prime, nmr_centrals, sub, large;
    MP_INT t;

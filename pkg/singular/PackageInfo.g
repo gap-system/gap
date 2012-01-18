@@ -3,7 +3,7 @@
 #W    PackageInfo.g        Package singular            Willem de Graaf
 #W                                                     Marco Costantini
 ##
-#H    @(#)$Id: PackageInfo.g,v 1.21 2006/07/23 20:05:30 gap Exp $
+#H    @(#)$Id: PackageInfo.g,v 1.22 2011/09/10 16:35:12 alexk Exp $
 ##
 #Y    Copyright (C) 2003 Willem de Graaf and Marco Costantini
 #Y    Copyright (C) 2004, 2005, 2006 Marco Costantini
@@ -14,14 +14,15 @@ SetPackageInfo( rec(
 PackageName := "singular",
 Subtitle := "The GAP interface to Singular",
 
+PackageWWWHome := "http://www.gap-system.org/HostedGapPackages/singular/",
+
 # on a new release, change the version/date twice here, in init.g and in 
 # doc/singular.xml
 
-Version := "06.07.23",
-Date := "23/07/2006",
-ArchiveURL := Concatenation([
- "http://www-math.science.unitn.it/~costanti/gap_code/singular/singular-", 
-  ~.Version]),
+Version := "11.08.11",
+Date := "11/08/2011",
+
+ArchiveURL := Concatenation( ~.PackageWWWHome, "singular-", ~.Version ),
 ArchiveFormats := ".tar.gz",
 
 Persons := [
@@ -29,7 +30,7 @@ Persons := [
   LastName := "Costantini",
   FirstNames := "Marco",
   IsAuthor := true,
-  IsMaintainer := true,
+  IsMaintainer := false,
   Email := "costanti@science.unitn.it",
   WWWHome := "http://www-math.science.unitn.it/~costanti/",
   Place := "Trento",
@@ -58,16 +59,13 @@ Status := "deposited",
 #CommunicatedBy := "",
 #AcceptDate := "",
 
-README_URL := "http://www-math.science.unitn.it/~costanti/gap_code/singular/README",
-PackageInfoURL :=
- "http://www-math.science.unitn.it/~costanti/gap_code/singular/PackageInfo.g",
+README_URL := Concatenation( ~.PackageWWWHome, "README" ),
+PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
 
 AbstractHTML :=
   "The <span class=\"pkgname\">singular</span> package provides an interface \
    from <span class=\"pkgname\">GAP</span> to the computer algebra system \
    <span class=\"pkgname\">Singular</span>.",
-
-PackageWWWHome := "http://www-math.science.unitn.it/~costanti/#singular",
 
 PackageDoc := rec(
   BookName  := "singular",
@@ -90,8 +88,8 @@ Dependencies := rec(
 AvailabilityTest := ReturnTrue,
 Autoload := false,
 # the banner
-BannerString := 
-"The GAP interface to Singular, by Marco Costantini and Willem de Graaf\n",
+# BannerString := 
+# "The GAP interface to Singular, by Marco Costantini and Willem de Graaf\n",
 
 #TestFile := "tst/testall.g",
 Keywords := [ "Interface to Singular", "Groebner bases" ]

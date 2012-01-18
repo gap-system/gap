@@ -3,8 +3,6 @@
 #W  scanmtx.gd     GAP 4 packages AtlasRep and MeatAxe          Thomas Breuer
 #W                                                              Frank L"ubeck
 ##
-#H  @(#)$Id: scanmtx.gd,v 1.24 2008/05/20 15:58:00 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Whenever this file is changed in one of the packages
@@ -18,12 +16,6 @@
 ##  The functions <Ref Func="CMtxBinaryFFMatOrPerm"/> and
 ##  <Ref Func="FFMatOrPermCMtxBinary"/> were contributed by Frank L"ubeck.
 ##
-if IsBound( Revision ) then
-  Revision.( "atlasrep/gap/scanmtx_gd" ) :=
-    "@(#)$Id: scanmtx.gd,v 1.24 2008/05/20 15:58:00 gap Exp $";
-  Revision.( "cmeataxe/gap/scanmtx_gd" ) :=
-    "@(#)$Id: scanmtx.gd,v 1.24 2008/05/20 15:58:00 gap Exp $";
-fi;
 
 
 ############################################################################
@@ -281,7 +273,7 @@ DeclareGlobalFunction( "ScanMeatAxeFile" );
 ##  <P/>
 ##  In the third form, for a permutation <A>perm</A> with largest moved point
 ##  <M>n</M>, say, a prime power <A>q</A>, and a list <A>dims</A> of length
-##  <M>2</M> containing two positive integers larger than or equal to
+##  two containing two positive integers larger than or equal to
 ##  <M>n</M>,
 ##  <Ref Oper="MeatAxeString"/> returns a string that encodes <A>perm</A>
 ##  as a matrix over <C>GF(<A>q</A>)</C>, of dimensions <A>dims</A>,
@@ -565,8 +557,8 @@ DeclareGlobalFunction( "FFMatOrPermCMtxBinary" );
 ##  This example means that the list of outputs of the program contains
 ##  elements of the classes <C>1A</C>, <C>2A</C>, <C>3A</C>, <C>5A</C>,
 ##  and <C>5B</C> (in this order),
-##  and that inside the program, these elements are referred to by the names
-##  <C>3</C>, <C>1</C>, <C>2</C>, <C>4</C>, and <C>5</C>.
+##  and that inside the program, these elements are referred to by the five
+##  names <C>3</C>, <C>1</C>, <C>2</C>, <C>4</C>, and <C>5</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

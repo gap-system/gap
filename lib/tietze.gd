@@ -2,7 +2,6 @@
 ##
 #W  tietze.gd                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id: tietze.gd,v 4.37 2011/05/14 21:27:34 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
 ##
-Revision.tietze_gd :=
-    "@(#)$Id: tietze.gd,v 4.37 2011/05/14 21:27:34 alexk Exp $";
 
 
 #############################################################################

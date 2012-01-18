@@ -1,0 +1,9 @@
+* update documentation to match latest reality
+* make package release
+* check copyright data
+* add GPL headers to files as appropriate
+* Consider removing "documentation" for methods like ImageElm, IsSolvableGroup
+  or at least rewrite it to make clear that what Polenta does
+  is providing a new *method* for these, but that the functions
+  themselves are part of GAP...
+* Implement IsTriangularizableMatGroup for FFE groups?

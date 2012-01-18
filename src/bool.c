@@ -2,7 +2,6 @@
 **
 *W  bool.c                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: bool.c,v 4.30 2010/10/15 21:06:04 alexk Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,8 +15,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_bool_c =
-   "@(#)$Id: bool.c,v 4.30 2010/10/15 21:06:04 alexk Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -504,8 +501,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoBool ( void )
 {
-    module.revision_c = Revision_bool_c;
-    module.revision_h = Revision_bool_h;
     FillInVersion( &module );
     return &module;
 }

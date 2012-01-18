@@ -3,7 +3,6 @@
 #W  package.gd                  GAP Library                      Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: package.gd,v 4.18 2011/04/21 11:08:30 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,14 +13,9 @@
 #T TODO: document the utilities
 #T   `SuggestUpgrades'
 #T   `CheckPackageLoading'
-#T   `ShowPackageVariables'
 #T   `LoadAllPackages'
 #T   `PackageAvailabilityInfo'
-#T   `BibEntry'
-#T   `PackageVariablesInfo'
 ##
-Revision.package_gd :=
-    "@(#)$Id: package.gd,v 4.18 2011/04/21 11:08:30 gap Exp $";
 
 
 #############################################################################
@@ -1006,48 +1000,54 @@ DeclareGlobalFunction( "SuggestUpgrades" );
 #F  BibEntry( <pkgname>[, <key>] )
 #F  BibEntry( <pkginfo>[, <key>] )
 ##
+##  <#GAPDoc Label="BibEntry">
 ##  <ManSection>
-##  <Func Name="BibEntry" Arg='"GAP"[, key]'/>
 ##  <Func Name="BibEntry" Arg='pkgname[, key]'/>
-##  <Func Name="BibEntry" Arg='pkginfo[, key]'/>
+##
+##  <Returns>
+##  a string in BibXMLext format
+##  (see <Ref Sect="The BibXMLext Format" BookName="gapdoc"/>)
+##  that can be used for referencing the &GAP; system or a &GAP; package.
+##  </Returns>
 ##
 ##  <Description>
-##  <Ref Func="BibEntry"/> returns a string representing a Bib&TeX; entry for
-##  referencing the &GAP; system or a &GAP; package.
-##  <P/>
-##  When called with argument the string <C>"GAP"</C>,
+##  If the argument <A>pkgname</A> is the string <C>"GAP"</C>,
 ##  the function returns an entry for the current version of &GAP;.
 ##  <P/>
-##  When a string <A>pkgname</A> is given as an argument,
-##  an entry for the &GAP; package with name <A>pkgname</A> is returned,
-##  which is computed from the record at the first position in the list
-##  returned by <Ref Func="PackageInfo"/> when this is called with the
-##  argument <A>pkgname</A>;
-##  if no package with name <A>pkgname</A> is loadable then the empty string
+##  Otherwise, if a string <A>pkgname</A> is given, which is the name of a
+##  &GAP; package, an entry for this package is returned;
+##  this entry is computed from the <F>PackageInfo.g</F> file of
+##  <E>the current version</E> of the package,
+##  see <Ref Func="InstalledPackageVersion"/>.
+##  If no package with name <A>pkgname</A> is installed then the empty string
 ##  is returned.
-##  An entry for a prescribed version of a package can be computed by
-##  entering, as the argument <A>pkginfo</A>,
-##  the desired record from the list returned by <Ref Func="PackageInfo"/>.
+##  <P/>
+##  A string for <E>a different version</E> of &GAP; or a package
+##  can be computed by entering, as the argument <A>pkgname</A>,
+##  the desired record from the <F>PackageInfo.g</F> file.
+##  (One can access these records using the function <C>PackageInfo</C>.)
 ##  <P/>
 ##  In each of the above cases, an optional argument <A>key</A> can be
 ##  given, a string which is then used as the key of the Bib&TeX; entry
 ##  instead of the default key that is generated from the system/package name
-##  and the version number;
-##  the version number should be part of any key,
-##  in order to be able to cite different versions of &GAP;
-##  or of a &GAP; package.
+##  and the version number.
 ##  <P/>
-##  This function requires the functions
+##  <Ref Func="BibEntry"/> requires the functions
 ##  <Ref Func="FormatParagraph" BookName="gapdoc"/> and
 ##  <Ref Func="NormalizedNameAndKey" BookName="gapdoc"/>
 ##  from the &GAP; package &GAPDoc;.
 ##  <P/>
+##  The functions <Ref Func="ParseBibXMLextString" BookName="gapdoc"/>
+##  and <Ref Func="StringBibXMLEntry" BookName="gapdoc"/>
+##  can be used to create for example a Bib&TeX; entry from the return value,
+##  as follows.
+##  <P/>
 ##  <Log><![CDATA[
-##  gap> bib:= BibEntry( "GAP", "4.5" );;
+##  gap> bib:= BibEntry( "GAP", "GAP4.5" );;
 ##  gap> Print( bib, "\n" );
-##  <entry id="4.5"><misc>
+##  <entry id="GAP4.5"><misc>
 ##    <title><C>GAP</C> &ndash; <C>G</C>roups, <C>A</C>lgorithms,
-##           and <C>P</C>rogramming, <C>V</C>ersion 4.dev</title>
+##           and <C>P</C>rogramming, <C>V</C>ersion 4.5.1</title>
 ##    <howpublished><URL>http://www.gap-system.org</URL></howpublished>
 ##    <key>GAP</key>
 ##    <keywords>groups; *; gap; manual</keywords>
@@ -1055,7 +1055,7 @@ DeclareGlobalFunction( "SuggestUpgrades" );
 ##  </misc></entry>
 ##  gap> parse:= ParseBibXMLextString( bib );;
 ##  gap> Print( StringBibXMLEntry( parse.entries[1], "BibTeX" ) );
-##  @misc{ 4.5,
+##  @misc{ GAP4.5,
 ##    title =            {{GAP}   {\textendash}   {G}roups,   {A}lgorithms,  and
 ##                        {P}rogramming, {V}ersion 4.5.1},
 ##    organization =     {The GAP {G}roup},
@@ -1067,6 +1067,7 @@ DeclareGlobalFunction( "SuggestUpgrades" );
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "BibEntry" );
 
@@ -1092,10 +1093,11 @@ DeclareGlobalFunction( "PackageVariablesInfo" );
 
 #############################################################################
 ##
-#F  ShowPackageVariables( <pkgname>[, <version>] )
+#F  ShowPackageVariables( <pkgname>[, <version>][, <arec>] )
 ##
+##  <#GAPDoc Label="ShowPackageVariables">
 ##  <ManSection>
-##  <Func Name="ShowPackageVariables" Arg='pkgname[, version]'/>
+##  <Func Name="ShowPackageVariables" Arg='pkgname[, version][, arec]'/>
 ##
 ##  <Description>
 ##  Let <A>pkgname</A> be the name of a &GAP; package.
@@ -1103,12 +1105,10 @@ DeclareGlobalFunction( "PackageVariablesInfo" );
 ##  <Ref Func="ShowPackageVariables"/> prints a list of global variables
 ##  that become bound and of methods that become installed
 ##  when the package is loaded.
-##  (For that, the package is actually loaded,
-##  so <Ref Func="ShowPackageVariables"/> can be called only once
-##  for the same package in the same &GAP; session.)
+##  (For that, the package is actually loaded.)
 ##  <P/>
 ##  If a version number <A>version</A> is given
-##  (see Section&nbsp;<Ref Sect="Version Numbers"/>)
+##  (see Section&nbsp;<Ref Sect="Version Numbers" BookName="Example"/>)
 ##  then this version of the package is considered.
 ##  <P/>
 ##  An error message is printed if (the given version of) the package
@@ -1128,8 +1128,48 @@ DeclareGlobalFunction( "PackageVariablesInfo" );
 ##  in the package,
 ##  and <C>Set<A>attr</A></C> and <C>Has<A>attr</A></C> type variables
 ##  where <A>attr</A> is an attribute or property.
+##  <!--
+##  <P/>
+##  The output can be customized using the optional record <A>arec</A>,
+##  the following components of this record are supported.
+##  <List>
+##  <Mark><C>show</C></Mark>
+##  <Item>
+##    a list of strings describings those kinds of variables which shall be
+##    shown, such as <C>"new global functions"</C>;
+##    the default are all kinds that appear in the package,
+##  </Item>
+##  <Mark><C>showDocumented</C></Mark>
+##  <Item>
+##    <K>true</K> (the default) if documented variables shall be shown,
+##    and <K>false</K> otherwise,
+##  </Item>
+##  <Mark><C>showUndocumented</C></Mark>
+##  <Item>
+##    <K>true</K> (the default) if undocumented variables shall be shown,
+##    and <K>false</K> otherwise,
+##  </Item>
+##  <Mark><C>showPrivate</C></Mark>
+##  <Item>
+##    <K>true</K> (the default) if variables from the package's name space
+##    (see Section <Ref Sect="Namespaces"/>) shall be shown,
+##    and <K>false</K> otherwise,
+##  </Item>
+##  <Mark><C>Display</C></Mark>
+##  <Item>
+##    a function that takes a string and shows it on the screen;
+##    the default is <Ref Func="Print"/>,
+##    another useful value is <Ref Func="Pager"/>.
+##  </Item>
+##  </List>
+##  <P/>
+##  An interactive variant of <Ref Func="ShowPackageVariables"/> is the
+##  function <Ref Func="BrowsePackageVariables" BookName="browse"/> that is
+##  provided by the &GAP; package <Package>Browse</Package>.
+##  -->
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ShowPackageVariables" );
 

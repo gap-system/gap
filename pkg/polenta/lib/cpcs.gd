@@ -2,10 +2,10 @@
 ##
 #W cpcs.gd              POLENTA package                     Bjoern Assmann
 ##
-## Methods for the calculation of 
+## Methods for the calculation of
 ## constructive pc-sequences for rational matrix groups
 ##
-#H  @(#)$Id: cpcs.gd,v 1.5 2011/05/31 13:10:57 gap Exp $
+#H  @(#)$Id: cpcs.gd,v 1.6 2011/09/23 13:36:31 gap Exp $
 ##
 #Y 2003
 ##
@@ -40,31 +40,31 @@ DeclareGlobalFunction( "CPCS_AbelianPRMGroup" );
 ##
 ## calculates a constructive pcs for the G/U_p(G)
 ##
-DeclareGlobalFunction( "CPCS_FactorGU_p" ); 
+DeclareGlobalFunction( "CPCS_FactorGU_p" );
 
 #############################################################################
 ##
 #F POL_PreImagesPcsNueK_p_G( gens_K_p, pcgs_nue_K_p )
 ##
-DeclareGlobalFunction( "POL_PreImagesPcsNueK_p_G" ); 
+DeclareGlobalFunction( "POL_PreImagesPcsNueK_p_G" );
 
 #############################################################################
 ##
 #F POL_PreImagesPcsI_p_G( pcgs_I_p, gens )
 ##
-DeclareGlobalFunction( "POL_PreImagesPcsI_p_G" ); 
+DeclareGlobalFunction( "POL_PreImagesPcsI_p_G" );
 
 #############################################################################
 ##
 #F TestPOL_PreImagesPcsI_p_G( preImgsI_p, p, pcgs_I_p );
 ##
-DeclareGlobalFunction( "TestPOL_PreImagesPcsI_p_G" ); 
- 
+DeclareGlobalFunction( "TestPOL_PreImagesPcsI_p_G" );
+
 #############################################################################
 ##
 #F ExponentVector_CPCS_FactorGU_p(pcgs_GU,g)
 ##
-DeclareGlobalFunction( "ExponentVector_CPCS_FactorGU_p" ); 
+DeclareGlobalFunction( "ExponentVector_CPCS_FactorGU_p" );
 
 #############################################################################
 ##
@@ -76,13 +76,13 @@ DeclareGlobalFunction( "POL_GetPartinK_P" );
 ##
 #F RelativeOrders_CPCS_FactorGU_p( pcgs_GU )
 ##
-DeclareGlobalFunction( "RelativeOrders_CPCS_FactorGU_p" ); 
+DeclareGlobalFunction( "RelativeOrders_CPCS_FactorGU_p" );
 
 #############################################################################
 ##
 #F POL_MergeCPCS( pcgs_U_p, pcgs_GU)
 ##
-DeclareGlobalFunction( "POL_MergeCPCS" ); 
+DeclareGlobalFunction( "POL_MergeCPCS" );
 
 #############################################################################
 ##
@@ -104,7 +104,7 @@ DeclareGlobalFunction(  "POL_TestIsUnipotenByAbelianGroupByRadSeries" );
 ##
 ## G is an abelian rational polycyclic rational matrix group
 ##
-DeclareGlobalFunction( "CPCS_UnipotentByAbelianGroupByRadSeries" );   
+DeclareGlobalFunction( "CPCS_UnipotentByAbelianGroupByRadSeries" );
 
 #############################################################################
 ##

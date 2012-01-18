@@ -2,7 +2,7 @@
 **
 *A  is_genlim_exceeded.c        ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: is_genlim_exceeded.c,v 1.5 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: is_genlim_exceeded.c,v 1.6 2011/11/28 17:47:19 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -19,7 +19,7 @@
 Logical is_genlim_exceeded (pcp)
 struct pcp_vars *pcp;   
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i, j;
    register int moccur;

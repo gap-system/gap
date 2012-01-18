@@ -2,7 +2,7 @@
 ##
 #W  ctounit6.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctounit6.tbl,v 1.1 2009/04/22 12:38:03 gap Exp $
+#H  @(#)$Id: ctounit6.tbl,v 1.2 2011/09/28 14:32:24 gap Exp $
 ##
 #Y  Copyright (C)  2008,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,16 +12,15 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctounit6.tbl,v $
+#H  Revision 1.2  2011/09/28 14:32:24  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 1.1  2009/04/22 12:38:03  gap
 #H  added table of U7(2), contributed by Frank L"ubeck
 #H      TB
 #H
 ##
-Revision.ctounit6_tbl :=
-    "@(#)$Id: ctounit6.tbl,v 1.1 2009/04/22 12:38:03 gap Exp $";
-
-SET_TABLEFILENAME("ctounit6");
-ALN:= Ignore;
 
 MOT("U7(2)",
 [
@@ -2671,7 +2670,6 @@ ARC("U7(2)","isSimple",true);
 ARC("U7(2)","extInfo",["","2"]);
 
 LIBTABLE.LOADSTATUS.ctounit6:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

@@ -3,14 +3,11 @@
 #W  perf0.grp              GAP Groups Library                 Volkmar Felsch
 ##                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: perf0.grp,v 4.7 2010/02/23 15:12:43 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  All data is based on Holt/Plesken: Perfect Groups, OUP 1989
 ##
-Revision.perf0_grp :=
-    "@(#)$Id: perf0.grp,v 4.7 2010/02/23 15:12:43 gap Exp $";
 
 ##  The  1097  nontrivial
 ##  perfect groups of the library  have been ordered by increasing

@@ -1,23 +1,17 @@
-#############################################################################
+###########################################################################
 ##
-#W    hasse/hasse.g       OpenMath Package             Andrew Solomon
-#W                                                     Marco Costantini
+#W  hasse/hasse.g       OpenMath Package                     Andrew Solomon
+#W                                                         Marco Costantini
 ##
-#H    @(#)$Id: hasse.g,v 1.14 2010/11/12 13:18:24 alexk Exp $
+#Y  Copyright (C) 1999, 2000, 2001, 2006
+#Y  School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2004, 2005, 2006 Marco Costantini
 ##
-#Y    Copyright (C) 1999, 2000, 2001, 2006
-#Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
-#Y    Copyright (C) 2004, 2005, 2006 Marco Costantini
-##
-##    This file contains the function for drawing Hasse diagrams
+##  This file contains the function for drawing Hasse diagrams
 ##
 
 
-Revision.("openmath/hasse/hasse.g") :=
-    "@(#)$Id: hasse.g,v 1.14 2010/11/12 13:18:24 alexk Exp $";
-
-
-#########################################################################
+###########################################################################
 ##
 #P IsHasseDiagram
 ##
@@ -26,7 +20,7 @@ Revision.("openmath/hasse/hasse.g") :=
 
 DeclareProperty("IsHasseDiagram", IsBinaryRelation);
 
-##########################################################################
+###########################################################################
 ## Return the Hasse Diagram of a partial order.
 ##
 
@@ -93,10 +87,6 @@ CreateHasseDiagram := function(f, le)
 end;
 
 
-
-
-
-
 BindGlobal( "OMDirectoryTemporary", DirectoryTemporary() );
 
 
@@ -119,6 +109,6 @@ BindGlobal("DrawHasse", function(h)
 end);
 
 
-#############################################################################
+###########################################################################
 #E
 

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+   [ <!ENTITY Polenta "<Package>Polenta</Package>">
+     <#Include Label="PKGVERSIONDATA">
+   ]>
+
+<!-- Documentation of the Example package. -->
+
+<Book Name="polenta"> 
+
+<TitlePage>
+  <Title>&Polenta;</Title>
+  <Subtitle>Polycyclic presentations for matrix groups</Subtitle>
+  <Version>Version &VERSION;</Version>
+  <Date>&RELEASEDATE;</Date>
+  <Author>
+    Björn Assmann                          <!-- REQUIRED -->
+    <Homepage>http://www.cs.st-andrews.ac.uk/~bjoern/</Homepage>
+  </Author>
+  <Author>
+    Max Horn                          <!-- REQUIRED -->
+    <Address>
+      AG Algebra und Diskrete Mathematik<Br/>
+      Institut Computational Mathematics<Br/>
+      TU Braunschweig<Br/>
+      Pockelsstr. 14<Br/>
+      D-38106 Braunschweig<Br/>
+      Germany
+    </Address>
+    <Email>
+        mhorn@tu-bs.de
+    </Email>
+    <Homepage>http://www.icm.tu-bs.de/~mhorn/</Homepage>
+  </Author>
+  <Copyright> 
+  <Index>License</Index>
+  &copyright; 2003-2007 by Björn Assmann<P/>
+  The &Polenta; package is free software; 
+  you can redistribute it and/or modify it under the terms of the 
+  <URL Text="GNU General Public License">http://www.fsf.org/licenses/gpl.html</URL> 
+  as published by the Free Software Foundation; either version 2 of the License, 
+  or (at your option) any later version.
+  </Copyright>
+  <Acknowledgements>
+    We appreciate very much all past and future comments, suggestions and 
+    contributions to this package and its documentation provided by &GAP; 
+    users and developers.
+  </Acknowledgements>
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+
+<#Include SYSTEM "intro.xml">
+<#Include SYSTEM "polenta.xml">
+<#Include SYSTEM "example.xml">
+<#Include SYSTEM "install.xml">
+<#Include SYSTEM "info.xml">
+
+</Body>
+
+<Bibliography Databases="polentabib.xml" />
+<TheIndex/>
+
+</Book>
+
+<!-- ==================================================================== -->
+

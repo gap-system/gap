@@ -2,7 +2,6 @@
 ##
 #W  PrintUtil.gi                 GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: PrintUtil.gi,v 1.6 2010/09/22 22:21:17 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -134,12 +133,13 @@ end);
 ##  /> and  <Ref BookName="ref" Func="Display" />,  respectively. The
 ##  difference is that the output is not sent directly to the screen,
 ##  but  is piped  into the  current pager;  see <Ref  BookName="ref"
-##  Var="PAGER" />.
-##  
-##  <Example>
+##  Func="Pager" />.
+## 
+##  <!-- cannot be run in automatic test -->
+##  <Log>
 ##  gap> Page([1..1421]+0);
 ##  gap> PageDisplay(CharacterTable("Symmetric", 14));
-##  </Example>
+##  </Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

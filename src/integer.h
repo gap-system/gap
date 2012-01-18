@@ -4,7 +4,6 @@
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
-*H  @(#)$Id: integer.h,v 4.15 2011/05/10 16:04:51 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,13 +12,14 @@
 **  This file declares the functions handling arbitrary size integers.
 */
 
+#ifndef GAP_INTEGER_H
+#define GAP_INTEGER_H
+
 #ifdef USE_GMP /* then use the gmp version of the header file */
  #include "gmpints.h"
 #else /* read the rest of this file */
 
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_integer_h =
-   "@(#)$Id: integer.h,v 4.15 2011/05/10 16:04:51 sal Exp $";
 #endif
 
 
@@ -33,8 +33,12 @@ const char * Revision_integer_h =
 */
 #ifdef SYS_IS_64_BIT
 typedef UInt4           TypDigit;
+#define INTEGER_UNIT_SIZE 4
+#define INTEGER_ALLOCATION_SIZE 16
 #else
 typedef UInt2           TypDigit;
+#define INTEGER_UNIT_SIZE 2
+#define INTEGER_ALLOCATION_SIZE 8
 #endif
 
 #define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
@@ -238,8 +242,10 @@ extern Obj FuncLog2Int( Obj self, Obj intnum);
 */
 StructInitInfo * InitInfoInt ( void );
 
-/* this matches the USE_GMP test at the top of the file */
-#endif
+
+#endif // USE_GMP
+
+#endif // GAP_INTEGER_H
 
 /****************************************************************************
 **

@@ -41,292 +41,248 @@
 **
 */
 
+#include "config.h"
+
 #include "presentation.h"
 #include "pc.h"
+#include "pcarith.h"
 #include "collect.h"
+#include "engel.h"
 
-static	word	(*PcGenerator)();
+static WordGenerator PcGenerator;
 
-void	WordCopyExpVec( ev, w )
-expvec	ev;
-word	w;
+void    WordCopyExpVec(expvec ev, word w) {
+	long    l;
+	gen     g;
 
-{	long	l;
-	gen	g;
+	for (l = 0, g = 1; g <= NrPcGensList[Class > 0 ? Class + 1 : 1]; g++)
+		if (ev[g] != (expo)0) {
+			if (ev[g] > (expo)0) { w[l].g =  g; w[l].e =  ev[g]; }
+			else                 { w[l].g = -g; w[l].e = -ev[g]; }
+			l++;
+		}
 
-	for( l = 0, g = 1; g <= NrPcGensList[Class > 0 ? Class+1 : 1]; g++ )
-	    if( ev[g] != (exp)0 ) {
-		if( ev[g] > (exp)0 ) { w[l].g =  g; w[l].e =  ev[g]; }
-		else                 { w[l].g = -g; w[l].e = -ev[g]; }
-		l++;
-	    }
-
-	w[l].g = EOW; w[l].e = (exp)0;
+	w[l].g = EOW;
+	w[l].e = (expo)0;
 }
 
-word	WordExpVec( ev )
-expvec	ev;
+word    WordExpVec(expvec ev) {
+	long    l;
+	gen     g;
+	word    w;
 
-{	long	l;
-	gen	g;
-	word	w;
+	for (l = 0, g = 1; g <= NrPcGensList[Class > 0 ? Class + 1 : 1]; g++)
+		if (ev[g] != (expo)0) l++;
 
-	for( l = 0, g = 1; g <= NrPcGensList[Class > 0? Class+1 : 1]; g++ )
-	    if( ev[g] != (exp)0 ) l++;
+	w = (word)Allocate((l + 1) * sizeof(gpower));
 
-	w = (word)Allocate( (l+1)*sizeof(gpower) );
-
-	WordCopyExpVec( ev, w );
+	WordCopyExpVec(ev, w);
 	return w;
 }
 
-expvec	ExpVecWord( w )
-word	w;
+expvec  ExpVecWord(word w) {
+	expvec  ev;
 
-{	expvec  ev;
+	ev = (expvec)Allocate((NrPcGens + NrCenGens + 1) * sizeof(expo));
 
-	ev = (expvec)Allocate( (NrPcGens+NrCenGens+1) * sizeof(exp) );
-
-	if( w != (word)0 ) 
-	    while( w->g != EOW ) {
-		    if( w->g > 0 ) ev[ w->g ] = w->e;
-		    else           ev[ -w->g ] = -w->e;
-		    w++;
-	    }
+	if (w != (word)0)
+		while (w->g != EOW) {
+			if (w->g > 0) ev[ w->g ] = w->e;
+			else           ev[ -w->g ] = -w->e;
+			w++;
+		}
 	return ev;
 }
 
-int	WordCmp( u, w )
-word	u, w;
-
-{	if( u == w ) return 0;
-	while( u->g == w->g && u->e == w->e ) {
-		if( u->g == EOW ) return 0;
-		u++; w++;
+int     WordCmp(word u, word w) {
+	if (u == w) return 0;
+	while (u->g == w->g && u->e == w->e) {
+		if (u->g == EOW) return 0;
+		u++;
+		w++;
 	}
 	return 1;
 }
 
-void	WordCopy( u, w )
-word	u, w;
-
-{	while( u->g != EOW ) *w++ = *u++;
+void    WordCopy(word u, word w) {
+	while (u->g != EOW) *w++ = *u++;
 	*w = *u;
 }
 
-int	WordLength( w )
-word	w;
+int     WordLength(word w) {
+	int     l = 0;
 
-{	int	l = 0;
-
-	while( w->g != EOW ) { w++; l++; }
+	while (w->g != EOW) { w++; l++; }
 	return l;
 }
 
-word	WordGen( g )
-gen	g;
+word WordGen(gen g) {
+	word    w;
+	int     l;
 
-{	word	w;
-	int	l;
+	if (g == 0) {
+		w = (word)Allocate(sizeof(gpower));
+		w[0].g = EOW;
+	} else {
+		if ((*PcGenerator)(g) == 0)
+			return (word)0;
 
-	if( g == 0 ) {
-	    w = (word)Allocate( sizeof( gpower ) );
-	    w[0].g = EOW;
-	}
-	else {
-            if( (*PcGenerator)(g) == (word)0 ) 
-                return (word)0;
-
-	    l = WordLength( (*PcGenerator)(g) );
-	    w = (word)Allocate( (l+1)*sizeof( gpower ) );
-	    WordCopy( (*PcGenerator)(g), w );
+		l = WordLength((*PcGenerator)(g));
+		w = (word)Allocate((l + 1) * sizeof(gpower));
+		WordCopy((*PcGenerator)(g), w);
 	}
 
 	return w;
 }
 
-word	WordMult( u, w )
-word	u, w;
+static word WordMult(word u, word w) {
+	expvec  ev;
 
-{	expvec	ev;
+	ev = ExpVecWord(u);
+	Free((void *)u);
+	if (Collect(ev, w, (expo)1)) {
+		Free((void *)w);
+		Free((void *)ev);
+		return (word)0;
+	}
 
-	ev = ExpVecWord( u );
-        Free( (void *)u ); 
-	if( Collect( ev, w, (exp)1 ) ) {
-          Free( (void *)w );
-          Free( (void *)ev );
-          return (word)0;
-        }
-
-        Free( (void *)w );
-	w = WordExpVec( ev );
-	Free( (void *)ev );
+	Free((void *)w);
+	w = WordExpVec(ev);
+	Free((void *)ev);
 	return w;
 }
 
-word	WordPow( w, pn )
-word	w;
-int	*pn;
-
-{	expvec	ev;
-	word	ww;
-	int	n;
+static word WordPow(word w, int * pn) {
+	expvec  ev;
+	word    ww;
+	int     n;
 
 	n = *pn;
-	if( n == 0 ) {
-	    Free( (void *)w );
-	    return WordGen( 0 );
+	if (n == 0) {
+		Free((void *)w);
+		return WordGen(0);
 	}
-	if( n < 0 ) {
-	    ww = Invert( w );
-	    Free( (void *)w );
-	    w = ww;
-	    n = -n;
+	if (n < 0) {
+		ww = Invert(w);
+		Free((void *)w);
+		w = ww;
+		n = -n;
 	}
 
-	if( n == 1 ) return w;
+	if (n == 1) return w;
 
-	ev = ExpVecWord( w );
-	if( Collect( ev, w, (exp)(n-1) ) ) {
-          Free( (void *)w );
-          Free( (void *)ev );
-          return (word) 0;
-        }
+	ev = ExpVecWord(w);
+	if (Collect(ev, w, (expo)(n - 1))) {
+		Free((void *)w);
+		Free((void *)ev);
+		return (word) 0;
+	}
 
-        Free( (void *)w );
-	w = WordExpVec( ev );
-	Free( (void *)ev );
+	Free((void *)w);
+	w = WordExpVec(ev);
+	Free((void *)ev);
 	return w;
 }
 
-word	WordConj( u, w )
-word	u, w;
-
-{	word	uw, x;
-	expvec	ev;
+static word WordConj(word u, word w) {
+	word    uw, x;
+	expvec  ev;
 
 	/* x = u^w = w^-1 * u * w   <===>   w * x = u * w. */
-	ev = ExpVecWord( u );
-	Free( (void *)u );
+	ev = ExpVecWord(u);
+	Free((void *)u);
 
-	if( Collect( ev, w, (exp)1 ) ) {
-          Free( (void *)ev );
-          Free( (void *)w );
-          return (word)0;
-        }
-	uw = WordExpVec( ev );
-	Free( (void *)ev );
+	if (Collect(ev, w, (expo)1)) {
+		Free((void *)ev);
+		Free((void *)w);
+		return (word)0;
+	}
+	uw = WordExpVec(ev);
+	Free((void *)ev);
 
-	x = Solve( w, uw );
-	Free( (void *)w );
-	Free( (void *)uw );
+	x = Solve(w, uw);
+	Free((void *)w);
+	Free((void *)uw);
 
 	return x;
 }
 
-word	WordComm( u, w )
-word	u, w;
+word WordComm(word u, word w) {
+	word    x;
 
-{	word	x;
+	x = Commutator(u, w);
 
-	x = Commutator( u, w );
-
-        Free( u ); Free( w );
-	return	x;
+	Free(u);
+	Free(w);
+	return  x;
 }
 
-word	WordEngel( u, w, e )
-word	u, w;
-int     *e;
+word WordEngel(word u, word w, int *e) {
+	word    x;
 
-{	word	x;
-        extern word EngelCommutator(); 
+	x = EngelCommutator(u, w, *e);
 
-	x = EngelCommutator( u, w, *e );
-
-        Free( u ); Free( w );
-	return	x;
+	Free(u);
+	Free(w);
+	return  x;
 }
 
 
 
-word	WordRel( u, w )
-word	u, w;
-
-{	word	x;
+static word WordRel(word u, word w) {
+	word    x;
 
 	/* The relation u = w is interpreted as
 	**          x = u^-1 * w, which is equivalent to
 	**      u * x = w.
 	*/
-	x = Solve( u, w );
-	Free( (void *)u ); Free( (void *)w );
+	x = Solve(u, w);
+	Free((void *)u);
+	Free((void *)w);
 
 	return x;
 }
 
-void	WordInit( generator )
-word	(*generator)();
+void    WordInit(WordGenerator generator) {
+	PcGenerator = generator;
 
-{	PcGenerator = generator;
-
-	SetEvalFunc( TGEN,  (void *(*)())WordGen );
-	SetEvalFunc( TMULT, (void *(*)())WordMult );
-	SetEvalFunc( TPOW,  (void *(*)())WordPow );
-	SetEvalFunc( TCONJ, (void *(*)())WordConj );
-	SetEvalFunc( TCOMM, (void *(*)())WordComm );
-	SetEvalFunc( TREL,  (void *(*)())WordRel );
-	SetEvalFunc( TDRELL,(void *(*)())WordRel );
-	SetEvalFunc( TDRELR,(void *(*)())WordRel );
-	SetEvalFunc( TENGEL,(void *(*)())WordEngel );
+/*	SetEvalFunc(TGEN, (EvalFunc)WordGen);*/
+	SetEvalFunc(TMULT, (EvalFunc)WordMult);
+	SetEvalFunc(TPOW, (EvalFunc)WordPow);
+	SetEvalFunc(TCONJ, (EvalFunc)WordConj);
+	SetEvalFunc(TCOMM, (EvalFunc)WordComm);
+	SetEvalFunc(TREL, (EvalFunc)WordRel);
+	SetEvalFunc(TDRELL, (EvalFunc)WordRel);
+	SetEvalFunc(TDRELR, (EvalFunc)WordRel);
+/*	SetEvalFunc(TENGEL, (EvalFunc)WordEngel);*/
 }
 
-void	WordPrint( gs )
-word	gs;
-
-{	if( gs->g != EOW )
-	    if( gs->g > 0 ) {
-		PrintGen( gs->g );
-		if( gs->e > (exp)1 ) 
-#ifdef LONGLONG
-                  printf( "^%Ld", gs->e );
-#else
-                  printf( "^%d", gs->e );
-#endif
-	    }
-	    else {
-		PrintGen( -gs->g );
-#ifdef LONGLONG
-		printf( "^-%Ld", gs->e );
-#else
-		printf( "^-%d", gs->e );
-#endif
-	    }
+void    WordPrint(word gs) {
+	if (gs->g != EOW)
+		if (gs->g > 0) {
+			PrintGen(gs->g);
+			if (gs->e > (expo)1)
+				printf("^"EXP_FORMAT, gs->e);
+		} else {
+			PrintGen(-gs->g);
+			printf("^-"EXP_FORMAT, gs->e);
+		}
 	else {
-	    printf( "1" );
-	    return;
+		printf("1");
+		return;
 	}
 	gs++;
-	    
-	while( gs->g != EOW ) {
-	    putchar( '*' );
-	    if( gs->g > 0 ) {
-		PrintGen( gs->g );
-		if( gs->e > (exp)1 )
-#ifdef LONGLONG
-                  printf( "^%Ld", gs->e );
-#else
-                  printf( "^%d", gs->e );
-#endif
-	    }
-	    else {
-		PrintGen( -gs->g );
-#ifdef LONGLONG
-		printf( "^-%Ld", gs->e );
-#else
-		printf( "^-%d", gs->e );
-#endif
-	    }
-	    gs++;
+
+	while (gs->g != EOW) {
+		putchar('*');
+		if (gs->g > 0) {
+			PrintGen(gs->g);
+			if (gs->e > (expo)1)
+				printf("^"EXP_FORMAT, gs->e);
+		} else {
+			PrintGen(-gs->g);
+			printf("^-"EXP_FORMAT, gs->e);
+		}
+		gs++;
 	}
 }

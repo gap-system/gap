@@ -1,10 +1,9 @@
 #############################################################################
 ##
-#W  dict.gd			GAP Library		       Gene Cooperman
-#W							         Scott Murray
+#W  dict.gd                     GAP Library                    Gene Cooperman
+#W                                                               Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: dict.gd,v 4.24 2011/04/04 08:38:40 gap Exp $
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,24 +18,22 @@
 ##  more than one array of values -- this facility should be used with care.
 ##
 ##  This code works for any kind of object, provided you have a KeyIntDense 
-##  or KeyIntSparse method to convert the key into a positive integer.  
-##  These methods should ideally be implemented efficiently in the core.
+##  method to convert the key into a positive integer.  
+##  This method should ideally be implemented efficiently in the core.
 ##
 ##  Note that, for efficiency, it is currently impossible to create a 
 ##  hash table with non-positive integers.
 ##
 ##  Requires: nothing
 ##  Exports: 
-##     	Category IsHash.
-##     	Representations IsDenseHashRep and IsSparseHashRep.  
-##     	Operations PrintHashWithNames, Iterator, GetHashEntry, AddHashEntry,
-##     	  GetHashEntryAtLastIndex, SetHashEntryAtLastIndex, SetHashEntry, 
-##	  [AddHashEntryAtLastIndex], HashFunct, KeyIntDense, KeyIntSparse.
-##	Functions DenseHash, SparseHash.
-##	Variables MaxViewSize, LastHashIndex.
+##      Category IsHash.
+##      Representations IsDenseHashRep and IsSparseHashRep.  
+##      Operations PrintHashWithNames, Iterator, GetHashEntry, AddHashEntry,
+##        GetHashEntryAtLastIndex, SetHashEntryAtLastIndex, SetHashEntry, 
+##        [AddHashEntryAtLastIndex], HashFunct, KeyIntDense.
+##      Functions DenseHash, SparseHash.
+##      Variables MaxViewSize, LastHashIndex.
 ##
-Revision.dict_gd :=
-    "@(#)$Id: dict.gd,v 4.24 2011/04/04 08:38:40 gap Exp $";
 
 #############################################################################
 ##
@@ -565,21 +562,21 @@ DeclareSynonym("DoubleHashArraySize", DoubleHashDictSize);
 
 #############################################################################
 ##
-#F  HashFunct( <key>, <i>, <size> )
+#F  IntegerHashFunction( <key>, <i>, <size> )
 ##
-##  <#GAPDoc Label="HashFunct">
+##  <#GAPDoc Label="IntegerHashFunction">
 ##  <ManSection>
-##  <Func Name="HashFunct" Arg='key, i, size'/>
+##  <Func Name="IntegerHashFunction" Arg='key, i, size'/>
 ##
 ##  <Description>
-##  This will be a good double hashing function for any reasonable KeyInt 
-##  (see Cormen, Leiserson and Rivest, Introduction to Algorithms, 
-##  1e, p. 235).
+##  This will be a good double hashing function for any reasonable 
+##  <C>KeyInt</C> (see <Cite Key="CLR90" Where="p.235"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "HashFunct", [ IsInt, IsInt, IsInt ] );
+DeclareGlobalFunction( "IntegerHashFunction", [ IsInt, IsInt, IsInt ] );
+DeclareSynonym( "HashFunct", IntegerHashFunction);
 
 #############################################################################
 ##

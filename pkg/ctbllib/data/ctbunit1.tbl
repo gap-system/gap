@@ -2,8 +2,6 @@
 ##
 #W  ctbunit1.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctbunit1.tbl,v 4.5 2010/09/15 08:23:19 gap Exp $
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the Brauer character tables of groups related to
@@ -13,6 +11,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctbunit1.tbl,v $
+#H  Revision 4.6  2011/09/28 12:12:38  gap
+#H  removed Revision entries and SET_TABLEFILENAME calls
+#H      TB
+#H
 #H  Revision 4.5  2010/09/15 08:23:19  gap
 #H  do not use `factorblocks' encoding in some Brauer tables where the ordering
 #H  of ordinary irreducibles does not fit to that in the factors
@@ -88,10 +90,7 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctbunit1_tbl :=
-    "@(#)$Id: ctbunit1.tbl,v 4.5 2010/09/15 08:23:19 gap Exp $";
 
-SET_TABLEFILENAME("ctbunit1");
 TEXT1:= "origin: modular ATLAS of finite groups, tests: DEC, TENS";
 
 MBT("12_1.U4(3).2_1",5,
@@ -1989,6 +1988,7 @@ TEXT1,
 0);
 
 LIBTABLE.LOADSTATUS.ctbunit1:="userloaded";
+
 #############################################################################
 ##
 #E

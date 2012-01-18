@@ -3,13 +3,14 @@
 #W  examples.g                GAP4 Package `RCWA'                 Stefan Kohl
 ##
 ##  This file contains a collection of examples of rcwa mappings and -groups.
-##  It can be read in a GAP session by issueing RCWAReadExamples();.
+##  It can be read into a GAP session by the function `RCWALoadExamples'
+##  which takes no arguments and returns a record containing all examples.
 ##
 ##  Selected examples are discussed in some detail in the manual chapter
 ##  "Examples". The global variables defined there can be assigned by
-##  applying the function `UnwrapExample' to the name of the respective
-##  component of the record `RCWAExamples'. The component names are given
-##  in the corresponding sections of the manual.
+##  applying the function `AssignGlobals' to the the respective component
+##  of the record returned by `RCWALoadExamples'. The component names are
+##  given in the corresponding sections of the manual.
 ##
 ##  Note that since the beginnings of RCWA, examples have only been added to
 ##  this file, but never been removed. For this reason, there are 'older' and
@@ -18,66 +19,24 @@
 ##
 #############################################################################
 
-if not IsBound( RCWAExamples ) then RCWAExamples := rec( ); fi;
+local  RCWAExamples, tau, nu, t, rc, k, l, m, n, x, e, r;
 
-#############################################################################
-##
-#F  AssignGlobals( <record> )
-##
-##  This auxiliary function assigns the record components of <record> to
-##  global variables of the same names.
-##
-if not IsBound( AssignGlobals ) then
-  BindGlobal( "AssignGlobals",
-
-    function ( record )
-
-      local  names, name;
-
-      names := RecNames(record);
-      for name in names do
-        if IsBoundGlobal(name) then
-          if IsReadOnlyGlobal(name)
-          then
-            MakeReadWriteGlobal(name);
-            Info(InfoWarning,1,"The read-only global variable ",name,
-                               " has been overwritten.");
-          else
-            Info(InfoWarning,1,"The global variable ",name,
-                               " has been overwritten.");
-          fi;
-          UnbindGlobal(name);
-        fi;
-        BindGlobal(name,record.(name));
-        MakeReadWriteGlobal(name);
-      od;
-      Print("The following global variables have been assigned:\n",
-            names,"\n");
-    end );
-fi;
-
-#############################################################################
-##
-#F  UnwrapExample( <name> )
-##
-##  This auxiliary function assigns the global variables defined in the
-##  example named <name>.
-##
-if not IsBound( UnwrapExample ) then
-  BindGlobal( "UnwrapExample", function ( name )
-                                 AssignGlobals(RCWAExamples.(name));
-                               end );
-fi;
+RCWAExamples := rec( );
 
 #############################################################################
 ##
 ##  Some basics.
 ##
-nu  := ClassShift(Integers);        SetName(nu,"nu");
-t   := ClassReflection(Integers);   SetName(t,"t");
-tau := ClassTransposition(0,2,1,2); SetName(tau,"tau");
-
 rc  := function(r,m) return ResidueClass(DefaultRing(m),m,r); end;
+
+nu  := ClassShift(Integers);
+t   := ClassReflection(Integers);
+tau := ClassTransposition(0,2,1,2);
+
+RCWAExamples.Basics := rec( tau := tau, nu := nu, t := t );
+SetName(RCWAExamples.Basics.tau,"tau");
+SetName(RCWAExamples.Basics.nu,"nu");
+SetName(RCWAExamples.Basics.t,"t");
 
 #############################################################################
 ##
@@ -109,8 +68,6 @@ SetName(RCWAExamples.CollatzMapping.T5p,"T5+");
 ##      Notes on Pure Mathematics, 1974, Department of Pure Mathematics,
 ##      Australian National University, Canberra, ISBN 0 7081 0300 6.
 ##
-CallFuncList(HideGlobalVariables,List("klmnx",ch->[ch]));
-
 k := ClassTransposition(0,2,1,2); l := ClassTransposition(1,2,2,4);
 m := ClassTransposition(0,2,1,4); n := ClassTransposition(1,4,2,4);
 
@@ -214,9 +171,6 @@ RCWAExamples.HigmanThompson := rec(
 
 );
 
-Unbind(k); Unbind(l); Unbind(m); Unbind(n); Unbind(x);
-CallFuncList(UnhideGlobalVariables,List("klmnx",ch->[ch]));
-
 #############################################################################
 ##
 ##  Finite generation of CT_P(Z) for finite sets P
@@ -307,7 +261,7 @@ RCWAExamples.CT3Z := rec(
                  [0,6,7,8], [3,6,4,8], [0,8,1,8], [6,8,7,8] ],
                ClassTransposition),
 
-  CT3Z := Group(gens)
+  CT3Z := Group(~.gens)
 
 );
 
@@ -348,6 +302,12 @@ RCWAExamples.ZxZ := rec(
 
   hyperbolic := RcwaMapping(~.R,[[1,0],[0,2]],[[[[4,0],[0,1]],[0, 0],2],
                                                [[[4,0],[0,1]],[2,-1],2]]),
+
+  T2 := RcwaMapping( ~.R, [[2,0],[0,2]],
+                          [[[0,0],[[[1,0],[0,1]],[0,0],2]],
+                            [[0,1],[[[1,0],[0,2]],[0,0],2]],
+                            [[1,0],[[[2,0],[0,1]],[0,0],2]],
+                            [[1,1],[[[2,1],[1,2]],[1,1],2]]] ),
 
   Sigma_T := RcwaMapping( ~.R, [[1,0],[0,6]],
                                [[[[2,0],[0,1]],[0,0],2],
@@ -505,7 +465,6 @@ SetName(RCWAExamples.CollatzlikePerms.Mod5Mult16,"Mod5Mult16");
 ##  An rcwa mapping of GF(2)[x] of infinite order which has only finite
 ##  cycles.
 ##
-HideGlobalVariables( "x", "e" );
 x := Indeterminate(GF(2),1); SetName(x,"x"); e := One(GF(2));
 
 RCWAExamples.GF2xFiniteCycles := rec(
@@ -522,8 +481,6 @@ RCWAExamples.GF2xFiniteCycles := rec(
                            [ x^2 + x + e, x^2 + x, x^2 + e ] ] )
 
 );
-
-UnhideGlobalVariables( "x", "e" );
 
 SetName(RCWAExamples.GF2xFiniteCycles.r_2mod,"r_2mod");
 
@@ -1438,14 +1395,12 @@ RCWAExamples.AbelianGroupOverPolynomialRing := rec(
 
 );
 
-HideGlobalVariables( "r" );
-  r := RCWAExamples.AbelianGroupOverPolynomialRing;
-  SetName(r.x,"x");
-  r.cg[1][2] := r.cg[1][2] + (r.x^2 + r.e) * r.p * r.q;
-  r.ch[7][2] := r.ch[7][2] + r.x * r.r * r.s;
-  r.gm := RcwaMapping( r.R, r.q, r.cg );
-  r.hm := RcwaMapping( r.R, r.s, r.ch );
-UnhideGlobalVariables( "r" );
+r := RCWAExamples.AbelianGroupOverPolynomialRing;
+SetName(r.x,"x");
+r.cg[1][2] := r.cg[1][2] + (r.x^2 + r.e) * r.p * r.q;
+r.ch[7][2] := r.ch[7][2] + r.x * r.r * r.s;
+r.gm := RcwaMapping( r.R, r.q, r.cg );
+r.hm := RcwaMapping( r.R, r.s, r.ch );
 
 #############################################################################
 ##
@@ -1844,6 +1799,8 @@ RCWAExamples.CollatzFactorizationOld := rec(
       ~.f1, ~.f2, ~.f3, ~.f1, ~.f2, ~.f3 ] )
 
 );
+
+return RCWAExamples;
 
 #############################################################################
 ##

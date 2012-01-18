@@ -2,7 +2,7 @@
 %%
 %%  matgroups.tex         IRREDSOL documentation            Burkhard Höfling
 %%
-%%  @(#)$Id: matgroups.tex,v 1.8 2011/05/18 16:23:12 gap Exp $
+%%  @(#)$Id: matgroups.tex,v 1.9 2011/07/17 12:02:35 gap Exp $
 %%
 %%  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 %%
@@ -81,7 +81,7 @@ reference manual. However, unlike nice monomorphisms,
 
 The matrix group <G> of degree <d> is irreducible over the field <F> if no subspace of $<F>^d$ is
 invariant under the action of <G>. If <F> is not
-specified, $F = `FieldOfMatrixGroup'(<G>)$ is assumed.
+specified, `FieldOfMatrixGroup'(<G>) is used as <F>.
 
 \beginexample
 gap> G := IrreducibleSolvableMatrixGroup (4, 2, 2, 3);
@@ -112,8 +112,8 @@ false
 @{`IsMaximalAbsolutelyIrreducibleSolvable\\MatrixGroup'} P
 
 This property, if present, is `true' if, and only if, <G> is absolutely irreducible and maximal among 
-the solvable subgroups of $GL(d, F)$, where $d = `DegreeOfMatrixGroup'(<G>)$ and
-$F = `FieldOfMatrixGroup'(<G>)$. 
+the solvable subgroups of $GL(d, F)$, where $d$ is `DegreeOfMatrixGroup'(<G>) and
+$F$ equals `FieldOfMatrixGroup'(<G>). 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Primitivity of matrix groups}
@@ -129,8 +129,8 @@ action of <G>. Obviously, all $V_i$ have the same dimension; this is the
 dimension of the block system
 $V_1 \oplus \cdots \oplus V_k$. The function
 `MinimalBlockDimensionOfMatrixGroup' returns the minimum of the dimensions
-of all block systems of <G>. If <F> is not specified, $F =
-`FieldOfMatrixGroup'(<G>)$ is assumed. At present, only methods for groups 
+of all block systems of <G>. If <F> is not specified, `FieldOfMatrixGroup'(<G>)
+ is used as <F>. At present, only methods for groups 
 which are irreducible over <F> are available.
 
 \beginexample
@@ -149,7 +149,7 @@ gap> MinimalBlockDimension (G, GF(9));
 An irreducible matrix group <G> of degree <d> is primitive over the field <F> if it
 only has the trivial block system $<F>^d$ or, equivalently, if
 $`MinimalBlockDimensionOfMatrixGroup'(<G>, <F>) = d$. If <F> is not
-specified, $F = `FieldOfMatrixGroup'(<G>)$ is assumed.
+specified, it is assumed that <F> is `FieldOfMatrixGroup'(<G>).
 
 \beginexample
 gap> G := IrreducibleSolvableMatrixGroup (2,2,1,1);;

@@ -3,7 +3,6 @@
 *W  streams.c                   GAP source                       Frank Celler
 *W                                                  & Burkhard Höfling (MAC)
 **
-*H  @(#)$Id: streams.c,v 4.101 2011/06/06 16:28:08 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -25,8 +24,6 @@
 #include <errno.h>
 
 
-const char * Revision_streams_c =
-   "@(#)$Id: streams.c,v 4.101 2011/06/06 16:28:08 sal Exp $";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -313,6 +310,68 @@ Int READ_TEST ( void )
     if ( ! CloseTest() ) {
         ErrorQuit(
             "Panic: ReadTest cannot close input, this should not happen",
+            0L, 0L );
+    }
+    ClearError();
+
+    return 1;
+}
+
+/****************************************************************************
+**
+*F  READ_LOOP() . . . . . . . . . .  read current input as read-eval-view loop
+**
+**  Read the current input as read-eval-view loop and close the input stream.
+*/
+Int READ_LOOP ( void )
+{
+    UInt                type;
+    UInt                oldtime;
+
+    /* get the starting time                                               */
+    oldtime = SyTime();
+
+    /* now do the reading                                                  */
+    while ( 1 ) {
+
+        /* read and evaluate the command                                   */
+        ClearError();
+        type = ReadEvalCommand(TLS->bottomLVars);
+
+        /* stop the stopwatch                                              */
+        AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
+
+        /* handle ordinary command                                         */
+        if ( type == 0 && TLS->readEvalResult != 0 ) {
+
+            /* remember the value in 'last' and the time in 'time'         */
+            AssGVar( Last3, VAL_GVAR( Last2 ) );
+            AssGVar( Last2, VAL_GVAR( Last  ) );
+            AssGVar( Last,  TLS->readEvalResult   );
+
+            /* print the result                                            */
+            if ( ! TLS->dualSemicolon ) {
+                ViewObjHandler( TLS->readEvalResult );
+            }
+        }
+
+        /* handle return-value or return-void command                      */
+        else if ( type == 1 || type == 2 ) {
+            Pr( "'return' must not be used in file read-eval loop",
+                0L, 0L );
+        }
+
+        /* handle quit command or <end-of-file>                            */
+        else if ( type == 8 || type == 16 ) {
+            break;
+        }
+
+    }
+
+    /* close the input file again, and return 'true'                       */
+    if ( ! CloseInput() ) {
+        ErrorQuit(
+            "Panic: ReadLoop cannot close input, this should not happen",
             0L, 0L );
     }
     ClearError();
@@ -962,7 +1021,55 @@ Obj FuncAPPEND_TO_STREAM (
     return 0;
 }
 
-
+Obj FuncSetOutput (
+    Obj                 self,
+    Obj                 file,
+    Obj                 append    )
+{
+    
+    if ( IsStringConv(file) ) {
+        if ( append != False ) {
+          if ( ! OpenAppend( CSTR_STRING(file) ) ) {
+             ErrorQuit( "SetOutput: cannot open '%s' for appending",
+                                  (Int)CSTR_STRING(file), 0L );
+          } else {
+             return 0;
+          }
+        } else {
+          if ( ! OpenOutput( CSTR_STRING(file) ) ) {
+             ErrorQuit( "SetOutput: cannot open '%s' for output",
+                                  (Int)CSTR_STRING(file), 0L );
+          } else {
+            return 0;
+          }
+        }
+    } else {  /* an open stream */
+        if ( append != False ) {
+          if ( ! OpenAppendStream( file ) ) {
+             ErrorQuit( "SetOutput: cannot open stream for appending", 0L, 0L );
+          } else {
+             return 0;
+          }
+        } else {
+          if ( ! OpenOutputStream( file ) ) {
+             ErrorQuit( "SetOutput: cannot open stream for output", 0L, 0L );
+          } else {
+            return 0;
+          }
+        }
+    }
+    return 0;
+}
+     
+Obj FuncSetPreviousOutput( Obj self ) {
+    /* close the current output stream, and return nothing  */
+    if ( ! CloseOutput() ) {
+        ErrorQuit( "SetPreviousOutput: cannot close output", 0L, 0L );
+        return 0;
+    }
+    return 0;
+}
+     
 /****************************************************************************
 **
 *F  FuncREAD( <self>, <filename> )  . . . . . . . . . . . . . . . read a file
@@ -1040,6 +1147,33 @@ Obj FuncREAD_STREAM (
 
     /* read the test file                                                  */
     return READ() ? True : False;
+}
+
+/****************************************************************************
+**
+*F  FuncREAD_STREAM_LOOP( <self>, <stream>, <catcherrstdout> ) . read a stream
+*/
+Obj FuncREAD_STREAM_LOOP (
+    Obj                 self,
+    Obj                 stream,
+    Obj                 catcherrstdout )
+{
+    Obj ret;
+
+    /* try to open the file                                                */
+    if ( ! OpenInputStream(stream) ) {
+        return False;
+    }
+    if ( catcherrstdout == True )
+      IgnoreStdoutErrout = TLS->output;
+    else
+      IgnoreStdoutErrout = NULL;
+
+
+    /* read the test file                                                  */
+    ret = READ_LOOP() ? True : False;
+    IgnoreStdoutErrout = NULL;
+    return ret;
 }
 
 
@@ -1415,7 +1549,6 @@ Obj FuncSTRING_LIST_DIR (
     entry = readdir(dir);
     while (entry != NULL) {
       sl = strlen(entry->d_name);
-      len = len;
       GROW_STRING(res, len + sl + 1);
       memcpy(CHARS_STRING(res) + len, entry->d_name, sl + 1);
       len = len + sl + 1;
@@ -2242,6 +2375,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "READ_STREAM", 1L, "stream",
       FuncREAD_STREAM, "src/streams.c:READ_STREAM" },
 
+    { "READ_STREAM_LOOP", 2L, "stream, catchstderrout",
+      FuncREAD_STREAM_LOOP, "src/streams.c:READ_STREAM_LOOP" },
+
     { "READ_TEST", 1L, "filename", 
       FuncREAD_TEST, "src/streams.c:READ_TEST" },
 
@@ -2298,6 +2434,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "APPEND_TO_STREAM", -1L, "args",
       FuncAPPEND_TO_STREAM, "src/streams.c:APPEND_TO_STREAM" },
+
+    { "SetOutput", 2, "file, app",
+      FuncSetOutput, "src/streams.c:SetOutput" },
+
+    { "SetPreviousOutput", 0, "",
+      FuncSetPreviousOutput, "src/streams.c:SetPreviousOutput" },
 
     { "TmpName", 0L, "",
       FuncTmpName, "src/streams.c:TmpName" },
@@ -2454,8 +2596,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoStreams ( void )
 {
-    module.revision_c = Revision_streams_c;
-    module.revision_h = Revision_streams_h;
     FillInVersion( &module );
     return &module;
 }

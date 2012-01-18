@@ -4,7 +4,6 @@
 #W                                                             & Frank Celler
 #W                                                          & Martin Schönert
 ##
-#H  @(#)$Id: init.g,v 4.280 2011/06/21 16:22:26 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  This file initializes GAP.
 ##
 Revision := AtomicRecord( rec() );
-Revision.init_g :=
-    "@(#)$Id: init.g,v 4.280 2011/06/21 16:22:26 gap Exp $";
 
 
     
@@ -662,7 +659,7 @@ BindGlobal( "ShowKernelInformation", function()
     if IsBound(GAPInfo.shortbanner) then
         Print("This is GAP ", GAPInfo.Version, " of ",
               sysdate, " (", GAPInfo.Architecture);
-        if IsBound( GAPInfo.KernelInfo.Revision.gmpints_c ) then
+        if "gmpints" in LoadedModules() then
             Print(" + gmp");
         fi;
         if IsBound( GAPInfo.UseReadline ) then
@@ -685,7 +682,7 @@ BindGlobal( "ShowKernelInformation", function()
              " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
       # For each library, print the name.
       libs:= [];
-      if IsBound( GAPInfo.KernelInfo.Revision.gmpints_c ) then
+      if "gmpints" in LoadedModules() then
         Add( libs, "gmp" );
       fi;
       if IsBound( GAPInfo.UseReadline ) then
@@ -844,6 +841,7 @@ BindGlobal( "SetUserPreferences", function( arg )
       GAPInfo.UserPreferences := rec(
           Editor := "vi",
           ExcludeFromAutoload := [],
+          HTMLStyle := ["default"],
           HelpViewers := [ "screen" ],
           IndeterminateNameReuse := 0,
           InfoPackageLoadingLevel := PACKAGE_ERROR,
@@ -851,10 +849,14 @@ BindGlobal( "SetUserPreferences", function( arg )
           Pager := "builtin",
           PagerOptions := [],
           ReadObsolete := true,
+          TextTheme := ["default"],
           UseColorPrompt := false,
+          UseColorsInTerminal := true,
+          UseMathJax := false,
           ViewLength := 3,
           XdviOptions := "",
           XpdfOptions := "",
+          MaxBitsIntView := 8000,
         );
     fi;
     # check environment variables for editor and pager settings

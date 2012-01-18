@@ -2,7 +2,7 @@
 **
 *A  solve_equation.c            ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: solve_equation.c,v 1.3 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: solve_equation.c,v 1.4 2011/11/28 17:47:21 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -24,7 +24,7 @@ int cp2;
 int result;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i, r;
    register int p = pcp->p;

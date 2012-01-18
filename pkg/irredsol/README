@@ -9,12 +9,12 @@ of all primitive soluble groups of degree at most 1000000.
 This version of IRREDSOL requires at least GAP 4.4.12.
 
 In order to install IRREDSOL, you have to get the package archive file 
-`irredsol-1r2.tar.gz', or any other archive format suitable for your
+`irredsol-1r2n1.tar.gz', or any other archive format suitable for your
 system. It is available for download from
 
 http://www.gap-system.org/Packages/irredsol.html
 
-To install IRREDSOL, move the package archive `irredsol-1r2' into the `pkg' 
+To install IRREDSOL, move the package archive file into the `pkg' 
 directory in which you plan to install IRREDSOL. Usually, this will be 
 the directory `pkg' in the GAP directory. 
 
@@ -37,4 +37,4 @@ author:
 
 Burkhard Höfling
 e-mail: b.hoefling@tu-bs.de
-www:    http://www-public.tu-bs.de:8080/~bhoeflin
+www:    http://www.icm.tu-bs.de/~bhoeflin

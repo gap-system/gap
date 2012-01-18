@@ -2,7 +2,6 @@
 ##
 #W  ctblauto.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: ctblauto.gi,v 4.10 2010/02/23 15:12:52 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -15,8 +14,6 @@
 ##  The methods in this file do not use the partition backtrack techniques.
 ##  It would be desirable to translate them.
 ##
-Revision.ctblauto_gi :=
-    "@(#)$Id: ctblauto.gi,v 4.10 2010/02/23 15:12:52 gap Exp $";
 
 
 #############################################################################

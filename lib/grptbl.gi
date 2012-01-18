@@ -2,7 +2,6 @@
 ##
 #W  grptbl.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: grptbl.gi,v 4.25 2010/02/23 15:13:09 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the methods for magmas given by their multiplication
 ##  tables.
 ##
-Revision.grptbl_gi :=
-    "@(#)$Id: grptbl.gi,v 4.25 2010/02/23 15:13:09 gap Exp $";
 
 
 #############################################################################

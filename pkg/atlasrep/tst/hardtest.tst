@@ -1,8 +1,6 @@
 #############################################################################
 ##
-#W  hardtest.tst        GAP 4 package `atlasrep'                Thomas Breuer
-##
-#H  @(#)$Id: hardtest.tst,v 1.28 2008/06/25 12:48:58 gap Exp $
+#W  hardtest.tst         GAP 4 package AtlasRep                 Thomas Breuer
 ##
 #Y  Copyright (C)  2002,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -15,7 +13,7 @@
 ##  of the `pkg/atlasrep' directory, and calls `ReadTest( "hardtest.tst" );'.
 ##
 
-gap> START_TEST("$Id: hardtest.tst,v 1.28 2008/06/25 12:48:58 gap Exp $");
+gap> START_TEST( "Input file: hardtest.tst" );
 
 
 # Load the package if necessary.
@@ -26,49 +24,52 @@ true
 gap> LoadPackage( "ctbllib" );
 true
 
+gap> ReadPackage( "atlasrep", "gap/test.g" );
+true
+
 # Test transferring group generators in MeatAxe format (using `IO').
 gap> dir:= DirectoriesPackageLibrary( "atlasrep", "datagens" );;
 gap> id:= OneAtlasGeneratingSet( "A5", Characteristic, 2 ).identifier;;
 gap> for file in List( id[2], name -> Filename( dir, name ) ) do
 >      RemoveFile( file );
 > od;
-gap> id = AtlasGenerators( id ).identifier;
+gap> gens:= AtlasGenerators( id );
+gap> IsRecord( gens ) and id = gens.identifier;
 true
 
 # Test transferring group generators in GAP format (using `wget').
 gap> AtlasOfGroupRepresentationsInfo.wget:= true;;
 gap> id:= OneAtlasGeneratingSetInfo( "A5", Characteristic, 0 ).identifier;;
 gap> RemoveFile( Filename( dir, id[2] ) );;
-gap> id = AtlasGenerators( id ).identifier;
+gap> gens:= AtlasGenerators( id );
+gap> IsRecord( gens ) and id = gens.identifier;
 true
 gap> Unbind( AtlasOfGroupRepresentationsInfo.wget );
 
 # Read all MeatAxe format files in the local installation.
-gap> if not AtlasOfGroupRepresentationsTestFiles() then
->      Print( "#I  Error in `AtlasOfGroupRepresentationsTestFiles'\n" );
+gap> if not AGR.Test.Files() then
+>      Print( "#I  Error in `AGR.Test.Files'\n" );
 > fi;
 
 # Test whether the group names are consistent (with verification test).
-gap> if not AtlasOfGroupRepresentationsTestGroupOrders( true ) then
->      Print( "#I  Error in `AtlasOfGroupRepresentationsTestGroupOrders'\n" );
+gap> if not AGR.Test.GroupOrders() then
+>      Print( "#I  Error in `AGR.Test.GroupOrders'\n" );
 > fi;
-gap> if not AtlasOfGroupRepresentationsTestSubgroupOrders() then
->      Print( "#I  Error in `AtlasOfGroupRepresentationsTestSubgroupOrders'\n" );
+gap> if not AGR.Test.MaxesStructure() then
+>      Print( "#I  Error in `AGR.Test.MaxesStructure'\n" );
 > fi;
-gap> if not AtlasOfGroupRepresentationsTestStdCompatibility() then
->      Print( "#I  Error in `AtlasOfGroupRepresentationsTestStdCompatibility'\n" );
+gap> if not AGR.Test.StdCompatibility() then
+>      Print( "#I  Error in `AGR.Test.StdCompatibility'\n" );
 > fi;
 
 # Check the conversion between binary and text format.
-gap> if not AtlasOfGroupRepresentationsTestBinaryFormat() then
->      Print( "#I  Error in `AtlasOfGroupRepresentationsTestBinaryFormat'\n" );
+gap> if not AGR.Test.BinaryFormat() then
+>      Print( "#I  Error in `AGR.Test.BinaryFormat'\n" );
 > fi;
 
 # Check whether changes of server files require cleanup.
-gap> if not IsEmpty(
->        AtlasOfGroupRepresentationsTestTableOfContentsRemoteUpdates() ) then
->      Print( "#I  Cleanup required by ",
->        "`AtlasOfGroupRepresentationsTestTableOfContentsRemoteUpdates'\n" );
+gap> if not IsEmpty( AGR.Test.TableOfContentsRemoteUpdates() ) then
+>      Print( "#I  Cleanup required by `AGR.Test.TableOfContentsRemoteUpdates'\n" );
 > fi;
 
 # Check the interface functions.
@@ -155,7 +156,7 @@ true
 gap> info:= ComputedMinimalRepresentationInfo();;
 gap> infostr:= StringOfMinimalRepresentationInfoData( info );;
 # eventually, compare old and new version!
-gap> AGR_TestMinimalDegrees();
+gap> AGR.Test.MinimalDegrees();
 true
 
 # Call `AtlasClassNames' for all tables of nonsimple and almost simple
@@ -212,18 +213,16 @@ gap> for name in AllCharacterTableNames() do
 
 # Test whether there are new `cyc' scripts for which the `cyc2ccls' script
 # can be computed by GAP.
-gap> if not AtlasOfGroupRepresentationsTestCycToCcls() then
->      Print( "#I  Error in ",
->             "`AtlasOfGroupRepresentationsTestCycToCcls'\n" );
+gap> if not AGR.Test.CycToCcls() then
+>      Print( "#I  Error in `AGR.Test.CycToCcls'\n" );
 > fi;
 
 # Test whether the scripts that return class representatives
 # are sufficiently consistent.
 # (This test should be the last one,
 # because newly added scripts may be too hard for it.)
-gap> if not AtlasOfGroupRepresentationsTestClassScripts() then
->      Print( "#I  Error in ",
->             "`AtlasOfGroupRepresentationsTestClassScripts'\n" );
+gap> if not AGR.Test.ClassScripts() then
+>      Print( "#I  Error in `AGR.Test.ClassScripts'\n" );
 > fi;
 
 

@@ -1,7 +1,5 @@
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_vecgf2_c =
-   "@(#)$Id: vecgf2.c,v 4.124 2011/05/11 22:12:28 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -4935,8 +4933,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGF2Vec ( void )
 {
-    module.revision_c = Revision_vecgf2_c;
-    module.revision_h = Revision_vecgf2_h;
     FillInVersion( &module );
     return &module;
 }

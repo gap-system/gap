@@ -11,12 +11,7 @@ if ! test -e $GAPPATH/sysinfo.gap; then
   echo "is already properly installed)."
   exit
 fi
-rm -f Makefile sedfile
-cat $GAPPATH/sysinfo.gap > Makefile
-echo "echo s#@GAPARCH@#\$GAParch#g >sedfile" >> Makefile
-chmod +x Makefile
-./Makefile
-rm -f Makefile
-sed -f sedfile Makefile.in >Makefile
-rm -f sedfile
 
+. $GAPPATH/sysinfo.gap
+sed -e "s|@GAPARCH@|$GAParch|g" Makefile.in > Makefile
+echo "Makefile successfully created."

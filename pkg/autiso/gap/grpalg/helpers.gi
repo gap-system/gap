@@ -23,7 +23,7 @@ end;
 
 MultBySC1 := function( S, F, n, v, w )
     local u, d, j;
-    d := DepthVector(v);
+    d := PositionNonZero(v);
     u := w[1] * S[d][1];
     for j in [2..n] do
         #if w[j] <> Zero(F) then

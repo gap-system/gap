@@ -2,7 +2,6 @@
 ##
 #W  padics.gi                   GAP Library                     Jens Hollmann
 ##
-#H  @(#)$Id: padics.gi,v 4.20 2010/02/23 15:13:21 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the implementation part of the padic numbers.
 ##
-Revision.padics_gi :=
-    "@(#)$Id: padics.gi,v 4.20 2010/02/23 15:13:21 gap Exp $";
 
 
 #############################################################################
@@ -413,7 +410,7 @@ end );
 ##  list[2].  It is easily guaranteed that  list[2] is never divisible by the
 ##  prime p.  By that we have always maximum precision.
 ##  
-InstallMethod( PadicNumber,
+InstallMethod( PadicNumber, "for a pure p-adic family and a list",
     true,
     [ IsPurePadicNumberFamily,
       IsCyclotomicCollection ],
@@ -437,7 +434,7 @@ end );
 ##
 ##  Make a pure p-adic number out of a rational.
 ##
-InstallMethod( PadicNumber,
+InstallMethod( PadicNumber, "for a pure p-adic family and a rational",
     true,
     [ IsPurePadicNumberFamily,
       IsRat ],
@@ -826,7 +823,7 @@ end );
 ##
 ##  So watch it!
 ##
-InstallMethod( PadicNumber,
+InstallMethod( PadicNumber, "for a p-adic extension family and a list",
     true,
     [ IsPadicExtensionNumberFamily,
       IsList ],
@@ -855,7 +852,7 @@ end );
 ##  result of PadicExpansionByRat  and put it at  the  first position of  the
 ##  coeff.list.
 ##
-InstallMethod( PadicNumber,
+InstallMethod( PadicNumber, "for a p-adic extension family and a rational",
     true,
     [ IsPadicExtensionNumberFamily,
       IsRat ],

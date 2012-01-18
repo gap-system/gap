@@ -203,31 +203,6 @@ InstallMethod( IsZxZ, "general method (ResClasses)", true,
 
 #############################################################################
 ##
-#M  One( <R> ) . . . . . . . . . . . . . . . . . . . . . . . . . . .  for Z^2
-#M  One( <v> ) . . . . . . . . . . . . . . . . . . . . . . for vectors in Z^2
-#M  IsOne( <v> ) . . . . . . . . . . . . . . . . . . . . . for vectors in Z^2
-##
-InstallOtherMethod( One, "for Z^2 (ResClasses)", true, [ IsRowModule ], 0,
-  function ( R )
-    if IsZxZ(R) then return [1,1]; else TryNextMethod(); fi;
-  end );
-
-InstallOtherMethod( One, "for [1,1] in Z^2 (ResClasses)",
-                    true, [ IsRowVector ], 0,
-  function ( v )
-    if   Length(v) = 2 and ForAll(v,IsInt)
-    then return [1,1]; else TryNextMethod(); fi;
-  end );
-
-InstallOtherMethod( IsOne, "for [1,1] in Z^2 (ResClasses)",
-                    true, [ IsRowVector ], 0,
-  function ( v )
-    if   Length(v) = 2 and ForAll(v,IsInt)
-    then return v = [1,1]; else TryNextMethod(); fi;
-  end );
-
-#############################################################################
-##
 #S  Residues / residue classes (mod m). /////////////////////////////////////
 ##
 #############################################################################
@@ -513,7 +488,7 @@ InstallMethod( Superlattices,
 ##
 BindGlobal( "ModulusAsFormattedString",
   function ( m )
-    if not IsMatrix(m) then return BlankFreeString(m); fi;
+    if not IsMatrix(m) then return ViewString(m); fi;
     return Concatenation(List(["(",m[1][1],",",m[1][2],")Z+(",
                                    m[2][1],",",m[2][2],")Z"],
                               BlankFreeString));
@@ -754,7 +729,11 @@ InstallGlobalFunction( ResidueClass,
       then Error( usage ); return fail; fi;
     elif Length( arg ) = 2 then
       if ForAll( arg, IsRingElement ) then
-        R := DefaultRing( arg ); 
+        if   IsPolynomial(arg[1])
+        then R := DefaultRing(arg[1]); arg[2] := arg[2] * One(R);
+        elif IsPolynomial(arg[2])
+        then R := DefaultRing(arg[2]); arg[1] := arg[1] * One(R);
+        else R := DefaultRing(arg); fi;
         m := Maximum( arg ); r := Minimum( arg );
         if IsZero( m ) then Error( usage ); return fail; fi;
       else
@@ -1357,16 +1336,9 @@ InstallMethod( Intersection2,
                0,
 
   function ( U, S )
-
-    local  result;
-
     if not IsSubset(UnderlyingRing(FamilyObj(U)),S) then TryNextMethod(); fi;
-    result := Filtered( Set(S), n -> n in U!.included
-                        or ( n mod U!.m in U!.r and not n in U!.excluded ) );
-    if   IsResidueClassUnionOfZxZ(U)
-    then return ResidueClassUnion(UnderlyingRing(FamilyObj(U)),
-                                  [[1,0],[0,1]],[],result,[]);
-    else return result; fi;
+    return Filtered( Set(S), n -> n in U!.included
+                     or ( n mod U!.m in U!.r and not n in U!.excluded ) );
   end );
 
 #############################################################################
@@ -1399,22 +1371,6 @@ InstallMethod( Intersection2,
                "for the base ring and a residue class union (ResClasses)",
                ReturnTrue, [ IsDomain, IsResidueClassUnion ], 0,
                function ( R, U ) return Intersection2( U, R ); end );
-
-#############################################################################
-##
-#M  Intersection2( <l>, <R> ) . . . . . . . . . . . . . .  for a list and Z^2
-#M  Intersection2( <R>, <l> ) . . . . . . . . . . . . . .  for Z^2 and a list
-##
-InstallMethod( Intersection2, "for a list and Z^2 (ResClasses)",
-               ReturnTrue, [ IsList, IsRowModule ], 0,
-  function ( l, R )
-    if not IsZxZ(R) then TryNextMethod(); fi;
-    return ResidueClassUnion(R,[[1,0],[0,1]],[],Filtered(l,p->p in R),[]);
-  end );
-
-InstallMethod( Intersection2, "for Z^2 and a list (ResClasses)",
-               ReturnTrue, [ IsRowModule, IsList ], 0,
-               function ( R, l ) return Intersection(l,R); end );
 
 #############################################################################
 ##
@@ -1542,12 +1498,24 @@ InstallMethod( Difference,
 ##
 InstallMethod( Difference,
                "for a ring and a finite set (ResClasses)", ReturnTrue,
-               [ IsDomain, IsList ], 0,
+               [ IsRing, IsList ], 0,
 
   function ( R, S )
-    if   not IsSubset(R,S) or not (IsRing(R) or IsRowModule(R))
-    then TryNextMethod(); fi;
+    if not IsSubset(R,S) then TryNextMethod(); fi;
     return ResidueClassUnionNC(R,One(R),[Zero(R)],[],Set(S));
+  end );
+
+#############################################################################
+##
+#M  Difference( <ZxZ>, <S> ) . . . . . . . . . . . . for Z^2 and a finite set
+##
+InstallOtherMethod( Difference,
+                    "for Z^2 and a finite set (ResClasses)", ReturnTrue,
+                    [ IsRowModule, IsList ], 0,
+
+  function ( ZxZ, S )
+    if not IsZxZ(ZxZ) or not IsSubset(ZxZ,S) then TryNextMethod(); fi;
+    return ResidueClassUnionNC(ZxZ,[[1,0],[0,1]],[[0,0]],[],Set(S));
   end );
 
 #############################################################################
@@ -1617,6 +1585,10 @@ InstallOtherMethod( \+,
     local  R;
 
     R := UnderlyingRing(FamilyObj(U));
+    if IsRing(R) and not x in R then
+      if   IsInt(x) or Characteristic(x) = Characteristic(R)
+      then x := x * One(R); else TryNextMethod(); fi;
+    fi;
     if not x in R then TryNextMethod(); fi;
     return ResidueClassUnion(R,Modulus(U),
                              List(Residues(U),r -> (r + x) mod Modulus(U)),
@@ -1643,6 +1615,10 @@ InstallOtherMethod( \+,
                     
   function ( R, x )
     if not IsRing(R) and not IsRowModule(R) then TryNextMethod(); fi;
+    if IsRing(R) and not x in R then
+      if   IsInt(x) or Characteristic(x) = Characteristic(R)
+      then x := x * One(R); fi;
+    fi;
     if not x in R then TryNextMethod(); fi;
     return R;
   end );
@@ -1716,8 +1692,10 @@ InstallOtherMethod( \*,
     local  R;
 
     R := UnderlyingRing(FamilyObj(U));
-    if   IsRing(R) and not x in R
-      or IsRowModule(R) and not x in LeftActingDomain(R)
+    if IsRing(R) and not x in R then
+      if   IsInt(x) or Characteristic(x) = Characteristic(R)
+      then x := x * One(R); else TryNextMethod(); fi;
+    elif IsRowModule(R) and not x in LeftActingDomain(R)
     then TryNextMethod(); fi;
     if IsZero(x) then return [Zero(R)]; fi;
     return ResidueClassUnionNC(R,Modulus(U)*x,
@@ -1787,13 +1765,20 @@ InstallOtherMethod( \*,
 ##
 InstallOtherMethod( \*,
                     "for the base ring and a ring element (ResClasses)",
-                    IsCollsElms, [ IsRing, IsRingElement ], 0,
+                    ReturnTrue, [ IsRing, IsRingElement ], 0,
                     
   function ( R, x )
+
     if not IsIntegers(R) and not IsZ_pi(R)
        and not (     IsUnivariatePolynomialRing(R)
-                 and IsFiniteFieldPolynomialRing(R)) or not x in R
+                 and IsFiniteFieldPolynomialRing(R))
     then TryNextMethod(); fi;
+
+    if not x in R then
+      if   IsInt(x) or Characteristic(x) = Characteristic(R)
+      then x := x * One(R); else TryNextMethod(); fi;
+    fi;
+
     if IsZero(x) then return [Zero(R)]; 
                  else return ResidueClass(R,x,Zero(x)); fi;
   end );
@@ -1868,15 +1853,24 @@ InstallOtherMethod( \/,
 
 #############################################################################
 ##
+#M  \/( <U>, <x> ) . . . . . . . . . . . for a residue class union and a unit
+##
+InstallOtherMethod( \/,
+                    "for residue class union and unit (ResClasses)",
+                    ReturnTrue, [ IsResidueClassUnion, IsRingElement ], 5,
+
+  function ( U, x )
+    if IsUnit(x) then return U * Inverse(x); else TryNextMethod(); fi;
+  end );
+
+#############################################################################
+##
 #M  \/( [ ], <x> ) . . . . . . . . . . . for the empty set and a ring element
 ##
 InstallOtherMethod( \/,
                     "for the empty set and a ring element (ResClasses)",
                     ReturnTrue, [ IsList and IsEmpty, IsRingElement ], 0,
-
-  function ( empty, x )
-    return [ ];
-  end );
+                    function ( empty, x ) return [ ]; end );
 
 #############################################################################
 ##
@@ -2525,8 +2519,8 @@ InstallGlobalFunction( RingToString,
 InstallMethod( ViewString,
                "for residue classes (ResClasses)", true,
                [ IsResidueClass ], 0,
-               cl -> Concatenation(String(Residue(cl)),"(",
-                                   String(Modulus(cl)),")") );
+               cl -> Concatenation(ViewString(Residue(cl)),"(",
+                                   ViewString(Modulus(cl)),")") );
 
 #############################################################################
 ##
@@ -2562,8 +2556,18 @@ InstallMethod( ViewObj,
            endval, short, bound, display;
 
     PrintFiniteSet := function ( S )
-      if   Length(String(S)) <= 32 or display
-      then Print(S);
+
+      local  i;
+
+      if Length(String(S)) <= 32 or display then
+        if not IsPolynomialRing(R) then Print(S); else
+          Print("[ ");
+          for i in [1..Length(S)] do
+            Print(ViewString(S[i]));
+            if i < Length(S) then Print(", "); fi;
+          od;
+          Print(" ]");
+        fi;
       else Print("<set of cardinality ",Length(S),">"); fi;
     end;
 
@@ -2572,11 +2576,13 @@ InstallMethod( ViewObj,
       local  s, r, m;
 
       if IsRing(R) then
-        m := Modulus(cl); r := Residue(cl); s := String(r);
+        m := Modulus(cl); r := Residue(cl);
+        if   IsIntegers(R) or IsZ_pi(R)
+        then s := String(r); else s := ViewString(r); fi;
         if   IsIntegers(R) or IsZ_pi(R)
         then s := Concatenation(s,"(",String(m),")");
-        elif short then s := Concatenation(s,"(mod ",String(m),")");
-        else s := Concatenation(s," ( mod ",String(m)," )"); fi;
+        elif short then s := Concatenation(s,"(",ViewString(m),")");
+        else s := Concatenation(s," ( mod ",ViewString(m)," )"); fi;
       elif IsZxZ(R) then s := ViewString(cl);
       else return fail; fi;
       return s;

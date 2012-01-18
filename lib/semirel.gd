@@ -2,7 +2,6 @@
 ##
 #W  semirel.gd                  GAP library                   James D Mitchell
 ##
-#H  @(#)$Id: semirel.gd,v 4.31 2010/02/23 15:13:29 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  semigroups. Of particular interest are Green's relations,
 ##  congruences, and Rees congruences.
 ##
-Revision.semirel_gd :=
-    "@(#)$Id: semirel.gd,v 4.31 2010/02/23 15:13:29 gap Exp $";
 
 #############################################################################
 ##

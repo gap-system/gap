@@ -2,7 +2,7 @@
 ##
 #W triangulations.g                                         Laurent Bartholdi
 ##
-#H   @(#)$Id: triangulations.g,v 1.29 2011/06/21 14:11:48 gap Exp $
+#H   @(#)$Id: triangulations.g,v 1.32 2011/08/24 14:12:34 gap Exp $
 ##
 #Y Copyright (C) 2011, Laurent Bartholdi
 ##
@@ -24,7 +24,7 @@ BindGlobal("EPS@", rec(
         prec := Sqrt(MACFLOAT_EPS), # points that close are considered equal
         obst := Float(10^-2), # points that close are suspected to form
                                  # an obstruction
-        fast := Float(10^-3), # if spider moved that little, just wiggle it
+        fast := Float(10^-2), # if spider moved that little, just wiggle it
         ratprec := MACFLOAT_EPS^(3/4), # quality to achieve in rational fct.
         eps := Sqrt(MACFLOAT_EPS), # error allowed on P1Map
         fail := fail));
@@ -104,7 +104,8 @@ BindGlobal("LOCATE@", function(t,f0,p)
     local baryc, yc, i, seen;
     
     if f0=fail then f0 := t!.f[1]; fi;
-    # bad, this can cost linear time. Rather use "rho" method
+    # bad, this can cost linear time, and not logarithmic.
+    # we should use a "rho" method
     seen := BlistList([1..Length(t!.f)],[]);
     repeat
         baryc := List(f0.n,e->P1Image(e.map^-1,p));
@@ -273,12 +274,12 @@ InstallMethod(DelaunayTriangulation, "(FR) for a list of points and a quality",
             Add(order,i);
         fi;
         for p in [P1Point(1),P1Point(0,1),P1Point(-1),P1Point(0,-1)] do
-            t := P1Map(points[n],points[order[2]]);
+            t := MoebiusMap(points[n],points[order[2]]);
             Add(points,P1Image(t,p));
             Add(order,Length(points));
         od;
     else # points[i] is roughly at 90 degrees from points[n]
-        t := P1Map(points[n],points[i],P1Antipode(points[n]));
+        t := MoebiusMap(points[n],points[i],P1Antipode(points[n]));
         # so t(0)=points[n], t(1)=points[i]. Try to find points close to t^-1(infty,-1,i,-i).
         i := t^-1; im := List(points,x->P1Image(i,x));
         for p in [P1Point(infinity),P1Point(1),P1Point(0,1),P1Point(-1),P1Point(0,-1)] do
@@ -806,129 +807,144 @@ BindGlobal("ESSDISJOINT@", function(ratmap,p0,p1,domain)
     return true;
 end);
 
-BindGlobal("CHOOSEBYSUBDIVISION@", function(ratmap,p0,t0,gamma,candidates,upbdry,downcell)
-    # candidates is a list of records containing in particular fields pos and t.
-    # returns the one such gamma[t0,candidate.t] (which stays in downcell)
-    # lifts to a path from p0 to candidate.pos and staying in upcell.
-    local c, i, p, subdiv;
-    
-    # first a very cheap test: if one candidate is a "to", and the other is a neighbour
-    if not IsBound(candidates[1].d) and ForAll([2..Length(candidates)],i->ESSDISJOINT@(ratmap,candidates[1].pos,candidates[i].pos,downcell)) then
-        return candidates[1];
-    fi;
-    
-    # then a cheap test: is one of the paths ratmap(p0->c.pos) completely in the downcell?
-    
-    c := Filtered(candidates,c->ESSDISJOINT@(ratmap,p0,c.pos,downcell));
-    if Length(c)>=1 then
-        # OK, we found one. Just in case, if there's a "to" vertex we can go to from here
-        # (i.e. we overshot), return back to that "to".
-        c := c[1];
-        if IsBound(c.d) and c.t >= 1.0-EPS@.eps then # try "to"
-            for i in candidates do
-                if not IsBound(i.d) and ESSDISJOINT@(ratmap,i.pos,c.pos,downcell) then
-                    c := i;
-                    break;
-                fi;
-            od;
-        fi;
-        return c;
-    fi;
-    
-    # now try harder: all the paths p0->c.pos project to some curve that
-    # wiggles out of downcell.
-    
-    subdiv := [rec(t := t0, pos := p0)];
-    for c in candidates do
-        if IsBound(c.t) then
-            Add(subdiv, rec(t := c.t, result := c));
-        else
-            Add(subdiv, rec(t := 1.0, result := c));
-        fi;
-    od;
-    Sort(subdiv,function(x,y) return x.t < y.t; end);
-    i := 2;
-    while true do
-        if not IsBound(subdiv[i].lifts) then
-            subdiv[i].lifts := [];
-            for p in P1PreImages(ratmap,P1Image(gamma,P1Point(subdiv[i].t))) do
-                if ForAll(upbdry,e->SphereP1Y(P1Image(e.map^-1,p))>-MACFLOAT_EPS) then
-                    Add(subdiv[i].lifts,p);
-                fi;
-            od;
-        fi;
-        Assert(1,Length(subdiv[i].lifts)>=1,"No lift in LIFTARC -- I'm stymied");
-        if Length(subdiv[i].lifts)=1 then # just one choice
-            p := subdiv[i].lifts[1];
-        else
-            p := Filtered(subdiv[i].lifts,p->ESSDISJOINT@(ratmap,subdiv[i-1].pos,p,downcell));
-            Assert(1,Length(p)<=1,"More than one lift in LIFTARC -- I'm stymied");
-            if p=[] then # subdivide
-                Add(subdiv,rec(t := (subdiv[i-1].t+subdiv[i].t)/2));
-                p := fail;
-            else # we got just one lift -- hurray
-                p := p[1];
-            fi;
-        fi;
-        # is this lift actually one of our candidates?
-        if p<>fail then
-            if IsBound(subdiv[i].result) and ESSDISJOINT@(ratmap,subdiv[i].result.pos,p,downcell) then
-                return subdiv[i].result;
-            fi;
-            subdiv[i].pos := p;
-            i := i+1;
-        fi;
-    od;
-end);
-
-BindGlobal("SELECTCANDIDATES@", function(l,r,lift,xings)
-    # this code is not used. It should return a list of candidates among xings,
-    # such that there exist a choice of non-overlapping arcs in upcell
-    # that connect the "in" and "out" intersections in xings
-    local tu, e, i, c, curface, curtime, curbdry, candidates;
-    
-    Error("@@ this code is not used at all, and certainly broken");
-    
-    candidates := [];
-    tu := [-r..l];
-    e := lift.e.reverse;
-    i := POSITIONID@(xings[e.index],lift.reverse);
-    l := 0;
-    repeat
-        curbdry := curface.n;
-        break;
-        i := i+1;
-        while i > Length(xings[e.index]) do
-            i := POSITIONID@(curface.n,e)+1;
-            if i>Length(curface.n) then i := 1; fi;
-            e := curface.n[i];
-            i := 1;
-        od;
-        if IsIdenticalObj(xings[e.index][i],lift.reverse) and IsIdenticalObj(e,lift.e.reverse) then
-            break;
-        fi;
-        # now consider xings[e.index][i]. If it's in/outcoming,
-        # update l.
-        # if l is in range [-#from..#to], and time >= curtime,
-        # add it to candidates.
-        c := xings[e.index][i];
-        if c.t >= curtime and c.d >= 0 and l in tu then
-            Add(candidates,c);
-        fi;
-        # if r.d=0, we don't know if r moves in or out, so we
-        # just increase the interval.
-        if c.d=0 then tu := [Minimum(tu)-1..Maximum(tu)+1]; fi;
-        l := l+r.d;
-    until false;
-end);
-
-BindGlobal("LIFTARC@", function(spider,ratmap,from,to,gamma,domain)
-    # <gamma> is an arc in the range, contained in face <domain>, which we
+BindGlobal("LIFTARC@", function(spider,ratmap,from,to,gamma,downcell)
+    # <gamma> is an arc in the range, contained in face <downcell>, which we
     # want to lift through <ratmap>.
     # <from> and <to> are described in LIFTEDGE@, as is the return value
-    local curtime, curface, curbdry, lift, lifts, xings, candidates,
-          fromface, toface,
-          e, f, i, l, r, tu, c;
+    local curtime, nexttime, curface, curpos, curelt, curbdry, curedge,
+          lift, lifts, xings, candidates,
+          toface, e, f, i, c,
+          choosebysubdivision, getcandidates, getbdry, getxings;
+    
+    choosebysubdivision := function(p0,t0,t1,candidates,upbdry)
+    # candidates is a list of records containing in particular a field pos.
+    # returns the one such that gamma[t0,t1] (which stays in downcell)
+    # lifts to a path from p0 to candidate.pos and staying in upcell.
+    # works by subdividing the time interval.
+        local c, d, l, i, p, subdiv;
+    
+        subdiv := [rec(t := t0, pos := p0), rec(t := t1)];
+        i := 2;
+        while i <= Length(subdiv) do
+            if not IsBound(subdiv[i].lifts) then
+                subdiv[i].lifts := [];
+                for p in P1PreImages(ratmap,P1Image(gamma,P1Point(subdiv[i].t))) do
+                    if ForAll(upbdry,e->SphereP1Y(P1Image(e.map^-1,p))>-MACFLOAT_EPS) then
+                        Add(subdiv[i].lifts,p);
+                    fi;
+                od;
+            fi;
+            p := subdiv[i].lifts;
+            l := Length(p);
+            if l=0 then
+                Error("LIFTARC: I can't analytically continue, no candidate");
+            elif l>1 then # many choices, find good one(s)
+                p := Filtered(p,p->ESSDISJOINT@(ratmap,subdiv[i-1].pos,p,downcell));
+                l := Length(p);
+                if l>1 then
+                    Error("LIFTARC: I can't analytically continue, too many candidates");
+                elif l=0 then  # subdivide
+                    Add(subdiv,rec(t := (subdiv[i-1].t+subdiv[i].t)/2),i);
+                    continue;
+                fi;
+            fi;
+            p := p[1];
+            subdiv[i].pos := p;
+            i := i+1;
+        od;
+        
+        # now find closest candidate to point p.
+        l := 10.0; # bigger than maximal distance between P1 points
+        for i in candidates do
+            d := P1Distance(i.pos,p);
+            if d<l then l := d; c := i; fi;
+        od;
+        return c;
+    end;
+    
+    # compute a sequence of edges surrounding our current position
+    getbdry := function()
+        local e;
+        
+        if curedge<>fail then # we're parallel to an edge, i.e.
+            curbdry := [];
+            for e in curface.n do
+                if not IsIdenticalObj(e,curedge.reverse) then
+                    Add(curbdry,e);
+                fi;
+            od;
+            for e in curedge.left.n do
+                if not IsIdenticalObj(e,curedge) then
+                    Add(curbdry,e);
+                fi;
+            od;
+        else
+            curbdry := curface.n;
+        fi;
+    end;
+    
+    # compute edge intersections on neighbours of current cell
+    getxings := function()
+        local e, l, r, i, tu;
+        
+        for e in curface.n do
+            if not IsBound(xings[e.index]) then
+                # get list of [t,u,d,p,q] such that gamma(t)=delta(u)=p,
+                # e.map(u)=q, d=Im(gamma^-1*delta)'(u)
+                tu := P1INTERSECT(gamma,ratmap,e.map);
+                # in increasing order along the edge
+                Sort(tu,function(x,y) return x[2]<y[2]; end);
+                l := []; r := []; i := 1;
+                for tu in tu do
+                    Add(l, rec(t := tu[1], u := tu[2], d := tu[3], gammapos := tu[4], pos := tu[5], e := e));
+                    Add(r, rec(t := tu[1], u := (1.0-tu[2])/(1.0+tu[2]), d := -tu[3], gammapos := tu[4], pos := tu[5], e := e.reverse));
+                    l[i].reverse := r[i];
+                    r[i].reverse := l[i];
+                    i := i+1;
+                od;
+                xings[e.index] := l;
+                xings[e.reverse.index] := Reversed(r);
+            fi;
+        od;
+    end;
+    
+    # out of the xings, find candidates:
+    # - all endpoints of paths (in list "to")
+    # - among edge crossings, only those at time >= curtime
+    # - if we're parallel to an edge, all on that edge
+    # - for the other ("boundary") crossings, only those pointing
+    #   outward, and separated by (algebraically) >= #to and <= #from
+    #   on the current face(s).
+    getcandidates := function()
+        local c, e;
+        
+        if IsBound(toface[curface.index]) then
+            candidates := ShallowCopy(toface[curface.index]);
+            nexttime := 1.0;
+        else
+            candidates := [];
+            nexttime := 2.0; # out of the way
+        fi;
+        
+        if curedge<>fail then # we're parallel to an edge, i.e.
+            # inside a lozenge. take its boundary.
+            for c in xings[curedge.index] do
+                if c.t > curtime then
+                    if c.t < nexttime then nexttime := c.t; fi;
+                    Add(candidates,c);
+                fi;
+            od;
+        fi;
+    
+        for e in curbdry do
+            for c in xings[e.index] do
+                if c.t > curtime and c.d >= 0 then
+                    if c.t < nexttime then nexttime := c.t; fi;
+                    Add(candidates,c);
+                fi;
+            od;
+        od;
+    end;
     
     # the results will go there
     lifts := [];
@@ -936,12 +952,7 @@ BindGlobal("LIFTARC@", function(spider,ratmap,from,to,gamma,domain)
     # xings[edge.index] are the (left-to-right) crossings of gamma with f(edge)
     xings := [];
     
-    # from, to are lists indexed by faces, containing the starts and ends of lifts
-    fromface := [];
-    for f in from do
-        if not IsBound(fromface[f.cell.index]) then fromface[f.cell.index] := []; fi;
-        Add(fromface[f.cell.index],f);
-    od;
+    # toface is a list indexed by faces, containing starts and ends of lifts
     toface := [];
     for f in to do
         if not IsBound(toface[f.cell.index]) then toface[f.cell.index] := []; fi;
@@ -950,163 +961,68 @@ BindGlobal("LIFTARC@", function(spider,ratmap,from,to,gamma,domain)
 
     for lift in from do
         curface := lift.cell;
-        # set start time: -epsilon if we're almost on an edge
-        if Length(LOCATE@(spider!.cut,curface,lift.pos))>=3 then
-            curtime := -EPS@.eps; # we start on an edge or vertex
-        else
-            curtime := 0.0; # we start in a face
-        fi;
-        Remove(fromface[curface.index],1); # we're dealing with it
-        # lift is initially rec(cell, pos, elt), and records a position,
-        # presumably at a crossing.
-        # it may acquire t (time along gamma), e (edge),
-        # u (crossing time along edge), d (direction: 1 for left-right,
-        # 0 for indifferent, -1 for right-left)
-        repeat
-            # compute edge intersections on neighbours of lift.cell
-            for e in curface.n do
-                if not IsBound(xings[e.index]) then
-                    # get list of [t,u,d,p,q] such that gamma(t)=delta(u)=p, e.map(u)=q;
-                    # d=Im(gamma^-1*delta)'(u)
-                    tu := P1INTERSECT(gamma,ratmap,e.map);
-                    # in increasing order along the edge
-                    Sort(tu,function(x,y) return x[2]<y[2]; end);
-                    l := []; r := []; i := 1;
-                    for tu in tu do
-                        Add(l, rec(t := tu[1], u := tu[2], d := tu[3], gammapos := tu[4], pos := tu[5], e := e));
-                        Add(r, rec(t := tu[1], u := (1.0-tu[2])/(1.0+tu[2]), d := -tu[3], gammapos := tu[4], pos := tu[5], e := e.reverse));
-                        l[i].reverse := r[i];
-                        r[i].reverse := l[i];
-                        i := i+1;
-                    od;
-                    xings[e.index] := l;
-                    xings[e.reverse.index] := Reversed(r);
-                fi;
-            od;
-            
-            # out of the xings, find candidates:
-            # - all endpoints of paths (in list "to")
-            # - among edge crossings, only those at time >= curtime
-            # - if we're parallel to an edge, all on that edge
-            # - for the other ("boundary") crossings, only those pointing
-            #   outward, and separated by (algebraically) >= #to and <= #from
-            #   on the current face(s).
-            if IsBound(toface[curface.index]) then
-                candidates := ShallowCopy(toface[curface.index]);
-            else
-                candidates := [];
-            fi;
-            if not IsBound(lift.d) then # initial point, we're in a triangle
-                curbdry := curface.n;
-                for e in curbdry do
-                    for c in xings[e.index] do
-                        if c.t >= curtime and c.d >= 0 then
-                            Add(candidates,c);
-                        fi;
-                    od;
-                od;
-            elif lift.d=0 then # we're parallel to an edge, i.e.
-                # inside a lozenge, take everything
-                curbdry := [];
-                for e in curface.n do
-                    if not IsIdenticalObj(e.reverse,lift.e) then
-                        Add(curbdry,e);
-                    fi;
-                od;
-                for e in lift.e.n do
-                    if not IsIdenticalObj(e,lift.e) then
-                        Add(curbdry,e);
-                    fi;
-                od;
-                for c in xings[lift.e.index] do
-                    if c.t >= curtime then
-                        Add(candidates,c);
-                    fi;
-                od;
-                for e in curbdry do
-                    for c in xings[e.index] do
-                        if c.t >= curtime and c.d >= 0 then
-                            Add(candidates,c);
-                        fi;
-                    od;
-                od;
-            else # we're on a side. make linear list of candidates, and
-                # count the number of in/out in xings[]
-                # along the way, starting from lift.e[lift.u]
-                #if IsBound(fromface[curface.index]) then
-                #    l := fromface[curface.index]);
-                #else
-                #    l := [];
-                #fi;
-                #if IsBound(toface[curface.index]) then
-                #    r := toface[curface.index];
-                #else
-                #    r := [];
-                #fi;                
-                #candidates := SELECTCANDIDATES@(l,r,lift,xings,curface);
-                for e in curface.n do
-                    for c in xings[e.index] do
-                        if c.t >= curtime and c.d >= 0 then
-                            Add(candidates,c);
-                        fi;
-                    od;
-                od;
-            fi;
+        curedge := fail; # will keep track of edge to which we're parallel
+        curpos := lift.pos;
+        curelt := lift.elt;
+        curtime := -EPS@.eps; # just in case we're on an edge or vertex
 
-            if Length(candidates)>=2 then
-                # middle game: keep those candidates that project
-                # to something homotopic to gamma[curtime..intersect_time],
-                # namely that does not intersect domain's boundary (except maybe
-                # at its extremities
-                c := CHOOSEBYSUBDIVISION@(ratmap,lift.pos,curtime,gamma,candidates,curbdry,domain);
-            elif Length(candidates)=1 then
-                c := candidates[1];
-            else
-                c := fail;
-                for e in curface.n do # check for a "to" in a neighbouring cell
-                    if IsBound(toface[e.right.index]) then
-                        for i in toface[e.right.index] do
-                            if Length(LOCATE@(spider!.cut,curface,i.pos))>=3 and ESSDISJOINT@(ratmap,lift.pos,i.pos,domain) then
-                                curface := e.right;
-                                lift.elt := lift.elt * e.gpelement;
-                                c := i;
-                                break;
-                            fi;
-                        od;
+        repeat
+            getbdry();
+            getxings();
+            getcandidates();
+            
+            c := First(candidates,c->ESSDISJOINT@(ratmap,curpos,c.pos,downcell));
+            if candidates=[] then # our last chance is a "to" on the other side
+                lift := fail;
+                for e in curface.n do if IsBound(toface[e.right.index]) then
+                    for c in toface[e.right.index] do
+                        if ESSDISJOINT@(ratmap,curpos,c.pos,downcell) then
+                            curelt := curelt * e.gpelement;
+                            curface := e.right;
+                            lift := c;
+                            break;
+                        fi;
+                    od;
+                    if lift<>fail then break; fi;
+                fi; od;
+            elif c=fail then                
+                c := [];
+                for i in candidates do
+                    if (nexttime=1.0 and not IsBound(i.t)) or i.t=nexttime then
+                        Add(c,i);
                     fi;
-                    if c<>fail then break; fi;
                 od;
-                if c=fail then
-                    Error("No lift to follow in LIFTARC -- I'm stymied\n");
+                c := choosebysubdivision(curpos,curtime,nexttime,c,curbdry);
+                if not IsBound(c.e) and not IsBound(c.cell) then # got a new point in curface
+                    curpos := c.pos;
+                    curtime := nexttime;
+                    continue;
                 fi;
             fi;
             
             if IsBound(c.cell) then # "to" cell: done!
-                i := lift.elt;
                 lift := ShallowCopy(Remove(toface[curface.index],POSITIONID@(toface[curface.index],c)));
-                lift.elt := i;
+                lift.elt := curelt;
                 break;
             fi;
             
-            i := lift.elt;
             # if we're parallel to an edge, maybe move back to the previous cell
             if not IsIdenticalObj(c.e.left,curface) then
-                Error("This code is not yet tested @@");
-                i := i / lift.e.gpelement;
+                Error("This code is probably not necessary @@");
+                curelt := curelt / c.e.gpelement;
             fi;
-            lift := c;
-            lift.elt := i * lift.e.gpelement;
-            curface := lift.e.right;
-
+            
+            curface := c.e.right;
+            if c.d=0 then curedge := c.e; else curedge := fail; fi;
+            curelt := curelt * c.e.gpelement;
+            curtime := c.t;
             # if at a vertex, allow time to go back a little, in case the
             # edges don't really match
-            if lift.u < EPS@.eps or lift.u > 1.0-EPS@.eps then
-                curtime := lift.t - 10.0*MACFLOAT_EPS;
-            else
-                curtime := lift.t;
+            if c.u < EPS@.eps or c.u > 1.0-EPS@.eps then
+                curtime := curtime - 10.0*MACFLOAT_EPS;
             fi;
-            c.t := -2.0; # mark it, and its reverse, as unusable
-            c.reverse.t := -2.0;
+            c.t := -1.0; # mark xing, and its reverse, as unusable
+            c.reverse.t := -1.0;
         until false;
         Add(lifts,lift);
     od;
@@ -1220,7 +1136,7 @@ BindGlobal("POSTCRITICALPOINTS@", function(f)
         j := i+1;
         while j<= Length(cp) do
             if P1Distance(cp[i][1],cp[j][1])<EPS@.prec then
-                Remove(cp,j);
+                Add(cp[i],Remove(cp,j)[1]);
                 cp[i][2] := cp[i][2]+1;
             else
                 j := j+1;
@@ -1228,7 +1144,13 @@ BindGlobal("POSTCRITICALPOINTS@", function(f)
         od;
         i := i+1;
     od;
-
+    for c in cp do
+        if Length(c)>2 then
+            c[1] := P1Barycentre(c{Concatenation([1],[3..Length(c)])});
+            while Length(c)>2 do Remove(c); od;
+        fi;
+    od;
+    
     poly := First([1..Length(cp)],i->cp[i][2]=deg and P1Distance(P1Image(f,cp[i][1]),cp[i][1])<EPS@.prec);
     
     pcp := [];
@@ -1365,6 +1287,38 @@ InstallMethod(FRMachine, "(FR) for a rational function",
         [IsRationalFunction],
         f->FRMachine(P1MapRational(f)));
 
+BindGlobal("NORMALIZEADDINGMACHINE@", function(model,trans,out,adder)
+    # conjugate the recursion so that element adder, which is checked to
+    # be an adding machine, becomes of the form (t,...,1)s,
+    # where s is the cycle i|->i-1 mod d.
+    # adder is the position of the adding element.
+    # model is the ambient fundamental group.
+    local cycle, deg, perm, x, i, j, basis;
+    
+    deg := Length(trans[1]);
+    cycle := Cycles(PermList(out[adder]),[1..deg]);
+    while Length(cycle)<>1 or not IsConjugate(model,Product(trans[adder]{cycle[1]}),model.(adder)) do
+        Error("Element #",adder," is not an adding element");
+    od;
+    
+    perm := PermList(Concatenation([deg],[1..deg-1]));
+    perm := RepresentativeAction(SymmetricGroup(deg),PermList(out[adder]),perm);
+    REORDERREC@([trans,out],perm);
+
+    basis := [];
+    x := One(model);
+    for i in [deg,deg-1..1] do
+        basis[i] := x;
+        x := x*trans[adder][i];
+    od;
+    basis := RepresentativeAction(model,model.(adder),x)*basis;
+    for i in [1..Length(trans)] do
+        for j in [1..deg] do
+            trans[i][j] := basis[j]*trans[i][j]/basis[out[i][j]];
+        od;
+    od;
+end);
+
 BindGlobal("IMGRECURSION@", function(to,from,trans,out,poly)
     # <trans,out> describe a recursion from spider <from> to spider <to>;
     # each line corresponds to a generator of <from>.group.
@@ -1386,9 +1340,7 @@ BindGlobal("IMGRECURSION@", function(to,from,trans,out,poly)
         v := Source(to!.marking).(Length(recur[1]));
         v := REDUCEINNER@(Flat(recur[1]),[v,v^-1],NFFUNCTION@(to));
     else
-        MARKTIME@(15);
         v := REDUCEINNER@(Flat(recur[1]),GeneratorsOfMonoid(Source(to!.marking)),NFFUNCTION@(to));
-        MARKTIME@(16);    
     fi;
     if not IsOne(v) then
         for r in recur[1] do for j in [1..Length(r)] do r[j] := r[j]^v; od; od;
@@ -1636,7 +1588,7 @@ BindGlobal("QUADRICRITICAL@", function(perm,values)
     local c, w, f, m, id, aut, z;
     
     # normalize values to be 0,1,infty,w
-    aut := CallFuncList(P1Map,values{[1..3]});
+    aut := CallFuncList(MoebiusMap,values{[1..3]});
     w := Complex(P1Image(aut^-1,values[4]));
     
     # which two values have same deck transformation?
@@ -1664,12 +1616,12 @@ BindGlobal("RATIONALMAP@", function(values,perm,oldf,oldlifts)
     deg := Length(perm[1]);
     if Length(cv)=2 then # bicritical
         p := List(values{cv},P1POINT2C2);
-        f := CallFuncList(P1Map,values{cv})*P1MAPMONOMIAL@(deg);
+        f := CallFuncList(MoebiusMap,values{cv})*P1MAPMONOMIAL@(deg);
         points := [P1Point(0),P1infinity];
     elif Length(cv)=3 then # tricritical
         p := TRICRITICAL@(perm{cv});
         if p<>fail then
-            f := CallFuncList(P1Map,ELMS_LIST(values{cv},p[3]))*p[1];
+            f := CallFuncList(MoebiusMap,ELMS_LIST(values{cv},p[3]))*p[1];
             points := p[2];
         fi;
     elif deg=3 then # quadricritical, but degree 3
@@ -2009,7 +1961,7 @@ BindGlobal("NORMALIZEV@", function(f,M,param)
         Error("NORMALIZEV@: parameter should be 'IsPolynomial', 'IsBicritical' or a positive integer");
     od;
         
-    mobius := P1Map(p[2][1][1], p[2][2][1]); # send 2 first c.p. to 0,infty
+    mobius := MoebiusMap(p[2][1][1], p[2][2][1]); # send 2 first c.p. to 0,infty
     
     if param=IsBicritical then # force critical points at 0, infty; make first other point 1
         while Length(p[2])>2 do
@@ -2065,7 +2017,7 @@ BindGlobal("NORMALIZEV@", function(f,M,param)
                 return [P1MAPMONOMIAL@(degree),mobius];
             fi;
             j := First(p[4],r->r[1]=i-3)[2];
-            mobius := P1Map(p[2][3-i][1],p[3][j],p[2][i][1]);
+            mobius := MoebiusMap(p[2][3-i][1],p[3][j],p[2][i][1]);
         elif param=2 then # normalize as a/(z^2+2z), infty=>0->infty, -1=>
             if Length(p[3])=2 then # special case infty=>0=>infty or polynomial
                 if First(p[4],r->r[1]=j)[2]=j then
@@ -2074,10 +2026,10 @@ BindGlobal("NORMALIZEV@", function(f,M,param)
                     return [P1MAPMONOMIAL@(-degree),mobius];
                 fi;
             fi;
-            mobius := P1Map(p[3][j],p[2][3-i][1],p[2][i][1])*P1MAPMINUSZ@;
+            mobius := MoebiusMap(p[3][j],p[2][3-i][1],p[2][i][1])*P1MAPMINUSZ@;
         else # normalize as 1+a/z+b/z^2, 0=>infty->1
             k := First(p[4],r->r[1]=j)[2];
-            mobius := P1Map(p[2][i][1],p[3][k],p[3][j]);
+            mobius := MoebiusMap(p[2][i][1],p[3][k],p[3][j]);
         fi;
     fi;
     f := CleanedP1Map(mobius^-1*f*mobius,EPS@.prec);
@@ -2191,7 +2143,7 @@ BindGlobal("FRMACHINE2RAT@", function(M)
     lifts := fail;
     f := fail; # in the beginning, we don't know them
     fast := false;
-MARKTIME@(0); # set counters
+
     repeat
         oldspider := spider;
         # find a rational map that has the right critical values

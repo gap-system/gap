@@ -2,7 +2,6 @@
 ##
 #W  field.gd                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: field.gd,v 4.63 2011/06/01 16:32:16 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file declares the operations for division rings.
 ##
-Revision.field_gd :=
-    "@(#)$Id: field.gd,v 4.63 2011/06/01 16:32:16 gap Exp $";
 
 
 #############################################################################
@@ -71,12 +68,12 @@ Revision.field_gd :=
 ##  true
 ##  gap> IsField( Rationals );                 # the field of rationals
 ##  true
-##  gap> q:= QuaternionAlgebra( Rationals );;  # a noncommutative division ring
+##  gap> q:= QuaternionAlgebra( Rationals );;  # noncommutative division ring
 ##  gap> IsField( q );  IsDivisionRing( q );
 ##  false
 ##  true
 ##  gap> mat:= [ [ 1 ] ];;  a:= Algebra( Rationals, [ mat ] );;
-##  gap> IsDivisionRing( a );   # an algebra not constructed as a division ring
+##  gap> IsDivisionRing( a );   # algebra not constructed as a division ring
 ##  false
 ##  ]]></Example>
 ##  </Description>

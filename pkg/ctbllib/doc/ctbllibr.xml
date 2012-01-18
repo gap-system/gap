@@ -1,8 +1,11 @@
 
-<!--  @(#)$Id: ctbllibr.xml,v 1.3 2011/02/09 16:12:07 gap Exp $ -->
+<!-- %W  ctbllibr.xml    GAP 4 package CTblLib              Thomas Breuer -->
+<!-- %Y  Copyright 2011, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="ch:ctbllibr">
-<Heading>The &GAP; Character Table Library</Heading>
+<Heading>Contents of the &GAP; Character Table Library</Heading>
 
 <Index>character tables!library of</Index>
 <Index>tables!library of</Index>
@@ -16,39 +19,44 @@ This chapter informs you about
   (see Section&nbsp;<Ref Sect="sec:contents"/>),
 </Item>
 <Item>
-  how to access library tables (see Section&nbsp;<Ref Sect="sec:access"/>),
-</Item>
-<Item>
   generic character tables
-  (see Sections&nbsp;<Ref Sect="sec:generictables"/>
-  and <Ref Sect="sec:explsgenerictables"/>),
+  (see Section&nbsp;<Ref Sect="sec:generictables"/>),
 </Item>
 <Item>
   the subsets of &ATLAS; tables
-  (see Sections&nbsp;<Ref Sect="sec:ATLAS Tables"/>
-  and <Ref Sect="sec:explsATLAS"/>)
+  (see Section&nbsp;<Ref Sect="sec:ATLAS Tables"/>)
   and &CAS; tables
   (see Section&nbsp;<Ref Sect="sec:CAS Tables"/>),
-</Item>
-<Item>
-  the organization of the table library
-  (see Section&nbsp;<Ref Sect="sec:organization"/>), and
-</Item>
-<Item>
-  how to extend the library (see Section&nbsp;<Ref Sect="sec:extending"/>).
 </Item>
 </List>
 
 <P/>
 
-The latter two sections are rather technical,
-they are thought only for those who want to maintain or extend the table
-library.
+The following rather technical sections are thought for those
+who want to maintain or extend the Character Table Library.
+
+<P/>
+
+<List>
+<Item>
+  the technicalities of the access to library tables
+  (see Section&nbsp;<Ref Sect="sec:technicalities"/>),
+</Item>
+<Item>
+  how to extend the library
+  (see Section&nbsp;<Ref Sect="sec:extending"/>), and
+</Item>
+<Item>
+  sanity checks
+  (see Section&nbsp;<Ref Sect="sec:CTblLib Sanity Checks"/>).
+</Item>
+</List>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="sec:contents">
-<Heading>Contents of the &GAP; Character Table Library</Heading>
+<Heading>Ordinary and Brauer Tables in the &GAP; Character Table Library
+</Heading>
 
 <Index>character tables!library of</Index>
 <Index>tables!library of</Index>
@@ -57,7 +65,7 @@ library.
 This section gives a brief overview of the contents of the &GAP;
 character table library.
 For the details about, e.&nbsp;g., the structure of data files,
-see Section&nbsp;<Ref Sect="sec:organization"/>.
+see Section&nbsp;<Ref Sect="sec:technicalities"/>.
 
 <P/>
 
@@ -81,17 +89,20 @@ These decomposition matrices can be computed from the ordinary and modular
 irreducibles with &GAP;,
 see Section&nbsp;<Ref Sect="Operations Concerning Blocks" BookName="ref"/>
 for details.
-A collection of DVI and PostScript files of the known decomposition matrices
-of almost simple groups in the &GAP; table library can also be found at
+A collection of <C>PDF</C> files of the known decomposition matrices
+of almost simple groups in the &GAP; Character Table Library can also be
+found at
 
 <P/>
 
-<URL>http://www.math.rwth-aachen.de/&nbsp;MOC/decomposition/</URL>.
+<URL>http://www.math.rwth-aachen.de/~MOC/decomposition/</URL>.
 
 <P/>
 
 
-<E>Ordinary Character Tables</E>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsec:contents-ordinary">
+<Heading>Ordinary Character Tables</Heading>
 
 Two different aspects are useful to list the ordinary character tables
 available in &GAP;, namely the aspect of the <E>source</E> of the tables
@@ -111,7 +122,7 @@ these two variants of character tables of the same group.
 A large subset of the &CAS; tables is the set of tables of
 Sylow normalizers of sporadic simple groups
 as published in&nbsp;<Cite Key="Ost86"/>
---this may be viewed as another source of character tables.
+&nbsp;this may be viewed as another source of character tables.
 The library also contains the character tables of factor groups of space
 groups (computed by W.&nbsp;Hanrath, see&nbsp;<Cite Key="Han88"/>)
 that are part of&nbsp;<Cite Key="HP89"/>, in the form of two microfiches;
@@ -126,21 +137,21 @@ table, authorship and so on,
 the <Ref Attr="InfoText" BookName="ref"/> value of the table
 contains the information
 <List>
-<Mark><C>origin: ATLAS of finite groups</C></Mark>
+<Mark><C>origin:&nbsp;ATLAS of finite groups</C></Mark>
 <Item>
   for &ATLAS; tables (see Section&nbsp;<Ref Sect="sec:ATLAS Tables"/>),
 </Item>
-<Mark><C>origin: Ostermann</C></Mark>
+<Mark><C>origin:&nbsp;Ostermann</C></Mark>
 <Item>
   for tables contained in&nbsp;<Cite Key="Ost86"/>,
 </Item>
-<Mark><C>origin: CAS library</C></Mark>
+<Mark><C>origin:&nbsp;CAS library</C></Mark>
 <Item>
   for any table of the &CAS; table library that is contained
   neither in the &ATLAS; nor in&nbsp;<Cite Key="Ost86"/>,
   and
 </Item>
-<Mark><C>origin: Hanrath library</C></Mark>
+<Mark><C>origin:&nbsp;Hanrath library</C></Mark>
 <Item>
   for tables contained in the microfiches in&nbsp;<Cite Key="HP89"/>.
 </Item>
@@ -206,9 +217,12 @@ to be compatible for any two subgroups of a group and their intersection,
 and they are not guaranteed to be consistent
 w.&nbsp;r.&nbsp;t.&nbsp;the composition of maps.
 
-<P/>
+</Subsection>
 
-<E>Brauer Tables</E>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsec:contents-modular">
+<Heading>Brauer Tables</Heading>
 
 The library contains all tables of the &ATLAS; of
 Brauer Tables (<Cite Key="JLPW95"/>),
@@ -216,77 +230,12 @@ and many other Brauer tables of bicyclic extensions of simple groups
 which are known yet.
 
 The Brauer tables in the library contain the information
-<Log>
+<Verb>
 origin: modular ATLAS of finite groups
-</Log>
+</Verb>
 in their <Ref Attr="InfoText" BookName="ref"/> string.
 
-<P/>
-
-
-<E>Generic Character Tables</E>
-
-See Section&nbsp;<Ref Sect="sec:generictables"/>
-for an overview of the generic tables available.
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sec:access">
-<Heading>Access to Library Character Tables</Heading>
-
-<Index>character tables!access to</Index>
-
-This section describes how to access
-a specific character table (see&nbsp;<Ref Func="CharacterTableFromLibrary"/>),
-known character tables of maximal subgroups (see&nbsp;<Ref Func="Maxes"/>),
-and how to select character tables with prescribed properties
-(see&nbsp;<Ref Func="AllCharacterTableNames"/>,
-<Ref Func="OneCharacterTableName"/>).
-
-<P/>
-
-<#Include Label="CharacterTableFromLibrary">
-
-<P/>
-
-The above two tables are tables of the symmetric group on five letters;
-the first is in &ATLAS; format
-(see Section&nbsp;<Ref Sect="sec:ATLAS Tables"/>),
-the second is constructed from the generic table for symmetric groups
-(see&nbsp;<Ref Sect="sec:generictables"/>).
-
-<P/>
-
-<Example>
-gap> CharacterTable( "J5" );
-fail
-gap> CharacterTable( "A5" ) mod 2;
-BrauerTable( "A5", 2 )
-</Example>
-
-<P/>
-
-<#Include Label="Maxes">
-
-<#Include Label="FusionToTom">
-
-<#Include Label="ProjectivesInfo">
-
-<#Include Label="ExtensionInfoCharacterTable">
-
-<#Include Label="AllCharacterTableNames">
-
-<#Include Label="OneCharacterTableName">
-
-<#Include Label="GroupInfoForCharacterTable">
-
-<#Include Label="CharacterTableForGroupInfo">
-
-<#Include Label="BrowseCTblLibInfo">
-
-<#Include Label="CTblLibSetUnload">
+</Subsection>
 
 </Section>
 
@@ -348,124 +297,6 @@ generic scalar products.
 
 <P/>
 
-Currently, generic tables of the following groups
---in alphabetical order-- are available in &GAP;.
-(A list of the names of generic tables known to &GAP; is
-<C>LIBTABLE.GENERIC.firstnames</C>.)
-We list the function calls needed to get a specialized table,
-the generic table itself can be accessed by calling
-<Ref Func="CharacterTable" BookName="ref"/>
-with the first argument only;
-for example, <C>CharacterTable( "Cyclic" )</C> yields the generic table of
-cyclic groups.
-
-<List>
-<Mark><C>CharacterTable( "Alternating", n )</C></Mark>
-<Item>
-  the table of the <E>alternating</E> group on <C>n</C> letters,
-</Item>
-<Mark><C>CharacterTable( "Cyclic", n )</C></Mark>
-<Item>
-  the table of the <E>cyclic</E> group of order <C>n</C>,
-</Item>
-<Mark><C>CharacterTable( "Dihedral", 2n )</C></Mark>
-<Item>
-  the table of the <E>dihedral</E> group of order <C>2n</C>,
-</Item>
-<Mark><C>CharacterTable( "DoubleCoverAlternating", n )</C></Mark>
-<Item>
-  the table of the <E>Schur double cover of the alternating</E> group
-  on <C>n</C> letters (see&nbsp;<Cite Key="Noe02"/>),
-</Item>
-<Mark><C>CharacterTable( "DoubleCoverSymmetric", n )</C></Mark>
-<Item>
-  the table of the <E>standard Schur double cover of the symmetric</E> group
-  on <C>n</C> letters (see&nbsp;<Cite Key="Noe02"/>),
-</Item>
-<Mark><C>CharacterTable( "GL", 2, q )</C></Mark>
-<Item>
-  the table of the <E>general linear</E> group <C>GL(2,q)</C>,
-  for a prime power <C>q</C>,
-</Item>
-<Mark><C>CharacterTable( "GU", 3, q )</C></Mark>
-<Item>
-  the table of the <E>general unitary</E> group <C>GU(3,q)</C>,
-  for a prime power <C>q</C>,
-</Item>
-<Mark><C>CharacterTable( "P:Q", [ p, q ] )</C> and
-  <C>CharacterTable( "P:Q", [ p, q, k ] )</C></Mark>
-<Item>
-  the table of the <E>Frobenius extension</E> of the cyclic group of order
-  <C>p</C> by a cyclic group of order <C>q</C> where <C>q</C> divides
-  <C>p-1</C>;
-  if <C>p</C> is a prime integer then <C>q</C> determines the group uniquely
-  and thus the first version can be used,
-  otherwise the action of the residue class of <C>k</C> modulo <C>p</C> is
-  taken for forming orbits of length <C>q</C> each on the nonidentity
-  elements of the group of order <C>p</C>,
-</Item>
-<Mark><C>CharacterTable( "PSL", 2, q )</C></Mark>
-<Item>
-  the table of the <E>projective special linear</E> group <C>PSL(2,q)</C>,
-  for a prime power <C>q</C>,
-</Item>
-<Mark><C>CharacterTable( "SL", 2, q )</C></Mark>
-<Item>
-  the table of the <E>special linear</E> group <C>SL(2,q)</C>,
-  for a prime power <C>q</C>,
-</Item>
-<Mark><C>CharacterTable( "SU", 3, q )</C></Mark>
-<Item>
-  the table of the <E>special unitary</E> group <C>SU(3,q)</C>,
-  for a prime power <C>q</C>,
-</Item>
-<Mark><C>CharacterTable( "Suzuki", q )</C></Mark>
-<Item>
-  the table of the <E>Suzuki</E> group
-  <C>Sz(q)</C> <M>= {}^2B_2(</M><C>q</C><M>)</M>,
-  for <C>q</C> an odd power of <M>2</M>,
-</Item>
-<Mark><C>CharacterTable( "Symmetric", n )</C></Mark>
-<Item>
-  the table of the <E>symmetric</E> group on <C>n</C> letters,
-</Item>
-<Mark><C>CharacterTable( "WeylB", n )</C></Mark>
-<Item>
-  the table of the <E>Weyl</E> group of type <M>B_n</M>,
-</Item>
-<Mark><C>CharacterTable( "WeylD", n )</C></Mark>
-<Item>
-  the table of the <E>Weyl</E> group of type <M>D_n</M>.
-</Item>
-</List>
-
-In addition to the above calls that really use generic tables,
-the following calls to
-<Ref Func="CharacterTable" BookName="ref"/> are to some extent <Q>generic</Q>
-constructions.
-But note that no local evaluation is possible in these cases,
-as no generic table object exists in &GAP; that can be asked for local
-information.
-
-<List>
-<Mark><C>CharacterTable( "Quaternionic", 4n )</C></Mark>
-<Item>
-  the table of the <E>quaternionic</E> (dicyclic) group of order <C>4n</C>,
-</Item>
-<Mark><C>CharacterTableWreathSymmetric( tbl, n )</C></Mark>
-<Item>
-  the character table of the wreath product of the group whose table is
-  <C>tbl</C> with the symmetric group on <C>n</C> letters,
-  see&nbsp;<Ref Func="CharacterTableWreathSymmetric" BookName="ref"/>.
-</Item>
-</List>
-
-<P/>
-
-<#Include Label="CharacterTableSpecialized">
-
-<P/>
-
 While the numbers of conjugacy classes for the members of a series of groups
 are usually not bounded,
 there is always a fixed finite number of <E>types</E> (equivalence classes)
@@ -495,41 +326,136 @@ computed from generic tables is stored using the attributes
 <Ref Attr="ClassParameters" BookName="ref"/> and
 <Ref Attr="CharacterParameters" BookName="ref"/>.
 
-<P/>
 
-<Example>
-gap> HasClassParameters( c5 );  HasCharacterParameters( c5 );
-true
-true
-gap> ClassParameters( c5 );  CharacterParameters( c5 );
-[ [ 1, 0 ], [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ] ]
-[ [ 1, 0 ], [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ] ]
-gap> ClassParameters( CharacterTable( "Symmetric", 3 ) );
-[ [ 1, [ 1, 1, 1 ] ], [ 1, [ 2, 1 ] ], [ 1, [ 3 ] ] ]
-</Example>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsec:generictablesavailable">
+<Heading>Available generic character tables</Heading>
 
-<P/>
+Currently, generic tables of the following groups
+&ndash;in alphabetical order&ndash; are available in &GAP;.
+(A list of the names of generic tables known to &GAP; is
+<C>LIBTABLE.GENERIC.firstnames</C>.)
+We list the function calls needed to get a specialized table,
+the generic table itself can be accessed by calling
+<Ref Func="CharacterTable" BookName="ref"/>
+with the first argument only;
+for example, <C>CharacterTable( "Cyclic" )</C> yields the generic table of
+cyclic groups.
 
-Here are examples for <Q>local evaluation</Q> of generic character tables,
-first a character value of the cyclic group shown above,
-then a character value and a representative order of a symmetric group.
+<List>
+<Mark><C>CharacterTable( "Alternating", </C><M>n</M><C> )</C></Mark>
+<Item>
+  the table of the <E>alternating</E> group on <M>n</M> letters,
+</Item>
+<Mark><C>CharacterTable( "Cyclic", </C><M>n</M><C> )</C></Mark>
+<Item>
+  the table of the <E>cyclic</E> group of order <M>n</M>,
+</Item>
+<Mark><C>CharacterTable( "Dihedral", </C><M>2n</M><C> )</C></Mark>
+<Item>
+  the table of the <E>dihedral</E> group of order <M>2n</M>,
+</Item>
+<Mark><C>CharacterTable( "DoubleCoverAlternating", </C><M>n</M><C> )</C></Mark>
+<Item>
+  the table of the <E>Schur double cover of the alternating</E> group
+  on <M>n</M> letters (see&nbsp;<Cite Key="Noe02"/>),
+</Item>
+<Mark><C>CharacterTable( "DoubleCoverSymmetric", </C><M>n</M><C> )</C></Mark>
+<Item>
+  the table of the <E>standard Schur double cover of the symmetric</E> group
+  on <M>n</M> letters (see&nbsp;<Cite Key="Noe02"/>),
+</Item>
+<Mark><C>CharacterTable( "GL", 2, </C><M>q</M><C> )</C></Mark>
+<Item>
+  the table of the <E>general linear</E> group <C>GL(2,</C><M>q</M><C>)</C>,
+  for a prime power <M>q</M>,
+</Item>
+<Mark><C>CharacterTable( "GU", 3, </C><M>q</M><C> )</C></Mark>
+<Item>
+  the table of the <E>general unitary</E> group <C>GU(3,</C><M>q</M><C>)</C>,
+  for a prime power <M>q</M>,
+</Item>
+<Mark><C>CharacterTable( "P:Q", </C><M>[ p, q ]</M><C> )</C> and
+  <C>CharacterTable( "P:Q", </C><M>[ p, q, k ]</M><C> )</C></Mark>
+<Item>
+  the table of the <E>Frobenius extension</E> of the nontrivial cyclic group
+  of odd order <M>p</M> by the nontrivial cyclic group of order <M>q</M>
+  where <M>q</M> divides <M>p_i-1</M> for all prime divisors <M>p_i</M> of
+  <M>p</M>;
+  if <M>p</M> is a prime power then <M>q</M> determines the group uniquely
+  and thus the first version can be used,
+  otherwise the action of the residue class of <M>k</M> modulo <M>p</M> is
+  taken for forming orbits of length <M>q</M> each on the nonidentity
+  elements of the group of order <M>p</M>,
+</Item>
+<Mark><C>CharacterTable( "PSL", 2, </C><M>q</M><C> )</C></Mark>
+<Item>
+  the table of the <E>projective special linear</E> group
+  <C>PSL(2,</C><M>q</M><C>)</C>, for a prime power <M>q</M>,
+</Item>
+<Mark><C>CharacterTable( "SL", 2, </C><M>q</M><C> )</C></Mark>
+<Item>
+  the table of the <E>special linear</E> group <C>SL(2,</C><M>q</M><C>)</C>,
+  for a prime power <M>q</M>,
+</Item>
+<Mark><C>CharacterTable( "SU", 3, </C><M>q</M><C> )</C></Mark>
+<Item>
+  the table of the <E>special unitary</E> group <C>SU(3,</C><M>q</M><C>)</C>,
+  for a prime power <M>q</M>,
+</Item>
+<Mark><C>CharacterTable( "Suzuki", </C><M>q</M><C> )</C></Mark>
+<Item>
+  the table of the <E>Suzuki</E> group
+  <C>Sz(</C><M>q</M><C>)</C> <M>= {}^2B_2(q)</M>,
+  for <M>q</M> an odd power of <M>2</M>,
+</Item>
+<Mark><C>CharacterTable( "Symmetric", </C><M>n</M><C> )</C></Mark>
+<Item>
+  the table of the <E>symmetric</E> group on <M>n</M> letters,
+</Item>
+<Mark><C>CharacterTable( "WeylB", </C><M>n</M><C> )</C></Mark>
+<Item>
+  the table of the <E>Weyl</E> group of type <M>B_n</M>,
+</Item>
+<Mark><C>CharacterTable( "WeylD", </C><M>n</M><C> )</C></Mark>
+<Item>
+  the table of the <E>Weyl</E> group of type <M>D_n</M>.
+</Item>
+</List>
 
-<P/>
+In addition to the above calls that really use generic tables,
+the following calls to
+<Ref Func="CharacterTable" BookName="ref"/> are to some extent <Q>generic</Q>
+constructions.
+But note that no local evaluation is possible in these cases,
+as no generic table object exists in &GAP; that can be asked for local
+information.
 
-<Example>
-gap> CharacterTable( "Cyclic" ).irreducibles[1][1]( 5, 2, 3 );
-E(5)
-gap> tbl:= CharacterTable( "Symmetric" );;
-gap> tbl.irreducibles[1][1]( 5, [ 3, 2 ], [ 2, 2, 1 ] );
-1
-gap> tbl.orders[1]( 5, [ 2, 1, 1, 1 ] );
-2
-</Example>
+<List>
+<Mark><C>CharacterTable( "Quaternionic", </C><M>4n</M><C> )</C></Mark>
+<Item>
+  the table of the <E>generalized quaternionic</E> group of order <M>4n</M>,
+</Item>
+<Mark><C>CharacterTableWreathSymmetric( tbl, </C><M>n</M><C> )</C></Mark>
+<Item>
+  the character table of the wreath product of the group whose table is
+  <C>tbl</C> with the symmetric group on <M>n</M> letters,
+  see&nbsp;<Ref Func="CharacterTableWreathSymmetric" BookName="ref"/>.
+</Item>
+</List>
 
-<P/>
+</Subsection>
+
+<#Include Label="CharacterTableSpecialized">
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsec:generictablecomponents">
+<Heading>Components of generic character tables</Heading>
 
 Any generic table in &GAP; is represented by a record.
 The following components are supported for generic character table records.
+
 <List>
 <Mark><C>centralizers</C></Mark>
 <Item>
@@ -635,20 +561,12 @@ this method will be called when the generic table is used to compute the
 whole character table for a given <M>q</M>
 (see&nbsp;<Ref Func="CharacterTableSpecialized"/>).
 
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sec:explsgenerictables">
-<Heading>Examples of Generic Character Tables</Heading>
-
-<Index>tables!generic</Index>
-<Index>character tables!generic</Index>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Subsection Label="subsec:generictableCn">
-<Heading>The generic table of cyclic groups</Heading>
+<Heading>Example: The generic table of cyclic groups</Heading>
 
 For the cyclic group <M>C_q = \langle x \rangle</M> of order <M>q</M>,
 there is one type of classes.
@@ -669,7 +587,7 @@ for <M>e_q</M> a primitive complex <M>q</M>-th root of unity,
 the character values are <M>\chi_l(x^k) = e_q^{kl}</M>.
 
 The library file contains the following generic table.
-<Log>
+<Listing>
 rec(
 identifier := "Cyclic",
 specializedname := ( q -> Concatenation( "C", String(q) ) ),
@@ -684,22 +602,22 @@ irreducibles := [ [ function( n, k, l ) return E(n)^(k*l); end ] ],
 domain := IsPosInt,
 libinfo := rec( firstname:= "Cyclic", othernames:= [] ),
 isGenericTable := true )
-</Log>
+</Listing>
 
 </Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Subsection Label="subsec:generictableGL2">
-<Heading>The generic table of the general linear group GL<M>(2,q)</M>
+<Heading>Example: The generic table of the general linear group GL<M>(2,q)</M>
 </Heading>
 
 We have four types <M>t_1, t_2, t_3, t_4</M> of classes,
 according to the rational canonical form of the elements.
 <M>t_1</M> describes scalar matrices,
 <M>t_2</M> nonscalar diagonal matrices,
-<M>t_3</M> companion matrices of <M>(X - \rho)^2</M> for elements
-<M>\rho \in F_q^\ast</M>,
+<M>t_3</M> companion matrices of <M>(X - \rho)^2</M> for nonzero elements
+<M>\rho \in F_q</M>,
 and
 <M>t_4</M> companion matrices of irreducible polynomials of degree <M>2</M>
 over <M>F_q</M>.
@@ -707,9 +625,12 @@ over <M>F_q</M>.
 <P/>
 
 The sets of class parameters of the types are in bijection with
-<M>F_q^\ast</M> for <M>t_1</M> and <M>t_3</M>,
+nonzero elements in <M>F_q</M> for <M>t_1</M> and <M>t_3</M>,
 with the set
-<M>\{ \{ \rho, \tau \}; \rho, \tau \in F_q^\ast, \rho \not= \tau \}</M>
+<Display Mode="M">
+  \{ \{ \rho, \tau \};
+     \rho, \tau \in F_q, \rho \not= 0, \tau \not= 0, \rho \not= \tau \}
+</Display>
 for <M>t_2</M>,
 and with the set
 <M>\{ \{ \epsilon, \epsilon^q \}; \epsilon \in F_{{q^2}} \setminus F_q \}</M>
@@ -733,7 +654,7 @@ multiple of the orders of <M>\rho</M> and <M>\tau</M>.
 <P/>
 
 The file contains something similar to the following table.
-<Log>
+<Listing>
 rec(
 identifier := "GL2",
 specializedname := ( q -> Concatenation( "GL(2,", String(q), ")" ) ),
@@ -755,7 +676,7 @@ irreducibles := [ [ function( q, k, l ) return E(q-1)^(2*k*l); end,
 classtext := [ ..., ..., ..., ... ],
 domain := IsPrimePowerInt,
 isGenericTable := true )
-</Log>
+</Listing>
 
 </Subsection>
 </Section>
@@ -779,13 +700,13 @@ Characters (<Cite Key="JLPW95"/>).
 <P/>
 
 These tables have the information
-<Log>
+<Verb>
 origin: ATLAS of finite groups
-</Log>
+</Verb>
 or
-<Log>
+<Verb>
 origin: modular ATLAS of finite groups
-</Log>
+</Verb>
 in their <Ref Attr="InfoText" BookName="ref"/> value,
 they are simply called &ATLAS; tables further on.
 
@@ -798,13 +719,14 @@ and&nbsp;<Ref Func="AtlasLabelsOfIrreducibles"/>.
 
 <P/>
 
-In addition to the information given in Chapters&nbsp;6--8 of the
+In addition to the information given in Chapters&nbsp;6 to&nbsp;8 of the
 &ATLAS; which tell you how to read the printed tables,
 there are some rules relating these to the corresponding &GAP; tables.
 
-<P/>
 
-<E>Improvements</E>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsec:Improvements">
+<Heading>Improvements to the &ATLAS;</Heading>
 
 For the &GAP; Character Table Library not the printed versions of the
 &ATLAS; of Finite Groups and the &ATLAS; of Brauer Characters are relevant
@@ -816,13 +738,11 @@ it contains the improvements that had been known until the
 <Q>&ATLAS; of Brauer Characters</Q> was published.
 The second list contains the improvements to the &ATLAS; of Finite Groups
 that were found since the publication of&nbsp;<Cite Key="JLPW95"/>.
-It can be found in the internet, namely, an HTML version at
+It can be found in the internet, an HTML version at
 
 <P/>
 
 <URL>http://web.mat.bham.ac.uk/atlas/html/atlasmods.html</URL>
-
-\bad_addresses!!
 
 <P/>
 
@@ -831,6 +751,8 @@ and a DVI version at
 <P/>
 
 <URL>http://web.mat.bham.ac.uk/atlas/html/atlasmods.dvi</URL>.
+
+<!-- find better addresses, and update the lists -->
 
 <P/>
 
@@ -855,17 +777,19 @@ respectively.
 
 <P/>
 
-Also some tables are regarded as &ATLAS; tables which are
-not printed in the &ATLAS; but available in &ATLAS; format from Cambridge,
+Also some tables are regarded as &ATLAS; tables that are
+not printed in the &ATLAS; but available in &ATLAS; format,
 according to the lists of improvements mentioned above.
 Currently these are the tables related to <M>L_2(49)</M>, <M>L_2(81)</M>,
 <M>L_6(2)</M>, <M>O_8^-(3)</M>, <M>O_8^+(3)</M>, <M>S_{10}(2)</M>,
 and <M>{}^2E_6(2).3</M>.
 
-<P/>
+</Subsection>
 
 
-<E>Power Maps</E>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsec:Power Maps">
+<Heading>Power Maps</Heading>
 
 For the tables of <M>3.McL</M>, <M>3_2.U_4(3)</M> and its covers,
 and <M>3_2.U_4(3).2_3</M> and its covers,
@@ -877,26 +801,30 @@ In these cases, the first possible map according to lexicographical
 ordering was chosen, and the automorphisms are listed in the
 <Ref Attr="InfoText" BookName="ref"/> strings of the tables.
 
-<P/>
+</Subsection>
 
 
-<E>Projective Characters and Projections</E>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsec:Projective Characters and Projections">
+<Heading>Projective Characters and Projections</Heading>
 
 If <M>G</M> (or <M>G.a</M>) has a nontrivial Schur multiplier then the
 attribute <Ref Func="ProjectivesInfo"/> of the &GAP; table object of <M>G</M>
 (or <M>G.a</M>) is set;
 the <C>chars</C> component of the record in question
 is the list of values lists of those faithful projective irreducibles
-that are printed in the &ATLAS; (so--called <E>proxy character</E>),
+that are printed in the &ATLAS; (so-called <E>proxy character</E>),
 and the <C>map</C> component lists the positions of columns in the covering
 for which the column is printed in the &ATLAS;
-(a so--called <E>proxy class</E>, this preimage is denoted by <M>g_0</M> in
+(a so-called <E>proxy class</E>, this preimage is denoted by <M>g_0</M> in
 Chapter&nbsp;7, Section&nbsp;14 of the &ATLAS;).
 
-<P/>
+</Subsection>
 
 
-<E>Tables of Isoclinic Groups</E>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsec:Tables of Isoclinic Groups">
+<Heading>Tables of Isoclinic Groups</Heading>
 
 As described in Chapter&nbsp;6, Section&nbsp;7 and
 in Chapter&nbsp;7, Section&nbsp;18 of the &ATLAS;,
@@ -907,132 +835,149 @@ The table in the &GAP; Character Table Library is the one printed in the
 the table of the other isoclinic variant can be constructed using
 <Ref Func="CharacterTableIsoclinic" BookName="ref"/>.
 
-<P/>
+</Subsection>
 
 
-<E>Ordering of Characters and Classes</E>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsec:Ordering of Characters and Classes">
+<Heading>Ordering of Characters and Classes</Heading>
 
-(Throughout this paragraph, <M>G</M> always means the simple group involved.)
-<List>
-<Mark>1.</Mark>
+(Throughout this section, <M>G</M> always means the simple group involved.)
+<Enum>
 <Item>
   For <M>G</M> itself, the ordering of classes and characters in the &GAP;
   table coincides with the one in the &ATLAS;.
 </Item>
-<Mark>2.</Mark>
 <Item>
   For an automorphic extension <M>G.a</M>,
   there are three types of characters.
-  <P/>
-  If a character <M>\chi</M> of <M>G</M> extends to <M>G.a</M> then the
-  different extensions <M>\chi^0, \chi^1, \ldots, \chi^{{a-1}}</M>
-  are consecutive in the table of <M>G.a</M>
-  (see Chapter&nbsp;7, Section&nbsp;16 of the &ATLAS;).
-  <P/>
-  If some characters of <M>G</M> fuse to give a single character of
-  <M>G.a</M> then the position of that character in the table of <M>G.a</M>
-  is given by the position of the first involved character of <M>G</M>.
-  <P/>
-  If both extension and fusion occur for a character
-  then the resulting characters are consecutive in the table of <M>G.a</M>,
-  and each replaces the first involved character of <M>G</M>.
+  <List>
+  <Item>
+    If a character <M>\chi</M> of <M>G</M> extends to <M>G.a</M> then the
+    different extensions <M>\chi^0, \chi^1, \ldots, \chi^{{a-1}}</M>
+    are consecutive in the table of <M>G.a</M>
+    (see <Cite Key="CCN85" Where="Chapter&nbsp;7, Section&nbsp;16"/>).
+  </Item>
+  <Item>
+    If some characters of <M>G</M> fuse to give a single character of
+    <M>G.a</M> then the position of that character in the table of <M>G.a</M>
+    is given by the position of the first involved character of <M>G</M>.
+  </Item>
+  <Item>
+    If both extension and fusion occur for a character
+    then the resulting characters are consecutive in the table of <M>G.a</M>,
+    and each replaces the first involved character of <M>G</M>.
+  </Item>
+  </List>
 </Item>
-<Mark>3.</Mark>
 <Item>
   Similarly, there are different types of classes for an automorphic
   extension <M>G.a</M>, as follows.
-  <P/>
-  If some classes collapse then the resulting class replaces the first
-  involved class of <M>G</M>.
-  <P/>
-  For <M>a &gt; 2</M>, any proxy class and its algebraic conjugates that are not
-  printed in the &ATLAS; are consecutive in the table of
-  <M>G.a</M>;
-  if more than two classes of <M>G.a</M> have the same proxy class
-  (the only case that actually occurs is for <M>a = 5</M>)
-  then the ordering of non-printed classes is the natural one of
-  corresponding Galois conjugacy operators <M>\ast k</M>
-  (see Chapter&nbsp;7, Section&nbsp;19 in the &ATLAS;).
-  <P/>
-  For <M>a_1, a_2</M> dividing <M>a</M> such that <M>a_1 \leq a_2</M>,
-  the classes of <M>G.a_1</M> in <M>G.a</M> precede the classes of
-  <M>G.a_2</M> not contained in <M>G.a_1</M>.
-  This ordering is the same as in the &ATLAS;,
-  with the only exception <M>U_3(8).6</M>.
+  <List>
+  <Item>
+    If some classes collapse then the resulting class replaces the first
+    involved class of <M>G</M>.
+  </Item>
+  <Item>
+    For <M>a &gt; 2</M>,
+    any proxy class and its algebraic conjugates that are not
+    printed in the &ATLAS; are consecutive in the table of <M>G.a</M>;
+    if more than two classes of <M>G.a</M> have the same proxy class
+    (the only case that actually occurs is for <M>a = 5</M>)
+    then the ordering of non-printed classes is the natural one of
+    corresponding Galois conjugacy operators <M>*k</M>
+    (see <Cite Key="CCN85" Where="Chapter&nbsp;7, Section&nbsp;19"/>).
+  </Item>
+  <Item>
+    For <M>a_1</M>, <M>a_2</M> dividing <M>a</M> such that <M>a_1 \leq a_2</M>,
+    the classes of <M>G.a_1</M> in <M>G.a</M> precede the classes of
+    <M>G.a_2</M> not contained in <M>G.a_1</M>.
+    This ordering is the same as in the &ATLAS;,
+    with the only exception <M>U_3(8).6</M>.
+  </Item>
+  </List>
 </Item>
-<Mark>4.</Mark>
 <Item>
   For a central extension <M>M.G</M>, there are two different types of
   characters, as follows.
-  <P/>
-  Each character can be regarded as a faithful character of a factor group
-  <M>m.G</M>, where <M>m</M> divides <M>M</M>.
-  Characters with the same kernel are consecutive as in the
-  &ATLAS;,
-  the ordering of characters with different kernels is given by the order
-  of precedence <M>1, 2, 4, 3, 6, 12</M> for the different values of <M>m</M>.
-  <P/>
-  If <M>m &gt; 2</M>, a faithful character of <M>m.G</M> that is printed in the
-  &ATLAS; (a so-called <E>proxy character</E>) represents
-  two or more Galois conjugates.
-  In each &ATLAS; table in &GAP;,
-  a proxy character always precedes the non-printed characters with this proxy.
-  The case <M>m = 12</M> is the only one that actually occurs where more than
-  one character for a proxy is not printed.
-  In this case, the non-printed characters are ordered according to the
-  corresponding Galois conjugacy operators <M>\ast 5</M>, <M>\ast 7</M>,
-  <M>\ast 11</M>
-  (in that succession).
+  <List>
+  <Item>
+    Each character can be regarded as a faithful character of a factor group
+    <M>m.G</M>, where <M>m</M> divides <M>M</M>.
+    Characters with the same kernel are consecutive as in the
+    &ATLAS;,
+    the ordering of characters with different kernels is given by the order
+    of precedence <M>1, 2, 4, 3, 6, 12</M> for the different values of <M>m</M>.
+  </Item>
+  <Item>
+    If <M>m &gt; 2</M>,
+    a faithful character of <M>m.G</M> that is printed in the &ATLAS;
+    (a so-called <E>proxy character</E>) represents two or more Galois
+    conjugates.
+    In each &ATLAS; table in &GAP;,
+    a proxy character always precedes the non-printed characters with this
+    proxy.
+    The case <M>m = 12</M> is the only one that actually occurs
+    where more than one character for a proxy is not printed.
+    In this case, the non-printed characters are ordered according to the
+    corresponding Galois conjugacy operators <M>*5</M>, <M>*7</M>,
+    <M>*11</M>
+    (in this order).
+  </Item>
+  </List>
 </Item>
-<Mark>5.</Mark>
 <Item>
   For the classes of a central extension we have the following.
-  <P/>
-  The preimages of a <M>G</M>-class in <M>M.G</M> are subsequent,
-  the ordering is the same as that of the lifting order rows in the
-  &ATLAS; (see Chapter&nbsp;7, Section&nbsp;7 there).
-  <P/>
-  The primitive roots of unity chosen to represent the generating
-  central element (i.&nbsp;e., the element in the second class of the &GAP;
-  table) are  <C>E(3)</C>, <C>E(4)</C>,
-  <C>E(6)&circum;5</C> (<C>= E(2)*E(3)</C>),
-  and <C>E(12)&circum;7</C> (<C>= E(3)*E(4)</C>),
-  for <M>m = 3</M>, <M>4</M>, <M>6</M>, and <M>12</M>, respectively.
+  <List>
+  <Item>
+    The preimages of a <M>G</M>-class in <M>M.G</M> are subsequent,
+    the ordering is the same as that of the lifting order rows in
+    <Cite Key="CCN85" Where="Chapter&nbsp;7, Section&nbsp;7"/>.
+  </Item>
+  <Item>
+    The primitive roots of unity chosen to represent the generating
+    central element (i.&nbsp;e., the element in the second class of the &GAP;
+    table) are  <C>E(3)</C>, <C>E(4)</C>,
+    <C>E(6)^5</C> (<C>= E(2)*E(3)</C>),
+    and <C>E(12)^7</C> (<C>= E(3)*E(4)</C>),
+    for <M>m = 3</M>, <M>4</M>, <M>6</M>, and <M>12</M>, respectively.
+  </Item>
+  </List>
 </Item>
-<Mark>6.</Mark>
 <Item>
   For tables of bicyclic extensions <M>m.G.a</M>, both the rules for
   automorphic and central extensions hold.
   Additionally we have the following three rules.
-  <P/>
-  Whenever classes of the subgroup <M>m.G</M> collapse in <M>m.G.a</M>
-  then the resulting class replaces the first involved class.
-  <P/>
-  Whenever characters of the subgroup <M>m.G</M> collapse fuse in <M>m.G.a</M>
-  then the result character replaces the first involved character.
-  <P/>
-  Extensions of a character are subsequent, and the extensions of a
-  proxy character precede the extensions of characters with this proxy
-  that are not printed.
-  <P/>
-  Preimages of a class of <M>G.a</M> in <M>m.G.a</M> are subsequent,
-  and the preimages of a proxy class precede the preimages of non-printed
-  classes with this proxy.
+  <List>
+  <Item>
+    Whenever classes of the subgroup <M>m.G</M> collapse in <M>m.G.a</M>
+    then the resulting class replaces the first involved class.
+  </Item>
+  <Item>
+    Whenever characters of the subgroup <M>m.G</M> collapse fuse in <M>m.G.a</M>
+    then the result character replaces the first involved character.
+  </Item>
+  <Item>
+    Extensions of a character are subsequent, and the extensions of a
+    proxy character precede the extensions of characters with this proxy
+    that are not printed.
+  </Item>
+  <Item>
+    Preimages of a class of <M>G.a</M> in <M>m.G.a</M> are subsequent,
+    and the preimages of a proxy class precede the preimages of non-printed
+    classes with this proxy.
+  </Item>
+  </List>
 </Item>
-</List>
+</Enum>
 
-<P/>
+</Subsection>
 
 <#Include Label="AtlasLabelsOfIrreducibles">
 
-<P/>
-
-
-</Section>
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sec:explsATLAS">
+<Subsection Label="subsect:explsATLAS">
 <Heading>Examples of the &ATLAS; Format for &GAP; Tables</Heading>
 
 <Index>character tables!CAS</Index>
@@ -1049,22 +994,20 @@ First, let <M>G</M> be the trivial group.
 We consider the cyclic group <M>C_6</M> of order <M>6</M>.
 It can be viewed in several ways, namely
 <List>
-<Mark>1.</Mark>
 <Item>
   as a downward extension of the factor group <M>C_2</M> which contains
   <M>G</M> as a subgroup,
   or equivalently,
   as an upward extension of the subgroup <M>C_3</M> which has a factor group
   isomorphic to <M>G</M>:
-
-  <P/>
+</Item>
+</List>
 
 <Alt Only="LaTeX">
 <![CDATA[
-\def\ttquote{\char13}
 \setlength{\unitlength}{0.1cm}
-\begin{picture}(110,55)
-\put(-2,23){
+\begin{picture}(110,67)
+\put(8,36){
 \begin{picture}(29,29)
 \put(0,29){\line(1,0){14}}
 \put(0,15){\line(1,0){14}}
@@ -1087,17 +1030,18 @@ It can be viewed in several ways, namely
 \put(7,22){\makebox(0,0){G}}
 \put(22,22){\makebox(0,0){G.2}}
 \end{picture}}
-\put(37,52){\makebox(0,0)[tl]{
+
+\put(50,65){\makebox(0,0)[tl]{
 \small\tt
 \begin{minipage}{2in}
-\baselineskip0.9ex
-\parskip0.2ex
+\baselineskip2.7ex
+\parskip0ex
 
 \ \ \ \ ;\ \ \ @\ \ \ ;\ \ \ ;\ \ \ @\ \par
 \ \par
 \ \ \ \ \ \ \ \ 1\ \ \ \ \ \ \ \ \ \ \ 1\ \par
 \ \ p\ power\ \ \ \ \ \ \ \ \ \ \ A\ \par
-\ \ p\ttquote\ part\ \ \ \ \ \ \ \ \ \ \ A\ \par
+\ \ p'\ part\ \ \ \ \ \ \ \ \ \ \ A\ \par
 \ \ ind\ \ 1A\ fus\ ind\ \ 2A\ \par
 \ \par
 $\chi_1$\ \ +\ \ \ 1\ \ \ :\ \ ++\ \ \ 1\ \par
@@ -1109,26 +1053,26 @@ $\chi_1$\ \ +\ \ \ 1\ \ \ :\ \ ++\ \ \ 1\ \par
 $\chi_2$\ o2\ \ \ 1\ \ \ :\ oo2\ \ \ 1\ 
 \end{minipage}}}
 
-\put(83,52){\makebox(0,0)[tl]{
+\put(99,65){\makebox(0,0)[tl]{
 \small\tt
-\begin{minipage}{2in}
+\begin{minipage}{2.2in}
 \baselineskip2.7ex
 \parskip0ex
 
 \ \ \ 2\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
 \ \ \ 3\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
- \par
+\ \par
 \ \ \ \ \ \ 1a\ \ 3a\ \ 3b\ \ 2a\ \ 6a\ \ 6b \par
 \ \ 2P\ \ 1a\ \ 3b\ \ 3a\ \ 1a\ \ 3b\ \ 3a \par
 \ \ 3P\ \ 1a\ \ 1a\ \ 1a\ \ 2a\ \ 2a\ \ 2a \par
- \par
+\ \par
 X.1\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
 X.2\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ -1\ \ -1\ \ -1 \par
 X.3\ \ \ \ 1\ \ \ A\ \ /A\ \ \ 1\ \ \ A\ \ /A \par
 X.4\ \ \ \ 1\ \ \ A\ \ /A\ \ -1\ \ -A\ -/A \par
 X.5\ \ \ \ 1\ \ /A\ \ \ A\ \ \ 1\ \ /A\ \ \ A \par
 X.6\ \ \ \ 1\ \ /A\ \ \ A\ \ -1\ -/A\ \ -A \par
- \par
+\ \par
 A\ =\ E(3) \par
 \ \ =\ (-1+ER(-3))/2\ =\ b3 \par
 
@@ -1137,50 +1081,52 @@ A\ =\ E(3) \par
 ]]>
 </Alt>
 <Alt Not="LaTeX">
-<Log>
- -------   -------         ;   @   ;   ;   @      2   1   1   1   1   1   1
-|       | |       |            1           1      3   1   1   1   1   1   1
-|   G   | |  G.2  |      p power           A
-|       | |       |      p' part           A         1a  3a  3b  2a  6a  6b
- -------   -------       ind  1A fus ind  2A     2P  1a  3b  3a  1a  3b  3a
- -------   -------                               3P  1a  1a  1a  2a  2a  2a
-|       | |       |  chi1  +   1   :  ++   1
-|  3.G  | | 3.G.2 |                            X.1    1   1   1   1   1   1
-|       | |       |      ind   1 fus ind   2   X.2    1   1   1  -1  -1  -1
- -------   -------             3           6   X.3    1   A  /A   1   A  /A
-                               3           6   X.4    1   A  /A  -1  -A -/A
-                                               X.5    1  /A   A   1  /A   A
-                     chi2 o2   1   : oo2   1   X.6    1  /A   A  -1 -/A  -A
+<Listing>
+┌───────┐ ┌───────┐       ;   @   ;   ;   @      2   1   1   1   1   1   1
+│       │ │       │           1           1      3   1   1   1   1   1   1
+│   G   │ │  G.2  │     p power           A
+│       │ │       │     p' part           A         1a  3a  3b  2a  6a  6b
+└───────┘ └───────┘     ind  1A fus ind  2A     2P  1a  3b  3a  1a  3b  3a
+┌───────┐ ┌───────┐                             3P  1a  1a  1a  2a  2a  2a
+│       │ │       │  χ_1  +   1   :  ++   1
+│  3.G  │ │ 3.G.2 │                           X.1    1   1   1   1   1   1
+│       │ │       │     ind   1 fus ind   2   X.2    1   1   1  -1  -1  -1
+└───────┘ └───────┘           3           6   X.3    1   A  /A   1   A  /A
+                              3           6   X.4    1   A  /A  -1  -A -/A
+                                              X.5    1  /A   A   1  /A   A
+                     χ_2 o2   1   : oo2   1   X.6    1  /A   A  -1 -/A  -A
 
-                                               A = E(3)
-                                                 = (-1+ER(-3))/2 = b3
-</Log>
+                                              A = E(3)
+                                                = (-1+ER(-3))/2 = b3
+</Listing>
 </Alt>
 
-<P/>
-
+<List>
+<Mark></Mark>
+<Item>
 <C>X.1</C>, <C>X.2</C> extend  <M>\chi_1</M>.
 <C>X.3</C>, <C>X.4</C> extend the proxy character <M>\chi_2</M>.
 <C>X.5</C>, <C>X.6</C> extend the not printed character with proxy
 <M>\chi_2</M>.
 The classes <C>1a</C>, <C>3a</C>, <C>3b</C> are preimages of <C>1A</C>,
 and <C>2a</C>, <C>6a</C>, <C>6b</C> are preimages of <C>2A</C>.
-
 </Item>
-<Mark>2.</Mark>
+</List>
+
+<List>
 <Item>
   as a downward extension of the factor group <M>C_3</M> which contains
   <M>G</M> as a subgroup,
   or equivalently,
   as an upward extension of the subgroup <M>C_2</M> which has a factor group
   isomorphic to <M>G</M>:
-
-<P/>
+</Item>
+</List>
 
 <Alt Only="LaTeX">
 <![CDATA[
-\begin{picture}(110,55)
-\put(-2,23){
+\begin{picture}(110,67)
+\put(8,36){
 \begin{picture}(29,29)
 \put(0,29){\line(1,0){14}}
 \put(0,15){\line(1,0){14}}
@@ -1203,17 +1149,18 @@ and <C>2a</C>, <C>6a</C>, <C>6b</C> are preimages of <C>2A</C>.
 \put(7,22){\makebox(0,0){G}}
 \put(22,22){\makebox(0,0){G.3}}
 \end{picture}}
-\put(37,52){\makebox(0,0)[tl]{
+
+\put(50,65){\makebox(0,0)[tl]{
 \small\tt
 \begin{minipage}{2in}
-\baselineskip0.9ex
-\parskip0.2ex
+\baselineskip2.7ex
+\parskip0ex
 
 \ \ \ \ ;\ \ \ @\ \ \ ;\ \ \ ;\ \ \ @ \par
 \ \par
 \ \ \ \ \ \ \ \ 1\ \ \ \ \ \ \ \ \ \ \ 1 \par
 \ \ p\ power\ \ \ \ \ \ \ \ \ \ \ A \par
-\ \ p\ttquote\ part\ \ \ \ \ \ \ \ \ \ \ A \par
+\ \ p'\ part\ \ \ \ \ \ \ \ \ \ \ A \par
 \ \ ind\ \ 1A\ fus\ ind\ \ 3A \par
 \ \par
 $\chi_1$\ \ +\ \ \ 1\ \ \ :\ +oo\ \ \ 1 \par
@@ -1224,26 +1171,26 @@ $\chi_1$\ \ +\ \ \ 1\ \ \ :\ +oo\ \ \ 1 \par
 $\chi_2$\ \ +\ \ \ 1\ \ \ :\ +oo\ \ \ 1 \par
 \end{minipage}}}
 
-\put(83,52){\makebox(0,0)[tl]{
+\put(99,65){\makebox(0,0)[tl]{
 \small\tt
-\begin{minipage}{2in}
+\begin{minipage}{2.2in}
 \baselineskip2.7ex
 \parskip0ex
 
 \ \ \ 2\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
 \ \ \ 3\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
- \par
+\ \par
 \ \ \ \ \ \ 1a\ \ 2a\ \ 3a\ \ 6a\ \ 3b\ \ 6b \par
 \ \ 2P\ \ 1a\ \ 1a\ \ 3b\ \ 3b\ \ 3a\ \ 3a \par
 \ \ 3P\ \ 1a\ \ 2a\ \ 1a\ \ 2a\ \ 1a\ \ 2a \par
- \par
+\ \par
 X.1\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
 X.2\ \ \ \ 1\ \ \ 1\ \ \ A\ \ \ A\ \ /A\ \ /A \par
 X.3\ \ \ \ 1\ \ \ 1\ \ /A\ \ /A\ \ \ A\ \ \ A \par
 X.4\ \ \ \ 1\ \ -1\ \ \ 1\ \ -1\ \ \ 1\ \ -1 \par
 X.5\ \ \ \ 1\ \ -1\ \ \ A\ \ -A\ \ /A\ -/A \par
 X.6\ \ \ \ 1\ \ -1\ \ /A\ -/A\ \ \ A\ \ -A \par
- \par
+\ \par
 A\ =\ E(3) \par
 \ \ =\ (-1+ER(-3))/2\ =\ b3 \par
 \end{minipage}}}
@@ -1251,47 +1198,49 @@ A\ =\ E(3) \par
 ]]>
 </Alt>
 <Alt Not="LaTeX">
-<Log>
- -------   -------         ;   @   ;   ;   @      2   1   1   1   1   1   1
-|       | |       |            1           1      3   1   1   1   1   1   1
-|   G   | |  G.3  |      p power           A
-|       | |       |      p' part           A         1a  2a  3a  6a  3b  6b
- -------   -------       ind  1A fus ind  3A     2P  1a  1a  3b  3b  3a  3a
- -------   -------                               3P  1a  2a  1a  2a  1a  2a
-|       | |       |  chi1  +   1   : +oo   1
-|  2.G  | | 2.G.3 |                            X.1    1   1   1   1   1   1
-|       | |       |      ind   1 fus ind   3   X.2    1   1   A   A  /A  /A
- -------   -------             2           6   X.3    1   1  /A  /A   A   A
-                                               X.4    1  -1   1  -1   1  -1
-                     chi2  +   1   : +oo   1   X.5    1  -1   A  -A  /A -/A
-                                               X.6    1  -1  /A -/A   A  -A
+<Listing>
+┌───────┐ ┌───────┐       ;   @   ;   ;   @      2   1   1   1   1   1   1
+│       │ │       │           1           1      3   1   1   1   1   1   1
+│   G   │ │  G.3  │     p power           A
+│       │ │       │     p' part           A         1a  2a  3a  6a  3b  6b
+└───────┘ └───────┘     ind  1A fus ind  3A     2P  1a  1a  3b  3b  3a  3a
+┌───────┐ ┌───────┐                             3P  1a  2a  1a  2a  1a  2a
+│       │ │       │  χ_1  +   1   : +oo   1
+│  2.G  │ │ 2.G.3 │                           X.1    1   1   1   1   1   1
+│       │ │       │     ind   1 fus ind   3   X.2    1   1   A   A  /A  /A
+└───────┘ └───────┘           2           6   X.3    1   1  /A  /A   A   A
+                                              X.4    1  -1   1  -1   1  -1
+                     χ_2  +   1   : +oo   1   X.5    1  -1   A  -A  /A -/A
+                                              X.6    1  -1  /A -/A   A  -A
 
-                                               A = E(3)
-                                                 = (-1+ER(-3))/2 = b3
-</Log>
+                                              A = E(3)
+                                                = (-1+ER(-3))/2 = b3
+</Listing>
 </Alt>
 
-<P/>
-
-<C>X.1</C>--<C>X.3</C> extend <M>\chi_1</M>,
-<C>X.4</C>--<C>X.6</C> extend <M>\chi_2</M>.
+<List>
+<Mark></Mark>
+<Item>
+<C>X.1</C> to <C>X.3</C> extend <M>\chi_1</M>,
+<C>X.4</C> to <C>X.6</C> extend <M>\chi_2</M>.
 The classes <C>1a</C> and <C>2a</C> are preimages of <C>1A</C>,
 <C>3a</C> and <C>6a</C> are preimages of the proxy class <C>3A</C>,
 and <C>3b</C> and <C>6b</C> are preimages of the not printed class
 with proxy <C>3A</C>.
-
 </Item>
-<Mark>3.</Mark>
+</List>
+
+<List>
 <Item>
   as a downward extension of the factor groups <M>C_3</M> and <M>C_2</M> which
   have <M>G</M> as a factor group:
-
-<P/>
+</Item>
+</List>
 
 <Alt Only="LaTeX">
 <![CDATA[
-\begin{picture}(110,70)
-\put(-2,8){
+\begin{picture}(110,120)
+\put(8,58){
 \begin{picture}(14,59)
 \put(0,59){\line(1,0){14}}
 \put(0,45){\line(1,0){14}}
@@ -1314,17 +1263,18 @@ with proxy <C>3A</C>.
 \put(7,37){\makebox(0,0){2.G}}
 \put(7,52){\makebox(0,0){G}}
 \end{picture}}
-\put(37,67){\makebox(0,0)[tl]{
+
+\put(50,117){\makebox(0,0)[tl]{
 \small\tt
 \begin{minipage}{2in}
-\baselineskip0.9ex
-\parskip0.2ex
+\baselineskip2.7ex
+\parskip0ex
 
 \ \ \ \ ;\ \ \ @ \par
 \ \  \par
 \ \ \ \ \ \ \ \ 1 \par
 \ \ p\ power \par
-\ \ p\ttquote\ part \par
+\ \ p'\ part \par
 \ \ ind\ \ 1A \par
 \ \  \par
 $\chi_1$\ \ +\ \ \ 1 \par
@@ -1350,26 +1300,26 @@ $\chi_3$\ o2\ \ \ 1 \par
 $\chi_4$\ o2\ \ \ 1 \par
 \end{minipage}}}
 
-\put(83,67){\makebox(0,0)[tl]{
+\put(99,117){\makebox(0,0)[tl]{
 \small\tt
-\begin{minipage}{2in}
+\begin{minipage}{2.2in}
 \baselineskip2.7ex
 \parskip0ex
 
 \ \ \ 2\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
 \ \ \ 3\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
- \par
+\ \par
 \ \ \ \ \ \ 1a\ \ 6a\ \ 3a\ \ 2a\ \ 3b\ \ 6b \par
 \ \ 2P\ \ 1a\ \ 3a\ \ 3b\ \ 1a\ \ 3a\ \ 3b \par
 \ \ 3P\ \ 1a\ \ 2a\ \ 1a\ \ 2a\ \ 1a\ \ 2a \par
- \par
+\ \par
 X.1\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
 X.2\ \ \ \ 1\ \ -1\ \ \ 1\ \ -1\ \ \ 1\ \ -1 \par
 X.3\ \ \ \ 1\ \ \ A\ \ /A\ \ \ 1\ \ \ A\ \ /A \par
 X.4\ \ \ \ 1\ \ /A\ \ \ A\ \ \ 1\ \ /A\ \ \ A \par
 X.5\ \ \ \ 1\ \ -A\ \ /A\ \ -1\ \ \ A\ -/A \par
 X.6\ \ \ \ 1\ -/A\ \ \ A\ \ -1\ \ /A\ \ -A \par
- \par
+\ \par
 A\ =\ E(3) \par
 \ \ =\ (-1+ER(-3))/2\ =\ b3 \par
 \end{minipage}}}
@@ -1377,59 +1327,60 @@ A\ =\ E(3) \par
 ]]>
 </Alt>
 <Alt Not="LaTeX">
-<Log>
- -------             ;   @        2   1   1   1   1   1   1
-|       |                1        3   1   1   1   1   1   1
-|   G   |          p power
-|       |          p' part           1a  6a  3a  2a  3b  6b
- -------           ind  1A       2P  1a  3a  3b  1a  3a  3b
- -------                         3P  1a  2a  1a  2a  1a  2a
-|       |      chi1  +   1
-|  2.G  |                      X.1    1   1   1   1   1   1
-|       |          ind   1     X.2    1  -1   1  -1   1  -1
- -------                 2     X.3    1   A  /A   1   A  /A
- -------                       X.4    1  /A   A   1  /A   A
-|       |      chi2  +   1     X.5    1  -A  /A  -1   A -/A
-|  3.G  |                      X.6    1 -/A   A  -1  /A  -A
-|       |          ind   1
- -------                 3     A = E(3)
- -------                 3       = (-1+ER(-3))/2 = b3
-|       |
-|  6.G  |      chi3 o2   1
-|       |
- -------           ind   1
-                         6
-                         3
-                         2
-                         3
-                         6
+<Listing>
+┌───────┐           ;   @        2   1   1   1   1   1   1
+│       │               1        3   1   1   1   1   1   1
+│   G   │         p power
+│       │         p' part           1a  6a  3a  2a  3b  6b
+└───────┘         ind  1A       2P  1a  3a  3b  1a  3a  3b
+┌───────┐                       3P  1a  2a  1a  2a  1a  2a
+│       │      χ_1  +   1
+│  2.G  │                     X.1    1   1   1   1   1   1
+│       │         ind   1     X.2    1  ─1   1  ─1   1  ─1
+└───────┘               2     X.3    1   A  /A   1   A  /A
+┌───────┐                     X.4    1  /A   A   1  /A   A
+│       │      χ_2  +   1     X.5    1  ─A  /A  ─1   A ─/A
+│  3.G  │                     X.6    1 ─/A   A  ─1  /A  ─A
+│       │         ind   1
+└───────┘               3     A = E(3)
+┌───────┐               3       = (─1+ER(─3))/2 = b3
+│       │
+│  6.G  │      χ_3 o2   1
+│       │
+└───────┘         ind   1
+                        6
+                        3
+                        2
+                        3
+                        6
 
-               chi4 o2   1
-</Log>
+               χ_4 o2   1
+</Listing>
 </Alt>
 
-<P/>
-
+<List>
+<Mark></Mark>
+<Item>
 <C>X.1</C>, <C>X.2</C> correspond to <M>\chi_1, \chi_2</M>, respectively;
 <C>X.3</C>, <C>X.5</C> correspond to the proxies <M>\chi_3</M>,
 <M>\chi_4</M>, and
 <C>X.4</C>, <C>X.6</C> to the not printed characters with these proxies.
-followers.
 The factor fusion onto <M>3.G</M> is given by <C>[ 1, 2, 3, 1, 2, 3 ]</C>,
 that onto <M>G.2</M> by <C>[ 1, 2, 1, 2, 1, 2 ]</C>.
-
 </Item>
-<Mark>4.</Mark>
+</List>
+
+<List>
 <Item>
   as an upward extension of the subgroups <M>C_3</M> or <M>C_2</M> which both
   contain a subgroup isomorphic to <M>G</M>:
-
-<P/>
+</Item>
+</List>
 
 <Alt Only="LaTeX">
 <![CDATA[
-\begin{picture}(110,55)
-\put(-2,38){
+\begin{picture}(110,65)
+\put(8,49){
 \begin{picture}(59,14)
 \put(0,0){\line(1,0){14}}
 \put(0,0){\line(0,1){14}}
@@ -1452,42 +1403,43 @@ that onto <M>G.2</M> by <C>[ 1, 2, 1, 2, 1, 2 ]</C>.
 \put(59,0){\line(0,1){14}}
 \put(52,7){\makebox(0,0){G.6}}
 \end{picture}}
-\put(-2,30){\makebox(0,0)[tl]{
+
+\put(8,41){\makebox(0,0)[tl]{
 \small\tt
 \begin{minipage}{4in}
-\baselineskip0.9ex
-\parskip0.2ex
+\baselineskip2.7ex
+\parskip0ex
 
 \ \ \ \ ;\ \ \ @\ \ \ ;\ \ \ ;\ \ \ @\ \ \ ;\ \ \ ;\ \ \ @\ \ \ ;\ \ \ \ \ ;\ \ \ @\ \par
 \ \par
 \ \ \ \ \ \ \ \ 1\ \ \ \ \ \ \ \ \ \ \ 1\ \ \ \ \ \ \ \ \ \ \ 1\ \ \ \ \ \ \ \ \ \ \ \ \ 1\ \par
 \ \ p\ power\ \ \ \ \ \ \ \ \ \ \ A\ \ \ \ \ \ \ \ \ \ \ A\ \ \ \ \ \ \ \ \ \ \ \ AA\ \par
-\ \ p\ttquote\ part\ \ \ \ \ \ \ \ \ \ \ A\ \ \ \ \ \ \ \ \ \ \ A\ \ \ \ \ \ \ \ \ \ \ \ AA\ \par
+\ \ p'\ part\ \ \ \ \ \ \ \ \ \ \ A\ \ \ \ \ \ \ \ \ \ \ A\ \ \ \ \ \ \ \ \ \ \ \ AA\ \par
 \ \ ind\ \ 1A\ fus\ ind\ \ 2A\ fus\ ind\ \ 3A\ fus\ \ \ ind\ \ 6A\ \par
 \ \par
 $\chi_1$\ \ +\ \ \ 1\ \ \ :\ \ ++\ \ \ 1\ \ \ :\ +oo\ \ \ 1\ \ \ :+oo+oo\ \ \ 1\ \par
 \end{minipage}}}
 
-\put(83,52){\makebox(0,0)[tl]{
+\put(103,63){\makebox(0,0)[tl]{
 \small\tt
-\begin{minipage}{2in}
+\begin{minipage}{2.2in}
 \baselineskip2.7ex
 \parskip0ex
 
 \ \ \ 2\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
 \ \ \ 3\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
- \par
+\ \par
 \ \ \ \ \ \ 1a\ \ 2a\ \ 3a\ \ 3b\ \ 6a\ \ 6b \par
 \ \ 2P\ \ 1a\ \ 1a\ \ 3b\ \ 3a\ \ 3b\ \ 3a \par
 \ \ 3P\ \ 1a\ \ 2a\ \ 1a\ \ 1a\ \ 2a\ \ 2a \par
- \par
+\ \par
 X.1\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
 X.2\ \ \ \ 1\ \ -1\ \ \ A\ \ /A\ \ -A\ -/A \par
 X.3\ \ \ \ 1\ \ \ 1\ \ /A\ \ \ A\ \ /A\ \ \ A \par
 X.4\ \ \ \ 1\ \ -1\ \ \ 1\ \ \ 1\ \ -1\ \ -1 \par
 X.5\ \ \ \ 1\ \ \ 1\ \ \ A\ \ /A\ \ \ A\ \ /A \par
 X.6\ \ \ \ 1\ \ -1\ \ /A\ \ \ A\ -/A\ \ -A \par
- \par
+\ \par
 A\ =\ E(3) \par
 \ \ =\ (-1+ER(-3))/2\ =\ b3 \par
 \end{minipage}}}
@@ -1495,21 +1447,21 @@ A\ =\ E(3) \par
 ]]>
 </Alt>
 <Alt Not="LaTeX">
-<Log>
- -------   -------   -------   -------
-|       | |       | |       | |       |
-|   G   | |  G.2  | |  G.3  | |  G.6  |
-|       | |       | |       | |       |
- -------   -------   -------   -------
+<Listing>
+┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐
+│       │ │       │ │       │ │       │
+│   G   │ │  G.2  │ │  G.3  │ │  G.6  │
+│       │ │       │ │       │ │       │
+└───────┘ └───────┘ └───────┘ └───────┘
 
-      ;   @   ;   ;   @   ;   ;   @   ;     ;   @
+     ;   @   ;   ;   @   ;   ;   @   ;     ;   @
 
-          1           1           1             1
-    p power           A           A            AA
-    p' part           A           A            AA
-    ind  1A fus ind  2A fus ind  3A fus   ind  6A
+         1           1           1             1
+   p power           A           A            AA
+   p' part           A           A            AA
+   ind  1A fus ind  2A fus ind  3A fus   ind  6A
 
-chi1  +   1   :  ++   1   : +oo   1   :+oo+oo   1
+χ_1  +   1   :  ++   1   : +oo   1   :+oo+oo   1
 
 
     2   1   1   1   1   1   1
@@ -1527,32 +1479,31 @@ chi1  +   1   :  ++   1   : +oo   1   :+oo+oo   1
 
  A = E(3)
    = (-1+ER(-3))/2 = b3
-</Log>
+</Listing>
 </Alt>
 
-<P/>
-
+<List>
+<Mark></Mark>
+<Item>
 The classes <C>1a</C>, <C>2a</C> correspond to <M>1A</M>, <M>2A</M>,
 respectively.
 <C>3a</C>, <C>6a</C> correspond to the proxies <M>3A</M>, <M>6A</M>,
 and <C>3b</C>, <C>6b</C> to the not printed classes with these proxies.
-
 </Item>
 </List>
 
 <P/>
 
-The second example explains the fusion case;
-again, <M>G</M> is the trivial group.
+The second example explains the fusion case.
+Again, <M>G</M> is the trivial group.
 
 <P/>
 
 <Alt Only="LaTeX">
 <![CDATA[
-\def\ttquote{\char13}
 \setlength{\unitlength}{0.1cm}
-\begin{picture}(110,95)
-\put(0,33){
+\begin{picture}(110,125)
+\put(0,63){
 \begin{picture}(29,59)
 \put(0,59){\line(1,0){14}}
 \put(0,45){\line(1,0){14}}
@@ -1591,17 +1542,18 @@ again, <M>G</M> is the trivial group.
 \put(22,37){\makebox(0,0){2.G.2}}
 \put(22,52){\makebox(0,0){G.2}}
 \end{picture}}
-\put(39,92){\makebox(0,0)[tl]{
+
+\put(44,122){\makebox(0,0)[tl]{
 \small\tt
 \begin{minipage}{2in}
-\baselineskip0.9ex
-\parskip0.2ex
+\baselineskip2.7ex
+\parskip0ex
 
 \ \ \ \ ;\ \ \ @\ \ \ ;\ \ \ ;\ \ @\ \par
 \ \ \ \par
 \ \ \ \ \ \ \ \ 1\ \ \ \ \ \ \ \ \ \ 1\ \par
 \ \ p\ power\ \ \ \ \ \ \ \ \ \ A\ \par
-\ \ p\ttquote\ part\ \ \ \ \ \ \ \ \ \ A\ \par
+\ \ p'\ part\ \ \ \ \ \ \ \ \ \ A\ \par
 \ \ ind\ \ 1A\ fus\ ind\ 2A\ \par
 \ \ \ \par
 $\chi_1$\ \ +\ \ \ 1\ \ \ :\ \ ++\ \ 1\ \par
@@ -1615,7 +1567,7 @@ $\chi_2$\ \ +\ \ \ 1\ \ \ :\ \ ++\ \ 1\ \par
 \ \ \ \ \ \ \ \ 3\ \par
 \ \ \ \ \ \ \ \ 3\ \par
 \ \ \ \par
-$\chi_3$\ o2\ \ \ 1\ \ \ \*\ \ \ +\ \par
+$\chi_3$\ o2\ \ \ 1\ \ \ *\ \ \ +\ \par
 \ \ \ \par
 \ \ ind\ \ \ 1\ fus\ ind\ \ 2\ \par
 \ \ \ \ \ \ \ \ 6\ \ \ \ \ \ \ \ \ \ 2\par
@@ -1627,36 +1579,36 @@ $\chi_3$\ o2\ \ \ 1\ \ \ \*\ \ \ +\ \par
 $\chi_4$\ o2\ \ \ 1\ \ \ *\ \ \ +\ \par
 \end{minipage}}}
 
-\put(85,92){\makebox(0,0)[tl]{
+\put(95,122){\makebox(0,0)[tl]{
 \small\tt
-\begin{minipage}{2in}
+\begin{minipage}{2.2in}
 \baselineskip2.7ex
 \parskip0ex
 
 $3.G.2$ \par
- \par
+\ \par
 \ \ \ 2\ \ \ 1\ \ \ .\ \ \ 1 \par
 \ \ \ 3\ \ \ 1\ \ \ 1\ \ \ . \par
- \par
+\ \par
 \ \ \ \ \ \ 1a\ \ 3a\ \ 2a \par
 \ \ 2P\ \ 1a\ \ 3a\ \ 1a \par
 \ \ 3P\ \ 1a\ \ 1a\ \ 2a \par
- \par
+\ \par
 X.1\ \ \ \ 1\ \ \ 1\ \ \ 1 \par
 X.2\ \ \ \ 1\ \ \ 1\ \ -1 \par
 X.3\ \ \ \ 2\ \ -1\ \ \ . \par
- \par
+\ \par
 \ 
- \par
+\ \par
 $6.G.2$ \par
- \par
+\ \par
 \ \ \ 2\ \ \ 2\ \ \ 1\ \ \ 1\ \ \ 2\ \ \ 2\ \ \ 2 \par
 \ \ \ 3\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ .\ \ \ . \par
- \par
+\ \par
 \ \ \ \ \ \ 1a\ \ 6a\ \ 3a\ \ 2a\ \ 2b\ \ 2c \par
 \ \ 2P\ \ 1a\ \ 3a\ \ 3a\ \ 1a\ \ 1a\ \ 1a \par
 \ \ 3P\ \ 1a\ \ 2a\ \ 1a\ \ 2a\ \ 2b\ \ 2c \par
- \par
+\ \par
 Y.1\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
 Y.2\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ -1\ \ -1 \par
 Y.3\ \ \ \ 1\ \ -1\ \ \ 1\ \ -1\ \ \ 1\ \ -1 \par
@@ -1669,37 +1621,37 @@ Y.6\ \ \ \ 2\ \ \ 1\ \ -1\ \ -2\ \ \ .\ \ \ . \par
 ]]>
 </Alt>
 <Alt Not="LaTeX">
-<Log>
- -------   -------        ;   @   ;   ;  @      3.G.2
-|       | |       |           1          1
-|   G   | |  G.2  |     p power          A         2   1   .   1
-|       | |       |     p' part          A         3   1   1   .
- -------   -------      ind  1A fus ind 2A
- -------   -------                                    1a 3a 2a
-|       | |       |   X1  +   1   :  ++  1        2P  1a 3a 1a
-|  2.G  | | 2.G.2 |                               3P  1a 1a 2a
-|       | |       |     ind   1 fus ind  2
- -------   -------            2          2      X.1    1  1  1
- -------   -------                              X.2    1  1 -1
-|       | |           X2  +   1   :  ++  1      X.3    2 -1  .
-|  3.G  | | 3.G.2
-|       | |             ind   1 fus ind  2
- -------                      3                 6.G.2
- -------   -------            3
-|       | |                                        2   2  1  1  2  2  2
-|  6.G  | | 6.G.2     X3 o2   1   *   +            3   1  1  1  1  .  .
-|       | |
- -------                ind   1 fus ind  2            1a 6a 3a 2a 2b 2c
-                              6          2        2P  1a 3a 3a 1a 1a 1a
-                              3                   3P  1a 2a 1a 2a 2b 2c
-                              2
-                              3                 Y.1    1  1  1  1  1  1
-                              6                 Y.2    1  1  1  1 -1 -1
-                                                Y.3    1 -1  1 -1  1 -1
-                      X4 o2   1   *   +         Y.4    1 -1  1 -1 -1  1
-                                                Y.5    2 -1 -1  2  .  .
-                                                Y.6    2  1 -1 -2  .  .
-</Log>
+<Listing>
+┌───────┐ ┌───────┐        ;   @   ;   ;  @      3.G.2
+│       │ │       │            1          1
+│   G   │ │  G.2  │      p power          A         2   1   .   1
+│       │ │       │      p' part          A         3   1   1   .
+└───────┘ └───────┘      ind  1A fus ind 2A
+┌───────┐ ┌───────┐                                    1a 3a 2a
+│       │ │       │   χ_1  +   1   :  ++  1        2P  1a 3a 1a
+│  2.G  │ │ 2.G.2 │                                3P  1a 1a 2a
+│       │ │       │      ind   1 fus ind  2
+└───────┘ └───────┘            2          2      X.1    1  1  1
+┌───────┐ ┌───────                               X.2    1  1 ─1
+│       │ │           χ_2  +   1   :  ++  1      X.3    2 ─1  .
+│  3.G  │ │ 3.G.2
+│       │ │              ind   1 fus ind  2
+└───────┘                      3                 6.G.2
+┌───────┐ ┌───────             3
+│       │ │                                         2   2  1  1  2  2  2
+│  6.G  │ │ 6.G.2     χ_3 o2   1   *   +            3   1  1  1  1  .  .
+│       │ │
+└───────┘                ind   1 fus ind  2            1a 6a 3a 2a 2b 2c
+                               6          2        2P  1a 3a 3a 1a 1a 1a
+                               3                   3P  1a 2a 1a 2a 2b 2c
+                               2
+                               3                 Y.1    1  1  1  1  1  1
+                               6                 Y.2    1  1  1  1 -1 -1
+                                                 Y.3    1 -1  1 -1  1 -1
+                      χ_4 o2   1   *   +         Y.4    1 -1  1 -1 -1  1
+                                                 Y.5    2 -1 -1  2  .  .
+                                                 Y.6    2  1 -1 -2  .  .
+</Listing>
 </Alt>
 
 <P/>
@@ -1718,7 +1670,7 @@ and the two preimages of <C>1A</C> of order <M>3</M> collapse.
 
 <P/>
 
-In  <M>6.G.2</M>,  <C>Y.1</C>--<C>Y.4</C> are extensions of <M>\chi_1</M>,
+In  <M>6.G.2</M>,  <C>Y.1</C> to <C>Y.4</C> are extensions of <M>\chi_1</M>,
 <M>\chi_2</M>,
 so these characters are the inflated characters from <M>2.G.2</M>
 (with respect to the factor fusion <C>[ 1, 2, 1, 2, 3, 4 ]</C>).
@@ -1737,8 +1689,8 @@ Consider the following tables.
 
 <Alt Only="LaTeX">
 <![CDATA[
-\begin{picture}(110,125)
-\put(0,93){
+\begin{picture}(110,175)
+\put(0,143){
 \begin{picture}(29,29)
 \put(0,29){\line(1,0){14}}
 \put(0,15){\line(1,0){14}}
@@ -1762,18 +1714,19 @@ Consider the following tables.
 \put(22,22){\makebox(0,0){G.3}}
 \end{picture}}
 
-\put(81,91){\line(0,1){8}}  % fusion sign in picture
-\put(39,122){\makebox(0,0)[tl]{
+\put(84.9,116.8){\line(0,1){16.4}}  % fusion sign in picture
+
+\put(39,172){\makebox(0,0)[tl]{
 \small\tt
 \begin{minipage}{3in}
-\baselineskip0.9ex
-\parskip0.2ex
+\baselineskip2.7ex
+\parskip0ex
 
 \ \ \ \ ;\ \ \ @\ \ \ @\ \ \ @\ \ \ @\ \ \ ;\ \ \ ;\ \ \ @\ \par
 \ \par
 \ \ \ \ \ \ \ \ 4\ \ \ 4\ \ \ 4\ \ \ 4\ \ \ \ \ \ \ \ \ \ \ 1\ \par
 \ \ p\ power\ \ \ A\ \ \ A\ \ \ A\ \ \ \ \ \ \ \ \ \ \ A\ \par
-\ \ p\ttquote\ part\ \ \ A\ \ \ A\ \ \ A\ \ \ \ \ \ \ \ \ \ \ A\ \par
+\ \ p'\ part\ \ \ A\ \ \ A\ \ \ A\ \ \ \ \ \ \ \ \ \ \ A\ \par
 \ \ ind\ \ 1A\ \ 2A\ \ 2B\ \ 2C\ fus\ ind\ \ 3A\ \par
 \ \par
 $\chi_1$\ \ +\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ :\ +oo\ \ \ 1\ \par
@@ -1790,42 +1743,42 @@ $\chi_4$\ \ +\ \ \ 1\ \ -1\ \ -1\ \ \ 1\ \ \ .\ \par
 $\chi_5$\ \ -\ \ \ 2\ \ \ 0\ \ \ 0\ \ \ 0\ \ \ :\ -oo\ \ \ 1\ \par
 \end{minipage}}}
 
-\put(102,122){\makebox(0,0)[tl]{
+\put(107,172){\makebox(0,0)[tl]{
 \small\tt
 \begin{minipage}{3in}
 \baselineskip2.7ex
 \parskip0ex
 $G.3$\par
- \par
+\ \par
 \ \ \ 2\ \ \ 2\ \ \ 2\ \ \ .\ \ \ . \par
 \ \ \ 3\ \ \ 1\ \ \ .\ \ \ 1\ \ \ 1 \par
- \par
+\ \par
 \ \ \ \ \ \ 1a\ \ 2a\ \ 3a\ \ 3b \par
 \ \ 2P\ \ 1a\ \ 1a\ \ 3b\ \ 3a \par
 \ \ 3P\ \ 1a\ \ 2a\ \ 1a\ \ 1a \par
- \par
+\ \par
 X.1\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1 \par
 X.2\ \ \ \ 1\ \ \ 1\ \ \ A\ \ /A \par
 X.3\ \ \ \ 1\ \ \ 1\ \ /A\ \ \ A \par
 X.4\ \ \ \ 3\ \ -1\ \ \ .\ \ \ . \par
- \par
+\ \par
 A\ =\ E(3) \par
 \ \ =\ (-1+ER(-3))/2\ =\ b3 \par
 \end{minipage}}}
 
-\put(0,71){\makebox(0,0)[tl]{
+\put(0,81){\makebox(0,0)[tl]{
 \small\tt
 \begin{minipage}{3in}
 \baselineskip2.7ex
 \parskip0ex
 $2.G$\par
- \par
+\ \par
 \ \ \ 2\ \ \ 3\ \ \ 3\ \ \ 2\ \ \ 2\ \ \ 2\par
- \par
+\ \par
 \ \ \ \ \ \ 1a\ \ 2a\ \ 4a\ \ 4b\ \ 4c\par
 \ \ 2P\ \ 1a\ \ 1a\ \ 2a\ \ 1a\ \ 1a\par
 \ \ 3P\ \ 1a\ \ 2a\ \ 4a\ \ 4b\ \ 4c\par
- \par
+\ \par
 X.1\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\par
 X.2\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ -1\ \ -1\par
 X.3\ \ \ \ 1\ \ \ 1\ \ -1\ \ \ 1\ \ -1\par
@@ -1833,20 +1786,20 @@ X.4\ \ \ \ 1\ \ \ 1\ \ -1\ \ -1\ \ \ 1\par
 X.5\ \ \ \ 2\ \ -2\ \ \ .\ \ \ .\ \ \ .\par
 \end{minipage}}}
 
-\put(50,71){\makebox(0,0)[tl]{
+\put(70,81){\makebox(0,0)[tl]{
 \small\tt
 \begin{minipage}{3in}
 \baselineskip2.7ex
 \parskip0ex
 $2.G.3$\par
- \par
+\ \par
 \ \ \ 2\ \ \ 3\ \ \ 3\ \ \ 2\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\par
 \ \ \ 3\ \ \ 1\ \ \ 1\ \ \ .\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\par
- \par
+\ \par
 \ \ \ \ \ \ 1a\ \ 2a\ \ 4a\ \ 3a\ \ 6a\ \ 3b\ \ 6b\par
 \ \ 2P\ \ 1a\ \ 1a\ \ 2a\ \ 3b\ \ 3b\ \ 3a\ \ 3a\par
 \ \ 3P\ \ 1a\ \ 2a\ \ 4a\ \ 1a\ \ 2a\ \ 1a\ \ 2a\par
- \par
+\ \par
 X.1\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\par
 X.2\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ \ A\ \ \ A\ \ /A\ \ /A\par
 X.3\ \ \ \ 1\ \ \ 1\ \ \ 1\ \ /A\ \ /A\ \ \ A\ \ \ A\par
@@ -1854,7 +1807,7 @@ X.4\ \ \ \ 3\ \ \ 3\ \ -1\ \ \ .\ \ \ .\ \ \ .\ \ \ .\par
 X.5\ \ \ \ 2\ \ -2\ \ \ .\ \ \ 1\ \ \ 1\ \ \ 1\ \ \ 1\par
 X.6\ \ \ \ 2\ \ -2\ \ \ .\ \ \ A\ \ -A\ \ /A\ -/A\par
 X.7\ \ \ \ 2\ \ -2\ \ \ .\ \ /A\ -/A\ \ \ A\ \ -A\par
- \par
+\ \par
 A\ =\ E(3) \par
 \ \ =\ (-1+ER(-3))/2\ =\ b3 \par
 \end{minipage}}}
@@ -1862,22 +1815,22 @@ A\ =\ E(3) \par
 ]]>
 </Alt>
 <Alt Not="LaTeX">
-<Log>
- -------   -------            ;   @   @   @   @   ;   ;   @
-|       | |       |               4   4   4   4           1
-|   G   | |  G.3  |         p power   A   A   A           A
-|       | |       |         p' part   A   A   A           A
- -------   -------          ind  1A  2A  2B  2C fus ind  3A
- -------   -------
-|       | |       |     chi1  +   1   1   1   1   : +oo   1
-|  2.G  | | 2.G.3 |     chi2  +   1   1  -1  -1   .   +   0
-|       | |       |     chi3  +   1  -1   1  -1   |
- -------   -------      chi4  +   1  -1  -1   1   |
+<Listing>
+┌───────┐ ┌───────┐          ;   @   @   @   @   ;   ;   @
+│       │ │       │              4   4   4   4           1
+│   G   │ │  G.3  │        p power   A   A   A           A
+│       │ │       │        p' part   A   A   A           A
+└───────┘ └───────┘        ind  1A  2A  2B  2C fus ind  3A
+┌───────┐ ┌───────┐
+│       │ │       │     χ_1  +   1   1   1   1   : +oo   1
+│  2.G  │ │ 2.G.3 │     χ_2  +   1   1  ─1  ─1   .   +   0
+│       │ │       │     χ_3  +   1  ─1   1  ─1   |
+└───────┘ └───────┘     χ_4  +   1  ─1  ─1   1   |
 
-                            ind   1   4   4   4 fus ind   3
-                                  2                       6
+                           ind   1   4   4   4 fus ind   3
+                                 2                       6
 
-                        chi5  -   2   0   0   0   : -oo   1
+                        χ_5  -   2   0   0   0   : -oo   1
 
   G.3
 
@@ -1890,32 +1843,26 @@ A\ =\ E(3) \par
 
   X.1    1   1   1   1
   X.2    1   1   A  /A
-  X.3    1   1  /A   A
+  X.3    1   1  /A   A         2.G.3
   X.4    3  -1   .   .
-
-  A = E(3)
+                                  2   3   3   2   1   1   1   1
+  A = E(3)                        3   1   1   .   1   1   1   1
     = (-1+ER(-3))/2 = b3
-
-  2.G                          2.G.3
-
-     2   3   3   2   2   2        2   3   3   2   1   1   1   1
-                                  3   1   1   .   1   1   1   1
-        1a  2a  4a  4b  4c
-    2P  1a  1a  2a  1a  1a           1a  2a  4a  3a  6a  3b  6b
-    3P  1a  2a  4a  4b  4c       2P  1a  1a  2a  3b  3b  3a  3a
+                                     1a  2a  4a  3a  6a  3b  6b
+  2.G                            2P  1a  1a  2a  3b  3b  3a  3a
                                  3P  1a  2a  4a  1a  2a  1a  2a
-  X.1    1   1   1   1   1
-  X.2    1   1   1  -1  -1     X.1    1   1   1   1   1   1   1
-  X.3    1   1  -1   1  -1     X.2    1   1   1   A   A  /A  /A
-  X.4    1   1  -1  -1   1     X.3    1   1   1  /A  /A   A   A
-  X.5    2  -2   .   .   .     X.4    3   3  -1   .   .   .   .
+     2   3   3   2   2   2
+                               X.1    1   1   1   1   1   1   1
+        1a  2a  4a  4b  4c     X.2    1   1   1   A   A  /A  /A
+    2P  1a  1a  2a  1a  1a     X.3    1   1   1  /A  /A   A   A
+    3P  1a  2a  4a  4b  4c     X.4    3   3  -1   .   .   .   .
                                X.5    2  -2   .   1   1   1   1
-                               X.6    2  -2   .   A  -A  /A -/A
-                               X.7    2  -2   .  /A -/A   A  -A
-
-                               A = E(3)
-                                 = (-1+ER(-3))/2 = b3
-</Log>
+  X.1    1   1   1   1   1     X.6    2  -2   .   A  -A  /A -/A
+  X.2    1   1   1  -1  -1     X.7    2  -2   .  /A -/A   A  -A
+  X.3    1   1  -1   1  -1
+  X.4    1   1  -1  -1   1     A = E(3)
+  X.5    2  -2   .   .   .       = (-1+ER(-3))/2 = b3
+</Listing>
 </Alt>
 
 <P/>
@@ -1932,21 +1879,7 @@ the class fusion corresponding to the injection
 is <C>[ 1, 2, 3, 3, 3 ]</C>, and the factor fusion corresponding to the
 epimorphism <M>2.G.3 \rightarrow G.3</M> is <C>[ 1, 1, 2, 3, 3, 4, 4 ]</C>.
 
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sec:unipotsec">
-<Heading>Unipotent Characters of Finite Groups of Lie Type</Heading>
-
-<Index Subkey="unipotent">character</Index>
-
-<#Include Label="sec:unipot">
-
-<#Include Label="UnipotentCharacter">
-<!-- crossref. from Ref. Manual, currently commented out -->
-<#Include Label="DeligneLusztigNames">
-<#Include Label="DeligneLusztigName">
+</Subsection>
 
 </Section>
 
@@ -1959,10 +1892,12 @@ epimorphism <M>2.G.3 \rightarrow G.3</M> is <C>[ 1, 1, 2, 3, 3, 4, 4 ]</C>.
 <Index Subkey="library">tables</Index>
 <Index>library of character tables</Index>
 
-All character tables of the &CAS; table library
-(see&nbsp;<Cite Key="NPP84"/>)
-are available in &GAP; except if stated otherwise in the file
-<F>doc/ctbldiff.pdf</F>.
+One of the predecessors of &GAP; was
+&CAS; (<E>C</E>haracter <E>A</E>lgorithm <E>S</E>ystem,
+see&nbsp;<Cite Key="NPP84"/>),
+which had also a library of character tables.
+All these character tables are available in &GAP;
+except if stated otherwise in the file <F>doc/ctbldiff.pdf</F>.
 This sublibrary has been completely revised before it was included in &GAP;,
 for example, errors have been corrected and power maps have been completed.
 
@@ -1974,44 +1909,60 @@ the table name or the filename used in &CAS;.
 
 <P/>
 
-<Example>
-gap> tbl:= CharacterTable( "m10" );
-CharacterTable( "A6.2_3" )
-</Example>
-
-<P/>
-
 <#Include Label="CASInfo">
-
-<P/>
-
-
-<P/>
-
-The class fusions stored on tables from the &CAS; library
-have been computed anew;
-the <C>text</C> component of such a fusion record tells if the fusion map
-is equal to that in the &CAS; library
---of course modulo the permutation of classes between the table in
-&CAS; and its &GAP; version.
-
-<P/>
-
-<Example>
-gap> First( ComputedClassFusions( tbl ), x -> x.name = "M11" );
-rec( name := "M11", map := [ 1, 2, 3, 4, 5, 4, 7, 8 ], 
-  text := "fusion is unique up to table automorphisms,\nthe representative is \
-equal to the fusion map on the CAS table" )
-</Example>
 
 </Section>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sec:organization">
-<Heading>Organization of the &GAP; Character Table Library</Heading>
+<Section Label="sec:customize">
+<Heading>Customizations of the &GAP; Character Table Library</Heading>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsect:install">
+<Heading>Installing the &GAP; Character Table Library</Heading>
+
+To install the package unpack the archive file in a
+directory in the <F>pkg</F> directory of your local copy of &GAP;&nbsp;4.
+This might be the <F>pkg</F> directory of the &GAP;&nbsp;4 home directory,
+see Section&nbsp;<Ref Sect="Installing a GAP Package" BookName="ref"/>
+for details.
+It is however also possible to keep an additional <F>pkg</F> directory
+in your private directories,
+see&nbsp;<Ref Sect="GAP Root Directory" BookName="ref"/>.
+The latter possibility <E>must</E> be chosen if you do not have write access
+to the &GAP; root directory.
+
+<P/>
+
+The package consists entirely of &GAP; code,
+no external binaries need to be compiled.
+
+<P/>
+
+<#Include Label="testinst">
+
+<P/>
+
+PDF and HTML versions of the package manual are available
+in the <F>doc</F> directory of the package.
+
+</Subsection>
+
+<#Include Label="CTblLibSetUnload">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:technicalities">
+<Heading>Technicalities of the Access to Character Tables from the Library
+</Heading>
 
 <#Include Label="organization">
+
+<#Include Label="LIBLIST">
 
 <#Include Label="LibInfoCharacterTable">
 
@@ -2027,138 +1978,58 @@ equal to the fusion map on the CAS table" )
 
 &GAP; users may want to extend the character table library in different
 respects.
-Probably the easiest change is to add new admissible names to library tables,
-in order to use these names in calls of
-<Ref Func="CharacterTable" BookName="ref"/>
-and <Ref Func="CharacterTableFromLibrary"/>.
-This can be done as follows.
 
 <P/>
+
+<List>
+<Item>
+  Probably the easiest change is to <E>add new admissible names</E>
+  to library tables, in order to use these names in calls of
+  <Ref Meth="CharacterTable" Label="for a string"/>.
+  This can be done using <Ref Func="NotifyNameOfCharacterTable"/>.
+</Item>
+<Item>
+  The next kind of changes is the <E>addition of new fusions</E>
+  between library tables.
+  Once a fusion map is known, it can be added to the library file containing
+  the table of the subgroup, using the format produced by
+  <Ref Func="LibraryFusion"/>.
+</Item>
+<Item>
+  The last kind of changes is the <E>addition of new character tables</E>
+  to the &GAP; character table library.
+  Data files containing tables in library format
+  (i.&nbsp;e., in the form of calls to <C>MOT</C> or <C>MBT</C>)
+  can be produced using <Ref Func="PrintToLib"/>.
+  <P/>
+  If you have an ordinary character table in library format which you want to
+  add to the table library, for example because it shall be accessible via
+  <Ref Meth="CharacterTable" Label="for a string"/>,
+  you must notify this table, i.&nbsp;e., tell &GAP; in which file it can be
+  found,
+  and which names shall be admissible for it.
+  This can be done using <Ref Func="NotifyCharacterTable"/>.
+</Item>
+</List>
 
 <#Include Label="NotifyNameOfCharacterTable">
 
-<P/>
-
-
-<P/>
-
-The next kind of changes is the addition of new fusions between library
-tables.
-Once a fusion map is known, it can be added to the library file containing
-the table of the subgroup, using the format produced by
-<Ref Func="LibraryFusion"/>.
-
-<P/>
-
-<#Include Label="ALF">
 <#Include Label="LibraryFusion">
-
-<P/>
-
-
-<P/>
-
-The last kind of changes is the addition of new character tables to the
-&GAP; character table library.
-Data files containing tables in library format
-(i.&nbsp;e., in the form of calls to <C>MOT</C> or <C>MBT</C>)
-can be produced using <Ref Func="PrintToLib"/>.
 
 <#Include Label="PrintToLib">
 
-<P/>
-
-<Log>
-gap> PrintToLib( "private", a5 );
-</Log>
-
-<P/>
-
-The above command appends the data of the table <C>a5</C> to the file
-<F>private.tbl</F>;
-the first lines printed to this file are
-
-<P/>
-
-<Log>
-SET_TABLEFILENAME("private");
-MOT("A5",
-[
-"origin: ATLAS of finite groups, tests: 1.o.r., pow[2,3,5]"
-],
-[60,4,3,5,5],
-[,[1,1,3,5,4],[1,2,1,5,4],,[1,2,3,1,1]],
-[[1,1,1,1,1],[3,-1,0,-E(5)-E(5)^4,-E(5)^2-E(5)^3],
-[GALOIS,[2,2]],[4,0,1,-1,-1],[5,1,-1,0,0]],
-[(4,5)]);
-ARC("A5","projectives",["2.A5",[[2,0,-1,E(5)+E(5)^4,E(5)^2+E(5)^3],
-[GALOIS,[1,2]],[4,0,1,-1,-1],[6,0,0,1,1]],]);
-ARC("A5","extInfo",["2","2"]);
-</Log>
-
-<P/>
-
-If you have an ordinary character table in library format which you want to
-add to the table library, for example because it shall be accessible via
-<Ref Func="CharacterTable" BookName="ref"/>
-(see&nbsp;<Ref Func="CharacterTableFromLibrary"/>),
-you must notify this table, i.&nbsp;e., tell &GAP; in which file it can be
-found,
-and which names shall be admissible for it.
-
-<P/>
-
 <#Include Label="NotifyCharacterTable">
 
-<P/>
+</Section>
 
-For example, let us change the name <C>A5</C> to <C>icos</C> wherever it
-occurs in the file <F>private.tbl</F> that was produced above,
-and then notify the <Q>new</Q> table in this file as follows.
-(The name change is needed because &GAP; knows already a table with name
-<C>A5</C> and would not accept to add another table with this name.)
 
-<P/>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="sec:CTblLib Sanity Checks">
+<Heading>Sanity Checks for the &GAP; Character Table Library</Heading>
 
-<Log>
-gap> NotifyCharacterTable( "icos", "private", [] );
-gap> icos:= CharacterTable( "icos" );
-CharacterTable( "icos" )
-gap> Display( icos );
-icos
-
-     2  2  2  .  .  .
-     3  1  .  1  .  .
-     5  1  .  .  1  1
-
-       1a 2a 3a 5a 5b
-    2P 1a 1a 3a 5b 5a
-    3P 1a 2a 1a 5b 5a
-    5P 1a 2a 3a 1a 1a
-
-X.1     1  1  1  1  1
-X.2     3 -1  .  A *A
-X.3     3 -1  . *A  A
-X.4     4  .  1 -1 -1
-X.5     5  1 -1  .  .
-
-A = -E(5)-E(5)^4
-  = (1-ER(5))/2 = -b5
-</Log>
-
-<P/>
-
-So the private table is treated as a library table.
-Note that the table can be accessed only if it has been notified in the
-current &GAP; session.
-For frequently used private tables, it may be reasonable to put the
-<Ref Func="NotifyCharacterTable"/> statements into your <F>gaprc</F> file
-(see&nbsp;<Ref Sect="The gap.ini and gaprc files" BookName="ref"/>),
-or into a file that is read via the <F>gaprc</F> file.
-For adding interesting character tables to the &GAP; distribution,
-please send the tables to the e-mail address mentioned in the first paragraph
-of this chapter.
+<#Include Label="tests">
 
 </Section>
+
 </Chapter>
 

@@ -2,7 +2,6 @@
 **
 *W  macfloat.c                   GAP source                      Steve Linton
 **
-*H  @(#)$Id: macfloat.c,v 4.12 2011/06/06 16:28:08 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_macfloat_c =
-   "@(#)$Id: macfloat.c,v 4.12 2011/06/06 16:28:08 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -55,9 +52,6 @@ extern void SaveDouble( Double d);
 
 #include <stdlib.h>
 
-#define VAL_MACFLOAT(obj) (*(Double *)ADDR_OBJ(obj))
-#define SET_VAL_MACFLOAT(obj, val) (*(Double *)ADDR_OBJ(obj) = val)
-#define IS_MACFLOAT(obj) (TNUM_OBJ(obj) == T_MACFLOAT)
 #define SIZE_MACFLOAT   sizeof(Double)
 
 /****************************************************************************
@@ -69,13 +63,11 @@ extern void SaveDouble( Double d);
 **  'TypeMacfloat' is the function in 'TypeObjFuncs' for macfloatean values.
 */
 Obj TYPE_MACFLOAT;
-Obj TYPE_MACFLOAT0;
 
 Obj TypeMacfloat (
     Obj                 val )
-{
-  
-    return VAL_MACFLOAT(val) == 0.0L ? TYPE_MACFLOAT0 : TYPE_MACFLOAT;
+{  
+    return TYPE_MACFLOAT;
 }
 
 
@@ -106,6 +98,13 @@ Int EqMacfloat (
     Obj                 macfloatR )
 {
   return VAL_MACFLOAT(macfloatL) == VAL_MACFLOAT(macfloatR);
+}
+
+Obj FuncEqMacfloat (
+    Obj                 macfloatL,
+    Obj                 macfloatR )
+{
+  return EqMacfloat(macfloatL,macfloatR) ? True : False;
 }
 
 
@@ -167,7 +166,7 @@ void LoadMacfloat( Obj obj )
   SET_VAL_MACFLOAT(obj, LoadDouble());
 }
 
-static inline Obj NEW_MACFLOAT( Double val )
+Obj NEW_MACFLOAT( Double val )
 {
   Obj f;
   f = NewBag(T_MACFLOAT,SIZE_MACFLOAT);
@@ -314,7 +313,7 @@ Obj ModMacfloat( Obj fl, Obj fr )
 **
 */
 
-Obj FuncMACFLOAT_INT( Obj self, Obj i)
+Obj FuncMACFLOAT_INT( Obj self, Obj i )
 {
   if (!IS_INTOBJ(i))
     return Fail;
@@ -328,7 +327,7 @@ Obj FuncMACFLOAT_INT( Obj self, Obj i)
 **
 */
 
-Obj FuncMACFLOAT_STRING( Obj self, Obj s)
+Obj FuncMACFLOAT_STRING( Obj self, Obj s )
 {
 
   while (!IsStringConv(s))
@@ -363,7 +362,7 @@ Obj SumIntMacfloat( Obj i, Obj f )
 */
 
 #define MAKEMATHPRIMITIVE(NAME,name)			\
-  Obj Func##NAME##_MACFLOAT( Obj self, Obj f)		\
+  Obj Func##NAME##_MACFLOAT( Obj self, Obj f )		\
   {							\
     return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f)));	\
   }
@@ -374,26 +373,45 @@ Obj SumIntMacfloat( Obj i, Obj f )
     return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f),VAL_MACFLOAT(g)));	\
   }
 
-MAKEMATHPRIMITIVE(COS,cos);
-MAKEMATHPRIMITIVE(SIN,sin);
-MAKEMATHPRIMITIVE(TAN,tan);
-MAKEMATHPRIMITIVE(ACOS,acos);
-MAKEMATHPRIMITIVE(ASIN,asin);
-MAKEMATHPRIMITIVE(ATAN,atan);
-MAKEMATHPRIMITIVE(LOG,log);
-MAKEMATHPRIMITIVE(EXP,exp);
-MAKEMATHPRIMITIVE(SQRT,sqrt);
-MAKEMATHPRIMITIVE(RINT,rint);
-MAKEMATHPRIMITIVE(FLOOR,floor);
-MAKEMATHPRIMITIVE(CEIL,ceil);
-MAKEMATHPRIMITIVE2(ATAN2,atan2);
-MAKEMATHPRIMITIVE2(HYPOT,hypot);
+MAKEMATHPRIMITIVE(COS,cos)
+MAKEMATHPRIMITIVE(SIN,sin)
+MAKEMATHPRIMITIVE(TAN,tan)
+MAKEMATHPRIMITIVE(ACOS,acos)
+MAKEMATHPRIMITIVE(ASIN,asin)
+MAKEMATHPRIMITIVE(ATAN,atan)
+MAKEMATHPRIMITIVE(LOG,log)
+MAKEMATHPRIMITIVE(EXP,exp)
+#if HAVE_LOG2
+MAKEMATHPRIMITIVE(LOG2,log2)
+#endif
+#if HAVE_LOG10
+MAKEMATHPRIMITIVE(LOG10,log10)
+#endif
+#if HAVE_LOG1P
+MAKEMATHPRIMITIVE(LOG1P,log1p)
+#endif
+#if HAVE_EXP2
+MAKEMATHPRIMITIVE(EXP2,exp2)
+#endif
+#if HAVE_EXPM1
+MAKEMATHPRIMITIVE(EXPM1,expm1)
+#endif
+#if HAVE_EXP10
+MAKEMATHPRIMITIVE(EXP10,exp10)
+#endif
+MAKEMATHPRIMITIVE(SQRT,sqrt)
+MAKEMATHPRIMITIVE(RINT,rint)
+MAKEMATHPRIMITIVE(FLOOR,floor)
+MAKEMATHPRIMITIVE(CEIL,ceil)
+MAKEMATHPRIMITIVE(ABS,fabs)
+MAKEMATHPRIMITIVE2(ATAN2,atan2)
+MAKEMATHPRIMITIVE2(HYPOT,hypot)
 
 extern Obj FuncIntHexString(Obj,Obj);
 
 Obj FuncINTFLOOR_MACFLOAT( Obj self, Obj obj )
 {
-#if defined(_ISOC99_SOURCE)
+#if HAVE_TRUNC
   Double f = trunc(VAL_MACFLOAT(obj));
 #else
   Double f = VAL_MACFLOAT(obj);
@@ -407,10 +425,10 @@ Obj FuncINTFLOOR_MACFLOAT( Obj self, Obj obj )
   if (fabs(f) < (Double) (1L<<NR_SMALL_INT_BITS))
     return INTOBJ_INT((Int)f);
 
-  int strlen = (int) (log(fabs(f)) / log(16.0)) + 3;
+  int str_len = (int) (log(fabs(f)) / log(16.0)) + 3;
 
-  Obj str = NEW_STRING(strlen);
-  char *s = CSTR_STRING(str), *p = s+strlen-1;
+  Obj str = NEW_STRING(str_len);
+  char *s = CSTR_STRING(str), *p = s+str_len-1;
   if (f < 0.0)
     f = -f, s[0] = '-';
   while (p > s || (p == s && s[0] != '-')) {
@@ -479,6 +497,9 @@ static StructGVarFilt GVarFilts [] = {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
+#define GVARENTRY(NAME) { #NAME "_MACFLOAT", 1, "macfloat",		\
+      Func##NAME##_MACFLOAT, "src/macfloat.c:" #NAME "_MACFLOAT" }
+
 static StructGVarFunc GVarFuncs [] = {
   { "MACFLOAT_INT", 1, "int",
     FuncMACFLOAT_INT, "src/macfloat.c:MACFLOAT_INT" },
@@ -486,56 +507,57 @@ static StructGVarFunc GVarFuncs [] = {
   { "MACFLOAT_STRING", 1, "string",
     FuncMACFLOAT_STRING, "src/macfloat.c:MACFLOAT_STRING" },
 
-  { "SIN_MACFLOAT", 1, "macfloat",
-    FuncSIN_MACFLOAT, "src/macfloat.c:SIN_MACFLOAT" },
-
-  { "COS_MACFLOAT", 1, "macfloat",
-    FuncCOS_MACFLOAT, "src/macfloat.c:COS_MACFLOAT" },
-
-  { "TAN_MACFLOAT", 1, "macfloat",
-    FuncTAN_MACFLOAT, "src/macfloat.c:TAN_MACFLOAT" },
-
-  { "ASIN_MACFLOAT", 1, "macfloat",
-    FuncASIN_MACFLOAT, "src/macfloat.c:ASIN_MACFLOAT" },
-
-  { "ACOS_MACFLOAT", 1, "macfloat",
-    FuncACOS_MACFLOAT, "src/macfloat.c:ACOS_MACFLOAT" },
-
-  { "ATAN_MACFLOAT", 1, "macfloat",
-    FuncATAN_MACFLOAT, "src/macfloat.c:ATAN_MACFLOAT" },
+  GVARENTRY(SIN),
+  GVARENTRY(COS),
+  GVARENTRY(TAN),
+  GVARENTRY(ASIN),
+  GVARENTRY(ACOS),
+  GVARENTRY(ATAN),
 
   { "ATAN2_MACFLOAT", 2, "real, imag",
     FuncATAN2_MACFLOAT, "src/macfloat.c:ATAN2_MACFLOAT" },
 
-  { "LOG_MACFLOAT", 1, "macfloat",
-    FuncLOG_MACFLOAT, "src/macfloat.c:LOG_MACFLOAT" },
+  { "HYPOT_MACFLOAT", 2, "real, imag",
+    FuncHYPOT_MACFLOAT, "src/macfloat.c:HYPOT_MACFLOAT" },
 
-  { "EXP_MACFLOAT", 1, "macfloat",
-    FuncEXP_MACFLOAT, "src/macfloat.c:EXP_MACFLOAT" },
+  GVARENTRY(LOG),
+  GVARENTRY(EXP),
+#if HAVE_LOG2
+  GVARENTRY(LOG2),
+#endif
+#if HAVE_LOG10
+  GVARENTRY(LOG10),
+#endif  
+#if HAVE_LOG1P
+  GVARENTRY(LOG1P),
+#endif  
+#if HAVE_EXP2
+  GVARENTRY(EXP2),
+#endif  
+#if HAVE_EXPM1
+  GVARENTRY(EXPM1),
+#endif
+#if HAVE_EXP10
+  GVARENTRY(EXP10),
+#endif
 
   { "LDEXP_MACFLOAT", 2, "macfloat, int",
     FuncLDEXP_MACFLOAT, "src/macfloat.c:LDEXP_MACFLOAT" },
 
-  { "FREXP_MACFLOAT", 1, "macfloat",
-    FuncFREXP_MACFLOAT, "src/macfloat.c:FREXP_MACFLOAT" },
-
-  { "SQRT_MACFLOAT", 1, "macfloat",
-    FuncSQRT_MACFLOAT, "src/macfloat.c:SQRT_MACFLOAT" },
-
-  { "RINT_MACFLOAT", 1, "macfloat",
-    FuncRINT_MACFLOAT, "src/macfloat.c:RINT_MACFLOAT" },
-
-  { "INTFLOOR_MACFLOAT", 1, "macfloat",
-    FuncINTFLOOR_MACFLOAT, "src/macfloat.c:INTFLOOR_MACFLOAT" },
-
-  { "FLOOR_MACFLOAT", 1, "macfloat",
-    FuncFLOOR_MACFLOAT, "src/macfloat.c:FLOOR_MACFLOAT" },
-
-  { "STRING_MACFLOAT", 1, "macfloat",
-    FuncSTRING_MACFLOAT, "src/macfloat.c:STRING_MACFLOAT" },
+  GVARENTRY(FREXP),
+  GVARENTRY(SQRT),
+  GVARENTRY(RINT),
+  GVARENTRY(INTFLOOR),
+  GVARENTRY(FLOOR),
+  GVARENTRY(CEIL),
+  GVARENTRY(ABS),
+  GVARENTRY(STRING),
 
   { "STRING_DIGITS_MACFLOAT", 2, "digits, macfloat",
     FuncSTRING_DIGITS_MACFLOAT, "src/macfloat.c:STRING_DIGITS_MACFLOAT" },
+
+  { "EQ_MACFLOAT", 2, "x, y",
+    FuncEqMacfloat, "src/macfloat.c:FuncEqMacfloat" },
 
   {0}
 };
@@ -561,7 +583,6 @@ static Int InitKernel (
 
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_MACFLOAT", &TYPE_MACFLOAT );
-    ImportGVarFromLibrary( "TYPE_MACFLOAT0", &TYPE_MACFLOAT0 );
     TypeObjFuncs[ T_MACFLOAT ] = TypeMacfloat;
 
     /* install the saving functions                                       */
@@ -654,8 +675,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoMacfloat ( void )
 {
-    module.revision_c = Revision_macfloat_c;
-    module.revision_h = Revision_macfloat_h;
     FillInVersion( &module );
     return &module;
 }

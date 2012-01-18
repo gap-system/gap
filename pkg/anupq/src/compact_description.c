@@ -2,7 +2,7 @@
 **
 *A  compact_description.c       ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: compact_description.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: compact_description.c,v 1.7 2011/12/31 19:36:23 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -25,7 +25,7 @@
  **              group. Note that existing files of this name are updated.
  ****************************************************************************/
 
-#if defined (LARGE_INT)
+#ifdef HAVE_GMP
 
 MP_INT Encode (p, length, list)
 int p;
@@ -34,7 +34,6 @@ int *list;
 {
   MP_INT powers, code;
   int i;
-  MP_INT factor;
 
   mpz_init_set_ui (&code, 0);
 
@@ -46,6 +45,7 @@ int *list;
   }
 /*
      if (list[i] != 0) {
+        MP_INT factor;
         mpz_init_set_si (&factor, list[i]);
         mpz_ui_pow_ui (&powers, p, i);
         mpz_mul (&powers, &powers, &factor);
@@ -65,7 +65,7 @@ int *compact_description (write_to_file, pcp)
 Logical write_to_file;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int p1;
    register int p2;
@@ -144,7 +144,7 @@ int ptr;
 int generator;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int i, gen, exp, count;
 #include "access.h"
@@ -173,13 +173,14 @@ int *sequence;
 int nmr_of_exponents;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
   
-   register int count;
-   FILE_TYPE output_file;
+   FILE * output_file;
    char *file_name;
-#ifdef LARGE_INT 
+#ifdef HAVE_GMP 
    MP_INT code;
+#else
+   register int count;
 #endif
 
    file_name = allocate_char_vector (MAXWORD + 1, 0, FALSE);
@@ -192,7 +193,7 @@ struct pcp_vars *pcp;
    /* write rank of Frattini quotient, number of pcp generators, prime,
       and exponent-p class to file */
 
-#ifdef LARGE_INT 
+#ifdef HAVE_GMP 
    fprintf (output_file, "[%d, %d, %d, ",
 	    y[pcp->clend + 1], pcp->lastg, pcp->cc);
    code = Encode (pcp->p, nmr_of_exponents, sequence);

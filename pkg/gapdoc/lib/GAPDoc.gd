@@ -2,7 +2,6 @@
 ##
 #W  GAPDoc.gd                    GAPDoc                          Frank Lübeck
 ##
-#H  @(#)$Id: GAPDoc.gd,v 1.7 2011/02/08 00:31:51 gap Exp $
 ##
 #Y  Copyright (C)  2000,  Frank Lübeck,  Lehrstuhl D für Mathematik,  
 #Y  RWTH Aachen
@@ -36,32 +35,8 @@ DeclareGlobalFunction("NormalizedArgList");
 BindGlobal("InfoGAPDoc", NewInfoClass("InfoGAPDoc"));
 SetInfoLevel(InfoGAPDoc, 1);
 if CompareVersionNumbers(GAPInfo.Version, "4.dev") then
-  SetInfoHandler(InfoGAPDoc, function(cl, lev, l)
-    CallFuncList(Print, l);
-  end);
+  SetInfoHandler(InfoGAPDoc, PlainInfoHandler);
 fi;
 
-##  <#GAPDoc Label="GAPDocLanguage">
-##  <ManSection >
-##  <Heading>Using &GAPDoc; with other languages</Heading>
-##  <Var Name="GAPDocTexts" />
-##  <Func Name="SetGAPDocLanguage" Arg="[lang]" />
-##  <Returns>Nothing.</Returns>
-##  <Description>
-##  The converter functions produce some language dependend text, for example 
-##  headings like <C>"Abstract"</C>, <C>"References"</C> or navigation links
-##  like <C>"Next Chapter"</C>. The default strings are stored in the record
-##  <C>GAPDocTexts.english</C>. To use &GAPDoc; with another language
-##  <A>lang</A> provide a translation <C>GAPDocTexts.(<A>lang</A>)</C> (in 
-##  <C>UTF-8</C> encoding) and
-##  set it with <Ref Func="SetGAPDocLanguage"/>. The default for <A>lang</A>
-##  is <C>"english"</C>.<P/>
-##  Furthermore, make sure that &LaTeX; supports your language, maybe use the
-##  <C>babel</C> package, and for languages with non-latin1 characters use
-##  the "utf8" option, see <Ref Func="GAPDoc2LaTeX"/> and <Ref
-##  Func="SetGapDocLaTeXOptions"/>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
 DeclareGlobalVariable("GAPDocTexts");
 DeclareGlobalFunction("SetGapDocLanguage");

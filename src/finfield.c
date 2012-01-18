@@ -3,7 +3,6 @@
 *W  finfield.c                  GAP source                      Werner Nickel
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id: finfield.c,v 4.54 2011/06/19 20:33:56 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -52,8 +51,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_finfield_c =
-   "@(#)$Id: finfield.c,v 4.54 2011/06/19 20:33:56 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -1865,7 +1862,7 @@ Obj FuncZ (
 
     /* check the argument                                                  */
     if ( (TNUM_OBJ(q) == T_INT && (INT_INTOBJ(q) > 65536)) ||
-	 (TNUM_OBJ(q) == T_INTPOS))
+         (TNUM_OBJ(q) == T_INTPOS))
       return CALL_1ARGS(ZOp, q);
     
     if ( TNUM_OBJ(q)!=T_INT || INT_INTOBJ(q)<=1 ) {
@@ -1917,20 +1914,20 @@ Obj FuncZ2 ( Obj self, Obj p, Obj d)
       ip = INT_INTOBJ(p);
       id = INT_INTOBJ(d);
       if (ip > 1 && id > 0 && id <= 16 && ip <= 65536)
-	{
-	  id1 = id;
-	  q = ip;
-	  while (--id1 > 0 && q <= 65536)
-	    q *= ip;
-	  if (q <= 65536)
-	    {
-	      /* get the finite field                                                */
-	      ff = FiniteField( ip, id );
-	      
-	      /* make the root                                                       */
-	      return NEW_FFE( ff, (ip == 2 && id == 1 ? 1 : 2) );
-	    }
-	}
+        {
+          id1 = id;
+          q = ip;
+          while (--id1 > 0 && q <= 65536)
+            q *= ip;
+          if (q <= 65536)
+            {
+              /* get the finite field                                                */
+              ff = FiniteField( ip, id );
+              
+              /* make the root                                                       */
+              return NEW_FFE( ff, (ip == 2 && id == 1 ? 1 : 2) );
+            }
+        }
     }
   return CALL_2ARGS(ZOp, p, d);
 }
@@ -2116,8 +2113,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFinfield ( void )
 {
-    module.revision_c = Revision_finfield_c;
-    module.revision_h = Revision_finfield_h;
     FillInVersion( &module );
     return &module;
 }

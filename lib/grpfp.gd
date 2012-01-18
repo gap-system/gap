@@ -2,7 +2,6 @@
 ##
 #W  grpfp.gd                    GAP library                    Volkmar Felsch
 ##
-#H  @(#)$Id: grpfp.gd,v 4.86 2010/10/10 12:34:37 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
 ##
-Revision.grpfp_gd :=
-    "@(#)$Id: grpfp.gd,v 4.86 2010/10/10 12:34:37 alexk Exp $";
 
 
 #############################################################################
@@ -232,6 +229,16 @@ InstallTrueMethod(CanEasilyTestMembership, IsSubgroupFgGroup and IsWholeFamily);
 ##  <P/>
 ##  Free groups are a special case of finitely presented groups,
 ##  namely finitely presented groups with no relators.
+##  <Example><![CDATA[
+##  gap> g:=FreeGroup(2);
+##  <free group on the generators [ f1, f2 ]>
+##  gap> IsFpGroup(g);
+##  true
+##  gap> h:=CyclicGroup(2);
+##  <pc group of size 2 with 1 generators>
+##  gap> IsFpGroup(h);
+##  false
+##  ]]></Example>
 ##  <P/>
 ##  Another special case are groups given by polycyclic presentations.
 ##  &GAP; uses a special representation for these groups which is created
@@ -865,7 +872,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  gap> G := F / [ x^2, y^4, z^3, (x*y)^3, (y*z)^2, (x*z)^3 ];;
 ##  gap> torsion := [ x, y, y^2, z, x*y, x*z, y*z ];;
 ##  gap> SetInfoLevel( InfoFpGroup, 2 );
-##  gap> lis := LowIndexSubgroupsFpGroup( G, TrivialSubgroup( G ), 24, torsion );;
+##  gap> lis := LowIndexSubgroupsFpGroup(G, TrivialSubgroup(G), 24, torsion);;
 ##  #I  LowIndexSubgroupsFpGroup called
 ##  #I   class 1 of index 24 and length 8
 ##  #I   class 2 of index 24 and length 24

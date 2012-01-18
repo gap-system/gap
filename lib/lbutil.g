@@ -2,15 +2,12 @@
 ##  
 #W  lbutil.g                 GAP Library                        Frank Lübeck
 ##  
-#H  @(#)$Id: lbutil.g,v 1.2 2010/02/23 15:13:11 gap Exp $
 ##  
 #Y  Copyright (C) 2004 The GAP Group
 ##  
 ##  This file contain a few simple tools for translating text files between
 ##  different line break conventions for Unix, DOS/Windows, MacOS.
 ##  
-Revision.lbutil_g := 
-  "@(#)$Id: lbutil.g,v 1.2 2010/02/23 15:13:11 gap Exp $";
 
 
 ############################################################################

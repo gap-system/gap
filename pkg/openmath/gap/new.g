@@ -1,19 +1,16 @@
-#############################################################################
+###########################################################################
 ##
-#W    new.g               OpenMath Package             Marco Costantini
+#W    new.g               OpenMath Package                 Marco Costantini
+#W                                                      Alexander Konovalov
 ##
-#H    @(#)$Id: new.g,v 1.24 2009/04/16 20:24:00 alexk Exp $
+#Y  Copyright (C) 1999, 2000, 2001, 2006
+#Y  School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2004, 2005, 2006 Marco Costantini
 ##
-#Y    Copyright (C) 1999, 2000, 2001, 2006
-#Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
-#Y    Copyright (C) 2004, 2005, 2006 Marco Costantini
-##
-##    This file contains updates to the record OMsymRecord, according to the
-##    current OpenMath CDs (for converting from OpenMath to GAP),
+##  This file contains updates to the record OMsymRecord, according to 
+##  the current OpenMath CDs (for converting from OpenMath to GAP).
 ##
 
-Revision.("openmath/gap/new.g") :=
-    "@(#)$Id: new.g,v 1.24 2009/04/16 20:24:00 alexk Exp $";
 
 #######################################################################
 ## 

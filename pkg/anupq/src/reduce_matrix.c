@@ -2,7 +2,7 @@
 **
 *A  reduce_matrix.c             ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: reduce_matrix.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: reduce_matrix.c,v 1.6 2011/11/29 13:48:18 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -15,7 +15,7 @@
 /* left echelonise mod p the matrix a, which has the supplied dimensions;
    set up its definition set both as a subset and as a bit string  */
 
-int reduce_matrix (a, nmr_rows, nmr_columns, p, pga)
+void reduce_matrix (a, nmr_rows, nmr_columns, p, pga)
 int **a;
 int nmr_rows;
 int nmr_columns;

@@ -2,7 +2,6 @@
 **
 *W  gvars.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: gvars.h,v 4.22 2010/02/23 15:13:43 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -26,9 +25,11 @@
 **  only reference the same value as the global variable if it is a function.
 **  Otherwise the internal copies reference functions that signal an error.
 */
+
+#ifndef GAP_GVARS_H
+#define GAP_GVARS_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_gvars_h =
-   "@(#)$Id: gvars.h,v 4.22 2010/02/23 15:13:43 gap Exp $";
 #endif
 
 #include "global.h"
@@ -209,7 +210,7 @@ extern void MakeThreadLocalVar (
     UInt		rnam );
 
 extern Int IsReadOnlyGVar (
-    UInt                gvar );			   
+    UInt                gvar );
 
 /****************************************************************************
 **
@@ -396,6 +397,8 @@ extern void SetGVar(GVarDescriptor *gvar, Obj obj);
 */
 StructInitInfo * InitInfoGVars ( void );
 
+
+#endif // GAP_GVARS_H
 
 /****************************************************************************
 **

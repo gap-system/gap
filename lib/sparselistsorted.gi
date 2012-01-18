@@ -2,7 +2,6 @@
 ##
 #W  sparselistsorted.gi             GAP library                      Steve Linton
 ##
-#H  @(#)$Id: sparselistsorted.gi,v 4.4 2010/02/23 15:13:31 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  associated methods
 ##
 
-Revision.sparselistsorted_gi :=
-  "@(#)$Id: sparselistsorted.gi,v 4.4 2010/02/23 15:13:31 gap Exp $";
 
 #############################################################################
 ##

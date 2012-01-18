@@ -2,7 +2,7 @@
 **
 *A  initialise_pcp.c            ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: initialise_pcp.c,v 1.5 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: initialise_pcp.c,v 1.6 2011/11/28 13:42:04 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -23,9 +23,7 @@ struct pcp_vars *pcp;
    pcp->diagn = output == 3;
    pcp->overflow = FALSE;
    pcp->multiplicator = FALSE;
-#ifndef Magma
    pcp->metabelian = FALSE;
-#endif
    pcp->cover = FALSE;
    pcp->valid = TRUE;
    pcp->end_wt = 0;
@@ -37,7 +35,4 @@ struct pcp_vars *pcp;
    pcp->lastg = 0;
    pcp->pm1 = pcp->p - 1;
    pcp->m = 0;
-#ifdef Magma
-   pcp->output_level = output;
-#endif
 }

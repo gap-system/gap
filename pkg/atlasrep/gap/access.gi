@@ -2,25 +2,46 @@
 ##
 #W  access.gi            GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: access.gi,v 1.99 2009/07/29 15:13:51 gap Exp $
-##
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains functions for accessing data from the ATLAS of Group
 ##  Representations.
 ##
-Revision.( "atlasrep/gap/access_gi" ) :=
-    "@(#)$Id: access.gi,v 1.99 2009/07/29 15:13:51 gap Exp $";
 
 
 #############################################################################
 ##
-##  If the IO package is not installed then an error message is avoided
-##  via the following assignment.
+#V  AGR.ExtensionInfoCharacterTable
+#V  AGR.HasExtensionInfoCharacterTable
+#V  AGR.LibInfoCharacterTable
+##
+if IsBound( ExtensionInfoCharacterTable ) then
+  AGR.ExtensionInfoCharacterTable:= ExtensionInfoCharacterTable;
+  AGR.HasExtensionInfoCharacterTable:= HasExtensionInfoCharacterTable;
+  AGR.LibInfoCharacterTable:= LibInfoCharacterTable;
+fi;
+
+
+#############################################################################
+##
+#F  AGR.IsLowerAlphaOrDigitChar( <char> )
+##
+AGR.IsLowerAlphaOrDigitChar:= 
+    char -> IsLowerAlphaChar( char ) or IsDigitChar( char );
+
+
+#############################################################################
+##
+##  If the IO package is not installed then error messages are avoided
+##  via the following assignments.
 ##
 if not IsBound( SingleHTTPRequest ) then
   SingleHTTPRequest:= "dummy";
 fi;
+if not IsBound( IO_stat ) then
+  IO_stat:= "dummy";
+fi;
+
 
 
 #############################################################################
@@ -82,7 +103,6 @@ BindGlobal( "AtlasOfGroupRepresentationsTransferFile",
     fi;
 
     srvfile:= Concatenation( "/", srvfile);
-#T do this outside?
 
     # Try the IO package if it is admissible.
     if io and LoadPackage( "io" ) = true then
@@ -125,10 +145,6 @@ BindGlobal( "AtlasOfGroupRepresentationsTransferFile",
     # No admissible alternative was successful.
     return false;
 end );
-
-if IsString( SingleHTTPRequest ) then
-  Unbind( SingleHTTPRequest );
-fi;
 
 
 #############################################################################
@@ -433,7 +449,7 @@ InstallValue( AtlasOfGroupRepresentationsAccessFunctionsDefault, [
 #      fi;
 #
 #      # Try to fetch the remote file.
-#      result:= fail; 
+#      result:= fail;
 #      filename:= ReplacedString( filename, ".m", ".g" );
 #      for info in AtlasOfGroupRepresentationsInfo.servers do
 #
@@ -625,10 +641,79 @@ end );
 
 #############################################################################
 ##
-#F  AGRFileContents( <dirname>, <groupname>, <filename>, <type> )
+#F  AtlasOfGroupRepresentationsTestTableOfContentsRemoteUpdates()
 ##
-InstallGlobalFunction( AGRFileContents,
-    function( dirname, groupname, filename, type )
+InstallGlobalFunction(
+    AtlasOfGroupRepresentationsTestTableOfContentsRemoteUpdates, function()
+
+    local version, inforec, home, server, path, dstfilename, result, lines,
+          datadirs, line, pos, pos2, filename, localfile, servdate, stat;
+
+    if LoadPackage( "io" ) <> true then
+      Info( InfoAtlasRep, 1, "the package IO is not available" );
+      return fail;
+    fi;
+
+    # Download the file that lists the changes.
+    version:= InstalledPackageVersion( "atlasrep" );
+    inforec:= First( PackageInfo( "atlasrep" ), r -> r.Version = version );
+    home:= inforec.PackageWWWHome;
+    if home{ [ 1 .. 7 ] } = "http://" then
+      home:= home{ [ 8 .. Length( home ) ] };
+    fi;
+
+    server:= home{ [ 1 .. Position( home, '/' ) - 1 ] };
+    path:= home{ [ Position( home, '/' ) + 1 .. Length( home ) ] };
+    dstfilename:= Filename( DirectoryTemporary(), "changes.htm" );
+
+    result:= [];
+    if AtlasOfGroupRepresentationsTransferFile( server,
+               Concatenation( path, "/htm/data/changes.htm" ),
+               dstfilename ) then
+      lines:= SplitString( StringFile( dstfilename ), "\n" );
+      lines:= Filtered( lines,
+                  x ->     20 < Length( x ) and x{ [ 1 .. 4 ] } = "<tr>"
+                       and x{ [ -3 .. 0 ] + Length( x ) } = " -->" );
+      datadirs:= Concatenation(
+                     DirectoriesPackageLibrary( "atlasrep", "datagens" ),
+                     DirectoriesPackageLibrary( "atlasrep", "dataword" ) );
+      for line in lines do
+        pos:= PositionSublist( line, "</td><td>" );
+        if pos <> fail then
+          pos2:= PositionSublist( line, "</td><td>", pos );
+          filename:= line{ [ pos+9 .. pos2-1 ] };
+          localfile:= Filename( datadirs, filename );
+          if localfile <> fail then
+            if not IsExistingFile( localfile ) then
+              localfile:= Concatenation( localfile, ".gz" );
+            fi;
+            if IsExistingFile( localfile ) then
+              # There is something to compare.
+              pos:= PositionSublist( line, "<!-- " );
+              if pos <> fail then
+                servdate:= Int( line{ [ pos+5 .. Length( line )-4 ] } );
+                stat:= IO_stat( localfile );
+                if stat <> fail then
+                  if stat.mtime < servdate then
+                    Add( result, localfile );
+                  fi;
+                fi;
+              fi;
+            fi;
+          fi;
+        fi;
+      od;
+    fi;
+
+    return result;
+    end );
+
+
+#############################################################################
+##
+#F  AGR.FileContents( <dirname>, <groupname>, <filename>, <type> )
+##
+AGR.FileContents:= function( dirname, groupname, filename, type )
     local result;
 
     if not ( IsString( filename ) or
@@ -644,7 +729,7 @@ InstallGlobalFunction( AGRFileContents,
 
     # 3. We have the local file(s).  Try to extract the contents.
     return result[2].contents( result[1], filename, groupname, dirname, type );
-end );
+    end;
 
 
 #############################################################################
@@ -661,8 +746,8 @@ InstallGlobalFunction( FilenameAtlas,
             "FilenameAtlas is deprecated,\n#I  use ",
             "`AtlasOfGroupRepresentationsLocalFilenameTransfer' instead" );
     fi;
-    for type in AGRDataTypes( "rep", "prg" ) do
-      if AGRParseFilenameFormat( filename, type[2].FilenameFormat )
+    for type in AGR.DataTypes( "rep", "prg" ) do
+      if AGR.ParseFilenameFormat( filename, type[2].FilenameFormat )
              <> fail then
         return AtlasOfGroupRepresentationsLocalFilenameTransfer( dirname,
                    groupname, filename, type )[1];
@@ -674,11 +759,12 @@ end );
 
 #############################################################################
 ##
-#F  AGR_InfoForName( <gapname> )
+#F  AGR.InfoForName( <gapname> )
 ##
-BindGlobal( "AGR_InfoForName", function( gapname )
+AGR.InfoForName:= function( gapname )
     local pos;
 
+    gapname:= AGR.GAPName( gapname );
     pos:= PositionSorted( AtlasOfGroupRepresentationsInfo.GAPnames,
                           [ gapname ] );
     if pos <= Length( AtlasOfGroupRepresentationsInfo.GAPnames ) and
@@ -687,65 +773,908 @@ BindGlobal( "AGR_InfoForName", function( gapname )
     else
       return fail;
     fi;
-end );
+    end;
 
 
 #############################################################################
 ##
-#F  AGRGNAN( <gapname>, <atlasname>[, <size>[, <maxessizes>[, "all"
-#F           [, <compatinfo>]]]] )
+##  auxiliary function
 ##
-InstallGlobalFunction( AGRGNAN, function( arg )
+AGR.TST:= function( gapname, value, compname, testfun, msg )
+    if not IsBound( AGR.GAPnamesRec.( gapname ) ) then
+      Error( "AGR.GAPnamesRec.( \"", gapname, "\" ) is not bound" );
+    elif not IsBound( AGR.GAPnamesRec.( gapname )[3] ) then
+      Error( "AGR.GAPnamesRec.( \"", gapname, "\" )[3] is not bound" );
+    elif IsBound( AGR.GAPnamesRec.( gapname )[3].( compname ) ) then
+      Error( "AGR.GAPnamesRec.( \"", gapname, "\" )[3].", compname,
+             " is bound" );
+    elif not testfun( value ) then
+      Error( "<", compname, "> must be a ", msg );
+    fi;
+    end;
+
+
+#############################################################################
+##
+#F  AGR.IsRepNameAvailable( <repname> )
+##
+##  If `AtlasOfGroupRepresentationsInfo.checkData' is bound then this
+##  function is called when additional data are added that refer to the
+##  representation <repname>.
+##
+AGR.IsRepNameAvailable:= function( repname )
+    local filenames, type, parsed, groupname, gapname;
+
+    filenames:= [ Concatenation( repname, ".m1" ),
+                  Concatenation( repname, ".g" ) ];
+    for type in AGR.DataTypes( "rep" ) do
+      parsed:= List( filenames,
+          x -> AGR.ParseFilenameFormat( x, type[2].FilenameFormat ) );
+      if ForAny( parsed, IsList ) then
+        break;
+      fi;
+    od;
+    if ForAll( parsed, IsBool ) then
+      Print( "#E  wrong format of `", repname, "'\n" );
+      return false;
+    fi;
+    groupname:= First( parsed, IsList )[1];
+    gapname:= First( AtlasOfGroupRepresentationsInfo.GAPnames,
+                     pair -> pair[2] = groupname );
+    if gapname = fail then
+      Print( "#E  no group name `", groupname, "' for `", repname, "'\n" );
+      return false;
+    elif ForAll( AllAtlasGeneratingSetInfos( gapname[1] ),
+                 x -> x.repname <> repname ) then
+      Print( "#E  no representation `", repname, "' available\n" );
+      return false;
+    fi;
+
+    return true;
+    end;
+
+
+#############################################################################
+##
+#F  AGR.IsPrgNameAvailable( <prgname> )
+##
+##  If `AtlasOfGroupRepresentationsInfo.checkData' is bound then this
+##  function is called when additional data are added that refer to the
+##  program <prgname>.
+##
+AGR.IsPrgNameAvailable:= function( prgname )
+    local type, parsed, groupname;
+
+    for type in AGR.DataTypes( "prg" ) do
+      parsed:= AGR.ParseFilenameFormat( prgname, type[2].FilenameFormat );
+      if IsList( parsed ) then
+        break;
+      fi;
+    od;
+    if parsed = fail then
+      Print( "#E  wrong format of `", prgname, "'\n" );
+      return false;
+    fi;
+    groupname:= parsed[1];
+    if ForAny( AGR.TablesOfContents( "all" ),
+           toc -> IsBound( toc.( groupname ) ) and
+                  ForAny( RecNames( toc.( groupname ) ),
+                      nam -> ForAny( toc.( groupname ).( nam ),
+                                 l -> l[ Length( l ) ] = prgname ) ) ) then
+      return true;
+    else
+      Print( "#E  no program `", prgname, "' available\n" );
+      return false;
+    fi;
+    end;
+
+
+#############################################################################
+##
+#V  AGR.MapNameToGAPName
+#F  AGR.GAPName( <name> )
+##
+##  Let <name> be a string.
+##  If `LowercaseString( <name> )' is the lower case version of the GAP name
+##  of an ATLAS group then `AGR.GAPName' returns this GAP name.
+##  If <name> is an admissible name of a GAP character table with identifier
+##  <id> (this condition is already case insensitive) then `AGR.GAPName'
+##  returns `AGR.GAPName( <id> )'.
+##
+##  These two conditions are forced to be consistent, as follows.
+##  Whenever a GAP name <nam>, say, of an ATLAS group is notified with
+##  `AGR.GNAN', we compute `LibInfoCharacterTable( <nam> )'.
+##  If this is `fail' then there is no danger of an inconsistency,
+##  and if the result is a record <r> then we have the condition
+##  `AGR.GAPName( <r>.firstName ) = <nam>'.
+##
+##  So a case insensitive partial mapping from character table identifiers
+##  to GAP names of ATLAS groups is built in `AGR.GNAN',
+##  and is used in `AGR.GAPName'
+##
+##  Examples of different names for a group are `"F3+"' vs. `"Fi24'"'
+##  and `"S6"' vs. `"A6.2_1"'.
+##
+AGR.MapNameToGAPName:= [ [], [] ];
+
+AGR.GAPName:= function( name )
+    local r, nname, pos;
+
+    # Make sure that the file `gap/types.g' is alreay loaded.
+    IsRecord( AtlasOfGroupRepresentationsInfo );
+
+    if IsBound( AGR.LibInfoCharacterTable ) then
+      r:= AGR.LibInfoCharacterTable( name );
+    else
+      r:= fail;
+    fi;
+    if r = fail then
+      nname:= LowercaseString( name );
+    else
+      nname:= r.firstName;
+    fi;
+    pos:= Position( AGR.MapNameToGAPName[1], nname );
+    if pos = fail then
+      return name;
+    fi;
+    return AGR.MapNameToGAPName[2][ pos ];
+    end;
+
+
+#############################################################################
+##
+#F  AGR.GNAN( <gapname>, <atlasname> )
+##
+##  <#GAPDoc Label="AGR.GNAN">
+##  <Mark><C>AGR.GNAN( <A>gapname</A>, <A>atlasname</A> )</C></Mark>
+##  <Item>
+##    Called with two strings <A>gapname</A> (the &GAP; name of the group)
+##    and <A>atlasname</A> (the &ATLAS; name of the group),
+##    <C>AGR.GNAN</C> stores the information in the list
+##    <C>AtlasOfGroupRepresentationsInfo.GAPnames</C>,
+##    which defines the name mapping between the <Package>ATLAS</Package>
+##    names and &GAP; names of the groups.
+##    <P/>
+##    This function may be used also for private extensions of the database.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.GNAN("A5.2","S5")</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.GNAN:= function( gapname, atlasname )
+    local value, r, pos;
+
     if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
       if   ForAny( AtlasOfGroupRepresentationsInfo.GAPnames,
-                   pair -> arg[1] = pair[1] ) then
-        Error( "cannot notify `", arg[1], "' more than once" );
+                   pair -> gapname = pair[1] ) then
+        Error( "cannot notify `", gapname, "' more than once" );
       elif ForAny( AtlasOfGroupRepresentationsInfo.GAPnames,
-                   pair -> arg[2] = pair[2] ) then
-        Error( "ambiguous GAP names for ATLAS name `", arg[2], "'" );
-      elif IsBound( arg[3] ) and not IsPosInt( arg[3] ) then
-        Error( "third entry of <arg>, if given, must be a positive integer" );
-      elif IsBound( arg[4] ) and
-           not ( IsList( arg[4] ) and ForAll( arg[4], IsPosInt ) ) then
-        Error( "fourth entry of <arg>, if given, must be ",
-               "a list of positive integers" );
-      elif IsBound( arg[5] ) and not IsString( arg[5] ) then
-        Error( "fifth entry of <arg>, if given, must be a string" );
-      elif IsBound( arg[6] ) and not IsList( arg[6] ) then
-        Error( "sixth entry of <arg>, if given, must be a list" );
+                   pair -> atlasname = pair[2] ) then
+        Error( "ambiguous GAP names for ATLAS name `", atlasname, "'" );
       fi;
     fi;
-    MakeImmutable( arg );
-    AddSet( AtlasOfGroupRepresentationsInfo.GAPnames, arg );
-#T really AddSet?
-end );
+
+    # Make the character table names admissible.
+    if IsBound( AGR.LibInfoCharacterTable ) then
+      r:= AGR.LibInfoCharacterTable( gapname );
+    else
+      r:= fail;
+    fi;
+    if r = fail then
+      # Store the lowercase name.
+      Add( AGR.MapNameToGAPName[1], LowercaseString( gapname ) );
+      Add( AGR.MapNameToGAPName[2], gapname );
+    elif not r.firstName in AGR.MapNameToGAPName[1] then
+      Add( AGR.MapNameToGAPName[1], r.firstName );
+      Add( AGR.MapNameToGAPName[2], gapname );
+    else
+      Error( "<gapname> is not compatible with CTblLib" );
+    fi;
+
+    value:= [ gapname, atlasname, rec() ];
+    AddSet( AtlasOfGroupRepresentationsInfo.GAPnames, value );
+    AGR.GAPnamesRec.( gapname ):= value;
+    end;
 
 
 #############################################################################
 ##
-#F  AGR_SetGAPnamesSortDisp()
+#F  AGR.GRP( <dirname>, <simpname>, <groupname> )
 ##
-AGR_SetGAPnamesSortDisp:= function()
+##  <#GAPDoc Label="AGR.GRP">
+##  <Mark><C>AGR.GRP( <A>dirname</A>, <A>simpname</A>, <A>groupname</A>)</C></Mark>
+##  <Item>
+##    Called with three strings, <C>AGR.GRP</C> stores in the
+##    <C>groupname</C> component of 
+##    <Ref Var="AtlasOfGroupRepresentationsInfo"/> in which path on the
+##    servers the data about the group with &ATLAS; name <A>groupname</A>
+##    can be found.
+##    <P/>
+##    This function is <E>not</E> intended for private extensions of the
+##    database.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.GRP("alt","A5","S5")</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.GRP:= function( dirname, simpname, groupname )
+    local entry;
+
+    if ForAll( AtlasOfGroupRepresentationsInfo.GAPnames,
+               pair -> pair[2] <> groupname ) then
+
+      # There is no corresponding GAP name.
+      AddSet( AtlasOfGroupRepresentationsInfo.GAPnames,
+              Immutable( [ groupname, groupname ] ) );
+      AGR.SetGAPnamesSortDisp();
+      Info( InfoAtlasRep, 1,
+            "no GAP name known for `", groupname, "'" );
+
+    fi;
+
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
+      entry:= First( AtlasOfGroupRepresentationsInfo.groupnames,
+                     l -> l[3] = groupname );
+      if entry <> fail then
+
+        # Check whether the group is already notified.
+        if entry[1] = dirname then
+          Info( InfoAtlasRep, 1,
+                "group with Atlas name `", groupname, "' already notified" );
+        else
+          Error( "group with Atlas name `", groupname,
+                 "' notified for different directories!" );
+        fi;
+        if entry[2] <> simpname then
+          Error( "group with Atlas name `", groupname,
+                 "' notified for different simple groups!" );
+        fi;
+        return;
+      fi;
+    fi;
+
+    # Notify the group.
+    Add( AtlasOfGroupRepresentationsInfo.groupnames,
+         [ dirname, simpname, groupname ] );
+    end;
+
+
+#############################################################################
+##
+#F  AGR.TOC( <typename>, <filename>[, <n>] )
+##
+##  <#GAPDoc Label="AGR.TOC">
+##  <Mark><C>AGR.TOC( <A>typename</A>, <A>filename</A>[, <A>n</A>] )</C></Mark>
+##  <Item>
+##    Called with two strings <A>typename</A> and <A>filename</A>,
+##    <C>AGR.TOC</C> notifies an entry to the <C>TableOfContents.remote</C>
+##    component of <Ref Var="AtlasOfGroupRepresentationsInfo"/>,
+##    where <A>typename</A> must be the name of the data type to which
+##    the entry belongs and <A>filename</A> must be the prefix of the data
+##    file(s); the optional third argument <A>n</A> indicates that the
+##    generators are located in <A>n</A> files.
+##    <P/>
+##    This function is <E>not</E> intended for private extensions of the
+##    database.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.TOC("perm","S5G1-p5B0.m",2)</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.TOC:= function( arg )
+    local type, string, t, record, entry, groupname, added, j;
+
+    # Get the arguments.
+    type:= arg[1];
+    if Length( arg ) = 3 then
+      string:= Concatenation( arg[2], "1" );
+    else
+      string:= arg[2];
+    fi;
+
+    # Parse the filename with the given format info.
+    # type:= First( AGR.DataTypes( "rep", "prg" ), x -> x[1] = type );
+    for t in AGR.DataTypes( "rep", "prg" ) do
+      if t[1] = type then
+        type:= t;
+        break;
+      fi;
+    od;
+    record:= AtlasTableOfContents( "remote" ).TableOfContents;
+    entry:= AGR.ParseFilenameFormat( string, type[2].FilenameFormat );
+    if entry = fail then
+      Info( InfoAtlasRep, 1, "`", arg, "' is not a valid t.o.c. entry" );
+      return;
+    fi;
+
+    # Get the list for the data in the record for the group name.
+    groupname:= entry[1];
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) and
+       ForAll( AtlasOfGroupRepresentationsInfo.groupnames,
+               x -> x[3] <> groupname ) then
+      Error( "`", groupname, "' is not a valid group name" );
+    fi;
+    if not IsBound( record.( groupname ) ) then
+      record.( groupname ):= rec();
+    fi;
+    record:= record.( groupname );
+    if not IsBound( record.( type[1] ) ) then
+      record.( type[1] ):= [];
+    fi;
+
+    # Add the first filename.
+    added:= type[2].AddFileInfo( record.( type[1] ), entry, string );
+
+    # Add the other filenames if necessary.
+    if added and Length( arg ) = 3 then
+      for j in [ 2 .. arg[3] ] do
+        entry[ Length( entry ) ]:= j;
+        added:= type[2].AddFileInfo( record.( type[1] ), entry,
+                    Concatenation( arg[2], String( j ) ) )
+                and added;
+      od;
+    fi;
+
+    if not added then
+      Info( InfoAtlasRep, 1, "`", arg, "' is not a valid t.o.c. entry" );
+    fi;
+    end;
+
+
+#############################################################################
+##
+#F  AGR.GRS( <gapname>, <size> )
+##
+##  <#GAPDoc Label="AGR.GRS">
+##  <Mark><C>AGR.GRS( <A>gapname</A>, <A>size</A> )</C></Mark>
+##  <Item>
+##    Called with the string <A>gapname</A> (the &GAP; name of the group)
+##    and the integer <A>size</A> (the order of the group),
+##    <C>AGR.GRS</C> stores this information in
+##    <C>AtlasOfGroupRepresentationsInfo.GAPnames</C>.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.GRS("A5.2",120)</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.GRS:= function( gapname, size )
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
+      AGR.TST( gapname, size, "size", IsPosInt, "positive integer" );
+    fi;
+    AGR.GAPnamesRec.( gapname )[3].size:= size;
+    end;
+
+
+#############################################################################
+##
+#F  AGR.MXN( <gapname>, <nrMaxes> )
+##
+##  <#GAPDoc Label="AGR.MXN">
+##  <Mark><C>AGR.MXN( <A>gapname</A>, <A>nrMaxes</A> )</C></Mark>
+##  <Item>
+##    Called with the string <A>gapname</A> (the &GAP; name of the group)
+##    and the integer <A>nrMaxes</A> (the number of classes of maximal
+##    subgroups of the group),
+##    <C>AGR.MXN</C> stores the information in
+##    <C>AtlasOfGroupRepresentationsInfo.GAPnames</C>.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.MXN("A5.2",4)</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.MXN:= function( gapname, nrMaxes )
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
+      AGR.TST( gapname, nrMaxes, "nrMaxes", IsPosInt, "positive integer" );
+    fi;
+    AGR.GAPnamesRec.( gapname )[3].nrMaxes:= nrMaxes;
+    end;
+
+
+#############################################################################
+##
+#F  AGR.MXO( <gapname>, <sizesMaxes> )
+##
+##  <#GAPDoc Label="AGR.MXO">
+##  <Mark><C>AGR.MXO( <A>gapname</A>, <A>sizesMaxes</A> )</C></Mark>
+##  <Item>
+##    Called with the string <A>gapname</A> (the &GAP; name of the group)
+##    and the list <A>sizesMaxes</A> (of subgroup orders of the classes of
+##    maximal subgroups of the group, not necessarily dense,
+##    in non-increasing order),
+##    <C>AGR.MXO</C> stores the information in
+##    <C>AtlasOfGroupRepresentationsInfo.GAPnames</C>.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.MXO("A5.2",[60,24,20,12])</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.MXO:= function( gapname, sizesMaxes )
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
+      AGR.TST( gapname, sizesMaxes, "sizesMaxes",
+          x -> IsList( x ) and ForAll( x, IsPosInt )
+                           and IsSortedList( Reversed( Compacted( x ) ) ),
+          "list of non-increasing pos. integers" );
+    fi;
+    AGR.GAPnamesRec.( gapname )[3].sizesMaxes:= sizesMaxes;
+    end;
+
+
+#############################################################################
+##
+#F  AGR.MXS( <gapname>, <structureMaxes> )
+##
+##  <#GAPDoc Label="AGR.MXS">
+##  <Mark><C>AGR.MXS( <A>gapname</A>, <A>structureMaxes</A> )</C></Mark>
+##  <Item>
+##    Called with the string <A>gapname</A> (the &GAP; name of the group)
+##    and the list <A>structureMaxes</A> (of strings describing the
+##    structures of the maximal subgroups of the group, not necessarily dense),
+##    <C>AGR.MXS</C> stores the information in
+##    <C>AtlasOfGroupRepresentationsInfo.GAPnames</C>.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.MXS("A5.2",["A5","S4","5:4","S3x2"])</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.MXS:= function( gapname, structureMaxes )
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
+      AGR.TST( gapname, structureMaxes, "structureMaxes",
+          x -> IsList( x ) and ForAll( x, IsString ),
+          "list of strings" );
+    fi;
+    AGR.GAPnamesRec.( gapname )[3].structureMaxes:= structureMaxes;
+    end;
+
+
+#############################################################################
+##
+##  AGR.KERPRG( <gapname>, <kernelProgram> )
+##
+##  <#GAPDoc Label="AGR.KERPRG">
+##  <Mark><C>AGR.KERPRG( <A>gapname</A>, <A>kernelProgram</A> )</C></Mark>
+##  <Item>
+##    Called with the string <A>gapname</A> (the &GAP; name of the group)
+##    and the list <A>kernelProgram</A> (with entries the standardization of
+##    the group, the &GAP; name of a factor group, and the list of lines of a
+##    straight line program that computes generators of the kernel of the
+##    epimorphism from the group to the factor group),
+##    <C>AGR.KERPRG</C> stores the information in
+##    <C>AtlasOfGroupRepresentationsInfo.GAPnames</C>.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.KERPRG("2.J2",[1,"J2",[[[1,2]]]])</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.KERPRG:= function( gapname, kernelProgram )
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) and
+       not ( IsList( kernelProgram ) and Length( kernelProgram ) = 3 and
+             IsPosInt( kernelProgram[1] ) and
+             IsString( kernelProgram[2] ) and
+             IsDenseList( kernelProgram[3] ) ) then
+      Error( "<kernelProgram> must be a suitable list" );
+    fi;
+    if not IsBound( AGR.GAPnamesRec.( gapname )[3].kernelPrograms ) then
+      AGR.GAPnamesRec.( gapname )[3].kernelPrograms:= [];
+    fi;
+    Add( AGR.GAPnamesRec.( gapname )[3].kernelPrograms, kernelProgram );
+    end;
+
+
+#############################################################################
+##
+#F  AGR.STDCOMP( <gapname>, <factorCompatibility> )
+##
+##  <#GAPDoc Label="AGR.STDCOMP">
+##  <Mark><C>AGR.STDCOMP</C></Mark>
+##  <Item>
+##    Called with the string <A>gapname</A> (the &GAP; name of the group)
+##    and the list <A>factorCompatibility</A> (with entries
+##    the standardization of the group, the &GAP; name of a factor group,
+##    the standardization of this factor group, and
+##    <K>true</K> or <K>false</K>, indicating whether mapping the standard
+##    generators for <A>gapname</A> to those of <A>factgapname</A> defines an
+##    epimorphism),
+##    <C>AGR.STDCOMP</C> stores the information in
+##    <C>AtlasOfGroupRepresentationsInfo.GAPnames</C>.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.STDCOMP("2.A5.2",[1,"A5.2",1,true])</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.STDCOMP:= function( gapname, factorCompatibility )
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) and
+       not ( IsList( factorCompatibility ) and
+             Length( factorCompatibility ) = 4 and
+             IsPosInt( factorCompatibility[1] ) and
+             IsString( factorCompatibility[2] ) and
+             IsPosInt( factorCompatibility[3] ) and
+             IsBool( factorCompatibility[4] ) ) then
+      Error( "<factorCompatibility> must be a suitable list" );
+    fi;
+    if not IsBound( AGR.GAPnamesRec.( gapname )[3].factorCompatibility ) then
+      AGR.GAPnamesRec.( gapname )[3].factorCompatibility:= [];
+    fi;
+    Add( AGR.GAPnamesRec.( gapname )[3].factorCompatibility,
+         factorCompatibility );
+    end;
+
+
+#############################################################################
+##
+#F  AGR.RNG( <repname>, <descr> )
+##
+##  <#GAPDoc Label="AGR.RNG">
+##  <Mark><C>AGR.RNG( <A>repname</A>, <A>descr</A> )</C></Mark>
+##  <Item>
+##    Called with two strings <A>repname</A> (denoting the name
+##    of a file containing the generators of a matrix representation over a
+##    ring that is not determined by the filename)
+##    and <A>descr</A> (describing this ring <M>R</M>, say),
+##    <C>AGR.RNG</C> adds the triple
+##    <M>[ <A>repname</A>, <A>descr</A>, R ]</M>
+##    to the list stored in the <C>ringinfo</C> component of
+##    <Ref Var="AtlasOfGroupRepresentationsInfo"/>.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.RNG("A5G1-Ar3aB0","Field([Sqrt(5)])")</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.RNG:= function( repname, descr )
+    local triple;
+
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
+      # Check that this representation really exists.
+      if not AGR.IsRepNameAvailable( repname ) then
+        return;
+      fi;
+    fi;
+
+    triple:= [ repname, descr, EvalString( descr ) ];
+    if triple in AtlasOfGroupRepresentationsInfo.ringinfo then
+      Info( InfoAtlasRep, 1,
+            "triple `", triple, "' cannot be notified more than once" );
+    else
+      Add( AtlasOfGroupRepresentationsInfo.ringinfo, triple );
+    fi;
+    end;
+
+
+#############################################################################
+##
+#F  AGR.TOCEXT( <atlasname>, <std>, <maxnr>, <files> )
+##
+##  <#GAPDoc Label="AGR.TOCEXT">
+##  <Mark><C>AGR.TOCEXT( <A>atlasname</A>, <A>std</A>, <A>maxnr</A>, <A>files</A> )</C></Mark>
+##  <Item>
+##    Called with the string <A>atlasname</A> (the &ATLAS; name of the
+##    group), the positive integers <A>std</A> (the standardization) and
+##    <A>maxnr</A> (the number of the class of maximal subgroups), and
+##    the list <A>files</A> (of filenames of straight line programs for
+##    computing generators of the <A>maxnr</A>-th maximal subgroup, using
+##    a straight line program for a factor group plus perhaps some straight
+##    line program for computing kernel generators),
+##    <C>AGR.TOCEXT</C> stores the information in the <C>maxext</C> component
+##    of the <A>atlasname</A> component of the <C>"remote"</C>
+##    table of contents.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.TOCEXT("2A5",1,3,["A5G1-max3W1"])</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.TOCEXT:= function( atlasname, std, maxnr, files )
+    local r, info;
+
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
+      if not ( IsString( atlasname ) and IsPosInt( std )
+                                     and IsPosInt( maxnr )
+                                     and IsList( files )
+                                     and ForAll( files, IsString ) ) then
+        Error( "not a valid t.o.c.ext entry" );
+      elif ForAll( AtlasOfGroupRepresentationsInfo.GAPnames,
+                   x -> x[2] <> atlasname )  then
+        Error( "`", atlasname, "' is not a valid group name" );
+      fi;
+
+      # Check that the required programs really exist.
+      if not AGR.IsPrgNameAvailable( files[1] ) then
+        # The program for the max. subgroup of the factor is not available.
+        return;
+      elif IsBound( files[2] ) then
+        # Check whether the required program for computing kernel generators
+        # is available.
+        info:= First( AtlasOfGroupRepresentationsInfo.GAPnames,
+                      x -> x[2] = atlasname )[3];
+        if not ( IsBound( info.kernelPrograms ) and
+                 ForAny( info.kernelPrograms, x -> x[2] = files[2] ) ) then
+          Print( "#E  kernel program required by `", atlasname, "' and `",
+                 files, "' not available\n" );
+          return;
+        fi;
+      fi;
+    fi;
+
+    r:= AtlasTableOfContents( "remote" ).TableOfContents;
+    if not IsBound( r.( atlasname ) ) then
+      r.( atlasname ):= rec();
+    fi;
+    r:= r.( atlasname );
+    if not IsBound( r.maxext )  then
+      r.maxext:= [];
+    fi;
+    Add( r.maxext, [ std, maxnr, files ] );
+    end;
+
+
+#############################################################################
+##
+#F  AGR.API( <repname>, <info> )
+##
+##  <#GAPDoc Label="AGR.API">
+##  <Mark><C>AGR.API( <A>repname</A>, <A>info</A> )</C></Mark>
+##  <Item>
+##    Called with the string <A>repname</A> (denoting the name of a
+##    permutation representation)
+##    and the list <A>info</A> (describing the point stabilizer of this
+##    representation),
+##    <C>AGR.API</C> binds the component <A>repname</A> of the record
+##    <C>AtlasOfGroupRepresentationsInfo.permrepinfo</C> to <A>info</A>.
+##    <P/>
+##    <A>info</A> has the following entries.
+##    <List>
+##    <Item>
+##      At position <M>1</M>, the transitivity is stored.
+##    </Item>
+##    <Item>
+##      If the transitivity is zero then the second entry is the list of
+##      orbit lengths.
+##    </Item>
+##    <Item>
+##      If the transitivity is positive then the second entry is the rank
+##      of the action.
+##    </Item>
+##    <Item>
+##      If the transitivity is positive then the third entry is one of the
+##      strings <C>"prim"</C>, <C>"imprim"</C>, denoting primitivity or not.
+##    </Item>
+##    <Item>
+##      If the transitivity is positive then the fourth entry is a string
+##      describing the structure of the point stabilizer.
+##      If the third entry is <C>"imprim"</C> then this description consists
+##      of a subgroup part and a maximal subgroup part, separated by
+##      <C>" &lt; "</C>.
+##    </Item>
+##    <Item>
+##      If the third entry is <C>"prim"</C> then the fifth entry is either
+##      <C>"???"</C>
+##      or it denotes the number of the class of maximal subgroups
+##      that are the point stabilizers.
+##    </Item>
+##    </List>
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.API("A5G1-p5B0",[3,2,"prim","A4",1])</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.API:= function( repname, info )
+    local r;
+
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
+      if IsBound( AtlasOfGroupRepresentationsInfo.permrepinfo.( repname ) ) then
+        Error( "cannot notify `", repname, "' more than once" );
+      fi;
+
+      # Check that this representation really exists.
+      if not AGR.IsRepNameAvailable( repname ) then
+        return;
+      fi;
+    fi;
+
+    r:= rec( transitivity:= info[1] );
+    if info[1] = 0 then
+      r.orbits:= info[2];
+    else
+      r.rankAction:= info[2];
+      r.isPrimitive:= ( info[3] = "prim" );
+      r.stabilizer:= info[4];
+      if r.isPrimitive then
+        r.maxnr:= info[5];
+      fi;
+    fi;
+    AtlasOfGroupRepresentationsInfo.permrepinfo.( repname ):= r;
+    end;
+
+
+#############################################################################
+##
+#F  AGR.CHAR( <groupname>, <repname>, <char>, <pos>[, <charname>] )
+##
+##  <#GAPDoc Label="AGR.CHAR">
+##  <Mark><C>AGR.CHAR( <A>groupname</A>, <A>repname</A>, <A>char</A>, <A>pos</A>[, <A>charname</A>] )</C></Mark>
+##  <Item>
+##    Called with the strings <A>groupname</A> (the &GAP; name of the group)
+##    and <A>repname</A> (denoting the name of the representation),
+##    the integer <A>char</A> (the characteristic of the representation),
+##    and <A>pos</A> (the position or list of positions of the irreducible
+##    constituent(s)),
+##    <C>AGR.CHAR</C> stores the information in
+##    <C>AtlasOfGroupRepresentationsInfo.characterinfo</C>.
+##    A string describing the character can be entered as <A>charname</A>.
+##    <P/>
+##    An example of a valid call is
+##    <C>AGR.CHAR("M11","M11G1-p11B0",0,[1,2],"1a+10a")</C>.
+##  </Item>
+##  <#/GAPDoc>
+##
+AGR.CHAR:= function( arg )
+    local map, groupname, repname, char, pos;
+
+    map:= AtlasOfGroupRepresentationsInfo.characterinfo;
+    groupname:= arg[1];
+    repname:= arg[2];
+    char:= arg[3];
+    pos:= arg[4];
+    if not IsBound( map.( groupname ) ) then
+      map.( groupname ):= [];
+    fi;
+    map:= map.( groupname );
+    if char = 0 then
+      char:= 1;
+    fi;
+    if not IsBound( map[ char ] ) then
+      map[ char ]:= [ [], [], [] ];
+    fi;
+    map:= map[ char ];
+
+    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
+      # Check whether we have already a character for this representation.
+      # (Two different representations with the same character are allowed.)
+      if arg[2] in map[2] and map[1][ Position( map[2], repname ) ] <> pos then
+        Error( "attempt to enter two different characters for ", arg[2] );
+      fi;
+
+      # Check that this representation really exists.
+      if not AGR.IsRepNameAvailable( repname ) then
+        return;
+      fi;
+    fi;
+
+    Add( map[1], pos );
+    Add( map[2], repname );
+    if Length( arg ) = 5 then
+      Add( map[3], arg[5] );
+    else
+      Add( map[3], fail );
+    fi;
+    end;
+
+
+#############################################################################
+##
+#F  AGR.CompareAsNumbersAndNonnumbers( <nam1>, <nam2> )
+##
+##  This function is available as `BrowseData.CompareAsNumbersAndNonnumbers'
+##  if the Browse package is available.
+##  But we must deal also with the case that this package is not available.
+##
+AGR.CompareAsNumbersAndNonnumbers:= function( nam1, nam2 )
+    local len1, len2, len, digit, comparenumber, i;
+
+    len1:= Length( nam1 );
+    len2:= Length( nam2 );
+    len:= len1;
+    if len2 < len then
+      len:= len2;
+    fi;
+    digit:= false;
+    comparenumber:= 0;
+    for i in [ 1 .. len ] do
+      if nam1[i] in DIGITS then
+        if nam2[i] in DIGITS then
+          digit:= true;
+          if comparenumber = 0 then
+            # first digit of a number, or previous digits were equal
+            if nam1[i] < nam2[i] then
+              comparenumber:= 1;
+            elif nam1[i] <> nam2[i] then
+              comparenumber:= -1;
+            fi;
+          fi;
+        else
+          # if digit then the current number in `nam2' is shorter,
+          # so `nam2' is smaller;
+          # if not digit then a number starts in `nam1' but not in `nam2',
+          # so `nam1' is smaller
+          return not digit;
+        fi;
+      elif nam2[i] in DIGITS then
+        # if digit then the current number in `nam1' is shorter,
+        # so `nam1' is smaller;
+        # if not digit then a number starts in `nam2' but not in `nam1',
+        # so `nam2' is smaller
+        return digit;
+      else
+        # both characters are non-digits
+        if digit then
+          # first evaluate the current numbers (which have the same length)
+          if comparenumber = 1 then
+            # nam1 is smaller
+            return true;
+          elif comparenumber = -1 then
+            # nam2 is smaller
+            return false;
+          fi;
+          digit:= false;
+        fi;
+        # now compare the non-digits
+        if nam1[i] <> nam2[i] then
+          return nam1[i] < nam2[i];
+        fi;
+      fi;
+    od;
+
+    if digit then
+      # The suffix of the shorter string is a number.
+      # If the longer string continues with a digit then it is larger,
+      # otherwise the first digits of the number decide.
+      if len < len1 and nam1[ len+1 ] in DIGITS then
+        # nam2 is smaller
+        return false;
+      elif len < len2 and nam2[ len+1 ] in DIGITS then
+        # nam1 is smaller
+        return true;
+      elif comparenumber = 1 then
+        # nam1 is smaller
+        return true;
+      elif comparenumber = -1 then
+        # nam2 is smaller
+        return false;
+      fi;
+    fi;
+
+    # Now the longer string is larger.
+    return len1 < len2;
+    end;
+
+
+#############################################################################
+##
+#F  AGR.SetGAPnamesSortDisp()
+##
+##  Bind the component `AtlasOfGroupRepresentationsInfo.GAPnamesSortDisp'.
+##
+AGR.SetGAPnamesSortDisp:= function()
     local list;
 
     list:= ShallowCopy( AtlasOfGroupRepresentationsInfo.GAPnames );
     SortParallel( List( list, x -> x[1] ), list,
-                  BrowseData_CompareAsNumbersAndNonnumbers );
+                  AGR.CompareAsNumbersAndNonnumbers );
     AtlasOfGroupRepresentationsInfo.GAPnamesSortDisp:= list;
-end;
+    end;
 
 
 #############################################################################
 ##
-#F  AGRParseFilenameFormat( <string>, <format> )
+#F  AGR.ParseFilenameFormat( <string>, <format> )
 ##
-InstallGlobalFunction( "AGRParseFilenameFormat", function( string, format )
+AGR.ParseFilenameFormat:= function( string, format )
     local result, i, res;
 
     string:= SplitString( string, "-" );
-if Length( string ) <> Length( format[1] ) then
-  return fail;
-fi;
+    if Length( string ) <> Length( format[1] ) then
+      return fail;
+    fi;
     result:= [];
     for i in [ 1 .. Length( string ) ] do
 
@@ -758,63 +1687,7 @@ fi;
 
     od;
     return result;
-end );
-
-
-#############################################################################
-##
-#F  AGRRNG( <filename>, <descr> )
-##
-InstallGlobalFunction( AGRRNG, function( filename, descr )
-    local triple;
-
-    triple:= [ filename, descr, EvalString( descr ) ];
-    if triple in AtlasOfGroupRepresentationsInfo.ringinfo then
-      Info( InfoAtlasRep, 1,
-            "triple `", triple, "' cannot be notified more than once" );
-    else
-      Add( AtlasOfGroupRepresentationsInfo.ringinfo, triple );
-    fi;
-end );
-
-
-#############################################################################
-##
-#F  AGRAPI( <repname>, <info> )
-##
-##  <info> is a list with the following entries:
-##  - At position 1, the transitivity is stored.
-##  - If the transitivity is zero then the second entry is the list of
-##    orbit lengths.
-##  - If the transitivity is positive then the second entry is the rank
-##    of the action.
-##  - If the transitivity is positive then the third entry is one of the
-##    strings `"prim"', `"imprim"', denoting primitivity or not.
-##  - If the transitivity is positive then the fourth entry is a string
-##    that describes the structure of the point stabilizer.
-##  - If the third entry is `"prim"' then the fifth entry is either `"???"'
-##    or it denotes the number of the class of maximal subgroups
-##    that are the point stabilizers.
-##
-InstallGlobalFunction( AGRAPI, function( repname, info )
-    local r;
-
-    if IsBound( AtlasOfGroupRepresentationsInfo.permrepinfo.( repname ) ) then
-      Error( "cannot notify this again" );
-    fi;
-    r:= rec( transitivity:= info[1] );
-    if 0 < info[1] then
-      r.rankAction:= info[2];
-      r.isPrimitive:= ( info[3] = "prim" );
-      r.stabilizer:= info[4];
-      if r.isPrimitive then
-        r.maxnr:= info[5];
-      fi;
-    else
-      r.orbits:= info[2];
-    fi;
-    AtlasOfGroupRepresentationsInfo.permrepinfo.( repname ):= r;
-end );
+    end;
 
 
 #############################################################################
@@ -916,8 +1789,8 @@ BindGlobal( "AtlasOfGroupRepresentationsScanFilename",
       filename:= filename{ [ pos+1 .. Length( filename ) ] };
       pos:= Position( filename, '/' );
     od;
-    for type in AGRDataTypes( "rep", "prg" ) do
-      format:= AGRParseFilenameFormat( filename, type[2].FilenameFormat );
+    for type in AGR.DataTypes( "rep", "prg" ) do
+      format:= AGR.ParseFilenameFormat( filename, type[2].FilenameFormat );
       if format <> fail then
         groupname:= format[1];
         if not IsBound( result.( groupname ) ) then
@@ -981,7 +1854,7 @@ BindGlobal( "AtlasOfGroupRepresentationsComposeTableOfContents",
     result:= rec( otherfiles:= [] );
 
     # Deal with the case of `gzip'ped files, and omit obvious garbage.
-    for name in filelist do
+    for name in Set( filelist ) do
       len:= Length( name );
       if 3 <= len and name{ [ len-2 .. len ] } = ".gz" then
         name:= name{ [ 1 .. len-3 ] };
@@ -1006,7 +1879,7 @@ BindGlobal( "AtlasOfGroupRepresentationsComposeTableOfContents",
       if IsBound( result.( groupname ) ) then
 
         record:= result.( groupname );
-        for type in AGRDataTypes( "rep", "prg" ) do
+        for type in AGR.DataTypes( "rep", "prg" ) do
           if IsBound( record.( type[1] ) ) then
 
             type[2].PostprocessFileInfo( result, record );
@@ -1073,8 +1946,8 @@ InstallGlobalFunction( AtlasTableOfContents, function( string )
       # by testing which of the files in the remote t.o.c. are stored.
       tocremote:= AtlasTableOfContents( "remote" ).TableOfContents;
       typeinfo:= Concatenation(
-                     List( AGRDataTypes( "rep" ), x -> [ "datagens", x ] ),
-                     List( AGRDataTypes( "prg" ), x -> [ "dataword", x ] ) );
+                     List( AGR.DataTypes( "rep" ), x -> [ "datagens", x ] ),
+                     List( AGR.DataTypes( "prg" ), x -> [ "dataword", x ] ) );
       for groupname in RecNames( tocremote ) do
         r:= tocremote.( groupname );
         if IsRecord( r ) then
@@ -1122,7 +1995,9 @@ InstallGlobalFunction( AtlasTableOfContents, function( string )
     # Compose the result record.
     result:= AtlasOfGroupRepresentationsComposeTableOfContents( filenames,
                  groupnames );
-    result.diridPrivate:= string;
+    if string <> "local" then
+      result.diridPrivate:= string;
+    fi;
 
     # Store the newly computed table of contents.
     toc.( string ):= result;
@@ -1167,9 +2042,10 @@ end );
 ##
 #F  StoreAtlasTableOfContents( <filename> )
 ##
+##  Note that we must put everything into a single file because this is the
+##  one that can be fetched automatically by users.
+##
 InstallGlobalFunction( StoreAtlasTableOfContents, function( filename )
-    local toc, pos, pos2;
-
     if IsExistingFile( filename ) and not IsWritableFile( filename ) then
       Error( "<filename> must be writable if exists" );
     elif not IsBound( AtlasOfGroupRepresentationsInfo.TableOfContents.(
@@ -1177,21 +2053,8 @@ InstallGlobalFunction( StoreAtlasTableOfContents, function( filename )
       Error( "no remote t.o.c. exists" );
     fi;
 
-    # Copy the constant part of the data to the desired file.
-    toc:= StringFile( Filename( DirectoriesPackageLibrary( "atlasrep", "gap" ),
-                                "atlasprm.g" ) );
-    pos:= PositionSublist( toc, "##  Establish the bijection" );
-    pos2:= PositionSublist( toc, "do not edit" );
-    pos2:= Position( toc, '\n', pos2 );
-    toc:= toc{ [ pos .. pos2 ] };
-    Append( toc, "##\n\n" );
-    FileString( filename, toc );
-
     # Add the data.
-    AppendTo( filename,
-        StringOfAtlasTableOfContents( "remote" ),
-        "##################################################################",
-        "###########\n##\n#E\n\n" );
+    FileString( filename, StringOfAtlasTableOfContents( "remote" ) );
 end );
 
 
@@ -1208,13 +2071,16 @@ InstallGlobalFunction( ReplaceAtlasTableOfContents, function( filename )
 
     # Remove the information we are going to add by reading the file.
     AtlasOfGroupRepresentationsInfo.TableOfContents.( "remote" ):= rec();
-#T the file is assumed to contain only calls to AGRGNAN, AGRRNG, AGRTOC!
     priv:= AtlasOfGroupRepresentationsInfo.private;
     AtlasOfGroupRepresentationsInfo.GAPnames := [];
     AtlasOfGroupRepresentationsInfo.GAPnamesSortDisp:= [];
     AtlasOfGroupRepresentationsInfo.groupnames := [];
     AtlasOfGroupRepresentationsInfo.ringinfo := [];
     AtlasOfGroupRepresentationsInfo.private := [];
+    AtlasOfGroupRepresentationsInfo.characterinfo:= rec();
+    AtlasOfGroupRepresentationsInfo.permrepinfo:= rec();
+    AGR.MapNameToGAPName:= [ [], [] ];
+    AGR.GAPnamesRec:= rec();
 
     # Replace the old version by the new one.
     AtlasOfGroupRepresentationsInfo.checkData:= true;
@@ -1233,10 +2099,124 @@ end );
 #F  StringOfAtlasTableOfContents( <string> )
 ##
 InstallGlobalFunction( StringOfAtlasTableOfContents, function( string )
-    local toc, str, triple, groupname, reps, type, entry, i;
+    local str, pos, toc, sepline, triple, groupname, reps, type, entry,
+          lines, nam, line, r, map, i, j;
+
+    # Currently only the argument `"remote"' is supported.
+    if string <> "remote" then
+      Error( "sorry, private tables of contents are not yet supported here" );
+    fi;
+
+    # Copy the constant part of the data to the desired file.
+    str:= StringFile( Filename( DirectoriesPackageLibrary( "atlasrep", "gap" ),
+                                "atlasprm.g" ) );
+    pos:= PositionSublist( str, "AGR.SetGAPnamesSortDisp();" );
+    pos:= Position( str, '\n', pos );
+    str:= str{ [ 1 .. pos ] };
 
     toc:= AtlasTableOfContents( string ).TableOfContents;
-    str:= "";
+    sepline:= RepeatedString( "#", 77 );
+
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str, "Store group orders.\n" );
+    Append( str, "##\n" );
+    lines:= [];
+    for nam in RecNames( AGR.GAPnamesRec ) do
+      if IsBound( AGR.GAPnamesRec.( nam )[3].size ) then
+        entry:= AGR.GAPnamesRec.( nam )[3].size;
+        Add( lines, Concatenation( "AGR.GRS(\"", nam, "\",",
+                        String( entry ), ");\n" ) );
+      fi;
+    od;
+    Sort( lines );
+    for line in lines do
+      Append( str, line );
+    od;
+
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str, "Store numbers of classes of maximal subgroups.\n" );
+    Append( str, "##\n" );
+    lines:= [];
+    for nam in RecNames( AGR.GAPnamesRec ) do
+      if IsBound( AGR.GAPnamesRec.( nam )[3].nrMaxes ) then
+        entry:= AGR.GAPnamesRec.( nam )[3].nrMaxes;
+        Add( lines, Concatenation( "AGR.MXN(\"", nam, "\",",
+                        String( entry ), ");\n" ) );
+      fi;
+    od;
+    Sort( lines );
+    for line in lines do
+      Append( str, line );
+    od;
+
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str, "Store orders of maximal subgroups.\n" );
+    Append( str, "##\n" );
+    lines:= [];
+    for nam in RecNames( AGR.GAPnamesRec ) do
+      if IsBound( AGR.GAPnamesRec.( nam )[3].sizesMaxes ) then
+        entry:= AGR.GAPnamesRec.( nam )[3].sizesMaxes;
+        Add( lines, Concatenation( "AGR.MXO(\"", nam, "\",",
+                        ReplacedString( String( entry ), " ", "" ), ");\n" ) );
+      fi;
+    od;
+    Sort( lines );
+    for line in lines do
+      Append( str, line );
+    od;
+
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str, "Store structures of maximal subgroups.\n" );
+    Append( str, "##\n" );
+    lines:= [];
+    for nam in RecNames( AGR.GAPnamesRec ) do
+      if IsBound( AGR.GAPnamesRec.( nam )[3].structureMaxes ) then
+        entry:= AGR.GAPnamesRec.( nam )[3].structureMaxes;
+        Add( lines, Concatenation( "AGR.MXS(\"", nam, "\",",
+                        ReplacedString( String( entry ), " ", "" ), ");\n" ) );
+      fi;
+    od;
+    Sort( lines );
+    for line in lines do
+      Append( str, line );
+    od;
+
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str, "Store information about generators of kernels.\n" );
+    Append( str, "##\n" );
+    lines:= [];
+    for nam in RecNames( AGR.GAPnamesRec ) do
+      if IsBound( AGR.GAPnamesRec.( nam )[3].kernelPrograms ) then
+        for entry in AGR.GAPnamesRec.( nam )[3].kernelPrograms do
+          Add( lines, Concatenation( "AGR.KERPRG(\"", nam, "\",",
+                          ReplacedString( String( entry ), " ", "" ), ");\n" ) );
+        od;
+      fi;
+    od;
+    Sort( lines );
+    for line in lines do
+      Append( str, line );
+    od;
+
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str, "In the following, the table of contents is built\n" );
+    Append( str, "##  using `AGR.GRP' and `AGR.TOC'.\n" );
+    Append( str, "##  This part of the file is created by the function\n" );
+    Append( str, "##  `RecomputeAtlasTableOfContents',\n" );
+    Append( str, "##  do not edit below this line!\n" );
+    Append( str, "##\n\n" );
 
     for triple in AtlasOfGroupRepresentationsInfo.groupnames do
 
@@ -1244,7 +2224,7 @@ InstallGlobalFunction( StringOfAtlasTableOfContents, function( string )
       Append( str, "# " );
       Append( str, triple[3] );
       Append( str, "\n" );
-      Append( str, "AGRGRP(\"" );
+      Append( str, "AGR.GRP(\"" );
       Append( str, triple[1] );
       Append( str, "\",\"" );
       Append( str, triple[2] );
@@ -1256,7 +2236,7 @@ InstallGlobalFunction( StringOfAtlasTableOfContents, function( string )
       groupname:= triple[3];
       if IsBound( toc.( groupname ) ) then
         reps:= toc.( groupname );
-        for type in AGRDataTypes( "rep", "prg" ) do
+        for type in AGR.DataTypes( "rep", "prg" ) do
           if IsBound( reps.( type[1] ) ) then
             for entry in reps.( type[1] ) do
               if IsBound( type[2].TOCEntryString ) then
@@ -1269,41 +2249,183 @@ InstallGlobalFunction( StringOfAtlasTableOfContents, function( string )
             od;
           fi;
         od;
-        if IsBound( toc.( groupname ).maxextprg ) then
-          for entry in toc.( groupname ).maxextprg do
-            Append( str, Concatenation( "AGRTOCEXT(\"", groupname,
-                             "\",\"", entry[1], "\",[" ) );
-            for i in entry[2] do
-              Append( str, ReplacedString( String( i ), " ", "" ) );
-              Append( str, "," );
-            od;
-            Append( str, "]);\n" );
-          od;
-        fi;
-        if IsBound( toc.( groupname ).maxext ) then
-          for entry in toc.( groupname ).maxext do
-            Append( str, Concatenation( "AGRTOCEXT(\"", groupname, "\",",
-                           String( entry[1] ), ",", String( entry[2] ),
-                           ",[" ) );
-            for i in entry[3] do
-              Append( str, Concatenation( "\"", i, "\"," ) );
-            od;
-            Append( str, "]);\n" );
-          od;
-        fi;
       fi;
 
       Append( str, "\n" );
 
     od;
 
-    # Append the current date and time.
     Append( str, "\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str,
+      "What follows now are the representation dependent additional data.\n" );
+    Append( str, "##  They must be read after the notification of the representations,\n" );
+    Append( str, "##  in order to give us a chance to check the existence of the underlying\n");
+    Append( str, "##  representation.\n" );
+    Append( str, "##\n" );
+
+    # Append the compatibility information w.r.t. factors.
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str, "Store info about compatibility of generators with those of factor groups.\n" );
+    Append( str, "##\n" );
+    lines:= [];
+    for nam in RecNames( AGR.GAPnamesRec ) do
+      if IsBound( AGR.GAPnamesRec.( nam )[3].factorCompatibility ) then
+        for entry in AGR.GAPnamesRec.( nam )[3].factorCompatibility do
+          Add( lines, Concatenation( "AGR.STDCOMP(\"", nam, "\",",
+                          ReplacedString( String( entry ), " ", "" ), ");\n" ) );
+        od;
+      fi;
+    od;
+    Sort( lines );
+    for line in lines do
+      Append( str, line );
+    od;
+
+    # Append the information about the base rings of char. zero repres.
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str, "Store information about the rings over which characteristic zero\n" );
+    Append( str, "##  representations are written if known.\n" );
+    Append( str, "##  Note that the filenames do not contain this information,\n" );
+    Append( str, "##  so it has to be stored explicitly.\n" );
+    Append( str, "##\n" );
+    lines:= [];
+    for entry in AtlasOfGroupRepresentationsInfo.ringinfo do
+      Add( lines, Concatenation( "AGR.RNG(\"", entry[1], "\",\"", entry[2],
+                                 "\");\n" ) );
+    od;
+    Sort( lines );
+    for line in lines do
+      Append( str, line );
+    od;
+
+    # Append the information about compatibility of maxes scripts.
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str,
+        "Store information which straight line programs for restricting to maximal\n" );
+    Append( str,
+        "##  subgroups of a group can be used also for restricting to maximal\n" );
+    Append( str, "##  subgroups of downward extensions.\n" );
+    Append( str, "##\n" );
+    lines:= [];
+    for nam in RecNames( toc ) do
+      if IsRecord( toc.( nam ) ) and IsBound( toc.( nam ).maxext ) then
+        for entry in toc.( nam ).maxext do
+          Add( lines, Concatenation( "AGR.TOCEXT(\"", nam, "\",",
+            String( entry[1] ), ",", String( entry[2] ), ",",
+            ReplacedString( String( entry[3] ), " ", "" ), ");\n" ) );
+        od;
+      fi;
+    od;
+    Sort( lines );
+    for line in lines do
+      Append( str, line );
+    od;
+
+    # Append the primitivity information.
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  " );
+    Append( str,
+        "Store information about the point stabilizers of permutation\n" );
+    Append( str, "##  representations if known.\n" );
+    Append( str,
+        "##  Note that the filenames do not contain this information,\n" );
+    Append( str, "##  so it has to be stored explicitly.\n" );
+    Append( str, "##\n" );
+    lines:= [];
+    for nam in RecNames( AtlasOfGroupRepresentationsInfo.permrepinfo ) do
+      r:= AtlasOfGroupRepresentationsInfo.permrepinfo.( nam );
+      if not IsBound( r.isPrivate ) then
+        line:= Concatenation( "AGR.API(\"", nam, "\",[" );
+        Append( line, String( r.transitivity ) );
+        Append( line, "," );
+        if r.transitivity = 0 then
+          Append( line, ReplacedString( String( r.orbits ), " ", "" ) );
+          Append( line, "]);\n" );
+        else
+          Append( line, String( r.rankAction ) );
+          Append( line, "," );
+          if r.isPrimitive then
+            Append( line, "\"prim\"" );
+          else
+            Append( line, "\"imprim\"" );
+          fi;
+          Append( line, ",\"" );
+          Append( line, r.stabilizer );
+          Append( line, "\"" );
+          if r.isPrimitive then
+            Append( line, "," );
+            if IsInt( r.maxnr ) then
+              Append( line, String( r.maxnr ) );
+            else
+              Append( line, "\"" );
+              Append( line, String( r.maxnr ) );
+              Append( line, "\"" );
+            fi;
+          fi;
+          Append( line, "]);\n" );
+        fi;
+        Add( lines, line );
+      fi;
+    od;
+    Sort( lines );
+    for line in lines do
+      Append( str, line );
+    od;
+
+    # Append the character information.
+    Append( str, "\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n##  precomputed character data\n" );
+    Append( str, "##\n" );
+    lines:= [];
+    for nam in RecNames( AtlasOfGroupRepresentationsInfo.characterinfo ) do
+      map:= AtlasOfGroupRepresentationsInfo.characterinfo.( nam );
+      for i in [ 1 .. Length( map ) ] do
+        if IsBound( map[i] ) then
+          for j in [ 1 .. Length( map[i][1] ) ] do
+            line:= Concatenation( "AGR.CHAR(\"", nam, "\",\"", map[i][2][j], "\"," );
+#T only for the non-private ones!
+            if i = 1 then
+              Append( line, "0" );
+            else
+              Append( line, String( i ) );
+            fi;
+            Append( line, "," );
+            Append( line, ReplacedString( String( map[i][1][j] ), " ", "" ) );
+            if map[i][3][j] <> fail then
+              Append( line, ",\"" );
+              Append( line, map[i][3][j] );
+              Append( line, "\"" );
+            fi;
+            Append( line, ");\n" );
+            Add( lines, line );
+          od;
+        fi;
+      od;
+    od;
+    Sort( lines );
+    for line in lines do
+      Append( str, line );
+    od;
+
+    # Finally, append the current date and time.
+    Append( str, "\n\n" );
     Append( str, "AtlasOfGroupRepresentationsInfo.TableOfContents.( \"" );
     Append( str, string );
     Append( str, "\" ).lastupdated:=\n  \"" );
     Append( str, toc.lastupdated );
     Append( str, "\";\n\n" );
+    Append( str, sepline );
+    Append( str, "\n##\n#E\n\n" );
 
     return str;
 end );
@@ -1311,23 +2433,54 @@ end );
 
 #############################################################################
 ##
-#F  AGR_TablesOfContents( <descr> )
+#F  AGR.TablesOfContents( <descr> )
 ##
 ##  Admissible arguments are
-##  - the string "all",
-##  - the string "public",
-##  - a string describing a private table of contents, or
-##  - a list of strings as above.
+##  1 the string "all",
+##  2 the string "public",
+##  3 a string describing a private table of contents,
+##    (which occurs as the second component of an entry in
+##    `AtlasOfGroupRepresentationsInfo.private') or
+##  4 a list of conditions such as [ <std>, "contents", <...> ]
+##  5 a list of strings as 1-3.
 ##
-BindGlobal( "AGR_TablesOfContents", function( descr )
-    local label, tocs, flag, toc, pair;
+AGR.TablesOfContents:= function( descr )
+    local pos, tocid, i, label, tocs, flag, toc, pair;
 
-    if IsString( descr ) then
-      label:= descr;
-    else
-      label:= JoinStringsWithSeparator( SortedList( descr ), "|" );
+    if descr = [] then
+      descr:= [ "all" ];
+    elif IsString( descr ) then
+      descr:= [ descr ];
+    elif not IsList( descr ) then
+      Error( "<descr> must be a string or a list of strings/conditions" );
     fi;
 
+    pos:= Position( descr, "contents" );
+    if pos <> fail then
+      # `descr' is a list of conditions.
+      # Evaluate its "contents" part,
+      # i. e., restrict the tables of contents, and remove this condition.
+      tocid:= descr[ pos+1 ];
+      for i in [ pos .. Length( descr ) - 2 ] do
+        descr[i]:= descr[ i+2 ];
+      od;
+      Unbind( descr[ Length( descr ) ] );
+      Unbind( descr[ Length( descr ) ] );
+      if IsString( tocid ) then
+        descr:= [ tocid ];
+      else
+        descr:= tocid;
+      fi;
+    elif ForAny( descr, x -> x <> "all" and x <> "public"
+                        and ForAll( AtlasOfGroupRepresentationsInfo.private,
+                                    pair -> x <> pair[2] ) ) then
+      # `descr' is a list of conditions that does not restrict the
+      # table of contents.
+      descr:= [ "all" ];
+    fi;
+
+    # Now `descr' is a list of identifiers of tables of contents.
+    label:= JoinStringsWithSeparator( SortedList( descr ), "|" );
     if not IsBound( AtlasOfGroupRepresentationsInfo.TOC_Cache.( label ) ) then
       tocs:= [];
       if descr = "all" or descr = "public" or
@@ -1347,216 +2500,60 @@ BindGlobal( "AGR_TablesOfContents", function( descr )
       for pair in AtlasOfGroupRepresentationsInfo.private do
         if descr = "all" or "all" in descr or
            descr = pair[2] or pair[2] in descr then
-          Add( tocs, 
+          Add( tocs,
                AtlasOfGroupRepresentationsInfo.TableOfContents.( pair[2] ) );
         fi;
       od;
       AtlasOfGroupRepresentationsInfo.TOC_Cache.( label ):= tocs;
     fi;
     return AtlasOfGroupRepresentationsInfo.TOC_Cache.( label );
-end );
+end;
 
 
 #############################################################################
 ##
-#F  AGRGRP( <dirname>, <simpname>, <groupname> )
-##
-InstallGlobalFunction( AGRGRP,
-    function( dirname, simpname, groupname )
-    local entry;
-
-    if ForAll( AtlasOfGroupRepresentationsInfo.GAPnames,
-               pair -> pair[2] <> groupname ) then
-
-      # There is no corresponding {\GAP} name.
-      AddSet( AtlasOfGroupRepresentationsInfo.GAPnames,
-              Immutable( [ groupname, groupname ] ) );
-      AGR_SetGAPnamesSortDisp();
-      Info( InfoAtlasRep, 1,
-            "no GAP name known for `", groupname, "'" );
-
-    fi;
-
-    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) then
-      entry:= First( AtlasOfGroupRepresentationsInfo.groupnames,
-                     l -> l[3] = groupname );
-      if entry <> fail then
-
-        # Check whether the group is already notified.
-        if entry[1] = dirname then
-          Info( InfoAtlasRep, 1,
-                "group with Atlas name `", groupname, "' already notified" );
-        else
-          Error( "group with Atlas name `", groupname,
-                 "' notified for different directories!" );
-        fi;
-        if entry[2] <> simpname then
-          Error( "group with Atlas name `", groupname,
-                 "' notified for different simple groups!" );
-        fi;
-        return;
-      fi;
-    fi;
-
-    # Notify the group.
-    Add( AtlasOfGroupRepresentationsInfo.groupnames,
-         [ dirname, simpname, groupname ] );
-end );
-
-
-#############################################################################
-##
-#F  AGRTOC( <arg> )
-##
-InstallGlobalFunction( AGRTOC, function( arg )
-    local type, string, t, record, entry, groupname, added, j;
-
-    # Get the arguments.
-    type:= arg[1];
-    if Length( arg ) = 3 then
-      string:= Concatenation( arg[2], "1" );
-    else
-      string:= arg[2];
-    fi;
-
-    # Parse the filename with the given format info.
-    # type:= First( AGRDataTypes( "rep", "prg" ), x -> x[1] = type );
-    for t in AGRDataTypes( "rep", "prg" ) do
-      if t[1] = type then
-        type:= t;
-        break;
-      fi;
-    od;
-    record:= AtlasTableOfContents( "remote" ).TableOfContents;
-    entry:= AGRParseFilenameFormat( string, type[2].FilenameFormat );
-    if entry = fail then
-      Info( InfoAtlasRep, 1, "`", arg, "' is not a valid t.o.c. entry" );
-      return;
-    fi;
-
-    # Get the list for the data in the record for the group name.
-    groupname:= entry[1];
-    if IsBound( AtlasOfGroupRepresentationsInfo.checkData ) and
-       ForAll( AtlasOfGroupRepresentationsInfo.groupnames,
-               x -> x[3] <> groupname ) then
-      Info( InfoAtlasRep, 1, "`", groupname, "' is not a valid group name" );
-      return;
-    fi;
-    if not IsBound( record.( groupname ) ) then
-      record.( groupname ):= rec();
-    fi;
-    record:= record.( groupname );
-    if not IsBound( record.( type[1] ) ) then
-      record.( type[1] ):= [];
-    fi;
-
-    # Add the first filename.
-    added:= type[2].AddFileInfo( record.( type[1] ), entry, string );
-
-    # Add the other filenames if necessary.
-    if added and Length( arg ) = 3 then
-      for j in [ 2 .. arg[3] ] do
-        entry[ Length( entry ) ]:= j;
-        added:= type[2].AddFileInfo( record.( type[1] ), entry,
-                    Concatenation( arg[2], String( j ) ) )
-                and added;
-      od;
-    fi;
-
-    if not added then
-      Info( InfoAtlasRep, 1, "`", arg, "' is not a valid t.o.c. entry" );
-    fi;
-end );
-
-
-#############################################################################
-##
-#F  AGRTOCEXT( <atlasname>, <factname>, <lines> )
-#F  AGRTOCEXT( <atlasname>, <std>, <maxnr>, <files> )
-##
-InstallGlobalFunction( AGRTOCEXT, function( arg )
-    local record, groupname;
-
-    if Length( arg ) < 3 or not IsString( arg[1] ) then
-      Info( InfoAtlasRep, 1, "`", arg, "' is not a valid t.o.c.ext entry" );
-      return;
-    fi;
-    record:= AtlasTableOfContents( "remote" ).TableOfContents;
-    groupname:= arg[1];
-    if ForAll( AtlasOfGroupRepresentationsInfo.GAPnames,
-               x -> x[2] <> groupname )  then
-      Info( InfoAtlasRep, 1, "`", groupname, "' is not a valid group name" );
-      return;
-    fi;
-    if not IsBound( record.( groupname ) ) then
-      record.( groupname ):= rec();
-    fi;
-    record:= record.( groupname );
-    if   IsString( arg[2] ) and IsDenseList( arg[3] ) then
-      # Notify lines of a straight line program.
-      if not IsBound( record.maxextprg )  then
-        record.maxextprg:= [];
-      fi;
-      if ForAny( record.maxextprg, x -> x[1] = arg[2] ) then
-        Info( InfoAtlasRep, 1, "`", arg,
-              "' is not a valid t.o.c.ext entry" );
-        return;
-      fi;
-      Add( record.maxextprg, arg{ [ 2, 3 ] } );
-    elif Length( arg ) = 4 and IsPosInt( arg[2] ) and IsPosInt( arg[3] )
-                           and IsList( arg[4] )
-                           and ForAll( arg[4], IsString ) then
-      if not IsBound( record.maxext )  then
-        record.maxext:= [];
-      fi;
-      Add( record.maxext, arg{ [ 2 .. 4 ] } );
-    else
-      Info( InfoAtlasRep, 1, "`", arg, "' is not a valid t.o.c.ext entry" );
-    fi;
-end );
-
-
-#############################################################################
-##
-#F  AtlasOfGroupRepresentationsNotifyPrivateDirectory( <dir>[, <dirid>] )
+#F  AtlasOfGroupRepresentationsNotifyPrivateDirectory( <dir>[, <dirid>]
+#F     [, <test>] )
 ##
 InstallGlobalFunction( AtlasOfGroupRepresentationsNotifyPrivateDirectory,
     function( arg )
-    local dirname, dirid, dir, prm, toc, allfilenames, RemovedDirectories,
+    local dirname, dirid, test, oldtest, olddata, dir, prm, toc,
+          allfilenames, RemovedDirectories,
           groupname, record, type, entry, name, tocs, ok, oldtoc, names,
-          unknown;
+          unknown, nam;
 
     # Get and check the arguments.
-    if   Length( arg ) = 1 and IsString( arg[1] ) then
-      dirname:= ShallowCopy( arg[1] );
-      dirid:= dirname;
-      dir:= Directory( dirname );
-    elif Length( arg ) = 1 and IsDirectory( arg[1] ) then
-      dir:= arg[1];
-      dirname:= ShallowCopy( dir![1] );
+    if 1 <= Length( arg ) and Length( arg ) <= 3 and
+       ( IsString( arg[1] ) or IsDirectory( arg[1] ) ) and
+       ( Length( arg ) = 1 or ( IsString( arg[2] ) or IsBool( arg[2] ) ) ) and
+       ( Length( arg ) < 3 or ( IsString( arg[2] ) and IsBool( arg[3] ) ) ) then
+      if IsString( arg[1] ) then
+        dirname:= ShallowCopy( arg[1] );
+      else
+        dir:= arg[1];
+        dirname:= ShallowCopy( dir![1] );
 #T this is not clean!
 #T (how to call DirectoryContents for a directory given as an object?)
-      dirid:= dirname;
-    elif Length( arg ) = 2 and IsString( arg[1] ) and IsString( arg[2] ) then
-      dirname:= ShallowCopy( arg[1] );
-      dirid:= ShallowCopy( arg[2] );
-      dir:= Directory( dirname );
-    elif Length( arg ) = 2 and IsDirectory( arg[1] )
-                           and IsString( arg[2] ) then
-      dir:= arg[1];
-      dirname:= ShallowCopy( dir![1] );
-      dirid:= ShallowCopy( arg[2] );
+      fi;
+      if Length( arg ) = 1 then
+        dirid:= dirname;
+      elif IsString( arg[2] ) or Length( arg ) = 3 then
+        dirid:= arg[2];
+      else
+        dirid:= dirname;
+      fi;
+      if Length( arg ) = 1 then
+        test:= false;
+      elif IsBool( arg[2] ) then
+        test:= arg[2];
+      elif Length( arg ) = 3 then
+        test:= arg[3];
+      else
+        test:= false;
+      fi;
     else
       Error( "usage: AtlasOfGroupRepresentationsNotifyPrivateDirectory(\n",
-             "<dirname>[,<dirid>])" );
-    fi;
-
-    AtlasOfGroupRepresentationsInfo.checkData:= true;
-
-    # Read the primary file (for the group declarations).
-    prm:= Filename( dir, "toc.g" );
-    if IsExistingFile( prm ) = true then
-      Read( prm );
+             "  <dirname>[,<dirid>][,<test>])" );
     fi;
 
     # Add the directory name.
@@ -1571,6 +2568,23 @@ InstallGlobalFunction( AtlasOfGroupRepresentationsNotifyPrivateDirectory,
              " is already the identifier of another private directory" );
     fi;
     AddSet( AtlasOfGroupRepresentationsInfo.private, [ dirname, dirid ] );
+
+    # Read the primary file (for group declarations and describing data).
+    # The file may contain calls of `AGR.GNAN' (which must come *before* the
+    # data for the groups in question can be notified) and of `AGR.API' and
+    # `AGR.CHAR' (which must come *afterwards*).
+    # So we must postpone the calls of `AGR.IsRepNameAvailable'.
+    oldtest:= IsBound( AtlasOfGroupRepresentationsInfo.checkData );
+    Unbind( AtlasOfGroupRepresentationsInfo.checkData );
+    olddata:= rec(
+      permrepinfo:= RecNames( AtlasOfGroupRepresentationsInfo.permrepinfo ),
+      );
+#T same for characters!
+
+    prm:= Filename( dir, "toc.g" );
+    if IsExistingFile( prm ) = true then
+      Read( prm );
+    fi;
 
     # Set up a table of contents for the private directory.
     toc:= AtlasTableOfContents( dirid ).TableOfContents;
@@ -1603,6 +2617,7 @@ InstallGlobalFunction( AtlasOfGroupRepresentationsNotifyPrivateDirectory,
     od;
 
     # 2. Check whether the list is disjoint to the other tables of contents.
+#T this is expensive
     if AtlasOfGroupRepresentationsInfo.remote = true then
       tocs:= [ AtlasTableOfContents( "remote" ).TableOfContents ];
     else
@@ -1628,6 +2643,7 @@ InstallGlobalFunction( AtlasOfGroupRepresentationsNotifyPrivateDirectory,
                     ok:= false;
                     Info( InfoAtlasRep, 1,
                           "file `", name, "' was already in another t.o.c." );
+#T better remove the entry for this file
                   fi;
                 od;
               od;
@@ -1651,9 +2667,26 @@ InstallGlobalFunction( AtlasOfGroupRepresentationsNotifyPrivateDirectory,
                 List( unknown, x -> [ x, x ] ) );
     fi;
 
-    AGR_SetGAPnamesSortDisp();
+    AGR.SetGAPnamesSortDisp();
     AtlasOfGroupRepresentationsInfo.TOC_Cache:= rec();
-    Unbind( AtlasOfGroupRepresentationsInfo.checkData );
+    AtlasOfGroupRepresentationsInfo.TableOfContents.merged:= rec();
+
+    # Run the postponed tests.
+    if test then
+      AtlasOfGroupRepresentationsInfo.checkData:= true;
+      for nam in Difference(
+                   RecNames( AtlasOfGroupRepresentationsInfo.permrepinfo ),
+                   olddata.permrepinfo ) do
+        AtlasOfGroupRepresentationsInfo.permrepinfo.( nam ).isPrivate:= true;
+        ok:= AGR.IsRepNameAvailable( nam ) and ok;
+      od;
+#T check also the characters!
+    fi;
+
+    # Restore the original flag.
+    if not oldtest then
+      Unbind( AtlasOfGroupRepresentationsInfo.checkData );
+    fi;
 
     # Return the flag.
     return ok;
@@ -1682,7 +2715,7 @@ InstallGlobalFunction( AtlasOfGroupRepresentationsForgetPrivateDirectory,
         prm:= Filename( dir, "toc.g" );
         if IsExistingFile( prm ) = true then
           str:= StringFile( prm );
-          pos:= PositionSublist( str, "AGRGNAN" );
+          pos:= PositionSublist( str, "GNAN" );
           while pos <> fail do
             while pos <= Length( str ) and str[ pos ] <> '"' do
               pos:= pos + 1;
@@ -1692,12 +2725,13 @@ InstallGlobalFunction( AtlasOfGroupRepresentationsForgetPrivateDirectory,
                 for j in [ 1 .. Length( GAPnames ) ] do
                   if IsBound( GAPnames[j] ) and GAPnames[j][1] = gapname then
                     Unbind( GAPnames[j] );
+                    Unbind( AGR.GAPnamesRec.( gapname ) );
                     break;
                   fi;
                 od;
               fi;
             od;
-            pos:= PositionSublist( str, "AGRGNAN", pos2 );
+            pos:= PositionSublist( str, "GNAN", pos2 );
           od;
         fi;
 
@@ -1710,12 +2744,23 @@ InstallGlobalFunction( AtlasOfGroupRepresentationsForgetPrivateDirectory,
     od;
 
     AtlasOfGroupRepresentationsInfo.GAPnames:= Compacted( GAPnames );
-    AGR_SetGAPnamesSortDisp();
+    AGR.SetGAPnamesSortDisp();
     AtlasOfGroupRepresentationsInfo.TOC_Cache:= rec();
     end );
+
+
+if IsString( SingleHTTPRequest ) then
+  Unbind( SingleHTTPRequest );
+fi;
+if IsString( IO_stat ) then
+  Unbind( IO_stat );
+fi;
 
 
 #############################################################################
 ##
 #E
+
+#str:= StringOfAtlasTableOfContents( "remote" );;
+#FileString( "fil", str );
 

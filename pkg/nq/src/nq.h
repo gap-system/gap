@@ -9,6 +9,9 @@
 **    build a polycyclic presentation.
 */
 
+#ifndef NQ_H
+#define NQ_H
+
 #include <stdio.h>
 #include <string.h>
 
@@ -18,7 +21,7 @@
 /*
 **    This variable indicates whether GAP output should be produced.
 */
-extern	int	Gap;
+extern  int     Gap;
 
 /*
 **    This variable indicates whether the relation matrix for each factor
@@ -29,13 +32,13 @@ extern  int     AbelianInv;
 /*
 **    This variable switches the verbose mode on.
 */
-extern	int	Verbose;
+extern  int     Verbose;
 
 /*
 **    The input file name. Used in some routines to build a file name for
 **    outpout.
 */
-extern  char    *InputFile;
+extern const char *InputFile;
 
 #include "mem.h"
 #include "genexp.h"
@@ -44,58 +47,46 @@ extern  char    *InputFile;
 #include "collect.h"
 #include "macro.h"
 
-extern int	*Dimension;
+extern int      *Dimension;
 
-extern word	*Generators;
+extern word     *Generators;
 
 /*
 **    The data structures used for the integer triagonalization.
 */
-extern	long     NrRows;
-extern	long     NrCols;
-extern	long	*Heads;
+extern  long     NrRows;
+extern  long     NrCols;
+extern  long    *Heads;
 
 /*
 **    Functions manipulating words.
 **    Defined in word.c.
 */
-extern	word	getWord();
-extern	int	cmpWords();
-extern	void	printWord();
-
-/*
-**    Functions manipulating exponent vectors
-*/
-extern	expvec	expVector();
-
-/*
-**    Functions manipulating the pc-presentation,
-**    defined in pc.c.
-*/
-extern	void	initPcPres();
-extern	void	readPcPres();
-extern	void	calcCommute();
-extern	void	completePcPres();
-
-/*
-**    Some useful functions defined in system.c.
-*/
-extern	long	RunTime();
+extern  void    printWord(word w, char c);
+extern  void    printGen(gen g, char c);
 
 /*
 **    Early stoppping criterion.
 */
 extern int      EarlyStop;
 
-/*
-**    Print functions.
-*/
-extern	void	printList();
-extern	void	printExpVec();
+/* TODO: Misc decls */
+extern void SetupCommuteList(void); /* from addgen.c */
+extern void SetupCommute2List(void); /* from addgen.c */
+extern void SetupNrPcGensList(void); /* from addgen.c */
+extern void AddGenerators(void); /* from addgen.c */
 
-/*
-**    The consistency check.
-*/
-extern	void	consistency();
+extern void printEv(expvec ev); /* from consistency.c */
+extern void Consistency(void); /* from consistency.c */
 
-extern	void	NqRelations();
+extern void ElimGenerators(void); /* from eliminate.c */
+extern long appendExpVector(gen k, expvec ev, word w, gen *renumber); /* from eliminate.c */
+
+extern void PrintRawGapPcPres(void); /* from gap.c */
+
+extern void Tails(void); /* from tails.c */
+
+extern void InitTrMetAb(int t); /* from trmetab.c */
+extern void EvalTrMetAb(void); /* from trmetab.c */
+
+#endif

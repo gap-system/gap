@@ -2,26 +2,44 @@
 ##
 #W  float.gd                       GAP library              Laurent Bartholdi
 ##
-#H  @(#)$Id: float.gd,v 4.6 2011/06/20 21:55:23 gap Exp $
 ##
 #Y  Copyright (C) 2011 Laurent Bartholdi
 ##
 ##  This file deals with general float functions
 ##
-Revision.float_gd :=
-  "@(#)$Id: float.gd,v 4.6 2011/06/20 21:55:23 gap Exp $";
 
 #############################################################################
 ##
 #C  Floateans
 ##
 DeclareCategory("IsFloat", IsScalar and IsCommutativeElement and IsZDFRE);
+DeclareCategory("IsFloatInterval", IsFloat and IsCollection);
+DeclareCategory("IsComplexFloat", IsFloat);
+DeclareCategory("IsComplexFloatInterval", IsComplexFloat and IsFloatInterval);
 DeclareCategoryFamily("IsFloat");
 DeclareCategoryCollections("IsFloat");
 DeclareCategoryCollections("IsFloatCollection");
 BindGlobal("FloatsFamily", NewFamily("FloatsFamily", IsFloat));
 DeclareConstructor("NewFloat",[IsFloat,IsObject]);
+DeclareOperation("MakeFloat",[IsFloat,IsObject]);
 #############################################################################
+
+BindGlobal("DECLAREFLOATCREATOR", function(arg)
+    DeclareConstructor("NewFloat",arg);
+    DeclareOperation("MakeFloat",arg);
+end);
+
+BindGlobal("INSTALLFLOATCREATOR", function(arg)
+    if Length(arg)=3 then
+        InstallMethod(NewFloat,arg[1],arg[2],arg[3]);
+        InstallMethod(MakeFloat,arg[1],arg[2],arg[3]);
+    elif Length(arg)=4 then
+        InstallMethod(NewFloat,arg[1],arg[2],arg[3],arg[4]);
+        InstallMethod(MakeFloat,arg[1],arg[2],arg[3],arg[4]);
+    else
+        Error("INSTALLFLOATCREATOR only coded for 3-argument or 4-argument version");
+    fi;        
+end);
 
 #############################################################################
 ##
@@ -29,8 +47,10 @@ DeclareConstructor("NewFloat",[IsFloat,IsObject]);
 ##
 ## <#GAPDoc Label="FLOAT_UNARY">
 ## <ManSection>
+##   <Heading>Mathematical operations</Heading>
 ##   <Oper Name="Cos" Arg="x"/>
 ##   <Oper Name="Sin" Arg="x"/>
+##   <Oper Name="SinCos" Arg="x"/>
 ##   <Oper Name="Tan" Arg="x"/>
 ##   <Oper Name="Sec" Arg="x"/>
 ##   <Oper Name="Csc" Arg="x"/>
@@ -51,18 +71,37 @@ DeclareConstructor("NewFloat",[IsFloat,IsObject]);
 ##   <Oper Name="Log" Arg="x"/>
 ##   <Oper Name="Log2" Arg="x"/>
 ##   <Oper Name="Log10" Arg="x"/>
+##   <Oper Name="Log1p" Arg="x"/>
 ##   <Oper Name="Exp" Arg="x"/>
 ##   <Oper Name="Exp2" Arg="x"/>
 ##   <Oper Name="Exp10" Arg="x"/>
+##   <Oper Name="Expm1" Arg="x"/>
 ##   <Oper Name="Cuberoot" Arg="x"/>
 ##   <Oper Name="Square" Arg="x"/>
+##   <Oper Name="Hypothenuse" Arg="x y"/>
 ##   <Oper Name="Ceil" Arg="x"/>
 ##   <Oper Name="Floor" Arg="x"/>
 ##   <Oper Name="Round" Arg="x"/>
 ##   <Oper Name="Trunc" Arg="x"/>
+##   <Oper Name="Frac" Arg="x"/>
 ##   <Oper Name="SignFloat" Arg="x"/>
+##   <Oper Name="Argument" Arg="x"/>
+##   <Oper Name="Erf" Arg="x"/>
+##   <Oper Name="Zeta" Arg="x"/>
+##   <Oper Name="Gamma" Arg="x"/>
 ##   <Description>
 ##     Usual mathematical functions.
+##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="EqFloat" Arg="x y"/>
+##   <Returns>Whether the floateans <A>x</A> and <A>y</A> are equal</Returns>
+##   <Description>
+##     This function compares two floating-point numbers, and returns
+##     <K>true</K> if they are equal, and <K>false</K> otherwise; with the
+##     exception that <K>NaN</K> is always considered to be different from
+##     itself.
 ##   </Description>
 ## </ManSection>
 ##
@@ -70,9 +109,31 @@ DeclareConstructor("NewFloat",[IsFloat,IsObject]);
 ##   <Oper Name="PrecisionFloat" Arg="x"/>
 ##   <Returns>The precision of <A>x</A></Returns>
 ##   <Description>
-##     This function returns the precision, counted in number of bits,
+##     This function returns the precision, counted in number of binary digits,
 ##     of the floating-point number <A>x</A>.
 ##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Heading>Interval operations</Heading>
+##   <Oper Name="Sup" Arg="interval"/>
+##   <Oper Name="Inf" Arg="interval"/>
+##   <Oper Name="Mid" Arg="interval"/>
+##   <Oper Name="AbsoluteDiameter" Arg="interval"/>
+##   <Oper Name="RelativeDiameter" Arg="interval"/>
+##   <Oper Name="Overlaps" Arg="interval1 interval2"/>
+##   <Oper Name="IsDisjoint" Arg="interval1 interval2"/>
+##   <Oper Name="IncreaseInterval" Arg="interval delta"/>
+##   <Oper Name="BlowupInterval" Arg="interval ratio"/>
+##   <Oper Name="BisectInterval" Arg="interval"/>
+##   <Description>
+##     Most are self-explanatory.
+##     <C>BlowupInterval</C> returns an interval with same midpoint but 
+##     relative diameter increased by <A>ratio</A>; <C>IncreaseInterval</C>
+##     returns an interval with same midpoint but absolute diameter increased
+##     by <A>delta</A>; <C>BisectInterval</C> returns a list of two intervals
+##     whose union equals <A>interval</A>.
+##   </Description>  
 ## </ManSection>
 ##
 ## <ManSection>
@@ -89,7 +150,7 @@ DeclareConstructor("NewFloat",[IsFloat,IsObject]);
 ## </ManSection>
 ##
 ## <ManSection>
-##   <Var Name="FLOAT"/>
+##   <Var Name="FLOAT" Label="constants"/>
 ##   <Description>
 ##     This record contains useful floating-point constants: <List>
 ##     <Mark>DECIMAL_DIG</Mark> <Item>Maximal number of useful digits;</Item>
@@ -114,59 +175,66 @@ DeclareConstructor("NewFloat",[IsFloat,IsObject]);
 ## </ManSection>
 ## <#/GAPDoc>
 ##
-DeclareOperation("Cos",[IsFloat]);
-DeclareOperation("Sin",[IsFloat]);
-DeclareOperation("Tan",[IsFloat]);
-DeclareOperation("Sec",[IsFloat]);
-DeclareOperation("Csc",[IsFloat]);
-DeclareOperation("Cot",[IsFloat]);
-DeclareOperation("Asin",[IsFloat]);
-DeclareOperation("Acos",[IsFloat]);
-DeclareOperation("Atan",[IsFloat]);
-DeclareOperation("Cosh",[IsFloat]);
-DeclareOperation("Sinh",[IsFloat]);
-DeclareOperation("Tanh",[IsFloat]);
-DeclareOperation("Sech",[IsFloat]);
-DeclareOperation("Csch",[IsFloat]);
-DeclareOperation("Coth",[IsFloat]);
-DeclareOperation("Asinh",[IsFloat]);
-DeclareOperation("Acosh",[IsFloat]);
-DeclareOperation("Atanh",[IsFloat]);
+DeclareAttribute("Cos",IsFloat);
+DeclareAttribute("Sin",IsFloat);
+DeclareAttribute("Tan",IsFloat);
+DeclareAttribute("Sec",IsFloat);
+DeclareAttribute("Csc",IsFloat);
+DeclareAttribute("Cot",IsFloat);
+DeclareAttribute("Asin",IsFloat);
+DeclareAttribute("Acos",IsFloat);
+DeclareAttribute("Atan",IsFloat);
+DeclareAttribute("Cosh",IsFloat);
+DeclareAttribute("Sinh",IsFloat);
+DeclareAttribute("Tanh",IsFloat);
+DeclareAttribute("Sech",IsFloat);
+DeclareAttribute("Csch",IsFloat);
+DeclareAttribute("Coth",IsFloat);
+DeclareAttribute("Asinh",IsFloat);
+DeclareAttribute("Acosh",IsFloat);
+DeclareAttribute("Atanh",IsFloat);
 DeclareOperation("Log",[IsFloat]);
-DeclareOperation("Log2",[IsFloat]);
-DeclareOperation("Log10",[IsFloat]);
-DeclareOperation("Exp",[IsFloat]);
-DeclareOperation("Exp2",[IsFloat]);
-DeclareOperation("Exp10",[IsFloat]);
-DeclareOperation("CubeRoot",[IsFloat]);
-DeclareOperation("Square",[IsFloat]);
-DeclareOperation("Ceil",[IsFloat]);
-DeclareOperation("Floor",[IsFloat]);
-DeclareOperation("Round",[IsFloat]);
-DeclareOperation("Trunc",[IsFloat]);
+DeclareAttribute("Log2",IsFloat);
+DeclareAttribute("Log10",IsFloat);
+DeclareAttribute("Log1p",IsFloat);
+DeclareAttribute("Exp",IsFloat);
+DeclareAttribute("Exp2",IsFloat);
+DeclareAttribute("Exp10",IsFloat);
+DeclareAttribute("Expm1",IsFloat);
+DeclareAttribute("CubeRoot",IsFloat);
+DeclareAttribute("Square",IsFloat);
+DeclareAttribute("Ceil",IsFloat);
+DeclareAttribute("Floor",IsFloat);
+DeclareAttribute("Round",IsFloat);
+DeclareAttribute("Trunc",IsFloat);
 DeclareOperation("Atan2", [IsFloat,IsFloat]);
-DeclareOperation("FrExp", [IsFloat]);
+DeclareAttribute("FrExp", IsFloat);
 DeclareOperation("LdExp", [IsFloat,IsInt]);
 DeclareAttribute("Argument", IsFloat);
 DeclareAttribute("AbsoluteValue", IsFloat);
 #DeclareAttribute("Norm", IsFloat); #already defined
 DeclareOperation("Hypothenuse", [IsFloat,IsFloat]);
-DeclareOperation("Frac",[IsFloat]);
-DeclareOperation("SinCos",[IsFloat]);
-DeclareOperation("Erf",[IsFloat]);
-DeclareOperation("Zeta",[IsFloat]);
-DeclareOperation("Gamma",[IsFloat]);
+DeclareAttribute("Frac",IsFloat);
+DeclareAttribute("SinCos",IsFloat);
+DeclareAttribute("Erf",IsFloat);
+DeclareAttribute("Zeta",IsFloat);
+DeclareAttribute("Gamma",IsFloat);
 
-DeclareOperation("PrecisionFloat",[IsFloat]);
-DeclareOperation("SignFloat",[IsFloat]);
+DeclareAttribute("PrecisionFloat",IsFloat);
+DeclareAttribute("SignFloat",IsFloat);
 
-DeclareOperation("Sup", [IsFloat]);
-DeclareOperation("Inf", [IsFloat]);
-DeclareOperation("Mid", [IsFloat]);
-DeclareOperation("DiameterOfInterval", [IsFloat]);
-#DeclareOperation("Diameter", [IsFloat]);
+DeclareAttribute("Sup", IsFloat);
+DeclareAttribute("Inf", IsFloat);
+DeclareAttribute("Mid", IsFloat);
+DeclareAttribute("AbsoluteDiameter", IsFloat);
+DeclareAttribute("RelativeDiameter", IsFloat);
+#DeclareOperation("Diameter", IsFloat);
 DeclareOperation("Overlaps", [IsFloat,IsFloat]);
 DeclareOperation("IsDisjoint", [IsFloat,IsFloat]);
+DeclareOperation("EqFloat", [IsFloat,IsFloat]);
+DeclareOperation("IncreaseInterval", [IsFloat,IsFloat]);
+DeclareOperation("BlowupInterval", [IsFloat,IsFloat]);
+DeclareOperation("BisectInterval", [IsFloat,IsFloat]);
 
 DeclareProperty("IsPInfinity", IsFloat);
 DeclareProperty("IsNInfinity", IsFloat);
@@ -183,6 +251,7 @@ DeclareProperty("IsNaN", IsFloat);
 ## <ManSection>
 ##   <Oper Name="Float" Arg="obj"/>
 ##   <Oper Name="NewFloat" Arg="filter, obj"/>
+##   <Oper Name="MakeFloat" Arg="sample obj, obj"/>
 ##   <Returns>A new floating-point number, based on <A>obj</A></Returns>
 ##   <Description>
 ##     This function creates a new floating-point number.
@@ -209,7 +278,7 @@ DeclareProperty("IsNaN", IsFloat);
 ## </ManSection>
 ##
 ## <ManSection>
-##   <Oper Name="Rat" Arg="f"/>
+##   <Oper Name="Rat" Arg="f" Label="for floats"/>
 ##   <Returns>A rational approximation to <A>f</A></Returns>
 ##   <Description>
 ##     This command constructs a rational approximation to the
@@ -224,18 +293,20 @@ DeclareProperty("IsNaN", IsFloat);
 ## </ManSection>
 ##
 ## <ManSection>
-##   <Func Name="InstallFloatsHandler" Arg="rec"/>
-##   <Func Name="InstallFloatsConstructors" Arg="rec"/>
+##   <Func Name="SetFloats" Arg="rec [bits]"/>
 ##   <Description>
-##     Installs a new interface to floating-point numbers in &GAP;.
+##     Installs a new interface to floating-point numbers in &GAP;, optionally
+##     with a desired precision in binary digits.
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>
 ##
 DeclareGlobalFunction("Float");
-DeclareGlobalFunction("InstallFloatsHandler");
-DeclareGlobalFunction("InstallFloatsConstructors");
+DeclareGlobalFunction("SetFloats");
 #############################################################################
+
+DeclareOperation("Cyc", [IsFloat, IsPosInt]);
+DeclareOperation("Cyc", [IsFloat]);
 
 # these variables are read-write
 FLOAT := fail; # record holding all float information

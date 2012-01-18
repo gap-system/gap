@@ -447,7 +447,7 @@ AddModulePresentation := function( Q, M )
     od;
 
     # finally sort and transpose back
-    SortParallel( List(len, DepthVector), mat );
+    SortParallel( List(len, PositionNonZero), mat );
     M.tails := MutableTransposedMat( Reversed(mat) );
     M.rows := Length(M.tails);
     if M.rows>0 then M.cols := Length(M.tails[1]); fi;

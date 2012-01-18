@@ -3,14 +3,11 @@
 #W  stbc.gd                     GAP library                    Heiko Theißen
 #W                                                               Ákos Seress
 ##
-#H  @(#)$Id: stbc.gd,v 4.54 2010/04/30 19:21:25 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.stbc_gd :=
-    "@(#)$Id: stbc.gd,v 4.54 2010/04/30 19:21:25 alexk Exp $";
 
 
 #############################################################################

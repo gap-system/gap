@@ -2,7 +2,6 @@
 ##
 #W  relation.gi                  GAP library                   Andrew Solomon
 ##
-#H  @(#)$Id: relation.gi,v 4.57 2010/02/23 15:13:26 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -20,8 +19,6 @@
 ##  Andrew Solomon
 ##
 ##
-Revision.relation_gi :=
-    "@(#)$Id: relation.gi,v 4.57 2010/02/23 15:13:26 gap Exp $";
 
 ############################################################################
 ##
@@ -1970,7 +1967,7 @@ InstallMethod(EquivalenceClasses, "wraparound to call 2-argument version",
 ##
 #M  EquivalenceClasses( <E>, <C> )
 ##
-##  Returns the list of equivalence classes of an equivalence relation.
+##  Returns the list of equivalence classes of the equivalence relation <E> that intersect <C>.
 ##  This generic method will not terminate for an equivalence over an
 ##  infinite set.
 ##
@@ -1986,13 +1983,17 @@ InstallOtherMethod(EquivalenceClasses, "for a generic equivalence relation",
         classes := [];
         if HasEquivalenceRelationPartition(E) then
             for p in EquivalenceRelationPartition(E) do
-                Add(classes, EquivalenceClassOfElementNC(E, p[1]));
+                for elm in p do
+                    if elm in D then
+                        Add(classes, EquivalenceClassOfElementNC(E, elm));
+                        break;
+                    fi;
+                od;
             od;
             ## Get the singletons
             ##
-            if Sum(List(EquivalenceRelationPartition(E),i->Length(i)))<>
-                   Size(D) then
-                d := Difference(AsSet(D), Flat(EquivalenceRelationPartition(E)));
+            if Sum(List(EquivalenceRelationPartition(E),Length))<>Size(D) then
+                d := Difference(AsSet(D), Concatenation(EquivalenceRelationPartition(E)));
                 for p in d do
                     Add(classes, EquivalenceClassOfElementNC(E,p));
                  od;

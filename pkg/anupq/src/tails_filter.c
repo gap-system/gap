@@ -2,18 +2,19 @@
 **
 *A  tails_filter.c              ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: tails_filter.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: tails_filter.c,v 1.7 2011/11/28 17:47:22 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
 
-#if defined (TAILS_FILTER) && defined (GROUP) 
 #include "pq_defs.h"
 #include "pcp_vars.h"
 #include "constants.h"
 #include "pq_functions.h"
+
+#if defined (TAILS_FILTER) && defined (GROUP) 
 
 /* look up the definitions of two pcp generator */
 
@@ -22,7 +23,7 @@ int generator;
 int *weight_vector;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int structure = pcp->structure;
    int pointer = pcp->lused + 1;
@@ -68,7 +69,7 @@ Logical mo_filter (weight_vector, pcp)
 int *weight_vector;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    Logical filter; 
    int frattini_rank = y[pcp->clend + 1]; 
@@ -99,7 +100,7 @@ int right;
 int *weight_vector;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    Logical filter; 
    int frattini_rank = y[pcp->clend + 1]; 
@@ -128,7 +129,7 @@ Logical exp5_filter (weight_vector, pcp)
 int *weight_vector;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    int frattini_rank = y[pcp->clend + 1]; 
    Logical filter; 
@@ -156,7 +157,7 @@ int start_weight;
 int end_weight;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int structure = pcp->structure;
    register int class_end = pcp->clend;

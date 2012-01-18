@@ -2,7 +2,7 @@
 **
 *W  xgap.c                      XGAP Source                      Frank Celler
 **
-*H  @(#)$Id: xgap.c,v 1.13 2004/02/20 08:14:47 gap Exp $
+*H  @(#)$Id: xgap.c,v 1.14 2011/11/24 11:44:24 gap Exp $
 **
 *Y  Copyright 1995-1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1997,       Frank Celler,                 Huerth,       Germany
@@ -279,9 +279,9 @@ static void MenuPastePrompt ( item )
     paste = !paste;
     GTDropGapPrompt( GapTalk, !paste );
     if ( paste )
-	XtVaSetValues( item->entry, XtNrightBitmap, CheckMarkSymbol, 0 );
+	XtVaSetValues( item->entry, XtNrightBitmap, CheckMarkSymbol, NULL );
     else
-	XtVaSetValues( item->entry, XtNrightBitmap, EmptyMarkSymbol, 0 );
+	XtVaSetValues( item->entry, XtNrightBitmap, EmptyMarkSymbol, NULL );
 }
 
 static void MenuQuitGapCTRD ( item )
@@ -289,9 +289,9 @@ static void MenuQuitGapCTRD ( item )
 {
     QuitGapCtrlD = !QuitGapCtrlD;
     if ( QuitGapCtrlD )
-	XtVaSetValues( item->entry, XtNrightBitmap, CheckMarkSymbol, 0 );
+	XtVaSetValues( item->entry, XtNrightBitmap, CheckMarkSymbol, NULL );
     else
-	XtVaSetValues( item->entry, XtNrightBitmap, EmptyMarkSymbol, 0 );
+	XtVaSetValues( item->entry, XtNrightBitmap, EmptyMarkSymbol, NULL );
 }
 
 #ifndef NO_FILE_SELECTOR
@@ -441,30 +441,30 @@ static void CreateMenu (
 			       items->label, smeBSBObjectClass, menu,
 			       XtNrightMargin, 14,
                                XtNrightBitmap, EmptyMarkSymbol,
-			       0 );
+			       NULL );
 	    XtAddCallback( items->entry, XtNcallback,
 			   (XtCallbackProc)MenuSelected, items );
 	    switch ( items->sensitive )
 	    {
 		case S_INPUT_ONLY:
 		    AddList( ListInputOnly, items->entry );
-		    XtVaSetValues( items->entry, XtNsensitive, False, 0 );
+		    XtVaSetValues( items->entry, XtNsensitive, False, NULL );
 		    break;
 		case S_ERROR_ONLY:
 		    AddList( ListErrorOnly, items->entry );
-		    XtVaSetValues( items->entry, XtNsensitive, False, 0 );
+		    XtVaSetValues( items->entry, XtNsensitive, False, NULL );
 		    break;
 		case S_NORMAL_ONLY:
 		    AddList( ListNormalOnly, items->entry );
-		    XtVaSetValues( items->entry, XtNsensitive, False, 0 );
+		    XtVaSetValues( items->entry, XtNsensitive, False, NULL );
 		    break;
 		case S_RUNNING_ONLY:
 		    AddList( ListRunningOnly, items->entry );
-		    XtVaSetValues( items->entry, XtNsensitive, False, 0 );
+		    XtVaSetValues( items->entry, XtNsensitive, False, NULL );
 		    break;
 		case S_HELP_ONLY:
 		    AddList( ListHelpOnly, items->entry );
-		    XtVaSetValues( items->entry, XtNsensitive, False, 0 );
+		    XtVaSetValues( items->entry, XtNsensitive, False, NULL );
 		    break;
 		case S_ALWAYS:
 		    break;
@@ -504,9 +504,9 @@ void UpdateMenus ( state )
     for ( i = 0;  i < l->len;  i++ )
     {
 	if ( state == GAP_ERROR )
-	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, True, 0 );
+	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, True, NULL );
 	else
-	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, False, 0 );
+	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, False, NULL );
     }
 
     /* menu entry active only during input */
@@ -514,9 +514,9 @@ void UpdateMenus ( state )
     for ( i = 0;  i < l->len;  i++ )
     {
 	if ( state == GAP_ERROR || state == GAP_INPUT )
-	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, True, 0 );
+	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, True, NULL );
 	else
-	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, False, 0 );
+	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, False, NULL );
     }
 
     /* menu entry active only during normal input */
@@ -524,9 +524,9 @@ void UpdateMenus ( state )
     for ( i = 0;  i < l->len;  i++ )
     {
 	if ( state == GAP_INPUT )
-	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, True, 0 );
+	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, True, NULL );
 	else
-	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, False, 0 );
+	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, False, NULL );
     }
 
     /* menu entry active only while gap is running */
@@ -534,9 +534,9 @@ void UpdateMenus ( state )
     for ( i = 0;  i < l->len;  i++ )
     {
 	if ( state == GAP_RUNNING )
-	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, True, 0 );
+	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, True, NULL );
 	else
-	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, False, 0 );
+	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, False, NULL );
     }
 
     /* menu entry active only while gap is helping */
@@ -544,9 +544,9 @@ void UpdateMenus ( state )
     for ( i = 0;  i < l->len;  i++ )
     {
 	if ( state == GAP_HELP )
-	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, True, 0 );
+	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, True, NULL );
 	else
-	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, False, 0 );
+	    XtVaSetValues( (Widget)l->ptr[i], XtNsensitive, False, NULL );
     }
 }
 
@@ -615,8 +615,8 @@ static void GapTalkResized (
     {
 	
 	/* compute a sensible size */
-	XtVaGetValues( talk, XtNtextSink, &snk,  0 );
-	XtVaGetValues( snk,  XtNfont,     &font, 0 );
+	XtVaGetValues( talk, XtNtextSink, &snk,  NULL );
+	XtVaGetValues( snk,  XtNfont,     &font, NULL );
 	w = evt->xconfigure.width / font->max_bounds.width - 3;
 	h = evt->xconfigure.height / ( font->max_bounds.ascent
 	    + font->max_bounds.descent ) - 2;
@@ -702,7 +702,7 @@ static void CreateGapWindow ( void )
 	         box,
 		 XtNleftBitmap,     symbol,
 		 XtNx,              10,
-		 0 );
+		 NULL );
     CreateMenu( button, RunMenu );
 
     /* create help menu button and help menu */
@@ -710,7 +710,7 @@ static void CreateGapWindow ( void )
 	         box,
 		 XtNleftBitmap,     symbol,
 		 XtNx,              10,
-		 0 );
+		 NULL );
     CreateMenu( button, HelpMenu );
 
     /* create the communication window */
@@ -730,7 +730,7 @@ static void CreateGapWindow ( void )
     GTDropGapPrompt( GapTalk, True );
 
     /* to quit or not do quit on CTR-D */
-    XtVaGetValues( GapTalk, XtNquitGapCtrD, &flag,  0 );
+    XtVaGetValues( GapTalk, XtNquitGapCtrD, &flag, NULL );
     if ( flag )
     {
 	for ( i = 0;  GapMenu[i].label;  i++ )
@@ -741,7 +741,7 @@ static void CreateGapWindow ( void )
     }
 
     /* paste GAP prompt into talk window? */
-    XtVaGetValues( GapTalk, XtNpasteGapPrompt, &flag,  0 );
+    XtVaGetValues( GapTalk, XtNpasteGapPrompt, &flag, NULL );
     if ( flag )
     {
 	for ( i = 0;  GapMenu[i].label;  i++ )
@@ -1077,7 +1077,7 @@ int main ( argc,  argv )
     /* create a new top level shell and an applictation context */
     XGap = XtVaAppInitialize( &AppContext, "XGap",
 			      CommandOptions, XtNumber(CommandOptions),
-			      &i, argv, FallbackResources, 0 );
+			      &i, argv, FallbackResources, NULL );
     for ( j = len;  j <= argc;  j++ ) {
 	argv[i+(j-len)] = argv[j];
     }
@@ -1155,7 +1155,7 @@ int main ( argc,  argv )
     InitXCMDS();
 
     /* get color model */
-    XtVaGetValues( GapTalk, XtNcolorModel, &color, 0 );
+    XtVaGetValues( GapTalk, XtNcolorModel, &color, NULL );
     len = strlen(color);
     if ( !strncmp( color, "black&white", len ) )
 	mod = CM_BW;
@@ -1179,7 +1179,7 @@ int main ( argc,  argv )
 	mod = -1;
     }
     if ( mod != -1 ) {
-	XtVaGetValues( GapTalk, XtNcolors, &colors, 0 );
+	XtVaGetValues( GapTalk, XtNcolors, &colors, NULL );
 	GCSetColorModel( GapDisplay, mod, colors );
     }
 

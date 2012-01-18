@@ -2,7 +2,7 @@
 ##
 #W  ctocliff.tbl                GAP table library                Ute Schiffer
 ##
-#H  @(#)$Id: ctocliff.tbl,v 4.17 2010/12/01 17:39:15 gap Exp $
+#H  @(#)$Id: ctocliff.tbl,v 4.18 2011/09/28 14:32:10 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,6 +12,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctocliff.tbl,v $
+#H  Revision 4.18  2011/09/28 14:32:10  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.17  2010/12/01 17:39:15  gap
 #H  the table "2^8:O8+(2)" is also "O10+(2)M2"
 #H      TB
@@ -134,11 +138,6 @@
 #H  first proposal of the table library
 #H  ==========================================================================
 ##
-Revision.ctocliff_tbl :=
-    "@(#)$Id: ctocliff.tbl,v 4.17 2010/12/01 17:39:15 gap Exp $";
-
-SET_TABLEFILENAME("ctocliff");
-ALN:= Ignore;
 
 MOT("3^(1+10):U5(2):2",
 [
@@ -926,7 +925,6 @@ ALF("2^(1+22).Co2","B",[1,3,2,3,8,9,5,5,2,5,3,4,8,9,10,13,14,11,11,3,5,5,8,
 ALN("2^(1+22).Co2",["BN2B"]);
 
 LIBTABLE.LOADSTATUS.ctocliff:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

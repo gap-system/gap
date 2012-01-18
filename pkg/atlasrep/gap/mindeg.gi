@@ -2,16 +2,12 @@
 ##
 #W  mindeg.gi            GAP 4 package AtlasRep                 Thomas Breuer
 ##
-#H  @(#)$Id: mindeg.gi,v 1.6 2009/08/19 14:50:04 gap Exp $
-##
 #Y  Copyright (C)  2007,   Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains declarations for dealing with information about
 ##  permutation and matrix representations of minimal degree
 ##  for selected groups.
 ##
-Revision.( "atlasrep/gap/mindeg_gi" ) :=
-    "@(#)$Id: mindeg.gi,v 1.6 2009/08/19 14:50:04 gap Exp $";
 
 
 #############################################################################
@@ -90,9 +86,6 @@ InstallGlobalFunction( MinimalPermutationRepresentationInfo,
                  = "ConstructPermuted"
          and Length( ConstructionInfoCharacterTable( ordtbl )[2] ) = 1 then
         # Delegate to another table for which more information is available.
-#T careful: currently, the permuted tables must *not* have `Maxes' set,
-#T since no fusions are available!
-#T (one argument to change the setup ...)
         identifier:= ConstructionInfoCharacterTable( ordtbl )[2][1];
         value:= MinimalRepresentationInfo( identifier, NrMovedPoints );
         if value <> fail then
@@ -631,8 +624,8 @@ InstallGlobalFunction( ComputedMinimalRepresentationInfo, function()
       MinimalRepresentationInfo( grpname, NrMovedPoints, "recompute" );
       ordtbl:= CharacterTable( grpname );
       MinimalRepresentationInfo( grpname, Characteristic, 0, "recompute" );
-      if IsBound( info[3] ) then
-        size:= info[3];
+      if IsBound( info[3].size ) then
+        size:= info[3].size;
         for p in Set( Factors( size ) ) do
           MinimalRepresentationInfo( grpname, Characteristic, p,
                                      "recompute" );
@@ -796,112 +789,6 @@ InstallGlobalFunction( StringOfMinimalRepresentationInfoData,
             "  CallFuncList( SetMinimalRepresentationInfo, entry );\n" );
     Append( result, "od;\n" );
 
-    return result;
-    end );
-
-
-#############################################################################
-##
-#F  AGR_TestMinimalDegrees( [<msg>] )
-##
-InstallGlobalFunction( "AGR_TestMinimalDegrees", function( arg )
-    local result, msg, info, grpname, known, knownzero, deg, mindeg,
-          knownfinite, chars_and_sizes, size, p, knowncharp, q, knownsizeq;
-
-    result:= true;
-    msg:= ( Length( arg ) <> 0 );
-    for info in AtlasOfGroupRepresentationsInfo.GAPnames do
-
-      grpname:= info[1];
-
-      # Check permutation representations.
-      known:= AllAtlasGeneratingSetInfos( grpname, IsPermGroup, true );
-      if not IsEmpty( known ) then
-        deg:= Minimum( List( known, r -> r.p ) );
-        mindeg:= MinimalRepresentationInfo( grpname, NrMovedPoints,
-                     "lookup" );
-        if   mindeg = fail then
-          if msg then
-            Print( "#I  `", grpname, "': degree ", deg,
-                   " perm. repr. known but no minimality info stored\n" );
-          fi;
-        elif deg < mindeg.value then
-          Print( "#E  `", grpname, "': smaller perm. repr. (", deg,
-                 ") than minimal degree (", mindeg.value, ")\n" );
-          result:= false;
-        fi;
-      fi;
-
-      # Check matrix representations over fields in characteristic zero.
-      known:= AllAtlasGeneratingSetInfos( grpname, Ring, IsField );
-      knownzero:= Filtered( known,
-                      r -> IsBound( r.ring ) and not IsFinite( r.ring ) );
-      if not IsEmpty( knownzero ) then
-        deg:= Minimum( List( knownzero, r -> r.dim ) );
-        mindeg:= MinimalRepresentationInfo( grpname, Characteristic, 0,
-                     "lookup" );
-        if   mindeg = fail then
-          if msg then
-            Print( "#I  `", grpname, "': degree ", deg, " char. 0 ",
-                   "matrix repr. known but no minimality info stored\n" );
-          fi;
-        elif deg < mindeg.value then
-          Print( "#E  `", grpname, "': smaller char. 0 matrix repr. (", deg,
-                 ") than minimal degree (", mindeg.value, ")\n" );
-          result:= false;
-        fi;
-      fi;
-
-      # Check matrix representations over finite fields.
-      knownfinite:= Filtered( known, r -> IsFinite( r.ring ) );
-      chars_and_sizes:= [];
-      for size in Set( List( knownfinite, r -> Size( r.ring ) ) ) do
-        p:= SmallestRootInt( size );
-        info:= First( chars_and_sizes, pair -> pair[1] = p );
-        if info = fail then
-          Add( chars_and_sizes, [ p, [ size ] ] );
-        else
-          Add( info[2], size );
-        fi;
-      od;
-      for info in chars_and_sizes do
-        p:= info[1];
-        knowncharp:= Filtered( knownfinite,
-                               r -> Characteristic( r.ring ) = p );
-        deg:= Minimum( List( knowncharp, r -> r.dim ) );
-        mindeg:= MinimalRepresentationInfo( grpname, Characteristic, p,
-                     "lookup" );
-        if   mindeg = fail then
-          if msg then
-            Print( "#I  `", grpname, "': degree ", deg, " char. ", p,
-                   " matrix repr. known but no minimality info stored\n" );
-          fi;
-        elif deg < mindeg.value then
-          Print( "#E  `", grpname, "': smaller char. ", p, " matrix repr. (",
-                 deg, ") than minimal degree (", mindeg.value, ")\n" );
-          result:= false;
-        fi;
-        for q in info[2] do
-          knownsizeq:= Filtered( knownfinite,
-                                 r -> Size( r.ring ) = q );
-          deg:= Minimum( List( knownsizeq, r -> r.dim ) );
-          mindeg:= MinimalRepresentationInfo( grpname, Size, q,
-                       "lookup" );
-          if   mindeg = fail then
-            if msg then
-              Print( "#I  `", grpname, "': degree ", deg, " size ", q,
-                     " matrix repr. known but no minimality info stored\n" );
-            fi;
-          elif deg < mindeg.value then
-            Print( "#E  `", grpname, "': smaller size ", q,
-                   " matrix repr. (", deg, ") than minimal degree (",
-                   mindeg.value, ")\n" );
-            result:= false;
-          fi;
-        od;
-      od;
-
-    od;
     return result;
     end );
 

@@ -2,7 +2,7 @@
 ##
 #W  ctomax20.tbl                GAP table library               Thomas Breuer
 ##
-#H  @(#)$Id: ctomax20.tbl,v 4.2 2010/05/05 13:20:04 gap Exp $
+#H  @(#)$Id: ctomax20.tbl,v 4.3 2011/09/28 14:32:20 gap Exp $
 ##
 #Y  Copyright (C)  2009,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,6 +13,10 @@
 #H  ctbllib history
 #H  ---------------
 #H  $Log: ctomax20.tbl,v $
+#H  Revision 4.3  2011/09/28 14:32:20  gap
+#H  removed revision entry and SET_TABLEFILENAME call
+#H      TB
+#H
 #H  Revision 4.2  2010/05/05 13:20:04  gap
 #H  - added many class fusions,
 #H  - changed several class fusions according to consistency conditions,
@@ -31,11 +35,6 @@
 #H      TB
 #H
 ##
-Revision.ctomax20_tbl :=
-    "@(#)$Id: ctomax20.tbl,v 4.2 2010/05/05 13:20:04 gap Exp $";
-
-SET_TABLEFILENAME("ctomax20");
-ALN:= Ignore;
 
 MOT("2^(1+8)_+:U4(2)",
 0,
@@ -15099,7 +15098,6 @@ E(3)^2,-E(3)^2,-E(3)^2,E(3)^2,E(3),-E(3),-E(3),E(3),1,-1,-1,1,-2*E(3),2*E(3),
 ]);
 
 LIBTABLE.LOADSTATUS.ctomax20:="userloaded";
-ALN:= NotifyNameOfCharacterTable;
 
 #############################################################################
 ##

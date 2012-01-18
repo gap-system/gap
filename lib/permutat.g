@@ -3,7 +3,6 @@
 #W  permutat.g                   GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id: permutat.g,v 4.52 2010/10/14 18:02:17 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file deals with permutations.
 ##
-Revision.permutat_g :=
-    "@(#)$Id: permutat.g,v 4.52 2010/10/14 18:02:17 alexk Exp $";
 
 
 #############################################################################
@@ -578,8 +575,12 @@ BIND_GLOBAL( "MappingPermListList", function( src, dst )
 
     src := Concatenation( src, Difference( [1..Maximum(src)], src ) );
     dst := Concatenation( dst, Difference( [1..Maximum(dst)], dst ) );
+    src := PermList(src);
+    if src = fail then return fail; fi;
+    dst := PermList(dst);
+    if dst = fail then return fail; fi;
 
-    return LeftQuotient( PermList( src ), PermList( dst ) );
+    return LeftQuotient( src, dst );
 end );
 
 
@@ -641,7 +642,7 @@ InstallMethod( NrMovedPoints,
 #m  CycleStructurePerm( <perm> )  . . . . . . . . .  length of cycles of perm
 ##
 InstallMethod( CycleStructurePerm, "internal", [ IsPerm and IsInternalRep],0,
-  CycleStructPerm);
+  CYCLE_STRUCT_PERM);
 
 InstallMethod( CycleStructurePerm, "generic method", [ IsPerm ],0,
 function ( perm )
@@ -660,7 +661,7 @@ function ( perm )
         cys := [];
         for i in [1..degree] do
             if not mark[i] then 
-               cyc := CyclePermInt( perm, i );
+               cyc := CYCLE_PERM_INT( perm, i );
                len := Length(cyc) - 1;
                if 0 < len  then
                   if IsBound(cys[len])  then
@@ -721,7 +722,7 @@ InstallMethod( String,
 InstallMethod( Order,
     "for a permutation",
     [ IsPerm ],
-    OrderPerm );
+    ORDER_PERM );
 
 
 #############################################################################

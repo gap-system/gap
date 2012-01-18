@@ -3,36 +3,26 @@
 #W init.g                  POLENTA package                     Bjoern Assmann
 ##
 ##
-#H  @(#)$Id: init.g,v 1.4 2011/05/31 13:10:57 gap Exp $
+#H  @(#)$Id: init.g,v 1.5 2011/06/30 08:36:29 gap Exp $
 ##
 #Y 2003
 ##
-
-
-DeclarePackage( "polenta", "1.1", function() return true; end );
-#DeclarePackageDocumentation( "polenta", "doc" );
  
 #############################################################################
 #R  read .gd files
 ##
-ReadPkg( "polenta/lib/finite.gd" );
-ReadPkg( "polenta/lib/info.gd" );
-ReadPkg( "polenta/lib/basic.gd" );
-ReadPkg( "polenta/exam/test.gd" );
 
-ReadPkg( "polenta/lib/cpcs.gd" );
-ReadPkg( "polenta/lib/present.gd" );
-ReadPkg( "polenta/lib/solvable.gd" );
-ReadPkg( "polenta/lib/series.gd" );
-ReadPkg( "polenta/lib/subgroups.gd" );
-ReadPkg( "polenta/lib/ispolyz.gd" );
+ReadPackage( "polenta/lib/finite.gd" );
+ReadPackage( "polenta/lib/info.gd" );
+ReadPackage( "polenta/lib/basic.gd" );
+ReadPackage( "polenta/exam/test.gd" );
 
-############################################################################
-#R  read other packages
-##
-RequirePackage( "polycyclic" );
-RequirePackage( "alnuth" );
-RequirePackage( "aclib" );
+ReadPackage( "polenta/lib/cpcs.gd" );
+ReadPackage( "polenta/lib/present.gd" );
+ReadPackage( "polenta/lib/solvable.gd" );
+ReadPackage( "polenta/lib/series.gd" );
+ReadPackage( "polenta/lib/subgroups.gd" );
+ReadPackage( "polenta/lib/ispolyz.gd" );
 
 #############################################################################
 ##

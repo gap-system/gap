@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  factors.gd         Alnuth - PARI/GP interface          Andreas Distler
+#W  factors.gd      Alnuth - ALgebraic NUmber THeory        Andreas Distler
 ##
 
 #############################################################################

@@ -2,7 +2,7 @@
 %%
 %%  manual.tex            IRREDSOL documentation            Burkhard Höfling
 %%
-%%  @(#)$Id: manual.tex,v 1.15 2011/05/07 18:51:09 gap Exp $
+%%  @(#)$Id: manual.tex,v 1.16 2011/07/17 11:57:45 gap Exp $
 %%
 %%  Copyright © Burkhard Höfling (burkhard@hoefling.name)
 %%
@@ -13,12 +13,16 @@
 % input GAP macro file
 \input ../../../doc/gapmacro.tex
 
+\citebookstrue
+\biblitemtrue
+\bibindent 4em
+
 % declare some package names
 \Package{IRREDSOL}
 \Package{CRISP}
 
 % allow manual line breaks in long function names
-\def\\{\discretionary{\char92}{}{}} 
+\gdef\\{\discretionary{\char92}{}{}} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \BeginningOfBook{irredsol}

@@ -2,7 +2,6 @@
 **
 *W  read.h                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id: read.h,v 4.21 2011/02/18 20:36:18 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,9 +9,11 @@
 **
 **  This module declares the functions to read  expressions  and  statements.
 */
+
+#ifndef GAP_READ_H
+#define GAP_READ_H
+
 #ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_read_h =
-   "@(#)$Id: read.h,v 4.21 2011/02/18 20:36:18 gap Exp $";
 #endif
 
 
@@ -140,6 +141,8 @@ Obj Call1ArgsInNewReader(Obj f,Obj a);
 */
 StructInitInfo * InitInfoRead ( void );
 
+
+#endif // GAP_READ_H
 
 /****************************************************************************
 **

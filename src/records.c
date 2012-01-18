@@ -2,7 +2,6 @@
 **
 *W  records.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id: records.c,v 4.24 2010/02/23 15:13:47 gap Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_records_c =
-   "@(#)$Id: records.c,v 4.24 2010/02/23 15:13:47 gap Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -107,7 +104,7 @@ Obj             HashRNam;
 UInt            SizeRNam;
 
 UInt            RNamName (
-    Char *              name )
+    const Char *        name )
 {
     Obj                 rnam;           /* record name (as imm intobj)     */
     UInt                pos;            /* hash position                   */
@@ -115,7 +112,7 @@ UInt            RNamName (
     Obj                 string;         /* temporary string object <name>  */
     Obj                 table;          /* temporary copy of <HashRNam>    */
     Obj                 rnam2;          /* one element of <table>          */
-    Char *              p;              /* loop variable                   */
+    const Char *        p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
 
     /* start looking in the table at the following hash position           */
@@ -809,8 +806,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRecords ( void )
 {
-    module.revision_c = Revision_records_c;
-    module.revision_h = Revision_records_h;
     FillInVersion( &module );
     return &module;
 }

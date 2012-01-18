@@ -3,7 +3,6 @@
 #W  gpfpiso.gi                  GAP library                      Bettina Eick
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id: gpfpiso.gi,v 4.10 2011/06/14 19:31:23 gap Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains the methods for computing presentations for
 ##  (permutation) groups.
 ##
-Revision.gpfpiso_gi :=
-    "@(#)$Id: gpfpiso.gi,v 4.10 2011/06/14 19:31:23 gap Exp $";
 
 #############################################################################
 ##
@@ -578,7 +575,9 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
   SetIsWordDecompHomomorphism(hom2,true);
 
   SetIsSurjective(hom2,true);
-  SetKernelOfMultiplicativeGeneralMapping(hom2,N);
+  if N<>false then
+    SetKernelOfMultiplicativeGeneralMapping(hom2,N);
+  fi;
 
   return hom2;
 end);

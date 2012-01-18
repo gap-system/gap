@@ -2,7 +2,7 @@
 **
 *A  calculate_jacobi.c          ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: calculate_jacobi.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: calculate_jacobi.c,v 1.5 2011/11/28 17:47:16 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -15,34 +15,22 @@
 
 /* calculate an individual jacobi */
 
-#ifdef Magma
-void calculate_jacobi (c, b, a, pcp)
-int c;
-int b;
-int a;
-struct pcp_vars *pcp;
-#else
 void calculate_jacobi (pcp)
 struct pcp_vars *pcp;
-#endif
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    Logical invalid = FALSE;
    int bound = pcp->ccbeg;
    int output;
-#ifndef Magma
    int a, b, c; 
-#endif
 
 #include "access.h"
 
-#ifndef Magma
    printf ("Input the three components for the consistency calculation: ");
    read_value (FALSE, "", &c, 1);
    read_value (FALSE, "", &b, 1);
    read_value (TRUE,  "", &a, 1);
-#endif
 
    /* check the validity of the components */
    invalid = outside (a, bound) || outside (b, bound) || outside (c, bound)

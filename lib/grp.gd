@@ -5,7 +5,6 @@
 #W                                                             & Bettina Eick
 #W                                                           & Heiko Theißen
 ##
-#H  @(#)$Id: grp.gd,v 4.240 2011/06/14 19:32:33 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -32,8 +31,6 @@
 ##  with the parent as an attribute.
 ##  <#/GAPDoc>
 ##
-Revision.grp_gd :=
-    "@(#)$Id: grp.gd,v 4.240 2011/06/14 19:32:33 gap Exp $";
 
 
 #############################################################################
@@ -201,6 +198,8 @@ InstallFactorMaintenance( IsElementaryAbelian,
 
 InstallTrueMethod( IsElementaryAbelian, IsGroup and IsTrivial );
 
+InstallTrueMethod( IsCommutative, IsGroup and IsElementaryAbelian );
+
 
 #############################################################################
 ##
@@ -227,7 +226,7 @@ DeclareProperty( "IsFinitelyGeneratedGroup", IsGroup );
 InstallFactorMaintenance( IsFinitelyGeneratedGroup,
     IsGroup and IsFinitelyGeneratedGroup, IsObject, IsGroup );
 
-InstallTrueMethod( IsFinitelyGeneratedGroup, IsGroup and IsTrivial );
+InstallTrueMethod( IsFinitelyGeneratedGroup, IsGroup and IsFinite );
 
 #############################################################################
 ##
@@ -309,6 +308,30 @@ InstallTrueMethod( IsSubsetLocallyFiniteGroup, IsFFECollection and IsMagma );
 ##  <#/GAPDoc>
 ##
 DeclareFilter( "CanEasilyTestMembership" );
+
+
+#############################################################################
+##
+#F  CanEasilyComputeWithIndependentGensAbelianGroup( <G> )
+##
+##  <#GAPDoc Label="CanEasilyComputeWithIndependentGensAbelianGroup">
+##  <ManSection>
+##  <Func Name="CanEasilyComputeWithIndependentGensAbelianGroup" Arg='G'/>
+##
+##  <Description>
+##  This filter indicates whether &GAP; can in reasonable time compute
+##  independent abelian generators of the group <A>G</A>
+##  (via <Ref Func="IndependentGeneratorsOfAbelianGroup"/>) and
+##  then can decompose arbitrary group elements with respect to these
+##  generators using <Ref Func="IndependentGeneratorExponents"/>.
+##  
+##  It is used by the method selection to decide whether an algorithm
+##  that relies on these two operations may be used.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareFilter( "CanEasilyComputeWithIndependentGensAbelianGroup" );
 
 
 #############################################################################
@@ -723,6 +746,10 @@ InstallSubsetMaintenance( IsSolvableGroup,
 InstallFactorMaintenance( IsSolvableGroup,
     IsGroup and IsSolvableGroup, IsObject, IsGroup );
 
+##  For finite groups, supersolvability implies monomiality, and this implies
+##  solvability.
+##  But monomiality is defined only for finite groups, for the general case
+##  we need the direct implication from supersolvability to solvability.
 InstallTrueMethod( IsSolvableGroup, IsMonomialGroup );
 InstallTrueMethod( IsSolvableGroup, IsSupersolvableGroup );
 
@@ -772,6 +799,9 @@ InstallTrueMethod( IsPolycyclicGroup,
 ##  gap> g:=Group((1,2,3,4),(1,2),(5,6));;
 ##  gap> AbelianInvariants(g);
 ##  [ 2, 2 ]
+##  gap> h:=FreeGroup(2);;h:=h/[h.1^3];;
+##  gap> AbelianInvariants(h);
+##  [ 0, 3 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -842,7 +872,8 @@ DeclareAttribute( "AsGroup", IsCollection );
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> ChiefSeries(g);
-##  [ Group([ (1,2,3,4), (1,2) ]), Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
+##  [ Group([ (1,2,3,4), (1,2) ]), 
+##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
 ##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
 ##  ]]></Example>
 ##  </Description>
@@ -950,7 +981,8 @@ DeclareAttribute( "CompositionSeries", IsGroup );
 ##  gap> CompositionSeries(g);
 ##  [ Group([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
 ##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
-##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(()) ]
+##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(()) 
+##   ]
 ##  gap> DisplayCompositionSeries(Group((1,2,3,4,5,6,7),(1,2)));
 ##  G (2 gens, size 5040)
 ##   | Z(2)
@@ -1053,8 +1085,9 @@ DeclareAttribute( "ConjugacyClasses", IsGroup );
 ##  <Ref Func="MaximalSubgroupClassReps"/>.
 ##  <Example><![CDATA[
 ##  gap> ConjugacyClassesMaximalSubgroups(g);
-##  [ AlternatingGroup( [ 1 .. 4 ] )^G, Group( [ (1,2,3), (1,2) ] )^G, 
-##    Group( [ (1,2), (3,4), (1,3)(2,4) ] )^G ]
+##  [ Group( [ (2,4,3), (1,4)(2,3), (1,3)(2,4) ] )^G, 
+##    Group( [ (3,4), (1,4)(2,3), (1,3)(2,4) ] )^G, 
+##    Group( [ (3,4), (2,4,3) ] )^G ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1077,7 +1110,8 @@ DeclareAttribute( "ConjugacyClassesMaximalSubgroups", IsGroup );
 ##  <Ref Func="ConjugacyClassesMaximalSubgroups"/>.
 ##  <Example><![CDATA[
 ##  gap> MaximalSubgroups(Group((1,2,3),(1,2)));
-##  [ Group([ (1,2,3) ]), Group([ (2,3) ]), Group([ (1,2) ]), Group([ (1,3) ]) ]
+##  [ Group([ (1,2,3) ]), Group([ (2,3) ]), Group([ (1,2) ]), 
+##    Group([ (1,3) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1099,8 +1133,9 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##  of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> MaximalSubgroupClassReps(g);
-##  [ Alt( [ 1 .. 4 ] ), Group([ (1,2,3), (1,2) ]), 
-##    Group([ (1,2), (3,4), (1,3)(2,4) ]) ]
+##  [ Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
+##    Group([ (3,4), (1,4)(2,3), (1,3)(2,4) ]), Group([ (3,4), (2,4,3) ]) 
+##   ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1151,11 +1186,11 @@ DeclareAttribute( "PerfectResiduum", IsGroup );
 ##  gap> m11:=TransitiveGroup(11,6);
 ##  M(11)
 ##  gap> r:=RepresentativesPerfectSubgroups(m11);
-##  [ Group([ (3,6,7)(4,5,9)(8,10,11), (1,10)(2,8)(4,7)(5,9) ]),
-##    Group([ (2,3,7)(4,11,9)(5,8,10), (1,10)(2,8)(4,7)(5,9) ]),
-##    Group([ (4,9,10,11)(5,6,8,7), (1,10)(2,8)(4,7)(5,9) ]),
-##    Group([ (3,4,10)(5,11,6)(7,9,8), (1,10)(2,8)(4,7)(5,9) ]), M(11), Group(()) 
-##   ]
+##  [ Group([ (3,4,10)(5,11,6)(7,9,8), (2,5)(3,8)(4,6)(9,11) ]), 
+##    Group([ (1,2,3)(4,6,11)(7,9,10), (2,5)(3,8)(4,6)(9,11) ]), 
+##    Group([ (3,4,9,7)(5,8,6,10), (2,5)(3,8)(4,6)(9,11) ]), 
+##    Group([ (1,2,4)(3,6,11)(7,10,8), (2,5)(3,8)(4,6)(9,11) ]), M(11), 
+##    Group(()) ]
 ##  gap> List(r,Size);
 ##  [ 60, 60, 360, 660, 7920, 1 ]
 ##  ]]></Example>
@@ -1180,11 +1215,14 @@ DeclareAttribute( "RepresentativesSimpleSubgroups", IsGroup );
 ##  (see <Ref Func="RepresentativesPerfectSubgroups"/>.)
 ##  <Example><![CDATA[
 ##  gap> ConjugacyClassesPerfectSubgroups(m11);
-##  [ Group( [ ( 3, 6, 7)( 4, 5, 9)( 8,10,11), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
-##    Group( [ ( 2, 3, 7)( 4,11, 9)( 5, 8,10), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
-##    Group( [ ( 4, 9,10,11)( 5, 6, 8, 7), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
-##    Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
-##    M(11)^G, Group( () )^G ]
+##  [ Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8), 
+##        ( 2, 5)( 3, 8)( 4, 6)( 9,11) ] )^G, 
+##    Group( [ ( 1, 2, 3)( 4, 6,11)( 7, 9,10), 
+##        ( 2, 5)( 3, 8)( 4, 6)( 9,11) ] )^G, 
+##    Group( [ ( 3, 4, 9, 7)( 5, 8, 6,10), ( 2, 5)( 3, 8)( 4, 6)( 9,11) 
+##       ] )^G, 
+##    Group( [ ( 1, 2, 4)( 3, 6,11)( 7,10, 8), 
+##        ( 2, 5)( 3, 8)( 4, 6)( 9,11) ] )^G, M(11)^G, Group( () )^G ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1213,10 +1251,11 @@ DeclareAttribute( "ConjugacyClassesPerfectSubgroups", IsGroup );
 ##  gap> ConjugacyClassesSubgroups(g);
 ##  [ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (3,4) ] )^G, 
 ##    Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G, 
-##    Group( [ (1,2)(3,4), (3,4) ] )^G, Group( [ (1,2)(3,4), (1,3,2,4) ] )^G, 
-##    Group( [ (3,4), (2,4,3) ] )^G, Group( [ (1,3)(2,4), (1,4)(2,3), (1,2) ] )^G,
-##    Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3) ] )^G, 
-##    Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,2) ] )^G ]
+##    Group( [ (3,4), (1,2)(3,4) ] )^G, 
+##    Group( [ (1,3,2,4), (1,2)(3,4) ] )^G, Group( [ (3,4), (2,4,3) ] )^G,
+##    Group( [ (1,4)(2,3), (1,3)(2,4), (3,4) ] )^G, 
+##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3) ] )^G, 
+##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3), (3,4) ] )^G ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1245,9 +1284,10 @@ DeclareAttribute( "ConjugacyClassesSubgroups", IsGroup );
 ##  gap> ConjugacyClassesSubgroups(l);
 ##  [ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (3,4) ] )^G, 
 ##    Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G, 
-##    Group( [ (3,4), (1,2)(3,4) ] )^G, Group( [ (1,3,2,4), (1,2)(3,4) ] )^G,
-##    Group( [ (3,4), (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4), (3,4) ] )^G,
-##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3) ] )^G,
+##    Group( [ (3,4), (1,2)(3,4) ] )^G, 
+##    Group( [ (1,3,2,4), (1,2)(3,4) ] )^G, Group( [ (3,4), (2,4,3) ] )^G,
+##    Group( [ (1,4)(2,3), (1,3)(2,4), (3,4) ] )^G, 
+##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3) ] )^G, 
 ##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3), (3,4) ] )^G ]
 ##  ]]></Example>
 ##  </Description>
@@ -1408,14 +1448,14 @@ DeclareAttribute( "CommutatorLength", IsGroup );
 ##  gap> G:= SmallGroup( 3^6, 100 );
 ##  <pc group of size 729 with 6 generators>
 ##  gap> JenningsSeries( G );
-##  [ <pc group of size 729 with 6 generators>, Group([ f3, f4, f5, f6 ]), 
+##  [ <pc group of size 729 with 6 generators>, Group([ f3, f4, f5, f6 ]),
 ##    Group([ f4, f5, f6 ]), Group([ f5, f6 ]), Group([ f5, f6 ]), 
 ##    Group([ f5, f6 ]), Group([ f6 ]), Group([ f6 ]), Group([ f6 ]), 
 ##    Group([ <identity> of ... ]) ]
 ##  gap> DimensionsLoewyFactors(G);
-##  [ 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25, 26, 27, 27, 
-##    27, 27, 27, 27, 27, 27, 27, 26, 25, 23, 22, 20, 19, 17, 16, 14, 13, 11, 10, 
-##    8, 7, 5, 4, 2, 1 ]
+##  [ 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25, 26, 
+##    27, 27, 27, 27, 27, 27, 27, 27, 27, 26, 25, 23, 22, 20, 19, 17, 16, 
+##    14, 13, 11, 10, 8, 7, 5, 4, 2, 1 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1715,8 +1755,8 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  returns a list of all normal subgroups of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);;NormalSubgroups(g);
-##  [ Group(()), Group([ (1,4)(2,3), (1,3)(2,4) ]), 
-##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), Sym( [ 1 .. 4 ] ) ]
+##  [ Sym( [ 1 .. 4 ] ), Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
+##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
 ##  ]]></Example>
 ##  <P/>
 ##  The algorithm for the computation of normal subgroups is described in
@@ -1970,7 +2010,7 @@ DeclareAttribute( "MinimalGeneratingSet", IsGroup );
 ##  necessarily needs to be optimal.
 ##  <Example><![CDATA[
 ##  gap> SmallGeneratingSet(g);
-##  [ (1,2), (1,2,3,4) ]
+##  [ (1,2,3,4), (1,2) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2151,7 +2191,7 @@ DeclareSynonymAttr( "TrivialSubgroup", TrivialSubmagmaWithOne );
 ##  all minimal normal subgroups.
 ##  <Example><![CDATA[
 ##  gap> Socle(g);
-##  Group([ (1,4)(2,3), (1,2)(3,4) ])
+##  Group([ (1,4)(2,3), (1,3)(2,4) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2530,8 +2570,9 @@ InParentFOA( "Core", IsGroup, IsGroup, DeclareAttribute );
 ##  recognized.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> tab := CosetTable( g, Subgroup( g, [ g.1, g.2*g.1*g.2*g.1*g.2^-1 ] ) );
-##  [ [ 1, 4, 5, 2, 3 ], [ 1, 4, 5, 2, 3 ], [ 2, 3, 1, 4, 5 ], [ 3, 1, 2, 4, 5 ] ]
+##  gap> tab := CosetTable(g, Subgroup(g, [ g.1, g.2*g.1*g.2*g.1*g.2^-1 ]));
+##  [ [ 1, 4, 5, 2, 3 ], [ 1, 4, 5, 2, 3 ], [ 2, 3, 1, 4, 5 ], 
+##    [ 3, 1, 2, 4, 5 ] ]
 ##  gap> List( last, PermList );
 ##  [ (2,4)(3,5), (2,4)(3,5), (1,2,3), (1,3,2) ]
 ##  gap> PrintArray( TransposedMat( tab ) );
@@ -2682,11 +2723,16 @@ DeclareAttribute( "IndexInWholeGroup", IsGroup );
 ##
 ##  <Description>
 ##  returns a list of generators <M>a_1, a_2, \ldots</M> of prime power order
-##  of the abelian group <A>A</A> such that <A>A</A> is the direct product of
-##  the cyclic groups generated by the <M>a_i</M>.
+##  or infinite order of the abelian group <A>A</A> such that <A>A</A> is the
+##  direct product of the cyclic groups generated by the <M>a_i</M>.
+##  The list of orders of the returned generators must match the result of
+##  <Ref Func="AbelianInvariants"/> (taking into account that zero
+##  and <Ref Var="infinity"/> are identified).
 ##  <Example><![CDATA[
 ##  gap> g:=AbelianGroup(IsPermGroup,[15,14,22,78]);;
 ##  gap> List(IndependentGeneratorsOfAbelianGroup(g),Order);
+##  [ 2, 2, 2, 3, 3, 5, 7, 11, 13 ]
+##  gap> AbelianInvariants(g);
 ##  [ 2, 2, 2, 3, 3, 5, 7, 11, 13 ]
 ##  ]]></Example>
 ##  </Description>
@@ -2712,11 +2758,15 @@ DeclareAttribute( "IndependentGeneratorsOfAbelianGroup",
 ##  <M>[ e_1, \ldots, e_n ]</M> to represent
 ##  <M><A>g</A> = \prod_i a_i^{{e_i}}</M>.
 ##  <Example><![CDATA[
-##  gap> g:=AbelianGroup([16,9,625]);;   
-##  gap> gens:=IndependentGeneratorsOfAbelianGroup(g);;
-##  gap> r:=gens[1]^12*gens[2]^4*gens[3]^128;;
+##  gap> g := AbelianGroup([16,9,625]);;
+##  gap> gens := IndependentGeneratorsOfAbelianGroup(g);;
+##  gap> List(gens, Order);
+##  [ 9, 16, 625 ]
+##  gap> AbelianInvariants(g);
+##  [ 9, 16, 625 ]
+##  gap> r:=gens[1]^4*gens[2]^12*gens[3]^128;;
 ##  gap> IndependentGeneratorExponents(g,r);
-##  [ 12, 4, 128 ]
+##  [ 4, 12, 128 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3086,7 +3136,7 @@ KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
 ##  <M>V \geq </M><A>U</A>. If <A>U</A> is subnormal, <M>V =</M> <A>U</A>.
 ##  <Example><![CDATA[
 ##  gap> s:=SubnormalSeries(g,Group((1,2)(3,4)));
-##  [ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,4)(2,3) ]),
+##  [ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,3)(2,4) ]), 
 ##    Group([ (1,2)(3,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
@@ -3219,7 +3269,7 @@ DeclareOperation( "NrConjugacyClassesInSupergroup", [ IsGroup, IsGroup ] );
 ##  <Example><![CDATA[
 ##  gap> G:=SymmetricGroup( 6 );;
 ##  gap> r:=(3,4);; s:=(1,2,3,4,5,6);;
-##  gap> # create a subgroup to force the system to use the generators r and s.
+##  gap> # create subgroup to force the system to use the generators r and s:
 ##  gap> H:= Subgroup(G, [ r, s ] );
 ##  Group([ (3,4), (1,2,3,4,5,6) ])
 ##  gap> Factorization( H, (1,2,3) );
@@ -3653,10 +3703,11 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  in a different way.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> IsomorphismTypeInfoFiniteSimpleGroup(Group((4,5)(6,7),(1,2,4)(3,5,6)));
+##  gap> IsomorphismTypeInfoFiniteSimpleGroup(
+##  >                             Group((4,5)(6,7),(1,2,4)(3,5,6)));
 ##  rec( 
-##    name := "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,7) = U(2\
-##  ,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L" )
+##    name := "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,\
+##  7) = U(2,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L" )
 ##  ]]></Example>
 ##  <P/>
 ##  For a positive integer <A>n</A>,
@@ -3673,10 +3724,10 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  rec( name := "Z(5)", parameter := 5, series := "Z" )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( 6 );
 ##  fail
-##  gap> IsomorphismTypeInfoFiniteSimpleGroup( Size( SymplecticGroup(6,3)) / 2 );
+##  gap> IsomorphismTypeInfoFiniteSimpleGroup(Size(SymplecticGroup(6,3))/2);
 ##  rec( 
-##    name := "cannot decide from size alone between B(3,3) = O(7,3) and C(3,3) = \
-##  S(6,3)", parameter := [ 3, 3 ] )
+##    name := "cannot decide from size alone between B(3,3) = O(7,3) and C\
+##  (3,3) = S(6,3)", parameter := [ 3, 3 ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3703,14 +3754,12 @@ DeclareAttribute( "IsomorphismTypeInfoFiniteSimpleGroup", IsPosInt );
 ##    Currently, all simple groups of order less than <M>10^6</M> are
 ##    available via this function.
 ##  <Example>
-##  <![CDATA[
 ##  gap> SmallSimpleGroup(60);
 ##  A5
 ##  gap> SmallSimpleGroup(20160,1);
 ##  A8
 ##  gap> SmallSimpleGroup(20160,2);
 ##  PSL(3,4)
-##  ]]>
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
@@ -3736,20 +3785,19 @@ DeclareGlobalFunction( "SmallSimpleGroup" );
 ##    Currently, all simple groups of order less than <M>10^6</M> are
 ##    available via this function.
 ##  <Example>
-##  <![CDATA[
 ##  gap> List(AllSmallNonabelianSimpleGroups([1..1000000]),
 ##  >         StructureDescription);
-##  [ "A5", "PSL(3,2)", "A6", "PSL(2,8)", "PSL(2,11)", "PSL(2,13)", "PSL(2,17)", 
-##    "A7", "PSL(2,19)", "PSL(2,16)", "PSL(3,3)", "PSU(3,3)", "PSL(2,23)", 
-##    "PSL(2,25)", "M11", "PSL(2,27)", "PSL(2,29)", "PSL(2,31)", "A8", 
-##    "PSL(3,4)", "PSL(2,37)", "O(5,3)", "Sz(8)", "PSL(2,32)", "PSL(2,41)", 
-##    "PSL(2,43)", "PSL(2,47)", "PSL(2,49)", "PSU(3,4)", "PSL(2,53)", "M12", 
-##    "PSL(2,59)", "PSL(2,61)", "PSU(3,5)", "PSL(2,67)", "J1", "PSL(2,71)", "A9", 
+##  [ "A5", "PSL(3,2)", "A6", "PSL(2,8)", "PSL(2,11)", "PSL(2,13)", 
+##    "PSL(2,17)", "A7", "PSL(2,19)", "PSL(2,16)", "PSL(3,3)", 
+##    "PSU(3,3)", "PSL(2,23)", "PSL(2,25)", "M11", "PSL(2,27)", 
+##    "PSL(2,29)", "PSL(2,31)", "A8", "PSL(3,4)", "PSL(2,37)", "O(5,3)", 
+##    "Sz(8)", "PSL(2,32)", "PSL(2,41)", "PSL(2,43)", "PSL(2,47)", 
+##    "PSL(2,49)", "PSU(3,4)", "PSL(2,53)", "M12", "PSL(2,59)", 
+##    "PSL(2,61)", "PSU(3,5)", "PSL(2,67)", "J1", "PSL(2,71)", "A9", 
 ##    "PSL(2,73)", "PSL(2,79)", "PSL(2,64)", "PSL(2,81)", "PSL(2,83)", 
-##    "PSL(2,89)", "PSL(3,5)", "M22", "PSL(2,97)", "PSL(2,101)", "PSL(2,103)", 
-##    "HJ", "PSL(2,107)", "PSL(2,109)", "PSL(2,113)", "PSL(2,121)", "PSL(2,125)", 
-##    "O(5,4)" ]
-##  ]]>
+##    "PSL(2,89)", "PSL(3,5)", "M22", "PSL(2,97)", "PSL(2,101)", 
+##    "PSL(2,103)", "HJ", "PSL(2,107)", "PSL(2,109)", "PSL(2,113)", 
+##    "PSL(2,121)", "PSL(2,125)", "O(5,4)" ]
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
@@ -3826,7 +3874,8 @@ DeclareAttribute( "IsomorphismSpecialPcGroup", IsGroup );
 ##  gap> iso:=IsomorphismPermGroup(g);
 ##  <action isomorphism>
 ##  gap> Image(iso,g.3*g.4);
-##  (1,12)(2,16)(3,19)(4,5)(6,22)(7,8)(9,23)(10,11)(13,24)(14,15)(17,18)(20,21)
+##  (1,12)(2,16)(3,19)(4,5)(6,22)(7,8)(9,23)(10,11)(13,24)(14,15)(17,
+##  18)(20,21)
 ##  ]]></Example>
 ##  <P/>
 ##  In many cases the permutation representation constructed by
@@ -3856,11 +3905,10 @@ DeclareAttribute("IsomorphismPermGroup",IsGroup);
 ##  gap> iso := IsomorphismFpGroup( g );
 ##  [ (4,5), (1,2,3,4,5), (1,3,2,4,5) ] -> [ F1, F2, F3 ]
 ##  gap> fp := Image( iso );
-##  <fp group of size 120 on the generators [ F1, F2, F3 ]>
+##  <fp group on the generators [ F1, F2, F3 ]>
 ##  gap> RelatorsOfFpGroup( fp );
-##  [ F1^2*F2^2*F3*F2^-1, F2^-1*F1^-1*F2*F1*F2^-1*F3^2*F2^2*F3^2*F2^2*F3*F2^-1, 
-##    F3^-1*F1^-1*F3*F1*F3^-1, F2^5*F3^-5, F2^5*F3^-1*F2^-1*F3^-1*F2^-1, 
-##    F2^-2*F3^2*F2^-2*F3^2 ]
+##  [ F1^2, F1^-1*F2*F1*F2^-1*F3*F2^-2, F1^-1*F3*F1*F2*F3^-1*F2*F3*F2^-1, 
+##    F2^5*F3^-5, F2^5*F3^-1*F2^-1*F3^-1*F2^-1, F2^-2*F3^2*F2^-2*F3^2 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3892,13 +3940,14 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> SetInfoLevel( InfoFpGroup, 1 );
 ##  gap> iso := IsomorphismFpGroupByGenerators( g, [ (1,2), (1,2,3,4,5) ] );
-##  #I  the image group has 2 gens and 4 rels of total length 37
+##  #I  the image group has 2 gens and 5 rels of total length 39
 ##  [ (1,2), (1,2,3,4,5) ] -> [ F1, F2 ]
 ##  gap> fp := Image( iso );
 ##  <fp group of size 120 on the generators [ F1, F2 ]>
 ##  gap> RelatorsOfFpGroup( fp );
-##  [ F1^2, F2^-1*F1*F2^-1*F1*F2^-1*F1*F2^-1*F1, F2^2*F1*F2^-2*F1*F2^2*F1*F2^-2*F1
-##      , F2^-1*F1*F2^2*F1*F2^-1*F1*F2^-2*F1*F2*F1*F2^-2*F1 ]
+##  [ F1^2, F2^5, F2^-1*F1*F2^-1*F1*F2^-1*F1*F2^-1*F1, 
+##    F2^-1*F1*F2*F1*F2^-1*F1*F2*F1*F2^-1*F1*F2*F1, 
+##    F2^2*F1*F2^-2*F1*F2^2*F1*F2^-2*F1 ]
 ##  ]]></Example>
 ##  <P/>
 ##  The main task of the function
@@ -3921,13 +3970,13 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> M12 := MathieuGroup( 12 );
-##  Group([ (1,2,3,4,5,6,7,8,9,10,11), (3,7,11,8)(4,10,5,6),
+##  Group([ (1,2,3,4,5,6,7,8,9,10,11), (3,7,11,8)(4,10,5,6), 
 ##    (1,12)(2,11)(3,6)(4,8)(5,9)(7,10) ])
 ##  gap> gens := GeneratorsOfGroup( M12 );;
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
-##  #I  the image group has 3 gens and 23 rels of total length 515
+##  #I  the image group has 3 gens and 23 rels of total length 628
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
-##  #I  the image group has 3 gens and 17 rels of total length 524
+##  #I  the image group has 3 gens and 23 rels of total length 569
 ##  ]]></Example>
 ##  <P/>
 ##  Also in the case of a permutation group <A>G</A>, the function
@@ -3971,10 +4020,12 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  </List>
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : method := "regular" );;
+##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : 
+##  >                                           method := "regular" );;
 ##  #I  the image group has 3 gens and 11 rels of total length 92
-##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : method := "fast" );;
-##  #I  the image group has 3 gens and 160 rels of total length 3485
+##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : 
+##  >                                           method := "fast" );;
+##  #I  the image group has 3 gens and 138 rels of total length 3149
 ##  ]]></Example>
 ##  <P/>
 ##  Though the option <C>method := "regular"</C> is only checked in the case
@@ -3991,30 +4042,32 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  gap> G := ImfMatrixGroup( 5, 1, 3 );
 ##  ImfMatrixGroup(5,1,3)
 ##  gap> gens := GeneratorsOfGroup( G );
-##  [ [ [ -1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 0, 1, 0 ],
-##        [ -1, -1, -1, -1, 2 ], [ -1, 0, 0, 0, 1 ] ],
-##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ],
+##  [ [ [ -1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
+##        [ -1, -1, -1, -1, 2 ], [ -1, 0, 0, 0, 1 ] ], 
+##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
 ##        [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
-##  #I  the image group has 2 gens and 7 rels of total length 74
-##  gap> iso := IsomorphismFpGroupByGenerators( G, gens : method := "regular" );;
+##  #I  the image group has 2 gens and 8 rels of total length 80
+##  gap> iso := IsomorphismFpGroupByGenerators( G, gens : 
+##  >                                           method := "regular");;
 ##  #I  the image group has 2 gens and 6 rels of total length 56
 ##  gap> SetInfoLevel( InfoFpGroup, 0 );
 ##  gap> iso;
-##  <composed isomorphism:[ [ [ -1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 0, 1,\
-##   0 ], [ -1, -1, -1, -1, 2 ], [ -1, 0, 0, 0, 1 ] ], [ [ 0, 1, 0, 0, 0 ], [ 0, 0\
-##  , 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]->[ F1\
-##  , F2 ]>
+##  <composed isomorphism:[ [ [ -1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, \
+##  0, 0, 1, 0 ], [ -1, -1, -1, -1, 2 ], [ -1, 0, 0, 0, 1 ] ], [ [ 0, 1, 0\
+##  , 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], [ 1, 0, 0, 0, 0 ], [ 0\
+##  , 0, 0, 0, 1 ] ] ]->[ F1, F2 ]>
 ##  gap> ConstituentsCompositionMapping(iso);
-##  [ <action isomorphism>,
-##    [ (1,55,43,29,19,71)(2,72,18,30,44,54)(3,32,20,31,4,56)(5,75,46,33,47,74)(6,
-##          35,48,34,7,76)(8,36)(9,63,51,37,27,79)(10,80,26,38,52,62)(11,40,28,39,
-##          12,64)(13,59,58)(14,15,60)(17,70,41,53,42,69)(21,67,66)(22,23,68)(25,
-##          78,49,61,50,77)(45,73), (1,13,5,2)(3,29,21,7)(4,14,33,10)(6,30,9,
-##          15)(8,31,37,23)(11,32,22,35)(12,16,34,38)(18,53,25,19)(20,54,61,
-##          27)(24,36,39,40)(26,55)(28,56,62,63)(41,57,45,42)(43,69,65,47)(44,58,
-##          73,50)(46,70,49,59)(48,71,77,67)(51,72,66,75)(52,60,74,78)(68,76,79,
-##          80) ] -> [ F1, F2 ] ]
+##  [ <action isomorphism>, 
+##    [ (2,3,5,9,16,29)(4,7,13,24,19,32)(6,11,20,34,40,57)(8,15,28,46,42,
+##          59)(10,18,25,41,49,67)(12,22,37,53,48,66)(14,26,31)(17,30,35,
+##          50,58,38)(21,36,33)(23,39,56)(27,44,61,72,43,60)(45,62,51,68,
+##          54,70)(47,64,73)(52,69)(55,71,75,78,77,76)(65,74), 
+##        (1,2,4,8)(3,6,12,23)(5,10,19,33)(7,14,27,45)(9,17,18,31)(11,21,
+##          16,28)(13,25,42,57)(20,35,51,67)(22,38,55,70)(24,40,26,43)(29,
+##          37,54,39)(30,47,65,68)(32,48)(34,49,36,52)(41,58,56,61)(44,50,
+##          53,64)(46,63,69,59)(60,66,75,79)(62,73,72,77)(71,76,80,74) 
+##       ] -> [ F1, F2 ] ]
 ##  ]]></Example>
 ##  <P/>
 ##  Since &GAP; cannot decompose elements of a matrix group into generators,

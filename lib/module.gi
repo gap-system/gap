@@ -2,7 +2,6 @@
 ##
 #W  module.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: module.gi,v 4.43 2010/02/23 15:13:18 gap Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains generic methods for modules.
 ##
-Revision.module_gi :=
-    "@(#)$Id: module.gi,v 4.43 2010/02/23 15:13:18 gap Exp $";
 
 
 #############################################################################

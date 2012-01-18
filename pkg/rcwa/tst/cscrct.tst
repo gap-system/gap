@@ -44,22 +44,23 @@ ClassShift(0,4)
 gap> ClassShift(0,3);
 ClassShift(0,3)
 gap> ClassShift(R1,Zero(R1),x);
-ClassShift(0*Z(2),x)
+ClassShift(0,x)
 gap> Source(last);
 GF(2^2)[x]
 gap> ClassShift(Zero(R1),x);
-ClassShift(0*Z(2),x)
+ClassShift(0,x)
 gap> Display(last);
 
 Bijective rcwa mapping of GF(2)[x] with modulus x, of order 2
 
-         P mod x          |                    Image of P
---------------------------+---------------------------------------------------
- 0*Z(2)                   | P + x
- Z(2)^0                   | P
+        /
+        | P + x if P in 0(x)
+ P |-> <  P     if P in 1(x)
+        |
+        \
 
 gap> ClassShift([Zero(R1),x]);
-ClassShift(0*Z(2),x)
+ClassShift(0,x)
 gap> Source(last);
 GF(2)[x]
 gap> ClassShift(Integers,ResidueClass(2,3));
@@ -67,19 +68,19 @@ ClassShift(2,3)
 gap> ClassShift(ResidueClass(2,3));
 ClassShift(2,3)
 gap> ClassShift(R1,ResidueClass(R1,x,Zero(x)));
-ClassShift(0*Z(2),x)
+ClassShift(0,x)
 gap> Display(last);
 
 Bijective rcwa mapping of GF(2^2)[x] with modulus x, of order 2
 
-         P mod x          |                    Image of P
---------------------------+---------------------------------------------------
- 0*Z(2)                   | P + x
- Z(2)^0   Z(2^2)          |
- Z(2^2)^2                 | P
+        /
+        | P + x if P in 0(x)
+ P |-> <  P     otherwise
+        |
+        \
 
 gap> ClassShift(ResidueClass(R1,x,Zero(x)));
-ClassShift(0*Z(2),x)
+ClassShift(0,x)
 gap> Source(last);
 GF(2^2)[x]
 gap> ClassShift(Integers);
@@ -89,7 +90,7 @@ ClassShift(0,1)
 gap> ClassShift([Z_pi([2,3])]);
 ClassShift(0,1)
 gap> ClassShift(R1);
-ClassShift(0*Z(2),Z(2)^0)
+ClassShift(0,1)
 gap> Display(last);
 Bijective rcwa mapping of GF(2^2)[x]: P -> P + Z(2)^0
 gap> ClassReflection(Integers,1,2);
@@ -105,13 +106,13 @@ IdentityMapping( GF(2^2)[x] )
 gap> IsRcwaMapping(last);
 true
 gap> ClassReflection(R2,Zero(R2),y);
-ClassReflection(0*Z(5),y)
+ClassReflection(0,y)
 gap> last^2;
 IdentityMapping( GF(5^2)[y] )
 gap> ClassReflection(Zero(R2),y);
-ClassReflection(0*Z(5),y)
+ClassReflection(0,y)
 gap> ClassReflection([Zero(R2),y]);
-ClassReflection(0*Z(5),y)
+ClassReflection(0,y)
 gap> Source(last);
 GF(5)[y]
 gap> ClassReflection(Integers,ResidueClass(2,3));
@@ -119,11 +120,11 @@ ClassReflection(2,3)
 gap> ClassReflection(ResidueClass(2,3));
 ClassReflection(2,3)
 gap> ClassReflection(R2,ResidueClass(R2,y,Zero(y)));
-ClassReflection(0*Z(5),y)
+ClassReflection(0,y)
 gap> Source(last);
 GF(5^2)[y]
 gap> ClassReflection(ResidueClass(R2,y,Zero(y)));
-ClassReflection(0*Z(5),y)
+ClassReflection(0,y)
 gap> Source(last);
 GF(5^2)[y]
 gap> ClassReflection(Integers);
@@ -135,7 +136,7 @@ ClassReflection(0,1)
 gap> Display(last);
 Bijective rcwa mapping of Z_( 2, 3 ): n -> -n
 gap> ClassReflection(R2);
-ClassReflection(0*Z(5),Z(5)^0)
+ClassReflection(0,1)
 gap> Display(last);
 Bijective rcwa mapping of GF(5^2)[y]: P -> -P
 gap> ClassRotation(Integers,-1);
@@ -160,43 +161,44 @@ gap> Display(last);
 
 Tame bijective rcwa mapping of Z_( 2 ) with modulus 2, of order infinity
 
-                n mod 2                |             Image of n
----------------------------------------+--------------------------------------
-  0                                    | n
-  1                                    | 3/5 n + 2/5
+        /
+        | 3/5 n + 2/5 if n in 1(2)
+ n |-> <  n           if n in 0(2)
+        |
+        \
 
 gap> ClassRotation(ResidueClass(Z_pi(2),2,1),3/5);
 ClassRotation(1,2,3/5)
 gap> ClassRotation([ResidueClass(Z_pi(2),2,1),3/5]);
 ClassRotation(1,2,3/5)
 gap> ClassRotation(R1,ResidueClass(R1,x,Zero(R1)),Z(4)*One(R1));
-ClassRotation(0*Z(2),x,Z(2^2))
+ClassRotation(0,x,Z(2^2))
 gap> Display(last);
 
 Bijective rcwa mapping of GF(2^2)[x] with modulus x, of order 3
 
-         P mod x          |                    Image of P
---------------------------+---------------------------------------------------
- 0*Z(2)                   | Z(2^2)*P
- Z(2)^0   Z(2^2)          |
- Z(2^2)^2                 | P
+        /
+        | Z(2^2)*P if P in 0(x)
+ P |-> <  P        otherwise
+        |
+        \
 
 gap> last^-1;
-ClassRotation(0*Z(2),x,Z(2^2))^2
+ClassRotation(0,x,Z(2^2))^2
 gap> ClassRotation(R1,Z(4)*One(R1));
-ClassRotation(0*Z(2),Z(2)^0,Z(2^2))
+ClassRotation(0,1,Z(2^2))
 gap> Display(last);
 Bijective rcwa mapping of GF(2^2)[x]: P -> Z(2^2)*P
 gap> last^2;
-ClassRotation(0*Z(2),Z(2)^0,Z(2^2))^2
+ClassRotation(0,1,Z(2^2))^2
 gap> Display(last);
 Bijective rcwa mapping of GF(2^2)[x]: P -> Z(2^2)^2*P
 gap> ClassRotation(R2,ResidueClass(R2,y^2,y+1),Z(25)*One(R2));
-ClassRotation(y+Z(5)^0,y^2,Z(5^2))
+ClassRotation(y+1,y^2,Z(5^2))
 gap> last^2;
-ClassRotation(y+Z(5)^0,y^2,Z(5^2))^2
+ClassRotation(y+1,y^2,Z(5^2))^2
 gap> last^5;
-ClassRotation(y+Z(5)^0,y^2,Z(5^2))^10
+ClassRotation(y+1,y^2,Z(5^2))^10
 gap> last^12;
 IdentityMapping( GF(5^2)[y] )
 gap> ClassTransposition(0,2,1,2);
@@ -209,10 +211,11 @@ gap> Display(last);
 
 Bijective rcwa mapping of Z_( 2 ) with modulus 2, of order 2
 
-                n mod 2                |             Image of n
----------------------------------------+--------------------------------------
-  0                                    | n + 1
-  1                                    | n - 1
+        /
+        | n + 1 if n in 0(2)
+ n |-> <  n - 1 if n in 1(2)
+        |
+        \
 
 gap> LaTeXString(last);
 "\\tau_{0(2),1(2)}"
@@ -235,11 +238,11 @@ gap> Display(last2);
 
 Bijective rcwa mapping of Z_( 2, 3 ) with modulus 3, of order 2
 
-                n mod 3                |             Image of n
----------------------------------------+--------------------------------------
-  0                                    | n + 1
-  1                                    | n - 1
-  2                                    | n
+        /
+        | n + 1 if n in 0(3)
+ n |-> <  n - 1 if n in 1(3)
+        | n     if n in 2(3)
+        \
 
 gap> ClassTransposition(Z_pi([2,3]),
 >                       ResidueClass(Z_pi([2,3]),3,0),
@@ -251,38 +254,25 @@ gap> IsClassTransposition(last2);
 true
 gap> ClassTransposition(R1,ResidueClass(R1,x,Zero(R1)),
 >                          ResidueClass(R1,x^2,x+1));
-ClassTransposition(0*Z(2),x,x+Z(2)^0,x^2)
+ClassTransposition(0,x,x+1,x^2)
 gap> TransposedClasses(last);
-[ 0*Z(2)(mod x), x+Z(2)^0(mod x^2) ]
+[ 0(x), x+1(x^2) ]
 gap> Support(last2);
-0*Z(2)(mod x) U x+Z(2)^0(mod x^2)
+0(x) U x+1(x^2)
 gap> Source(last3);
 GF(2^2)[x]
 gap> ClassTransposition(ResidueClass(R1,x,Zero(R1)),
 >                       ResidueClass(R1,x^2,x+1));
-ClassTransposition(0*Z(2),x,x+Z(2)^0,x^2)
+ClassTransposition(0,x,x+1,x^2)
 gap> Display(last);
 
 Bijective rcwa mapping of GF(2^2)[x] with modulus x^2, of order 2
 
-        P mod x^2         |                    Image of P
---------------------------+---------------------------------------------------
- 0*Z(2)                   |
- x                        |
- Z(2^2)*x                 |
- Z(2^2)^2*x               | x*P + x+Z(2)^0
- Z(2)^0                   |
- Z(2^2)                   |
- Z(2^2)^2                 |
- x+Z(2^2)                 |
- x+Z(2^2)^2               |
- Z(2^2)*x+Z(2)^0          |
- Z(2^2)*x+Z(2^2)          |
- Z(2^2)*x+Z(2^2)^2        |
- Z(2^2)^2*x+Z(2)^0        |
- Z(2^2)^2*x+Z(2^2)        |
- Z(2^2)^2*x+Z(2^2)^2      | P
- x+Z(2)^0                 | (P + x+Z(2)^0)/x
+        /
+        | x*P + x+Z(2)^0   if P in 0(x)
+ P |-> <  (P + x+Z(2)^0)/x if P in x+1(x^2)
+        | P                otherwise
+        \
 
 gap> last^2;
 IdentityMapping( GF(2^2)[x] )
@@ -308,15 +298,15 @@ gap> R := Integers^2;
 ( Integers^2 )
 gap> L := [ [ 2, 1 ], [ -1, 2 ] ];;
 gap> cls := AllResidueClassesModulo(R,L);
-[ (0,0)+(1,3)Z+(0,5)Z, (0,1)+(1,3)Z+(0,5)Z, (0,2)+(1,3)Z+(0,5)Z,
+[ (0,0)+(1,3)Z+(0,5)Z, (0,1)+(1,3)Z+(0,5)Z, (0,2)+(1,3)Z+(0,5)Z, 
   (0,3)+(1,3)Z+(0,5)Z, (0,4)+(1,3)Z+(0,5)Z ]
 gap> cls[2] := SplittedClass(cls[2],[2,3]);
-[ (0,1)+(2,6)Z+(0,15)Z, (0,6)+(2,6)Z+(0,15)Z, (0,11)+(2,6)Z+(0,15)Z,
+[ (0,1)+(2,6)Z+(0,15)Z, (0,6)+(2,6)Z+(0,15)Z, (0,11)+(2,6)Z+(0,15)Z, 
   (1,4)+(2,6)Z+(0,15)Z, (1,9)+(2,6)Z+(0,15)Z, (1,14)+(2,6)Z+(0,15)Z ]
 gap> cls := Flat(cls);
-[ (0,0)+(1,3)Z+(0,5)Z, (0,1)+(2,6)Z+(0,15)Z, (0,6)+(2,6)Z+(0,15)Z,
-  (0,11)+(2,6)Z+(0,15)Z, (1,4)+(2,6)Z+(0,15)Z, (1,9)+(2,6)Z+(0,15)Z,
-  (1,14)+(2,6)Z+(0,15)Z, (0,2)+(1,3)Z+(0,5)Z, (0,3)+(1,3)Z+(0,5)Z,
+[ (0,0)+(1,3)Z+(0,5)Z, (0,1)+(2,6)Z+(0,15)Z, (0,6)+(2,6)Z+(0,15)Z, 
+  (0,11)+(2,6)Z+(0,15)Z, (1,4)+(2,6)Z+(0,15)Z, (1,9)+(2,6)Z+(0,15)Z, 
+  (1,14)+(2,6)Z+(0,15)Z, (0,2)+(1,3)Z+(0,5)Z, (0,3)+(1,3)Z+(0,5)Z, 
   (0,4)+(1,3)Z+(0,5)Z ]
 gap> Union(cls);
 ( Integers^2 )
@@ -340,17 +330,11 @@ gap> Display(ct);
 
 Bijective rcwa mapping of Z^2 with modulus (2,6)Z+(0,15)Z, of order 2
 
-   [m,n] mod (2,6)Z+(0,15)Z    |               Image of [m,n]
--------------------------------+----------------------------------------------
- [0,0]  [0,5]  [0,10] [1,3]    |
- [1,8]  [1,13]                 | [2m,-3m+3n+6]
- [0,1]  [0,2]  [0,3]  [0,4]    |
- [0,7]  [0,8]  [0,9]  [0,11]   |
- [0,12] [0,13] [0,14] [1,0]    |
- [1,1]  [1,2]  [1,4]  [1,5]    |
- [1,6]  [1,7]  [1,9]  [1,10]   |
- [1,11] [1,12] [1,14]          | [m,n]
- [0,6]                         | [m/2,(3m+2n-12)/6]
+            /
+            | (2m,-3m+3n+6)      if (m,n) in (0,0)+(1,3)Z+(0,5)Z
+ (m,n) |-> <  (m/2,(3m+2n-12)/6) if (m,n) in (0,6)+(2,6)Z+(0,15)Z
+            | (m,n)              otherwise
+            \
 
 gap> Cycle(ct,[1,8]);
 [ [ 1, 8 ], [ 2, 27 ] ]
@@ -385,11 +369,11 @@ true
 gap> cs1 = cs2;
 false
 gap> Display(cs1);
-Tame bijective rcwa mapping of Z^2: [m,n] -> [m+1,n]
+Tame bijective rcwa mapping of Z^2: (m,n) -> (m+1,n)
 gap> Display(cs2);
-Tame bijective rcwa mapping of Z^2: [m,n] -> [m,n+1]
+Tame bijective rcwa mapping of Z^2: (m,n) -> (m,n+1)
 gap> Display(cs1*cs2);
-Bijective rcwa mapping of Z^2: [m,n] -> [m+1,n+1]
+Bijective rcwa mapping of Z^2: (m,n) -> (m+1,n+1)
 gap> Comm(cs1,cs2);
 IdentityMapping( ( Integers^2 ) )
 gap> cs := ClassShift(cls[4],1);
@@ -411,17 +395,11 @@ gap> Display(cs);
 Tame bijective rcwa mapping of Z^2 with modulus (2,6)Z+(0,15)Z, of order infin\
 ity
 
-   [m,n] mod (2,6)Z+(0,15)Z    |               Image of [m,n]
--------------------------------+----------------------------------------------
- [0,0]  [0,1]  [0,2]  [0,3]    |
- [0,4]  [0,5]  [0,6]  [0,7]    |
- [0,8]  [0,9]  [0,10] [0,12]   |
- [0,13] [0,14] [1,0]  [1,1]    |
- [1,2]  [1,3]  [1,4]  [1,5]    |
- [1,6]  [1,7]  [1,8]  [1,9]    |
- [1,10] [1,11] [1,12] [1,13]   |
- [1,14]                        | [m,n]
- [0,11]                        | [m+2,n+6]
+            /
+            | (m+2,n+6) if (m,n) in (0,11)+(2,6)Z+(0,15)Z
+ (m,n) |-> <  (m,n)     otherwise
+            |
+            \
 
 gap> String(cs);
 "ClassShift((Integers^2),[0,11],[[2,6],[0,15]],1)"
@@ -436,7 +414,7 @@ gap> Order(cr);
 gap> Support(cr);
 Z^2 \ [ [ 0, 0 ] ]
 gap> Display(cr);
-Bijective rcwa mapping of Z^2: [m,n] -> [-m,-n]
+Bijective rcwa mapping of Z^2: (m,n) -> (-m,-n)
 gap> cr*cr;
 IdentityMapping( ( Integers^2 ) )
 gap> cr := ClassReflection(cls[1]);
@@ -455,10 +433,11 @@ gap> Display(cr);
 
 Bijective rcwa mapping of Z^2 with modulus (1,3)Z+(0,5)Z, of order 2
 
-    [m,n] mod (1,3)Z+(0,5)Z    |               Image of [m,n]
--------------------------------+----------------------------------------------
- [0,0]                         | [-m,-n]
- [0,1] [0,2] [0,3] [0,4]       | [m,n]
+            /
+            | (-m,-n) if (m,n) in (0,0)+(1,3)Z+(0,5)Z
+ (m,n) |-> <  (m,n)   otherwise
+            |
+            \
 
 gap> String(cr);
 "ClassReflection((Integers^2),[0,0],[[1,3],[0,5]])"
@@ -485,17 +464,11 @@ gap> Display(cr);
 Tame bijective rcwa mapping of Z^2 with modulus (2,6)Z+(0,15)Z, of order infin\
 ity
 
-   [m,n] mod (2,6)Z+(0,15)Z    |               Image of [m,n]
--------------------------------+----------------------------------------------
- [0,0]  [0,1]  [0,2]  [0,3]    |
- [0,4]  [0,5]  [0,6]  [0,7]    |
- [0,8]  [0,9]  [0,10] [0,11]   |
- [0,12] [0,13] [0,14] [1,0]    |
- [1,1]  [1,2]  [1,3]  [1,4]    |
- [1,5]  [1,6]  [1,7]  [1,8]    |
- [1,9]  [1,10] [1,11] [1,12]   |
- [1,13]                        | [m,n]
- [1,14]                        | [m,(15m+2n-15)/2]
+            /
+            | (m,(15m+2n-15)/2) if (m,n) in (1,14)+(2,6)Z+(0,15)Z
+ (m,n) |-> <  (m,n)             otherwise
+            |
+            \
 
 gap> String(cr);
 "ClassRotation((Integers^2),[1,14],[[2,6],[0,15]],[[1,1],[0,1]])"

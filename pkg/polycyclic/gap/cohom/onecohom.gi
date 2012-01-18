@@ -56,7 +56,7 @@ InstallGlobalFunction( OneCoboundariesEX, function( A )
 end );
 
 InstallGlobalFunction( OneCoboundariesCR, function( A )
-    return OneCoboundariesEX( A ).basis;
+    return OneCoboundariesEX( A );
 end );
 
 #############################################################################
@@ -177,6 +177,7 @@ end );
 ##
 #F ComplementCR( C, c ) . . . . . . . . . . . . . . . .for c an affine vector
 ##
+# FIXME: This function is documented and should be turned into a GlobalFunction
 ComplementCR := function( A, c )
     local pcpK, l, vec, K, all;
 

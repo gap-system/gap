@@ -2,18 +2,19 @@
 **
 *A  consistency_filter.c        ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: consistency_filter.c,v 1.3 2001/06/15 14:31:51 werner Exp $
+*A  @(#)$Id: consistency_filter.c,v 1.6 2011/12/02 16:30:55 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
 **
 */
 
-#if defined (CONSISTENCY_FILTER)
-
 #include "pq_defs.h"
 #include "pcp_vars.h"
 #include "pq_functions.h"
+
+#if defined (CONSISTENCY_FILTER)
+
 int *add_weights ();
 
 
@@ -28,7 +29,7 @@ int *queue_length;
 int wc;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int a;
    register int b;
@@ -95,7 +96,7 @@ struct pcp_vars *pcp;
 	       if (pcp->redgen != 0 && pcp->m != 0) 
 		  queue[++*queue_length] = pcp->redgen;
 	    }
-	    if (pcp->overflow || pcp->complete != 0 && !pcp->multiplicator)
+	    if (pcp->overflow || (pcp->complete != 0 && !pcp->multiplicator))
 	       return;
 	 }
       }
@@ -153,7 +154,7 @@ struct pcp_vars *pcp;
 		     if (pcp->redgen != 0 && pcp->m != 0) 
 			queue[++*queue_length] = pcp->redgen;
 		  }
-		  if (pcp->overflow || pcp->complete != 0 && !pcp->multiplicator)
+		  if (pcp->overflow || (pcp->complete != 0 && !pcp->multiplicator))
 		     return;
 	       }
 	    }
@@ -228,7 +229,7 @@ struct pcp_vars *pcp;
 		  if (pcp->redgen != 0 && pcp->m != 0) 
 		     queue[++*queue_length] = pcp->redgen;
 	       }
-	       if (pcp->overflow || pcp->complete != 0 && !pcp->multiplicator)
+	       if (pcp->overflow || (pcp->complete != 0 && !pcp->multiplicator))
 		  return;
 	    }
 	 }

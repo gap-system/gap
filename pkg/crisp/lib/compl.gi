@@ -2,12 +2,12 @@
 ##
 ##  compl.gi                         CRISP                   Burkhard Höfling
 ##
-##  @(#)$Id: compl.gi,v 1.9 2011/05/15 19:17:53 gap Exp $
+##  @(#)$Id: compl.gi,v 1.10 2011/07/17 11:53:45 gap Exp $
 ##
 ##  Copyright (C) 2000-2002, 2005 Burkhard Höfling
 ##
 Revision.compl_gi :=
-    "@(#)$Id: compl.gi,v 1.9 2011/05/15 19:17:53 gap Exp $";
+    "@(#)$Id: compl.gi,v 1.10 2011/07/17 11:53:45 gap Exp $";
 
 
 #############################################################################
@@ -159,14 +159,14 @@ InstallGlobalFunction ("COMPLEMENT_SOLUTION_FUNCTION",
 ##  
 ##  enumerates pairs [1,1], [2,1], [2,2], [3,1], [3,2], [3,3], ...
 ##
-EnumeratorOfTriangle := function (k)
+BindGlobal ("EnumeratorOfTriangle", function (k)
 
 	local i, j;
 	
 	i := QuoInt (1 + RootInt (8*k-1), 2);
 	j := k - i* (i-1)/2;
 	return [i,j];
-end;
+end);
 
 
 #############################################################################

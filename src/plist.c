@@ -2,7 +2,6 @@
 **
 *W  plist.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id: plist.c,v 4.84 2010/06/12 20:44:34 sal Exp $
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -37,8 +36,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_plist_c =
-   "@(#)$Id: plist.c,v 4.84 2010/06/12 20:44:34 sal Exp $";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -4953,8 +4950,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPlist ( void )
 {
-    module.revision_c = Revision_plist_c;
-    module.revision_h = Revision_plist_h;
     FillInVersion( &module );
     return &module;
 }

@@ -1,20 +1,17 @@
-#######################################################################
+###########################################################################
 ##
-#W  omputbin.gi          OpenMath Package           Alexander Konovalov
+#W  omputbin.gi              OpenMath Package                   Max Nicosia
 ##
-#H  @(#)$Id: omputbin.gi,v 1.22 2010/11/12 13:18:23 alexk Exp $
 ##
-#Y    Copyright (C) 1999, 2000, 2001, 2006
-#Y    School Math and Comp. Sci., University of St.  Andrews, Scotland
-#Y    Copyright (C) 2004, 2005, 2006 Marco Costantini
+#Y  Copyright (C) 1999, 2000, 2001, 2006
+#Y  School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2004, 2005, 2006 Marco Costantini
 ##
 ##  Low-level methods for output in the OpenMath binary format
 ## 
 
-Revision.("openmath/gap/omputbin.gi") := 
-    "@(#)$Id: omputbin.gi,v 1.22 2010/11/12 13:18:23 alexk Exp $";
 
-########################################################################
+###########################################################################
 ##
 #M  BigIntToListofInts( <integer> )
 ##
@@ -41,7 +38,8 @@ BindGlobal ( "BigIntToListofInts", function(int)
 	return listofInts;
 end);
 
-#######################################################################
+
+###########################################################################
 #
 #M  IsIntFloat( <object> )
 #
@@ -50,7 +48,8 @@ BindGlobal( "IsIntFloat", function(x)
 	return Float(0) = x-Float(Int(x));
 end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M CreateListWithFalses( <integer> )
 ##
@@ -66,7 +65,8 @@ BindGlobal( "CreateListWithFalses", function(numFalses)
 	return listFalses;
 end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M  WriteIntasBytes( <stream>, <list> )
 ##
@@ -80,7 +80,8 @@ BindGlobal( "WriteIntasBytes", function( stream, listofInts )
 	WriteByte(stream, listofInts[4]);
 end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M  FindFirst1BinaryString( <string> )
 ##
@@ -97,7 +98,8 @@ od;
 return i;
 end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M  WriteDecasHex( <float> ) 
 ##
@@ -123,7 +125,8 @@ local intPart, resultHex, number, i, zeroF;
 	
 end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M  WriteHexAsBin( <hexNum>, <bool> )
 ##
@@ -131,12 +134,17 @@ end);
 ##  Leading zeroes are included if the flag is set to TRUE.
 ## 
 BindGlobal( "WriteHexAsBin", function( hexNum, withLeadingZeroes )
-local hexNumLen, binStri, num, charStri, counter, binArrayWithZeroes, binArrayNoLeadingZeroes;
+local hexNumLen, binStri, num, charStri, counter, 
+      binArrayWithZeroes, binArrayNoLeadingZeroes;
 hexNumLen := Length(hexNum);
 binStri := "";
 counter:= 1;
-binArrayWithZeroes := ["0000", "0001" ,"0010", "0011",	"0100", "0101", "0110", "0111", "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111"];
-binArrayNoLeadingZeroes := ["", "1" ,"10", "11", "100", "101", "110", "111", "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111"];
+binArrayWithZeroes := 
+  ["0000", "0001" ,"0010", "0011", "0100", "0101", "0110", "0111", 
+   "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111"];
+binArrayNoLeadingZeroes := 
+  ["", "1" ,"10", "11", "100", "101", "110", "111", "1000", 
+  "1001", "1010", "1011", "1100", "1101", "1110", "1111"];
 charStri := hexNum{[counter]};
 num := IntHexString(charStri);
 if withLeadingZeroes then
@@ -154,7 +162,8 @@ od;
 return binStri;
 end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M  WriteBinAsHex( <string> )
 ##
@@ -165,8 +174,12 @@ local binStriLen, hexStri, counter, binArray,hexArray, limit, upper, lower;
 binStriLen := Length(binStri);
 hexStri := "";
 counter:= 1;
-binArray := ["0000", "0001" ,"0010", "0011", "0100", "0101", "0110", "0111", "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111"];
-hexArray := ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+binArray := 
+  ["0000", "0001" ,"0010", "0011", "0100", "0101", "0110", "0111", 
+   "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111"];
+hexArray := 
+  ["0", "1", "2", "3", "4", "5", "6", "7", 
+   "8", "9", "A", "B", "C", "D", "E", "F"];
 #limit := binStriLen /4;
 upper := 4;
 lower := 1;
@@ -184,7 +197,8 @@ od;
 return hexStri;
 end);
 
-########################################################################
+
+###########################################################################
 ###
 ##M 
 ## removes all falses at the start of the list.
@@ -205,7 +219,8 @@ end);
 #return i;
 #end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M  WriteHexStriAsBytes( <string>, <stream> )
 ##
@@ -225,7 +240,8 @@ while upper <= hexStriLen do
 od;
 end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M  WriteBinStringsAsBytes( <)
 ##
@@ -262,9 +278,7 @@ WriteHexStriAsBytes(hexStri, stream);
 end);
 
 
-
-
-#######################################################################
+###########################################################################
 ##
 #O  OMPutOMOBJ( <stream> ) 
 #O  OMPutEndOMOBJ( <stream> ) 
@@ -283,7 +297,7 @@ function( writer )
 end);
 
 
-#######################################################################
+###########################################################################
 ##
 #M  OMPut( <OMWriter>, <int> )  
 ##
@@ -337,7 +351,8 @@ fi;
 
 end);
 
-########################################################################
+
+###########################################################################
 ##
 #M  OMPut( <OMWriter>, <float> )
 ##
@@ -346,7 +361,8 @@ end);
 InstallMethod(OMPut, "for a float to binary OpenMath", true,
 [ IsOpenMathBinaryWriter, IS_MACFLOAT ],0,
 function(writer, f)
-	local intPart, decPart, sign, decHex, decBin, decBinLen, exponent, pos, mantissa, intBin, absIntPart;
+	local intPart, decPart, sign, decHex, decBin, decBinLen, exponent, 
+	      pos, mantissa, intBin, absIntPart;
 	WriteByte( writer![1], 3);
 	if f > 0 then
 		sign := false;
@@ -383,7 +399,8 @@ function(writer, f)
 
 end);
 
-########################################################################
+
+###########################################################################
 ##
 #M  OMPutVar( <OMWriter>, <variable> )
 ##
@@ -408,7 +425,7 @@ function(writer, var)
 end);
 
 
-########################################################################
+###########################################################################
 ##
 #M  OMPut( <OMWriter>, <symbol> )
 ##
@@ -441,7 +458,7 @@ function( writer, cd, name )
 end);
 
 
-#######################################################################
+###########################################################################
 ##
 #M  OMPutOMATTR
 #M  OMPutEndOMATTR
@@ -459,7 +476,8 @@ function( writer )
 	WriteByte( writer![1], 19 );
 end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M  OMPutOMATP
 #M  OMPutEndOMATP
@@ -476,7 +494,8 @@ function( writer )
 	WriteByte( writer![1], 21 );
 end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M  OMPutOMBIND
 #M  OMPutEndOMBIND
@@ -493,7 +512,8 @@ function( writer )
 	WriteByte( writer![1], 27 );
 end);
 
-#######################################################################
+
+###########################################################################
 ##
 #M  OMPutOMBVAR
 #M  OMPutEndOMBVAR
@@ -511,15 +531,15 @@ function( writer )
 end);
 
 
-########################################################################
+###########################################################################
 ##
 #M  OMPutByteArray( <OMWriter>, <bitList> )
 ##
 ##
-##
 InstallGlobalFunction( OMPutByteArray, function( writer, bitList )	
   # TODO: fill the 2nd branch and move this function to omput.gi 
-  local numBytesLength, bitListLength, tempList, numFalses, hexStri, numBytes, quoVal, modVal;
+  local numBytesLength, bitListLength, tempList, numFalses, hexStri, 
+        numBytes, quoVal, modVal;
   if IsOpenMathBinaryWriter(writer)  then	
 	bitListLength := Length(bitList);
 	quoVal := QuoInt(bitListLength,8);
@@ -555,10 +575,9 @@ fi;
 end);
 
 
-########################################################################
+###########################################################################
 ##
 #M  OMPut( <OMWriter>, <string> )
-##
 ##
 ##
 InstallMethod(OMPut, "for a string to binary OpenMath", true,
@@ -579,17 +598,9 @@ function( writer, string )
 end);
 
 
-########################################################################
-##
-#M  OMPut( <OMWriter>, <cdbase> )
-##
-##
-##
-
-########################################################################
+###########################################################################
 ##
 #M  OMPut( <OMWriter>, <foreign> )
-##
 ##
 ##
 InstallMethod( OMPutForeign, "for a foreign object to binary OpenMath", true,
@@ -613,10 +624,10 @@ function( writer, encString, objString )
 	WriteAll(writer![1], objString);
 end);
 
-########################################################################
+
+###########################################################################
 ##
 #M  OMPutOMAWithId( <OMWriter>, <reference> )
-##
 ##
 ##
 InstallMethod( OMPutOMAWithId, "to put Applications with Ids", true,
@@ -637,7 +648,7 @@ function(writer, reference)
 end);
 
 
-########################################################################
+###########################################################################
 ##
 #O  OMPutOMA( <OMWriter> );
 #O  OMPutEndOMA( <OMWriter> );
@@ -655,25 +666,8 @@ function( writer )
 	WriteByte( writer![1], 17 );
 end);
 
-    
-########################################################################
-##
-#M  OMPut( <OMWriter>, <attribution> )
-##
-##
-##
 
-########################################################################
-##
-#M  OMPut( <OMWriter>, <binding> )
-##
-##
-##
-
-
-
-
-########################################################################
+###########################################################################
 ##
 #O  OMPutOME( <OMWriter> );
 #O  OMPutEndOME( <OMWriter> );
@@ -692,7 +686,7 @@ function( writer )
 end);
 
 
-########################################################################
+###########################################################################
 ##
 #M  OMPut( <OMWriter>, <reference> )
 ##
@@ -720,5 +714,5 @@ fi;
 end);
 
 
-#############################################################################
+###########################################################################
 #E

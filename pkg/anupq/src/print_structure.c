@@ -2,7 +2,7 @@
 **
 *A  print_structure.c           ANUPQ source                   Eamonn O'Brien
 **
-*A  @(#)$Id: print_structure.c,v 1.5 2001/06/15 14:31:52 werner Exp $
+*A  @(#)$Id: print_structure.c,v 1.6 2011/11/28 17:47:20 gap Exp $
 **
 *Y  Copyright 1995-2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  Copyright 1995-2001,  School of Mathematical Sciences, ANU,     Australia
@@ -20,7 +20,7 @@ int generator;
 int pointer;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int i;
    register int address = -pointer + 1;
@@ -42,7 +42,7 @@ int pointer;
 int weight;
 struct pcp_vars *pcp;
 {  
-#include "define_y.h"
+   register int *y = y_address;
 
    register int u, v;
    register int structure = pcp->structure;
@@ -87,7 +87,7 @@ int layer (generator, pcp)
 int generator;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
    
    int i;
 
@@ -105,7 +105,7 @@ void print_structure (first, last, pcp)
 int first, last;
 struct pcp_vars *pcp;
 {
-#include "define_y.h"
+   register int *y = y_address;
 
    register int structure = pcp->structure;
    register int u, v;
