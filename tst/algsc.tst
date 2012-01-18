@@ -2,28 +2,23 @@
 ##
 #W  algsc.tst                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: algsc.tst,v 4.31 2010/10/10 21:59:25 alexk Exp $
 ##
 #Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id: algsc.tst,v 4.31 2010/10/10 21:59:25 alexk Exp $");
-
+gap> START_TEST("algsc.tst");
 
 #############################################################################
 ##
 ##  Expl. 0: Quaternion algebra
 ##
-
 gap> T0 := [
 >            [[[1],[1]],[[2],[ 1]],[[3],[ 1]],[[4],[ 1]]],
 >            [[[2],[1]],[[1],[-1]],[[4],[ 1]],[[3],[-1]]],
 >            [[[3],[1]],[[4],[-1]],[[1],[-1]],[[2],[ 1]]],
 >            [[[4],[1]],[[3],[ 1]],[[2],[-1]],[[1],[-1]]],
 >            0, 0 ];;
-
 gap> id:= IdentityFromSCTable( T0 );
 [ 1, 0, 0, 0 ]
 gap> v:= [ 0, 1, 1, 1 ];;
@@ -33,12 +28,10 @@ gap> q:= QuotientFromSCTable( T0, id, v );
 [ 0, -1/3, -1/3, -1/3 ]
 gap> v = QuotientFromSCTable( T0, id, q );
 true
-
 gap> a:= AlgebraByStructureConstants( Rationals, T0 );
 <algebra of dimension 4 over Rationals>
 gap> Dimension( a );
 4
-
 gap> v:= ObjByExtRep( ElementsFamily( FamilyObj( a ) ), [ 0, 1, 0, 1 ] );
 v.2+v.4
 gap> One( v ); v^0;
@@ -53,14 +46,12 @@ gap> Inverse( v ); v^-1;
 gap> AdditiveInverse( v ); -v;
 (-1)*v.2+(-1)*v.4
 (-1)*v.2+(-1)*v.4
-
 gap> b:= Basis( a );
 CanonicalBasis( <algebra of dimension 4 over Rationals> )
 gap> Coefficients( b, v );
 [ 0, 1, 0, 1 ]
 gap> w:= LinearCombination( b, [ 1, 2, 3, 4 ] );
 v.1+(2)*v.2+(3)*v.3+(4)*v.4
-
 gap> v + w;
 v.1+(3)*v.2+(3)*v.3+(5)*v.4
 gap> v * w;
@@ -71,17 +62,14 @@ gap> v < w;
 true
 gap> w < v;
 false
-
 gap> s:= Subalgebra( a, [ v, 0*v, v^0, w ] );
 <algebra over Rationals, with 4 generators>
 gap> Dimension( s );
 4
-
 gap> v:= Subspace( a, [ v, 0*v, v^0, w ] );
 <vector space over Rationals, with 4 generators>
 gap> Dimension( v );
 3
-
 
 #############################################################################
 ##
@@ -105,12 +93,10 @@ gap> permgrp:= Action( g, orb, OnRight );;
 gap> Size( permgrp );
 720
 
-
 #############################################################################
 ##
 ##  Expl. 2: Poincare Lie algebra
 ##
-
 gap> T1:= EmptySCTable( 10, 0, "antisymmetric" );;
 gap> SetEntrySCTable( T1, 1, 3, [2,4] );
 gap> SetEntrySCTable( T1, 1, 4, [-2,3] );
@@ -136,10 +122,8 @@ gap> SetEntrySCTable( T1, 5, 7, [1,9] );
 gap> SetEntrySCTable( T1, 5, 9, [2,10] );
 gap> SetEntrySCTable( T1, 6, 7, [1,8] );
 gap> SetEntrySCTable( T1, 6, 8, [2,10] );
-
 gap> IdentityFromSCTable( T1 );
 fail
-
 gap> l1:= AlgebraByStructureConstants( Rationals, T1 );
 <algebra of dimension 10 over Rationals>
 gap> IsLieAlgebra( l1 );
@@ -162,10 +146,8 @@ gap> IsLieAbelian( l1 );
 false
 gap> c:= LieCentre( l1 );
 <Lie algebra of dimension 0 over Rationals>
-
 gap> gens:= GeneratorsOfAlgebra( l1 );
 [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10 ]
-
 gap> s1:= Subalgebra( l1, [ gens[1] ] );
 <Lie algebra over Rationals, with 1 generators>
 gap> Dimension( s1 );
@@ -179,7 +161,6 @@ true
 gap> LieCentre( s1 );
 <two-sided ideal in <Lie algebra of dimension 1 over Rationals>, (dimension 1
  )>
-
 gap> LieCentralizer( l1, s1 );
 <Lie algebra of dimension 4 over Rationals>
 gap> ps:= ProductSpace( l1, s1 );
@@ -190,10 +171,8 @@ gap> LieNormalizer( l1, ps );
 <Lie algebra of dimension 4 over Rationals>
 
 # use AsAlgebra etc.
-
 gap> KappaPerp( l1, ps );
 <vector space of dimension 6 over Rationals>
-
 gap> b:= Basis( l1 );
 CanonicalBasis( <Lie algebra of dimension 10 over Rationals> )
 gap> Print(AdjointMatrix( b, gens[1] ),"\n");
@@ -202,7 +181,6 @@ gap> Print(AdjointMatrix( b, gens[1] ),"\n");
   [ 0, 0, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 0, 0, 0, 0, -2, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, -2, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
-
 gap> der:= Derivations( b );
 <Lie algebra of dimension 11 over Rationals>
 gap> IsLieAlgebra( der );
@@ -211,14 +189,12 @@ gap> IsMatrixSpace( der );
 true
 gap> Dimension( der );
 11
-
 gap> Print(KillingMatrix( b ),"\n");
 [ [ -24, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 24, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 12, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -12, 0, 0, 0, 0 ], 
   [ 0, 0, 12, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, -12, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
-
 gap> IsNilpotentElement( l1, gens[1] );
 false
 gap> IsNilpotentElement( s1, Random( s1 ) );
@@ -227,10 +203,8 @@ gap> IsRestrictedLieAlgebra( l1 );
 false
 
 # PthPowerImages( l1 );
-
 gap> NonNilpotentElement( l1 );
 v.1
-
 gap> Print(AdjointBasis( b ),"\n");
 Basis( VectorSpace( Rationals, 
 [ [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -284,8 +258,8 @@ Basis( VectorSpace( Rationals,
       [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ], 
       [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 2, 0, 0, 0, 0, 0, 0, 0, 0 ] ] 
  ] ), 
-[ [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 
-          0, 0, -2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], 
+[ [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, -2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], 
       [ 0, 0, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 0, 0, 0, 0, -2, 0, 0, 0, 0, 0 ], 
       [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, -2, 0 ], 
       [ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ], 
@@ -336,13 +310,10 @@ Basis( VectorSpace( Rationals,
       [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 2, 0, 0, 0, 0, 0, 0, 0, 0 ] ] 
  ] )
 
-
-
 #############################################################################
 ##
 ##  Expl. 3: Second example of Willem de Graaf
 ##
-
 gap> T2:= EmptySCTable( 15, 0, "antisymmetric" );;
 gap> SetEntrySCTable( T2, 1, 2, [-1,5] );
 gap> SetEntrySCTable( T2, 1, 4, [-1,6] );
@@ -437,7 +408,6 @@ gap> SetEntrySCTable( T2, 12, 15, [4,2,4,4,-2,11] );
 gap> SetEntrySCTable( T2, 13, 14, [11,5,-3,8,1,13,1,14] );
 gap> SetEntrySCTable( T2, 13, 15, [8,5,6,6,12,7,-6,8,4,13,-2,14] );
 gap> SetEntrySCTable( T2, 14, 15, [3,5,4,6,18,7,3,8,3,13,-3,14] );
-
 gap> l2:= AlgebraByStructureConstants( Rationals, T2 );
 <algebra of dimension 15 over Rationals>
 gap> IsLieAlgebra( l2 );
@@ -463,13 +433,10 @@ false
 gap> LieCentre( l2 );
 <two-sided ideal in <Lie algebra of dimension 15 over Rationals>, (dimension 1
  )>
-
-
 gap> gens:= GeneratorsOfAlgebra( l2 );;
 gap> Print(gens,"\n");
 [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14, 
   v.15 ]
-
 gap> s2:= Subalgebra( l2, [ gens[1] ] );
 <Lie algebra over Rationals, with 1 generators>
 gap> Dimension( s2 );
@@ -483,7 +450,6 @@ true
 gap> LieCentre( s2 );
 <two-sided ideal in <Lie algebra of dimension 1 over Rationals>, (dimension 1
  )>
-
 gap> LieCentralizer( l2, s2 );
 <Lie algebra of dimension 9 over Rationals>
 gap> ps:= ProductSpace( l2, s2 );
@@ -492,12 +458,10 @@ gap> LieCentralizer( l2, ps );
 <Lie algebra of dimension 1 over Rationals>
 gap> LieNormalizer( l2, ps );
 <Lie algebra of dimension 10 over Rationals>
-
 gap> Print( KappaPerp( l2, ps ), "\n" );
 VectorSpace( Rationals, [ v.1, v.3, (-3)*v.5+v.6, v.5+(3)*v.7+v.8, v.9, v.10, 
   (3)*v.2+v.4+v.11, v.2+v.4+v.12, (4)*v.5+v.13, v.5+(-3)*v.7+v.14, 
   (-1)*v.5+(-6)*v.7+v.15 ] )
-
 gap> b:= Basis( l2 );
 CanonicalBasis( <Lie algebra of dimension 15 over Rationals> )
 gap> Print(AdjointMatrix( b, gens[1] ),"\n");
@@ -516,7 +480,6 @@ gap> Print(AdjointMatrix( b, gens[1] ),"\n");
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
-
 gap> der:= Derivations( b );
 <Lie algebra of dimension 17 over Rationals>
 gap> IsLieAlgebra( der );
@@ -525,7 +488,6 @@ gap> IsMatrixSpace( der );
 true
 gap> Dimension( der );
 17
-
 gap> Print(KillingMatrix( b ),"\n");
 [ [ 0, -8, 0, -24, 0, 0, 0, 0, 0, 0, 48, 32, 0, 0, 0 ], 
   [ -8, 0, -8, 0, 0, 0, 0, 0, 16, -32, 0, 0, 0, 0, 0 ], 
@@ -542,23 +504,19 @@ gap> Print(KillingMatrix( b ),"\n");
   [ 0, 0, 0, 0, -64, -192, 48, -80, 0, 0, 0, 0, 256, 208, 224 ], 
   [ 0, 0, 0, 0, -64, -144, 64, -80, 0, 0, 0, 0, 208, 256, 272 ], 
   [ 0, 0, 0, 0, -80, -144, 64, -64, 0, 0, 0, 0, 224, 272, 256 ] ]
-
 gap> IsNilpotentElement( l2, gens[1] );
 true
 gap> IsNilpotentElement( s2, Random( s2 ) );
 true
-
 gap> IsRestrictedLieAlgebra( l2 );
 false
 gap> NonNilpotentElement( l2 );
 v.5
 
-
 #############################################################################
 ##
 ##  Expl. 4: Third example of Willem de Graaf (solvable Lie algebra)
 ##
-
 gap> T3:= EmptySCTable( 14, 0, "antisymmetric" );;
 gap> SetEntrySCTable( T3, 1, 5, [1,2] );
 gap> SetEntrySCTable( T3, 1, 6, [1,3] );
@@ -598,7 +556,6 @@ gap> SetEntrySCTable( T3, 9, 12, [1,9] );
 gap> SetEntrySCTable( T3, 9, 14, [-1,9] );
 gap> SetEntrySCTable( T3, 10, 13, [1,10] );
 gap> SetEntrySCTable( T3, 10, 14, [-1,10] );
-
 gap> l3:= AlgebraByStructureConstants( Rationals, T3 );
 <algebra of dimension 14 over Rationals>
 gap> IsLieAlgebra( l3 );
@@ -622,10 +579,8 @@ gap> IsLieAbelian( l3 );
 false
 gap> LieCentre( l3 );
 <Lie algebra of dimension 0 over Rationals>
-
 gap> gens:= GeneratorsOfAlgebra( l3 );
 [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14 ]
-
 gap> s3:= Subalgebra( l3, [ gens[1] ] );
 <Lie algebra over Rationals, with 1 generators>
 gap> Dimension( s3 );
@@ -639,7 +594,6 @@ true
 gap> LieCentre( s3 );
 <two-sided ideal in <Lie algebra of dimension 1 over Rationals>, (dimension 1
  )>
-
 gap> LieCentralizer( l3, s3 );
 <Lie algebra of dimension 10 over Rationals>
 gap> ps:= ProductSpace( l3, s3 );;
@@ -647,13 +601,10 @@ gap> Print( ps, "\n" );
 VectorSpace( Rationals, [ v.2, v.3, v.4, v.1 ] )
 gap> LieCentralizer( l3, ps );
 <Lie algebra of dimension 4 over Rationals>
-
 gap> LieNormalizer( l3, ps );
 <Lie algebra of dimension 14 over Rationals>
-
 gap> KappaPerp( l3, ps );
 <vector space of dimension 14 over Rationals>
-
 gap> b:= Basis( l3 );
 CanonicalBasis( <Lie algebra of dimension 14 over Rationals> )
 gap> Print(AdjointMatrix( b, gens[1] ),"\n");
@@ -671,7 +622,6 @@ gap> Print(AdjointMatrix( b, gens[1] ),"\n");
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
-
 gap> der:= Derivations( b );
 <Lie algebra of dimension 14 over Rationals>
 gap> IsLieAlgebra( der );
@@ -680,7 +630,6 @@ gap> IsMatrixSpace( der );
 true
 gap> Dimension( der );
 14
-
 gap> Print(KillingMatrix( b ),"\n");
 [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -696,17 +645,14 @@ gap> Print(KillingMatrix( b ),"\n");
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 5, 5 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 10, 5 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 10 ] ]
-
 gap> IsNilpotentElement( l3, gens[1] );
 true
 gap> IsNilpotentElement( s3, Random( s3 ) );
 true
-
 gap> IsRestrictedLieAlgebra( l3 );
 false
 gap> NonNilpotentElement( l3 );
 v.11
-
 
 #############################################################################
 ##
@@ -731,13 +677,9 @@ gap> c:= Centre( t );
 gap> c = t;
 true
 
-
 #############################################################################
-gap> STOP_TEST( "algsc.tst",296002170);
-
+gap> STOP_TEST( "algsc.tst", 76600000 );
 
 #############################################################################
 ##
 #E
-
-

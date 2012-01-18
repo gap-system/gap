@@ -2,28 +2,23 @@
 ##
 #W  vspchom.tst                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: vspchom.tst,v 4.27 2010/10/10 21:59:40 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id: vspchom.tst,v 4.27 2010/10/10 21:59:40 alexk Exp $");
-
+gap> START_TEST("vspchom.tst");
 
 #############################################################################
 ##
 ##  tests for linear mappings given by images
 ##
-
 gap> f:= GF(3);
 GF(3)
 gap> v:= GF(27);
 GF(3^3)
 gap> w:= f^2;
 ( GF(3)^2 )
-
 gap> map1:= LeftModuleGeneralMappingByImages( f, v, [ Z(3)^0 ], [ Z(27) ] );
 [ Z(3)^0 ] -> [ Z(3^3) ]
 gap> ImagesSource( map1 );
@@ -50,7 +45,6 @@ gap> 2 * map1 = - map1;
 true
 gap> Z(3) * map1 = - map1;
 true
-
 gap> map2:= LeftModuleGeneralMappingByImages( v, w,
 >       CanonicalBasis( v ),
 >       [ [ Z(3)^0, 0*Z(3)^0 ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3)^0, Z(3)^0 ] ] );
@@ -80,7 +74,6 @@ gap> 2 * map2 = - map2;
 true
 gap> Z(3) * map2 = - map2;
 true
-
 gap> map3:= LeftModuleGeneralMappingByImages( w, v,
 >        [ [ Z(3)^0, 0*Z(3)^0 ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3)^0, Z(3)^0 ] ],
 >        CanonicalBasis( v ) );
@@ -110,9 +103,8 @@ gap> 2 * map3 = - map3;
 true
 gap> Z(3) * map3 = - map3;
 true
-
 gap> comp1:= CompositionMapping( map3, map2 );
-CompositionMapping( [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ],
+CompositionMapping( [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
   [ 0*Z(3), Z(3)^0 ] ] -> CanonicalBasis( GF(3^3) ), CanonicalBasis( GF(3^
 3) ) -> [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ] )
 gap> IsInjective( comp1 );
@@ -121,11 +113,10 @@ gap> IsSingleValued( comp1 );
 false
 gap> IsSurjective( comp1 );
 true
-
 gap> comp2:= CompositionMapping( map2, map3 );
-CompositionMapping( CanonicalBasis( GF(3^3) ) ->
-[ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ],
-[ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ]
+CompositionMapping( CanonicalBasis( GF(3^3) ) -> 
+[ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ], 
+[ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] 
  ] -> CanonicalBasis( GF(3^3) ) )
 gap> IsInjective( comp2 );
 true
@@ -133,7 +124,6 @@ gap> IsSingleValued( comp2 );
 true
 gap> IsSurjective( comp2 );
 true
-
 gap> comp3:= CompositionMapping( FrobeniusAutomorphism( v ), map1 );
 [ Z(3)^0 ] -> [ Z(3^3)^3 ]
 gap> IsInjective( comp3 );
@@ -148,12 +138,10 @@ gap> ImagesRepresentative( comp3, 0*Z(3)^0 );
 0*Z(3)
 gap> ImagesRepresentative( comp3, Z(3)^0 );
 Z(3^3)^3
-
 gap> sum:= map1 + map1;
 [ Z(3)^0 ] -> [ Z(3^3)^14 ]
 gap> sum + map1 = ZeroMapping( f, v );
 true
-
 gap> map4:= LeftModuleGeneralMappingByImages( v, v, CanonicalBasis( v ),
 >            [ Z(27)^8, Z(3), Z(27) ] );
 CanonicalBasis( GF(3^3) ) -> [ Z(3^3)^8, Z(3), Z(3^3) ]
@@ -161,7 +149,6 @@ gap> map4 + IdentityMapping( v );
 CanonicalBasis( GF(3^3) ) -> [ Z(3^3)^15, Z(3^3)^3, Z(3^3)^10 ]
 gap> IdentityMapping( v ) + map4;
 CanonicalBasis( GF(3^3) ) -> [ Z(3^3)^15, Z(3^3)^3, Z(3^3)^10 ]
-
 
 # some tests involving zero mappings
 gap> m:= GroupRing( GF(3), CyclicGroup( 2 ) );;
@@ -191,21 +178,18 @@ gap> map:= LeftModuleGeneralMappingByImages( t, m, 0 * bm, bm );;
 gap> List( funs, f -> f( map ) );
 [ true, true, true, false ]
 
-
 #############################################################################
 ##
 ##  tests for linear mappings given by matrices
 ##  (same tests as above,
 ##  except those that would involve matrices with zero rows or columns)
 ##
-
 gap> bf:= CanonicalBasis( GF(3) );
 CanonicalBasis( GF(3) )
 gap> bv:= CanonicalBasis( GF(27) );
 CanonicalBasis( GF(3^3) )
 gap> bw:= CanonicalBasis( f^2 );
 CanonicalBasis( ( GF(3)^2 ) )
-
 gap> map5:= LeftModuleHomomorphismByMatrix( bf,
 >               [ [ Z(3), Z(3), Z(3) ] ], bv );
 <linear mapping by matrix, GF(3) -> GF(3^3)>
@@ -233,7 +217,6 @@ gap> 2 * map5 = - map5;
 true
 gap> Z(3) * map5 = - map5;
 true
-
 gap> map6:= LeftModuleHomomorphismByMatrix( bv,
 >            [ [ Z(3), Z(3) ], [ 0*Z(3), 0*Z(3) ], [ Z(3), 0*Z(3) ] ],
 >            bw );
@@ -262,7 +245,6 @@ gap> 2 * map6 = - map6;
 true
 gap> Z(3) * map6 = - map6;
 true
-
 gap> map7:= LeftModuleHomomorphismByMatrix( bw,
 >          [ [ Z(3)^0, 0*Z(3)^0, Z(3)^0 ], [ Z(3)^0, 0*Z(3)^0, Z(3)^0 ] ],
 >          bv );
@@ -291,7 +273,6 @@ gap> 2 * map7 = - map7;
 true
 gap> Z(3) * map7 = - map7;
 true
-
 gap> comp1:= CompositionMapping( map7, map6 );
 <linear mapping by matrix, GF(3^3) -> GF(3^3)>
 gap> IsInjective( comp1 );
@@ -300,7 +281,6 @@ gap> IsSingleValued( comp1 );
 true
 gap> IsSurjective( comp1 );
 false
-
 gap> comp2:= CompositionMapping( map6, map7 );
 <linear mapping by matrix, ( GF(3)^2 ) -> ( GF(3)^2 )>
 gap> IsInjective( comp2 );
@@ -309,7 +289,6 @@ gap> IsSingleValued( comp2 );
 true
 gap> IsSurjective( comp2 );
 false
-
 gap> comp3:= CompositionMapping( FrobeniusAutomorphism( v ), map5 );
 <linear mapping by matrix, GF(3) -> GF(3^3)>
 gap> IsInjective( comp3 );
@@ -324,12 +303,10 @@ gap> ImagesRepresentative( comp3, 0*Z(3)^0 );
 0*Z(3)
 gap> ImagesRepresentative( comp3, Z(3)^0 );
 Z(3^3)^5
-
 gap> sum:= map1 + map1;
 [ Z(3)^0 ] -> [ Z(3^3)^14 ]
 gap> sum + map1 = ZeroMapping( f, v );
 true
-
 gap> map8:= LeftModuleHomomorphismByMatrix( bv,
 >            [ [   Z(3),   Z(3),   Z(3) ],
 >              [ 0*Z(3), 0*Z(3), Z(3)^0 ],
@@ -341,19 +318,16 @@ gap> map8 + IdentityMapping( v );
 gap> IdentityMapping( v ) + map8;
 <linear mapping by matrix, GF(3^3) -> GF(3^3)>
 
-
 #############################################################################
 ##
 ##  tests for mixed cases
 ##
-
 gap> map2 + map6;
 CanonicalBasis( GF(3^3) ) -> [ [ 0*Z(3), Z(3) ], [ Z(3)^0, Z(3)^0 ], 
   [ Z(3), Z(3)^0 ] ]
 gap> map6 + map2;
 CanonicalBasis( GF(3^3) ) -> [ [ 0*Z(3), Z(3) ], [ Z(3)^0, Z(3)^0 ], 
   [ Z(3), Z(3)^0 ] ]
-
 gap> # id:= IdentityMapping( v );
 gap> # 2 * id;
 gap> # id + id;
@@ -364,19 +338,15 @@ gap> # zero + zero;
 gap> # id + zero;
 gap> # - zero;
 
-
 #############################################################################
 ##
 ##  tests for natural homomorphisms
 ##
-
 gap> NaturalHomomorphismBySubspace( v, TrivialSubspace( v ) )
 >    = IdentityMapping( v );
 true
-
 gap> IsZero( NaturalHomomorphismBySubspace( v, v ) );
 true
-
 gap> nathom:= NaturalHomomorphismBySubspace( w,
 >                 Subspace( w, [ [ Z(3), Z(3) ] ] ) );
 <linear mapping by matrix, ( GF(3)^2 ) -> ( GF(3)^1 )>
@@ -409,12 +379,10 @@ true
 gap> Z(3) * nathom = - nathom;
 true
 
-
 #############################################################################
 ##
 ##  tests for spaces of linear mappings
 ##
-
 gap> hom:= Hom( f, v, w );
 Hom( GF(3), GF(3^3), ( GF(3)^2 ) )
 gap> IsFullHomModule( hom );
@@ -429,7 +397,6 @@ gap> sub:= Subspace( hom, [ map6 ] );
 <vector space over GF(3), with 1 generators>
 gap> BasisVectors( Basis( sub ) );
 [ <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )> ]
-
 gap> sub:= LeftModuleByGenerators( f, [ map6 ] );
 <vector space over GF(3), with 1 generators>
 gap> Dimension( sub );
@@ -440,19 +407,16 @@ gap> triv:= LeftModuleByGenerators( f, [], zero );
 <vector space over GF(3), with 0 generators>
 gap> IsSubset( hom, triv );
 true
-
 gap> mb:= MutableBasis( f, [], zero );
 <mutable basis over GF(3), 0 vectors>
 gap> CloseMutableBasis( mb, map6 );
 gap> ImmutableBasis( mb );
 Basis( <vector space of dimension 1 over GF(3)>, ... )
 
-
 #############################################################################
 ##
 ##  tests for algebras of linear mappings
 ##
-
 gap> endo:= End( f, v );
 End( GF(3), GF(3^3) )
 gap> id:= IdentityMapping( v );
@@ -463,14 +427,12 @@ gap> id in endo;
 true
 gap> zero in endo;
 true
-
 gap> RingByGenerators( [ id ] );
 <algebra over GF(3), with 1 generators>
 gap> DefaultRingByGenerators( [ id ] );
 <algebra over GF(3), with 1 generators>
 gap> RingWithOneByGenerators( [ id ] );
 <algebra-with-one over GF(3), with 1 generators>
-
 gap> a:= AlgebraByGenerators( f, [], zero );
 <algebra over GF(3), with 0 generators>
 gap> Dimension( a );
@@ -479,7 +441,6 @@ gap> a:= AlgebraByGenerators( f, [ id ] );
 <algebra over GF(3), with 1 generators>
 gap> Dimension( a );
 1
-
 gap> a:= AlgebraWithOneByGenerators( f, [], zero );
 <algebra-with-one over GF(3), with 0 generators>
 gap> Dimension( a );
@@ -488,7 +449,6 @@ gap> a:= AlgebraWithOneByGenerators( f, [ id ] );
 <algebra-with-one over GF(3), with 1 generators>
 gap> Dimension( a );
 1
-
 gap> IsFullHomModule( a );
 false
 gap> IsFullHomModule( endo );
@@ -534,17 +494,12 @@ gap> map:= LeftModuleHomomorphismByMatrix( bv, 2 * IdentityMat( 3, f ), bv );
 <linear mapping by matrix, GF(3^3) -> GF(3^3)>
 gap> Coefficients( b, map );
 [ Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3) ]
-
-
 gap> endoendo:= End( f, endo );
 End( GF(3), End( GF(3), GF(3^3) ) )
 gap> Dimension( endoendo );
 81
-
-gap> STOP_TEST( "vspchom.tst",74000701);
-
+gap> STOP_TEST( "vspchom.tst", 9500000 );
 
 #############################################################################
 ##
 #E
-

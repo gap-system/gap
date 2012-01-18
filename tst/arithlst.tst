@@ -2,15 +2,12 @@
 ##
 #W  arithlst.tst                GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id: arithlst.tst,v 1.19 2010/10/10 21:59:25 alexk Exp $
 ##
 #Y  Copyright (C)  2000,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testinstall.g because it runs too long.
 ##
-
-gap> START_TEST("$Id: arithlst.tst,v 1.19 2010/10/10 21:59:25 alexk Exp $");
-
+gap> START_TEST("arithlst.tst");
 
 #############################################################################
 ##
@@ -20,16 +17,13 @@ gap> START_TEST("$Id: arithlst.tst,v 1.19 2010/10/10 21:59:25 alexk Exp $");
 ##
 gap> error:= Print;;
 
-
 #############################################################################
 ##
 ##  Define auxiliary functions.
 ##
-
 gap> RandomSquareArray := function( dim, D )
 >   return List( [ 1 .. dim ], i -> List( [ 1 .. dim ], j -> Random( D ) ) );
 > end;;
-
 gap> NestingDepthATest := function( obj )
 >   if not IsGeneralizedRowVector( obj ) then
 >     return 0;
@@ -39,7 +33,6 @@ gap> NestingDepthATest := function( obj )
 >     return 1 + NestingDepthATest( obj[ PositionBound( obj ) ] );
 >   fi;
 > end;;
-
 gap> NestingDepthMTest := function( obj )
 >   if not IsMultiplicativeGeneralizedRowVector( obj ) then
 >     return 0;
@@ -49,7 +42,6 @@ gap> NestingDepthMTest := function( obj )
 >     return 1 + NestingDepthMTest( obj[ PositionBound( obj ) ] );
 >   fi;
 > end;;
-
 gap> ImmutabilityLevel2 := function( list )
 >   if not IsList( list ) then
 >     if IsMutable( list ) then
@@ -66,7 +58,6 @@ gap> ImmutabilityLevel2 := function( list )
 >     return 1 + ImmutabilityLevel2( list[ PositionBound( list ) ] );
 >   fi;
 > end;;
-
 gap> ImmutabilityLevel := function( list )
 >   if IsMutable( list ) then
 >     return ImmutabilityLevel2( list );
@@ -75,10 +66,8 @@ gap> ImmutabilityLevel := function( list )
 >   fi;
 > end;;
 
-
 ##  Note that the two-argument version of `List' is defined only for
 ##  dense lists.
-
 gap> ListWithPrescribedHoles := function( list, func )
 >   local result, i;
 > 
@@ -90,8 +79,6 @@ gap> ListWithPrescribedHoles := function( list, func )
 >   od;
 >   return result;
 > end;;
-
-
 gap> SumWithHoles := function( list )
 >   local pos, result, i;
 > 
@@ -104,8 +91,6 @@ gap> SumWithHoles := function( list )
 >   od;
 >   return result;
 > end;;
-
-
 gap> ParallelOp := function( op, list1, list2, mode )
 >   local result, i;
 > 
@@ -123,8 +108,6 @@ gap> ParallelOp := function( op, list1, list2, mode )
 >   od;
 >   return result;
 > end;;
-
-
 gap> ErrorMessage := function( opname, operands, info, is, should )
 >   local str, i;
 > 
@@ -136,8 +119,6 @@ gap> ErrorMessage := function( opname, operands, info, is, should )
 >   error( str, operands[ Length( operands ) ], " ):  ", info, ",\n",
 >          "should be ", should, " but is ", is, "\n" );
 > end;;
-
-
 gap> CheckMutabilityStatus := function( opname, list )
 >   local attr, op, val, sm;
 > 
@@ -162,12 +143,9 @@ gap> CheckMutabilityStatus := function( opname, list )
 >   fi;
 > end;;
 
-
 ##  Check whether a unary operation preserves the compression status.
-
 gap> COMPRESSIONS := [ "Is8BitMatrixRep", "Is8BitVectorRep",
 >                      "IsGF2VectorRep", "IsGF2MatrixRep" ];;
-
 gap> CheckCompressionStatus := function( opname, list )
 >   local value, namefilter, filter;
 > 
@@ -181,8 +159,6 @@ gap> CheckCompressionStatus := function( opname, list )
 >     od;
 >   fi;
 > end;;
-
-
 gap> CompareTest := function( opname, operands, result, desired )
 >   local i, j, val;
 > 
@@ -230,7 +206,6 @@ gap> CompareTest := function( opname, operands, result, desired )
 >   fi;
 > end;;
 
-
 #############################################################################
 ##
 #F  ZeroTest( <list> )
@@ -250,7 +225,6 @@ gap> ZeroTest := function( list )
 >   fi;
 > end;;
 
-
 #############################################################################
 ##
 #F  AdditiveInverseTest( <list> )
@@ -269,7 +243,6 @@ gap> AdditiveInverseTest := function( list )
 >     CheckCompressionStatus( "AdditiveInverseSM", list );
 >   fi;
 > end;;
-
 
 #############################################################################
 ##
@@ -325,7 +298,6 @@ gap> AdditionTest := function( left, right )
 >   fi;
 > end;;
 
-
 #############################################################################
 ##
 #F  OneTest( <list> )
@@ -337,7 +309,6 @@ gap> OneTest := function( list )
 >     CheckCompressionStatus( "OneSM", list );
 >   fi;
 > end;;
-
 
 #############################################################################
 ##
@@ -351,7 +322,6 @@ gap> InverseTest := function( list )
 >   fi;
 > end;;
 
-
 #############################################################################
 ##
 #F  TransposedMatTest( <obj> )
@@ -362,7 +332,6 @@ gap> TransposedMatTest := function( list )
 >     CheckCompressionStatus( "TransposedMatOp", list );
 >   fi;
 > end;;
-
 
 #############################################################################
 ##
@@ -496,7 +465,6 @@ gap> MultiplicationTest := function( left, right )
 >   fi;
 > end;;
 
-
 #############################################################################
 ##
 #F  RunTest( <func>, <arg1>, ... )
@@ -522,7 +490,6 @@ gap> RunTest := function( arg )
 >     CallFuncList( arg[1], entry );
 >   od;
 > end;;
-
 
 #############################################################################
 ##
@@ -631,7 +598,6 @@ gap> TestOfAdditiveListArithmetic := function( R, dim )
 >   od;
 > end;;
 
-
 #############################################################################
 ##
 #F  TestOfMultiplicativeListArithmetic( <R>, <dim> )
@@ -735,7 +701,6 @@ gap> TestOfMultiplicativeListArithmetic := function( R, dim )
 >   od;
 > end;;
 
-
 #############################################################################
 ##
 #F  TestOfListArithmetic( <R>, <dimlist> )
@@ -761,7 +726,6 @@ gap> TestOfListArithmetic := function( R, dimlist )
 >     fi;
 >   od;
 > end;;
-
 
 #############################################################################
 ##
@@ -822,12 +786,8 @@ gap> TestOfAdditiveListArithmetic( LieAlgebra( GF(3)^[2,2] ), 4 );
 # gap> # block matrix!
 # gap> TestOfAdditiveListArithmetic( blockmats, 4 );
 # gap> TestOfMultiplicativeListArithmetic( blockmats, 4 );
-
-
-gap> STOP_TEST( "arithlst.tst", 2000000 );
-
+gap> STOP_TEST( "arithlst.tst", 48429100000 );
 
 #############################################################################
 ##
 #E
-

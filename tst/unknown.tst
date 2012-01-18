@@ -2,15 +2,12 @@
 ##
 #W  unknown.tst                GAP Library                      Thomas Breuer
 ##
-#H  @(#)$Id: unknown.tst,v 4.8 2010/10/10 21:59:40 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testinstall.g: why?
 ##
-
-gap> START_TEST("$Id: unknown.tst,v 4.8 2010/10/10 21:59:40 alexk Exp $");
-
+gap> START_TEST("unknown.tst");
 gap> LargestUnknown:= 0;;
 gap> u:= Unknown();
 Unknown(1)
@@ -82,10 +79,8 @@ gap> u ^ 1;
 Unknown(1)
 gap> u ^ 2;
 Unknown(18)
-
-gap> STOP_TEST( "unknown.tst", 170000 );
+gap> STOP_TEST( "unknown.tst", 100000 );
 
 #############################################################################
 ##
 #E
-

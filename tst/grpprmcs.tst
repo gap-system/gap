@@ -2,14 +2,12 @@
 ##
 #W  grpprmcs.tst                GAP library                       Ákos Seress
 ##
-#H  @(#)$Id: grpprmcs.tst,v 1.12 2010/10/10 21:59:29 alexk Exp $
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testinstall.g: why?
 ##
-
-gap> START_TEST("$Id: grpprmcs.tst,v 1.12 2010/10/10 21:59:29 alexk Exp $");
+gap> START_TEST("grpprmcs.tst");
 
 # we don't want `GroupString' to display the number of generators as this
 # may differ. We get the sizes anyhow from the composition factors. Thus
@@ -25,7 +23,6 @@ gap> InstallMethod(GroupString, "for a group", true, [ IsGroup,IsString ], 0,
 # proba
 
 # agl10.2
-
 gap> g:=
 > Group( (   1,   2)(   3,   4)(   5,   6)(   7,   8)(   9,  10)
 > (  11,  12)(  13,  14)(  15,  16)(  17,  18)(  19,  20)(  21,  22)
@@ -270,7 +267,6 @@ gap> g:=
 > ( 500,1012)( 501,1013)( 502,1014)( 503,1015)( 504,1016)( 505,1017)
 > ( 506,1018)( 507,1019)( 508,1020)( 509,1021)( 510,1022)( 511,1023)
 > ( 512,1024) );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -299,13 +295,10 @@ Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 375234700595146883504949480652800, 1024, 1 ]
 
-
 # agl1103.gen
-
 gap> perm1:= PermList( Concatenation( [ 2 .. 1103 ], [ 1 ] ) );;
 gap> perm2:= PermList( List( [1 .. 1103 ], x -> (5*x mod 1103) +1 ) );;
 gap> g:= Group( perm1, perm2 );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -320,9 +313,7 @@ Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 1215506, 607753, 31987, 1103, 1 ]
 
-
 # $Co_2$ on 2300 points
-
 gap> g:=
 > Group( (   1,   4)(   2,   7)(   5,  10)(   6,  12)(   8,  17)
 > (  11,  18)(  13,  24)(  15,  25)(  16,  23)(  20,  30)(  21,  31)
@@ -681,7 +672,6 @@ gap> g:=
 > (1516,1802,1870,2014,1982,2005,2050,2073,1721,2100,2188,2174,1539,1746,
 >  1736)(1620,1809,2062,2285,2085,1943,1975,1964,1897,1898,2220,1888,
 >  1889,1991,1808) );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -690,9 +680,7 @@ Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 42305421312000, 1 ]
 
-
 # $Co_3$ on 276 points
-
 gap> g:= Group(
 > (4,6)(5,10)(7,13)(8,16)(9,11)(12,21)(14,24)(15,27)
 > (17,29)(20,34)(22,37)(23,40)(25,46)(26,47)(28,44)(31,53)
@@ -758,7 +746,6 @@ gap> g:= Group(
 > (227,264)(230,260)(232,243)(234,267)(237,256)(238,262)(240,261)(244,252)
 > (246,270)(247,273)(248,271)(251,266)(255,259)(263,269)(268,276)(272,274)
 > );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -767,9 +754,7 @@ Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 495766656000, 1 ]
 
-
 # cube
-
 gap> g := Group(
 >   (1,3,8,6)(2,5,7,4)(9,48,15,12)(10,47,16,13)(11,46,17,14),
 >   (9,11,26,24)(10,19,25,18)(1,12,33,41)(4,20,36,44)(6,27,38,46),
@@ -777,7 +762,6 @@ gap> g := Group(
 >   (15,17,32,30)(16,23,31,22)(3,43,35,14)(5,45,37,21)(8,48,40,29),
 >   (33,35,40,38)(34,37,39,36)(24,27,30,43)(25,28,31,42)(26,29,32,41),
 >   (41,43,48,46)(42,45,47,44)(1,24,40,17)(2,18,39,23)(3,9,38,32) );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -827,9 +811,7 @@ gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 43252003274489856000, 21626001637244928000, 1072718335180800, 490497638400, 
   2048, 2, 1 ]
 
-
 # gl10.2
-
 gap> g:=
 > Group( (257,513)(258,514)(259,515)(260,516)(261,517)(262,518)(263,519)
 > (264,520)(265,521)(266,522)(267,523)(268,524)(269,525)(270,526)
@@ -988,7 +970,6 @@ gap> g:=
 > ( 497,1009)( 498,1010)( 499,1011)( 500,1012)( 501,1013)( 502,1014)
 > ( 503,1015)( 504,1016)( 505,1017)( 506,1018)( 507,1019)( 508,1020)
 > ( 509,1021)( 510,1022)( 511,1023)( 512,1024) );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -997,9 +978,7 @@ Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 366440137299948128422802227200, 1 ]
 
-
 # $J_2$ on 100 points
-
 gap> g:= Group( (2,3,4,5,6,7,8)(9,10,11,12,13,14,15)
 > (16,17,18,19,20,21,22)(23,24,25,26,27,28,29)(30,31,32,33,34,35,36)
 > (37,38,39,40,41,42,43)(44,45,46,47,48,49,50)(51,52,53,54,55,56,57)
@@ -1016,7 +995,6 @@ gap> g:= Group( (2,3,4,5,6,7,8)(9,10,11,12,13,14,15)
 > (22,65)(23,53)(24,52)(25,51)(26,57)(27,56)(28,55)(29,54)(37,91)(38,90)
 > (39,89)(40,88)(41,87)(42,86)(43,92)(44,99)(45,98)(46,97)(47,96)(48,95)
 > (49,94)(50,93)(58,85)(59,84)(60,83)(61,82)(62,81)(63,80)(64,79) );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -1025,9 +1003,7 @@ Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 604800, 1 ]
 
-
 # neum on 240 points
-
 gap> g:=
 > Group( (  3,  8,  6)(  4, 16, 23)(  5, 86,119)(  7, 91,149)
 > (  9, 89, 14)( 10,164, 18)( 11, 19, 20)( 12, 74,120)( 13,101, 28)
@@ -1076,7 +1052,6 @@ gap> g:=
 > (137,179,161)(138,148,149)(141,226,142)(143,153,173)(150,152,186)
 > (151,163,234)(164,175,177)(165,213,183)(168,218,176)(171,188,224)
 > (172,236,200)(192,212,223)(193,198,240)(202,221,230)(206,217,216) );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -1087,9 +1062,7 @@ Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 40320, 2, 1 ]
 
-
 # regular
-
 gap> g:= PrimitiveGroup( 11, 6 );;
 gap> elms:= AsList( g );;
 gap> gens:= Concatenation( List( GeneratorsOfGroup( g ),
@@ -1098,7 +1071,6 @@ gap> gens:= Concatenation( List( GeneratorsOfGroup( g ),
 >                   PermList( List( [ 1 .. 7920 ],
 >                       i -> Position( elms, x^-1 * elms[i] ) ) ) ] ) );;
 gap> reg:= Group( gens );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -1106,10 +1078,7 @@ Group
 Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 7920, 1 ]
-
-
 gap> # $S_5 \wr S_5$ on 3125 points. 
-
 gap> l:= [ (1,2,3,4,5), (1,2), (1,6,11,16,21)(2,7,12,17,22)(3,8,13,18,23)
 >          (4,9,14,19,24)(5,10,15,20,25), (1,6)(2,7)(3,8)(4,9)(5,10) ];;
 gap> tuptonum:= tup -> tup * [ 1, 5, 25, 125, 625 ] - 15430;;
@@ -1136,7 +1105,6 @@ gap> for j in [ 1 .. 4 ] do
 >      od;
 >    od;
 gap> g:= Group( List( gens, PermList ), () );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -1173,9 +1141,7 @@ Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 2985984000000, 1492992000000, 746496000000, 12441600000, 777600000, 1 ]
 
-
 # sol768.gen
-
 gap> g:=
 > Group( (  1,  4)(  2,  5)(  3, 73)(  9,175, 28,188, 12,172)
 > ( 10,177,132,221, 13,174)( 11,176, 75,552, 14,173)( 15,166)( 16,168)
@@ -1275,7 +1241,6 @@ gap> g:=
 > (290,300,622,709,480,427)(313,744,407,358,504,704)(324,487,700,658,551,
 >  548,544,474,409,687,436,767)(330,635,523,357,637,662)(333,761,626,536,
 >  603,664)(403,414,677,502,465,640) );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -1329,9 +1294,7 @@ gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 1088391168, 544195584, 181398528, 45349632, 22674816, 2519424, 839808, 
   13122, 6561, 1 ]
 
-
 # $Suz$ on 1782 points
-
 gap> g:=
 > Group( (   2,   3)(   8,  14)(   9,  15)(  11,  17)(  13,  24)
 > (  16,  25)(  18,  31)(  20,  28)(  23,  40)(  26,  29)(  27,  43)
@@ -1610,7 +1573,6 @@ gap> g:=
 >  1301)( 653, 895,1709, 791, 764,1541,1579)( 706,1055, 861,1504,1641,
 >  1508,1481)( 810,1296, 970,1698,1523,1215, 869)(1097,1456,1383,1461,
 >  1467,1748,1153)(1222,1674,1384,1729,1707,1452,1417) );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -1619,9 +1581,7 @@ Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 448345497600, 1 ]
 
-
 # test
-
 gap> g:= 
 > Group( (  1,  5,  7,  3, 12, 24, 11)(  2, 23,  4, 27, 13, 14, 26)
 > (  6, 20, 18,  8, 25, 21, 28)(  9, 10, 17, 15, 22, 16, 19)
@@ -1826,7 +1786,6 @@ gap> g:=
 > (584,640,724,780,668,612,752,696)(585,641,725,781,669,613,753,697)
 > (586,642,726,782,670,614,754,698)(587,643,727,783,671,615,755,699)
 > (588,644,728,784,672,616,756,700) );;
-
 gap> SetName( g, "g" );
 gap> DisplayCompositionSeries( g );
 Group
@@ -1837,10 +1796,8 @@ Group
 gap> List( ChiefSeriesOfGroup( g ), Size );
 [ 36578304, 6048, 1 ]
 
-
 # $A_5 \times A_5$ in primitive action on $60$ points
 # (direct factors corresponding to left and right regular action)
-
 gap> g:= AlternatingGroup( 5 );;
 gap> e:= AsList( g );;
 gap> gens:= GeneratorsOfGroup( g );;
@@ -1853,12 +1810,8 @@ true
 gap> CompositionSeries( h );
 [ <permutation group of size 3600 with 4 generators>, 
   <permutation group of size 60 with 2 generators>, Group(()) ]
-
-
-gap> STOP_TEST( "grpprmcs.tst",12735051238);
-
+gap> STOP_TEST( "grpprmcs.tst", 4153600000 );
 
 #############################################################################
 ##
 #E
-

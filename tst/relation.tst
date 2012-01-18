@@ -2,15 +2,12 @@
 ##
 #W  relation.tst                 GAP library                Robert F. Morse
 ##
-#H  @(#)$Id: relation.tst,v 4.9 2010/10/10 21:59:38 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id: relation.tst,v 4.9 2010/10/10 21:59:38 alexk Exp $");
-
+gap> START_TEST("relation.tst");
 gap> ##################################################
 gap> ##
 gap> ##  Categories
@@ -21,7 +18,7 @@ gap> ##################################################
 gap> dom := Domain([1..10]);;  
 gap> m := GeneralMappingByElements(dom,dom,List(dom,x->Tuple([x,x])));;
 gap> IsBinaryRelation(m);
-true 
+true
 gap> IsEndoGeneralMapping(m);
 true
 gap> IsReflexiveBinaryRelation(m);
@@ -38,7 +35,7 @@ gap> e := EquivalenceRelationByRelation(m);;
 gap> r := Random(dom);;
 gap> c := EquivalenceClassOfElement(e,r);;
 gap> IsEquivalenceClass(c);
-true 
+true
 gap> ##################################################
 gap> ##
 gap> ##  Properties
@@ -116,7 +113,7 @@ gap> Images(e,10);
 [ 10 ]
 gap> br:=BinaryRelationOnPoints([[1],[2,4,5],[3],[4,2,5],[2,4,5],[6],[7],[8],[9],[10]]);;
 gap> e=br;
-true 
+true
 gap> Successors(br);
 [ [ 1 ], [ 2, 4, 5 ], [ 3 ], [ 2, 4, 5 ], [ 2, 4, 5 ], [ 6 ], [ 7 ], [ 8 ], 
   [ 9 ], [ 10 ] ]
@@ -134,7 +131,7 @@ gap> ##################################################
 gap> br := BinaryRelationOnPoints([[2],[3],[4],[5],[6],[7],[8],[9],[10],[]]);;
 gap> rc := ReflexiveClosureBinaryRelation(br);;
 gap> Successors(rc);
-[ [ 1, 2 ], [ 2, 3 ], [ 3, 4 ], [ 4, 5 ], [ 5, 6 ], [ 6, 7 ], [ 7, 8 ],
+[ [ 1, 2 ], [ 2, 3 ], [ 3, 4 ], [ 4, 5 ], [ 5, 6 ], [ 6, 7 ], [ 7, 8 ], 
   [ 8, 9 ], [ 9, 10 ], [ 10 ] ]
 gap> sc := SymmetricClosureBinaryRelation(br);;
 gap> Successors(sc);
@@ -142,8 +139,8 @@ gap> Successors(sc);
   [ 7, 9 ], [ 8, 10 ], [ 9 ] ]
 gap> tc := TransitiveClosureBinaryRelation(br);;
 gap> Successors(tc);
-[ [ 2, 3, 4, 5, 6, 7, 8, 9, 10 ], [ 3, 4, 5, 6, 7, 8, 9, 10 ],
-  [ 4, 5, 6, 7, 8, 9, 10 ], [ 5, 6, 7, 8, 9, 10 ], [ 6, 7, 8, 9, 10 ],
+[ [ 2, 3, 4, 5, 6, 7, 8, 9, 10 ], [ 3, 4, 5, 6, 7, 8, 9, 10 ], 
+  [ 4, 5, 6, 7, 8, 9, 10 ], [ 5, 6, 7, 8, 9, 10 ], [ 6, 7, 8, 9, 10 ], 
   [ 7, 8, 9, 10 ], [ 8, 9, 10 ], [ 9, 10 ], [ 10 ], [  ] ]
 gap> er := EquivalenceRelationByRelation(br);;
 gap> er1 := EquivalenceRelationByPairs(dom,[[2,3],[4,5],[6,5]]);;
@@ -153,7 +150,7 @@ gap> er2 := EquivalenceRelationByPairs(dom,[[1,2],[3,4],[6,7],[7,8],[8,9],[9,10]
 gap> j1 := JoinEquivalenceRelations(er1,er2);;
 gap> j2 := JoinEquivalenceRelations(er,er1);;
 gap> j1=j2; 
-true 
+true
 gap> m1 := MeetEquivalenceRelations(j1,er2);;
 gap> m1=er2;
 true
@@ -173,7 +170,7 @@ gap> n:=10;; dom := Domain([1..n]);;
 gap> el := List([1..n-1],x->Tuple([x,x+1]));;
 gap> e := EquivalenceRelationByRelation(IdentityMapping(dom));;
 gap> EquivalenceRelationPartition(e)=[];
-true 
+true
 gap> er := EquivalenceRelationByPairs(dom,el);;
 gap> Size(EquivalenceRelationPartition(er))=1;
 true
@@ -187,16 +184,15 @@ gap> el :=  List([1..d-1],x->Tuple([AsList(sgs)[x],AsList(sgs)[x+1]]));;
 gap> er1 := EquivalenceRelationByRelation(GeneralMappingByElements(sgs,sgs,el));;
 gap> er := EquivalenceRelationByPairs(sgs,el);;
 gap> er=er1;
-true 
+true
 gap> el := List([1..n-1],x->Tuple([x,x+1]));;
 gap> rel := TransitiveClosureBinaryRelation(GeneralMappingByElements(dom,dom,el));;
 gap> Size(UnderlyingRelation(rel));
 45
 gap> Size(GeneratorsOfEquivalenceRelationPartition(EquivalenceRelationByPairs(dom,el)));
-9 
-gap> STOP_TEST( "relation.tst", 48010000 );
+9
+gap> STOP_TEST( "relation.tst", 7300000 );
 
 #############################################################################
 ##
 #E
-

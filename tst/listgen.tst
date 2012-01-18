@@ -2,15 +2,12 @@
 ##
 #A  listgen.tst               GAP 4.0 library                   Thomas Breuer
 ##
-#A  @(#)$Id: listgen.tst,v 4.12 2010/10/10 21:59:35 alexk Exp $
 ##
 #Y  Copyright 1996,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id: listgen.tst,v 4.12 2010/10/10 21:59:35 alexk Exp $");
-
+gap> START_TEST("listgen.tst");
 gap> List( [ 1 .. 10 ], x -> x^2 );
 [ 1, 4, 9, 16, 25, 36, 49, 64, 81, 100 ]
 gap> List( [ 2, 1, 2, 1 ], x -> x - 1 );
@@ -97,10 +94,8 @@ gap> p2:=Position(t,(5,7)(6,8));
 fail
 
 # that's all, folks
-gap> STOP_TEST( "listgen.tst", 1440000 );
-
+gap> STOP_TEST( "listgen.tst", 1000000 );
 
 #############################################################################
 ##
 #E
-

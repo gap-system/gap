@@ -2,14 +2,12 @@
 ##
 #W  semicong.tst                 GAP library                Robert F. Morse
 ##
-#H  $Id: semicong.tst,v 1.8 2010/10/10 21:59:39 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id: semicong.tst,v 1.8 2010/10/10 21:59:39 alexk Exp $");
+gap> START_TEST("semicong.tst");
 gap> #######################################################################
 gap> ##
 gap> ##  1. Testing infinite finitely presented commutative semigroups 
@@ -42,13 +40,12 @@ gap> ##     true and false
 gap> ##
 gap> ec := EquivalenceClassOfElement(c,sgns[n]);;
 gap> Size(ec);
-1 
+1
 gap> ec := EquivalenceClassOfElement(c,sgns[n-1]);;
 gap> sgns[n] in ec;
 false
 gap> Size(ec);
 5
-
 gap> ######################################################################
 gap> ## 2. Check partital closure of an infinite block
 gap> ##    
@@ -73,7 +70,6 @@ gap> ## We should never get a full closure
 gap> ##
 gap> HasEquivalenceRelationPartition(c);
 false
-
 gap> ######################################################################
 gap> ## 3. Check partital closure with an infinite number of blocks
 gap> ##
@@ -86,8 +82,7 @@ gap> gns := GeneratorsOfSemigroup(s);; #<a,b>
 gap> c := SemigroupCongruenceByGeneratingPairs(s,[[gns[1],gns[1]^2]]);;
 gap> ec :=EquivalenceClassOfElement(c,gns[1]*gns[2]^20);;
 gap> gns[1]^2*gns[2]^20 in ec;
-true 
-
+true
 gap> ######################################################################
 gap> ## 4. Compute some quotient semigroups and compute some finite
 gap> ##    congruences of these quotient semigroups.  
@@ -109,9 +104,8 @@ gap> Size(ec);
 1
 gap> Size(ec[1]);
 9
-gap> STOP_TEST( "semicong.tst", 46000000 );
+gap> STOP_TEST( "semicong.tst", 7800000 );
 
 #############################################################################
 ##
 #E
-

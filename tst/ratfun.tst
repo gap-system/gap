@@ -2,14 +2,12 @@
 ##
 #W  ratfun.tst                  GAP Tests                    Alexander Hulpke
 ##
-#H  @(#)$Id: ratfun.tst,v 4.6 2010/10/10 21:59:38 alexk Exp $
 ##
 #Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id: ratfun.tst,v 4.6 2010/10/10 21:59:38 alexk Exp $");
+gap> START_TEST("ratfun.tst");
 gap> t:=Indeterminate(Rationals,100);;
 gap> SetName(t,"t");;
 gap> p0:=0*t^0;;
@@ -37,15 +35,10 @@ gap> mat:=[[y1,1,0],[y2,y1,1],[y3,y2,y1]];;
 gap> det:=DeterminantMat(mat*y1^0);;
 gap> Value(det,[y1,y2,y3],[1,-5,1]);
 12
-
 gap> 1/( y1*y2 );
 1/(x_1*x_2)
-
-
-gap> STOP_TEST( "ratfun.tst", 9000000 );
-
+gap> STOP_TEST( "ratfun.tst", 500000 );
 
 #############################################################################
 ##
 #E
-

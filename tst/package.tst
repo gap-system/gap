@@ -2,15 +2,12 @@
 ##
 #W  package.tst               GAP Library                       Thomas Breuer
 ##
-#H  @(#)$Id: package.tst,v 1.4 2010/10/10 21:59:38 alexk Exp $
 ##
 #Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testinstall.g: why?
 ##
-
-gap> START_TEST("$Id: package.tst,v 1.4 2010/10/10 21:59:38 alexk Exp $");
-
+gap> START_TEST("package.tst");
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
 gap> sml:= [ [ "", "dev" ], [ "a", "1" ], [ "a", "b1c" ], [ "1", "2" ],
@@ -18,7 +15,6 @@ gap> sml:= [ [ "", "dev" ], [ "a", "1" ], [ "a", "b1c" ], [ "1", "2" ],
 >      [ "1a2b3", "c1d2e4f" ] ];;
 gap> equ:= [ [ "a", "" ], [ "a1b", "1" ], [ "a1b2c", "1a2" ],
 >      [ "a1b2c3d", "1a2b3" ] ];;
-
 gap> for pair in sml do
 >   if   CompareVersionNumbers( pair[1], pair[2] ) then
 >     Error( "wrong result for ", pair );
@@ -48,12 +44,8 @@ gap> for entry in Set( Concatenation( Concatenation( [ sml, equ ] ) ) ) do
 >     Error( "wrong result for ", [ entry, entry ], " and \"equal\"" );
 >   fi;
 > od;
-
-
-gap> STOP_TEST( "package.tst", 4711 );
-
+gap> STOP_TEST( "package.tst", 100000 );
 
 #############################################################################
 ##
 #E
-

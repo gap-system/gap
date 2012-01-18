@@ -2,14 +2,12 @@
 ##
 #W  semigrp.tst                 GAP library                    Andrew Solomon
 ##
-#H  @(#)$Id: semigrp.tst,v 4.21 2011/01/04 20:18:01 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id: semigrp.tst,v 4.21 2011/01/04 20:18:01 alexk Exp $");
+gap> START_TEST("semigrp.tst");
 gap> ###############################################
 gap> ##
 gap> ##  AsTransformation - changing representation
@@ -131,7 +129,7 @@ gap> ########################
 gap> f := FreeGroup("a");;
 gap> g := f/[f.1^4];;
 gap> phi := InjectionZeroMagma(g);
-MappingByFunction( <fp group of size 4 on the generators [ a ]>, <monoid with
+MappingByFunction( <fp group of size 4 on the generators [ a ]>, <monoid with 
 4 generators>, function( g ) ... end )
 gap> m := Range(phi);
 <monoid with 4 generators>
@@ -286,10 +284,8 @@ gap> CategoryCollections(IsMultiplicativeElementWithZero)(m);
 true
 gap> 
 gap> 
-gap> STOP_TEST( "semigrp.tst",135000574);
-
+gap> STOP_TEST( "semigrp.tst", 13100000 );
 
 #############################################################################
 ##
 #E
-

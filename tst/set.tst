@@ -2,14 +2,12 @@
 ##
 #W  set.tst                   GAP Library                    Alexander Hulpke
 ##
-#H  @(#)$Id: set.tst,v 4.9 2010/10/10 21:59:39 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testinstall.g: why?
 ##
-
-gap> START_TEST("$Id: set.tst,v 4.9 2010/10/10 21:59:39 alexk Exp $");
+gap> START_TEST("set.tst");
 gap> a:=Set([(1,3,2),(4,5)]);;
 gap> b:=[(1,2),(5,9,7)];;
 gap> UniteSet(a,b);
@@ -34,6 +32,7 @@ gap> c;
 gap> HasIsSSortedList(c) and IsSSortedList(c);
 true
 gap> AddSet(a,(5,6));
+
 #gap> HasIsSSortedList(a) and IsSSortedList(a);
 #true
 gap> c:=Union(a,[(1,2),(1,2,3)]);
@@ -52,10 +51,8 @@ gap> Length(c);
 gap> c:=Difference(l,a);;                            
 gap> c=l;
 true
-
-gap> STOP_TEST( "set.tst", 21000000 );
+gap> STOP_TEST( "set.tst", 5600000 );
 
 #############################################################################
 ##
 #E
-

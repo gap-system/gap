@@ -2,7 +2,6 @@
 ##
 #W  primsan.tst                 GAP library                      Steve Linton
 ##
-#H  @(#)$Id: primsan.tst,v 4.4 2010/10/10 21:59:38 alexk Exp $
 ##
 #Y  Copyright (C)  1999,  School of Computer Science, St Andrews
 ##
@@ -12,14 +11,13 @@
 ##  Exclude from testinstall.g until the typical developer's desktop
 ##  is big and fast enough.
 ##
+gap> START_TEST("primsan.tst");
 
-gap> START_TEST("$Id: primsan.tst,v 4.4 2010/10/10 21:59:38 alexk Exp $");
 #
 # Disable warnings which depend on Conway Polynomial databases 
 #
 gap> iW := InfoLevel(InfoWarning);;
 gap> SetInfoLevel(InfoWarning,0);
-
 
 #############################################################################
 ##
@@ -38,12 +36,9 @@ gap> checkdegree := function(n)
 gap> for n in [2..999] do 
 >     checkdegree(n);
 > od;
-
 gap> SetInfoLevel(InfoWarning,iW);
-gap> STOP_TEST( "primsan.tst", 105797500 );
-
+gap> STOP_TEST( "primsan.tst", 139570200000 );
 
 #############################################################################
 ##
 #E
-

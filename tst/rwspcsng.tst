@@ -2,15 +2,12 @@
 ##
 #W  rwspcsng.tst                GAP library                      Frank Celler
 ##
-#H  @(#)$Id: rwspcsng.tst,v 4.18 2010/10/10 21:59:39 alexk Exp $
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testinstall.g: why?
 ##
-
-gap> START_TEST("$Id: rwspcsng.tst,v 4.18 2010/10/10 21:59:39 alexk Exp $");
-
+gap> START_TEST("rwspcsng.tst");
 
 #############################################################################
 
@@ -33,11 +30,9 @@ gap> f11 := g[11];;
 
 # store the relators in <r>
 gap> r := [
-
-# power relators
+> # power relators
 > [ 1, f2*f9 ],
-
-# commutator relators
+> # commutator relators
 > [ 6, 1, f9*f10*f11 ], [ 7, 1, f9*f11 ], [ 8, 1, f9*f10 ], [ 3, 2,
 > f9*f11 ], [ 5, 2, f9*f10 ], [ 5, 3, f5 ], [ 7, 3, f8 ], [ 8, 3,
 > f7*f8 ], [ 9, 3, f9*f11 ], [ 10, 3, f9*f10 ], [ 11, 3, f10*f11 ], [
@@ -82,19 +77,14 @@ gap> Print(ExtRepOfObj(w),"\n");
 # start multiplying around with <w>
 gap> Print(ExtRepOfObj( ReducedProduct( rws, w, w ) ),"\n");
 [ 2, 1, 3, 1, 4, 1, 5, 2, 9, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( SingleCollector_Solution( rws, w, w^0 ) ),"\n");
 [ 1, 1, 3, 1, 4, 1, 5, 2, 6, 1, 7, 1, 8, 1, 9, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedInverse( rws, w ) ),"\n");
 [ 1, 1, 3, 1, 4, 1, 5, 2, 6, 1, 7, 1, 8, 1, 9, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedForm( rws, w^-1 ) ),"\n");
 [ 1, 1, 3, 1, 4, 1, 5, 2, 6, 1, 7, 1, 8, 1, 9, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 1000 ) ),"\n");
 [ 3, 2, 4, 2, 5, 6, 9, 1, 10, 1, 11, 1 ]
-
 gap> l := GeneratorsOfRws(rws);;
 gap> p := ReducedOne(rws);;
 gap> for i  in l  do 
@@ -102,7 +92,6 @@ gap> for i  in l  do
 >    od;
 gap> Print(ExtRepOfObj(p),"\n");
 [ 3, 2, 4, 2, 5, 3, 6, 1, 8, 1, 9, 1 ]
-
 gap> l := GeneratorsOfRws(rws);;
 gap> p := ReducedOne(rws);;
 gap> for i  in l  do 
@@ -111,115 +100,83 @@ gap> for i  in l  do
 >    od;
 gap> Print(ExtRepOfObj(p),"\n");
 [ 1, 1, 6, 1, 8, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedComm( rws, w, w ) ),"\n");
 [  ]
-
 gap> a := ReducedProduct( rws, ReducedProduct( rws, w, w ), w );;
 gap> Print(ExtRepOfObj(a),"\n");
 [ 1, 1, 6, 1, 7, 1, 8, 1 ]
-
 gap> a := ReducedProduct( rws, a, a );;
 gap> Print(ExtRepOfObj(a),"\n");
 [ 2, 1 ]
-
 gap> a := ReducedProduct( rws, a, a );;
 gap> Print(ExtRepOfObj(a),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedLeftQuotient( rws, ReducedProduct(rws,w,w), w) ),"\n");
 [ 1, 1, 3, 1, 4, 1, 5, 2, 6, 1, 7, 1, 8, 1, 9, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, -1 ) ),"\n");
 [ 1, 1, 3, 1, 4, 1, 5, 2, 6, 1, 7, 1, 8, 1, 9, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 0 ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 1 ) ),"\n");
 [ 1, 1, 2, 1, 3, 2, 4, 2, 5, 6, 6, 1, 7, 1, 8, 1, 9, 1, 10, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 2 ) ),"\n");
 [ 2, 1, 3, 1, 4, 1, 5, 2, 9, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 3 ) ),"\n");
 [ 1, 1, 6, 1, 7, 1, 8, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 4 ) ),"\n");
 [ 3, 2, 4, 2, 5, 6, 9, 1, 10, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 5 ) ),"\n");
 [ 1, 1, 2, 1, 3, 1, 4, 1, 5, 2, 6, 1, 7, 1, 8, 1, 9, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedComm( rws, w, w ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedComm( rws, w, l[1] ) ),"\n");
 [ 9, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedLeftQuotient( rws, w, w ) ) ,"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedLeftQuotient( rws, w, l[1] ) ),"\n");
 [ 2, 1, 3, 1, 4, 1, 5, 2, 6, 1, 7, 1, 8, 1, 9, 1, 11, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedOne( rws ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, w ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, l[1] ) ),"\n");
 [ 2, 1, 3, 2, 4, 2, 5, 6, 6, 1, 7, 1, 8, 1, 10, 1, 11, 1 ]
-
 gap> rws := ShallowCopy(rws);; 
 gap> Print(ExtRepOfObj( ReducedComm( rws, w, w ) ),"\n");
 [  ]
-
 gap> rws := ShallowCopy(rws);;                
 gap> Print(ExtRepOfObj( ReducedConjugate( rws, w, w ) ),"\n");
 [ 1, 1, 2, 1, 3, 2, 4, 2, 5, 6, 6, 1, 7, 1, 8, 1, 9, 1, 10, 1, 11, 1 ]
-
 gap> rws := ShallowCopy(rws);;                     
 gap> Print(ExtRepOfObj( ReducedForm( rws, w^-1 ) ),"\n") ;
 [ 1, 1, 3, 1, 4, 1, 5, 2, 6, 1, 7, 1, 8, 1, 9, 1, 11, 1 ]
-
 gap> rws := ShallowCopy(rws);;                
 gap> Print(ExtRepOfObj( ReducedInverse( rws, w ) ),"\n");
 [ 1, 1, 3, 1, 4, 1, 5, 2, 6, 1, 7, 1, 8, 1, 9, 1, 11, 1 ]
-
 gap> rws := ShallowCopy(rws);;                
 gap> Print(ExtRepOfObj( ReducedLeftQuotient( rws, w, w ) ),"\n");
 [  ]
-
 gap> rws := ShallowCopy(rws);;                        
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 0 ) ),"\n");
 [  ]
-
 gap> rws := ShallowCopy(rws);;                 
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 1 ) ),"\n");
 [ 1, 1, 2, 1, 3, 2, 4, 2, 5, 6, 6, 1, 7, 1, 8, 1, 9, 1, 10, 1, 11, 1 ]
-
 gap> rws := ShallowCopy(rws);;                 
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 2 ) ),"\n");
 [ 2, 1, 3, 1, 4, 1, 5, 2, 9, 1, 11, 1 ]
-
 gap> rws := ShallowCopy(rws);;                    
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, -1 ) ),"\n");
 [ 1, 1, 3, 1, 4, 1, 5, 2, 6, 1, 7, 1, 8, 1, 9, 1, 11, 1 ]
-
 gap> rws := ShallowCopy(rws);;                  
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, -2 ) ),"\n");
 [ 2, 1, 3, 2, 4, 2, 5, 6, 9, 1, 10, 1, 11, 1 ]
-
 gap> rws := ShallowCopy(rws);;                   
 gap> Print(ExtRepOfObj( ReducedProduct( rws, w, w ) ),"\n");
 [ 2, 1, 3, 1, 4, 1, 5, 2, 9, 1, 11, 1 ]
-
 gap> rws := ShallowCopy(rws);;                     
 gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, w ) ),"\n");
 [  ]
-
 gap> rws := ShallowCopy(rws);;
 gap> Print(ExtRepOfObj( ReducedOne( rws ) ),"\n");
 [  ]
@@ -295,12 +252,10 @@ gap> f61 := g[61];;
 
 # store the relators in <r>
 gap> r := [
-
-# power relators
+> # power relators
 > [ 8, f9 ], [ 15, f16 ], [ 22, f23 ], [ 29, f30 ], [ 36, f37 ], [ 43,
 > f44 ], [ 50, f51 ], [ 57, f58 ],
-
-# commutator relators
+> # commutator relators
 > [ 2, 1, f2 ], [ 4, 1, f5 ], [ 5, 1, f4*f5 ], [ 13, 1, f13^2*f20 ], [
 > 14, 1, f14^30*f21 ], [ 15, 1, f15*f16*f22 ], [ 16, 1, f16*f23 ], [
 > 17, 1, f17^4*f24 ], [ 18, 1, f18^4*f25 ], [ 19, 1, f19^4*f26 ], [
@@ -484,34 +439,29 @@ gap> Print(ExtRepOfObj( ReducedProduct( rws, w, w ) ),"\n");
   3, 20, 1, 21, 5, 23, 1, 24, 3, 25, 3, 27, 1, 28, 5, 30, 1, 31, 3, 32, 3, 
   34, 1, 35, 5, 37, 1, 38, 3, 39, 3, 41, 1, 42, 5, 44, 1, 45, 3, 46, 3, 48, 
   1, 49, 5, 51, 1, 52, 3, 53, 3, 55, 1, 56, 5, 58, 1, 59, 3, 60, 3 ]
-
 gap> Print(ExtRepOfObj( SingleCollector_Solution( rws, w, w^0 ) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 
   14, 5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 
   2, 27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 
   39, 4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 
   1, 52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedInverse( rws, w ) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 
   14, 5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 
   2, 27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 
   39, 4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 
   1, 52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedForm( rws, w^-1 ) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 
   14, 5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 
   2, 27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 
   39, 4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 
   1, 52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 1000 ) ),"\n");
 [ 1, 2, 2, 6, 6, 2, 7, 30, 10, 3, 11, 3, 12, 4, 13, 2, 14, 30, 17, 3, 18, 3, 
   19, 4, 20, 2, 21, 30, 24, 3, 25, 3, 26, 4, 27, 2, 28, 30, 31, 3, 32, 3, 33, 
   4, 34, 2, 35, 30, 38, 3, 39, 3, 40, 4, 41, 2, 42, 30, 45, 3, 46, 3, 47, 4, 
   48, 2, 49, 30, 52, 3, 53, 3, 54, 4, 55, 2, 56, 30, 59, 3, 60, 3, 61, 4 ]
-
 gap> l := GeneratorsOfRws(rws);;
 gap> p := ReducedOne(rws);;
 gap> for i  in l  do 
@@ -522,7 +472,6 @@ gap> Print(ExtRepOfObj(p),"\n");
   2, 21, 4, 22, 1, 24, 1, 26, 4, 28, 26, 31, 2, 32, 3, 33, 3, 34, 2, 35, 24, 
   36, 1, 38, 1, 39, 3, 42, 30, 43, 1, 44, 1, 45, 3, 46, 3, 47, 1, 48, 2, 50, 
   1, 51, 1, 52, 3, 54, 2, 55, 1, 56, 26, 57, 1, 59, 4, 60, 2 ]
-
 gap> l := GeneratorsOfRws(rws);;
 gap> p := ReducedOne(rws);;
 gap> for i  in l  do 
@@ -535,41 +484,33 @@ gap> Print(ExtRepOfObj(p),"\n");
   4, 33, 2, 34, 2, 35, 19, 36, 1, 38, 1, 39, 2, 41, 1, 42, 5, 44, 1, 45, 3, 
   48, 2, 49, 6, 50, 1, 52, 3, 53, 1, 54, 4, 55, 2, 56, 19, 57, 1, 59, 2, 60, 
   2, 61, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedComm( rws, w, w ) ),"\n");
 [  ]
-
 gap> a := ReducedProduct( rws, ReducedProduct( rws, w, w ), w );;
 gap> Print(ExtRepOfObj(a),"\n");
 [ 3, 1, 4, 1, 5, 1, 8, 1, 12, 1, 15, 1, 19, 1, 22, 1, 26, 1, 29, 1, 33, 1, 
   36, 1, 40, 1, 43, 1, 47, 1, 50, 1, 54, 1, 57, 1, 61, 1 ]
-
 gap> a := ReducedProduct( rws, a, a );;
 gap> Print(ExtRepOfObj(a),"\n");
 [ 9, 1, 12, 3, 16, 1, 19, 3, 23, 1, 26, 3, 30, 1, 33, 3, 37, 1, 40, 3, 44, 1, 
   47, 3, 51, 1, 54, 3, 58, 1, 61, 3 ]
-
 gap> a := ReducedProduct( rws, a, a );;
 gap> Print(ExtRepOfObj(a),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedLeftQuotient( rws, ReducedProduct(rws,w,w), w) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 
   14, 5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 
   2, 27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 
   39, 4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 
   1, 52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, -1 ) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 
   14, 5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 
   2, 27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 
   39, 4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 
   1, 52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 0 ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 1 ) ),"\n");
 [ 1, 2, 2, 6, 3, 1, 4, 1, 5, 1, 6, 2, 7, 30, 8, 1, 9, 1, 10, 4, 11, 4, 12, 4, 
   13, 2, 14, 30, 15, 1, 16, 1, 17, 4, 18, 4, 19, 4, 20, 2, 21, 30, 22, 1, 23, 
@@ -577,23 +518,19 @@ gap> Print(ExtRepOfObj( ReducedPower( rws, w, 1 ) ),"\n");
   34, 2, 35, 30, 36, 1, 37, 1, 38, 4, 39, 4, 40, 4, 41, 2, 42, 30, 43, 1, 44, 
   1, 45, 4, 46, 4, 47, 4, 48, 2, 49, 30, 50, 1, 51, 1, 52, 4, 53, 4, 54, 4, 
   55, 2, 56, 30, 57, 1, 58, 1, 59, 4, 60, 4, 61, 4 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 2 ) ),"\n");
 [ 1, 1, 2, 2, 6, 1, 7, 5, 9, 1, 10, 3, 11, 3, 13, 1, 14, 5, 16, 1, 17, 3, 18, 
   3, 20, 1, 21, 5, 23, 1, 24, 3, 25, 3, 27, 1, 28, 5, 30, 1, 31, 3, 32, 3, 
   34, 1, 35, 5, 37, 1, 38, 3, 39, 3, 41, 1, 42, 5, 44, 1, 45, 3, 46, 3, 48, 
   1, 49, 5, 51, 1, 52, 3, 53, 3, 55, 1, 56, 5, 58, 1, 59, 3, 60, 3 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 3 ) ),"\n");
 [ 3, 1, 4, 1, 5, 1, 8, 1, 12, 1, 15, 1, 19, 1, 22, 1, 26, 1, 29, 1, 33, 1, 
   36, 1, 40, 1, 43, 1, 47, 1, 50, 1, 54, 1, 57, 1, 61, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 4 ) ),"\n");
 [ 1, 2, 2, 6, 6, 2, 7, 30, 10, 3, 11, 3, 12, 4, 13, 2, 14, 30, 17, 3, 18, 3, 
   19, 4, 20, 2, 21, 30, 24, 3, 25, 3, 26, 4, 27, 2, 28, 30, 31, 3, 32, 3, 33, 
   4, 34, 2, 35, 30, 38, 3, 39, 3, 40, 4, 41, 2, 42, 30, 45, 3, 46, 3, 47, 4, 
   48, 2, 49, 30, 52, 3, 53, 3, 54, 4, 55, 2, 56, 30, 59, 3, 60, 3, 61, 4 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 5 ) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 9, 1, 10, 1, 11, 1, 12, 1, 
   13, 1, 14, 5, 15, 1, 16, 1, 17, 1, 18, 1, 19, 1, 20, 1, 21, 5, 22, 1, 23, 
@@ -601,29 +538,22 @@ gap> Print(ExtRepOfObj( ReducedPower( rws, w, 5 ) ),"\n");
   34, 1, 35, 5, 36, 1, 37, 1, 38, 1, 39, 1, 40, 1, 41, 1, 42, 5, 43, 1, 44, 
   1, 45, 1, 46, 1, 47, 1, 48, 1, 49, 5, 50, 1, 51, 1, 52, 1, 53, 1, 54, 1, 
   55, 1, 56, 5, 57, 1, 58, 1, 59, 1, 60, 1, 61, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedComm( rws, w, w ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedComm( rws, w, l[1] ) ),"\n");
 [ 2, 6, 3, 1, 4, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedLeftQuotient( rws, w, w ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedLeftQuotient( rws, w, l[1] ) ),"\n");
 [ 1, 2, 2, 4, 3, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 14, 
   5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 2, 
   27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 39, 
   4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 1, 
   52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedOne( rws ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, w ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, l[1] ) ),"\n");
 [ 1, 1, 2, 3, 3, 1, 4, 1, 6, 2, 7, 30, 8, 1, 9, 1, 10, 4, 11, 4, 12, 4, 13, 
   2, 14, 30, 15, 1, 16, 1, 17, 4, 18, 4, 19, 4, 20, 2, 21, 30, 22, 1, 23, 1, 
@@ -631,7 +561,6 @@ gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, l[1] ) ),"\n");
   2, 35, 30, 36, 1, 37, 1, 38, 4, 39, 4, 40, 4, 41, 2, 42, 30, 43, 1, 44, 1, 
   45, 4, 46, 4, 47, 4, 48, 2, 49, 30, 50, 1, 51, 1, 52, 4, 53, 4, 54, 4, 55, 
   2, 56, 30, 57, 1, 58, 1, 59, 4, 60, 4, 61, 4 ]
-
 
 #############################################################################
 
@@ -704,12 +633,10 @@ gap> f61 := g[61];;
 
 # store the relators in <r>
 gap> r := [
-
-# power relators
+> # power relators
 > [ 8, f9 ], [ 15, f16 ], [ 22, f23 ], [ 29, f30 ], [ 36, f37 ], [ 43,
 > f44 ], [ 50, f51 ], [ 57, f58 ],
-
-# commutator relators
+> # commutator relators
 > [ 2, 1, f2 ], [ 4, 1, f5 ], [ 5, 1, f4*f5 ], [ 13, 1, f13^2*f20 ], [
 > 14, 1, f14^30*f21 ], [ 15, 1, f15*f16*f22 ], [ 16, 1, f16*f23 ], [
 > 17, 1, f17^4*f24 ], [ 18, 1, f18^4*f25 ], [ 19, 1, f19^4*f26 ], [
@@ -893,34 +820,29 @@ gap> Print(ExtRepOfObj( ReducedProduct( rws, w, w ) ),"\n");
   3, 20, 1, 21, 5, 23, 1, 24, 3, 25, 3, 27, 1, 28, 5, 30, 1, 31, 3, 32, 3, 
   34, 1, 35, 5, 37, 1, 38, 3, 39, 3, 41, 1, 42, 5, 44, 1, 45, 3, 46, 3, 48, 
   1, 49, 5, 51, 1, 52, 3, 53, 3, 55, 1, 56, 5, 58, 1, 59, 3, 60, 3 ]
-
 gap> Print(ExtRepOfObj( SingleCollector_Solution( rws, w, w^0 ) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 
   14, 5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 
   2, 27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 
   39, 4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 
   1, 52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedInverse( rws, w ) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 
   14, 5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 
   2, 27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 
   39, 4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 
   1, 52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedForm( rws, w^-1 ) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 
   14, 5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 
   2, 27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 
   39, 4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 
   1, 52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 1000 ) ),"\n");
 [ 1, 2, 2, 6, 6, 2, 7, 30, 10, 3, 11, 3, 12, 4, 13, 2, 14, 30, 17, 3, 18, 3, 
   19, 4, 20, 2, 21, 30, 24, 3, 25, 3, 26, 4, 27, 2, 28, 30, 31, 3, 32, 3, 33, 
   4, 34, 2, 35, 30, 38, 3, 39, 3, 40, 4, 41, 2, 42, 30, 45, 3, 46, 3, 47, 4, 
   48, 2, 49, 30, 52, 3, 53, 3, 54, 4, 55, 2, 56, 30, 59, 3, 60, 3, 61, 4 ]
-
 gap> l := GeneratorsOfRws(rws);;
 gap> p := ReducedOne(rws);;
 gap> for i  in l  do 
@@ -931,7 +853,6 @@ gap> Print(ExtRepOfObj(p),"\n");
   2, 21, 4, 22, 1, 24, 1, 26, 4, 28, 26, 31, 2, 32, 3, 33, 3, 34, 2, 35, 24, 
   36, 1, 38, 1, 39, 3, 42, 30, 43, 1, 44, 1, 45, 3, 46, 3, 47, 1, 48, 2, 50, 
   1, 51, 1, 52, 3, 54, 2, 55, 1, 56, 26, 57, 1, 59, 4, 60, 2 ]
-
 gap> l := GeneratorsOfRws(rws);;
 gap> p := ReducedOne(rws);;
 gap> for i  in l  do 
@@ -944,41 +865,33 @@ gap> Print(ExtRepOfObj(p),"\n");
   4, 33, 2, 34, 2, 35, 19, 36, 1, 38, 1, 39, 2, 41, 1, 42, 5, 44, 1, 45, 3, 
   48, 2, 49, 6, 50, 1, 52, 3, 53, 1, 54, 4, 55, 2, 56, 19, 57, 1, 59, 2, 60, 
   2, 61, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedComm( rws, w, w ) ),"\n");
 [  ]
-
 gap> a := ReducedProduct( rws, ReducedProduct( rws, w, w ), w );;
 gap> Print(ExtRepOfObj(a),"\n");
 [ 3, 1, 4, 1, 5, 1, 8, 1, 12, 1, 15, 1, 19, 1, 22, 1, 26, 1, 29, 1, 33, 1, 
   36, 1, 40, 1, 43, 1, 47, 1, 50, 1, 54, 1, 57, 1, 61, 1 ]
-
 gap> a := ReducedProduct( rws, a, a );;
 gap> Print(ExtRepOfObj(a),"\n");
 [ 9, 1, 12, 3, 16, 1, 19, 3, 23, 1, 26, 3, 30, 1, 33, 3, 37, 1, 40, 3, 44, 1, 
   47, 3, 51, 1, 54, 3, 58, 1, 61, 3 ]
-
 gap> a := ReducedProduct( rws, a, a );;
 gap> Print(ExtRepOfObj(a),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedLeftQuotient( rws, ReducedProduct(rws,w,w), w) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 
   14, 5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 
   2, 27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 
   39, 4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 
   1, 52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, -1 ) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 
   14, 5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 
   2, 27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 
   39, 4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 
   1, 52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 0 ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 1 ) ),"\n");
 [ 1, 2, 2, 6, 3, 1, 4, 1, 5, 1, 6, 2, 7, 30, 8, 1, 9, 1, 10, 4, 11, 4, 12, 4, 
   13, 2, 14, 30, 15, 1, 16, 1, 17, 4, 18, 4, 19, 4, 20, 2, 21, 30, 22, 1, 23, 
@@ -986,23 +899,19 @@ gap> Print(ExtRepOfObj( ReducedPower( rws, w, 1 ) ),"\n");
   34, 2, 35, 30, 36, 1, 37, 1, 38, 4, 39, 4, 40, 4, 41, 2, 42, 30, 43, 1, 44, 
   1, 45, 4, 46, 4, 47, 4, 48, 2, 49, 30, 50, 1, 51, 1, 52, 4, 53, 4, 54, 4, 
   55, 2, 56, 30, 57, 1, 58, 1, 59, 4, 60, 4, 61, 4 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 2 ) ),"\n");
 [ 1, 1, 2, 2, 6, 1, 7, 5, 9, 1, 10, 3, 11, 3, 13, 1, 14, 5, 16, 1, 17, 3, 18, 
   3, 20, 1, 21, 5, 23, 1, 24, 3, 25, 3, 27, 1, 28, 5, 30, 1, 31, 3, 32, 3, 
   34, 1, 35, 5, 37, 1, 38, 3, 39, 3, 41, 1, 42, 5, 44, 1, 45, 3, 46, 3, 48, 
   1, 49, 5, 51, 1, 52, 3, 53, 3, 55, 1, 56, 5, 58, 1, 59, 3, 60, 3 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 3 ) ),"\n");
 [ 3, 1, 4, 1, 5, 1, 8, 1, 12, 1, 15, 1, 19, 1, 22, 1, 26, 1, 29, 1, 33, 1, 
   36, 1, 40, 1, 43, 1, 47, 1, 50, 1, 54, 1, 57, 1, 61, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 4 ) ),"\n");
 [ 1, 2, 2, 6, 6, 2, 7, 30, 10, 3, 11, 3, 12, 4, 13, 2, 14, 30, 17, 3, 18, 3, 
   19, 4, 20, 2, 21, 30, 24, 3, 25, 3, 26, 4, 27, 2, 28, 30, 31, 3, 32, 3, 33, 
   4, 34, 2, 35, 30, 38, 3, 39, 3, 40, 4, 41, 2, 42, 30, 45, 3, 46, 3, 47, 4, 
   48, 2, 49, 30, 52, 3, 53, 3, 54, 4, 55, 2, 56, 30, 59, 3, 60, 3, 61, 4 ]
-
 gap> Print(ExtRepOfObj( ReducedPower( rws, w, 5 ) ),"\n");
 [ 1, 1, 2, 2, 3, 1, 4, 1, 5, 1, 6, 1, 7, 5, 8, 1, 9, 1, 10, 1, 11, 1, 12, 1, 
   13, 1, 14, 5, 15, 1, 16, 1, 17, 1, 18, 1, 19, 1, 20, 1, 21, 5, 22, 1, 23, 
@@ -1010,29 +919,22 @@ gap> Print(ExtRepOfObj( ReducedPower( rws, w, 5 ) ),"\n");
   34, 1, 35, 5, 36, 1, 37, 1, 38, 1, 39, 1, 40, 1, 41, 1, 42, 5, 43, 1, 44, 
   1, 45, 1, 46, 1, 47, 1, 48, 1, 49, 5, 50, 1, 51, 1, 52, 1, 53, 1, 54, 1, 
   55, 1, 56, 5, 57, 1, 58, 1, 59, 1, 60, 1, 61, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedComm( rws, w, w ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedComm( rws, w, l[1] ) ),"\n");
 [ 2, 6, 3, 1, 4, 1 ]
-
 gap> Print(ExtRepOfObj( ReducedLeftQuotient( rws, w, w ) ) ,"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedLeftQuotient( rws, w, l[1] ) ),"\n");
 [ 1, 2, 2, 4, 3, 1, 5, 1, 6, 1, 7, 5, 8, 1, 10, 4, 11, 4, 12, 2, 13, 1, 14, 
   5, 15, 1, 17, 4, 18, 4, 19, 2, 20, 1, 21, 5, 22, 1, 24, 4, 25, 4, 26, 2, 
   27, 1, 28, 5, 29, 1, 31, 4, 32, 4, 33, 2, 34, 1, 35, 5, 36, 1, 38, 4, 39, 
   4, 40, 2, 41, 1, 42, 5, 43, 1, 45, 4, 46, 4, 47, 2, 48, 1, 49, 5, 50, 1, 
   52, 4, 53, 4, 54, 2, 55, 1, 56, 5, 57, 1, 59, 4, 60, 4, 61, 2 ]
-
 gap> Print(ExtRepOfObj( ReducedOne( rws ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, w ) ),"\n");
 [  ]
-
 gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, l[1] ) ),"\n");
 [ 1, 1, 2, 3, 3, 1, 4, 1, 6, 2, 7, 30, 8, 1, 9, 1, 10, 4, 11, 4, 12, 4, 13, 
   2, 14, 30, 15, 1, 16, 1, 17, 4, 18, 4, 19, 4, 20, 2, 21, 30, 22, 1, 23, 1, 
@@ -1041,13 +943,9 @@ gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, l[1] ) ),"\n");
   45, 4, 46, 4, 47, 4, 48, 2, 49, 30, 50, 1, 51, 1, 52, 4, 53, 4, 54, 4, 55, 
   2, 56, 30, 57, 1, 58, 1, 59, 4, 60, 4, 61, 4 ]
 
-
 #############################################################################
-
-gap> STOP_TEST( "rwspcsng.tst",346001450);
-
+gap> STOP_TEST( "rwspcsng.tst", 81100000 );
 
 #############################################################################
 ##
 #E
-

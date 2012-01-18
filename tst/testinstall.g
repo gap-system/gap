@@ -2,7 +2,6 @@
 ##
 #W  testinstall.g               GAP library                      Frank Celler
 ##
-#H  @(#)$Id: testinstall.g,v 4.4 2011/01/04 13:14:11 alexk Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -17,8 +16,9 @@
 ##  The documentation states the following:
 ##  <P/>
 ##  <#GAPDoc Label="[1]{testinstall.g}">
-##  If you want to run a more thorough test (though this is not required), 
-##  you can read in a test script that exercises more &GAP;'s capabilities.
+##  If you want to run a quick test of your &GAP; installation 
+##  (though this is not required), you can read in a test script 
+##  that exercises some &GAP;'s capabilities.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "testinstall.g" ) );
@@ -34,47 +34,50 @@
 Print( "You should start GAP4 using `gap -N -A -x 80 -r -m 100m -o 512m'.\n",
        "The more GAP4stones you get, the faster your system is.\n",
        "The runtime of the following tests (in general) increases.\n",
-       "You should expect about 100000 GAP4stones \n",
-       "on an Intel Core 2 Duo / 2.53 GHz machine.\n",
+       "You should expect the test to take about one minute and show about\n",
+       "100000 GAP4stones on an Intel Core 2 Duo / 2.53 GHz machine.\n",
        "The `next' time is an approximation of the running time ",
        "for the next file.\n\n" );
 
 Reread( Filename( DirectoriesLibrary( "tst" ), "testutil.g" ) );
 
 RunStandardTests( [
-  [ "alghom.tst",63000568],
-  [ "algmat.tst",1441013704],
-  [ "algsc.tst",296002170],
-  [ "combinat.tst", 270000000 ],
-  [ "ctblfuns.tst", 31000000 ],
-  [ "ctblmoli.tst",416003661],
-  [ "ctblmono.tst",274001908],
-  [ "ctblsolv.tst",391002100],
-  [ "cyclotom.tst",5832500],
-  [ "ffe.tst", 18000000 ],
-  [ "ffeconway.tst", 270000000 ],
-  [ "gaussian.tst", 640000 ],
-  [ "grpfree.tst", 5000000 ],
-  [ "grpmat.tst",1560006131],
-  [ "grppc.tst",116000670],
-  [ "grppcnrm.tst",1532002851],
-  [ "listgen.tst", 1440000 ],
-  [ "mapping.tst", 31000000 ],
-  [ "mgmring.tst", 19000000 ],
-  [ "modfree.tst",36000000 ],
-  [ "morpheus.tst",634003277],
-  [ "onecohom.tst",332001351],
-  [ "oprt.tst",23823519],
-  [ "ratfun.tst", 9000000 ],
-  [ "rwspcgrp.tst",252000906],
-  [ "semigrp.tst",135000574],
-  [ "semirel.tst",364004597],
-  [ "vspchom.tst",74000701],
-  [ "vspcmat.tst",52000692],
-  [ "vspcrow.tst",195001138],
-  [ "xgap.tst",562000888],
-  [ "zlattice.tst", 136000 ],
-  [ "zmodnz.tst", 2100000 ],
+  [ "alghom.tst", 5300000 ],
+  [ "algmat.tst", 287300000 ],
+  [ "algsc.tst", 76600000 ],
+  [ "combinat.tst", 7000000 ],
+  [ "ctblfuns.tst", 3300000 ],
+  [ "ctblmoli.tst", 98500000 ],
+  [ "ctblmono.tst", 31000000 ],
+  [ "ctblsolv.tst", 54000000 ],
+  [ "cyclotom.tst", 1000000 ],
+  [ "ffe.tst", 2600000 ],
+  [ "ffeconway.tst", 50200000 ],
+  [ "gaussian.tst", 300000 ],
+  [ "grpfp.tst", 146700000 ],
+  [ "grpfree.tst", 700000 ],
+  [ "grpmat.tst", 426300000 ],
+  [ "grppc.tst", 42600000 ],
+  [ "grppcnrm.tst", 2333400000 ],
+  [ "listgen.tst", 1000000 ],
+  [ "mapping.tst", 33000000 ],
+  [ "mgmring.tst", 1500000 ],
+  [ "modfree.tst", 5800000 ],
+  [ "morpheus.tst", 82700000 ],
+  [ "onecohom.tst", 50600000 ],
+  [ "oprt.tst", 1500000 ],
+  [ "ratfun.tst", 500000 ],
+  [ "relation.tst", 7300000 ],
+  [ "rwspcgrp.tst", 59400000 ],
+  [ "semicong.tst", 7800000 ],
+  [ "semigrp.tst", 13100000 ],
+  [ "semirel.tst", 12400000 ],
+  [ "vspchom.tst", 9500000 ],
+  [ "vspcmat.tst", 10300000 ],
+  [ "vspcrow.tst", 47400000 ],
+  [ "xgap.tst", 1120100000 ],
+  [ "zlattice.tst", 100000 ],
+  [ "zmodnz.tst", 2800000 ],
 ] );
 
 

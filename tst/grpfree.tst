@@ -2,15 +2,12 @@
 ##
 #W  grpfree.tst                GAP-4 library                    Thomas Breuer
 ##
-#H  @(#)$Id: grpfree.tst,v 4.15 2010/10/10 21:59:28 alexk Exp $
 ##
 #Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id: grpfree.tst,v 4.15 2010/10/10 21:59:28 alexk Exp $");
-
+gap> START_TEST("grpfree.tst");
 gap> g:= FreeGroup( "a", "b" );
 <free group on the generators [ a, b ]>
 gap> IsWholeFamily( g );
@@ -49,11 +46,8 @@ gap> Print(first50,"\n");
   b^-1*a^-1*b^-1, a*b^-2 ]
 gap> List( first50, x -> Position( enum, x ) ) = [ 1 .. 50 ];
 true
-
-gap> STOP_TEST( "grpfree.tst", 5000000 );
-
+gap> STOP_TEST( "grpfree.tst", 700000 );
 
 #############################################################################
 ##
 #E
-
