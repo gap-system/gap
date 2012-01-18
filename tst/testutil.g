@@ -76,7 +76,7 @@ BindGlobal( "RunStandardTests", function( arg )
     for i in [ 1 .. Length( testfiles ) ]  do
       name:= Filename( dir, testfiles[i][1] );
       Print( "testing: ", name, "\n" );
-      Test( name );
+      Test( name, rec(compareFunction := "uptowhitespace" ));
       if Length( GAPInfo.TestData.results ) < i then
         Print( "#E  Add a `STOP_TEST' command to the file `", name, "'!\n" );
         GAPInfo.TestData.results[i]:= "dummy";
