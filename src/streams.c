@@ -351,7 +351,9 @@ Int READ_LOOP ( void )
 
             /* print the result                                            */
             if ( ! TLS->dualSemicolon ) {
+		Bag currLVars = TLS->currLVars;
                 ViewObjHandler( TLS->readEvalResult );
+		SWITCH_TO_OLD_LVARS(currLVars);
             }
         }
 
