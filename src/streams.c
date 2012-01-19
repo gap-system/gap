@@ -1167,14 +1167,14 @@ Obj FuncREAD_STREAM_LOOP (
         return False;
     }
     if ( catcherrstdout == True )
-      IgnoreStdoutErrout = TLS->output;
+      TLS->IgnoreStdoutErrout = GetCurrentOutput();
     else
-      IgnoreStdoutErrout = NULL;
+      TLS->IgnoreStdoutErrout = NULL;
 
 
     /* read the test file                                                  */
     ret = READ_LOOP() ? True : False;
-    IgnoreStdoutErrout = NULL;
+    TLS->IgnoreStdoutErrout = NULL;
     return ret;
 }
 

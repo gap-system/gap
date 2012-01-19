@@ -611,6 +611,12 @@ UInt OpenDefaultOutput( void )
   return OpenOutputStream(stream);
 }
 
+TypOutputFile *GetCurrentOutput() {
+  if (!TLS->output) {
+    OpenDefaultOutput();
+  }
+  return TLS->output;
+}
 
 
 /****************************************************************************
@@ -1216,7 +1222,7 @@ UInt OpenOutputLogStream (
     return 1;
 }
 
-TypOutputFile*  IgnoreStdoutErrout = NULL;
+/* TL: TypOutputFile*  IgnoreStdoutErrout = NULL; */
 
 /****************************************************************************
 **
@@ -1282,7 +1288,7 @@ UInt OpenOutput (
     int sp;
 
     /* do nothing for stdout and errout if catched */
-    if ( TLS->output != NULL && IgnoreStdoutErrout == TLS->output && 
+    if ( TLS->output != NULL && TLS->IgnoreStdoutErrout == TLS->output && 
           ( SyStrcmp( filename, "*errout*" ) == 0
            || SyStrcmp( filename, "*stdout*" ) == 0 ) ) {
         return 1;
@@ -1299,7 +1305,7 @@ UInt OpenOutput (
     /* Handle *defout* specially; also, redirect *errout* if we already
      * have a default channel open. */
     if ( ! SyStrcmp( filename, "*defout*" ) ||
-         ! SyStrcmp( filename, "*errout*" ) && TLS->defaultOutput )
+         ! SyStrcmp( filename, "*errout*" ) && TLS->threadID != 0)
         return OpenDefaultOutput();
 
     /* try to open the file                                                */
@@ -1396,11 +1402,11 @@ UInt CloseOutput ( void )
     if ( TLS->output == TLS->testOutput )
         return 1;
     /* and similarly */
-    if ( IgnoreStdoutErrout == TLS->output )
+    if ( TLS->IgnoreStdoutErrout == TLS->output )
         return 1;
 
     /* refuse to close the initial output file '*stdout*'                  */
-    if ( TLS->outputFilesSP <= 1 )
+    if ( TLS->outputFilesSP <= 1  && TLS->defaultOutput == TLS->output)
       return 1;
 
 
@@ -1411,7 +1417,11 @@ UInt CloseOutput ( void )
     }
 
     /* revert to previous output file and indicate success                 */
-    TLS->output = TLS->outputFiles[--TLS->outputFilesSP-1];
+    --TLS->outputFilesSP;
+    if (TLS->outputFilesSP)
+      TLS->output = TLS->outputFiles[TLS->outputFilesSP-1];
+    else
+      TLS->output = 0;
     return 1;
 }
 
@@ -2589,11 +2599,6 @@ void PutLine2(
 {
   Obj                     str;
   UInt                    lstr;
-  if ( ! output ) {
-    output = TLS->output;
-    if ( ! output ) OpenDefaultOutput();
-    output = TLS->output;
-  }
   if ( output->isstream ) {
     /* special handling of string streams, where we can copy directly */
     if (output->isstringstream) {
@@ -2775,12 +2780,6 @@ void PutChrTo (
   Char                str [MAXLENOUTPUTLINE];
 
 
-
-  if (! stream) {
-    stream = TLS->output;
-    if (! stream) OpenDefaultOutput();
-    stream = TLS->output;
-  }
   /* '\01', increment indentation level                                  */
   if ( ch == '\01' ) {
 
@@ -3334,7 +3333,7 @@ void Pr (
          Int                 arg1,
          Int                 arg2 )
 {
-  PrTo(TLS->output, format, arg1, arg2);
+  PrTo(GetCurrentOutput(), format, arg1, arg2);
 }
 
 /* TL: static Char *theBuffer; */

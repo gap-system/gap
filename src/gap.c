@@ -1481,9 +1481,7 @@ Obj CallErrorInner (
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(TLS->currStat);
-  OpenDefaultOutput();
   result = CALL_2ARGS(ErrorInner,r,l);  
-  CloseOutput();
   return result;
 }
 

@@ -516,6 +516,17 @@ UInt GVarName (
     return INT_INTOBJ(gvar);
 }
 
+Int FindGVarByValue(Obj value, Int start) {
+  Int max = CountGVars;
+  AO_nop_read();
+  while (start < max) {
+    if (VAL_GVAR(start) == value)
+      return start;
+    start++;
+  }
+  return -1;
+}
+
 /****************************************************************************
 **
 

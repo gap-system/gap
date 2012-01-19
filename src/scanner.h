@@ -893,6 +893,14 @@ extern TypOutputFile* IgnoreStdoutErrout;
 
 /****************************************************************************
 **
+*F  GetCurrentOutput()  . . . . . . . . . . . get the current thread's output
+**
+**  The same as 'OpenOutput' but for streams.
+*/
+extern TypOutputFile *GetCurrentOutput ( void);
+
+/****************************************************************************
+**
 *F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
 **
 **  'Pr' is the output function. The first argument is a 'printf' like format

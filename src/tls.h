@@ -65,6 +65,7 @@ typedef struct ThreadLocalStorage
   TypOutputFile * outputLog;
   TypInputFile *  testInput;
   TypOutputFile * testOutput;
+  TypOutputFile * IgnoreStdoutErrout;
   Obj		  defaultOutput;
   Obj		  defaultInput;
   Char            testLine [256];
