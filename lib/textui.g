@@ -514,6 +514,16 @@ BindGlobal("CommandPause@", function(line)
   PauseThread(thread);
 end);
 
+BindGlobal("CommandResume@", function(line)
+  local thread;
+  thread := ThreadNumFromString@(line);
+  if thread = fail then
+    SystemMessage@("Unknown thread ", line);
+    return;
+  fi;
+  ResumeThread(thread);
+end);
+
 BindGlobal("CommandBreak@", function(line)
   local thread;
   thread := ThreadNumFromString@(line);
@@ -794,6 +804,7 @@ BindGlobal("InitializeCommands@", function()
     [ "kill", CommandKill@ ],
     [ "break", CommandBreak@ ],
     [ "pause", CommandPause@ ],
+    [ "resume", CommandResume@ ],
     [ "prefix", CommandPrefix@ ],
     [ "select", CommandSelect@ ],
     [ "next", CommandNext@ ],
