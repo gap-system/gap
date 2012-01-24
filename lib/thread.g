@@ -82,6 +82,18 @@ BindGlobal("FindGVarHolding", function(val)
   return fail;
 end);
 
+LAST_INTERRUPT := ShareObj(rec(id := 0));
+
+BindGlobal("NewInterruptID", function()
+  atomic LAST_INTERRUPT do
+    if LAST_INTERRUPT.id >= MAX_INTERRUPT then
+      Error("Too many different interrupt handlers");
+    fi;
+    LAST_INTERRUPT.id := LAST_INTERRUPT.id + 1;
+    return LAST_INTERRUPT.id;
+  od;
+end);
+
 DeclareAttribute( "RecNames", IsAtomicRecord);
 InstallMethod( RecNames,
     "for an atomic record in internal representation",
