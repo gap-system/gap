@@ -490,6 +490,41 @@ BindGlobal("CommandInfo@", function(line)
   fi;
 end);
 
+BindGlobal("ThreadNumFromString@", function(str)
+  return SMALLINT_STR(str);
+end);
+
+BindGlobal("CommandKill@", function(line)
+  local thread;
+  thread := ThreadNumFromString@(line);
+  if thread = fail then
+    SystemMessage@("Unknown thread ", line);
+    return;
+  fi;
+  KillThread(thread);
+end);
+
+BindGlobal("CommandPause@", function(line)
+  local thread;
+  thread := ThreadNumFromString@(line);
+  if thread = fail then
+    SystemMessage@("Unknown thread ", line);
+    return;
+  fi;
+  PauseThread(thread);
+end);
+
+BindGlobal("CommandBreak@", function(line)
+  local thread;
+  thread := ThreadNumFromString@(line);
+  if thread = fail then
+    SystemMessage@("Unknown thread ", line);
+    return;
+  fi;
+  InterruptThread(thread, 0);
+end);
+
+
 BindGlobal("CommandHide@", function(line)
   local thread;
   if line = "*" then
@@ -756,6 +791,9 @@ BindGlobal("InitializeCommands@", function()
     [ "hide", CommandHide@ ],
     [ "watch", CommandWatch@ ],
     [ "keep", CommandKeep@ ],
+    [ "kill", CommandKill@ ],
+    [ "break", CommandBreak@ ],
+    [ "pause", CommandPause@ ],
     [ "prefix", CommandPrefix@ ],
     [ "select", CommandSelect@ ],
     [ "next", CommandNext@ ],
