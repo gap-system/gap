@@ -535,9 +535,12 @@ Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func) {
       INT_INTOBJ(handler) > MAX_INTERRUPT)
     ArgumentError("SetInterruptHandler: First argument must be an integer "
       "between 1 and " AS_STRING(MAX_INTERRUPT));
-  if (TNUM_OBJ(func) != T_FUNCTION || NARG_FUNC(func) != 0 ||
-      !BODY_FUNC(func))
-    ArgumentError("SetInterruptHandler: Second argument must be a parameterless function");
+  if (func == Fail) {
+    SetInterruptHandler((int)(INT_INTOBJ(handler)), (Obj) 0);
+    return (Obj) 0;
+  }
+  if (TNUM_OBJ(func) != T_FUNCTION || NARG_FUNC(func) != 0 || !BODY_FUNC(func))
+    ArgumentError("SetInterruptHandler: Second argument must be a parameterless function or 'fail'");
   SetInterruptHandler((int)(INT_INTOBJ(handler)), func);
   return (Obj) 0;
 }
