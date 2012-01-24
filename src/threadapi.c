@@ -545,7 +545,6 @@ Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func) {
   return (Obj) 0;
 }
 
-
 #undef AS_STRING
 
 
@@ -1135,6 +1134,7 @@ static void PrintRegion(Obj);
 
 GVarDescriptor LastInaccessibleGVar;
 GVarDescriptor DisableGuardsGVar;
+GVarDescriptor MAX_INTERRUPTGVar;
 
 /****************************************************************************
 **
@@ -1165,6 +1165,7 @@ static Int InitKernel (
     InitCopyGVar("TYPE_REGION", &TYPE_REGION);
     DeclareGVar(&LastInaccessibleGVar,"LastInaccessible");
     DeclareGVar(&DisableGuardsGVar,"DISABLE_GUARDS");
+    DeclareGVar(&MAX_INTERRUPTGVar,"MAX_INTERRUPT");
     /* install mark functions */
     InitMarkFuncBags(T_THREAD, MarkNoSubBags);
     InitMarkFuncBags(T_CHANNEL, MarkChannelBag);
@@ -1219,6 +1220,8 @@ static Int InitLibrary (
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
+    SetGVar(&MAX_INTERRUPTGVar, INTOBJ_INT(MAX_INTERRUPT));
+    MakeReadOnlyGVar(GVarName("MAX_INTERRUPT"));
 
     /* synchronization */
     pthread_mutex_init(&KeepAliveLock, NULL);
