@@ -889,7 +889,7 @@ typedef struct {
 /* TL: extern TypOutputFile   OutputFiles [16]; */
 /* TL: extern TypOutputFile * Output; */
 
-extern TypOutputFile* IgnoreStdoutErrout;
+/* TL: extern TypOutputFile* IgnoreStdoutErrout; */
 
 /****************************************************************************
 **
@@ -897,7 +897,7 @@ extern TypOutputFile* IgnoreStdoutErrout;
 **
 **  The same as 'OpenOutput' but for streams.
 */
-extern TypOutputFile *GetCurrentOutput ( void);
+extern TypOutputFile *GetCurrentOutput ( void );
 
 /****************************************************************************
 **
