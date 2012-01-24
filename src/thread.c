@@ -689,7 +689,7 @@ void PauseThread(int threadID) {
     case TSTATE_PAUSED:
     case TSTATE_TERMINATED:
     case TSTATE_KILLED:
-    case TSTATE_STOPPED:
+    case TSTATE_INTERRUPTED:
       return;
     }
   }
@@ -723,18 +723,40 @@ static void PauseCurrentThread(int locked) {
     pthread_mutex_unlock(thread->lock);
 }
 
-static void EnterBreakCurrentThread(int locked, Stat stat) {
+static void InterruptCurrentThread(int locked, Stat stat) {
   ThreadData *thread = thread_data + TLS->threadID;
+  int state;
+  Obj handler = (Obj) 0;
   if (stat == T_NO_STAT)
     return;
   if (!locked)
     pthread_mutex_lock(thread->lock);
   TLS->CurrExecStatFuncs = ExecStatFuncs;
   SET_BRK_CURR_STAT(stat);
-  UpdateThreadState(TLS->threadID, TSTATE_STOPPED, TSTATE_RUNNING);
-  ErrorReturnVoid("system interrupt", 0L, 0L, "you can 'return;'");
+  state = GetThreadState(TLS->threadID);
+  if ((state & TSTATE_MASK) == TSTATE_INTERRUPTED)
+    UpdateThreadState(TLS->threadID, state, TSTATE_RUNNING);
+  if (state >> TSTATE_SHIFT) {
+    Int n = state >> TSTATE_SHIFT;
+    if (TLS->interruptHandlers) {
+      if (n >= 1 && n <= LEN_PLIST(TLS->interruptHandlers))
+        handler = ELM_PLIST(TLS->interruptHandlers, n);
+    }
+  }
+  if (handler)
+    FuncCALL_WITH_CATCH((Obj) 0, handler, NEW_PLIST(T_PLIST, 0));
+  else
+    ErrorReturnVoid("system interrupt", 0L, 0L, "you can 'return;'");
   if (!locked)
     pthread_mutex_unlock(thread->lock);
+}
+
+void SetInterruptHandler(int handler, Obj func) {
+  if (!TLS->interruptHandlers) {
+    TLS->interruptHandlers = NEW_PLIST(T_PLIST, MAX_INTERRUPT);
+    SET_LEN_PLIST(TLS->interruptHandlers, MAX_INTERRUPT);
+  }
+  SET_ELM_PLIST(TLS->interruptHandlers, handler, func);
 }
 
 void HandleInterrupts(int locked, Stat stat) {
@@ -742,8 +764,8 @@ void HandleInterrupts(int locked, Stat stat) {
      case TSTATE_PAUSED:
        PauseCurrentThread(locked);
        break;
-     case TSTATE_STOPPED:
-       EnterBreakCurrentThread(locked, stat);
+     case TSTATE_INTERRUPTED:
+       InterruptCurrentThread(locked, stat);
        break;
      case TSTATE_KILLED:
        TerminateCurrentThread(locked);
@@ -770,7 +792,7 @@ void KillThread(int threadID) {
 	  return;
       }
       break;
-    case TSTATE_STOPPED:
+    case TSTATE_INTERRUPTED:
       if (UpdateThreadState(threadID, state, TSTATE_KILLED)) {
           SetInterrupt(threadID);
 	  return;
@@ -788,28 +810,31 @@ void KillThread(int threadID) {
   }
 }
 
-void StopThread(int threadID) {
+void InterruptThread(int threadID, int handler) {
   for (;;) {
     int state = GetThreadState(threadID);
     switch (state & TSTATE_MASK) {
     case TSTATE_RUNNING:
-      if (UpdateThreadState(threadID, TSTATE_RUNNING, TSTATE_STOPPED)) {
+      if (UpdateThreadState(threadID, TSTATE_RUNNING, 
+        TSTATE_INTERRUPTED | (handler << TSTATE_SHIFT))) {
 	SetInterrupt(threadID);
         return;
       }
       break;
     case TSTATE_BLOCKED:
-      if (LockAndUpdateThreadState(threadID, state, TSTATE_STOPPED))
+      if (LockAndUpdateThreadState(threadID, state,
+        TSTATE_INTERRUPTED | (handler << TSTATE_SHIFT)))
         return;
       break;
     case TSTATE_SYSCALL:
-      if (UpdateThreadState(threadID, state, TSTATE_STOPPED))
+      if (UpdateThreadState(threadID, state,
+        TSTATE_INTERRUPTED | (handler << TSTATE_SHIFT)))
         return;
       break;
     case TSTATE_PAUSED:
     case TSTATE_TERMINATED:
     case TSTATE_KILLED:
-    case TSTATE_STOPPED:
+    case TSTATE_INTERRUPTED:
       /* We do not interrupt threads that are interrupted */
       return;
     }

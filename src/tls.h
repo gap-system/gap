@@ -20,6 +20,7 @@ typedef struct ThreadLocalStorage
   Obj lockStack;
   int lockStackPointer;
   Obj copiedObjs;
+  Obj interruptHandlers;
   /* From intrprtr.c */
   Obj intrResult;
   UInt intrIgnoring;

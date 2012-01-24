@@ -498,24 +498,52 @@ Obj FuncKillThread(Obj self, Obj thread) {
 
 /****************************************************************************
 **
-*F FuncStopThread ... stop a given thread
+*F FuncInterruptThread ... interrupt a given thread
 **
 */
 
+#define AS_STRING(s) #s
 
-Obj FuncStopThread(Obj self, Obj thread) {
+
+Obj FuncInterruptThread(Obj self, Obj thread, Obj handler) {
   int id;
   if (IS_INTOBJ(thread)) {
     id = INT_INTOBJ(thread);
     if (id < 0 || id >= MAX_THREADS)
-      ArgumentError("StopThread: Thread ID out of range");
+      ArgumentError("InterruptThread: Thread ID out of range");
   } else if (TNUM_OBJ(thread) == T_THREAD) {
     id = ThreadID(thread);
   } else
-    ArgumentError("StopThread: Argument must be a thread object");
-  StopThread(id);
+    ArgumentError("InterruptThread: First argument must identify a thread");
+  if (!IS_INTOBJ(handler) || INT_INTOBJ(handler) < 0 ||
+      INT_INTOBJ(handler) > MAX_INTERRUPT)
+    ArgumentError("InterruptThread: Second argument must be an integer "
+      "between 0 and " AS_STRING(MAX_INTERRUPT));
+  InterruptThread(id, (int)(INT_INTOBJ(handler)));
   return (Obj) 0;
 }
+
+/****************************************************************************
+**
+*F FuncSetInterruptHandler ... set interrupt handler for current thread
+**
+*/
+
+Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func) {
+  int id;
+  if (!IS_INTOBJ(handler) || INT_INTOBJ(handler) < 1 ||
+      INT_INTOBJ(handler) > MAX_INTERRUPT)
+    ArgumentError("SetInterruptHandler: First argument must be an integer "
+      "between 1 and " AS_STRING(MAX_INTERRUPT));
+  if (TNUM_OBJ(func) != T_FUNCTION || NARG_FUNC(func) != 0 ||
+      !BODY_FUNC(func))
+    ArgumentError("SetInterruptHandler: Second argument must be a parameterless function");
+  SetInterruptHandler((int)(INT_INTOBJ(handler)), func);
+  return (Obj) 0;
+}
+
+
+#undef AS_STRING
 
 
 /****************************************************************************
@@ -768,7 +796,7 @@ Obj FuncCreateThread(Obj self, Obj funcargs);
 Obj FuncCurrentThread(Obj self);
 Obj FuncThreadID(Obj self, Obj thread);
 Obj FuncKillThread(Obj self, Obj thread);
-Obj FuncStopThread(Obj self, Obj thread);
+Obj FuncInterruptThread(Obj self, Obj thread, Obj handler);
 Obj FuncPauseThread(Obj self, Obj thread);
 Obj FuncResumeThread(Obj self, Obj thread);
 Obj FuncWaitThread(Obj self, Obj id);
@@ -831,8 +859,11 @@ static StructGVarFunc GVarFuncs [] = {
     { "KillThread", 1, "thread",
       FuncKillThread, "src/threadapi.c:KillThread" },
 
-    { "StopThread", 1, "thread",
-      FuncStopThread, "src/threadapi.c:StopThread" },
+    { "InterruptThread", 2, "thread, handler",
+      FuncInterruptThread, "src/threadapi.c:InterruptThread" },
+
+    { "SetInterruptHandler", 2, "handler, function",
+      FuncSetInterruptHandler, "src/threadapi.c:SetInterruptHandler" },
 
     { "PauseThread", 1, "thread",
       FuncPauseThread, "src/threadapi.c:PauseThread" },
