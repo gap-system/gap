@@ -25,7 +25,7 @@ Tasks.Worker := function(channels)
 	od;
       fi;
     od;
-    if taskdata.detached then
+    if taskdata.async then
       CALL_WITH_CATCH(taskdata.func, taskdata.args);
       SendChannel(Tasks.Pool, channels);
     else
@@ -96,7 +96,7 @@ Tasks.CreateTask := function(arglist)
     request := request,
     complete := false,
     started := false,
-    detached := false,
+    async := false,
     result := fail);
   return task;
 end;
@@ -112,7 +112,7 @@ end;
 
 ExecuteTask := function(task)
   if not task.started then
-    task.request.detached := task.detached;
+    task.request.async := task.async;
     SendChannel(task.request.channels.toworker, task.request);
     ATOMIC_ADDITION(Tasks.Running, 1, 1);
     task.started := true;
@@ -128,19 +128,19 @@ RunTask := function(arg)
   return task;
 end;
 
-RunDetachedTask := function(arg)
+RunAsyncTask := function(arg)
   local task;
   task := Tasks.CreateTask(arg);
-  task.detached := true;
+  task.async := true;
   ExecuteTask(task);
   return task;
 end;
 
-DetachTask := function(task)
+MakeTaskAsync := function(task)
   if task.started then
-    Error("Cannot detach a running task");
+    Error("Cannot make a running task asynchronous");
   fi;
-  task.detached := true;
+  task.async := true;
 end;
 
 ImmediateTask := function(arg)
@@ -154,7 +154,7 @@ ImmediateTask := function(arg)
   else
     result := result[2];
   fi;
-  return rec( started := true, complete := true, detached := false,
+  return rec( started := true, complete := true, async := false,
     result := result );
 end;
 
@@ -169,8 +169,8 @@ WaitTask := function(arg)
     arg := arg[1];
   fi;
   for task in arg do
-    if task.detached then
-      Error("Cannot wait for a detached task");
+    if task.async then
+      Error("Cannot wait for a asynchronous task");
     fi;
   od;
   for task in arg do
@@ -197,8 +197,8 @@ WaitAnyTask := function(arg)
   fi;
   len := Length(arg);
   for task in arg do
-    if task.detached then
-      Error("Cannot wait for a detached task");
+    if task.async then
+      Error("Cannot wait for a async task");
     fi;
   od;
   for task in arg do
@@ -226,8 +226,8 @@ end;
 
 TaskResult := function(task)
   local taskresult;
-  if task.detached then
-    Error("Cannot obtain the result of a detached task");
+  if task.async then
+    Error("Cannot obtain the result of a asynchronous task");
   fi;
   if not task.started then
     ExecuteTask(task);
@@ -247,10 +247,6 @@ end;
 
 TaskFinished := function(task)
   return task.complete or Length(InspectChannel(task.channel)) > 0;
-end;
-
-TaskDetached := function(task)
-  return task.detached;
 end;
 
 Tasks.Initialize();
