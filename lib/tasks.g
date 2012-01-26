@@ -249,4 +249,8 @@ TaskFinished := function(task)
   return task.complete or Length(InspectChannel(task.channel)) > 0;
 end;
 
+TaskIsAsync := function(task)
+  return task.async;
+end;
+
 Tasks.Initialize();
