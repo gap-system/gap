@@ -1,3 +1,6 @@
+#ifndef GAP_AOBJECTS_H
+#define GAP_AOBJECTS_H
+
 StructInitInfo *InitInfoAObjects(void);
 Obj SetARecordField(Obj record, UInt field, Obj obj);
 Obj GetARecordField(Obj record, UInt field);
@@ -6,3 +9,5 @@ Obj GetTLRecordField(Obj record, UInt field);
 Obj FromAtomicRecord(Obj record);
 void SetTLDefault(Obj record, UInt rnam, Obj value);
 void SetTLConstructor(Obj record, UInt rnam, Obj func);
+
+#endif

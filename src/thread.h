@@ -1,5 +1,5 @@
-#ifndef _THREAD_H
-#define _THREAD_H
+#ifndef GAP_THREAD_H
+#define GAP_THREAD_H
 
 /* Maximum number of threads excluding the main thread */
 #define MAX_THREADS 1023
@@ -105,4 +105,4 @@ void SetInterruptHandler(int handler, Obj func);
 
 #define MAX_INTERRUPT 100
 
-#endif /* _THREAD_H */
+#endif // GAP_THREAD_H

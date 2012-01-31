@@ -1,5 +1,5 @@
-#ifndef _GAP__GLOBAL_H
-#define _GAP_GLOBAL_H
+#ifndef GAP__GLOBAL_H
+#define GAP_GLOBAL_H
 
 /* This file contains global #includes for faster compilation */
 
@@ -9,4 +9,4 @@
 #include <atomic_ops.h>
 #endif
 
-#endif /* _GAP_GLOBAL_H */
+#endif // GAP_GLOBAL_H

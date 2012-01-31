@@ -1,3 +1,6 @@
+#ifndef GAP_THREADAPI_H
+#define GAP_THREADAPI_H
+
 typedef struct {
   pthread_mutex_t lock;
   struct WaitList *head, *tail;
@@ -23,3 +26,5 @@ void SignalMonitor(Monitor *monitor);
 void SortMonitors(unsigned count, Monitor **monitors);
 void LockMonitors(unsigned count, Monitor **monitors);
 void UnlockMonitors(unsigned count, Monitor **monitors);
+
+#endif // GAP_THREADAPI_H

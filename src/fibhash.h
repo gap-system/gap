@@ -1,5 +1,5 @@
-#ifndef _FIBHASH_H
-#define _FIBHASH_H
+#ifndef GAP_FIBHASH_H
+#define GAP_FIBHASH_H
 
 #ifndef SIZEOF_VOID_P
 #error Require SIZEOF_VOID_P to be defined
@@ -19,4 +19,4 @@ static inline UInt FibHash(UInt word, unsigned bits)
     (FIB_HASH_BITS - bits);
 }
 
-#endif /* _FIBHASH_H */
+#endif // GAP_FIBHASH_H

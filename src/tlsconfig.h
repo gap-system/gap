@@ -1,5 +1,5 @@
-#ifndef _TLSCONFIG_H
-#define _TLSCONFIG_H
+#ifndef GAP_TLSCONFIG_H
+#define GAP_TLSCONFIG_H
 
 #undef HAVE_NATIVE_TLS
 
@@ -16,6 +16,6 @@
 #error TLS_SIZE must be a power of 2
 #endif
 
-#endif
+#endif // SIZEOF_VOID_P == 8
 
-#endif
+#endif // GAP_TLSCONFIG_H

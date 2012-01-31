@@ -1,5 +1,5 @@
-#ifndef _TLS_H
-#define _TLS_H
+#ifndef GAP_TLS_H
+#define GAP_TLS_H
 
 #include <stdint.h>
 
@@ -322,4 +322,4 @@ void InitializeTLS();
 void InitTLS();
 void DestroyTLS();
 
-#endif /* _TLS_H */
+#endif // GAP_TLS_H
