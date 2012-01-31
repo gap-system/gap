@@ -13,7 +13,7 @@
 
 #define FIB_HASH_BITS (SIZEOF_VOID_P * 8)
 
-static UInt FibHash(UInt word, unsigned bits)
+static inline UInt FibHash(UInt word, unsigned bits)
 {
   return (word * FIB_HASH_MULT) >>
     (FIB_HASH_BITS - bits);
