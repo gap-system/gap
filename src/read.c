@@ -1103,11 +1103,17 @@ void ReadFuncExpr (
     volatile UInt       nrError;        /* copy of <TLS->nrError>          */
     volatile Bag        currLVars;      /* copy of <TLS->currLVars>             */
     volatile Int        startLine;      /* line number of function keyword */
+    volatile int        is_block = 0;   /* is this a do ... od block?      */
 
     /* begin the function               */
     startLine = TLS->input->number;
-    Match( S_FUNCTION, "function", follow );
-    Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
+    if (TLS->symbol == S_DO) {
+	Match( S_DO, "do", follow );
+        is_block = 1;
+    } else {
+	Match( S_FUNCTION, "function", follow );
+	Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
+    }
 
     /* make and push the new local variables list (args and locals)        */
     narg = nloc = 0;
@@ -1115,27 +1121,29 @@ void ReadFuncExpr (
     SET_LEN_PLIST( nams, narg+nloc );
     TLS->countNams += 1;
     ASS_LIST( TLS->stackNams, TLS->countNams, nams );
-    if ( TLS->symbol != S_RPAREN ) {
-        name = NEW_STRING( SyStrlen(TLS->value) );
-        SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
-        narg += 1;
-        ASS_LIST( nams, narg+nloc, name );
-        Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
+    if (!is_block) {
+	if ( TLS->symbol != S_RPAREN ) {
+	    name = NEW_STRING( SyStrlen(TLS->value) );
+	    SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+	    narg += 1;
+	    ASS_LIST( nams, narg+nloc, name );
+	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
+	}
+	while ( TLS->symbol == S_COMMA ) {
+	    Match( S_COMMA, ",", follow );
+	    for ( i = 1; i <= narg; i++ ) {
+		if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
+		    SyntaxError("name used for two arguments");
+		}
+	    }
+	    name = NEW_STRING( SyStrlen(TLS->value) );
+	    SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+	    narg += 1;
+	    ASS_LIST( nams, narg+nloc, name );
+	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
+	}
+        Match( S_RPAREN, ")", S_LOCAL|STATBEGIN|S_END|follow );
     }
-    while ( TLS->symbol == S_COMMA ) {
-        Match( S_COMMA, ",", follow );
-        for ( i = 1; i <= narg; i++ ) {
-            if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
-                SyntaxError("name used for two arguments");
-            }
-        }
-        name = NEW_STRING( SyStrlen(TLS->value) );
-        SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
-        narg += 1;
-        ASS_LIST( nams, narg+nloc, name );
-        Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
-    }
-    Match( S_RPAREN, ")", S_LOCAL|STATBEGIN|S_END|follow );
     if ( TLS->symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
         for ( i = 1; i <= narg; i++ ) {
@@ -1203,7 +1211,10 @@ void ReadFuncExpr (
     TLS->countNams--;
 
     /* 'end'                                                               */
-    Match( S_END, "end", follow );
+    if (is_block)
+        Match(S_OD, "od", follow );
+    else
+        Match( S_END, "end", follow );
 }
 
 
@@ -1346,7 +1357,7 @@ void ReadLiteral (
     }
 
     /* <Function>                                                          */
-    else if ( TLS->symbol == S_FUNCTION ) {
+    else if ( TLS->symbol == S_FUNCTION || TLS->symbol == S_DO) {
         ReadFuncExpr( follow );
     }
 
@@ -1395,7 +1406,7 @@ void ReadAtom (
     }
     /* otherwise read a literal expression                                 */
     else if (IS_IN(TLS->symbol,S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
-                          S_REC|S_FUNCTION| S_FLOAT | S_DOT))
+                          S_REC|S_FUNCTION|S_DO| S_FLOAT | S_DOT))
     {
         ReadLiteral( follow );
     }
