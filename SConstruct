@@ -130,7 +130,10 @@ conf.Finish()
 cflags = ""
 if not GAP["debug"]:
   cflags = "-O2"
-cflags += " -g"
+if compiler == "gcc":
+  cflags += "-g3"
+else:
+  cflags += " -g"
 cflags += " -m"+GAP["abi"]
 cflags += " -DCONFIG_H"
 if "gc" in libs:
