@@ -131,7 +131,7 @@ cflags = ""
 if not GAP["debug"]:
   cflags = "-O2"
 if compiler == "gcc":
-  cflags += "-g3"
+  cflags += " -g3"
 else:
   cflags += " -g"
 cflags += " -m"+GAP["abi"]
