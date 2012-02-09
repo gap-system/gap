@@ -1165,6 +1165,7 @@ void            InitBags (
     /* Set ChangedBags to a proper initial value */
     ChangedBags = 0;
 #else /* BOEHM_GC */
+#define LARGE_GC_SIZE (SIZEOF_VOID_P * 8192)
 #ifndef DISABLE_GC
 #if SIZEOF_VOID_P == 4
     GC_all_interior_pointers = 0;
@@ -1263,17 +1264,56 @@ Bag NewBag (
     alloc_size = HEADER_SIZE*sizeof(Bag) + size;
 #ifndef DISABLE_GC
     bag = GC_malloc(2*sizeof(Bag *));
+    /* If the size of an object is zero (such as an empty permutation),
+     * and the header size is a multiple of twice the word size of the
+     * architecture, then the master pointer will actually point past
+     * the allocated area. Because this would result in the object
+     * being freed prematurely, we will allocate at least one extra
+     * byte so that the master pointer actually points to within an
+     * allocated memory area.
+     */
     if (size == 0)
       alloc_size++;
+    /* While we use the Boehm GC without the "all interior pointers"
+     * option, stack references to the interior of an object will
+     * still be valid from any reference on the stack. This can lead,
+     * for example, to a 1GB string never being freed if there's an
+     * integer on the stack that happens to also be a reference to
+     * any character inside that string. The garbage collector does
+     * this because after compiler optimizations (especially reduction
+     * in strength) references to the beginning of an object may be
+     * lost.
+     *
+     * However, this is not generally a risk with GAP objects, because
+     * master pointers on the heap will always retain a reference to
+     * the start of the object (or, more precisely, to the first byte
+     * past the header area). Hence, compiler optimizations pose no
+     * actual risk unless the master pointer is destroyed also.
+     *
+     * To avoid the scenario where large objects do not get deallocated,
+     * we therefore use the _ignore_off_page() calls. One caveat here
+     * is that these calls do not use thread-local allocation, making
+     * them somewhat slower. Hence, we only use them for sufficiently
+     * large objects.
+     */
     if (TabFinalizerFuncBags[type])
     {
-      dst = GC_malloc_atomic(alloc_size);
+      if (alloc_size >= LARGE_GC_SIZE)
+        dst = GC_malloc_atomic_ignore_off_page(alloc_size);
+      else
+	dst = GC_malloc_atomic(alloc_size);
       GC_register_finalizer(dst, StandardFinalizer, NULL, NULL, NULL);
     }
     else if (TabMarkFuncBags[type] == MarkNoSubBags) {
-      dst = GC_malloc_atomic(alloc_size);
+      if (alloc_size >= LARGE_GC_SIZE)
+        dst = GC_malloc_atomic_ignore_off_page(alloc_size);
+      else
+	dst = GC_malloc_atomic(alloc_size);
     } else {
-      dst = GC_malloc(alloc_size);
+      if (alloc_size >= LARGE_GC_SIZE)
+	dst = GC_malloc_ignore_off_page(alloc_size);
+      else
+	dst = GC_malloc(alloc_size);
     }
 #else
     bag = malloc(2*sizeof(Bag *));
@@ -1572,9 +1612,15 @@ void            RetypeBag (
 	    alloc_size++;
 #ifndef DISABLE_GC
 	if (TabMarkFuncBags[type] == MarkNoSubBags) {
-	    dst = GC_malloc_atomic(alloc_size);
+	    if (alloc_size >= LARGE_GC_SIZE)
+	      dst = GC_malloc_atomic_ignore_off_page(alloc_size);
+	    else
+	      dst = GC_malloc_atomic(alloc_size);
 	} else {
-	    dst = GC_malloc(alloc_size);
+	    if (alloc_size >= LARGE_GC_SIZE)
+	      dst = GC_malloc_ignore_off_page(alloc_size);
+	    else
+	      dst = GC_malloc(alloc_size);
 	}
 #else
         dst       = malloc( alloc_size );
