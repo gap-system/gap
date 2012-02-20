@@ -3267,10 +3267,32 @@ void DestroyCoderTLS( void )
 {
 }
 
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    InitMarkFuncBags( T_BODY, MarkNoSubBags );
+    /* install the marking functions for function body bags                */
+    InfoBags[ T_BODY ].name = "function body bag";
+    InitMarkFuncBags( T_BODY, MarkThreeSubBags );
+
+    SaveObjFuncs[ T_BODY ] = SaveBody;
+    LoadObjFuncs[ T_BODY ] = LoadBody;
+
+    /* Allocate function bodies in the public data space */
+    MakeBagTypePublic(T_BODY);
+
+    /* make the result variable known to Gasman                            */
+    /* TL: InitGlobalBag( &CodeResult, "CodeResult" ); */
+
+    /* allocate the statements and expressions stacks                      */
+    InitGlobalBag( &TLS->stackStat, "TLS->stackStat" );
+    InitGlobalBag( &TLS->stackExpr, "TLS->stackExpr" );
+
+    /* return success                                                      */
     return 0;
 }
 
