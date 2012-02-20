@@ -3267,6 +3267,12 @@ void DestroyCoderTLS( void )
 {
 }
 
+static Int InitKernel (
+    StructInitInfo *    module )
+{
+    InitMarkFuncBags( T_BODY, MarkNoSubBags );
+    return 0;
+}
 
 static Int InitLibrary (
     StructInitInfo *    module )
@@ -3337,7 +3343,7 @@ static StructInitInfo module = {
     0,                                  /* revision entry of h file       */
     0,                                  /* version                        */
     0,                                  /* crc                            */
-    0,                         		/* initKernel                     */
+    InitKernel,                         /* initKernel                     */
     InitLibrary,                        /* initLibrary                    */
     0,                        /* checkInit                      */
     PreSave,                            /* preSave                        */

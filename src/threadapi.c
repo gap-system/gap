@@ -1172,7 +1172,7 @@ static Int InitKernel (
     InitMarkFuncBags(T_BARRIER, MarkBarrierBag);
     InitMarkFuncBags(T_SYNCVAR, MarkSyncVarBag);
     InitMarkFuncBags(T_MONITOR, MarkNoSubBags);
-    InitMarkFuncBags(T_REGION, MarkNoSubBags);
+    InitMarkFuncBags(T_REGION, MarkAllSubBags);
     InitFinalizerFuncBags(T_MONITOR, FinalizeMonitor);
     /* install print functions */
     PrintObjFuncs[ T_THREAD ] = PrintThread;

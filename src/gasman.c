@@ -589,7 +589,6 @@ void InitMarkFuncBags (
     UInt                type,
     TNumMarkFuncBags    mark_func )
 {
-#ifndef BOEHM_GC
 #ifdef CHECK_FOR_CLASH_IN_INIT_MARK_FUNC
     char                str[256];
 
@@ -605,7 +604,6 @@ void InitMarkFuncBags (
     }
 #endif
     TabMarkFuncBags[type] = mark_func;
-#endif
 }
 
 
@@ -707,6 +705,14 @@ void MarkBagWeakly(
 }
 
 
+#ifdef BOEHM_GC
+static inline int IsAtomicBagType(
+    UInt tnum )
+{
+  return TabMarkFuncBags[tnum] == MarkNoSubBags ||
+    TabFinalizerFuncBags[tnum] != NULL;
+}
+#endif
 
 
 /****************************************************************************
@@ -1223,6 +1229,7 @@ void            InitBags (
 **  local  variables  of the function.  To  enable  statistics only {\Gasman}
 **  needs to be recompiled.
 */
+
 Bag NewBag (
     UInt                type,
     UInt                size )
@@ -1296,19 +1303,13 @@ Bag NewBag (
      * them somewhat slower. Hence, we only use them for sufficiently
      * large objects.
      */
-    if (TabFinalizerFuncBags[type])
-    {
+    if (IsAtomicBagType(type)) {
       if (alloc_size >= LARGE_GC_SIZE)
         dst = GC_malloc_atomic_ignore_off_page(alloc_size);
       else
 	dst = GC_malloc_atomic(alloc_size);
-      GC_register_finalizer(dst, StandardFinalizer, NULL, NULL, NULL);
-    }
-    else if (TabMarkFuncBags[type] == MarkNoSubBags) {
-      if (alloc_size >= LARGE_GC_SIZE)
-        dst = GC_malloc_atomic_ignore_off_page(alloc_size);
-      else
-	dst = GC_malloc_atomic(alloc_size);
+      if (TabFinalizerFuncBags[type])
+	GC_register_finalizer_no_order(dst, StandardFinalizer, NULL, NULL, NULL);
     } else {
       if (alloc_size >= LARGE_GC_SIZE)
 	dst = GC_malloc_ignore_off_page(alloc_size);
@@ -1377,10 +1378,10 @@ void            RetypeBag (
     UInt                new_type )
 {
 
+    UInt                old_type;       /* old type of the bag */
 #ifdef  COUNT_BAGS
     /* update the statistics      */
     {
-          UInt                old_type;       /* old type of the bag */
 	  UInt                size;
 
           old_type = TNUM_BAG(bag);
@@ -1394,6 +1395,10 @@ void            RetypeBag (
           InfoBags[old_type].sizeAll  -= size;
           InfoBags[new_type].sizeAll  += size;
     }
+#else
+#ifdef BOEHM_GC
+    old_type = TNUM_BAG(bag);
+#endif
 #endif
 
     /* change the size-type word                                           */
@@ -1402,6 +1407,33 @@ void            RetypeBag (
     *(*bag-HEADER_SIZE) |= new_type;
 #else
     *(*bag-HEADER_SIZE) = new_type;
+#endif
+#ifdef BOEHM_GC
+    {
+      int old_atomic, new_atomic;
+      UInt size;
+      void *new_mem, *old_mem;
+      old_atomic = IsAtomicBagType(old_type);
+      new_atomic = IsAtomicBagType(new_type);
+      if (old_atomic != new_atomic) {
+        size = SIZE_BAG(bag) + HEADER_SIZE * sizeof(Bag);
+	if (new_atomic) {
+	  if (size >= LARGE_GC_SIZE)
+	    new_mem = GC_malloc_atomic_ignore_off_page(size);
+	  else
+	    new_mem = GC_malloc_atomic(size);
+	} else {
+	  if (size >= LARGE_GC_SIZE)
+	    new_mem = GC_malloc_ignore_off_page(size);
+	  else
+	    new_mem = GC_malloc(size);
+	}
+	old_mem = PTR_BAG(bag);
+	old_mem = ((char *) old_mem) - HEADER_SIZE * sizeof(Bag);
+	memcpy(new_mem, old_mem, size);
+	PTR_BAG(bag) = (void *)(((char *)new_mem) + HEADER_SIZE * sizeof(Bag));
+      }
+    }
 #endif
     switch (DSInfoBags[new_type]) {
       case DSI_PUBLIC:
@@ -1677,8 +1709,11 @@ void            RetypeBag (
         while ( src < end )
             *dst++ = *src++;
 #else
-        if (dst != src)
+        if (dst != src) {
 	    memcpy( dst, src, old_size < new_size ? old_size : new_size );
+	} else if (new_size < old_size) {
+	  memset(dst+new_size, 0, old_size - new_size);
+	}
 #endif
 
     }
