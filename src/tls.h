@@ -180,6 +180,13 @@ static inline ThreadLocalStorage *GetTLS()
 
 #define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
 
+#ifdef __GNUC__
+#define ALWAYS_INLINE __attribute__((always_inline)) inline
+#else
+#define ALWAYS_INLINE inline
+#endif
+
+
 #ifdef VERBOSE_GUARDS
 
 #define ReadGuard(bag) ReadGuardFull(bag, __FILE__, __LINE__, __FUNCTION__, #bag)
@@ -191,10 +198,10 @@ static inline ThreadLocalStorage *GetTLS()
 #endif
 
 #ifdef VERBOSE_GUARDS
-static inline Bag WriteGuardFull(Bag bag,
+static ALWAYS_INLINE Bag WriteGuardFull(Bag bag,
   const char *file, unsigned line, const char *func, const char *expr)
 #else
-static inline Bag WriteGuard(Bag bag)
+static ALWAYS_INLINE Bag WriteGuard(Bag bag)
 #endif
 {
   extern void WriteGuardError();
@@ -212,10 +219,10 @@ static inline Bag WriteGuard(Bag bag)
 }
 
 #ifdef VERBOSE_GUARDS
-static inline Bag *WriteGuardByRefFull(Bag *bagref,
+static ALWAYS_INLINE Bag *WriteGuardByRefFull(Bag *bagref,
   const char *file, unsigned line, const char *func, const char *expr)
 #else
-static inline Bag *WriteGuardByRef(Bag *bagref)
+static ALWAYS_INLINE Bag *WriteGuardByRef(Bag *bagref)
 #endif
 {
   extern void WriteGuardError();
@@ -250,10 +257,10 @@ static inline int CheckWrite(Bag bag)
 }
 
 #ifdef VERBOSE_GUARDS
-static inline Bag ReadGuardFull(Bag bag,
+static ALWAYS_INLINE Bag ReadGuardFull(Bag bag,
   const char *file, unsigned line, const char *func, const char *expr)
 #else
-static inline Bag ReadGuard(Bag bag)
+static ALWAYS_INLINE Bag ReadGuard(Bag bag)
 #endif
 {
   extern void ReadGuardError();
@@ -272,10 +279,10 @@ static inline Bag ReadGuard(Bag bag)
 }
 
 #ifdef VERBOSE_GUARDS
-static inline Bag *ReadGuardByRefFull(Bag *bagref,
+static ALWAYS_INLINE Bag *ReadGuardByRefFull(Bag *bagref,
   const char *file, unsigned line, const char *func, const char *expr)
 #else
-static inline Bag *ReadGuardByRef(Bag *bagref)
+static ALWAYS_INLINE Bag *ReadGuardByRef(Bag *bagref)
 #endif
 {
   extern void ReadGuardError();
@@ -296,13 +303,13 @@ static inline Bag *ReadGuardByRef(Bag *bagref)
 
 #define READ_GUARD(bag) (*ReadGuardByRef(&(bag)))
 
-static inline Bag ImpliedReadGuard(Bag bag)
+static ALWAYS_INLINE Bag ImpliedReadGuard(Bag bag)
 {
   return bag;
 }
 
 
-static inline int CheckRead(Bag bag)
+static ALWAYS_INLINE int CheckRead(Bag bag)
 {
   Region *region;
   if (!IS_BAG_REF(bag))
