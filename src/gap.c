@@ -2926,9 +2926,9 @@ void ThreadedInterpreter(void *funcargs) {
   SET_LEN_PLIST(tmp, LEN_PLIST(tmp)-1);
 
   if (!READ_ERROR()) {
+    Obj init, exit;
     if (sySetjmp(TLS->threadExit))
       return;
-    Obj init, exit;
     init = GVarOptFunc(&GVarTHREAD_INIT);
     if (init) CALL_0ARGS(init);
     FuncCALL_FUNC_LIST((Obj) 0, func, tmp);
