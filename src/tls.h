@@ -180,7 +180,7 @@ static inline ThreadLocalStorage *GetTLS()
 
 #define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(FORCE_INLINE_GUARDS)
 #define ALWAYS_INLINE __attribute__((always_inline)) inline
 #else
 #define ALWAYS_INLINE inline
