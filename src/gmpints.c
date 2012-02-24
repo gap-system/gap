@@ -56,6 +56,8 @@
 
 
 #ifdef USE_GMP
+/* TODO: Remove after Ward2 */
+#ifndef WARD_ENABLED
 
 #include <gmp.h>
 
@@ -2710,6 +2712,7 @@ StructInitInfo * InitInfoInt ( void )
   return &module;
 }
 
+#endif /* WARD_ENABLED */
 /* corresponds to USE_GMP test at start */
 #endif
 

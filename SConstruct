@@ -127,6 +127,7 @@ conf.Finish()
 
 # Construct command line options
 
+defines = []
 cflags = ""
 if not GAP["debug"]:
   cflags = "-O2"
@@ -135,26 +136,27 @@ if compiler == "gcc":
 else:
   cflags += " -g"
 cflags += " -m"+GAP["abi"]
-cflags += " -DCONFIG_H"
+defines.append("CONFIG_H")
 if "gc" in libs:
-  cflags += " -DGC_THREADS"
+  defines.append("GC_THREADS")
 else:
-  cflags += " -DDISABLE_GC"
+  defines.append("DISABLE_GC")
 if "gmp" in libs:
-  cflags += " -DUSE_GMP"
+  defines.append("USE_GMP")
 if have_sigsetjmp:
-  cflags += " -DHAVE_SIGSETJMP=1"
+  defines.append("HAVE_SIGSETJMP=1")
 if have__setjmp:
-  cflags += " -DHAVE__SETJMP=1"
+  defines.append("HAVE__SETJMP=1")
 if have_stdint_h:
-  cflags += " -DHAVE_STDINT_H=1"
+  defines.append("HAVE_STDINT_H=1")
 
 if GAP["debugguards"]:
-  cflags += " -DVERBOSE_GUARDS"
+  defines.append("VERBOSE_GUARDS")
 
 if GAP["cflags"]:
   cflags += " " + string.replace(GAP["cflags"], "%", " ")
-
+for define in defines:
+  cflags += " -D" + define
 
 GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags)
 
@@ -204,11 +206,11 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
 # Adding paths for external libraries
 
 options = { }
-include_path = build_dir+":." # for config.h
+include_path = [ build_dir, "." ] # for config.h
 if compile_gc or compile_gmp:
   options["LIBPATH"] = abi_path + "/lib"
-  include_path += ":" + abi_path + "/include"
-options["CPPPATH"] = include_path
+  include_path.append(abi_path + "/include")
+options["CPPPATH"] = ":".join(include_path)
 options["OBJPREFIX"] = "../" + build_dir + "/"
 
 # uname file generator
@@ -234,9 +236,13 @@ def SysInfoBuilder(target, source, env):
 
 # Building binary from source
 
+def make_ward_options(prefix, args):
+  return (" " + prefix).join([""] + args)
+
 preprocess = string.replace(GAP["preprocess"], "%", " ")
 if GAP["ward"]:
-  preprocess = GAP["ward"] + "/bin/addguards2c -Ibin/current -I" + abi_path + "/include"
+  preprocess = GAP["ward"] + "/bin/addguards2c" + \
+    make_ward_options("-I", include_path) + make_ward_options("-D", defines)
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
