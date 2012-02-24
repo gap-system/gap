@@ -1308,6 +1308,7 @@ Bag NewBag (
         dst = GC_malloc_atomic_ignore_off_page(alloc_size);
       else
 	dst = GC_malloc_atomic(alloc_size);
+      memset(dst, 0, alloc_size);
       if (TabFinalizerFuncBags[type])
 	GC_register_finalizer_no_order(dst, StandardFinalizer, NULL, NULL, NULL);
     } else {
@@ -1422,6 +1423,7 @@ void            RetypeBag (
 	    new_mem = GC_malloc_atomic_ignore_off_page(size);
 	  else
 	    new_mem = GC_malloc_atomic(size);
+	  memset(new_mem, 0, size);
 	} else {
 	  if (size >= LARGE_GC_SIZE)
 	    new_mem = GC_malloc_ignore_off_page(size);
@@ -1648,6 +1650,7 @@ void            RetypeBag (
 	      dst = GC_malloc_atomic_ignore_off_page(alloc_size);
 	    else
 	      dst = GC_malloc_atomic(alloc_size);
+	    memset(dst, 0, alloc_size);
 	} else {
 	    if (alloc_size >= LARGE_GC_SIZE)
 	      dst = GC_malloc_ignore_off_page(alloc_size);
