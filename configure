@@ -2818,7 +2818,7 @@ fi
 
 gapdir=`pwd`
 mkdir -p bin
-ac_config_files="$ac_config_files Makefile sysinfo.gap:sysinfo.in bin/gap.sh:gap.shi"
+ac_config_files="$ac_config_files sysinfo.gap:sysinfo.in bin/gap.sh:gap.shi"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3387,7 +3387,6 @@ cat >>$CONFIG_STATUS <<\_ACEOF
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "sysinfo.gap") CONFIG_FILES="$CONFIG_FILES sysinfo.gap:sysinfo.in" ;;
     "bin/gap.sh") CONFIG_FILES="$CONFIG_FILES bin/gap.sh:gap.shi" ;;
 

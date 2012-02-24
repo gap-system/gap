@@ -54,5 +54,5 @@ AC_PROG_MAKE_SET
 AC_SUBST(gapdir)
 gapdir=`pwd`
 mkdir -p bin
-AC_OUTPUT(Makefile sysinfo.gap:sysinfo.in bin/gap.sh:gap.shi)
+AC_OUTPUT(sysinfo.gap:sysinfo.in bin/gap.sh:gap.shi)
 

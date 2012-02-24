@@ -25,7 +25,7 @@ clean:
 	$(SCONS) -c preprocess=dummy
 
 distclean:
-	$(SCONS) -c preprocess=dummy; rm -rf extern/32bit extern/64bit
+	$(SCONS) -c preprocess=dummy; rm -rf extern/32bit extern/64bit bin/current/*
 
 $(WARD)/bin/ward:
 	@echo "Building Ward."
