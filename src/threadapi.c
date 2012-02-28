@@ -75,6 +75,13 @@ typedef struct Channel
   int dynamic;
 } Channel;
 
+typedef struct Semaphore
+{
+  Obj monitor;
+  Int count;
+  int waiting;
+} Semaphore;
+
 typedef struct Barrier
 {
   Obj monitor;
@@ -794,6 +801,10 @@ Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list);
 Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list);
 Obj FuncTryTransmitChannel(Obj self, Obj channel, Obj obj);
 Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj defaultobj);
+Obj FuncCreateSemaphore(Obj self, Obj args);
+Obj FuncSignalSemaphore(Obj self, Obj sem);
+Obj FuncWaitSemaphore(Obj self, Obj sem);
+Obj FuncTryWaitSemaphore(Obj self, Obj sem);
 Obj FuncCreateThread(Obj self, Obj funcargs);
 Obj FuncCurrentThread(Obj self);
 Obj FuncThreadID(Obj self, Obj thread);
@@ -917,6 +928,15 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "HaveReadAccess", 1, "object",
       FuncHaveReadAccess, "src/threadapi.c:HaveReadAccess" },
+
+    { "CreateSemaphore", -1, "[count]",
+      FuncCreateSemaphore, "src/threadapi.c:CreateSemaphore" },
+
+    { "SignalSemaphore", 1, "semaphore",
+      FuncSignalSemaphore, "src/threadapi.c:SignalSemaphore" },
+
+    { "WaitSemaphore", 1, "semaphore",
+      FuncWaitSemaphore, "src/threadapi.c:WaitSemaphore" },
 
     { "CreateChannel", -1, "[size]",
       FuncCreateChannel, "src/threadapi.c:CreateChannel" },
@@ -1082,6 +1102,7 @@ static StructGVarFunc GVarFuncs [] = {
 };
 
 Obj TYPE_THREAD;
+Obj TYPE_SEMAPHORE;
 Obj TYPE_CHANNEL;
 Obj TYPE_BARRIER;
 Obj TYPE_SYNCVAR;
@@ -1090,6 +1111,11 @@ Obj TYPE_REGION;
 Obj TypeThread(Obj obj)
 {
   return TYPE_THREAD;
+}
+
+Obj TypeSemaphore(Obj obj)
+{
+  return TYPE_SEMAPHORE;
 }
 
 Obj TypeChannel(Obj obj)
@@ -1122,11 +1148,13 @@ static Int NeverMutable(Obj obj)
   return 0;
 }
 
+static void MarkSemaphoreBag(Bag);
 static void MarkChannelBag(Bag);
 static void MarkBarrierBag(Bag);
 static void MarkSyncVarBag(Bag);
 static void FinalizeMonitor(Bag);
 static void PrintThread(Obj);
+static void PrintSemaphore(Obj);
 static void PrintChannel(Obj);
 static void PrintBarrier(Obj);
 static void PrintSyncVar(Obj);
@@ -1146,6 +1174,7 @@ static Int InitKernel (
 {
   /* install info string */
   InfoBags[T_THREAD].name = "thread";
+  InfoBags[T_SEMAPHORE].name = "channel";
   InfoBags[T_CHANNEL].name = "channel";
   InfoBags[T_BARRIER].name = "barrier";
   InfoBags[T_SYNCVAR].name = "syncvar";
@@ -1153,12 +1182,14 @@ static Int InitKernel (
   
     /* install the kind methods */
     TypeObjFuncs[ T_THREAD ] = TypeThread;
+    TypeObjFuncs[ T_SEMAPHORE ] = TypeSemaphore;
     TypeObjFuncs[ T_CHANNEL ] = TypeChannel;
     TypeObjFuncs[ T_BARRIER ] = TypeBarrier;
     TypeObjFuncs[ T_SYNCVAR ] = TypeSyncVar;
     TypeObjFuncs[ T_REGION ] = TypeRegion;
     /* install global variables */
     InitCopyGVar("TYPE_THREAD", &TYPE_THREAD);
+    InitCopyGVar("TYPE_SEMAPHORE", &TYPE_SEMAPHORE);
     InitCopyGVar("TYPE_CHANNEL", &TYPE_CHANNEL);
     InitCopyGVar("TYPE_BARRIER", &TYPE_BARRIER);
     InitCopyGVar("TYPE_SYNCVAR", &TYPE_SYNCVAR);
@@ -1168,6 +1199,7 @@ static Int InitKernel (
     DeclareGVar(&MAX_INTERRUPTGVar,"MAX_INTERRUPT");
     /* install mark functions */
     InitMarkFuncBags(T_THREAD, MarkNoSubBags);
+    InitMarkFuncBags(T_SEMAPHORE, MarkSemaphoreBag);
     InitMarkFuncBags(T_CHANNEL, MarkChannelBag);
     InitMarkFuncBags(T_BARRIER, MarkBarrierBag);
     InitMarkFuncBags(T_SYNCVAR, MarkSyncVarBag);
@@ -1176,17 +1208,20 @@ static Int InitKernel (
     InitFinalizerFuncBags(T_MONITOR, FinalizeMonitor);
     /* install print functions */
     PrintObjFuncs[ T_THREAD ] = PrintThread;
+    PrintObjFuncs[ T_SEMAPHORE ] = PrintSemaphore;
     PrintObjFuncs[ T_CHANNEL ] = PrintChannel;
     PrintObjFuncs[ T_BARRIER ] = PrintBarrier;
     PrintObjFuncs[ T_SYNCVAR ] = PrintSyncVar;
     PrintObjFuncs[ T_REGION ] = PrintRegion;
     /* install mutability functions */
     IsMutableObjFuncs [ T_THREAD ] = NeverMutable;
+    IsMutableObjFuncs [ T_SEMAPHORE ] = AlwaysMutable;
     IsMutableObjFuncs [ T_CHANNEL ] = AlwaysMutable;
     IsMutableObjFuncs [ T_BARRIER ] = AlwaysMutable;
     IsMutableObjFuncs [ T_SYNCVAR ] = AlwaysMutable;
     IsMutableObjFuncs [ T_REGION ] = AlwaysMutable;
     MakeBagTypePublic(T_THREAD);
+    MakeBagTypePublic(T_SEMAPHORE);
     MakeBagTypePublic(T_CHANNEL);
     MakeBagTypePublic(T_REGION);
     MakeBagTypePublic(T_SYNCVAR);
@@ -1265,6 +1300,12 @@ StructInitInfo * InitInfoThreadAPI ( void )
     module.revision_h = "@(#)$Id: threadapi.h,v 1.0 ";
     FillInVersion( &module );
     return &module;
+}
+
+static void MarkSemaphoreBag(Bag bag)
+{
+  Semaphore *sem = (Semaphore *)(PTR_BAG(bag));
+  MARK_BAG(sem->monitor);
 }
 
 static void MarkChannelBag(Bag bag)
@@ -1877,6 +1918,74 @@ Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj obj)
   return TryReceiveChannel(ObjPtr(channel), obj);
 }
 
+static Obj CreateSemaphore(UInt count)
+{
+  Semaphore *sem;
+  Bag semBag;
+  semBag = NewBag(T_SEMAPHORE, sizeof(Semaphore));
+  sem = ObjPtr(semBag);
+  sem->monitor = NewMonitor();
+  sem->count = count;
+  sem->waiting = 0;
+  return semBag;
+}
+
+Obj FuncCreateSemaphore(Obj self, Obj args)
+{
+  Int count;
+  switch (LEN_PLIST(args))
+  {
+    case 0:
+      count = 0;
+      break;
+    case 1:
+      if (IS_INTOBJ(ELM_PLIST(args, 1)))
+      {
+	count = INT_INTOBJ(ELM_PLIST(args, 1));
+	if (count < 0)
+	  ArgumentError("CreateSemaphore: Initial count must be non-negative");
+	break;
+      }
+      ArgumentError("CreateSemaphore: Argument must be initial count");
+    default:
+      ArgumentError("CreateSemaphore: Function takes up to two arguments");
+      return (Obj) 0; /* control flow hint */
+  }
+  return CreateSemaphore(count);
+}
+
+Obj FuncSignalSemaphore(Obj self, Obj semaphore)
+{
+  Semaphore *sem;
+  if (TNUM_OBJ(semaphore) != T_SEMAPHORE)
+    ArgumentError("SignalSemaphore: Argument must be a semaphore");
+  sem = ObjPtr(semaphore);
+  LockMonitor(ObjPtr(sem->monitor));
+  sem->count++;
+  if (sem->waiting)
+    SignalMonitor(ObjPtr(sem->monitor));
+  UnlockMonitor(ObjPtr(sem->monitor));
+  return (Obj) 0;
+}
+
+Obj FuncWaitSemaphore(Obj self, Obj semaphore)
+{
+  Semaphore *sem;
+  if (TNUM_OBJ(semaphore) != T_SEMAPHORE)
+    ArgumentError("WaitSemaphore: Argument must be a semaphore");
+  sem = ObjPtr(semaphore);
+  LockMonitor(ObjPtr(sem->monitor));
+  sem->waiting++;
+  while (sem->count == 0)
+    WaitForMonitor(ObjPtr(sem->monitor));
+  sem->count--;
+  sem->waiting--;
+  if (sem->waiting && sem->count > 0)
+    SignalMonitor(ObjPtr(sem->monitor));
+  UnlockMonitor(ObjPtr(sem->monitor));
+  return (Obj) 0;
+}
+
 void LockBarrier(Barrier *barrier)
 {
   LockMonitor(ObjPtr(barrier->monitor));
@@ -2064,6 +2173,18 @@ static void PrintThread(Obj obj)
   sprintf(buf, "<thread #%ld: %s>", id, status_message);
   UnlockThreadControl();
   Pr("%s", (Int) buf, 0L);
+}
+
+static void PrintSemaphore(Obj obj)
+{
+  Semaphore *sem = ObjPtr(obj);
+  Int count;
+  char buffer[100];
+  LockMonitor(ObjPtr(sem->monitor));
+  count = sem->count;
+  UnlockMonitor(ObjPtr(sem->monitor));
+  sprintf(buffer, "<semaphore %p: count = %ld>", sem, (long) count);
+  Pr("%s", (Int) buffer, 0L);
 }
 
 static void PrintChannel(Obj obj)

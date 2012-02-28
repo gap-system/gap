@@ -23,6 +23,7 @@ BindGlobal("AtomicFamily", NewFamily("AtomicFamily", IsObject));
 BindGlobal("RegionFamily", NewFamily("DataSpaceFamily", IsObject));
 
 DeclareFilter("IsThread", IsObject and IsInternalRep);
+DeclareFilter("IsSemaphore", IsObject and IsInternalRep);
 DeclareFilter("IsChannel", IsObject and IsInternalRep);
 DeclareFilter("IsBarrier", IsObject and IsInternalRep);
 DeclareFilter("IsSyncVar", IsObject and IsInternalRep);
@@ -32,6 +33,7 @@ DeclareFilter("IsAtomicRecord", IsObject and IsInternalRep);
 DeclareFilter("IsThreadLocalRecord", IsObject and IsInternalRep);
 
 BindGlobal("TYPE_THREAD", NewType(ThreadFamily, IsThread));
+BindGlobal("TYPE_SEMAPHORE", NewType(SynchronizationFamily, IsSemaphore));
 BindGlobal("TYPE_CHANNEL", NewType(SynchronizationFamily, IsChannel));
 BindGlobal("TYPE_BARRIER", NewType(SynchronizationFamily, IsBarrier));
 BindGlobal("TYPE_SYNCVAR", NewType(SynchronizationFamily, IsSyncVar));
