@@ -3,7 +3,7 @@ GMP=yes
 WARD=../ward
 SCONS=bin/scons
 
-all: $(WARD)/bin/ward
+all opt: $(WARD)/bin/ward
 	$(SCONS) -j $(JOBS) debug=0 ward=$(WARD) gmp=$(GMP)
 
 debug: $(WARD)
@@ -25,7 +25,7 @@ clean:
 	$(SCONS) -c preprocess=dummy
 
 distclean:
-	$(SCONS) -c preprocess=dummy; rm -rf extern/32bit extern/64bit bin/current/*
+	$(SCONS) -c preprocess=dummy; rm -rf extern/lib/* extern/include/* extern/32bit extern/64bit bin/current/*
 
 $(WARD)/bin/ward:
 	@echo "Building Ward."

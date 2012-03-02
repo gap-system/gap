@@ -193,12 +193,12 @@ if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
 
 if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
   os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
-  build_external("libatomic_ops-1.2")
+  build_external("libatomic_ops-2012-03-02")
   del os.environ["CC"]
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
   os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
-  build_external("bdwgc-2011-10-10")
+  build_external("bdwgc-2012-03-02")
   del os.environ["CC"]
 
 
