@@ -154,6 +154,13 @@ void InstallTLSHandler(
 void RunTLSConstructors();
 void RunTLSDestructors();
 
+#if defined(__GNUC__)
+#define ALWAYS_INLINE __attribute__((always_inline)) inline
+#else
+#define ALWAYS_INLINE inline
+#endif
+
+
 #ifdef HAVE_NATIVE_TLS
 
 extern __thread ThreadLocalStorage TLSInstance;
@@ -162,7 +169,7 @@ extern __thread ThreadLocalStorage TLSInstance;
 
 #else
 
-static inline ThreadLocalStorage *GetTLS()
+static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
 {
   void *stack;
 #ifdef __GNUC__
@@ -179,13 +186,6 @@ static inline ThreadLocalStorage *GetTLS()
 #endif /* HAVE_NATIVE_TLS */
 
 #define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
-
-#if defined(__GNUC__)
-#define ALWAYS_INLINE __attribute__((always_inline)) inline
-#else
-#define ALWAYS_INLINE inline
-#endif
-
 
 #ifdef VERBOSE_GUARDS
 
