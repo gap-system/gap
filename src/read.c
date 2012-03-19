@@ -1104,6 +1104,9 @@ void ReadFuncExpr (
     volatile Bag        currLVars;      /* copy of <TLS->currLVars>             */
     volatile Int        startLine;      /* line number of function keyword */
     volatile int        is_block = 0;   /* is this a do ... od block?      */
+    volatile int        is_atomic = 0;  /* is this an atomic function?      */
+    volatile int        lockmode;       /* type of lock for current argument */
+    volatile Bag        locks = 0;      /* locks of the function */
 
     /* begin the function               */
     startLine = TLS->input->number;
@@ -1111,6 +1114,10 @@ void ReadFuncExpr (
 	Match( S_DO, "do", follow );
         is_block = 1;
     } else {
+	if (TLS->symbol == S_ATOMIC) {
+	    Match(S_ATOMIC, "atomic", follow);
+	    is_atomic = 1;
+	}
 	Match( S_FUNCTION, "function", follow );
 	Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
     }
@@ -1123,6 +1130,16 @@ void ReadFuncExpr (
     ASS_LIST( TLS->stackNams, TLS->countNams, nams );
     if (!is_block) {
 	if ( TLS->symbol != S_RPAREN ) {
+	    lockmode = 0;
+	    switch (TLS->symbol) {
+	      case S_READONLY:
+	        lockmode++;
+	      case S_READWRITE:
+	        lockmode++;
+		locks = NEW_STRING(4);
+		CHARS_STRING(locks)[0] = lockmode;
+	        GetSymbol();
+	    }
 	    name = NEW_STRING( SyStrlen(TLS->value) );
 	    SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
 	    narg += 1;
@@ -1131,6 +1148,21 @@ void ReadFuncExpr (
 	}
 	while ( TLS->symbol == S_COMMA ) {
 	    Match( S_COMMA, ",", follow );
+	    lockmode = 0;
+	    switch (TLS->symbol) {
+	      case S_READONLY:
+	        lockmode++;
+	      case S_READWRITE:
+	        lockmode++;
+		if (!locks)
+		  locks = NEW_STRING(narg);
+		else {
+		  GrowString(locks, narg);
+		  SET_LEN_STRING(locks, narg);
+		}
+		CHARS_STRING(locks)[narg-1] = lockmode;
+	        GetSymbol();
+	    }
 	    for ( i = 1; i <= narg; i++ ) {
 		if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
 		    SyntaxError("name used for two arguments");
@@ -1189,6 +1221,7 @@ void ReadFuncExpr (
 
     /* now finally begin the function                                      */
     if ( ! READ_ERROR() ) { IntrFuncExprBegin( narg, nloc, nams, startLine ); }
+    if ( nrError == 0) LCKS_FUNC(CURR_FUNC) = locks;
 
     /* <Statments>                                                         */
     nr = ReadStats( S_END|follow );
@@ -1357,7 +1390,8 @@ void ReadLiteral (
     }
 
     /* <Function>                                                          */
-    else if ( TLS->symbol == S_FUNCTION || TLS->symbol == S_DO) {
+    else if ( TLS->symbol == S_FUNCTION || TLS->symbol == S_ATOMIC ||
+              TLS->symbol == S_DO) {
         ReadFuncExpr( follow );
     }
 
@@ -1406,7 +1440,7 @@ void ReadAtom (
     }
     /* otherwise read a literal expression                                 */
     else if (IS_IN(TLS->symbol,S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
-                          S_REC|S_FUNCTION|S_DO| S_FLOAT | S_DOT))
+                          S_REC|S_FUNCTION|S_DO|S_ATOMIC| S_FLOAT | S_DOT))
     {
         ReadLiteral( follow );
     }

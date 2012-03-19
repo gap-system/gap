@@ -1156,6 +1156,316 @@ Obj             DoExecFuncXargs (
       }
 }
 
+Obj             DoExecFunc1argsL (
+    Obj                 func,
+    Obj                 arg1 )
+{
+    Bag                 oldLvars;       /* old values bag                  */
+    OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
+
+    /* switch to a new values bag                                          */
+    SWITCH_TO_NEW_LVARS( func, 1, NLOC_FUNC(func), oldLvars );
+
+    /* enter the arguments                                                 */
+    ASS_LVAR( 1, arg1 );
+
+    /* execute the statement sequence                                      */
+    REM_BRK_CURR_STAT();
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* switch back to the old values bag                                   */
+    SWITCH_TO_OLD_LVARS( oldLvars );
+
+    CHECK_RECURSION_AFTER
+
+    /* return the result                                                   */
+      {
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
+      }
+}
+
+Obj             DoExecFunc2argsL (
+    Obj                 func,
+    Obj                 arg1,
+    Obj                 arg2 )
+{
+    Bag                 oldLvars;       /* old values bag                  */
+    OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
+
+    /* switch to a new values bag                                          */
+    SWITCH_TO_NEW_LVARS( func, 2, NLOC_FUNC(func), oldLvars );
+
+    /* enter the arguments                                                 */
+    ASS_LVAR( 1, arg1 );
+    ASS_LVAR( 2, arg2 );
+
+    /* execute the statement sequence                                      */
+    REM_BRK_CURR_STAT();
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* switch back to the old values bag                                   */
+    SWITCH_TO_OLD_LVARS( oldLvars );
+
+    CHECK_RECURSION_AFTER
+
+    /* return the result                                                   */
+      {
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
+      }
+}
+
+Obj             DoExecFunc3argsL (
+    Obj                 func,
+    Obj                 arg1,
+    Obj                 arg2,
+    Obj                 arg3 )
+{
+    Bag                 oldLvars;       /* old values bag                  */
+    OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
+
+    /* switch to a new values bag                                          */
+    SWITCH_TO_NEW_LVARS( func, 3, NLOC_FUNC(func), oldLvars );
+
+    /* enter the arguments                                                 */
+    ASS_LVAR( 1, arg1 );
+    ASS_LVAR( 2, arg2 );
+    ASS_LVAR( 3, arg3 );
+
+    /* execute the statement sequence                                      */
+    REM_BRK_CURR_STAT();
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* switch back to the old values bag                                   */
+    SWITCH_TO_OLD_LVARS( oldLvars );
+
+    CHECK_RECURSION_AFTER
+
+    /* return the result                                                   */
+      {
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
+      }
+}
+
+Obj             DoExecFunc4argsL (
+    Obj                 func,
+    Obj                 arg1,
+    Obj                 arg2,
+    Obj                 arg3,
+    Obj                 arg4 )
+{
+    Bag                 oldLvars;       /* old values bag                  */
+    OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
+
+    /* switch to a new values bag                                          */
+    SWITCH_TO_NEW_LVARS( func, 4, NLOC_FUNC(func), oldLvars );
+
+    /* enter the arguments                                                 */
+    ASS_LVAR( 1, arg1 );
+    ASS_LVAR( 2, arg2 );
+    ASS_LVAR( 3, arg3 );
+    ASS_LVAR( 4, arg4 );
+
+    /* execute the statement sequence                                      */
+    REM_BRK_CURR_STAT();
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* switch back to the old values bag                                   */
+    SWITCH_TO_OLD_LVARS( oldLvars );
+
+    CHECK_RECURSION_AFTER
+
+    /* return the result                                                   */
+      {
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
+      }
+}
+
+Obj             DoExecFunc5argsL (
+    Obj                 func,
+    Obj                 arg1,
+    Obj                 arg2,
+    Obj                 arg3,
+    Obj                 arg4,
+    Obj                 arg5 )
+{
+    Bag                 oldLvars;       /* old values bag                  */
+    OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
+
+    /* switch to a new values bag                                          */
+    SWITCH_TO_NEW_LVARS( func, 5, NLOC_FUNC(func), oldLvars );
+
+    /* enter the arguments                                                 */
+    ASS_LVAR( 1, arg1 );
+    ASS_LVAR( 2, arg2 );
+    ASS_LVAR( 3, arg3 );
+    ASS_LVAR( 4, arg4 );
+    ASS_LVAR( 5, arg5 );
+
+    /* execute the statement sequence                                      */
+    REM_BRK_CURR_STAT();
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* switch back to the old values bag                                   */
+    SWITCH_TO_OLD_LVARS( oldLvars );
+
+    CHECK_RECURSION_AFTER
+
+    /* return the result                                                   */
+      {
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
+      }
+}
+
+Obj             DoExecFunc6argsL (
+    Obj                 func,
+    Obj                 arg1,
+    Obj                 arg2,
+    Obj                 arg3,
+    Obj                 arg4,
+    Obj                 arg5,
+    Obj                 arg6 )
+{
+    Bag                 oldLvars;       /* old values bag                  */
+    OLD_BRK_CURR_STAT                   /* old executing statement         */
+
+    CHECK_RECURSION_BEFORE
+
+    /* switch to a new values bag                                          */
+    SWITCH_TO_NEW_LVARS( func, 6, NLOC_FUNC(func), oldLvars );
+
+    /* enter the arguments                                                 */
+    ASS_LVAR( 1, arg1 );
+    ASS_LVAR( 2, arg2 );
+    ASS_LVAR( 3, arg3 );
+    ASS_LVAR( 4, arg4 );
+    ASS_LVAR( 5, arg5 );
+    ASS_LVAR( 6, arg6 );
+
+    /* execute the statement sequence                                      */
+    REM_BRK_CURR_STAT();
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* switch back to the old values bag                                   */
+    SWITCH_TO_OLD_LVARS( oldLvars );
+
+    CHECK_RECURSION_AFTER
+
+    /* return the result                                                   */
+      {
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
+      }
+}
+
+Obj             DoExecFuncXargsL (
+    Obj                 func,
+    Obj                 args )
+{
+    Bag                 oldLvars;       /* old values bag                  */
+    OLD_BRK_CURR_STAT                   /* old executing statement         */
+    UInt                len;            /* number of arguments             */
+    UInt                i;              /* loop variable                   */
+
+    CHECK_RECURSION_BEFORE
+
+    /* check the number of arguments                                       */
+    len = NARG_FUNC( func );
+    while ( len != LEN_PLIST( args ) ) {
+        args = ErrorReturnObj(
+            "Function Calls: number of arguments must be %d (not %d)",
+            len, LEN_PLIST( args ),
+            "you can replace the <list> of arguments via 'return <list>;'" );
+        PLAIN_LIST( args );
+    }
+
+    /* switch to a new values bag                                          */
+    SWITCH_TO_NEW_LVARS( func, len, NLOC_FUNC(func), oldLvars );
+
+    /* enter the arguments                                                 */
+    for ( i = 1; i <= len; i++ ) {
+        ASS_LVAR( i, ELM_PLIST( args, i ) );
+    }
+
+    /* execute the statement sequence                                      */
+    REM_BRK_CURR_STAT();
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* switch back to the old values bag                                   */
+    SWITCH_TO_OLD_LVARS( oldLvars );
+
+    CHECK_RECURSION_AFTER
+
+    /* return the result                                                   */
+      {
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
+      }
+}
+
 
 /****************************************************************************
 **
@@ -1168,17 +1478,31 @@ Obj             MakeFunction (
 {
     Obj                 func;           /* function, result                */
     ObjFunc             hdlr;           /* handler                         */
+    Obj                 locks;          /* Locks of the function?   */
 
+    locks = LCKS_FUNC(fexp);
     /* select the right handler                                            */
-    if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0args;
-    else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1args;
-    else if ( NARG_FUNC(fexp) ==  2 )  hdlr = DoExecFunc2args;
-    else if ( NARG_FUNC(fexp) ==  3 )  hdlr = DoExecFunc3args;
-    else if ( NARG_FUNC(fexp) ==  4 )  hdlr = DoExecFunc4args;
-    else if ( NARG_FUNC(fexp) ==  5 )  hdlr = DoExecFunc5args;
-    else if ( NARG_FUNC(fexp) ==  6 )  hdlr = DoExecFunc6args;
-    else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargs;
-    else   /* NARG_FUNC(fexp) == -1 */ hdlr = DoExecFunc1args;
+    if (locks) {
+	if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0args;
+	else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1argsL;
+	else if ( NARG_FUNC(fexp) ==  2 )  hdlr = DoExecFunc2argsL;
+	else if ( NARG_FUNC(fexp) ==  3 )  hdlr = DoExecFunc3argsL;
+	else if ( NARG_FUNC(fexp) ==  4 )  hdlr = DoExecFunc4argsL;
+	else if ( NARG_FUNC(fexp) ==  5 )  hdlr = DoExecFunc5argsL;
+	else if ( NARG_FUNC(fexp) ==  6 )  hdlr = DoExecFunc6argsL;
+	else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargsL;
+	else   /* NARG_FUNC(fexp) == -1 */ hdlr = DoExecFunc1argsL;
+    } else {
+	if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0args;
+	else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1args;
+	else if ( NARG_FUNC(fexp) ==  2 )  hdlr = DoExecFunc2args;
+	else if ( NARG_FUNC(fexp) ==  3 )  hdlr = DoExecFunc3args;
+	else if ( NARG_FUNC(fexp) ==  4 )  hdlr = DoExecFunc4args;
+	else if ( NARG_FUNC(fexp) ==  5 )  hdlr = DoExecFunc5args;
+	else if ( NARG_FUNC(fexp) ==  6 )  hdlr = DoExecFunc6args;
+	else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargs;
+	else   /* NARG_FUNC(fexp) == -1 */ hdlr = DoExecFunc1args;
+    }
 
     /* make the function                                                   */
     func = NewFunctionT( T_FUNCTION, SIZE_FUNC,
@@ -1192,6 +1516,7 @@ Obj             MakeFunction (
     ENVI_FUNC( func ) = TLS->currLVars;
     /* the 'CHANGED_BAG(TLS->currLVars)' is needed because it is delayed        */
     CHANGED_BAG( TLS->currLVars );
+    LCKS_FUNC( func ) = locks;
     FEXS_FUNC( func ) = FEXS_FUNC( fexp );
 
     /* return the function                                                 */
@@ -1456,6 +1781,14 @@ static Int InitKernel (
     InitHandlerFunc( DoExecFunc5args, "i5");
     InitHandlerFunc( DoExecFunc6args, "i6");
     InitHandlerFunc( DoExecFuncXargs, "iX");
+    InitHandlerFunc( DoExecFunc1argsL, "i1l");
+    InitHandlerFunc( DoExecFunc2argsL, "i2l");
+    InitHandlerFunc( DoExecFunc3argsL, "i3l");
+    InitHandlerFunc( DoExecFunc4argsL, "i4l");
+    InitHandlerFunc( DoExecFunc5argsL, "i5l");
+    InitHandlerFunc( DoExecFunc6argsL, "i6l");
+    InitHandlerFunc( DoExecFuncXargsL, "iXl");
+
 
     /* install the evaluators and executors                                */
     ExecStatFuncs [ T_PROCCALL_0ARGS ] = ExecProccall0args;

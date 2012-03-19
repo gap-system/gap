@@ -100,6 +100,15 @@ typedef Obj (* ObjFunc) (/*arguments*/);
 **  'FEXS_FUNC(<func>)'  is the function expressions list (i.e., the list of
 **  the function expressions of the functions defined inside of <func>).
 **
+**  'LCKS_FUNC(<func>)' is a string that contains the lock mode for the
+**  arguments of <func>. Each byte corresponds to the mode for an argument:
+**  0 means no lock, 1 means a read-only lock, 2 means a read-write lock.
+**  The value of the bag can be null, in which case no argument requires a
+**  lock.
+**
+**  'LOCK_FUNC(<func>, <i>)' is the lock mode of the i-th argument.
+**  It is the responsibility of the caller to check that 'LCKS_FUNC(<func>)'
+**  does not return a null reference before calling 'LOCK_FUNC()'.
 */
 #define HDLR_FUNC(func,i)       (* (ObjFunc*) (ADDR_OBJ(func) + 0 +(i)) )
 #define NAME_FUNC(func)         (*            (ADDR_OBJ(func) + 8     ) )
@@ -111,7 +120,9 @@ typedef Obj (* ObjFunc) (/*arguments*/);
 #define BODY_FUNC(func)         (*            (ADDR_OBJ(func) +13     ) )
 #define ENVI_FUNC(func)         (*            (ADDR_OBJ(func) +14     ) )
 #define FEXS_FUNC(func)         (*            (ADDR_OBJ(func) +15     ) )
-#define SIZE_FUNC               (16*sizeof(Bag))
+#define LCKS_FUNC(func)         (* (Bag*)     (ADDR_OBJ(func) +16     ) )
+#define LOCK_FUNC(func,i)       (CHARS_STRING(LCKS_FUNC(func))[(i)-1])
+#define SIZE_FUNC               (17*sizeof(Bag))
 
 
 /****************************************************************************
