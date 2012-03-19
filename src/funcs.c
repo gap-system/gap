@@ -1156,12 +1156,45 @@ Obj             DoExecFuncXargs (
       }
 }
 
+void            LockFuncArgs (
+    Obj                 func,
+    Obj *               args )
+{
+    Int nargs = NARG_FUNC(func);
+    Int i;
+    int count = 0;
+    int *mode = alloca(nargs * sizeof(int));
+    char *locks = CHARS_STRING(LCKS_FUNC(func));
+    Obj *objects = alloca(nargs * sizeof(Obj));
+    for (i=0; i<nargs; i++) {
+      switch (locks[i]) {
+	case 1:
+	  mode[count] = 0;
+	  objects[count] = args[i];
+	  count++;
+	  break;
+	case 2:
+	  mode[count] = 1;
+	  objects[count] = args[i];
+	  count++;
+	  break;
+      }
+    }
+    if (LockObjects(count, objects, mode) < 0)
+      ErrorMayQuit("Cannot lock arguments of atomic function", 0L, 0L );
+}
+
 Obj             DoExecFunc1argsL (
     Obj                 func,
     Obj                 arg1 )
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+    int			lockSP = TLS->lockStackPointer;
+    Obj                 args[1];
+    args[0] = arg1;
+    LockFuncArgs(func, args);
+
 
     CHECK_RECURSION_BEFORE
 
@@ -1183,6 +1216,8 @@ Obj             DoExecFunc1argsL (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    PopRegionLocks(lockSP);
+
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
@@ -1201,6 +1236,11 @@ Obj             DoExecFunc2argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+    int			lockSP = TLS->lockStackPointer;
+    Obj                 args[2];
+    args[0] = arg1;
+    args[1] = arg2;
+    LockFuncArgs(func, args);
 
     CHECK_RECURSION_BEFORE
 
@@ -1223,6 +1263,8 @@ Obj             DoExecFunc2argsL (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    PopRegionLocks(lockSP);
+
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
@@ -1242,6 +1284,13 @@ Obj             DoExecFunc3argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+    int			lockSP = TLS->lockStackPointer;
+    Obj                 args[3];
+    args[0] = arg1;
+    args[1] = arg2;
+    args[2] = arg3;
+    LockFuncArgs(func, args);
+
 
     CHECK_RECURSION_BEFORE
 
@@ -1265,6 +1314,8 @@ Obj             DoExecFunc3argsL (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    PopRegionLocks(lockSP);
+
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
@@ -1285,6 +1336,13 @@ Obj             DoExecFunc4argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+    int			lockSP = TLS->lockStackPointer;
+    Obj                 args[4];
+    args[0] = arg1;
+    args[1] = arg2;
+    args[2] = arg3;
+    args[3] = arg4;
+    LockFuncArgs(func, args);
 
     CHECK_RECURSION_BEFORE
 
@@ -1309,6 +1367,8 @@ Obj             DoExecFunc4argsL (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    PopRegionLocks(lockSP);
+
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
@@ -1330,6 +1390,14 @@ Obj             DoExecFunc5argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+    int			lockSP = TLS->lockStackPointer;
+    Obj                 args[5];
+    args[0] = arg1;
+    args[1] = arg2;
+    args[2] = arg3;
+    args[3] = arg4;
+    args[4] = arg5;
+    LockFuncArgs(func, args);
 
     CHECK_RECURSION_BEFORE
 
@@ -1355,6 +1423,8 @@ Obj             DoExecFunc5argsL (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    PopRegionLocks(lockSP);
+
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
@@ -1377,6 +1447,15 @@ Obj             DoExecFunc6argsL (
 {
     Bag                 oldLvars;       /* old values bag                  */
     OLD_BRK_CURR_STAT                   /* old executing statement         */
+    int			lockSP = TLS->lockStackPointer;
+    Obj                 args[6];
+    args[0] = arg1;
+    args[1] = arg2;
+    args[2] = arg3;
+    args[3] = arg4;
+    args[4] = arg5;
+    args[5] = arg6;
+    LockFuncArgs(func, args);
 
     CHECK_RECURSION_BEFORE
 
@@ -1403,6 +1482,8 @@ Obj             DoExecFunc6argsL (
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
 
+    PopRegionLocks(lockSP);
+
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
@@ -1422,6 +1503,7 @@ Obj             DoExecFuncXargsL (
     OLD_BRK_CURR_STAT                   /* old executing statement         */
     UInt                len;            /* number of arguments             */
     UInt                i;              /* loop variable                   */
+    int			lockSP = TLS->lockStackPointer;
 
     CHECK_RECURSION_BEFORE
 
@@ -1434,6 +1516,8 @@ Obj             DoExecFuncXargsL (
             "you can replace the <list> of arguments via 'return <list>;'" );
         PLAIN_LIST( args );
     }
+
+    LockFuncArgs(func, ADDR_OBJ(args) + 1);
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, len, NLOC_FUNC(func), oldLvars );
@@ -1454,6 +1538,8 @@ Obj             DoExecFuncXargsL (
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS( oldLvars );
+
+    PopRegionLocks(lockSP);
 
     CHECK_RECURSION_AFTER
 
