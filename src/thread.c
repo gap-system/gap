@@ -882,12 +882,33 @@ void ResumeAllThreads() {
   }
 }
 
+int LockObject(Obj obj, int mode) {
+  Region *region = GetRegionOf(obj);
+  int locked;
+  int result = TLS->lockStackPointer;
+  if (!region || region->fixed_owner)
+    return -1;
+  locked = IsLocked(region);
+  if (locked == 2 && mode)
+    return -1;
+  if (!locked) {
+    if (mode)
+      RegionWriteLock(region);
+    else
+      RegionReadLock(region);
+    PushRegionLock(region);
+  }
+  return result;
+}
+
 int LockObjects(int count, Obj *objects, int *mode)
 {
   int result;
   int i;
   int locked;
   LockRequest *order;
+  if (count == 1) /* fast path */
+    return LockObject(objects[0], mode[0]);
   if (count > MAX_LOCKS)
     return -1;
   order = alloca(sizeof(LockRequest)*count);
