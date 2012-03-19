@@ -57,6 +57,7 @@ void EndSingleThreaded();
 
 int IsLocked(Region *region);
 void GetLockStatus(int count, Obj *objects, int *status);
+int LockObject(Obj obj, int mode);
 int LockObjects(int count, Obj *objects, int *mode);
 int TryLockObjects(int count, Obj *objects, int *mode);
 void PushRegionLock(Region *region);
