@@ -1132,9 +1132,9 @@ void ReadFuncExpr (
 	if ( TLS->symbol != S_RPAREN ) {
 	    lockmode = 0;
 	    switch (TLS->symbol) {
-	      case S_READONLY:
-	        lockmode++;
 	      case S_READWRITE:
+	        lockmode++;
+	      case S_READONLY:
 	        lockmode++;
 		locks = NEW_STRING(4);
 		CHARS_STRING(locks)[0] = lockmode;
