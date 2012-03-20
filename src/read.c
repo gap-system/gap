@@ -1150,17 +1150,17 @@ void ReadFuncExpr (
 	    Match( S_COMMA, ",", follow );
 	    lockmode = 0;
 	    switch (TLS->symbol) {
-	      case S_READONLY:
-	        lockmode++;
 	      case S_READWRITE:
 	        lockmode++;
+	      case S_READONLY:
+	        lockmode++;
 		if (!locks)
-		  locks = NEW_STRING(narg);
+		  locks = NEW_STRING(narg+1);
 		else {
-		  GrowString(locks, narg);
-		  SET_LEN_STRING(locks, narg);
+		  GrowString(locks, narg+1);
+		  SET_LEN_STRING(locks, narg+1);
 		}
-		CHARS_STRING(locks)[narg-1] = lockmode;
+		CHARS_STRING(locks)[narg] = lockmode;
 	        GetSymbol();
 	    }
 	    for ( i = 1; i <= narg; i++ ) {
