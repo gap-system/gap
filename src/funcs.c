@@ -1167,15 +1167,20 @@ void            LockFuncArgs (
     char *locks = CHARS_STRING(LCKS_FUNC(func));
     Obj *objects = alloca(nargs * sizeof(Obj));
     for (i=0; i<nargs; i++) {
+      Obj obj = args[i];
       switch (locks[i]) {
 	case 1:
+	  if (CheckRead(obj))
+	    break;
 	  mode[count] = 0;
-	  objects[count] = args[i];
+	  objects[count] = obj;
 	  count++;
 	  break;
 	case 2:
+	  if (CheckWrite(obj))
+	    break;
 	  mode[count] = 1;
-	  objects[count] = args[i];
+	  objects[count] = obj;
 	  count++;
 	  break;
       }
