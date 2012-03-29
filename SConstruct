@@ -237,9 +237,14 @@ def SysInfoBuilder(target, source, env):
     file.write(line+"\n")
   file.close()
 
+def WriteCFlags(cflags):
+  file = open("bin/cflags", "w")
+  file.write(cflags+"\n")
+  file.close()
+
 # Building binary from source
 
-def make_ward_options(prefix, args):
+def make_cc_options(prefix, args):
   return (" " + prefix).join([""] + args)
 
 
@@ -249,7 +254,9 @@ if GAP["mpi"]:
 preprocess = string.replace(GAP["preprocess"], "%", " ")
 if GAP["ward"]:
   preprocess = GAP["ward"] + "/bin/addguards2c" + \
-    make_ward_options("-I", include_path) + make_ward_options("-D", defines)
+    make_cc_options("-I", include_path) + make_cc_options("-D", defines)
+WriteCFlags((make_cc_options("-I", include_path) +
+  make_cc_options("-D", defines))[1:])
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
