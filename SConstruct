@@ -5,6 +5,7 @@ import commands, os, glob, sys, string
 vars = Variables()
 vars.Add('cflags', 'Supply additional CFLAGS', "")
 vars.Add(BoolVariable("debug", "Set for debug builds", 0))
+vars.Add(BoolVariable("mpi", "Enable MPI support", 0))
 vars.Add(BoolVariable("debugguards", "Set for debugging guards", 0))
 vars.Add(BoolVariable("profile",
   "Set for profiling with google performance tools", 0))
@@ -135,6 +136,8 @@ if compiler == "gcc":
   cflags += " -g3"
 else:
   cflags += " -g"
+if GAP["mpi"]:
+  cflags += " -DGAPMPI"
 cflags += " -m"+GAP["abi"]
 defines.append("CONFIG_H")
 if "gc" in libs:
@@ -238,6 +241,10 @@ def SysInfoBuilder(target, source, env):
 
 def make_ward_options(prefix, args):
   return (" " + prefix).join([""] + args)
+
+
+if GAP["mpi"]:
+  GAP["LINK"] = "mpicc"
 
 preprocess = string.replace(GAP["preprocess"], "%", " ")
 if GAP["ward"]:
