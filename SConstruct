@@ -264,11 +264,14 @@ WriteFlags((make_cc_options("-I", map(os.path.abspath, include_path)) +
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
+print GAP["mpi"]
+if not GAP["mpi"]:
+  source.remove("src/gapmpi.c")
 if preprocess:
   import os, stat
   try: os.mkdir("gen")
   except: pass
-  pregen = glob.glob("src/*.[ch]")
+  pregen = source + glob.glob("src/*.h")
   gen = map(lambda s: "gen/"+s[4:], pregen)
   for i in range(len(pregen)):
     GAP.Command(gen[i], pregen[i],
