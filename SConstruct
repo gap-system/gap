@@ -137,6 +137,9 @@ if compiler == "gcc":
 else:
   cflags += " -g"
 if GAP["mpi"]:
+  GAP["CC"] = "mpicc"
+  #mpiincdir = os.environ["MPIHOME"]+"/include"
+  #cflags += " -I"+mpiincdir
   cflags += " -DGAPMPI"
 cflags += " -m"+GAP["abi"]
 defines.append("CONFIG_H")

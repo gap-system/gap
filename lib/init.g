@@ -1201,7 +1201,7 @@ HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
 ##  ParGAP loading and switching into the slave mode hook
 ##
 if IsBoundGlobal("MPI_Initialized") then
-  LoadPackage("pargap");
+    LoadPackage("mpigap");
 fi;
 if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
 

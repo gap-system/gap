@@ -562,15 +562,17 @@ Obj MPIiprobe( Obj self, Obj args )
 
 /* called _before_ GAP system initialization to remove command lines, etc. */
 void InitPargapmpi( int * argc_ptr, char *** argv_ptr )
-{ char * cmd = (*argv_ptr)[0], * tmp;
-
+{ //char * cmd = (*argv_ptr)[0], * tmp;
+  int g;
   /* Unless this binary is called as .../pargapmpi, we return immediately;
      In that case, InitLibrary() will note MPI_Initialized() is false,
        and will not install UNIX functions
   */
-  for ( tmp = cmd; *tmp !='\0'; tmp++ )
-    if ( *tmp == '/' ) cmd = tmp + 1;
-  if ( 0 != SyStrcmp( "mpigap", cmd ) ) return;
+  //for ( tmp = cmd; *tmp !='\0'; tmp++ )
+  //if ( *tmp == '/' ) cmd = tmp + 1;
+  //if ( 0 != SyStrcmp( "mpigap", cmd ) ) {
+  //return;
+  //}
 
   if ( 0 != MPI_Init( argc_ptr, argv_ptr ) ) {
     fputs("ParGAP:  panic:  couldn't initialize MPI.\n", stderr);
@@ -579,19 +581,19 @@ void InitPargapmpi( int * argc_ptr, char *** argv_ptr )
 
   UNIX_Realtime( (Obj)0 ); /* initialize UNIX_Realtime:time_since_start */
   { if ( INT_INTOBJ( MPIcomm_size( (Obj)0 ) ) <= 1 )
-#ifdef USE_MPINU  
-      printf("\nWARNING:  No slave processes; check procgroup file?\n\n");
-#else 
+	  //#ifdef USE_MPINU  
+      //printf("\nWARNING:  No slave processes; check procgroup file?\n\n");
+	  //#else 
       printf("\nWARNING:  No slave processes; did you not start ParGAP with an MPI launcher?\n\n");
-#endif
+	//#endif
     if ( INT_INTOBJ(MPIcomm_rank((Obj)0)) > 0 ) {
       SyQuiet = ! SyQuiet;
       { sigset_t fullset;
 	sigfillset( &fullset );
 	sigdelset( &fullset, SIGINT ); /* Let slaves see interrupts */
-#if 0
-	sigprocmask( SIG_BLOCK, &fullset, NULL );
-#endif
+	//#if 0
+	//sigprocmask( SIG_BLOCK, &fullset, NULL );
+	//#endif
         signal( SIGINT, &ParGAPAnswerIntr ); /* Slaves ignore interrupts */
       }
     }
