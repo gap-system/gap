@@ -130,6 +130,7 @@ conf.Finish()
 
 defines = []
 cflags = ""
+linkflags = ""
 if not GAP["debug"]:
   cflags = "-O2"
 if compiler == "gcc":
@@ -164,7 +165,10 @@ if GAP["cflags"]:
 for define in defines:
   cflags += " -D" + define
 
-GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags)
+if os.uname()[0] == "Linux":
+  linkflags += " -Wl,-export-dynamic"
+
+GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags+linkflags)
 
 # Building external libraries
 
