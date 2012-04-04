@@ -13,11 +13,15 @@ syntax: regexp
 \.orig$
 \.o$
 \.so$
+\.lo$
+\.la$
 \.so\*$
 ^extern/gmp-4.2.2/*
 ^config\.log$
 ^config\.status$
 ^bin/gap\.sh$
+^bin/cflags$
+^bin/ldflags$
 ^sysinfo\.gap$
 ^bin/i686-
 ^Makefile$
