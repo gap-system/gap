@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd">
+
+<!--
+
+  io.xml          IO package documentation                Max Neunhoeffer
+
+  Copyright (C) 2006-2012  Max Neunhoeffer, Lehrstuhl D f. Math., RWTH Aachen
+  This file is free software, see license information at the end.
+
+-->
+
+<Book Name="IO">
+
+<TitlePage>
+    <Title>GAP 4 Package <Package>IO</Package></Title>
+    <Subtitle>Bindings for low level C library I/O routines</Subtitle>
+    <Version>
+      Version <#Include SYSTEM "../VERSION">
+    </Version>
+    <Author>Max Neunhöffer
+<Address>
+School of Mathematics and Statistics
+Mathematical Institute
+University of St Andrews
+North Haugh
+St Andrews, Fife KY16 9SS
+Scotland, UK
+</Address>
+    <Email>neunhoef@mcs.st-and.ac.uk</Email>
+    <Homepage>http://www-groups.mcs.st-and.ac.uk/&tilde;neunhoef</Homepage>
+    </Author>
+    <Date>January 2012</Date>
+
+<Copyright>
+    &copyright; 2005-2012 by Max Neunhöffer<P/>
+
+  This package may be distributed under the terms and conditions of the
+  GNU Public License Version 3 or later.
+</Copyright>
+</TitlePage>
+
+<!--  TableOfContents  . . . . . .  generate a table of contents   -->
+<TableOfContents/>
+
+<!--  The only chapter of the book  --> 
+<Body>
+<#Include SYSTEM "main.xml">
+</Body>
+
+<!--  We do not need a bibliography  -->
+<!-- <Bibliography Databases="edim"/>-->
+
+<!--  And finally an index as well   -->
+<TheIndex/>
+
+</Book>
+
+<!--
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+  

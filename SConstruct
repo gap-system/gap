@@ -5,7 +5,8 @@ import commands, os, glob, sys, string
 vars = Variables()
 vars.Add('cflags', 'Supply additional CFLAGS', "")
 vars.Add(BoolVariable("debug", "Set for debug builds", 0))
-vars.Add(BoolVariable("mpi", "Enable MPI support", 0))
+vars.Add('mpi','Specify a directory with the MPI implementation',"")
+#BoolVariable("mpi", "Enable MPI support", 0))
 vars.Add(BoolVariable("debugguards", "Set for debugging guards", 0))
 vars.Add(BoolVariable("profile",
   "Set for profiling with google performance tools", 0))
@@ -138,9 +139,10 @@ if compiler == "gcc":
 else:
   cflags += " -g"
 if GAP["mpi"]:
-  GAP["CC"] = "mpicc"
-  #mpiincdir = os.environ["MPIHOME"]+"/include"
-  #cflags += " -I"+mpiincdir
+  if GAP["mpi"] == "system":
+    GAP["CC"] = "mpicc"
+  else:
+    GAP["CC"] = GAP["mpi"] + "/bin/mpicc"
   cflags += " -DGAPMPI"
 cflags += " -m"+GAP["abi"]
 defines.append("CONFIG_H")
@@ -259,7 +261,10 @@ def make_cc_options(prefix, args):
 
 
 if GAP["mpi"]:
-  GAP["LINK"] = "mpicc"
+  if GAP["mpi"] == "system":
+    GAP["LINK"] = "mpicc"
+  else:
+    GAP["LINK"] = GAP["mpi"] + "/bin/mpicc"
 
 preprocess = string.replace(GAP["preprocess"], "%", " ")
 if GAP["ward"]:
@@ -271,7 +276,6 @@ WriteFlags((make_cc_options("-I", map(os.path.abspath, include_path)) +
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
-print GAP["mpi"]
 if not GAP["mpi"]:
   source.remove("src/gapmpi.c")
 if preprocess:
