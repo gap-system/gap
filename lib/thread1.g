@@ -53,4 +53,6 @@ LockAndAdoptObj := function(obj)
   return obj;
 end;
 
+MakeThreadLocal("~");
+
 HaveMultiThreadedUI := false;

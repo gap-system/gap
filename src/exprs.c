@@ -1095,7 +1095,7 @@ Obj             EvalListTildeExpr (
     Obj                 tilde;          /* old value of tilde              */
 
     /* remember the old value of '~'                                       */
-    tilde = VAL_GVAR( Tilde );
+    tilde = ValAutoGVar( Tilde );
 
     /* create the list value                                               */
     list = ListExpr1( expr );
@@ -1469,7 +1469,7 @@ Obj             EvalRecTildeExpr (
     Obj                 tilde;          /* old value of tilde              */
 
     /* remember the old value of '~'                                       */
-    tilde = VAL_GVAR( Tilde );
+    tilde = ValAutoGVar( Tilde );
 
     /* create the record value                                             */
     rec = RecExpr1( expr );

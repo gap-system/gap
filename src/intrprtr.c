@@ -2377,7 +2377,7 @@ void            IntrListExprBegin (
     /* if this is an outmost list, save it for reference in '~'            */
     /* (and save the old value of '~' on the values stack)                 */
     if ( top ) {
-        old = VAL_GVAR( Tilde );
+        old = ValAutoGVar( Tilde );
         if ( old != 0 ) { PushObj( old ); }
         else            { PushVoidObj();  }
         AssGVar( Tilde, list );
@@ -2590,7 +2590,7 @@ void            IntrRecExprBegin (
     /* if this is an outmost record, save it for reference in '~'          */
     /* (and save the old value of '~' on the values stack)                 */
     if ( top ) {
-        old = VAL_GVAR( Tilde );
+        old = ValAutoGVar( Tilde );
         if ( old != 0 ) { PushObj( old ); }
         else            { PushVoidObj();  }
         AssGVar( Tilde, record );
