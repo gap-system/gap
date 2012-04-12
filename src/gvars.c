@@ -351,6 +351,38 @@ Obj             ValAutoGVar (
     return val;
 }
 
+/****************************************************************************
+**
+*F  ValGVarTL(<gvar>) . . . . . . . . value of a global/thread-local variable
+**
+**  'ValGVarTL' returns the value of the global or thread-local variable
+**  <gvar>.
+*/
+Obj             ValGVarTL (
+    UInt                gvar )
+{
+    Obj			expr;
+    Obj                 func;           /* function to call for automatic  */
+    Obj                 arg;            /* argument to pass for automatic  */
+    Obj			val;
+    UInt		gvar_bucket = GVAR_BUCKET(gvar);
+    UInt		gvar_index  = GVAR_INDEX(gvar);
+
+    val = ValGVar(gvar);
+    /* is this a thread-local variable? */
+    if ( val == 0 &&
+         (expr = ELM_PLIST( ExprGVars[gvar_bucket], gvar_index )) != 0 ) {
+
+	if (IS_INTOBJ(expr)) {
+	  /* thread-local variable */
+	  return GetTLRecordField(TLVars, INT_INTOBJ(expr));
+	}
+    }
+
+    /* return the value                                                    */
+    return val;
+}
+
 
 /****************************************************************************
 **
@@ -914,7 +946,7 @@ Obj FuncISB_GVAR (
       return True;
     expr = ELM_PLIST( ExprGVars[GVAR_BUCKET(gv)], GVAR_INDEX(gv) );
     if (expr && !IS_INTOBJ(expr)) /* auto gvar */
-      return True;
+      return False;
     if (!expr || !TLVars)
       return False;
     return GetTLRecordField(TLVars, INT_INTOBJ(expr)) ? True : False;
@@ -940,7 +972,7 @@ Obj FuncVAL_GVAR (
     }
 
     /* get the value */
-    val = ValAutoGVar( GVarName( CSTR_STRING(gvar) ) );
+    val = ValGVarTL( GVarName( CSTR_STRING(gvar) ) );
 
     while (val == (Obj) 0)
       val = ErrorReturnObj("VAL_GVAR: No value bound to %s",

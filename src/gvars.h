@@ -141,6 +141,16 @@ extern  void            AssGVar (
 extern  Obj             ValAutoGVar (
             UInt                gvar );
 
+/****************************************************************************
+**
+*F  ValGVarTL(<gvar>) . . . . . . . . value of a global/thread-local variable
+**
+**  'ValGVarTL' returns the value of the global or thread-local variable
+**  <gvar>.
+*/
+extern  Obj             ValGVarTL (
+            UInt                gvar );
+
 
 /****************************************************************************
 **
