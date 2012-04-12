@@ -8,7 +8,6 @@
 Overview of structure of the GAP  CVS-repository and the distributed 
 system.
 
-       $Id: structure.xml,v 1.1.1.1 2005/03/24 10:52:37 gap Exp $
 -->
 
 <Chapter Label="Chap-Structure">

@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- %W  main.xml        GAP 4 Reference Manual        ... -->
-<!-- %H  $Id: main.xml,v 4.6 2009/06/19 14:53:29 gap Exp $ -->
-<!-- %Y  Copyright 1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+<!-- %Y  Copyright 1997, Lehrstuhl D fÃ¼r Mathematik, RWTH Aachen, Germany -->
 
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
@@ -18,6 +17,7 @@
 \makeatletter 
 \renewcommand*\l@section{\@dottedtocline{1}{1.5em}{2.8em}}
 \renewcommand*\l@subsection{\@dottedtocline{2}{3.8em}{4.0em}}
+\def\@pnumwidth{2.1em}
 \makeatother
 "?>
 
@@ -31,18 +31,30 @@
   </Author>
 
   <Copyright>
-<#Include SYSTEM "../ref/copyrigh.xml">
+    Copyright &copyright; (1987-&RELEASEYEAR;) 
+    for the core part of the &GAP; system by the &GAP; Group.
+    <P/>
+    Most parts of this distribution, including the core part of the &GAP; 
+    system are distributed under the terms of the GNU General Public License, 
+    see <URL>http://www.gnu.org/licenses/gpl.html</URL> or the file 
+    <F>GPL</F> in the <F>etc</F> directory of the &GAP; 
+    installation.
+    <P/>
+    More detailed information about copyright and licenses of parts of this
+    distribution can be found in Section 
+    <Ref Sect="Copyright and License"/> of this manual.
+    <P/>
+    &GAP; is developed over a long time and has many authors and contributors.
+    More detailed information can be found in Section
+    <Ref Sect="Authors and Maintainers"/> of this manual.
   </Copyright>
-  <Acknowledgements>
-<#Include SYSTEM "../tut/authors.xml">
-  </Acknowledgements>
 </TitlePage>
 
 <TableOfContents/>
 
 <Body>
 
-<#Include SYSTEM "about.xml">
+<#Include SYSTEM "preface.xml">
 <#Include SYSTEM "help.xml">
 <#Include SYSTEM "run.xml">
 <#Include SYSTEM "language.xml">
@@ -63,6 +75,7 @@
 <#Include SYSTEM "combinat.xml">
 <#Include SYSTEM "rational.xml">
 <#Include SYSTEM "cyclotom.xml">
+<#Include SYSTEM "floats.xml">
 
 <#Include SYSTEM "boolean.xml">
 
@@ -71,6 +84,7 @@
 <#Include SYSTEM "vector.xml">
 <#Include SYSTEM "matrix.xml">
 <#Include SYSTEM "matint.xml">
+<#Include SYSTEM "matobj.xml">
 <#Include SYSTEM "string.xml">
 <#Include SYSTEM "hash2.xml">
 
@@ -114,8 +128,8 @@
 <#Include SYSTEM "fldabnum.xml">
 <#Include SYSTEM "vspc.xml">
 <#Include SYSTEM "algebra.xml">
-<#Include SYSTEM "alglie.xml">
 <#Include SYSTEM "algfp.xml">
+<#Include SYSTEM "alglie.xml">
 <#Include SYSTEM "mgmring.xml">
 
 <#Include SYSTEM "ratfun.xml">
@@ -131,24 +145,24 @@
 <#Include SYSTEM "unknown.xml">
 <#Include SYSTEM "ctblmono.xml">
 
-<#Include SYSTEM "install.xml">
 <#Include SYSTEM "gappkg.xml">
 <#Include SYSTEM "obsolete.xml">
 
-<#Include SYSTEM "../prg/methsel.xml">
-<#Include SYSTEM "../prg/create.xml">
-<#Include SYSTEM "../prg/intrfc.xml">
-<#Include SYSTEM "../prg/xtndxmpl.xml">
-<#Include SYSTEM "../prg/arith.xml">
+<#Include SYSTEM "methsel.xml">
+<#Include SYSTEM "create.xml">
+<#Include SYSTEM "intrfc.xml">
+<#Include SYSTEM "xtndxmpl.xml">
+<#Include SYSTEM "arith.xml">
 
-<#Include SYSTEM "../ext/libform.xml">
-<#Include SYSTEM "../ext/gappkg.xml">
-<#Include SYSTEM "../ext/helpintf.xml">
-<#Include SYSTEM "../ext/foa.xml">
-<#Include SYSTEM "../ext/weakptr.xml">
-<#Include SYSTEM "../ext/stbchain.xml">
+<#Include SYSTEM "libform.xml">
+<#Include SYSTEM "helpintf.xml">
+<#Include SYSTEM "foa.xml">
+<#Include SYSTEM "weakptr.xml">
+<#Include SYSTEM "stbchain.xml">
 
 </Body>
+
+<#Include SYSTEM "changes.xml">
 
 <Bibliography Databases="../manualbib.xml"/>
 

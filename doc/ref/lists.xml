@@ -1,11 +1,11 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  lists.msk                   GAP documentation            Martin Schoenert -->
+<!-- %A  lists.msk                   GAP documentation            Martin Schönert -->
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: lists.msk,v 1.58 2006/06/19 10:13:43 stefan Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Lists">
@@ -64,6 +64,7 @@ Each list constructed this way is mutable
 <#Include Label="IsDenseList">
 <#Include Label="IsHomogeneousList">
 <#Include Label="IsTable">
+<#Include Label="IsRectangularTable">
 <#Include Label="IsConstantTimeAccessList">
 
 </Section>
@@ -193,7 +194,7 @@ elements of that list, however, are identical to the corresponding elements
 of the left operand (see&nbsp;<Ref Sect="Identical Lists"/>).
 <P/>
 It is possible to nest such <E>sublist extractions</E>, as can be seen in the
-following example.
+example below.
 <P/>
 <Example><![CDATA[
 gap> m := [ [1,2,3], [4,5,6], [7,8,9], [10,11,12] ];;  m{[1,2,3]}{[3,2]};
@@ -213,10 +214,10 @@ With each selector <C>[<A>pos</A>]</C> or <C>{<A>poss</A>}</C> we associate
 a <E>level</E> that is defined as the number of selectors of the form
 <C>{<A>poss</A>}</C> to its left in the same expression. For example
 <P/>
-<Log><![CDATA[
+<Listing><![CDATA[
     l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
 level   0      0      1     2      2     3
-]]></Log>
+]]></Listing>
 <P/>
 Then  a selector <C><A>list</A>[<A>pos</A>]</C> of level <A>level</A> is
 computed as <C>ListElement(<A>list</A>,<A>pos</A>,<A>level</A>)</C>,
@@ -333,8 +334,7 @@ gap> l{[1,7,1,10]} := [ 1, 2, 3, 4 ];; l;
 [ 3, 11, 12, 13, 11, 13, 2, 19,, 4 ]
 ]]></Example>
 <P/>
-It is possible to nest such sublist assignments, as can be seen in the
-following example.
+The next example shows that it is possible to nest such sublist assignments.
 <P/>
 <Example><![CDATA[
 gap> m := [ [1,2,3], [4,5,6], [7,8,9], [10,11,12] ];;
@@ -409,20 +409,20 @@ cf.&nbsp;<Ref Sect="Basic Operations for Lists"/>.)
 <#Include Label="Remove">
 
 <ManSection>
-<Func Name="COPY_LIST_ENTRIES"
- Arg='from-list, from-index, from-step, to-list, to-index, to-step, number'/>
+<Func Name="CopyListEntries"
+ Arg='fromlst, fromind, fromstep, tolst, toind, tostep, n'/>
 
 <Description>
-This function copies <A>number</A> elements from <A>from-list</A>,
-starting at position <A>from-index</A> and incrementing the position by
-<A>from-step</A> each time,
-into <A>to-list</A> starting at position <A>to-index</A>
-and incrementing the position by <A>to-step</A> each time.
-<A>from-list</A> and <A>to-list</A> must be plain lists.
-<A>from-step</A> and/or <A>to-step</A> can be negative.
-Unbound positions of <A>from-list</A> are simply copied to <A>to-list</A>.
+This function copies <A>n</A> elements from <A>fromlst</A>,
+starting at position <A>fromind</A> and incrementing the position by
+<A>fromstep</A> each time,
+into <A>tolst</A> starting at position <A>toind</A>
+and incrementing the position by <A>tostep</A> each time.
+<A>fromlst</A> and <A>tolst</A> must be plain lists.
+<A>fromstep</A> and/or <A>tostep</A> can be negative.
+Unbound positions of <A>fromlst</A> are simply copied to <A>tolst</A>.
 <P/>
-<Ref Func="COPY_LIST_ENTRIES"/> is used in methods for
+<Ref Func="CopyListEntries"/> is used in methods for
 the operations <Ref Func="Add"/> and <Ref Func="Remove"/>.
 </Description>
 </ManSection>
@@ -465,7 +465,7 @@ by adding one to it.
 Instead the <E>variable</E> <C>i</C> is changed by assigning the value of
 <C>i+1</C>,
 which happens to be <C>4</C>, to <C>i</C>.
-The same thing happens in the following example.
+The same thing happens in the example below.
 <P/>
 <Log><![CDATA[
 l := [ 1, 2 ];
@@ -828,9 +828,9 @@ or both are bound and
 <Example><![CDATA[
 gap> [ 1, 2, 3, 4 ] < [ 1, 2, 4, 8 ]; # <list1>[3] < <list2>[3]
 true
-gap> [ 1, 2, 3 ] < [ 1, 2, 3, 4 ];    # <list1>[4] is unbound and therefore very small
+gap> [ 1, 2, 3 ] < [ 1, 2, 3, 5 ];  # <list1>[4] is unbound and thus < 5
 true
-gap> [ 1, , 3, 4 ] < [ 1, 2, 3 ];     # <list1>[2] is unbound and therefore very small
+gap> [ 1, , 3, 4 ] < [ 1, -1, 3 ];  # <list1>[2] is unbound and thus < -1
 true
 ]]></Example>
 <P/>
@@ -1403,6 +1403,7 @@ The latter can be done also using <Ref Func="ListWithIdenticalEntries"/>.
 <#Include Label="PositionSorted">
 <#Include Label="PositionSet">
 <#Include Label="PositionProperty">
+<#Include Label="PositionsProperty">
 <#Include Label="PositionBound">
 <#Include Label="PositionNot">
 <#Include Label="PositionNonZero">
@@ -1456,12 +1457,15 @@ copy using <Ref Func="Immutable"/>.
 <Section Label="Sorting Lists">
 <Heading>Sorting Lists</Heading>
 
-Currently &GAP; uses shellsort.
 
 <#Include Label="Sort">
 <#Include Label="SortParallel">
 <#Include Label="Sortex">
 <#Include Label="SortingPerm">
+
+The default methods for all of these sorting operations currently
+use Shell sort as it has a comparable performance to Quicksort for lists of
+length at most a few thousands, and has better worst-case behaviour.
 
 </Section>
 
@@ -1640,6 +1644,7 @@ with possibly slightly different meaning for lists and non-list collections.
 <#Include Label="AsDuplicateFreeList">
 <#Include Label="Flat">
 <#Include Label="Reversed">
+<#Include Label="Shuffle">
 <#Include Label="IsLexicographicallyLess">
 <#Include Label="Apply">
 <#Include Label="Perform">
@@ -1749,7 +1754,6 @@ gap> r[5];
 -4
 gap> r := [ 1, 4 .. 32 ];
 Error, Range: <last>-<first> (31) must be divisible by <inc> (3)
-not in any function
 ]]></Example>
 <P/>
 Most often ranges are used in connection with the <K>for</K>-loop

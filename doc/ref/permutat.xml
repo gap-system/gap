@@ -1,11 +1,11 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  permutat.msk                GAP documentation            Martin Schoenert -->
+<!-- %A  permutat.msk                GAP documentation            Martin Schönert -->
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: permutat.msk,v 1.15 2002/04/15 10:02:33 sal Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Permutations">
@@ -15,7 +15,7 @@
 of permutation groups.
 <P/>
 The points on which permutations in &GAP; act are the positive
-integers less than <M>2^{28}-1</M>,
+integers up to a certain architecture dependent limit,
 and the image of a point <M>i</M> under a permutation <M>p</M> is written
 <M>i^p</M>, which is expressed as <M>i</M><C>^</C><M>p</M> in &GAP;.
 (This action is also implemented by the function <Ref Func="OnPoints"/>.)

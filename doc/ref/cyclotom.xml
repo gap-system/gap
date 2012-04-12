@@ -5,7 +5,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: cyclotom.msk,v 1.30 2003/10/30 15:23:58 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <!-- %%  This file is being maintained by Thomas Breuer. -->
@@ -194,18 +194,17 @@ cyclotomic field it is contained in.
 The internal coefficients list coincides with the external representation
 returned by <Ref Func="ExtRepOfObj" Label="for a cyclotomic"/>.
 <P/>
-Since the conductor of internally represented cyclotomics must be
-in the filter <C>IsSmallIntRep</C>, the biggest possible (though not very
-useful) conductor is <M>2^{28} - 1</M>.
+To avoid calculations becoming unintentionally very long, or consuming
+very large amounts of memory,
+there is a limit on the conductor of internally represented cyclotomics,
+by default set to one million.
+This can be raised (although not lowered) using
+<Ref Func="SetCyclotomicsLimit"/> and
+accessed using <Ref Func="GetCyclotomicsLimit"/>.
+The maximum value of the limit is <M>2^{28}-1</M> on <M>32</M> bit systems,
+and <M>2^{32}</M> on <M>64</M> bit systems.
 So the maximal cyclotomic field implemented in &GAP; is not really
 the field <M>&QQ;^{ab}</M>.
-<P/>
-<Example><![CDATA[
-gap> IsSmallIntRep( 2^28-1 );
-true
-gap> IsSmallIntRep( 2^28 );
-false
-]]></Example>
 <P/>
 It should be emphasized that one disadvantage of representing a cyclotomic in
 the smallest <E>cyclotomic</E> field (and not in the smallest field) is that
@@ -221,6 +220,20 @@ So it is worth thinking about using elements in a field constructed with
 of cyclotomic fields are not needed.
 
 <!-- % show an example? -->
+<ManSection>
+<Func Name="SetCyclotomicsLimit" Arg="newlimit"/>
+<Func Name="GetCyclotomicsLimit" Arg=""/>
+<Description>
+<Ref Func="GetCyclotomicsLimit"/> returns the current limit on
+conductors of internally represented cyclotomic numbers
+<P/>
+<Ref Func="SetCyclotomicsLimit"/> can be called to increase the 
+limit on conductors of internally represented cyclotomic numbers. Note that computing in
+large cyclotomic fields using this representation can be both slow and memory-consuming, and
+that other approaches may be better for some problems. See
+<Ref Sect="Internally Represented Cyclotomics"/>.
+</Description>
+</ManSection>
 
 </Section>
 </Chapter>

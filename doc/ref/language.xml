@@ -1,10 +1,10 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %W  language.msk           GAP documentation                Martin Schoenert -->
+<!-- %W  language.msk           GAP documentation                Martin Schönert -->
 <!-- %% -->
 <!-- %H  @(#)<M>Id: language.msk,v 1.41 2006/09/27 21:40:31 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  Copyright 1990-1992, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany -->
+<!-- %Y  Copyright 1990-1992, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 <!-- %% -->
 <!-- %%  This file describes the &GAP; programming language. -->
 <!-- %% -->
@@ -249,17 +249,30 @@ and <K>else</K> and <C>a</C> must be separated.
 <Section Label="Keywords">
 <Heading>Keywords</Heading>
 
+<Index Key="GAPInfo.Keywords"><C>GAPInfo.Keywords</C></Index>
+
 <E>Keywords</E> are reserved words that are used to denote special operations
-or are part of statements. They must not be used as identifiers. The
-keywords are
+or are part of statements. They must not be used as identifiers. The list of
+keywords is contained in the <C>GAPInfo.Keywords</C> component of the
+<C>GAPInfo</C> record (see <Ref Sect="GAPInfo"/>). We will show how to print
+it in a nice table, demonstrating at the same time some list manipulation
+techniques:
 <P/>
-<Listing><![CDATA[
-and     do       elif   else    end     fi
-for     function if     in      local   mod
-not     od       or     repeat  return  then
-until   while    quit   QUIT    break   rec 
-continue
-]]></Listing>
+<Example><![CDATA[
+gap> keys:=SortedList( GAPInfo.Keywords );; l:=Length( keys );;
+gap> arr:= List( [ 0 .. Int( l/4 )-1 ], i-> keys{ 4*i + [ 1 .. 4 ] } );;
+gap> if l mod 4 <> 0 then Add( arr, keys{[ 4*Int(l/4) + 1 .. l ]} ); fi;
+gap> Length( keys ); PrintArray( arr );
+32
+[ [         Assert,           Info,        IsBound,           QUIT ],
+  [  TryNextMethod,         Unbind,            and,          break ],
+  [       continue,             do,           elif,           else ],
+  [            end,          false,             fi,            for ],
+  [       function,             if,             in,          local ],
+  [            mod,            not,             od,             or ],
+  [           quit,            rec,         repeat,         return ],
+  [           then,           true,          until,          while ] ]
+]]></Example>
 <P/>
 Note that (almost) all keywords are written in lowercase and that they
 are case sensitive.
@@ -268,18 +281,17 @@ and so forth are ordinary identifiers.
 Keywords must not contain whitespace, for example <C>el if</C> is not the
 same as <K>elif</K>.
 <P/>
-<E>Note</E>:
-A number of tokens that appear to be normal identifiers
-representing functions or literals of various kinds are actually
-implemented as keywords for technical reasons. The only consequence of
-this is that those identifiers cannot be re-assigned, and do not
-actually have function objects bound to them, which could be assigned
-to other variables or passed to functions. These keywords are:
-<P/>
-<Listing><![CDATA[
-false 	true	IsBound	Unbind	TryNextMethod	
-Info	Assert	SaveWorkspace   fail
-]]></Listing>
+<E>Note</E>: 
+Several tokens from the list of keywords above may appear to be normal 
+identifiers representing functions or literals of various kinds but are 
+actually implemented as keywords for technical reasons. The only 
+consequence of this is that those identifiers cannot be re-assigned, and 
+do not actually have function objects bound to them, which could be 
+assigned to other variables or passed to functions. These keywords are
+<K>true</K>, <K>false</K>, <Ref Func="Assert"/>, 
+<Ref Func="IsBound" Label="for a global variable"/>,
+<Ref Func="Unbind" Label="unbind a variable"/>, 
+<Ref Func="Info"/> and <Ref Func="TryNextMethod"/>.
 
 </Section>
 
@@ -290,9 +302,13 @@ Info	Assert	SaveWorkspace   fail
 
 An <E>identifier</E> is used to refer to a variable
 (see <Ref Sect="Variables"/>).
-An identifier usually consists of letters, digits, and underscores <C>_</C>,
+An identifier usually consists of letters, digits, underscores <C>_</C>,
+and <Q>at</Q>-characters <C>@</C>,
 and must contain at least one non-digit.
 An identifier is terminated by the first character not in this class.
+Note that the <Q>at</Q>-character <C>@</C> is used to implement
+namespaces, see Section <Ref Sect="Namespaces"/> for details.
+<P/>
 Examples of valid identifiers are
 <P/>
 <Listing><![CDATA[
@@ -301,6 +317,7 @@ hello       Hello       HELLO
 x100        100x       _100
 some_people_prefer_underscores_to_separate_words
 WePreferMixedCaseToSeparateWords
+abc@def
 ]]></Listing>
 <P/>
 Note that case is significant, so the three identifiers in the second
@@ -325,6 +342,10 @@ making it possible to split long identifiers over multiple lines.
 
 <#Include Label="IsValidIdentifier">
 
+Note that the <Q>at</Q>-character is used to implement namespaces
+for global variables in packages. See <Ref Sect="Namespaces"/> for
+details.
+<Index>namespace</Index>
 </Section>
 
 
@@ -441,14 +462,13 @@ end;
 ]]></Listing>
 <P/>
 It is important to note that the concept of a variable in &GAP; is quite
-different from the concept of a variable in programming languages like
-PASCAL.
+different from the concept of a variable in most compiled programming languages.
 <P/>
 In those languages a variable denotes a block of memory. The
 value of the variable is stored in this block. So in those languages two
 variables can have the same value, but they can never have identical
 values, because they denote different blocks of memory.  Note that
-PASCAL has the concept of a reference argument. It seems as if such an
+some languages have the concept of a reference argument. It seems as if such an
 argument and the variable used in the actual function call have the same
 value, since changing the argument's value also changes the value of the
 variable used in the actual function call.  But this is not so; the
@@ -456,8 +476,7 @@ reference argument is actually a pointer to the variable used in the
 actual function call, and it is the compiler that inserts enough magic to
 make the pointer invisible.  In order for this to work the compiler
 needs enough information to compute the amount of memory needed for each
-variable in a program, which is readily available in the declarations
-PASCAL requires for every variable.
+variable in a program, which is readily available in the declarations.
 <P/>
 In &GAP; on the other hand each variable just points to a value,
 and different variables can share the same value.
@@ -504,8 +523,15 @@ can be used to delete components or entries, respectively
 
 The vast majority of variables in &GAP; are defined at the outer
 level (the global scope). They are used to access functions and
-other objects created either in the &GAP; library or in the user's
-code. Certain special facilities are provided for manipulating these
+other objects created either in the &GAP; library or packages or in the user's
+code. 
+<P/>
+Note that for packages there is a mechanism to implement package local
+namespaces on top of this global namespace. See Section <Ref
+Sect="Namespaces"/> for details.
+<Index>namespace</Index>
+<P/>
+Certain special facilities are provided for manipulating global
 variables which are not available for other types of variable (such as 
 local variables or function arguments).
 <P/>
@@ -671,8 +697,57 @@ specify a string with which the name of the global variable starts.
 </Description>
 </ManSection>
 
+<!-- here name spaces -->
+
 </Section>
 
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Namespaces">
+<Heading>Namespaces for &GAP; packages</Heading>
+
+As mentioned in Section <Ref Sect="More About Global Variables"/>
+above all global variables share a common namespace. This can
+relatively easily lead to name clashes, in particular when many
+&GAP; packages are loaded at the same time. To give package code
+a way to have a package local namespace without breaking backward
+compatibility of the &GAP; language, the following simple rule has
+been devised:
+<P/>
+If in package code a global variable that ends with an
+<Q>at</Q>-character <C>@</C> is accessed in any way, the name of the
+package is appended before accessing it. Here, <Q>package code</Q>
+refers to everything which is read with <Ref Func="ReadPackage"/>.
+As the name of the package the entry <C>PackageName</C> in its 
+<F>PackageInfo.g</F> file is taken. As for all identifiers,
+this name is case sensitive.
+<P/>
+For example, if the following is done in the code of a package with name
+<C>xYz</C>:
+
+<Log><![CDATA[
+gap> a@ := 12;
+]]>
+</Log>
+
+Then actually the global variable <C>a@xYz</C> is assigned. Further
+accesses to <C>a@</C> within the package code will all be redirected
+to <C>a@xYz</C>. This includes all the functions described in Section
+<Ref Sect="More About Global Variables"/> and indeed all the functions
+described Section <Ref Sect="Global Variables in the Library"/> like
+for example <Ref Func="DeclareCategory"/>. Note that from code in the
+same package it is still possible to access the same global variable
+via <C>a@xYz</C> explicitly.
+<P/>
+All other code outside the package as well as interactive user input
+that wants to refer to that variable <C>a@xYz</C> must do so explicitly
+by using <C>a@xYz</C>.
+<P/>
+Since in earlier releases of &GAP; the <Q>at</Q>-character <C>@</C>
+was not a legal character (without using backslashes), this small
+extension of the language does not break any old code.
+
+</Section>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Function Calls">
@@ -822,8 +897,6 @@ it. The system provides no safeguard against misspelled option names.
 The operator <C>=</C> tests for equality of its two operands and evaluates to
 <K>true</K> if they are equal and to <K>false</K> otherwise.
 Likewise <C>&lt;></C> tests for inequality of its two operands.
-Note that any two objects can be compared, i.e.,
-<C>=</C> and <C>&lt;></C> will never signal an error.
 For each type of objects the definition of equality is given in the
 respective chapter.
 Objects in different families (see&nbsp;<Ref Sect="Families"/>) are never equal,
@@ -924,9 +997,9 @@ see&nbsp;<Ref Sect="Comparison Operations for Elements"/>.
 The arithmetic operators are <C>+</C>, <C>-</C>, <C>*</C>, <C>/</C>,
 <K>mod</K>, and <C>^</C>.
 The meanings (semantics) of those operators generally depend on the types
-of the operands involved, and, except for <K>mod</K>, they are defined in the 
-various chapters describing the types. However basically the meanings are
-as follows.
+of the operands involved,
+and they are defined in the various chapters describing the types.
+However basically the meanings are as follows.
 <P/>
 <C><A>a</A> + <A>b</A></C> denotes the addition of additive elements <A>a</A> and <A>b</A>.
 <P/>
@@ -980,7 +1053,7 @@ its operand; over the integers it is equivalent to multiplication by <C>-1</C>.
 an integer, and is also used to denote the action of a group element on a
 point of a set if the right operand is a group element.
 <P/>
-<Index Subkey="precedence">operators</Index>
+<Index Subkey="precedence">arithmetic operators</Index>
 The <E>precedence</E> of those operators is as follows.
 The powering operator <C>^</C> has the highest precedence,
 followed by the unary operators <C>+</C> and <C>-</C>,
@@ -1065,8 +1138,8 @@ denotes assignment.
 Empty statements are permitted and have no effect.
 <P/>
 A sequence of one or more statements is a <E>statement sequence</E>, and may
-occur everywhere instead of a single statement. There is nothing like
-PASCAL's BEGIN-END, instead each construct is terminated by a keyword.
+occur everywhere instead of a single statement.
+Each construct is terminated by a keyword.
 The simplest statement sequence is a single semicolon, which can be
 used as an empty statement sequence. In fact an empty statement
 sequence as in <C>for i in [ 1 .. 2 ] do od</C> is also permitted and is
@@ -1220,13 +1293,13 @@ i.e., &GAP; has no <Q>dangling else</Q>.
 In
 <P/>
 <Listing><![CDATA[
-<C>if <A>expr1</A> then if <A>expr2</A> then <A>stats1</A> else <A>stats2</A> fi; fi;</C>
+if expr1 then if expr2 then stats1 else stats2 fi; fi;
 ]]></Listing>
 <P/>
 the <K>else</K> part belongs to the second  <K>if</K> statement, whereas in
 <P/>
 <Listing><![CDATA[
-<C>if <A>expr1</A> then if <A>expr2</A> then <A>stats1</A> fi; else <A>stats2</A> fi;</C>
+if expr1 then if expr2 then stats1 fi; else stats2 fi;
 ]]></Listing>
 <P/>
 the <K>else</K> part belongs to the first <K>if</K> statement.

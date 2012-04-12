@@ -1,10 +1,10 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  fpsemi.msk                GAP documentation                Isabel Araujo -->
+<!-- %A  fpsemi.msk                GAP documentation                Isabel Araújo -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: fpsemi.msk,v 1.27 2002/08/09 17:49:33 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Finitely Presented Semigroups and Monoids">
@@ -62,12 +62,12 @@ So, if one wants to access the generators by their names, one first has to
 introduce the respective variables and to assign the generators to them.
  
 <Example><![CDATA[
+gap> Unbind(a);
 gap> f:=FreeSemigroup("a","b");;
 gap> x:=GeneratorsOfSemigroup(f);;
 gap> s:=f/[ [x[1]*x[2],x[2]*x[1]] ];;
 gap> a;
-Variable: 'a' must have a value
-
+Error, Variable: 'a' must have a value
 gap> a:=GeneratorsOfSemigroup(s)[1];
 a
 gap> b:=GeneratorsOfSemigroup(s)[2];
@@ -205,6 +205,11 @@ returns the word from the free semigroup that is used as a
 representative for <A>elm</A>.
 <P/>
 <Example><![CDATA[
+gap> f := FreeSemigroup( "a" , "b" );;
+gap> a := GeneratorsOfSemigroup( f )[ 1 ];;
+gap> b := GeneratorsOfSemigroup( f )[ 2 ];;
+gap> s := f / [ [ a^3 , a ] , [ b^3 , b ] , [ a*b , b*a ] ];
+<fp semigroup on the generators [ a, b ]>
 gap> w := GeneratorsOfSemigroup(s)[1] * GeneratorsOfSemigroup(s)[2];
 a*b
 gap> IsWord (w );

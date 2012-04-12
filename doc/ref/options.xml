@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: options.msk,v 1.9 2002/06/07 14:04:42 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Options Stack">
@@ -20,6 +20,7 @@
 <#Include Label="PushOptions">
 <#Include Label="PopOptions">
 <#Include Label="ResetOptionsStack">
+<#Include Label="OnQuit">
 <#Include Label="ValueOption">
 <#Include Label="DisplayOptionsStack">
 <#Include Label="InfoOptions">

@@ -8,7 +8,6 @@
 Here we document how we distribute the maintenance of library and
 kernel among the developers.
 
-       $Id: lib.xml,v 1.1.1.1 2005/03/24 10:52:37 gap Exp $
 -->
 
 <Chapter Label="Chap-Lib">

@@ -14,9 +14,8 @@
 <Heading>Weak Pointers</Heading>
 
 This chapter describes the use of the kernel feature of <E>weak pointers</E>.
-This feature is intended for use only in &GAP; internals,
-and is <E>not recommended</E> for use in &GAP; packages, user code,
-or at the higher levels of the library.
+This feature is primarily intended for use only in &GAP; internals, and
+should be used extremely carefully otherwise.
 <P/>
 The GASMAN garbage collector is the part of the kernel that manages memory in
 the users workspace.  It will  normally only reclaim  the storage used by  an
@@ -137,7 +136,7 @@ which returns <K>true</K> if there is currently a value bound at position
 <P/>
 Note that it is <E>not</E> safe to write:
 <P/>
-<C>if IsBoundElmWpObj(w,i) then x:= ElmWPObj(w,i); fi;</C>
+<C>if IsBoundElmWPObj(w,i) then x:= ElmWPObj(w,i); fi;</C>
 <P/>
 and treat <C>x</C> as reliably containing a value taken from <C>w</C>,
 as a badly timed garbage collection could leave <C>x</C> containing

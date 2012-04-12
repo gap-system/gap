@@ -1,7 +1,6 @@
 ##  this creates the documentation, needs: GAPDoc package, latex, pdflatex,
 ##  mkindex, dvips
 ##  
-##  $Id: makedocrelx.g,v 1.2 2006/05/08 17:43:46 gap Exp $
 ##  
 
 LoadPackage("GAPDoc");
@@ -19,7 +18,7 @@ MakeGAPDocDoc(
 # name of book
 "Development", 
 # relative path to main gap doc-directory
-".."
+"../.."
 # probably don't need the versions with MathML or tth-converted math formulae
 ##  , 
 ##  "MathML", 
@@ -29,6 +28,8 @@ MakeGAPDocDoc(
 # file for cross references from gapmacro.tex- manuals
 # TODO: adjust to work for a main book
 #     GAPDocManualLab("Development");
+
+CopyHTMLStyleFiles(".");
 
 QUIT;
 

@@ -3,9 +3,8 @@
 ##
 #W  mkxtest.sh      Test the examples in GAP manual files      Volkmar Felsch
 ##
-#H  $Id: mkxtest.sh,v 1.7 2006/07/10 13:36:26 alexk Exp $
 ##
-#Y  Copyright (C) 2002, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
+#Y  Copyright (C) 2002, Lehrstuhl D für Mathematik, RWTH Aachen, Germany
 ##
 ##  mkxtest.sh [-f] [-i] [-o] [-d] [-c] [-p path] [-s suffix] [-r package]
 ##            [file1 file2 ...]
@@ -59,7 +58,7 @@
 ##
 ##  Define the local call of GAP.
 ##
-gap="gapdev -b -m 100m -o 500m -A -N -x 80 -r -T"
+gap="../../bin/gap.sh -b -m 100m -o 500m -A -N -x 80 -r -T"
 
 
 #############################################################################

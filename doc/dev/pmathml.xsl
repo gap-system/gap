@@ -13,7 +13,6 @@
 >
 
 <!--
-$Id: pmathml.xsl,v 1.1.1.1 2005/03/24 10:52:37 gap Exp $
 
 Copyright David Carlisle 2001, 2002.
 

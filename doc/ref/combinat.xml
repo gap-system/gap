@@ -1,11 +1,11 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  combinat.msk                GAP documentation            Martin Schoenert -->
+<!-- %A  combinat.msk                GAP documentation            Martin Schönert -->
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: combinat.msk,v 1.19 2002/09/04 11:27:01 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Combinatorics">
@@ -39,6 +39,7 @@ subsets.
 <Heading>Combinations, Arrangements and Tuples</Heading>
 
 <#Include Label="Combinations">
+<#Include Label="IteratorOfCombinations">
 <#Include Label="NrCombinations">
 <#Include Label="Arrangements">
 <#Include Label="NrArrangements">
@@ -55,6 +56,7 @@ subsets.
 <#Include Label="PartitionsSet">
 <#Include Label="NrPartitionsSet">
 <#Include Label="Partitions">
+<#Include Label="IteratorOfPartitions">
 <#Include Label="NrPartitions">
 <#Include Label="OrderedPartitions">
 <#Include Label="NrOrderedPartitions">

@@ -1,11 +1,11 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  record.msk                  GAP documentation            Martin Schoenert -->
+<!-- %A  record.msk                  GAP documentation            Martin Schönert -->
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: record.msk,v 1.14 2002/10/01 15:03:08 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Records">
@@ -67,10 +67,10 @@ not homogeneous like lists.
 
 <Index Subkey="record elements">accessing</Index>
 <Index Subkey="component access">record</Index>
-<C><A>rec</A>.<A>name</A></C>
+<C><A>r</A>.<A>name</A></C>
 <P/>
 The above construct evaluates to the value of the record component with
-the name <A>name</A> in the record <A>rec</A>. Note that the <A>name</A> is not
+the name <A>name</A> in the record <A>r</A>. Note that the <A>name</A> is not
 evaluated, i.e. it is taken literal.
 <P/>
 <Example><![CDATA[
@@ -82,12 +82,12 @@ gap> r.b;
 ]]></Example>
 <P/>
 <Index Subkey="component variable">record</Index>
-<C><A>rec</A>.(<A>name</A>)</C>
+<C><A>r</A>.(<A>name</A>)</C>
 <P/>
 This construct is similar to the above construct. The difference is that
 the second operand <A>name</A> is evaluated. It must evaluate to a string or
 an integer otherwise an error is signalled. The construct then evaluates
-to the element of the record <A>rec</A> whose name is, as a string, equal to
+to the element of the record <A>r</A> whose name is, as a string, equal to
 <A>name</A>.
 <P/>
 <Example><![CDATA[
@@ -112,15 +112,15 @@ rec(
 
 <Index Subkey="to a record">assignment</Index>
 <Index Subkey="component assignment">record</Index>
-<C><A>rec</A>.<A>name</A> := <A>obj</A></C>
+<C><A>r</A>.<A>name</A> := <A>obj</A></C>
 <P/>
 The record assignment assigns the object <A>obj</A>,
 which may be an object of arbitrary type,
 to the record component with the name <A>name</A>,
-which must be an identifier, of the record <A>rec</A>.
+which must be an identifier, of the record <A>r</A>.
 That means that accessing the element with name <A>name</A> of the record
-<A>rec</A> will return <A>obj</A> after this assignment.
-If the record <A>rec</A> has no component with the name <A>name</A>,
+<A>r</A> will return <A>obj</A> after this assignment.
+If the record <A>r</A> has no component with the name <A>name</A>,
 the record is automatically extended to make room for the new component.
 <P/>
 <Example><![CDATA[
@@ -158,12 +158,12 @@ rec(
 ]]></Example>
 <P/>
 <Index Subkey="component variable assignment">record</Index>
-<C><A>rec</A>.(<A>name</A>) := <A>obj</A></C>
+<C><A>r</A>.(<A>name</A>) := <A>obj</A></C>
 <P/>
 This construct is similar to the above construct. The difference is that
 the second operand <A>name</A> is evaluated. It must evaluate to a string or
 an integer otherwise an error is signalled. The construct then assigns
-<A>obj</A> to the record component of the record <A>rec</A> whose name is,
+<A>obj</A> to the record component of the record <A>r</A> whose name is,
 as a string, equal to <A>name</A>.
 
 </Section>
@@ -195,8 +195,8 @@ r.b := 2;
 To understand the difference first think of a variable as a name for an
 object. The important point is that a record can have several names at
 the same time.
-An assignment <C><A>var</A> := <A>record</A></C> means in this interpretation
-that <A>var</A> is a name for the object <A>record</A>.
+An assignment <C><A>var</A> := <A>r</A></C> means in this interpretation
+that <A>var</A> is a name for the object <A>r</A>.
 At the end of the following example <C>r2</C> still has the value
 <C>rec( a := 1 )</C> as this record has not been changed and nothing else
 has been assigned to <C>r2</C>.
@@ -330,7 +330,8 @@ false
 <C><A>rec1</A> &lt;= <A>rec2</A></C>
 <P/>
 To compare records we imagine that the components of both records are
-sorted according to their names.
+sorted according to their names (the sorting depends on the &GAP; session,
+more precisely the order in which component names were first used).
 Then the records are compared lexicographically with unbound elements
 considered smaller than anything else.
 Precisely one record <A>rec1</A> is considered less than another record
@@ -343,16 +344,16 @@ component with this name and
 <C><A>rec1</A>.<A>name1</A> = <A>rec2</A>.<A>name1</A></C>.
 <P/>
 <Example><![CDATA[
-gap> rec( a := 1, b := 2 ) < rec( b := 2, a := 1 ); # they are equal
+gap> rec( axy := 1, bxy := 2 ) < rec( bxy := 2, axy := 1 ); # are equal
 false
-gap> rec( a := 1 ) < rec( a := 1, b := 2 ); # unbound is less than 2
+gap> rec( axy := 1 ) < rec( axy := 1, bxy := 2 ); # unbound is < 2
 true
-gap> # note in the following examples that the `a' elements are compared first
-gap> rec( a := 1, b := 2 ) < rec( a := 2, b := 0 ); # 1 is less than 2
+gap> # in new session the .axy components are compared first
+gap> rec( axy := 1, bxy := 2 ) < rec( axy := 2, bxy := 0 ); # 1 < 2
 true
-gap> rec( a := 1 ) < rec( a := 0, b := 2 ); # 0 is less than 1
+gap> rec( axy := 1 ) < rec( axy := 0, bxy := 2 ); # 0 < 1
 false
-gap> rec( b := 1 ) < rec( b := 0, a := 2 ); # unbound is less than 2
+gap> rec( bxy := 1 ) < rec( bxy := 0, axy := 2 ); # unbound is < 2
 true
 ]]></Example>
 
@@ -364,13 +365,13 @@ true
 <Heading>IsBound and Unbind for Records</Heading>
 
 <ManSection>
-<Oper Name="IsBound" Arg='record.name' Label="for a record component"/>
+<Oper Name="IsBound" Arg='r.name' Label="for a record component"/>
 
 <Description>
 <Ref Func="IsBound" Label="for a record component"/> returns <K>true</K>
-if the record <A>record</A> has a component with the name <A>name</A>
+if the record <A>r</A> has a component with the name <A>name</A>
 (which must be an identifier) and <K>false</K> otherwise.
-<A>record</A> must evaluate to a record, otherwise an error is signalled.
+<A>r</A> must evaluate to a record, otherwise an error is signalled.
 <P/>
 <Example><![CDATA[
 gap> r := rec( a := 1, b := 2 );;
@@ -384,15 +385,15 @@ false
 
 
 <ManSection>
-<Oper Name="Unbind" Arg='record.name' Label="unbind a record component"/>
+<Oper Name="Unbind" Arg='r.name' Label="unbind a record component"/>
 
 <Description>
 <Ref Func="Unbind" Label="unbind a record component"/> deletes the component
-with the name <A>name</A> in the record <A>record</A>. That is, after
+with the name <A>name</A> in the record <A>r</A>. That is, after
 execution of <Ref Func="Unbind" Label="unbind a record component"/>,
-<A>record</A> no longer has a record component with this name.
+<A>r</A> no longer has a record component with this name.
 Note that it is not an error to unbind a nonexisting record component.
-<A>record</A> must evaluate to a record, otherwise an error is signalled.
+<A>r</A> must evaluate to a record, otherwise an error is signalled.
 <P/>
 <Example><![CDATA[
 gap> r := rec( a := 1, b := 2 );;

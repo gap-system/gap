@@ -100,6 +100,13 @@ and&nbsp;<Ref Sect="Subgroups characterized by prime powers"/>.
 <#Include Label="Subgroup">
 <#Include Label="Index">
 <#Include Label="IndexInWholeGroup">
+<Example><![CDATA[
+gap> freegp:=FreeGroup(1);;
+gap> freesub:=Subgroup(freegp,[freegp.1^5]);;
+gap> IndexInWholeGroup(freesub);
+5
+]]></Example>
+
 <#Include Label="AsSubgroup">
 <#Include Label="IsSubgroup">
 <#Include Label="IsNormal">
@@ -166,6 +173,7 @@ free generators, that will map on this element again.
 <#Include Label="RightCosets">
 <#Include Label="CanonicalRightCosetElement">
 <#Include Label="IsRightCoset">
+<#Include Label="CosetDecomposition">
 
 </Section>
 
@@ -225,7 +233,7 @@ For the operations
 <#Include Label="PCore">
 <#Include Label="NormalClosure">
 <#Include Label="NormalIntersection">
-<#Include Label="Complementclasses">
+<#Include Label="ComplementClassesRepresentatives">
 <#Include Label="InfoComplement">
 
 </Section>
@@ -332,6 +340,8 @@ as they depend on a parameter.
 <#Include Label="IsSimpleGroup">
 <#Include Label="IsAlmostSimpleGroup">
 <#Include Label="IsomorphismTypeInfoFiniteSimpleGroup">
+<#Include Label="SimpleGroup">
+<#Include Label="SimpleGroupsIterator">
 <#Include Label="SmallSimpleGroup">
 <#Include Label="AllSmallNonabelianSimpleGroups">
 <#Include Label="IsFinitelyGeneratedGroup">
@@ -350,7 +360,13 @@ as they depend on a parameter.
 <Section Label="Numerical Group Attributes">
 <Heading>Numerical Group Attributes</Heading>
 
-Some functions, such as <Ref Func="EulerianFunction"/>,
+This section gives only some examples of numerical group attributes, so
+it should not serve as a collection of all numerical group attributes.
+The manual contains more such attributes documented in this manual, for
+example, <Ref Attr="NrConjugacyClasses"/>, 
+<Ref Attr="NilpotencyClassOfGroup"/> and others.
+<P/>
+Note also that some functions, such as <Ref Func="EulerianFunction"/>,
 are mathematical attributes, but not &GAP; attributes
 (see <Ref Sect="Attributes"/>) as they are depending on a parameter.
 
@@ -417,7 +433,7 @@ the series without destroying the properties of the series.
 <#Include Label="HasElementaryAbelianFactorGroup">
 <#Include Label="CentralizerModulo">
 
-<!-- %%  The code for factor groups is due to Alexander Hulpke and Heiko Thei{\ss}en. -->
+<!-- %%  The code for factor groups is due to Alexander Hulpke and Heiko Theißen. -->
 
 </Section>
 
@@ -430,6 +446,7 @@ the series without destroying the properties of the series.
 <#Include Label="IsConjugacyClassSubgroupsRep">
 <#Include Label="ConjugacyClassesSubgroups">
 <#Include Label="ConjugacyClassesMaximalSubgroups">
+<#Include Label="AllSubgroups">
 <#Include Label="MaximalSubgroupClassReps">
 <#Include Label="MaximalSubgroups">
 <#Include Label="NormalSubgroups">
@@ -526,7 +543,7 @@ for every <M>\gamma \in Z^1( G/M, M )</M>.
 <#Include Label="OneCocycles">
 <#Include Label="OneCoboundaries">
 <#Include Label="OCOneCocycles">
-<#Include Label="ComplementclassesEA">
+<#Include Label="ComplementClassesRepresentativesEA">
 <#Include Label="InfoCoh">
 
 <!-- %%  The computation of the 1-Cohomology follows <Cite Key="CNW90"/> and was implemented -->
@@ -558,6 +575,7 @@ see <Cite Key="BJR87"/>.
 <#Include Label="NonabelianExteriorSquare">
 <#Include Label="EpimorphismNonabelianExteriorSquare">
 <#Include Label="IsCentralFactor">
+<#Include Label="{SchurCoversOfSymmetricGroup}">
 
 </Section>
 
@@ -568,6 +586,7 @@ see <Cite Key="BJR87"/>.
 
 <#Include Label="[3]{grp}">
 <#Include Label="CanEasilyTestMembership">
+<#Include Label="CanEasilyComputeWithIndependentGensAbelianGroup">
 <#Include Label="CanComputeSize">
 <#Include Label="CanComputeSizeAnySubgroup">
 <#Include Label="CanComputeIndex">

@@ -1,7 +1,7 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %A  create.tex                GAP manual                    Thomas Breuer -->
-<!-- %A                                                       Martin Schoenert -->
+<!-- %A                                                       Martin Schönert -->
 <!-- %% -->
 <!-- %H  @(#)<M>Id: create.tex,v 4.48 2005/10/20 07:39:10 gap Exp </M> -->
 <!-- %% -->
@@ -104,6 +104,7 @@ one can use logical implications
 
 <!-- %T Categories and representations should not be operations, -->
 <!-- %T the same for filters made by <C>NewFilter</C>! -->
+<!-- %AK Now everything is displayed properly -->
 
 </Section>
 
@@ -663,12 +664,14 @@ over a finite set; the function is called
 gap> Print( EnumeratorOfTuples, "\n" );
 function ( set, k )
     local  enum;
-    if IsEmpty( set )  then
-        return Immutable( [  ] );
-    elif k = 0  then
+    if k = 0  then
         return Immutable( [ [  ] ] );
+    elif IsEmpty( set )  then
+        return Immutable( [  ] );
     fi;
-    enum := EnumeratorByFunctions( CollectionsFamily( FamilyObj( set ) ), rec(
+    enum 
+     := EnumeratorByFunctions( CollectionsFamily( FamilyObj( set ) ), 
+       rec(
           ElementNumber := function ( enum, n )
                 local  nn, t, i;
                 nn := n - 1;
@@ -678,7 +681,8 @@ function ( set, k )
                     nn := QuoInt( nn, Length( enum!.set ) );
                 od;
                 if nn <> 0  then
-                    Error( "<enum>[", n, "] must have an assigned value" );
+                    Error( "<enum>[", n, 
+                     "] must have an assigned value" );
                 fi;
                 nn := enum!.set{Reversed( t )};
                 MakeImmutable( nn );
@@ -705,8 +709,8 @@ function ( set, k )
                 return Length( enum!.set ) ^ enum!.k;
             end,
           PrintObj := function ( enum )
-                Print( "EnumeratorOfTuples( ", enum!.set, ", ", enum!.k, " )" 
-                 );
+                Print( "EnumeratorOfTuples( ", enum!.set, ", ", 
+                 enum!.k, " )" );
                 return;
             end,
           set := Set( set ),
@@ -1014,7 +1018,7 @@ gap> l := [1,2,4];
 gap> MakeImmutable(l);
 [ 1, 2, 4 ]
 gap> l[3] := 5;
-Lists Assignment: <list> must be a mutable list
+Error, Lists Assignment: <list> must be a mutable list
 ]]></Example>
 <P/>
 For external objects, the situation is different. An external object which
@@ -1040,12 +1044,13 @@ Sym( [ 1 .. 4 ] )
 gap> IsMutable(g);
 false
 gap> NamesOfComponents(g);
-[ "GeneratorsOfMagmaWithInverses", "Size", "MovedPoints", "NrMovedPoints" ]
+[ "Size", "NrMovedPoints", "MovedPoints", 
+  "GeneratorsOfMagmaWithInverses" ]
 gap> g!.silly := "rubbish";
 "rubbish"
 gap> NamesOfComponents(g);
-[ "GeneratorsOfMagmaWithInverses", "Size", "MovedPoints", "NrMovedPoints", 
-  "silly" ]
+[ "Size", "NrMovedPoints", "MovedPoints", 
+  "GeneratorsOfMagmaWithInverses", "silly" ]
 gap> g!.silly;
 "rubbish"
 ]]></Example>
@@ -1097,9 +1102,10 @@ gap> e1 := StructuralCopy(e);
 gap> IsMutable(e1);
 false
 gap> e2 := ShallowCopy(e);
-[ (), (1,4), (1,2,4), (1,3,4), (2,4), (1,4,2), (1,2), (1,3,4,2), (2,3,4), 
-  (1,4,2,3), (1,2,3), (1,3)(2,4), (3,4), (1,4,3), (1,2,4,3), (1,3), (2,4,3), 
-  (1,4,3,2), (1,2)(3,4), (1,3,2), (2,3), (1,4)(2,3), (1,2,3,4), (1,3,2,4) ]
+[ (), (1,4), (1,2,4), (1,3,4), (2,4), (1,4,2), (1,2), (1,3,4,2), 
+  (2,3,4), (1,4,2,3), (1,2,3), (1,3)(2,4), (3,4), (1,4,3), (1,2,4,3), 
+  (1,3), (2,4,3), (1,4,3,2), (1,2)(3,4), (1,3,2), (2,3), (1,4)(2,3), 
+  (1,2,3,4), (1,3,2,4) ]
 gap> 
 ]]></Example>
 <P/>
@@ -1236,12 +1242,13 @@ Calls to the following functions belong to the implementation part.
 <P/>
 <Index Key="DeclareRepresentation" Subkey="belongs to implementation part">
 <C>DeclareRepresentation</C></Index>
-Whenever both a <C>New<A>Something</A></C> and a <C>Declare<A>Something</A></C> variant
-of a function exist (see&nbsp;<Ref Sect="Global Variables in the Library"/>),
-the use of <C>Declare<A>Something</A></C> is recommended
+Whenever both a <C>New</C><A>Something</A> and a
+<C>Declare</C><A>Something</A> variant of a function exist
+(see&nbsp;<Ref Sect="Global Variables in the Library"/>),
+the use of <C>Declare</C><A>Something</A> is recommended
 because this protects the variables in question from being overwritten.
-Note that there are <E>no</E> functions <C>DeclareFamily</C> and <C>DeclareType</C>
-since families and types are created dynamically,
+Note that there are <E>no</E> functions <C>DeclareFamily</C> and
+<C>DeclareType</C> since families and types are created dynamically,
 hence usually no global variables are associated to them.
 Further note that <Ref Func="DeclareRepresentation"/> is regarded as
 belonging to the implementation part,

@@ -2,12 +2,12 @@
 <!-- %% -->
 <!-- %W  lists.tex                 GAP documentation             Thomas Breuer -->
 <!-- %W                                                         & Frank Celler -->
-<!-- %W                                                     & Martin Schoenert -->
-<!-- %W                                                       & Heiko Theissen -->
+<!-- %W                                                     & Martin Schönert -->
+<!-- %W                                                       & Heiko Theißen -->
 <!-- %% -->
 <!-- %H  @(#)<M>Id: lists.tex,v 4.34 2002/10/04 12:04:17 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
 <!-- %% -->
 <!-- %%  This file contains a tutorial introduction to lists and records. -->
 <!-- %% -->
@@ -285,7 +285,7 @@ of primes.  Check this by printing the values of <C>numbers</C> and <C>primes</C
 <P/>
 Lists and records can be changed this way because &GAP; objects of these
 types have subobjects.
-To clarify this statement consider the following example.
+To clarify this statement consider the following assignments.
 <P/>
 <Example><![CDATA[
 gap> i:= 1;; j:= i;; i:= i+1;; 
@@ -370,28 +370,6 @@ on the top level.
 It should be noted that also other objects than lists can appear in
 mutable or immutable form.
 Records (see Section&nbsp;<Ref Sect="Plain Records"/>) provide another example.
-<P/>
-<!-- %<Index><C>StructuralCopy</C></Index> -->
-<!-- %\exercise How can  you produce  a  mutable <Q>deep copy</Q> of  an immutable -->
-<!-- %list? -->
-<!-- % -->
-<!-- %\answer <C>StructuralCopy( list )</C> will copy <C>list</C> only as deep  as  it is -->
-<!-- %mutable, hence it will not copy an immutable list at all.  So you have to -->
-<!-- %iterate the effect  of <C>ShallowCopy</C>, e.g.,  with the following recursive -->
-<!-- %function: -->
-<!-- %<Log><![CDATA[ -->
-<!-- %DeepCopy := function( old ) -->
-<!-- %local   new,  entry; -->
-<!-- %    new := [  ];  for entry  in old  do -->
-<!-- %    if IsList( entry )  then  Add( new, DeepCopy( entry ) ); -->
-<!-- %                        else  Add( new, entry );  fi;  od; -->
-<!-- %    return new; -->
-<!-- %end; -->
-<!-- %]]></Log> -->
-<!-- %This works only if the original list  does not contain the same subobject -->
-<!-- %(up to <C>IsIdenticalObj</C>, see Section&nbsp;<Ref Sect="Objects vs. Elements"/>) twice. -->
-<!-- %For example, the list which &GAP; prints as <C>[ &nbsp; ]</C> will cause this -->
-<!-- %function to recurse infinitely. -->
 
 </Section>
 
@@ -821,19 +799,6 @@ you can simply say <C>25  + 0 * [ 1 .. 100 ]</C>.
 Note that ranges are also vectors (over the rationals),
 and that <C>[ 1 .. 100 ]</C> is mutable.
 <P/>
-<!-- %In many algorithms, mutable lists of this type are needed as an initial -->
-<!-- %value for a data structure. To avoid the necessity to use <C>ShallowCopy</C>, -->
-<!-- %&GAP; offers the operation <C>ListWithIdenticalEntries(<A>len</A>,<A>val</A>)</C> that -->
-<!-- %will produce such a mutable list. -->
-<P/>
-<!-- %<Index><C>ListWithIdenticalEntries</C></Index> -->
-<!-- %\exercise  How can  you produce  a mutable  list  with 100&nbsp;entries  equal -->
-<!-- %to&nbsp;25? -->
-<!-- % -->
-<!-- %\answer <C>ShallowCopy( 25 + 0 * [ 1 .. 100 ] )</C> or <C>List(  [ 1 .. 100 ], x -->
-<!-- %->  25 )</C>. Since such constructions  are frequently needed, &GAP; offers -->
-<!-- %you a shortcut: you can simply say <C>ListWithIdenticalEntries( 100, 25 )</C>. -->
-<P/>
 A matrix is a dense list of row vectors of equal length.
 <P/>
 <Example><![CDATA[
@@ -957,7 +922,8 @@ In a record the elements, the so-called <E>record components</E>,
 are not indexed by numbers but by names.
 <P/>
 In this section you will see how to define and how to use records.
-Records are changed by assignments to record components.
+Records are changed by assignments to record components
+or by unbinding record components.
 <P/>
 Initially a record is defined as a comma separated list of assignments to
 its record components.
@@ -966,7 +932,7 @@ its record components.
 gap> date:= rec(year:= 1997,
 >               month:= "Jul",
 >               day:= 14);
-rec( year := 1997, month := "Jul", day := 14 )
+rec( day := 14, month := "Jul", year := 1997 )
 ]]></Example>
 <P/>
 The value of a record component is accessible by  the record name and the
@@ -985,23 +951,8 @@ record is automatically resized to hold the new component.
 gap> date.time:= rec(hour:= 19, minute:= 23, second:= 12);
 rec( hour := 19, minute := 23, second := 12 )
 gap> date;
-rec( year := 1997, month := "Jul", day := 14, 
-  time := rec( hour := 19, minute := 23, second := 12 ) )
-]]></Example>
-<P/>
-We may use the <Ref Func="Display" BookName="ref"/> function to illustrate
-the hierarchy of the record components.
-<P/>
-<Example><![CDATA[
-gap> Display( date );
-rec(
-  year := 1997,
-  month := "Jul",
-  day := 14,
-  time := rec(
-      hour := 19,
-      minute := 23,
-      second := 12 ) )
+rec( day := 14, month := "Jul", 
+  time := rec( hour := 19, minute := 23, second := 12 ), year := 1997 )
 ]]></Example>
 <P/>
 Records are objects  that  may be  changed.   An assignment to  a  record
@@ -1017,28 +968,8 @@ all bound components of this record as a list of strings.
 <P/>
 <Example><![CDATA[
 gap> RecNames(date);
-[ "year", "month", "day", "time" ]
+[ "time", "year", "month", "day" ]
 ]]></Example>
-<P/>
-<!-- %\exercise Finally try the following examples and explain the results. -->
-<!-- %\b eginexample -->
-<!-- %gap> r:= rec(); -->
-<!-- %rec( -->
-<!-- %   ) -->
-<!-- %gap> r:= rec(r:= r); -->
-<!-- %rec( -->
-<!-- %  r := rec( -->
-<!-- %       ) ) -->
-<!-- %gap> r.r:= r; -->
-<!-- %rec( -->
-<!-- %  r := &nbsp; ) -->
-<!-- %\e ndexample -->
-<!-- % -->
-<!-- %\answer  The  first  assignment to <C>r</C>    creates a  record.   The second -->
-<!-- %assignment assigns a  new object to <C>r</C>, namely  a record whose component -->
-<!-- %<C>r</C> contains the old record object created  in the first assignment.  The -->
-<!-- %last assignment changes the value of the record component <C>r</C> and creates -->
-<!-- %a recursive object. -->
 <P/>
 Now return to Sections <Ref Sect="Identical Lists"/>  and <Ref Sect="Immutability"/> and find out
 what these sections mean for records.

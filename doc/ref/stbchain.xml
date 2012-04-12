@@ -1,10 +1,10 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %W  stbchain.tex              GAP documentation            Heiko Thei�en -->
+<!-- %W  stbchain.tex              GAP documentation            Heiko Theißen -->
 <!-- %% -->
 <!-- %H  @(#)<M>Id: stbchain.tex,v 4.18 2002/10/14 12:38:11 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
 <!-- %% -->
 <Chapter Label="More about Stabilizer Chains">
 <Heading>More about Stabilizer Chains (preliminary)</Heading>
@@ -64,7 +64,7 @@ If, more generally, <M>hom</M> is a right inverse to a homomorphism
 equality <M>*</M> holds modulo the kernel of <M>\varphi</M>;
 in this case the <Q>conjugated</Q> chain can be made into a real stabilizer
 chain by extending each level with the generators of the kernel and
-appending a proper stabilizer chain of te kernel at the end.
+appending a proper stabilizer chain of the kernel at the end.
 These special cases will occur in the algorithms for permutation group
 homomorphisms (see&nbsp;<Ref Chap="Group Homomorphisms"/>).
 <P/>

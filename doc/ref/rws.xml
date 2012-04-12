@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: rws.msk,v 1.11 2003/07/31 20:04:19 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Rewriting Systems">
@@ -127,21 +127,21 @@ gap> g:=f/rels;
 gap> mhom:=IsomorphismFpMonoid(g);
 MappingByFunction( <fp group on the generators 
 [ f1, f2, f3 ]>, <fp monoid on the generators 
-[ f1^-1, f1, f2^-1, f2, f3^-1, f3 
+[ f1, f1^-1, f2, f2^-1, f3, f3^-1 
  ]>, function( x ) ... end, function( x ) ... end )
 gap> mon:=Image(mhom);
-<fp monoid on the generators [ f1^-1, f1, f2^-1, f2, f3^-1, f3 ]>
+<fp monoid on the generators [ f1, f1^-1, f2, f2^-1, f3, f3^-1 ]>
 gap> k:=KnuthBendixRewritingSystem(mon);
-Knuth Bendix Rewriting System for Monoid( [ f1^-1, f1, f2^-1, f2, f3^-1, f3 
- ], ... ) with rules 
-[ [ f1^-1*f1, <identity ...> ], [ f1*f1^-1, <identity ...> ], 
-  [ f2^-1*f2, <identity ...> ], [ f2*f2^-1, <identity ...> ], 
-  [ f3^-1*f3, <identity ...> ], [ f3*f3^-1, <identity ...> ], 
-  [ f1*f2^2*f3^-1, <identity ...> ], [ f2*f3^2*f1^-1, <identity ...> ], 
-  [ f3*f1^2*f2^-1, <identity ...> ] ]
+Knuth Bendix Rewriting System for Monoid( 
+[ f1, f1^-1, f2, f2^-1, f3, f3^-1 ], ... ) with rules 
+[ [ f1*f1^-1, <identity ...> ], [ f1^-1*f1, <identity ...> ], 
+  [ f2*f2^-1, <identity ...> ], [ f2^-1*f2, <identity ...> ], 
+  [ f3*f3^-1, <identity ...> ], [ f3^-1*f3, <identity ...> ], 
+  [ f1*f2^2*f3^-1, <identity ...> ], [ f2*f3^2*f1^-1, <identity ...> ]
+    , [ f3*f1^2*f2^-1, <identity ...> ] ]
 gap> MakeConfluent(k);
 gap> a:=Product(GeneratorsOfMonoid(mon));
-f1^-1*f1*f2^-1*f2*f3^-1*f3
+f1*f1^-1*f2*f2^-1*f3*f3^-1
 gap> ReducedForm(k,UnderlyingElement(a));
 <identity ...>
 ]]></Example>

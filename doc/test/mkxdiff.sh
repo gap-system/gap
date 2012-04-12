@@ -3,9 +3,8 @@
 ##
 #W  mkxdiff.sh       Differences of GAP manual examples        Volkmar Felsch
 ##
-#H  $Id: mkxdiff.sh,v 1.2 2006/03/14 17:14:15 gap Exp $
 ##
-#Y  Copyright (C) 2002, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
+#Y  Copyright (C) 2002, Lehrstuhl D für Mathematik, RWTH Aachen, Germany
 ##
 ##  mkxdiff.sh [-c] [-p path] [-s suffix] [file1 file2 ...]
 ##

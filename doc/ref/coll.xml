@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: coll.msk,v 1.24 2006/08/29 13:38:17 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Collections">
@@ -132,7 +132,6 @@ false
 
 <#Include Label="[2]{coll}">
 <#Include Label="Random:coll">
-<#Include Label="StateRandom">
 <#Include Label="PseudoRandom">
 <#Include Label="RandomList">
 

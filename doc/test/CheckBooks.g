@@ -1,6 +1,5 @@
 
-## some test loops for basic checks of the help books    (Frank Lübeck)
-## $Id: CheckBooks.g,v 1.1 2004/03/30 14:13:07 gap Exp $
+## some test loops for basic checks of the help books    (Frank LÃ¼beck)
 
 ##  check in which formats the help books are available
 for a in RecFields(HELP_BOOKS_INFO) do 

@@ -230,7 +230,7 @@ A -- probably incomplete -- list follows
     Backtrace               Where
     CharTable               CharacterTable     # (also composita)
     Denominator             DenominatorRat
-    DepthVector             PositionNot
+    DepthVector             PositionNonZero
     Elements                AsSSortedList
     IsBijection             IsBijective
     IsFunc                  IsFunction
@@ -809,7 +809,6 @@ The level of an info class <A>class</A> is set to <A>level</A> by calling
 <C>SetInfoLevel( <A>class</A>, <A>level</A> )</C>.
 An <C>Info</C> statement is printed only if its second argument is smaller than
 or equal to the current info level.
-For example,
 <P/>
 <Example><![CDATA[
 gap> test:= function( obj )
@@ -850,7 +849,7 @@ integer as argument, permits one to step down or up in the
 stack.
 <P/>
 When interrupting, the first line printed by <C>Where</C> actually may be
-one level higher, as the following example shows
+one level higher, as shown below.
 <P/>
 <Log><![CDATA[
 gap> OnBreak := function() Where(0); end;; # eliminate back-tracing on
@@ -1134,7 +1133,7 @@ InstallOtherMethod( PROD,
     MyMult );
 ]]></Log>
 <P/>
-And now the example works (again).
+And now it works (again).
 <P/>
 <Log><![CDATA[
 gap> a:= MyObject( 3 );
@@ -1160,7 +1159,7 @@ InstallOtherMethod( PRINT_OBJ,
     function( obj ) Print( "MyObject( ", obj!.x, " )" ); end );
 ]]></Log>
 <P/>
-Now the example behaves as follows.
+Now output looks as follows.
 <P/>
 <Log><![CDATA[
 gap> a;  b;  a * b;

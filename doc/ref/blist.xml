@@ -1,10 +1,10 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  blist.msk                  GAP documentation             Martin Schoenert -->
+<!-- %A  blist.msk                  GAP documentation             Martin Schönert -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: blist.msk,v 1.9 2002/04/15 10:02:27 sal Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Boolean Lists">

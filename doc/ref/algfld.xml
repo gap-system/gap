@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: algfld.msk,v 1.6 2006/10/19 10:32:09 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Algebraic extensions of fields">
@@ -82,15 +82,15 @@ which will embed all entries in the extension.
 <P/>
 <Example><![CDATA[
 gap> m:=[[1,a],[0,1]];
-[ [ 1, (a) ], [ 0, 1 ] ]
+[ [ 1, a ], [ 0, 1 ] ]
 gap> IsMatrix(m);
 false
 gap> m:=m*One(e);
-[ [ !1, (a) ], [ !0, !1 ] ]
+[ [ !1, a ], [ !0, !1 ] ]
 gap> IsMatrix(m);
 true
 gap> m^2;
-[ [ !1, (2*a) ], [ !0, !1 ] ]
+[ [ !1, 2*a ], [ !0, !1 ] ]
 ]]></Example>
 
 <#Include Label="IsAlgebraicElement">

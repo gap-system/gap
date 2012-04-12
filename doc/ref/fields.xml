@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: fields.msk,v 1.18 2005/04/21 09:38:23 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Fields and Division Rings">
@@ -73,9 +73,9 @@ which vanish on <A>z</A>.
 gap> MinimalPolynomial( Rationals, E(8) );
 x_1^4+1
 gap> MinimalPolynomial( CF(4), E(8) );
-x_1^2+-E(4)
+x_1^2+(-E(4))
 gap> MinimalPolynomial( CF(8), E(8) );
-x_1+-E(8)
+x_1+(-E(8))
 ]]></Example>
 </Description>
 </ManSection>

@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: addmagma.msk,v 1.5 2006/03/10 08:55:52 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Additive Magmas">
@@ -99,6 +99,7 @@ and functions for forming additive submagmas
 <Heading>Operations for (Near-)Additive Magmas</Heading>
 
 <#Include Label="ClosureNearAdditiveGroup">
+<#Include Label="ShowAdditionTable">
 
 </Section>
 </Chapter>

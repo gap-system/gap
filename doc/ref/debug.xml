@@ -2,7 +2,7 @@
 <!-- %% -->
 <!-- %W  debug.msk                 GAP manual                    Thomas Breuer -->
 <!-- %W                                                       Alexander Hulpke -->
-<!-- %W                                                       Martin Schoenert -->
+<!-- %W                                                       Martin Schönert -->
 <!-- %% -->
 <!-- %H  @(#)<M>Id: debug.msk,v 1.26 2006/03/07 22:05:56 jjm Exp </M> -->
 <!-- %% -->
@@ -14,7 +14,15 @@
 This chapter describes some functions that are useful mainly for
 debugging and profiling purposes.
 <P/>
-The sections&nbsp;<Ref Sect="sect:ApplicableMethod"/>
+Probably the most important debugging tool in &GAP; is the break loop
+(see Section <Ref Sect="Break Loops"/>) which can be entered by putting
+an <Ref Func="Error"/> statement into your code or by hitting Control-C.
+In the break loop one can inspect variables, stack traces and issue 
+commands as usual in an interactive &GAP; session. See also the
+<Ref Func="DownEnv"/>, <Ref Func="UpEnv"/> and <Ref Func="Where"/>
+functions.
+<P/>
+Sections&nbsp;<Ref Sect="sect:ApplicableMethod"/>
 and&nbsp;<Ref Sect="Tracing Methods"/> show how to get
 information about the methods chosen by the method selection mechanism
 (see chapter&nbsp;<Ref Chap="Method Selection"/>).
@@ -191,22 +199,39 @@ gap> InfoLevel(InfoWarning);
 </ManSection>
 
 <ManSection>
+<Heading>Customizing <Ref Func="Info"/> statements</Heading>
 <Func Arg="infoclass, handler" Name="SetInfoHandler" />
+<Func Arg="infoclass, out" Name="SetInfoOutput" />
+<Func Arg="out" Name="SetDefaultInfoOutput" />
 <Returns>nothing</Returns>
 <Description>
 This allows to customize what happens in an
-<C>Info(<A>infoclass</A>, <A>level</A>, ...)</C> statement. 
-Here <A>handler</A>
+<C>Info(<A>infoclass</A>, <A>level</A>, ...)</C> statement.<P/> 
+In the first function <A>handler</A>
 must be a function with three arguments <A>infoclass</A>, <A>level</A>,
 <A>list</A>. Here <A>list</A> is the list containing the third to last
 argument of the <Ref Func="Info"/> call.
 <P/>
-For example, using <C>function(cl, lev, l) CallFuncList(Print, l); end;</C>
-would print the arguments without the default <C>"#I  "</C> 
-and <C>"\n"</C> around it.
+The default handler is the function <C>DefaultInfoHandler</C>.
+<Index Key="DefaultInfoHandler"><C>DefaultInfoHandler</C></Index>
+It prints <C>"#I  "</C>, then the third and further arguments of 
+the info statement, and finally a <C>"\n"</C>.
 <P/>
 If the first argument of an <Ref Func="Info"/> statement is a sum of
 Info classes, the handler of the first summand is used.
+<P/>
+The file or stream to which <Ref Func="Info"/> statements for individual
+<Ref Func="Info"/> classes print can be changed with 
+<Ref Func="SetInfoOutput"/>. The initial default for all <Ref Func="Info"/>
+classes is the string <C>"*Print*"</C> which means the current output
+file. The default can be changed with <Ref Func="SetDefaultInfoOutput"/>.  
+The argument <A>out</A> can be a filename or an open stream, 
+the special names <C>"*Print*"</C>, <C>"*errout*</C> and <C>"*stdout*</C>
+are also recognized.<P/>
+For example,
+<C>SetDefaultInfoOutput("*errout*");</C> would send <Ref Func="Info"/> 
+output to standard error, which can be interesting if &GAP;s output is
+redirected.
 </Description>
 </ManSection>
 
@@ -372,19 +397,243 @@ In the read-eval-print loop,
 <Section Label="Profiling">
 <Heading>Profiling</Heading>
 
-Profiling of code can be used to determine in which parts of a program how
-much time has been spent during runtime.
+Profiling of code can be used to determine in which parts of a program
+how much time has been spent and how much memory has been allocated
+during runtime.
+The idea is that
+<List>
+<Item>
+    first one switches on profiling for those &GAP; functions
+    the performance of which one wants to check,
+</Item>
+<Item>
+    then one runs some &GAP; computations,
+</Item>
+<Item>
+    then one looks at the profile information collected during these
+    computations,
+</Item>
+<Item>
+    then one runs more computations (perhaps clearing all profile information
+    before, see <Ref Func="ClearProfile"/>),
+</Item>
+<Item>
+    and finally one switches off profiling.
+</Item>
+</List>
+<P/>
+For switching on and off profiling, &GAP; supports entering a list of
+functions
+(see <Ref Func="ProfileFunctions"/>, <Ref Func="UnprofileFunctions"/>)
+or a list of operations whose methods shall be (un)profiled
+(<Ref Func="ProfileMethods"/>, <Ref Func="UnprofileMethods"/>),
+and <Ref Func="DisplayProfile"/> can be used to show profile information
+about functions in a given list.
+<P/>
+Besides these functions, <Ref Func="ProfileGlobalFunctions"/>,
+<Ref Func="ProfileOperations"/>, and
+<Ref Func="ProfileOperationsAndMethods"/> can be used for switching on
+or off profiling for <E>all</E> global functions, operations, and operations
+together with all their methods, respectively,
+and for showing profile information about these functions.
+<P/>
+Note that &GAP; will perform more slowly when profiling than when not.
 
+<#Include Label="ProfileGlobalFunctions">
 <#Include Label="ProfileOperations">
 <#Include Label="ProfileOperationsAndMethods">
-<#Include Label="ProfileMethods">
-<#Include Label="UnprofileMethods">
+
 <#Include Label="ProfileFunctions">
 <#Include Label="UnprofileFunctions">
-<#Include Label="ProfileGlobalFunctions">
+<#Include Label="ProfileMethods">
+<#Include Label="UnprofileMethods">
+
 <#Include Label="DisplayProfile">
-<#Include Label="PROFILETHRESHOLD">
 <#Include Label="ClearProfile">
+
+
+<!-- The source of the following subsection is not stored in lib/profile.g
+     because the GAP output has to be adjusted from time to time,
+     and this is easier if there is no indentation. -->
+<Subsection Label="subsect:profiling_example">
+<Heading>An Example of Profiling</Heading>
+
+Let us suppose we want to get information about the computation of the
+conjugacy classes of a certain permutation group.
+For that,
+first we create the group,
+then we start profiling for all global functions and for all operations
+and their methods,
+then we compute the conjugacy classes,
+and then we stop profiling.
+<P/>
+<Log><![CDATA[
+gap> g:= PrimitiveGroup( 24, 1 );;
+gap> ProfileGlobalFunctions( true );
+gap> ProfileOperationsAndMethods( true );
+gap> ConjugacyClasses( g );;
+gap> ProfileGlobalFunctions( false );
+gap> ProfileOperationsAndMethods( false );
+]]></Log>
+<P/>
+Now the profile information is available.
+We can list the information for all profiled functions with
+<Ref Func="DisplayProfile"/>.
+<P/>
+<Log><![CDATA[
+gap> DisplayProfile();
+  count  self/ms  chld/ms  stor/kb  chld/kb  package  function              
+  17647        0        0      275        0  GAP      BasePoint             
+  10230        0        0      226        0  (oprt.)  ShallowCopy           
+  10139        0        0        0        0           PositionSortedOp: for*
+  10001        0        0      688        0           UniteSet: for two int*
+  10001        8        0       28      688  (oprt.)  UniteSet              
+  14751       12        0        0        0           =: for two families: *
+  10830        8        4      182      276  GAP      Concatenation         
+   2700       20       12      313       55  GAP      AddRefinement         
+   2444       28        4     3924      317  GAP      ConjugateStabChain    
+   4368        0       32        7      714  (oprt.)  Size                  
+   2174       32        4     1030      116  GAP      List                  
+    585        4       32       45      742  GAP      RRefine               
+   1532       32        8      194       56  GAP      AddGeneratorsExtendSc*
+   1221        8       32      349      420  GAP      Partition             
+ 185309       28       12        0        0  (oprt.)  Length                
+    336        4       40       95      817  GAP      ExtendSeriesPermGroup 
+      4       28       20      488      454  (oprt.)  Sortex                
+   2798        0       52       54      944  GAP      StabChainForcePoint   
+    560        4       48       83      628  GAP      StabChainSwap         
+    432       16       40      259      461  GAP      SubmagmaWithInversesNC
+ 185553       48        8      915       94  (oprt.)  Add                   
+     26        0       64        0     2023  (oprt.)  CentralizerOp         
+     26        0       64        0     2023  GAP      CentralizerOp: perm g*
+     26        0       64        0     2023  GAP      Centralizer: try to e*
+    152        4       64        0     2024  (oprt.)  Centralizer           
+   1605        0       68        0     2032  (oprt.)  StabilizerOfExternalS*
+     26        0       68        0     2024  GAP      Meth(StabilizerOfExte*
+    382        0       96       69     1922  GAP      TryPcgsPermGroup      
+   5130        4       96      309     3165  GAP      ForAll                
+   7980       24      116      330     6434  GAP      ChangeStabChain       
+  12076       12      136      351     6478  GAP      ProcessFixpoint       
+    192        0      148        4     3029  GAP      StabChainMutable: cal*
+   2208        4      148        3     3083  (oprt.)  StabChainMutable      
+    217        0      160        0     3177  (oprt.)  StabChainOp           
+    217       12      148       60     3117  GAP      StabChainOp: group an*
+    216       36      464      334    12546  GAP      PartitionBacktrack    
+   1479       12      668      566    18474  GAP      RepOpElmTuplesPermGro*
+   1453       12      684       56    18460  GAP      in: perm class rep    
+    126        0      728       13    19233  GAP      ConjugacyClassesTry   
+      1        0      736        0    19671  GAP      ConjugacyClassesByRan*
+      2        0      736        2    19678  (oprt.)  ConjugacyClasses      
+      1        0      736        0    19675  GAP      ConjugacyClasses: per*
+  13400     1164        0        0        0  (oprt.)  Position              
+             484             12052                    OTHER                 
+            2048             23319                    TOTAL                 
+]]></Log>
+<P/>
+We can restrict the list to global functions with
+<Ref Func="ProfileGlobalFunctions"/>.
+<P/>
+<Log><![CDATA[
+gap> ProfileGlobalFunctions();
+  count  self/ms  chld/ms  stor/kb  chld/kb  package  function              
+  17647        0        0      275        0  GAP      BasePoint             
+  10830        8        4      182      276  GAP      Concatenation         
+   2700       20       12      313       55  GAP      AddRefinement         
+   2444       28        4     3924      317  GAP      ConjugateStabChain    
+   2174       32        4     1030      116  GAP      List                  
+    585        4       32       45      742  GAP      RRefine               
+   1532       32        8      194       56  GAP      AddGeneratorsExtendSc*
+   1221        8       32      349      420  GAP      Partition             
+    336        4       40       95      817  GAP      ExtendSeriesPermGroup 
+   2798        0       52       54      944  GAP      StabChainForcePoint   
+    560        4       48       83      628  GAP      StabChainSwap         
+    432       16       40      259      461  GAP      SubmagmaWithInversesNC
+    382        0       96       69     1922  GAP      TryPcgsPermGroup      
+   5130        4       96      309     3165  GAP      ForAll                
+   7980       24      116      330     6434  GAP      ChangeStabChain       
+  12076       12      136      351     6478  GAP      ProcessFixpoint       
+    216       36      464      334    12546  GAP      PartitionBacktrack    
+   1479       12      668      566    18474  GAP      RepOpElmTuplesPermGro*
+    126        0      728       13    19233  GAP      ConjugacyClassesTry   
+      1        0      736        0    19671  GAP      ConjugacyClassesByRan*
+            1804             14536                    OTHER                 
+            2048             23319                    TOTAL                 
+]]></Log>
+<P/>
+We can restrict the list to operations with
+<Ref Func="ProfileOperations"/>.
+<P/>
+<Log><![CDATA[
+gap> ProfileOperations();
+  count  self/ms  chld/ms  stor/kb  chld/kb  package  function              
+  10230        0        0      226        0  (oprt.)  ShallowCopy           
+  10001        8        0       28      688  (oprt.)  UniteSet              
+   4368        0       32        7      714  (oprt.)  Size                  
+ 185309       28       12        0        0  (oprt.)  Length                
+      4       28       20      488      454  (oprt.)  Sortex                
+ 185553       48        8      915       94  (oprt.)  Add                   
+     26        0       64        0     2023  (oprt.)  CentralizerOp         
+    152        4       64        0     2024  (oprt.)  Centralizer           
+   1605        0       68        0     2032  (oprt.)  StabilizerOfExternalS*
+   2208        4      148        3     3083  (oprt.)  StabChainMutable      
+    217        0      160        0     3177  (oprt.)  StabChainOp           
+      2        0      736        2    19678  (oprt.)  ConjugacyClasses      
+  13400     1164        0        0        0  (oprt.)  Position              
+             764             21646                    OTHER                 
+            2048             23319                    TOTAL                 
+]]></Log>
+<P/>
+We can restrict the list to operations and their methods with
+<Ref Func="ProfileOperationsAndMethods"/>.
+<P/>
+<Log><![CDATA[
+gap> ProfileOperationsAndMethods();
+  count  self/ms  chld/ms  stor/kb  chld/kb  package  function              
+  10230        0        0      226        0  (oprt.)  ShallowCopy           
+  10139        0        0        0        0           PositionSortedOp: for*
+  10001        0        0      688        0           UniteSet: for two int*
+  10001        8        0       28      688  (oprt.)  UniteSet              
+  14751       12        0        0        0           =: for two families: *
+   4368        0       32        7      714  (oprt.)  Size                  
+ 185309       28       12        0        0  (oprt.)  Length                
+      4       28       20      488      454  (oprt.)  Sortex                
+ 185553       48        8      915       94  (oprt.)  Add                   
+     26        0       64        0     2023  (oprt.)  CentralizerOp         
+     26        0       64        0     2023  GAP      CentralizerOp: perm g*
+     26        0       64        0     2023  GAP      Centralizer: try to e*
+    152        4       64        0     2024  (oprt.)  Centralizer           
+   1605        0       68        0     2032  (oprt.)  StabilizerOfExternalS*
+     26        0       68        0     2024  GAP      Meth(StabilizerOfExte*
+    192        0      148        4     3029  GAP      StabChainMutable: cal*
+   2208        4      148        3     3083  (oprt.)  StabChainMutable      
+    217        0      160        0     3177  (oprt.)  StabChainOp           
+    217       12      148       60     3117  GAP      StabChainOp: group an*
+   1453       12      684       56    18460  GAP      in: perm class rep    
+      2        0      736        2    19678  (oprt.)  ConjugacyClasses      
+      1        0      736        0    19675  GAP      ConjugacyClasses: per*
+  13400     1164        0        0        0  (oprt.)  Position              
+             728             20834                    OTHER                 
+            2048             23319                    TOTAL                 
+]]></Log>
+<P/>
+Finally, we can restrict the list to explicitly given functions with
+<Ref Func="DisplayProfile"/>,
+by entering the list of functions as an argument.
+<P/>
+<Log><![CDATA[
+gap> DisplayProfile( [ StabChainOp, Centralizer ] );
+  count  self/ms  chld/ms  stor/kb  chld/kb  package  function              
+    152        4       64        0     2024  (oprt.)  Centralizer           
+    217        0      160        0     3177  (oprt.)  StabChainOp           
+            2044             23319                    OTHER                 
+            2048             23319                    TOTAL                 
+]]></Log>
+
+<!-- extend this example by changing the thresholds, and call ClearProfile -->
+
+</Subsection>
+
+
 <#Include Label="DisplayCacheStats">
 <#Include Label="ClearCacheStats">
 
@@ -395,7 +644,11 @@ much time has been spent during runtime.
 <Section Label="Information about the version used">
 <Heading>Information about the version used</Heading>
 
-<#Include Label="DisplayRevision">
+<Index Key="GAPInfo.Version"><C>GAPInfo.Version</C></Index>
+
+The global variable <C>GAPInfo.Version</C> (see <Ref Var="GAPInfo"/>)
+contains the version number of the version of &GAP;. Its value can be 
+checked other version number using <Ref Func="CompareVersionNumbers"/>.
 
 </Section>
 
@@ -408,37 +661,25 @@ Test files are used to check that &GAP; produces correct results in
 certain computations. A selection of test files for the library can be
 found in the <F>tst</F> directory of the &GAP; distribution.
 
-<ManSection>
-<Oper Name="ReadTest" Arg='name-file'/>
+<#Include Label="ReadTest">
+<#Include Label="StartStopTest">
 
-<Description>
-reads a test file.
-A test file starts with a line
-<P/>
+<#Include Label="[1]{testinstall.g}">
+
 <Log><![CDATA[
-gap> START_TEST("arbitrary identifier string");
+test file         GAP4stones     time(msec)
+-------------------------------------------
+testing: ................/gap4r5/tst/zlattice.tst
+zlattice.tst               0              0
+testing: ................/gap4r5/tst/gaussian.tst
+gaussian.tst               0             10
+[ further lines deleted ]
 ]]></Log>
+
+<#Include Label="[1]{testall.g}">
 <P/>
-(Note that the <C>gap></C> prompt is part of the line!)
-It continues by lines of &GAP; input and corresponding output.
-The input lines again start with the <C>gap></C> prompt (or the <C>></C> prompt if
-commands exceed one line). The output is exactly as would result from typing
-in the input interactively to a &GAP; session
-(on a screen with 80 characters per line).
-<P/>
-The test file stops with a line
-<P/>
-<Log><![CDATA[
-gap> STOP_TEST( "filename", 10000 );
-]]></Log>
-<P/>
-Here the string <C>"filename"</C> should give the name of the test file. The
-number is a proportionality factor that is used to output a <Q>&GAP;stone</Q>
-speed ranking after the file has been completely processed. For the files
-provided with the distribution this scaling is roughly equalized to yield
-the same numbers as produced by <F>combinat.tst</F>.
-</Description>
-</ManSection>
+
+<#Include Label="Test">
 
 </Section>
 

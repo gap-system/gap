@@ -5,7 +5,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: vspc.msk,v 1.23 2003/07/21 19:49:06 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Vector Spaces">
@@ -95,7 +95,6 @@
 <!-- % add an example of a non-integral basis; -->
 <!-- % for that, add a method that takes an integral basis, -->
 <!-- % and inspects the basechange matrix -->
-<#Include Label="StructureConstantsTable">
 
 </Section>
 

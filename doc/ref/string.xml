@@ -1,11 +1,11 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  string.msk                  GAP documentation            Martin Schoenert -->
+<!-- %A  string.msk                  GAP documentation            Martin Schönert -->
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: string.msk,v 1.36 2006/08/16 10:21:03 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Strings and Characters">
@@ -72,11 +72,13 @@ it is displayed with enclosing doublequotes.
 empty list of arbitrary &GAP; objects;
 it is only printed like a string if it was input as empty string or converted
 to a string with <Ref Func="ConvertToStringRep"/>.)
+<!--  no longer true since we consider UTF-8 standard, but support latinX
 The difference between <Ref Func="ViewObj" Label="for a string"/> and
 <Ref Func="PrintObj" Label="for a string"/> is that the latter prints
 <E>all</E> non-printable and non-ASCII characters in three digit octal
 notation, while  <Ref Func="ViewObj" Label="for a string"/> sends all
 printable characters to the output stream.
+-->
 The output of <Ref Func="PrintObj" Label="for a string"/> can be read back
 into &GAP;.
 <P/>
@@ -100,12 +102,12 @@ gap> PrintObj( s4 );  Print( "\n" );
 gap> Print( s4 );  Print( "\n" );
 abc"def
 ghi
-gap> s := "German uses strange characters: \344\366\374\337\n";
-"German uses strange characters: ����\n"
+gap> s := "German uses strange characters: äöüß\n";
+"German uses strange characters: äöüß\n"
 gap> Print(s);
-German uses strange characters: ����
+German uses strange characters: äöüß
 gap> PrintObj(s);  Print( "\n" );
-"German uses strange characters: \344\366\374\337\n"
+"German uses strange characters: \303\244\303\266\303\274\303\237\n"
 ]]></Example>
 <P/>
 <Log><![CDATA[
@@ -226,7 +228,7 @@ such digits. The meaning is given in the following list
 <C>\XYZ</C></Mark>
 <Item>
     with <C>X</C>, <C>Y</C>, <C>Z</C> three octal digits.
-    This is translated to the character correponding to the number
+    This is translated to the character corresponding to the number
     <C>X * 64 + Y * 8 + Z modulo 256</C>.
     This can be used to specify and store arbitrary binary data as a string
     in &GAP;.
@@ -337,9 +339,9 @@ The inequality operator <C>&lt;></C> returns <K>true</K> if the two strings
 <Example><![CDATA[
 gap> "Hello world.\n" = "Hello world.\n";
 true
-gap> "Hello World.\n" = "Hello world.\n";  # string comparison is case sensitive
+gap> "Hello World.\n" = "Hello world.\n"; # comparison is case sensitive
 false
-gap> "Hello world." = "Hello world.\n";  # the first string has no <newline>
+gap> "Hello world." = "Hello world.\n";  # first string has no <newline>
 false
 gap> "Goodbye world.\n" = "Hello world.\n";
 false
@@ -361,11 +363,13 @@ implied by the underlying, system dependent, character set.
 <Example><![CDATA[
 gap> "Hello world.\n" < "Hello world.\n";  # the strings are equal
 false
-gap> "Hello World." < "Hello world.";  # in ASCII capitals range before small letters
+gap> # in ASCII capitals range before small letters:
+gap> "Hello World." < "Hello world.";
 true
 gap> "Hello world." < "Hello world.\n";  # prefixes are always smaller
 true
-gap> "Goodbye world.\n" < "Hello world.\n";  # `G' comes before `H', in ASCII at least
+gap> # G comes before H, in ASCII at least:
+gap> "Goodbye world.\n" < "Hello world.\n";
 true
 ]]></Example>
 <P/>
@@ -384,7 +388,28 @@ not strings, see&nbsp;<Ref Sect="Comparisons"/> for the details.
 For the possibility to print &GAP; objects to strings,
 see&nbsp;<Ref Sect="String Streams"/>.
 
+<#Include Label="DisplayString">
+
+<ManSection>
+<Var Name="DEFAULTDISPLAYSTRING"/>
+<Description>
+    This is the default value for <Ref Oper="DisplayString"/>.
+</Description>
+</ManSection>
+
+<#Include Label="ViewString">
+
+<ManSection>
+<Var Name="DEFAULTVIEWSTRING"/>
+<Description>
+    This is the default value for <Ref Oper="ViewString"/>.
+</Description>
+</ManSection>
+
+<#Include Label="PrintString">
 <#Include Label="String">
+
+<#Include Label="StripLineBreakCharacters">
 
 <ManSection>
 <Func Name="HexStringInt" Arg='int'/>
@@ -444,6 +469,11 @@ gap> s;
 <#Include Label="JoinStringsWithSeparator">
 <#Include Label="Chomp">
 
+The following two functions convert basic strings to lists of numbers and
+vice versa. They are useful for examples of text encryption.
+<#Include Label="NumbersString">
+<#Include Label="StringNumbers">
+
 </Section>
 
 
@@ -457,11 +487,9 @@ might depend on the system used. While most systems use an extension of
 ASCII, in particular character values outside the range <C>[ 32 .. 126 ]</C>
 might differ between architectures.
 <P/>
-All functions in this section are internal and behaviour is undefined if
-invalid arguments are given.
 
 <ManSection>
-<Func Name="INT_CHAR" Arg='char'/>
+<Func Name="IntChar" Arg='char'/>
 
 <Description>
 returns an integer value in the range <C>[ 0 .. 255 ]</C> that corresponds
@@ -471,16 +499,16 @@ to <A>char</A>.
 
 
 <ManSection>
-<Func Name="CHAR_INT" Arg='int'/>
+<Func Name="CharInt" Arg='int'/>
 
 <Description>
 returns a character that corresponds to the integer value <A>int</A>,
 which must be in the range <C>[ 0 .. 255 ]</C>.
 <P/>
 <Example><![CDATA[
-gap> c:=CHAR_INT(65);
+gap> c:=CharInt(65);
 'A'
-gap> INT_CHAR(c);
+gap> IntChar(c);
 65
 ]]></Example>
 </Description>
@@ -488,7 +516,7 @@ gap> INT_CHAR(c);
 
 
 <ManSection>
-<Func Name="SINT_CHAR" Arg='char'/>
+<Func Name="SIntChar" Arg='char'/>
 
 <Description>
 returns a signed integer value in the range <C>[ -128 .. 127 ]</C> that
@@ -498,7 +526,7 @@ corresponds to <A>char</A>.
 
 
 <ManSection>
-<Func Name="CHAR_SINT" Arg='int'/>
+<Func Name="CharSInt" Arg='int'/>
 
 <Description>
 returns a character which corresponds to the signed integer value <A>int</A>,
@@ -508,18 +536,19 @@ The signed and unsigned integer functions behave the same for values in the
 range <C>[ 0 .. 127 ]</C>.
 <P/>
 <Example><![CDATA[
-gap> SINT_CHAR(c);
+gap> SIntChar(c);
 65
-gap> c:=CHAR_SINT(-20);;
-gap> SINT_CHAR(c);
+gap> c:=CharSInt(-20);;
+gap> SIntChar(c);
 -20
-gap> INT_CHAR(c);
+gap> IntChar(c);
 236
-gap> SINT_CHAR(CHAR_INT(255));
+gap> SIntChar(CharInt(255));
 -1
 ]]></Example>
 </Description>
 </ManSection>
+
 
 </Section>
 
@@ -613,44 +642,37 @@ gap> HexStringInt(last);
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Obtaining LaTeX Representations of Objects">
 <Heading>Obtaining LaTeX Representations of Objects</Heading>
+<Index Subkey="for GAP objects">LaTeX</Index>
 
-<ManSection>
-<Func Name="LaTeX" Arg='obj1, obj2, ...'/>
-
-<Description>
-Returns a LaTeX string describing the objects <A>obj1</A>, <A>obj2</A>, ... .
-This string can for example be pasted to a &LaTeX; file, or one can use
-it in composing a temporary &LaTeX; file,
-which is intended for being &LaTeX;'ed afterwards from within &GAP;.
+For the purpose of generating &LaTeX; source code with &GAP; it is 
+recommended to add new functions which will print the &LaTeX; source 
+or return &LaTeX; strings for further processing.
 <P/>
-<Example><![CDATA[
-gap> LaTeX(355/113);
-"\\frac{355}{113}%\n"
-gap> LaTeX(Z(9)^5);
-"Z(3^{2})^{5}%\n"
-gap> Print(LaTeX([[1,2,3],[4,5,6],[7,8,9]]));
-\left(\begin{array}{rrr}%
-1&2&3\\%
-4&5&6\\%
-7&8&9\\%
-\end{array}\right)%
-]]></Example>
-</Description>
-</ManSection>
 
+An alternative approach could be based on methods for the default &LaTeX; 
+representation for each appropriate type of objects. However, there is
+no clear notion of a default &LaTeX; code for any non-trivial mathematical
+object; moreover, different output may be required in different contexts.
+<P/>
 
-<ManSection>
-<Oper Name="LaTeXObj" Arg='obj'/>
+While customisation of such an operation may require changes in a variety 
+of methods that may be distributed all over the library, the user will 
+have a clean overview of the whole process of &LaTeX; code generation if 
+it is contained in a single function. Furthermore, there may be kinds of 
+objects which are not detected by the method selection, or there may be 
+a need in additional parameters specifying requirements for the output.
+<P/>
 
-<Description>
-The function <Ref Func="LaTeX"/> actually calls the operation
-<Ref Func="LaTeXObj"/> for each argument.
-By installing special methods for this operation, it is possible
-to achieve special &LaTeX;'ing behavior for certain objects
-(see Chapter&nbsp;<Ref Chap="Method Selection"/>).
-</Description>
-</ManSection>
-
+This is why having a special purpose function for each particular case 
+is more suitable. &GAP; provides several functions that produce &LaTeX; 
+strings for those situations where this is nontrivial and reasonable. 
+A useful example is <Ref Func="LaTeXStringDecompositionMatrix"/> from
+the &GAP; library, others can be found entering <C>?LaTeX</C> at the 
+&GAP; prompt. Package authors are encouraged to add an index entry 
+<C>LaTeX</C> to the documentation of all &LaTeX; string producing functions.
+This way, entering <C>?LaTeX</C> will give an overview of all documented 
+functionality in this direction.
+ 
 </Section>
 </Chapter>
 

@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: domain.msk,v 1.29 2002/04/15 10:02:28 sal Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Domains and their Elements">
@@ -12,8 +12,8 @@
 
 <#Include Label="[1]{domain}">
 <P/>
-The most important facts about domains are stated in
-Chapter&nbsp;<Ref Chap="Domains" BookName="tut"/>.
+An introduction to the most important facts about domains is given
+in Chapter&nbsp;<Ref Chap="Domains" BookName="tut"/>.
 <P/>
 There are only few <E>operations</E> especially for domains
 (see&nbsp;<Ref Sect="Operations for Domains"/>),
@@ -114,15 +114,15 @@ see&nbsp;<Ref Sect="Domain Categories"/>.
 <Heading>Constructing Domains</Heading>
 
 For several operational structures (see&nbsp;<Ref Sect="Operational Structure of Domains"/>),
-&GAP; provides functions to construct domains with this structure.
+&GAP; provides functions to construct domains with this structure
+(note that such functions do not exist for all operational structures).
 For example, <Ref Func="Group" Label="for several generators"/>
-returns groups, <Ref Func="VectorSpace"/> returns vector spaces etc.
+returns groups, <Ref Func="VectorSpace"/> returns vector spaces etc.:
 <P/>
 <Index Key="Struct"><A>Struct</A></Index>
 <C><A>Struct</A>( <A>arg1</A>, <A>arg2</A>, ... )</C>
 <P/>
-The syntax of these functions may vary, dependent on the structure in
-question.
+The syntax of these functions may vary, dependent on the structure in question.
 Usually a domain is constructed as the closure of some elements under the
 given operations, that is, the domain is given by its <E>generators</E>.
 For example, a group can be constructed from a list of generating
@@ -556,8 +556,9 @@ following.
 <Index Subkey="operation">division</Index>
 <Index Subkey="operation">exponentiation</Index>
 <Index Subkey="operation">remainder</Index>
-For details about special methods for <Ref Oper="\mod"/>,
-consult the index entries for <Q>mod</Q>.
+For details about special methods for <Ref Oper="\*"/>, 
+<Ref Oper="\/"/>, <Ref Oper="\^"/> and <Ref Oper="\mod"/>, 
+consult the appropriate index entries for them.
 <!-- % (no Declaration available for them?) -->
 </Description>
 </ManSection>

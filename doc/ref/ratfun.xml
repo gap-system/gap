@@ -5,7 +5,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: ratfun.msk,v 1.69 2006/03/23 19:40:39 stefan Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Polynomials and Rational Functions">
@@ -13,7 +13,10 @@
 
 Let <M>R</M> be a commutative ring-with-one. We call a free associative
 algebra <M>A</M> over <M>R</M> a <E>polynomial ring</E> over <M>R</M>. The free generators of
-<M>A</M> are called <E>indeterminates</E>, they are usually denoted by
+<M>A</M> are called <E>indeterminates</E>
+(to avoid naming conflicts with the word <E>variables</E> which will be used
+to denote &GAP; variables only)
+, they are usually denoted by
 <M>x_1, x_2, \ldots</M>.
 The number of indeterminates is called the <E>rank</E> of <M>A</M>.
 The elements of <M>A</M> are called <E>polynomials</E>. Products of
@@ -59,7 +62,6 @@ coefficients, however, <M>R</M> must be a unique factorization domain.
 <#Include Label="IndeterminateOfUnivariateRationalFunction">
 <#Include Label="IndeterminateName">
 <#Include Label="CIUnivPols">
-<#Include Label="INDETERMINATENAMEREUSE">
 
 </Section>
 
@@ -84,7 +86,7 @@ therefore all arithmetic operations are applicable to rational functions.
 <C><A>f</A> / <A>g</A></C>
 <P/>
 <Example><![CDATA[
-gap> x:=X(Rationals,1);;y:=X(Rationals,2);;
+gap> x:=Indeterminate(Rationals,1);;y:=Indeterminate(Rationals,2);;
 gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
 gap> a:=g/f;
 (x_1^2*x_2+x_1*x_2^2+5)/(x_1^5+x_1*x_2+3)
@@ -138,13 +140,13 @@ Two rational functions <A>f</A> and <A>g</A> are equal if the product
 <C>Numerator(<A>g</A>) * Denominator(<A>f</A>)</C>.
 <P/>
 <Example><![CDATA[
-gap> x:=X(Rationals,"x");;y:=X(Rationals,"y");;
+gap> x:=Indeterminate(Rationals,"x");;y:=Indeterminate(Rationals,"y");;
 gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
 gap> a:=g/f;
 (x^2*y+x*y^2+5)/(x^5+x*y+3)
 gap> b:=(g*f)/(f^2);
-(x^7*y+x^6*y^2+5*x^5+x^3*y^2+x^2*y^3+3*x^2*y+3*x*y^2+5*x*y+15)/(x^10+2*x^6*y+6\
-*x^5+x^2*y^2+6*x*y+9)
+(x^7*y+x^6*y^2+5*x^5+x^3*y^2+x^2*y^3+3*x^2*y+3*x*y^2+5*x*y+15)/(x^10+2\
+*x^6*y+6*x^5+x^2*y^2+6*x*y+9)
 gap> a=b;
 true
 ]]></Example>
@@ -234,6 +236,16 @@ Some of the operations are actually defined on the larger domain of Laurent
 polynomials (see <Ref Sect="Laurent Polynomials"/>). For this section you can simply
 ignore the word <Q>Laurent</Q> if it occurs in a description.
 <P/>
+
+<#Include Label="UnivariatePolynomial">
+<#Include Label="UnivariatePolynomialByCoefficients">
+<#Include Label="DegreeOfLaurentPolynomial">
+<#Include Label="RootsOfPolynomial">
+<#Include Label="RootsOfUPol">
+<#Include Label="QuotRemLaurpols">
+<#Include Label="UnivariatenessTestRationalFunction">
+<#Include Label="InfoPoly">
+
 We remark that some functions for multivariate polynomials (which will be
 defined in the following sections) permit a different syntax for univariate
 polynomials which drops the requirement to specify the indeterminate.
@@ -242,6 +254,8 @@ Examples are
 <Ref Func="Discriminant"/>, <Ref Func="Derivative"/>,
 <Ref Func="LeadingCoefficient"/> and <Ref Func="LeadingMonomial"/>:
 <Example><![CDATA[
+gap> p:=UnivariatePolynomial(Rationals,[1,2,3,4],1);
+4*x^3+3*x^2+2*x+1
 gap> Value(p,Z(5));
 Z(5)^2
 gap> LeadingCoefficient(p);
@@ -249,14 +263,6 @@ gap> LeadingCoefficient(p);
 gap> Derivative(p);
 12*x^2+6*x+2
 ]]></Example>
-
-<#Include Label="UnivariatePolynomial">
-<#Include Label="UnivariatePolynomialByCoefficients">
-<#Include Label="DegreeOfLaurentPolynomial">
-<#Include Label="RootsOfUPol">
-<#Include Label="QuotRemLaurpols">
-<#Include Label="UnivariatenessTestRationalFunction">
-<#Include Label="InfoPoly">
 
 </Section>
 
@@ -354,7 +360,7 @@ gap> Factors( f );
 gap> Factors( PolynomialRing( Rationals ), f );
 [ x^2+1 ]
 gap> Factors( PolynomialRing( CF(4) ), f );
-[ x+-E(4), x+E(4) ]
+[ x+(-E(4)), x+E(4) ]
 ]]></Example>
 </Description>
 </ManSection>
@@ -457,7 +463,8 @@ Alternatively, first create the
 indeterminates and then create the ring including these indeterminates.
 <P/>
 <Example><![CDATA[
-gap> a:=X(Rationals,"a":old);;b:=X(Rationals,"b":old);;
+gap> a:=Indeterminate(Rationals,"a":old);;
+gap> b:=Indeterminate(Rationals,"b":old);;
 gap> PolynomialRing(Rationals,[a,b]);;
 ]]></Example>
 <P/>

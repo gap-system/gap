@@ -5,7 +5,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: pcgs.msk,v 1.33 2003/01/30 17:23:11 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Polycyclic Groups">
@@ -21,25 +21,23 @@ are not polycyclic.
 <P/>
 In &GAP; there exists a large number of methods for polycyclic groups
 which are based upon the polycyclic structure of these groups. These
-methods are usually very efficient and hence &GAP; tries to use them
-whenever possible.
+methods are usually very efficient, especially for groups which are
+given by a pc-presentation (see chapter <Ref Chap="Pc Groups"/>), and can 
+be applied to many types of groups. Hence &GAP; tries to use them 
+whenever possible, for example, for permutation groups and matrix 
+groups over finite fields that are known to be polycyclic 
+(the only exception is the representation as finitely presented group 
+for which the polycyclic methods cannot be used in general).
 <P/>
-In &GAP;&nbsp;3 these methods have been available for AgGroups only; that
-is, for groups defined via a power-commutator presentation, see
-Chapter&nbsp;<Ref Chap="Pc Groups"/> for the &GAP;&nbsp;4 analogon. This has changed in &GAP;&nbsp;4
-where these methods can be applied to many types of groups. For example,
-the methods can be applied to permutation groups or matrix groups which
-are known to be polycyclic. The only exception is the representation as
-finitely presented group for which the polycyclic methods cannot
-be used in general.
-<P/>
-At the current state of implementations the methods for polycyclic
-groups can only be applied to finite groups. However, a more general
-implementation is planned.
+At the current state of implementations the &GAP; library contains 
+methods to compute with finite polycyclic groups, while the &GAP; 
+package <Package>Polycyclic</Package> by Bettina Eick and Werner Nickel 
+allows also computations with infinite polycyclic groups which are given 
+by a pc-presentation.
 <P/>
 <!-- %%  Most of the methods for polycyclic groups are due to Frank Celler, Bettina -->
 <!-- %%  Eick, Alexander Hulpke and Werner Nickel. The methods to consider a solvable -->
-<!-- %%  permutation group as a polycyclic group are due to Heiko Thei{\ss}en. -->
+<!-- %%  permutation group as a polycyclic group are due to Heiko Theißen. -->
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -111,8 +109,7 @@ Note also that a pcgs behaves like a list.
 <Section Label="Defining a Pcgs Yourself">
 <Heading>Defining a Pcgs Yourself</Heading>
 
-In a number of situations it might be useful to supply a pgcs
-to a group.
+In a number of situations it might be useful to supply a pcgs to a group.
 <P/>
 Note that the elementary operations for such a pcgs might be rather
 inefficient, since &GAP; has to use generic methods in this case.
@@ -489,19 +486,19 @@ When working with a polycyclic group, one often needs to compute matrix
 operations of the group on a factor of the group.
 For this purpose there are the functions described in
 <Ref Subsect="VectorSpaceByPcgsOfElementaryAbelianGroup"/> to
-<Ref Subsect="LinearOperationLayer"/>.
+<Ref Subsect="LinearActionLayer"/>.
 <P/>
 In certain situations, for example within the computation of conjugacy
 classes of finite soluble groups as described in <Cite Key="MeckyNeubueser89"/>,
 affine actions of groups are required. For this purpose we introduce
-the functions <Ref Func="AffineOperation"/> and
-<Ref Func="AffineOperationLayer"/>.
+the functions <Ref Func="AffineAction"/> and
+<Ref Func="AffineActionLayer"/>.
 
 <#Include Label="VectorSpaceByPcgsOfElementaryAbelianGroup">
-<#Include Label="LinearOperation">
-<#Include Label="LinearOperationLayer">
-<#Include Label="AffineOperation">
-<#Include Label="AffineOperationLayer">
+<#Include Label="LinearAction">
+<#Include Label="LinearActionLayer">
+<#Include Label="AffineAction">
+<#Include Label="AffineActionLayer">
 
 </Section>
 
@@ -579,8 +576,6 @@ centralizers in solvable groups via epimorphic images
 <Cite Key="Theissen93"/>).
 Usually these are only invoked as methods, but it is possible to access the
 algorithm directly.
-<P/>
-@<E>The syntax of this function may change in a future rewrite!</E>@
 <P/>
 <#Include Label="ClassesSolvableGroup">
 <#Include Label="CentralizerSizeLimitConsiderFunction">

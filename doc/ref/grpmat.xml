@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: grpmat.msk,v 1.18 2002/04/15 10:02:29 sal Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Matrix Groups">
@@ -22,12 +22,13 @@ gap> m1 := [ [ Z(3)^0, Z(3)^0,   Z(3) ],
 gap> m2 := [ [   Z(3),   Z(3), Z(3)^0 ],
 >            [   Z(3), 0*Z(3),   Z(3) ],
 >            [ Z(3)^0, 0*Z(3),   Z(3) ] ];;
-gap> SizeScreen([ 83, ]);;
 gap> m := Group( m1, m2 );
 Group(
-[ [ [ Z(3)^0, Z(3)^0, Z(3) ], [ Z(3), 0*Z(3), Z(3) ], [ 0*Z(3), Z(3), 0*Z(3) ] ],
-  [ [ Z(3), Z(3), Z(3)^0 ], [ Z(3), 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3), Z(3) ] ] ])
-gap> SizeScreen([ 80, ]);;
+[ 
+  [ [ Z(3)^0, Z(3)^0, Z(3) ], [ Z(3), 0*Z(3), Z(3) ], 
+      [ 0*Z(3), Z(3), 0*Z(3) ] ], 
+  [ [ Z(3), Z(3), Z(3)^0 ], [ Z(3), 0*Z(3), Z(3) ], 
+      [ Z(3)^0, 0*Z(3), Z(3) ] ] ])
 ]]></Example>
 
 
@@ -53,6 +54,7 @@ that represent a faithful action on vectors.
 <#Include Label="DefaultFieldOfMatrixGroup">
 <#Include Label="FieldOfMatrixGroup">
 <#Include Label="TransposedMatrixGroup">
+<#Include Label="IsFFEMatrixGroup">
 
 </Section>
 
