@@ -15,53 +15,94 @@
 #############################################################################
 ##  
 #F  Pager( <lines> ) . . . . . . . . . . . . display text on screen in a pager
-##  
-##  This function can be used to display a text on screen using a pager, i.e.,
-##  the text is shown page by page. 
-##  
-##  There is a default builtin pager in GAP which has very limited capabilities
-##  but should work on any system.
-##  
+
+##  <#GAPDoc Label="Pager">
+##  <ManSection>
+##  <Func Name="Pager" Arg='lines'/>
+##
+##  <Description>
+##  This function can be used to display a text on screen using a pager,
+##  i.e., the text is shown page by page. 
+##  <P/>
+##  There is a default builtin pager in &GAP; which has very limited
+##  capabilities but should work on any system.
+##  <P/>
 ##  At least on a UNIX system one should use an external pager program like
-##  `less' or `more'. {\GAP} assumes that this program has a command line option 
-##  `+nr' which starts the display of the text with line number `nr'.
-##  
-##  Which pager is used can be controlled by setting the variable
-##  `GAPInfo.UserPreferences.Pager'.
-##  The default setting is `GAPInfo.UserPreferences.Pager := "builtin";'
+##  <C>less</C> or <C>more</C>.
+##  &GAP; assumes that this program has a command line option <C>+nr</C>
+##  which starts the display of the text with line number <C>nr</C>.
+##  <P/>
+##  Which pager is used can be controlled by setting the user preference
+##  <C>"Pager"</C>.
+##  The default value is <C>"builtin"</C>
 ##  which means that the internal pager is used.
-##  
-##  On UNIX systems you probably want to set
-##  `GAPInfo.UserPreferences.Pager := "less";' or
-##  `GAPInfo.UserPreferences.Pager := "more";',
-##  you can do this for example in your `gap.ini' file.
-##  In that case you can also tell {\GAP} a list of standard options for the
-##  external pager. These are specified as list of strings in the variable
-##  `GAPInfo.UserPreferences.PagerOptions'.
-##  
-##  Example:
-##    GAPInfo.UserPreferences.Pager  := "less";
-##    GAPInfo.UserPreferences.PagerOptions := ["-f", "-r", "-a", "-i", "-M", "-j2"];
-##  
-##  The argument <lines> can have one of the following forms:
-##  
-##  (1) a string (i.e., lines are separated by newline characters)
-##  (2) a list of strings (without trailing newline characters) 
+##  <P/>
+##  On UNIX systems you probably want to set the user preference
+##  <C>"Pager"</C> to the value <C>"less"</C> or <C>"more"</C>,
+##  you can do this for example in your <F>gap.ini</F>
+##  file (see <Ref Sect="sect:gap.ini"/>).
+##  In that case you can also tell &GAP; a list of standard options for the
+##  external pager, via the user preference <C>"PagerOptions"</C>.
+##  <P/>
+##  <Log><![CDATA[
+##    SetUserPreference( "Pager", "less" );
+##    SetUserPreference( "PagerOptions", ["-f","-r","-a","-i","-M","-j2"] );
+##  ]]></Log>
+##  <P/>
+##  The argument <A>lines</A> can have one of the following forms:
+##  <P/>
+##  <Enum> 
+##  <Item> 
+##   a string (i.e., lines are separated by newline characters)
+##  </Item>
+##  <Item>
+##   a list of strings (without  newline characters) 
 ##  which are interpreted as lines of the text to be shown
-##  (3) a record with component `.lines' as in (1) or (2) and 
+##  </Item>
+##  <Item>
+##   a record with component <C>lines</C> as in 1. or 2. and
 ##  optional further components
-##  
-##  In case (3) currently the following additional components are used:
-##  
-##  `.formatted' &
-##  can be `false' or `true'. If set to `true' the builtin pager tries 
-##  to show the text exactly as it is given (avoiding {\GAP}s automatic 
-##  line breaking
-##  
-##  `.start' &
-##  must be an integral number. This is interpreted as the number of the
-##  first line shown by the pager (one may see the beginning of the text
-##  via back scrolling).
+##  </Item> 
+##  </Enum>
+##  <P/>
+##  In case&nbsp;3. currently the following additional components are used:
+##  <P/>
+##  <List>
+##  <Mark><C>formatted</C></Mark>
+##  <Item>
+##    can be <K>false</K> or <K>true</K>.
+##    If set to <K>true</K> the builtin pager tries to show the text exactly
+##    as it is given (avoiding &GAP;'s automatic line breaking),
+##  </Item>
+##  <Mark><C>start</C></Mark>
+##  <Item>
+##    must be a positive integer.
+##    This is interpreted as the number of the first line shown by the pager
+##    (one may see the beginning of the text via back scrolling).
+##  </Item>
+##  <Mark><C>exitAtEnd</C></Mark>
+##  <Item>
+##    can be <K>false</K> or <K>true</K>.
+##    If set to <K>true</K> (the default), the builtin pager is terminated
+##    as soon as the end of the list is shown;
+##    otherwise entering the <B>q</B> key is necessary in order to return
+##    from the pager.
+##  </Item>
+##  </List>
+##  <P/>
+##  The <Ref Func="Pager"/> command is used by &GAP;'s help system for
+##  displaying help sections in text format.
+##  But, of course, it may be used for other purposes as well.
+##  <P/>
+##  <Log><![CDATA[
+##  gap> s6 := SymmetricGroup(6);;
+##  gap> words := ["This", "is", "a", "very", "stupid", "example"];;
+##  gap> l := List(s6, p-> Permuted(words, p));;
+##  gap> Pager(List(l, a-> JoinStringsWithSeparator(a," ")));;
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##  
 
 DeclareGlobalFunction("Pager");

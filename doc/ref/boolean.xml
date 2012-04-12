@@ -1,11 +1,11 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  boolean.msk                 GAP documentation            Martin Schoenert -->
+<!-- %A  boolean.msk                 GAP documentation            Martin Schönert -->
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: boolean.msk,v 1.14 2002/04/15 10:02:27 sal Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Booleans">
@@ -71,10 +71,14 @@ and <K>fail</K> cannot appear in boolean lists
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Comparisons of Booleans">
 <Heading>Comparisons of Booleans</Heading>
-
 <Index Subkey="of booleans">comparisons</Index>
+<Subsection Label="Equality and inequality of Booleans">
+<Heading>Equality and inequality of Booleans</Heading>
+<Index Subkey="of booleans">equality</Index>
+<Index Subkey="of booleans">inequality</Index>
 <C><A>bool1</A> = <A>bool2</A></C>
 <P/>
+<Alt Only="LaTeX">\noindent</Alt>
 <C><A>bool1</A> &lt;> <A>bool2</A></C>
 <P/>
 The equality operator <C>=</C> evaluates to <K>true</K>
@@ -99,7 +103,10 @@ true
 gap> true <> 17;
 true
 ]]></Example>
-<P/>
+</Subsection>
+
+<Subsection Label="Ordering of Booleans">
+<Heading>Ordering of Booleans</Heading>
 <Index Subkey="booleans">ordering</Index>
 <A>bool1</A> <C>&lt;</C> <A>bool2</A>
 <P/>
@@ -113,6 +120,7 @@ gap> true < false;  fail >= false;
 true
 true
 ]]></Example>
+</Subsection>
 
 </Section>
 
@@ -127,6 +135,10 @@ true
 The following boolean operations are only applicable to <K>true</K> and
 <K>false</K>.
 <P/>
+
+<Subsection Label="Logical disjunction">
+<Heading>Logical disjunction</Heading>
+<Index>Logical disjunction</Index>
 <Index Key="or"><K>or</K></Index>
 <A>bool1</A> <K>or</K> <A>bool2</A>
 <P/>
@@ -163,9 +175,17 @@ gap> if i <= 0 or l[i] = false then     # this does not cause an error,
 >    Print("aha\n"); fi;                # because `l[i]' is not evaluated
 aha
 ]]></Example>
-<P/>
+</Subsection>
+
+<Subsection Label="Logical conjunction">
+<Heading>Logical conjunction</Heading>
+<Index>Logical conjunction</Index>
 <Index Key="and"><K>and</K></Index>
 <A>bool1</A> <K>and</K> <A>bool2</A>
+<P/>
+<Index Key="and" Subkey="for filters"><K>and</K></Index>
+<Alt Only="LaTeX">\noindent</Alt>
+<A>fil1</A> <K>and</K> <A>fil2</A>
 <P/>
 The logical operator <K>and</K> evaluates to <K>true</K>
 if both boolean operands <A>bool1</A>, <A>bool2</A> are <K>true</K>,
@@ -196,12 +216,9 @@ gap> true and false;
 false
 gap> true and true;
 true
-gap> false and 17;  # this does not cause an error, because `17' is never looked at
+gap> false and 17;  # does not cause error, because 17 is never looked at
 false
 ]]></Example>
-<P/>
-<Index Key="and" Subkey="for filters"><K>and</K></Index>
-<A>fil1</A> <K>and</K> <A>fil2</A>
 <P/>
 <K>and</K> can also be applied to filters.
 It returns a filter that when applied to some argument <A>x</A>,
@@ -213,7 +230,11 @@ gap> andfilt( 17 );  andfilt( 1/2 );
 true
 false
 ]]></Example>
-<P/>
+</Subsection>
+
+<Subsection Label="Logical negation">
+<Heading>Logical negation</Heading>
+<Index>Logical negation</Index>
 <Index Key="not"><K>not</K></Index>
 <K>not</K> <A>bool</A>
 <P/>
@@ -235,6 +256,7 @@ false
 gap> not false;
 true
 ]]></Example>
+</Subsection>
 
 </Section>
 </Chapter>

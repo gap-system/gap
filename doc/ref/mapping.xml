@@ -4,13 +4,13 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: mapping.msk,v 1.20 2002/04/15 10:02:30 sal Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Mappings">
 <Heading>Mappings</Heading>
 
-<Index>functions</Index>
+<Index Subkey="as in mathematics">functions</Index>
 <Index>relations</Index>
 A <E>mapping</E> in &GAP; is what is called a <Q>function</Q> in mathematics.
 &GAP; also implements <E>generalized mappings</E> in which one element might

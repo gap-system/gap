@@ -1,14 +1,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%A  gapmacro.tex                GAP manual                   Frank Celler
-%A                                                           Heiko Theissen
+%A  gapmacro.tex                GAP manual                       Frank Celler
+%A                                                             Heiko Theissen
 %A                                                           Alexander Hulpke
+%A                                                           Burkhard Höfling
 %%
-%%  @(#)$Id: gapmacro.tex,v 4.66 2005/07/11 10:51:44 gap Exp $
 %%
 %%  DO NOT RELY ON MACRO DEFINITIONS IN THIS FILE!
 %%  The official definition of the manual style is to be found in the file
-%%  `ext:document.tex'.
+%%  `gapmacrodoc.tex'.
 %%
 %%  The following macros are defined in this file.
 %%
@@ -55,42 +55,96 @@
 %%  \Bibliography, \Index, \TableOfContents  make these chapters (w/o head)
 %%  \EndOfBook
 %%
+%%  The following macros can be used just after inputting gapmacro.tex to control
+%%  the layout.
+%%    \casesensitivetrue makes labels case sensitive (this is still experimental 
+%%     and not currently supported by the html converter)
+%%  \casesensitivefalse & (default) labels are case insensitive
+%%
+%%  \addlinks (default) This inserts pdf links within the document, so 
+%%    that you can click on a reference or citation. This will only work
+%%    with pdftex, otherwise this has no effect.
+%%
+%%  \nolinks This switches off additional pdf links within the document.
+%%
+%%  \citebookstrue References to external books will be 
+%%     "GAP Reference Manual, 2.7.12" instead of just "2.7.12", similarly 
+%%     for the GAP tutorial. If you cite other books, you have to define 
+%%     macros \xxxManual which must expand to the text which you want to 
+%%     be inserted before the number for package xxx (lower case).
+%%  \citebooksfalse (default) just print the number
+%%
+%%  \usepsfonts (default) use the standard Postscript fonts for typesetting
+%%  \usecmfonts use the TeX standard fonts
+%%
+%%  \biblitemfalse (default) In the bibliography, print abbreviations for 
+%%    papers right-aligned (as in gapmacro.tex)
+%%  \biblitemtrue print abbreviations left-aligned
+%%  \bibindent (default: 3 pc) indentation used in the bibliography - 
+%%    depending 
+%%    on the abbreviations you use, you may need more (this is not very 
+%%    obvious if you use \biblitemfalse because long abbreviations will
+%%    protrude into the left margin only, but will cause overfull hboxes
+%%    when using \biblitemtrue
 
 \input amssym.tex
+
+\catcode`@=11 
 
 % Page dimensions and double column output.
 \hsize 39pc
 \vsize 52pc
 
-% do we run pdftex? 
-\expandafter\ifx\csname pdfdest\endcsname\relax
-\immediate\write16{Running TeX}
-% no: define dummy bookmarking functions
-\global\def\bookmarkdestin#1{}
-\global\def\setbookmarkind#1#2{}
-\global\def\setbookmark#1#2{}
-\global\def\indexbookmark#1#2{}
-\else
-\immediate\write16{Running PDFTeX}
-% yes: define macros to do pdf stuff and set some parameters
-\global\def\bookmarkdestin#1{\pdfdest name {#1} xyz}
-\global\def\setbookmarkind#1#2{%
-  \setindent{\chapterlen{\the\chapno}}
-  \pdfoutline goto name {#1} count -\indentno {#2}}
-\global\def\setbookmark#1#2{%
-  \setindent{\chapterlen{\the\chapno}}
-  \pdfoutline goto name {#1} count 0 {#2}}
-% special treatment for the index to get proper indention
-\global\def\indexbookmark#1#2{%
-  \pdfoutline goto name {#1} count -27 {#2}}
-\pdfinfo{
-/Subject (GAP Manual)
-/Author (The GAP Group)
+\gdef\nolinks{
+    \gdef\nameddest##1{}%
+    \gdef\startlink##1{}%
+    \gdef\endlink{}%
 }
-\pdfcatalog{
-/URI (http://www.gap-system.org)
-/PageMode /UseOutlines}
-\pdfcompresslevel 9
+
+\gdef\addlinks{
+    \gdef\nameddest##1{%
+      \ifx\debuglabels\undefined\else\immediate\write16{nameddest ##1 defined}\fi
+       \ifvmode \pdfdest name{##1} xyz%
+      \else\vbox to 0pt{\vss\pdfdest name{##1} xyz%
+      \vskip\baselineskip}\fi}%
+    \gdef\startlink##1{\begingroup{%
+      \ifx\debuglabels\undefined\else\immediate\write16{link ##1 inserted}\fi
+      \pdfstartlink attr{/Border [0 0 0]} goto name{##1}}\pdfliteral{\linkcolor}}%
+    \gdef\endlink{\pdfliteral{0 0 0 rg}\pdfendlink\endgroup}%
+}
+
+% do we run pdftex? 
+\ifx\pdfdest\undefined
+    \immediate\write16{Running TeX}
+    % no: define dummy bookmarking functions
+    \global\def\setbookmarkind#1#2{}
+    \global\def\setbookmark#1#2{}
+    \global\def\indexbookmark#1#2{}
+    \nolinks
+    \let\addlinks\relax
+\else
+    \def\linkcolor{0 0.1 0.6 rg}
+    \immediate\write16{Running PDFTeX}
+    % yes: define macros to do pdf stuff and set some parameters
+    \global\def\setbookmarkind#1#2{%
+      \setindent{\chapterlen{\the\chapno}}
+      \pdfoutline goto name{#1} count -\indentno {#2}}
+    \global\def\setbookmark#1#2{%
+      \setindent{\chapterlen{\the\chapno}}
+      \pdfoutline goto name{#1} count 0 {#2}}
+    % special treatment for the index to get proper indention
+    \global\def\indexbookmark#1#2{%
+      \pdfoutline goto name{#1} count -27 {#2}}
+    \addlinks
+    \pdfinfo{
+    /Subject (GAP Manual)
+    /Author (The GAP Group)
+    }
+    \pdfcatalog{
+    /URI (http://www.gap-system.org)
+%    /PageMode /UseOutlines}
+    /PageMode /UseNone}
+    \pdfcompresslevel 9
 \fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,7 +163,6 @@
 %      \separator     macro to generate column separator. Default is nothing.
 %                     \rulesep sets it to \vrule. \norulesep doesn't.
 %      \makepage      default is what is contained in plain.
-\catcode`@=11 % from plain.tex
 % Create and initialize new dimensions.
 \newdimen\pagewidth  \newdimen\pageheight  \newdimen\colwidth
 \pagewidth=\hsize    \pageheight=\vsize    \colwidth=3.2truein
@@ -117,6 +170,8 @@
 \def\draft{\hsize 42pc\vsize 63pc\pagewidth=\hsize \pageheight=\vsize}
 
 \def\pif{\char39}
+
+\def\tron{\tracingmacros 1\tracingcommands 1\tracingonline 1}
 
 % This routine is used by \output ; this is different from
 %   the one found in App. E.
@@ -162,7 +217,7 @@
     \setbox2=\vbox to\dimen@{\dimen2=\dp3 \unvbox3\kern-\dimen2 \vfil}
   \fi
   \global\vsize=\origvsize \pagesofar}
-\catcode`@=12
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \colwidth 19pc
@@ -171,16 +226,97 @@
 \parskip 1ex plus 0.5ex minus 0.5ex
 \parindent 0pt
 
-% Additional fonts.
-\font\inchhigh=cminch
-\font\titlefont=cmssdc10 at 40pt
-\font\subtitlefont=cmssdc10 at 24pt
-\font\secfont=cmssdc10 at 14pt
-\font\sf=cmss10
-\font\bsf=cmssdc10
-\font\smallrom=cmr8
-\font\sevenit=cmti10 at 7pt \scriptfont\itfam=\sevenit
-\font\fiveit=cmti10 at 5pt  \scriptscriptfont\itfam=\fiveit
+\outer\def\usepsfonts{%
+    % change standard TeX fonts, from plain.tex
+    \font\tenrm=ptmr7t at 10pt % roman text
+    \font\sevenrm=ptmr7t at 7pt
+    \font\fiverm=ptmr7t at 5pt
+    \font\tenr=zptmcm7t at 10pt % math roman
+    \font\sevenr=zptmcm7t at 7pt
+    \font\fiver=zptmcm7t at 5pt
+    \font\teni=zptmcm7m at 10pt % math italic
+    \font\seveni=zptmcm7m at 7pt
+    \font\fivei=zptmcm7m at 5pt
+    \font\tensy=zptmcm7y at 10pt % math symbols
+    \font\sevensy=zptmcm7y at 7pt
+    \font\fivesy=zptmcm7y at 5pt
+    \font\tenex=zptmcm7v at 10pt % math extension
+    \font\tenbf=ptmb7t at 10pt % boldface extended
+    \font\sevenbf=ptmb7t at 7pt
+    \font\fivebf=ptmb7t at 5pt
+    % additonal fonts needed by gapmacro.tex    
+    \font\tentt=cmtt10 % typewriter
+    \font\tensl=ptmro7t at 10pt
+    \font\tenit=ptmri7t at 10pt % text italic
+    % Additional fonts needed by gapmacro.tex
+    \font\inchhigh=phvb7t at 96pt
+    \font\titlefont=phvb7t at 36pt
+    \font\subtitlefont=phvb7t at 20pt
+    \font\secfont=phvb7t at 13pt
+    \font\sf=phvr7t at 10 pt
+    \font\bsf=phvb7t at 10 pt
+    \font\smallrom=ptmr7t at 8pt
+    \font\sevenit=ptmri7t at 7pt     
+    \font\fiveit=ptmri7t at 5pt 
+    \inst@allfonts
+}
+\outer\def\usecmfonts{
+    % standard TeX fonts, from plain.tex
+    \font\tenrm=cmr10 % roman text
+    \font\sevenrm=cmr7
+    \font\fiverm=cmr5
+    \font\tenr=cmr10 % math roman
+    \font\sevenr=cmr7
+    \font\fiver=cmr5
+    \font\teni=cmmi10 % math italic
+    \font\seveni=cmmi7
+    \font\fivei=cmmi5
+    \font\tensy=cmsy10 % math symbols
+    \font\sevensy=cmsy7
+    \font\fivesy=cmsy5
+    \font\tenex=cmex10 % math extension
+    \font\tenbf=cmbx10 % boldface extended
+    \font\sevenbf=cmbx7
+    \font\fivebf=cmbx5
+    \font\tentt=cmtt10 % typewriter
+    \font\tensl=cmsl10 % slanted roman
+    \font\tenit=cmti10 % text italic
+    % Additional fonts needed by gapmacro.tex
+    \font\inchhigh=cminch
+    \font\titlefont=cmssdc10 at 40pt
+    \font\subtitlefont=cmssdc10 at 24pt
+    \font\secfont=cmssdc10 at 14pt
+    \font\sf=cmss10
+    \font\bsf=cmssdc10
+    \font\smallrom=cmr8
+    \font\sevenit=cmti10 at 7pt
+    \font\fiveit=cmti10 at 5pt 
+    \inst@allfonts
+}
+
+\def\inst@allfonts{
+    \skewchar\teni='177 \skewchar\seveni='177 \skewchar\fivei='177
+    \skewchar\tensy='60 \skewchar\sevensy='60 \skewchar\fivesy='60
+
+    \textfont0=\tenr \scriptfont0=\sevenr \scriptscriptfont0=\fiver
+    \textfont1=\teni \scriptfont1=\seveni \scriptscriptfont1=\fivei
+    \textfont2=\tensy \scriptfont2=\sevensy \scriptscriptfont2=\fivesy
+    \textfont3=\tenex \scriptfont3=\tenex \scriptscriptfont3=\tenex
+    \textfont\itfam=\tenit \scriptfont\itfam=\sevenit \scriptscriptfont\itfam=\fiveit
+    \textfont\slfam=\tensl
+    \textfont\bffam=\tenbf \scriptfont\bffam=\sevenbf
+    \scriptscriptfont\bffam=\fivebf
+    \textfont\ttfam=\tentt
+    \tenrm
+}
+\def\rm{\fam0\tenrm}
+\def\mit{\fam1} \def\oldstyle{\fam\@ne\teni}
+\def\cal{\fam2}
+% fam 3 contains the large symbols, cannot be used for ordinary math
+\newfam\itfam \def\it{\fam\itfam\tenit} % \it is family 4
+\newfam\slfam \def\sl{\fam\slfam\tensl} % \sl is family 5
+\newfam\bffam \def\bf{\fam\bffam\tenbf} % \bf is family 6
+\newfam\ttfam \def\tt{\fam\ttfam\tentt} % \tt is family 7
 
 % If you don't have `msb' fonts, replace the next 4 lines by `\let\Bbb=\bf'.
 \newfam\msbfam \def\Bbb{\fam\msbfam}
@@ -202,6 +338,8 @@
        \global\mathcode\count1=\count2}
  \ifnum\count1<`Z \advance\count1 by1\repeat}
 
+\usepsfonts
+
 % macros for verbatim scanning (almost copied from `The TeXbook')
 \chardef\other=12
 \def\undocatcodespecials{\catcode`\\=\other     \catcode`\{=\other
@@ -210,7 +348,7 @@
   \catcode`\_=\other     \catcode`\*=\other     \catcode`\`=\other
   \catcode`\!=\other     \catcode`\"=\other     \catcode`\&=\other
   \catcode`\#=\other     \catcode`\|=\other}
-\def\ttindent{5mm} % indentation amount of verbatim examples
+\newdimen\ttindent \ttindent=5mm % indentation amount of verbatim examples
 \def\kernttindent{\hskip\ttindent\relax} % for use in %\begintt
 {\obeyspaces\global\let =\ }
 {\obeylines\gdef\obeylines{\catcode`^^M=\active}\gdef^^M{\par}%
@@ -232,17 +370,29 @@
 \def\unstableoutput{}
 \outer\def\beginexample{\par
   \begingroup\advance\leftskip by \ttindent
-  \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \examplefinish}
+  \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \catcode`\#=\other\examplefinish}
 {\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
   |obeylines % end of line is active
   |gdef||{|char124} %
-  |gdef|examplefinish#1^^M#2\endexample{#1|medskip{#2}|endgroup %
+  |gdef|examplefinish#1^^M#2\endexample{%
+      |iftestexample%
+         |ifexamplefileopen%
+         |else|immediate|openout|exampleout=|jobname.example-|the|chapno.tst%
+         |global|examplefileopentrue%
+         |fi%
+        {|def^^M{^^J}|immediate|write|exampleout{#1^^J#2}}%
+      |fi%
+      |global|testexampletrue%
+      #1|medskip{#2}|endgroup%
   |endgroup%
   |vskip-|parskip|medskip|noindent|ignorespaces}}
 
 % Input/output streams. Chapter and section counters.
 \newwrite\labelout \newwrite\indexout \newwrite\secindout
 \newwrite\tocout   \newwrite\citeout  \newwrite\ans
+\newwrite\exampleout
+\newif\ifexamplefileopen
+\newif\iftestexample\global\testexampletrue
 \newread \labelin  \newread \indexin  \newread \tocin  \newread \citein
 \countdef\chapno=1 \newcount\secno    \newcount\subsecno \newcount\exno
 \newcount\indentno 
@@ -263,8 +413,8 @@
 %  {\ifnum\pageno<0\romannumeral-\pageno\else%
 %   \number\pageno\fi}}%
 %  \ifvmode\nobreak\else\unskip\fi}
-{\catcode`@=11 
-\catcode`<=\active \catcode`_=\active \catcode`!=\active \catcode`*=\active 
+
+{\catcode`<=\active \catcode`_=\active \catcode`!=\active \catcode`*=\active 
 \catcode``=\active 
 
 \global\let\n@exp\noexpand
@@ -296,11 +446,17 @@
 \catcode`"=\active \def"{\begingroup\undoquotes\doref}  \chardef\"=`"
                                                         \chardef\\=`\\
 
+\def\refManual{{\GAP} Reference Manual}
+\def\tutManual{{\GAP} Tutorial}
+
 {\catcode`|=0 \catcode`\\=12 |gdef|bs{\}}
 % Labels (which are automatically generated by ``\Section'' and ``\>'').
 %\newif\iflabmultdef
 \newif\iflabundef
 \newif\iflabchanged
+\newif\ifcasesensitive
+\newif\ifcitebooks
+
 \def\doref#1"{\bookref#1:"}
 \def\bookref#1:#2"{\def\tempa{#2}\ifx\tempa\empty\printref{\book:#1}\else
   \printbookref#1:#2"\fi}
@@ -324,7 +480,7 @@
 % 4. Since GapDoc uses < and > in some of its labels a temporary re-defintion
 %    of <#1> was necessary, inside \@xplowr.
 % - GG 2001/06/11, 2001/09/02
-\catcode`@=11
+
 \let\@xp\expandafter
 \long\def\@firstoftwo#1#2{#1}
 \long\def\@secondoftwo#1#2{#2}
@@ -338,46 +494,67 @@
 \def\protectedwrite#1#2{\begingroup\let_\relax\immediate\write#1{#2}\endgroup}
 \def\@xplowr#1{\begingroup\def_{|}\def<##1>{|##1|}\let\next=\relax%
   \expandafter\edef\next{\gdef\noexpand\xpandlowr{#1}}%
-  \lowercase\expandafter{\next}\endgroup}
-\def\makelabel#1#2{\@xplowr{r@#1}%
+  \ifcasesensitive\next\else\lowercase\expandafter{\next}\fi\endgroup}
+\def\m@kelabel#1#2#3{\@xplowr{r@#1}%
   \@ifundefined{\xpandlowr}%
     \relax%
     {\let_\activeusc}%\protectedwrite{16}{Label `#1' multiply defined.}}%
   \let_\activeusc%\protectedwrite{16}{Defined label `#1'.}%
   \begingroup\edef_{|}\global\namedef{\xpandlowr}{#2}\endgroup}
+\let\makelabel\undefined
 \gdef\printref#1{\@xplowr{#1}%
   \@xp\ifx\csname r@\xpandlowr\endcsname\relax\lqq\xpandlowr''%
   \protectedwrite{16}{Label `#1' undefined.}\global\labundeftrue%
-  \else\csname r@\xpandlowr\endcsname\fi\endgroup\let_\activeusc}
+  \else\expandafter\printpdflink\xpandlowr\relax\fi\endgroup\let_\activeusc}
+\gdef\printpdflink#1:#2\relax{\edef\next{#1}\ifx\next\book
+       \startlink{#2}\csname r@\xpandlowr\endcsname\endlink\else
+       \ifcitebooks\expandafter\csname\next Manual\endcsname,\space\fi
+       \csname r@\xpandlowr\endcsname\fi}
+
+\newif\ifnewlab 
 
 % Macros which write labels, citations and index entries on auxiliary files.
-\gdef\label#1{\@xplowr{#1}
+\gdef\label#1{\@xplowr{#1}%
   \ifnum\secno=0 \edef\@currentlabel{\thechapter}\else
   \ifnum\subsecno=0 \edef\@currentlabel{\thechapter.\the\secno}\else
   \edef\@currentlabel{\thechapter.\the\secno.\the\subsecno}\fi\fi
   \@xp\ifx\csname r@\book:\xpandlowr\endcsname\@currentlabel\else%
-  %\immediate\write16{Label `\book:#1' has changed.}
-  \global\labchangedtrue\fi
-  \protectedwrite\labelout{\string\makelabel{\book:#1}{\@currentlabel}}%
+  %\immediate\write16{Label `\book:#1' has changed.}%
+  \global\labchangedtrue\fi%
+  \expandafter\ifx\csname pdfdest@\xpandlowr\endcsname\relax
+  \nameddest{\xpandlowr}%
+  \expandafter\gdef\csname pdfdest@\xpandlowr\endcsname{#1}%
+  \fi%
+  \ifnewlab\def\next{{\xpandlowr}}%
+  \else
+  \def\next{}%
+  \fi
+  \protectedwrite\labelout{\string\makelabel{\book:#1}{\@currentlabel}\next}%
   \let_\activeusc}
+
+\def\litem#1{% left aligned item
+ \par\hang\noindent\hbox to \parindent{#1\enspace\hfill}}
+
+\newif\ifbiblitem
 
  \gdef\sigel#1{[\expandafter\ifx\csname c@#1\endcsname\relax
   \immediate\write16{Reference `#1' undefined.}\global\labundeftrue
   #1\else \csname c@#1\endcsname\fi]}
  \gdef\bibitem[#1]#2{\expandafter\gdef\csname c@#2\endcsname{#1}%
-  \item{\sigel{#2}}%
-  \immediate\write\labelout{\noexpand\setcitlab{#2}\noexpand{#1}}}
+  \nameddest{citation@#2}\ifbiblitem\litem{\sigel{#2}}\else\item{\sigel{#2}}\fi
+  \immediate\write\labelout{\noexpand\setcitlab{#2}\noexpand{#1}}\ignorespaces}
  \gdef\setcitlab#1#2{\expandafter\gdef\csname c@#1\endcsname{#2}}
-\catcode`@=12%
 
-\def\cite#1{\write\citeout{\bs citation{#1}}\sigel{#1}}
+\def\cite#1{\write\citeout{\bs citation{#1}}\startlink{citation@#1}\sigel{#1}\endlink}
 \def\dosecindex#1#2#3{\ifchapter{\let\ =\space%
    \protectedwrite\secindout{#1 \the\chapno.\the\secno. #2#3}}\fi}
 \def\bothindex#1#2#3#4{\doindex{#2}{#3}{#4}\dosecindex{#1}{#2}{#4}}
 \def\index#1{\bothindex I{#1}{}{}}
 \def\atindex#1#2{\doindex{\scrubafterexcl#1!\end}{#2}{}\dosecindex I{#1}{}}
-\def\indextt#1{\doindex{\scrubafterexcl#1!\end}%
+{\catcode64=12
+\gdef\indextt#1{\doindex{\scrubafterexcl#1!\end}%
    {@`\scrubafterexcl#1!\end'\scrubbeforeexcl#1!\end}{}\dosecindex I{#1}{}}
+}
 %\def\indextt#1{\atindex{#1}{@`#1'}}
 \def\indexit#1{{\it #1}}
 
@@ -390,20 +567,20 @@
 \def\chapcontents#1#2#3{%
    %\iffirstsec\firstsecfalse\else\line{}\fi% empty line
    \par\penalty-5\medskip
-   \line{\bf\kern\manindent\vbox{\advance\hsize by-\manindent
+   \line{\@xplowr{#2}\startlink{\xpandlowr}\bf\kern\manindent\vbox{\advance\hsize by-\manindent
    \advance\hsize by-1.5em
    \rightskip 0pt plus1fil \emergencystretch 3em
    \noindent\llap{\hbox to\manindent{\hss #1\kern\smallmanindent}}\strut
-   #2~\hfill \strut\rlap{\hbox to1.5em{\hss #3}}}\hfil}}
+   #2~\hfill \strut\rlap{\hbox to1.5em{\hss #3}}}\hfil\endlink}}
 
 \def\seccontents#1#2#3{
    \par\penalty-5\medskip
    \setchapterlen#1.
-   \line{\kern\manindent\vbox{\advance\hsize by-\manindent
+   \line{\@xplowr{#2}\startlink{\xpandlowr}\kern\manindent\vbox{\advance\hsize by-\manindent
    \advance\hsize by-1.5em
    \rightskip 0pt plus1fil \emergencystretch 3em
    \noindent\llap{\hbox to\manindent{\hss #1\kern\smallmanindent}}\strut
-   #2~\dotsfill \strut\rlap{\hbox to1.5em{\hss #3}}}\hfil}}
+   #2~\dotsfill \strut\rlap{\hbox to1.5em{\hss #3}}}\hfil\endlink}}
 
 % GG ... the idea of \ors is to put the right no. of \or s in the \appno
 %        macro so that for an appendix:
@@ -429,7 +606,7 @@
 \newif\ifchapter           % set to true when \thechapter = \normalchapter
                            % ... or ...  when \thechapter = \appendixchapter
 
-{\catcode`@=11%
+{
 %
 \gdef\setchapterlen#1.#2.{\expandafter\gdef\csname ch@#1\endcsname{#2}}
 \gdef\chapterlen#1{%
@@ -441,39 +618,26 @@
 }
 \def\setindent#1{\indentno=#1}
 
+\outer\def\Chapter#1 \par{\doChapter{#1}{}}
 
-\def\Chapter#1 \par{\vfill\supereject \headlinefalse
+\def\doChapter#1#2{\vfill\supereject \headlinefalse
 %  \ifodd\pageno\else\null\vfill\eject\headlinefalse\fi
+  \ifexamplefileopen\immediate\closeout\exampleout\examplefileopenfalse\fi
   \advance\chapno by1 \secno=0\subsecno=0\exno=0%\ifnum\pageno>0 \pageno=1 \fi
-  \bookmarkdestin{#1}
-  \def\chapname{#1} \label{#1}
+  \def\chapname{#1#2}\label{#1}\ifx\relax#2\relax\else\label{#1#2}\fi%
   \immediate\write16{Chapter `#1' .}%
-  \write\tocout{\noexpand\chapcontents{\thechapter}{#1}{\the\pageno}}
+  \write\tocout{\noexpand\chapcontents{\thechapter}{#1#2}{\the\pageno}}%
   \ifchapter
     \immediate\write\secindout{C \filename\space\the\chapno. \chapname}\fi
-  \setbookmarkind{#1}{#1}
-  \setbox0=\hbox{\inchhigh\kern-.075em \chapterno}
+  \@xplowr{#1}\setbookmarkind{\xpandlowr}{#1#2}%
+  \setbox0=\hbox{\inchhigh\kern-.075em \chapterno}%
   \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-1em
 %    \hyphenpenalty=10000 \linepenalty=10000
-    \leftskip 0pt plus\hsize \parfillskip 0pt \baselineskip 44pt\relax #1}
+    \leftskip 0pt plus\hsize \parfillskip 0pt \baselineskip 44pt\relax #1#2}%
   \line{\box0\hfil\box1}\nobreak \mark{}\vskip 40pt}
 
 % start hack added by TB
-\def\PreliminaryChapter#1 \par{\vfill\supereject \headlinefalse
-%  \ifodd\pageno\else\null\vfill\eject\headlinefalse\fi
-  \advance\chapno by1 \secno=0\subsecno=0\exno=0%\ifnum\pageno>0 \pageno=1 \fi
-  \bookmarkdestin{#1}
-  \def\chapname{#1 (preliminary)} \label{#1}
-  \write\tocout{\noexpand\chapcontents{\thechapter}{#1 (preliminary)}{\the\pageno}}
-  \ifchapter
-    \immediate\write\secindout{C \filename\space\the\chapno. \chapname}\fi
-  \setbookmarkind{#1}{#1}
-  \setbox0=\hbox{\inchhigh\kern-.075em \chapterno}
-  \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-1em
-%    \hyphenpenalty=10000 \linepenalty=10000
-    \leftskip 0pt plus\hsize \parfillskip 0pt \baselineskip 44pt\relax #1 (preliminary)}
-  \line{\box0\hfil\box1}\nobreak \mark{}\vskip 40pt}
-% end hack added by TB
+\outer\def\PreliminaryChapter#1 \par{\doChapter{#1}{ (preliminary)}}
 
 \outer\def\Section#1#2\par{\bigbreak \advance\secno by1
   \subsecno=0
@@ -482,11 +646,10 @@
   \else
     \edef\tempa{\thechapter.\the\secno}%
   \fi%
-  \bookmarkdestin{\tempa}
-  \setbookmark{\tempa}{#1}
+  \@xplowr{#1}\setbookmark{\xpandlowr}{#1}
   \expandafter\writesecline\tempa\\{#1}
   \dosecindex S{#1}{}
-  \ifx#2\nolabel\else{\let\ =\space\label{#1}}\fi
+  \ifx#2\nolabel\nameddest{\xpandlowr}\else{\let\ =\space\label{#1}}\fi
   \ifx#2\null\else \edef\tempb{{#1@#1}}
     \expandafter\doindex\tempb{|indexit}{}\fi
   \noindent{\baselineskip 18pt\let!=\space \mark{Section \the\secno. #1}%
@@ -494,11 +657,11 @@
 
 \def\writesecline#1\\#2{\write\tocout{\noexpand\seccontents{#1}{#2}
   {\the\pageno}}}
-\def\letter#1{\medskip{\secfont #1}\endgraf\nobreak%
+\def\letter#1{%
   \edef\tempa{LeTtEr#1}%
-  \bookmarkdestin{\tempa}%
+  \nameddest{\tempa}%
   \setbookmark{\tempa}{#1}%
-  }
+  \medskip{\secfont #1}\endgraf\nobreak}
 
 % Macros for generating paragraph headings (e.g., function descriptions).
 \def\fmark{\noindent\llap{\darktriangleright\rm\enspace}}
@@ -506,7 +669,7 @@
 \def\fpar{\endgraf\endgroup\nobreak\smallskip\noindent\ignorespaces}
 \def\>{\begingroup\undoquotes\obeylines\angle}
 \def\){\begingroup\obeylines\cloparen}
-{\obeylines
+{\obeylines\catcode64=12
 \gdef\angle#1
   {\endgroup \ifx\par\fpar \global\def\susemarker{\fmark}\else%
   \global\advance\subsecno by1%
@@ -522,45 +685,46 @@
   \endgraf{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}\def\|{\vrule\relax}%
   \noindent\typewriter#1'}}%
 \gdef\scanparen#1(#2\end{\def\tempa{#2}\ifx\tempa\empty%
-  \def\next{\begingroup\cloparen\susemarker#1
+  \def\next{\begingroup\cloparen\susemarker#1%
   \label{#1}\bothindex F{#1}{@`#1'}{}}%
-  \else\def\next{\delparen#1(#2\end}\fi \next}}
-\def\delparen#1(\end{\function#1}
-\def\oporfunc#1#2\end{\ifx#1`\def\next{\oporvalue#1#2}\else
-                             \def\next{\scanparen#1#2(\end}\fi \next}
-\long\def\oporvalue`#1'#2{\ifx#2V\def\next{\operation`#1'{#1}@{`#1'} V}\else
-                                 \def\next{\operation`#1'{#2}}\fi \next}
-\long\def\operation`#1'#2#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
-  \def\|{\vrule\relax}}
+  \else\def\next{\delparen#1(#2\end}\fi \next}%
+\gdef\delparen#1(\end{\function#1}%
+\gdef\oporfunc#1#2\end{\ifx#1`\def\next{\oporvalue#1#2}\else%
+                             \def\next{\scanparen#1#2(\end}\fi \next}%
+\long\gdef\oporvalue`#1'#2{\ifx#2V\def\next{\operation`#1'{#1}@{`#1'} V}\else%
+                                 \def\next{\operation`#1'{#2}}\fi \next}%
+\long\gdef\operation`#1'#2#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
+  \def\|{\vrule\relax}}%
   \susemarker\typewriter#1'%
-  \ifx#3!\def\next{\suboperation{#2}}
-    \else\ifx#3@\def\next{\subatoperation{#2}}
+  \ifx#3!\def\next{\suboperation{#2}}%
+    \else\ifx#3@\def\next{\subatoperation{#2}}%
     \else\endheaderline \label{#2}%
-    \bothindex F{#2}{}{}\let\next=#3\fi\fi\next}
-\long\def\function#1(#2)#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
-  \def\|{\vrule\relax}
+    \bothindex F{#2}{}{}\let\next=#3\fi\fi\next}%
+\long\gdef\function#1(#2)#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
+  \def\|{\vrule\relax}%
   \susemarker\typewriter#1(#2)'}%
-  \ifx#3!\def\next{\subfunction{#1}}\else
+  \ifx#3!\def\next{\subfunction{#1}}\else%
     \endheaderline\label{#1}\bothindex F{#1}{@`#1'}{}%
-    \let\next=#3\fi\next}
-\def\subfunction#1#2{\endheaderline\label{#1!#2}%
-  \bothindex F{#1}{@`#1'}{!#2}}
-\def\suboperation#1#2{\endheaderline\label{#1!#2}%
-  \bothindex F{#1}{}{!#2}}
-\def\subatoperation#1#2{\endheaderline\label{#1}%
-  \doindex{\scrubafterexcl#1!\end}{@#2}{}
-  \dosecindex F{#1}{}}
-\def\scrubafterexcl#1!#2\end{#1}
-\def\scrubbeforeexcl#1!#2\end{\if\relax#2\else!\removeendexcl#2\fi}
-\def\removeendexcl#1!{#1}
-
-\def\endheaderline{\hskip 0pt plus 1filll}
+    \let\next=#3\fi\next}%
+\gdef\subfunction#1#2{\endheaderline\label{#1!#2}%
+  \bothindex F{#1}{@`#1'}{!#2}}%
+\gdef\suboperation#1#2{\endheaderline\label{#1!#2}%
+  \bothindex F{#1}{}{!#2}}%
+\gdef\subatoperation#1#2{\endheaderline\label{#1}%
+  \doindex{\scrubafterexcl#1!\end}{@#2}{}%
+  \dosecindex F{#1}{}}%
+\gdef\scrubafterexcl#1!#2\end{#1}%
+\gdef\scrubbeforeexcl#1!#2\end{\if\relax#2\else!\removeendexcl#2\fi}%
+\gdef\removeendexcl#1!{#1}%
+\gdef\endheaderline{\hskip 0pt plus 1filll}%
+}
 
 % Macro for item lists.
 \catcode`&=\active
 \def\beginitems{%
   \smallskip
   \begingroup
+    \advance\ttindent\manindent
     \def&{\par \nobreak \hangindent\manindent \hangafter 0
       {\parskip 0pt\noindent}\ignorespaces}
     \parindent 0pt
@@ -652,9 +816,9 @@
   \else\global\headlinetrue \hfil\fi}
 
 % Macro for inputting an auxiliary file.
-\def\inputaux#1#2#3{\immediate\openin#1=#2\jobname.#3
-  \ifeof#1\immediate\write16{No file #2\jobname.#3.}\else
-  \immediate\closein#1 \input#2\jobname.#3 \fi}
+\def\inputaux#1#2{\immediate\openin#1=#2
+  \ifeof#1\immediate\write16{No file #2.}\else
+  \immediate\closein#1 \input#2\fi}
 
 % Macros for the parts of the manual.
 \outer\def\FrontMatter{%
@@ -662,8 +826,9 @@
   \def\lefthead{\it\chapname} \let\righthead=\lefthead
 
   \begingroup
+  \def\makelabel##1##2{\m@kelabel{##1}{##2}{}}%
   \undoquotes
-  \inputaux\labelin{}{lab}
+  \inputaux\labelin{\jobname.lab}
   %\setbox0=\vbox{\Bibliography}
   \endgroup
   \labchangedfalse
@@ -695,6 +860,7 @@
 % \appno\chapno (= \appendixchapter) numbers the appendices sequentially from A
 % for the .lab file (which TeX uses).
 \outer\def\Appendices{\vfill\eject
+  \ifexamplefileopen\immediate\closeout\exampleout\examplefileopenfalse\fi
   \setors \let\thechapter=\appendixchapter \chaptertrue
   \def\lefthead{{\it Appendix \thechapter. \chapname}}
   \def\righthead{\ifx\botmark\empty\lefthead\else{\it \botmark}\fi}}
@@ -710,7 +876,7 @@
 %%
 %F  \BeginningOfBook  . . . . . . . . . . . . . . . . . . . .  start the book
 %%
-\def\BeginningOfBook#1{%
+\outer\def\BeginningOfBook#1{%
   \def\book{#1}%
   \pageno=-1%
   \pageno=1%
@@ -725,18 +891,20 @@
 %%
 %F  \UseReferences{<book-path>}	. . . use references from book in <book-path>
 %%
-\def\UseReferences#1{{\undoquotes
-    \inputaux\labelin{#1/}{lab}}
+\outer\def\UseReferences#1{\begingroup\def\makelabel##1##2{\m@kelabel{##1}{##2}{}}\undoquotes
+    \inputaux\labelin{#1/manual.lab}\endgroup
 }
-\let\UseGapDocReferences\UseReferences %needed so that the HTML converter
-                                       %can tell the difference
+\outer\def\UseGapDocReferences#1{\begingroup\def\makelabel##1##2##3{\m@kelabel{##1}{##2}{##3}}\undoquotes
+    \inputaux\labelin{#1/manual.lab}\endgroup
+}
+\outer\def\GAPDocLabFile#1{\def\makelabel##1##2##3{\m@kelabel{##1}{##2}{##3}}}
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %F  \EndOfBook	. . . . . . . . . . . . . . . . . . . . . . . .  end the book
 %%
-\def\EndOfBook{\vfill\supereject
+\outer\def\EndOfBook{\vfill\supereject
   \immediate\write16{##}
   \immediate\closeout\citeout
   \immediate\write16{## Citations for BibTeX written on \jobname.aux.}
@@ -748,6 +916,7 @@
   \immediate\write16{## Label definitions written on \jobname.lab.}
   \immediate\closeout\tocout
   \immediate\write16{## Table of contents written on \jobname.toc.}
+  \immediate\write16{## Examples written to \jobname.example-XX.tst.}
   %\iflabmultdef\immediate\write16{## There were multiply-defined labels.}\fi
   \iflabundef\immediate\write16{## There were undefined labels or
   references.}\fi
@@ -774,28 +943,26 @@
 \def\dotsfill{\leaders\hbox to12pt{\hss.\hss}\hfill}
 
 % produce the chapter "Contents"
-\outer\def\TableOfContents{\Chapter{\TOCHeader}
-
+\outer\def\TableOfContents{\doChapter\TOCHeader{}%
 \TOCMatter
 \vskip 20pt
 \begingroup
 \rigidfalse
 \let!=\space
 \begindoublecolumns
-\inputaux\tocin{}{toc}\vfill\eject
+\inputaux\tocin{\jobname.toc}\vfill\eject
 \enddoublecolumns
 \endgroup
 }
 
 % a one column version of \TableOfContents for short manuals
-\outer\def\OneColumnTableOfContents{\Chapter{\TOCHeader}
-
+\outer\def\OneColumnTableOfContents{\doChapter\TOCHeader{}%
 \TOCMatter
 \vskip 20pt
 \begingroup
 \rigidfalse
 \let!=\space
-\inputaux\tocin{}{toc}\vfill\eject
+\inputaux\tocin{\jobname.toc}\vfill\eject
 \endgroup
 }
 
@@ -803,7 +970,7 @@
 %%
 %F  \TitlePage{<text>}	. . . . . . . . . . . . . . . . generate a title page
 %%
-\long\def\TitlePage#1{%
+\outer\long\def\TitlePage#1{%
   \null\vfill#1\null\vfill\eject
 }
 
@@ -811,8 +978,7 @@
 %%
 %F  \Colophon{<text>}	. . . . . . . . . . . . . . generate a colophon page
 %%
-\long\def\Colophon#1{\Chapter{}
-
+\outer\long\def\Colophon#1{\doChapter{}{}%
 #1\null\vfill\eject
 }
 
@@ -825,8 +991,7 @@
 \def\AnswersHeader{Answers to the Exercises}
 %
 % produce the chapter "Answers"
-\def\Answers{\Chapter{\AnswersHeader}
-
+\outer\def\Answers{\doChapter\AnswersHeader{}%
   \parindent\manindent
   \parskip 1ex plus 0.5ex minus 0.5ex
   \immediate\closeout\ans
@@ -839,18 +1004,18 @@
 %%
 % header for the bibliography
 \def\BibHeader{Bibliography}
+\newdimen\bibindent \bibindent=\manindent
 
 % produce the chapter bibliography
-\def\Bibliography{\EndMatter\Chapter{\BibHeader}
-
+\outer\def\Bibliography{\EndMatter\doChapter\BibHeader{}%
   \begingroup\undoquotes\frenchspacing
-  \parindent\manindent
+  \parindent\bibindent
   \pretolerance=5000 %badness allowed for hypenation
   \tolerance=5000    %badness allowed before overfull boxes appear 
   \parskip 1ex plus 0.5ex minus 0.5ex
   \def\begin##1##2{} \def\end##1{}
   \let\newblock=\relax \let\em=\sl
-  \inputaux\citein{}{bbl}
+  \inputaux\citein{\jobname.bbl}
   \endgroup
 }
 
@@ -873,11 +1038,10 @@ e.g., ```PermutationCharacter''' comes before ``permutation group''.%
 \def\idxkern{\kern.3em}
 
 % produce the chapter index
-\def\Index{\EndMatter%
-% get the proper bookmarking function
-\global\let\setbookmarkind=\indexbookmark%
-\Chapter{\IndexHeader}
-
+\outer\def\Index{\EndMatter%
+  % get the proper bookmarking function
+  \global\let\setbookmarkind=\indexbookmark%
+  \doChapter\IndexHeader{}%
   \IndexMatter
   \bigskip
   \begindoublecolumns
@@ -889,7 +1053,7 @@ e.g., ```PermutationCharacter''' comes before ``permutation group''.%
   \def\sub{\advance\leftskip by\smallmanindent}
   \def\subsub{\advance\leftskip by2\smallmanindent}
   \obeylines
-  \inputaux\indexin{}{ind}
+  \inputaux\indexin{\jobname.ind}
   \enddoublecolumns
 }
 
@@ -919,3 +1083,9 @@ e.g., ```PermutationCharacter''' comes before ``permutation group''.%
 \raggedbottom
 \frenchspacing
 \vfuzz=2pt
+
+\catcode64=12% catcode of @
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+%%

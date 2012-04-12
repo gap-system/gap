@@ -455,22 +455,22 @@ DeclareGlobalFunction("OCOneCocycles");
 
 #############################################################################
 ##
-#O  ComplementclassesEA(<G>,<N>) . complement classes to el.ab. N by 1-Cohom.
+#O  ComplementClassesRepresentativesEA(<G>,<N>) . complement classes to el.ab. N by 1-Cohom.
 ##
-##  <#GAPDoc Label="ComplementclassesEA">
+##  <#GAPDoc Label="ComplementClassesRepresentativesEA">
 ##  <ManSection>
-##  <Oper Name="ComplementclassesEA" Arg='G, N'/>
+##  <Oper Name="ComplementClassesRepresentativesEA" Arg='G, N'/>
 ##
 ##  <Description>
 ##  computes complement classes to an elementary abelian normal subgroup
 ##  <A>N</A> via 1-Cohomology. Normally, a user program should call
-##  <Ref Func="Complementclasses"/> instead, which also works
+##  <Ref Func="ComplementClassesRepresentatives"/> instead, which also works
 ##  for a solvable (not necessarily elementary abelian) <A>N</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction("ComplementclassesEA");
+DeclareGlobalFunction("ComplementClassesRepresentativesEA");
 
 
 #############################################################################

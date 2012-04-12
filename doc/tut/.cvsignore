@@ -1,5 +1,9 @@
+*.css
+*.js
+*.tex
 chap*.html
 chap*.txt
+chooser.html
 main.aux
 main.bbl
 main.blg
@@ -8,12 +12,14 @@ main.idx
 main.ilg
 main.ind
 main.log
+main.out
 main.pnr
-main.tex
 main.toc
+make_manuals.out
 manual.css
 manual.dvi
 manual.lab
 manual.pdf
 manual.ps
 manual.six
+manual-bw.pdf

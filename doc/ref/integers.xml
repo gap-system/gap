@@ -1,11 +1,11 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  integers.msk                GAP documentation            Martin Schoenert -->
+<!-- %A  integers.msk                GAP documentation            Martin Schönert -->
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: integers.msk,v 1.26 2006/08/22 09:55:00 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 
@@ -59,6 +59,7 @@ in chapter&nbsp;<Ref Chap="Combinatorics"/>.
 <#Include Label="LogInt">
 <#Include Label="RootInt">
 <#Include Label="SmallestRootInt">
+<#Include Label="ListOfDigits">
 
 <ManSection>
 <Func Name="Random" Arg='Integers' Label="for integers"/>
@@ -105,6 +106,7 @@ use the construction <C>Random( [ <A>low</A> .. <A>high</A> ] )</C>
 <#Include Label="NextPrimeInt">
 <#Include Label="PrevPrimeInt">
 <#Include Label="FactorsInt">
+<#Include Label="PrimeDivisors">
 <#Include Label="PartialFactorization">
 <#Include Label="PrintFactorsInt">
 <#Include Label="PrimePowersInt">
@@ -143,6 +145,15 @@ modulo 32.
 <#Include Label="ZmodnZ">
 <#Include Label="ZmodnZObj">
 <#Include Label="IsZmodnZObj">
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Check Digits">
+<Heading>Check Digits</Heading>
+
+<#Include Label="CheckDigitISBN">
+<#Include Label="CheckDigitTestFunction">
 
 </Section>
 

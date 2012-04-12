@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: semigrp.msk,v 1.23 2003/10/24 16:52:42 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Semigroups">
@@ -14,8 +14,8 @@ This chapter describes functions for creating semigroups
 and determining information about them.
 
 <!-- %%  Support for algebraic semigroup theory in &GAP; was designed by Andrew -->
-<!-- %%  Solomon, based on code by Goetz Pfeiffer, and was implemented by Isabel -->
-<!-- %%  Araujo, Robert Arthur, and Andrew Solomon. -->
+<!-- %%  Solomon, based on code by Götz Pfeiffer, and was implemented by Isabel -->
+<!-- %%  Araújo, Robert Arthur, and Andrew Solomon. -->
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->

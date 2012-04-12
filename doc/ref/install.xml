@@ -1,13 +1,13 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %W  install.msk               GAP documentation              Frank Celler -->
-<!-- %W                                                     & Martin Schoenert -->
+<!-- %W                                                     & Martin SchÃ¶nert -->
 <!-- %W                                                     & Alexander Hulpke -->
-<!-- %W                                                    & Burkhard Hoefling -->
+<!-- %W                                                    & Burkhard HÃ¶fling -->
 <!-- %% -->
 <!-- %H  @(#)<M>Id: install.msk,v 1.134 2006/03/10 09:20:48 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D fÃ¼r Mathematik,  RWTH Aachen,   Germany -->
 <!-- %Y  (C) 1998 School Math and Comp. Sci., University of St  Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
@@ -15,12 +15,49 @@
 <!-- %%  for various operating systems. -->
 <!-- %% -->
 
+<!-- AK: This chapter was excluded from the manual 
+     following the message below on September 13th, 2011 
+
+Dear all,
+
+We (Steve, John and me) agreed about a proposal to gather all GAP installation 
+instructions in a single place.
+
+Currently there are two versions of them:
+
+1) linked from http://www.gap-system.org/Download/index.html
+under the section "Unpacking and Installing the Archives", leading to installation
+instructions under UNIX/Windows/Mac
+
+2) included in the reference manual, chapter 77. 
+
+This is prone to omissions/outdating/contradictions, since it's hard to maintain 
+two copies of these instructions. 
+
+The suggestion is to have a single text file called e.g. INSTALL (or INSTALL.txt)
+available on Web (so search engines will see it) and linked from the Download 
+section of the GAP website. We will be able to update it as soon as we need between
+releases, and also get it using GAP distribution wrapping scripts and put into the 
+GAP release in the top level gap4r5 directory. I personally think the canonical 
+location for the INSTALL file would be the CVS repository of the GAP website, but 
+there may be other options. Then, the Chapter 77 "Installing GAP" should be removed.
+
+If there are no objections, we would like to proceed with removing Chapter 77 shortly
+(on Wednesday?) in order to do this before GAP 4.5.2 will be out. Please let us know 
+if you have any objections.
+
+Thanks,
+Alexander
+
+-->
+
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="Installing GAP">
 <Heading>Installing GAP</Heading>
 
-<Index>installation</Index><Index>options</Index>
+<Index>installation</Index>
+<Index Subkey="for installation">options</Index>
 <P/>
 &GAP; runs on a large number of different operating systems. It behaves
 slightly different on each of those. This chapter describes the
@@ -28,10 +65,8 @@ behaviour of &GAP;, the installation, and the options on some of those
 operating systems.
 <P/>
 Currently it contains instructions for <E>UNIX</E> (which includes the popular
-variant <E>Linux</E>), for Apple Macintosh computers
-under <E>OS X</E> (see <Ref Sect="GAP for Macintosh OS X"/>) as well under the <Q>classic</Q>
-<E>MacOS</E> (see <Ref Sect="GAP for MacOS"/>), and finally 
-for <E>Windows</E>.
+variant <E>Linux</E>), for Apple Mac computers under <E>Mac OS X</E> (see 
+<Ref Sect="GAP for Mac OS X"/>), and for <E>Windows</E>.
 <P/>
 For other systems the section <Ref Sect="Porting GAP"/> gives hints how to
 approach such a port.
@@ -42,8 +77,8 @@ approach such a port.
 <Heading>Installation Overview</Heading>
 
 To permit compatibility over a wide range of operating systems, the
-installation of &GAP; might differ from what you are accustomed to for you
-particular operating system. In particular, there is no <Q>Installer</Q>
+installation of &GAP; might differ from what you are accustomed to for your
+particular operating system. In particular, there may be no <Q>Installer</Q>
 program.
 <P/>
 Installing the &GAP; distribution alone takes about 150MB of disk space.
@@ -53,30 +88,25 @@ You also should have at least 64MB of memory to run &GAP;.
 <P/>
 The installation consists of 5 easy steps:
 <List>
-<Mark>-</Mark>
 <Item>
 Get the archive(s) suitable for your system
 </Item>
-<Mark>-</Mark>
 <Item>
 Unpack
 </Item>
-<Mark>-</Mark>
 <Item>
 Compile (unless a binary has been provided already)
 </Item>
-<Mark>-</Mark>
 <Item>
 Test the installation
 </Item>
-<Mark>-</Mark>
 <Item>
-Install packages. (Some packages will only work  under Unix and OS X).
+Install packages. (Some packages will only work under Unix and Mac OS X).
 </Item>
 </List>
 <P/>
-Installation will always install the full version of &GAP;. There is no
-<Q>Upgrade</Q> mode. If you are worried about losing the old version, you can
+Installation will always install the full version of &GAP;. 
+If you are worried about losing the old version, you can
 keep an existing installation of &GAP; in another directory, it will not be
 overwritten.
 <P/>
@@ -103,55 +133,41 @@ If you use
 <List>
 <Mark>Unix</Mark>
 <Item>
-you can use the <C>.tar.gz</C>, <C>.tar.bz2</C> or <C>.zoo</C> archives.
+you can use the <C>.tar.gz</C>, <C>.tar.bz2</C> or <C>.zip</C> archives.
 </Item>
-<Mark>Macintosh OS X</Mark>
+<Mark>Mac OS X</Mark>
 <Item>
-you can use the <C>.tar.gz</C> or <C>.zoo</C> archives (or install the <C>MacOS</C>
-version, see also&nbsp;<Ref Sect="GAP for Macintosh OS X"/>).
-</Item>
-<Mark>MacOS</Mark>
-<Item>
-Use the <C>.zoo</C> archive. Also make sure you get the <C>.sit</C> StuffIt archives
-for the <C>unzoo</C> uncompressor.
+you can use the <C>.tar.gz</C>, <C>.tar.bz2</C> or <C>.zip</C> archives.
 </Item>
 <Mark>Windows</Mark>
 <Item>
-Use the <C>-win.zip</C> or the <C>.zoo</C> archives. 
+Use the <C>-win.zip</C> archive. 
 </Item>
 </List>
 <P/>
-Now get the installation archives of the right kind, according to your
-operating system. You want to get the archives:
-<List>
-<Mark><F>gap&VERSIONSUFFIX;</F></Mark>
-<Item>
-which contains the main &GAP; installation
-</Item>
+Now get the installation archive 
+<F>gap&VERSIONSUFFIX;-&lt;timestamp></F>
+of the right kind, according to your operating system.
+<!--
 <Mark><F>packages&VERSIONSUFFIX;</F></Mark>
 <Item>
 which contains &GAP; packages that provide further functionality
 </Item>
+-->
+<!--
 <Mark><C>unzoo</C></Mark>
 <Item>
-Only if you use the <C>.zoo</C> archives: Unix and OS X users get the source code
-<C>unzoo.c</C>, MacOS users get the <C>.sit</C> archive and Windows users
-the <C>.exe</C> binary.
+Only if you use the <C>.zoo</C> archives: Unix and Mac OS X users get 
+the source code <C>unzoo.c</C>, Windows users the <C>.exe</C> binary.
 </Item>
-<Mark><F>htmie&VERSIONSUFFIX;</F></Mark>
-<Item>
-An alternative version of the HTML manual which uses a nonstandard
-<Q>symbol</Q> font instead of Unicode characters. If you use a webbrowser such
-as <C>Internet Explorer</C> that has difficulties with rendering Unicode
-correctly, you might want to replace the HTML documentation with this
-version. (See section&nbsp;<Ref Sect="The Documentation"/>.)
-</Item>
+-->
+<!--
 <Mark><F>xtom&VERSIONSUFFIX;</F></Mark>
 <Item>
 Contains about 80MB of further tables of marks. (You can always install this
 later if the need arises.)
 </Item>
-</List>
+-->
 <P/>
 Note that starting with release 4.4, the distribution archives for &GAP;
 will always contain the most recent bugfix. Thus if you install anew from
@@ -168,60 +184,54 @@ The concrete act of unpacking will vary slightly, depending on the operating
 system and the type of archive used.
 <P/>
 <List>
-<Mark>Unix, OS X</Mark>
+<Mark>Unix, Mac OS X</Mark>
 <Item>
-Under Unix or OS X unpack the archive <C>gap&VERSIONSUFFIX;</C> in whatever
-place you want &GAP; to reside. If you use the <C>.zoo</C> archive, you will
+Under Unix or Mac OS X unpack the archive <C>gap&VERSIONSUFFIX;</C> in whatever
+place you want &GAP; to reside. 
+<!--
+If you use the <C>.zoo</C> archive, you will
 have to compile the <C>unzoo</C> program first
 <P/>
-<Log>
+<Listing>
 cc -o unzoo -DSYS_IS_UNIX -O unzoo.c
 ./unzoo -x gap&VERSIONSUFFIX;.zoo
-</Log>
+</Listing>
+-->
 <P/>
 (If you unpack the archive as <C>root</C> user under UNIX, make sure that you
 issue the command <C>umask 022</C> before, to ensure that users will have
 permissions to read the files.)
-</Item>
-<Mark>MacOS</Mark>
-<Item>
-if the <C>.sit</C> archive did not extract autmatically, click it to force
-extraction. You will end up with an applications,
-<C>unzoo 4.4 PPC</C>. 
-Now move this applications, as well as the <F>gap&VERSIONSUFFIX;.zoo</F>
-archive to the Folder in which you want to install &GAP;. Drag the archive
-<F>gap&VERSIONSUFFIX;.zoo</F> onto the icon of <C>unzoo 4.4 PPC</C>.
-You will get a window with many lines of text output.
-This process will create a folder <F>&GAPDIRNAME;</F> in the current folder.
 </Item>
 <Mark>Windows</Mark>
 <Item>
 The archive must be extracted to the <E>main</E> directory of the <C>C:</C> drive. (If
 you do not have permissions or sufficient free space to create directories
 there, see section&nbsp;<Ref Sect="Expert Windows Installation"/>.)
+<!--
 If you use the <C>.zoo</C> archives we provide
 move <F>unzoo.exe</F> and <F>gap&VERSIONSUFFIX;.zoo</F> in the
 <F>C:</F> directory, open the <C>MS-DOS</C> (or <C>Command Prompt</C>) window. (You can
 find this under <Q>Start/Programs/Accessories</Q>.)
 In this window issue the commands
 <P/>
-<Log>
+<Listing>
 cd c:\
 unzoo -x gap&VERSIONSUFFIX;.zoo
-</Log>
+</Listing>
 <P/>
 (It might be necessary to use upper case letters instead)
+-->
 <P/>
-If you prefer to use the <C>-win.zip</C> archive use a <C>ZIP</C> extractor.
+To use the <C>-win.zip</C> archive you will need a <C>ZIP</C> extractor.
 Make sure that you specify extraction to the <F>c:/</F> folder
 (with <E>no</E> extra directory name &ndash;the directory is part of the
 archive)
 to avoid extraction in a wrong place or in a separate directory.
 After extraction you can start &GAP; with the file
 <P/>
-<Log>
+<Listing>
 C:\&UCGAPDIRNAME;\bin\gapw95.exe
-</Log>
+</Listing>
 </Item>
 </List>
 
@@ -232,52 +242,138 @@ C:\&UCGAPDIRNAME;\bin\gapw95.exe
 <Section Label="Compilation">
 <Heading>Compilation</Heading>
 
-For the MacOS and Windows version the unpacking process will already have
-put binaries in place. Under Unix and OS X you will have to compile (OS X
-users please see section <Ref Sect="GAP for Macintosh OS X"/> for information about
-compilation) such a binary yourself.
+For the Windows version the unpacking process will already have
+put binaries in place. Under Unix and Mac OS X you will have to 
+compile such a binary yourself. (Mac OS X users please see section 
+<Ref Sect="GAP for Mac OS X"/> for information about compilation)
 <P/>
 Go into the directory <F>&GAPDIRNAME;</F> (which you just created by unpacking).
-Issue the two commands
-<Log><![CDATA[
+To get started quickly you may simply build &GAP; with default settings by issuing the two 
+commands
+<Listing><![CDATA[
 ./configure
 make
-]]></Log>
+]]></Listing>
 Both will produce a lot of text output. You should end up with a shell
-script <C>bin/gap.sh</C> which you can use to start &GAP;. (If you want, you can
-copy this script later to a directory that is listed in your search path.)
+script <F>bin/gap.sh</F>(*) which you can use to start &GAP;. If you want, you can
+copy this script later to a directory that is listed in your search path.
 <P/>
-OS X users please note that this script must be started from within the
+(* In fact, what is produced is a script called <F>bin/gapXX.sh</F>, where <C>XX</C> is either 32 or 64, depending on the build mode in use, and <F>bin/gap.sh</F> is a link to the script just built. See the paragraph about build modes below for further details.)
+<P/>
+Mac OS X users please note that this script must be started from within the
 <C>Terminal</C> Application. It is not possible to start &GAP; by clicking this
 script.
 <P/>
 If you get weird error messages from these commands, make sure that
-you got the Unix version of GAP (i.e. not the <C>-win.zip</C> format archive) and
+you got the Unix version of &GAP; (i.e. not the <C>-win.zip</C> format archive) and
 that you extracted the archive on the machine on which you compile.
 Also see section&nbsp;<Ref Sect="Known Problems of the Configure Process"/> below for further
 information.
 <P/>
-If you use OS X in the <Q>Panther</Q> release (version 10.3), you might want to
+There are several options to the build process which you can specify at the <C>configure</C>
+step. The following paragraphs describe these options; a brief description of each is also available via
+<Listing><![CDATA[
+./configure --help
+]]></Listing>
+<P/>
+
+<List>
+<Mark>Configure options</Mark>
+<Item></Item>
+<Mark>GMP</Mark>
+<Item>
+By default, &GAP; 4.5 uses the external library <Package>GMP</Package> 
+(see <URL>http://www.gmplib.org</URL>) for large integer arithmetic, replacing
+the built-in code used in previous versions and achieving a significant speed-up in related 
+computations. There is a version of <Package>GMP</Package> included with 
+the &GAP; archive you downloaded and this will be used unless otherwise requested. You can 
+configure <Package>GMP</Package> use as follows:
+<Listing><![CDATA[
+./configure --with-gmp=yes|no|system|"path"
+]]></Listing>
+If the argument you supply is <C>yes</C>, then the version of <Package>GMP</Package> bundled with
+this &GAP; will be used. This is the default. If the argument is <C>system</C> you are
+telling &GAP; that the <Package>GMP</Package> library is reachable with the standard search path, under
+<F>/usr</F> or <F>/usr/local</F>.
+You may instead give the complete <F>path</F> to a directory which contains the library.
+If the argument is no, original &GAP; large integer functionality will be used instead of
+<Package>GMP</Package>.
+<P/>
+Note that <C>--with-gmp</C> is equivalent to <C>--with-gmp=yes</C> and <C>--without-gmp</C>
+is equivalent to <C>--with-gmp=no</C>.
+</Item>
+
+<Mark>Readline</Mark>
+<Item>
+&GAP; now also uses the external library <C>Readline</C> 
+(see <URL>http://www.gnu.org/software/readline</URL>) which is used for command-line editing
+support. &GAP; will use this library by default if it is available on your system. 
+You can configure <C>Readline</C> use as follows:
+<Listing><![CDATA[
+./configure --with-readline=yes|no|"path"
+]]></Listing>
+If the argument you supply is <C>yes</C>, then &GAP; will look in standard locations for a 
+<C>Readline</C> installed on your system. Or you can specify a <F>path</F> to a <C>Readline</C>
+installation. If the supplied argument is <C>no</C> then readline support will not
+be used.
+<P/>
+Note that <C>--with-readline</C> is equivalent to <C>--with-readline=yes</C> and 
+<C>--without-readline</C> is equivalent to <C>--with-readline=no</C>.
+</Item>
+
+<Mark>Build mode</Mark>
+<Item>
+&GAP; will attempt to build in 32-bit mode on 32-bit machines and in 64-bit mode on 64-bit
+machines. On a 64-bit machine, you can tell &GAP; to build in 32-bit instead, if you wish.
+In that case, <Package>GMP</Package> will also be built in 32-bit mode. You can configure the build mode
+as follows:
+<Listing><![CDATA[
+./configure --with-abi=32|64
+]]></Listing>
+The value of the argument determines the build mode &GAP; will attempt to use. Note that 
+building in 64-bit mode on a 32-bit architecture is not supported.
+<P/>
+It is possible (on a 64-bit machine) to have builds in both 32- and 64-bit modes 'side by 
+side'. To do this you
+could unpack your &GAP; archive and then do:
+<Listing><![CDATA[
+./configure --with-abi=64
+make
+./configure --with-abi=32
+make
+]]></Listing>
+This will create both scripts <F>bin/gap32.sh</F> and <F>bin/gap64.sh</F> and these can be 
+called directly to choose the version you want. The link <F>bin/gap.sh</F> will point to the
+most recent of these.
+</Item>
+</List>
+
+The <C>configure</C> step creates the <F>Makefile</F>, needed for the <C>make</C> command.
+You should not need to provide any arguments to <C>make</C> in order to build &GAP;. 
+<P/> 
+
+<!--
+If you use Mac OS X in the <Q>Panther</Q> release (version 10.3), you might want to
 change the call to <C>make</C> to 
-<Log><![CDATA[
+<Listing><![CDATA[
 make COPTS="-fast -mcpu=7450"
-]]></Log>
+]]></Listing>
 on a G4 system or to
-<Log><![CDATA[
+<Listing><![CDATA[
 make COPTS="-O3 -mtune=G5 -mcpu=G5 -mpowerpc64"
-]]></Log>
+]]></Listing>
 on a G5 system (please note that the <C>-fast</C> compiler option causes problems
 on a G5 at the time of this writing &ndash;February 2004). Initial tests
 indicate that this will give you substantially improved performance.
 <P/>
-Unless you want to use the same installation of &GAP; also under Windows or
-MacOS (not OS X),
+Unless you want to use the same installation of &GAP; also under Windows,
 issue the command
-<Log><![CDATA[
+<Listing><![CDATA[
 make removewin
-]]></Log>
+]]></Listing>
 to delete unnecessary files that are Windows-only and only take up about 2MB
 of space.
+-->
 
 </Section>
 
@@ -287,21 +383,20 @@ of space.
 <Heading>Test of the installation</Heading>
 
 You are now at a point where you can start &GAP; for the first time. Unix
-and OS X users type 
-<Log><![CDATA[
+and Mac OS X users type 
+<Listing><![CDATA[
 ./bin/gap.sh
-]]></Log>
-MacOS users click the Application <C>GAP 4 PPC</C> in the <F>&GAPDIRNAME;</F>
-directory, Windows users start
-<Log>
+]]></Listing>
+Windows users start
+<Listing>
 C:\&UCGAPDIRNAME;\bin\gapw95.exe
-</Log>
+</Listing>
 &GAP; should start up with its banner and after a little while give you a
 command prompt <C>></C>.
 <P/>
 Try a few commands to see if the compilation succeeded.
 <P/>
-<Log><![CDATA[
+<Example><![CDATA[
 gap> 2 * 3 + 4;
 10
 gap> Factorial( 30 );
@@ -312,9 +407,8 @@ gap> Size( m11 );
 gap> Length( ConjugacyClasses( m11 ) );
 10 
 gap> Factors( 10^42 + 1 );
-#I  IsPrimeInt: probably prime, but not proven: 4458192223320340849
 [ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ]
-]]></Log>
+]]></Example>
 <P/>
 If you get the error message <Q><C>hmm, I cannot find lib/init.g</C></Q> you are
 likely to have installed only the binary (or on Windows have not installed
@@ -339,11 +433,10 @@ should give the following lines:
 <P/>
 <Example><![CDATA[
 gap> Factors( 10^42 + 2 );
-#I  IsPrimeInt: probably prime, but not proven: 3145594690908701990242740067
 [ 2, 3, 433, 953, 128400049, 3145594690908701990242740067 ]
 ]]></Example>
 <P/>
-<#Include Label="[1]{testall.g}">
+<#Include Label="[1]{testinstall.g}">
 <P/>
 <Log><![CDATA[
 test file         GAP4stones     time(msec)
@@ -354,6 +447,8 @@ testing: /home/fac/a/hulpke/gap4/tst/gaussian.tst
 gaussian.tst               0             10
 [ further lines deleted ]
 ]]></Log>
+<P/>
+<#Include Label="[1]{testall.g}">
 <P/>
 Windows users should note that the MS-DOS/Command Prompt user interface
 provided by Microsoft might not offer history scrolling or cut and paste
@@ -367,15 +462,13 @@ this.
 <Section Label="Packages">
 <Heading>Packages</Heading>
 
-To extract the packages, extract the <F>package&VERSIONSUFFIX;</F> archive
-<E>in</E>
-the <F>&GAPDIRNAME;/pkg</F> directory by the same method used to extracted
-the main archive. (If you use <C>unzoo</C> or under MacOS move both the <C>unzoo</C>
-binary and the archive in the <F>pkg</F> directory and extract there.)
+&GAP; distribution already contains all currently redistributed with 
+&GAP; packages in the <F>&GAPDIRNAME;/pkg</F> directory, and 
+for packages that consist only of &GAP; code no further installation is
+necessary. 
 <P/>
-For packages that consist only of &GAP; code no further installation is
-necessary. Some packages however contain external binaries that will
-require separate compilation. (If you use the MacOS version or Windows you
+Some packages however contain external binaries that will
+require separate compilation. (If you use Windows you
 will not be able to use external binaries anyhow any you can skip the rest
 of this section.) You can skip this compilation now and do it later
 &ndash;&GAP; will work fine,
@@ -413,10 +506,6 @@ deals with user questions of a general  nature;  bug  reports  and  other
 problems you have while installing and/or using &GAP; should be sent  to
 <Email>support@gap-system.org</Email>.
 <P/>
-At this point you can also delete all archive files. (You
-might want to keep <C>unzoo</C> if you used it in case a bugfix will be
-released.)
-<P/>
 The directories <F>trans</F>, <F>small</F> and <F>prim</F> within <F>&GAPDIRNAME;</F>
 contain data libraries. If you are short of disk space you can erase some of
 them. Similarly, you can erase and any of the &GAP; package directories in
@@ -441,27 +530,24 @@ The standard distribution contains two of them.
 in particular, Section&nbsp;<Ref Sect="Loading a GAP Package"/>) provide
 their own documentation in their own <F>doc</F> directories.
 <P/>
-All documentation will be available automatically for the online help
+All documentation will be available automatically within every $GAP; session
 (see Section&nbsp;<Ref Sect="Help" BookName="tut"/> and
 Chapter&nbsp;<Ref Chap="The Help System"/> in this manual for more details).
 <P/>
 There also is (if installed) an HTML version of some books that can be
 viewed with an HTML browser, see&nbsp;<Ref Sect="Changing the Help Viewer"/>.
 Some of these use <E>unicode characters</E> for mathematical formulae.
-If your browser is not able to display these
-(older versions of <C>Internet Explorer</C> do not),
-get the <F>htmie&VERSIONSUFFIX;</F> archive which provides math symbols in a
-different encoding.
-(<C>Mozilla</C>, <C>Konqueror</C> and <C>Safari</C> all support unicode
+(<C>Firefox</C>, <C>Konqueror</C> and <C>Safari</C> all support unicode
 characters.)
 <P/>
 The manual is also available in <C>pdf</C> format.
-In the full UNIX distribution (<F>gap&VERSIONSUFFIX;.zoo</F>)
+In the full distribution 
 these files are included in the directory <F>&GAPDIRNAME;/doc</F>
 in the subdirectories <F>tut</F> (a  beginner's  tutorial) and
 <F>ref</F> (the  reference manual).
 <P/>
-If  you want  to  use these manual files  with  the online  help you  may
+If  you want  to  use these manual files  with  the  help system from
+your $GAP; session you  may
 check (or  make sure)  that  your  system  provides some  additional
 software  like
 <P/>
@@ -470,6 +556,7 @@ software  like
 <Item>
   see <URL>http://www.foolabs.com/xpdf/</URL>
 </Item>
+<!--  Can we consider this as outdated? (FL)
 <Mark><C>xdvi</C></Mark>
 <Item>
   see any of the CTAN  sites/mirrors; the main site is
@@ -481,30 +568,24 @@ software  like
   (after the main site name) is
   <C>tex-archive/dviware/xdvi/xdvi.tar.gz</C>.
 </Item>
+-->
 <Mark><C>acroread</C></Mark>
 <Item>
   see <URL>http://www.adobe.com/products/acrobat/readstep.html</URL>
 </Item>
 </List>
 <P/>
-To complete beginners, we  suggest  you read  the tutorial  first for  an
-introduction to &GAP; 4. Then start to use the system with extensive use of
-the  online  help  system
+To complete beginners, we  suggest  you read (parts of) the tutorial  first 
+for  an introduction to &GAP; 4. Then start to use the system with extensive 
+use of the  help  system
 (see Section&nbsp;<Ref Sect="Help" BookName="tut"/> and
 Chapter&nbsp;<Ref Chap="The Help System"/> in this manual).
-<P/>
-If you  have experience with  &GAP; 3, it might  be still worthwhile  to at
-least glance  over the first  chapters of  the tutorial. You  however should
-read the last  chapter of the tutorial, <Q>Migrating to  GAP4</Q>. This chapter
-gives a summary  of changes between &GAP;  3 and &GAP; 4  that will affect
-the user. It also explains a <Q>compatibility  mode</Q> you may turn on to make
-&GAP; 4 behave a bit more like &GAP; 3.
 <P/>
 As some  of the manuals  are quite large,  you should not  immediately print
 them. If  you start using  &GAP; it can be  helpful to print  the tutorial
 (and  probably the  first chapters  of the  reference manual).  There is  no
 compelling reason to print the whole of the reference manual, better use the
-online help which provides useful search features.
+help system which provides useful search features.
 
 </Section>
 
@@ -525,27 +606,21 @@ and their remedies. Also see the FAQ list on the &GAP; web pages at
 <Item>
 You either started only the binary or did not edit the shell script/batch
 file to give the correct library path. 
-You must start the binary with the command line option <C>-l </C><A>path</A>
+You must start the binary with the command line option
+<C>-l</C>&nbsp;<A>path</A>
 where <A>path</A> is the path to the &GAP; home directory.
 See section&nbsp;<Ref Sect="Command Line Options"/>.
 </Item>
 <Mark>When starting, &GAP; produces error messages about undefined variables.</Mark>
 <Item>
-You might have a <F>.gaprc</F> file that was intended for &GAP;&nbsp;3 but is not
-compatible with &GAP;&nbsp;4.
-See section&nbsp;<Ref Sect="The .gaprc file"/>
+You might have a <F>.gaprc</F> file in your home directory
+that was intended for &GAP;&nbsp;3 but is not compatible with &GAP;&nbsp;4.
+See section&nbsp;<Ref Sect="sect:gap.ini"/>
 in chapter&nbsp;<Ref Chap="Running GAP"/>.
-</Item>
-<Mark>&GAP; complains: <Q><C>corrupted completion file</C></Q>.</Mark>
-<Item>
-Some library files got changed without rebuilding the completion files.
-This is often a sign that earlier a bugfix was not installed properly or
-that you changed the library yourself. In the latter case,
-start &GAP; with command line option <C>-N</C> and see section&nbsp;<Ref Sect="Completion Files"/>.
 </Item>
 <Mark>&GAP; stops with an error message <Q><C>exceeded the permitted memory</C></Q>.</Mark>
 <Item>
-Your job got bigger than what is permitted by default (256MB). (This is a
+Your job got bigger than what is permitted by default (this is a
 safety feature to avoid single jobs wrecking a multi-user system.) You can
 type <C>return;</C> to continue, if the error message happens repeatedly you
 better start the job anew and use the command line option <C>-o</C> to set a
@@ -564,7 +639,7 @@ pre-allocate initially a large piece of workspace.
 </Item>
 <Mark>&GAP; is not able to allocate memory above a certain limit</Mark>
 <Item>
-Being a 32 bit program, &GAP; currently is unable to use over 4GB of
+In a 32-bit mode &GAP; is unable to use over 4GB of
 memory. Since the address space also has to keep the operating system,
 3GB probably are an upper limit for a &GAP; workspace.
 <P/>
@@ -581,9 +656,9 @@ Windows users also see below for a built-in limit.
 The dates of the new files were not extracted properly (Alpha-OSF machines
 are prone to this). Call
 <P/>
-<Log><![CDATA[
+<Listing><![CDATA[
 touch * cnf/* src/*
-]]></Log>
+]]></Listing>
 <P/>
 from the main &GAP; directory (this ought to reset the date of all relevant
 files to <Q>now</Q>) and try again.
@@ -646,7 +721,7 @@ a remedy.
 </Item>
 <Mark>You get an error message about the <C>cygwin1.dll</C></Mark>
 <Item>
-&GAP; comnes with a version of this dynamic library. If you have another
+&GAP; comes with a version of this dynamic library. If you have another
 version installed (use <Q>Find</Q>), delete the older one (and probably copy the newer one in
 both places).
 </Item>
@@ -658,13 +733,11 @@ both places).
 <Email>support@gap-system.org</Email>. Please give:
 <P/>
 <List>
-<Mark><M>\bullet</M></Mark>
 <Item>
  a (short, if possible) self-contained excerpt of a &GAP;
 session containing both input and output that illustrates your problem 
 (including comments of why you think it is a bug); and
 </Item>
-<Mark><M>\bullet</M></Mark>
 <Item>
  state the type of machine, operating system,
 (compiler used, if UNIX/Linux) and version of &GAP; (for example
@@ -689,9 +762,9 @@ when your &GAP;&nbsp;4 starts up, supplies the information required).
 If <C>make</C> complains <Q>Do not know how to make <A>xyz</A></Q> but <A>xyz</A> is an
 existing file, it is likely that the dates of the files were not
 extracted properly (Alpha-OSF machines are prone to this). Call
-<Log><![CDATA[
+<Listing><![CDATA[
 touch * cnf/* src/*
-]]></Log>
+]]></Listing>
 from the main &GAP; directory (this ought to reset the date of all relevant
 files to <Q>now</Q>) and try again.
 <P/>
@@ -699,13 +772,13 @@ Sometimes the <C>configure</C> process does not properly figure out the
 <Q>inline</Q> compiler command. If you get error messages
 that complain that <Q>inline</Q> is unknown, edit the file <C>config.h</C> in the
 <C>bin/<A>architecture</A></C> subdirectory and replace the line
-<Log><![CDATA[
+<Listing><![CDATA[
 /* #undef inline */
-]]></Log>
+]]></Listing>
 by
-<Log><![CDATA[
+<Listing><![CDATA[
 #define inline
-]]></Log>
+]]></Listing>
 and then try to compile again.
 <P/>
 The <C>configure</C> script respects compiler settings given in environment
@@ -753,9 +826,9 @@ it.
 If you want to compile &GAP; with further compiler options (for example
 specific processor optimizations) you will have to assign them to the variable
 <C>COPTS</C> as in the following example when calling <C>make</C>:
-<Log><![CDATA[
+<Listing><![CDATA[
 make COPTS=-option
-]]></Log>
+]]></Listing>
 If there are several compiler options or if they contain spaces you might
 have to enclose them by quotes to avoid depending on the shell you are
 using.
@@ -856,9 +929,9 @@ If &GAP; compiles but crashes while reading the library or during a garbage
 collection with a bus error it is possible that the configuration script did
 not guess the permitted pointer alignment correctly. This value is stored
 in the line
-<Log><![CDATA[
+<Listing><![CDATA[
 #define C_STACK_ALIGN      2
-]]></Log>
+]]></Listing>
 of <C>config.h</C>. Increase the value to the next power of 2  (<M>\le  8</M>)  and
 compile &GAP; anew.
 <P/>
@@ -870,290 +943,74 @@ try this file, but please still report your problems to <C>support</C>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="GAP for Macintosh OS X">
-<Heading>GAP for Macintosh OS X</Heading>
+<Section Label="GAP for Mac OS X">
+<Heading>GAP for Mac OS X</Heading>
 
-<Index>OSX</Index>
+<Index>Mac OS X</Index>
 <Index>Apple</Index>
+<Index>Mac</Index>
 <Index>Macintosh</Index>
-OS X, the new version of the Macintosh operating system, is built on top of
-a variant of Unix. Thus there are two ways to run &GAP; under this
-operating system.
-<P/>
-The first way is simply to follow the instructions in section
-<Ref Sect="GAP for MacOS"/> below and to run the binary we provide
-in the <Q>Classic</Q> environment.
-<P/>
-The second way is to install the Unix version of &GAP;. 
-<P/>
-We recommend to use this (Unix) version because you will be able to use all
-features of GAP as well as all packages. However for installation you might
-need a basic knowledge of Unix.
-Note also that the Unix version of GAP uses Unix style text files. (These
-files differ from older style macintosh text files in that lines do not
+Mac OS X is built on top of
+a variant of Unix. Thus, you should follow the Unix installation instructions 
+to compile &GAP;; then you will be able to use all features of GAP as well as 
+all packages. However for installation you might need a basic knowledge of Unix.
+Note also that the Unix version of &GAP; uses Unix style text files. (These
+files differ from older style Macintosh text files in that lines do not
 contain a trailing <C>CR</C> character. Depending on what text editor you use
-you might not be able to inspect GAP library files and potentially might
+you might not be able to inspect &GAP; library files and potentially might
 run into problems with program files you create if they contain strings that
 go over several lines.)
 <P/>
 The following are a couple of notes and remarks about this:
 <P/>
-You will need a compiler. The <C>gcc</C> C compiler is not installed by default,
-but is part of the <Q>Developer tools</Q> package. This package might be in an
-installer package already on your system (look at the <C>Installer</C> folder
-under <C>Applications</C>), if not you can get it for free from Apple by
-registering as a developer. See <URL>http://developer.apple.com</URL> for details.
-For the <Q>Panther</Q> release (10.3) of OS X, <C>gcc</C> is part of the <Q>XCode</Q>
-development tools which you should install.
+First, note that you should get the Unix type &GAP; archives,
+i.e. one of <C>.zip</C>, <C>.tar.gz</C> or <C>.tar.bz2</C>archives, 
+but <E>not</E> the <C>-win.zip</C> archive (you won't be able 
+to compile the program as given in the <C>-win.zip</C> archive).
 <P/>
-To compile and run &GAP; you will have to open the <C>Terminal</C> application
-and type the Unix command into its window. The <C>Terminal</C> application can 
-be found in the <C>Utilities</C> folder in the <C>Applications</C> folder.
-&GAP; also will run in such a window.
-<P/>
-The next thing to note is that you should get the Unix type GAP archives,
-i.e. usually the tar archive, <E>not</E> the zip archive (You won't be able to
-compile the program as given in the <C>.zip</C> archive).
-<P/>
-(If you prefer to use the <C>.zoo</C> type archive over <C>.tar</C> you can use this
-as well.  However then you will need to use the Unix 
+<!--
+(If you prefer to use the <C>.zoo</C> type archive over <C>.tar</C> you can 
+use this as well.  However then you will need to use the Unix 
 version of <C>unzoo</C>, which you will need to compile first by the command
-<Log><![CDATA[
+<Listing><![CDATA[
 gcc -o unzoo -DSYS_IS_UNIX -O unzoo.c
-]]></Log>
+]]></Listing>
 If you use the Macintosh version of the <C>unzoo</C> extractor, the text files
-will be converted to MacOS format and you will have problems with the
+will be converted to Mac OS format and you will have problems with the
 compilation.)
 <P/>
 Go (using the <C>cd</C> command in the terminal window) into the directory where
 you want to install &GAP;, and copy the archives (and the unzoo program if
 you want to use <C>zoo</C>) in this directory. Then extract the archive by
 the command
-<Log>
+<Listing>
 tar zxvf gap&VERSIONSUFFIX;.tar.gz
-</Log>
+</Listing>
 (respectively &ndash;if you prefer <C>zoo</C>&ndash;
-<Log>
+<Listing>
 gcc -o unzoo -DSYS_IS_UNIX -O unzoo.c
 ./unzoo -x gap&VERSIONSUFFIX;.zoo
-</Log>
+</Listing>
 )
 <P/>
-Then simply follow the Unix installation instructions to compile &GAP;. 
+-->
+
+Next, you will need a compiler and build tools like <C>make</C>. The <C>gcc</C> C 
+compiler is not installed on a Mac OS X system by default,
+but is part of the <Q>XCode</Q> app(lication). This package might be in an
+installer package already on your system (look at the <C>Installer</C> folder
+under <C>Applications</C>), if not you can get it from Apple by
+registering as a developer (see <URL>http://developer.apple.com</URL>), or by purchasing 
+it from the App Store.
+<P/>
+To compile and run &GAP; you will have to open the <C>Terminal</C> application
+and type the Unix command into its window. The <C>Terminal</C> application can 
+be found in the <C>Utilities</C> folder in the <C>Applications</C> folder
+(&GAP; will run in such a window). 
+Now simply follow the Unix installation instructions to compile &GAP;. 
 
 </Section>
 
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="GAP for MacOS">
-<Heading>GAP for MacOS</Heading>
-
-<Index>MacOS</Index>
-<Index>Apple</Index>
-<Index>Macintosh</Index>
-This section contains information about &GAP; that is specific to the
-port of &GAP; for Apple Macintosh systems under MacOS (simply called
-&GAP; for MacOS below).
-<P/>
-To run &GAP; for MacOS you need an Apple Macintosh with a Motorola M68020, 
-M68030, or M68040 processor, or a Power Macintosh. The computer must have 
-at least 16MByte of (physical) memory and a harddisk. For 
-serious calculations, much more may be needed. The operating system must 
-be System 7 or higher. &GAP; for MacOS runs under System X, however only
-in Classic Mode. 
-<P/>
-The section <Ref Sect="Copyrights"/> describes the copyright as it
-applies to the executable version that we distribute. The section
-<Ref Sect="Installation of GAP for MacOS"/> describes how you install &GAP; for
-MacOS. 
-<P/>
-Please refer to the relevant sections of Chapter <Ref Chap="Running GAP"/>
-for an overview over the features of &GAP; for MacOS.
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Installation of GAP for MacOS">
-<Heading>Installation of GAP for MacOS</Heading>
-
-Installing &GAP; under MacOS is fairly easy. First, decide into which 
-folder you want to install &GAP;&nbsp;&VERSIONNUMBER;.
-&GAP; will be installed in a subfolder <F>&GAPDIRNAME;</F> of this folder.
-You can later move &GAP; to a different location.
-<P/>
-Note that certain parts of the output in the examples
-should only be taken as rough outline, especially file sizes and file
-dates are <E>not</E> to be taken literally.
-<P/>
-If you encounter problems please also see section&nbsp;<Ref Sect="If Things Go Wrong"/> of
-this document.
-<P/>
-Get the Mac-specific files described  in  <Ref Sect="Get the Archives"/>,  that  is,  the
-distribution   <C>gap&VERSIONSUFFIX;.zoo</C> and the    binary    archive
-<F>unzoo4r4-PPC.sit</F>,
-<P/>
-How you can get those
-files is described in the section <Ref Sect="Get the Archives"/>. Remember that the
-distribution consists of binary files and that you must transmit them in
-binary mode. 
-<P/>
-If the <C>sit</C> files did not extract automatically click on them to extract
-them. If even this fails use one of the standard 
-decompression utilities, such as <C>Stuffit Expander</C>.
-<P/>
-After this process you should end up with two applications,
-<C>GAP 4 PPC</C> and <C>unzoo 4.4 PPC</C>. 
-<P/>
-The latter is used to uncompress the <C>.zoo</C> archives which contain most of 
-&GAP;. The <C>zoo</C> archives we provide for &GAP; contain comments which indicate
-whether files are text or binary files. The <C>unzoo</C> we provide uses these
-comments. If you use another zoo extractor you might lose this information
-and end up with files that contain text but cannot be opened as text files.
-<P/>
-The following installation example assumes that you are installing &GAP;
-in the folder <C>Applications</C> on a PowerPC Macintosh. (For a 68k Macintosh 
-you should replace all references to <C>PPC</C> to ones referring to <C>68K</C>
-<P/>
-Move the file <F>gap&VERSIONSUFFIX;.zoo</F> into the folder <F>Applications</F>
-and drag it onto the icon of <C>unzoo 4.4 PPC</C>. You will get many lines of 
-output in this window. 
-<P/>
-This should have created a folder <F>&GAPDIRNAME;</F> in the current folder.
-<P/>
-(You will not need the file <F>gap&VERSIONSUFFIX;.zoo</F> any
-longer. If you are short of disk space you can remove it now.)
-<P/>
-If you got not the full distribution file but several small files, extract
-all of them (<E>except the &GAP; packages!</E>) in this way.
-<P/>
-Move  <C>GAP 4 PPC</C> and the bugfix file (if there is one) in the folder 
-<F>&GAPDIRNAME;</F>. Drag the bugfix file onto the icon of <C>unzoo 4.4 PPC</C>
-to decompress it. 
-<P/>
-If you got any &GAP; packages, move them into the <F>pkg</F> folder in the folder 
-folder <F>&GAPDIRNAME;</F> extract them there, in the same way as the bugfix.
-<P/>
-After extraction you may discard all <F>.zoo</F> files if you are short of disk 
-space.
-<P/>
-The folders <F>trans</F>, <F>small</F> and <F>prim</F> contain data
-libraries. If you are short of disk space you can erase some of them and
-any &GAP; package directories in the <F>pkg</F> directory that you don't need,
-but then of course you will not be able to access these data and packages.
-(Any &GAP; package that has a C code component is essentially UNIX-dependent
-and you may as well delete those; such packages typically describe in their
-<F>README</F> files that they require <C>configure</C> and <C>make</C> to complete their
-installation or have a <F>src</F> directory.)
-<P/>
-Before you use &GAP;, you should set up &GAP;'s memory allocation, by 
-setting appropriate values by selecting the &GAP; application and 
-<C>Get Info...</C> in the Finder's <C>File</C> menu (in order to be able to 
-modify the values there, you have to do this <E>before</E> you launch &GAP;). 
-<P/>
-The maximum amount of workspace &GAP; can use depends on the amount of 
-memory the Finder allocates to &GAP; when it is launched. The maximum 
-amount of &GAP; workspace is this value, minus a certain amount used 
-internally by the &GAP; application (for the PPC 
-version, currently around 1.7 Megabytes, plus the size of the &GAP; 
-application if you do not use virtual memory, and 2.9 Megabytes for the 
-68K version), minus any additional amount set with the <C>-a</C>, <C>-P</C> or <C>-W</C>
-command line options (see below).
-<P/>
-You can find information about the amount of free &GAP; workspace, the total
-amount of available workspace, and the remaining free memory, 
-by choosing <C>About GAP</C> in the <C>Apple</C> menu.
-<P/>
-To ensure efficient operation, you should not allocate more memory to &GAP;
-than the amount of physical memory in your computer. 
-If you are not using virtual memory, 
-the amount may have to be considerably less (depending on your system and
-the number of other applications which you may want to run at the same time).
-<P/>
-If you notice heavy disk use during garbage collections, this is a clear 
-indication that you have allocated too much memory to &GAP;.
-<P/>
-In order to test your installation now run the <C>GAP</C> application
-by clicking on <C>GAP 4 PPC</C>.
-You should get the &GAP; banner and then the &GAP; prompt in a window
-titled <C>GAP log</C>. (The process of starting &GAP; may take a while.)
-<P/>
-Try a few things to see if the installation succeeded.
-<P/>
-<Log><![CDATA[
-gap> 2 * 3 + 4;
-10
-gap> Factorial( 30 );
-265252859812191058636308480000000
-gap> Factors( 10^42 + 1 );
-[ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ]
-gap> m11 := Group((1,2,3,4,5,6,7,8,9,10,11),(3,7,11,8)(4,10,5,6));;
-gap> Size( m11 );
-7920
-gap> Length( ConjugacyClasses( m11 ) );
-10 
-]]></Log>
-<P/>
-A set of test files is provided, running them all probably takes some 40
-minutes on a 200 MHz PPC machine. 
-This is not a necessary part of the
-installation; it only serves as a confirmation that everything went
-OK. The full test suite takes some time  and uses quite a bit of memory (around 70MB), so you may
-wish to skip this step or run only part of the tests. This does no
-harm.
-<P/>
-Initially we must ensure that the print width of &GAP; is 80 characters per
-line which we achieve with the <C>SizeScreen</C> command (otherwise we will be
-swamped with error messages).
-<P/>
-<Log><![CDATA[
-gap> SizeScreen([80,]);;
-gap> Filename( DirectoriesLibrary("tst"), "testall.g" );
-"./tst/testall.g"
-gap> Read(last);
-[many output lines omitted]
-]]></Log>
-<P/>
-The information about the manual is system independent; you can find it in
-section&nbsp;<Ref Sect="The Documentation"/>.
-<P/>
-<E>A few final reminders:</E>
-<P/>
-<List>
-<Mark><M>\bullet</M></Mark>
-<Item>
-
-We would appreciate after installation your sending us a short note at
-<Email>support@gap-system.org</Email> 
-(even if you have installed &GAP; 3 before).
-Generally, we do not reply to such emails; we only use them to gain some idea
-of how many people use &GAP; and of the machines/operating systems on which
-&GAP; has been successfully installed.
-</Item>
-<Mark><M>\bullet</M></Mark>
-<Item>
-
-We also suggest that you subscribe to our <C>GAP Forum</C> mailing list; 
-see the &GAP; web pages for details. Whenever there is a bug fix or new
-release of &GAP; this is where it is announced. The <C>GAP Forum</C> also
-deals with user questions of a general nature; bug reports and other
-problems you have while installing and/or using &GAP; should be sent to
-<Email>support@gap-system.org</Email>.
-<P/>
-</Item>
-</List>
-<P/>
-That's all, your installation should be complete. Please refer to
-Chapter <Ref Chap="Running GAP"/> for a description
-of some special features and options of &GAP; for MacOS.
-<P/>
-We hope that you will 
-enjoy using &GAP;. Remember, if you have problems, do not hesitate to
-contact us at
-<Email>support@gap-system.org</Email>.
-See Section&nbsp;<Ref Sect="If Things Go Wrong"/> for what to include in a bug report.
-
-</Section>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -1187,29 +1044,29 @@ but you will have to edit a batch file and use this file to start &GAP;.
 First unpack the &GAP; distribution in the directory you want. 
 <P/>
 Lets suppose you want &GAP; to reside in the directory
-<Log><![CDATA[
+<Listing><![CDATA[
 C:\MY PROGRAMS\GAP
-]]></Log>
+]]></Listing>
 Extract &GAP; (as described in the previous section for <C>C:</C>) in this
 directory. (alternatively, you can also first unpack it in 
-<Log>
+<Listing>
 C:\&UCGAPDIRNAME;
-</Log>
+</Listing>
 test it there first, and afterwards move it in the desired location.)
 <P/>
 You now will have to edit the provided batch file, that will be used to start &GAP;.
 This batch file is needed, since &GAP; otherwise will not find its library
 directories. The file sits in the <C>bin</C> directory of the &GAP;
-distribution, i.e. in our example
-<Log>
-C:\MY PROGRAMS\GAP\GAP&UCGAPDIRNAME;\bin\gap.bat
-</Log>
+distribution, i.e. in our case it is
+<Listing>
+C:\MY PROGRAMS\GAP\&UCGAPDIRNAME;\bin\gap.bat
+</Listing>
 This file should contain the following <E>single</E> line (which might be broken
 over in several lines in this manual as the page width is limited):
-<Log>
-"C:\MY PROGRAMS\GAP\GAP&UCGAPDIRNAME;\bin\gapw95.exe" -m 14m 
-  -l "C:\MY PROGRAMS\GAP\GAP&UCGAPDIRNAME;" %1 %2 %3 %4 %5 %6 %7 %8
-</Log>
+<Listing>
+"C:\MY PROGRAMS\GAP\&UCGAPDIRNAME;\bin\gapw95.exe" -m 14m 
+  -l "C:\MY PROGRAMS\GAP\&UCGAPDIRNAME;" %1 %2 %3 %4 %5 %6 %7 %8
+</Listing>
 <P/>
 You now should be able to start &GAP; by clicking this <F>gap.bat</F> file.
 <P/>
@@ -1231,9 +1088,9 @@ Before changing the entries, you might have to run &GAP; once first to
 create the appropriate registry keys.
 <P/>
 The shell script <F>usemem.bat</F> in the <F>bin</F> directory sets a registry entry
-<Log><![CDATA[
+<Listing><![CDATA[
 /HKEY_LOCAL_MACHINE/Software/Cygnus Solutions/Cygwin/heap_chunk_in_mb
-]]></Log>
+]]></Listing>
 to decimal 1024. 
 <P/>
 If you prefer to do the change by hand, open <C>regedit</C> and
@@ -1248,7 +1105,7 @@ go to the <C>Cygwin</C> Key listed above. Then choose <C>new value</C> and add
 <Heading>Copyrights</Heading>
 
 In addition to the general copyright for &GAP; set forth in the Copyright
-the following terms apply to the versions of &GAP; for Windows and MacOS.
+the following terms apply to the versions of &GAP; for Windows.
 <P/>
 The executable of &GAP; for Windows that we distribute was compiled with
 the <C>gnuwin32</C> compiler of the <C>cygwin</C> package. 
@@ -1272,25 +1129,6 @@ The <F>cygwin1.dll</F>, <F>libW11.dll</F>, <F>rxvt.exe</F> and <F>regtool.exe</F
 taken unmodified from the Cygwin distribution. They are copyright by RedHat Software
 and released under the GPL. You can find more information about <C>cygwin</C> under
 <URL>http://www.cygwin.com</URL>. You also will be able to obtain the sources for <C>cygwin</C> from this place.
-<P/>
-The system dependent part of &GAP; for MacOS was written by Burkhard 
-Höfling. He assigns
-the copyright to the &GAP; group. Many thanks to Burkhard for his help!
-Burkhard Höfling's port was partly based on an earlier
-port of &GAP; for the Mac, 
-which was done by Dave Bayer
-and used the 
-Mac Programmers Workshop (MPW) compiler. Many thanks to Dave for his work. 
-Moreover, the built-in editor is based upon the freeware text editor 
-<C>PlainText</C> by Mel Park which, in turn, uses <C>TE32K</C>, a <C>TextEdit</C> 
-replacement by Roy Wood. It also uses <C>Internet Config</C>.
-<P/>
-For technical reasons we do not distribute the Macintosh specific source and
-project files as part of the standard archives. If you are interested in
-compiling &GAP; yourself, we are happy to provide you with the appropriate
-files (contact us at <Email>support@gap-system.org</Email>). The source can
-be compiled with CodeWarrior Pro 5 with Apple's Universal Headers 3.3
-installed.
 <P/>
 Please contact <Email>support@gap-system.org</Email> if you need further information.
 

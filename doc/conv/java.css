@@ -1,0 +1,33 @@
+/* no special treatment if javascript is present */
+
+div.ContChap div.ContSect:hover div.ContSSBlock {
+  display: none;
+  position: static;
+  background: inherit;
+  color: inherit;
+  left: inherit;
+  width: 100%;
+}
+
+div.ContChap div.ContSect:hover {
+  width: 100%;
+  background: inherit;
+  color: inherit;
+}
+
+
+div.ChapSects div.ContSect:hover div.ContSSBlock {
+  display: none;
+  position: static;
+  background: inherit;
+  color: inherit;
+  left: inherit;
+  width: 100%;
+  z-index: 10000;
+}
+
+div.ChapSects div.ContSect:hover {
+  background: inherit;
+  color: inherit;
+}
+

@@ -1,10 +1,10 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %W  foa.tex                   GAP documentation            Heiko Thei�en -->
+<!-- %W  foa.tex                   GAP documentation            Heiko Theißen -->
 <!-- %% -->
 <!-- %H  @(#)<M>Id: foa.tex,v 4.20 2002/10/09 12:32:13 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
 <!-- %% -->
 <Chapter Label="Function-Operation-Attribute Triples">
 <Heading>Function-Operation-Attribute Triples</Heading>
@@ -57,9 +57,9 @@ for the attribute are required either.
 <Section Label="Operation Functions">
 <Heading>Operation Functions</Heading>
 
-<Index Key="ExternalSet"><C>ExternalSet</C></Index>
-<Index Key="G-sets"><M>G</M>-sets</Index>
-<Index Key="Orbits"><C>Orbits</C></Index>
+<Index Subkey="computing orbits"><C>ExternalSet</C></Index>
+<Index Subkey="computing orbits"><M>G</M>-sets</Index>
+<Index Subkey="as attributes for external sets"><C>Orbits</C></Index>
 Chapter&nbsp;<Ref Chap="Group Actions"/>
 and, in particular,
 the Section&nbsp;<Ref Sect="About Group Actions"/>
@@ -208,7 +208,7 @@ OrbitishFO( "Blocks",
 And this extraordinary FOA triple works as follows:
 <Example><![CDATA[
 gap> s4 := Group((1,2,3,4),(1,2));;
-Blocks( s4, MovedPoints(s4), [1,2] );
+gap> Blocks( s4, MovedPoints(s4), [1,2] );
 [ [ 1, 2, 3, 4 ] ]
 gap> Tester( BlocksAttr )( s4 );
 false

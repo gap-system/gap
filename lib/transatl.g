@@ -57,7 +57,7 @@ Transatlantic(CentralizerTransSymmCSPG);
 Transatlantic(CentralizerWreath);
 Transatlantic(ClassesSolvableGroup);
 Transatlantic(ClassPositionsOfSolvableResiduum);
-Transatlantic(ComplementclassesSolvableNC);
+Transatlantic(ComplementClassesRepresentativesSolvableNC);
 Transatlantic(ComputedIsPSolvableCharacterTables);
 Transatlantic(CONextCentralizer);
 Transatlantic(EpimorphismSolvableQuotient);

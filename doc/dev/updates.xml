@@ -7,7 +7,6 @@
 
 Here we document tasks for preparing an update or a full release.
 
-       $Id: updates.xml,v 1.9 2008/09/26 06:48:44 gap Exp $
 -->
 
 <Chapter Label="Chap-Updates">
@@ -233,6 +232,16 @@ branch.
 
 <Subsection Label="Ssect-Wrap">
 <Heading>Wrapping the archives</Heading>
+<B>REMARK (FL)</B> For GAP 4.5 this should be simplified. The approach
+with <F>zooandtag</F> allows a per file configuration of which files
+should be considered text or binary files. But on the other hand it is
+too easy  to forget some file in the archive. The following
+seems simpler, less error prone and probably good enough: checkout all 
+files under CVS;
+have a script which deletes everything we don't want to distribute;
+pack as .tar.gz; use the (conservative) heuristic by file extensions 
+of the <F>repack.py</F> script to decide which files are marked as text
+files. <B>END REMARK</B> <P/>
 Now we explain how to wrap the archives. The  &GAP; binaries
 for Windows and MacOS are added in the end, this can be left out until a
 release candidate is wrapped. The following steps produce the
@@ -277,6 +286,11 @@ or warnings during the compilation.
 a few explicitly listed executable files get <C>755</C>-permissions.
 Note that the latter list must be adjusted if new executable files are
 added to the &GAP; distribution.</Item>
+<Item>Check and adjust <F>./zooandtag</F>. This is the file containing
+the information which files in the archives are text files and which
+are binary files. If new files are added to directories containing text
+and binary files, these must be added in the appropriate place in
+<F>./zooandtag</F>. </Item>
 <Item>Now the <C>.zoo</C>-archives can be wrapped with <F>./zooandtag</F> and
 <F>./zooandtagdata</F>. This produces the main archive as well as the 
 <F>htmie...</F> and <F>tools...</F> archives.
@@ -347,7 +361,7 @@ directory, otherwise move this archive to the wrapping directory).
 <Item>Now create the other archive types using the 
 <F>repack.py</F> utility. This can be done with <F>./repack</F>.</Item>
 <Item>
-Ask Burkhard Höfling (<C>Familie Höfling
+Ask Burkhard HÃ¶fling (<C>Familie HÃ¶fling
 &lt;B.Hoefling@tu-bs.de&gt;</C>) to provide a MacOS executable of the
 &GAP; kernel in the release branch (if the kernel has changed, otherwise
 get it from the previous release). Copy the file <F>GAP 4 PPC</F> to

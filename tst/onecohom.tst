@@ -25,7 +25,7 @@ gap> n:=Group((10,12)(14,15),(10,11)(13,15),(10,12,11),(11,12),
 > (1,3)(7,8)(11,12)(13,15)(16,18,17),
 > (1,3)(4,6,5)(8,9)(10,11)(17,18),(4,6,5)(7,8,9)(14,15)(17,18),
 > (1,3)(7,8)(10,12)(13,15,14)(16,17));;
-gap> Length(Complementclasses(g,n));
+gap> Length(ComplementClassesRepresentatives(g,n));
 2
 gap> g:=PerfectGroup(IsPermGroup,120,1);;
 gap> n:=Filtered(NormalSubgroups(g),i->IsElementaryAbelian(i) and Size(i)>1)[1];;

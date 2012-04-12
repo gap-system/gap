@@ -1,11 +1,11 @@
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %W  libform.tex              GAP documentation           Alexander Hulpke -->
 <!-- %% -->
 <!-- %H  @(#)<M>Id: libform.tex,v 4.14 2004/01/27 09:26:53 stefan Exp </M> -->
 <!-- %% -->
 
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="Library Files">
 <Heading>Library Files</Heading>
 
@@ -15,7 +15,7 @@ These conventions are intended as a help on how to read library files and
 how to find information in them.
 So everybody is recommended to follow these conventions,
 although they do not prescribe a compulsory programming style
--- &GAP; itself will not bother with the formatting of files.
+&ndash;&GAP; itself will not bother with the formatting of files.
 <P/>
 Filenames have traditionally &GAP; adhered to the 8+3 convention (to make it
 possible to use the same filenames even on a MS-DOS file system) and been in
@@ -27,7 +27,7 @@ case. Directory names of packages, however, <E>must</E> be in lower case
 (the <Ref Func="LoadPackage"/> command assumes this).
 
 
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="File Types">
 <Heading>File Types</Heading>
 
@@ -55,12 +55,6 @@ by their suffixes:
     Usually declarations of representations are also considered to be
     part of the implementation and are therefore found in the <C>.gi</C> files.
 </Item>
-<Mark><C>.co</C> </Mark>
-<Item>
-    Completion files.
-    They are used only to speed up loading
-    (see&nbsp;<Ref Sect="Completion Files"/>).
-</Item>
 </List>
 <P/>
 As a rule of thumb, all <C>.gd</C> files are read in before the <C>.gi</C>
@@ -68,99 +62,65 @@ files are read.
 Therefore a <C>.gi</C> file usually may use any operation or global function
 (it has been declared before),
 and no care has to be taken towards the order in which the <C>.gi</C> files
-are read.
+are read. 
 
 </Section>
 
 
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="File Structure">
-<Heading>File Structure</Heading>
-
-Every file starts with a header that lists the filename, copyright, a short
-description of the file contents and the original authors of this file.
-<P/>
-This is followed by a revision entry:
-<Log><![CDATA[
-Revision.file_suf :=
-    "@(#)$Id: libform.xml,v 4.4 2008/09/18 07:58:06 gap Exp $";
-]]></Log>
-where <F>file.suf</F> is the file name. The revision control system used for the
-development will automatically append text to the string <Q><C>Id: </C></Q> which
-indicates the version number. The reason for these revision entries is to
-give the possibility to check from within &GAP; for revision numbers of a
-file. (Do not mistake these revision numbers for the version number of
-&GAP; itself.)
-<P/>
-Global comments usually are indented by two hash marks and two blanks.
-Several such comments are actually used for the manuals.
-<P/>
-In manuals whose format is based on the &TeX; macros described in
-the document <Q>The gapmacro.tex Manual Format</Q>,
-every declaration or method or function installation which is not only of
-local scope is introduced by a function header of the following type.
-<P/>
-<Log><![CDATA[
-#############################################################################
-##
-#X  ExampleFunction(<A>,<B>)
-##
-##  This function does nothing.
-]]></Log>
-<P/>
-The <Q>X</Q> in the example is one of the letters: <C>F</C>, <C>A</C>, <C>P</C>, <C>O</C>,
-<C>C</C>, <C>R</C> or <C>V</C>, and has the same meaning as at the end
-of a declaration line in the Reference Manual (see&nbsp;<Ref Sect="Manual Conventions"/>);
-it indicates whether the object declared will be a function, attribute,
-property, operation, category, representation or variable, respectively.
-Additionally <C>M</C> is used in <C>.gi</C> files for method installations.
-The line then gives a sample usage of the function.
-This is followed by a comment which describes the identifier.
-This description will automatically be extracted to build the
-manual source, if there is a <C>\Declaration</C> line in some
-<C>.msk</C> file together with an appropriate configuration file.
-<P/>
-Indentation in functions and the use of decorative spaces in the code are
-left to the decision of the authors of each file.
-<P/>
-The file ends with an 
-<P/>
-<Log><![CDATA[
-#E
-]]></Log>
-<P/>
-comment section.
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Finding Implementations in the Library">
 <Heading>Finding Implementations in the Library</Heading>
 
-There is no general browsing tool that would point you to the place in the
-library where a certain method or global function is installed. However the
-following remarks might be of help:
+For a concretely given function, you can use
+<Ref Func="FilenameFunc"/> and <Ref Func="StartlineFunc"/> for finding the
+file where this function is defined, and the line in this file where the
+definition of this function starts.
+This does not work for arbitrary functions,
+see Section <Ref Func="FilenameFunc"/> for the restrictions.
 <P/>
-You can use <Ref Sect="ApplicableMethod"/>
-to get the function which implements a method for specific
-arguments. Setting its print level higher will also give you the
-installation string for this method.
+If you are interested in getting the function which implements a method
+for specific arguments, you can use <Ref Sect="ApplicableMethod"/>.
+If <Ref Func="FilenameFunc"/> does not work for this method then
+setting the print level of <Ref Sect="ApplicableMethod"/> higher will give
+you the installation string for this method, which can be used for searching
+in library files.
 <P/>
-To find the occurrence of functions and methods in the library, one can use
-the <C>grep</C> tool under UNIX. To find a function, search for the function name
-in the <C>.gd</C> files (as it is declared only once, only one file will show up),
-the function installation is likely to occur in the corresponding <C>.gi</C> file.
+To find the occurrence of functions, methods, function names,
+and installation strings in the library,
+one can use the <C>grep</C> tool under UNIX.
+To find a function, search for the function name in the <C>.gd</C> files;
+as global variables are usually declared only once,
+only few files will show up.
+The function installation is likely to occur in the corresponding
+<C>.gi</C> file.
 <P/>
-To find a method search for the string <Q><C>Method(</C></Q>
+To find a method from the known operation name and the installation string,
+search for the string <Q><C>Method(</C></Q>
 (this catches both <Ref Func="InstallMethod"/> and
 <Ref Func="InstallOtherMethod"/>)
 and the installation string or the operation name.
+<P/>
+The following tools from the &GAP; package <Package>Browse</Package>
+can be used for accessing the code of functions.
+<P/>
+<List>
+<Item>
+    <Ref Func="BrowseGapMethods" BookName="browse"/> shows an overview of
+    &GAP;'s operations and methods, and allows one to navigate through the
+    files that contain the implementations of the methods, using a pager.
+</Item>
+<Item>
+    <Ref Func="BrowseProfile" BookName="browse"/> shows profiling results
+    (similar to <Ref Func="DisplayProfile"/>) and allows one to navigate
+    through the files that contain the implementations of the functions
+    that were actually used, using a pager.
+</Item>
+</List>
 
 </Section>
 
 
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Undocumented Variables">
 <Heading>Undocumented Variables</Heading>
 
@@ -217,9 +177,4 @@ be sure that nothing will be broken later due to changes in &GAP;.
 
 </Section>
 </Chapter>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- %% -->
-<!-- %E -->
 

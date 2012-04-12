@@ -1076,7 +1076,7 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
         K := SocleComplement( G );
     else
         F := FittingSubgroup( G );
-        K := Complementclasses( G, F )[1];
+        K := ComplementClassesRepresentatives( G, F )[1];
     fi;
     gensF := Pcgs( F );
     gensK := Pcgs( K );

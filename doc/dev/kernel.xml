@@ -6,7 +6,6 @@
 
 Here we give an introduction to the &GAP; kernel programming.
 
-       $Id: kernel.xml,v 1.8 2009/09/30 23:36:21 alexk Exp $
 -->
 
 <Chapter Label="Chap-Kernel">
@@ -491,9 +490,11 @@ for working with objects:
 <Item>
 <C>NEW_PLIST</C>, <C>SET_ELM_PLIST</C>, etc. for creating plain lists
 </Item>
-<Item><C>PROD</C> for arithmetic (see also <C>SUM</C>, <C>DIFF</C>, etc.)
+<Item>
+<C>PROD</C> for arithmetic (see also <C>SUM</C>, <C>DIFF</C>, etc.)
 </Item>
-</List>These macros are flexible: for example, <C>PROD</C> will multiply anything,
+</List>
+These macros are flexible: for example, <C>PROD</C> will multiply anything,
 but if you know what objects you will have it will be a bit faster to call 
 the multiplication directly.
 <P/>
@@ -717,7 +718,7 @@ lenfunc = NewFunctionC( "Length", 1L, "list", FuncLength);
 <Heading>Lists</Heading>
  
 The &GAP; kernel provides a generic list interface,
-which is equivalent to using <C>&lt;list>[&lt;ix>]</C> 
+which is equivalent to using <C>list[i]</C> 
 etc. in the library. This interface works for all types 
 of lists known to GAP, including virtual lists. It has
 macros like 
@@ -733,22 +734,20 @@ Implementation of these macros is done via tables of functions indexed by TNUM.
 <P/> 
 Nevertheless, it will be not much faster to write your &C; code using such macros,
 for example, to reverse an arbitrary list, than to do the same working in &GAP;.
-However, in case of <E>plain lists</E> 
-(see next subsection <Ref Label="Subsect-PlainLists"/>) coding
+However, in case of <E>plain lists</E> coding
 in &C; actually ought to produce some speedup.
- 
-</Subsection>
-
-
-<Subsection Label="Subsect-PlainLists">
-<Heading>Plain Lists</Heading>
- 
+<P/>
+A  plain list is a list  that may have holes  and may contain elements of
+arbitrary types.  A plain list may also have room for elements beyond its
+current  logical length.  The  last position to  which  an element can be
+assigned without resizing the plain list is called the physical length.
+<P/> 
 If you need to create a plain list, use 
 <C>NEW_PLIST(&lt;tnum>,&lt;plength>)</C>,
 where <C>&lt;tnum></C> should be <C>T_PLIST_&lt;something></C>,
 and <C>&lt;plength></C> is physical length in bags. Furthermore,
-<C>LEN_PLIST</C> gets logical length 
-<C>SET_LEN_PLIST</C> sets logical length. Note that
+<C>LEN_PLIST</C> gets its logical length, and
+<C>SET_LEN_PLIST</C> sets its logical length. Note that
 <C>ELM_PLIST</C> is faster than <C>ELM_LIST</C>.
 
 </Subsection>
@@ -761,7 +760,8 @@ and <C>&lt;plength></C> is physical length in bags. Furthermore,
 records using <C>Objectify</C>. They contain their <E>Type</E> and data 
 accessible with <C>![]</C> and <C>!.</C> operations.
 <P/>
-<E>Data objects</E> also contain their <E>Type</E>, but the data is only 
+
+<E>Data objects</E> also contain their <E>Type</E>, but the data is only 
 accessible via kernel functions. Data can be anything you like <E>except</E> 
 bag references. The garbage collector doesn't see inside them. At a minimum, 
 construction and basic access functions need to be written in the kernel.
@@ -781,13 +781,16 @@ For example, compressed vectors are done this way.
 
 Three golden rules of &GAP; kernel programming:
 <Enum>
-<Item>Real &C; pointers into objects (returned by <C>ADDR_OBJ</C>) must <E>not</E> 
+<Item>
+Real &C; pointers into objects (returned by <C>ADDR_OBJ</C>) must <E>not</E> 
 be held across anything that could cause a garbage collection (<E>GC</E>).
 </Item>
-<Item>If you add a new object to another one (e.g. put it in a list) you must call 
+<Item>
+If you add a new object to another one (e.g. put it in a list) you must call 
 <C>CHANGED_BAG</C> on the container, otherwise the new object may get lost in a GC.
 </Item>
-<Item>Don't use malloc: actually using it a little bit is usually safe, 
+<Item>
+Don't use malloc: actually using it a little bit is usually safe, 
 and it's safe if you don't ever want to expand the GAP workspace.
 </Item>
 </Enum>
@@ -803,7 +806,8 @@ More things can cause a garbage collection than you expect:
 <Item>printing (might be to string stream)</Item>
 <Item>generic list or record access (might be handled by &GAP; methods)</Item>
 <Item>integer arithmetic (might overflow to large integers)</Item>
-</List>Be careful of things like
+</List>
+Be careful of things like
 <Log>
 <![CDATA[
 ELM_PLIST(l, 3) = something that might cause GC
@@ -834,6 +838,9 @@ initializations from tables.
 <Section Label="Sect-compiler">
 <Heading>The &GAP; compiler</Heading>
 
+<Subsection Label="Compiling GAP Code">
+<Heading>Compiling &GAP; Code</Heading>
+
 The &GAP; compiler converts &GAP; code into kernel functions. The compiled 
 code then can be loaded into a running kernel (on UNIX or Mac OS). The 
 resulting code still has to do lots of checks, so usually it will not be as 
@@ -848,20 +855,57 @@ load it during the subsequent &GAP; session:
 
 <Log>
 <![CDATA[
-$ cat > foo.gfoo := x -> [x,x^2,x^3];$ gac -d -C foo.g... compilation to C file ...
-$ gac -d foo.g... compilation to .so file ...
-$ ls -l foo.so-rwxr-xr-x 1 sal 158 4999 2007-09-11 10:19 foo.so*$ gap -bGAP4, Version: 4.dev of today, ....gap> LoadDynamicModule("./foo.so");gap> Print(foo);function ( <<arg-1>> )    <<compiled code>>endgap> foo(3);[ 3, 9, 27 ]
+$ cat > foo.g
+foo := x -> [x,x^2,x^3];
+$ gac -d -C foo.g
+... compilation to C file ...
+$ gac -d foo.g
+... compilation to .so file ...
+$ ls -l foo.so
+-rwxr-xr-x 1 sal 158 4999 2007-09-11 10:19 foo.so*
+$ gap -b
+GAP4, Version: 4.dev of today, ....
+gap> LoadDynamicModule("./foo.so");
+gap> Print(foo);
+function ( <<arg-1>> )
+    <<compiled code>>
+endgap> foo(3);
+[ 3, 9, 27 ]
 ]]>
 </Log>
 
-The compiler code will look as follows:
+The compiler code will look as follows:
+
 <Log>
 <![CDATA[
-/* return [ x, x ^ 2, x ^ 3 ]; */t_1 = NEW_PLIST( T_PLIST, 3 );SET_LEN_PLIST( t_1, 3 );SET_ELM_PLIST( t_1, 1, a_x );CHANGED_BAG( t_1 );t_2 = POW( a_x, INTOBJ_INT(2) );SET_ELM_PLIST( t_1, 2, t_2 );CHANGED_BAG( t_1 );t_2 = POW( a_x, INTOBJ_INT(3) );SET_ELM_PLIST( t_1, 3, t_2 );CHANGED_BAG( t_1 );RES_BRK_CURR_STAT();SWITCH_TO_OLD_FRAME(oldFrame);return t_1;
+/* return [ x, x ^ 2, x ^ 3 ]; */
+t_1 = NEW_PLIST( T_PLIST, 3 );
+SET_LEN_PLIST( t_1, 3 );
+SET_ELM_PLIST( t_1, 1, a_x );
+CHANGED_BAG( t_1 );
+t_2 = POW( a_x, INTOBJ_INT(2) );
+SET_ELM_PLIST( t_1, 2, t_2 );
+CHANGED_BAG( t_1 );
+t_2 = POW( a_x, INTOBJ_INT(3) );
+SET_ELM_PLIST( t_1, 3, t_2 );
+CHANGED_BAG( t_1 );
+RES_BRK_CURR_STAT();
+SWITCH_TO_OLD_FRAME(oldFrame);
+return t_1;
 ]]>
 </Log>
 
 Note that the original &GAP; code (more or less) appears as comments.
+<P/>
+
+If you want to see or modify the intermediate C code, you can also instruct
+the compiler to produce only the C files by using the option <C>-C</C>
+instead of <C>-d</C>. 
+<P/>
+
+There are some known problems with C code produced with the
+&GAP; compiler on 32 bit architectures and used on 64 bit architectures
+(and vice versa).
 <P/>
 
 There are more ways to exploit the &GAP; compiler apart from just compiling 
@@ -872,12 +916,99 @@ For example, you can replace calls to <C>POW</C> by calls to <C>PROD</C> or
 even to the product function for particular kinds of objects. You must be
 aware of a risk of a segmentation fault if you will call your function with wrong arguments.
 </Item>
-<Item>You can use the compiler to generate a shell that can be dynamically loaded,
+<Item>
+You can use the compiler to generate a shell that can be dynamically loaded,
 and then fill in your own &C; code in this shell. This approach is used
 in <Package>Browse</Package>, <Package>EDIM</Package> and <Package>IO</Package> 
 packages. In this case you must make it sure that your code complies with rules.
 </Item>
 </List>
+
+</Subsection>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="Suitability for Compilation">
+<Heading>Suitability for Compilation</Heading>
+
+Typically algorithms spend large parts of their runtime only in small parts
+of the code. The design of &GAP; reflects this situation with kernel 
+methods for many time critical calculations such as matrix or permutation
+arithmetic.
+<P/>
+Compiling an algorithm whose time critical parts are already in the kernel
+of course will give disappointing results: Compilation will only speed up
+the parts that are not already in the kernel and if they make us a small
+part of the runtime, the overall gain is small.
+<P/>
+Routines that benefit from compilation are those which do extensive
+operations with basic data types, such as lists or small integers.
+
+</Subsection>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="Compiling Library Code">
+<Heading>Compiling Library Code</Heading>
+
+This subsection describes the mechanism used to make &GAP; recognize compiled 
+versions of library files. Note that there is no point in compiling 
+the whole library as typically only few functions benefit from compilation as
+described in Section&nbsp;<Ref Sect="Suitability for Compilation"/>.
+<P/>
+All library files that come with &GAP; (not the files that belong to &GAP;
+packages) are read using the internal function <C>READ_GAP_ROOT</C>.
+This function then checks whether a compiled version of the file exists
+and if its CRC number (see&nbsp;<Ref Sect="CrcFile" BookName="ref"/>) matches the file.
+If it does, the compiled version is loaded.  Otherwise the file is read.
+You can start &GAP; with the <C>-D -N</C> option to see information printed
+about this process.
+<P/>
+To make &GAP; find the compiled versions, they must be
+put in the <F>bin/</F><A>systemname</A><F>/compiled</F> directory
+(<A>systemname</A> is the name you gave for compilation,
+for example <F>i386-ibm-linux-gcc2</F>).
+They have to be called according to the following scheme: 
+Suppose the file is <F>humpty/dumpty.gi</F> in the &GAP; home directory.
+Then the compiled version will be
+<F>bin/</F><A>systemname</A><F>/compiled/humpty/gi/dumpty.so</F>.
+That is, the directory hierarchy is mirrored under the <F>compiled</F>
+directory.
+A further directory level is added for the suffix of the file,
+and the suffix of the compiled version of the file is set to <C>.so</C>
+(as produced by the compiler).
+<P/>
+For example we show how
+to compile the <F>combinat.gi</F> file on a Linux machine.
+Suppose we are in the home directory of the gap distribution.
+<P/>
+<Log><![CDATA[
+bin/i386-ibm-linux-gcc2/gac -d lib/combinat.gi
+]]></Log>
+<P/>
+creates a file <F>combinat.so</F>. We now put it in the right place, creating
+also the necessary directories:
+<P/>
+<Log><![CDATA[
+mkdir bin/i386-ibm-linux-gcc2/compiled
+mkdir bin/i386-ibm-linux-gcc2/compiled/lib
+mkdir bin/i386-ibm-linux-gcc2/compiled/lib/gi
+mv combinat.so bin/i386-ibm-linux-gcc2/compiled/lib/gi
+]]></Log>
+<P/>
+If you now start &GAP; and look, for example, at the function
+<Ref Func="Binomial" BookName="ref"/>, defined in <F>combinat.gi</F>,
+you see it is indeed compiled:
+<Log><![CDATA[
+gap> Print(Binomial);
+function ( <<arg-1>>, <<arg-2>> )
+    <<compiled code>>
+end
+]]></Log>
+<P/>
+The command line option <C>-M</C>  disables the loading of compiled modules
+and always reads code from the library.
+
+</Subsection>
 
 </Section>
 

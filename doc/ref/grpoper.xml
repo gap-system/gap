@@ -1,18 +1,17 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %A  grpoper.msk                GAP documentation            Alexander Hulpke -->
-<!-- %A                                                          Heiko Theissen -->
+<!-- %A                                                          Heiko Theißen -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: grpoper.msk,v 1.47 2005/04/30 23:58:53 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Group Actions">
 <Heading>Group Actions</Heading>
 
 <Index>group actions</Index>
-<Index Key="G-sets"><M>G</M>-sets</Index>
 A <E>group action</E> is a triple <M>(G, \Omega, \mu)</M>,
 where <M>G</M> is a group, <M>\Omega</M> a set and
 <M>\mu \colon \Omega \times G \rightarrow \Omega</M> a function
@@ -87,9 +86,6 @@ in the following ways:
   Here <M>gens</M> must be a set of generators of <M>G</M> and <M>acts</M>
   the images of <M>gens</M> under <M>\varphi</M>.
   <M>\mu</M> is the acting function for <M>H</M>.
-<!-- strange sentence in the old version:
-     the call to <C>ExampleActionFunction</C> implements the induced action
-     of <A>G</A>. -->
   Again, the function <M>\mu</M> is optional
   and <Ref Func="OnPoints"/> is used as a default.
   <P/>
@@ -152,7 +148,7 @@ end;
 <P/>
 Note that this function <E>must</E> implement a group action from the
 <E>right</E>.
-This is not verified by &GAP; and results are unpredicatble otherwise.
+This is not verified by &GAP; and results are unpredictable otherwise.
 
 <#Include Label="OnPoints">
 <#Include Label="OnRight">
@@ -179,8 +175,8 @@ to implement a permutation action on a domain:
 gap> g:=Group((1,2,3),(1,2));;
 gap> dom:=[ "a", "b", "c" ];;
 gap> Orbit(g,dom,Permuted);
-[ [ "a", "b", "c" ], [ "c", "a", "b" ], [ "b", "a", "c" ], [ "b", "c", "a" ], 
-  [ "a", "c", "b" ], [ "c", "b", "a" ] ]
+[ [ "a", "b", "c" ], [ "c", "a", "b" ], [ "b", "a", "c" ], 
+  [ "b", "c", "a" ], [ "a", "c", "b" ], [ "c", "b", "a" ] ]
 ]]></Example>
 </Description>
 </ManSection>

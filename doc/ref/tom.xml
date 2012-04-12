@@ -1,16 +1,15 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %W  tom.msk                     GAP documentation              Goetz Pfeiffer -->
+<!-- %W  tom.msk                     GAP documentation              Götz Pfeiffer -->
 <!-- %W                                                            Thomas Merkwitz -->
 <!-- %% -->
 <!-- %H  @(#)<M>Id: tom.msk,v 1.25 2004/03/30 09:27:45 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <!-- %%  This file describes the functions dealing with tables of marks. -->
-<!-- %%  The corresponding &GAP; code is contained in the files <C>lib/tom.g[di]</C> -->
-<!-- %%  and <C>pkg/tomlib/gap/tmadmin.tm[di]</C>. -->
+<!-- %%  The corresponding &GAP; code is contained in the files <C>lib/tom.g[di]</C>. -->
 <!-- %% -->
 <Chapter Label="Tables of Marks">
 <Heading>Tables of Marks</Heading>
@@ -37,7 +36,8 @@
 <#Include Label="[3]{tom}">
 <P/>
 Several examples in this chapter require
-the &GAP; Library of Tables of Marks to be available.
+the &GAP; package <Package>TomLib</Package>
+(the &GAP; Library of Tables of Marks) to be available.
 If it is not yet loaded then we load it now.
 <P/>
 <Example><![CDATA[
@@ -142,21 +142,6 @@ true
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Standard Generators of Groups">
-<Heading>Standard Generators of Groups</Heading>
-
-<#Include Label="[1]{stdgen}">
-<#Include Label="StandardGeneratorsInfo:stdgen">
-<!-- %T  replace by an example for isom. type as soon as this is implemented! -->
-<#Include Label="HumanReadableDefinition">
-<#Include Label="StandardGeneratorsFunctions">
-<#Include Label="IsStandardGeneratorsOfGroup">
-<#Include Label="StandardGeneratorsOfGroup">
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Accessing Subgroups via Tables of Marks">
 <Heading>Accessing Subgroups via Tables of Marks</Heading>
 
@@ -165,7 +150,6 @@ true
 <#Include Label="StraightLineProgramsTom">
 <#Include Label="IsTableOfMarksWithGens">
 <#Include Label="RepresentativeTom">
-<#Include Label="StandardGeneratorsInfo:tom">
 
 </Section>
 
@@ -220,9 +204,9 @@ of marks then one can also call
      and then an external reference should be created. -->
 with argument the character table.
 <P/>
-A list of all names of tables of marks in the database can be obtained via
-<C>AllLibTomNames</C>.
-<!-- This function should be documented in the TomLib package. -->
+A list of all names of tables of marks that are provided by the
+<Package>TomLib</Package> package can be obtained via
+<Ref Func="AllLibTomNames" BookName="tomlib"/>.
 <P/>
 <Example><![CDATA[
 gap> names:= AllLibTomNames();;

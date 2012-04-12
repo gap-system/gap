@@ -6,7 +6,6 @@
 
 Organization and compilation of GAP documentation.
 
-       $Id: documentation.xml,v 1.2 2008/01/07 15:52:47 alexk Exp $
 -->
 
 <Chapter Label="Chap-Documentation">
@@ -17,6 +16,11 @@ and how to produce the viewable documents from the sources.
 
 <Section Label="Sect-DocDirs">
 <Heading>The source of the &GAP; documentation</Heading>
+
+Mention that manual examples should fit in 72 character width, and
+that examples should run as shown if all examples within a chapter
+are run in a fresh  &GAP; in default configuration with 
+<C>ScreenSize([72]);</C>.
 
 </Section>
 

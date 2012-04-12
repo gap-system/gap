@@ -1479,9 +1479,9 @@ end);
 
 #############################################################################
 ##
-#F  ComplementclassesEA(<G>,<N>) . complement classes to el.ab. N by 1-Cohom.
+#F  ComplementClassesRepresentativesEA(<G>,<N>) . complement classes to el.ab. N by 1-Cohom.
 ##
-InstallGlobalFunction(ComplementclassesEA,function(g,n)
+InstallGlobalFunction(ComplementClassesRepresentativesEA,function(g,n)
 local oc,l;
   oc:=OneCocycles(g,n);
   if not oc.isSplitExtension  then

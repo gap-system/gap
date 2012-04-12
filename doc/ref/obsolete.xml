@@ -1,32 +1,14 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %W  obsolete.tex             GAP documentation               Frank Lübeck -->
+<!-- %W  obsolete.tex             GAP documentation               Frank LÃ¼beck -->
 <!-- %%   -->
 <!-- %H  @(#)<M>Id: obsolete.tex,v 4.3 2005/08/24 14:31:34 gap Exp </M> -->
 <!-- %%   -->
-<P/>
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="Replaced and Removed Command Names">
 <Heading>Replaced and Removed Command Names</Heading>
 
-<Index>obsolete</Index>
-<Index>deprecated</Index>
-<Index>legacy</Index>
-
-In general we try to keep &GAP;&nbsp;4 compatible with former releases
-as much as possible.
-Nevertheless, from time to time it seems appropriate to remove some commands
-or to change the names of some commands or variables.
-There are various reasons for that:
-Some functionality was improved and got another (hopefully better) interface,
-names turned out to be too special or too general for the underlying
-functionality,
-or names are found to be unintuitive or inconsistent with other names.
-<P/>
-In this chapter we collect such old names while pointing to the sections
-which explain how to substitute them.
-Usually, old names will be available for several releases;
-they may be removed when they don't seem to be used any more.
+<#Include Label="obsolete_intro">
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -97,6 +79,11 @@ The following functions are no longer needed:
 They are substituted by entries in the packages' <F>PackageInfo.g</F> files,
 see <Ref Sect="The PackageInfo.g File"/>. 
 <P/>
+Furthermore, the global variable <C>PACKAGES_VERSIONS</C> is no longer needed,
+since this information is now contained in the <C>GAPInfo.PackagesInfo</C> record
+(see <Ref Subsect="GAPInfo"/>).
+<P/>
+
 The following function names were changed.
 <P/>
 <Index Key="RequirePackage"><C>RequirePackage</C></Index>
@@ -147,7 +134,6 @@ The functionality of all of these commands is now available with
 
 <Index Key="QUIET"><C>QUIET</C></Index>
 <Index Key="BANNER"><C>BANNER</C></Index>
-<Index Key="GAPInfo"><C>GAPInfo</C></Index>
 
 In former releases of &GAP;&nbsp;4 there were some global variable names
 bound to general information about the running &GAP;,
@@ -155,8 +141,8 @@ such as path names or command line options.
 Although they were not officially documented they were used by several users
 and in some packages.
 We mention here <C>BANNER</C> and <C>QUIET</C>.
-This type of information is now collected in a record with name
-<C>GAPInfo</C> and will become documented after a test phase.
+This type of information is now collected in the global record
+<Ref Var="GAPInfo"/>.
 <P/>
 Here are some further name changes.
 <P/>
@@ -177,6 +163,43 @@ Here are some further name changes.
   <Item><Ref Func="NormedRowVectors"/></Item>
 </Row>
 </Table>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="obsolete-gaprc">
+<Heading>The former .gaprc file</Heading>
+
+Up to &GAP;&nbsp;4.4, a file <F>.gaprc</F> in the user's home directory
+(if available, and &GAP; was started without <C>-r</C> option) was 
+read automatically during startup,
+early enough for influencing the autoloading of packages and
+late enough for being allowed to execute any &GAP; code.  On Windows 
+machines this file was called <F>gap.rc</F>.
+<P/>
+In &GAP;&nbsp;4.5 the startup mechanism has changed, see 
+<Ref Sect="sect:gap.ini"/> for details. These new configuration
+files are now contained in a directory <C>GAPInfo.UserGapRoot</C>.
+<P/>
+For the sake of partial backwards compatibility,
+also the former file <F>~/.gaprc</F> is still supported for such
+initializations, but this file is read only if the directory 
+<C>GAPInfo.UserGapRoot</C> does not exist.
+In that case the <F>~/.gaprc</F> is read at the same time as <F>gaprc</F>
+would be read, i.&nbsp;e., too late for influencing the startup of &GAP;.
+<P/>
+As before, the command line option <C>-r</C> disables reading
+<F>~/.gaprc</F>, see <Ref Sect="Command Line Options"/>.
+<P/>
+To migrate from the old setup to the new one introduced with &GAP;&nbsp;4.5,
+first have a look at the function <Ref Func="WriteGapIniFile"/>. Many users
+will find that all or most of what was set in the old <F>~/.gaprc</F> file
+can now be done via the user preferences in a <F>gap.ini</F> file.
+If you had code for new functions or abbreviations in your old <F>~/.gaprc</F> 
+file or you were reading additional files, then move this into
+the file <F>gaprc</F> (without the leading dot, same name for all operating
+systems) in the directory <C>GAPInfo.UserGapRoot</C>.
 
 </Section>
 </Chapter>

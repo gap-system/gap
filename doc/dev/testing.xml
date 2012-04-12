@@ -1,4 +1,3 @@
-
 <!-- 
 
   testing.xml          GAP documentation    
@@ -7,7 +6,6 @@
 
 Describe testing.
 
-       $Id: testing.xml,v 1.9 2007/05/29 11:59:34 gap Exp $
 -->
 
 <Chapter Label="Chap-Testing">
@@ -47,24 +45,33 @@ gap> if LoadPackage( "ctbllib" ) &lt;&gt; fail then
 >    fi;
 </Listing>
 
+Moreover, it is recommended to group tests that require packages to be 
+performed after all other tests are completed.
+
 Some of the test files in the <F>tst</F> directory are listed in the file
-<F>tst/testall.g</F>,
+<F>tst/testinstall.g</F>,
 running this subset of tests is recommended after installing &GAP;,
+<!-- TODO: fix reference -->
 see section <Ref BookName="Ref" Sect="Test of the installation"/>.
 The idea is that the examples in these <C>.tst</C> files are typical
 &GAP; computations,
 and that running these tests requires only a few minutes.
 Each of the <C>.tst</C> files in this subset must contain the string
-<C>"To be listed in testall.g"</C> in its header,
-in order to make it possible to create <F>tst/testall.g</F> automatically
+<C>"To be listed in testinstall.g"</C> in its header,
+in order to make it possible to create <F>tst/testinstall.g</F> automatically
 from an existing version of this file and the contents of the <F>tst</F>
 directory, see section <Ref Sect="Sect-TestSuite"/>.
 <P/>
 
+Additionally, all test files in the <F>tst</F> directory are listed in the file
+<F>tst/testall.g</F> which can be used to run all tests instead of only a subset
+of those (see section <Ref Sect="Sect-TestSuite"/>).
+<P/>
+
 All <C>.tst</C> files in the <F>tst</F> directory (also those that are not
-listed in <F>tst/testall.g</F>) and the files <F>tst/testall.g</F> and
-<F>tst/testutil.g</F> belong to the distribution of &GAP;
-and are kept under CVS control.
+listed in <F>tst/testall.g</F>) and the files  <F>tst/testinstall.g</F>, 
+<F>tst/testall.g</F> and <F>tst/testutil.g</F> belong to the distribution 
+of &GAP; and are kept under CVS control.
 </Section>
 
 
@@ -72,12 +79,16 @@ and are kept under CVS control.
 <Heading>Checking examples in the main manuals</Heading>
 
 The reproducability of the output of examples in the main &GAP; manuals
-(the five manuals in the directories <F>ext</F>, <F>new</F>, <F>prg</F>,
-<F>ref</F>, and <F>tut</F>)
+(the two manuals in the directories <F>ref</F> and <F>tut</F>)
 is promised in section <Ref BookName="tut" Sect="Starting and Leaving GAP"/>,
 under the condition that all examples of a manual chapter are run
 immediately after starting &GAP;.
-Section <Ref BookName="ext" Sect="Testing the Examples"/> contains another
+<!-- the reference to "Testing the Examples" below refers 
+     to the gapmacro.tex Manual Format - 
+     add a cross-reference to the document ``The gapmacro.tex Manual Format''
+     on web, as soon as its URL is fixed. -->
+<!-- TODO: fix reference -->    
+Section <Ref BookName="Ref" Sect="Testing the Examples"/> contains another
 paragraph about the use of manual examples for testing purposes.
 <P/>
 
@@ -86,21 +97,46 @@ It is up to the package authors whether they want to promise something
 similar for their package.
 <P/>
 
-The automatic tests can be performed by the scripts <F>doc/test/mktest.sh</F>
-and <F>doc/test/mkdiff.sh</F>,
-a description of the parts of manual files that are actually processed
-by these tests can be found in the file <F>doc/test/README</F>.
-This manual checker tool can be used for manuals in the formats given by
-<C>doc/gapmacro.tex</C>
-(see chapter <Ref BookName="ext" Chap="The gapmacro.tex Manual Format"/>)
+For the manuals in the formats given by the &GAPDoc; package,
+the automatic test extracts examples from the manuals using the function
+<C>ExtractManualExamples</C> from <F>tst/testutil.g</F>, creating test files
+in the subdirectories <F>doc/test/ref</F> and <F>doc/test/tut</F>,
+and then calls the script <F>doc/test/mktestx.sh</F> 
+(see section <Ref Sect="Sect-TestSuite"/>).
+<P/>
+
+The same mechanism may be used for testing individual chapters. 
+To extract manual examples, start &GAP; with <C>-r</C> option 
+from the &GAP; root directory and enter commands
+<Listing>
+Read("tst/testutil.g");
+ExtractManualExamples("tut");
+ExtractManualExamples("ref");
+</Listing>
+This will create test files in the subdirectories <F>doc/test/ref</F> and 
+<F>doc/test/tut</F>. This procedure should be repeated for each new test
+after any changes in examples. Note that examples with randomness involved
+will depend on the state of the random source. They are adjusted to the
+state when &GAP; is just started without packages.
+<P/>
+
+For the manuals in the formats given by <C>doc/gapmacro.tex</C> that may be
+used by some packages, another manual checker tool can be used. The automatic 
+tests can be performed by the scripts <F>doc/test/mktest.sh</F> and 
+<F>doc/test/mkdiff.sh</F>, and a description of the parts of manual files that 
+are actually processed by these tests can be found in the file <F>doc/test/README</F>.
+
+<!-- the next reference points to the gapmacro.tex Manual Format - 
+     add a cross-reference to the document ``The gapmacro.tex Manual Format''
+     on web, as soon as its URL is fixed. -->
+(see chapter <Ref BookName="Ref" Chap="The gapmacro.tex Manual Format"/>)
 or by the &GAPDoc; package.
-Output files are created in the subdirectories
 <P/>
 
 The directory <F>doc/test</F> is part of the &GAP; distribution,
 in order to make it possible that anybody can apply the tests,
 and is kept under CVS control.
-The subdirectories are only temporarily and therefore are not distributed.
+Its subdirectories are only temporarily and therefore are not distributed.
 <P/>
 
 (An older tool for checking manual examples can be found in the CVS
@@ -119,9 +155,9 @@ The output that is shown in examples in the &GAP; manuals as well as the
 output that is prescribed in the files <C>tst/*.tst</C> should be the same
 when &GAP; is run without packages or with all packages available.
 Therefore, the tests in the standard test suite
-(see <Ref Sect="Sect-TestSuite"/>) are run twice,
-once in a &GAP; that loads no packages and
-once in a &GAP; that loads all available packages.
+(see <Ref Sect="Sect-TestSuite"/>) are run several times,
+in a &GAP; that loads no packages and in a &GAP; that loads all available 
+packages and/or all available autoloaded packages.
 <P/>
 
 Concerning tests of package functionality,
@@ -132,7 +168,7 @@ in section <Ref Sect="Sect-TstFiles"/>.
 <P/>
 
 If the record in the <F>PackageInfo.g</F> file of the package
-(see <Ref BookName="ext" Sect="The PackageInfo.g File"/>)
+(see <Ref BookName="Ref" Sect="The PackageInfo.g File"/>)
 contains the component <C>TestFile</C> then the file given by the value
 is read as a part of the regular &GAP; test suite,
 see section <Ref Sect="Sect-TestSuite"/>.
@@ -145,7 +181,7 @@ listed in the file given by the <C>TestFile</C> component.)
 <P/>
 
 Note that the inclusion of the above package tests refers to the latest
-released version of each package not to its development version.
+released version of each package, not to its development version.
 <P/>
 
 Since the format of the documentation for a package is not prescribed,
@@ -173,6 +209,13 @@ the &GAP; website.
 
 (Possible ingedients are <F>doc/test/CheckBooks.g</F> and
 <F>dev/LinksOfAllHelpSections.g</F>.)
+<P/>
+
+For the manuals in the formats given by the &GAPDoc; package,
+multiply defined labels and non-resolved references will be 
+reported at the manual build stage. 
+<P/>
+
 </Section>
 
 
@@ -192,26 +235,37 @@ in the &GAP; root directory.
 It consists of
 <List>
   <Item>
+    the tests contained in the subset of all files <C>tst/*.tst</C>
+    mentioned in <F>tst/testinstall.g</F>),
+    see <Ref Sect="Sect-TstFiles"/>,
+  </Item>
+  <Item>
     the tests contained in all files <C>tst/*.tst</C>
     (that is, not only the subset of those files that are mentioned in
-    <F>tst/testall.g</F>),
+    <F>tst/testinstall.g</F>),
     see <Ref Sect="Sect-TstFiles"/>,
   </Item>
   <Item>
     the tests of the main manuals described in section
     <Ref Sect="Sect-CheckManualExamples"/>,
-    and
   </Item>
   <Item>
     the package tests described by the <C>TestFile</C> components of
-    <F>PackageInfo.g</F> files of all accepted or deposited packages.
+    <F>PackageInfo.g</F> files of all accepted or deposited packages, and
+  </Item>
+  <Item>
+    the tests of packages loading with
+    <Ref BookName="ref" Func="LoadPackage"/> 
+    and
+    <Ref BookName="Example" Func="LoadAllPackages"/>
   </Item>
 </List>
 
 As is stated in Section <Ref Sect="Sect-CheckPackages"/>,
-each test is run twice,
-once in a &GAP; that loads no packages and
-once in a &GAP; that loads all available packages.
+each test is run at least twice,
+once in a &GAP; that loads no packages and then 
+in a &GAP; that loads all available 
+packages and/or all available autoloaded packages.
 <P/>
 
 Before running these tests,
@@ -219,28 +273,29 @@ you should make sure that the system is up to date,
 in particular,
 <List>
   <Item>
-    call <C>cvs update</C> for the main system,
+    call <C>cvs update -d</C> for the main system,
   </Item>
   <Item>
     unpack the latest package archive into the <F>pkg</F> directory,
   </Item>
   <Item>
-    compile a new &GAP; executable (call <C>make</C> in the root directory),
+    compile a new &GAP; executable (call <C>make</C> in the root directory,
+    if necessary, calling <C>make clean ; ./configure</C> before),
   </Item>
   <Item>
     compile package executables where applicable,
   </Item>
   <Item>
-    call <C>make_doc</C> in the <F>doc</F> directory,
+    call <C>make manuals</C> in the root directory,
     in order to process the main documentation,
   </Item>
 </List>
 
-Then go to the &GAP; root directory, and proceed as follows.
+Then proceed as follows in the &GAP; root directory.
 <List>
   <Item>
     Call <C>make testinstall</C>.
-    This reads the file <C>tst/testall.g</C>,
+    This reads the file <C>tst/testinstall.g</C>,
     which should require just a few minutes.
   </Item>
   <Item>
@@ -263,10 +318,17 @@ Then go to the &GAP; root directory, and proceed as follows.
     <F>PackageInfo.g</F> file (if this is available).
     It may require several hours.
   </Item>
+  <Item>
+    Call <C>make testpackagesloading</C>.
+    This loads each accepted or deposited package in a new &GAP; session,
+    then starts a new &GAP; session and calls <Ref BookName="Example" Func="LoadAllPackages"/>
+    to check that all packages may be loaded simultaneosuly.
+    It require just a few minutes.
+  </Item>  
 </List>
 
 In each case, &GAP; is called with the command line options
-<C>-m 100m -o 500m -A -N -q -x 80 -r</C>,
+<C>-m 100m -o 512m -A -N -q -x 80 -r</C>,
 cf. <Ref BookName="Ref" Sect="Command Line Options"/>,
 and the assertion level is set to 2 before the tests.
 <P/>
@@ -276,8 +338,9 @@ which does not belong to the distribution of &GAP; and
 is also not kept under CVS control.
 The file names start with the name of the target (<C>testinstall</C>,
 <C>teststandard</C>, etc.),
-followed by <C>1</C> for the case that no packages are loaded
-before the tests and by <C>2</C> if all packages are loaded before the tests,
+followed by <C>1</C> for the case that no packages are loaded before the tests,
+by <C>2</C> if all packages are loaded before the tests,
+and by <C>A</C> if only autoloaded packages are loaded before the tests,
 followed by the date and time when the test was started,
 in the format <C>_YY_MM_DD_HH_MM</C>.
 For the package tests, the output for each package in question is written
@@ -286,7 +349,7 @@ to a file of its own, and the package name is appended to the file name.
 
 Note that in the case that no package is loaded initially,
 some packages may be loaded during the tests,
-due to <C>LoadPackage</C> statements in the test files.
+due to <Ref BookName="ref" Func="LoadPackage"/> statements in the test files.
 So a list of all packages that are loaded at the end of the tests
 can be found at the end of the output files.
 </Section>
@@ -360,30 +423,32 @@ The following additional issues are related to testing
 when a new version of &GAP; is to be released.
 <List>
   <Item>
-    Using a processor of the type mentioned in <F>doc/ref/install.tex</F>
+    Using a processor of the type mentioned in <F>doc/ref/install.xml</F>
+    <!-- TODO: fix reference -->
     (see Section <Ref BookName="Ref" Sect="Test of the installation"/>)
-    and in <F>tst/testall.g</F>,
+    and in in <F>tst/testinstall.g</F>, <F>tst/testall.g</F>,
     run the standard tests and renormalize the scaling factors in the
     <C>STOP_TEST</C> statements of the <C>tst/*.tst</C> files,
-    and replace the scaling factors in the file <C>tst/testall.g</C>.
+    and replace the scaling factors in files 
+    <F>tst/testinstall.g</F> and <C>tst/testall.g</C>.
     This can be done by calling <C>make teststandardrenormalize</C> in the
     &GAP; root directory;
     in this case the tests are run without any package being loaded,
-    and a new version of the file <F>tst/testall.g</F> is created in the end.
+    and a new version of the file <F>tst/testinstall.g</F> is created in the end.
 
     (If such a processor is no longer typical then use a more typical
     processor for the renormalization, and adjust the two statements
-    in <F>tst/testall.g</F>.
+    in <F>tst/testinstall.g</F> and <C>tst/testall.g</C>.
     Note that the source also for the relevant paragraph in
-    <F>doc/ref/install.tex</F> can be found in <F>tst/testall.g</F>.)
+    <F>doc/ref/install.xml</F> can be found in <F>tst/testinstall.g</F>.)
   </Item>
   <Item>
     If new test files have appeared in <C>tst/*.tst</C> then
     decide about adding them to the list in <C>tst/testall.g</C>;
     this is expressed by the string <C>"To be listed in testall.g"</C>
     in the headers (see Section <Ref Sect="Sect-TstFiles"/>).
-    Then prepare an up-to-date version of the file <F>tst/testall.g</F>,
-    by calling <C>make testall.g</C> in the &GAP; root directory.
+    Then prepare an up-to-date version of the file <F>tst/testinstall.g</F>,
+    by calling <C>make testinstall.g</C> in the &GAP; root directory.
   </Item>
   <Item>
     After these updates, repeat all tests.
@@ -413,7 +478,6 @@ when a new version of &GAP; is to be released.
     What is the meaning/status of the following files:
     <F>dev/mattests.g</F>,
     <F>dev/reflistarith.g</F>,
-    <F>tst/detest.awk</F>,
     <F>tst/polytest.g</F>,
     <F>tst/remake.sh</F>,
     <F>tst/sanity.g</F>,

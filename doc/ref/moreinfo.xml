@@ -1,0 +1,77 @@
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %W  moreinfo.xml              GAP documentation         Joachim Neubueser -->
+<!-- %% -->
+<!-- %H  @(#)<M>Id: preface.tex,v 4.44 2006/06/27 21:37:08 gap Exp </M> -->
+<!-- %% -->
+<!-- %Y  Copyright (C) 1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+<!-- %% -->
+<!-- %%  This file contains a part of the preface to the tutorial and reference manual -->
+<!-- %% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+Information about &GAP; is best obtained from the &GAP; website
+<P/>
+	<URL>http://www.gap-system.org</URL>
+<P/>
+There you will find, amongst other things
+<List>
+<Item>
+directions to the sites from which you can download the
+current &GAP; distribution, all accepted and deposited &GAP; packages,
+and a selection of other contributions.
+</Item>
+<Item>
+the &GAP; manual and an archive of the <C>gap-forum</C> mailing
+list, formatted for reading with a Web browser, and indexed for
+searching.
+</Item>
+<Item>
+information about &GAP; developers, and about the email
+addresses available for comment, discussion and support.
+</Item>
+</List>
+<P/>
+<P/>
+We would particularly ask you to note the following things:
+<List>
+<Item>
+The &GAP; Forum &ndash; an email discussion forum for comments,
+discussions or questions about &GAP;. You must subscribe to the list
+before you can post to it, see the website for details.
+In particular we will announce new releases in this mailing list.
+</Item>
+<Item>
+The email address <Email>support@gap-system.org</Email> to which you
+are asked to send any questions or bug reports which do not seem likely
+to be of interest to the whole &GAP; Forum. Please give a 
+(short, if possible) self-contained excerpt of a &GAP;
+session containing both input and output that illustrates your problem 
+(including comments of why you think it is a bug) and state the type of
+the machine, operating system, (compiler used, if UNIX/Linux) and the 
+version of &GAP; you are using (the first line after the &GAP;&nbsp;4 
+banner starting <C>GAP, Version 4...</C>).
+</Item>
+<Item>
+We also ask you to send a brief message to 
+<Email>support@gap-system.org</Email> when you install &GAP;.
+</Item>
+<Item>
+The correct form of citation of &GAP;, which we ask you use
+whenever you publish scientific results obtained using &GAP;.
+</Item>
+</List>
+<P/>
+It finally remains for us to wish you all pleasure and success in using
+&GAP;, and to invite your constructive comment and criticism.
+<P/>
+<P/>
+<P/>
+The GAP Group,
+<P/>
+&RELEASEDAY;
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %% -->
+<!-- %E -->
+

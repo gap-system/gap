@@ -1,11 +1,11 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  vector.msk                  GAP documentation            Martin Schoenert -->
+<!-- %A  vector.msk                  GAP documentation            Martin Schönert -->
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: vector.msk,v 1.23 2003/03/26 17:45:05 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Row Vectors">
@@ -19,7 +19,7 @@ represented by a list of coefficients with respect to some basis.
 These correspond roughly to the &GAP; concept of <E>row vectors</E>.
 
 <!-- %%  The basic design of the row vector support in &GAP; 4 is due to -->
-<!-- %%  Martin Sch�nert. Frank Celler added the special support for -->
+<!-- %%  Martin Schönert. Frank Celler added the special support for -->
 <!-- %%  vectors over the field of two elements; Steve Linton added special -->
 <!-- %%  support for vectors over fields of sizes between 3 and 256; and Werner -->
 <!-- %%  Nickel added special methods for vectors over large finite fields. -->
@@ -236,12 +236,6 @@ operations described in this section are on a lower level.
 <#Include Label="[2]{listcoef}">
 <#Include Label="ValuePol">
 
-<!-- %\ Declaration{ProductPol} -->
-<!-- %\ beginexample -->
-<!-- %gap> ProductPol([1,2,3],[4,5,6]); -->
-<!-- %[ 4, 13, 28, 27, 18 ] -->
-<!-- %\ endexample -->
-
 <!-- %\ Declaration{MultCoeffs} -->
 <!-- %\ beginexample -->
 <!-- %gap> a:=[];;l:=[1,2,3,4];;m:=[5,6,7];; -->
@@ -256,7 +250,6 @@ operations described in this section are on a lower level.
 <#Include Label="ReduceCoeffsMod">
 <#Include Label="PowerModCoeffs">
 <#Include Label="ShiftedCoeffs">
-<#Include Label="ShrinkCoeffs">
 
 </Section>
 </Chapter>

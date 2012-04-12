@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: fldabnum.msk,v 1.12 2003/10/28 07:47:33 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Abelian Number Fields">
@@ -56,7 +56,7 @@ x_1
 gap> Factors( PolynomialRing( Rationals ), x^5-1 );
 [ x_1-1, x_1^4+x_1^3+x_1^2+x_1+1 ]
 gap> Factors( PolynomialRing( CF(5) ), x^5-1 );
-[ x_1-1, x_1+-E(5), x_1+-E(5)^2, x_1+-E(5)^3, x_1+-E(5)^4 ]
+[ x_1-1, x_1+(-E(5)), x_1+(-E(5)^2), x_1+(-E(5)^3), x_1+(-E(5)^4) ]
 ]]></Example>
 </Description>
 </ManSection>
@@ -91,16 +91,16 @@ gap> Factors( PolynomialRing( CF(5) ), x^5-1 );
 <Index Subkey="of number fields">automorphism group</Index>
 The field automorphisms of the cyclotomic field <M>&QQ;_n</M>
 (see Chapter&nbsp;<Ref Chap="Cyclotomic Numbers"/>)
-are given by the linear maps <M>\ast k</M> on <M>&QQ;_n</M>
-that are defined by <C>E</C><M>(n)^{{\ast k}} = </M><C>E</C><M>(n)^k</M>,
+are given by the linear maps <M>*k</M> on <M>&QQ;_n</M>
+that are defined by <C>E</C><M>(n)^{{*k}} = </M><C>E</C><M>(n)^k</M>,
 where <M>1 \leq k &lt; n</M> and <C>Gcd</C><M>( n, k ) = 1</M> hold
 (see&nbsp;<Ref Func="GaloisCyc" Label="for a cyclotomic"/>).
 Note that this action is <E>not</E> equal to exponentiation of cyclotomics,
-i.e., for general cyclotomics <M>z</M>, <M>z^{{\ast k}}</M> is different from
+i.e., for general cyclotomics <M>z</M>, <M>z^{{*k}}</M> is different from
 <M>z^k</M>.
 <P/>
-(In &GAP;, the image of a cyclotomic <A>z</A> under <M>\ast k</M> can be
-computed as <C>GaloisCyc( <A>z</A>, <A>k</A> )</C>.)
+(In &GAP;, the image of a cyclotomic <M>z</M> under <M>*k</M> can be
+computed as <C>GaloisCyc( </C><M>z, k</M><C> )</C>.)
 <P/>
 <Example><![CDATA[
 gap> ( E(5) + E(5)^4 )^2; GaloisCyc( E(5) + E(5)^4, 2 );
@@ -109,7 +109,7 @@ E(5)^2+E(5)^3
 ]]></Example>
 <P/>
 For <C>Gcd</C><M>( n, k ) \neq 1</M>,
-the map <C>E</C><M>(n) \mapsto </M><C>E</C><M>(n)^k</M> does <E>not</E>
+the map <C>E</C><M>(n) \mapsto</M> <C>E</C><M>(n)^k</M> does <E>not</E>
 define a field automorphism of <M>&QQ;_n</M>
 but only a <M>&QQ;</M>-linear map.
 <P/>
@@ -125,11 +125,11 @@ gap> GaloisCyc( E(5)+E(5)^4, 5 ); GaloisCyc( ( E(5)+E(5)^4 )^2, 5 );
 <Description>
 The Galois group <M>Gal( &QQ;_n, &QQ; )</M> of the field extension
 <M>&QQ;_n / &QQ;</M> is isomorphic to the group
-<M>(&ZZ; / n &ZZ;)^{\ast}</M>
+<M>(&ZZ; / n &ZZ;)^{*}</M>
 of prime residues modulo <M>n</M>, via the isomorphism
-<M>(&ZZ; / n &ZZ;)^{\ast} \rightarrow Gal( &QQ;_n, &QQ; )</M>
+<M>(&ZZ; / n &ZZ;)^{*} \rightarrow Gal( &QQ;_n, &QQ; )</M>
 that is defined by
-<M>k + n &ZZ; \mapsto ( z \mapsto z^{\ast k} )</M>.
+<M>k + n &ZZ; \mapsto ( z \mapsto z^{*k} )</M>.
 <P/>
 The Galois group of the field extension <M>&QQ;_n / L</M> with
 any abelian number field <M>L \subseteq &QQ;_n</M> is simply the
@@ -137,8 +137,8 @@ factor group of <M>Gal( &QQ;_n, &QQ; )</M> modulo the stabilizer of <M>L</M>,
 and the Galois group of <M>L / L'</M>, with <M>L'</M> an abelian
 number field contained in <M>L</M>, is the subgroup in this group that stabilizes
 <M>L'</M>.
-These groups are easily described in terms of <M>(&ZZ; / n &ZZ;)^{\ast}</M>.
-Generators of <M>(&ZZ; / n &ZZ;)^{\ast}</M> can be computed using
+These groups are easily described in terms of <M>(&ZZ; / n &ZZ;)^{*}</M>.
+Generators of <M>(&ZZ; / n &ZZ;)^{*}</M> can be computed using
 <Ref Func="GeneratorsPrimeResidues"/>.
 <P/>
 In &GAP;, a field extension <M>L / L'</M> is given by the field

@@ -906,7 +906,7 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
 end );
 
 
-InstallMethod(ComplementclassesSolvableNC,"pc groups",IsIdenticalObj,
+InstallMethod(ComplementClassesRepresentativesSolvableNC,"pc groups",IsIdenticalObj,
   [CanEasilyComputePcgs,CanEasilyComputePcgs],0,
 function(G,N)
   return List( COComplementsMain(G, N, true, false), G -> G.complement );
@@ -915,9 +915,9 @@ end);
 
 #############################################################################
 ##
-#M  Complementclasses( <G>, <N> ) . . . . . . . . . . . . find all complement
+#M  ComplementClassesRepresentatives( <G>, <N> ) . . . . . . . . . . . . find all complement
 ##
-InstallMethod(Complementclasses,"solvable normal subgroup",IsIdenticalObj,
+InstallMethod(ComplementClassesRepresentatives,"solvable normal subgroup",IsIdenticalObj,
   [IsGroup,IsGroup],0,
 function( G, N )
   local   C;
@@ -934,7 +934,7 @@ function( G, N )
     TryNextMethod();
   else
     # otherwise we have to work
-    C:=ComplementclassesSolvableNC(G,N);
+    C:=ComplementClassesRepresentativesSolvableNC(G,N);
   fi;
 
   # return what we have found
@@ -945,9 +945,9 @@ end);
 
 #############################################################################
 ##
-#M  Complementclasses( <G>, <N> )
+#M  ComplementClassesRepresentatives( <G>, <N> )
 ##
-InstallMethod(Complementclasses,
+InstallMethod(ComplementClassesRepresentatives,
   "tell that the normal subgroup must be solvable",IsIdenticalObj,
   [IsGroup,IsGroup],-2*RankFilter(IsGroup),
 function( G, N )

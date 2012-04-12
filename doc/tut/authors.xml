@@ -5,45 +5,10 @@
 <!-- %% -->
 <!-- %H  @(#)<M>Id: authors.tex,v 4.32 2006/02/20 00:49:37 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D f√ºr Mathematik,  RWTH Aachen,   Germany -->
 <!-- %% -->
-<P/>
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- <Chapter Label="Acknowledgement"> -->
-<!-- <Heading>Acknowledgement</Heading> -->
 
-We would like to thank the many people who have made contributions of
-various kinds to the development of &GAP; since 1986, in particular:
-<P/>
-Isabel&nbsp;M.&nbsp;Ara˙jo, Robert&nbsp;Arthur, Hans&nbsp;Ulrich&nbsp;Besche, Thomas&nbsp;Bischops,
-<P/>
-Oliver&nbsp;Bonten, Thomas&nbsp;Breuer, Frank&nbsp;Celler, Gene&nbsp;Cooperman, Bettina&nbsp;Eick,
-<P/>
-Volkmar&nbsp;Felsch, Franz&nbsp;G‰hler, Greg&nbsp;Gamble, Willem&nbsp;de&nbsp;Graaf,
-<P/>
-Burkhard&nbsp;Hˆfling, Jens&nbsp;Hollmann, Derek&nbsp;Holt, ErzsÈbet&nbsp;Horv·th, 
-<P/>
-Alexander&nbsp;Hulpke, Ansgar&nbsp;Kaup, Susanne&nbsp;Keitemeier, Stefan Kohl, Steve&nbsp;Linton,
-<P/>
-Frank&nbsp;L¸beck, Bohdan&nbsp;Majewski, Johannes&nbsp;Meier, Thomas&nbsp;Merkwitz, 
-<P/>
-Wolfgang&nbsp;Merkwitz, James Mitchell, J¸rgen&nbsp;Mnich, Robert&nbsp;F.&nbsp;Morse,
-<P/>
-Scott Murray, Joachim&nbsp;Neub¸ser, Max Neunhˆffer,
-<P/>
-Werner&nbsp;Nickel, Alice&nbsp;Niemeyer, Dima&nbsp;Pasechnik, Gˆtz&nbsp;Pfeiffer,
-<P/>
-Udo&nbsp;Polis, Ferenc&nbsp;R·kÛczi, Sarah&nbsp;Rees, Edmund&nbsp;Robertson,
-<P/>
-Colva Roney-Dougal, Ute Schiffer, Jack Schmidt, Martin&nbsp;Schˆnert,
-<P/>
-¡kos&nbsp;Seress, Andrew&nbsp;Solomon, Heiko&nbsp;Theiﬂen, Rob&nbsp;Wainwright,
-<P/>
-Alex&nbsp;Wegner, Chris&nbsp;Wensley and Charles&nbsp;Wright.
-<P/>
-<P/>
-<P/>
-<P/>
 The following list gives the authors (indicated by A)
 who designed the code in the first place,
 as well as the current maintainers (indicated by M)
@@ -57,8 +22,8 @@ editions.
 <List>
 <Mark>Kernel</Mark>
 <Item>
-Frank Celler&nbsp;(A), Steve Linton&nbsp;(AM), Frank L¸beck&nbsp;(AM), 
-Werner Nickel&nbsp;(AM), Martin Schˆnert&nbsp;(A)
+Frank Celler&nbsp;(A), Steve Linton&nbsp;(AM), Frank L√ºbeck&nbsp;(AM), 
+Werner Nickel&nbsp;(AM), Martin Sch√∂nert&nbsp;(A)
 </Item>
 <Mark>Automorphism groups of finite pc groups </Mark>
 <Item>
@@ -79,7 +44,7 @@ Alexander Hulpke&nbsp;(AM)
 <Mark>Classical Groups </Mark>
 <Item>
 Thomas Breuer&nbsp;(AM), Frank Celler&nbsp;(A), Stefan Kohl&nbsp;(AM), 
-Frank L¸beck&nbsp;(AM), Heiko Theiﬂen&nbsp;(A)
+Frank L√ºbeck&nbsp;(AM), Heiko Thei√üen&nbsp;(A)
 </Item>
 <Mark>Congruences of magmas, semigroups and monoids </Mark>
 <Item>
@@ -99,7 +64,7 @@ Alexander Hulpke&nbsp;(AM)
 </Item>
 <Mark>Documentation Utilities </Mark>
 <Item>
-Frank Celler&nbsp;(A), Heiko Theiﬂen&nbsp;(A), Alexander Hulpke&nbsp;(A), 
+Frank Celler&nbsp;(A), Heiko Thei√üen&nbsp;(A), Alexander Hulpke&nbsp;(A), 
 Willem de Graaf&nbsp;(A), Steve Linton&nbsp;(A), Werner Nickel&nbsp;(A), Greg Gamble&nbsp;(AM)
 </Item>
 <Mark>Factor groups </Mark>
@@ -108,21 +73,21 @@ Alexander Hulpke&nbsp;(AM)
 </Item>
 <Mark>Finitely presented groups </Mark>
 <Item>
-Volkmar Felsch&nbsp;(A), Alexander Hulpke&nbsp;(AM), Martin Schoenert&nbsp;(A)
+Volkmar Felsch&nbsp;(A), Alexander Hulpke&nbsp;(AM), Martin Sch√∂nert&nbsp;(A)
 </Item>
 <Mark>Finitely presented monoids and semigroups </Mark>
 <Item>
-Isabel Ara˙jo&nbsp;(A), Derek Holt&nbsp;(A), Alexander Hulpke&nbsp;(A), James
-Mitchell&nbsp;(M), Gˆtz Pfeiffer&nbsp;(A), Andrew Solomon&nbsp;(A)
+Isabel Ara√∫jo&nbsp;(A), Derek Holt&nbsp;(A), Alexander Hulpke&nbsp;(A), James
+Mitchell&nbsp;(M), G√∂tz Pfeiffer&nbsp;(A), Andrew Solomon&nbsp;(A)
 </Item>
 <Mark>&GAP; for MacOS </Mark>
 <Item>
 
-Burkhard Hˆfling&nbsp;(AM)
+Burkhard H√∂fling&nbsp;(AM)
 </Item>
 <Mark>Group actions </Mark>
 <Item>
-Heiko Theiﬂen&nbsp;(A) and Alexander Hulpke&nbsp;(AM)
+Heiko Thei√üen&nbsp;(A) and Alexander Hulpke&nbsp;(AM)
 </Item>
 <Mark>Homomorphism search </Mark>
 <Item>
@@ -154,7 +119,7 @@ Thomas Breuer&nbsp;(A), Craig Struble&nbsp;(A), Juergen Wisliceny&nbsp;(A), Will
 </Item>
 <Mark>Monomiality Questions </Mark>
 <Item>
-Thomas Breuer&nbsp;(AM), ErzsÈbet Horv·th&nbsp;(A)
+Thomas Breuer&nbsp;(AM), Erzs√©bet Horv√°th&nbsp;(A)
 </Item>
 <Mark>Multiplier and Schur cover </Mark>
 <Item>
@@ -166,23 +131,23 @@ Frank Celler&nbsp;(A) and Alexander Hulpke&nbsp;(AM)
 </Item>
 <Mark>Partition Backtrack algorithm </Mark>
 <Item>
-Heiko Theiﬂen&nbsp;(A), Alexander Hulpke&nbsp;(M)
+Heiko Thei√üen&nbsp;(A), Alexander Hulpke&nbsp;(M)
 </Item>
 <Mark>Permutation group composition series </Mark>
 <Item>
-¡kos Seress&nbsp;(AM)
+√Åkos Seress&nbsp;(AM)
 </Item>
 <Mark>Permutation group homomorphisms </Mark>
 <Item>
-¡kos Seress&nbsp;(AM), Heiko Theiﬂen&nbsp;(A), Alexander Hulpke&nbsp;(M)
+√Åkos Seress&nbsp;(AM), Heiko Thei√üen&nbsp;(A), Alexander Hulpke&nbsp;(M)
 </Item>
 <Mark>Permutation Group Pcgs </Mark>
 <Item>
-Heiko Theiﬂen&nbsp;(A), Alexander Hulpke&nbsp;(M)
+Heiko Thei√üen&nbsp;(A), Alexander Hulpke&nbsp;(M)
 </Item>
 <Mark>Possible Permutation Characters </Mark>
 <Item>
-Thomas Breuer&nbsp;(AM), Gˆtz Pfeiffer&nbsp;(A)
+Thomas Breuer&nbsp;(AM), G√∂tz Pfeiffer&nbsp;(A)
 </Item>
 <Mark>Possible Class Fusions, Possible Power Maps </Mark>
 <Item>
@@ -190,7 +155,7 @@ Thomas Breuer&nbsp;(AM)
 </Item>
 <Mark>Primitive groups library </Mark>
 <Item>
-Heiko Theiﬂen&nbsp;(A), Colva Roney-Dougal&nbsp;(AM)
+Heiko Thei√üen&nbsp;(A), Colva Roney-Dougal&nbsp;(AM)
 </Item>
 <Mark>Properties and attributes of finite pc groups </Mark>
 <Item>
@@ -198,7 +163,7 @@ Frank Celler&nbsp;(A), Bettina Eick&nbsp;(A), Werner Nickel&nbsp;(M)
 </Item>
 <Mark>Random Schreier-Sims </Mark>
 <Item>
-¡kos Seress&nbsp;(AM)
+√Åkos Seress&nbsp;(AM)
 </Item>
 <Mark>Rational Functions </Mark>
 <Item>
@@ -206,7 +171,7 @@ Frank Celler&nbsp;(A) and Alexander Hulpke&nbsp;(AM)
 </Item>
 <Mark>Semigroup relations </Mark>
 <Item>
-Isabel Araujo&nbsp;(A), Robert F. Morse&nbsp;(AM), Andrew Solomon&nbsp;(A)
+Isabel Ara√∫jo&nbsp;(A), Robert F. Morse&nbsp;(AM), Andrew Solomon&nbsp;(A)
 </Item>
 <Mark>Special Pcgs for finite pc groups </Mark>
 <Item>
@@ -214,21 +179,21 @@ Bettina Eick&nbsp;(AM)
 </Item>
 <Mark>Stabilizer Chains </Mark>
 <Item>
-¡kos Seress&nbsp;(AM), Heiko Theiﬂen&nbsp;(A), Alexander Hulpke&nbsp;(M)
+√Åkos Seress&nbsp;(AM), Heiko Thei√üen&nbsp;(A), Alexander Hulpke&nbsp;(M)
 </Item>
 <Mark>Strings and Characters </Mark>
 <Item>
 
-Martin Schˆnert&nbsp;(A), Frank Celler&nbsp;(A), Thomas Breuer&nbsp;(A), 
-Frank L¸beck&nbsp;(AM)
+Martin Sch√∂nert&nbsp;(A), Frank Celler&nbsp;(A), Thomas Breuer&nbsp;(A), 
+Frank L√ºbeck&nbsp;(AM)
 </Item>
 <Mark>Structure Descriptions for Finite Groups </Mark>
 <Item>
-Stefan Kohl&nbsp;(AM), Markus P¸schel&nbsp;(A), Sebastian Egner&nbsp;(A)
+Stefan Kohl&nbsp;(AM), Markus P√ºschel&nbsp;(A), Sebastian Egner&nbsp;(A)
 </Item>
 <Mark>Subgroup lattice </Mark>
 <Item>
-Martin Schˆnert&nbsp;(A), Alexander Hulpke&nbsp;(AM)
+Martin Sch√∂nert&nbsp;(A), Alexander Hulpke&nbsp;(AM)
 </Item>
 <Mark>Subgroup lattice for solvable groups </Mark>
 <Item>
@@ -240,7 +205,7 @@ Volkmar Felsch&nbsp;(A), Werner Nickel&nbsp;(M)
 </Item>
 <Mark>The Help System </Mark>
 <Item>
-Frank Celler&nbsp;(A), Frank L¸beck&nbsp;(AM)
+Frank Celler&nbsp;(A), Frank L√ºbeck&nbsp;(AM)
 </Item>
 <Mark>Tietze transformations </Mark>
 <Item>
@@ -248,7 +213,7 @@ Volkmar Felsch&nbsp;(A), Werner Nickel&nbsp;(M)
 </Item>
 <Mark>Transformation semigroups </Mark>
 <Item>
-Isabel Araujo&nbsp;(A), Robert Arthur&nbsp;(A), Robert F. Morse&nbsp;(AM), 
+Isabel Ara√∫jo&nbsp;(A), Robert Arthur&nbsp;(A), Robert F. Morse&nbsp;(AM), 
 Andrew Solomon&nbsp;(A)
 </Item>
 <Mark>Transitive groups library </Mark>
@@ -260,22 +225,18 @@ Alexander Hulpke&nbsp;(AM)
 Bettina Eick&nbsp;(AM)
 </Item>
 </List>
-<P/>
 <!-- %The system design of &GAP;&nbsp;4 was initiated by -->
-<!-- %Martin&nbsp;Schˆnert and has been continued by -->
+<!-- %Martin&nbsp;Sch√∂nert and has been continued by -->
 <!-- %Thomas&nbsp;Breuer, Frank&nbsp;Celler and Steve&nbsp;Linton. -->
 <!-- %</E></E> -->
 <!-- %Large parts of &GAP;&nbsp;4 have also been designed and written by: -->
 <!-- %<P/> -->
 <!-- %Bettina&nbsp;Eick, Volkmar&nbsp;Felsch, Willem&nbsp;de&nbsp;Graaf, Alexander&nbsp;Hulpke, -->
-<!-- %Werner&nbsp;Nickel, Ferenc&nbsp;R·kÛczi, ¡kos&nbsp;Seress and Heiko&nbsp;Theiﬂen. -->
+<!-- %Werner&nbsp;Nickel, Ferenc&nbsp;R√°k√≥czi, √Åkos&nbsp;Seress and Heiko&nbsp;Thei√üen. -->
 <!-- %</E></E> -->
 <!-- %The Macintosh Version of &GAP; has been written and maintained by Burkhard -->
-<!-- %Hˆfling. -->
-<P/>
+<!-- %H√∂fling. -->
+
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-<P/>
-<!-- </Chapter> -->
-

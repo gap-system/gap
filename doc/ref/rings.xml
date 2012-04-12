@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: rings.msk,v 1.21 2005/03/07 10:25:16 stefan Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Rings">
@@ -109,6 +109,7 @@ see&nbsp;<Ref Func="DefaultRing" Label="for ring elements"/>.
 <#Include Label="IsAssociated">
 <#Include Label="Associates">
 <#Include Label="StandardAssociate">
+<#Include Label="StandardAssociateUnit">
 <#Include Label="IsIrreducibleRingElement">
 <#Include Label="IsPrime">
 <#Include Label="Factors">
@@ -138,6 +139,7 @@ see&nbsp;<Ref Func="DefaultRing" Label="for ring elements"/>.
 <#Include Label="GcdOp">
 <#Include Label="GcdRepresentation">
 <#Include Label="GcdRepresentationOp">
+<#Include Label="ShowGcd">
 <#Include Label="Lcm">
 <#Include Label="LcmOp">
 <#Include Label="QuotientMod">

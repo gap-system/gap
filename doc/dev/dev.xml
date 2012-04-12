@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?LaTeX ExtraPreamble="\usepackage[pdftex]{graphicx}"?>
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
@@ -8,12 +8,11 @@
 <!--
 
   dev.xml                  GAP documentation                  Thomas Breuer
-                                                              Frank Lübeck
-                                                              Max Neunhöffer
+                                                              Frank LÃ¼beck
+                                                              Max NeunhÃ¶ffer
 
     Copyright (C) 2005  The GAP Group
 
-    $Id: dev.xml,v 1.4 2008/01/07 15:52:47 alexk Exp $
 
 -->
 

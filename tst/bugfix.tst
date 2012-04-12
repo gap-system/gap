@@ -751,9 +751,9 @@ gap> Assert(0,H<>K); # Fails in 4.4.5
 gap> Assert(0,Size(G)=734832 and IsPerfectGroup(G)); # Sanity check
 gap> Assert(0,Size(H)=734832 and IsPerfectGroup(H)); # Sanity check
 gap> Assert(0,Size(K)=734832 and IsPerfectGroup(K)); # Sanity check
-gap> Assert(0,Size(Complementclasses(G,SylowSubgroup(FittingSubgroup(G),3)))=1); # Iso check
-gap> Assert(0,Size(Complementclasses(H,SylowSubgroup(FittingSubgroup(H),3)))=3); # Iso check
-gap> Assert(0,Size(Complementclasses(K,SylowSubgroup(FittingSubgroup(K),3)))=0); # Iso check
+gap> Assert(0,Size(ComplementClassesRepresentatives(G,SylowSubgroup(FittingSubgroup(G),3)))=1); # Iso check
+gap> Assert(0,Size(ComplementClassesRepresentatives(H,SylowSubgroup(FittingSubgroup(H),3)))=3); # Iso check
+gap> Assert(0,Size(ComplementClassesRepresentatives(K,SylowSubgroup(FittingSubgroup(K),3)))=0); # Iso check
 
 # 2005/08/10 (TB)
 gap> ApplicableMethod( \in, [ 1, Rationals ] );

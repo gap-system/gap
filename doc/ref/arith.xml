@@ -11,8 +11,9 @@
 
 In this chapter, we give a &ndash;hopefully typical&ndash;
 example of extending &GAP; by new objects with prescribed
-arithmetic operations.
-
+arithmetic operations (for a simple approach that may be useful 
+to get started though does not permit to exploit all potential 
+features, see also <Ref Func="ArithmeticElementCreator"/>).
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="New Arithmetic Operations vs. New Objects">
@@ -69,8 +70,8 @@ corresponds to a given group element.
 <P/>
 It should be noted that the &GAP; approach to the construction of
 Lie algebras from associative algebras is generic in the sense
-that all objects in the filter <C>IsLieObject</C> use the same methods
-for their addition, multiplication etc.,
+that all objects in the filter <Ref Filt="IsLieObject"/> use the 
+same methods for their addition, multiplication etc.,
 by delegating to the <Q>underlying</Q> objects of the associative algebra,
 no matter what these objects actually are.
 Analogously, also the construction of group rings is generic.

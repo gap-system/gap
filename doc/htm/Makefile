@@ -2,9 +2,8 @@
 ##
 #W  Makefile                    GAP autodoc                  Alexander Hulpke
 ##
-#H  @(#)$Id: Makefile,v 1.8 2003/11/17 22:36:13 gap Exp $
 ##
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
 BUILD = ../../etc/convert.pl -u
 BUILDIE = ../../etc/convert.pl -t

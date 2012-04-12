@@ -131,7 +131,7 @@
   </author>  
   <title>A procedure for obtaining simplified defining relations for a
               subgroup</title>
-  <booktitle>Groups&ndash;St. Andrews 1981 (St. Andrews, 1981)</booktitle>
+  <booktitle>Groups&ndash;St Andrews 1981 (St Andrews, 1981)</booktitle>
   <publisher>Cambridge Univ. Press</publisher>
   <year>1982</year>
   <editor>
@@ -1452,6 +1452,24 @@
   <other type="fjournal">Journal of Symbolic Computation</other>
 </article></entry>
 
+<entry id="CLR90"><book>
+  <author>
+    <name><first>T. H.</first><last>Cormen</last></name>
+    <name><first>C. E.</first><last>Leiserson</last></name>
+    <name><first>R. L.</first><last>Rivest</last></name>
+  </author>  
+  <title>Introduction to algorithms</title>
+  <publisher>MIT Press</publisher>
+  <year>1990</year>
+  <series>The MIT Electrical Engineering and Computer Science Series</series>
+  <address>Cambridge, MA</address>
+  <isbn>0-262-03141-8</isbn>
+  <mrnumber>1066870 (91i:68001)</mrnumber>
+  <mrclass>68-01 (05-01 05C85 68Q25)</mrclass>
+  <mrreviewer>Selim G. Akl</mrreviewer>
+  <other type="pages">xx+1028</other>
+</book></entry>
+
 <entry id="coxlittleoshea"><book>
   <author>
     <name><first>David</first><last>Cox</last></name>
@@ -1735,6 +1753,16 @@
   <other type="fjournal">LMS Journal of Computation and Mathematics</other>
 </article></entry>
 
+<entry id="EickHulpke01"><inproceedings>
+  <author>
+      <name><first>Bettina</first><last>Eick</last></name>
+      <name><first>Alexander</first><last>Hulpke</last></name>
+  </author>  
+  <title>Computing the maximal subgroups of a permutation group <C>I</C></title>
+  <pages>155&ndash;168</pages>
+  <crossref>DIMACS3</crossref>
+</inproceedings></entry>
+
 <entry id="Ellis98"><article>
   <author>
     <name><first>Graham</first><last>Ellis</last></name>
@@ -1782,7 +1810,7 @@
     <name><first>S. V.</first><last>Tsaranov</last></name>
   </author>  
   <title>The structure of certain <C>C</C>oxeter groups</title>
-  <booktitle>Groups '93 Galway/St. Andrews, Vol. 1 (Galway, 1993)</booktitle>
+  <booktitle>Groups '93 Galway/St Andrews, Vol. 1 (Galway, 1993)</booktitle>
   <publisher>Cambridge Univ. Press</publisher>
   <year>1995</year>
   <volume>211</volume>
@@ -2159,6 +2187,18 @@
   <mrreviewer>Michael Rosen</mrreviewer>
   <other type="pages">225</other>
 </book></entry>
+
+<entry id="Hal36"><article>
+  <author>
+    <name><first>Philip</first><last>Hall</last></name>
+  </author>
+  <title>The <C>E</C>ulerian functions of a group</title>
+  <journal>Quarterly J. Of Mathematics</journal>
+  <year>1936</year>
+  <volume>os-7</volume>
+  <number>1</number>
+  <pages>134&ndash;151</pages>
+</article></entry>
 
 <entry id="Han88"><phdthesis>
   <author>
@@ -3526,7 +3566,7 @@
   </author>  
   <title>An elementary introduction to coset table methods in
               computational group theory</title>
-  <booktitle>Groups&ndash;St. Andrews 1981 (St. Andrews, 1981)</booktitle>
+  <booktitle>Groups&ndash;St Andrews 1981 (St Andrews, 1981)</booktitle>
   <year>1982</year>
   <editor>
     <name><first>Colin M.</first><last>Campbell</last></name>
@@ -5115,7 +5155,7 @@
   <mrclass>20-06</mrclass>
   <other type="booktitle">Proceedings of the International Conference on
       Groups held at
-              the Mathematical Institute, University of St. Andrews, St.
+              the Mathematical Institute, University of St Andrews, St.
               Andrews, July 25&ndash;August 8, 1981</other>
   <other type="pages">viii+360</other>
 </proceedings></entry>
@@ -5373,4 +5413,62 @@
       symposium on Symbolic and algebraic computation</other>
   <other type="source">ACM Order No.: 505980, ACM member price $25</other>
 </proceedings></entry>
+
+<entry id="MR1820589"><article>
+  <author><name><first>J.</first><last>Schur</last></name></author>
+  <title>On the representation of the symmetric and alternating groups by fractional linear substitutions</title>
+  <journal>Internat. J. Theoret. Phys.</journal>
+  <year>2001</year>
+  <volume>40</volume>
+  <number>1</number>
+  <pages>413–458</pages>
+  <note>Translated from the German [J. Reine Angew. Math. 139 (1911), 155–250] by Marc-Felix Otto</note>
+  <issn>0020-7748</issn>
+  <mrnumber>MR1820589 (2003a:20016)</mrnumber>
+  <mrclass>20C25 (05E05 20C30)</mrclass>
+  <mrreviewer>Tadeusz Józefiak</mrreviewer>
+  <url>http://dx.doi.org/10.1023/A:1003772419522</url>
+  <other type="coden">IJTPBM</other>
+  <other type="doi">10.1023/A:1003772419522</other>
+  <other type="fjournal">International Journal of Theoretical Physics</other>
+</article></entry>
+
+<entry id="Schur1911"><article>
+  <author><name><first>J.</first><last>Schur</last></name></author>
+  <title>Über die Darstellung der symmetrischen und der alternierenden Gruppe durch gebrochene lineare Substitutionen</title>
+  <journal>Journal für die reine und angewandte Mathematik</journal>
+  <year>1911</year>
+  <volume>139</volume>
+  <pages>155–250</pages>
+  <url>http://www.digizeitschriften.de/resolveppn/GDZPPN002167298</url>
+  <other type="jfm">42.0154.02</other>
+</article></entry>
+
+<entry id="Maas2010"><article>
+  <author><name><first>Lukas</first><last>Maas</last></name></author>
+  <title>On a construction of the basic spin representations of symmetric groups</title>
+  <journal>Communications in Algebra</journal>
+  <year>2010</year>
+  <volume>38</volume>
+  <pages>4545–4552</pages>
+  <url>http://dx.doi.org/10.1080/00927872.2010.490541</url>
+  <url>http://arxiv.org/abs/0911.3794</url>
+  <other type="doi">10.1080/00927872.2010.490541</other>
+</article></entry>
+
+<entry id="BLS1975"><article>
+  <author>
+    <name><first>John</first><last>Brillhart</last></name>
+    <name><first>D.H.</first><last>Lehmer</last></name>
+    <name><first>J.L.</first><last>Selfridge</last></name>
+  </author>
+  <title>New primality criteria and factorizations of <M>2^m \pm 1</M></title>
+  <journal>Mathematics of Computation</journal>
+  <year>1975</year>
+  <volume>29</volume>
+  <pages>620–647</pages>
+  <url>http://dx.doi.org/10.2307/2005583</url>
+  <other type="doi">10.2307/2005583</other>
+</article></entry>
+
 </file>

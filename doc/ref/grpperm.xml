@@ -1,20 +1,20 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %A  grpperm.msk                 GAP documentation            Alexander Hulpke -->
-<!-- %A                                                           Heiko Theissen -->
-<!-- %A                                                           Akos Seress -->
+<!-- %A                                                           Heiko Theißen -->
+<!-- %A                                                           Ákos Seress -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: grpperm.msk,v 1.39 2003/10/28 04:55:03 gap Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Permutation Groups">
 <Heading>Permutation Groups</Heading>
 
 <!-- %%  The code for the computation and verification stabilizer chains, for -->
-<!-- %%  composition series and the radical is due to \'Akos Seress. -->
-<!-- %%  Heiko Thei{\ss}en wrote the backtrack routines which are used to compute for -->
+<!-- %%  composition series and the radical is due to \Ákos Seress. -->
+<!-- %%  Heiko Theißen wrote the backtrack routines which are used to compute for -->
 <!-- %%  example centralizers, normalizers and conjugating elements. -->
 
 
@@ -86,12 +86,14 @@ for example <Ref Func="BaseStabChain"/>.
 <#Include Label="IsomorphismPermGroup">
 <#Include Label="SmallerDegreePermutationRepresentation">
 
-<!-- % gap> p:=Group((1,2,3,4,5,6),(1,2));;p:=Action(p,AsList(p),OnRight);; -->
-<!-- % gap> Length(MovedPoints(p)); -->
-<!-- % 720 -->
-<!-- % gap> q:=SmallerDegreePermutationRepresentation(p);; -->
-<!-- % gap> NrMovedPoints(Image(q)); -->
-<!-- % 6 -->
+<Example><![CDATA[
+gap> p:=Group((1,2,3,4,5,6),(1,2));;p:=Action(p,AsList(p),OnRight);;
+gap> Length(MovedPoints(p));
+720
+gap> q:=SmallerDegreePermutationRepresentation(p);;
+gap> NrMovedPoints(Image(q));
+6
+]]></Example>
 
 </Section>
 
@@ -114,8 +116,6 @@ The functions <Ref Func="IsSymmetricGroup"/> and
 (not necessarily a permutation group)
 is isomorphic to a symmetric or alternating group.
 <P/>
-There are no methods yet for <Ref Func="IsSymmetricGroup"/> and
-<Ref Func="IsAlternatingGroup"/>!
 
 <#Include Label="IsNaturalSymmetricGroup">
 <#Include Label="IsSymmetricGroup">
@@ -307,7 +307,7 @@ a candidate for more thorough examination; another use is when
 the user suspects that the quadratic bottleneck of the guaranteed
 correct verification is hit.
 <P/>
-We will illustrate these ideas in two examples.
+We will give two examples to illustrate these ideas.
 <P/>
 <Example><![CDATA[
 gap> h:= SL(4,7);;
@@ -522,7 +522,7 @@ gap> BaseOfGroup(g);
 gap> StabChainOptions(g);
 rec( random := 1000 )
 gap> DefaultStabChainOptions;
-rec( reduced := true, random := 1000, tryPcgs := true )
+rec( random := 1000, reduced := true, tryPcgs := true )
 ]]></Example>
 
 </Section>

@@ -7,7 +7,6 @@
 
 Maintaining www.gap-system.org
 
-       $Id: website.xml,v 1.8 2008/08/19 20:57:49 alexk Exp $
 -->
 
 <Chapter Label="Chap-GAPWeb">
@@ -43,9 +42,9 @@ Sect="WPXHTML"/> for an explanation) and the <Package>Mixer</Package>
 handles the technical details.
 
 <P/>
-All the sources for the web pages are kept in the St. Andrews CVS repository
+All the sources for the web pages are kept in the St Andrews CVS repository
 under the directory <F>WWW2</F>. Everybody having developer access
-can check out a copy of the pages. The web server in St. Andrews
+can check out a copy of the pages. The web server in St Andrews
 also checks out a copy, runs the <Package>Mixer</Package> and then serves
 the pages. However, the web server does not use the latest revision of
 each file, but it uses the so called <Q>published</Q> version. That is,
@@ -81,7 +80,7 @@ machine:
     <Item> a web browser (to view the resulting pages)
     </Item>
     <Item> an <F>ssh</F> client to be able to update the web pages on the
-           web server in St. Andrews, note that you also need access
+           web server in St Andrews, note that you also need access
            authorisation from there
     </Item>
 </List>
@@ -91,7 +90,7 @@ copy of the web pages (see Section <Ref Sect="WPCVS"/>), install the
 <Package>Mixer</Package> (see Section <Ref Sect="WPMixer"/>), and run
 it. After that you can look at your copy of the web pages and start to
 make changes. Finally you have to acquire <F>ssh</F> access to the 
-web server in St. Andrews to update the pages there, if you do not
+web server in St Andrews to update the pages there, if you do not
 want to rely on the nightly automatic update scripts (see Section
 <Ref Sect="WPyin"/>).
 
@@ -107,7 +106,7 @@ first.
 
 <P/>
 The <Package>Mixer</Package> is stored in and can be acquired from the
-directory <F>Mixer</F> in the St. Andrews CVS repository. That is, the
+directory <F>Mixer</F> in the St Andrews CVS repository. That is, the
 easiest way to get it is to use
 
 <Verb>
@@ -275,7 +274,7 @@ below the current directory!
 
 <P/>
 Also note that this <Q>publication</Q> does not automatically change anything
-on the web server, you have to run the update scripts in St. Andrews as 
+on the web server, you have to run the update scripts in St Andrews as 
 described in Section <Ref Sect="WPyin"/> or wait for the nightly
 automatic run of that script.
 
@@ -302,7 +301,7 @@ following command
     cvs tag -d PUB index.mixer
 </Verb>
 
-After that, the update scripts on the web server in St. Andrews will remove
+After that, the update scripts on the web server in St Andrews will remove
 the file automatically, because no revision is tagged for publication any
 more. Again, be careful with this command as tags are not under revision
 control in CVS and a minor typo can delete all publishing tags completely!
@@ -310,9 +309,9 @@ control in CVS and a minor typo can delete all publishing tags completely!
 </Section>
 
 <Section Label="WPyin">
-    <Heading>The web server in St. Andrews</Heading>
+    <Heading>The web server in St Andrews</Heading>
 
-Currently, the following machine in St. Andrews holds the actually
+Currently, the following machine in St Andrews holds the actually
 published version of the web site:
 
 <Verb>
@@ -605,7 +604,7 @@ installation to the place specified by the variable <F>GAPManualLink</F>
 in <F>WWW2/lib/config</F> (which is <F>WWW2/Manuals</F> in the current
 setup). Note that those files are <E>not</E>
 under CVS control there, they are only copied to checked out
-working copies, like for example on the web server in St. Andrews.
+working copies, like for example on the web server in St Andrews.
 
 <P/>
 The single remaining point to explain is how one can specify links
@@ -676,18 +675,24 @@ a link <F>WWW2/Search/swish</F> to that executable.
 <Heading>The &GAP; bibliography</Heading>
 
 The &GAP; bibliography resides in the directory <F>WWW2/Doc/Bib</F>.
-In the following <Q>MR</Q> stands for <Q>Mathematical Reviews</Q>.
 
 <P/>
 The source files are:
 
 <List>
     <Mark> <F>GapCite.MR</F> </Mark>
-    <Item> just MR numbers, we will use MR to get full bibliographic info
+    <Item> This file contains just MR numbers of papers that cite or refer 
+    to (one of the versions of) GAP (here and below <Q>MR</Q> stands for 
+    <Q>Mathematical Reviews</Q>.). The format is alternatingly one line 
+    of the form <C>1stAuthorSurname Paper</C> (not starting with a blank) and
+    one line <C>MR-Number</C> (starting with a blank). MR numbers will be used
+    to get full bibliographic info from MathSciNet, and the textual description
+    only helps when adding papers to the file (in particular, to keep entries 
+    sorted by the first author).
     </Item>
     <Mark> <F>GapCite.notyet</F> </Mark>
     <Item> <C>BiBTeX</C> entries for papers that are not yet in MR but
-        likely will be in a few months </Item>
+        likely will be there in a few months </Item>
     <Mark> <F>GapNonMR.bib</F> </Mark>
     <Item> <C>BiBTeX</C> entries for papers that will not be in MR (e.g. 
            theses)
@@ -695,19 +700,62 @@ The source files are:
     <Mark> <F>NonVerif.MR</F> </Mark>
     <Item> Things not yet verified, same format as <F>GapCite.MR</F></Item>
     <Mark> <F>NonVerif.NonMR</F> </Mark>
-    <Item> Things not yet verified, same format as <F>GapCite.notyet</F>
+    <Item> Things not yet verified, same format as <F>GapCite.notyet</F></Item>
+    <Mark> <F>GapIgnore.MR</F> </Mark>
+    <Item> This file contains a list of &GAP; strings corresponding to MR 
+    numbers of papers that may be falsely reported by MathSciNet as citing
+    &GAP; (for example, if they refer to the History of Mathematics Archive
+    website wrongly stating its address in the &GAP; domain as may be returned
+    by some search systems). If necessary, add new items there in an obvious
+    way.
     </Item>
 </List>
 
-From these the script <C>makegapbib</C> (using <F>HEADER</F> and <F>MRBIB</F>) 
-produces <F>gap-published.bib</F>. This requires subscription to 
-MathSciNet, which St Andrews has.
+It is possible to check MathSciNet for new references to &GAP; reading the 
+file <F>updatebib.g</F> into &GAP;. It will produce two files:
 
+<List>
+    <Mark> <F>tobeadded.txt</F> </Mark>
+    <Item> This file has the same format as <F>GapCite.MR</F> and 
+    lists publications citing &GAP; which should be examined and 
+    after that added either to <F>GapCite.MR</F> or to <F>GapIgnore.MR</F>.
+    </Item>
+    <Mark> <F>suggested.txt</F> </Mark>
+    <Item> This file contains suggestions to <Q>move</Q> certain entries
+    from <F>GapCite.notyet</F> and <F>GapNonMR.bib</F> to <F>GapCite.MR</F>.
+    All suggestions, including those which do not match the publication
+    listed in the &GAP; bibliography, should be carefully examined before any
+    changes.
+    </Item>
+</List>
+
+Note that <F>updatebib.g</F> is not a complete solution for updating &GAP; 
+bibliography. It searches for occurrences of the substring <C>www.gap</C>
+in citations (this covers both old and current addresses of the &GAP; website), 
+but it does not cover publications citing &GAP; without its website or referring
+to it only in the text; finally, it covers only MathSciNet and does not look
+into other bibliography databases. Therefore, manual search still should be 
+used to discover more &GAP; citations. The function 
+<C>SearchMathSciNetForUpdates</C> from <F>updatebib.g</F> may be helpful in
+this direction since it performs more broad search in the MathSciNet, dropping
+some more strict limitations.
 <P/>
-The advantage of this approach is that MathSciNet gives us 
-good <C>BiBTeX</C> entries (no need to look up journal names or diacritic
-characters) and MR numbers we can link to. It also makes it easier to add
-entries as only the MR number is needed.
+
+After the source files of the &GAP; bibliography are updated, the script 
+<F>newmakegapbib</F> uses <F>GapCite.MR</F>, <F>GapCite.notyet</F> and 
+<F>GapNonMR.bib</F> (and also <F>HEADER</F> and <F>MRBIB</F>) to
+produce <F>gap-published.bib</F> (this requires subscription to MathSciNet, 
+which St Andrews has). The advantage of this approach is that MathSciNet gives 
+us good <C>BiBTeX</C> entries (no need to look up journal names or diacritic
+characters) and their updates, and MR numbers we can link to. It also makes 
+it easier to add entries as only the MR number is needed.
+<P/>
+
+At the end of its work <F>newmakegapbib</F> will also display error 
+messages reporting MR numbers whose BibTeX record it failed to fetch from 
+MathSciNet -- these should be investigated since they may point out on
+some inconsistencies in our data.
+<P/>
 
 <P/>
 (There is also a script <C>GETMR</C> that will return MR
@@ -716,35 +764,44 @@ found in the citation index.)
 
 <P/>
 Finally &GAP; itself called with <F>convbib.g</F> produces the web page
-and a nice PDF bibliography from <F>gap-published.bib</F>. These are in
-<F>gap-published.html</F> and <F>gap-published.pdf</F> which are linked
-from the main web page <F>bib.html</F>. In addition, 
-<F>statistics.generated</F> is created,
-a statistics page used in <F>statistics.mixer</F> to create 
-<F>statistics.html</F>.
-
-<P/>
-Further helper files are <F>gapbib.tex</F> and <F>gap-head.bib</F>.
-
-<P/>
-<E>NOTE</E>: 
+and a nice PDF bibliography from <F>gap-published.bib</F> (using further
+helper files <F>gapbib.tex</F> and <F>gap-head.bib</F>). The resulting
+files are <F>gap-published.html</F> and <F>gap-published.pdf</F> which 
+are linked from the main web page <F>bib.html</F>. <E>NOTE</E> that 
 <F>gap-published.html</F> and <F>gap-published.pdf</F> are <E>not</E> in 
 CVS because they can be generated automatically by <F>convbib.g</F> rather 
-quickly.
-
+quickly. In addition, <F>convbib.g</F> creates <F>statistics.generated</F>
+and <F>statistics.mscreport</F> - two pages with tables which are used in 
+<F>statistics.mixer</F> to create <F>statistics.html</F>.
 <P/>
-<E>NOTE 2</E>: 
+
+The output of <F>convbib.g</F> should be also checked for errors and warnings
+reporting repeated entries, incomplete BibTeX records (mostly may be ignored), etc.
+<P/>
+
+<E>NOTE</E>: 
 Please do not forget to tag the latest version of <F>gap-published.bib</F> 
-after creation and check it in with the PUB tag:
+and <F>statistics.generated</F> after their creation and check them in 
+with the <C>PUB</C> tag:
 
 <Verb>
   cvs tag -F PUB gap-published.bib
+  cvs tag -F PUB statistics.generated
+  cvs tag -F PUB statistics.mscreport
 </Verb>
 
 Otherwise the nightly update script will revert to the old version.
-Note that the current setup does not run &GAP; on <F>convbib.g</F>
+<P/>
+
+<E>NOTE 2</E>: 
+The current setup does not run &GAP; on <F>convbib.g</F>
 every night. This means that everybody who changes the &GAP; bibliography
 has to do this manually on <C>yin</C> after every change.
+<P/>
+
+
+
+
 </Section>
 
 <Section Label="WPSitemap">

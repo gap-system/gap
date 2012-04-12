@@ -4,7 +4,7 @@
 <!-- %% -->
 <!-- %A  @(#)<M>Id: padics.msk,v 1.6 2002/04/15 10:02:31 sal Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="p-adic Numbers">
@@ -18,23 +18,27 @@ if <M>p</M> divides neither <M>a</M> nor <M>b</M>.
 They form a field of characteristic 0 which nevertheless shows
 some behaviour of the finite field with <M>p</M> elements.
 <P/>
-A <M>p</M>-adic numbers can be approximated by a
+A <M>p</M>-adic numbers can be represented by a
 <Q><M>p</M>-adic expansion</Q> which is similar to the decimal expansion
 used for the reals (but written from left to right).
 So for example if <M>p = 2</M>, the numbers <M>1</M>, <M>2</M>, <M>3</M>,
 <M>4</M>, <M>1/2</M>, and <M>4/5</M>
 are represented as <M>1(2)</M>, <M>0.1(2)</M>, <M>1.1(2)</M>, <M>0.01(2)</M>,
-<M>10(2)</M>, and <M>0.0101(2)</M>.
-Approximation means to ignore higher powers of <M>p</M>,
+<M>10(2)</M>, and the infinite periodic
+expansion <M>0.010110011001100...(2)</M>.
+
+<M>p</M>-adic numbers can be approximated by ignoring higher powers of <M>p</M>,
 so for example with only 2 digits accuracy <M>4/5</M> would be approximated
 as <M>0.01(2)</M>.
-The important difference to the decimal approximation is that
+This is different from the decimal approximation of real numbers in that
 <M>p</M>-adic approximation is a ring homomorphism on the subrings of
-<M>p</M>-adic numbers whose valuation is bounded from below.
+<M>p</M>-adic numbers whose valuation is bounded from below so that
+rounding errors do not increase with repeated calculations.
 <P/>
-In &GAP;, <M>p</M>-adic numbers are represented by approximations.
-A family of (approximated) <M>p</M>-adic numbers consists of
-<M>p</M>-adic numbers with a certain precision,
+
+In &GAP;, <M>p</M>-adic numbers are always represented by such approximations.
+A family of approximated <M>p</M>-adic numbers consists of
+<M>p</M>-adic numbers with a fixed prime <M>p</M> and a certain precision,
 and arithmetic with these numbers is done with this precision.
 
 
@@ -51,11 +55,14 @@ Pure <M>p</M>-adic numbers are the <M>p</M>-adic numbers described so far.
 
 <Description>
 returns the element of the <M>p</M>-adic number family <A>fam</A>
-that is used to represent the rational number <A>rat</A>.
+that approximates the rational number <A>rat</A>.
 <P/>
 <M>p</M>-adic numbers allow the usual operations for fields.
 <P/>
 <Example><![CDATA[
+gap> fam:=PurePadicNumberFamily(2,20);;
+gap> a:=PadicNumber(fam,4/5);
+0.010110011001100110011(2)
 gap> fam:=PurePadicNumberFamily(2,3);;
 gap> a:=PadicNumber(fam,4/5);
 0.0101(2)
@@ -66,6 +73,9 @@ gap> a/2;
 gap> a*10;
 0.001(2)
 ]]></Example>
+See 
+<Ref Oper="PadicNumber" Label="for a p-adic extension family and a rational"/>
+for other methods for <Ref Oper="PadicNumber" Label="for pure padics"/>.
 </Description>
 </ManSection>
 

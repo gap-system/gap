@@ -171,8 +171,8 @@ objects that is too restrictive for our purposes (or we want to install a
 method that takes another number of arguments). If this is the case,
 the call to <Ref Func="InstallMethod"/> causes an error message.
 We can avoid this by using <Ref Func="InstallOtherMethod"/> instead.
-
-<!-- %T better explain re-declaration! -->
+It is also possible to re-declare an operation with another number of 
+arguments and/or different filters for its arguments.
 
 </Section>
 
@@ -244,7 +244,7 @@ RedispatchOnCondition(NormalizerOp,IsIdenticalObj,
 <Section Label="Adding a new Operation">
 <Heading>Adding a new Operation</Heading>
 
-The next step is to add own operations. As an example we take the Sylow
+Next, we will consider how to add own operations. As an example we take the Sylow
 normalizer in a group of a given prime. This operation gets two arguments,
 the first has to be a group, the second a prime number.
 <P/>
@@ -475,8 +475,10 @@ could be computed later and probably even for a wider class of objects), a
 component is just part of the internal definition of an object.
 <P/>
 So if the data is <Q>of general interest</Q>, if we want the user to have
-access to it, attributes are preferable. They provide a clean interface and
-their immutability makes it safe to hand the data to a user who potentially
+access to it, attributes are preferable. Moreover, attributes can be used 
+by the method selection (by specifying the filter <C>HasAttr</C> for an 
+attribute <C>Attr</C>). They provide a clean 
+interface and their immutability makes it safe to hand the data to a user who potentially
 could corrupt a components entries.
 <P/>
 On the other hand more <Q>technical</Q> data (say the encoding of a sparse
@@ -484,12 +486,9 @@ matrix) is better hidden from the user in a component, as declaring it as an
 attribute would not give any advantage.
 <P/>
 Resource-wise, attributes need more memory (the attribute setter and
-tester are implicitly declared, and two filter bits are required), the
-<!-- %T why two?? -->
+tester are implicitly declared, and one filter bit is required), the
 attribute access is one further function call in the kernel, thus components
 might be an immeasurable bit faster.
-
-<!-- %T and what about the aspect that attributes are used by the method selection?? -->
 
 </Section>
 
@@ -498,7 +497,7 @@ might be an immeasurable bit faster.
 <Section Label="Adding new Concepts">
 <Heading>Adding new Concepts</Heading>
 
-Finally we look how to implement a new concept for existing objects and fit
+Now we look how to implement a new concept for existing objects and fit
 this in the method selection. Three examples that will be made more explicit
 below would be groups for which a <Q>length</Q> of elements (as a word in
 certain generators) is defined, groups that can be decomposed as a
@@ -726,7 +725,6 @@ gap> PosetElementSpec :=rec(
 >   Zero := a -> [],
 >   Multiplication := function(a, b) return Intersection(a, b); end,
 >   Addition := function(a, b) return Union(a, b); end,
->   AdditiveInverse := a -> Filtered(w, x->(not x in a)),
 >   # Mathematical properties of the elements
 >   MathInfo := IsCommutativeElement and IsAdditivelyCommutativeElement
 > );;
@@ -740,10 +738,11 @@ Now we can create new elements, perform arithmetic on them and form domains:
 gap> a := mkposet([1,2,3]);
 [ 1, 2, 3 ]
 gap> CategoriesOfObject(a);
-[ "IsExtAElement", "IsNearAdditiveElement", "IsNearAdditiveElementWithZero", 
-  "IsNearAdditiveElementWithInverse", "IsExtLElement", "IsExtRElement", 
-  "IsMultiplicativeElement", "IsMultiplicativeElementWithOne", 
-  "IsAdditivelyCommutativeElement", "IsCommutativeElement", "IsPosetOn4" ]
+[ "IsExtAElement", "IsNearAdditiveElement", 
+  "IsNearAdditiveElementWithZero", "IsAdditiveElement", 
+  "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement", 
+  "IsMultiplicativeElementWithOne", "IsAdditivelyCommutativeElement", 
+  "IsCommutativeElement", "IsPosetOn4" ]
 gap> a=[1,2,3];
 false
 gap> UnderlyingElement(a)=[1,2,3];

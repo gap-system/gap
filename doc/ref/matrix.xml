@@ -1,33 +1,39 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  matrix.msk                  GAP documentation            Martin Schoenert -->
+<!-- %A  matrix.msk                  GAP documentation            Martin Schönert -->
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %A  @(#)<M>Id: matrix.msk,v 1.42 2006/03/09 16:47:16 sal Exp </M> -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland -->
+<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
 <!-- %Y  Copyright (C) 2002 The GAP Group -->
 <!-- %% -->
 <Chapter Label="Matrices">
 <Heading>Matrices</Heading>
 
-Matrices are represented in &GAP; by lists of row vectors (see <Ref Chap="Row Vectors"/>).
+Matrices are represented in &GAP; by lists of row vectors
+(see <Ref Chap="Row Vectors"/>) (for future changes to this
+policy see Chapter <Ref Chap="Matrix objects"/>).
 The vectors must all have the same length, and their elements must lie in
 a common ring. However, since checking rectangularness can be expensive
 functions and methods of operations for matrices often will not give an error
-message for non-rectangular lists of lists - in such cases the result is
+message for non-rectangular lists of lists &ndash;in such cases the result is
 undefined.
 <P/>
 Because matrices are just a special case of lists, all operations and
 functions for lists are applicable to matrices also (see chapter
-<Ref Chap="Lists"/>). This especially includes accessing elements of a matrix (see
-<Ref Sect="List Elements"/>), changing elements of a matrix (see <Ref Sect="List Assignment"/>),
+<Ref Chap="Lists"/>).
+This especially includes accessing elements of a matrix (see
+<Ref Sect="List Elements"/>),
+changing elements of a matrix (see <Ref Sect="List Assignment"/>),
 and comparing matrices (see <Ref Sect="Comparisons of Lists"/>).
 <P/>
-Note that, since a matrix is a list of lists, the behaviour of <Ref Oper="ShallowCopy"/>
-for matrices is just a special case of <C>ShallowCopy</C> for lists
+Note that, since a matrix is a list of lists,
+the behaviour of <Ref Oper="ShallowCopy"/>
+for matrices is just a special case of <Ref Oper="ShallowCopy"/> for lists
 (see&nbsp;<Ref Sect="Duplication of Lists"/>);
-called with an immutable matrix <A>mat</A>, <Ref Oper="ShallowCopy"/> returns a mutable matrix
+called with an immutable matrix <A>mat</A>,
+<Ref Oper="ShallowCopy"/> returns a mutable matrix
 whose rows are identical to the rows of <A>mat</A>.
 In particular the rows are still immutable.
 To get a matrix whose rows are mutable,
@@ -344,6 +350,7 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 
 <Index>Gaussian algorithm</Index>
 <#Include Label="RankMat">
+<#Include Label="TriangulizedMat">
 <#Include Label="TriangulizeMat">
 <#Include Label="NullspaceMat">
 <#Include Label="NullspaceMatDestructive">
@@ -374,6 +381,7 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 See also chapter <Ref Chap="Integral matrices and lattices"/>.
 
 <#Include Label="ElementaryDivisorsMat">
+<#Include Label="ElementaryDivisorsTransformationsMat">
 <#Include Label="DiagonalizeMat">
 
 </Section>

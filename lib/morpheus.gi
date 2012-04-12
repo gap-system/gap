@@ -127,7 +127,7 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
   Info(InfoMorph,2,"|syno|=",Size(syno)," |cen|=",Size(cen));
   if Size(cen)>1 then
     w:=syno;
-    syno:=Complementclasses(syno,cen);
+    syno:=ComplementClassesRepresentatives(syno,cen);
     if Length(syno)=0 then 
       return fail; # not unique permauts
     fi;
@@ -170,7 +170,7 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
     fi;
 
     if Size(cen)>1 then
-      no:=Complementclasses(no,cen);
+      no:=ComplementClassesRepresentatives(no,cen);
       if Length(no)>0 then
 	no:=no[1];
       else

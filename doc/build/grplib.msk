@@ -6,7 +6,7 @@
 %A                                                         Alexander Hulpke
 %A                                                         Hans Ulrich Besche
 %%
-%A  @(#)$Id: grplib.msk,v 1.83 2008/05/29 06:11:29 gap Exp $
+%A  @(#)$Id: grplib.msk,v 1.85 2011/05/24 13:16:10 gap Exp $
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 %Y  Copyright (C) 2002 The GAP Group
@@ -481,7 +481,7 @@ The data occupies about 30 MB (storing over 400 million groups in about
 200 megabits). The group identification occupies about 47 MB of which
 18 MB is used for the groups in layer (6). More information on the Small 
 Groups library can be found on
-\URL{http://www.tu-bs.de/~hubesche/small.html}
+\URL{http://www.icm.tu-bs.de/ag_algebra/software/small/}
 
 This library has been constructed by Hans Ulrich Besche, Bettina Eick and 
 E.~A.~O'Brien. A survey on this topic and an account of the history of 

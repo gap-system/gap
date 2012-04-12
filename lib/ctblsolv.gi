@@ -143,7 +143,7 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
       h:= NaturalHomomorphismByNormalSubgroupNC( G, SubgroupNC( G, [ z ] ) );
 
       # `c' is a list of complement classes of `N' modulo `z'
-      c:= List( Complementclasses( ImagesSource( h ), ImagesSet( h, N ) ),
+      c:= List( ComplementClassesRepresentatives( ImagesSource( h ), ImagesSet( h, N ) ),
                 x -> PreImagesSet( h, x ) );
       r:= Centralizer( G, N );
       for L in c do

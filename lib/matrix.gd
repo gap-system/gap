@@ -400,13 +400,13 @@ DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
 
 #############################################################################
 ##
-#O  ElementaryDivisorsTranformationsMat([<ring>,] <mat>)
-#F  ElementaryDivisorsTranformationsMatDestructive(<ring>,<mat>)
+#O  ElementaryDivisorsTransformationsMat([<ring>,] <mat>)
+#F  ElementaryDivisorsTransformationsMatDestructive(<ring>,<mat>)
 ##
-##  <#GAPDoc Label="ElementaryDivisorsTranformationsMat">
+##  <#GAPDoc Label="ElementaryDivisorsTransformationsMat">
 ##  <ManSection>
-##  <Oper Name="ElementaryDivisorsTranformationsMat" Arg='[ring,] mat'/>
-##  <Func Name="ElementaryDivisorsTranformationsMatDestructive" Arg='ring,mat'/>
+##  <Oper Name="ElementaryDivisorsTransformationsMat" Arg='[ring,] mat'/>
+##  <Func Name="ElementaryDivisorsTransformationsMatDestructive" Arg='ring,mat'/>
 ##
 ##  <Description>
 ##  <C>ElementaryDivisorsTransformations</C>, in addition to the tasks done

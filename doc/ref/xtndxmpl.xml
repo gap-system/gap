@@ -274,7 +274,7 @@ and the object itself is chosen to be a positional object with this
 residue at the first and only position (see&nbsp;<Ref Sect="Positional Objects"/>).
 <P/>
 <Example><![CDATA[
-gap> DeclareRepresentation( "IsMyModulusRep", IsPositionalObjectRep, [ 1 ] );
+gap> DeclareRepresentation("IsMyModulusRep", IsPositionalObjectRep, [1]);
 ]]></Example>
 <P/>
 The fourth ingredients of a type, <E>attributes</E>, are usually of minor
@@ -493,13 +493,13 @@ are normalized.
 gap> InstallMethod( \=,
 >    "for two elements in Z/nZ (ModulusRep)",
 >    IsIdenticalObj,
->    [ IsMyZmodnZObj and IsMyModulusRep, IsMyZmodnZObj and IsMyModulusRep ],
+>    [IsMyZmodnZObj and IsMyModulusRep, IsMyZmodnZObj and IsMyModulusRep],
 >    function( x, y ) return x![1] = y![1]; end );
 gap> 
 gap> InstallMethod( \<,
 >    "for two elements in Z/nZ (ModulusRep)",
 >    IsIdenticalObj,
->    [ IsMyZmodnZObj and IsMyModulusRep, IsMyZmodnZObj and IsMyModulusRep ],
+>    [IsMyZmodnZObj and IsMyModulusRep, IsMyZmodnZObj and IsMyModulusRep],
 >    function( x, y ) return x![1] < y![1]; end );
 ]]></Example>
 <P/>
@@ -534,7 +534,7 @@ first for the additive structure.
 gap> InstallMethod( \+,
 >    "for two elements in Z/nZ (ModulusRep)",
 >    IsIdenticalObj,
->    [ IsMyZmodnZObj and IsMyModulusRep, IsMyZmodnZObj and IsMyModulusRep ],
+>    [IsMyZmodnZObj and IsMyModulusRep, IsMyZmodnZObj and IsMyModulusRep],
 >    function( x, y )
 >    return MyZmodnZObj( FamilyObj( x ), x![1] + y![1] );
 >    end );
@@ -643,7 +643,7 @@ Note that the method for <Ref Func="InverseOp"/> returns
 gap> InstallMethod( \*,
 >    "for two elements in Z/nZ (ModulusRep)",
 >    IsIdenticalObj,
->    [ IsMyZmodnZObj and IsMyModulusRep, IsMyZmodnZObj and IsMyModulusRep ],
+>    [IsMyZmodnZObj and IsMyModulusRep, IsMyZmodnZObj and IsMyModulusRep],
 >    function( x, y )
 >    return MyZmodnZObj( FamilyObj( x ), x![1] * y![1] );
 >    end );
@@ -813,7 +813,7 @@ matrix.
 gap> InstallMethod( InverseOp,
 >    "for an ordinary matrix over a ring Z/nZ",
 >    [ IsMatrix and IsOrdinaryMatrix
->          and CategoryCollections( CategoryCollections( IsMyZmodnZObj ) ) ],
+>      and CategoryCollections( CategoryCollections( IsMyZmodnZObj ) ) ],
 >    function( mat )
 >    local one, modulus;
 > 
@@ -838,7 +838,7 @@ gap> InstallMethod( DefaultFieldOfMatrixGroup,
 >     "for a matrix group over a ring Z/nZ",
 >     [ IsMatrixGroup and CategoryCollections( CategoryCollections(
 >           CategoryCollections( IsMyZmodnZObj ) ) ) ],
->     G -> RingWithOneByGenerators( [ One( Representative( G )[1][1] ) ] ) );
+>     G -> RingWithOneByGenerators([ One( Representative( G )[1][1] ) ]));
 ]]></Example>
 <P/>
 Now we can deal with matrix groups over residue class rings.
