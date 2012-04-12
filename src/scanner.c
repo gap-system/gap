@@ -3565,6 +3565,7 @@ StructInitInfo * InitInfoScanner ( void )
 
 void InitScannerTLS()
 {
+  TLS->helpSubsOn = 1;
 }
 
 void DestroyScannerTLS()
