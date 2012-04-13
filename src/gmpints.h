@@ -4,7 +4,6 @@
 **                                                           
 **                                                           
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,11 +16,6 @@
 #define GAP_GMPINTS_H
 
 #ifdef USE_GMP
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_gmpints_h =
-   "@(#)$Id$";
-#endif
 
 #include <gmp.h>
 
@@ -40,11 +34,27 @@ typedef UInt4           TypDigit;
 #define NR_HEX_DIGITS         8
 #define SaveLimb SaveUInt8
 #define LoadLimb LoadUInt8
+#define INTEGER_UNIT_SIZE 8
+#define INTEGER_ALLOCATION_SIZE 8
 #else
 typedef UInt2           TypDigit;
 #define NR_HEX_DIGITS         4
 #define SaveLimb SaveUInt4
 #define LoadLimb LoadUInt4
+#define INTEGER_UNIT_SIZE 4
+#define INTEGER_ALLOCATION_SIZE 4
+#endif
+
+#if GMP_LIMB_BITS != NR_HEX_DIGITS * 8
+#error Aborting compile: unexpected GMP limb size
+#endif
+#if GMP_NAIL_BITS != 0
+#error Aborting compile: GAP does not support non-zero GMP nail size
+#endif
+#ifndef __GNU_MP_RELEASE
+ #if __GMP_MP_RELEASE < 50002
+ #error Aborting compile: GAP requires GMP 5.0.2 or newer
+ #endif
 #endif
 
 #define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
@@ -229,6 +239,7 @@ extern  Obj             GcdInt (
 
 extern Obj FuncLog2Int( Obj self, Obj intnum);
 
+extern Obj AInvInt ( Obj gmp );
 
 /****************************************************************************
 **

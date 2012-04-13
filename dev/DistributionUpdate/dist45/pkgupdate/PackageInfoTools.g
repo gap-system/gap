@@ -2,7 +2,6 @@
 ##  
 ##  PackageInfoTools.g                                         (C) Frank Lübeck
 ##  
-##      $Id$
 ##  
 ##  This file contains utilities for automatic updating of the information 
 ##  related to package which are available via the GAP website. 
@@ -19,7 +18,7 @@
 
 #DeclareInfoClass( "InfoExec" );
 #SetInfoLevel(InfoExec,1);
-#
+# 
 #MakeReadWriteGlobal("Exec");       
 #UnbindGlobal("Exec");
 #BindGlobal("Exec",
@@ -28,31 +27,32 @@
 #    cmd := ShallowCopy( arg[1] );
 #    Info( InfoExec, 1, cmd );
 #    if not IsString( cmd )  then
-#        Error( "the command ", cmd, " is not a name.\n", 
-#         "possibly a binary is missing or has not been compiled." );
+#      Error( "the command ", cmd, " is not a name.\n", 
+#      "possibly a binary is missing or has not been compiled." );
 #    fi;
 #    for i  in [ 2 .. Length( arg ) ]  do
-#        Append( cmd, " " );
-#        Append( cmd, arg[i] );
+#      Append( cmd, " " );
+#      Append( cmd, arg[i] );
 #    od;
 #    shell := Filename( DirectoriesSystemPrograms(  ), "sh" );
 #    cs := "-c";
 #    if shell = fail and ARCH_IS_WINDOWS(  )  then
-#        shell := Filename( DirectoriesSystemPrograms(  ), "cmd.exe" );
-#        cs := "/C";
+#      shell := Filename( DirectoriesSystemPrograms(  ), "cmd.exe" );
+#      cs := "/C";
 #    fi;
 #    dir := DirectoryCurrent(  );
 #    Process( dir, shell, InputTextUser(  ), OutputTextUser(  ), [ cs, cmd ] );
 #    return;
 #end);
 
-## store package infos
+## setting global variable to store package infos
 PACKAGE_INFOS := rec();
 
 ## should be told the 'mixer' directly
 GAPLibraryVersion := "unknown";
 GAPKernelVersion := "unknown";
 
+## clear the global variable PACKAGE_INFOS
 ClearPACKAGE_INFOS := function()
   local a;
   for a in NamesOfComponents(PACKAGE_INFOS) do
@@ -227,6 +227,7 @@ IsLocalArchive := function(fname)
   return PositionSublist(s, "..") = fail and PositionSublist(s, " /") = fail;
 end;
 
+
 ReadAllPackageInfos := function(pkgdir)
   local pkgs, pkg;
   pkgs := Difference(FilesDir(pkgdir, "d", 1), [pkgdir]);
@@ -239,7 +240,8 @@ end;
 # returns list of names of dirs with updated package info
 UpdatePackageInfoFiles := function(pkgdir)
   local path, find, wget, date, stdin, stdout, res, outstr, out, p, 
-        pkgs, nam, info, infon, namn, d, pkg, f, update, has_error;
+        pkgs, nam, info, infon, namn, d, pkg, f, update, has_error,
+        passes, t;
   path := DirectoriesSystemPrograms();
   find := Filename( path, "find" );
   wget := Filename( path, "wget" );
@@ -249,104 +251,151 @@ UpdatePackageInfoFiles := function(pkgdir)
   # get directory list 
   pkgs := Difference(FilesDir(pkgdir, "d", 1), [pkgdir]);
 
-
   for pkg in pkgs do
-    # read local info
-    # to initialize handling of a package just 
-    #  - create corresponding directory (all small letters)
-    #  - provide a 'slim' pkgname/PackageInfo.g file,
-    #    setting only the .PackageName and .PackageInfoURL components
-    ClearPACKAGE_INFOS();
-    if IsExistingFile(Concatenation(pkg, "/DONTUPDATE")) then
-      Print("Found ", pkg, "/DONTUPDATE  --  not updating PackageInfo.g!!!\n");
-      continue;
-    fi;
-    READPackageInfo(Concatenation(pkg, "/PackageInfo.g"));
-    nam := NamesOfComponents(PACKAGE_INFOS);
-    if Length(nam) = 0 then
-      Print(pkg, ": IGNORED\n");
-      continue;
-    else
-      nam := nam[1];
-      info := PACKAGE_INFOS.(nam);
-    fi;
-    Print("Package: ", info.PackageName, "\n");
-
-    if not IsBound( info.PackageInfoURL ) then
-      Print("#  ERROR (", info.PackageName, "): PackageInfoURL not bound in the stored file.\n");
-      Print("#  You need to set it manually or using the command \n");
-      Print("#  ./addPackage <package-name> <PackageInfoURL>\n");
-      continue;
-    fi; 
-            
-    # try to get current info file with wget
-    Exec(Concatenation("mkdir -p ", pkg, "/tmp; rm -f ", pkg,
-    "/tmp/tmpinfo.g"));
-    Exec(Concatenation("wget --timeout=60 --tries=1 -O ", 
-                       pkg, "/tmp/tmpinfo.g ",
-    info.PackageInfoURL, " 2>> wgetlog"));
-    ClearPACKAGE_INFOS();
-    READPackageInfo(Concatenation(pkg, "/tmp/tmpinfo.g"));
-    if not IsBound(PACKAGE_INFOS.(nam)) then
-      Print("  WARNING (", info.PackageName, "): no success in download of the current info file \n  from ", 
-            info.PackageInfoURL, "\n");
-      continue;
-    fi;
-    
-    infon := PACKAGE_INFOS.(nam);
-    
-    # helper, because "=" for functions doesn't work as it should
-    f := function(a)
-      if not IsBound(infon.(a)) then
-        return false;
-      elif IsFunction(info.(a)) then
-        return StringPrint(info.(a)) <> StringPrint(infon.(a));
-      else
-        return info.(a) <> infon.(a);
-      fi;
-    end;
-    
-    nam := NamesOfComponents(info);
-    namn := NamesOfComponents(infon);
-    if nam = namn and ForAll(nam, f) then
-      Print("  No changes in info file.\n");
-      continue;
-    fi;
-    update := false;
+    # we allow up to two passes over the body of the loop, so when the new
+    # PackageInfoURL will be given, we will read new PackageInfo.g from the 
+    # new location and repeat all steps once again
+    passes:=0;
     has_error := false;
-    d := Difference(nam, namn);
-    if Length(d) > 0 then
-      Print("  removed components: ", d, "\n");
-      update := true;
-      if "PackageInfoURL" in d then
-        Print("  WARNING (", info.PackageName, "): no PackageInfoURL component in the current info file from\n   ",
-              info.PackageInfoURL, "\n  info file will not be changed\n");
-        has_error := true;
-      fi;  
-    fi;
-    d := Difference(namn, nam);
-    if Length(d) > 0 then
-      Print("  new components: ", d, "\n");
-      update := true;
-    fi;
-    d := Filtered(nam, f);
-    if Length(d) > 0 then
-      Print("  changed components: ", d, "\n");
-      update := true;
-    fi;
-    if update and not has_error then
-      # save old info file, store new one
-      outstr := StringCurrentTime();
-      Exec(Concatenation("mv -f ", pkg, "/PackageInfo.g ", pkg, 
-                         "/PackageInfo.g-", outstr));
-      Exec(Concatenation("mv -f ", pkg, "/tmp/tmpinfo.g ", pkg,
-                         "/PackageInfo.g"));
-      Add(res, pkg);
-    elif has_error then
-      Print("  There was an error. PackageInfo.g not accepted.\n");
-    else
-      Print("  No changes.\n");
-    fi;
+
+    repeat
+    
+      # Read locally stored information about the package. After the call
+      # to the 'addPackages' function to initialize handling of a package
+      # this consists at least of the following:
+      #  - the corresponding directory (all small letters);
+      #  - the 'slim' pkgname/PackageInfo.g file having only its 
+      #    .PackageName, .PackageInfoURL and .Status components set.
+      ClearPACKAGE_INFOS();
+      READPackageInfo(Concatenation(pkg, "/PackageInfo.g"));
+      nam := NamesOfComponents(PACKAGE_INFOS);
+      if Length(nam) = 0 then
+        Print( pkg, ": IGNORED (bad local version of PackageInfo.g)\n" );
+        has_error:=true;
+        continue;
+      else
+        nam := nam[1];
+        info := PACKAGE_INFOS.(nam);
+      fi;
+      Print("Package: ", info.PackageName, "\n");
+
+      if not IsBound( info.PackageInfoURL ) then
+        Print("#  ERROR (", info.PackageName, "): PackageInfoURL not bound \n",
+              "#  in the local version of PackageInfo.g. To set it, edit the file\n",
+              "#  'currentPackageInfoURLList' and then call\n",
+              "#  ./addPackages currentPackageInfoURLList\n");
+        has_error:=true;
+        continue;
+      fi; 
+            
+      # try to get current info file with wget
+      Exec(Concatenation("mkdir -p ", pkg, "/tmp; rm -f ", pkg, "/tmp/tmpinfo.g"));
+      Exec(Concatenation("wget --timeout=60 --tries=1 -O ", pkg, "/tmp/tmpinfo.g ",
+      info.PackageInfoURL, " 2>> wgetlog"));
+      ClearPACKAGE_INFOS();
+      # error if download unseccessful or if the file is not GAP readable
+      # TODO: possibly improve the check that the content is appropriate
+      READPackageInfo(Concatenation(pkg, "/tmp/tmpinfo.g"));
+      if not IsBound(PACKAGE_INFOS.(nam)) then
+        Print("  WARNING (", info.PackageName, "): no success in download of the current info file \n  from ", 
+              info.PackageInfoURL, "\n");
+        has_error:=true;
+        continue;
+      fi;
+    
+      infon := PACKAGE_INFOS.(nam);
+    
+      # helper, because "=" for functions doesn't work as it should
+      f := function(a)
+        if not IsBound(infon.(a)) then
+          return false;
+        elif IsFunction(info.(a)) then
+          return StringPrint(info.(a)) = StringPrint(infon.(a));
+        else
+          return info.(a) = infon.(a);
+        fi;
+      end;
+    
+      nam := NamesOfComponents(info);
+      namn := NamesOfComponents(infon);
+
+      # any different components?
+      if nam = namn and ForAll(nam, f) then
+        Print("  No changes in PackageInfo.g file.\n");
+        update := false;
+        continue;
+      fi;
+
+      # any removed components?
+      d := Difference(nam, namn);
+      if Length(d) > 0 then
+        Print("  removed components: ", d, "\n");
+        update := true;
+        if "PackageInfoURL" in d then
+          Print("  ERROR (", info.PackageName, "): no .PackageInfoURL component in the new info file from\n   ",
+                info.PackageInfoURL, "\n  info file will not be changed\n");
+          has_error := true;
+        fi;  
+        if "Version" in d then
+          Print("  ERROR (", info.PackageName, "): no .Version component in the new info file from\n   ",
+                info.PackageInfoURL, "\n  info file will not be changed\n");
+          has_error := true;
+        fi;  
+      fi;
+
+      # any new components?
+      d := Difference(namn, nam);
+      if Length(d) > 0 then
+        Print("  new components: ", d, "\n");
+        update := true;
+      fi;
+
+      # any changed components?
+      d := Filtered(nam, t -> not f(t));
+      if Length(d) > 0 then
+        Print("  changed components: ", d, "\n");
+        update := true;
+        if IsBound(info.Version) and not "Version" in d then
+          Print("  ERROR (", info.PackageName, "): There are changed components in the new info file from\n  ",
+                info.PackageInfoURL, "\n   but .Version remains the same. ",
+                "This is not allowed, so the info file will not be changed\n");
+          has_error := true;
+        fi;    
+        if IsBound(info.Version) and not CompareVersionNumbers( infon.Version, info.Version ) then
+          Print("  ERROR (", info.PackageName, "): the new version ", infon.Version, 
+                " in the new info file from\n  ", info.PackageInfoURL, 
+                "\n  is not larger than the old version ", info.Version, 
+                "\n  This is not allowed, so the info file will not be changed\n");
+          has_error := true;
+        fi;      
+      fi;
+    
+      if update then
+        if not has_error then
+          # save old info file, store new one
+          outstr := StringCurrentTime();
+          Exec(Concatenation("mv -f ", pkg, "/PackageInfo.g ", pkg, 
+                             "/PackageInfo.g-", outstr));
+          Exec(Concatenation("mv -f ", pkg, "/tmp/tmpinfo.g ", pkg,
+                             "/PackageInfo.g"));
+          Add(res, [ infon.PackageName, infon.Version ] );
+        else 
+          Print("  PackageInfo.g is not accepted because of an error.\n");
+        fi;
+      fi;
+    
+      # will we need another pass?
+      if "PackageInfoURL" in d then 
+        if passes = 1 then
+          Print("  New URL of PackageInfo.g file is given - repeating update one more time\n");
+        fi;  
+      else
+        # PackageInfoURL unchanged - no more passes
+        update:=false;
+      fi;
+    
+    passes:=passes+1;
+    until passes >= 2 or not update or has_error;
   od;
   return res;
 end;
@@ -406,17 +455,18 @@ TextFilesInZooArchive := function(zoofile)
 end;
 
 # returns list of dirs with updated archives
-UpdatePackageArchives := function(pkgdir, webdir)
-  local pkgs, res, nam, info, url, pos, fname, formats, pkgtmp, missing, 
-        available, fmt, lines, l, ll, fun, pkg, p, a, bname, dnam, old, fn;
+UpdatePackageArchives := function(pkgdir, pkgreposdir, webdir)
+  local pkgs, res, nam, info, infostored, infoarchive, url, pos, fname, 
+        formats, pkgtmp, missing, available, fmt, lines, l, ll, fun, pkg, 
+        p, a, bname, dnam, old, fn, populated, pkgdirname;
   # package dirs
   pkgs := Difference(FilesDir(pkgdir, "d", 1), [pkgdir]);
   # make sure the needed subdirs of the webdir exist
   Exec(Concatenation("mkdir -p ", webdir, "/Packages/pkg"));
-  # Exec(Concatenation("mkdir -p ", webdir, "/ftpdir/zoo/packages"));
-  Exec(Concatenation("mkdir -p ", webdir, "/ftpdir/win.zip/packages"));
   Exec(Concatenation("mkdir -p ", webdir, "/ftpdir/tar.gz/packages"));
   Exec(Concatenation("mkdir -p ", webdir, "/ftpdir/tar.bz2/packages"));
+  Exec(Concatenation("mkdir -p ", webdir, "/ftpdir/zip/packages"));
+  Exec(Concatenation("mkdir -p ", webdir, "/ftpdir/win.zip/packages"));
 
   res := [];
   for pkg in pkgs do
@@ -425,55 +475,78 @@ UpdatePackageArchives := function(pkgdir, webdir)
     READPackageInfo(Concatenation(pkg, "/PackageInfo.g"));
     nam := NamesOfComponents(PACKAGE_INFOS);
     if Length(nam) = 0 then
+      Print( pkg, ": IGNORED (bad local version of PackageInfo.g)\n" );
       continue;
     fi;
     nam := nam[1];
-    Print("Package: ", nam, " --- updating archive ...\n");
     info := PACKAGE_INFOS.(nam);
-    Print(info.PackageName, ":\n");
-    if not IsBound(info.ArchiveURL) then
-      Print("# Warning (", info.PackageName, "): no ArchiveURL given!\n");
-      continue;
-    fi;
-    url := info.ArchiveURL;
-    # filename of the archive without extension
-    fname := Basename(url);
-
-    # check if .tar.gz file is already in the local collection
-    Print( "Checking for ", pkgdir, "/", nam, "/", fname, ".tar.gz \c");
-    if IsExistingFile(Concatenation(pkgdir, "/", nam, "/", fname, ".tar.gz")) then
-      Print(" - already in collection\n");
+    pkgdirname := LowercaseString( NormalizedWhitespace( info.PackageName ) );
+    # we update to the tip before doing any other actions to ensure that 
+    # in case of any errors the latest version of the package will be used
+    Exec( Concatenation( "cd ", pkgreposdir,  "/", pkgdirname, " ; hg update -r tip" ) );
+    # if the package release repository is already populated, which 
+    # latest version of the package is stored there?
+    if IsExistingFile( Concatenation( pkgreposdir, "/", pkgdirname, "/PackageInfo.g") ) then
+      ClearPACKAGE_INFOS();
+      READPackageInfo( Concatenation( pkgreposdir, "/", pkgdirname, "/PackageInfo.g") );
+      nam := NamesOfComponents(PACKAGE_INFOS);
+      if Length(nam) = 0 then
+        Print( pkg, ": IGNORED (can't read PackageInfo.g from the repository)\n" );
+        continue;
+      fi;
+      nam := nam[1];
+      infostored := PACKAGE_INFOS.(nam);
+      populated:=true;
     else
-    
-      Print(" - missing\n");
-      Print("  GETTING NEW archives ...\n   (", url, ")\n");
-      Add(res, nam);
+      populated:=false;
+    fi;  
+
+    Print("* ", info.PackageName, " ");
+   
+    # do we have the newer version of the package 
+    # in the most recent PackageInfo.g file?
+    if populated and info.Version = infostored.Version then
+      Print(info.Version, " is already in collection\n");
+    else
       # ok, so we have to get the archives
+      Print("- NEW version ", info.Version, " discovered!!!\n");
+      Print("  ============================================\n");
+      if not IsBound(info.ArchiveURL) then
+        Print("# ERROR (", info.PackageName, "): no ArchiveURL given!\n");
+        continue;
+      fi;
+      url := info.ArchiveURL;
+      # filename of the archive without extension
+      fname := Basename(url);
+      Add(res, nam);
       formats := SplitString(info.ArchiveFormats,""," \n\r\t,");
-      # use only recognized formats here
-      formats := Intersection(formats, [ ".tar.gz", ".tar.bz2",
-                   "-win.zip", ".zoo", ".deb", ".rpm" ]);
-      # ??? do we need to keep deb and rpm here ???   
-      # ??? do we need to clean up the pkgtmp directory ???       
-      # Exec(Concatenation("rm -rf ", pkgtmp));
+      # use only acceptable formats here
+      formats := Intersection( 
+                   formats, [ ".tar.gz", ".tar.bz2", ".zip", "-win.zip", ".zoo" ]);
+      Print("  GETTING NEW archives from \n  ", url, formats, "\n");
+      Exec(Concatenation("rm -rf ", pkgtmp));
       Exec(Concatenation("mkdir -p ", pkgtmp));
       # copy available archive formats
       for fmt in formats do
         Exec(Concatenation("cd ", pkgtmp, ";wget --timeout=60 --tries=1 -O ", 
              fname, fmt, " ", url, fmt, " 2>> wgetlog"));
       od;
-      #
 
       # which acceptable formats are available? (".zoo" is to be retired soon)
-      available := Filtered([ ".tar.gz", ".tar.bz2", "-win.zip", ".zoo" ], fmt ->
-                          IsExistingFile(Concatenation(pkgtmp, fname, fmt)));
-    
-      # which formats are missing and must be recreated? (except ".zoo")
-      missing := Filtered([ ".tar.gz", ".tar.bz2", "-win.zip" ], fmt ->
-                          not IsExistingFile(Concatenation(pkgtmp, fname, fmt)));
+      available := Filtered([ ".tar.gz", ".tar.bz2", ".zip", "-win.zip", ".zoo" ], 
+                     fmt -> IsExistingFile(Concatenation(pkgtmp, fname, fmt)));
 
+      # which acceptable formats were promised as available but in fact are not?
+      missing := Filtered( formats, 
+                   fmt -> not IsExistingFile(Concatenation(pkgtmp, fname, fmt)));  
+      if Length( missing ) > 0 then
+        Print("WARNING: ", info.PackageName, 
+              " has the following formats promised in the PackageInfo.g file\n  but missing: ", 
+              missing, "\n");
+      fi;
+       
       if Length(available)=0 then 
-        Print("GOT NONE OF THE ARCHIVES! NOT UPDATED!\n");
+        Print("ERROR: for ", info.PackageName, " no archives are available!!!\n");
         Unbind(res[Length(res)]);
         continue;
       fi;
@@ -481,7 +554,7 @@ UpdatePackageArchives := function(pkgdir, webdir)
       fmt:=available[1];
       
       if fmt=".zoo" then
-        Print("WARNING: ", info.PackageName, " is distributed only in zoo format\n"); 
+        Print("  WARNING: ", info.PackageName, " is distributed only in zoo format\n"); 
       fi;
 
       if not IsLocalArchive(Concatenation(pkgtmp, fname, fmt)) then
@@ -522,13 +595,52 @@ UpdatePackageArchives := function(pkgdir, webdir)
         dnam := dnam{[2..Length(dnam)]};
       fi;
       
+      # Do not import package if the version in the archive differs from 
+      # the one claimed in the PackageInfo.g file on the package website.
+      # TODO: Warning if something else in the PackageInfo.g file on web
+      # website differs from PackageInfo.g file in the archive. 
+      if IsExistingFile( Concatenation(pkgtmp, "/", dnam, "/PackageInfo.g") ) then
+          ClearPACKAGE_INFOS();
+          READPackageInfo( Concatenation(pkgtmp, "/", dnam, "/PackageInfo.g") );
+          nam := NamesOfComponents(PACKAGE_INFOS);
+          if Length(nam) = 0 then
+             Print( pkg, ": IGNORED (can't read PackageInfo.g from the archive)\n" );
+             continue;
+          fi;
+          nam := nam[1];
+          infoarchive := PACKAGE_INFOS.(nam);
+          if info.Version <> infoarchive.Version then
+              Print("  ERROR (", info.PackageName, "): ",
+              "PackageInfo.g on web refers to version ", info.Version, ", but \n",
+              "PackageInfo.g in the archive has version ", infoarchive.Version, "! SKIPPING!!!\n");
+              continue;
+          fi;
+          else
+           Print("  ERROR (", info.PackageName, "): there is no PackageInfo.g file in the archive! SKIPPING!!!\n");
+           continue;
+      fi; 
+      
       if not ValidatePackageInfo( Concatenation(pkgtmp, "/", dnam, "/PackageInfo.g")) then
-           Print("  ERROR (", info.PackageName, "): validation of the info file not successful .... SKIPPING !!!\n");
+           Print("  ERROR (", info.PackageName, "): validation of the info file not successful! SKIPPING!!!\n");
            continue;
       else
            Print("  VALIDATION of the info file successful!\n");
       fi;
 
+      if not info.Status in ["accepted","submitted","deposited"] then
+        Print("WARNING (", info.PackageName, "): has status ", info.Status, 
+              "\nwhich is is not one of accepted/submitted/deposited\n");
+      fi;
+      
+      if IsBound( info.Dependencies ) then
+        Print("  Package ", info.PackageName, " has dependencies:\n");
+        for a in RecNames( info.Dependencies ) do
+          if Length( info.Dependencies.(a) ) > 0 then
+            Print("  * ", a, " ", info.Dependencies.(a), "\n");
+          fi;
+        od;
+      fi;
+    
       # need to find out the text files
       Print("  finding text files  . . .\n");
               PrintTo( Concatenation(pkgtmp, "patternstextbinary.txt" ), "#Autogenerated by GAP\n" );
@@ -584,83 +696,216 @@ UpdatePackageArchives := function(pkgdir, webdir)
       Print("\n=====================ignored files=======================\n");
       Exec(Concatenation("cd ", pkgtmp, " ; cat listignoredfiles.txt" ));
       Print("\n=====================end of the list of ignored files====\n");
-      Exec(Concatenation( "cp ", pkgtmp, "/listtextfiles.txt ", pkg, "/", fname, ".txtfiles" ));
-      Exec(Concatenation( "cp ", pkgtmp, "/listbinaryfiles.txt ", pkg, "/", fname, ".binfiles" ));
       
-      # now create the missing archives
-      for fmt in missing do
-        if fmt = ".tar.gz" then
-          Print("  creating ",fname,".tar.gz\n");
-          Print(Concatenation("cd ", pkgtmp,"; tar cpf \"", fname, ".tar\" ",
-               dnam, "; gzip -9 ", fname, ".tar\n"));
-          Exec(Concatenation("cd ", pkgtmp,"; tar cpf \"", fname, ".tar\" ",
-               dnam, "; gzip -9 ", fname, ".tar"));
-        elif fmt = ".tar.bz2" then
-          Print("  creating ",fname,".tar.bz2\n");
-          Exec(Concatenation("cd ", pkgtmp,"; tar cpf \"", fname, ".tar\" ",
-               dnam, "; bzip2 -9 ", fname, ".tar"));
-        #elif fmt = ".zoo" then
-        #  Print("  creating ",fname,".zoo\n");
-        #  Exec(Concatenation("cd ", pkgtmp,"; find ", dnam, 
-        #       " -print | zoo aIhq ", fname, ".zoo"));
-        #  for a in tfiles do
-        #    Exec(Concatenation("cd ", pkgtmp,"; (echo '!TEXT!'; echo '/END')", 
-        #         "| zoo c ", fname, ".zoo ", a));
-        #  od;
-        elif fmt = "-win.zip" then
-          Print("  creating ",fname,"-win.zip\n");
-          Exec(Concatenation("cd ", pkgtmp,"; rm -f ", fname, "-win.zip ; ",
-                 "cat listbinaryfiles.txt | zip -v -9 ", fname, "-win.zip -@ > /dev/null; ",
-                 "cat listtextfiles.txt | zip -v -9 -l ", fname, "-win.zip -@ > /dev/null "));
-        else
-          Print("Cannot create archive with format: ", fmt, "\n");
-        fi;
-      od; # loop over missing archive formats
-    
-      # copy to Web and move archives
-      for fmt in [ ".tar.gz", ".tar.bz2", "-win.zip"] do # removed .zoo
-        if not IsExistingFile(Concatenation(webdir, "/ftpdir/",
-          fmt{[2..Length(fmt)]}, "/packages/", fname, fmt)) then
-          # first delete old ones from ftp dir
-          old := List(FilesDir(pkg, "f", 1), Basename);
-          old := Filtered(old, a-> Length(a)>=Length(fmt) and
-                 a{[Length(a)-Length(fmt)+1..Length(a)]} = fmt);
-          for fn in old do
-            Exec(Concatenation("rm -f ", webdir, "/ftpdir/", 
-                 fmt{[2..Length(fmt)]}, "/packages/", fn));
-          od;
-          if IsExistingFile(Concatenation(pkgtmp,"/",fname,fmt)) then
-            Exec(Concatenation("cd ", pkgtmp,"; mv -f ", fname, fmt, " .."));
-          fi;
-          Exec(Concatenation("cd ", pkgtmp, "/.. ; cp -f ", fname, fmt,
-                        " ", webdir, "/ftpdir/", fmt{[2..Length(fmt)]},
-                        "/packages/")); 
-        fi;
-      od;
+      # NOW STORE THE PACKAGE IN THE REPOSITORY
+      
+      # remove files from the the previous version
+      Exec( Concatenation( "rm -rf ", pkgreposdir, "/", pkgdirname, "/*" ) );
+      # create 'pkg' subdirectory where the package will be stored
+      Exec( Concatenation( "mkdir -p ", pkgreposdir, "/", pkgdirname, "/pkg" ) );
+      # copy the PackageInfo.g file to the top level of the repository
+      Exec( Concatenation( "cp -r ", pkgtmp, dnam, "/PackageInfo.g", " ", pkgreposdir, "/", pkgdirname, "/" ) );
+      # get the lists of text/binary files
+      Exec(Concatenation( "cp ", pkgtmp, "/listtextfiles.txt ", pkgreposdir, "/", pkgdirname, "/" ));
+      Exec(Concatenation( "cp ", pkgtmp, "/listbinaryfiles.txt ", pkgreposdir, "/", pkgdirname, "/" ));
 
-      # and get the README file
-      if not IsExistingFile(Concatenation(pkg, "/DONTUPDATE")) then
-        if not IsBound( info.README_URL ) then
-          Print("#   Error (", info.PackageName, "): README_URL not bound in the info file.\n");
-        else 
-          Exec(Concatenation("cd ", pkgtmp,"; rm -f ", bname, 
-               "; wget --timeout=60 --tries=1 ", info.README_URL, " 2>> wgetlog"));
-          if IsExistingFile(Concatenation(pkgtmp, "/", bname)) then
-            Exec(Concatenation("cd ", pkgtmp,"; mkdir -p ", webdir,
-                 "/Packages/pkg/",
-                 nam, "; cp -f ", bname, 
-                 " ", webdir, "/Packages/pkg/", nam, "/README.", nam, "; mv -f ", 
-                 bname, " ../README.", nam));
-          else
-            Print("#   Error (", info.PackageName, "): could not get README file from\n   ", info.README_URL, "\n");
-          fi;
+      # get the README file from package homepage (not from the archive!)
+      if not IsBound( info.README_URL ) then
+        Print("#   Error (", info.PackageName, "): README_URL not bound in the info file.\n");
+      else 
+        bname := Basename(info.README_URL);
+        Exec(Concatenation("cd ", pkgtmp,"; rm -f ", bname, 
+             "; wget --timeout=60 --tries=1 ", info.README_URL, " 2>> wgetlog"));
+        if IsExistingFile(Concatenation(pkgtmp, "/", bname)) then
+          Exec( Concatenation( "cp -r ", pkgtmp, "/", bname, " ", 
+                                pkgreposdir, "/", pkgdirname, "/README.", nam ) );
+#        Exec(Concatenation("cd ", pkgtmp,"; mkdir -p ", webdir,
+#               "/Packages/pkg/",
+#               nam, "; cp -f ", bname, 
+#               " ", webdir, "/Packages/pkg/", nam, "/README.", nam, "; mv -f ", 
+#               bname, " ../README.", nam));
+        else
+          Print("#   Error (", info.PackageName, "): could not get README file from\n   ", info.README_URL, "\n");
         fi;
-      fi;  
+      fi;
+      
+      # copy the package directory to the 'pkg' subdirectory of the repository
+      # instead of doing this like in the next line
+      # Exec( Concatenation( "cp -r ", pkgtmp, dnam, " ", pkgreposdir, "/", pkgdirname, "/pkg/" ) );
+      # we are copying over the tar archive only those files which were selected 
+      # during text/binary classification (to exclude files that should be ignored, e.g.
+      # VCS files that may be occasionally wrapped into the package archive)
+      Exec(Concatenation( 
+        "cd ", pkgtmp, " ; ",
+        "cat listtextfiles.txt listbinaryfiles.txt > listallfiles.txt ; ",
+        "tar cf ", dnam, "-repack.tar -T listallfiles.txt ; ",
+        "mv ", dnam, "-repack.tar ", pkgreposdir, "/", pkgdirname, "/pkg/ ; ", 
+        "cd ", pkgreposdir, "/", pkgdirname, "/pkg/ ; ",
+        "tar -xpf ", dnam, "-repack.tar ; ",
+        "rm ", dnam, "-repack.tar ; " ) );
+      
+      # change to the repository and perform all version control magic 
+      Exec ( Concatenation( "cd ", pkgreposdir, "/", pkgdirname, " ; ",
+                            "hg addremove ; ",
+                            "hg commit -m \"Version ", info.Version, ", ", info.Date, "\" ; ",
+                            "hg tag Version-", info.Version ) );
+
+      # THE NEW PACKAGE VERSION HAS BEEN STORED!
+      Print("  ============================================\n");
     fi; # if package needs an update
   od; # end of loop over all packages
   return res;
 end;
+
+# This should be used carefully in manual mode only once:
+# to populate repositories of package versions with backwards history
+StoreLegacyPackageArchive := function( fullarchivename, pkgreposdir )
+
+local pkgtmp, fname, ext, dnam, nam, info, pkgdirname, a;
+        
+# Create temporary directory and copy archive there
+pkgtmp := DirectoryTemporary();
+pkgtmp := Filename(pkgtmp,"");
+Exec( Concatenation( "cp ", fullarchivename, " ", pkgtmp ));
+fname:=Basename( fullarchivename );
+
+# unpack the archive
+
+if not IsLocalArchive( Concatenation(pkgtmp, fname) ) then
+  Print("ERROR: archive contains path starting with / or containing ..\n");
+  return;
+fi;
+      
+Print("Unpacking ", fname, " ... \n");   
+ext := fname{[Length(fname)-3..Length(fname)]};
+if ext = "r.gz" then
+  Exec(Concatenation("cd ", pkgtmp, ";gzip -dc ", fname, "|tar xpf - "));
+elif ext = ".bz2" then
+  Exec(Concatenation("cd ", pkgtmp, ";bzip2 -dc ", fname, "|tar xpf - "));
+elif ext = ".zoo" then
+  Exec(Concatenation("cd ", pkgtmp, ";unzoo -x ", fname, " > /dev/null 2>&1"));
+elif ext = ".zip" then
+  Exec(Concatenation("cd ", pkgtmp, ";unzip -a ", fname ));
+else
+  Print("ERROR: unrecognized archive format ", fname, "\n");
+  # return;
+fi;
+   
+# name of unpacked directory (must no longer be 'nam')
+dnam := Difference(FilesDir(pkgtmp, "d", 1), [pkgtmp]);
+if Length(dnam) = 0 then
+  Print("ERROR: could not unpack archive!\n");
+  return;
+else
+  dnam := Basename(dnam[1]);
+fi;
+      
+ClearPACKAGE_INFOS();
+READPackageInfo(Concatenation(pkgtmp, dnam, "/PackageInfo.g"));
+nam := NamesOfComponents(PACKAGE_INFOS);
+if Length(nam) = 0 then
+  Print( "IGNORED (bad version of PackageInfo.g)\n" );
+  return;
+fi;
+nam := nam[1];
+info := PACKAGE_INFOS.(nam);
+pkgdirname := LowercaseString( NormalizedWhitespace( info.PackageName ) );
+
+Print("Unpacked package ", info.PackageName, " ", info.Version, "\n");
+      
+if not ValidatePackageInfo( Concatenation(pkgtmp, dnam, "/PackageInfo.g")) then
+  Print("  WARNING (", info.PackageName, "): validation of the info file not successful!!!\n");
+fi;
+
+# need to find out the text files
+Print("Finding text files  . . .\n");
+  PrintTo( Concatenation(pkgtmp, "patternstextbinary.txt" ), "#Autogenerated by GAP\n" );
+Exec( Concatenation ( "cd ", pkgtmp, " ; touch patternstextbinary.txt" ) );
+
+if Number( [IsBound(info.TextFiles), 
+            IsBound(info.BinaryFiles), 
+            IsBound(info.TextBinaryFilesPatterns) ], a -> a=true ) > 1 then
+  Print("  WARNING (", info.PackageName, 
+        "): do not use more than one of TextFiles, BinaryFiles, TextBinaryFilesPatterns\n");
+  Print("          The superfluous components will be ignored.\n");
+fi;           
+
+if IsBound(info.TextFiles) then
+  Print("  using ", info.TextFiles, " from PackageInfo.g as text files \n");
+  AppendTo( Concatenation(pkgtmp, "patternstextbinary.txt" ), "# Autoextended by GAP\n" );
+  for a in info.TextFiles do
+    AppendTo( Concatenation(pkgtmp, "patternstextbinary.txt" ), "T", a, "\n" );
+  od;
+elif IsBound(info.BinaryFiles) then
+  Print("  using ", info.BinaryFiles, " from PackageInfo.g as binary files \n");
+  AppendTo( Concatenation(pkgtmp, "patternstextbinary.txt" ), "# Autoextended by GAP\n" );
+  for a in info.BinaryFiles do
+    AppendTo( Concatenation(pkgtmp, "patternstextbinary.txt" ), "B", a, "\n" );
+  od;
+elif IsBound(info.TextBinaryFilesPatterns) then
+  Print("  using ", info.TextBinaryFilesPatterns, " from PackageInfo.g to set text/binary patterns \n");
+  AppendTo( Concatenation(pkgtmp, "patternstextbinary.txt" ), "# Autoextended by GAP\n" );
+  for a in info.TextBinaryFilesPatterns do
+    AppendTo( Concatenation(pkgtmp, "patternstextbinary.txt" ), a, "\n" );
+  od;  
+fi;
+      
+# classify text/binary files with Max's script classifyfiles.py
+Exec( Concatenation (
+    "cp ../classifyfiles.py ", pkgtmp, "/ ; ",
+    "cp ../patternscolorpkg.txt ", pkgtmp, "/patternscolor.txt ;",
+    "cat ../patternstextbinary.txt >> ", pkgtmp, "/patternstextbinary.txt ;",
+    "echo \"B*\" >> ", pkgtmp, "/patternstextbinary.txt ; ",
+    "cd ", pkgtmp, " ; ",
+    "python ./classifyfiles.py ", dnam ) );           
  
+Print("\n=====================text files==========================\n");
+Exec(Concatenation("cd ", pkgtmp, " ; cat listtextfiles.txt" ));
+Print("\n=====================end of the list of text files=======");
+Print("\n=====================binary files========================\n");
+Exec(Concatenation("cd ", pkgtmp, " ; cat listbinaryfiles.txt" ));
+Print("\n=====================end of the list of binary files=====");
+Print("\n=====================ignored files=======================\n");
+Exec(Concatenation("cd ", pkgtmp, " ; cat listignoredfiles.txt" ));
+Print("\n=====================end of the list of ignored files====\n");
+      
+# NOW STORE THE PACKAGE IN THE REPOSITORY
+      
+# remove the previous version
+Exec( Concatenation( "rm -rf ", pkgreposdir, "/", pkgdirname, "/*" ) );
+# create 'pkg' subdirectory where the package will be stored
+Exec( Concatenation( "mkdir -p ", pkgreposdir, "/", pkgdirname, "/pkg" ) );
+# copy the PackageInfo.g file to the top level of the repository
+Exec( Concatenation( "cp -r ", pkgtmp, dnam, "/PackageInfo.g", " ", pkgreposdir, "/", pkgdirname, "/" ) );
+# get the lists of text/binary files
+Exec(Concatenation( "cp ", pkgtmp, "/listtextfiles.txt ", pkgreposdir, "/", pkgdirname, "/" ));
+Exec(Concatenation( "cp ", pkgtmp, "/listbinaryfiles.txt ", pkgreposdir, "/", pkgdirname, "/" ));
+
+# copy the package directory to the 'pkg' subdirectory of the repository
+# instead of doing this like in the next line
+# Exec( Concatenation( "cp -r ", pkgtmp, dnam, " ", pkgreposdir, "/", pkgdirname, "/pkg/" ) );
+# we are copying over the tar archive only those files which were selected 
+# during text/binary classification (to exclude files that should be ignored, e.g.
+# VCS files that may be occasionally wrapped into the package archive)
+Exec(Concatenation( 
+"cd ", pkgtmp, " ; ",
+"cat listtextfiles.txt listbinaryfiles.txt > listallfiles.txt ; ",
+"tar cf ", dnam, "-repack.tar -T listallfiles.txt ; ",
+"mv ", dnam, "-repack.tar ", pkgreposdir, "/", pkgdirname, "/pkg/ ; ", 
+"cd ", pkgreposdir, "/", pkgdirname, "/pkg/ ; ",
+"tar -xpf ", dnam, "-repack.tar ; ",
+"rm ", dnam, "-repack.tar ; " ) );
+      
+# change to the repository and perform all version control magic 
+Exec ( Concatenation( "cd ", pkgreposdir, "/", pkgdirname, " ; ",
+                      "hg addremove ; ",
+                      "hg commit -m \"Version ", info.Version, ", ", info.Date, "\" ; ",
+                      "hg tag Version-", info.Version ) );
+# THAT'S ALL FOLKS! THE NEW PACKAGE VERSION HAS BEEN STORED!
+end;
+
+ 
+# OLD CODE, KEEP IT AROUND FOR A WHILE
 MergePackageArchives := function(pkgdir, tmpdir, archdir, webdir, inmerge)
 # This function is called from the 'mergePackageArchives' script 
 # with the following arguments: 
@@ -707,9 +952,6 @@ MergePackageArchives := function(pkgdir, tmpdir, archdir, webdir, inmerge)
       continue;
     fi;
     fname := Basename(info.ArchiveURL);
-    # ???TODO??? should this be done here?
-    # collect text file names from zoo archive
-    # Append(tf, TextFilesInZooArchive(Concatenation(pkg, "/", fname, ".zoo")));
     # unpack from .tar.gz file
     Exec(Concatenation("cat ", pkg, "/", fname, ".tar.gz | (cd ", d, 
                        "; tar xzpf - )" ) );
@@ -724,7 +966,7 @@ MergePackageArchives := function(pkgdir, tmpdir, archdir, webdir, inmerge)
   # (just this, no others any more)
   fun := function(pkgdir, dir, fn, textfiles)
     local a;
-##      local allfiles;
+    ## local allfiles;
     Exec(Concatenation("cd ", dir, "; tar cpf ../", fn, ".tar * ; cd .. ; ",
          " gzip -9 ", fn, ".tar ; " ));
     #Exec(Concatenation("cd ", dir, "; tar cpf ../", fn, ".tar * ; cd .. ; ",
@@ -802,10 +1044,432 @@ MergePackageArchives := function(pkgdir, tmpdir, archdir, webdir, inmerge)
        
 end;
 
+
+MergePackages := function(pkgdir, pkgreposdir, tmpdir, archdir, webdir, parameters)
+# This function is called from the 'mergePackages' script 
+# with the following arguments: 
+# PkgCacheDir, PkgReposDir, PkgMergeTmpDir, PkgMergedArchiveDir, PkgWebFtpDir, true
+  local mergedir, pkgs, basepkgs, textfilesmerge, nam, info, tf, 
+        fname, fun, allfiles, allformats, pkg, str, fmt, fn_targzArch,
+        default, specific, t, s, revision, tag, old, fn;
+
+  # Parsing parameters of packages combination to be assembled
+ 
+  default := "tip";
+  allformats := false;
+  specific := [];
+  if Length( parameters ) > 0 then
+    parameters := LowercaseString( parameters );
+    parameters := SplitString( parameters, " ", " ");
+    if not ForAll( parameters, s -> s in [ "all", "tip", "latest", "stable"] or '=' in s ) then
+      Print("ERROR: mergePackages must be called in one of the following ways:\n",
+            "1) without arguments\n",
+            "2) with the word 'all' to wrap individual package archives in all formats\n",
+            "3) with one of words 'tip', 'latest' (synonym of 'tip') or 'stable'\n",
+            "4) with specifications of the form pkgname=tip|latest|stable|version|no\n",
+            "5) with a combination of arguments as in (2) and (3) above\n\n");
+      return;
+    fi;
+    if "all" in parameters then
+      allformats := true;
+    fi;
+    t := Filtered( parameters, s -> not '=' in s and s<>"all" );
+    if Length( t ) > 1 then
+      Print("ERROR: only one of 'stable', 'tip' or 'latest' (synonym of 'tip') \n",
+            "       may be specified as default \n\n");
+      return;   
+    elif Length( t ) = 1 then
+      default := t[1];
+      if default="latest" then
+        default:="tip";
+      fi;  
+    fi;
+    t := Filtered( parameters, s -> '=' in s);
+    specific := List( t, s -> SplitString( s, "=" ) );
+  fi;
+
+  Print("Preparing to wrap package archive with the following settings:\n",
+        "Default package version: ", default, "\n",
+        "Specific requirements  : ", specific, "\n");
+ 
+  pkgs := Difference(FilesDir(pkgreposdir, "d", 1), [pkgreposdir]);
+  basepkgs := List( pkgs, Basename );
+  
+  if not ForAll( specific, s -> s[1] in basepkgs ) then
+    Print("ERROR: nothing known about package(s) ", 
+          Filtered( specific, s -> not s[1] in basepkgs ), "\n",
+          "Check that the package is added for the redistribution,\n",
+          "its name is spelled correctly and that the convention\n",
+          "'pkgname=tip|latest|stable|version|no' is followed\n\n");
+    return; 
+  fi;
+
+  if tmpdir[Length(tmpdir)] <> '/' then
+    tmpdir := Concatenation(tmpdir, "/");
+  fi;
+  if pkgdir[Length(pkgdir)] <> '/' then
+    pkgdir := Concatenation(pkgdir, "/");
+  fi;
+  
+  mergedir := Concatenation(tmpdir, "merge/");
+  Exec(Concatenation("rm -rf ", mergedir));
+  Exec(Concatenation("mkdir -p ", mergedir));
+  
+  textfilesmerge := [];
+
+  for pkg in pkgs do
+
+    Print("*** Updating ", pkg, " ... \n");
+    # we update to the tip before doing any other actions to ensure that 
+    # in case of any errors the latest version of the package will be used
+    Exec( Concatenation( "cd ", pkg, " ; hg update -r tip" ));
+    # TODO: while we are at the tip, figure out what's the version here.
+    # Then when requested stable, we may report if it is latest or not
+    
+    # now some analysys and update to the version needed
+    t := Filtered( specific, s -> s[1]=Basename(pkg) );
+    if Length(t) = 0 then
+      revision:=default;
+    else 
+      if Length(t) > 1 then
+        Print("WARNING: more than one requirement specified:\n", t, "\n",
+              "         but only the first one will be used\n");
+      fi;
+      # revision must be a version number of one of:
+      # 'tip', 'latest' (synonym of 'tip'), 'stable' or 'no'
+      revision:=t[1][2];
+      if default="latest" then
+        default:="tip";
+      fi;        
+    fi;    
+    
+    if revision="no" then
+      Print("Skipping ", pkg, "\n");
+      continue;
+    fi;  
+    
+    if revision in ["tip","latest","stable"] then
+      tag := revision;
+    else # assuming that explicit version number is specificed
+      tag := Concatenation( "Version-", revision );
+    fi;  
+    
+    Print("    requesting version ", revision, " ... \n");
+    Exec( Concatenation( "cd ", pkg, " ; hg update -r ", tag ));
+
+    # read info file and check the version number in it
+    ClearPACKAGE_INFOS();
+    READPackageInfo(Concatenation(pkg, "/", "PackageInfo.g"));
+    nam := NamesOfComponents(PACKAGE_INFOS);
+    if Length(nam) = 0 then
+      Print("Skipping ", pkg, "\n");
+      continue;
+    fi;
+    nam := nam[1];
+    info := PACKAGE_INFOS.(nam);
+    if not revision in ["tip","latest","stable"] then
+      if revision <> info.Version then
+        Print("ERROR: can not find version ", revision, " of ", info.PackageName, "\n");
+      fi;
+    fi;
+    Print("Package ", info.PackageName, ": requested ", 
+          revision, ", retrieved version ", info.Version, "\n");
+    tf := textfilesmerge;
+    if not IsBound(info.ArchiveURL) then
+      continue;
+    fi;
+
+    # To copy the package from the repository to the destination, use
+    Exec(Concatenation("cd ", pkg, " ; cp -r pkg/* ", mergedir ));
+    # TODO: on Linux, use hard links instead of copying all files
+    
+    # and copy the README file
+    Exec(Concatenation("cp ", pkg, "/README.", nam, " ", mergedir ));
+    # and copy files with lists of text files and binary files
+    Exec( Concatenation("cp ", pkg, "/listtextfiles.txt ", mergedir, nam, ".txtfiles"));
+    Exec( Concatenation("cp ", pkg, "/listbinaryfiles.txt ", mergedir, nam, ".binfiles"));
+    
+    # if called with 'all', will also wrap individual archives for redistribution, 
+    # otherwise will only wrap the merged archive
+    # TODO: shall we forbid 'all' when not called with 'stable'?
+    if allformats then 
+    # wrap indvidual package arhives in all redistributed formats
+      fname  := Basename( info.ArchiveURL );
+      Exec(Concatenation("cd ", mergedir, " ; ",
+            "cat ", nam, ".txtfiles ", nam, ".binfiles > ", nam, ".allfiles"));
+      Print("  creating ",fname,".zip\n");
+      Exec(Concatenation("cd ", mergedir,"; rm -f ", fname, ".zip ; ",
+            "cat ", nam, ".allfiles | zip -v -9 ", fname, ".zip -@ > /dev/null"));
+      Print("  creating ",fname,"-win.zip\n");
+      Exec(Concatenation("cd ", mergedir,"; rm -f ", fname, "-win.zip ; ",
+            "cat ", nam, ".binfiles | zip -v -9 ", fname, "-win.zip -@ > /dev/null; ",
+            "cat ", nam, ".txtfiles | zip -v -9 -l ", fname, "-win.zip -@ > /dev/null "));
+      Print("  creating ",fname,".tar\n");
+      Exec(Concatenation("cd ", mergedir, " ; ",
+            "tar cpf ", fname, ".tar -T ", nam, ".allfiles ; "));
+      Print("  creating ",fname,".tar.gz\n");
+      Exec(Concatenation("cd ", mergedir, " ; ",
+            "cp ", fname, ".tar ", fname, ".tar.X ; ", 
+            "gzip -9 ", fname, ".tar ; "));
+      Print("  creating ",fname,".tar.bz2\n");
+      Exec(Concatenation("cd ", mergedir, " ; ",
+            "mv -f ", fname, ".tar.X ", fname, ".tar ; ",
+            "bzip2 -9 ", fname, ".tar" ));
+               
+      # copy to Web and move archives
+      for fmt in [ ".tar.gz", ".tar.bz2", "-win.zip", ".zip" ] do # removed .zoo
+        if not IsExistingFile(Concatenation(webdir, "/ftpdir/",
+          fmt{[2..Length(fmt)]}, "/packages/", fname, fmt)) then
+          # first delete old ones from ftp dir
+          old := List(FilesDir(pkg, "f", 1), Basename);
+          old := Filtered(old, a-> Length(a)>=Length(fmt) and
+                 a{[Length(a)-Length(fmt)+1..Length(a)]} = fmt);
+          for fn in old do
+            Exec(Concatenation("rm -f ", webdir, "/ftpdir/", 
+                 fmt{[2..Length(fmt)]}, "/packages/", fn));
+          od;
+          if IsExistingFile(Concatenation(mergedir,"/",fname,fmt)) then
+            Exec(Concatenation("cd ", mergedir,"; mv -f ", fname, fmt, " .."));
+          fi;
+          Exec(Concatenation("cd ", mergedir, "/.. ; cp -f ", fname, fmt,
+                        " ", webdir, "/ftpdir/", fmt{[2..Length(fmt)]},
+                        "/packages/")); 
+        fi;
+      od;  
+      Exec( Concatenation( "cd ", mergedir, " ; rm *.allfiles") );
+    fi; # if allformats
+     
+  od; # end of the loop over all packages
+
+  if allformats then
+    Print("Completed wrapping individual package archives, stopping now ... \n");
+    return;
+  fi;
+  
+  # now create the merged tar.gz archive
+  # (just this, no others any more)
+  fun := function(pkgdir, dir, fn, textfiles)
+    local a;
+    ## local allfiles;
+    Exec(Concatenation("cd ", dir, "; tar cpf ../", fn, ".tar * ; cd .. ; ",
+         " gzip -9 ", fn, ".tar ; " ));
+    #Exec(Concatenation("cd ", dir, "; tar cpf ../", fn, ".tar * ; cd .. ; ",
+    #     "cp ", fn, ".tar ", fn, ".tar.X; gzip -9 ", fn, ".tar ; ",
+    #     "mv -f ", fn, ".tar.X ", fn, ".tar; bzip2 -9 ", fn, ".tar ; "
+    #     ));
+    # then zoo it
+    #Exec(Concatenation("cd ", dir, "; ",
+    #     "find * -print | zoo ahIq ../", fn, ".zoo "));
+    # add !TEXT! comments to zoo archive
+    #for a in textfiles do
+    #  Exec(Concatenation("cd ", dir, "/.. ; (echo '!TEXT!'; echo '/END')", 
+    #       "| zoo c ", fn, ".zoo \"", a, "\""));
+    #od;
+    # adjust time stamp
+    #Exec(Concatenation("cd ", dir, "/.. ; zoo Tq ", fn, ".zoo"));
+
+    # and finally zip it 
+    #FileString(Concatenation(dir, "/../tmptfiles"),
+    #                          JoinStringsWithSeparator(textfiles, "\n"));
+    #Exec(Concatenation("cd ", dir,"; find * ", " -print > ../allfiles"));
+    #allfiles := SplitString(StringFile(Concatenation(dir, "/../allfiles")), 
+    #                        "", "\n");
+    #FileString(Concatenation(dir, "/../tmpbfiles"), 
+    #        JoinStringsWithSeparator(Difference(allfiles, textfiles), "\n"));
+    #Exec(Concatenation("cd ", dir,"; ",
+    #     "cat ../tmpbfiles | zip -9 ../", fn, "-win.zip -@ > /dev/null ; ",
+    #     "cat ../tmptfiles | zip -9 -l ../", fn, "-win.zip -@ > /dev/null "));
+  end; 
+
+  str := StringCurrentTime();
+  while Length(str) > 0 and str[Length(str)] = '\n' do
+    Unbind(str[Length(str)]);
+  od;
+
+   
+  Exec( Concatenation( 
+    "cd ", mergedir, " ; ", 
+    "cat *.txtfiles > metainfotxtfiles-", str, ".txt ; ",
+    "cat *.binfiles > metainfobinfiles-", str, ".txt ; ",
+    "rm *.txtfiles ; ",
+    "rm *.binfiles ; ",
+    "rm -rf *.tar.gz *.tar.bz2 *.zip ; ",
+    "ls README.* >> metainfotxtfiles-", str, ".txt ; ",
+    "ls metainfo* | zip -q metainfopackages", str, " -@" ) );  
+    
+  # move metainfo archive to the archive collection and then cleanup
+  Exec(Concatenation("cd ", archdir, "; mkdir -p old; ",
+       "touch metainfopackages*; mv metainfopackages* old ; ",
+       "cp -f ", tmpdir, "/merge/metainfopackages*.zip ", archdir, 
+       "; rm -f ", tmpdir, "/merge/metainfo*",
+       "; rm -f ", webdir, "/ftpdir/*/metainfo*"));
+ 
+  Print("Wrapping merged packages archive ...\n");
+  fun(pkgdir, mergedir, Concatenation("packages-", str), textfilesmerge);
+
+  # cp merged to archive collection and ftp directory
+##    Exec(Concatenation("cd ", pkgdir, "/../archives; mkdir -p old; ",
+##         "touch packages-*; mv packages-* old; cp -f ", tmpdir, "/packages-* ",
+##         pkgdir, "/../archives; rm -f ", pkgdir, "/../web/ftpdir/*/packages-*"));
+##    for fmt in [".zoo", ".tar.gz", ".tar.bz2", "-win.zip"] do
+##      Exec(Concatenation("mv -f ", tmpdir, "/packages-*", fmt, " ", pkgdir, 
+##           "/../web/ftpdir/", fmt{[2..Length(fmt)]}, "/"));
+##    od;
+
+  # TODO: change the location of the merged archive - it's not going public
+
+  Exec(Concatenation("cd ", archdir, "; mkdir -p old; ",
+       "touch packages-*; mv packages-* old; cp -f ", tmpdir, "/packages-* ",
+       archdir, "; rm -f ", webdir, "/ftpdir/*/packages-*"));
+  for fmt in [ ".tar.gz" ] do # no merged ".tar.bz2", "-win.zip", and retired ".zoo"
+    Exec(Concatenation("mv -f ", tmpdir, "/packages-*", fmt, " ", webdir, 
+         "/ftpdir/", fmt{[2..Length(fmt)]}, "/"));
+  od;
+
+  # repack archives with Frank's script repack.py
+  #fn_targzArch := Concatenation("packages-", str, ".tar.gz");
+  #Exec(Concatenation("cd ", archdir, 
+  #"; /Users/alexk/CVSREPS/GAPDEV/dev/DistributionUpdate/dist45/repack.py ",
+  #fn_targzArch, " -all ;" )); 
+       
+end;
+
+
+MarkStableRevisions := function(pkgreposdir, parameters)
+local default, s, t, pkgname, pair, revision, pkgdir, tag, nam, info;
+  if Length( parameters ) > 0 then
+    parameters := LowercaseString( parameters );
+    parameters := SplitString( parameters, " ", " ");
+    if not ForAll( parameters, s -> '=' in s ) then
+      Print("ERROR: markStableRevisions must be called with a list\n",
+            "of specifications of the form pkgname=tip|latest|version|\n");
+      return;
+    fi;
+    parameters := List( parameters, s -> SplitString( s, "=" ) );
+  fi;
+  Print("### Preparing to mark the following revisions as stable:\n", parameters, "\n");
+  for pair in parameters do
+    Print("*** Marking revision ", pair[2], " of ", pair[1], " package ...\n" );
+    pkgname := LowercaseString(pair[1]);
+    revision := pair[2];
+    pkgdir := Concatenation( pkgreposdir, "/", pkgname );
+    if IsExistingFile( pkgdir ) then
+      if revision in ["tip","latest"] then
+        tag := "tip";
+      else # assuming that explicit version number is specified
+        tag := Concatenation( "Version-", revision );
+      fi;     
+      Print("    updating to the latest revision ...\n");
+      Exec( Concatenation( "cd ", pkgdir, " ; hg update -r tip" ));
+      Print("    requesting revision ", revision, " ... \n");
+      Exec( Concatenation( "cd ", pkgdir, " ; hg update -r ", tag ));
+
+      # read info file and check the version number in it
+      ClearPACKAGE_INFOS();
+      READPackageInfo(Concatenation(pkgdir, "/", "PackageInfo.g"));
+      nam := NamesOfComponents(PACKAGE_INFOS);
+      if Length(nam) = 0 then
+        Print("Skipping ", info.PackageName, ", can't read PackageInfo.g\n");
+        continue;
+      fi;
+      nam := nam[1];
+      info := PACKAGE_INFOS.(nam);
+      if not revision in ["tip","latest"] then
+        if revision <> info.Version then
+          Print("ERROR: can not find version ", revision, " of ", info.PackageName, ", skipping ...\n");
+          continue;
+        fi;
+      fi;
+      Print("    retrieved ", info.PackageName, ", version ", info.Version, "\n");
+      Print("    bookmarking ", info.PackageName, ", version ", info.Version, " as stable\n");
+      Exec( Concatenation( "cd ", pkgdir, " ; hg bookmark -i -f stable -r Version-", info.Version ));
+    else
+      Print("Nothing known about the package ", pair[1], "\n");
+    fi;
+  od;  
+  Print("DONE!\n");
+end;
+
+
+# Marking all latest versions of packages as stable
+# Use with care - this should be done only once at the initialisation
+MarkAllLatestStable := function(pkgreposdir)
+local pkgs, pkg;
+pkgs := Difference(FilesDir(pkgreposdir, "d", 1), [pkgreposdir]);
+for pkg in pkgs do
+  MarkStableRevisions( pkgreposdir, Concatenation( Basename(pkg), "=latest" ) );
+od;
+end;
+
+
+ReportPackageVersions:=function( pkgreposdir )
+local pkgs, pkgdir, info, getInfo, res, ver, i, j, m, x;
+
+getInfo:=function( pkgdir )
+local nam;
+ClearPACKAGE_INFOS();
+READPackageInfo(Concatenation(pkgdir, "/", "PackageInfo.g"));
+nam := NamesOfComponents(PACKAGE_INFOS);
+if Length(nam) = 0 then
+  return fail;
+else
+  nam := nam[1];
+  return PACKAGE_INFOS.(nam);
+fi;
+end;
+
+pkgs := Difference(FilesDir(pkgreposdir, "d", 1), [pkgreposdir]);
+res:=[ [ "Package name", "Latest", "Date", "Stable", "Date" ]];
+
+for pkgdir in pkgs do
+Print("*** Checking ", pkgdir, "\n" );
+
+  ver:=[];
+
+  Print("# checking out the latest version ...\n");
+  Exec( Concatenation( "cd ", pkgdir, " ; hg update -r tip" ));
+  info := getInfo( pkgdir );
+  Print("* latest version ", info.Version, " (", info.Date, ")\n");
+
+  ver := [ info.PackageName, info.Version, info.Date ];
+  
+  Print("# checking out the stable version ... \n");
+  Exec( Concatenation( "cd ", pkgdir, " ; hg update -r stable" ));
+  info := getInfo( pkgdir );
+  Print("* stable version ", info.Version, " (", info.Date, ")\n");
+  
+  if info.Version <> ver[2] then
+    Append( ver, [ info.Version, info.Date ] );
+  else
+    Append( ver, [ "*", " " ] );
+  fi;
+  
+  Add( res, ShallowCopy( ver ) );  
+  
+od;
+
+# post-processing for pretty-printing
+for j in [1..5] do
+  m := Maximum( List( res, x -> Length(x[j]) ) );
+  for x in res do
+    Append( x[j], ListWithIdenticalEntries( m-Length(x[j]), ' ' ) );
+  od;
+od;  
+Print("=======================================================================\n");
+for i in [1..Length(res)] do
+  for j in [1..Length(res[i])] do
+    Print( res[i][j], " | ");
+  od;
+  Print("\n");
+od;
+Print("=======================================================================\n");
+end;
+
+
 # returns list of [dirname, bookname] of updated packages
 UpdatePackageDoc := function(pkgdir, pkgdocdir)
   local pkgs, res, nam, info, books, url, fname, pkgtmp, fmt, pkg, 
-        b, pkgarch, a, dname, compactname;
+        b, pkgarch, a, dname, compactname, c;
   # package dirs
   pkgs := Difference(FilesDir(pkgdir, "d", 1), [pkgdir]);
   res := [];
@@ -819,7 +1483,7 @@ UpdatePackageDoc := function(pkgdir, pkgdocdir)
     nam := nam[1];
     info := PACKAGE_INFOS.(nam);
     Print(info.PackageName, ":\n");
-    pkgtmp := Concatenation(pkg, "/tmp/");
+    pkgtmp := Concatenation(pkg, "/pkg");
     if not IsBound(info.PackageDoc) then
       Print("# Warning (", info.PackageName, "): no PackageDoc component!\n");
       continue;
@@ -832,33 +1496,47 @@ UpdatePackageDoc := function(pkgdir, pkgdocdir)
     fi;
 
     for b in books do
+      # Should the documentation be taken from the package release, 
+      # or is there a separate archive with the package documentation?
       if IsBound(b.ArchiveURLSubset) then
-        # get files from main package archive
-        pkgarch := Concatenation(Basename(info.ArchiveURL), ".tar.gz");
-        # we store the archive name when we unpack the doc for this book
-        compactname := Filtered(b.BookName, x-> not x in " \t\n\b\r");
-        if IsExistingFile(Concatenation(pkgdir, "/", nam, "/docversion", 
-                  compactname, pkgarch)) then
-          Print("  help book ", b.BookName, " is up-to-date.\n"); 
-          continue;
-        else
-          Print("  updating help book ", b.BookName, " from main archive.\n");
-        fi;
-        # so we need to extract the book
-        Exec(Concatenation("rm -rf ", pkgtmp, "; mkdir -p ", pkgtmp));
-        Exec(Concatenation("cd ", pkgtmp, "; tar xzpf ../", pkgarch));
+        # Get all manuals from the package release stored in the repository
         dname := NormalizedWhitespace(StringSystem("sh", "-c", 
                      Concatenation("cd ", pkgtmp, "; ls")));
+        Exec( Concatenation( "mkdir -p ", pkgdocdir, "/", dname ));                    
         for a in b.ArchiveURLSubset do
-          Exec(Concatenation("cd ", pkgtmp, "/", dname, "; cp -r --parents ", 
-               a, " .."));
+          if IsExistingFile( Concatenation( pkgtmp, "/", dname, "/", a ) ) then
+            # whether a is a directory name or (rarely) a filename, e.g. doc/manual.pdf?
+            if Basename(a)=a then
+            # directory name or a file in the current directory
+            Exec(Concatenation("cd ", pkgtmp, "/", dname, " ; ",
+                               "cp -fr ", a, " ", pkgdocdir, "/", dname ));
+            else
+            Exec(Concatenation("cd ", pkgtmp, "/", dname, " ; ",
+                               "mkdir -p ", pkgdocdir, "/", dname, "/", Dirname(a), " ; ",
+                               "cp -fr ", a, " ", pkgdocdir, "/", dname, "/", Dirname(a), "/" ));
+            fi;
+          else
+            Print("WARNING: package ", info.PackageName, ", book ", b.BookName, 
+                  " has no subdirectory ", dname, "/", a, "\n",
+                  "         but has ArchiveURLSubset=", b.ArchiveURLSubset, "\n" );
+          fi;
+          # TODO: can we detect whether there is a GAPDoc manual without .css file?
+          # We may try some heuristics as below, but false alarms are annoying.
+          #if IsExistingFile( Concatenation( pkgtmp, "/", dname, "/", a, "/manual.css" ) ) then 
+          #  if not ( IsExistingFile( Concatenation( pkgtmp, "/", dname, "/", a, "/manual.xml" ) ) or
+          #           IsExistingFile( Concatenation( pkgtmp, "/", dname, "/", a, "/", a, ".xml" ) ) or
+          #           IsExistingFile( Concatenation( pkgtmp, "/", dname, "/", a, "/", b.BookName, ".xml" ) ) or
+          #           IsExistingFile( Concatenation( pkgtmp, "/", dname, "/", a, "/", pkg, ".xml" ) ) ) then
+          #    Print("WARNING: package ", info.PackageName, ", book ", b.BookName, "\n",
+          #          " probably has a GAPDoc-based manual with missing .css file\n",
+          #          "Check the content of the directory ", dname, "/", a, " below:\n" );
+          #      Exec( Concatenation( "cd ", pkgtmp, "/", dname, "/", a , " ; ls *.xml *.css" ) );
+          #  fi;    
+          #fi;
         od;
-        Print(Concatenation("cd ", pkgtmp, "; rm -rf ", dname,"\n"));
-        Exec(Concatenation("cd ", pkgtmp, "; rm -rf ", dname));
-        Exec(Concatenation("touch ", pkgtmp, "/../docversion", compactname,
-                                                                    pkgarch));
-        Add(res, [nam, b.BookName]);
+        Add(res, [nam, b.BookName]);                           
       elif IsBound(b.Archive) then
+        # Use the separate archive with the package documentation
         url := b.Archive;
         fname := Basename(url);
         # check if it is already in the local collection
@@ -867,13 +1545,13 @@ UpdatePackageDoc := function(pkgdir, pkgdocdir)
           Print("  doc archive ", b.BookName, " is up-to-date.\n");
           continue;
         else
-          Print("  updating help book ", b.BookName, 
-                " from separate archive.\n");
+          Print("  updating help book ", b.BookName, " from separate archive.\n");
         fi;
          
         # ok, so we have to get the archive
         Add(res, [nam, b.BookName]);
-        Exec(Concatenation("rm -rf ", pkgtmp, "; mkdir -p ", pkgtmp));
+        pkgtmp := DirectoryTemporary();
+        pkgtmp := Filename(pkgtmp,"");
         Exec(Concatenation("cd ", pkgtmp, ";wget --timeout=60 --tries=1 ", 
              url, " 2>> wgetlog"));
         fmt := url{[Length(url)-3..Length(url)]};
@@ -884,30 +1562,27 @@ UpdatePackageDoc := function(pkgdir, pkgdocdir)
         fi;
         Print("  unpacking new documentation ", fname, "\n");
         if fmt = ".zoo" then
-          Exec(Concatenation("cd ", pkgtmp, ";unzoo -x ", fname, 
-               " > /dev/null 2>&1"));
+          Exec(Concatenation("cd ", pkgtmp, ";unzoo -x ", fname, " > /dev/null 2>&1"));
         elif fmt = "r.gz" then
-          Exec(Concatenation("cd ", pkgtmp, ";gzip -dc ", fname, 
-               " |tar xpf - "));
+          Exec(Concatenation("cd ", pkgtmp, ";gzip -dc ", fname, " |tar xpf - "));
         elif fmt = ".bz2" then
-          Exec(Concatenation("cd ", pkgtmp, ";bzip2 -dc ", fname, 
-               " |tar xpf - "));
+          Exec(Concatenation("cd ", pkgtmp, ";bzip2 -dc ", fname, " |tar xpf - "));
         elif fmt = ".zip" then
           Exec(Concatenation("cd ", pkgtmp, ";unzip -a ", fname));
         else
           Error("(", info.PackageName, "): no recognized archive format: ", fmt);
         fi;
-        # here we must assume that package directory is lower case of
-        # package name
+        # we assume that package directory is lower case of package name
         dname := nam;
-      else
+        # move to web dir and to archives
+        Exec(Concatenation("cd ", pkgtmp, "; rm -f wgetlog ; ",
+                           "mkdir -p ", pkgdocdir, "/", dname, 
+                           "; cp -fr * ", pkgdocdir, "/", dname,  
+                           "; cp -fr * ..; rm -rf *"));
+        else
         dname := nam;
         Print("   WARNING (", info.PackageName, "): No package documentation specified!\n");
       fi;
-      # move to web dir and to archives
-      Exec(Concatenation("cd ", pkgtmp, "; rm -f wgetlog ; ",
-        "mkdir -p ", pkgdocdir, "/", dname, 
-        "; cp -fr * ", pkgdocdir, "/", dname,  "; cp -fr * ..; rm -rf *"));
     od;
   od;
   return res;
@@ -1138,7 +1813,7 @@ AddHTMLPackageInfo := function(arg)
   Append(res, Concatenation("[<a href='{{GAPManualLink}}pkg/", 
           nam, "/README.", nam, 
           "'>README</a>]&nbsp;&nbsp;&nbsp;&nbsp;",bnam));
-  for ext in [ ".tar.gz",  "-win.zip", ".tar.bz2"] do # retired ".zoo",
+  for ext in [ ".tar.gz", ".tar.bz2", "-win.zip", ".zip" ] do # retired ".zoo",
     fn := Concatenation(webdir, "/ftpdir/", ext{[2..Length(ext)]}, 
           "/packages/", bnam, ext);
     s := StringSizeFilename(fn);
@@ -1221,7 +1896,7 @@ end;
 # It also creates the short info pages for each package, like ace.mixer, ...
 # these files are written in <webdir>/Packages.
 # The current archive files must be in <webdir>/ftpdir/<fmt>   with <fmt> in
-# zoo, tar.gz, tar.bz2, win.zip
+# tar.gz, tar.bz2, win.zip and zip.
 WritePackageWebPageInfos := function(webdir, pkgconffile)
   local mergedarchivelinks, templ, treelines, pi, fl, fn, manualslinks, 
     suggestupgradeslines, nam, lnam, pkgmix, mixfile, linkentry, ss, s, 
@@ -1282,6 +1957,7 @@ WritePackageWebPageInfos := function(webdir, pkgconffile)
   AppendTo(pkgconffile, "PKG_mergedarchivelinks = r'''", 
           esc(mergedarchivelinks), "'''\n\n");
   
+  Print("Enumerating packages ...\n");
   # write the <pkgname>.mixer files and fill the package.mixer entries and
   # the 'tree' file and manual overview lines and SuggestUpgrade args
   manualslinks := rec();
@@ -1307,7 +1983,8 @@ WritePackageWebPageInfos := function(webdir, pkgconffile)
     FileString(Concatenation(webdir, "/Packages/", mixfile, ".mixer"), pkgmix);
     linkentry := Concatenation("<a href=\"{{pkgmixerpath}}", 
                  mixfile, ".html\">",
-                 nam, "</a>&nbsp;&nbsp; by ");
+                 nam, "</a>&nbsp;&nbsp;", 
+                 pi.(a).Version, " (", pi.(a).Date, ") by ");
     # list entry in overview
     ss := [];
     if not IsBound(pi.(a).Persons) then
@@ -1330,6 +2007,7 @@ WritePackageWebPageInfos := function(webdir, pkgconffile)
     suggestupgradeslines.(lnam) := pi.(a).SuggestUpgradesEntry;
   od;
   
+  Print("Updating the package tree ...\n");
   # for tree file, all packages sorted alphabetically by name
   tree := "";
   Sort(treelines);
@@ -1337,6 +2015,7 @@ WritePackageWebPageInfos := function(webdir, pkgconffile)
     Append(tree, a[2]);
   od;
 
+  Print("Preparing the manuals overview ...\n");
   # now the manuals overview
   names := ShallowCopy(NamesOfComponents(manualslinks));
   Sort(names);
@@ -1348,6 +2027,7 @@ WritePackageWebPageInfos := function(webdir, pkgconffile)
   AppendTo(pkgconffile, "PKG_AllManualLinks = r'''", esc(str), "'''\n\n");
   
   # info for SuggestUpgrades
+  Print("Preparing information for SuggestUpgrades ...\n");
   names := ShallowCopy(NamesOfComponents(suggestupgradeslines));
   Sort(names);
   lines := [ "[ \"GAPKernel\", \"<mixer var='GAPKernelVersion'/>\" ], ",
@@ -1411,17 +2091,98 @@ UpdateAllPackages := function(pkgdir)
     "\n\nNew documentation: ", newdoc, "\n\n");
 end;
 
-# adding a package
-AddPackage := function(pkgdir, pkgname, pkginfourl)
-  local nam;
+
+###########################################################################
+#
+# This functions adds new packages for the redistribution, checks that the 
+# stored URLs of PackageInfo.g files coincide with the given ones, and 
+# migrates packages to new PackageInfo.g URLs, when the "MOVE" option is 
+# used. Its arguments are:
+# pkgdir - environment variable PkgCacheDir
+# pkgreposdir - environment variable PkgReposDir
+# urlsfile - name of the file with PackageInfo.g URLs
+#
+AddPackages := function(pkgdir, pkgreposdir, urlsfile )
+local input, line, pkgname, pkginfourl, inmove, nam, info;
+input:=InputTextFile( urlsfile);
+
+while true do
+
+  inmove:=false;
+  line := ReadLine(input);
+  if line = fail then
+    return;
+  fi;  
+  line:=NormalizedWhitespace(line);
+  if Length(line) = 0 or line[1]='#' then
+    continue;
+  fi;  
+
+  line:=SplitString( line, " " );
+  if Length(line) = 2 then
+    pkgname := line[1];
+    pkginfourl := line[2];
+    if pkginfourl{[1..7]} <> "http://" then
+      Print("Error: misformatted line\n", line, "\n");
+      continue;
+    fi;
+  elif Length(line) = 3 then
+    pkgname := line[1];
+    pkginfourl := line[3];
+    if pkginfourl{[1..7]} <> "http://" then
+      Print("Error: misformatted line\n", line, "\n");
+      continue;
+    fi;  
+    if line[2]="MOVE" then   
+      inmove:=true;
+    else  
+      Print("Error: misformatted line\n", line, "\n");
+      continue;
+    fi;
+  else
+    Print("Error: misformatted line\n", line, "\n");
+    continue;
+  fi;    
+  
   nam := LowercaseString(NormalizedWhitespace(pkgname));
+  
+  # create the repository to store package releases, if it does not exist
+  
+  if not IsExistingFile( Concatenation( pkgreposdir, "/", nam ) ) then
+    Exec( Concatenation( "mkdir -p ", pkgreposdir, "/", nam) );
+    Exec( Concatenation( "cd ", pkgreposdir, "/", nam, " ; ",
+                         "hg init") );
+    Print("Package ", pkgname, " added for redistribution\n");      
+  fi;
+  
+  if IsExistingFile( Concatenation( pkgdir, "/", nam, "/PackageInfo.g" ) ) then
+    ClearPACKAGE_INFOS();
+    READPackageInfo( Concatenation( pkgdir, "/", nam, "/PackageInfo.g" ) );
+    info := PACKAGE_INFOS.(nam);
+    if info.PackageInfoURL = pkginfourl then
+      # stored URL coincides with the given in the argument - do nothing
+      continue;
+    else
+      # stored URL differs from the argument - print warning
+      Print("*** Package ", pkgname, " - different PackageInfo.g URL:\n",
+            "  Our   : ", pkginfourl, "\n",
+            "  Stored: ", info.PackageInfoURL, "\n" );
+      if not inmove then      
+        continue;
+      fi;  
+    fi; 
+  fi;
+  
+  # if a new package is added, or package is moved to a new URL, create 
+  # a template for PackageInfo.g with only three components: .PackageName, 
+  # .PackageInfoURL and .Status
   Exec(Concatenation("mkdir -p ", pkgdir, "/", nam));
-  PrintTo(Concatenation(pkgdir, "/", nam, "/PackageInfo.g"), 
-    Concatenation("SetPackageInfo( rec( \n PackageName := \"", nam,  
-                  "\",\nPackageInfoURL := \"", pkginfourl, "\",\n",
-                  "Status := \"unknown\"  ) );\n"));
+  PrintTo( Concatenation(pkgdir, "/", nam, "/PackageInfo.g"), 
+           Concatenation("SetPackageInfo( rec( \n PackageName := \"", nam,  
+                         "\",\nPackageInfoURL := \"", pkginfourl, "\",\n",
+                         "Status := \"unknown\"  ) );\n"));
+  Print("Set URL of PackageInfo.g for package ", pkgname, " to\n       ", 
+        pkginfourl, "\n");    
+od;
 end;
-
-
-
 

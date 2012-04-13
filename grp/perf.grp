@@ -3,14 +3,11 @@
 #W  perf.grp              GAP Groups Library                 Alexander Hulpke
 ##                                                             Volkmar Felsch
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the access functions for the Holt/Plesken library
 ##
-Revision.perf_grp :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

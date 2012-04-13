@@ -2,7 +2,6 @@
 **
 *W  objfgelm.h                  GAP source                       Frank Celler
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,11 +10,6 @@
 
 #ifndef GAP_OBJFGELM_H
 #define GAP_OBJFGELM_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_objfgelm_h =
-   "@(#)$Id$";
-#endif
 
 
 /****************************************************************************

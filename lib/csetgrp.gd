@@ -2,7 +2,6 @@
 ##
 #W  csetgrp.gd                      GAP library              Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the declarations of operations for cosets.
 ##
-Revision.csetgrp_gd:=
-  "@(#)$Id$";
 
 #############################################################################
 ##
@@ -223,8 +220,9 @@ DeclareOperation("DoubleCoset",[IsGroup,IsObject,IsGroup]);
 ##  <Example><![CDATA[
 ##  gap> dc:=DoubleCosets(g,u,v);
 ##  [ DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(),Group( [ (3,4) ] )), 
-##    DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(1,3)(2,4),Group( [ (3,4) ] )), 
-##    DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(1,4)(2,3),Group( [ (3,4) ] )) ]
+##    DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(1,3)(2,4),Group( 
+##      [ (3,4) ] )), DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(1,4)
+##      (2,3),Group( [ (3,4) ] )) ]
 ##  gap> List(dc,Representative);
 ##  [ (), (1,3)(2,4), (1,4)(2,3) ]
 ##  ]]></Example>

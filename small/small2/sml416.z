@@ -3,8 +3,6 @@
 #W  sml416.z               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml416_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 416 ] :=
 [ 1034406837404031699873803, 226495913477855300352,

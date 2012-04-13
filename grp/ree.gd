@@ -2,12 +2,9 @@
 #
 #W  ree.gd                        GAP library                Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  (C) 2001 School Math. Sci., University of St Andrews, Scotland
 ##
-Revision.ree_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

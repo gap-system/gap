@@ -2,7 +2,6 @@
 **
 *W  intrprtr.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,6 @@
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_intrprtr_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -54,9 +51,7 @@ const char * Revision_intrprtr_c =
 #include        "funcs.h"               /* functions                       */
 #include        "read.h"
 
-#define INCLUDE_DECLARATION_PART
 #include        "intrprtr.h"            /* interpreter                     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "saveload.h"            /* saving and loading              */
 
@@ -1922,7 +1917,7 @@ void            IntrFloatExpr (
     if ( IntrIgnoring  > 0 ) { return; }
     if ( IntrCoding    > 0 ) {  CodeFloatExpr( str );   return; }
 
-    len = SyStrlen(str)+1;
+    len = strlen(str)+1;
     val = NEW_STRING(len-1);
     memcpy(CHARS_STRING(val), (void *) str, len);
     PushObj(ConvertFloatLiteralEager(val));
@@ -4526,8 +4521,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoIntrprtr ( void )
 {
-    module.revision_c = Revision_intrprtr_c;
-    module.revision_h = Revision_intrprtr_h;
     FillInVersion( &module );
     return &module;
 }

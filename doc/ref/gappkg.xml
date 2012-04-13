@@ -5,7 +5,8 @@
 <!-- %% -->
 <!-- %H  @(#)<M>Id: gappkg.msk,v 1.18 2004/01/26 10:09:20 gap Exp </M> -->
 <!-- %% -->
-<P/>
+
+
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Chapter Label="GAP Packages">
 <Heading>GAP Packages</Heading>
@@ -49,7 +50,7 @@ or install new packages between upgrades of your &GAP; installation.
 <P/>
 A package consists of a collection  of files within a single directory
 that must  be a subdirectory of  the <F>pkg</F>  directory   in one  of the
-&GAP; root directories, see <Ref Sect="GAP Root Directory"/>. (If you don't
+&GAP; root directories, see <Ref Sect="GAP Root Directories"/>. (If you don't
 have access  to the <F>pkg</F>  directory in your main  &GAP; installation
 you can add private root directories as explained in that section.)
 <P/>
@@ -165,6 +166,8 @@ users.
 </Subsection>
 
 <#Include Label="ValidatePackageInfo">
+<#Include Label="ShowPackageVariables">
+<#Include Label="BibEntry">
 
 </Section>
 

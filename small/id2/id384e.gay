@@ -2,8 +2,6 @@
 ##
 #W  id384e.gay             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id384e_gay :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[384].next[137].next[1].next[25]:=
 rec(

@@ -4,7 +4,6 @@
 #W                                                         & Martin Schönert
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,6 @@
 ##  5. methods for identity mappings
 ##  6. methods for zero mappings
 ##
-Revision.mapprep_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -460,11 +457,11 @@ InstallMethod( ViewObj,
     true,
     [ IsCompositionMappingRep ], 100,
     function( com )
-    Print( "CompositionMapping( " );
+    Print( "CompositionMapping( ", BHINT );
     View( com!.map2 );
-    Print( ", " );
+    Print( ",", BHINT, " " );
     View( com!.map1 );
-    Print( " )" );
+    Print( " )", BHINT );
     end );
 
 InstallMethod( PrintObj,

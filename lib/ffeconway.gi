@@ -2,15 +2,12 @@
 ##
 #W  ffeconway.gi               GAP library                       Steve Linton
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2005 The GAP Group
 ##
 ##  This file contains methods for `FFE's represented as library objects by
 ##  coefficients of polynomials modulo the Conway polynomial.
 ##
-Revision.ffeconway_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

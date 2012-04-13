@@ -2,7 +2,6 @@
 **
 *W  read.c                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 #include        <string.h>              /* memcpy */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_read_c =
-   "@(#)$Id$";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -38,9 +35,7 @@ const char * Revision_read_c =
 
 #include        "intrprtr.h"            /* interpreter                     */
 
-#define INCLUDE_DECLARATION_PART
 #include        "read.h"                /* reader                          */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "bool.h"
 
@@ -277,7 +272,7 @@ void ReadCallVarAss (
     while ( type == ' ' && nest < CountNams ) {
         nams = ELM_LIST( StackNams, CountNams-nest );
         for ( indx = LEN_LIST( nams ); 1 <= indx; indx-- ) {
-            if ( SyStrcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+            if ( strcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
                 if ( nest == 0 ) {
                     type = 'l';
                     var = indx;
@@ -315,7 +310,7 @@ void ReadCallVarAss (
 		indx = 1023;
 	      }
 	    for ( ; 1 <= indx; indx-- ) {
-	      if ( SyStrcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+	      if ( strcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
 		type = 'd';
 		
 		/* Ultrix 4.2 cc get's confused if the UInt is missing     */
@@ -687,7 +682,7 @@ void ReadPerm (
 
 static UInt appendToString(Obj string, UInt len)
 {
-       UInt len1 = SyStrlen(Value);
+       UInt len1 = strlen(Value);
        GROW_STRING(string, len+len1+1);
        memcpy(CHARS_STRING(string) + len, (void *)Value, len1+1);
        SET_LEN_STRING(string, len+len1);
@@ -703,7 +698,7 @@ void ReadLongNumber(
      UInt done;
 
      /* string in which to accumulate number */
-     len = SyStrlen(Value);
+     len = strlen(Value);
      string = NEW_STRING(len);
      memcpy(CHARS_STRING(string), (void *)Value, len+1);
      done = 0;
@@ -1115,8 +1110,8 @@ void ReadFuncExpr (
     CountNams += 1;
     ASS_LIST( StackNams, CountNams, nams );
     if ( Symbol != S_RPAREN ) {
-        name = NEW_STRING( SyStrlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+        name = NEW_STRING( strlen(Value) );
+        SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
         narg += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1124,12 +1119,12 @@ void ReadFuncExpr (
     while ( Symbol == S_COMMA ) {
         Match( S_COMMA, ",", follow );
         for ( i = 1; i <= narg; i++ ) {
-            if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+            if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
                 SyntaxError("name used for two arguments");
             }
         }
-        name = NEW_STRING( SyStrlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+        name = NEW_STRING( strlen(Value) );
+        SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
         narg += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1138,12 +1133,12 @@ void ReadFuncExpr (
     if ( Symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
         for ( i = 1; i <= narg; i++ ) {
-            if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+            if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
                 SyntaxError("name used for argument and local");
             }
         }
-        name = NEW_STRING( SyStrlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+        name = NEW_STRING( strlen(Value) );
+        SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1152,17 +1147,17 @@ void ReadFuncExpr (
             Value[0] = '\0';
             Match( S_COMMA, ",", follow );
             for ( i = 1; i <= narg; i++ ) {
-                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
                     SyntaxError("name used for argument and local");
                 }
             }
             for ( i = narg+1; i <= narg+nloc; i++ ) {
-                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( SyStrlen(Value) );
-            SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+            name = NEW_STRING( strlen(Value) );
+            SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
             nloc += 1;
             ASS_LIST( nams, narg+nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1171,7 +1166,7 @@ void ReadFuncExpr (
     }
 
     /* 'function( arg )' takes a variable number of arguments              */
-    if ( narg == 1 && ! SyStrcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
+    if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
         narg = -1;
 
     /* remember the current variables in case of an error                  */
@@ -1228,8 +1223,8 @@ void ReadFuncExpr1 (
     SET_LEN_PLIST( nams, 0 );
     CountNams++;
     ASS_LIST( StackNams, CountNams, nams );
-    name = NEW_STRING( SyStrlen(Value) );
-    SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+    name = NEW_STRING( strlen(Value) );
+    SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
     ASS_LIST( nams, 1, name );
 
     /* match away the '->'                                                 */
@@ -2383,8 +2378,8 @@ UInt ReadEvalFile ( void )
     ASS_LIST( StackNams, CountNams, nams );
     if ( Symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
-        name = NEW_STRING( SyStrlen(Value) );
-        SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+        name = NEW_STRING( strlen(Value) );
+        SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
         nloc += 1;
         ASS_LIST( nams, nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2392,12 +2387,12 @@ UInt ReadEvalFile ( void )
             Value[0] = '\0';
             Match( S_COMMA, ",", 0L );
             for ( i = 1; i <= nloc; i++ ) {
-                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( SyStrlen(Value) );
-            SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+            name = NEW_STRING( strlen(Value) );
+            SyStrncat( CSTR_STRING(name), Value, strlen(Value) );
             nloc += 1;
             ASS_LIST( nams, nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2654,8 +2649,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRead ( void )
 {
-    module.revision_c = Revision_read_c;
-    module.revision_h = Revision_read_h;
     FillInVersion( &module );
     return &module;
 }

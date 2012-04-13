@@ -2,7 +2,6 @@
 ##
 #W  zmodnz.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -26,8 +25,6 @@
 ##  internal finite field elements must be respected, for larger primes
 ##  again the ordering of representatives is chosen.
 ##
-Revision.zmodnz_gi :=
-    "@(#)$Id$";
 
 #T for small residue class rings, avoid constructing new objects by
 #T keeping an elements list, and change the constructor such that the
@@ -820,6 +817,15 @@ InstallMethod( Size,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
     RankFilter( IsRing ),
     R -> ElementsFamily( FamilyObj( R ) )!.modulus );
+
+
+#############################################################################
+##
+#M  IsIntegralRing( <obj> )  . . . . . . . . . .  method for subrings of Z/nZ
+##
+InstallImmediateMethod( IsIntegralRing,
+    IsZmodnZObjNonprimeCollection and IsRing, 0,
+    ReturnFalse );
 
 
 #############################################################################

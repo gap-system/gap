@@ -2,7 +2,6 @@
 ##
 #W  cyclotom.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 ##
 ##  This file contains methods for cyclotomics.
 ##
-Revision.cyclotom_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -1741,7 +1738,7 @@ InstallOtherMethod( RationalizedMat,
 InstallMethod( IsGeneratorsOfMagmaWithInverses,
     "for a collection of cyclotomics (return false)",
     [ IsCyclotomicCollection ],
-    SUM_FLAGS, # override evrything else
+    SUM_FLAGS, # override everything else
     function( gens )
     Info( InfoWarning, 1,
           "no groups of cyclotomics allowed because of incompatible ^" );
@@ -1961,6 +1958,97 @@ InstallGlobalFunction( DenominatorCyc, function( cyc )
       return Lcm( List( COEFFS_CYC( cyc ), DenominatorRat ) );
     fi;
     end );
+
+
+#############################################################################
+
+
+#
+# The following code is meant to allow comparisons between some select
+# cyclotomics domains. So you can do things like
+#   Integers = GaussianRationals;
+#   IsSubset(Rationals, PositiveIntegers);
+# without GAP running into an error. However, this code currently only
+# works for a small fixed set of domains. It will not, for example, work
+# with cyclotomic field extensions, or manually defined rings over the
+# integers such as ClosureRing(1, E(3)).
+# It would be nice if we eventually, were able to compare and intersect
+# such objects, too.
+#
+
+# The following are three lists of equal length. At position i of the first
+# list is a certain known cyclotomic (semi)ring. At position i of the second
+# list is the corresponding filter. At position i of the third list is a
+# finite list which can act as a "proxy" for the corresponding semiring when
+# it comes to comparing it for inclusion resp. computing intersections with
+# any of the other semirings.
+# To simplify the code using these lists, the final entry of each list is
+# fail, resp. the trivial filter IsObject.
+BindGlobal("CompareCyclotomicCollectionHelper_Semirings", [
+	PositiveIntegers, NonnegativeIntegers,
+	Integers, GaussianIntegers,
+	Rationals, GaussianRationals,
+	Cyclotomics, fail
+] );
+
+BindGlobal("CompareCyclotomicCollectionHelper_Filters", [
+	IsPositiveIntegers, IsNonnegativeIntegers,
+	IsIntegers, IsGaussianIntegers,
+	IsRationals, IsGaussianRationals,
+	IsWholeFamily, IsObject
+] );
+
+BindGlobal("CompareCyclotomicCollectionHelper_Proxies", [
+	[ 1 ], [ 0, 1 ],
+	[ -1, 0, 1 ], [ -1, 0, 1, E(4) ],
+	[ -1, 0, 1/2, 1 ], [ -1, 0, 1, 1/2, E(4) ],
+	[ -1, 0, 1, 1/2, E(4), E(9) ], fail
+] );
+
+
+BindGlobal("CompareCyclotomicCollectionHelper", function (A, B)
+  local a, b;
+  a := PositionProperty( CompareCyclotomicCollectionHelper_Filters, p -> p(A) );
+  b := PositionProperty( CompareCyclotomicCollectionHelper_Filters, p -> p(B) );
+  return CompareCyclotomicCollectionHelper_Proxies{[a,b]};
+end );
+
+
+InstallMethod( \=, "for certain cyclotomic semirings",
+             [IsCyclotomicCollection and IsSemiringWithOne,
+              IsCyclotomicCollection and IsSemiringWithOne],
+function (A,B)
+  local ab;
+  ab := CompareCyclotomicCollectionHelper(A, B);
+  # It suffices if we "recognize" at least on of A and B; but if we
+  # recognize neither, we give up.
+  if ab = [fail,fail] then TryNextMethod(); fi;
+  return ab[1] = ab[2];
+end );
+
+InstallMethod( IsSubset, "for certain cyclotomic semirings",
+             [IsCyclotomicCollection and IsSemiringWithOne,
+              IsCyclotomicCollection and IsSemiringWithOne],
+function (A,B)
+  local ab;
+  ab := CompareCyclotomicCollectionHelper(A, B);
+  # Verify that we recognized both A and B, otherwise give up.
+  if fail in ab then TryNextMethod(); fi;
+  return IsSubset(ab[1], ab[2]);
+end );
+
+
+InstallMethod( Intersection2, "for certain cyclotomic semirings",
+             [IsCyclotomicCollection and IsSemiringWithOne,
+              IsCyclotomicCollection and IsSemiringWithOne],
+function (A,B)
+  local ab, i;
+  ab := CompareCyclotomicCollectionHelper(A, B);
+  # Verify that we recognized both A and B, otherwise give up.
+  if fail in ab then TryNextMethod(); fi;
+  i := Position( CompareCyclotomicCollectionHelper_Proxies, Intersection2( ab[1], ab[2] ) );
+  return CompareCyclotomicCollectionHelper_Semirings[i];
+end );
 
 
 #############################################################################

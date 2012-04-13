@@ -2,7 +2,6 @@
 ##
 #W  module.gi                   GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains generic methods for modules.
 ##
-Revision.module_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -189,16 +186,7 @@ InstallMethod( SetGeneratorsOfLeftModule,
 ##
 #M  Characteristic( <M> ) . . . . . . . . . . characteristic of a left module
 ##
-InstallMethod( Characteristic,
-    "for a left module with known left acting domain",
-    [ IsLeftModule and HasLeftActingDomain ],
-    function( M )
-    if IsIdenticalObj( M, LeftActingDomain( M ) ) then
-      TryNextMethod();
-    else
-      return Characteristic( LeftActingDomain( M ) );
-    fi;
-    end );
+##  Do we have and/or need a replacement method?
 
 
 #############################################################################

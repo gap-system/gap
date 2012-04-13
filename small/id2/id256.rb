@@ -2,8 +2,6 @@
 ##
 #W  id256.rb               GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256_rb :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[256].next[18].next[2]:=
 rec(

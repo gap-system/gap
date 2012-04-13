@@ -2,7 +2,6 @@
 **
 *W  code.h                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,11 +15,6 @@
 
 #ifndef GAP_CODE_H
 #define GAP_CODE_H
-
-#ifdef INCLUDE_DECLARATION_PART
-const char * Revision_code_h =
-   "@(#)$Id$";
-#endif
 
 
 /****************************************************************************
@@ -167,7 +161,7 @@ extern  Stat *          PtrBody;
 
 #define T_EMPTY                 (FIRST_STAT_TNUM+78)
 
-#define T_PROCCALL_OPTS        (FIRST_STAT_TNUM+ 79)
+#define T_PROCCALL_OPTS         (FIRST_STAT_TNUM+ 79)
 
 #define LAST_STAT_TNUM          T_PROCCALL_OPTS
 
@@ -362,8 +356,8 @@ extern  Stat *          PtrBody;
 #define T_ISB_COMOBJ_EXPR       (FIRST_EXPR_TNUM+80)
 
 #define T_FUNCCALL_OPTS         (FIRST_EXPR_TNUM+81)
-#define T_FLOAT_EXPR_EAGER         (FIRST_EXPR_TNUM+82)
-#define T_FLOAT_EXPR_LAZY         (FIRST_EXPR_TNUM+83)
+#define T_FLOAT_EXPR_EAGER      (FIRST_EXPR_TNUM+82)
+#define T_FLOAT_EXPR_LAZY       (FIRST_EXPR_TNUM+83)
 
 #define LAST_EXPR_TNUM          T_FLOAT_EXPR_LAZY
 

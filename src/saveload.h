@@ -2,7 +2,6 @@
 **
 *W  saveload.h                  GAP source                   Steve Linton
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,11 +14,6 @@
 
 #ifndef GAP_SAVELOAD_H
 #define GAP_SAVELOAD_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_saveload_h =
-   "@(#)$Id$";
-#endif
 
 /***************************************************************************
 **

@@ -1,6 +1,5 @@
 #############################################################################
 #
-# $Id$
 #
 # patternstextbinary.txt
 #
@@ -20,14 +19,13 @@ Tsrc/*
 # *** TEXT FILES ***
 #
 T*CHANGES*
-T*configure*
 TCOPYING
-Tgap.shi
 Tgap.ini
 TGPL
 TINSTALL
 TLICENSE
 T*README*
+TTODO
 TVERSION
 #
 # extensions pointing out that the file is text, in alphabetical order
@@ -45,8 +43,6 @@ T*.h
 T*.htm
 T*.html
 T*.msk
-T*.sh
-T*.six
 T*.tex
 T*.tom
 T*.tst
@@ -55,6 +51,7 @@ T*.xml
 #
 # *** BINARY FILES ***
 #
+B*configure*
 B*Makefile*
 Bcnf/*
 #
@@ -73,6 +70,9 @@ B*.m4
 B*.pif
 B*.pdf
 B*.ps
+B*.sh
+B*.shi
+B*.six
 B*.tar
 B*.tgz
 B*.zip

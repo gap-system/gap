@@ -2,8 +2,6 @@
 ##
 #W  id256.cot              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256_cot :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[256].next[93].next[20]:=
 rec(

@@ -2,7 +2,6 @@
 ##
 #W  tietze.gd                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
 ##
-Revision.tietze_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -951,7 +948,7 @@ DeclareGlobalFunction("TzEliminateGens");
 ##  a power <M>a^n</M>, and a product of the form <M>a^s b^t</M>
 ##  with <M>s</M> prime to <M>n</M>.
 ##  For each such pair, <Ref Func="TzFindCyclicJoins"/> uses the
-##  Euclidian algorithm to express <M>a</M> as a power of <M>b</M>,
+##  Euclidean algorithm to express <M>a</M> as a power of <M>b</M>,
 ##  and then it eliminates <M>a</M>.
 ##  </Description>
 ##  </ManSection>

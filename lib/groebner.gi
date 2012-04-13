@@ -3,14 +3,11 @@
 #W  groebner.gi                   GAP Library               Alexander Hulpke   
 #W                                                              David Joyner   
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementations for monomial orderings and Groebner
 ##  bases.
-Revision.groebner_gi :=
-    "@(#)$Id$";
 
 # convenience function to catch cases
 BindGlobal("GBasisFixOrderingArgument",function(a)
@@ -1188,6 +1185,12 @@ local basis_elt,p,t,F,vars,vars2,GB,coeff_t;
     fi;
   od;
   return One(F);
+end);
+
+InstallOtherMethod(LcmOp,"multivariate Lcm based on Groebner bases",
+  IsCollsElmsElms,[IsPolynomialRing,IsPolynomial,IsPolynomial],0,
+function(R,f,g)
+  return f*g/GcdOp(R,f,g);
 end);
 
 BindGlobal("NaiveBuchberger",function(elms,order)

@@ -2,7 +2,6 @@
 ##  
 #W  helpbase.gi                 GAP Library                      Frank Lübeck
 ##  
-#H  @(#)$Id$
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ## The files helpbase.g{d,i} contain the interface between GAP's online help
 ## and the actual help books.
 ##  
-Revision.helpbase_gi := 
-  "@(#)$Id$";
 
 #############################################################################
 ##  
@@ -565,7 +562,7 @@ InstallGlobalFunction(HELP_PRINT_MATCH, function(match)
   local book, entrynr, viewer, hv, pos, type, data;
   book := HELP_BOOK_INFO(match[1]);
   entrynr := match[2];
-  viewer:= GAPInfo.UserPreferences.HelpViewers;
+  viewer:= UserPreference("HelpViewers");
   if HELP_LAST.NEXT_VIEWER = false then
     hv := viewer;
   else

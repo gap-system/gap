@@ -3,7 +3,6 @@
 #W  addgphom.gi                 GAP library                      Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -11,8 +10,6 @@
 ##  This file contains declarations for mappings between groups and additive
 ##  groups.
 ##
-Revision.addgphom_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

@@ -1,11 +1,10 @@
 #!/bin/sh
 #############################################################################
 #
-#  $Id$
 #
 # Where to put the temporary export tree and archives. The path 
 # "/mnt/raid/hudson-slave/..." is used by Jenkins continuous build system.
-export DISTROOT=/mnt/raid/hudson-slave/workspace/GAP-source-distro/wrap/gap45beta
+export DISTROOT=/mnt/raid/hudson-slave/workspace/GAP-next-release/wrap/gap45
 
 # the cvs repository (login once, before using these scripts) 
 export CVSROOT=":pserver:visitor@cvs.gap-system.org:/gap/CVS"
@@ -16,23 +15,17 @@ export CVSROOT=":pserver:visitor@cvs.gap-system.org:/gap/CVS"
 # - to get the state used for the previous release (e.g. to merge with the
 #   new packages archive, use e.g. "-r GAP4R5P1" 
 export GAPCVSVERSION="-D now"
-# export GAPCVSVERSION="-r GAP4R5P1"
-
-# OLD COMMENT: for the release first tag all files when the status of a 
-# OLD COMMENT: release candidate is reached, say:
-# OLD COMMENT:     cvs tag -b -D now GAP4r4
-# OLD COMMENT: (the -b flag created a CVS branch such that (bugfix) changes 
-# OLD COMMENT: can be applied independently of the changes in the main branch.)
+# export GAPCVSVERSION="-r GAP4R5P2"
 
 # version to wrap
 export VERSION="5"
-export FULLVERSION="$VERSION.2(beta)"
+export FULLVERSION="$VERSION.3(beta)"
 
 # directory name
 export DISTNAME="gap4r$VERSION"
 
 # archive name
-export RBVERSION="4r5p2"
+export RBVERSION="4r5p3"
 export ARCHNAME="gap$RBVERSION"
 
 # location of the merged packages archive (assumed to be on the same machine)

@@ -3,7 +3,6 @@
 *W  tietze.c                    GAP source                       Frank Celler
 *W                                                           & Volkmar Felsch
 **
-*H  @(#)$Id$
 **
 *Y  Copyright 1990-1992,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 #include        "code.h"
 #include        "stats.h"               /* for TakeInterrupt */
 
-const char * Revision_tietze_c = 
-  "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -35,9 +32,7 @@ const char * Revision_tietze_c =
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "tietze.h"              /* tietze helper functions         */
-#undef  INCLUDE_DECLARATION_PART
 
 
 /****************************************************************************
@@ -109,7 +104,7 @@ void CheckTietzeInverses (
     Obj *               ptTietze,
     Obj *               invs,
     Obj * *             ptInvs,
-    Int *              numgens )
+    Int *               numgens )
 {
     /* get and check the Tietze inverses list                              */
     *invs    = ptTietze[TZ_INVERSES];
@@ -205,7 +200,7 @@ Obj FuncTzSortC (
 {
     Obj *               ptTietze;       /* pointer to the Tietze stack     */
     Obj                 rels;           /* relators list                   */
-    Obj *               ptRels  ;       /* pointer to this list            */
+    Obj *               ptRels;         /* pointer to this list            */
     Obj                 lens;           /* lengths list                    */
     Obj *               ptLens;         /* pointer to this list            */
     Obj                 flags;          /* handle of the flags list        */
@@ -1782,8 +1777,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoTietze ( void )
 {
-    module.revision_c = Revision_tietze_c;
-    module.revision_h = Revision_tietze_h;
     FillInVersion( &module );
     return &module;
 }

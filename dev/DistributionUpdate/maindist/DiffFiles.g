@@ -2,7 +2,6 @@
 ##  
 ##  DiffFiles.g                                              (C) Frank Lübeck
 ##  
-##      $Id$
 ##  
 ##  This file contains utilities for checking directory trees, finding
 ##  differences, creating an archive with differences, reading file names of

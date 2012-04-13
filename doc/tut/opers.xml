@@ -61,12 +61,12 @@ are called <E>operations</E>,
 so <Ref Func="Size" BookName="ref"/> is an example of an operation.
 <P/>
 <Example><![CDATA[
-gap> G := Group( (1,2,3,4,5,6,7,8), (1,2) );;
-gap> Size( G ); time > 0;   # the time may of course vary on your machine
-40320
+gap> G := Group(List([1..3], i-> Random(SymmetricGroup(53))));;
+gap> Size( G ); time > 0; # the time may of course vary on your machine
+4274883284060025564298013753389399649690343788366813724672000000000000
 true
 gap> Size( G ); time;
-40320
+4274883284060025564298013753389399649690343788366813724672000000000000
 0
 ]]></Example>
 <P/>
@@ -378,6 +378,8 @@ gap> Size( g );
 #I  Size: for a permutation group
 #I  immediate: IsNonTrivial
 #I  immediate: Size
+#I  immediate: IsFreeAbelian
+#I  immediate: IsTorsionFree
 #I  immediate: IsNonTrivial
 #I  immediate: GeneralizedPcgs
 #I  Setter(Size): system setter

@@ -601,13 +601,13 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
-READLINEPREFIX
-NOREADLINE
 GMP_VER
+USE_GMP
 MAKE_GMP
 GMP_LIBS
 GMP_CFLAGS
 m4_PRESENT
+GAPARCH
 CONFIGNAME
 gapdir
 SET_MAKE
@@ -637,6 +637,7 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+COPTS
 target_alias
 host_alias
 build_alias
@@ -1331,7 +1332,8 @@ Some influential environment variables:
               not deselect it) in 32- or 64-bit mode. The default value for
               this option is determined by testing the behaviour of your
               compiler, so should be 32 on a 32-bit system and 64 on one which
-              is 64-bit.
+              is 64-bit. On ARM processors, leave this unset (the build system
+              will set it to "standard" for GMP).
   CONFIGNAME  Supply a (meaningful) name for the configuration you are
               building. This name will be appended to the
               architecture-dependent named sub-directory of bin/. Allows for
@@ -2096,9 +2098,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-if test "x$CFLAGS" = "x" ;  then
-  CFLAGS=${COPTS}
-fi
+#if test "x$CFLAGS" = "x" ;  then
+#  CFLAGS=${COPTS}
+#fi
+
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -4083,47 +4086,54 @@ fi
 $as_echo "$CONFIGNAME" >&6; }
 
 
+GAPARCH=$target-$BASECC-${CONFIGNAME}
+
 
 
 # Check whether --with-gmp was given.
 if test "${with_gmp+set}" = set; then :
-  withval=$with_gmp;  if test "$withval" = "yes" ; then
-      GMP_HOME="`pwd`/bin/$target-$BASECC-${CONFIGNAME}/extern/gmp"
-      GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
-      GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
-      MAKE_GMP="gmp"
-      GMP_VER="5.0.2"
-    elif test "$withval" = "5.0.1" ; then
-      GMP_HOME="`pwd`/bin/$target-$BASECC-${CONFIGNAME}/extern/gmp"
-      GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
-      GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
-      MAKE_GMP="gmp"
-      GMP_VER="5.0.1"
-    elif test "$withval" = "system" ; then
-      GMP_CFLAGS="-DUSE_GMP -m${ABI}"
-      GMP_LIBS="-lgmp"
-      MAKE_GMP=""
-    elif test "$withval" != "no" ; then
-      GMP_HOME="$withval"
-      GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
-      GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
-      MAKE_GMP=""
-    else
-      GMP_CFLAGS=""
-      GMP_LIBS=""
-      MAKE_GMP=""
-    fi
-
+  withval=$with_gmp;
 else
-   GMP_HOME="`pwd`/bin/$target-$BASECC-${CONFIGNAME}/extern/gmp"
-   GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
-   GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
-   MAKE_GMP="gmp"
-   GMP_VER="5.0.2"
-
+   with_gmp=yes
 
 fi
 
+
+USE_GMP=yes
+case "$with_gmp" in
+  no)
+    GMP_CFLAGS=""
+    GMP_LIBS=""
+    MAKE_GMP=""
+    USE_GMP=no
+    ;;
+  yes | 5.0.2 | 5.0.4)
+    if test "$with_gmp" = "yes" ; then
+      with_gmp="5.0.4"
+    fi;
+    GMP_HOME="`pwd`/bin/$GAPARCH/extern/gmp"
+    GMP_CFLAGS="-I${GMP_HOME}/include"
+    GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
+    MAKE_GMP="gmp"
+    GMP_VER="$with_gmp"
+    ;;
+  system)
+    GMP_CFLAGS="-m${ABI}"
+    GMP_LIBS="-lgmp"
+    MAKE_GMP=""
+    ;;
+  *)
+    # user specified directory
+    GMP_HOME="$with_gmp"
+	if test -d ${GMP_HOME}/include && test -f ${GMP_HOME}/lib/libgmp.a ; then
+      GMP_CFLAGS="-I${GMP_HOME}/include"
+      GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
+    else
+      as_fn_error $? "Could not locate GMP in the specified location" "$LINENO" 5
+    fi;
+    MAKE_GMP=""
+    ;;
+esac
 
 if test "$MAKE_GMP" = "gmp" ; then
   if ! test $ac_cv_sizeof_void_p = 4; then
@@ -4177,25 +4187,23 @@ fi
     as_fn_error $? "You have requested that GAP be built with GMP but this
                    requires m4, which has not been detected on your system.
                    Please install m4 or build without GMP." "$LINENO" 5
- fi
+  fi
+  case "$target" in
+    arm*)
+      ABI="standard"
+      ABI_CFLAGS=""
+      ;;
+  esac
 fi
 
+# Enabling/disabling readline is handled by the "inner" configure
+# script in cnf/, so we do nothing here (the command line flag
+# is automatically passed on to the "inner" configure script anyway.
 
 # Check whether --with-readline was given.
 if test "${with_readline+set}" = set; then :
-  withval=$with_readline;  if test "$withval" = "no"; then
-     NOREADLINE="-DNO_READLINE"
-     READLINEPREFIX=""
-   elif test "$withval" = "yes"; then
-     NOREADLINE=""
-     READLINEPREFIX=""
-   else
-     NOREADLINE=""
-     READLINEPREFIX=$withval
-   fi
-
+  withval=$with_readline;
 fi
-
 
 
 

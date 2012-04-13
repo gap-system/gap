@@ -50,7 +50,8 @@ in <C>s8</C>, or as its derived subgroup.
 <P/>
 <Example><![CDATA[
 gap> a8 := DerivedSubgroup( s8 );
-Group([ (1,2,3), (2,3,4), (2,4)(3,5), (2,6,4), (2,4)(5,7), (2,8,6,4)(3,5) ])
+Group([ (1,2,3), (2,3,4), (2,4)(3,5), (2,6,4), (2,4)(5,7), 
+  (2,8,6,4)(3,5) ])
 gap> Size( a8 ); IsAbelian( a8 ); IsPerfect( a8 );
 20160
 false
@@ -68,11 +69,11 @@ as a function of <E>two</E> arguments, and hence one could not attribute it
 to just one of them.
 (Of course the function <Ref Func="CommutatorSubgroup" BookName="ref"/> can
 compute the commutator  subgroup  of <E>two</E> arbitrary  subgroups.)  The
-situation is  a bit  different for  Sylow  <A>p</A>-subgroups: The function
+situation is  a bit  different for  Sylow  <M>p</M>-subgroups: The function
 <Ref Func="SylowSubgroup" BookName="ref"/> also  requires  two arguments,
 namely a   group and a
-prime <A>p</A>, but the result is  stored in the  group --- namely together
-with the prime  <A>p</A> in a  list that can be accessed with
+prime <M>p</M>, but the result is  stored in the  group &ndash;namely together
+with the prime  <M>p</M> in a  list that can be accessed with
 <C>ComputedSylowSubgroups</C>, but we
 won't dwell on the details here.
 <P/>
@@ -144,11 +145,12 @@ whose image is the factor group.
 <Example><![CDATA[
 gap> hom := NaturalHomomorphismByNormalSubgroup( norm, elab );
 [ (2,3)(6,7), (3,4)(7,8), (3,5)(4,6), (5,7)(6,8), (5,6)(7,8), 
-  (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,6)(2,5)(3,8)(4,7) ] -> 
-[ (1,2)(5,6), (2,3)(6,7), (2,4)(3,5), (4,6)(5,7), (4,5)(6,7), (), (), () ]
+  (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,6)(2,5)(3,8)(4,7) 
+ ] -> [ (1,2)(5,6), (2,3)(6,7), (2,4)(3,5), (4,6)(5,7), (4,5)(6,7), 
+  (), (), () ]
 gap> f := Image( hom );
-Group([ (1,2)(5,6), (2,3)(6,7), (2,4)(3,5), (4,6)(5,7), (4,5)(6,7), (), (), 
-  () ])
+Group([ (1,2)(5,6), (2,3)(6,7), (2,4)(3,5), (4,6)(5,7), (4,5)(6,7), 
+  (), (), () ])
 gap> Size( f );
 168
 ]]></Example>
@@ -168,7 +170,8 @@ none at all.
 <P/>
 <Example><![CDATA[
 gap> ker:= Kernel( hom );
-Group([ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,5)(2,6)(3,7)(4,8) ])
+Group([ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), 
+  (1,5)(2,6)(3,7)(4,8) ])
 gap> x := (1,8,3,5,7,6,2);; Image( hom, x );
 (1,7,5,6,2,3,4)
 gap> coset := PreImages( hom, last );
@@ -198,8 +201,8 @@ names are of course not available for non-simple groups.)
 gap> IsSimple( f ); IsomorphismTypeInfoFiniteSimpleGroup( f );
 true
 rec( 
-  name := "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,7) = U(2\
-,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L" )
+  name := "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,\
+7) = U(2,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L" )
 gap> SetName( f, "L_3(2)" );
 ]]></Example>
 <P/>
@@ -271,10 +274,9 @@ gap> ccl := ConjugacyClasses( a8 );; Length( ccl );
 14
 gap> List( ccl, c -> Order( Representative( c ) ) );
 [ 1, 2, 2, 3, 6, 3, 4, 4, 5, 15, 15, 6, 7, 7 ]
-gap> SizeScreen([ 82, ]);;
 gap> List( ccl, Size );
-[ 1, 210, 105, 112, 1680, 1120, 2520, 1260, 1344, 1344, 1344, 3360, 2880, 2880 ]
-gap> SizeScreen([ 80, ]);;
+[ 1, 210, 105, 112, 1680, 1120, 2520, 1260, 1344, 1344, 1344, 3360, 
+  2880, 2880 ]
 ]]></Example>
 <P/>
 Note the difference between <Ref Func="Order" BookName="ref"/>
@@ -305,15 +307,15 @@ In this example,
 we  have specified the action function <Ref Func="OnPoints" BookName="ref"/>
 in this example,
 which is defined as
-<C>OnPoints( <A>d</A>, <A>g</A> ) = <A>d</A> ^ <A>g</A></C>.
+<C>OnPoints( </C><M>d</M><C>, </C><M>g</M><C> ) = </C><M>d</M><C> ^ </C><M>g</M>.
 This <Q>caret</Q>  operator denotes conjugation in  a group if  both
-arguments <A>d</A> and  <A>g</A> are group elements  (contained in a common
+arguments <M>d</M> and  <M>g</M> are group elements  (contained in a common
 group), but it also  denotes the natural  action  of permutations on
 positive integers (and exponentiation of integers as well, of course).
 It is in fact the default action and will be supplied by the system if not
 given. Another common action is for example
 always assumes <Ref Func="OnRight" BookName="ref"/>, which means right
-multiplication, defined as <C><A>d</A> * <A>g</A></C>.
+multiplication, defined as <M>d</M><C> * </C><M>g</M>.
 (Group actions in &GAP; are always from the right.)
 <P/>
 We now have a permutation representation <C>op</C> on 112 points, which we
@@ -388,10 +390,11 @@ gap> nophom := ActionHomomorphism( a8, AsList(class) );
 gap> IsSurjective(nophom);
 false
 gap> Image(nophom,(1,2,3));
-(2,43,14)(3,44,20)(4,45,26)(5,46,32)(6,47,38)(8,13,48)(9,19,53)(10,25,58)(11,
-31,63)(12,37,68)(15,49,73)(16,50,74)(17,51,75)(18,52,76)(21,54,77)(22,55,
-78)(23,56,79)(24,57,80)(27,59,81)(28,60,82)(29,61,83)(30,62,84)(33,64,85)(34,
-65,86)(35,66,87)(36,67,88)(39,69,89)(40,70,90)(41,71,91)(42,72,92)
+(2,43,14)(3,44,20)(4,45,26)(5,46,32)(6,47,38)(8,13,48)(9,19,53)(10,25,
+58)(11,31,63)(12,37,68)(15,49,73)(16,50,74)(17,51,75)(18,52,76)(21,54,
+77)(22,55,78)(23,56,79)(24,57,80)(27,59,81)(28,60,82)(29,61,83)(30,62,
+84)(33,64,85)(34,65,86)(35,66,87)(36,67,88)(39,69,89)(40,70,90)(41,71,
+91)(42,72,92)
 ]]></Example>
 <P/>
 In this situation, however (for performance reasons, avoiding computation
@@ -403,9 +406,9 @@ The <C>Image</C> of the action homomorphism of course is the same group in
 either case.
 <Example><![CDATA[
 gap> Size(Range(nophom));
-197450685722107402353682037275992488341277868034975337796656295094902858969771\
-811440894224355027779366597957338237853638272334919686385621811850780464277094\
-400000000000000000000000000
+1974506857221074023536820372759924883412778680349753377966562950949028\
+5896977181144089422435502777936659795733823785363827233491968638562181\
+1850780464277094400000000000000000000000000
 gap> Size(Range(ophom));
 20160
 gap> nophom := ActionHomomorphism( a8, AsList(class),"surjective" );
@@ -450,16 +453,17 @@ gap> RepresentativeAction( a8, sgp, preim );
 <Index>canonical position</Index>
 
 One of the most prominent actions of a group is on the cosets of a subgroup.
-Na{\"\i}vely this can be done by constructing the cosets and acting on them
+Naïvely this can be done by constructing the cosets and acting on them
 by right multiplication.
 <Example><![CDATA[
 gap> cosets:=RightCosets(a8,norm);;
 gap> op:=Action(a8,cosets,OnRight);
 Group([ (1,2,3)(4,6,5)(7,8,9)(10,12,11)(13,14,15), 
-  (1,3,2)(4,9,13)(5,11,7)(6,15,10)(8,12,14), (1,13)(2,7)(3,10)(4,11)(5,15)(6,
-    9), (1,8,13)(2,7,12)(3,9,5)(4,14,11)(6,10,15), 
-  (2,3)(4,14)(5,7)(8,13)(9,12)(10,15), (1,8)(2,3,11,6)(4,12,10,15)(5,7,14,9) 
- ])
+  (1,3,2)(4,9,13)(5,11,7)(6,15,10)(8,12,14), 
+  (1,13)(2,7)(3,10)(4,11)(5,15)(6,9), 
+  (1,8,13)(2,7,12)(3,9,5)(4,14,11)(6,10,15), 
+  (2,3)(4,14)(5,7)(8,13)(9,12)(10,15), 
+  (1,8)(2,3,11,6)(4,12,10,15)(5,7,14,9) ])
 gap> NrMovedPoints(op);
 15
 ]]></Example>
@@ -511,7 +515,7 @@ a list,
 <Ref Func="PositionCanonical" BookName="ref"/> returns the same as
 <C>Position</C>. If the element is not contained in the list (and for
 special lists, such as transversals), <C>PositionCanonical</C> returns the
-list element representng the same objects, e.g. the transversal element
+list element representing the same objects, e.g. the transversal element
 representing the same coset.
 <Example><![CDATA[
 gap> PositionCanonical(t,(1,2,3));
@@ -530,10 +534,11 @@ most efficient way of creating this action.
 <Example><![CDATA[
 gap> Action(a8,RightTransversal(a8,norm),OnRight);
 Group([ (1,2,3)(4,6,5)(7,8,9)(10,12,11)(13,14,15), 
-  (1,3,2)(4,9,13)(5,11,7)(6,15,10)(8,12,14), (1,13)(2,7)(3,10)(4,11)(5,15)(6,
-    9), (1,8,13)(2,7,12)(3,9,5)(4,14,11)(6,10,15), 
-  (2,3)(4,14)(5,7)(8,13)(9,12)(10,15), (1,8)(2,3,11,6)(4,12,10,15)(5,7,14,9) 
- ])
+  (1,3,2)(4,9,13)(5,11,7)(6,15,10)(8,12,14), 
+  (1,13)(2,7)(3,10)(4,11)(5,15)(6,9), 
+  (1,8,13)(2,7,12)(3,9,5)(4,14,11)(6,10,15), 
+  (2,3)(4,14)(5,7)(8,13)(9,12)(10,15), 
+  (1,8)(2,3,11,6)(4,12,10,15)(5,7,14,9) ])
 ]]></Example>
 <P/>
 
@@ -580,9 +585,11 @@ gap> pairs := Tuples( [1..8], 2 );;
 <P/>
 Now we would like to have <C>a8</C> operate on this  domain.
 But we cannot use the default action <Ref Func="OnPoints" BookName="ref"/>
-because <C><A>list</A> ^ <A>perm</A></C> is not
-defined. So we  must tell the functions  from the actions package  how
-the group elements operate on the elements of  the domain. In our example
+because powering a list by a permutation via the caret operator <C>^</C>
+is not defined. So we must tell the functions from the actions package how
+the group elements operate on the elements of  the domain
+(here and below, the word <Q>package</Q> refers to the &GAP; functionality 
+for group actions, not to a &GAP; package). In our example
 we can do this by simply passing <Ref Func="OnPairs" BookName="ref"/>
 as an optional last argument.
 All functions from the actions package accept such an optional argument
@@ -730,7 +737,8 @@ gap> Index( a8, u336 );
 Other  functions  are also applicable  to  subgroups. In the following we
 show that  <C>u336</C> acts regularly on the  60&nbsp;triples of
 <C>[ 4 .. 8 ]</C> which
-contain no element twice. We  constuct the list  of these 60&nbsp;triples with
+contain no element twice.
+We construct the list of these 60&nbsp;triples with
 the function <Ref Func="Orbit" BookName="ref"/>
 (using <Ref Func="OnTuples" BookName="ref"/>  as the natural generalization
 of <Ref Func="OnPairs" BookName="ref"/>)
@@ -810,10 +818,10 @@ gap> u105 := Stabilizer( a8, (1,2)(3,4)(5,6)(7,8) );; Index( a8, u105 );
 105
 ]]></Example>
 <P/>
-Note that although the length of a conjugacy class of any element <A>elm</A>
-in any finite group <A>G</A> can be computed as
-<C>OrbitLength( <A>G</A>, <A>elm</A> )</C>,
-the command <C>Size( ConjugacyClass( <A>G</A>, <A>elm</A> ) )</C>
+Note that although the length of a conjugacy class of any element <M>g</M>
+in any finite group <M>G</M> can be computed as
+<C>OrbitLength( </C><M>G</M><C>, </C><M>g</M><C> )</C>,
+the command <C>Size( ConjugacyClass( </C><M>G</M><C>, </C><M>g</M><C> ) )</C>
 is probably more efficient.
 <P/>
 <Example><![CDATA[
@@ -877,8 +885,8 @@ fail
 ]]></Example>
 <P/>
 <Ref Func="RepresentativeAction" BookName="ref"/> tells us that there is no
-element <A>g</A> in <C>a8</C>
-such that <C>u15 ^ <A>g</A> = u15b</C>.
+element <M>g</M> in <C>a8</C>
+such that <C>u15 ^ </C><M>g</M><C> = u15b</C>.
 Because <C>^</C> also denotes the conjugation of subgroups
 this tells us that <C>u15</C> and <C>u15b</C> are not conjugate.
 <P/>
@@ -1120,9 +1128,10 @@ Section&nbsp;<Ref Sect="Conjugacy Classes" BookName="ref"/>).
 <Example><![CDATA[
 gap> pcls := ConjugacyClasses( p );; gcls := [  ];;
 gap> for pc  in pcls  do
->      gc:=ConjugacyClass(grp,PreImagesRepresentative(hom,Representative(pc)));
+>      gc:=ConjugacyClass(grp,
+>                   PreImagesRepresentative(hom,Representative(pc)));
 >      SetStabilizerOfExternalSet(gc,PreImage(hom,
->                                 StabilizerOfExternalSet(pc)));
+>                                      StabilizerOfExternalSet(pc)));
 >      Add( gcls, gc );
 >    od;
 gap> List( gcls, Size );
@@ -1172,7 +1181,7 @@ gap> aut := AutomorphismGroup( p );; NiceMonomorphism(aut);;
 gap> niceaut := NiceObject( aut );
 Group([ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ])
 gap> IsomorphismGroups( niceaut, SymmetricGroup( 4 ) );
-[ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ] ->
+[ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ] -> 
 [ (1,2,3,4), (1,2,3), (1,3)(2,4), (1,4)(2,3) ]
 ]]></Example>
 <P/>

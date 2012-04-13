@@ -44,11 +44,11 @@ generators by their names, you first have to introduce the respective
 variables and to assign the generators to them.
 <P/>
 <Example><![CDATA[
+gap> Unbind(a);
 gap> GeneratorsOfGroup( g );
 [ a, b ]
 gap> a;
 Error, Variable: 'a' must have a value
-
 gap> a := g.1;; b := g.2;; # assign variables
 gap> GeneratorsOfGroup( g );
 [ a, b ]
@@ -271,10 +271,11 @@ gap> g := f / [ f.1^2, f.2^3, (f.1*f.2)^5 ];
 gap> h := IsomorphismPermGroup( g );
 [ a, b ] -> [ (1,2)(4,5), (2,3,4) ]
 gap> u:=Subgroup(g,[g.1*g.2]);;rt:=RightTransversal(g,u);
-RightTransversal(<fp group of size 60 on the generators [ a, b ]>,Group(
-[ a*b ]))
+RightTransversal(<fp group of size 60 on the generators 
+[ a, b ]>,Group([ a*b ]))
 gap> Image(ActionHomomorphism(g,rt,OnRight));
-Group([ (1,2)(3,4)(5,7)(6,8)(9,10)(11,12), (1,3,2)(4,5,6)(7,8,9)(10,11,12) ])
+Group([ (1,2)(3,4)(5,7)(6,8)(9,10)(11,12), 
+  (1,3,2)(4,5,6)(7,8,9)(10,11,12) ])
 ]]></Example>
 
 
@@ -321,7 +322,6 @@ which is based on the <Package>XGAP</Package> package.
 
 <ManSection>
 <Func Name="FactorCosetAction" Arg='G, H' Label="for fp groups"/>
-<Func Name="FactorCosetOperation" Arg='G, H' Label="for fp groups"/>
 
 <Description>
 returns the action of <A>G</A> on the cosets of its subgroup <A>H</A>.
@@ -374,7 +374,7 @@ standard the <E>semilenlex</E> standard as it would also work in the case of
 semigroups where no inverses of the generators are known.
 <P/>
 We have changed the convention from the semilenlex standard to the lenlex
-standard because the definiton of a standard coset table in Sims' book tends
+standard because the definition of a standard coset table in Sims' book tends
 to become a kind of international standard. However, for reasons of upward
 compatibility &GAP; still offers the possibility to switch back to the old
 convention by just changing the value of the global variable
@@ -477,8 +477,8 @@ behave like ordinary words and no extra treatment should be necessary.
 gap> r:=Range(hom).1^10;
 F1^10
 gap> p:=PreImagesRepresentative(hom,r);
-<[ [ 1, 10 ] ]|f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^
--1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1>
+<[ [ 1, 10 ] ]|f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^
+-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1>
 ]]></Example>
 
 If desired, it also is possible to convert these underlying words using
@@ -486,11 +486,11 @@ If desired, it also is possible to convert these underlying words using
 
 <Example><![CDATA[
 gap> r:=EvalStraightLineProgElm(UnderlyingElement(p));
-f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^
--1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1
+f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^
+-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1
 gap> p:=ElementOfFpGroup(FamilyObj(p),r);
-f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^
--1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1
+f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^
+-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1
 ]]></Example>
 <P/>
 (If you are only interested in a finitely presented group isomorphic to
@@ -606,7 +606,7 @@ this subgroup. Since the subgroup is cyclic, its size can be checked easily
 from the resulting presentation, the size of the whole group is the product
 of the index and the subgroup size.  Since however no bound for the index of
 such a subgroup (if any exist) is known, such a test might continue
-unsuccesfully until memory is exhausted.
+unsuccessfully until memory is exhausted.
 <P/>
 On the other hand, a couple of methods exist, that might prove that a group
 is infinite. Again, none is guaranteed to work in every case:

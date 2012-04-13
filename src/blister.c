@@ -3,7 +3,6 @@
 *W  blister.c                   GAP source                       Frank Celler
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -72,8 +71,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_blister_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -95,9 +92,7 @@ const char * Revision_blister_c =
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
 #include        "set.h"                 /* plain sets                      */
-#define INCLUDE_DECLARATION_PART
 #include        "blister.h"             /* boolean lists                   */
-#undef  INCLUDE_DECLARATION_PART
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
 
@@ -2787,8 +2782,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoBlist ( void )
 {
-    module.revision_c = Revision_blister_c;
-    module.revision_h = Revision_blister_h;
     FillInVersion( &module );
     return &module;
 }

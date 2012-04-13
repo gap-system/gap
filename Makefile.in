@@ -2,7 +2,6 @@
 ##
 #W  Makefile                    GAP source                       Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -59,6 +58,7 @@ TARGET=@target@
 GMP_CFLAGS=@GMP_CFLAGS@
 GMP_LIBS=@GMP_LIBS@
 MAKE_GMP=@MAKE_GMP@
+USE_GMP=@USE_GMP@
 ifndef GMP_VER
  GMP_VER=@GMP_VER@
 endif
@@ -67,11 +67,11 @@ ifndef ABI
 endif
 ABI_CFLAGS=@ABI_CFLAGS@
 export CFLAGS+=@ABI_CFLAGS@ @CFLAGS@
-export NOREADLINE=@NOREADLINE@
-export READLINEPREFIX=@READLINEPREFIX@
+export COPTS=@COPTS@
 ifndef CONFIGNAME
  CONFIGNAME=@CONFIGNAME@
 endif
+GAPARCH=@GAPARCH@
 
 TESTGAP = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 512m -A -N -q -x 80 -r
 TESTGAPauto = ./bin/gap-$(CONFIGNAME).sh -b -m 100m -o 512m -N -q -x 80 -r
@@ -88,31 +88,31 @@ setconfig:
 	  echo "There is no config with name: "$(CONFIGNAME); \
 	fi;
 
-config: bin/@target@-@BASECC@-$(CONFIGNAME)/configure  bin/@target@-@BASECC@-$(CONFIGNAME)/Makefile bin/@target@-@BASECC@-$(CONFIGNAME)/extern/Makefile 
+config: bin/$(GAPARCH)/configure  bin/$(GAPARCH)/Makefile bin/$(GAPARCH)/extern/Makefile 
 
-bin/@target@-@BASECC@-$(CONFIGNAME)/configure: cnf/configure.out 
-	mkdir -p bin/@target@-@BASECC@-$(CONFIGNAME)
-	@rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/configure
-	cp cnf/configure.out bin/@target@-@BASECC@-$(CONFIGNAME)/configure
+bin/$(GAPARCH)/configure: cnf/configure.out 
+	mkdir -p bin/$(GAPARCH)
+	@rm -f bin/$(GAPARCH)/configure
+	cp cnf/configure.out bin/$(GAPARCH)/configure
 
-bin/@target@-@BASECC@-$(CONFIGNAME)/Makefile bin/@target@-@BASECC@-$(CONFIGNAME)/extern/Makefile : bin/@target@-@BASECC@-$(CONFIGNAME)/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
-	mkdir -p bin/@target@-@BASECC@-$(CONFIGNAME)/extern
-	( cd bin/@target@-@BASECC@-$(CONFIGNAME) ; CC='$(CC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' NOREADLINE='$(NOREADLINE)' READLINEPREFIX='$(READLINEPREFIX)' CONFIGNAME='$(CONFIGNAME)' ./configure --target=@target@ @gp_configure_options@ )
+bin/$(GAPARCH)/Makefile bin/$(GAPARCH)/extern/Makefile : bin/$(GAPARCH)/configure cnf/config.hin cnf/gac.in extern/Makefile.in cnf/Makegap.in
+	mkdir -p bin/$(GAPARCH)/extern
+	( cd bin/$(GAPARCH) ; CC='$(CC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' GMP_CFLAGS='$(GMP_CFLAGS)' CONFIGNAME='$(CONFIGNAME)' USE_GMP='$(USE_GMP)' GAPARCH='$(GAPARCH)' ./configure --target=@target@ @gp_configure_options@ )
 
 extern: config
-	( cd bin/@target@-@BASECC@-$(CONFIGNAME)/extern ; $(MAKE) TARGET='$(TARGET)' BASECC='$(BASECC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' CC='$(CC)' GMP_VER='$(GMP_VER)' MAKE_GMP='$(MAKE_GMP)' CONFIGNAME='$(CONFIGNAME)' )
+	( cd bin/$(GAPARCH)/extern ; $(MAKE) TARGET='$(TARGET)' BASECC='$(BASECC)' ABI='$(ABI)' ABI_CFLAGS='$(ABI_CFLAGS)' CC='$(CC)' GMP_VER='$(GMP_VER)' MAKE_GMP='$(MAKE_GMP)' CONFIGNAME='$(CONFIGNAME)' )
 
 compile: extern
-	( cd bin/@target@-@BASECC@-$(CONFIGNAME); $(MAKE) ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' READLINEPREFIX='$(READLINEPREFIX)'  NOREADLINE='$(NOREADLINE)' CONFIGNAME='$(CONFIGNAME)' )
+	( cd bin/$(GAPARCH); $(MAKE) ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' CONFIGNAME='$(CONFIGNAME)' )
 	chmod +x bin/gap-$(CONFIGNAME).sh
 
 static: extern
-	( cd bin/@target@-@BASECC@-$(CONFIGNAME) ; $(MAKE) static CC='$(CC)' ABI='$(ABI)' )
-	chmod +x bin/gap.sh
-	( cd bin/@target@-@BASECC@-$(CONFIGNAME) ; strip gap@EXEEXT@)
+	( cd bin/$(GAPARCH) ; $(MAKE) static CC='$(CC)' ABI='$(ABI)' )
+	chmod +x bin/gap-$(CONFIGNAME).sh
+	( cd bin/$(GAPARCH) ; strip gap@EXEEXT@)
 
 strip: compile
-	if ! grep darwin sysinfo.gap ; then ( cd bin/@target@-@BASECC@-$(CONFIGNAME); strip gap@EXEEXT@) ; fi
+	if ! grep darwin sysinfo.gap ; then ( cd bin/$(GAPARCH); strip gap@EXEEXT@) ; fi
 
 removewin: strip
 	( rm -f bin/*.exe bin/*.dll bin/*.bat bin/*.pif "bin/GAP 4 PPC")
@@ -128,18 +128,18 @@ endif
 clean: clean_$(CLEANME)
 
 clean_$(CLEANME): clean_gap_$(CLEANME) clean_gmp_$(CLEANME)
-	rm -rf bin/@target@-@BASECC@-$(CONFIGNAME)
+	rm -rf bin/$(GAPARCH)
 
 
 clean_gap: clean_gap_$(CLEANME)
 
 clean_gap_$(CLEANME): rebuild
-	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/*.o
-	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/Makefile
-	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/config*
-	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/gac
-	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/gap
-	rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/sysinfo*
+	rm -f bin/$(GAPARCH)/*.o
+	rm -f bin/$(GAPARCH)/Makefile
+	rm -f bin/$(GAPARCH)/config*
+	rm -f bin/$(GAPARCH)/gac
+	rm -f bin/$(GAPARCH)/gap
+	rm -f bin/$(GAPARCH)/sysinfo*
 	rm -f bin/gap-$(CONFIGNAME).sh
 	rm -f sysinfo.gap-$(CONFIGNAME)
 	(if ! test -h sysinfo.gap -a -e sysinfo.gap; then \
@@ -157,10 +157,10 @@ clean_gap_$(CLEANME): rebuild
 clean_gmp: clean_gmp_$(CLEANME)
 
 clean_gmp_$(CLEANME):
-	if test -d bin/@target@-@BASECC@-$(CONFIGNAME)/extern/gmp-$(GMP_VER); then \
-	 rm -rf bin/@target@-@BASECC@-$(CONFIGNAME)/extern/gmp-$(GMP_VER); fi
-	if test -h bin/@target@-@BASECC@-$(CONFIGNAME)/extern/gmp; then \
-	 rm -f bin/@target@-@BASECC@-$(CONFIGNAME)/extern/gmp; fi
+	if test -d bin/$(GAPARCH)/extern/gmp-$(GMP_VER); then \
+	 rm -rf bin/$(GAPARCH)/extern/gmp-$(GMP_VER); fi
+	if test -h bin/$(GAPARCH)/extern/gmp; then \
+	 rm -f bin/$(GAPARCH)/extern/gmp; fi
 	if test -d extern/gmp-$(GMP_VER); then \
 	 (cd extern/gmp-$(GMP_VER); rm -f LASTBUILD.*; \
 	  if test -r Makefile; then make distclean; fi ); fi
@@ -183,10 +183,12 @@ manuals:
 
 testinstall:
 	mkdir -p dev/log
-	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); \
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) > \
             `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
-	( echo 'ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) > \
             `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
 
@@ -195,9 +197,11 @@ teststandard:
 	( echo 'ShowSystemInformation(); RunStandardTests( [' > test.tmp; \
           grep -h "STOP_TEST" tst/*.tst | sed -e 's/^gap> STOP_TEST(/[/;s/);/],/' >> test.tmp; \
           echo '] ); ' >> test.tmp )
-	( echo 'ReadGapRoot( "tst/testutil.g" ); Read( "test.tmp" );' | $(TESTGAP) > \
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); Read( "test.tmp" );' | $(TESTGAP) > \
             `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
-	( echo 'ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); Read( "test.tmp" );' | $(TESTGAP) > \
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); Read( "test.tmp" );' | $(TESTGAP) > \
             `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
 	( rm test.tmp )
 
@@ -222,12 +226,28 @@ testpackages:
 	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
             SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
 	( echo 'CreatePackageTestsInput( "testpackages.in", \
-            [ "dev/log/testpackages1", "dev/log/testpackages2" ], \
-            "$(TESTGAP) -L wsp.g" );'\
+            "dev/log/testpackages1", \
+            "$(TESTGAP) -L wsp.g", "false" );'\
             | $(TESTGAP) -L wsp.g > /dev/null )
 	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
 	( rm wsp.g )
-
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAPauto) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackagesA", \
+            "$(TESTGAPauto) -L wsp.g", "auto" );'\
+            | $(TESTGAPauto) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+	( echo 'SetAssertionLevel( 2 ); ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageTestsInput( "testpackages.in", \
+            "dev/log/testpackages2", \
+            "$(TESTGAP) -L wsp.g", "true" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackages.in; ./testpackages.in; rm testpackages.in )
+	( rm wsp.g )
+	
 testpackagesload:
 	mkdir -p dev/log
 	( echo 'ReadGapRoot( "tst/testutil.g" ); \
@@ -267,7 +287,80 @@ testpackagesload:
             `date -u +dev/log/testpackagesloadNA_%Y-%m-%d-%H-%M`; rm testpackagesload.in )
 	( rm wsp.g )
 
+testpackagesvars:
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) )
+	( echo 'CreatePackageVarsTestsInput( "testpackagesvars.in", \
+            "dev/log/testpackagesvars", \
+            "$(TESTGAP) -L wsp.g" );'\
+            | $(TESTGAP) -L wsp.g > /dev/null )
+	( chmod 777 testpackagesvars.in; ./testpackagesvars.in > \
+            `date -u +dev/log/testpackagesvars_%Y-%m-%d-%H-%M`; rm testpackagesvars.in )
+	( rm wsp.g )
+	
+testmanuals1:
+	(cd doc/ref; ../../bin/gap.sh -r extractexamples.g runexamples.g)
+	(cd doc/tut; ../../bin/gap.sh -r extractexamples.g runexamples.g)
+
 testmanuals:
+	mkdir -p dev/log
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=(`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (NO PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=(`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (NO PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanuals1_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAPauto);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=(`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (DEFAULT PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAPauto);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=(`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (DEFAULT PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanualsA_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+	((cd doc/tut ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  LoadAllPackages() ; \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=(`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  if [ $$ff != "0" ] ; then cat doc/tut/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN TUTORIAL EXAMPLES (ALL PACKAGES)"; fi ; \
+	  echo '============================================================';\
+	  cd doc/ref ; \
+	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  LoadAllPackages() ; \
+	  Read("extractexamples.g"); Read("runexamples.g"); ' | ../../$(TESTGAP);\
+	  echo '============================================================';\
+	  cd ../.. ; ff=(`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`); \
+	  if [ $$ff != "0" ] ; then cat doc/ref/EXAMPLEDIFFS*; \
+	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (ALL PACKAGES)"; fi ) \
+	  > `date -u +dev/log/testmanuals2_%Y-%m-%d-%H-%M` 2>&1 )
+	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
+			
+	
+testmanualsold:
 	mkdir -p dev/log
 	mkdir -p doc/test/tut
 	mkdir -p doc/test/ref
@@ -301,35 +394,27 @@ testmanuals:
 	( rm doc/test/wsp.g )
 
 cygwin:	extern
-	( cd bin/@target@-@BASECC@-$(CONFIGNAME) ; $(MAKE) gapdll ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' READLINEPREFIX='$(READLINEPREFIX)'  NOREADLINE='$(NOREADLINE)'  )
-	cp bin/@target@-@BASECC@-$(CONFIGNAME)/gapw95.exe bin
-	cp bin/@target@-@BASECC@-$(CONFIGNAME)/gap.dll bin
+	( cd bin/$(GAPARCH) ; $(MAKE) gapdll ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' CONFIGNAME='$(CONFIGNAME)' )
+	chmod +x bin/gap-$(CONFIGNAME).sh
+	chmod +x bin/*.bat
+	cp bin/$(GAPARCH)/gapw95.exe bin
+	cp bin/$(GAPARCH)/gap.dll bin
 	cp /bin/cygncurses-10.dll /bin/cygncursesw-10.dll \
 	   /bin/cygpanel-10.dll /bin/cygwin1.dll \
 	   /bin/libW11.dll /usr/bin/rxvt.exe /usr/bin/regtool.exe \
 	   /bin/cygreadline7.dll /bin/cyggcc_s-1.dll /bin/cygpopt-0.dll \
 	   /bin/cygstart.exe /bin/mintty.exe bin
-	rm -rf terminfo
-	mkdir terminfo 
-	mkdir terminfo/c 
-	mkdir terminfo/r
-	mkdir terminfo/x
-	mkdir terminfo/63
-	mkdir terminfo/72
-	mkdir terminfo/78
-	cp /usr/share/terminfo/c/cygwin terminfo/c
-	cp /usr/share/terminfo/r/rxvt terminfo/r
-	cp /usr/share/terminfo/x/xterm terminfo/x
-	cp /usr/share/terminfo/63/cygwin terminfo/63
-	cp /usr/share/terminfo/72/rxvt terminfo/72
-	cp /usr/share/terminfo/78/xterm terminfo/78
-
+	chmod +x cnf/instcygwinterminfo.sh
+	cnf/instcygwinterminfo.sh
+	( if which peflags ; then peflags --cygwin-heap=2048 bin/gapw95.exe ; fi )
+	
 winbinp:
 	( tar cfz ../winbin.tgz bin/*.dll bin/*.exe \
-          bin/@target@-@BASECC@-$(CONFIGNAME)/gac \
-          bin/@target@-@BASECC@-$(CONFIGNAME)/config.h \
+          bin/$(GAPARCH)/gac \
+          bin/$(GAPARCH)/config.h \
           terminfo )
 
 packages:
 	./makepkgs
 
+.PHONY: clean clean_$(CLEANME) clean_gap clean_gap_$(CLEANME) clean_gmp clean_gmp_$(CLEANME) compile config cygwin default distclean extern manuals packages rebuild removewin setconfig static strip testinstall testinstall.g testmanuals testpackages testpackagesload testpackagesvars teststandard teststandardrenormalize winbinp

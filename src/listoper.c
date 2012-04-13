@@ -2,7 +2,6 @@
 **
 *W  listoper.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_listoper_c =
-   "@(#)$Id$";
 
 #include        "sysfiles.h"            /* file input/output               */
 
@@ -38,9 +35,7 @@ const char * Revision_listoper_c =
 #include        "precord.h"             /* plain records                   */
 
 #include        "lists.h"               /* generic lists                   */
-#define INCLUDE_DECLARATION_PART
 #include        "listoper.h"            /* operations for generic lists    */
-#undef  INCLUDE_DECLARATION_PART
 #include        "listfunc.h"            /* functions for generic lists    */
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
@@ -2621,8 +2616,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoListOper ( void )
 {
-    module.revision_c = Revision_listoper_c;
-    module.revision_h = Revision_listoper_h;
     FillInVersion( &module );
     return &module;
 }

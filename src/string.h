@@ -2,7 +2,6 @@
 **
 *W  string.h                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -26,11 +25,6 @@
 
 #ifndef GAP_STRING_H
 #define GAP_STRING_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_string_h =
-   "@(#)$Id$";
-#endif
 
 #include <string.h>  /* for memcpy */
 
@@ -274,8 +268,9 @@ extern Int IsStringConv (
 ???  */
 #define C_NEW_STRING(string,len,cstr) \
   do { \
-    string = NEW_STRING( len ); \
-    memcpy( CHARS_STRING(string), (cstr), (len) ); \
+    size_t tmp_len = (len); \
+    string = NEW_STRING( tmp_len ); \
+    memcpy( CHARS_STRING(string), (cstr), tmp_len ); \
   } while ( 0 );
 
 /****************************************************************************

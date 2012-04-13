@@ -3,14 +3,11 @@
 #W  gprd.gi                     GAP library                      Bettina Eick
 ##                                                             Heiko Theißen
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.gprd_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -781,7 +778,12 @@ InstallOtherMethod( WreathProduct,"generic groups", true,
  [ IsGroup, IsGroup ], 0,
 function(G,H)
 local iso;
-  iso:=IsomorphismPermGroup(H);
+  # take the regular action, unless permutation group
+  if IsPermGroup(H) then
+    iso:=IdentityMapping(H);
+  else
+    iso:=ActionHomomorphism(H,Elements(H),OnRight,"surjective");
+  fi;
   return WreathProduct(G,H,iso);
 end);
 

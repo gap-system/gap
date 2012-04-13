@@ -4,7 +4,6 @@
 "
 " By Thomas Breuer and Max Neunhöffer 2003
 "
-" $Id$
 "
 map <f2> OError("Breakpoint #<esc>"apa");<esc>
 map <f3> OPrint("Watchpoint #<esc>"apa\n");<esc>

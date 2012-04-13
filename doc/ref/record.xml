@@ -330,7 +330,8 @@ false
 <C><A>rec1</A> &lt;= <A>rec2</A></C>
 <P/>
 To compare records we imagine that the components of both records are
-sorted according to their names.
+sorted according to their names (the sorting depends on the &GAP; session,
+more precisely the order in which component names were first used).
 Then the records are compared lexicographically with unbound elements
 considered smaller than anything else.
 Precisely one record <A>rec1</A> is considered less than another record
@@ -343,16 +344,16 @@ component with this name and
 <C><A>rec1</A>.<A>name1</A> = <A>rec2</A>.<A>name1</A></C>.
 <P/>
 <Example><![CDATA[
-gap> rec( a := 1, b := 2 ) < rec( b := 2, a := 1 ); # they are equal
+gap> rec( axy := 1, bxy := 2 ) < rec( bxy := 2, axy := 1 ); # are equal
 false
-gap> rec( a := 1 ) < rec( a := 1, b := 2 ); # unbound is less than 2
+gap> rec( axy := 1 ) < rec( axy := 1, bxy := 2 ); # unbound is < 2
 true
-gap> # note in the following examples that the `a' elements are compared first
-gap> rec( a := 1, b := 2 ) < rec( a := 2, b := 0 ); # 1 is less than 2
+gap> # in new session the .axy components are compared first
+gap> rec( axy := 1, bxy := 2 ) < rec( axy := 2, bxy := 0 ); # 1 < 2
 true
-gap> rec( a := 1 ) < rec( a := 0, b := 2 ); # 0 is less than 1
+gap> rec( axy := 1 ) < rec( axy := 0, bxy := 2 ); # 0 < 1
 false
-gap> rec( b := 1 ) < rec( b := 0, a := 2 ); # unbound is less than 2
+gap> rec( bxy := 1 ) < rec( bxy := 0, axy := 2 ); # unbound is < 2
 true
 ]]></Example>
 

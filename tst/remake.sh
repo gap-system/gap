@@ -23,7 +23,6 @@ gap -N -A -x 80 < $input0 > /dev/null
 cat > $sedscript <<EOF
 s/^gap> #/#/
 s/^gap> \+$//
-/^\$Id: / d
 /^GAP4stones: / d
 /^gap> LogTo();/ d
 EOF

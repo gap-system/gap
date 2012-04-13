@@ -3,14 +3,12 @@
 #W  matrix.tst                  GAP Tests                     Robert F. Morse
 ##  
 ##
-#H  $Id$ 
 ##
 #Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##  
 ##  Exclude from testinstall.g: why?
 ##
-
-gap> START_TEST("$Id$");
+gap> START_TEST("matrix.tst");
 gap> ##
 gap> ##
 gap> ########################################################################
@@ -114,7 +112,7 @@ true
 gap> ## list ops
 gap> mlst := [m,m1,m,m1];;
 gap> e+mlst-e = mlst;
-true 
+true
 gap> e*mlst/e=mlst;
 true
 gap> #T
@@ -313,7 +311,7 @@ gap> n:=5;;
 gap> VV:=Elements(ZmodnZ(12)){[4..8]};;
 gap> MM := List(VV,x->List([0..n-1],y->x^y));; ## build Vandermonde matrix
 gap> AdjointDV(MM)*MM = DeterminantMatDivFree(M)*One(M);
-true 
+true
 gap> ##
 gap> ########################################################################
 gap> ##
@@ -412,7 +410,7 @@ gap> m := [[1,2,3],[4,5,6],[7,8,9]];;
 gap> m1 := TransposedMat(m);;
 gap> TransposedMatDestructive(m);;
 gap> m=m1;
-true 
+true
 gap> ##
 gap> m := [[1,2]];;
 gap> m1 := [[5,7],[9,2]];;
@@ -540,9 +538,8 @@ gap> ## Matrices as Linear Mappings
 gap> ##
 gap> ##
 gap> ########################################################################
-gap> STOP_TEST( "matrix.tst",3721017553);
+gap> STOP_TEST( "matrix.tst", 769200000 );
 
 #############################################################################
 ##
 #E
-

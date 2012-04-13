@@ -2,7 +2,6 @@
 ##
 #W  cyclotom.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 ##
 ##  This file declares operations for cyclotomics.
 ##
-Revision.cyclotom_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -103,7 +100,8 @@ DeclareAttribute( "AbsoluteValue" ,  IsCyclotomic  );
 ##  <Example><![CDATA[
 ##  gap> RoundCyc( E(5)+1/2*E(5)^2 ); RoundCyc( 2/3*E(7)+3/2*E(4) );
 ##  E(5)+E(5)^2
-##  -2*E(28)^3+E(28)^4-2*E(28)^11-2*E(28)^15-2*E(28)^19-2*E(28)^23-2*E(28)^27
+##  -2*E(28)^3+E(28)^4-2*E(28)^11-2*E(28)^15-2*E(28)^19-2*E(28)^23
+##   -2*E(28)^27
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -824,8 +822,8 @@ DeclareGlobalFunction( "StarCyc" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Quadratic( EB(5) ); Quadratic( EB(27) );
-##  rec( ATLAS := "b5", a := -1, b := 1, d := 2, display := "(-1+Sqrt(5))/2", 
-##    root := 5 )
+##  rec( ATLAS := "b5", a := -1, b := 1, d := 2, 
+##    display := "(-1+Sqrt(5))/2", root := 5 )
 ##  rec( ATLAS := "1+3b3", a := -1, b := 3, d := 2, 
 ##    display := "(-1+3*Sqrt(-3))/2", root := -3 )
 ##  gap> Quadratic(0); Quadratic( E(5) );
@@ -923,7 +921,8 @@ DeclareGlobalFunction( "Quadratic" );
 ##    mat := [ [ E(3), E(4) ], [ E(3), -E(4) ], [ E(3)^2, E(4) ], 
 ##        [ E(3)^2, -E(4) ] ] )
 ##  gap> GaloisMat( [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ] ] );
-##  rec( galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ], generators := [ (2,3) ], 
+##  rec( galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ], 
+##    generators := [ (2,3) ], 
 ##    mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ] )
 ##  ]]></Example>
 ##  </Description>

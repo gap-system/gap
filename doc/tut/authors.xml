@@ -7,28 +7,8 @@
 <!-- %% -->
 <!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
 <!-- %% -->
-<P/>
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- <Chapter Label="Acknowledgement"> -->
-<!-- <Heading>Acknowledgement</Heading> -->
 
-We would like to thank the many people who have made contributions of
-various kinds to the development of &GAP; since 1986, in particular:
-<P/>
-Isabel&nbsp;M.&nbsp;Araújo, Robert&nbsp;Arthur, Hans&nbsp;Ulrich&nbsp;Besche, Thomas&nbsp;Bischops,
-Oliver&nbsp;Bonten, Thomas&nbsp;Breuer, Frank&nbsp;Celler, Gene&nbsp;Cooperman, Bettina&nbsp;Eick,
-Volkmar&nbsp;Felsch, Franz&nbsp;Gähler, Greg&nbsp;Gamble, Willem&nbsp;de&nbsp;Graaf,
-Burkhard&nbsp;Höfling, Jens&nbsp;Hollmann, Derek&nbsp;Holt, Erzsébet&nbsp;Horváth, 
-Alexander&nbsp;Hulpke, Ansgar&nbsp;Kaup, Susanne&nbsp;Keitemeier, Stefan Kohl, Steve&nbsp;Linton,
-Frank&nbsp;Lübeck, Bohdan&nbsp;Majewski, Johannes&nbsp;Meier, Thomas&nbsp;Merkwitz, 
-Wolfgang&nbsp;Merkwitz, James Mitchell, Jürgen&nbsp;Mnich, Robert&nbsp;F.&nbsp;Morse,
-Scott Murray, Joachim&nbsp;Neubüser, Max Neunhöffer,
-Werner&nbsp;Nickel, Alice&nbsp;Niemeyer, Dima&nbsp;Pasechnik, Götz&nbsp;Pfeiffer,
-Udo&nbsp;Polis, Ferenc&nbsp;Rákóczi, Sarah&nbsp;Rees, Edmund&nbsp;Robertson,
-Colva Roney-Dougal, Ute Schiffer, Jack Schmidt, Martin&nbsp;Schönert,
-Ákos&nbsp;Seress, Andrew&nbsp;Solomon, Heiko&nbsp;Theißen, Rob&nbsp;Wainwright,
-Alex&nbsp;Wegner, Chris&nbsp;Wensley and Charles&nbsp;Wright.
-<P/>
 The following list gives the authors (indicated by A)
 who designed the code in the first place,
 as well as the current maintainers (indicated by M)
@@ -245,7 +225,6 @@ Alexander Hulpke&nbsp;(AM)
 Bettina Eick&nbsp;(AM)
 </Item>
 </List>
-<P/>
 <!-- %The system design of &GAP;&nbsp;4 was initiated by -->
 <!-- %Martin&nbsp;Schönert and has been continued by -->
 <!-- %Thomas&nbsp;Breuer, Frank&nbsp;Celler and Steve&nbsp;Linton. -->
@@ -257,10 +236,7 @@ Bettina Eick&nbsp;(AM)
 <!-- %</E></E> -->
 <!-- %The Macintosh Version of &GAP; has been written and maintained by Burkhard -->
 <!-- %Höfling. -->
-<P/>
+
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-<P/>
-<!-- </Chapter> -->
-

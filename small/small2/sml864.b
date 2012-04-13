@@ -3,8 +3,6 @@
 #W  sml864.b               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml864_b :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 864 ][ 2 ] :=
 [ 4289121498651652812658843655, 4289121498651652812654649351,

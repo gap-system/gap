@@ -3,7 +3,6 @@
 #W  grplatt.gd                GAP library                   Martin Schönert,
 #W                                                          Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This  file  contains declarations for subgroup latices
 ##
-Revision.grplatt_gd:=
-  "@(#)$Id$";
 
 
 #############################################################################
@@ -191,16 +188,17 @@ DeclareAttribute("Zuppos",IsGroup);
 ##  gap> g:=WreathProduct(Group((1,2,3),(1,2)),Group((1,2,3,4)));;
 ##  gap> l:=LatticeByCyclicExtension(g,function(G)
 ##  > return Size(G) in [1,2,3,6];end);
-##  <subgroup lattice of <permutation group of size 5184 with 9 generators>, 
-##  47 classes, 2628 subgroups, restricted under further condition l!.func>
+##  <subgroup lattice of <permutation group of size 5184 with 
+##  9 generators>, 47 classes, 
+##  2628 subgroups, restricted under further condition l!.func>
 ##  ]]></Example>
 ##  <P/>
 ##  The total number of classes in this example is much bigger, as the
 ##  following example shows:
 ##  <Example><![CDATA[
 ##  gap> LatticeSubgroups(g);
-##  <subgroup lattice of <permutation group of size 5184 with 9 generators>,
-##  566 classes, 27134 subgroups>
+##  <subgroup lattice of <permutation group of size 5184 with 
+##  9 generators>, 566 classes, 27134 subgroups>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -249,11 +247,11 @@ DeclareGlobalFunction("LatticeViaRadical");
 ##  gap> MaximalSubgroupsLattice(l);
 ##  [ [  ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], 
 ##    [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ] ], [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ], 
-##    [ [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ],
+##    [ [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ], 
 ##    [ [ 7, 1 ], [ 6, 1 ], [ 5, 1 ] ], 
 ##    [ [ 5, 1 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
-##    [ [ 10, 1 ], [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 8, 1 ], [ 8, 2 ], [ 8, 3 ], 
-##        [ 8, 4 ] ] ]
+##    [ [ 10, 1 ], [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 8, 1 ], [ 8, 2 ], 
+##        [ 8, 3 ], [ 8, 4 ] ] ]
 ##  gap> last[6];
 ##  [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ]
 ##  gap> u1:=Representative(ConjugacyClassesSubgroups(l)[6]);
@@ -296,12 +294,12 @@ DeclareAttribute("MaximalSubgroupsLattice",IsLatticeSubgroupsRep);
 ##  See also <Ref Func="MaximalSubgroupsLattice"/>.
 ##  <Example><![CDATA[
 ##  gap> MinimalSupergroupsLattice(l);
-##  [ [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ], 
-##        [ 3, 5 ], [ 3, 6 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
-##    [ [ 5, 1 ], [ 6, 2 ], [ 7, 2 ] ], [ [ 6, 1 ], [ 8, 1 ], [ 8, 3 ] ], 
-##    [ [ 8, 1 ], [ 10, 1 ] ], [ [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 10, 1 ] ],
-##    [ [ 9, 1 ] ], [ [ 9, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], 
-##    [  ] ]
+##  [ [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], 
+##        [ 3, 4 ], [ 3, 5 ], [ 3, 6 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], 
+##        [ 4, 4 ] ], [ [ 5, 1 ], [ 6, 2 ], [ 7, 2 ] ], 
+##    [ [ 6, 1 ], [ 8, 1 ], [ 8, 3 ] ], [ [ 8, 1 ], [ 10, 1 ] ], 
+##    [ [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 10, 1 ] ], [ [ 9, 1 ] ], 
+##    [ [ 9, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], [  ] ]
 ##  gap> last[3];
 ##  [ [ 6, 1 ], [ 8, 1 ], [ 8, 3 ] ]
 ##  gap> u5:=ClassElementLattice(ConjugacyClassesSubgroups(l)[8],1);

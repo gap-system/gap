@@ -2,15 +2,12 @@
 ##
 #W  wordlett.gi                  GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file contains  methods for   associative words  in letter
 ##  representation
-Revision.wordlett_gi :=
-    "@(#)$Id$";
 
 InstallMethod(AssocWordByLetterRep, "W letter words family", true,
     [ IsWLetterWordsFamily, IsHomogeneousList ], 0,

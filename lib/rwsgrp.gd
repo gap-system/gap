@@ -2,7 +2,6 @@
 ##
 #W  rwsgrp.gd                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,8 +15,6 @@
 ##  Rewriting  system constructors should   set the rewriting system  feature
 ##  `IsBuiltFromGroup' in this case.
 ##
-Revision.rwsgrp_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

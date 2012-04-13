@@ -3,8 +3,6 @@
 #W  sml1296.b              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1296_b :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1296 ][ 2 ] :=
 [ 108158503996541544850067997946814991,

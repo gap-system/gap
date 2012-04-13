@@ -3,7 +3,6 @@
 ##
 #W  gac.sh                      GAP compiler                 Martin Schoenert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -73,13 +72,13 @@ stat_identifier="USER";
 
 # These three should be filled in by the standard autoconf procedures 
 c_compiler="@CC@"
-c_options="@CFLAGS@"
+c_options="@CFLAGS@ @GMP_CFLAGS@"
 c_linker="@CC@"
 c_link_options="@LDFLAGS@"
 c_libs="@LIBS@ @GMP_LIBS@"
 
 # These three will need special care 
-c_dyn_options="@CDYNOPTIONS@"
+c_dyn_options="@CDYNOPTIONS@ @GMP_CFLAGS@"
 c_dyn_linker="@CDYNLINKER@"
 c_dyn_linking="@CDYNLINKING@"
 c_dynlibs="@C_DYNLIBS@"
@@ -122,7 +121,7 @@ c_compile () {
     echo ${c_compiler}  $3 -o $1 -I${gap_dir} \
          -I${gap_bin} -DCONFIG_H -c $2
     ${c_compiler} $3 -o $1 -I${gap_dir} \
-         -I${gap_bin} -DCONFIG_H -c $2
+         -I${gap_bin} -DCONFIG_H -c $2 || exit 1
 }
 
 
@@ -132,7 +131,7 @@ c_compile () {
 ##
 c_link_dyn () {
     echo ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_addlibs}
-    ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_addlibs}
+    ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_addlibs} || exit 1
 }
 
 
@@ -142,7 +141,8 @@ c_link_dyn () {
 ##
 c_link () {
     echo ${c_linker} ${c_dynlibs}  -o $1 $2 ${c_link_options} -lm ${c_libs}
-    ${c_linker} ${c_dynlibs} -o $1 $2 ${c_link_options} -lm ${c_libs}
+    ${c_linker} ${c_dynlibs} -o $1 $2 ${c_link_options} \
+        -lm ${c_libs} || exit 1
 }
 
 #############################################################################

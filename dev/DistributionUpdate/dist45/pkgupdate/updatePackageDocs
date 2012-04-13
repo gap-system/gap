@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id$    (C) Frank Lübeck
+# (C) Frank Lübeck
 
 
 mypath=`dirname  $0`/
@@ -12,7 +12,7 @@ Unbind(PrintPromptHook);
 Print("\n");
 
 
-newdocs := UpdatePackageDoc("${PkgCacheDir}", "${PkgWebFtpDir}/Packages/pkg");;
+newdocs := UpdatePackageDoc("${PkgReposDir}", "${PkgWebFtpDir}/Packages/pkg");;
 if Length(newdocs) > 0 then
   Print("\nPackages with updated online manual books:\n", newdocs, "\n");
 else

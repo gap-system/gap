@@ -3,8 +3,6 @@
 #W  sml288.z               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml288_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 288 ] :=
 [ 9939753945407988141791107, 119018989515813428136,

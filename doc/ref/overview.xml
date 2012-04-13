@@ -14,11 +14,10 @@
 computation in discrete abstract algebra. The terms <Q>free</Q> and <Q>open</Q> 
 describe the conditions under which the system is distributed -- in brief, it 
 is <E>free of charge</E> (except possibly for the immediate costs of delivering 
-it to  you), you are <E>free  to pass  it on</E> within  certain limits,  and 
+it to you), you are <E>free to pass it on</E> within certain limits, and 
 all of the workings of the system are <E>open for you to examine and change</E>.
-Details of these conditions can be found in the Copyright Notice
-in the beginning of this manual.
-<!-- in <Ref Chap="Copyright" BookName="ref"/>. -->
+Details of these conditions can be found in Section 
+<Ref Chap="Copyright and License" BookName="ref"/>.
 <P/>
 The system is <Q>extensible</Q> in that you can write your own  programs  in
 the &GAP; language, and use them in just the same way  as  the  programs
@@ -26,7 +25,7 @@ which form part of the system  (the  <Q>library</Q>).  Indeed,  we  actively
 support the contribution, refereeing and distribution  of  extensions  to
 the system, in the form of <Q>&GAP; packages</Q>.  Further details of  this
 can be found in chapter <Ref Chap="GAP Packages" BookName="ref"/>, and
-on our World Wide Web site.
+on our website.
 <P/>
 Development of &GAP; began at Lehrstuhl D für Mathematik,
 RWTH-Aachen, under the leadership of Joachim Neubüser
@@ -36,9 +35,9 @@ In 1997 coordination of
 transferred to St Andrews.  A complete internal redesign and almost
 complete rewrite of the system was completed over the following years and
 version 4.1 was released in July 1999.
-<P/>
-A sign of the further internationalization of the project is this release,
-4.4, which has been coordinated from Colorado State University, Fort Collins.
+A sign of the further internationalization of the project was the 
+&GAP;&nbsp;4.4 release in 2004, which has been coordinated from 
+Colorado State University, Fort Collins.
 <P/>
 More information on the motivation and development of &GAP; to date,
 can be found on our Web pages in a section entitled <Q>Release history
@@ -118,8 +117,8 @@ small utilities which we hope you will find useful.
 package contains &GAP; code and its own documentation and may also
 contain data files or external programs to which the &GAP; code
 provides an interface.  These packages may be loaded into &GAP; using
-the <C>LoadPackage</C> command, and both the package and its
-documentation are then available just as if they were parts of the
+the <Ref Func="LoadPackage" BookName="ref"/> command, and both the package 
+and its documentation are then available just as if they were parts of the
 core system. Some packages may be loaded automatically, when &GAP; is
 started, if they are present. Some packages, because they depend on
 external programs, may only be available on the operating systems
@@ -134,9 +133,7 @@ Brauer character tables, and the library of tables of marks) which
 contain functionality developed from parts of the &GAP; core
 system. These have been moved into packages for ease of maintenance
 and to allow new versions to be released independently of new releases
-of the core system. (For technical reasons the library of tables of marks is
-still distributed in the main system archive.) 
-The library of small groups should also be
+of the core system. The library of small groups should also be
 regarded as a package, although it does not currently use the standard
 package mechanism. Other packages contain functionality which has
 never been part of the core system, and may extend it substantially,

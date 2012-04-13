@@ -3,8 +3,6 @@
 #W  col8.z                 GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.col8_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 3516 ] :=
 [ 13392148977811639177011, 47086795801871665782543175, 3835664310220776007,

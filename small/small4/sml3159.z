@@ -3,8 +3,6 @@
 #W  sml3159.z              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml3159_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 3159 ].pnil := rec( syl :=
 [ 61, 67 ], oper :=

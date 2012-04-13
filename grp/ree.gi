@@ -2,12 +2,9 @@
 ##
 #W  ree.gi                     GAP library
 ##
-#H  @(#)$Id$
 ##
 #Y  (C) 2001 School Math. Sci., University of St Andrews, Scotland
 ##
-Revision.ree_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

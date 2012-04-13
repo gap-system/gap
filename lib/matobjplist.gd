@@ -12,8 +12,6 @@
 #
 ############################################################################
 
-Revision.matobjplist_gd :=
-    "@(#)$Id$";
 
 DeclareRepresentation( "IsPlistVectorRep", 
    IsRowVectorObj and IsPositionalObjectRep, [] );

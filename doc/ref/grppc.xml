@@ -278,7 +278,7 @@ see <Ref Func="IsomorphismRefinedPcGroup"/> and <Ref Func="RefinedPcGroup"/>.
 <Func Name="CombinatorialCollector" Arg='fgrp, relorders'/>
 
 <Description>
-initializes a single collector or a combiatorial collector,
+initializes a single collector or a combinatorial collector,
 where <A>fgrp</A> must be a free group and <A>relorders</A> must be a list
 of the relative orders of the pc series.
 <P/>
@@ -501,8 +501,8 @@ gap> Extensions( G, M );
   <pc group of size 8 with 3 generators>, 
   <pc group of size 8 with 3 generators> ]
 gap> List(last, IdSmallGroup);
-[ [ 8, 5 ], [ 8, 2 ], [ 8, 3 ], [ 8, 3 ], [ 8, 2 ], [ 8, 2 ], [ 8, 3 ], 
-  [ 8, 4 ] ]
+[ [ 8, 5 ], [ 8, 2 ], [ 8, 3 ], [ 8, 3 ], [ 8, 2 ], [ 8, 2 ], 
+  [ 8, 3 ], [ 8, 4 ] ]
 ]]></Example>
 <P/>
 Note that the extensions returned by <Ref Func="Extensions"/> are computed
@@ -532,14 +532,15 @@ false
 gap> A := AutomorphismGroup( N );
 <group of size 24 with 4 generators>
 gap> iso := IsomorphismPcGroup( A );
-CompositionMapping( Pcgs([ (2,6,5,3), (1,3,5)(2,4,6), (2,5)(3,6), (1,4)(3,6) 
- ]) -> [ f1, f2, f3, f4 ], <action isomorphism> )
+CompositionMapping( Pcgs([ (2,6,5,3), (1,3,5)(2,4,6), (2,5)(3,6), 
+  (1,4)(3,6) ]) -> [ f1, f2, f3, f4 ], <action isomorphism> )
 gap> H := Image( iso );
 Group([ f1, f2, f3, f4 ])
 gap> G := Subgroup( H, Pcgs(H){[1,2]} );
 Group([ f1, f2 ])
 gap> inv := InverseGeneralMapping( iso );
-[ f1*f2, f2^2*f3, f4, f3 ] -> [ Pcgs([ f1, f2, f3 ]) -> [ f1*f2, f2, f3 ], 
+[ f1*f2, f2^2*f3, f4, f3 ] -> 
+[ Pcgs([ f1, f2, f3 ]) -> [ f1*f2, f2, f3 ], 
   Pcgs([ f1, f2, f3 ]) -> [ f2, f1*f2, f3 ], 
   Pcgs([ f1, f2, f3 ]) -> [ f1*f3, f2, f3 ], 
   Pcgs([ f1, f2, f3 ]) -> [ f1, f2*f3, f3 ] ]

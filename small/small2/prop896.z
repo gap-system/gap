@@ -3,8 +3,6 @@
 #W  prop896.z              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.prop896_z :=
-    "@(#)$Id$";
 
 PROPERTIES_SMALL_GROUPS[ 896 ] := rec(
 isNilpotent := [ 2, 402, -563, 4667, -5499, 16340, -17492, 19136, -19304,

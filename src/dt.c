@@ -2,7 +2,6 @@
 **
 *W  dt.c                        GAP source                  Wolfgang Merkwitz
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -54,8 +53,6 @@
 */
 #include       "system.h"
 
-const char * Revision_dt_c =
-   "@(#)$Id$";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -67,9 +64,7 @@ const char * Revision_dt_c =
 #include        "gvars.h"               /* global variables                */
 #include        "integer.h"             /* integers                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "dt.h"                  /* deep thought                    */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -1868,8 +1863,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoDeepThought ( void )
 {
-    module.revision_c = Revision_dt_c;
-    module.revision_h = Revision_dt_h;
     FillInVersion( &module );
     return &module;
 }

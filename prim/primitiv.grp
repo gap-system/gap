@@ -5,14 +5,11 @@
 #A                                                          Brian Mortimer
 #A                                                          Charles Sims
 ##
-#A  @(#)$Id$
 ##
 #Y  Copyright (C) 2000, School of Math.&Comp. Sci. University of St Andrews
 ##
 ##  This file contains part of the primitive groups library
 ##
-Revision.primitiv_grp:=
-"@(#)$Id$";
 
 #############################################################################
 ##

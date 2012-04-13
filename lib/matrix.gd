@@ -6,7 +6,6 @@
 #W                                                           & Heiko Theißen
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##
 ##  This file contains those functions that mainly deal with matrices.
 ##
-Revision.matrix_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -128,10 +125,13 @@ DeclareOperation("IsLowerTriangularMat",[IsMatrix]);
 ##  <Oper Name="DiagonalOfMat" Arg='mat'/>
 ##
 ##  <Description>
-##  returns the diagonal of <A>mat</A> as a list.
+##  returns the diagonal of the matrix <A>mat</A>. If <A>mat</A> is not a
+##  square matrix, then the result has the same length as the rows of
+##  <A>mat</A>, and is padded with zeros if <A>mat</A> has fewer rows than
+##  columns.
 ##  <Example><![CDATA[
-##  gap> DiagonalOfMat([[1,2],[3,4]]);
-##  [ 1, 4 ]
+##  gap> DiagonalOfMat([[1,2,3],[4,5,6]]);
+##  [ 1, 5, 0 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -362,16 +362,16 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##  <Func Name="ElementaryDivisorsMatDestructive" Arg='ring,mat'/>
 ##
 ##  <Description>
-##  <C>ElementaryDivisors</C> returns a list of the elementary divisors, i.e., the
-##  unique <A>d</A> with <C><A>d</A>[<A>i</A>]</C> divides  <C><A>d</A>[<A>i</A>+1]</C> and <A>mat</A> is  equivalent
-##  to a diagonal matrix with the elements <C><A>d</A>[<A>i</A>]</C> on the diagonal.
+##  returns a list of the elementary divisors, i.e., the
+##  unique <M>d</M> with <M>d[i]</M> divides  <M>d[i+1]</M> and <A>mat</A> is  equivalent
+##  to a diagonal matrix with the elements <M>d[i]</M> on the diagonal.
 ##  The operations are performed over the euclidean
 ##  ring <A>ring</A>, which must contain
 ##  all matrix entries. For compatibility reasons it can be omitted and
-##  defaults to <Ref Var="Integers"/>.
+##  defaults to the <Ref Func="DefaultRing" Label="for ring elements"/> of the matrix entries.
 ##  <P/>
 ##  The function <Ref Func="ElementaryDivisorsMatDestructive"/> produces the same result
-##  but in the process destroys the contents of <A>mat</A>.
+##  but in the process may destroy the contents of <A>mat</A>.
 ##  <Example><![CDATA[
 ##  gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
 ##  gap> ElementaryDivisorsMat(mat);
@@ -381,8 +381,9 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##  [ [ -x+1, 2, 3 ], [ 4, -x+5, 6 ], [ 7, 8, -x+9 ] ]
 ##  gap> ElementaryDivisorsMat(PolynomialRing(Rationals,1),mat);
 ##  [ 1, 1, x^3-15*x^2-18*x ]
-##  gap> mat:=KroneckerProduct(CompanionMat((x-1)^2),CompanionMat((x^3-1)*(x-1)));;
-##  gap> mat:=mat*One(x)-x*mat^0;                                                 
+##  gap> mat:=KroneckerProduct(CompanionMat((x-1)^2),
+##  >                          CompanionMat((x^3-1)*(x-1)));;
+##  gap> mat:=mat*One(x)-x*mat^0;
 ##  [ [ -x, 0, 0, 0, 0, 0, 0, 1 ], [ 0, -x, 0, 0, -1, 0, 0, -1 ], 
 ##    [ 0, 0, -x, 0, 0, -1, 0, 0 ], [ 0, 0, 0, -x, 0, 0, -1, -1 ], 
 ##    [ 0, 0, 0, -1, -x, 0, 0, -2 ], [ 1, 0, 0, 1, 2, -x, 0, 2 ], 
@@ -399,31 +400,31 @@ DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
 
 #############################################################################
 ##
-#O  ElementaryDivisorsTranformationsMat([<ring>,] <mat>)
-#F  ElementaryDivisorsTranformationsMatDestructive(<ring>,<mat>)
+#O  ElementaryDivisorsTransformationsMat([<ring>,] <mat>)
+#F  ElementaryDivisorsTransformationsMatDestructive(<ring>,<mat>)
 ##
-##  <#GAPDoc Label="ElementaryDivisorsTranformationsMat">
+##  <#GAPDoc Label="ElementaryDivisorsTransformationsMat">
 ##  <ManSection>
-##  <Oper Name="ElementaryDivisorsTranformationsMat" Arg='[ring,] mat'/>
-##  <Func Name="ElementaryDivisorsTranformationsMatDestructive" Arg='ring,mat'/>
+##  <Oper Name="ElementaryDivisorsTransformationsMat" Arg='[ring,] mat'/>
+##  <Func Name="ElementaryDivisorsTransformationsMatDestructive" Arg='ring,mat'/>
 ##
 ##  <Description>
 ##  <C>ElementaryDivisorsTransformations</C>, in addition to the tasks done
-##  by <C>ElementaryDivisors</C>, also calculates transforming matrices.
+##  by <C>ElementaryDivisorsMat</C>, also calculates transforming matrices.
 ##  It returns a record with components <C>normal</C> (a matrix <M>S</M>),
 ##  <C>rowtrans</C> (a matrix <M>P</M>),
 ##  and <C>coltrans</C> (a matrix <M>Q</M>) such that <M>P A Q = S</M>.
 ##  The operations are performed over the euclidean ring
 ##  <A>ring</A>, which must contain
 ##  all matrix entries. For compatibility reasons it can be omitted and
-##  defaults to <Ref Var="Integers"/>.
+##  defaults to the <Ref Func="DefaultRing" Label="for ring elements"/> of the matrix entries.
 ##  <P/>
 ##  The function <Ref Func="ElementaryDivisorsTransformationsMatDestructive"/>
 ##  produces the same result
 ##  but in the process destroys the contents of <A>mat</A>.
 ##  <Example><![CDATA[
 ##  gap> mat:=KroneckerProduct(CompanionMat((x-1)^2),CompanionMat((x^3-1)*(x-1)));;
-##  gap> mat:=mat*One(x)-x*mat^0;                                                 
+##  gap> mat:=mat*One(x)-x*mat^0;
 ##  [ [ -x, 0, 0, 0, 0, 0, 0, 1 ], [ 0, -x, 0, 0, -1, 0, 0, -1 ], 
 ##    [ 0, 0, -x, 0, 0, -1, 0, 0 ], [ 0, 0, 0, -x, 0, 0, -1, -1 ], 
 ##    [ 0, 0, 0, -1, -x, 0, 0, -2 ], [ 1, 0, 0, 1, 2, -x, 0, 2 ], 
@@ -718,7 +719,7 @@ DeclareAttribute( "RankMat", IsMatrix );
 ##  <Oper Name="RankMatDestructive" Arg='mat'/>
 ##
 ##  <Description>
-##  <C>RankMatDestructive</C> returns the same result as <Ref Func="RankMat"/> but may
+##  returns the same result as <Ref Func="RankMat"/> but may
 ##  modify its argument in the process, if this saves time or memory
 ##  </Description>
 ##  </ManSection>
@@ -1109,24 +1110,28 @@ DeclareOperation( "SolutionMat", [ IsMatrix, IsRowVector ] );
 ##  <Oper Name="SolutionMatDestructive" Arg='mat, vec'/>
 ##
 ##  <Description>
-##  Does the same as <C>SolutionMat( <A>mat</A>, <A>vec</A> )</C> except that it may
-##  destroy the matrix <A>mat</A>. The matrix <A>mat</A> must be mutable.
+##  Does the same as <C>SolutionMat( <A>mat</A>, <A>vec</A> )</C> except that
+##  it may destroy the matrix <A>mat</A> and the vector <A>vec</A>.
+##  The matrix <A>mat</A> must be mutable.
 ##  <Example><![CDATA[
 ##  gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
 ##  gap> SolutionMat(mat,[3,5,7]);
 ##  [ 5/3, 1/3, 0 ]
-##  gap> mm:=[[1,2,3],[4,5,6],[7,8,9]];;
-##  gap> SolutionMatDestructive( mm, [3,5,7] );
+##  gap> mm:= [[1,2,3],[4,5,6],[7,8,9]];;
+##  gap> v:= [3,5,7];;
+##  gap> SolutionMatDestructive( mm, v );
 ##  [ 5/3, 1/3, 0 ]
 ##  gap> mm;
 ##  [ [ 1, 2, 3 ], [ 0, -3, -6 ], [ 0, 0, 0 ] ]
+##  gap> v;
+##  [ 0, 0, 0 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SolutionMatDestructive", [ IsMatrix and IsMutable, IsRowVector ] );
-
+DeclareOperation( "SolutionMatDestructive",
+    [ IsMatrix and IsMutable, IsRowVector ] );
 
 
 ############################################################################
@@ -1155,6 +1160,29 @@ DeclareOperation( "SolutionMatDestructive", [ IsMatrix and IsMutable, IsRowVecto
 DeclareOperation( "SumIntersectionMat", [ IsMatrix, IsMatrix ] );
 
 
+
+#############################################################################
+##
+#O  TriangulizedMat( <mat> ) . . .  compute upper triangular form of a matrix
+##
+##  <#GAPDoc Label="TriangulizedMat">
+##  <ManSection>
+##  <Oper Name="TriangulizedMat" Arg='mat'/>
+##  <Oper Name="RREF" Arg='mat'/>
+##
+##  <Description>
+##  Computes an upper triangular form of the matrix <A>mat</A> via
+##  the Gaussian Algorithm. It returns a immutable matrix in upper triangular form.
+##  This is sometimes also  called <Q>Hermite normal form</Q> or <Q>Reduced Row Echelon
+##  Form</Q>.
+##  <C>RREF</C> is a synonym for <C>TriangulizedMat</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "TriangulizedMat", [ IsMatrix ] );
+DeclareSynonym( "RREF", TriangulizedMat);
+
 #############################################################################
 ##
 #O  TriangulizeMat( <mat> ) . . . . . bring a matrix in upper triangular form
@@ -1162,14 +1190,12 @@ DeclareOperation( "SumIntersectionMat", [ IsMatrix, IsMatrix ] );
 ##  <#GAPDoc Label="TriangulizeMat">
 ##  <ManSection>
 ##  <Oper Name="TriangulizeMat" Arg='mat'/>
-##  <Oper Name="TriangulizedMat" Arg='mat'/>
-##  <Oper Name="RREF" Arg='mat'/>
 ##
 ##  <Description>
-##  applies the Gaussian Algorithm to the mutable matrix <A>mat</A> and changes
-##  <A>mat</A> such that it is in upper triangular
-##  normal form (sometimes called <Q>Hermite normal form</Q> or <Q>Reduced
-##  Row Echelon Form</Q>).  <C>RREF</C> is a synonym.
+##  Applies the Gaussian Algorithm to the mutable matrix
+##  <A>mat</A> and changes <A>mat</A> such that it is in upper triangular normal
+##  form (sometimes called <Q>Hermite normal form</Q> or <Q>Reduced Row Echelon
+##  Form</Q>).
 ##  <Example><![CDATA[
 ##  gap> m:=TransposedMatMutable(mat);
 ##  [ [ 1, 4, 7 ], [ 2, 5, 8 ], [ 3, 6, 9 ] ]
@@ -1186,22 +1212,6 @@ DeclareOperation( "SumIntersectionMat", [ IsMatrix, IsMatrix ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "TriangulizeMat", [ IsMatrix and IsMutable ] );
-DeclareOperation( "TriangulizedMat", [ IsMatrix ] );
-DeclareSynonym( "RREF", TriangulizedMat);
-
-#############################################################################
-##
-#F  TriangulizeMatGF2( <mat> ). . . . bring a matrix in upper triangular form
-##
-##  <ManSection>
-##  <Func Name="TriangulizeMatGF2" Arg='mat'/>
-##
-##  <Description>
-##  special function for the GF2 case
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction("TriangulizeMatGF2");
 
 
 #############################################################################
@@ -1646,8 +1656,9 @@ DeclareGlobalFunction( "ReflectionMat" );
 ##  <A>R</A>, which defaults to <Ref Var="Integers"/>.
 ##  <Example><![CDATA[
 ##  gap> m := RandomInvertibleMat(4);
-##  [ [ 1, -2, -1, 0 ], [ 1, 0, 1, -1 ], [ 0, 2, 0, 4 ], [ -1, -3, 1, -4 ] ]
-##  gap> m^-1;                                                                     
+##  [ [ 1, -2, -1, 0 ], [ 1, 0, 1, -1 ], [ 0, 2, 0, 4 ], 
+##    [ -1, -3, 1, -4 ] ]
+##  gap> m^-1;
 ##  [ [ 1/4, 1/2, -1/8, -1/4 ], [ -1/3, 0, -1/3, -1/3 ], 
 ##    [ -1/12, 1/2, 13/24, 5/12 ], [ 1/6, 0, 5/12, 1/6 ] ]
 ##  ]]></Example>

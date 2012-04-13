@@ -2,7 +2,6 @@
 ##
 #W  list.g                        GAP library                Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains some  list types and functions that  have to be  known
 ##  very early in the bootstrap stage (therefore they are not in list.gi)
 ##
-Revision.list_g :=
-    "@(#)$Id$";
 
 
 #############################################################################

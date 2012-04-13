@@ -2,7 +2,6 @@
 **
 *W  code.c                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_code_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -43,9 +40,7 @@ const char * Revision_code_c =
 
 #include        "funcs.h"               /* functions                       */
 
-#define INCLUDE_DECLARATION_PART
 #include        "code.h"                /* coder                           */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "vars.h"                /* variables                       */
 
@@ -75,12 +70,12 @@ Stat OffsBody;
 Stat OffsBodyStack[1024];
 UInt OffsBodyCount = 0;
 
-static inline void PushOffsBody() {
+static inline void PushOffsBody( void ) {
   assert(OffsBodyCount <= 1023);
   OffsBodyStack[OffsBodyCount++] = OffsBody;
 }
 
-static inline void PopOffsBody() {
+static inline void PopOffsBody( void ) {
   assert(OffsBodyCount);
   OffsBody = OffsBodyStack[--OffsBodyCount];
 }
@@ -642,7 +637,7 @@ void CodeFuncExprBegin (
 
     /* record where we are reading from */
     if (!Input->gapname) {
-      len = SyStrlen(Input->name);
+      len = strlen(Input->name);
       Input->gapname = NEW_STRING(len);
       SyStrncat(CSTR_STRING(Input->gapname),Input->name, len);
     }
@@ -658,6 +653,7 @@ void CodeFuncExprBegin (
 
     /* switch to this function                                             */
     SWITCH_TO_NEW_LVARS( fexp, (narg != -1 ? narg : 1), nloc, old );
+    (void) old; /* please picky compilers. */
 
     /* allocate the top level statement sequence                           */
     stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
@@ -1283,7 +1279,7 @@ void CodeAInv ( void )
     Int                 i;
 
     expr = PopExpr();
-    if ( IS_INTEXPR(expr) && INT_INTEXPR(expr) != -(1L<<28) ) {
+    if ( IS_INTEXPR(expr) && INT_INTEXPR(expr) != -(1L<<NR_SMALL_INT_BITS) ) {
         i = INT_INTEXPR(expr);
         PushExpr( INTEXPR_INT( -i ) );
     }
@@ -1390,9 +1386,6 @@ void CodeIntExpr (
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
         memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
-        /*        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
-            ((UInt2*)ADDR_EXPR(expr))[i] = ((UInt2*)ADDR_OBJ(val))[i-1];
-            } */
     }
 
     /* push the expression                                                 */
@@ -1683,7 +1676,7 @@ static Obj EAGER_FLOAT_LITERAL_CACHE = 0;
 static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
 
-static UInt getNextFloatExprNumber() {
+static UInt getNextFloatExprNumber( void ) {
   if (NextFloatExprNumber > MAX_FLOAT_INDEX)
     return 0;
   else
@@ -1778,7 +1771,7 @@ void CodeFloatExpr (
     Char *              str )
 {
   
-  UInt l = SyStrlen(str);
+  UInt l = strlen(str);
   UInt l1 = l;
   Char mark;
   if (str[l-1] == '_' )
@@ -3273,8 +3266,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCode ( void )
 {
-    module.revision_c = Revision_code_c;
-    module.revision_h = Revision_code_h;
     FillInVersion( &module );
     return &module;
 }

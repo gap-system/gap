@@ -3,7 +3,6 @@
 *W  gap.c                       GAP source                       Frank Celler
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -22,18 +21,13 @@
 #include        <sys/stat.h>
 #endif
 
-const char * Revision_gap_c =
-"@(#)$Id$";
-
 extern char * In;
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "gap.h"                 /* error handling, initialisation  */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "read.h"                /* reader                          */
 
@@ -516,13 +510,16 @@ static void StrAppend(char **st, const char *st2)
     if (*st == NULL)
         len = 0;
     else
-        len = SyStrlen(*st);
-    len2 = SyStrlen(st2);
+        len = strlen(*st);
+    len2 = strlen(st2);
     *st = realloc(*st,len+len2+1);
     if (*st == NULL) {
         printf("Extremely unexpected out of memory error. Giving up.\n");
         exit(1);
     }
+    /* If *st was initially NULL, we must zero-terminate the
+       newly allocated string. */
+    if (len == 0) **st = 0;
     SyStrncat(*st,st2,len2);
 }
 
@@ -540,10 +537,10 @@ static void DoFindMyself(char *myself, char **mypath, char **gappath)
     }
     tmppath = NULL;
     StrAppend(&tmppath,*mypath);
-    p = tmppath+SyStrlen(tmppath);
+    p = tmppath+strlen(tmppath);
     while (*p != '/') p--;
     *p = 0;
-    StrAppend(&tmppath,"/../../..");
+    StrAppend(&tmppath,"/../..");
     *gappath = realpath(tmppath,NULL);
     if (*gappath == NULL) {
         printf("Could not determine GAP path, giving up.\n");
@@ -582,15 +579,15 @@ int DoCreateStartupScript(int argc, char *argv[], int withws)
     tmppath = NULL;
     StrAppend(&tmppath,SYS_ARCH);
     p = tmppath;
-    while (*p != '/') p++;
+    while (*p != 0 && *p != '/') p++;
     *p++ = 0;
     fprintf(f,"GAP_ARCH_SYS=\"%s\"\n",tmppath);
-    fprintf(f,"GAP_ARCH_ABI=\"%s\"\n",p);
+    fprintf(f,"GAP_ARCH_ABI=\"%s\"\n",p);	// FIXME: WRONG
     fprintf(f,"exec %s -l %s",mypath,gappath);
     if (withws) {
         tmppath[0] = 0;
         StrAppend(&tmppath,mypath);
-        p = tmppath+SyStrlen(tmppath);
+        p = tmppath+strlen(tmppath);
         while (*p != '/') p--;
         p[1] = 0;
         StrAppend(&tmppath,"workspace.gap");
@@ -635,7 +632,7 @@ int DoCreateWorkspace(char *myself)
 
     tmppath = NULL;
     StrAppend(&tmppath,mypath);
-    p = tmppath+SyStrlen(tmppath);
+    p = tmppath+strlen(tmppath);
     while (*p != '/') p--;
     p[1] = 0;
     StrAppend(&tmppath,"workspace.gap");
@@ -676,7 +673,7 @@ int DoFixGac(char *myself)
     DoFindMyself(myself,&mypath,&gappath);
     gacpath = NULL;
     StrAppend(&gacpath,mypath);
-    p = gacpath + SyStrlen(gacpath);
+    p = gacpath + strlen(gacpath);
     while (*p != '/') p--;
     *p = 0;
     gapbin = NULL;
@@ -691,7 +688,7 @@ int DoFixGac(char *myself)
         return -7;
     }
     buf = malloc(65536);
-    buf2 = malloc(65536+SyStrlen(gapbin)+10);
+    buf2 = malloc(65536+strlen(gapbin)+10);
     if (buf == NULL || buf2 == NULL) {
         printf("Could not allocate 128kB of memory. Giving up.\n");
         return -8;
@@ -705,7 +702,7 @@ int DoFixGac(char *myself)
     p[len+1] = 0;
     q = buf2;
     while (*p) {
-        if (!SyStrncmp(p,"gap_bin=",8)) {
+        if (!strncmp(p,"gap_bin=",8)) {
             while (*p != '\n' && *p != 0) p++;
             *q++ = 'g'; *q++ = 'a'; *q++ = 'p'; *q++ = '_';
             *q++ = 'b'; *q++ = 'i'; *q++ = 'n'; *q++ = '=';
@@ -744,10 +741,10 @@ int DoFixGac(char *myself)
 #endif
 
 #ifdef COMPILECYGWINDLL
-int realmain (
-#else
-int main (
+#define main realmain
 #endif
+
+int main (
           int                 argc,
           char *              argv [],
           char *              environ [] )
@@ -757,16 +754,16 @@ int main (
   Int4                crc;                    /* crc of file to compile  */
 
 #ifdef HAVE_REALPATH
-  if (argc >= 3 && !SyStrcmp(argv[1],"--createstartupscript")) {
+  if (argc >= 3 && !strcmp(argv[1],"--createstartupscript")) {
       return DoCreateStartupScript(argc,argv,0);
   }
-  if (argc >= 3 && !SyStrcmp(argv[1],"--createstartupscriptwithws")) {
+  if (argc >= 3 && !strcmp(argv[1],"--createstartupscriptwithws")) {
       return DoCreateStartupScript(argc,argv,1);
   }
-  if (argc >= 2 && !SyStrcmp(argv[1],"--createworkspace")) {
+  if (argc >= 2 && !strcmp(argv[1],"--createworkspace")) {
       return DoCreateWorkspace(argv[0]);
   }
-  if (argc >= 2 && !SyStrcmp(argv[1],"--fixgac")) {
+  if (argc >= 2 && !strcmp(argv[1],"--fixgac")) {
       return DoFixGac(argv[0]);
   }
 #endif
@@ -803,7 +800,7 @@ int main (
       }
       func = READ_AS_FUNC();
       crc  = SyGAPCRC(SyCompileInput);
-      if (SyStrlen(SyCompileOptions) != 0)
+      if (strlen(SyCompileOptions) != 0)
         SetCompileOpts(SyCompileOptions);
       type = CompileFunc(
                          SyCompileOutput,
@@ -896,16 +893,12 @@ Obj FuncRuntime (
 Obj FuncRUNTIMES( Obj     self)
 {
   Obj    res;
-#if HAVE_GETRUSAGE
   res = NEW_PLIST(T_PLIST, 4);
   SET_LEN_PLIST(res, 4);
   SET_ELM_PLIST(res, 1, INTOBJ_INT( SyTime() ));
   SET_ELM_PLIST(res, 2, INTOBJ_INT( SyTimeSys() ));
   SET_ELM_PLIST(res, 3, INTOBJ_INT( SyTimeChildren() ));
   SET_ELM_PLIST(res, 4, INTOBJ_INT( SyTimeChildrenSys() ));
-#else
-  res = INTOBJ_INT( SyTime() );
-#endif
   return res;
    
 }
@@ -1119,8 +1112,8 @@ Obj FuncWindowCmd (
 
   /* now call the window front end with the argument string              */
   qtr = CSTR_STRING(WindowCmdString);
-  ptr = SyWinCmd( qtr, SyStrlen(qtr) );
-  len = SyStrlen(ptr);
+  ptr = SyWinCmd( qtr, strlen(qtr) );
+  len = strlen(ptr);
 
   /* now convert result back into a list                                 */
   list = NEW_PLIST( T_PLIST, 11 );
@@ -1422,7 +1415,7 @@ static Obj ErrorMessageToGAPString(
   Obj Message;
   SPrTo(message, 120, msg, arg1, arg2);
   message[119] = '\0';
-  C_NEW_STRING(Message, SyStrlen(message), message); 
+  C_NEW_STRING(Message, strlen(message), message); 
   return Message;
 }
 
@@ -1590,7 +1583,7 @@ Obj ErrorReturnObj (
     const Char *        msg2 )
 {
   Obj LateMsg;
-  C_NEW_STRING(LateMsg, SyStrlen(msg2), msg2);
+  C_NEW_STRING(LateMsg, strlen(msg2), msg2);
   return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg, 1);
 }
 
@@ -1606,7 +1599,7 @@ void ErrorReturnVoid (
     const Char *        msg2 )
 {
   Obj LateMsg;
-  C_NEW_STRING(LateMsg, SyStrlen(msg2), msg2);
+  C_NEW_STRING(LateMsg, strlen(msg2), msg2);
   CallErrorInner( msg, arg1, arg2, 0,1,0,LateMsg, 1);
   /*    ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' ); */
 }
@@ -1784,7 +1777,7 @@ Obj FuncLOAD_STAT (
         if ( info == 0 ) {
             continue;
         }
-        if ( ! SyStrcmp( CSTR_STRING(filename), info->name ) ) {
+        if ( ! strcmp( CSTR_STRING(filename), info->name ) ) {
             break;
         }
     }
@@ -1861,9 +1854,9 @@ Obj FuncSHOW_STAT (
         if ( info == 0 ) {
             continue;
         }
-        /*CCC name = NEW_STRING( SyStrlen(info->name) );
-          SyStrncat( CSTR_STRING(name), info->name, SyStrlen(info->name) );CCC*/
-        len = SyStrlen(info->name);
+        /*CCC name = NEW_STRING( strlen(info->name) );
+          SyStrncat( CSTR_STRING(name), info->name, strlen(info->name) );CCC*/
+        len = strlen(info->name);
         C_NEW_STRING(name, len, info->name);
 
         SET_ELM_PLIST( modules, im, name );
@@ -1897,26 +1890,26 @@ Obj FuncLoadedModules (
         if ( m->type == MODULE_BUILTIN ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'b'] );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, SyStrlen(m->name), m->name );
+            C_NEW_STRING( str, strlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             SET_ELM_PLIST( list, 3*i+3, INTOBJ_INT(m->version) );
         }
         else if ( m->type == MODULE_DYNAMIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, SyStrlen(m->name), m->name );
+            C_NEW_STRING( str, strlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, SyStrlen(m->filename), m->filename );
+            C_NEW_STRING( str, strlen(m->filename), m->filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
         else if ( m->type == MODULE_STATIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, SyStrlen(m->name), m->name );
+            C_NEW_STRING( str, strlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, SyStrlen(m->filename), m->filename );
+            C_NEW_STRING( str, strlen(m->filename), m->filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
     }
@@ -1970,7 +1963,7 @@ again:
        }
 
         /* if request display the statistics                               */
-        if ( SyStrcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
+        if ( strcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
@@ -1988,7 +1981,7 @@ again:
         }
 
         /* if request give a short display of the statistics                */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "displayshort" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "displayshort" ) == 0 ) {
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
@@ -2010,7 +2003,7 @@ again:
         }
 
         /* if request display the statistics                               */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
             for ( k = 0; k < 256; k++ ) {
 #ifdef GASMAN_CLEAR_TO_LIVE
                 InfoBags[k].nrAll    = InfoBags[k].nrLive;
@@ -2023,17 +2016,17 @@ again:
         }
 
         /* or collect the garbage                                          */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
             CollectBags(0,1);
         }
 
         /* or collect the garbage                                          */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "partial" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "partial" ) == 0 ) {
             CollectBags(0,0);
         }
 
         /* or display information about global bags                        */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "global" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "global" ) == 0 ) {
             for ( i = 0;  i < GlobalBags.nr;  i++ ) {
                 if ( *(GlobalBags.addr[i]) != 0 ) {
                     Pr( "%50s: %12d bytes\n", (Int)GlobalBags.cookie[i], 
@@ -2043,7 +2036,7 @@ again:
         }
 
         /* or finally toggle Gasman messages                               */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "message" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "message" ) == 0 ) {
             SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
         }
 
@@ -2146,9 +2139,9 @@ Obj FuncTNUM_OBJ (
     /* set the type                                                        */
     SET_ELM_PLIST( res, 1, INTOBJ_INT( TNUM_OBJ(obj) ) );
     cst = TNAM_OBJ(obj);
-    /*CCC    str = NEW_STRING( SyStrlen(cst) );
-      SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );CCC*/
-    len = SyStrlen(cst);
+    /*CCC    str = NEW_STRING( strlen(cst) );
+      SyStrncat( CSTR_STRING(str), cst, strlen(cst) );CCC*/
+    len = strlen(cst);
     C_NEW_STRING(str, len, cst);
     SET_ELM_PLIST( res, 2, str );
 
@@ -2299,87 +2292,9 @@ Obj FuncSWAP_MPTR (
 
 *F  FillInVersion( <module>, <rev_c>, <rev_h> ) . . .  fill in version number
 */
-static UInt ExtractRevision (
-    const Char *                rev,
-    const Char * *              name )
-{
-    const Char *                p;
-    const Char *                major;
-    const Char *                minor;
-    UInt                        ver1;
-    UInt                        ver2;
-
-    /* store the revision strings                                          */
-    
-    /* the revision string is "@(#)Id: filename.x,v major.minor ..."       */
-    p = rev;
-    while ( *p && *p != ':' )  p++;
-    if ( *p )  p++;
-    while ( *p && *p == ' ' )  p++;
-    *name = p;
-    while ( *p && *p != ' ' )  p++;
-    while ( *p && *p == ' ' )  p++;
-    major = p;
-    while ( *p && *p != '.' )  p++;
-    if ( *p )  p++;
-    while ( *p && *p == '.' )  p++;
-    minor = p;
-
-    /* the version is MMmmm, that is 2 digits major, 3 digits minor        */
-    ver1 = 0;
-    while ( '0' <= *major && *major <= '9' ) {
-        ver1 = ver1 * 10 + (UInt)( *major - '0' );
-        major++;
-    }
-    ver2 = 0;
-    while ( '0' <= *minor && *minor <= '9' ) {
-        ver2 = ver2 * 10 + (UInt)( *minor - '0' );
-        minor++;
-    }
-
-    return ver1 * 1000 + ver2;
-}
-
-
 void FillInVersion (
     StructInitInfo *            module )
 {
-    const Char *                p;
-    const Char *                q;
-    const Char *                name;
-    const Char *                rev_c;
-    const Char *                rev_h;
-    UInt                        c_ver;
-    UInt                        h_ver;
-
-    /* store revision entries                                              */
-    rev_c = module->revision_c;
-    rev_h = module->revision_h;
-
-    /* extract the filename and version entry from <rev_c>                 */
-    c_ver = ExtractRevision( rev_c, &name );
-    if ( module->name ) {
-        p = name;
-        q = module->name;
-        while ( *p && *q && *p == *q ) { p++; q++; }
-        if ( *q || *p != '.' ) {
-            FPUTS_TO_STDERR( "#W  corrupt version info '" );
-            FPUTS_TO_STDERR( rev_c );
-            FPUTS_TO_STDERR( "'\n" );
-        }
-    }
-    h_ver = ExtractRevision( rev_h, &name );
-    if ( module->name ) {
-        p = name;
-        q = module->name;
-        while ( *p && *q && *p == *q ) { p++; q++; }
-        if ( *q || *p != '.' ) {
-            FPUTS_TO_STDERR( "#W  corrupt version info '" );
-            FPUTS_TO_STDERR( rev_h );
-            FPUTS_TO_STDERR( "'\n" );
-        }
-    }
-    module->version = c_ver*100000+h_ver;
 }
 
 
@@ -2791,13 +2706,6 @@ Obj FuncQUIT_GAP( Obj self )
 
 /****************************************************************************
 **
-*V  Revisions . . . . . . . . . . . . . . . . . .  record of revision numbers
-*/
-Obj Revisions;
-
-
-/****************************************************************************
-**
 *F  KERNEL_INFO() ......................record of information from the kernel
 ** 
 ** The general idea is to put all kernel-specific info in here, and clean up
@@ -2812,15 +2720,15 @@ Obj FuncKERNEL_INFO(Obj self) {
   UInt i,j;
 
   /* GAP_ARCHITECTURE                                                    */
-  tmp = NEW_STRING(SyStrlen(SyArchitecture));
+  tmp = NEW_STRING(strlen(SyArchitecture));
   RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-  SyStrncat( CSTR_STRING(tmp), SyArchitecture, SyStrlen(SyArchitecture) );
+  SyStrncat( CSTR_STRING(tmp), SyArchitecture, strlen(SyArchitecture) );
   r = RNamName("GAP_ARCHITECTURE");
   AssPRec(res,r,tmp);
   /* KERNEL_VERSION */
-  tmp = NEW_STRING(SyStrlen(SyKernelVersion));
+  tmp = NEW_STRING(strlen(SyKernelVersion));
   RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-  SyStrncat( CSTR_STRING(tmp), SyKernelVersion, SyStrlen(SyKernelVersion) );
+  SyStrncat( CSTR_STRING(tmp), SyKernelVersion, strlen(SyKernelVersion) );
   r = RNamName("KERNEL_VERSION");
   AssPRec(res,r,tmp);
   /* GAP_ROOT_PATH                                                       */
@@ -2829,7 +2737,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   list = NEW_PLIST( T_PLIST+IMMUTABLE, MAX_GAP_DIRS );
   for ( i = 0, j = 1;  i < MAX_GAP_DIRS;  i++ ) {
     if ( SyGapRootPaths[i][0] ) {
-      len = SyStrlen(SyGapRootPaths[i]);
+      len = strlen(SyGapRootPaths[i]);
       tmp = NEW_STRING(len);
       RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
       SyStrncat( CSTR_STRING(tmp), SyGapRootPaths[i], len );
@@ -2840,44 +2748,56 @@ Obj FuncKERNEL_INFO(Obj self) {
   SET_LEN_PLIST( list, j-1 );
   r = RNamName("GAP_ROOT_PATHS");
   AssPRec(res,r,list);
-      
-    /* create a revision record                                            */
-
-    r = RNamName("Revision");
-    AssPRec(res, r, Revisions);
-
+  /* And also the DotGapPath if available */
+#if HAVE_DOTGAPRC
+  len = strlen(DotGapPath);
+  tmp = NEW_STRING(len);
+  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  SyStrncat( CSTR_STRING(tmp), DotGapPath, len );
+  r = RNamName("DOT_GAP_PATH");
+  AssPRec(res,r,tmp);
+#endif
     
-    /* make command line and environment available to GAP level       */
-    for (lenvec=0; SyOriginalArgv[lenvec]; lenvec++);
-    tmp = NEW_PLIST( T_PLIST+IMMUTABLE, lenvec );
-    SET_LEN_PLIST( tmp, lenvec );
-    for (i = 0; i<lenvec; i++) {
-      lenstr = SyStrlen(SyOriginalArgv[i]);
-      str = NEW_STRING(lenstr);
-      SyStrncat(CSTR_STRING(str), SyOriginalArgv[i], lenstr);
-      SET_LEN_STRING(str, lenstr);
-      SET_ELM_PLIST(tmp, i+1, str);
-      CHANGED_BAG(tmp);
-    }
-    r = RNamName("COMMAND_LINE");
-    AssPRec(res,r, tmp);
+  /* make command line and environment available to GAP level       */
+  for (lenvec=0; SyOriginalArgv[lenvec]; lenvec++);
+  tmp = NEW_PLIST( T_PLIST+IMMUTABLE, lenvec );
+  SET_LEN_PLIST( tmp, lenvec );
+  for (i = 0; i<lenvec; i++) {
+    lenstr = strlen(SyOriginalArgv[i]);
+    str = NEW_STRING(lenstr);
+    SyStrncat(CSTR_STRING(str), SyOriginalArgv[i], lenstr);
+    SET_LEN_STRING(str, lenstr);
+    SET_ELM_PLIST(tmp, i+1, str);
+    CHANGED_BAG(tmp);
+  }
+  r = RNamName("COMMAND_LINE");
+  AssPRec(res,r, tmp);
 
-    tmp = NEW_PREC(0);
-    for (i = 0; sysenviron[i]; i++) {
-      for (p = sysenviron[i]; *p != '='; p++)
-        ;
-      *p++ = '\0';
-      lenstr = SyStrlen(p);
-      str = NEW_STRING(lenstr);
-      SyStrncat(CSTR_STRING(str),p, lenstr);
-      SET_LEN_STRING(str, lenstr);
-      AssPRec(tmp,RNamName(sysenviron[i]), str);
-      *--p = '='; /* change back to allow a convenient rerun */
-    }
-    r = RNamName("ENVIRONMENT");
-    AssPRec(res,r, tmp);
-   
-    return res;
+  tmp = NEW_PREC(0);
+  for (i = 0; sysenviron[i]; i++) {
+    for (p = sysenviron[i]; *p != '='; p++)
+      ;
+    *p++ = '\0';
+    lenstr = strlen(p);
+    str = NEW_STRING(lenstr);
+    SyStrncat(CSTR_STRING(str),p, lenstr);
+    SET_LEN_STRING(str, lenstr);
+    AssPRec(tmp,RNamName(sysenviron[i]), str);
+    *--p = '='; /* change back to allow a convenient rerun */
+  }
+  r = RNamName("ENVIRONMENT");
+  AssPRec(res,r, tmp);
+
+  /* and also the CONFIGNAME of the running  GAP kernel  */
+  p = CONFIGNAME;
+  lenstr = strlen(p);
+  str = NEW_STRING(lenstr);
+  SyStrncat(CSTR_STRING(str), p, lenstr);
+  SET_LEN_STRING(str, lenstr);
+  r = RNamName("CONFIGNAME");
+  AssPRec(res, r, str);
+  
+  return res;
   
 }
 
@@ -3025,7 +2945,6 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* init the completion function                                        */
-    InitGlobalBag( &Revisions,         "src/gap.c:Revisions"         );
     InitGlobalBag( &ThrownObject,      "src/gap.c:ThrownObject"      );
 
     /* list of exit functions                                              */
@@ -3072,9 +2991,6 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
       UInt var;
-
-    /* create a revision record                                            */
-    Revisions = NEW_PREC(0);
 
     /* library name and other stuff                                        */
     var = GVarName( "DEBUG_LOADING" );
@@ -3141,9 +3057,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGap ( void )
 {
-    module.revision_c = Revision_gap_c;
-    module.revision_h = Revision_gap_h;
-    FillInVersion( &module );
     return &module;
 }
 
@@ -3273,7 +3186,7 @@ void RecordLoadedModule (
     if ( NrModules == MAX_MODULES ) {
         Pr( "panic: no room to record module\n", 0L, 0L );
     }
-    len = SyStrlen(filename);
+    len = strlen(filename);
     if (NextLoadedModuleFilename + len + 1
         > LoadedModuleFilenames+MAX_MODULE_FILENAMES) {
       Pr( "panic: no room for module filename\n", 0L, 0L );
@@ -3284,22 +3197,6 @@ void RecordLoadedModule (
     NextLoadedModuleFilename += len +1;
     Modules[NrModules++] = info;
 }
-
-
-/****************************************************************************
-**
-
-*F  SET_REVISION( <file>, <revision> )  . . . . . . . . . enter revision info
-*/
-#define SET_REVISION( file, revision ) \
-  do { \
-      UInt                    rev_rnam; \
-      Obj                     rev_str; \
-      rev_rnam = RNamName(file); \
-      C_NEW_STRING( rev_str, SyStrlen(revision), (revision) ); \
-      RESET_FILT_LIST( rev_str, FN_IS_MUTABLE ); \
-      AssPRec( Revisions, rev_rnam, rev_str ); \
-  } while (0)
 
 
 /****************************************************************************
@@ -3328,33 +3225,6 @@ void RecordLoadedModule (
 extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
 
 static Obj POST_RESTORE;
-
-/* needed in two places below */
-void CreateRevisionRecord()
-{
-    int i;
-
-    /* create a revision record / overwrite a restored one           */
-    for ( i = 0;  i < NrBuiltinModules;  i++ ) {
-        Char buf[30];
-        buf[0] = 0;
-        SyStrncat( buf, Modules[i]->name, 27 );
-        SyStrncat( buf, "_c", 2 );
-        SET_REVISION( buf, Modules[i]->revision_c );
-        buf[0] = 0;
-        SyStrncat( buf, Modules[i]->name, 27 );
-        SyStrncat( buf, "_h", 2 );
-        SET_REVISION( buf, Modules[i]->revision_h );
-    }
-
-    /* add revisions for files which are not modules                       */
-    {
-        SET_REVISION( "system_c", Revision_system_c );
-        SET_REVISION( "system_h", Revision_system_h );
-        SET_REVISION( "gasman_c", Revision_gasman_c );
-        SET_REVISION( "gasman_h", Revision_gasman_h );
-    }
-}
 
 void InitializeGap (
     int *               pargc,
@@ -3466,9 +3336,6 @@ void InitializeGap (
         SyRestoring = NULL;
 
 
-        /* overwrite revision record of kernel modules */
-        CreateRevisionRecord();
-
         /* Call POST_RESTORE which is a GAP function that now takes control, 
            calls the post restore functions and then runs a GAP session */
         if (POST_RESTORE != (Obj) 0 &&
@@ -3520,9 +3387,6 @@ void InitializeGap (
             }
         }
     }
-
-    /* create revision record of kernel modules */
-    CreateRevisionRecord();
 
     /* read the init files      
        this now actually runs the GAP session, we only get 

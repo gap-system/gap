@@ -3,15 +3,12 @@
 #W  perf6.grp              GAP Groups Library                 Volkmar Felsch
 ##                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the perfect groups of sizes 43200-87480
 ##  All data is based on Holt/Plesken: Perfect Groups, OUP 1989
 ##
-Revision.perf6_grp :=
-    "@(#)$Id$";
 
   PERFGRP[81]:=[# 43200.1
   [[1,"abcde",

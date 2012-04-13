@@ -1189,7 +1189,6 @@ gap> ReadTest("tst/algsc.tst");
 + Variable: 'orb' must have a value
 + Variable: 'permgrp' must have a value
 - 720
-+ $Id$
 + GAP4stones: 39554
 true
 

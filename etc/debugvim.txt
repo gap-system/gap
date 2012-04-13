@@ -1,4 +1,3 @@
-$Id$
 Short introduction into debugging in GAP by Thomas Breuer and Max Neunhöffer
 (see library file lib/debug.g)
 

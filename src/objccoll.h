@@ -2,7 +2,6 @@
 **
 *W  objccoll.h                  GAP source                      Werner Nickel
 **
-*H  @(#)$Id$
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
@@ -10,11 +9,6 @@
 
 #ifndef GAP_OBJCCOLL_H
 #define GAP_OBJCCOLL_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_objccoll_h =
-   "@(#)$Id$";
-#endif
 
 /****************************************************************************
 **

@@ -4,7 +4,6 @@
 #W                                                               Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##
 ##  This file contains the implementations for dictionaries.
 ##
-Revision.dict_gi :=
-    "@(#)$Id$";
 
 ##
 ## List and Sort dictionaries

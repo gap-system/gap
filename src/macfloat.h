@@ -2,7 +2,6 @@
 **
 *W  macfloat.h                      GAP source                  Steve Linton
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,11 +12,6 @@
 
 #ifndef GAP_MACFLOAT_H
 #define GAP_MACFLOAT_H
-
-#ifdef INCLUDE_DECLARATION_PART
-const char * Revision_macfloat_h =
-   "@(#)$Id$";
-#endif
 
 
 #ifdef VERY_LONG_DOUBLES
@@ -35,6 +29,14 @@ typedef double Double;
 #define STRTOD strtod
 #define MATH(name) name
 #endif
+
+#define VAL_MACFLOAT(obj) (*(Double *)ADDR_OBJ(obj))
+#define SET_VAL_MACFLOAT(obj, val) (*(Double *)ADDR_OBJ(obj) = val)
+#define IS_MACFLOAT(obj) (TNUM_OBJ(obj) == T_MACFLOAT)
+
+extern Obj NEW_MACFLOAT( Double val);
+
+
 
 /*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * **/
 

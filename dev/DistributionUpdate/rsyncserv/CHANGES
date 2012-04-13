@@ -3,6 +3,78 @@
     CHANGES of "GAP on Linux via Rsync"         (Frank Lübeck)
     ==========================================================
 
+---  Fri, 06 Jan 2012 17:44:17 +0100
+New packages:
+  GradedModules 2011.10.05
+  GradedRingForHomalg 2011.10.05
+  Modules 2011.10.05
+  Smallsemi 0.6.2
+  hecke 1.3
+Updated packages:
+  Alnuth -> 2.3.1
+  AtlasRep -> 1.5.0
+  CRISP -> 1.3.4
+  Crime -> 1.4
+  ExamplesForHomalg -> 2011.12.15
+  FR -> 1.1.2
+  FactInt -> 1.5.3
+  Forms -> 1.2.2
+  GAPDoc -> 1.3
+  Gauss -> 2011.08.22
+  GaussForHomalg -> 2011.08.10
+  GrpConst -> 2.2
+  HAP -> 1.9.5
+  HAPprime -> 0.6
+  HomalgToCAS -> 2011.11.23
+  IO -> 3.3
+  IO_ForHomalg -> 2011.07.25
+  IRREDSOL -> 1.2
+  LocalizeRingForHomalg -> 2011.09.01
+  MatricesForHomalg -> 2011.10.08
+  NQL -> 0.10
+  OpenMath -> 11.0.0
+  Polycyclic -> 2.8.1
+  RCWA -> 3.0.4
+  Repsn -> 3.0.2
+  ResClasses -> 3.0.0
+  RingsForHomalg -> 2011.12.13
+  SCO -> 2011.08.10
+  SCSCP -> 2.0.0
+  SONATA -> 2.5.1
+  homalg -> 2011.12.01
+  idrel -> 2.06
+  liealgdb -> 2.1
+  orb -> 3.8
+  recog -> 1.1
+  recogbase -> 1.1
+  simpcomp -> 1.5.3
+  toric -> 1.7
+
+---  Fri, 09 Jul 2010 16:09:55 +0200
+New packages:
+  LocalizeRingForHomalg 2010.05.28
+  MatricesForHomalg 2010.06.25
+Updated packages:
+  ExamplesForHomalg -> 2010.06.16
+  FR -> 1.1.1
+  Forms -> 1.2.1
+  GBNP -> 1.0.1
+  Gauss -> 2010.05.28
+  GaussForHomalg -> 2010.04.04
+  HAPcryst -> 0.1.9
+  HomalgToCAS -> 2010.04.04
+  IO_ForHomalg -> 2010.04.04
+  MONOID -> 3.1.4
+  NQL -> 0.09
+  OpenMath -> 10.1.0
+  RDS -> 1.2
+  RingsForHomalg -> 2010.05.14
+  SCO -> 2010.05.28
+  SCSCP -> 1.2.0
+  homalg -> 2010.06.25
+  polymaking -> 0.7.8
+  simpcomp -> 1.3.0
+
 ---  Fri, 29 Jan 2010 16:25:54 +0100
 Extra package (not from GAP site):
   Homology 1.4.3, binary package from

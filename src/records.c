@@ -2,7 +2,6 @@
 **
 *W  records.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_records_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -28,9 +25,7 @@ const char * Revision_records_c =
 #include        "calls.h"               /* generic call mechanism          */
 #include        "opers.h"               /* generic operations              */
 
-#define INCLUDE_DECLARATION_PART
 #include        "records.h"             /* generic records                 */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "bool.h"                /* booleans                        */
 
@@ -100,7 +95,7 @@ UInt            RNamName (
 
     /* look through the table until we find a free slot or the global      */
     while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-         && SyStrncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
+         && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
         pos = (pos % SizeRNam) + 1;
     }
 
@@ -112,8 +107,8 @@ UInt            RNamName (
         SET_ELM_PLIST( HashRNam, pos, rnam );
         namx[0] = '\0';
         SyStrncat( namx, name, 1023 );
-        string = NEW_STRING( SyStrlen(namx) );
-        SyStrncat( CSTR_STRING(string), namx, SyStrlen(namx) );
+        string = NEW_STRING( strlen(namx) );
+        SyStrncat( CSTR_STRING(string), namx, strlen(namx) );
         GROW_PLIST(    NamesRNam,   CountRNam );
         SET_LEN_PLIST( NamesRNam,   CountRNam );
         SET_ELM_PLIST( NamesRNam,   CountRNam, string );
@@ -253,10 +248,10 @@ Obj             NameRNamHandler (
             (Int)TNAM_OBJ(rnam), 0L,
             "you can replace <rnam> via 'return <rnam>;'" );
     }
-    name = NEW_STRING( SyStrlen( NAME_RNAM( INT_INTOBJ(rnam) ) ) );
+    name = NEW_STRING( strlen( NAME_RNAM( INT_INTOBJ(rnam) ) ) );
     SyStrncat( CSTR_STRING(name),
                NAME_RNAM( INT_INTOBJ(rnam) ),
-               SyStrlen( NAME_RNAM( INT_INTOBJ(rnam) ) ) );
+               strlen( NAME_RNAM( INT_INTOBJ(rnam) ) ) );
     return name;
 }
 
@@ -770,8 +765,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRecords ( void )
 {
-    module.revision_c = Revision_records_c;
-    module.revision_h = Revision_records_h;
     FillInVersion( &module );
     return &module;
 }

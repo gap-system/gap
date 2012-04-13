@@ -2,7 +2,6 @@
 **
 *W  dt.h                        GAP source                  Wolfgang Merkwitz
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,11 +14,6 @@
 
 #ifndef GAP_DT_H
 #define GAP_DT_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_dt_h =
-   "@(#)$Id$";
-#endif
 
 extern void  UnmarkTree(
                   Obj   z );

@@ -2,7 +2,6 @@
 ##
 #W  algsc.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -26,8 +25,6 @@
 ##  If the family has *not* the category `IsFamilyOverFullCoefficientsFamily'
 ##  then it has the component `coefficientsDomain'.
 ##
-Revision.algsc_gi :=
-    "@(#)$Id$";
 
 
 #T need for the norm of a quaternion?

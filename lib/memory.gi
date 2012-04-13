@@ -9,8 +9,6 @@
 ##
 #############################################################################
 
-Revision.memory_gi :=
-  "@(#)$Id$";
 
 InstallMethod(TypeOfObjWithMemory,"generic",true,[IsFamily],0,
 function(fam)

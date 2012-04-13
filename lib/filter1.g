@@ -2,7 +2,6 @@
 ##
 #W  filter1.g                    GAP library                     Steve Linton
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  Speed-critical code moved from filter.g so that it can be
 ##  statically compiled
 ##
-Revision.filter1_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

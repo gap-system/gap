@@ -4,7 +4,6 @@
 ##                                                                Stefan Kohl
 ##                                                          Laurent Bartholdi
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,9 +11,6 @@
 ##
 ##  This file deals with macfloats 
 ##
-Revision.ieee754_g :=
-
-  "@(#)$Id$";
 
 #############################################################################
 ##
@@ -140,6 +136,21 @@ BindGlobal("IEEE754FLOAT", rec(
     creator := MACFLOAT_STRING,
     eager := 'l'));
 
+DeclareCategory("IsIEEE754PseudoField", IsFloatPseudoField);
+BindGlobal("IEEE754_PSEUDOFIELD",
+        Objectify(NewType(CollectionsFamily(FloatsFamily),
+                IsIEEE754PseudoField and IsAttributeStoringRep),rec()));
+SetName(IEEE754_PSEUDOFIELD, "IEEE754_PSEUDOFIELD");
+
+SetLeftActingDomain(IEEE754_PSEUDOFIELD,Rationals);
+SetCharacteristic(IEEE754_PSEUDOFIELD,0);
+SetDimension(IEEE754_PSEUDOFIELD,infinity);
+SetSize(IEEE754_PSEUDOFIELD,infinity);
+SetIsWholeFamily(IEEE754_PSEUDOFIELD,true);
+SetZero(IEEE754_PSEUDOFIELD,MACFLOAT_INT(0));
+SetOne(IEEE754_PSEUDOFIELD,MACFLOAT_INT(1));
+InstallMethod( \in, [IsIEEE754FloatRep,IsIEEE754PseudoField], ReturnTrue);
+        
 InstallMethod( PrecisionFloat, "for macfloats", [ IsIEEE754FloatRep ], x->IEEE754FLOAT.constants.MANT_DIG );
 
 IEEE754FLOAT.constants.EPSILON := LDEXP_MACFLOAT(MACFLOAT_INT(1),1-IEEE754FLOAT.constants.MANT_DIG);

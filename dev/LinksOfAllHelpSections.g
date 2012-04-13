@@ -8,7 +8,6 @@
 ##  First load all the documentation you want to cover. Then read this
 ##  file. The result is written to a file "AllLinksOfAllHelpSections.data".
 ##
-##  $Id$
 ##  
 
 NOTPKG := ["gpisotyp", "genus", "aclib","xgap"];

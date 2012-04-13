@@ -2,8 +2,6 @@
 ##
 #W  id1920.adr             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id1920_adr :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[1920].next[1].next[122]:=
 rec(

@@ -2,7 +2,6 @@
 ##
 #W  semicong.gi                  GAP library   	               Andrew Solomon
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  Robert F. Morse
 ##  Andrew Solomon
 ##
-Revision.semicong_gi :=
-    "@(#)$Id$";
 
 ######################################################################
 ##

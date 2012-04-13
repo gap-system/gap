@@ -3,8 +3,6 @@
 #W  sml1536.caa            GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1536_caa :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1536 ].npnil[ 1 ][ 1 ] :=
 [ 398546451583909056150611899856029594432093061897296624765,

@@ -3,8 +3,6 @@
 #W  nor2.hc                GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.nor2_hc :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 8 ][ 3 ] :=
 rec( pos := [ 1, -22, 39, -63, 87, -200, 316, -381, 443, -458, 497, -502, 531

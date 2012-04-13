@@ -2,7 +2,6 @@
 ##
 #W  vspcmat.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -32,8 +31,6 @@
 ##  5. Methods for full matrix spaces
 ##  7. Methods for mutable bases of Gaussian matrix spaces
 ##
-Revision.vspcmat_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

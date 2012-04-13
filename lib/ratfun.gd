@@ -3,7 +3,6 @@
 #W  ratfun.gd                   GAP Library                      Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci.,  University of St  Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains the categories,  attributes, properties and operations
 ##  for  rational functions, Laurent polynomials   and polynomials and  their
 ##  families.
-Revision.ratfun_gd :=
-    "@(#)$Id$";
 
 ##  Warning:
 ##  If the mechanism for storing attributes is changed,
@@ -954,6 +951,7 @@ DeclareAttribute( "DegreeOfLaurentPolynomial",
     IsLaurentPolynomial );
 DeclareSynonym( "DegreeOfUnivariateLaurentPolynomial",
   DegreeOfLaurentPolynomial);
+BindGlobal("DEGREE_ZERO_LAURPOL",Ninfinity);
 
 #############################################################################
 ##
@@ -1107,7 +1105,7 @@ DeclareOperation("Value",[IsPolynomialFunction,IsList,IsList]);
 ##  A permutation <A>perm</A> acts on the multivariate polynomial <A>poly</A>
 ##  by permuting the indeterminates as it permutes points.
 ##  <Example><![CDATA[
-##  gap> x:=Indeterminate(Rationals,"x");; y:=Indeterminate(Rationals,"y");;
+##  gap> x:=Indeterminate(Rationals,1);; y:=Indeterminate(Rationals,2);;
 ##  gap> OnIndeterminates(x^7*y+x*y^4,(1,17)(2,28));
 ##  x_17^7*x_28+x_17*x_28^4
 ##  gap> Stabilizer(Group((1,2,3,4),(1,2)),x*y,OnIndeterminates);
@@ -1385,9 +1383,10 @@ DeclareOperation( "Resultant",[ IsPolynomial, IsPolynomial, IsPosInt]);
 ##  indeterminate can be given as <A>ind</A>.
 ##  <Example><![CDATA[
 ##  gap> Discriminant(f,1);
-##  20503125*y^28+262144*y^25+27337500*y^22+19208040*y^21+1474560*y^17+13668750*y^\
-##  16+18225000*y^15+6075000*y^14+1105920*y^13+3037500*y^10+6489720*y^9+4050000*y^\
-##  8+900000*y^7+62208*y^5+253125*y^4+675000*y^3+675000*y^2+300000*y+50000
+##  20503125*y^28+262144*y^25+27337500*y^22+19208040*y^21+1474560*y^17+136\
+##  68750*y^16+18225000*y^15+6075000*y^14+1105920*y^13+3037500*y^10+648972\
+##  0*y^9+4050000*y^8+900000*y^7+62208*y^5+253125*y^4+675000*y^3+675000*y^\
+##  2+300000*y+50000
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1497,7 +1496,7 @@ DeclareGlobalFunction("QuotientPolynomialsExtRep");
 ##  <Func Name="QuotRemLaurpols" Arg='left,right,mode'/>
 ##
 ##  <Description>
-##  This internal function for euclidean divison of polynomials
+##  This internal function for euclidean division of polynomials
 ##  takes two polynomials <A>left</A> and <A>right</A>
 ##  and computes their quotient. No test is performed whether the arguments
 ##  indeed  are polynomials.

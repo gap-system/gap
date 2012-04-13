@@ -9,22 +9,21 @@
 ##  This file contains the methods  for attributes, properties and operations
 ##  for polynomial rings and function fields.
 ##
-Revision.ringpoly_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
 ##
 #M  GiveNumbersNIndeterminates(<ratfunfam>,<count>,<names>,<avoid>)
 BindGlobal("GiveNumbersNIndeterminates",function(rfam,cnt,nam,avoid)
-local opt, idn, nbound, p, i,str;
-  opt:=0;
-  if ValueOption("old")=true then
-    opt:=1;
-  elif ValueOption("new")=true then
-    opt:=2;
-  elif GAPInfo.UserPreferences.IndeterminateNameReuse <> 0 then
-    opt:= GAPInfo.UserPreferences.IndeterminateNameReuse;
+local reuse, idn, nbound, p, i,str;
+  reuse:=true;
+  # TODO: The following check could be simplified if we are willing to
+  # change semantics of the options "new" and "old" a bit: Currently,
+  # "old" has precedence, which is the why this check is a bit more
+  # complicated than one might expect. But perhaps we would like to
+  # get rid of option "old" completely?
+  if ValueOption("old")<>true and ValueOption("new")=true then
+    reuse:=false;
   fi;
 
   #avoid:=List(avoid,IndeterminateNumberOfLaurentPolynomial);
@@ -47,33 +46,25 @@ local opt, idn, nbound, p, i,str;
      and ForAll(str{[3..Length(str)]},IsDigitChar) then
       p:=Int(str{[3..Length(str)]});
       if IsPosInt(p) then
-	Add(idn,p);
+        Add(idn,p);
       else
-	p:=fail;
+        p:=fail;
       fi;
-    elif nbound and opt<>2 and IsBound(rfam!.namesIndets) then
+    elif nbound and reuse and IsBound(rfam!.namesIndets) then
       # is the indeterminate already used?
       p:=Position(rfam!.namesIndets,str);
       if p<>fail then
-	if opt<>1 then
-	  Error(
-  "Indeterminate ``",str,"'' is already used.\n",
-  "Use the `old' option; e.g. Indeterminate(Rationals,\"",str,"\":old);\n",
-  "  to re-use the variable already defined with this name and the\n",
-  "`new' option; e.g. Indeterminate(Rationals,\"",str,"\":new);\n",
-  "  to create a new variable with the duplicate name.\n");
-	else
-	  if p in avoid then
-	    Info(InfoWarning,1,
-  "The `old' option to re-use variables was given, but the variable with this\n",
-  "#I  name was explicitly to be avoided. I assume the `new' option was given.");
+        if p in avoid then
+          Info(InfoWarning,1,
+  "A variable with the name '", str, "' already exists, yet the variable\n",
+  "#I  with this name was explicitly to be avoided. I will create a\n",
+  "#I  new variables with the same name.");
 
-	    p:=fail;
-	  else
-	    # reuse the old variable
-	    Add(idn,p);
-	  fi;
-	fi;
+          p:=fail;
+        else
+          # reuse the old variable
+          Add(idn,p);
+        fi;
       fi;
     else
       p:=fail;
@@ -82,12 +73,12 @@ local opt, idn, nbound, p, i,str;
     if p=fail then
       # skip unwanted indeterminates
       while (i in avoid) or (nbound and HasIndeterminateName(rfam,i)) do
-	i:=i+1;
+        i:=i+1;
       od;
       Add(idn,i);
 
       if nbound then
-	SetIndeterminateName(rfam,i,str);
+        SetIndeterminateName(rfam,i,str);
       fi;
     fi;
     i:=i+1;
@@ -325,7 +316,7 @@ end);
 InstallMethod( ViewString,
                "for a polynomial ring", true,  [ IsPolynomialRing ], 0,
 
-  R -> Concatenation(String(LeftActingDomain(R)),
+  R -> Concatenation(ViewString(LeftActingDomain(R)),
                      Filtered(String(IndeterminatesOfPolynomialRing(R)),
                               ch -> ch <> ' ')) );
 
@@ -549,7 +540,7 @@ function( ogens )
 
     univ:=Filtered(ogens{g},
 	     i->DegreeOfUnivariateLaurentPolynomial(i)>=0 and
-		DegreeOfUnivariateLaurentPolynomial(i)<infinity);
+		DegreeOfUnivariateLaurentPolynomial(i)<>DEGREE_ZERO_LAURPOL);
 
     gens:=ogens{Difference([1..Length(ogens)],g)};
 
@@ -628,14 +619,16 @@ end);
 
 #############################################################################
 ##
-#M  StandardAssociate( <pring>, <upol> )
+#M  StandardAssociateUnit( <pring>, <upol> )
 ##
-InstallMethod(StandardAssociate,"normalize leading coefficient",IsCollsElms,
-  [IsPolynomialRing, IsPolynomial],0,
+InstallMethod(StandardAssociateUnit,
+  "for a polynomial ring and a polynomial",
+  IsCollsElms,
+  [IsPolynomialRing, IsPolynomial],
 function(R,f)
-local c;
+  local c;
   c:=LeadingCoefficient(f);
-  return f*StandardAssociate(CoefficientsRing(R),c)/c;
+  return StandardAssociateUnit(CoefficientsRing(R),c);
 end);
 
 InstallMethod(FunctionField,"indetlist",true,[IsRing,IsList],
@@ -671,13 +664,21 @@ function(r,n)
   type := IsFunctionField and IsAttributeStoringRep and IsLeftModule 
           and IsAlgebraWithOne;
 
-
-  # Polynomial rings over commutative rings are themselves commutative.
-  if HasIsCommutative(r) and IsCommutative(r) then
-    type:= type and IsCommutative;
+  # If the coefficients form an integral ring, then the function field is also a field
+  if HasIsIntegralRing(r) and IsIntegralRing(r) then
+    type:= type and IsField;
   fi;
 
-  fcfl := Objectify(NewType(CollectionsFamily(rfun),type),rec());
+  fcfl := Objectify(NewType(CollectionsFamily(rfun),type),rec());;
+
+  # The function field is commutative if and only if the coefficient ring is.
+  if HasIsCommutative(r) then
+    SetIsCommutative(fcfl, IsCommutative(r));
+  fi;
+  # ... same for associative ...
+  if HasIsAssociative(r) then
+    SetIsAssociative(fcfl, IsAssociative(r));
+  fi;
 
   # set the left acting domain
   SetLeftActingDomain(fcfl,r);
@@ -686,7 +687,6 @@ function(r,n)
   Setter(IndeterminatesOfFunctionField)(fcfl,ind);
 
   # set known properties
-  SetIsFinite(fcfl,false);
   SetIsFiniteDimensional(fcfl,false);
   SetSize(fcfl,infinity);
 

@@ -2,7 +2,6 @@
 **
 *W  listfunc.c                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_listfunc_c =
-   "@(#)$Id$";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -39,9 +36,7 @@ const char * Revision_listfunc_c =
 
 #include        "permutat.h"            /* permutations                    */
 
-#define INCLUDE_DECLARATION_PART
 #include        "listfunc.h"            /* functions for generic lists     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "plist.h"               /* plain lists                     */
 #include        "set.h"                 /* plain sets                      */
@@ -240,8 +235,7 @@ Obj             FuncAPPEND_LIST_INTR (
         len2 = GET_LEN_STRING(list2);
         GROW_STRING(list1, len1 + len2);
         SET_LEN_STRING(list1, len1 + len2);
-        memcpy( (void *)(CHARS_STRING(list1) + len1), 
-                (void *)CHARS_STRING(list2), len2 + 1);
+        memcpy( CHARS_STRING(list1) + len1, CHARS_STRING(list2), len2 );
         /* ensure trailing zero */
         *(CHARS_STRING(list1) + len1 + len2) = 0;    
         return (Obj) 0;
@@ -2041,8 +2035,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoListFunc ( void )
 {
-    module.revision_c = Revision_listfunc_c;
-    module.revision_h = Revision_listfunc_h;
     FillInVersion( &module );
     return &module;
 }

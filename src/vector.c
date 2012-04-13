@@ -2,7 +2,6 @@
 **
 *W  vector.c                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_vector_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -43,9 +40,7 @@ const char * Revision_vector_c =
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "vector.h"              /* functions for plain vectors     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "range.h"               /* ranges                          */
 
@@ -803,8 +798,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoVector ( void )
 {
-    module.revision_c = Revision_vector_c;
-    module.revision_h = Revision_vector_h;
     FillInVersion( &module );
     return &module;
 }

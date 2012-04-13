@@ -2,7 +2,6 @@
 ##
 #W  grpramat.gi                 GAP Library                     Franz Gähler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains operations for matrix groups over the rationals
 ##
-Revision.grpramat_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

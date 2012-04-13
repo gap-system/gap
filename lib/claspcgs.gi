@@ -2,7 +2,6 @@
 ##
 #W  claspcgs.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  functions   rely only on   the existence of pcgs,  not  on the particular
 ##  representation of the groups.
 ##
-Revision.claspcgs_gi:=
-    "@(#)$Id$";
 
 #############################################################################
 ##

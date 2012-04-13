@@ -3,8 +3,6 @@
 #W  sml4802.z              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml4802_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 4802 ].pnil := rec( syl :=
 [ 1, 2, 2, 3, 3, 3, 4, 5, 5, 5, 6, 7, 7, 7, 8, 9, 9, 9, 10, 10, 10, 11, 11,

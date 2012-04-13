@@ -1,0 +1,27 @@
+#!/bin/sh
+# (C) Frank Lübeck
+
+
+mypath=`dirname  $0`/
+
+source ${mypath}setvarpkg
+
+echo "Marking all latest versions of packages as stable"
+echo "This should be done only once at the initialisation"
+read -n 1 -p "Are you sure to continue? (y/n)> " ANSWER
+echo
+
+if [ $ANSWER = "y" ]; then
+
+$GAP -r -b -q  ${mypath}PackageInfoTools.g  << EOI
+ANSI_COLORS := false;;
+Unbind(PrintPromptHook);
+Print("\n");
+
+MarkAllLatestStable( "${PkgReposDir}" );
+quit;
+EOI
+
+else
+  echo "I will not do it, bye."
+fi

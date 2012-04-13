@@ -2,7 +2,6 @@
 ##  
 ##  Update.g                                                (C) Frank Lübeck
 ##  
-##      $Id$
 ##  
 ##  This file contains some utilities for extracting information from the
 ##  dev/Update file. 

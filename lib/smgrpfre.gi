@@ -3,7 +3,6 @@
 #W  smgrpfre.gi                 GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 ##  associative words.
 ##  For the external representation see the file 'wordrep.gi'.
 ##
-Revision.smgrpfre_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

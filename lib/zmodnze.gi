@@ -2,30 +2,27 @@
 ##
 #W  zmodnze.gi                   GAP library              Alexander Konovalov
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for the elements of the rings $Z/nZ(epsilon)$,
-##  where epsilon is the primitive root of unity of degree m (not depending 
+##  where epsilon is the primitive root of unity of degree m (not depending
 ##  on n).
 ##  The following approach was used to construct such rings. First we create
-##  a ring of integral cyclotomics in the m-th cyclotomic field. Then we 
-##  construct from its elememts a new ring, defining operations modulo n. 
+##  a ring of integral cyclotomics in the m-th cyclotomic field. Then we
+##  construct from its elements a new ring, defining operations modulo n.
 ##  Thus, elements of the ring $Z/nz(epsilon)$ internally are represented
-##  as cyclotomic interers.
+##  as cyclotomic integers.
 ##
-Revision.zmodnze_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
-#
+#
 # RingOfIntegralCyclotomics( F )
 #
-# Let F be a cyclotomic field. This function returns the ring of integral 
+# Let F be a cyclotomic field. This function returns the ring of integral
 # cyclotomics of the field F
 #
 InstallGlobalFunction( RingOfIntegralCyclotomics,
@@ -42,7 +39,7 @@ end );
 
 
 #############################################################################
-#
+#
 # ZmodnZepsObj( Fam, celt )
 #
 # This function takes a cyclotomic element celt and creates an object in a
@@ -68,10 +65,10 @@ end );
 
 
 #############################################################################
-#
+#
 # ZmodnZeps( n, m)
 #
-# This function returns the ring $Z/nZ(epsilon)$, where n is a positive 
+# This function returns the ring $Z/nZ(epsilon)$, where n is a positive
 # integer and epsilon is a primitive root of unity of degree m.
 # Alternatively, the same result may me obtained using the command
 # RingInt(CF(m)) mod n
@@ -103,10 +100,11 @@ end );
 
 
 #############################################################################
-#
+
+#
 # PrintObj( R )
-# 
-# If R is the ring $Z/nZ(epsilon)$, where epsilon^m=1, then it will be 
+#
+# If R is the ring $Z/nZ(epsilon)$, where epsilon^m=1, then it will be
 # printed in the following form:
 # RingInt(CF(m)) mod n
 #
@@ -124,11 +122,11 @@ end );
 
 
 #############################################################################
-#
+#
 # PrintObj( x )
-# 
+#
 # If x is an element of the ring $Z/nZ(epsilon)$, where epsilon^m=1, and celt
-# is its underlying cyclotomic element (thus, its internal representation), 
+# is its underlying cyclotomic element (thus, its internal representation),
 # then x will be printed in the following form:
 # ( celt mod n )
 #
@@ -140,7 +138,7 @@ function( x )
 end );
 
 
-#############################################################################
+#############################################################################
 #
 # x=y
 #
@@ -156,13 +154,13 @@ function( x, y )
   return x![1] = y![1]; end );
 
 
-########################################################################
+#############################################################################
 #
 # x < y
 #
-# this is just extending of relation "<" implemented in GAP for 
-# cyclotomics. Thus, x < y iff the same relation holds for underlying 
-# cyclotomics, since their canonical form is uniquely determined by 
+# this is just extending of relation "<" implemented in GAP for
+# cyclotomics. Thus, x < y iff the same relation holds for underlying
+# cyclotomics, since their canonical form is uniquely determined by
 # ZmodnZepsObj
 #
 InstallMethod( \<,
@@ -175,7 +173,7 @@ function( x, y )
 end );
 
 
-########################################################################
+#############################################################################
 #
 #  x+y
 #
@@ -183,7 +181,7 @@ end );
 #  x in Z/nZ(m), y Cyclotomic
 #  x Cyclotomic, y in Z/nZ(m)
 #
-#  These operations are implemened via appropriate operations over 
+#  These operations are implemented via appropriate operations over
 #  (underlying) cyclotomics and then 'objectifying' the result
 #
 InstallMethod( \+,
@@ -209,7 +207,7 @@ function( x, y )
   return ZmodnZepsObj( FamilyObj( y ), x + y![1] );
 end );
 
-########################################################################
+#############################################################################
 #
 #  x * y
 #  x Cyclotomic , y in Z/nZ(m)
@@ -218,7 +216,7 @@ end );
 #  x in Z/nZ    , y in Z/nZ(m)
 #  x in Z/nZ(m) , y in Z/nZ(m)
 #
-#  These operations are implemened via appropriate operations over 
+#  These operations are implemented via appropriate operations over
 #  (underlying) cyclotomics and then 'objectifying' the result
 #
 InstallMethod( \*,
@@ -263,7 +261,7 @@ function( x, y )
 end );
 
 
-########################################################################
+#############################################################################
 #
 # Zero
 #
@@ -272,7 +270,7 @@ InstallMethod( ZeroOp,
     [ IsZmodnZepsObj ],
     x -> ZmodnZepsObj( FamilyObj( x ), 0 ) );
 
-########################################################################
+#############################################################################
 #
 # One
 #
@@ -282,7 +280,7 @@ InstallMethod( OneOp,
 elm -> ZmodnZepsObj( FamilyObj( elm ), 1 ) );
 
 
-########################################################################
+#############################################################################
 #
 # -x
 #
@@ -292,7 +290,7 @@ InstallMethod( AdditiveInverseOp,
 x -> ZmodnZepsObj( FamilyObj( x ), AdditiveInverse( x![1] ) ) );
 
 
-########################################################################
+#############################################################################
 #
 # Cyclotomic
 #
@@ -304,7 +302,7 @@ InstallMethod( Cyclotomic,
 z -> z![1] );
 
 
-########################################################################
+#############################################################################
 #
 # mod
 #
@@ -319,7 +317,7 @@ function( R, n )
 end );
 
 
-########################################################################
+#############################################################################
 #
 # Size of Z/nZ(m) is equal to n^Phi(m)
 #
@@ -330,7 +328,7 @@ R -> ElementsFamily(FamilyObj(R))!.modulus^
      Phi(ElementsFamily(FamilyObj(R))!.degree));
 
 
-########################################################################
+#############################################################################
 #
 # IsFinite = true
 #
@@ -338,7 +336,7 @@ InstallTrueMethod( IsFinite,
 CategoryCollections( IsZmodnZepsObj ) and IsDomain );
 
 
-########################################################################
+#############################################################################
 #
 # Random
 #
@@ -355,7 +353,7 @@ function(R)
 end );
 
 
-########################################################################
+#############################################################################
 #
 # Enumerator
 #
@@ -374,7 +372,7 @@ end );
 
 
 
-########################################################################
+#############################################################################
 #
 # IsUnit( R, elm )
 #
@@ -406,7 +404,7 @@ function( R, elm )
 end );
 
 
-########################################################################
+#############################################################################
 #
 # IsUnit( elm )
 #
@@ -434,7 +432,7 @@ function( elm )
 end );
 
 
-########################################################################
+#############################################################################
 #
 # x^-1
 # calculates the inverse element building the list of its powers
@@ -458,12 +456,12 @@ function( elm )
 end );
 
 
-########################################################################
+#############################################################################
 #
 # Units
 #
 # now simply generates the group using all units.
-# TODO: Improve by minimalizing the list of generators
+# TODO: Improve by minimizing the list of generators
 #
 InstallMethod( Units,
   "zmodnze : for full ring Z/nZ(m)",

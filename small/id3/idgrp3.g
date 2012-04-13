@@ -6,8 +6,6 @@
 ##  This file contains the identification routines for groups of order
 ##  2^n * p with 3 <= n <= 8 and p an odd prime
 ##
-Revision.idgrp3_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

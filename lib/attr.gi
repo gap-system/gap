@@ -2,7 +2,6 @@
 ##
 #W  attr.gi                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file defines some functions that tweak the behaviour of attributes
 ##
-Revision.attr_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

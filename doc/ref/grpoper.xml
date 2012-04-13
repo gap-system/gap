@@ -86,9 +86,6 @@ in the following ways:
   Here <M>gens</M> must be a set of generators of <M>G</M> and <M>acts</M>
   the images of <M>gens</M> under <M>\varphi</M>.
   <M>\mu</M> is the acting function for <M>H</M>.
-<!-- strange sentence in the old version:
-     the call to <C>ExampleActionFunction</C> implements the induced action
-     of <A>G</A>. -->
   Again, the function <M>\mu</M> is optional
   and <Ref Func="OnPoints"/> is used as a default.
   <P/>
@@ -151,7 +148,7 @@ end;
 <P/>
 Note that this function <E>must</E> implement a group action from the
 <E>right</E>.
-This is not verified by &GAP; and results are unpredicatble otherwise.
+This is not verified by &GAP; and results are unpredictable otherwise.
 
 <#Include Label="OnPoints">
 <#Include Label="OnRight">
@@ -178,8 +175,8 @@ to implement a permutation action on a domain:
 gap> g:=Group((1,2,3),(1,2));;
 gap> dom:=[ "a", "b", "c" ];;
 gap> Orbit(g,dom,Permuted);
-[ [ "a", "b", "c" ], [ "c", "a", "b" ], [ "b", "a", "c" ], [ "b", "c", "a" ], 
-  [ "a", "c", "b" ], [ "c", "b", "a" ] ]
+[ [ "a", "b", "c" ], [ "c", "a", "b" ], [ "b", "a", "c" ], 
+  [ "b", "c", "a" ], [ "a", "c", "b" ], [ "c", "b", "a" ] ]
 ]]></Example>
 </Description>
 </ManSection>

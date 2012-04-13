@@ -5,7 +5,6 @@
 *W                                                         & Martin Schönert
 *W                                                         & Alexander Hulpke
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_costab_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -38,9 +35,7 @@ const char * Revision_costab_c =
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "costab.h"              /* coset table                     */
-#undef  INCLUDE_DECLARATION_PART
 
 
 /****************************************************************************
@@ -83,6 +78,22 @@ static Int      dedprint;               /* print flag for warning          */
 static Int      wordList [1024];        /* coset rep word buffer           */
 static Int      wordSize = 1023;        /* maximal no. of coset rep words  */
 
+/* clean out global Obj-type variables  to avoid hogging memory*/
+static void CleanOut( void )
+{
+  objRel = (Obj) 0;
+  objNums = (Obj) 0;
+  objTable = (Obj) 0;
+  objTable2 = (Obj) 0;
+  objNext = (Obj) 0;
+  objPrev = (Obj) 0;
+  objFactor = (Obj) 0;
+  objTree = (Obj) 0;
+  objTree1 = (Obj) 0;
+  objTree2 = (Obj) 0;
+  objExponent = (Obj) 0;
+  objWordValue = (Obj) 0;
+}
 
 /****************************************************************************
 **
@@ -181,7 +192,7 @@ Obj FuncApplyRel (
 **  'dedgen',  'dedcos',  'dedfst',  'dedlst',  'dedSize' and 'objTable'  are
 **  assumed to be known as static variables.
 */
-static void CompressDeductionList ()
+static void CompressDeductionList ( void )
 {
     Obj               * ptTable;          /* pointer to the coset table    */
     Int                 i;
@@ -558,6 +569,9 @@ Obj FuncMakeConsequences (
     SET_ELM_PLIST( list, 8, INTOBJ_INT( firstDef  ) );
     SET_ELM_PLIST( list, 9, INTOBJ_INT( lastDef   ) );
 
+    /* clean out  */
+    CleanOut();
+
     return INTOBJ_INT( nrdel );
 }
 
@@ -665,6 +679,9 @@ Obj FuncMakeConsequencesPres (
 
         apply++;
     }
+
+    /* clean out  */
+    CleanOut();
 
     return INTOBJ_INT( undefined );
 }
@@ -781,6 +798,9 @@ Obj FuncStandardizeTableC (
         SET_LEN_PLIST( ptTable[2*j-1], lcos );
         SET_LEN_PLIST( ptTable[2*j  ], lcos );
     }
+
+    /* clean out  */
+    CleanOut();
 
     /* return void                                                         */
     return 0;
@@ -2752,6 +2772,10 @@ Obj FuncMakeConsequences2 (
     if ( treeType == 1 ) {
         SET_ELM_PLIST( list, 16, objExponent );
     }
+
+    /* clean out  */
+    CleanOut();
+
     return INTOBJ_INT(nrdel);
 }
 
@@ -3364,8 +3388,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCosetTable ( void )
 {
-    module.revision_c = Revision_costab_c;
-    module.revision_h = Revision_costab_h;
     FillInVersion( &module );
     return &module;
 }

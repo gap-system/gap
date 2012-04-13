@@ -3,7 +3,6 @@
 #W  coll.gi                     GAP library                  Martin Schönert
 #W                                                            & Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains methods for collections in general.
 ##
-Revision.coll_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -736,11 +733,20 @@ InstallGlobalFunction( List,
       else
         func:= arg[2];
         res := EmptyPlist(Length(C));
-        i   := 0;
-        for elm in C do
-          i:= i+1;
-          res[i]:= func( elm );
-        od;
+        # hack to save type adjustments and conversions (e.g. to blist)
+        if Length(C) > 0 then res[Length(C)] := 1; fi;
+        if IsDenseList(C) then
+          # save the IsBound tests from general case
+          for i in [1..Length(C)] do
+            res[i] := func( C[i] );
+          od;
+        else
+          for i in [1..Length(C)] do
+            if IsBound(C[i]) then
+              res[i] := func( C[i] );
+            fi;
+          od;
+        fi;
         return res;
       fi;
     else
@@ -821,9 +827,10 @@ InstallMethod( SortedList, "for a list or collection",
     true, [ IsListOrCollection ], 0,
 function(C)
 local l;
-  l:=List(C);
-  if not IsDenseList(l) then
-    l:=List(l,i->i);
+  if IsList(C) then
+    l := Compacted(C);
+  else
+    l := List(C);
   fi;
   Sort(l);
   return l;

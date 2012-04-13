@@ -2,8 +2,6 @@
 ##
 #W  id384.awb              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id384_awb :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[384].next[49].next[2]:=
 rec(

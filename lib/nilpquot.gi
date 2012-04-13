@@ -2,10 +2,7 @@
 ##  
 #W  nilpquot.gi                 GAP Library                     Werner Nickel
 ##
-#H  $Id$
 ##
-Revision.nilpquot_gi :=
-    "$Id$";
 
 
 LeftNormedComm := function( list )

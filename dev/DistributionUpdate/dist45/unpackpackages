@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id$
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'
@@ -22,29 +21,6 @@ $line
 rm -rf pkgnow
 mkdir -p pkgnow/${DISTNAME}/pkg
 cd pkgnow/${DISTNAME}/pkg
-
-echo 'WARNING: TEMPORARY TRICK!!! Getting archives of packages with missing'
-echo 'PackageInfo.g files directly from autors homepages'
-# The packages below will not come as a part of the merged packages archive,
-# so we have to plug them in "manually".
-# This step will be no longer needed when all GAP 4.5-only packages 
-# will inform us about their PackageInfo.g location.
-# NOTE: a special question would be TomLib with two archives, one optional.
-
-echo 'Adding Browse package'
-rm -rf Browse
-wget -nv http://www.math.rwth-aachen.de/~Browse/Browse-1.4.tar.gz
-gzip -dc Browse-1.4.tar.gz | tar xp
-rm Browse-1.4.tar.gz
-
-echo 'Adding tomlib package'
-rm -rf tomlib
-wget -nv http://schmidt.nuigalway.ie/tomlib/tomlib1r2p1.tar.gz
-gzip -dc tomlib1r2p1.tar.gz | tar xp
-rm tomlib1r2p1.tar.gz
-wget -nv http://schmidt.nuigalway.ie/tomlib/tomlibxt1r2p1.tar.gz
-gzip -dc tomlibxt1r2p1.tar.gz | tar xp
-rm tomlibxt1r2p1.tar.gz
 
 # these exceptions above have to be classified here, while for the
 # rest of the packages we will get the metainformation together with

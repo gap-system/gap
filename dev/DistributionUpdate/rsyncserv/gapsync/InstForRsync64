@@ -1,6 +1,5 @@
-#!/usr/bin/tcsh
+#!/bin/bash
 
-# $Id$
 
 # You need 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
 # And the files: gap4r4.tar.gz, packages-XXX.tar.gz, tools4r4.tar.gz,
@@ -8,47 +7,17 @@
 
 # Frank Lübeck, Frank.Luebeck@Math.RWTH-Aachen.De for questions and complaints.
 
-# Note, that this isn't and is not intended to be a sophisticated script.
-# Even if it doesn't work completely automatically for you, you may get 
-# an idea what to do for a complete installation of GAP.
+setenv NAME "4r5"
+#setenv COPTS ""
+#setenv LOPTS ""
+
+#tar xzvpf gap{$NAME}p*.tar.gz
+unzip L18743-4734TMP.zip
+
+cd gap4r5
 
 
-setenv NAME "4r4"
-
-# adjust settings as you like, the example is  for gcc under Linux ix86
-# (use settings like "-v8a -fast" or "-v9a -fast" for 32bit or 64bit
-# compilations with SUN's compilers under Solaris, and similar for other
-# systems)
-# on x86_64 bit:
-setenv COPTS ""
-
-# you can also set this to choose a C compiler
-#setenv CC ...
-
-# and you can fix extra linker options, e.g.,
-setenv LOPTS "-static"
-
-tar xzvpf gap{$NAME}p*.tar.gz
-tar xzvpf tools{$NAME}p*.tar.gz
-tar xzvpf xtom1*.tar.gz
-rm -f gap$NAME/GAP\ \*
-rm -f gap$NAME/bin/*.exe
-rm -f gap$NAME/bin/*.dll
-rm -rf gap$NAME/bin/*cygwin*
-cd gap$NAME/pkg
-tar xzvpf ../../packages-*.tar.gz
-#tar xzvpf ../../tomlibx*.tar.gz
-# we fetch 2 not yet re-distributed packages
-wget http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/cvec/cvec-1.7.tar.gz
-tar xzf cvec*.tar.gz
-rm -f cvec*.tar.gz
-cp cvec/README README.cvec
-rm -f cvec/doc/manual.ps cvec/doc/manual.dvi
-# and another one in the end (needs password)
-
-cd ..
-
-# quite a few packages have unpleasant file permissions
+# Some packages have a few unpleasant file permissions
 # - we remove write permissions for group and world
 # - we give read permissions for everyone
 # - we give write permissions for user
@@ -60,14 +29,43 @@ chmod -R g+r pkg
 chmod -R o+r pkg
 chmod -R u+w pkg
 
+# we want fat binaries for GMP
+cd extern
+mv Makefile.in Makefile.in.orig
+sed -e "s/configure/configure --enable-fat/" < Makefile.in.orig > Makefile.in
+cd ..
 
 # compile GAP
 ./configure
-make
+make config
+make -j4
+# reduce dependencies
+cd bin/x86_64-unknown-linux-gnu-gcc-default64
+
+# with newer ld:
+#gcc -g  -export-dynamic  -o gap ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o -l:libreadline.a -l:libncurses.a  -l:libm.a  extern/gmp/lib/libgmp.a  -ldl 
+gcc -g  -export-dynamic  -o gap ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  extern/gmp/lib/libgmp.a  -ldl 
+strip gap
+# store away until pargap is built
+cp gap gapnompi
+cp gap.o gap.o.nompi
+cd ../..
+
+
 #unsetenv COPTS
 #unsetenv LOPTS
 # we collect all start scripts in 'bin'
-cp bin/`sed -e 's/GAParch=//' sysinfo.gap`/gac bin
+cp bin/`grep ^GAParch= sysinfo.gap | sed -e 's/GAParch=//'`/gac bin
+
+# unpack tools
+cd ..
+tar xzf gap4r5/etc/tools.tar.gz
+cd gap4r5
+
+# make various targets in Makefile-default64 work
+cd bin
+rm -f gap-default64.sh
+ln -s ../local/bin/gap64 gap-default64.sh
 
 # now the packages
 cd pkg
@@ -80,8 +78,9 @@ cd ..
 
 ### program is not 64-bit clean but we can compile a 32-bit binary
 cd anupq
-./configure ../..
+./configure 
 make linux-iX86-gcc2 COPTS="-m32 -g" LOPTS="-m32 -g -static"
+strip bin/*/pq
 cd ..
 
 # You may not want a writable directory here! In this case substitute
@@ -96,7 +95,19 @@ cd ..
 # other packages is produced in the end.
 cd Browse
 ./configure
+# reduce dependencies
+# for this we need .a libs compiled with -fPIC, done as follows
+#   apt-get source ncurses
+#   cd ncurses-*
+#   debian/rules build CFLAGS="-fPIC"
+#   mkdir -p /users/luebeck/piclibs/64/ncurses/
+#   cp -a obj* /users/luebeck/piclibs/64/ncurses/
+mv Makefile Makefile.orig
+#sed -e "s/-lpanel -lncurses/-L \/users\/luebeck\/piclibs\/64\/ncurses\/obj\/lib -l:libpanel.a -l:libncurses.a/" <Makefile.orig >Makefile
+sed -e "s/-lpanel -lncurses/-L \/users\/luebeck\/piclibs\/64\/ncurses\/obj\/lib\/libpanel.a \/users\/luebeck\/piclibs\/64\/ncurses\/obj\/lib\/libncurses.a/" <Makefile.orig >Makefile
+#sed -e "s/-lpanel -lncurses/\/usr\/lib\/libpanel.a \/usr\/lib\/libncurses.a/" <Makefile.orig >Makefile
 make
+strip bin/*/*.so
 cd ..
 
 # Installation of Carat produces a lot of data, maybe you want to leave 
@@ -136,88 +147,108 @@ echo 'CFLAGS='$COPTS' -static' > makefile
 grep -v "^\(CFLAGS\)" makefile.orig >> makefile
 cd ../..
 make 
+strip bin/x8*/*
 cd ..
 
-# create dynamic library first
-# a statically linked GAP containing the kernel module from CVec and
-# other packages is produced in the end.
-###  currently not yet re-distributed
 cd cvec
 ./configure
 make
+strip bin/*/*
 cd ..
 
 cd example
 ./configure ../..
 make CC="gcc -O2 -Wall -static"
+strip bin/x8*/*
 cd ..
 
 cd fplsa
 ./configure ../..
 make CC="gcc -static -O2 "
-cd doc
-tex manual
-tex manual
-makeindex manual
-tex manual
-cd ../..
-
-# We don't compile this because there is no variant for static linking
-# available. 
-# This could be used with a dynamically linked gap (the
-# configure finds on my system g77 as fortran compiler, which then fails 
-# during compilation - therefore the extra argument to configure):
-#cd fr
-#./configure FORTRAN=gfortran-4.2
-#make
+strip bin/x8*/*
+# some file is missing in doc, but cannot regenerate in dapper
+#cd doc
+#pdftex manual
+#pdftex manual
+#makeindex manual
+#pdftex manual
 #cd ..
-
-cd grape
-./configure ../..
-make LD=-static
 cd ..
 
-cd guava*
-./configure ../..
-make CFLAGS="-O2 -g -static"
-cd ..
 
-# create dynamic library first
-# a statically linked GAP containing the kernel module from IO and
-# other packages is produced in the end.
-cd io
-./configure
+# needs libgsl0-dev and openjdk-6-jdk  Debian packages
+# to reduce dependencies we prepare:
+#  apt-get source libgsl0-dev
+#  cd gsl-*
+#  debian/rules build CFLAGS="-fPIC"
+#  # ON DAPPER:  debian/rules build CC="gcc -fPIC "
+#  cp .libs/*.a cblas/.libs/*.a /users/luebeck/piclibs/64/
+cd fr
+./configure 
+mv Makefile Makefile.orig
+#sed -e "s/-L -lgsl -L -lgslcblas/-L -L\/users\/luebeck\/piclibs\/64\/ -L -l:libgsl.a -L -l:libgslcblas.a/" < Makefile.orig > Makefile
+sed -e "s/-L -lgsl -L -lgslcblas/-L \/users\/luebeck\/piclibs\/64\/libgsl.a -L \/users\/luebeck\/piclibs\/64\/libgslcblas.a/" < Makefile.orig > Makefile
 make
 cd ..
 
-cd kbmag
-make clean
-rm -rf bin/*
-./configure ../..
-make COPTS="-O2 -g -static"
+cd Gauss
+cp Makefile.linux.in Makefile.linux.in.orig
+echo "" >> Makefile.linux.in
+echo "mytarget: " >> Makefile.linux.in
+echo "		../../bin/@GAPARCH@/gac -d -o bin/@GAPARCH@/gauss.so src/gauss.c" >> Makefile.linux.in
+./configure
+mv Makefile.linux.in.orig Makefile.linux.in
+make bindir
+make mytarget
+strip bin/*/*.so
 cd ..
+
+cd grape
+./configure 
+make LDFLAGS=-static
+strip bin/x86*/*
+cd ..
+
+cd guava*
+./configure 
+mkdir bin
+make CFLAGS="-O2 -g -static" LDFLAGS="-static" LINKOPT="-static"
+gcc -static -o ./src/ctjhai/minimum-weight ./src/ctjhai/minimum-weight.o ./src/ctjhai/minimum-weight-gf2.o  ./src/ctjhai/minimum-weight-gf3.o ./src/ctjhai/popcount.o -lm
+make install
+strip bin/x8*/*
+cd ..
+
+cd io
+./configure
+make
+strip bin/x8*/*
+cd ..
+
+cd kbmag
+./configure 
+make COPTS="-O2 -g -static"
+strip bin/x8*/*
+cd ..
+
+# first install liblinbox-dev and its dependencies
+# ???????  configure fails, how to use the GAP GMP?
 
 # for nq use the GMP version which comes with Carat
 cd nq-*
 ./configure
-make GNU_MP_LIB=../../Gmplib64/lib GNU_MP_INC=../../Gmplib64/include
+make CFLAGS=-O3 LDFLAGS=-static
 strip bin/*/*
-cd ..
-
-# openmath
-cd openmath
-cd OMCv1.3c/src
-./configure
-make
-cd ../..
-./configure ../..
-make
 cd ..
 
 # orb
 cd orb
 ./configure 
 make
+strip bin/*/*.so
+cd ..
+
+# nothing to do? configure and Makefile are for authors only?
+cd qaos
 cd ..
 
 # needs Tcl/Tk (/usr/bin/wish)  and GraphViz  (/usr/bin/dot)
@@ -227,109 +258,37 @@ make xsemi
 make xaut
 cd ../..
 
-# create dynamic library first
-# a statically linked GAP containing the kernel module from EDIM and
-# other packages is produced in the end.
 cd edim
-#make clean
-unsetenv LANG
-unsetenv LC_ALL
 ./configure
-# produce the ediv.so file for dynamic loading.
 make
+strip bin/*/*.so
 cd ..
 
 #  see the pargap documentation how to use this 
 #  (in particular, user needs procgroup file)
 cd pargap
-./configure ../..
+./configure --with-mpi=MPINU2
+mv Makefile Makefile.orig
+sed -e 's/ rm -f bin/ rm -f binxxx/' < Makefile.orig > Makefile
 # produce gapmpi.o and start script
 make 
 cp bin/pargap.sh ../../bin/
 cd ..
-# no longer needed from 4.4 on
 rm -f ALLPKG
-
-# in the end produce a GAP binary with all package kernel modules and the
-# pargap stuff
-setenv ARCHSTR `sed -e 's/GAParch=//' ../sysinfo.gap`
-cd ../bin/$ARCHSTR
-# new static gap with ediv module, see SHOW_STAT();
-rm -f gap.o
-make COPTS="-DGAPMPI -DPARGAPMPI -DPARGAP" gap.o
-
-
-##  TEMPORARY HACK: problem with gauss.c: defines __stack_chk_fail_local as in io.c
-mv ../../pkg/Gauss/src/gauss.c ../../pkg/Gauss/src/gauss.c.orig
-cp ../../../gauss.c ../../pkg/Gauss/src/gauss.c
-
-
-#./gac -o gap -P "gapmpi.o -lm ../../pkg/pargap/bin/*/libmpi.a -lpanel -lncurses -static" -p "-DEDIVSTATIC -DNCURSESSTATIC -DCVECSTATIC -DIOSTATIC -I../../pkg/io/bin/$ARCHSTR" ../../pkg/edim/src/ediv.c ../../pkg/Browse/src/ncurses.c ../../pkg/cvec/src/cvec.c  ../../pkg/io/src/io.c
-
-./gac -o gap -P "gapmpi.o -lm ../../pkg/pargap/bin/*/libmpi.a -lpanel -lncurses -static" -p "-DEDIVSTATIC -DNCURSESSTATIC -DCVECSTATIC -DGAUSSSTATIC -DORBSTATIC -DIOSTATIC -I ../../pkg/io/bin/x* " ../../pkg/edim/src/ediv.c ../../pkg/Browse/src/ncurses.c ../../pkg/cvec/src/cvec.c ../../pkg/Gauss/src/gauss.c ../../pkg/orb/src/orb.c ../../pkg/io/src/io.c
-strip gap
+# reduce dependencies of gap executable 
+cd  ..
+cd bin/x86_64-unknown-linux-gnu-gcc-default64
+rm -f pargapmpi
+#gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/x86_64-unknown-linux-gnu-gcc-default64/libmpi.a -l:libreadline.a -l:libncurses.a  -l:libm.a  extern/gmp/lib/libgmp.a  -ldl 
+gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/x86_64-unknown-linux-gnu-gcc-default64/libmpi.a /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  extern/gmp/lib/libgmp.a  -ldl 
+mv gapnompi gap
+mv gap.o.nompi gap.o
 
 cd ../../pkg
-
-# For XGap the following shared libraries of the X window system must be 
-# installed on your machine together with the development files (header 
-# files and so on):
-# 
-#   libXaw.so, libXmu.so, libXt.so, libXext.so, libX11.so, libSM.so, libICE.so
-# 
-# In addition you need on XFree Version >= 4:
-# 
-#   libXpm.so
-#
-# If you  miss one of  these under Linux you  can usually just  install some
-# more packages of your favorite distribution. The development files usually
-# come in some package with "dev" in its name.
-
-
-# doesn't compile in x86_64 systems as 64-bit application
-# can no longer compile xgap statically, also links to libraries are missing
-# when installing the 'ia32-libs' package on Ubuntu feisty 
-# The following works on that system:
-##  cd xgap
-##  make clean
-##  ./configure
-##  make COPTS="-m32" LOPTS="-m32  -L. -lXaw -lXpm -lXmu -lXt -lXext -ldl -lXpm -lX11"
-##  # linking did not yet work, create additional links to lib32 libs:
-##  cd bin/x86*
-##  ln -s /usr/lib32/libXaw.so.7 libXaw.so
-##  ln -s /usr/lib32/libXmu.so.6 libXmu.so
-##  ln -s /usr/lib32/libXt.so.6 libXt.so
-##  ln -s /usr/lib32/libXext.so.6 libXext.so
-##  ln -s /usr/lib32/libX11.so.6 libX11.so
-##  ln -s /usr/lib32/libSM.so.6 libSM.so
-##  ln -s /usr/lib32/libICE.so.6 libICE.so
-##  ln -s /usr/lib32/libXpm.so.4 libXpm.so
-##  cd ../..
-##  make COPTS="-m32" LOPTS="-m32  -L. -lXaw -lXpm -lXmu -lXt -lXext -ldl -lXpm -lX11"
-##  cd ..
 
 # cleanup-don't need to distribute .o files from compiler
 cd ..
 find . -name \*.o -exec file {} \; | grep ": ELF " | cut -f1 -d: | xargs rm -f 
-
-### copy the gapsync directory (do this in 32bit version)
-#mkdir gapsync
-#cd gapsync
-#cp -a ~/gap4/dev/DistributionUpdate/rsyncserv/gapsync/CVS .
-#cvs update
-#rm -rf CVS
-#cd ..
-
-
-
-## This needs a password, only interesting for people who help developing it`
-## (ok, if done on 32 bit)
-#cd pkg
-#svn export svn://luebeck@thuban.math.rwth-aachen.de/home2/thuban/svnuser/REPOSITORY.chop/trunk/chop
-#cd chop
-#gapL <makedoc.g
-#cd ..
-
 
 # move some files to distinguish from 32 bit version
 cd bin
@@ -337,14 +296,4 @@ mv gap.sh gap64.sh
 mv pargap.sh pargap64.sh
 mv gac gac64
 cd ..
-
-
-##  #TEMPORARY, some packages are too old in package archive
-##  cd ..
-##  wget http://cage.ugent.be/geometry/software/forms/forms-1.2.1.tar.gz
-##  wget http://homalg.math.rwth-aachen.de/index.php/download/23-download/20-homalg-project
-##  cd gap4r4/pkg
-##  tar xzvf ../../forms-*
-##  tar xzvf ../../homalg-project*
-##  cd ..
 

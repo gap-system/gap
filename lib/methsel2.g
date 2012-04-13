@@ -4,7 +4,6 @@
 ##                                                         Hans Ulrich Besche
 ##                                                           Max Neuenhoeffer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  which do not need to be compiled by default. More performance critical
 ##  functions are found in methsel1.g
 ##
-Revision.methsel2_g :=
-  "@(#)$Id$";
 
 
 ##  This is a dirty hack, because this function is defined only later:

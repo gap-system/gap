@@ -2,7 +2,6 @@
 ##
 #W  algfp.gi                   GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the methods for finitely presented algebras.
 ##  So far, there are not many.
 ##
-Revision.algfp_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -279,10 +276,8 @@ InstallGlobalFunction( FactorFreeAlgebraByRelators, function( F, rels )
     fam!.relators := Immutable( rels );
     fam!.familyRing := FamilyObj(LeftActingDomain(F));
 
-    # Set the characteristic.
-    if HasCharacteristic( F ) or HasCharacteristic( FamilyObj( F ) ) then
-      SetCharacteristic( fam, Characteristic( F ) );
-    fi;
+    # We do not set the characteristic since this depends on the fact
+    # whether or not we are 0-dimensional.
 
     # Create the algebra.
     if IsAlgebraWithOne( F ) then
@@ -323,6 +318,42 @@ InstallGlobalFunction( FactorFreeAlgebraByRelators, function( F, rels )
 
     return A;
 end );
+
+
+#############################################################################
+##
+#M  Characteristic( <A> )
+#M  Characteristic( <algelm> )
+#M  Characteristic( <algelmfam> )
+##
+##  (via delegations)
+##
+InstallMethod( Characteristic, "for an elements family of an fp subalgebra",
+  [ IsElementOfFpAlgebraFamily ],
+  function( fam )
+    local A,n,one,x;
+    A := fam!.wholeAlgebra;
+    if IsAlgebraWithOne(A) then
+        one := One(A);
+        if Zero(A) = one then return 1; fi;
+    else
+        if Dimension(A) = 0 then return 1; fi;
+    fi;
+    if IsField(LeftActingDomain(A)) then
+        return Characteristic(LeftActingDomain(A));
+    else
+        if not IsAlgebraWithOne(A) then return fail; fi;
+        # This might be horribly slow and might not terminate if the
+        # characteristic is 0:
+        n := 2;
+        x := one+one;
+        while not(IsZero(x)) do
+            x := x + one;
+            n := n + 1;
+        od;
+        return n;
+    fi;
+  end );
 
 
 #############################################################################

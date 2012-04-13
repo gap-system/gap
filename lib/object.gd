@@ -2,7 +2,6 @@
 ##
 #W  object.gd                   GAP library                  Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file declares the operations for all objects.
 ##
-Revision.object_gd :=
-    "@(#)$Id$";
 
 
 #T Shall we add a check that no  object ever lies in both
@@ -70,7 +67,7 @@ DeclareCategoryKernel( "IsObject", IS_OBJECT, IS_OBJECT );
 ##  <Example><![CDATA[
 ##  gap> IsIdenticalObj( 10^6, 10^6);
 ##  true
-##  gap> IsIdenticalObj( 10^12, 10^12);
+##  gap> IsIdenticalObj( 10^30, 10^30);
 ##  false
 ##  gap> IsIdenticalObj( true, true);
 ##  true
@@ -424,8 +421,6 @@ DeclareOperation( "String", [ IsObject, IS_INT ] );
 ##  printed via this name, and a domain without name is in many cases printed
 ##  via its generators.
 ##  <!-- write that many domains (without name) are in fact GAP readable?-->
-##  <P/>
-##  &GAP; readable data can be produced with <Ref Func="SaveObj"/>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -660,8 +655,8 @@ DeclareOperation( "ObjByExtRep", [ IsFamily, IsObject ] );
 ##  gap> g:=Group((1,2),(1,2,3));;Size(g);;
 ##  gap> KnownAttributesOfObject(g);
 ##  [ "Size", "OneImmutable", "NrMovedPoints", "MovedPoints", 
-##    "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", "Pcgs", 
-##    "GeneralizedPcgs", "StabChainMutable", "StabChainOptions" ]
+##    "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
+##    "Pcgs", "GeneralizedPcgs", "StabChainMutable", "StabChainOptions" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -703,24 +698,27 @@ DeclareOperation( "KnownPropertiesOfObject", [ IsObject ] );
 ##  gap> g:=Group((1,2),(1,2,3));;
 ##  gap> KnownPropertiesOfObject(g);
 ##  [ "IsFinite", "CanEasilyCompareElements", "CanEasilySortElements", 
-##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
-##    "IsSimpleSemigroup", "IsFinitelyGeneratedGroup", 
-##    "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose" ]
+##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", 
+##    "IsAssociative", "IsSimpleSemigroup", "IsFinitelyGeneratedGroup", 
+##    "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", 
+##    "IsNilpotentByFinite" ]
 ##  gap> Size(g);
 ##  6
 ##  gap> KnownPropertiesOfObject(g);
 ##  [ "IsEmpty", "IsTrivial", "IsNonTrivial", "IsFinite", 
-##    "CanEasilyCompareElements", "CanEasilySortElements", "IsDuplicateFree", 
-##    "IsGeneratorsOfMagmaWithInverses", "IsAssociative", "IsSimpleSemigroup", 
-##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
-##    "KnowsHowToDecompose", "IsPerfectGroup", "IsSolvableGroup", 
-##    "IsPolycyclicGroup" ]
+##    "CanEasilyCompareElements", "CanEasilySortElements", 
+##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", 
+##    "IsAssociative", "IsSimpleSemigroup", "IsFinitelyGeneratedGroup", 
+##    "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", 
+##    "IsPerfectGroup", "IsSolvableGroup", "IsPolycyclicGroup", 
+##    "IsNilpotentByFinite", "IsTorsionFree", "IsFreeAbelian" ]
 ##  gap> KnownTruePropertiesOfObject(g);
 ##  [ "IsNonTrivial", "IsFinite", "CanEasilyCompareElements", 
 ##    "CanEasilySortElements", "IsDuplicateFree", 
-##    "IsGeneratorsOfMagmaWithInverses", "IsAssociative", "IsSimpleSemigroup", 
-##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
-##    "KnowsHowToDecompose", "IsSolvableGroup", "IsPolycyclicGroup" ]
+##    "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
+##    "IsSimpleSemigroup", "IsFinitelyGeneratedGroup", 
+##    "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", 
+##    "IsSolvableGroup", "IsPolycyclicGroup", "IsNilpotentByFinite" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

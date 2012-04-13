@@ -41,8 +41,6 @@
 ##  `IsUpToDatePolycyclicCollector' because it is reset when the presentation
 ##  is changed.
 ##
-Revision.rwspcclt_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

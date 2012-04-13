@@ -2,7 +2,6 @@
 ##
 #W  gasman.gd                   GAP Library                       Steve Linton
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains declarations of functions that report information from
 ##  the GASMAN garbage collector.
 ##
-Revision.gasman_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -35,7 +32,7 @@ Revision.gasman_gd :=
 ##  the garbage collection; <C>livekb</C> contains the total number of
 ##  kilobytes occupied by those bags; <C>deadbags</C> contains the total
 ##  number of bags which were reclaimed by that garbage collection and
-##  all the partial garbage collections preceeding it, since the
+##  all the partial garbage collections preceding it, since the
 ##  previous full garbage collection; <C>deadkb</C> contains the total
 ##  number of kilobytes occupied by those bags; <C>freekb</C> reports the
 ##  total number of kilobytes available in the &GAP; workspace for new

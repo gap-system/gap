@@ -3,20 +3,20 @@ dnl ##
 dnl ## check for a unique program in the source directory
 dnl ##
 
-AC_INIT
+AC_INIT([GAP], [4.dev], [support@gap-system.org], [gap], [http://www.gap-system.org/])
 AC_CONFIG_SRCDIR([gap.c])
 AC_CONFIG_AUX_DIR(../../cnf)
 
-if test "x$CFLAGS" = "x" ;  then
-  CFLAGS=${COPTS}
-fi
+#if test "x$CFLAGS" = "x" ;  then
+#  CFLAGS=${COPTS}
+#fi
 
 dnl #########################################################################
 dnl ##
 dnl ## create a config file from "config.hin"
 dnl ##
 
-AC_CONFIG_HEADER(config.h:../../cnf/config.hin)
+AC_CONFIG_HEADER(config.h:config.hin)
 
 
 dnl #########################################################################
@@ -28,11 +28,20 @@ AC_PROG_CC
 AC_C_CONST
 AC_C_INLINE
 AC_C_BIGENDIAN
+AC_COMPUTE_INT(RIGHTSHIFTMINUSONE,[(-1L >> 1)+1])
+if test "$RIGHTSHIFTMINUSONE" = "0" ; then
+    HAVE_ARITHRIGHTSHIFT=1
+else
+    HAVE_ARITHRIGHTSHIFT=0
+fi
+AC_DEFINE_UNQUOTED([HAVE_ARITHRIGHTSHIFT],[$HAVE_ARITHRIGHTSHIFT],
+  [define as 1 if >> for long int behaves like an arithmetic right shift for negative numbers])
+
 #
 # Assume that cross-compiling is for 32 bit systems 
 # (alpha/NT will have to wait)
 #
-AC_CHECK_SIZEOF(void *, 4) # no space between 'void *' and ','
+AC_CHECK_SIZEOF([void *])
 GP_C_UNDERSCORE_SYMBOLS
 
 
@@ -41,8 +50,9 @@ dnl ##
 dnl ## find a canonical name for the system
 dnl ##
 
-AC_CANONICAL_TARGET
-AC_DEFINE_UNQUOTED( SYS_ARCH, "$target-$CC-$CONFIGNAME" )
+AC_CANONICAL_HOST
+AC_DEFINE_UNQUOTED( SYS_ARCH, "$GAPARCH", [define the name of the architucture] )
+AC_SUBST(GAPARCH)
 
 dnl This has to be left until after we know the system type
 GP_C_LONG_ALIGN
@@ -57,8 +67,27 @@ dnl ## check for the existence of various header files
 dnl ##
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS( termios.h termio.h sgtty.h signal.h stdio.h unistd.h libc.h sys/stat.h )
-AC_CHECK_HEADERS( errno.h fcntl.h sys/types.h assert.h sys/sysmacros.h stdlib.h string.h math.h)
+
+# TODO: The following headers are all from the standard C library, so
+# strictly speaking, we should not have to check for their presence. So
+# we either should remove these checks, or document why we need them.
+AC_CHECK_HEADERS( assert.h errno.h math.h stdio.h stdlib.h string.h )
+AC_CHECK_HEADERS( termios.h termio.h sgtty.h signal.h unistd.h sys/stat.h )
+AC_CHECK_HEADERS( fcntl.h sys/ioctl.h sys/time.h sys/types.h sys/sysmacros.h sys/resource.h )
+
+dnl #########################################################################
+dnl ##
+dnl ## check for stdint.h and the types int8_t, uint8_t etc. it defines
+dnl ##
+
+AC_TYPE_INT8_T
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
 
 dnl #########################################################################
 dnl ##
@@ -81,7 +110,7 @@ dnl ##
 
 AC_CHECK_FUNCS( rld_load )
 
-AC_SEARCH_LIBS(dlopen, dl, AC_DEFINE(HAVE_DLOPEN,1))
+AC_SEARCH_LIBS(dlopen, dl, AC_DEFINE(HAVE_DLOPEN,1,[define as 1 if you have `dlopen' and `dlsym']))
 
 if test "$ac_cv_search_dlopen" != "no";  then
   GP_PROG_CC_EXPORT_DYNAMIC
@@ -91,12 +120,14 @@ if test "$ac_cv_search_dlopen" != "no";  then
 fi
 
 case "$LIBS" in 
-
-	*-ldl* ) C_DYNLIBS="-ldl";;
-                *)  C_DYNLIBS="";;
+  *-ldl* )
+    C_DYNLIBS="-ldl"
+    ;;
+  *)
+    C_DYNLIBS=""
+    ;;
 esac;
 
-AC_SUBST(LDFLAGS)
 AC_SUBST(C_DYNLIBS)
 
 dnl #########################################################################
@@ -120,14 +151,14 @@ dnl ##
 dnl ## check for functions dealing with virtual memory
 dnl ##
 
-AC_CHECK_FUNCS( vm_allocate sbrk )
+AC_CHECK_FUNCS( vm_allocate sbrk madvise sysconf )
 
 dnl #########################################################################
 dnl ##
 dnl ## check for functions dealing with strings and integers
 dnl ##
 
-AC_CHECK_FUNCS( atol )
+AC_CHECK_FUNCS( atol strlcpy strlcmp )
 
 
 dnl #########################################################################
@@ -138,12 +169,12 @@ dnl ##
 AC_HEADER_SYS_WAIT
 AC_TYPE_PID_T
 AC_FUNC_FORK
-AC_CHECK_FUNCS( fork popen waitpid wait4 )
+AC_CHECK_FUNCS( popen waitpid wait4 )
 
 AC_MSG_CHECKING([for old non-posix union wait])
 
 dnl AC_EGREP_HEADER( union wait, sys/wait.h,
-dnl   [AC_DEFINE( HAVE_UNION_WAIT)
+dnl   [AC_DEFINE( HAVE_UNION_WAIT, 1, [define as 1 if you have "union wait"])
 dnl   AC_MSG_RESULT(yes)],
 dnl  [AC_MSG_RESULT(no)] )
 
@@ -156,21 +187,6 @@ dnl ## check for signal handling
 dnl ##
 
 AC_CHECK_FUNCS( signal )
-AC_DIAGNOSE([obsolete],[your code may safely assume C89 semantics that RETSIGTYPE is void.
-Remove this warning and the `AC_CACHE_CHECK' when you adjust the code.])dnl
-AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[AC_COMPILE_IFELSE(
-[AC_LANG_PROGRAM([#include <sys/types.h>
-#include <signal.h>
-],
-		 [return *(signal (0, 0)) (0) == 1;])],
-		   [ac_cv_type_signal=int],
-		   [ac_cv_type_signal=void])])
-AC_DEFINE_UNQUOTED([RETSIGTYPE],[$ac_cv_type_signal],[Define as the return type of signal handlers
-		    (`int' or `void').])
-
-if test "$ac_cv_type_signal" = "void"; then
-  AC_DEFINE( HAVE_SIGNAL_VOID)
-fi
 
 
 dnl #########################################################################
@@ -180,20 +196,20 @@ dnl ##
 
 AC_CHECK_FUNCS( ttyname strerror select )
 
-
 dnl #########################################################################
 dnl ##
 dnl ## check for file access functions
 dnl ##
 
-AC_CHECK_FUNCS( access stat fstat lstat unlink mkdir mkdtemp mkstemp rmdir link rename symlink readlink chmod fchmod chown fchown lchown dup dup2 mknod mkfifo realpath )
 AC_HEADER_STAT
+AC_CHECK_FUNCS( access stat fstat lstat unlink mkdir rmdir mkdtemp mkstemp link rename chmod dup dup2 realpath )
 
 dnl #########################################################################
 dnl ##
 dnl ## check for socket access functions
 dnl ##
-AC_CHECK_FUNCS( socket listen accept connect bind getsockname recv recvfrom recvmsg send sendto sendmsg getsockopt setsockopt getprotobyname gethostbyname )
+
+AC_CHECK_FUNCS( socket accept connect bind send )
 
 dnl #########################################################################
 dnl ##
@@ -201,7 +217,7 @@ dnl ## check for directory access functions
 dnl ##
 
 AC_HEADER_DIRENT
-AC_CHECK_FUNCS( opendir closedir dirfd readdir rewinddir seekdir telldir )
+AC_CHECK_FUNCS( opendir closedir readdir )
 
 dnl #########################################################################
 dnl ##
@@ -212,14 +228,62 @@ AC_CHECK_FUNCS( log2 log10 log1p exp2 expm1 exp10 trunc )
 
 dnl #########################################################################
 dnl ##
-dnl ## check if GNU readline is available
+dnl ## check if GNU readline is available and requested
 dnl ##
-if test "x$READLINEPREFIX" != "x"  ; then
-   LDFLAGS="-L${READLINEPREFIX}/lib/"
+
+AC_ARG_WITH([readline],
+ [AS_HELP_STRING([--with-readline=yes|no|<path>],
+   [Use readline library for command line editing.
+    [[default=yes]]
+ ])], [], []
+)
+
+# TODO: Currently, if the user requests building against readline
+# explicitly, and this fails for some reason, we simply silently
+# go on without it. Maybe we should produce an error instead?
+
+# TODO: Actually, we should be using CPPFLAGS instead of CFLAGS
+gap_save_CFLAGS="$CFLAGS"
+gap_save_LDFLAGS="$LDFLAGS"
+
+if test "x$with_readline" != xno; then
+  # Readline support not disabled
+
+
+  if test "x$with_readline" != x; then
+    if test "x$with_readline" != xyes; then
+      # Use custom prefix for readline, if the paths are present
+      if test -d ${with_readline}/include && test -d ${with_readline}/lib; then
+        CFLAGS="$CFLAGS -I${with_readline}/include"
+        LDFLAGS="$LDFLAGS -L${with_readline}/lib"
+        # TODO: We could produce an error here, after all, the user specified an
+        # invalid path prefix.
+      fi
+    fi
+  fi
+
+  # TODO: Should also check for headers
+  AC_CHECK_LIB([ncurses], [initscr])
+  AC_CHECK_LIB([readline], [rl_gnu_readline_p], [], [with_readline=no], [-lncurses])
+
 fi
 
-AC_CHECK_LIB(ncurses, initscr)
-AC_CHECK_LIB(readline, rl_gnu_readline_p, , , -lncurses)
+
+if test "x$with_readline" = xno; then
+  # Readline support disabled
+  CFLAGS="$gap_save_CFLAGS"
+  LDFLAGS="$gap_save_LDFLAGS"
+fi;
+
+
+dnl #########################################################################
+dnl ##
+dnl ## enable GMP if parent configure script tell us that it is available
+dnl ##
+
+if test "x$USE_GMP" = "xyes"  ; then
+  AC_DEFINE(USE_GMP, 1, [use GMP for integers])
+fi
 
 dnl #########################################################################
 dnl ##
@@ -234,57 +298,30 @@ dnl ## set features on systems we know for better performance
 dnl ##
 
 case "$host" in
-
   i386-*-* | i486-*-* | i586-*-* | i686-*-*)
-    AC_DEFINE( C_STACK_ALIGN, 2 )
+    gp_cv_c_long_align=2
     ;;
-
-
-  *)
-    AC_DEFINE_UNQUOTED( C_STACK_ALIGN, $gp_cv_c_long_align )
-    ;;
-
 esac
+AC_DEFINE_UNQUOTED(C_STACK_ALIGN, $gp_cv_c_long_align, [define as least offset we have to check the stack for pointer])
 
 case "$host" in 
-
-   sparc-* )
-    AC_DEFINE( SPARC, 1)
-   ;;
-
-   ia64-* ) 
-    AC_DEFINE(ITANIUM,1)
+  sparc-* )
+    AC_DEFINE(SPARC, 1, [define as 1 on SPARC architecture to flush register windows])
+    ;;
+  ia64-* ) 
+    AC_DEFINE(ITANIUM, 1, [define as 1 on Itanium architecture to flush and mark register stack])
     ITANIUMOBJ=itanium.o
     ;;
 esac
-
 AC_SUBST(ITANIUMOBJ)
 
-dnl # The following AC_DIAGNOSE placed here by autoupdate tool. We had used AC_CYGWIN here.
-dnl # JJM, 240211.
-
-AC_DIAGNOSE([obsolete],[AC_CYGWIN is obsolete: use AC_CANONICAL_HOST and check if $host_os
-matches *cygwin*])dnl
-AC_CANONICAL_HOST
-case $host_os in
-  *cygwin* ) CYGWIN=yes;;
-	 * ) CYGWIN=no;;
-esac
-
-if test "$CYGWIN" = "yes"; then
-  AC_DEFINE(SYS_IS_CYGWIN32, 1)
-else
-  AC_DEFINE(SYS_IS_CYGWIN32, 0)
-fi
-
-
-case "$host" in 
-	*-darwin* )
-	AC_DEFINE(SYS_IS_DARWIN, 1)
-        ;;
-	* )
-	AC_DEFINE(SYS_IS_DARWIN, 0)
-	;;
+case "$host_os" in
+  *cygwin*)
+    AC_DEFINE(SYS_IS_CYGWIN32, 1, [define if this is the Cygwin32 port])
+    ;;
+  *darwin*)
+    AC_DEFINE(SYS_IS_DARWIN, 1, [define if this is the Darwin port])
+    ;;
 esac
 
 dnl #########################################################################
@@ -301,6 +338,11 @@ dnl ##
 dnl ## generate a makefile
 dnl ##
 
+AC_SUBST(CC)
+AC_SUBST(CFLAGS)
+AC_SUBST(CPPFLAGS)
+AC_SUBST(LDFLAGS)
+
 AC_SUBST(gapbin)
 gapbin=`pwd`
 
@@ -311,11 +353,14 @@ ABI_CFLAGS=$ABI_CFLAGS
 
 AC_SUBST(GMP_LIBS)
 GMP_LIBS=$GMP_LIBS
+AC_SUBST(GMP_CFLAGS)
+GMP_CFLAGS=$GMP_CFLAGS
 
 AC_ARG_WITH(gmp,[dummy],[],[])
 AC_ARG_WITH(abi,[dummy],[],[])
-AC_ARG_WITH(readline,[dummy],[],[])
 AC_ARG_WITH(configname,[dummy],[],[])
+
+AC_DEFINE_UNQUOTED(CONFIGNAME, "$CONFIGNAME", [the CONFIGNAME value of the active configuration])
 
 AC_CONFIG_FILES([sysinfo.gap:../../cnf/sysinfo.in gac:../../cnf/gac.in Makefile:../../cnf/Makegap.in extern/Makefile:../../extern/Makefile.in])
 AC_OUTPUT

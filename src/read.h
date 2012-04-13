@@ -2,7 +2,6 @@
 **
 *W  read.h                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,11 +12,6 @@
 
 #ifndef GAP_READ_H
 #define GAP_READ_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_read_h =
-   "@(#)$Id$";
-#endif
 
 
 /****************************************************************************

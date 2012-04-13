@@ -3,8 +3,6 @@
 #W  gap3cat.g              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.gap3cat_g :=
-    "@(#)$Id$";
 
 GAP3_CATALOGUE_ID_GROUP := [
 ,,, [ 2, 1 ],, [ 2, 1 ],, [ 3, 2, 4, 5, 1 ], [ 2, 1 ], [ 2, 1 ],, [ 4, 2, 5,

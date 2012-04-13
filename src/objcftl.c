@@ -8,8 +8,6 @@
 */
 #include "system.h"
 
-const char * Revision_objcftl_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -30,9 +28,7 @@ const char * Revision_objcftl_c =
 
 #include        "dt.h"                  /* deep thought                    */
 
-#define INCLUDE_DECLARATION_PART
 #include        "objcftl.h"             /* from the left collect           */
-#undef  INCLUDE_DECLARATION_PART
 
 
 #define IS_INT_ZERO( n )  (IS_INTOBJ(n) && ((n) == INTOBJ_INT(0))) 
@@ -450,8 +446,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPcc ( void )
 {
-    module.revision_c = Revision_objcftl_c;
-    module.revision_h = Revision_objcftl_h;
     FillInVersion( &module );
     return &module;
 }

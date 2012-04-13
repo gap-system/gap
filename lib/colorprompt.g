@@ -9,8 +9,6 @@
 ##  The variable ANSI_COLORS used in earlier versions is no longer
 ##  supported, see GAPInfo.UserPreferences.UseColorsInTerminal.
 ##  
-Revision.colorprompt_g := 
-    "$Id$";
 
 # see comment below
 if not IsBound(STDOut) then
@@ -19,7 +17,8 @@ else
   Info(InfoWarning, 1, "You probably have an 'ReadLib(\"colorprompt.g\");'",
                         " in your .gaprc file.");
   Info(InfoWarning, 1, "Its functionality is now in the GAP library.");
-  Info(InfoWarning, 1, "Substitute that line by 'ColorPrompt(true);'.");
+  Info(InfoWarning, 1, "Use now 'SetUserPreference(\"UseColorPrompt\", true);\
+ in your 'gap.ini' file.");
 fi;
 
 # same behaviour as with unbound functions
@@ -50,9 +49,12 @@ EndLineHook := function() end;
 ##  conventions you see  the standard prompt in bold blue  and the break
 ##  loop prompt in bold red, as well as your input in red.
 ##  <P/>
-##  If it works for you and you like it, set the <C>UseColorPrompt</C>
-##  component in your <F>gap.ini</F> file to <K>true</K> or to a
-##  record as described below (see&nbsp;<Ref Sect="sect:gap.ini"/>).
+##  If it works for you and you like it, put a call of 
+##  <C>SetUserPreference("UseColorPrompt", true);</C>
+##  in your <F>gap.ini</F> file.
+##  If you want a more complicated setting as explained below then
+##  put your <C>SetUserPreference("UseColorPrompt", rec( ... ) );</C>
+##  call into your <F>gaprc</F> file.
 ##  <P/>
 ##  The optional second argument <A>optrec</A> allows one to further
 ##  customize the behaviour.
@@ -186,5 +188,18 @@ end;
 
 # now, that the file is in the GAP library, the default is no colored prompt
 ColorPrompt(false);
+
+# The coloring of the prompt after startup can be configured via a user
+# preference.
+DeclareUserPreference( rec(
+  name:= "UseColorPrompt",
+  description:= [
+    "In a color capable terminal (almost any terminal application) you can \
+run GAP such that the prompts, the input and output are distinguished \
+by colors. Options are 'true', 'false' or some record as explained in \
+the help section for 'ColorPrompt'." ],
+  default:= false,
+  check:= val -> val in [ true, false ] or IsRecord( val ),
+  ) );
 
 

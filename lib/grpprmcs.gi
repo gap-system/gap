@@ -2,14 +2,11 @@
 ##
 #W  grpprmcs.gi                 GAP library                       Ákos Seress
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.grpprmcs_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -928,7 +925,7 @@ end );
 ##
 InstallGlobalFunction( NormalizerStabCSPG, function(G)
     local   n,          # degree of G
-            chainG,     # stablizer chain of `G'
+            chainG,     # stabilizer chain of `G'
             chainstab,  # stabilizer chain of a point stabilizer in `G'
             orbits,     # orbits of stabgroup
             len,        # minimal length of stabgroup orbits

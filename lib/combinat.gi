@@ -2,7 +2,6 @@
 ##
 #W  combinat.gi                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains method for combinatorics.
 ##
-Revision.combinat_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

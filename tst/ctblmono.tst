@@ -3,18 +3,14 @@
 #W  ctblmono.tst               GAP Library                      Thomas Breuer
 #W                                                         & Erzsébet Horváth
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id$");
-
+gap> START_TEST("ctblmono.tst");
 gap> S4:= SymmetricGroup( 4 );;  SetName( S4, "S4");
 gap> Sl23:= SL( 2, 3 );;
-
 gap> Alpha( Sl23 );
 [ 1, 3, 3 ]
 gap> Alpha( S4 );
@@ -31,7 +27,6 @@ gap> List( Irr( Sl23 ), IsBergerCondition );
 [ true, true, true, false, false, false, true ]
 gap> List( Irr( Sl23 ), Degree );
 [ 1, 1, 1, 2, 2, 2, 3 ]
-
 gap> n:= DerivedSubgroup( Sl23 );;      
 gap> chi:= Irr( Sl23 )[7];
 Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
@@ -84,7 +79,7 @@ gap> TestSubnormallyMonomial( S4 );
 rec( character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
   comment := "found non-SM character", isSubnormallyMonomial := false )
 gap> TestSubnormallyMonomial( Irr( S4 )[4] );
-rec( comment := "all subnormal subgroups checked",
+rec( comment := "all subnormal subgroups checked", 
   isSubnormallyMonomial := false )
 gap> TestSubnormallyMonomial( DerivedSubgroup( S4 ) );
 rec( comment := "all irreducibles checked", isSubnormallyMonomial := true )
@@ -93,12 +88,10 @@ true
 gap> TestRelativelySM( DerivedSubgroup( S4 ) );
 rec( comment := "normal subgroups are abelian or have nilpotent factor group",
   isRelativelySM := true )
-
 gap> IsMinimalNonmonomial( Sl23 );                  
 true
 gap> IsMinimalNonmonomial( S4 );
 false
-
 gap> MinimalNonmonomialGroup(  2,  3 ); # the group SL(2,3)
 2^(1+2):3
 gap> MinimalNonmonomialGroup(  3,  4 );
@@ -111,11 +104,8 @@ gap> MinimalNonmonomialGroup(  1, 14 );
 2^(1+6):D14
 gap> MinimalNonmonomialGroup(  2, 14 );
 (2^(1+6)Y4):D14
-
-gap> STOP_TEST( "ctblmono.tst",274001908);
-
+gap> STOP_TEST( "ctblmono.tst", 31000000 );
 
 #############################################################################
 ##
 #E
-

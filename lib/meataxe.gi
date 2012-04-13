@@ -4,7 +4,6 @@
 #W                                                                 Sarah Rees
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$ 
 ##
 #Y  Copyright 1994 -- School of Mathematical Sciences, ANU   
 #Y  (C) 1998-2001 School Math. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  This file contains the 'Smash'-MeatAxe modified for GAP4 and using the 
 ##  standard MeatAxe interface.  It defines the MeatAxe SMTX.
 ##
-Revision.meataxe_gi:=
-  "@(#)$Id$";
 
 InstallGlobalFunction(GModuleByMats,function(arg)
 local l,f,dim,m;
@@ -2980,7 +2977,7 @@ SMTX.SortHomGModule:=SMTX_SortHomGModule;
 ##  the i-th row of mat gives the image in module2 of the i-th basis
 ##  vector of module1.
 ##  It is checked whether mat really does define a homomorphism.
-##  If, so then the correcponding vector space homomorphism from the underlying
+##  If, so then the corresponding vector space homomorphism from the underlying
 ##  row space of module1 to that of module2 is returned. This can be used
 ##  for computing images, kernel, preimages, etc.
 

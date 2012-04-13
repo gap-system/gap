@@ -6,8 +6,6 @@
 ##  This file contains the identification routines for groups with order
 ##  the product of maximal 3 primes. 
 ##
-Revision.idgrp1_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

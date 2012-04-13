@@ -3,7 +3,6 @@
 #W  algmat.gi                   GAP library                     Thomas Breuer
 #W                                                            Willem de Graaf
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains those functions that mainly deal with matrix algebras,
 ##  that is, associative matrix algebras and matrix Lie algebras.
 ##
-Revision.algmat_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -925,7 +922,7 @@ InstallMethod( RadicalOfAlgebra,
       # If `p' is greater than 0, then the situation is more difficult.
       # We implement the algorithm presented in
       # "Cohen, Arjeh M, G\'{a}bor Ivanyos, and David B. Wales,
-      # 'Finding the radical of an algebra of linear tranformations,'
+      # 'Finding the radical of an algebra of linear transformations,'
       # Journal of Pure and Applied Algebra 117 & 118 (1997), 177-193".
 
       q := Size( F );

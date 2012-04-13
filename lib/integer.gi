@@ -8,14 +8,11 @@
 #W                                                         & Martin Schönert
 #W                                                              & Alex Wegner
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.integer_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -34,6 +31,7 @@ SetSize( Integers, infinity );
 SetLeftActingDomain( Integers, Integers );
 SetGeneratorsOfRing( Integers, [ 1 ] );
 SetGeneratorsOfLeftModule( Integers, [ 1 ] );
+SetIsFiniteDimensional( Integers, true );
 SetUnits( Integers, [ -1, 1 ] );
 SetIsWholeFamily( Integers, false );
 
@@ -1706,14 +1704,14 @@ InstallMethod( Root,
 ##
 #M  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
 ##
-InstallMethod( RoundCyc, "Integer", true, [ IsInt], 0,  x->x );
+InstallMethod( RoundCyc, "Integer", true, [ IsInt ], 0,  x->x );
 
 
 #############################################################################
 ##
 #M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
 ##
-InstallMethod( RoundCycDown, "Integer", true, [ IsInt], 0,  x->x );
+InstallMethod( RoundCycDown, "Integer", true, [ IsInt ], 0,  x->x );
 
 
 #############################################################################
@@ -1729,6 +1727,22 @@ InstallMethod( StandardAssociate,
         return -n;
     else
         return n;
+    fi;
+    end );
+
+#############################################################################
+##
+#M  StandardAssociateUnit( Integers, <n> )
+##
+InstallMethod( StandardAssociateUnit,
+    "for integers",
+    true,
+    [ IsIntegers, IsInt ], 0,
+    function ( Integers, n )
+    if n < 0 then
+        return -1;
+    else
+        return 1;
     fi;
     end );
 
@@ -1855,6 +1869,37 @@ local d,i,r;
     i:=i+1;
   until r<2;
   return d;
+end);
+
+##  The behaviour of View(String) for large integers can be configured via a
+##  user preference.
+DeclareUserPreference( rec(
+  name:= "MaxBitsIntView",
+  description:= [
+    "Maximal bit length of integers to 'view' unabbreviated.  \
+Default is about 30 lines of a 80 character wide terminal.  \
+Set this to '0' to avoid abbreviated ints."
+    ],
+  default:= 8000,
+  check:= val -> IsInt( val ) and 0 <= val,
+  ) );
+##  give only a short info if |n| is larger than 2^GAPInfo.MaxBitsIntView
+InstallMethod(ViewString, "for integer", [IsInt], function(n)
+  local mb, l, start, trail;
+  mb := UserPreference("MaxBitsIntView");
+  if not IsSmallIntRep(n) and mb <> fail and 
+      mb > 64 and Log2Int(n) > mb then
+    l := LogInt(n, 10);
+    start := String(QuoInt(n, 10^(l-2)));
+    trail := String(n mod 1000);
+    while Length(trail) < 3 do
+      trail := Concatenation("0", trail);
+    od;
+    return Concatenation("<integer ",start,"...",trail," (",
+                         String(l+1)," digits)>");
+  else
+    return String(n);
+  fi;
 end);
 
 #############################################################################

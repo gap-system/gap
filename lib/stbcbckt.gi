@@ -2,7 +2,6 @@
 ##
 #W  stbcbckt.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  calculation  of   set   stabilizers, normalizers,    centralizers     and
 ##  intersections.
 ##
-Revision.stbcbckt_gi :=
-    "@(#)$Id$";
 
 if not IsBound( LARGE_TASK )  then  LARGE_TASK := false;   fi;
 
@@ -2641,7 +2638,7 @@ local G, E, L, issub, mpG, mpE, cnt, P, Omega, orb, i, start, so, hom, Gh, Eh, L
   E := arg[ 2 ];
   Unbind(G!.suborbits); # in case any remained from interruption
   Unbind(E!.suborbits);
-  if IsTrivial( E )  then
+  if IsTrivial( E ) or IsTrivial( G ) then
       return G;
   elif Size( E ) = 2  then
     if Length( arg ) > 2  then  L := arg[ 3 ];

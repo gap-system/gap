@@ -1,469 +1,427 @@
-#ifndef INCLUDED_CONFIG_H
-#define INCLUDED_CONFIG_H
+/* config.hin.  Generated from configure.in by autoheader.  */
 
-/****************************************************************************
-**
-*D  user edit-able defines
-*/
+/* Define if building universal (internal helper macro) */
+#undef AC_APPLE_UNIVERSAL_BUILD
 
-/* initial amount of memory if '-m' is not given in KB                          */
-#define SY_STOR_MIN		(24 * 1024)
+/* the CONFIGNAME value of the active configuration */
+#undef CONFIGNAME
 
+/* define as least offset which is still safe for an unaligned access */
+#undef C_LONG_ALIGN
 
-/****************************************************************************
-**
-*D  debug flags (user edit-able)
-*/
+/* define as least offset we have to check the stack for pointer */
+#undef C_STACK_ALIGN
 
+/* define as 1 if you symbols in ".o" files begin with `_' */
+#undef C_UNDERSCORE_SYMBOLS
 
+/* Define to 1 if you have the `accept' function. */
+#undef HAVE_ACCEPT
 
-/* * * * * * * * * *  saving/loading the workspace * * * * * * * * * * * * */
+/* Define to 1 if you have the `access' function. */
+#undef HAVE_ACCESS
 
-/* define to get information while restoring                               */
-/* #undef DEBUG_LOADING */
+/* define as 1 if >> for long int behaves like an arithmetic right shift for
+   negative numbers */
+#undef HAVE_ARITHRIGHTSHIFT
 
-/* define to debug registering of global bags                              */
-/* #undef DEBUG_GLOBAL_BAGS */
+/* Define to 1 if you have the <assert.h> header file. */
+#undef HAVE_ASSERT_H
 
-/* define to debug registering of function handlers                        */
-/* #undef DEBUG_HANDLER_REGISTRATION */
+/* Define to 1 if you have the `atol' function. */
+#undef HAVE_ATOL
 
+/* Define to 1 if you have the `bind' function. */
+#undef HAVE_BIND
 
-/* * * * * * * * * * * * * debugging GASMAN  * * * * * * * * * * * * * * * */
+/* Define to 1 if you have the `chmod' function. */
+#undef HAVE_CHMOD
 
-/* define to create functions PTR_BAG, etc instead of macros               */
-/* #undef DEBUG_FUNCTIONS_BAGS */
+/* Define to 1 if you have the `closedir' function. */
+#undef HAVE_CLOSEDIR
 
-/* define to debug the generational aspect of gasman                       */
-/* #undef DEBUG_DEADSONS_BAGS */
+/* Define to 1 if you have the `connect' function. */
+#undef HAVE_CONNECT
 
-/* define to debug masterpointers errors                                   */
-/* #undef DEBUG_MASTERPOINTERS */
+/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_DIRENT_H
 
+/* define as 1 if you have `dlopen' and `dlsym' */
+#undef HAVE_DLOPEN
 
-/****************************************************************************
-**
-*D  architecture
-*/
+/* Define to 1 if you have the `dup' function. */
+#undef HAVE_DUP
 
-/* define the name of the architucture                                     */
-#define SYS_ARCH		@SYS_ARCH@
+/* Define to 1 if you have the `dup2' function. */
+#undef HAVE_DUP2
 
-/* define as 1 if the user resource file is ".gaprc"                       */
-#define HAVE_DOTGAPRC		1
+/* Define to 1 if you have the <errno.h> header file. */
+#undef HAVE_ERRNO_H
 
-/* define as 1 if there is a environment variable $PATH                    */
-#define HAVE_PATH_ENV		1
+/* Define to 1 if you have the `exp10' function. */
+#undef HAVE_EXP10
 
+/* Define to 1 if you have the `exp2' function. */
+#undef HAVE_EXP2
 
-/****************************************************************************
-**
-*D  check for the compiler features
-*/
+/* Define to 1 if you have the `expm1' function. */
+#undef HAVE_EXPM1
 
-/* define as size of `long int' in bytes                                   */
-#define SIZEOF_VOID_P		@SIZEOF_VOID_P@
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
 
-/* define as empty if `const' does not work                                */
-#undef const
+/* Define to 1 if you have the `fork' function. */
+#undef HAVE_FORK
 
-/* define as empty if `inline' does not work                                */
-#undef inline
+/* Define to 1 if you have the `fstat' function. */
+#undef HAVE_FSTAT
 
-/* define if most significant bits have smallest addresses                 */
-#undef WORDS_BIGENDIAN
+/* Define to 1 if you have the `getpseudotty' function. */
+#undef HAVE_GETPSEUDOTTY
 
-/* define as least offset which is still safe for an unaligned access      */
-#define C_LONG_ALIGN		@C_LONG_ALIGN@
+/* Define to 1 if you have the `getpt' function. */
+#undef HAVE_GETPT
 
-/* define as least offset we have to check the stack for pointer           */
-#define C_STACK_ALIGN           @C_STACK_ALIGN@
+/* Define to 1 if you have the `getrusage' function. */
+#undef HAVE_GETRUSAGE
 
-/* define as 1 on SPARC architecture to flush register windows */
-#define SPARC                   0
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `ncurses' library (-lncurses). */
+#undef HAVE_LIBNCURSES
+
+/* Define to 1 if you have the `readline' library (-lreadline). */
+#undef HAVE_LIBREADLINE
+
+/* Define to 1 if you have the `link' function. */
+#undef HAVE_LINK
+
+/* Define to 1 if you have the `log10' function. */
+#undef HAVE_LOG10
+
+/* Define to 1 if you have the `log1p' function. */
+#undef HAVE_LOG1P
+
+/* Define to 1 if you have the `log2' function. */
+#undef HAVE_LOG2
+
+/* Define to 1 if you have the `lstat' function. */
+#undef HAVE_LSTAT
+
+/* Define to 1 if you have the `madvise' function. */
+#undef HAVE_MADVISE
+
+/* Define to 1 if you have the <math.h> header file. */
+#undef HAVE_MATH_H
+
+/* Define to 1 if you have the `memcpy' function. */
+#undef HAVE_MEMCPY
+
+/* Define to 1 if you have the `memmove' function. */
+#undef HAVE_MEMMOVE
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `memset' function. */
+#undef HAVE_MEMSET
+
+/* Define to 1 if you have the `mkdir' function. */
+#undef HAVE_MKDIR
+
+/* Define to 1 if you have the `mkdtemp' function. */
+#undef HAVE_MKDTEMP
+
+/* Define to 1 if you have the `mkstemp' function. */
+#undef HAVE_MKSTEMP
+
+/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+#undef HAVE_NDIR_H
+
+/* Define to 1 if you have the `opendir' function. */
+#undef HAVE_OPENDIR
+
+/* Define to 1 if you have the `popen' function. */
+#undef HAVE_POPEN
+
+/* Define to 1 if you have the `ptsname_r' function. */
+#undef HAVE_PTSNAME_R
+
+/* Define to 1 if you have the `readdir' function. */
+#undef HAVE_READDIR
+
+/* Define to 1 if you have the `realpath' function. */
+#undef HAVE_REALPATH
+
+/* Define to 1 if you have the `rename' function. */
+#undef HAVE_RENAME
+
+/* Define to 1 if you have the `rld_load' function. */
+#undef HAVE_RLD_LOAD
+
+/* Define to 1 if you have the `rmdir' function. */
+#undef HAVE_RMDIR
+
+/* Define to 1 if you have the `sbrk' function. */
+#undef HAVE_SBRK
+
+/* Define to 1 if you have the `select' function. */
+#undef HAVE_SELECT
+
+/* Define to 1 if you have the `send' function. */
+#undef HAVE_SEND
+
+/* Define to 1 if you have the `setpgid' function. */
+#undef HAVE_SETPGID
+
+/* Define to 1 if you have the <sgtty.h> header file. */
+#undef HAVE_SGTTY_H
+
+/* Define to 1 if you have the `signal' function. */
+#undef HAVE_SIGNAL
+
+/* Define to 1 if you have the <signal.h> header file. */
+#undef HAVE_SIGNAL_H
+
+/* Define to 1 if you have the `sigsetjmp' function. */
+#undef HAVE_SIGSETJMP
+
+/* Define to 1 if you have the `socket' function. */
+#undef HAVE_SOCKET
+
+/* Define to 1 if you have the `stat' function. */
+#undef HAVE_STAT
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the `strerror' function. */
+#undef HAVE_STRERROR
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the `strlcmp' function. */
+#undef HAVE_STRLCMP
+
+/* Define to 1 if you have the `strlcpy' function. */
+#undef HAVE_STRLCPY
+
+/* Define to 1 if you have the `sysconf' function. */
+#undef HAVE_SYSCONF
+
+/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_DIR_H
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#undef HAVE_SYS_IOCTL_H
+
+/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_NDIR_H
+
+/* Define to 1 if you have the <sys/param.h> header file. */
+#undef HAVE_SYS_PARAM_H
+
+/* Define to 1 if you have the <sys/resource.h> header file. */
+#undef HAVE_SYS_RESOURCE_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/sysmacros.h> header file. */
+#undef HAVE_SYS_SYSMACROS_H
+
+/* Define to 1 if you have the <sys/times.h> header file. */
+#undef HAVE_SYS_TIMES_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
+#undef HAVE_SYS_WAIT_H
+
+/* Define to 1 if you have the <termios.h> header file. */
+#undef HAVE_TERMIOS_H
+
+/* Define to 1 if you have the <termio.h> header file. */
+#undef HAVE_TERMIO_H
+
+/* Define to 1 if you have the `times' function. */
+#undef HAVE_TIMES
+
+/* Define to 1 if you have the `trunc' function. */
+#undef HAVE_TRUNC
+
+/* Define to 1 if you have the `ttyname' function. */
+#undef HAVE_TTYNAME
+
+/* define as 1 if you have "union wait" */
+#undef HAVE_UNION_WAIT
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the `unlink' function. */
+#undef HAVE_UNLINK
+
+/* Define to 1 if you have the `vfork' function. */
+#undef HAVE_VFORK
+
+/* Define to 1 if you have the <vfork.h> header file. */
+#undef HAVE_VFORK_H
+
+/* Define to 1 if you have the `vm_allocate' function. */
+#undef HAVE_VM_ALLOCATE
+
+/* Define to 1 if you have the `wait4' function. */
+#undef HAVE_WAIT4
+
+/* Define to 1 if you have the `waitpid' function. */
+#undef HAVE_WAITPID
+
+/* Define to 1 if `fork' works. */
+#undef HAVE_WORKING_FORK
+
+/* Define to 1 if `vfork' works. */
+#undef HAVE_WORKING_VFORK
+
+/* Define to 1 if you have the `_getpty' function. */
+#undef HAVE__GETPTY
+
+/* Define to 1 if you have the `_setjmp' function. */
+#undef HAVE__SETJMP
 
 /* define as 1 on Itanium architecture to flush and mark register stack */
-#define ITANIUM                   0
+#undef ITANIUM
 
-/* define as 1 if you symbols in ".o" files begin with `_'                 */
-#define C_UNDERSCORE_SYMBOLS	0
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
 
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
 
-/****************************************************************************
-**
-*D  check for "the" standard include files
-*/
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
 
-/* define as 1 if you have the include file "termio.h"                     */
-#define HAVE_TERMIO_H		0
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
 
-/* define as 1 if you have the include file "termios.h"                    */
-#define HAVE_TERMIOS_H		0
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
 
-/* define as 1 if you have the include file "sgtty.h"                      */
-#define HAVE_SGTTY_H		0
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
 
-/* define as 1 if you have the include file "signal.h"                     */
-#define HAVE_SIGNAL_H		0
+/* The size of `void *', as computed by sizeof. */
+#undef SIZEOF_VOID_P
 
-/* define as 1 if you have the include file "stdio.h"                      */
-#define HAVE_STDIO_H		0
+/* define as 1 on SPARC architecture to flush register windows */
+#undef SPARC
 
-/* define as 1 if you have the standard ANSI C header files                */
-#define STDC_HEADERS            0
+/* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
+#undef STAT_MACROS_BROKEN
 
-/* define as 1 if you have the include file "libc.h"                       */
-#define HAVE_LIBC_H 	  	0
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
 
-/* define as 1 if you have the include file "unistd.h"                     */
-#define HAVE_UNISTD_H		0
-
-/* define as 1 if you have `getpseudotty'                                  */
-#define HAVE_GETPSEUDOTTY	0
-
-/* define as 1 if you have `_getpty'                                       */
-#define HAVE__GETPTY		0
-
-/* define as 1 if you have the include file "fcntl.h"                      */
-#define HAVE_FCNTL_H            0
-
-#define HAVE_SYS_STAT_H         0
-#define HAVE_SYS_SYSMACROS_H    0
-#define HAVE_ERRNO_H            0
-#define HAVE_ASSERT_H           0
-#define HAVE_STDLIB_H            0
-#define HAVE_STRING_H           0
-#define HAVE_MATH_H             0
-#define HAVE_GETPT              0
-#define HAVE_PTSNAME_R         0
-#define HAVE_SETPGID           0
-
-#define HAVE_MEMCPY            0
-#define HAVE_MEMMOVE           0
-#define HAVE_MEMSET            0  
-
-#define HAVE__SETJMP           0
-#define HAVE_SIGSETJMP         0
-
-/****************************************************************************
-**
-*D  define if and how dynamic loading is supported
-*/
-
-/* define as 1 if you have `dlopen' and `dlsym'                            */
-#define HAVE_DLOPEN		0
-
-/* define as 1 if you have `rld_load' and `rld_lockup'                     */
-#define HAVE_RLD_LOAD		0
-
-
-/****************************************************************************
-**
-*D  define if and how the timing functions work
-*/
-
-/* define as 1 if you have `getrusage'                                     */
-#define HAVE_GETRUSAGE		0
-
-/* define as 1 if you have `times' (but not `getrusage')                   */
-#define HAVE_TIMES		0
-
-/* define as 1 if you have the include file "sys/param.h"                  */
-#define HAVE_SYS_PARAM_H	0
-
-/* define as 1 if you have the include file "sys/times.h"                  */
-#define HAVE_SYS_TIMES_H	0
-
-
-/****************************************************************************
-**
-*D  define if and how virtual memory works
-*/
-
-/* define as 1 if you have `vm_allocate'                                   */
-#define HAVE_VM_ALLOCATE	0
-
-/* define as 1 if you have `sbrk' (but not `vm_allocate')                  */
-#define HAVE_SBRK		0
-
-
-/****************************************************************************
-**
-*D  define if and how subprocesses are executed
-*/
-
-/* define as 1 if you have the include file "vfork.h"                      */
-#define HAVE_VFORK_H		0
-
-/* define as 1 if you have `fork'                                          */
-#define HAVE_FORK        	0
-
-/* define as 1 ifyou have `popen'                                          */
-#define HAVE_POPEN		0
-
-/* define vfork as fork if vfork does not work                             */
-#undef vfork
-
-/* define pid_t as int if pid_t does not work                              */
-#undef pid_t
-
-/* define as 1 if you have a POSIX compatible "sys/wait.h"                 */
-#define HAVE_SYS_WAIT_H         0
-
-/* define as 1 if you have `waitpid'                                       */
-#define HAVE_WAITPID		0
-
-/* define as 1 if you have `wait4' (but not waitpid)                       */
-#define HAVE_WAIT4		0
-
-/* define as 1 if you have "union wait"                                    */
-#define HAVE_UNION_WAIT		0
-
-
-/****************************************************************************
-**
-*D  define if and how signal handling works
-*/
-
-/* define as 1 if you have `signal'                                        */
-#define HAVE_SIGNAL		0
-
-/* define as the return type of the signal handler                         */
-#define RETSIGTYPE		@RETSIGTYPE@
-
-/* define as 1 if <RTSIGTYPE> is void                                      */
-#define HAVE_SIGNAL_VOID	0
-
-
-/****************************************************************************
-**
-*D  define if and how standard input/output works
-*/
-
-/* define as 1 if you have `ttyname'                                       */
-#define HAVE_TTYNAME		0
-
-/* define as 1 if you have `strerror'                                      */
-#define HAVE_STRERROR		0
-
-/* define as 1 if you have `select'                                        */
-#define HAVE_SELECT             0
-
-/****************************************************************************
-**
-*D  define if and how file access checks work
-*/
-
-/* define as 1 if your directory separator is '/'                          */
-#define HAVE_SLASH_SEPARATOR	1
-
-/* define as 1 if you have `access'                                        */
-#define HAVE_ACCESS		0
-
-/* define as 1 if you have `stat'                                          */
-#define HAVE_STAT		0
-
-/* define as 1 if you have `fstat'                                         */
-#define HAVE_FSTAT		0
-
-/* define as 1 if you have `lstat'                                         */
-#define HAVE_LSTAT		0
-
-/* define as 1 if the macros `S_ISDIR', `S_ISREG' do not work properly     */
-#define STAT_MACROS_BROKEN	0
-
-/* define as 1 if you have `mkdir'                                         */
-#define HAVE_MKDIR              0
-
-/* define as 1 if you have `unlink'                                        */
-#define HAVE_UNLINK             0
-
-/* define as 1 if you have `mkstemp'                                       */
-#define HAVE_MKSTEMP            0
-
-/* define as 1 if you have `mkdtemp'                                       */
-#define HAVE_MKDTEMP            0
-
-/* define as 1 if you have `rmdir'                                         */
-#define HAVE_RMDIR              0
-
-/* define as 1 if you have `link'                                          */
-#define HAVE_LINK               0
-
-/* define as 1 if you have `rename'                                        */
-#define HAVE_RENAME             0
-
-/* define as 1 if you have `symlink'                                       */
-#define HAVE_SYMLINK            0
-
-/* define as 1 if you have `readlink'                                      */
-#define HAVE_READLINK           0
-
-/* define as 1 if you have `lstat'                                         */
-#define HAVE_LSTAT              0
-
-/* define as 1 if you have `chmod'                                         */
-#define HAVE_CHMOD              0
-
-/* define as 1 if you have `fchmod'                                        */
-#define HAVE_FCHMOD             0
-
-/* define as 1 if you have `chown'                                         */
-#define HAVE_CHOWN              0
-
-/* define as 1 if you have `fchown'                                        */
-#define HAVE_FCHOWN             0
-
-/* define as 1 if you have `lchown'                                        */
-#define HAVE_LCHOWN             0
-
-/* define as 1 if you have `dup'                                           */
-#define HAVE_DUP                0
-
-/* define as 1 if you have `dup2'                                          */
-#define HAVE_DUP2               0
-
-/* define as 1 if you have `mknod'                                         */
-#define HAVE_MKNOD              0
-
-/* define as 1 if you have `mkfifo'                                        */
-#define HAVE_MKFIFO             0
-
-/* define as 1 if you have `realpath'                                      */
-#define HAVE_REALPATH           0
-
-
-/****************************************************************************
-**
-*D  define if and how directory access checks work
-*/
-
-/* define as 1 if you have the include file "dirent.h"                     */
-#define HAVE_DIRENT_H            0
-
-/* define as 1 if you have `opendir'                                       */
-#define HAVE_OPENDIR             0
-
-/* define as 1 if you have `closedir'                                      */
-#define HAVE_CLOSEDIR            0
-
-/* define as 1 if you have `dirfd'                                         */
-#define HAVE_DIRFD               0
-
-/* define as 1 if you have `readdir'                                       */
-#define HAVE_READDIR             0
-
-/* define as 1 if you have `rewinddir'                                     */
-#define HAVE_REWINDDIR           0
-
-/* define as 1 if you have `seekdir'                                       */
-#define HAVE_SEEKDIR             0
-
-/* define as 1 if you have `telldir'                                       */
-#define HAVE_TELLDIR             0
-
-/* define as 1 if you have `telldir'                                       */
-#define HAVE_TELLDIR             0
-
-/****************************************************************************
-**
-*D  sockets
-*/
-
-/* define as 1 if you have `socket'                                        */
-#define HAVE_SOCKET              0
-
-/* define as 1 if you have `listen'                                        */
-#define HAVE_LISTEN              0
-
-/* define as 1 if you have `accept'                                        */
-#define HAVE_ACCEPT              0
-
-/* define as 1 if you have `connect'                                       */
-#define HAVE_CONNECT             0
-
-/* define as 1 if you have `bind'                                          */
-#define HAVE_BIND                0
-
-/* define as 1 if you have `getsockname'                                   */
-#define HAVE_GETSOCKNAME         0
-
-/* define as 1 if you have `recv'                                          */
-#define HAVE_RECV                0
-
-/* define as 1 if you have `recvfrom'                                      */
-#define HAVE_RECVFROM            0
-
-/* define as 1 if you have `recvmsg'                                       */
-#define HAVE_RECVMSG             0
-
-/* define as 1 if you have `send'                                          */
-#define HAVE_SEND                0
-
-/* define as 1 if you have `sendto'                                        */
-#define HAVE_SENDTO              0
-
-/* define as 1 if you have `sendmsg'                                       */
-#define HAVE_SENDMSG             0
-
-/* define as 1 if you have `getsockopt'                                    */
-#define HAVE_GETSOCKOPT          0
-
-/* define as 1 if you have `setsockopt'                                    */
-#define HAVE_SETSOCKOPT          0
-
-/* define as 1 if you have `getprotobyname'                                */
-#define HAVE_GETPROTOBYNAME      0
-
-/* define as 1 if you have `gethostbyname'                                 */
-#define HAVE_GETHOSTBYNAME       0
-
-/* define as 1 if you have `atol'                                 */
-#define HAVE_ATOL       0
-
-/* define as 1 if you have `ncurses' */
-#ifndef NO_READLINE
-#define HAVE_LIBNCURSES        0
-#endif
-
-/* define as 1 if you have `readline'                                 */
-#ifndef NO_READLINE
-#define HAVE_LIBREADLINE       0
-#endif
-
-/****************************************************************************
-**
-*D  math
-*/
-
-/* define as 1 if you have `log2'                                        */
-#define HAVE_LOG2              0
-
-/* define as 1 if you have `log10'                                        */
-#define HAVE_LOG10              0
-
-/* define as 1 if you have `log1p'                                        */
-#define HAVE_LOG1p              0
-
-/* define as 1 if you have `exp2'                                        */
-#define HAVE_EXP2              0
-
-/* define as 1 if you have `expm1'                                        */
-#define HAVE_EXPM1              0
-
-/* define as 1 if you have `exp10'                                        */
-#define HAVE_EXP10              0
-
-
-/****************************************************************************
-**
-*D  miscellaneous
-*/
+/* define the name of the architucture */
+#undef SYS_ARCH
 
 /* define if this is the Cygwin32 port */
-#define SYS_IS_CYGWIN32          0
+#undef SYS_IS_CYGWIN32
 
 /* define if this is the Darwin port */
-#define SYS_IS_DARWIN          0
+#undef SYS_IS_DARWIN
 
+/* use GMP for integers */
+#undef USE_GMP
+
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+#  undef WORDS_BIGENDIAN
+# endif
 #endif
+
+/* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
+   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+   #define below would cause a syntax error. */
+#undef _UINT32_T
+
+/* Define for Solaris 2.5.1 so the uint64_t typedef from <sys/synch.h>,
+   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+   #define below would cause a syntax error. */
+#undef _UINT64_T
+
+/* Define for Solaris 2.5.1 so the uint8_t typedef from <sys/synch.h>,
+   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+   #define below would cause a syntax error. */
+#undef _UINT8_T
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
+
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+#ifndef __cplusplus
+#undef inline
+#endif
+
+/* Define to the type of a signed integer type of width exactly 16 bits if
+   such a type exists and the standard includes do not define it. */
+#undef int16_t
+
+/* Define to the type of a signed integer type of width exactly 32 bits if
+   such a type exists and the standard includes do not define it. */
+#undef int32_t
+
+/* Define to the type of a signed integer type of width exactly 64 bits if
+   such a type exists and the standard includes do not define it. */
+#undef int64_t
+
+/* Define to the type of a signed integer type of width exactly 8 bits if such
+   a type exists and the standard includes do not define it. */
+#undef int8_t
+
+/* Define to `int' if <sys/types.h> does not define. */
+#undef pid_t
+
+/* Define to the type of an unsigned integer type of width exactly 16 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint16_t
+
+/* Define to the type of an unsigned integer type of width exactly 32 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint32_t
+
+/* Define to the type of an unsigned integer type of width exactly 64 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint64_t
+
+/* Define to the type of an unsigned integer type of width exactly 8 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint8_t
+
+/* Define as `fork' if `vfork' does not work. */
+#undef vfork

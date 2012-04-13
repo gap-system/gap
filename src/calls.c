@@ -2,7 +2,6 @@
 **
 *W  calls.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -36,8 +35,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_calls_c =
-   "@(#)$Id$";
 
 
 #include        "gasman.h"              /* garbage collector               */
@@ -48,9 +45,7 @@ const char * Revision_calls_c =
 
 #include        "gvars.h"               /* global variables                */
 
-#define INCLUDE_DECLARATION_PART
 #include        "calls.h"               /* generic call mechanism          */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "opers.h"               /* generic operations              */
 
@@ -912,7 +907,7 @@ void InitHandlerFunc (
     {
       UInt i;
       for (i = 0; i < NHandlerFuncs; i++)
-        if (!SyStrcmp(HandlerFuncs[i].cookie, cookie))
+        if (!strcmp(HandlerFuncs[i].cookie, cookie))
           Pr("Duplicate cookie %s\n", (Int)cookie, 0L);
     }
 #endif
@@ -929,7 +924,7 @@ void InitHandlerFunc (
 *f  CheckHandlersBag( <bag> ) . . . . . . check that handlers are initialised
 */
 
-void InitHandlerRegistration()
+void InitHandlerRegistration( void )
 {
   /* initialize these here rather than statically to allow for restart */
   /* can't do them in InitKernel of this module because it's called too late
@@ -987,7 +982,7 @@ static int IsLessHandlerInfo (
             /* cast to please Irix CC and HPUX CC */
             return (UInt)(h1->hdlr) < (UInt)(h2->hdlr);
         case 2:
-            return SyStrcmp(h1->cookie, h2->cookie) < 0;
+            return strcmp(h1->cookie, h2->cookie) < 0;
         default:
             ErrorQuit( "Invalid sort mode %u", (Int)byWhat, 0L );
             return 0; /* please lint */
@@ -1058,7 +1053,7 @@ ObjFunc HandlerOfCookie(
     {
       for (i = 0; i < NHandlerFuncs; i++)
         {
-          if (SyStrcmp(cookie, HandlerFuncs[i].cookie) == 0)
+          if (strcmp(cookie, HandlerFuncs[i].cookie) == 0)
             return HandlerFuncs[i].hdlr;
         }
       return (ObjFunc)0L;
@@ -1069,7 +1064,7 @@ ObjFunc HandlerOfCookie(
       bottom = 0;
       while (top >= bottom) {
         middle = (top + bottom)/2;
-        res = SyStrcmp(cookie,HandlerFuncs[middle].cookie);
+        res = strcmp(cookie,HandlerFuncs[middle].cookie);
         if (res < 0)
           top = middle-1;
         else if (res > 0)
@@ -1232,8 +1227,6 @@ Obj NewFunctionCT (
         while ( nams_c[l]!=' ' && nams_c[l]!=',' && nams_c[l]!='\0' ) {
             l++;
         }
-        /*CCC        name_o = NEW_STRING((l-k) );
-          SyStrncat( CSTR_STRING(name_o), nams_c+k, (UInt)(l-k) );CCC*/
         C_NEW_STRING(name_o, l-k, nams_c+k);
         RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
         SET_ELM_PLIST( nams_o, i, name_o );
@@ -1241,9 +1234,7 @@ Obj NewFunctionCT (
     }
 
     /* convert the name to an object                                       */
-    len = SyStrlen( name_c );
-    /*CCCname_o = NEW_STRING(len);
-      SyStrncat( CSTR_STRING(name_o), name_c, (UInt)len );CCC*/
+    len = strlen( name_c );
     C_NEW_STRING(name_o, len, name_c);
     RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
 
@@ -1560,18 +1551,14 @@ Obj FuncNAME_FUNC (
     Obj                 func )
 {
     Obj                 name;
-    /*CCC const char *        deflt = "unknown"; CCC*/
 
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
         if ( name == 0 ) {
-          /*CCC name = NEW_STRING(SyStrlen(deflt));
-            SyStrncat( CSTR_STRING(name), deflt, SyStrlen(deflt) );CCC*/
             C_NEW_STRING(name, 7, "unknown");
             RESET_FILT_LIST( name, FN_IS_MUTABLE );
             NAME_FUNC(func) = name;
             CHANGED_BAG(func);
-
         }
         return name;
     }
@@ -1878,7 +1865,7 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
     narg = 7;
   hdlr = HDLR_FUNC(func, narg);
   cookie = CookieOfHandler(hdlr);
-  len = SyStrlen(cookie);
+  len = strlen(cookie);
   cookieStr = NEW_STRING(len);
   COPY_CHARS(cookieStr, cookie, len);
   return cookieStr;
@@ -2123,8 +2110,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCalls ( void )
 {
-    module.revision_c = Revision_calls_c;
-    module.revision_h = Revision_calls_h;
     FillInVersion( &module );
     return &module;
 }

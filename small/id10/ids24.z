@@ -2,8 +2,6 @@
 ##
 #W  ids24.z                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.ids24_z :=
-    "@(#)$Id$";
 
 
 ID_GROUP_TREE.next[11508]:=

@@ -3,8 +3,6 @@
 #W  sml960.d               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml960_d :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 960 ][ 4 ] :=
 [ 23399891755845234988587122848548205968162823,

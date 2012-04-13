@@ -36,7 +36,7 @@ gap> 66/123;  # numerator and denominator are made relatively prime
 22/41
 gap> 17/-13;  # the numerator carries the sign;
 -17/13
-gap> 121/11;  # rationals with denominator 1 (after cancelling) are integers
+gap> 121/11;  # rationals with denominator 1 (when canceled) are integers
 11
 ]]></Example>
 

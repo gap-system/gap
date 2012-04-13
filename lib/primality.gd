@@ -2,14 +2,11 @@
 ##
 #W  primality.gd                GAP library                      Jack Schmidt
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  2005 Jack Schmidt
 ##
 ##  This file contains declarations for the primality test in the integers.
 ##
-Revision.primality_gd :=
-    "@(#)$Id$";
 
 ##############################################################################
 ##
@@ -189,7 +186,7 @@ DeclareGlobalFunction( "IsProbablyPrimeInt" );
 ##  <Func Name="PrimalityProof" Arg='n'/>
 ##
 ##  <Description>
-##  Construct a machine verifable proof of the primality of (the probable
+##  Construct a machine verifiable proof of the primality of (the probable
 ##  prime) <A>n</A>, following the ideas of <Cite Key="BLS1975"/>.
 ##
 ##  The proof consists of various Fermat and Lucas pseudoprimality tests,

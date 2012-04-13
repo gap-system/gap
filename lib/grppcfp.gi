@@ -9,8 +9,6 @@
 ##  This file contains some functions to convert a pc group into an
 ##  fp group and vice versa.
 ##
-Revision.grppcfp_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

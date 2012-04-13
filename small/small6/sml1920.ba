@@ -3,8 +3,6 @@
 #W  sml1920.ba             GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1920_ba :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1920 ].n2nil[ 1 ] :=
 [ 50236606675764455511350068136600438088503870016831488,

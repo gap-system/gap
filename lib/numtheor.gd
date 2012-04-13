@@ -2,7 +2,6 @@
 ##
 #W  numtheor.gd                 GAP library                  Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -28,8 +27,6 @@
 ##  The arguments are simply integers.
 ##  <#/GAPDoc>
 ##
-Revision.numtheor_gd:=
-    "@(#)$Id$";
 
 
 ##########################################################################
@@ -252,13 +249,16 @@ DeclareGlobalFunction( "IsPrimitiveRootMod" );
 ##  <Ref Func="PrimitiveRootMod"/> returns the smallest primitive root that
 ##  is strictly larger than <A>start</A>.
 ##  <Example><![CDATA[
-##  gap> PrimitiveRootMod( 409 ); # largest primitive root for a prime less than 2000
+##  gap> # largest primitive root for a prime less than 2000:
+##  gap> PrimitiveRootMod( 409 ); 
 ##  21
 ##  gap> PrimitiveRootMod( 541, 2 );
 ##  10
-##  gap> PrimitiveRootMod( 337, 327 ); # 327 is the largest primitive root mod 337
+##  gap> # 327 is the largest primitive root mod 337:
+##  gap> PrimitiveRootMod( 337, 327 );
 ##  fail
-##  gap> PrimitiveRootMod( 30 );  # there exists no primitive root modulo 30
+##  gap> # there exists no primitive root modulo 30:
+##  gap> PrimitiveRootMod( 30 );
 ##  fail
 ##  ]]></Example>
 ##  </Description>
@@ -303,10 +303,11 @@ DeclareGlobalFunction( "PrimitiveRootMod" );
 ##  gap> GeneratorsPrimeResidues( 1 );
 ##  rec( exponents := [  ], generators := [  ], primes := [  ] )
 ##  gap> GeneratorsPrimeResidues( 4*3 );
-##  rec( exponents := [ 2, 1 ], generators := [ 7, 5 ], primes := [ 2, 3 ] )
+##  rec( exponents := [ 2, 1 ], generators := [ 7, 5 ], 
+##    primes := [ 2, 3 ] )
 ##  gap> GeneratorsPrimeResidues( 8*9*5 );
-##  rec( exponents := [ 3, 2, 1 ], generators := [ [ 271, 181 ], 281, 217 ], 
-##    primes := [ 2, 3, 5 ] )
+##  rec( exponents := [ 3, 2, 1 ], 
+##    generators := [ [ 271, 181 ], 281, 217 ], primes := [ 2, 3, 5 ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -357,9 +358,11 @@ DeclareGlobalFunction( "GeneratorsPrimeResidues" );
 ##  <Example><![CDATA[
 ##  gap> Jacobi( 11, 35 );  # 9^2 = 11 mod 35
 ##  1
-##  gap> Jacobi( 6, 35 );   # it is -1, thus there is no r such that r^2 = 6 mod 35
+##  gap> # this is -1, thus there is no r such that r^2 = 6 mod 35
+##  gap> Jacobi( 6, 35 );
 ##  -1
-##  gap> Jacobi( 3, 35 );   # it is 1 even though there is no r with r^2 = 3 mod 35
+##  gap> # this is 1 even though there is no r with r^2 = 3 mod 35
+##  gap> Jacobi( 3, 35 );
 ##  1
 ##  ]]></Example>
 ##  </Description>
@@ -401,9 +404,11 @@ DeclareGlobalFunction( "Jacobi" );
 ##  <Example><![CDATA[
 ##  gap> Legendre( 5, 11 );  # 4^2 = 5 mod 11
 ##  1
-##  gap> Legendre( 6, 11 );  # it is -1, thus there is no r such that r^2 = 6 mod 11
+##  gap> # this is -1, thus there is no r such that r^2 = 6 mod 11
+##  gap> Legendre( 6, 11 );
 ##  -1
-##  gap> Legendre( 3, 35 );  # it is -1, thus there is no r such that r^2 = 3 mod 35
+##  gap> # this is -1, thus there is no r such that r^2 = 3 mod 35
+##  gap> Legendre( 3, 35 );
 ##  -1
 ##  ]]></Example>
 ##  </Description>
@@ -446,14 +451,15 @@ DeclareGlobalFunction( "Legendre" );
 ##  (see <Ref Func="FactorsInt"/>).
 ##  
 ##  <Example><![CDATA[
-##  gap> RootMod( 64, 1009 );  # note 'RootMod' does not return 8 in this case but -8;
+##  gap> # note 'RootMod' does not return 8 in this case but -8:
+##  gap> RootMod( 64, 1009 );
 ##  1001
 ##  gap> RootMod( 64, 3, 1009 );
 ##  518
 ##  gap> RootMod( 64, 5, 1009 );
 ##  656
 ##  gap> List( RootMod( 64, 1009 ) * RootsUnityMod( 1009 ),
-##  >          x -> x mod 1009 );  # set of all square roots of 64 mod 1009
+##  >       x -> x mod 1009 );  # set of all square roots of 64 mod 1009
 ##  [ 1001, 8 ]
 ##  ]]></Example>
 ##  </Description>
@@ -659,7 +665,8 @@ DeclareOperation( "Sigma", [ IsObject ] );
 ##  2
 ##  gap> Tau( 8128 );
 ##  14
-##  gap> Tau( 36 );  # the result is odd if and only if the argument is a perfect square
+##  gap> # result is odd if and only if argument is a perfect square:
+##  gap> Tau( 36 );
 ##  9
 ##  ]]></Example>
 ##  </Description>
@@ -759,13 +766,16 @@ DeclareGlobalFunction( "MoebiusMu" );
 ##  fail
 ##  gap> TwoSquares( 16 );
 ##  [ 0, 4 ]
-##  gap> TwoSquares( 45 );  # 3 is the minimal possible gcd because 9 divides 45
+##  gap> # 3 is the minimal possible gcd because 9 divides 45:
+##  gap> TwoSquares( 45 );
 ##  [ 3, 6 ]
-##  gap> TwoSquares( 125 );  # it is not [5,10] because their gcd is not minimal
+##  gap> # it is not [5,10] because their gcd is not minimal:
+##  gap> TwoSquares( 125 );
 ##  [ 2, 11 ]
-##  gap> TwoSquares( 13*17 );  # [10,11] would be the other possible representation
+##  gap> # [10,11] would be the other possible representation:
+##  gap> TwoSquares( 13*17 );
 ##  [ 5, 14 ]
-##  gap> TwoSquares( 848654483879497562821 );  # 848654483879497562821 is prime
+##  gap> TwoSquares( 848654483879497562821 );  # argument is prime
 ##  [ 6305894639, 28440994650 ]
 ##  ]]></Example>
 ##  </Description>

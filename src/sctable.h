@@ -2,7 +2,6 @@
 **
 *W  sctable.h                   GAP source                     Marcel Roelofs
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,        CWI,        Amsterdam,        The Netherlands
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,11 +13,6 @@
 
 #ifndef GAP_SCTABLE_H
 #define GAP_SCTABLE_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_sctable_h =
-   "@(#)$Id$";
-#endif
 
 
 /****************************************************************************

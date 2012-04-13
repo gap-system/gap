@@ -4,7 +4,6 @@
 #W                                                           Alexander Hulpke
 #W                                                             Max Neunhöffer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,8 +15,6 @@
 ##  1. Functions for straight line programs
 ##  2. Functions for elements represented by straight line programs
 ##
-Revision.straight_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -460,9 +457,9 @@ DeclareGlobalFunction( "CompositionOfStraightLinePrograms" );
 ##  <C>List( <A>listofprogs</A>, <A>p</A> -&tgt; ResultOfStraightLineProgram( <A>p</A>, <A>gens</A> )</C>.
 ##  <Example><![CDATA[
 ##  gap> f:= FreeGroup( "x", "y" );;  gens:= GeneratorsOfGroup( f );;
-##  gap> prg1:= StraightLineProgram( [ [ [ 1, 2 ], 1 ], [ 1, 2, 2, -1 ] ], 2 );;
-##  gap> prg2:= StraightLineProgram( [ [ [ 2, 2 ], 3 ], [ 1, 3, 3, 2 ] ], 2 );;
-##  gap> prg3:= StraightLineProgram( [ [ 2, 2 ], [ 1, 3, 3, 2 ] ], 2 );;
+##  gap> prg1:= StraightLineProgram([ [ [ 1, 2 ], 1 ], [ 1, 2, 2, -1 ] ], 2);;
+##  gap> prg2:= StraightLineProgram([ [ [ 2, 2 ], 3 ], [ 1, 3, 3, 2 ] ], 2);;
+##  gap> prg3:= StraightLineProgram([ [ 2, 2 ], [ 1, 3, 3, 2 ] ], 2);;
 ##  gap> prg:= IntegratedStraightLineProgram( [ prg1, prg2, prg3 ] );;
 ##  gap> ResultOfStraightLineProgram( prg, gens );
 ##  [ x^4*y^-1, x^3*y^4, x^3*y^4 ]
@@ -640,9 +637,11 @@ DeclareGlobalFunction("StraightLineProgGens");
 ##  gap> Size(g);
 ##  24
 ##  gap> Random(g);
-##  <[ [ 1, -1, 2, -1, 1, 1, 2, -1, 1, -1, 2, 1, 1, 1, 2, 1, 1, -1, 2, 2, 1, 1 ], 
-##    [ 3, -2, 2, -2, 1, -1, 2, -2, 1, 1, 2, -1, 1, -1, 2, -2, 1, 1, 2, -1, 1,
-##        -1, 2, -1, 1, 1, 2, 1, 1, -1, 2, 1, 1, 1 ] ]>
+##  <
+##  [ [ 1, -1, 2, -1, 1, 1, 2, -1, 1, -1, 2, 1, 1, 1, 2, 1, 1, -1, 2, 2, 
+##        1, 1 ], 
+##    [ 3, -2, 2, -2, 1, -1, 2, -2, 1, 1, 2, -1, 1, -1, 2, -2, 1, 1, 2, 
+##        -1, 1, -1, 2, -1, 1, 1, 2, 1, 1, -1, 2, 1, 1, 1 ] ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -845,7 +844,7 @@ DeclareGlobalFunction( "IntermediateResultOfSLPWithoutOverwrite" );
 ##
 ##  <Description>
 ##  <A>s1</A> and <A>s2</A> must be two slps that return a single element with the same
-##  number of inputs. This function contructs an slp that returns the product
+##  number of inputs. This function constructs an slp that returns the product
 ##  of the two results the slps <A>s1</A> and <A>s2</A> would produce with the same
 ##  input.
 ##  </Description>

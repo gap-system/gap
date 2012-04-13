@@ -3,7 +3,6 @@
 #W  gpprmsya.gd                   GAP Library                    Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains the declarations for symmetric and alternating
 ##  permutation groups
 ##
-Revision.gpprmsya_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

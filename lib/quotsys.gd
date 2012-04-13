@@ -2,12 +2,9 @@
 ##  
 #W  quotsys.gd                  GAP Library                     Werner Nickel
 ##
-#H  $Id$
 ##
 #Y  Copyright (C) 1998  . . . . . . . . .  University of St Andrews, Scotland
 ##
-Revision.quotsys_gd :=
-    "$Id$";
 
 #############################################################################
 ##

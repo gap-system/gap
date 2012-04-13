@@ -2,7 +2,6 @@
 **
 *W  weakptr.c                   GAP source                       Steve Linton
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1997,  School of Mathematical and Computational Sciences,
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_weakptr_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -30,9 +27,7 @@ const char * Revision_weakptr_c =
 
 #include        "bool.h"                /* booleans                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "weakptr.h"             /* weak pointers                   */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
@@ -684,8 +679,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoWeakPtr ( void )
 {
-    module.revision_c = Revision_weakptr_c;
-    module.revision_h = Revision_weakptr_h;
     FillInVersion( &module );
     return &module;
 }

@@ -2,8 +2,6 @@
 ##
 #W  id44100.t              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id44100_t :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[44100].next[20]:=
 rec(

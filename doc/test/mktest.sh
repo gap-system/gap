@@ -3,7 +3,6 @@
 ##
 #W  mktest.sh      Test the examples in GAP manual files       Volkmar Felsch
 ##
-#H  $Id$
 ##
 #Y  Copyright (C) 2002, Lehrstuhl D für Mathematik, RWTH Aachen, Germany
 ##

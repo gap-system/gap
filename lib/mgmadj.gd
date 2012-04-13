@@ -2,7 +2,6 @@
 ##
 #W  mgmadj.gd                    GAP library                  Andrew Solomon
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains declarations for magmas with zero adjoined.
 ##
-Revision.mgmadj_gd:=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -41,6 +38,8 @@ DeclareCategoryCollections("IsMultiplicativeElementWithZero");
 ##  <Oper Name="MultiplicativeZeroOp" Arg='elt'/>
 ##
 ##  <Description>
+##  for an element <A>elt</A> in the category 
+##  <Ref Func="IsMultiplicativeElementWithZero"/>,
 ##  returns the element <M>z</M> in the family <M>F</M> of <A>elt</A>
 ##  with the property that <M>z * m = z = m * z</M> holds for all
 ##  <M>m \in F</M>, if such an element is known.

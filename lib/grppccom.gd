@@ -3,7 +3,6 @@
 #W  grppccom.gd                  GAP Library                     Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains the operations for the computation of complements in
 ##  pc groups
 ##
-Revision.grppccom_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -143,10 +140,10 @@ DeclareGlobalFunction("COComplementsMain");
 
 #############################################################################
 ##
-#O  ComplementclassesSolvableNC( <G>, <N> )
+#O  ComplementClassesRepresentativesSolvableNC( <G>, <N> )
 ##
 ##  <ManSection>
-##  <Oper Name="ComplementclassesSolvableNC" Arg='G, N'/>
+##  <Oper Name="ComplementClassesRepresentativesSolvableNC" Arg='G, N'/>
 ##
 ##  <Description>
 ##  computes a set of representatives of the complement classes of <A>N</A> in
@@ -155,16 +152,16 @@ DeclareGlobalFunction("COComplementsMain");
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation("ComplementclassesSolvableNC",
+DeclareOperation("ComplementClassesRepresentativesSolvableNC",
   [IsGroup,IsGroup]);
 
 #############################################################################
 ##
-#O  Complementclasses( <G>, <N> ) . . . . . . . . . . . . find all complement
+#O  ComplementClassesRepresentatives( <G>, <N> ) . . . . . . . . . . . . find all complement
 ##
-##  <#GAPDoc Label="Complementclasses">
+##  <#GAPDoc Label="ComplementClassesRepresentatives">
 ##  <ManSection>
-##  <Oper Name="Complementclasses" Arg='G, N'/>
+##  <Oper Name="ComplementClassesRepresentatives" Arg='G, N'/>
 ##
 ##  <Description>
 ##  Let <A>N</A> be a normal subgroup of <A>G</A>.
@@ -175,14 +172,14 @@ DeclareOperation("ComplementclassesSolvableNC",
 ##  <P/>
 ##  At the moment only methods for a solvable <A>N</A> are available.
 ##  <Example><![CDATA[
-##  gap> Complementclasses(g,Group((1,2)(3,4),(1,3)(2,4)));
+##  gap> ComplementClassesRepresentatives(g,Group((1,2)(3,4),(1,3)(2,4)));
 ##  [ Group([ (3,4), (2,4,3) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation("Complementclasses",[IsGroup,IsGroup]);
+DeclareOperation("ComplementClassesRepresentatives",[IsGroup,IsGroup]);
 
 
 #############################################################################

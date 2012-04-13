@@ -3,8 +3,6 @@
 #W  sml768.z               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml768_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 768 ].pnil := rec( 2syl :=
 [ 2, 35, 36, 38, 39, 305, 306, 542, 543, 544, 722, 732, 737, 810, 820, 825,

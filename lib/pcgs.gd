@@ -2,7 +2,6 @@
 ##
 #W  pcgs.gd                     GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the operations for polycylic generating systems.
 ##
-Revision.pcgs_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -244,7 +241,8 @@ DeclareAttribute(
 ##  gap> PcSeries(p);
 ##  [ Group([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
 ##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
-##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(()) ]
+##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(()) 
+##   ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -655,13 +653,13 @@ DeclareAttribute( "IndicesChiefNormalSteps", IsPcgs );
 ##  [ 1, 2, 3, 5 ]
 ##  gap> g:=Group((1,2,3,4),(1,5)(2,6)(3,7)(4,8));;
 ##  gap> p:=PcgsCentralSeries(g);
-##  Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), (1,4,3,2)(5,6,7,8), 
-##    (1,3)(2,4)(5,7)(6,8) ])
+##  Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), 
+##    (1,4,3,2)(5,6,7,8), (1,3)(2,4)(5,7)(6,8) ])
 ##  gap> IndicesCentralNormalSteps(p);
 ##  [ 1, 2, 4, 5, 6 ]
 ##  gap> q:=PcgsPCentralSeriesPGroup(g);
-##  Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), (1,4,3,2)(5,6,7,8), 
-##    (1,3)(2,4)(5,7)(6,8) ])
+##  Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), 
+##    (1,4,3,2)(5,6,7,8), (1,3)(2,4)(5,7)(6,8) ])
 ##  gap> IndicesPCentralNormalStepsPGroup(q);
 ##  [ 1, 3, 5, 6 ]
 ##  ]]></Example>

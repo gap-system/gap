@@ -3,14 +3,11 @@
 #W  glzmodmz.gd                    GAP library                    Stefan Kohl
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2011 The GAP Group
 ##
 ##  This file contains declarations for constructing clasical groups over
 ##  residue class rings.
-Revision.glzmodmz_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

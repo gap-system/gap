@@ -2,7 +2,6 @@
 ##
 #W  permdeco.gd                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -10,8 +9,6 @@
 ##  composition factors and the representation of such groups in a nice way
 ##  as permutation groups.
 ##
-Revision.permdeco_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -135,7 +132,7 @@ DeclareAttribute("FittingFreeLiftSetup",IsGroup);
 ##  <C>serdepths</C>
 ##  For each depth step in the pcgs for the radical of <G>, as stored in
 ##  <C>parentffs</C>, this indicates the index in <C>pcgs</C> for <A>U</A>,
-##  at which this depth is acchieved.
+##  at which this depth is achieved.
 ##
 ##  The record may hold other components that are germane to the recognition
 ##  setup. These components may not be modified by user code.

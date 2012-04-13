@@ -3,7 +3,6 @@
 #W  grpfree.gi                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,8 +15,6 @@
 ##  (associative) words, that is they have a normal  form that allows an easy
 ##  equalitity test.
 ##
-Revision.grpfree_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

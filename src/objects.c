@@ -2,7 +2,6 @@
 **
 *W  objects.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,16 +11,12 @@
 */
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
 
-const char * Revision_objects_c =
-   "@(#)$Id$";
 
 #include        "sysfiles.h"            /* file input/output               */
 
 #include        "gasman.h"              /* garbage collector               */
 
-#define INCLUDE_DECLARATION_PART
 #include        "objects.h"             /* objects                         */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "scanner.h"             /* scanner                         */
 
@@ -1781,8 +1776,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoObjects ( void )
 {
-    module.revision_c = Revision_objects_c;
-    module.revision_h = Revision_objects_h;
     FillInVersion( &module );
     return &module;
 }

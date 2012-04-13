@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.listcoef_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -177,10 +175,11 @@ DeclareOperation(
 ##
 ##  <Description>
 ##  <E> Only used internally</E>
-##  Let <A>pol2</A> (and <A>pol3</A>) be polynomials given by the first <A>len2</A> (<A>len3</A>)
-##  entries of the coefficient list <A>list2</A> (<A>list3</A>).
-##  If <A>len2</A> and <A>len3</A> are omitted, they default to the lengths of <A>list2</A>
-##  and <A>list3</A>.
+##  Let <A>pol2</A> (and <A>pol3</A>) be polynomials given by the first
+##  <A>len2</A> (<A>len3</A>) entries of the coefficient list <A>list2</A>
+##  (<A>list3</A>).
+##  If <A>len2</A> and <A>len3</A> are omitted, they default to the lengths
+##  of <A>list2</A> and <A>list3</A>.
 ##  This operation changes <A>list1</A> to the coefficient list of the product
 ##  of <A>pol2</A> with <A>pol3</A>.
 ##  This operation changes <A>list1</A> which therefore must be a mutable list.
@@ -265,7 +264,7 @@ DeclareOperation(
 ##
 ##  <Description>
 ##  Let <M>p1</M> (and <M>p2</M>) be polynomials given by the first
-##  <A>len1</A> (<A>len2</A>) entries of the coefficient list <A>list2</A>
+##  <A>len1</A> (<A>len2</A>) entries of the coefficient list <A>list1</A>
 ##  (<A>list2</A>).
 ##  If <A>len1</A> and <A>len2</A> are omitted,
 ##  they default to the lengths of <A>list1</A> and <A>list2</A>.
@@ -301,7 +300,7 @@ DeclareOperation(
 ##
 ##  <Description>
 ##  Let <M>p1</M> (and <M>p2</M>) be polynomials given by the first
-##  <A>len1</A> (<A>len2</A>) entries of the coefficient list <A>list2</A>
+##  <A>len1</A> (<A>len2</A>) entries of the coefficient list <A>list1</A>
 ##  (<A>list2</A>).
 ##  If <A>len1</A> and <A>len2</A> are omitted,
 ##  they default to the lengths of <A>list1</A> and <A>list2</A>.

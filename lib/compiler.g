@@ -2,7 +2,6 @@
 ##
 #W  compiler.g                   GAP library                     Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the frontend function for the compiler.
 ##
-Revision.compiler_g :=
-    "@(#)$Id$";
 
 
 #############################################################################

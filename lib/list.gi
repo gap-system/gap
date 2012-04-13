@@ -2,7 +2,6 @@
 ##
 #W  list.gi                     GAP library                  Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains methods for lists in general.
 ##
-Revision.list_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -1911,6 +1908,9 @@ InstallMethod( Compacted,
     function ( list )
     local   res,        # compacted of <list>, result
             elm;        # element of <list>
+    if IsDenseList(list) then
+      return ShallowCopy(list);
+    fi;
     res := [];
     for elm in list do
         Add( res, elm );
@@ -2406,7 +2406,20 @@ InstallMethod( MaximumList,
     od;
     return max;
     end );
-
+    
+InstallMethod( MaximumList,
+    "for a list and a seed",
+    [ IsList, IsObject ],
+    function ( list, max )
+    local elm;
+    for elm in list do
+        if max < elm  then
+            max := elm;
+        fi;
+    od;
+    return max;
+    end );
+    
 InstallMethod( MaximumList,
     "for a range",
     [ IsRange ],
@@ -2423,14 +2436,42 @@ InstallMethod( MaximumList,
     end );
 
 InstallMethod( MaximumList,
+    "for a range and a seed",
+    [ IsRange, IsObject ],
+    function ( range, max )
+    local len;
+    len := Length(range);
+    if max < range[1] then
+        max := range[1];
+    fi;
+    if len > 0 and max < range[len] then
+        max := range[len];
+    fi;
+    return max;
+    end );
+
+InstallMethod( MaximumList,
     "for a sorted list",
     [ IsSSortedList ],
-    function ( l )
-    local min;
-    if Length( l ) = 0 then
+    function ( list )
+    local len;
+    len := Length(list);
+    if len = 0 then
       Error( "MaximumList: <list> must contain at least one element" );
     fi;
-    return l[Length(l)];
+    return list[len];
+    end );
+
+InstallMethod( MaximumList,
+    "for a sorted list and a seed",
+    [ IsSSortedList, IsObject ],
+    function ( list, max )
+    local len;
+    len := Length(list);
+    if len > 0 and list[len] > max then
+        return list[len];
+    fi;
+    return max;
     end );
 
 
@@ -2477,14 +2518,28 @@ InstallMethod( MinimumList,
     end );
 
 InstallMethod( MinimumList,
+    "for a list",
+    [ IsList, IsObject ],
+    function ( list, min )
+    local elm;
+    for elm  in list  do
+        if elm < min then
+            min := elm;
+        fi;
+    od;
+    return min;
+    end );
+
+InstallMethod( MinimumList,
     "for a range",
     [ IsRange ],
     function ( range )
-    local min;
-    if Length( range ) = 0 then
+    local min, len;
+    len := Length(range);
+    if len = 0 then
         Error( "MinimumList: <range> must contain at least one element" );
     fi;
-    min := range[ Length( range ) ];
+    min := range[ len ];
     if range[1] < min then
         return range[1];
     fi;
@@ -2492,16 +2547,39 @@ InstallMethod( MinimumList,
     end );
 
 InstallMethod( MinimumList,
+    "for a range and a seed",
+    [ IsRange, IsObject ],
+    function ( range, min )
+    local len;
+    len := Length(range);
+    if min > range[1] then
+        min := range[1];
+    fi;
+    if len > 0 and min > range[len] then
+        min := range[len];
+    fi;
+    return min;
+    end );
+    
+InstallMethod( MinimumList,
     "for a sorted list",
     [ IsSSortedList ],
-    function ( l )
-    local min;
-    if Length( l ) = 0 then
+    function ( list )
+    if Length(list) = 0 then
       Error( "MinimumList: <list> must contain at least one element" );
     fi;
-    return l[1];
+    return list[1];
     end );
 
+InstallMethod( MinimumList,
+    "for a sorted list and a seed",
+    [ IsSSortedList, IsObject ],
+    function ( list, min )
+    if Length(list) > 0 and list[1] < min then
+        return list[1];
+    fi;
+    return min;
+    end );
 
 #############################################################################
 ##

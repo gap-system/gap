@@ -2,7 +2,6 @@
 ##
 #W  ctblauto.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,8 +12,6 @@
 ##  and functions to calculate permutations transforming the rows of a matrix
 ##  to the rows of another matrix.
 ##
-Revision.ctblauto_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

@@ -2,7 +2,6 @@
 ##
 #W  log2html.g             GAP *.log - File --> HTML              Stefan Kohl
 ##
-#H  @(#)$Id$
 ##
 ##  Utility to convert GAP log files to XHTML 1.0 Strict.
 ##

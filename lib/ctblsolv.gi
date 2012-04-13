@@ -3,7 +3,6 @@
 #W  ctblsolv.gi                 GAP library                Hans Ulrich Besche
 #W                                                              Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains character table methods for solvable groups.
 ##
-Revision.ctblsolv_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -146,7 +143,7 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
       h:= NaturalHomomorphismByNormalSubgroupNC( G, SubgroupNC( G, [ z ] ) );
 
       # `c' is a list of complement classes of `N' modulo `z'
-      c:= List( Complementclasses( ImagesSource( h ), ImagesSet( h, N ) ),
+      c:= List( ComplementClassesRepresentatives( ImagesSource( h ), ImagesSet( h, N ) ),
                 x -> PreImagesSet( h, x ) );
       r:= Centralizer( G, N );
       for L in c do
@@ -1930,10 +1927,14 @@ BindGlobal( "IrreducibleRepresentationsByBaumClausen", function( G )
     mrep:= [];
     info:= BaumClausenInfo( G );
     lg:= Length( info.pcgs );
-
+    
+    if info.lin=[[]] then # trivial group
+        return [GroupHomomorphismByImagesNC(G,Group([[1]]),[],[])];
+    fi;
+    
     # Compute the images of linear representations on the pcgs.
     for rep in info.lin do
-      gcd:= Gcd( rep );
+      gcd := Gcd( rep );
       if gcd = 0 then
         Add( mrep, List( rep, x -> [ [ 1 ] ] ) );
       else

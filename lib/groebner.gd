@@ -2,14 +2,11 @@
 ##
 #W  groebner.gd                   GAP Library               Alexander Hulpke   
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for monomial orderings and Groebner
 ##  bases.
-Revision.groebner_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -158,8 +155,8 @@ DeclareAttribute("OccuringVariableIndices",IsMonomialOrdering);
 ##  returns the leading monomial (with respect to the ordering <A>ord</A>)
 ##  of the polynomial <A>pol</A>.
 ##  <Example><![CDATA[
-##  gap> x:=Indeterminate(Rationals,"x":old);;
-##  gap> y:=Indeterminate(Rationals,"y":old);;
+##  gap> x:=Indeterminate(Rationals,"x");;
+##  gap> y:=Indeterminate(Rationals,"y");;
 ##  gap> z:=Indeterminate(Rationals,"z");;
 ##  gap> lexord:=MonomialLexOrdering();grlexord:=MonomialGrlexOrdering();
 ##  MonomialLexOrdering()
@@ -245,21 +242,21 @@ DeclareOperation("LeadingTermOfPolynomial",
 ##  used as the underlying order of variables.
 ##  <Example><![CDATA[
 ##  gap> l:=List(Tuples([1..3],3),i->x^(i[1]-1)*y^(i[2]-1)*z^(i[3]-1));
-##  [ 1, z, z^2, y, y*z, y*z^2, y^2, y^2*z, y^2*z^2, x, x*z, x*z^2, x*y, x*y*z, 
-##    x*y*z^2, x*y^2, x*y^2*z, x*y^2*z^2, x^2, x^2*z, x^2*z^2, x^2*y, x^2*y*z, 
-##    x^2*y*z^2, x^2*y^2, x^2*y^2*z, x^2*y^2*z^2 ]
+##  [ 1, z, z^2, y, y*z, y*z^2, y^2, y^2*z, y^2*z^2, x, x*z, x*z^2, x*y, 
+##    x*y*z, x*y*z^2, x*y^2, x*y^2*z, x*y^2*z^2, x^2, x^2*z, x^2*z^2, 
+##    x^2*y, x^2*y*z, x^2*y*z^2, x^2*y^2, x^2*y^2*z, x^2*y^2*z^2 ]
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialLexOrdering()));l;
-##  [ 1, z, z^2, y, y*z, y*z^2, y^2, y^2*z, y^2*z^2, x, x*z, x*z^2, x*y, x*y*z, 
-##    x*y*z^2, x*y^2, x*y^2*z, x*y^2*z^2, x^2, x^2*z, x^2*z^2, x^2*y, x^2*y*z, 
-##    x^2*y*z^2, x^2*y^2, x^2*y^2*z, x^2*y^2*z^2 ]
+##  [ 1, z, z^2, y, y*z, y*z^2, y^2, y^2*z, y^2*z^2, x, x*z, x*z^2, x*y, 
+##    x*y*z, x*y*z^2, x*y^2, x*y^2*z, x*y^2*z^2, x^2, x^2*z, x^2*z^2, 
+##    x^2*y, x^2*y*z, x^2*y*z^2, x^2*y^2, x^2*y^2*z, x^2*y^2*z^2 ]
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialLexOrdering([y,z,x])));l;
-##  [ 1, x, x^2, z, x*z, x^2*z, z^2, x*z^2, x^2*z^2, y, x*y, x^2*y, y*z, x*y*z, 
-##    x^2*y*z, y*z^2, x*y*z^2, x^2*y*z^2, y^2, x*y^2, x^2*y^2, y^2*z, x*y^2*z, 
-##    x^2*y^2*z, y^2*z^2, x*y^2*z^2, x^2*y^2*z^2 ]
+##  [ 1, x, x^2, z, x*z, x^2*z, z^2, x*z^2, x^2*z^2, y, x*y, x^2*y, y*z, 
+##    x*y*z, x^2*y*z, y*z^2, x*y*z^2, x^2*y*z^2, y^2, x*y^2, x^2*y^2, 
+##    y^2*z, x*y^2*z, x^2*y^2*z, y^2*z^2, x*y^2*z^2, x^2*y^2*z^2 ]
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialLexOrdering([z,x,y])));l;
-##  [ 1, y, y^2, x, x*y, x*y^2, x^2, x^2*y, x^2*y^2, z, y*z, y^2*z, x*z, x*y*z, 
-##    x*y^2*z, x^2*z, x^2*y*z, x^2*y^2*z, z^2, y*z^2, y^2*z^2, x*z^2, x*y*z^2, 
-##    x*y^2*z^2, x^2*z^2, x^2*y*z^2, x^2*y^2*z^2 ]
+##  [ 1, y, y^2, x, x*y, x*y^2, x^2, x^2*y, x^2*y^2, z, y*z, y^2*z, x*z, 
+##    x*y*z, x*y^2*z, x^2*z, x^2*y*z, x^2*y^2*z, z^2, y*z^2, y^2*z^2, 
+##    x*z^2, x*y*z^2, x*y^2*z^2, x^2*z^2, x^2*y*z^2, x^2*y^2*z^2 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -314,17 +311,17 @@ DeclareGlobalFunction("MonomialGrlexOrdering");
 ##  used as the underlying order of variables.
 ##  <Example><![CDATA[
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialGrlexOrdering()));l;
-##  [ 1, z, y, x, z^2, y*z, y^2, x*z, x*y, x^2, y*z^2, y^2*z, x*z^2, x*y*z, 
-##    x*y^2, x^2*z, x^2*y, y^2*z^2, x*y*z^2, x*y^2*z, x^2*z^2, x^2*y*z, x^2*y^2, 
-##    x*y^2*z^2, x^2*y*z^2, x^2*y^2*z, x^2*y^2*z^2 ]
+##  [ 1, z, y, x, z^2, y*z, y^2, x*z, x*y, x^2, y*z^2, y^2*z, x*z^2, 
+##    x*y*z, x*y^2, x^2*z, x^2*y, y^2*z^2, x*y*z^2, x*y^2*z, x^2*z^2, 
+##    x^2*y*z, x^2*y^2, x*y^2*z^2, x^2*y*z^2, x^2*y^2*z, x^2*y^2*z^2 ]
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialGrevlexOrdering()));l;
-##  [ 1, z, y, x, z^2, y*z, x*z, y^2, x*y, x^2, y*z^2, x*z^2, y^2*z, x*y*z, 
-##    x^2*z, x*y^2, x^2*y, y^2*z^2, x*y*z^2, x^2*z^2, x*y^2*z, x^2*y*z, x^2*y^2, 
-##    x*y^2*z^2, x^2*y*z^2, x^2*y^2*z, x^2*y^2*z^2 ]
+##  [ 1, z, y, x, z^2, y*z, x*z, y^2, x*y, x^2, y*z^2, x*z^2, y^2*z, 
+##    x*y*z, x^2*z, x*y^2, x^2*y, y^2*z^2, x*y*z^2, x^2*z^2, x*y^2*z, 
+##    x^2*y*z, x^2*y^2, x*y^2*z^2, x^2*y*z^2, x^2*y^2*z, x^2*y^2*z^2 ]
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialGrlexOrdering([z,y,x])));l;
-##  [ 1, x, y, z, x^2, x*y, y^2, x*z, y*z, z^2, x^2*y, x*y^2, x^2*z, x*y*z, 
-##    y^2*z, x*z^2, y*z^2, x^2*y^2, x^2*y*z, x*y^2*z, x^2*z^2, x*y*z^2, y^2*z^2, 
-##    x^2*y^2*z, x^2*y*z^2, x*y^2*z^2, x^2*y^2*z^2 ]
+##  [ 1, x, y, z, x^2, x*y, y^2, x*z, y*z, z^2, x^2*y, x*y^2, x^2*z, 
+##    x*y*z, y^2*z, x*z^2, y*z^2, x^2*y^2, x^2*y*z, x*y^2*z, x^2*z^2, 
+##    x*y*z^2, y^2*z^2, x^2*y^2*z, x^2*y*z^2, x*y^2*z^2, x^2*y^2*z^2 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -379,7 +376,7 @@ DeclareGlobalFunction("EliminationOrdering");
 ##  corresponding to <A>gens</A>.
 ##  <Example><![CDATA[
 ##  gap> bas:=[x^3*y*z,x*y^2*z,z*y*z^3+x];;
-##  gap> pol:=x^7*z*bas[1]+y^5*bas[3]+x*z;;                                        
+##  gap> pol:=x^7*z*bas[1]+y^5*bas[3]+x*z;;
 ##  gap> PolynomialReduction(pol,bas,MonomialLexOrdering()); 
 ##  [ -y*z^5, [ x^7*z, 0, y^5+z ] ]
 ##  gap> PolynomialReducedRemainder(pol,bas,MonomialLexOrdering());
@@ -430,7 +427,7 @@ DeclareGlobalFunction("PolynomialReduction");
 ##  <Description>
 ##  this operation does the same way as
 ##  <Ref Func="PolynomialReduction"/> but does not keep track of the actual quotients
-##  and returns only the remainder (it is therfore slightly faster).
+##  and returns only the remainder (it is therefore slightly faster).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -472,7 +469,8 @@ DeclareGlobalFunction("PolynomialReducedRemainder");
 ##  <Example><![CDATA[
 ##  gap> l:=[x^2+y^2+z^2-1,x^2+z^2-y,x-y];;
 ##  gap> GroebnerBasis(l,MonomialLexOrdering());
-##  [ x^2+y^2+z^2-1, x^2+z^2-y, x-y, -y^2-y+1, -z^2+2*y-1, 1/2*z^4+2*z^2-1/2 ]
+##  [ x^2+y^2+z^2-1, x^2+z^2-y, x-y, -y^2-y+1, -z^2+2*y-1, 
+##    1/2*z^4+2*z^2-1/2 ]
 ##  gap> GroebnerBasis(l,MonomialLexOrdering([z,x,y]));
 ##  [ x^2+y^2+z^2-1, x^2+z^2-y, x-y, -y^2-y+1 ]
 ##  gap> GroebnerBasis(l,MonomialGrlexOrdering());

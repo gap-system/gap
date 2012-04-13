@@ -2,15 +2,12 @@
 ##
 #W  perf.gd               GAP Groups Library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declarations for the Holt/Plesken library of
 ##  perfect groups
 ##
-Revision.perf_gd :=
-    "@(#)$Id$";
 
 
 PERFRec := fail; # indicator that perf0.grp is not loaded
@@ -90,7 +87,8 @@ DeclareAttribute("PerfectIdentification", IsGroup );
 ##
 ##  <Description>
 ##  This is the ordered list of all numbers up to <M>10^6</M> that occur as
-##  sizes of perfect groups.  One can iterate over the perfect groups libray with:
+##  sizes of perfect groups.
+##  One can iterate over the perfect groups library with:
 ##  <Example><![CDATA[
 ##  gap> for n in SizesPerfectGroups() do
 ##  >      for k in [1..NrPerfectLibraryGroups(n)] do

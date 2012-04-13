@@ -4,13 +4,10 @@
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
-#H  @(#)$Id$
 ##
 ##  This file contains declarations of functions for computing (with)
 ##  continued fraction expansions of real numbers.
 ##
-Revision.contfrac_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -37,9 +34,9 @@ Revision.contfrac_gd :=
 ##  gap> ContinuedFractionExpansionOfRoot(x^3-2,20);
 ##  [ 1, 3, 1, 5, 1, 1, 4, 1, 1, 8, 1, 14, 1, 10, 2, 1, 4, 12, 2, 3 ]
 ##  gap> ContinuedFractionExpansionOfRoot(x^5-x-1,50);
-##  [ 1, 5, 1, 42, 1, 3, 24, 2, 2, 1, 16, 1, 11, 1, 1, 2, 31, 1, 12, 5, 1, 7, 11, 
-##    1, 4, 1, 4, 2, 2, 3, 4, 2, 1, 1, 11, 1, 41, 12, 1, 8, 1, 1, 1, 1, 1, 9, 2, 
-##    1, 5, 4 ]
+##  [ 1, 5, 1, 42, 1, 3, 24, 2, 2, 1, 16, 1, 11, 1, 1, 2, 31, 1, 12, 5, 
+##    1, 7, 11, 1, 4, 1, 4, 2, 2, 3, 4, 2, 1, 1, 11, 1, 41, 12, 1, 8, 1, 
+##    1, 1, 1, 1, 9, 2, 1, 5, 4 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

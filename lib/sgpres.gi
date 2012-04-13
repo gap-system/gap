@@ -2,7 +2,6 @@
 ##
 #W  sgpres.gi                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file  contains  the methods for  subgroup presentations  in finitely
 ##  presented groups (fp groups).
 ##
-Revision.sgpres_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -2321,7 +2318,7 @@ end );
 ##
 #R  IsPresentationDefaultRep( <pres> )
 ##
-##  is te default representation of presentations.
+##  is the default representation of presentations.
 ##  `IsPresentationDefaultRep' is a subrepresentation of
 ##  `IsComponentObjectRep'.
 ##

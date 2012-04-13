@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id$    (C) Frank Lübeck
+# (C) Frank Lübeck
 
 # path to the directory which will contain directories needed by the 
 # packages update mechanism (pkgcache, webftp, mergedarchives, tmp, WWW2).
@@ -9,8 +9,8 @@
 
 export PREFIX="/mnt/raid/hudson-slave/workspace/GAP-pkg-update/pkgadmin"
 
-# how to call GAP, e.g. "/gap/bin/gapL"
-export GAP="/mnt/raid/hudson-slave/workspace/GAP-source-distro/wrap/gap45beta/gapsourcedistro/gap4r5/bin/gap.sh"
+# how to call GAP, e.g. "/gap/bin/gapL" or "gap45"
+export GAP="gap45"
 
 # path to directory for caching PackageInfo.g, archive and unpacked
 # package documentation
@@ -32,3 +32,9 @@ export WWW2Dir=${PREFIX}"/WWW2"
 # destination of the ftp server directory (can be remote), the one
 # containing the directories 'tar.gz', 'tar.bz2' and 'win.zip'
 export FtpServer="/ftp/pub/gap/gap45"
+
+# destination of the directory containing package release repositories 
+# (that is, repositories to store released versions of the package to
+# use in the GAP package update mechanism; NOT to store development 
+# versions of packages
+export PkgReposDir="/mnt/raid/gap-packages-archive"

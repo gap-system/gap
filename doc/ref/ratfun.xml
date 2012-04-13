@@ -145,8 +145,8 @@ gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
 gap> a:=g/f;
 (x^2*y+x*y^2+5)/(x^5+x*y+3)
 gap> b:=(g*f)/(f^2);
-(x^7*y+x^6*y^2+5*x^5+x^3*y^2+x^2*y^3+3*x^2*y+3*x*y^2+5*x*y+15)/(x^10+2*x^6*y+6\
-*x^5+x^2*y^2+6*x*y+9)
+(x^7*y+x^6*y^2+5*x^5+x^3*y^2+x^2*y^3+3*x^2*y+3*x*y^2+5*x*y+15)/(x^10+2\
+*x^6*y+6*x^5+x^2*y^2+6*x*y+9)
 gap> a=b;
 true
 ]]></Example>
@@ -463,8 +463,8 @@ Alternatively, first create the
 indeterminates and then create the ring including these indeterminates.
 <P/>
 <Example><![CDATA[
-gap> a:=Indeterminate(Rationals,"a");;
-gap> b:=Indeterminate(Rationals,"b");;
+gap> a:=Indeterminate(Rationals,"a":old);;
+gap> b:=Indeterminate(Rationals,"b":old);;
 gap> PolynomialRing(Rationals,[a,b]);;
 ]]></Example>
 <P/>

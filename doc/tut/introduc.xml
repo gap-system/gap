@@ -21,15 +21,11 @@ This tutorial introduces you to  the &GAP;  system.  It is written  with
 users in mind who have just managed to start &GAP; for the first time on
 their computer and want to learn the basic facts  about &GAP; by playing
 around with some instructive  examples. Therefore, this tutorial contains
-at many  places several lines of  input  (which you  should type  on your
-terminal) followed by the corresponding output  (which &GAP; produces as
-an answer to your input).
-<Log><![CDATA[
-This ``session protocol'' is printed in typewriter style and highlihted
-(like this paragraph) in this tutorial. It should look exactly as it
-looks in your GAP session.
-]]></Log>
-This is  to encourage you to actually  run through these examples on your
+at many  places examples consisting of  several lines of  input  (which 
+you  should type  on your terminal) followed by the corresponding output  (
+which &GAP; produces as an answer to your input).
+<P/>
+We encourage you to actually  run through these examples on your
 computer. This will support your  feeling for &GAP;  as a tool, which is
 the leading aim of this  tutorial. Do not believe any  statement in it as
 long  as you cannot verify  it for your own  version of  &GAP;. You will
@@ -56,9 +52,8 @@ tutorial, you can immediately plunge into the exciting parts of &GAP;
 and  only read detailed  information about  elementary things (in  the
 reference manual) when you really need them.
 <P/>
-Each chapter of this tutorial contains an  overview of its sections at
-the beginning,  and a section  with references to the reference manual
-at the end.
+Each chapter of this tutorial contains a section with references to the 
+reference manual at the end.
 <P/>
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Starting and Leaving GAP">
@@ -70,7 +65,7 @@ at the end.
 If the  program is correctly  installed then you usually start &GAP; by
 simply
 typing  <C>gap</C> at  the  prompt of your   operating system followed by  the
-<A>return</A> key, sometimes this is also called the <A>newline</A> key.
+<B>Return</B> key, sometimes this is also called the <B>Newline</B> key.
 <P/>
 <Log><![CDATA[
 $ gap
@@ -94,19 +89,20 @@ gap> quit;
 $ 
 ]]></Log>
 <P/>
-On some systems you could type  <A>ctl</A>-<C>D</C> to yield the same effect.
-In any situation   &GAP; is ended by  typing  <A>ctl</A>-<C>C</C> twice  within  a
-second. Here as always, a combination like  <A>ctl</A>-<C>D</C> means that you have
-to press the <C>D</C> key while you hold down the <A>ctl</A> key.
+On some systems you could type <B>Ctrl-D</B> to yield the same effect.
+In any situation &GAP; is ended by typing <B>Ctrl-C</B> twice within a
+second.  Here as always, a combination like <B>Ctrl-D</B> means that you have
+to press the <B>D</B> key while you hold down the <B>Ctrl</B> key.
 <P/>
 On some systems (for example the Apple Macintosh) minor changes might be
 necessary. This is explained in &GAP; installation instructions.
 <!-- TODO: put URL -->
 <P/>
 <Index>whitespace</Index>
-In  most   places <E>whitespace</E>  characters   (i.e.  <A>space</A>s, <A>tab</A>s  and
-<A>return</A>s) are insignificant for the meaning of &GAP; input. Identifiers
-and keywords must however not contain any whitespace.  On the other hand,
+In most places <E>whitespace</E> characters (i.e. <B>Space</B>s, <B>Tab</B>s
+and <B>Return</B>s) are insignificant for the meaning of &GAP; input.
+Identifiers and keywords must however not contain any whitespace.
+On the other hand,
 sometimes there  must be  whitespace  around identifiers and keywords  to
 separate them from each other and from numbers. We will use whitespace to
 format more complicated commands for better readability.
@@ -118,25 +114,6 @@ comments in   the printed examples  in this  tutorial to  explain certain
 lines of input or output.
 <!-- % These comments will be printed in a normal font for better readability, -->
 <!-- % they start with the symbol&nbsp;#. -->
-<P/>
-You should be able to reproduce the results of the <E>examples</E> of &GAP;
-sessions in this manual, in the following sense.
-If you start the &GAP; session with the two commands
-<P/>
-<Log><![CDATA[
-gap> SizeScreen( [ 80, ] ); LogTo( "logfile1" );
-]]></Log>
-<P/>
-(which are used to set the line length to 80 if this isn't already your
-default line length and to save a listing of
-the session on some file), then choose any chapter and rerun its
-examples in one continuous session and in the given order, the &GAP;
-output should look like the output shown in the manual, except for a
-few lines of output which we have edited a little bit with respect to
-blanks or line breaks in order to improve the readability.  However,
-when random processes are involved, you may get different results if
-you extract single examples and run them separately.
-
 </Section>
 
 
@@ -192,10 +169,10 @@ section <Ref Func="Read" BookName="ref"/>.
 <P/>
 A simple calculation with &GAP; is as easy as one can imagine.  You type
 the problem just after the prompt, terminate it with a semicolon and then
-pass the problem to the  program with the <A>return</A> key.  For  example, to
+pass the problem to the  program with the <B>Return</B> key.  For  example, to
 multiply the difference between 9 and 7 by the sum of 5 and 6, that is to
 calculate  <M>(9 - 7) * (5 + 6)</M>, you type exactly this  last sequence  of
-symbols followed by <C>;</C> and <A>return</A>.
+symbols followed by <C>;</C> and <B>Return</B>.
 <P/>
 <Example><![CDATA[
 gap> (9 - 7) * (5 + 6);
@@ -209,16 +186,16 @@ longer print this additional prompt.
 <P/>
 <Index>line editing</Index>
 If you make a mistake while typing the line,
-but <E>before</E> typing the final <A>return</A>,
-you can use the <A>delete</A> key (or sometimes <A>backspace</A> key)
+but <E>before</E> typing the final <B>Return</B>,
+you can use the <B>Delete</B> key (or sometimes <B>Backspace</B> key)
 to delete the last typed character.
-You can also move the cursor back and forward in the line with <A>ctl</A>-<C>B</C>
-and <A>ctl</A>-<C>F</C> and insert or delete characters anywhere in the line.
+You can also move the cursor back and forward in the line with <B>Ctrl-B</B>
+and <B>Ctrl-F</B> and insert or delete characters anywhere in the line.
 The line editing commands are fully described
 in section&nbsp;<Ref Sect="Line Editing" BookName="ref"/>.
 <P/>
 If you did omit the semicolon at the end of  the line but have already
-typed  <A>return</A>, then &GAP; has  read  everything you typed, but does
+typed <B>Return</B>, then &GAP; has read everything you typed, but does
 not know  that the command  is  complete.  The program is  waiting for
 further  input and indicates  this with  a  partial prompt <C>></C>.   This
 problem is solved by simply  typing the missing  semicolon on the next
@@ -234,7 +211,7 @@ gap> (9 - 7) * (5 + 6)
 So the input can consist of several lines, and &GAP; prints a partial
 prompt <C>></C> in each input line except the first, until the command is
 completed with a semicolon.
-(&GAP; may already evaluate part of the input when <A>return</A> is typed,
+(&GAP; may already evaluate part of the input when <B>Return</B> is typed,
 so for long calculations it might take some time until the partial prompt
 appears.)
 Whenever you see the partial prompt and you cannot decide what &GAP; is
@@ -261,25 +238,25 @@ an unexpected  symbol occurred with   an arrow sign  <C>^</C>  under it.  As a
 computer program  cannot know what your  intentions really were,  this is
 only  a hint. But in this  case &GAP;  is  right by  claiming that there
 should be a closing  parenthesis before the  semicolon. Now you  can type
-<A>ctl</A>-<C>P</C> to recover the last line of input. It will be written after the
-prompt with the cursor in the first  position. Type <A>ctl</A>-<C>E</C> to take the
-cursor  to the end of   the line, then <A>ctl</A>-<C>B</C>   to move the cursor one
+<B>Ctrl-P</B> to recover the last line of input. It will be written after the
+prompt with the cursor in the first  position. Type <B>Ctrl-E</B> to take the
+cursor to the end of the line, then <B>Ctrl-B</B> to move the cursor one
 character back. The cursor is now on the position of the semicolon. Enter
 the missing parenthesis by simply typing <C>)</C>. Now the line is correct and
-may be passed to &GAP;  by hitting the <A>return</A>  key. Note that for this
+may be passed to &GAP;  by hitting the <B>Return</B>  key. Note that for this
 action it is not necessary to move the cursor  past the last character of
 the input line.
 <P/>
 Each line  of commands  you  type is sent to    &GAP; for evaluation  by
-pressing <A>return</A> regardless of the position of  the cursor in that line.
-We will no longer mention the <A>return</A> key from now on.
+pressing <B>Return</B> regardless of the position of  the cursor in that line.
+We will no longer mention the <B>Return</B> key from now on.
 <P/>
 <Index>break loops</Index>
 Sometimes a syntax error will cause &GAP; to enter a <E>break loop</E>.  This
 is indicated by the special prompt <C>brk></C>. If another syntax error occurs
 while  &GAP; is in  a break loop, the prompt  will  change to <C>brk_02></C>,
 <C>brk_03></C> and so on. You can leave the current break loop and exit to the
-next outer one by either typing <C>quit;</C> or by hitting <A>ctl</A>-<C>D</C>.
+next outer one by either typing <C>quit;</C> or by hitting <B>Ctrl-D</B>.
 Eventually &GAP; will return to its normal state and show its normal
 prompt <C>gap></C> again.
 

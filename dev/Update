@@ -2,7 +2,6 @@
 %%
 %W  Update                      GAP Maintenance
 %%
-%H  $Id$
 %%
 %Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 %%
@@ -548,4 +547,402 @@ Z(2)^0
 ! Changed Files
 lib/field.gd
 ! End
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/03/13
+! Changed by
+FL
+! Type of Change
+New: improved documentation and fix of efficiency issue
+! Description
+Documented 
+<mixer manual="Reference: IsBlistRep">
+<span class="code">IsBlistRep</span></mixer> 
+and
+<mixer manual="Reference: ConvertToBlistRep">
+<span class="code">ConvertToBlistRep</span></mixer>,
+improved documentation of blists and fixed expansion of blists 
+to plain lists by some list handling methods.
+! Test Code
+gap> b:=BlistList([1..4],[1,2]);
+[ true, true, false, false ]
+gap> b{[1,2]} := [false,false];
+[ false, false ]
+gap> IsBlistRep(b);
+true
+! Changed Files
+doc/ref/blist.xml
+lib/list.g
+src/blister.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/04/01
+! Changed by
+FL
+! Type of Change
+Fix: efficiency issue
+! Description
+Made 
+<mixer manual="Reference: MemoryUsage">
+<span class="code">MemoryUsage</span></mixer>
+much more efficient, in particular on large objects.
+! Changed Files
+lib/object.g*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/03/08
+! Changed by
+FL
+! Type of Change
+New: new functionality
+! Description
+GAP can now be compiled with readline support for line editing. Some
+advantage are: works with unicode terminals, highly configurable, 
+nicer handling of long input lines,  improved TAB-completion. 
+(see 
+<mixer manual="Reference: Editing using the readline library"><span
+class="code">??readline</span></mixer> for documentation).
+! Changed Files
+lib/cmdledit.g
+src/sysfiles.c
+doc/ref/mloop.xml
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2009/09/25
+! Changed by
+FL
+! Reported by
+Simon King
+! Type of Change
+Fix: crash, internal data corruption
+! Description
+Fixed problem with resetting the kernels recursion depth counter when running 
+into many break loops.
+! Changed Files
+src/funcs.*
+src/gap.c
+src/streams.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/02/03
+! Changed by
+FL
+! Type of Change
+New: defined file encoding to be UTF-8
+! Description
+Now all files in the GAP core distribution use UTF-8 file encoding
+(old hacks to specify non-ASCII characters were removed).
+! Changed Files
+about 4700 different files
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/10/25
+! Changed by
+various
+! Type of Change
+Fix: shorter startup banner
+! Description
+GAP now shows a shorter and more informative banner at startup (if not
+switched off via -b).
+! Changed Files
+lib/init.g
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/03/17
+! Changed by
+FL
+! Type of Change
+Fix: internal data corruption
+! Description
+GAP behaves now much better when the printing of a (large) object is
+interrupted with Ctrl-c. The object is no longer corrupted and the
+indentation level is reset.
+! Changed Files
+src/gap.c
+src/objects.*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/05/03
+! Changed by
+FL
+! Type of Change
+Fix: documentation
+! Description
+Adjusted the documentation of 
+<mixer manual="Reference: Random Elements">
+Random elements</mixer> to the setup with the Mersenne twister and
+random sources.
+! Changed Files
+doc/ref/coll.xml
+lib/coll.g*
+lib/obsolete.g
+lib/random.g*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/09/29
+! Changed by
+FL
+! Reported by
+Ramon Esteban-Romero
+! Type of Change
+Fix: wrong result
+! Description
+Made 
+<mixer manual="Reference: IsSupersolvableGroup">
+<span class="code">IsSupersolvableGroup</span></mixer>
+work for (not yet know to be) trivial group.
+! Changed Files
+lib/grppcprp.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/09/20
+! Changed by
+FL
+! Type of Change
+New: new functionality
+! Description
+Added an operation 
+<mixer manual="Reference: Shuffle">
+<span class="code">Shuffle</span></mixer>
+for lists.
+! Changed Files
+doc/ref/lists.xml
+lib/list.g*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/09/20
+! Changed by
+FL
+! Type of Change
+New: new functionality
+! Description
+Added a function
+<mixer manual="Reference: PrimeDivisors">
+<span class="code">PrimeDivisors</span></mixer>.
+! Changed Files
+doc/ref/integers.xml
+lib/integer.g*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/09/17
+! Changed by
+FL
+! Type of Change
+Fix: limitation of columns
+! Description
+GAP does now support up to 4096 columns in a terminal 
+(this can be changed at compile time via the variable
+<span class="code">MAXLENOUTPUTLINE</span> in 
+<span class="code">src/config.h</span>.
+! Changed Files
+src/gap.c
+src/scanner.*
+src/sysfiles.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/09/15
+! Changed by
+FL
+! Type of Change
+New: new functionality
+! Description
+New iterators and enumerators are available: 
+<mixer manual="Reference: EnumeratorOfCombinations">
+<span class="code">EnumeratorOfCombinations</span></mixer>,
+<mixer manual="Reference: IteratorOfCombinations">
+<span class="code">IteratorOfCombinations</span></mixer>,
+<mixer manual="Reference: IteratorOfPartitions">
+<span class="code">IteratorOfPartitions</span></mixer>.
+! Changed Files
+doc/ref/combinat.xml
+lib/coll.g*
+lib/combinat.g*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/09/07
+! Changed by
+FL
+! Type of Change
+Fix: machine dependency
+! Description
+The Mersenne twister implementation is made independent of endianness, seeds
+can be now be transferred between architectures.
+! Changed Files
+src/gmpints.c
+src/integers.c
+lib/random.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/01/18
+! Changed by
+FL
+! Reported by
+Chris Jefferson
+! Type of Change
+Fix: syntax that can be misunderstood
+! Description
+GAP no longer accepts multiple unary + or - signs. This is to avoid
+misunderstandings because double ++ or -- mean increment and decrement 
+in many other programming languages.
+! Changed Files
+src/read.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/02/09
+! Changed by
+FL
+! Type of Change
+Fix: interface error
+! Description
+There are no more partial prompts when GAP is started with -q option.
+! Changed Files
+src/read.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/02/05
+! Changed by
+FL
+! Type of Change
+New: extended functionality
+! Description
+Now GAP expands paths with "~/" in -l options correctly.
+! Changed Files
+src/system.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/07/13
+! Changed by
+FL
+! Type of Change
+New: extended functionality
+! Description
+Support for 
+<span class="code">SetPrintFormattingStatus("*stdout*",false);</span>
+to switch off the automatic line breaking in terminal output.
+! Test Code
+gap> SetPrintFormattingStatus("*stdout*",false);
+gap> [1..100]+0;
+[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100 ]
+gap> SetPrintFormattingStatus("*stdout*",true);
+! Changed Files
+lib/streams.gi
+src/scanner.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/09/29
+! Changed by
+FL
+! Type of Change
+New: extended functionality
+! Description
+The <span class=code>List</span> command now works in a documented way for
+lists with holes, see 
+<mixer manual="Reference: List (for a list (and a function))">
+<span class="code">List(list[, func])</span></mixer>.
+! Test Code
+gap> List([1,,3],x->x^2);
+[ 1,, 9 ]
+! Changed Files
+lib/coll.g*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/11/24
+! Changed by
+FL
+! Type of Change
+New: new functionality
+! Description
+The behaviour of 
+<span class=code>Info</span> statements can now be configured (per 
+<span class=code>Info</span> class). The way arguments are printed can
+be changed and the output stream can be configured, see
+<mixer manual="Reference: Customizing Info">
+Customizing Info statements</mixer>.
+! Changed Files
+lib/info.g*
+doc/ref/debug.xml
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/11/20
+! Changed by
+FL
+! Type of Change
+Fix: documented functionality
+! Description
+Now <span class=code>AppendTo</span> works with 
+<span class=code>"*errout*"</span> and
+<span class=code>"*stdout*"</span>.
+! Test Code
+gap> AppendTo("*stdout*","Hi!\n");
+Hi!
+! Changed Files
+src/sysfiles.c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/11/09
+! Changed by
+FL
+! Type of Change
+New: new functionality
+! Description
+The source code of a function can be read with 
+<mixer manual="Reference: PageSource">
+<span class="code">PageSource</span></mixer>.
+! Changed Files
+lib/methwhy.g
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/12/20
+! Changed by
+FL
+! Type of Change
+New: extended functionality
+! Description
+Large integers are now displayed by a short string showing the first and 
+last few digits. What "large" means is user configurable.
+! Test Code
+gap> 2^1000000;
+<integer 990...376 (301030 digits)>
+! Changed Files
+lib/integer.g*
+lib/init.g
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/01/23
+! Changed by
+FL
+! Type of Change
+New: new functionality
+! Description
+GAP has a new function 
+<mixer manual="Reference: Test">
+<span class="code">Test</span></mixer>
+which can substitute the less flexible 
+<span class="code">ReadTest</span> function.
+! Changed Files
+lib/test.g*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

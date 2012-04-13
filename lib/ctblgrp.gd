@@ -2,7 +2,6 @@
 ##
 #W  ctblgrp.gd                   GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 1997
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the declarations for the Dixon-Schneider algorithm
 ##
-Revision.ctblgrp_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -387,7 +384,7 @@ DeclareOperation( "IrrDixonSchneider", [ IsGroup, IsRecord ] );
 ##  <Description>
 ##  Called with one argument, a group <A>G</A>,
 ##  <Ref Func="IrreducibleRepresentationsDixon"/>
-##  computes (reresentatives of) all irreducible complex representations for
+##  computes (representatives of) all irreducible complex representations for
 ##  the finite group <A>G</A>, using the method of&nbsp;<Cite Key="Dix93"/>,
 ##  which computes the character table and computes the representation
 ##  as constituent of an induced monomial representation of a subgroup.

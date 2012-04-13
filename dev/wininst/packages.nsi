@@ -2,7 +2,6 @@
 # 
 # packages.nsi
 #
-# $Id$
 # 
 # To make the GAP packages installer for Windows:
 # - create the subdirectory 'pkg' in the directory with packages.nsi 

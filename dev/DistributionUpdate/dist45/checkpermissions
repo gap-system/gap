@@ -2,7 +2,7 @@
 
 #############################################################################
 ##
-##  $Id$ Frank Lübeck
+##  (C) Frank Lübeck
 ##  
 ##  Small utility for discovering potentially problematic file permissions.
 ##  Needs (GNU?)  'find'.

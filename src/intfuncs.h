@@ -4,7 +4,6 @@
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,11 +14,6 @@
 
 #ifndef GAP_INTFUNCS_H
 #define GAP_INTFUNCS_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_intfuncs_h =
-   "@(#)$Id$";
-#endif
 
 /* link between Mersenne Twister randim numbers and
    representation specific large integer codes */

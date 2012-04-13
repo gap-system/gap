@@ -5,7 +5,6 @@
 #W                                                            Juergen Mueller
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 ##  polynomials and polynomials and their families which are time critical
 ##  and will benefit from compilation.
 ##
-Revision.ratfun1_gi :=
-    "@(#)$Id$";
 
 # Functions to create objects 
 

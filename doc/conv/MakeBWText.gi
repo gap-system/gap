@@ -2,7 +2,6 @@
 ##
 #W  DocToBWText.gi                                         
 ##
-#H  @(#)$Id$
 ##
 
 BindGlobal("GAPDoc2BWTextProcs", rec());

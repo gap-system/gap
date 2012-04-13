@@ -2,15 +2,12 @@
 ##
 #W  ringhom.gi                   GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
 ##  This file contains methods for ring general mappings and homomorphisms.
 ##  It is based on alghom.gi
 ##
-Revision.ringhom_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -88,7 +85,7 @@ InstallGlobalFunction( RingHomomorphismByImages,
     function( S, R, gens, imgs )
     local hom;
     hom:= RingGeneralMappingByImages( S, R, gens, imgs );
-    if IsMapping( hom ) and IsTotal( hom ) then
+    if IsMapping( hom ) then
       return RingHomomorphismByImagesNC( S, R, gens, imgs );
     else
       return fail;
@@ -115,7 +112,7 @@ end );
 #M  PrintObj( <map> ) . . . . . . . . . . . . . . . . .  for ring g.m.b.i.
 ##
 InstallMethod( PrintObj, "for an ring hom. b.i.", true,
-    [     IsMapping and IsTotal
+    [     IsMapping
       and IsRingGeneralMappingByImagesDefaultRep ], 0,
 function( map )
 local mapi;

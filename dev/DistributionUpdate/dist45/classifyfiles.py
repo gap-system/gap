@@ -2,7 +2,6 @@
 import os, sys, fnmatch, os.path
 #############################################################################
 ##
-##  $Id$
 ##
 ## Argument: path to work on (relative or absolute)
 ## Requires: files "colorpatterns.txt" and "textbinarypatterns.txt" 

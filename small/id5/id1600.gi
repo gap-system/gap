@@ -2,8 +2,6 @@
 ##
 #W  id1600.gi              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id1600_gi :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[1600].next[191]:=
 rec(

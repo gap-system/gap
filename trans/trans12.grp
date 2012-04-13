@@ -2,15 +2,12 @@
 ##
 #W  trans12.grp         GAP transitive groups library        Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the transitive groups of degree 12
 ##  They were originally published by Gordon Royle
 ##
-Revision.trans12_grp:=
-  "@(#)$Id$";
 
 
 TRANSGRP[12]:=

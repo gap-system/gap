@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-## $Id$
 ##  
 ## This script unpacks the tools.tar.gz archive which contains some utilities 
 ## mainly for package authors (preparing documentation and archives, ...). 

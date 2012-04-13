@@ -3,8 +3,6 @@
 #W  prop1440.z             GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.prop1440_z :=
-    "@(#)$Id$";
 
 PROPERTIES_SMALL_GROUPS[ 1440 ] := rec(
 isNilpotent := [ 4, 198, -216, 222, 919, -942, 1438, -1456, 1676, -1681, 4540

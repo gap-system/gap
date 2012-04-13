@@ -3,7 +3,6 @@
 *W  finfield.c                  GAP source                      Werner Nickel
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -52,8 +51,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_finfield_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -72,9 +69,7 @@ const char * Revision_finfield_c =
 
 #include        "integer.h"             /* integers                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "finfield.h"            /* finite fields and ff elements   */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -2112,8 +2107,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFinfield ( void )
 {
-    module.revision_c = Revision_finfield_c;
-    module.revision_h = Revision_finfield_h;
     FillInVersion( &module );
     return &module;
 }

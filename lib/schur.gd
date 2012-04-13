@@ -6,8 +6,6 @@
 #Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.schur_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -42,7 +40,7 @@ DeclareInfoClass( "InfoSchur" );
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> epi:=EpimorphismSchurCover(g);
-##  [ f1, f2, f3 ] -> [ (3,4), (2,4,3), (1,4)(2,3) ]
+##  [ f1, f2, f3 ] -> [ (3,4), (2,4,3), (1,3)(2,4) ]
 ##  gap> Size(Source(epi));
 ##  48
 ##  ]]></Example>
@@ -192,7 +190,7 @@ DeclareOperation("EpimorphismNonabelianExteriorSquare", [IsGroup]);
 ##
 ##  <Description>
 ##  This function determines if there exists a group <M>H</M> such that
-##  <A>G</A> is isomormorphic to the quotient <M>H/Z(H)</M>.
+##  <A>G</A> is isomorphic to the quotient <M>H/Z(H)</M>.
 ##  A group with this property is called in literature <E>capable</E>.
 ##  A group being capable is 
 ##  equivalent to the epicentre of <A>G</A> being trivial,

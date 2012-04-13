@@ -2,7 +2,6 @@
 ##
 #W  ideal.gd                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -73,8 +72,6 @@
 #T  formed, it is again an ideal.
 #T  The product of two ideals ...
 ##
-Revision.ideal_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -403,7 +400,8 @@ DeclareAttribute( "RightActingRingOfIdeal", IsRing );
 ##  gap> C:= Subalgebra( B, Basis( B ){[1..9]} );
 ##  <algebra over Rationals, with 9 generators>
 ##  gap> I:= AsTwoSidedIdeal( B, C );
-##  <two-sided ideal in <algebra of dimension 18 over Rationals>, (9 generators)>
+##  <two-sided ideal in <algebra of dimension 18 over Rationals>, 
+##    (9 generators)>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

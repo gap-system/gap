@@ -6,8 +6,6 @@
 ##  This file contains the basic installations for the library of small
 ##  groups and the group identification routines. 
 ##
-Revision.small_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

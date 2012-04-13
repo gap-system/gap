@@ -2,7 +2,6 @@
 ##
 #A  imf14.grp                   GAP group library              Volkmar Felsch
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1995,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -12,8 +11,6 @@
 ##  [1]  a quadratic form (as lower triangle of the Gram matrix),
 ##  [2]  a list of matrix generators.
 ##
-Revision.imf14_grp :=
-    "@(#)$Id$";
 
 
 #############################################################################

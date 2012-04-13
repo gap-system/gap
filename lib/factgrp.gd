@@ -2,7 +2,6 @@
 ##
 #W  factgrp.gd                      GAP library              Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the declarations of operations for factor group maps
 ##
-Revision.factgrp_gd:=
-  "@(#)$Id$";
 
 ##
 ##  To implement new factor group methods, one does not need to deal with
@@ -153,7 +150,6 @@ DeclareAttribute("NaturalHomomorphismsPool",IsGroup,
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "FactorCosetAction", [IsGroup,IsGroup] );
-DeclareSynonym( "FactorCosetOperation",FactorCosetAction);
 
 #############################################################################
 ##

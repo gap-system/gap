@@ -7,8 +7,6 @@
 ##  This file contains the methods for the construction of the basic fp group
 ##  types.
 ##
-Revision.basicfp_gi :=
-    "@(#)$Id$";
 
 
     
@@ -101,7 +99,7 @@ local f,g,fam,gfam;
     local u,e;
     u:=UnderlyingElement(x);
     e:=ExtRepOfObj(u); # syllable form
-    if e[2]>=0 and e[2]<n then
+    if Length(e)=0 or (e[2]>=0 and e[2]<n) then
       return u;
     elif e[2] mod n=0 then
       return One(f);

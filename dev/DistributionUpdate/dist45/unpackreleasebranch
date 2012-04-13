@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id$
 ##
 ##  unpacking the archive derived from GAP.dev checkout
 ##

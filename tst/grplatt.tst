@@ -2,7 +2,6 @@
 ##
 #W  grplatt.tst                GAP tests                     Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,9 +9,7 @@
 ##
 ##  Exclude from testinstall.g: why?
 ##
-
-gap> START_TEST("$Id$");
-
+gap> START_TEST("grplatt.tst");
 gap> g:=PerfectGroup(IsPermGroup,95040);;
 gap> l:=ConjugacyClassesSubgroups(g);;
 gap> li:=List(l,i->[Size(Representative(i)),Size(i)]);;
@@ -49,7 +46,6 @@ gap> Print(List(li,i->i),"\n");
   [ 432, 220 ], [ 432, 220 ], [ 660, 144 ], [ 660, 144 ], [ 720, 66 ], 
   [ 720, 66 ], [ 720, 66 ], [ 720, 66 ], [ 720, 66 ], [ 720, 66 ], 
   [ 1440, 66 ], [ 1440, 66 ], [ 7920, 12 ], [ 7920, 12 ], [ 95040, 1 ] ]
-
 gap> LatticeSubgroups(Group((1,2,3,4,5,6)));;
 gap> g := Group( (1,2,3,4)(5,6,7,8), (1,5,3,7)(2,8,4,6) );;
 gap> AsSortedList(List(ConjugacyClassesSubgroups(g),i->Size(Representative(i))));
@@ -58,10 +54,8 @@ gap> AsSortedList(List(NormalSubgroups(g),Size));
 [ 1, 2, 4, 4, 4, 8 ]
 
 # thats all, folks
-gap> STOP_TEST( "grplatt.tst",4630000839);
-
+gap> STOP_TEST( "grplatt.tst", 904800000 );
 
 #############################################################################
 ##
 #E
-

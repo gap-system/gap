@@ -168,8 +168,8 @@ as well as sections&nbsp;<Ref Sect="Logical Implications"/>,
 <Section Label="Categories">
 <Heading>Categories</Heading>
 
-The <E>categories</E> of an object are filters (see&nbsp;<Ref Sect="Filters"/>) determine what
-operations an object admits.
+The <E>categories</E> of an object are filters (see&nbsp;<Ref Sect="Filters"/>)
+that determine what operations an object admits.
 For example, all integers form a category, all rationals form a category,
 and all rational functions form a category.
 An object which claims to lie in a certain category is accepting the
@@ -214,39 +214,40 @@ subcategories of the non indented category listed above it.
 ]]></Log>
 Every object lies in the category <Ref Filt="IsObject"/>.
 <P/>
-The categories <C>IsExtLElement</C> and <C>IsExtRElement</C> contain objects
-that can be multiplied with other objects via <C>*</C> from the left and
-from the right, respectively.  These categories are required for the
-operands of the operation <C>*</C>.
+The categories <Ref Filt="IsExtLElement"/> and <Ref Filt="IsExtRElement"/> 
+contain objects that can be multiplied with other objects via <C>*</C> from 
+the left and from the right, respectively. These categories are required 
+for the operands of the operation <C>*</C>.
 <P/>
-The category <C>IsMultiplicativeElement</C> contains objects that can be
-multiplied from the left and from the right with objects from the same
-family.  <C>IsMultiplicativeElementWithOne</C> contains objects <C>obj</C> for
-which a multiplicatively neutral element can be obtained by taking the
-zeroth power <C>obj^0</C>.
-<C>IsMultiplicativeElementWithInverse</C> contains
-objects <C>obj</C> for which a multiplicative inverse can be obtained by
+The category <Ref Filt="IsMultiplicativeElement"/> contains objects that 
+can be multiplied from the left and from the right with objects from the 
+same family. <Ref Filt="IsMultiplicativeElementWithOne"/> contains objects 
+<C>obj</C> for which a multiplicatively neutral element can be obtained by 
+taking the <M>0</M>-th power <C>obj^0</C>.
+<Ref Filt="IsMultiplicativeElementWithInverse"/> contains objects 
+<C>obj</C> for which a multiplicative inverse can be obtained by
 forming <C>obj^-1</C>.
 <P/>
-Likewise, the categories <C>IsExtAElement</C>, <C>IsAdditiveElement</C>,
-<C>IsAdditiveElementWithZero</C>, and <C>IsAdditiveElementWithInverse</C>
+Likewise, the categories <Ref Filt="IsExtAElement"/>, 
+<Ref Filt="IsAdditiveElement"/>, <Ref Filt="IsAdditiveElementWithZero"/>
+and <Ref Filt="IsAdditiveElementWithInverse"/>
 contain objects that can be added via <C>+</C> to other objects, objects
 that can be added to objects of the same family, objects for which an
 additively neutral element can be obtained by multiplication with
 zero, and objects for which an additive inverse can be obtained by
 multiplication with <C>-1</C>.
 <P/>
-So a vector lies in <C>IsExtLElement</C>, <C>IsExtRElement</C>, and
-<C>IsAdditiveElementWithInverse</C>.  A ring element must additionally lie
-in <C>IsMultiplicativeElement</C>.
+So a vector lies in <Ref Filt="IsExtLElement"/>, <Ref Filt="IsExtRElement"/>
+and <Ref Filt="IsAdditiveElementWithInverse"/>. A ring element must 
+additionally lie in <Ref Filt="IsMultiplicativeElement"/>.
 <P/>
 As stated above it is not guaranteed by the categories of objects
 whether the result of an operation with these objects as arguments is
-defined.  For example, the category <C>IsMatrix</C> is a subcategory of
-<C>IsMultiplicativeElementWithInverse</C>.  Clearly not every matrix has a
-multiplicative inverse.  But the category <C>IsMatrix</C> makes each matrix
-an admissible argument of the operation <C>Inverse</C>, which may sometimes
-return <K>fail</K>.
+defined.  For example, the category <Ref Filt="IsMatrix"/> is a subcategory 
+of <Ref Filt="IsMultiplicativeElementWithInverse"/>. Clearly not every 
+matrix has a multiplicative inverse. But the category <Ref Filt="IsMatrix"/> 
+makes each matrix an admissible argument of the operation 
+<Ref Oper="Inverse"/>, which may sometimes return <K>fail</K>.
 Likewise, two matrices can be multiplied only if they are of appropriate
 shapes.
 <P/>
@@ -270,10 +271,10 @@ A domain that is
 closed under multiplication <C>*</C> is called a magma and it lies in the
 category <Ref Func="IsMagma"/>.
 If a magma is closed under taking the identity,
-it lies in <C>IsMagmaWithOne</C>, and if it is also closed under taking
-inverses, it lies in <C>IsMagmaWithInverses</C>.  The category
-<C>IsMagmaWithInversesIfNonzero</C> denotes closure under taking inverses
-only for nonzero elements, every division ring lies in this category.
+it lies in <Ref Filt="IsMagmaWithOne"/>, and if it is also closed under 
+taking inverses, it lies in <Ref Filt="IsMagmaWithInverses"/>. The category
+<Ref Filt="IsMagmaWithInversesIfNonzero"/> denotes closure under taking 
+inverses only for nonzero elements, every division ring lies in this category.
 <P/>
 Note that every set of categories constitutes its own notion of
 generation, for example a group may be generated as a magma with
@@ -361,8 +362,9 @@ and <Q>know</Q> have to be understood in the sense that it is very cheap
 to get such a value when the attribute is called again.
 <P/>
 The stored value of an attribute is in general immutable
-(see&nbsp;<Ref Sect="Mutability and Copyability"/>), except if the attribute had been
-specally constructed as <Q>mutable attribute</Q>.
+(see&nbsp;<Ref Sect="Mutability and Copyability"/>),
+except if the attribute had been specially constructed as
+<Q>mutable attribute</Q>.
 <P/>
 It depends on the representation of an object (see&nbsp;<Ref Sect="Representation"/>)
 which attribute values it stores.  An object in the representation
@@ -560,7 +562,7 @@ by list assignment) the type may need to be adjusted.
 <P/>
 Important properties for domains are <Ref Func="IsAssociative"/>,
 <Ref Func="IsCommutative"/>, <Ref Func="IsAnticommutative"/>,
-<C>IsLDistributive</C>, and <C>IsRDistributive</C>,
+<Ref Func="IsLDistributive"/> and <Ref Func="IsRDistributive"/>,
 which mean that the multiplication of elements in the domain satisfies
 <M>( a * b ) * c = a * ( b * c )</M>, <M>a * b = b * a</M>,
 <M>a * b = - ( b * a )</M>, <M>a * ( b + c ) = a * b + a * c</M>,
@@ -581,8 +583,8 @@ There are situations where one wants to express a kind of knowledge
 that is based on some heuristic.
 <P/>
 For example, the filters (see&nbsp;<Ref Sect="Filters"/>)
-<C>CanEasilyTestMembership</C> and
-<C>CanEasilyComputePcgs</C> are defined in the &GAP; library.
+<Ref Filt="CanEasilyTestMembership"/> and
+<Ref Filt="CanEasilyComputePcgs"/> are defined in the &GAP; library.
 Note that such filters do not correspond to a mathematical concept,
 contrary to properties (see&nbsp;<Ref Sect="Properties"/>).
 Also it need not be defined what <Q>easily</Q> means for an arbitrary &GAP;
@@ -595,15 +597,15 @@ either explicitly (for the given object) or via a logical implication
 (see&nbsp;<Ref Sect="Logical Implications"/>)
 from other filters.
 <P/>
-For example, a <K>true</K> value of <C>CanEasilyComputePcgs</C> for a group
-means that certain methods are applicable that use a pcgs
+For example, a <K>true</K> value of <Ref Filt="CanEasilyComputePcgs"/> 
+for a group means that certain methods are applicable that use a pcgs
 (see&nbsp;<Ref Sect="Polycyclic Generating Systems"/>) for the group.
 There are logical implications to set the filter value to <K>true</K>
 for permutation groups that are known to be solvable,
 and for groups that have already a (sufficiently nice) pcgs stored.
 In the case one has a solvable matrix group and wants to enable methods
-that use a pcgs, one can set the <C>CanEasilyComputePcgs</C> value to
-<K>true</K> for this particular group.
+that use a pcgs, one can set the <Ref Filt="CanEasilyComputePcgs"/> 
+value to <K>true</K> for this particular group.
 <P/>
 A filter <A>filt</A> of the kind described here is different from
 the other filters introduced in the previous sections.

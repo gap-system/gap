@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- %W  main.xml        GAP 4 Tutorial        ... -->
-<!-- %H  $Id$ -->
 <!-- %Y  Copyright 1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
@@ -23,11 +22,22 @@
   </Author>
 
   <Copyright>
-<#Include SYSTEM "../ref/copyrigh.xml">
+    Copyright &copyright; (1987-&RELEASEYEAR;) 
+    for the core part of the &GAP; system by the &GAP; Group.
+    <P/>
+    Most parts of this distribution, including the core part of the &GAP; 
+    system are distributed under the terms of the GNU General Public License, 
+    see <URL>http://www.gnu.org/licenses/gpl.html</URL> or the file 
+    <F>GPL</F> in the <F>etc</F> directory of the &GAP; 
+    installation.
+    <P/>
+    More detailed information about copyright and licenses of parts of this
+    distribution can be found in <Ref Sect="Copyright and License" BookName="ref"/>.
+    <P/>
+    &GAP; is developed over a long time and has many authors and contributors.
+    More detailed information can be found in 
+    <Ref Sect="Authors and Maintainers" BookName="ref"/>.
   </Copyright>
-  <Acknowledgements>
-<#Include SYSTEM "../tut/authors.xml">
-  </Acknowledgements>
 </TitlePage>
 
 <TableOfContents/>

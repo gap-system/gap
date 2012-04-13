@@ -3,7 +3,6 @@
 #W  ctblsymm.gd                 GAP library                    Götz Pfeiffer
 #W                                                               Felix Noeske
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -69,8 +68,6 @@
 ##  wreath product  uses  lists of them. A list  of beta-numbers is  called a
 ##  symbol.
 ##
-Revision.ctblsymm_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

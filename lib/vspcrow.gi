@@ -2,7 +2,6 @@
 ##
 #W  vspcrow.gi                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -30,8 +29,6 @@
 ##  7. Methods for mutable bases of Gaussian row spaces
 ##  8. Methods installed by somebody else without documenting this ...
 ##
-Revision.vspcrow_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

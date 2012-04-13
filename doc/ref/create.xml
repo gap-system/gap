@@ -669,7 +669,9 @@ function ( set, k )
     elif IsEmpty( set )  then
         return Immutable( [  ] );
     fi;
-    enum := EnumeratorByFunctions( CollectionsFamily( FamilyObj( set ) ), rec(
+    enum 
+     := EnumeratorByFunctions( CollectionsFamily( FamilyObj( set ) ), 
+       rec(
           ElementNumber := function ( enum, n )
                 local  nn, t, i;
                 nn := n - 1;
@@ -679,7 +681,8 @@ function ( set, k )
                     nn := QuoInt( nn, Length( enum!.set ) );
                 od;
                 if nn <> 0  then
-                    Error( "<enum>[", n, "] must have an assigned value" );
+                    Error( "<enum>[", n, 
+                     "] must have an assigned value" );
                 fi;
                 nn := enum!.set{Reversed( t )};
                 MakeImmutable( nn );
@@ -706,8 +709,8 @@ function ( set, k )
                 return Length( enum!.set ) ^ enum!.k;
             end,
           PrintObj := function ( enum )
-                Print( "EnumeratorOfTuples( ", enum!.set, ", ", enum!.k, " )" 
-                 );
+                Print( "EnumeratorOfTuples( ", enum!.set, ", ", 
+                 enum!.k, " )" );
                 return;
             end,
           set := Set( set ),
@@ -1041,12 +1044,13 @@ Sym( [ 1 .. 4 ] )
 gap> IsMutable(g);
 false
 gap> NamesOfComponents(g);
-[ "Size", "NrMovedPoints", "MovedPoints", "GeneratorsOfMagmaWithInverses" ]
+[ "Size", "NrMovedPoints", "MovedPoints", 
+  "GeneratorsOfMagmaWithInverses" ]
 gap> g!.silly := "rubbish";
 "rubbish"
 gap> NamesOfComponents(g);
-[ "Size", "NrMovedPoints", "MovedPoints", "GeneratorsOfMagmaWithInverses", 
-  "silly" ]
+[ "Size", "NrMovedPoints", "MovedPoints", 
+  "GeneratorsOfMagmaWithInverses", "silly" ]
 gap> g!.silly;
 "rubbish"
 ]]></Example>
@@ -1098,9 +1102,10 @@ gap> e1 := StructuralCopy(e);
 gap> IsMutable(e1);
 false
 gap> e2 := ShallowCopy(e);
-[ (), (1,4), (1,2,4), (1,3,4), (2,4), (1,4,2), (1,2), (1,3,4,2), (2,3,4), 
-  (1,4,2,3), (1,2,3), (1,3)(2,4), (3,4), (1,4,3), (1,2,4,3), (1,3), (2,4,3), 
-  (1,4,3,2), (1,2)(3,4), (1,3,2), (2,3), (1,4)(2,3), (1,2,3,4), (1,3,2,4) ]
+[ (), (1,4), (1,2,4), (1,3,4), (2,4), (1,4,2), (1,2), (1,3,4,2), 
+  (2,3,4), (1,4,2,3), (1,2,3), (1,3)(2,4), (3,4), (1,4,3), (1,2,4,3), 
+  (1,3), (2,4,3), (1,4,3,2), (1,2)(3,4), (1,3,2), (2,3), (1,4)(2,3), 
+  (1,2,3,4), (1,3,2,4) ]
 gap> 
 ]]></Example>
 <P/>

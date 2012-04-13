@@ -186,7 +186,6 @@ a Pentium Pro 200 Mhz.  So start with ``combinat.tst'' first.
     gap> Filename( DirectoriesLibrary("tst"), "combinat.tst" );
     "/usr/local/lib/gap4beta/tst/combinat.tst"
     gap> ReadTest(last);
-    + $Id$
     + GAP4stones: 27801
     true
 

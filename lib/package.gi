@@ -3,7 +3,6 @@
 #W  package.gi                  GAP Library                      Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains support for &GAP; packages.
 ##
-Revision.package_gi :=
-    "@(#)$Id$";
 
 
 # recode string to GAPInfo.TermEncoding, assuming input is UTF-8 or latin1
@@ -34,11 +31,11 @@ BindGlobal( "RecodeForCurrentTerminal", function( str )
       u:= fun( u, GAPInfo.TermEncoding );
       return u;
     else
-      # GAPDoc is not available, do nothing in this case.
+      # GAPDoc is not yet available, do nothing in this case.
       return str;
     fi;
   end );
-  
+
 #############################################################################
 ##
 #F  CompareVersionNumbers( <supplied>, <required>[, "equal"] )
@@ -174,7 +171,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     GAPInfo.PackagesInfoRefuseLoad:= [];
 
     LogPackageLoadingMessage( PACKAGE_DEBUG,
-        "enter InitializePackagesInfoRecords", "GAP" );
+        "entering InitializePackagesInfoRecords", "GAP" );
     dirs:= [];
     pkgdirs:= DirectoriesLibrary( "pkg" );
     if pkgdirs = fail then
@@ -284,7 +281,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
 
     GAPInfo.PackagesInfoInitialized:= true;
     LogPackageLoadingMessage( PACKAGE_DEBUG,
-        "exit InitializePackagesInfoRecords", "GAP" );
+        "return from InitializePackagesInfoRecords", "GAP" );
     end );
 
 
@@ -513,8 +510,7 @@ InstallGlobalFunction( LogPackageLoadingMessage, function( arg )
       message:= [ message ];
     fi;
     if severity <= PACKAGE_WARNING 
-       and IsBound( GAPInfo.UserPreferences.UseColorsInTerminal )
-       and GAPInfo.UserPreferences.UseColorsInTerminal = true 
+       and UserPreference("UseColorsInTerminal") = true
        and IsBound( TextAttr )
        and IsRecord( TextAttr ) then
       if severity = PACKAGE_ERROR then
@@ -566,25 +562,46 @@ InstallGlobalFunction( DisplayPackageLoadingLog, function( arg )
 
 #############################################################################
 ##
-#F  PackageAvailabilityInfo( <name>, <version>, <record>, <suggested> )
+#F  PackageAvailabilityInfo( <name>, <version>, <record>, <suggested>,
+#F      <checkall> )
 ##
 InstallGlobalFunction( PackageAvailabilityInfo,
-    function( name, version, record, suggested )
-    local InvalidStrongDependencies, equal, comp, pair, currversion, inforec,
-          msg, dep, record_local, wght, pos, needed, test, name2;
+    function( name, version, record, suggested, checkall )
+    local InvalidStrongDependencies, Name, equal, comp, pair, currversion,
+          inforec, skip, msg, dep, record_local, wght, pos, needed, test,
+          name2, testpair;
 
     InvalidStrongDependencies:= function( dependencies, weights,
                                           strong_dependencies )
-      local order;
+      local result, order, pair, cycle;
 
+      result:= false;
       if not IsEmpty( strong_dependencies ) then
         order:= LinearOrderByPartialWeakOrder( dependencies, weights ).cycles;
-        return ForAny( List( strong_dependencies, Set ),
-                 pair -> ForAny( order, cycle -> IsSubset( cycle, pair ) ) );
+        for pair in strong_dependencies do
+          for cycle in order do
+            if IsSubset( cycle, pair ) then
+              # This condition was imposed by some
+              # `OtherPackagesLoadedInAdvance' component.
+              LogPackageLoadingMessage( PACKAGE_INFO,
+                  [ Concatenation( "PackageAvailabilityInfo: package '",
+                        pair[1], "'" ),
+                    Concatenation( "shall be loaded before package '", name,
+                        "' but must be" ),
+                    "in the same load cycle, due to other dependencies" ],
+                  Name );
+              result:= true;
+              if not checkall then
+                return result;
+              fi;
+            fi;
+          od;
+        od;
       fi;
-      return false;
+      return result;
     end;
 
+    Name:= name;
     name:= LowercaseString( name );
     equal:= "";
     if 0 < Length( version ) and version[1] = '=' then
@@ -592,6 +609,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
     fi;
 
     if name = "gap" then
+      # This case occurs if a package requires a particular GAP version.
       return CompareVersionNumbers( GAPInfo.Version, version, equal );
     fi;
 
@@ -635,28 +653,88 @@ InstallGlobalFunction( PackageAvailabilityInfo,
     #    (Note that they are ordered w.r.t. descending version numbers.)
     for inforec in PackageInfo( name ) do
 
+      Name:= inforec.PackageName;
+      skip:= false;
       currversion[2]:= inforec.Version;
-      msg:= Concatenation( "PackageAvailabilityInfo for version ",
-                           inforec.Version );
-      if version <> "" then
-        Append( msg, Concatenation( " (required: ", version, ")" ) );
-      fi;
-      LogPackageLoadingMessage( PACKAGE_DEBUG, msg, name );
-
-      # Locate the `init.g' file of the package.
-      if Filename( [ Directory( inforec.InstallationPath ) ], "init.g" )
-           = fail  then
-        LogPackageLoadingMessage( PACKAGE_DEBUG,
-            Concatenation( "PackageAvailabilityInfo: cannot locate `",
-              inforec.InstallationPath,
-              "/init.g', please check the installation" ), name );
-        continue;
-      fi;
 
       if IsBound( inforec.Dependencies ) then
         dep:= inforec.Dependencies;
       else
         dep:= rec();
+      fi;
+
+      # Test whether this package version fits.
+      msg:= [ Concatenation( "PackageAvailabilityInfo for version ",
+                             inforec.Version ) ];
+      if version <> "" then
+        if not CompareVersionNumbers( inforec.Version, version, equal ) then
+          # The severity of the log message must be less than `PACKAGE_INFO',
+          # since we do not want to see the message when looking for reasons
+          # why the current package cannot be loaded.
+          LogPackageLoadingMessage( PACKAGE_DEBUG,
+              [ Concatenation( "PackageAvailabilityInfo: version ",
+                    inforec.Version, " does not fit" ),
+                Concatenation( "(required: ", version, ")" ) ],
+              inforec.PackageName );
+          if not checkall then
+            continue;
+          fi;
+          skip:= true;
+        else
+          Add( msg, Concatenation( "(required: ", version, ")" ) );
+          LogPackageLoadingMessage( PACKAGE_INFO, msg,
+              inforec.PackageName );
+        fi;
+      else
+        LogPackageLoadingMessage( PACKAGE_INFO, msg,
+            inforec.PackageName );
+      fi;
+
+      # Test whether the required GAP version fits.
+      if IsBound( dep.GAP )
+         and not CompareVersionNumbers( GAPInfo.Version, dep.GAP ) then
+        LogPackageLoadingMessage( PACKAGE_INFO,
+            Concatenation( "PackageAvailabilityInfo: required GAP version (",
+                dep.GAP, ") does not fit",
+            inforec.PackageName ) );
+        if not checkall then
+          continue;
+        fi;
+        skip:= true;
+      fi;
+
+      # Test whether the availability test function fits.
+      GAPInfo.PackageCurrent:= inforec;
+      test:= inforec.AvailabilityTest();
+      Unbind( GAPInfo.PackageCurrent );
+      if test = true then
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            Concatenation( "PackageAvailabilityInfo: the AvailabilityTest",
+                " function returned 'true'" ),
+            inforec.PackageName );
+      else
+        LogPackageLoadingMessage( PACKAGE_INFO,
+            Concatenation( "PackageAvailabilityInfo: the AvailabilityTest",
+                " function returned ", String( test ) ),
+            inforec.PackageName );
+        if not checkall then
+          continue;
+        fi;
+        skip:= true;
+      fi;
+
+      # Locate the `init.g' file of the package.
+      if Filename( [ Directory( inforec.InstallationPath ) ], "init.g" )
+           = fail  then
+        LogPackageLoadingMessage( PACKAGE_WARNING,
+            Concatenation( "PackageAvailabilityInfo: cannot locate `",
+              inforec.InstallationPath,
+              "/init.g', please check the installation" ),
+            inforec.PackageName );
+        if not checkall then
+          continue;
+        fi;
+        skip:= true;
       fi;
 
       record_local:= StructuralCopy( record );
@@ -684,31 +762,6 @@ InstallGlobalFunction( PackageAvailabilityInfo,
         record_local.Weights[ pos ][2]:= wght;
       fi;
 
-      # Test whether this package version, the required GAP version,
-      # and the availability test function fit.
-      if not CompareVersionNumbers( inforec.Version, version, equal ) then
-        LogPackageLoadingMessage( PACKAGE_DEBUG,
-            Concatenation( "PackageAvailabilityInfo: version ",
-                inforec.Version, " does not fit" ), name );
-        continue;
-      fi;
-      if IsBound( dep.GAP )
-         and not CompareVersionNumbers( GAPInfo.Version, dep.GAP ) then
-        LogPackageLoadingMessage( PACKAGE_DEBUG,
-            Concatenation( "PackageAvailabilityInfo: required GAP version (",
-                dep.GAP, ") does not fit", name ) );
-        continue;
-      fi;
-      GAPInfo.PackageCurrent:= inforec;
-      test:= inforec.AvailabilityTest();
-      Unbind( GAPInfo.PackageCurrent );
-      if test <> true then
-        LogPackageLoadingMessage( PACKAGE_DEBUG,
-            Concatenation( "PackageAvailabilityInfo: the AvailabilityTest",
-                " function returned ", String( test ) ), name );
-        continue;
-      fi;
-
       # Check the dependencies of this package version.
       needed:= [];
       if IsBound( dep.OtherPackagesLoadedInAdvance ) then
@@ -721,33 +774,61 @@ InstallGlobalFunction( PackageAvailabilityInfo,
         Append( needed, dep.NeededOtherPackages );
       fi;
       test:= true;
-      for pair in needed do
-        name2:= LowercaseString( pair[1] );
-        test:= PackageAvailabilityInfo( name2, pair[2], record_local,
-                   suggested );
-        if test = false then
-          # This dependency cannot be satisfied, skip the others.
-          LogPackageLoadingMessage( PACKAGE_DEBUG,
-              Concatenation( "PackageAvailabilityInfo: dependency ",
-                  name2, " cannot be satisfied" ), name );
-          break;
-        elif test <> true then
-          # The package `name2' is available but not yet loaded.
-          Add( record_local.Dependencies, [ name2, name ] );
-        fi;
-      od;
+      if IsEmpty( needed ) then
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            "PackageAvailabilityInfo: no needed packages",
+            inforec.PackageName );
+      else
+        LogPackageLoadingMessage( PACKAGE_DEBUG, Concatenation(
+            [ "PackageAvailabilityInfo: check needed packages" ],
+            List( needed,
+                  pair -> Concatenation( pair[1], " (", pair[2], ")" ) ) ),
+            inforec.PackageName );
+        for pair in needed do
+          name2:= LowercaseString( pair[1] );
+          testpair:= PackageAvailabilityInfo( name2, pair[2], record_local,
+                         suggested, checkall );
+          if testpair = false then
+            # This dependency is not satisfied.
+            test:= false;
+            LogPackageLoadingMessage( PACKAGE_INFO,
+                Concatenation( "PackageAvailabilityInfo: dependency '",
+                    name2, "' is not satisfied" ), inforec.PackageName );
+            if not checkall then
+              # Skip the check of other dependencies.
+              break;
+            fi;
+          elif testpair <> true then
+            # The package `name2' is available but not yet loaded.
+            Add( record_local.Dependencies, [ name2, name ] );
+          fi;
+        od;
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            "PackageAvailabilityInfo: check of needed packages done",
+            inforec.PackageName );
+      fi;
       if test = false then
-        # Some package needed by this version is not available,
-        continue;
+        # At least one package needed by this version is not available,
+        if not checkall then
+          continue;
+        fi;
+        skip:= true;
       fi;
 
       if InvalidStrongDependencies( record_local.Dependencies,
              record_local.Weights, record_local.StrongDependencies ) then
         # This package version cannot be loaded due to conditions
         # imposed by `OtherPackagesLoadedInAdvance' components.
-        LogPackageLoadingMessage( PACKAGE_DEBUG,
-            Concatenation( "PackageAvailabilityInfo: some condition from ",
-                "OtherPackagesLoadedInAdvance cannot be satisfied" ), name );
+        # (Log messages are added inside the function.)
+        if not checkall then
+          continue;
+        fi;
+        skip:= true;
+      fi;
+
+      # All checks for this version have been performed.
+      # Go to the next installed version if some check failed.
+      if skip then
         continue;
       fi;
 
@@ -764,13 +845,18 @@ InstallGlobalFunction( PackageAvailabilityInfo,
 
       if suggested and IsBound( dep.SuggestedOtherPackages ) then
         # Collect info about suggested packages and their dependencies.
+        LogPackageLoadingMessage( PACKAGE_DEBUG, Concatenation(
+            [ "PackageAvailabilityInfo: check suggested packages" ],
+            List( dep.SuggestedOtherPackages,
+                  pair -> Concatenation( pair[1], " (", pair[2], ")" ) ) ),
+            inforec.PackageName );
         for pair in dep.SuggestedOtherPackages do
           name2:= LowercaseString( pair[1] );
           # Do not change the information collected up to now
           # until we are sure that we will really use the suggested package.
           record_local:= StructuralCopy( record );
           test:= PackageAvailabilityInfo( name2, pair[2], record_local,
-                     suggested );
+                     suggested, checkall );
           if test <> true then
             Add( record_local.Dependencies, [ name2, name ] );
             if IsString( test ) then
@@ -789,6 +875,9 @@ InstallGlobalFunction( PackageAvailabilityInfo,
             fi;
           fi;
         od;
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            "PackageAvailabilityInfo: check of suggested packages done",
+            inforec.PackageName );
       fi;
 
       # Print a warning if the package should better be upgraded.
@@ -798,9 +887,10 @@ InstallGlobalFunction( PackageAvailabilityInfo,
 #T component name OnLoad:
 #T shouldn't this be done only if the package is actually loaded?
 
-      LogPackageLoadingMessage( PACKAGE_DEBUG,
+      LogPackageLoadingMessage( PACKAGE_INFO,
           Concatenation( "PackageAvailabilityInfo: version ",
-                         inforec.Version, " is available" ), name );
+                         inforec.Version, " is available" ),
+          inforec.PackageName );
 
       return inforec.InstallationPath;
 
@@ -816,9 +906,9 @@ InstallGlobalFunction( PackageAvailabilityInfo,
       fi;
     fi;
 
-    LogPackageLoadingMessage( PACKAGE_DEBUG,
+    LogPackageLoadingMessage( PACKAGE_INFO,
         Concatenation( "PackageAvailabilityInfo: ",
-            "no installed version fits" ), name );
+            "no installed version fits" ), Name );
 
     return false;
 end );
@@ -826,24 +916,33 @@ end );
 
 #############################################################################
 ##
-#F  TestPackageAvailability( <name>, <version> )
-##
-##  In earlier versions, this function had an optional third argument,
-##  which is now ignored.
+#F  TestPackageAvailability( <name>[, <version>][, <checkall>] )
 ##
 InstallGlobalFunction( TestPackageAvailability, function( arg )
-    local name, version, result;
+    local name, version, checkall, result;
 
     # Get the arguments.
     name:= LowercaseString( arg[1] );
-    if 1 < Length( arg ) then
-      version:= arg[2];
-    else
-      version:= "";
+    version:= "";
+    checkall:= false;
+    if Length( arg ) = 2 then
+      if IsString( arg[2] ) then
+        version:= arg[2];
+      elif arg[2] = true then
+        checkall:= true;
+      fi;
+    elif Length( arg ) = 3 then
+      if IsString( arg[2] ) then
+        version:= arg[2];
+      fi;
+      if arg[3] = true then
+        checkall:= true;
+      fi;
     fi;
 
     # Ignore suggested packages.
-    result:= PackageAvailabilityInfo( name, version, rec(), false );
+    result:= PackageAvailabilityInfo( name, version, rec(), false,
+                                      checkall );
 
     if result = false then
       return fail;
@@ -954,7 +1053,7 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
       Append( str, "\n" );
     fi;
     
-    # temprary hack, in some package names with umlauts are in HTML encoding
+    # temporary hack, in some package names with umlauts are in HTML encoding
     str := Concatenation(sep, RecodeForCurrentTerminal(str), sep);
     str:= ReplacedString( str, "&auml;", RecodeForCurrentTerminal("ä") );
     str:= ReplacedString( str, "&ouml;", RecodeForCurrentTerminal("ö") );
@@ -1162,14 +1261,14 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
         namespace := pair[1].PackageName;
         pkgname := LowercaseString( namespace );
         LogPackageLoadingMessage( PACKAGE_DEBUG,
-            "start reading file read.g",
+            "start reading file 'read.g'",
             namespace );
         ENTER_NAMESPACE(namespace);
         Read( pair[2] );
         LEAVE_NAMESPACE();
         Unbind( GAPInfo.PackageCurrent );
         LogPackageLoadingMessage( PACKAGE_DEBUG,
-            "finish reading file read.g",
+            "finish reading file 'read.g'",
             namespace );
       fi;
     od;
@@ -1200,12 +1299,97 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
     fi;
     end );
 
+
+#############################################################################
+##
+#F  GetPackageNameForPrefix( <prefix> ) . . . . . . . .  show list of matches
+#F                                                   or single match directly
+##
+##  Compute all names of installed packages that match the prefix <prefix>.
+##  In case of a unique match return this match,
+##  otherwise print an info message about the matches and return <prefix>.
+##
+##  This function is called by `LoadPackage'.
+##
+BindGlobal( "GetPackageNameForPrefix", function( prefix )
+    local len, lowernames, name, allnames, indent, pos, sep; 
+
+    len:= Length( prefix );
+    lowernames:= [];
+    for name in Set( RecNames( GAPInfo.PackagesInfo ) ) do
+      if Length( prefix ) <= Length( name ) and
+         name{ [ 1 .. len ] } = prefix then
+        Add( lowernames, name );
+      fi;
+    od;
+    if IsEmpty( lowernames ) then
+      # No package name matches.
+      return prefix;
+    fi;
+    allnames:= List( lowernames,
+                     nam -> GAPInfo.PackagesInfo.( nam )[1].PackageName );
+    if Length( allnames ) = 1 then
+      # There is one exact match.
+      LogPackageLoadingMessage( PACKAGE_DEBUG, Concatenation(
+          [ "replace prefix '", prefix, "' by the unique completion '",
+            allnames[1], "'" ] ), allnames[1] );
+      return lowernames[1];
+    fi;
+
+    # Several package names match.
+    if 0 < InfoLevel( InfoPackageLoading ) then
+      Print( "#I  Call 'LoadPackage' with one of the following strings:\n" );
+      len:= SizeScreen()[1] - 6;
+      indent:= "#I  ";
+      Print( indent );
+      pos:= Length( indent );
+      sep:= "";
+      for name in allnames do
+        Print( sep );
+        pos:= pos + Length( sep );
+        if len < pos + Length( name ) then
+          Print( "\n", indent );
+          pos:= Length( indent );
+        fi;
+        Print( "\"", name, "\"" );
+        pos:= pos + Length( name ) + 2;
+        sep:= ", ";
+      od;
+      Print( ".\n" );
+    fi;
+    return prefix;
+    end );
+
+
 InstallGlobalFunction( LoadPackage, function( arg )
-    local name, version, banner, loadsuggested, msg, depinfo, path, pair, i,
-          order, paths, cycle, secondrun, pkgname, pos, info, filename, read;
+    local name, Name, version, banner, loadsuggested, msg, depinfo, path,
+          pair, i, order, paths, cycle, secondrun, pkgname, pos, info,
+          filename, read;
 
     # Get the arguments.
-    name:= LowercaseString( arg[1] );
+    if Length( arg ) = 0 then
+      name:= "";
+    else
+      name:= arg[1];
+      if not IsString( name ) then
+        Error( "<name> must be a string" );
+      fi;
+      name:= LowercaseString( name );
+    fi;
+    if not IsBound( GAPInfo.PackagesInfo.( name ) ) then
+      name:= GetPackageNameForPrefix( name );
+    fi;
+
+    # Return 'fail' if this package is not installed.
+    if not IsBound( GAPInfo.PackagesInfo.( name ) ) then
+      LogPackageLoadingMessage( PACKAGE_DEBUG,
+          "no package with this name is installed, return 'fail'", name );
+      return fail;
+    fi;
+
+    # The package is available, fetch the name for messages.
+    Name:= GAPInfo.PackagesInfo.( name )[1].PackageName;
+
     version:= "";
     banner:= not GAPInfo.CommandLineOptions.q and
              not GAPInfo.CommandLineOptions.b;
@@ -1245,12 +1429,13 @@ InstallGlobalFunction( LoadPackage, function( arg )
     if not loadsuggested then
       Append( msg, " (omitting suggested packages)" );
     fi;
-    LogPackageLoadingMessage( PACKAGE_DEBUG, msg, name );
+    LogPackageLoadingMessage( PACKAGE_DEBUG, msg, Name );
 
     # Test whether the package is available,
     # and compute the dependency information.
     depinfo:= rec();
-    path:= PackageAvailabilityInfo( name, version, depinfo, loadsuggested );
+    path:= PackageAvailabilityInfo( name, version, depinfo, loadsuggested,
+                                    false );
     if not IsString( path ) then
       if path = false then
         path:= fail;
@@ -1259,25 +1444,15 @@ InstallGlobalFunction( LoadPackage, function( arg )
       # or `fail' (the package cannot be loaded).
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           Concatenation( "return from LoadPackage, ",
-              "PackageAvailabilityInfo returned ", String( path ) ), name );
+              "PackageAvailabilityInfo returned ", String( path ) ), Name );
       GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
       return path;
     fi;
 
-    # First mark all packages in question as loaded,
-    # in order to avoid that an occasional call of `LoadPackage'
-    # inside the package code causes the files to be read more than once.
-    for pair in depinfo.InstallationPaths do
-      GAPInfo.PackagesLoaded.( pair[1] ):= pair[2];
-#T Remove the following as soon as the obsolete variable has been removed!
-if IsBoundGlobal( "PACKAGES_VERSIONS" ) then
-  ValueGlobal( "PACKAGES_VERSIONS" ).( pair[1] ):= pair[2][2];
-fi;
-    od;
-
     # Compute the order in which the packages are loaded.
     # For each set of packages with cyclic dependencies,
-    # read first all `init.g' files and then all `read.g' files.
+    # we will first read all `init.g' files
+    # and afterwards all `read.g' files.
     if IsEmpty( depinfo.Dependencies ) then
       order:= rec( cycles:= [ [ name ] ],
                    weights:= [ depinfo.Weights[1][2] ] );
@@ -1298,11 +1473,23 @@ fi;
     for i in [ 1 .. Length( order.cycles ) ] do
       cycle:= order.cycles[i];
 
+      # First mark all packages in the current cycle as loaded,
+      # in order to avoid that an occasional call of `LoadPackage'
+      # inside the package code causes the files to be read more than once.
+      for pkgname in cycle do
+        pos:= PositionSorted( paths[1], pkgname );
+        GAPInfo.PackagesLoaded.( pkgname ):= paths[2][ pos ];
+#T Remove the following as soon as the obsolete variable has been removed!
+if IsBoundGlobal( "PACKAGES_VERSIONS" ) then
+  ValueGlobal( "PACKAGES_VERSIONS" ).( pkgname ):= paths[2][ pos ][2];
+fi;
+      od;
+
       # If the weight is 1 and the GAP library is not yet loaded
       # then load the GAP library now.
       if order.weights[i] = 1 and not IsBound( GAPInfo.LibraryLoaded ) then
         LogPackageLoadingMessage( PACKAGE_DEBUG,
-            [ "read the impl. part of the GAP library" ], name );
+            [ "read the impl. part of the GAP library" ], Name );
         ReadGapRoot( "lib/read.g" );
         GAPInfo.LibraryLoaded:= true;
         LoadPackage_ReadImplementationParts( Concatenation(
@@ -1311,10 +1498,14 @@ fi;
         secondrun:= [];
       fi;
 
+      if loadsuggested then
+        msg:= "start loading needed/suggested/self packages";
+      else
+        msg:= "start loading needed/self packages";
+      fi;
       LogPackageLoadingMessage( PACKAGE_DEBUG,
-          Concatenation( [ "start loading needed/suggested/self packages" ],
-              cycle ),
-          name );
+          Concatenation( [ msg ], cycle ),
+          Name );
 
       for pkgname in cycle do
         pos:= PositionSorted( paths[1], pkgname );
@@ -1333,7 +1524,7 @@ fi;
           if not read then
             LogPackageLoadingMessage( PACKAGE_WARNING,
                 Concatenation( "file `", filename, "' cannot be read" ),
-                pkgname );
+                info.PackageName );
           fi;
         fi;
 
@@ -1341,13 +1532,15 @@ fi;
         LoadPackageDocumentation( info );
 
         # Read the `init.g' files.
-        LogPackageLoadingMessage( PACKAGE_DEBUG, "start reading file init.g",
-            pkgname );
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            "start reading file 'init.g'",
+            info.PackageName );
         GAPInfo.PackageCurrent:= info;
         ReadPackage( pkgname, "init.g" );
         Unbind( GAPInfo.PackageCurrent );
-        LogPackageLoadingMessage( PACKAGE_DEBUG, "finish reading file init.g",
-            pkgname );
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            "finish reading file 'init.g'",
+            info.PackageName );
 
         filename:= Filename( [ Directory( info.InstallationPath ) ],
                              "read.g" );
@@ -1372,7 +1565,7 @@ fi;
     fi;
 
     LogPackageLoadingMessage( PACKAGE_DEBUG, "return from LoadPackage",
-        name );
+        Name );
     GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
     return true;
     end );
@@ -1495,8 +1688,48 @@ InstallGlobalFunction( InstalledPackageVersion, function( name )
 ##
 #F  AutoloadPackages()
 ##
+
+# The packages to load during startup can be specified via a user preference.
+DeclareUserPreference( rec(
+  name:= "PackagesToLoad",
+  description:= [
+    "A list of names of packages which should be loaded during startup. \
+For backwards compatibility, the default lists most of packages \
+that were autoloaded in GAP 4.4 (add or remove packages as you like)."
+    ],
+  default:= [ "autpgrp", "alnuth", "crisp", "factint", "fga", "irredsol",
+              "laguna", "polenta", "polycyclic", "resclasses", "sophus" ],
+  values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
+  multi:= true,
+  ) );
+
+# And a preference for avoiding some packages.
+DeclareUserPreference( rec(
+  name:= "ExcludeFromAutoload",
+  description:= [
+    "These packages are not loaded at GAP startup. This(doesn't work for \
+packages which are needed by the GAP library, or which are already loaded \
+in a workspace)."
+    ],
+  default:= [],
+  values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
+  multi:= true,
+  ) );
+
+# 
+DeclareUserPreference( rec(
+  name:= "InfoPackageLoadingLevel",
+  description:= [
+    "Info messages concerning package loading up to this level are printed.  \
+The level can be changed in a running session using 'SetInfoLevel'."
+    ],
+  default:= PACKAGE_ERROR,
+  values:= [ PACKAGE_ERROR, PACKAGE_WARNING, PACKAGE_INFO, PACKAGE_DEBUG ],
+  multi:= false,
+  ) );
+
 InstallGlobalFunction( AutoloadPackages, function()
-    local banner, pair, excludedpackages, name, record;
+    local banner, msg, pair, excludedpackages, name, record;
 
 #T remove this as soon as `BANNER' is not used anymore in packages
 if IsBoundGlobal( "BANNER" ) then
@@ -1506,6 +1739,15 @@ if IsBoundGlobal( "BANNER" ) then
 fi;
 BindGlobal( "BANNER", false );
 
+    if GAPInfo.CommandLineOptions.L = "" then
+      msg:= "entering AutoloadPackages (no workspace)";
+    else
+      msg:= Concatenation( "entering AutoloadPackages (workspace ",
+                           GAPInfo.CommandLineOptions.L, ")" ) ;
+    fi;
+    LogPackageLoadingMessage( PACKAGE_DEBUG,
+        msg,
+        "GAP" );
     GAPInfo.delayedImplementationParts:= [];
 
     # Load the needed other packages (suppressing banners)
@@ -1513,7 +1755,10 @@ BindGlobal( "BANNER", false );
     if ForAny( GAPInfo.Dependencies.NeededOtherPackages,
                p -> not IsBound( GAPInfo.PackagesLoaded.( p[1] ) ) ) then
       LogPackageLoadingMessage( PACKAGE_DEBUG,
-          "trying to load needed packages", "GAP" );
+          Concatenation( [ "trying to load needed packages" ],
+              List( GAPInfo.Dependencies.NeededOtherPackages,
+                  pair -> Concatenation( pair[1], " (", pair[2], ")" ) ) ),
+          "GAP" );
       if GAPInfo.CommandLineOptions.A then
         PushOptions( rec( OnlyNeeded:= true ) );
       fi;
@@ -1532,11 +1777,14 @@ BindGlobal( "BANNER", false );
       fi;
     fi;
 
-    if GAPInfo.CommandLineOptions.A or ValueOption( "OnlyNeeded" ) = true then
+    if   GAPInfo.CommandLineOptions.A then
       LogPackageLoadingMessage( PACKAGE_DEBUG,
-          "omitting suggested packages", "GAP" );
+          "omitting suggested packages (-A option)", "GAP" );
+    elif ValueOption( "OnlyNeeded" ) = true then
+      LogPackageLoadingMessage( PACKAGE_DEBUG,
+          "omitting suggested packages ('OnlyNeeded' option)", "GAP" );
     else
-      excludedpackages:= List( GAPInfo.UserPreferences.ExcludeFromAutoload,
+      excludedpackages:= List( UserPreference("ExcludeFromAutoload"),
                                LowercaseString );
       if ForAny( GAPInfo.Dependencies.SuggestedOtherPackages,
                  p -> not IsBound( GAPInfo.PackagesLoaded.( p[1] ) ) ) then
@@ -1571,6 +1819,9 @@ BindGlobal( "BANNER", false );
     fi;
 
     # Load the documentation for not yet loaded packages.
+    LogPackageLoadingMessage( PACKAGE_DEBUG,
+        "call LoadPackageDocumentation for not loaded packages",
+        "GAP" );
     for name in RecNames( GAPInfo.PackagesInfo ) do
       if not IsBound( GAPInfo.PackagesLoaded.( name ) ) then
         # Note that the info records for each package are sorted
@@ -1581,6 +1832,9 @@ BindGlobal( "BANNER", false );
         fi;
       fi;
     od;
+    LogPackageLoadingMessage( PACKAGE_DEBUG,
+        "LoadPackageDocumentation for not loaded packages done",
+        "GAP" );
 
     # If necessary then load the implementation part of the GAP library,
     # and the implementation parts of the packages loaded up to now.
@@ -1595,6 +1849,9 @@ BindGlobal( "BANNER", false );
       GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
     fi;
     Unbind( GAPInfo.delayedImplementationParts );
+    LogPackageLoadingMessage( PACKAGE_DEBUG,
+        "return from AutoloadPackages",
+        "GAP" );
 
 #T remove this as soon as `BANNER' is not used anymore in packages
 MakeReadWriteGlobal( "BANNER" );
@@ -1818,12 +2075,15 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestOption( subrec, "IsAuthor", IsProperBool, "`true' or `false'" );
         TestOption( subrec, "IsMaintainer", IsProperBool,
             "`true' or `false'" );
-
-        if not (    IsBound( subrec.Email ) or IsBound( subrec.WWWHome )
-                 or IsBound( subrec.PostalAddress ) ) then
-          Print( "#E  one of the components `Email', `WWWHome', ",
-                 "`PostalAddress' must be bound\n" );
-          result:= false;
+        if IsBound( subrec.IsMaintainer ) then
+          if subrec.IsMaintainer = true and 
+               not ( IsBound( subrec.Email ) or 
+                     IsBound( subrec.WWWHome ) or
+                     IsBound( subrec.PostalAddress ) ) then
+            Print( "#E  one of the components `Email', `WWWHome', `PostalAddress'\n",
+                   "#E  must be bound for each package maintainer \n" );
+            result:= false;
+          fi;
         fi;
         TestOption( subrec, "Email", IsString, "a string" );
         TestOption( subrec, "WWWHome", IsString, "a string" );
@@ -1868,7 +2128,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         fi;
         TestOption( subrec, "Archive", IsString, "a string" );
         TestOption( subrec, "ArchiveURLSubset", IsFilenameList,
-            "a list of strings denoting relative paths to readable files" );
+            "a list of strings denoting relative paths to readable files or directories" );
         TestMandat( subrec, "HTMLStart", IsFilename,
                     "a string denoting a relative path to a readable file" );
         TestMandat( subrec, "PDFFile", IsFilename,
@@ -2207,18 +2467,11 @@ InstallGlobalFunction( SuggestUpgrades, function( suggestedversions )
 #F  BibEntry( <pkgname>[, <key>] )
 #F  BibEntry( <pkginfo>[, <key>] )
 ##
-NormalizedNameAndKey:= "dummy";
-RepeatedString:= "dummy";
-FormatParagraph:= "dummy";
 Unicode:= "dummy";
 Encode:= "dummy";
 
 InstallGlobalFunction( BibEntry, function( arg )
     local key, pkgname, pkginfo, GAP, ps, months, val, entry, author;
-
-    if LoadPackage( "GAPDoc" ) <> true then
-      return fail;
-    fi;
 
     key:= false;
     if   Length( arg ) = 1 and IsString( arg[1] ) then
@@ -2242,11 +2495,11 @@ InstallGlobalFunction( BibEntry, function( arg )
       if pkgname = "GAP" then
         GAP:= true;
       else
-        pkginfo:= PackageInfo( pkgname );
-        if pkginfo = [] then
+        pkginfo:= InstalledPackageVersion( pkgname );
+        pkginfo:= First( PackageInfo( pkgname ), r -> r.Version = pkginfo );
+        if pkginfo = fail then
           return "";
         fi;
-        pkginfo:= pkginfo[1];
       fi;
     fi;
 
@@ -2400,48 +2653,54 @@ InstallGlobalFunction( BibEntry, function( arg )
     return entry;
 end );
 
-Unbind( NormalizedNameAndKey );
-Unbind( RepeatedString );
-Unbind( FormatParagraph );
 Unbind( Unicode );
 Unbind( Encode );
 
 #############################################################################
 ##
-#F  PackageVariablesInfo( <pkgname>[, <version>] )
+#F  PackageVariablesInfo( <pkgname>, <version> )
 ##
 NamesSystemGVars := "dummy";   # is not yet defined when this file is read
 NamesUserGVars   := "dummy";
 
-InstallGlobalFunction( PackageVariablesInfo, function( arg )
-    local pkgname, version, test, PkgName, realname, new, new_up_to_case,
+InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
+    local test, cache, cache2, PkgName, realname, new, new_up_to_case,
           redeclared, newmethod, key_dependent_operation, rules,
           localBindGlobal, rule, loaded, pkg, args, docmark, done, result,
           subrule, added, prev, subresult, entry, isrelevant, guesssource,
           protected;
 
-    # Get and check the arguments.
-    if   Length( arg ) = 1 and IsString( arg[1] ) then
-      pkgname:= LowercaseString( arg[1] );
-      version:= "";
-    elif Length( arg ) = 2 and IsString( arg[1] ) and IsString( arg[2] ) then
-      pkgname:= LowercaseString( arg[1] );
-      version:= arg[2];
-    else
-      Error( "usage: ShowPackageVariables( <pkgname>[ <version>] )" );
+    test:= TestPackageAvailability( pkgname, version );
+
+    # If the function has been called for this package then
+    # return the stored value.
+    cache:= Concatenation( pkgname, ":", version );
+    if not IsBound( GAPInfo.PackageVariablesInfo ) then
+      GAPInfo.PackageVariablesInfo:= rec();
+    elif IsBound( GAPInfo.PackageVariablesInfo.( cache ) ) then
+      return GAPInfo.PackageVariablesInfo.( cache );
+    elif version = "" and test = true then
+      cache2:= Concatenation( pkgname, ":",
+                   InstalledPackageVersion( pkgname ) );
+      if IsBound( GAPInfo.PackageVariablesInfo.( cache2 ) ) then
+        return GAPInfo.PackageVariablesInfo.( cache2 );
+      fi;
     fi;
 
     # Check that the package is available but not yet loaded.
-    test:= TestPackageAvailability( pkgname, version );
     if test = true then
-      Print( "#E  the package `", pkgname, "' is already loaded\n" );
+      Info( InfoWarning, 1,
+            "the package `", pkgname, "' is already loaded" );
       return [];
     elif test = fail then
-      Print( "#E  the package `", pkgname, "' cannot be loaded" );
-      if version <> "" then
-        Print( " in version `", version, "'" );
+      if version = "" then
+        Info( InfoWarning, 1,
+              "the package `", pkgname, "' cannot be loaded" );
+      else
+        Info( InfoWarning, 1,
+              "the package `", pkgname, "' cannot be loaded in version `",
+              version, "'" );
       fi;
-      Print( "\n" );
       return [];
     fi;
 
@@ -2739,6 +2998,13 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
     isrelevant:= function( name )
       local name2, attr;
 
+      # Omit variables that are not bound anymore.
+      # (We have collected the new variables file by file, and it may happen
+      # that some of them become unbound in the meantime.)
+      if not IsBoundGlobal( name ) then
+        return false;
+      fi;
+
       # Omit `Set<attr>' and `Has<attr>' type variables.
       if 3 < Length( name ) and name{ [ 1 .. 3 ] } in [ "Has", "Set" ] then
         name2:= name{ [ 4 .. Length( name ) ] };
@@ -2804,6 +3070,13 @@ InstallGlobalFunction( PackageVariablesInfo, function( arg )
     # Delete the auxiliary component from `GAPInfo'.
     Unbind( GAPInfo.data );
 
+    # Store the data.
+    GAPInfo.PackageVariablesInfo.( cache ):= result;
+    if version = "" then
+      Append( cache, InstalledPackageVersion( pkgname ) );
+      GAPInfo.PackageVariablesInfo.( cache ):= result;
+    fi;
+
     return result;
     end );
 
@@ -2813,18 +3086,82 @@ Unbind( NamesUserGVars );
 
 #############################################################################
 ##
-#F  ShowPackageVariables( <pkgname>[, <version>] )
+#F  ShowPackageVariables( <pkgname>[, <version>][, <arec>] )
 ##
 InstallGlobalFunction( ShowPackageVariables, function( arg )
-    local entry, subentry;
+    local version, arec, pkgname, info, show, documented, undocumented,
+          private, result, entry, first, subentry, str;
 
-    for entry in CallFuncList( PackageVariablesInfo, arg ) do
-      Print( entry[1], ":\n" );
-      for subentry in entry[2] do
-        Print( "  ", Concatenation( subentry[1] ), "\n" );
-      od;
-      Print( "\n" );
+    # Get and check the arguments.
+    version:= "";
+    arec:= rec();
+    if   Length( arg ) = 1 and IsString( arg[1] ) then
+      pkgname:= LowercaseString( arg[1] );
+    elif Length( arg ) = 2 and IsString( arg[1] ) and IsString( arg[2] ) then
+      pkgname:= LowercaseString( arg[1] );
+      version:= arg[2];
+    elif Length( arg ) = 2 and IsString( arg[1] ) and IsRecord( arg[2] ) then
+      pkgname:= LowercaseString( arg[1] );
+      arec:= arg[2];
+    elif Length( arg ) = 3 and IsString( arg[1] ) and IsString( arg[2] )
+                           and IsRecord( arg[3] ) then
+      pkgname:= LowercaseString( arg[1] );
+      version:= arg[2];
+      arec:= arg[3];
+    else
+      Error( "usage: ShowPackageVariables( <pkgname>[, <version>]",
+             "[, <arec>] )" );
+    fi;
+
+    # Compute the data.
+    info:= PackageVariablesInfo( pkgname, version );
+
+    # Evaluate the optional record.
+    if IsBound( arec.show ) and IsList( arec.show ) then
+      show:= arec.show;
+    else
+      show:= List( info, entry -> entry[1] );
+    fi;
+    documented:= not IsBound( arec.showDocumented )
+                 or arec.showDocumented <> false;
+    undocumented:= not IsBound( arec.showUndocumented )
+                   or arec.showUndocumented <> false;
+    private:= not IsBound( arec.showPrivate )
+              or arec.showPrivate <> false;
+
+    # Render the relevant data.
+    result:= "";
+    for entry in info do
+      if entry[1] in show then
+        first:= true;
+        for subentry in entry[2] do
+          if ( ( documented and subentry[1][3] = "" ) or
+               ( undocumented and subentry[1][3] = "*" ) ) and
+             ( private or not '@' in subentry[1][1] ) then
+            if first then
+              Append( result, entry[1] );
+              Append( result, ":\n" );
+              first:= false;
+            fi;
+            Append( result, "  " );
+            for str in subentry[1] do
+              Append( result, str );
+            od;
+            Append( result, "\n" );
+          fi;
+        od;
+        if not first then
+          Append( result, "\n" );
+        fi;
+      fi;
     od;
+
+    # Show the relevant data.
+    if IsBound( arec.Display ) then
+      arec.Display( result );
+    else
+      Print( result );
+    fi;
     end );
 
 

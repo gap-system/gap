@@ -2,7 +2,6 @@
 ##
 #W  grpfp.gd                    GAP library                    Volkmar Felsch
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
 ##
-Revision.grpfp_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -143,7 +140,7 @@ CosetTableDefaultMaxLimit := 2^12*1000;
 ##  <Var Name="CosetTableStandard"/>
 ##
 ##  <Description>
-##  specifies the definiton of a <E>standard coset table</E>. It is used
+##  specifies the definition of a <E>standard coset table</E>. It is used
 ##  whenever coset tables or augmented coset tables are created. Its value
 ##  may be <C>"lenlex"</C> or <C>"semilenlex"</C>.
 ##  If it is <C>"lenlex"</C> coset tables will be standardized using
@@ -232,6 +229,16 @@ InstallTrueMethod(CanEasilyTestMembership, IsSubgroupFgGroup and IsWholeFamily);
 ##  &GAP; uses a special representation for these groups which is created
 ##  in a different way.
 ##  See chapter <Ref Chap="Pc Groups"/> for details.
+##  <Example><![CDATA[
+##  gap> g:=FreeGroup(2);
+##  <free group on the generators [ f1, f2 ]>
+##  gap> IsFpGroup(g);
+##  true
+##  gap> h:=CyclicGroup(2);
+##  <pc group of size 2 with 1 generators>
+##  gap> IsFpGroup(h);
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -822,7 +829,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  ]]></Example>
 ##  <P/>
 ##  By default, the algorithm computes no generating sets for the subgroups.
-##  This can be enforcd with <Ref Func="GeneratorsOfGroup"/>:
+##  This can be enforced with <Ref Func="GeneratorsOfGroup"/>:
 ##  <Example><![CDATA[
 ##  gap> GeneratorsOfGroup(li[2]);
 ##  [ a, b*a*b^-1 ]
@@ -860,7 +867,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  gap> G := F / [ x^2, y^4, z^3, (x*y)^3, (y*z)^2, (x*z)^3 ];;
 ##  gap> torsion := [ x, y, y^2, z, x*y, x*z, y*z ];;
 ##  gap> SetInfoLevel( InfoFpGroup, 2 );
-##  gap> lis := LowIndexSubgroupsFpGroup( G, TrivialSubgroup( G ), 24, torsion );;
+##  gap> lis := LowIndexSubgroupsFpGroup(G, TrivialSubgroup(G), 24, torsion);;
 ##  #I  LowIndexSubgroupsFpGroup called
 ##  #I   class 1 of index 24 and length 8
 ##  #I   class 2 of index 24 and length 24
@@ -1248,7 +1255,7 @@ DeclareGlobalFunction("NewmanInfinityCriterion");
 ##  relators <M>x_i\cdot\cdots\cdot x_{r+i-1}/x_{r+i}</M> (with indices reduced
 ##  modulo <A>n</A>).
 ##  <P/>
-##  If <A>r</A> is ommitted, it defaults to 2.
+##  If <A>r</A> is omitted, it defaults to 2.
 ##  </Description>
 ##  </ManSection>
 ##

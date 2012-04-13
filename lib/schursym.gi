@@ -8,8 +8,6 @@
 ##  This file contains the implementation for Schur covers of symmetric and
 ##  alternating groups on Coxeter or standard generators.
 ##
-Revision.schursym_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

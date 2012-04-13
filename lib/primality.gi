@@ -2,14 +2,11 @@
 ##
 #W  primality.gi    GAP library          Jack Schmidt
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  2005 Jack Schmidt
 ##
 ##  This file contains declarations for the primality test in the integers.
 ##
-Revision.primality_gi :=
-    "@(#)$Id$";
 
 ##  This file is meant to improve the primality testing in GAP in two
 ##  significant ways. (1) IsProbablyPrimeInt has been sped up, and perhaps
@@ -668,7 +665,7 @@ end);
 
 ##############################################################################
 ##
-#F  PrimalityProof(N) - Construct a machine verifable proof of the primality
+#F  PrimalityProof(N) - Construct a machine verifiable proof of the primality
 ##  of (the probable prime) N, following the ideas of the paper Brillhart, 
 ##  Lehmer, Selfridge's "New Primality Criteria and Factorizations of 2^m +-1", 
 ##  1975.
@@ -701,7 +698,6 @@ function(N)
       if(ret[1]=fail) then 
         Print("\n\n");
         Print("# !!! Please email gapmethods@mowsey.org the following:\n");
-        Print("# !!! $Id$\n");
         Print("# !!! PrimalityProof(",HexStringInt(N),") failed at F",p[2],"\n\n\n");
         Error("# !!! You have probably found a bug. Theoretically <n> is composite.");
         return fail;
@@ -721,7 +717,6 @@ function(N)
       if(ret[1]=fail) then 
         Print("\n\n");
         Print("# !!! Please email gapmethods@mowsey.org the following:\n");
-        Print("# !!! $Id$\n");
         Print("# !!! PrimalityProof(",HexStringInt(N),") failed at L",p[2],"\n\n\n");
         Error("# !!! You have probably found a bug. Theoretically <n> is composite.");
         return fail;
@@ -1032,7 +1027,6 @@ function(N)
     else
       Print("\n\n");
       Print("# !!! Please email gapmethods@mowsey.org the following:\n");
-      Print("# !!! $Id$\n");
       Print("# !!! BPSW failed on ",HexStringInt(N),"\n\n\n");
       Error("# !!! You have probably found a bug. Theoretically <n> is composite.");
       return false;

@@ -3,15 +3,12 @@
 #W  glzmodmz.gi                    GAP library                    Stefan Kohl
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2011 The GAP Group
 ##
 ##  This file contains the functionality for constructing clasical groups over
 ##  residue class rings.
 ##
-Revision.glzmodmz_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -106,9 +103,33 @@ InstallMethod( GeneralLinearGroupCons,
     return G;
   end );
 
+BindGlobal("OrderMatrixIntegerResidue",function(p,a,M)
+local f,M2,o,e,MM,i;
+  MM:=M;
+  f:=GF(p);
+  M2:=ImmutableMatrix(f,List(M,x->List(x,y->Int(y)*One(f))));
+  o:=Order(M2);
+  M:=M^o;
+  e:=p;
+  i:=1;
+  while i<a do
+    i:=i+1;
+    e:=e*p;
+    M2:=M-M^0;
+    if ForAny(M2,x->ForAny(x,x->Int(x) mod e<>0)) then
+      o:=o*p;
+      M:=M^p;
+    fi;
+  od;
+  
+  Assert(1,IsOne(M));
+  return o;
+end);
+
 InstallGlobalFunction("ConstructFormPreservingGroup",function(arg)
-local oper,n,R,
-  q,p,field,zero,one,oner,a,f,pp,b,d,fb,btf,eq,r,i,j,e,k,ogens,gens,bp,sol,
+local oper,n,R,o,nrit,
+  q,p,field,zero,one,oner,a,f,pp,b,d,fb,btf,eq,r,i,j,e,k,ogens,gens,gensi,
+  bp,sol,
   g,prev,proper,fp,ho,evrels,hom,bas,basm,em,ngens,addmat,sub,transpose;
 
   oper:=arg[1];
@@ -157,9 +178,11 @@ local oper,n,R,
     od;
   od;
 
+  nrit:=0;
   pp:=p; # previous p
   while pp<q do
 
+    nrit:=nrit+1;
     prev:=g;
 
     if HasIsomorphismFpGroup(prev) then
@@ -225,118 +248,126 @@ local oper,n,R,
 
 	proper:=p^Length(sol)*Size(prev); # proper order of group
 
-	# vector space in kernel that is generated
-	bas:=[];
-	basm:=[];
-	sub:=VectorSpace(field,bas,Zero(e));
+	if ValueOption("avoidkerneltest")<>true then
+	  # vector space in kernel that is generated
+	  bas:=[];
+	  basm:=[];
+	  sub:=VectorSpace(field,bas,Zero(e));
 
-	addmat:=function(em)
-	local c;
-	  e:=List(em,r->List(r,Int))-b;
-	  e:=1/pp*e;
-	  e:=Concatenation(e)*one;
-	  if not e in sub then
-	    Add(bas,e);
-	    Add(basm,em);
-	    sub:=VectorSpace(field,bas);
+	  addmat:=function(em)
+	  local c;
+	    e:=List(em,r->List(r,Int))-b;
+	    e:=1/pp*e;
+	    e:=Concatenation(e)*one;
+	    if p<257 then
+	      ConvertToVectorRep(e,p);
+	    fi;
+	    if not e in sub then
+	      Add(bas,e);
+	      Add(basm,em);
+	      sub:=VectorSpace(field,bas);
+	    fi;
+	  end;
+
+	  if fp<>fail then
+	    # evaluate relators
+	    evrels:=RelatorsOfFpGroup(fp);
+
+	    i:=1;
+	    while i<=Length(evrels) and Length(bas)<Length(sol) do
+	      em:=MappedWord(evrels[i],FreeGeneratorsOfFpGroup(fp),gens);
+	      addmat(em);
+	      i:=i+1;
+	    od;
+	  else
+	    evrels:=Source(EpimorphismFromFreeGroup(prev));
+	    repeat
+	      j:=PseudoRandom(evrels:radius:=10);
+	      k:=MappedWord(j,GeneratorsOfGroup(evrels),GeneratorsOfGroup(prev));
+	      o:=OrderMatrixIntegerResidue(p,nrit,k);
+	      k:=MappedWord(j,GeneratorsOfGroup(evrels),gens)^o;
+	    until not IsOne(k);
+	    addmat(k);
+	      
 	  fi;
-	end;
 
-	if fp<>fail then
-	  # evaluate relators
-	  evrels:=RelatorsOfFpGroup(fp);
-
+	  # close under action
+	  gensi:=List(gens,Inverse);
 	  i:=1;
-	  while i<=Length(evrels) and Length(bas)<Length(sol) do
-	    em:=MappedWord(evrels[i],FreeGeneratorsOfFpGroup(fp),gens);
-	    addmat(em);
+	  while i<=Length(basm) and Length(bas)<Length(sol) do
+	    for j in [1..Length(gens)] do
+	      #em:=basm[i]^j;
+	      em:=gensi[j]*basm[i]*gens[j];
+	      addmat(em);
+	    od;
 	    i:=i+1;
 	  od;
-	else
-	  evrels:=Source(EpimorphismFromFreeGroup(prev));
-	  repeat
-	    j:=PseudoRandom(evrels:radius:=10);
-	    k:=MappedWord(j,GeneratorsOfGroup(evrels),GeneratorsOfGroup(prev));
-	    k:=MappedWord(j,GeneratorsOfGroup(evrels),gens)^Order(k);
-	  until not IsOne(k);
-	  addmat(k);
-	    
-	fi;
 
-	# close under action
-	i:=1;
-	while i<=Length(basm) and Length(bas)<Length(sol) do
-	  for j in gens do
-	    em:=basm[i]^j;
-	    addmat(em);
-	  od;
-	  i:=i+1;
-	od;
-
-	if Length(bas)=Length(sol) then
-	  Info(InfoGroup,1,"kernel generated ",Length(bas));
-	else
-	  Info(InfoGroup,1,"kernel partially generated ",Length(bas));
-	  ngens:=ShallowCopy(gens);
-	  i:=Iterator(sol); # just jun through basis as linear
-	  while Length(bas)<Length(sol) do
-	    e:=NextIterator(i);
-	    e:=List(e,Int);
-	    e:=b+pp*List([1..n],x->e{[(x-1)*n+1..x*n]});
-	    addmat(e);
-	    if e=basm[Length(basm)] then
-	      # was added
-	      Add(ngens,e);
-	      g:=Group(ngens);
-	      Info(InfoGroup,1,"added generator");
-	    fi;
-	  od;
-	fi;
-
-	if fp <>fail then
-	  # extend presentation
-	  bas:=Basis(sub,bas);
-	  RUN_IN_GGMBI:=true;
-	  hom:=GroupGeneralMappingByImages(g,fp,gens,GeneratorsOfGroup(fp));
-	  hom:=LiftFactorFpHom(hom,g,"M",SubgroupNC(g,basm),rec(
-		pcgs:=basm,
-		prime:=p,
-		decomp:=function(em)
-		local e;
-		  e:=List(em,r->List(r,Int))-b;
-		  e:=1/pp*e;
-		  e:=Concatenation(e)*one;
-		  return List(Coefficients(bas,e),Int);
-		end
-		));
-	  RUN_IN_GGMBI:=false;
-	  #simplify Image to avoid explosion of generator number
-	  fp:=Range(hom);
-	  if true then
-	    # remove redundant generators
-	    e:=PresentationFpGroup(fp);
-	    TzOptions(e).printLevel:=0;
-	    j:=Filtered(Reversed([1..Length(e!.generators)]),
-	      x->not MappingGeneratorsImages(hom)[1][x] in ngens);
-            j:=e!.generators{j};
-
-	    TzInitGeneratorImages(e);
-	    for i in j do
-	      TzEliminate(e,i);
+	  if Length(bas)=Length(sol) then
+	    Info(InfoGroup,1,"kernel generated ",Length(bas));
+	  else
+	    Info(InfoGroup,1,"kernel partially generated ",Length(bas));
+	    ngens:=ShallowCopy(gens);
+	    i:=Iterator(sol); # just run through basis as linear
+	    while Length(bas)<Length(sol) do
+	      e:=NextIterator(i);
+	      e:=List(e,Int);
+	      e:=b+pp*List([1..n],x->e{[(x-1)*n+1..x*n]});
+	      addmat(e);
+	      if e=basm[Length(basm)] then
+		# was added
+		Add(ngens,e);
+		g:=Group(ngens);
+		Info(InfoGroup,1,"added generator");
+	      fi;
 	    od;
-	    fp:=FpGroupPresentation(e);
-	    j:=MappingGeneratorsImages(hom);
-	    k:=TzPreImagesNewGens(e);
-	    k:=List(k,x->j[1][Position(OldGeneratorsOfPresentation(e),x)]);
-
-	    RUN_IN_GGMBI:=true;
-	    hom:=GroupHomomorphismByImagesNC(g,fp,
-		  k,
-		  GeneratorsOfGroup(fp));
-	    RUN_IN_GGMBI:=false;
 	  fi;
 
-	  SetIsomorphismFpGroup(g,hom);
+	  if fp <>fail then
+	    # extend presentation
+	    bas:=Basis(sub,bas);
+	    RUN_IN_GGMBI:=true;
+	    hom:=GroupGeneralMappingByImages(g,fp,gens,GeneratorsOfGroup(fp));
+	    hom:=LiftFactorFpHom(hom,g,"M",SubgroupNC(g,basm),rec(
+		  pcgs:=basm,
+		  prime:=p,
+		  decomp:=function(em)
+		  local e;
+		    e:=List(em,r->List(r,Int))-b;
+		    e:=1/pp*e;
+		    e:=Concatenation(e)*one;
+		    return List(Coefficients(bas,e),Int);
+		  end
+		  ));
+	    RUN_IN_GGMBI:=false;
+	    #simplify Image to avoid explosion of generator number
+	    fp:=Range(hom);
+	    if true then
+	      # remove redundant generators
+	      e:=PresentationFpGroup(fp);
+	      TzOptions(e).printLevel:=0;
+	      j:=Filtered(Reversed([1..Length(e!.generators)]),
+		x->not MappingGeneratorsImages(hom)[1][x] in ngens);
+	      j:=e!.generators{j};
+
+	      TzInitGeneratorImages(e);
+	      for i in j do
+		TzEliminate(e,i);
+	      od;
+	      fp:=FpGroupPresentation(e);
+	      j:=MappingGeneratorsImages(hom);
+	      k:=TzPreImagesNewGens(e);
+	      k:=List(k,x->j[1][Position(OldGeneratorsOfPresentation(e),x)]);
+
+	      RUN_IN_GGMBI:=true;
+	      hom:=GroupHomomorphismByImagesNC(g,fp,
+		    k,
+		    GeneratorsOfGroup(fp));
+	      RUN_IN_GGMBI:=false;
+	    fi;
+
+	    SetIsomorphismFpGroup(g,hom);
+	  fi;
 	fi;
 
 	SetSize(g,Size(prev)*Size(field)^Length(sol));
@@ -368,7 +399,7 @@ InstallOtherMethod( SymplecticGroupCons,
 function ( filter, n, R )
 local g;
   g:=ConstructFormPreservingGroup(SP,n,R);
-  SetName(g,Concatenation("SP(",String(n),",Z/",String(Size(R)),"Z)"));
+  SetName(g,Concatenation("Sp(",String(n),",Z/",String(Size(R)),"Z)"));
   return g;
 end);
 

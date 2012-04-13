@@ -2,8 +2,6 @@
 ##
 #W  id8.acr                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id8_acr :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[8].next[1].next[96]:=
 rec(

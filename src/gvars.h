@@ -2,7 +2,6 @@
 **
 *W  gvars.h                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -29,11 +28,6 @@
 
 #ifndef GAP_GVARS_H
 #define GAP_GVARS_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_gvars_h =
-   "@(#)$Id$";
-#endif
 
 
 /****************************************************************************

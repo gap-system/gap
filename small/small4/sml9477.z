@@ -3,8 +3,6 @@
 #W  sml9477.z              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml9477_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 9477 ].pnil := rec( syl :=
 [ 102, 122, 475, 497, 498, 499, 504, 504, 504, 504 ], oper :=

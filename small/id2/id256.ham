@@ -2,8 +2,6 @@
 ##
 #W  id256.ham              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id256_ham :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[256].next[8].next[1].next[13]:=
 rec(

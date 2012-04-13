@@ -2,7 +2,6 @@
 ##
 #W  Makefile                    GAP autodoc                  Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 ##

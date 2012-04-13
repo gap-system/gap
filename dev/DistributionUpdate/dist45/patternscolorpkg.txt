@@ -1,6 +1,5 @@
 #############################################################################
 #
-# $Id$
 #
 # patternscolorpkg.txt
 #
@@ -14,9 +13,13 @@
 # The first match decides about the class.
 #
 # files and directories we never include
--*.o
--*.cvsignore*
 -*CVS/*
+-*.cvsignore*
 -*.git/*
+-*.hg/*
+-*.hgtags
+-*.hgignore
+-*.svn/*
+-*.DS_Store
 # for packages, everything else is included 
 +*

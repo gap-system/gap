@@ -14,8 +14,6 @@
 ##  still support the required components via '.'.  The positions in the list
 ##  object are defined in the kernel and are exported as "SCP_something".
 ##
-Revision.rwspcsng_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

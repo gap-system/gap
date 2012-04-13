@@ -1452,6 +1452,24 @@
   <other type="fjournal">Journal of Symbolic Computation</other>
 </article></entry>
 
+<entry id="CLR90"><book>
+  <author>
+    <name><first>T. H.</first><last>Cormen</last></name>
+    <name><first>C. E.</first><last>Leiserson</last></name>
+    <name><first>R. L.</first><last>Rivest</last></name>
+  </author>  
+  <title>Introduction to algorithms</title>
+  <publisher>MIT Press</publisher>
+  <year>1990</year>
+  <series>The MIT Electrical Engineering and Computer Science Series</series>
+  <address>Cambridge, MA</address>
+  <isbn>0-262-03141-8</isbn>
+  <mrnumber>1066870 (91i:68001)</mrnumber>
+  <mrclass>68-01 (05-01 05C85 68Q25)</mrclass>
+  <mrreviewer>Selim G. Akl</mrreviewer>
+  <other type="pages">xx+1028</other>
+</book></entry>
+
 <entry id="coxlittleoshea"><book>
   <author>
     <name><first>David</first><last>Cox</last></name>

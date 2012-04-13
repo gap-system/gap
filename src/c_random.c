@@ -7,8 +7,6 @@ static GVar G_QUO__INT;
 static Obj  GF_QUO__INT;
 static GVar G_LEN__LIST;
 static Obj  GF_LEN__LIST;
-static GVar G_Revision;
-static Obj  GC_Revision;
 static GVar G_R__N;
 static Obj  GC_R__N;
 static GVar G_R__X;
@@ -20,7 +18,6 @@ static GVar G_RANDOM__SEED;
 static Obj  GF_RANDOM__SEED;
 
 /* record names used in handlers */
-static RNam R_random__g;
 
 /* information for the functions */
 static Obj  NameFunc[4];
@@ -248,12 +245,6 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.random_g := "@(#)$Id$"; */
- t_1 = GC_Revision;
- CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 53, "@(#)$Id$" )
- ASS_REC( t_1, R_random__g, t_2 );
- 
  /* R_N := 1; */
  AssGVar( G_R__N, INTOBJ_INT(1) );
  
@@ -274,8 +265,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_1 ) = CurrLVars;
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_2) = INTOBJ_INT(26);
- ENDLINE_BODY(t_2) = INTOBJ_INT(30);
+ STARTLINE_BODY(t_2) = INTOBJ_INT(23);
+ ENDLINE_BODY(t_2) = INTOBJ_INT(27);
  FILENAME_BODY(t_2) = FileName;
  BODY_FUNC(t_1) = t_2;
  CHANGED_BAG( CurrLVars );
@@ -297,8 +288,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_1 ) = CurrLVars;
  t_2 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_2) = INTOBJ_INT(32);
- ENDLINE_BODY(t_2) = INTOBJ_INT(42);
+ STARTLINE_BODY(t_2) = INTOBJ_INT(29);
+ ENDLINE_BODY(t_2) = INTOBJ_INT(39);
  FILENAME_BODY(t_2) = FileName;
  BODY_FUNC(t_1) = t_2;
  CHANGED_BAG( CurrLVars );
@@ -337,21 +328,20 @@ static Int InitKernel ( StructInitInfo * module )
  /* global variables used in handlers */
  InitFopyGVar( "QUO_INT", &GF_QUO__INT );
  InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
- InitCopyGVar( "Revision", &GC_Revision );
  InitCopyGVar( "R_N", &GC_R__N );
  InitCopyGVar( "R_X", &GC_R__X );
  InitCopyGVar( "R_228", &GC_R__228 );
  InitFopyGVar( "RANDOM_SEED", &GF_RANDOM__SEED );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(-129287531)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(-129287531)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(-129287531)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](-129287531)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(-129287531)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](-129287531)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(-129287531)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](-129287531)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(-48550429)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/random.g:FileName(-48550429)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(-48550429)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](-48550429)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(-48550429)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](-48550429)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(-48550429)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](-48550429)" );
  
  /* return success */
  return 0;
@@ -370,7 +360,6 @@ static Int InitLibrary ( StructInitInfo * module )
  /* global variables used in handlers */
  G_QUO__INT = GVarName( "QUO_INT" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
- G_Revision = GVarName( "Revision" );
  G_R__N = GVarName( "R_N" );
  G_R__X = GVarName( "R_X" );
  G_R__228 = GVarName( "R_228" );
@@ -378,7 +367,6 @@ static Int InitLibrary ( StructInitInfo * module )
  G_RANDOM__SEED = GVarName( "RANDOM_SEED" );
  
  /* record names used in handlers */
- R_random__g = RNamName( "random_g" );
  
  /* information for the functions */
  C_NEW_STRING( DefaultName, 14, "local function" )
@@ -414,7 +402,6 @@ static Int PostRestore ( StructInitInfo * module )
  /* global variables used in handlers */
  G_QUO__INT = GVarName( "QUO_INT" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
- G_Revision = GVarName( "Revision" );
  G_R__N = GVarName( "R_N" );
  G_R__X = GVarName( "R_X" );
  G_R__228 = GVarName( "R_228" );
@@ -422,7 +409,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_RANDOM__SEED = GVarName( "RANDOM_SEED" );
  
  /* record names used in handlers */
- R_random__g = RNamName( "random_g" );
  
  /* information for the functions */
  NameFunc[1] = DefaultName;
@@ -448,7 +434,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -129287531,
+ /* crc         = */ -48550429,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

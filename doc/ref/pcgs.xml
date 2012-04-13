@@ -109,8 +109,7 @@ Note also that a pcgs behaves like a list.
 <Section Label="Defining a Pcgs Yourself">
 <Heading>Defining a Pcgs Yourself</Heading>
 
-In a number of situations it might be useful to supply a pgcs
-to a group.
+In a number of situations it might be useful to supply a pcgs to a group.
 <P/>
 Note that the elementary operations for such a pcgs might be rather
 inefficient, since &GAP; has to use generic methods in this case.

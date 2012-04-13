@@ -3,8 +3,6 @@
 #W  sml1536.a              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1536_a :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1536 ].2nil := [];
 SMALL_GROUP_LIB[ 1536 ].2nil[ 11 ] := rec( ops :=

@@ -2,7 +2,6 @@
 **
 *W  objscoll.c                  GAP source                       Frank Celler
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -24,8 +23,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_objscoll_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -50,9 +47,7 @@ const char * Revision_objscoll_c =
 
 #include        "objfgelm.h"            /* objects of free groups          */
 
-#define INCLUDE_DECLARATION_PART
 #include        "objscoll.h"            /* single collector                */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "objccoll.h"            /* combinatorial collector         */
 
@@ -2550,8 +2545,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSingleCollector ( void )
 {
-    module.revision_c = Revision_objscoll_c;
-    module.revision_h = Revision_objscoll_h;
     FillInVersion( &module );
     return &module;
 }

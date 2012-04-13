@@ -2,7 +2,6 @@
 ##
 #W  trans13.grp         GAP transitive groups library        Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,8 +9,6 @@
 ##  They were originally published by Greg Butler and John McKay
 ##  Names and actual generators are by John Conway, John McKay and AH.
 ##
-Revision.trans13_grp:=
-  "@(#)$Id$";
 
 
 TRANSGRP[13]:=

@@ -3,8 +3,6 @@
 #W  sml8019.z              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml8019_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 8019 ].pnil := rec( syl :=
 [ 504 ], oper :=

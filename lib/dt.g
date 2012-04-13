@@ -2,7 +2,6 @@
 ##
 #W  dt.g                        GAP library                 Wolfgang Merkwitz
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -51,8 +50,6 @@
 ##  entry contains num( <a> ) and the last entry finally gives a boundary
 ##  for pos( <b> ) for all trees <b> which are represented by <a>.
 ##
-Revision.dt_g :=
-  "@(#)$Id$";
 
 
 

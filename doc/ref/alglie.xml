@@ -326,7 +326,8 @@ element by the list <C>[ [], 1 ]</C>.
 <Example><![CDATA[
 gap> L:= SimpleLieAlgebra( "G", 2, Rationals );;
 gap> g:=LatticeGeneratorsInUEA( L );
-[ y1, y2, y3, y4, y5, y6, x1, x2, x3, x4, x5, x6, ( h13/1 ), ( h14/1 ) ]
+[ y1, y2, y3, y4, y5, y6, x1, x2, x3, x4, x5, x6, ( h13/1 ), 
+  ( h14/1 ) ]
 gap> IsUEALatticeElement( g[1] );
 true
 gap> g[1]^3;

@@ -2,7 +2,6 @@
 ##
 #W  profile.g                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the profiling functions.
 ##
-Revision.profile_g :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -211,6 +208,10 @@ end );
 ##  used and the total memory allocated by the profiled functions not shown
 ##  in the list (label <C>OTHER</C>)
 ##  and by all profiled functions (label <C>TOTAL</C>), respectively.
+##  <P/>
+##  An interactive variant of <Ref Func="DisplayProfile"/> is the function
+##  <Ref Func="BrowseProfile" BookName="browse"/> that is provided by the
+##  &GAP; package <Package>Browse</Package>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

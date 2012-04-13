@@ -137,7 +137,8 @@ gap> m1:= [ [ 1, 2 ], [ 3, 4 ] ];; m2:= [ [ 1, 1 ], [ 1, 0 ] ];;
 gap> V:= VectorSpace( Rationals, [ m1, m2 ] );
 <vector space over Rationals, with 2 generators>
 gap> B:= Basis( V );
-SemiEchelonBasis( <vector space over Rationals, with 2 generators>, ... )
+SemiEchelonBasis( <vector space over Rationals, with 
+2 generators>, ... )
 gap> BasisVectors( Basis( V ) );
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 1 ], [ 2, 4 ] ] ]
 ]]></Example>
@@ -152,7 +153,8 @@ are constructed using <Ref Func="LinearCombination" BookName="ref"/>.
 gap> V:= VectorSpace( Rationals, [ [ 1, 2 ], [ 3, 4 ] ] );
 <vector space over Rationals, with 2 generators>
 gap> B:= Basis( V );
-SemiEchelonBasis( <vector space over Rationals, with 2 generators>, ... )
+SemiEchelonBasis( <vector space over Rationals, with 
+2 generators>, ... )
 gap> BasisVectors( Basis( V ) );
 [ [ 1, 2 ], [ 0, 1 ] ]
 gap> Coefficients( B, [ 1, 0 ] );
@@ -364,13 +366,12 @@ its default value 80 to 82 in order to make the long output expression fit
 into one line.
 <P/>
 <Example><![CDATA[
-gap> SizeScreen([ 82, ]);;
 gap> T:= EmptySCTable( 2, 0, "symmetric" );
-[ [ [ [  ], [  ] ], [ [  ], [  ] ] ], [ [ [  ], [  ] ], [ [  ], [  ] ] ], 1, 0 ]
+[ [ [ [  ], [  ] ], [ [  ], [  ] ] ], 
+  [ [ [  ], [  ] ], [ [  ], [  ] ] ], 1, 0 ]
 gap> SetEntrySCTable( T, 1, 2, [1/2,1,1/3,2] );  T;
 [ [ [ [  ], [  ] ], [ [ 1, 2 ], [ 1/2, 1/3 ] ] ], 
   [ [ [ 1, 2 ], [ 1/2, 1/3 ] ], [ [  ], [  ] ] ], 1, 0 ]
-gap> SizeScreen([ 80, ]);;
 ]]></Example>
 <P/>
 If we have defined a structure constants table, then we can construct
@@ -430,10 +431,9 @@ gap> subA:= Subalgebra( A, [ m-m^2 ] );
 <algebra over Rationals, with 1 generators>
 gap> Dimension( subA );
 2
-gap> SizeScreen([ 81, ]);;
 gap> idA:= Ideal( A, [ m-m^3 ] );
-<two-sided ideal in <algebra of dimension 3 over Rationals>, (1 generators)>
-gap> SizeScreen([ 80, ]);;
+<two-sided ideal in <algebra of dimension 3 over Rationals>, 
+  (1 generators)>
 gap> Dimension( idA ); 
 2
 gap> B:= A/idA;
@@ -542,7 +542,7 @@ gap> Order( g2 );
 10
 gap> g:=Group( g1, g2 );;
 #I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for 
-[ (1/2*E(5)+1/2*E(5)^4)*e+(1/2)*i+(-1/2*E(5)^2-1/2*E(5)^3)*j, 
+  [ (1/2*E(5)+1/2*E(5)^4)*e+(1/2)*i+(-1/2*E(5)^2-1/2*E(5)^3)*j, 
   (-1/2*E(5)^2-1/2*E(5)^3)*e+(1/2)*i+(1/2*E(5)+1/2*E(5)^4)*k ]
 gap> Size( g );
 120

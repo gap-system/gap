@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id$    (C) Frank Lübeck
+# (C) Frank Lübeck
 
 
 mypath=`dirname  $0`/
@@ -12,7 +12,7 @@ Unbind(PrintPromptHook);
 Print("\n");
 
 
-newarchs := UpdatePackageArchives("${PkgCacheDir}", "${PkgWebFtpDir}");;
+newarchs := UpdatePackageArchives("${PkgCacheDir}", "${PkgReposDir}", "${PkgWebFtpDir}");;
 if Length(newarchs) > 0 then
   Print("\nPackages with new archive files:\n", newarchs, "\n");
 else

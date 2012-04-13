@@ -19,3 +19,6 @@ ReadLib( "package.gi"   );
 
 ReadLib( "string.gi"   ); # since StringFile is needed early
 
+# for dealing with test files and manual examples
+ReadLib("test.gd");
+ReadLib("test.gi");

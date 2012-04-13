@@ -2,7 +2,6 @@
 **
 *W  scanner.h                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -29,11 +28,6 @@
 
 #ifndef GAP_SCANNER_H
 #define GAP_SCANNER_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_scanner_h =
-   "@(#)$Id$";
-#endif
 
 
 /****************************************************************************
@@ -703,6 +697,8 @@ extern UInt CloseOutputLog ( void );
 **  which is the terminal  even   if '*stdout*'  is  redirected to   a  file.
 **  'OpenOutput' passes  those  file names to 'SyFopen'  like any other name,
 **  they are just a convention between the main and the system package.
+**  The function does nothing and returns success for '*stdout*' and '*errout*'
+**  when IgnoreStdoutErrout is true (useful for testing purposes).
 **
 **  It is not neccessary to open the initial output file, 'InitScanner' opens
 **  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
@@ -883,6 +879,7 @@ typedef struct {
 
 extern TypOutputFile   OutputFiles [16];
 extern TypOutputFile * Output;
+extern TypOutputFile* IgnoreStdoutErrout;
 
 /****************************************************************************
 **

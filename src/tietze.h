@@ -2,7 +2,6 @@
 **
 *W  tietze.h                    GAP source                     Volkmar Felsch
 **
-*H  @(#)$Id$
 **
 *Y  Copyright 1990-1992,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,11 +12,6 @@
 
 #ifndef GAP_TIETZE_H
 #define GAP_TIETZE_H
-
-#ifdef INCLUDE_DECLARATION_PART
-const char * Revision_tietze_h =
-   "@(#)$Id$";
-#endif
 
 
 /****************************************************************************

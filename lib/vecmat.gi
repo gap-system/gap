@@ -2,7 +2,6 @@
 ##
 #W  vecmat.gi                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains  the basic methods for  creating and doing  arithmetic
 ##  with GF2 vectors and matrices.
 ##
-Revision.vecmat_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -1216,6 +1213,18 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
         q := Q_VEC8BIT(v);
         if (Length(arg) = 1 or arg[2] = q or (IsField(arg[2]) and Size(arg[2]) = q)) then
             return q;
+        elif (IsInt(arg[2]) and arg[2] mod q = 0)  or (IsField(arg[2]) and Size(arg[2]) mod q = 0) then
+            if IsLockedRepresentationVector(v) then
+                Error("Vector is locked over smaller field");
+            else
+                if IsInt(arg[2]) then
+                    CONV_VEC8BIT(v,arg[2]);
+                    return arg[2];    
+                elif IsField(arg[2]) then
+                    CONV_VEC8BIT(v,Size(arg[2]));
+                    return Size(arg[2]);
+                fi;
+            fi; 
         fi;
     fi;
     

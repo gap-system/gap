@@ -2,7 +2,6 @@
 ##
 #W  padics.gd                   GAP Library                     Jens Hollmann
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the declaration part of the padic numbers.
 ##
-Revision.padics_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -146,6 +143,8 @@ DeclareOperation( "Valuation",  [ IsObject ] );
 ##   Label="for a p-adic extension family and a list"/>
 ##
 ##  <Description>
+##  (see also <Ref Oper="PadicNumber" Label="for pure padics"/>).
+##  <P/>
 ##  <Ref Func="PadicNumber"
 ##   Label="for a p-adic extension family and a rational"/>
 ##  creates a <M>p</M>-adic number in the

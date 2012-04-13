@@ -2,7 +2,6 @@
 #
 # gap.nsi
 #
-# $Id$
 #
 # To make the GAP installer for Windows:
 # - create the subdirectories 'gap', 'htmie', 'tools', 'xtom' in the 

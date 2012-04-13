@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id$
 ##
 ## Updates version number and release date. 
 ## The following information should be changed for *every* release:
@@ -33,6 +32,7 @@ echo 's/"today"/"'$COREDATE'"/g' >> sedfile
 sed -f sedfile system.g > system.g.new
 mv system.g.new system.g
 rm -f sedfile
+
 cd ../doc/
 echo 's/"4.dev"/"4.'$FULLVERSION'"/g' > sedfile
 echo 's/"4r5dev"/"'$RBVERSION'"/g' >> sedfile
@@ -41,6 +41,11 @@ echo 's/"this year"/"'$COREYEAR'"/g' >> sedfile
 sed -f sedfile versiondata > versiondata.new
 mv versiondata.new versiondata
 rm -f sedfile
+
+cd ../cnf/
+sed -i -e "s/4.dev/4.$FULLVERSION/g" configure.in
+sed -i -e "s/4.dev/4.$FULLVERSION/g" configure.out
+
 cd ..
 
 exit 0

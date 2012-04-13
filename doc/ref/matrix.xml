@@ -350,6 +350,7 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 
 <Index>Gaussian algorithm</Index>
 <#Include Label="RankMat">
+<#Include Label="TriangulizedMat">
 <#Include Label="TriangulizeMat">
 <#Include Label="NullspaceMat">
 <#Include Label="NullspaceMatDestructive">
@@ -380,6 +381,7 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 See also chapter <Ref Chap="Integral matrices and lattices"/>.
 
 <#Include Label="ElementaryDivisorsMat">
+<#Include Label="ElementaryDivisorsTransformationsMat">
 <#Include Label="DiagonalizeMat">
 
 </Section>

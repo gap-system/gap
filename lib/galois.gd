@@ -2,14 +2,11 @@
 ##
 #W  galois.gd                   GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for the computation of Galois Groups.
 ##
-Revision.galois_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

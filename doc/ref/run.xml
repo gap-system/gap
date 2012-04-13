@@ -18,10 +18,9 @@
 <Heading>Running GAP</Heading>
 
 <Index>options</Index>
-This chapter informs about command line options for &GAP; under UNIX
-and OS X
+This chapter informs about command line options for &GAP; 
 (see&nbsp;<Ref Sect="Command Line Options"/>),
-some files in the <F>.gap</F> directory
+some files in user specific &GAP; root  directory
 (see&nbsp;<Ref Sect="sect:gap.ini"/>) 
 and saving and loading a &GAP; workspace
 (see&nbsp;<Ref Sect="Saving and Loading a Workspace"/>).
@@ -38,14 +37,15 @@ and saving and loading a &GAP; workspace
 <Index Key="GAPInfo.CommandLineOptions">
 <C>GAPInfo.CommandLineOptions</C></Index>
 
-When you start &GAP; under UNIX, you may specify a number of  options on
+When you start &GAP; from a command line or from a script you may 
+specify a number of  options on
 the command-line to change  the default behaviour  of &GAP;.  All  these
 options  start with a  hyphen <C>-</C>, followed by a  single letter.
 Options must not be grouped, e.g., <C>gap -gq</C> is invalid,
 use <C>gap -g -q</C> instead.
 Some options require an argument, this must follow the option
-and  must be separated by whitespace, e.g.,  <C>gap -m 256k</C>,
-it is not correct to say <C>gap -m256k</C> instead.
+and  must be separated by whitespace, e.g.,  <C>gap -m 256m</C>,
+it is not correct to say <C>gap -m256m</C> instead.
 Certain Boolean options (<C>-b</C>, <C>-q</C>, <C>-e</C>, <C>-r</C>,
 <C>-A</C>, <C>-D</C>, <C>-M</C>, <C>-N</C>, <C>-T</C>, <C>-X</C>, <C>-Y</C>)
 toggle the current value so that <C>gap -b -b</C> is equivalent to <C>gap</C>
@@ -56,8 +56,8 @@ and to <C>gap -b -q -b -q</C> etc.
 As is described in the &GAP; installation instructions,
 <!-- TODO: put URL -->
 usually you will not execute &GAP; directly. Instead  you  will
-call a shell script, with the name <C>gap</C>, which in turn executes  &GAP;.
-This shell script sets some options which are necessary  to  make  &GAP;
+call a (shell) script, with the name <C>gap</C>, which in turn executes  &GAP;.
+This  script sets some options which are necessary  to  make  &GAP;
 work on your system. This means that the default settings mentioned below
 may not be what you experience when you execute &GAP; on your system.
 <P/>
@@ -86,7 +86,8 @@ GASMAN, the storage manager of &GAP; uses <C>sbrk</C> to get blocks of memory
 from (certain) operating systems and it is required that subsequent calls
 to <C>sbrk</C> produce adjacent blocks of memory in this case  because  &GAP;
 only wants to deal with one large block of  memory.  If  the  C  function
-<C>malloc</C> is called for whatever reason, it is likely that <C>sbrk</C> will  no
+<C>malloc</C> is called for whatever reason, it is likely that 
+<C>sbrk</C> will  no
 longer produce adjacent blocks, therefore &GAP; does  not  use  <C>malloc</C>
 itself.
 <P/>
@@ -94,16 +95,15 @@ However some operating systems insist on calling  <C>malloc</C>  to  create  a
 buffer when a file is opened, or for some other reason. In order to catch
 these cases &GAP; preallocates a block of memory with <C>malloc</C> which  is
 immediately freed. The amount preallocated can  be  controlled  with  the
-<C>-a</C> option.
-If the last character of <A>memory</A> is <C>k</C> or <C>K</C> it is  taken
-as kilobytes and if the last character is <C>m</C> or <C>M</C>
-<A>memory</A> is taken as megabytes.
+<C>-a</C> option. (Most users do not need this option.)
+<P/>
+The option argument <A>memory</A> is specified as with the <C>-m</C> option.
 </Item>
 <Mark><Index Key="-B"><C>-B</C></Index>
 <C>-B </C><A>architecture</A></Mark>
 <Item>
 Executable binary files that form part of &GAP; or of  a &GAP;  package
-are kept in a subdirectory of the <F>bin</F> directory with in  the  &GAP; or
+are kept in a subdirectory of the <F>bin</F> directory within  the  &GAP; or
 package root directory. The subdirectory  name  is  determined  from  the
 operating system, processor and compiler details when &GAP;  (resp.  the
 package) is installed. Under rare circumstances, it may be  necessary  to
@@ -129,7 +129,7 @@ toggle this behavior on and off. The message,
 ]]></Log>
 <P/>
 tells   you  that   &GAP;  has  started    to  read the   library   file
-<F>lib/kernel.g</F>.
+<F>lib/kernel.g</F>. 
 <P/>
 <Log><![CDATA[
 #I  READ_GAP_ROOT: loading 'lib/kernel.g' statically
@@ -137,7 +137,7 @@ tells   you  that   &GAP;  has  started    to  read the   library   file
 <P/>
 tells you that &GAP; has used the compiled version of the  library  file
 <F>lib/kernel.g</F>. This compiled module was statically linked to the  &GAP;
-kernel at the time the kernel was created.
+kernel at the time the kernel was created. 
 <P/>
 <Log><![CDATA[
 #I  READ_GAP_ROOT: loading 'lib/kernel.g' dynamically
@@ -147,6 +147,7 @@ tells you that &GAP; has loaded the compiled version of the library file
 <F>lib/kernel.g</F>. This compiled module was dynamically loaded to the &GAP;
 kernel at runtime from a corresponding <C>.so</C> file.
 <P/>
+Obviously, this is a debugging option and most users will not need it.
 </Item>
 <Mark><Index Key="-e"><C>-e</C></Index>
 <C>-e</C></Mark>
@@ -159,7 +160,8 @@ This option may be repeated to toggle this behavior on and off.
 <Mark><Index Key="-f"><C>-f</C></Index>
 <C>-f</C></Mark>
 <Item>
-tells &GAP; to enable the line editing and history (see <Ref Sect="Line Editing"/>).
+tells &GAP; to enable the line editing and history 
+(see <Ref Sect="Line Editing"/>).
 <P/>
 In general  line editing will  be enabled if the input  is connected to a
 terminal.  There are rare circumstances, for  example when using a remote
@@ -170,7 +172,7 @@ toggle; you must use <C>-n</C> to disable line editing.
 <Mark><Index Key="-g"><C>-g</C></Index>
 <C>-g</C></Mark>
 <Item>
-tells &GAP; to print a information message every  time  a  full  garbage
+tells &GAP; to print a message every  time  a  full  garbage
 collection is performed.
 <P/>
 <Log><![CDATA[
@@ -208,12 +210,12 @@ are ignored.
 <C>-i </C><A>filename</A></Mark>
 <Item>
 changes  the  name  of  the  init  file  from  the  default  <F>init.g</F>  to
-<A>filename</A>.
+<A>filename</A>. (Usually not needed.)
 </Item>
 <Mark><Index Key="-K"><C>-K</C></Index> 
 <C>-K </C><A>memory</A></Mark>
 <Item>
-is like <C>-o</C> above.
+is like the <C>-o</C> option.
 But while the latter actually allocates more memory if the system allows it
 and then prints a warning inside a break loop the <C>-K</C> 
 options tells &GAP; not even to try to allocate more memory. Instead &GAP;
@@ -229,35 +231,33 @@ section&nbsp;<Ref Sect="Saving and Loading a Workspace"/>.
 <Mark><Index Key="-l"><C>-l</C></Index>
 <C>-l </C><A>path_list</A></Mark>
 <Item>
-can be used to modify &GAP;'s list of root directories
-(see <Ref Sect="GAP Root Directory"/>).
-Before the option <C>-l</C> is used for the first time, the  only
-root directories are <F>.gap</F> in the user's home directory (if it exists)
-and <F>./</F> (the current directory). In addition, on Mac OS X, also
-an additional root directory, <F>Library/Preferences/GAP</F> is used (if it exists).
+can be used to set or modify &GAP;'s list of root directories
+(see <Ref Sect="GAP Root Directories"/>).
+The default if no <C>-l </C> option is given is the current directory
+<F>./</F>. This option can be used several times. Depending on the 
+<C>-r</C> option a further user specific path is prepended to the
+list of root directories (the path in <C>GAPInfo.UserGapRoot</C>).
+<P/>
+<A>path_list</A> should be a list of directories separated by  semicolons.
+No whitespace is permitted before or after a semicolon.
+If <A>path_list</A> does not start  or  end  with  a semicolon,
+then <A>path_list</A> replaces the existing list of root directories.
+If <A>path_list</A> starts with a semicolon, then <A>path_list</A>  is
+appended to the existing list of root directories.  If  <A>path_list</A>  ends
+with a semicolon and does not start with one, then the new list of root
+directories is the concatenation of <A>path_list</A> and the existing list  of
+root directories. After &GAP; has completed its  startup  procedure  and
+displays the prompt, the list of root directories can be  seen  in  the
+variable <C>GAPInfo.RootPaths</C>,
+see <Ref Var="GAPInfo"/>.
+<P/>
 Usually this option is used inside a startup script to specify
 where &GAP; is installed on the system.
 The <C>-l</C> option can also be used by individual users to tell &GAP;
 about privately installed modifications of the library,
 additional &GAP; packages and so on.
-Section <Ref Sect="GAP Root Directory"/>  explains  how  several
+Section <Ref Sect="GAP Root Directories"/>  explains  how  several
 root paths can be used to do this.
-<P/>
-<Index Key="GAPInfo.RootPaths"><C>GAPInfo.RootPaths</C></Index>
-<A>path_list</A> should be a list of directories separated by  semicolons.
-No whitespace is permitted before or after a semicolon.
-Each directory  name should end with a pathname separator, i.e., <C>/</C>,
-but &GAP; will silently add one if it is missing.
-If <A>path_list</A> does not start  or  end  with  a semicolon,
-then <A>path_list</A> replaces the existing list of root directories.
-If <A>path_list</A> starts with a semicolon, then <A>path_list</A>  is
-appended to the existing list of root directories.  If  <A>path_list</A>  ends
-with a semicolon (and does not start with one), then the new list of root
-directories is the concatenation of <A>path_list</A> and the existing list  of
-root directories. After &GAP; has completed its  startup  procedure  and
-displays the prompt, the list of root directories can be  viewed  in  the
-variable <C>GAPInfo.RootPaths</C>,
-see <Ref Var="GAPInfo"/>.
 <P/>
 &GAP; will attempt to read the file <A>root_dir</A><F>/lib/init.g</F> during
 startup where <A>root_dir</A> is one of the directories in its  list  of  root
@@ -291,7 +291,7 @@ and if it is <C>g</C> or <C>G</C> it is taken as gigabytes.
 <P/>
 This amount of memory should be large enough so that computations  do  not
 require too many garbage  collections.  On  the  other  hand,  if  &GAP;
-allocates more virtual memory than is physically available, it will spend
+allocates more memory than is physically available, it will spend
 most of the time paging.
 </Item>
 <Mark><Index Key="-n"><C>-n</C></Index>
@@ -309,15 +309,23 @@ This option does not toggle; you must use <C>-f</C> to enable line editing.
 <Mark><Index Key="-o"><C>-o</C></Index>
 <C>-o </C><A>memory</A></Mark>
 <Item>
-tells &GAP; to allocate at most <A>memory</A> bytes.
-If the last character of <A>memory</A> is <C>k</C> or <C>K</C>
-it is taken as kilobytes,
-if the last character is <C>m</C> or <C>M</C> <A>memory</A>
-is taken as megabytes
-and if it is <C>g</C> or <C>G</C> it is taken as gigabytes. 
+tells &GAP; to allocate at most <A>memory</A> bytes without asking.
+The option argument <A>memory</A> is specified as with the <C>-m</C> 
+option.
 <P/>
 If more than this amount is required during the &GAP; session, 
-&GAP; prints an error messages and enters a break loop.
+&GAP; prints an error message and enters a break loop. In that case you can
+enter <C>return;</C> which implicitly doubles the amount given with this 
+option. 
+</Item>
+<Mark><Index Key="-q"><C>-q</C></Index>
+<C>-q</C></Mark>
+<Item>
+tells &GAP; to be quiet. This means that  &GAP;  displays  neither  the
+banner nor the prompt <C>gap></C>. This is useful if you want to run &GAP; as
+a filter with input and output redirection and want to avoid  the  banner
+and the prompts appearing in the output file. This option may be repeated
+to disable quiet mode; each <C>-q</C> toggles quiet mode.
 </Item>
 <Mark><Index Key="-R"><C>-R</C></Index>
 <C>-R</C></Mark>
@@ -328,22 +336,31 @@ specified via the <C>-L</C> option. This option does not toggle.
 <Mark><Index Key="-r"><C>-r</C></Index>
 <C>-r</C></Mark>
 <Item>
-The option <C>-r</C> tells &GAP; not to read any
-<F>gap.ini</F> file or any <F>gaprc</F> from the &GAP; root directories,
-and not to add the <F>.gap</F> subdirectory of the user's home directory
-(and, in case of Mac OS X, the directory <F>Library/Preferences/GAP</F>) 
-to the &GAP; root directories.
-This option may be repeated to enable the user parameters again;
-each use of <C>-r</C> toggles whether to read the files.
+The option <C>-r</C> tells &GAP; to ignore any user specific configuration 
+files. In particular, the user specific root directory 
+<C>GAPInfo.UserGapRoot</C> is not added to the &GAP; root directories and
+so <F>gap.ini</F> and <F>gaprc</F> files  that may be contained in that
+directory are not read, see <Ref Sect="sect:gap.ini"/>.
+Multiple <C>-r</C> options toggle this behaviour.
 </Item>
-<Mark><Index Key="-q"><C>-q</C></Index>
-<C>-q</C></Mark>
+<Mark><Index Key="-s"><C>-s</C></Index>
+<C>-s </C><A>memory</A></Mark>
 <Item>
-tells &GAP; to be quiet. This means that  &GAP;  displays  neither  the
-banner nor the prompt <C>gap></C>. This is useful if you want to run &GAP; as
-a filter with input and output redirection and want to avoid  the  banner
-and the prompts appearing in the output file. This option may be repeated
-to disable quiet mode; each <C>-q</C> toggles quiet mode.
+With this option &GAP; does not use <C>sbrk</C> to get memory from the 
+operating system. Instead it uses <C>mmap</C>, <C>malloc</C> or some other
+command for the amount given 
+with this option to allocate 
+space for the <C>GASMAN</C> memory manager. 
+Usually &GAP; does not really use all of this memory, the options 
+<C>-m</C>, <C>-o</C>, <C>-K</C> still work
+as documented. This feature assumes that the operating system only assigns 
+physical memory to the &GAP; process when it is accessed, so that specifying a
+large amount of memory with <C>-s</C> should not cause any performance problem.
+The advantage of using this option is that &GAP; can work together with kernel
+modules which allocate a lot of memory with <C>malloc</C>.
+<P/>
+The option argument <A>memory</A> is specified as with the <C>-m</C> 
+option.
 </Item>
 <Mark><Index Key="-T"><C>-T</C></Index>
 <C>-T</C></Mark>
@@ -368,8 +385,9 @@ this value to decide when to split long lines. After starting &GAP;  you
 may use <Ref Func="SizeScreen"/> to alter the line length.
 <P/>
 The default value is 80, unless another value can be  obtained  from  the
-Operating System, which is the right value if you have a  standard  ASCII
-terminal. If you have a  larger  monitor,  or  use  a  smaller  font,  or
+Operating System, which is the right value if you have a  standard 
+terminal application. If you have a  larger  monitor,  or  use  a  
+smaller  font,  or
 redirect the output to a printer, you may want to increase this value.
 </Item>
 <Mark><Index Key="-y"><C>-y</C></Index>
@@ -381,8 +399,9 @@ should  wait.  After   starting   &GAP;   you   may   use
 <Ref Func="SizeScreen"/> to alter the number of lines.
 <P/>
 The default value is 24, unless another value can be  obtained  from  the
-Operating System, which is the right value if you have a  standard  ASCII
-terminal. If you have a  larger  monitor,  or  use  a  smaller  font,  or
+Operating System, which is the right value if you have a  standard  
+terminal application. 
+If you have a  larger  monitor,  or  use  a  smaller  font,  or
 redirect the output to a printer, you may want to increase this value.
 </Item>
 <Mark><Index Subkey="command line, filenames">options</Index>
@@ -406,7 +425,10 @@ and <C>-z</C> are  used
 internally by the <Package>gac</Package> script (see <Ref Label="Kernel modules"/>)
 and/or on specific operating systems.
 
+
+<!-- was removed again before public release 
 <#Include Label="Restart">
+-->
 
 </Section>
 
@@ -417,7 +439,7 @@ and/or on specific operating systems.
 
 When you start &GAP;,
 it looks for files with the names <F>gap.ini</F> and <F>gaprc</F>
-in its root directories,
+in its root directories (see <Ref Sect="GAP Root Directories"/>),
 and reads the first <F>gap.ini</F> and the first <F>gaprc</F> file it finds.
 These files are used for certain initializations, as follows.
 <P/>
@@ -428,8 +450,11 @@ such as which packages are automatically loaded
 and whether library files containing obsolete variables are read
 (see Chapter <Ref Chap="Replaced and Removed Command Names"/>).
 On the other hand, only calls to a restricted set of &GAP; functions are
-allowed in a <F>gap.ini</F> file.
-The file is read whenever &GAP; is started, with or without a workspace.
+allowed in a <F>gap.ini</F> file. Usually, it should only contain calls
+of <Ref Func="SetUserPreference"/>. This file can be generated (or updated
+when new releases introduce further user preferences) with the command
+<Ref Func="WriteGapIniFile"/>.
+This file is read whenever &GAP; is started, with or without a workspace.
 <P/>
 The file <F>gaprc</F> is read after the startup process,
 before the first input file given on the command line
@@ -445,119 +470,34 @@ and on the other hand one can start &GAP;, read one's <F>gaprc</F> file,
 save a workspace, and then start from this workspace <E>without</E>
 reading one's <F>gaprc</F> file again.)
 <P/>
-Note that by default, the directory <F>.gap</F> in your home directory
-is the first &GAP; root directory. On Mac OS X, the directory 
-<F>Library/Preferences/GAP</F> in your home directory is searched 
-next. So you can put files <F>gap.ini</F> and <F>gaprc</F> into these directories.
+Note that by default, the user specific &GAP; root directory 
+<C>GAPInfo.UserGapRoot</C> 
+is the first &GAP; root directory. 
+So you can put your <F>gap.ini</F> and <F>gaprc</F> files into this directory.
+<P/>
+This mechanism substitutes the much less flexible reading of a users
+<F>.gaprc</F> file in versions of &GAP; up to 4.4. 
+For compatibility this <F>.gaprc</F> file is still read if the directory
+<C>GAPInfo.UserGapRoot</C> does not exist, see <Ref Sect="obsolete-gaprc"/>
+how to migrate your old setup.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Subsection Label="subsect:gap.ini file">
 <Heading>The gap.ini file</Heading>
 
 <Index Key="gap.ini"><F>gap.ini</F></Index>
-<Index Key="SetUserPreferences"><C>SetUserPreferences</C></Index>
-<Index Key="GAPInfo.UserPreferences"><C>GAPInfo.UserPreferences</C></Index>
 
-If the user's home directory contains a directory <F>.gap</F>
-and if this directory contains a file <F>gap.ini</F>
-then this file is read during the startup of &GAP;,
-allowing for setting certain user parameters.
-<P/>
-More precisely, the file <F>gap.ini</F> is read after the declaration part
+The file <F>gap.ini</F> is read after the declaration part
 of the &GAP; library is read,
 before the declaration parts of the packages needed and suggested by &GAP;
 are read,
 and before the implementation parts of &GAP; and of the packages are read.
 <P/>
-The file <F>gap.ini</F> contains a call to the function
-<C>SetUserPreferences</C> whose argument is a record.
-The components of this record are the global user parameters for the &GAP;
-session.
-In the &GAP; session, the record can be accessed as
-<C>GAPInfo.UserPreferences</C> (see <Ref Var="GAPInfo"/>).
-The following components are supported.
-
-<!-- Of course more parameters should be moved to `gap.ini'.
-     Here the ones are listed for which the GAP 4.4 manual
-     had explicitly suggested using the `.gaprc' file. -->
-
+The file <F>gap.ini</F> is expected to consist of calls to the function
+<Ref Func="SetUserPreference"/>,
+see Section&nbsp;<Ref Func="SetUserPreference"/>.
 <P/>
-<List>
-<Mark><C>Editor</C></Mark>
-<Item>
-    a string denoting the name of the text editor used by the function
-    <Ref Func="Edit"/>, the default is <C>"vi"</C>.
-</Item>
-<Mark><C>ExcludeFromAutoload</C></Mark>
-<Item>
-    a list of package names (the default being empty);
-    &GAP; <E>will not load</E> the packages with these names automatically
-    when processing its suggested packages
-    (i.&nbsp;e., the packages listed in 
-    <C>GAPInfo.Dependencies.SuggestedOtherPackages</C>);
-    note that &GAP; <E>will load</E> these packages automatically
-    if they are needed (i.&nbsp;e., their names are listed in 
-    <C>GAPInfo.Dependencies.NeededOtherPackages</C>) or if they are
-    needed or suggested by a package that is automatically loaded,
-</Item>
-<Mark><C>HelpViewers</C></Mark>
-<Item>
-    a list of strings denoting the default help viewers
-    (see <Ref Sect="Changing the Help Viewer"/>),
-    the default is <C>[ "screen" ]</C>,
-    the value is changed by <Ref Func="SetHelpViewer"/>,
-</Item>
-<Mark><C>IndeterminateNameReuse</C></Mark>
-<Item>
-    one of <C>0</C>, <C>1</C>, or <C>2</C>
-    (see <Ref Sect="Indeterminates"/>), the default is <C>0</C>,
-</Item>
-<Mark><C>PackagesToLoad</C></Mark>
-<Item>
-    a list of names of &GAP; packages (default an empty list);
-    these packages shall be loaded at the end of &GAP;'s startup
-    if they are available and if the command line option <C>-A</C>
-    is not given (see <Ref Sect="Command Line Options"/>),
-</Item>
-<Mark><C>Pager</C></Mark>
-<Item>
-    a string denoting the name of the pager used by the function
-    <Ref Func="Pager"/>, the default is <C>"builtin"</C>;
-    the value is changed by <Ref Func="SetHelpViewer"/>,
-</Item>
-<Mark><C>PagerOptions</C></Mark>
-<Item>
-    a list of strings denoting standard options for the pager
-    specified by <C>GAPInfo.UserPreferences.Pager</C>,
-    the default is an empty list;
-    the value is changed by <Ref Func="SetHelpViewer"/>,
-</Item>
-<Mark><C>ReadObsolete</C></Mark>
-<Item>
-    <K>true</K> (the default) or <K>false</K>, meaning that the library files
-    <F>lib/obsolete.gd</F> and <F>lib/obsolete.gi</F> are read or not,
-    see <Ref Chap="Replaced and Removed Command Names"/>,
-</Item>
-<Mark><C>UseColorPrompt</C></Mark>
-<Item>
-    either <K>false</K> (the default) or <K>true</K>
-    or a record as described in <Ref Func="ColorPrompt"/>,
-</Item>
-<Mark><C>ViewLength</C></Mark>
-<Item>
-    the maximal number of lines that are reasonably printed for an object by
-    <Ref Func="View"/>, used by several methods of this operation;
-    the default is <M>3</M>,
-</Item>
-<Mark><C>XdviOptions</C> and <C>XpdfOptions</C></Mark>
-<Item>
-    strings of options for <C>xdvi</C> and <C>xpdf</C>, respectively
-    (the default is <C>""</C>), used by the &GAP;  help system.
-</Item>
 
-<!-- `IndeterminateNameReuse' (see `lib/ringpoly.gd') -->
-</List>
-<P/>
 Since the file <F>gap.ini</F> is read before the implementation part of
 &GAP; is read, not all &GAP; functions may be called in the file.
 Assignments of numbers, lists, and records are admissible as well as calls
@@ -578,6 +518,8 @@ with a workspace.
 If a file <F>gaprc</F> is found it is read after &GAP;'s <F>init.g</F>,
 but before any of the files mentioned on the command line are read.
 You can use this file for your private customizations.
+(Many users may be happy with using just  user preferences in the
+<F>gap.ini</F> file (see above) for private customization.)
 For example, if you have a file containing functions or data that you
 always need, you could read this from <F>gaprc</F>.
 Or if you find some of the names in the library too long,
@@ -603,6 +545,8 @@ you might accidentally create a file <F>gaprc.txt</F> or <F>gaprc.doc</F>
 which GAP will not recognize.
 
 </Subsection>
+
+<#Include Label="UserPreferences">
 
 </Section>
 
@@ -716,7 +660,7 @@ GAPInfo.SystemCommandLine
 GAPInfo.TestData
 GAPInfo.UseReadline
 GAPInfo.UserHome
-GAPInfo.UserPreferences (has an index entry)
+GAPInfo.UserPreferences
 GAPInfo.Version (has an index entry)
 GAPInfo.gaprc
 -->

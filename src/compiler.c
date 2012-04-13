@@ -4,7 +4,6 @@
 *W                                                         & Ferenc Ràkòczi
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 #include        <stdarg.h>              /* variable argument list macros   */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_compiler_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -25,6 +22,7 @@ const char * Revision_compiler_c =
 #include        "gvars.h"               /* global variables                */
 
 #include        "ariths.h"              /* basic arithmetic                */
+#include        "integer.h"
 
 #include        "bool.h"                /* booleans                        */
 
@@ -49,9 +47,7 @@ const char * Revision_compiler_c =
 
 #include        "vars.h"                /* variables                       */
 
-#define INCLUDE_DECLARATION_PART
 #include        "compiler.h"            /* compiler                        */
-#undef  INCLUDE_DECLARATION_PART
 
 
 /****************************************************************************
@@ -135,9 +131,9 @@ void SetCompileOpts( Char *opts )
         s++;
       for (i = 0; i < N_CompOpts; i++)
         {
-          if (0 == SyStrncmp(CompOptNames[i].extname,
+          if (0 == strncmp(CompOptNames[i].extname,
                              s,
-                             SyStrlen(CompOptNames[i].extname)))
+                             strlen(CompOptNames[i].extname)))
             {
               *(CompOptNames[i].variable) = CompOptNames[i].val;
               break;
@@ -213,8 +209,6 @@ static Char * compilerMagic2;
 
 /****************************************************************************
 **
-
-
 *T  CVar  . . . . . . . . . . . . . . . . . . . . . . .  type for C variables
 **
 **  A C variable represents the result of compiling an expression.  There are
@@ -230,7 +224,7 @@ static Char * compilerMagic2;
 **  expression into a  temporary variable,  and  the C variable contains  the
 **  index of that temporary variable.
 */
-typedef UInt4           CVar;
+typedef UInt           CVar;
 
 #define IS_INTG_CVAR(c) ((((UInt)(c)) & 0x03) == 0x01)
 #define INTG_CVAR(c)    (((Int)(c)) >> 2)
@@ -814,7 +808,11 @@ void            Emit (
             else if ( *p == 'c' ) {
                 cvar = va_arg( ap, CVar );
                 if ( IS_INTG_CVAR(cvar) ) {
-                    Pr( "INTOBJ_INT(%d)", INTG_CVAR(cvar), 0L );
+		  Int x = INTG_CVAR(cvar);
+		  if (x >= -(1L <<28) && x < (1L << 28))
+                    Pr( "INTOBJ_INT(%d)", x, 0L );
+		  else
+		    Pr( "C_MAKE_MED_INT(%d)", x, 0L );
                 }
                 else if ( IS_TEMP_CVAR(cvar) ) {
                     Pr( "t_%d", TEMP_CVAR(cvar), 0L );
@@ -2374,35 +2372,58 @@ CVar CompPow (
 *F  CompIntExpr( <expr> ) . . . . . . . . . . . . . . .  T_INTEXPR/T_INT_EXPR
 *
 * This is complicated by the need to produce code that will compile correctly
-* in 32 or 64 bit. 
+* in 32 or 64 bit and with or without GMP.
 *
-* This will need attention for GMP.
+* The problem is that when we compile the code, we know the integer representation
+* of the stored literal in the compiling process
+* but NOT the representation which will apply to the compiled code or the endianness
+*
+* The solution to this is macros: C_MAKE_INTEGER_BAG( size, type) 
+*                                 C_SET_LIMB2(bag, limbnumber, value)
+*                                 C_SET_LIMB4(bag, limbnumber, value)
+*                                 C_SET_LIMB8(bag, limbnumber, value)
+*
+* we compile using the one appropriate for the compiling system, but their
+* definition depends on the limb size of the target system.
 *
 */
+
 CVar CompIntExpr (
     Expr                expr )
 {
     CVar                val;
     Int                 siz;
     Int                 i;
+    UInt                typ;
 
     if ( IS_INTEXPR(expr) ) {
         return CVAR_INTG( INT_INTEXPR(expr) );
     }
     else {
         val = CVAR_TEMP( NewTemp( "val" ) );
-        siz = SIZE_EXPR(expr);
-        if ( ((UInt2*)ADDR_EXPR(expr))[0] == 1 ) {
-            Emit( "%c = NewBag( T_INTPOS, %d );\n", val, siz-sizeof(UInt2) );
+        siz = SIZE_EXPR(expr) - sizeof(UInt);
+	typ = *(UInt *)ADDR_EXPR(expr);
+	Emit( "%c = C_MAKE_INTEGER_BAG(%d, %d);\n",val, siz, typ);
+        if ( typ == T_INTPOS ) {
             SetInfoCVar(val, W_INT_POS);
         }
         else {
-            Emit( "%c = NewBag( T_INTNEG, %d );\n", val, siz-sizeof(UInt2) );
+            SetInfoCVar(val, W_INT);
+	}
+
+        for ( i = 0; i < siz/INTEGER_UNIT_SIZE; i++ ) {
+#if INTEGER_UNIT_SIZE == 2
+	    Emit( "C_SET_LIMB2( %c, %d, %d);\n",val, i, ((UInt2 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
+#else
+#if INTEGER_UNIT_SIZE == 4
+	    Emit( "C_SET_LIMB4( %c, %d, %dL);\n",val, i, ((UInt4 *)((UInt *)ADDR_EXPR(expr) + 1))[i]);
+#else
+	    Emit( "C_SET_LIMB8( %c, %d, %dLL);\n",val, i, ((UInt8*)((UInt *)ADDR_EXPR(expr) + 1))[i]);
+#endif
+#endif
         }
-        for ( i = 1; i < siz/sizeof(UInt2); i++ ) {
-            Emit( "((UInt2*)ADDR_OBJ(%c))[%d-1] = %d;\n",
-                  val, i, ((UInt2*)ADDR_EXPR(expr))[i] );
-        }
+	if (siz <= 8)
+	  Emit("%c = C_NORMALIZE_INT(%c);\n", val,val);
         return val;
     }
 }
@@ -5399,6 +5420,7 @@ void CompAssert3 (
 }
 
 
+
 /****************************************************************************
 **
 
@@ -5706,12 +5728,12 @@ Int CompileFunc (
     }
     Emit( "\n/* information for the functions */\n" );
     Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" )\n" );
-    Emit( "C_NEW_STRING( FileName, %d, \"%s\" )\n", SyStrlen(magic2), magic2 );
+    Emit( "C_NEW_STRING( FileName, %d, \"%s\" )\n", strlen(magic2), magic2 );
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
             Emit( "C_NEW_STRING( NameFunc[%d], %d, \"%S\" )\n",
-                  i, SyStrlen(CSTR_STRING(n)), CSTR_STRING(n) );
+                  i, strlen(CSTR_STRING(n)), CSTR_STRING(n) );
         }
         else {
             Emit( "NameFunc[%d] = DefaultName;\n", i );
@@ -5765,7 +5787,7 @@ Int CompileFunc (
     /* emit the initialization code                                        */
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructInitInfo module = {\n" );
-    if ( ! SyStrcmp( "Init_Dynamic", name ) ) {
+    if ( ! strcmp( "Init_Dynamic", name ) ) {
         Emit( "/* type        = */ %d,\n",     MODULE_DYNAMIC ); 
     }
     else {
@@ -6189,8 +6211,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoCompiler ( void )
 {
-    module.revision_c = Revision_compiler_c;
-    module.revision_h = Revision_compiler_h;
     FillInVersion( &module );
     return &module;
 }

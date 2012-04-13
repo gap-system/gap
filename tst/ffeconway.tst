@@ -2,7 +2,6 @@
 ##
 #W  ffeconway.tst                GAP tests                   Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,8 +9,8 @@
 ##
 ##  To be listed in testinstall.g
 ## 
+gap> START_TEST("ffeconway.tst");
 
-gap> START_TEST("$Id$");
 #
 # Disable various warnings which depend on state of prime number and 
 # Conway Polynomial databases and on whether FactInt is loaded 
@@ -24,6 +23,7 @@ gap> SetInfoLevel(InfoPrimeInt,0);
 gap> SetInfoLevel(InfoFactor,0);
 gap> if IsBound(InfoFactInt) then SetInfoLevel(InfoFactInt,0); fi;
 gap> SetInfoLevel(InfoWarning,0);
+
 #
 # A range of field sizes to hit various cases for the underlying vector 
 # arithmetic.
@@ -32,6 +32,7 @@ gap> fieldsizes := [ [2,17], [2,32], [2,60], [2,76], [2,87], [3,11],
 > [3,20], [3,60], [17,4], [257,2], [257,11], [65521,2], [65537,2], 
 > [268435399,2], [4294967291,2], [1152921504606846883,3] ];;
 gap> Add( fieldsizes, [NextPrimeInt(2^64),2] );
+
 #
 # When we come to test cross-field, we need to make sure we don't try and
 # create overlarge fields
@@ -57,16 +58,19 @@ gap> fieldpairs := Concatenation(List(fieldsizes, pd -> List(Filtered([1..pd[2]-
   [ 257, 11, 1 ], [ 65521, 2, 1 ], [ 65537, 2, 1 ], [ 268435399, 2, 1 ], 
   [ 4294967291, 2, 1 ], [ 1152921504606846883, 3, 1 ], 
   [ 18446744073709551629, 2, 1 ] ]
+
 #
 # construct generating elements
 #
 gap> zs := List(fieldsizes, pd -> Z(pd[1],pd[2]));
 [ z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z ]
+
 #
 # and another way
 #
 gap> zs = List(fieldsizes, pd -> Z(pd[1]^pd[2]));
 true
+
 #
 # Construct some more interesting elements and test View, Print and Display
 #
@@ -81,7 +85,6 @@ gap> izs := List(zs, Inverse);
 +z29+z31+2z32+z33+z34+2z35+2z37+2z38+z39+2z40+z43+z59, 8+9z+11z3, 2+171z, 
   99+86z10, 61667+23125z, 21846+43691z, 89478467+89478466z, 
   2147483646+2147483645z, 1+576460752303423442z2, 2+9223372036854775814z ]
-
 gap> Print(izs,"\n");
 [ Z(2,17)^2+Z(2,17)^16, 
   Z(2,32)^2+Z(2,32)^3+Z(2,32)^6+Z(2,32)^8+Z(2,32)^14+Z(2,32)^31, 
@@ -133,6 +136,7 @@ z+2z10
 2147483646+2147483645z
 1+576460752303423442z2
 2+9223372036854775814z
+
 #
 # Test arithmetic within the field
 #
@@ -146,7 +150,6 @@ z59, 1+z4+z13+z14+z18+z19+z22+z23+z24+z26+z28+z30+z32+z33+z34+z35+z36+z37+z75,
 9+z31+2z32+z33+z34+2z35+2z37+2z38+z39+2z40+z43+z59, 8+10z+11z3, 2+172z, 
   99+z+86z10, 61667+23126z, 21846+43692z, 89478467+89478467z, 
   2147483646+2147483646z, 1+z+576460752303423442z2, 2+9223372036854775815z ]
-
 gap> zs - izs;
 [ z+z2+z16, z+z2+z3+z6+z8+z14+z31, 
   z2+z3+z4+z7+z11+z16+z18+z21+z24+z25+z29+z31+z32+z33+z35+z38+z40+z41+z43+z44+\
@@ -158,7 +161,6 @@ z31+z32+2z33+2z34+z35+z37+z38+2z39+z40+2z43+2z59, 9+9z+6z3, 255+87z,
   158+z+171z10, 3854+42397z, 43691+21847z, 178956932+178956934z, 
   2147483645+2147483647z, 1152921504606846882+z+576460752303423441z2, 
   18446744073709551627+9223372036854775816z ]
-
 gap> List(izs, x->x^2);
 [ z+z15, z+z2+z5+z7+z13+z30, 
   1+z+z2+z3+z6+z10+z15+z17+z20+z23+z24+z28+z30+z31+z32+z34+z37+z39+z40+z42+z43\
@@ -170,11 +172,9 @@ gap> List(izs, x->x^2);
   35+86z9+33z10, 3174+50331z, 50973+58255z, 59652311+149130777z, 
   3221225468+3221225468z, 1+576460752303423442z+576460752303423442z2, 
   9223372036854775818+18446744073709551628z ]
-
 gap> List([1..Length(zs)] , i-> zs[i]/izs[i]);
 [ z2, z2, z2, z2, z2, z2, z2, z2, z2, 254+6z, z2, 65504+3z, 65534+z, 
   268435396+2z, 4294967289+z, z2, 18446744073709551627+4z ]
-
 gap> List(izs, AdditiveInverse);
 [ z2+z16, z2+z3+z6+z8+z14+z31, 
   z+z2+z3+z4+z7+z11+z16+z18+z21+z24+z25+z29+z31+z32+z33+z35+z38+z40+z41+z43+z4\
@@ -705,14 +705,11 @@ z30+2z31+2z32+2z34+2z35+2z36+z38+z39+z40+2z42+z45+2z46+2z49+2z51+z52+z53+2z54+\
 49+z51+2z52+z53+z54+z57+z58+2z59, 6z, 9+15z+10z2+11z3, 
   5+7z+14z2+13z3+10z4+10z5+4z6+13z7+5z8+12z9+3z10+7z11, 86z, 86z, 42396z, 
   21846z, 178956933z, 2147483646z, 576460752303423442z, 9223372036854775815z ]
-
 gap> ForAll(fieldsizes, pd -> ForAll(DivisorsInt(pd[2]), d2 -> 
 >     Z(pd[1],pd[2])^((pd[1]^pd[2]-1)/(pd[1]^d2-1)) = Z(pd[1],d2) ));
 true
-
 gap> SetInfoLevel(InfoPrimeInt,iPI);
 gap> SetInfoLevel(InfoFactor,iF);
 gap> if IsBound(InfoFactInt) then SetInfoLevel(InfoFactInt,iFI); fi;
 gap> SetInfoLevel(InfoWarning,iW);
-gap> STOP_TEST( "ffeconway.tst", 270000000 );
-
+gap> STOP_TEST( "ffeconway.tst", 50200000 );

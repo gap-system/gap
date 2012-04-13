@@ -172,30 +172,34 @@ Here are some further name changes.
 <Heading>The former .gaprc file</Heading>
 
 Up to &GAP;&nbsp;4.4, a file <F>.gaprc</F> in the user's home directory
-(if available) was read automatically during startup,
+(if available, and &GAP; was started without <C>-r</C> option) was 
+read automatically during startup,
 early enough for influencing the autoloading of packages and
-late enough for being allowed to execute any &GAP; code.
+late enough for being allowed to execute any &GAP; code.  On Windows 
+machines this file was called <F>gap.rc</F>.
 <P/>
-In &GAP;&nbsp;4.5, the order in which files are read on startup has changed.
-Because of that (and in order to provide better support for workspaces),
-&GAP; now supports in each of its root directories one file <F>gap.ini</F>,
-which is read early but may contain only very restricted assignments,
-and one file <F>gaprc</F>,
-which is read after starting &GAP; but before reading the files given
-on the command line.
-The latter file can be used only for initializations after startup,
-for example reading personal files, it cannot influence the startup of &GAP;.
-See <Ref Sect="sect:gap.ini"/> for details.
+In &GAP;&nbsp;4.5 the startup mechanism has changed, see 
+<Ref Sect="sect:gap.ini"/> for details. These new configuration
+files are now contained in a directory <C>GAPInfo.UserGapRoot</C>.
 <P/>
 For the sake of partial backwards compatibility,
 also the former file <F>~/.gaprc</F> is still supported for such
-initializations, but this file is read only if no <F>gaprc</F> file
-is found in the &GAP; root directories,
-and <F>~/.gaprc</F> is read at the same time as <F>gaprc</F>
+initializations, but this file is read only if the directory 
+<C>GAPInfo.UserGapRoot</C> does not exist.
+In that case the <F>~/.gaprc</F> is read at the same time as <F>gaprc</F>
 would be read, i.&nbsp;e., too late for influencing the startup of &GAP;.
 <P/>
 As before, the command line option <C>-r</C> disables reading
 <F>~/.gaprc</F>, see <Ref Sect="Command Line Options"/>.
+<P/>
+To migrate from the old setup to the new one introduced with &GAP;&nbsp;4.5,
+first have a look at the function <Ref Func="WriteGapIniFile"/>. Many users
+will find that all or most of what was set in the old <F>~/.gaprc</F> file
+can now be done via the user preferences in a <F>gap.ini</F> file.
+If you had code for new functions or abbreviations in your old <F>~/.gaprc</F> 
+file or you were reading additional files, then move this into
+the file <F>gaprc</F> (without the leading dot, same name for all operating
+systems) in the directory <C>GAPInfo.UserGapRoot</C>.
 
 </Section>
 </Chapter>

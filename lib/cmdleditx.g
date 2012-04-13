@@ -2,7 +2,6 @@
 ##
 #W  cmdleditx.g                   GAP library                    Frank Lübeck 
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  2010 The GAP Group
 ##
@@ -11,8 +10,6 @@
 ##  libreadline. It is kept temporarily for people who have difficulties 
 ##  compiling with libreadline.
 ##  
-Revision.cmdleditx_g :=
-    "@(#)$Id$";
 
 ############################################################################ 
 ##  

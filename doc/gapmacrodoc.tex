@@ -6,7 +6,6 @@
 %W                                                       & Heiko Theissen
 %W                                                     & Burkhard Höfling
 %%
-%H  @(#)$Id$
 %%
 %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
 %%
@@ -19,7 +18,7 @@
 \TitlePage{
   \centerline{\titlefont GAP}\bigskip
   \centerline{\secfont Release 4.5}\medskip
-  \centerline{\secfont May 2011}\vfill
+  \centerline{\secfont October 2011}\vfill
   \centerline{\titlefont The gapmacro.tex}\bigskip\bigskip
   \centerline{\titlefont Manual Format}\vfill
   \centerline{\secfont The GAP Group}\bigskip
@@ -371,7 +370,7 @@ Of course, you need not set options which are marked as default.
 `\\usepsfonts' & (default) use the standard Postscript fonts for typesetting
 
 `\\usecmfonts' & use the TeX standard (Computer Modern) fonts (this was the 
-    behaviour until {\GAP} 4.4.
+    behaviour until {\GAP} 4.4).
     
 `\\addlinks' & (default) This inserts pdf links within the document, so 
     that you can click on a reference or citation. This will only work
@@ -384,7 +383,7 @@ Of course, you need not set options which are marked as default.
    chapter/section/subsection number(s).
    
 `\\citebookstrue' & References to external books will be printed as
-    ``GAP Reference Manual, 2.7.12\'' instead of just ``2.7.12'', similarly 
+    `GAP Reference Manual, 2.7.12' instead of just `2.7.12', similarly 
     for the GAP tutorial. If you cite other books, you have to define 
     for each book `XXX' a macro `\\xxxManual' which expands to the text 
     which you want to be inserted before the number for package `XXX'.
@@ -393,7 +392,12 @@ Of course, you need not set options which are marked as default.
     
     &
     If you want to cite from the manual of a package ``OtherPackage'', then you should 
-    ``\gdef\otherpackageManual{The OtherPackage Manual}''.
+    add the line 
+    
+\begintt 
+\gdef\otherpackageManual{The OtherPackage Manual}
+\endtt
+   & at the beginning of your main {\TeX} input file.
 
 `\\biblitemfalse' & (default, same as in {\GAP} 4.4) In the bibliography, 
    print abbreviations for papers right-aligned 
@@ -1234,7 +1238,7 @@ As mentioned above, a {\TeX} run of the manual produces files
 `manual.example-<chapno>.tst', one for each chapter containing at least
 one {\GAP} example (the text between `\\beginexample'
 and `\\endexample'). These files can be read into {\GAP} using `ReadTest' 
-(see "ref:ReadTest"), to ensure that the {\GAP} output for the examples
+(see `?ReadTest'), to ensure that the {\GAP} output for the examples
 hasn't changed.
 
 The test also requires that examples are not indented

@@ -2,7 +2,6 @@
 ##
 #W  polyconw.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the declaration of functions and data around
 ##  Conway polynomials.
 ##
-Revision.polyconw_gd :=
-    "@(#)$Id$";
 
 
 ###############################################################################
@@ -23,17 +20,15 @@ Revision.polyconw_gd :=
 ##  <Func Name="PowerModEvalPol" Arg='f, g, xpownmodf'/>
 ##
 ##  <Description>
-##  computes the coefficients list of the polynomial <M>g( x^n ) \bmod f</M>, for
-##  the given coefficients lists of the two polynomials <M>f</M> and <M>g</M>, and the
-##  coefficients list of <M>x^n \bmod f</M>.
+##  computes the coefficients list of the polynomial <M>g( x^n ) \bmod f</M>,
+##  for the given coefficients lists of the two polynomials <M>f</M> and
+##  <M>g</M>, and the coefficients list of <M>x^n \bmod f</M>.
 ##  <P/>
-##  We evaluate <M>g</M> at <M>x^n \bmod f</M>, and use Horner's method and reduction
-##  modulo <M>f</M> for computing the result.
+##  We evaluate <M>g</M> at <M>x^n \bmod f</M>, and use Horner's method and
+##  reduction modulo <M>f</M> for computing the result.
 ##  If <M>g = \sum_{i=0}^k g_i x^i</M> then we compute
 ##  <M>( \cdots (((c_k x^n + c_{k-1}) x^n + c_{k-2}) x^n + c_{k-3}) x^n
-##   + \cdots c_0</M>.
-##  <P/>
-##  (this function is used in <C>ConwayPol</C>.)
+##   + \cdots ) x^n + c_0</M>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -114,6 +109,11 @@ DeclareGlobalFunction( "ConwayPol" );
 ##  <P/>
 ##  See&nbsp;<Cite Key="L03"/> for further information on known
 ##  Conway polynomials.
+##  <P/>
+##  An interactive overview of the Conway polynomials known to &GAP; is
+##  provided by the function <C>BrowseConwayPolynomials</C> from the
+##  &GAP; package <Package>Browse</Package>,
+##  see <Ref Func="BrowseGapData" BookName="browse"/>.
 ##  <P/>
 ##  If <A>pol</A> is a result returned by <Ref Func="ConwayPolynomial"/> the
 ##  command <C>Print( InfoText( <A>pol</A> ) );</C> will print some info on

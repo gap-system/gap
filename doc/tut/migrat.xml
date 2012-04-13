@@ -230,7 +230,7 @@ A -- probably incomplete -- list follows
     Backtrace               Where
     CharTable               CharacterTable     # (also composita)
     Denominator             DenominatorRat
-    DepthVector             PositionNot
+    DepthVector             PositionNonZero
     Elements                AsSSortedList
     IsBijection             IsBijective
     IsFunc                  IsFunction

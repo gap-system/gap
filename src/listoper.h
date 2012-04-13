@@ -2,7 +2,6 @@
 **
 *W  listoper.h                  GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,11 +13,6 @@
 
 #ifndef GAP_LISTOPER_H
 #define GAP_LISTOPER_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_listoper_h =
-   "@(#)$Id$";
-#endif
 
 /* These functions are exported because specialised methods may want to
    fall back on them from other files (eg vec8bit) */

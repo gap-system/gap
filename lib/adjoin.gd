@@ -1,15 +1,12 @@
 #############################################################################
 #W  adjoin.gd                  GAP library                Steve Linton 
 ##
-#H  @(#)$Id$
 ##
 ##
 ##  This file contains the declarations for functions pertaining to 
 ##  adjoining an identity element to a semigroup. 
 ##
 
-Revision.adjoin_gd :=
-  "@(#)$Id$";
 
 DeclareCategory("IsMonoidByAdjoiningIdentityElt", IsMultiplicativeElementWithOne and IsAssociativeElement);
 DeclareCategory("IsMonoidByAdjoiningIdentity", IsMonoid);

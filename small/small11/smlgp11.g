@@ -7,8 +7,6 @@
 ##  of order p^7 for p in { 3, 5, 7, 11 } created by Eamon O'Brien and 
 ##  Mike Vaughan-Lee.
 ##
-Revision.smlgp11_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

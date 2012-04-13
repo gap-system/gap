@@ -2,7 +2,6 @@
 **
 *W  objfgelm.c                  GAP source                       Frank Celler
 **
-*H  @(#)$Id$
 *
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -75,8 +74,6 @@
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_objfgelm_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -98,9 +95,7 @@ const char * Revision_objfgelm_c =
 
 #include        "bool.h"                /* booleans                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "objfgelm.h"            /* objects of free groups          */
-#undef  INCLUDE_DECLARATION_PART
 
 
 /****************************************************************************
@@ -3491,8 +3486,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFreeGroupElements ( void )
 {
-    module.revision_c = Revision_objfgelm_c;
-    module.revision_h = Revision_objfgelm_h;
     FillInVersion( &module );
     return &module;
 }

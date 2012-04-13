@@ -2,7 +2,6 @@
 ##
 #W  files.gi                    GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the methods for files and directories.
 ##
-Revision.files_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -99,7 +96,7 @@ end );
 
 #M  Filename( <directory>, <string> ) . . . . . . . . . . . create a filename
 ##
-InstallOtherMethod( Filename,
+InstallMethod( Filename,
     "for a directory and a string",
     [ IsDirectory,
       IsString ],
@@ -133,12 +130,48 @@ end );
 
 #############################################################################
 ##
+#M  ExternalFilename( <directory>, <string> )
+#M  ExternalFilename( <directories>, <string> )
+##
+BindGlobal("MakeExternalFilename",
+  function(name)
+    local path;
+    if ARCH_IS_WINDOWS() then
+        if name{[1..10]} = "/cygdrive/" then
+            path := Concatenation("C:",name{[12..Length(name)]});
+            path[1] := name[11];
+            return ReplacedString(path,"/","\\");
+        fi;
+        return ReplacedString(name,"/","\\");
+    else
+        return name;
+    fi;
+  end);
+
+InstallMethod( ExternalFilename, "for a directory and a string",
+  [ IsDirectory, IsString ],
+  function( d, s )
+    return MakeExternalFilename(Filename(d,s));
+  end );
+
+InstallMethod( ExternalFilename, "for a directory list and a string",
+  [ IsList, IsString ],
+  function( d, s )
+    return MakeExternalFilename(Filename(d,s));
+  end );
+
+#############################################################################
+##
 #F  DirectoryContents(<name>)
 ## 
 InstallGlobalFunction(DirectoryContents, function(dirname)
   local str;
-  # to make ~/mydir work
-  dirname := USER_HOME_EXPAND(dirname);
+  if IsDirectory(dirname) then
+    dirname := dirname![1];
+  else
+    # to make ~/mydir work
+    dirname := USER_HOME_EXPAND(dirname);
+  fi;
   str := STRING_LIST_DIR(dirname);
   if str = fail then
     Error("Could not open ", dirname, " as directory,\nsee LastSystemError();");
@@ -228,22 +261,46 @@ InstallMethod( ReadAsFunction,
 ##
 #M  Edit( <filename> )  . . . . . . . . . . . . . . . . .  edit and read file
 ##
+
+# The editor can be specified at startup time via a user preference.
+DeclareUserPreference( rec(
+  name:= [ "Editor", "EditorOptions" ],
+  description:= [
+    "Determines the editor and options (used by GAPs 'Edit' command).  \
+Under Mac OS X, the value \"open\" for Editor will work. For further options, \
+see the GAP help for 'Edit'.  \
+If you want to use the editor defined in your (shell) environment then \
+leave the 'Editor' and 'EditorOptions' preferences empty."
+    ],
+  default:= function()    # copied from GAPInfo.READENVPAGEREDITOR
+    local str, sp;
+    if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.EDITOR) then
+      str := GAPInfo.KernelInfo.ENVIRONMENT.EDITOR;
+      sp := SplitStringInternal(str, "", " \n\t\r");
+      if Length(sp) > 0 then
+        return [ sp[1], sp{[2..Length(sp)]} ];
+      fi;
+    fi;
+    return [ "vi", [] ];
+    end,
+  check:= function( editor, editoroptions )
+    return IsString( editor ) and IsList( editoroptions )
+                              and ForAll( editoroptions, IsString );
+    end,
+  ) );
+
 InstallGlobalFunction( Edit, function( name )
     local   editor,  ret;
 
     name := USER_HOME_EXPAND(name);
-    editor := Filename( DirectoriesSystemPrograms(),
-                        GAPInfo.UserPreferences.Editor );
+    editor := Filename( DirectoriesSystemPrograms(), UserPreference("Editor") );
     if editor = fail  then
-        Error( "cannot locate editor `", GAPInfo.UserPreferences.Editor,
-               "' (check variable GAPInfo.UserPreferences.Editor)" );
-    fi;
-    if not IsBound(GAPInfo.UserPreferences.EditorOptions) then
-      GAPInfo.UserPreferences.EditorOptions := [];
+        Error( "cannot locate editor `", UserPreference("Editor"),
+                          "' (reset via SetUserPreference(\"Editor\", ...))" );
     fi;
     ret := Process( DirectoryCurrent(), editor, InputTextUser(), 
                     OutputTextUser(), Concatenation(
-                      GAPInfo.UserPreferences.EditorOptions, [ name ]) );
+                    UserPreference("EditorOptions"), [ name ]) );
     if ret <> 0  then
         Error( "editor returned ", ret );
     fi;
@@ -252,9 +309,12 @@ end );
 
 
 #############################################################################
-##
+##  NO LONGER SUPPORTED IN GAP >= 4.5
 #M  CreateCompletionFiles( [<path>] ) . . . . . . create "lib/readX.co" files
 ##
+InstallGlobalFunction( CreateCompletionFiles, function( arg )
+  Print("CreateCompletionFiles: Completion files are no longer supported by GAP.\n");
+end);
 ##InstallGlobalFunction( CreateCompletionFiles, function( arg )
 ##    local path, input, i, com, read, j, crc;
 ##
@@ -471,6 +531,41 @@ local a,h,d;
     fi;
   fi;
 end);
+
+InstallGlobalFunction(RemoveDirectoryRecursively,
+  function(dirname)
+    # dirname must be a string
+    local Dowork;
+    if not(IsDir(dirname) = 'D') then
+        Error("dirname must be a directory");
+        return fail;
+    fi;
+    while Length(dirname) > 0 and dirname[Length(dirname)] = '/' do
+        Unbind(dirname[Length(dirname)]);
+    od;
+    if Length(dirname) = 0 then
+        Error("dirname must be nonempty");
+        return fail;
+    fi;
+    Dowork := function(pathname)
+      # pathname does not end in a / and is known to be a proper directory
+      local c,f,fullname,what;
+      c := DirectoryContents(pathname);
+      for f in c do
+          if f <> "." and f <> ".." then
+              fullname := Concatenation(pathname,"/",f);
+              what := IsDir(fullname);
+              if what = 'D' then
+                  Dowork(fullname);
+              else
+                  RemoveFile(fullname);
+              fi;
+          fi;
+      od;
+      return RemoveDir(pathname);
+    end;
+    return Dowork(dirname);
+  end );
 
 
 #############################################################################

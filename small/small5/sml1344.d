@@ -3,8 +3,6 @@
 #W  sml1344.d              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1344_d :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1344 ][ 4 ] :=
 [ 34686184766654663938032056231788194516612999947,

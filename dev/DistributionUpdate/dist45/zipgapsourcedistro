@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id$
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'
@@ -17,19 +16,26 @@ $line
 source ./core_checkout_time.txt
 
 ziparchive=${ARCHNAME}_${CORETIME}.zip
+winziparchive=${ARCHNAME}_${CORETIME}-win.zip
 rm -f $ziparchive
+rm -f $winziparchive
 
-echo 'Creating the GAP source distribution '${GAPSOURCE}/$ziparchive
+echo '===================================================================='
+echo 'Wrapping archive '${GAPSOURCE}/$ziparchive
+echo 'Adding text files to '${GAPSOURCE}/$ziparchive
+cat listtextfiles.txt | zip -q -9 ${ziparchive} -@
+echo 'Adding binary files to '${GAPSOURCE}/$ziparchive
+cat listbinaryfiles.txt | zip -q -9 ${ziparchive} -@
 
-echo 'Adding text files to the archive '${GAPSOURCE}/$ziparchive
+echo '===================================================================='
+echo 'Wrapping archive '${GAPSOURCE}/$winziparchive
+echo 'Adding text files to '${GAPSOURCE}/$winziparchive
+cat listtextfiles.txt | zip -q -9 -l ${winziparchive} -@
+echo 'Adding binary files to '${GAPSOURCE}/$winziparchive
+cat listbinaryfiles.txt | zip -q -9 ${winziparchive} -@
 
-cat listtextfiles.txt | zip -q ${ziparchive} -@
-
-echo 'Adding binary files to the archive '${GAPSOURCE}/$ziparchive
-
-cat listbinaryfiles.txt | zip -q ${ziparchive} -@
-
-echo 'Unpacking the newly created archive to check for missing files ...'
+echo '===================================================================='
+echo 'Unpacking .zip archive to check for missing files ...'
 unzip -q ${ziparchive} -d tmpunpack
 mv tmpunpack/${DISTNAME} ${DISTNAME}tst
 rm -rf tmpunpack

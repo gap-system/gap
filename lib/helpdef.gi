@@ -2,7 +2,6 @@
 ##  
 #W  helpdef.gi                  GAP Library       Frank Celler / Frank Lübeck
 ##  
-#H  @(#)$Id$
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -16,8 +15,6 @@
 ##  The function  which converts the  TeX sources  to text for  the "screen"
 ##  viewer is outsourced into `helpt2t.g{d,i}'.
 ##  
-Revision.helpdef_gi := 
-  "@(#)$Id$";
   
 ################ ???????????????????????????? ###############################
 

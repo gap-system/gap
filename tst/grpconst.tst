@@ -2,14 +2,13 @@
 ##
 #W  grpconst.tst              GAP Library                  Hans Ulrich Besche
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testinstall.g: why?
 ##
 
-gap> START_TEST("$Id$");
+gap> START_TEST("grpconst.tst");
 gap> if LoadPackage( "grpconst", false )=fail then
 > Print("\n\n",
 > "*** Since you do not have the `grpconst' package installed,    ***\n",
@@ -33,8 +32,7 @@ gap> ConstructAndTestAllGroups( 840 );;
 gap> ConstructAndTestAllGroups( 1560 );;
 gap> ConstructAndTestAllGroups( 1800 );;
 gap> UnloadSmallGroupsData();
-
-gap> STOP_TEST( "grpconst.tst", 130921000000 );
+gap> STOP_TEST( "grpconst.tst", 19528600000*10 );
 
 #############################################################################
 ##

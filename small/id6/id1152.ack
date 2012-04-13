@@ -2,8 +2,6 @@
 ##
 #W  id1152.ack             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id1152_ack :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[1152].next[1].next[89]:=
 rec(

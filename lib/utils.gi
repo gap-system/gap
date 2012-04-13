@@ -3,7 +3,6 @@
 #W  utils.gi			GAP Library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This is a temporary file containing utilities for group chains.
 ##
-Revision.utils_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

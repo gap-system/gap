@@ -2,8 +2,6 @@
 ##
 #W  id384e.gaj             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id384e_gaj :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[384].next[137].next[1].next[10]:=
 rec(

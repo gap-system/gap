@@ -2,7 +2,6 @@
 ##
 #W  modulmat.gi                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 ##  matrix modules because the standard delegation to full row modules
 ##  suffices.)
 ##
-Revision.modulmat_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

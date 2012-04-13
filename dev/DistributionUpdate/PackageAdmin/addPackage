@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id$    (C) Frank Lübeck
+# (C) Frank Lübeck
 
 mypath=`dirname  $0`/
 

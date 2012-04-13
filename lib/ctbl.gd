@@ -3,7 +3,6 @@
 #W  ctbl.gd                     GAP library                     Thomas Breuer
 #W                                                           & Götz Pfeiffer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -27,8 +26,6 @@
 ##  12. Storing Normal Subgroup Information
 ##  13. Auxiliary Stuff
 ##
-Revision.ctbl_gd :=
-    "@(#)$Id$";
 
 
 #T when are two character tables equal? -> same identifier & same permutation?)
@@ -934,31 +931,33 @@ InstallIsomorphismMaintenance( CharacterDegrees,
 ##  need <E>not</E> coincide with the ordering of its
 ##  <Ref Func="IrreducibleRepresentations"/> value.
 ##  <P/>
-##  In the following example we temporarily increase the line length limit
-##  from its default value 80 to 85 in order to get a nicer output format.
-##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Irr( SymmetricGroup( 4 ) );
-##  [ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1 ] ),
-##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 3, -1, -1, 0, 1 ] ),
-##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 2, 0, 2, -1, 0 ] ),
-##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 3, 1, -1, 0, -1 ] ),
-##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] ) ]
+##  [ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1 
+##       ] ), Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), 
+##      [ 3, -1, -1, 0, 1 ] ), 
+##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 2, 0, 2, -1, 0 ] )
+##      , Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), 
+##      [ 3, 1, -1, 0, -1 ] ), 
+##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] ) 
+##   ]
 ##  gap> Irr( SymmetricGroup( 4 ), 2 );
-##  [ Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 1, 1 ] ),
+##  [ Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 1, 1 ] ), 
 ##    Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 2, -1 ] ) ]
-##  gap> SizeScreen([ 85, ]);;
 ##  gap> Irr( CharacterTable( "A5" ) );
-##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
-##    Character( CharacterTable( "A5" ), [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ),
-##    Character( CharacterTable( "A5" ), [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ),
-##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ),
+##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), 
+##      [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ), 
+##    Character( CharacterTable( "A5" ), 
+##      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ), 
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
 ##    Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ]
-##  gap> SizeScreen([ 80, ]);;
 ##  gap> Irr( CharacterTable( "A5" ) mod 2 );
-##  [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ),
-##    Character( BrauerTable( "A5", 2 ), [ 2, -1, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ),
-##    Character( BrauerTable( "A5", 2 ), [ 2, -1, E(5)^2+E(5)^3, E(5)+E(5)^4 ] ),
+##  [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ), 
+##    Character( BrauerTable( "A5", 2 ), 
+##      [ 2, -1, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ), 
+##    Character( BrauerTable( "A5", 2 ), 
+##      [ 2, -1, E(5)^2+E(5)^3, E(5)+E(5)^4 ] ), 
 ##    Character( BrauerTable( "A5", 2 ), [ 4, 1, -1, -1 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -1004,8 +1003,9 @@ DeclareAttributeSuppCT( "Irr", IsNearlyCharacterTable,
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> LinearCharacters( SymmetricGroup( 4 ) );
-##  [ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1 ] ) ]
+##  [ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1 
+##       ] ) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1168,8 +1168,8 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "O7(3)" ) );
 ##  rec( name := "B(3,3) = O(7,3)", parameter := [ 3, 3 ], series := "B" )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "A8" ) );
-##  rec( name := "A(8) ~ A(3,2) = L(4,2) ~ D(3,2) = O+(6,2)", parameter := 8, 
-##    series := "A" )
+##  rec( name := "A(8) ~ A(3,2) = L(4,2) ~ D(3,2) = O+(6,2)", 
+##    parameter := 8, series := "A" )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "L3(4)" ) );
 ##  rec( name := "A(2,4) = L(3,4)", parameter := [ 3, 4 ], series := "L" )
 ##  ]]></Example>
@@ -2271,8 +2271,9 @@ DeclareOperation( "ClassPositionsOfNormalClosure",
 ##  gap> tbl:= CharacterTable( "L3(2)" );;
 ##  gap> pbl:= PrimeBlocks( tbl, 2 );
 ##  rec( block := [ 1, 1, 1, 1, 1, 2 ], 
-##    centralcharacter := [ [ ,, 56,, 24 ], [ ,, -7,, 3 ] ], defect := [ 3, 0 ], 
-##    height := [ 0, 0, 0, 1, 0, 0 ], relevant := [ 3, 5 ] )
+##    centralcharacter := [ [ ,, 56,, 24 ], [ ,, -7,, 3 ] ], 
+##    defect := [ 3, 0 ], height := [ 0, 0, 0, 1, 0, 0 ], 
+##    relevant := [ 3, 5 ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2384,10 +2385,11 @@ DeclareGlobalFunction( "SameBlock" );
 ##  <Example><![CDATA[
 ##  gap> BlocksInfo( CharacterTable( "L3(2)" ) mod 2 );
 ##  [ rec( basicset := [ 1, 2, 3 ], 
-##        decinv := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], defect := 3, 
-##        modchars := [ 1, 2, 3 ], ordchars := [ 1, 2, 3, 4, 5 ] ), 
-##    rec( basicset := [ 6 ], decinv := [ [ 1 ] ], defect := 0, modchars := [ 4 ],
-##        ordchars := [ 6 ] ) ]
+##        decinv := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##        defect := 3, modchars := [ 1, 2, 3 ], 
+##        ordchars := [ 1, 2, 3, 4, 5 ] ), 
+##    rec( basicset := [ 6 ], decinv := [ [ 1 ] ], defect := 0, 
+##        modchars := [ 4 ], ordchars := [ 6 ] ) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2559,7 +2561,7 @@ DeclareGlobalFunction( "LaTeXStringDecompositionMatrix" );
 ##  of <A>tbl</A> and <A>subtbl</A>.
 ##  The containment of the underlying groups of <A>subtbl</A> and <A>tbl</A>
 ##  is <E>not</E> checked;
-##  so the disctinction between 
+##  so the distinction between 
 ##  <Ref Func="Index" Label="for a group and its subgroup"/> 
 ##  and <Ref Func="IndexNC" Label="for a group and its subgroup"/>
 ##  is not made for character tables.
@@ -2637,7 +2639,7 @@ DeclareAttributeSuppCT( "ComputedIsPSolvableCharacterTables",
 ##  gap> tbld8:= CharacterTable( "Dihedral", 8 );;
 ##  gap> fus:= PossibleClassFusions( tblc2, tbld8 );
 ##  [ [ 1, 3 ], [ 1, 4 ], [ 1, 5 ] ]
-##  gap> List( fus, map -> IsClassFusionOfNormalSubgroup( tblc2, map, tbld8 ) );
+##  gap> List(fus, map -> IsClassFusionOfNormalSubgroup(tblc2, map, tbld8));
 ##  [ true, false, false ]
 ##  ]]></Example>
 ##  </Description>
@@ -2943,11 +2945,13 @@ DeclareGlobalFunction( "ClassStructureCharTable" );
 ##  table <A>ordtbl</A>, and second argument a prime <A>p</A>,
 ##  <Ref Oper="CharacterTable" Label="for a group"/> calls the operation
 ##  <Ref Oper="BrauerTable" Label="for a group, and a prime integer"/>.
+##  <P/>
 ##  Called with a string <A>name</A> and perhaps optional parameters
-##  <A>param</A>, <Ref Oper="CharacterTable" Label="for a string"/> delegates
-##  to <C>CharacterTableFromLibrary</C>, which
-##  tries to access the &GAP; Character Table Library (see the manual of
-##  this &GAP; package for an overview of admissible strings <A>name</A>).
+##  <A>param</A>, <Ref Oper="CharacterTable" Label="for a string"/>
+##  tries to access a character table from the &GAP; Character Table Library.
+##  See the manual of the &GAP; package <Package>CTblLib</Package> for an
+##  overview of admissible arguments.
+##  An error is signalled if this &GAP; package is not loaded in this case.
 ##  <P/>
 ##  Probably the most interesting information about the character table is
 ##  its list of irreducibles, which can be accessed as the value of the
@@ -3194,7 +3198,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##
 ##  <#GAPDoc Label="[11]{ctbl}">
 ##  <ManSection>
-##  <Meth Name="ViewObj" Arg='chi' Label="for a character table"/>
+##  <Meth Name="ViewObj" Arg='tbl' Label="for a character table"/>
 ##
 ##  <Description>
 ##  The default <Ref Oper="ViewObj"/> method for ordinary character
@@ -3209,7 +3213,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  </ManSection>
 ##
 ##  <ManSection>
-##  <Meth Name="PrintObj" Arg='chi' Label="for a character table"/>
+##  <Meth Name="PrintObj" Arg='tbl' Label="for a character table"/>
 ##
 ##  <Description>
 ##  The default <Ref Oper="PrintObj"/> method for character tables
@@ -3220,7 +3224,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  </ManSection>
 ##
 ##  <ManSection>
-##  <Meth Name="Display" Arg='chi' Label="for a character table"/>
+##  <Meth Name="Display" Arg='tbl' Label="for a character table"/>
 ##
 ##  <Description>
 ##  There are various ways to customize the <Ref Oper="Display"/> output
@@ -3240,6 +3244,12 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  are given by the function <Ref Func="PrintTo1" BookName="gapdoc"/>
 ##  or by using <Ref Func="PageDisplay" BookName="gapdoc"/> and the
 ##  facilities of the pager used, cf.&nbsp;<Ref Func="Pager"/>.
+##  <P/>
+##  An interactive variant of <Ref Oper="Display"/> is the
+##  <Ref Oper="Browse" BookName="browse"/> method for character tables
+##  that is provided by the &GAP; package <Package>Browse</Package>,
+##  see <Ref Meth="Browse" Label="for character tables"
+##  BookName="browse"/>.
 ##  <P/>
 ##  <Ref Oper="Display"/> shows certain characters (by default all
 ##  irreducible characters) of <A>tbl</A>, together with the orders of the
@@ -3772,7 +3782,8 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##  gap> d8:= CharacterTable( "Dihedral", 8 );
 ##  CharacterTable( "Dihedral(8)" )
 ##  gap> nsg:= ClassPositionsOfNormalSubgroups( d8 );
-##  [ [ 1 ], [ 1, 3 ], [ 1 .. 3 ], [ 1, 3, 4 ], [ 1, 3 .. 5 ], [ 1 .. 5 ] ]
+##  [ [ 1 ], [ 1, 3 ], [ 1 .. 3 ], [ 1, 3, 4 ], [ 1, 3 .. 5 ], [ 1 .. 5 ] 
+##   ]
 ##  gap> iso:= CharacterTableIsoclinic( d8, nsg[3] );;
 ##  gap> Display( iso );
 ##  Isoclinic(Dihedral(8))
@@ -4315,15 +4326,15 @@ DeclareGlobalFunction( "NormalSubgroupClasses" );
 ##  gap> HasNormalSubgroupClassesInfo( tbl );
 ##  true
 ##  gap> NormalSubgroupClassesInfo( tbl );
-##  rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ], nsgclasses := [ [ 1, 3 ] ],
-##    nsgfactors := [  ] )
+##  rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ], 
+##    nsgclasses := [ [ 1, 3 ] ], nsgfactors := [  ] )
 ##  gap> ClassPositionsOfNormalSubgroup( tbl, kernel );
 ##  [ 1, 3 ]
 ##  gap> FactorGroupNormalSubgroupClasses( tbl, [ 1, 3 ] );
 ##  Group([ f1, f2 ])
 ##  gap> NormalSubgroupClassesInfo( tbl );
-##  rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ], nsgclasses := [ [ 1, 3 ] ],
-##    nsgfactors := [ Group([ f1, f2 ]) ] )
+##  rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ], 
+##    nsgclasses := [ [ 1, 3 ] ], nsgfactors := [ Group([ f1, f2 ]) ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -4429,7 +4440,8 @@ DeclareRepresentation( "IsGenericCharacterTableRep", IsNearlyCharacterTable,
 ##
 if not IsBound( CharacterTableFromLibrary ) then
   BindGlobal( "CharacterTableFromLibrary", function( arg )
-      Error( "sorry, the GAP Character Table Library is not installed" );
+      Error( "sorry, the GAP Character Table Library is not loaded,\n",
+             "call `LoadPackage( \"CTblLib\" )' if you want to use it" );
       end );
 fi;
 

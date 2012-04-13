@@ -8,7 +8,6 @@
 *W                                                  & Burkhard Höfling (MAC)
 *W                                                    & Steve Linton (MS/DOS)
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -31,54 +30,39 @@
 **
 **  to compile and link GAP.
 */
-#define INCLUDE_DECLARATION_PART
 
 #include        "system.h"              /* system dependent part           */
 
-#undef  INCLUDE_DECLARATION_PART
 
-const char * Revision_system_c =
-   "@(#)$Id$";
 
 #include        "sysfiles.h"            /* file input/output               */
 #include        "gasman.h"            
 #include        <fcntl.h>
 
 
-#ifndef SYS_STDIO_H                     /* standard input/output functions */
-# include <stdio.h>
-# define SYS_STDIO_H
+#include        <stdio.h>               /* standard input/output functions */
+#include        <stdlib.h>              /* ANSI standard functions         */
+#include        <string.h>              /* string functions                */
+
+#include        <assert.h>
+#include        <dirent.h>
+
+#if HAVE_UNISTD_H                       /* definition of 'R_OK'            */
+# include        <unistd.h>
 #endif
 
-#include <dirent.h>
-
-#ifndef SYS_UNISTD_H                    /* definition of 'R_OK'            */
-# include <unistd.h>
-# define SYS_UNISTD_H
-#endif
-
-#ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
-# if SYS_ANSI
-#  include      <stdlib.h>
-# endif
-# define SYS_STDLIB_H
-#endif
 
 #if HAVE_LIBREADLINE
 #include        <readline/readline.h>   /* readline for interactive input  */
 #endif
 
-#ifndef SYS_HAS_STDIO_PROTO             /* ANSI/TRAD decl. from H&S 15     */
-extern FILE * fopen ( const char *, const char * );
-extern int    fclose ( FILE * );
-extern void   setbuf ( FILE *, char * );
-extern char * fgets ( char *, int, FILE * );
-extern int    fputs ( const char *, FILE * );
+#if HAVE_SYS_TIMES_H                    /* time functions                  */
+# include       <sys/types.h>
+# include       <sys/times.h>
 #endif
 
-
-#if SYS_DARWIN
-#define task_self mach_task_self
+#if HAVE_MADVISE
+#include        <sys/mman.h>
 #endif
 
 /****************************************************************************
@@ -216,20 +200,24 @@ Int SyDebugLoading;
 **  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
 **  be a valid filename.
 **
+**  In addition we store the path to the users ~/.gap directory, if available,
+**  in 'DotGapPath'.
+**  
 **  Put in this package because the command line processing takes place here.
 **
 #define MAX_GAP_DIRS 128
 */
 Char SyGapRootPaths [MAX_GAP_DIRS] [512];
+#if HAVE_DOTGAPRC
+Char DotGapPath[512];
+#endif
 
 /****************************************************************************
 **
 *V  IgnoreGapRC . . . . . . . . . . . . . . . . . . . -r option for kernel
-*V  DotGapPath  . . . . . . . . . . . . . . . . . . . path of ~/.gap 
 **
 */
 Int IgnoreGapRC;
-Char DotGapPath[512];
 
 /****************************************************************************
 **
@@ -348,8 +336,9 @@ UInt SyInitializing;
 **  'SyStorMax' is the maximal size of the workspace allocated by Gasman.
 **  in kilobytes
 **
-**  This is per default 256 MByte,  which is often a  reasonable value.  It is
-**  usually changed with the '-o' option in the script that starts GAP.
+**  This is per default 1G in 32-bit mode and 2G in 64-bit mode, which
+**  is often a reasonable value. It is usually changed with the '-o'
+**  option in the script that starts GAP.
 **
 **  This is used in the function 'SyAllocBags'below.
 **
@@ -421,22 +410,6 @@ UInt SyWindow;
 
 /****************************************************************************
 **
-*V  syStackSpace  . . . . . . . . . . . . . . . . . . . amount of stack space
-**
-**  'syStackSpace' is the amount of stackspace that GAP gets.
-**
-**  Under TOS and on the  Mac special actions must  be  taken to ensure  that
-**  enough space is available.
-*/
-#if SYS_TOS_GCC2
-# define __NO_INLINE__
-int _stksize;
-static UInt syStackSpace;
-#endif
-
-
-/****************************************************************************
-**
 
 *F * * * * * * * * * * * * * time related functions * * * * * * * * * * * * *
 */
@@ -473,17 +446,13 @@ UInt SyStopTime;
 **  Use use   'getrusage'  if possible,  because  it gives  us  a much better
 **  resolution. 
 */
-#if ! SYS_IS_CYGWIN32
-#if HAVE_GETRUSAGE
+#if HAVE_GETRUSAGE && !SYS_IS_CYGWIN32
 
-#ifndef SYS_RESOURCE_H
+#if HAVE_SYS_TIME_H
 # include       <sys/time.h>            /* definition of 'struct timeval'  */
-# include       <sys/resource.h>        /* definition of 'struct rusage'   */
-# define SYS_RESOURCE_H
 #endif
-
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern int getrusage ( int, struct rusage * );
+#if HAVE_SYS_RESOURCE_H
+# include       <sys/resource.h>        /* definition of 'struct rusage'   */
 #endif
 
 UInt SyTime ( void )
@@ -494,7 +463,7 @@ UInt SyTime ( void )
         fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
         SyExit( 1 );
     }
-    return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000 -SyStartTime;
+    return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000 - SyStartTime;
 }
 UInt SyTimeSys ( void )
 {
@@ -528,27 +497,21 @@ UInt SyTimeChildrenSys ( void )
 }
 
 #endif
-#endif
 
 
 /****************************************************************************
 **
-*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . .  BSD/Mach/DJGPP
+*f  SyTime()
 **
-**  For Berkeley UNIX the clock ticks in 1/60.  On some (all?) BSD systems we
-**  can use 'getrusage', which gives us a much better resolution.
+**  The 'times' POSIX call measures clock ticks in 1/CLOCKS_PER_SEC. Typically,
+**  CLOCKS_PER_SEC equals 60 or 100. On most systems, the 'times' API has been
+**  deprecated in favor of 'getrusage', which provides a much better resolution.
+**
+**  Cygwin claims to support 'getrusage' but child times are not given properly.
 */
-#if ! HAVE_GETRUSAGE
-#if SYS_BSD || SYS_MACH || SYS_MSDOS_DJGPP || HAVE_TIMES
+#if HAVE_TIMES && (SYS_IS_CYGWIN32 || !HAVE_GETRUSAGE)
 
-#ifndef SYS_TIMES_H                     /* time functions                  */
-# include       <sys/types.h>
-# include       <sys/times.h>
-# define SYS_TIMES_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern int times ( struct tms * );
-#endif
+#include <time.h> /* for CLOCKS_PER_SEC */
 
 UInt SyTime ( void )
 {
@@ -558,122 +521,40 @@ UInt SyTime ( void )
         fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
         SyExit( 1 );
     }
-    return 100 * tbuf.tms_utime / (60/10) - SyStartTime;
-}
-
-#endif
-#endif
-
-
-/****************************************************************************
-**
-*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . . . . . . USG/OS2
-**
-**  For UNIX System V and OS/2 the clock ticks in 1/HZ,  this is usually 1/60
-**  or 1/100.
-*/
-#if SYS_USG || SYS_OS2_EMX
-
-#ifndef SYS_TIMES_H                     /* time functions                  */
-# include       <sys/param.h>           /* definition of 'HZ'              */
-# include       <sys/types.h>
-# include       <sys/times.h>
-# define SYS_TIMES_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern int times ( struct tms * );
-#endif
-
-UInt SyTime ( void )
-{
-    struct tms          tbuf;
-
-    if ( times( &tbuf ) == -1 ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return 100 * tbuf.tms_utime / (HZ / 10) - SyStartTime;
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . .  CYGWIN
-**
-**  though the configuration claims that `getrusage' works, it does not. We
-**  must use `times' and the factor is different than under BSD &c.
-*/
-#if SYS_IS_CYGWIN32
-
-#ifndef SYS_TIMES_H                     /* time functions                  */
-# include       <sys/types.h>
-# include       <sys/times.h>
-# define SYS_TIMES_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern int times ( struct tms * );
-#endif
-
-UInt SyTime ( void )
-{
-    struct tms          tbuf;
-
-    if ( times( &tbuf ) == -1 ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return tbuf.tms_utime  - SyStartTime;
+    return tbuf.tms_utime * 1000L / CLOCKS_PER_SEC - SyStartTime;
 }
 
 UInt SyTimeSys ( void )
 {
-  return 0;
+    struct tms          tbuf;
+
+    if ( times( &tbuf ) == -1 ) {
+        fputs("gap: panic 'SyTimeSys' cannot get time!\n",stderr);
+        SyExit( 1 );
+    }
+    return tbuf.tms_stime * 1000L / CLOCKS_PER_SEC;
 }
 
 UInt SyTimeChildren ( void )
 {
-  return 0;
+    struct tms          tbuf;
+
+    if ( times( &tbuf ) == -1 ) {
+        fputs("gap: panic 'SyTimeChildren' cannot get time!\n",stderr);
+        SyExit( 1 );
+    }
+    return tbuf.tms_cutime * 1000L / CLOCKS_PER_SEC;
 }
 
 UInt SyTimeChildrenSys ( void )
 {
-  return 0;
-}
+    struct tms          tbuf;
 
-#endif
-
-
-/****************************************************************************
-**
-*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . . . . . . TOS/VMS
-**
-**  For TOS and VMS we use the function 'clock' and allow to stop the clock.
-*/
-#if SYS_TOS_GCC2 || SYS_VMS
-
-#ifndef SYS_TIME_H                      /* time functions                  */
-# include       <time.h>
-# define SYS_TIME_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* ANSI/TRAD decl. from H&S 18.2    */
-# if SYS_ANSI
-extern  clock_t         clock ( void );
-# define SYS_CLOCKS     CLOCKS_PER_SEC
-# else
-extern  long            clock ( void );
-#  if SYS_TOS_GCC2
-#   define SYS_CLOCKS   200
-#  else
-#   define SYS_CLOCKS   100
-#  endif
-# endif
-#endif
-
-UInt SyTime ( void )
-{
-    return 100 * (UInt)clock() / (SYS_CLOCKS/10) - SyStartTime;
+    if ( times( &tbuf ) == -1 ) {
+        fputs("gap: panic 'SyTimeChildrenSys' cannot get time!\n",stderr);
+        SyExit( 1 );
+    }
+    return tbuf.tms_cstime * 1000L / CLOCKS_PER_SEC;
 }
 
 #endif
@@ -688,31 +569,11 @@ UInt SyTime ( void )
 
 /****************************************************************************
 **
-
 *F  SyStrlen( <str> ) . . . . . . . . . . . . . . . . . .  length of a string
 **
 **  'SyStrlen' returns the length of the string <str>, i.e.,  the  number  of
 **  characters in <str> that precede the terminating null character.
 */
-#ifndef SYS_STRING_H                    /* string functions                */
-# include <string.h>
-# define SYS_STRING_H
-#endif
-
-#ifndef SYS_HAS_STRING_PROTO            /* ANSI/TRAD decl. from H&S 13     */
-# if SYS_ANSI
-extern  char *          strncat ( char *, const char *, size_t );
-extern  int             strcmp ( const char *, const char * );
-extern  int             strncmp ( const char*, const char*, size_t );
-extern  size_t          strlen ( const char * );
-# else
-extern  char *          strncat ( char *, const char *, int );
-extern  int             strcmp ( const char *, const char * );
-extern  int             strncmp ( const char *, const char *, int );
-extern  int             strlen ( const char * );
-# endif
-#endif
-
 UInt SyStrlen (
     const Char *         str )
 {
@@ -749,7 +610,7 @@ Int SyStrncmp (
     const Char *        str2,
     UInt                len )
 {
-    return strncmp( str1, str2, len );
+    return SyStrncmp( str1, str2, len );
 }
 
 /****************************************************************************
@@ -802,27 +663,6 @@ Int SyIntString( const Char *string) {
 **  <dst> becomes the concatenation of <dst> and <src>.  The resulting string
 **  is always null terminated.  'SyStrncat' returns a pointer to <dst>.
 */
-#ifdef SYS_HAS_BROKEN_STRNCAT
-
-
-Char * SyStrncat (
-    Char *              dst,
-    const Char *        src,
-    UInt                len )
-{
-    Char *              d;
-    const Char *        s;  /*BH: CodeWarrior needs const */
-
-    for ( d = dst; *d != '\0'; d++ )
-        ;
-    for ( s = src; *s != '\0' && 0 < len; len-- )
-        *d++ = *s++;
-    *d = 0;
-    return dst;
-}
-
-
-#else
 Char * SyStrncat (
     Char *              dst,
     const Char *        src,
@@ -832,9 +672,155 @@ Char * SyStrncat (
 }
 
 
-#endif
+#ifndef HAVE_STRLCPY
+
+size_t strlcpy (
+    char *dst,
+    const char *src,
+    size_t len)
+{
+    /* Keep a copy of the original src. */
+    const char * const orig_src = src;
+
+    /* If a non-empty len was specified, we can actually copy some data. */
+    if (len > 0) {
+        /* Copy up to len-1 bytes (reserve one for the terminating zero). */
+        while (--len > 0) {
+            /* Copy from src to dst; if we reach the string end, we are
+               done and can simply return the total source string length */
+            if ((*dst++ = *src++) == 0) {
+                /* return length of source string without the zero byte */
+                return src - orig_src - 1;
+            }
+        }
+        
+        /* If we got here, then we used up the whole buffer and len is zero.
+           We must make sure to terminate the destination string. */
+        *dst = 0;
+    }
+
+    /* in the end, we must return the length of the source string, no
+       matter whether we completely copied or not; so advance src
+       till its terminator is reached */
+    while (*src++)
+        ;
+
+    /* return length of source string without the zero byte */
+    return src - orig_src - 1;
+}
+
+#endif /* !HAVE_STRLCPY */
 
 
+#ifndef HAVE_STRLCAT
+
+size_t strlcat (
+    char *dst,
+    const char *src,
+    size_t len)
+{
+    /* Keep a copy of the original dst. */
+    const char * const orig_dst = dst;
+
+    /* Find the end of the dst string, so that we can append after it. */
+    while (*dst != 0 && len > 0) {
+        dst++;
+        len--;
+    }
+
+    /* We can only append anything if there is free space left in the
+       destination buffer. */
+    if (len > 0) {
+        /* One byte goes away for the terminating zero. */
+        len--;
+
+        /* Do the actual work and append from src to dst, until we either
+           appended everything, or reached the dst buffer's end. */
+        while (*src != 0 && len > 0) {
+            *dst++ = *src++;
+            len--;
+        }
+
+        /* Terminate, terminate, terminate! */
+        *dst = 0;
+    }
+
+    /* Compute the final result. */
+    return (dst - orig_dst) + strlen(src);
+}
+
+#endif /* !HAVE_STRLCAT */
+
+size_t strlncat (
+    char *dst,
+    const char *src,
+    size_t len,
+    size_t n)
+{
+    /* Keep a copy of the original dst. */
+    const char * const orig_dst = dst;
+
+    /* Find the end of the dst string, so that we can append after it. */
+    while (*dst != 0 && len > 0) {
+        dst++;
+        len--;
+    }
+
+    /* We can only append anything if there is free space left in the
+       destination buffer. */
+    if (len > 0) {
+        /* One byte goes away for the terminating zero. */
+        len--;
+
+        /* Do the actual work and append from src to dst, until we either
+           appended everything, or reached the dst buffer's end. */
+        while (*src != 0 && len > 0 && n > 0) {
+            *dst++ = *src++;
+            len--;
+            n--;
+        }
+
+        /* Terminate, terminate, terminate! */
+        *dst = 0;
+    }
+
+    /* Compute the final result. */
+    len = strlen(src);
+    if (n < len)
+        len = n;
+    return (dst - orig_dst) + len;
+}
+
+size_t strxcpy (
+    char *dst,
+    const char *src,
+    size_t len)
+{
+    size_t res = strlcpy(dst, src, len);
+    assert(res < len);
+    return res;
+}
+
+size_t strxcat (
+    char *dst,
+    const char *src,
+    size_t len)
+{
+    size_t res = strlcat(dst, src, len);
+    assert(res < len);
+    return res;
+}
+
+size_t strxncat (
+    char *dst,
+    const char *src,
+    size_t len,
+    size_t n)
+{
+    size_t res = strlncat(dst, src, len, n);
+    assert(res < len);
+    return res;
+}
 
 /****************************************************************************
 **
@@ -992,10 +978,9 @@ static UInt SyAllocPool;
 
 /****************************************************************************
 **
-*f  SyAllocBags( <size>, <need> ) . . . . . . . BSD/USG/OS2 EMX/MSDOS/TOS/VMS
+*f  SyAllocBags( <size>, <need> )
 **
-**  For UNIX,  OS/2, MS-DOS, TOS,  and VMS, 'SyAllocBags' calls 'sbrk', which
-**  will work on most systems.
+**  For UNIX, 'SyAllocBags' calls 'sbrk', which will work on most systems.
 **
 **  Note that   it may  happen that  another   function   has  called  'sbrk'
 **  between  two calls to  'SyAllocBags',  so that the  next  allocation will
@@ -1005,16 +990,198 @@ static UInt SyAllocPool;
 **  the workspace beyond 'SyStorMax' or to reduce it below 'SyStorMin'.
 */
 
-#if SYS_BSD||SYS_USG||SYS_OS2_EMX||SYS_MSDOS_DJGPP||SYS_TOS_GCC2||SYS_VMS||HAVE_SBRK
+static UInt pagesize = 4096;   /* Will be initialised if SyAllocPool > 0 */
 
-#ifndef SYS_HAS_MISC_PROTO              /* UNIX decl. from 'man'           */
-extern  char * sbrk ( int );
-#endif
+static inline UInt SyRoundUpToPagesize(UInt x)
+{
+    UInt r;
+    r = x % pagesize;
+    return r == 0 ? x : x - r + pagesize;
+}
 
+void *     POOL = NULL;
 UInt * * * syWorkspace = NULL;
 UInt       syWorksize = 0;
 
-void *     POOL = NULL;
+
+#if HAVE_MADVISE
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+
+static void *SyMMapStart = NULL;   /* Start of mmap'ed region for POOL */
+static void *SyMMapEnd;            /* End of mmap'ed region for POOL */
+static void *SyMMapAdvised;        /* We have already advised about non-usage
+                                      up to here. */
+
+void SyMAdviseFree() {
+    size_t size;
+    void *from;
+    if (!SyMMapStart) 
+        return;
+    from = (char *) syWorkspace + syWorksize * 1024;
+    from = (void *)SyRoundUpToPagesize((UInt) from);
+    if (from > SyMMapAdvised) {
+        SyMMapAdvised = from;
+        return;
+    }
+    if (from < SyMMapStart || from >= SyMMapEnd || from >= SyMMapAdvised)
+        return;
+    size = (char *)SyMMapAdvised - (char *)from;
+#if defined(MADV_FREE)
+    madvise(from, size, MADV_FREE);
+#elif defined(MADV_DONTNEED)
+    madvise(from, size, MADV_DONTNEED);
+#endif
+    SyMMapAdvised = from;
+    /* On Darwin, MADV_FREE and MADV_DONTNEED will not actually update
+     * a process's resident memory until those pages are explicitly
+     * unmapped or needed elsewhere.
+     *
+     * The following code accomplishes this, but is not portable and
+     * potentially not safe, since the POSIX standard does not make
+     * any sufficiently strong promises with regard to the use of
+     * MAP_FIXED.
+     *
+     * We probably don't want to do this and just live with pages
+     * remaining with a process until reused even if that appears to
+     * inflate the resident set size.
+     *
+     * Maybe we do want to do this until it breaks to avoid questions
+     * by users...
+     */
+#ifndef NO_DIRTY_OSX_MMAP_TRICK
+#if SYS_IS_DARWIN
+    if (mmap(from, size, PROT_NONE,
+            MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
+        fputs("gap: OS/X trick to free pages did not work, bye!\n", stderr);
+        SyExit( 2 );
+    }
+    if (mmap(from, size, PROT_READ|PROT_WRITE,
+            MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
+        fputs("gap: OS/X trick to free pages did not work, bye!\n", stderr);
+        SyExit( 2 );
+    }
+#endif
+#endif
+}
+
+void *SyAnonMMap(size_t size) {
+    void *result;
+    size = SyRoundUpToPagesize(size);
+#ifdef SYS_IS_64_BIT
+    /* The following is at 16 Terabyte: */
+    result = mmap((void *) (16L*1024*1024*1024*1024), size, 
+                  PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    if (result == MAP_FAILED) {
+        result = mmap(NULL, size, PROT_READ|PROT_WRITE,
+            MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    }
+#else
+    result = mmap(NULL, size, PROT_READ|PROT_WRITE,
+        MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+#endif
+    if (result == MAP_FAILED)
+        result = NULL;
+    SyMMapStart = result;
+    SyMMapEnd = (char *)result + size;
+    SyMMapAdvised = (char *)result + size;
+    return result;
+}
+
+int SyTryToIncreasePool(void)
+/* This tries to increase the pool size by a factor of 3/2, if this
+ * worked, then 0 is returned, otherwise -1. */
+{
+    void *result;
+    size_t size;
+    size_t newchunk;
+
+    size = (Int) SyMMapEnd - (Int) SyMMapStart;
+    newchunk = SyRoundUpToPagesize(size/2);
+    result = mmap(SyMMapEnd, newchunk, PROT_READ|PROT_WRITE,
+                  MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    if (result == MAP_FAILED) return -1;
+    if (result != SyMMapEnd) {
+        munmap(result,newchunk);
+        return -1;
+    }
+    /* We actually got an extension! */
+    SyMMapEnd = (void *)((char *)SyMMapEnd + newchunk);
+    SyAllocPool += newchunk;
+    return 0;
+}
+
+#else
+
+void SyMAdviseFree(void) {
+    /* do nothing */
+}
+
+int SyTryToIncreasePool(void)
+{
+    return -1;   /* Refuse */
+}
+
+#endif
+
+void SyInitialAllocPool( void )
+{
+#if HAVE_SYSCONF
+#ifdef _SC_PAGESIZE
+   pagesize = sysconf(_SC_PAGESIZE);
+#endif
+#endif
+   /* Otherwise we take the default of 4k as pagesize. */
+
+   do {
+       /* Always round up to pagesize: */
+       SyAllocPool = SyRoundUpToPagesize(SyAllocPool);
+#if HAVE_MADVISE
+       POOL = SyAnonMMap(SyAllocPool+pagesize);   /* For alignment */
+#else
+       POOL = calloc(SyAllocPool+pagesize,1);   /* For alignment */
+#endif
+       if (POOL != NULL) {
+           /* fprintf(stderr,"Pool size is %lx.\n",SyAllocPool); */
+           break;
+       }
+       SyAllocPool = SyAllocPool / 2;
+       fputs("gap: halfing pool size.\n", stderr);
+       if (SyAllocPool < 16*1024*1024) {
+         fputs("gap: cannot allocate initial memory, bye.\n", stderr);
+         SyExit( 2 );
+       }
+   } while (1);   /* Is left by break */
+
+   /* ensure alignment of start address */
+   syWorkspace = (UInt***)(SyRoundUpToPagesize((UInt) POOL));
+   /* Now both syWorkspace and SyAllocPool are aligned to pagesize */
+}
+
+UInt ***SyAllocBagsFromPool(Int size, UInt need)
+{
+  /* get the storage, but only if we stay within the bounds              */
+  /* if ( (0 < size && syWorksize + size <= SyStorMax) */
+  /* first check if we would get above SyStorKill, if yes exit! */
+  if ( need < 2 && SyStorKill != 0 && 0 < size 
+                && SyStorKill < syWorksize + size ) {
+      fputs("gap: will not extend workspace above -K limit, bye!\n",stderr);
+      SyExit( 2 );
+  }
+  if (size > 0) {
+    while ((syWorksize+size)*1024 > SyAllocPool) {
+        if (SyTryToIncreasePool()) return (UInt***)-1;
+    }
+    return (UInt***)((char*)syWorkspace + syWorksize*1024);
+  }
+  else if  (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size))
+    return (UInt***)((char*)syWorkspace + syWorksize*1024);
+  else
+    return (UInt***)-1;
+}
+
+#if HAVE_SBRK && ! HAVE_VM_ALLOCATE /* prefer `vm_allocate' over `sbrk' */
 
 UInt * * * SyAllocBags (
     Int                 size,
@@ -1024,39 +1191,10 @@ UInt * * * SyAllocBags (
     UInt adjust = 0;
 
     if (SyAllocPool > 0) {
-      if (POOL == NULL) {
-         POOL = malloc(SyAllocPool+8);
-         if (POOL == NULL) {
-           fputs("gap: cannot allocate initial memory, bye.\n", stderr);
-           SyExit( 2 );
-         }
-         /* ensure alignment of start address */
-         if ((UInt)POOL % 8 == 0) 
-           syWorkspace = (UInt***)POOL;
-         else
-           syWorkspace = (UInt***)((Char *)POOL + (8-(UInt)POOL % 8));
-      }
-      /* get the storage, but only if we stay within the bounds              */
-      /* if ( (0 < size && syWorksize + size <= SyStorMax) */
-      /* first check if we would get above SyStorKill, if yes exit! */
-      if ( need < 2 && SyStorKill != 0 && 0 < size 
-                    && SyStorKill < syWorksize + size ) {
-          fputs("gap: will not extend workspace above -K limit, bye!\n",stderr);
-          SyExit( 2 );
-      }
-      if (size > 0) {
-        if ((syWorksize+size)*1024 <= SyAllocPool) {
-          ret = (UInt***)((char*)syWorkspace + syWorksize*1024);
-        }
-        else
-          ret = (UInt***)-1;
-      }
-      else if  (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size))  {
-        ret = (UInt***)((char*)syWorkspace + syWorksize*1024);
-      }
-      else {
-        ret = (UInt***)-1;
-      }
+      if (POOL == NULL) SyInitialAllocPool();
+      /* Note that this does abort GAP if it does not succeed! */
+      
+      ret = SyAllocBagsFromPool(size,need);
     }
     else {
 
@@ -1075,8 +1213,10 @@ UInt * * * SyAllocBags (
         /* get the storage, but only if we stay within the bounds              */
         /* if ( (0 < size && syWorksize + size <= SyStorMax) */
         /* first check if we would get above SyStorKill, if yes exit! */
-        if ( need < 2 && SyStorKill != 0 && 0 < size && SyStorKill < syWorksize + size ) {
-            fputs("gap: will not extend workspace above -K limit, bye!\n",stderr);
+        if ( need < 2 && SyStorKill != 0 && 0 < size && 
+             SyStorKill < syWorksize + size ) {
+            fputs("gap: will not extend workspace above -K limit, bye!\n",
+                  stderr);
             SyExit( 2 );
         }
         if (0 < size )
@@ -1085,27 +1225,31 @@ UInt * * * SyAllocBags (
             while (size > 1024*1024)
               {
                 ret = (UInt ***)sbrk(1024*1024*1024);
-                if (ret != (UInt ***)-1  && ret != (UInt***)((char*)syWorkspace + syWorksize*1024))
+                if (ret != (UInt ***)-1  && 
+                    ret != (UInt***)((char*)syWorkspace + syWorksize*1024))
                   {
                     sbrk(-1024*1024*1024);
                     ret = (UInt ***)-1;
                   }
                 if (ret == (UInt ***)-1)
                   break;
-                memset((void *)((char *)syWorkspace + syWorksize*1024), 0, 1024*1024*1024);
+                memset((void *)((char *)syWorkspace + syWorksize*1024), 0, 
+                       1024*1024*1024);
                 size -= 1024*1024;
                 syWorksize += 1024*1024;
                 adjust++;
               }
 #endif
             ret = (UInt ***)sbrk(size*1024);
-            if (ret != (UInt ***)-1  && ret != (UInt***)((char*)syWorkspace + syWorksize*1024))
+            if (ret != (UInt ***)-1  && 
+                ret != (UInt***)((char*)syWorkspace + syWorksize*1024))
               {
                 sbrk(-size*1024);
                 ret = (UInt ***)-1;
               }
             if (ret != (UInt ***)-1)
-              memset((void *)((char *)syWorkspace + syWorksize*1024), 0, 1024*size);
+              memset((void *)((char *)syWorkspace + syWorksize*1024), 0, 
+                     1024*size);
             
           }
         else if  (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size))  {
@@ -1140,7 +1284,7 @@ UInt * * * SyAllocBags (
 
     /* test if the allocation failed                                       */
     if ( ret == (UInt***)-1 && need ) {
-        fputs("gap: cannot extend the workspace any more\n",stderr);
+        fputs("gap: cannot extend the workspace any more!\n",stderr);
         SyExit( 1 );
     }
     /* if we de-allocated the whole workspace then remember this */
@@ -1162,18 +1306,19 @@ UInt * * * SyAllocBags (
 
 /****************************************************************************
 **
-*f  SyAllocBags( <size>, <need> ) . . . . . . . . . . . . . . . . . . .  MACH
+*f  SyAllocBags( <size>, <need> )
 **
 **  Under MACH virtual memory managment functions are used instead of 'sbrk'.
 */
-#if SYS_MACH || HAVE_VM_ALLOCATE
+#if HAVE_VM_ALLOCATE
 
 #include <mach/mach.h>
 
+#if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
+#define task_self mach_task_self
+#endif
+
 vm_address_t syBase;
-UInt         sySize = 0;
-UInt * * *   syWorkspace = NULL;
-void *       POOL = NULL;
  
 UInt * * * SyAllocBags (
     Int                 size,
@@ -1183,44 +1328,16 @@ UInt * * * SyAllocBags (
     vm_address_t        adr;    
 
     if (SyAllocPool > 0) {
-      if (POOL == NULL) {
-         POOL = malloc(SyAllocPool+8);
-         if (POOL == NULL) {
-           fputs("gap: cannot allocate initial memory, bye.\n", stderr);
-           SyExit( 2 );
-         }
-         /* ensure alignment of start address */
-         if ((UInt)POOL % 8 == 0) 
-           syWorkspace = (UInt***)POOL;
-         else
-           syWorkspace = (UInt***)((Char *)POOL + (8-(UInt)POOL % 8));
-      }
-      /* get the storage, but only if we stay within the bounds              */
-      /* if ( (0 < size && sySize + size <= SyStorMax) */
-      /* first check if we would get above SyStorKill, if yes exit! */
-      if ( need < 2 && SyStorKill != 0 && 0 < size 
-                    && SyStorKill < sySize + size ) {
-          fputs("gap: will not extend workspace above -K limit, bye!\n",stderr);
-          SyExit( 2 );
-      }
-      if (size > 0) {
-        if ((sySize+size)*1024 <= SyAllocPool) {
-          ret = (UInt***)((char*)syWorkspace + sySize*1024);
-          sySize += size;
-        }
-        else
-          ret = (UInt***)-1;
-      }
-      else if  (size < 0 && (need >= 2 || SyStorMin <= sySize + size))  {
-        ret = (UInt***)((char*)syWorkspace + sySize*1024);
-        sySize += size;
-      }
-      else {
-        ret = (UInt***)-1;
-      }
+      if (POOL == NULL) SyInitialAllocPool();
+      /* Note that this does abort GAP if it does not succeed! */
+ 
+      ret = SyAllocBagsFromPool(size,need);
+      if (ret != (UInt ***)-1)
+          syWorksize += size;
+
     }
     else {
-        if ( SyStorKill != 0 && 0 < size && SyStorKill < 1024*(sySize + size) ) {
+        if ( SyStorKill != 0 && 0 < size && SyStorKill < 1024*(syWorksize + size) ) {
             if (need) {
                 fputs("gap: will not extend workspace above -K limit, bye!\n",stderr);
                 SyExit( 2 );
@@ -1242,32 +1359,32 @@ UInt * * * SyAllocBags (
         /* allocate memory anywhere on first call                              */
         else if ( 0 < size && syBase == 0 ) {
             if ( vm_allocate(task_self(),&syBase,size*1024,TRUE) == KERN_SUCCESS ) {
-                sySize = size;
+                syWorksize = size;
                 ret = (UInt***) syBase;
             }
         }
 
         /* don't shrink memory but mark it as deactivated                      */
-        else if ( size < 0 && sySize + size > SyStorMin) {
-            adr = (vm_address_t)( (char*) syBase + (sySize+size)*1024 );
+        else if ( size < 0 && syWorksize + size > SyStorMin) {
+            adr = (vm_address_t)( (char*) syBase + (syWorksize+size)*1024 );
             if ( vm_deallocate(task_self(),adr,-size*1024) == KERN_SUCCESS ) {
-                ret = (UInt***)( (char*) syBase + sySize*1024 );
-                sySize += size;
+                ret = (UInt***)( (char*) syBase + syWorksize*1024 );
+                syWorksize += size;
             }
         }
 
         /* get more memory from system                                         */
         else {
-            adr = (vm_address_t)( (char*) syBase + sySize*1024 );
+            adr = (vm_address_t)( (char*) syBase + syWorksize*1024 );
             if ( vm_allocate(task_self(),&adr,size*1024,FALSE) == KERN_SUCCESS ) {
-                ret = (UInt***) ( (char*) syBase + sySize*1024 );
-                sySize += size;
+                ret = (UInt***) ( (char*) syBase + syWorksize*1024 );
+                syWorksize += size;
             }
         }
 
         /* test if the allocation failed                                       */
         if ( ret == (UInt***)-1 && need ) {
-            fputs("gap: cannot extend the workspace any more\n",stderr);
+            fputs("gap: cannot extend the workspace any more!!\n",stderr);
             SyExit(1);
         }
     }
@@ -1275,15 +1392,15 @@ UInt * * * SyAllocBags (
     /* otherwise return the result (which could be 0 to indicate failure)  */
     if ( ret == (UInt***)-1 ){
         if (need) { 
-            fputs("gap: cannot extend the workspace any more\n",stderr);
+            fputs("gap: cannot extend the workspace any more!!!\n",stderr);
             SyExit( 1 );
         }
         return (UInt***) 0;
     } 
     else {
-        if (sySize  > SyStorMax)  {
+        if (syWorksize  > SyStorMax)  {
             SyStorOverrun = -1;
-            SyStorMax=sySize*2; /* new maximum */
+            SyStorMax=syWorksize*2; /* new maximum */
             InterruptExecStat(); /* interrupt at the next possible point */
        }
      }
@@ -1335,10 +1452,6 @@ void SySleep ( UInt secs )
 **  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
 */
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 19.3   */
-extern  void            exit ( int );
-#endif
-
 void SyExit (
     UInt                ret )
 {
@@ -1372,9 +1485,9 @@ void SyExit (
 
 /****************************************************************************
 **
-*f  SySetGapRootPath( <string> )  . . . . . . . . . . . . . . .  BSG/Mach/USG
+*f  SySetGapRootPath( <string> )
 */
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || HAVE_SLASH_SEPARATOR 
+#if HAVE_SLASH_SEPARATOR 
 
 void SySetGapRootPath( const Char * string )
 {
@@ -1384,7 +1497,7 @@ void SySetGapRootPath( const Char * string )
     Int             n;
 
     /* set string to a default value if unset                              */
-    if ( string == 0 ) {
+    if ( string == 0 || *string == 0 ) {
         string = "./";
     }
  
@@ -1399,7 +1512,7 @@ void SySetGapRootPath( const Char * string )
          string++;
 
     }
-    else if( string[ SyStrlen(string) - 1 ] == ';' ) {
+    else if( string[ strlen(string) - 1 ] == ';' ) {
         /* Count the number of directories in 'string'.                    */
         n = 0; p = string; while( *p ) if( *p++ == ';' ) n++;
 
@@ -1411,8 +1524,7 @@ void SySetGapRootPath( const Char * string )
         /* Move existing root paths to the back                            */
         if( i + n >= MAX_GAP_DIRS ) return;
         while( i >= 0 ) {
-            SyGapRootPaths[i+n][0] = '\0';
-            SyStrncat( SyGapRootPaths[i+n], SyGapRootPaths[i], 254 );
+            memcpy( SyGapRootPaths[i+n], SyGapRootPaths[i], sizeof(SyGapRootPaths[i+n]) );
             i--;
         }
 
@@ -1434,7 +1546,7 @@ void SySetGapRootPath( const Char * string )
         while ( *p && *p != ';' ) {
             *q = *p++;
 
-#if  SYS_IS_CYGWIN32
+#if SYS_IS_CYGWIN32
             /* fix up for DOS */
             if (*q == '\\')
               *q = '/';
@@ -1443,8 +1555,7 @@ void SySetGapRootPath( const Char * string )
             q++;
         }
         if ( q == SyGapRootPaths[n] ) {
-            SyGapRootPaths[n][0] = '\0';
-            SyStrncat( SyGapRootPaths[n], "./", 2 );
+            strxcpy( SyGapRootPaths[n], "./", sizeof(SyGapRootPaths[n]) );
         }
         else if ( q[-1] != '/' ) {
             *q++ = '/';
@@ -1475,36 +1586,6 @@ void SySetGapRootPath( const Char * string )
 **  scans the command line for options, tries to  find  'LIBNAME/init.g'  and
 **  '$HOME/.gaprc' and copies the remaining arguments into 'SyInitfiles'.
 */
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 20, 13 */
-extern char *  getenv ( const char * );
-extern int     atoi ( const char * );
-#endif
-
-
-#ifndef SYS_HAS_MISC_PROTO              /* UNIX decl. from 'man'           */
-extern int     isatty ( int );
-extern char *  ttyname ( int );
-#endif
-
-
-#ifndef SYS_HAS_MALLOC_PROTO
-# if SYS_ANSI                           /* ANSI decl. from H&S 16.1, 16.2  */
-extern void * malloc ( size_t );
-extern void   free ( void * );
-# else                                  /* TRAD decl. from H&S 16.1, 16.2  */
-extern char * malloc ( unsigned );
-extern void   free ( char * );
-# endif
-#endif
-
-
-#if SYS_TOS_GCC2
-# ifndef SYS_BASEPAGE_H                 /* definition of basepage          */
-#  include      <basepage.h>
-#  define SYS_BASEPAGE_H
-# endif
-#endif
-
 
 typedef struct { Char symbol; UInt value; } sizeMultiplier;
 
@@ -1526,7 +1607,7 @@ sizeMultiplier memoryUnits[]= {
 static UInt ParseMemory( Char * s)
 {
   UInt size  = atoi(s);
-  Char symbol =  s[SyStrlen(s)-1];
+  Char symbol =  s[strlen(s)-1];
   UInt i;
   UInt maxmem;
 #ifdef SYS_IS_64_BIT
@@ -1590,9 +1671,9 @@ static Int storeMemory2( Char **argv, void *Where )
 static Int processCompilerArgs( Char **argv, void * dummy)
 {
   SyCompilePlease = 1;
-  SyStrncat( SyCompileOutput, argv[0], sizeof(SyCompileOutput)-2 );
-  SyStrncat( SyCompileInput, argv[1], sizeof(SyCompileInput)-2 );
-  SyStrncat( SyCompileName, argv[2], sizeof(SyCompileName)-2 );
+  strxcat( SyCompileOutput, argv[0], sizeof(SyCompileOutput) );
+  strxcat( SyCompileInput, argv[1], sizeof(SyCompileInput) );
+  strxcat( SyCompileName, argv[2], sizeof(SyCompileName) );
   SyCompileMagic1 = argv[3];
   return 4;
 }
@@ -1647,9 +1728,6 @@ struct optInfo options[] = {
   { 'o',  storeMemory2, &SyStorMax, 1 }, /* library with new interface */
   { 'p',  toggle, &SyWindow, 0 }, /* ?? */
   { 'q',  toggle, &SyQuiet, 0 }, /* ?? */
-#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 
-  { 'z',  storeInteger, &syIsIntrFreq, 0},
-#endif
   { '\0',0,0}};
 
 
@@ -1685,18 +1763,22 @@ void InitSystem (
     SyNrRowsLocked = 0;
     SyQuiet = 0;
     SyInitializing = 0;
-    SyStorMax = 512*1024L;
-    SyAllocPool = 0;
+#ifdef SYS_IS_64_BIT
+    SyStorMax = 2048*1024L;          /* This is in kB! */
+    SyAllocPool = 4096L*1024*1024;   /* Note this is in bytes! */
+#else
+    SyStorMax = 1024*1024L;          /* This is in kB! */
+#if SYS_IS_CYGWIN32
+    SyAllocPool = 0;                 /* works better on cygwin */
+#else
+    SyAllocPool = 1536L*1024*1024;   /* Note this is in bytes! */
+#endif
+#endif
     SyStorOverrun = 0;
     SyStorKill = 0;
-    SyStorMin = SY_STOR_MIN;
+    SyStorMin = SY_STOR_MIN;         /* see system.h */
     SyUseModule = 1;
     SyWindow = 0;
-#if SYS_TOS_GCC2
-# define __NO_INLINE__
-    _stksize = 64 * 1024;   /* GNU C, amount of stack space    */
-    syStackSpace = 64 * 1024;
-#endif
 
     for (i = 0; i < 2; i++) {
       UInt j;
@@ -1705,12 +1787,11 @@ void InitSystem (
       }
     }
 
-#if SYS_BSD||SYS_USG||SYS_OS2_EMX||SYS_MSDOS_DJGPP||SYS_TOS_GCC2||SYS_VMS||HAVE_SBRK
-    syWorkspace = (UInt ***)0;
-#endif
-#if SYS_MACH || HAVE_VM_ALLOCATE
+#if HAVE_VM_ALLOCATE
     syBase = 0;
-    sySize = 0;
+    syWorksize = 0;
+#elif HAVE_SBRK
+    syWorkspace = (UInt ***)0;
 #endif
     /*  nopts = 0;
     noptvals = 0;
@@ -1720,12 +1801,12 @@ void InitSystem (
     preAllocAmount = 4*1024*1024;
     
     /* open the standard files                                             */
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_VMS || HAVE_TTYNAME
+#if HAVE_TTYNAME
     syBuf[0].fp = fileno(stdin);
     syBuf[0].bufno = -1;
     if ( isatty( fileno(stdin) ) ) {
         if ( isatty( fileno(stdout) )
-          && ! SyStrcmp( ttyname(fileno(stdin)), ttyname(fileno(stdout)) ) )
+          && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stdout)) ) )
             syBuf[0].echo = fileno(stdout);
         else
             syBuf[0].echo = open( ttyname(fileno(stdin)), O_WRONLY );
@@ -1739,7 +1820,7 @@ void InitSystem (
     syBuf[1].bufno = -1;
     if ( isatty( fileno(stderr) ) ) {
         if ( isatty( fileno(stdin) )
-          && ! SyStrcmp( ttyname(fileno(stdin)), ttyname(fileno(stderr)) ) )
+          && ! strcmp( ttyname(fileno(stdin)), ttyname(fileno(stderr)) ) )
             syBuf[2].fp = fileno(stdin);
         else
             syBuf[2].fp = open( ttyname(fileno(stderr)), O_RDONLY );
@@ -1755,38 +1836,6 @@ void InitSystem (
     setbuf(stdout, (char *)0);
     setbuf(stderr, (char *)0);
 #endif
-#if SYS_OS2_EMX
-    syBuf[0].fp = stdin;   setbuf( stdin, syBuf[0].buf );
-    if ( isatty( fileno(stdin) ) ) {
-        if ( isatty( fileno(stdout) ) )
-            syBuf[0].echo = stdout;
-        else
-            syBuf[0].echo = fopen( "CON", "w" );
-        if ( syBuf[0].echo != (FILE*)0 && syBuf[0].echo != stdout )
-            setbuf( syBuf[0].echo, (char*)0 );
-    }
-    else {
-        syBuf[0].echo = stdout;
-    }
-    syBuf[1].echo = syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
-    if ( isatty( fileno(stderr) ) ) {
-        if ( isatty( fileno(stdin) ) )
-            syBuf[2].fp = stdin;
-        else
-            syBuf[2].fp = fopen( "CON", "r" );
-        if ( syBuf[2].fp != (FILE*)0 && syBuf[2].fp != stdin )
-            setbuf( syBuf[2].fp, syBuf[2].buf );
-        syBuf[2].echo = stderr;
-    }
-    syBuf[3].fp = stderr;  setbuf( stderr, (char*)0 );
-#endif
-#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2
-    syBuf[0].fp = stdin;   setbuf( stdin, syBuf[0].buf );
-    syBuf[1].echo = syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
-    syBuf[3].fp = stderr;  setbuf( stderr, (char*)0 );
-    if ( isatty( fileno(stderr) ) )
-        syBuf[2].fp = stderr;
-#endif
 
     for (i = 4; i < sizeof(syBuf)/sizeof(syBuf[0]); i++)
       syBuf[i].fp = -1;
@@ -1801,7 +1850,7 @@ void InitSystem (
     SyInstallAnswerIntr();
 
     SySystemInitFile[0] = '\0';
-    SyStrncat( SySystemInitFile, "lib/init.g", 10 );
+    strxcpy( SySystemInitFile, "lib/init.g", sizeof(SySystemInitFile) );
 #if SYS_IS_CYGWIN32
     SySetGapRootPath( SyWindowsPath );
 #else
@@ -1825,7 +1874,7 @@ void InitSystem (
       {
         if (argv[1][0] == '-' ) {
 
-          if ( SyStrlen(argv[1]) != 2 ) {
+          if ( strlen(argv[1]) != 2 ) {
             FPUTS_TO_STDERR("gap: sorry, options must not be grouped '");
             FPUTS_TO_STDERR(argv[1]);  FPUTS_TO_STDERR("'.\n");
             goto usage;
@@ -1882,6 +1931,11 @@ void InitSystem (
         SyStorMax = SyStorMin;
     }
 
+    /* fix pool size if it is given and lower than SyStorMax */
+    if ( SyAllocPool != 0 && SyAllocPool < SyStorMax * 1024) {
+        SyAllocPool = SyStorMax * 1024;
+    }
+
     /* when running in package mode set ctrl-d and line editing            */
     if ( SyWindow ) {
       /*         SyLineEdit   = 1;
@@ -1923,33 +1977,35 @@ void InitSystem (
     }
     */
 
-#if HAVE_DOTGAPRC || HAVE_GAPRC
+#if HAVE_DOTGAPRC
     /* the users home directory                                            */
     if ( getenv("HOME") != 0 ) {
-        SyUserHome[0] = '\0';
-        SyStrncat(SyUserHome, getenv("HOME"), sizeof(SyUserHome)-1);
+        strxcpy(SyUserHome, getenv("HOME"), sizeof(SyUserHome));
         SyHasUserHome = 1;
-        if (!IgnoreGapRC) {
-# if SYS_DARWIN
-            DotGapPath[0] = '\0';
-            SyStrncat(DotGapPath, getenv("HOME"), sizeof(DotGapPath)-26);
-            SyStrncat(DotGapPath+SyStrlen(DotGapPath), "/Library/Preferences/GAP;", 26);
-            SySetGapRootPath(DotGapPath);
+
+        strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
+# if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
+        strxcat(DotGapPath, "/Library/Preferences/GAP;", sizeof(DotGapPath));
+# elif defined(__CYGWIN__)
+        strxcat(DotGapPath, "/_gap;", sizeof(DotGapPath));
+# else
+        strxcat(DotGapPath, "/.gap;", sizeof(DotGapPath));
 # endif
-            DotGapPath[0] = '\0';
-          SyStrncat(DotGapPath, getenv("HOME"), sizeof(DotGapPath)-6);
-          SyStrncat(DotGapPath+SyStrlen(DotGapPath), "/.gap;", 6);
+
+        if (!IgnoreGapRC) {
           SySetGapRootPath(DotGapPath);
         }
+        DotGapPath[strlen(DotGapPath)-1] = '\0';
+        
         /* and in this case we can also expand paths which start
            with a tilde ~ */
         for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
           if (SyGapRootPaths[i][0] == '~' && 
-              SyStrlen(SyUserHome)+SyStrlen(SyGapRootPaths[i]) < 512) {
-            memmove(SyGapRootPaths[i]+SyStrlen(SyUserHome),
+              strlen(SyUserHome)+strlen(SyGapRootPaths[i]) < 512) {
+            memmove(SyGapRootPaths[i]+strlen(SyUserHome),
                     /* don't copy the ~ but the trailing '\0' */
-                    SyGapRootPaths[i]+1, SyStrlen(SyGapRootPaths[i]));
-            memcpy(SyGapRootPaths[i], SyUserHome, SyStrlen(SyUserHome));
+                    SyGapRootPaths[i]+1, strlen(SyGapRootPaths[i]));
+            memcpy(SyGapRootPaths[i], SyUserHome, strlen(SyUserHome));
           }
         }
     }

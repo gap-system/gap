@@ -6,8 +6,6 @@
 ##  This file contains the identification routines for groups of squarefree
 ##  order and for groups of cubefree order up to 50000.
 ##
-Revision.idgrp10_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

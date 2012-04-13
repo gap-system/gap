@@ -4,7 +4,6 @@
 #W                                                           Alexander Hulpke
 #W                                                           Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##
 ##  This file contains the methods for symmetric and alternating groups
 ##
-Revision.gpprmsya_gi :=
-    "@(#)$Id$";
 
 # xref to transgrp library
 if not IsBound(TRANSDEGREES) then
@@ -578,7 +575,7 @@ local bound, n, i, p, cycles, l, pnt;
   repeat
     i:=i+1;
     p:=PseudoRandom(g);
-    l:=CycleLengthPermInt(p,pnt);
+    l:=CYCLE_LENGTH_PERM_INT(p,pnt);
   until (i>bound) or (l> n/2 and l<n-2 and IsPrime(l));
   if i>bound then
     return fail;

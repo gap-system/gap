@@ -2,7 +2,6 @@
 ##
 #W  vspcmat.tst                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,9 +9,7 @@
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id$");
-
+gap> START_TEST("vspcmat.tst");
 
 #############################################################################
 ##
@@ -24,7 +21,6 @@ gap> IsGaussianMatrixSpace( z );
 true
 gap> IsNonGaussianMatrixSpace( z );
 false
-
 gap> v:= LeftModuleByGenerators( GF(9),
 >            [ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ] );
 <vector space over GF(3^2), with 1 generators>
@@ -35,7 +31,6 @@ false
 gap> v = LeftModuleByGenerators( GF(9),
 >            [ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ], Zero( v ) );
 true
-
 gap> w:= LeftModuleByGenerators( GF(9),
 >            [ [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ] );
 <vector space over GF(3^2), with 1 generators>
@@ -76,33 +71,32 @@ gap> SiftedVector( b, [ [ Z(3), Z(3) ], [ 0*Z(3), 0*Z(3) ] ] );
 [ [ 0*Z(3), 0*Z(3) ], [ Z(3)^0, 0*Z(3) ] ]
 gap> SiftedVector( b, [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ] );
 [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ]
-
 gap> b:= Basis( v, [ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ] );
 fail
 gap> b:= Basis( v, [ [ [ Z(3), Z(3) ], [ Z(3),   Z(3) ] ],
 >                    [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ] );
-Basis( <vector space over GF(3^2), with 2 generators>,
+Basis( <vector space over GF(3^2), with 2 generators>, 
 [ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ], [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ] )
 gap> IsSemiEchelonized( b );
 false
 gap> b:= Basis( v, [ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ],
 >                    [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ] ] );
-Basis( <vector space over GF(3^2), with 2 generators>,
-[ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ],
+Basis( <vector space over GF(3^2), with 2 generators>, 
+[ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ], 
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ] ] )
 gap> IsSemiEchelonized( b );
 false
 gap> b:= Basis( v, [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
 >                    [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, 0*Z(3) ] ] ] );
-Basis( <vector space over GF(3^2), with 2 generators>,
-[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
+Basis( <vector space over GF(3^2), with 2 generators>, 
+[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], 
   [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, 0*Z(3) ] ] ] )
 gap> IsSemiEchelonized( b );
 false
 gap> b:= Basis( v, [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
 >                    [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] );
-SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
-[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>, 
+[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], 
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] )
 gap> IsSemiEchelonized( b );
 true
@@ -121,7 +115,6 @@ gap> Z(3) * [ [ 0, 0 ], [ 0, 1 ], [ 0, 0 ] ] in w;
 false
 gap> [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] in w;
 true
-
 gap> [ [] ] in v;
 false
 gap> Zero( v ) in v;
@@ -132,22 +125,20 @@ gap> Z(3) * [ [ 0, 0 ], [ 0, 1 ], [ 0, 0 ] ] in v;
 false
 gap> Z(3) * [ [ 0, 0 ], [ 0, 1 ] ] in v;
 true
-
 gap> BasisNC( v,
 >     [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
 >       [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] );
-SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
-[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>, 
+[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], 
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] )
 gap> Basis( v );
-SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
-[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>, 
+[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], 
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] )
 gap> SemiEchelonBasis( v );
-SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
-[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>, 
+[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], 
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] )
-
 gap> b:= SemiEchelonBasis( v,
 >         [ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ], 
 >           [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] );
@@ -155,14 +146,14 @@ fail
 gap> b:= SemiEchelonBasis( v,
 >         [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], 
 >           [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] );
-SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
-[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>, 
+[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], 
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] )
 gap> b:= SemiEchelonBasisNC( v,
 >         [ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], 
 >           [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] );
-SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
-[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ],
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>, 
+[ [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ], 
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] )
 gap> c1:= CanonicalBasis( v );;
 gap> Print( c1, "\n" );
@@ -175,7 +166,6 @@ CanonicalBasis( VectorSpace( GF(3),
   [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ] ) )
 gap> c1 = c2;
 true
-
 gap> w:= LeftModuleByGenerators( GF(9),
 >         [ [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ],
 >           [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ],
@@ -186,19 +176,17 @@ Basis( <vector space over GF(3^2), with 3 generators>, ... )
 gap> b:= Basis( w,
 >         [ [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ],
 >           [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ] );
-Basis( <vector space of dimension 2 over GF(3^2)>,
-[ [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ], [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ]
+Basis( <vector space of dimension 2 over GF(3^2)>, 
+[ [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ], [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ] 
  ] )
 gap> IsBasisByNiceBasis( b );
 true
 gap> Coefficients( b, [ [ Z(27), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] );
 [ Z(3), Z(3)^0 ]
-
 gap> IsZero( Zero( v ) );
 true
 gap> ForAny( b, IsZero );
 false
-
 gap> ww:= AsVectorSpace( GF(3), w );;
 gap> Print( ww, "\n" );
 VectorSpace( GF(3), [ [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ], 
@@ -212,7 +200,6 @@ gap> w = ww;
 true
 gap> AsVectorSpace( GF(27), w );
 fail
-
 gap> u:= GF( 3^6 )^[ 2, 3 ];
 ( GF(3^6)^[ 2, 3 ] )
 gap> uu:= AsVectorSpace( GF(9), u );;
@@ -298,7 +285,6 @@ VectorSpace( GF(3^6),
   [ [ 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3^6)^2 ] ] ] )
 gap> u = uuu;
 true
-
 gap> c:= VectorSpace( GF(9),
 >          [ [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ],
 >            [ [ 0*Z(3), Z(3)^0 ], [ 0*Z(3), 0*Z(3) ] ] ] );
@@ -346,7 +332,6 @@ gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 false
 gap> BasisVectors( mb );
 [ [ [ 1, 1 ], [ 1, 1 ] ], [ [ 0, 1 ], [ 1, 1 ] ], [ [ E(4), 0 ], [ 0, 0 ] ] ]
-
 gap> mb:= MutableBasis( Rationals,
 >          [ [ [ 1, 1 ], [ 1, 1 ] ],
 >            [ [ 0, 1 ], [ 1, 1 ] ],
@@ -362,10 +347,9 @@ gap> Print( bv, "\n" );
 [ [ [ 1, 1 ], [ 1, 1 ] ], [ [ 0, 1 ], [ 1, 1 ] ], [ [ 0, 0 ], [ 1, 2 ] ], 
   [ [ 0, 0 ], [ 0, 1 ] ] ]
 gap> ImmutableBasis( mb );
-SemiEchelonBasis( <vector space of dimension 4 over Rationals>,
+SemiEchelonBasis( <vector space of dimension 4 over Rationals>, 
 [ [ [ 1, 1 ], [ 1, 1 ] ], [ [ 0, 1 ], [ 1, 1 ] ], [ [ 0, 0 ], [ 1, 2 ] ], 
   [ [ 0, 0 ], [ 0, 1 ] ] ] )
-
 gap> mb:= MutableBasis( Rationals, [], [ [ 0, 0 ], [ 0, 0 ] ] );
 <mutable basis over Rationals, 0 vectors>
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 4 ] ] );
@@ -376,20 +360,16 @@ true
 gap> BasisVectors( mb );
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ]
 gap> ImmutableBasis( mb );
-SemiEchelonBasis( <vector space of dimension 2 over Rationals>,
+SemiEchelonBasis( <vector space of dimension 2 over Rationals>, 
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ] )
-
 gap> mb:= MutableBasis( Rationals, [], [ [ 0, 0 ], [ 0, 0 ] ] );
 <mutable basis over Rationals, 0 vectors>
 gap> CloseMutableBasis( mb, [ [ 1, 0 ], [ 0, 1 ] ] );
 gap> CloseMutableBasis( mb, [ [ 0, 1 ], [ 1, 0 ] ] );   
 gap> IsContainedInSpan( mb, [ [ 1, 1 ], [ 1, 1 ] ] );
 true
-
-gap> STOP_TEST( "vspcmat.tst",52000692);
-
+gap> STOP_TEST( "vspcmat.tst", 10300000 );
 
 #############################################################################
 ##
 #E
-

@@ -7,8 +7,6 @@
 ##  of size 2^n * p for 3 <= n <= 8 and p an odd prime. 2^n * p has to be
 ##  greater then 1000.
 ##
-Revision.smlgp3_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

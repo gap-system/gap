@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.grppcaut_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -590,7 +588,7 @@ NormalizingReducedGL := function( spec, s, n, M )
     od;
     Sort( part, function( x, y ) return Length(x) < Length(y); end );
 
-    # compute partition stablizer
+    # compute partition stabilizer
     if Length(part) > 1 then
         for par in part do 
             if Length( part ) = 1 then
@@ -1078,7 +1076,7 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
         K := SocleComplement( G );
     else
         F := FittingSubgroup( G );
-        K := Complementclasses( G, F )[1];
+        K := ComplementClassesRepresentatives( G, F )[1];
     fi;
     gensF := Pcgs( F );
     gensK := Pcgs( K );

@@ -3,7 +3,6 @@
 #W  onecohom.gd                     GAP library                  Frank Celler
 ##                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains the declarations of operations for the 1-Cohomology
 ##
-Revision.onecohom_gd:=
-  "@(#)$Id$";
 
 
 #############################################################################
@@ -262,7 +259,6 @@ DeclareOperation( "OCCoprimeComplement",
 ##  [ (1,2)(3,4), (1,2)(3,4) ]
 ##  gap> oc.listToCocycle([(),(1,3)(2,4)]) = Z(2) * [ 0, 0, 1, 0];
 ##  true
-##  Group([ (1,2), (1,2,3) ])
 ##  gap> oc.cocycleToComplement([ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ]);
 ##  Group([ (3,4), (1,3,4) ])
 ##  gap> oc.complementToCocycle(Group((1,2,4),(1,4))) = Z(2) * [ 0, 1, 1, 1 ];
@@ -318,6 +314,8 @@ DeclareGlobalFunction( "OneCoboundaries" );
 ##  If this is done the 1-cocycles are computed
 ##  with respect to these generators (otherwise the routines try to select
 ##  suitable generators themselves).
+##  The current version of the code assumes that <A>G</A> is a permutation
+##  group or a Pc group.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -457,22 +455,22 @@ DeclareGlobalFunction("OCOneCocycles");
 
 #############################################################################
 ##
-#O  ComplementclassesEA(<G>,<N>) . complement classes to el.ab. N by 1-Cohom.
+#O  ComplementClassesRepresentativesEA(<G>,<N>) . complement classes to el.ab. N by 1-Cohom.
 ##
-##  <#GAPDoc Label="ComplementclassesEA">
+##  <#GAPDoc Label="ComplementClassesRepresentativesEA">
 ##  <ManSection>
-##  <Oper Name="ComplementclassesEA" Arg='G, N'/>
+##  <Oper Name="ComplementClassesRepresentativesEA" Arg='G, N'/>
 ##
 ##  <Description>
 ##  computes complement classes to an elementary abelian normal subgroup
 ##  <A>N</A> via 1-Cohomology. Normally, a user program should call
-##  <Ref Func="Complementclasses"/> instead, which also works
+##  <Ref Func="ComplementClassesRepresentatives"/> instead, which also works
 ##  for a solvable (not necessarily elementary abelian) <A>N</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction("ComplementclassesEA");
+DeclareGlobalFunction("ComplementClassesRepresentativesEA");
 
 
 #############################################################################

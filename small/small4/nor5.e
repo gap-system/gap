@@ -3,8 +3,6 @@
 #W  nor5.e                 GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.nor5_e :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 275 ] := [
 [ [ 1 ], -1, -1, [ 1, 5, 16, -2, 21, -2 ], [ 1, 5, -2 ], -5,

@@ -2,7 +2,6 @@
 ##
 #W  basis.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains generic methods for bases.
 ##
-Revision.basis_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -955,20 +952,23 @@ InstallMethod( NiceBasis,
 #M  NiceBasisNC( <B> )
 ##
 InstallMethod( NiceBasisNC,
+    "for basis by nice basis with precomputed basis",
+    [ IsBasisByNiceBasis and HasNiceBasis ],
+    NiceBasis );
+
+InstallMethod( NiceBasisNC,
     "for basis by nice basis",
     [ IsBasisByNiceBasis ],
     function( B )
-    local A;
-    A:= UnderlyingLeftModule( B );
+    local A, V;
+    V:= UnderlyingLeftModule( B );
     if HasBasisVectors( B ) then
-      A:= BasisNC( NiceFreeLeftModule( A ),
-                   List( BasisVectors( B ), v -> NiceVector( A, v ) ) );
+      A:= BasisNC( NiceFreeLeftModule( V ),
+                   List( BasisVectors( B ), v -> NiceVector( V, v ) ) );
     else
-      A:= Basis( NiceFreeLeftModule( A ) );
+      A:= Basis( NiceFreeLeftModule( V ) );
     fi;
-    if not HasNiceBasis( B ) then
-      SetNiceBasis( B, A );
-    fi;
+    SetNiceBasis( B, A );
     return A;
     end );
 #T is this operation meaningful at all??

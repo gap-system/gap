@@ -3,7 +3,6 @@
 #W  alglie.gi                   GAP library                     Thomas Breuer
 #W                                                        and Willem de Graaf
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains methods for Lie algebras.
 ##
-Revision.alglie_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -4465,7 +4462,7 @@ local ReductionModuloTable,   #
      #
      # In this function a polynomial `rel' is left normed.
      # The Jacobi identity is applied successively to achieve this.
-     # This means that en expression of the form
+     # This means that an expression of the form
      #
      #    [a,b,c,[d,e],f] (where a,b,c are generators (this part is already
      #     `done') and [d,e] is any bracketed expression having d and e as

@@ -4,7 +4,6 @@
 #W                                                               Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,8 @@
 ##  more than one array of values -- this facility should be used with care.
 ##
 ##  This code works for any kind of object, provided you have a KeyIntDense 
-##  or KeyIntSparse method to convert the key into a positive integer.  
-##  These methods should ideally be implemented efficiently in the core.
+##  method to convert the key into a positive integer.  
+##  This method should ideally be implemented efficiently in the core.
 ##
 ##  Note that, for efficiency, it is currently impossible to create a 
 ##  hash table with non-positive integers.
@@ -31,12 +30,10 @@
 ##      Representations IsDenseHashRep and IsSparseHashRep.  
 ##      Operations PrintHashWithNames, Iterator, GetHashEntry, AddHashEntry,
 ##        GetHashEntryAtLastIndex, SetHashEntryAtLastIndex, SetHashEntry, 
-##        [AddHashEntryAtLastIndex], HashFunct, KeyIntDense, KeyIntSparse.
+##        [AddHashEntryAtLastIndex], HashFunct, KeyIntDense.
 ##      Functions DenseHash, SparseHash.
 ##      Variables MaxViewSize, LastHashIndex.
 ##
-Revision.dict_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -543,9 +540,8 @@ DeclareSynonym("DoubleHashArraySize", DoubleHashDictSize);
 ##  <Func Name="IntegerHashFunction" Arg='key, i, size'/>
 ##
 ##  <Description>
-##  This will be a good double hashing function for any reasonable KeyInt 
-##  (see Cormen, Leiserson and Rivest, Introduction to Algorithms, 
-##  1e, p. 235).
+##  This will be a good double hashing function for any reasonable 
+##  <C>KeyInt</C> (see <Cite Key="CLR90" Where="p.235"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

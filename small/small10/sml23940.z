@@ -3,8 +3,6 @@
 #W  sml23940.z             GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml23940_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 23940 ] :=
 [ 3877023845865770594554883384534760215063,

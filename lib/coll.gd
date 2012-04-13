@@ -3,7 +3,6 @@
 #W  coll.gd                     GAP library                  Martin Schönert
 #W                                                            & Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file declares the operations for collections.
 ##
-Revision.coll_gd :=
-    "@(#)$Id$";
 
 #T change the installation of isomorphism and factor maintained methods
 #T in the same way as that of subset maintained methods!
@@ -919,7 +916,7 @@ BIND_GLOBAL( "FACTOR_MAINTAINED_INFO", [] );
 ##  gap> IsSolvableGroup( g );  HasIsSolvableGroup( h );
 ##  true
 ##  false
-##  gap> UseFactorRelation( g, Subgroup( g, [ (1,2)(3,4), (1,3)(2,4) ] ), h );;
+##  gap> UseFactorRelation(g, Subgroup( g, [ (1,2)(3,4), (1,3)(2,4) ] ), h);;
 ##  gap> HasIsSolvableGroup( h );  IsSolvableGroup( h );
 ##  true
 ##  true
@@ -1228,8 +1225,8 @@ DeclareOperation( "IsDoneIterator", [ IsIterator ] );
 ##  10
 ##  gap> ir:= Iterator( Rationals );;
 ##  gap> l:= [];; for i in [1..20] do Add( l, NextIterator( ir ) ); od; l;
-##  [ 0, 1, -1, 1/2, 2, -1/2, -2, 1/3, 2/3, 3/2, 3, -1/3, -2/3, -3/2, -3, 1/4, 
-##    3/4, 4/3, 4, -1/4 ]
+##  [ 0, 1, -1, 1/2, 2, -1/2, -2, 1/3, 2/3, 3/2, 3, -1/3, -2/3, -3/2, -3, 
+##    1/4, 3/4, 4/3, 4, -1/4 ]
 ##  gap> for i in ir do
 ##  >      if DenominatorRat( i ) > 10 then break; fi;
 ##  >    od;
@@ -1372,7 +1369,7 @@ InstallFactorMaintenance( IsTrivial,
 ##  <!-- (indication to introduce antifilters?)-->
 ##  <!--  1996/08/08 M.Schönert is this a sensible definition?-->
 ##  <Example><![CDATA[
-##  gap> IsEmpty( [] );  IsEmpty( [ 1 .. 100 ] );  IsEmpty( Group( (1,2,3) ) );
+##  gap> IsEmpty( [] ); IsEmpty( [ 1 .. 100 ] ); IsEmpty( Group( (1,2,3) ) );
 ##  true
 ##  false
 ##  false
@@ -1551,7 +1548,7 @@ DeclareAttribute( "Representative", IsListOrCollection );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Representative( Rationals );
-##  1
+##  0
 ##  gap> Representative( [ -1, -2 .. -100 ] );
 ##  -1
 ##  gap> RepresentativeSmallest( [ -1, -2 .. -100 ] );
@@ -2003,24 +2000,21 @@ DeclareAttribute( "UnderlyingCollection", IsListOrCollection );
 ##  <Func Name="List" Arg='list[, func]' Label="for a list (and a function)"/>
 ##
 ##  <Description>
-##  Called with a list <A>list</A> (not necessarily dense or homogeneous),
-##  <Ref Func="List" Label="for a list (and a function)"/> returns a new
-##  mutable list <A>new</A> that contains the elements (and the holes) of
-##  <A>list</A> in the same order;
-##  thus <Ref Func="List" Label="for a list (and a function)"/> does the same
-##  as <Ref Func="ShallowCopy"/> in this case.
-##  <P/>
-##  For a dense list <A>list</A> and a function <A>func</A>,
-##  which must take exactly one argument,
-##  <Ref Func="List" Label="for a list (and a function)"/> returns a new
-##  mutable list <A>new</A> given by
-##  <M><A>new</A>[i] = <A>func</A>( <A>list</A>[i] )</M>.
+##  This function returns a new mutable list <C>new</C> of the same length 
+##  as the list <A>list</A> (which may have holes). The entry <C>new[i]</C> 
+##  is unbound if <C><A>list</A>[i]</C> is unbound. Otherwise 
+##  <C>new[i] = <A>func</A>(<A>list</A>[i])</C>. If the argument <A>func</A> is
+##  omitted, its default is <Ref Func="IdFunc"/>, so this function does the
+##  same as <Ref Oper="ShallowCopy"/> (see also 
+##  <Ref Sect="Duplication of Lists"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> List( [1,2,3], i -> i^2 );
 ##  [ 1, 4, 9 ]
 ##  gap> List( [1..10], IsPrime );
 ##  [ false, true, true, false, true, false, true, false, false, false ]
+##  gap> List([,1,,3,4], x-> x > 2);
+##  [ , false,, true, true ]
 ##  ]]></Example>
 ##  <P/>
 ##  (See also <Ref Func="List" Label="for a collection"/>.)
@@ -2314,15 +2308,16 @@ DeclareSynonym( "AsSet", AsSSortedList );
 ##  <Attr Name="AsSSortedListNonstored" Arg='C'/>
 ##
 ##  <Description>
-##  returns the <C>AsSSortedList(<A>C</A>)</C> but ensures that this list
+##  returns the <Ref Func="AsSSortedList"/> value of the list or collection
+##  <A>C</A> but ensures that this list
 ##  (nor a permutation or substantial subset) will not be
 ##  stored in attributes of <A>C</A> unless such a list is already stored.
 ##  This permits to obtain an element list once
 ##  without danger of clogging up memory in the long run.
 ##  <P/>
 ##  Because of this guarantee of nonstorage, methods for
-##  <C>AsSSortedListNonstored</C> may not default to <C>AsSSortedList</C>,
-##  but only vice versa.
+##  <Ref Func="AsSSortedListNonstored"/> may not default to
+##  <Ref Func="AsSSortedList"/>, but only vice versa.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -2816,9 +2811,9 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##  gap> l:= [ 1, 2, 3, 4 ];;
 ##  gap> pair:= function( x, y ) return [ x, y ]; end;;
 ##  gap> ListX( l, l, pair );
-##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], 
-##    [ 2, 4 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ], [ 4, 1 ], [ 4, 2 ], 
-##    [ 4, 3 ], [ 4, 4 ] ]
+##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 1 ], [ 2, 2 ], 
+##    [ 2, 3 ], [ 2, 4 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ], 
+##    [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ]
 ##  ]]></Example>
 ##  <P/>
 ##  In the following example, <Ref Func="\&lt;"/> is the comparison
@@ -2998,9 +2993,9 @@ DeclareOperation( "IsSubset", [ IsListOrCollection, IsListOrCollection ] );
 ##  groups is again a permutation group.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> Intersection( CyclotomicField(9), CyclotomicField(12) )
-##  >       # this is one of the rare cases where the intersection of two infinite
-##  >    ;  # domains works (`CF' is a shorthand for `CyclotomicField')
+##  gap> # this is one of the rare cases where the intersection of two
+##  gap> # infinite domains works ('CF' is a shorthand for 'CyclotomicField'):
+##  gap> Intersection( CyclotomicField(9), CyclotomicField(12) );
 ##  CF(3)
 ##  gap> D12 := Group( (2,6)(3,5), (1,2)(3,6)(4,5) );;
 ##  gap> Intersection( D12, Group( (1,2), (1,2,3,4,5) ) );
@@ -3008,9 +3003,9 @@ DeclareOperation( "IsSubset", [ IsListOrCollection, IsListOrCollection ] );
 ##  gap> Intersection( D12, [ (1,3)(4,6), (1,2)(3,4) ] )
 ##  >    ;  # note that the second argument is not a proper set
 ##  [ (1,3)(4,6) ]
-##  gap> Intersection( D12, [ (), (1,2)(3,4), (1,3)(4,6), (1,4)(5,6) ] )
-##  >       # although the result is mathematically a group it is returned as a
-##  >    ;  # proper set because the second argument is not regarded as a group
+##  gap> # although the result is mathematically a group it is returned as a
+##  gap> # proper set because the second argument is not regarded as a group:
+##  gap> Intersection( D12, [ (), (1,2)(3,4), (1,3)(4,6), (1,4)(5,6) ] );
 ##  [ (), (1,3)(4,6) ]
 ##  gap> Intersection( Group( () ), [1,2,3] );
 ##  [  ]

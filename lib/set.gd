@@ -2,7 +2,6 @@
 ##
 #W  set.gd                        GAP library                Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,6 @@
 ##  then <Ref Func="Set"/> is silently applied to it first.
 ##  <#/GAPDoc>
 ##
-Revision.set_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

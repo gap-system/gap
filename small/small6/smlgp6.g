@@ -6,8 +6,6 @@
 ##  This file contains the reading and constrution functions for the groups
 ##  of size 1152 and 1920.
 ##
-Revision.smlgp6_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

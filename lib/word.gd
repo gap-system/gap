@@ -3,7 +3,6 @@
 #W  word.gd                     GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 ##  4. Free Magmas
 ##  5. External Representation for Nonassociative Words
 ##
-Revision.word_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

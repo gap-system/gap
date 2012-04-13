@@ -3,7 +3,6 @@
 #W  ctbllatt.gd                 GAP library                     Thomas Breuer
 #W                                                                Ansgar Kaup
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains the declaration of functions that mainly deal with
 ##  lattices in the context of character tables.
 ##
-Revision.ctbllatt_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -78,8 +75,9 @@ Revision.ctbllatt_gd :=
 ##  >     [ 8, 0, 0, 2, 0 ], [ 12, 2, 0, 0, 0 ], [ 1, 1, 1, 1, 1 ] ];;
 ##  gap> LLL( s4, chars );
 ##  rec( 
-##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 
-##           ] ), Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
+##    irreducibles := 
+##      [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ) ], 
@@ -135,16 +133,19 @@ DeclareGlobalFunction( "LLL" );
 ##  gap> red:= [ [ 5, 1, 5, 2, 1 ], [ 2, 0, 2, 2, 0 ], [ 3, -1, 3, 0, -1 ],
 ##  >            [ 6, 0, -2, 0, 0 ], [ 4, 0, 0, 1, 2 ] ];;
 ##  gap> gram:= MatScalarProducts( s4, red, red );
-##  [ [ 6, 3, 2, 0, 2 ], [ 3, 2, 1, 0, 1 ], [ 2, 1, 2, 0, 0 ], [ 0, 0, 0, 2, 1 ], 
-##    [ 2, 1, 0, 1, 2 ] ]
+##  [ [ 6, 3, 2, 0, 2 ], [ 3, 2, 1, 0, 1 ], [ 2, 1, 2, 0, 0 ], 
+##    [ 0, 0, 0, 2, 1 ], [ 2, 1, 0, 1, 2 ] ]
 ##  gap> ext:= Extract( s4, red, gram, 5 );
-##  rec( choice := [ [ 2, 5, 3, 4, 1 ] ],
-##    solution := [ [ [ 1, 1, 0, 0, 2 ], [ 1, 0, 1, 0, 1 ], [ 0, 1, 0, 1, 0 ], 
+##  rec( choice := [ [ 2, 5, 3, 4, 1 ] ], 
+##    solution := 
+##      [ 
+##        [ [ 1, 1, 0, 0, 2 ], [ 1, 0, 1, 0, 1 ], [ 0, 1, 0, 1, 0 ], 
 ##            [ 0, 0, 1, 0, 1 ], [ 0, 0, 0, 1, 0 ] ] ] )
 ##  gap> dec:= Decreased( s4, red, ext.solution[1], ext.choice[1] );
 ##  rec( 
-##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] )
-##          , Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
+##    irreducibles := 
+##      [ Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ), 
 ##        Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ) ], 
@@ -209,9 +210,11 @@ DeclareGlobalFunction( "Extract" );
 ##  gap> Add( red, TrivialCharacter( s6 ) );
 ##  gap> lll:= LLL( s6, red );;
 ##  gap> irred:= lll.irreducibles;
-##  [ Character( CharacterTable( "A6.2_1" ), [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] )
-##      , Character( CharacterTable( "A6.2_1" ), [ 9, 1, 0, 0, 1, -1, -3, -3, 1, 
-##        0, 0 ] ), Character( CharacterTable( "A6.2_1" ), 
+##  [ Character( CharacterTable( "A6.2_1" ), 
+##      [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A6.2_1" ), 
+##      [ 9, 1, 0, 0, 1, -1, -3, -3, 1, 0, 0 ] ), 
+##    Character( CharacterTable( "A6.2_1" ), 
 ##      [ 16, 0, -2, -2, 0, 1, 0, 0, 0, 0, 0 ] ) ]
 ##  gap> Set( Flat( MatScalarProducts( s6, irred, lll.remainders ) ) );
 ##  [ 0 ]
@@ -224,8 +227,9 @@ DeclareGlobalFunction( "Extract" );
 ##  gap> emb1:= OrthogonalEmbeddings( gram, 8 );
 ##  rec( norms := [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 
 ##    solutions := [ [ 1, 2, 3, 7, 11, 12, 13, 15 ], 
-##        [ 1, 2, 4, 8, 10, 12, 13, 14 ], [ 1, 2, 5, 6, 9, 12, 13, 16 ] ], 
-##    vectors := [ [ -1, 0, 1, 0, 1, 0, 1, 0 ], [ 1, 0, 0, 1, 0, 1, 0, 0 ], 
+##        [ 1, 2, 4, 8, 10, 12, 13, 14 ], [ 1, 2, 5, 6, 9, 12, 13, 16 ] ],
+##    vectors := 
+##      [ [ -1, 0, 1, 0, 1, 0, 1, 0 ], [ 1, 0, 0, 1, 0, 1, 0, 0 ], 
 ##        [ 0, 1, 1, 0, 0, 0, 1, 1 ], [ 0, 1, 1, 0, 0, 0, 1, 0 ], 
 ##        [ 0, 1, 1, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 1, 0 ], 
 ##        [ 0, -1, 0, 0, 0, 0, 0, 1 ], [ 0, 1, 0, 0, 0, 0, 0, 0 ], 
@@ -240,27 +244,26 @@ DeclareGlobalFunction( "Extract" );
 ##  in order to get a nicer output format.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> SizeScreen([ 62, ]);;
 ##  gap> emb2:= OrthogonalEmbeddingsSpecialDimension( s6, rem, gram, 8 );
-##  rec(
-##    irreducibles := [ Character( CharacterTable( "A6.2_1" ),
-##          [ 5, 1, -1, 2, -1, 0, 1, -3, -1, 1, 0 ] ),
-##        Character( CharacterTable( "A6.2_1" ),
-##          [ 5, 1, 2, -1, -1, 0, -3, 1, -1, 0, 1 ] ),
-##        Character( CharacterTable( "A6.2_1" ),
-##          [ 10, -2, 1, 1, 0, 0, -2, 2, 0, 1, -1 ] ),
-##        Character( CharacterTable( "A6.2_1" ),
-##          [ 10, -2, 1, 1, 0, 0, 2, -2, 0, -1, 1 ] ) ],
-##    remainders :=
-##      [ VirtualCharacter( CharacterTable( "A6.2_1" ),
-##          [ 0, 0, 3, -3, 0, 0, 4, -4, 0, 1, -1 ] ),
-##        VirtualCharacter( CharacterTable( "A6.2_1" ),
-##          [ 6, 2, 3, 0, 0, 1, 2, -2, 0, -1, -2 ] ),
-##        VirtualCharacter( CharacterTable( "A6.2_1" ),
-##          [ 10, 2, 1, 1, 2, 0, 2, 2, -2, -1, -1 ] ),
-##        VirtualCharacter( CharacterTable( "A6.2_1" ),
+##  rec( 
+##    irreducibles := 
+##      [ Character( CharacterTable( "A6.2_1" ), 
+##          [ 5, 1, -1, 2, -1, 0, 1, -3, -1, 1, 0 ] ), 
+##        Character( CharacterTable( "A6.2_1" ), 
+##          [ 5, 1, 2, -1, -1, 0, -3, 1, -1, 0, 1 ] ), 
+##        Character( CharacterTable( "A6.2_1" ), 
+##          [ 10, -2, 1, 1, 0, 0, -2, 2, 0, 1, -1 ] ), 
+##        Character( CharacterTable( "A6.2_1" ), 
+##          [ 10, -2, 1, 1, 0, 0, 2, -2, 0, -1, 1 ] ) ], 
+##    remainders := 
+##      [ VirtualCharacter( CharacterTable( "A6.2_1" ), 
+##          [ 0, 0, 3, -3, 0, 0, 4, -4, 0, 1, -1 ] ), 
+##        VirtualCharacter( CharacterTable( "A6.2_1" ), 
+##          [ 6, 2, 3, 0, 0, 1, 2, -2, 0, -1, -2 ] ), 
+##        VirtualCharacter( CharacterTable( "A6.2_1" ), 
+##          [ 10, 2, 1, 1, 2, 0, 2, 2, -2, -1, -1 ] ), 
+##        VirtualCharacter( CharacterTable( "A6.2_1" ), 
 ##          [ 14, 2, 2, -1, 0, -1, 6, 2, 0, 0, -1 ] ) ] )
-##  gap> SizeScreen([ 80, ]);;
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -324,27 +327,23 @@ DeclareGlobalFunction( "OrthogonalEmbeddingsSpecialDimension" );
 ##  gap> x:= Irr( s4 );;
 ##  gap> red:= [ x[1]+x[2], -x[1]-x[3], -x[1]+x[3], -x[2]-x[4] ];;
 ##  gap> mat:= MatScalarProducts( s4, red, red );
-##  [ [ 2, -1, -1, -1 ], [ -1, 2, 0, 0 ], [ -1, 0, 2, 0 ], [ -1, 0, 0, 2 ] ]
+##  [ [ 2, -1, -1, -1 ], [ -1, 2, 0, 0 ], [ -1, 0, 2, 0 ], 
+##    [ -1, 0, 0, 2 ] ]
 ##  gap> emb:= OrthogonalEmbeddings( mat );
 ##  rec( norms := [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], 
 ##    solutions := [ [ 1, 6, 7, 12 ], [ 2, 5, 8, 11 ], [ 3, 4, 9, 10 ] ], 
 ##    vectors := [ [ -1, 1, 1, 0 ], [ -1, 1, 0, 1 ], [ 1, -1, 0, 0 ], 
-##        [ -1, 0, 1, 1 ], [ -1, 0, 1, 0 ], [ -1, 0, 0, 1 ], [ 0, -1, 1, 0 ], 
-##        [ 0, -1, 0, 1 ], [ 0, 1, 0, 0 ], [ 0, 0, -1, 1 ], [ 0, 0, 1, 0 ], 
-##        [ 0, 0, 0, 1 ] ] )
-##  gap> SizeScreen([ 62, ]);;
+##        [ -1, 0, 1, 1 ], [ -1, 0, 1, 0 ], [ -1, 0, 0, 1 ], 
+##        [ 0, -1, 1, 0 ], [ 0, -1, 0, 1 ], [ 0, 1, 0, 0 ], 
+##        [ 0, 0, -1, 1 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ] )
 ##  gap> dec:= Decreased( s4, red, emb.vectors{ emb.solutions[1] } );
 ##  rec( 
-##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), 
-##          [ 3, -1, -1, 0, 1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), 
-##          [ 1, -1, 1, 1, -1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), 
-##          [ 2, 0, 2, -1, 0 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), 
-##          [ 3, 1, -1, 0, -1 ] ) ], matrix := [  ], 
-##    remainders := [  ] )
-##  gap> SizeScreen([ 80, ]);;
+##    irreducibles := 
+##      [ Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ) ], 
+##    matrix := [  ], remainders := [  ] )
 ##  gap> Decreased( s4, red, emb.vectors{ emb.solutions[2] } );
 ##  fail
 ##  gap> Decreased( s4, red, emb.vectors{ emb.solutions[3] } );
@@ -413,18 +412,14 @@ DeclareGlobalFunction( "Decreased" );
 ##  >            [ 5, -1, 1, -1, 1 ], [ -1, 1, 3, -1, -1 ] ];;
 ##  gap> gram:= MatScalarProducts( s4, red, red );
 ##  [ [ 2, 1, 0, 0 ], [ 1, 2, 1, -1 ], [ 0, 1, 2, 0 ], [ 0, -1, 0, 2 ] ]
-##  gap> SizeScreen([ 62, ]);;
 ##  gap> dn:= DnLattice( s4, gram, red );
 ##  rec( gram := [  ], 
-##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), 
-##          [ 2, 0, 2, -1, 0 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), 
-##          [ 1, -1, 1, 1, -1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), 
-##          [ 1, 1, 1, 1, 1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), 
-##          [ 3, -1, -1, 0, 1 ] ) ], remainders := [  ] )
-##  gap> SizeScreen([ 80, ]);;
+##    irreducibles := 
+##      [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ], 
+##    remainders := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -466,19 +461,14 @@ DeclareGlobalFunction( "DnLattice" );
 ##  gap> s4:= CharacterTable( "Symmetric", 4 );;
 ##  gap> red:= [ [ 2, 0, 2, 2, 0 ], [ 4, 0, 0, 1, 2 ],
 ##  >            [ 5, -1, 1, -1, 1 ], [ -1, 1, 3, -1, -1 ] ];;
-##  gap> SizeScreen([ 62, ]);;
 ##  gap> dn:= DnLatticeIterative( s4, red );
 ##  rec( 
-##    irreducibles := [ Character( CharacterTable( "Sym(4)" ), 
-##          [ 2, 0, 2, -1, 0 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), 
-##          [ 1, -1, 1, 1, -1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), 
-##          [ 1, 1, 1, 1, 1 ] ), 
-##        Character( CharacterTable( "Sym(4)" ), 
-##          [ 3, -1, -1, 0, 1 ] ) ], norms := [  ], 
-##    remainders := [  ] )
-##  gap> SizeScreen([ 80, ]);;
+##    irreducibles := 
+##      [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
+##        Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ], 
+##    norms := [  ], remainders := [  ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

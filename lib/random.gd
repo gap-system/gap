@@ -3,14 +3,11 @@
 #W   random.gd                     GAP library                    Frank Lübeck
 #W                                                              Max Neunhöffer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2006 The GAP Group
 ##
 ##  This file declares variables for random sources.
 ##
-Revision.random_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -89,8 +86,8 @@ DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 ##  <Ref Oper="State"/> should return a data structure which allows to recover the state
 ##  of the random source such that a sequence of random calls using this 
 ##  random source can be reproduced. If a random source cannot be reset 
-##  (say, it uses truely random physical data) then <Ref Oper="State"/> should return 
-##  <K>fail</K>.
+##  (say, it uses truly random physical data) then <Ref Oper="State"/>
+##  should return  <K>fail</K>.
 ##  <P/>
 ##  <C>Reset( <A>rs</A>, <A>seed</A> )</C> resets the random source <A>rs</A> to a state described
 ##  by <A>seed</A>, if the random source can be reset (otherwise it should do
@@ -110,12 +107,12 @@ DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 ##  <Example><![CDATA[
 ##  gap> seed := State(GlobalMersenneTwister);;
 ##  gap> List([1..10],i->Random(Integers));
-##  [ -1, -4, -1, -3, -2, 1, -2, -1, 0, 1 ]
+##  [ -1, -3, -2, 1, -2, -1, 0, 1, 0, 1 ]
 ##  gap> List([1..10],i->Random(Integers));
-##  [ 0, 1, -1, 0, 2, 0, 4, -1, -3, 1 ]
+##  [ -1, 0, 2, 0, 4, -1, -3, 1, -4, -1 ]
 ##  gap> Reset(GlobalMersenneTwister, seed);;
 ##  gap> List([1..10],i->Random(Integers));
-##  [ -1, -4, -1, -3, -2, 1, -2, -1, 0, 1 ]
+##  [ -1, -3, -2, 1, -2, -1, 0, 1, 0, 1 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

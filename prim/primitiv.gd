@@ -5,11 +5,8 @@
 #W                                                          Colva Roney-Dougal
 ##
 ##
-#H  @(#)$Id$
 ##
 ##
-Revision.primitiv_gd :=
-    "@(#)$Id$";
 
 
 ##  <#GAPDoc Label="[1]{primitiv}">

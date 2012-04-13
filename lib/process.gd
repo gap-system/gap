@@ -8,8 +8,6 @@
 ##
 ##  This file contains the operations for process.
 ##
-Revision.process_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

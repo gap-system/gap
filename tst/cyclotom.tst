@@ -2,7 +2,6 @@
 ##
 #W  cyclotom.tst                GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -13,8 +12,7 @@
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id$");
+gap> START_TEST("cyclotom.tst");
 
 # Check basic arithmetic operations.
 gap> cyc:= E(5) + E(7);
@@ -164,13 +162,11 @@ gap> AtlasIrrationality( "3y'''24*13-4&5&7" );
 -7*E(24)-4*E(24)^11+4*E(24)^17+7*E(24)^19
 gap> AtlasIrrationality( "3y'''24&7" );
 6*E(24)-6*E(24)^19
-
 gap> StarCyc( EB(7) );
 E(7)^3+E(7)^5+E(7)^6
 gap> StarCyc( Sqrt(13) );
 -E(13)+E(13)^2-E(13)^3-E(13)^4+E(13)^5+E(13)^6+E(13)^7+E(13)^8-E(13)^9
  -E(13)^10+E(13)^11-E(13)^12
-
 gap> Quadratic( 4 );
 rec( ATLAS := "4", a := 4, b := 0, d := 1, display := "4", root := 1 )
 gap> Quadratic( EB(7) );
@@ -187,7 +183,6 @@ rec( ATLAS := "2r3", a := 0, b := 2, d := 1, display := "2*Sqrt(3)",
 gap> Quadratic( StarCyc( EB(5) ) );
 rec( ATLAS := "-1-b5", a := -1, b := -1, d := 2, display := "(-1-Sqrt(5))/2", 
   root := 5 )
-
 gap> GeneratorsPrimeResidues( 7^4 );
 rec( exponents := [ 4 ], generators := [ 3 ], primes := [ 7 ] )
 gap> GeneratorsPrimeResidues( 27*125 );
@@ -200,11 +195,10 @@ rec( exponents := [ 2, 1, 2 ], generators := [ 151, 101, 277 ],
   primes := [ 2, 3, 5 ] )
 gap> GeneratorsPrimeResidues( 8*49*11 );
 rec( exponents := [ 3, 2, 1 ], generators := [ [ 1079, 2157 ], 3433, 3137 ], 
-  primes := [ 2, 7, 11 ] )  
+  primes := [ 2, 7, 11 ] )
 gap> GeneratorsPrimeResidues( 16*13*29 );
 rec( exponents := [ 4, 1, 1 ], generators := [ [ 5279, 1509 ], 1393, 1249 ], 
   primes := [ 2, 13, 29 ] )
-
 gap> mat:= [ [       1333, EB(7),          -1,         0,      0 ],
 >            [  259775040,     0,           0, 2*Sqrt(3),      0 ],
 >            [  885257856,     0, 2*Sqrt(5)-1,         0,      0 ],
@@ -232,11 +226,11 @@ rec( galoisfams := [ [ [ 1, 5 ], [ 1, 10321 ] ], [ [ 2, 6 ], [ 1, 9031 ] ],
 gap> Print(RationalizedMat( gm.mat ),"\n");
 [ [ 2666, -1, -2, 0, 0 ], [ 519550080, 0, 0, 0, 0 ], 
   [ 1770515712, 0, -2, 0, 0 ], [ 4337827830, 0, 0, 0, -1 ] ]
-
-gap> STOP_TEST( "cyclotom.tst",5832500);
-
+gap> a := -E(4)*2^(8*GAPInfo.BytesPerVariable-4);;
+gap> TNUM_OBJ(COEFFS_CYC(-a)[2]) <> [ 0, "integer" ];
+true
+gap> STOP_TEST( "cyclotom.tst", 1000000 );
 
 #############################################################################
 ##
 #E
-

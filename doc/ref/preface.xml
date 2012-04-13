@@ -12,10 +12,15 @@
 
 <Chapter Label="Preface">
 <Heading>Preface</Heading>
+<Index Key="About GAP manual">About &GAP; manual</Index>
 
-Welcome to &GAP;. This preface serves not only to introduce 
-<Q>the &GAP; Reference Manual</Q>, but also as an introduction to the
-system as a whole.
+Welcome to &GAP;. 
+This is one of two manuals documenting the core part of &GAP;, 
+the other being the <E>&GAP; Tutorial</E>
+<Alt Only="HTML">(see <Ref BookName="tut" Label="Preface"/>)</Alt>.
+<P/>
+This preface serves not only to introduce <Q>The &GAP; Reference Manual</Q>, 
+but also as an introduction to the whole system.
 <P/>
 &GAP; stands  for  <E>Groups, Algorithms  and Programming</E>.  The  name was
 chosen to reflect  the aim of  the  system, which  is introduced in  this
@@ -24,135 +29,35 @@ broader,    and  you will  also   find information   about algorithms and
 programming  for other   algebraic structures,   such as semigroups   and
 algebras.
 <P/>
-In addition to this manual, there is the <Q>&GAP; Tutorial</Q> 
-<Alt Only="HTML">(see <Ref BookName="tut" Label="Preface"/>)</Alt>.
+This manual, the <E>&GAP; reference manual</E> contains the official definitions
+of &GAP; functions. It should give all information to someone who wants to
+use &GAP; as it is, and it is not intended to be read cover-to-cover.
+<P/>
+To get started a new user may first look at parts of the <E>&GAP; Tutorial</E> 
+<Alt Only="HTML">(see <Ref BookName="tut" Label="Preface"/>)</Alt>. 
+<P/>
 A lot of the functionality of the system and a number of
 contributed extensions are provided as <Q>&GAP; packages</Q>
-and each of these has its own manual.
-This preface, however, serves as an introduction to the whole system.
+which are developed independently of the core part of &GAP; and can be loaded
+into a &GAP; session. Each package comes with a separate manual which is 
+also available from the &GAP; help system.
+<P/>
+This manual is divided into chapters, sections and subsections.
+Chapter&nbsp;<Ref Chap="The Help System"/> describes the <E>help system</E>,
+which provides access to all  manuals from a running &GAP; session.
+Chapter&nbsp;<Ref Chap="Running GAP"/> gives technical advice for 
+<E>running</E> &GAP;. Chapter&nbsp;<Ref Chap="The Programming Language"/> 
+introduces the &GAP; language, while the next chapters deal with the 
+<E>environment</E> provided by &GAP; for the user. These are followed by 
+the main bulk of chapters which is devoted to various mathematical 
+structures that &GAP; can handle.
 <P/>
 Subsequent sections of this preface explain the structure of the
 system and the arrangements for the attribution of credit for
 authorship and maintenance of the system; acknowledge those who have
 made particular contributions to this and previous releases and
-outline the changes from earlier versions.
+provide copyright and licensing information.
 <P/>
-
-<!-- TEMPORARY PREFACE FOR GAP 4.5 BETA FOR PACKAGE AUTHORS -->
-
-<Section Label="GAP 4.5.2 (beta) preface">
-<Heading>Preface for the second beta Release of &GAP; 4.5.2 (beta)</Heading>
-
-<E>
-This is a temporary preface for the second beta release of &GAP; 4.5 for the package
-authors. The rest of the preface will be revised an updated later before the
-first public release of &GAP; 4.5.
-</E>
-<P/>
-
-<E>Dear authors of &GAP; packages,</E>
-<P/>
-
-There have been many changes in the development version of &GAP; 
-during almost three years since the release of &GAP;&nbsp;4.4.12. Some
-major developments that were started earlier are now ready for release and it's
-now high time for the &GAP;&nbsp;4.5 release, which we plan to have in November 
-2011.
-<P/>
-
-Earlier in April 2011 we made available the first beta release of &GAP;&nbsp;4.5,
-and we appreciate all feedback we received from package authors and users. 
-Moreover, in the subsequent period some packages already have been upgraded to 
-work with &GAP;&nbsp;4.5. 
-Now, to allow you to test your packages with the new features and make the 
-final step towards the official release of &GAP;&nbsp;4.5,
-we have prepared the second beta version of &GAP;&nbsp;4.5, named 
-&GAP;&nbsp;4.5.2, which is available to package authors in the following directory:
-<P/>
-<URL>ftp://ftp.gap-system.org/pub/gap/gap45/beta/</URL>
-<P/>
-
-The archive you will find to download at the above URL is not quite the same 
-as the &GAP;&nbsp;4.4 archives. For the general release of &GAP;&nbsp;4.5 
-(and subsequent updates) we plan the main form of distribution of &GAP; 
-to be a single dated archive file including current versions of 
-all packages at that date and binaries for the most common 
-environments (Windows, MacOS, and Linux on 32 and 64 bit intel processors). 
-We plan that these archives will be rebuilt and marked with a new timestamp
-whenever a new version of a package is released, which we expect to be quite 
-frequently and we will make no special distinction between 
-updates to packages and to the core system. For the beta release, however,
-we do not quite have the setup for this fully in place. 
-The beta archives will include packages, but not binaries.
-<P/>
-
-Please download and install &GAP;&nbsp;4.5.2 and test it with your package(s). 
-Since we have not yet included binaries, you will need to compile the 
-&GAP; kernel as usual. To run &GAP; under
-Windows, you may either compile it yourself with Cygwin or write to Alexander 
-Konovalov (<C>alexk@mcs.st-andrews.ac.uk</C>) and ask him to send you the &GAP; 
-executable file for Windows.
-<P/>
-
-If you have a new version of your package that you would like to release with the first
-public release of &GAP;&nbsp;4.5, please prepare the new version of your package 
-before November 15th 2011. When you've done that, please make the new version available 
-to us for testing and notify Alexander Konovalov (<C>alexk@mcs.st-andrews.ac.uk</C>)
-about the location of the relevant <File>PackageInfo.g</File> file
-to arrange for the &GAP; Group to obtain your package for further tests.
-<P/>
-
-Note that if the new version of your package is compatible with both &GAP;&nbsp;4.4
-and &GAP;&nbsp;4.5 you need not to change its location. However, if the new version
-will require &GAP;&nbsp;4.5, please put in under different URL so it will not be
-picked up by the package update scripts for &GAP;&nbsp;4.4 which we will still 
-continue to run until the official release of  &GAP;&nbsp;4.5.
-<P/>
-
-If a package is released to us later than November 15th 2011 and our testing shows any 
-problems (most likely in interactions with other packages) we may not be able to 
-sort them out in time to include it in the first official release of &GAP;&nbsp;4.5. 
-<P/>
-
-We have already tested most of the current versions of &GAP; packages with the
-beta-release of &GAP;&nbsp;4.5, and did not find any serious problems. Thus, we hope
-that for most packages the change will go smoothly - a version of the
-package with basic compatibility with &GAP;&nbsp;4.5 can be produced with little or no
-effort (for most packages simply recompiling the documentation would be good
-enough). We would encourage you though, to do a little more work and adjust your package 
-to use some of the new features of the GAP 4.5 package interface. 
-<P/>
-
-This is especially important since some of the changes involve improvements 
-to the &GAP; package interface to deal with problems which have arisen and 
-cope more smoothly as the number of packages approaches~100 and the complexity 
-of the functionality supplied by packages and the relationships between packages increases. 
-<P/>
-
-As well as testing your package, please let us know of any problems you find 
-with &GAP;&nbsp;4.5 itself. We encourage you to test &GAP;&nbsp;4.5 on as 
-many configurations as possible. We welcome all feedback to 
-<C>support@gap-system.org</C> including comments, suggestions, bug 
-reports and manual corrections.
-<P/>
-
-You will find a brief overview of main changes in &GAP;&nbsp;4.5 from the
-package author's perspective, descriptions of known problems that we observed while
-testing current packages with &GAP;&nbsp;4.5, and some further guidelines in
-the Appendix of the <Package>Example</Package> package included in the second
-beta release (see <Ref BookName="Example" Label="Guidelines for Writing a GAP Package"/>).
-<P/>
-
-<E>Best wishes,</E>
-<P/>
-<E>the GAP development team</E>
-<P/>
-<E>September 2011</E>
-<P/>
-</Section>
-
-<!-- TEMPORARY PREFACE FOR GAP 4.5 BETA FOR PACKAGE AUTHORS ENDS HERE -->
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="The GAP System">
@@ -162,10 +67,10 @@ beta release (see <Ref BookName="Example" Label="Guidelines for Writing a GAP Pa
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Authorship and Maintenance">
-<Heading>Authorship and Maintenance</Heading>
+<Section Label="Authors and Maintainers">
+<Heading>Authors and Maintainers</Heading>
 
-Previous versions of &GAP; have simply included the increasingly long
+Early versions of &GAP; have simply included the increasingly long
 list of all of the authors of the system with no indication as to who
 contributed what. With &GAP; 4.3 we have introduced a new concept:
 <E>modules</E>, to allow us to report the authorship of the system in more
@@ -182,6 +87,10 @@ assumed that the list of modules in this manual represents all of
 everyone's contribution, or that it lists everyone who made any
 contribution at all to each module.
 <P/>
+
+<#Include SYSTEM "../tut/authors.xml">
+<P/>
+
 All &GAP; packages are also considered to be modules and have their
 own authors and maintainers. It should however be noted that some
 packages provide interfaces between &GAP; and an external program, a
@@ -204,10 +113,12 @@ We also include with this distribution a
 number of packages which have not (yet) gone through our refereeing
 process. Some may be accepted in the future, in other cases the
 authors have chosen not to submit them.  More information can be found
-on our World Wide Web site,
-see section <Ref Sect="Further Information about GAP"/>.
+on our World Wide Web site 
+(see Section <Ref Sect="Further Information about GAP"/>).
+<P/>
 
 </Section>
+
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -231,8 +142,26 @@ or mainly employed to work on &GAP;.
 Nevertheless, the development
 process has remained constructive and friendly, even when wrangling
 over difficult technical decisions, or sensitive questions of
-attribution and credit and I must express our huge gratitude to
+attribution and credit and we must express our huge gratitude to
 everyone involved for this.
+<P/>
+We would like to thank the many people who have made contributions of
+various kinds to the development of &GAP; since 1986, in particular:
+<P/>
+Isabel&nbsp;M.&nbsp;Araújo, Robert&nbsp;Arthur, Hans&nbsp;Ulrich&nbsp;Besche, 
+Thomas&nbsp;Bischops, Oliver&nbsp;Bonten, Thomas&nbsp;Breuer, Frank&nbsp;Celler, 
+Gene&nbsp;Cooperman, Bettina&nbsp;Eick, Volkmar&nbsp;Felsch, Franz&nbsp;Gähler, 
+Greg&nbsp;Gamble, Willem&nbsp;de&nbsp;Graaf, Burkhard&nbsp;Höfling, 
+Jens&nbsp;Hollmann, Derek&nbsp;Holt, Erzsébet&nbsp;Horváth, Alexander&nbsp;Hulpke, 
+Ansgar&nbsp;Kaup, Susanne&nbsp;Keitemeier, Stefan Kohl, Steve&nbsp;Linton,
+Frank&nbsp;Lübeck, Bohdan&nbsp;Majewski, Johannes&nbsp;Meier, Thomas&nbsp;Merkwitz, 
+Wolfgang&nbsp;Merkwitz, James Mitchell, Jürgen&nbsp;Mnich, Robert&nbsp;F.&nbsp;Morse,
+Scott Murray, Joachim&nbsp;Neubüser, Max Neunhöffer,
+Werner&nbsp;Nickel, Alice&nbsp;Niemeyer, Dima&nbsp;Pasechnik, Götz&nbsp;Pfeiffer,
+Udo&nbsp;Polis, Ferenc&nbsp;Rákóczi, Sarah&nbsp;Rees, Edmund&nbsp;Robertson,
+Colva Roney-Dougal, Ute Schiffer, Jack Schmidt, Martin&nbsp;Schönert,
+Ákos&nbsp;Seress, Andrew&nbsp;Solomon, Heiko&nbsp;Theißen, Rob&nbsp;Wainwright,
+Alex&nbsp;Wegner, Chris&nbsp;Wensley and Charles&nbsp;Wright.
 <P/>
 The list of modules which appears in this manual now gives a partial
 idea of the contributions of different people, but we would like to
@@ -263,7 +192,27 @@ system; and very many others have contributed ideas, insight and hard
 work to produce this release. Senior colleagues, especially Joachim
 Neubüser, Edmund Robertson, and Charley Wright, continue to
 provide encouragement support and constructive criticism.
+<P/>
+The manual tries to give credit to designers and implementors of major parts
+of &GAP;, mentioning many of them in Section <Ref Sect="Authors and Maintainers"/>.
+However, for many parts of the &GAP; code it is impossible to give
+detailed credit, because over the time of its development many persons 
+have contributed from first ideas, even in prerunners of &GAP; such as 
+<Package>CAS</Package> or <Package>SOGOS</Package>, via first 
+implementations, improvements, and even total reimplementations.
+The documentation of the code gives further details, but
+again, it suffers from the same problem. We have attempted to give
+attributions with the different chapters of the manual where this seemed
+to be possible, but we apologise for all (unavoidable) shortcomings of
+this attempt.
 
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Copyright and License">
+<Heading>Copyright and License</Heading>
+<#Include SYSTEM "../ref/copyrigh.xml">
 </Section>
 
 

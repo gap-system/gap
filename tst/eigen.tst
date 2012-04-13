@@ -3,14 +3,12 @@
 #W  eigen.tst                   GAP library		       Gene Cooperman
 #W							     and Scott Murray
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testinstall.g: why?
 ##
-
-gap> START_TEST("$Id$");
+gap> START_TEST("eigen.tst");
 gap> A := GL(4,3).1;
 [ [ Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
   [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ]
@@ -21,10 +19,8 @@ gap> GeneralisedEigenvalues(GF(3), A );
 gap> GeneralisedEigenspaces(GF(3),A);
 [ <vector space over GF(3), with 1 generators>, 
   <vector space over GF(3), with 3 generators> ]
-gap> STOP_TEST( "eigen.tst", 17000000 );
-
+gap> STOP_TEST( "eigen.tst", 800000 );
 
 #############################################################################
 ##
 #E  
-

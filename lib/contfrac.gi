@@ -4,13 +4,10 @@
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
-#H  @(#)$Id$
 ##
 ##  This file contains code for computing (with) continued fraction
 ##  expansions of real numbers.
 ##
-Revision.contfrac_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

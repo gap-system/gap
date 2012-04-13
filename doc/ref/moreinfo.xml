@@ -10,29 +10,24 @@
 <!-- %% -->
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-Information about &GAP; is best obtained from the &GAP; Web pages that
-you find on:
+Information about &GAP; is best obtained from the &GAP; website
 <P/>
 	<URL>http://www.gap-system.org</URL>
-<P/>
-and its mirror at:
-<P/>
-	<URL>http://www.math.rwth-aachen.de/~GAP</URL>
 <P/>
 There you will find, amongst other things
 <List>
 <Item>
- directions to the sites from which you can download the
-current &GAP; distribution, any bug-fixes, all accepted &GAP; packages,
+directions to the sites from which you can download the
+current &GAP; distribution, all accepted and deposited &GAP; packages,
 and a selection of other contributions.
 </Item>
 <Item>
- the &GAP; manual and an archive of the <C>gap-forum</C> mailing
+the &GAP; manual and an archive of the <C>gap-forum</C> mailing
 list, formatted for reading with a Web browser, and indexed for
 searching.
 </Item>
 <Item>
- information about &GAP; developers, and about the email
+information about &GAP; developers, and about the email
 addresses available for comment, discussion and support.
 </Item>
 </List>
@@ -41,10 +36,10 @@ addresses available for comment, discussion and support.
 We would particularly ask you to note the following things:
 <List>
 <Item>
- The  &GAP; Forum &ndash; an email discussion forum for comments,
+The &GAP; Forum &ndash; an email discussion forum for comments,
 discussions or questions about &GAP;. You must subscribe to the list
-before you can post to it, see the Web page for details.
-In  particular we will announce bugfixes in this mailing list.
+before you can post to it, see the website for details.
+In particular we will announce new releases in this mailing list.
 </Item>
 <Item>
 The email address <Email>support@gap-system.org</Email> to which you
@@ -58,23 +53,23 @@ version of &GAP; you are using (the first line after the &GAP;&nbsp;4
 banner starting <C>GAP, Version 4...</C>).
 </Item>
 <Item>
- We also ask you to send a brief message to <Email>support@gap-system.org</Email> when you install &GAP;.
+We also ask you to send a brief message to 
+<Email>support@gap-system.org</Email> when you install &GAP;.
 </Item>
 <Item>
- The correct form of citation of &GAP;, which we ask you use
+The correct form of citation of &GAP;, which we ask you use
 whenever you publish scientific results obtained using &GAP;.
 </Item>
 </List>
 <P/>
-It finally remains  for me to wish you  all pleasure and success in using
+It finally remains for us to wish you all pleasure and success in using
 &GAP;, and to invite your constructive comment and criticism.
 <P/>
 <P/>
 <P/>
+The GAP Group,
 <P/>
-Fort Collins, March 2004
-<P/>
-Alexander Hulpke
+&RELEASEDAY;
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->

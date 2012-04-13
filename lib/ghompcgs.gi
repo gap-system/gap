@@ -7,8 +7,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.ghompcgs_gi :=
-    "@(#)$Id$";
 
 # compute the powers of the source pcgs. We cache these to speed up frequent
 # mapping.
@@ -69,7 +67,6 @@ local hom, pcgs, pcgsimgs, H, filter, G;
                 filter ),
               Source,G,
               Range,H,
-              MappingGeneratorsImages,[pcgs,pcgsimgs],
               ImagesSource,SubgroupNC( H, pcgsimgs )
 #    ,CoKernelOfMultiplicativeGeneralMapping,TrivialSubgroup(H);
                 );

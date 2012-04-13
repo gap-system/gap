@@ -3,8 +3,6 @@
 #W  small.gd                 GAP group library             Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.small_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -205,9 +203,10 @@ DeclareSynonym( "NrSmallGroups",NumberSmallGroups );
 ##  [ <pc group of size 6 with 2 generators>, 
 ##    <pc group of size 6 with 2 generators> ]
 ##  gap> AllSmallGroups( Size, 120, IsSolvableGroup, false );
-##  [ Group([ (1,2,4,8)(3,6,9,5)(7,12,13,17)(10,14,11,15)(16,20,21,24)(18,22,19,
-##          23), (1,3,7)(2,5,10)(4,9,13)(6,11,8)(12,16,20)(14,18,22)(15,19,23)(17,
-##          21,24) ]), Group([ (1,2,3,4,5), (1,2) ]), 
+##  [ Group(
+##      [ (1,2,4,8)(3,6,9,5)(7,12,13,17)(10,14,11,15)(16,20,21,24)(18,22,
+##          19,23), (1,3,7)(2,5,10)(4,9,13)(6,11,8)(12,16,20)(14,18,
+##          22)(15,19,23)(17,21,24) ]), Group([ (1,2,3,4,5), (1,2) ]), 
 ##    Group([ (1,2,3,5,4), (1,3)(2,4)(6,7) ]) ]
 ##  gap> G := OneSmallGroup( 120, IsNilpotentGroup, false );
 ##  <pc group of size 120 with 5 generators>
@@ -246,21 +245,21 @@ DeclareSynonym( "NrSmallGroups",NumberSmallGroups );
 ##  gap> SmallGroupsInformation( 32 );
 ##  
 ##    There are 51 groups of order 32.
-##    They are sorted by their ranks.
-##       1 is cyclic.
+##    They are sorted by their ranks. 
+##       1 is cyclic. 
 ##       2 - 20 have rank 2.
 ##       21 - 44 have rank 3.
 ##       45 - 50 have rank 4.
-##       51 is elementary abelian.
+##       51 is elementary abelian. 
 ##  
-##    For the selection functions the values of the following attributes
+##    For the selection functions the values of the following attributes 
 ##    are precomputed and stored:
-##       IsAbelian, PClassPGroup, RankPGroup, FrattinifactorSize and
-##       FrattinifactorId.
+##       IsAbelian, PClassPGroup, RankPGroup, FrattinifactorSize and 
+##       FrattinifactorId. 
 ##  
-##    This size belongs to layer 2 of the SmallGroups library.
-##    IdSmallGroup is available for this size.
-##  
+##    This size belongs to layer 2 of the SmallGroups library. 
+##    IdSmallGroup is available for this size. 
+##   
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

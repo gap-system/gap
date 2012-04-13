@@ -3,7 +3,6 @@
 #W  record.g                    GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -22,8 +21,6 @@
 ##  or such that a record can be compared via `<' with objects in other
 ##  families, one can load the file `compat3c.g'.
 ##
-Revision.record_g :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -141,7 +138,7 @@ DeclareOperationKernel( "Unbind.", [ IsObject, IsObject ], UNB_REC );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> r := rec( a := 1, b := 2 );;
-##  gap> RecNames( r );
+##  gap> Set(RecNames( r )); # 'Set' because ordering depends on GAP session
 ##  [ "a", "b" ]
 ##  ]]></Example>
 ##  <P/>

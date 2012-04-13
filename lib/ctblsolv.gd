@@ -2,7 +2,6 @@
 ##
 #W  ctblsolv.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the declaration of operations for computing
 ##  characters of solvable groups.
 ##
-Revision.ctblsolv_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -214,31 +211,34 @@ DeclareOperation( "IrreducibleRepresentations",
 ##  (see&nbsp;<Cite Key="BC94"/>).
 ##  An error is signalled if <A>G</A> is not solvable.
 ##  <P/>
-##  In the following example we temporarily increase the line length limit
-##  from its default value 80 to 87 in order to get a nicer output format.
-##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:= SL(2,3);;
-##  gap> SizeScreen([ 87, ]);;
 ##  gap> irr1:= IrrDixonSchneider( g );
-##  [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ),
-##    Character( CharacterTable( SL(2,3) ), [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ),
-##    Character( CharacterTable( SL(2,3) ), [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ),
-##    Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] ),
-##    Character( CharacterTable( SL(2,3) ), [ 2, E(3)^2, E(3), -2, -E(3), -E(3)^2, 0 ] ),
-##    Character( CharacterTable( SL(2,3) ), [ 2, E(3), E(3)^2, -2, -E(3)^2, -E(3), 0 ] ),
+##  [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( SL(2,3) ), 
+##      [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ), 
+##    Character( CharacterTable( SL(2,3) ), 
+##      [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ), 
+##    Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] ), 
+##    Character( CharacterTable( SL(2,3) ), 
+##      [ 2, E(3)^2, E(3), -2, -E(3), -E(3)^2, 0 ] ), 
+##    Character( CharacterTable( SL(2,3) ), 
+##      [ 2, E(3), E(3)^2, -2, -E(3)^2, -E(3), 0 ] ), 
 ##    Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] ) ]
 ##  gap> irr2:= IrrConlon( g );
-##  [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ),
-##    Character( CharacterTable( SL(2,3) ), [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ),
-##    Character( CharacterTable( SL(2,3) ), [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ),
+##  [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( SL(2,3) ), 
+##      [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ), 
+##    Character( CharacterTable( SL(2,3) ), 
+##      [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ), 
 ##    Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] ) ]
 ##  gap> irr3:= IrrBaumClausen( g );
-##  [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ),
-##    Character( CharacterTable( SL(2,3) ), [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ),
-##    Character( CharacterTable( SL(2,3) ), [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ),
+##  [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( SL(2,3) ), 
+##      [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ), 
+##    Character( CharacterTable( SL(2,3) ), 
+##      [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ), 
 ##    Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] ) ]
-##  gap> SizeScreen([ 80, ]);;
 ##  gap> chi:= irr2[4];;  HasTestMonomial( chi );
 ##  true
 ##  ]]></Example>

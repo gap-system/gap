@@ -2,7 +2,6 @@
 ##
 #W  csetpc.gi                       GAP library              Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the operations for cosets of pc groups
 ##
-Revision.csetpc_gi:=
-  "@(#)$Id$";
 
 #############################################################################
 ##

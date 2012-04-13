@@ -2,14 +2,13 @@
 ##
 #W  semirel.tst                 GAP library                Robert F. Morse
 ##
-#H  $Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  To be listed in testinstall.g
 ##
+gap> START_TEST("semirel.tst");
 
-gap> START_TEST("$Id$");
 ##
 ##  Three non-commutative finite semigroups
 ##
@@ -21,7 +20,6 @@ gap> s1 := f/rels;; Size(s1);
 gap> t1 := Range(IsomorphismTransformationSemigroup(s1));;
 gap> Size(t1);
 38
-
 gap> f := FreeSemigroup(2);;
 gap> a := GeneratorsOfSemigroup(f)[1];; b := GeneratorsOfSemigroup(f)[2];;
 gap> rels := [[a^5,a],[b^5,b],[(a*b)^5,a*b],[(b*a)^5,b*a],[a*b^2,a*b],[a^2*b,a*b]];; 
@@ -29,7 +27,6 @@ gap> s2 := f/rels;;
 gap> t2 := Range(IsomorphismTransformationSemigroup(s2));;
 gap> Size(t2);
 108
-
 gap> f := FreeSemigroup(2);;
 gap> a := GeneratorsOfSemigroup(f)[1];; b := GeneratorsOfSemigroup(f)[2];;
 gap> rels := [[a^4,a],[b^4,b],[(a*b)^2,a^2*b^2],[(b*a)^2,b^2*a^2]];; 
@@ -55,6 +52,7 @@ gap> Size(t4);
 gap> t3 := FullTransformationSemigroup(3);;
 gap> t4 := FullTransformationSemigroup(4);;
 gap> t5 := FullTransformationSemigroup(5);;
+
 ##
 ##  Size is known no computation required
 ##
@@ -77,6 +75,7 @@ gap> gjp := EquivalenceRelationPartition(GreensJRelation(s1));;
 gap> gjp1 := EquivalenceRelationPartition(GreensJRelation(t1));;
 gap> Set(List(gjp,i->Size(i))) = Set(List(gjp1,i->Size(i)));
 true
+
 ##
 ##  See that Green's classes for full transformation semigroups
 ##  are of the proper form
@@ -117,11 +116,8 @@ gap> ForAll(GreensHClasses(t4),
 > and KernelOfTransformation(j) = KernelOfTransformation(Representative(i))
 > ));
 true
-
-gap> STOP_TEST( "semirel.tst",364004597);
-
+gap> STOP_TEST( "semirel.tst", 12400000 );
 
 #############################################################################
 ##
 #E
-

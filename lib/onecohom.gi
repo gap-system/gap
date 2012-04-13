@@ -3,7 +3,6 @@
 #W  onecohom.gi                     GAP library                  Frank Celler
 ##                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci.,University of St Andrews,Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains the methods for operations for the 1-Cohomology
 ##
-Revision.onecohom_gi:=
-  "@(#)$Id$";
 
 
 #############################################################################
@@ -1482,9 +1479,9 @@ end);
 
 #############################################################################
 ##
-#F  ComplementclassesEA(<G>,<N>) . complement classes to el.ab. N by 1-Cohom.
+#F  ComplementClassesRepresentativesEA(<G>,<N>) . complement classes to el.ab. N by 1-Cohom.
 ##
-InstallGlobalFunction(ComplementclassesEA,function(g,n)
+InstallGlobalFunction(ComplementClassesRepresentativesEA,function(g,n)
 local oc,l;
   oc:=OneCocycles(g,n);
   if not oc.isSplitExtension  then

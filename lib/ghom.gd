@@ -4,7 +4,6 @@
 #W                                                           Alexander Hulpke
 #W                                                             Heiko Theißen
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 ##  3. Functions for conjugation action
 ##  4. Functions for ...
 ##
-Revision.ghom_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -590,8 +587,8 @@ DeclareGlobalFunction( "MakeMapping" );
 ##  <Example><![CDATA[
 ##  gap> hom:=GroupHomomorphismByFunction(g,h,
 ##  > function(x) if SignPerm(x)=-1 then return (1,2); else return ();fi;end);
-##  MappingByFunction( Group([ (1,2,3,4), (1,2) ]), Group([ (1,2,3), (1,2) 
-##   ]), function( x ) ... end )
+##  MappingByFunction( Group([ (1,2,3,4), (1,2) ]), Group(
+##  [ (1,2,3), (1,2) ]), function( x ) ... end )
 ##  gap> ImagesSource(hom);
 ##  Group([ (1,2), (1,2) ])
 ##  gap> Image(hom,(1,2,3,4));

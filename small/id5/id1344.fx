@@ -2,8 +2,6 @@
 ##
 #W  id1344.fx              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id1344_fx :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[1344].next[180]:=
 rec(

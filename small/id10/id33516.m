@@ -2,8 +2,6 @@
 ##
 #W  id33516.m              GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id33516_m :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[33516].next[13]:=
 rec(

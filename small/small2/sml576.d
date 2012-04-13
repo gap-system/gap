@@ -3,8 +3,6 @@
 #W  sml576.d               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml576_d :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 576 ][ 4 ] :=
 [ 2906387853799679261215241, 1676012498535617760610814473,

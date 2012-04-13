@@ -2,7 +2,6 @@
 ##
 #W  grpmat.gi                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the methods for matrix groups.
 ##
-Revision.grpmat_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -33,7 +30,7 @@ InstallMethod( DefaultFieldOfMatrixGroup,
 
 InstallMethod( DefaultFieldOfMatrixGroup,
     "for matrix group over the cyclotomics",
-    [ IsMatrixGroup and IsCyclotomicCollCollColl ],
+    [ IsCyclotomicMatrixGroup ],
     grp -> Cyclotomics );
 
 InstallMethod( DefaultFieldOfMatrixGroup,

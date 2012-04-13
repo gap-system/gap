@@ -2,14 +2,11 @@
 ##
 #A  trans30h.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id$
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 30
 ##
-Revision.trans30h_grp:=
-  "@(#)$Id$";
 
 TRANSGRP[30]{[2101..2400]}:=
 [[(1,7)(2,8)(3,9)(10,13)(11,15)(12,14)(16,27)(17,25)(18,26)(19,22)(20,23)(21,24),

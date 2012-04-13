@@ -2,7 +2,6 @@
 ##
 #W  grpnames.g                                                    Stefan Kohl
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -12,8 +11,6 @@
 ##  NAMES_OF_SMALL_GROUPS[n][i] is the description corresponding to
 ##  SmallGroup(n,i).
 ##
-Revision.grpnames_g :=
-  "@(#)$Id$";
 
 NAMES_OF_SMALL_GROUPS :=
 [ [ "1" ], [ "C2" ], [ "C3" ], [ "C4", "C2 x C2" ], [ "C5" ], [ "S3", "C6" ],

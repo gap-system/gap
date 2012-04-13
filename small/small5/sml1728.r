@@ -3,8 +3,6 @@
 #W  sml1728.r              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1728_r :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1728 ][ 18 ] :=
 [ 173187032288338008543274093406115138893249600429063,

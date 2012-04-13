@@ -2,7 +2,6 @@
 ##
 #W  zlattice.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the declaration of functions and operations dealing
 ##  with lattices.
 ##
-Revision.zlattice_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -330,8 +327,8 @@ DeclareGlobalFunction( "DecompositionInt" );
 ##  >                [ 25, 1, 1, 0, 0 ] ];;
 ##  gap> LLLReducedBasis( vectors, "linearcomb" );
 ##  rec( B := [ 5, 36/5, 12, 50/3 ], 
-##    basis := [ [ 1, 1, 1, 1, 1 ], [ 1, 1, -2, 1, 1 ], [ -1, 3, -1, -1, -1 ], 
-##        [ -3, 1, 0, 2, 2 ] ], 
+##    basis := [ [ 1, 1, 1, 1, 1 ], [ 1, 1, -2, 1, 1 ], 
+##        [ -1, 3, -1, -1, -1 ], [ -3, 1, 0, 2, 2 ] ], 
 ##    mue := [ [  ], [ 2/5 ], [ -1/5, 1/3 ], [ 2/5, 1/6, 1/6 ] ], 
 ##    relations := [ [ -1, 0, -1, 0, 1 ] ], 
 ##    transformation := [ [ 0, -1, 1, 0, 0 ], [ -1, -2, 0, 2, 0 ], 
@@ -397,8 +394,8 @@ DeclareGlobalFunction( "LLLReducedBasis" );
 ##  rec( B := [ 4, 4, 75/16, 168/25, 32/7 ], 
 ##    mue := [ [  ], [ 1/2 ], [ 1/4, -1/8 ], [ 1/2, 1/4, -2/25 ], 
 ##        [ -1/4, 1/8, 37/75, 8/21 ] ], relations := [  ], 
-##    remainder := [ [ 4, 2, 1, 2, -1 ], [ 2, 5, 0, 2, 0 ], [ 1, 0, 5, 0, 2 ], 
-##        [ 2, 2, 0, 8, 2 ], [ -1, 0, 2, 2, 7 ] ], 
+##    remainder := [ [ 4, 2, 1, 2, -1 ], [ 2, 5, 0, 2, 0 ], 
+##        [ 1, 0, 5, 0, 2 ], [ 2, 2, 0, 8, 2 ], [ -1, 0, 2, 2, 7 ] ], 
 ##    transformation := [ [ 1, 0, 0, 0, 0 ], [ -1, 1, 0, 0, 0 ], 
 ##        [ -1, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], [ -2, 0, 1, 0, 1 ] ] )
 ##  ]]></Example>
@@ -442,7 +439,8 @@ DeclareGlobalFunction( "LLLReducedGramMat" );
 ##  gap> ShortestVectors(g,4);
 ##  rec( norms := [ 4, 2, 2, 4, 2, 4, 2, 2, 2 ], 
 ##    vectors := [ [ -1, 1, 1 ], [ 0, 0, 1 ], [ -1, 0, 1 ], [ 1, -1, 1 ], 
-##        [ 0, -1, 1 ], [ -1, -1, 1 ], [ 0, 1, 0 ], [ -1, 1, 0 ], [ 1, 0, 0 ] ] )
+##        [ 0, -1, 1 ], [ -1, -1, 1 ], [ 0, 1, 0 ], [ -1, 1, 0 ], 
+##        [ 1, 0, 0 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -511,8 +509,9 @@ DeclareGlobalFunction( "ShortestVectors" );
 ##  rec( norms := [ 1, 1, 1, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2 ], 
 ##    solutions := [ [ 1, 2, 3 ], [ 1, 6, 6, 7, 7 ], [ 2, 5, 5, 8, 8 ], 
 ##        [ 3, 4, 4, 9, 9 ], [ 4, 5, 6, 7, 8, 9 ] ], 
-##    vectors := [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ], [ -1, 1, 0 ], 
-##        [ -1, 0, 1 ], [ 1, 0, 0 ], [ 0, -1, 1 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] )
+##    vectors := [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ], 
+##        [ -1, 1, 0 ], [ -1, 0, 1 ], [ 1, 0, 0 ], [ 0, -1, 1 ], 
+##        [ 0, 1, 0 ], [ 0, 0, 1 ] ] )
 ##  gap> c.vectors{ c.solutions[1] };
 ##  [ [ -1, 1, 1 ], [ 1, -1, 1 ], [ -1, -1, 1 ] ]
 ##  ]]></Example>

@@ -2,12 +2,9 @@
 ##
 #W  suzuki.gd                   GAP library                       Stefan Kohl
 ##
-#H  @(#)$Id$
 ##
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
-Revision.suzuki_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

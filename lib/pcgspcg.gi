@@ -2,7 +2,6 @@
 ##
 #W  pcgspcg.gi                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file   contains the methods  for polycylic  generating systems of pc
 ##  groups.
 ##
-Revision.pcgspcg_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -941,7 +938,7 @@ function( pcgs, elm, pos )
             dg := DepthOfPcElement( pfa, g );
 
 	    if codepths[dg]>dep then
-	      # once we have reached pfa-depth dg, we cannot acchieve `dep'
+	      # once we have reached pfa-depth dg, we cannot achieve `dep'
 	      # any longer. So we may stop the descent through pfa here
 	      g:=id;
             elif IsBound(pcs[dg])  then
@@ -1044,7 +1041,7 @@ function( pcgs, elm )
 	    # do this by stepping down in pag
             dg := DepthOfPcElement( pfa, g );
 	    if codepths[dg]>dep then
-	      # once we have reached pfa-depth dg, we cannot acchieve `dep'
+	      # once we have reached pfa-depth dg, we cannot achieve `dep'
 	      # any longer. So we may stop the descent through pfa here
 	      g:=id;
             elif IsBound(pcs[dg])  then
@@ -1122,7 +1119,7 @@ function( pcgs, elm,range )
             dg := DepthOfPcElement( pfa, g );
 
 	    if codepths[dg]>dep then
-	      # once we have reached pfa-depth dg, we cannot acchieve `dep'
+	      # once we have reached pfa-depth dg, we cannot achieve `dep'
 	      # any longer. So we may stop the descent through pfa here
 	      g:=id;
             elif IsBound(pcs[dg])  then
@@ -1244,7 +1241,7 @@ function( pcgs, elm )
         dg := DepthOfPcElement( pfa, elm );
 
 	if codepths[dg]>dep then
-	  # once we have reached pfa-depth dg, we cannot acchieve `dep'
+	  # once we have reached pfa-depth dg, we cannot achieve `dep'
 	  # any longer. So we may stop the descent through pfa here
 	  elm:=id;
 	elif IsBound(pcs[dg])  then

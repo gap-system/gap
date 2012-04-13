@@ -2,8 +2,6 @@
 ##
 #W  id384.cp               GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id384_cp :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[384].next[94]:=
 rec(

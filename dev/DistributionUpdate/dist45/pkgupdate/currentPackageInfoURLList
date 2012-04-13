@@ -1,99 +1,116 @@
-# $Id$
-./addPackage ACE http://www.math.rwth-aachen.de/~Greg.Gamble/ACE/PackageInfo.g
-./addPackage AClib http://www-public.tu-bs.de:8080/~beick/soft/aclib/PackageInfo.g
-./addPackage Alnuth http://www.icm.tu-bs.de/ag_algebra/software/Alnuth/PackageInfo.g
-./addPackage ANUPQ http://www.math.rwth-aachen.de/~Greg.Gamble/ANUPQ/PackageInfo.g
-./addPackage AtlasRep http://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep/PackageInfo.g
-./addPackage Automata http://www.fc.up.pt/cmup/mdelgado/automata/PackageInfo.g
-./addPackage AutomGrp http://finautom.sourceforge.net/automgrp/PackageInfo.g
-./addPackage AutPGrp http://www-public.tu-bs.de:8080/~beick/soft/autpgrp/PackageInfo.g
-# ./addPackage Browse - no PackageInfo.g
-./addPackage Carat http://www.math.uni-bielefeld.de/~gaehler/gap/Carat/PackageInfo.g
-./addPackage Circle http://www.cs.st-andrews.ac.uk/~alexk/circle/PackageInfo.g
-./addPackage Citrus http://www-groups.mcs.st-andrews.ac.uk/~jamesm/citrus/PackageInfo.g
-./addPackage cohomolo http://www.warwick.ac.uk/staff/D.F.Holt/cohomolo/PackageInfo.g
-./addPackage Crime http://math.uic.edu/~marcus/Crime/PackageInfo.g
-./addPackage CRISP http://www-public.tu-bs.de:8080/~bhoeflin/crisp/PackageInfo.g
-./addPackage Cryst http://www.math.uni-bielefeld.de/~gaehler/gap/Cryst/PackageInfo.g
-./addPackage CrystCat http://www.math.uni-bielefeld.de/~gaehler/gap/CrystCat/PackageInfo.g
-./addPackage CTblLib http://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib/PackageInfo.g
-./addPackage Cubefree http://www.icm.tu-bs.de/ag_algebra/software/dietrich/Cubefree/PackageInfo.g
-./addPackage cvec http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/cvecfor4.5/PackageInfo.g
-./addPackage DESIGN http://www.maths.qmul.ac.uk/~leonard/pkgbeta/design/PackageInfo.g
-./addPackage EDIM http://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM/PackageInfo.g
-./addPackage Example http://www.cs.st-andrews.ac.uk/~alexk/example/PackageInfo.g
-./addPackage ExamplesForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/ExamplesForHomalg/PackageInfo.g
-./addPackage FactInt http://www.gap-system.org/DevelopersPages/StefanKohl/factint/PackageInfo.g
-./addPackage FGA http://www.icm.tu-bs.de/ag_algebra/software/sievers/FGA/PackageInfo.g
-./addPackage FORMAT http://www.uoregon.edu/~wright/RESEARCH/PackageInfo.g
-./addPackage Forms http://cage.ugent.be/geometry/software/forms/PackageInfo.g
-./addPackage FPLSA http://www.math.rwth-aachen.de/~Thomas.Breuer/fplsa/PackageInfo.g
-./addPackage FR http://www.uni-math.gwdg.de/laurent/FR/PackageInfo.g
-./addPackage fwtree http://www.maths.nuigalway.ie/~tobias/fwtree/PackageInfo.g
-./addPackage GAPDoc http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/tmp1.4/PackageInfo.g
-./addPackage Gauss http://wwwb.math.rwth-aachen.de/goertzen/Gauss/PackageInfo.g
-./addPackage GaussForHomalg http://wwwb.math.rwth-aachen.de/goertzen/GaussForHomalg/PackageInfo.g
-./addPackage GBNP http://mathdox.org/products/gbnp/PackageInfo.g
-./addPackage genss http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genssfor4.5/PackageInfo.g
-./addPackage gpd http://www.math.bangor.ac.uk/chda/gap4r5/gpd/PackageInfo.g
-./addPackage GradedModules http://homalg.math.rwth-aachen.de/~markus/GradedModules/PackageInfo.g
-./addPackage GradedRingForHomalg http://homalg.math.rwth-aachen.de/~markus/GradedRingForHomalg/PackageInfo.g
-./addPackage GRAPE http://www.maths.qmul.ac.uk/~leonard/pkgbeta/grape/PackageInfo.g
-./addPackage GrpConst http://www-public.tu-bs.de:8080/~beick/soft/grpconst/PackageInfo.g
-./addPackage Guarana http://www-circa.mcs.st-and.ac.uk/~jjm/software/Guarana_093/PackageInfo.g
-./addPackage GUAVA http://sage.math.washington.edu/home/wdj/guava/PackageInfo.g
-./addPackage HAP http://hamilton.nuigalway.ie/Hap/PackageInfo.g
-./addPackage HAPcryst http://csserver.evansville.edu/~mroeder/HAPcryst/PackageInfo.g
-./addPackage HAPprime http://www.cs.st-andrews.ac.uk/~pas/HAPprime/PackageInfo.g
-./addPackage hecke http://home.in.tum.de/~traytel/hecke/PackageInfo.g
-./addPackage homalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/homalg/PackageInfo.g
-./addPackage HomalgToCAS http://homalg.math.rwth-aachen.de/~barakat/homalg-project/HomalgToCAS/PackageInfo.g
-./addPackage idrel http://www.math.bangor.ac.uk/chda/gap4r5/idrel/PackageInfo.g
-./addPackage IO http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/iofor4.5/PackageInfo.g
-./addPackage IO_ForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/IO_ForHomalg/PackageInfo.g
-./addPackage IRREDSOL http://www-public.tu-bs.de:8080/~bhoeflin/irredsol/PackageInfo.g
-./addPackage ITC http://www.math.rwth-aachen.de/~Volkmar.Felsch/itc/PackageInfo.g
-./addPackage kan http://www.math.bangor.ac.uk/chda/gap4r5/kan/PackageInfo.g
-./addPackage kbmag http://www.warwick.ac.uk/~mareg/kbmag/PackageInfo.g
-./addPackage LAGUNA http://www.cs.st-andrews.ac.uk/~alexk/laguna/PackageInfo.g
-./addPackage liealgdb http://www.sztaki.hu/~schneider/Research/LieAlgDB/PackageInfo.g
-./addPackage linboxing http://www.cs.st-andrews.ac.uk/~pas/linboxing/PackageInfo.g
-./addPackage LocalizeRingForHomalg http://homalg.math.rwth-aachen.de/~markus/LocalizeRingForHomalg/PackageInfo.g
-./addPackage loops http://www.math.du.edu/loops/PackageInfo.g
-./addPackage MatricesForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/MatricesForHomalg/PackageInfo.g
-./addPackage Modules http://homalg.math.rwth-aachen.de/~barakat/homalg-project/Modules/PackageInfo.g
-./addPackage Nilmat http://larmor.nuigalway.ie/~dane/nilmat/PackageInfo.g
-./addPackage nq http://www.icm.tu-bs.de/ag_algebra/software/NQ/PackageInfo.g
-./addPackage NQL http://www.uni-math.gwdg.de/rhartung/pub/nql/PackageInfo.g
-./addPackage NumericalSgps http://www.fc.up.pt/cmup/mdelgado/numericalsgps/PackageInfo.g
-./addPackage OpenMath http://www.cs.st-andrews.ac.uk/~alexk/openmath/PackageInfo.g
-./addPackage orb http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/orbfor4.5/PackageInfo.g
-./addPackage ParGAP http://www.cs.st-andrews.ac.uk/~pas/ParGAP/PackageInfo.g
-./addPackage Polenta http://www.cs.st-andrews.ac.uk/~bjoern/software/Polenta/PackageInfo.g
-./addPackage Polycyclic http://www.icm.tu-bs.de/ag_algebra/software/polycyclic/PackageInfo.g
-./addPackage polymaking http://csserver.evansville.edu/~mroeder/polymaking/PackageInfo.g
-./addPackage qaos http://www.math.tu-berlin.de/~kant/download/gap/qaos.PackageInfo.g
-./addPackage QuaGroup http://www.science.unitn.it/~degraaf/PackageInfo.g
-./addPackage RadiRoot http://www.icm.tu-bs.de/ag_algebra/software/distler/radiroot/PackageInfo.g
-./addPackage RCWA http://www.gap-system.org/DevelopersPages/StefanKohl/rcwa/PackageInfo.g
-./addPackage RDS http://csserver.evansville.edu/~mroeder/rds/gap4_5/PackageInfo.g
-./addPackage recog http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/recogfor4.5/PackageInfo.g
-./addPackage recogbase http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/recogbasefor4.5/PackageInfo.g
-./addPackage Repsn http://www.sfu.ca/~vdabbagh/gap/PackageInfo.g
-./addPackage ResClasses http://www.gap-system.org/DevelopersPages/StefanKohl/resclasses/PackageInfo.g
-./addPackage RingsForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/RingsForHomalg/PackageInfo.g
-./addPackage SCO http://wwwb.math.rwth-aachen.de/goertzen/SCO/PackageInfo.g
-./addPackage SCSCP http://www.cs.st-andrews.ac.uk/~alexk/scscp/PackageInfo.g
-./addPackage SgpViz http://www.fc.up.pt/cmup/mdelgado/sgpviz/PackageInfo.g
-./addPackage simpcomp http://www.igt.uni-stuttgart.de/LstDiffgeo/simpcomp/PackageInfo.g
-./addPackage singular http://www.gap-system.org/HostedGapPackages/singular/PackageInfo.g
-./addPackage Smallsemi http://www-groups.mcs.st-andrews.ac.uk/~jamesm/smallsemi/PackageInfo.g
-./addPackage SONATA http://www.algebra.uni-linz.ac.at/Sonata/sonata-2.5/PackageInfo.g
-./addPackage Sophus http://www.sztaki.hu/~schneider/Research/Sophus/PackageInfo.g
-# ./addPackage TomLib - no PackageInfo.g. TODO: sort out two archives, main and optional
-./addPackage toric http://www.opensourcemath.org/toric/PackageInfo.g
-./addPackage unipot http://www.sergei-haller.de/unipot/PackageInfo.g
-./addPackage UnitLib http://www.cs.st-andrews.ac.uk/~alexk/unitlib/PackageInfo.g
-./addPackage Wedderga http://www.um.es/adelrio/wedderga/PackageInfo.g
-./addPackage XGAP http://www.math.rwth-aachen.de/~Max.Neunhoeffer/xgap4/PackageInfo.g
-./addPackage XMod http://www.math.bangor.ac.uk/chda/gap4r5/xmod/PackageInfo.g
+# This file contains URLs of PackageInfo.g files. It must be updated when
+# a new packages is added for redistribution or when the URL of the
+# PackageInfo.g file for some package is changed. The automated package
+# update system will use this file before running further package update
+# scripts to get notification about any new packages or changed URLs.
+# Before changing URLs, validates them using the form available here:
+#
+# http://www.gap-system.org/Packages/Authors/authors.html
+#
+# Each non commented out line of this file must have format
+# <package-name> <PackageInfoURL>
+# or
+# <package-name> MOVE <PackageInfoURL>
+# The URL must be started with "http". The option "MOVE" is used to enforce
+# the change of the URL in case if the stored URL is different.
+
+ACE         http://school.maths.uwa.edu.au/~gregg/ACE/PackageInfo.g
+AClib       http://www-public.tu-bs.de:8080/~beick/soft/aclib/PackageInfo.g
+Alnuth      http://www.icm.tu-bs.de/ag_algebra/software/Alnuth/PackageInfo.g
+ANUPQ       http://www.math.rwth-aachen.de/~Greg.Gamble/ANUPQ/PackageInfo.g
+AtlasRep    http://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep/PackageInfo.g
+Automata    http://www.fc.up.pt/cmup/mdelgado/automata/PackageInfo.g
+AutomGrp    http://finautom.sourceforge.net/automgrp/PackageInfo.g
+AutPGrp     http://www-public.tu-bs.de:8080/~beick/soft/autpgrp/PackageInfo.g
+Browse      http://www.math.rwth-aachen.de/~Browse/PackageInfo.g
+Carat       http://www.math.uni-bielefeld.de/~gaehler/gap45/Carat/PackageInfo.g
+Circle      http://www.cs.st-andrews.ac.uk/~alexk/circle/PackageInfo.g
+Citrus      http://www-groups.mcs.st-and.ac.uk/~jamesm/citrus/PackageInfo.g
+cohomolo    http://www.warwick.ac.uk/staff/D.F.Holt/cohomolo/PackageInfo.g
+Crime       http://math.uic.edu/~marcus/Crime/PackageInfo.g
+CRISP       http://www.icm.tu-bs.de/~bhoeflin/crisp/PackageInfo.g
+Cryst       http://www.math.uni-bielefeld.de/~gaehler/gap45/Cryst/PackageInfo.g
+CrystCat    http://www.math.uni-bielefeld.de/~gaehler/gap45/CrystCat/PackageInfo.g
+CTblLib     http://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib/PackageInfo.g
+Cubefree    http://www.icm.tu-bs.de/ag_algebra/software/dietrich/Cubefree/PackageInfo.g
+cvec        http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/cvecfor4.5/PackageInfo.g
+DESIGN      http://www.maths.qmul.ac.uk/~leonard/design/design1r6/PackageInfo.g
+EDIM        http://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM/PackageInfo.g
+Example     http://www.cs.st-andrews.ac.uk/~alexk/example/PackageInfo.g
+ExamplesForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/ExamplesForHomalg/PackageInfo.g
+FactInt     http://www.gap-system.org/DevelopersPages/StefanKohl/factint/PackageInfo.g
+FGA         http://www.icm.tu-bs.de/ag_algebra/software/sievers/FGA/PackageInfo.g
+FORMAT      http://www.uoregon.edu/~wright/RESEARCH/format/PackageInfo.g
+Forms       http://cage.ugent.be/geometry/software/forms/PackageInfo.g
+FPLSA       http://www.math.rwth-aachen.de/~Thomas.Breuer/fplsa/PackageInfo.g
+FR          http://www.uni-math.gwdg.de/laurent/FR/PackageInfo.g
+fwtree      http://www.maths.nuigalway.ie/~tobias/fwtree/PackageInfo.g
+GAPDoc      http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/PackageInfo.g
+Gauss       http://wwwb.math.rwth-aachen.de/goertzen/Gauss/PackageInfo.g
+GaussForHomalg http://wwwb.math.rwth-aachen.de/goertzen/GaussForHomalg/PackageInfo.g
+GBNP        http://mathdox.org/products/gbnp/PackageInfo.g
+genss       http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genssfor4.5/PackageInfo.g
+gpd         http://www.maths.bangor.ac.uk/chda/gap4r5/gpd/PackageInfo.g
+GradedModules http://homalg.math.rwth-aachen.de/~markus/GradedModules/PackageInfo.g
+GradedRingForHomalg http://homalg.math.rwth-aachen.de/~markus/GradedRingForHomalg/PackageInfo.g
+GRAPE       http://www.maths.qmul.ac.uk/~leonard/grape/grape4r5/PackageInfo.g
+GrpConst    http://www-public.tu-bs.de:8080/~beick/soft/grpconst/PackageInfo.g
+Guarana     http://www-circa.mcs.st-andrews.ac.uk/~jjm/software/Guarana_093/PackageInfo.g
+GUAVA       http://www.southernct.edu/~fields/Guava/PackageInfo.g
+HAP         http://hamilton.nuigalway.ie/Hap/PackageInfo.g
+HAPcryst    http://csserver.evansville.edu/~mroeder/HAPcryst/PackageInfo.g
+HAPprime    http://www.cs.st-andrews.ac.uk/~pas/HAPprime/PackageInfo.g
+hecke       http://home.in.tum.de/~traytel/hecke/PackageInfo.g
+homalg      http://homalg.math.rwth-aachen.de/~barakat/homalg-project/homalg/PackageInfo.g
+HomalgToCAS http://homalg.math.rwth-aachen.de/~barakat/homalg-project/HomalgToCAS/PackageInfo.g
+idrel       http://www.maths.bangor.ac.uk/chda/gap4r5/idrel/PackageInfo.g
+IO          http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/iofor4.5/PackageInfo.g
+IO_ForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/IO_ForHomalg/PackageInfo.g
+IRREDSOL    http://www.icm.tu-bs.de/~bhoeflin/irredsol/PackageInfo.g
+ITC         http://www.math.rwth-aachen.de/~Volkmar.Felsch/itc/PackageInfo.g
+kan         http://www.maths.bangor.ac.uk/chda/gap4r5/kan/PackageInfo.g
+kbmag       http://www.warwick.ac.uk/~mareg/kbmag/PackageInfo.g
+LAGUNA      http://www.cs.st-andrews.ac.uk/~alexk/laguna/PackageInfo.g
+liealgdb    http://www.sztaki.hu/~schneider/Research/LieAlgDB/PackageInfo.g
+linboxing   http://www.cs.st-andrews.ac.uk/~pas/linboxing/PackageInfo.g
+LocalizeRingForHomalg http://homalg.math.rwth-aachen.de/~markus/LocalizeRingForHomalg/PackageInfo.g
+loops       http://www.math.du.edu/loops/PackageInfo.g
+MapClass    http://web.mat.bham.ac.uk/~jamesa/mapclass/PackageInfo.g 
+MatricesForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/MatricesForHomalg/PackageInfo.g
+Modules     http://homalg.math.rwth-aachen.de/~barakat/homalg-project/Modules/PackageInfo.g
+Nilmat      http://larmor.nuigalway.ie/~dane/nilmat/PackageInfo.g
+nq          http://www.icm.tu-bs.de/ag_algebra/software/NQ/PackageInfo.g
+NQL         http://www.uni-math.gwdg.de/rhartung/pub/nql/PackageInfo.g
+NumericalSgps http://www.fc.up.pt/cmup/mdelgado/numericalsgps/PackageInfo.g
+OpenMath    http://www.cs.st-andrews.ac.uk/~alexk/openmath/PackageInfo.g
+orb         http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/orbfor4.5/PackageInfo.g
+ParGAP      http://www.cs.st-andrews.ac.uk/~pas/ParGAP/PackageInfo.g
+Polenta     http://www.icm.tu-bs.de/ag_algebra/software/Polenta/PackageInfo.g
+Polycyclic  http://www.icm.tu-bs.de/ag_algebra/software/polycyclic/PackageInfo.g
+polymaking  http://csserver.evansville.edu/~mroeder/polymaking/PackageInfo.g
+qaos        http://www.math.tu-berlin.de/~kant/download/gap/qaos.PackageInfo.g
+QuaGroup    http://www.science.unitn.it/~degraaf/PackageInfo.g
+RadiRoot    http://www.icm.tu-bs.de/ag_algebra/software/radiroot/PackageInfo.g
+RCWA        http://www.gap-system.org/DevelopersPages/StefanKohl/rcwa/PackageInfo.g
+RDS         http://csserver.evansville.edu/~mroeder/rds/gap4_5/PackageInfo.g
+recog       http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/recogfor4.5/PackageInfo.g
+recogbase   http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/recogbasefor4.5/PackageInfo.g
+Repsn       http://www.sfu.ca/~vdabbagh/gap/PackageInfo.g
+ResClasses  http://www.gap-system.org/DevelopersPages/StefanKohl/resclasses/PackageInfo.g
+RingsForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/RingsForHomalg/PackageInfo.g
+SCO         http://wwwb.math.rwth-aachen.de/goertzen/SCO/PackageInfo.g
+SCSCP       http://www.cs.st-andrews.ac.uk/~alexk/scscp/PackageInfo.g
+SgpViz      http://www.fc.up.pt/cmup/mdelgado/sgpviz/PackageInfo.g
+simpcomp    http://www.igt.uni-stuttgart.de/LstDiffgeo/simpcomp/PackageInfo.g
+singular    http://www.gap-system.org/HostedGapPackages/singular/PackageInfo.g
+Smallsemi   http://www-groups.mcs.st-andrews.ac.uk/~jamesm/smallsemi/PackageInfo.g
+SONATA      http://www.algebra.uni-linz.ac.at/Sonata/PackageInfo.g
+Sophus      http://www.sztaki.hu/~schneider/Research/Sophus/PackageInfo.g
+SymbCompCC  http://www.icm.tu-bs.de/ag_algebra/software/feichten/SymbCompCC/PackageInfo.g
+TomLib      http://schmidt.nuigalway.ie/tomlib/PackageInfo.g
+toric       http://www.opensourcemath.org/toric/PackageInfo.g
+unipot      http://www.sergei-haller.de/unipot/PackageInfo.g
+UnitLib     http://www.cs.st-andrews.ac.uk/~alexk/unitlib/PackageInfo.g
+Wedderga    http://www.um.es/adelrio/wedderga/PackageInfo.g
+XGAP        http://www.math.rwth-aachen.de/~Max.Neunhoeffer/xgap4/PackageInfo.g
+XMod        http://www.math.bangor.ac.uk/chda/gap4r5/xmod/PackageInfo.g

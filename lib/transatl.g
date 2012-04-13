@@ -2,7 +2,6 @@
 ##
 #W  transatl.g                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2005 The GAP Group
 ##
@@ -10,8 +9,6 @@
 ##  differently on different sides of the Atlantic, such as
 ##  `Stabilizer/Stabiliser' and `Solvable/Soluble'.
 ##
-Revision.transatl_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -19,10 +16,17 @@ Revision.transatl_g :=
 ##
 ##  Declare a synonym for the name according as it would be on the other
 ##  side of the Atlantic Ocean.
-BindGlobal("Transatlantic",function(fct)
-local name,new,p;
+BindGlobal("Transatlantic",function(arg)
+local fct,attr,name,new,p;
+  fct := arg[1];
+  if Length(arg) > 1 then
+    attr:=arg[2];
+  else
+    attr:=false;
+  fi;
   name:=NameFunction(fct);
   new:=ShallowCopy(name);
+
   p:=PositionSublist(name,"lizer");
   if p<>fail then
     new:=ShallowCopy(name);
@@ -33,6 +37,7 @@ local name,new,p;
     new:=ShallowCopy(name);
     new[p+2]:='z';
   fi;
+
   p:=PositionSublist(name,"olvable");
   if p<>fail then
     new:=ReplacedString(name,"olvable","oluble");
@@ -41,7 +46,21 @@ local name,new,p;
   if p<>fail then
     new:=ReplacedString(name,"oluble","olvable");
   fi;
-  DeclareSynonym(new,fct);
+
+  p:=PositionSublist(name,"enter");
+  if p<>fail then
+    new:=ReplacedString(name,"enter","entre");
+  fi;
+  p:=PositionSublist(name,"entre");
+  if p<>fail then
+    new:=ReplacedString(name,"entre","enter");
+  fi;
+
+  if attr then
+    DeclareSynonymAttr(new,fct);
+  else
+    DeclareSynonym(new,fct);
+  fi;
 end);
 
 # the following list is taken from gd files. It is possible that functions
@@ -60,7 +79,7 @@ Transatlantic(CentralizerTransSymmCSPG);
 Transatlantic(CentralizerWreath);
 Transatlantic(ClassesSolvableGroup);
 Transatlantic(ClassPositionsOfSolvableResiduum);
-Transatlantic(ComplementclassesSolvableNC);
+Transatlantic(ComplementClassesRepresentativesSolvableNC);
 Transatlantic(ComputedIsPSolvableCharacterTables);
 Transatlantic(CONextCentralizer);
 Transatlantic(EpimorphismSolvableQuotient);

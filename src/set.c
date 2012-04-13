@@ -2,7 +2,6 @@
 **
 *W  set.c                       GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -23,8 +22,6 @@
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_set_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -47,9 +44,7 @@ const char * Revision_set_c =
 #include        "lists.h"               /* generic lists                   */
 #include        "listfunc.h"            /* functions for generic lists     */
 #include        "plist.h"               /* plain lists                     */
-#define INCLUDE_DECLARATION_PART
 #include        "set.h"                 /* plain sets                      */
-#undef  INCLUDE_DECLARATION_PART
 #include        "string.h"              /* strings                         */
 
 
@@ -1178,8 +1173,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSet ( void )
 {
-    module.revision_c = Revision_set_c;
-    module.revision_h = Revision_set_h;
     FillInVersion( &module );
     return &module;
 }

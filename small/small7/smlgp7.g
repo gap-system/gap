@@ -6,8 +6,6 @@
 ##  This file contains the reading and constrution functions for the groups
 ##  of size 512.
 ##
-Revision.smlgp7_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

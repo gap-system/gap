@@ -1,7 +1,5 @@
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_vecgf2_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -27,9 +25,7 @@ const char * Revision_vecgf2_c =
 #include        "blister.h"             /* boolean lists                   */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "vecgf2.h"              /* GF2 vectors                     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "saveload.h"            /* saving and loading              */
 
@@ -530,9 +526,7 @@ Obj AddPartialGF2VecGF2Vec (
 
 #endif
 
-Obj ProdGF2VecGF2Vec ( vl, vr )
-    Obj                 vl;
-    Obj                 vr;
+Obj ProdGF2VecGF2Vec ( Obj vl, Obj vr )
 {
     UInt *              ptL;            /* bit field of <vl>               */
     UInt *              ptR;            /* bit field of <vr>               */
@@ -590,9 +584,7 @@ Obj ProdGF2VecGF2Vec ( vl, vr )
 **  multiplied by the corresponding entry of <vl>.  Note that the  caller has
 **  to ensure, that <vl> is a gf2-vector and <vr> is a gf2-matrix.
 */
-Obj ProdGF2VecGF2Mat ( vl, vr )
-    Obj                 vl;
-    Obj                 vr;
+Obj ProdGF2VecGF2Mat ( Obj vl, Obj vr )
 {
     UInt                len;            /* length of the list              */
     UInt                stop;
@@ -658,9 +650,7 @@ Obj ProdGF2VecGF2Mat ( vl, vr )
 **  Note that the  caller has
 **  to ensure, that <ml> is a GF2 matrix and <vr> is a GF2 vector.
 */
-Obj ProdGF2MatGF2Vec ( ml, vr )
-    Obj                 ml;
-    Obj                 vr;
+Obj ProdGF2MatGF2Vec ( Obj ml, Obj vr )
 {
     UInt                len;            /* length of the vector            */
     UInt                ln1;            /* length of the rows of the mx    */
@@ -4924,8 +4914,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGF2Vec ( void )
 {
-    module.revision_c = Revision_vecgf2_c;
-    module.revision_h = Revision_vecgf2_h;
     FillInVersion( &module );
     return &module;
 }

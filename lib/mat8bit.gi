@@ -2,7 +2,6 @@
 ##
 #W  mat8bit.gi                   GAP Library                     Steve Linton
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##
 ##  all rows must be the same length and written over the same field
 ##
-Revision.mat8bit_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

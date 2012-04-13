@@ -3,7 +3,6 @@
 *W  compiler.h                  GAP source                   Ferenc Ràkòczi
 *W                                                         & Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,11 +13,6 @@
 
 #ifndef GAP_COMPILER_H
 #define GAP_COMPILER_H
-
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_compiler_h =
-   "@(#)$Id$";
-#endif
 
 
 /****************************************************************************

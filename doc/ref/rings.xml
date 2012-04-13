@@ -109,6 +109,7 @@ see&nbsp;<Ref Func="DefaultRing" Label="for ring elements"/>.
 <#Include Label="IsAssociated">
 <#Include Label="Associates">
 <#Include Label="StandardAssociate">
+<#Include Label="StandardAssociateUnit">
 <#Include Label="IsIrreducibleRingElement">
 <#Include Label="IsPrime">
 <#Include Label="Factors">

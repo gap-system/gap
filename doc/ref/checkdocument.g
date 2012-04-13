@@ -6,7 +6,7 @@ LoadPackage( "GAPDoc" );
 
 LoadPackage( "ctbllib" );
 
-# Read( "makedocrel.g" );
+Read( "makedocreldata.g" );
 
 if not IsBound( GAPInfo.ManualDataRef ) then
   Error( "read the data from makedocrel.g first" );
@@ -163,7 +163,7 @@ CheckWords := function(wlist)
   # numbers
   wlist := Filtered(wlist, a-> not ForAll(a, IsDigitChar));
   # documented GAP variables
-  wlist := Filtered(wlist, a-> not IsDocumentedVariable(a));
+  wlist := Filtered(wlist, a-> not IsDocumentedWord(a));
   # further bound GAP variables
   bnd := Filtered(wlist, a-> IsBoundGlobal(a));
   wlist := Filtered(wlist, a-> not IsBoundGlobal(a));

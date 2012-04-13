@@ -3,7 +3,6 @@
 #W  package.gd                  GAP Library                      Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,14 +13,9 @@
 #T TODO: document the utilities
 #T   `SuggestUpgrades'
 #T   `CheckPackageLoading'
-#T   `ShowPackageVariables'
 #T   `LoadAllPackages'
 #T   `PackageAvailabilityInfo'
-#T   `BibEntry'
-#T   `PackageVariablesInfo'
 ##
-Revision.package_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -241,11 +235,13 @@ DeclareGlobalFunction( "LinearOrderByPartialWeakOrder" );
 
 #############################################################################
 ##
-#F  PackageAvailabilityInfo( <name>, <version>, <record>, <suggested> )
+#F  PackageAvailabilityInfo( <name>, <version>, <record>, <suggested>,
+#F      <checkall> )
 ##
 ##  Let <A>name</A> and <A>version</A> be strings,
 ##  <A>record</A> be a record,
-##  and <A>suggested</A> be either <K>true</K> or <K>false</K>.
+##  and <A>suggested</A> and <A>checkall</A> be either <K>true</K> or
+##  <K>false</K>.
 ##  This function tests whether the &GAP; package <A>name</A> is available
 ##  for loading in a version that is at least <A>version</A>, or equal to
 ##  <A>version</A> if the first character of <A>version</A> is <C>=</C>,
@@ -254,7 +250,7 @@ DeclareGlobalFunction( "LinearOrderByPartialWeakOrder" );
 ##  <P/>
 ##  As usual, the argument <A>name</A> is case insensitive.
 ##  <P/>
-##  The result is <K>true</K> if the package is already loaded,
+##  The result is <K>true</K> if the package <A>name</A> is already loaded,
 ##  <K>false</K> if it cannot be loaded in the desired version,
 ##  and the string denoting the &GAP; root path where the package resides
 ##  if the package is available, but not yet loaded.
@@ -283,8 +279,8 @@ DeclareGlobalFunction( "LinearOrderByPartialWeakOrder" );
 ##  </Item>
 ##  </List>
 ##  <P/>
-##  The last two arguments of the function are used for loading packages,
-##  as follows.
+##  The arguments <A>record</A> and <A>suggested</A> are used
+##  for loading packages, as follows.
 ##  The record <A>record</A> collects information about the needed and
 ##  suggested packages of the package <A>name</A>, which allows one to
 ##  compute an appropriate loading order of these packages.
@@ -292,17 +288,24 @@ DeclareGlobalFunction( "LinearOrderByPartialWeakOrder" );
 ##  suggested packages are considered (value <K>true</K>) or only needed
 ##  packages (value <K>false</K>);
 ##  the latter is used for example in <Ref Func="TestPackageAvailability"/>.
+##  <P/>
+##  The argument <A>checkall</A> will be <K>false</K> when the function is
+##  called by <Ref Func="LoadPackage"/>;
+##  the value <K>true</K> means that all checks are performed,
+##  even if some have turned out to be not satisfied.
+##  This is useful when one is interested in the reasons why the package
+##  <A>name</A> cannot be loaded.
 ##
 DeclareGlobalFunction( "PackageAvailabilityInfo" );
 
 
 #############################################################################
 ##
-#F  TestPackageAvailability( <name>, <version> )
+#F  TestPackageAvailability( <name>[, <version>][, <checkall>] )
 ##
 ##  <#GAPDoc Label="TestPackageAvailability">
 ##  <ManSection>
-##  <Func Name="TestPackageAvailability" Arg='name, version'/>
+##  <Func Name="TestPackageAvailability" Arg='name[, version][, checkall]'/>
 ##
 ##  <Description>
 ##  For strings <A>name</A> and <A>version</A>, this function tests
@@ -318,6 +321,15 @@ DeclareGlobalFunction( "PackageAvailabilityInfo" );
 ##  if it is available, but not yet loaded.
 ##  So the package <A>name</A> is available if the result of
 ##  <Ref Func="TestPackageAvailability"/> is not equal to <K>fail</K>.
+##  <P/>
+##  If the optional argument <A>checkall</A> is <K>true</K> then all
+##  dependencies are checked, even if some have turned out to be not
+##  satisfied.
+##  This is useful when one is interested in the reasons why the package
+##  <A>name</A> cannot be loaded.
+##  In this situation, calling first <Ref Func="TestPackageAvailability"/>
+##  and then <Ref Func="DisplayPackageLoadingLog"/> with argument
+##  <Ref Var="PACKAGE_INFO"/> will give an overview of these reasons.
 ##  <P/>
 ##  You should <E>not</E> call <Ref Func="TestPackageAvailability"/> in
 ##  the test function of a package (the value of the component
@@ -362,10 +374,43 @@ DeclareGlobalFunction( "TestPackageAvailability" );
 ##  To each message, a <Q>severity</Q> is assigned,
 ##  which is one of <Ref Var="PACKAGE_ERROR"/>, <Ref Var="PACKAGE_WARNING"/>,
 ##  <Ref Var="PACKAGE_INFO"/>, <Ref Var="PACKAGE_DEBUG"/>,
-##  in decreasing order.
+##  in increasing order.
 ##  The function <Ref Func="DisplayPackageLoadingLog"/> shows only the
 ##  messages whose severity is at most <A>severity</A>,
 ##  the default for <A>severity</A> is <Ref Var="PACKAGE_WARNING"/>.
+##  <P/>
+##  The intended meaning of the severity levels is as follows.
+##  <P/>
+##  <List>
+##  <Mark>PACKAGE_ERROR</Mark>
+##  <Item>
+##    should be used whenever &GAP; will run into an error
+##    during package loading,
+##    where the reason of the error shall be documented in the global list.
+##  </Item>
+##  <Mark>PACKAGE_WARNING</Mark>
+##  <Item>
+##    should be used whenever &GAP; has detected a reason why a package
+##    cannot be loaded,
+##    and where the message describes how to solve this problem,
+##    for example if a package binary is missing.
+##  </Item>
+##  <Mark>PACKAGE_INFO</Mark>
+##  <Item>
+##    should be used whenever &GAP; has detected a reason why a package
+##    cannot be loaded,
+##    and where it is not clear how to solve this problem,
+##    for example if the package is not compatible with other installed
+##    packages.
+##  </Item>
+##  <Mark>PACKAGE_DEBUG</Mark>
+##  <Item>
+##    should be used for other messages reporting what &GAP; does when it
+##    loads packages (checking dependencies, reading files, etc.).
+##    One purpose is to record in which order packages have been considered
+##    for loading or have actually been loaded.
+##  </Item>
+##  </List>
 ##  <P/>
 ##  The log messages are created either by the functions of &GAP;'s
 ##  package loading mechanism or in the code of your package, for example
@@ -383,6 +428,10 @@ DeclareGlobalFunction( "TestPackageAvailability" );
 ##  or is called from a package file that is read from <F>init.g</F> or
 ##  <F>read.g</F>; in these cases, the name of the current package
 ##  (stored in the record <C>GAPInfo.PackageCurrent</C>) is taken.
+##  According to the above list, the <A>severity</A> argument of
+##  <Ref Func="LogPackageLoadingMessage"/> calls in a package's
+##  <C>AvailabilityTest</C> function is either <Ref Var="PACKAGE_WARNING"/>
+##  or <Ref Var="PACKAGE_INFO"/>.
 ##  <P/>
 ##  If you want to see the log messages already during the package loading
 ##  process, you can set the level of the info class
@@ -391,8 +440,8 @@ DeclareGlobalFunction( "TestPackageAvailability" );
 ##  afterwards the messages with at most this severity are shown immediately
 ##  when they arise.
 ##  In order to make this work already for autoloaded packages,
-##  you can set <C>GAPInfo.UserPreferences.InfoPackageLoadingLevel</C>
-##  to the desired severity level.
+##  you can call <C>SetUserPreference("InfoPackageLoadingLevel", 
+##  <A>lev</A>);</C> to set the desired severity level <A>lev</A>.
 ##  This can for example be done in your <F>gap.ini</F> file,
 ##  see Section <Ref Subsect="subsect:gap.ini file"/>.
 ##  </Description>
@@ -576,7 +625,7 @@ DeclareGlobalFunction( "DirectoriesPackageLibrary" );
 ##  <P/>
 ##  If only one argument <A>file</A> is given,
 ##  this should be the path of a file relative to the <F>pkg</F> subdirectory
-##  of &GAP; root paths (see&nbsp;<Ref Sect="GAP Root Directory"/>).
+##  of &GAP; root paths (see&nbsp;<Ref Sect="GAP Root Directories"/>).
 ##  Note that in this case, the package name is assumed to be equal to the
 ##  first part of <A>file</A>,
 ##  <E>so the one argument form is not recommended</E>.
@@ -655,11 +704,24 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  The latter may be the case if the package is not installed, if necessary
 ##  binaries have not been compiled, or if the version number of the
 ##  available version is too small.
+##  If the package cannot be loaded, <Ref Func="TestPackageAvailability"/>
+##  can be used to find the reasons.
 ##  <P/>
 ##  If the package <A>name</A> has already been loaded in a version number
 ##  at least or equal to <A>version</A>, respectively,
 ##  <Ref Func="LoadPackage"/> returns <K>true</K> without doing anything
 ##  else.
+##  <P/>
+##  The argument <A>name</A> may be the prefix of a package name.
+##  If no package with name <A>name</A> is installed,
+##  the behaviour is as follows.
+##  If <A>name</A> is the prefix of exactly one name of an installed package
+##  then <Ref Func="LoadPackage"/> is called with this name;
+##  if the names of several installed packages start with <A>name</A> then
+##  the these names are printed, and <Ref Func="LoadPackage"/> returns
+##  <K>fail</K>.
+##  Thus the names of <E>all</E> installed packages can be shown by calling
+##  <Ref Func="LoadPackage"/> with an empty string.
 ##  <P/>
 ##  If the optional argument <A>banner</A> is present then it must be either
 ##  <K>true</K> or <K>false</K>;
@@ -780,7 +842,7 @@ DeclareGlobalFunction( "SetPackagePath" );
 ##
 ##  <Description>
 ##  Let <A>paths</A> be a list of strings that denote paths to intended
-##  &GAP; root directories (see <Ref Sect="GAP Root Directory"/>).
+##  &GAP; root directories (see <Ref Sect="GAP Root Directories"/>).
 ##  The function <Ref Func="ExtendRootDirectories"/> adds these paths to
 ##  the global list <C>GAPInfo.RootPaths</C> and calls the initialization of
 ##  available &GAP; packages,
@@ -789,7 +851,7 @@ DeclareGlobalFunction( "SetPackagePath" );
 ##  directories given by <A>paths</A>.
 ##  <P/>
 ##  Note that the purpose of this function is to make &GAP; packages in the
-##  given directries available.
+##  given directories available.
 ##  It cannot be used to influence the start of &GAP;,
 ##  because the &GAP; library is loaded before
 ##  <Ref Func="ExtendRootDirectories"/> can be called
@@ -856,7 +918,7 @@ DeclareGlobalFunction( "InstalledPackageVersion" );
 ##  If some needed packages are not loadable then an error is signalled.
 ##  Then those packages in <C>GAPInfo.Dependencies.SuggestedOtherPackages</C>
 ##  are loaded (if they are available) that do not occur in the list
-##  <C>GAPInfo.UserPreferences.ExcludeFromAutoload</C>.
+##  <C>UserPreference("ExcludeFromAutoload");</C>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -1006,48 +1068,54 @@ DeclareGlobalFunction( "SuggestUpgrades" );
 #F  BibEntry( <pkgname>[, <key>] )
 #F  BibEntry( <pkginfo>[, <key>] )
 ##
+##  <#GAPDoc Label="BibEntry">
 ##  <ManSection>
-##  <Func Name="BibEntry" Arg='"GAP"[, key]'/>
 ##  <Func Name="BibEntry" Arg='pkgname[, key]'/>
-##  <Func Name="BibEntry" Arg='pkginfo[, key]'/>
+##
+##  <Returns>
+##  a string in BibXMLext format
+##  (see <Ref Sect="The BibXMLext Format" BookName="gapdoc"/>)
+##  that can be used for referencing the &GAP; system or a &GAP; package.
+##  </Returns>
 ##
 ##  <Description>
-##  <Ref Func="BibEntry"/> returns a string representing a Bib&TeX; entry for
-##  referencing the &GAP; system or a &GAP; package.
-##  <P/>
-##  When called with argument the string <C>"GAP"</C>,
+##  If the argument <A>pkgname</A> is the string <C>"GAP"</C>,
 ##  the function returns an entry for the current version of &GAP;.
 ##  <P/>
-##  When a string <A>pkgname</A> is given as an argument,
-##  an entry for the &GAP; package with name <A>pkgname</A> is returned,
-##  which is computed from the record at the first position in the list
-##  returned by <Ref Func="PackageInfo"/> when this is called with the
-##  argument <A>pkgname</A>;
-##  if no package with name <A>pkgname</A> is loadable then the empty string
+##  Otherwise, if a string <A>pkgname</A> is given, which is the name of a
+##  &GAP; package, an entry for this package is returned;
+##  this entry is computed from the <F>PackageInfo.g</F> file of
+##  <E>the current version</E> of the package,
+##  see <Ref Func="InstalledPackageVersion"/>.
+##  If no package with name <A>pkgname</A> is installed then the empty string
 ##  is returned.
-##  An entry for a prescribed version of a package can be computed by
-##  entering, as the argument <A>pkginfo</A>,
-##  the desired record from the list returned by <Ref Func="PackageInfo"/>.
+##  <P/>
+##  A string for <E>a different version</E> of &GAP; or a package
+##  can be computed by entering, as the argument <A>pkgname</A>,
+##  the desired record from the <F>PackageInfo.g</F> file.
+##  (One can access these records using the function <C>PackageInfo</C>.)
 ##  <P/>
 ##  In each of the above cases, an optional argument <A>key</A> can be
 ##  given, a string which is then used as the key of the Bib&TeX; entry
 ##  instead of the default key that is generated from the system/package name
-##  and the version number;
-##  the version number should be part of any key,
-##  in order to be able to cite different versions of &GAP;
-##  or of a &GAP; package.
+##  and the version number.
 ##  <P/>
-##  This function requires the functions
+##  <Ref Func="BibEntry"/> requires the functions
 ##  <Ref Func="FormatParagraph" BookName="gapdoc"/> and
 ##  <Ref Func="NormalizedNameAndKey" BookName="gapdoc"/>
 ##  from the &GAP; package &GAPDoc;.
 ##  <P/>
+##  The functions <Ref Func="ParseBibXMLextString" BookName="gapdoc"/>
+##  and <Ref Func="StringBibXMLEntry" BookName="gapdoc"/>
+##  can be used to create for example a Bib&TeX; entry from the return value,
+##  as follows.
+##  <P/>
 ##  <Log><![CDATA[
-##  gap> bib:= BibEntry( "GAP", "4.5" );;
+##  gap> bib:= BibEntry( "GAP", "GAP4.5" );;
 ##  gap> Print( bib, "\n" );
-##  <entry id="4.5"><misc>
+##  <entry id="GAP4.5"><misc>
 ##    <title><C>GAP</C> &ndash; <C>G</C>roups, <C>A</C>lgorithms,
-##           and <C>P</C>rogramming, <C>V</C>ersion 4.dev</title>
+##           and <C>P</C>rogramming, <C>V</C>ersion 4.5.1</title>
 ##    <howpublished><URL>http://www.gap-system.org</URL></howpublished>
 ##    <key>GAP</key>
 ##    <keywords>groups; *; gap; manual</keywords>
@@ -1055,7 +1123,7 @@ DeclareGlobalFunction( "SuggestUpgrades" );
 ##  </misc></entry>
 ##  gap> parse:= ParseBibXMLextString( bib );;
 ##  gap> Print( StringBibXMLEntry( parse.entries[1], "BibTeX" ) );
-##  @misc{ 4.5,
+##  @misc{ GAP4.5,
 ##    title =            {{GAP}   {\textendash}   {G}roups,   {A}lgorithms,  and
 ##                        {P}rogramming, {V}ersion 4.5.1},
 ##    organization =     {The GAP {G}roup},
@@ -1067,6 +1135,7 @@ DeclareGlobalFunction( "SuggestUpgrades" );
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "BibEntry" );
 
@@ -1092,10 +1161,11 @@ DeclareGlobalFunction( "PackageVariablesInfo" );
 
 #############################################################################
 ##
-#F  ShowPackageVariables( <pkgname>[, <version>] )
+#F  ShowPackageVariables( <pkgname>[, <version>][, <arec>] )
 ##
+##  <#GAPDoc Label="ShowPackageVariables">
 ##  <ManSection>
-##  <Func Name="ShowPackageVariables" Arg='pkgname[, version]'/>
+##  <Func Name="ShowPackageVariables" Arg='pkgname[, version][, arec]'/>
 ##
 ##  <Description>
 ##  Let <A>pkgname</A> be the name of a &GAP; package.
@@ -1103,12 +1173,10 @@ DeclareGlobalFunction( "PackageVariablesInfo" );
 ##  <Ref Func="ShowPackageVariables"/> prints a list of global variables
 ##  that become bound and of methods that become installed
 ##  when the package is loaded.
-##  (For that, the package is actually loaded,
-##  so <Ref Func="ShowPackageVariables"/> can be called only once
-##  for the same package in the same &GAP; session.)
+##  (For that, the package is actually loaded.)
 ##  <P/>
 ##  If a version number <A>version</A> is given
-##  (see Section&nbsp;<Ref Sect="Version Numbers"/>)
+##  (see Section&nbsp;<Ref Sect="Version Numbers" BookName="Example"/>)
 ##  then this version of the package is considered.
 ##  <P/>
 ##  An error message is printed if (the given version of) the package
@@ -1128,8 +1196,46 @@ DeclareGlobalFunction( "PackageVariablesInfo" );
 ##  in the package,
 ##  and <C>Set<A>attr</A></C> and <C>Has<A>attr</A></C> type variables
 ##  where <A>attr</A> is an attribute or property.
+##  <P/>
+##  The output can be customized using the optional record <A>arec</A>,
+##  the following components of this record are supported.
+##  <List>
+##  <Mark><C>show</C></Mark>
+##  <Item>
+##    a list of strings describing those kinds of variables which shall be
+##    shown, such as <C>"new global functions"</C>;
+##    the default are all kinds that appear in the package,
+##  </Item>
+##  <Mark><C>showDocumented</C></Mark>
+##  <Item>
+##    <K>true</K> (the default) if documented variables shall be shown,
+##    and <K>false</K> otherwise,
+##  </Item>
+##  <Mark><C>showUndocumented</C></Mark>
+##  <Item>
+##    <K>true</K> (the default) if undocumented variables shall be shown,
+##    and <K>false</K> otherwise,
+##  </Item>
+##  <Mark><C>showPrivate</C></Mark>
+##  <Item>
+##    <K>true</K> (the default) if variables from the package's name space
+##    (see Section <Ref Sect="Namespaces"/>) shall be shown,
+##    and <K>false</K> otherwise,
+##  </Item>
+##  <Mark><C>Display</C></Mark>
+##  <Item>
+##    a function that takes a string and shows it on the screen;
+##    the default is <Ref Func="Print"/>,
+##    another useful value is <Ref Func="Pager"/>.
+##  </Item>
+##  </List>
+##  <P/>
+##  An interactive variant of <Ref Func="ShowPackageVariables"/> is the
+##  function <Ref Func="BrowsePackageVariables" BookName="browse"/> that is
+##  provided by the &GAP; package <Package>Browse</Package>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ShowPackageVariables" );
 

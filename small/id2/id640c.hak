@@ -2,8 +2,6 @@
 ##
 #W  id640c.hak             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id640c_hak :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[640].next[86].next[37]:=
 rec(

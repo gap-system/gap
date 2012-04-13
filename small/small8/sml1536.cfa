@@ -3,8 +3,6 @@
 #W  sml1536.cfa            GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1536_cfa :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1536 ].npnil[ 6 ][ 1 ] :=
 [ 723420846249490843255909, 11300288069810023120996, 90427596773987144778852,

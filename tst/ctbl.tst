@@ -2,14 +2,12 @@
 ##
 #W  ctbl.tst                   GAP Library                      Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  Exclude from testinstall.g: why?
 ##
-
-gap> START_TEST("$Id$");
+gap> START_TEST("ctbl.tst");
 
 # `ClassPositionsOf...' for the trivial group (which usually causes trouble)
 gap> g:= TrivialGroup( IsPermGroup );;
@@ -44,7 +42,6 @@ gap> ClassPositionsOfCentre( TrivialCharacter( t ) );
 [ 1 ]
 gap> ClassPositionsOfKernel( TrivialCharacter( t ) );
 [ 1 ]
-
 gap> LoadPackage("ctbllib", "1", false);; 
 
 # `CharacterTableDirectProduct' in all four combinations.
@@ -60,11 +57,8 @@ gap> ( t1 mod 2 ) * t2;
 BrauerTable( "C2xC3", 2 )
 gap> t2 * ( t1 mod 2 );
 BrauerTable( "C3xC2", 2 )
-
-
-gap> STOP_TEST( "ctbl.tst", 2250828729 );
+gap> STOP_TEST( "ctbl.tst", 15300000 );
 
 #############################################################################
 ##
 #E
-

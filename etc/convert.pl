@@ -944,7 +944,7 @@ sub macro_replace {
           }
 	# pseudo ``itemend'' character
         elsif ($macro eq "itmnd")        { return ($rest, "<dd>");         }
-        elsif ($macro eq "cite" and $rest =~ /^\{\s*(\w+)\s*\}/) 
+        elsif ($macro eq "cite" and $rest =~ /^\{\s*(\S+)\s*\}/) 
           { return ($', "<a href=\"biblio.htm#$1\"><cite>$1</cite></a>"); }
         elsif ($macro eq "URL" and $rest =~ /^\{([^\}]*)\}/) 
           { return ($', "<a href=\"$1\">$1</a>"); }

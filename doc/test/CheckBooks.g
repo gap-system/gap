@@ -1,6 +1,5 @@
 
 ## some test loops for basic checks of the help books    (Frank Lübeck)
-## $Id$
 
 ##  check in which formats the help books are available
 for a in RecFields(HELP_BOOKS_INFO) do 

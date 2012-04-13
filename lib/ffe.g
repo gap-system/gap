@@ -3,7 +3,6 @@
 #W  ffe.g                        GAP library                    Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file deals with internal finite field elements.
 ##
-Revision.ffe_g :=
-    "@(#)$Id$";
 
 
 #############################################################################

@@ -2,7 +2,6 @@
 ##
 #W  rvecempt.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 ##  The first case where empty row vectors turned out to be necessary was
 ##  in the representation of elements of a zero dimensional s.c. algebra.
 ##
-Revision.rvecempt_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

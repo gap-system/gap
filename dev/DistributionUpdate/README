@@ -1,7 +1,7 @@
          Setting up the Package/Distribution/Web Page Update Mechanism
          =============================================================
 
-##  $Id$   Frank Lübeck
+##  (C) Frank Lübeck
 
 (1) Choose a directory for the setup and copy this whole directory there.
     (To be able to keep archives for some time, there should be space for a

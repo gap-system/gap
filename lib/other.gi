@@ -2,15 +2,12 @@
 ##
 #W  other.gi                    GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##                                                     
 #Y  (C) 2000 School Mathematical Sciences, University of St Andrews, Scotland
 ##
 ##  This file contains implementations for interface functions to other
 ##  systems.
 
-Revision.other_gi :=
-    "@(#)$Id$";                 
 
 InstallMethod(MagmaInputString,"perm group",true,
   [IsPermGroup,IsString],0,

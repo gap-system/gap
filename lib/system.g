@@ -2,7 +2,6 @@
 ##
 #W  system.g                   GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -18,8 +17,6 @@
 ##  just some dedicated components are modified via the
 ##  ``post restore functions'' mechanism.
 ##  
-Revision.system_g :=
-    "@(#)$Id$";
 
 BIND_GLOBAL( "GAPInfo", rec(
 
@@ -45,6 +42,9 @@ BIND_GLOBAL( "GAPInfo", rec(
     ),
 
     HasReadGAPRC:= false,
+    
+    # list of all reserved keywords
+    Keywords:=ALL_KEYWORDS(),
 
     # the maximal number of arguments a method can have
     MaxNrArgsMethod:= 6,
@@ -69,15 +69,15 @@ BIND_GLOBAL( "GAPInfo", rec(
       [ "y", "", "<num>", "set number of lines" ],
       ,
       [ "g", 0, "show GASMAN messages (full/all/no garbage collections)" ],
-      [ "m", "70m", "<mem>", "set the initial workspace size" ],
-      [ "o", "512m", "<mem>", "set hint for maximal workspace size (GAP may allocate more)" ],
+      [ "m", "128m", "<mem>", "set the initial workspace size" ],
+      [ "o", "2g", "<mem>", "set hint for maximal workspace size (GAP may allocate more)" ],
       [ "K", "0", "<mem>", "set maximal workspace size (GAP never allocates more)" ],
       [ "c", "0", "<mem>", "set the cache size value" ],
       [ "a", "0", "<mem>", "set amount to pre-malloc-ate",
              "postfix 'k' = *1024, 'm' = *1024*1024, 'g' = *1024*1024*1024" ],
       ,
       [ "l", [], "<paths>", "set the GAP root paths" ],
-      [ "r", false, "disable/enable root dir. '~/.gap' and reading 'gap.ini', 'gaprc'" ],
+      [ "r", false, "disable/enable user GAP root dir GAPInfo.UserGapRoot" ],
       [ "A", false, "disable/enable autoloading of suggested GAP packages" ],
       [ "B", "", "<name>", "current architecture" ],
       [ "D", false, "enable/disable debugging the loading of files" ],
@@ -93,10 +93,38 @@ BIND_GLOBAL( "GAPInfo", rec(
       [ "p", false, "enable/disable package output mode" ],
       [ "E", false ],
       [ "U", "" ],     # -C -U undocumented options to the compiler
-      [ "s", "0k" ],
+      [ "s", "4g" ],
       [ "z", "20" ],
           ],
     ) );
+  
+
+#############################################################################
+##
+#V  GAPInfo.BytesPerVariable
+#V  DOUBLE_OBJLEN
+##
+##  <ManSection>
+##  <Var Name="GAPInfo.BytesPerVariable"/>
+##  <Var Name="DOUBLE_OBJLEN"/>
+##
+##  <Description>
+##  <Ref Var="GAPInfo.BytesPerVariable"/> is the number of bytes used for one
+##  <C>Obj</C> variable.
+##  </Description>
+##  </ManSection>
+##
+##  These variables need not be recomputed when a workspace is loaded.
+##
+GAPInfo.BytesPerVariable := 4;
+# are we a 64 (or more) bit system?
+while TNUM_OBJ( 2^((GAPInfo.BytesPerVariable-1)*8) )
+    = TNUM_OBJ( 2^((GAPInfo.BytesPerVariable+1)*8) ) do
+  GAPInfo.BytesPerVariable:= GAPInfo.BytesPerVariable + 4;
+od;
+BIND_GLOBAL( "DOUBLE_OBJLEN", 2*GAPInfo.BytesPerVariable );
+
+
 
 
 #############################################################################
@@ -146,6 +174,21 @@ CallAndInstallPostRestore( function()
         break;
       fi;
     od;
+    # On 32-bit we have to adjust some values:
+    if GAPInfo.BytesPerVariable = 4 then
+      i := 1;
+      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+            GAPInfo.CommandLineOptionData[i][1] <> "m" do i := i + 1; od;
+      GAPInfo.CommandLineOptionData[i][2] := "64m";
+      i := 1;
+      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+            GAPInfo.CommandLineOptionData[i][1] <> "o" do i := i + 1; od;
+      GAPInfo.CommandLineOptionData[i][2] := "1g";
+      i := 1;
+      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+            GAPInfo.CommandLineOptionData[i][1] <> "s" do i := i + 1; od;
+      GAPInfo.CommandLineOptionData[i][2] := "1500m";
+    fi;
 
     # The exact command line which called GAP as list of strings;
     # first entry is the executable followed by the options.
@@ -157,6 +200,11 @@ CallAndInstallPostRestore( function()
     # paths
     GAPInfo.RootPaths:= GAPInfo.KernelInfo.GAP_ROOT_PATHS;
     GAPInfo.UserHome:= GAPInfo.SystemEnvironment.HOME;
+    if IsBound(GAPInfo.KernelInfo.DOT_GAP_PATH) then
+      GAPInfo.UserGapRoot := GAPInfo.KernelInfo.DOT_GAP_PATH;
+    else
+      GAPInfo.UserGapRoot := fail;
+    fi;
 
     # directory caches
     GAPInfo.DirectoriesLibrary:= rec();
@@ -300,13 +348,6 @@ end );
 ##
 
 
-#############################################################################
-##
-##  identifier that will recognize the Windows and the Mac version
-##
-BIND_GLOBAL("WINDOWS_ARCHITECTURE",
-  IMMUTABLE_COPY_OBJ("i686-pc-cygwin-gcc/32-bit"));
-
 #T the following functions eventually should be more clever. This however
 #T will require kernel support and thus is something for later.  AH
 
@@ -325,7 +366,7 @@ BIND_GLOBAL("WINDOWS_ARCHITECTURE",
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ARCH_IS_WINDOWS",function()
-  return GAPInfo.Architecture = WINDOWS_ARCHITECTURE;
+  return POSITION_SUBSTRING (GAPInfo.Architecture, "cygwin", 0) <> fail;
 end);
 
 #############################################################################
@@ -365,32 +406,6 @@ end);
 BIND_GLOBAL("ARCH_IS_UNIX",function()
   return not ARCH_IS_WINDOWS();
 end);
-
-
-#############################################################################
-##
-#V  GAPInfo.BytesPerVariable
-#V  DOUBLE_OBJLEN
-##
-##  <ManSection>
-##  <Var Name="GAPInfo.BytesPerVariable"/>
-##  <Var Name="DOUBLE_OBJLEN"/>
-##
-##  <Description>
-##  <Ref Var="GAPInfo.BytesPerVariable"/> is the number of bytes used for one
-##  <C>Obj</C> variable.
-##  </Description>
-##  </ManSection>
-##
-##  These variables need not be recomputed when a workspace is loaded.
-##
-GAPInfo.BytesPerVariable := 4;
-# are we a 64 (or more) bit system?
-while TNUM_OBJ( 2^((GAPInfo.BytesPerVariable-1)*8) )
-    = TNUM_OBJ( 2^((GAPInfo.BytesPerVariable+1)*8) ) do
-  GAPInfo.BytesPerVariable:= GAPInfo.BytesPerVariable + 4;
-od;
-BIND_GLOBAL( "DOUBLE_OBJLEN", 2*GAPInfo.BytesPerVariable );
 
 
 #############################################################################

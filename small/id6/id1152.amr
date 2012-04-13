@@ -2,8 +2,6 @@
 ##
 #W  id1152.amr             GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id1152_amr :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[1152].next[1].next[356]:=
 rec(

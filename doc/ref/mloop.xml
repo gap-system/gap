@@ -25,6 +25,8 @@ interactive environment in which you use &GAP;.
 <Index Subkey="syntax">errors</Index>
 <Index Subkey="suppressing">output</Index>
 <Index Key="last"><C>last</C></Index>
+<Index Key="last2"><C>last2</C></Index>
+<Index Key="last3"><C>last3</C></Index>
 <Index>previous result</Index>
 The normal interaction with &GAP; happens in the so-called
 <E>read-eval-print</E> loop.
@@ -143,7 +145,7 @@ The next to previous result is available in <C>last2</C>
 and the result produced before that is available in <C>last3</C>.
 <P/>
 <Example><![CDATA[
-gap> 1; 2; 3;
+gap> 1;2;3;
 1
 2
 3
@@ -180,11 +182,11 @@ gap> n := 1234\
 > 567890;
 1234567890
 gap> "This is a very long string that does not fit on a line \
-gap> and is therefore continued on the next line.";
-"This is a very long string that does not fit on a line and is therefore conti\
-nued on the next line."
+> and is therefore continued on the next line.";
+"This is a very long string that does not fit on a line and is therefo\
+re continued on the next line."
 gap> bla\
-gap> bla := 5;; blabla;
+> bla := 5;; blabla;
 5
 ]]></Example>
 <P/>
@@ -620,10 +622,10 @@ and here is how we might define it.
 (Note <C>ErrorNoTraceBack</C> is <E>not</E> a &GAP; function.)
 <P/>
 <Example><![CDATA[
-gap> ErrorNoTraceBack := function(arg) # arg is a special variable that GAP   
->                                      # knows to treat as a list of arg'ts
+gap> ErrorNoTraceBack := function(arg) # arg is special variable that GAP
+>                                      # knows to treat as list of arg's
 >      local SavedOnBreak, ENTBOnBreak;
->      SavedOnBreak := OnBreak;        # save the current value of OnBreak
+>      SavedOnBreak := OnBreak;        # save current value of OnBreak
 > 
 >      ENTBOnBreak := function()       # our `local' OnBreak
 >      local s;
@@ -703,6 +705,8 @@ value later).
 gap> NormalOnBreakMessage := OnBreakMessage;; # save the default value 
 gap> OnBreakMessage := function() end;        # do-nothing function
 function(  ) ... end
+gap> OnBreakMessage();
+gap> OnBreakMessage := NormalOnBreakMessage;; # reset
 ]]></Example>
 <P/>
 With <Ref Func="OnBreak"/> still set away from its default value,
@@ -731,6 +735,7 @@ is an example in the &GAP; code where the idea is actually used.
 
 <Description>
 <Index Subkey="GAP3 name for Where">Backtrace</Index>
+<Index>Stack trace</Index>
 shows the last <A>nr</A> commands on the execution stack during whose execution
 the error occurred. If not given, <A>nr</A> defaults to 5. (Assume, for the
 following example, that after the last example <Ref Func="OnBreak"/>
@@ -969,11 +974,12 @@ during the session, and closing open files. If an error occurs during
 the execution of one of these functions, that function is simply
 abandoned, no break loop is entered. 
 <P/>
-<Example><![CDATA[
+<!-- Cannot test this as manual example -->
+<Log><![CDATA[
 gap> InstallAtExit(function() Print("bye\n"); end);
 gap> quit;
 bye
-]]></Example>
+]]></Log>
 <P/>
 During execution of these functions, the global variable <C>QUITTING</C>
 will be set to <K>true</K> if &GAP; is exiting because the user typed
@@ -1312,7 +1318,7 @@ range.
 When using &GAP; in the context of (undergraduate) teaching it is often
 desirable to simplify some of the system output and functionality defaults
 (potentially at the cost of making the printing of objects more expensive).
-This can be acchieved by turning on a teaching mode:
+This can be achieved by turning on a teaching mode:
 
 <ManSection>
 <Func Name="TeachingMode" Arg='[switch]'/>
@@ -1335,18 +1341,18 @@ Z(11)^3
 At the moment, teaching mode changes the following things
 <P/>
 <List>
-<Mark><B>Prime Field Elements</B></Mark>
+<Mark>Prime Field Elements</Mark>
 <Item>
 Elements of fields of prime order are printed as
 <Ref Func="ZmodnZObj" Label="for two integers"/>
 instead as power of a primitive root.
 </Item>
-<Mark><B>Quadratic Irrationalities</B></Mark>
+<Mark>Quadratic Irrationalities</Mark>
 <Item>
 Elements of a quadratic extension of the rationals are printed using the
 square root <Ref Func="ER"/> instead of using roots of unity.
 </Item>
-<Mark><B>Creation of some small groups</B></Mark>
+<Mark>Creation of some small groups</Mark>
 <Item>
 The group creator functions
 <Ref Func="CyclicGroup"/>,

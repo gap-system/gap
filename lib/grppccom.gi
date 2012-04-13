@@ -3,7 +3,6 @@
 #W  grppccom.gi                  GAP Library                     Frank Celler
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains the methods for complements in pc groups
 ##
-Revision.grppccom_gi:=
-    "@(#)$Id$";
 
 BindGlobal("HomomorphismsSeries",function(G,h)
 local r,img,i,gens,img2;
@@ -909,8 +906,8 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
 end );
 
 
-InstallMethod(ComplementclassesSolvableNC,"pc groups",IsIdenticalObj,
-  [CanEasilyComputePcgs,CanEasilyComputePcgs],0,
+InstallMethod( ComplementClassesRepresentativesSolvableNC, "pc groups", 
+  IsIdenticalObj, [CanEasilyComputePcgs,CanEasilyComputePcgs], 0,
 function(G,N)
   return List( COComplementsMain(G, N, true, false), G -> G.complement );
 end);
@@ -918,10 +915,10 @@ end);
 
 #############################################################################
 ##
-#M  Complementclasses( <G>, <N> ) . . . . . . . . . . . . find all complement
+#M  ComplementClassesRepresentatives( <G>, <N> ) . . . .  find all complement
 ##
-InstallMethod(Complementclasses,"solvable normal subgroup",IsIdenticalObj,
-  [IsGroup,IsGroup],0,
+InstallMethod( ComplementClassesRepresentatives, "solvable normal subgroup",
+  IsIdenticalObj, [IsGroup,IsGroup],0,
 function( G, N )
   local   C;
 
@@ -937,7 +934,7 @@ function( G, N )
     TryNextMethod();
   else
     # otherwise we have to work
-    C:=ComplementclassesSolvableNC(G,N);
+    C:=ComplementClassesRepresentativesSolvableNC(G,N);
   fi;
 
   # return what we have found
@@ -948,9 +945,9 @@ end);
 
 #############################################################################
 ##
-#M  Complementclasses( <G>, <N> )
+#M  ComplementcClassesRepresentatives( <G>, <N> )
 ##
-InstallMethod(Complementclasses,
+InstallMethod( ComplementClassesRepresentatives,
   "tell that the normal subgroup must be solvable",IsIdenticalObj,
   [IsGroup,IsGroup],-2*RankFilter(IsGroup),
 function( G, N )

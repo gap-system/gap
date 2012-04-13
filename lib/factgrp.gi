@@ -8,8 +8,6 @@
 ##
 ##  This file contains the declarations of operations for factor group maps
 ##
-Revision.factgrp_gi:=
-  "@(#)$Id$";
 
 #############################################################################
 ##
@@ -512,7 +510,7 @@ end);
 BADINDEX:=1000; # the index that is too big
 GenericFindActionKernel:=function(arg)
 local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, bv, badi,
-totalcnt, interupt, u, nu, cor, zzz,bigperm;
+totalcnt, interupt, u, nu, cor, zzz,bigperm,perm;
 
   G:=arg[1];
   N:=arg[2];
@@ -520,6 +518,14 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm;
     knowi:=arg[3];
   else
     knowi:=Index(G,N);
+  fi;
+
+  # special treatment for solvable groups. This will never be triggered for
+  # perm groups or nice groups
+  if Size(N)>1 and HasSolvableFactorGroup(G,N) then
+    perm:=ActionHomomorphism(G,RightCosets(G,N),OnRight,"surjective");
+    perm:=perm*IsomorphismPcGroup(Image(perm));
+    return perm;
   fi;
 
   bigperm:=IsPermGroup(G) and NrMovedPoints(G)>10000;
@@ -715,7 +721,14 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop, i,cheap;
       return s;
     fi;
     return IdentityMapping(G);
-  fi;
+  # simple test is comparatively cheap for permgrp
+  elif IsSimpleGroup(G) and not IsAbelian(G) then 
+    H:=SimpleGroup(ClassicalIsomorphismTypeFiniteSimpleGroup(G));
+    if IsPermGroup(H) and NrMovedPoints(H)>=NrMovedPoints(G) then
+      return IdentityMapping(G);
+    fi;
+  fi; # transitive/simple treatment
+
   # if the original group has no stabchain we probably do not want to keep
   # it (or a homomorphisms pool) there -- make a copy for working
   # intermediately with it.
@@ -1220,7 +1233,7 @@ local h;
   # check, whether we already know a factormap
   DoCheapActionImages(G);
   h:=GetNaturalHomomorphismsPool(G,N);
-  if h=fail and IsSolvableGroup(N) and not IsSolvableGroup(G) and N=RadicalGroup(G)
+  if h=fail and HasIsSolvableGroup(N) and HasIsSolvableGroup(G) and IsSolvableGroup(N) and not IsSolvableGroup(G) and N=RadicalGroup(G)
     then
     # did we just compute it?
     h:=GetNaturalHomomorphismsPool(G,N);

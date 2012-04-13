@@ -2,7 +2,6 @@
 ##
 #W  kbsemi.gd           GAP library        Andrew Solomon and Isabel Araújo
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the declarations for Knuth-Bendix Rewriting Systems
 ##
 
-Revision.kbsemi_gd :=
-    "@(#)$Id$";
 
 
 ############################################################################

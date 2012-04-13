@@ -3,7 +3,6 @@
 #W  grppcatr.gi                 GAP Library                      Frank Celler
 #W                                                             & Bettina Eick
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains the methods for attributes of polycylic groups.
 ##
-Revision.grppcatr_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

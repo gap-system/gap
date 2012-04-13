@@ -2,7 +2,6 @@
 ##
 #W  field.gi                    GAP library                  Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains generic methods for division rings.
 ##
-Revision.field_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -538,6 +535,12 @@ InstallMethod( AsList,
 BindGlobal( "DivisionRing_IsSubset", function( D, F )
     local CF;
 
+    # Special case for when F equals the cyclotomics (and hence is infinite
+    # dimensional over its left acting domain).
+    if IsIdenticalObj(F, Cyclotomics) then
+      return IsIdenticalObj(D, Cyclotomics);
+    fi;
+
     CF:= LeftActingDomain( F );
 
     if not IsSubset( D, GeneratorsOfDivisionRing( F ) ) then
@@ -1010,9 +1013,9 @@ InstallHandlingByNiceBasis( "IsFieldElementsSpace", rec(
 #M  Quotient( <F>, <r>, <s> ) . . . . . . . . quotient of elements in a field
 ##
 InstallMethod( Quotient,
-    "for field, and two ring elements",
+    "for a division ring, and two ring elements",
     IsCollsElmsElms,
-    [ IsField, IsRingElement, IsRingElement ],
+    [ IsDivisionRing, IsRingElement, IsRingElement ],
     function ( F, r, s )
     return r/s;
     end );
@@ -1023,9 +1026,9 @@ InstallMethod( Quotient,
 #M  IsUnit( <F>, <r> )  . . . . . . . . . . check for being a unit in a field
 ##
 InstallMethod( IsUnit,
-    "for field, and ring element",
+    "for a division ring, and a ring element",
     IsCollsElms,
-    [ IsField, IsRingElement ],
+    [ IsDivisionRing, IsRingElement ],
     function ( F, r )
     return not IsZero( r ) and r in F;
     end );
@@ -1072,9 +1075,9 @@ InstallMethod( PrimitiveRoot,
 #M  IsAssociated( <F>, <r>, <s> ) . . . . . . check associatedness in a field
 ##
 InstallMethod( IsAssociated,
-    "for field, and two ring elements",
+    "for a division ring, and two ring elements",
     IsCollsElmsElms,
-    [ IsField, IsRingElement, IsRingElement ],
+    [ IsDivisionRing, IsRingElement, IsRingElement ],
     function ( F, r, s )
     return (r = Zero( F ) ) = (s = Zero( F ) );
     end );
@@ -1085,9 +1088,9 @@ InstallMethod( IsAssociated,
 #M  StandardAssociate( <F>, <x> ) . . . . . . . standard associate in a field
 ##
 InstallMethod( StandardAssociate,
-    "for field and ring element",
+    "for a division ring and a ring element",
     IsCollsElms,
-    [ IsField, IsScalar ],
+    [ IsDivisionRing, IsScalar ],
     function ( R, r )
     if r = Zero( R ) then
         return Zero( R );
@@ -1096,12 +1099,30 @@ InstallMethod( StandardAssociate,
     fi;
     end );
 
+
+#############################################################################
+##
+#M  StandardAssociateUnit( <F>, <x> )
+##
+InstallMethod( StandardAssociateUnit,
+    "for a division ring and a ring element",
+    IsCollsElms,
+    [ IsDivisionRing, IsScalar ],
+    function ( R, r )
+    if r = Zero( R ) then
+        return One( R );
+    else
+        return r^-1;
+    fi;
+    end );
+
+
 #############################################################################
 ##
 #M  IsIrreducibleRingElement( <F>, <x> )
 ##
 InstallMethod(IsIrreducibleRingElement,"for field and ring element",
-    IsCollsElms, [ IsField, IsScalar ],0,
+    IsCollsElms, [ IsDivisionRing, IsScalar ],0,
 function ( F, r )
   if not r in F then
     TryNextMethod();

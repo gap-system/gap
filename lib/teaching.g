@@ -2,7 +2,6 @@
 ##
 #W  teaching.g                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -10,8 +9,6 @@
 ##  context. It is made part of the general system to ensure it will be
 ##  always installed with GAP.
 ##
-Revision.teaching_g:=
-  "@(#)$Id$";
 
 #############################################################################
 ##
@@ -68,7 +65,7 @@ DeclareGlobalFunction("ListOfDigits");
 ##  to the ring specified by the coefficients of <A>p</A> via
 ##  <Ref Func="DefaultRing" Label="for ring elements"/>).
 ##  <Example><![CDATA[
-##  gap> x:=X(Rationals,"x":old);;p:=x^4-1;    
+##  gap> x:=X(Rationals,"x");;p:=x^4-1;    
 ##  x^4-1
 ##  gap> RootsOfPolynomial(p);
 ##  [ 1, -1 ]
@@ -189,8 +186,9 @@ DeclareGlobalFunction("CosetDecomposition");
 ##  <A>H</A>-conjugacy.
 ##  <Example><![CDATA[
 ##  gap> AllHomomorphismClasses(SymmetricGroup(4),SymmetricGroup(3)); 
-##  [ [ (1,2,3,4), (1,2) ] -> [ (), () ], [ (1,2,3,4), (1,2) ] -> [ (2,3), (1,2) ]
-##      , [ (1,2,3,4), (1,2) ] -> [ (1,2), (1,2) ] ]
+##  [ [ (1,3,4,2), (1,2,4) ] -> [ (), () ], 
+##    [ (1,3,4,2), (1,2,4) ] -> [ (1,2), () ], 
+##    [ (1,3,4,2), (1,2,4) ] -> [ (2,3), (1,2,3) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -218,8 +216,10 @@ DeclareGlobalFunction("AllHomomorphismClasses");
 ##  <Ref Func="AllAutomorphisms"/> returns all bijective endomorphisms.
 ##  <Example><![CDATA[
 ##  gap> AllHomomorphisms(SymmetricGroup(3),SymmetricGroup(3));
-##  [ [ (1,2,3), (1,2) ] -> [ (), () ], [ (1,2,3), (1,2) ] -> [ (), (1,2) ], 
-##    [ (1,2,3), (1,2) ] -> [ (), (2,3) ], [ (1,2,3), (1,2) ] -> [ (), (1,3) ], 
+##  [ [ (1,2,3), (1,2) ] -> [ (), () ], 
+##    [ (1,2,3), (1,2) ] -> [ (), (1,2) ], 
+##    [ (1,2,3), (1,2) ] -> [ (), (2,3) ], 
+##    [ (1,2,3), (1,2) ] -> [ (), (1,3) ], 
 ##    [ (1,2,3), (1,2) ] -> [ (1,2,3), (1,2) ], 
 ##    [ (1,2,3), (1,2) ] -> [ (1,2,3), (2,3) ], 
 ##    [ (1,2,3), (1,2) ] -> [ (1,3,2), (1,2) ], 
@@ -275,7 +275,7 @@ BindGlobal("AllSubgroups",
 ##  of taking the standard product of the vector of digits with the fixed vector
 ##  <A>f</A> modulo <A>m</A>; the result needs to be 0.
 ##  
-##  The function returns a function thatthen can be used for testing or
+##  The function returns a function that then can be used for testing or
 ##  determining check digits.
 ##  <Example><![CDATA[
 ##  gap> isbntest:=CheckDigitTestFunction(10,11,[1,2,3,4,5,6,7,8,9,-1]); 
@@ -283,7 +283,7 @@ BindGlobal("AllSubgroups",
 ##  gap> isbntest("038794680");
 ##  Check Digit is 2
 ##  2
-#  ]]></Example>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -303,7 +303,7 @@ DeclareGlobalFunction("CheckDigitTestFunction");
 ##
 ##  <Description>
 ##  These functions can be used to compute, or check, check digits for some
-##  everyday items. In each case what is tubmitted as input is either the number
+##  everyday items. In each case what is submitted as input is either the number
 ##  with check digit (in which case the function returns <C>true</C> or
 ##  <C>false</C>), or the number without check digit (in which case the function
 ##  returns the missing check digit). The number can be specified as integer, as
@@ -364,8 +364,8 @@ DeclareGlobalFunction("CheckDigitTestFunction");
 ##  it is used instead for encoding).
 ##  <Example><![CDATA[
 ##  gap> l:=NumbersString("Twas brillig and the slithy toves",1000000);
-##  [ 303311, 291012, 281922, 221917, 101124, 141030, 181510, 292219, 301835, 
-##    103025, 321529 ]
+##  [ 303311, 291012, 281922, 221917, 101124, 141030, 181510, 292219, 
+##    301835, 103025, 321529 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

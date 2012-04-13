@@ -2,20 +2,20 @@
 ##
 #W  float.gd                       GAP library              Laurent Bartholdi
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2011 Laurent Bartholdi
 ##
 ##  This file deals with general float functions
 ##
-Revision.float_gd :=
-  "@(#)$Id$";
 
 #############################################################################
 ##
 #C  Floateans
 ##
 DeclareCategory("IsFloat", IsScalar and IsCommutativeElement and IsZDFRE);
+DeclareCategory("IsFloatInterval", IsFloat and IsCollection);
+DeclareCategory("IsComplexFloat", IsFloat);
+DeclareCategory("IsComplexFloatInterval", IsComplexFloat and IsFloatInterval);
 DeclareCategoryFamily("IsFloat");
 DeclareCategoryCollections("IsFloat");
 DeclareCategoryCollections("IsFloatCollection");
@@ -23,6 +23,11 @@ BindGlobal("FloatsFamily", NewFamily("FloatsFamily", IsFloat));
 DeclareConstructor("NewFloat",[IsFloat,IsObject]);
 DeclareOperation("MakeFloat",[IsFloat,IsObject]);
 #############################################################################
+
+BindGlobal("DECLAREFLOATCREATOR", function(arg)
+    DeclareConstructor("NewFloat",arg);
+    DeclareOperation("MakeFloat",arg);
+end);
 
 BindGlobal("INSTALLFLOATCREATOR", function(arg)
     if Length(arg)=3 then
@@ -42,8 +47,10 @@ end);
 ##
 ## <#GAPDoc Label="FLOAT_UNARY">
 ## <ManSection>
+##   <Heading>Mathematical operations</Heading>
 ##   <Oper Name="Cos" Arg="x"/>
 ##   <Oper Name="Sin" Arg="x"/>
+##   <Oper Name="SinCos" Arg="x"/>
 ##   <Oper Name="Tan" Arg="x"/>
 ##   <Oper Name="Sec" Arg="x"/>
 ##   <Oper Name="Csc" Arg="x"/>
@@ -64,16 +71,25 @@ end);
 ##   <Oper Name="Log" Arg="x"/>
 ##   <Oper Name="Log2" Arg="x"/>
 ##   <Oper Name="Log10" Arg="x"/>
+##   <Oper Name="Log1p" Arg="x"/>
 ##   <Oper Name="Exp" Arg="x"/>
 ##   <Oper Name="Exp2" Arg="x"/>
 ##   <Oper Name="Exp10" Arg="x"/>
+##   <Oper Name="Expm1" Arg="x"/>
 ##   <Oper Name="Cuberoot" Arg="x"/>
 ##   <Oper Name="Square" Arg="x"/>
+##   <Oper Name="Hypothenuse" Arg="x y"/>
 ##   <Oper Name="Ceil" Arg="x"/>
 ##   <Oper Name="Floor" Arg="x"/>
 ##   <Oper Name="Round" Arg="x"/>
 ##   <Oper Name="Trunc" Arg="x"/>
+##   <Oper Name="Frac" Arg="x"/>
 ##   <Oper Name="SignFloat" Arg="x"/>
+##   <Oper Name="Argument" Arg="x"/>
+##   <Oper Name="Erf" Arg="x"/>
+##   <Oper Name="Zeta" Arg="x"/>
+##   <Oper Name="Gamma" Arg="x"/>
+##   <Oper Name="ComplexI" Arg="x"/>
 ##   <Description>
 ##     Usual mathematical functions.
 ##   </Description>
@@ -97,6 +113,28 @@ end);
 ##     This function returns the precision, counted in number of binary digits,
 ##     of the floating-point number <A>x</A>.
 ##   </Description>
+## </ManSection>
+##
+## <ManSection>
+##   <Heading>Interval operations</Heading>
+##   <Oper Name="Sup" Arg="interval"/>
+##   <Oper Name="Inf" Arg="interval"/>
+##   <Oper Name="Mid" Arg="interval"/>
+##   <Oper Name="AbsoluteDiameter" Arg="interval"/>
+##   <Oper Name="RelativeDiameter" Arg="interval"/>
+##   <Oper Name="Overlaps" Arg="interval1 interval2"/>
+##   <Oper Name="IsDisjoint" Arg="interval1 interval2"/>
+##   <Oper Name="IncreaseInterval" Arg="interval delta"/>
+##   <Oper Name="BlowupInterval" Arg="interval ratio"/>
+##   <Oper Name="BisectInterval" Arg="interval"/>
+##   <Description>
+##     Most are self-explanatory.
+##     <C>BlowupInterval</C> returns an interval with same midpoint but 
+##     relative diameter increased by <A>ratio</A>; <C>IncreaseInterval</C>
+##     returns an interval with same midpoint but absolute diameter increased
+##     by <A>delta</A>; <C>BisectInterval</C> returns a list of two intervals
+##     whose union equals <A>interval</A>.
+##   </Description>  
 ## </ManSection>
 ##
 ## <ManSection>
@@ -182,6 +220,7 @@ DeclareAttribute("SinCos",IsFloat);
 DeclareAttribute("Erf",IsFloat);
 DeclareAttribute("Zeta",IsFloat);
 DeclareAttribute("Gamma",IsFloat);
+DeclareAttribute("ComplexI",IsFloat);
 
 DeclareAttribute("PrecisionFloat",IsFloat);
 DeclareAttribute("SignFloat",IsFloat);
@@ -189,17 +228,27 @@ DeclareAttribute("SignFloat",IsFloat);
 DeclareAttribute("Sup", IsFloat);
 DeclareAttribute("Inf", IsFloat);
 DeclareAttribute("Mid", IsFloat);
-DeclareAttribute("DiameterOfInterval", IsFloat);
+DeclareAttribute("AbsoluteDiameter", IsFloat);
+DeclareAttribute("RelativeDiameter", IsFloat);
 #DeclareOperation("Diameter", IsFloat);
 DeclareOperation("Overlaps", [IsFloat,IsFloat]);
 DeclareOperation("IsDisjoint", [IsFloat,IsFloat]);
 DeclareOperation("EqFloat", [IsFloat,IsFloat]);
+DeclareOperation("IncreaseInterval", [IsFloat,IsFloat]);
+DeclareOperation("BlowupInterval", [IsFloat,IsFloat]);
+DeclareOperation("BisectInterval", [IsFloat,IsFloat]);
 
 DeclareProperty("IsPInfinity", IsFloat);
 DeclareProperty("IsNInfinity", IsFloat);
 DeclareProperty("IsXInfinity", IsFloat);
 DeclareProperty("IsFinite", IsFloat);
 DeclareProperty("IsNaN", IsFloat);
+#############################################################################
+
+#############################################################################
+# roots
+#############################################################################
+#! document (LB)
 #############################################################################
 
 #############################################################################

@@ -6,8 +6,6 @@
 ##  This file contains the identification routines for groups of order up to
 ##  1000 except 512, 768 andsize a product of more then 3 primes
 ##
-Revision.idgrp2_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

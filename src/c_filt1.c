@@ -23,8 +23,6 @@ static GVar G_FLAGS__FILTER;
 static Obj  GF_FLAGS__FILTER;
 static GVar G_LEN__LIST;
 static Obj  GF_LEN__LIST;
-static GVar G_Revision;
-static Obj  GC_Revision;
 static GVar G_HIDDEN__IMPS;
 static Obj  GC_HIDDEN__IMPS;
 static GVar G_WITH__HIDDEN__IMPS__FLAGS__CACHE;
@@ -66,7 +64,6 @@ static GVar G_RANK__FILTER__COUNT;
 static Obj  GC_RANK__FILTER__COUNT;
 
 /* record names used in handlers */
-static RNam R_filter1__g;
 
 /* information for the functions */
 static Obj  NameFunc[9];
@@ -951,12 +948,6 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.filter1_g := "@(#)$Id$"; */
- t_1 = GC_Revision;
- CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 54, "@(#)$Id$" )
- ASS_REC( t_1, R_filter1__g, t_2 );
- 
  /* HIDDEN_IMPS := [  ]; */
  t_1 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_1, 0 );
@@ -997,8 +988,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[2], NargFunc[2], NamsFunc[2], HdlrFunc2 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(29);
- ENDLINE_BODY(t_4) = INTOBJ_INT(41);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(26);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(38);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
@@ -1034,8 +1025,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[3], NargFunc[3], NamsFunc[3], HdlrFunc3 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(44);
- ENDLINE_BODY(t_4) = INTOBJ_INT(74);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(41);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(71);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
@@ -1072,8 +1063,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[4], NargFunc[4], NamsFunc[4], HdlrFunc4 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(89);
- ENDLINE_BODY(t_4) = INTOBJ_INT(91);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(86);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(88);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
@@ -1119,8 +1110,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[5], NargFunc[5], NamsFunc[5], HdlrFunc5 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(94);
- ENDLINE_BODY(t_4) = INTOBJ_INT(133);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(91);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(130);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
@@ -1153,8 +1144,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[6], NargFunc[6], NamsFunc[6], HdlrFunc6 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(147);
- ENDLINE_BODY(t_4) = INTOBJ_INT(164);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(144);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(161);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
@@ -1188,8 +1179,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[7], NargFunc[7], NamsFunc[7], HdlrFunc7 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(169);
- ENDLINE_BODY(t_4) = INTOBJ_INT(183);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(166);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(180);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
@@ -1219,8 +1210,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[8], NargFunc[8], NamsFunc[8], HdlrFunc8 );
  ENVI_FUNC( t_3 ) = CurrLVars;
  t_4 = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );
- STARTLINE_BODY(t_4) = INTOBJ_INT(186);
- ENDLINE_BODY(t_4) = INTOBJ_INT(201);
+ STARTLINE_BODY(t_4) = INTOBJ_INT(183);
+ ENDLINE_BODY(t_4) = INTOBJ_INT(198);
  FILENAME_BODY(t_4) = FileName;
  BODY_FUNC(t_3) = t_4;
  CHANGED_BAG( CurrLVars );
@@ -1252,7 +1243,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "TRUES_FLAGS", &GF_TRUES__FLAGS );
  InitFopyGVar( "FLAGS_FILTER", &GF_FLAGS__FILTER );
  InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
- InitCopyGVar( "Revision", &GC_Revision );
  InitCopyGVar( "HIDDEN_IMPS", &GC_HIDDEN__IMPS );
  InitCopyGVar( "WITH_HIDDEN_IMPS_FLAGS_CACHE", &GC_WITH__HIDDEN__IMPS__FLAGS__CACHE );
  InitCopyGVar( "WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS", &GC_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS );
@@ -1273,24 +1263,24 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "RANK_FILTER_COUNT", &GC_RANK__FILTER__COUNT );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(43382433)" );
- InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(43382433)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(43382433)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](43382433)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(43382433)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](43382433)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(43382433)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](43382433)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(43382433)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](43382433)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/filter1.g:HdlrFunc5(43382433)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/filter1.g:NameFunc[5](43382433)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/filter1.g:HdlrFunc6(43382433)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/filter1.g:NameFunc[6](43382433)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/filter1.g:HdlrFunc7(43382433)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/filter1.g:NameFunc[7](43382433)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/filter1.g:HdlrFunc8(43382433)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/filter1.g:NameFunc[8](43382433)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(-34850804)" );
+ InitGlobalBag( &FileName, "GAPROOT/lib/filter1.g:FileName(-34850804)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(-34850804)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](-34850804)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(-34850804)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](-34850804)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(-34850804)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](-34850804)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(-34850804)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](-34850804)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/filter1.g:HdlrFunc5(-34850804)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/filter1.g:NameFunc[5](-34850804)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/filter1.g:HdlrFunc6(-34850804)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/filter1.g:NameFunc[6](-34850804)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/filter1.g:HdlrFunc7(-34850804)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/filter1.g:NameFunc[7](-34850804)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/filter1.g:HdlrFunc8(-34850804)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/filter1.g:NameFunc[8](-34850804)" );
  
  /* return success */
  return 0;
@@ -1317,7 +1307,6 @@ static Int InitLibrary ( StructInitInfo * module )
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
  G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
- G_Revision = GVarName( "Revision" );
  G_HIDDEN__IMPS = GVarName( "HIDDEN_IMPS" );
  G_WITH__HIDDEN__IMPS__FLAGS__CACHE = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE" );
  G_WITH__HIDDEN__IMPS__FLAGS__COUNT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_COUNT" );
@@ -1341,7 +1330,6 @@ static Int InitLibrary ( StructInitInfo * module )
  G_RANK__FILTER__COUNT = GVarName( "RANK_FILTER_COUNT" );
  
  /* record names used in handlers */
- R_filter1__g = RNamName( "filter1_g" );
  
  /* information for the functions */
  C_NEW_STRING( DefaultName, 14, "local function" )
@@ -1400,7 +1388,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
  G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
- G_Revision = GVarName( "Revision" );
  G_HIDDEN__IMPS = GVarName( "HIDDEN_IMPS" );
  G_WITH__HIDDEN__IMPS__FLAGS__CACHE = GVarName( "WITH_HIDDEN_IMPS_FLAGS_CACHE" );
  G_WITH__HIDDEN__IMPS__FLAGS__COUNT = GVarName( "WITH_HIDDEN_IMPS_FLAGS_COUNT" );
@@ -1424,7 +1411,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_RANK__FILTER__COUNT = GVarName( "RANK_FILTER_COUNT" );
  
  /* record names used in handlers */
- R_filter1__g = RNamName( "filter1_g" );
  
  /* information for the functions */
  NameFunc[1] = DefaultName;
@@ -1465,7 +1451,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 43382433,
+ /* crc         = */ -34850804,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

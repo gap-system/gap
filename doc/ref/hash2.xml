@@ -48,7 +48,7 @@ it and look them up.
 <P/>
 For the creation of objects the user has to make a few choices: Is the
 dictionary only to be used to check whether objects are known already, or
-whether assiciated information is to be stored with the objects. This second
+whether associated information is to be stored with the objects. This second
 case is called a <E>lookup dictionary</E> and is selected by the second parameter
 of <Ref Func="NewDictionary"/>.
 <P/>
@@ -71,7 +71,7 @@ suitable collection of objects has been defined in &GAP; - for example for
 permutations there is no object representing the symmetric group on
 infinitely many points.
 <P/>
-Once a dictionary has been created, it is possibel to use
+Once a dictionary has been created, it is possible to use
 <Ref Oper="RepresentationsOfObject"/> to check which representation is used by &GAP;.
 <P/>
 In the following example, we create a dictionary to store permutations with
@@ -95,12 +95,13 @@ the other hand, if we have an explicit, sorted element list, direct indexing
 is to be used.
 <Example><![CDATA[
 gap> RepresentationsOfObject(d);
-[ "IsComponentObjectRep", "IsDictionaryDefaultRep", "IsListDictionary", 
-  "IsListLookupDictionary", "IsSortDictionary", "IsSortLookupDictionary" ]
-gap> d:=NewDictionary((1,2,3),true,Elements(SymmetricGroup(5)));;              
+[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
+  "IsListDictionary", "IsListLookupDictionary", "IsSortDictionary", 
+  "IsSortLookupDictionary" ]
+gap> d:=NewDictionary((1,2,3),true,Elements(SymmetricGroup(5)));;
 gap> RepresentationsOfObject(d);
-[ "IsComponentObjectRep", "IsDictionaryDefaultRep", "IsPositionDictionary", 
-  "IsPositionDictionary" ]
+[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
+  "IsPositionDictionary", "IsPositionDictionary" ]
 ]]></Example>
 (Just indicating <C>SymmetricGroup(5)</C> as a third parameter would still keep
 the first storage method, as indexing would be too expensive if no explicit
@@ -115,11 +116,13 @@ the use of hashing (which will be faster).
 gap> v:=GF(2)^7;;
 gap> d:=NewDictionary(Zero(v),true);;                            
 gap> RepresentationsOfObject(d);
-[ "IsComponentObjectRep", "IsDictionaryDefaultRep", "IsListDictionary", 
-  "IsListLookupDictionary", "IsSortDictionary", "IsSortLookupDictionary" ]
+[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
+  "IsListDictionary", "IsListLookupDictionary", "IsSortDictionary", 
+  "IsSortLookupDictionary" ]
 gap> d:=NewDictionary(Zero(v),true,v);;
 gap> RepresentationsOfObject(d);
-[ "IsComponentObjectRep", "IsSparseHashRep" ]
+[ "IsComponentObjectRep", "IsDictionaryDefaultRep", 
+  "IsPositionDictionary", "IsPositionDictionary" ]
 ]]></Example>
 
 </Section>
@@ -170,11 +173,10 @@ cannot be removed from the table, but the corresponding value can be
 changed.  Fast access to last hash index allows you to efficiently store 
 more than one array of values &ndash;this facility should be used with care.
 <P/>
-This code works for any kind of object, provided you have a DenseIntKey
-or KeyIntSparse method to convert the key into a positive integer.  
-These methods should ideally be implemented efficiently in the core.
-<P/>
-Note that, for efficiency, it is currently impossible to create a 
+This code works for any kind of object, provided you have a 
+<Ref Oper="DenseIntKey"/> method to convert the key into a positive integer.  
+This method should ideally be implemented efficiently in the core.
+<P/>Note that, for efficiency, it is currently impossible to create a 
 hash table with non-positive integers.
 
 </Section>
@@ -202,9 +204,9 @@ The actual function used will vary very much on the type of objects. However
 
 Dense hash tables are used for hashing dense sets without collisions, 
 in particular integers. 
-Stores keys as an unordered list and values as an 
-array with holes.  The position of a value is given by the attribute
-<C>IntKeyFun</C> or the function returned by <Ref Oper="DenseIntKey"/>,
+Keys are stored as an unordered list and values as an 
+array with holes. The position of a value is given by 
+the function returned by <Ref Oper="DenseIntKey"/>,
 and so <C>KeyIntDense</C> must be one-to-one.  
 
 <#Include Label="DenseHashTable">

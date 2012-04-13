@@ -9,8 +9,6 @@
 ##
 #############################################################################
 
-Revision.memory_gd :=
-  "@(#)$Id$";
 
 DeclareFilter("IsObjWithMemoryRankFilter",100); 
 

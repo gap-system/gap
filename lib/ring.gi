@@ -2,7 +2,6 @@
 ##
 #W  ring.gi                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains generic methods for rings.
 ##
-Revision.ring_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -555,7 +552,7 @@ InstallOtherMethod( IsAssociated,
 InstallMethod( IsSubset,
     "for two rings",
     IsIdenticalObj,
-    [ IsRing, IsRing and HasGeneratorsOfRing ], 0,
+    [ IsRing, IsRing and HasGeneratorsOfRing ],
     function( R, S )
     return IsSubset( R, GeneratorsOfRing( S ) );
     end );
@@ -568,9 +565,14 @@ InstallMethod( IsSubset,
 InstallMethod( IsSubset,
     "for two rings-with-one",
     IsIdenticalObj,
-    [ IsRingWithOne, IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
+    [ IsRing, IsRingWithOne and HasGeneratorsOfRingWithOne ],
     function( R, S )
-    return IsSubset( R, GeneratorsOfRingWithOne( S ) );
+    local gens;
+
+    gens:= GeneratorsOfRingWithOne( S );
+    return IsSubset( R, gens ) and
+           ( ( IsRingWithOne( R ) and not IsEmpty( gens ) ) 
+             or One( S ) in R );
     end );
 
 
@@ -636,16 +638,22 @@ InstallMethod( Enumerator,
     [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
     EnumeratorOfRing );
 
-InstallMethod( Size, "characteristic zero ring is infinite",
-    true, [ IsRing and HasGeneratorsOfRing], 0,
-function(R)
-  if HasCharacteristic(R) 
-    and Characteristic(R)=0 and ForAny(GeneratorsOfRing(R),i->not IsZero(i))
-    then
+
+#############################################################################
+##
+#M  Size( <R> ) . . . . . . . . . . . .  characteristic zero ring is infinite
+##
+InstallMethod( Size,
+    "characteristic zero ring is infinite",
+    [ IsRing and HasGeneratorsOfRing and HasCharacteristic ],
+    function( R )
+    if Characteristic( R ) <> 0 then
+      TryNextMethod();
+    elif ForAll( GeneratorsOfRing( R ), IsZero ) then
+      return 1;
+    fi;
     return infinity;
-  fi;
-  TryNextMethod();
-end);
+    end );
 
 
 #############################################################################
@@ -666,7 +674,9 @@ InstallMethod( IsIntegralRing,
         elms := Enumerator( R );
         zero := Zero( R );
         for i  in [1..Length(elms)]  do
+            if elms[i] = zero then continue; fi;
             for k  in [i+1..Length(elms)]  do
+                if elms[k] = zero then continue; fi;
                 if elms[i] * elms[k] = zero then
                     return false;
                 fi;
@@ -883,13 +893,53 @@ InstallMethod( Units,
 
 #############################################################################
 ##
-#M  StandardAssociate( <r> )  . . . . . . . . .  delegate to the default ring
+#M  StandardAssociate( <r> )
 ##
 InstallOtherMethod( StandardAssociate,
     "for a ring element",
     true,
-    [ IsRingElement ], 0,
+    [ IsRingElement ],
     r -> StandardAssociate( DefaultRing( [ r ] ), r ) );
+
+InstallMethod( StandardAssociate,
+    "for a ring and its zero element",
+    IsCollsElms,
+    [ IsRing, IsRingElement and IsZero ],
+    SUM_FLAGS, # can't do better
+    function ( R, r )
+    return r;
+    end );
+
+InstallMethod( StandardAssociate,
+    "for a ring and a ring element (using StandardAssociateUnit)",
+    IsCollsElms,
+    [ IsRing, IsRingElement ],
+    function ( R, r )
+      local u;
+      u := StandardAssociateUnit( R, r );
+      if u <> fail then return u * r; fi;
+      TryNextMethod();
+    end );
+
+
+#############################################################################
+##
+#M  StandardAssociateUnit( <r> )
+##
+InstallOtherMethod( StandardAssociateUnit,
+    "for a ring element",
+    true,
+    [ IsRingElement ],
+    r -> StandardAssociateUnit( DefaultRing( [ r ] ), r ) );
+
+InstallMethod( StandardAssociateUnit,
+    "for a ring and its zero element",
+    IsCollsElms,
+    [ IsRing, IsRingElement and IsZero ],
+    SUM_FLAGS, # can't do better
+    function ( R, r )
+    return One( R );
+    end );
 
 
 #############################################################################
@@ -907,7 +957,7 @@ InstallMethod( Associates,
     "for a ring and a ring element",
     IsCollsElms,
     [ IsRing, IsRingElement ], 0,
-    function( R, r );
+    function( R, r )
     return AsSSortedList( Enumerator( Units( R ) ) * r );
     end );
 
@@ -1037,7 +1087,7 @@ InstallMethod( QuotientMod,
     f := s;  fs := 1;
     g := m;  gs := 0;
     while g <> Zero( R ) do
-    	t := QuotientRemainder( R, f, g );
+        t := QuotientRemainder( R, f, g );
         h := g;          hs := gs;
         g := t[2];       gs := fs - t[1] * gs;
         f := h;          fs := hs;
@@ -1277,12 +1327,12 @@ InstallMethod( GcdRepresentationOp,
     f := x;  fx := One( R );
     g := y;  gx := Zero( R );
     while g <> Zero( R ) do
-    	t := QuotientRemainder( R, f, g );
+        t := QuotientRemainder( R, f, g );
         h := g;          hx := gx;
         g := t[2];       gx := fx - t[1] * gx;
         f := h;          fx := hx;
     od;
-    q := Quotient(R, StandardAssociate(R, f), f);
+    q := StandardAssociateUnit(R, f);
     if y = Zero( R ) then
         return [ q * fx, Zero( R ) ];
     else
@@ -1362,7 +1412,7 @@ InstallOtherMethod( LcmOp,
 InstallMethod( LcmOp,
     "for a Euclidean ring and two ring elements",
     IsCollsElmsElms,
-    [ IsEuclideanRing, IsRingElement, IsRingElement ], 0,
+    [ IsUniqueFactorizationRing, IsRingElement, IsRingElement ], 0,
     function( R, r, s )
 
     # compute the least common multiple

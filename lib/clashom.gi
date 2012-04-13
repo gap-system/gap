@@ -2,7 +2,6 @@
 ##
 #W  clashom.gi                  GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -12,8 +11,6 @@
 ##  Literature: A.H: Conjugacy classes in finite permutation groups via
 ##  homomorphic images, MathComp, to appear.
 ##
-Revision.clashom_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -860,7 +857,7 @@ local clT,	# classes T
 	fi;
       until cnt<0;
       r:=r*brp;
-      Info(InfoHomClass,2,"acchieved centralizer size ",bcen);
+      Info(InfoHomClass,2,"achieved centralizer size ",bcen);
     fi;
     Info(InfoHomClass,2,"representative ",r);
     cr:=Centralizer(M,r);

@@ -2,7 +2,6 @@
 ##
 #W  morpheus.gi                GAP library                   Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This  file  contains declarations for Morpheus
 ##
-Revision.morpheus_gi:=
-  "@(#)$Id$";
 
 #############################################################################
 ##
@@ -130,7 +127,7 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
   Info(InfoMorph,2,"|syno|=",Size(syno)," |cen|=",Size(cen));
   if Size(cen)>1 then
     w:=syno;
-    syno:=Complementclasses(syno,cen);
+    syno:=ComplementClassesRepresentatives(syno,cen);
     if Length(syno)=0 then 
       return fail; # not unique permauts
     fi;
@@ -173,7 +170,7 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
     fi;
 
     if Size(cen)>1 then
-      no:=Complementclasses(no,cen);
+      no:=ComplementClassesRepresentatives(no,cen);
       if Length(no)>0 then
 	no:=no[1];
       else
@@ -629,6 +626,7 @@ end);
 ##  rels  some relations that hold in from, given as list [word,order]
 ##  dom   a set of elements on which automorphisms act faithful
 ##  aut   Subgroup of already known automorphisms
+##  condition function that must return `true' on the homomorphism.
 ##
 ##  action is a number whose bit-representation indicates the action to be
 ##  taken:
@@ -696,7 +694,7 @@ end;
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       mp,cen,i,j,imgs,ok,size,l,hom,cenis,reps,repspows,sortrels,genums,wert,p,
-      e,offset,pows,TestRels,pop,mfw,derhom,skip;
+      e,offset,pows,TestRels,pop,mfw,derhom,skip,cond;
 
   len:=Length(clali);
   if ForAny(clali,i->Length(i)=0) then
@@ -715,6 +713,13 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
   else
     result:=[];
     rig:=false;
+  fi;
+
+  # extra condition?
+  if IsBound(params.condition) then
+    cond:=params.condition;
+  else
+    cond:=fail;
   fi;
 
   tall:=action>7; # try all
@@ -978,6 +983,10 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 	    if ok and tinj then
 	      ok:=IsInjective(imgs);
 	    fi;
+	  fi;
+
+	  if ok and cond<>fail then
+	    ok:=cond(imgs);
 	  fi;
 	  
 	  if ok then
@@ -1942,6 +1951,10 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   if not IsInt(Size(G)/Size(H)) then
     Info(InfoMorph,1,"sizes do not permit embedding");
     return [];
+  fi;
+
+  if IsTrivial(H) then
+    return [GroupHomomorphismByImagesNC(H,G,[],[])];
   fi;
 
   if IsAbelian(G) then

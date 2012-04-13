@@ -2,7 +2,6 @@
 ##
 #W  grpmat.gd                   GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the operations for matrix groups.
 ##
-Revision.grpmat_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -255,7 +252,7 @@ InstallTrueMethod(IsGeneralLinearGroup,IsNaturalGL);
 ##
 ##  <Description>
 ##  The Special Linear group is the group of all invertible matrices over a
-##  ring, whose determinant is equal to 1. This property tests, wether a
+##  ring, whose determinant is equal to 1. This property tests, whether a
 ##  group is isomorphic to a Special Linear group. (Note that currently 
 ##  only a few trivial methods are available for this operation. We hope 
 ##  to improve this in the future.)

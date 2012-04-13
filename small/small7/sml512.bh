@@ -3,8 +3,6 @@
 #W  sml512.bh              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml512_bh :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 512 ][ 60 ] := [
 "%%%%%k8Yj/9-,8bFD/%%%ED)%%%%%% }o2^2UEh(K8[f,O=b4WGj!}tP/O!}wP1f!}uP/^!}xP1\

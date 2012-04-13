@@ -2,15 +2,12 @@
 ##
 #W  trans.gd          GAP transitive groups library          Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
 ##  This file contains the declarations for the transitive groups library
 ##
-Revision.trans_gd:=
-  "@(#)$Id$";
 
 #############################################################################
 ##

@@ -3,8 +3,6 @@
 #W  sml256.s               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml256_s :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 256 ][ 19 ] :=
 [ 162905491352540072308112402531737, 41703805786250258510859251284559259,

@@ -2,14 +2,11 @@
 ##
 #A  trans20c.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id$
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 20
 ##
-Revision.trans20c_grp:=
-  "@(#)$Id$";
 
 TRANSGRP[20]{[601..900]}:=
 [[(1,7,5,8,4,9,3,10,2,6)(11,17,15,20,14,18,13,16,12,19),

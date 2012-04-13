@@ -2,7 +2,6 @@
 ##
 #W  grpfree.gd                  GAP library                     Werner Nickel
 ##
-#H  $Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  (associative) words, that is they have a normal  form that allows an easy
 ##  equalitity test.  
 ##
-Revision.grpfree_gd :=
-    "$Id$";
 
 
 #############################################################################
@@ -60,7 +57,7 @@ DeclareSynonym( "IsElementOfFreeGroupFamily",IsAssocWordWithInverseFamily );
 ##  printed as <A>name</A><C>1</C>, <A>name</A><C>2</C> etc.,
 ##  that is, each name is the concatenation of the string <A>name</A> and an
 ##  integer from <C>1</C> to <A>range</A>.
-##  The default for <A>name</A> is the string <C>"g"</C>.
+##  The default for <A>name</A> is the string <C>"f"</C>.
 ##  <P/>
 ##  Called in the second form,
 ##  <Ref Func="FreeGroup" Label="for various names"/> returns

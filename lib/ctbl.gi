@@ -3,7 +3,6 @@
 #W  ctbl.gi                     GAP library                     Thomas Breuer
 #W                                                           & Götz Pfeiffer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -27,8 +26,6 @@
 ##  12. Storing Normal Subgroup Information
 ##  13. Auxiliary Stuff
 ##
-Revision.ctbl_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -1522,21 +1519,30 @@ InstallMethod( NrConjugacyClasses,
 #M  Size( <tbl> ) . . . . . . . . . . . . . . . . . . . for a character table
 #M  Size( <G> )
 ##
-##  We delegate from <tbl> to the underlying group in the general case.
-##  If we know the centralizer orders, however, we use them.
+##  We delegate from <tbl> to the underlying group if this is stored.
+##  If we know the centralizer orders or class lengths, we may use them.
 ##
-##  If the argument is a group, we can use the known size of the
-##  known ordinary character table.
+##  If the argument is a group <G>, we can use the known size of the
+##  known ordinary character table of <G>.
 ##
 InstallMethod( Size,
-    "for a character table with underlying group",
-    [ IsCharacterTable and HasUnderlyingGroup ],
-    tbl -> Size( UnderlyingGroup( tbl ) ) );
-
-InstallMethod( Size,
-    "for a character table with known centralizer orders",
-    [ IsNearlyCharacterTable and HasSizesCentralizers ],
-    tbl -> SizesCentralizers( tbl )[1] );
+    "for a character table",
+    [ IsNearlyCharacterTable ],
+    function( tbl )
+    if HasSizesCentralizers( tbl ) then
+      return SizesCentralizers( tbl )[1];
+    elif HasUnderlyingGroup( tbl ) and HasSize( UnderlyingGroup( tbl ) ) then
+      return Size( UnderlyingGroup( tbl ) );
+    elif HasSizesConjugacyClasses( tbl ) then
+      return Sum( SizesConjugacyClasses( tbl ) );
+    elif HasIrr( tbl ) then
+      return SizesCentralizers( tbl )[1];
+    elif HasUnderlyingGroup( tbl ) then
+      return Size( UnderlyingGroup( tbl ) );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 InstallMethod( Size,
     "for a group with known ordinary character table",
@@ -1848,23 +1854,6 @@ InstallMethod( \.,
 InstallGlobalFunction(ColumnCharacterTable,function(T,n)
   return Irr(T){[1..Length(Irr(T))]}[n];
 end);
-
-#############################################################################
-##
-#M  ClassParameters( <tbl> )
-##
-InstallMethod( ClassParameters,
-    "for a Brauer table (if the ordinary table knows class parameters)",
-    [ IsBrauerTable ],
-    function( tbl )
-    local ord;
-    ord:= OrdinaryCharacterTable( tbl );
-    if HasClassParameters( ord ) then
-      return ClassParameters( ord ){ GetFusionMap( tbl, ord ) };
-    else
-      TryNextMethod();
-    fi;
-    end );
 
 
 #############################################################################
@@ -3507,11 +3496,13 @@ InstallMethod( IsInternallyConsistent,
         for j in [ 1 .. i ] do
           sum:= row * characters[j];
           if ( i = j and sum <> order ) or ( i <> j and sum <> 0 ) then
+            if flag then
+              # Print a warning only once.
+              Info( InfoWarning, 1,
+                    "IsInternallyConsistent(", tbl, "):\n",
+                    "#I  Scpr( ., X[", i, "], X[", j, "] ) = ", sum / order );
+            fi;
             flag:= false;
-            Info( InfoWarning, 1,
-                  "IsInternallyConsistent(", tbl, "):\n",
-                  "#I  Scpr( ., X[", i, "], X[", j, "] ) = ", sum / order );
-#T better warn only once or twice ...
           fi;
         od;
       od;
@@ -4080,8 +4071,9 @@ InstallMethod( CharacterTable,
 #M  CharacterTable( <series>, <param> )
 #M  CharacterTable( <series>, <param1>, <param2> )
 ##
-##  These methods are used in the Character Table Library, where the function
-##  `CharacterTableFromLibrary' is replaced by a meaningful function.
+##  These methods are used in the &GAP; Character Table Library.
+##  The dummy function `CharacterTableFromLibrary' is replaced by
+##  a meaningful function when this package is loaded.
 ##
 InstallMethod( CharacterTable,
     "for a string",
@@ -4162,7 +4154,7 @@ InstallMethod( BrauerTableOp,
     result:= fail;
 
     if IsPSolvableCharacterTable( tbl, p ) then
-      return CharacterTableRegular( tbl, p );
+      result:= CharacterTableRegular( tbl, p );
     elif HasFactorsOfDirectProduct( tbl ) then
       modtbls:= List( FactorsOfDirectProduct( tbl ),
                       t -> BrauerTable( t, p ) );
@@ -4187,11 +4179,16 @@ InstallMethod( BrauerTableOp,
       # i.e., use the alternative path in the commutative diagram that is
       # given by forming the Brauer table and the isoclinic table.
       source:= SourceOfIsoclinicTable( tbl );
-#T sort w.r.t. class permutation!
       modtbls:= BrauerTable( source[1], p );
       if modtbls <> fail then
-        return CharacterTableIsoclinic( modtbls, tbl );
+        # (This function takes care of a class permutation in `tbl'.)
+        result:= CharacterTableIsoclinic( modtbls, tbl );
       fi;
+    fi;
+
+    if HasClassParameters( tbl ) and result <> fail then
+      SetClassParameters( result,
+          ClassParameters( tbl ){ GetFusionMap( result, tbl ) } );
     fi;
 
     return result;
@@ -4531,18 +4528,6 @@ BindGlobal( "CharacterTableDisplayLegendDefault",
     od;
 
     return result;
-    end );
-
-
-#############################################################################
-##
-#F  CharacterTableDisplayPrintLegendDefault( <data> )
-##
-#T only for backwards compatibility ...
-##
-BindGlobal( "CharacterTableDisplayPrintLegendDefault",
-    function( data )
-    Print( CharacterTableDisplayLegendDefault( data ) );
     end );
 
 
@@ -5871,6 +5856,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
     # Make the isoclinic table.
     isoclinic:= Concatenation( "Isoclinic(", Identifier( tbl ), ")" );
 #T careful!!
+#T better construct a defining name
     ConvertToStringRep( isoclinic );
 
     isoclinic:= rec(
@@ -5909,7 +5895,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
       # The squares of elements outside $U$ lie in $U$.
       # For $g^2 = h \in U$, we have $(gz)^2 = hx$.
       # If $|Z| = 4$ then we take the other
-      # preimage under the factorfusion, if exists.
+      # preimage under the factor fusion, if exists.
       # If $|Z| = 8$ then we take the one among the up to four preimages
       # for which the character values fit.
 
@@ -5935,9 +5921,9 @@ InstallOtherMethod( CharacterTableIsoclinic,
                                 chi -> chi[ old ] = 0 or
                                 chi[x] / chi[ old ] = chi[ ypos ] / chi[1] ) );
             fi;
-# if Length( images ) <> 1 then
-#   Error( "power map problem!" );
-# fi;
+            if Length( images ) <> 1 then
+              Error( Ordinal( p ), " power map is not uniquely determined" );
+            fi;
             map[ class ]:= images[1];
             if p = 2 then
               orders[ class ]:= 2 * orders[ images[1] ];
@@ -5958,9 +5944,9 @@ InstallOtherMethod( CharacterTableIsoclinic,
     od;
 
     # Convert the record into a library table.
+    # (The data are to be read w.r.t. the class permutation of `tbl'.)
     ConvertToLibraryCharacterTableNC( isoclinic );
     SetSourceOfIsoclinicTable( isoclinic, [ tbl, nsg, center, xpos ] );
-#T sorting w.r.t. class permutation!
 
     # Return the result.
     return isoclinic;

@@ -4,7 +4,6 @@
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -20,11 +19,6 @@
  #include "gmpints.h"
 #else /* read the rest of this file */
 
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_integer_h =
-   "@(#)$Id$";
-#endif
-
 
 /****************************************************************************
 **
@@ -36,8 +30,12 @@ const char * Revision_integer_h =
 */
 #ifdef SYS_IS_64_BIT
 typedef UInt4           TypDigit;
+#define INTEGER_UNIT_SIZE 4
+#define INTEGER_ALLOCATION_SIZE 16
 #else
 typedef UInt2           TypDigit;
+#define INTEGER_UNIT_SIZE 2
+#define INTEGER_ALLOCATION_SIZE 8
 #endif
 
 #define NR_DIGIT_BITS      (8 * sizeof(TypDigit))

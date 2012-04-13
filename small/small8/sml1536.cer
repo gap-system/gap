@@ -3,8 +3,6 @@
 #W  sml1536.cer            GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1536_cer :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1536 ].npnil[ 5 ][ 18 ] :=
 [ 2876752624618697100631184, 700267534322680945710224,

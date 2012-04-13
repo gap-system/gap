@@ -2,7 +2,6 @@
 ##
 #W  algsc.gd                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -38,8 +37,6 @@
 ##
 ##  The constructor for s.~c. algebra elements is `ObjByExtRep'.
 ##
-Revision.algsc_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################

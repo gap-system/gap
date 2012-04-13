@@ -2,14 +2,11 @@
 ##
 #W  grpperm.gd                  GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.grpperm_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -274,7 +271,8 @@ DeclareGlobalFunction("ApproximateSuborbitsStabilizerPermGroup");
 ##  gap> g:=Group((1,2,3,4,5,6,7,8),(1,2));;
 ##  gap> bs:=[[1,2,3,4],[5,6,7,8]];;
 ##  gap> Stabilizer(g,bs,OnSetsDisjointSets);
-##  Group([ (6,7), (5,6), (5,8), (2,3), (3,4)(5,7), (1,4), (1,5,4,8)(2,6,3,7) ])
+##  Group([ (6,7), (5,6), (5,8), (2,3), (3,4)(5,7), (1,4), 
+##    (1,5,4,8)(2,6,3,7) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -440,9 +438,9 @@ DeclareAttribute( "ONanScottType", IsPermGroup );
 ##  "3a"
 ##  gap> SocleTypePrimitiveGroup(ac);
 ##  rec( 
-##    name := "A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) ~ 2A(1,4\
-##  ) = U(2,4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,5) ~ 2A(1,5) = U\
-##  (2,5)", parameter := 5, series := "A", width := 2 )
+##    name := "A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) \
+##  ~ 2A(1,4) = U(2,4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,\
+##  5) ~ 2A(1,5) = U(2,5)", parameter := 5, series := "A", width := 2 )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

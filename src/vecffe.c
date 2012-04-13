@@ -3,7 +3,6 @@
 **
 *W  vecffe.c                    GAP source                      Werner Nickel
 **
-*H  @(#)$Id$
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
@@ -11,8 +10,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_vecffe_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -38,9 +35,7 @@ const char * Revision_vecffe_c =
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "vecffe.h"              /* functions for fin field vectors */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "range.h"               /* ranges                          */
 
@@ -1242,8 +1237,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoVecFFE ( void )
 {
-    module.revision_c = Revision_vecffe_c;
-    module.revision_h = Revision_vecffe_h;
     FillInVersion( &module );
     return &module;
 }

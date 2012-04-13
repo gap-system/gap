@@ -2,7 +2,6 @@
 ##
 #A  oldmatint.gi                   GAP library                 Robert Wainwright
 ##
-#H  $Id$
 ##
 #Y  Copyright (C)  1997,  St Andrews
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,8 +16,6 @@
 ##  on (and in parts identical to) code written by Bohdan Majewski.
 
 ##
-Revision.oldmatint_gi :=
-    "$Id$";
 
 
 ##############################################################################
@@ -260,7 +257,7 @@ end);
 
 #############################################################################
 ##
-#F  LcNormHnf( <array> [,< Bool/Rat >] )  . the HNF and the tranforming matrix
+#F  LcNormHnf( <array> [,< Bool/Rat >] )  . the HNF and the transforming matrix
 ##
 BindGlobal("LcNormHnf" , function( arg )
 
@@ -489,7 +486,7 @@ end);
 
 ##############################################################################
 ##
-#F  LcLLLHnf( <array> [, <rat>] ) .. the Hermite NF and the tranforming matrix
+#F  LcLLLHnf( <array> [, <rat>] ) .. the Hermite NF and the transforming matrix
 ##
 BindGlobal("LcLLLHnf", function(arg)
 

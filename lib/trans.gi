@@ -2,7 +2,6 @@
 ##
 #W  trans.gi           GAP library                    Andrew Solomon
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  James D. Mitchell
 ##
 
-Revision.trans_gi :=
-    "@(#)$Id$";
 
 ## Functions altered JDM
 ## 1) KernelOfTransformation
@@ -35,7 +32,7 @@ Revision.trans_gi :=
 ##  These two functions should be the only piece of representation
 ##  specific code.
 ##
-##  IdentityTransformation returns the identity tranformation on n points
+##  IdentityTransformation returns the identity transformation on n points
 ## 
 
 InstallGlobalFunction(Transformation,

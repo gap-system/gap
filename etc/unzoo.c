@@ -2,7 +2,6 @@
 **
 *A  unzoo.c                     Tools                        Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  This file is in the Public Domain.
 **
@@ -221,6 +220,13 @@
 **
 **  HISTORY
 *H  $Log$
+*H  Revision 4.11  2011/11/04 13:59:45  gap
+*H  Removed cvs  $Id tags and all bindings to Revision on GAP level and revision
+*H  entries in kernel modules.
+*H  This is part of the preparation for the move to another version control
+*H  system shortly after the release of GAP 4.5.
+*H  FL
+*H
 *H  Revision 4.10  2010/02/23 15:12:39  gap
 *H  This is the conversion of the files under gap-dev to UTF-8 encoding.
 *H  Also spellings from pre-latin1 times are corrected.
@@ -2933,7 +2939,6 @@ int			Banner ()
 {
     printf("unzoo -- a zoo archive extractor by Martin Schönert\n");
 #ifndef SYS_IS_MAC_MWC
-    printf("  ($Id$)\n");
 #endif
     printf("  based on 'booz' version 2.0 by Rahul Dhesi\n");
 #ifdef SYS_IS_MAC_MWC

@@ -2,7 +2,6 @@
 **
 *W  precord.c                   GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -29,8 +28,6 @@
 #include        <stdlib.h>              /* for qsort */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_precord_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -48,9 +45,7 @@ const char * Revision_precord_c =
 
 #include        "bool.h"                /* booleans                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "precord.h"             /* plain records                   */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
@@ -675,7 +670,7 @@ void SortPRec ( Obj rec )
             val  = GET_ELM_PREC(  rec, i );
             k = i;
             while ( h < k
-                 && SyStrcmp( NAME_RNAM(rnam),
+                 && strcmp( NAME_RNAM(rnam),
                               NAME_RNAM( GET_RNAM_PREC(rec,k-h) ) ) < 0 ) {
                 SET_RNAM_PREC( rec, k, GET_RNAM_PREC( rec, k-h ) );
                 SET_ELM_PREC(  rec, k, GET_ELM_PREC(  rec, k-h ) );
@@ -787,10 +782,9 @@ Obj InnerRecNames( Obj rec )
     /* loop over the components                                            */
     for ( i = 1; i <= LEN_PREC(rec); i++ ) {
         rnam = -(Int)(GET_RNAM_PREC( rec, i ));
-        len = SyStrlen(NAME_RNAM(rnam));
-        string = NEW_STRING( len );
+        len = strlen(NAME_RNAM(rnam));
         /* could have been moved by garbage collection */
-        SyStrncat( CSTR_STRING(string), NAME_RNAM(rnam), len );
+        C_NEW_STRING( string, len, NAME_RNAM(rnam) );
         SET_ELM_PLIST( list, i, string );
         CHANGED_BAG( list );
     }
@@ -1221,7 +1215,7 @@ Obj FuncLT_PREC_DEFAULT (
         /* The sense of this comparison is determined by the rule that
            unbound entries compare less than bound ones                    */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-            if ( SyStrcmp( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
+            if ( strcmp( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
                    NAME_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) ) > 0 ) {
                 return True;
             }
@@ -1527,8 +1521,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPRecord ( void )
 {
-    module.revision_c = Revision_precord_c;
-    module.revision_h = Revision_precord_h;
     FillInVersion( &module );
     return &module;
 }

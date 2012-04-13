@@ -1,5 +1,4 @@
 
-##  $Id$   Frank Lübeck
-if test -e ${HOME}/.gaprc; then G="${HOME}/.gaprc"; else G=""; fi
-${BINPATH}/gap -L ${GAP_DIR}/bin/wsgap4   "$@" $G
+##  (C) Frank Lübeck
+${BINPATH}/gap -L ${GAP_DIR}/bin/wsgap4 "$@" 
 

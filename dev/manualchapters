@@ -1,6 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
-% $Id$
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -303,16 +302,17 @@ classification of items:
 -5 In section ``Identifiers'', it is emphasized that `\*' is an identifier
   and not a keyword.
   This suggests that `*' in fact is a keyword. Is it?
--2AK Another confusing topic:  On the one hand, it is stated that keywords
++2AK Another confusing topic:  On the one hand, it is stated that keywords
   cannot be used as identifiers, but on the other hand, the function
   `IsValidIdentifier' returns `true' for the input `"if"'.
   (If there is a finite list of keywords then having this as a list stored in
   a component of `GAPInfo' would make it possible to use it in
   `IsValidIdentifier'.  And also code for improving GAPDoc documents could
   benefit from that.)
-  This informationis now provided by a kernel function ALL_KEYWORDS,
+  This information is now provided by a kernel function ALL_KEYWORDS,
   so IsValidIdentifier can be updated. SL (AK: IsValidIdentifier updated,
-  some final actions required)
+  now returns `false' for `"if"'; manual has been updated, now the list 
+  of keywords is produced from newly added GAPInfo.Keywords component. 
 -5 Once again identifiers:
   ``An identifier usually consists ...'' is not a sensible formulation for a
   definition, which one expects in the section ``Identifiers''.
@@ -327,7 +327,7 @@ classification of items:
 -6 Section ``For'' contained a piece of pseudo code, distinguishing
   keywords and constants from variable names.
   How to write this in GAPDoc?
-- What is the `continue' statement good for?
+-2 What is the `continue' statement good for?
   (At least the example shown is not striking.)
 +5*MN Is the comparison with PASCAL up-to-date?
   (several occurrences; replace by self-contained descriptions,
@@ -346,8 +346,9 @@ classification of items:
 % Started: January 24, 2008
 % Finished: September 24, 2008
 % Comments:
--2AK some examples missing
--3 missing: STARTLINE_FUNC etc.
++2AK some examples missing. AK: added more examples.
+-4 missing: STARTLINE_FUNC etc. 
+  AK: StartlineFunc is already documented. What else is missing?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 7: Main Loop and Break Loop
 % File: ./mloop.xml (line 10)
@@ -369,10 +370,13 @@ classification of items:
  --> Additional question: Do we really want that a name of an object
      overwrites the PrintObj methods???
 
--2AK The variables `last', `last2', `last3' are documented in the Tutorial,
++2AK The variables `last', `last2', `last3' are documented in the Tutorial,
   there is an index entry for `last' in the section ``Main Loop''
   but nothing else in the Reference Manual about `last', `last2', `last3'.
   These variables should get a proper documentation in the Reference Manual.
+  AK: there is already an example in this section involving all `last', 
+  `last2' and `last3'. I've added index entries for `last2', `last3' to
+  the reference manual.
 -5AK Section ``View and Print'' ends with a paragraph on `SetName'.
   But this function is documented in Chapter ``Objects and Elements''.
 +3cAK Can someone explain why ``DownEnv moves *up* nr steps''?
@@ -487,7 +491,7 @@ functionality.)
   as the component gets documented.
   (definition of the function: change this to return an empty list instead
   of raising an error if no such directory is found) -- NO
--2AK cross-reference to undocumented function `IsDirectory'
++2AK cross-reference to undocumented function `IsDirectory'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 11: Streams
 % File: ./streams.xml (line 18)
@@ -516,7 +520,7 @@ functionality.)
 % Started: January 24, 2008
 % Finished: October 05, 2008
 % Comments:
--2AK cross-ref. to undocumented variable `FamilyOfFamilies'
+-5 cross-ref. to undocumented variable `FamilyOfFamilies'
 -5 How to introduce a `ManSection' for the `and' of filters?
   (see also chapter `Booleans')
 +3c strange statements such as ``All attributes in the library are created
@@ -528,7 +532,9 @@ functionality.)
   Max: PLEASE NOT! I am using it in a package! (cvec)
   Why get rid of it? It is used.
   No: Leave it.
--2AK Many <C>...</C> elements may be converted to cross-references
++2AK Many <C>...</C> elements may be converted to cross-references
+  (AK: Done, except four basic representations of GAP objects which do
+  not have separate mansections).
 -5* Many <Ref> elements use "Func" instead of "Filt", "Oper", "Attr" etc. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 15: Integers
@@ -554,6 +560,7 @@ functionality.)
   applicable to avoid multiply defined labels, and it was enough for that 
   purpose; however, names of such ManSections might be revised (for example),
   14.6.3 "State" unites definitions of "State", "Reset" and "Init".
+  GAPDoc offers optional "Heading" element for such ManSections.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 16: Number Theory
 % File: ./numtheor.xml (line 12)
@@ -594,7 +601,9 @@ functionality.)
 % Comments:
 -6AK `Int' and `RoundCyc' should be nearer to each other,
   with a cross-ref. if necessary
--2AK cross-ref. to undocumented variable `CyclotomicsFamily'
++2AK cross-ref. to undocumented variable `CyclotomicsFamily'
+  (AK: added CyclotomicsFamily to the index. Note that we often do not
+  document families)
 -1AH section ``Internally Represented Cyclotomics'' mentions that
   the conductors of internal cyclotomics are restricted to small integers,
   and refers to `IsSmallIntRep', which is undocumented;
@@ -611,7 +620,7 @@ functionality.)
 % Started:
 % Finished: 
 % Comments:
--1LB This chapter is merely a placeholder for the beta version of GAP 4.5.
++1LB This chapter is merely a placeholder for the beta version of GAP 4.5.
    It should be filled with a real content.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 21: Booleans
@@ -659,12 +668,13 @@ functionality.)
 +2AK The documented function COPY_LIST_ENTRIES should not be written with
   capital letters only (and the declaration line is too long, and looks ugly).
   Declared a synonym and used shorter argument names in the manual.
--2*AH,AK very long lines in examples in ``Comparisons of Lists''
++2*AH,AK very long lines in examples in ``Comparisons of Lists''
   What is the recommended line length for manual examples?
-  Immediate place done.
+  Immediate in-place fix done.
   It turns out that 79 characters is the maximum possible in the PDF
   version and 75 for the online version. In HTML this depends on the
   size of the browser window.
+  (This was done by Frank on a systematic basis)
 -5 There is a section title ``Comparisons of Lists'' and an index entry
   ``comparisons!of lists'' (i.e., ``of lists'' is a subkey);
   the idea behind the index entry is that several subkeys will appear
@@ -693,8 +703,9 @@ functionality.)
   ``we catch plain lists by a function to avoid method selection'',
   which I think was not intended for the manual and therefore was removed.
   Make it a comment to the code rather a comment to the documentation.
--2AK `PositionSortedOp' is mentioned but not documented.
-  --> Actually there is a comment in the PositionSorted section.
++2AK `PositionSortedOp' is mentioned but not documented, 
+  but actually there is a comment in the PositionSorted section. 
+  AK: added index entry for PositionSortedOp
 +2*FL GAPDoc problem:  Entering `?List' now opens the entry for GAPDoc's <List>
   element (the only exact match since the function `List' now has two
   variants with labels)
@@ -761,11 +772,11 @@ functionality.)
   lines in `vector.xml'? 
   AK: `ProductPol' and its description moved into "obsolete.g{d,i}". 
   Checked that it is not used/documented.
--3AH,AK What is the difference between `ShrinkCoeffs' and `ShrinkRowVector'?
++3AH,AK What is the difference between `ShrinkCoeffs' and `ShrinkRowVector'?
   (Wouldn't one of them be enough?)
   Get rid of ShrinkCoeffs and replace all occurrences by ShrinkRowVector
   which has the better name.
-  AK to check - this seems already done
+  AK: ShrinkCoeffs moved to obsolete.{gd,gi}. 
 -6 (cf. chapter ``Lists'')
   several descriptions of infix operators that cannot be handled with
   <ManSection>
@@ -868,15 +879,19 @@ functionality.)
 % Comments:
 (This chapter was moved from the "new" manual to the "ref" manual since 
 the last release.)
--2AK An attribute <C>IntKeyFun</C> is mentioned which does not seem to
-  exist. TODO: remove it
++2AK An attribute <C>IntKeyFun</C> is mentioned which does not seem to
+  exist. AK: removed it.
++2AK An operation <C>KeyIntSparse</C> is mentioned which does not seem to 
+  exist. AK: removed it.
 +2AK And KeyIntDense, DefaultHashLength are mentioned without markup,
   as if they would be a valid words. AK: markup added.
--2AK The description of AddDictionary contains a sentence which is
-  obviously unfinished.
++2AK The description of AddDictionary contains a sentence which is
+  obviously unfinished (AK: was corrected in rev. 4.24 on 04/08/2011?)
 -5 This chapter needs some polishing of the formulations.
--2AK Turn the inline reference in Section ``HasFunct'' to a proper
-  reference to the bibliography.
+-3 Turn the inline reference in ManSection for IntegerHashFunction to 
+  a proper reference to the bibliography. AK: The book by Cormen, Leiserson 
+  and Rivest was added to the bibliography, but IntegerHashFunction is 
+  not documented at the moment - should it be?
 -5 This chapter has no examples at all, would be useful to add them eventually.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 30: Records
@@ -920,15 +935,17 @@ the last release.)
   This would make it easy to document the `SomethingInParent' functions
   that actually exist.)
 -4 cross-ref. to undocumented function `ParentAttr'
--2AK The functions described in Section ``Constructing Domains'' do not exist
++2AK The functions described in Section ``Constructing Domains'' do not exist
   for all operational structures; at least add a remark about this.
--2AK docum. of `MultiplicativeZeroOp':
-  relation to `IsMultiplicativeElementWithZero'?
++2AK docum. of `MultiplicativeZeroOp':
+  relation to `IsMultiplicativeElementWithZero'? (AK: explained that
+  the argument lies in the category `IsMultiplicativeElementWithZero')
 -4 ``Comparison Operations for Elements'':
   Make explicit how <>, <=, >, >= are implemented, i.e., how they are
   related to \= and \<.
--2AK ``Arithmetic Operations for Elements'':
++2AK ``Arithmetic Operations for Elements'':
   why ``look up details about special methods in the index'' only for \mod?
+  (AK: reformulated, there are also index entries for \*, \/, \^)
 +3c* ``Useful Categories of Elements'':
   Several filters are explained as the *join* of other filters
   (file `lib/arith.gd');
@@ -968,9 +985,9 @@ the last release.)
   `GeneralMappingByElements'?
 -3 Why are unary operations such as `ReflexiveClosureBinaryRelation' not
   attributes?
--3 `IsHasseDiagram':
-  Is it a sensible definition of a property that the return value is `true'
-  if the argument was constructed with `HasseDiagramBinaryRelation'?
+-3 `IsHasseDiagram': Is it a sensible definition of a property 
+   that the return value is `true' if the argument was constructed 
+   with `HasseDiagramBinaryRelation'?
 -5AK `AsBinaryRelationOnPoints' is not in line with the convention about
   As<Something> functions.
   AK: should we have BinaryRelationByObject operation??? 
@@ -1029,7 +1046,7 @@ the last release.)
 % Started: December 01, 2008
 % Finished: January 02, 2009
 % Comments:
--2 `IsGroup': The sentence ``See 13.3 for details about categories.''
+-5 `IsGroup': The sentence ``See 13.3 for details about categories.''
   is not very helpful.
 -3 `Subgroup( G )': I think this is not a clean concept.
 +4 AH `IndexInWholeGroup': Give an example where this applies.
@@ -1039,18 +1056,23 @@ the last release.)
 -3 `Factorization': ``computes all elements of the group to ensure a short
   word is found'' --doesn't this approach in fact guarantee *minimal* length?
 -4 and cross-ref. to undocumented function `MappingGeneratorsImages')
--3 `Centralizer' for a conjugacy class:
-  The text states that this ``is a slight abuse of notation''.
-  So should the definition of `Centralizer' for this case (as an attribute)
-  be made explicit?
--2* Shouldn't `Complementclasses' be called `ComplementClasses'? Yes, retaining
-    the old name for compatibility
+-3 `Centralizer' for a conjugacy class states that this ``is a slight abuse 
+   of notation''. So should the definition of `Centralizer' for this case 
+   (as an attribute) be made explicit?
++2AK * Shouldn't `Complementclasses' be called `ComplementClasses'? 
+   Yes, retaining the old name for compatibility
+   AK: Done: Complementclasses -> ComplementClassesRepresentatives
+   ComplementclassesEA -> ComplementClassesRepresentativesEA
+   ComplementclassesSolvableWBG -> ComplementClassesRepresentativesSolvableWBG
+   ComplementclassesSolvableNC -> ComplementClassesRepresentativesSolvableNC
+   The first two names retained as synonyms for backwards compatibility.
+   Since ComplementClasses is defined in Polycyclic package, its authors 
+   are notified.
 -4 `Omega: remark ``@At the moment methods exist only for abelian G and n=1.@''
 -4 `PRump': remark ``@example missing@''
 -4 `IsPSolvable': remark ``@Currently no method is installed!@''
--3 `ConjugacyClassSubgroups':
-  Is this name needed at all--why not simply use `ConjugacyClass'?
-  (Do not forget to remove the `[]' method, as promised.)
+-3 `ConjugacyClassSubgroups': Is this name needed at all--why not simply use 
+   `ConjugacyClass'? (Do not forget to remove the `[]' method, as promised.)
 -3 What is the recommended way to compute representatives of classes of
   maximal subgroups?
   (Note that `ConjugacyClassesMaximalSubgroups' refers to
@@ -1059,11 +1081,11 @@ the last release.)
 -6* Are distinguishing labels "operation" and "attribute" (as for `Orbits')
   useful for the online help? Yes, they are useful, and should be added to
   other identifiers which are both operations and attributes.  
--2AK Section ``Numerical Group Attributes'':
++2AK Section ``Numerical Group Attributes'':
   Is this reasonable, since attributes such as `NrConjugacyClasses' do not
   appear here?
-  TODO: add a note that it does not cover ALL attributes with numerical values
-  and put a couple of cross-references.
+  AK: added a note that it does not cover ALL attributes with numerical 
+  values and put a couple of cross-references.
 -4 Cross-references to undocumented functions `LeftActingGroup',
   `RightActingGroup'.
   TODO: there is a stub mansection at csetgrp.gd, extend it and link to the doc.
@@ -1114,12 +1136,12 @@ the last release.)
 % Started: December 01, 2008
 % Finished: December 05, 2008
 % Comments:
--2AK strange sentence in ``About Group Actions'':
++2AK strange sentence in ``About Group Actions'':
   ``the call to <C>ExampleActionFunction</C> implements the induced action
   of <A>G</A>'';
   I think this is nonsense, and have commented is out.
   (For example, there is no GAP function `ExampleActionFunction'.)
-  TODO: check if it should be removed completely
+  AK: removed it completely
 -3 `OnLines' and other action functions promise an error when the argument
   point is not normalized,
   but this is not true for `OnLines'.
@@ -1133,9 +1155,8 @@ the last release.)
   2. Aren't such tests an unnecessary overhead?
      (If we really want to have foolproof behaviour here, we could introcude
      `NC' variants, and change all the occurrences in the library ...)
--2* `Orbit':
-  The action function is optional.
-  (The whole chapter should be checked for consistency.)
+-2* `Orbit': The action function is optional. (The whole chapter should be 
+    checked for consistency.)
 -2 `OrbitStabilizer' and `StabilizerOfExternalSet':
   What does the statement ``The stabilizer must have G as its parent.'' mean?
   The function *constructs* this stabilizer, so there is no requirement on
@@ -1153,19 +1174,15 @@ the last release.)
   `Action' (``for GAP 3 compatibility'')?
   In other words, is `Action' really required to store information about
   the arguments in its return value?
--3 `SparseActionHomomorphism':
-  What does the sentence ``If G acts on a very large domain Omega not
-  surjectively'' mean?
+-3 `SparseActionHomomorphism': What does the sentence ``If G acts on a 
+   very large domain Omega not surjectively'' mean?
   Is surjective here the same as transitive?
   (Several formulations in this chapter sound strange.)
--3 `ActorOfExternalSet':
-  This works only if `CanonicalRepresentativeDeterminatorOfExternalSet'
-  is available, or?
--3 `IsTransitive':
-  The definition does not assume that the group really acts on the domain
-  given.  So for example the ``action on'' any singleton set is always
-  regarded as transitive.
-  Is this a meaningful definition?
+-3 `ActorOfExternalSet': This works only if 
+   `CanonicalRepresentativeDeterminatorOfExternalSet' is available, or?
+-3 `IsTransitive': The definition does not assume that the group really 
+  acts on the domain given. So for example the ``action on'' any singleton 
+  set is always regarded as transitive. Is this a meaningful definition?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 43: Permutations
 % File: ./permutat.xml (line 12)
@@ -1220,9 +1237,8 @@ the last release.)
   The rest of the text should be checked for more such wrong statements.
 -5AK The list label ``limit (default Size( Parent( G ) ) or StabChainOptions(
   Parent( G ) ).limit if this is present'' is too long!
--2 Description of the component `orbit':
-  How shall the sentence ``ordered in such a way that the base point b_i is''
-  end?
+-2 Description of the component `orbit': How shall the sentence 
+   ``ordered in such a way that the base point b_i is'' end?
 +1AH `GroupStabChain':
   cross-reference to `Generators( S )' and to ``assigned as component
   stabChain'' --relics from GAP 3?
@@ -1246,12 +1262,10 @@ the last release.)
 % Comments:
 -5*c There is a statement about changed line length in some examples.
   (What shall be the default, how to deal with such cases?)
--3 `(Default)FieldOfMatrixGroup':
-  The fact that the domain must be a field suggests that matrix groups over
-  non-fields are not supported.
-  On the other hand, the description of `IsGeneralLinearGroup' etc.
-  talks about rings.
-  What is the status here, what has to be documented?
+-3 `(Default)FieldOfMatrixGroup': The fact that the domain must be a field 
+  suggests that matrix groups over non-fields are not supported. On the 
+  other hand, the description of `IsGeneralLinearGroup' etc. talks about 
+  rings. What is the status here, what has to be documented?
 -4 cross-references to undocumented variables `LeftAction', `RightAction'.
 -3 Section ``Matrix Groups in Characteristic 0'' says:
   ``Most of the functions described in this and the following section have
@@ -1292,12 +1306,11 @@ the last release.)
   for a pcgs.  This means that nobody should install another method for this
   situation.  Shouldn't this become documented? (BE: I guess that thought 
   that this is not of interest. I still think it is probably not of interest)  
--2AK `AffineOperation', `AffineOperationLayer', etc.:
++2AK `AffineOperation', `AffineOperationLayer', etc.:
   There are already `AffineAction', `AffineActionLayer', etc.;
   shouldn't the old ``Operation'' like names become undocumented?
-  AK: I've replaced Operation by Action, but synonyms are still documented,
-  as they are used in some parts of the library. TODO: replace all occurrences,
-  check packages, and then remove old names at all.
+  AK: replaced Operation by Action, undocumented synonyms and moved them
+  to obsolete.gd.
 +3cAH comment ``@The syntax of this function may change in a future rewrite!@''
   for `ClassesSolvableGroup' --status?
   AH: Looking through this, I think that at this point a syntax change is 
@@ -1344,9 +1357,9 @@ the last release.)
 % Started: June 14, 2009
 % Finished: June 14, 2009
 % Comments:
--2AK `FactorCosetOperation':
++2AK `FactorCosetOperation':
   Shall this synonym of `FactorCosetAction' be documented at all?
-  TODO: withdraw documentation, keep synonym.
+  AK: removed from documentation, moved synonym to obsolete.gd
 -2SL Section `Standardization of coset tables':
   A ``caveat paragraph'' explains the difference between the lenlex
   standardization of coset tables used in GAP and the semilenlex
@@ -1356,8 +1369,8 @@ the last release.)
   avoid this.)
   In subsection `StandardizeTable', ``old'' and ``new'' convention are
   mentioned --this is not helpful, change this.
--4AK `IsFpGroup':
-  Add examples --the return value for a free group is `true',
++4AK `IsFpGroup':
+  Added example: the return value for a free group is `true',
   the return value for a pc group is `false'.
 -4AK `StringFactorizationWord':
   Add an explicit example instead of giving an example in the text.
@@ -1425,8 +1438,7 @@ the last release.)
 % Started: December 01, 2008
 % Finished: January 10, 2009
 % Comments:
--3JM `FreeSemigroup':
-  examples involve also `FreeGroup' (move them away?)
+-3JM `FreeSemigroup': examples involve also `FreeGroup' (move them away?)
 -4JM empty definition for `IsFullTransformationSemigroup'
 -3JM What are semigroup ideals?
 -3JM strange definition of `ReesCongruenceOfSemigroupIdeal'
@@ -1496,7 +1508,8 @@ look worse than others)
   For (small) finite rings one can do something but infinite rings are
   handled by GAP in an acceptable way at most if they are at least algebras.
   TODO: yes, put it
--4 no definition for `DefaultRingByGenerators'
++4AK only example and no definition for `DefaultRingByGenerators'
+  (AK: put a definition).
 -4 `AsRing': commented out, so not yet supported officially
 -3 what about sums and products of ideals?
 -4 cross-reference to undocumented `RightActingDomain'
@@ -1515,13 +1528,12 @@ look worse than others)
 % Started: February 06, 2009
 % Finished: February 07, 2009
 % Comments:
--3AK `AsFreeLeftModule':
-  I think that the intention was to leave this function out from the GAP 4.4
-  documentation, since the `\Declaration' statement in `doc/build/module.msk'
-  was preceded with `%W '; but the manual builder seems to ignore this,
-  so `doc/ref/module.tex' contains the documentation;
++3AK `AsFreeLeftModule': I think that the intention was to leave this function 
+  out from the GAP 4.4 documentation, since the `\Declaration' statement in 
+  `doc/build/module.msk' was preceded with `%W '; but the manual builder seems 
+  to ignore this, so `doc/ref/module.tex' contains the documentation;
   I have now added it also to the 4.dev documentation.
-  TODO: No methods installed (maybe only in packages?). If not at all, withdraw.
+  AK: No methods installed in the library and packages. Removed.
 -4AK Several statements talk about ``scalars''.
   It should be made precise what this means for a given module.
 -5 The whole chapter is suitable at most for the case of (left) vector spaces,
@@ -1660,8 +1672,7 @@ look worse than others)
 % Started: February 06, 2009
 % Finished: February 07, 2009
 % Comments:
--3AK Why is `Discriminant' not an attribute?
-  TODO: make it an attribute
+-3AK Why is `Discriminant' not an attribute? TODO: make it an attribute
 +2AH: rewritten
   The introductory text in section "Indeterminates" is not understandable.
 -5AK In the sections "Operations for Rational Functions",
@@ -1713,11 +1724,12 @@ look worse than others)
 % Started: April 19, 2009
 % Finished: April 19, 2009
 % Comments:
--1AK Already the trivial example to express 4/5 as a 2-adic number
++1AK Already the trivial example to express 4/5 as a 2-adic number
   is not correct, the value must be the *periodic* expansion
   0.010110011001100...
   (Without that, the subsequently introduced notion of approximation
   makes no sense.)
+  AK: corrected this example; also extended the example for PadicNumber.
 -4AK It should be made precise what precision means.
 -4 Useless definition, and no example:
   ``The valuation is the p-part of the p-adic number.''
@@ -1730,7 +1742,7 @@ look worse than others)
   p-adic numbers'' are supported.
 -5AK `PadicNumber' is explained in two sections; after rearrangement of the
   material (see above), this can be unified.
-  Can we ask AH?
+  Can we ask AH? So far AK at least put cross-references between both sections.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 70: The MeatAxe
 % File: ./meataxe.xml (line 12)
@@ -1745,8 +1757,7 @@ look worse than others)
   (And why does the first sentence emphasize ``submodules of a group
   algebra''? --The MeatAxe does not deal with group algebras!)
 -4 There are no examples for the functions in this chapter!
--3 SMTX.MinimalSubGModule:
-  ``It assumes `Distinguish' has been called already.''
+-3 SMTX.MinimalSubGModule: ``It assumes `Distinguish' has been called already.''
   Should this read as ``assumes that `MTX.Distinguish' has been called''
   or ``assumes that `SMTX.Distinguish' has been called''?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1791,10 +1802,9 @@ look worse than others)
 -6AK For `OrthogonalEmbeddingsSpecialDimension' and `RepresentativesFusions',
   the declarations are too long for a line in the PDF version.
   Can this be improved?
--2AK There are still two <Display> elements containing formulae that are nice
-  in LaTeX but ugly otherwise.  Shall we use <Alt>?
-  (see `Symmetrizations')
-  TODO: see also if MathJax handles them nicer
+-5 There are still two <Display> elements (see `Norm', `Symmetrizations') 
+  containing formulae that are nice in LaTeX but ugly otherwise. Shall we 
+  use <Alt>? AK: MathJax handles them nicer, we may use <Alt> for text later.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 74: Maps Concerning Character Tables
 % File: ./ctblmaps.xml (line 11)
@@ -1841,7 +1851,7 @@ look worse than others)
   (We have two alternative installers for Windows and one alternative 
   installter for Mac OS X.) 
   AK: changed it to "there may be no installer program".
--2AK Are the required disk space and main memory mentioned up to date?
++2AK Are the required disk space and main memory mentioned up to date?
 +2AK Is the statement correct that there is no Upgrade mode?
   AK: removed that sentence.
 +3bAH NO
@@ -1861,6 +1871,7 @@ look worse than others)
    to get GAP for Mac OS and does not reflect recent changes in the build
    process (gmp and readline options) - this should be cleaned up.
 -1AK Related issue: update number of GAPStones in testinstall.g and testall.g
+   (a preliminary update already made by AK after GAP 4.5.2)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 77: GAP Packages
 % File: ./gappkg.xml (line 11)
@@ -2019,9 +2030,9 @@ look worse than others)
   (Or perhaps to the documentation of its manual builder?)
   AK: so far I explained in the Example package what is compulsory if 
   gapmacro.tex is used. This is sufficient for the moment.
--2 Add (to Example package's manual) a cross-reference to the document 
++2AK Add (to Example package's manual) a cross-reference to the document 
   ``The gapmacro.tex Manual Format'' (see above) in the web, as soon as 
-  its URL is fixed.
+  its URL is fixed (AK: moved to the Example package TODOs).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Former chapter 85: Writing a GAP Package -
 % now moved to the Appendix for the "Example" package.
@@ -2042,22 +2053,23 @@ look worse than others)
         cross-referenced from "GAP Packages" chapter.
       * In the future, technical info (e.g. package loading mechanism 
         internals) should go to the GAP.dev manual
--2AK Add a cross-reference to the document ``The gapmacro.tex Manual Format''
-  (see above) in the web, as soon as its URL is fixed.
++2AK Add a cross-reference to the document ``The gapmacro.tex Manual Format''
+  (see above) in the web, as soon as its URL is fixed (AK: moved to TODOs
+  for the Example package).
 +3aAK Is the example in section ``An Example of a GAP Package'' UNIX specific?
   (There is a comment line with this statement.)
   NO, the example is not UNIX-specific, and the comment can no longer be found.
--2AK The template file for `PackageInfo.g' is mentioned twice, but it is not
++2AK The template file for `PackageInfo.g' is mentioned twice, but it is not
   specified where this file can be found.
   (Add an URL.)
 +2AK The function `ValidatePackageInfo' should become documented here.AK: yes, 
   it's now documented in the chapter GAP Packages of the reference manual.
--2AK Add a remark to section ``Declaration and Implementation Part'' that it is
++2AK Add a remark to section ``Declaration and Implementation Part'' that it is
   not safe to *call* functions from (needed) packages during package loading.
   (Perhaps it will become necessary to add this functionality, via a function
   that can be added to a package and which is guaranteed to be called after
   the package and all needed packages have been loaded.)
--2AK The global variable `GAPInfo' should become documented in GAP 4.5
++2AK The global variable `GAPInfo' should become documented in GAP 4.5
   (in the Reference Manual), then a proper cross-reference to this variable
   can be added in section `Version Numbers'.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2136,18 +2148,16 @@ look worse than others)
   (This information is available on the GAP web pages,
   and I could imagine a collection of changes w.r.t. older versions being
   part of the Reference Manual --really as a reference-- for example as an
-  appendix chapter.)
-  I have not tried to beautify the changes list, since the next release
-  will anyhow have a new list.
-  TODO: indeed it should be an appendix, 
-  references to this list should be updated
--2AK References to GAP functions and packages should be proper links.
+  appendix chapter.) I have not tried to beautify the changes list, since 
+  the next release will anyhow have a new list.
+  TODO: indeed it should be an appendix, references to it must be updated
++2AK References to GAP functions and packages should be proper links.
 -2 Reference to the "Migrating to GAP4" document is incomplete.
 +1AK A list of main changes for package authors should be available (for the
  beta, it is placed in the preface to the beta-release, later may be moved to
  the example package as a section on upgrading packages from GAP 4.4 to GAP 4.5)
--1AK Use preface for GAP 4.5 beta for a new section in the Example package
- manual about upgrading packages from GAP 4.4 to GAP 4.5
++1AK Use preface for GAP 4.5 beta for a new section in the Example package
+ manual about upgrading packages from GAP 4.4 to GAP 4.5 (AK: Done in Example 3.1)
 -1 A list of main changes from 4.4 to 4.5 should be added before release.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
@@ -2207,8 +2217,8 @@ look worse than others)
 % Finished: August 06, 2008
 % Comments:
 -4 reference to undocumented function ComputedSylowSubgroups
--2AK The term ``actions package'' occurs several times.
-  (It does not mean a GAP package.)
++2AK The term ``actions package'' occurs several times.
+  (It does not mean a GAP package.). AK: clarified this. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 6: Vector Spaces and Algebras
 % File: ./algvspc.xml (line 10)

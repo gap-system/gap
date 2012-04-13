@@ -2,14 +2,11 @@
 ##
 #W  oprtperm.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.oprtperm_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -97,7 +94,7 @@ end );
 InstallOtherMethod( CycleOp,"perm, int", true,
   [ IsPerm and IsInternalRep, IsInt ], 0,
     function( g, pnt )
-    return Immutable( CyclePermInt( g, pnt ) );
+    return Immutable( CYCLE_PERM_INT( g, pnt ) );
 end );
 
 #############################################################################
@@ -114,7 +111,7 @@ InstallOtherMethod( CycleLengthOp, "perm, int, act", true,
 end );
 
 InstallOtherMethod( CycleLengthOp, "perm, int", true,
-  [ IsPerm and IsInternalRep, IsInt ],0, CycleLengthPermInt);
+  [ IsPerm and IsInternalRep, IsInt ],0, CYCLE_LENGTH_PERM_INT);
 
 #############################################################################
 ##

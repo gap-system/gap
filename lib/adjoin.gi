@@ -1,13 +1,10 @@
 #############################################################################
 #W  adjoin.gi                  GAP library                Steve Linton
 ##
-#H  @(#)$Id$
 ##
 ##  This file contains the declarations for functions pertaining to 
 ##  adjoining an identity element to a semigroup. 
 ##
-Revision.adjoin_gi :=
-  "@(#)$Id$";
 
 ###########################################################################
 ##

@@ -3,7 +3,6 @@
 #W  wordass.gd                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,6 @@
 ##  6. External Representation for Associative Words
 ##  7. Some Undocumented Functions
 ##
-Revision.wordass_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -814,7 +811,7 @@ DeclareOperation( "SubSyllables", [ IsAssocWord, IsInt, IsInt ] );
 ##  generator order given in the list <A>gens</A>.
 ##  <P/>
 ##  (For words stored in syllable form the letter representation has to be
-##  comnputed.)
+##  computed.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

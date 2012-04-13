@@ -1,9 +1,8 @@
 #############################################################################
 ##
-#W  tom.gd                   GAP library                       Götz Pfeiffer
+#W  tom.gd                   GAP library                        Götz Pfeiffer
 #W                                                          & Thomas Merkwitz
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -26,8 +25,6 @@
 ##  12. The Interface between Tables of Marks and Character Tables
 ##  13. Generic Construction of Tables of Marks
 ##
-Revision.tom_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -88,7 +85,7 @@ Revision.tom_gd :=
 ##  in <M>G</M>.
 ##  <P/>
 ##  Since <M>H_j</M> can only have fixed points if it is contained in a point
-##  stablizer the matrix <M>M</M> is lower triangular if the classes
+##  stabilizer the matrix <M>M</M> is lower triangular if the classes
 ##  <M>C_i</M> are sorted according to the condition that if <M>H_i</M>
 ##  is contained in a conjugate of <M>H_j</M> then <M>i \leq j</M>.
 ##  <P/>
@@ -425,6 +422,12 @@ DeclareGlobalFunction( "LatticeSubgroupsByTom" );
 ##  line length, which can be accessed and changed by the function
 ##  <Ref Func="SizeScreen"/>.
 ##  <P/>
+##  An interactive variant of <Ref Oper="Display"/> is the
+##  <Ref Oper="Browse" BookName="browse"/> method for tables of marks
+##  that is provided by the &GAP; package <Package>Browse</Package>,
+##  see <Ref Meth="Browse" Label="for tables of marks"
+##  BookName="browse"/>.
+##  <P/>
 ##  The optional second argument <A>arec</A> of <Ref Func="Display"/> can be
 ##  used to change the default style for displaying a table of marks.
 ##  <A>arec</A> must be a record, its relevant components are the following.
@@ -717,8 +720,9 @@ DeclareGlobalFunction( "ConvertToTableOfMarks" );
 ##  gap> a5:= TableOfMarks( "A5" );
 ##  TableOfMarks( "A5" )
 ##  gap> MarksTom( a5 );
-##  [ [ 60 ], [ 30, 2 ], [ 20, 2 ], [ 15, 3, 3 ], [ 12, 2 ], [ 10, 2, 1, 1 ], 
-##    [ 6, 2, 1, 1 ], [ 5, 1, 2, 1, 1 ], [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ]
+##  [ [ 60 ], [ 30, 2 ], [ 20, 2 ], [ 15, 3, 3 ], [ 12, 2 ], 
+##    [ 10, 2, 1, 1 ], [ 6, 2, 1, 1 ], [ 5, 1, 2, 1, 1 ], 
+##    [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ]
 ##  gap> SubsTom( a5 );
 ##  [ [ 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 2, 4 ], [ 1, 5 ], [ 1, 2, 3, 6 ], 
 ##    [ 1, 2, 5, 7 ], [ 1, 2, 3, 4, 8 ], [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ] ]
@@ -760,7 +764,8 @@ DeclareAttribute( "SubsTom", IsTableOfMarks );
 ##  <Example><![CDATA[
 ##  gap> NrSubsTom( a5 );
 ##  [ [ 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 3, 1 ], [ 1, 1 ], [ 1, 3, 1, 1 ], 
-##    [ 1, 5, 1, 1 ], [ 1, 3, 4, 1, 1 ], [ 1, 15, 10, 5, 6, 10, 6, 5, 1 ] ]
+##    [ 1, 5, 1, 1 ], [ 1, 3, 4, 1, 1 ], [ 1, 15, 10, 5, 6, 10, 6, 5, 1 ] 
+##   ]
 ##  gap> OrdersTom( a5 );
 ##  [ 1, 2, 3, 4, 5, 6, 10, 12, 60 ]
 ##  ]]></Example>
@@ -821,7 +826,8 @@ DeclareAttribute( "LengthsTom", IsTableOfMarks );
 ##  <Example><![CDATA[
 ##  gap> a6:= TableOfMarks( "A6" );;
 ##  gap> ClassTypesTom( a6 );
-##  [ 1, 2, 3, 3, 4, 5, 6, 6, 7, 7, 8, 9, 10, 11, 11, 12, 13, 13, 14, 15, 15, 16 ]
+##  [ 1, 2, 3, 3, 4, 5, 6, 6, 7, 7, 8, 9, 10, 11, 11, 12, 13, 13, 14, 15, 
+##    15, 16 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -867,9 +873,9 @@ DeclareAttribute( "ClassTypesTom", IsTableOfMarks );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> ClassNamesTom( a6 );
-##  [ "1", "2", "3a", "3b", "5", "4", "(4)_2a", "(4)_2b", "(6)a", "(6)b", "(8)", 
-##    "(9)", "(10)", "(12)a", "(12)b", "(18)", "(24)a", "(24)b", "(36)", "(60)a", 
-##    "(60)b", "(360)" ]
+##  [ "1", "2", "3a", "3b", "5", "4", "(4)_2a", "(4)_2b", "(6)a", "(6)b", 
+##    "(8)", "(9)", "(10)", "(12)a", "(12)b", "(18)", "(24)a", "(24)b", 
+##    "(36)", "(60)a", "(60)b", "(360)" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -900,7 +906,8 @@ DeclareAttribute( "ClassNamesTom", IsTableOfMarks );
 ##  <Example><![CDATA[
 ##  gap> fus:= FusionsTom( a6 );;
 ##  gap> fus[1];
-##  [ "L3(4)", [ 1, 2, 3, 3, 14, 5, 9, 7, 15, 15, 24, 26, 27, 32, 33, 50, 57, 55, 
+##  [ "L3(4)", 
+##    [ 1, 2, 3, 3, 14, 5, 9, 7, 15, 15, 24, 26, 27, 32, 33, 50, 57, 55, 
 ##        63, 73, 77, 90 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -974,10 +981,10 @@ DeclareAttribute( "UnderlyingGroup", IsTableOfMarks );
 ##  [ 1, 1, 1, 1, 1, 1, 1, 1, 9 ]
 ##  gap> IdempotentsTomInfo( a5 );
 ##  rec( 
-##    fixpointvectors := [ [ 1, 1, 1, 1, 1, 1, 1, 1, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 
-##            0, 1 ] ], 
-##    primidems := [ [ 1, -2, -1, 0, 0, 1, 1, 1 ], [ -1, 2, 1, 0, 0, -1, -1, -1, 
-##            1 ] ] )
+##    fixpointvectors := [ [ 1, 1, 1, 1, 1, 1, 1, 1, 0 ], 
+##        [ 0, 0, 0, 0, 0, 0, 0, 0, 1 ] ], 
+##    primidems := [ [ 1, -2, -1, 0, 0, 1, 1, 1 ], 
+##        [ -1, 2, 1, 0, 0, -1, -1, -1, 1 ] ] )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1084,7 +1091,8 @@ DeclareAttribute( "MatTom", IsTableOfMarks );
 ##  <Example><![CDATA[
 ##  gap> MoebiusTom( a5 );
 ##  rec( ex := [ -60, 4, 2,,, -1, -1, -1, 1 ], hyp := [  ], 
-##    mu := [ -60, 4, 2,,, -1, -1, -1, 1 ], nu := [ -1, 2, 1,,, -1, -1, -1, 1 ] )
+##    mu := [ -60, 4, 2,,, -1, -1, -1, 1 ], 
+##    nu := [ -1, 2, 1,,, -1, -1, -1, 1 ] )
 ##  gap> tom:= TableOfMarks( "M12" );;
 ##  gap> moebius:= MoebiusTom( tom );;
 ##  gap> moebius.hyp;
@@ -1360,32 +1368,27 @@ DeclareGlobalFunction( "DerivedSubgroupsTom");
 ##  known for <A>tom</A> then it is a list of positive integers,
 ##  the value at position <M>i</M> being the position of the class of derived
 ##  subgroups of the <M>i</M>-th class of subgroups in <A>tom</A>.
+##  <P/>
 ##  The derived subgroups are in general not uniquely determined by the table
 ##  of marks if no <Ref Attr="UnderlyingGroup" Label="for tables of marks"/>
 ##  value is stored, so there is no default method for
 ##  <Ref Func="DerivedSubgroupsTomUnique"/>.
 ##  But in some cases the derived subgroups are explicitly set when the table
 ##  of marks is constructed.
+##  In this case, <Ref Func="DerivedSubgroupTom"/> does not set values in
+##  the <Ref Func="DerivedSubgroupsTomPossible"/> list.
+##  <P/>
 ##  The <Ref Func="DerivedSubgroupsTomUnique"/> value is automatically set
 ##  when the last missing unique value is entered in the
 ##  <Ref Func="DerivedSubgroupsTomPossible"/> list by
 ##  <Ref Func="DerivedSubgroupTom"/>.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> a5:= TableOfMarks( "A5" );
-##  TableOfMarks( "A5" )
-##  gap> DerivedSubgroupsTomPossible( a5 );
-##  [ ,, 1,,,,,, 9 ]
-##  gap> DerivedSubgroupTom( a5, 2 );
-##  1
-##  gap> DerivedSubgroupsTomPossible( a5 );
-##  [ , 1, 1,,,,,, 9 ]
-##  gap> DerivedSubgroupsTom( a5 );
-##  [ 1, 1, 1, 1, 1, 3, 5, 4, 9 ]
-##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
+##
+##  Currently the `DerivedSubgroupsTomUnique' value seems to be set
+##  automatically in all cases.
+##  Therefore, no example is shown.
 ##
 DeclareAttribute( "DerivedSubgroupsTomPossible", IsTableOfMarks, "mutable" );
 DeclareAttribute( "DerivedSubgroupsTomUnique", IsTableOfMarks );
@@ -1908,7 +1911,7 @@ DeclareAttribute( "StraightLineProgramsTom", IsTableOfMarks );
 ##  gap> alt5:= TableOfMarks( AlternatingGroup( 5 ) );;
 ##  gap> IsTableOfMarksWithGens( alt5 );
 ##  true
-##  gap> HasGeneratorsSubgroupsTom( alt5 );  HasStraightLineProgramsTom( alt5 );
+##  gap> HasGeneratorsSubgroupsTom(alt5); HasStraightLineProgramsTom(alt5);
 ##  true
 ##  false
 ##  gap> progs:= StraightLineProgramsTom( a5 );;
@@ -1920,7 +1923,8 @@ DeclareAttribute( "StraightLineProgramsTom", IsTableOfMarks );
 ##  2
 ##  gap> progs[4][1];
 ##  <straight line program>
-##  gap> Display( progs[4][1] );  # first generator of an el. ab group of order 4
+##  gap> # first generator of an el. ab group of order 4:
+##  gap> Display( progs[4][1] );
 ##  # input:
 ##  r:= [ g1, g2 ];
 ##  # program:
@@ -2054,7 +2058,7 @@ DeclareOperation( "RepresentativeTomByGeneratorsNC",
 ##  <Item>
 ##    There is neither fusion nor group information available.
 ##    In this case only necessary conditions can be checked,
-##    and if they are not sufficient to detemine the fusion uniquely then
+##    and if they are not sufficient to determine the fusion uniquely then
 ##    <K>fail</K> is returned by <Ref Oper="FusionCharTableTom"/>.
 ##  </Item>
 ##  </Enum>

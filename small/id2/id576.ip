@@ -2,8 +2,6 @@
 ##
 #W  id576.ip               GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id576_ip :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[576].next[250]:=
 rec(

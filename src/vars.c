@@ -2,7 +2,6 @@
 **
 *W  vars.c                      GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_vars_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -45,9 +42,7 @@ const char * Revision_vars_c =
 
 #include        "code.h"                /* coder                           */
 
-#define INCLUDE_DECLARATION_PART
 #include        "vars.h"                /* variables                       */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
@@ -3099,8 +3094,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoVars ( void )
 {
-    module.revision_c = Revision_vars_c;
-    module.revision_h = Revision_vars_h;
     FillInVersion( &module );
     return &module;
 }

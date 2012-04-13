@@ -2,7 +2,6 @@
 #
 # fix.nsi
 #
-# $Id$
 #
 # TO-DO: 
 # - check GAP version, if 4.3 then exit

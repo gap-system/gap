@@ -3,8 +3,6 @@
 #W  sml1536.cja            GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1536_cja :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1536 ].npnil[ 10 ][ 1 ] :=
 [ 126100789566390337, 18014398509482048, 54043195528462400, 54043195528462368

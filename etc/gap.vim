@@ -3,7 +3,6 @@
 " Author:  Frank Lübeck,  highlighting based on file by Alexander Hulpke
 " Maintainer:	Frank Lübeck
 " Last change:	June 2010 
-" CVS version:  $Id$
 " 
 " Comments: If you want to use this file, you may want to adjust colors to
 " your taste. There are some functions/macros for 

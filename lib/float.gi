@@ -3,7 +3,6 @@
 #W  float.gi                       GAP library                   Steve Linton
 ##                                                          Laurent Bartholdi 
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2011 The GAP Group
 ##
@@ -11,9 +10,22 @@
 ##  to deal with floateans.
 ##
 
-Revision.float_gi :=
-  "@(#)$Id$";
+#############################################################################
+## a category describing the "fields" of floating-point numbers
+## we must put it here, because float.gd is read too early for "IsAlgebra"
+## this is used mainly to create polynomials
+DeclareCategory("IsFloatPseudoField", IsAlgebra);
+SetIsUFDFamily(FloatsFamily,true);
 
+## these things should also be in float.gd, but require IsRationalFunction
+DeclareCategory("IsFloatRationalFunction", IsRationalFunction);
+DeclareSynonym("IsFloatPolynomial", IsFloatRationalFunction and IsPolynomial);
+DeclareSynonym("IsFloatUnivariatePolynomial", IsFloatRationalFunction and IsUnivariatePolynomial);
+DeclareOperation("RootsFloatOp", [IsList,IsFloat]);
+DeclareGlobalFunction("RootsFloat");
+DeclareOperation("Value", [IsFloatRationalFunction,IsFloat]);
+DeclareOperation("ValueInterval", [IsFloatRationalFunction,IsFloat]);
+#############################################################################
 
 MAX_FLOAT_LITERAL_CACHE_SIZE := 0; # cache all float literals by default.
 
@@ -38,7 +50,7 @@ InstallGlobalFunction(SetFloats, function(arg)
         FLOAT_OBJBYEXTREP := fail;
     fi;
     if IsBound(r.constants) then
-        FLOAT := ShallowCopy(r.constants);
+        FLOAT := r.constants;
     fi;
     if IsBound(r.creator) then
         FLOAT_STRING := r.creator;
@@ -154,9 +166,8 @@ end);
 BindGlobal("CONVERT_FLOAT_LITERAL", function(s)
     local i,l,f,s1,s2;
     f:= FLOAT_STRING(s);
-    if f <> fail then
-        return f;
-    fi;
+    if f<>fail then return f; fi;
+    
     l := LENGTH(s);
     s1 := "";
     for i in [1..LENGTH(s)] do
@@ -165,10 +176,15 @@ BindGlobal("CONVERT_FLOAT_LITERAL", function(s)
         elif s[i] in "dDqQ" then
             s1[i] := 'e';
         else
-            return fail;
+            s1 := fail; break;
         fi;
     od;
-    return FLOAT_STRING(s1);
+    if s1<>fail then
+        f := FLOAT_STRING(s1);
+        if f<>fail then return f; fi;
+    fi;
+    
+    Error("Conversion error: Badly formed number ",s);
 end);
 
 BindGlobal("CONVERT_FLOAT_LITERAL_EAGER", function(s,mark)
@@ -186,6 +202,24 @@ BindGlobal("CONVERT_FLOAT_LITERAL_EAGER", function(s,mark)
             return f(s);
         fi;
     fi;
+end);
+
+################################################################
+# zeros
+################################################################
+InstallGlobalFunction(RootsFloat, function(arg)
+    local l;
+    if Length(arg)=1 and IsList(arg[1]) then
+        l := arg[1];
+    elif ForAll(arg,IsFloat) then
+        l := arg;
+    elif Length(arg)=1 and IsUnivariatePolynomial(arg[1]) then
+        l := CoefficientsOfUnivariatePolynomial(arg[1]);
+    else
+        Error("RootsFloat: expected coefficients, a list of coefficients, or a polynomial, not ",arg);
+    fi;
+    if Length(l)=0 then return []; fi;
+    return RootsFloatOp(l,l[1]);
 end);
 
 #############################################################################
@@ -465,13 +499,28 @@ InstallOtherMethod( Rat, "for floats", [ IsFloat ],
     return sign * M[1][1]/M[2][1];
 end );
 
-InstallMethod( Cyc, "for floats, degree", [ IsFloat, IsPosInt ], -1,
-        function(x,n)
-    local i, m, b, phi, prec;
-    
-    prec := ValueOption("bits");
-    if not IsPosInt(prec) then prec := PrecisionFloat(x); fi;
+InstallOtherMethod( Rat, "for float intervals", [ IsFloatInterval ],
+        function ( x )
+    local M, a;
 
+    if x < Zero(x) then
+        M := [[-1,0],[0,1]]; x := -x;
+    else
+        M := [[1,0],[0,1]];
+    fi;
+    repeat
+        a := Int(Sup(x));
+        M := M * [[a,1],[1,0]];
+        x := x-a;
+        if Zero(x) in x then break; fi;
+        x := Inverse(x);
+    until AbsoluteDiameter(x) >= One(x);
+    return M[1][1]/M[2][1];
+end);
+
+BindGlobal("CYC_FLOAT_DEGREE", function(x,n,prec)
+    local i, m, b, phi;
+    
     phi := Phi(n);
     m := IdentityMat(phi+1);
     b := [];
@@ -487,28 +536,72 @@ InstallMethod( Cyc, "for floats, degree", [ IsFloat, IsPosInt ], -1,
 
     return -b*m{[1..phi]}/m[phi+1];
 end);
-
-InstallMethod( Cyc, "for floats", [ IsFloat ], -1,
-        function(x)
-    local n, lastlen, len, laste, e;
+    
+BindGlobal("CYC_FLOAT", function(x,prec)
+    local n, len, e, minlen, minn, mine;
+    
     n := 2;
-    len := infinity;
-    e := fail;
+    minlen := infinity;
     repeat
-        lastlen := len;
-        laste := e;
-        e := Cyc(x,n);
-        len := n*Length(String(e));
+        e := CYC_FLOAT_DEGREE(x,n,prec);
+        len := n*Norm(DenominatorCyc(e)*e)^2;
+        if len < minlen then
+            Info(InfoWarning,2,"Degree ",n,": ",e);
+            minlen := len;
+            minn := n;
+            mine := e;
+        fi;
         n := n+1;
-    until len > lastlen;
-    return laste;
+    until n > 2*minn+4;
+    return mine;
 end);
 
-BindGlobal("FLOAT_MINIMALPOLYNOMIAL", function(x,n,ind)
-    local prec, z, i, m;
+InstallMethod( Cyc, "for floats, degree", [ IsFloat, IsPosInt ], -1,
+        function(x,n)
+    local prec;
     
     prec := ValueOption("bits");
     if not IsPosInt(prec) then prec := PrecisionFloat(x); fi;
+    
+    return CYC_FLOAT_DEGREE(x,n,prec);
+end);
+
+InstallMethod( Cyc, "for intervals, degree", [ IsFloatInterval, IsPosInt ], -1,
+        function(x,n)
+    local diam;
+    
+    diam := AbsoluteDiameter(x);
+    if IsZero(diam) then
+        return CYC_FLOAT_DEGREE(Mid(x),n,PrecisionFloat(x));
+    else
+        return CYC_FLOAT_DEGREE(Mid(x),n,1+LogInt(1+Int(Inverse(diam)),2));
+    fi;
+end);
+
+InstallMethod( Cyc, "for floats", [ IsFloat ], -1,
+        function(x)
+    local n, len, e, minlen, minn, mine, prec;
+    
+    prec := ValueOption("bits");
+    if not IsPosInt(prec) then prec := PrecisionFloat(x); fi;
+    
+    return CYC_FLOAT(x,prec);
+end);
+
+InstallMethod( Cyc, "for intervals", [ IsFloatInterval ], -1,
+        function(x)
+    local diam;
+    
+    diam := AbsoluteDiameter(x);
+    if IsZero(diam) then
+        return CYC_FLOAT(Mid(x),PrecisionFloat(x));
+    else
+        return CYC_FLOAT(Mid(x),1+LogInt(1+Int(Inverse(diam)),2));
+    fi;
+end);
+
+BindGlobal("FLOAT_MINIMALPOLYNOMIAL", function(x,n,ind,prec)
+    local z, i, m;
     
     m := IdentityMat(n);
     z := LdExp(One(x),prec);
@@ -525,10 +618,25 @@ end);
 
 InstallMethod( MinimalPolynomial, "for floats", [ IsRationals, IsFloat, IsPosInt ],
         function(ring,x,ind)
-    local n, len, p, lastlen, lastp;
+    local n, len, p, lastlen, lastp, prec;
+    
+    prec := ValueOption("bits");
+    if not IsPosInt(prec) then
+        prec := PrecisionFloat(x);
+        if IsFloatInterval(x) then
+            p := AbsoluteDiameter(x);
+            if not IsZero(x) then
+                prec := 1+LogInt(1+Int(Inverse(p)),2);
+            fi;
+        fi;
+    fi;
+    if IsFloatInterval(x) then
+        x := Mid(x);
+    fi;
+    
     n := ValueOption("degree");
     if IsPosInt(n) then
-        return FLOAT_MINIMALPOLYNOMIAL(x,n+1,ind);
+        return FLOAT_MINIMALPOLYNOMIAL(x,n+1,ind,prec);
     fi;
     n := 1;
     len := infinity;
@@ -536,13 +644,321 @@ InstallMethod( MinimalPolynomial, "for floats", [ IsRationals, IsFloat, IsPosInt
     repeat
         lastlen := len;
         lastp := p;
-        p := FLOAT_MINIMALPOLYNOMIAL(x,n+1,ind);
+        p := FLOAT_MINIMALPOLYNOMIAL(x,n+1,ind,prec);
         len := (CoefficientsOfUnivariatePolynomial(p)^2)^n;
         n := n+1;
     until len > lastlen;
     return lastp;
 end);
 
+################################################################
+# rational functions
+################################################################
+# we need a new method, so that we keep track of the 0 and 1 of the
+# specific pseudofield
+InstallOtherMethod(RationalFunctionsFamily, "floats pseudofield",
+        [IsFloatPseudoField],
+        function(pf)
+  local   fam;
+  
+  # create a new family in the category <IsRationalFunctionsFamily>
+  fam := NewFamily("RationalFunctionsFamily(...)",
+                 IsPolynomialFunction and IsPolynomialFunctionsFamilyElement
+                 and IsFloatRationalFunction and IsRationalFunctionsFamilyElement,
+                 CanEasilySortElements,
+          IsPolynomialFunctionsFamily and CanEasilySortElements and
+          IsRationalFunctionsFamily);
+
+  # default type for polynomials
+  fam!.defaultPolynomialType := NewType( fam,
+	  IsPolynomial and IsPolynomialDefaultRep and
+	  HasExtRepPolynomialRatFun);
+
+  # default type for univariate laurent polynomials
+  fam!.threeLaurentPolynomialTypes := 
+    [ NewType( fam,
+	  IsLaurentPolynomial
+	  and IsLaurentPolynomialDefaultRep and
+	  HasIndeterminateNumberOfLaurentPolynomial and
+	  HasCoefficientsOfLaurentPolynomial), 
+
+	  NewType( fam,
+	    IsLaurentPolynomial
+	    and IsLaurentPolynomialDefaultRep and
+	    HasIndeterminateNumberOfLaurentPolynomial and
+	    HasCoefficientsOfLaurentPolynomial and
+	    IsConstantRationalFunction and IsUnivariatePolynomial),
+
+	  NewType( fam,
+	    IsLaurentPolynomial and IsLaurentPolynomialDefaultRep and
+	    HasIndeterminateNumberOfLaurentPolynomial and
+	    HasCoefficientsOfLaurentPolynomial and
+	    IsUnivariatePolynomial)];
+	      
+  # default type for univariate rational functions
+  fam!.univariateRatfunType := NewType( fam,
+	  IsUnivariateRationalFunctionDefaultRep  and
+	  HasIndeterminateNumberOfLaurentPolynomial and
+	  HasCoefficientsOfUnivariateRationalFunction);
+	      
+  fam!.defaultRatFunType := NewType( fam,
+          IsRationalFunctionDefaultRep and
+	  HasExtRepNumeratorRatFun and HasExtRepDenominatorRatFun);
+
+  # functions to add zipped lists
+  fam!.zippedSum := [ MONOM_GRLEX, \+ ];
+
+  # functions to multiply zipped lists
+  fam!.zippedProduct := [ MONOM_PROD,
+			  MONOM_GRLEX, \+, \* ];
+
+  # set the one and zero coefficient
+  fam!.zeroCoefficient := Zero(pf);
+  fam!.oneCoefficient  := One(pf);
+  fam!.oneCoefflist  := Immutable([fam!.oneCoefficient]);
+
+  # set the coefficients
+  SetCoefficientsFamily( fam, FloatsFamily );
+
+  SetCharacteristic( fam, 0 );
+
+  # and set one and zero
+  SetZero( fam, PolynomialByExtRepNC(fam,[]));
+  SetOne( fam, PolynomialByExtRepNC(fam,[[],fam!.oneCoefficient]));
+
+  # we will store separate `one's for univariate polynomials. This will
+  # allow to keep univariate calculations in this one indeterminate.
+  fam!.univariateOnePolynomials:=[];
+  fam!.univariateZeroPolynomials:=[];
+
+  # assign a names list
+  fam!.namesIndets := [];
+
+  # and return
+  return fam;
+end);
+
+InstallOtherMethod( UnivariatePolynomialByCoefficients, "ring",
+        [IsFloatPseudoField,IsList,IsInt],
+        function(r,cofs,ind)
+    return LaurentPolynomialByCoefficients(r,cofs,0,ind);
+end );
+
+InstallOtherMethod( LaurentPolynomialByCoefficients, "ring",
+        [IsFloatPseudoField,IsList,IsInt,IsInt],
+        function(r,cofs,val,ind)
+    local lc, fam;
+    lc := Length(cofs);
+    fam := RationalFunctionsFamily(r);
+    if lc > 0 and (IsZero( cofs[1] ) or IsZero( cofs[lc] ))  then
+        cofs := ShallowCopy( cofs );
+        val := val + RemoveOuterCoeffs( cofs, fam!.zeroCoefficient );
+    fi;
+    return LaurentPolynomialByExtRepNC( fam, cofs, val, ind );
+end );
+
+InstallOtherMethod( UnivariateRationalFunctionByCoefficients, "ring",
+        [IsFloatPseudoField,IsList,IsList,IsInt],
+        function(r,ncof,dcof,val)
+    return UnivariateRationalFunctionByCoefficients(r,ncof,dcof,val,1);
+end );
+
+InstallOtherMethod( UnivariateRationalFunctionByCoefficients, "ring",
+        [IsFloatPseudoField,IsList,IsList,IsInt,IsInt],
+        function(r,ncof,dcof,val,ind)
+    local fam;
+    fam := RationalFunctionsFamily( r );
+    if Length( ncof ) > 0 and (IsZero( ncof[1] ) or IsZero( ncof[Length( ncof )] ))  then
+        if not IsMutable( ncof )  then
+            ncof := ShallowCopy( ncof );
+        fi;
+        val := val + RemoveOuterCoeffs( ncof, fam!.zeroCoefficient );
+    fi;
+    if Length( dcof ) > 0 and (IsZero( dcof[1] ) or IsZero( dcof[Length( dcof )] ))  then
+        if not IsMutable( dcof )  then
+            dcof := ShallowCopy( dcof );
+        fi;
+        val := val - RemoveOuterCoeffs( dcof, fam!.zeroCoefficient );
+    fi;
+    return UnivariateRationalFunctionByExtRepNC( fam, ncof, dcof, val, ind );
+end );
+
+InstallMethod( PolynomialRing,"indetlist", true, [ IsFloatPseudoField, IsList ], 
+  1,
+function( r, n )
+    local   rfun,  zero,  one,  ind,  i,  type,  prng;
+
+    if IsPolynomialFunctionCollection(n) and ForAll(n,IsLaurentPolynomial) then
+      n:=List(n,IndeterminateNumberOfLaurentPolynomial);
+    fi;
+    if IsEmpty(n) or not IsInt(n[1]) then
+      TryNextMethod();
+    fi;
+
+    # get the rational functions of the elements family
+    rfun := RationalFunctionsFamily(r);
+
+    # cache univariate rings - they might be created often
+    if not IsBound(r!.univariateRings) then
+      r!.univariateRings:=[];
+    fi;
+
+    if Length(n)=1 
+      # some bozo might put in a ridiculous number
+      and n[1]<10000 
+      # only cache for the prime field
+      and IsField(r) 
+      and IsBound(r!.univariateRings[n[1]]) then
+      return r!.univariateRings[n[1]];
+    fi;
+
+    # first the indeterminates
+    zero := Zero(r);
+    one  := One(r);
+    ind  := [];
+    for i  in n  do
+        Add( ind, LaurentPolynomialByCoefficients(r,[one],1,i) );
+    od;
+
+    # construct a polynomial ring
+    type := IsPolynomialRing and IsAttributeStoringRep and IsFreeLeftModule and IsAlgebraWithOne;
+
+    if Length(n) = 1 then
+        type := type and IsUnivariatePolynomialRing and IsEuclideanRing;
+                     #and IsAlgebraWithOne; # done above already
+    fi;
+    
+    prng := Objectify( NewType( CollectionsFamily(rfun), type ), rec() );
+
+    # set the left acting domain
+    SetLeftActingDomain( prng, r );
+
+    # set the indeterminates
+    SetIndeterminatesOfPolynomialRing( prng, ind );
+
+    # set known properties
+    SetIsFinite( prng, false );
+    SetIsFiniteDimensional( prng, false );
+    SetSize( prng, infinity );
+
+    # set the coefficients ring
+    SetCoefficientsRing( prng, r );
+
+    # set one and zero
+    SetOne(  prng, ind[1]^0 );
+    SetZero( prng, ind[1]*zero );
+
+    # set the generators left operator ring-with-one if the rank is one
+    if IsRingWithOne(r) then
+        SetGeneratorsOfLeftOperatorRingWithOne( prng, ind );
+    fi;
+
+
+    if Length(n)=1 and n[1]<10000 
+      # only cache for the prime field
+      and IsField(r) then
+      r!.univariateRings[n[1]]:=prng;
+    fi;
+
+    # and return
+    return prng;
+end );
+
+InstallOtherMethod( Indeterminate, [IsFloatFamily,IsPosInt],
+        function(fam,ind)
+    Error("`Indeterminate(<family>,<ind>)' can not be used with floats; use `Indeterminate(<float pseudofield>,<ind>)'");
+end);
+
+InstallOtherMethod( Indeterminate,"number", true, [ IsFloatPseudoField,IsPosInt ],0,
+function( r,n )
+  return LaurentPolynomialByCoefficients(r,[One(r)],1,n);
+end);
+
+InstallOtherMethod( Indeterminate,"number 1", true, [ IsFloatPseudoField ],0,
+function( r )
+  return LaurentPolynomialByCoefficients(r,[One(r)],1,1);
+end);
+
+InstallOtherMethod( Indeterminate,"number, avoid", true, [ IsFloatPseudoField,IsList ],0,
+function( r,a )
+  if not IsRationalFunction(a[1]) then
+    TryNextMethod();
+  fi;
+  return LaurentPolynomialByCoefficients(r,[One(r)],1,
+          GiveNumbersNIndeterminates(RationalFunctionsFamily(r),1,[],a)[1]);
+end);
+
+InstallOtherMethod( Indeterminate,"number, name", true, [ IsFloatPseudoField,IsString ],0,
+function( r,n )
+  if not IsString(n) then
+    TryNextMethod();
+  fi;
+  return LaurentPolynomialByCoefficients(r,[One(r)],1,
+          GiveNumbersNIndeterminates(RationalFunctionsFamily(r),1,[n],[])[1]);
+end);
+
+InstallOtherMethod( Indeterminate,"number, name, avoid",true,
+  [ IsFloatPseudoField,IsString,IsList ],0,
+function( r,n,a )
+  if not IsString(n) then
+    TryNextMethod();
+  fi;
+  return LaurentPolynomialByCoefficients(r,[One(r)],1,
+          GiveNumbersNIndeterminates(RationalFunctionsFamily(r),1,[n],a)[1]);
+end);
+
+# we must avoid over/underflow here; hence the specific method
+InstallOtherMethod(ReduceCoeffs, "for float vectors",
+        [IsFloatCollection, IsInt, IsFloatCollection, IsInt],
+        function (l1, n1, l2, n2)
+    local l, q, i, x;
+    if 0 = n2  then
+        Error("<l2> must be non-zero");
+    elif 0 = n1  then
+        return n1;
+    fi;
+    while 0 < n2 and IsZero(l2[n2]) do n2 := n2 - 1; od;
+    if 0 = n2 then
+        Error("<l2> must be non-zero");
+    fi;
+    while 0 < n1 and IsZero(l1[n1]) do n1 := n1 - 1; od;
+    while n1 >= n2  do
+        q := l1[n1] / l2[n2];
+        l := n1-n2;
+        for i in [ n1-n2+1 .. n1 ] do
+            x := l1[i] - q * l2[i-n1+n2];
+            if i=n1 or l1[i] - x/2 = l1[i] then # epsilon-small value
+                l1[i] := Zero(l1[i]);
+            else
+                l1[i] := x;
+                l := i;
+            fi;
+        od;
+        n1 := l;
+    od;
+    return n1;
+end);
+
+InstallMethod( Derivative, "for float laurent polynomial",
+        [IsFloatRationalFunction and IsUnivariateRationalFunction and IsLaurentPolynomial],
+        function(f)
+    local  c, d, e, i, ind, fam;
+    ind := IndeterminateNumberOfUnivariateRationalFunction( f );
+    fam := FamilyObj(f);
+    e := CoefficientsOfLaurentPolynomial( f );
+    c := e[1];
+    if Length( c ) = 0  then
+        return f;
+    fi;
+    e := e[2];
+    d := [  ];
+    for i  in [ 1 .. Length(c) ]  do
+        d[i] := (i + e - 1) * c[i];
+    od;
+    e := e-1 + RemoveOuterCoeffs(d, fam!.zeroCoefficient);
+    return LaurentPolynomialByExtRepNC( fam, d, e, ind );
+end );
+      
 #############################################################################
 ##
 #M  \<, \+, ... for float and rat
@@ -557,29 +973,49 @@ end);
 
 InstallMethod( \<, "for rational and float", [ IsRat, IsFloat ], -1, COMPARE_FLOAT_ANY );
 InstallMethod( \<, "for float and rational", [ IsFloat, IsRat ], -1, COMPARE_FLOAT_ANY );
+InstallMethod( \<, "for floats", [ IsFloat, IsFloat ], -1,
+        function(x,y) return x < MakeFloat(x,y); end);
+
 InstallMethod( \=, "for rational and float", [ IsRat, IsFloat ], -1, COMPARE_FLOAT_ANY );
 InstallMethod( \=, "for float and rational", [ IsFloat, IsRat ], -1, COMPARE_FLOAT_ANY );
+InstallMethod( \=, "for floats", [ IsFloat, IsFloat ], -1,
+        function(x,y) return x = MakeFloat(x,y); end);
 
 InstallMethod( \+, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
         function ( x, y ) return MakeFloat(y,x) + y; end );
 InstallMethod( \+, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
         function ( x, y ) return x + MakeFloat(x,y); end );
+InstallMethod( \+, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return x + MakeFloat(x,y); end );
+        
 InstallMethod( \-, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
         function ( x, y ) return MakeFloat(y,x) - y; end );
 InstallMethod( \-, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
         function ( x, y ) return x - MakeFloat(x,y); end );
+InstallMethod( \-, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return x - MakeFloat(x,y); end );
+        
 InstallMethod( \*, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
         function ( x, y ) return MakeFloat(y,x) * y; end );
 InstallMethod( \*, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
         function ( x, y ) return x * MakeFloat(x,y); end );
+InstallMethod( \*, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return x * MakeFloat(x,y); end );
+
 InstallMethod( \/, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
         function ( x, y ) return MakeFloat(y,x) / y; end );
 InstallMethod( \/, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
         function ( x, y ) return x / MakeFloat(x,y); end );
+InstallMethod( \/, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return x / MakeFloat(x,y); end );
+
 InstallMethod( LQUO, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
         function ( x, y ) return LQUO(MakeFloat(y,x),y); end );
 InstallMethod( LQUO, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
         function ( x, y ) return LQUO(x,MakeFloat(x,y)); end );
+InstallMethod( LQUO, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return LQUO(x,MakeFloat(x,y)); end );
+
 InstallMethod( \^, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
         function ( x, y ) return MakeFloat(y,x) ^ y; end );
 InstallMethod( \^, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
@@ -587,6 +1023,8 @@ InstallMethod( \^, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
     if IsInt(y) then TryNextMethod(); fi;
     return x ^ MakeFloat(x,y);
 end );
+InstallMethod( \^, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
+        function ( x, y ) return x ^ MakeFloat(x,y); end );
         
 #############################################################################
 ##

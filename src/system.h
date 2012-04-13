@@ -8,7 +8,6 @@
 *W                                                  & Burkhard Höfling (MAC)
 *W                                                    & Steve Linton (MS/DOS)
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -21,320 +20,89 @@
 #ifndef GAP_SYSTEM_H
 #define GAP_SYSTEM_H
 
-#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
+/****************************************************************************
+**
+*V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
+*/
+#include "config.h"
+
+/* include C library stdlib.h to ensure size_t etc. is defined. */
+#include <stdlib.h>
+
 
 /****************************************************************************
 **
-
-*V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
+*D  user edit-able defines
 */
-#ifdef CONFIG_H
 
-#include "config.h"
+/* initial amount of memory if '-m' is not given in KB                     */ 
+/* The following tests whether we are in 64-bit mode, note that
+ * SYS_IS_64_BIT is only defined later in this file! */
+#if SIZEOF_VOID_P == 8
+#define SY_STOR_MIN		(128L * 1024)
+#else
+#define SY_STOR_MIN		(64L * 1024)
+#endif
+
+
+/****************************************************************************
+**
+*D  debug flags (user edit-able)
+*/
+
+/* * * * * * * * * *  saving/loading the workspace * * * * * * * * * * * * */
+
+/* define to get information while restoring                               */
+/* #undef DEBUG_LOADING */
+
+/* define to debug registering of global bags                              */
+/* #undef DEBUG_GLOBAL_BAGS */
+
+/* define to debug registering of function handlers                        */
+/* #undef DEBUG_HANDLER_REGISTRATION */
+
+
+/* * * * * * * * * * * * * debugging GASMAN  * * * * * * * * * * * * * * * */
+
+/* define to create functions PTR_BAG, etc instead of macros               */
+/* #undef DEBUG_FUNCTIONS_BAGS */
+
+/* define to debug the generational aspect of gasman                       */
+/* #undef DEBUG_DEADSONS_BAGS */
+
+/* define to debug masterpointers errors                                   */
+/* #undef DEBUG_MASTERPOINTERS */
 
 /* define stack align for gasman (from "config.h")                         */
 #define SYS_STACK_ALIGN         C_STACK_ALIGN
 
-/* assume all prototypes are there                                         */
-#define SYS_HAS_CALLOC_PROTO
-#define SYS_HAS_EXEC_PROTO
-#define SYS_HAS_IOCTL_PROTO
-#define SYS_HAS_MALLOC_PROTO
-#define SYS_HAS_MEMSET_PROTO
-#define SYS_HAS_MISC_PROTO
-#define SYS_HAS_READ_PROTO
-#define SYS_HAS_SIGNAL_PROTO
-#define SYS_HAS_STDIO_PROTO
-#define SYS_HAS_STRING_PROTO
-#define SYS_HAS_TIME_PROTO
-#define SYS_HAS_WAIT_PROTO
-#define SYS_HAS_WAIT_PROTO
-
 /* check if we are on a 64 bit machine                                     */
 #if SIZEOF_VOID_P == 8
 # define SYS_IS_64_BIT          1
-#endif
-
-/* some compiles define symbols beginning with an underscore               */
-/* but Mac OSX's dlopen adds one in for free!                              */
-#if C_UNDERSCORE_SYMBOLS
-#if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
-# define SYS_INIT_DYNAMIC       "Init__Dynamic"
-#else
-#if defined(SYS_IS_CYGWIN32) && SYS_IS_CYGWIN32
-# define SYS_INIT_DYNAMIC       "Init__Dynamic"
-#else
-# define SYS_INIT_DYNAMIC       "_Init__Dynamic"
-#endif
-#endif
-#else
-# define SYS_INIT_DYNAMIC       "Init__Dynamic"
-#endif
-
-/* "config.h" will redefine `vfork' to `fork' if necessary                 */
-#define SYS_MY_FORK             vfork
-
-#define SYS_HAS_SIG_T           RETSIGTYPE
-
-/* prefer `vm_allocate' over `sbrk'                                        */
-#if HAVE_VM_ALLOCATE
-# undef  HAVE_SBRK
-# define HAVE_SBRK              0
-#endif
-
-/* prefer "termio.h" over "sgtty.h"                                        */
-#if HAVE_TERMIO_H
-# undef  HAVE_SGTTY_H
-# define HAVE_SGTTY_H           0
-#endif
-
-/* prefer `getrusage' over `times'                                         */
-#if HAVE_GETRUSAGE
-# undef  HAVE_TIMES
-# define HAVE_TIMES             0
-#endif
-
-/* defualt HZ value                                                        */
-/*  on IRIX we need this include to get the system value                   */
-
-#if HAVE_SYS_SYSMACROS_H
-#include <sys/sysmacros.h>
-#endif
-
-#ifndef  HZ
-# define HZ                     50
-#endif
-
-/* prefer `waitpid' over `wait4'                                           */
-#if HAVE_WAITPID
-# undef  HAVE_WAIT4
-# define HAVE_WAIT4             0
-#endif
-
+#elif !defined(SIZEOF_VOID_P) && !defined(USE_PRECOMPILED)
+/* If SIZEOF_VOID_P has not been defined, and we are not currently
+   re-making the dependency list (via cnf/Makefile), then trigger
+   an error. */
+# error Something is wrong with this GAP installation: SIZEOF_VOID_P not defined
 #endif
 
 
-/****************************************************************************
+#ifndef HAVE_DOTGAPRC
+/* define as 1 if the user resource file is ".gaprc" */
+#define HAVE_DOTGAPRC           1
+#endif
+
+/* Define as 1 if your systems uses '/' as path separator.
 **
-*V  no autoconf . . . . . . . . . . . . . . . . . . . . do not use "config.h"
+** Currently, we support nothing else. For Windows (or rather: Cygwin), we
+** rely on a small hack which converts the path separator '\' used there
+** on '/' on the fly. Put differently: Systems that use completely different
+**  path separators, or none at all, are currently not supported.
 */
-#ifndef CONFIG_H
-
-#ifdef  SYS_HAS_STACK_ALIGN
-#define SYS_STACK_ALIGN         SYS_HAS_STACK_ALIGN
+#ifndef HAVE_SLASH_SEPARATOR
+#define HAVE_SLASH_SEPARATOR	1
 #endif
 
-#ifndef SYS_ARCH
-# define SYS_ARCH = "unknown";
-#endif
-
-#ifndef SY_STOR_MIN
-# if SYS_TOS_GCC2
-#  define SY_STOR_MIN   0
-# else
-#  define SY_STOR_MIN   24 * 1024 
-# endif
-#endif
-
-#ifndef SYS_HAS_STACK_ALIGN
-#define SYS_STACK_ALIGN         sizeof(UInt *)
-#endif
-
-#ifdef SYS_HAS_SIGNALS
-# define HAVE_SIGNAL            1
-#else
-# define HAVE_SIGNAL            0
-#endif
-
-#define HAVE_ACCESS             0
-#define HAVE_STAT               0
-#define HAVE_UNLINK             0
-#define HAVE_MKDIR              0
-#define HAVE_GETRUSAGE          0
-#define HAVE_DOTGAPRC           0
-#define HAVE_GAPRC              0
-
-#ifdef SYS_IS_BSD
-# undef  HAVE_ACCESS
-# define HAVE_ACCESS            1
-# undef  HAVE_STAT
-# define HAVE_STAT              1
-# undef  HAVE_UNLINK
-# define HAVE_UNLINK            1
-# undef  HAVE_MKDIR
-# define HAVE_MKDIR             1
-# undef  HAVE_GETRUSAGE
-# define HAVE_GETRUSAGE         1
-# undef  HAVE_DOTGAPRC
-# define HAVE_DOTGAPRC          1
-#endif
-
-#ifdef SYS_IS_MACH
-# undef  HAVE_ACCESS
-# define HAVE_ACCESS            1
-# undef  HAVE_STAT
-# define HAVE_STAT              1
-# undef  HAVE_UNLINK
-# define HAVE_UNLINK            1
-# undef  HAVE_MKDIR
-# define HAVE_MKDIR             1
-# undef  HAVE_GETRUSAGE
-# define HAVE_GETRUSAGE         1
-# undef  HAVE_DOTGAPRC
-# define HAVE_DOTGAPRC          1
-#endif
-
-#ifdef SYS_IS_USG
-# undef  HAVE_ACCESS
-# define HAVE_ACCESS            1
-# undef  HAVE_STAT
-# define HAVE_STAT              1
-# undef  HAVE_UNLINK
-# define HAVE_UNLINK            1
-# undef  HAVE_MKDIR
-# define HAVE_MKDIR             1
-# undef  HAVE_DOTGAPRC
-# define HAVE_DOTGAPRC          1
-#endif
-
-#ifdef SYS_IS_OS2_EMX
-# undef  HAVE_ACCESS
-# define HAVE_ACCESS            1
-# undef  HAVE_STAT
-# define HAVE_STAT              1
-# undef  HAVE_UNLINK
-# define HAVE_UNLINK            1
-# undef  HAVE_MKDIR
-# define HAVE_MKDIR             1
-# undef  HAVE_GAPRC
-# define HAVE_GAPRC             1
-#endif
-
-#ifdef SYS_HAS_NO_GETRUSAGE
-# undef  HAVE_GETRUSAGE
-# define HAVE_GETRUSAGE         0
-#endif
-
-#endif
-
-/****************************************************************************
-**
-*V  Includes  . . . . . . . . . . . . . . . . . . . . .  include system files
-*/
-#ifdef CONFIG_H
-#endif
-
-/* Cygwin claims to have GETRUSAGE but child times are not given properly */
-#if SYS_IS_CYGWIN32
-#undef  HAVE_GETRUSAGE
-#define HAVE_GETRUSAGE          0
-#endif
-
-
-/****************************************************************************
-**
-
-*V  Revision_system_h . . . . . . . . . . . . . . . . . . . . revision number
-*/
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_system_h =
-   "@(#)$Id$";
-#endif
-extern const char * Revision_system_c;  /* gap.c uses this */
-extern const char * Revision_system_h;
-
-
-/****************************************************************************
-**
-
-*V  SYS_ANSI  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  ANSI C
-*/
-#ifdef SYS_HAS_ANSI
-# define SYS_ANSI       SYS_HAS_ANSI
-#else
-# ifdef __STDC__
-#  define SYS_ANSI      1
-# else
-#  define SYS_ANSI      0
-# endif
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_BSD . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . BSD
-*/
-#ifdef SYS_IS_BSD
-# define SYS_BSD        1
-#else
-# define SYS_BSD        0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_MACH  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  MACH
-*/
-#ifdef SYS_IS_MACH
-# define SYS_MACH       1
-#else
-# define SYS_MACH       0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_USG . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . USG
-*/
-#ifdef SYS_IS_USG
-# define SYS_USG        1
-#else
-# define SYS_USG        0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_OS2_EMX . . . . . . . . . . . . . . . . . . . . . . OS2 using GCC/EMX
-*/
-#ifdef SYS_IS_OS2_EMX
-# define SYS_OS2_EMX    1
-#else
-# define SYS_OS2_EMX    0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_MSDOS_DJGPP . . . . . . . . . . . . . . . . . . . . . MSDOS using GCC
-*/
-#ifdef SYS_IS_MSDOS_DJGPP
-# define SYS_MSDOS_DJGPP 1
-#else
-# define SYS_MSDOS_DJGPP 0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_VMS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . VMS
-*/
-#ifdef SYS_IS_VMS
-# define SYS_VMS        1
-#else
-# define SYS_VMS        0
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_DARWIN . . . . . . . . . . . . . . .  DARWIN (BSD underlying MacOS X)
-*/
-#ifdef SYS_IS_DARWIN
-# define SYS_DARWIN    1
-#else
-# define SYS_DARWIN    0
-#endif
 
 #define FPUTS_TO_STDERR(str) fputs (str, stderr)
 
@@ -355,7 +123,7 @@ extern const char * Revision_system_h;
 /* 64 bit machines -- well alphas anyway                                   */
 #ifdef SYS_IS_64_BIT
 typedef char                    Char;
-typedef char                    Int1;
+typedef signed char             Int1;
 typedef short int               Int2;
 typedef int                     Int4;
 typedef long int                Int8;
@@ -370,7 +138,7 @@ typedef unsigned long int       UInt;
 /* 32bit machines                                                          */
 #else
 typedef char                    Char;
-typedef char                    Int1;
+typedef signed char             Int1;
 typedef short int               Int2;
 typedef long int                Int4;
 typedef long int                Int;
@@ -447,7 +215,6 @@ typedef UInt * *        Bag;
 
 /****************************************************************************
 **
-
 *V  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
 **
 **  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
@@ -599,11 +366,17 @@ extern Int SyDebugLoading;
 **  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
 **  be a valid filename.
 **
+**  In addition we store the path to the users ~/.gap directory, if available,
+**  in 'DotGapPath'.
+**  
 **  Put in this package because the command line processing takes place here.
 */
 #define MAX_GAP_DIRS 128
 
 extern Char SyGapRootPaths [MAX_GAP_DIRS] [512];
+#if HAVE_DOTGAPRC
+extern Char DotGapPath[512];
+#endif
 
 /****************************************************************************
 **
@@ -859,11 +632,11 @@ extern UInt SyStopTime;
 */
 extern UInt SyTime ( void );
 
-#if HAVE_GETRUSAGE
+/* TODO: Properly document the following three calls */
 extern UInt SyTimeSys ( void );
 extern UInt SyTimeChildren ( void );
 extern UInt SyTimeChildrenSys ( void );
-#endif
+
 /****************************************************************************
 **
 
@@ -873,7 +646,6 @@ extern UInt SyTimeChildrenSys ( void );
 
 /****************************************************************************
 **
-
 *F  IsAlpha( <ch> ) . . . . . . . . . . . . .  is a character a normal letter
 **
 **  'IsAlpha' returns 1 if its character argument is a normal character  from
@@ -937,7 +709,7 @@ extern Int SyStrcmp (
 extern Int SyStrncmp (
             const Char *    str1,
             const Char *    str2,
-            UInt                len );
+            UInt            len );
 
 /****************************************************************************
 **
@@ -960,8 +732,116 @@ extern Int SyIntString( const Char *string );
 */
 extern Char * SyStrncat (
             Char *              dst,
-            const Char *    src,
+            const Char *        src,
             UInt                len );
+
+
+
+/****************************************************************************
+**
+*F  strlcpy( <dst>, <src>, <len> )
+**
+** Copy src to buffer dst of size len.  At most len-1 characters will be
+** copied. Afterwards, dst is always NUL terminated (unless len == 0).
+**
+** Returns strlen(src); hence if the return value is greater or equal
+** than len, truncation occurred.
+**
+** This function is provided by some systems (e.g. OpenBSD, Mac OS X),
+** but not by all, so we provide a fallback implementation for those
+** systems that lack it.
+*/
+#ifndef HAVE_STRLCPY
+size_t strlcpy (
+    char *dst,
+    const char *src,
+    size_t len);
+#endif
+
+/****************************************************************************
+**
+*F  strlcat( <dst>, <src>, <len> )
+**
+** Appends src to buffer dst of size len (unlike strncat, len is the full
+** size of dst, not space left). At most len-1 characters will be copied.
+** Afterwards, dst is always NUL terminated (unless len == 0).
+**
+** Returns initial length of dst plus strlen(src); hence if the return value
+** is greater or equal than len, truncation occurred.
+**
+** This function is provided by some systems (e.g. OpenBSD, Mac OS X),
+** but not by all, so we provide a fallback implementation for those
+** systems that lack it.
+*/
+#ifndef HAVE_STRLCAT
+size_t strlcat (
+    char *dst,
+    const char *src,
+    size_t len);
+#endif
+
+/****************************************************************************
+**
+*F  strlncat( <dst>, <src>, <len>, <n> )
+**
+** Append at most n characters from src to buffer dst of size len. At most
+** len-1 characters will be copied. Afterwards, dst is always NUL terminated
+** (unless len == 0).
+**
+** Returns initial length of dst plus the minimum of n and strlen(src); hence
+** if the return value is greater or equal than len, truncation occurred.
+*/
+size_t strlncat (
+    char *dst,
+    const char *src,
+    size_t len,
+    size_t n);
+
+/****************************************************************************
+**
+*F  strxcpy( <dst>, <src>, <len> )
+**
+** Copy src to buffer dst of size len. If an overflow would occur, trigger
+** an assertion.
+**
+** This should be used with caution; in general, proper error handling is
+** preferable.
+**/
+size_t strxcpy (
+    char *dst,
+    const char *src,
+    size_t len);
+
+/****************************************************************************
+**
+*F  strxcat( <dst>, <src>, <len> )
+**
+** Append src to buffer dst of size len. If an overflow would occur, trigger
+** an assertion.
+**
+** This should be used with caution; in general, proper error handling is
+** preferable.
+**/
+size_t strxcat (
+    char *dst,
+    const char *src,
+    size_t len);
+
+/****************************************************************************
+**
+*F  strxncat( <dst>, <src>, <len>, <n> )
+**
+** Append not more than n characters from src to buffer dst of size len.
+** If an overflow would occur, trigger an assertion.
+**
+** This should be used with caution; in general, proper error handling is
+** preferable.
+**/
+size_t strxncat (
+    char *dst,
+    const char *src,
+    size_t len,
+    size_t n);
 
 
 /****************************************************************************
@@ -973,7 +853,6 @@ extern Char * SyStrncat (
 
 /****************************************************************************
 **
-
 *F  SyMsgsBags( <full>, <phase>, <nr> ) . . . . . . . display Gasman messages
 **
 **  'SyMsgsBags' is the function that is used by Gasman to  display  messages
@@ -987,11 +866,24 @@ extern void SyMsgsBags (
 
 /****************************************************************************
 **
+*F  SyMAdviseFree( )  . . . . . . . . . . . . . inform os about unused memory
+**
+**  'SyMAdviseFree' is the function that informs the operating system that
+**  the memory range after the current work space end is not needed by GAP. 
+**  This call is purely advisory and does not actually free pages, but
+**  only affects paging behavior.
+**  This function is called by GASMAN after each successfully completed
+**  garbage collection.
+*/
+extern void SyMAdviseFree ( void );
+
+/****************************************************************************
+**
 *F  SyAllocBags( <size>, <need> ) . . . allocate memory block of <size> bytes
 **
 **  'SyAllocBags' is called from Gasman to get new storage from the operating
-**  system.  <size> is the needed amount in kilobytes (it is always a multiple of
-**  512 KByte),  and <need> tells 'SyAllocBags' whether  Gasman  really needs
+**  system. <size> is the needed amount in kilobytes (it is always a multiple
+**  of 512 KByte), and <need> tells 'SyAllocBags' whether Gasman really needs
 **  the storage or only wants it to have a reasonable amount of free storage.
 **
 **  Currently  Gasman  expects this function to return  immediately  adjacent
@@ -1036,7 +928,6 @@ extern void SyAbortBags (
 
 /****************************************************************************
 **
-
 *F  MODULE_BUILTIN  . . . . . . . . . . . . . . . . . . . . .  builtin module
 */
 #define MODULE_BUILTIN          1
@@ -1064,22 +955,22 @@ extern void SyAbortBags (
 typedef struct init_info {
 
     /* type of the module: MODULE_BUILTIN, MODULE_STATIC, MODULE_DYNAMIC   */
-    UInt                type;               
+    UInt             type;               
 
     /* name of the module: filename with ".c" or library filename          */
-    const Char *    name;
+    const Char *     name;
 
     /* revision entry of c file for MODULE_BUILTIN                         */
-    const Char *    revision_c;
+    const Char *     revision_c;
 
     /* revision entry of h file for MODULE_BUILTIN                         */
-    const Char *    revision_h;
+    const Char *     revision_h;
 
     /* version number for MODULE_BUILTIN                                   */
-    UInt                version;
+    UInt             version;
 
     /* CRC value for MODULE_STATIC or MODULE_DYNAMIC                       */
-    Int                 crc;
+    Int              crc;
 
     /* initialise kernel data structures                                   */
     Int              (* initKernel)(struct init_info *);
@@ -1100,10 +991,10 @@ typedef struct init_info {
     Int              (* postRestore)(struct init_info *);
 
     /* filename relative to GAP_ROOT or absolut                            */
-    Char *            filename;
+    Char *           filename;
 
     /* true if the filename is GAP_ROOT relative                           */
-    Int                 isGapRootRelative;
+    Int              isGapRootRelative;
 
 } StructInitInfo;
 
@@ -1115,7 +1006,7 @@ typedef StructInitInfo* (*InitInfoFunc)(void);
 *T  StructBagNames  . . . . . . . . . . . . . . . . . . . . . tnums and names
 */
 typedef struct {
-    Int                 tnum;
+    Int             tnum;
     const Char *    name;
 } StructBagNames;
 
@@ -1127,8 +1018,8 @@ typedef struct {
 typedef struct {
     const Char *    name;
     const Char *    argument;
-    Obj *               filter;
-    Obj              (* handler)(/*arguments*/);
+    Obj *           filter;
+    Obj             (* handler)(/*arguments*/);
     const Char *    cookie;
 } StructGVarFilt;
 
@@ -1140,8 +1031,8 @@ typedef struct {
 typedef struct {
     const Char *    name;
     const Char *    argument;
-    Obj *               attribute;
-    Obj              (* handler)(/*arguments*/);
+    Obj *           attribute;
+    Obj             (* handler)(/*arguments*/);
     const Char *    cookie;
 } StructGVarAttr;
 
@@ -1153,8 +1044,8 @@ typedef struct {
 typedef struct {
     const Char *    name;
     const Char *    argument;
-    Obj *               property;
-    Obj              (* handler)(/*arguments*/);
+    Obj *           property;
+    Obj             (* handler)(/*arguments*/);
     const Char *    cookie;
 } StructGVarProp;
 
@@ -1165,10 +1056,10 @@ typedef struct {
 */
 typedef struct {
     const Char *    name;
-    Int                 nargs;
+    Int             nargs;
     const Char *    args;
-    Obj *               operation;
-    Obj              (* handler)(/*arguments*/);
+    Obj *           operation;
+    Obj             (* handler)(/*arguments*/);
     const Char *    cookie;
 } StructGVarOper;
 
@@ -1179,9 +1070,9 @@ typedef struct {
 */
 typedef struct {
     const Char *    name;
-    Int                 nargs;
+    Int             nargs;
     const Char *    args;
-    Obj              (* handler)(/*arguments*/);
+    Obj             (* handler)(/*arguments*/);
     const Char *    cookie;
 } StructGVarFunc;
 
@@ -1231,6 +1122,8 @@ extern Char *getOptionArg(Char key, UInt which);
  ** 
  **   macros, defining our selected longjump mechanism
  */
+
+#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 
 #if HAVE_SIGSETJMP
 #define sySetjmp( buff ) (sigsetjmp( (buff), 0))

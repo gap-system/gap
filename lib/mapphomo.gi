@@ -3,7 +3,6 @@
 #W  mapphomo.gi                 GAP library                     Thomas Breuer
 #W                                                         and Heiko Theißen
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -19,8 +18,6 @@
 ##     and additive structure
 ##  5. default equality tests for structure preserving mappings
 ##
-Revision.mapphomo_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

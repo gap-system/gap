@@ -3,8 +3,6 @@
 #W  nor2.f                 GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.nor2_f :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 6 ] := [
 [ 1,, 3,,, 7,,,, -3,,, -6, -3,,,, 5, -1, -6, -3,,,, -6, -3,,,,, -6,,, -3,,,,

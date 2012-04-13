@@ -3,7 +3,6 @@
 #W  list.gd                     GAP library                  Martin Schönert
 #W                                                            & Werner Nickel
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains the definition of operations and functions for lists.
 ##
-Revision.list_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -576,9 +573,9 @@ DeclarePropertyKernel( "IsPositionsList", IsDenseList, IS_POSS_LIST );
 ##  Typical examples of tables are matrices
 ##  (see&nbsp;<Ref Chap="Matrices"/>).
 ##  <Example><![CDATA[
-##  gap> IsTable( [ [ 1, 2 ], [ 3, 4 ] ] );        # in fact a matrix
+##  gap> IsTable( [ [ 1, 2 ], [ 3, 4 ] ] );    # in fact a matrix
 ##  true
-##  gap> IsTable( [ [ 1 ], [ 2, 3 ] ] );           # not rectangular but a table
+##  gap> IsTable( [ [ 1 ], [ 2, 3 ] ] );       # not rectangular but a table
 ##  true
 ##  gap> IsTable( [ [ 1, 2 ], [ () , (1,2) ] ] );  # not homogeneous
 ##  false
@@ -736,6 +733,7 @@ DeclareOperation( "PositionNthOccurrence", [ IsList, IsObject, IS_INT ] );
 ##  <Func Name="PositionSorted" Arg='list, elm[, func]'/>
 ##
 ##  <Description>
+##  <Index Key="PositionSortedOp"><C>PositionSortedOp</C></Index>
 ##  Called with two arguments, <Ref Func="PositionSorted"/> returns
 ##  the position of the element <A>elm</A> in the sorted list <A>list</A>.
 ##  <P/>
@@ -1436,12 +1434,14 @@ DeclareOperation( "ReversedOp", [ IsDenseList ] );
 ##  gap> l := [1..20];
 ##  [ 1 .. 20 ]
 ##  gap> m := Shuffle(ShallowCopy(l));
-##  [ 15, 13, 3, 19, 8, 11, 14, 7, 16, 4, 17, 18, 5, 1, 10, 6, 2, 9, 12, 20 ]
+##  [ 15, 13, 3, 19, 8, 11, 14, 7, 16, 4, 17, 18, 5, 1, 10, 6, 2, 9, 12, 
+##    20 ]
 ##  gap> l;
 ##  [ 1 .. 20 ]
 ##  gap> Shuffle(l);;
 ##  gap> l;
-##  [ 3, 4, 18, 13, 10, 7, 9, 8, 14, 17, 16, 6, 19, 12, 1, 11, 20, 2, 15, 5 ]
+##  [ 3, 4, 18, 13, 10, 7, 9, 8, 14, 17, 16, 6, 19, 12, 1, 11, 20, 2, 15, 
+##    5 ]
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
@@ -1514,7 +1514,8 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  [ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 3, 4 ], [ 1, 5 ], [ 0, 6 ] ]
 ##  gap> list := [ [0,6], [1,3], [3,4], [1,5], [1,2], [0,4], ];;
 ##  gap> Sort( list, function(v,w) return v[1] < w[1]; end );
-##  gap> list;  # note the random order of the elements with equal first component
+##  gap> # note the random order of the elements with equal first component:
+##  gap> list;
 ##  [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -1700,7 +1701,8 @@ DeclareGlobalFunction("LengthComparison");
 ##  700
 ##  gap> Maximum( [ -123, 700, 123, 0, -1000 ] );
 ##  700
-##  gap> Maximum( [1,2], [0,15], [1,5], [2,-11] );  # lists are compared elementwise
+##  gap> # lists are compared elementwise:
+##  gap> Maximum( [1,2], [0,15], [1,5], [2,-11] );  
 ##  [ 2, -11 ]
 ##  ]]></Example>
 ##  </Description>
@@ -1760,8 +1762,8 @@ DeclareGlobalFunction( "Minimum" );
 ##  <#GAPDoc Label="MaximumList">
 ##  <ManSection>
 ##  <Heading>MaximumList and MinimumList</Heading>
-##  <Oper Name="MaximumList" Arg='list'/>
-##  <Oper Name="MinimumList" Arg='list'/>
+##  <Oper Name="MaximumList" Arg='list [seed]'/>
+##  <Oper Name="MinimumList" Arg='list [seed]'/>
 ##
 ##  <Description>
 ##  return the maximum resp.&nbsp;the minimum of the elements in the list
@@ -1772,13 +1774,19 @@ DeclareGlobalFunction( "Minimum" );
 ##  Methods can be installed for special kinds of lists.
 ##  For example, there are special methods to compute the maximum
 ##  resp.&nbsp;the minimum of a range (see&nbsp;<Ref Sect="Ranges"/>).
+##  <P/>
+##  If a second argument <A>seed</A> is supplied, then the result is the
+##  maximum resp.&nbsp;minimum of the union of <A>list</A> and <A>seed</A>.
+##  In this manner, the operations may be applied to empty lists.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "MaximumList", [ IsList ] );
+DeclareOperation( "MaximumList", [ IsList, IsObject ] );
 
 DeclareOperation( "MinimumList", [ IsList ] );
+DeclareOperation( "MinimumList", [ IsList, IsObject ] );
 
 
 #############################################################################
@@ -1832,8 +1840,8 @@ DeclareOperation( "MinimumList", [ IsList ] );
 ##  [ [ 1, 3, 5 ], [ 1, 3, 6 ], [ 1, 4, 5 ], [ 1, 4, 6 ], [ 2, 3, 5 ], 
 ##    [ 2, 3, 6 ], [ 2, 4, 5 ], [ 2, 4, 6 ] ]
 ##  gap> Cartesian( [1,2,2], [1,1,2] );
-##  [ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ], [ 2, 1 ], 
-##    [ 2, 1 ], [ 2, 2 ] ]
+##  [ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ], 
+##    [ 2, 1 ], [ 2, 1 ], [ 2, 2 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

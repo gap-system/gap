@@ -3,8 +3,6 @@
 #W  sml768.a               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml768_a :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 768 ].npnil[ 1 ] :=
 [ 1342724534420852843261834341132879007597735961006607722016,

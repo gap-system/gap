@@ -11,8 +11,6 @@
 ##
 ##  This file contains generic methods for groups.
 ##
-Revision.grp_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -64,12 +62,12 @@ InstallMethod( IsCyclic,
     fi;
     end );
 
-InstallOtherMethod( MinimalGeneratingSet,"cyclic groups",true,
+InstallMethod( MinimalGeneratingSet,"cyclic groups",true,
     [ IsGroup and IsCyclic and IsFinite ],
-    SIZE_FLAGS(WITH_IMPS_FLAGS(FLAGS_FILTER(IsFinite and IsPcGroup))),
+    RankFilter(IsFinite and IsPcGroup),
 function ( G )
 local g;
-  if Size(G)=1 then return [One(G)];fi;
+  if Size(G)=1 then return [];fi;
   g:=Product(IndependentGeneratorsOfAbelianGroup(G),One(G));
   Assert( 1, Index(G,Subgroup(G,[g])) = 1 );
   return [g];
@@ -2448,14 +2446,10 @@ InstallMethod( PCentralSeriesOp,
     end );
 
 InstallOtherMethod( PCentralSeries, "pGroup", [ IsGroup ], function( G )
-local s;
-  s:=Size(G);
-  if s=1 then return [G];fi;
-  s:=Factors(s);
-  if Length(Set(s))>1 then
+  if not IsPGroup(G) then
     Error("<G> must be a p-group if no prime is given");
   fi;
-  return PCentralSeries(G,s[1]);
+  return PCentralSeries(G,PrimePGroup(G));
 end);
 
 #############################################################################

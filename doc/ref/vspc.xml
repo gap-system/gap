@@ -95,7 +95,6 @@
 <!-- % add an example of a non-integral basis; -->
 <!-- % for that, add a method that takes an integral basis, -->
 <!-- % and inspects the basechange matrix -->
-<#Include Label="StructureConstantsTable">
 
 </Section>
 

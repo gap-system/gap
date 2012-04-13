@@ -1,9 +1,8 @@
 #############################################################################
 ##
-#W  tom.gi                   GAP library                       Götz Pfeiffer
+#W  tom.gi                   GAP library                        Götz Pfeiffer
 #W                                                          & Thomas Merkwitz
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -25,8 +24,6 @@
 ##  12. The Interface between Tables of Marks and Character Tables
 ##  13. Generic Construction of Tables of Marks
 ##
-Revision.tom_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -2854,6 +2851,8 @@ InstallMethod( FactorGroupTom,
 ##
 #M  MaximalSubgroupsTom( <tom> )
 #M  MaximalSubgroupsTom( <tom>, <sub>)
+##
+##  Note that we assume that the table of marks has lower triangular shape.
 ##
 InstallMethod( MaximalSubgroupsTom,
     "for a table of marks",

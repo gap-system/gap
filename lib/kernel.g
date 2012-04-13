@@ -2,7 +2,6 @@
 ##
 #W  kernel.g                    GAP library                  Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  Actually it now just contains some utilities needed very early in
 ##  the bootstrap.
 ##
-Revision.kernel_g :=
-    "@(#)$Id$";
 
 
 #############################################################################

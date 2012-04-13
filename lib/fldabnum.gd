@@ -2,7 +2,6 @@
 ##
 #W  fldabnum.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -17,8 +16,6 @@
 ##  but its elements are not cyclotomics since this would be a property given
 ##  by their family.)
 ##
-Revision.fldabnum_gd :=
-    "@(#)$Id$";
 
 
 #T add rings of integers in abelian number fields!
@@ -510,7 +507,8 @@ DeclareSynonym( "NumberField", AbelianNumberField );
 ##  gap> f:= AsField( Field( [ Sqrt(-2) ] ), CF(8) );;
 ##  gap> # a cycl. field over a non-cycl. field
 ##  gap> b:= CanonicalBasis( f );;  BasisVectors( b );
-##  [ 1/2+1/2*E(8)-1/2*E(8)^2-1/2*E(8)^3, 1/2-1/2*E(8)+1/2*E(8)^2+1/2*E(8)^3 ]
+##  [ 1/2+1/2*E(8)-1/2*E(8)^2-1/2*E(8)^3, 
+##    1/2-1/2*E(8)+1/2*E(8)^2+1/2*E(8)^3 ]
 ##  gap> Coefficients( b, Sqrt(-2) );
 ##  [ E(8)+E(8)^3, E(8)+E(8)^3 ]
 ##  gap> f:= Field( [ Sqrt(-2) ] );   # a non-cycl. field over the rationals
@@ -535,8 +533,8 @@ DeclareSynonym( "NumberField", AbelianNumberField );
 ##  <Description>
 ##  Let <A>n</A> and <A>m</A> be positive integers,
 ##  such that <A>m</A> divides <A>n</A>.
-##  <Ref Func="ZumbroichBase"/> returns the set of exponents <A>i</A>
-##  for which <C>E(<A>n</A>)^<A>i</A></C> belongs to the (generalized)
+##  <Ref Func="ZumbroichBase"/> returns the set of exponents <M>i</M>
+##  for which <C>E(<A>n</A>)^</C><M>i</M> belongs to the (generalized)
 ##  Zumbroich basis of the cyclotomic field <M>&QQ;_n</M>,
 ##  viewed as a vector space over <M>&QQ;_m</M>.
 ##  <P/>
@@ -545,13 +543,14 @@ DeclareSynonym( "NumberField", AbelianNumberField );
 ##  <M><A>n</A> = \prod_{{p \in P}} p^{{\nu_p}}</M>, and
 ##  <M><A>m</A> = \prod_{{p \in P}} p^{{\mu_p}}</M>
 ##  with <M>\mu_p \leq \nu_p</M>.
-##  Let <M>e_n = </M><C>E(<A>n</A>)</C>, and
+##  Let <M>e_l =</M> <C>E</C><M>(l)</M> for any positive integer <M>l</M>, 
+##  and
 ##  <M>\{ e_{{n_1}}^j \}_{{j \in J}} \otimes \{ e_{{n_2}}^k \}_{{k \in K}} =
 ##  \{ e_{{n_1}}^j \cdot e_{{n_2}}^k \}_{{j \in J, k \in K}}</M>.
 ##  <P/>
 ##  Then the basis is
 ##  <Display Mode="M">
-##  B_{{n,m}} = \bigotimes_{p \in P}
+##  B_{{n,m}} = \bigotimes_{{p \in P}}
 ##    \bigotimes_{{k = \mu_p}}^{{\nu_p-1}}
 ##       \{ e_{{p^{{k+1}}}}^j \}_{{j \in J_{{k,p}}}}
 ##  </Display>
@@ -623,7 +622,7 @@ DeclareGlobalFunction( "ZumbroichBase" );
 ##  <Func Name="LenstraBase" Arg='n, stabilizer, super, m'/>
 ##
 ##  <Description>
-##  Let <A>n</A> and <A>m</A> be positive integers,
+##  Let <A>n</A> and <A>m</A> be positive integers
 ##  such that <A>m</A> divides <A>n</A>,
 ##  <A>stabilizer</A> be a list of prime residues modulo <A>n</A>,
 ##  which describes a subfield of the <A>n</A>-th cyclotomic field

@@ -2,7 +2,6 @@
 **
 *W  plist.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -37,8 +36,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_plist_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -60,9 +57,7 @@ const char * Revision_plist_c =
 #include        "precord.h"             /* plain records                   */
 
 #include        "lists.h"               /* generic lists                   */
-#define INCLUDE_DECLARATION_PART
 #include        "plist.h"               /* plain lists                     */
-#undef  INCLUDE_DECLARATION_PART
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
 #include        "blister.h"             /* boolean lists                   */
@@ -4906,8 +4901,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPlist ( void )
 {
-    module.revision_c = Revision_plist_c;
-    module.revision_h = Revision_plist_h;
     FillInVersion( &module );
     return &module;
 }

@@ -2,7 +2,6 @@
 ##
 #W  obsolete.gd                  GAP library                     Steve Linton
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -73,8 +72,6 @@
 ##  were used to control this behaviour.)
 ##  <#/GAPDoc>
 ##
-Revision.obsolete_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -372,6 +369,17 @@ end);
 # older documentation referred to `StatusRandom'. 
 DeclareSynonym("StatusRandom",StateRandom);
 
+# synonym formerly declared in factgrp.gd
+DeclareSynonym( "FactorCosetOperation",FactorCosetAction);
+
+# synonyms formerly declared in grppc.gd
+DeclareSynonym( "AffineOperation", AffineAction );
+DeclareSynonym( "AffineOperationLayer",AffineActionLayer );
+
+# synonyms for ComplementClasses retained for backwards compatibility with GAP 4.4
+DeclareSynonym( "Complementclasses", ComplementClassesRepresentatives );
+DeclareSynonym( "ComplementclassesEA", ComplementClassesRepresentativesEA );
+
 
 #############################################################################
 ##
@@ -420,12 +428,12 @@ BindGlobal( "ExcludeFromAutoload", function( arg )
 ##
 ##  were supported until GAP 4.4, obsolescent in GAP 4.5.
 ##
-EDITOR:= GAPInfo.UserPreferences.Editor;
-HELP_VIEWER:= GAPInfo.UserPreferences.HelpViewers;
-PAGER:= GAPInfo.UserPreferences.Pager;
-PAGER_OPTIONS:= GAPInfo.UserPreferences.PagerOptions;
-XDVI_OPTIONS:= GAPInfo.UserPreferences.XdviOptions;
-XPDF_OPTIONS:= GAPInfo.UserPreferences.XpdfOptions;
+EDITOR:= UserPreference("Editor");
+HELP_VIEWER:= UserPreference("HelpViewers");
+PAGER:= UserPreference("Pager");
+PAGER_OPTIONS:= UserPreference("PagerOptions");
+XDVI_OPTIONS:= UserPreference("XdviOptions");
+XPDF_OPTIONS:= UserPreference("XpdfOptions");
 POST_RESTORE_FUNCS:= GAPInfo.PostRestoreFuncs;
 
 

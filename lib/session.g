@@ -2,7 +2,6 @@
 ##
 #W  session.g                    GAP library                 Steve Linton
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2007 The GAP Group
 ##
@@ -10,8 +9,6 @@
 ##  SESSION is called from init.g or from POST_RESTORE depending on whether
 ##  this is a normal startup or startup from saved workspace
 ##
-Revision.session_g :=
-    "@(#)$Id$";
 
 
 OnGAPPromptHook := fail; # set some values to suppress warning

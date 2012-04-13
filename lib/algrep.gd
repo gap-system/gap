@@ -2,7 +2,6 @@
 ##
 #W  algrep.gd                  GAP library               Willem de Graaf
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the declarations for general modules over algebras.
 ##
-Revision.algrep_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -588,7 +585,8 @@ DeclareOperation( "RightModuleByHomomorphismToMatAlg", [ IsAlgebra,
 ##  gap> A:= Algebra( Rationals, [ m1, m2, m3 ] );
 ##  <algebra over Rationals, with 3 generators>
 ##  gap> V:= AdjointModule( A );
-##  <3-dimensional left-module over <algebra of dimension 3 over Rationals>>
+##  <3-dimensional left-module over <algebra of dimension 
+##  3 over Rationals>>
 ##  gap> v:= Basis( V )[3];
 ##  [ [ 0, 1 ], [ 0, 0 ] ]
 ##  gap> W:= SubAlgebraModule( V, [ v ] );
@@ -716,10 +714,13 @@ DeclareOperation( "ModuleByRestriction", [ IsAlgebraModule, IsAlgebra ] );
 ##  <left-module over <algebra of dimension 18 over Rationals>>
 ##  gap> f:= NaturalHomomorphismBySubAlgebraModule( V, W );
 ##  <linear mapping by matrix, <
-##  18-dimensional left-module over <algebra of dimension 18 over Rationals>> -> <
-##  9-dimensional left-module over <algebra of dimension 18 over Rationals>>>
+##  18-dimensional left-module over <algebra of dimension 
+##  18 over Rationals>> -> <
+##  9-dimensional left-module over <algebra of dimension 
+##  18 over Rationals>>>
 ##  gap> quo:= ImagesSource( f );  # i.e., the quotient module
-##  <9-dimensional left-module over <algebra of dimension 18 over Rationals>>
+##  <9-dimensional left-module over <algebra of dimension 
+##  18 over Rationals>>
 ##  gap> v:= Basis( quo )[1];
 ##  [ 1, 0, 0, 0, 0, 0, 0, 0, 0 ]
 ##  gap> PreImagesRepresentative( f, v );
@@ -880,13 +881,15 @@ DeclareGlobalFunction( "TensorProduct" );
 ##  gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 ##  gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
 ##  gap> W:= TensorProductOfAlgebraModules( [ V, V, V ] );
-##  <343-dimensional left-module over <Lie algebra of dimension 14 over Rationals>>
+##  <343-dimensional left-module over <Lie algebra of dimension 
+##  14 over Rationals>>
 ##  gap> w:= Basis(W)[1];
 ##  1*(1*v0<x>1*v0<x>1*v0)
 ##  gap> Basis(L)[1]^w;
 ##  <0-tensor>
 ##  gap> Basis(L)[7]^w;
-##  1*(1*v0<x>1*v0<x>y1*v0)+1*(1*v0<x>y1*v0<x>1*v0)+1*(y1*v0<x>1*v0<x>1*v0)
+##  1*(1*v0<x>1*v0<x>y1*v0)+1*(1*v0<x>y1*v0<x>1*v0)+1*(y
+##  1*v0<x>1*v0<x>1*v0)
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -958,7 +961,8 @@ DeclareOperation( "ExteriorPower", [ IsLeftModule, IsInt ] );
 ##  gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 ##  gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
 ##  gap> W:= ExteriorPowerOfAlgebraModule( V, 3 );
-##  <35-dimensional left-module over <Lie algebra of dimension 14 over Rationals>>
+##  <35-dimensional left-module over <Lie algebra of dimension 
+##  14 over Rationals>>
 ##  gap> w:= Basis(W)[1];
 ##  1*(1*v0/\y1*v0/\y3*v0)
 ##  gap> Basis(L)[10]^w;
@@ -1018,7 +1022,8 @@ DeclareOperation( "SymmetricPower", [ IsLeftModule, IsInt ] );
 ##  gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 ##  gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
 ##  gap> W:= SymmetricPowerOfAlgebraModule( V, 3 );
-##  <84-dimensional left-module over <Lie algebra of dimension 14 over Rationals>>
+##  <84-dimensional left-module over <Lie algebra of dimension 
+##  14 over Rationals>>
 ##  gap> w:= Basis(W)[1];
 ##  1*(1*v0.1*v0.1*v0)
 ##  gap> Basis(L)[2]^w;
@@ -1074,20 +1079,22 @@ DeclareCategoryFamily( "IsDirectSumElement" );
 ##  gap> W:= DirectSumOfAlgebraModules( V, V );
 ##  <6-dimensional left-module over ( Rationals^[ 3, 3 ] )>
 ##  gap> BasisVectors( Basis( W ) );
-##  [ ( [ 1, 0, 0 ] )(+)( [ 0, 0, 0 ] ), ( [ 0, 1, 0 ] )(+)( [ 0, 0, 0 ] ), 
-##    ( [ 0, 0, 1 ] )(+)( [ 0, 0, 0 ] ), ( [ 0, 0, 0 ] )(+)( [ 1, 0, 0 ] ), 
-##    ( [ 0, 0, 0 ] )(+)( [ 0, 1, 0 ] ), ( [ 0, 0, 0 ] )(+)( [ 0, 0, 1 ] ) ]
+##  [ ( [ 1, 0, 0 ] )(+)( [ 0, 0, 0 ] ), ( [ 0, 1, 0 ] )(+)( [ 0, 0, 0 ] )
+##      , ( [ 0, 0, 1 ] )(+)( [ 0, 0, 0 ] ), 
+##    ( [ 0, 0, 0 ] )(+)( [ 1, 0, 0 ] ), ( [ 0, 0, 0 ] )(+)( [ 0, 1, 0 ] )
+##      , ( [ 0, 0, 0 ] )(+)( [ 0, 0, 1 ] ) ]
 ##  ]]></Example>
 ##  <Example><![CDATA[
-##  gap> SizeScreen([ 81, ]);; # temporary increase line length for nicer output
 ##  gap> L:= SimpleLieAlgebra( "C", 3, Rationals );;
 ##  gap> V:= HighestWeightModule( L, [ 1, 1, 0 ] );
-##  <64-dimensional left-module over <Lie algebra of dimension 21 over Rationals>>
+##  <64-dimensional left-module over <Lie algebra of dimension 
+##  21 over Rationals>>
 ##  gap> W:= HighestWeightModule( L, [ 0, 0, 2 ] );
-##  <84-dimensional left-module over <Lie algebra of dimension 21 over Rationals>>
+##  <84-dimensional left-module over <Lie algebra of dimension 
+##  21 over Rationals>>
 ##  gap> U:= DirectSumOfAlgebraModules( V, W );
-##  <148-dimensional left-module over <Lie algebra of dimension 21 over Rationals>>
-##  gap> SizeScreen([ 80, ]);;
+##  <148-dimensional left-module over <Lie algebra of dimension 
+##  21 over Rationals>>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

@@ -2,7 +2,6 @@ This file lists all library files (in lib/) together with the names of
 the corresponding modules and their maintainers, as given in dev/MODULES
 (The files read*.* have been omitted).
 
-@(#)$Id$
 
  addcoset.gd
  addcoset.gi

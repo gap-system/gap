@@ -9,8 +9,6 @@
 ##
 ##  This file contains the declarations for functions for strings.
 ##
-Revision.string_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -742,6 +740,7 @@ DeclareGlobalFunction("ReadCSV");
 ##
 DeclareGlobalFunction("PrintCSV");
 
+BindGlobal("BHINT", "\>\<");
 
 #############################################################################
 ##

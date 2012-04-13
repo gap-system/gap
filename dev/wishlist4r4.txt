@@ -1,7 +1,6 @@
 
                   Wishlist for GAP 4.4
 
-      $Id$
 ---------------------------------------------------------------------------
 
 - Clean up the documentation and install methods for Smith normal forms 

@@ -8,8 +8,6 @@
 ##  and p^6 with order > 3125 (groups with order up to 3125 are contained in
 ##  the lower layers of the small groups library.
 ##
-Revision.smlgp9_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

@@ -3,8 +3,6 @@
 #W  sml1040.z              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1040_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1040 ] :=
 [ 10582917942036162398979, 38785936196153610683147,

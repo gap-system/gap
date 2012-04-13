@@ -142,7 +142,7 @@ streams* receive characters from {\GAP} which *writes* them to the
 stream.  Streams differ in their treatment of <end-of-line> and
 non-printable characters.  *Text streams* translate the <end-of-line>
 character ('\n') to the systems representation of <end-of-line> (e.g.,
-<new-line> under UNIX, <carriage-return> under MacOS,
+<new-line> under UNIX and Mac OS X, <carriage-return> under Mac OS 9,
 <carriage-return>-<new-line> under DOS, implicit under VMS), and the
 behaviour for nonprintable characters are undefined.  *Binary streams* do
 not translate the <end-of-line> character and allow nonprintable

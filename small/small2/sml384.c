@@ -3,8 +3,6 @@
 #W  sml384.c               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml384_c :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 384 ][ 3 ] :=
 [ 4180300187992331557260145747408656, 10886198406230030114578003506704,

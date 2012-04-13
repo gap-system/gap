@@ -1634,15 +1634,17 @@ BindGlobal( "OmegaZero", function( d, q )
       Error( "<d> must be odd" );
     elif d < 3 then
       Error( "<d> must be at least 3" );
-    elif d = 5 and q = 2 then
-      # The matrices given generate only A6 not S6.
-      Error( "the case <d> = 5, <q> = 2 is not supported" );
     fi;
     f:= GF(q);
     o:= One( f );
     m:= ( d-1 ) / 2;
 
-    if 3 < d then
+    if d = 5 and q = 2 then
+      # The matrices given in [RylandsTalor98] generate only A6 not S6.
+      # So we take the isomorphic group SO( 5, 2 ) instead.
+      return SO( 5, 2 );
+
+    elif 3 < d then
       # Omega(0,d,q) for d=2m+1, m >= 2, Section 4.5
       if d mod 4 = 3 then
         mo:= -o;  # (-1)^m

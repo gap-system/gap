@@ -72,11 +72,13 @@ it is displayed with enclosing doublequotes.
 empty list of arbitrary &GAP; objects;
 it is only printed like a string if it was input as empty string or converted
 to a string with <Ref Func="ConvertToStringRep"/>.)
+<!--  no longer true since we consider UTF-8 standard, but support latinX
 The difference between <Ref Func="ViewObj" Label="for a string"/> and
 <Ref Func="PrintObj" Label="for a string"/> is that the latter prints
 <E>all</E> non-printable and non-ASCII characters in three digit octal
 notation, while  <Ref Func="ViewObj" Label="for a string"/> sends all
 printable characters to the output stream.
+-->
 The output of <Ref Func="PrintObj" Label="for a string"/> can be read back
 into &GAP;.
 <P/>
@@ -100,12 +102,12 @@ gap> PrintObj( s4 );  Print( "\n" );
 gap> Print( s4 );  Print( "\n" );
 abc"def
 ghi
-gap> s := "German uses strange characters: \344\366\374\337\n";
-"German uses strange characters: ����\n"
+gap> s := "German uses strange characters: äöüß\n";
+"German uses strange characters: äöüß\n"
 gap> Print(s);
-German uses strange characters: ����
+German uses strange characters: äöüß
 gap> PrintObj(s);  Print( "\n" );
-"German uses strange characters: \344\366\374\337\n"
+"German uses strange characters: \303\244\303\266\303\274\303\237\n"
 ]]></Example>
 <P/>
 <Log><![CDATA[
@@ -226,7 +228,7 @@ such digits. The meaning is given in the following list
 <C>\XYZ</C></Mark>
 <Item>
     with <C>X</C>, <C>Y</C>, <C>Z</C> three octal digits.
-    This is translated to the character correponding to the number
+    This is translated to the character corresponding to the number
     <C>X * 64 + Y * 8 + Z modulo 256</C>.
     This can be used to specify and store arbitrary binary data as a string
     in &GAP;.
@@ -337,9 +339,9 @@ The inequality operator <C>&lt;></C> returns <K>true</K> if the two strings
 <Example><![CDATA[
 gap> "Hello world.\n" = "Hello world.\n";
 true
-gap> "Hello World.\n" = "Hello world.\n";  # string comparison is case sensitive
+gap> "Hello World.\n" = "Hello world.\n"; # comparison is case sensitive
 false
-gap> "Hello world." = "Hello world.\n";  # the first string has no <newline>
+gap> "Hello world." = "Hello world.\n";  # first string has no <newline>
 false
 gap> "Goodbye world.\n" = "Hello world.\n";
 false
@@ -361,11 +363,13 @@ implied by the underlying, system dependent, character set.
 <Example><![CDATA[
 gap> "Hello world.\n" < "Hello world.\n";  # the strings are equal
 false
-gap> "Hello World." < "Hello world.";  # in ASCII capitals range before small letters
+gap> # in ASCII capitals range before small letters:
+gap> "Hello World." < "Hello world.";
 true
 gap> "Hello world." < "Hello world.\n";  # prefixes are always smaller
 true
-gap> "Goodbye world.\n" < "Hello world.\n";  # `G' comes before `H', in ASCII at least
+gap> # G comes before H, in ASCII at least:
+gap> "Goodbye world.\n" < "Hello world.\n";
 true
 ]]></Example>
 <P/>

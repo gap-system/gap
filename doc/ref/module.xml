@@ -48,7 +48,6 @@
 
 <#Include Label="IsFreeLeftModule">
 <#Include Label="FreeLeftModule">
-<#Include Label="AsFreeLeftModule">
 <#Include Label="Dimension">
 <#Include Label="IsFiniteDimensional">
 <#Include Label="UseBasis">

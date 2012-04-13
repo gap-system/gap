@@ -2,13 +2,10 @@
 ##
 #A  galois.gi                   GAP library                  Alexander Hulpke
 ##
-#A  @(#)$Id$
 ##
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation for the computation of Galois Groups.
-Revision.galois_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

@@ -3,8 +3,6 @@
 #W  sml27300.z             GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml27300_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 27300 ] :=
 [ 802208799452467678432452825702398960351,

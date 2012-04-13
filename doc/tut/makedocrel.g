@@ -1,7 +1,6 @@
 ##  this creates the documentation, needs: GAPDoc package, latex, pdflatex,
 ##  mkindex, dvips
 ##
-LoadPackage( "GAPDoc" );
 
 Read( "makedocreldata.g" );
 

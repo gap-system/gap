@@ -3,7 +3,6 @@
 #W  ctbllatt.gi                 GAP library                     Thomas Breuer
 #W                                                                Ansgar Kaup
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,8 +11,6 @@
 ##  This file contains functions that mainly deal with lattices in the
 ##  context of character tables.
 ##
-Revision.ctbllatt_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

@@ -209,9 +209,10 @@ see&nbsp;<Ref Sect="Browsing through the Sections"/>.
 The viewer <C>"screen"</C> (see below) is always silently appended since we
 assume that each help book is available in text format.
 <P/>
-If you want to change the default setting you can set the
-<C>HelpViewers</C> component in your <F>gap.ini</F> file to the desired list
-of viewers (see&nbsp;<Ref Sect="sect:gap.ini"/>).
+If you want to change the default setting you can use a call of 
+<C>SetUserPreference( "HelpViewers", [ ... ] );</C>  (the list in 
+the second argument containing the viewers you want) 
+in your <F>gap.ini</F> file (see&nbsp;<Ref Sect="sect:gap.ini"/>).
 <P/>
 <List>
 <Mark><C>"screen"</C></Mark>
@@ -284,15 +285,14 @@ of viewers (see&nbsp;<Ref Sect="sect:gap.ini"/>).
   Note that only <C>"Skim"</C> seems to be capable to open a pdf file 
   on a given page. For the other help viewers, the page numbers where the information can be found will just be 
   printed on the screen.
-  None of the help viewerse seems to be capable of 
+  None of the help viewers seems to be capable of 
   opening a pdf at a given named destination (i. e., jump to precisely the place where the information can be found).
   The pdf viewer <C>"Skim"</C> is open source software, it can be downloaded from <F>http://skim-app.sourceforge.net/</F>.
 </Item>
 <Mark><C>"less"</C> or <C>"more"</C></Mark>
 <Item>
-  This is the same as <C>"screen"</C> but additionally the variables
-  <C>GAPInfo.UserPreferences.Pager</C> and
-  <C>GAPInfo.UserPreferences.PagerOptions</C>  are set,
+  This is the same as <C>"screen"</C> but additionally the user preferences
+  <C>"Pager"</C> and <C>""PagerOptions"</C> are set,
   see the section&nbsp;<Ref Sect="The Pager Command"/> for more details.
 </Item>
 </List>
@@ -314,87 +314,7 @@ on  the screen  page  by page.  Its functionality  is  very rudimentary  and
 self-explaining. This  is because (at  least under UNIX) there  are powerful
 external standard programs which do this job.
 
-
-<ManSection>
-<Func Name="Pager" Arg='lines'/>
-
-<Description>
-This function can be  used to display a text on screen  using a pager, i.e.,
-the text is shown page by page.
-<P/>
-There is a default builtin pager  in GAP which has very limited capabilities
-but should work on any system.
-<P/>
-At least  on a  UNIX system one  should use an  external pager  program like
-<C>less</C> or <C>more</C>.
-&GAP; assumes that this program has a command line option <C>+nr</C>
-which starts the display of the text with line number <C>nr</C>.
-<P/>
-Which pager is used can be controlled by setting the variable
-<C>GAPInfo.UserPreferences.Pager</C>.
-The default value is <C>"builtin"</C>
-which means that the internal pager is used.
-<P/>
-On UNIX systems you probably want to set
-<C>GAPInfo.UserPreferences.Pager := "less";</C> or
-<C>GAPInfo.UserPreferences.Pager := "more";</C>,
-you can do this for example in your <F>gap.ini</F>
-file (see <Ref Sect="sect:gap.ini"/>).
-In that case you can also tell &GAP; a list of standard options for the
-external pager.
-These are specified as list of strings in the variable
-<C>GAPInfo.UserPreferences.PagerOptions</C>.
-<P/>
-<Log><![CDATA[
-  GAPInfo.UserPreferences.Pager := "less";
-  GAPInfo.UserPreferences.PagerOptions := ["-f","-r","-a","-i","-M","-j2"];
-]]></Log>
-<P/>
-The argument <A>lines</A> can have one of the following forms:
-<P/>
-<Enum>
-<Item>
- a string (i.e., lines are separated by newline characters)
-</Item>
-<Item>
- a list of strings (without  newline characters) 
-which are interpreted as lines of the text to be shown
-</Item>
-<Item>
- a record with component <C>lines</C> as in 1. or 2. and 
-optional further components
-</Item>
-</Enum>
-<P/>
-In case&nbsp;3. currently the following additional components are used:
-<P/>
-<List>
-<Mark><C>formatted</C></Mark>
-<Item>
-  can be <K>false</K> or <K>true</K>.
-  If set to <K>true</K> the builtin pager tries to show the text exactly as
-  it is given (avoiding &GAP;'s automatic line breaking),
-</Item>
-<Mark><C>start</C></Mark>
-<Item>
-  must be a positive integer. This is interpreted as the number of the first
-  line shown by  the pager (one may see the beginning of the text via back
-  scrolling).
-</Item>
-</List>
-<P/>
-The <Ref Func="Pager"/> command is used by &GAP;'s help system for displaying
-help sections in text format.
-But, of course, it may be used for other purposes as well.
-<P/>
-<Log><![CDATA[
-gap> s6 := SymmetricGroup(6);;
-gap> words := ["This", "is", "a", "very", "stupid", "example"];;
-gap> l := List(s6, p-> Permuted(words, p));;
-gap> Pager(List(l, a-> JoinStringsWithSeparator(a," ")));;                
-]]></Log>
-</Description>
-</ManSection>
+<#Include Label="Pager">
 
 </Section>
 </Chapter>

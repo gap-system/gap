@@ -4,7 +4,6 @@
 ##                                                                Stefan Kohl
 ##                                                          Laurent Bartholdi
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -12,9 +11,6 @@
 ##
 ##  This file deals with settings for the low-level macfloats 
 ##
-Revision.macfloat_g :=
-
-  "@(#)$Id$";
 
 #############################################################################
 DeclareRepresentation("IsIEEE754FloatRep", IsFloat and IsInternalRep and IS_MACFLOAT,[]);

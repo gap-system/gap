@@ -3,7 +3,6 @@
 #W  polyfinf.gi                 GAP Library                      Frank Celler
 #W                                                         & Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##
 ##  This file contains functions for polynomials over finite fields
 ##
-Revision.polyfinf_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -47,7 +44,7 @@ local   c,  ind,  br,  g,  h,  k,  i,dou;
   # choose a random polynomial <g> of degree less than 2*<d>
   repeat
     g := RandomPol(br,2*d-1,ind);
-  until DegreeOfLaurentPolynomial(g)<>infinity;
+  until DegreeOfLaurentPolynomial(g)<>DEGREE_ZERO_LAURPOL;
 
   # if p = 2 take <g> + <g>^2 + <g>^(2^2) + ... + <g>^(2^(k*<d>-1))
   if Characteristic(br) = 2  then
@@ -216,7 +213,7 @@ local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
   #fam := FamilyObj(v[1][1]);
 
   if DegreeOfLaurentPolynomial(f) < 2 
-    or DegreeOfLaurentPolynomial(f)=infinity  then
+    or DegreeOfLaurentPolynomial(f)=DEGREE_ZERO_LAURPOL  then
       Add( irf, [cr,[f]] );
       PopOptions();
       return [f];
@@ -711,7 +708,7 @@ local   v,  R,  U,  x,  O,  n,  g,  q,  o,rem,bas;
       o := FFPOrderKnownDividend(R,bas,g[1],g[3]);
       if Length(g[4])>0 then
 	q:=DegreeOfLaurentPolynomial(PowerMod(bas,o[1],g[1]));
-	if not(q=0 or q=infinity) then
+	if not(q=0 or q=DEGREE_ZERO_LAURPOL) then
   # in fact x^o[1] is not congruent to a constant -- we really need the
   # primes.
   Error("cannot compute order due to limits in the integer factorization!");

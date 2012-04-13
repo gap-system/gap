@@ -3,7 +3,6 @@
 #W  fieldfin.gi                 GAP library                     Werner Nickel
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -22,8 +21,6 @@
 ##  3. Bases of Finite Fields
 ##  4. Automorphisms of Finite Fields
 ##
-Revision.fieldfin_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

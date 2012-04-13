@@ -2,7 +2,6 @@
 ##
 #W  vspc.gi                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains generic methods for vector spaces.
 ##
-Revision.vspc_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

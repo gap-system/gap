@@ -3,15 +3,12 @@
 #W  random.gi                     GAP library                    Frank Lübeck
 #W                                                             Max Neunhöffer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2006 The GAP Group
 ##
 ##  This file implements the basic operations for some types of random
 ##  sources.
 ##
-Revision.random_gi :=
-    "@(#)$Id$";
 
 ###########################################################################
 ##  Generic methods for random sources.

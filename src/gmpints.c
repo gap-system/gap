@@ -4,7 +4,6 @@
 **                                                           
 **                                                           
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -60,12 +59,8 @@
 
 #include <gmp.h>
 
-#define INCLUDE_DECLARATION_PART
 #include        "gmpints.h"             /* GMP integers                    */
-#undef  INCLUDE_DECLARATION_PART
 
-const char * Revision_gmpints_c =
-   "@(#)$Id$";
 
 /* macros to save typing later :)                                          */
 #define VAL_LIMB0(obj)         ( *(TypLimb *)ADDR_OBJ(obj)                  )
@@ -74,6 +69,10 @@ const char * Revision_gmpints_c =
 #define IS_INTNEG(obj)         (  TNUM_OBJ(obj) == T_INTNEG                 )
 #define IS_LARGEINT(obj)       (  ( TNUM_OBJ(obj) == T_INTPOS ) || \
                                   ( TNUM_OBJ(obj) == T_INTNEG )             )
+
+/* for fallbacks to library */
+Obj String;
+
 
 /****************************************************************************
 **
@@ -373,6 +372,7 @@ void PrintInt ( Obj op )
 {
   Char buf[20000];
   UInt signlength;
+  Obj str;
   /* print a small integer                                                 */
   if ( IS_INTOBJ(op) ) {
     Pr( "%>%d%<", INT_INTOBJ(op), 0L );
@@ -395,7 +395,11 @@ void PrintInt ( Obj op )
     Pr("%>%s%<",(Int)buf, 0);
   }
   else {
-    Pr("<<an integer too large to be printed>>",0L,0L);
+    str = CALL_1ARGS( String, op );
+    Pr("%>%s%<",(Int)(CHARS_STRING(str)), 0);
+    /* for a long time Print of large ints did not follow the general idea
+     * that Print should produce something that can be read back into GAP:
+       Pr("<<an integer too large to be printed>>",0L,0L); */
   }
 }
 
@@ -636,8 +640,6 @@ Obj FuncLog2Int( Obj self, Obj integer)
 **  <gmp>
 **
 */
-Obj String;
-
 Obj FuncSTRING_INT( Obj self, Obj integer )
 {
   Int   x;
@@ -2552,6 +2554,11 @@ static Int InitKernel ( StructInitInfo * module )
 {
   UInt                t1,  t2;
 
+  if (mp_bits_per_limb != GMP_LIMB_BITS) {
+    FPUTS_TO_STDERR("Panic, GMP limb size mismatch\n");
+    SyExit( 1 ); 
+  }
+
    mp_set_memory_functions( allocForGmp, reallocForGmp, freeForGmp); 
 
   /* init filters and functions                                            */
@@ -2694,8 +2701,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoInt ( void )
 {
-  module.revision_c = Revision_gmpints_c;
-  module.revision_h = Revision_gmpints_h;
   FillInVersion( &module );
   return &module;
 }

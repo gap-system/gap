@@ -2,7 +2,6 @@
 ##
 #W  pcgscomp.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file  contains the methods  for polycylic generating systems dealing
 ##  with or defined by a pc series.
 ##
-Revision.pcgscomp_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

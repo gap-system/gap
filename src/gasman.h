@@ -2,7 +2,6 @@
 **
 *W  gasman.h                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -37,13 +36,6 @@
 #ifndef GAP_GASMAN_H
 #define GAP_GASMAN_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-const char * Revision_gasman_h =
-   "@(#)$Id$";
-#endif
-extern const char * Revision_gasman_h;  /* gap.c uses this. */
-extern const char * Revision_gasman_c;
-
 /* This definition switches to the bigger bag header, supporting bags up to
    4GB in length (lists limited to 1GB for other reasons) */
 
@@ -51,18 +43,20 @@ extern const char * Revision_gasman_c;
 
 /****************************************************************************
 **
-
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#ifdef CONFIG_H
-
 #include "config.h"
 
-#endif
+
 /* on 64 bit systems use only two words for bag header */
 
 #if SIZEOF_VOID_P == 8
-#define USE_NEWSHAPE 
+#define USE_NEWSHAPE
+#elif !defined(SIZEOF_VOID_P) && !defined(USE_PRECOMPILED)
+/* If SIZEOF_VOID_P has not been defined, and we are not currently
+   re-making the dependency list (via cnf/Makefile), then trigger
+   an error. */
+#error Something is wrong with this GAP installation: SIZEOF_VOID_P not defined
 #endif
 
 

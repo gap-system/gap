@@ -44,7 +44,6 @@
 ##    <InfoClass> elements.
 ##  - Comment lines should perhaps be left unchanged,
 ##    but the replacements are applied also there.
-##    (Example: In the `$Id$...$'
 ##    is replaced by `<M>...</M>'.)
 ##  - Function declarations marked with `#F' are not translated correctly
 ##    when a declaration requires several lines starting with `#F';
@@ -164,24 +163,37 @@ LIBDIR:= "gap/";;  # or "lib"
 ##  Define the utilities.
 ##
 
-GetTagged:= function( str, leftright )
-    local left, right, pos, pos2;
+GetTagged:= function( arg )
+    local str, leftright, avoid_newline, left, right, pos, pos2, res;
 
+	str := arg[1];
+	leftright := arg[2];
+	if Length(arg) >= 3 then
+	  avoid_newline := arg[3];
+	else
+	  avoid_newline := false;
+	fi;
     left:= leftright[1];
     right:= leftright[2];
-    pos:= PositionSublist( str, left );
-    if pos = fail then
-      return fail;
-    fi;
-    pos2:= PositionSublist( str, right, pos );
-    if pos2 = fail then
-      return fail;
-    fi;
-    return [ leftright,
+
+    pos := 0;
+    repeat
+      pos:= PositionSublist( str, left, pos );
+      if pos = fail then
+        return fail;
+      fi;
+      pos2:= PositionSublist( str, right, pos );
+      if pos2 = fail then
+        return fail;
+      fi;
+      res :=
+           [ leftright,
              str{ [ 1 .. pos-1 ] },
              str{ [ pos+Length( left ) .. pos2-1 ] },
              str{ [ pos2+ Length( right ) .. Length( str ) ] },
            ];
+    until not (avoid_newline and '\n' in res[3]);
+    return res;
 end;;
 
 KeepInsideUnchanged:= [
@@ -241,7 +253,9 @@ SplitMSKFile:= function( str )
 end;
 
 RewriteText:= function( str )
-    local replacements, pair, replacementpairs, newstr, cand, i, filename,
+    local replacements, pair, replacementpairs,
+          avoid_newline,
+          newstr, cand, i, filename,
           prefix, len, cont;
 
     replacements:= [
@@ -301,15 +315,23 @@ RewriteText:= function( str )
         [ [ "\\index{", "}" ], [ "<Index>", "</Index>" ] ],
         [ [ "\\indextt{", "}" ], [ "<Index Key=\"", "\"><C>", "</C></Index>" ] ],
 
-        [ [ "\n\\>", " F\n" ], [ "<ManSection>\n<Func Name=!",
-                 "/>\n</ManSection><!-- MOVE DOWN TO THE END -->\n" ] ],
-        [ [ "\n\\>", " O\n" ], [ "<ManSection>\n<Oper Name=!",
-                 "/>\n</ManSection><!-- MOVE DOWN TO THE END -->\n" ] ],
-        [ [ "\n\\><C>", "</C> V\n" ], [ "<ManSection>\n<Var Name=\"",
-                 "\"/>\n</ManSection><!-- MOVE DOWN TO THE END -->\n" ] ],
-        [ [ "<Func Name=!", "(" ], [ "<Func Name=\"", "\" Arg=!" ] ],
-        [ [ "<Oper Name=!", "(" ], [ "<Oper Name=\"", "\" Arg=!" ] ],
-        [ [ "Arg=!", ")" ], [ "Arg=§", "$" ] ],
+        [ [ "\n\\>", " A\n" ], [ "\n<ManSection>\n<Attr Name=!",
+                 "/>\n</ManSection><!-- MOVE DOWN TO THE END -->\n" ], true ],
+        [ [ "\n\\>", " P\n" ], [ "\n<ManSection>\n<Prop Name=!",
+                 "/>\n</ManSection><!-- MOVE DOWN TO THE END -->\n" ], true ],
+        [ [ "\n\\>", " F\n" ], [ "\n<ManSection>\n<Func Name=!",
+                 "/>\n</ManSection><!-- MOVE DOWN TO THE END -->\n" ], true ],
+        [ [ "\n\\>", " O\n" ], [ "\n<ManSection>\n<Oper Name=!",
+                 "/>\n</ManSection><!-- MOVE DOWN TO THE END -->\n" ], true ],
+        [ [ "\n\\><C>", "</C> V\n" ], [ "\n<ManSection>\n<Var Name=\"",
+                 "\"/>\n</ManSection><!-- MOVE DOWN TO THE END -->\n" ], true ],
+        [ [ "\n\\><C>", "</C> I\n" ], [ "\n<ManSection>\n<InfoClass Name=\"",
+                 "\"/>\n</ManSection><!-- MOVE DOWN TO THE END -->\n" ], true ],
+        [ [ "<Attr Name=!", "(" ], [ "<Attr Name=\"", "\" Arg=!" ], true ],
+        [ [ "<Prop Name=!", "(" ], [ "<Prop Name=\"", "\" Arg=!" ], true ],
+        [ [ "<Func Name=!", "(" ], [ "<Func Name=\"", "\" Arg=!" ], true ],
+        [ [ "<Oper Name=!", "(" ], [ "<Oper Name=\"", "\" Arg=!" ], true ],
+        [ [ "Arg=!", ")" ], [ "Arg=§", "$" ], true ],
 
         [ [ "\\){\\kernttindent}", "\n" ], [ "&nbsp;&nbsp;<C>", "</C>\n" ] ],
 
@@ -323,7 +345,9 @@ RewriteText:= function( str )
     for pair in replacementpairs do
       newstr:= "";
       repeat
-        cand:= GetTagged( str, pair[1] );
+        avoid_newline := false;
+        if IsBound(pair[3]) then avoid_newline := pair[3]; fi;
+        cand:= GetTagged( str, pair[1], avoid_newline );
         if IsList( cand ) then
           Append( newstr, Concatenation( cand[2], pair[2][1] ) );
           for i in [ 2 .. Length( pair[2] ) ] do
@@ -369,7 +393,13 @@ RewriteText:= function( str )
         [ "{\\ATLAS}", "&ATLAS;" ],
         [ "{\\MeatAxe}", "&MeatAxe;" ],
         [ "{\\TeX}", "&TeX;" ],
-[ "{\\Example}", "&Example;" ],   # added for the `example' package
+        [ "{\\Polenta}", "&Polenta;" ],
+        [ "\\F", "\\mathbb{F}" ],
+        [ "\\N", "&NN;" ],
+        [ "\\Z", "&ZZ;" ],
+        [ "\\Q", "&QQ;" ],
+        [ "\\R", "&RR;" ],
+        [ "\\C", "&CC;" ],
         [ "~", "&nbsp;" ],
         [ "\n\n", "\n<P/>\n" ],
         [ "{\\accent127 u}", "ü" ],
@@ -773,7 +803,9 @@ ReplaceReferences:= function( str )
       if file = fail then
         file:= Filename( maindocdir, Concatenation( dir, "/manual.six" ) );
       fi;
-      mainentries.( dir ):= getdata( file ).entries;
+      if file <> fail then
+        mainentries.( dir ):= getdata( file ).entries;
+      fi;
     od;
     newstr:= "";
     repeat

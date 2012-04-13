@@ -2,7 +2,6 @@
 ##
 #W  streams.gd                  GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -10,8 +9,6 @@
 ##
 ##  This file contains the operations for streams.
 ##
-Revision.streams_gd :=
-    "@(#)$Id$";
 
 
 ##  <#GAPDoc Label="[1]{streams}">
@@ -874,7 +871,7 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  <P/>
 ##  When the stream is closed, the signal SIGTERM is delivered to the child
 ##  process, which is expected to exit.
-##  <Example><![CDATA[
+##  <Log><![CDATA[
 ##  gap> d := DirectoryCurrent();
 ##  dir("./")
 ##  gap> f := Filename(DirectoriesSystemPrograms(), "rev");
@@ -897,7 +894,7 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  gap> CloseStream(s);
 ##  gap> s;
 ##  < closed input/output stream to rev >
-##  ]]></Example>
+##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -958,23 +955,23 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  gap> s := "";; str := OutputTextString(s,false);;
 ##  gap> PrintTo(str,Primes{[1..30]});
 ##  gap> s;
-##  "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,\
-##   \n  71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]"
+##  "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,\
+##   \n  67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]"
 ##  gap> Print(s,"\n");
-##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 
-##    71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]
+##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 
+##    67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]
 ##  gap> SetPrintFormattingStatus(str, false);
 ##  gap> PrintTo(str,Primes{[1..30]});
 ##  gap> s;
-##  "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,\
-##   \n  71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7, 11, 13\
-##  , 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, \
-##  97, 101, 103, 107, 109, 113 ]"
+##  "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,\
+##   \n  67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7\
+##  , 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, \
+##  79, 83, 89, 97, 101, 103, 107, 109, 113 ]"
 ##  gap> Print(s,"\n");
-##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 
-##    71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7, 11, 13, 1\
-##  7, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,\
-##   101, 103, 107, 109, 113 ]
+##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 
+##    67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7, 1\
+##  1, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79,\
+##   83, 89, 97, 101, 103, 107, 109, 113 ]
 ##  ]]></Example>
 ##  <P/>
 ##  </Description>

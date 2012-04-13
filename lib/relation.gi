@@ -2,7 +2,6 @@
 ##
 #W  relation.gi                  GAP library                   Andrew Solomon
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -20,8 +19,6 @@
 ##  Andrew Solomon
 ##
 ##
-Revision.relation_gi :=
-    "@(#)$Id$";
 
 ############################################################################
 ##
@@ -1138,7 +1135,7 @@ InstallMethod(Successors, "for a generic relation", true,
 ##  Arithmetic and boolean methods on binary relations on points
 ##
 ##  \=  True if successors lists are equal (by construction each image is
-##      a set of integers so there is a cannonical form to check)
+##      a set of integers so there is a canonical form to check)
 ##
 ##  \in determines whether a tuple [x,y] in rel  
 ##
@@ -1811,7 +1808,7 @@ InstallMethod(\=, "for eqivalence relations", IsIdenticalObj,
             return Successors(x)=Successors(y);
         fi;
 
-        ## Look at partitions -- they are not in any cannonical 
+        ## Look at partitions -- they are not in any canonical 
         ##     form. 
         ##
         if (HasEquivalenceRelationPartition(x) and 

@@ -2,7 +2,6 @@
 ##
 #W  Makefile			GAP source			 Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,	RWTH Aachen,  Germany
 ##
@@ -28,9 +27,15 @@ iostream	macfloat	intfuncs
 
 default: configure.out ../configure Makegap.in
 
+config.hin: configure.in aclocal.m4
+	autoheader
+
 configure.out: configure.in aclocal.m4 config.hin
 	autoconf
-	sed -e 's%^srcdir=$$%srcdir=../../src%' -e 's%ac_dir_suffix=/.*$$%ac_dir_suffix=%' < configure > configure.out
+	sed -e 's%^srcdir=$$%srcdir=../../src%' \
+	    -e 's%ac_dir_suffix=/.*$$%ac_dir_suffix=%' \
+	    -e 's%config\.h:config\.hin%config.h:../../cnf/config.hin%' \
+	    < configure > configure.out
 	chmod 755 configure.out
 	rm configure
 
@@ -54,14 +59,14 @@ Makegap.in: Makegap.top Makefile Makegap.bottom
 	@echo >> Makegap.in
 	@echo '# compile and link gap.dll on cygwin' >> Makegap.in
 	@echo 'gapdll: $$(OBJECTS) $$(ITANIUMOBJ) $$(EXTOBJS) $$(GMP_LIBS)' >> Makegap.in
-	@echo '	$$(CC) -c -o gap.o ../../src/gap.c -I. -I../..  -DCONFIG_H -DCOMPILECYGWINDLL' >> Makegap.in
+	@echo '	$$(CC) $$(CPPFLAGS) $$(GMP_CFLAGS) $$(CFLAGS) -DCOMPILECYGWINDLL -o gap.o -c ../../src/gap.c' >> Makegap.in
 	@echo '	$$(CC) $$(LDFLAGS) -o gap.dll -shared $$(OBJECTS) $$(ITANIUMOBJ) -lm $$(MPILIBS) $$(EXTOBJS) $$(GMP_LIBS) $$(CONFLIBS)' >> Makegap.in
-	@echo '	$$(CC) $$(LDFLAGS) -o gapw95 ../../src/gapw95.c -I. -I../.. -DCONFIG_H -DCOMPILECYGWINDLL gap.dll' >> Makegap.in
+	@echo '	$$(CC) $$(LDFLAGS) -o gapw95 ../../src/gapw95.c $$(CPPFLAGS) $$(GMP_CFLAGS) $$(CFLAGS) -DCOMPILECYGWINDLL gap.dll' >> Makegap.in
 	@echo >> Makegap.in
 	@echo '# dependencies are automatically generated' >> Makegap.in
 	@(for i in `eval 'echo $(SOURCE)'`; do \
 	    $(CC) -MM -MG -I .. -DUSE_PRECOMPILED ../src/$$i.c; \
-	    echo '	$$(CC) -I. -I../.. -DCONFIG_H $$(GMP_CFLAGS) $$(CFLAGS)' -o $$i.o -c ../src/$$i.c; \
+	    echo '	$$(CC) $$(CPPFLAGS) $$(GMP_CFLAGS) $$(CFLAGS)' -o $$i.o -c ../src/$$i.c; \
 	    echo ; \
 	done \
 	) | sed -e 's:../src:@srcdir@:g' | sed -e 's:extern:../../extern:g' | sed -e 's#\.o: #.o: ../../Makefile #g' >> Makegap.in

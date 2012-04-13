@@ -2,7 +2,6 @@
 ##
 #W  morpheus.tst                GAP tests                    Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
@@ -10,10 +9,9 @@
 ##
 ##  To be listed in testinstall.g
 ##
-
-gap> START_TEST("$Id$");
-
+gap> START_TEST("morpheus.tst");
 gap> g:=Group((1,2,3,4),(1,3));;
+gap> LoadPackage("autpgrp", false);;
 gap> a:=AutomorphismGroup(g);;
 gap> inn:=InnerAutomorphismsAutomorphismGroup(a);;
 gap> iso1:=IsomorphismGroups(a,g);;
@@ -31,20 +29,17 @@ false
 gap> iso4:=iso3*InnerAutomorphism(g,r^-1);;
 gap> iso4=IdentityMapping(g);
 true
-
 gap> g:=TransitiveGroup(6,7);;
 gap> IsSolvableGroup(g);
 true
 gap> Size(AutomorphismGroup(g));
 24
-
 gap> g:=Group((1,2,3),(1,2));;
 gap> g:=Image(IsomorphismPcGroup(DirectProduct(g,g,g,g)));;
 gap> Size(g);
 1296
 gap> Size(AutomorphismGroup(g))/Size(g);
 24
-
 gap> g:=Group((1,2,3),(4,5,6),(7,8),(9,10),(11,12,13,14,15));
 Group([ (1,2,3), (4,5,6), (7,8), (9,10), (11,12,13,14,15) ])
 gap> a:=AutomorphismGroup(g);;
@@ -69,10 +64,8 @@ S (1 gens, size 3)
 1 (size 1)
 
 # that's all, folks
-gap> STOP_TEST( "morpheus.tst", 524900000 );
-
+gap> STOP_TEST( "morpheus.tst", 82700000 );
 
 #############################################################################
 ##
 #E
-

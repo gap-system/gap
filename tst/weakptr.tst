@@ -2,13 +2,13 @@
 ##
 #W  weakptr.tst                GAP Library                       Steve Linton
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997, 
 ##
 ##  Exclude from testinstall.g: too sensitive to compiler idiosyncracies SL
 ##
-gap> START_TEST("$Id$");
+gap> START_TEST("weakptr.tst");
+
 #
 # Low level access functions
 #
@@ -41,6 +41,7 @@ gap> LengthWPObj(w);
 6
 gap> Print(ShallowCopy(w),"\n");
 WeakPointerObj( [ 1, , , , , fail ] )
+
 #
 # Access as lists
 #
@@ -62,4 +63,4 @@ false
 gap> Unbind(w[2]);
 gap> Print(w,"\n");
 WeakPointerObj( [ 1, , E(5), 311, , fail ] )
-gap> STOP_TEST( "weakptr.tst", 24477500 );
+gap> STOP_TEST( "weakptr.tst", 11500000 );

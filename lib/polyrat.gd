@@ -2,7 +2,6 @@
 ##
 #W  polyrat.gd                 GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains attributes, properties and operations for univariate
 ##  polynomials over the rationals
 ##
-Revision.polyrat_gd:=
-  "@(#)$Id$";
 
 
 #############################################################################

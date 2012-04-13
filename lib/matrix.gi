@@ -6,7 +6,6 @@
 #W                                                           & Heiko Theißen
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##
 ##  This file contains methods for matrices.
 ##
-Revision.matrix_gi :=
-    "@(#)$Id$";
 
 
 #
@@ -25,8 +22,6 @@ Revision.matrix_gi :=
 InstallMethod(Zero,
         [IsRectangularTable and IsAdditiveElementWithZeroCollColl and IsInternalRep],
         ZERO_ATTR_MAT);
-
-
 
 #############################################################################
 ##
@@ -38,53 +33,52 @@ InstallGlobalFunction(PrintArray,function( array )
     if not IsDenseList( array ) then
         Error( "<array> must be a dense list" );
     elif Length( array ) = 0  then
-	Print( "[ ]\n" );
-elif array = [[]]  then
-    Print( "[ [ ] ]\n" );
-elif not ForAll( array, IsList )  then
-    arr := List( array, String );
-	max := Maximum( List( arr, Length ) );
-	Print( "[ ", String( arr[ 1 ], max + 1 ) );
-	for l  in [ 2 .. Length( arr ) ]  do
-	    Print( ", ", String( arr[ l ], max + 1 ) );
-	od;
-	Print( " ]\n" );
+        Print( "[ ]\n" );
+    elif array = [[]]  then
+        Print( "[ [ ] ]\n" );
+    elif not ForAll( array, IsList )  then
+        arr := List( array, String );
+        max := Maximum( List( arr, Length ) );
+        Print( "[ ", String( arr[ 1 ], max + 1 ) );
+        for l  in [ 2 .. Length( arr ) ]  do
+            Print( ", ", String( arr[ l ], max + 1 ) );
+        od;
+        Print( " ]\n" );
     else
-    	arr := List( array, x -> List( x, String ) );
-     max := Maximum( List( arr, 
+        arr := List( array, x -> List( x, String ) );
+        max := Maximum( List( arr, 
                     function(x)
-         if Length(x) = 0 then
-             return 1;
-         else
-             return Maximum( List(x,Length) );
-         fi;
-         end) );
+                         if Length(x) = 0 then
+                             return 1;
+                         else
+                             return Maximum( List(x,Length) );
+                         fi;
+                         end) );
         Print( "[ " );
-    	for l  in [ 1 .. Length( arr ) ]  do
-         if l > 1  then
-             Print( "  " );
-         fi;
-         Print( "[ " );
-         if Length(arr[ l ]) = 0 then
-             Print("  ]" );
-         else
-             
-             for k  in [ 1 .. Length( arr[ l ] ) ]  do
-                 Print( String( arr[ l ][ k ], max + 1 ) );
-                 if k = Length( arr[ l ] )  then
-                     Print( " ]" );
-                 else
-                     Print( ", " );
-                 fi;
-             od;
-         fi;
-         if l = Length( arr )  then
-             Print( " ]\n" );
-         else
-             Print( ",\n" );
-         fi;
-     od;
- fi;
+        for l in [ 1 .. Length( arr ) ] do
+            if l > 1 then
+                Print( "  " );
+            fi;
+            Print( "[ " );
+            if Length(arr[ l ]) = 0 then
+                Print("  ]" );
+            else
+                for k  in [ 1 .. Length( arr[ l ] ) ]  do
+                    Print( String( arr[ l ][ k ], max + 1 ) );
+                    if k = Length( arr[ l ] )  then
+                        Print( " ]" );
+                    else
+                        Print( ", " );
+                    fi;
+                od;
+            fi;
+            if l = Length( arr )  then
+                Print( " ]\n" );
+            else
+                Print( ",\n" );
+            fi;
+        od;
+    fi;
 end);
 
 
@@ -203,10 +197,6 @@ InstallMethod( IsLowerTriangularMat,
 #############################################################################
 ##
 #M  DiagonalOfMat(<mat>)  . . . . . . . . . . . . . . . .  diagonal of matrix
-##
-##  'DiagonalOfMat' returns  the diagonal of  the matrix <mat>.  The diagonal
-##  has the  same length  as the rows of  <mat>,  it is padded with zeros  if
-##  <mat> has fewer rows than columns.
 ##
 InstallGlobalFunction( DiagonalOfMat, function ( mat )
     local   diag, i;
@@ -345,8 +335,7 @@ end );
 #N  Shift to using ClearRow once we have kernel methods that give a
 #N  performance benefit
 ##
-Matrix_OrderPolynomialInner :=
-  function( fld, mat, vec, vecs)
+BindGlobal( "Matrix_OrderPolynomialInner", function( fld, mat, vec, vecs)
     local d, w, p, one, zero, zeroes, piv,  pols, x, t;
     Info(InfoMatrix,2,"Order Polynomial Inner on ",Length(mat[1]),
          " x ",Length(mat)," matrix over ",fld," with ",
@@ -402,7 +391,7 @@ Matrix_OrderPolynomialInner :=
     MakeImmutable(p);
     Info(InfoMatrix,2,"Order Polynomial returns ",p);
     return p;
-end;
+end );
 
 #############################################################################
 ##
@@ -411,21 +400,22 @@ end;
 ##  Compute the order polynomial, all the work is done in the
 ##  routine above
 ##
-Matrix_OrderPolynomialSameField := function( fld, mat, vec, ind )
+BindGlobal( "Matrix_OrderPolynomialSameField", function( fld, mat, vec, ind )
     local imat, ivec, coeffs;
     imat:=ImmutableMatrix(fld,mat);
     ivec := Immutable(vec);
     ConvertToVectorRepNC(ivec, fld);
     coeffs := Matrix_OrderPolynomialInner( fld, imat, ivec, []);
     return UnivariatePolynomialByCoefficients(ElementsFamily(FamilyObj(fld)), coeffs, ind );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  Matrix_CharacteristicPolynomialSameField( <fld>, <mat>, <ind> )
 ##
-Matrix_CharacteristicPolynomialSameField := function( fld, mat, ind)
+BindGlobal( "Matrix_CharacteristicPolynomialSameField",
+    function( fld, mat, ind)
     local i, n, ords, base, imat, vec, one,cp,op,zero,fam;
     Info(InfoMatrix,1,"Characteristic Polynomial called on ",
          Length(mat[1])," x ",Length(mat)," matrix over ",fld);
@@ -454,14 +444,14 @@ Matrix_CharacteristicPolynomialSameField := function( fld, mat, ind)
     Assert(2, Length(CoefficientsOfUnivariatePolynomial(cp)) = n+1);
     Info(InfoMatrix,1,"Characteristic Polynomial returns ", cp);
     return cp;
-end;
+end );
 
 
 ##########################################################################
 ##
 #F  Matrix_MinimalPolynomialSameField( <fld>, <mat>, <ind> )
 ##
-Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
+BindGlobal( "Matrix_MinimalPolynomialSameField", function( fld, mat, ind )
     local i, n, ords, base, imat, vec, one,cp,zero, fam,
           processVec, mp, dim, span,op,w, piv,j,ring;
 
@@ -482,10 +472,10 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
     #keep coeffs
     #mp := UnivariatePolynomialByCoefficients( fam, mp,ind);
     while dim < n do
-	vec := ShallowCopy(mat[1]);
+        vec := ShallowCopy(mat[1]);
         for i in [1..n] do
-	  #Add(vec,Random([one,zero]));
-	  vec[i]:=Random([one,zero]);
+          #Add(vec,Random([one,zero]));
+          vec[i]:=Random([one,zero]);
         od;
         vec[Random([1..n])] := one; # make sure it's not zero
         #ConvertToVectorRepNC(vec,fld);
@@ -494,12 +484,12 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
         op := Matrix_OrderPolynomialInner( fld, imat, vec, span);
         #op := UnivariatePolynomialByCoefficients(fam, op, ind);
         #mp := Lcm(mp, op);
-	# this command takes much time since a polynomial ring is created.
-	# Instead use the quick gcd-based method (avoiding the dispatcher):
+        # this command takes much time since a polynomial ring is created.
+        # Instead use the quick gcd-based method (avoiding the dispatcher):
         #mp := (mp*op)/GcdOp(mp, op);
-	#mp:=mp/LeadingCoefficient(mp);
-	mp:=QUOTREM_LAURPOLS_LISTS(ProductCoeffs(mp,op),GcdCoeffs(mp,op))[1];
-	mp:=mp/mp[Length(mp)];
+        #mp:=mp/LeadingCoefficient(mp);
+        mp:=QUOTREM_LAURPOLS_LISTS(ProductCoeffs(mp,op),GcdCoeffs(mp,op))[1];
+        mp:=mp/mp[Length(mp)];
 
         for j in [1..Length(span)] do
             if IsBound(span[j]) then
@@ -529,7 +519,7 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
     Assert(3, IsZero(Value(mp,imat)));
     Info(InfoMatrix,1,"Minimal Polynomial returns ", mp);
     return mp;
-end;
+end );
 
 
 ##########################################################################
@@ -585,7 +575,7 @@ function( m )
       # if it a finite,  use mixed integers/z notation
 #T ...
       else
-	  Print( "z = Z(", chr^deg, ")\n" );
+          Print( "z = Z(", chr^deg, ")\n" );
 
         # compute maximal width
         w := LogInt( chr^deg-1, 10 ) + 4;
@@ -620,6 +610,20 @@ function( m )
       fi;
     fi;
 end );
+
+
+##########################################################################
+##
+#M  Display( <ZmodnZ-mat> )
+##
+InstallMethod( Display,
+    "for matrix over Integers mod n",
+    [ IsZmodnZObjNonprimeCollColl and IsMatrix ],
+    function( m )
+    Print( "matrix over Integers mod ", DataType( TypeObj( m[1][1] ) ),
+           ":\n" );
+    Display( List( m, i -> List( i, i -> i![1] ) ) );
+    end );
 
 
 #############################################################################
@@ -812,10 +816,10 @@ local ord,i,vec,v,o;
       v := v * mat;
       o := o + 1;
       if o>lim then
-	return fail;
+        return fail;
       elif OrderMatLimit = o  and Characteristic(v[1])=0 then
-	  Info( InfoWarning, 1,
-		"Order: warning, order of <mat> might be infinite" );
+        Info( InfoWarning, 1,
+              "Order: warning, order of <mat> might be infinite" );
       fi;
     od;
 
@@ -1527,11 +1531,11 @@ InstallMethod( DimensionsMat,
     [ IsMatrix ],
     function( A )
     if IsRectangularTable(A) then
-    	return [ Length(A), Length(A[1]) ];
+        return [ Length(A), Length(A[1]) ];
     else
-    	return fail;
+        return fail;
     fi;
-	end	);
+    end );
 
 BindGlobal("DoDiagonalizeMat",function(R,M,transform,divide)
 local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
@@ -1556,9 +1560,9 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
     M{[1..l]}[a]:=M{[1..l]}[b];
     M{[1..l]}[b]:=c;
     if transform then
-      c:=right{[1..l]}[a];
-      right{[1..l]}[a]:=right{[1..l]}[b];
-      right{[1..l]}[b]:=c;
+      c:=right{[1..n]}[a];
+      right{[1..n]}[a]:=right{[1..n]}[b];
+      right{[1..n]}[b]:=c;
     fi;
   end;
 
@@ -1566,10 +1570,12 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
   local i;
     for i in [1..l] do
       M[i][a]:=M[i][a]+m*M[i][b];
-      if transform then
-	right[i][a]:=right[i][a]+m*right[i][b];
-      fi;
     od;
+    if transform then
+      for i in [1..n] do
+        right[i][a]:=right[i][a]+m*right[i][b];
+      od;
+    fi;
   end;
 
   addrow:=function(a,b,m)
@@ -1583,10 +1589,12 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
   local i;
     for i in [1..l] do
       M[i][a]:=M[i][a]*m;
-      if transform then
-	right[i][a]:=right[i][a]*m;
-      fi;
     od;
+    if transform then
+      for i in [1..n] do
+        right[i][a]:=right[i][a]*m;
+      od;
+    fi;
   end;
 
   multrow:=function(a,m)
@@ -1602,41 +1610,41 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
     repeat
       # now do the GCD calculations only in row/column
       for i in [start+1..n] do
-	a:=i;
-	b:=start;
-	if not IsZero(M[start][b]) then
-	  repeat
-	    qr:=QuotientRemainder(R,M[start][a],M[start][b]);
-	    addcol(a,b,-qr[1]);
-	    c:=a;a:=b;b:=c;
-	  until IsZero(qr[2]);
-	  if b=start then
-	    swapcol(start,i);
-	  fi;
-	fi;
+        a:=i;
+        b:=start;
+        if not IsZero(M[start][b]) then
+          repeat
+            qr:=QuotientRemainder(R,M[start][a],M[start][b]);
+            addcol(a,b,-qr[1]);
+            c:=a;a:=b;b:=c;
+          until IsZero(qr[2]);
+          if b=start then
+            swapcol(start,i);
+          fi;
+        fi;
 
-	# normalize
-	qr:=StandardAssociate(R,M[start][start])/M[start][start];
-	multcol(start,qr);
+        # normalize
+        qr:=StandardAssociateUnit(R,M[start][start]);
+        multcol(start,qr);
 
       od;
 
       for i in [start+1..l] do
-	a:=i;
-	b:=start;
-	if not IsZero(M[b][start]) then
-	  repeat
-	    qr:=QuotientRemainder(R,M[a][start],M[b][start]);
-	    addrow(a,b,-qr[1]);
-	    c:=a;a:=b;b:=c;
-	  until IsZero(qr[2]);
-	  if b=start then
-	    swaprow(start,i);
-	  fi;
-	fi;
+        a:=i;
+        b:=start;
+        if not IsZero(M[b][start]) then
+          repeat
+            qr:=QuotientRemainder(R,M[a][start],M[b][start]);
+            addrow(a,b,-qr[1]);
+            c:=a;a:=b;b:=c;
+          until IsZero(qr[2]);
+          if b=start then
+            swaprow(start,i);
+          fi;
+        fi;
 
-	qr:=StandardAssociate(R,M[start][start])/M[start][start];
-	multrow(start,qr);
+        qr:=StandardAssociateUnit(R,M[start][start]);
+        multrow(start,qr);
 
       od;
     until ForAll([start+1..n],i->IsZero(M[start][i]));
@@ -1651,29 +1659,23 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
   fi;
 
   start:=1;
-  while start<Length(M) and start<n do
+  while start<=Length(M) and start<=n do
 
     # find element of lowest degree and move it into pivot
     # hope is this will reduce the total number of iterations by making
     # it small in the first place
-    if IsZero(M[start][start]) then
-      d:=infinity;
-    else
-      d:=EuclideanDegree(R,M[start][start]);
-    fi;
-    posi:=start;
-    posj:=start;
+    d:=infinity;
 
     for i in [start..l] do
       for j in [start..n] do
         if not IsZero(M[i][j]) then
-	  ed:=EuclideanDegree(R,M[i][j]);
-	  if ed<d then
-	    d:=ed;
-	    posi:=i;
-	    posj:=j;
-	  fi;
-	fi;
+          ed:=EuclideanDegree(R,M[i][j]);
+          if ed<d then
+            d:=ed;
+            posi:=i;
+            posj:=j;
+          fi;
+        fi;
       od;
     od;
 
@@ -1683,41 +1685,35 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
         swaprow(start,posi);
       fi;
       if posj<>start then
-	swapcol(start,posj);
+        swapcol(start,posj);
       fi;
       cleanout();
 
       if divide then
-	repeat
-	  alldivide:=true;
-	  #make sure the pivot also divides the rest
-	  for i in [start+1..l] do
-	    for j in [start+1..n] do
-	      if Quotient(M[i][j],M[start][start])=fail then
-		alldivide:=false;
-		# do gcd
-		addrow(start,j,1);
-		cleanout();
-	      fi;
-	    od;
-	  od;
-	until alldivide;
+        repeat
+          alldivide:=true;
+          #make sure the pivot also divides the rest
+          for i in [start+1..l] do
+            for j in [start+1..n] do
+              if Quotient(M[i][j],M[start][start])=fail then
+                alldivide:=false;
+                # do gcd
+                addrow(start,i,1);
+                cleanout();
+              fi;
+            od;
+          od;
+        until alldivide;
 
       fi;
 
       # normalize
-      qr:=StandardAssociate(R,M[start][start])/M[start][start];
+      qr:=StandardAssociateUnit(R,M[start][start]);
       multcol(start,qr);
 
     fi;
     start:=start+1;
   od;
-
-  # normalize last entry
-  if not IsZero(M[start][start]) then
-    qr:=StandardAssociate(R,M[start][start])/M[start][start];
-    multcol(start,qr);
-  fi;
 
   if transform then
    return rec(rowtrans:=left,coltrans:=right,normal:=M);
@@ -1738,19 +1734,6 @@ InstallMethod( DiagonalizeMat,
   return DoDiagonalizeMat(R,M,false,false);
 end);
 
-#############################################################################
-##
-#M  EuclideanDegree( <pring>, <upol> )
-##
-InstallOtherMethod(EuclideanDegree,"laurent,ring",IsCollsElms,
-  [IsPolynomialRing,IsLaurentPolynomial],0,
-function(R,a) 
-  return DegreeOfLaurentPolynomial(a);
-end);
-
-InstallOtherMethod(EuclideanDegree,"laurent",true,
-  [IsLaurentPolynomial],0,DegreeOfLaurentPolynomial);
-
 
 #############################################################################
 ##
@@ -1762,37 +1745,11 @@ InstallOtherMethod(EuclideanDegree,"laurent",true,
 ##
 
 InstallGlobalFunction(ElementaryDivisorsMatDestructive,function(ring,mat)
-local  divs, gcd, zero, m, n, i, k;
-
-    m := Length(mat);  n := Length(mat[1]);
-
     # diagonalize the matrix
     DoDiagonalizeMat(ring, mat,false,true );
 
     # get the diagonal elements
-    divs := [];
-    for i  in [1..Minimum(m,n)]  do
-        divs[i] := mat[i][i];
-    od;
-#    #if divs <> []  then zero := divs[1] - divs[1];  fi;
-#
-#    # transform the divisors so that every divisor divides the next
-#    for i  in [1..Length(divs)-1]  do
-#        for k  in [i+1..Length(divs)]  do
-#            if divs[i] = zero and divs[k] <> zero  then
-#                divs[i] := divs[k];
-#                divs[k] := zero;
-#            elif divs[i] <> zero
-#              and EuclideanRemainder(ring, divs[k], divs[i] ) <> zero  then
-#                gcd     := Gcd(ring, divs[i], divs[k] );
-#                divs[k] := divs[k] / gcd * divs[i];
-#                divs[i] := gcd;
-#            fi;
-#        od;
-#        divs[i] := StandardAssociate( ring,divs[i] );
-#    od;
-
-    return divs;
+    return DiagonalOfMat(mat);
 end );
 
 InstallMethod( ElementaryDivisorsMat,
@@ -2096,7 +2053,7 @@ InstallMethod( GeneralisedEigenvalues,
     "for a matrix",
     [ IsField, IsMatrix ],
     function( F, A )
-    	return Set( Factors( UnivariatePolynomialRing(F), MinimalPolynomial(F, A,1) ) );
+        return Set( Factors( UnivariatePolynomialRing(F), MinimalPolynomial(F, A,1) ) );
     end );
 
 #############################################################################
@@ -2108,7 +2065,7 @@ InstallMethod( GeneralisedEigenspaces,
     [ IsField, IsMatrix ],
     function( F, A )
         return List( GeneralisedEigenvalues( F, A ), eval ->
-	    VectorSpace( F, TriangulizedNullspaceMat( Value( eval, A ) ) ) );
+            VectorSpace( F, TriangulizedNullspaceMat( Value( eval, A ) ) ) );
     end );
 
 #############################################################################
@@ -2119,9 +2076,9 @@ InstallMethod( Eigenvalues,
     "for a matrix",
     [ IsField, IsMatrix ],
     function( F, A )
-	return List( Filtered( GeneralisedEigenvalues(F,A),
-			       eval -> DegreeOfLaurentPolynomial(eval) = 1 ),
-		     eval -> -1 * Value(eval,0) );
+        return List( Filtered( GeneralisedEigenvalues(F,A),
+                               eval -> DegreeOfLaurentPolynomial(eval) = 1 ),
+                     eval -> -1 * Value(eval,0) );
     end );
 
 #############################################################################
@@ -2132,8 +2089,8 @@ InstallMethod( Eigenspaces,
     "for a matrix",
     [ IsField, IsMatrix ],
     function( F, A )
-	return List( Eigenvalues(F,A), eval ->
-	    VectorSpace( F, TriangulizedNullspaceMat(A - eval*One(A)) ) );
+        return List( Eigenvalues(F,A), eval ->
+            VectorSpace( F, TriangulizedNullspaceMat(A - eval*One(A)) ) );
     end );
 
 #############################################################################
@@ -2144,8 +2101,8 @@ InstallMethod( Eigenvectors,
     "for a matrix",
     [ IsField, IsMatrix ],
     function( F, A )
-	return Concatenation( List( Eigenspaces(F,A),
-				    esp -> AsList(Basis(esp)) ) );
+        return Concatenation( List( Eigenspaces(F,A),
+                                    esp -> AsList(Basis(esp)) ) );
     end );
 
 
@@ -3000,35 +2957,35 @@ local z,l,b,i,j,k,stop,v,dim,h,zv;
     stop:=false;
     repeat
       if j<=dim and (Length(mat)<i or mat[i][j]=z) then
-	# Add vector from bas with j-th component not zero (if any exists)
+        # Add vector from bas with j-th component not zero (if any exists)
         v:=PositionProperty(bas,k->k[j]<>z);
-	if v<>fail then
-	  # add the vector
-	  v:=bas[v];
-	  v:=1/v[j]*v; # normed
-	  Add(b,v);
-	  h[j]:=Length(b);
-	# if fail, then this dimension is only dependent (and not needed)
+        if v<>fail then
+          # add the vector
+          v:=bas[v];
+          v:=1/v[j]*v; # normed
+          Add(b,v);
+          h[j]:=Length(b);
+        # if fail, then this dimension is only dependent (and not needed)
         fi;
       else
         stop:=true;
-	# check whether we are running to fake zero columns
-	if i<=Length(mat) then
-	  # has a step, clean with basis vector
-	  v:=mat[i];
-	  v:=1/v[j]*v; # normed
-	  h[j]:=-i;
+        # check whether we are running to fake zero columns
+        if i<=Length(mat) then
+          # has a step, clean with basis vector
+          v:=mat[i];
+          v:=1/v[j]*v; # normed
+          h[j]:=-i;
         else
-	  v:=fail;
-	fi;
+          v:=fail;
+        fi;
       fi;
       if v<>fail then
-	# clean j-th component from bas with v
-	for k in [1..Length(bas)] do
-	  bas[k]:=bas[k]-bas[k][j]/v[j]*v;
-	od;
-	v:=Zero(v);
-	bas:=Filtered(bas,k->k<>v);
+        # clean j-th component from bas with v
+        for k in [1..Length(bas)] do
+          bas[k]:=bas[k]-bas[k][j]/v[j]*v;
+        od;
+        v:=Zero(v);
+        bas:=Filtered(bas,k->k<>v);
       fi;
       j:=j+1;
     until stop;
@@ -3044,8 +3001,8 @@ local z,l,b,i,j,k,stop,v,dim,h,zv;
   od;
   return rec(factorspace:=b,
              factorzero:=zv,
-	     subspace:=mat,
-	     heads:=h);
+             subspace:=mat,
+             heads:=h);
 end );
 
 
@@ -3128,7 +3085,7 @@ InstallGlobalFunction( IdentityMat, function ( arg )
         one  := One( arg[2] );
         if IsFFE(arg[2]) then
             f := Characteristic(arg[2]); # ConvertToVectorRep also takes the
-	                               # characteristic instead of the field
+                                       # characteristic instead of the field
         else
             f := false;
         fi;
@@ -3219,7 +3176,7 @@ end );
 InstallGlobalFunction( NullspaceModQ, function( E, q )
     local  facs,         # factors of <q>
            p,            # prime of facs
-	   pex,		 # p-power
+           pex,          # p-power
            n,            # <q> = p^n
            field,        # field with p elements
            B,            # E over GF(p)
@@ -3229,7 +3186,7 @@ InstallGlobalFunction( NullspaceModQ, function( E, q )
            r,            # inhomogenous part mod p^i-1
            newelem,      # all elements solving E mod p^i
            sol,          # solution of E * x = r mod p^i
-	   ran,
+           ran,
            new, o,
            j, i,k;
 
@@ -3256,27 +3213,27 @@ InstallGlobalFunction( NullspaceModQ, function( E, q )
     ran:=[1..Length(null[1])];
     # run trough powers
     for i  in [ 2..n ]  do
-	pex:=p^(i-1);
+        pex:=p^(i-1);
         for e  in elem  do
             #r   := o * ( - (e * E) / (p ^ ( i - 1 ) ) );
             r   := o * ( - (e * E) / pex );
             sol := SolutionMat( B, r );
             if sol <> fail then
 
-		# accessing the elements of the compact vector `sol'
-		# frequently would be very expensive
-		sol:=List(sol,IntFFE);
+                # accessing the elements of the compact vector `sol'
+                # frequently would be very expensive
+                sol:=List(sol,IntFFE);
 
                 for j  in [ 1..Length( elem ) ]  do
                     #new := e + ( p^(i-1) * List( o * elem[j] + sol, IntFFE ) );
-		    new:=ShallowCopy(e);
-		    for k in ran do
-		      #new[k]:=new[k]+pex * IntFFE(o*elem[j][k]+ sol[k]);
-		      new[k]:=new[k]+pex * ((elem[j][k]+ sol[k]) mod p);
-		    od;
+                    new:=ShallowCopy(e);
+                    for k in ran do
+                      #new[k]:=new[k]+pex * IntFFE(o*elem[j][k]+ sol[k]);
+                      new[k]:=new[k]+pex * ((elem[j][k]+ sol[k]) mod p);
+                    od;
 #T !
-		    MakeImmutable(new); # otherwise newelem does not remember
-		                        # it is sorted!
+                    MakeImmutable(new); # otherwise newelem does not remember
+                                        # it is sorted!
                     AddSet( newelem, new );
                 od;
             fi;
@@ -3301,31 +3258,31 @@ end );
 ##  of elements of <M>.
 ##
 InstallGlobalFunction (BasisNullspaceModN, function (M, n)
-	local snf, null, nullM, i, gcdex;
+    local snf, null, nullM, i, gcdex;
 
-	# if n is a  prime, Gaussian elimination is fastest
-	if IsPrimeInt (n) then
-	   return List (NullspaceMat (M*One(GF(n))),
-	      v -> List (v, IntFFE));
-	fi;
-	
-	# compute the Smith normal form S for M, i.e., S = R M C
-	snf := NormalFormIntMat (M, 1+4);
+    # if n is a  prime, Gaussian elimination is fastest
+    if IsPrimeInt (n) then
+       return List (NullspaceMat (M*One(GF(n))),
+          v -> List (v, IntFFE));
+    fi;
+    
+    # compute the Smith normal form S for M, i.e., S = R M C
+    snf := NormalFormIntMat (M, 1+4);
 
-	# compute the nullspace of S mod n
-	null := IdentityMat (Length (M));
-	
-	for i in [1..snf.rank] do
-	    null[i][i] := n/GcdInt (n, snf.normal[i][i]);
-	od;
-	
-	# nullM = null*R is the nullspace of M C mod n
-	# since solutions do not change under elementary matrices
-	# nullM is also the nullspace for M
-	
-	nullM := null*snf.rowtrans mod n;
-	Assert (1, ForAll (nullM, v -> v*M mod n =0*M[1]));
-	return nullM;
+    # compute the nullspace of S mod n
+    null := IdentityMat (Length (M));
+    
+    for i in [1..snf.rank] do
+        null[i][i] := n/GcdInt (n, snf.normal[i][i]);
+    od;
+    
+    # nullM = null*R is the nullspace of M C mod n
+    # since solutions do not change under elementary matrices
+    # nullM is also the nullspace for M
+    
+    nullM := null*snf.rowtrans mod n;
+    Assert (1, ForAll (nullM, v -> v*M mod n =0*M[1]));
+    return nullM;
 end);
 
 
@@ -3895,9 +3852,9 @@ local i,j,k,fg,f;
     for j in i do
       for k in j do
         if not k in f then
-	  Add(fg,k);
-	  f:=Field(fg);
-	fi;
+          Add(fg,k);
+          f:=Field(fg);
+        fi;
       od;
     od;
   od;
@@ -4041,7 +3998,7 @@ local M, n, p, vars, slackVars, i, id, bestMove,
 
   Val:=function(M,vars,slackVars,len,x) 
       if x in vars then 
-	  return 0; 
+          return 0; 
       else return M[Position(slackVars,x)+1][len]; 
       fi; 
   end;
@@ -4051,7 +4008,7 @@ local M, n, p, vars, slackVars, i, id, bestMove,
    n:=Size(c);
    p:=Size(b);
    if not (IsMatrix(A) and Size(A)=p and ForAny(A,R->Size(R)=n)) then
-     Error( "usage: SimplexMethod( <A>, <b>, <c>)");
+       Error( "usage: SimplexMethod( <A>, <b>, <c>)");
    fi;
 
    id:=IdentityMat(p,Rationals);
@@ -4069,9 +4026,10 @@ local M, n, p, vars, slackVars, i, id, bestMove,
 
    #initialize the feasible starting vertex
    if ForAll(b,x->not x<0) then 
-      vars:=[2..2+n-1];      
-      slackVars:=[2+n..n+p+1];
-   else return "Invalid data: not all constraints nonnegative!";
+       vars:=[2..2+n-1];      
+       slackVars:=[2+n..n+p+1];
+   else
+       return "Invalid data: not all constraints nonnegative!";
    fi;
    
    #Print("slackVars are ",slackVars ,"\n");
@@ -4254,11 +4212,10 @@ BindGlobal("POW_MAT_INT", function(mat, n)
   mm := value(pol, mm);
   return ti * mm * t;
 end);
+
 InstallMethod( \^,
     "for matrices, use char. poly. for large exponents",
     [ IsMatrix, IsPosInt ], POW_MAT_INT );
-
-
 
 
 #############################################################################

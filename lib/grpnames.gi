@@ -4,7 +4,6 @@
 ##                                                             Markus Püschel
 ##                                                            Sebastian Egner
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2004 The GAP Group
 ##
@@ -20,8 +19,6 @@
 ##  The code has been translated, simplified and extended by Stefan Kohl
 ##  from GAP3 code written by Markus Püschel and Sebastian Egner.
 ##
-Revision.grpnames_gi :=
-  "@(#)$Id$";
 
 #############################################################################
 ##

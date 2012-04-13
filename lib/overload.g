@@ -2,7 +2,6 @@
 ##
 #W  overload.g                  GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -48,8 +47,6 @@
 ##
 #T Shall we print warnings when the shorthands are used?
 ##
-Revision.overload_g :=
-    "@(#)$Id$";
 
 
 #############################################################################

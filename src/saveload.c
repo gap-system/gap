@@ -2,7 +2,6 @@
 **
 *W  saveload.c                  GAP source                       Steve Linton
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_saveload_c =
-   "@(#)$Id$";
 
 #include        <unistd.h>              /* write, read                     */
    
@@ -33,9 +30,7 @@ const char * Revision_saveload_c =
 #include        "macfloat.h"            /* floating points */
 #include        "compstat.h"            /* statically compiled modules     */
 
-#define INCLUDE_DECLARATION_PART
 #include        "saveload.h"            /* saving and loading              */
-#undef  INCLUDE_DECLARATION_PART
 
 
 /***************************************************************************
@@ -352,7 +347,7 @@ void SaveSubObj( Obj subobj )
 
 }
 
-Obj LoadSubObj()
+Obj LoadSubObj( void )
 {
   UInt word = LoadUInt();
   if (word == 0)
@@ -381,7 +376,7 @@ void SaveHandler( ObjFunc hdlr )
 }
 
 
-ObjFunc LoadHandler( )
+ObjFunc LoadHandler( void )
 {
   Char buf[256];
   LoadCStr(buf, 256);
@@ -401,7 +396,7 @@ void SaveDouble( Double d)
     SAVE_BYTE(buf[i]);
 }
 
-Double LoadDouble( void)
+Double LoadDouble( void )
 {
   UInt i;
   UInt1 buf[sizeof(Double)];
@@ -419,7 +414,7 @@ Double LoadDouble( void)
 
 
 
-static void SaveBagData (Bag bag)
+static void SaveBagData (Bag bag )
 {
 #ifndef USE_NEWSHAPE
   SaveUInt((UInt)PTR_BAG(bag)[-3]);
@@ -433,7 +428,7 @@ static void SaveBagData (Bag bag)
 
 
 
-static void LoadBagData ( )
+static void LoadBagData ( void )
 {
   Bag bag;
   UInt size;
@@ -734,15 +729,15 @@ void LoadWorkspace( Char * fname )
   /* Check file header */
 
   LoadCStr(buf,256);
-  if (SyStrncmp (buf, "GAP ", 4) != 0) {
+  if (strncmp (buf, "GAP ", 4) != 0) {
      Pr("File %s does not appear to be a GAP workspae.\n", (long) fname, 0L);
      SyExit(1);
   }
 
-  if (SyStrcmp (buf, "GAP workspace") == 0) {
+  if (strcmp (buf, "GAP workspace") == 0) {
 
      LoadCStr(buf,256);
-     if (SyStrcmp (buf, SyKernelVersion) != 0) {
+     if (strcmp (buf, SyKernelVersion) != 0) {
         Pr("This workspace is not compatible with GAP kernel (%s, present: %s).\n", 
            (long)buf, (long)SyKernelVersion);
         SyExit(1);
@@ -750,9 +745,9 @@ void LoadWorkspace( Char * fname )
 
      LoadCStr(buf,256);
 #ifdef SYS_IS_64_BIT             
-     if (SyStrcmp(buf,"64 bit") != 0)
+     if (strcmp(buf,"64 bit") != 0)
 #else
-     if (SyStrcmp(buf,"32 bit") != 0)
+     if (strcmp(buf,"32 bit") != 0)
 #endif
         {
            Pr("This workspace was created by a %s version of GAP.\n", (long)buf, 0L);
@@ -763,9 +758,9 @@ void LoadWorkspace( Char * fname )
      /* try if it is an old workspace */
 
 #ifdef SYS_IS_64_BIT             
-     if (SyStrcmp(buf,"GAP 4.0 beta 64 bit") != 0)
+     if (strcmp(buf,"GAP 4.0 beta 64 bit") != 0)
 #else 
-     if (SyStrcmp(buf,"GAP 4.0 beta 32 bit") != 0)
+     if (strcmp(buf,"GAP 4.0 beta 32 bit") != 0)
 #endif
         Pr("File %s probably isn't a GAP workspace.\n", (long)fname, 0L);
      else 
@@ -776,7 +771,7 @@ void LoadWorkspace( Char * fname )
   CheckEndiannessMarker();
   
   LoadCStr(buf,256);
-  if (SyStrcmp(buf,"Counts and Sizes") != 0)
+  if (strcmp(buf,"Counts and Sizes") != 0)
     {
       Pr("Bad divider\n",0L,0L);
       SyExit(1);
@@ -794,7 +789,7 @@ void LoadWorkspace( Char * fname )
   /* The restoring kernel must have at least as many compiled modules
      as the saving one. */
   LoadCStr(buf,256);
-  if (SyStrcmp(buf,"Loaded Modules") != 0)
+  if (strcmp(buf,"Loaded Modules") != 0)
     {
       Pr("Bad divider\n",0L,0L);
       SyExit(1);
@@ -818,7 +813,7 @@ void LoadWorkspace( Char * fname )
 	      if ( info == 0 ) {
 		continue;
 	      }
-	      if ( ! SyStrcmp( buf, info->name ) ) {
+	      if ( ! strcmp( buf, info->name ) ) {
 		break;
 	      }
 	    }
@@ -858,7 +853,7 @@ void LoadWorkspace( Char * fname )
 
   /* Now the kernel variables that point into the workspace */
   LoadCStr(buf,256);
-  if (SyStrcmp(buf,"Kernel to WS refs") != 0)
+  if (strcmp(buf,"Kernel to WS refs") != 0)
     {
       Pr("Bad divider\n",0L,0L);
        SyExit(1);
@@ -895,7 +890,7 @@ void LoadWorkspace( Char * fname )
     }
 
   LoadCStr(buf,256);
-  if (SyStrcmp(buf,"Bag data") != 0)
+  if (strcmp(buf,"Bag data") != 0)
     {
       Pr("Bad divider\n",0L,0L);
       SyExit(1);
@@ -938,7 +933,7 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
   CheckEndiannessMarker();
   LoadCStr(buf,256);
   Pr("Divider string: %s\n",(Int)buf,0L);
-  if (SyStrcmp(buf,"Counts and Sizes") != 0)
+  if (strcmp(buf,"Counts and Sizes") != 0)
     ErrorQuit("Bad divider",0L,0L);
   Pr("Loaded modules: %d\n",nMods = LoadUInt(), 0L);
   Pr("Global Bags   : %d\n",nGlobs = LoadUInt(), 0L);
@@ -946,7 +941,7 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
   Pr("Maximum Size  : %d\n",sizeof(Bag)*LoadUInt(), 0L);
   LoadCStr(buf,256);
   Pr("Divider string: %s\n",(Int)buf, 0L);
-  if (SyStrcmp(buf,"Loaded Modules") != 0)
+  if (strcmp(buf,"Loaded Modules") != 0)
     ErrorQuit("Bad divider",0L,0L);
   for (i = 0; i < nMods; i++)
     {
@@ -963,7 +958,7 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
     }
   LoadCStr(buf,256);
   Pr("Divider string: %s\n",(Int)buf,0L);
-  if (SyStrcmp(buf,"Kernel to WS refs") != 0)
+  if (strcmp(buf,"Kernel to WS refs") != 0)
     ErrorQuit("Bad divider",0L,0L);
   for (i = 0; i < nGlobs; i++)
     {
@@ -973,7 +968,7 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
     }
   LoadCStr(buf,256);
   Pr("Divider string: %s\n",(Int)buf,0L);
-  if (SyStrcmp(buf,"Bag data") != 0)
+  if (strcmp(buf,"Bag data") != 0)
     ErrorQuit("Bad divider",0L,0L);
   CloseAfterLoad();
   return (Obj) 0;
@@ -1070,8 +1065,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSaveLoad ( void )
 {
-    module.revision_c = Revision_saveload_c;
-    module.revision_h = Revision_saveload_h;
     FillInVersion( &module );
     return &module;
 }

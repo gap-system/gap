@@ -5,8 +5,6 @@
 #Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.ghomfp_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -1099,7 +1097,7 @@ local v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel;
   imgs:=List(gens,x->Image(mau,Image(hom,PreImagesRepresentative(ma,x))));
   q:=GroupHomomorphismByImages(a,Image(mau),gens,imgs);
   k:=KernelOfMultiplicativeGeneralMapping(q);
-  co:=Complementclasses(a,k);
+  co:=ComplementClassesRepresentatives(a,k);
   if Length(co)=0 then
     co:=List(ConjugacyClassesSubgroups(a),Representative);
     co:=Filtered(co,x->Size(Intersection(k,x))=1);

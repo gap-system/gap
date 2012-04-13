@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id$
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'
@@ -24,7 +23,11 @@ rm -f ${toolsarchive}
 echo 'Creating the GAP core archive '${GAPCORE}/$ziparchive
 
 pre=${DISTNAME}
-echo $pre/etc/README.tools >> listtextfilesfortools.txt
+cd $pre/doc
+pdftex gapmacrodoc.tex
+pdftex gapmacrodoc.tex
+cd ../..
+echo $pre/doc/gapmacrodoc.pdf >> listtextfilesfortools.txt
 echo 'Adding text tools files to the archive '${GAPCORE}/$toolsarchive
 tar cfz ${toolsarchive} -T listtextfilesfortools.txt
 

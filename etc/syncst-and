@@ -1,6 +1,6 @@
 #!/bin/sh
 
-##  $Id$ (Frank Lübeck)
+##  (C) Frank Lübeck)
 ## 
 ##  This is the script for syncronizing the CVS repository
 ##     gap@cvs-gap.dcs.st-and.ac.uk:CVS

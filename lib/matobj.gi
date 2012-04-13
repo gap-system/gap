@@ -10,8 +10,6 @@
 # defined in matobj1.gd and matobj2.gd.
 #
 ############################################################################
-Revision.matobj_gi :=
-    "@(#)$Id$";
 
 
 InstallMethod( WeightOfVector, "generic method",

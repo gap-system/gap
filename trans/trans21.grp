@@ -2,14 +2,11 @@
 ##
 #A  trans21.grp                 GAP group library           Alexander Hulpke
 ##
-#A  @(#)$Id$
 ##
 #Y  Copyright (C) 2001, Alexander Hulpke, Colorado State University
 ##
 ##  This file contains part of the transitive groups of degree 21
 ##
-Revision.trans21_grp:=
-  "@(#)$Id$";
 
 TRANSGRP[21]:=[];
 TRANSPROPERTIES[21]:=[];

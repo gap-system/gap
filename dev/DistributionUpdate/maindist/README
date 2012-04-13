@@ -1,7 +1,6 @@
            Creating Main Archives of GAP Distribution
            ==========================================
 
-##  $Id$
 
 
 To do this one needs:
@@ -146,16 +145,7 @@ Finally:
         );
 -------------------------------------
 
-(12) ask Burkhard early enough to provide a new MacOS binary "GAP 4 PPC"
-     and add it to the gap*.zoo archive with 'macbin' and to the top level
-     of fix....zoo
-
-     add the Mac binary:
-        - call 'macbin' and copy the executable "GAP 4 PPC" to the given
-          location.
-        - call 'macbin' again to add this file to the zoo archive.
-     for update with kernel change also add it to the fix...zoo archive,
-        - call 'macbinfix'
+(12) (deleted - we do no longer ship a Mac OS 9 binary)
     
 (13) That's it for the wrapping of a release candidate! 
      Now start to install from these archives, run all sorts of tests, try 

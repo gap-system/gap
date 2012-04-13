@@ -2,7 +2,6 @@
 ##
 #W  suzuki.gi                   GAP library                       Stefan Kohl
 ##
-#H  @(#)$Id$
 ##
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
 ##
@@ -15,8 +14,6 @@
 ##
 ##  See the middle of page 140, in the proof of Theorem 12.
 ##
-Revision.suzuki_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

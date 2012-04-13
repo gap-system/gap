@@ -738,9 +738,10 @@ Now we can create new elements, perform arithmetic on them and form domains:
 gap> a := mkposet([1,2,3]);
 [ 1, 2, 3 ]
 gap> CategoriesOfObject(a);
-[ "IsExtAElement", "IsNearAdditiveElement", "IsNearAdditiveElementWithZero", 
+[ "IsExtAElement", "IsNearAdditiveElement", 
+  "IsNearAdditiveElementWithZero", "IsAdditiveElement", 
   "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement", 
-  "IsMultiplicativeElementWithOne", "IsAdditivelyCommutativeElement",
+  "IsMultiplicativeElementWithOne", "IsAdditivelyCommutativeElement", 
   "IsCommutativeElement", "IsPosetOn4" ]
 gap> a=[1,2,3];
 false

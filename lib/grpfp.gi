@@ -13,8 +13,6 @@
 ##  1. methods for elements of f.p. groups
 ##  2. methods for f.p. groups
 ##
-Revision.grpfp_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

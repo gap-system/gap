@@ -25,9 +25,9 @@ So for example if <M>p = 2</M>, the numbers <M>1</M>, <M>2</M>, <M>3</M>,
 <M>4</M>, <M>1/2</M>, and <M>4/5</M>
 are represented as <M>1(2)</M>, <M>0.1(2)</M>, <M>1.1(2)</M>, <M>0.01(2)</M>,
 <M>10(2)</M>, and the infinite periodic
-expansion <M>0.0101100110011001...(2)</M>.
+expansion <M>0.010110011001100...(2)</M>.
 
-$p$-adic numbers can be approximated by ignoring higher powers of <M>p</M>,
+<M>p</M>-adic numbers can be approximated by ignoring higher powers of <M>p</M>,
 so for example with only 2 digits accuracy <M>4/5</M> would be approximated
 as <M>0.01(2)</M>.
 This is different from the decimal approximation of real numbers in that
@@ -60,6 +60,9 @@ that approximates the rational number <A>rat</A>.
 <M>p</M>-adic numbers allow the usual operations for fields.
 <P/>
 <Example><![CDATA[
+gap> fam:=PurePadicNumberFamily(2,20);;
+gap> a:=PadicNumber(fam,4/5);
+0.010110011001100110011(2)
 gap> fam:=PurePadicNumberFamily(2,3);;
 gap> a:=PadicNumber(fam,4/5);
 0.0101(2)
@@ -70,6 +73,9 @@ gap> a/2;
 gap> a*10;
 0.001(2)
 ]]></Example>
+See 
+<Ref Oper="PadicNumber" Label="for a p-adic extension family and a rational"/>
+for other methods for <Ref Oper="PadicNumber" Label="for pure padics"/>.
 </Description>
 </ManSection>
 

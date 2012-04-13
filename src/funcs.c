@@ -2,7 +2,6 @@
 **
 *W  funcs.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -22,8 +21,6 @@
 #include        "system.h"              /* Ints, UInts                     */
 #include        "bool.h"
 
-const char * Revision_funcs_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -39,9 +36,7 @@ const char * Revision_funcs_c =
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
-#define INCLUDE_DECLARATION_PART
 #include        "funcs.h"               /* functions                       */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "read.h"                /* read expressions                */
 #include        "records.h"             /* generic records                 */
@@ -1523,8 +1518,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoFuncs ( void )
 {
-    module.revision_c = Revision_funcs_c;
-    module.revision_h = Revision_funcs_h;
     FillInVersion( &module );
     return &module;
 }

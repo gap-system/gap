@@ -6,8 +6,6 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.ghomperm_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -1057,6 +1055,7 @@ InstallMethod( CompositionMapping2, "group hom. with perm group hom.",
         fi;
         S := S.stabilizer;
     od;
+    S.idimage := One( Range( hom1 ) );
     prd := GroupHomomorphismByImagesNC( Source( hom2 ), Range( hom1 ),
                    stb.generators, stb.genimages );
     SetStabChainMutable( prd, stb );

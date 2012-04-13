@@ -4,7 +4,6 @@
 **                                                           & Alice Niemeyer
 **                                                           & Werner  Nickel
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -42,7 +41,7 @@
 **  The macros 'INTOBJ_INT' and 'INT_INTOBJ' should be used to convert between
 **  a small integer value and its representation as immediate integer handle.
 **
-**  'T_INTPOS' and 'T_INTPOS' are the types of positive  respective  negative
+**  'T_INTPOS' and 'T_INTNEG' are the types of positive (respectively, negative)
 **  integer values  that  can  not  be  represented  by  immediate  integers.
 **
 **  This large integers values are represented in signed base 65536 notation.
@@ -84,12 +83,9 @@
 **  but 'PrInt' keeps a terminal at 9600 baud busy for almost  all  integers.
 */
 
-#ifndef USE_GMP /* use this file, otherwise ignore what follows */
-
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_integer_c =
-   "@(#)$Id$";
+#ifndef USE_GMP /* use this file, otherwise ignore what follows */
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -104,9 +100,7 @@ const char * Revision_integer_c =
 
 #include        "bool.h"                /* booleans                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "integer.h"             /* integers                        */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
@@ -121,6 +115,9 @@ const char * Revision_integer_c =
 #include        "intfuncs.h"
 
 #include <stdio.h>
+
+/* for fallbacks to library */
+Obj String;
 
 /****************************************************************************
 **
@@ -496,6 +493,7 @@ void            PrintInt (
     Obj                 op )
 {
     Int                 i;           /* loop counter                    */
+    Obj               str;           /* fallback to lib for large ints  */
 
     /* print a small integer                                               */
     if ( IS_INTOBJ(op) ) {
@@ -523,7 +521,11 @@ void            PrintInt (
     }
 
     else {
-        Pr("<<an integer too large to be printed>>",0L,0L);
+        str = CALL_1ARGS( String, op );
+        Pr("%>%s%<",(Int)(CHARS_STRING(str)), 0);
+        /* for a long time Print of large ints did not follow the general idea
+         * that Print should produce something that can be read back into GAP:
+           Pr("<<an integer too large to be printed>>",0L,0L); */
     }
 }
 
@@ -577,8 +579,6 @@ Obj FuncLog2Int( Obj self, Obj integer)
 **  <int>
 **
 */
-
-Obj String;
 
 Obj FuncSTRING_INT( Obj self, Obj integer )
 {
@@ -3401,8 +3401,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoInt ( void )
 {
-    module.revision_c = Revision_integer_c;
-    module.revision_h = Revision_integer_h;
     FillInVersion( &module );
     return &module;
 }

@@ -2,7 +2,6 @@
 ##  
 #W  helpview.gi                 GAP Library                      Frank Lübeck
 ##  
-#H  @(#)$Id$
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  The  files  helpview.g{d,i} contain the configuration mechanism  for  the
 ##  different help viewer.
 ##  
-Revision.helpview_gi := 
-  "@(#)$Id$";
 
 #############################################################################
 ##  
@@ -41,12 +38,29 @@ Revision.helpview_gi :=
 ##  
 ##  "pdf":    same as for "dvi"
 ##  
+
+#  The preferred help viewers can be specified via a user preference.
+DeclareUserPreference( rec(
+  name:= [ "HelpViewers", "XpdfOptions", "XdviOptions" ],
+  description:= [
+    "Here you can choose your preferred help viewers. See the help for \
+'SetHelpViewer' for further options.",
+    "Try 'HelpViewers:= [ \"screen\", \"firefox\", \"xpdf\" ];'.",
+    "(For \"screen\" we also suggest to set the 'Pager' entry to \"less\".)"
+    ],
+  default:= [ [ "screen" ], "", "" ],
+  check:= function( helpviewers, xpdfoptions, xdvioptions )
+    return IsList( helpviewers ) and ForAll( helpviewers, IsString )
+           and IsString( xpdfoptions ) and IsString( xdvioptions );
+    end,
+  ) );
+
 InstallValue(HELP_VIEWER_INFO, rec());
 
 # text on screen
 HELP_VIEWER_INFO.screen := rec(
 type := "text",
-show := Pager
+show := PagerAsHelpViewer,
 );
 
 
@@ -66,7 +80,7 @@ if ARCH_IS_WINDOWS() then
     Print( "done! \n" );         
   end
   );
-  	
+
 elif ARCH_IS_MAC_OS_X() then
   # html version using Mac OS X default browser
   HELP_VIEWER_INFO.("mac default browser") := rec (
@@ -94,7 +108,7 @@ elif ARCH_IS_MAC_OS_X() then
             return;
         end);
 
-  # html version using Mac OS X browser Safari
+  # html version using Mac OS X browser Firefox
   HELP_VIEWER_INFO.firefox := rec (
     type := "url", 
     show := function (url)
@@ -110,7 +124,7 @@ elif ARCH_IS_MAC_OS_X() then
         type := "pdf",
         show := function(file)
           local   page;
-          # unfortunately one cannot (yet?) give a start page to acroread
+          # unfortunately one cannot (yet?) give a start page to Preview.app
           # it is currently ignored
           page := 1;
           if IsRecord(file) then
@@ -161,8 +175,6 @@ elif ARCH_IS_MAC_OS_X() then
         type := "pdf",
         show := function(file)
             local   page;
-            # unfortunately one cannot (yet?) give a start page to acroread
-            # it is currently ignored
             page := 1;
             if IsRecord(file) then
                 if IsBound(file.page) then
@@ -294,31 +306,31 @@ local s,l,a,e,n,c;
     if l<>fail then
       e:=Length(l);
       if l[e]='\n' then
-	e:=e-1;
+        e:=e-1;
       fi;
       a:=1;
       while l[a]=' ' do
-	a:=a+1;
+        a:=a+1;
       od;
       if l{[a..a+6]}="Window " then
-	n:=l{[a+7..e-1]};
+        n:=l{[a+7..e-1]};
       elif l{[a..a+7]}="Command:" then
-	c:=l{[a+10..e]};
-	a:=PositionSublist(c,prog);
-	e:=Length(c);
-	# does the program name occur and is called on the right file?
-	if a<>fail and e>Length(bookf) 
-	   and c{[e-Length(bookf)+1..e]}=bookf then
-	  # now convert n in an integer
-	  e:=0;
-	  a:="0123456789abcdef";
-	  c:=3; # first two characters are 0x
-	  while c<=Length(n) do
-	    e:=e*16+Position(a,n[c])-1;
-	    c:=c+1;
-	  od;
-	  return e;
-	fi;
+        c:=l{[a+10..e]};
+        a:=PositionSublist(c,prog);
+        e:=Length(c);
+        # does the program name occur and is called on the right file?
+        if a<>fail and e>Length(bookf) 
+           and c{[e-Length(bookf)+1..e]}=bookf then
+          # now convert n in an integer
+          e:=0;
+          a:="0123456789abcdef";
+          c:=3; # first two characters are 0x
+          while c<=Length(n) do
+            e:=e*16+Position(a,n[c])-1;
+            c:=c+1;
+          od;
+          return e;
+        fi;
       fi;
     fi;
   od;
@@ -332,7 +344,7 @@ XRMTCMD:=false;
 ##  default options, can be adjusted in gap.ini file or by environment
 ##  variables
 ##  longer example:
-#GAPInfo.UserPreferences.XdviOptions:= " -geometry 739x577 -paper a4 -s 6 -fg \"#111111\" -bg \"#dddddd\" -margins 1cm -gamma 0.8";
+#SetUserPreference("XdviOptions", " -geometry 739x577 -paper a4 -s 6 -fg \"#111111\" -bg \"#dddddd\" -margins 1cm -gamma 0.8");
 
 HELP_VIEWER_INFO.xdvi := rec(
 type := "dvi",
@@ -355,7 +367,7 @@ show := function(file)
     wnum:=fail;
   fi;
   if wnum=fail or XRMTCMD=fail then
-    Exec(Concatenation("xdvi ", GAPInfo.UserPreferences.XdviOptions, " +",
+    Exec(Concatenation("xdvi ", UserPreference("XdviOptions"), " +",
             String(page), " ", file, " &"));
   else
     #Print("Window: ",wnum,"\n");
@@ -383,7 +395,7 @@ show := function(file)
     file := file.file;
   fi;
   Exec(Concatenation("xpdf -remote gap4 -raise ",
-                        GAPInfo.UserPreferences.XpdfOptions, 
+                        UserPreference("XpdfOptions"), 
                         " ", file, " ", page, " 2>/dev/null &"));
 end
 );
@@ -428,7 +440,7 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
   local   view,  i,  a;
 
   if Length(arg) = 0 then
-    return GAPInfo.UserPreferences.HelpViewers;
+    return UserPreference("HelpViewers");
   fi;
 
   view := List(arg, LowercaseString);
@@ -440,20 +452,20 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
       Info(InfoWarning, 2, 
       "Help viewer \"less\": interpreted as ",
       "viewer \"screen\" and setting:\n#I  ",
-      "GAPInfo.UserPreferences.Pager := \"less\";\n#I  ",
-      "GAPInfo.UserPreferences.PagerOptions:= ",
-      "[\"-f\",\"-r\",\"-a\",\"-i\",\"-M\",\"-j2\"];");
-      GAPInfo.UserPreferences.Pager := "less";
-      GAPInfo.UserPreferences.PagerOptions:= ["-f","-r","-a","-i","-M","-j2"];
+      "SetUserPreference(\"Pager\",\"less\");\n#I  ",
+      "SetUserPreference(\"PagerOptions\", ",
+      "[\"-f\",\"-r\",\"-a\",\"-i\",\"-M\",\"-j2\"]);");
+      SetUserPreference("Pager", "less");
+      SetUserPreference("PagerOptions", ["-f","-r","-a","-i","-M","-j2"]);
       view[i] := "screen";
     elif a = "more" then
       Info(InfoWarning, 2, 
       "Help viewer \"more\": interpreted as ",
       "viewer \"screen\" and setting:\n#I  ",
-      "GAPInfo.UserPreferences.Pager := \"more\";\n#I  ",
-      "GAPInfo.UserPreferences.PagerOptions := [];");
-      GAPInfo.UserPreferences.Pager := "more";
-      GAPInfo.UserPreferences.PagerOptions := [];
+      "SetUserPreferences(\"Pager\", \"more\");\n#I  ",
+      "SetUserPreference(\"PagerOptions\", []);");
+      SetUserPreference("Pager", "more");
+      SetUserPreference("PagerOptions",  []);
       view[i] := "screen";
     elif not IsBound(HELP_VIEWER_INFO.(a)) then
       Info(InfoWarning, 1, Concatenation(
@@ -464,14 +476,14 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
   if not "screen" in view then
     Add(view, "screen");
   fi;
-  GAPInfo.UserPreferences.HelpViewers := Filtered(view, a-> a<>fail);  
-  if Length( GAPInfo.UserPreferences.HelpViewers ) > 1 then
+  SetUserPreference("HelpViewers", Filtered(view, a-> a<>fail));  
+  if Length( UserPreference("HelpViewers") ) > 1 then
     Info( InfoWarning, 2, "Trying to use\n#I  ",
-          GAPInfo.UserPreferences.HelpViewers, 
+          UserPreference("HelpViewers"), 
           "\n#I  (in this order) as help viewer.");
   else
     Info(InfoWarning, 2, Concatenation(
-          "Using ", GAPInfo.UserPreferences.HelpViewers[1],
+          "Using ", UserPreference("HelpViewers")[1],
           " as help viewer."));
   fi;
 end);

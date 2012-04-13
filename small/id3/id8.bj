@@ -2,8 +2,6 @@
 ##
 #W  id8.bj                 GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id8_bj :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[8].next[2].next[10]:=
 rec(

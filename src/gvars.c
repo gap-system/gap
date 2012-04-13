@@ -2,7 +2,6 @@
 **
 *W  gvars.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -29,8 +28,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_gvars_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -39,9 +36,7 @@ const char * Revision_gvars_c =
 
 #include        "gap.h"                 /* error handling, initialisation  */
 
-#define INCLUDE_DECLARATION_PART
 #include        "gvars.h"               /* global variables                */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "calls.h"               /* generic call mechanism          */
 
@@ -238,9 +233,9 @@ void            AssGVar (
     /* assign name to a function                                           */
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
         name = NameGVar(gvar);
-        /*CCC        onam = NEW_STRING(SyStrlen(name));
-          SyStrncat( CSTR_STRING(onam), name, SyStrlen(name) ); CCC*/
-        len = SyStrlen(name);
+        /*CCC        onam = NEW_STRING(strlen(name));
+          SyStrncat( CSTR_STRING(onam), name, strlen(name) ); CCC*/
+        len = strlen(name);
         C_NEW_STRING(onam, len, name);
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
         NAME_FUNC(val) = onam;
@@ -339,7 +334,7 @@ UInt GVarName (
     /* First see whether it could be namespace-local: */
     cns = CSTR_STRING(CurrNamespace);
     if (*cns) {   /* only if a namespace is set */
-        len = SyStrlen(name);
+        len = strlen(name);
         if (name[len-1] == NSCHAR) {
             gvarbuf[0] = 0;
             if (len > 512) len = 512;
@@ -360,7 +355,7 @@ UInt GVarName (
 
     /* look through the table until we find a free slot or the global      */
     while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
-         && SyStrncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
+         && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
         pos = (pos % SizeGVars) + 1;
     }
 
@@ -372,9 +367,9 @@ UInt GVarName (
         SET_ELM_PLIST( TableGVars, pos, gvar );
         /*CCC        namx[0] = '\0';
         SyStrncat( namx, name, 1023 );
-        string = NEW_STRING( SyStrlen(namx) );
-        SyStrncat( CSTR_STRING(string), namx, SyStrlen(namx) );CCC*/
-        len = SyStrlen(name);
+        string = NEW_STRING( strlen(namx) );
+        SyStrncat( CSTR_STRING(string), namx, strlen(namx) );CCC*/
+        len = strlen(name);
         memcpy(namx, name, len+1);
         C_NEW_STRING(string, len, namx);
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
@@ -1258,8 +1253,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoGVars ( void )
 {
-    module.revision_c = Revision_gvars_c;
-    module.revision_h = Revision_gvars_h;
     FillInVersion( &module );
     return &module;
 }

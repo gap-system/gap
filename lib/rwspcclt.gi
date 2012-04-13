@@ -8,8 +8,6 @@
 ##
 ##  This file contains generic methods polycyclic rewriting systems.
 ##
-Revision.rwspcclt_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

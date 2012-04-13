@@ -3,8 +3,6 @@
 #W  sml640.d               GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml640_d :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 640 ][ 4 ] :=
 [ 317213626656419770340025942199241736195,

@@ -2,7 +2,6 @@
 ##
 #W  info.gi                     GAP library                      Steve Linton
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -27,8 +26,6 @@
 ##
 ##  This file is the implementation  part of that package
 ##
-Revision.info_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -59,7 +56,39 @@ if not IsBound(InfoData) then
     InfoData.CurrentLevels := [];
     InfoData.ClassNames := [];
     InfoData.Handler := [];
+    InfoData.Output := [];
 fi;
+
+InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
+  if IsBound(DefaultInfoOutput) then
+    MakeReadWriteGlobal("DefaultInfoOutput");
+  fi;
+  DefaultInfoOutput := out;
+  MakeReadOnlyGlobal("DefaultInfoOutput");
+end);
+
+InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
+  local cl, out, s;
+  cl := InfoData.LastClass![1];
+  if IsBound(InfoData.Output[cl]) then
+    out := InfoData.Output[cl];
+  else
+    out := DefaultInfoOutput;
+  fi;
+  if out = "*Print*" then
+    Print("#I  ");
+    for s in list do
+      Print(s);
+    od;
+    Print("\n");
+  else
+    AppendTo(out, "#I  ");
+    for s in list do
+      AppendTo(out, s);
+    od;
+    AppendTo(out, "\n");
+  fi;
+end);
 
 
 #############################################################################
@@ -121,6 +150,14 @@ end );
 ##
 InstallGlobalFunction( SetInfoHandler, function(class, handler)
   InfoData.Handler[class![1]] := handler;
+end);
+
+#############################################################################
+##
+#F  SetInfoOutput( <class>, <handler> )
+##
+InstallGlobalFunction( SetInfoOutput, function(class, out)
+  InfoData.Output[class![1]] := out;
 end);
 
 #############################################################################
@@ -276,14 +313,13 @@ end );
 ##
 
 BIND_GLOBAL( "InfoDoPrint", function(arglist)
+    local fun;
     if IsBound(InfoData.Handler[InfoData.LastClass![1]]) then
-      InfoData.Handler[InfoData.LastClass![1]](InfoData.LastClass,
-                       InfoData.LastLevel, arglist);
+      fun := InfoData.Handler[InfoData.LastClass![1]];
     else
-      Print("#I  ");
-      CallFuncList(Print, arglist);
-      Print("\n");
+      fun := DefaultInfoHandler;
     fi;
+    fun(InfoData.LastClass, InfoData.LastLevel, arglist);
 end );
 
 

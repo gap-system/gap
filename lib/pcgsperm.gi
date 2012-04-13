@@ -2,7 +2,6 @@
 ##
 #W  pcgsperm.gi                 GAP library                    Heiko Theißen
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file  contains    functions which deal with   polycyclic  generating
 ##  systems of solvable permutation groups.
 ##
-Revision.pcgsperm_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

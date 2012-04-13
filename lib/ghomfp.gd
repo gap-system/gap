@@ -5,8 +5,6 @@
 #Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.ghomfp_gd :=
-    "@(#)$Id$";
 
 ############################################################################
 ##
@@ -66,9 +64,8 @@ DeclareSynonym("IsFromFpGroupHomomorphismByImages",
 ##   Type='Representation'/>
 ##
 ##  <Description>
-##  is the representation of mappings from an fp group that give images of
-##  the standard generators. Note that this does not imply that the map has
-##  to be total, it could be defined on a proper subgroup.
+##  is the representation of total mappings from an fp group that give images of
+##  the standard generators.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

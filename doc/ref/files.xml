@@ -67,10 +67,44 @@ should only be used as an informational message for the user.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="GAP Root Directory">
-<Heading>GAP Root Directory</Heading>
+<Section Label="GAP Root Directories">
+<Heading>GAP Root Directories</Heading>
+<Index Key="GAPInfo.RootPaths"><C>GAPInfo.RootPaths</C></Index>
+
+When &GAP; is started it determines a list of directories which we
+call the <E>&GAP; root directories</E>. In a running &GAP; session  
+this list can be found in <C>GAPInfo.RootPaths</C>.
+<P/>
+The core part of &GAP; knows which files to read relative to its root 
+directories. For example when &GAP; wants to read its library file 
+<F>lib/group.gd</F>, it appends this path to each path in 
+<C>GAPInfo.RootPaths</C> until it finds the path of an existing file.
+The first file found this way is read.
+<P/>
+Furthermore, &GAP; looks for available packages by examining the
+subdirectories <F>pkg/</F> in each of the directories in 
+<C>GAPInfo.RootPaths</C>.
+<P/>
+The root directories are specified via one or several of the 
+<C>-l paths</C> command line options, see <Ref Sect="Command Line Options"/>.
+Furthermore, by default &GAP; automatically prepends a user specific &GAP; root
+directory to the list; this can be avoided by calling &GAP; with 
+the <C>-r</C>  option. The name of this user specific directory depends
+on your operating system, it can be found in <C>GAPInfo.UserGapRoot</C>.
+This directory can be used to tell &GAP; about personal preferences,
+to always load some additional code, to install additional packages,
+or to overwrite some &GAP; files. See <Ref Sect="sect:gap.ini"/>
+for more information how to do this.
+<P/>
+
+<!--
+  FL: An example how to overwrite the library file lib/files.gd doesn't
+      look useful for me. We should not encourage users to make use
+      of this possibility. That it can be done in principle as described below
+      is also clear from the shorter description above.
 
 <Index Key=".gap directory"><F>.gap</F> directory</Index>
+
 
 When starting &GAP; it is possible to specify various directories as
 root directories.  In &GAP;'s view of the world these directories are
@@ -145,6 +179,7 @@ This setup also allows one to easily install new &GAP; packages or bugfixes
 even if no write access to the system &GAP; installation is possible.
 Simply unpack the files into your <F>.gap</F> directory
 or into <F>/home/myhome/gap</F>, respectively.
+-->
 
 </Section>
 
@@ -153,6 +188,7 @@ or into <F>/home/myhome/gap</F>, respectively.
 <Section Label="Directories">
 <Heading>Directories</Heading>
 
+<#Include Label="IsDirectory">
 <#Include Label="Directory">
 <#Include Label="DirectoryTemporary">
 <#Include Label="DirectoryCurrent">
@@ -225,9 +261,9 @@ returns <K>true</K> if a file with the filename <A>name-file</A> exists
 and can be seen by the &GAP; process. Otherwise <K>false</K> is returned.
 <P/>
 <Example><![CDATA[
-gap> IsExistingFile( "/bin/date" );     # the file `/bin/date' exists
+gap> IsExistingFile( "/bin/date" );     # file `/bin/date' exists
 true
-gap> IsExistingFile( "/bin/date.new" ); # the file `/bin/date.new' does not exist
+gap> IsExistingFile( "/bin/date.new" ); # non existing `/bin/date.new'
 false
 gap> IsExistingFile( "/bin/date/new" ); # `/bin/date' is not a directory
 false
@@ -248,9 +284,9 @@ returns <K>true</K> if a file with the filename <A>name-file</A> exists
 or <K>false</K> if this is not the case.
 <P/>
 <Example><![CDATA[
-gap> IsReadableFile( "/bin/date" );     # the file `/bin/date' is readable
+gap> IsReadableFile( "/bin/date" );     # file `/bin/date' is readable
 true
-gap> IsReadableFile( "/bin/date.new" ); # the file `/bin/date.new' does not exist
+gap> IsReadableFile( "/bin/date.new" ); # non-existing `/bin/date.new'
 false
 gap> LastSystemError().message;        
 "No such file or directory"
@@ -269,7 +305,7 @@ returns <K>true</K> if a file with the filename <A>name-file</A> exists
 or <K>false</K> if this is not the case.
 <P/>
 <Example><![CDATA[
-gap> IsWritableFile( "/bin/date" );     # the file `/bin/date' is not writable ...
+gap> IsWritableFile( "/bin/date" );  # file `/bin/date' is not writable
 false
 ]]></Example>
 <P/>

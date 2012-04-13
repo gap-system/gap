@@ -2,15 +2,12 @@
 ##
 #W  ringsc.gd                   GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
 ##  This file contains declarations for elements of rings, given as Z-modules
 ##  with structure constants for multiplication. Is is based on algsc.gd
 ##
-Revision.ringsc_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

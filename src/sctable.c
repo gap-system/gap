@@ -2,7 +2,6 @@
 **
 *W  sctable.c                   GAP source                     Marcel Roelofs
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,        CWI,        Amsterdam,        The Netherlands
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -39,8 +38,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_sctable_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -60,9 +57,7 @@ const char * Revision_sctable_c =
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "sctable.h"             /* structure constant table        */
-#undef  INCLUDE_DECLARATION_PART
 
 
 /****************************************************************************
@@ -441,8 +436,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoSCTable ( void )
 {
-    module.revision_c = Revision_sctable_c;
-    module.revision_h = Revision_sctable_h;
     FillInVersion( &module );
     return &module;
 }

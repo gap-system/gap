@@ -2,7 +2,6 @@
 **
 *W  range.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -52,8 +51,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_range_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -75,9 +72,7 @@ const char * Revision_range_c =
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#define INCLUDE_DECLARATION_PART
 #include        "range.h"               /* ranges                          */
-#undef  INCLUDE_DECLARATION_PART
 #include        "string.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */
@@ -1794,8 +1789,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoRange ( void )
 {
-    module.revision_c = Revision_range_c;
-    module.revision_h = Revision_range_h;
     FillInVersion( &module );
     return &module;
 }

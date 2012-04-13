@@ -3,8 +3,6 @@
 #W  sml1875.z              GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1875_z :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1875 ].pnil := rec( syl :=
 [ 2, 11, 12, 14, 15, 15 ], oper :=

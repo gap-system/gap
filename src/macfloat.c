@@ -2,7 +2,6 @@
 **
 *W  macfloat.c                   GAP source                      Steve Linton
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_macfloat_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -27,9 +24,7 @@ const char * Revision_macfloat_c =
 #include        "ariths.h"              /* basic arithmetic                */
 #include        "integer.h"             /* basic arithmetic                */
 
-#define INCLUDE_DECLARATION_PART
 #include        "macfloat.h"                /* macfloateans                        */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "bool.h"
 #include        "scanner.h"
@@ -51,9 +46,6 @@ extern void SaveDouble( Double d);
 
 #include <stdlib.h>
 
-#define VAL_MACFLOAT(obj) (*(Double *)ADDR_OBJ(obj))
-#define SET_VAL_MACFLOAT(obj, val) (*(Double *)ADDR_OBJ(obj) = val)
-#define IS_MACFLOAT(obj) (TNUM_OBJ(obj) == T_MACFLOAT)
 #define SIZE_MACFLOAT   sizeof(Double)
 
 /****************************************************************************
@@ -168,7 +160,7 @@ void LoadMacfloat( Obj obj )
   SET_VAL_MACFLOAT(obj, LoadDouble());
 }
 
-static inline Obj NEW_MACFLOAT( Double val )
+Obj NEW_MACFLOAT( Double val )
 {
   Obj f;
   f = NewBag(T_MACFLOAT,SIZE_MACFLOAT);
@@ -447,7 +439,7 @@ Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj prec, Obj f)
   Obj str;
   UInt len;
   sprintf(buf, "%.*" PRINTFFORMAT, (int)INT_INTOBJ(prec), (TOPRINTFFORMAT)VAL_MACFLOAT(f));
-  len = SyStrlen(buf);
+  len = strlen(buf);
   str = NEW_STRING(len);
   SyStrncat(CSTR_STRING(str),buf,len);
   return str;
@@ -677,8 +669,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoMacfloat ( void )
 {
-    module.revision_c = Revision_macfloat_c;
-    module.revision_h = Revision_macfloat_h;
     FillInVersion( &module );
     return &module;
 }

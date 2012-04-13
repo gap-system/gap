@@ -4,7 +4,6 @@
 #W                                                             & Frank Celler
 #W                                                         & Martin Schönert
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  This file deals with filters. Some speed-critical functions are in 
 ##  filter1.g, which is compiled
 ##
-Revision.filter_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

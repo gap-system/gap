@@ -2,14 +2,11 @@
 ##
 #W  ctblmoli.gd                 GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.ctblmoli_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -162,18 +159,18 @@ DeclareGlobalFunction( "MolienSeriesWithGivenDenominator" );
 ##  gap> HasMolienSeriesInfo( mol );
 ##  true
 ##  gap> MolienSeriesInfo( mol );
-##  rec( degree := 3,
-##    denom := x_1^12-2*x_1^10-x_1^9+x_1^8+x_1^7+x_1^5+x_1^4-x_1^3-2*x_1^2+1,
-##    denominfo := [ 5, 1, 3, 1, 2, 2 ],
-##    denomstring := "(1-z^5)*(1-z^3)*(1-z^2)^2",
-##    numer := -x_1^9+x_1^7+x_1^6-x_1^3-x_1^2+1,
-##    numerstring := "1-z^2-z^3+z^6+z^7-z^9",
+##  rec( degree := 3, 
+##    denom := x_1^12-2*x_1^10-x_1^9+x_1^8+x_1^7+x_1^5+x_1^4-x_1^3-2*x_1^2\
+##  +1, denominfo := [ 5, 1, 3, 1, 2, 2 ], 
+##    denomstring := "(1-z^5)*(1-z^3)*(1-z^2)^2", 
+##    numer := -x_1^9+x_1^7+x_1^6-x_1^3-x_1^2+1, 
+##    numerstring := "1-z^2-z^3+z^6+z^7-z^9", 
 ##    ratfun := ( 1-z^2-z^3+z^6+z^7-z^9 ) / ( (1-z^5)*(1-z^3)*(1-z^2)^2 ),
-##    size := 60,
-##    summands := [ rec( k := 1, numer := [ -24, -12, -24 ], r := 5 ),
-##        rec( k := 1, numer := [ -20 ], r := 3 ),
-##        rec( k := 2, numer := [ -45/4, 75/4, -15/4, -15/4 ], r := 2 ),
-##        rec( k := 3, numer := [ -1 ], r := 1 ),
+##    size := 60, 
+##    summands := [ rec( k := 1, numer := [ -24, -12, -24 ], r := 5 ), 
+##        rec( k := 1, numer := [ -20 ], r := 3 ), 
+##        rec( k := 2, numer := [ -45/4, 75/4, -15/4, -15/4 ], r := 2 ), 
+##        rec( k := 3, numer := [ -1 ], r := 1 ), 
 ##        rec( k := 1, numer := [ -15/4 ], r := 1 ) ] )
 ##  ]]></Example>
 ##  </Description>

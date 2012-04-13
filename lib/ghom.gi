@@ -13,8 +13,6 @@
 ##  3. Functions for conjugation action
 ##  4. Functions for ...
 ##
-Revision.ghom_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -45,21 +43,21 @@ InstallGlobalFunction( GroupHomomorphismByImages,
 
     if Length(Ggens)>0 then
       if not (IsDenseList(Ggens) and IsHomogeneousList(Ggens) and
-	FamilyObj(Ggens)=FamilyObj(G)) then
+        FamilyObj(Ggens)=FamilyObj(G)) then
         Error("The generators do not all belong to the source");
       fi;
     fi;
 
     if Length(Hgens)>0 then
       if not (IsDenseList(Hgens) and IsHomogeneousList(Hgens) and
-	FamilyObj(Hgens)=FamilyObj(H)) then
+        FamilyObj(Hgens)=FamilyObj(H)) then
         Error("The images do not all belong to the range");
       fi;
     fi;
 
     hom:= GroupGeneralMappingByImages( G, H, Ggens, Hgens );
 
-    if IsMapping( hom ) and IsTotal( hom ) then
+    if IsMapping( hom ) then
       return GroupHomomorphismByImagesNC( G, H, Ggens, Hgens );
     else
       return fail;
@@ -120,7 +118,7 @@ InstallMethod(RestrictedMapping,"injective case: use GeneralRestrictedMapping",
 function(hom,U)
 
   if IsGroupGeneralMappingByImages(hom) then # restrictions of GHBI should be GHBI
-	TryNextMethod();
+        TryNextMethod();
   fi;
   
   return GeneralRestrictedMapping (hom, U, Range(hom));
@@ -197,7 +195,8 @@ end);
 ##    homomorphism by images.)
 ##
 ##  (If both general mappings know that they are in fact homomorphisms
-##  then also the result will be constructed as a homomorphism.)
+##  then also the result will be a homomorphism; this is not done
+##  here, however, but rather in function CompositionMapping.)
 ##
 InstallMethod( CompositionMapping2,
     "for gp. hom. and gp. gen. mapp., using `MappingGeneratorsImages'",
@@ -213,8 +212,8 @@ local mapi;
   fi;
   mapi:=MappingGeneratorsImages(hom2);
   return GroupGeneralMappingByImages( Source( hom2 ), Range( hom1 ),
-	    mapi[1], List( mapi[2], img ->
-	    ImagesRepresentative( hom1, img ) ) );
+            mapi[1], List( mapi[2], img ->
+            ImagesRepresentative( hom1, img ) ) );
 end);
 
 
@@ -290,7 +289,7 @@ InstallAttributeMethodByGroupGeneralMappingByImages( IsSurjective, IsBool );
 InstallMethod( GroupGeneralMappingByImages, "for group, group, list, list",
     true, [ IsGroup, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
-local   filter,  hom,pcgs,imgso,mapi,l,obj_args;
+local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
   
   hom := rec();
   # generators := Immutable( gens ),
@@ -313,13 +312,13 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args;
   pcgs:=false; # default: no pc groups code
   if IsPcGroup( G ) and IsPrimeOrdersPcgs(Pcgs(G))  then
     filter := filter and IsPcGroupGeneralMappingByImages;
-    pcgs  := CanonicalPcgsByGeneratorsWithImages( Pcgs(G), gens, imgs );
+    pcgs  := CanonicalPcgsByGeneratorsWithImages( Pcgs(G), mapi[1], mapi[2] );
     if pcgs[1]=Pcgs(G) then
       filter:=filter and IsTotal;
     fi;
   elif IsPcgs( gens )  then
     filter := filter and IsGroupGeneralMappingByPcgs;
-    pcgs:=[gens,imgs];
+    pcgs:=mapi;
   fi;
 
   if pcgs<>false then
@@ -335,12 +334,20 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args;
   # standard generators?
   # (So we can used MappedWord for mapping)?
   if IsSubgroupFpGroup(G) then
-    l:=List(GeneratorsOfGroup(G),UnderlyingElement);
     if HasIsWholeFamily(G) and IsWholeFamily(G) 
-      and IsSubset(l,List(gens,UnderlyingElement)) 
-      and IsSubset(FreeGeneratorsOfFpGroup(G),List(gens,UnderlyingElement)) then
-      filter := filter and IsFromFpGroupStdGensGeneralMappingByImages;
-      hom.genpositions:=List(gens,i->Position(l,UnderlyingElement(i)));
+      # total on free generators
+      and Set(FreeGeneratorsOfFpGroup(G))=Set(List(gens,UnderlyingElement))
+      then
+        l:=List(gens,UnderlyingElement);
+        p:=List(l,i->Position(FreeGeneratorsOfFpGroup(G),i));
+        # test for duplicate generators, same images
+        if Length(gens)=Length(FreeGeneratorsOfFpGroup(G)) or
+          ForAll([1..Length(gens)],x->imgs[x]=imgs[Position(l,l[x])]) then
+          filter := filter and IsFromFpGroupStdGensGeneralMappingByImages;
+          hom.genpositions:=p;
+        else
+          filter := filter and IsFromFpGroupGeneralMappingByImages;
+        fi;
     else
       filter := filter and IsFromFpGroupGeneralMappingByImages;
     fi;
@@ -349,7 +356,9 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args;
       filter := filter and IsToFpGroupGeneralMappingByImages;
   fi;
 
-  obj_args := [ hom, ,
+  obj_args := [
+    hom,
+    , # Here the type will be inserted
     Source, G,
     Range, H,
     MappingGeneratorsImages, mapi ];
@@ -367,8 +376,10 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args;
   elif pcgs <> false then
     # The following code is only guaranteed to be correct if the map is
     # single valued.
-    #imgso:=SubgroupNC( H, pcgs[2]);
-    #Append(obj_args, [ImagesSource, imgso]);
+    #if RankFilter(filter) = RankFilter(filter and IsSingleValued) then
+    #  imgso:=SubgroupNC( H, pcgs[2]);
+    #  Append(obj_args, [ImagesSource, imgso]);
+    #fi;
   fi;
 
   obj_args[2] := 
@@ -510,7 +521,7 @@ InstallMethod( \=,
     fi;
     for i  in [ 1 .. Length( mapi[1] ) ]  do
         if ImagesRepresentative( hom2, mapi[1][i] ) <> mapi[2][ i ]  then
-	  return false;
+          return false;
         fi;
     od;
     return true;
@@ -603,7 +614,7 @@ function( hom )
 local mapi;
   mapi:=MappingGeneratorsImages(hom);
   mapi:=GroupGeneralMappingByImages( Range( hom ),   Source( hom ),
-				      mapi[2], mapi[1] );
+                                      mapi[2], mapi[1] );
   if HasIsSurjective(hom) then
     SetIsTotal(mapi,IsSurjective(hom));
   fi;
@@ -626,7 +637,7 @@ function( hom )
 local mapi;
   mapi:=MappingGeneratorsImages(hom);
   mapi:=GroupHomomorphismByImagesNC( Range( hom ),   Source( hom ),
-				      mapi[2], mapi[1] );
+                                      mapi[2], mapi[1] );
   SetIsBijective( mapi, true );
   return mapi;
 end );
@@ -639,11 +650,11 @@ end );
 InstallGlobalFunction( MakeMapping, function( hom )
     local   elms,       # elements of subgroup of '<hom>.source'
             elmr,       # representatives of <elms> in '<hom>.elements'
-	    homelms,homimgs, # intermediate storage
+            homelms,homimgs, # intermediate storage
             imgs,       # elements of subgroup of '<hom>.range'
             imgr,       # representatives of <imgs> in '<hom>.images'
             rep,        # one new element of <elmr> or <imgr>
-	    mapi,	# generators and images
+            mapi,       # generators and images
             i, j, k;    # loop variables
 
     if HasIsFinite(Source(hom)) and not IsFinite(Source(hom)) then
@@ -654,7 +665,7 @@ InstallGlobalFunction( MakeMapping, function( hom )
 
         homelms := [ One( Source( hom ) ) ];
         homimgs   := [ One( Range ( hom ) ) ];
-	mapi:=MappingGeneratorsImages(hom);
+        mapi:=MappingGeneratorsImages(hom);
         for i  in [ 1 .. Length( mapi[1] ) ]  do
             elms := ShallowCopy( homelms );
             elmr := [ One( Source( hom ) ) ];
@@ -678,8 +689,8 @@ InstallGlobalFunction( MakeMapping, function( hom )
             IsSSortedList( homelms );  # give a hint that this is a set
 #T MakeImmutable!
         od;
-	hom!.elements:=homelms;
-	hom!.images:=homimgs;
+        hom!.elements:=homelms;
+        hom!.images:=homimgs;
     fi;
 end );
 
@@ -692,7 +703,7 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping, "for GHBI", true,
     function( hom )
     local   C,          # co kernel of <hom>, result
             gen,        # one generator of <C>
-	    mapi,	# generators/images
+            mapi,       # generators/images
             i, k;       # loop variables
 
     # make sure we have the mapping
@@ -712,7 +723,7 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping, "for GHBI", true,
             gen := hom!.images[i] * mapi[2][k]
                  / hom!.images[ Position( hom!.elements,
                                          hom!.elements[i]*mapi[1][k])];
-	    #NC is safe
+            #NC is safe
             C := ClosureSubgroupNC( C, gen );
 
         od;
@@ -756,14 +767,14 @@ local   p,mapi;
     if Length(mapi[1])>0 then
       if CanEasilyCompareElements(mapi[1][1]) then
         p:=Position(mapi[1],elm);
-	if p<>fail then 
-	  return mapi[2][p];
-	fi;
+        if p<>fail then 
+          return mapi[2][p];
+        fi;
       else
         p:=PositionProperty(mapi[1],i->IsIdenticalObj(i,elm));
-	if p<>fail then 
-	  return mapi[2][p];
-	fi;
+        if p<>fail then 
+          return mapi[2][p];
+        fi;
       fi;
     fi;
 
@@ -840,8 +851,8 @@ function( hom )
 local mapi;
   mapi:=MappingGeneratorsImages(hom);
   Print( "GroupGeneralMappingByImages( ",
-	  Source( hom ), ", ", Range(  hom ), ", ",
-	  mapi[1], ", ", mapi[2], " )" );
+          Source( hom ), ", ", Range(  hom ), ", ",
+          mapi[1], ", ", mapi[2], " )" );
 end );
 
 InstallMethod( PrintObj, "for GHBI", true,
@@ -850,8 +861,8 @@ function( hom )
 local mapi;
   mapi:=MappingGeneratorsImages(hom);
   Print( "GroupHomomorphismByImages( ",
-	  Source( hom ), ", ", Range(  hom ), ", ",
-	  mapi[1], ", ", mapi[2], " )" );
+          Source( hom ), ", ", Range(  hom ), ", ",
+          mapi[1], ", ", mapi[2], " )" );
 end );
 
 
@@ -934,12 +945,12 @@ local rep;
        and IsNormal( Group( g ), G ) then
       # ensure that g is chosen in G if possible
       if not g in G then
-	rep:=RepresentativeAction(G,GeneratorsOfGroup(G),
+        rep:=RepresentativeAction(G,GeneratorsOfGroup(G),
                List(GeneratorsOfGroup(G),x->x^g),OnTuples);
         if rep<>fail then
-	  Info(InfoPerformance,2,"changed conjugator to make it inner");
-	  g:=rep;
-	fi;
+          Info(InfoPerformance,2,"changed conjugator to make it inner");
+          g:=rep;
+        fi;
       fi;
       return ConjugatorAutomorphismNC( G, g );
     else
@@ -1248,12 +1259,12 @@ InstallMethod( IsInnerAutomorphism,
       return rep in s;
     else
       rep:= RepresentativeAction( s, gens, 
-		List( gens, i -> ImagesRepresentative( hom, i ) ), OnTuples );
+                List( gens, i -> ImagesRepresentative( hom, i ) ), OnTuples );
       if rep <> fail then
-	SetConjugatorOfConjugatorIsomorphism( hom, rep );
-	return true;
+        SetConjugatorOfConjugatorIsomorphism( hom, rep );
+        return true;
       else
-	return false;
+        return false;
       fi;
     fi;
     end );
@@ -1378,7 +1389,7 @@ InstallMethod( IsomorphismPermGroup,
 #M  IsomorphismPermGroup( <G> ) . . . . . . . . . for finite nilpotent groups
 ##
 InstallMethod( IsomorphismPermGroup, "for finite nilpotent groups", true,
-		[ IsNilpotentGroup and IsFinite and KnowsHowToDecompose ], 0,
+                [ IsNilpotentGroup and IsFinite and KnowsHowToDecompose ], 0,
 function ( G )
   local S, isoS, gens, imgs, H, i, phi, g, nice;
 
@@ -1455,15 +1466,15 @@ local map,type,prefun;
     # no inverse function given
     if Length(arg) in [3,5]  then
       type:=IsSPMappingByFunctionRep and IsSingleValued and IsTotal 
-	     and IsGroupHomomorphism;
+             and IsGroupHomomorphism;
 
       if Length(arg)=5 and IsFunction(arg[5]) then
-	prefun:=arg[5];
+        prefun:=arg[5];
       else
-	prefun:=fail;
-	if IsPermGroup(arg[2]) or IsPcGroup(arg[2]) then
-	  type:=type and IsPreimagesByAsGroupGeneralMappingByImages;
-	fi;
+        prefun:=fail;
+        if IsPermGroup(arg[2]) or IsPcGroup(arg[2]) then
+          type:=type and IsPreimagesByAsGroupGeneralMappingByImages;
+        fi;
       fi;
 
       # make the general mapping
@@ -1484,10 +1495,10 @@ local map,type,prefun;
         ElementsFamily(FamilyObj(arg[2]))),
                                IsSPMappingByFunctionWithInverseRep
                            and IsBijective
-			   and IsGroupHomomorphism),
+                           and IsGroupHomomorphism),
                        rec( fun    := arg[3],
                             invFun := arg[4],
-			    prefun := arg[4]) );
+                            prefun := arg[4]) );
 
     # otherwise signal an error
     else

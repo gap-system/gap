@@ -2,7 +2,6 @@
 ##
 #W  vspc.gd                     GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -13,8 +12,6 @@
 ##  The operations for bases of free left modules can be found in the file
 ##  <F>lib/basis.gd<F>.
 ##
-Revision.vspc_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -71,9 +68,6 @@ DeclareSynonym( "IsLeftOperatorRingWithOne",
 ##  this action and the addition in <A>V</A> are left and right distributive.
 ##  The division ring <M>F</M> can be accessed as value of the attribute
 ##  <Ref Func="LeftActingDomain"/>.
-##  <P/>
-##  The characteristic (see&nbsp;<Ref Func="Characteristic"/>) of a vector
-##  space is equal to the characteristic of its left acting domain.
 ##  <P/>
 ##  Vector spaces in &GAP; are always <E>left</E> vector spaces,
 ##  <Ref Filt="IsLeftVectorSpace"/> and <Ref Filt="IsVectorSpace"/> are

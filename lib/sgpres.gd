@@ -2,7 +2,6 @@
 ##
 #W  sgpres.gd                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
 ##
-Revision.sgpres_gd :=
-    "@(#)$Id$";
 
 
 ############################################################################
@@ -43,9 +40,9 @@ Revision.sgpres_gd :=
 ##  <free group on the generators [ x1, x2, x3, x4, x5 ]>
 ##  gap> x1 := F.1;; x2 := F.2;; x3 := F.3;; x4 := F.4;; x5 := F.5;;
 ##  gap> rels := [ x1^2, x2^2, x3^2, x4^2, x5^2,
-##  >  ( x1 * x3 )^2, ( x2 * x4 )^2, ( x1 * x2 )^3, ( x2 * x3 )^3, ( x3 * x4 )^3,
-##  >  ( x4 * x1 )^3, ( x1 * x5 )^3, ( x2 * x5 )^2, ( x3 * x5 )^3, ( x4 * x5 )^2,
-##  >  ( x1 * x2 * x3 * x4 * x3 * x2 )^2 ];;
+##  >  (x1 * x3)^2, (x2 * x4)^2, (x1 * x2)^3, (x2 * x3)^3, (x3 * x4)^3,
+##  >  (x4 * x1)^3, (x1 * x5)^3, (x2 * x5)^2, (x3 * x5)^3, (x4 * x5)^2,
+##  >  (x1 * x2 * x3 * x4 * x3 * x2)^2 ];;
 ##  gap> E1 := F / rels;
 ##  <fp group on the generators [ x1, x2, x3, x4, x5 ]>
 ##  gap> x1 := E1.1;; x2 := E1.2;; x3 := E1.3;; x4 := E1.4;; x5 := E1.5;;
@@ -60,7 +57,8 @@ Revision.sgpres_gd :=
 ##  gap> SimplifyPresentation( P );
 ##  #I  there are 8 generators and 30 relators of total length 148
 ##  gap> B1 := FpGroupPresentation( P );
-##  <fp group on the generators [ _x1, _x2, _x3, _x4, _x6, _x7, _x8, _x11 ]>
+##  <fp group on the generators [ _x1, _x2, _x3, _x4, _x6, _x7, _x8, _x11 
+##   ]>
 ##  gap> # Compute normal subgroup generators for B1'.
 ##  gap> gens := GeneratorsOfGroup( B1 );;
 ##  gap> numgens := Length( gens );;

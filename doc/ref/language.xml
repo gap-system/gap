@@ -249,17 +249,30 @@ and <K>else</K> and <C>a</C> must be separated.
 <Section Label="Keywords">
 <Heading>Keywords</Heading>
 
+<Index Key="GAPInfo.Keywords"><C>GAPInfo.Keywords</C></Index>
+
 <E>Keywords</E> are reserved words that are used to denote special operations
-or are part of statements. They must not be used as identifiers. The
-keywords are
+or are part of statements. They must not be used as identifiers. The list of
+keywords is contained in the <C>GAPInfo.Keywords</C> component of the
+<C>GAPInfo</C> record (see <Ref Sect="GAPInfo"/>). We will show how to print
+it in a nice table, demonstrating at the same time some list manipulation
+techniques:
 <P/>
-<Listing><![CDATA[
-and     do       elif   else    end     fi
-for     function if     in      local   mod
-not     od       or     repeat  return  then
-until   while    quit   QUIT    break   rec 
-continue
-]]></Listing>
+<Example><![CDATA[
+gap> keys:=SortedList( GAPInfo.Keywords );; l:=Length( keys );;
+gap> arr:= List( [ 0 .. Int( l/4 )-1 ], i-> keys{ 4*i + [ 1 .. 4 ] } );;
+gap> if l mod 4 <> 0 then Add( arr, keys{[ 4*Int(l/4) + 1 .. l ]} ); fi;
+gap> Length( keys ); PrintArray( arr );
+32
+[ [         Assert,           Info,        IsBound,           QUIT ],
+  [  TryNextMethod,         Unbind,            and,          break ],
+  [       continue,             do,           elif,           else ],
+  [            end,          false,             fi,            for ],
+  [       function,             if,             in,          local ],
+  [            mod,            not,             od,             or ],
+  [           quit,            rec,         repeat,         return ],
+  [           then,           true,          until,          while ] ]
+]]></Example>
 <P/>
 Note that (almost) all keywords are written in lowercase and that they
 are case sensitive.
@@ -268,18 +281,17 @@ and so forth are ordinary identifiers.
 Keywords must not contain whitespace, for example <C>el if</C> is not the
 same as <K>elif</K>.
 <P/>
-<E>Note</E>:
-A number of tokens that appear to be normal identifiers
-representing functions or literals of various kinds are actually
-implemented as keywords for technical reasons. The only consequence of
-this is that those identifiers cannot be re-assigned, and do not
-actually have function objects bound to them, which could be assigned
-to other variables or passed to functions. These keywords are:
-<P/>
-<Listing><![CDATA[
-false 	true	IsBound	Unbind	TryNextMethod	
-Info	Assert	SaveWorkspace   fail
-]]></Listing>
+<E>Note</E>: 
+Several tokens from the list of keywords above may appear to be normal 
+identifiers representing functions or literals of various kinds but are 
+actually implemented as keywords for technical reasons. The only 
+consequence of this is that those identifiers cannot be re-assigned, and 
+do not actually have function objects bound to them, which could be 
+assigned to other variables or passed to functions. These keywords are
+<K>true</K>, <K>false</K>, <Ref Func="Assert"/>, 
+<Ref Func="IsBound" Label="for a global variable"/>,
+<Ref Func="Unbind" Label="unbind a variable"/>, 
+<Ref Func="Info"/> and <Ref Func="TryNextMethod"/>.
 
 </Section>
 
@@ -728,7 +740,7 @@ same package it is still possible to access the same global variable
 via <C>a@xYz</C> explicitly.
 <P/>
 All other code outside the package as well as interactive user input
-that wants to refer to that variable <C>a@xYz</C> must do so explictly
+that wants to refer to that variable <C>a@xYz</C> must do so explicitly
 by using <C>a@xYz</C>.
 <P/>
 Since in earlier releases of &GAP; the <Q>at</Q>-character <C>@</C>

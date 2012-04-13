@@ -73,6 +73,8 @@ ReadLib( "attr.gi"     );
 
 ReadLib( "string.gd"   );
 
+ReadLib( "userpref.g"  );
+
 ReadLib( "cmdledit.g"  );
 
 ReadLib( "error.g"   );

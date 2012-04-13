@@ -2,7 +2,6 @@
 **
 *W  gasman.c                    GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -114,13 +113,9 @@
 #include        <string.h>
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_gasman_c =
-   "@(#)$Id$";
 
 
-#define INCLUDE_DECLARATION_PART
 #include        "gasman.h"              /* garbage collector               */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
@@ -712,7 +707,7 @@ void InitGlobalBag (
       UInt i;
       if (cookie != (Char *)0)
         for (i = 0; i < GlobalBags.nr; i++)
-          if ( 0 == SyStrcmp(GlobalBags.cookie[i], cookie) )
+          if ( 0 == strcmp(GlobalBags.cookie[i], cookie) )
             if (GlobalBags.addr[i] == addr)
               Pr("Duplicate global bag entry %s\n", (Int)cookie, 0L);
             else
@@ -745,7 +740,7 @@ static Int IsLessGlobal (
     return -1;
   if (cookie2 == 0L)
     return 1;
-  return SyStrcmp(cookie1, cookie2) < 0;
+  return strcmp(cookie1, cookie2) < 0;
 }
 
 
@@ -803,7 +798,7 @@ Bag * GlobalByCookie(
     {
       for (i = 0; i < GlobalBags.nr; i++)
         {
-          if (SyStrcmp(cookie, GlobalBags.cookie[i]) == 0)
+          if (strcmp(cookie, GlobalBags.cookie[i]) == 0)
             return GlobalBags.addr[i];
         }
       return (Bag *)0L;
@@ -814,7 +809,7 @@ Bag * GlobalByCookie(
       bottom = 0;
       while (top >= bottom) {
         middle = (top + bottom)/2;
-        res = SyStrcmp(cookie,GlobalBags.cookie[middle]);
+        res = strcmp(cookie,GlobalBags.cookie[middle]);
         if (res < 0)
           top = middle-1;
         else if (res > 0)
@@ -1197,8 +1192,10 @@ void            RetypeBag (
     /* update the statistics      */
     {
           UInt                old_type;       /* old type of the bag */
+	  UInt                size;
 
           old_type = TNUM_BAG(bag);
+	  size = SIZE_BAG(bag);
           InfoBags[old_type].nrLive   -= 1;
           InfoBags[new_type].nrLive   += 1;
           InfoBags[old_type].nrAll    -= 1;
@@ -1683,7 +1680,7 @@ void SparcStackFuncBags( void )
 #endif
 
 
-void GenStackFuncBags ()
+void GenStackFuncBags ( void )
 {
     Bag *               top;            /* top of stack                    */
     Bag *               p;              /* loop variable                   */
@@ -2256,7 +2253,7 @@ again:
           Bag *mptr = (Bag *)*p;
           if ( mptr == OldWeakDeadBagMarker)
             NrHalfDeadBags--;
-          if ( mptr == OldWeakDeadBagMarker || IS_BAG((UInt)mptr))
+          if ( mptr == OldWeakDeadBagMarker || IS_BAG((UInt)mptr) || mptr == 0)
             {
               *p = FreeMptrBags;
               FreeMptrBags = (Bag)p;
@@ -2361,6 +2358,9 @@ again:
     CheckMasterPointers();
 #endif
     
+    /* Possibly advise the operating system about unused pages:            */
+    SyMAdviseFree();
+
     /* return success                                                      */
     return 1;
 }

@@ -2,8 +2,6 @@
 ##
 #W  id8.akl                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id8_akl :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[8].next[1].next[298]:=
 rec(

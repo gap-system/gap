@@ -3,7 +3,6 @@
 ##
 #W  mkdiff.sh        Differences of GAP manual examples        Volkmar Felsch
 ##
-#H  $Id$
 ##
 #Y  Copyright (C) 2002, Lehrstuhl D für Mathematik, RWTH Aachen, Germany
 ##

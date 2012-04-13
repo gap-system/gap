@@ -2,7 +2,6 @@
 ##
 #W  grpcompl.gi                  GAP Library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the operations for the computation of complements in
 ##  'white box groups'
 ##
-Revision.grpcompl_gi :=
-    "@(#)$Id$";
 
 
 BindGlobal("COCohomologyAction",function(oc,actgrp,auts,orbs)
@@ -54,7 +51,7 @@ BindGlobal("COCohomologyAction",function(oc,actgrp,auts,orbs)
   return rec(com:=com,bas:=b,mats:=mats);
 end);
 
-ComplementclassesSolvableWBG:=function(arg)
+ComplementClassesRepresentativesSolvableWBG:=function(arg)
 local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom, 
       ncomgens, ncen, nlcom, nlcomgens, nlcen, ocr, generators, modulePcgs, 
       l, complement, k, v, afu, i, j, jj;
@@ -232,9 +229,10 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
 
 end;
 
-InstallMethod(ComplementclassesSolvableNC,"using cohomology",IsIdenticalObj,
+InstallMethod(ComplementClassesRepresentativesSolvableNC,"using cohomology",
+  IsIdenticalObj,
   [IsGroup,IsGroup],1,
-  ComplementclassesSolvableWBG);
+  ComplementClassesRepresentativesSolvableWBG);
 
 #############################################################################
 ##

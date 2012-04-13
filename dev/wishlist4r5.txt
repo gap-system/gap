@@ -1,7 +1,6 @@
 
                   Wishlist for GAP 4.5
 
-      $Id$
 ---------------------------------------------------------------------------
 The initials at the end of an entry show who has added this entry, they do
 *not* automatically mean that the same person will work on it. Please add

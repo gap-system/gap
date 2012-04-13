@@ -2,8 +2,6 @@
 ##
 #W  id260.z                GAP library of id's             Hans Ulrich Besche
 ##
-Revision.id260_z :=
-    "@(#)$Id$";
 
 ID_GROUP_TREE.next[260]:=
 rec(

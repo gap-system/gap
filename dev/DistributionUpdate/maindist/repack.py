@@ -4,7 +4,6 @@
 ##  
 ##  Utility for creating several archive formats from one of them.
 ##  
-##  $Id$
 
 
 import sys, os, string, tempfile

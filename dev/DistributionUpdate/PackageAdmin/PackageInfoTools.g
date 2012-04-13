@@ -2,7 +2,6 @@
 ##  
 ##  PackageInfoTools.g                                         (C) Frank Lübeck
 ##  
-##      $Id$
 ##  
 ##  This file contains utilities for automatic updating of the information 
 ##  related to package which are available via the GAP website. 

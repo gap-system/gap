@@ -3,8 +3,6 @@
 #W  sml1536.ceo            GAP library of groups           Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-Revision.sml1536_ceo :=
-    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1536 ].npnil[ 5 ][ 15 ] :=
 [ 2711102516286093586902044797, 5245697093830615508585564285,

@@ -5,7 +5,6 @@
 #W                                                            Juergen Mueller
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##  This file  contains    methods  for    rational  functions,  laurent
 ##  polynomials and polynomials and their families.
 ##
-Revision.ratfun_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -283,8 +280,7 @@ local fam;
   fam:=FamilyObj(f);
   # store the constant ext rep. for one in the family
   if not IsBound(fam!.constantDenominatorExtRep) then
-    fam!.constantDenominatorExtRep:=
-      Immutable([[],One(CoefficientsFamily(fam))]);
+    fam!.constantDenominatorExtRep:= Immutable([[],fam!.oneCoefficient]);
   fi;
   return fam!.constantDenominatorExtRep;
 end);
@@ -430,9 +426,12 @@ end );
 #M  NumeratorOfRationalFunction( <ratfun> )
 ##
 InstallMethod( NumeratorOfRationalFunction,"univariate using ExtRepNumerator",true,
-  [ IsRationalFunction ],0,
+  [ IsRationalFunction and IsUnivariateRationalFunction],0,
 function( f )
+local num;
+  num:=IndeterminateNumberOfUnivariateRationalFunction(f);
   f:= PolynomialByExtRepNC(FamilyObj(f),ExtRepNumeratorRatFun(f));
+  SetIndeterminateNumberOfUnivariateRationalFunction(f,num);
   IsUnivariatePolynomial(f);
   return f;
 end );
@@ -442,9 +441,12 @@ end );
 #M  DenominatorOfRationalFunction( <ratfun> )
 ##
 InstallMethod( DenominatorOfRationalFunction,"univariate using ExtRepDenominator",true,
-  [ IsRationalFunction ],0,
+  [ IsRationalFunction and IsUnivariateRationalFunction],0,
 function( f )
+local num;
+  num:=IndeterminateNumberOfUnivariateRationalFunction(f);
   f:= PolynomialByExtRepNC(FamilyObj(f),ExtRepDenominatorRatFun(f));
+  SetIndeterminateNumberOfUnivariateRationalFunction(f,num);
   IsUnivariatePolynomial(f);
   return f;
 end );
@@ -1267,13 +1269,13 @@ end);
 InstallMethod( \+, "ratfun + rat", true,
     [ IsPolynomialFunction, IsRat ],-RankFilter(IsRat),
 function( left, right )
-  return left+right*One(CoefficientsFamily(FamilyObj(left)));
+  return left+right*FamilyObj(left)!.oneCoefficient;
 end );
 
 InstallMethod( \+, "rat + ratfun ", true,
     [ IsRat, IsPolynomialFunction], -RankFilter(IsRat),
 function( left, right )
-  return left*One(CoefficientsFamily(FamilyObj(right)))+right;
+  return left*FamilyObj(right)!.oneCoefficient+right;
 end);
 
 #############################################################################
@@ -1384,7 +1386,7 @@ end );
 InstallMethod(Value,"rational function: supply `one'",
   true,[IsPolynomialFunction,IsList,IsList],0,
 function(rf,inds,vals)
-  return Value(rf,inds,vals,One(CoefficientsFamily(FamilyObj(rf))));
+  return Value(rf,inds,vals,FamilyObj(rf)!.oneCoefficient);
 end);
 
 #############################################################################
@@ -1591,7 +1593,9 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
   #  may not work
   m:=DegreeIndeterminate(f,ind);
   n:=DegreeIndeterminate(g,ind);
-  if n=infinity or m=infinity then return Zero(CoefficientsFamily(fam));fi;
+  if n=DEGREE_ZERO_LAURPOL or m=DEGREE_ZERO_LAURPOL then
+    return Zero(CoefficientsFamily(fam));
+  fi;
 
   if n>m then
     # force f to be of larger degee

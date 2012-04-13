@@ -4,7 +4,6 @@
 #W                                                         & Martin Schönert
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -203,8 +202,6 @@
 ##  which then delegate to the operations listed above.
 ##  <#/GAPDoc>
 ##
-Revision.mapping_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -789,6 +786,7 @@ DeclareOperation( "ImagesRepresentative", [ IsGeneralMapping, IsObject ] );
 ##  <A>map</A> then <Ref Func="ImagesSet"/> returns the set of all images of
 ##  <A>elms</A> under <A>map</A>.
 ##  <P/>
+##  The result will be either a proper set or a domain.
 ##  Anything may happen if <A>elms</A> is not a subset of the source of
 ##  <A>map</A>.
 ##  </Description>

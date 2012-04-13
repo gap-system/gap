@@ -2,15 +2,12 @@
 ##
 #W  basicpcg.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the methods for the construction of the basic pc group
 ##  types.
 ##
-Revision.basicpcg_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

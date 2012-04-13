@@ -7,8 +7,6 @@
 ##  for all groups of cubefree order up to 50000 not contained in lower
 ##  layers of the small groups library.
 ##
-Revision.smlgp10_g :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

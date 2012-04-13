@@ -2,8 +2,7 @@
 ##
 #W  mapphomo.tst                  GAP Tests                    Max Horn
 ##
-
-gap> START_TEST("$Id$");
+gap> START_TEST("mapphomo.tst");
 gap> G:=SymmetricGroup(4);; gens:=[(1,2,3), (2,3,4)];; G0 := Subgroup(G, gens);;
 gap> H:=AbelianGroup(IsPcGroup, [3,3,4]);; imgs:=[H.1, H.2];; H0 := Subgroup(H, imgs);;
 gap> Size(H0);
@@ -35,7 +34,6 @@ gap> Size(Kernel(hom));
 4
 gap> Size(ImagesSource(hom));
 9
-
 gap> # Another test: map is total, but not single valued
 gap> G:=SymmetricGroup(4);;
 gap> H:=AbelianGroup(IsPermGroup, [3,3,4]);;
@@ -50,7 +48,6 @@ gap> not IsBound(StabChainOptions(b).limit) or StabChainOptions(b).limit>=9;
 true
 gap> Size(b) = Size(CoKernel(hom));
 true
-
 gap> G:=CyclicGroup(IsPermGroup,15);;
 gap> hom:=GroupGeneralMappingByImages(G, G, GeneratorsOfGroup(G), [G.1^3]);;
 gap> HasIsTotal(hom); IsTotal(hom);                                        
@@ -66,12 +63,8 @@ false
 gap> HasIsSurjective(hom); IsSurjective(hom);
 true
 true
-
-
-gap> STOP_TEST( "mapphomo.tst", 9000000 );
-
+gap> STOP_TEST( "mapphomo.tst", 4300000 );
 
 #############################################################################
 ##
 #E
-

@@ -828,9 +828,9 @@ or both are bound and
 <Example><![CDATA[
 gap> [ 1, 2, 3, 4 ] < [ 1, 2, 4, 8 ]; # <list1>[3] < <list2>[3]
 true
-gap> [ 1, 2, 3 ] < [ 1, 2, 3, 5 ];    # <list1>[4] is unbound and thus < 5 
+gap> [ 1, 2, 3 ] < [ 1, 2, 3, 5 ];  # <list1>[4] is unbound and thus < 5
 true
-gap> [ 1, , 3, 4 ] < [ 1, -1, 3 ];    # <list1>[2] is unbound and thus < -1
+gap> [ 1, , 3, 4 ] < [ 1, -1, 3 ];  # <list1>[2] is unbound and thus < -1
 true
 ]]></Example>
 <P/>
@@ -1754,7 +1754,6 @@ gap> r[5];
 -4
 gap> r := [ 1, 4 .. 32 ];
 Error, Range: <last>-<first> (31) must be divisible by <inc> (3)
-not in any function
 ]]></Example>
 <P/>
 Most often ranges are used in connection with the <K>for</K>-loop

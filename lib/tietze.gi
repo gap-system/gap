@@ -2,7 +2,6 @@
 ##
 #W  tietze.gi                  GAP library                     Volkmar Felsch
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file contains the methods for Tietze transformations of presentation
 ##  records (i.e., of presentations of finitely presented groups (fp groups).
 ##
-Revision.tietze_gi :=
-    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -1428,7 +1425,7 @@ InstallGlobalFunction( TzEliminateFromTree, function ( T )
             pair[2] := invs[numgens+1+pair1];
         fi;
 
-        # add the correponding relator to the set of relators.
+        # add the corresponding relator to the set of relators.
         invnum := invs[numgens+1+num];
         if pair[1] = invs[numgens+1+pair[2]] then
             rel := [ invnum ];  leng := 1;
@@ -1998,7 +1995,7 @@ InstallGlobalFunction( TzFindCyclicJoins, function ( T )
           # If there is at least one relator of the form a^m or b^n, then
           # search for a relator of the form  a^s * b^t  (modulo [a,b])
           # with s prime to m or t prime to n, respectively. For, if s is
-          # prime to m, then we can use the Euclidian algorithm to
+          # prime to m, then we can use the Euclidean algorithm to
           # express a as a power of b and then eliminate a.
 
           if exp[1] > 0 or exp[2] > 0 then

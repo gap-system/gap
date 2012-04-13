@@ -64,7 +64,7 @@ If, more generally, <M>hom</M> is a right inverse to a homomorphism
 equality <M>*</M> holds modulo the kernel of <M>\varphi</M>;
 in this case the <Q>conjugated</Q> chain can be made into a real stabilizer
 chain by extending each level with the generators of the kernel and
-appending a proper stabilizer chain of te kernel at the end.
+appending a proper stabilizer chain of the kernel at the end.
 These special cases will occur in the algorithms for permutation group
 homomorphisms (see&nbsp;<Ref Chap="Group Homomorphisms"/>).
 <P/>

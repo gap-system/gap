@@ -1,7 +1,7 @@
       Setting up the (Linux) rsync distribution
       =========================================
 
-## $Id$    Frank Lübeck
+## (C) Frank Lübeck
 
 (1) Choose a directory RSDIR, copy the files motd, rsyncd.conf and
     startrsyncserver to RSDIR, and adjust the paths in 'rsyncd.conf' 

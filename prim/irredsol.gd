@@ -3,7 +3,6 @@
 #W  irredsol.gd                 GAP group library                  Mark Short
 #W                                                           Burkhard Höfling
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 1993, Murdoch University, Perth, Australia
 ##
@@ -18,8 +17,6 @@
 ##  This file contains the data  from Mark Short's thesis,  plus  two  groups 
 ##  missing from that list, subsequently discovered by Alexander Hulpke.
 ##
-Revision.irredsol_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

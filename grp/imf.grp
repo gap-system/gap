@@ -2,7 +2,6 @@
 ##
 #W  imf.grp                     GAP group library              Volkmar Felsch
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1995,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  Copyright (C)  2000,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
@@ -62,8 +61,6 @@
 ##                          the Q-class number  of the corresponding rational
 ##                          imf class.
 ##
-Revision.imf_grp :=
-    "@(#)$Id$";
 
 
 #############################################################################

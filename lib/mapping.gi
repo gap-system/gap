@@ -4,7 +4,6 @@
 #W                                                         & Martin Schönert
 #W                                                             & Frank Celler
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 ##  2. generic methods for general mappings
 ##  3. generic methods for underlying relations of general mappings
 ##
-Revision.mapping_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################

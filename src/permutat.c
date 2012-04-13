@@ -3,7 +3,6 @@
 *W  permutat.c                  GAP source                   Martin Schönert
 **                                                           & Alice Niemeyer
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -40,8 +39,6 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_permutat_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -60,9 +57,7 @@ const char * Revision_permutat_c =
 
 #include        "integer.h"             /* integers                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "permutat.h"            /* permutations                    */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -4571,16 +4566,16 @@ static StructGVarFunc GVarFuncs [] = {
     { "LARGEST_MOVED_POINT_PERM", 1, "perm",
       FuncLARGEST_MOVED_POINT_PERM, "src/permutat.c:LARGEST_MOVED_POINT_PERM" },
 
-    { "CycleLengthPermInt", 2, "perm, point",
+    { "CYCLE_LENGTH_PERM_INT", 2, "perm, point",
       FuncCycleLengthPermInt, "src/permutat.c:CycleLengthPermInt" },
 
-    { "CyclePermInt", 2, "perm, point",
+    { "CYCLE_PERM_INT", 2, "perm, point",
       FuncCyclePermInt, "src/permutat.c:CyclePermInt" },
 
-    { "CycleStructPerm", 1, "perm",
+    { "CYCLE_STRUCT_PERM", 1, "perm",
       FuncCycleStructurePerm, "src/permutat.c:CycleStructPerm" },
 
-    { "OrderPerm", 1, "perm",
+    { "ORDER_PERM", 1, "perm",
       FuncOrderPerm, "src/permutat.c:OrderPerm" },
 
     { "SIGN_PERM", 1, "perm",
@@ -4769,8 +4764,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPermutat ( void )
 {
-    module.revision_c = Revision_permutat_c;
-    module.revision_h = Revision_permutat_h;
     FillInVersion( &module );
     return &module;
 }

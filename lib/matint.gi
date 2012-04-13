@@ -6,22 +6,19 @@
 #W                                                                    D. Holt
 #W                                                                  A. Hulpke
 ##
-#H  $Id$
 ##
 #Y  Copyright (C) 2003 The GAP Group
 ##
-##  This file contains functions that compute Hermite and Smith normal forms 
-##  of integer matrices, with or without the HNF/SNF  expressed as the linear 
+##  This file contains functions that compute Hermite and Smith normal forms
+##  of integer matrices, with or without the HNF/SNF  expressed as the linear
 ##  combination of the input.
 ##
-Revision.matint_gi :=
-    "$Id$";
 
 ########################################################
 ##
-##  	auxiliary + main code for all in one function
+##      auxiliary + main code for all in one function
 ##
-##  MATINTsplit 
+##  MATINTsplit
 ##  MATINTrgcd
 ##  MATINTmgcdex
 ##  MATINTbezout
@@ -47,8 +44,7 @@ end);
 
 ################################################
 #
-#   MATINTrgcd(<N>,<a>) - Returns smallest nonnegative c such that
-#		   gcd(N,a+c) = 1
+# MATINTrgcd(<N>,<a>) - Returns smallest nonnegative c such that gcd(N,a+c) = 1
 #
 BindGlobal("MATINTrgcd",function(N,a)
 local k,r,d,i,c,g,q;
@@ -62,20 +58,20 @@ local k,r,d,i,c,g,q;
     for i in [1..k] do r[i]:=(r[i]+1) mod d[i]; od;
     i:=PositionProperty(r,x->x<=0);
     if i=fail then
-      g:=1;i:=0; 
+      g:=1;i:=0;
       while g=1 and i<k do
-	i:=i+1;
-	g:=GcdInt(r[i],d[i]);
+        i:=i+1;
+        g:=GcdInt(r[i],d[i]);
       od;
       if g=1 then return c; fi;
       q:=MATINTsplit(QuoInt(d[i],g),g);
       if q>1 then
-	k:=k+1;
-	r[k]:=r[i] mod q;
-	d[k]:=q;
+        k:=k+1;
+        r[k]:=r[i] mod q;
+        d[k]:=q;
       fi;
       r[i]:=0;
-      d[i]:=g;    
+      d[i]:=g;
     fi;
     c:=c+1;
   od;
@@ -83,7 +79,7 @@ local k,r,d,i,c,g,q;
 end);
 
 #######################################################
-# 
+#
 #  MATINTmgcdex(<N>,<a>,<v>) - Returns c[1],c[2],...c[k] such that
 #
 #   gcd(N,a+c[1]*b[1]+...+c[n]*b[k]) = gcd(N,a,b[1],b[2],...,b[k])
@@ -95,7 +91,7 @@ local h,g,M,c,i,d,b,l;
   h := N;
   for i in [1..l] do
     g := h;
-    h:=GcdInt(g,v[i]);  
+    h:=GcdInt(g,v[i]);
     M[i]:=QuoInt(g,h);
   od;
   h:=GcdInt(a,h);
@@ -125,8 +121,8 @@ end);
 #
 #  PA=H;
 #
-#  [ s  t ] [ a  b ]   [ e  f ] 
-#  [      ] [      ] = [       ]   
+#  [ s  t ] [ a  b ]   [ e  f ]
+#  [      ] [      ] = [       ]
 #  [ u  v ] [ c  d ]   [    g ]
 #
 BindGlobal("MATINTbezout", function(a,b,c,d)
@@ -138,7 +134,7 @@ local e,f,g,q;
   if g<0 then
     e.coeff3 := -e.coeff3;
     e.coeff4 := -e.coeff4;
-    g := -g; 
+    g := -g;
   fi;
   if g>0 then
     q := QuoInt(f-(f mod g),g);
@@ -166,69 +162,71 @@ local k,g,b,ii,m1,m2,t,tt,si,n,m,i,j,r,jj,piv,d,gt,tmp,A,T,TT,kk;
   if r=fail then
     r := Length(piv);
   else
-    r := r-1;  
-    piv := piv{[1..r]}; 
+    r := r-1;
+    piv := piv{[1..r]};
   fi;
   Append(piv,Difference([1..m],piv));
 
   if destroy then
-      T:=R;
-      ##  Need to be careful: we are trying to permute the cols in place
-      for i in [1..r] do
-          T[i]{[1..m]} := T[i]{piv};
-      od;
+    T:=R;
+    ##  Need to be careful: we are trying to permute the cols in place
+    for i in [1..r] do
+      T[i]{[1..m]} := T[i]{piv};
+    od;
   else
-      T := NullMat(n,m);
-      for j in [1..m] do
-          for i in [1..Minimum(r,j)] do T[i][j]:=R[i][piv[j]]; od;
+    T := NullMat(n,m);
+    for j in [1..m] do
+      for i in [1..Minimum(r,j)] do
+        T[i][j]:=R[i][piv[j]];
       od;
+    od;
   fi;
 
   si := 1;
   A := [];
   d := 2;
   for k in [1..m] do
-  Info(InfoMatInt,2,"SNFofREF - working on column ",k);
+    Info(InfoMatInt,2,"SNFofREF - working on column ",k);
     if k<=r then
-	d := d*AbsInt(T[k][k]);
-	Apply(T[k],x->x mod (2*d));
+      d := d*AbsInt(T[k][k]);
+      Apply(T[k],x->x mod (2*d));
     fi;
 
-   t := Minimum(k,r);
-   for i in [t-1,t-2..si] do
+    t := Minimum(k,r);
+    for i in [t-1,t-2..si] do
       t := MATINTmgcdex(A[i],T[i][k],[T[i+1][k]])[1];
       if t<>0 then
-         AddRowVector(T[i],T[i+1],t); 
-         Apply(T[i],x->x mod A[i]); 
+        AddRowVector(T[i],T[i+1],t);
+        Apply(T[i],x->x mod A[i]);
       fi;
-   od;
+    od;
 
-   for i in [si..Minimum(k-1,r)] do
+    for i in [si..Minimum(k-1,r)] do
       g := Gcdex(A[i],T[i][k]);
       T[i][k] := 0;
       if g.gcd<>A[i] then
-         b := QuoInt(A[i],g.gcd);
-         A[i] := g.gcd;
-         for ii in [i+1..Minimum(k-1,r)] do
-            AddRowVector(T[ii],T[i],-g.coeff2*QuoInt(T[ii][k],A[i]) mod A[ii]);
-            T[ii][k] := b*T[ii][k];
+        b := QuoInt(A[i],g.gcd);
+        A[i] := g.gcd;
+        for ii in [i+1..Minimum(k-1,r)] do
+          AddRowVector(T[ii],T[i],-g.coeff2*QuoInt(T[ii][k],A[i]) mod A[ii]);
+          T[ii][k] := b*T[ii][k];
 
-            Apply(T[ii],x->x mod A[ii]);
-         od;
-         if k<=r then 
-            t := g.coeff2*QuoInt(T[k][k],g.gcd);
-            AddRowVector(T[k],T[i],-t);
-            T[k][k]:=b*T[k][k];
-         fi;
-         Apply(T[i],x->x mod A[i]);
-         if A[i]=1 then si := i+1; fi;
+          Apply(T[ii],x->x mod A[ii]);
+        od;
+        if k<=r then
+          t := g.coeff2*QuoInt(T[k][k],g.gcd);
+          AddRowVector(T[k],T[i],-t);
+          T[k][k]:=b*T[k][k];
+        fi;
+        Apply(T[i],x->x mod A[i]);
+        if A[i]=1 then si := i+1; fi;
       fi;
-   od;
+    od;
 
-   if k<=r then 
+    if k<=r then
       A[k] := AbsInt(T[k][k]);
       Apply(T[k],x->x mod A[k]);
-   fi;
+    fi;
 
   od;
 
@@ -240,20 +238,20 @@ end);
 
 BindGlobal("BITLISTS_NFIM",
   [ [ false, false, false, false, false ], [ true, false, false, false, false ],
-    [ false, true, false, false, false ], [ true, true, false, false, false ], 
-    [ false, false, true, false, false ], [ true, false, true, false, false ], 
-    [ false, true, true, false, false ], [ true, true, true, false, false ], 
-    [ false, false, false, true, false ], [ true, false, false, true, false ], 
-    [ false, true, false, true, false ], [ true, true, false, true, false ], 
-    [ false, false, true, true, false ], [ true, false, true, true, false ], 
-    [ false, true, true, true, false ], [ true, true, true, true, false ], 
-    [ false, false, false, false, true ], [ true, false, false, false, true ], 
-    [ false, true, false, false, true ], [ true, true, false, false, true ], 
-    [ false, false, true, false, true ], [ true, false, true, false, true ], 
-    [ false, true, true, false, true ], [ true, true, true, false, true ], 
-    [ false, false, false, true, true ], [ true, false, false, true, true ], 
-    [ false, true, false, true, true ], [ true, true, false, true, true ], 
-    [ false, false, true, true, true ], [ true, false, true, true, true ], 
+    [ false, true, false, false, false ], [ true, true, false, false, false ],
+    [ false, false, true, false, false ], [ true, false, true, false, false ],
+    [ false, true, true, false, false ], [ true, true, true, false, false ],
+    [ false, false, false, true, false ], [ true, false, false, true, false ],
+    [ false, true, false, true, false ], [ true, true, false, true, false ],
+    [ false, false, true, true, false ], [ true, false, true, true, false ],
+    [ false, true, true, true, false ], [ true, true, true, true, false ],
+    [ false, false, false, false, true ], [ true, false, false, false, true ],
+    [ false, true, false, false, true ], [ true, true, false, false, true ],
+    [ false, false, true, false, true ], [ true, false, true, false, true ],
+    [ false, true, true, false, true ], [ true, true, true, false, true ],
+    [ false, false, false, true, true ], [ true, false, false, true, true ],
+    [ false, true, false, true, true ], [ true, true, false, true, true ],
+    [ false, false, true, true, true ], [ true, false, true, true, true ],
     [ false, true, true, true, true ], [ true, true, true, true, true ] ] );
 
 
@@ -265,13 +263,13 @@ BindGlobal("BITLISTS_NFIM",
 #
 # 1  - Triangular / Smith
 # 2  - No / Yes  Reduce off diag entries
-# 4  - No / Yes  Row Transforms 
+# 4  - No / Yes  Row Transforms
 # 8  - No / Yes  Col Transforms
 # 16 - change original matrix in place (The rows still change) -- save memory
 #
-# Compute a Triangular, Hermite or Smith form of the n x m 
+# Compute a Triangular, Hermite or Smith form of the n x m
 # integer input matrix A.  Optionally, compute n x n / m x m
-# unimodular transforming matrices which satisfy Q C A = H 
+# unimodular transforming matrices which satisfy Q C A = H
 # or  Q C A B P = S.
 #
 # Triangular / Hermite :
@@ -290,24 +288,24 @@ BindGlobal("BITLISTS_NFIM",
 #  [ Q2 | I ]  [    | I  ]     [ B2 | I ]  [ *  | I  ]
 #
 # * - possible non-zero entry in upper right corner...
-#				
+#
 #
 BindGlobal("DoNFIM", function(arg)
 local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
       t, tmp, i, q, R, rank, signdet;
 
-      if not Length(arg)=2 
-	or not (IsMatrix(arg[1]) 
-	    or (IsList(arg[1]) and Length(arg[1])=1 
-	        and IsList(arg[1][1]) and Length(arg[1][1])=0))
-	or not IsInt(arg[2]) then 
-    Error("syntax is DoNFIM(<matrix>,<options>)"); 
+  if not Length(arg)=2
+     or not (IsMatrix(arg[1])
+         or (IsList(arg[1]) and Length(arg[1])=1
+             and IsList(arg[1][1]) and Length(arg[1][1])=0))
+     or not IsInt(arg[2]) then
+    Error("syntax is DoNFIM(<matrix>,<options>)");
   fi;
 
   #Parse options
   opt := BITLISTS_NFIM[arg[2]+1];
   #List(CoefficientsQadic(arg[2],2),x->x=1);
-  #if Length(opt)<4 then 
+  #if Length(opt)<4 then
   #  opt{[Length(opt)+1..4]} := List([Length(opt)+1..4],x->false);
   #fi;
 
@@ -339,13 +337,13 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
   A[1][1] := 1;
   A[n][m] := 1;
 
-  if opt[3] then 
-    C := IdentityMat(n); 
+  if opt[3] then
+    C := IdentityMat(n);
     Q := NullMat(n,n);
-    Q[1][1] := 1; 
+    Q[1][1] := 1;
   fi;
 
-  if opt[1] and opt[4] then 
+  if opt[1] and opt[4] then
     B := IdentityMat(m);
     P := IdentityMat(m);
   fi;
@@ -374,50 +372,50 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
       Append(L,[c2+1..m-1]);
       Add(L,c2);
       for j in L do
-	if j=c2 then
-	  b:=A[r][c2];a:=A[r][c1];
-	  for i in [r+1..n] do
-	    if b<>1 then
-	      g:=Gcdex(b,A[i][c2]);
-	      b:=g.gcd;
-	      a:=g.coeff1*a+g.coeff2*A[i][c1];
-	    fi; 
-	  od;
-	  N:=0;
-	  for i in [r..n] do  
-	    if N<>1 then N:=GcdInt(N,A[i][c1]-QuoInt(A[i][c2],b)*a);fi;
-	  od;
-	else
-	  c := MATINTmgcdex(N,A[r][j],A{[r+1..n]}[j]);
-	  b := A[r][j]+c*A{[r+1..n]}[j];
-	  a := A[r][c1]+c*A{[r+1..n]}[c1];
-	fi;
-	t := MATINTmgcdex(N,a,[b])[1];
-	tmp := A[r][c1]+t*A[r][j];
-	while tmp=0 or tmp*A[k][c2]=(A[k][c1]+t*A[k][j])*A[r][c2] do
-	  t := t+1+MATINTmgcdex(N,a+t*b+b,[b])[1];
+        if j=c2 then
+          b:=A[r][c2];a:=A[r][c1];
+          for i in [r+1..n] do
+            if b<>1 then
+              g:=Gcdex(b,A[i][c2]);
+              b:=g.gcd;
+              a:=g.coeff1*a+g.coeff2*A[i][c1];
+            fi;
+          od;
+          N:=0;
+          for i in [r..n] do
+            if N<>1 then N:=GcdInt(N,A[i][c1]-QuoInt(A[i][c2],b)*a);fi;
+          od;
+        else
+          c := MATINTmgcdex(N,A[r][j],A{[r+1..n]}[j]);
+          b := A[r][j]+c*A{[r+1..n]}[j];
+          a := A[r][c1]+c*A{[r+1..n]}[c1];
+        fi;
+        t := MATINTmgcdex(N,a,[b])[1];
+        tmp := A[r][c1]+t*A[r][j];
+        while tmp=0 or tmp*A[k][c2]=(A[k][c1]+t*A[k][j])*A[r][c2] do
+          t := t+1+MATINTmgcdex(N,a+t*b+b,[b])[1];
           tmp := A[r][c1]+t*A[r][j];
         od;
-	if t>0 then
-	  for i in [1..n] do A[i][c1] := A[i][c1]+t*A[i][j]; od;
-	  if opt[4] then B[j][c1] := B[j][c1]+t; fi;
-	fi;
+        if t>0 then
+          for i in [1..n] do A[i][c1] := A[i][c1]+t*A[i][j]; od;
+          if opt[4] then B[j][c1] := B[j][c1]+t; fi;
+        fi;
       od;
       if A[r][c1]*A[k][c1+1]=A[k][c1]*A[r][c1+1] then
-	for i in [1..n] do A[i][c1+1] := A[i][c1+1]+A[i][c2]; od;
-	if opt[4] then B[c2][c1+1] := 1; fi; 
+        for i in [1..n] do A[i][c1+1] := A[i][c1+1]+A[i][c2]; od;
+        if opt[4] then B[c2][c1+1] := 1; fi;
       fi;
       c2 := c1+1;
     fi;
 
     c := MATINTmgcdex(AbsInt(A[r][c1]),A[r+1][c1],A{[r+2..n]}[c1]);
-    for i in [r+2..n] do 
+    for i in [r+2..n] do
       if c[i-r-1]<>0 then
-	AddRowVector(A[r+1],A[i],c[i-r-1]);
-	if opt[3] then 
-	  C[r+1][i] := c[i-r-1];  
-	  AddRowVector(Q[r+1],Q[i],c[i-r-1]); 
-	fi;
+        AddRowVector(A[r+1],A[i],c[i-r-1]);
+        if opt[3] then
+          C[r+1][i] := c[i-r-1];
+          AddRowVector(Q[r+1],Q[i],c[i-r-1]);
+        fi;
       fi;
     od;
 
@@ -426,16 +424,16 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     if i>r+1 then
       c := MATINTmgcdex(AbsInt(A[r][c1]),A[r+1][c1]+A[i][c1],[A[i][c1]])[1]+1;;
       AddRowVector(A[r+1],A[i],c);
-      if opt[3] then 
-	C[r+1][i] := C[r+1][i]+c; 
-	AddRowVector(Q[r+1],Q[i],c); 
+      if opt[3] then
+        C[r+1][i] := C[r+1][i]+c;
+        AddRowVector(Q[r+1],Q[i],c);
       fi;
     fi;
-    
+
     g := MATINTbezout(A[r][c1],A[r][c2],A[r+1][c1],A[r+1][c2]);
     sig:=sig*SignInt(A[r][c1]*A[r+1][c2]-A[r][c2]*A[r+1][c1]);
     A{[r,r+1]} := [[g.coeff1,g.coeff2],[g.coeff3,g.coeff4]]*A{[r,r+1]};
-    if opt[3] then 
+    if opt[3] then
       Q{[r,r+1]} := [[g.coeff1,g.coeff2],[g.coeff3,g.coeff4]]*Q{[r,r+1]};
     fi;
 
@@ -448,7 +446,7 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
       if opt[3] then AddRowVector(Q[i],Q[r+1],-q); fi;
     od;
 
-  od; 
+  od;
   rp[r+1] := m;
   Info(InfoMatInt,2,"DoNFIM - r,m,n=",r,m,n);
   if n=m and r+1<n then sig:=0;fi;
@@ -471,16 +469,16 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     for i in [r, r-1 .. 1] do
       Info(InfoMatInt,2,"DoNFIM - reducing row ",i);
       for j in [i+1 .. r+1] do
-	q := QuoInt(A[i][rp[j]]-(A[i][rp[j]] mod A[j][rp[j]]),A[j][rp[j]]);
-	AddRowVector(A[i],A[j],-q);
-	if opt[3] then AddRowVector(Q[i],Q[j],-q); fi;
+        q := QuoInt(A[i][rp[j]]-(A[i][rp[j]] mod A[j][rp[j]]),A[j][rp[j]]);
+        AddRowVector(A[i],A[j],-q);
+        if opt[3] then AddRowVector(Q[i],Q[j],-q); fi;
       od;
       if opt[1] and i<r then
-	for j in [i+1..m] do 
-	  q := QuoInt(A[i][j],A[i][i]);
-	  for k in [1..i] do A[k][j] := A[k][j]-q*A[k][i]; od;
-	  if opt[4] then P[i][j] := -q; fi;      
-	od;
+        for j in [i+1..m] do
+          q := QuoInt(A[i][j],A[i][i]);
+          for k in [1..i] do A[k][j] := A[k][j]-q*A[k][i]; od;
+          if opt[4] then P[i][j] := -q; fi;
+        od;
       fi;
     od;
   fi;
@@ -516,7 +514,7 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
       P[i][r] := P[i][r]*g.coeff1+P[i][r+1]*g.coeff2;
       P[i][r+1] := t*g.coeff3+P[i][r+1]*g.coeff4;
     od;
-    for j in [r+2..m-1] do  
+    for j in [r+2..m-1] do
       q := QuoInt(A[r][j],A[r][r]);
       for i in [1..r+1] do P[i][j] := P[i][j]-q*P[i][r]; od;
       A[r][j] := 0;
@@ -537,14 +535,14 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
   Unbind(A[n]);
   R:=rec(normal:=A);
 
-  if opt[3] then 
-    R.rowC:=C{[2..n-1]}{[2..n-1]}; 
-    R.rowQ:=Q{[2..n-1]}{[2..n-1]}; 
+  if opt[3] then
+    R.rowC:=C{[2..n-1]}{[2..n-1]};
+    R.rowQ:=Q{[2..n-1]}{[2..n-1]};
   fi;
 
   if opt[1] and opt[4] then
-    R.colC:=B{[2..m-1]}{[2..m-1]}; 
-    R.colQ:=P{[2..m-1]}{[2..m-1]}; 
+    R.colC:=B{[2..m-1]}{[2..m-1]};
+    R.colQ:=P{[2..m-1]}{[2..m-1]};
   fi;
 
   R.rank:=r-1;
@@ -563,7 +561,7 @@ function(mat,options)
   r:=DoNFIM(mat,options);
   opt := BITLISTS_NFIM[options+1];
   #opt := List(CoefficientsQadic(options,2),x->x=1);
-  #if Length(opt)<4 then 
+  #if Length(opt)<4 then
   #  opt{[Length(opt)+1..4]} := List([Length(opt)+1..4],x->false);
   #fi;
 
@@ -573,7 +571,7 @@ function(mat,options)
     #Unbind(r.rowC);
   fi;
 
-  if opt[1] and opt[4] then  
+  if opt[1] and opt[4] then
     r.coltrans:=r.colC*r.colQ;
     #Unbind(r.colQ);
     #Unbind(r.colC);
@@ -792,7 +790,7 @@ InstallMethod(ComplementIntMat,"use HNF and SNF",true,
 function( full,sub )
 local F, S, M, r, T, R;
   F := BaseIntMat( full );
-  if IsEmpty( sub ) or IsZero( sub ) then 
+  if IsEmpty( sub ) or IsZero( sub ) then
     return rec( complement := F, sub := [], moduli := [] );
   fi;
   S := BaseIntersectionIntMats( F, sub );
@@ -808,8 +806,8 @@ local F, S, M, r, T, R;
   r := NormalFormIntMat( T, 13 );
   M := r.coltrans^-1 * F;
   R := rec( complement := BaseIntMat( M{[1+r.rank..Length(M)]} ),
-	    sub := r.rowtrans * T * F,
-	    moduli    := List( [1..r.rank], i -> r.normal[i][i] ) );
+            sub := r.rowtrans * T * F,
+            moduli := List( [1..r.rank], i -> r.normal[i][i] ) );
   return R;
 end);
 
@@ -911,8 +909,8 @@ local sig, n, m, A, r, c2, c1, j, k, c, i, g, q;
   # Crossover point roughly 20x20 matrices, so farm the work if smaller..
   if n<22 then return DeterminantMat(mat);fi;
   m := Length(mat[1])+2;
-  
-  if not n=m then 
+
+  if not n=m then
     Error( "DeterminantIntMat: <mat> must be a square matrix" );
   fi;
 
@@ -940,22 +938,22 @@ local sig, n, m, A, r, c2, c1, j, k, c, i, g, q;
     od;
 
     c := MATINTmgcdex(AbsInt(A[r][c1]),A[r+1][c1],A{[r+2..n]}[c1]);
-    for i in [r+2..n] do 
+    for i in [r+2..n] do
       if c[i-r-1]<>0 then
-	AddRowVector(A[r+1],A[i],c[i-r-1]);
+        AddRowVector(A[r+1],A[i],c[i-r-1]);
       fi;
     od;
 
     i := r+1;
-    while A[r][c1]*A[i][c2]=A[i][c1]*A[r][c2] do 
-    i := i+1; 
+    while A[r][c1]*A[i][c2]=A[i][c1]*A[r][c2] do
+      i := i+1;
     od;
 
     if i>r+1 then
       c := MATINTmgcdex(AbsInt(A[r][c1]),A[r+1][c1]+A[i][c1],[A[i][c1]])[1]+1;;
       AddRowVector(A[r+1],A[i],c);
     fi;
-    
+
     g := MATINTbezout(A[r][c1],A[r][c2],A[r+1][c1],A[r+1][c2]);
     sig:=sig*SignInt(A[r][c1]*A[r+1][c2]-A[r][c2]*A[r+1][c1]);
     if sig=0 then return 0;fi;
@@ -967,7 +965,7 @@ local sig, n, m, A, r, c2, c1, j, k, c, i, g, q;
       q := QuoInt(A[i][c2],A[r+1][c2]);
       AddRowVector(A[i],A[r+1],-q);
     od;
-  od; 
+  od;
 
   for i in [2..r+1] do
     sig:=sig*A[i][i];

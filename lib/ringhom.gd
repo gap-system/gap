@@ -2,7 +2,6 @@
 ##
 #W  ringhom.gd                   GAP library                  Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 2008 The GAP Group
 ##
@@ -10,8 +9,6 @@
 ##  and homomorphisms. It is based on alghom.gd
 ##
 ##
-Revision.ringhom_gd :=
-    "@(#)$Id$";
 
 
 DeclareInfoClass("InfoRingHom");

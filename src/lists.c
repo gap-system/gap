@@ -2,7 +2,6 @@
 **
 *W  lists.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -22,8 +21,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_lists_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -39,9 +36,7 @@ const char * Revision_lists_c =
 
 #include        "records.h"             /* generic records                 */
 
-#define INCLUDE_DECLARATION_PART
 #include        "lists.h"               /* generic lists                   */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "bool.h"                /* booleans                        */
 
@@ -3266,8 +3261,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoLists ( void )
 {
-    module.revision_c = Revision_lists_c;
-    module.revision_h = Revision_lists_h;
     FillInVersion( &module );
     return &module;
 }

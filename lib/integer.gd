@@ -6,7 +6,6 @@
 #W                                                         & Martin Schönert
 #W                                                              & Alex Wegner
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -14,8 +13,6 @@
 ##
 ##  This file declares the operations for integers.
 ##
-Revision.integer_gd :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -450,7 +447,7 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  gap> FactorsInt( 10^42 + 1 );
 ##  [ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ]
 ##  gap> FactorsInt(2^256+1:RhoTrials:=100000000);
-##  [ 1238926361552897,
+##  [ 1238926361552897, 
 ##    93461639715357977769163558199606896584051237541638188580280321 ]
 ##  ]]></Example>
 ##  </Description>
@@ -554,15 +551,15 @@ DeclareGlobalFunction("PrimeDivisors");
 ##  [ [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 
 ##        2446338959059521520901826365168917110105972824229555319002965029 ], 
 ##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 
-##        2529823122088440042297648774735177983563570655873376751812787 ], 
+##        2529823122088440042297648774735177983563570655873376751812787 ],
 ##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 
-##        2529823122088440042297648774735177983563570655873376751812787 ], 
+##        2529823122088440042297648774735177983563570655873376751812787 ],
 ##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 
 ##        242549173950325921859769421435653153445616962914227 ], 
 ##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 687121, 
 ##        352993394104278463123335513593170858474150787 ], 
-##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 687121, 20241187, 
-##        504769301, 34549173843451574629911361501 ] ]
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 687121, 
+##        20241187, 504769301, 34549173843451574629911361501 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -605,7 +602,8 @@ DeclareOperation( "PartialFactorization",
 ##  is <M>1</M> or <M>-1</M>.
 ##  <Example><![CDATA[
 ##  gap> Gcdex( 123, 66 );
-##  rec( coeff1 := 7, coeff2 := -13, coeff3 := -22, coeff4 := 41, gcd := 3 )
+##  rec( coeff1 := 7, coeff2 := -13, coeff3 := -22, coeff4 := 41, 
+##    gcd := 3 )
 ##  ]]></Example>
 ##  This means <M>3 = 7 * 123 - 13 * 66</M>, <M>0 = -22 * 123 + 41 * 66</M>.
 ##  <Example><![CDATA[
@@ -614,6 +612,9 @@ DeclareOperation( "PartialFactorization",
 ##  gap> Gcdex( 0, 0 );
 ##  rec( coeff1 := 1, coeff2 := 0, coeff3 := 0, coeff4 := 1, gcd := 0 )
 ##  ]]></Example>
+##  <P/>
+##  <Ref Func="GcdRepresentation" Label="for (a ring and) several elements"/> 
+##  provides similar functionality over arbitrary Euclidean rings.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

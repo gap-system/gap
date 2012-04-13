@@ -17,7 +17,6 @@
 ##  *.txt, *.gi, *.gd, *.g, *.c, *.h, *.htm, *.html, *.xml, *.tex, 
 ##  *.six, *.bib, *.tst, README.*, INSTALL.*, Makefile
 ##  
-##  $Id$
 ##  
 
 pname=$1

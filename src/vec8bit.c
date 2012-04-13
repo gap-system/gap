@@ -1,7 +1,5 @@
 #include        "system.h"              /* system dependent part           */
 
-const char * Revision_vec8bit_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -30,16 +28,14 @@ const char * Revision_vec8bit_c =
 #include        "vector.h"              /* vectors */
 #include        "listoper.h"              /* default list ops */
 
-#define INCLUDE_DECLARATION_PART
 #include        "vec8bit.h"              /* GFQ vectors                     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "saveload.h"            /* saving and loading              */
 #include        "opers.h"
 #include        "integer.h"             /* integer functions needed for NUMBER_ */
 
 #include        "vecgf2.h"              /* needed for the conversion to
-					   GF(2^n) n>1) */
+             GF(2^n) n>1) */
 
 #include        "code.h"               /* for TakeInterrupt */
 #include        "stats.h" 
@@ -270,7 +266,7 @@ Obj TYPE_FIELDINFO_8BIT;
 #define SIZE_VEC8BIT(len,elts) (3*sizeof(UInt)+((len)+(elts)-1)/(elts))
 
 /****************************************************************************
-**									  
+**                    
 *V  GetFieldInfo( <q> ) . .make or recover the meataxe table for a field
 **                         always call this, as the tables are lost by
 **                         save/restore. It's very cheap if the table already
@@ -366,17 +362,17 @@ static const UInt1 * Char2Lookup[9] = {
 
 void MakeFieldInfo8Bit( UInt q)
 {
-  FF   gfq;			/* the field */
-  UInt p;			/* characteristic */
-  UInt d;			/* degree */
-  UInt i,j,k,l;			/* loop variables */
-  UInt e;			/* number of elements per byte */
-  UInt size;			/* data structure size */
-  UInt pows[7];  		/* table of powers of q for packing
-				   and unpacking bytes */
-  Obj info;			/* The table being constructed */
-  FFV mult;			/* multiplier for scalar product */
-  FFV prod;			/* used in scalar product */
+  FF   gfq;     /* the field */
+  UInt p;     /* characteristic */
+  UInt d;     /* degree */
+  UInt i,j,k,l;     /* loop variables */
+  UInt e;     /* number of elements per byte */
+  UInt size;      /* data structure size */
+  UInt pows[7];     /* table of powers of q for packing
+           and unpacking bytes */
+  Obj info;     /* The table being constructed */
+  FFV mult;     /* multiplier for scalar product */
+  FFV prod;     /* used in scalar product */
   UInt val;                     /* used to build up some answers */
   UInt val0;
   UInt elt,el1,el2;             /* used to build up some answers */
@@ -389,23 +385,23 @@ void MakeFieldInfo8Bit( UInt q)
   e = 0;
   for (i = 1; i <= 256; i *= q)
     pows[e++] = i;
-  pows[e] = i;		/* simplifies things to have one more */
+  pows[e] = i;    /* simplifies things to have one more */
   e--;
       
-  size = sizeof(Obj) +		/* type */
-    sizeof(Obj) +		/* q */
-    sizeof(Obj) +		/* p */
-    sizeof(Obj) +		/* d */
-    sizeof(Obj) +		/* els per byte */
+  size = sizeof(Obj) +    /* type */
+    sizeof(Obj) +   /* q */
+    sizeof(Obj) +   /* p */
+    sizeof(Obj) +   /* d */
+    sizeof(Obj) +   /* els per byte */
     q*sizeof(Obj) +             /* position in GAP < order  by number */
     q*sizeof(Obj) +             /* numbering from FFV */
-    q*sizeof(Obj) +		/* immediate FFE by number */
-    256*q*e +			/* set element lookup */
-    256*e +			/* get element lookup */
-    256*q +			/* scalar multiply */
-    2* 256*256 +		/* inner product, 1 lot of polynomial multiply data */
+    q*sizeof(Obj) +   /* immediate FFE by number */
+    256*q*e +     /* set element lookup */
+    256*e +     /* get element lookup */
+    256*q +     /* scalar multiply */
+    2* 256*256 +    /* inner product, 1 lot of polynomial multiply data */
     ((e == 1) ? 0 : (256*256))+ /* the other lot of polynomial data */
-    ((p == 2) ? 0 : (256*256));	/* add byte */
+    ((p == 2) ? 0 : (256*256)); /* add byte */
   
   info = NewBag(T_DATOBJ, size);
   TYPE_DATOBJ(info) = TYPE_FIELDINFO_8BIT;
@@ -423,10 +419,10 @@ void MakeFieldInfo8Bit( UInt q)
      of the field. In char 2, we assume that xor corresponds
      to addition, otherwise, the order doesn't matter */
   
-  if (p != 2)		
+  if (p != 2)   
     for (i = 0; i < q; i++)
       FELT_FFE_FIELDINFO_8BIT(info)[i] = (UInt1)i;
-  else			
+  else      
     for (i = 0; i < q; i++)
       FELT_FFE_FIELDINFO_8BIT(info)[i] = Char2Lookup[d][i];
   
@@ -449,31 +445,31 @@ void MakeFieldInfo8Bit( UInt q)
   if (q != 2)
     {
       if (d == 1)
-	for (i = 2; i < q; i++)
-	  GAPSEQ_FELT_FIELDINFO_8BIT(info)[i] = INTOBJ_INT(i);
+  for (i = 2; i < q; i++)
+    GAPSEQ_FELT_FIELDINFO_8BIT(info)[i] = INTOBJ_INT(i);
       else
-	{
-	  /* run through subfields, filling in entry for all the new elements
-	     of each field in turn */
-	  UInt q1 = 1;
-	  UInt pos = 2;
-	  for (i = 1; i <= d; i++)
-	    {
-	      q1 *= p;
-	      if (d % i == 0)
-		{
-		  for (j = 2; j < q1; j++)
-		    {
-		      UInt place = FELT_FFE_FIELDINFO_8BIT(info)[1+(j-1)*(q-1)/(q1-1)];
-		      if (GAPSEQ_FELT_FIELDINFO_8BIT(info)[place] == 0)
-			{
-			  GAPSEQ_FELT_FIELDINFO_8BIT(info)[place] = INTOBJ_INT(pos);
-			  pos++;
-			}
-		    }
-		}
-	    }
-	}
+  {
+    /* run through subfields, filling in entry for all the new elements
+       of each field in turn */
+    UInt q1 = 1;
+    UInt pos = 2;
+    for (i = 1; i <= d; i++)
+      {
+        q1 *= p;
+        if (d % i == 0)
+    {
+      for (j = 2; j < q1; j++)
+        {
+          UInt place = FELT_FFE_FIELDINFO_8BIT(info)[1+(j-1)*(q-1)/(q1-1)];
+          if (GAPSEQ_FELT_FIELDINFO_8BIT(info)[place] == 0)
+      {
+        GAPSEQ_FELT_FIELDINFO_8BIT(info)[place] = INTOBJ_INT(pos);
+        pos++;
+      }
+        }
+    }
+      }
+  }
     }
     
   
@@ -482,8 +478,8 @@ void MakeFieldInfo8Bit( UInt q)
   for (i = 0; i < q; i++)
     for (j = 0; j < e; j++)
       for (k = 0; k < 256; k++)
-	SETELT_FIELDINFO_8BIT(info)[(i*e + j)*256 + k] = (UInt1)
-	  ((k/pows[j+1])*pows[j+1] + i*pows[j] + (k % pows[j]));
+  SETELT_FIELDINFO_8BIT(info)[(i*e + j)*256 + k] = (UInt1)
+    ((k/pows[j+1])*pows[j+1] + i*pows[j] + (k % pows[j]));
   
   /* entry access GETELT...[i*256+j] recovers the ith entry from the
      byte j */
@@ -497,17 +493,17 @@ void MakeFieldInfo8Bit( UInt q)
     {
       mult = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)[i]);
       for(j = 0; j < 256; j++)
-	{
-	  val = 0;
-	  for (k  = 0; k < e; k++)
-	    {
-	      elt = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
-			    [GETELT_FIELDINFO_8BIT(info)[k*256+j]]);
-	      prod = PROD_FFV(elt,mult,succ);
-	      val += pows[k]*FELT_FFE_FIELDINFO_8BIT(info)[prod];
-	    }
-	  SCALAR_FIELDINFO_8BIT(info)[i*256+j] = val;
-	}
+  {
+    val = 0;
+    for (k  = 0; k < e; k++)
+      {
+        elt = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
+          [GETELT_FIELDINFO_8BIT(info)[k*256+j]]);
+        prod = PROD_FFV(elt,mult,succ);
+        val += pows[k]*FELT_FFE_FIELDINFO_8BIT(info)[prod];
+      }
+    SCALAR_FIELDINFO_8BIT(info)[i*256+j] = val;
+  }
     }
   
   /* inner product INNER...[i+256*j] is a byte whose LS entry is the contribution
@@ -516,19 +512,19 @@ void MakeFieldInfo8Bit( UInt q)
   for ( i = 0; i < 256; i++)
     for (j = i; j < 256; j++)
       {
-	val = 0;
-	for (k = 0; k < e; k++)
-	  {
-	    el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
-			  [GETELT_FIELDINFO_8BIT(info)[k*256+i]]);
-	    el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
-			  [GETELT_FIELDINFO_8BIT(info)[k*256+j]]);
-	    elt = PROD_FFV( el1, el2, succ);
-	    val = SUM_FFV(val, elt, succ);
-	  }
-	val = SETELT_FIELDINFO_8BIT(info)[256*e*FELT_FFE_FIELDINFO_8BIT(info)[val]];
-	INNER_FIELDINFO_8BIT(info)[i+256*j] = val;
-	INNER_FIELDINFO_8BIT(info)[j+256*i] = val;
+  val = 0;
+  for (k = 0; k < e; k++)
+    {
+      el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
+        [GETELT_FIELDINFO_8BIT(info)[k*256+i]]);
+      el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
+        [GETELT_FIELDINFO_8BIT(info)[k*256+j]]);
+      elt = PROD_FFV( el1, el2, succ);
+      val = SUM_FFV(val, elt, succ);
+    }
+  val = SETELT_FIELDINFO_8BIT(info)[256*e*FELT_FFE_FIELDINFO_8BIT(info)[val]];
+  INNER_FIELDINFO_8BIT(info)[i+256*j] = val;
+  INNER_FIELDINFO_8BIT(info)[j+256*i] = val;
       }
 
   /* PMULL and PMULU are the lower and upper bytes of the product
@@ -536,45 +532,45 @@ void MakeFieldInfo8Bit( UInt q)
   for ( i = 0; i < 256; i++)
     for (j = i; j < 256; j++)
       {
-	val0 = 0;
-	for (k = 0; k < e; k++)
-	  {
-	    val = 0;
-	    for (l = 0; l <= k; l++)
-	      {
-		el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
-			      [GETELT_FIELDINFO_8BIT(info)[l*256+i]]);
-		el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
-			      [GETELT_FIELDINFO_8BIT(info)[(k-l)*256+j]]);
-		elt = PROD_FFV( el1, el2, succ);
-		val = SUM_FFV(val, elt, succ);
-	      }
-	    val0 += pows[k]*FELT_FFE_FIELDINFO_8BIT(info)[val];
-	  }
-	PMULL_FIELDINFO_8BIT(info)[i+256*j] = val0;
-	PMULL_FIELDINFO_8BIT(info)[j+256*i] = val0;
+  val0 = 0;
+  for (k = 0; k < e; k++)
+    {
+      val = 0;
+      for (l = 0; l <= k; l++)
+        {
+    el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
+            [GETELT_FIELDINFO_8BIT(info)[l*256+i]]);
+    el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
+            [GETELT_FIELDINFO_8BIT(info)[(k-l)*256+j]]);
+    elt = PROD_FFV( el1, el2, succ);
+    val = SUM_FFV(val, elt, succ);
+        }
+      val0 += pows[k]*FELT_FFE_FIELDINFO_8BIT(info)[val];
+    }
+  PMULL_FIELDINFO_8BIT(info)[i+256*j] = val0;
+  PMULL_FIELDINFO_8BIT(info)[j+256*i] = val0;
 
-	/* if there is just one entry per byte then we don't need the upper half */
-	if (ELS_BYTE_FIELDINFO_8BIT(info) > 1)
-	  {
-	    val0 = 0;
-	    for (k = e; k < 2*e-1; k++)
-	      {
-		val = 0;
-		for (l = k-e+1; l < e; l++)
-		  {
-		    el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
-				  [GETELT_FIELDINFO_8BIT(info)[l*256+i]]);
-		    el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
-				  [GETELT_FIELDINFO_8BIT(info)[(k-l)*256+j]]);
-		    elt = PROD_FFV( el1, el2, succ);
-		    val = SUM_FFV(val, elt, succ);
-		  }
-		val0 += pows[k-e]*FELT_FFE_FIELDINFO_8BIT(info)[val];
-	      }
-	    PMULU_FIELDINFO_8BIT(info)[i+256*j] = val0;
-	    PMULU_FIELDINFO_8BIT(info)[j+256*i] = val0;
-	  }
+  /* if there is just one entry per byte then we don't need the upper half */
+  if (ELS_BYTE_FIELDINFO_8BIT(info) > 1)
+    {
+      val0 = 0;
+      for (k = e; k < 2*e-1; k++)
+        {
+    val = 0;
+    for (l = k-e+1; l < e; l++)
+      {
+        el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
+          [GETELT_FIELDINFO_8BIT(info)[l*256+i]]);
+        el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
+          [GETELT_FIELDINFO_8BIT(info)[(k-l)*256+j]]);
+        elt = PROD_FFV( el1, el2, succ);
+        val = SUM_FFV(val, elt, succ);
+      }
+    val0 += pows[k-e]*FELT_FFE_FIELDINFO_8BIT(info)[val];
+        }
+      PMULU_FIELDINFO_8BIT(info)[i+256*j] = val0;
+      PMULU_FIELDINFO_8BIT(info)[j+256*i] = val0;
+    }
       }
   
   
@@ -583,21 +579,21 @@ void MakeFieldInfo8Bit( UInt q)
   if (p != 2)
     {
       for (i = 0; i < 256; i++)
-	for (j = i; j < 256; j++)
-	  {
-	    val = 0;
-	    for (k = 0; k < e; k++)
-	      {
-		el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
-			      [GETELT_FIELDINFO_8BIT(info)[k*256+i]]);
-		el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
-			      [GETELT_FIELDINFO_8BIT(info)[k*256+j]]);
-		val += pows[k]*
-		  FELT_FFE_FIELDINFO_8BIT(info)[SUM_FFV(el1,el2, succ)];
-	      }
-	    ADD_FIELDINFO_8BIT(info)[i+256*j] = val;
-	    ADD_FIELDINFO_8BIT(info)[j+256*i] = val;
-	  }
+  for (j = i; j < 256; j++)
+    {
+      val = 0;
+      for (k = 0; k < e; k++)
+        {
+    el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
+            [GETELT_FIELDINFO_8BIT(info)[k*256+i]]);
+    el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)
+            [GETELT_FIELDINFO_8BIT(info)[k*256+j]]);
+    val += pows[k]*
+      FELT_FFE_FIELDINFO_8BIT(info)[SUM_FFV(el1,el2, succ)];
+        }
+      ADD_FIELDINFO_8BIT(info)[i+256*j] = val;
+      ADD_FIELDINFO_8BIT(info)[j+256*i] = val;
+    }
     }
   
   
@@ -655,7 +651,7 @@ void RewriteVec8Bit( Obj vec, UInt q)
   if (DoFilter(IsLockedRepresentationVector,vec) == True)
     {
       ErrorMayQuit("You cannot convert a locked vector compressed over GF(%i) to GF(%i)",
-		      q1, q);
+          q1, q);
       return;
     }
   
@@ -693,15 +689,15 @@ void RewriteVec8Bit( Obj vec, UInt q)
     {
       val= VAL_FFE(convtab1[ gettab1[byte1 + 256 * (i % els1)]]);
       if (val != 0)
-	val = 1+ (val-1)*mult;
+  val = 1+ (val-1)*mult;
       byte = settab[ byte + 256 * (i % els + els* convtab[ val ])];
       if (0 == i % els)
-	{
-	  *ptr-- = byte;
-	  byte = 0;
-	}
+  {
+    *ptr-- = byte;
+    byte = 0;
+  }
       if (0 == i % els1)
-	byte1 = *--ptr1;
+  byte1 = *--ptr1;
       i--;
     }
   SET_FIELD_VEC8BIT(vec,q);
@@ -736,7 +732,7 @@ void RewriteGF2Vec( Obj vec, UInt q )
   if (DoFilter(IsLockedRepresentationVector,vec) == True)
     {
       ErrorReturnVoid("You cannot convert a locked vector compressed over GF(2) to GF(%i)",
-		      q, 0, "You can `return;' to ignore the conversion");
+          q, 0, "You can `return;' to ignore the conversion");
       return;
     }
   
@@ -762,12 +758,12 @@ void RewriteGF2Vec( Obj vec, UInt q )
     {
       byte = settab[ byte + 256 * (i % els + els* ((block & MASK_POS_GF2VEC( i+1)) ? one: zero))];
       if (0 == i % els)
-	{
-	  *ptr-- = byte;
-	  byte = 0;
-	}
+  {
+    *ptr-- = byte;
+    byte = 0;
+  }
       if (0 == i % BIPEB)
-	block = *--ptr1;
+  block = *--ptr1;
       i--;
     }
   SET_FIELD_VEC8BIT(vec, q);
@@ -788,19 +784,19 @@ void ConvVec8Bit (
 {
     Int                 len;            /* logical length of the vector    */
     Int                 i;              /* loop variable                   */
-    UInt                p;	/* char */
-    UInt                d;	/* degree */
-    FF                  f;	/* field */
- /* Obj                 x;	/ an element */
-    Obj                 info;	/* field info object */
-    UInt                elts;	/* elements per byte */
-    UInt1 *             settab;	/* element setting table */
+    UInt                p;  /* char */
+    UInt                d;  /* degree */
+    FF                  f;  /* field */
+ /* Obj                 x;  / an element */
+    Obj                 info; /* field info object */
+    UInt                elts; /* elements per byte */
+    UInt1 *             settab; /* element setting table */
     UInt1 *             convtab; /* FFE -> FELT conversion table */
     Obj                 firstthree[3]; /* the first three entries
-					may get clobbered my the early bytes */
-    UInt                e;	/* loop varibale */
-    UInt1               byte;	/* byte under construction */
-    UInt1*              ptr;	/* place to put byte */
+          may get clobbered my the early bytes */
+    UInt                e;  /* loop varibale */
+    UInt1               byte; /* byte under construction */
+    UInt1*              ptr;  /* place to put byte */
     Obj                elt;
     UInt               val;
     UInt               nsize;
@@ -808,28 +804,28 @@ void ConvVec8Bit (
         
     if (q > 256)
       ErrorQuit("Field size %d is too much for 8 bits\n",
-		q, 0L);
+    q, 0L);
     if (q == 2)
       ErrorQuit("GF2 has its own representation\n",0L,0L);
 
     /* already in the correct representation                               */
     if ( IS_VEC8BIT_REP(list))
       {
-	if(FIELD_VEC8BIT(list) == q ) 
-	  return;
-	else if (FIELD_VEC8BIT(list) < q)
-	  {
-	    RewriteVec8Bit(list,q);
-	    return;
-	  }
-	/* remaining case is list is written over too large a field
-	   pass through to the generic code */
-	
+  if(FIELD_VEC8BIT(list) == q ) 
+    return;
+  else if (FIELD_VEC8BIT(list) < q)
+    {
+      RewriteVec8Bit(list,q);
+      return;
+    }
+  /* remaining case is list is written over too large a field
+     pass through to the generic code */
+  
     }
     else if ( IS_GF2VEC_REP(list))
       {
-	RewriteGF2Vec(list, q);
-	return;
+  RewriteGF2Vec(list, q);
+  return;
       }
     
     len   = LEN_LIST(list);
@@ -865,20 +861,20 @@ void ConvVec8Bit (
       assert( d % DegreeFFE(elt) == 0);
       val = VAL_FFE(elt);
       if (val != 0 && FLD_FFE(elt) != f)
-	{
-	  val = 1+(val-1)*(q-1)/(SIZE_FF(FLD_FFE(elt))-1);
-	}
+  {
+    val = 1+(val-1)*(q-1)/(SIZE_FF(FLD_FFE(elt))-1);
+  }
       /* Must get these afresh after every list access, just in case this is
        a virtual list whose accesses might cause a garbage collection */
       settab = SETELT_FIELDINFO_8BIT(info);
       convtab = FELT_FFE_FIELDINFO_8BIT(info);
       byte = settab[(e + elts*convtab[val])*256 + byte];
       if (++e == elts || i == len)
-	{
-	  *ptr++ = byte;
-	  byte = 0;
-	  e = 0;
-	}
+  {
+    *ptr++ = byte;
+    byte = 0;
+    e = 0;
+  }
     }
 
     /* it can happen that the few bytes after the end of the data are
@@ -916,9 +912,9 @@ UInt LcmDegree( UInt d, UInt d1)
   while (x != 0 && y != 0)
     {
       if (x <= y)
-	y = y % x;
+  y = y % x;
       else 
-	x = x % y;
+  x = x % y;
     }
   if (x == 0)
     g = y;
@@ -939,7 +935,7 @@ Obj FuncCONV_VEC8BIT (
   if (!IS_INTOBJ(q))
     {
       ErrorMayQuit("CONV_VEC8BIT: q must be a small integer (3--256) not a %s",
-		   (Int)TNAM_OBJ(q), 0);
+       (Int)TNAM_OBJ(q), 0);
     }
     
   ConvVec8Bit(list, INT_INTOBJ(q));
@@ -974,8 +970,8 @@ void PlainVec8Bit (
     /* resize the list and retype it, in this order                        */
     if (True == DoFilter(IsLockedRepresentationVector, list))
       {
-	ErrorMayQuit("Attempt to convert locked compressed vector to plain list",0,0);
-	return;
+  ErrorMayQuit("Attempt to convert locked compressed vector to plain list",0,0);
+  return;
       }
 
     len = LEN_VEC8BIT(list);
@@ -997,26 +993,26 @@ void PlainVec8Bit (
 
     if (len != 0)
       {
-	gettab = GETELT_FIELDINFO_8BIT(info);
-	/* keep the first two entries
-	   because setting the third destroys them  */
-	
-	first = FFE_FELT_FIELDINFO_8BIT(info)[gettab[BYTES_VEC8BIT(list)[0]]];
-	if (len > 1)
-	  second =
-	    FFE_FELT_FIELDINFO_8BIT(info)
-	    [gettab[256*(1 % elts)+BYTES_VEC8BIT(list)[1/elts]]];
-	
-	/* replace the bits by FF elts as the case may be        */
-	/* this must of course be done from the end of the list backwards      */
-	for ( i = len;  2 < i;  i-- )
-	  SET_ELM_PLIST( list, i,
-			 FFE_FELT_FIELDINFO_8BIT(info)
-		       [gettab[256*((i-1)%elts)+
-			       BYTES_VEC8BIT( list )[ (i-1) /elts]]] );
-	if (len > 1)
-	  SET_ELM_PLIST( list, 2, second );
-	SET_ELM_PLIST( list, 1, first );
+  gettab = GETELT_FIELDINFO_8BIT(info);
+  /* keep the first two entries
+     because setting the third destroys them  */
+  
+  first = FFE_FELT_FIELDINFO_8BIT(info)[gettab[BYTES_VEC8BIT(list)[0]]];
+  if (len > 1)
+    second =
+      FFE_FELT_FIELDINFO_8BIT(info)
+      [gettab[256*(1 % elts)+BYTES_VEC8BIT(list)[1/elts]]];
+  
+  /* replace the bits by FF elts as the case may be        */
+  /* this must of course be done from the end of the list backwards      */
+  for ( i = len;  2 < i;  i-- )
+    SET_ELM_PLIST( list, i,
+       FFE_FELT_FIELDINFO_8BIT(info)
+           [gettab[256*((i-1)%elts)+
+             BYTES_VEC8BIT( list )[ (i-1) /elts]]] );
+  if (len > 1)
+    SET_ELM_PLIST( list, 2, second );
+  SET_ELM_PLIST( list, 1, first );
       }
     /* Null out any entries after the end of valid data */
     for (i = len+1; i < (SIZE_BAG(list)+sizeof(Obj) -1 ) /sizeof(Obj); i++)
@@ -1043,7 +1039,7 @@ Obj FuncPLAIN_VEC8BIT (
     if (DoFilter(IsLockedRepresentationVector,list) == True)
     {
       ErrorMayQuit("You cannot convert a locked vector compressed over GF(%i) to a plain list",
-		      FIELD_VEC8BIT(list) , 0);
+          FIELD_VEC8BIT(list) , 0);
       return 0;
     }
     PlainVec8Bit(list);
@@ -1107,10 +1103,10 @@ Obj CopyVec8Bit( Obj list, UInt mut )
 */
 
 void  AddVec8BitVec8BitInner( Obj sum,
-			      Obj vl,
-			      Obj vr,
-			      UInt start,
-			      UInt stop )
+  Obj vl,
+  Obj vr,
+  UInt start,
+  UInt stop )
 {
   Obj info;
   UInt p;
@@ -1131,40 +1127,37 @@ void  AddVec8BitVec8BitInner( Obj sum,
   start --;
   stop --;
   if (p == 2)
+  {
+    UInt *ptrL2;
+    UInt *ptrR2;
+    UInt *ptrS2;
+    UInt *endS2;
+    ptrL2 = BLOCKS_VEC8BIT(vl) + start/(sizeof(UInt)*elts);
+    ptrR2 = BLOCKS_VEC8BIT(vr) + start/(sizeof(UInt)*elts);
+    ptrS2 = BLOCKS_VEC8BIT(sum) + start/(sizeof(UInt)*elts);
+    endS2 = BLOCKS_VEC8BIT(sum) + stop/(sizeof(UInt)*elts)+1;
+    if (sum == vl)
     {
-      UInt *ptrL2;
-      UInt *ptrR2;
-      UInt *ptrS2;
-      UInt *endS2;
-      UInt x;
-      ptrL2 = BLOCKS_VEC8BIT(vl) + start/(sizeof(UInt)*elts);
-      ptrR2 = BLOCKS_VEC8BIT(vr) + start/(sizeof(UInt)*elts);
-      ptrS2 = BLOCKS_VEC8BIT(sum) + start/(sizeof(UInt)*elts);
-      endS2 = BLOCKS_VEC8BIT(sum) + stop/(sizeof(UInt)*elts)+1;
-      if (sum == vl)
-	{
-	  while (ptrL2 < endS2)
-	    {
-	      if ((x = *ptrR2) != 0)
-		*ptrL2 = *ptrL2 ^ x;
-	      ptrL2++; ptrR2++; 
-	    }
-	}
-      else if (sum == vr)
-	{
-	  while (ptrR2 < endS2)
-	    {
-	      if ((x = *ptrL2) != 0)
-		*ptrR2 = *ptrR2 ^ x;
-	      ptrL2++; ptrR2++;
-	    }
-	  
-	}
-      else
-	while (ptrS2 < endS2)
-	  *ptrS2++ = *ptrL2++ ^ *ptrR2++;
+      while (ptrL2 < endS2)
+      {
+        *ptrL2 ^= *ptrR2;
+        ptrL2++; ptrR2++; 
+      }
     }
-  else
+    else if (sum == vr)
+    {
+      while (ptrR2 < endS2)
+      {
+        *ptrR2 ^=  *ptrL2;
+        ptrL2++; ptrR2++;
+      }
+
+    }
+    else
+      while (ptrS2 < endS2)
+        *ptrS2++ = *ptrL2++ ^ *ptrR2++;
+    }
+    else
     {
       UInt1 *ptrL;
       UInt1 *ptrR;
@@ -1177,29 +1170,29 @@ void  AddVec8BitVec8BitInner( Obj sum,
       ptrS = BYTES_VEC8BIT(sum) + start/elts;
       endS = BYTES_VEC8BIT(sum) + stop/elts + 1;
       if (vl == sum)
-	{
-	  while (ptrL < endS)
-	    {
-	      if ((x = *ptrR) != 0)
-		*ptrL = addtab[256* (*ptrL) + x];
-	      ptrR++; ptrL++;
-	    }
-	}
+      {
+        while (ptrL < endS)
+        {
+          if ((x = *ptrR) != 0)
+            *ptrL = addtab[256* (*ptrL) + x];
+          ptrR++; ptrL++;
+        }
+      }
       else if (vr == sum)
-	{
-	  while (ptrR < endS)
-	    {
-	      if ((x = *ptrL) != 0)
-		*ptrR = addtab[256* (x) + *ptrR];
-	      ptrR++; ptrL++;
-	    }
-	}
+      {
+        while (ptrR < endS)
+        {
+          if ((x = *ptrL) != 0)
+            *ptrR = addtab[256* (x) + *ptrR];
+          ptrR++; ptrL++;
+        }
+      }
       else
-	while (ptrS < endS)
-	  *ptrS++ = addtab[256* (*ptrL++) + *ptrR++];
+        while (ptrS < endS)
+          *ptrS++ = addtab[256* (*ptrL++) + *ptrR++];
+      }
+      return;
     }
-  return;
-}
 
 /****************************************************************************
 **
@@ -1261,20 +1254,20 @@ Obj FuncSUM_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
       assert(p == P_FIELDINFO_8BIT(infor));
       newq = 1;
       for (i = 0; i < newd; i++)
-	newq *= p;
+  newq *= p;
       /* if the exponent is bigger than 31, overflow changes the value to 0 */
       if (newd>8 || newq > 256 ||
-	  (ql != newq && True == CALL_1ARGS(IsLockedRepresentationVector,vl)) ||
-	  (qr != newq && True == CALL_1ARGS(IsLockedRepresentationVector,vr)))
-	{
-	  sum = SumListList(vl,vr);
-	  return sum;
-	}
+    (ql != newq && True == CALL_1ARGS(IsLockedRepresentationVector,vl)) ||
+    (qr != newq && True == CALL_1ARGS(IsLockedRepresentationVector,vr)))
+  {
+    sum = SumListList(vl,vr);
+    return sum;
+  }
       else
-	{
-	  RewriteVec8Bit( vl, newq);
-	  RewriteVec8Bit( vr, newq);
-	}
+  {
+    RewriteVec8Bit( vl, newq);
+    RewriteVec8Bit( vr, newq);
+  }
     }
 
   
@@ -1314,10 +1307,10 @@ Obj FuncSUM_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
 */
 
 void MultVec8BitFFEInner( Obj prod,
-			  Obj vec,
-			  Obj scal,
-			  UInt start,
-			  UInt stop )
+        Obj vec,
+        Obj scal,
+        UInt start,
+        UInt stop )
 {
   Obj info;
   UInt elts;
@@ -1384,9 +1377,9 @@ Obj MultVec8BitFFE( Obj vec, Obj scal )
     {
       v = VAL_FFE(scal);
       if (v != 0)
-	v = 1+ (v-1)*(q-1)/(SIZE_FF(FLD_FFE(scal))-1);
+  v = 1+ (v-1)*(q-1)/(SIZE_FF(FLD_FFE(scal))-1);
       scal = NEW_FFE( FiniteField(P_FIELDINFO_8BIT(info),
-				  D_FIELDINFO_8BIT(info)),v);
+          D_FIELDINFO_8BIT(info)),v);
     }
   MultVec8BitFFEInner( prod, vec, scal, 1, len);
   return prod;
@@ -1441,8 +1434,8 @@ Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
     }
   else if (VAL_FFE(ffe) == 0)
     return ZeroVec8Bit(FIELD_VEC8BIT(vec),
-		       LEN_VEC8BIT(vec),
-		       IS_MUTABLE_OBJ(vec));
+           LEN_VEC8BIT(vec),
+           IS_MUTABLE_OBJ(vec));
   
   info = GetFieldInfo8Bit(FIELD_VEC8BIT(vec));
   d = D_FIELDINFO_8BIT(info);
@@ -1471,8 +1464,8 @@ Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
 Obj FuncZERO_VEC8BIT( Obj self, Obj vec )
 {
   return ZeroVec8Bit( FIELD_VEC8BIT(vec),
-		      LEN_VEC8BIT(vec),
-		      1);
+          LEN_VEC8BIT(vec),
+          1);
 }
 
 /****************************************************************************
@@ -1485,10 +1478,10 @@ Obj FuncZERO_VEC8BIT_2( Obj self, Obj q, Obj len )
 {
   if (!ARE_INTOBJS(q,len))
     ErrorQuit("ZERO_VEC8BIT2: arguments must be small integers, not a %s and a %s",
-	      (Int)TNAM_OBJ(q), (Int)TNAM_OBJ(len));
+        (Int)TNAM_OBJ(q), (Int)TNAM_OBJ(len));
   return ZeroVec8Bit( INT_INTOBJ(q),
-		      INT_INTOBJ(len),
-		      1L);
+          INT_INTOBJ(len),
+          1L);
 }
 
 /****************************************************************************
@@ -1574,11 +1567,11 @@ Obj FuncAINV_VEC8BIT_IMMUTABLE( Obj self, Obj vec )
 */
 
 void  AddVec8BitVec8BitMultInner( Obj sum,
-				  Obj vl,
-				  Obj vr,
-				  Obj mult,
-				  UInt start,
-				  UInt stop )
+          Obj vl,
+          Obj vr,
+          Obj mult,
+          UInt start,
+          UInt stop )
 {
   Obj info;
   UInt p;
@@ -1636,32 +1629,32 @@ void  AddVec8BitVec8BitMultInner( Obj sum,
   if (p != 2)
     if (sum == vl)
       {
-	const UInt1* endS1 = endS;
-	const UInt1* addtab1 = addtab;
-	const UInt1* multab1 = multab;
-	while (ptrL < endS1)
-	  {
-	    if ((x = *ptrR) != 0)
-	      *ptrL = addtab1[256* (*ptrL) + multab1[x]];
-	    ptrL++; ptrR++; 
-	  }
+  const UInt1* endS1 = endS;
+  const UInt1* addtab1 = addtab;
+  const UInt1* multab1 = multab;
+  while (ptrL < endS1)
+    {
+      if ((x = *ptrR) != 0)
+        *ptrL = addtab1[256* (*ptrL) + multab1[x]];
+      ptrL++; ptrR++; 
+    }
       }
     else
       while (ptrS < endS)
-	*ptrS++ = addtab[256* (*ptrL++) + multab[*ptrR++]];
+  *ptrS++ = addtab[256* (*ptrL++) + multab[*ptrR++]];
   else
     if (sum == vl)
       {
-	while (ptrL < endS)
-	  {
-	    if ((x = *ptrR) != 0)
-	      *ptrL = *ptrL ^ multab[x];
-	    ptrR++; ptrL++;
-	  }
+  while (ptrL < endS)
+    {
+      if ((x = *ptrR) != 0)
+        *ptrL = *ptrL ^ multab[x];
+      ptrR++; ptrL++;
+    }
       }
     else
       while (ptrS < endS)
-	*ptrS++ = *ptrL++ ^ multab[*ptrR++];
+  *ptrS++ = *ptrL++ ^ multab[*ptrR++];
   return;
 }
 
@@ -1691,10 +1684,10 @@ Obj FuncMULT_ROWVECTOR_VEC8BITS( Obj self, Obj vec, Obj mul)
       d = D_FIELDINFO_8BIT(info);
       d1 = DegreeFFE(mul);
       if (d % d1)
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       val = VAL_FFE(mul);
       if (val != 0)
-	val = 1 + (val-1)*(q-1)/(SIZE_FF(FLD_FFE(mul))-1);
+  val = 1 + (val-1)*(q-1)/(SIZE_FF(FLD_FFE(mul))-1);
       mul = NEW_FFE(FiniteField(P_FIELDINFO_8BIT(info),d),val);
     }
   MultVec8BitFFEInner( vec, vec, mul, 1, LEN_VEC8BIT(vec));
@@ -1723,7 +1716,7 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_5( Obj self, Obj vl, Obj vr, Obj mul, Obj from, O
   if (len != LEN_VEC8BIT(vr))
     {
       vr = ErrorReturnObj( "AddRowVector: <left> and <right> must be vectors of the same length",
-			   0L,0L,
+         0L,0L,
                            "you can replace <right> via 'return <right>;'");
       
       /* Now redispatch, because vr could be anything */
@@ -1732,8 +1725,8 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_5( Obj self, Obj vl, Obj vr, Obj mul, Obj from, O
   while (LT(INTOBJ_INT(len),to))
     {
       to = ErrorReturnObj( "AddRowVector: <to> (%d) is greater than the length of the vectors (%d)",
-			   INT_INTOBJ(to), len,
-			   "you can replace <to> via 'return <to>;'");
+         INT_INTOBJ(to), len,
+         "you can replace <to> via 'return <to>;'");
     }
   if (LT(to,from))
     return (Obj) 0;
@@ -1761,18 +1754,18 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_5( Obj self, Obj vl, Obj vr, Obj mul, Obj from, O
       assert(p == CHAR_FF(FLD_FFE(mul)));
       q0 = 1;
       for (i = 0; i < d0; i++)
-	q0 *= p;
+  q0 *= p;
       /* if the exponent is bigger than 31, overflow changes the value to 0 */
       if (d0>8||q0 > 256)
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       if ( (q0 > q && DoFilter(IsLockedRepresentationVector, vl) == True) ||
-	   (q0 > q1 && DoFilter(IsLockedRepresentationVector, vr) == True))
-	return TRY_NEXT_METHOD;
+     (q0 > q1 && DoFilter(IsLockedRepresentationVector, vr) == True))
+  return TRY_NEXT_METHOD;
       RewriteVec8Bit(vl,q0);
       RewriteVec8Bit(vr,q0);
       val = VAL_FFE(mul);
       if (val != 0)
-	val = 1 + (val-1)*(q0-1)/(SIZE_FF(FLD_FFE(mul))-1);
+  val = 1 + (val-1)*(q0-1)/(SIZE_FF(FLD_FFE(mul))-1);
       mul = NEW_FFE(FiniteField(p,d0),val);
       q = q0;
     }
@@ -1796,7 +1789,7 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_3( Obj self, Obj vl, Obj vr, Obj mul)
   if (LEN_VEC8BIT(vl) != LEN_VEC8BIT(vr))
     {
       vr = ErrorReturnObj( "SUM: <left> and <right> must be vectors of the same length",
-			   0L,0L,
+         0L,0L,
                            "you can replace <right> via 'return <right>;'");
       
       /* Now redispatch, because vr could be anything */
@@ -1824,18 +1817,18 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_3( Obj self, Obj vl, Obj vr, Obj mul)
       assert(p == CHAR_FF(FLD_FFE(mul)));
       q0 = 1;
       for (i = 0; i < d0; i++)
-	q0 *= p;
+  q0 *= p;
       /* if the exponent is bigger than 31, overflow changes the value to 0 */
       if (d0>8||q0 > 256)
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       if ( (q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vl) == True) ||
-	   (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
-	return TRY_NEXT_METHOD;
+     (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
+  return TRY_NEXT_METHOD;
       RewriteVec8Bit(vl,q0);
       RewriteVec8Bit(vr,q0);
       val = VAL_FFE(mul);
       if (val != 0)
-	val = 1 + (val-1)*(q0-1)/(SIZE_FF(FLD_FFE(mul))-1);
+  val = 1 + (val-1)*(q0-1)/(SIZE_FF(FLD_FFE(mul))-1);
       mul = NEW_FFE(FiniteField(p,d0),val);
       q = q0;
     }
@@ -1858,7 +1851,7 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_2( Obj self, Obj vl, Obj vr)
   if (LEN_VEC8BIT(vl) != LEN_VEC8BIT(vr))
     {
       vr = ErrorReturnObj( "SUM: <left> and <right> must be vectors of the same length",
-			   0L,0L,
+         0L,0L,
                            "you can replace <right> via 'return <right>;'");
       
       /* Now redispatch, because vr could be anything */
@@ -1883,13 +1876,13 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_2( Obj self, Obj vl, Obj vr)
       assert(p == P_FIELDINFO_8BIT(info1));
       q0 = 1;
       for (i = 0; i < d0; i++)
-	q0 *= p;
+  q0 *= p;
       /* if the exponent is bigger than 31, overflow changes the value to 0 */
       if (d0>8||q0 > 256)
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       if ( (q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vl) == True) ||
-	   (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
-	return TRY_NEXT_METHOD;
+     (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
+  return TRY_NEXT_METHOD;
       RewriteVec8Bit(vl,q0);
       RewriteVec8Bit(vr,q0);
       q = q0;
@@ -1934,9 +1927,9 @@ Obj SumVec8BitVec8BitMult( Obj vl, Obj vr, Obj mult )
     {
       v = VAL_FFE(mult);
       if (v != 0)
-	v = 1+ (v-1)*(q-1)/(SIZE_FF(FLD_FFE(mult))-1);
+  v = 1+ (v-1)*(q-1)/(SIZE_FF(FLD_FFE(mult))-1);
       mult = NEW_FFE( FiniteField(P_FIELDINFO_8BIT(info),
-				  D_FIELDINFO_8BIT(info)),v);
+          D_FIELDINFO_8BIT(info)),v);
     }
   AddVec8BitVec8BitMultInner( sum, vl, vr, mult, 1, len);
   return sum;
@@ -1969,10 +1962,10 @@ Obj DiffVec8BitVec8Bit( Obj vl, Obj vr)
       dif = MultVec8BitFFE( vr, MinusOne);
       AddVec8BitVec8BitInner( dif, dif, vl, 1, LEN_VEC8BIT(vl));
       if (IS_MUTABLE_OBJ(vl) && !IS_MUTABLE_OBJ(vr))
-	{
-	  type = TypeVec8Bit(Q_FIELDINFO_8BIT(info), 1);
-	  TYPE_DATOBJ(dif) = type;
-	}
+  {
+    type = TypeVec8Bit(Q_FIELDINFO_8BIT(info), 1);
+    TYPE_DATOBJ(dif) = type;
+  }
       return dif;
     }
   else
@@ -2007,21 +2000,21 @@ Obj FuncDIFF_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
       assert(p == P_FIELDINFO_8BIT(infor));
       newq = 1;
       for (i = 0; i < newd; i++)
-	newq *= p;
+  newq *= p;
       /* if the exponent is bigger than 31, overflow changes the value to 0 */
       if (newd>8||newq > 256 ||
-	  (ql != newq && True == CALL_1ARGS(IsLockedRepresentationVector,vl)) ||
-	  (qr != newq && True == CALL_1ARGS(IsLockedRepresentationVector,vr)))
-	{
-	  diff = DiffListList(vl,vr);
-	  CALL_1ARGS(ConvertToVectorRep, diff);
-	  return diff;
-	}
+    (ql != newq && True == CALL_1ARGS(IsLockedRepresentationVector,vl)) ||
+    (qr != newq && True == CALL_1ARGS(IsLockedRepresentationVector,vr)))
+  {
+    diff = DiffListList(vl,vr);
+    CALL_1ARGS(ConvertToVectorRep, diff);
+    return diff;
+  }
       else
-	{
-	  RewriteVec8Bit( vl, newq);
-	  RewriteVec8Bit( vr, newq);
-	}
+  {
+    RewriteVec8Bit( vl, newq);
+    RewriteVec8Bit( vr, newq);
+  }
     }
   
   /* Finally the main line */
@@ -2070,27 +2063,27 @@ Int CmpVec8BitVec8Bit( Obj vl, Obj vr )
   while (ptrL < endL && ptrR < endR)
     {
       if (*ptrL == *ptrR)
-	{
-	  ptrL++;
-	  ptrR++;
-	}
+  {
+    ptrL++;
+    ptrR++;
+  }
       else
-	{
-	  for (e = 0; e < elts; e++)
-	    {
-	      vall = gettab[*ptrL + 256*e];
-	      valr = gettab[*ptrR + 256*e];
-	      if (vall != valr)
-		{
-		  if (LT( ffe_elt[vall], ffe_elt[valr]))
-		    return -1;
-		  else
-		    return 1;
-		}
-	    }
-	  ErrorQuit("panic: bytes differed but all entries the same",
-		    0L, 0L);
-	}
+  {
+    for (e = 0; e < elts; e++)
+      {
+        vall = gettab[*ptrL + 256*e];
+        valr = gettab[*ptrR + 256*e];
+        if (vall != valr)
+    {
+      if (LT( ffe_elt[vall], ffe_elt[valr]))
+        return -1;
+      else
+        return 1;
+    }
+      }
+    ErrorQuit("panic: bytes differed but all entries the same",
+        0L, 0L);
+  }
     }
   /* now the final byte */
 
@@ -2110,12 +2103,12 @@ Int CmpVec8BitVec8Bit( Obj vl, Obj vr )
       vall = gettab[*ptrL + 256*e];
       valr = gettab[*ptrR + 256*e];
       if (vall != valr)  
-	{
-	  if (LT( ffe_elt[vall], ffe_elt[valr]))  
-	    return -1;
-	  else
-	    return 1;
-	}
+  {
+    if (LT( ffe_elt[vall], ffe_elt[valr]))  
+      return -1;
+    else
+      return 1;
+  }
     }
     /* if that didn't decide then the longer list is bigger */
   if (lenr > lenl)
@@ -2163,19 +2156,19 @@ Obj ScalarProductVec8Bits( Obj vl, Obj vr )
   if (P_FIELDINFO_8BIT(info) == 2)
     {
       while (ptrL < endL)
-	{
-	  contrib = inntab [*ptrL++ + 256* *ptrR++];
-	  acc ^= contrib;
-	}
+  {
+    contrib = inntab [*ptrL++ + 256* *ptrR++];
+    acc ^= contrib;
+  }
     }
   else
     {
       addtab = ADD_FIELDINFO_8BIT(info);
       while (ptrL < endL)
-	{
-	  contrib = inntab [*ptrL++ + 256* *ptrR++];
-	  acc = addtab[256*acc+contrib];
-	}
+  {
+    contrib = inntab [*ptrL++ + 256* *ptrR++];
+    acc = addtab[256*acc+contrib];
+  }
       
     }
   return FFE_FELT_FIELDINFO_8BIT(info)[GETELT_FIELDINFO_8BIT(info)[acc]];
@@ -2233,11 +2226,11 @@ UInt DistanceVec8Bits( Obj vl, Obj vr )
   while (ptrL < endL)
     {
       if (*ptrL != *ptrR)
-	{
-	  for (i = 0; i < elts; i++)
-	    if (gettab[*ptrL + 256*i] != gettab[*ptrR + 256*i])
-	      acc++;
-	}
+  {
+    for (i = 0; i < elts; i++)
+      if (gettab[*ptrL + 256*i] != gettab[*ptrR + 256*i])
+        acc++;
+  }
       ptrL++;
       ptrR++;
     }
@@ -2266,18 +2259,18 @@ Obj FuncDISTANCE_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr )
 **
 */
 void DistDistrib8Bits(
-  Obj		veclis, /* pointers to matrix vectors and their multiples */
-  Obj 	        vec,    /* vector we compute distance to */
-  Obj		d,	/* distances list */
-  Obj  	        sum,	/* position of the sum vector */
-  UInt		pos,	/* recursion depth */
-  UInt		l	/* length of basis */
+  Obj   veclis, /* pointers to matrix vectors and their multiples */
+  Obj           vec,    /* vector we compute distance to */
+  Obj   d,  /* distances list */
+  Obj           sum,  /* position of the sum vector */
+  UInt    pos,  /* recursion depth */
+  UInt    l /* length of basis */
   ) 
 {
-  UInt 		i;
-  UInt		di;
-  Obj		cnt;
-  Obj		vp;
+  UInt    i;
+  UInt    di;
+  Obj   cnt;
+  Obj   vp;
   Obj           one;
   Obj           tmp;
   UInt          len;
@@ -2291,24 +2284,24 @@ void DistDistrib8Bits(
   for (i=0; i<q; i++)
     {
       if (pos < l)
-	{
-	  DistDistrib8Bits( veclis, vec, d, sum, pos+1, l);
-	}
+  {
+    DistDistrib8Bits( veclis, vec, d, sum, pos+1, l);
+  }
       else
-	{
-	  di=DistanceVec8Bits(sum,vec);
-	  cnt=ELM_PLIST(d,di+1);
-	  if (IS_INTOBJ(cnt) && SUM_INTOBJS(tmp, cnt, one))
-	    {
-	      cnt = tmp;
-	      SET_ELM_PLIST(d,di+1,cnt);
-	    }
-	  else
-	    {
-	      cnt=SumInt(cnt,one);
-	      SET_ELM_PLIST(d,di+1,cnt);
-	      CHANGED_BAG(d);
-	    }
+  {
+    di=DistanceVec8Bits(sum,vec);
+    cnt=ELM_PLIST(d,di+1);
+    if (IS_INTOBJ(cnt) && SUM_INTOBJS(tmp, cnt, one))
+      {
+        cnt = tmp;
+        SET_ELM_PLIST(d,di+1,cnt);
+      }
+    else
+      {
+        cnt=SumInt(cnt,one);
+        SET_ELM_PLIST(d,di+1,cnt);
+        CHANGED_BAG(d);
+      }
       }
     AddVec8BitVec8BitInner(sum,sum,ELM_PLIST(vp,i+1),1,len);
   }
@@ -2316,14 +2309,14 @@ void DistDistrib8Bits(
 }
 
 Obj FuncDISTANCE_DISTRIB_VEC8BITS(
-  Obj		self,
-  Obj		veclis, /* pointers to matrix vectors and their multiples */
-  Obj		vec,    /* vector we compute distance to */
-  Obj		d )	/* distances list */
+  Obj   self,
+  Obj   veclis, /* pointers to matrix vectors and their multiples */
+  Obj   vec,    /* vector we compute distance to */
+  Obj   d ) /* distances list */
 
 {
-  Obj		sum; /* sum vector */
-  UInt 		len;
+  Obj   sum; /* sum vector */
+  UInt    len;
   UInt           q;
 
   len = LEN_VEC8BIT(vec);
@@ -2357,22 +2350,22 @@ void OverwriteVec8Bit( Obj dst, Obj src)
 }
 
 UInt AClosVec8Bit( 
-		  Obj		veclis, /* pointers to matrix vectors and their multiples */
-		  Obj 	        vec,    /* vector we compute distance to */
-		  Obj  	        sum,	/* position of the sum vector */
-		  UInt		pos,	/* recursion depth */
-		  UInt		l,	/* length of basis */
-		  UInt		cnt,	/* numbr of vectors used already */
-		  UInt		stop,	/* stop value */
-		  UInt		bd,	/* best distance so far */
-		  Obj		bv,	/* best vector so far */
-		  Obj           coords,
-		  Obj           bcoords
-		  )
+      Obj   veclis, /* pointers to matrix vectors and their multiples */
+      Obj           vec,    /* vector we compute distance to */
+      Obj           sum,  /* position of the sum vector */
+      UInt    pos,  /* recursion depth */
+      UInt    l,  /* length of basis */
+      UInt    cnt,  /* numbr of vectors used already */
+      UInt    stop, /* stop value */
+      UInt    bd, /* best distance so far */
+      Obj   bv, /* best vector so far */
+      Obj           coords,
+      Obj           bcoords
+      )
 {
-  UInt 		i,j;
-  UInt		di;
-  Obj		vp;
+  UInt    i,j;
+  UInt    di;
+  Obj   vp;
 /*Obj           one; */
 /*Obj           tmp; */
   UInt q;
@@ -2397,28 +2390,28 @@ UInt AClosVec8Bit(
       SET_ELM_PLIST(coords,pos,INTOBJ_INT(i));
     if (cnt == 0)
       {
-	/* do we have a new best case */
-	di=DistanceVec8Bits(sum,vec);
-	if (di < bd) {
-	  bd=di;
-	  OverwriteVec8Bit(bv, sum);
-	  if (coords)
-	    for (j = 1; j <= l; j++)
-	      {
-		Obj x;
-		x = ELM_PLIST(coords,j);
-		SET_ELM_PLIST(bcoords,j,x);
-	      }
-	  if (bd <= stop)
-	    return bd;
-	}
+  /* do we have a new best case */
+  di=DistanceVec8Bits(sum,vec);
+  if (di < bd) {
+    bd=di;
+    OverwriteVec8Bit(bv, sum);
+    if (coords)
+      for (j = 1; j <= l; j++)
+        {
+    Obj x;
+    x = ELM_PLIST(coords,j);
+    SET_ELM_PLIST(bcoords,j,x);
+        }
+    if (bd <= stop)
+      return bd;
+  }
       }
     else if (pos < l)
       {
-	bd = AClosVec8Bit(veclis,vec,sum,pos+1,l,cnt-1,stop,bd,bv,coords,bcoords);
-	if (bd<=stop) {
-	  return bd;
-	}
+  bd = AClosVec8Bit(veclis,vec,sum,pos+1,l,cnt-1,stop,bd,bv,coords,bcoords);
+  if (bd<=stop) {
+    return bd;
+  }
       }
   }
   /* reset component */
@@ -2436,23 +2429,23 @@ UInt AClosVec8Bit(
 */
 
 Obj FuncAClosVec8Bits( 
-		      Obj		self,
-		      Obj		veclis, /* pointers to matrix vectors and their multiples */
-		      Obj		vec,    /* vector we compute distance to */
-		      Obj		cnt,	/* distances list */
-		      Obj		stop)	/* distances list */
+          Obj   self,
+          Obj   veclis, /* pointers to matrix vectors and their multiples */
+          Obj   vec,    /* vector we compute distance to */
+          Obj   cnt,  /* distances list */
+          Obj   stop) /* distances list */
      
 {
-  Obj		sum; /* sum vector */
-  Obj		best; /* best vector */
-/*UInt *	ptr; */
+  Obj   sum; /* sum vector */
+  Obj   best; /* best vector */
+/*UInt *  ptr; */
 /*UInt *        end; */
-  UInt 		len;
+  UInt    len;
   UInt q;
 
   if (!ARE_INTOBJS(cnt,stop))
     ErrorQuit("A_CLOSEST_VEC8BIT: cnt and stop must be smal integers, not a %s and a %s",
-	      (Int)TNAM_OBJ(cnt), (Int)TNAM_OBJ(stop));
+        (Int)TNAM_OBJ(cnt), (Int)TNAM_OBJ(stop));
   
 
   q = FIELD_VEC8BIT(vec);
@@ -2465,8 +2458,8 @@ Obj FuncAClosVec8Bits(
 
   /* do the recursive work */
   AClosVec8Bit(veclis,vec,sum,1, LEN_PLIST(veclis),
-	       INT_INTOBJ(cnt),INT_INTOBJ(stop),len+1, /* maximal value +1 */
-	       best, (Obj)0, (Obj)0);
+         INT_INTOBJ(cnt),INT_INTOBJ(stop),len+1, /* maximal value +1 */
+         best, (Obj)0, (Obj)0);
   
   return best;
 }
@@ -2477,18 +2470,18 @@ Obj FuncAClosVec8Bits(
 */
 
 Obj FuncAClosVec8BitsCoords( 
-		      Obj		self,
-		      Obj		veclis, /* pointers to matrix vectors and their multiples */
-		      Obj		vec,    /* vector we compute distance to */
-		      Obj		cnt,	/* distances list */
-		      Obj		stop)	/* distances list */
+          Obj   self,
+          Obj   veclis, /* pointers to matrix vectors and their multiples */
+          Obj   vec,    /* vector we compute distance to */
+          Obj   cnt,  /* distances list */
+          Obj   stop) /* distances list */
      
 {
-  Obj		sum; /* sum vector */
-  Obj		best; /* best vector */
-/*UInt *	ptr; */
+  Obj   sum; /* sum vector */
+  Obj   best; /* best vector */
+/*UInt *  ptr; */
 /*UInt *        end; */
-  UInt 		len, len2,i;
+  UInt    len, len2,i;
   UInt q;
   Obj coords;
   Obj bcoords;
@@ -2496,7 +2489,7 @@ Obj FuncAClosVec8BitsCoords(
 
   if (!ARE_INTOBJS(cnt,stop))
     ErrorQuit("A_CLOSEST_VEC8BIT: cnt and stop must be smal integers, not a %s and a %s",
-	      (Int)TNAM_OBJ(cnt), (Int)TNAM_OBJ(stop));
+        (Int)TNAM_OBJ(cnt), (Int)TNAM_OBJ(stop));
   
 
   q = FIELD_VEC8BIT(vec);
@@ -2519,8 +2512,8 @@ Obj FuncAClosVec8BitsCoords(
 
   /* do the recursive work */
   AClosVec8Bit(veclis,vec,sum,1, LEN_PLIST(veclis),
-	       INT_INTOBJ(cnt),INT_INTOBJ(stop),len+1, /* maximal value +1 */
-	       best, coords, bcoords);
+         INT_INTOBJ(cnt),INT_INTOBJ(stop),len+1, /* maximal value +1 */
+         best, coords, bcoords);
 
   res = NEW_PLIST(T_PLIST_DENSE_NHOM,2);
   SET_LEN_PLIST(res,2);
@@ -2540,7 +2533,7 @@ Obj FuncAClosVec8BitsCoords(
 Obj FuncNUMBER_VEC8BIT (Obj self, Obj vec)
 
 {
-    Obj			info;
+    Obj     info;
     UInt                elts;
     UInt                len;
     UInt                i;
@@ -2550,7 +2543,7 @@ Obj FuncNUMBER_VEC8BIT (Obj self, Obj vec)
     Obj                 *convtab;
 
     Obj                 res;
-    Obj 		f;
+    Obj     f;
     
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(vec));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
@@ -2563,15 +2556,15 @@ Obj FuncNUMBER_VEC8BIT (Obj self, Obj vec)
 
     for (i = 0; i < len; i++)
       {
-	elt = convtab[gettab[ptrS[i/elts] + 256*(i%elts)]];
-	res=ProdInt(res,f); /* ``shift'' */
-	res=SumInt(res,elt);
-	if (!IS_INTOBJ(res)) {
-	  /* a garbage collection might have moved the pointers */
-	  gettab = GETELT_FIELDINFO_8BIT(info);
-	  convtab = GAPSEQ_FELT_FIELDINFO_8BIT(info);
-	  ptrS = BYTES_VEC8BIT(vec);
-	}
+  elt = convtab[gettab[ptrS[i/elts] + 256*(i%elts)]];
+  res=ProdInt(res,f); /* ``shift'' */
+  res=SumInt(res,elt);
+  if (!IS_INTOBJ(res)) {
+    /* a garbage collection might have moved the pointers */
+    gettab = GETELT_FIELDINFO_8BIT(info);
+    convtab = GAPSEQ_FELT_FIELDINFO_8BIT(info);
+    ptrS = BYTES_VEC8BIT(vec);
+  }
       }
     
     return res;
@@ -2588,13 +2581,13 @@ Obj FuncNUMBER_VEC8BIT (Obj self, Obj vec)
 #include <stdio.h>
 
 UInt CosetLeadersInner8Bits( Obj veclis,
-			   Obj v,
-			   Obj w,
-			   UInt weight,
-			   UInt pos,
-			   Obj leaders,
-			   UInt tofind,
-			   Obj felts)
+         Obj v,
+         Obj w,
+         UInt weight,
+         UInt pos,
+         Obj leaders,
+         UInt tofind,
+         Obj felts)
 {
   UInt found = 0;
   UInt len = LEN_VEC8BIT(v);
@@ -2622,93 +2615,93 @@ UInt CosetLeadersInner8Bits( Obj veclis,
   if (weight == 1)
     {
       for (i = pos; i <= len; i++)
-	{
+  {
                           vp = ELM_PLIST(veclis, i);
-	  u = ELM_PLIST(vp,1);
-	  AddVec8BitVec8BitInner(w,w,u,1,lenw);
-	  ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
-	  *ptr = settab[*ptr + 256 * (elts + ((i-1) % elts))];
-	  sy = 0;
-	  for (j = 0; j < lenw; j++)
-	    {
-		      UInt xxxx;
-		      sy *= q;
-		      xxxx = gettab[ptrw[j / elts] + 256* (j % elts)];
-		      sy += xxxx;
-	    }
-	  if ((Obj) 0 == ELM_PLIST(leaders,sy+1))
-	    {
-	      UInt k;
-	      Obj qk;
-	      Obj wc;
-	      vc = CopyVec8Bit(v, 0);
-	      SET_ELM_PLIST(leaders,sy+1,vc);
-	      CHANGED_BAG(leaders);
-	      /* Also record all the multiples here */
-	      wc = ZeroVec8Bit(q,lenw,1);
-	      settab = SETELT_FIELDINFO_8BIT(info);
-	      gettab = GETELT_FIELDINFO_8BIT(info);
+    u = ELM_PLIST(vp,1);
+    AddVec8BitVec8BitInner(w,w,u,1,lenw);
+    ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
+    *ptr = settab[*ptr + 256 * (elts + ((i-1) % elts))];
+    sy = 0;
+    for (j = 0; j < lenw; j++)
+      {
+          UInt xxxx;
+          sy *= q;
+          xxxx = gettab[ptrw[j / elts] + 256* (j % elts)];
+          sy += xxxx;
+      }
+    if ((Obj) 0 == ELM_PLIST(leaders,sy+1))
+      {
+        UInt k;
+        Obj qk;
+        Obj wc;
+        vc = CopyVec8Bit(v, 0);
+        SET_ELM_PLIST(leaders,sy+1,vc);
+        CHANGED_BAG(leaders);
+        /* Also record all the multiples here */
+        wc = ZeroVec8Bit(q,lenw,1);
+        settab = SETELT_FIELDINFO_8BIT(info);
+        gettab = GETELT_FIELDINFO_8BIT(info);
                      ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
-	      ptrw = BYTES_VEC8BIT(w);
-	      for (k = 2; k < q; k++)
-		{		  
-		  qk = FFE_FELT_FIELDINFO_8BIT(info)[k];
-		  MultVec8BitFFEInner(wc,w,qk,1,lenw);
+        ptrw = BYTES_VEC8BIT(w);
+        for (k = 2; k < q; k++)
+    {     
+      qk = FFE_FELT_FIELDINFO_8BIT(info)[k];
+      MultVec8BitFFEInner(wc,w,qk,1,lenw);
                           ptrw = BYTES_VEC8BIT(wc);
-		  sy = 0;
-		  for (j = 0; j < lenw; j++)
-		    {
-		      UInt xxxx;
-		      sy *= q;
-		      xxxx = gettab[ptrw[j / elts] + 256* (j % elts)];
-		      sy += xxxx;
-		    }
-		  vc = ZeroVec8Bit(q, len, 0);
-		  settab = SETELT_FIELDINFO_8BIT(info);
-		  gettab = GETELT_FIELDINFO_8BIT(info);
-		  ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
-		  ptrw = BYTES_VEC8BIT(w);
-		  MultVec8BitFFEInner(vc,v,qk,1,len);
-		  SET_ELM_PLIST(leaders, sy+1, vc);
-		  CHANGED_BAG(leaders);
-		}
-	      found += (q-1);
-	      if (found == tofind)
-		return found;
-	    }
-	  u = ELM_PLIST(vp,q+1);
-	  AddVec8BitVec8BitInner(w,w,u,1,lenw);
-	  *ptr = settab[*ptr + 256 * ((i-1) % elts)];
-	}
+      sy = 0;
+      for (j = 0; j < lenw; j++)
+        {
+          UInt xxxx;
+          sy *= q;
+          xxxx = gettab[ptrw[j / elts] + 256* (j % elts)];
+          sy += xxxx;
+        }
+      vc = ZeroVec8Bit(q, len, 0);
+      settab = SETELT_FIELDINFO_8BIT(info);
+      gettab = GETELT_FIELDINFO_8BIT(info);
+      ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
+      ptrw = BYTES_VEC8BIT(w);
+      MultVec8BitFFEInner(vc,v,qk,1,len);
+      SET_ELM_PLIST(leaders, sy+1, vc);
+      CHANGED_BAG(leaders);
+    }
+        found += (q-1);
+        if (found == tofind)
+    return found;
+      }
+    u = ELM_PLIST(vp,q+1);
+    AddVec8BitVec8BitInner(w,w,u,1,lenw);
+    *ptr = settab[*ptr + 256 * ((i-1) % elts)];
+  }
     }
   else
     {
       if (pos + weight <= len)
-	{
-	    found += CosetLeadersInner8Bits(veclis, v, w, weight, pos+1, leaders, tofind, felts);
-	  if (found == tofind)
-	    return found;
-	}
+  {
+      found += CosetLeadersInner8Bits(veclis, v, w, weight, pos+1, leaders, tofind, felts);
+    if (found == tofind)
+      return found;
+  }
       
       settab = SETELT_FIELDINFO_8BIT(info);
       feltffe = FELT_FFE_FIELDINFO_8BIT(info);
       vp = ELM_PLIST(veclis, pos);
       for (i = 1; i < q; i++)
-	{
-	  u = ELM_PLIST(vp,i);
-	  AddVec8BitVec8BitInner(w,w,u,1,lenw);
-	  ptr = BYTES_VEC8BIT(v)+ (pos-1)/elts;
-	  x = ELM_PLIST(felts,i+1);
-	  *ptr = settab[*ptr + 256 * (elts*feltffe[VAL_FFE(x)] + ((pos-1) % elts))];
-	  found += CosetLeadersInner8Bits(veclis,v,w,weight-1,pos+1,leaders,tofind-found,felts);
-	  if (found == tofind)
-	    return found;
-	}
-	     settab = SETELT_FIELDINFO_8BIT(info);
-	  feltffe = FELT_FFE_FIELDINFO_8BIT(info);
-	  u = ELM_PLIST(vp,q);
-	  AddVec8BitVec8BitInner(w,w,u,1,lenw);
-	
+  {
+    u = ELM_PLIST(vp,i);
+    AddVec8BitVec8BitInner(w,w,u,1,lenw);
+    ptr = BYTES_VEC8BIT(v)+ (pos-1)/elts;
+    x = ELM_PLIST(felts,i+1);
+    *ptr = settab[*ptr + 256 * (elts*feltffe[VAL_FFE(x)] + ((pos-1) % elts))];
+    found += CosetLeadersInner8Bits(veclis,v,w,weight-1,pos+1,leaders,tofind-found,felts);
+    if (found == tofind)
+      return found;
+  }
+       settab = SETELT_FIELDINFO_8BIT(info);
+    feltffe = FELT_FFE_FIELDINFO_8BIT(info);
+    u = ELM_PLIST(vp,q);
+    AddVec8BitVec8BitInner(w,w,u,1,lenw);
+  
       ptr = BYTES_VEC8BIT(v) + (pos-1)/elts;
       *ptr = settab[*ptr + 256 * ((pos-1) % elts)];
       
@@ -2726,7 +2719,7 @@ Obj FuncCOSET_LEADERS_INNER_8BITS( Obj self, Obj veclis, Obj weight, Obj tofind,
   UInt lenv, lenw, q;
   if (!ARE_INTOBJS(weight, tofind))
     ErrorQuit("COSET_LEADERS_INNER_8BITS: weight and tofind must be small integers, not a %s and a %s",
-	      (Int)TNAM_OBJ(weight), (Int)TNAM_OBJ(tofind));
+        (Int)TNAM_OBJ(weight), (Int)TNAM_OBJ(tofind));
   lenv = LEN_PLIST(veclis);
   q = LEN_PLIST(felts);
   v = ZeroVec8Bit( q, lenv, 1);
@@ -2824,12 +2817,12 @@ Obj FuncELM0_VEC8BIT (
     Obj                 pos )
 {
     UInt                p;
-    Obj			info;
+    Obj     info;
     UInt elts;
 
     if (!IS_INTOBJ(pos))
       ErrorQuit("ELM0_VEC8BIT: position must be a small integer, not a %s",
-		(Int)TNAM_OBJ(pos),0L);
+    (Int)TNAM_OBJ(pos),0L);
     p = INT_INTOBJ(pos);
     if ( LEN_VEC8BIT(list) < p ) {
         return Fail;
@@ -2838,8 +2831,8 @@ Obj FuncELM0_VEC8BIT (
       info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
       elts = ELS_BYTE_FIELDINFO_8BIT(info);
       return FFE_FELT_FIELDINFO_8BIT(info)[
-		GETELT_FIELDINFO_8BIT(info)[BYTES_VEC8BIT(list)[(p-1)/elts] +
-					   256*((p-1)%elts)]];
+    GETELT_FIELDINFO_8BIT(info)[BYTES_VEC8BIT(list)[(p-1)/elts] +
+             256*((p-1)%elts)]];
     }
 }
 
@@ -2858,12 +2851,12 @@ Obj FuncELM_VEC8BIT (
     Obj                 pos )
 {
     UInt                p;
-    Obj			info;
+    Obj     info;
     UInt elts;
 
     if (!IS_INTOBJ(pos))
       ErrorQuit("ELM0_VEC8BIT: position must be a small integer, not a %s",
-		(Int)TNAM_OBJ(pos),0L);
+    (Int)TNAM_OBJ(pos),0L);
     p = INT_INTOBJ(pos);
     if ( LEN_VEC8BIT(list) < p ) {
         ErrorReturnVoid(
@@ -2875,8 +2868,8 @@ Obj FuncELM_VEC8BIT (
       info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
       elts = ELS_BYTE_FIELDINFO_8BIT(info);
       return FFE_FELT_FIELDINFO_8BIT(info)[
-		GETELT_FIELDINFO_8BIT(info)[BYTES_VEC8BIT(list)[(p-1)/elts] +
-					   256*((p-1)%elts)]];
+    GETELT_FIELDINFO_8BIT(info)[BYTES_VEC8BIT(list)[(p-1)/elts] +
+             256*((p-1)%elts)]];
 
     }
 }
@@ -2895,7 +2888,7 @@ Obj FuncELMS_VEC8BIT (
 {
     UInt                p;
     Obj                 pos;
-    Obj			info;
+    Obj     info;
     UInt                elts;
     UInt                len;
     Obj                 res;
@@ -2925,25 +2918,25 @@ Obj FuncELMS_VEC8BIT (
     byte = 0;
     for (i = 1; i <= len; i++)
       {
-	pos = ELM_PLIST(poss,i);
-	if (!IS_INTOBJ(pos))
-	  ErrorQuit("ELMS_VEC8BIT: positions list includes a %s, should all be small integers",
-		    (Int)TNAM_OBJ(pos), 0L);
-	if (pos <= INTOBJ_INT(0))
-	  ErrorQuit("ELMS_VEC8BIT: positions list includes a non-positive number", 0L, 0L);
-	p = INT_INTOBJ(pos);
-	if (p > len2)
-	  ErrorQuit("ELMS_VEC8BIT: positions list includes index %d in a list of length %d",
-		    (Int)p,(Int)len2);
-	elt = gettab[ptrS[(p-1)/elts] + 256*((p-1)%elts)];
-	byte = settab[ byte + 256*(e + elts*elt)];
-	e++;
-	if (e == elts)
-	  {
-	    *ptrD++ = byte;
-	    e = 0;
-	    byte = 0;
-	  }
+  pos = ELM_PLIST(poss,i);
+  if (!IS_INTOBJ(pos))
+    ErrorQuit("ELMS_VEC8BIT: positions list includes a %s, should all be small integers",
+        (Int)TNAM_OBJ(pos), 0L);
+  if (pos <= INTOBJ_INT(0))
+    ErrorQuit("ELMS_VEC8BIT: positions list includes a non-positive number", 0L, 0L);
+  p = INT_INTOBJ(pos);
+  if (p > len2)
+    ErrorQuit("ELMS_VEC8BIT: positions list includes index %d in a list of length %d",
+        (Int)p,(Int)len2);
+  elt = gettab[ptrS[(p-1)/elts] + 256*((p-1)%elts)];
+  byte = settab[ byte + 256*(e + elts*elt)];
+  e++;
+  if (e == elts)
+    {
+      *ptrD++ = byte;
+      e = 0;
+      byte = 0;
+    }
       }
     if (e)
       *ptrD = byte;
@@ -2966,7 +2959,7 @@ Obj FuncELMS_VEC8BIT_RANGE (
     Obj                 range  )
 {
     UInt                p;
-    Obj			info;
+    Obj     info;
     UInt                elts;
     UInt                len;
     UInt                lenl;
@@ -2990,14 +2983,14 @@ Obj FuncELMS_VEC8BIT_RANGE (
     lenl = LEN_VEC8BIT(list);
     if (inc < 0)
       {
-	if (low > lenl || low + inc*(len-1) < 1)
-	  ErrorQuit("ELMS_VEC8BIT_RANGE: Range includes indices which are too high or too low",
-		    0L, 0L);
+  if (low > lenl || low + inc*(len-1) < 1)
+    ErrorQuit("ELMS_VEC8BIT_RANGE: Range includes indices which are too high or too low",
+        0L, 0L);
       }
     else
       if (low < 1 || low + inc*(len-1) > lenl)
-	ErrorQuit("ELMS_VEC8BIT_RANGE: Range includes indices which are too high or too low",
-		  0L, 0L);
+  ErrorQuit("ELMS_VEC8BIT_RANGE: Range includes indices which are too high or too low",
+      0L, 0L);
     res = NewBag(T_DATOBJ, SIZE_VEC8BIT( len, elts));
     TYPE_DATOBJ(res) = TYPE_DATOBJ(list);
     SET_FIELD_VEC8BIT(res, FIELD_VEC8BIT(list));
@@ -3008,45 +3001,45 @@ Obj FuncELMS_VEC8BIT_RANGE (
     ptrD = BYTES_VEC8BIT(res);
     e = 0;
     byte = 0;
-    p = low-1;			/* the -1 converts to 0 base */
+    p = low-1;      /* the -1 converts to 0 base */
     if (p % elts == 0 && inc == 1 && len >= elts)
       {
-	while (p < low + len - elts)
-	  {
-	    *ptrD++ =ptrS[p/elts];
-	    p += elts;
-	  }
-	byte = 0;
-	e = 0;
-	if ( p < low + len - 1)
-	  {
-	    while (p < low + len - 1)
-	      {
-		elt = gettab[ptrS[p/elts] + 256*(p%elts)];
-		byte = settab[ byte + 256 *(e + elts *elt)];
-		e++;
-		p++;
-	      }
-	    *ptrD = byte;
-	  }
+  while (p < low + len - elts)
+    {
+      *ptrD++ =ptrS[p/elts];
+      p += elts;
+    }
+  byte = 0;
+  e = 0;
+  if ( p < low + len - 1)
+    {
+      while (p < low + len - 1)
+        {
+    elt = gettab[ptrS[p/elts] + 256*(p%elts)];
+    byte = settab[ byte + 256 *(e + elts *elt)];
+    e++;
+    p++;
+        }
+      *ptrD = byte;
+    }
       }
     else
       {
-	for (i = 1; i <= len; i++)
-	  {
-	    elt = gettab[ptrS[p/elts] + 256*(p%elts)];
-	    byte = settab[ byte + 256*(e + elts*elt)];
-	    e++;
-	    if (e == elts)
-	      {
-		*ptrD++ = byte;
-		e = 0;
-		byte = 0;
-	      }
-	    p += inc;
-	  }
-	if (e)
-	  *ptrD = byte;
+  for (i = 1; i <= len; i++)
+    {
+      elt = gettab[ptrS[p/elts] + 256*(p%elts)];
+      byte = settab[ byte + 256*(e + elts*elt)];
+      e++;
+      if (e == elts)
+        {
+    *ptrD++ = byte;
+    e = 0;
+    byte = 0;
+        }
+      p += inc;
+    }
+  if (e)
+    *ptrD = byte;
       }
     
     return res;
@@ -3092,7 +3085,7 @@ Obj FuncASS_VEC8BIT (
     /* get the position                                                    */
     if (!IS_INTOBJ(pos))
       ErrorQuit("ASS_VEC8BIT: position should be a small integer, not a %s",
-		(Int)TNAM_OBJ(pos), 0L);
+    (Int)TNAM_OBJ(pos), 0L);
     p = INT_INTOBJ(pos);
     if (p <= 0)
       ErrorQuit("ASS_VEC9BIT: position must be positive", 0L, 0L);
@@ -3106,60 +3099,60 @@ Obj FuncASS_VEC8BIT (
     if ( p <= LEN_VEC8BIT(list)+1 ) {
       if ( LEN_VEC8BIT(list)+1 == p ) {
       if (True == DoFilter(IsLockedRepresentationVector, list))
-	{
-	  ErrorReturnVoid("List assignment would increase length of locked compressed vector",0,0,
-			  "You can `return;' to ignore the assignment");
-	  return 0;
-	}
-	ResizeBag( list, SIZE_VEC8BIT(p,elts));
-	SET_LEN_VEC8BIT( list, p);
-	/* 	Pr("Extending 8 bit vector by 1",0,0); */
+  {
+    ErrorReturnVoid("List assignment would increase length of locked compressed vector",0,0,
+        "You can `return;' to ignore the assignment");
+    return 0;
+  }
+  ResizeBag( list, SIZE_VEC8BIT(p,elts));
+  SET_LEN_VEC8BIT( list, p);
+  /*  Pr("Extending 8 bit vector by 1",0,0); */
       }
       if (IS_FFE(elm) &&
-	  chr == CharFFE(elm))
-	{
+    chr == CharFFE(elm))
+  {
 
-	  /* We may need to rewrite the vector over a larger field */
-	  if (d % DegreeFFE(elm) !=  0)
-	    {
-	      /* 	      Pr("Rewriting over larger field",0,0);*/
-	      f = CommonFF(FiniteField(chr,d),d,
-			   FLD_FFE(elm),DegreeFFE(elm));
-	      if (f && SIZE_FF(f) <= 256)
-		{
-		  RewriteVec8Bit(list, SIZE_FF(f));
-		  info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
-		  elts = ELS_BYTE_FIELDINFO_8BIT(info);
-		  chr = P_FIELDINFO_8BIT(info);
-		  d = D_FIELDINFO_8BIT(info);
-		  q = Q_FIELDINFO_8BIT(info);
-		}
-	      else
-		{
-		  PlainVec8Bit(list);
-		  AssPlistFfe( list, p, elm );
-		  return 0;
-		}
-	    }
+    /* We may need to rewrite the vector over a larger field */
+    if (d % DegreeFFE(elm) !=  0)
+      {
+        /*        Pr("Rewriting over larger field",0,0);*/
+        f = CommonFF(FiniteField(chr,d),d,
+         FLD_FFE(elm),DegreeFFE(elm));
+        if (f && SIZE_FF(f) <= 256)
+    {
+      RewriteVec8Bit(list, SIZE_FF(f));
+      info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
+      elts = ELS_BYTE_FIELDINFO_8BIT(info);
+      chr = P_FIELDINFO_8BIT(info);
+      d = D_FIELDINFO_8BIT(info);
+      q = Q_FIELDINFO_8BIT(info);
+    }
+        else
+    {
+      PlainVec8Bit(list);
+      AssPlistFfe( list, p, elm );
+      return 0;
+    }
+      }
 
-	 
-	  v = VAL_FFE(elm);
+   
+    v = VAL_FFE(elm);
 
-	  /* may need to promote the element to a bigger field
-	     or restrict it to a smaller one */
-	  if (v != 0 && q != SIZE_FF(FLD_FFE(elm)))
-	    {
-	      assert (((v-1)*(q-1)) % (SIZE_FF(FLD_FFE(elm))-1) == 0);
-	      v = 1+(v-1)*(q-1)/(SIZE_FF(FLD_FFE(elm))-1);
-	    }
+    /* may need to promote the element to a bigger field
+       or restrict it to a smaller one */
+    if (v != 0 && q != SIZE_FF(FLD_FFE(elm)))
+      {
+        assert (((v-1)*(q-1)) % (SIZE_FF(FLD_FFE(elm))-1) == 0);
+        v = 1+(v-1)*(q-1)/(SIZE_FF(FLD_FFE(elm))-1);
+      }
 
-	  /* finally do the assignment */
-	  BYTES_VEC8BIT(list)[(p-1) / elts] =
-	    SETELT_FIELDINFO_8BIT(info)
-	    [256*(elts*FELT_FFE_FIELDINFO_8BIT(info)[v]+(p-1)%elts) +
-	    BYTES_VEC8BIT(list)[(p-1)/elts]];
-	  return 0;
-	}
+    /* finally do the assignment */
+    BYTES_VEC8BIT(list)[(p-1) / elts] =
+      SETELT_FIELDINFO_8BIT(info)
+      [256*(elts*FELT_FFE_FIELDINFO_8BIT(info)[v]+(p-1)%elts) +
+      BYTES_VEC8BIT(list)[(p-1)/elts]];
+    return 0;
+  }
     }
 
     /* We fall through here if the assignment position is so large
@@ -3203,15 +3196,15 @@ Obj FuncUNB_VEC8BIT (
     }
     if (True == DoFilter(IsLockedRepresentationVector, list))
       {
-	ErrorReturnVoid("Unbind of entry of locked compressed vector is forbidden",0,0,
-			"You can `return;' to ignore the assignment");
-	return 0;
+  ErrorReturnVoid("Unbind of entry of locked compressed vector is forbidden",0,0,
+      "You can `return;' to ignore the assignment");
+  return 0;
       }
 
     /* get the position                                                    */
     if (!IS_INTOBJ(pos))
       ErrorQuit("UNB_VEC8BIT: position should be a small integer, not a %s",
-		(Int)TNAM_OBJ(pos), 0L);
+    (Int)TNAM_OBJ(pos), 0L);
     p = INT_INTOBJ(pos);
     if (p <= 0)
       ErrorQuit("UNB_VEC9BIT: position must be positive", 0L, 0L);
@@ -3225,8 +3218,8 @@ Obj FuncUNB_VEC8BIT (
       info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
       elts = ELS_BYTE_FIELDINFO_8BIT(info);
       BYTES_VEC8BIT(list)[(p-1)/elts] =
-	SETELT_FIELDINFO_8BIT(info)[((p-1) % elts)*256 +
-				   BYTES_VEC8BIT(list)[(p-1)/elts]];
+  SETELT_FIELDINFO_8BIT(info)[((p-1) % elts)*256 +
+           BYTES_VEC8BIT(list)[(p-1)/elts]];
         ResizeBag( list, 3*sizeof(UInt)+(p+elts-2)/elts );
         SET_LEN_VEC8BIT( list, p-1);
     }
@@ -3268,9 +3261,9 @@ UInt PositionNonZeroVec8Bit ( Obj list, UInt from )
     /* might be an initial part byte */
     if (j) {
       if (i < nb && ptr[i])
-	for (j = from % elts; j < elts && (i*elts+j < len); j++)
-	  if (gettab[256*j + ptr[i]] != 0)
-	    return elts*i+j+1;
+  for (j = from % elts; j < elts && (i*elts+j < len); j++)
+    if (gettab[256*j + ptr[i]] != 0)
+      return elts*i+j+1;
       i++;
     }
 
@@ -3289,7 +3282,7 @@ UInt PositionNonZeroVec8Bit ( Obj list, UInt from )
     return elts*i+j+1;
 }
 
-			    
+          
 
 Obj FuncPOSITION_NONZERO_VEC8BIT (
     Obj                 self,
@@ -3336,9 +3329,9 @@ Obj FuncAPPEND_VEC8BIT (
     lenr = LEN_VEC8BIT(vecr);
     if (True == DoFilter(IsLockedRepresentationVector, vecl) && lenr > 0)
       {
-	ErrorReturnVoid("Append to locked compressed vector is forbidden", 0, 0,
-			"You can `return;' to ignore the operation");
-	return 0;
+  ErrorReturnVoid("Append to locked compressed vector is forbidden", 0, 0,
+      "You can `return;' to ignore the operation");
+  return 0;
       }
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(vecl));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
@@ -3346,38 +3339,38 @@ Obj FuncAPPEND_VEC8BIT (
 
     if (lenl % elts == 0)
       {
-	ptrl = BYTES_VEC8BIT(vecl) + lenl/elts;
-	ptrr = BYTES_VEC8BIT(vecr);
-	nb = (lenr + elts - 1)/elts;
-	for (i = 0; i < nb; i++)
-	  *ptrl++ = *ptrr++;
+  ptrl = BYTES_VEC8BIT(vecl) + lenl/elts;
+  ptrr = BYTES_VEC8BIT(vecr);
+  nb = (lenr + elts - 1)/elts;
+  for (i = 0; i < nb; i++)
+    *ptrl++ = *ptrr++;
       }
     else
       {
-	ptrl = BYTES_VEC8BIT(vecl) + (lenl -1)/elts;
-	bytel = *ptrl;
-	posl = lenl;
-	posr = 0;
-	ptrr = BYTES_VEC8BIT(vecr);
-	byter = *ptrr;
-	gettab = GETELT_FIELDINFO_8BIT(info);
-	settab = SETELT_FIELDINFO_8BIT(info);
-	while (posr < lenr)
-	  {
-	    elt = gettab[ byter + 256 * (posr % elts) ];
-	    bytel = settab[ bytel + 256 * ( posl % elts + elts * elt)];
-	    if (++posl % elts == 0)
-	      {
-		*ptrl++ = bytel; 
-		bytel = 0;
-	      }
-	    if ( ++posr % elts == 0)
-	      {
-		byter = *++ptrr;
-	      }
-	  }
-	/* Write last byte only if not already written: */
-	if (posl % elts != 0) *ptrl = bytel;
+  ptrl = BYTES_VEC8BIT(vecl) + (lenl -1)/elts;
+  bytel = *ptrl;
+  posl = lenl;
+  posr = 0;
+  ptrr = BYTES_VEC8BIT(vecr);
+  byter = *ptrr;
+  gettab = GETELT_FIELDINFO_8BIT(info);
+  settab = SETELT_FIELDINFO_8BIT(info);
+  while (posr < lenr)
+    {
+      elt = gettab[ byter + 256 * (posr % elts) ];
+      bytel = settab[ bytel + 256 * ( posl % elts + elts * elt)];
+      if (++posl % elts == 0)
+        {
+    *ptrl++ = bytel; 
+    bytel = 0;
+        }
+      if ( ++posr % elts == 0)
+        {
+    byter = *++ptrr;
+        }
+    }
+  /* Write last byte only if not already written: */
+  if (posl % elts != 0) *ptrl = bytel;
       }
     SET_LEN_VEC8BIT(vecl, lenl + lenr);
     return (Obj) 0;
@@ -3430,16 +3423,16 @@ Obj FuncPROD_VEC8BIT_MATRIX( Obj self, Obj vec, Obj mat)
   for (i = 0; i < len; i++)
     if (i < l2)
       {
-	x = ffefelt[gettab[BYTES_VEC8BIT(vec)[i/elts] + 256*(i % elts)]];
-	if (VAL_FFE(x) != 0)
-	  {
-	    row1 = ELM_PLIST(mat,i+1);  
-	    /* This may be unduly draconian. Later we may want to be able to promote the rows
-	       to a bigger field */
-	    if ((! IS_VEC8BIT_REP(row1)) || (FIELD_VEC8BIT(row1) != q))
-	      return TRY_NEXT_METHOD;
-	    AddVec8BitVec8BitMultInner( res, res, row1, x, 1, len1);
-	  }
+  x = ffefelt[gettab[BYTES_VEC8BIT(vec)[i/elts] + 256*(i % elts)]];
+  if (VAL_FFE(x) != 0)
+    {
+      row1 = ELM_PLIST(mat,i+1);  
+      /* This may be unduly draconian. Later we may want to be able to promote the rows
+         to a bigger field */
+      if ((! IS_VEC8BIT_REP(row1)) || (FIELD_VEC8BIT(row1) != q))
+        return TRY_NEXT_METHOD;
+      AddVec8BitVec8BitMultInner( res, res, row1, x, 1, len1);
+    }
       }
   return res;
   
@@ -3505,7 +3498,7 @@ Obj FuncCONV_MAT8BIT( Obj self, Obj list, Obj q )
 
   if (!IS_INTOBJ(q))
     ErrorQuit("CONV_MAT8BIT: q must be a small integer, not a %s",
-	      (Int)TNAM_OBJ(q), (Int)0L);
+        (Int)TNAM_OBJ(q), (Int)0L);
   PLAIN_LIST(list);
   len = LEN_PLIST(list);
   mut = IS_MUTABLE_OBJ(list);
@@ -3513,7 +3506,7 @@ Obj FuncCONV_MAT8BIT( Obj self, Obj list, Obj q )
   for (i = len; i >= 1; i--)
     {
       tmp = ELM_PLIST(list, i);
-	  type = TypeVec8BitLocked( INT_INTOBJ(q), IS_MUTABLE_OBJ(tmp));
+    type = TypeVec8BitLocked( INT_INTOBJ(q), IS_MUTABLE_OBJ(tmp));
       TYPE_DATOBJ(tmp) = type;
       SET_ELM_MAT8BIT( list, i, tmp);
       CHANGED_BAG(list);
@@ -3566,34 +3559,34 @@ Obj ProdVec8BitMat8Bit( Obj vec, Obj mat )
   for (i = 0; i +elts < len; i += elts, bptr++)
     {
       if ((byte = *bptr)) {
-	for (j = 0; j < elts ; j++)
-	  {
-	    if (i + j < lenm)
-	      {
-		y = gettab[byte + 256*j];
-		if (y)
-		  {
-		    x = ffefelt[y];
-		    row1 = ELM_MAT8BIT(mat,i+j+1);  
-		    AddVec8BitVec8BitMultInner( res, res, row1, x, 1, len1);
-		  }
-	      }
-	  }
+  for (j = 0; j < elts ; j++)
+    {
+      if (i + j < lenm)
+        {
+    y = gettab[byte + 256*j];
+    if (y)
+      {
+        x = ffefelt[y];
+        row1 = ELM_MAT8BIT(mat,i+j+1);  
+        AddVec8BitVec8BitMultInner( res, res, row1, x, 1, len1);
+      }
+        }
+    }
       }
     }
   if ((byte = *bptr)) {
     for (j = 0; i+j < len  ; j++)
       {
-	if (i + j < lenm)
-	  {
-	    y = gettab[byte + 256*j];
-	    if (y)
-	      {
-		x = ffefelt[y];
-		row1 = ELM_MAT8BIT(mat,i+j+1);  
-		AddVec8BitVec8BitMultInner( res, res, row1, x, 1, len1);
-	      }
-	  }
+  if (i + j < lenm)
+    {
+      y = gettab[byte + 256*j];
+      if (y)
+        {
+    x = ffefelt[y];
+    row1 = ELM_MAT8BIT(mat,i+j+1);  
+    AddVec8BitVec8BitMultInner( res, res, row1, x, 1, len1);
+        }
+    }
       }
   }
   return res;
@@ -3620,16 +3613,16 @@ Obj FuncPROD_VEC8BIT_MAT8BIT( Obj self, Obj vec, Obj mat)
   if (q != q1)
     {
       if (q > q1 || CALL_1ARGS(IsLockedRepresentationVector, vec) == True)
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       q2 = q;
       while (q2 < q1)
-	{
-	  q2 *= q;
-	}
+  {
+    q2 *= q;
+  }
       if (q2 == q1)
-	RewriteVec8Bit(vec, q1);
+  RewriteVec8Bit(vec, q1);
       else
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
     }
 
   /* OK, now we can do the work */
@@ -3671,10 +3664,10 @@ Obj ProdMat8BitVec8Bit( Obj mat, Obj vec)
       entry = ScalarProductVec8Bits( vec, ELM_MAT8BIT(mat, i+1));
       byte = settab[ byte + 256 * ( elts * feltffe[VAL_FFE(entry)] +  i % elts )];
       if (i % elts == elts-1)
-	{
-	  *ptr++ = byte;
-	  byte = 0;
-	}
+  {
+    *ptr++ = byte;
+    byte = 0;
+  }
     }
     if (len % elts != 0)
       *ptr++ = byte;
@@ -3706,16 +3699,16 @@ Obj FuncPROD_MAT8BIT_VEC8BIT( Obj self, Obj mat, Obj vec)
   if (q != q1)
     {
       if (q > q1 || CALL_1ARGS(IsLockedRepresentationVector, vec) == True)
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       q2 = q;
       while (q2 < q1)
-	{
-	  q2 *= q;
-	}
+  {
+    q2 *= q;
+  }
       if (q2 == q1)
-	RewriteVec8Bit(vec, q1);
+  RewriteVec8Bit(vec, q1);
       else
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
     }
 
   /* OK, now we can do the work */
@@ -3755,7 +3748,7 @@ Obj ProdMat8BitMat8Bit( Obj matl, Obj matr)
       row = ProdVec8BitMat8Bit(ELM_MAT8BIT(matl,i),matr);
 
       /* Since I'm going to put this vector into a matrix, I must lock its
-	 representation, so that it doesn't get rewritten over GF(q^k) */
+   representation, so that it doesn't get rewritten over GF(q^k) */
       TYPE_DATOBJ(row) = locked_type;
       SET_ELM_MAT8BIT(prod,i,row);
       CHANGED_BAG(prod);
@@ -3829,10 +3822,10 @@ Obj InverseMat8Bit( Obj mat, UInt mut)
       ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
       x = gettab[BYTES_VEC8BIT(row)[0]];
       if ( x == 0 )
-	return Fail;
+  return Fail;
       xi = INV(ffefelt[x]);
       row1 = NewBag(T_DATOBJ, SIZE_VEC8BIT(1, elts));
-	  type = TypeVec8BitLocked(q, mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(row)));
+    type = TypeVec8BitLocked(q, mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(row)));
       TYPE_DATOBJ(row1) = type;
       settab = SETELT_FIELDINFO_8BIT(info);
       feltffe = FELT_FFE_FIELDINFO_8BIT(info);
@@ -3843,7 +3836,7 @@ Obj InverseMat8Bit( Obj mat, UInt mut)
       SET_ELM_PLIST(inv, 2, row1);
       CHANGED_BAG(inv);
       RetypeBag(inv, T_POSOBJ);
-	  type = TypeMat8Bit(q, mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(mat)));
+    type = TypeMat8Bit(q, mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(mat)));
       TYPE_POSOBJ(inv) = type;
       SET_LEN_MAT8BIT(inv,1);
       return inv;
@@ -3881,52 +3874,52 @@ Obj InverseMat8Bit( Obj mat, UInt mut)
       pos = (i-1) % elts;
       /* find a non-zero entry in column i */
       for (j = i; j <= len; j++)
-	{
-	  row = ELM_PLIST(cmat, j);
-	  byte = BYTES_VEC8BIT(row)[off];
-	  if (byte != 0 && (x = gettab[byte + 256 * pos]) != 0)
-	    break;
-	}
+  {
+    row = ELM_PLIST(cmat, j);
+    byte = BYTES_VEC8BIT(row)[off];
+    if (byte != 0 && (x = gettab[byte + 256 * pos]) != 0)
+      break;
+  }
 
       /* if we didn't find one */
       if ( j > len)
-	return Fail;
+  return Fail;
       
       /* swap and normalize */
       row1 = ELM_PLIST(inv, j+1);
       if (i != j)
-	{
-	  SET_ELM_PLIST(cmat, j, ELM_PLIST(cmat, i));
-	  SET_ELM_PLIST(cmat, i, row );
-	  SET_ELM_PLIST(inv, j+1, ELM_PLIST(inv, i+1));
-	  SET_ELM_PLIST(inv,i+1, row1);
-	}
+  {
+    SET_ELM_PLIST(cmat, j, ELM_PLIST(cmat, i));
+    SET_ELM_PLIST(cmat, i, row );
+    SET_ELM_PLIST(inv, j+1, ELM_PLIST(inv, i+1));
+    SET_ELM_PLIST(inv,i+1, row1);
+  }
       if (x != o)
-	{
-	  xi = INV(ffefelt[x]);
-	  MultVec8BitFFEInner( row, row, xi, i, len);
-	  MultVec8BitFFEInner( row1, row1, xi, 1, len);
-	}
+  {
+    xi = INV(ffefelt[x]);
+    MultVec8BitFFEInner( row, row, xi, i, len);
+    MultVec8BitFFEInner( row1, row1, xi, 1, len);
+  }
 
       /* Now clean out column */
       for (k = 1; k <= len; k++)
-	{
-	  if (k < i || k > j)
-	    {
-	      row2 = ELM_PLIST(cmat, k);
-	      byte = BYTES_VEC8BIT(row2)[off];
-	      if (byte != 0 && (x = gettab[byte + 256 * pos]) != 0)
-		{
-		  xn = AINV(ffefelt[x]);
-		  AddVec8BitVec8BitMultInner( row2, row2, row, xn, i, len);
-		  row2 = ELM_PLIST(inv, k+1);
-		  AddVec8BitVec8BitMultInner( row2, row2, row1, xn, 1, len);
-		}
-	    }
-	}
+  {
+    if (k < i || k > j)
+      {
+        row2 = ELM_PLIST(cmat, k);
+        byte = BYTES_VEC8BIT(row2)[off];
+        if (byte != 0 && (x = gettab[byte + 256 * pos]) != 0)
+    {
+      xn = AINV(ffefelt[x]);
+      AddVec8BitVec8BitMultInner( row2, row2, row, xn, i, len);
+      row2 = ELM_PLIST(inv, k+1);
+      AddVec8BitVec8BitMultInner( row2, row2, row1, xn, 1, len);
+    }
+      }
+  }
       if (TakeInterrupt()) {
-	gettab = GETELT_FIELDINFO_8BIT(info);
-	ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
+  gettab = GETELT_FIELDINFO_8BIT(info);
+  ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
       }
     }
 
@@ -3956,9 +3949,9 @@ Obj FuncINV_MAT8BIT_MUTABLE( Obj self, Obj mat)
   if (LEN_MAT8BIT(mat) != LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)))
     {
       mat = ErrorReturnObj("InverseOp: matrix must be square, not %d by %d",
-			   LEN_MAT8BIT(mat),
-			   LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)),
-			   "you can replace matrix <inv> via 'return <inv>;'");
+         LEN_MAT8BIT(mat),
+         LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)),
+         "you can replace matrix <inv> via 'return <inv>;'");
       return INV(mat);
     }
   
@@ -3976,9 +3969,9 @@ Obj FuncINV_MAT8BIT_SAME_MUTABILITY( Obj self, Obj mat)
   if (LEN_MAT8BIT(mat) != LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)))
     {
       mat = ErrorReturnObj("INVOp: matrix must be square, not %d by %d",
-			   LEN_MAT8BIT(mat),
-			   LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)),
-			   "you can replace matrix <inv> via 'return <inv>;'");
+         LEN_MAT8BIT(mat),
+         LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)),
+         "you can replace matrix <inv> via 'return <inv>;'");
       return INV_MUT(mat);
     }
   
@@ -3997,9 +3990,9 @@ Obj FuncINV_MAT8BIT_IMMUTABLE( Obj self, Obj mat)
     {
       Obj inv;
       mat = ErrorReturnObj("Inverse: matrix must be square, not %d by %d",
-			   LEN_MAT8BIT(mat),
-			   LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)),
-			   "you can replace matrix <inv> via 'return <inv>;'");
+         LEN_MAT8BIT(mat),
+         LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)),
+         "you can replace matrix <inv> via 'return <inv>;'");
       inv = INV_MUT(mat);
       MakeImmutable(inv);
       return inv;
@@ -4027,7 +4020,7 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
 
   if (!IS_INTOBJ(p))
     ErrorQuit("ASS_MAT8BIT: position should be a small integer, not a %s",
-	      (Int)TNAM_OBJ(p), 0L);
+        (Int)TNAM_OBJ(p), 0L);
   pos = INT_INTOBJ(p);
     if (pos <= 0)
       ErrorQuit("ASS_MAT8BIT: position must be positive", 0L, 0L);
@@ -4042,17 +4035,17 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
   if (len == 1 && pos == 1)
     {
       if (IS_VEC8BIT_REP(obj))
-	{
-	  q = FIELD_VEC8BIT(obj);
-	  goto cando;
-	}
+  {
+    q = FIELD_VEC8BIT(obj);
+    goto cando;
+  }
       else
-	{
-	  TYPE_POSOBJ(mat) = IS_MUTABLE_OBJ(mat) ? TYPE_LIST_GF2MAT : TYPE_LIST_GF2MAT_IMM;
-	  TYPE_DATOBJ(obj) = IS_MUTABLE_OBJ(obj) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED;
-	  SET_ELM_GF2MAT(mat, 1, obj);
-	  return (Obj) 0;
-	}
+  {
+    TYPE_POSOBJ(mat) = IS_MUTABLE_OBJ(mat) ? TYPE_LIST_GF2MAT : TYPE_LIST_GF2MAT_IMM;
+    TYPE_DATOBJ(obj) = IS_MUTABLE_OBJ(obj) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED;
+    SET_ELM_GF2MAT(mat, 1, obj);
+    return (Obj) 0;
+  }
     }
   
   row = ELM_MAT8BIT(mat,1);
@@ -4072,8 +4065,8 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
       goto cantdo;
     else
       {
-	RewriteGF2Vec(obj, q);
-	goto cando;
+  RewriteGF2Vec(obj, q);
+  goto cando;
       }
   }
   
@@ -4089,10 +4082,10 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
   while (q2 <= 256)
     {
       if (q2 == q)
-	{
-	  RewriteVec8Bit(obj, q);
-	  goto cando;
-	}
+  {
+    RewriteVec8Bit(obj, q);
+    goto cando;
+  }
       q2 *= q1;
     }
   goto cantdo;
@@ -4165,11 +4158,11 @@ Obj SumMat8BitMat8Bit( Obj ml, Obj mr)
   for (i = 1; i <= ls; i++)
     {
       if (i > ll)
-	row = CopyVec8Bit(ELM_MAT8BIT(mr,i),1);
+  row = CopyVec8Bit(ELM_MAT8BIT(mr,i),1);
       else if (i > lr)
-	row = CopyVec8Bit(ELM_MAT8BIT(ml,i),1);
+  row = CopyVec8Bit(ELM_MAT8BIT(ml,i),1);
       else
-	row = SumVec8BitVec8Bit(ELM_MAT8BIT(ml,i), ELM_MAT8BIT(mr,i));
+  row = SumVec8BitVec8Bit(ELM_MAT8BIT(ml,i), ELM_MAT8BIT(mr,i));
       
       TYPE_DATOBJ(row) = type;
       SET_ELM_MAT8BIT(sum, i, row);
@@ -4254,11 +4247,11 @@ Obj DiffMat8BitMat8Bit( Obj ml, Obj mr)
   for (i = 1; i <= ld; i++)
     {
       if (i > ll)
-	row = MultVec8BitFFE( ELM_MAT8BIT(mr,i), mone);
+  row = MultVec8BitFFE( ELM_MAT8BIT(mr,i), mone);
       else if (i > lr)
-	row = CopyVec8Bit(ELM_MAT8BIT(ml,i),1);
+  row = CopyVec8Bit(ELM_MAT8BIT(ml,i),1);
       else
-	row = SumVec8BitVec8BitMult(ELM_MAT8BIT(ml,i), ELM_MAT8BIT(mr,i), mone);
+  row = SumVec8BitVec8BitMult(ELM_MAT8BIT(ml,i), ELM_MAT8BIT(mr,i), mone);
       
       TYPE_DATOBJ(row) = type;
       SET_ELM_MAT8BIT(diff, i, row);
@@ -4317,10 +4310,10 @@ UInt RightMostNonZeroVec8Bit( Obj vec)
     {
       gettab = GETELT_FIELDINFO_8BIT(info) + *ptr;
       for (i = len % elts -1; i >= 0; i--)
-	{
-	  if (gettab[256*i] != 0)
-	    return (elts*(len/elts) + i + 1);
-	}
+  {
+    if (gettab[256*i] != 0)
+      return (elts*(len/elts) + i + 1);
+  }
       ptr--;
     }
   
@@ -4336,7 +4329,7 @@ UInt RightMostNonZeroVec8Bit( Obj vec)
   for (i = elts-1; i >= 0; i--)
     {
       if (gettab[256 * i]  != 0)
-	return (elts*(ptr - ptrS) + i + 1);
+  return (elts*(ptr - ptrS) + i + 1);
     }
   Pr("panic: this should never happen\n", 0, 0);
   SyExit(1);
@@ -4360,7 +4353,7 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
   if (True == DoFilter(IsLockedRepresentationVector, vec ))
     {
       ErrorReturnVoid("Resize of locked compressed vector is forbidden", 0, 0,
-		      "You can `return;' to ignore the operation");
+          "You can `return;' to ignore the operation");
       return;
     }
 
@@ -4378,6 +4371,23 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
   elts = ELS_BYTE_FIELDINFO_8BIT(info);
   SET_LEN_VEC8BIT(vec,newlen);
   ResizeBag( vec, SIZE_VEC8BIT( newlen, elts));
+  /* vector has got shorter. */
+  if (len > newlen) {
+    if (newlen % elts) {
+      /* clean spare entries in last byte */
+      settab = SETELT_FIELDINFO_8BIT(info);
+      byte = BYTES_VEC8BIT(vec)[(newlen-1)/elts];
+      for (i = newlen % elts; i < elts; i++)
+        byte = settab[ byte + 256 * i];
+      BYTES_VEC8BIT(vec)[(newlen-1)/elts] = byte;
+    }
+    /* Clean spare bytes in last word for characteristic 2 */
+    if ((q % 2) == 0) 
+      for (i = (newlen+elts -1)/elts; i % sizeof(UInt); i++ )
+        BYTES_VEC8BIT(vec)[i] = 0;
+  }
+
+  /* vector has got longer and might be dirty */
   if (!knownclean && newlen > len)
     {
       settab = SETELT_FIELDINFO_8BIT(info);
@@ -4391,7 +4401,7 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
       }
       ptr2 = BYTES_VEC8BIT(vec) + (newlen + elts -1) / elts;
       while (ptr < ptr2)
-	    *ptr++ = (UInt1)0;
+      *ptr++ = (UInt1)0;
     }
   return;
 }
@@ -4431,7 +4441,7 @@ void ShiftLeftVec8Bit( Obj vec, UInt amount)
     {
       end = BYTES_VEC8BIT(vec) + (len +elts -1)/elts;
       while (ptr2 < end)
-	*ptr1++ = *ptr2++;
+  *ptr1++ = *ptr2++;
     }
   else
     /* The general case */
@@ -4444,19 +4454,19 @@ void ShiftLeftVec8Bit( Obj vec, UInt amount)
       settab = SETELT_FIELDINFO_8BIT(info);
       
       while (from < len)
-	{
-	  x = gettab[fbyte + 256*(from % elts)];
-	  tbyte = settab[tbyte + 256*(to % elts + elts *x)];
-	  if (++from % elts == 0)
-	    fbyte = *++ptr2;
-	  if (++to % elts == 0)
-	    {
-	      *ptr1++ = tbyte;
-	      tbyte = 0;
-	    }
-	}
+  {
+    x = gettab[fbyte + 256*(from % elts)];
+    tbyte = settab[tbyte + 256*(to % elts + elts *x)];
+    if (++from % elts == 0)
+      fbyte = *++ptr2;
+    if (++to % elts == 0)
+      {
+        *ptr1++ = tbyte;
+        tbyte = 0;
+      }
+  }
       if (to % elts != 0)
-	*ptr1 = tbyte;
+  *ptr1 = tbyte;
     }
   ResizeVec8Bit(vec, len - amount, 0);
   return;
@@ -4493,9 +4503,9 @@ void ShiftRightVec8Bit( Obj vec, UInt amount) /* pads with zeros */
     {
       end = BYTES_VEC8BIT(vec);
       while (ptr2 >= end)
-	*ptr1-- = *ptr2--;
+  *ptr1-- = *ptr2--;
       while ( ptr1 >= end)
-	*ptr1-- = (UInt1)0;
+  *ptr1-- = (UInt1)0;
     }
   else
     /* The general case */
@@ -4508,22 +4518,22 @@ void ShiftRightVec8Bit( Obj vec, UInt amount) /* pads with zeros */
       settab = SETELT_FIELDINFO_8BIT(info);
       
       while (from >= 0)
-	{
-	  x = gettab[fbyte + 256*(from % elts)];
-	  tbyte = settab[tbyte + 256*(to % elts + elts *x)];
-	  if (from-- % elts == 0)
-	    fbyte = *--ptr2;
-	  if (to-- % elts == 0)
-	    {
-	      *ptr1-- = tbyte;
-	      tbyte = 0;
-	    }
-	}
+  {
+    x = gettab[fbyte + 256*(from % elts)];
+    tbyte = settab[tbyte + 256*(to % elts + elts *x)];
+    if (from-- % elts == 0)
+      fbyte = *--ptr2;
+    if (to-- % elts == 0)
+      {
+        *ptr1-- = tbyte;
+        tbyte = 0;
+      }
+  }
       if (to % elts != elts-1)
-	*ptr1-- = tbyte;
+  *ptr1-- = tbyte;
       end = BYTES_VEC8BIT(vec);
       while (ptr1 >= end)
-	*ptr1-- = (UInt1)0;
+  *ptr1-- = (UInt1)0;
     }
   return;
 }
@@ -4573,18 +4583,18 @@ Obj FuncADD_COEFFS_VEC8BIT_3( Obj self, Obj vec1, Obj vec2, Obj mult )
       assert(p == CHAR_FF(FLD_FFE(mult)));
       q0 = 1;
       for (i = 0; i < d0; i++)
-	q0 *= p;
+  q0 *= p;
       /* if the exponent is bigger than 31, overflow changes the value to 0 */
       if (d0>8||q0 > 256)
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       if ( (q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vec1) == True) ||
-	   (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vec2) == True))
-	return TRY_NEXT_METHOD;
+     (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vec2) == True))
+  return TRY_NEXT_METHOD;
       RewriteVec8Bit(vec1,q0);
       RewriteVec8Bit(vec2,q0);
       val = VAL_FFE(mult);
       if (val != 0)
-	val = 1 + (val-1)*(q0-1)/(SIZE_FF(FLD_FFE(mult))-1);
+  val = 1 + (val-1)*(q0-1)/(SIZE_FF(FLD_FFE(mult))-1);
       mult = NEW_FFE(FiniteField(p,d0),val);
       q = q0;
     }
@@ -4629,14 +4639,14 @@ Obj FuncADD_COEFFS_VEC8BIT_2( Obj self, Obj vec1, Obj vec2 )
       assert(p == P_FIELDINFO_8BIT(info1));
       q0 = 1;
       for (i = 0; i < d0; i++)
-	q0 *= p;
+  q0 *= p;
 /*Pr("q0= %d d0= %d\n",q0,d0); */
       /* if the exponent is bigger than 31, overflow changes the value to 0 */
       if (d0>8||q0 > 256)
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       if ( (q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vec1) == True) ||
-	   (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vec2) == True))
-	return TRY_NEXT_METHOD;
+     (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vec2) == True))
+  return TRY_NEXT_METHOD;
       RewriteVec8Bit(vec1,q0);
       RewriteVec8Bit(vec2,q0);
       q = q0;
@@ -4658,8 +4668,8 @@ Obj FuncSHIFT_VEC8BIT_LEFT( Obj self, Obj vec, Obj amount)
   while (!IS_INTOBJ(amount) || INT_INTOBJ(amount) < 0)
     {
       amount = ErrorReturnObj("SHIFT_VEC8BIT_LEFT: <amount> must be a non-negative small integer",
-			      0,0,
-			      "you can replace <amount> via 'return <amount>;'");
+            0,0,
+            "you can replace <amount> via 'return <amount>;'");
     }
   ShiftLeftVec8Bit( vec, INT_INTOBJ(amount));
   return (Obj) 0;
@@ -4677,8 +4687,8 @@ Obj FuncSHIFT_VEC8BIT_RIGHT( Obj self, Obj vec, Obj amount, Obj zero)
   while (!IS_INTOBJ(amount) || INT_INTOBJ(amount) < 0)
     {
       amount = ErrorReturnObj("SHIFT_VEC8BIT_RIGHT: <amount> must be a non-negative small integer",
-			      0,0,
-			      "you can replace <amount> via 'return <amount>;'");
+            0,0,
+            "you can replace <amount> via 'return <amount>;'");
     }
   ShiftRightVec8Bit( vec, INT_INTOBJ(amount));
   return (Obj) 0;
@@ -4698,7 +4708,7 @@ Obj FuncRESIZE_VEC8BIT( Obj self, Obj vec, Obj newsize )
   while (IS_INTOBJ(newsize) && INT_INTOBJ(newsize) < 0)
     {
       newsize = ErrorReturnObj("RESIZE_VEC8BIT: <amount> must be a non-negative integer, not %d",INT_INTOBJ(newsize),0,
-			       "you can replace <amount> via 'return <amount>;'");
+             "you can replace <amount> via 'return <amount>;'");
     }
   ResizeVec8Bit( vec, INT_INTOBJ(newsize), 0);
   return (Obj) 0;
@@ -4759,30 +4769,30 @@ void ProdCoeffsVec8Bit ( Obj res, Obj vl, UInt ll, Obj vr, UInt lr )
     {
       bytel = ptrl[i];
       if (bytel != 0)
-	for (j = 0; j < lr/elts; j++)
-	  {
-	    byter = ptrr[j];
-	    if (byter != 0)
-	      {
-		byte1 = pmulltab[ 256*bytel + byter];
-		if (byte1 != 0) {
-		  if (p != 2)
-		    ptrp[i+j] = addtab[ ptrp[i+j] + 256*byte1];
-		  else
-		    ptrp[i+j] ^= byte1;
-		}
-		if (elts > 1)
-		  {
-		    byte2 = pmulutab[ 256*bytel + byter];
-		    if (byte2 != 0) {
-		      if (p != 2)
-			ptrp[i+j+1] = addtab[ ptrp[i+j+1] + 256*byte2];
-		      else
-			ptrp[i+j+1] ^= byte2;
-		    }
-		  }
-	      }
-	  }
+  for (j = 0; j < lr/elts; j++)
+    {
+      byter = ptrr[j];
+      if (byter != 0)
+        {
+    byte1 = pmulltab[ 256*bytel + byter];
+    if (byte1 != 0) {
+      if (p != 2)
+        ptrp[i+j] = addtab[ ptrp[i+j] + 256*byte1];
+      else
+        ptrp[i+j] ^= byte1;
+    }
+    if (elts > 1)
+      {
+        byte2 = pmulutab[ 256*bytel + byter];
+        if (byte2 != 0) {
+          if (p != 2)
+      ptrp[i+j+1] = addtab[ ptrp[i+j+1] + 256*byte2];
+          else
+      ptrp[i+j+1] ^= byte2;
+        }
+      }
+        }
+    }
     }
 
   /* The next two deal with the end byte from each polynomial, in combination with the whole
@@ -4793,74 +4803,74 @@ void ProdCoeffsVec8Bit ( Obj res, Obj vl, UInt ll, Obj vr, UInt lr )
     {
       bytel = ptrl[ll/elts];
       if (bytel != 0)
-	{
-	  partl = 0;
-	  for (i = (ll/elts)*elts; i < ll; i++)
-	    {
-	      byte1 = gettab[bytel+256*(i%elts)];
-	      partl = settab[partl + 256*(i  %elts + elts*byte1)];
-	    }
-	  if (partl != 0)
-	    for (j = 0; j < lr/elts; j++)
-	      {
-		byter = ptrr[j];
-		if (byter != 0)
-		  {
-		    byte2 = pmulltab[ 256*partl + byter];
-		    if (byte2 != 0) {
-		      if (p != 2)
-			ptrp[ll/elts + j] = addtab[ ptrp[ll/elts+j] + 256*byte2];
-		      else
-			ptrp[ll/elts+j] ^= byte2;
-		    }
-		    if (elts > 1)
-		      {
-			byte2 = pmulutab[ 256*partl + byter];
-			if (byte2 != 0) {
-			  if (p !=2)
-			    ptrp[ll/elts +j+1] = addtab[ ptrp[ll/elts+j+1] + 256*byte2];
-			  else
-			    ptrp[ll/elts+j+1] ^= byte2;
-			}
-		      }
-		  }
-	      }
-	}
+  {
+    partl = 0;
+    for (i = (ll/elts)*elts; i < ll; i++)
+      {
+        byte1 = gettab[bytel+256*(i%elts)];
+        partl = settab[partl + 256*(i  %elts + elts*byte1)];
+      }
+    if (partl != 0)
+      for (j = 0; j < lr/elts; j++)
+        {
+    byter = ptrr[j];
+    if (byter != 0)
+      {
+        byte2 = pmulltab[ 256*partl + byter];
+        if (byte2 != 0) {
+          if (p != 2)
+      ptrp[ll/elts + j] = addtab[ ptrp[ll/elts+j] + 256*byte2];
+          else
+      ptrp[ll/elts+j] ^= byte2;
+        }
+        if (elts > 1)
+          {
+      byte2 = pmulutab[ 256*partl + byter];
+      if (byte2 != 0) {
+        if (p !=2)
+          ptrp[ll/elts +j+1] = addtab[ ptrp[ll/elts+j+1] + 256*byte2];
+        else
+          ptrp[ll/elts+j+1] ^= byte2;
+      }
+          }
+      }
+        }
+  }
     }
   if (lr % elts != 0)
     {
       byter = ptrr[lr/elts];
       if (byter != 0)
-	{
-	  partr = 0;
-	  for (i = (lr/elts)*elts; i < lr; i++)
-	    partr = settab[partr + 256*(i  %elts + elts*gettab[byter+256*(i%elts)])];
-	  if (partr != 0)
-	    for (i = 0; i < ll/elts; i++)
-	      {
-		bytel = ptrl[i];
-		if (bytel != 0)
-		  {
-		    byte1 = pmulltab[ 256*partr + bytel];
-		    if (byte1 != 0) {
-		      if (p != 2)
-			ptrp[lr/elts  + i] = addtab[ ptrp[lr/elts+i] + 256*byte1];
-		      else
-			ptrp[lr/elts + i] ^= byte1;
-		    }
-		    if (elts > 1)
-		      {
-			byte1 = pmulutab[ 256*partr + bytel];
-			if (byte1 != 0) {
-			  if (p != 2)
-			    ptrp[lr/elts +i+1] = addtab[ ptrp[lr/elts+i+1] + 256*byte1];
-			  else
-			    ptrp[lr/elts+i+1] ^= byte1;
-			}
-		      }
-		  }
-	      }
-	}
+  {
+    partr = 0;
+    for (i = (lr/elts)*elts; i < lr; i++)
+      partr = settab[partr + 256*(i  %elts + elts*gettab[byter+256*(i%elts)])];
+    if (partr != 0)
+      for (i = 0; i < ll/elts; i++)
+        {
+    bytel = ptrl[i];
+    if (bytel != 0)
+      {
+        byte1 = pmulltab[ 256*partr + bytel];
+        if (byte1 != 0) {
+          if (p != 2)
+      ptrp[lr/elts  + i] = addtab[ ptrp[lr/elts+i] + 256*byte1];
+          else
+      ptrp[lr/elts + i] ^= byte1;
+        }
+        if (elts > 1)
+          {
+      byte1 = pmulutab[ 256*partr + bytel];
+      if (byte1 != 0) {
+        if (p != 2)
+          ptrp[lr/elts +i+1] = addtab[ ptrp[lr/elts+i+1] + 256*byte1];
+        else
+          ptrp[lr/elts+i+1] ^= byte1;
+      }
+          }
+      }
+        }
+  }
     }
 
   /* Finally, we have to multiply the two end bytes */
@@ -4868,21 +4878,21 @@ void ProdCoeffsVec8Bit ( Obj res, Obj vl, UInt ll, Obj vr, UInt lr )
     {
       byte1 = pmulltab[ partl + 256*partr];
       if (byte1 != 0) {
-	if (p != 2)
-	  ptrp[ll/elts + lr/elts] = addtab[ptrp[ll/elts + lr/elts] + 256 * byte1];
-	else
-	  ptrp[ll/elts + lr/elts] ^= byte1;
+  if (p != 2)
+    ptrp[ll/elts + lr/elts] = addtab[ptrp[ll/elts + lr/elts] + 256 * byte1];
+  else
+    ptrp[ll/elts + lr/elts] ^= byte1;
       }
       if (elts > 1)
-	{
-	  byte2 = pmulutab[ partl + 256*partr];
-	  if (byte2 != 0) {
-	    if (p != 2)
-	      ptrp[ll/elts + lr/elts + 1] = addtab[ptrp[ll/elts + lr/elts+ 1] + 256 * byte2];
-	    else
-	      ptrp[ll/elts + lr/elts + 1] ^= byte2;
-	  }
-	}
+  {
+    byte2 = pmulutab[ partl + 256*partr];
+    if (byte2 != 0) {
+      if (p != 2)
+        ptrp[ll/elts + lr/elts + 1] = addtab[ptrp[ll/elts + lr/elts+ 1] + 256 * byte2];
+      else
+        ptrp[ll/elts + lr/elts + 1] ^= byte2;
+    }
+  }
     }
   return;
 }
@@ -4917,28 +4927,28 @@ Obj FuncPROD_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vr, Obj lr  )
       assert(p == P_FIELDINFO_8BIT(info1));
       q0 = 1;
       for (i = 0; i < d0; i++)
-	q0 *= p;
+  q0 *= p;
       /* if the exponent is bigger than 31, overflow changes the value to 0 */
       if (d0>8||q0 > 256)
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       if ( (q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vl) == True) ||
-	   (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
-	return TRY_NEXT_METHOD;
+     (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
+  return TRY_NEXT_METHOD;
       RewriteVec8Bit(vl,q0);
       RewriteVec8Bit(vr,q0);
       q = q0;
     }
   if (!ARE_INTOBJS(ll,lr))
     ErrorQuit("PROD_COEFFS_VEC8BIT: both lengths must be small integers, not a %s and a %s",
-	      (Int)TNAM_OBJ(ll), (Int)TNAM_OBJ(lr));
+        (Int)TNAM_OBJ(ll), (Int)TNAM_OBJ(lr));
   ll1 = INT_INTOBJ(ll);
   lr1 = INT_INTOBJ(lr);
   if (0 > ll1 || ll1 > LEN_VEC8BIT(vl))
     ErrorQuit("ProdCoeffs: given length <ll> of left argt (%d)\n is negative or longer than the argt (%d)",
-	      INT_INTOBJ(ll), LEN_VEC8BIT(vl));
+        INT_INTOBJ(ll), LEN_VEC8BIT(vl));
   if (0 > lr1 || lr1 > LEN_VEC8BIT(vr))
     ErrorQuit("ProdCoeffs: given length <lr> of right argt (%d)\n is negative or longer than the argt (%d)",
-	      INT_INTOBJ(lr), LEN_VEC8BIT(vr));
+        INT_INTOBJ(lr), LEN_VEC8BIT(vr));
   info = GetFieldInfo8Bit(q);
   if (ll1 == 0 && lr1 == 0)
     lenp = 0;
@@ -5019,11 +5029,11 @@ Obj MakeShiftedVecs( Obj v, UInt len)
     {
       /* fill the rest up with zero vectors of suitable lengths */
       for (i = 1; i < elts; i++)
-	{
-	  ashift = ZeroVec8Bit(q, len+i, 0);
-	  SET_ELM_PLIST( shifts, (len + i-1) % elts + 1, ashift);
-	  CHANGED_BAG(shifts);
-	}
+  {
+    ashift = ZeroVec8Bit(q, len+i, 0);
+    SET_ELM_PLIST( shifts, (len + i-1) % elts + 1, ashift);
+    CHANGED_BAG(shifts);
+  }
 
       /* reload the tables, in case there was a garbage collection */
       gettab = GETELT_FIELDINFO_8BIT(info);
@@ -5031,22 +5041,22 @@ Obj MakeShiftedVecs( Obj v, UInt len)
       /* Now run through the entries of vn inserting them into the shifted versions */
       ptr = BYTES_VEC8BIT(vn);
       for (j = 1; j < elts; j++)
-	ptrs[j] = BYTES_VEC8BIT(ELM_PLIST(shifts, (len + j -1) % elts + 1));
+  ptrs[j] = BYTES_VEC8BIT(ELM_PLIST(shifts, (len + j -1) % elts + 1));
       for (i = 0; i < len; i++)
-	{
-	  x = gettab[*ptr + 256 *(i % elts)];
-	  if (x != 0)
-	    {
-	      for (j = 1; j < elts; j++)
-		{
-		  *(ptrs[j]) = settab[*(ptrs[j]) + 256*((i+j)%elts + elts*x)];
-		}
-	    }
-	  if (i % elts == elts-1)
-	    ptr++;
-	  else
-	    ptrs[elts - 1 - (i % elts)] ++;
-	}
+  {
+    x = gettab[*ptr + 256 *(i % elts)];
+    if (x != 0)
+      {
+        for (j = 1; j < elts; j++)
+    {
+      *(ptrs[j]) = settab[*(ptrs[j]) + 256*((i+j)%elts + elts*x)];
+    }
+      }
+    if (i % elts == elts-1)
+      ptr++;
+    else
+      ptrs[elts - 1 - (i % elts)] ++;
+  }
     }
   return shifts;
 }
@@ -5092,30 +5102,30 @@ void ReduceCoeffsVec8Bit ( Obj vl, Obj vrshifted, Obj quot )
       ptrl1 = ptrl + i/elts;
       x = gettab[*ptrl1 + 256*(i%elts)];
       if (qptr)
-	qptr[jj/elts] = settab[qptr[jj/elts]+ 256 * ( jj % elts + elts* x )];
+  qptr[jj/elts] = settab[qptr[jj/elts]+ 256 * ( jj % elts + elts* x )];
       if (x != 0)
-	{
-	  
-	  if (p == 2)
-	    xn = x;
-	  else
-	    xn = feltffe[VAL_FFE(AINV(ffefelt[x]))];
-	  multab = SCALAR_FIELDINFO_8BIT(info) + 256*xn;
-	  vrs = ELM_PLIST(vrshifted, 1+i%elts);
-	  lrs = LEN_VEC8BIT(vrs);
-	  ptrr = BYTES_VEC8BIT(vrs) + (lrs-1)/elts;
-	  for (j = (lrs -1)/elts; j >= 0; j--)
-	    {
-	      y = multab[*ptrr];
-	      if (p == 2)
-		*ptrl1 ^= y;
-	      else
-		*ptrl1 = addtab[*ptrl1 + 256 * y];
-	      ptrl1--;
-	      ptrr--;
-	    }
-	  assert( ! gettab[ptrl[i/elts] + 256*(i%elts)]);
-	}
+  {
+    
+    if (p == 2)
+      xn = x;
+    else
+      xn = feltffe[VAL_FFE(AINV(ffefelt[x]))];
+    multab = SCALAR_FIELDINFO_8BIT(info) + 256*xn;
+    vrs = ELM_PLIST(vrshifted, 1+i%elts);
+    lrs = LEN_VEC8BIT(vrs);
+    ptrr = BYTES_VEC8BIT(vrs) + (lrs-1)/elts;
+    for (j = (lrs -1)/elts; j >= 0; j--)
+      {
+        y = multab[*ptrr];
+        if (p == 2)
+    *ptrl1 ^= y;
+        else
+    *ptrl1 = addtab[*ptrl1 + 256 * y];
+        ptrl1--;
+        ptrr--;
+      }
+    assert( ! gettab[ptrl[i/elts] + 256*(i%elts)]);
+  }
     }
   if (quot)
     {
@@ -5135,11 +5145,11 @@ Obj FuncMAKE_SHIFTED_COEFFS_VEC8BIT( Obj self, Obj vr, Obj lr)
 {
   if (!IS_INTOBJ(lr))
     ErrorQuit("ReduceCoeffs: Length of right argument should be a small integer, not a %s",
-	      (Int)TNAM_OBJ(lr), 0L);
+        (Int)TNAM_OBJ(lr), 0L);
   if (INT_INTOBJ(lr) < 0 || INT_INTOBJ(lr) > LEN_VEC8BIT(vr))
     {
       ErrorQuit("ReduceCoeffs: given length <lr> of right argt (%d)\n is negative or longer than the argt (%d)",
-		INT_INTOBJ(lr), LEN_VEC8BIT(vr)); 
+    INT_INTOBJ(lr), LEN_VEC8BIT(vr)); 
     }
   return MakeShiftedVecs(vr, INT_INTOBJ(lr));
 }
@@ -5154,11 +5164,11 @@ Obj FuncREDUCE_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vrshifted)
     return Fail;
   if (!IS_INTOBJ(ll))
     ErrorQuit("ReduceCoeffs: Length of left argument should be a small integer, not a %s",
-	      (Int)TNAM_OBJ(ll), 0L);
+        (Int)TNAM_OBJ(ll), 0L);
   if (0 > INT_INTOBJ(ll) || INT_INTOBJ(ll) > LEN_VEC8BIT(vl))
     {
        ErrorQuit( "ReduceCoeffs: given length <ll> of left argt (%d)\n is negative or longer than the argt (%d)",
-		      INT_INTOBJ(ll), LEN_VEC8BIT(vl)); 
+          INT_INTOBJ(ll), LEN_VEC8BIT(vl)); 
     }
   ResizeVec8Bit(vl, INT_INTOBJ(ll), 0);
   ReduceCoeffsVec8Bit( vl,  vrshifted, (Obj)0);
@@ -5180,11 +5190,11 @@ Obj FuncQUOTREM_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vrshifted)
     return Fail;
   if (!IS_INTOBJ(ll))
     ErrorQuit("QuotRemCoeffs: Length of left argument should be a small integer, not a %s",
-	      (Int)TNAM_OBJ(ll), 0L);
+        (Int)TNAM_OBJ(ll), 0L);
   if (0 > INT_INTOBJ(ll) || INT_INTOBJ(ll) > LEN_VEC8BIT(vl))
     {
        ErrorQuit( "QuotRemCoeffs: given length <ll> of left argt (%d)\n is negative or longer than the argt (%d)",
-		      INT_INTOBJ(ll), LEN_VEC8BIT(vl)); 
+          INT_INTOBJ(ll), LEN_VEC8BIT(vl)); 
     }
   ill = INT_INTOBJ(ll);
   rem = CopyVec8Bit( vl, 1);
@@ -5277,71 +5287,71 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
     {
       row = ELM_PLIST(mat, i);
       if (TransformationsNeeded)
-	{
-	    coeffrow = NewBag(T_DATOBJ, SIZE_VEC8BIT(nrows,elts));
-	    SET_LEN_VEC8BIT(coeffrow, nrows);
-	    type = TypeVec8Bit(q, 1);
-	    TYPE_DATOBJ(coeffrow) = type;
-	    SET_FIELD_VEC8BIT(coeffrow, q);
-	    CHANGED_BAG(coeffrow);
-	    
-	    /* No garbage collection risk from here */
-	    settab = SETELT_FIELDINFO_8BIT(info);
-	    BYTES_VEC8BIT(coeffrow)[(i-1)/elts] = settab[256*((i-1) % elts + elts*one)];
-	}
+  {
+      coeffrow = NewBag(T_DATOBJ, SIZE_VEC8BIT(nrows,elts));
+      SET_LEN_VEC8BIT(coeffrow, nrows);
+      type = TypeVec8Bit(q, 1);
+      TYPE_DATOBJ(coeffrow) = type;
+      SET_FIELD_VEC8BIT(coeffrow, q);
+      CHANGED_BAG(coeffrow);
+      
+      /* No garbage collection risk from here */
+      settab = SETELT_FIELDINFO_8BIT(info);
+      BYTES_VEC8BIT(coeffrow)[(i-1)/elts] = settab[256*((i-1) % elts + elts*one)];
+  }
       /* No garbage collection risk from here */
       gettab = GETELT_FIELDINFO_8BIT(info);
       convtab1 = FFE_FELT_FIELDINFO_8BIT(info);
       
       /* Clear out the current row */
       for (j = 1; j <= ncols; j++)
-	{
-	  h = INT_INTOBJ(ELM_PLIST(heads, j));
-	  if (h != 0)
-	    {
-	      byte = BYTES_VEC8BIT(row)[(j-1)/elts];
-	      if (byte && zero != (x = gettab[ byte+256*((j-1) % elts)]))
-		{
-		  y = AINV(convtab1[x]);
-		  AddVec8BitVec8BitMultInner(row, row, ELM_PLIST(vectors,h),y,1,ncols);
-		  if (TransformationsNeeded)
-		    AddVec8BitVec8BitMultInner(coeffrow, coeffrow, ELM_PLIST(coeffs,h),y,1,nrows);
-		}
-	    }
-	}
+  {
+    h = INT_INTOBJ(ELM_PLIST(heads, j));
+    if (h != 0)
+      {
+        byte = BYTES_VEC8BIT(row)[(j-1)/elts];
+        if (byte && zero != (x = gettab[ byte+256*((j-1) % elts)]))
+    {
+      y = AINV(convtab1[x]);
+      AddVec8BitVec8BitMultInner(row, row, ELM_PLIST(vectors,h),y,1,ncols);
+      if (TransformationsNeeded)
+        AddVec8BitVec8BitMultInner(coeffrow, coeffrow, ELM_PLIST(coeffs,h),y,1,nrows);
+    }
+      }
+  }
       j = 1;
       rowp = BYTES_VEC8BIT(row);
       while (j <= ncols && !*rowp )
-	{
-	  j += elts;
-	  rowp++;
-	}
+  {
+    j += elts;
+    rowp++;
+  }
       while ( j <= ncols && (zero == (x = gettab[ *rowp + 256*((j-1) % elts)])))
-	j++;
+  j++;
 
       if (j <= ncols)
-	{
-	  y = INV(convtab1[x]);
-	  MultVec8BitFFEInner(row,row,y,1,ncols);
-	  SET_ELM_PLIST(vectors, ++nvecs, row);
-	  CHANGED_BAG(vectors);
-	  SET_LEN_PLIST(vectors, nvecs);
-	  SET_ELM_PLIST( heads, j, INTOBJ_INT(nvecs));
-	  if (TransformationsNeeded)
-	    {
-	      MultVec8BitFFEInner(coeffrow,coeffrow,y,1,nrows);
-	      SET_ELM_PLIST(coeffs, nvecs, coeffrow);
-	      CHANGED_BAG(coeffs);
-	      SET_LEN_PLIST(coeffs, nvecs);
-	    }
-	  /* garbage collection OK again after here */
-	}
+  {
+    y = INV(convtab1[x]);
+    MultVec8BitFFEInner(row,row,y,1,ncols);
+    SET_ELM_PLIST(vectors, ++nvecs, row);
+    CHANGED_BAG(vectors);
+    SET_LEN_PLIST(vectors, nvecs);
+    SET_ELM_PLIST( heads, j, INTOBJ_INT(nvecs));
+    if (TransformationsNeeded)
+      {
+        MultVec8BitFFEInner(coeffrow,coeffrow,y,1,nrows);
+        SET_ELM_PLIST(coeffs, nvecs, coeffrow);
+        CHANGED_BAG(coeffs);
+        SET_LEN_PLIST(coeffs, nvecs);
+      }
+    /* garbage collection OK again after here */
+  }
       else if (TransformationsNeeded)
-	{
-	  SET_ELM_PLIST(relns, ++nrels, coeffrow);
-	  CHANGED_BAG(relns);
-	  SET_LEN_PLIST(relns, nrels);
-	}
+  {
+    SET_ELM_PLIST(relns, ++nrels, coeffrow);
+    CHANGED_BAG(relns);
+    SET_LEN_PLIST(relns, nrels);
+  }
       TakeInterrupt();
     }
   if (RNheads == 0)
@@ -5357,16 +5367,16 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
   if (TransformationsNeeded)
     {
       if (RNcoeffs == 0)
-	{
-	  RNcoeffs = RNamName("coeffs");
-	  RNrelns = RNamName("relations");
-	}
+  {
+    RNcoeffs = RNamName("coeffs");
+    RNrelns = RNamName("relations");
+  }
       AssPRec(res,RNcoeffs,coeffs);
       if (LEN_PLIST(coeffs) == 0)
-	RetypeBag(coeffs, T_PLIST_EMPTY);
+  RetypeBag(coeffs, T_PLIST_EMPTY);
       AssPRec(res,RNrelns,relns);
       if (LEN_PLIST(relns) == 0)
-	RetypeBag(relns, T_PLIST_EMPTY);
+  RetypeBag(relns, T_PLIST_EMPTY);
     }
   SortPRecRNam(res,0);
   return res;
@@ -5422,52 +5432,52 @@ UInt TriangulizeListVec8Bits( Obj mat, UInt clearup, Obj *deterp)
       getcol = gettab + 256*((workcol - 1) % elts);
       
       for (workrow = rank+1; workrow <= nrows; workrow ++)
-	{
-	  row = ELM_PLIST( mat, workrow);
-	  x = getcol[BYTES_VEC8BIT(row)[byte]];
-	  if (x)
-	    break;
-	}
+  {
+    row = ELM_PLIST( mat, workrow);
+    x = getcol[BYTES_VEC8BIT(row)[byte]];
+    if (x)
+      break;
+  }
       if (workrow <= nrows)
-	{
-	  rank++;
-	  y = convtab[x];
-	  MultVec8BitFFEInner(row, row, INV(y), workcol, ncols);
-	  if (deterp)
-	    deter = PROD(deter, y);
-	  
-	  if (workrow != rank)
-	    {
-	      if (deterp)
-		sign = -sign;
-	      SET_ELM_PLIST(mat, workrow, ELM_PLIST(mat, rank));
-	      SET_ELM_PLIST(mat, rank, row);
-	    }
-	  if (clearup)
-	    for (j = 1; j < rank; j ++)
-	      {
-		row2 = ELM_PLIST(mat, j);
-		if ((x2 =  getcol[BYTES_VEC8BIT(row2)[byte]]))
-		  AddVec8BitVec8BitMultInner(row2,row2,row,AINV(convtab[x2]),workcol,ncols);
-	      }
-	  for (j = workrow+1; j <= nrows; j++)
-	    {
-	      row2 = ELM_PLIST(mat, j);
-	      if ((x2 =  getcol[BYTES_VEC8BIT(row2)[byte]]))
-		AddVec8BitVec8BitMultInner(row2,row2,row,AINV(convtab[x2]),workcol,ncols);
-	    }
-	}
+  {
+    rank++;
+    y = convtab[x];
+    MultVec8BitFFEInner(row, row, INV(y), workcol, ncols);
+    if (deterp)
+      deter = PROD(deter, y);
+    
+    if (workrow != rank)
+      {
+        if (deterp)
+    sign = -sign;
+        SET_ELM_PLIST(mat, workrow, ELM_PLIST(mat, rank));
+        SET_ELM_PLIST(mat, rank, row);
+      }
+    if (clearup)
+      for (j = 1; j < rank; j ++)
+        {
+    row2 = ELM_PLIST(mat, j);
+    if ((x2 =  getcol[BYTES_VEC8BIT(row2)[byte]]))
+      AddVec8BitVec8BitMultInner(row2,row2,row,AINV(convtab[x2]),workcol,ncols);
+        }
+    for (j = workrow+1; j <= nrows; j++)
+      {
+        row2 = ELM_PLIST(mat, j);
+        if ((x2 =  getcol[BYTES_VEC8BIT(row2)[byte]]))
+    AddVec8BitVec8BitMultInner(row2,row2,row,AINV(convtab[x2]),workcol,ncols);
+      }
+  }
       if (TakeInterrupt()) {
-	gettab = GETELT_FIELDINFO_8BIT(info);
-	convtab = FFE_FELT_FIELDINFO_8BIT(info);
+  gettab = GETELT_FIELDINFO_8BIT(info);
+  convtab = FFE_FELT_FIELDINFO_8BIT(info);
       }
     }
   if (deterp)
     {
       if (rank < nrows)
-	deter = ZERO(deter);
+  deter = ZERO(deter);
       else if (sign == -1)
-	deter = AINV(deter);
+  deter = AINV(deter);
       *deterp = deter;
     }
   return rank;
@@ -5504,7 +5514,7 @@ Obj FuncSEMIECHELON_LIST_VEC8BITS( Obj self, Obj mat )
       row = ELM_PLIST(mat, i);
       if (!IS_VEC8BIT_REP(row) || FIELD_VEC8BIT(row) != q || LEN_VEC8BIT(row) != width)
       {
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       }
     }
   return SemiEchelonListVec8Bits( mat, 0);
@@ -5540,10 +5550,10 @@ Obj FuncSEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS( Obj self, Obj mat )
     {
       row = ELM_PLIST(mat, i);
       if (!IS_VEC8BIT_REP(row) ||
-	  FIELD_VEC8BIT(row) != q ||
-	  LEN_VEC8BIT(row) != width)
+    FIELD_VEC8BIT(row) != q ||
+    LEN_VEC8BIT(row) != width)
       {
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       }
     }
   return SemiEchelonListVec8Bits( mat, 1);
@@ -5579,9 +5589,9 @@ Obj FuncTRIANGULIZE_LIST_VEC8BITS( Obj self, Obj mat )
     {
       row = ELM_PLIST(mat, i);
       if (!IS_MUTABLE_OBJ(row) || !IS_VEC8BIT_REP(row)
-	  || FIELD_VEC8BIT(row) != q || LEN_VEC8BIT(row) != width)
+    || FIELD_VEC8BIT(row) != q || LEN_VEC8BIT(row) != width)
       {
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       }
     }
   TriangulizeListVec8Bits( mat, 1, (Obj *) 0);
@@ -5617,9 +5627,9 @@ Obj FuncRANK_LIST_VEC8BITS( Obj self, Obj mat )
     {
       row = ELM_PLIST(mat, i);
       if (!IS_VEC8BIT_REP(row) || FIELD_VEC8BIT(row) != q
-	  || LEN_VEC8BIT(row) != width)
+    || LEN_VEC8BIT(row) != width)
       {
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       }
     }
   return INTOBJ_INT(TriangulizeListVec8Bits( mat, 0, (Obj *) 0));
@@ -5655,9 +5665,9 @@ Obj FuncDETERMINANT_LIST_VEC8BITS( Obj self, Obj mat )
     {
       row = ELM_PLIST(mat, i);
       if (!IS_VEC8BIT_REP(row) || FIELD_VEC8BIT(row) != q ||
-	  LEN_VEC8BIT(row) != width)
+    LEN_VEC8BIT(row) != width)
       {
-	return TRY_NEXT_METHOD;
+  return TRY_NEXT_METHOD;
       }
     }
   TriangulizeListVec8Bits( mat, 0, &det);
@@ -5685,7 +5695,7 @@ Int Cmp_MAT8BIT_MAT8BIT( Obj ml, Obj mr)
     {
       c = CmpVec8BitVec8Bit(ELM_MAT8BIT(ml,i), ELM_MAT8BIT(mr,i));
       if (c != 0)
-	return c;
+  return c;
     }
   if (l1 < l2)
     return -1;
@@ -5779,7 +5789,7 @@ Obj FuncTRANSPOSED_MAT8BIT( Obj self, Obj mat)
     row = NewBag( T_DATOBJ, SIZE_VEC8BIT(l, elts));
     SET_LEN_VEC8BIT(row,l);
     SET_FIELD_VEC8BIT(row,q);
-	type = TypeVec8BitLocked(q,1);
+  type = TypeVec8BitLocked(q,1);
     TYPE_DATOBJ(row) = type;
     SET_ELM_MAT8BIT( tra, i, row);
     CHANGED_BAG(tra);
@@ -5799,36 +5809,36 @@ Obj FuncTRANSPOSED_MAT8BIT( Obj self, Obj mat)
      elts x elts submatrix into vals */
     for (n=0; n<nrb; n++) {
       for (j=0;j<elts;j++) {
-	if ((i+j)>l) {
-	  
-	  vals[j]=0; /* outside matrix */
-	  
-	}
-	else {
-	  vals[j]=BYTES_VEC8BIT(ELM_MAT8BIT(mat,i+j))[n];	  
-	}
+  if ((i+j)>l) {
+    
+    vals[j]=0; /* outside matrix */
+    
+  }
+  else {
+    vals[j]=BYTES_VEC8BIT(ELM_MAT8BIT(mat,i+j))[n];   
+  }
       }
       
       /* write transposed values in new matrix */
       nstart=n*elts+1;
       for (j=0;j<elts;j++) { /* bit number = Row in transpose */
-	if ((nstart+j)<=w) {
-	  
-	  /* still within matrix */
-	  if (elts > 1)
-	    {
-	      val=0;
-	      for (k=0;k<elts;k++) {
-		val = settab[val + 256* ( k + elts*gettab[vals[k] + 256*j])];
-	      }
-	    }
-	  else
-	    val = vals[0];
-	  
-	  /* set entry */
-	  ptr=BYTES_VEC8BIT(ELM_GF2MAT(tra,nstart+j))+imod;
-	  *ptr=val;
-	}
+  if ((nstart+j)<=w) {
+    
+    /* still within matrix */
+    if (elts > 1)
+      {
+        val=0;
+        for (k=0;k<elts;k++) {
+    val = settab[val + 256* ( k + elts*gettab[vals[k] + 256*j])];
+        }
+      }
+    else
+      val = vals[0];
+    
+    /* set entry */
+    ptr=BYTES_VEC8BIT(ELM_GF2MAT(tra,nstart+j))+imod;
+    *ptr=val;
+  }
       }
     }
   }
@@ -5895,32 +5905,32 @@ Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT( Obj self, Obj matl, Obj matr)
       data = (UInt1 *) ADDR_OBJ(shift[i]);
       datar = BYTES_VEC8BIT(ELM_MAT8BIT(matr,j));
       for (k = 0; k < ncolr; k++)
-	data[(k+i)/elts] = setelt[data[(k+i)/elts] + 256*((k+i)%elts + getelt[datar[k/elts]+256*(k%elts)]*elts)];
+  data[(k+i)/elts] = setelt[data[(k+i)/elts] + 256*((k+i)%elts + getelt[datar[k/elts]+256*(k%elts)]*elts)];
     }
     for (i = 1; i <= nrowl; i++) {
       data = BYTES_VEC8BIT(ELM_MAT8BIT(mat,(i-1)*nrowr+j));
       ncol = 0;
       for (k = 0; k < ncoll; k++) {
-	s = getelt[BYTES_VEC8BIT(ELM_MAT8BIT(matl,i))[k/elts] + 256*(k%elts)];
-	l = 0;
-	if (s != zero) {
-	  /* append s*shift[ncol%elts] to data */
-	  datar = (UInt1 *) ADDR_OBJ(shift[ncol%elts]);
-	  if (ncol % elts) {
-	    if (p == 2)
-	      data[-1] ^= scalar[*datar++ + 256*s];
-	    else
-	      data[-1] = add[data[-1] + 256*scalar[*datar++ + 256*s]];
-	    l = elts - ncol%elts;
-	  }
-	  for (; l < ncolr; l += elts)
-	    *data++ = scalar[*datar++ + 256*s];
-	} else {
-	  if (ncol % elts)
-	    l = elts - ncol%elts;
-	  data += (ncolr+elts-1-l)/elts;
-	}
-	ncol += ncolr;
+  s = getelt[BYTES_VEC8BIT(ELM_MAT8BIT(matl,i))[k/elts] + 256*(k%elts)];
+  l = 0;
+  if (s != zero) {
+    /* append s*shift[ncol%elts] to data */
+    datar = (UInt1 *) ADDR_OBJ(shift[ncol%elts]);
+    if (ncol % elts) {
+      if (p == 2)
+        data[-1] ^= scalar[*datar++ + 256*s];
+      else
+        data[-1] = add[data[-1] + 256*scalar[*datar++ + 256*s]];
+      l = elts - ncol%elts;
+    }
+    for (; l < ncolr; l += elts)
+      *data++ = scalar[*datar++ + 256*s];
+  } else {
+    if (ncol % elts)
+      l = elts - ncol%elts;
+    data += (ncolr+elts-1-l)/elts;
+  }
+  ncol += ncolr;
       }
     }
   }
@@ -6244,8 +6254,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoVec8bit ( void )
 {
-    module.revision_c = Revision_vec8bit_c;
-    module.revision_h = Revision_vec8bit_h;
     FillInVersion( &module );
     return &module;
 }

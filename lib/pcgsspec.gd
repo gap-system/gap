@@ -2,14 +2,11 @@
 ##
 #W  pcgsspec.gd                 GAP library                      Bettina Eick
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-Revision.pcgsspec_gd :=
-    "@(#)$Id$";
 
 #############################################################################
 ##

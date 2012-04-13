@@ -2,7 +2,6 @@
 **
 *W  exprs.c                     GAP source                   Martin Schönert
 **
-*H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -15,8 +14,6 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-const char * Revision_exprs_c =
-   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
@@ -47,9 +44,7 @@ const char * Revision_exprs_c =
 #include        "stats.h"
 
 
-#define INCLUDE_DECLARATION_PART
 #include        "exprs.h"               /* expressions                     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include <assert.h>
 
@@ -2169,8 +2164,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoExprs ( void )
 {
-    module.revision_c = Revision_exprs_c;
-    module.revision_h = Revision_exprs_h;
     FillInVersion( &module );
     return &module;
 }

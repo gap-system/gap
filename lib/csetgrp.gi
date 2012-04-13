@@ -8,8 +8,6 @@
 ##
 ##  This file contains the generic operations for cosets.
 ##
-Revision.csetgrp_gi:=
-  "@(#)$Id$";
 
 
 #############################################################################
@@ -531,7 +529,12 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
       stabs, dcs, homs, tra, a1, a2, indx, normal, hom, omi, omiz,c1,
       unten, compst, s, nr, nstab, lst, sifa, pinv, blist, bsz, cnt,
       ps, e, mop, mo, lstgens, lstgensop, rep, st, o, oi, i, img, ep,
-      siz, rt, j, canrep, rsiz, step, nu;
+      siz, rt, j, canrep, rsiz, step, nu,
+      actlimit, uplimit, badlimit;
+
+  actlimit:=100000; # maximal degree on which we try blocks
+  uplimit:=200;
+  badlimit:=50000;
 
   # if a is small and b large, compute cosets b\G/a and take inverses of the
   # representatives: Since we compute stabilizers in b and a chain down to
@@ -558,7 +561,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
   # compute ascending chain and refine if necessarily (we anyhow need action
   # on cosets).
   #c:=AscendingChain(G,a:refineChainActionLimit:=Index(G,a));
-  c:=AscendingChain(G,a:refineChainActionLimit:=50000);
+  c:=AscendingChain(G,a:refineChainActionLimit:=actlimit);
 
   # cano indicates whether there is a final up step (and thus we need to
   # form canonical representatives). ```Canonical'' means that on each
@@ -566,12 +569,12 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
   # the transversal position).
   cano:=false;
 
-  if maxidx(c)>50000 then
+  if maxidx(c)>badlimit then
     # try to do better
 
     # what about flipping (back)?
-    c1:=AscendingChain(G,b:refineChainActionLimit:=50000);
-    if maxidx(c1)<=50000 then
+    c1:=AscendingChain(G,b:refineChainActionLimit:=actlimit);
+    if maxidx(c1)<=badlimit then
       Info(InfoCoset,1,"flip to get better chain");
       c:=b;
       b:=a;
@@ -580,6 +583,9 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
       c:=c1;
 
     elif IsPermGroup(G) then
+
+      actlimit:=Maximum(actlimit,NrMovedPoints(G));
+      badlimit:=Maximum(badlimit,NrMovedPoints(G));
 
       tryfct:=function(obj,act)
 	local G1,a1,c1;
@@ -590,8 +596,9 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 	  G1:=Stabilizer(G,obj,act);
 	  a1:=Stabilizer(a,obj,act);
 	fi;
-	if maxidx(c)>50000 or Size(a1)>Size(c[1]) then
-	  c1:=AscendingChain(G1,a1:refineChainActionLimit:=50000);
+	if Index(G,a1)<maxidx(c) and (
+	  maxidx(c)>badlimit or Size(a1)>Size(c[1])) then
+	  c1:=AscendingChain(G1,a1:refineChainActionLimit:=actlimit);
 	  if maxidx(c1)<maxidx(c) then
 	    c:=Concatenation(c1,[G]);
 	    cano:=true;
@@ -604,9 +611,9 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
       # are maxes known?
       if HasMaximalSubgroupClassReps(G) then
 	for i in MaximalSubgroupClassReps(G) do
-	  if Index(G,i)<maxidx(c) and Index(G,i)<50000 then
+	  if Index(G,i)<maxidx(c) and Index(G,i)<badlimit then
 	    p:=Intersection(a,i);
-	    if Index(a,p)<200 then
+	    if Index(a,p)<uplimit then
               Info(InfoCoset,3,"Try maximal of Indices ",Index(G,i),":",
 		Index(a,p));
 	      tryfct("max",[i,p]);
@@ -624,23 +631,26 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 	  
     fi;
     
-    if maxidx(c)>50000 or (Size(a)<50000 and
+    if maxidx(c)>badlimit or (Size(a)<badlimit and
       10*(Size(a)/Size(c[1]))^2>Size(a)) or IsSolvableGroup(a) then
 
       if IsSolvableGroup(a) then
         r:=ShallowCopy(MaximalSubgroupClassReps(a));
-      else
+      elif Index(a,RadicalGroup(a))<5*10^5 then
 	# avoid maxes at this point for whole group
 	j:=NaturalHomomorphismByNormalSubgroup(a,RadicalGroup(a));
 	r:=MaximalSubgroupClassReps(Image(j));
 	r:=List(r,x->PreImage(j,x));
+      else
+	r:=[];
       fi;
+      r:=Filtered(r,x->Index(a,x)<uplimit);
 
       Sort(r,function(a,b) return Size(a)<Size(b);end);
       for j in r do
 	if Size(j)>Size(c[1]) then
-	  t:=AscendingChain(G,j:refineChainActionLimit:=50000);
-	  if maxidx(t)<50000 then
+	  t:=AscendingChain(G,j:refineChainActionLimit:=actlimit);
+	  if maxidx(t)<maxidx(c) and maxidx(t)<badlimit then
 	    c:=t;
 	    cano:=true;
 	    Info(InfoCoset,1,"improved chain with up step index:",
@@ -669,7 +679,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
     tra[step]:=t;
 
     # is it worth using a permutation representation?
-    if (step>1 or cano) and Length(t)<50000 and IsPermGroup(G) and 
+    if (step>1 or cano) and Length(t)<actlimit and IsPermGroup(G) and 
       not normal then
       # in this case, we can beneficially compute the action once and then use
       # homomorphism methods to obtain the permutation image

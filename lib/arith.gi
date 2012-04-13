@@ -2,7 +2,6 @@
 ##
 #W  arith.gi                    GAP library                     Thomas Breuer
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
@@ -11,8 +10,6 @@
 ##  This file  contains  the generic  methods  for elements in families  that
 ##  allow certain arithmetical operations.
 ##
-Revision.arith_gi :=
-    "@(#)$Id$";
 
 
 #############################################################################
@@ -522,17 +519,17 @@ InstallMethod( LieBracket,
 ##
 InstallOtherMethod( \*,
     "positive integer * additive element",
-    [ IsPosInt, IsAdditiveElement ],
+    [ IsPosInt, IsNearAdditiveElement ],
     PROD_INT_OBJ );
 
 InstallOtherMethod( \*,
     "zero integer * additive element with zero",
-    [ IsInt and IsZeroCyc, IsAdditiveElementWithZero ], SUM_FLAGS,
+    [ IsInt and IsZeroCyc, IsNearAdditiveElementWithZero ], SUM_FLAGS,
     PROD_INT_OBJ );
 
 InstallOtherMethod( \*,
     "negative integer * additive element with inverse",
-    [ IsInt and IsNegRat, IsAdditiveElementWithInverse ],
+    [ IsInt and IsNegRat, IsNearAdditiveElementWithInverse ],
     PROD_INT_OBJ );
 
 
@@ -542,21 +539,21 @@ InstallOtherMethod( \*,
 ##
 InstallOtherMethod( \*,
     "additive element * positive integer",
-    [ IsAdditiveElement, IsPosInt ],
+    [ IsNearAdditiveElement, IsPosInt ],
 function(a,b)
   return PROD_INT_OBJ(b,a);
 end);
 
 InstallOtherMethod( \*,
     "additive element with zero * zero integer",
-    [ IsAdditiveElementWithZero, IsInt and IsZeroCyc ], SUM_FLAGS,
+    [ IsNearAdditiveElementWithZero, IsInt and IsZeroCyc ], SUM_FLAGS,
 function(a,b)
   return PROD_INT_OBJ(b,a);
 end);
 
 InstallOtherMethod( \*,
     "additive element with inverse * negative integer",
-    [ IsAdditiveElementWithInverse, IsInt and IsNegRat ],
+    [ IsNearAdditiveElementWithInverse, IsInt and IsNegRat ],
 function(a,b)
   return PROD_INT_OBJ(b,a);
 end);
@@ -611,7 +608,7 @@ InstallMethod( SetElementsFamily,
 #M  Characteristic(<obj>)
 ##
 InstallMethod( Characteristic,
-    "method that asks the family",
+    "ask the family",
     [ IsObject ],
     function ( obj )
     local   F;
@@ -621,6 +618,27 @@ InstallMethod( Characteristic,
     fi;
     return Characteristic( F );
 end );
+
+InstallMethod( Characteristic,
+    "delegate to family (element)",
+    [ IsAdditiveElementWithZero ],
+    function( el )
+      return Characteristic( FamilyObj(el) );
+    end );
+
+InstallMethod( Characteristic,
+    "for family delegate to elements family",
+    [ IsFamily and HasElementsFamily],
+    function( el )
+      return Characteristic( ElementsFamily(el) );
+    end );
+
+InstallMethod( Characteristic,
+    "return fail",
+    [ IsObject ], -SUM_FLAGS,
+    function( el )
+      return fail;
+    end );
 
 
 #############################################################################
