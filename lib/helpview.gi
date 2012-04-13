@@ -413,6 +413,8 @@ show := function(file)
 end
 );
 
+LockAndMigrateObj(HELP_VIEWER_INFO,HELP_REGION);
+
 #############################################################################
 ##
 #F  SetHelpViewer(<viewer>):  Set the viewer used for help

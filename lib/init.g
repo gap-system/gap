@@ -615,6 +615,7 @@ CallAndInstallPostRestore( function()
   else
     GAPInfo.TermEncoding := GAPInfo.TermEncodingOverwrite;
   fi;
+  MakeImmutable( GAPInfo.TermEncoding );
 end );
 
 
@@ -838,15 +839,15 @@ BindGlobal( "SetUserPreferences", function( arg )
 
     # Set the record and defaults.
     if not IsBound( GAPInfo.UserPreferences ) then
-      GAPInfo.UserPreferences := rec(
+      GAPInfo.UserPreferences := AtomicRecord( rec(
           Editor := "vi",
           ExcludeFromAutoload := [],
           HTMLStyle := ["default"],
-          HelpViewers := [ "screen" ],
+          HelpViewers := MakeImmutable([ "screen" ]),
           IndeterminateNameReuse := 0,
           InfoPackageLoadingLevel := PACKAGE_ERROR,
           PackagesToLoad := [],
-          Pager := "builtin",
+          Pager := MakeImmutable("builtin"),
           PagerOptions := [],
           ReadObsolete := true,
           TextTheme := ["default"],
@@ -857,7 +858,7 @@ BindGlobal( "SetUserPreferences", function( arg )
           XdviOptions := "",
           XpdfOptions := "",
           MaxBitsIntView := 8000,
-        );
+        ) );
     fi;
     # check environment variables for editor and pager settings
     # (is overwritten below by explicit values in gap.ini)

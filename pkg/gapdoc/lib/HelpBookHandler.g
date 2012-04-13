@@ -11,53 +11,7 @@
 ##  contained in the GAPDoc package and GAP's help system.
 ## 
 
-HELP_BOOK_HANDLER.GapDocGAP := rec();
-
-##  
-##  The  .entries info in the GapDocGAP  six-format has  entries of form 
-##  
-##      [ showstring,  
-##        sectionstring,  (allows searching of section numbers, like: "1.3-4")
-##        [chapnr, secnr, subsecnr], 
-##        linenr  (for "text" format), 
-##        pagenr (for .dvi, .pdf-formats),
-##        idstring (for a link L.<idstring> in PDF file,
-##        searchstring (simplified lowercased version of <showstring>)
-##      ]
-##  
-
 HELPBOOKINFOSIXTMP := 0;
-
-# helper to set the text theme
-HELP_BOOK_HANDLER.GapDocGAP.setTextTheme := function()
-  if IsString(GAPInfo.UserPreferences.TextTheme) then
-    GAPInfo.UserPreferences.TextTheme := [ GAPInfo.UserPreferences.TextTheme ];
-  fi;
-  if GAPInfo.UserPreferences.TextTheme = ["default"] then
-    if not IsBound(GAPInfo.UserPreferences.UseColorsInTerminal) or 
-         GAPInfo.UserPreferences.UseColorsInTerminal <> true then
-      SetGAPDocTextTheme("none");
-    else
-      SetGAPDocTextTheme(rec());
-    fi;
-  else
-    CallFuncList(SetGAPDocTextTheme, GAPInfo.UserPreferences.TextTheme);
-  fi;
-end;
-HELP_BOOK_HANDLER.GapDocGAP.setTextTheme();
-
-# helper function for showing matches in current text theme
-HELP_BOOK_HANDLER.GapDocGAP.apptheme := function(res, theme)
-  local a;
-  if not IsBound(res.theme) or res.theme <> theme then
-    for a in res.entries do
-      a[1] := SubstituteEscapeSequences(a[8], theme);
-    od;
-    res.theme := ShallowCopy(theme);
-  fi;
-end;
-
-
 
 ##  <#GAPDoc Label="SetGAPDocHTMLStyle">
 ##  <ManSection >
@@ -94,6 +48,54 @@ BindGlobal("SetGAPDocHTMLStyle", function(arg)
                                       JoinStringsWithSeparator(arg, ",");
   fi;
 end);
+
+atomic readwrite HELP_REGION do
+
+HELP_BOOK_HANDLER.GapDocGAP := MigrateObj(rec(),HELP_REGION);
+
+##  
+##  The  .entries info in the GapDocGAP  six-format has  entries of form 
+##  
+##      [ showstring,  
+##        sectionstring,  (allows searching of section numbers, like: "1.3-4")
+##        [chapnr, secnr, subsecnr], 
+##        linenr  (for "text" format), 
+##        pagenr (for .dvi, .pdf-formats),
+##        idstring (for a link L.<idstring> in PDF file,
+##        searchstring (simplified lowercased version of <showstring>)
+##      ]
+##  
+
+# helper to set the text theme
+HELP_BOOK_HANDLER.GapDocGAP.setTextTheme := function()
+  if IsString(GAPInfo.UserPreferences.TextTheme) then
+    GAPInfo.UserPreferences.TextTheme := [ GAPInfo.UserPreferences.TextTheme ];
+  fi;
+  if GAPInfo.UserPreferences.TextTheme = ["default"] then
+    if not IsBound(GAPInfo.UserPreferences.UseColorsInTerminal) or 
+         GAPInfo.UserPreferences.UseColorsInTerminal <> true then
+      SetGAPDocTextTheme("none");
+    else
+      SetGAPDocTextTheme(rec());
+    fi;
+  else
+    CallFuncList(SetGAPDocTextTheme, GAPInfo.UserPreferences.TextTheme);
+  fi;
+end;
+HELP_BOOK_HANDLER.GapDocGAP.setTextTheme();
+
+# helper function for showing matches in current text theme
+HELP_BOOK_HANDLER.GapDocGAP.apptheme := atomic function( readwrite res, readonly theme)
+  local a;
+  if not IsBound(res.theme) or res.theme <> theme then
+    for a in res.entries do
+      a[1] := SubstituteEscapeSequences(a[8], theme);
+    od;
+    res.theme := ShallowCopy(theme);
+  fi;
+end;
+
+
 # set HTML style from gap.ini file
 HELP_BOOK_HANDLER.GapDocGAP.f := function()
   if IsString(GAPInfo.UserPreferences.HTMLStyle) then
@@ -428,4 +430,6 @@ HELP_BOOK_HANDLER.GapDocGAP.MatchNext := function(book, entrynr)
   od;
   return [info, nr];
 end;
+
+od;
 

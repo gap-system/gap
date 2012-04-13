@@ -180,11 +180,12 @@ GAPDoc2TextProcs.OtherThemes.raggedright := rec(
 );
 
 InstallValue(GAPDocTextTheme, rec());
+LockAndMigrateObj( GAPDocTextTheme, HELP_REGION );
 
 # argument doesn't need all component, the missing ones are taken from default
 InstallGlobalFunction(SetGAPDocTextTheme, function(arg)
-  local r, res, h, af, v, a, nam, f, i;
-  
+local r, res, h, af, v, a, nam, f, i;
+atomic HELP_REGION do  
   r := rec();
   for a in arg do
     if IsString(a) then
@@ -238,6 +239,7 @@ InstallGlobalFunction(SetGAPDocTextTheme, function(arg)
   for f in RecFields(res) do
     GAPDocTextTheme.(f) := res.(f);
   od;
+od;  
 end);
-SetGAPDocTextTheme(rec());
+SetGAPDocTextTheme( LockAndMigrateObj(rec(),HELP_REGION) );
 
