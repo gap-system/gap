@@ -890,62 +890,62 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
 			infinity          ];
 
     # Store the internal types.
-    ThreadVar.NEW_TYPE_READONLY := false;
+    ConstructExtendedType(function()
+      K:= NewType( F, Is8BitsAssocWord and req );
+      K![ AWP_PURE_TYPE    ]      := K;
+      K![ AWP_NR_BITS_EXP  ]      := F!.expBits[1];
+      K![ AWP_NR_GENS      ]      := rank;
+      K![ AWP_NR_BITS_PAIR ]      := 8;
+      K![ AWP_FUN_OBJ_BY_VECTOR ] := 8Bits_ObjByVector;
+      K![ AWP_FUN_ASSOC_WORD    ] := 8Bits_AssocWord;
+      F!.types[1]:= K;
+      MakeReadOnlyObj(K);
 
-    K:= NewType( F, Is8BitsAssocWord and req );
-    K![ AWP_PURE_TYPE    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[1];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 8;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 8Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 8Bits_AssocWord;
-    F!.types[1]:= K;
-    MakeReadOnlyObj(K);
+      K:= NewType( F, Is16BitsAssocWord and req );
+      K![ AWP_PURE_TYPE    ]      := K;
+      K![ AWP_NR_BITS_EXP  ]      := F!.expBits[2];
+      K![ AWP_NR_GENS      ]      := rank;
+      K![ AWP_NR_BITS_PAIR ]      := 16;
+      K![ AWP_FUN_OBJ_BY_VECTOR ] := 16Bits_ObjByVector;
+      K![ AWP_FUN_ASSOC_WORD    ] := 16Bits_AssocWord;
+      F!.types[2]:= K;
+      MakeReadOnlyObj(K);
 
-    K:= NewType( F, Is16BitsAssocWord and req );
-    K![ AWP_PURE_TYPE    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[2];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 16;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 16Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 16Bits_AssocWord;
-    F!.types[2]:= K;
-    MakeReadOnlyObj(K);
+      K:= NewType( F, Is32BitsAssocWord and req );
+      K![ AWP_PURE_TYPE    ]      := K;
+      K![ AWP_NR_BITS_EXP  ]      := F!.expBits[3];
+      K![ AWP_NR_GENS      ]      := rank;
+      K![ AWP_NR_BITS_PAIR ]      := 32;
+      K![ AWP_FUN_OBJ_BY_VECTOR ] := 32Bits_ObjByVector;
+      K![ AWP_FUN_ASSOC_WORD    ] := 32Bits_AssocWord;
+      F!.types[3]:= K;
+      MakeReadOnlyObj(K);
 
-    K:= NewType( F, Is32BitsAssocWord and req );
-    K![ AWP_PURE_TYPE    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[3];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 32;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 32Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 32Bits_AssocWord;
-    F!.types[3]:= K;
-    MakeReadOnlyObj(K);
-
-    ThreadVar.NEW_TYPE_READONLY := true;
+      return K;
+    end);
 
   fi;
 
-  ThreadVar.NEW_TYPE_READONLY := false;
+  ConstructExtendedType(function()
+    K:= NewType( F, IsInfBitsAssocWord and req );
+    K![ AWP_PURE_TYPE    ]      := K;
+    K![ AWP_NR_BITS_EXP  ]      := infinity;
+    K![ AWP_NR_GENS      ]      := Length( names );
+    K![ AWP_NR_BITS_PAIR ]      := infinity;
+    K![ AWP_FUN_OBJ_BY_VECTOR ] := InfBits_ObjByVector;
+    K![ AWP_FUN_ASSOC_WORD    ] := InfBits_AssocWord;
+    F!.types[4]:= K;
+    MakeReadOnlyObj(K);
 
-  K:= NewType( F, IsInfBitsAssocWord and req );
-  K![ AWP_PURE_TYPE    ]      := K;
-  K![ AWP_NR_BITS_EXP  ]      := infinity;
-  K![ AWP_NR_GENS      ]      := Length( names );
-  K![ AWP_NR_BITS_PAIR ]      := infinity;
-  K![ AWP_FUN_OBJ_BY_VECTOR ] := InfBits_ObjByVector;
-  K![ AWP_FUN_ASSOC_WORD    ] := InfBits_AssocWord;
-  F!.types[4]:= K;
-  MakeReadOnlyObj(K);
+    if IsBLetterWordsFamily(F) then
+      K:= NewType( F, IsBLetterAssocWordRep and req );
+    else
+      K:= NewType( F, IsWLetterAssocWordRep and req );
+    fi;
+    F!.letterWordType:=K;
 
-  ThreadVar.NEW_TYPE_READONLY := true;
-
-  if IsBLetterWordsFamily(F) then
-    K:= NewType( F, IsBLetterAssocWordRep and req );
-  else
-    K:= NewType( F, IsWLetterAssocWordRep and req );
-  fi;
-  F!.letterWordType:=K;
+    return K;
+  end);
 
 end );
 

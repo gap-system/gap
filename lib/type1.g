@@ -203,7 +203,17 @@ end );
 ##
 NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
-SetTLDefault(ThreadVar, "NEW_TYPE_READONLY", true);
+NEW_TYPE_READONLY    := true;
+MakeThreadLocal("NEW_TYPE_READONLY");
+
+BIND_GLOBAL("ConstructExtendedType", function(body)
+    local type, save_flag;
+    save_flag := NEW_TYPE_READONLY;
+    NEW_TYPE_READONLY := false;
+    type := body();
+    NEW_TYPE_READONLY := save_flag;
+    return MakeReadOnlyObj(type);
+end);
 
 BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     local   hash,  cache,  cached,  type, ncache, ncl, t;
@@ -212,7 +222,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     LOCK(DS_TYPE_CACHE);
     cache := family!.TYPES;
     hash  := HASH_FLAGS(flags) mod family!.HASH_SIZE + 1;
-    if IsBound( cache[hash] )  then
+    if IsBound( cache[hash] ) and NEW_TYPE_READONLY then
         cached := cache[hash];
         if IS_EQUAL_FLAGS( flags, cached![2] )  then
             if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_TYPE ] )
@@ -259,7 +269,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
         cache[hash] := type;
     fi;
     family!.nTYPES := family!.nTYPES + 1;
-    if ThreadVar.NEW_TYPE_READONLY then
+    if NEW_TYPE_READONLY then
         MakeReadOnlyObj(type);
     fi;
     UNLOCK(LOCK()-1);
@@ -358,8 +368,9 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "Subtype2", function ( type, filter )
-    local   new, i;
-    ThreadVar.NEW_TYPE_READONLY := false;
+    local   new, i, save_flag;
+    save_flag := NEW_TYPE_READONLY;
+    NEW_TYPE_READONLY := false;
     new := NEW_TYPE( TypeOfTypes,
                      type![1],
                      WITH_IMPS_FLAGS( AND_FLAGS(
@@ -372,14 +383,15 @@ BIND_GLOBAL( "Subtype2", function ( type, filter )
         fi;
     od;
     MakeReadOnlyObj(new);
-    ThreadVar.NEW_TYPE_READONLY := true;
+    NEW_TYPE_READONLY := save_flag;
     return new;
 end );
 
 
 BIND_GLOBAL( "Subtype3", function ( type, filter, data )
-    local   new, i;
-    ThreadVar.NEW_TYPE_READONLY := false;
+    local   new, i, save_flag;
+    save_flag := NEW_TYPE_READONLY;
+    NEW_TYPE_READONLY := false;
     new := NEW_TYPE( TypeOfTypes,
                      type![1],
                      WITH_IMPS_FLAGS( AND_FLAGS(
@@ -392,7 +404,7 @@ BIND_GLOBAL( "Subtype3", function ( type, filter, data )
         fi;
     od;
     MakeReadOnlyObj(new);
-    ThreadVar.NEW_TYPE_READONLY := true;
+    NEW_TYPE_READONLY := save_flag;
     return new;
 end );
 

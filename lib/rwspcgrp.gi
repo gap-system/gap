@@ -399,29 +399,28 @@ function( sc )
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
     # create the special 8 bits type
-    ThreadVar.NEW_TYPE_READONLY := false;
+    ConstructExtendedType(function()
 
-    fam!.8BitsType := NewType( fam, Is8BitsPcWordRep );
+      fam!.8BitsType := NewType( fam, Is8BitsPcWordRep );
 
-    # copy the assoc word type
-    for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
-        fam!.8BitsType![i] := sc![SCP_DEFAULT_TYPE]![i];
-    od;
+      # copy the assoc word type
+      for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
+	  fam!.8BitsType![i] := sc![SCP_DEFAULT_TYPE]![i];
+      od;
 
-    # default type to use
-    fam!.8BitsType![AWP_PURE_TYPE] := fam!.8BitsType;
+      # default type to use
+      fam!.8BitsType![AWP_PURE_TYPE] := fam!.8BitsType;
 
-    # store the names
-    fam!.8BitsType![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
+      # store the names
+      fam!.8BitsType![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
 
-    # force the single collector to return elements of that type
-    sc := ShallowCopy(sc);
-    sc![SCP_DEFAULT_TYPE] := fam!.8BitsType;
-    fam!.8BitsType![PCWP_COLLECTOR] := sc;
+      # force the single collector to return elements of that type
+      sc := ShallowCopy(sc);
+      sc![SCP_DEFAULT_TYPE] := fam!.8BitsType;
+      fam!.8BitsType![PCWP_COLLECTOR] := sc;
 
-    MakeReadOnlyObj(fam!.8BitsType);
-
-    ThreadVar.NEW_TYPE_READONLY := true;
+      return fam!.8BitsType;
+    end);
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
@@ -576,29 +575,29 @@ function( sc )
     # create the default type for the elements
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
-    ThreadVar.NEW_TYPE_READONLY := false;
+    ConstructExtendedType(function()
     
-    # create the special 16 bits type
-    fam!.16BitsType := NewType( fam, Is16BitsPcWordRep );
+      # create the special 16 bits type
+      fam!.16BitsType := NewType( fam, Is16BitsPcWordRep );
 
-    # copy the assoc word type
-    for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
-        fam!.16BitsType![i] := sc![SCP_DEFAULT_TYPE]![i];
-    od;
+      # copy the assoc word type
+      for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
+	  fam!.16BitsType![i] := sc![SCP_DEFAULT_TYPE]![i];
+      od;
 
-    # default type to use
-    fam!.16BitsType![AWP_PURE_TYPE] := fam!.16BitsType;
+      # default type to use
+      fam!.16BitsType![AWP_PURE_TYPE] := fam!.16BitsType;
 
-    # store the names
-    fam!.16BitsType![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
+      # store the names
+      fam!.16BitsType![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
 
-    # force the single collector to return elements of that type
-    sc := ShallowCopy(sc);
-    sc![SCP_DEFAULT_TYPE] := fam!.16BitsType;
-    fam!.16BitsType![PCWP_COLLECTOR] := sc;
-    
-    MakeReadOnlyObj(fam!.16BitsType);
-    ThreadVar.NEW_TYPE_READONLY := true;
+      # force the single collector to return elements of that type
+      sc := ShallowCopy(sc);
+      sc![SCP_DEFAULT_TYPE] := fam!.16BitsType;
+      fam!.16BitsType![PCWP_COLLECTOR] := sc;
+      
+      return fam!.16BitsType;
+    end);
     
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
