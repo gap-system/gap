@@ -74,6 +74,17 @@ end);
 
 BindGlobal("CompleteHandShake", SyncRead);
 
+BindGlobal("FindAllGVarsHolding", function(val)
+  local s, result;
+  result := [];
+  for s in IDENTS_GVAR() do
+    if IsBoundGlobal(s) and IsIdenticalObj(ValueGlobal(s), val) then
+      Add(result, s);
+    fi;
+  od;
+  return result;
+end);
+
 BindGlobal("FindGVarHolding", function(val)
   local s;
   for s in IDENTS_GVAR() do

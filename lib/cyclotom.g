@@ -499,7 +499,7 @@ DeclareCategory( "IsNegInfinity", IsCyclotomic );
 
 BIND_GLOBAL( "Ninfinity",
     Objectify( NewType( CyclotomicsFamily, IsNegInfinity
-                        and IsPositionalObjectRep ), [] ) );
+                        and IsAtomicPositionalObjectRep ), [] ) );
 
 InstallMethod( PrintObj,
     "for -infinity",

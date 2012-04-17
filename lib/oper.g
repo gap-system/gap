@@ -274,106 +274,107 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     fi;
     flags:= relev;
 
-    # Remove requirements that are implied by the remaining ones.
-    # (Note that it is possible to have implications from a filter
-    # to another one with a bigger number.)
-    relev  := [];
-    rflags := [];
-    for i  in flags  do
+    atomic FILTER_REGION do
+	# Remove requirements that are implied by the remaining ones.
+	# (Note that it is possible to have implications from a filter
+	# to another one with a bigger number.)
+	relev  := [];
+	rflags := [];
+	for i  in flags  do
 
-      # Get the implications of this filter.
-      wif:= WITH_IMPS_FLAGS( FLAGS_FILTER( FILTERS[i] ) );
+	  # Get the implications of this filter.
+	  wif:= WITH_IMPS_FLAGS( FLAGS_FILTER( FILTERS[i] ) );
 
-      # If the filter is implied by one in `relev', ignore it.
-      # Otherwise add it to `relev', and remove all those that
-      # are implied by the new filter.
-      ignore:= false;
-      for j  in [ 1 .. LEN_LIST( relev ) ]  do
-          if IsBound( rflags[j] ) then
-              if IS_SUBSET_FLAGS( rflags[j], wif ) then
+	  # If the filter is implied by one in `relev', ignore it.
+	  # Otherwise add it to `relev', and remove all those that
+	  # are implied by the new filter.
+	  ignore:= false;
+	  for j  in [ 1 .. LEN_LIST( relev ) ]  do
+	      if IsBound( rflags[j] ) then
+		  if IS_SUBSET_FLAGS( rflags[j], wif ) then
 
-                  # `FILTERS[i]' is implied by one in `relev'.
-                  ignore:= true;
-                  break;
-              elif IS_SUBSET_FLAGS( wif, rflags[j] ) then
+		      # `FILTERS[i]' is implied by one in `relev'.
+		      ignore:= true;
+		      break;
+		  elif IS_SUBSET_FLAGS( wif, rflags[j] ) then
 
-                  # `FILTERS[i]' implies one in `relev'.
-                  Unbind( relev[j]  );
-                  Unbind( rflags[j] );
-              fi;
-          fi;
-      od;
-      if not ignore then
-          ADD_LIST( relev, i    );
-          ADD_LIST( rflags, wif );
-      fi;
-    od;
+		      # `FILTERS[i]' implies one in `relev'.
+		      Unbind( relev[j]  );
+		      Unbind( rflags[j] );
+		  fi;
+	      fi;
+	  od;
+	  if not ignore then
+	      ADD_LIST( relev, i    );
+	      ADD_LIST( rflags, wif );
+	  fi;
+	od;
 
-    # We install the method for the requirements in `relev'.
-    # 'pos' is saved for modifying 'imm' below.
-    # TODO: this way of changing IMMEDIATE_METHODS should be atomic
-    pos:=LEN_LIST( IMMEDIATE_METHODS );
-    IMMEDIATE_METHODS[pos+1]:=method;
-    pos:=pos+1;
-    
-    for j  in relev  do
+	# We install the method for the requirements in `relev'.
+	# 'pos' is saved for modifying 'imm' below.
+	# TODO: this way of changing IMMEDIATE_METHODS should be atomic
+	pos:=LEN_LIST( IMMEDIATE_METHODS );
+	IMMEDIATE_METHODS[pos+1]:=method;
+	pos:=pos+1;
+	
+	for j  in relev  do
 
-      # adjust `IMM_FLAGS'
-      IMM_FLAGS:= SUB_FLAGS( IMM_FLAGS, FLAGS_FILTER( FILTERS[j] ) );
+	  # adjust `IMM_FLAGS'
+	  IMM_FLAGS:= SUB_FLAGS( IMM_FLAGS, FLAGS_FILTER( FILTERS[j] ) );
 #T here it would be better to subtract a flag list
 #T with `true' exactly at position `j'!
 #T means: When an immed. method gets installed for a property then
 #T the property tester should remain in IMM_FLAGS.
 #T (This would make an if statement in `RunImmediateMethods' unnecessary!)
 
-      # Find the place to put the new method.
-      if not IsBound( IMMEDIATES[j] ) then
-          IMMEDIATES[j]:= MakeImmutable([]);
-      fi;
-      i := 0;
-      while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
-          i := i + 7;
-      od;
-      
-      # Now is a good time to see if the method is already there 
-      if REREADING then
-          replace := false;
-          k := i;
-          while k < LEN_LIST(IMMEDIATES[j]) and 
-            rank = IMMEDIATES[j][k+5] do
-              if name = IMMEDIATES[j][k+7] and 
-                 oper = IMMEDIATES[j][k+1] and
-                 FLAGS_FILTER( filter ) = IMMEDIATES[j][k+4] then
-                  replace := true;
-                  i := k;
-                  break;
-              fi;
-              k := k+7;
-          od;
-      fi;
-      
-      # push the other functions back
-      
-      # ShallowCopy is not bound yet, so we take a sublist
-      imm:=IMMEDIATES[j]{[1..LEN_LIST(IMMEDIATES[j])]};
-      
-      if not REREADING or not replace then
-          imm{[i+8..7+LEN_LIST(imm)]} := imm{[i+1..LEN_LIST(imm)]};
-      fi;
-      
-      # install the new method
-      imm[i+1] := oper;
-      imm[i+2] := SETTER_FILTER( oper );
-      imm[i+3] := FLAGS_FILTER( TESTER_FILTER( oper ) );
-      imm[i+4] := FLAGS_FILTER( filter );
-      imm[i+5] := rank;
-      imm[i+6] := pos;
-      imm[i+7] := IMMUTABLE_COPY_OBJ(name);
-     
-      IMMEDIATES[j]:=MakeImmutable(imm);
-      
+	  # Find the place to put the new method.
+	  if not IsBound( IMMEDIATES[j] ) then
+	      IMMEDIATES[j]:= MakeImmutable([]);
+	  fi;
+	  i := 0;
+	  while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
+	      i := i + 7;
+	  od;
+	  
+	  # Now is a good time to see if the method is already there 
+	  if REREADING then
+	      replace := false;
+	      k := i;
+	      while k < LEN_LIST(IMMEDIATES[j]) and 
+		rank = IMMEDIATES[j][k+5] do
+		  if name = IMMEDIATES[j][k+7] and 
+		     oper = IMMEDIATES[j][k+1] and
+		     FLAGS_FILTER( filter ) = IMMEDIATES[j][k+4] then
+		      replace := true;
+		      i := k;
+		      break;
+		  fi;
+		  k := k+7;
+	      od;
+	  fi;
+	  
+	  # push the other functions back
+	  
+	  # ShallowCopy is not bound yet, so we take a sublist
+	  imm:=IMMEDIATES[j]{[1..LEN_LIST(IMMEDIATES[j])]};
+	  
+	  if not REREADING or not replace then
+	      imm{[i+8..7+LEN_LIST(imm)]} := imm{[i+1..LEN_LIST(imm)]};
+	  fi;
+	  
+	  # install the new method
+	  imm[i+1] := oper;
+	  imm[i+2] := SETTER_FILTER( oper );
+	  imm[i+3] := FLAGS_FILTER( TESTER_FILTER( oper ) );
+	  imm[i+4] := FLAGS_FILTER( filter );
+	  imm[i+5] := rank;
+	  imm[i+6] := pos;
+	  imm[i+7] := IMMUTABLE_COPY_OBJ(name);
+	 
+	  IMMEDIATES[j]:=MakeImmutable(imm);
+	  
+	od;
     od;
-
 end );
 
 
@@ -914,9 +915,9 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
 
     # store the information about the filter
-    FILTERS[ FLAG2_FILTER( tester ) ] := tester;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
     atomic FILTER_REGION do
+	FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
         INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
     od;
 
@@ -1035,7 +1036,9 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     ADD_LIST( OPERATIONS, [ [ flags ] ] );
 
     # install the default functions
-    FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+    atomic FILTER_REGION do
+	FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+    od;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
 
     # the <tester> is newly made, therefore  the cache cannot contain a  flag
@@ -1086,43 +1089,45 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
 
     if ISB_GVAR( name ) then
 
-      # The variable exists already.
-      gvar:= VALUE_GLOBAL( name );
+      atomic FILTER_REGION do
+	# The variable exists already.
+	gvar:= VALUE_GLOBAL( name );
 
-      # Check that the variable is in fact bound to an operation.
-      if not IS_OPERATION( gvar ) then
-        Error( "variable `", name, "' is not bound to an operation" );
-      fi;
+	# Check that the variable is in fact bound to an operation.
+	if not IS_OPERATION( gvar ) then
+	  Error( "variable `", name, "' is not bound to an operation" );
+	fi;
 
-      # The attribute has already been declared.
-      # If it was not created as an attribute
-      # then ask for re-declaration as an ordinary operation.
-      # (Note that the values computed for objects matching the new
-      # requirements cannot be stored.)
-      if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
+	# The attribute has already been declared.
+	# If it was not created as an attribute
+	# then ask for re-declaration as an ordinary operation.
+	# (Note that the values computed for objects matching the new
+	# requirements cannot be stored.)
+	if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
 
-        # `gvar' is not an attribute (tester) and not a property (tester),
-        # or `gvar' is a filter;
-        # in any case, `gvar' is not an attribute.
-        Error( "operation `", name, "' was not created as an attribute,",
-               " use`DeclareOperation'" );
+	  # `gvar' is not an attribute (tester) and not a property (tester),
+	  # or `gvar' is a filter;
+	  # in any case, `gvar' is not an attribute.
+	  Error( "operation `", name, "' was not created as an attribute,",
+		 " use`DeclareOperation'" );
 
-      fi;
+	fi;
 
-      # Add the new requirements.
-      filter:= arg[2];
-      if not IS_OPERATION( filter ) then
-        Error( "<filter> must be an operation" );
-      fi;
+	# Add the new requirements.
+	filter:= arg[2];
+	if not IS_OPERATION( filter ) then
+	  Error( "<filter> must be an operation" );
+	fi;
 
-      pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
+	pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
+	ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
 
-      # also set the extended range for the setter
-      pos:= POS_LIST_DEFAULT( OPERATIONS, Setter(gvar), pos );
-      ADD_LIST( OPERATIONS[ pos+1 ],
-                [ FLAGS_FILTER( filter),OPERATIONS[pos+1][1][2] ] );
+	# also set the extended range for the setter
+	pos:= POS_LIST_DEFAULT( OPERATIONS, Setter(gvar), pos );
+	ADD_LIST( OPERATIONS[ pos+1 ],
+		  [ FLAGS_FILTER( filter),OPERATIONS[pos+1][1][2] ] );
 
+      od;
     else
 
       # The attribute is new.
@@ -1192,10 +1197,10 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     ADD_LIST( OPERATIONS, [ [ FLAGS_FILTER(filter) ] ] );
 
     # install the default functions
-    FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
-    FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
     atomic FILTER_REGION do
+	FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
+	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
+	FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
 	INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
 	INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
     od;
@@ -1274,10 +1279,10 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
 
     # install the default functions
-    FILTERS[ FLAG1_FILTER( getter ) ] := getter;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
-    FILTERS[ FLAG2_FILTER( getter ) ] := tester;
     atomic FILTER_REGION do
+	FILTERS[ FLAG1_FILTER( getter ) ] := getter;
+	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
+	FILTERS[ FLAG2_FILTER( getter ) ] := tester;
 	INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
 	INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
     od;

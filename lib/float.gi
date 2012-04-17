@@ -18,7 +18,7 @@ FLOAT_DEFAULT_REP := fail;
 FLOAT_STRING := fail;
 FLOAT := fail; # holds the constants
 FLOAT_OBJBYEXTREP := fail;
-BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", rec());
+BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", AtomicRecord());
 
 InstallGlobalFunction(SetFloats, function(arg)
     local i, r;

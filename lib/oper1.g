@@ -548,7 +548,7 @@ InstallAttributeFunction(
         rank  := 0;
         cats  := IS_OBJECT;
         props := [];
-        atomic readonly CATS_AND_REPS do
+        atomic readwrite FILTER_REGION, readonly CATS_AND_REPS do
             for i in [ 1 .. LEN_FLAGS( flags ) ] do
                 if ELM_FLAGS( flags, i ) then
                     if i in CATS_AND_REPS  then

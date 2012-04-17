@@ -32,7 +32,7 @@ CLEAR_IMP_CACHE := fail;
 ##  <FILTERS>  and  <RANK_FILTERS> are  lists containing at position <i>  the
 ##  filter with number <i> resp.  its rank.
 ##
-BIND_GLOBAL( "FILTERS", [] );
+BIND_GLOBAL( "FILTERS", LockAndMigrateObj([], FILTER_REGION) );
 
 
 #############################################################################
@@ -257,9 +257,9 @@ BIND_GLOBAL( "NewFilter", function( arg )
     fi;
 
     # Do some administrational work.
-    FILTERS[ FLAG1_FILTER( filter ) ] := filter;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
     atomic FILTER_REGION do
+	FILTERS[ FLAG1_FILTER( filter ) ] := filter;
+	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
         RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
 	    INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
     od;
@@ -304,12 +304,14 @@ BIND_GLOBAL( "NamesFilter", function( flags )
     else
         bn := SHALLOW_COPY_OBJ(TRUES_FLAGS(flags));
     fi;
-    for i  in  [ 1 .. LEN_LIST(bn) ]  do
-        if not IsBound(FILTERS[ bn[i] ])  then
-            bn[i] := STRING_INT( bn[i] );
-        else
-            bn[i] := NAME_FUNC(FILTERS[ bn[i] ]);
-        fi;
+    atomic readonly FILTER_REGION do
+	for i  in  [ 1 .. LEN_LIST(bn) ]  do
+	    if not IsBound(FILTERS[ bn[i] ])  then
+		bn[i] := STRING_INT( bn[i] );
+	    else
+		bn[i] := NAME_FUNC(FILTERS[ bn[i] ]);
+	    fi;
+	od;
     od;
     return bn;
 
@@ -324,8 +326,15 @@ end );
 ##  function to test whether <x> is a filter.
 ##  (This is *not* a filter itself!.)
 ##
+BIND_GLOBAL( "IS_FILTER_ATOMIC", function(x)
+    atomic readonly FILTER_REGION do
+       return x in FILTERS;
+    od;
+end);
+
 BIND_GLOBAL( "IsFilter",
-    x -> IS_OPERATION( x ) and ( FLAG1_FILTER( x ) <> 0 or x in FILTERS ) );
+    x -> IS_OPERATION( x ) and
+         ( FLAG1_FILTER( x ) <> 0 or IS_FILTER_ATOMIC(x) ) );
 
 
 ## Global Rank declarations

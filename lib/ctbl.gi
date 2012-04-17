@@ -5002,7 +5002,7 @@ fi;
 ##
 #V  CharacterTableDisplayDefaults
 ##
-InstallValue( CharacterTableDisplayDefaults, rec(
+InstallValue( CharacterTableDisplayDefaults, MakeImmutable(rec(
       Global:= rec(
         centralizers    := true,
 
@@ -5010,7 +5010,7 @@ InstallValue( CharacterTableDisplayDefaults, rec(
         StringEntry     := CharacterTableDisplayStringEntryDefault,
         StringEntryData := CharacterTableDisplayStringEntryDataDefault,
         Legend          := CharacterTableDisplayLegendDefault,
-    ) ) );
+    ) ) ) );
 
 
 #############################################################################

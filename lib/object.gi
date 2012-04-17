@@ -625,7 +625,7 @@ end );
 ##
 #V  DEFAULTDISPLAYSTRING . . . . . . default string returned by DisplayString
 ##
-BIND_GLOBAL("DEFAULTDISPLAYSTRING", "<object>\n");
+BIND_GLOBAL("DEFAULTDISPLAYSTRING", MakeImmutable("<object>\n"));
 
 
 #############################################################################

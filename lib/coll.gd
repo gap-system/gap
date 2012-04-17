@@ -441,7 +441,8 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "SUBSET_MAINTAINED_INFO", [ [], [] ] );
+BIND_GLOBAL( "SUBSET_MAINTAINED_INFO", ShareObj([ [], [] ],
+  "SUBSET_MAINTAINED_INFO") );
 
 
 #############################################################################
@@ -491,10 +492,12 @@ InstallMethod( UseSubsetRelation,
 
     local entry;
 
-    for entry in SUBSET_MAINTAINED_INFO[1] do
-      if entry[1]( super ) and entry[2]( sub ) and not entry[4]( sub ) then
-        entry[5]( sub, entry[3]( super ) );
-      fi;
+    atomic readonly SUBSET_MAINTAINED_INFO do
+      for entry in SUBSET_MAINTAINED_INFO[1] do
+	if entry[1]( super ) and entry[2]( sub ) and not entry[4]( sub ) then
+	  entry[5]( sub, entry[3]( super ) );
+	fi;
+      od;
     od;
 
     return true;
@@ -563,89 +566,89 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
     # (We must not call `SUBTR_SET' here because the lists types may be
     # not yet defined.)
     filtssub:= [];
-    atomic readonly CATS_AND_REPS do
-        for flag in TRUES_FLAGS( FLAGS_FILTER( sub_req ) ) do
-            if not flag in CATS_AND_REPS then
-                ADD_LIST_DEFAULT( filtssub, flag );
-            fi;
-        od;
-    od;
+    atomic readonly CATS_AND_REPS, readwrite SUBSET_MAINTAINED_INFO do
+      for flag in TRUES_FLAGS( FLAGS_FILTER( sub_req ) ) do
+	  if not flag in CATS_AND_REPS then
+	      ADD_LIST_DEFAULT( filtssub, flag );
+	  fi;
+      od;
 
-    for triple in SUBSET_MAINTAINED_INFO[2] do
-      req:= SHALLOW_COPY_OBJ( filtssub );
-      INTER_SET( req, triple[1] );
-      if LEN_LIST( req ) <> 0 and triple[3] < upper then
-        upper:= triple[3];
+      for triple in SUBSET_MAINTAINED_INFO[2] do
+	req:= SHALLOW_COPY_OBJ( filtssub );
+	INTER_SET( req, triple[1] );
+	if LEN_LIST( req ) <> 0 and triple[3] < upper then
+	  upper:= triple[3];
+	fi;
+      od;
+
+      # Are there methods that require `operation'?
+      lower:= 0;
+      attrprop:= true;
+      filt1:= FLAGS_FILTER( operation );
+      if filt1 = false then
+
+	# `operation' is an attribute.
+	filt1:= FLAGS_FILTER( tester );
+
+      else
+
+	# Special treatment of categories, representations (makes sense?),
+	# and filters created by `NewFilter'.
+	if FLAG2_FILTER( operation ) = 0 then
+	  attrprop:= false;
+	fi;
+
+      fi;
+
+      # (We must not call `SUBTR_SET' here because the lists types may be
+      # not yet defined.)
+      filtsopr:= [];
+      for flag in TRUES_FLAGS( filt1 ) do
+	  if not flag in CATS_AND_REPS then
+	      ADD_LIST_DEFAULT( filtsopr, flag );
+	  fi;
+      od;
+      for triple in SUBSET_MAINTAINED_INFO[2] do
+	req:= SHALLOW_COPY_OBJ( filtsopr );
+	INTER_SET( req, triple[2] );
+	if LEN_LIST( req ) <> 0 and lower < triple[3] then
+	  lower:= triple[3];
+	fi;
+      od;
+
+      # Compute the ``rank'' of the maintenance.
+      # (Do we have a cycle?)
+      if upper <= lower then
+	Print( "#W  warning: cycle in `InstallSubsetMaintenance'\n" );
+	rank:= lower;
+      else
+	rank:= ( upper + lower ) / 2;
+      fi;
+
+      filt1:= IsCollection and Tester( super_req ) and super_req and tester;
+      filt2:= IsCollection and Tester( sub_req   ) and sub_req;
+
+      # Update the info list.
+      i:= LEN_LIST( SUBSET_MAINTAINED_INFO[2] );
+      while 0 < i and SUBSET_MAINTAINED_INFO[2][i][3] < rank do
+	SUBSET_MAINTAINED_INFO[1][ i+1 ]:= SUBSET_MAINTAINED_INFO[1][ i ];
+	SUBSET_MAINTAINED_INFO[2][ i+1 ]:= SUBSET_MAINTAINED_INFO[2][ i ];
+	i:= i-1;
+      od;
+      SUBSET_MAINTAINED_INFO[2][ i+1 ]:=
+        MigrateObj([ filtsopr, filtssub, rank ], SUBSET_MAINTAINED_INFO);
+      if attrprop then
+	SUBSET_MAINTAINED_INFO[1][ i+1 ]:= 
+	 MigrateObj([ filt1, filt2, operation, tester, setter ],
+	   SUBSET_MAINTAINED_INFO);
+      else
+	SUBSET_MAINTAINED_INFO[1][ i+1 ]:= MigrateObj(
+		  [ filt1, filt2, operation, operation,
+		    function( sub, val )
+			SetFeatureObj( sub, operation, val );
+		    end ], SUBSET_MAINTAINED_INFO);
       fi;
     od;
-
-    # Are there methods that require `operation'?
-    lower:= 0;
-    attrprop:= true;
-    filt1:= FLAGS_FILTER( operation );
-    if filt1 = false then
-
-      # `operation' is an attribute.
-      filt1:= FLAGS_FILTER( tester );
-
-    else
-
-      # Special treatment of categories, representations (makes sense?),
-      # and filters created by `NewFilter'.
-      if FLAG2_FILTER( operation ) = 0 then
-        attrprop:= false;
-      fi;
-
-    fi;
-
-    # (We must not call `SUBTR_SET' here because the lists types may be
-    # not yet defined.)
-    filtsopr:= [];
-    atomic readonly CATS_AND_REPS do
-        for flag in TRUES_FLAGS( filt1 ) do
-            if not flag in CATS_AND_REPS then
-                ADD_LIST_DEFAULT( filtsopr, flag );
-            fi;
-        od;
-    od;
-    for triple in SUBSET_MAINTAINED_INFO[2] do
-      req:= SHALLOW_COPY_OBJ( filtsopr );
-      INTER_SET( req, triple[2] );
-      if LEN_LIST( req ) <> 0 and lower < triple[3] then
-        lower:= triple[3];
-      fi;
-    od;
-
-    # Compute the ``rank'' of the maintenance.
-    # (Do we have a cycle?)
-    if upper <= lower then
-      Print( "#W  warning: cycle in `InstallSubsetMaintenance'\n" );
-      rank:= lower;
-    else
-      rank:= ( upper + lower ) / 2;
-    fi;
-
-    filt1:= IsCollection and Tester( super_req ) and super_req and tester;
-    filt2:= IsCollection and Tester( sub_req   ) and sub_req;
-
-    # Update the info list.
-    i:= LEN_LIST( SUBSET_MAINTAINED_INFO[2] );
-    while 0 < i and SUBSET_MAINTAINED_INFO[2][i][3] < rank do
-      SUBSET_MAINTAINED_INFO[1][ i+1 ]:= SUBSET_MAINTAINED_INFO[1][ i ];
-      SUBSET_MAINTAINED_INFO[2][ i+1 ]:= SUBSET_MAINTAINED_INFO[2][ i ];
-      i:= i-1;
-    od;
-    SUBSET_MAINTAINED_INFO[2][ i+1 ]:= [ filtsopr, filtssub, rank ];
-    if attrprop then
-      SUBSET_MAINTAINED_INFO[1][ i+1 ]:=
-                [ filt1, filt2, operation, tester, setter ];
-    else
-      SUBSET_MAINTAINED_INFO[1][ i+1 ]:=
-                [ filt1, filt2, operation, operation,
-                  function( sub, val )
-                      SetFeatureObj( sub, operation, val );
-                  end ];
-    fi;
 
 #T missing in new implementation!
 #     # Install the method.
@@ -712,7 +715,8 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "ISOMORPHISM_MAINTAINED_INFO", [] );
+BIND_GLOBAL( "ISOMORPHISM_MAINTAINED_INFO", ShareObj([],
+  "Isomorphism Maintained Info/Functions"));
 
 
 #############################################################################
@@ -762,10 +766,12 @@ InstallMethod( UseIsomorphismRelation,
     function( old, new )
     local entry;
 
-    for entry in ISOMORPHISM_MAINTAINED_INFO do
-      if entry[1]( old ) and entry[2]( new ) and not entry[4]( new ) then
-        entry[5]( new, entry[3]( old ) );
-      fi;
+    atomic readonly ISOMORPHISM_MAINTAINED_INFO do
+      for entry in ISOMORPHISM_MAINTAINED_INFO do
+	if entry[1]( old ) and entry[2]( new ) and not entry[4]( new ) then
+	  entry[5]( new, entry[3]( old ) );
+	fi;
+      od;
     od;
 
     return true;
@@ -791,23 +797,31 @@ InstallMethod( UseIsomorphismRelation,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "ISOM_MAINT_FUNCS", [] );
+BIND_GLOBAL( "ISOM_MAINT_FUNCS",
+  LockAndMigrateObj([], ISOMORPHISM_MAINTAINED_INFO) );
 
 BIND_GLOBAL( "InstallIsomorphismMaintenanceFunction", function( func )
     local entry;
-    for entry in ISOMORPHISM_MAINTAINED_INFO do
-      CallFuncList( func, entry );
+    # TODO: May cause deadlock when functions are called?
+    atomic ISOMORPHISM_MAINTAINED_INFO do
+      for entry in ISOMORPHISM_MAINTAINED_INFO do
+	CallFuncList( func, entry );
+      od;
+      ADD_LIST( ISOM_MAINT_FUNCS, func );
     od;
-    ADD_LIST( ISOM_MAINT_FUNCS, func );
 end );
 
 BIND_GLOBAL( "RUN_ISOM_MAINT_FUNCS",
     function( arglist )
     local func;
-    for func in ISOM_MAINT_FUNCS do
-      CallFuncList( func, arglist );
+    # TODO: May cause deadlock when functions are called?
+    atomic ISOMORPHISM_MAINTAINED_INFO do
+      for func in ISOM_MAINT_FUNCS do
+	CallFuncList( func, arglist );
+      od;
+      ADD_LIST( ISOMORPHISM_MAINTAINED_INFO,
+        MigrateObj(CopyRegion(arglist), ISOMORPHISM_MAINTAINED_INFO) );
     od;
-    ADD_LIST( ISOMORPHISM_MAINTAINED_INFO, arglist );
 end );
 
 
@@ -899,7 +913,7 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "FACTOR_MAINTAINED_INFO", [] );
+BIND_GLOBAL( "FACTOR_MAINTAINED_INFO", ShareObj([], "FACTOR_MAINTAINED_INFO") );
 
 
 #############################################################################
@@ -963,11 +977,13 @@ InstallMethod( UseFactorRelation,
 
     local entry;
 
-    for entry in FACTOR_MAINTAINED_INFO do
-      if entry[1]( num ) and entry[2]( den ) and entry[3]( fac )
-                         and not entry[5]( fac ) then
-        entry[6]( fac, entry[4]( num ) );
-      fi;
+    atomic readonly FACTOR_MAINTAINED_INFO do
+      for entry in FACTOR_MAINTAINED_INFO do
+	if entry[1]( num ) and entry[2]( den ) and entry[3]( fac )
+			   and not entry[5]( fac ) then
+	  entry[6]( fac, entry[4]( num ) );
+	fi;
+      od;
     od;
 
     return true;
@@ -1025,13 +1041,15 @@ BIND_GLOBAL( "InstallFactorMaintenance",
 
     tester:= Tester( opr );
 
-    ADD_LIST( FACTOR_MAINTAINED_INFO,
-        [ IsCollection and Tester( numer_req ) and numer_req and tester,
-          Tester( denom_req ) and denom_req,
-          IsCollection and Tester( factor_req ) and factor_req,
-          opr,
-          tester,
-          Setter( opr ) ] );
+    atomic FACTOR_MAINTAINED_INFO do
+	ADD_LIST( FACTOR_MAINTAINED_INFO,
+	    [ IsCollection and Tester( numer_req ) and numer_req and tester,
+	      Tester( denom_req ) and denom_req,
+	      IsCollection and Tester( factor_req ) and factor_req,
+	      opr,
+	      tester,
+	      Setter( opr ) ] );
+    od;
 
 #T not yet available in the new implementation
 #     if     FLAGS_FILTER( opr ) <> false

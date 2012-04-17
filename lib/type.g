@@ -61,12 +61,10 @@ fi;
 ##
 BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
     if not IS_IDENTICAL_OBJ( cat, IS_OBJECT ) then
-        atomic readwrite CATS_AND_REPS do
+        atomic readwrite FILTER_REGION, CATS_AND_REPS do
             ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
-        od;
-        FILTERS[ FLAG1_FILTER( cat ) ] := cat;
-        IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
-	atomic FILTER_REGION do
+	    FILTERS[ FLAG1_FILTER( cat ) ] := cat;
+	    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
 	    INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
             RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
 	od;
@@ -118,10 +116,10 @@ BIND_GLOBAL( "NewCategory", function ( arg )
     atomic readwrite CATS_AND_REPS do
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
     od;
-    FILTERS[ FLAG1_FILTER( cat ) ] := cat;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
-
     atomic FILTER_REGION do
+	FILTERS[ FLAG1_FILTER( cat ) ] := cat;
+	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
+
 	if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
 	  RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= arg[3];
 	else
@@ -169,7 +167,7 @@ end );
 BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
     local   rep, filt;
     if REREADING then
-        atomic readonly CATS_AND_REPS do
+        atomic readonly CATS_AND_REPS, FILTER_REGION do
             for filt in CATS_AND_REPS do
                 if NAME_FUNC(FILTERS[filt]) = arg[1] then
                     Print("#W DeclareRepresentationKernel \"",arg[1],"\" in Reread. ");
@@ -179,19 +177,26 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
             od;
         od;
     fi;
-    if LEN_LIST(arg) = 4  then
-        rep := arg[4];
-    elif LEN_LIST(arg) = 5  then
-        rep := arg[5];
-    else
-        Error("usage:DeclareRepresentation(<name>,<super>,<slots>[,<req>])");
-    fi;
-    atomic readwrite CATS_AND_REPS do
+    atomic CATS_AND_REPS, FILTER_REGION do
+	if REREADING then
+            for filt in CATS_AND_REPS do
+                if NAME_FUNC(FILTERS[filt]) = arg[1] then
+                    Print("#W DeclareRepresentationKernel \"",arg[1],"\" in Reread. ");
+                          Print("Change of Super-rep not handled\n");
+                    return FILTERS[filt];
+                fi;
+            od;
+	fi;
+	if LEN_LIST(arg) = 4  then
+	    rep := arg[4];
+	elif LEN_LIST(arg) = 5  then
+	    rep := arg[5];
+	else
+	    Error("usage:DeclareRepresentation(<name>,<super>,<slots>[,<req>])");
+	fi;
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
-    od;
-    FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-    atomic FILTER_REGION do
+	FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
+	IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
         RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
 	INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
     od;
@@ -258,7 +263,7 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
 
     # Do *not* create a new representation when the file is reread.
     if REREADING then
-        atomic readonly CATS_AND_REPS do
+        atomic readonly CATS_AND_REPS, readwrite FILTER_REGION do
             for filt in CATS_AND_REPS do
                 if NAME_FUNC(FILTERS[filt]) = arg[1] then
                     Print("#W NewRepresentation \"",arg[1],"\" in Reread. ");
@@ -280,12 +285,10 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     InstallTrueMethodNewFilter( arg[2], rep );
 
     # Do some administrational work.
-    atomic readwrite CATS_AND_REPS do
+    atomic readwrite CATS_AND_REPS, FILTER_REGION do
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
-    od;
-    FILTERS[ FLAG1_FILTER( rep ) ] := rep;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-    atomic FILTER_REGION do
+      FILTERS[ FLAG1_FILTER( rep ) ] := rep;
+      IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
         RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
 	INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
     od;
