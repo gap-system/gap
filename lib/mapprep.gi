@@ -62,7 +62,6 @@ InstallGlobalFunction( TypeOfDefaultGeneralMapping,
 			    ElementsFamily( FamilyObj( source ) ),
 			    ElementsFamily( FamilyObj( range  ) ) ),
 		      IsDefaultGeneralMappingRep and filter );
-
       # Store source and range.
       SetDataType( Type, [ source, range ] );
       return Type;
