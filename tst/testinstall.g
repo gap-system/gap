@@ -75,7 +75,7 @@ RunStandardTests( [
   [ "vspchom.tst", 9500000 ],
   [ "vspcmat.tst", 10300000 ],
   [ "vspcrow.tst", 47400000 ],
-  [ "xgap.tst", 1120100000 ],
+#  [ "xgap.tst", 1120100000 ],
   [ "zlattice.tst", 100000 ],
   [ "zmodnz.tst", 2800000 ],
 ] );
