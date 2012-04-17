@@ -576,6 +576,8 @@ function( sc )
     # create the default type for the elements
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
+    ThreadVar.NEW_TYPE_READONLY := false;
+    
     # create the special 16 bits type
     fam!.16BitsType := NewType( fam, Is16BitsPcWordRep );
 
@@ -594,7 +596,10 @@ function( sc )
     sc := ShallowCopy(sc);
     sc![SCP_DEFAULT_TYPE] := fam!.16BitsType;
     fam!.16BitsType![PCWP_COLLECTOR] := sc;
-
+    
+    MakeReadOnlyObj(fam!.16BitsType);
+    ThreadVar.NEW_TYPE_READONLY := true;
+    
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
 
