@@ -44,6 +44,7 @@ UNICODE_RECODE.NormalizedEncodings := rec(
   URL := "URL",
   percent := "URL",
 );
+
 UNICODE_RECODE.f := function()
   local nam, i;
   for i in Concatenation([1..11],[13..15]) do
@@ -1179,4 +1180,5 @@ function(s)
   fi;
 end);
 
+MakeImmutable(UNICODE_RECODE);
 
