@@ -17,6 +17,10 @@
 ##  by their family.)
 ##
 
+atomic readwrite CYCLOTOMIC_FIELDS do
+  CYCLOTOMIC_FIELDS[1]:=Rationals;
+  CYCLOTOMIC_FIELDS[4]:=GaussianRationals;
+od;
 
 #############################################################################
 ##
@@ -133,7 +137,6 @@ InstallGlobalFunction( CyclotomicField, function ( arg )
     # Return the field.
     return F;
 end );
-
 
 #############################################################################
 ##

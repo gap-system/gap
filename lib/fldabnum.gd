@@ -310,10 +310,8 @@ DeclareCategory( "IsGaussianRationals", IsCyclotomicCollection and IsField );
 DeclareGlobalVariable( "CYCLOTOMIC_FIELDS",
     "list, CYCLOTOMIC_FIELDS[n] = CF(n) if bound" );
 
-InstallFlushableValue( CYCLOTOMIC_FIELDS,
-    [ Rationals,,, GaussianRationals ] );
-
-ShareSingleObj(CYCLOTOMIC_FIELDS);
+InstallFlushableValue( CYCLOTOMIC_FIELDS, [ ] );
+ShareObj(CYCLOTOMIC_FIELDS);
 
 #############################################################################
 ##
