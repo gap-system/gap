@@ -938,6 +938,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "WaitSemaphore", 1, "semaphore",
       FuncWaitSemaphore, "src/threadapi.c:WaitSemaphore" },
 
+    { "TryWaitSemaphore", 1, "semaphore",
+      FuncTryWaitSemaphore, "src/threadapi.c:TryWaitSemaphore" },
+
     { "CreateChannel", -1, "[size]",
       FuncCreateChannel, "src/threadapi.c:CreateChannel" },
 
@@ -1984,6 +1987,24 @@ Obj FuncWaitSemaphore(Obj self, Obj semaphore)
     SignalMonitor(ObjPtr(sem->monitor));
   UnlockMonitor(ObjPtr(sem->monitor));
   return (Obj) 0;
+}
+
+Obj FuncTryWaitSemaphore(Obj self, Obj semaphore)
+{
+  Semaphore *sem;
+  int success;
+  if (TNUM_OBJ(semaphore) != T_SEMAPHORE)
+    ArgumentError("WaitSemaphore: Argument must be a semaphore");
+  sem = ObjPtr(semaphore);
+  LockMonitor(ObjPtr(sem->monitor));
+  success = (sem->count > 0);
+  if (success)
+    sem->count--;
+  sem->waiting--;
+  if (sem->waiting && sem->count > 0)
+    SignalMonitor(ObjPtr(sem->monitor));
+  UnlockMonitor(ObjPtr(sem->monitor));
+  return success ? True: False;
 }
 
 void LockBarrier(Barrier *barrier)
