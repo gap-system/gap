@@ -151,6 +151,9 @@ Obj FuncWeakPointerObj( Obj self, Obj list ) {
   for (i = 1; i <= len ; i++) 
     { 
       ELM_WPOBJ(wp,i) = ELM0_LIST(list,i); 
+#ifdef BOEHM_GC
+      RegisterWeakReference(&ELM_WPOBJ(wp, i));
+#endif
       CHANGED_BAG(wp);          /* this must be here in case list is 
                                  in fact an object and causes a GC in the 
                                  element access method */
@@ -177,6 +180,7 @@ Int LengthWPObj(Obj wp)
   Int len;
   Obj elm;
   Int changed = 0;
+#ifndef BOEHM_GC
   for (len = STORED_LEN_WPOBJ(wp); 
        len > 0 && 
          (!(elm = ELM_WPOBJ(wp,len)) ||
@@ -190,6 +194,9 @@ Int LengthWPObj(Obj wp)
   if (changed)
     STORE_LEN_WPOBJ(wp,len);
   return len;
+#else
+  return STORED_LEN_WPOBJ(wp);
+#endif
 }
 
 /****************************************************************************
@@ -226,6 +233,9 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
       STORE_LEN_WPOBJ(wp,ipos);
     }
   ELM_WPOBJ(wp,ipos) = val;
+#ifdef BOEHM_GC
+  RegisterWeakReference(&ELM_WPOBJ(wp, ipos));
+#endif
   CHANGED_BAG(wp);
   return 0;
 }
@@ -249,11 +259,13 @@ Int IsBoundElmWPObj( Obj wp, Obj pos)
       return 0;
     }
   elm = ELM_WPOBJ(wp,ipos);
+#ifndef BOEHM_GC
   if (IS_WEAK_DEAD_BAG(elm))
     {
       ELM_WPOBJ(wp,ipos) = 0;
       return 0;
     }
+#endif
   if (elm == 0)
     {
       return 0;
@@ -315,11 +327,13 @@ Obj FuncElmWPObj( Obj self, Obj wp, Obj pos)
       return Fail;
     }
   elm = ELM_WPOBJ(wp,ipos);
+#ifndef BOEHM_GC
   if (IS_WEAK_DEAD_BAG(elm))
     {
       ELM_WPOBJ(wp,ipos) = 0;
       return Fail;
     }
+#endif
   if (elm == 0)
     {
       return Fail;
@@ -433,6 +447,10 @@ Obj CopyObjWPObj (
         if ( elm != 0  && !IS_WEAK_DEAD_BAG(elm)) {
             tmp = COPY_OBJ( elm, mut );
             ADDR_OBJ(copy)[i] = tmp;
+#ifndef BOEHM_GC
+	    if (mut)
+	      RegisterWeakReference(ADDR_OBJ(copy)+i);
+#endif
             CHANGED_BAG( copy );
         }
     }
@@ -620,10 +638,16 @@ static Int InitKernel (
     InfoBags[ T_WPOBJ          ].name = "object (weakptr)";
     InfoBags[ T_WPOBJ +COPYING ].name = "object (weakptr, copied)";
 
+#ifndef BOEHM_GC
     InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ,          SweepWeakPointerObj  );
     InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ +COPYING, SweepWeakPointerObj  );
+#else
+    /* force atomic allocation of these pointers */
+    InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );
+    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkNoSubBags   );
+#endif
 
     /* typing method                                                       */
     TypeObjFuncs[ T_WPOBJ ] = TypeWPObj;
@@ -689,6 +713,19 @@ StructInitInfo * InitInfoWeakPtr ( void )
     FillInVersion( &module );
     return &module;
 }
+
+#ifdef BOEHM_GC
+void RegisterWeakReference(Bag *bag) {
+  if (*bag && IS_BAG_REF(*bag))
+    GC_general_register_disappearing_link(bag, *bag);
+}
+
+void UnregisterWeakReference(Bag *bag) {
+  if (*bag && IS_BAG_REF(*bag))
+    GC_unregister_disappearing_link(bag);
+}
+#endif
+
 
 
 /****************************************************************************

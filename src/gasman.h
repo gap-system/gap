@@ -775,11 +775,14 @@ extern void MarkAllSubBagsDefault ( Bag );
 *F
 */
 
+#ifndef BOEHM_GC
 #define IS_WEAK_DEAD_BAG(bag) ( (((UInt)bag & (sizeof(Bag)-1)) == 0) && \
                                 (Bag)MptrBags <= (bag)    &&          \
                                 (bag) < (Bag)OldBags  &&              \
                                 (((UInt)*bag) & (sizeof(Bag)-1)) == 1)
-
+#else
+#define IS_WEAK_DEAD_BAG(bag) (!(bag))
+#endif
              
 /****************************************************************************
 **
