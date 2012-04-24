@@ -112,7 +112,8 @@
 #define S_STRING        ((1UL<<11)+3)
 #define S_PARTIALSTRING ((1UL<<11)+4)
 
-#define S_REC           ((1UL<<12))
+#define S_REC           ((1UL<<12)+0)
+#define S_BACKQUOTE     ((1UL<<12)+1)
 
 #define S_FUNCTION      ((1UL<<13))
 #define S_LOCAL         ((1UL<<14))
@@ -139,7 +140,8 @@
 #define S_AND           ((1UL<<20)+1)
 #define S_OR            ((1UL<<20)+2)
 
-#define S_ASSIGN        ((1UL<<21))
+#define S_ASSIGN        ((1UL<<21)+0)
+#define S_INCORPORATE   ((1UL<<21)+1)
 
 #define S_IF            ((1UL<<22)+0)
 #define S_FOR           ((1UL<<22)+1)
@@ -2519,6 +2521,9 @@ void GetSymbol ( void )
         { GET_CHAR(); }
     }
     if ( *TLS->in == '=' ) { TLS->symbol = S_ASSIGN;  GET_CHAR(); break; }
+    if ( TLS->in[0] == ':' && TLS->in[1] == '=') {
+      TLS->symbol = S_INCORPORATE; GET_CHAR(); GET_CHAR(); break;
+    }
     break;
 
   case ';':   TLS->symbol = S_SEMICOLON;                   GET_CHAR();  break;
@@ -2545,6 +2550,7 @@ void GetSymbol ( void )
   case '*':   TLS->symbol = S_MULT;                        GET_CHAR();  break;
   case '/':   TLS->symbol = S_DIV;                         GET_CHAR();  break;
   case '^':   TLS->symbol = S_POW;                         GET_CHAR();  break;
+  case '`':   TLS->symbol = S_BACKQUOTE;                   GET_CHAR();  break;
 
   case '"':                               GET_CHAR(); GetStr();    break;
   case '\'':                                          GetChar();   break;

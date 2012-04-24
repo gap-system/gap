@@ -515,7 +515,7 @@ void ReadCallVarAss (
     }
 
     /* if we need a reference                                              */
-    if ( mode == 'r' || (mode == 'x' && TLS->symbol != S_ASSIGN) ) {
+    if ( mode == 'r' || (mode == 'x' && !IS_IN(TLS->symbol, S_ASSIGN)) ) {
         if ( READ_ERROR() ) {}
         else if ( type == 'l' ) { IntrRefLVar( var );           }
         else if ( type == 'h' ) { IntrRefHVar( var );           }
@@ -544,9 +544,12 @@ void ReadCallVarAss (
     }
 
     /* if we need a statement                                              */
-    else if ( mode == 's' || (mode == 'x' && TLS->symbol == S_ASSIGN) ) {
+    else if ( mode == 's' || (mode == 'x' && IS_IN(TLS->symbol, S_ASSIGN)) ) {
         if ( type != 'c' && type != 'C') {
-            Match( S_ASSIGN, ":=", follow );
+	    if (TLS->symbol != S_ASSIGN)
+	      Match( S_INCORPORATE, ":= or ::=", follow);
+	    else
+	      Match( S_ASSIGN, ":= or ::=", follow );
             if ( TLS->countNams == 0 || !TLS->intrCoding ) { TLS->currLHSGVar = (type == 'g' ? var : 0); }
             ReadExpr( follow, 'r' );
         }
@@ -1396,6 +1399,12 @@ void ReadLiteral (
     else if ( TLS->symbol == S_REC ) {
         ReadRecExpr( follow );
     }
+    /* `Literal								   */
+    else if ( TLS->symbol == S_BACKQUOTE ) {
+        Match( S_BACKQUOTE, "`", follow );
+	ReadExpr( follow, 'r' );
+    }
+
 
     /* <Function>                                                          */
     else if ( TLS->symbol == S_FUNCTION || TLS->symbol == S_ATOMIC ||

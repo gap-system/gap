@@ -88,7 +88,8 @@
 #define S_STRING        ((1UL<<11)+3)
 #define S_PARTIALSTRING ((1UL<<11)+4)
 
-#define S_REC           ((1UL<<12))
+#define S_REC           ((1UL<<12)+0)
+#define S_BACKQUOTE	((1UL<<12)+1)
 
 #define S_FUNCTION      ((1UL<<13))
 #define S_LOCAL         ((1UL<<14))
@@ -115,7 +116,8 @@
 #define S_AND           ((1UL<<20)+1)
 #define S_OR            ((1UL<<20)+2)
 
-#define S_ASSIGN        ((1UL<<21))
+#define S_ASSIGN        ((1UL<<21)+0)
+#define S_INCORPORATE   ((1UL<<21)+1)
 
 #define S_IF            ((1UL<<22)+0)
 #define S_FOR           ((1UL<<22)+1)
