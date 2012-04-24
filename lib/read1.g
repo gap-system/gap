@@ -77,7 +77,7 @@ ReadLib( "string.gd"   );
 ReadLib( "cmdledit.g"  );
 
 ReadLib( "thread.g" );
-ReadLib( "tasks.g" );
+#ReadLib( "tasks.g" );
 
 ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );

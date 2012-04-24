@@ -1230,6 +1230,8 @@ CallAndInstallPostRestore( function()
     od;
 end );
 
+ReadLib("tasks.g");
+
 if THREAD_UI() then
   ReadLib("textui.g");
   MULTI_SESSION();
