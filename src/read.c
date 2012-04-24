@@ -1404,7 +1404,7 @@ void ReadLiteral (
         Match( S_BACKQUOTE, "`", follow );
 	IntrRefGVar(GVarName("MakeLiteral"));
 	IntrFuncCallBegin();
-	ReadExpr( follow, 'r' );
+	ReadAtom( follow, 'r' );
 	IntrFuncCallEnd(1, 0, 1);
     }
 
