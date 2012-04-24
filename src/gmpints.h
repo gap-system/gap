@@ -54,8 +54,10 @@ typedef UInt2           TypDigit;
 #if GMP_NAIL_BITS != 0
 #error Aborting compile: GAP does not support non-zero GMP nail size
 #endif
-#if __GMP_MP_RELEASE < 50002
-#error Aborting compile: GAP requires GMP 5.0.2 or newer
+#ifndef __GNU_MP_RELEASE
+  #if __GMP_MP_RELEASE < 50002
+  #error Aborting compile: GAP requires GMP 5.0.2 or newer
+  #endif
 #endif
 
 
