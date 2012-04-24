@@ -426,7 +426,7 @@ TaskResult := function(task)
   if task.async then
     Error("Cannot obtain the result of a asynchronous task");
   fi;
-  if not task.started then
+  if (not task.complete) and (not task.started) then
     ExecuteTask(task);
   fi;
   if not task.complete then
