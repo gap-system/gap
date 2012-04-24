@@ -1402,7 +1402,10 @@ void ReadLiteral (
     /* `Literal								   */
     else if ( TLS->symbol == S_BACKQUOTE ) {
         Match( S_BACKQUOTE, "`", follow );
+	IntrRefGVar(GVarName("MakeImmutable"));
+	IntrFuncCallBegin();
 	ReadExpr( follow, 'r' );
+	IntrFuncCallEnd(1, 0, 1);
     }
 
 
