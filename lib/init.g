@@ -75,6 +75,13 @@ end;
 
 #############################################################################
 ##
+#F  MakeLiteral(<obj>) . . . . . . make the argument a literal and return it.
+##
+
+MakeLiteral := MakeImmutable;
+
+#############################################################################
+##
 #F  Ignore( <arg> ) . . . . . . . . . . . . ignore but evaluate the arguments
 ##
 #T  1996/08/07 M.Schönert 'Ignore' should be in the kernel
