@@ -2643,8 +2643,14 @@ local G, E, L, issub, mpG, mpE, cnt, P, Omega, orb, i, start, so, hom, Gh, Eh, L
 
   G := arg[ 1 ];
   E := arg[ 2 ];
-  Unbind(G!.suborbits); # in case any remained from interruption
-  Unbind(E!.suborbits);
+  # TODO: I guess this is only relevant after interruption, so as a quick 
+  # hack I've added checking `IsBound' so the error will occur only then.
+  if IsBound(G!.suborbits) then
+    Unbind(G!.suborbits); # in case any remained from interruption
+  fi;  
+  if IsBound(G!.suborbits) then
+    Unbind(E!.suborbits);
+  fi;  
   if IsTrivial( E ) or IsTrivial( G ) then
       return G;
   elif Size( E ) = 2  then
