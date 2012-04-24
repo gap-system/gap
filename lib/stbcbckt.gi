@@ -2626,9 +2626,10 @@ local Pr, div, B, rbase, data, N;
   else
     N := ShallowCopy( G );
   fi;
-  # remove cached information
-  Unbind(G!.suborbits);
-  Unbind(E!.suborbits);
+  # remove cached information (before this used Unbound and crashed.
+  # I've replaced unbinding to emptying. TODO: properly rework !. access)
+  G!.suborbits:=[];
+  E!.suborbits:=[];
 
   # bring the stabilizer chains back into a decent form
   ReduceStabChain(StabChainMutable(G));
