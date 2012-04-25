@@ -1039,6 +1039,22 @@ void AssTLRecord(Obj record, UInt rnam, Obj value)
   AssPRec(tlrecord, rnam, value);
 }
 
+void UnbTLRecord(Obj record, UInt rnam)
+{
+  Obj contents, *table;
+  Obj tlrecord;
+  ExpandTLRecord(record);
+  contents = GetTLInner(record);
+  table = ADDR_OBJ(contents);
+  tlrecord = table[TLR_DATA+TLS->threadID];
+  if (!tlrecord) {
+    tlrecord = NEW_PREC(0);
+    UpdateThreadRecord(record, tlrecord);
+  }
+  UnbPRec(tlrecord, rnam);
+}
+
+
 Int IsbTLRecord(Obj record, UInt rnam)
 {
   return GetTLRecordField(record, rnam) != (Obj) 0;
@@ -1575,6 +1591,7 @@ static Int InitKernel (
   IsbRecFuncs[ T_TLREC ] = IsbTLRecord;
   AssRecFuncs[ T_TLREC ] = AssTLRecord;
   IsRecFuncs[ T_TLREC ] = IsRecYes;
+  UnbRecFuncs[ T_TLREC ] = UnbTLRecord;
   /* return success                                                      */
   return 0;
 }
