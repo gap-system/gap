@@ -126,6 +126,12 @@ UInt            ReadStats (
 void            ReadFuncExpr1 (
     TypSymbolSet        follow );
 
+void            ReadFuncExpr0 (
+    TypSymbolSet        follow );
+
+void ReadAtom (
+    TypSymbolSet        follow,
+    Char                mode );
 
 /* TL: static UInt CurrentGlobalForLoopVariables[100]; */
 /* TL: static UInt CurrentGlobalForLoopDepth; */
@@ -1323,6 +1329,60 @@ void ReadFuncExpr1 (
 
 /****************************************************************************
 **
+*F  ReadFuncExpr0(<follow>) . . . . . . . . . . .  read a function expression
+**
+**  'ReadFuncExpr0' reads  an abbreviated  function literal   expression.  In
+**  case of an error it skips all symbols up to one contained in <follow>.
+**
+**      <Function>      := '->' <Expr>
+*/
+void ReadFuncExpr0 (
+    TypSymbolSet        follow )
+{
+    volatile Obj        nams;           /* list of local variables names   */
+    volatile UInt       nrError;        /* copy of <TLS->nrError>          */
+    volatile Bag        currLVars;      /* copy of <TLS->currLVars>             */
+
+    /* make and push the new local variables list                          */
+    nams = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( nams, 0 );
+    TLS->countNams++;
+    ASS_LIST( TLS->stackNams, TLS->countNams, nams );
+
+    /* match away the '->'                                                 */
+    Match( S_MAPTO, "->", follow );
+
+    /* remember the current variables in case of an error                  */
+    currLVars = TLS->currLVars;
+    nrError   = TLS->nrError;
+
+    /* begin interpreting the function expression (with 1 argument)        */
+    if ( ! READ_ERROR() ) { IntrFuncExprBegin( 0L, 0L, nams, TLS->input->number ); }
+
+    /* read the expression and turn it into a return-statement             */
+    ReadExpr( follow, 'r' );
+    if ( ! READ_ERROR() ) { IntrReturnObj(); }
+
+    /* end interpreting the function expression (with 1 statement)         */
+    if ( ! READ_ERROR() ) {
+        IntrFuncExprEnd( 1UL, 1UL );
+    }
+
+    /* an error has occured *after* the 'IntrFuncExprEnd'                  */
+    else if ( nrError == 0  && TLS->intrCoding ) {
+        CodeEnd(1);
+        TLS->intrCoding--;
+        TLS->currLVars = currLVars;
+        TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
+        TLS->ptrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+    }
+
+    /* pop the new local variables list                                    */
+    TLS->countNams--;
+}
+
+/****************************************************************************
+**
 *F  ReadLiteral( <follow> ) . . . . . . . . . . . . . . . . . .  read an atom
 **
 **  'ReadLiteral' reads a  literal expression.  In  case of an error it skips
@@ -1425,6 +1485,9 @@ void ReadLiteral (
       TLS->value[1] = '\0';
       ReadLongNumber( follow );
     }
+    else if (TLS->symbol == S_MAPTO) {
+      ReadFuncExpr0( follow );
+    }
 
     /* signal an error, we want to see a literal                           */
     else {
@@ -1460,7 +1523,8 @@ void ReadAtom (
     }
     /* otherwise read a literal expression                                 */
     else if (IS_IN(TLS->symbol,S_INT|S_TRUE|S_FALSE|S_CHAR|S_STRING|S_LBRACK|
-                          S_REC|S_FUNCTION|S_DO|S_ATOMIC| S_FLOAT | S_DOT))
+                          S_REC|S_FUNCTION|S_DO|S_ATOMIC| S_FLOAT | S_DOT |
+			  S_MAPTO))
     {
         ReadLiteral( follow );
     }
