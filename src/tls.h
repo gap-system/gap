@@ -21,6 +21,7 @@ typedef struct ThreadLocalStorage
   int lockStackPointer;
   Obj copiedObjs;
   Obj interruptHandlers;
+  char *CurrFuncName;
   /* From intrprtr.c */
   Obj intrResult;
   UInt intrIgnoring;

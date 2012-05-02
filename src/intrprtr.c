@@ -3830,6 +3830,11 @@ void            IntrAssPosObj ( void )
 
     /* assign to the element of the list                                   */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        /* Because BindOnce() functions can reallocate the list even if they
+	 * only have read-only access, we have to be careful when accessing
+	 * positional objects. Hence the explicit WriteGuard().
+	 */
+        WriteGuard(list);
         if ( SIZE_OBJ(list)/sizeof(Obj) - 1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
         }
@@ -3986,6 +3991,11 @@ void            IntrUnbPosObj ( void )
 
     /* unbind the element                                                  */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        /* Because BindOnce() functions can reallocate the list even if they
+	 * only have read-only access, we have to be careful when accessing
+	 * positional objects. Hence the explicit WriteGuard().
+	 */
+        WriteGuard(list);
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
@@ -4036,12 +4046,18 @@ void            IntrElmPosObj ( void )
 
     /* get the element of the list                                         */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
+        /* Because BindOnce() functions can reallocate the list even if they
+	 * only have read-only access, we have to be careful when accessing
+	 * positional objects.
+	 */
+        Bag *contents = PTR_BAG(list);
+	AO_nop_read(); /* essential memory barrier */
+        if ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorQuit(
                 "PosObj Element: <posobj>![%d] must have an assigned value",
                 (Int)p, 0L );
         }
-        elm = ELM_PLIST( list, p );
+        elm = contents[p];
         if ( elm == 0 ) {
             ErrorQuit(
                 "PosObj Element: <posobj>![%d] must have an assigned value",
@@ -4188,8 +4204,15 @@ void            IntrIsbPosObj ( void )
 
     /* get the result                                                      */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
-               True : False);
+        /* Because BindOnce() functions can reallocate the list even if they
+	 * only have read-only access, we have to be careful when accessing
+	 * positional objects.
+	 */
+        Bag *contents = PTR_BAG(list);
+	if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
+	  isb = False;
+	else
+	  isb = contents[p] != 0 ? True : False;
     }
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
         isb = (IsbListFuncs[T_FIXALIST]( list, p ) ? True : False);

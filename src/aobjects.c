@@ -1405,6 +1405,144 @@ void DestroyAObjectsTLS() {
 
 #endif /* WARD_ENABLED */
 
+void FuncError(char *message) {
+  ErrorQuit("%s: %s", (Int)(TLS->CurrFuncName), (Int)message);
+}
+
+Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
+  Int n;
+  Bag *contents;
+  Bag result;
+  if (!IS_INTOBJ(index) || ((n = INT_INTOBJ(index)) <= 0))
+    FuncError("index for positional object must be a positive integer");
+  ReadGuard(obj);
+#ifndef WARD_ENABLED
+  contents = PTR_BAG(obj);
+  AO_nop_read();
+  if (SIZE_BAG_CONTENTS(contents) / sizeof(Bag) <= n) {
+    HashLock(obj);
+    /* resize bag */
+    if (SIZE_BAG(obj) / sizeof(Bag) <= n) {
+      /* can't use ResizeBag() directly because of guards. */
+      /* therefore we create a faux master pointer in the public region. */
+      UInt *mptr[2];
+      mptr[0] = (UInt *)contents;
+      mptr[1] = 0;
+      ResizeBag(mptr, sizeof(Bag) * (n+1));
+      AO_nop_write();
+      PTR_BAG(obj) = (void *)(mptr[0]);
+    }
+    /* reread contents pointer */
+    HashUnlock(obj);
+    contents = PTR_BAG(obj);
+    AO_nop_read();
+  }
+  /* already bound? */
+  if (result = (Bag)(contents[n]))
+    return result;
+  if (eval)
+    *new = CALL_0ARGS(*new);
+  HashLockShared(obj);
+  contents = PTR_BAG(obj);
+  AO_nop_read();
+  for (;;) {
+    result = (Bag)(contents[n]);
+    if (result)
+      break;
+    if (AO_compare_and_swap_full((AO_t*)(contents+n), (AO_t) 0, (AO_t) *new))
+      break;
+  }
+  HashUnlockShared(obj);
+  return result;
+#endif
+}
+
+Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
+  UInt n;
+  UInt len;
+  AtomicObj anew;
+  AtomicObj *addr;
+  Obj result;
+  /* atomic positional objects aren't resizable. */
+  addr = ADDR_ATOM(obj);
+  AO_nop_read();
+  len = addr[0].atom;
+  if (!IS_INTOBJ(index))
+    FuncError("Second argument must be an integer");
+  n = INT_INTOBJ(index);
+  if (n <= 0 || n > len)
+    FuncError("Index out of range");
+  result = addr[n+1].obj;
+  if (result)
+    return result;
+  anew.obj = *new;
+  if (eval)
+    *new = CALL_0ARGS(*new);
+  for (;;) {
+    result = addr[n+1].obj;
+    if (result)
+      break;
+    if (AO_compare_and_swap_full(&(addr[n+1].atom), (AO_t) 0, anew.atom))
+      break;
+  }
+  return result;
+}
+
+
+Obj BindOnceComObj(Obj obj, Obj index, Obj *new, int eval) {
+  FuncError("not yet implemented");
+}
+
+
+Obj BindOnceAComObj(Obj obj, Obj index, Obj *new, int eval) {
+  FuncError("not yet implemented");
+}
+
+
+Obj BindOnce(Obj obj, Obj index, Obj *new, int eval) {
+  switch (TNUM_OBJ(obj)) {
+    case T_POSOBJ:
+      return BindOncePosObj(obj, index, new, eval);
+    case T_APOSOBJ:
+      return BindOnceAPosObj(obj, index, new, eval);
+    case T_COMOBJ:
+      return BindOnceComObj(obj, index, new, eval);
+    case T_ACOMOBJ:
+      return BindOnceAComObj(obj, index, new, eval);
+    default:
+      FuncError("first argument must be a positional or component object");
+  }
+}
+
+Obj FuncBindOnce(Obj self, Obj obj, Obj index, Obj new) {
+  Obj result;
+  TLS->CurrFuncName = "BindOnce";
+  result = BindOnce(obj, index, &new, 0);
+  return result ? result : new;
+}
+
+Obj FuncTestBindOnce(Obj self, Obj obj, Obj index, Obj new) {
+  Obj result;
+  TLS->CurrFuncName = "TestBindOnce";
+  result = BindOnce(obj, index, &new, 0);
+  return result ? False : True;
+}
+
+Obj FuncBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
+  Obj result;
+  TLS->CurrFuncName = "BindOnceExpr";
+  result = BindOnce(obj, index, &new, 1);
+  return result ? result : new;
+}
+
+Obj FuncTestBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
+  Obj result;
+  TLS->CurrFuncName = "TestBindOnceExpr";
+  result = BindOnce(obj, index, &new, 1);
+  return result ? False : True;
+}
+
+
 /****************************************************************************
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
@@ -1470,6 +1608,18 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SetTLConstructor", 3, "thread-local record, name, function",
       FuncSetTLConstructor, "src/aobjects.c:SetTLConstructor" },
+
+    { "BindOnce", 3, "obj, index, value",
+      FuncBindOnce, "src/aobjects.c:BindOnce" },
+
+    { "TestBindOnce", 3, "obj, index, value",
+      FuncTestBindOnce, "src/aobjects.c:TestBindOnce" },
+
+    { "BindOnceExpr", 3, "obj, index, func",
+      FuncBindOnceExpr, "src/aobjects.c:BindOnceExpr" },
+
+    { "TestBindOnceExpr", 3, "obj, index, func",
+      FuncTestBindOnceExpr, "src/aobjects.c:TestBindOnceExpr" },
 
     { 0 }
 

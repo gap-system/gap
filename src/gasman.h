@@ -150,6 +150,22 @@ typedef UInt * *        Bag;
 #define SIZE_BAG(bag)   (*(*(bag)-2))
 #endif
 
+/****************************************************************************
+**
+*F  SIZE_BAG_CONTENTS(<ptr>)  . . . . . . . . . . . . . . . . . size of a bag
+**
+**  'SIZE_BAG_CONTENTS' performs the same function as 'SIZE_BAG', but takes
+**  a pointer to the contents of the bag instead. This is useful for certain
+**  atomic operations that require a memory barrier in between dereferencing
+**  the bag pointer and accessing the contents of the bag.
+*/
+#ifdef USE_NEWSHAPE
+#define SIZE_BAG_CONTENTS(bag)   (*((UInt *)(bag)-2) >> 16)
+#else
+#define SIZE_BAG_CONTENTS(bag)   (*((UInt *)(bag)-2))
+#endif
+
+
 #define LINK_BAG(bag)   (*(Bag *)(*(bag)-1))
 /****************************************************************************
 **

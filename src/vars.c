@@ -2068,6 +2068,7 @@ UInt            ExecAssPosObj (
 
     /* special case for plain list                                         */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        WriteGuard(list);
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ResizeBag( list, (p+1) * sizeof(Obj) );
         }
@@ -2116,6 +2117,7 @@ UInt            ExecUnbPosObj (
 
     /* unbind the element                                                  */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
+        WriteGuard(list);
         if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
             SET_ELM_PLIST( list, p, 0 );
         }
@@ -2161,13 +2163,14 @@ Obj             EvalElmPosObj (
 
     /* special case for plain lists (use generic code to signal errors)    */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        while ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
+        Bag *contents = PTR_BAG(list);
+        while ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorReturnVoid(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
                 (Int)p, 0L,
                 "you can 'return;' after assigning a value" );
         }
-        elm = ELM_PLIST( list, p );
+        elm = contents[p];
         while ( elm == 0 ) {
             ErrorReturnVoid(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
@@ -2218,8 +2221,11 @@ Obj             EvalIsbPosObj (
 
     /* get the result                                                      */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
-               True : False);
+        Bag *contents = PTR_BAG(list);
+	if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
+	  isb = False;
+	else
+	  isb = contents[p] != 0 ? True : False;
     }
     else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
         isb = IsbListFuncs[T_FIXALIST](list, p) ? True : False;
