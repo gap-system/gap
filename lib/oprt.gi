@@ -210,7 +210,7 @@ InstallOtherMethod( ExternalSubsetOp,
     if not IsBound( type![XSET_XSSETTYPE] )  then
         xsset := ExternalSetByFilterConstructor( IsExternalSubset,
                          G, HomeEnumerator( xset ), gens, acts, act );
-        type![XSET_XSSETTYPE] := TypeObj( xsset );
+        BindOnce( type, XSET_XSSETTYPE, TypeObj( xsset ) );
     else
         xsset := ExternalSetByTypeConstructor( type![XSET_XSSETTYPE],
                          G, HomeEnumerator( xset ), gens, acts, act );
@@ -345,7 +345,7 @@ InstallOtherMethod( ExternalOrbitOp,
     if not IsBound( type![XSET_XORBTYPE] )  then
         xorb := ExternalSetByFilterConstructor( IsExternalOrbit,
                         G, HomeEnumerator( xset ), gens, acts, act );
-        type![XSET_XORBTYPE] := TypeObj( xorb );
+        BindOnce( type, XSET_XORBTYPE, TypeObj( xorb ) );
     else
         xorb := ExternalSetByTypeConstructor( type![XSET_XORBTYPE],
                         G, HomeEnumerator( xset ), gens, acts, act );
