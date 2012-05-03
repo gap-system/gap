@@ -732,7 +732,7 @@ function( efam )
 	  HasExtRepPolynomialRatFun);
 
   # default type for univariate laurent polynomials
-  fam!.threeLaurentPolynomialTypes := 
+  fam!.threeLaurentPolynomialTypes := MakeImmutable(
     [ NewType( fam,
 	  IsLaurentPolynomial
 	  and IsLaurentPolynomialDefaultRep and
@@ -750,7 +750,7 @@ function( efam )
 	    IsLaurentPolynomial and IsLaurentPolynomialDefaultRep and
 	    HasIndeterminateNumberOfLaurentPolynomial and
 	    HasCoefficientsOfLaurentPolynomial and
-	    IsUnivariatePolynomial)];
+	    IsUnivariatePolynomial)] );
 	      
   # default type for univariate rational functions
   fam!.univariateRatfunType := NewType( fam,
