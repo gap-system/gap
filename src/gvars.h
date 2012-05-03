@@ -32,7 +32,7 @@
 #ifdef  INCLUDE_DECLARATION_PART
 #endif
 
-#include "global.h"
+#include "systhread.h"
 
 #define GVAR_BUCKETS 1024
 #define GVAR_BUCKET_SIZE 1024
@@ -87,7 +87,7 @@ extern  Obj *           PtrGVars[GVAR_BUCKETS];
 
 static inline Obj ValGVar(UInt gvar) {
   Obj result = VAL_GVAR(gvar);
-  AO_nop_read();
+  MEMBAR_READ();
   return result;
 }
 

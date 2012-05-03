@@ -12,7 +12,7 @@
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 #include        <string.h>              /* memcpy */
 #include        <stdlib.h>
-#include	"global.h"		/* global includes */
+#include	"systhread.h"		/* system thread primitives	   */
 
 #include        "system.h"              /* system dependent part           */
 
@@ -80,7 +80,7 @@ Obj TypeAList(Obj obj)
   Obj result;
   Obj *addr;
   addr = ADDR_OBJ(obj);
-  AO_nop_read();
+  MEMBAR_READ();
   result = addr[1];
   return result != NULL ? result : TYPE_ALIST;
 }
@@ -88,14 +88,14 @@ Obj TypeAList(Obj obj)
 Obj TypeARecord(Obj obj)
 {
   Obj result;
-  AO_nop_read();
+  MEMBAR_READ();
   result = ADDR_OBJ(obj)[0];
   return result != NULL ? result : TYPE_AREC;
 }
 
 int IsTypedARecord(Obj obj)
 {
-  AO_nop_read();
+  MEMBAR_READ();
   return TNUM_OBJ(obj) == T_AREC && ADDR_OBJ(obj)[0] != NULL;
 }
 
@@ -120,14 +120,14 @@ void SetTypeAList(Obj obj, Obj kind)
       HashUnlock(obj);
       break;
   }
-  AO_nop_write();
+  MEMBAR_WRITE();
 }
 
 void SetTypeARecord(Obj obj, Obj kind)
 {
   ADDR_OBJ(obj)[0] = kind;
   RetypeBag(obj, T_ACOMOBJ);
-  AO_nop_write();
+  MEMBAR_WRITE();
 }
 
 
@@ -144,14 +144,14 @@ static void ArgumentError(char *message)
 static Obj NewFixedAtomicList(UInt length)
 {
   Obj result = NewBag(T_FIXALIST, sizeof(AtomicObj) * (length + 2));
-  AO_nop_write();
+  MEMBAR_WRITE();
   return result;
 }
 
 static Obj NewAtomicList(UInt length)
 {
   Obj result = NewBag(T_ALIST, sizeof(AtomicObj) * (length + 2));
-  AO_nop_write();
+  MEMBAR_WRITE();
   return result;
 }
 
@@ -174,7 +174,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = ELM0_LIST(init, i);
-	AO_nop_write(); /* Should not be necessary, but better be safe. */
+	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
 	return result;
       } else {
         len = INT_INTOBJ(init);
@@ -184,7 +184,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = (Obj) 0;
-	AO_nop_write(); /* Should not be necessary, but better be safe. */
+	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
 	return result;
       }
     case 2:
@@ -200,7 +200,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
       data++->obj = NULL;
       for (i=1; i<=len; i++)
         data++->obj = init;
-      AO_nop_write(); /* Should not be necessary, but better be safe. */
+      MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
       return result;
     default:
       ArgumentError("AtomicList: Too many arguments");
@@ -227,7 +227,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = ELM0_LIST(init, i);
-	AO_nop_write(); /* Should not be necessary, but better be safe. */
+	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
 	return result;
       } else {
         len = INT_INTOBJ(init);
@@ -237,7 +237,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = (Obj) 0;
-	AO_nop_write(); /* Should not be necessary, but better be safe. */
+	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
 	return result;
       }
     case 2:
@@ -253,7 +253,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
       data++->obj = NULL;
       for (i=1; i<=len; i++)
         data++->obj = init;
-      AO_nop_write(); /* Should not be necessary, but better be safe. */
+      MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
       return result;
     default:
       ArgumentError("FixedAtomicList: Too many arguments");
@@ -316,7 +316,7 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
   n = INT_INTOBJ(index);
   if (n <= 0 || n > len)
     ArgumentError("GET_ATOMIC_LIST: Index out of range");
-  AO_nop_read(); /* read barrier */
+  MEMBAR_READ(); /* read barrier */
   return addr[n+1].obj;
 }
 
@@ -335,7 +335,7 @@ static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
   if (n <= 0 || n > len)
     ArgumentError("SET_ATOMIC_LIST: Index out of range");
   addr[n+1].obj = value;
-  AO_nop_write(); /* write barrier */
+  MEMBAR_WRITE(); /* write barrier */
   return (Obj) 0;
 }
 
@@ -361,7 +361,7 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
     ArgumentError("COMPARE_AND_SWAP: Index out of range");
   aold.obj = old;
   anew.obj = new;
-  return AO_compare_and_swap_full(&(addr[n+1].atom), aold.atom, anew.atom) ?
+  return COMPARE_AND_SWAP(&(addr[n+1].atom), aold.atom, anew.atom) ?
     True : False;
 }
 
@@ -392,7 +392,7 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
     if (!IS_INTOBJ(aold.obj))
       ArgumentError("ATOMIC_ADDITION: list element is not an integer");
     anew.obj = INTOBJ_INT(INT_INTOBJ(aold.obj) + INT_INTOBJ(inc));
-  } while (!AO_compare_and_swap_full(&(addr[n+1].atom), aold.atom, anew.atom));
+  } while (!COMPARE_AND_SWAP(&(addr[n+1].atom), aold.atom, anew.atom));
   return anew.obj;
 }
 
@@ -408,7 +408,7 @@ static Obj FuncFromAtomicList(Obj self, Obj list)
   len = (UInt) (data++->atom);
   result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
-  AO_nop_read();
+  MEMBAR_READ();
   for (i=1; i<=len; i++)
     SET_ELM_PLIST(result, i, data[i].obj);
   return result;
@@ -468,7 +468,7 @@ static void MarkTLRecordInner(Bag bag)
 static Obj GetTLInner(Obj obj)
 {
   Obj contents = ADDR_ATOM(obj)->obj;
-  AO_nop_read(); /* read barrier */
+  MEMBAR_READ(); /* read barrier */
   return contents;
 }
 
@@ -513,7 +513,7 @@ static void ExpandTLRecord(Obj obj)
     newtable[TLR_CONSTRUCTORS] = table[TLR_CONSTRUCTORS];
     memcpy(newtable + TLR_DATA, table + TLR_DATA,
       (UInt)table[TLR_SIZE] * sizeof(Obj));
-  } while (!AO_compare_and_swap_full(&(ADDR_ATOM(obj)->atom),
+  } while (!COMPARE_AND_SWAP(&(ADDR_ATOM(obj)->atom),
     contents.atom, newcontents.atom));
 }
 
@@ -599,7 +599,7 @@ Obj GetARecordField(Obj record, UInt field)
   /* We need a memory barrier to ensure that we see fields that
    * were updated before the table pointer was updated; there is
    * a matching write barrier in the set operation. */
-  AO_nop_read();
+  MEMBAR_READ();
   cap = table[AR_CAP].atom;
   bits = table[AR_BITS].atom;
   hash = FibHash(field, bits);
@@ -609,7 +609,7 @@ Obj GetARecordField(Obj record, UInt field)
     UInt key = data[hash*2].atom;
     if (key == field)
     {
-      AO_nop_read(); /* memory barrier */
+      MEMBAR_READ(); /* memory barrier */
       return data[hash*2+1].obj;
     }
     if (!key)
@@ -679,7 +679,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
 	new.obj = obj;
 	do {
 	  old = data[hash*2+1];
-	} while (!AO_compare_and_swap_full(&data[hash*2+1].atom,
+	} while (!COMPARE_AND_SWAP(&data[hash*2+1].atom,
 	          old.atom, new.atom));
 	HashUnlockShared(record);
 	return obj;
@@ -699,7 +699,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   do {
     size = table[AR_SIZE].atom + 1;
     have_room = (size <= UsageCap[bits]);
-  } while (have_room && !AO_compare_and_swap_full(&table[AR_SIZE].atom,
+  } while (have_room && !COMPARE_AND_SWAP(&table[AR_SIZE].atom,
                          size-1, size));
   /* we're guaranteed to have a non-full table for the insertion step */
   /* if have_room is true */
@@ -709,12 +709,12 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
       /* we don't actually need a new entry, so revert the size update */
       do {
 	size = table[AR_SIZE].atom;
-      } while (!AO_compare_and_swap_full(&table[AR_SIZE].atom, size, size-1));
+      } while (!COMPARE_AND_SWAP(&table[AR_SIZE].atom, size, size-1));
       /* continue below */
     } else if (!old.atom) {
       AtomicObj new;
       new.atom = field;
-      if (!AO_compare_and_swap_full(&data[hash*2].atom, old.atom, new.atom))
+      if (!COMPARE_AND_SWAP(&data[hash*2].atom, old.atom, new.atom))
         continue;
       /* else continue below */
     } else {
@@ -734,7 +734,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
 	if (strat) {
 	  AtomicObj new;
 	  new.obj = obj;
-	  if (AO_compare_and_swap_full(&data[hash*2+1].atom,
+	  if (COMPARE_AND_SWAP(&data[hash*2+1].atom,
 	      old.atom, new.atom)) {
 	    result = obj;
 	    break;
@@ -746,7 +746,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
       } else {
         AtomicObj new;
 	new.obj = obj;
-	if (AO_compare_and_swap_full(&data[hash*2+1].atom,
+	if (COMPARE_AND_SWAP(&data[hash*2+1].atom,
 	    old.atom, new.atom)) {
 	  result = obj;
 	  break;
@@ -787,7 +787,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   }
   else
     newdata[2*n+1].obj = result = obj;
-  AO_nop_write(); /* memory barrier */
+  MEMBAR_WRITE(); /* memory barrier */
   ADDR_OBJ(record)[1] = newarec;
   HashUnlock(record);
   return result;
@@ -800,7 +800,7 @@ Obj FromAtomicRecord(Obj record)
   UInt cap, i;
   table = ARecordTable(record);
   data = table + AR_DATA;
-  AO_nop_read(); /* memory barrier */
+  MEMBAR_READ(); /* memory barrier */
   cap = table[AR_CAP].atom;
   result = NEW_PREC(0);
   for (i=0; i<cap; i++)
@@ -808,7 +808,7 @@ Obj FromAtomicRecord(Obj record)
     UInt key;
     Obj value;
     key = data[2*i].atom;
-    AO_nop_read();
+    MEMBAR_READ();
     value = data[2*i+1].obj;
     if (key && value)
       AssPRec(result, key, value);
@@ -856,7 +856,7 @@ static Obj NewAtomicRecordFrom(Obj precord)
     pos = ARecordFastInsert(table, field);
     table[AR_DATA+2*pos+1].obj = GET_ELM_PREC(precord, i);
   }
-  AO_nop_write();
+  MEMBAR_WRITE();
   return result;
 }
 
@@ -1167,7 +1167,7 @@ static Obj NewTLRecord(Obj defaults, Obj constructors) {
   ADDR_OBJ(inner)[TLR_DEFAULTS] = CreateTLDefaults(defaults);
   WriteGuard(constructors);
   DS_BAG(constructors) = LimboRegion;
-  AO_nop_write();
+  MEMBAR_WRITE();
   ADDR_OBJ(inner)[TLR_CONSTRUCTORS] = NewAtomicRecordFrom(constructors);
   ((AtomicObj *)(ADDR_OBJ(result)))->obj = inner;
   return result;
@@ -1254,13 +1254,13 @@ static Int IsSmallListAList(Obj list)
 
 static Int LenListAList(Obj list)
 {
-  AO_nop_read();
+  MEMBAR_READ();
   return (Int)(ADDR_ATOM(list)[0].atom);
 }
 
 static Obj LengthAList(Obj list)
 {
-  AO_nop_read();
+  MEMBAR_READ();
   return INTOBJ_INT(ADDR_ATOM(list)[0].atom);
 }
 
@@ -1268,11 +1268,11 @@ static Obj Elm0AList(Obj list, Int pos)
 {
   AtomicObj *addr = ADDR_ATOM(list);
   UInt len;
-  AO_nop_read();
+  MEMBAR_READ();
   len = (UInt) addr[0].atom;
   if (pos < 1 || pos > len)
     return 0;
-  AO_nop_read();
+  MEMBAR_READ();
   return addr[1+pos].obj;
 }
 
@@ -1280,7 +1280,7 @@ Obj ElmAList(Obj list, Int pos)
 {
   AtomicObj *addr = ADDR_ATOM(list);
   UInt len;
-  AO_nop_read();
+  MEMBAR_READ();
   len = (UInt)addr[0].atom;
   Obj result;
   while (pos < 1 || pos > len) {
@@ -1296,7 +1296,7 @@ Obj ElmAList(Obj list, Int pos)
   for (;;) {
     result = addr[1+pos].obj;
     if (result) {
-      AO_nop_read();
+      MEMBAR_READ();
       return result;
     }
     ErrorReturnVoid(
@@ -1309,7 +1309,7 @@ Obj ElmAList(Obj list, Int pos)
 Int IsbAList(Obj list, Int pos) {
   AtomicObj *addr = ADDR_ATOM(list);
   UInt len;
-  AO_nop_read();
+  MEMBAR_READ();
   len = (UInt) addr[0].atom;
   return pos >= 1 && pos <= len && addr[1+pos].obj;
 }
@@ -1328,7 +1328,7 @@ void AssFixAList(Obj list, Int pos, Obj obj)
     pos = INT_INTOBJ(posobj);
   }
   ADDR_ATOM(list)[1+pos].obj = obj;
-  AO_nop_write();
+  MEMBAR_WRITE();
 }
 
 void AssAList(Obj list, Int pos, Obj obj)
@@ -1361,16 +1361,16 @@ void AssAList(Obj list, Int pos, Obj obj)
       memcpy(PTR_BAG(newlist), PTR_BAG(list), sizeof(AtomicObj)*(2+len));
       addr = ADDR_ATOM(newlist);
       addr[0].atom = pos;
-      AO_nop_write();
+      MEMBAR_WRITE();
       PTR_BAG(list) = PTR_BAG(newlist);
-      AO_nop_write();
+      MEMBAR_WRITE();
     } else {
       addr[0].atom = pos;
-      AO_nop_write();
+      MEMBAR_WRITE();
     }
   }
   ADDR_ATOM(list)[1+pos].obj = obj;
-  AO_nop_write();
+  MEMBAR_WRITE();
   HashUnlock(list);
 }
 
@@ -1383,7 +1383,7 @@ void UnbAList(Obj list, Int pos)
   len = (UInt)addr[0].atom;
   if (pos >= 1 && pos <= len) {
     addr[1+pos].obj = 0;
-    AO_nop_write();
+    MEMBAR_WRITE();
   }
   HashUnlockShared(list);
 }
@@ -1418,7 +1418,7 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
   ReadGuard(obj);
 #ifndef WARD_ENABLED
   contents = PTR_BAG(obj);
-  AO_nop_read();
+  MEMBAR_READ();
   if (SIZE_BAG_CONTENTS(contents) / sizeof(Bag) <= n) {
     HashLock(obj);
     /* resize bag */
@@ -1429,13 +1429,13 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
       mptr[0] = (UInt *)contents;
       mptr[1] = 0;
       ResizeBag(mptr, sizeof(Bag) * (n+1));
-      AO_nop_write();
+      MEMBAR_WRITE();
       PTR_BAG(obj) = (void *)(mptr[0]);
     }
     /* reread contents pointer */
     HashUnlock(obj);
     contents = PTR_BAG(obj);
-    AO_nop_read();
+    MEMBAR_READ();
   }
   /* already bound? */
   if (result = (Bag)(contents[n]))
@@ -1444,12 +1444,12 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
     *new = CALL_0ARGS(*new);
   HashLockShared(obj);
   contents = PTR_BAG(obj);
-  AO_nop_read();
+  MEMBAR_READ();
   for (;;) {
     result = (Bag)(contents[n]);
     if (result)
       break;
-    if (AO_compare_and_swap_full((AO_t*)(contents+n), (AO_t) 0, (AO_t) *new))
+    if (COMPARE_AND_SWAP((AO_t*)(contents+n), (AO_t) 0, (AO_t) *new))
       break;
   }
   HashUnlockShared(obj);
@@ -1465,7 +1465,7 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
   Obj result;
   /* atomic positional objects aren't resizable. */
   addr = ADDR_ATOM(obj);
-  AO_nop_read();
+  MEMBAR_READ();
   len = addr[0].atom;
   if (!IS_INTOBJ(index))
     FuncError("Second argument must be an integer");
@@ -1482,7 +1482,7 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
     result = addr[n+1].obj;
     if (result)
       break;
-    if (AO_compare_and_swap_full(&(addr[n+1].atom), (AO_t) 0, anew.atom))
+    if (COMPARE_AND_SWAP(&(addr[n+1].atom), (AO_t) 0, anew.atom))
       break;
   }
   return result;

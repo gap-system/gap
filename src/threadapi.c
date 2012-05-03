@@ -14,7 +14,7 @@
 #include        <string.h>              /* memcpy */
 #include        <stdlib.h>
 
-#include        "global.h"              /* global includes                 */
+#include        "systhread.h"           /* system thread primitives        */
 
 #include        "system.h"              /* system dependent part           */
 
@@ -2656,12 +2656,12 @@ Obj FuncEND_SINGLE_THREADED(Obj self)
 
 Obj FuncORDERED_READ(Obj self, Obj obj)
 {
-  AO_nop_read();
+  MEMBAR_READ();
   return obj;
 }
 
 Obj FuncORDERED_WRITE(Obj self, Obj obj)
 {
-  AO_nop_write();
+  MEMBAR_WRITE();
   return obj;
 }

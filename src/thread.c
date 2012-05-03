@@ -10,8 +10,8 @@
 #ifndef DISABLE_GC
 #include <gc/gc.h>
 #endif
-#include "global.h"
 
+#include 	"systhread.h"
 #include        "system.h"
 #include        "gasman.h"
 #include        "objects.h"
@@ -564,7 +564,7 @@ void SetRegionName(Region *region, Obj name)
     if (IS_MUTABLE_OBJ(name))
       name = CopyObj(name, 0);
   }
-  AO_nop_write();
+  MEMBAR_WRITE();
   region->name = name;
 }
 
@@ -575,7 +575,7 @@ Obj GetRegionName(Region *region)
     result = region->name;
   else
     result = PublicRegionName;
-  AO_nop_read();
+  MEMBAR_READ();
   return result;
 }
 
@@ -643,7 +643,7 @@ int GetThreadState(int threadID) {
 }
 
 int UpdateThreadState(int threadID, int oldState, int newState) {
-  return AO_compare_and_swap_full(&thread_data[threadID].state,
+  return COMPARE_AND_SWAP(&thread_data[threadID].state,
     (AO_t) oldState, (AO_t) newState);
 }
 

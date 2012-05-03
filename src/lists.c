@@ -19,7 +19,7 @@
 **  'LEN_PLIST', 'SET_LEN_PLIST',   'ELM_PLIST', and 'SET_ELM_PLIST' exported
 **  by the plain list package to access and modify plain lists.
 */
-#include	"global.h"		/* global includes */
+#include	"systhread.h"		/* system thread primitives	   */
 
 #include        "system.h"              /* Ints, UInts                     */
 
@@ -2229,7 +2229,7 @@ Obj             TYPES_LIST_FAM (
       case T_COMOBJ:
         return ElmPRec( fam, TYPES_LIST_FAM_RNam );
       case T_ACOMOBJ:
-	AO_nop_read();
+	MEMBAR_READ();
         return GetARecordField( fam, TYPES_LIST_FAM_RNam );
       default:
         return 0;

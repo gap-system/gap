@@ -6,7 +6,7 @@
 #include <pthread.h>
 #ifndef WARD_ENABLED
 /* This file contains some constructs Ward can't parse yet. */
-#include <atomic_ops.h>
+#include "atomic.h"
 #endif
 
 #endif // GAP_GLOBAL_H

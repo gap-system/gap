@@ -4051,7 +4051,7 @@ void            IntrElmPosObj ( void )
 	 * positional objects.
 	 */
         Bag *contents = PTR_BAG(list);
-	AO_nop_read(); /* essential memory barrier */
+	MEMBAR_READ(); /* essential memory barrier */
         if ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
             ErrorQuit(
                 "PosObj Element: <posobj>![%d] must have an assigned value",

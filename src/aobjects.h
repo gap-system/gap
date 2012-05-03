@@ -53,7 +53,7 @@ void SetTLConstructor(Obj record, UInt rnam, Obj func);
 static inline void ATOMIC_SET_ELM_PLIST(Obj list, UInt index, Obj value) {
 #ifndef WARD_ENABLED
   Obj *contents = ADDR_OBJ(list);
-  AO_nop_write(); /* ensure that contents[index] becomes visible to
+  MEMBAR_WRITE(); /* ensure that contents[index] becomes visible to
                    * other threads only after value has become visible,
 		   * too.
 		   */
@@ -68,13 +68,13 @@ static inline Obj ATOMIC_SET_ELM_PLIST_ONCE(Obj list, UInt index, Obj value) {
   for (;;) {
     result = contents[index];
     if (result) {
-      AO_nop_read(); /* matching memory barrier. */
+      MEMBAR_READ(); /* matching memory barrier. */
       return result;
     }
-    if (AO_compare_and_swap_full((AO_t *)(contents+index),
+    if (COMPARE_AND_SWAP((AO_t *)(contents+index),
       (AO_t) 0, (AO_t) value)) {
       /* no extra memory barrier needed, a full barrier is implicit in the
-       * AO_compare_and_swap_full() call.
+       * COMPARE_AND_SWAP() call.
        */
       return value;
     }
@@ -87,7 +87,7 @@ static inline Obj ATOMIC_ELM_PLIST(Obj list, UInt index) {
   Obj *contents = ADDR_OBJ(list);
   Obj result;
   result = contents[index];
-  AO_nop_read(); /* matching memory barrier. */
+  MEMBAR_READ(); /* matching memory barrier. */
   return result;
 #endif
 }

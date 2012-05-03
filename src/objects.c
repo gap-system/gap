@@ -1163,14 +1163,14 @@ Obj             TypeComObj (
     Obj                 obj )
 {
     Obj result = TYPE_COMOBJ( obj );
-    AO_nop_read();
+    MEMBAR_READ();
     return result;
 }
 #endif
 
 void SetTypeComObj( Obj obj, Obj kind)
 {
-    AO_nop_write();
+    MEMBAR_WRITE();
     TYPE_COMOBJ(obj) = kind;
     CHANGED_BAG(obj);
 }
@@ -1206,7 +1206,7 @@ Obj SET_TYPE_COMOBJ_Handler (
     switch (TNUM_OBJ(obj)) {
       case T_PREC:
       case T_COMOBJ:
-	AO_nop_write();
+	MEMBAR_WRITE();
 	TYPE_COMOBJ( obj ) = kind;
 	RetypeBag( obj, T_COMOBJ );
 	CHANGED_BAG( obj );
@@ -1232,14 +1232,14 @@ Obj TypePosObj (
     Obj                 obj )
 {
     Obj result = TYPE_POSOBJ( obj );
-    AO_nop_read();
+    MEMBAR_READ();
     return result;
 }
 #endif
 
 void SetTypePosObj( Obj obj, Obj kind)
 {
-    AO_nop_write();
+    MEMBAR_WRITE();
     TYPE_POSOBJ(obj) = kind;
     CHANGED_BAG(obj);
 }
@@ -1283,7 +1283,7 @@ Obj SET_TYPE_POSOBJ_Handler (
 	CHANGED_BAG( obj );
         break;
       default:
-	AO_nop_write();
+	MEMBAR_WRITE();
 	TYPE_POSOBJ( obj ) = kind;
 	RetypeBag( obj, T_POSOBJ );
 	CHANGED_BAG( obj );

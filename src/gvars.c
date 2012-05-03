@@ -27,7 +27,7 @@
 **  Otherwise the internal copies reference functions that signal an error.
 */
 #include        <stdio.h>
-#include        "global.h"		/* global includes */
+#include        "systhread.h"		/* system thread primitives	   */
 
 #include        "system.h"              /* Ints, UInts                     */
 
@@ -245,7 +245,7 @@ void            AssGVar (
 	  return;
 	}
     }
-    AO_nop_write();
+    MEMBAR_WRITE();
     VAL_GVAR(gvar) = val;
     CHANGED_BAG( ValGVars[gvar_bucket] );
 
@@ -550,7 +550,7 @@ UInt GVarName (
 
 Int FindGVarByValue(Obj value, Int start) {
   Int max = CountGVars;
-  AO_nop_read();
+  MEMBAR_READ();
   while (start < max) {
     if (VAL_GVAR(start) == value)
       return start;
@@ -1258,7 +1258,7 @@ void DeclareAllGVars( void )
 Obj GVarValue(GVarDescriptor *gvar)
 {
   Obj result = *(gvar->ref);
-  AO_nop_read();
+  MEMBAR_READ();
   return result;
 }
 
@@ -1267,7 +1267,7 @@ Obj GVarObj(GVarDescriptor *gvar)
   Obj result = *(gvar->ref);
   if (!result)
     ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0L);
-  AO_nop_read();
+  MEMBAR_READ();
   return result;
 }
 
@@ -1281,7 +1281,7 @@ Obj GVarFunc(GVarDescriptor *gvar)
   ImpliedWriteGuard(result);
   if (TNUM_OBJ(result) != T_FUNCTION)
     ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0L);
-  AO_nop_read();
+  MEMBAR_READ();
   return result;
 }
 
@@ -1295,13 +1295,13 @@ Obj GVarOptFunc(GVarDescriptor *gvar)
   ImpliedWriteGuard(result);
   if (TNUM_OBJ(result) != T_FUNCTION)
     return (Obj) 0;
-  AO_nop_read();
+  MEMBAR_READ();
   return result;
 }
 
 void SetGVar(GVarDescriptor *gvar, Obj obj)
 {
-  AO_nop_write();
+  MEMBAR_WRITE();
   *(gvar->ref) = obj;
 }
 
