@@ -24,11 +24,18 @@
 ##  without changing the kernel.
 ##
 
-InstallValue(TYPES_VEC8BIT , [[],[], [], []]);
-TYPES_VEC8BIT[1][257] := 1;
-TYPES_VEC8BIT[2][257] := 1;
-TYPES_VEC8BIT[3][257] := 1;
-TYPES_VEC8BIT[4][257] := 1;
+InstallValue(TYPES_VEC8BIT , [ ] );
+ShareObj( TYPES_VEC8BIT );
+atomic readwrite TYPES_VEC8BIT do
+  TYPES_VEC8BIT[1] := MigrateObj( [ ], TYPES_VEC8BIT );
+  TYPES_VEC8BIT[2] := MigrateObj( [ ], TYPES_VEC8BIT );
+  TYPES_VEC8BIT[3] := MigrateObj( [ ], TYPES_VEC8BIT );
+  TYPES_VEC8BIT[4] := MigrateObj( [ ], TYPES_VEC8BIT );
+  TYPES_VEC8BIT[1][257] := 1;
+  TYPES_VEC8BIT[2][257] := 1;
+  TYPES_VEC8BIT[3][257] := 1;
+  TYPES_VEC8BIT[4][257] := 1;
+od;
 
 
 #############################################################################
@@ -41,33 +48,49 @@ TYPES_VEC8BIT[4][257] := 1;
 
 InstallGlobalFunction(TYPE_VEC8BIT,
   function( q, mut)
-    local col,filts;
+    local col,filts, type;
     if mut then col := 1; else col := 2; fi;
-    if not IsBound(TYPES_VEC8BIT[col][q]) then
-        filts := IsHomogeneousList and IsListDefault and IsCopyable and
-                 Is8BitVectorRep and IsSmallList and
-                 IsNoImmediateMethodsObject and
-                 IsRingElementList and HasLength;
-        if mut then filts := filts and IsMutable; fi;
-        TYPES_VEC8BIT[col][q] := NewType(FamilyObj(GF(q)),filts);
-    fi;
-    return TYPES_VEC8BIT[col][q];
+    atomic readonly TYPES_VEC8BIT do
+      if IsBound(TYPES_VEC8BIT[col][q]) then
+        return TYPES_VEC8BIT[col][q];
+      fi;
+    od;  
+    filts := IsHomogeneousList and IsListDefault and IsCopyable and
+             Is8BitVectorRep and IsSmallList and
+             IsNoImmediateMethodsObject and
+             IsRingElementList and HasLength;
+    if mut then filts := filts and IsMutable; fi;
+    type := NewType(FamilyObj(GF(q)),filts);
+    atomic readwrite TYPES_VEC8BIT do
+      if not IsBound(TYPES_VEC8BIT[col][q]) then
+        TYPES_VEC8BIT[col][q] := type;
+      fi;
+      return TYPES_VEC8BIT[col][q];
+    od;  
 end);
 
 InstallGlobalFunction(TYPE_VEC8BIT_LOCKED,
   function( q, mut)
-    local col,filts;
+    local col,filts, type;
     if mut then col := 3; else col := 4; fi;
-    if not IsBound(TYPES_VEC8BIT[col][q]) then
-        filts := IsHomogeneousList and IsListDefault and IsCopyable and
-                 Is8BitVectorRep and IsSmallList and
-                 IsNoImmediateMethodsObject and
-                 IsLockedRepresentationVector and
-                 IsRingElementList and HasLength;
-        if mut then filts := filts and IsMutable; fi;
-        TYPES_VEC8BIT[col][q] := NewType(FamilyObj(GF(q)),filts);
-    fi;
-    return TYPES_VEC8BIT[col][q];
+    atomic readonly TYPES_VEC8BIT do
+      if IsBound(TYPES_VEC8BIT[col][q]) then
+        return TYPES_VEC8BIT[col][q];
+      fi;
+    od;    
+    filts := IsHomogeneousList and IsListDefault and IsCopyable and
+             Is8BitVectorRep and IsSmallList and
+             IsNoImmediateMethodsObject and
+             IsLockedRepresentationVector and
+             IsRingElementList and HasLength;
+    if mut then filts := filts and IsMutable; fi;
+    type := NewType(FamilyObj(GF(q)),filts);
+    atomic readwrite TYPES_VEC8BIT do
+      if not IsBound(TYPES_VEC8BIT[col][q]) then
+        TYPES_VEC8BIT[col][q] := type;
+      fi;
+      return TYPES_VEC8BIT[col][q];
+    od;
 end);
 
 #############################################################################
