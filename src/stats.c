@@ -2233,9 +2233,9 @@ static Int InitKernel (
 void InitStatTLS()
 {
   TLS->CurrExecStatFuncs = ExecStatFuncs;
-  AO_nop_full();
+  MEMBAR_FULL();
   if (GetThreadState(TLS->threadID) >= TSTATE_INTERRUPT) {
-    AO_nop_full();
+    MEMBAR_FULL();
     TLS->CurrExecStatFuncs = IntrExecStatFuncs;
   }
 }

@@ -69,7 +69,7 @@ static UInt UsageCap[sizeof(UInt)*8];
 
 typedef union AtomicObj
 {
-  AO_t atom;
+  AtomicUInt atom;
   Obj obj;
 } AtomicObj;
 
@@ -621,7 +621,7 @@ Obj GetARecordField(Obj record, UInt field)
   return (Obj) 0;
 }
 
-static UInt ARecordFastInsert(AtomicObj *table, AO_t field)
+static UInt ARecordFastInsert(AtomicObj *table, AtomicUInt field)
 {
   AtomicObj *data = table + AR_DATA;
   UInt cap = table[AR_CAP].atom;
@@ -629,7 +629,7 @@ static UInt ARecordFastInsert(AtomicObj *table, AO_t field)
   UInt hash = FibHash(field, bits);
   for (;;)
   {
-    AO_t key;
+    AtomicUInt key;
     key = data[hash*2].atom;
     if (!key)
     {
@@ -668,7 +668,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
       break;
     if (key == field)
     {
-      AO_nop_full(); /* memory barrier */
+      MEMBAR_FULL(); /* memory barrier */
       if (strat < 0) {
         HashUnlockShared(record);
 	return 0;
@@ -723,7 +723,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
         hash = 0;
       continue;
     }
-    AO_nop_full(); /* memory barrier */
+    MEMBAR_FULL(); /* memory barrier */
     for (;;) { /* CAS loop */
       old = data[hash*2+1];
       if (old.obj) {
@@ -956,7 +956,7 @@ static void UpdateThreadRecord(Obj record, Obj tlrecord)
   do {
     inner = GetTLInner(record);
     ADDR_OBJ(inner)[TLR_DATA+TLS->threadID] = tlrecord;
-    AO_nop_full(); /* memory barrier */
+    MEMBAR_FULL(); /* memory barrier */
   } while (inner != GetTLInner(record));
   if (tlrecord) {
     if (TLS->tlRecords)
@@ -1449,7 +1449,8 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
     result = (Bag)(contents[n]);
     if (result)
       break;
-    if (COMPARE_AND_SWAP((AO_t*)(contents+n), (AO_t) 0, (AO_t) *new))
+    if (COMPARE_AND_SWAP((AtomicUInt*)(contents+n),
+      (AtomicUInt) 0, (AtomicUInt) *new))
       break;
   }
   HashUnlockShared(obj);
@@ -1482,7 +1483,7 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
     result = addr[n+1].obj;
     if (result)
       break;
-    if (COMPARE_AND_SWAP(&(addr[n+1].atom), (AO_t) 0, anew.atom))
+    if (COMPARE_AND_SWAP(&(addr[n+1].atom), (AtomicUInt) 0, anew.atom))
       break;
   }
   return result;

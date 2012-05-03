@@ -71,8 +71,8 @@ static inline Obj ATOMIC_SET_ELM_PLIST_ONCE(Obj list, UInt index, Obj value) {
       MEMBAR_READ(); /* matching memory barrier. */
       return result;
     }
-    if (COMPARE_AND_SWAP((AO_t *)(contents+index),
-      (AO_t) 0, (AO_t) value)) {
+    if (COMPARE_AND_SWAP((AtomicUInt *)(contents+index),
+      (AtomicUInt) 0, (AtomicUInt) value)) {
       /* no extra memory barrier needed, a full barrier is implicit in the
        * COMPARE_AND_SWAP() call.
        */

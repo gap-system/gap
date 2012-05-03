@@ -38,7 +38,7 @@ typedef struct ThreadData {
   pthread_cond_t *cond;
   int joined;
   int system;
-  AO_t state;
+  AtomicUInt state;
   void *tls;
   void (*start)(void *);
   void *arg;
@@ -67,18 +67,18 @@ Obj PublicRegion;
 Obj PublicRegionName;
 
 static int GlobalPauseInProgress;
-static AO_t ThreadCounter = 1;
+static AtomicUInt ThreadCounter = 1;
 
 static inline TraversalState *currentTraversal() {
   return TLS->traversalState;
 }
 
 static inline void IncThreadCounter() {
-  AO_fetch_and_add1(&ThreadCounter);
+  ATOMIC_INC(&ThreadCounter);
 }
 
 static inline void DecThreadCounter() {
-  AO_fetch_and_sub1(&ThreadCounter);
+  ATOMIC_DEC(&ThreadCounter);
 }
 
 int IsSingleThreaded() {
@@ -644,12 +644,12 @@ int GetThreadState(int threadID) {
 
 int UpdateThreadState(int threadID, int oldState, int newState) {
   return COMPARE_AND_SWAP(&thread_data[threadID].state,
-    (AO_t) oldState, (AO_t) newState);
+    (AtomicUInt) oldState, (AtomicUInt) newState);
 }
 
 static int SetInterrupt(int threadID) {
   ThreadLocalStorage *tls = thread_data[threadID].tls;
-  AO_nop_full();
+  MEMBAR_FULL();
   tls->CurrExecStatFuncs = IntrExecStatFuncs;
 }
 
