@@ -49,7 +49,7 @@
 #include        "opers.h"               /* generic operations              */
 
 #include        "ariths.h"              /* basic arithmetic                */
-#include        "finfield.h"            /* fintie fields                   */
+#include        "finfield.h"            /* finite fields                   */
 
 #include        "bool.h"                /* booleans                        */
 

@@ -53,6 +53,8 @@
 #ifndef GAP_FINFIELD_H
 #define GAP_FINFIELD_H
 
+#include "ffdata.h"		/* precomputed finite field data */
+
 #ifdef  INCLUDE_DECLARATION_PART
 #endif
 
@@ -80,9 +82,7 @@ typedef UInt2       FF;
 **  Note that  'CHAR_FF' is a macro,  so do not call  it  with arguments that
 **  have sideeffects.
 */
-#define CHAR_FF(ff)             INT_INTOBJ( ELM_PLIST( CharFF, ff ) )
-
-extern  Obj             CharFF;
+#define CHAR_FF(ff)             (CharFF[ff])
 
 
 /****************************************************************************
@@ -94,9 +94,7 @@ extern  Obj             CharFF;
 **  Note that 'DEGR_FF' is  a macro, so do   not call it with  arguments that
 **  have sideeffects.
 */
-#define DEGR_FF(ff)             INT_INTOBJ( ELM_PLIST( DegrFF, ff ) )
-
-extern  Obj             DegrFF;
+#define DEGR_FF(ff)             (DegrFF[ff])
 
 
 /****************************************************************************
@@ -108,7 +106,7 @@ extern  Obj             DegrFF;
 **  Note that 'SIZE_FF' is a macro, so do not call  it  with  arguments  that
 **  have sideeffects.
 */
-#define SIZE_FF(ff)             (*SUCC_FF(ff)+1)
+#define SIZE_FF(ff)             (SizeFF[ff])
 
 
 /****************************************************************************
