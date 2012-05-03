@@ -1,4 +1,4 @@
-#ifndef GAP__GLOBAL_H
+#ifndef GAP_GLOBAL_H
 #define GAP_GLOBAL_H
 
 /* This file contains global #includes for faster compilation */
