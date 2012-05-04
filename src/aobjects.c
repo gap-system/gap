@@ -63,6 +63,18 @@ Obj TYPE_ALIST;
 Obj TYPE_AREC;
 Obj TYPE_TLREC;
 
+#define ALIST_LEN(x) ((x) >> 2)
+#define CHANGE_ALIST_LEN(x, y) (((x) & 3) | (y << 2))
+#define CHANGE_ALIST_POL(x, y) (((x) & ~3) | y)
+
+#define ALIST_RW 0
+#define ALIST_W1 1
+#define ALIST_WX 2
+
+#define AREC_RW 1
+#define AREC_W1 0
+#define AREC_WX (-1)
+
 #ifndef WARD_ENABLED
 
 static UInt UsageCap[sizeof(UInt)*8];
@@ -170,7 +182,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
 	len = LEN_LIST(init);
 	result = NewAtomicList(len);
 	data = ADDR_ATOM(result);
-	data++->atom = len;
+	data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = ELM0_LIST(init, i);
@@ -180,7 +192,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
         len = INT_INTOBJ(init);
 	result = NewAtomicList(len);
 	data = ADDR_ATOM(result);
-	data++->atom = len;
+	data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = (Obj) 0;
@@ -196,7 +208,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
       result = NewAtomicList(len);
       init = ELM_PLIST(args, 2);
       data = ADDR_ATOM(result);
-      data++->atom = len;
+      data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
       data++->obj = NULL;
       for (i=1; i<=len; i++)
         data++->obj = init;
@@ -223,7 +235,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
 	len = LEN_LIST(init);
 	result = NewFixedAtomicList(len);
 	data = ADDR_ATOM(result);
-	data++->atom = len;
+	data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = ELM0_LIST(init, i);
@@ -233,7 +245,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
         len = INT_INTOBJ(init);
 	result = NewFixedAtomicList(len);
 	data = ADDR_ATOM(result);
-	data++->atom = len;
+	data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
 	data++->obj = NULL;
 	for (i=1; i<= len; i++)
 	  data++->obj = (Obj) 0;
@@ -249,7 +261,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
       result = NewFixedAtomicList(len);
       init = ELM_PLIST(args, 2);
       data = ADDR_ATOM(result);
-      data++->atom = len;
+      data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
       data++->obj = NULL;
       for (i=1; i<=len; i++)
         data++->obj = init;
@@ -310,7 +322,7 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
   if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_FIXALIST)
     ArgumentError("GET_ATOMIC_LIST: First argument must be an atomic list");
   addr = ADDR_ATOM(list);
-  len = addr[0].atom;
+  len = ALIST_LEN((UInt) addr[0].atom);
   if (!IS_INTOBJ(index))
     ArgumentError("GET_ATOMIC_LIST: Second argument must be an integer");
   n = INT_INTOBJ(index);
@@ -328,7 +340,7 @@ static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
   if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_FIXALIST)
     ArgumentError("SET_ATOMIC_LIST: First argument must be an atomic list");
   addr = ADDR_ATOM(list);
-  len = (UInt) addr[0].atom;
+  len = ALIST_LEN((UInt) addr[0].atom);
   if (!IS_INTOBJ(index))
     ArgumentError("SET_ATOMIC_LIST: Second argument must be an integer");
   n = INT_INTOBJ(index);
@@ -353,7 +365,7 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
       ArgumentError("COMPARE_AND_SWAP: First argument must be a fixed atomic list");
   }
   addr = ADDR_ATOM(list);
-  len = addr[0].atom;
+  len = ALIST_LEN((UInt)addr[0].atom);
   if (!IS_INTOBJ(index))
     ArgumentError("COMPARE_AND_SWAP: Second argument must be an integer");
   n = INT_INTOBJ(index);
@@ -378,7 +390,7 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
       ArgumentError("ATOMIC_ADDITION: First argument must be a fixed atomic list");
   }
   addr = ADDR_ATOM(list);
-  len = (UInt) addr[0].atom;
+  len = ALIST_LEN((UInt) addr[0].atom);
   if (!IS_INTOBJ(index))
     ArgumentError("ATOMIC_ADDITION: Second argument must be an integer");
   n = INT_INTOBJ(index);
@@ -405,7 +417,7 @@ static Obj FuncFromAtomicList(Obj self, Obj list)
   if (TNUM_OBJ(list) != T_FIXALIST && TNUM_OBJ(list) != T_ALIST)
     ArgumentError("FromAtomicList: First argument must be an atomic list");
   data = ADDR_ATOM(list);
-  len = (UInt) (data++->atom);
+  len = ALIST_LEN((UInt) (data++->atom));
   result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
   MEMBAR_READ();
@@ -419,7 +431,7 @@ static void MarkAtomicList(Bag bag)
   UInt len;
   AtomicObj *ptr, *ptrend;
   ptr = ADDR_ATOM(bag);
-  len = ptr++->atom;
+  len = ALIST_LEN((UInt)(ptr++->atom));
   ptrend = ptr + len + 1;
   while (ptr < ptrend)
     MARK_BAG(ptr++->obj);
@@ -521,9 +533,10 @@ static void PrintAtomicList(Obj obj)
 {
 
   if (TNUM_OBJ(obj) == T_FIXALIST)
-    Pr("<fixed atomic list of size %d>", (UInt)(ADDR_OBJ(obj)[0]), 0L);
+    Pr("<fixed atomic list of size %d>",
+      ALIST_LEN((UInt)(ADDR_OBJ(obj)[0])), 0L);
   else
-    Pr("<atomic list of size %d>", (UInt)(ADDR_OBJ(obj)[0]), 0L);
+    Pr("<atomic list of size %d>", ALIST_LEN((UInt)(ADDR_OBJ(obj)[0])), 0L);
 }
 
 static inline Obj ARecordObj(Obj record)
@@ -1255,13 +1268,13 @@ static Int IsSmallListAList(Obj list)
 static Int LenListAList(Obj list)
 {
   MEMBAR_READ();
-  return (Int)(ADDR_ATOM(list)[0].atom);
+  return (Int)(ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom));
 }
 
 static Obj LengthAList(Obj list)
 {
   MEMBAR_READ();
-  return INTOBJ_INT(ADDR_ATOM(list)[0].atom);
+  return INTOBJ_INT(ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom));
 }
 
 static Obj Elm0AList(Obj list, Int pos)
@@ -1269,7 +1282,7 @@ static Obj Elm0AList(Obj list, Int pos)
   AtomicObj *addr = ADDR_ATOM(list);
   UInt len;
   MEMBAR_READ();
-  len = (UInt) addr[0].atom;
+  len = ALIST_LEN((UInt) addr[0].atom);
   if (pos < 1 || pos > len)
     return 0;
   MEMBAR_READ();
@@ -1281,7 +1294,7 @@ Obj ElmAList(Obj list, Int pos)
   AtomicObj *addr = ADDR_ATOM(list);
   UInt len;
   MEMBAR_READ();
-  len = (UInt)addr[0].atom;
+  len = ALIST_LEN((UInt)addr[0].atom);
   Obj result;
   while (pos < 1 || pos > len) {
     Obj posobj;
@@ -1310,13 +1323,13 @@ Int IsbAList(Obj list, Int pos) {
   AtomicObj *addr = ADDR_ATOM(list);
   UInt len;
   MEMBAR_READ();
-  len = (UInt) addr[0].atom;
+  len = ALIST_LEN((UInt) addr[0].atom);
   return pos >= 1 && pos <= len && addr[1+pos].obj;
 }
 
 void AssFixAList(Obj list, Int pos, Obj obj)
 {
-  UInt len = (UInt)ADDR_ATOM(list)[0].atom;
+  UInt len = ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom);
   while (pos < 1 || pos > len) {
     Obj posobj;
     do {
@@ -1334,7 +1347,7 @@ void AssFixAList(Obj list, Int pos, Obj obj)
 void AssAList(Obj list, Int pos, Obj obj)
 {
   AtomicObj *addr;
-  UInt len, newlen;
+  UInt len, newlen, pol;
   if (pos < 1) {
     ErrorQuit(
 	"Atomic List Element: <pos>=%d is an invalid index for <list>",
@@ -1343,12 +1356,14 @@ void AssAList(Obj list, Int pos, Obj obj)
   }
   HashLockShared(list);
   addr = ADDR_ATOM(list);
-  len = (UInt)addr[0].atom;
+  pol = (UInt)addr[0].atom;
+  len = ALIST_LEN(pol);
   if (pos > len) {
     HashUnlockShared(list);
     HashLock(list);
     addr = ADDR_ATOM(list);
-    len = (UInt)addr[0].atom;
+    pol = (UInt)addr[0].atom;
+    len = ALIST_LEN(pol);
   }
   if (pos > len) {
     if (pos > SIZE_BAG(list)/sizeof(AtomicObj) - 2) {
@@ -1360,12 +1375,12 @@ void AssAList(Obj list, Int pos, Obj obj)
       newlist = NewBag(T_ALIST, sizeof(AtomicObj) * ( 2 + newlen));
       memcpy(PTR_BAG(newlist), PTR_BAG(list), sizeof(AtomicObj)*(2+len));
       addr = ADDR_ATOM(newlist);
-      addr[0].atom = pos;
+      addr[0].atom = CHANGE_ALIST_LEN(pol, pos);
       MEMBAR_WRITE();
       PTR_BAG(list) = PTR_BAG(newlist);
       MEMBAR_WRITE();
     } else {
-      addr[0].atom = pos;
+      addr[0].atom = CHANGE_ALIST_LEN(pol, pos);
       MEMBAR_WRITE();
     }
   }
@@ -1380,7 +1395,7 @@ void UnbAList(Obj list, Int pos)
   UInt len;
   HashLockShared(list);
   addr = ADDR_ATOM(list);
-  len = (UInt)addr[0].atom;
+  len = ALIST_LEN((UInt)addr[0].atom);
   if (pos >= 1 && pos <= len) {
     addr[1+pos].obj = 0;
     MEMBAR_WRITE();
@@ -1467,7 +1482,7 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
   /* atomic positional objects aren't resizable. */
   addr = ADDR_ATOM(obj);
   MEMBAR_READ();
-  len = addr[0].atom;
+  len = ALIST_LEN(addr[0].atom);
   if (!IS_INTOBJ(index))
     FuncError("Second argument must be an integer");
   n = INT_INTOBJ(index);
