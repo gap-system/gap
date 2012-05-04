@@ -168,6 +168,22 @@ static Obj NewAtomicList(UInt length)
   return result;
 }
 
+static Obj NewAtomicListFrom(Obj list)
+{
+  Obj result;
+  UInt len, i;
+  AtomicObj *data;
+  len = LEN_LIST(list);
+  result = NewAtomicList(len);
+  data = ADDR_ATOM(result);
+  data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
+  data++->obj = NULL;
+  for (i=1; i<= len; i++)
+    data++->obj = ELM0_LIST(list, i);
+  MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
+  return result;
+}
+
 static Obj FuncAtomicList(Obj self, Obj args)
 {
   Obj init;
@@ -180,15 +196,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
       if (!IS_LIST(init) && (!IS_INTOBJ(init) || INT_INTOBJ(init) <=0) )
         ArgumentError("AtomicList: Argument must be list or positive integer");
       if (IS_LIST(init)) {
-	len = LEN_LIST(init);
-	result = NewAtomicList(len);
-	data = ADDR_ATOM(result);
-	data++->atom = CHANGE_ALIST_LEN(ALIST_RW, len);
-	data++->obj = NULL;
-	for (i=1; i<= len; i++)
-	  data++->obj = ELM0_LIST(init, i);
-	MEMBAR_WRITE(); /* Should not be necessary, but better be safe. */
-	return result;
+	return NewAtomicListFrom(init);
       } else {
         len = INT_INTOBJ(init);
 	result = NewAtomicList(len);
@@ -1454,20 +1462,36 @@ void DestroyAObjectsTLS() {
   }
 }
 
+#endif /* WARD_ENABLED */
+
+Obj MakeAtomic(Obj obj) {
+  if (IS_LIST(obj))
+    return NewAtomicListFrom(obj);
+  else if (TNUM_OBJ(obj) == T_PREC)
+    return NewAtomicRecordFrom(obj);
+  else
+    return (Obj) 0;
+}
+
 Obj FuncMakeWriteOnceAtomic(Obj self, Obj obj) {
   switch (TNUM_OBJ(obj)) {
     case T_ALIST:
     case T_FIXALIST:
+    case T_APOSOBJ:
       HashLock(obj);
       ADDR_ATOM(obj)[0].atom =
         CHANGE_ALIST_POL(ADDR_ATOM(obj)[0].atom, ALIST_W1);
       HashUnlock(obj);
       break;
     case T_AREC:
+    case T_ACOMOBJ:
       SetARecordUpdateStrategy(obj, AREC_W1);
       break;
     default:
-      ArgumentError("MakeWriteOnceAtomic: argument not an atomic object");
+      obj = MakeAtomic(obj);
+      if (obj)
+        return FuncMakeWriteOnceAtomic(self, obj);
+      ArgumentError("MakeWriteOnceAtomic: argument not an atomic object, list, or record");
   }
   return obj;
 }
@@ -1476,16 +1500,21 @@ Obj FuncMakeReadWriteAtomic(Obj self, Obj obj) {
   switch (TNUM_OBJ(obj)) {
     case T_ALIST:
     case T_FIXALIST:
+    case T_APOSOBJ:
       HashLock(obj);
       ADDR_ATOM(obj)[0].atom =
         CHANGE_ALIST_POL(ADDR_ATOM(obj)[0].atom, ALIST_RW);
       HashUnlock(obj);
       break;
     case T_AREC:
+    case T_ACOMOBJ:
       SetARecordUpdateStrategy(obj, AREC_RW);
       break;
     default:
-      ArgumentError("MakeReadWriteAtomic: argument not an atomic object");
+      obj = MakeAtomic(obj);
+      if (obj)
+        return FuncMakeReadWriteAtomic(self, obj);
+      ArgumentError("MakeReadWriteAtomic: argument not an atomic object, list, or record");
   }
   return obj;
 }
@@ -1494,22 +1523,25 @@ Obj FuncMakeStrictWriteOnceAtomic(Obj self, Obj obj) {
   switch (TNUM_OBJ(obj)) {
     case T_ALIST:
     case T_FIXALIST:
+    case T_APOSOBJ:
       HashLock(obj);
       ADDR_ATOM(obj)[0].atom =
         CHANGE_ALIST_POL(ADDR_ATOM(obj)[0].atom, ALIST_WX);
       HashUnlock(obj);
       break;
     case T_AREC:
+    case T_ACOMOBJ:
       SetARecordUpdateStrategy(obj, AREC_RW);
       break;
     default:
-      ArgumentError("MakeStrictWriteOnceAtomic: argument not an atomic object");
+      obj = MakeAtomic(obj);
+      if (obj)
+        return FuncMakeStrictWriteOnceAtomic(self, obj);
+      ArgumentError("MakeStrictWriteOnceAtomic: argument not an atomic object, list, or record");
   }
   return obj;
 }
 
-
-#endif /* WARD_ENABLED */
 
 void FuncError(char *message) {
   ErrorQuit("%s: %s", (Int)(TLS->CurrFuncName), (Int)message);
