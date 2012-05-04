@@ -2482,7 +2482,7 @@ Obj             EvalElmComObjName (
         elm = ElmPRec(record, rnam);
 	break;
       case T_ACOMOBJ:
-        elm = GetARecordField(record, rnam);
+        elm = ElmARecord(record, rnam);
 	break;
       default:
         elm = ELM_REC( record, rnam );
@@ -2519,7 +2519,7 @@ Obj             EvalElmComObjExpr (
       case T_COMOBJ:
         return ElmPRec( record, rnam );
       case T_ACOMOBJ:
-        return GetARecordField( record, rnam );
+        return ElmARecord( record, rnam );
     }
     return 0;
 }

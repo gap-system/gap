@@ -4387,7 +4387,7 @@ void            IntrElmComObjName (
         elm = ElmPRec( record, rnam );
 	break;
       case T_ACOMOBJ:
-        elm = GetARecordField( record, rnam );
+        elm = ElmARecord ( record, rnam );
 	break;
       default:
         elm = ELM_REC( record, rnam );
@@ -4422,7 +4422,7 @@ void            IntrElmComObjExpr ( void )
         elm = ElmPRec( record, rnam );
 	break;
       case T_ACOMOBJ:
-        elm = GetARecordField( record, rnam );
+        elm = ElmARecord ( record, rnam );
 	break;
       default:
         elm = ELM_REC( record, rnam );
