@@ -64,6 +64,7 @@ Obj TYPE_AREC;
 Obj TYPE_TLREC;
 
 #define ALIST_LEN(x) ((x) >> 2)
+#define ALIST_POL(x) ((x) & 3)
 #define CHANGE_ALIST_LEN(x, y) (((x) & 3) | (y << 2))
 #define CHANGE_ALIST_POL(x, y) (((x) & ~3) | y)
 
@@ -1329,7 +1330,8 @@ Int IsbAList(Obj list, Int pos) {
 
 void AssFixAList(Obj list, Int pos, Obj obj)
 {
-  UInt len = ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom);
+  UInt pol = (UInt)ADDR_ATOM(list)[0].atom;
+  UInt len = ALIST_LEN(pol);
   while (pos < 1 || pos > len) {
     Obj posobj;
     do {
@@ -1340,7 +1342,21 @@ void AssFixAList(Obj list, Int pos, Obj obj)
     } while (!IS_INTOBJ(posobj));
     pos = INT_INTOBJ(posobj);
   }
-  ADDR_ATOM(list)[1+pos].obj = obj;
+  switch (ALIST_POL(pol)) {
+    case ALIST_RW:
+      ADDR_ATOM(list)[1+pos].obj = obj;
+      break;
+    case ALIST_W1:
+      COMPARE_AND_SWAP(&ADDR_ATOM(list)[1+pos].atom,
+        (AtomicUInt) 0, (AtomicUInt) obj);
+      break;
+    case ALIST_WX:
+      if (!COMPARE_AND_SWAP(&ADDR_ATOM(list)[1+pos].atom,
+        (AtomicUInt) 0, (AtomicUInt) obj)) {
+	ErrorQuit("Atomic List Assignment: <list>[%d] already has an assigned value", pos, (Int) 0);
+      }
+      break;
+  }
   MEMBAR_WRITE();
 }
 
@@ -1384,7 +1400,22 @@ void AssAList(Obj list, Int pos, Obj obj)
       MEMBAR_WRITE();
     }
   }
-  ADDR_ATOM(list)[1+pos].obj = obj;
+  switch (ALIST_POL(pol)) {
+    case ALIST_RW:
+      ADDR_ATOM(list)[1+pos].obj = obj;
+      break;
+    case ALIST_W1:
+      COMPARE_AND_SWAP(&ADDR_ATOM(list)[1+pos].atom,
+        (AtomicUInt) 0, (AtomicUInt) obj);
+      break;
+    case ALIST_WX:
+      if (!COMPARE_AND_SWAP(&ADDR_ATOM(list)[1+pos].atom,
+        (AtomicUInt) 0, (AtomicUInt) obj)) {
+	HashUnlock(list);
+	ErrorQuit("Atomic List Assignment: <list>[%d] already has an assigned value", pos, (Int) 0);
+      }
+      break;
+  }
   MEMBAR_WRITE();
   HashUnlock(list);
 }
@@ -1392,10 +1423,15 @@ void AssAList(Obj list, Int pos, Obj obj)
 void UnbAList(Obj list, Int pos)
 {
   AtomicObj *addr;
-  UInt len;
+  UInt len, pol;
   HashLockShared(list);
   addr = ADDR_ATOM(list);
-  len = ALIST_LEN((UInt)addr[0].atom);
+  pol = (UInt)addr[0].atom;
+  len = ALIST_LEN(pol);
+  if (ALIST_POL(pol) != ALIST_RW) {
+    HashUnlockShared(list);
+    ErrorQuit("Atomic List Unbind: list is in write-once mode", (Int) 0, (Int) 0);
+  }
   if (pos >= 1 && pos <= len) {
     addr[1+pos].obj = 0;
     MEMBAR_WRITE();
@@ -1417,6 +1453,61 @@ void DestroyAObjectsTLS() {
       UpdateThreadRecord(ELM_PLIST(records, i), (Obj) 0);
   }
 }
+
+Obj FuncMakeWriteOnceAtomic(Obj self, Obj obj) {
+  switch (TNUM_OBJ(obj)) {
+    case T_ALIST:
+    case T_FIXALIST:
+      HashLock(obj);
+      ADDR_ATOM(obj)[0].atom =
+        CHANGE_ALIST_POL(ADDR_ATOM(obj)[0].atom, ALIST_W1);
+      HashUnlock(obj);
+      break;
+    case T_AREC:
+      SetARecordUpdateStrategy(obj, AREC_W1);
+      break;
+    default:
+      ArgumentError("MakeWriteOnceAtomic: argument not an atomic object");
+  }
+  return obj;
+}
+
+Obj FuncMakeReadWriteAtomic(Obj self, Obj obj) {
+  switch (TNUM_OBJ(obj)) {
+    case T_ALIST:
+    case T_FIXALIST:
+      HashLock(obj);
+      ADDR_ATOM(obj)[0].atom =
+        CHANGE_ALIST_POL(ADDR_ATOM(obj)[0].atom, ALIST_RW);
+      HashUnlock(obj);
+      break;
+    case T_AREC:
+      SetARecordUpdateStrategy(obj, AREC_RW);
+      break;
+    default:
+      ArgumentError("MakeReadWriteAtomic: argument not an atomic object");
+  }
+  return obj;
+}
+
+Obj FuncMakeStrictWriteOnceAtomic(Obj self, Obj obj) {
+  switch (TNUM_OBJ(obj)) {
+    case T_ALIST:
+    case T_FIXALIST:
+      HashLock(obj);
+      ADDR_ATOM(obj)[0].atom =
+        CHANGE_ALIST_POL(ADDR_ATOM(obj)[0].atom, ALIST_WX);
+      HashUnlock(obj);
+      break;
+    case T_AREC:
+      SetARecordUpdateStrategy(obj, AREC_RW);
+      break;
+    default:
+      ArgumentError("MakeStrictWriteOnceAtomic: argument not an atomic object");
+  }
+  return obj;
+}
+
 
 #endif /* WARD_ENABLED */
 
@@ -1624,6 +1715,15 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "SetTLConstructor", 3, "thread-local record, name, function",
       FuncSetTLConstructor, "src/aobjects.c:SetTLConstructor" },
+
+    { "MakeWriteOnceAtomic", 1, "obj",
+      FuncMakeWriteOnceAtomic, "src/aobjects.c:MakeWriteOnceAtomic" },
+
+    { "MakeReadWriteAtomic", 1, "obj",
+      FuncMakeReadWriteAtomic, "src/aobjects.c:MakeReadWriteAtomic" },
+
+    { "MakeStrictWriteOnceAtomic", 1, "obj",
+      FuncMakeStrictWriteOnceAtomic, "src/aobjects.c:MakeStrictWriteOnceAtomic" },
 
     { "BindOnce", 3, "obj, index, value",
       FuncBindOnce, "src/aobjects.c:BindOnce" },
