@@ -799,7 +799,7 @@ function( efam )
   fam!.univariateZeroPolynomials:=[];
 
   # assign a names list
-  fam!.namesIndets := [];
+  fam!.namesIndets := MakeWriteOnceAtomic([]);
 
   # and return
   return fam;

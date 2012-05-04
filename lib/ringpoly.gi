@@ -51,7 +51,7 @@ local opt, idn, nbound, p, i,str;
       fi;
     elif nbound and opt<>2 and IsBound(rfam!.namesIndets) then
       # is the indeterminate already used?
-      p:=Position(rfam!.namesIndets,str);
+      p:=Position(FromAtomicList(rfam!.namesIndets),str);
       if p<>fail then
 	if opt<>1 then
 	  Error(
