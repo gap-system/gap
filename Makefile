@@ -2,24 +2,34 @@ JOBS=4
 GMP=yes
 WARD=../ward
 SCONS=bin/scons
+DEBUG=debugguards=1 cflags=-DTRACK_CREATOR
 
 all opt: $(WARD)/bin/ward
 	$(SCONS) -j $(JOBS) debug=0 ward=$(WARD) gmp=$(GMP)
 
-debug: $(WARD)
-	$(SCONS) -j $(JOBS) debug=1 ward=$(WARD) gmp=$(GMP) debugguards=1
+gapdebug: $(WARD)/bin/ward
+	$(SCONS) -j $(JOBS) debug=0 ward=$(WARD) gmp=$(GMP) $(DEBUG)
 
-opt32 32: $(WARD)
+debug: $(WARD)/bin/ward
+	$(SCONS) -j $(JOBS) debug=1 ward=$(WARD) gmp=$(GMP) $(DEBUG)
+
+opt32 32: $(WARD)/bin/ward
 	$(SCONS) -j $(JOBS) debug=0 abi=32 ward=$(WARD) gmp=$(GMP)
 
-debug32: $(WARD)
-	$(SCONS) -j $(JOBS) debug=1 abi=32 ward=$(WARD) gmp=$(GMP) debugguards=1
+gapdebug32: $(WARD)/bin/ward
+	$(SCONS) -j $(JOBS) debug=0 abi=32 ward=$(WARD) gmp=$(GMP) $(DEBUG)
 
-opt64 64: $(WARD)
+debug32: $(WARD)/bin/ward
+	$(SCONS) -j $(JOBS) debug=1 abi=32 ward=$(WARD) gmp=$(GMP) $(DEBUG)
+
+opt64 64: $(WARD)/bin/ward
 	$(SCONS) -j $(JOBS) debug=0 abi=64 ward=$(WARD) gmp=$(GMP)
 
-debug64: $(WARD)
-	$(SCONS) -j $(JOBS) debug=1 abi=64 ward=$(WARD) gmp=$(GMP) debugguards=1
+gapdebug64: $(WARD)/bin/ward
+	$(SCONS) -j $(JOBS) debug=0 abi=64 ward=$(WARD) gmp=$(GMP) $(DEBUG)
+
+debug64: $(WARD)/bin/ward
+	$(SCONS) -j $(JOBS) debug=1 abi=64 ward=$(WARD) gmp=$(GMP) $(DEBUG)
 
 clean:
 	$(SCONS) -c preprocess=dummy

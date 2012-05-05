@@ -134,6 +134,11 @@
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */
 #include	"tls.h"			/* thread-local storage		   */
+#ifdef TRACK_CREATOR
+/* Need CURR_FUNC and NAME_FUNC() */
+#include        "calls.h"               /* calls                           */
+#include        "vars.h"                /* variables                       */
+#endif
 
 
 
@@ -1270,7 +1275,15 @@ Bag NewBag (
 #else /* BOEHM_GC */
     alloc_size = HEADER_SIZE*sizeof(Bag) + size;
 #ifndef DISABLE_GC
+#ifndef TRACK_CREATOR
     bag = GC_malloc(2*sizeof(Bag *));
+#else
+    bag = GC_malloc(4*sizeof(Bag *));
+    if (TLS->ptrLVars) {
+      bag[2] = (void *)(CURR_FUNC);
+      bag[3] = (void *)(NAME_FUNC(CURR_FUNC));
+    }
+#endif
     /* If the size of an object is zero (such as an empty permutation),
      * and the header size is a multiple of twice the word size of the
      * architecture, then the master pointer will actually point past

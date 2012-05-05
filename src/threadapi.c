@@ -785,6 +785,36 @@ Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function) {
   return (Obj) 0;
 }
 
+/****************************************************************************
+**
+*F FuncCREATOR_OF ... return function that created an object
+**
+*/
+
+Obj FuncCREATOR_OF(Obj self, Obj obj) {
+#ifdef TRACK_CREATOR
+  Obj result = NEW_PLIST(T_PLIST+IMMUTABLE, 2);
+  SET_LEN_PLIST(result, 2);
+  if (!IS_BAG_REF(obj)) {
+    SET_ELM_PLIST(result, 1, Fail);
+    SET_ELM_PLIST(result, 2, Fail);
+    return result;
+  }
+  if (obj[2])
+    SET_ELM_PLIST(result, 2, (Obj)(obj[2]));
+  else
+    SET_ELM_PLIST(result, 2, MakeImmString(""));
+  if (obj[3])
+    SET_ELM_PLIST(result, 1, (Obj)(obj[3]));
+  else
+    SET_ELM_PLIST(result, 1, Fail);
+  return result;
+#else
+  return Fail;
+#endif
+}
+
+
 Obj FuncCreateChannel(Obj self, Obj args);
 Obj FuncDestroyChannel(Obj self, Obj channel);
 Obj FuncSendChannel(Obj self, Obj channel, Obj obj);
@@ -850,6 +880,7 @@ Obj FuncBEGIN_SINGLE_THREADED(Obj self);
 Obj FuncEND_SINGLE_THREADED(Obj self);
 Obj FuncORDERED_WRITE(Obj self, Obj obj);
 Obj FuncORDERED_READ(Obj self, Obj obj);
+Obj FuncCREATOR_OF(Obj self, Obj obj);
 
 /****************************************************************************
 **
@@ -1099,6 +1130,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "ORDERED_WRITE", 1, "obj",
       FuncORDERED_WRITE, "src/threadapi.c:ORDERED_WRITE" },
+
+    { "CREATOR_OF", 1, "obj",
+      FuncCREATOR_OF, "src/threadapi.c:CREATOR_OF" },
 
     { 0 }
 
