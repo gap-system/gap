@@ -23,28 +23,34 @@
 InstallMethod(IndeterminateName,"for rational function families",true,
   [IsPolynomialFunctionsFamily,IsPosInt],0,
 function(fam,nr)
-  if IsBound(fam!.namesIndets[nr]) then
-    return fam!.namesIndets[nr];
-  else
-    return fail;
-  fi;
+  atomic readonly fam!.namesIndets do
+    if IsBound(fam!.namesIndets[nr]) then
+      return fam!.namesIndets[nr];
+    else
+      return fail;
+    fi;
+  od;
 end);
 
 InstallMethod(HasIndeterminateName,"for rational function families",true,
   [IsPolynomialFunctionsFamily,IsPosInt],0,
 function(fam,nr)
-  return IsBound(fam!.namesIndets[nr]);
+  atomic readonly fam!.namesIndets do
+    return IsBound(fam!.namesIndets[nr]);
+  od;
 end);
 
 InstallMethod(SetIndeterminateName,"for rational function families",true,
   [IsPolynomialFunctionsFamily,IsPosInt,IsString],0,
 function(fam,nr,str)
-  if IsBound(fam!.namesIndets[nr]) and fam!.namesIndets[nr]<>str then
-    Error("indeterminate number ",nr,
-          " has been baptized already differently");
-  else
-    fam!.namesIndets[nr]:=Immutable(str);
-  fi;
+  atomic fam!.namesIndets do
+    if IsBound(fam!.namesIndets[nr]) and fam!.namesIndets[nr]<>str then
+      Error("indeterminate number ",nr,
+	    " has been baptized already differently");
+    else
+      fam!.namesIndets[nr]:=Immutable(str);
+    fi;
+  od;
 end);
 
 InstallMethod(SetName,"set name of indeterminate",
@@ -799,7 +805,7 @@ function( efam )
   fam!.univariateZeroPolynomials:=[];
 
   # assign a names list
-  fam!.namesIndets := MakeWriteOnceAtomic([]);
+  fam!.namesIndets := ShareObj([]);
 
   # and return
   return fam;

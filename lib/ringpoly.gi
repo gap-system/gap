@@ -51,28 +51,30 @@ local opt, idn, nbound, p, i,str;
       fi;
     elif nbound and opt<>2 and IsBound(rfam!.namesIndets) then
       # is the indeterminate already used?
-      p:=Position(FromAtomicList(rfam!.namesIndets),str);
-      if p<>fail then
-	if opt<>1 then
-	  Error(
+      atomic rfam!.namesIndets do
+	p:=Position(rfam!.namesIndets,str);
+	if p<>fail then
+	  if opt<>1 then
+	    Error(
   "Indeterminate ``",str,"'' is already used.\n",
   "Use the `old' option; e.g. Indeterminate(Rationals,\"",str,"\":old);\n",
   "  to re-use the variable already defined with this name and the\n",
   "`new' option; e.g. Indeterminate(Rationals,\"",str,"\":new);\n",
   "  to create a new variable with the duplicate name.\n");
-	else
-	  if p in avoid then
-	    Info(InfoWarning,1,
+	  else
+	    if p in avoid then
+	      Info(InfoWarning,1,
   "The `old' option to re-use variables was given, but the variable with this\n",
   "#I  name was explicitly to be avoided. I assume the `new' option was given.");
 
-	    p:=fail;
-	  else
-	    # reuse the old variable
-	    Add(idn,p);
+	      p:=fail;
+	    else
+	      # reuse the old variable
+	      Add(idn,p);
+	    fi;
 	  fi;
 	fi;
-      fi;
+      od;
     else
       p:=fail;
     fi;
