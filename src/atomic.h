@@ -1,7 +1,11 @@
 #ifndef GAP_ATOMIC_H
 #define GAP_ATOMIC_H
 
+#ifndef WARD_ENABLED
 #include <atomic_ops.h>
+#else
+typedef size_t AO_t;
+#endif
 
 #define MEMBAR_READ() (AO_nop_read())
 #define MEMBAR_WRITE() (AO_nop_write())

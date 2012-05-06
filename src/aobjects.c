@@ -76,10 +76,6 @@ Obj TYPE_TLREC;
 #define AREC_W1 0
 #define AREC_WX (-1)
 
-#ifndef WARD_ENABLED
-
-static UInt UsageCap[sizeof(UInt)*8];
-
 typedef union AtomicObj
 {
   AtomicUInt atom;
@@ -87,6 +83,10 @@ typedef union AtomicObj
 } AtomicObj;
 
 #define ADDR_ATOM(bag) ((AtomicObj *)(ADDR_OBJ(bag)))
+
+#ifndef WARD_ENABLED
+
+static UInt UsageCap[sizeof(UInt)*8];
 
 Obj TypeAList(Obj obj)
 {
