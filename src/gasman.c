@@ -132,6 +132,7 @@
 #include        "scanner.h"             /* scanner                         */
 
 #include	"code.h"		/* coder                           */
+#include	"systhread.h"		/* system thread primitives	   */
 #include	"thread.h"		/* threads			   */
 #include	"tls.h"			/* thread-local storage		   */
 #ifdef TRACK_CREATOR
@@ -480,6 +481,20 @@ void MakeBagTypePublic(int type)
 void MakeBagTypeProtected(int type)
 {
     DSInfoBags[type] = DSI_PROTECTED;
+}
+
+Bag MakeBagPublic(Bag bag)
+{
+    MEMBAR_WRITE();
+    DS_BAG(bag) = 0;
+    return bag;
+}
+
+Bag MakeBagReadOnly(Bag bag)
+{
+    MEMBAR_WRITE();
+    DS_BAG(bag) = ReadOnlyRegion;
+    return bag;
 }
 
 
