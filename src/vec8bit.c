@@ -600,6 +600,7 @@ void MakeFieldInfo8Bit( UInt q)
     }
   
   
+  MakeBagReadOnly(info);
   /* remember the result */
   SET_ELM_PLIST(FieldInfo8Bit,q,info);
   CHANGED_BAG(FieldInfo8Bit);
