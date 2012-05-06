@@ -1194,12 +1194,12 @@ void            InitBags (
 #define LARGE_GC_SIZE (SIZEOF_VOID_P * 8192)
 #ifndef DISABLE_GC
 #if SIZEOF_VOID_P == 4
-    GC_all_interior_pointers = 0;
+    GC_set_all_interior_pointers(0);
     GC_init();
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
 #else
-    GC_all_interior_pointers = 0;
+    GC_set_all_interior_pointers(0);
     GC_init();
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
