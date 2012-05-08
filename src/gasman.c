@@ -497,6 +497,13 @@ Bag MakeBagReadOnly(Bag bag)
     return bag;
 }
 
+Region *RegionBag(Bag bag)
+{
+    Region *result = DS_BAG(bag);
+    MEMBAR_READ();
+    return result;
+}
+
 
 /****************************************************************************
 **

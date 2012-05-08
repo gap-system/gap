@@ -1128,9 +1128,13 @@ Region *NewRegion(void);
 /****************************************************************************
 **
 *F  DS_BAG(<bag>)  . . . . . . . .  return the region containing the bag
+*F  RegionBag(<bag>)   . . . . . .  return the region containing the bag
 **
+**  RegionBag() also contains a memory barrier.
 */
 #define DS_BAG(bag) (((Region **)(bag))[1])
+
+Region *RegionBag(Bag bag);
 
 /****************************************************************************
 **
