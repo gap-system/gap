@@ -45,6 +45,7 @@ local f,typ,lc;
   # slightly better to do this after the Length has been determined 
   if IsFFECollection(coeff) and IS_PLIST_REP(coeff) then
     ConvertToVectorRep(coeff);
+    coeff := ShallowCopy(coeff);
     MakeReadOnly(coeff);
   fi;
 
