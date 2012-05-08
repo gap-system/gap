@@ -41,6 +41,7 @@
 
 #include        "code.h"               /* for TakeInterrupt */
 #include        "stats.h" 
+#include	"aobjects.h"		/* atomic objects */
 #include	"thread.h"
 #include	"tls.h"
 
@@ -602,7 +603,7 @@ void MakeFieldInfo8Bit( UInt q)
   
   MakeBagReadOnly(info);
   /* remember the result */
-  SET_ELM_PLIST(FieldInfo8Bit,q,info);
+  ATOMIC_SET_ELM_PLIST_ONCE(FieldInfo8Bit,q,info);
   CHANGED_BAG(FieldInfo8Bit);
 }
      
@@ -610,11 +611,11 @@ Obj GetFieldInfo8Bit( UInt q)
 {
   Obj info;
   assert(2< q && q <= 256);
-  info = ELM_PLIST(FieldInfo8Bit, q );
+  info = ATOMIC_ELM_PLIST(FieldInfo8Bit, q );
   if ( info == 0)
     {
       MakeFieldInfo8Bit( q );
-      info = ELM_PLIST(FieldInfo8Bit, q );
+      info = ATOMIC_ELM_PLIST(FieldInfo8Bit, q );
     }
   return info;
 }
@@ -6212,6 +6213,7 @@ static Int InitLibrary (
   FieldInfo8Bit = NEW_PLIST(T_PLIST_NDENSE,257);
   SET_ELM_PLIST(FieldInfo8Bit,257,INTOBJ_INT(1));
   SET_LEN_PLIST(FieldInfo8Bit,257);
+  MakeBagPublic(FieldInfo8Bit);
     /* init filters and functions                                          */
   InitGVarFuncsFromTable( GVarFuncs );
   
