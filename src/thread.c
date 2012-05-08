@@ -473,18 +473,30 @@ static UInt LockID(void *object) {
 }
 
 void HashLock(void *object) {
+  if (TLS->CurrentHashLock)
+    ErrorQuit("Nested hash locks", 0L, 0L);
+  TLS->CurrentHashLock = object;
   pthread_rwlock_wrlock(&ObjLock[LockID(object)]);
 }
 
 void HashLockShared(void *object) {
+  if (TLS->CurrentHashLock)
+    ErrorQuit("Nested hash locks", 0L, 0L);
+  TLS->CurrentHashLock = object;
   pthread_rwlock_rdlock(&ObjLock[LockID(object)]);
 }
 
 void HashUnlock(void *object) {
+  if (TLS->CurrentHashLock != object)
+    ErrorQuit("Improperly matched hash lock/unlock calls", 0L, 0L);
+  TLS->CurrentHashLock = 0;
   pthread_rwlock_unlock(&ObjLock[LockID(object)]);
 }
 
 void HashUnlockShared(void *object) {
+  if (TLS->CurrentHashLock != object)
+    ErrorQuit("Improperly matched hash lock/unlock calls", 0L, 0L);
+  TLS->CurrentHashLock = 0;
   pthread_rwlock_unlock(&ObjLock[LockID(object)]);
 }
 
@@ -700,6 +712,8 @@ static void TerminateCurrentThread(int locked) {
   if (locked)
     pthread_mutex_unlock(thread->lock);
   PopRegionLocks(0);
+  if (TLS->CurrentHashLock)
+    HashUnlock(TLS->CurrentHashLock);
   syLongjmp(TLS->threadExit, 1);
 }
 

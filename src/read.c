@@ -2543,6 +2543,8 @@ ExecStatus ReadEvalCommand ( Obj context )
         IntrEnd( 1UL );
         type = STATUS_ERROR;
         PopRegionLocks(lockSP);
+	if (TLS->CurrentHashLock)
+	  HashUnlock(TLS->CurrentHashLock);
     }
 
     /* switch back to the old reader context                               */
@@ -2681,6 +2683,8 @@ UInt ReadEvalFile ( void )
     /* switch back to the old reader context                               */
     memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
     PopRegionLocks(lockSP);
+    if (TLS->CurrentHashLock)
+      HashUnlock(TLS->CurrentHashLock);
     TLS->stackNams   = stackNams;
     TLS->countNams   = countNams;
     TLS->readTop     = readTop;

@@ -1374,6 +1374,8 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       TLS->currStat = currStat;
       PopRegionLocks(lockSP);
+      if (TLS->CurrentHashLock)
+        HashUnlock(TLS->CurrentHashLock);
     } else {
       switch (LEN_PLIST(plain_args)) {
       case 0: result = CALL_0ARGS(func);
