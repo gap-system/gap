@@ -114,12 +114,25 @@ end );
 
 #############################################################################
 ##
+#V METHODS_OPERATION_REGION . . . . pseudo lock for updating method lists.
+##
+## We really just need one arbitrary lock here. Any globally shared
+## region will do. This is to prevent concurrent SET_METHODS_OPERATION()
+## calls to overwrite each other. Given that these normally only occur
+## when loading a package, actual concurrent calls should be vanishingly
+## rare.
+
+BIND_GLOBAL("METHODS_OPERATION_REGION", NewRegion("operation methods"));
+
+#############################################################################
+##
 #F  INSTALL_METHOD_FLAGS( <opr>, <info>, <rel>, <flags>, <rank>, <method> ) .
 ##
 BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     function( opr, info, rel, flags, rank, method )
     local   methods,  narg,  i,  k,  tmp, replace, match, j;
 
+    atomic METHODS_OPERATION_REGION do
     # add the number of filters required for each argument
     if IS_CONSTRUCTOR(opr) then
         if 0 < LEN_LIST(flags)  then
@@ -134,6 +147,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     # get the methods list
     narg := LEN_LIST( flags );
     methods := METHODS_OPERATION( opr, narg );
+    methods := methods{[1..LEN_LIST(methods)]};
 
     # set the name
     if info = false  then
@@ -227,7 +241,8 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
 
     # flush the cache
-    CHANGED_METHODS_OPERATION( opr, narg );
+    SET_METHODS_OPERATION( opr, narg, MakeReadOnlyObj(methods) );
+    od;
 end );
 
 

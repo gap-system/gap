@@ -5683,7 +5683,7 @@ Obj MethsOper (
     methods = METHS_OPER( oper, i );
     if ( methods == 0 ) {
         methods = NEW_PLIST( T_PLIST, 0 );
-	DS_BAG(methods) = ProtectedRegion;
+	MakeBagReadOnly(methods);
         METHS_OPER( oper, i ) = methods;
         CHANGED_BAG( oper );
     }
@@ -5708,6 +5708,7 @@ Obj FuncMETHODS_OPERATION (
     }
     n = INT_INTOBJ( narg );
     meth = MethsOper( oper, (UInt)n );
+    MEMBAR_READ();
     return meth == 0 ? Fail : meth;
 }
 
@@ -5769,6 +5770,7 @@ Obj FuncSET_METHODS_OPERATION (
         return 0;
     }
     n = INT_INTOBJ( narg );
+    MEMBAR_WRITE();
     METHS_OPER( oper, n ) = meths;
     return 0;
 }
