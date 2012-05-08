@@ -171,7 +171,11 @@ extern __thread ThreadLocalStorage TLSInstance;
 
 #else
 
+#if defined(VERBOSE_GUARDS)
+static inline ThreadLocalStorage *GetTLS()
+#else
 static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
+#endif
 {
   void *stack;
 #ifdef __GNUC__
