@@ -167,7 +167,8 @@ Int IsMutableObjNot (
 Int IsMutableObjObject (
     Obj                 obj )
 {
-    return (DoFilter( IsMutableObjFilt, obj ) == True);
+    return RegionBag(obj) != ReadOnlyRegion &&
+      (DoFilter( IsMutableObjFilt, obj ) == True);
 }
 
 
