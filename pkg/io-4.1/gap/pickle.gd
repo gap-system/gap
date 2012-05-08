@@ -9,7 +9,7 @@
 ##  This file contains functions for pickling and unpickling.
 ##
 
-DeclareGlobalVariable( "IO_PICKLECACHE" );
+MakeThreadLocal( "IO_PICKLECACHE" );
 DeclareGlobalFunction( "IO_ClearPickleCache" );
 DeclareGlobalFunction( "IO_AddToPickled" );
 DeclareGlobalFunction( "IO_IsAlreadyPickled" );

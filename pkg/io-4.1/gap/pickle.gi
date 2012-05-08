@@ -13,7 +13,7 @@
 # (Un-)Pickling: 
 #################
 
-InstallValue( IO_PICKLECACHE, rec( ids := [], nrs := [], obs := [],
+BindThreadLocal( "IO_PICKLECACHE", rec( ids := [], nrs := [], obs := [],
                                    depth := 0 ) );
 
 InstallGlobalFunction( IO_ClearPickleCache,

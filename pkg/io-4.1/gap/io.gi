@@ -21,6 +21,7 @@ BindGlobal( "FileFamily", NewFamily("FileFamily", IsFile) );
 # The type:
 InstallValue( FileType,
   NewType(FileFamily, IsFile and IsAttributeStoringRep));
+MakeReadOnlyObj(FileType);
 
 
 # one can now create objects by doing:
@@ -39,13 +40,13 @@ else
 fi;
 
 InstallValue( IO_Error,
-  Objectify( NewType( IO_ResultsFamily, IO_Result ), rec( val := "IO_Error" ))
+  Objectify( NewType( IO_ResultsFamily, IO_Result ), rec( val := `"IO_Error" ))
 );
 InstallValue( IO_Nothing,
-  Objectify( NewType( IO_ResultsFamily, IO_Result ), rec( val := "IO_Nothing"))
+  Objectify( NewType( IO_ResultsFamily, IO_Result ), rec( val := `"IO_Nothing"))
 );
 InstallValue( IO_OK,
-  Objectify( NewType( IO_ResultsFamily, IO_Result ), rec( val := "IO_OK"))
+  Objectify( NewType( IO_ResultsFamily, IO_Result ), rec( val := `"IO_OK"))
 );
 InstallMethod( \=, "for two IO_Results",
   [ IO_Result, IO_Result ],
