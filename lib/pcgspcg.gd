@@ -20,6 +20,7 @@
 ##  <Prop Name="IsFamilyPcgs" Arg='pcgs'/>
 ##
 ##  <Description>
+##  specifies whether the pcgs is a <Ref Attr="FamilyPcgs"/> of a pc group.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

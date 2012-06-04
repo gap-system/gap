@@ -2714,7 +2714,7 @@ Obj FuncQUIT_GAP( Obj self )
 
 Obj FuncKERNEL_INFO(Obj self) {
   Obj res = NEW_PREC(0);
-  UInt r,len,lenvec,lenstr;
+  UInt r,len,lenvec,lenstr,lenstr2;
   Char *p;
   Obj tmp,list,str;
   UInt i,j;
@@ -2777,13 +2777,20 @@ Obj FuncKERNEL_INFO(Obj self) {
   for (i = 0; sysenviron[i]; i++) {
     for (p = sysenviron[i]; *p != '='; p++)
       ;
-    *p++ = '\0';
+    lenstr2 = (UInt) (p-sysenviron[i]);
+    p++;   /* Move pointer behind = character */
     lenstr = strlen(p);
-    str = NEW_STRING(lenstr);
+    if (lenstr2 > lenstr)
+        str = NEW_STRING(lenstr2);
+    else
+        str = NEW_STRING(lenstr);
+    SyStrncat(CSTR_STRING(str),sysenviron[i],lenstr2);
+    r = RNamName(CSTR_STRING(str));
+    *(CSTR_STRING(str)) = 0;
     SyStrncat(CSTR_STRING(str),p, lenstr);
     SET_LEN_STRING(str, lenstr);
-    AssPRec(tmp,RNamName(sysenviron[i]), str);
-    *--p = '='; /* change back to allow a convenient rerun */
+    SHRINK_STRING(str);
+    AssPRec(tmp,r , str);
   }
   r = RNamName("ENVIRONMENT");
   AssPRec(res,r, tmp);
@@ -2797,6 +2804,13 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("CONFIGNAME");
   AssPRec(res, r, str);
   
+  /* export if we want to use readline  */
+  r = RNamName("HAVE_LIBREADLINE");
+  if (SyUseReadline)
+    AssPRec(res, r, True);
+  else
+    AssPRec(res, r, False);
+
   return res;
   
 }

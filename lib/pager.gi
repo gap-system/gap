@@ -241,7 +241,7 @@ BindGlobal("PAGER_EXTERNAL",  function( lines )
     cmdargs := [];
   fi;
   stream:=InputTextString(lines);
-  Process(path[1], pager, stream, OutputTextUser(),
+  Process(DirectoryCurrent(), pager, stream, OutputTextUser(),
   Concatenation( UserPreference("PagerOptions"), cmdargs ));
 end);
 

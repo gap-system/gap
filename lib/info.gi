@@ -68,7 +68,7 @@ InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
 end);
 
 InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
-  local cl, out, s;
+  local cl, out, fun, s;
   cl := InfoData.LastClass![1];
   if IsBound(InfoData.Output[cl]) then
     out := InfoData.Output[cl];
@@ -76,11 +76,22 @@ InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
     out := DefaultInfoOutput;
   fi;
   if out = "*Print*" then
-    Print("#I  ");
+    if IsBoundGlobal( "PrintFormattedString" ) then
+      fun := function(s)
+        if IsString(s) then
+          ValueGlobal( "PrintFormattedString" )(s); 
+        else
+          Print(s);
+        fi;
+      end;
+    else
+      fun := Print;
+    fi;
+    fun("#I  ");
     for s in list do
-      Print(s);
+      fun(s);
     od;
-    Print("\n");
+    fun("\n");
   else
     AppendTo(out, "#I  ");
     for s in list do

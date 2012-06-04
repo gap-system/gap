@@ -610,11 +610,9 @@ InitInfoFunc SyLoadModule ( const Char * name )
 
 /****************************************************************************
 **
-*F  ESC( <V> )  . . . . . . . . . . . . . . . . . convert <V> into escape-<V>
+*F  Esc( <V> )  . . . . . . . . . . . . . . . . . convert <V> into escape-<V>
 */
-#if !HAVE_LIBREADLINE
-#define ESC(C)          ((C) | 0x100)   /* <esc> character                 */
-#endif
+#define Esc(C)          ((C) | 0x100)   /* <esc> character                 */
 
 
 /****************************************************************************
@@ -2152,11 +2150,11 @@ Char * syFgetsNoEdit (
    functions which do the actual work. */
 Obj LineEditKeyHandler;
 Obj LineEditKeyHandlers;
+Obj GAPInfo;
 
 #if HAVE_LIBREADLINE
 
 /* we import GAP level functions from GAPInfo components */
-Obj GAPInfo;
 Obj CLEFuncs;
 Obj KeyHandler;
 
@@ -2393,16 +2391,12 @@ Char * readlineFgets (
 
 #endif
 
-
 Char * syFgets (
     Char *              line,
     UInt                length,
     Int                 fid,
     UInt                block)
 {
-#if HAVE_LIBREADLINE
-    Char *  p;
-#else
     Int                 ch,  ch2,  ch3, last;
     Char                * p,  * q,  * r,  * s,  * t;
     static Char         yank [32768];
@@ -2413,7 +2407,6 @@ Char * syFgets (
     Int                 rn;
     Int                 rubdel;
     Obj                 linestr, yankstr, args, res;
-#endif
 
     /* check file identifier                                               */
     if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
@@ -2439,24 +2432,25 @@ Char * syFgets (
         return p;
     }
 
-
 #if HAVE_LIBREADLINE
-    /* switch back to cooked mode                                          */
-    if ( SyLineEdit )
-        syStopraw(fid);
+    if (SyUseReadline) {
+      /* switch back to cooked mode                                          */
+      if ( SyLineEdit )
+          syStopraw(fid);
 
-    /* stop the clock, reading should take no time                         */
-    SyStopTime = SyTime();
+      /* stop the clock, reading should take no time                         */
+      SyStopTime = SyTime();
 
-    p = readlineFgets(line, length, fid, block);
-    /* start the clock again                                               */
-    SyStartTime += SyTime() - SyStopTime;
-    if ( EndLineHook ) Call0ArgsInNewReader( EndLineHook );
-    if (!p)
-      return p;
-    else
-      return line;
-#else
+      p = readlineFgets(line, length, fid, block);
+      /* start the clock again                                               */
+      SyStartTime += SyTime() - SyStopTime;
+      if ( EndLineHook ) Call0ArgsInNewReader( EndLineHook );
+      if (!p)
+        return p;
+      else
+        return line;
+    } else {
+#endif
 
 /*  EXPERIMENT    */
     if ( LEN_PLIST(LineEditKeyHandlers) > 999 &&
@@ -2476,7 +2470,6 @@ Char * syFgets (
     }
 
 /*  END EXPERIMENT    */
-
     /* In line editing mode 'length' is not allowed bigger than the
       yank buffer (= length of line buffer for input files).*/
     if (length > 32768)
@@ -2497,8 +2490,8 @@ Char * syFgets (
         /* get a character, handle <ctr>V<chr>, <esc><num> and <ctr>U<num> */
         rep = 1; ch2 = 0;
         do {
-            if ( syESCN > 0 ) { if (ch == ESC('N')) {ch = '\n'; syESCN--; }
-                                else {ch = ESC('N'); } }
+            if ( syESCN > 0 ) { if (ch == Esc('N')) {ch = '\n'; syESCN--; }
+                                else {ch = Esc('N'); } }
             else if ( syCTRO % 2 == 1 ) { ch = CTR('N'); syCTRO = syCTRO - 1; }
             else if ( syCTRO != 0 ) { ch = CTR('O'); rep = syCTRO / 2; }
             else {
@@ -2511,7 +2504,7 @@ Char * syFgets (
             if ( ch2==0        && ch==CTR('V') ) {             ch2=ch; ch=0;}
             if ( ch2==0        && ch==CTR('[') ) {             ch2=ch; ch=0;}
             if ( ch2==0        && ch==CTR('U') ) {             ch2=ch; ch=0;}
-            if ( ch2==CTR('[') && ch==CTR('V') ) { ch2=ESC(CTR('V'));  ch=0;}
+            if ( ch2==CTR('[') && ch==CTR('V') ) { ch2=Esc(CTR('V'));  ch=0;}
             if ( ch2==CTR('[') && IsDigit(ch)  ) { rep=ch-'0'; ch2=ch; ch=0;}
             if ( ch2==CTR('[') && ch=='['      ) {             ch2=ch; ch=0;}
             if ( ch2==CTR('U') && ch==CTR('V') ) { rep=4*rep;  ch2=ch; ch=0;}
@@ -2529,8 +2522,8 @@ Char * syFgets (
             }
         } while ( ch == 0 );
         if ( ch2==CTR('V') )       ch  = CTV(ch);
-        if ( ch2==ESC(CTR('V')) )  ch  = CTV(ch | 0x80);
-        if ( ch2==CTR('[') )       ch  = ESC(ch);
+        if ( ch2==Esc(CTR('V')) )  ch  = CTV(ch | 0x80);
+        if ( ch2==CTR('[') )       ch  = Esc(ch);
         if ( ch2==CTR('U') )       rep = 4*rep;
         /* windows keys */
         if ( ch2=='[' && ch=='A')  ch  = CTR('P');
@@ -2552,7 +2545,7 @@ Char * syFgets (
                    [linestr, ch, ppos, length, yankstr]
                GAP handler must return new
                    [linestr, ppos, yankstr]
-               or an integer, interpreted as number of ESC('N')
+               or an integer, interpreted as number of Esc('N')
                calls for the next lines.                                  */
             C_NEW_STRING(linestr,strlen(line),line);
             C_NEW_STRING(yankstr,strlen(yank),yank);
@@ -2566,7 +2559,7 @@ Char * syFgets (
             res = Call1ArgsInNewReader(LineEditKeyHandler, args);
             if (IS_INTOBJ(res)){
                syESCN = INT_INTOBJ(res);
-               ch = ESC('N');
+               ch = Esc('N');
                SET_ELM_PLIST(args,2,INTOBJ_INT(ch));
                res = Call1ArgsInNewReader(LineEditKeyHandler, args);
             }
@@ -2587,8 +2580,8 @@ Char * syFgets (
                 while ( p > line )  --p;
                 break;
 
-            case ESC('B'): /* move cursor one word to the left             */
-            case ESC('b'):
+            case Esc('B'): /* move cursor one word to the left             */
+            case Esc('b'):
                 if ( p > line ) do {
                     --p;
                 } while ( p>line && (!IS_SEP(*(p-1)) || IS_SEP(*p)));
@@ -2602,8 +2595,8 @@ Char * syFgets (
                 if ( *p != '\0' )  ++p;
                 break;
 
-            case ESC('F'): /* move cursor one word to the right            */
-            case ESC('f'):
+            case Esc('F'): /* move cursor one word to the right            */
+            case Esc('f'):
                 if ( *p != '\0' ) do {
                     ++p;
                 } while ( *p!='\0' && (IS_SEP(*(p-1)) || !IS_SEP(*p)));
@@ -2636,21 +2629,21 @@ Char * syFgets (
                 /* let '<ctr>-K' do the work                               */
 
             case CTR('K'): /* delete to end of line                        */
-                if ( last!=CTR('X') && last!=CTR('K') && last!=ESC(127)
-                  && last!=ESC('D') && last!=ESC('d') )  yank[0] = '\0';
+                if ( last!=CTR('X') && last!=CTR('K') && last!=Esc(127)
+                  && last!=Esc('D') && last!=Esc('d') )  yank[0] = '\0';
                 for ( r = yank; *r != '\0'; ++r ) ;
                 for ( s = p; *s != '\0'; ++s )  r[s-p] = *s;
                 r[s-p] = '\0';
                 *p = '\0';
                 break;
 
-            case ESC(127): /* delete the word left of the cursor           */
+            case Esc(127): /* delete the word left of the cursor           */
                 q = p;
                 if ( p > line ) do {
                     --p;
                 } while ( p>line && (!IS_SEP(*(p-1)) || IS_SEP(*p)));
-                if ( last!=CTR('X') && last!=CTR('K') && last!=ESC(127)
-                  && last!=ESC('D') && last!=ESC('d') )  yank[0] = '\0';
+                if ( last!=CTR('X') && last!=CTR('K') && last!=Esc(127)
+                  && last!=Esc('D') && last!=Esc('d') )  yank[0] = '\0';
                 for ( r = yank; *r != '\0'; ++r ) ;
                 for ( ; yank <= r; --r )  r[q-p] = *r;
                 for ( s = p; s < q; ++s )  yank[s-p] = *s;
@@ -2659,14 +2652,14 @@ Char * syFgets (
                 *r = '\0';
                 break;
 
-            case ESC('D'): /* delete the word right of the cursor          */
-            case ESC('d'):
+            case Esc('D'): /* delete the word right of the cursor          */
+            case Esc('d'):
                 q = p;
                 if ( *q != '\0' ) do {
                     ++q;
                 } while ( *q!='\0' && (IS_SEP(*(q-1)) || !IS_SEP(*q)));
-                if ( last!=CTR('X') && last!=CTR('K') && last!=ESC(127)
-                  && last!=ESC('D') && last!=ESC('d') )  yank[0] = '\0';
+                if ( last!=CTR('X') && last!=CTR('K') && last!=Esc(127)
+                  && last!=Esc('D') && last!=Esc('d') )  yank[0] = '\0';
                 for ( r = yank; *r != '\0'; ++r ) ;
                 for ( s = p; s < q; ++s )  r[s-p] = *s;
                 r[s-p] = '\0';
@@ -2697,30 +2690,30 @@ Char * syFgets (
                 }
                 break;
 
-            case ESC('U'): /* uppercase word                               */
-            case ESC('u'):
+            case Esc('U'): /* uppercase word                               */
+            case Esc('u'):
                 if ( *p != '\0' ) do {
                     if ('a' <= *p && *p <= 'z')  *p = *p + 'A' - 'a';
                     ++p;
                 } while ( *p!='\0' && (IS_SEP(*(p-1)) || !IS_SEP(*p)));
                 break;
 
-            case ESC('C'): /* capitalize word                              */
-            case ESC('c'):
+            case Esc('C'): /* capitalize word                              */
+            case Esc('c'):
                 while ( *p!='\0' && IS_SEP(*p) )  ++p;
                 if ( 'a' <= *p && *p <= 'z' )  *p = *p + 'A'-'a';
                 if ( *p != '\0' ) ++p;
                 /* lowercase rest of the word                              */
 
-            case ESC('L'): /* lowercase word                               */
-            case ESC('l'):
+            case Esc('L'): /* lowercase word                               */
+            case Esc('l'):
                 if ( *p != '\0' ) do {
                     if ('A' <= *p && *p <= 'Z')  *p = *p + 'a' - 'A';
                     ++p;
                 } while ( *p!='\0' && (IS_SEP(*(p-1)) || !IS_SEP(*p)));
                 break;
 
-            case ESC(CTR('L')): /* repaint input line                      */
+            case Esc(CTR('L')): /* repaint input line                      */
                 syEchoch('\n',fid);
                 for ( q = syPrompt; q < syPrompt+syNrchar; ++q )
                     syEchoch( *q, fid );
@@ -2908,7 +2901,6 @@ Char * syFgets (
 
             } /* switch ( ch ) */
           } /* key handler hook */
-
           last = ch;
         }
 
@@ -2985,6 +2977,8 @@ Char * syFgets (
         return (Char*)0;
     return line;
 
+#if HAVE_LIBREADLINE
+}
 #endif
 }
 
@@ -3831,12 +3825,9 @@ static Int InitKernel(
   InitHdlrFuncsFromTable( GVarFuncs );
 
   /* line edit key handler from library                                  */
-#if HAVE_LIBREADLINE
   ImportGVarFromLibrary("GAPInfo", &GAPInfo);
-#else
   ImportFuncFromLibrary("LineEditKeyHandler", &LineEditKeyHandler);
   ImportGVarFromLibrary("LineEditKeyHandlers", &LineEditKeyHandlers);
-#endif
   /* return success                                                      */
   return 0;
 

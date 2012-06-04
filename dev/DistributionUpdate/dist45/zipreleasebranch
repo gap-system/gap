@@ -30,7 +30,7 @@ cat listbinaryfiles.txt | zip -q ${ziparchive} -@
 echo 'Adding text tools files to the archive '${RELEASEBRANCH}/$toolsarchive
 cat listtextfilesfortools.txt | zip -q ${toolsarchive} -@
 
-# uncomment the next block if there will be any binary files for tools
+# uncomment the next block if there will be any binary files for tools at this stage
 # echo 'Adding binary tools files to the archive '${RELEASEBRANCH}/$toolsarchive
 # cat listbinaryfilesfortools.txt | zip -q ${toolsarchive} -@
 

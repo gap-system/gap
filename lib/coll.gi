@@ -761,14 +761,17 @@ end );
 ##
 InstallMethod( ListOp,
     "for a collection",
-    true,
-    [ IsCollection ], 0,
+    [ IsCollection ],
     C -> ShallowCopy( Enumerator( C ) ) );
 
 InstallMethod( ListOp,
     "for a collection that is a list",
-    true,
-    [ IsCollection and IsList ], 0,
+    [ IsCollection and IsList ],
+    ShallowCopy );
+
+InstallMethod( ListOp,
+    "for a list",
+    [ IsList ],
     ShallowCopy );
 
 
@@ -778,8 +781,7 @@ InstallMethod( ListOp,
 ##
 InstallMethod( ListOp,
     "for a list/collection, and a function",
-    true,
-    [ IsListOrCollection, IsFunction ], 0,
+    [ IsListOrCollection, IsFunction ],
     function ( C, func )
     local   res, i, elm;
     res := [];
@@ -790,10 +792,10 @@ InstallMethod( ListOp,
     od;
     return res;
     end );
+
 InstallMethod( ListOp,
     "for a list, and a function",
-    true,
-    [ IsList, IsFunction ], 0,
+    [ IsList, IsFunction ],
     function ( C, func )
     local   res, i, elm;
     res := [];
@@ -806,13 +808,13 @@ InstallMethod( ListOp,
     od;
     return res;
     end );
+
 InstallMethod( ListOp,
     "for a dense list, and a function",
-    true,
-    [ IsDenseList, IsFunction ], 0,
+    [ IsDenseList, IsFunction ],
     function ( C, func )
     local   res, elm;
-    res := 0*[1..Length(C)];
+    res := EmptyPlist(Length(C));
     for elm in [1..Length(C)] do
       res[elm]:= func( C[elm] );
     od;

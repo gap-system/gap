@@ -139,9 +139,9 @@ DeclareAttribute( "AbelianInvariantsMultiplier", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute("Epicentre", IsGroup );
-DeclareSynonym("Epicenter", Epicentre);
-DeclareSynonym("ExteriorCentre", Epicentre);
-DeclareSynonym("ExteriorCenter", Epicentre);
+DeclareSynonymAttr("Epicenter", Epicentre);
+DeclareSynonymAttr("ExteriorCentre", Epicentre);
+DeclareSynonymAttr("ExteriorCenter", Epicentre);
 
 ##############################################################################
 ##

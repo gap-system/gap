@@ -61,9 +61,7 @@ we sat that <M>u</M> is <E>reduced</E>.
 <#Include Label="AddRule">
 <#Include Label="AddRuleReduced">
 <#Include Label="MakeConfluent">
-<!-- % Don't know what to make of these. -->
 <#Include Label="GeneratorsOfRws">
-<#Include Label="AddGenerators">
 
 </Section>
 
@@ -75,19 +73,30 @@ we sat that <M>u</M> is <E>reduced</E>.
 In this section let <M>u</M> denote an element of the term algebra
 <M>T</M> representing <M>[u]</M> in the quotient algebra <M>A</M>.
 
-<#Include Label="ReducedProduct">
-<#Include Label="ReducedSum">
-<#Include Label="ReducedOne">
-<#Include Label="ReducedAdditiveInverse">
-<#Include Label="ReducedComm">
-<#Include Label="ReducedConjugate">
-<#Include Label="ReducedDifference">
-<#Include Label="ReducedInverse">
-<#Include Label="ReducedLeftQuotient">
-<#Include Label="ReducedPower">
-<#Include Label="ReducedQuotient">
-<#Include Label="ReducedScalarProduct">
-<#Include Label="ReducedZero">
+<ManSection>
+<Oper Name="ReducedProduct" Arg='rws, u, v'/>
+<Oper Name="ReducedSum" Arg='rws, left, right'/>
+<Oper Name="ReducedOne" Arg='rws'/>
+<Oper Name="ReducedAdditiveInverse" Arg='rws, obj'/>
+<Oper Name="ReducedComm" Arg='rws, left, right'/>
+<Oper Name="ReducedConjugate" Arg='rws, left, right'/>
+<Oper Name="ReducedDifference" Arg='rws, left, right'/>
+<Oper Name="ReducedInverse" Arg='rws, obj'/>
+<Oper Name="ReducedLeftQuotient" Arg='rws, left, right'/>
+<Oper Name="ReducedPower" Arg='rws, obj, pow'/>
+<Oper Name="ReducedQuotient" Arg='rws, left, right'/>
+<Oper Name="ReducedScalarProduct" Arg='rws, left, right'/>
+<Oper Name="ReducedZero" Arg='rws'/>
+
+<Description>
+The result of <Ref Prop="ReducedProduct"/> is <M>w</M> where 
+<M>[w]</M> equals [<A>u</A>][<A>v</A>] in <M>A</M> and <M>w</M> 
+is in reduced form.
+<P/>
+The remaining operations are defined similarly when they
+are defined (as determined by the signature of the term algebra).
+</Description>
+</ManSection>
 
 </Section>
 
@@ -96,15 +105,19 @@ In this section let <M>u</M> denote an element of the term algebra
 <Section Label="Properties of rewriting systems">
 <Heading>Properties of rewriting systems</Heading>
 
-The following properties may be used to identify the 
-type of term algebra over which the rewriting system is defined.
+<ManSection>
+<Prop Name="IsBuiltFromAdditiveMagmaWithInverses" Arg='obj'/>
+<Prop Name="IsBuiltFromMagma" Arg='obj'/>
+<Prop Name="IsBuiltFromMagmaWithOne" Arg='obj'/>
+<Prop Name="IsBuiltFromMagmaWithInverses" Arg='obj'/>
+<Prop Name="IsBuiltFromSemigroup" Arg='obj'/>
+<Prop Name="IsBuiltFromGroup" Arg='obj'/>
 
-<#Include Label="IsBuiltFromAdditiveMagmaWithInverses">
-<#Include Label="IsBuiltFromMagma">
-<#Include Label="IsBuiltFromMagmaWithOne">
-<#Include Label="IsBuiltFromMagmaWithInverses">
-<#Include Label="IsBuiltFromSemigroup">
-<#Include Label="IsBuiltFromGroup">
+<Description>
+These properties may be used to identify the type of term algebra 
+over which the rewriting system is defined.
+</Description>
+</ManSection>
 
 </Section>
 

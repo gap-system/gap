@@ -17,8 +17,14 @@ source ./core_checkout_time.txt
 
 ziparchive=${ARCHNAME}_${CORETIME}.zip
 winziparchive=${ARCHNAME}_${CORETIME}-win.zip
+tararchive=${ARCHNAME}_${CORETIME}.tar
+targzarchive=${ARCHNAME}_${CORETIME}.tar.gz
+tarbz2archive=${ARCHNAME}_${CORETIME}.tar.bz2
 rm -f $ziparchive
 rm -f $winziparchive
+rm -f $tararchive
+rm -f $targzarchive
+rm -f $tarbz2archive
 
 echo '===================================================================='
 echo 'Wrapping archive '${GAPSOURCE}/$ziparchive
@@ -34,9 +40,36 @@ cat listtextfiles.txt | zip -q -9 -l ${winziparchive} -@
 echo 'Adding binary files to '${GAPSOURCE}/$winziparchive
 cat listbinaryfiles.txt | zip -q -9 ${winziparchive} -@
 
+cat listtextfiles.txt listbinaryfiles.txt > listallfiles.txt
+
+echo '===================================================================='
+echo 'Creating '$tararchive
+tar cpf $tararchive -T listallfiles.txt
+cp $tararchive $tararchive.X
+
+echo '===================================================================='
+echo 'Creating '$targzarchive
+gzip -9 $tararchive 
+
+echo '===================================================================='
+echo 'Creating '$tarbz2archive
+mv $tararchive.X $tararchive
+bzip2 -9 $tararchive
+
 echo '===================================================================='
 echo 'Unpacking .zip archive to check for missing files ...'
 unzip -q ${ziparchive} -d tmpunpack
+mv tmpunpack/${DISTNAME} ${DISTNAME}tst
+rm -rf tmpunpack
+diff -rq ${DISTNAME} ${DISTNAME}tst
+rm -rf ${DISTNAME}tst
+
+echo '===================================================================='
+echo 'Unpacking .tar.gz archive to check for missing files ...'
+mkdir tmpunpack
+cd tmpunpack
+tar xzf ../${targzarchive}
+cd ..
 mv tmpunpack/${DISTNAME} ${DISTNAME}tst
 rm -rf tmpunpack
 diff -rq ${DISTNAME} ${DISTNAME}tst

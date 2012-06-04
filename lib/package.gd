@@ -705,7 +705,12 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  binaries have not been compiled, or if the version number of the
 ##  available version is too small.
 ##  If the package cannot be loaded, <Ref Func="TestPackageAvailability"/>
-##  can be used to find the reasons.
+##  can be used to find the reasons. Also, 
+##  <Ref Func="DisplayPackageLoadingLog"/> can be used to find out more
+##  about the failure reasons. To see the problems directly, one can
+##  change the verbosity using the user preference 
+##  <C>InfoPackageLoadingLevel</C>, see <Ref InfoClass="InfoPackageLoading"/>
+##  for details.
 ##  <P/>
 ##  If the package <A>name</A> has already been loaded in a version number
 ##  at least or equal to <A>version</A>, respectively,
@@ -765,11 +770,6 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  <C>GAPInfo.Dependencies.NeededOtherPackages</C> are still loaded
 ##  automatically, and an error is signalled if not all of these packages
 ##  are available.
-##  <P/>
-##  <Index Key="OnlyNeeded" Subkey="option"><C>OnlyNeeded</C></Index>
-##  The global option <C>OnlyNeeded</C> (see <Ref Chap="Options Stack"/>)
-##  can be used to (recursively) suppress loading the suggested packages
-##  of the package in question.
 ##  <P/>
 ##  See <Ref Func="SetPackagePath"/> for a possibility to force that a
 ##  prescribed package version will be loaded.
@@ -1142,30 +1142,13 @@ DeclareGlobalFunction( "BibEntry" );
 
 #############################################################################
 ##
-#F  PackageVariablesInfo( <pkgname>[, <version>] )
-##
-##  <ManSection>
-##  <Func Name="PackageVariablesInfo" Arg='pkgname[, version]'/>
-##
-##  <Description>
-##  This is currently the function that does the work for
-##  <Ref Func="ShowPackageVariables"/>.
-##  In the future, better interfaces for such overviews are desirable,
-##  so it makes sense to separate the computation of the data from the
-##  actual rendering.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction( "PackageVariablesInfo" );
-
-
-#############################################################################
-##
 #F  ShowPackageVariables( <pkgname>[, <version>][, <arec>] )
+#F  PackageVariablesInfo( <pkgname>, <version> )
 ##
 ##  <#GAPDoc Label="ShowPackageVariables">
 ##  <ManSection>
 ##  <Func Name="ShowPackageVariables" Arg='pkgname[, version][, arec]'/>
+##  <Func Name="PackageVariablesInfo" Arg='pkgname, version'/>
 ##
 ##  <Description>
 ##  Let <A>pkgname</A> be the name of a &GAP; package.
@@ -1173,7 +1156,7 @@ DeclareGlobalFunction( "PackageVariablesInfo" );
 ##  <Ref Func="ShowPackageVariables"/> prints a list of global variables
 ##  that become bound and of methods that become installed
 ##  when the package is loaded.
-##  (For that, the package is actually loaded.)
+##  (For that, &GAP; actually loads the package.)
 ##  <P/>
 ##  If a version number <A>version</A> is given
 ##  (see Section&nbsp;<Ref Sect="Version Numbers" BookName="Example"/>)
@@ -1233,11 +1216,25 @@ DeclareGlobalFunction( "PackageVariablesInfo" );
 ##  An interactive variant of <Ref Func="ShowPackageVariables"/> is the
 ##  function <Ref Func="BrowsePackageVariables" BookName="browse"/> that is
 ##  provided by the &GAP; package <Package>Browse</Package>.
+##  For this function, it is not sensible to assume that the package
+##  <A>pkgname</A> is not yet loaded before the function call,
+##  because one might be interested in packages that must be loaded before
+##  <Package>Browse</Package> itself can be loaded.
+##  The solution is that
+##  <Ref Func="BrowsePackageVariables" BookName="browse"/> takes the output
+##  of <Ref Func="PackageVariablesInfo"/> as its second argument.
+##  The function <Ref Func="PackageVariablesInfo"/> is used by both
+##  <Ref Func="ShowPackageVariables"/> and
+##  <Ref Func="BrowsePackageVariables" BookName="browse"/> for collecting the
+##  information about the package in question, and can be called before the
+##  package <Package>Browse</Package> is loaded.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ShowPackageVariables" );
+
+DeclareGlobalFunction( "PackageVariablesInfo" );
 
 
 #############################################################################

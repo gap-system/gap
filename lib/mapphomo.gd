@@ -320,6 +320,13 @@ InstallTrueMethod( RespectsZero,
 ##  <Prop Name="IsAdditiveGroupHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
+##  <Ref Prop="IsAdditiveGroupGeneralMapping"/>
+##  specifies whether a general mapping <A>mapp</A> respects
+##  addition (see <Ref Prop="RespectsAddition"/>) and respects
+##  additive inverses (see <Ref Prop="RespectsAdditiveInverses"/>).
+##  <P/>
+##  <Ref Prop="IsAdditiveGroupHomomorphism"/> is a synonym for the meet of
+##  <Ref Prop="IsAdditiveGroupGeneralMapping"/> and <Ref Prop="IsMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -422,6 +429,13 @@ InstallTrueMethod( RespectsAdditiveInverses, RespectsScalarMultiplication );
 ##  <Prop Name="IsLeftModuleHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
+##  <Ref Prop="IsLeftModuleGeneralMapping"/>
+##  specifies whether a general mapping <A>mapp</A> satisfies the property
+##  <Ref Prop="IsAdditiveGroupGeneralMapping"/> and respects scalar 
+##  multiplication (see <Ref Prop="RespectsScalarMultiplication"/>).
+##  <P/>
+##  <Ref Prop="IsLeftModuleHomomorphism"/> is a synonym for the meet of
+##  <Ref Prop="IsLeftModuleGeneralMapping"/> and <Ref Prop="IsMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -476,6 +490,13 @@ DeclareOperation( "IsLinearMapping", [ IsDomain, IsGeneralMapping ] );
 ##  <Prop Name="IsRingHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
+##  <Ref Prop="IsRingGeneralMapping"/> specifies whether a general mapping
+##  <A>mapp</A> satisfies the property 
+##  <Ref Prop="IsAdditiveGroupGeneralMapping"/> and respects multiplication 
+##  (see <Ref Prop="RespectsMultiplication"/>).
+##  <P/>
+##  <Ref Prop="IsRingHomomorphism"/> is a synonym for the meet of
+##  <Ref Prop="IsRingGeneralMapping"/> and <Ref Prop="IsMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -521,6 +542,13 @@ DeclareSynonymAttr( "IsRingWithOneHomomorphism",
 ##  <Prop Name="IsAlgebraHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
+##  <Ref Prop="IsAlgebraGeneralMapping"/> specifies whether a general 
+##  mapping <A>mapp</A> satisfies both properties 
+##  <Ref Prop="IsRingGeneralMapping"/> and 
+##  (see <Ref Prop="IsLeftModuleGeneralMapping"/>).
+##  <P/>
+##  <Ref Prop="IsAlgebraHomomorphism"/> is a synonym for the meet of
+##  <Ref Prop="IsAlgebraGeneralMapping"/> and <Ref Prop="IsMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -543,6 +571,13 @@ DeclareSynonymAttr( "IsAlgebraHomomorphism",
 ##  <Prop Name="IsAlgebraWithOneHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
+##  <Ref Prop="IsAlgebraWithOneGeneralMapping"/>
+##  specifies whether a general mapping <A>mapp</A> satisfies both 
+##  properties <Ref Prop="IsAlgebraGeneralMapping"/> and 
+##  <Ref Prop="RespectsOne"/>.
+##  <P/>
+##  <Ref Prop="IsAlgebraWithOneHomomorphism"/> is a synonym for the meet of
+##  <Ref Prop="IsAlgebraWithOneGeneralMapping"/> and <Ref Prop="IsMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

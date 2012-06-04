@@ -264,6 +264,8 @@ DeclareCategoryCollections( "IsElementOfMagmaRingModuloRelations" );
 ##   Type='Category'/>
 ##
 ##  <Description>
+##  The family category for the category 
+##  <Ref Filt="IsElementOfMagmaRingModuloRelations" />.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -283,6 +285,8 @@ DeclareCategoryFamily( "IsElementOfMagmaRingModuloRelations" );
 ##   Type='Category'/>
 ##
 ##  <Description>
+##  The category of elements of a free magma ring
+##  (See <Ref Func="IsFreeMagmaRing"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -469,6 +473,9 @@ DeclareCategory( "IsFreeMagmaRing", IsMagmaRingModuloRelations );
 ##  <Filt Name="IsFreeMagmaRingWithOne" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
+##  <Ref Filt="IsFreeMagmaRingWithOne"/> is just a synonym for the meet of
+##  <Ref Filt="IsFreeMagmaRing"/> and
+##  <Ref Filt="IsMagmaWithOne"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -503,6 +510,7 @@ DeclareProperty( "IsGroupRing", IsFreeMagmaRing );
 ##  <Attr Name="UnderlyingMagma" Arg='RM'/>
 ##
 ##  <Description>
+##  stores the underlying magma of a free magma ring.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -627,6 +635,7 @@ DeclareGlobalFunction( "MagmaRingModuloSpanOfZero" );
 ##  <Filt Name="IsMagmaRingModuloSpanOfZero" Arg='RM' Type='Category'/>
 ##
 ##  <Description>
+##  The category of magma rings modulo the span of a zero element.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

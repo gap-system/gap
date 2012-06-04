@@ -8,13 +8,13 @@ source ${mypath}setvarpkg
 cd ${PkgWebFtpDir}/Packages
 
 echo "Dry run for packages metainformation:"
-rsync -av -c -n *.mixer pkgconf.py currentPackageInfoURLList ${WWW2Dir}/Packages/
+rsync -av -c -n *.mixer pkgconf.py ${WWW2Dir}/Packages/
 read -n 1 -p "Shall I copy? (y/n)> " ANSWER
 echo
 
 if [ $ANSWER = "y" ]; then
   echo "Ok, I'll copy packages metainformation ..."
-  rsync -av -c *.mixer pkgconf.py currentPackageInfoURLList ${WWW2Dir}/Packages/
+  rsync -av -c *.mixer pkgconf.py ${WWW2Dir}/Packages/
 else
   echo "Don't copy, bye."
 fi

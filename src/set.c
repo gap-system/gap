@@ -67,16 +67,13 @@
 ** 
 */
 
-#define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
-
 Int IsSet ( 
     Obj                 list )
 {
     Int                 isSet;          /* result                          */
 
     /* if <list> is a plain list                                           */
-    if ( T_PLIST <= TNUM_OBJ(list)
-      && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT+IMMUTABLE ) {
+    if ( IS_PLIST( list ) ) {
 
         /* if <list> is the empty list, its a set (:-)                     */
         if ( LEN_PLIST(list) == 0 ) {

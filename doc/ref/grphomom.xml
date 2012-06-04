@@ -419,7 +419,7 @@ It might be stored by <C>SetNiceMonomorphism</C>
 <P/>
 Another nice way of representing automorphisms as permutations has been
 described in <Cite Key="Sims97"/>.
-It it not yet available in &GAP;, a description however can be found
+It is not yet available in &GAP;, a description however can be found
 in section
 &nbsp;<Ref Sect="Stabilizer Chains for Automorphisms Acting on Enumerators"/>.
 

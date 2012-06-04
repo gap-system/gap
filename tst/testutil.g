@@ -459,41 +459,46 @@ BindGlobal( "CreatePackageLoadTestsInput",
          od;
     od;
     Append( result, "echo '==========================================='\n" );
-    Append( result, Concatenation("echo '\n======OUTPUT START: LoadAllPackages", mode, "'\n" ) );
-    Append( result, 
-        Concatenation( "echo 'SetUserPreference(\"UseColorsInTerminal\",false); ",
-                                "if CompareVersionNumbers( GAPInfo.Version, \"4.5.0\") then ",
-                                "SetInfoLevel(InfoPackageLoading,4);",
-                                "fi;LoadAllPackages(", PKGLOADTSTOPT, "); ",
-                                "Print([CHAR_INT(10)]); ",
-                                "Print(\"### all packages loaded                 ", mode, "\"); ' | ",  
-                       gap, " > ", outfileprefix, "$TIMESTAMP.all 2>&1 \n" ) );
-    Append( result, 
-        Concatenation( "cat ", outfileprefix, "$TIMESTAMP.all\n" ) );
-    Append( result, 
-        Concatenation("echo '\n======OUTPUT END: LoadAllPackages", mode, "'\n" ) );
-    Append( result, "echo '==========================================='\n" );
-    Append( result, 
-        Concatenation("echo '\n======OUTPUT START: LoadAllPackages ",
-                      "in the reverse order", mode, "'\n" ) );
-    if PKGLOADTSTOPT="" then
-      	PKGLOADTSTOPT:=":reversed";
-    else
-      	PKGLOADTSTOPT:=":OnlyNeeded,reversed";
-    fi;
-    Append( result, 
-        Concatenation( "echo 'SetUserPreference(\"UseColorsInTerminal\",false); ",
-                                "if CompareVersionNumbers( GAPInfo.Version, \"4.5.0\") then ",
-                                "SetInfoLevel(InfoPackageLoading,4);",
-                                "fi;LoadAllPackages(", PKGLOADTSTOPT, "); ",
-                                "Print([CHAR_INT(10)]); ",
-                                "Print(\"### all packages loaded in reverse order", mode, "\"); ' | ", 
-                       gap, " > ", outfileprefix, "$TIMESTAMP.all 2>&1 \n" ) );
-    Append( result, 
-        Concatenation( "cat ", outfileprefix, "$TIMESTAMP.all\n" ) );
-    Append( result, 
-        Concatenation("echo '\n======OUTPUT END: LoadAllPackages ",
-                      "in the reverse order", mode, "'\n" ) );
+    
+    # do not test LoadAllPackages with OnlyNeeded option
+    if not onlyneeded then    
+        Append( result, Concatenation("echo '\n======OUTPUT START: LoadAllPackages", mode, "'\n" ) );
+        Append( result, 
+            Concatenation( "echo 'SetUserPreference(\"UseColorsInTerminal\",false); ",
+                           "if CompareVersionNumbers( GAPInfo.Version, \"4.5.0\") then ",
+                           "SetInfoLevel(InfoPackageLoading,4);",
+                           "fi;LoadAllPackages(", PKGLOADTSTOPT, "); ",
+                           "Print([CHAR_INT(10)]); ",
+                           "Print(\"### all packages loaded                 ", mode, "\"); ' | ",  
+                           gap, " > ", outfileprefix, "$TIMESTAMP.all 2>&1 \n" ) );
+        Append( result, 
+            Concatenation( "cat ", outfileprefix, "$TIMESTAMP.all\n" ) );
+        Append( result, 
+            Concatenation("echo '\n======OUTPUT END: LoadAllPackages", mode, "'\n" ) );
+        Append( result, "echo '==========================================='\n" );
+        Append( result, 
+            Concatenation("echo '\n======OUTPUT START: LoadAllPackages ",
+                          "in the reverse order", mode, "'\n" ) );
+        if PKGLOADTSTOPT="" then
+      	    PKGLOADTSTOPT:=":reversed";
+        else
+      	    PKGLOADTSTOPT:=":OnlyNeeded,reversed";
+        fi;
+        Append( result, 
+            Concatenation( "echo 'SetUserPreference(\"UseColorsInTerminal\",false); ",
+                           "if CompareVersionNumbers( GAPInfo.Version, \"4.5.0\") then ",
+                           "SetInfoLevel(InfoPackageLoading,4);",
+                           "fi;LoadAllPackages(", PKGLOADTSTOPT, "); ",
+                           "Print([CHAR_INT(10)]); ",
+                           "Print(\"### all packages loaded in reverse order", mode, "\"); ' | ", 
+                           gap, " > ", outfileprefix, "$TIMESTAMP.all 2>&1 \n" ) );
+        Append( result, 
+            Concatenation( "cat ", outfileprefix, "$TIMESTAMP.all\n" ) );
+        Append( result, 
+            Concatenation("echo '\n======OUTPUT END: LoadAllPackages ",
+                          "in the reverse order", mode, "'\n" ) );
+    fi;         
+    
     Append( result, Concatenation( "rm ", outfileprefix, "$TIMESTAMP.*\n" ) );
     PrintTo( scriptfile, result );
     end );

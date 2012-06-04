@@ -19,13 +19,13 @@ export GAPCVSVERSION="-D now"
 
 # version to wrap
 export VERSION="5"
-export FULLVERSION="$VERSION.3(beta)"
+export FULLVERSION="$VERSION.4"
 
 # directory name
 export DISTNAME="gap4r$VERSION"
 
 # archive name
-export RBVERSION="4r5p3"
+export RBVERSION="4r5p4"
 export ARCHNAME="gap$RBVERSION"
 
 # location of the merged packages archive (assumed to be on the same machine)

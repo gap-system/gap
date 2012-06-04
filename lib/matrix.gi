@@ -2982,7 +2982,9 @@ local z,l,b,i,j,k,stop,v,dim,h,zv;
       if v<>fail then
         # clean j-th component from bas with v
         for k in [1..Length(bas)] do
-          bas[k]:=bas[k]-bas[k][j]/v[j]*v;
+	  if not IsZero(bas[k][j]) then
+	    bas[k]:=bas[k]-bas[k][j]/v[j]*v;
+	  fi;
         od;
         v:=Zero(v);
         bas:=Filtered(bas,k->k<>v);

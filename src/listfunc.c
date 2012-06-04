@@ -110,8 +110,7 @@ Obj FuncADD_LIST (
     Obj                 obj )
 {
     /* dispatch                                                            */
-    if ( T_PLIST          <= TNUM_OBJ( list )
-      && TNUM_OBJ( list ) <= T_PLIST_CYC_SSORT ) {
+    if ( IS_PLIST( list ) ) {
         AddPlist( list, obj );
     }
     else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
@@ -181,8 +180,7 @@ Obj FuncREM_LIST (
 
 {
     /* dispatch                                                            */
-    if ( T_PLIST          <= TNUM_OBJ( list )
-      && TNUM_OBJ( list ) <= T_PLIST_CYC_SSORT ) {
+    if ( IS_PLIST( list ) ) {
         return RemPlist( list);
     }
     else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
@@ -235,7 +233,8 @@ Obj             FuncAPPEND_LIST_INTR (
         len2 = GET_LEN_STRING(list2);
         GROW_STRING(list1, len1 + len2);
         SET_LEN_STRING(list1, len1 + len2);
-        memcpy( CHARS_STRING(list1) + len1, CHARS_STRING(list2), len2 );
+        memmove( (void *)(CHARS_STRING(list1) + len1), 
+                (void *)CHARS_STRING(list2), len2 + 1);
         /* ensure trailing zero */
         *(CHARS_STRING(list1) + len1 + len2) = 0;    
         return (Obj) 0;
@@ -390,8 +389,7 @@ Obj             FuncPOSITION_SORTED_LIST (
     }
 
     /* dispatch                                                            */
-    if ( T_PLIST_DENSE  <= TNUM_OBJ(list)
-      && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT ) {
+    if ( IS_DENSE_PLIST(list) ) {
         h = PositionSortedDensePlist( list, obj );
     }
     else {
@@ -490,8 +488,7 @@ Obj             FuncPOSITION_SORTED_COMP (
     }
 
     /* dispatch                                                            */
-    if ( T_PLIST_DENSE  <= TNUM_OBJ(list)
-      && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT ) {
+    if ( IS_DENSE_PLIST(list) ) {
         h = PositionSortedDensePlistComp( list, obj, func );
     }
     else {
@@ -647,8 +644,7 @@ void SORT_LIST (
         }
         h = h / 3;
     }
-    if (FIRST_PLIST_TNUM <= TNUM_OBJ(list) &&
-        TNUM_OBJ(list) <= LAST_PLIST_TNUM)
+    if (IS_PLIST(list))
       RESET_FILT_LIST(list, FN_IS_NSORT);
 }
 
@@ -1038,8 +1034,7 @@ Obj FuncSORT_LIST (
     }
 
     /* dispatch                                                            */
-    if ( T_PLIST_DENSE  <= TNUM_OBJ(list)
-      && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT ) {
+    if ( IS_DENSE_PLIST(list) ) {
         SortDensePlist( list );
     }
     else {
@@ -1080,8 +1075,7 @@ Obj FuncSORT_LIST_COMP (
     }
 
     /* dispatch                                                            */
-    if ( T_PLIST_DENSE  <= TNUM_OBJ(list)
-      && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT ) {
+    if ( IS_DENSE_PLIST(list) ) {
         SortDensePlistComp( list, func );
     }
     else {
@@ -1124,10 +1118,7 @@ Obj FuncSORT_PARA_LIST (
     }
 
     /* dispatch                                                            */
-    if ( T_PLIST_DENSE     <= TNUM_OBJ(list)
-       && TNUM_OBJ(list)   <= T_PLIST_CYC_SSORT
-       && T_PLIST_DENSE    <= TNUM_OBJ(shadow)
-       && TNUM_OBJ(shadow) <= T_PLIST_CYC_SSORT ) {
+    if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
         SortParaDensePlist( list, shadow );
     }
     else {
@@ -1180,10 +1171,7 @@ Obj FuncSORT_PARA_LIST_COMP (
     }
 
     /* dispatch                                                            */
-    if ( T_PLIST_DENSE     <= TNUM_OBJ(list)
-       && TNUM_OBJ(list)   <= T_PLIST_CYC_SSORT
-       && T_PLIST_DENSE    <= TNUM_OBJ(shadow)
-       && TNUM_OBJ(shadow) <= T_PLIST_CYC_SSORT ) {
+    if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
         SortParaDensePlistComp( list, shadow, func );
     }
     else {

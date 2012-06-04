@@ -65,6 +65,7 @@ BIND_GLOBAL( "GAPInfo", rec(
       [ "e", false, "disable/enable quitting on <ctr>-D" ],
       [ "f", false, "force line editing" ],
       [ "n", false, "prevent line editing" ],
+      [ "E", true, "disable/enable use of readline library (if possible)" ],
       [ "x", "", "<num>", "set line width" ],
       [ "y", "", "<num>", "set number of lines" ],
       ,
@@ -271,6 +272,8 @@ CallAndInstallPostRestore( function()
       fi;
     od;
     CommandLineOptions.g:= CommandLineOptions.g mod 3;
+    # use the same as the kernel
+    CommandLineOptions.E:= GAPInfo.KernelInfo.HAVE_LIBREADLINE;
     MakeImmutable( CommandLineOptions );
     MakeImmutable( InitFiles );
 
@@ -323,9 +326,9 @@ CallAndInstallPostRestore( function()
       od;
 
       PRINT_TO("*errout*",
-        "  Boolean options (b,q,e,r,A,D,M,N,T,X,Y) toggle the current value\n",
-        "  each time they are called. Default actions are indicated first.\n",
-        "\n" );
+       "  Boolean options (b,q,e,r,A,D,E,M,N,T,X,Y) toggle the current value\n",
+       "  each time they are called. Default actions are indicated first.\n",
+       "\n" );
       QUIT_GAP();
     fi;
 end );

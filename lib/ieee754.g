@@ -119,6 +119,21 @@ InstallMethod( ComplexConjugate, "for macfloats", [ IsIEEE754FloatRep ], x->x);
 #############################################################################
 # default constructor record
 
+DeclareCategory("IsIEEE754PseudoField", IsFloatPseudoField);
+BindGlobal("IEEE754_PSEUDOFIELD",
+        Objectify(NewType(CollectionsFamily(IEEE754FloatsFamily),
+                IsIEEE754PseudoField and IsAttributeStoringRep),rec()));
+SetName(IEEE754_PSEUDOFIELD, "IEEE754_PSEUDOFIELD");
+
+SetLeftActingDomain(IEEE754_PSEUDOFIELD,Rationals);
+SetCharacteristic(IEEE754_PSEUDOFIELD,0);
+SetDimension(IEEE754_PSEUDOFIELD,infinity);
+SetSize(IEEE754_PSEUDOFIELD,infinity);
+SetIsWholeFamily(IEEE754_PSEUDOFIELD,true);
+SetZero(IEEE754_PSEUDOFIELD,MACFLOAT_INT(0));
+SetOne(IEEE754_PSEUDOFIELD,MACFLOAT_INT(1));
+InstallMethod( \in, [IsIEEE754FloatRep,IsIEEE754PseudoField], ReturnTrue);
+        
 BindGlobal("IEEE754FLOAT", rec(
     constants := rec(
         DIG := 15,
@@ -133,23 +148,13 @@ BindGlobal("IEEE754FLOAT", rec(
         NINFINITY := MACFLOAT_STRING("-inf"),
         NAN := MACFLOAT_STRING("nan")),
     filter := IsIEEE754FloatRep,
+    field := IEEE754_PSEUDOFIELD,
     creator := MACFLOAT_STRING,
     eager := 'l'));
 
-DeclareCategory("IsIEEE754PseudoField", IsFloatPseudoField);
-BindGlobal("IEEE754_PSEUDOFIELD",
-        Objectify(NewType(CollectionsFamily(FloatsFamily),
-                IsIEEE754PseudoField and IsAttributeStoringRep),rec()));
-SetName(IEEE754_PSEUDOFIELD, "IEEE754_PSEUDOFIELD");
-
-SetLeftActingDomain(IEEE754_PSEUDOFIELD,Rationals);
-SetCharacteristic(IEEE754_PSEUDOFIELD,0);
-SetDimension(IEEE754_PSEUDOFIELD,infinity);
-SetSize(IEEE754_PSEUDOFIELD,infinity);
-SetIsWholeFamily(IEEE754_PSEUDOFIELD,true);
-SetZero(IEEE754_PSEUDOFIELD,MACFLOAT_INT(0));
-SetOne(IEEE754_PSEUDOFIELD,MACFLOAT_INT(1));
-InstallMethod( \in, [IsIEEE754FloatRep,IsIEEE754PseudoField], ReturnTrue);
+SetIsUFDFamily(IEEE754FloatsFamily,true);
+SetZero(IEEE754FloatsFamily, NewFloat(IsIEEE754FloatRep,0));
+SetOne(IEEE754FloatsFamily, NewFloat(IsIEEE754FloatRep,0));
         
 InstallMethod( PrecisionFloat, "for macfloats", [ IsIEEE754FloatRep ], x->IEEE754FLOAT.constants.MANT_DIG );
 

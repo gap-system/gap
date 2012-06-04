@@ -629,48 +629,6 @@ end);
 
 #############################################################################
 ##
-#M  ListOp( <list> )
-#M  ListOp( <list>, <func> )
-##
-InstallMethod( ListOp,
-    "for a list",
-    [ IsList ],
-    ShallowCopy );
-
-InstallMethod( ListOp,
-    "for a dense list",
-    [ IsList and IsDenseList ],
-    list -> list{ [ 1 .. Length( list ) ] } );
-
-InstallMethod( ListOp,
-    "for a dense list, and a function",
-    [ IsDenseList, IsFunction ],
-    function ( list, func )
-    local   res, i;
-    res := [];
-    for i  in [ 1 .. Length( list ) ] do
-        res[i] := func( list[i] );
-    od;
-    return res;
-    end );
-
-InstallMethod( ListOp,
-    "for any list, and a function",
-    [ IsList, IsFunction ],
-    function ( list, func )
-    local   res, i;
-    res := [];
-    for i  in [ 1 .. Length( list ) ] do
-        if IsBound(list[i]) then
-            Add(res,func( list[i] ));
-        fi;
-    od;
-    return res;
-end );
-
-
-#############################################################################
-##
 #M  SSortedList( <list> )  . . . . . . . . . . . set of the elements of a list
 ##
 InstallOtherMethod( SSortedList, "for a plist",

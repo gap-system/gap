@@ -222,8 +222,7 @@ typedef UInt    RNam;
  len = LENGTH(list);
 
 #define C_LEN_LIST_FPL(len,list) \
- if ( TNUM_OBJ(list) >= FIRST_PLIST_TNUM && \
-      TNUM_OBJ(list) <= LAST_PLIST_TNUM ) { \
+ if ( IS_PLIST(list) ) { \
   len = INTOBJ_INT( LEN_PLIST(list) ); \
  } \
  else { \
@@ -240,9 +239,7 @@ typedef UInt    RNam;
  elm = IS_INTOBJ(p) ? ELMW_LIST( list, INT_INTOBJ(p) ) : ELMB_LIST(list, p);
 
 #define C_ELM_LIST_FPL(elm,list,p) \
- if ( IS_INTOBJ(p) && \
-      TNUM_OBJ(list) >= FIRST_PLIST_TNUM && \
-      TNUM_OBJ(list) <= LAST_PLIST_TNUM ) { \
+ if ( IS_INTOBJ(p) && IS_PLIST(list) ) { \
   if ( INT_INTOBJ(p) <= LEN_PLIST(list) ) { \
    elm = ELM_PLIST( list, INT_INTOBJ(p) ); \
    if ( elm == 0 ) elm = ELM_LIST( list, INT_INTOBJ(p) ); \
@@ -250,9 +247,7 @@ typedef UInt    RNam;
  } else C_ELM_LIST( elm, list, p )
 
 #define C_ELM_LIST_NLE_FPL(elm,list,p) \
- if ( IS_INTOBJ(p) && \
-      TNUM_OBJ(list) >= FIRST_PLIST_TNUM && \
-      TNUM_OBJ(list) <= LAST_PLIST_TNUM ) { \
+ if ( IS_INTOBJ(p) && IS_PLIST(list) ) { \
   elm = ELM_PLIST( list, INT_INTOBJ(p) ); \
  } else C_ELM_LIST_NLE(elm, list, p)
 

@@ -78,9 +78,7 @@ Transatlantic(CentralizerSizeLimitConsiderFunction);
 Transatlantic(CentralizerTransSymmCSPG);
 Transatlantic(CentralizerWreath);
 Transatlantic(ClassesSolvableGroup);
-Transatlantic(ClassPositionsOfSolvableResiduum);
 Transatlantic(ComplementClassesRepresentativesSolvableNC);
-Transatlantic(ComputedIsPSolvableCharacterTables);
 Transatlantic(CONextCentralizer);
 Transatlantic(EpimorphismSolvableQuotient);
 Transatlantic(ExternalOrbitsStabilizers);
@@ -93,9 +91,6 @@ Transatlantic(IsExternalOrbitByStabilizerRep);
 Transatlantic(IsFixedStabilizer);
 Transatlantic(IsLieSolvable);
 Transatlantic(IsPSolvable);
-Transatlantic(IsPSolvableCharacterTable);
-Transatlantic(IsPSolvableCharacterTableOp);
-Transatlantic(IsSolvableCharacterTable);
 Transatlantic(IsSolvableGroup);
 Transatlantic(IsSolvableTom);
 Transatlantic(LieCentralizer);
@@ -118,7 +113,6 @@ Transatlantic(Pcgs_OrbitStabilizer);
 Transatlantic(Pcgs_OrbitStabilizer_Blist);
 Transatlantic(Pcs_OrbitStabilizer);
 Transatlantic(RationalClassesSolvableGroup);
-Transatlantic(SizesCentralizers);
 Transatlantic(SolvableNormalClosurePermGroup);
 Transatlantic(SolvableQuotient);
 Transatlantic(Stabilizer);
@@ -130,3 +124,113 @@ Transatlantic(StabilizerPcgs);
 Transatlantic(SubgroupsOrbitsAndNormalizers);
 Transatlantic(SubgroupsSolvableGroup);
 Transatlantic(VerifyStabilizer);
+
+
+
+# optional args: 
+#    list of names to check (default NamesGVars()),
+#    list of pairs to substitute 
+BindGlobal("CheckSynonyms", function(arg)
+  local pairs, a, p2, allnames, md, mnd, nid, ok, d, nd, pos, n2, doc, p, n;
+  # default pairs to check
+  pairs := [ [ "lizer", "liser" ], 
+             [ "enter", "entre" ],
+             [ "Solvable", "Soluble" ],
+           ];
+  # default names to check
+  allnames := NamesGVars();
+
+  # can be overwritten by arguments
+  for a in arg do 
+    if IsList(a) and ForAll(a, IsString) then
+      allnames := a;
+    fi;
+    if IsList(a) and ForAll(a, b-> IsList(b) and ForAll(b, IsString)) then
+      pairs := ShallowCopy(a);
+    fi;
+  od;
+  # only consider bound names
+  allnames := Set(Filtered(allnames, IsBoundGlobal));
+  # add lowercase pairs and interchanged pairs
+  for p in pairs do
+    p2 := List(p, LowercaseString);
+    if not p2 in pairs then
+      Add(pairs, p2);
+    fi;
+  od;
+  Append(pairs, List(pairs, p-> [p[2], p[1]]));
+ 
+  md := [];
+  mnd := [];
+  nid := [];
+  ok := [];
+  d := [];
+  nd := [];
+  for p in pairs do 
+    Print("Checking pair ", p, "\n");
+    for n in allnames do
+      pos := PositionSublist(n, p[1]);
+      if pos <> fail then
+        n2 := SubstitutionSublist(n, p[1], p[2]);
+        doc := List([n,n2], IsDocumentedWord);
+        if not n2 in allnames then
+          if doc = [false, false] then
+            Add(mnd, [n,n2]);
+          else
+            Add(md, [n,n2]);
+          fi;
+        else
+          if not IsIdenticalObj(ValueGlobal(n), ValueGlobal(n2)) then
+            Add(nid, [n, n2]);
+          else 
+            if doc = [true, true] then
+              AddSet(ok, Set([n,n2]));
+            elif doc = [false, false] then
+              Add(nd, [n, n2]);
+            elif IsSet([n,n2]) then
+              Add(d, [n, n2]);
+            fi;
+          fi;
+        fi;
+      fi;
+    od;
+  od;
+  if Length(nid) > 0 then
+    Print("\nThese should be synonyms but have non-identical values:\n");
+    for p in nid do
+      Print("  ",p[1]," / ",p[2],"\n");
+    od;
+  fi;
+  if Length(md) > 0 then
+    Print("\nDocumented variables with missing synonym:\n");
+    for p in md do
+      Print("  ",p[1]," / ",p[2],"\n");
+    od;
+  fi;
+  if Length(d) > 0 then
+    Print("\nOne of these synonyms is not documented:\n");
+    for p in d do
+      Print("  ",p[1]," / ",p[2],"\n");
+    od;
+  fi;
+  if Length(nd) > 0 then
+    Print("\nSynonyms without documentation:\n");
+    for p in nd do
+      Print("  ",p[1]," / ",p[2],"\n");
+    od;
+  fi;
+  if Length(mnd) > 0 then
+    Print("\nUndocumented variables with missing synonym:\n");
+    for p in mnd do
+      Print("  ",p[1]," / ",p[2],"\n");
+    od;
+  fi;
+  if Length(ok) > 0 then
+    Print("\nOK, synonyms which are both documented:\n");
+    for p in ok do
+      Print("  ",p[1]," / ",p[2],"\n");
+    od;
+  fi;
+end);
+
+

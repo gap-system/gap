@@ -18,17 +18,17 @@ pre=${DISTNAME}
 echo 'Adding a list of text documentation files to '${GAPSOURCE}/listtextfiles.txt
 
 find \
-   $pre/doc/{ref,tut}/*.{txt,html,six,lab,toc,ind,css} \
+   $pre/doc/{ref,tut,changes}/*.{txt,html,six,lab,toc,ind,css} \
        -print >> listtextfiles.txt
 
 echo 'Adding a list of binary documentation files to '${GAPSOURCE}/listbinaryfiles.txt
              
 find \
-   $pre/doc/{ref,tut}/*.pdf \
+   $pre/doc/{ref,tut,changes}/*.pdf \
        -print >> listbinaryfiles.txt
 
 find \
-   $pre/doc/{ref,tut}/*.js \
+   $pre/doc/{ref,tut,changes}/*.js \
        -print >> listbinaryfiles.txt
                          
 exit 0

@@ -21,7 +21,7 @@ find ${DISTNAME} -type f -exec chmod 644 {} ";"
 echo 'and there are a few executables ...' 
 find \
   ${DISTNAME}/{configure,gap.shi,tst/remake.sh} \
-  ${DISTNAME}/bin/*.{bat,pif} \
+  ${DISTNAME}/bin/*.bat \
   ${DISTNAME}/cnf/{config.guess,config.sub,configure.out,install-sh} \
   ${DISTNAME}/doc/manualindex \
   ${DISTNAME}/doc/test/mktestx.sh \

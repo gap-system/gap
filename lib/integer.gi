@@ -1405,6 +1405,33 @@ InstallMethod( DefaultRingByGenerators,
       fi;
     end );
 
+    
+#############################################################################
+##
+#M  DefaultRingByGenerators( <mats> ) .  for a list of n x n integer matrices
+##
+InstallMethod( DefaultRingByGenerators,
+               "for lists of n x n integer matrices", true,
+               [ IsCyclotomicCollCollColl and IsFinite ],
+
+  function ( mats )
+    local d;
+    if IsEmpty(mats) or not ForAll(mats,IsRectangularTable and IsMatrix) then
+       TryNextMethod(); 
+    fi;
+    d := Length( mats[1] );
+    if d=0 then
+       TryNextMethod(); 
+    fi;
+    if not ForAll( mats, m -> Length(m)=d and Length(m[1])=d ) then
+       TryNextMethod(); 
+    fi;    
+    if not ForAll( mats, m -> ForAll( m, r -> ForAll(r,IsInt))) then
+       TryNextMethod(); 
+    fi;
+    return FullMatrixAlgebra(Integers,d);
+  end );
+  
 
 #############################################################################
 ##

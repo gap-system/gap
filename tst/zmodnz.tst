@@ -267,7 +267,7 @@ gap> G:= GroupWithGenerators( [ one ] );;
 gap> One( G );
 [ [ ZmodnZObj( 1, 6 ), ZmodnZObj( 0, 6 ) ], 
   [ ZmodnZObj( 0, 6 ), ZmodnZObj( 1, 6 ) ] ]
-gap> STOP_TEST( "zmodnz.tst", 2800000 );
+gap> STOP_TEST( "zmodnz.tst", 2300000 );
 
 #############################################################################
 ##

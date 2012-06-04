@@ -595,6 +595,32 @@ BIND_GLOBAL("ARCH_IS_MAC",function()
       or GAPInfo.Architecture = MACINTOSH_PPC_ARCHITECTURE;
 end);
 
+
+#############################################################################
+##
+#F  ConnectGroupAndCharacterTable( <G>, <tbl>[, <info>] )
+##
+##  This function was supported up to GAP 4.4.12.
+##  It is deprecated because it changes its arguments, which is a bad idea.
+##  Note that after a successful call of `ConnectGroupAndCharacterTable',
+##  one cannot use <tbl> in another call with another group <G>.
+##
+##  Moreover, if <tbl> is a character table from GAP's table library (which
+##  is probably the most usual application) then the following may happen.
+##  One fetches the table <tbl> with `CharacterTable',
+##  then stores the group information with `ConnectGroupAndCharacterTable',
+##  then performs some computations with this table and perhaps with other
+##  tables,
+##  and finally one fetches <tbl> again with `CharacterTable'; depending on
+##  the intermediate computations, this table can be the old instance, with
+##  the (unwanted) stored group information.
+##
+##  In GAP 4.5, one can use the function `CharacterTableWithStoredGroup'
+##  instead of `ConnectGroupAndCharacterTable'.
+##
+DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
+
+
 #############################################################################
 ##
 #E

@@ -2423,7 +2423,7 @@ CVar CompIntExpr (
 #endif
         }
 	if (siz <= 8)
-	  Emit("%c = C_NORMALIZE_INT(%c);\n", val,val);
+	  Emit("%c = C_NORMALIZE_64BIT(%c);\n", val,val);
         return val;
     }
 }

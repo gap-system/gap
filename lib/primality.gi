@@ -697,7 +697,7 @@ function(N)
       ret:=PrimalityProof_FindFermat(N,p[2]);
       if(ret[1]=fail) then 
         Print("\n\n");
-        Print("# !!! Please email gapmethods@mowsey.org the following:\n");
+        Print("# !!! Please email support@gap-system.org the following:\n");
         Print("# !!! PrimalityProof(",HexStringInt(N),") failed at F",p[2],"\n\n\n");
         Error("# !!! You have probably found a bug. Theoretically <n> is composite.");
         return fail;
@@ -716,7 +716,7 @@ function(N)
       ret:=PrimalityProof_FindLucas(N,D,p[2]);
       if(ret[1]=fail) then 
         Print("\n\n");
-        Print("# !!! Please email gapmethods@mowsey.org the following:\n");
+        Print("# !!! Please email support@gap-system.org the following:\n");
         Print("# !!! PrimalityProof(",HexStringInt(N),") failed at L",p[2],"\n\n\n");
         Error("# !!! You have probably found a bug. Theoretically <n> is composite.");
         return fail;
@@ -1026,7 +1026,7 @@ function(N)
     # Otherwise an error or composite BPSW number has been found.
     else
       Print("\n\n");
-      Print("# !!! Please email gapmethods@mowsey.org the following:\n");
+      Print("# !!! Please email support@gap-system.org the following:\n");
       Print("# !!! BPSW failed on ",HexStringInt(N),"\n\n\n");
       Error("# !!! You have probably found a bug. Theoretically <n> is composite.");
       return false;

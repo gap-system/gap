@@ -1197,7 +1197,7 @@ end);
 LOCAL_COPY_GF2 := GF(2);
 
 InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
-    local   v,  q,  vc,  common,  field;
+    local   v,  q,  vc,  common,  field, q0;
     if Length(arg) < 1 then
         Error("ConvertToVectorRep: one or two arguments required");
     fi;
@@ -1210,20 +1210,35 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     fi;
     
     if Is8BitVectorRep(v) then
-        q := Q_VEC8BIT(v);
-        if (Length(arg) = 1 or arg[2] = q or (IsField(arg[2]) and Size(arg[2]) = q)) then
+        q0 := Q_VEC8BIT(v);
+        if Length(arg) = 1 then
+            return q0;
+        fi;
+        if IsInt(arg[2]) then
+            q := arg[2];
+        elif IsField(arg[2]) then
+            q := Size(arg[2]);
+        fi;
+        if q = q0 then
             return q;
-        elif (IsInt(arg[2]) and arg[2] mod q = 0)  or (IsField(arg[2]) and Size(arg[2]) mod q = 0) then
-            if IsLockedRepresentationVector(v) then
-                Error("Vector is locked over smaller field");
+        fi;
+        if IsLockedRepresentationVector(v) then
+            Error("Vector is locked over current field");
+        else
+            if q = 2 then
+                CONV_GF2VEC(v);
+                return 2;
+            elif q < 256 then
+                CONV_VEC8BIT(v,q);
+                return q;
             else
-                if IsInt(arg[2]) then
-                    CONV_VEC8BIT(v,arg[2]);
-                    return arg[2];    
-                elif IsField(arg[2]) then
-                    CONV_VEC8BIT(v,Size(arg[2]));
-                    return Size(arg[2]);
+                if q mod q0 <> 0 then
+                    Error("New field size incompatible with vector entries");
+                else
+                    PLAIN_VEC8BIT(v);
+                    return q;
                 fi;
+                    
             fi; 
         fi;
     fi;

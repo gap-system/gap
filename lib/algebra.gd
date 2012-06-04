@@ -250,6 +250,9 @@ DeclareAttribute( "GeneratorsOfLeftOperatorRingWithOne",
 ##
 ##  <Description>
 ##  returns a list of elements that generate <A>A</A> as an algebra.
+##  <P/>
+##  For a free algebra, each generator can also be accessed using 
+##  the <C>.</C> operator (see <Ref Attr="GeneratorsOfDomain"/>).
 ##  <Example><![CDATA[
 ##  gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3 ], [ 0, 0, 0 ] ];;
 ##  gap> A:= AlgebraWithOne( Rationals, [ m ] );
@@ -277,6 +280,9 @@ DeclareSynonymAttr( "GeneratorsOfFLMLOR", GeneratorsOfLeftOperatorRing );
 ##  <Description>
 ##  returns a list of elements of <A>A</A>
 ##  that generate <A>A</A> as an algebra with one. 
+##  <P/>
+##  For a free algebra with one, each generator can also be accessed using 
+##  the <C>.</C> operator (see <Ref Attr="GeneratorsOfDomain"/>).
 ##  <Example><![CDATA[
 ##  gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3 ], [ 0, 0, 0 ] ];;
 ##  gap> A:= AlgebraWithOne( Rationals, [ m ] );

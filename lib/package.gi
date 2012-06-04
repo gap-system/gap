@@ -2120,14 +2120,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
       fi;
       for subrec in list do
         TestMandat( subrec, "BookName", IsString, "a string" );
-        if not IsBound(subrec.Archive) and not
-                                   IsBound(subrec.ArchiveURLSubset) then
-          Print("#E  PackageDoc component must have `Archive' or \
-`ArchiveURLSubset' component\n");
-          result := false;
+        if IsBound(subrec.Archive) then
+          Print("#W  PackageDoc.Archive is withdrawn, use PackageDoc.ArchiveURLSubset instead\n");
         fi;
-        TestOption( subrec, "Archive", IsString, "a string" );
-        TestOption( subrec, "ArchiveURLSubset", IsFilenameList,
+        TestMandat( subrec, "ArchiveURLSubset", IsFilenameList,
             "a list of strings denoting relative paths to readable files or directories" );
         TestMandat( subrec, "HTMLStart", IsFilename,
                     "a string denoting a relative path to a readable file" );
@@ -2301,7 +2297,7 @@ GAPInfo.PackagesRestrictions := rec(
               "  with the current version of GAP.\n",
               "  It is strongly recommended to update to the ",
               "most recent version, see URL\n",
-              "      http://www-public.tu-bs.de:8080/~beick/so.html\n" );
+              "      http://www.gap-system.org/Packages/autpgrp.html\n" );
         fi;
         end ) );
 
@@ -2670,6 +2666,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
           subrule, added, prev, subresult, entry, isrelevant, guesssource,
           protected;
 
+    pkgname:= LowercaseString( pkgname );
     test:= TestPackageAvailability( pkgname, version );
 
     # If the function has been called for this package then

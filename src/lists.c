@@ -223,7 +223,7 @@ Obj FuncLEN_LIST (
     Obj                 list )
 {
     /* special case for plain lists (avoid conversion back and forth)      */
-    if ( TNUM_OBJ(list) == T_PLIST ) {
+    if ( IS_PLIST(list) ) {
         return INTOBJ_INT( LEN_PLIST( list ) );
     }
 

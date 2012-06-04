@@ -12,7 +12,7 @@ setenv NAME "4r5"
 #setenv LOPTS ""
 
 #tar xzvpf gap{$NAME}p*.tar.gz
-unzip L18743-4734TMP.zip
+unzip gap4r5p*.zip
 
 cd gap4r5
 
@@ -60,11 +60,6 @@ cp bin/`grep ^GAParch= sysinfo.gap | sed -e 's/GAParch=//'`/gac bin
 cd ..
 tar xzf gap4r5/etc/tools.tar.gz
 cd gap4r5
-
-# make various targets in Makefile-default32 work
-cd bin
-rm -f gap-default32.sh
-ln -s ../local/bin/gap gap-default32.sh
 
 # now the packages
 cd pkg
@@ -267,42 +262,13 @@ make
 strip bin/*/*.so
 cd ..
 
-#  see the pargap documentation how to use this 
-#  (in particular, user needs procgroup file)
-cd pargap
-./configure --with-mpi=MPINU2
-mv Makefile Makefile.orig
-sed -e 's/ rm -f bin/ rm -f binxxx/' < Makefile.orig > Makefile
-# produce gapmpi.o and start script
-make 
-cp bin/pargap.sh ../../bin/
-cd ..
-rm -f ALLPKG
-# reduce dependencies of gap executable 
-cd  ..
-cd bin/i686*
-rm -f pargapmpi
-## see above for the two versions
-#gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/i686*/libmpi.a -l:libreadline.a -l:libncurses.a  -l:libm.a  extern/gmp/lib/libgmp.a  -ldl 
-gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/i686*/libmpi.a /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  extern/gmp/lib/libgmp.a  -ldl 
-mv gapnompi gap
-mv gap.o.nompi gap.o
-
-cd ../../pkg
+#### PARGAP
 
 # needs the following Debian packages: 
 # libxaw7-dev libxpm-dev libxmu-dev libxt-dev libxext-dev libxpm-dev libx11-dev 
 cd xgap
 ./configure
-make config
-cd bin/*
-mv Makefile Makefile.orig
-sed -e "s/lXaw/lXaw7/" < Makefile.orig > Makefile
-cd ../..
-# on newer systems
-#make LOPTS="-static  -lXaw7 -lXpm -lXmu -lXt -lXext -ldl -lXpm -lX11 -lxcb -lpthread -lXau -lXdmcp"
-# on Dapper
-make LOPTS="-static  -lXaw7 -lXpm -lXmu -lXt -lXext -ldl -lXpm -lX11 -lpthread -lXau -lXdmcp"
+make 
 strip bin/*/xgap
 cp bin/xgap.sh ../../bin/
 cd ..
@@ -320,10 +286,8 @@ cvs update
 rm -rf CVS
 cd ..
 
-# unpack the binary archive for the 'homology' package
+# make various targets in Makefile-default32 work
+cd bin
+rm -f gap-default32.sh
+ln -s ../local/bin/gap gap-default32.sh
 cd ..
-wget http://www.cis.udel.edu/%7Edumas/Homology/Binaries/homology-1.4.3_i686-pc-linux-gnu-gcc.tgz
-cd gap4r5
-tar xzvf ../homology-1.4.3_i686-pc-linux-gnu-gcc.tgz
-
-

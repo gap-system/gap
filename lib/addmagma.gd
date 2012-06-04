@@ -340,6 +340,7 @@ DeclareSynonym( "AdditiveMagmaWithInverses", NearAdditiveGroup );
 ##  <Oper Name="NearAdditiveMagmaByGenerators" Arg='[Fam, ]gens'/>
 ##
 ##  <Description>
+##  An underlying operation for <Ref Func="NearAdditiveMagma"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -358,6 +359,7 @@ DeclareSynonym( "AdditiveMagmaByGenerators", NearAdditiveMagmaByGenerators );
 ##  <Oper Name="NearAdditiveMagmaWithZeroByGenerators" Arg='[Fam, ]gens'/>
 ##
 ##  <Description>
+##  An underlying operation for <Ref Func="NearAdditiveMagmaWithZero"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -378,6 +380,7 @@ DeclareSynonym( "AdditiveMagmaWithZeroByGenerators",
 ##  <Oper Name="NearAdditiveGroupByGenerators" Arg='[Fam, ]gens'/>
 ##
 ##  <Description>
+##  An underlying operation for <Ref Func="NearAdditiveGroup"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -58,6 +58,7 @@ Tetc/patternstextbinary.txt
 #
 +doc/ref/*
 +doc/tut/*
++doc/changes/*
 +doc/versiondata
 +doc/manualbib.xml
 +doc/manual.css

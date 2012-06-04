@@ -18,8 +18,7 @@ else
   wsname=ws64gap4
 fi
 
-# the -N option is to really load the code, not completion files
-bin/$arch*/gap -l `pwd`"/local;"`pwd` -N -r > /dev/null <<EOF
+bin/$arch*/gap -l `pwd`"/local;"`pwd`  -r > /dev/null <<EOF
 
 # load here all packages you want to include in the standard workspace
 for nam in [ "atlasrep", "autpgrp", "browse", "cohomolo", "crisp", "cryst", 

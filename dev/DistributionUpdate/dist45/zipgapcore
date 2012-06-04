@@ -27,13 +27,25 @@ cd $pre/doc
 pdftex gapmacrodoc.tex
 pdftex gapmacrodoc.tex
 cd ../..
-echo $pre/doc/gapmacrodoc.pdf >> listtextfilesfortools.txt
-echo 'Adding text tools files to the archive '${GAPCORE}/$toolsarchive
-tar cfz ${toolsarchive} -T listtextfilesfortools.txt
+echo $pre/doc/gapmacrodoc.pdf >> listbinaryfilesfortools.txt
+cp listtextfilesfortools.txt $pre/
+cp listbinaryfilesfortools.txt $pre/
 
-# so far we have no binary tools files, otherwise we need a step to add them
+cd $pre
 
-mv ${toolsarchive} $pre/etc/
+echo 's,'$pre'/,,g' > sedfile
+sed -f sedfile listtextfilesfortools.txt > listtextfilesfortools.rel
+sed -f sedfile listbinaryfilesfortools.txt > listbinaryfilesfortools.rel
+
+cat listtextfilesfortools.rel listbinaryfilesfortools.rel > listallfilesfortools.txt
+
+echo 'Adding text and binary tools files to the archive '${GAPCORE}/$toolsarchive
+tar cfz ${toolsarchive} -T listallfilesfortools.txt
+
+mv ${toolsarchive} etc/
+
+cd ..
+
 echo $pre/etc/${toolsarchive} >> listbinaryfiles.txt
        
 echo 'Adding text files to the archive '${GAPCORE}/$ziparchive

@@ -32,6 +32,6 @@ rm -f XXXisnew XXXisold
 touch XXXisnew
 
 echo "New collection is in gap4r5XXX; test it and if ok:"
-echo "     cd "`pwd`"/.."
+echo "     cd "`pwd`"
 echo "     ./swapwithXXX"
 

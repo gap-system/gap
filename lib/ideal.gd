@@ -359,6 +359,7 @@ DeclareAttribute( "GeneratorsOfRightIdeal", IsRing );
 ##  <Attr Name="RightActingRingOfIdeal" Arg='I'/>
 ##
 ##  <Description>
+##  returns the left (resp. right) acting ring of an ideal <A>I</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

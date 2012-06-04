@@ -282,6 +282,7 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 ##  <#GAPDoc Label="StartlineFunc">
 ##  <ManSection>
 ##  <Func Name="StartlineFunc" Arg='func'/>
+##  <Func Name="EndlineFunc" Arg='func'/>
 ##
 ##  <Description>
 ##  Let <A>func</A> be a function.
@@ -291,19 +292,24 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 ##  <Ref Func="StartlineFunc"/> returns the line number in this file
 ##  where the definition of <A>func</A> starts.
 ##  <P/>
+##  <Ref Func="EndlineFunc"/> behaves similarly and returns the line number 
+##  in this file where the definition of <A>func</A> ends.
+##  <P/>
 ##  <Log><![CDATA[
 ##  gap> meth:= ApplicableMethod( Size, [ Group( () ) ] );;
 ##  gap> FilenameFunc( meth );
 ##  "... some path ... gap4r5/lib/grpperm.gi"
 ##  gap> StartlineFunc( meth );
-##  490
+##  487
+##  gap> EndlineFunc( meth );
+##  487
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "StartlineFunc", STARTLINE_FUNC );
-
+BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 
 #############################################################################
 ##
@@ -311,7 +317,7 @@ BIND_GLOBAL( "StartlineFunc", STARTLINE_FUNC );
 ##
 ##  <#GAPDoc Label="CallFuncList">
 ##  <ManSection>
-##  <Func Name="CallFuncList" Arg='func, args'/>
+##  <Oper Name="CallFuncList" Arg='func, args'/>
 ##
 ##  <Description>
 ##  returns the result, when calling function <A>func</A> with the arguments

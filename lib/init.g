@@ -640,10 +640,10 @@ BindGlobal( "ShowKernelInformation", function()
         Print("This is GAP ", GAPInfo.Version, " of ",
               sysdate, " (", GAPInfo.Architecture);
         if "gmpints" in LoadedModules() then
-            Print(" + gmp");
+            Print("+gmp");
         fi;
         if IsBound( GAPInfo.UseReadline ) then
-            Print(" + readline");
+            Print("+readline");
         fi;
         Print(")\n");
         if GAPInfo.CommandLineOptions.L <> "" then
@@ -1169,6 +1169,7 @@ end);
 ##
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
+HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
 
 
 #############################################################################

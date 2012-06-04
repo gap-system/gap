@@ -145,8 +145,8 @@
 ##      The <C>random</C> option is explained in more detail
 ##      in&nbsp;<Ref Sect="Randomized Methods for Permutation Groups"/>.
 ##  </Item>
-##  <Mark><C>size</C> (default <C>Size( <A>G</A> )</C> if this is known,
-##          i.e., if <C>HasSize( <A>G</A> )</C> is <K>true</K>) </Mark>
+##  <Mark><C>size</C> (default <C>Size(<A>G</A>)</C> if this is known,
+##          i.e., if <C>HasSize(<A>G</A>)</C> is <K>true</K>)</Mark>
 ##  <Item>
 ##      If this component is present, its value is assumed to be the order
 ##      of the group <A>G</A>.
@@ -157,7 +157,7 @@
 ##  </Item>
 ##  <Mark><C>limit</C> (default <C>Size(Parent(<A>G</A>))</C> or
 ##           <C>StabChainOptions(Parent(<A>G</A>)).limit</C>
-##           if this is present) </Mark>
+##           if it is present)</Mark>
 ##  <Item>
 ##      If this component is present, it must be greater than or equal to
 ##      the order of <A>G</A>.

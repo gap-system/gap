@@ -864,30 +864,11 @@ Obj             EvalIntExpr (
     Expr                expr )
 {
     Obj                 val;            /* integer, result                 */
-#if 0
-    UInt                i;              /* loop variable                   */
-#endif
 
     
     /* allocate the integer                                                */
     val = NewBag( ((UInt *)ADDR_EXPR(expr))[0], SIZE_EXPR(expr)-sizeof(UInt));
-#if 0
-    if ( ((UInt2*)ADDR_EXPR(expr))[0] == 1 ) {
-        val = NewBag( T_INTPOS, SIZE_EXPR(expr) - sizeof(UInt2) );
-    }
-    else {
-        val = NewBag( T_INTNEG, SIZE_EXPR(expr) - sizeof(UInt2) );
-    }
-
-    /* copy over                                                           */
-    /* Need to fix this for GMP integers */
-    for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
-        ((UInt2*)ADDR_OBJ(val))[i-1] = ((UInt2*)ADDR_EXPR(expr))[i];
-    }
-    */
-#endif
-
-      memcpy((void *)ADDR_OBJ(val), (void *)(((UInt *)ADDR_EXPR(expr))+1), (size_t) (SIZE_EXPR(expr)-sizeof(UInt)));
+    memcpy((void *)ADDR_OBJ(val), (void *)(((UInt *)ADDR_EXPR(expr))+1), (size_t) (SIZE_EXPR(expr)-sizeof(UInt)));
 
     /* return the value                                                    */
     return val;

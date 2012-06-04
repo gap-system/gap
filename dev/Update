@@ -39,6 +39,7 @@ Fix: crash
 Fix: internal data corruption
 New: extended functionality
 New: new functionality
+New: changed functionality
 New: improved documentation
 
 ! Description
@@ -73,6 +74,7 @@ Fix: efficiency issue
 Fix: crash
 New: extended functionality
 New: new functionality
+New: changed functionality
 New: improved documentation
 
 % For the description use (X)HTML (preferred) or plain text:
@@ -944,5 +946,405 @@ which can substitute the less flexible
 <span class="code">ReadTest</span> function.
 ! Changed Files
 lib/test.g*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/04/12
+! Changed by
+AK
+! Type of Change
+New: changed functionality
+! Description
+Renamed
+<span class=code>Complementclasses</span> 
+to 
+<span class=code>ComplementClassesRepresentatives</span> 
+and
+<span class=code>ComplementclassesEA</span> 
+to
+<span class=code>ComplementClassesRepresentativesEA</span>.
+! Changed Files
+doc/ref/groups.xml lib/ctblsolv.gi lib/ghomfp.gi lib/grpcompl.gi
+lib/grppcaut.gi lib/grppccom.gd lib/grppccom.gi lib/morpheus.gi 
+lib/obsolete.gd lib/onecohom.gd lib/onecohom.gi lib/transatl.g
+tst/bugfix.tst tst/grppc.tst tst/onecohom.tst tst/sanity.g
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/01/18
+! Changed by
+AK
+! Type of Change
+New: improved documentation
+! Description
+Documentation of <span class=code>ImagesSet</span> states that the result 
+may be be a proper set or a domain.
+! Changed Files
+lib/mapping.gd
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/10/14
+! Changed by
+AK
+! Type of Change
+New: improved documentation
+! Description
+Stated that the upper limit on the number of simultaneosly opened files is 15.
+! Changed Files
+doc/ref/files.xml
+lib/files.gd
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/01/20
+! Changed by
+AK
+! Type of Change
+New: improved documentation
+! Description
+Documented <span class=code>IsRectangularTable</span> property.
+! Changed Files
+doc/ref/lists.xml
+lib/list.g
+lib/matrix.gd
+tst/matrix.tst
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/01/24
+! Changed by
+AK
+! Type of Change
+New: changed functionality
+! Description
+<span class=code>DisplayRevision</span> made obsolete.
+! Changed Files
+doc/ref/debug.xml
+lib/obsolete.gd
+lib/profile.g
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/10/15
+! Changed by
+AK
+! Type of Change
+New: changed functionality
+! Description
+<span class=code>AffineOperation</span>,
+<span class=code>AffineOperationLayer</span> and
+<span class=code>FactorCosetOperation</span>
+are withdrawn from the documentation and made obsolete. Instead, 
+one should use  
+<span class=code>AffineAction</span>,
+<span class=code>AffineActionLayer</span>
+and
+<span class=code>FactorCosetAction</span>.
+! Changed Files
+lib/grppc.gd
+lib/grppcint.gi
+lib/obsolete.gd
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/05/11
+! Changed by
+AK
+! Type of Change
+New: extended functionality
+! Description
+Changed the declaration and added method for 
+<span class=code>PositionProperty</span> to support non-dense lists.
+! Changed Files
+lib/list.*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/04/10
+! Changed by
+AK
+! Reported by
+LB
+! Type of Change
+New: extended functionality
+! Description
+Added method for <span class=code>AdditiveInverseOp</span> 
+for <span class=code>IsNullMapMatrix</span>.
+! Changed Files
+lib/matrix.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/07/09
+! Changed by
+AK
+! Type of Change
+New: improved documentation
+! Description
+Documented <span class=code>START_TEST</span> and 
+<span class=code>STOP_TEST</span> functions 
+which may be optionally used in test files.
+! Changed Files
+doc/ref/debug.xml
+lib/files.gd
+lib/profile.g
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/08/02
+! Changed by
+AK
+! Type of Change
+New: changed functionality
+! Description
+<span class=code>ProductPol</span> made obsolete.
+! Changed Files
+doc/ref/vector.xml 
+lib/listcoef.*
+lib/obsolete.*
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/10/02
+! Changed by
+AK
+! Type of Change
+New: changed functionality
+New: improved documentation
+! Description
+<span class=code>TeXObj</span> and <span class=code>LaTeXObj</span> made obsolete.
+Index entries added to the documentation of all LaTeX string producing functions.
+! Changed Files
+doc/ref/string.xml
+lib/ctbl.gd
+lib/ctblpope.gd
+lib/ffe.gi
+lib/grpfp.gi
+lib/matrix.gi
+lib/obsolete.*
+lib/oper.g
+lib/ratfun.gi
+lib/rational.gi
+lib/straight.gd
+lib/wordlett.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/12/02
+! Changed by
+AK
+! Type of Change
+New: changed functionality
+! Description
+<span class=code>ValidatePackageInfo</span> allows to omit components
+<span class=code>Email</span>, <span class=code>WWWHome</span> and
+<span class=code>PostalAddress</span> for package authors who are not 
+maintainers.
+! Changed Files
+lib/package.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/04/26
+! Changed by
+AK
+! Type of Change
+New: changed functionality
+! Description
+<span class=code>ValidatePackageInfo</span> requires mandatory
+<span class=code>PackageDoc.ArchiveURLSubset</span> component.
+<span class=code>PackageDoc.Archive</span> component has been
+withdrawn.
+! Changed Files
+lib/package.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/10/10
+! Changed by
+AK
+! Type of Change
+New: changed functionality
+! Description
+testall.g is now a much longer test, and its previous content is now in
+testinstall.g. 
+! Changed Files
+Makefile.in
+doc/ref/install.xml
+doc/ref/makedocreldata.g 
+tst/*.tst
+tst/testall.g
+tst/testinstall.g 
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/01/16
+! Changed by
+AK
+! Type of Change
+New: improved documentation
+! Description
+Documented the possibility to re-declare an operation with another number 
+of arguments and/or different filters for its arguments.
+! Changed Files
+doc/prg/intrfc.xml
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/05/16
+! Changed by
+AK
+! Type of Change
+New: changed functionality
+! Description
+<span class=code>X</span> as a synonym for 
+<span class=code>Indeterminate</span> is now supported only 
+for backwards compatibility. We recommend not to use 
+<span class=code>X</span> in your code.
+! Changed Files
+doc/ref/ratfun.xml
+lib/ringpoly.*
+lib/algfld.gi
+lib/ctblfuns.gi
+lib/galois.gi
+lib/groebner.*
+lib/matrix.gd
+lib/ratfun.gd
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/05/20
+! Changed by
+AK
+! Type of Change
+New: extended functionality
+! Description
+Added support for the Google Chrome browser 
+in <span class=code>SetHelpViewer</span>.
+! Changed Files
+doc/ref/help.xml
+lib/helpview.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/02/25
+! Changed by
+AK
+! Type of Change
+New: extended functionality
+! Description
+Fixed the problem of viewing help with Safari and Mac OS X default
+browsers, which opened the needed chapter but not at the needed section.
+! Changed Files
+lib/helpview.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/09/21
+! Changed by
+AK
+! Type of Change
+New: extended functionality
+! Description
+<span class=code>ValidatePackageInfo</span> allows "submitted" status of 
+a package. 
+! Changed Files
+lib/package.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/09/21
+! Changed by
+AK
+! Type of Change
+New: extended functionality
+! Description
+<span class=code>ValidatePackageInfo</span> accepts an optional component
+<span class=code>TextBinaryFilesPatterns</span> with hints for classifying
+package files on text/binary using wildcards. 
+! Changed Files
+lib/package.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/03/25
+! Changed by
+AK
+! Type of Change
+New: improved documentation
+! Description
+Description of completion files is removed from the documentation 
+as they are no longer supported.
+! Changed Files
+doc/ref/install.xml
+doc/ref/libform.xml
+doc/ref/run.xml
+lib/oper.g
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2011/01/12
+! Changed by
+AK
+! Type of Change
+New: improved documentation
+! Description
+Description of the gac script is restricted to cover only building packages 
+with kernel modules. Compiling the GAP code is no longer supported.
+! Changed Files
+doc/ext/gappkg.xml
+doc/ref/run.xml
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/11/12
+! Changed by
+AK
+! Type of Change
+New: new functionality
+! Description
+<span class=code>IntChar</span>, <span class=code>CharInt</span>,
+<span class=code>SIntChar</span> and <span class=code>CharSInt</span>
+made available as synonyms to <span class=code>INT_CHAR</span>, 
+<span class=code>CHAR_INT</span>, <span class=code>SINT_CHAR</span> and 
+<span class=code>CHAR_SINT</span>. The comment about their internal 
+behaviour is removed from documentation: proper error management is 
+already in place.
+! Changed Files
+doc/ref/lists.xml
+lib/list.*
+lib/semirel.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/10/20
+! Changed by
+AK
+! Type of Change
+New: new functionality
+! Description
+<span class=code>CopyListEntries</span> made available as a synonym to 
+<span class=code>COPY_LIST_ENTRIES</span>.
+! Changed Files
+doc/ref/string.xml 
+lib/string.gd
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2010/10/14
+! Changed by
+AK
+! Type of Change
+New: changed functionality
+! Description
+GAP3 compatibility mode is no longer supported. 
+The -O option used to activate it is removed.
+! Changed Files
+doc/ref/run.xml
+doc/ref/ratfun.xml
+lib/compat*.g
+tst/compat3.tst
+tst/testall.g
 ! End
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

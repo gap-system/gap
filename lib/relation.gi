@@ -799,7 +799,7 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
         ##
         e := STRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Successors(r));
 
-        ## Eliminate singlatons
+        ## Eliminate singletons
         e := Filtered(e, i->Length(i)>1);
 
         ## Do a depth first search of rel

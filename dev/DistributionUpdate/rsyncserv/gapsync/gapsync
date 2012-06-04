@@ -49,6 +49,8 @@ if [ ! -f gapsync.issyncdir ]; then
   else
     gappath=$gappath'/gap4r5'
   fi
+  # avoid multiple //
+  gappath=${gappath//\/\//\/}
 
   echo "Also, tell me an absolute path for the scripts to start GAP "
   echo "(default is /usr/local/bin)"

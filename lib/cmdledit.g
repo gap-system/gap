@@ -14,7 +14,7 @@
 ##
 
 
-if IsBound(BINDKEYSTOGAPHANDLER) then
+if GAPInfo.CommandLineOptions.E then
 ############################################################################
 ##       readline interface functions
 GAPInfo.UseReadline := true;
@@ -917,6 +917,11 @@ end;
 ##  "\0331\030\007\t"
 ##  gap> BindKeySequence("^[OR",last);  # first arg with C-v<F3>
 
+  # for compatibility with the non-readline kernel code
+  LineEditKeyHandlers := [];
+  LineEditKeyHandler := function(l)
+    return [l[1], l[3], l[5]];
+  end;
 else
   # some experimental code, use readline instead
   ReadLib("cmdleditx.g");

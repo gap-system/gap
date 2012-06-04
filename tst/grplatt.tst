@@ -54,7 +54,7 @@ gap> AsSortedList(List(NormalSubgroups(g),Size));
 [ 1, 2, 4, 4, 4, 8 ]
 
 # thats all, folks
-gap> STOP_TEST( "grplatt.tst", 904800000 );
+gap> STOP_TEST( "grplatt.tst", 971100000 );
 
 #############################################################################
 ##

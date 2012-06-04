@@ -1962,9 +1962,7 @@ Obj FuncCycList (
     }
 
     /* get and check the argument                                          */
-    if ( ! ( T_PLIST <= TNUM_OBJ( list )
-             && TNUM_OBJ( list ) <= LAST_PLIST_TNUM )
-         || ! IS_DENSE_LIST( list ) ) {
+    if ( ! IS_PLIST( list ) || ! IS_DENSE_LIST( list ) ) {
         ErrorQuit( "CycList: <list> must be a dense plain list (not a %s)",
                    (Int)TNAM_OBJ( list ), 0L );
     }

@@ -558,6 +558,9 @@ Obj FuncTzSubstituteGen (
 
     /* loop over all relators                                              */
     for ( i = 1;  i <= numrels;  i++ ) {
+        /* We assume that ptRels, ptLens and ptIdx are valid at the 
+           beginning of this loop (and not rendered invalid by a 
+           garbage collection)! */
         rel = ptRels[i];
         ptRel = ADDR_OBJ(rel);
         leng = INT_INTOBJ(ptLens[i]);
@@ -592,11 +595,11 @@ Obj FuncTzSubstituteGen (
         ptIdx[len]=INTOBJ_INT(i);
         CHANGED_BAG(Idx);
 
-
-
         /* allocate a bag for the modified Tietze relator                  */
         new = NEW_PLIST( T_PLIST, leng + occ * (wleng - 1) );
+        /* Now renew saved pointers into bags: */
         pt2 = ptNew = ADDR_OBJ( new );
+        ptIdx  = ADDR_OBJ( Idx );
         ptLens = ADDR_OBJ( lens );
         ptInvs = ADDR_OBJ( invs ) + (numgens + 1);
         ptWrd  = ADDR_OBJ( word );
@@ -644,6 +647,7 @@ Obj FuncTzSubstituteGen (
         SHRINK_PLIST( new, newleng );
         ptRels = ADDR_OBJ( rels );
         ptLens = ADDR_OBJ( lens );
+        ptIdx  = ADDR_OBJ( Idx );
         ptRels[i] = new;
         ADDR_OBJ( flags )[i] = INTOBJ_INT( 1 );
         CHANGED_BAG(rels);

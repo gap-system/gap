@@ -1381,7 +1381,6 @@ Obj             EvalElmList (
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
     Int                 p;              /* position, as C integer          */
-    UInt                tnum;
 
     /* evaluate the list (checking is done by 'ELM_LIST')                  */
     list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
@@ -1393,8 +1392,7 @@ Obj             EvalElmList (
       {
         
         /* special case for plain lists (use generic code to signal errors)    */
-        tnum = TNUM_OBJ(list);
-        if ( FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM )
+        if ( IS_PLIST( list ) )
           {
             if ( LEN_PLIST(list) < p ) {
               return ELM_LIST( list, p );

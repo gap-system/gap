@@ -91,9 +91,9 @@ case "$with_gmp" in
     MAKE_GMP=""
     USE_GMP=no
     ;;
-  yes | 5.0.2 | 5.0.4)
+  yes | 5.0.5 | 5.0.4)
     if test "$with_gmp" = "yes" ; then
-      with_gmp="5.0.4"
+      with_gmp="5.0.5"
     fi;
     GMP_HOME="`pwd`/bin/$GAPARCH/extern/gmp"
     GMP_CFLAGS="-I${GMP_HOME}/include"

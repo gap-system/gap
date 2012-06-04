@@ -1125,11 +1125,19 @@ RedispatchOnCondition(Value,true,[IsPolynomialFunction,IsRingElement],
 
 # print coeff list f.
 BindGlobal("StringUnivariateLaurent",function(fam,cofs,val,name)
-local str,zero,one,mone,i,c,lc,s;
+  local str,zero,one,mone,i,c,lc,s;
   str:="";
   zero := fam!.zeroCoefficient;
   one  := fam!.oneCoefficient;
   mone := -one;
+
+  if IsInt(name) then # passed as indeterminate number
+    if HasIndeterminateName(fam,name) then
+      name:=IndeterminateName(fam,name);
+    else
+      name:=Concatenation("x_",String(name));
+    fi;
+  fi;
 
   if Length(cofs)=0 then
     return String(zero);
@@ -1203,17 +1211,6 @@ local str,zero,one,mone,i,c,lc,s;
   return str;
 end);
 
-# print coeff list f.
-BindGlobal("DoPrintUnivariateLaurent",function(fam,cofs,val,ind)
-local zero,one,mone,i,c,name,lc;
-  if HasIndeterminateName(fam,ind) then
-    name:=IndeterminateName(fam,ind);
-  else
-    name:=Concatenation("x_",String(ind));
-  fi;
-  Print(StringUnivariateLaurent(fam,cofs,val,name));
-end);
-
 #############################################################################
 ##
 #M  PrintObj( <uni-laurent> )
@@ -1226,7 +1223,16 @@ InstallMethod( PrintObj,"laurent polynomial",true,[IsLaurentPolynomial],0,
 function( f )
 local c;
   c:=CoefficientsOfLaurentPolynomial(f);
-  DoPrintUnivariateLaurent(FamilyObj(f),
+  Print(StringUnivariateLaurent(FamilyObj(f),
+    c[1],c[2],
+    IndeterminateNumberOfLaurentPolynomial(f)));
+end);
+
+InstallMethod( String,"laurent polynomial",true,[IsLaurentPolynomial],0,
+function( f )
+local c;
+  c:=CoefficientsOfLaurentPolynomial(f);
+  return StringUnivariateLaurent(FamilyObj(f),
     c[1],c[2],
     IndeterminateNumberOfLaurentPolynomial(f));
 end);
@@ -1282,11 +1288,23 @@ local fam,ind,nv,dv;
     nv:=0;
     dv:=-f[3];
   fi;
-  Print("(");
-  DoPrintUnivariateLaurent(fam,f[1],nv,ind);
-  Print(")/(");
-  DoPrintUnivariateLaurent(fam,f[2],dv,ind);
-  Print(")");
+  Print("(",StringUnivariateLaurent(fam,f[1],nv,ind),")/(",StringUnivariateLaurent(fam,f[2],dv,ind),")");
+end);
+
+InstallMethod( String,"univar",true,[IsUnivariateRationalFunction],0,
+function( f )
+local fam,ind,nv,dv;
+  fam := FamilyObj(f);
+  ind := IndeterminateNumberOfLaurentPolynomial(f);
+  f   := CoefficientsOfUnivariateRationalFunction(f);
+  if f[3]>=0 then
+    nv:=f[3];
+    dv:=0;
+  else
+    nv:=0;
+    dv:=-f[3];
+  fi;
+  return Concatenation("(",StringUnivariateLaurent(fam,f[1],nv,ind),")/(",StringUnivariateLaurent(fam,f[2],dv,ind),")");
 end);
 
 # Conversion:

@@ -15,13 +15,13 @@
 # the change of the URL in case if the stored URL is different.
 
 ACE         http://school.maths.uwa.edu.au/~gregg/ACE/PackageInfo.g
-AClib       http://www-public.tu-bs.de:8080/~beick/soft/aclib/PackageInfo.g
+AClib       http://www.icm.tu-bs.de/~beick/soft/aclib/PackageInfo.g
 Alnuth      http://www.icm.tu-bs.de/ag_algebra/software/Alnuth/PackageInfo.g
 ANUPQ       http://www.math.rwth-aachen.de/~Greg.Gamble/ANUPQ/PackageInfo.g
 AtlasRep    http://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep/PackageInfo.g
 Automata    http://www.fc.up.pt/cmup/mdelgado/automata/PackageInfo.g
 AutomGrp    http://finautom.sourceforge.net/automgrp/PackageInfo.g
-AutPGrp     http://www-public.tu-bs.de:8080/~beick/soft/autpgrp/PackageInfo.g
+AutPGrp     http://www.icm.tu-bs.de/~beick/soft/autpgrp/PackageInfo.g
 Browse      http://www.math.rwth-aachen.de/~Browse/PackageInfo.g
 Carat       http://www.math.uni-bielefeld.de/~gaehler/gap45/Carat/PackageInfo.g
 Circle      http://www.cs.st-andrews.ac.uk/~alexk/circle/PackageInfo.g
@@ -32,14 +32,14 @@ CRISP       http://www.icm.tu-bs.de/~bhoeflin/crisp/PackageInfo.g
 Cryst       http://www.math.uni-bielefeld.de/~gaehler/gap45/Cryst/PackageInfo.g
 CrystCat    http://www.math.uni-bielefeld.de/~gaehler/gap45/CrystCat/PackageInfo.g
 CTblLib     http://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib/PackageInfo.g
-Cubefree    http://www.icm.tu-bs.de/ag_algebra/software/dietrich/Cubefree/PackageInfo.g
+Cubefree    http://www.icm.tu-bs.de/ag_algebra/software/Cubefree/PackageInfo.g
 cvec        http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/cvecfor4.5/PackageInfo.g
 DESIGN      http://www.maths.qmul.ac.uk/~leonard/design/design1r6/PackageInfo.g
 EDIM        http://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM/PackageInfo.g
 Example     http://www.cs.st-andrews.ac.uk/~alexk/example/PackageInfo.g
 ExamplesForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/ExamplesForHomalg/PackageInfo.g
 FactInt     http://www.gap-system.org/DevelopersPages/StefanKohl/factint/PackageInfo.g
-FGA         http://www.icm.tu-bs.de/ag_algebra/software/sievers/FGA/PackageInfo.g
+FGA         http://www.icm.tu-bs.de/ag_algebra/software/FGA/PackageInfo.g
 FORMAT      http://www.uoregon.edu/~wright/RESEARCH/format/PackageInfo.g
 Forms       http://cage.ugent.be/geometry/software/forms/PackageInfo.g
 FPLSA       http://www.math.rwth-aachen.de/~Thomas.Breuer/fplsa/PackageInfo.g
@@ -53,9 +53,9 @@ genss       http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/g
 gpd         http://www.maths.bangor.ac.uk/chda/gap4r5/gpd/PackageInfo.g
 GradedModules http://homalg.math.rwth-aachen.de/~markus/GradedModules/PackageInfo.g
 GradedRingForHomalg http://homalg.math.rwth-aachen.de/~markus/GradedRingForHomalg/PackageInfo.g
-GRAPE       http://www.maths.qmul.ac.uk/~leonard/grape/grape4r5/PackageInfo.g
-GrpConst    http://www-public.tu-bs.de:8080/~beick/soft/grpconst/PackageInfo.g
-Guarana     http://www-circa.mcs.st-andrews.ac.uk/~jjm/software/Guarana_093/PackageInfo.g
+GRAPE       http://www.maths.qmul.ac.uk/~leonard/grape/grape4r6/PackageInfo.g
+GrpConst    http://www.icm.tu-bs.de/~beick/soft/grpconst/PackageInfo.g
+Guarana     http://www-circa.mcs.st-andrews.ac.uk/~jjm/software/Guarana/PackageInfo.g
 GUAVA       http://www.southernct.edu/~fields/Guava/PackageInfo.g
 HAP         http://hamilton.nuigalway.ie/Hap/PackageInfo.g
 HAPcryst    http://csserver.evansville.edu/~mroeder/HAPcryst/PackageInfo.g
@@ -84,7 +84,7 @@ NQL         http://www.uni-math.gwdg.de/rhartung/pub/nql/PackageInfo.g
 NumericalSgps http://www.fc.up.pt/cmup/mdelgado/numericalsgps/PackageInfo.g
 OpenMath    http://www.cs.st-andrews.ac.uk/~alexk/openmath/PackageInfo.g
 orb         http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/orbfor4.5/PackageInfo.g
-ParGAP      http://www.cs.st-andrews.ac.uk/~pas/ParGAP/PackageInfo.g
+ParGAP      http://www.gap-system.org/HostedGapPackages/pargap/PackageInfo.g
 Polenta     http://www.icm.tu-bs.de/ag_algebra/software/Polenta/PackageInfo.g
 Polycyclic  http://www.icm.tu-bs.de/ag_algebra/software/polycyclic/PackageInfo.g
 polymaking  http://csserver.evansville.edu/~mroeder/polymaking/PackageInfo.g
@@ -111,6 +111,6 @@ TomLib      http://schmidt.nuigalway.ie/tomlib/PackageInfo.g
 toric       http://www.opensourcemath.org/toric/PackageInfo.g
 unipot      http://www.sergei-haller.de/unipot/PackageInfo.g
 UnitLib     http://www.cs.st-andrews.ac.uk/~alexk/unitlib/PackageInfo.g
-Wedderga    http://www.um.es/adelrio/wedderga/PackageInfo.g
-XGAP        http://www.math.rwth-aachen.de/~Max.Neunhoeffer/xgap4/PackageInfo.g
+Wedderga    http://www.cs.st-andrews.ac.uk/~alexk/wedderga/PackageInfo.g
+XGAP        http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/xgap4/PackageInfo.g
 XMod        http://www.math.bangor.ac.uk/chda/gap4r5/xmod/PackageInfo.g

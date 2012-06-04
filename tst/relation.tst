@@ -191,7 +191,7 @@ gap> Size(UnderlyingRelation(rel));
 45
 gap> Size(GeneratorsOfEquivalenceRelationPartition(EquivalenceRelationByPairs(dom,el)));
 9
-gap> STOP_TEST( "relation.tst", 7300000 );
+gap> STOP_TEST( "relation.tst", 7700000 );
 
 #############################################################################
 ##

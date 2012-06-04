@@ -4528,14 +4528,14 @@ InstallSubsetMaintenance( CanComputeSizeAnySubgroup,
 ##
 #F  Factorization( <G>, <elm> ) . . . . . . . . . . . . . . .  generic method
 ##
-InstallMethod( Factorization,"generic method", true,
-               [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
+
+BindGlobal("GenericFactorizationGroup",
 # code based on work by N. Rohrbacher
 function(G,elm)
   local maxlist, rvalue, setrvalue, one, hom, names, F, gens, letters, info,
   iso, e, objelm, objnum, numobj, actobj, S, cnt, SC, i, p, olens, stblst,
   l, rs, idword, dist, aim, ll, from, to, total, diam, write, count, cont,
-  ri, old, new, a, rna, w, stop, num, hold, g,OG;
+  ri, old, new, a, rna, w, stop, num, hold, g,OG,spheres;
 
   # A list can have length at most 2^27
   maxlist:=2^27;
@@ -4577,10 +4577,11 @@ function(G,elm)
     fi;
   end;
 
-  if not elm in G then
+  if not elm in G and elm<>fail then
     return fail;
   fi;
 
+  spheres:=[];
   one:=One(G);
 
   OG:=G;
@@ -4745,10 +4746,12 @@ function(G,elm)
     info.to:=1;
 
     info.diam:=0;
+    info.spheres:=spheres;
     OG!.factorinfo:=info;
 
   else
     info:=G!.factorinfo;
+    spheres:=info.spheres;
     rs:=info.prodlist;
     if info.iso<>fail then
       G:=Image(info.iso);
@@ -4762,7 +4765,7 @@ function(G,elm)
 
   F:=Source(hom);
   idword:=One(F);
-  if IsOne(elm) then return idword;fi; # special treatment length 0
+  if elm<>fail and IsOne(elm) then return idword;fi; # special treatment length 0
 
   gens:=info.mygens;
   letters:= info.mylett;
@@ -4773,8 +4776,12 @@ function(G,elm)
 
   dist:=info.dist;
 
-  aim:=numobj(objelm(elm));
-  if rvalue(aim)=8 then
+  if elm=fail then
+    aim:=fail;
+  else
+    aim:=numobj(objelm(elm));
+  fi;
+  if aim=fail or rvalue(aim)=8 then
     # element not yet found. We need to expand
 
     ll:=info.last;
@@ -4797,6 +4804,18 @@ function(G,elm)
         dist[diam]:=total;
         Info(InfoGroup,1,"process diameter ",diam,", extend ",total,
           " elements, ",count," elements left");
+	if IsMutable(spheres) then
+	  Add(spheres,total);
+	fi;
+        if count=0 and elm=fail then
+	  info.from:=from;
+	  info.to:=to;
+	  info.write:=write;
+	  info.count:=count;
+	  info.diam:=diam;
+	  MakeImmutable(spheres);
+	  return spheres;
+	fi;
       fi;
       i:=ll[from];
       from:=from+1;
@@ -4886,7 +4905,9 @@ function(G,elm)
 
 end);
 
-
+InstallMethod(Factorization,"generic method", true,
+               [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
+  GenericFactorizationGroup);
 
 #############################################################################
 ##

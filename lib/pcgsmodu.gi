@@ -527,27 +527,12 @@ end );
 ##
 #M  PcElementByExponentsNC( <pcgs>, <list> )
 ##
+
 InstallOtherMethod( PcElementByExponentsNC, "generic method: modulo", true,
     [ IsModuloPcgs, IsRowVector and IsCyclotomicCollection ], 0,
 function( pcgs, list )
-    local   elm,  i;
-
-    elm := fail;
-
-    for i  in [ 1 .. Length(list) ]  do
-      if list[i]=1  then
-	if elm=fail then elm := pcgs[i];
-	else elm := elm * pcgs[i];fi;
-      elif list[i] <> 0  then
-	if elm=fail then elm := pcgs[i] ^ list[i];
-	else elm := elm * pcgs[i] ^ list[i];fi;
-      fi;
-    od;
-    if elm=fail then elm := OneOfPcgs(pcgs);fi;
-
-    return elm;
-
-end );
+  return DoPcElementByExponentsGeneric(pcgs,pcgs,list);
+end);
 
 
 #############################################################################
@@ -557,25 +542,8 @@ end );
 InstallOtherMethod( PcElementByExponentsNC, "generic method: modulo, FFE",
     true, [ IsModuloPcgs, IsRowVector and IsFFECollection ], 0,
 function( pcgs, list )
-    local   elm,  i,z;
-
-    elm := fail;
-
-    for i  in [ 1 .. Length(list) ]  do
-      z :=IntFFE(list[i]);
-      if z=1 then
-	if elm=fail then elm := pcgs[i] ;
-	else elm := elm * pcgs[i] ; fi;
-      elif z>1 then
-	if elm=fail then elm := pcgs[i] ^ z;
-	else elm := elm * pcgs[i] ^ z;fi;
-      fi;
-    od;
-    if elm=fail then elm := OneOfPcgs(pcgs);fi;
-
-    return elm;
-
-end );
+  return DoPcElementByExponentsGeneric(pcgs,pcgs,list);
+end);
 
 
 #############################################################################
@@ -598,20 +566,8 @@ end );
 ##
 InstallOtherMethod( PcElementByExponentsNC, "generic method: modulo, basis",
     IsFamFamX, [IsModuloPcgs,IsList,IsRowVector and IsCyclotomicCollection], 0,
-function( pcgs, basis, list )
-    local   elm,  i;
+    DoPcElementByExponentsGeneric );
 
-    elm := OneOfPcgs(pcgs);
-
-    for i  in [ 1 .. Length(list) ]  do
-        if list[i] <> 0  then
-            elm := elm * basis[i] ^ list[i];
-        fi;
-    od;
-
-    return elm;
-
-end );
 
 #############################################################################
 ##
@@ -620,23 +576,7 @@ end );
 InstallOtherMethod( PcElementByExponentsNC,
     "generic method: modulo, basis, FFE", IsFamFamX,
     [ IsModuloPcgs, IsList, IsRowVector and IsFFECollection ], 0,
-function( pcgs, basis, list )
-    local   elm,  i,  z;
-
-    elm := OneOfPcgs(pcgs);
-
-    for i  in [ 1 .. Length(list) ]  do
-        z := IntFFE(list[i]);
-	if z=1 then
-	  elm := elm * basis[i] ;
-	elif z>1 then
-	  elm := elm * basis[i] ^ z;
-	fi;
-    od;
-
-    return elm;
-
-end );
+    DoPcElementByExponentsGeneric );
 
 
 #############################################################################

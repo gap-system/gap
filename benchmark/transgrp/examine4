@@ -2426,7 +2426,7 @@ local pmp,b,s,u,w,n,g,op,oh,hom,omp,k,f,v,co,i,j,jj,new,cl,sug,nsug,fg,pi,
       fi;
       ino:=PreImage(oh,ino);
       if largedeg then
-        co:=ComplementclassesSolvableWBG(pi,k,n);
+        co:=ComplementClassesRepresentativesSolvableWBG(pi,k,n);
 	hasfuse:=false;
 	Info(InfoAli,2,"Size ",Size(i),", ",Length(co)," complements, ");
 
@@ -2469,7 +2469,7 @@ local pmp,b,s,u,w,n,g,op,oh,hom,omp,k,f,v,co,i,j,jj,new,cl,sug,nsug,fg,pi,
 	Info(InfoAli,2,"fused into ",Length(new)," classes in preimage");
 
       else
-	co:=Complementclasses(pi,k);
+	co:=ComplementClassesRepresentatives(pi,k);
 	Info(InfoAli,2,"Size ",Size(i),", ",Length(co)," complements (factor), ");
 	# if we do not work in the full normalizer factor
 	# fuse under operation of this full factor
@@ -2812,8 +2812,8 @@ local co,no,nco,nno,i,j,a,b,cs,new,hom,ag,nh,gr,orb;
 #Print(List(co,Size),"\n");
     for j in [1..Length(co)] do
       if nh<>fail then
-        new:=Complementclasses(Image(nh,co[j]),Image(nh,cs[i-1]));
-	Info(InfoAli,4,Length(new)," local complementclasses in factor");
+        new:=ComplementClassesRepresentatives(Image(nh,co[j]),Image(nh,cs[i-1]));
+	Info(InfoAli,4,Length(new)," local complement classes in factor");
 	if Length(new)>10 then
 	  Error("QQQ");
 	fi;
@@ -2834,8 +2834,8 @@ local co,no,nco,nno,i,j,a,b,cs,new,hom,ag,nh,gr,orb;
 	od;
 
       else
-	new:=ComplementclassesSolvableWBG(co[j],cs[i-1],cs[i]);
-	Info(InfoAli,4,Length(new)," local complementclasses");
+	new:=ComplementClassesRepresentativesSolvableWBG(co[j],cs[i-1],cs[i]);
+	Info(InfoAli,4,Length(new)," local complement classes");
 	b:=[];
 	for a in new do
 	  if ForAll(b,x->RepresentativeAction(no[j],a,x)=fail) then
@@ -2873,7 +2873,7 @@ local b,w,a;
                                        GeneratorsOfGroup(t)));
 
 #Add(COMPL,[w,b]);
-  t:=Complementclasses(w,b);
+  t:=ComplementClassesRepresentatives(w,b);
 
   # further fusion 
   b:=[];
@@ -2933,7 +2933,7 @@ local b,w,a,fno,cnt,normalsyl,tf,nt,tno,ntno,i,j,k,com,hom,cs,ker,nf;
 	tf:=Image(hom,t[j]);
 	nf:=Image(hom,nf);
       fi;
-      k:=Complementclasses(tf,ker);
+      k:=ComplementClassesRepresentatives(tf,ker);
       if Length(k)>1 then
         Info(InfoAli,3,"Class ",j," split into ",Length(k)," classes");
       fi;

@@ -509,7 +509,7 @@ UpdatePackageArchives := function(pkgdir, pkgreposdir, webdir)
       Print(info.Version, " is already in collection\n");
     else
       # ok, so we have to get the archives
-      Print("- NEW version ", info.Version, " discovered!!!\n");
+      Print("- new version ", info.Version, " discovered!!!\n");
       Print("  ============================================\n");
       if not IsBound(info.ArchiveURL) then
         Print("# ERROR (", info.PackageName, "): no ArchiveURL given!\n");
@@ -523,7 +523,7 @@ UpdatePackageArchives := function(pkgdir, pkgreposdir, webdir)
       # use only acceptable formats here
       formats := Intersection( 
                    formats, [ ".tar.gz", ".tar.bz2", ".zip", "-win.zip", ".zoo" ]);
-      Print("  GETTING NEW archives from \n  ", url, formats, "\n");
+      Print("  Getting new archives from \n  ", url, formats, "\n");
       Exec(Concatenation("rm -rf ", pkgtmp));
       Exec(Concatenation("mkdir -p ", pkgtmp));
       # copy available archive formats
@@ -558,8 +558,7 @@ UpdatePackageArchives := function(pkgdir, pkgreposdir, webdir)
       fi;
 
       if not IsLocalArchive(Concatenation(pkgtmp, fname, fmt)) then
-        Print("   archive contains path starting with / or containing ..\n",
-              "       REJECTED !!!\n");
+        Print("   archive rejected: it has a path starting with '/' or containing '..'\n");
         continue;
       fi;
       
@@ -624,7 +623,7 @@ UpdatePackageArchives := function(pkgdir, pkgreposdir, webdir)
            Print("  ERROR (", info.PackageName, "): validation of the info file not successful! SKIPPING!!!\n");
            continue;
       else
-           Print("  VALIDATION of the info file successful!\n");
+           Print("  Validation of the info file successful!\n");
       fi;
 
       if not info.Status in ["accepted","submitted","deposited"] then
@@ -633,7 +632,9 @@ UpdatePackageArchives := function(pkgdir, pkgreposdir, webdir)
       fi;
       
       if IsBound( info.Dependencies ) then
-        Print("  Package ", info.PackageName, " has dependencies:\n");
+        Print("  Package ", info.PackageName, 
+              " (version ", info.Version, 
+              " from ", info.Date, ") has dependencies:\n");
         for a in RecNames( info.Dependencies ) do
           if Length( info.Dependencies.(a) ) > 0 then
             Print("  * ", a, " ", info.Dependencies.(a), "\n");
@@ -1437,7 +1438,9 @@ Print("*** Checking ", pkgdir, "\n" );
   Exec( Concatenation( "cd ", pkgdir, " ; hg update -r stable" ));
   info := getInfo( pkgdir );
   Print("* stable version ", info.Version, " (", info.Date, ")\n");
-  
+
+  Exec( Concatenation( "cd ", pkgdir, " ; hg update -r tip" ));
+
   if info.Version <> ver[2] then
     Append( ver, [ info.Version, info.Date ] );
   else
@@ -1927,35 +1930,35 @@ WritePackageWebPageInfos := function(webdir, pkgconffile)
   end;
   treelines := [];
   pi := PACKAGE_INFOS;
-  # find combined package files
-  fl := SplitString(StringSystem("ls", 
-           Concatenation(webdir, "/ftpdir/tar.gz/")), "", "\n");
-  fn := First(fl, a-> Length(a)>8 and a{[1..9]} = "packages-" and 
-        a{[Length(a)-6..Length(a)]} = ".tar.gz");
-  if fn <> fail then
-    fn := fn{[1..Length(fn)-7]};
-  else
-    Print("No merged package-*.tar.gz\n");
-    fn := "nopackage";
-  fi;
+# find combined package files
+#  fl := SplitString(StringSystem("ls", 
+#           Concatenation(webdir, "/ftpdir/tar.gz/")), "", "\n");
+#  fn := First(fl, a-> Length(a)>8 and a{[1..9]} = "packages-" and 
+#        a{[Length(a)-6..Length(a)]} = ".tar.gz");
+#  if fn <> fail then
+#    fn := fn{[1..Length(fn)-7]};
+#  else
+#    Print("No merged package-*.tar.gz\n");
+#    fn := "nopackage";
+#  fi;
   # can be used in several places
-  mergedarchivelinks := 
-     Concatenation(fn,
+#  mergedarchivelinks := 
+#     Concatenation(fn,
 #          "[<a href=\"{{gap4ftp}}zoo/",fn,".zoo\">.zoo (", 
 #          StringSizeFilename(Concatenation(webdir,"/ftpdir/zoo/",fn,".zoo")),
 #          ")</a>]\n",
-          "[<a href=\"{{gap4ftp}}tar.gz/",fn,".tar.gz\">.tar.gz (", 
-          StringSizeFilename(Concatenation(webdir,"/ftpdir/tar.gz/",
-          fn,".tar.gz")), ")</a>]\n"#,
+#          "[<a href=\"{{gap4ftp}}tar.gz/",fn,".tar.gz\">.tar.gz (", 
+#          StringSizeFilename(Concatenation(webdir,"/ftpdir/tar.gz/",
+#          fn,".tar.gz")), ")</a>]\n"#,
 #          "[<a href=\"{{gap4ftp}}tar.bz2/",fn,".tar.bz2\">.tar.bz2 (", 
 #          StringSizeFilename(Concatenation(webdir,"/ftpdir/tar.bz2/",
 #          fn,".tar.bz2")), ")</a>]\n",
 #          "[<a href=\"{{gap4ftp}}win.zip/",fn,"-win.zip\">-win.zip (", 
 #          StringSizeFilename(Concatenation(webdir,"/ftpdir/win.zip/",
 #          fn,"-win.zip")), ")</a>]\n"
-          );
-  AppendTo(pkgconffile, "PKG_mergedarchivelinks = r'''", 
-          esc(mergedarchivelinks), "'''\n\n");
+#          );
+#  AppendTo(pkgconffile, "PKG_mergedarchivelinks = r'''", 
+#          esc(mergedarchivelinks), "'''\n\n");
   
   Print("Enumerating packages ...\n");
   # write the <pkgname>.mixer files and fill the package.mixer entries and
@@ -1964,6 +1967,7 @@ WritePackageWebPageInfos := function(webdir, pkgconffile)
   suggestupgradeslines := rec();
   pi := EnsureLatin1Strings(pi);
   for a in NamesOfComponents(pi) do
+    Print( a, "\n" );
     nam := pi.(a).PackageName;
     lnam := LowercaseString(pi.(a).PackageName);
     pkgmix := AddHTMLPackageInfo(pi.(a), webdir);

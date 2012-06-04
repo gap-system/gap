@@ -936,10 +936,11 @@ BindGlobal("NormalizerParentSA",function(s,u)
   local dom, issym, o, b, beta, alpha, emb, nb, na, w, perm, pg, l, is, ie, ll, syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j;
 
   dom:=Set(MovedPoints(s));
-  if not IsSubset(dom,MovedPoints(u)) then
-    return s; # cannot get parent
-  fi;
   issym:=IsNaturalSymmetricGroup(s);
+  if not IsSubset(dom,MovedPoints(u)) or
+    ((not issym) and ForAny(GeneratorsOfGroup(u),x->SignPerm(x)=-1)) then
+    return s; # cannot get parent, as not contained
+  fi;
   # get orbits
   o:=ShallowCopy(Orbits(u,dom));
   Info(InfoGroup,1,"SymmAlt normalizer: orbits ",List(o,Length));

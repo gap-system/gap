@@ -430,6 +430,13 @@ extern Char SyUserHome [256];
 */
 extern UInt SyLineEdit;
 
+/****************************************************************************
+**
+*V  SyUseReadline   . . . . . . . . . . . . . . . . . .  support line editing
+**
+**  Switch for not using readline although GAP is compiled with libreadline
+*/
+extern UInt SyUseReadline;
 
 /****************************************************************************
 **

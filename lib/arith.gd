@@ -781,6 +781,9 @@ InstallTrueMethod(
 ##  <Filt Name="IsNearRingElementWithInverse" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
+##  <Ref Func="IsNearRingElementWithInverse"/> is just a synonym for the meet of
+##  <Ref Func="IsNearAdditiveElementWithInverse"/> and
+##  <Ref Func="IsMultiplicativeElementWithInverse"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

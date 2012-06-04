@@ -95,7 +95,8 @@ second.  Here as always, a combination like <B>Ctrl-D</B> means that you have
 to press the <B>D</B> key while you hold down the <B>Ctrl</B> key.
 <P/>
 On some systems (for example the Apple Macintosh) minor changes might be
-necessary. This is explained in &GAP; installation instructions.
+necessary. This is explained in &GAP; installation instructions (see the 
+<F>INSTALL</F> file in the &GAP; root directory, or the &GAP; website).
 <!-- TODO: put URL -->
 <P/>
 <Index>whitespace</Index>

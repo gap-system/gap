@@ -1773,7 +1773,7 @@ void CodeFloatExpr (
   
   UInt l = strlen(str);
   UInt l1 = l;
-  Char mark;
+  Char mark = '\0'; /* initialize to please compilers */
   if (str[l-1] == '_' )
     {
       l1 = l-1;
@@ -1802,7 +1802,7 @@ void CodeFloatExpr (
 void CodeLongFloatExpr (
     Obj              str )
 {
-  Char mark;
+  Char mark = '\0'; /* initialize to please compilers */
 
     /* allocate the float expression                                      */
     UInt l = GET_LEN_STRING(str);

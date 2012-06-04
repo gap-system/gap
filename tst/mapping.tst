@@ -287,7 +287,7 @@ gap> IsGroupHomomorphism(res);
 true
 gap> IsInjective(res);        
 true
-gap> STOP_TEST( "mapping.tst", 33000000 );
+gap> STOP_TEST( "mapping.tst", 37300000 );
 
 #############################################################################
 ##

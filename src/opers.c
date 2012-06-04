@@ -1498,7 +1498,7 @@ Obj CallHandleMethodNotFound( Obj oper,
 **
 */
 
-static UInt NextTypeID;
+static Int NextTypeID;
 Obj IsType;
 
 static void FixTypeIDs( Bag b ) {

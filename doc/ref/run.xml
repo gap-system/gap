@@ -53,7 +53,8 @@ and to <C>gap -b -q -b -q</C> etc.
 <P/>
 &GAP; for UNIX will distinguish between upper and lower case options.
 <P/>
-As is described in the &GAP; installation instructions,
+As described in the &GAP; installation instructions (see the 
+<F>INSTALL</F> file in the &GAP; root directory, or the &GAP; website),
 <!-- TODO: put URL -->
 usually you will not execute &GAP; directly. Instead  you  will
 call a (shell) script, with the name <C>gap</C>, which in turn executes  &GAP;.

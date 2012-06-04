@@ -174,10 +174,14 @@ manuals:
           ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
 	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )          
 	( cd doc/ref; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
 	( cd doc/tut; echo 'Read( "makedocrel.g" );' | \
           ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )
+	( cd doc/changes; echo 'Read( "makedocrel.g" );' | \
+          ../../$(TESTGAP) -L ../wsp.g > make_manuals.out )           
 	( rm doc/wsp.g )
 
 

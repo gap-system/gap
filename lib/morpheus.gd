@@ -18,19 +18,30 @@ DeclareInfoClass("InfoMorph");
 ##
 ##  <#GAPDoc Label="AutomorphismGroup">
 ##  <ManSection>
-##  <Attr Name="AutomorphismGroup" Arg='obj'/>
+##  <Attr Name="AutomorphismGroup" Arg='G'/>
 ##
 ##  <Description>
-##  returns the full automorphism group of the object <A>obj</A>.
-##  The automorphisms act on the domain by the caret operator <C>^</C>.
+##  returns the full automorphism group of the group <A>G</A>.
+##  The automorphisms act on <A>G</A> by the caret operator <C>^</C>.
 ##  The automorphism group often stores a <Ref Func="NiceMonomorphism"/>
 ##  value whose image is a permutation group,
-##  obtained by the action on a subset of <A>obj</A>.
+##  obtained by the action on a subset of <A>G</A>.
 ##  <P/>
 ##  Note that current methods for the calculation of the automorphism group
 ##  of a group <M>G</M> require <M>G</M> to be a permutation group or
-##  a pc group to be efficient.
-##  For groups in other representations the calculation is likely very slow.
+##  a pc group to be efficient. For groups in other representations the 
+##  calculation is likely very slow.
+##  <P/>
+##  Also, the <Package>AutPGrp</Package> package installs enhanced methods 
+##  for <Ref Oper="AutomorphismGroup"/> for finite <M>p</M>-groups, and 
+##  the <Package>FGA</Package> package - for finitely generated subgroups 
+##  of free groups. 
+##  <P/> 
+##  Methods may be installed for <Ref Oper="AutomorphismGroup"/> 
+##  for other domains, such as e.g. for linear codes in the
+##  <Package>GUAVA</Package> package, loops in the <Package>loops</Package>  
+##  package and nilpotent Lie algebras in the <Package>Sophus</Package> 
+##  package (see package manuals for their descriptions).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

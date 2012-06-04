@@ -2632,7 +2632,8 @@ local Pr, div, B, rbase, data, N;
 end );
 
 InstallGlobalFunction( NormalizerPermGroup, function( arg )
-local G, E, L, issub, mpG, mpE, cnt, P, Omega, orb, i, start, so, hom, Gh, Eh, Lh, Nh;
+local G, E, L, issub, mpG, mpE, cnt, P, Omega, orb, i, start, so, hom, Gh,
+Eh, Lh, Nh,G0;
 
   G := arg[ 1 ];
   E := arg[ 2 ];
@@ -2666,6 +2667,7 @@ local G, E, L, issub, mpG, mpE, cnt, P, Omega, orb, i, start, so, hom, Gh, Eh, L
     if issub=false then 
       issub:=IsSubset(G,E);
     fi;
+    G0:=G;
     if issub then
       P:=G;
     else
@@ -2718,6 +2720,10 @@ local G, E, L, issub, mpG, mpE, cnt, P, Omega, orb, i, start, so, hom, Gh, Eh, L
 	Omega:=Difference(Omega,so);
       fi;
     od;
+
+    if not issub then
+      G:=Intersection(G,G0);
+    fi;
 
     if Length(Omega)=0 and not IsNormal(G,E) then
       # we ran through all orbits and did not stop early because everything

@@ -20,6 +20,7 @@
 ##  <Filt Name="IsMatrixGroup" Arg='grp' Type='Category'/>
 ##
 ##  <Description>
+##  The category of matrix groups.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

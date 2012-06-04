@@ -14,7 +14,7 @@ if [ -f tools.tar.gz ]
 then
 echo '============================================================================'
 echo 'Unpacking tools.tar.gz archive ...'
-tar -xvzf tools.tar.gz -C ../../
+tar -xvzf tools.tar.gz -C ../
 echo 'Done!'
 echo '============================================================================'
 else

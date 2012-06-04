@@ -43,6 +43,7 @@ DeclareProperty("IsTransformationMonoid", IsTransformationSemigroup);
 ##  <Prop Name="IsFullTransformationSemigroup" Arg='obj'/>
 ##
 ##  <Description>
+##  checks whether <A>obj</A> is a full transformation semigroup.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

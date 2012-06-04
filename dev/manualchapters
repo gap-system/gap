@@ -75,7 +75,8 @@ classification of items:
 +2AK put a note about the temporary preface for beta release which will be
    revised later
 -1 revise prefaces: check for consistency - all outdated information 
-   must be updated.
+   must be updated. This mostly relates to ``Authors and Maintainers''
+   and ``Acknowledgements'' sections.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 2: About the GAP Reference Manual
 % File: ./about.xml (line 10)
@@ -272,10 +273,9 @@ classification of items:
 -5 In the future, the Example package may also contain an example of the 
    kernel module and the documentation of the parts of the kernel interface 
    (some of which is already documented in the GAP.dev manual)
--1JMCD: check how gac works with GMP when GAP code being compiled 
++1SL: check how gac works with GMP when GAP code being compiled 
   contains large integers (the solution would be to generate four #ifdefs
-  for various modes (32/64-bit, with/without gmp)
-  For beta, may call this an unresolved bug and put a warning.
+  for various modes (32/64-bit, with/without gmp). Done: fixed by Steve.
 -5 cross-ref. to undocumented `READ_GAP_ROOT'.
 +1TB Admit loading packages that have been installed newly after the GAP
   session started; in particular, admit loading packages that are not
@@ -327,7 +327,7 @@ classification of items:
 -6 Section ``For'' contained a piece of pseudo code, distinguishing
   keywords and constants from variable names.
   How to write this in GAPDoc?
--2 What is the `continue' statement good for?
+-5 What is the `continue' statement good for?
   (At least the example shown is not striking.)
 +5*MN Is the comparison with PASCAL up-to-date?
   (several occurrences; replace by self-contained descriptions,
@@ -357,7 +357,7 @@ classification of items:
 % Finished: September 21, 2008
 % Comments:
 -6* read-eval-print or read-eval-view?
--2MN We provide `ViewObj', `PrintObj', `Display', `String';
+-5MN We provide `ViewObj', `PrintObj', `Display', `String';
   where do we state which of these operations may delegate to others?
   (There is also the undocumented function `DisplayString'.)
 
@@ -368,7 +368,8 @@ classification of items:
  --> This is done and documented. Discussion on gap-dev needed.
  --> Proposal sent.
  --> Additional question: Do we really want that a name of an object
-     overwrites the PrintObj methods???
+     overwrites the PrintObj methods??? Perhaps it should overwrite ViewObj
+     and not PrintObj
 
 +2AK The variables `last', `last2', `last3' are documented in the Tutorial,
   there is an index entry for `last' in the section ``Main Loop''
@@ -543,20 +544,20 @@ functionality.)
 % Started: 8 January 2008
 % Finished: 21 January 2008
 % Comments:
--2AK There are undocumented variables mentioned in <C> elements: 
+-4AK There are undocumented variables mentioned in <C> elements: 
   FactorsRho, MAXSIZE_GF_INTERNAL, and well described but not documented
   in separate ManSections variables Primes2, ProbablePrimes2,
   IsZmodnZObjNonprimeFamily, IsFFEFamily, RandomSourcesFamily
 +4JS The <Description> for the documented function `PrimalityProof' is empty.
   Jack Schmidt promised to look into this.
--1JS The documentation of IsPrimeInt should be adjusted to the current
-   implementation.
+-5 The documentation of IsPrimeInt should be adjusted to the current
+   implementation (the bounds should be updated to the actual state-of art)
 +5*MN,FL This is now supported and documented as extension of the 
          Arg attribute in <Func > and so on. (FL)
   GAPDoc issue:  
   How to display options in Arg? (see e.g. in FactorsInt, where we obtain
   FactorsInt(n[, :RhoTrials:=trials]), so the comma may be confusing).
--2* There are ManSections combining several definitions. I added labels where
+-4* There are ManSections combining several definitions. I added labels where
   applicable to avoid multiply defined labels, and it was enough for that 
   purpose; however, names of such ManSections might be revised (for example),
   14.6.3 "State" unites definitions of "State", "Reset" and "Init".
@@ -604,7 +605,7 @@ functionality.)
 +2AK cross-ref. to undocumented variable `CyclotomicsFamily'
   (AK: added CyclotomicsFamily to the index. Note that we often do not
   document families)
--1AH section ``Internally Represented Cyclotomics'' mentions that
+-4 section ``Internally Represented Cyclotomics'' mentions that
   the conductors of internal cyclotomics are restricted to small integers,
   and refers to `IsSmallIntRep', which is undocumented;
   also, an example demonstrates that 2^28 is not a small integer,
@@ -613,6 +614,8 @@ functionality.)
        Maximal values for both 32bit and 64bit should be given.
        Here, there should the statement that the conductor is a
        IsSmallIntRep and a reference but no example.
+  AK: IsSmallIntRep is no longer mentioned anywhere in GAP manuals. If we 
+  want, we may document it later, but this is not urgent at the moment.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 20: Floats
 % File: ./floats.xml (line 12)
@@ -724,7 +727,9 @@ functionality.)
 +3c (AH) The sentence ``Currently &GAP; uses shellsort.'' in section
   ``Sorting Lists'' looks strange.
   (In which *methods* is shellsort used?)
--2AK cross-references to undocumented functions `UnionSet', `IntersectionSet'
+-5 Mentioned undocumented functions `UnionSet', `IntersectionSet' from 
+   coll.gi, which are also methods for more general operations `Union' and
+   `Intersection'. It may be worth to document them properly.
 -3 why is IsRange a category not a property?
   (clean up IsRange vs. ConvertToRangeRep?)
   --> Fix together with the ranges.
@@ -962,7 +967,7 @@ the last release.)
   ``some natural *sub*domain''.  Does this make sense??
   --> Leave it, it is used e.g. in WreathProducts
   --> Changed subdomain to quotient domain
--2 empty description of `Range', `Source', `IsAdditiveGroupGeneralMapping',
++2AK empty description of `Range', `Source', `IsAdditiveGroupGeneralMapping',
   `IsLeftModuleGeneralMapping', `IsRingGeneralMapping',
   `IsRingHomomorphism', `IsRingWithOneGeneralMapping',
   `IsRingWithOneHomomorphism', `IsAlgebraGeneralMapping',
@@ -1039,6 +1044,7 @@ the last release.)
   `IsAttributeStoringRep', `UnderlyingElement',
   `CreateKnuthBendixRewritingSystem'
   TODO: the 1st two are already documented.
++2AK: empty decsriptions for GeneratorsOfRws and AddGenerators
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 40: Groups
 % File: ./groups.xml (line 11)
@@ -1050,7 +1056,7 @@ the last release.)
   is not very helpful.
 -3 `Subgroup( G )': I think this is not a clean concept.
 +4 AH `IndexInWholeGroup': Give an example where this applies.
--2 `ConjugateSubgroup': What is this? (no definition, no example, ...)
++2AK `ConjugateSubgroup': What is this? (no definition, no example, ...)
 -6AK `EpimorphismFromFreeGroup': Is the word found in the example ``as short as
   possible'' (i.e., of minimal length)?
 -3 `Factorization': ``computes all elements of the group to ensure a short
@@ -1113,7 +1119,7 @@ the last release.)
   seems not to be needed, so can stay out.
 
 -4 Cross-reference to undocumented function `SetIsMapping'.
--2 `AutomorphismGroup':
++AK `AutomorphismGroup':
   If the definition really intends to describe the general concept of an
   automorphism group of a GAP object, in the sense of the group of all
   bijections that preserve the algebraic structure of this object,
@@ -1122,13 +1128,14 @@ the last release.)
   I think this is asking for trouble, and so we should better describe the
   operation only in the case that ist argument is a group.
   Yes - in the reference manual only for groups, and packages should document
-  it for other domains (as e.g. MONOID does).
+  it for other domains. Mentioned relevant packages.
 -4AK cross-ref. to undocumented function `MappingGeneratorsImages'
   (well, in fact there was a typo, a reference to `MappingGeneratorImages)
   TODO: at least fix a typo
--2 cross-ref. to ``Stabilizer Chains for Automorphisms Acting on Enumerators''
+-5 cross-ref. to ``Stabilizer Chains for Automorphisms Acting on Enumerators''
   (in former `ext' manual, mentioned as ``not yet available in GAP''
-  --is this a good idea?)
+  --is this a good idea?) AK: seems not bad to me -- the referenced section 
+  is non-trivial.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 42: Group Actions
 % File: ./grpoper.xml (line 12)
@@ -1155,9 +1162,12 @@ the last release.)
   2. Aren't such tests an unnecessary overhead?
      (If we really want to have foolproof behaviour here, we could introcude
      `NC' variants, and change all the occurrences in the library ...)
--2* `Orbit': The action function is optional. (The whole chapter should be 
-    checked for consistency.)
--2 `OrbitStabilizer' and `StabilizerOfExternalSet':
+-5* `Orbit': The action function is optional - this is now clear. 
+    (The whole chapter should be checked for consistency.)
+    We checked and stated the default value of action. May be improved by 
+    cross-ref to the place where all other optional arguments (Omega, pnt, 
+    gens, acts) are explained.
+-4 `OrbitStabilizer' and `StabilizerOfExternalSet':
   What does the statement ``The stabilizer must have G as its parent.'' mean?
   The function *constructs* this stabilizer, so there is no requirement on
   the arguments, or?
@@ -1235,15 +1245,15 @@ the last release.)
   components `base' and `orbit', and the component `stabChain' represented
   the stabilizer of the first point in the `orbit' component.)
   The rest of the text should be checked for more such wrong statements.
--5AK The list label ``limit (default Size( Parent( G ) ) or StabChainOptions(
++5AK The list label ``limit (default Size( Parent( G ) ) or StabChainOptions(
   Parent( G ) ).limit if this is present'' is too long!
--2 Description of the component `orbit': How shall the sentence 
++2 Description of the component `orbit': How shall the sentence 
    ``ordered in such a way that the base point b_i is'' end?
 +1AH `GroupStabChain':
   cross-reference to `Generators( S )' and to ``assigned as component
   stabChain'' --relics from GAP 3?
   AH: commented out.
--2AK ``Working with large degree permutation groups'':
+-4AK ``Working with large degree permutation groups'':
   Does it make sense to show a fake ``example'' of ``a group of degree
   231000'', where the input data (the generators) are not described?
   Would it be sensible to have the full example somewhere on the GAP
@@ -1294,7 +1304,7 @@ the last release.)
   - Can the last two sentences be replaced by a reference to the package
     `Polycyclic'? 
   (AK: all done)
--2AK Section ``Elementary Operations for a Pcgs'' (and other sections):
+-4AK Section ``Elementary Operations for a Pcgs'' (and other sections):
   common example for several subsections; split this?
 +3cBE,AK Induced pcgs are defined in Section 45.7, but several earlier subsections
   require their arguments to be induced pcgs;
@@ -1360,7 +1370,7 @@ the last release.)
 +2AK `FactorCosetOperation':
   Shall this synonym of `FactorCosetAction' be documented at all?
   AK: removed from documentation, moved synonym to obsolete.gd
--2SL Section `Standardization of coset tables':
++2SL Section `Standardization of coset tables':
   A ``caveat paragraph'' explains the difference between the lenlex
   standardization of coset tables used in GAP and the semilenlex
   standardization ``that we have used in earlier GAP versions'';
@@ -1377,10 +1387,17 @@ the last release.)
 -4 references to undocumented variables `TCENUM', `GAPTCENUM',
   `UnderlyingElement', `SetRelativeOrder', `MappingGeneratorsImages',
   `InducedPcgsOp'.
--2 Where is the notation `F.1' etc. introduced, which is used in several
++2AK Where is the notation `F.1' etc. introduced, which is used in several
   examples? (only for free groups, or for arbitrary groups, or for free
   structures?)
   TODO: find out for which groups it work, then document it.
+  AK: DONE: Described this notation in `GeneratorsOfDomain' 
+  and added cross-references to relevant places detected from calls to
+  `InstallAccessToGenerators' or `\.' method installations, namely, for 
+  free algebras and free algebras with one - in descriptions of 
+  `GeneratorsOfAlgebra' and `GeneratorsOfAlgebraWithOne', for groups - 
+  in `GeneratorsOfGroup', for free magmas and free magmas with one - in 
+  `GeneratorsOfMagma' and `GeneratorsOfMagmaWithOne'. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 49: Presentations and Tietze Transformations
 % File: ./pres.xml (line 12)
@@ -1422,7 +1439,7 @@ the last release.)
 % Started: January 24, 2008
 % Finished: October 25, 2008
 % Comments:
--2AK under `GeneralLinearGroup', there is an example how to construct PGL;
+-5 under `GeneralLinearGroup', there is an example how to construct PGL;
   why not simply a cross-reference?
 +4 empty ManSection about `SizesPerfectGroups'
 -4 cross-references to undocumented functions `DegreeOfMatrixGroup',
@@ -1501,13 +1518,13 @@ look worse than others)
 % Started: December 01, 2008
 % Finished: January 11, 2009
 % Comments:
--2AK no documentation on near rings and semirings --where to put this?
- TODO: say that this is possible, cross-ef to packages.
--2AK Would it be useful to add a disclaimer that there is little support for
++2AK no documentation on near rings and semirings -- where to put this?
+ DONE: cross-ref to SONATA and Smallsemi packages.
++2AK Would it be useful to add a disclaimer that there is little support for
   rings that have no additional structure?
   For (small) finite rings one can do something but infinite rings are
   handled by GAP in an acceptable way at most if they are at least algebras.
-  TODO: yes, put it
+  DONE: yes, said that.
 +4AK only example and no definition for `DefaultRingByGenerators'
   (AK: put a definition).
 -4 `AsRing': commented out, so not yet supported officially
@@ -1652,11 +1669,13 @@ look worse than others)
 % Started: January 24, 2008
 % Finished: October 08, 2008
 % Comments:
--2* (not only in this chapter) several empty <Description> elements inside
++2AK* (not only in this chapter) several empty <Description> elements inside
   <ManSection>:
   In the old manual, this might have been o.k. (a section containing some
   text and some lines of function declaration embedded into this text),
   but now this means that there are empty subsections!
+  AK: I've done this systematically, identifying 57 empty mansections
+  and putting a comment <!-- TODO: fill description -->.
 -5* (not only in this chapter) some cross-references point to both a subsection
   and the corresponding section or chapter (which is unnecessary)
 -3AK Polynomial rings are listed as examples of free magma rings.
@@ -1787,8 +1806,8 @@ look worse than others)
 % Finished: August 20, 2008
 % Comments:
 -4TB cross-references to undocumented functions ...
--1TB ConnectGroupAndCharacterTable:
-  Do not support this function in the next version.
+-1TB ConnectGroupAndCharacterTable: Do not support this function in the 
+ next version (AK asked TB to check this: see Tracker thread 1542)
 -3TB IrreducibleRepresentations: refer to the GAP package in question!
   (also crossref to GAP's MeatAxe functions?)
 -4TB There are disclaimers about features that are not yet available.
@@ -1870,8 +1889,9 @@ look worse than others)
 +1AK,JJM Installation instructions still refers to zoo archives, explains how 
    to get GAP for Mac OS and does not reflect recent changes in the build
    process (gmp and readline options) - this should be cleaned up.
--1AK Related issue: update number of GAPStones in testinstall.g and testall.g
-   (a preliminary update already made by AK after GAP 4.5.2)
+-1AK Related issue: update number of GAP4stones in testinstall.g and testall.g
+   (a preliminary update has been already made by AK after GAP 4.5.2, do
+   another one before the final release)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 77: GAP Packages
 % File: ./gappkg.xml (line 11)
@@ -1971,9 +1991,9 @@ look worse than others)
   For example, there is an example which introduces a new property
   `IsMGroup', whereas the GAP library uses the similar but different filter
   `IsMonomial'.
--2AK The description of categories vs. properties in ``Adding new Concepts''
++2MN The description of categories vs. properties in ``Adding new Concepts''
   is not correct.
-  TODO: ??? AK asked Thomas 
+  TODO: What's namely is wrong there? AK asked Thomas 
 -4AK Again there are cross-references to undocumented functions
   (NormalizerOp, GroupByGenerators).
   Check, I guess the latter is obsolete.
@@ -2083,8 +2103,9 @@ look worse than others)
     (let it be called as it is, it's undocumented)
 -4AK the undocumented function HELP_VIEWER_INFO could be documented here
   TODO: documentation is there, link it to the manual.
--2 add a cross-reference to the document ``The gapmacro.tex Manual Format''
++2AK add a cross-reference to the document ``The gapmacro.tex Manual Format''
   (see above) in the web, as soon as its URL is fixed.
+  AK: instead of URL, this document is a part of the tools archive.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 86: Function-Operation-Attribute Triples
 % File: ./foa.xml (line 10)
@@ -2152,13 +2173,15 @@ look worse than others)
   the next release will anyhow have a new list.
   TODO: indeed it should be an appendix, references to it must be updated
 +2AK References to GAP functions and packages should be proper links.
--2 Reference to the "Migrating to GAP4" document is incomplete.
+-5 Put a proper URL referring to the "Migrating to GAP4" document on the 
+ GAP website.
 +1AK A list of main changes for package authors should be available (for the
  beta, it is placed in the preface to the beta-release, later may be moved to
  the example package as a section on upgrading packages from GAP 4.4 to GAP 4.5)
 +1AK Use preface for GAP 4.5 beta for a new section in the Example package
  manual about upgrading packages from GAP 4.4 to GAP 4.5 (AK: Done in Example 3.1)
--1 A list of main changes from 4.4 to 4.5 should be added before release.
+-1 A list of main changes from 4.4 to 4.5 should be added before the release
+ (This is now an ongoing work in doc/changes manual) 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%  Tutorial
@@ -2261,9 +2284,9 @@ look worse than others)
   therefore it has been removed from it.
   I propose to turn the chapter into a self-contained document
   that is available only in the GAP 3 part of the GAP website,
-  in PDF and HTML format.
-  (A preliminary version is `doc/migratedoc.tex';
+  in PDF and HTML format. (A preliminary version is `doc/migratedoc.tex'; 
   shorten the copyright notice?)
+  AK: 
 +3a The only part of this chapter that is interesting for GAP 4 users
   is the section on ``Naming Conventions''.
   Put it somewhere?

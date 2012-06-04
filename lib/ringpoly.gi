@@ -425,7 +425,7 @@ end);
 ##
 #M  \.   Access to indeterminates
 ##
-InstallMethod(\.,"pring indeterminates",true,[IsPolynomialRing,IsPosInt],
+InstallMethod(\.,"polynomial ring indeterminates",true,[IsPolynomialRing,IsPosInt],
 function(r,n)
 local v, fam, a, i;
   v:=IndeterminatesOfPolynomialRing(r);

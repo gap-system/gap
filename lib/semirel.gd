@@ -62,6 +62,7 @@
 ##  <Prop Name="IsGreensDRelation" Arg='equiv-relation'/>
 ##
 ##  <Description>
+##  Categories for the Green's relations.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

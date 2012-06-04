@@ -1708,6 +1708,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     app2[4] := app2[2];
     ApplyRel2( app2, triple[2], triple[1] );
     factors := app2[7];
+#if Length(factors)>0 then Print(Length(factors)," ",Maximum(factors)," ",Minimum(factors),"\n");fi;
 
     # ensure that the scan provided a deduction.
     # if app2[1] - 1 <> app2[3]
@@ -1781,6 +1782,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
                 count := count - 2;
 
                 # set up the deduction queue and run over it until it's empty
+		deductions:=[];
                 deductions[1] := [i,j];
                 nrdeds := 1;
                 ded := 1;

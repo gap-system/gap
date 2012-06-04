@@ -737,5 +737,66 @@ BindGlobal( "CharacterTableDisplayPrintLegendDefault",
 
 #############################################################################
 ##
+#F  ConnectGroupAndCharacterTable( <G>, <tbl>[, <arec>] )
+#F  ConnectGroupAndCharacterTable( <G>, <tbl>, <bijection> )
+##
+InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
+    local G, tbl, arec, ccl, compat;
+
+    # Get and check the arguments.
+    if   Length( arg ) = 2 and IsGroup( arg[1] )
+                           and IsOrdinaryTable( arg[2] ) then
+      arec:= rec();
+    elif Length( arg ) = 3 and IsGroup( arg[1] )
+                           and IsOrdinaryTable( arg[2] )
+                           and ( IsRecord( arg[3] ) or IsList(arg[3]) ) then
+      arec:= arg[3];
+    else
+      Error( "usage: ConnectGroupAndCharacterTable(<G>,<tbl>[,<arec>])" );
+    fi;
+
+    G   := arg[1];
+    tbl := arg[2];
+
+    if HasUnderlyingGroup( tbl ) then
+      Error( "<tbl> has already underlying group" );
+    elif HasOrdinaryCharacterTable( G ) then
+      Error( "<G> has already a character table" );
+    fi;
+
+    ccl:= ConjugacyClasses( G );
+#T How to exploit the known character table
+#T if the conjugacy classes of <G> are not yet computed?
+
+    if IsList( arec ) then
+      compat:= arec;
+    else
+      compat:= CompatibleConjugacyClasses( G, ccl, tbl, arec );
+    fi;
+
+    if IsList( compat ) then
+
+      # Permute the classes if necessary.
+      if compat <> [ 1 .. Length( compat ) ] then
+        ccl:= ccl{ compat };
+      fi;
+
+      # The identification is unique, store attribute values.
+      SetUnderlyingGroup( tbl, G );
+      SetOrdinaryCharacterTable( G, tbl );
+      SetConjugacyClasses( tbl, ccl );
+      SetIdentificationOfConjugacyClasses( tbl, compat );
+
+      return true;
+
+    else
+      return false;
+    fi;
+
+    end );
+
+
+#############################################################################
+##
 #E
 

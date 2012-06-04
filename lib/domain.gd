@@ -146,6 +146,17 @@ InstallTrueMethod( IsDuplicateFree, IsDomain );
 ##  See&nbsp;<Ref Sect="Constructing Domains"/> and
 ##  <Ref Sect="Changing the Structure"/> for concepts
 ##  of other notions of generation.
+##  <P/>
+##  For many domains that have <E>natural generators by construction</E>
+##  (for example, the natural generators of a free group of rank two 
+##  are the two generators stored as value of the attribute 
+##  <Ref Attr="GeneratorsOfGroup"/>, and the natural generators of 
+##  a free associative algebra are those generators stored as value of 
+##  the attribute <Ref Attr="GeneratorsOfAlgebra"/>), each <E>natural</E> 
+##  generator can be accessed using the <C>.</C> operator. For a domain
+##  <A>D</A>, <C><A>D</A>.i</C> returns the <M>i</M>-th generator if 
+##  <M>i</M> is a positive integer, and if <C>name</C> is the name of a 
+##  generator of <A>D</A> then <C><A>D</A>.name</C> returns this generator. 
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

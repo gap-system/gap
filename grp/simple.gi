@@ -270,7 +270,7 @@ local brg,str,p,a,param,g,s,small;
       else
         Error("Illegal Parameter for Suzuki groups");
       fi;
-    elif str="R" or str="REE" then
+    elif str="R" or str="REE" or str="2G" then
       if Length(param)=1 and param[1]>26 and
         Set(Factors(param[1]))=[3] and IsOddInt(LogInt(param[1],3)) then
 	g:=ReeGroup(IsMatrixGroup,param[1]);

@@ -15,7 +15,6 @@
 ## we must put it here, because float.gd is read too early for "IsAlgebra"
 ## this is used mainly to create polynomials
 DeclareCategory("IsFloatPseudoField", IsAlgebra);
-SetIsUFDFamily(FloatsFamily,true);
 
 ## these things should also be in float.gd, but require IsRationalFunction
 DeclareCategory("IsFloatRationalFunction", IsRationalFunction);
@@ -36,35 +35,54 @@ FLOAT_OBJBYEXTREP := fail;
 BindGlobal("EAGER_FLOAT_LITERAL_CONVERTERS", rec());
 
 InstallGlobalFunction(SetFloats, function(arg)
-    local i, r;
-    if arg=[] or not IsRecord(arg[1]) or Length(arg)>2 or (Length(arg)=2 and not IsPosInt(arg[2])) then
-        Error("Unknown argument to SetFloats: ",arg);
-    fi;
-    r := arg[1];
-    if IsBound(r.filter) then
-        FLOAT_DEFAULT_REP := r.filter;
-    fi;
-    if IsBound(r.objbyextrep) then
-        FLOAT_OBJBYEXTREP := r.objbyextrep;
-    else
-        FLOAT_OBJBYEXTREP := fail;
-    fi;
-    if IsBound(r.constants) then
-        FLOAT := r.constants;
-    fi;
-    if IsBound(r.creator) then
-        FLOAT_STRING := r.creator;
-        if IsBound(r.eager) then
-            EAGER_FLOAT_LITERAL_CONVERTERS.([r.eager]) := r.creator;
+    local i, r, prec, install;
+    
+    r := fail;
+    prec := fail;
+    install := true;
+    for i in [1..Length(arg)] do
+        if IsRecord(arg[i]) and i=1 then
+            r := arg[1];
+        elif IsBool(arg[i]) then
+            install := arg[i];
+        elif IsPosInt(arg[i]) then
+            prec := arg[i];
+        else
+            r := fail;
+            break;
         fi;
+    od;
+    while r=fail do
+        Error("SetFloats requires a record, and optional precision(posint) and install(bool), not ",arg);
+    od;
+        
+    if install then
+        if IsBound(r.filter) then
+            FLOAT_DEFAULT_REP := r.filter;
+        fi;
+        if IsBound(r.objbyextrep) then
+            FLOAT_OBJBYEXTREP := r.objbyextrep;
+        else
+            FLOAT_OBJBYEXTREP := fail;
+        fi;
+        if IsBound(r.constants) then
+            FLOAT := r.constants;
+        fi;
+        if IsBound(r.creator) then
+            FLOAT_STRING := r.creator;
+        fi;
+    fi;
+    
+    if IsBound(r.creator) and IsBound(r.eager) then
+        EAGER_FLOAT_LITERAL_CONVERTERS.([r.eager]) := r.creator;
     fi;
     
     UNBIND_GLOBAL("FLOAT_LITERAL_CACHE");
 
-    if Length(arg)=2 then
-        FLOAT.MANT_DIG := arg[2];
-        if IsBound(FLOAT.recompute) then
-            FLOAT.recompute(FLOAT,arg[2]);
+    if prec<>fail then
+        r.constants.MANT_DIG := prec;
+        if IsBound(r.constants.recompute) then
+            r.constants.recompute(r.constants,prec);
         fi;
     fi;
 end);
@@ -718,7 +736,7 @@ InstallOtherMethod(RationalFunctionsFamily, "floats pseudofield",
   fam!.oneCoefflist  := Immutable([fam!.oneCoefficient]);
 
   # set the coefficients
-  SetCoefficientsFamily( fam, FloatsFamily );
+  SetCoefficientsFamily( fam, FamilyObj(fam!.zeroCoefficient) );
 
   SetCharacteristic( fam, 0 );
 
@@ -1015,6 +1033,9 @@ InstallMethod( LQUO, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -
         function ( x, y ) return LQUO(x,MakeFloat(x,y)); end );
 InstallMethod( LQUO, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
         function ( x, y ) return LQUO(x,MakeFloat(x,y)); end );
+        
+InstallOtherMethod( \/, "for empty list", [ IsEmpty, IsFloat ],
+        function ( x, y ) return x; end );
 
 InstallMethod( \^, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
         function ( x, y ) return MakeFloat(y,x) ^ y; end );

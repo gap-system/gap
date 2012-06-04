@@ -433,12 +433,15 @@ Obj FuncINTFLOOR_MACFLOAT( Obj self, Obj obj )
   return FuncIntHexString(self,str);
 }
 
-Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj prec, Obj f)
+Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
 {
-  Char buf[32];
+  Char buf[50];
   Obj str;
   UInt len;
-  sprintf(buf, "%.*" PRINTFFORMAT, (int)INT_INTOBJ(prec), (TOPRINTFFORMAT)VAL_MACFLOAT(f));
+  int prec = INT_INTOBJ(gapprec);
+  if (prec > 40) /* too much anyways, and would risk buffer overrun */
+    prec = 40;
+  sprintf(buf, "%.*" PRINTFFORMAT, prec, (TOPRINTFFORMAT)VAL_MACFLOAT(f));
   len = strlen(buf);
   str = NEW_STRING(len);
   SyStrncat(CSTR_STRING(str),buf,len);

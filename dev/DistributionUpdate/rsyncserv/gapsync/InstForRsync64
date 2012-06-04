@@ -12,7 +12,7 @@ setenv NAME "4r5"
 #setenv LOPTS ""
 
 #tar xzvpf gap{$NAME}p*.tar.gz
-unzip L18743-4734TMP.zip
+unzip gap4r5p*.zip
 
 cd gap4r5
 
@@ -62,11 +62,6 @@ cd ..
 tar xzf gap4r5/etc/tools.tar.gz
 cd gap4r5
 
-# make various targets in Makefile-default64 work
-cd bin
-rm -f gap-default64.sh
-ln -s ../local/bin/gap64 gap-default64.sh
-
 # now the packages
 cd pkg
 
@@ -104,7 +99,7 @@ cd Browse
 #   cp -a obj* /users/luebeck/piclibs/64/ncurses/
 mv Makefile Makefile.orig
 #sed -e "s/-lpanel -lncurses/-L \/users\/luebeck\/piclibs\/64\/ncurses\/obj\/lib -l:libpanel.a -l:libncurses.a/" <Makefile.orig >Makefile
-sed -e "s/-lpanel -lncurses/-L \/users\/luebeck\/piclibs\/64\/ncurses\/obj\/lib\/libpanel.a \/users\/luebeck\/piclibs\/64\/ncurses\/obj\/lib\/libncurses.a/" <Makefile.orig >Makefile
+sed -e "s/-lpanel -lncurses/-L \/users\/luebeck\/piclibs\/64\/ncurses\/obj\/lib\/libncurses.a \/users\/luebeck\/piclibs\/64\/ncurses\/obj\/lib\/libpanel.a \/users\/luebeck\/piclibs\/64\/ncurses\/obj\/lib\/libncurses.a/" <Makefile.orig >Makefile
 #sed -e "s/-lpanel -lncurses/\/usr\/lib\/libpanel.a \/usr\/lib\/libncurses.a/" <Makefile.orig >Makefile
 make
 strip bin/*/*.so
@@ -264,27 +259,11 @@ make
 strip bin/*/*.so
 cd ..
 
-#  see the pargap documentation how to use this 
-#  (in particular, user needs procgroup file)
-cd pargap
-./configure --with-mpi=MPINU2
-mv Makefile Makefile.orig
-sed -e 's/ rm -f bin/ rm -f binxxx/' < Makefile.orig > Makefile
-# produce gapmpi.o and start script
-make 
-cp bin/pargap.sh ../../bin/
-cd ..
-rm -f ALLPKG
-# reduce dependencies of gap executable 
-cd  ..
-cd bin/x86_64-unknown-linux-gnu-gcc-default64
-rm -f pargapmpi
-#gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/x86_64-unknown-linux-gnu-gcc-default64/libmpi.a -l:libreadline.a -l:libncurses.a  -l:libm.a  extern/gmp/lib/libgmp.a  -ldl 
-gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/x86_64-unknown-linux-gnu-gcc-default64/libmpi.a /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  extern/gmp/lib/libgmp.a  -ldl 
-mv gapnompi gap
-mv gap.o.nompi gap.o
+# unpack already compiled homology 1.4.5
+tar xzf ../../homology.1.4.5.staticbin.tgz 
 
-cd ../../pkg
+
+###  PARGAP
 
 # cleanup-don't need to distribute .o files from compiler
 cd ..
@@ -295,5 +274,11 @@ cd bin
 mv gap.sh gap64.sh
 mv pargap.sh pargap64.sh
 mv gac gac64
+cd ..
+
+# make various targets in Makefile-default64 work
+cd bin
+rm -f gap-default64.sh
+ln -s ../local/bin/gap64 gap-default64.sh
 cd ..
 

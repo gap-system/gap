@@ -239,6 +239,14 @@ UInt SyLineEdit;
 
 /****************************************************************************
 **
+*V  SyUseReadline   . . . . . . . . . . . . . . . . . .  support line editing
+**
+**  Switch for not using readline although GAP is compiled with libreadline
+*/
+UInt SyUseReadline;
+
+/****************************************************************************
+**
 *V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
 **
 **  'SyMsgsFlagBags' determines whether garabage collections are reported  or
@@ -1719,6 +1727,7 @@ struct optInfo options[] = {
                                            never seems to be useful */
   { 'e',  toggle, &SyCTRD, 0 }, /* kernel */
   { 'f',  forceLineEditing, (void *)2, 0 }, /* probably library now */
+  { 'E',  toggle, &SyUseReadline, 0 }, /* kernel */
   { 'i',  storeString, SySystemInitFile, 1}, /* kernel */
   { 'l',  setGapRootPath, 0, 1}, /* kernel */
   { 'm',  storeMemory2, &SyStorMin, 1 }, /* kernel */
@@ -1754,6 +1763,7 @@ void InitSystem (
     SyDebugLoading = 0;
     SyHasUserHome = 0;
     SyLineEdit = 1;
+    SyUseReadline = 1;
     /* SyAutoloadPackages = 1; */
     /*  SyBreakSuppress = 0; */
     SyMsgsFlagBags = 0;
@@ -1920,7 +1930,11 @@ void InitSystem (
         }
           
       }
-
+    /* adjust SyUseReadline if no readline support available or for XGAP  */
+#if !HAVE_LIBREADLINE
+    SyUseReadline = 0;
+#endif
+    if (SyWindow) SyUseReadline = 0;
 
     /* now that the user has had a chance to give -x and -y,
        we determine the size of the screen ourselves */

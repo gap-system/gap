@@ -3,6 +3,15 @@
 
 ## (C) Frank Lübeck
 
+(0) Following http://freegamedev.net/wiki/Portable_binaries we setup virtual
+    machines with Ubuntu Dapper (6.06 LTS) for i686 and AMD64 for linking
+    against sufficiently old glibc (2.3).
+       (virtual machines are currently started on gemma:
+         VBoxHeadless -s dapper606x8664  # 137.226.152.52
+         VBoxHeadless -s dapper606386    # 137.226.152.51
+         VBoxHeadless -s GAPrsync        # 137.226.152.50
+       )
+
 (1) Choose a directory RSDIR, copy the files motd, rsyncd.conf and
     startrsyncserver to RSDIR, and adjust the paths in 'rsyncd.conf' 
     (search 'home2').

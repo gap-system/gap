@@ -214,7 +214,7 @@ is labelled with the generator <M>T[p]</M>, and the product of edge labels
 along the unique path from <M>p</M> to <M>b_i</M> is the inverse of the
 transversal element carrying <M>b_i</M> to <M>p</M>.
 <P/>
-Before we describe the construction of stablizer chains
+Before we describe the construction of stabilizer chains
 in&nbsp;<Ref Sect="Construction of Stabilizer Chains"/>,
 we explain in&nbsp;<Ref Sect="Randomized Methods for Permutation Groups"/>
 the idea of using non-deterministic algorithms;
@@ -476,7 +476,8 @@ Note: Since the structure is recursive, <E>never print a stabilizer chain!</E>
 <Mark><C>orbit</C> </Mark>
 <Item>
         the vertices of  the Schreier tree,  which  form the basic  orbit
-        <M>b_i^{{G^{(i)}}}</M>, ordered in such a way that the  base point <M>b_i</M> is
+        <M>b_i^{{G^{(i)}}}</M>, ordered in such a way that the base point 
+        <M>b_i</M> is in the first position in the orbit.
 </Item>
 <Mark><C>transversal</C></Mark>
 <Item>

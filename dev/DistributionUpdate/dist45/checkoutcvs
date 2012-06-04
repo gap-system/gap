@@ -26,7 +26,7 @@ cd ${RELEASEBRANCH}
 rm -rf ${DISTNAME}
 
 # Checkout the files. Note that currently we do not use any tags.
-echo "$0: checking out version $FULLVERSION of $DATE"
+echo "$0: checking out the repository for version 4.$FULLVERSION of $DATE"
 line='cvs -q -Q checkout '${GAPCVSVERSION}' -d '${DISTNAME}' 4.0'
 echo $line
 $line

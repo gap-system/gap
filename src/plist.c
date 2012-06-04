@@ -1703,7 +1703,7 @@ void AssPlistFfe   (
 	UInt otherpos;
 
 	/* Here we select an other element to compare the field and
-	   possibly characteristic of the assigned value to This will
+	   possibly characteristic of the assigned value to. This
 	   code will never select pos, where the assignment has
 	   already been done, unless we are replacing the only entry
 	   of a length 1 list, in which case the result will always

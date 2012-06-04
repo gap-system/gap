@@ -57,6 +57,8 @@ case "$host" in
         gp_cv_c_long_align=$ac_cv_sizeof_void_p;;
    i586-* | i686-* )
         gp_cv_c_long_align=2;;
+   x86_64-* )
+        gp_cv_c_long_align=2;;
         * )
 
 case "$host" in 
@@ -114,7 +116,7 @@ dnl ##
 AC_DEFUN(GP_CFLAGS,
 [AC_CACHE_CHECK(C compiler default flags, gp_cv_cflags,
  [ case "$host-$CC" in
-    *-gcc* | *-linux*-cc )
+    *-gcc* )
         gp_cv_cflags="-Wall -g -O2 ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_cflags="-Wall -g -O3 ${ABI_CFLAGS} -Wno-unused-value";;
@@ -158,10 +160,12 @@ AC_DEFUN(GP_LDFLAGS,
  [ case "$host-$CC" in
     *-apple-darwin11*-gcc* )
         gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
-    *-gcc* | *-linux*-cc | *-egcs )
+    *-apple-darwin11*-mpicc* )
+        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
+    *-gcc* | *-egcs )
         gp_cv_ldflags="-g ${ABI_CFLAGS}";;
     *-apple-darwin*-clang* )
-        gp_cv_ldflags="-g ${ABI_CFLAGS}";;
+        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_ldflags="-g -rdynamic ${ABI_CFLAGS}";;
     *-icc* )
@@ -207,7 +211,7 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynoptions=" -O3 -woff 1110,1167,1174,1552";;
    
     * )    dnl ## if we don't recognise this compiler, guess some flags
-        gp_cv_prog_cc_cdynoptions="-fpic -Wall -O2 ${ABI_CFLAGS}";;
+        gp_cv_prog_cc_cdynoptions="-fpic -O2 ${ABI_CFLAGS}";;
    esac 
  ])
  AC_CACHE_CHECK(dynamic linker, gp_cv_prog_cc_cdynlinker,

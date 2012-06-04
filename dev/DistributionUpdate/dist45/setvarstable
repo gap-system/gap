@@ -15,17 +15,17 @@ export CVSROOT=":pserver:visitor@cvs.gap-system.org:/gap/CVS"
 # - to get the state used for the previous release (e.g. to merge with the
 #   new packages archive, use e.g. "-r GAP4R5P1" 
 # export GAPCVSVERSION="-D now"
-export GAPCVSVERSION="-r GAP4R5P2"
+export GAPCVSVERSION="-r GAP4R5P3"
 
 # version to wrap
 export VERSION="5"
-export FULLVERSION="$VERSION.2(beta)"
+export FULLVERSION="$VERSION.3(beta)"
 
 # directory name
 export DISTNAME="gap4r$VERSION"
 
 # archive name
-export RBVERSION="4r5p2"
+export RBVERSION="4r5p3"
 export ARCHNAME="gap$RBVERSION"
 
 # location of the merged packages archive (assumed to be on the same machine)
