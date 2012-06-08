@@ -1615,13 +1615,15 @@ end );
 ##  global variables (see <C>variable.g</C>) because of the completion
 ##  mechanism.
 ##
-BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", [] );
+BIND_GLOBAL( "GLOBAL_FUNCTION_NAMES", ShareObj([], "GLOBAL_FUNCTION_NAMES") );
 
 BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
     local   name;
 
     name := arg[1];
-    ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
+    atomic GLOBAL_FUNCTION_NAMES do
+	ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
+    od;
     BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
 end );
 
@@ -1639,11 +1641,13 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
     if IS_STRING( oper ) then
       oper:= VALUE_GLOBAL( oper );
     fi;
-    if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
-      Error("you cannot install a global function for another global ",
-            "function,\nuse `DeclareSynonym' instead!");
-    fi;
-    INSTALL_METHOD_ARGS( oper, func );
+    atomic readonly GLOBAL_FUNCTION_NAMES do
+      if NAME_FUNC(func) in GLOBAL_FUNCTION_NAMES then
+	Error("you cannot install a global function for another global ",
+	      "function,\nuse `DeclareSynonym' instead!");
+      fi;
+      INSTALL_METHOD_ARGS( oper, func );
+    od;
 end );
 
 
