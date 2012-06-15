@@ -765,6 +765,10 @@ int main (
 	  char *              argv [],
           char *              environ [] )
 {
+#ifdef PRINT_BACKTRACE
+  void InstallBacktraceHandlers();
+  InstallBacktraceHandlers();
+#endif
   RunThreadedMain(realmain, argc, argv, environ);
   return 0;
 }
