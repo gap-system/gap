@@ -13,6 +13,11 @@ static Obj TypeZmqSocket() {
   return TYPE_ZMQ_SOCKET;
 }
 
+#if ZMQ_VERSION_MAJOR == 2
+#define zmq_sendmsg zmq_send
+#define zmq_recvmsg zmq_recv
+#endif
+
 static void *ZmqContext;
 
 #define ZMQ_DAT_SOCKET_OFF 1
@@ -134,7 +139,7 @@ static Obj FuncZmqSend(Obj self, Obj socketobj, Obj data) {
   if (is_string) {
     zmq_msg_init_size(&msg, GET_LEN_STRING(data));
     memcpy(zmq_msg_data(&msg), CSTR_STRING(data), GET_LEN_STRING(data));
-    error = (zmq_send(Socket(socketobj), &msg, 0) < 0);
+    error = (zmq_sendmsg(Socket(socketobj), &msg, 0) < 0);
     zmq_msg_close(&msg);
   } else {
     Int i = 1;
@@ -147,7 +152,7 @@ static Obj FuncZmqSend(Obj self, Obj socketobj, Obj data) {
       memcpy(zmq_msg_data(&msg), CSTR_STRING(elem), GET_LEN_STRING(elem));
       if (i == len)
         flags &= ~ZMQ_SNDMORE;
-      error = (zmq_send(socket, &msg, flags) < 0);
+      error = (zmq_sendmsg(socket, &msg, flags) < 0);
       zmq_msg_close(&msg);
       i++;
     } while (!error && i <= len);
@@ -168,7 +173,7 @@ static Obj FuncZmqReceive(Obj self, Obj socketobj) {
     BadArgType(socketobj, "ZmqReceive", 1, "zmq socket");
   socket = Socket(socketobj);
   zmq_msg_init(&msg);
-  if (zmq_recv(socket, &msg, 0) < 0)
+  if (zmq_recvmsg(socket, &msg, 0) < 0)
     ZmqError("ZmqReceive");
   result = NEW_STRING(zmq_msg_size(&msg));
   memcpy(CSTR_STRING(result), zmq_msg_data(&msg), zmq_msg_size(&msg));
@@ -186,7 +191,7 @@ static Obj FuncZmqReceive(Obj self, Obj socketobj) {
       is_list = 1;
     }
     zmq_msg_init(&msg);
-    if (zmq_recv(socket, &msg, 0) < 0)
+    if (zmq_recvmsg(socket, &msg, 0) < 0)
       ZmqError("ZmqReceive");
     elem = NEW_STRING(zmq_msg_size(&msg));
     memcpy(CSTR_STRING(elem), zmq_msg_data(&msg), zmq_msg_size(&msg));
@@ -243,7 +248,12 @@ static Obj FuncZmqSetReceiveBufferSize(Obj self, Obj socket, Obj size) {
 }
 
 static Obj FuncZmqSetMessageLimit(Obj self, Obj socket, Obj size) {
+#if ZMQ_VERSION_MAJOR == 2
   ZmqSetUIntSockOpt("ZmqSetMessageLimit", socket, ZMQ_HWM, size);
+#else
+  ZmqSetUIntSockOpt("ZmqSetMessageLimit", socket, ZMQ_SNDHWM, size);
+  ZmqSetUIntSockOpt("ZmqSetMessageLimit", socket, ZMQ_RCVHWM, size);
+#endif
   return (Obj) 0;
 }
 
@@ -280,7 +290,11 @@ static Obj FuncZmqGetReceiveBufferSize(Obj self, Obj socket) {
 }
 
 static Obj FuncZmqGetMessageLimit(Obj self, Obj socket) {
+#if ZMQ_VERSION_MAJOR == 2
   return ZmqGetUIntSockOpt("ZmqGetMessageLimit", socket, ZMQ_HWM);
+#else
+  return ZmqGetUIntSockOpt("ZmqGetMessageLimit", socket, ZMQ_SNDHWM);
+#endif
 }
 
 static Obj FuncZmqSubscribe(Obj self, Obj socket, Obj str) {
@@ -325,6 +339,7 @@ static StructGVarFunc GVarFuncs [] = {
   FUNC_DEF(ZmqGetMessageLimit, 1, "zmq socket"),
   FUNC_DEF(ZmqSubscribe, 2, "zmq socket, string"),
   FUNC_DEF(ZmqUnsubscribe, 2, "zmq socket, string"),
+  0
 };
 
 /******************************************************************************
@@ -388,4 +403,4 @@ StructInitInfo *InitInfoZmq ( void )
 
 
 
-#endif WITH_ZMQ
+#endif // WITH_ZMQ
