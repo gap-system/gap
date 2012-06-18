@@ -7,6 +7,7 @@ vars.Add('cflags', 'Supply additional CFLAGS', "")
 vars.Add(BoolVariable("debug", "Set for debug builds", 0))
 vars.Add('mpi','Specify a directory with the MPI implementation',"")
 #BoolVariable("mpi", "Enable MPI support", 0))
+vars.Add("zmq", "Build with zeromq support (yes, no, /path)", "no")
 vars.Add(BoolVariable("debugguards", "Set for debugging guards", 0))
 vars.Add(BoolVariable("profile",
   "Set for profiling with google performance tools", 0))
@@ -145,6 +146,12 @@ if GAP["mpi"]:
     GAP["CC"] = GAP["mpi"] + "/bin/mpicc"
   cflags += " -DGAPMPI"
 cflags += " -m"+GAP["abi"]
+if GAP["zmq"] != "no":
+  defines.append("WITH_ZMQ")
+  linkflags += " -lzmq"
+  if GAP["zmq"].startswith("/"):
+    add_include_path(GAP["zmq"] + "/include")
+    add_library_path(GAP["zmq"] + "/lib")
 defines.append("CONFIG_H")
 if "gc" in libs:
   defines.append("GC_THREADS")
@@ -217,10 +224,24 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
 
 # Adding paths for external libraries
 
-options = { }
 include_path = [ build_dir, "." ] # for config.h
+library_path = [ ]
+options = { }
+
+def add_include_path(path):
+  global include_path, options
+  if path not in include_path:
+    include_path.append(path)
+    options["CPPPATH"] = ":".join(include_path)
+
+def add_library_path(path):
+  global library_path, options
+  if path not in library_path:
+    library_path.append(path)
+    options["LIBPATH"] = library_path[:]
+
 if compile_gc or compile_gmp:
-  options["LIBPATH"] = abi_path + "/lib"
+  add_library_path(abi_path + "/lib")
   include_path.append(abi_path + "/include")
 options["CPPPATH"] = ":".join(include_path)
 options["OBJPREFIX"] = "../" + build_dir + "/"

@@ -27,6 +27,7 @@ DeclareFilter("IsSemaphore", IsObject and IsInternalRep);
 DeclareFilter("IsChannel", IsObject and IsInternalRep);
 DeclareFilter("IsBarrier", IsObject and IsInternalRep);
 DeclareFilter("IsSyncVar", IsObject and IsInternalRep);
+DeclareFilter("IsZmqSocket", IsObject and IsInternalRep);
 DeclareFilter("IsRegion", IsObject and IsInternalRep);
 DeclareFilter("IsAtomicList", IsObject and IsInternalRep);
 DeclareFilter("IsAtomicRecord", IsObject and IsInternalRep);
@@ -41,6 +42,7 @@ BindGlobal("TYPE_REGION", NewType(RegionFamily, IsRegion));
 BindGlobal("TYPE_ALIST", NewType(AtomicFamily, IsAtomicList));
 BindGlobal("TYPE_AREC", NewType(AtomicFamily, IsAtomicRecord));
 BindGlobal("TYPE_TLREC", NewType(AtomicFamily, IsThreadLocalRecord));
+BindGlobal("TYPE_ZMQ_SOCKET", NewType(SynchronizationFamily, IsZmqSocket));
 
 AT_THREAD_EXIT_LIST := 0;
 MakeThreadLocal("AT_THREAD_EXIT_LIST");

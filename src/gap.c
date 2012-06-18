@@ -101,6 +101,10 @@
 #include        "gapmpi.h"              /* ParGAP/MPI                      */
 #endif
 
+#ifdef WITH_ZMQ
+#include	"zmqgap.h"		/* GAP ZMQ support		   */
+#endif
+
 #include        "thread.h"
 #include        "tls.h"
 #include        "threadapi.h"
@@ -3308,6 +3312,11 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
 #ifdef GAPMPI
     /* ParGAP/MPI module                                                   */
     InitInfoGapmpi,
+#endif
+
+#ifdef WITH_ZMQ
+    /* ZeroMQ module */
+    InitInfoZmq,
 #endif
 
     0
