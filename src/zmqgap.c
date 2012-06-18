@@ -28,11 +28,13 @@ static void BadArgType(Obj obj, char *fname, int pos, char *expected) {
   char buf[1024];
   sprintf(buf, "Bad argument #%d of %s, expected %s, got %s",
     pos, fname, expected, InfoBags[TNUM_OBJ(obj)].name);
+  ErrorQuit("%s", (Int) buf, 0L);
 }
 
 static void BadArg(char *fname, int pos, char *message) {
   char buf[1024];
   sprintf(buf, "Bad argument #%d of %s, %s", pos, fname, message);
+  ErrorQuit("%s", (Int) buf, 0L);
 }
 
 static int IsSocket(Obj obj) {
@@ -135,6 +137,8 @@ static Obj FuncZmqSend(Obj self, Obj socketobj, Obj data) {
       }
       is_string = 0;
     }
+    else
+      BadArgType(data, "ZmqSend", 2, "string or non-empty list of strings");
   }
   if (is_string) {
     zmq_msg_init_size(&msg, GET_LEN_STRING(data));
