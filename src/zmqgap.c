@@ -38,8 +38,12 @@ static void BadArg(char *fname, int pos, char *message) {
 }
 
 static int IsSocket(Obj obj) {
-  return TNUM_OBJ(obj) == T_DATOBJ &&
-    ADDR_OBJ(obj)[0] == TypeZmqSocket();
+  if (TNUM_OBJ(obj) == T_DATOBJ &&
+      ADDR_OBJ(obj)[0] == TypeZmqSocket()) {
+    WriteGuard(obj);
+    return 1;
+  }
+  return 0;
 }
 
 static void *Socket(Obj obj) {
