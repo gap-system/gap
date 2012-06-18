@@ -120,8 +120,8 @@ if IsBound(ZmqSocket) then
   BindGlobal("ZmqPullSocket", -> ZmqSocket("PULL"));
   BindGlobal("ZmqRequestSocket", -> ZmqSocket("REQ"));
   BindGlobal("ZmqReplySocket", -> ZmqSocket("REP"));
-  BindGlobal("ZmqPubSocket", -> ZmqSocket("PUB"));
-  BindGlobal("ZmqSubSocket", -> ZmqSocket("SUB"));
+  BindGlobal("ZmqPublisherSocket", -> ZmqSocket("PUB"));
+  BindGlobal("ZmqSubscriberSocket", -> ZmqSocket("SUB"));
 fi;
 
 DISABLE_GUARDS := false;
