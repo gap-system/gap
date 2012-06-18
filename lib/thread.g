@@ -116,6 +116,8 @@ InstallMethod( RecNames,
     REC_NAMES );
 
 if IsBound(ZmqSocket) then
+  BindGlobal("ZmqDealerSocket", -> ZmqSocket("DEALER"));
+  BindGlobal("ZmqRouterSocket", -> ZmqSocket("ROUTER"));
   BindGlobal("ZmqPushSocket", -> ZmqSocket("PUSH"));
   BindGlobal("ZmqPullSocket", -> ZmqSocket("PULL"));
   BindGlobal("ZmqRequestSocket", -> ZmqSocket("REQ"));

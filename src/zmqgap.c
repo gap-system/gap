@@ -65,6 +65,9 @@ static Obj FuncZmqSocket(Obj self, Obj type) {
   tstring = CSTR_STRING(type);
   t = -1;
   switch (tstring[0]) {
+    case 'D':
+      if (!strcmp(tstring, "DEALER")) t = ZMQ_DEALER;
+      break;
     case 'P':
       if (!strcmp(tstring, "PULL")) t = ZMQ_PULL;
       else if (!strcmp(tstring, "PUSH")) t = ZMQ_PUSH;
@@ -73,6 +76,7 @@ static Obj FuncZmqSocket(Obj self, Obj type) {
     case 'R':
       if (!strcmp(tstring, "REQ")) t = ZMQ_REQ;
       else if (!strcmp(tstring, "REP")) t = ZMQ_REP;
+      else if (!strcmp(tstring, "ROUTER")) t = ZMQ_ROUTER;
       break;
     case 'S':
       if (!strcmp(tstring, "SUB")) t = ZMQ_SUB;
