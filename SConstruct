@@ -220,6 +220,10 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
   build_external("bdwgc-2012-03-02")
   del os.environ["CC"]
 
+if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
+  os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
+  build_external("zeromq-2.2.0")
+  del os.environ["CC"]
 
 
 # Adding paths for external libraries
