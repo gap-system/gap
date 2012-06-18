@@ -367,7 +367,10 @@ static Obj FuncZmqPoll(Obj self, Obj in, Obj out, Obj timeout) {
   n = zmq_poll(items, p, to);
   if (n < 0)
     ZmqError("ZmqPoll");
-  result = NEW_PLIST(T_PLIST_CYC_SSORT, n);
+  if (n > 0)
+    result = NEW_PLIST(T_PLIST_CYC_SSORT, n);
+  else
+    result = NEW_PLIST(T_PLIST, n);
   SET_LEN_PLIST(result, n);
   if (n == 0)
     return result;
