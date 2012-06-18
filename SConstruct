@@ -275,11 +275,16 @@ def SysInfoBuilder(target, source, env):
   file.close()
 
 def WriteFlags(cflags, ldflags):
+  arch = "-m" + GAP["abi"]
   file = open("bin/cflags", "w")
   file.write(cflags+"\n")
   file.close()
   file = open("bin/ldflags", "w")
   file.write(ldflags+"\n")
+  file.close()
+  file = open(build_dir+"/buildflags.sh", "w")
+  file.write("extra_cflags=' " + arch + " " + cflags + "'")
+  file.write("extra_ldflags=' " + arch + " " + ldflags + "'")
   file.close()
 
 # Building binary from source

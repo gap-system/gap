@@ -81,6 +81,12 @@ c_dynlibs="@C_DYNLIBS@"
 
 # hardwire this for now. There is probably a nicer way 
 
+if [ -r "${gap_bin}/buildflags.sh" ]; then
+  source "${gap_bin}/buildflags.sh"
+  c_compiler="${c_compiler}${extra_cflags}"
+  c_linker="${c_linker}${extra_ldflags}"
+fi
+
 OBJECTS="\
     c_meths1.o  c_type1.o   c_oper1.o   c_filt1.o    c_random.o  \
     ariths.o    blister.o   bool.o      calls.o      code.o      \
