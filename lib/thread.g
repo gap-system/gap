@@ -115,4 +115,13 @@ InstallMethod( RecNames,
     [ IsAtomicRecord and IsInternalRep],
     REC_NAMES );
 
+if IsBound(ZmqSocket) then
+  BindGlobal("ZmqPushSocket", -> ZmqSocket("PUSH"));
+  BindGlobal("ZmqPullSocket", -> ZmqSocket("PULL"));
+  BindGlobal("ZmqRequestSocket", -> ZmqSocket("REQ"));
+  BindGlobal("ZmqReplySocket", -> ZmqSocket("REP"));
+  BindGlobal("ZmqPubSocket", -> ZmqSocket("PUB"));
+  BindGlobal("ZmqSubSocket", -> ZmqSocket("SUB"));
+fi;
+
 DISABLE_GUARDS := false;

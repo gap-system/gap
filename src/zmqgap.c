@@ -205,6 +205,106 @@ static Obj FuncZmqClose(Obj self, Obj socketobj) {
     ZmqError("ZmqClose");
 }
 
+
+static void CheckSocketArg(char *fname, Obj socket) {
+  if (!IsSocket(socket))
+    BadArgType(socket, fname, 1, "zmq socket");
+}
+
+static Obj FuncZmqSetIdentity(Obj self, Obj socket, Obj str) {
+  CheckSocketArg("ZmqSetIdentity", socket);
+  if (!IsStringConv(str))
+    BadArgType(str, "ZmqSetIdentity", 2, "string");
+  if (zmq_setsockopt(Socket(socket), ZMQ_IDENTITY,
+      CSTR_STRING(str), GET_LEN_STRING(str)) < 0)
+    ZmqError("ZmqSetIdentity");
+  return (Obj) 0;
+}
+
+static void ZmqSetUIntSockOpt(char *fname, Obj socket, int opt, Obj num) {
+  uint64_t value;
+  CheckSocketArg(fname, socket);
+  if (!IS_INTOBJ(num) || INT_INTOBJ(num) < 0)
+    BadArgType(num, fname, 2, "non-negative integer");
+  value = INT_INTOBJ(num);
+  if (zmq_setsockopt(Socket(socket), opt,
+      &value, sizeof(value)) < 0)
+    ZmqError(fname);
+}
+
+static Obj FuncZmqSetSendBufferSize(Obj self, Obj socket, Obj size) {
+  ZmqSetUIntSockOpt("ZmqSetSendBufferSize", socket, ZMQ_SNDBUF, size);
+  return (Obj) 0;
+}
+
+static Obj FuncZmqSetReceiveBufferSize(Obj self, Obj socket, Obj size) {
+  ZmqSetUIntSockOpt("ZmqSetReceiveBufferSize", socket, ZMQ_RCVBUF, size);
+  return (Obj) 0;
+}
+
+static Obj FuncZmqSetMessageLimit(Obj self, Obj socket, Obj size) {
+  ZmqSetUIntSockOpt("ZmqSetMessageLimit", socket, ZMQ_HWM, size);
+  return (Obj) 0;
+}
+
+static Obj FuncZmqGetIdentity(Obj self, Obj socket) {
+  char buf[256]; /* maximum identity length is 255 */
+  size_t len;
+  Obj result;
+  CheckSocketArg("ZmgGetIdentity", socket);
+  if (zmq_getsockopt(Socket(socket), ZMQ_IDENTITY, buf, &len) < 0)
+    ZmqError("ZmqGetidentity");
+  result = NEW_STRING(len);
+  SET_LEN_STRING(result, len);
+  memcpy(CSTR_STRING(result), buf, len);
+  return result;
+}
+
+static Obj ZmqGetUIntSockOpt(char *fname, Obj socket, int opt) {
+  uint64_t value;
+  size_t value_size = sizeof(value);
+  CheckSocketArg(fname, socket);
+  if (zmq_getsockopt(Socket(socket), opt, &value, &value_size) < 0)
+    ZmqError(fname);
+  if (value >= (1 << 28))
+    ErrorQuit("%s: small integer overflow", (Int) fname, 0L);
+  return INTOBJ_INT((Int)value);
+}
+
+static Obj FuncZmqGetSendBufferSize(Obj self, Obj socket) {
+  return ZmqGetUIntSockOpt("ZmqGetSendBufferSize", socket, ZMQ_SNDBUF);
+}
+
+static Obj FuncZmqGetReceiveBufferSize(Obj self, Obj socket) {
+  return ZmqGetUIntSockOpt("ZmqGetReceiveBufferSize", socket, ZMQ_RCVBUF);
+}
+
+static Obj FuncZmqGetMessageLimit(Obj self, Obj socket) {
+  return ZmqGetUIntSockOpt("ZmqGetMessageLimit", socket, ZMQ_HWM);
+}
+
+static Obj FuncZmqSubscribe(Obj self, Obj socket, Obj str) {
+  CheckSocketArg("ZmqSubscribe", socket);
+  if (!IsStringConv(str))
+    BadArgType(str, "ZmqSubscribe", 2, "string");
+  if (zmq_setsockopt(Socket(socket), ZMQ_SUBSCRIBE,
+      CSTR_STRING(str), GET_LEN_STRING(str)) < 0)
+    ZmqError("ZmqSubscribe");
+  return (Obj) 0;
+}
+
+static Obj FuncZmqUnsubscribe(Obj self, Obj socket, Obj str) {
+  CheckSocketArg("ZmqUnsubscribe", socket);
+  if (!IsStringConv(str))
+    BadArgType(str, "ZmqUnsubscribe", 2, "string");
+  if (zmq_setsockopt(Socket(socket), ZMQ_UNSUBSCRIBE,
+      CSTR_STRING(str), GET_LEN_STRING(str)) < 0)
+    ZmqError("ZmqUnsubscribe");
+  return (Obj) 0;
+}
+
+
+
 #define FUNC_DEF(name, narg, argdesc) \
   { #name, narg, argdesc, Func ## name, __FILE__ ":Func" #name }
 
@@ -215,6 +315,16 @@ static StructGVarFunc GVarFuncs [] = {
   FUNC_DEF(ZmqSend, 2, "zmq socket, string|list of strings"),
   FUNC_DEF(ZmqReceive, 1, "zmq socket"),
   FUNC_DEF(ZmqClose, 1, "zmq socket"),
+  FUNC_DEF(ZmqSetIdentity, 2, "zmq socket, string"),
+  FUNC_DEF(ZmqSetSendBufferSize, 2, "zmq socket, size"),
+  FUNC_DEF(ZmqSetReceiveBufferSize, 2, "zmq socket, size"),
+  FUNC_DEF(ZmqSetMessageLimit, 2, "zmq socket, count"),
+  FUNC_DEF(ZmqGetIdentity, 1, "zmq socket"),
+  FUNC_DEF(ZmqGetSendBufferSize, 1, "zmq socket"),
+  FUNC_DEF(ZmqGetReceiveBufferSize, 1, "zmq socket"),
+  FUNC_DEF(ZmqGetMessageLimit, 1, "zmq socket"),
+  FUNC_DEF(ZmqSubscribe, 2, "zmq socket, string"),
+  FUNC_DEF(ZmqUnsubscribe, 2, "zmq socket, string"),
 };
 
 /******************************************************************************
