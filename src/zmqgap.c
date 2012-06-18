@@ -317,6 +317,58 @@ static Obj FuncZmqUnsubscribe(Obj self, Obj socket, Obj str) {
   return (Obj) 0;
 }
 
+static Obj FuncZmqPoll(Obj self, Obj in, Obj out, Obj timeout) {
+  Int i, p, len_in, len_out, to, n;
+  Obj result;
+  zmq_pollitem_t items[1024];
+  if (!IS_LIST(in))
+    BadArgType(in, "ZmqPoll", 1, "list of zmq sockets");
+  len_in = LEN_LIST(in);
+  for (i = 1; i <= len_in; i++) {
+    if (!IsSocket(ELM_LIST(in, i)))
+      BadArgType(in, "ZmqPoll", 1, "list of zmq sockets");
+  }
+  if (!IS_LIST(out))
+    BadArgType(out, "ZmqPoll", 2, "list of zmq sockets");
+  len_out = LEN_LIST(out);
+  for (i = 1; i <= len_out; i++) {
+    if (!IsSocket(ELM_LIST(out, i)))
+      BadArgType(out, "ZmqPoll", 1, "list of zmq sockets");
+  }
+  if (len_in + len_out > 1024)
+    ErrorQuit("ZmqPoll: Cannot poll more than 1024 sockets", 0L, 0L);
+  p = 0;
+  for (i=1; i <= len_in; i++, p++) {
+    items[p].socket = Socket(ELM_LIST(in, i));
+    items[p].fd = -1;
+    items[p].events = ZMQ_POLLIN;
+  }
+  for (i=1; i <= len_out; i++, p++) {
+    items[p].socket = Socket(ELM_LIST(out, i));
+    items[p].fd = -1;
+    items[p].events = ZMQ_POLLOUT;
+  }
+  if (!IS_INTOBJ(timeout))
+    BadArgType(timeout, "ZmqPoll", 3, "timeout value");
+  to = INT_INTOBJ(timeout);
+  if (to < 0) to = -1;
+  n = zmq_poll(items, p, to);
+  if (n < 0)
+    ZmqError("ZmqPoll");
+  result = NEW_PLIST(T_PLIST, n);
+  SET_LEN_PLIST(result, n);
+  if (n == 0)
+    return result;
+  n = 1;
+  for (i=0; i<p; i++) {
+    if (items[i].revents & (ZMQ_POLLIN | ZMQ_POLLOUT)) {
+      SET_ELM_PLIST(result, n, INTOBJ_INT(i+1));
+      n++;
+    }
+  }
+  return result;
+}
+
 
 
 #define FUNC_DEF(name, narg, argdesc) \
@@ -329,6 +381,7 @@ static StructGVarFunc GVarFuncs [] = {
   FUNC_DEF(ZmqSend, 2, "zmq socket, string|list of strings"),
   FUNC_DEF(ZmqReceive, 1, "zmq socket"),
   FUNC_DEF(ZmqClose, 1, "zmq socket"),
+  FUNC_DEF(ZmqPoll, 3, "list of input sockets, list of output sockets, timeout (ms)"),
   FUNC_DEF(ZmqSetIdentity, 2, "zmq socket, string"),
   FUNC_DEF(ZmqSetSendBufferSize, 2, "zmq socket, size"),
   FUNC_DEF(ZmqSetReceiveBufferSize, 2, "zmq socket, size"),
