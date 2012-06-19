@@ -1,19 +1,14 @@
 #############################################################################
 ##
-#W  thread.g                    GAP library                  Reimer Behrends
-##
-#H  @(#)$Id: thread.g,v 4.50 2010/04/10 14:20:00 gap Exp $
+#W  thread1.g                    GAP library                 Reimer Behrends
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-##  This is a minimal file to provide type information for the new types
-##  provided by thread primitives.
+##  This file provides the necessary thread initialization code code needed
+##  early in GAP's initialization process. The rest can be found in thread.g.
 ##
-
-Revision.thread1_g :=
-  "@(#)$Id: thread1.g,v 4.50 2010/04/10 14:20:00 gap Exp $";
 
 
 # Convenience aliases

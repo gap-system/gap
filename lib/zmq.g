@@ -1,3 +1,14 @@
+#############################################################################
+##
+#W  zmq.g                    GAP library                  Reimer Behrends
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
+##
+##  Additional ease-of-use primitives for using ZeroMQ.
+##
+
 DeclareFilter("IsZmqSocket", IsObject and IsInternalRep);
 BindGlobal("TYPE_ZMQ_SOCKET", NewType(SynchronizationFamily, IsZmqSocket));
 
