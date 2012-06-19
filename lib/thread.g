@@ -27,7 +27,6 @@ DeclareFilter("IsSemaphore", IsObject and IsInternalRep);
 DeclareFilter("IsChannel", IsObject and IsInternalRep);
 DeclareFilter("IsBarrier", IsObject and IsInternalRep);
 DeclareFilter("IsSyncVar", IsObject and IsInternalRep);
-DeclareFilter("IsZmqSocket", IsObject and IsInternalRep);
 DeclareFilter("IsRegion", IsObject and IsInternalRep);
 DeclareFilter("IsAtomicList", IsObject and IsInternalRep);
 DeclareFilter("IsAtomicRecord", IsObject and IsInternalRep);
@@ -42,7 +41,6 @@ BindGlobal("TYPE_REGION", NewType(RegionFamily, IsRegion));
 BindGlobal("TYPE_ALIST", NewType(AtomicFamily, IsAtomicList));
 BindGlobal("TYPE_AREC", NewType(AtomicFamily, IsAtomicRecord));
 BindGlobal("TYPE_TLREC", NewType(AtomicFamily, IsThreadLocalRecord));
-BindGlobal("TYPE_ZMQ_SOCKET", NewType(SynchronizationFamily, IsZmqSocket));
 
 AT_THREAD_EXIT_LIST := 0;
 MakeThreadLocal("AT_THREAD_EXIT_LIST");
@@ -116,42 +114,7 @@ InstallMethod( RecNames,
     REC_NAMES );
 
 if IsBound(ZmqSocket) then
-  BindGlobal("ZmqAttachedSocket", function(type, addrs)
-    local socket, addr;
-    socket := ZmqSocket(type);
-    for addr in addrs do
-      if addr <> "" and addr[1] = '+' then
-        ZmqConnect(socket, addr{[2..Length(addr)]});
-      else
-        ZmqBind(socket, addr);
-      fi;
-    od;
-    return socket;
-  end);
-  BindGlobal("ZmqPushSocket", function(arg)
-    return ZmqAttachedSocket("PUSH", arg);
-  end);
-  BindGlobal("ZmqPullSocket", function(arg)
-    return ZmqAttachedSocket("PULL", arg);
-  end);
-  BindGlobal("ZmqRequestSocket", function(arg)
-    return ZmqAttachedSocket("REQ", arg);
-  end);
-  BindGlobal("ZmqReplySocket", function(arg)
-    return ZmqAttachedSocket("REP", arg);
-  end);
-  BindGlobal("ZmqDealerSocket", function(arg)
-    return ZmqAttachedSocket("DEALER", arg);
-  end);
-  BindGlobal("ZmqRouterSocket", function(arg)
-    return ZmqAttachedSocket("ROUTER", arg);
-  end);
-  BindGlobal("ZmqPublisherSocket", function(arg)
-    return ZmqAttachedSocket("PUB", arg);
-  end);
-  BindGlobal("ZmqSubscriberSocket", function(arg)
-    return ZmqAttachedSocket("SUB", arg);
-  end);
+  ReadLib("zmq.g");
 fi;
 
 DISABLE_GUARDS := false;
