@@ -45,3 +45,9 @@ end);
 BindGlobal("ZmqSubscriberSocket", function(arg)
   return ZmqAttachedSocket("SUB", arg);
 end);
+
+BindGlobal("ZmqReceiveAllAsString", function(socket, sep)
+  local parts;
+  parts := ZmqReceiveAll(socket);
+  return JoinStringsWithSeparator(parts, sep);
+end);

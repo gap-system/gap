@@ -179,32 +179,48 @@ static Obj FuncZmqReceive(Obj self, Obj socketobj) {
   int64_t more;
   size_t more_size;
   Obj result;
+  Int len;
 
-  int is_list = 0;
   if (!IsSocket(socketobj))
     BadArgType(socketobj, "ZmqReceive", 1, "zmq socket");
   socket = Socket(socketobj);
   zmq_msg_init(&msg);
   if (zmq_recvmsg(socket, &msg, 0) < 0)
     ZmqError("ZmqReceive");
-  result = NEW_STRING(zmq_msg_size(&msg));
-  memcpy(CSTR_STRING(result), zmq_msg_data(&msg), zmq_msg_size(&msg));
+  len = zmq_msg_size(&msg);
+  result = NEW_STRING(len);
+  memcpy(CSTR_STRING(result), zmq_msg_data(&msg), len);
+  zmq_msg_close(&msg);
+  return result;
+}
+
+static Obj FuncZmqReceiveAll(Obj self, Obj socketobj) {
+  void *socket;
+  int flags;
+  zmq_msg_t msg;
+  int64_t more;
+  size_t more_size;
+  Obj result, elem;
+
+  if (!IsSocket(socketobj))
+    BadArgType(socketobj, "ZmqReceiveAll", 1, "zmq socket");
+  socket = Socket(socketobj);
+  zmq_msg_init(&msg);
+  if (zmq_recvmsg(socket, &msg, 0) < 0)
+    ZmqError("ZmqReceiveAll");
+  result = NEW_PLIST(T_PLIST, 1);
+  SET_LEN_PLIST(result, 1);
+  elem = NEW_STRING(zmq_msg_size(&msg));
+  memcpy(CSTR_STRING(elem), zmq_msg_data(&msg), zmq_msg_size(&msg));
+  SET_ELM_PLIST(result, 1, elem);
   zmq_msg_close(&msg);
   for (;;) {
-    Obj elem;
     more_size = sizeof(more);
     zmq_getsockopt(socket, ZMQ_RCVMORE, &more, &more_size);
     if (!more) break;
-    if (!is_list) {
-      elem = result;
-      result = NEW_PLIST(T_PLIST, 1);
-      SET_LEN_PLIST(result, 1);
-      SET_ELM_PLIST(result, 1, elem);
-      is_list = 1;
-    }
     zmq_msg_init(&msg);
     if (zmq_recvmsg(socket, &msg, 0) < 0)
-      ZmqError("ZmqReceive");
+      ZmqError("ZmqReceiveAll");
     elem = NEW_STRING(zmq_msg_size(&msg));
     memcpy(CSTR_STRING(elem), zmq_msg_data(&msg), zmq_msg_size(&msg));
     zmq_msg_close(&msg);
@@ -227,6 +243,16 @@ static void CheckSocketArg(char *fname, Obj socket) {
   if (!IsSocket(socket))
     BadArgType(socket, fname, 1, "zmq socket");
 }
+
+static Obj FuncZmqHasMore(Obj self, Obj socket) {
+  int64_t more;
+  size_t more_size;
+  CheckSocketArg("ZmqHasMore", socket);
+  more_size = sizeof(more);
+  zmq_getsockopt(Socket(socket), ZMQ_RCVMORE, &more, &more_size);
+  return more ? True : False;
+}
+
 
 static Obj FuncZmqSetIdentity(Obj self, Obj socket, Obj str) {
   CheckSocketArg("ZmqSetIdentity", socket);
@@ -395,12 +421,14 @@ static StructGVarFunc GVarFuncs [] = {
   FUNC_DEF(ZmqConnect, 2, "zmq socket, remote address"),
   FUNC_DEF(ZmqSend, 2, "zmq socket, string|list of strings"),
   FUNC_DEF(ZmqReceive, 1, "zmq socket"),
+  FUNC_DEF(ZmqReceiveAll, 1, "zmq socket"),
   FUNC_DEF(ZmqClose, 1, "zmq socket"),
   FUNC_DEF(ZmqPoll, 3, "list of input sockets, list of output sockets, timeout (ms)"),
   FUNC_DEF(ZmqSetIdentity, 2, "zmq socket, string"),
   FUNC_DEF(ZmqSetSendBufferSize, 2, "zmq socket, size"),
   FUNC_DEF(ZmqSetReceiveBufferSize, 2, "zmq socket, size"),
   FUNC_DEF(ZmqSetMessageLimit, 2, "zmq socket, count"),
+  FUNC_DEF(ZmqHasMore, 1, "zmq socket"),
   FUNC_DEF(ZmqGetIdentity, 1, "zmq socket"),
   FUNC_DEF(ZmqGetSendBufferSize, 1, "zmq socket"),
   FUNC_DEF(ZmqGetReceiveBufferSize, 1, "zmq socket"),
