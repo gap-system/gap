@@ -12,16 +12,27 @@
 DeclareFilter("IsZmqSocket", IsObject and IsInternalRep);
 BindGlobal("TYPE_ZMQ_SOCKET", NewType(SynchronizationFamily, IsZmqSocket));
 
-BindGlobal("ZmqAttachedSocket", function(type, addrs)
-  local socket, addr;
+BindGlobal("ZmqAttach", function(socket, addr)
+  if addr <> "" and addr[1] = '+' then
+    ZmqConnect(socket, addr{[2..Length(addr)]});
+  else
+    ZmqBind(socket, addr);
+  fi;
+end);
+
+BindGlobal("ZmqAttachedSocket", function(type, args)
+  local socket, nargs;
+  nargs := Length(args);
   socket := ZmqSocket(type);
-  for addr in addrs do
-    if addr <> "" and addr[1] = '+' then
-      ZmqConnect(socket, addr{[2..Length(addr)]});
-    else
-      ZmqBind(socket, addr);
-    fi;
-  od;
+  if nargs = 0 then
+  elif nargs = 1 then
+    ZmqAttach(socket, args[1]);
+  elif nargs = 2 then
+    ZmqSetIdentity(socket, args[2]);
+    ZmqAttach(socket, args[1]);
+  else
+    Error("ZmqAttachedSocket: Too many arguments");
+  fi;
   return socket;
 end);
 
