@@ -4887,6 +4887,9 @@ static Int InitKernel(
 #endif
   DeclareGVar(&GVarBeginEdit, "TERMINAL_BEGIN_EDIT");
   DeclareGVar(&GVarEndEdit, "TERMINAL_END_EDIT");
+#ifdef SIGWINCH
+  signal(SIGWINCH, SIG_IGN);
+#endif
   /* return success                                                      */
   return 0;
 
