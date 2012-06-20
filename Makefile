@@ -6,8 +6,9 @@ CFLAGS=
 DEBUG=debugguards=1 cflags=-DTRACK_CREATOR
 ZMQ=no
 COMPILER=
+CPP_COMPILER=
 BUILD=$(SCONS) -j $(JOBS) ward=$(WARD) gmp=$(GMP) zmq=$(ZMQ) \
-	cflags=$(CFLAGS) compiler=$(COMPILER)
+	cflags=$(CFLAGS) compiler=$(COMPILER) cpp_compiler=$(CPP_COMPILER)
 
 all opt: $(WARD)/bin/ward
 	$(BUILD) debug=0

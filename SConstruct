@@ -14,6 +14,7 @@ vars.Add(BoolVariable("profile",
 vars.Add(EnumVariable("abi", "Set to 32 or 64 depending on platform", 'auto',
   allowed_values=('32', '64', 'auto')))
 vars.Add('compiler', "C compiler", "")
+vars.Add('cpp_compiler', "C++ compiler", "")
 vars.Add(EnumVariable("gmp", "Use GMP: yes, no, or system", "yes",
   allowed_values=("yes", "no", "system")))
 vars.Add(EnumVariable("gc", "Use GC: yes, no, or system", "yes",
@@ -24,8 +25,11 @@ vars.Add('ward', 'Specify Ward directory', "")
 GAP = DefaultEnvironment(variables=vars)
 if GAP["compiler"] != "":
   GAP["CC"] = GAP["compiler"]
+if GAP["cpp_compiler"] != "":
+  GAP["CXX"] = GAP["cpp_compiler"]
 
 compiler = GAP["CC"]
+cpp_compiler = GAP["CXX"]
 platform = commands.getoutput("cnf/config.guess")
 build_dir = "bin/" + platform + "-" + compiler
 
@@ -226,8 +230,10 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
   os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
+  os.environ["CXX"] = GAP["CXX"]+" -m"+GAP["abi"]
   build_external("zeromq-3.2.0")
   del os.environ["CC"]
+  del os.environ["CXX"]
 
 
 # Adding paths for external libraries
