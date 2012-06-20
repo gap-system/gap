@@ -631,8 +631,11 @@ Obj GetARecordField(Obj record, UInt field)
     UInt key = data[hash*2].atom;
     if (key == field)
     {
+      Obj result;
       MEMBAR_READ(); /* memory barrier */
-      return data[hash*2+1].obj;
+      result = data[hash*2+1].obj;
+      if (result != Undefined)
+        return result;
     }
     if (!key)
       return (Obj) 0;
@@ -790,9 +793,10 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   newtable[AR_STRAT] = table[AR_STRAT]; /* strategy */
   for (i=0; i<cap; i++) {
     UInt key = data[2*i].atom;
-    if (key) {
+    Obj value = data[2*i+1].obj;
+    if (key && value != Undefined) {
       n = ARecordFastInsert(newtable, key);
-      newdata[2*n+1].obj = data[2*i+1].obj;
+      newdata[2*n+1].obj = value;
     }
   }
   n = ARecordFastInsert(newtable, field);
@@ -832,7 +836,7 @@ Obj FromAtomicRecord(Obj record)
     key = data[2*i].atom;
     MEMBAR_READ();
     value = data[2*i+1].obj;
-    if (key && value)
+    if (key && value && value != Undefined)
       AssPRec(result, key, value);
   }
   return result;
@@ -910,6 +914,10 @@ Obj ElmARecord(Obj record, UInt rnam)
 void AssARecord(Obj record, UInt rnam, Obj value)
 {
    SetARecordField(record, rnam, value);
+}
+
+void UnbARecord(Obj record, UInt rnam) {
+   SetARecordField(record, rnam, Undefined);
 }
 
 Int IsbARecord(Obj record, UInt rnam)
@@ -1882,6 +1890,7 @@ static Int InitKernel (
   CopyObjFuncs[ T_AREC ] = CopyARecord;
   CleanObjFuncs[ T_AREC ] = CleanARecord;
   IsRecFuncs[ T_AREC ] = IsRecYes;
+  UnbRecFuncs[ T_AREC ] = UnbARecord;
   CopyObjFuncs[ T_ACOMOBJ ] = CopyARecord;
   CleanObjFuncs[ T_ACOMOBJ ] = CleanARecord;
   IsRecFuncs[ T_ACOMOBJ ] = IsRecNot;
