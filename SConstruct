@@ -13,6 +13,7 @@ vars.Add(BoolVariable("profile",
   "Set for profiling with google performance tools", 0))
 vars.Add(EnumVariable("abi", "Set to 32 or 64 depending on platform", 'auto',
   allowed_values=('32', '64', 'auto')))
+vars.Add('compiler', "C compiler", "")
 vars.Add(EnumVariable("gmp", "Use GMP: yes, no, or system", "yes",
   allowed_values=("yes", "no", "system")))
 vars.Add(EnumVariable("gc", "Use GC: yes, no, or system", "yes",
@@ -21,6 +22,8 @@ vars.Add('preprocess', 'Use source preprocessor', "")
 vars.Add('ward', 'Specify Ward directory', "")
 
 GAP = DefaultEnvironment(variables=vars)
+if GAP["compiler"] != "":
+  GAP["CC"] = GAP["compiler"]
 
 compiler = GAP["CC"]
 platform = commands.getoutput("cnf/config.guess")
@@ -61,14 +64,14 @@ if changed_abi:
 
 if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
   if not GetOption("clean"):
+    os.environ["CC"] = compiler 
     if GAP["abi"] != "auto":
-      os.environ["CC"] = compiler 
       os.environ["CFLAGS"] = " -m" + GAP["abi"]
     os.system("./configure")
     os.system("cd "+build_dir+"; sh ../../cnf/configure.out")
     os.system("test -w bin/gap.sh && chmod ugo+x bin/gap.sh")
+    del os.environ["CC"]
     if GAP["abi"] != "auto":
-      del os.environ["CC"]
       del os.environ["CFLAGS"]
 
 default_abi, has_config = abi_from_config(config_header_file)
@@ -197,6 +200,7 @@ def build_external(libname, confargs=None):
     confargs = " " + confargs
   else:
     confargs = ""
+  print "=== Building " + libname + " ==="
   if os.system("cd " + abi_path + ";"
           + "tar xzf ../" + libname + ".tar.gz;"
 	  + "cd " + libname + ";"
@@ -207,7 +211,7 @@ def build_external(libname, confargs=None):
 
 if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
   os.environ["ABI"] = GAP["abi"]
-  build_external("gmp-5.0.4")
+  build_external("gmp-5.0.4", "--disable-shared")
   del os.environ["ABI"]
 
 if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
@@ -217,15 +221,12 @@ if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
   os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
-  build_external("bdwgc-2012-03-02")
+  build_external("bdwgc-2012-03-02", confargs="--disable-shared")
   del os.environ["CC"]
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
   os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
-  if os.uname()[0] == "Linux":
-    build_external("zeromq-3.2.0")
-  else:
-    build_external("zeromq-2.2.0")
+  build_external("zeromq-3.2.0")
   del os.environ["CC"]
 
 
@@ -247,9 +248,8 @@ def add_library_path(path):
     library_path.append(path)
     options["LIBPATH"] = library_path[:]
 
-if compile_gc or compile_gmp:
-  add_library_path(abi_path + "/lib")
-  include_path.append(abi_path + "/include")
+add_library_path(abi_path + "/lib")
+include_path.append(abi_path + "/include")
 options["CPPPATH"] = ":".join(include_path)
 options["OBJPREFIX"] = "../" + build_dir + "/"
 
