@@ -22,7 +22,10 @@ static void *ZmqContext;
 
 #define ZMQ_DAT_SOCKET_OFF 1
 #define ZMQ_DAT_TYPE_OFF 2
-#define ZMQ_DAT_FLAG_OFF 2
+#define ZMQ_DAT_URI_OFF 3
+#define ZMQ_DAT_FLAG_OFF 4
+
+#define ZMQ_SOCK_FLAG_BOUND 1
 
 static void BadArgType(Obj obj, char *fname, int pos, char *expected) {
   char buf[1024];
@@ -37,27 +40,127 @@ static void BadArg(char *fname, int pos, char *message) {
   ErrorQuit("%s", (Int) buf, 0L);
 }
 
-static int IsSocket(Obj obj) {
+static int IsOpenSocket(Obj obj) {
   if (TNUM_OBJ(obj) == T_DATOBJ &&
       ADDR_OBJ(obj)[0] == TypeZmqSocket()) {
     WriteGuard(obj);
+    if (!ADDR_OBJ(obj)[ZMQ_DAT_SOCKET_OFF])
+      ErrorQuit("Attempt to operate on a closed zmq socket", 0L, 0L);
     return 1;
   }
   return 0;
 }
 
+static int IsSocket(Obj obj) {
+  if (TNUM_OBJ(obj) == T_DATOBJ &&
+      ADDR_OBJ(obj)[0] == TypeZmqSocket()) {
+    ReadGuard(obj);
+    return 1;
+  }
+  return 0;
+}
+
+
 static void *Socket(Obj obj) {
   return ADDR_OBJ(obj)[ZMQ_DAT_SOCKET_OFF];
 }
 
+static Int SocketFlags(Obj obj) {
+  return (Int) ADDR_OBJ(obj)[ZMQ_DAT_FLAG_OFF];
+}
+
+
 static Int SocketType(Obj obj) {
   return INT_INTOBJ(ADDR_OBJ(obj)[ZMQ_DAT_TYPE_OFF]);
+}
+
+static char *SocketURI(Obj obj) {
+  return (char *)(ADDR_OBJ(obj)[ZMQ_DAT_URI_OFF]);
+}
+
+static void SetSocketURI(Obj socket, Obj uri) {
+  /* This function would use malloc()/free() if turned into
+   * a GAP 4.5 package instead.
+   */
+  char *uri_mem;
+  if (uri_mem = (char *) ADDR_OBJ(socket)[ZMQ_DAT_URI_OFF]) {
+    /* FreeMemoryBlock(uri_mem); */
+  }
+  if (!uri)
+    ADDR_OBJ(socket)[ZMQ_DAT_URI_OFF] = (Obj) 0;
+  else {
+    uri_mem = AllocateMemoryBlock(GET_LEN_STRING(uri)+1);
+    memcpy(uri_mem, CSTR_STRING(uri), GET_LEN_STRING(uri));
+    uri_mem[GET_LEN_STRING(uri)] = '\0';
+    ADDR_OBJ(socket)[ZMQ_DAT_URI_OFF] = (Obj) uri_mem;
+  }
 }
 
 
 static void ZmqError(char *funcname) {
   ErrorQuit("%s: %s", (Int) funcname, (Int) zmq_strerror(errno));
 }
+
+static char * SocketTypeToString(Int type) {
+  switch (type) {
+    case ZMQ_PULL: return "PULL";
+    case ZMQ_PUSH: return "PUSH";
+    case ZMQ_PUB: return "PUB";
+    case ZMQ_SUB: return "SUB";
+    case ZMQ_REQ: return "REQ";
+    case ZMQ_REP: return "REP";
+    case ZMQ_DEALER: return "DEALER";
+    case ZMQ_ROUTER: return "ROUTER";
+    default: return NULL;
+  }
+}
+
+static Obj FuncZmqSocketType(Obj self, Obj socket) {
+  Obj result = Fail;
+  char *typename;
+  if (!IsSocket(socket))
+    BadArgType(socket, "ZmqSocketType", 1, "zmq socket");
+  typename = SocketTypeToString(SocketType(socket));
+  if (typename) {
+    result = NEW_STRING(strlen(typename));
+    strcpy(CSTR_STRING(result), typename);
+  }
+  return result;
+}
+
+static Obj FuncZmqSocketURI(Obj self, Obj socket) {
+  Obj result = Fail;
+  char *uri;
+  if (!IsSocket(socket))
+    BadArgType(socket, "ZmqSocketURI", 1, "zmq socket");
+  uri = SocketURI(socket);
+  if (uri) {
+    result = NEW_STRING(strlen(uri));
+    strcpy(CSTR_STRING(result), uri);
+  }
+  return result;
+}
+
+static Obj FuncZmqIsOpen(Obj self, Obj socket) {
+  if (!IsSocket(socket))
+    BadArgType(socket, "ZmqIsOpen", 1, "zmq socket");
+  return Socket(socket) ? True : False;
+}
+
+static Obj FuncZmqIsBound(Obj self, Obj socket) {
+  if (!IsSocket(socket))
+    BadArgType(socket, "ZmqIsBound", 1, "zmq socket");
+  return SocketURI(socket) && (SocketFlags(socket) & ZMQ_SOCK_FLAG_BOUND) ?
+           True : False;
+}
+
+static Obj FuncZmqIsConnected(Obj self, Obj socket) {
+  if (!IsSocket(socket))
+    BadArgType(socket, "ZmqIsConnected", 1, "zmq socket");
+  return SocketURI(socket) && !(SocketFlags(socket) & ZMQ_SOCK_FLAG_BOUND) ?
+           True : False;
+}
+
 
 static Obj FuncZmqSocket(Obj self, Obj type) {
   char *tstring;
@@ -102,7 +205,7 @@ static Obj FuncZmqSocket(Obj self, Obj type) {
 static Obj FuncZmqBind(Obj self, Obj socketobj, Obj addrobj) {
   void *socket;
   char *addr;
-  if (!IsSocket(socketobj))
+  if (!IsOpenSocket(socketobj))
     BadArgType(socketobj, "ZmqBind", 1, "zmq socket");
   if (!IsStringConv(addrobj))
     BadArgType(addrobj, "ZmqBind", 2, "string specifying a local address");
@@ -110,13 +213,15 @@ static Obj FuncZmqBind(Obj self, Obj socketobj, Obj addrobj) {
   addr = CSTR_STRING(addrobj);
   if (zmq_bind(socket, addr) < 0)
     ZmqError("ZmqBind");
+  SetSocketURI(socketobj, addrobj);
+  ADDR_OBJ(socketobj)[ZMQ_DAT_FLAG_OFF] = (Obj) ZMQ_SOCK_FLAG_BOUND;
   return (Obj) 0;
 }
 
 static Obj FuncZmqConnect(Obj self, Obj socketobj, Obj addrobj) {
   void *socket;
   char *addr;
-  if (!IsSocket(socketobj))
+  if (!IsOpenSocket(socketobj))
     BadArgType(socketobj, "ZmqConnect", 1, "zmq socket");
   if (!IsStringConv(addrobj))
     BadArgType(addrobj, "ZmqConnect", 2, "string specifying a remote address");
@@ -124,6 +229,8 @@ static Obj FuncZmqConnect(Obj self, Obj socketobj, Obj addrobj) {
   addr = CSTR_STRING(addrobj);
   if (zmq_connect(socket, addr) < 0)
     ZmqError("ZmqConnect");
+  SetSocketURI(socketobj, addrobj);
+  ADDR_OBJ(socketobj)[ZMQ_DAT_FLAG_OFF] = 0;
   return (Obj) 0;
 }
 
@@ -132,7 +239,7 @@ static Obj FuncZmqSend(Obj self, Obj socketobj, Obj data) {
   int error = 0;
   void *socket;
   zmq_msg_t msg;
-  if (!IsSocket(socketobj))
+  if (!IsOpenSocket(socketobj))
     BadArgType(socketobj, "ZmqSend", 1, "zmq socket");
   if (!IsStringConv(data)) {
     if (IS_LIST(data)) {
@@ -181,7 +288,7 @@ static Obj FuncZmqReceive(Obj self, Obj socketobj) {
   Obj result;
   Int len;
 
-  if (!IsSocket(socketobj))
+  if (!IsOpenSocket(socketobj))
     BadArgType(socketobj, "ZmqReceive", 1, "zmq socket");
   socket = Socket(socketobj);
   zmq_msg_init(&msg);
@@ -202,7 +309,7 @@ static Obj FuncZmqReceiveAll(Obj self, Obj socketobj) {
   size_t more_size;
   Obj result, elem;
 
-  if (!IsSocket(socketobj))
+  if (!IsOpenSocket(socketobj))
     BadArgType(socketobj, "ZmqReceiveAll", 1, "zmq socket");
   socket = Socket(socketobj);
   zmq_msg_init(&msg);
@@ -231,16 +338,19 @@ static Obj FuncZmqReceiveAll(Obj self, Obj socketobj) {
 
 static Obj FuncZmqClose(Obj self, Obj socketobj) {
   void *socket;
-  if (!IsSocket(socketobj))
+  if (!IsOpenSocket(socketobj))
     BadArgType(socketobj, "ZmqClose", 1, "zmq socket");
   socket = Socket(socketobj);
   if (zmq_close(socket) < 0)
     ZmqError("ZmqClose");
+  ADDR_OBJ(socketobj)[ZMQ_DAT_SOCKET_OFF] = (Obj) 0;
+  SetSocketURI(socketobj, (Obj) 0);
+  return (Obj) 0;
 }
 
 
 static void CheckSocketArg(char *fname, Obj socket) {
-  if (!IsSocket(socket))
+  if (!IsOpenSocket(socket))
     BadArgType(socket, fname, 1, "zmq socket");
 }
 
@@ -285,12 +395,12 @@ static Obj FuncZmqSetReceiveBufferSize(Obj self, Obj socket, Obj size) {
   return (Obj) 0;
 }
 
-static Obj FuncZmqSetMessageLimit(Obj self, Obj socket, Obj size) {
+static Obj FuncZmqSetCapacity(Obj self, Obj socket, Obj size) {
 #if ZMQ_VERSION_MAJOR == 2
-  ZmqSetUIntSockOpt("ZmqSetMessageLimit", socket, ZMQ_HWM, size);
+  ZmqSetUIntSockOpt("ZmqSetCapacity", socket, ZMQ_HWM, size);
 #else
-  ZmqSetUIntSockOpt("ZmqSetMessageLimit", socket, ZMQ_SNDHWM, size);
-  ZmqSetUIntSockOpt("ZmqSetMessageLimit", socket, ZMQ_RCVHWM, size);
+  ZmqSetUIntSockOpt("ZmqSetCapacity", socket, ZMQ_SNDHWM, size);
+  ZmqSetUIntSockOpt("ZmqSetCapacity", socket, ZMQ_RCVHWM, size);
 #endif
   return (Obj) 0;
 }
@@ -327,11 +437,11 @@ static Obj FuncZmqGetReceiveBufferSize(Obj self, Obj socket) {
   return ZmqGetUIntSockOpt("ZmqGetReceiveBufferSize", socket, ZMQ_RCVBUF);
 }
 
-static Obj FuncZmqGetMessageLimit(Obj self, Obj socket) {
+static Obj FuncZmqGetCapacity(Obj self, Obj socket) {
 #if ZMQ_VERSION_MAJOR == 2
-  return ZmqGetUIntSockOpt("ZmqGetMessageLimit", socket, ZMQ_HWM);
+  return ZmqGetUIntSockOpt("ZmqGetCapacity", socket, ZMQ_HWM);
 #else
-  return ZmqGetUIntSockOpt("ZmqGetMessageLimit", socket, ZMQ_SNDHWM);
+  return ZmqGetUIntSockOpt("ZmqGetCapacity", socket, ZMQ_SNDHWM);
 #endif
 }
 
@@ -363,14 +473,14 @@ static Obj FuncZmqPoll(Obj self, Obj in, Obj out, Obj timeout) {
     BadArgType(in, "ZmqPoll", 1, "list of zmq sockets");
   len_in = LEN_LIST(in);
   for (i = 1; i <= len_in; i++) {
-    if (!IsSocket(ELM_LIST(in, i)))
+    if (!IsOpenSocket(ELM_LIST(in, i)))
       BadArgType(in, "ZmqPoll", 1, "list of zmq sockets");
   }
   if (!IS_LIST(out))
     BadArgType(out, "ZmqPoll", 2, "list of zmq sockets");
   len_out = LEN_LIST(out);
   for (i = 1; i <= len_out; i++) {
-    if (!IsSocket(ELM_LIST(out, i)))
+    if (!IsOpenSocket(ELM_LIST(out, i)))
       BadArgType(out, "ZmqPoll", 1, "list of zmq sockets");
   }
   if (len_in + len_out > 1024)
@@ -424,15 +534,22 @@ static StructGVarFunc GVarFuncs [] = {
   FUNC_DEF(ZmqReceiveAll, 1, "zmq socket"),
   FUNC_DEF(ZmqClose, 1, "zmq socket"),
   FUNC_DEF(ZmqPoll, 3, "list of input sockets, list of output sockets, timeout (ms)"),
+
+  FUNC_DEF(ZmqIsOpen, 1, "zmq socket"),
+  FUNC_DEF(ZmqIsBound, 1, "zmq socket"),
+  FUNC_DEF(ZmqIsConnected, 1, "zmq socket"),
+  FUNC_DEF(ZmqSocketURI, 1, "zmq socket"),
+  FUNC_DEF(ZmqSocketType, 1, "zmq socket"),
+
   FUNC_DEF(ZmqSetIdentity, 2, "zmq socket, string"),
   FUNC_DEF(ZmqSetSendBufferSize, 2, "zmq socket, size"),
   FUNC_DEF(ZmqSetReceiveBufferSize, 2, "zmq socket, size"),
-  FUNC_DEF(ZmqSetMessageLimit, 2, "zmq socket, count"),
+  FUNC_DEF(ZmqSetCapacity, 2, "zmq socket, count"),
   FUNC_DEF(ZmqHasMore, 1, "zmq socket"),
   FUNC_DEF(ZmqGetIdentity, 1, "zmq socket"),
   FUNC_DEF(ZmqGetSendBufferSize, 1, "zmq socket"),
   FUNC_DEF(ZmqGetReceiveBufferSize, 1, "zmq socket"),
-  FUNC_DEF(ZmqGetMessageLimit, 1, "zmq socket"),
+  FUNC_DEF(ZmqGetCapacity, 1, "zmq socket"),
   FUNC_DEF(ZmqSubscribe, 2, "zmq socket, string"),
   FUNC_DEF(ZmqUnsubscribe, 2, "zmq socket, string"),
   0

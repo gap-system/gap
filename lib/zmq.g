@@ -73,3 +73,48 @@ BindGlobal("ZmqReceiveAllAsString", function(socket, sep)
   parts := ZmqReceiveAll(socket);
   return JoinStringsWithSeparator(parts, sep);
 end);
+
+InstallMethod( PrintObj,
+  "for zmq socket",
+  true,
+  [ IsZmqSocket ],
+  0,
+function(socket)
+  Print(String(socket));
+end);
+
+InstallMethod( ViewObj,
+  "for zmq socket",
+  true,
+  [ IsZmqSocket ],
+  0,
+function(socket)
+  Print(String(socket));
+end);
+
+InstallMethod( String,
+  "for zmq socket",
+  true,
+  [ IsZmqSocket ],
+  0,
+function(socket)
+  local uri, result;
+  if not ZmqIsOpen(socket) then
+    return MakeImmutable("<zmq socket (closed)>");
+  else
+    result := "<zmq ";
+    Append(result, LowercaseString(ZmqSocketType(socket)));
+    Append(result, " socket");
+    uri := ZmqSocketURI(socket);
+    if uri <> fail then
+      if ZmqIsBound(socket) then
+	Append(result, " bound to ");
+      else
+	Append(result, " connected to ");
+      fi;
+      Append(result, uri);
+    fi;
+    Append(result, ">");
+    return MakeImmutable(result);
+  fi;
+end);
