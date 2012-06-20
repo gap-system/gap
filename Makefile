@@ -44,6 +44,6 @@ distclean:
 
 $(WARD)/bin/ward:
 	@echo "Building Ward."
-	@cd ward; sh build.sh >/dev/null 2>/dev/null
+	@cd $(WARD); sh build.sh >/dev/null 2>/dev/null
 	@echo "Ward build completed."
 
