@@ -1155,6 +1155,7 @@ void ReadFuncExpr (
 	    }
 	    name = NEW_STRING( SyStrlen(TLS->value) );
 	    SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+	    MakeImmutableString(name);
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1187,6 +1188,7 @@ void ReadFuncExpr (
 	    }
 	    name = NEW_STRING( SyStrlen(TLS->value) );
 	    SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+	    MakeImmutableString(name);
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
 	    Match(S_IDENT,"identifier",S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
@@ -1202,6 +1204,7 @@ void ReadFuncExpr (
         }
         name = NEW_STRING( SyStrlen(TLS->value) );
         SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+	MakeImmutableString(name);
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1221,6 +1224,7 @@ void ReadFuncExpr (
             }
             name = NEW_STRING( SyStrlen(TLS->value) );
             SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+	    MakeImmutableString(name);
             nloc += 1;
             ASS_LIST( nams, narg+nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
@@ -1292,6 +1296,7 @@ void ReadFuncExpr1 (
     ASS_LIST( TLS->stackNams, TLS->countNams, nams );
     name = NEW_STRING( SyStrlen(TLS->value) );
     SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+    MakeImmutableString( name );
     ASS_LIST( nams, 1, name );
 
     /* match away the '->'                                                 */
