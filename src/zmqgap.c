@@ -374,8 +374,14 @@ static Obj FuncZmqSetIdentity(Obj self, Obj socket, Obj str) {
   return (Obj) 0;
 }
 
-static void ZmqSetUIntSockOpt(char *fname, Obj socket, int opt, Obj num) {
-  uint64_t value;
+#if ZMQ_VERSION_MAJOR == 2
+  typedef int64_t int_opt_t;
+#else
+  typedef int int_opt_t;
+#endif
+
+static void ZmqSetIntSockOpt(char *fname, Obj socket, int opt, Obj num) {
+  int_opt_t value;
   CheckSocketArg(fname, socket);
   if (!IS_INTOBJ(num) || INT_INTOBJ(num) < 0)
     BadArgType(num, fname, 2, "non-negative integer");
@@ -386,21 +392,29 @@ static void ZmqSetUIntSockOpt(char *fname, Obj socket, int opt, Obj num) {
 }
 
 static Obj FuncZmqSetSendBufferSize(Obj self, Obj socket, Obj size) {
-  ZmqSetUIntSockOpt("ZmqSetSendBufferSize", socket, ZMQ_SNDBUF, size);
+  ZmqSetIntSockOpt("ZmqSetSendBufferSize", socket, ZMQ_SNDBUF, size);
   return (Obj) 0;
 }
 
 static Obj FuncZmqSetReceiveBufferSize(Obj self, Obj socket, Obj size) {
-  ZmqSetUIntSockOpt("ZmqSetReceiveBufferSize", socket, ZMQ_RCVBUF, size);
+  ZmqSetIntSockOpt("ZmqSetReceiveBufferSize", socket, ZMQ_RCVBUF, size);
   return (Obj) 0;
 }
 
-static Obj FuncZmqSetCapacity(Obj self, Obj socket, Obj size) {
+static Obj FuncZmqSetSendCapacity(Obj self, Obj socket, Obj size) {
 #if ZMQ_VERSION_MAJOR == 2
-  ZmqSetUIntSockOpt("ZmqSetCapacity", socket, ZMQ_HWM, size);
+  ZmqSetIntSockOpt("ZmqSetSendCapacity", socket, ZMQ_HWM, size);
 #else
-  ZmqSetUIntSockOpt("ZmqSetCapacity", socket, ZMQ_SNDHWM, size);
-  ZmqSetUIntSockOpt("ZmqSetCapacity", socket, ZMQ_RCVHWM, size);
+  ZmqSetIntSockOpt("ZmqSetCapacity", socket, ZMQ_SNDHWM, size);
+#endif
+  return (Obj) 0;
+}
+
+static Obj FuncZmqSetReceiveCapacity(Obj self, Obj socket, Obj size) {
+#if ZMQ_VERSION_MAJOR == 2
+  ZmqSetIntSockOpt("ZmqSetSendCapacity", socket, ZMQ_HWM, size);
+#else
+  ZmqSetIntSockOpt("ZmqSetCapacity", socket, ZMQ_RCVHWM, size);
 #endif
   return (Obj) 0;
 }
@@ -418,8 +432,8 @@ static Obj FuncZmqGetIdentity(Obj self, Obj socket) {
   return result;
 }
 
-static Obj ZmqGetUIntSockOpt(char *fname, Obj socket, int opt) {
-  uint64_t value;
+static Obj ZmqGetIntSockOpt(char *fname, Obj socket, int opt) {
+  int_opt_t value;
   size_t value_size = sizeof(value);
   CheckSocketArg(fname, socket);
   if (zmq_getsockopt(Socket(socket), opt, &value, &value_size) < 0)
@@ -430,18 +444,26 @@ static Obj ZmqGetUIntSockOpt(char *fname, Obj socket, int opt) {
 }
 
 static Obj FuncZmqGetSendBufferSize(Obj self, Obj socket) {
-  return ZmqGetUIntSockOpt("ZmqGetSendBufferSize", socket, ZMQ_SNDBUF);
+  return ZmqGetIntSockOpt("ZmqGetSendBufferSize", socket, ZMQ_SNDBUF);
 }
 
 static Obj FuncZmqGetReceiveBufferSize(Obj self, Obj socket) {
-  return ZmqGetUIntSockOpt("ZmqGetReceiveBufferSize", socket, ZMQ_RCVBUF);
+  return ZmqGetIntSockOpt("ZmqGetReceiveBufferSize", socket, ZMQ_RCVBUF);
 }
 
-static Obj FuncZmqGetCapacity(Obj self, Obj socket) {
+static Obj FuncZmqGetSendCapacity(Obj self, Obj socket) {
 #if ZMQ_VERSION_MAJOR == 2
-  return ZmqGetUIntSockOpt("ZmqGetCapacity", socket, ZMQ_HWM);
+  return ZmqGetIntSockOpt("ZmqGetCapacity", socket, ZMQ_HWM);
 #else
-  return ZmqGetUIntSockOpt("ZmqGetCapacity", socket, ZMQ_SNDHWM);
+  return ZmqGetIntSockOpt("ZmqGetCapacity", socket, ZMQ_SNDHWM);
+#endif
+}
+
+static Obj FuncZmqGetReceiveCapacity(Obj self, Obj socket) {
+#if ZMQ_VERSION_MAJOR == 2
+  return ZmqGetIntSockOpt("ZmqGetCapacity", socket, ZMQ_HWM);
+#else
+  return ZmqGetIntSockOpt("ZmqGetCapacity", socket, ZMQ_RCVHWM);
 #endif
 }
 
@@ -544,12 +566,14 @@ static StructGVarFunc GVarFuncs [] = {
   FUNC_DEF(ZmqSetIdentity, 2, "zmq socket, string"),
   FUNC_DEF(ZmqSetSendBufferSize, 2, "zmq socket, size"),
   FUNC_DEF(ZmqSetReceiveBufferSize, 2, "zmq socket, size"),
-  FUNC_DEF(ZmqSetCapacity, 2, "zmq socket, count"),
+  FUNC_DEF(ZmqSetSendCapacity, 2, "zmq socket, count"),
+  FUNC_DEF(ZmqSetReceiveCapacity, 2, "zmq socket, count"),
   FUNC_DEF(ZmqHasMore, 1, "zmq socket"),
   FUNC_DEF(ZmqGetIdentity, 1, "zmq socket"),
   FUNC_DEF(ZmqGetSendBufferSize, 1, "zmq socket"),
   FUNC_DEF(ZmqGetReceiveBufferSize, 1, "zmq socket"),
-  FUNC_DEF(ZmqGetCapacity, 1, "zmq socket"),
+  FUNC_DEF(ZmqGetSendCapacity, 1, "zmq socket"),
+  FUNC_DEF(ZmqGetReceiveCapacity, 1, "zmq socket"),
   FUNC_DEF(ZmqSubscribe, 2, "zmq socket, string"),
   FUNC_DEF(ZmqUnsubscribe, 2, "zmq socket, string"),
   0
