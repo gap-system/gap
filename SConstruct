@@ -191,7 +191,7 @@ GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags+linkflags)
 abi_path = "extern/"+GAP["abi"]+"bit"
 GAP.Append(RPATH=os.path.join(os.getcwd(), abi_path, "lib"))
 
-def build_external(libname, confargs=None):
+def build_external(libname, confargs="", makeargs=""):
   global abi_path
   if GetOption("help") or GetOption("clean"):
     return
@@ -202,14 +202,15 @@ def build_external(libname, confargs=None):
   jobs = GetOption("num_jobs")
   if confargs:
     confargs = " " + confargs
-  else:
-    confargs = ""
+  if makeargs:
+    makeargs = " " + makeargs
   print "=== Building " + libname + " ==="
   if os.system("cd " + abi_path + ";"
           + "tar xzf ../" + libname + ".tar.gz;"
 	  + "cd " + libname + ";"
 	  + "./configure --prefix=$PWD/.." + confargs
-	  + " && make -j " + str(jobs) + " && make install") != 0:
+	  + " && make -j " + str(jobs) + makeargs
+	  + " && make" + makeargs + " install") != 0:
     print "=== Failed to build " + libname + " ==="
     sys.exit(1)
 
@@ -231,7 +232,7 @@ if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
   os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
   os.environ["CXX"] = GAP["CXX"]+" -m"+GAP["abi"]
-  build_external("zeromq-3.2.0")
+  build_external("zeromq-3.2.0", makeargs="'SUBDIRS=src doc'")
   del os.environ["CC"]
   del os.environ["CXX"]
 
