@@ -857,13 +857,6 @@ extern UInt SyStartTime;
 
 /****************************************************************************
 **
-*V  SyStopTime  . . . . . . . . . . . . . . . . . . time when reading started
-*/
-extern UInt SyStopTime;
-
-
-/****************************************************************************
-**
 *F  SyTime()  . . . . . . . . . . . . . . . return time spent in milliseconds
 **
 **  'SyTime' returns the number of milliseconds spent by GAP so far.
