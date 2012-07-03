@@ -924,7 +924,7 @@ void            PrintObj (
     }
 
 #ifndef WARD_ENABLED
-   if (IS_BAG_REF(obj) && !CheckRead(obj)) {
+   if (IS_BAG_REF(obj) && !CheckReadAccess(obj)) {
      PrintInaccessibleObject(obj);
      return;
    }
@@ -1059,7 +1059,7 @@ void            ViewObj (
        it is necessary */
 
 #ifndef WARD_ENABLED
-   if (IS_BAG_REF(obj) && !CheckRead(obj)) {
+   if (IS_BAG_REF(obj) && !CheckReadAccess(obj)) {
      PrintInaccessibleObject(obj);
      return;
    }

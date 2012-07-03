@@ -253,13 +253,24 @@ static inline Bag ImpliedWriteGuard(Bag bag)
   return bag;
 }
 
-static inline int CheckWrite(Bag bag)
+static inline int CheckWriteAccess(Bag bag)
 {
   Region *region;
   if (!IS_BAG_REF(bag))
     return 1;
   region = DS_BAG(bag);
   return !(region && region->owner != TLS && region->alt_owner != TLS);
+}
+
+static inline int CheckExclusiveWriteAccess(Bag bag)
+{
+  Region *region;
+  if (!IS_BAG_REF(bag))
+    return 1;
+  region = DS_BAG(bag);
+  if (!region)
+    return 0;
+  return region->owner == TLS || region->alt_owner == TLS;
 }
 
 #ifdef VERBOSE_GUARDS
@@ -315,7 +326,7 @@ static ALWAYS_INLINE Bag ImpliedReadGuard(Bag bag)
 }
 
 
-static ALWAYS_INLINE int CheckRead(Bag bag)
+static ALWAYS_INLINE int CheckReadAccess(Bag bag)
 {
   Region *region;
   if (!IS_BAG_REF(bag))

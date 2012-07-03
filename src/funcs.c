@@ -1170,14 +1170,14 @@ void            LockFuncArgs (
       Obj obj = args[i];
       switch (locks[i]) {
 	case 1:
-	  if (CheckRead(obj))
+	  if (CheckReadAccess(obj))
 	    break;
 	  mode[count] = 0;
 	  objects[count] = obj;
 	  count++;
 	  break;
 	case 2:
-	  if (CheckWrite(obj))
+	  if (CheckWriteAccess(obj))
 	    break;
 	  mode[count] = 1;
 	  objects[count] = obj;

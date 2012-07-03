@@ -1259,7 +1259,7 @@ void QueueForTraversal(Obj obj)
 
 void TraverseRegionFrom(TraversalState *traversal, Obj obj)
 {
-  if (!IS_BAG_REF(obj) || !CheckRead(obj)) {
+  if (!IS_BAG_REF(obj) || !CheckReadAccess(obj)) {
     traversal->list = NewList(0);
     return;
   }
