@@ -613,6 +613,10 @@ Obj TypePlistWithKTnum (
 
     /* whats going on here?                                                */
     else {
+	if (IS_MUTABLE_OBJ(list))
+	  return TYPE_LIST_DENSE_NHOM_MUTABLE;
+	else
+	  return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
         ErrorQuit(
             "Panic: strange kind type '%s' ('%d')",
             (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
