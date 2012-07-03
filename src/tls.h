@@ -105,6 +105,7 @@ typedef struct ThreadLocalStorage
   Obj execState;
 
   /* From opers.c */
+  Obj PropertyCache;
   Obj methodCache;
   Obj *methodCacheItems;
   UInt methodCacheSize;
