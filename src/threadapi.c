@@ -1430,7 +1430,8 @@ static void AddToChannel(Channel *channel, Obj obj, int migrate)
   Obj children;
   Region *ds = DS_BAG(channel->queue);
   UInt i, len;
-  if (migrate && IS_BAG_REF(obj) && DS_BAG(obj) && DS_BAG(obj)->owner == TLS) {
+  if (migrate && IS_BAG_REF(obj) &&
+      DS_BAG(obj) && DS_BAG(obj)->owner == TLS && DS_BAG(obj)->fixed_owner) {
     children = ReachableObjectsFrom(obj);
     len = children ? LEN_PLIST(children) : 0;
   } else {
