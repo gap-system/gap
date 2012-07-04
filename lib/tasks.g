@@ -117,7 +117,13 @@ Tasks.Worker := function(channels)
       
       atomic task do
         task.complete := true;
-        task.result := MigrateObj (result, task);
+	if IsThreadLocal(result) then
+	  task.result := MigrateObj (result, task);
+	  task.adopt_result := true;
+	else
+	  task.result := result;
+	  task.adopt_result := false;
+	fi;
         while true do
           toUnblock := TryReceiveChannel (task.blockedWorkers, fail);
           if IsIdenticalObj (toUnblock, fail) then
@@ -394,7 +400,11 @@ TaskResult := function(task)
   fi;
   
   atomic readonly task do
-    taskresult :=  CLONE_REACHABLE(task.result);
+    if task.adopt_result then
+      taskresult :=  CLONE_REACHABLE(task.result);
+    else
+      taskresult := task.result;
+    fi;
   od;
   
   return taskresult;
