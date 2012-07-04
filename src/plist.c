@@ -614,9 +614,9 @@ Obj TypePlistWithKTnum (
     /* whats going on here?                                                */
     else {
 	if (IS_MUTABLE_OBJ(list))
-	  return TYPE_LIST_DENSE_NHOM_MUTABLE;
+	  return TYPE_LIST_NDENSE_MUTABLE;
 	else
-	  return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+	  return TYPE_LIST_NDENSE_IMMUTABLE;
         ErrorQuit(
             "Panic: strange kind type '%s' ('%d')",
             (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
@@ -1690,21 +1690,23 @@ void AssPlistCyc   (
     CHANGED_BAG( list );
 
     /* try and maintain maximum information about the list                */
-    if (pos > len + 1)
-      {
+    if (pos > len + 1) {
 	CLEAR_FILTS_LIST(list);
 	SET_FILT_LIST( list, FN_IS_NDENSE );
-      }
-    else if (TNUM_OBJ(val) > T_CYC)
-      {
+    } else {
+      if (!CheckReadAccess(val)) {
 	CLEAR_FILTS_LIST(list);
 	SET_FILT_LIST( list, FN_IS_DENSE );
+      } else {
+	if (TNUM_OBJ(val) > T_CYC) {
+	  CLEAR_FILTS_LIST(list);
+	  SET_FILT_LIST( list, FN_IS_DENSE );
+	} else {
+	  RESET_FILT_LIST( list, FN_IS_NSORT );
+	  RESET_FILT_LIST( list, FN_IS_SSORT );
+	}
       }
-    else
-      {
-      	RESET_FILT_LIST( list, FN_IS_NSORT );
-	RESET_FILT_LIST( list, FN_IS_SSORT );
-      }
+    }
 	
 }
 
