@@ -2953,10 +2953,11 @@ void ThreadedInterpreter(void *funcargs) {
   } 
 }
 
+UInt BreakPointValue;
+
 Obj BREAKPOINT(Obj self, Obj arg) {
-  static volatile Int value;
   if (IS_INTOBJ(arg))
-    value = INT_INTOBJ(arg);
+    BreakPointValue = INT_INTOBJ(arg);
   return (Obj) 0;
 }
 
