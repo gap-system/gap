@@ -1584,7 +1584,8 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
     MEMBAR_READ();
   }
   /* already bound? */
-  if (result = (Bag)(contents[n]))
+  result = (Bag)(contents[n]);
+  if (result && result != Fail)
     return result;
   if (eval)
     *new = CALL_0ARGS(*new);
@@ -1593,14 +1594,14 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
   MEMBAR_READ();
   for (;;) {
     result = (Bag)(contents[n]);
-    if (result)
+    if (result && result != Fail)
       break;
     if (COMPARE_AND_SWAP((AtomicUInt*)(contents+n),
-      (AtomicUInt) 0, (AtomicUInt) *new))
+      (AtomicUInt) result, (AtomicUInt) *new))
       break;
   }
   HashUnlockShared(obj);
-  return result;
+  return result == Fail ? (Obj) 0 : result;
 #endif
 }
 
@@ -1620,19 +1621,20 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
   if (n <= 0 || n > len)
     FuncError("Index out of range");
   result = addr[n+1].obj;
-  if (result)
+  if (result && result != Fail)
     return result;
   anew.obj = *new;
   if (eval)
     *new = CALL_0ARGS(*new);
   for (;;) {
     result = addr[n+1].obj;
-    if (result)
+    if (result && result != Fail) {
       break;
-    if (COMPARE_AND_SWAP(&(addr[n+1].atom), (AtomicUInt) 0, anew.atom))
+    }
+    if (COMPARE_AND_SWAP(&(addr[n+1].atom), (AtomicUInt) result, anew.atom))
       break;
   }
-  return result;
+  return result == Fail ? (Obj) 0 : result;
 }
 
 
