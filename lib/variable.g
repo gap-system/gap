@@ -190,6 +190,10 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
 	fi;
       fi;
       FORCE_SWITCH_OBJ (gvar, value);
+    elif IsType(value) and IsReadOnly(value) then
+      value := CopyRegion(value);
+      FORCE_SWITCH_OBJ(gvar, value);
+      MakeReadOnlyObj(gvar);
     elif IsShared(value) then
       atomic value do
         tmp := CopyRegion(value);
