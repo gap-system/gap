@@ -286,7 +286,7 @@ ImmediateTask := function(arg)
     result := result[2];
   fi;
   task := ShareObj (rec( started := true, complete := true, async := false,
-                  result := result ));
+                  result := result, adopt_result := false ));
   return task;
 end;
 
