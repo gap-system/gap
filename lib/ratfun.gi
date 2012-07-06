@@ -772,10 +772,10 @@ function( efam )
   fi;
 
   # functions to add zipped lists
-  fam!.zippedSum := [ MONOM_GRLEX, \+ ];
+  fam!.zippedSum := `[ MONOM_GRLEX, \+ ];
 
   # functions to multiply zipped lists
-  fam!.zippedProduct := [ MONOM_PROD,
+  fam!.zippedProduct := `[ MONOM_PROD,
 			  MONOM_GRLEX, \+, \* ];
 
   # set the one and zero coefficient
@@ -801,8 +801,8 @@ function( efam )
 
   # we will store separate `one's for univariate polynomials. This will
   # allow to keep univariate calculations in this one indeterminate.
-  fam!.univariateOnePolynomials:=[];
-  fam!.univariateZeroPolynomials:=[];
+  fam!.univariateOnePolynomials:=MakeWriteOnceAtomic([]);
+  fam!.univariateZeroPolynomials:=MakeWriteOnceAtomic([]);
 
   # assign a names list
   fam!.namesIndets := ShareObj([]);
