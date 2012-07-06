@@ -533,7 +533,7 @@ BIND_GLOBAL( "FlagsType", K -> K![2] );
 BIND_GLOBAL( "DataType", K -> K![ POS_DATA_TYPE ] );
 
 BIND_GLOBAL( "SetDataType", function ( K, data )
-    K![ POS_DATA_TYPE ]:= data;
+    BindOnce(K, POS_DATA_TYPE, data);
 end );
 
 

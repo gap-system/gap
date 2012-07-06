@@ -57,15 +57,12 @@ InstallGlobalFunction( TypeOfDefaultGeneralMapping,
     fi;
 
     # Construct the type.
-    ConstructExtendedType(function()
-      Type:= NewType( GeneralMappingsFamily(
-			    ElementsFamily( FamilyObj( source ) ),
-			    ElementsFamily( FamilyObj( range  ) ) ),
-		      IsDefaultGeneralMappingRep and filter );
-      # Store source and range.
-      SetDataType( Type, [ source, range ] );
-      return Type;
-    end);
+    Type:= NewType( GeneralMappingsFamily(
+			  ElementsFamily( FamilyObj( source ) ),
+			  ElementsFamily( FamilyObj( range  ) ) ),
+		    IsDefaultGeneralMappingRep and filter );
+    # Store source and range.
+    SetDataType( Type, [ source, range ] );
 
     # Return the type.
     return Type;

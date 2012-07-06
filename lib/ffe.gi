@@ -196,12 +196,9 @@ InstallGlobalFunction( FFEFamily, function( p )
 
         # Store the type for the representation of prime field elements
         # via residues.
-        ConstructExtendedType(function()
-	    F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
-						 and IsModulusRep and IsZDFRE,p);
-	    F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
-	    return F!.typeOfZmodnZObj;
-        end);
+	F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
+					     and IsModulusRep and IsZDFRE,p);
+	BindOnce(F!.typeOfZmodnZObj, ZNZ_PURE_TYPE, F!.typeOfZmodnZObj);
         F!.modulus:= p;
 
         SetOne(  F, ZmodnZObj( F, 1 ) );

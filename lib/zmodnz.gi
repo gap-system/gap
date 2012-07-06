@@ -80,14 +80,11 @@ InstallOtherMethod( ZmodnZObj,
 
       # Store the type for the representation of prime field elements
       # via residues.
-      ConstructExtendedType(function()
-	Fam!.typeOfZmodnZObj:= NewType( Fam,
-				   IsZmodpZObjSmall and IsModulusRep );
-	SetDataType( Fam!.typeOfZmodnZObj, p );
-	Fam!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= Fam!.typeOfZmodnZObj;
-	MakeReadOnlyObj(Fam!.typeOfZmodnZObj);
-	return Fam!.typeOfZmodnZObj;
-      end);
+      Fam!.typeOfZmodnZObj:= NewType( Fam,
+				 IsZmodpZObjSmall and IsModulusRep );
+      SetDataType( Fam!.typeOfZmodnZObj, p );
+      BindOnce(Fam!.typeOfZmodnZObj, ZNZ_PURE_TYPE, Fam!.typeOfZmodnZObj);
+      MakeReadOnlyObj(Fam!.typeOfZmodnZObj);
 
     fi;
     return Objectify( Fam!.typeOfZmodnZObj, [ residue mod p ] );
@@ -1032,12 +1029,9 @@ InstallGlobalFunction( ZmodnZ, function( n )
     SetCharacteristic(F,n);
 
     # Store the objects type.
-    ConstructExtendedType(function()
-      F!.typeOfZmodnZObj:= NewType( F, IsZmodnZObjNonprime and IsModulusRep );
-      SetDataType( F!.typeOfZmodnZObj, n );
-      F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
-      return F!.typeOfZmodnZObj;
-    end);
+    F!.typeOfZmodnZObj:= NewType( F, IsZmodnZObjNonprime and IsModulusRep );
+    SetDataType( F!.typeOfZmodnZObj, n );
+    BindOnce(F!.typeOfZmodnZObj, ZNZ_PURE_TYPE, F!.typeOfZmodnZObj);
 
     # as n is no prime, the family is no UFD
     SetIsUFDFamily(F,false);
