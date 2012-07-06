@@ -555,6 +555,7 @@ Obj TypePlistWithKTnum (
     Int                 ktype;          /* kind type of <list>             */
     Obj                 family;         /* family of elements              */
     Obj                 kinds;          /* kinds list of <family>          */
+    UInt                i, len;
 
     if (CheckWriteAccess(list)) {
       /* recursion is possible for this type of list                         */
@@ -599,30 +600,40 @@ Obj TypePlistWithKTnum (
         /* get the list kinds of the elements family */
         kinds  = TYPES_LIST_FAM( family );
 
-        /* if the kind is not yet known, compute it                        */
-        kind = ELM0_LIST( kinds, ktype-T_PLIST_HOM+1 );
-        if ( kind == 0 ) {
-            kind = CALL_2ARGS( TYPE_LIST_HOM,
-                family, INTOBJ_INT(ktype-T_PLIST_HOM+1) );
-            ASS_LIST( kinds, ktype-T_PLIST_HOM+1, kind );
-        }
+	if (CheckWriteAccess(kinds)) {
+	  /* if the kind is not yet known, compute it                        */
+	  kind = ELM0_LIST( kinds, ktype-T_PLIST_HOM+1 );
+	  if ( kind == 0 ) {
+	      kind = CALL_2ARGS( TYPE_LIST_HOM,
+		  family, INTOBJ_INT(ktype-T_PLIST_HOM+1) );
+	      ASS_LIST( kinds, ktype-T_PLIST_HOM+1, kind );
+	  }
 
-        /* return the kind                                                 */
-        return kind;
+	  /* return the kind                                                 */
+	  return kind;
+	}
     }
-
-    /* whats going on here?                                                */
-    else {
+    len = LEN_LIST(list);
+    for (i = 1; i <= len; i++) {
+      if (ELM_LIST(list, i) == (Obj) 0) {
 	if (IS_MUTABLE_OBJ(list))
 	  return TYPE_LIST_NDENSE_MUTABLE;
 	else
 	  return TYPE_LIST_NDENSE_IMMUTABLE;
-        ErrorQuit(
-            "Panic: strange kind type '%s' ('%d')",
-            (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
-        return 0;
+      }
     }
 
+    /* whats going on here?                                                */
+    if (IS_MUTABLE_OBJ(list))
+      return TYPE_LIST_DENSE_NHOM_MUTABLE;
+    else
+      return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+#if 0
+    ErrorQuit(
+	"Panic: strange kind type '%s' ('%d')",
+	(Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
+    return 0;
+#endif
 }
 
 Obj TypePlistNDenseMut (
