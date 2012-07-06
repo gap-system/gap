@@ -283,7 +283,7 @@ BIND_GLOBAL( "NewType2", function ( typeOfTypes, family )
     return NEW_TYPE( typeOfTypes,
                      family,
                      family!.IMP_FLAGS,
-                     false );
+                     fail );
 end );
 
 
@@ -293,7 +293,7 @@ BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         family!.IMP_FLAGS,
                         FLAGS_FILTER(filter) ) ),
-                     false );
+                     fail );
 end );
 
 
