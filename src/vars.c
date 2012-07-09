@@ -116,6 +116,35 @@ Obj             ObjLVar (
     return val;
 }
 
+Bag NewLVarsBag(UInt slots) {
+  Bag result;
+  if (slots < sizeof(TLS->LVarsPool)/(sizeof(TLS->LVarsPool[0]))) {
+    /* We have to be careful here, because there's a possible
+     * race condition when the garbage collector triggers after
+     * the assignment to result.
+     */
+    result = TLS->LVarsPool[slots];
+    if (result) {
+      TLS->LVarsPool[slots] = ADDR_OBJ(result)[0];
+      return result;
+    }
+  }
+  return NewBag(T_LVARS, sizeof(Obj) * ( 3 + slots ) );
+}
+
+void FreeLVarsBag(Bag bag) {
+  UInt slots = SIZE_BAG(bag) / sizeof(Obj) - 3;
+  if (slots < sizeof(TLS->LVarsPool)/(sizeof(TLS->LVarsPool[0]))) {
+    Bag tmp;
+    /* We try and clear pool/bags during garbage collection */
+    /* See GCThreadHandler(). */
+    /* Otherwise, we'd have to zero them here. */
+    tmp = TLS->LVarsPool[slots];
+    ADDR_OBJ(bag)[0] = tmp;
+    TLS->LVarsPool[slots] = bag;
+  }
+}
+
 
 /****************************************************************************
 **
@@ -2910,23 +2939,35 @@ static Int InitKernel (
     /* install the marking functions for local variables bag               */
     InfoBags[ T_LVARS ].name = "values bag";
     InitMarkFuncBags( T_LVARS, MarkAllSubBags );
+    InfoBags[ T_HVARS ].name = "high variables bag";
+    InitMarkFuncBags( T_HVARS, MarkAllSubBags );
 
     /* Make T_LVARS bags public */
     MakeBagTypePublic(T_LVARS);
+    MakeBagTypePublic(T_HVARS);
 
     /* and the save restore functions */
     SaveObjFuncs[ T_LVARS ] = SaveLVars;
     LoadObjFuncs[ T_LVARS ] = LoadLVars;
+    SaveObjFuncs[ T_HVARS ] = SaveLVars;
+    LoadObjFuncs[ T_HVARS ] = LoadLVars;
 
     /* and a type */
 
     TypeObjFuncs[ T_LVARS ] = TypeLVars;
+    TypeObjFuncs[ T_HVARS ] = TypeLVars;
     PrintObjFuncs[ T_LVARS ] = PrintLVars;
+    PrintObjFuncs[ T_HVARS ] = PrintLVars;
     EqFuncs[T_LVARS][T_LVARS] = EqLVars;
+    EqFuncs[T_LVARS][T_HVARS] = EqLVars;
+    EqFuncs[T_HVARS][T_LVARS] = EqLVars;
+    EqFuncs[T_HVARS][T_HVARS] = EqLVars;
     for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++)
       {
         EqFuncs[T_LVARS][i] = EqLVarsX;
         EqFuncs[i][T_LVARS] = EqLVarsX;
+        EqFuncs[T_HVARS][i] = EqLVarsX;
+        EqFuncs[i][T_HVARS] = EqLVarsX;
       }
    
 

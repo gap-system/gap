@@ -279,12 +279,13 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_FLAGS                 (FIRST_CONSTANT_TNUM+11)
 #define T_MACFLOAT              (FIRST_CONSTANT_TNUM+12)
 #define T_LVARS                 (FIRST_CONSTANT_TNUM+13)   
-#define T_SINGULAR              (FIRST_CONSTANT_TNUM+14)   
+#define T_HVARS                 (FIRST_CONSTANT_TNUM+14)   
+#define T_SINGULAR              (FIRST_CONSTANT_TNUM+15)   
 #define LAST_CONSTANT_TNUM      (T_SINGULAR)
 
 #define IMMUTABLE               1
 
-#define FIRST_IMM_MUT_TNUM      (LAST_CONSTANT_TNUM+2)       /* Should be even */
+#define FIRST_IMM_MUT_TNUM      (LAST_CONSTANT_TNUM+1)       /* Should be even */
 #define FIRST_RECORD_TNUM       FIRST_IMM_MUT_TNUM
 #define T_PREC                  (FIRST_RECORD_TNUM+ 0)
 #define LAST_RECORD_TNUM        (T_PREC+IMMUTABLE)

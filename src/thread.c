@@ -331,9 +331,11 @@ void *DispatchThread(void *arg)
   region->fixed_owner = 0;
   RegionWriteUnlock(region);
   DestroyTLS();
+  memset(TLS, 0, sizeof(ThreadLocalStorage));
 #ifndef DISABLE_GC
   RemoveGCRoots();
 #endif
+  this_thread->state = TSTATE_TERMINATED;
   DecThreadCounter();
   return 0;
 }
@@ -400,7 +402,7 @@ Obj RunThread(void (*start)(void *), void *arg)
     pthread_attr_destroy(&thread_attr);
 #ifndef HAVE_NATIVE_TLS
     FreeTLS(tls);
-  #endif
+#endif
     return (Obj)0;
   }
   pthread_attr_destroy(&thread_attr);
@@ -443,6 +445,16 @@ int JoinThread(int id)
   FreeTLS(tls);
 #endif
   return 1;
+}
+
+void GCThreadHandler() {
+  int i;
+  for (i=0; i<MAX_THREADS; i++) {
+    if (thread_data[i].tls && !(thread_data[i].state & TSTATE_TERMINATED)) {
+      ThreadLocalStorage *tls = thread_data[i].tls;
+      memset(&tls->LVarsPool, 0, sizeof(tls->LVarsPool));
+    }
+  }
 }
 
 Int ThreadID(Obj thread)
@@ -1110,6 +1122,7 @@ static void InitTraversal()
   for (i=FIRST_CONSTANT_TNUM; i<=LAST_CONSTANT_TNUM; i++)
     TraversalMask[i] = TRAVERSE_NONE;
   TraversalMask[T_LVARS] = TRAVERSE_NONE;
+  TraversalMask[T_HVARS] = TRAVERSE_NONE;
   TraversalMask[T_PREC] = TRAVERSE_BY_FUNCTION;
   TraversalMask[T_PREC+IMMUTABLE] = TRAVERSE_BY_FUNCTION;
   TraversalFunc[T_PREC] = TraversePRecord;

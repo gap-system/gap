@@ -37,6 +37,7 @@ typedef struct ThreadLocalStorage
   Bag bottomLVars;
   Bag currLVars;
   Obj *ptrLVars;
+  Bag LVarsPool[16];
   /* From read.c */
   syJmp_buf readJmpError;
   syJmp_buf threadExit;

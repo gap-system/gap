@@ -832,7 +832,7 @@ Obj DoExecFunc0args (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* Switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
 
     CHECK_RECURSION_AFTER
@@ -871,7 +871,7 @@ Obj             DoExecFunc1args (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -911,7 +911,7 @@ Obj             DoExecFunc2args (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -953,7 +953,7 @@ Obj             DoExecFunc3args (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -997,7 +997,7 @@ Obj             DoExecFunc4args (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -1043,7 +1043,7 @@ Obj             DoExecFunc5args (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -1091,7 +1091,7 @@ Obj             DoExecFunc6args (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -1143,7 +1143,7 @@ Obj             DoExecFuncXargs (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
 
@@ -1219,7 +1219,7 @@ Obj             DoExecFunc1argsL (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     PopRegionLocks(lockSP);
 
@@ -1266,7 +1266,7 @@ Obj             DoExecFunc2argsL (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     PopRegionLocks(lockSP);
 
@@ -1317,7 +1317,7 @@ Obj             DoExecFunc3argsL (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     PopRegionLocks(lockSP);
 
@@ -1370,7 +1370,7 @@ Obj             DoExecFunc4argsL (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     PopRegionLocks(lockSP);
 
@@ -1426,7 +1426,7 @@ Obj             DoExecFunc5argsL (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     PopRegionLocks(lockSP);
 
@@ -1485,7 +1485,7 @@ Obj             DoExecFunc6argsL (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     PopRegionLocks(lockSP);
 
@@ -1542,7 +1542,7 @@ Obj             DoExecFuncXargsL (
     SET_BRK_CALL_FROM( ((Obj) 0));
 
     /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS( oldLvars );
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     PopRegionLocks(lockSP);
 
@@ -1607,6 +1607,7 @@ Obj             MakeFunction (
     ENVI_FUNC( func ) = TLS->currLVars;
     /* the 'CHANGED_BAG(TLS->currLVars)' is needed because it is delayed        */
     CHANGED_BAG( TLS->currLVars );
+    RetypeBag(TLS->currLVars, T_HVARS);
     LCKS_FUNC( func ) = locks;
     FEXS_FUNC( func ) = FEXS_FUNC( fexp );
 

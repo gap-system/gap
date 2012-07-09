@@ -49,6 +49,8 @@ Obj GetRegionName(Region *region);
 void LockThreadControl(int modify);
 void UnlockThreadControl(void);
 
+void GCThreadHandler();
+
 void InitMainThread();
 
 int IsSingleThreaded();

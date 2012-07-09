@@ -440,7 +440,7 @@ Obj FuncSHELL (Obj self, Obj args)
     ErrorMayQuit("SHELL takes 10 arguments",0,0);
   
   context = ELM_PLIST(args,1);
-  if (TNUM_OBJ(context) != T_LVARS)
+  if (TNUM_OBJ(context) != T_LVARS && TNUM_OBJ(context) != T_HVARS)
     ErrorMayQuit("SHELL: 1st argument should be a local variables bag",0,0);
   
   if (ELM_PLIST(args,2) == True)
@@ -2917,7 +2917,7 @@ void ThreadedInterpreter(void *funcargs) {
   TLS->intrIgnoring = 0;
   TLS->nrError = 0;
   TLS->thrownObject = 0;
-  TLS->bottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
+  TLS->bottomLVars = NewBag( T_HVARS, 3*sizeof(Obj) );
   tmp = NewFunctionC( "bottom", 0, "", 0 );
   PTR_BAG(TLS->bottomLVars)[0] = tmp;
   tmp = NewBag( T_BODY, NUMBER_HEADER_ITEMS_BODY*sizeof(Obj) );

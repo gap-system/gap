@@ -655,6 +655,7 @@ void CodeFuncExprBegin (
     /* give it an environment                                              */
     ENVI_FUNC( fexp ) = TLS->currLVars;
     CHANGED_BAG( fexp );
+    RetypeBag(TLS->currLVars, T_HVARS);
 
     /* switch to this function                                             */
     SWITCH_TO_NEW_LVARS( fexp, (narg != -1 ? narg : 1), nloc, old );

@@ -139,6 +139,16 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 
 /****************************************************************************
 **
+*F  NewLVarsBag( <slots> ) . . make new lvars bag with <slots> variable slots
+*F  FreeLVarsBag( <bag> )  . . . . . . . . . . . . . . . . . . free lvars bag
+*/
+
+Bag NewLVarsBag(UInt slots);
+void FreeLVarsBag(Bag bag);
+
+
+/****************************************************************************
+**
 *F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc>, <old> )  . . . . . new local
 **
 **  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,
@@ -159,8 +169,7 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 {
   Obj old = TLS->currLVars;
   CHANGED_BAG( old );
-  TLS->currLVars = NewBag( T_LVARS,
-                      sizeof(Obj)*(3+narg+nloc) );
+  TLS->currLVars = NewLVarsBag( narg+nloc );
   TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
   CURR_FUNC = func;
   TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
@@ -208,11 +217,40 @@ static inline void SwitchToOldLVars( Obj old
   TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
 }
 
+static inline void SwitchToOldLVarsAndFree( Obj old
+#ifdef TRACEFRAMES
+, char *file, int line
+#endif
+)
+{
+#ifdef TRACEFRAMES
+  if (STEVES_TRACING == True) {
+    fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
+           file, line, (UInt)TLS->currLVars,(UInt)old);
+  }
+#endif
+  CHANGED_BAG( TLS->currLVars );
+  if (TLS->currLVars != old && TNUM_OBJ(TLS->currLVars) == T_LVARS)
+    FreeLVarsBag(TLS->currLVars);
+  TLS->currLVars = (old);
+  TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
+  TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
+}
+
+
 #ifdef TRACEFRAMES
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old), __FILE__,__LINE__)
 #else
 #define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old))
 #endif
+
+#ifdef TRACEFRAMES
+#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old), __FILE__,__LINE__)
+#else
+#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old))
+#endif
+
+
 
 
 /****************************************************************************

@@ -1200,17 +1200,16 @@ void            InitBags (
 #else /* BOEHM_GC */
 #define LARGE_GC_SIZE (SIZEOF_VOID_P * 8192)
 #ifndef DISABLE_GC
-#if SIZEOF_VOID_P == 4
     GC_set_all_interior_pointers(0);
     GC_init();
+#if SIZEOF_VOID_P == 4
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
 #else
-    GC_set_all_interior_pointers(0);
-    GC_init();
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
 #endif
+    GC_set_start_callback(GCThreadHandler);
     AddGCRoots();
     CreateMainRegion();
 #endif /* DISABLE_GC */

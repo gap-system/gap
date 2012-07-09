@@ -3023,7 +3023,6 @@ void            IntrAssDVar (
     /* assign the right hand side                                          */
     currLVars = TLS->currLVars;
     SWITCH_TO_OLD_LVARS( TLS->errorLVars );
-    SWITCH_TO_OLD_LVARS( TLS->errorLVars );
     while (depth--)
       SWITCH_TO_OLD_LVARS( PTR_BAG(TLS->currLVars) [2] );
     ASS_HVAR( dvar, rhs );
