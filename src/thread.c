@@ -447,16 +447,6 @@ int JoinThread(int id)
   return 1;
 }
 
-void GCThreadHandler() {
-  int i;
-  for (i=0; i<MAX_THREADS; i++) {
-    if (thread_data[i].tls && !(thread_data[i].state & TSTATE_TERMINATED)) {
-      ThreadLocalStorage *tls = thread_data[i].tls;
-      memset(&tls->LVarsPool, 0, sizeof(tls->LVarsPool));
-    }
-  }
-}
-
 Int ThreadID(Obj thread)
 {
   return *(UInt *)(ADDR_OBJ(thread)+1);

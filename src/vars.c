@@ -119,10 +119,6 @@ Obj             ObjLVar (
 Bag NewLVarsBag(UInt slots) {
   Bag result;
   if (slots < sizeof(TLS->LVarsPool)/(sizeof(TLS->LVarsPool[0]))) {
-    /* We have to be careful here, because there's a possible
-     * race condition when the garbage collector triggers after
-     * the assignment to result.
-     */
     result = TLS->LVarsPool[slots];
     if (result) {
       TLS->LVarsPool[slots] = ADDR_OBJ(result)[0];
@@ -135,12 +131,8 @@ Bag NewLVarsBag(UInt slots) {
 void FreeLVarsBag(Bag bag) {
   UInt slots = SIZE_BAG(bag) / sizeof(Obj) - 3;
   if (slots < sizeof(TLS->LVarsPool)/(sizeof(TLS->LVarsPool[0]))) {
-    Bag tmp;
-    /* We try and clear pool/bags during garbage collection */
-    /* See GCThreadHandler(). */
-    /* Otherwise, we'd have to zero them here. */
-    tmp = TLS->LVarsPool[slots];
-    ADDR_OBJ(bag)[0] = tmp;
+    memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
+    ADDR_OBJ(bag)[0] = TLS->LVarsPool[slots];
     TLS->LVarsPool[slots] = bag;
   }
 }

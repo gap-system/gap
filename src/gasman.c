@@ -1209,7 +1209,6 @@ void            InitBags (
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
 #endif
-    GC_set_start_callback(GCThreadHandler);
     AddGCRoots();
     CreateMainRegion();
 #endif /* DISABLE_GC */
@@ -1339,15 +1338,15 @@ Bag NewBag (
      */
     if (IsAtomicBagType(type)) {
       if (alloc_size >= LARGE_GC_SIZE)
-        dst = GC_malloc_atomic_ignore_off_page(alloc_size);
+        dst = GC_malloc(alloc_size);
       else
-	dst = GC_malloc_atomic(alloc_size);
+	dst = GC_malloc(alloc_size);
       memset(dst, 0, alloc_size);
       if (TabFinalizerFuncBags[type])
 	GC_register_finalizer_no_order(dst, StandardFinalizer, NULL, NULL, NULL);
     } else {
       if (alloc_size >= LARGE_GC_SIZE)
-	dst = GC_malloc_ignore_off_page(alloc_size);
+	dst = GC_malloc(alloc_size);
       else
 	dst = GC_malloc(alloc_size);
     }
@@ -1454,13 +1453,13 @@ void            RetypeBag (
         size = SIZE_BAG(bag) + HEADER_SIZE * sizeof(Bag);
 	if (new_atomic) {
 	  if (size >= LARGE_GC_SIZE)
-	    new_mem = GC_malloc_atomic_ignore_off_page(size);
+	    new_mem = GC_malloc(size);
 	  else
-	    new_mem = GC_malloc_atomic(size);
+	    new_mem = GC_malloc(size);
 	  memset(new_mem, 0, size);
 	} else {
 	  if (size >= LARGE_GC_SIZE)
-	    new_mem = GC_malloc_ignore_off_page(size);
+	    new_mem = GC_malloc(size);
 	  else
 	    new_mem = GC_malloc(size);
 	}
@@ -1681,13 +1680,13 @@ void            RetypeBag (
 #ifndef DISABLE_GC
 	if (TabMarkFuncBags[type] == MarkNoSubBags) {
 	    if (alloc_size >= LARGE_GC_SIZE)
-	      dst = GC_malloc_atomic_ignore_off_page(alloc_size);
+	      dst = GC_malloc(alloc_size);
 	    else
-	      dst = GC_malloc_atomic(alloc_size);
+	      dst = GC_malloc(alloc_size);
 	    memset(dst, 0, alloc_size);
 	} else {
 	    if (alloc_size >= LARGE_GC_SIZE)
-	      dst = GC_malloc_ignore_off_page(alloc_size);
+	      dst = GC_malloc(alloc_size);
 	    else
 	      dst = GC_malloc(alloc_size);
 	}
