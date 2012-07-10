@@ -1607,7 +1607,7 @@ Obj             MakeFunction (
     ENVI_FUNC( func ) = TLS->currLVars;
     /* the 'CHANGED_BAG(TLS->currLVars)' is needed because it is delayed        */
     CHANGED_BAG( TLS->currLVars );
-    RetypeBag(TLS->currLVars, T_HVARS);
+    MakeHighVars(TLS->currLVars);
     LCKS_FUNC( func ) = locks;
     FEXS_FUNC( func ) = FEXS_FUNC( fexp );
 

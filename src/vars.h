@@ -146,6 +146,19 @@ static inline void SetBrkCallTo( Expr expr, char * file, int line ) {
 Bag NewLVarsBag(UInt slots);
 void FreeLVarsBag(Bag bag);
 
+/****************************************************************************
+**
+*F  MakeHighVars( <bag> ) . . turn all frames on the stack into high vars
+*/
+
+static inline void MakeHighVars( Bag bag ) {
+  while (bag && TNUM_OBJ(bag) == T_LVARS) {
+    RetypeBag(bag, T_HVARS);
+    bag = ADDR_OBJ(bag)[2];
+  }
+}
+
+
 
 /****************************************************************************
 **
