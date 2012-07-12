@@ -85,5 +85,7 @@ ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 ReadLib( "altview.g" );
 
+ReadLib( "tasks.g" );
+
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
