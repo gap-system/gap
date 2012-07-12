@@ -1555,7 +1555,7 @@ Obj FuncCompactTypeIDs( Obj self )
 **
 *F  DoOperation( <name> ) . . . . . . . . . . . . . . .  make a new operation
 */
-UInt CacheIndex;
+/* TL: UInt TLS->CacheIndex; */
 
 Obj Method0Args;
 Obj NextMethod0Args;
@@ -1736,9 +1736,9 @@ Obj DoOperation0Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 0 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[2*CacheIndex] = method;
-	      cache[2*CacheIndex+1] = prec;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[2*TLS->CacheIndex] = method;
+	      cache[2*TLS->CacheIndex+1] = prec;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG(cacheBag);
 	    }
 #ifdef COUNT_OPERS
@@ -1824,10 +1824,10 @@ Obj DoOperation1Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 1 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[3*CacheIndex] = method;
-	      cache[3*CacheIndex+1] = prec;
-	      cache[3*CacheIndex+2] = id1;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[3*TLS->CacheIndex] = method;
+	      cache[3*TLS->CacheIndex+1] = prec;
+	      cache[3*TLS->CacheIndex+2] = id1;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG( cacheBag);
 	    }
 #ifdef COUNT_OPERS
@@ -1921,11 +1921,11 @@ Obj DoOperation2Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 2 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[4*CacheIndex] = method;
-	      cache[4*CacheIndex+1] = prec;
-	      cache[4*CacheIndex+2] = id1;
-	      cache[4*CacheIndex+3] = id2;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[4*TLS->CacheIndex] = method;
+	      cache[4*TLS->CacheIndex+1] = prec;
+	      cache[4*TLS->CacheIndex+2] = id1;
+	      cache[4*TLS->CacheIndex+3] = id2;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG(cacheBag);
 	    }
 #ifdef COUNT_OPERS
@@ -2025,12 +2025,12 @@ Obj DoOperation3Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 3 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[5*CacheIndex] = method;
-	      cache[5*CacheIndex+1] = prec;
-	      cache[5*CacheIndex+2] = id1;
-	      cache[5*CacheIndex+3] = id2;
-	      cache[5*CacheIndex+4] = id3;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[5*TLS->CacheIndex] = method;
+	      cache[5*TLS->CacheIndex+1] = prec;
+	      cache[5*TLS->CacheIndex+2] = id1;
+	      cache[5*TLS->CacheIndex+3] = id2;
+	      cache[5*TLS->CacheIndex+4] = id3;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG( cacheBag );
 	    }
 #ifdef COUNT_OPERS
@@ -2138,13 +2138,13 @@ Obj DoOperation4Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 4 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[6*CacheIndex] = method;
-	      cache[6*CacheIndex+1] = prec;
-	      cache[6*CacheIndex+2] = id1;
-	      cache[6*CacheIndex+3] = id2;
-	      cache[6*CacheIndex+4] = id3;
-	      cache[6*CacheIndex+5] = id4;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[6*TLS->CacheIndex] = method;
+	      cache[6*TLS->CacheIndex+1] = prec;
+	      cache[6*TLS->CacheIndex+2] = id1;
+	      cache[6*TLS->CacheIndex+3] = id2;
+	      cache[6*TLS->CacheIndex+4] = id3;
+	      cache[6*TLS->CacheIndex+5] = id4;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG(cacheBag);
 	    }
 #ifdef COUNT_OPERS
@@ -2272,14 +2272,14 @@ Obj DoOperation5Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 5 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[7*CacheIndex] = method;
-	      cache[7*CacheIndex+1] = prec;
-	      cache[7*CacheIndex+2] = id1;
-	      cache[7*CacheIndex+3] = id2;
-	      cache[7*CacheIndex+4] = id3;
-	      cache[7*CacheIndex+5] = id4;
-	      cache[7*CacheIndex+6] = id5;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[7*TLS->CacheIndex] = method;
+	      cache[7*TLS->CacheIndex+1] = prec;
+	      cache[7*TLS->CacheIndex+2] = id1;
+	      cache[7*TLS->CacheIndex+3] = id2;
+	      cache[7*TLS->CacheIndex+4] = id3;
+	      cache[7*TLS->CacheIndex+5] = id4;
+	      cache[7*TLS->CacheIndex+6] = id5;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG( cacheBag );
 	    }
 #ifdef COUNT_OPERS
@@ -2427,15 +2427,15 @@ Obj DoOperation6Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 6 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[8*CacheIndex] = method;
-	      cache[8*CacheIndex+1] = prec;
-	      cache[8*CacheIndex+2] = id1;
-	      cache[8*CacheIndex+3] = id2;
-	      cache[8*CacheIndex+4] = id3;
-	      cache[8*CacheIndex+5] = id4;
-	      cache[8*CacheIndex+6] = id5;
-	      cache[8*CacheIndex+7] = id6;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[8*TLS->CacheIndex] = method;
+	      cache[8*TLS->CacheIndex+1] = prec;
+	      cache[8*TLS->CacheIndex+2] = id1;
+	      cache[8*TLS->CacheIndex+3] = id2;
+	      cache[8*TLS->CacheIndex+4] = id3;
+	      cache[8*TLS->CacheIndex+5] = id4;
+	      cache[8*TLS->CacheIndex+6] = id5;
+	      cache[8*TLS->CacheIndex+7] = id6;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG( cacheBag );
 	    }
 #ifdef COUNT_OPERS
@@ -3106,7 +3106,6 @@ Obj NewOperationC (
 
 *F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
 */
-UInt CacheIndex;
 
 Obj Constructor0Args;
 Obj NextConstructor0Args;
@@ -3197,9 +3196,9 @@ Obj DoConstructor0Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 0 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[2*CacheIndex] = method;
-	      cache[2*CacheIndex+1] = prec;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[2*TLS->CacheIndex] = method;
+	      cache[2*TLS->CacheIndex+1] = prec;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG( cacheBag );
 	    }
 #ifdef COUNT_OPERS
@@ -3289,10 +3288,10 @@ Obj DoConstructor1Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 1 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[3*CacheIndex] = method;
-	      cache[3*CacheIndex+1] = prec;
-	      cache[3*CacheIndex+2] = kind1;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[3*TLS->CacheIndex] = method;
+	      cache[3*TLS->CacheIndex+1] = prec;
+	      cache[3*TLS->CacheIndex+2] = kind1;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG( cacheBag );
 	    }
 #ifdef COUNT_OPERS
@@ -3388,11 +3387,11 @@ Obj DoConstructor2Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 2 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[4*CacheIndex] = method;
-	      cache[4*CacheIndex+1] = prec;
-	      cache[4*CacheIndex+2] = kind1;
-	      cache[4*CacheIndex+3] = id2;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[4*TLS->CacheIndex] = method;
+	      cache[4*TLS->CacheIndex+1] = prec;
+	      cache[4*TLS->CacheIndex+2] = kind1;
+	      cache[4*TLS->CacheIndex+3] = id2;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG(cacheBag);
 	    }
 #ifdef COUNT_OPERS
@@ -3495,12 +3494,12 @@ Obj DoConstructor3Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 3 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[5*CacheIndex] = method;
-	      cache[5*CacheIndex+1] = prec;
-	      cache[5*CacheIndex+2] = kind1;
-	      cache[5*CacheIndex+3] = id2;
-	      cache[5*CacheIndex+4] = id3;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[5*TLS->CacheIndex] = method;
+	      cache[5*TLS->CacheIndex+1] = prec;
+	      cache[5*TLS->CacheIndex+2] = kind1;
+	      cache[5*TLS->CacheIndex+3] = id2;
+	      cache[5*TLS->CacheIndex+4] = id3;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG(cacheBag);
 	    }
 #ifdef COUNT_OPERS
@@ -3610,13 +3609,13 @@ Obj DoConstructor4Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 4 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[6*CacheIndex] = method;
-	      cache[6*CacheIndex+1] = prec;
-	      cache[6*CacheIndex+2] = kind1;
-	      cache[6*CacheIndex+3] = id2;
-	      cache[6*CacheIndex+4] = id3;
-	      cache[6*CacheIndex+5] = id4;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[6*TLS->CacheIndex] = method;
+	      cache[6*TLS->CacheIndex+1] = prec;
+	      cache[6*TLS->CacheIndex+2] = kind1;
+	      cache[6*TLS->CacheIndex+3] = id2;
+	      cache[6*TLS->CacheIndex+4] = id3;
+	      cache[6*TLS->CacheIndex+5] = id4;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG(cacheBag);
 	    }
 #ifdef COUNT_OPERS
@@ -3745,14 +3744,14 @@ Obj DoConstructor5Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 5 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[7*CacheIndex] = method;
-	      cache[7*CacheIndex+1] = prec;
-	      cache[7*CacheIndex+2] = kind1;
-	      cache[7*CacheIndex+3] = id2;
-	      cache[7*CacheIndex+4] = id3;
-	      cache[7*CacheIndex+5] = id4;
-	      cache[7*CacheIndex+6] = id5;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[7*TLS->CacheIndex] = method;
+	      cache[7*TLS->CacheIndex+1] = prec;
+	      cache[7*TLS->CacheIndex+2] = kind1;
+	      cache[7*TLS->CacheIndex+3] = id2;
+	      cache[7*TLS->CacheIndex+4] = id3;
+	      cache[7*TLS->CacheIndex+5] = id4;
+	      cache[7*TLS->CacheIndex+6] = id5;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG(cacheBag);
 	    }
 #ifdef COUNT_OPERS
@@ -3901,15 +3900,15 @@ Obj DoConstructor6Args (
 	    {
 	      Bag cacheBag = GET_METHOD_CACHE( oper, 6 );
 	      cache = 1+ADDR_OBJ( cacheBag );
-	      cache[8*CacheIndex] = method;
-	      cache[8*CacheIndex+1] = prec;
-	      cache[8*CacheIndex+2] = kind1;
-	      cache[8*CacheIndex+3] = id2;
-	      cache[8*CacheIndex+4] = id3;
-	      cache[8*CacheIndex+5] = id4;
-	      cache[8*CacheIndex+6] = id5;
-	      cache[8*CacheIndex+7] = id6;
-	      CacheIndex = (CacheIndex + 1) % CACHE_SIZE;
+	      cache[8*TLS->CacheIndex] = method;
+	      cache[8*TLS->CacheIndex+1] = prec;
+	      cache[8*TLS->CacheIndex+2] = kind1;
+	      cache[8*TLS->CacheIndex+3] = id2;
+	      cache[8*TLS->CacheIndex+4] = id3;
+	      cache[8*TLS->CacheIndex+5] = id4;
+	      cache[8*TLS->CacheIndex+6] = id5;
+	      cache[8*TLS->CacheIndex+7] = id6;
+	      TLS->CacheIndex = (TLS->CacheIndex + 1) % CACHE_SIZE;
 	      CHANGED_BAG(cacheBag);
 	    }
 #ifdef COUNT_OPERS

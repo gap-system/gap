@@ -109,6 +109,8 @@ typedef struct ThreadLocalStorage
   Obj methodCache;
   Obj *methodCacheItems;
   UInt methodCacheSize;
+  UInt CacheIndex;
+
   /* From permutat.c */
   Obj TmpPerm;
   /* From cyclotom.c */
