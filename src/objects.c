@@ -1207,11 +1207,13 @@ Obj SET_TYPE_COMOBJ_Handler (
 {
     switch (TNUM_OBJ(obj)) {
       case T_PREC:
-      case T_COMOBJ:
 	MEMBAR_WRITE();
 	TYPE_COMOBJ( obj ) = kind;
 	RetypeBag( obj, T_COMOBJ );
 	CHANGED_BAG( obj );
+	break;
+      case T_COMOBJ:
+        SetTypeComObj(obj, kind);
 	break;
       case T_AREC:
       case T_ACOMOBJ:
@@ -1285,6 +1287,9 @@ Obj SET_TYPE_POSOBJ_Handler (
 	RetypeBag( obj, T_APOSOBJ );
 	CHANGED_BAG( obj );
         break;
+      case T_POSOBJ:
+        SetTypePosObj( obj, kind );
+	break;
       default:
 	MEMBAR_WRITE();
 	TYPE_POSOBJ( obj ) = kind;
@@ -1356,10 +1361,14 @@ Obj SET_TYPE_DATOBJ_Handler (
     Obj                 obj,
     Obj                 kind )
 {
+#ifndef WARD_ENABLED
+    ReadGuard( obj );
     TYPE_DATOBJ( obj ) = kind;
-    RetypeBag( obj, T_DATOBJ );
+    if (TNUM_OBJ(obj) != T_DATOBJ)
+      RetypeBag( obj, T_DATOBJ );
     CHANGED_BAG( obj );
     return obj;
+#endif
 }
 
 
