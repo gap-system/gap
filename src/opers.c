@@ -54,7 +54,6 @@
 #include        "tls.h"                 /* thread-local storage            */
 #include        "thread.h"              /* threads                         */
 #include        "aobjects.h"            /* atomic objects                  */
-#include        "fibhash.h"             /* Fibonacci hashing               */
 
 /****************************************************************************
 **
@@ -5079,51 +5078,6 @@ Obj DoSetProperty (
     return 0;
 }
 
-#define PROP_CACHE_SIZE_LOG2 10
-#define PROP_CACHE_SIZE (1<<PROP_CACHE_SIZE_LOG2)
-
-Obj GetPropertyCache(Obj oper, Obj obj)
-{
-  Obj cache = TLS->PropertyCache;
-  UInt index;
-  Obj *entry;
-  if (!cache)
-    return (Obj) 0;
-  index = FibHash((UInt)oper + (UInt) obj, PROP_CACHE_SIZE_LOG2);
-  entry = ADDR_OBJ(cache) + 1 + 3 * index;
-  if (entry[0] == oper && entry[1] == obj)
-    return entry[2];
-  if (entry[3] == oper && entry[4] == obj)
-    return entry[5];
-  return (Obj) 0;
-}
-
-Obj SetPropertyCache(Obj oper, Obj obj, Obj val)
-{
-  Obj cache = TLS->PropertyCache;
-  UInt index;
-  Obj *entry;
-  if (!cache) {
-    cache = NEW_PLIST(T_PLIST, 3 * PROP_CACHE_SIZE);
-    TLS->PropertyCache = cache;
-  }
-  index = FibHash((UInt)oper + (UInt) obj, PROP_CACHE_SIZE_LOG2);
-  entry = ADDR_OBJ(cache) + 1 + 3 * index;
-  if (entry[0] == oper && entry[1] == obj)
-    entry[2] = val;
-  else if (entry[3] == oper && entry[4] == obj)
-    entry[5] = val;
-  else {
-    entry[3] = entry[0];
-    entry[4] = entry[1];
-    entry[5] = entry[2];
-    entry[0] = oper;
-    entry[1] = obj;
-    entry[2] = val;
-  }
-}
-
-
 
 /****************************************************************************
 **
@@ -5151,9 +5105,6 @@ Obj DoProperty (
     if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
         return ELM_FLAGS( flags, flag1 );
     }
-    
-    if (val = GetPropertyCache(self, obj))
-      return val;
 
     /* call the operation to compute the value                             */
     val = DoOperation1Args( self, obj );
@@ -5167,18 +5118,13 @@ Obj DoProperty (
     
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
-	if (CheckExclusiveWriteAccess(obj)) {
-	  switch (TNUM_OBJ(obj)) {
-	    case T_COMOBJ:
-	    case T_ACOMOBJ:
-	    case T_POSOBJ:
-	    case T_DATOBJ:
-	      flags = (val == True ? self : TESTR_FILT(self));
-	      CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-	  }
-	}
-	else {
-	  SetPropertyCache(self, obj, val);
+	switch (TNUM_OBJ(obj)) {
+	  case T_COMOBJ:
+	  case T_ACOMOBJ:
+	  case T_POSOBJ:
+	  case T_DATOBJ:
+            flags = (val == True ? self : TESTR_FILT(self));
+            CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
 	}
     }
 
