@@ -1167,14 +1167,15 @@ Obj             TypeComObj (
     MEMBAR_READ();
     return result;
 }
-#endif
 
 void SetTypeComObj( Obj obj, Obj kind)
 {
+    ReadGuard(obj);
     MEMBAR_WRITE();
     TYPE_COMOBJ(obj) = kind;
     CHANGED_BAG(obj);
 }
+#endif
 
 
 /*****************************************************************************
@@ -1236,14 +1237,15 @@ Obj TypePosObj (
     MEMBAR_READ();
     return result;
 }
-#endif
 
 void SetTypePosObj( Obj obj, Obj kind)
 {
+    ReadGuard(obj);
     MEMBAR_WRITE();
     TYPE_POSOBJ(obj) = kind;
     CHANGED_BAG(obj);
 }
+#endif
 
 
 
