@@ -2334,7 +2334,7 @@ void initreadline ( void )
   rl_catch_signals = 0;
   rl_catch_sigwinch = 1;
   /* hook to read from other channels */
-  rl_event_hook = charreadhook_rl;
+  rl_event_hook = 0;
   /* give GAP_rl_func a name that can be used in .inputrc */
   rl_add_defun( "handled-by-GAP", GAP_rl_func, -1 );
 
@@ -2359,6 +2359,8 @@ Char * readlineFgets (
 
   /* read at most as much as we can buffer */
   rl_num_chars_to_read = length-2;
+  /* hook to read from other channels */
+  rl_event_hook = (OnCharReadHookActive != (Obj) 0) ? charreadhook_rl : 0;
   /* now do the real work */
   doingReadline = 1;
   rlres = readline(Prompt);

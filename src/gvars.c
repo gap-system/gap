@@ -91,7 +91,7 @@ Obj * PtrGVars;
 *V  NameGVars . . . . . . . . . . . . . . . . . . . names of global variables
 *V  WriteGVars  . . . . . . . . . . . . .  writable flags of global variables
 *V  ExprGVars . . . . . . . . . .  expressions for automatic global variables
-*V  BopiesGVars . . . . . . . . . . . . . internal copies of global variables
+*V  CopiesGVars . . . . . . . . . . . . . internal copies of global variables
 *V  FopiesGVars . . . . . . . .  internal function copies of global variables
 *V  CountGVars  . . . . . . . . . . . . . . . . .  number of global variables
 */

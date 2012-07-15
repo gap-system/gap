@@ -125,7 +125,7 @@ else
   cd $gappath
 fi
 
-line=''$rsync' -avz --delete --port 8731 --exclude=local/ rsync.math.rwth-aachen.de::gap4r5/ .'
+line=''$rsync' -avz --delete --port 8731 --exclude=local/ rsync.gap-system.org::gap4r5/ .'
 echo 'Calling: '$line 
 
 if ! $line; then
@@ -233,8 +233,8 @@ if [ $arch'X' = x86_64X ]; then
   if [ ! -f $binpath/pargap64 ]; then
     rm -f local/bin/pargap64
     echo "Creating start script "$binpath"/pargap64," 
-    echo "      (you can customize this by editing local/bin/pargap)."
-    echo "#!/bin/sh" > local/bin/pargap
+    echo "      (you can customize this by editing local/bin/pargap64)."
+    echo "#!/bin/sh" > local/bin/pargap64
     echo "GAP_DIR="$gappath >> local/bin/pargap64
     cat gapsync/pargap64.sh >> local/bin/pargap64
     chmod 755 local/bin/pargap64

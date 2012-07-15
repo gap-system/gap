@@ -16,7 +16,7 @@ $line
 source ./core_checkout_time.txt
 
 ziparchive=${ARCHNAME}_${CORETIME}.zip
-winziparchive=${ARCHNAME}_${CORETIME}-win.zip
+winziparchive=${ARCHNAME}_${CORETIME}-nobin-win.zip
 tararchive=${ARCHNAME}_${CORETIME}.tar
 targzarchive=${ARCHNAME}_${CORETIME}.tar.gz
 tarbz2archive=${ARCHNAME}_${CORETIME}.tar.bz2

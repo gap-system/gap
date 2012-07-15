@@ -204,7 +204,7 @@ local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
   i   := PositionProperty( irf, i -> i[1] = cr );
   if i <> fail  then
     PopOptions();
-    return irf[i][2];
+    return ShallowCopy(irf[i][2]);
   fi;
 
   # handle the trivial cases

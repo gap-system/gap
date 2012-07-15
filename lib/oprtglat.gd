@@ -34,5 +34,15 @@ DeclareGlobalFunction("MinimumGroupOnSubgroupsOrbit");
 
 #############################################################################
 ##
+#O  PermPreConjtestGroups(G,l)
+##
+##  Utility function: Cluster permgroups according to orbits and cycle
+##  structures, possibly conjugating. This is only worth if there are many
+##  very similar subgroups and thus not part of the default
+##  SubgroupsOrbitsAndNormalizers method.
+DeclareGlobalFunction("PermPreConjtestGroups");
+
+#############################################################################
+##
 #E  oprtglat.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

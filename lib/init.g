@@ -877,7 +877,11 @@ PAR_GAP_SLAVE_START := fail;
 ##  Autoload packages (suppressing banners).
 ##  (If GAP was started with a workspace then the user may have given
 ##  additional directories, so more suggested packages may become available.
-##  So we have to call `AutoloadPackages' also then.)
+##  So we have to call `AutoloadPackages' also then.
+##  Note that we have to use `CallAndInstallPostRestore' not
+##  `InstallAndCallPostRestore' because some packages may install their own
+##  post-restore functions, and when a workspaces gets restored then these
+##  functions must be called *before* loading new packages.)
 ##
 ##  Load the implementation part of the GAP library.
 ##
@@ -886,20 +890,7 @@ PAR_GAP_SLAVE_START := fail;
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
     Print ("and packages ...\n");
 fi;
-CallAndInstallPostRestore( function()
-    local pkgname;
-    SetInfoLevel( InfoPackageLoading,
-        UserPreference( "InfoPackageLoadingLevel" ) );
-
-    GAPInfo.PackagesInfoInitialized:= false;
-    InitializePackagesInfoRecords();
-    AutoloadPackages();
-
-    if not GAPInfo.CommandLineOptions.A then
-      Perform( UserPreference( "PackagesToLoad" ), 
-               pkgname -> LoadPackage( pkgname, false ) );
-    fi;
-end );
+CallAndInstallPostRestore( AutoloadPackages );
 
 
 ############################################################################
@@ -1186,7 +1177,7 @@ if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
 ##
 ##  Read init files, run a shell, and do exit-time processing.
 ##
-CallAndInstallPostRestore( function()
+InstallAndCallPostRestore( function()
     local i, status;
     for i in [1..Length(GAPInfo.InitFiles)] do
         status := READ_NORECOVERY(GAPInfo.InitFiles[i]);

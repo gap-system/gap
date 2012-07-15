@@ -51,34 +51,36 @@ end);
 # avoid warning for vars from GAPDoc package
 if not IsBound(StripEscapeSequences) then
   StripEscapeSequences := 0;
-  WordsString := 0;
 fi;
-BindGlobal("IsDocumentedWord",  function(arg) 
-  local word, case, books, simple, cword, matches, i;
+
+BindGlobal( "IsDocumentedWord", function( arg ) 
+  local inid, word, case, simple, cword, book, matches, a, match;
+
+  inid:= Union( CHARS_DIGITS, CHARS_UALPHA, "_", CHARS_LALPHA );
   word := arg[1];
-  if Length(arg) > 1 and arg[2] = false then
-    case := LowercaseString;
+  if Length( arg ) > 1 and arg[2] = false then
+    case:= LowercaseString;
   else
-    case := IdFunc;
+    case:= IdFunc;
   fi;
-  books := [];
-  simple := SIMPLE_STRING( word );
-  cword := case(word);
-  for i in [1..Length(HELP_KNOWN_BOOKS[1])] do
-    matches := HELP_GET_MATCHES( [HELP_KNOWN_BOOKS[1][i]], simple, true);
-    if ForAny(Concatenation(matches), a-> cword in 
-           WordsString(case(StripEscapeSequences(a[1].entries[a[2]][1])))) then
-      Add(books, HELP_KNOWN_BOOKS[2][i][1]);
-    fi;
+  simple:= SIMPLE_STRING( word );
+  cword:= case( word );
+  for book in HELP_KNOWN_BOOKS[1] do
+    matches:= HELP_GET_MATCHES( [ book ], simple, true );
+    for a in Concatenation( matches ) do
+      match:= case( StripEscapeSequences( a[1].entries[ a[2] ][1] ) );
+      if cword in SplitString( match, "", Difference( match, inid ) ) then
+        return true;
+      fi;
+    od;
   od;
-  # we could return more precise information:
-  # return List(books, s-> ReplacedString(s, " (not loaded)", ""));
-  return Length(books) > 0;
+  return false;
 end);
+
 if StripEscapeSequences = 0 then
   Unbind(StripEscapeSequences);
-  Unbind(WordsString);
 fi;
+
 
 #############################################################################
 ##  

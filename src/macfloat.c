@@ -75,7 +75,7 @@ void PrintMacfloat (
     Obj                 x )
 {
   Char buf[32];
-  sprintf(buf, "%.16" PRINTFFORMAT, (TOPRINTFFORMAT) VAL_MACFLOAT(x));
+  snprintf(buf, sizeof(buf), "%.16" PRINTFFORMAT, (TOPRINTFFORMAT) VAL_MACFLOAT(x));
   Pr("%s",(Int)buf, 0);
 }
 
@@ -441,7 +441,7 @@ Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
   int prec = INT_INTOBJ(gapprec);
   if (prec > 40) /* too much anyways, and would risk buffer overrun */
     prec = 40;
-  sprintf(buf, "%.*" PRINTFFORMAT, prec, (TOPRINTFFORMAT)VAL_MACFLOAT(f));
+  snprintf(buf, sizeof(buf), "%.*" PRINTFFORMAT, prec, (TOPRINTFFORMAT)VAL_MACFLOAT(f));
   len = strlen(buf);
   str = NEW_STRING(len);
   SyStrncat(CSTR_STRING(str),buf,len);

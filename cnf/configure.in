@@ -68,9 +68,6 @@ dnl ##
 
 AC_HEADER_STDC
 
-# TODO: The following headers are all from the standard C library, so
-# strictly speaking, we should not have to check for their presence. So
-# we either should remove these checks, or document why we need them.
 AC_CHECK_HEADERS( assert.h errno.h math.h stdio.h stdlib.h string.h )
 AC_CHECK_HEADERS( termios.h termio.h sgtty.h signal.h unistd.h sys/stat.h )
 AC_CHECK_HEADERS( fcntl.h sys/ioctl.h sys/time.h sys/types.h sys/sysmacros.h sys/resource.h )
@@ -94,7 +91,18 @@ dnl ##
 dnl ## check how to get a pseudo-tty pair
 dnl ##
 
-AC_CHECK_FUNCS( getpseudotty _getpty getpt ptsname_r )
+# Check for POSIX 98 pty APIs
+AC_CHECK_FUNCS( ptsname grantpt unlockpt posix_openpt )
+# Check for glibc specific pty APIs
+AC_CHECK_FUNCS( getpt ptsname_r )
+# Check for some legacy APIs
+AC_CHECK_FUNCS( getpseudotty _getpty )
+
+# openpty() is available on various BSD variants, but also in glibc.
+# On BSD systems, one usually needs to add -lutil to LIBS in order
+# to use it.
+AC_CHECK_HEADERS( util.h pty.h libutil.h )
+AC_SEARCH_LIBS(openpty, util, AC_DEFINE(HAVE_OPENPTY,1,[define as 1 if you have `openpty']))
 
 dnl #########################################################################
 dnl ##

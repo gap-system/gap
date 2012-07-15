@@ -4,10 +4,13 @@
 ##
 ## Updates version number and release date. 
 ## The following information should be changed for *every* release:
-## 1) lib/system.g: 'Version' and 'Date', in lines
+## 1) lib/system.g: 'Version' and 'Date' in lines
 ##    Version := "4.dev",
 ##    Date := "today",
-## 2) doc/versiondata: 'VERSIONNUMBER', 'VERSIONSUFFIX', 'RELEASEDAY', 
+##    NeedKernelVersion := "4.dev",
+## 2) src/system.g: 'SyKernelVersion' in line
+##    const Char * SyKernelVersion = "4.dev";
+## 3) doc/versiondata: 'VERSIONNUMBER', 'VERSIONSUFFIX', 'RELEASEDAY', 
 ##    'RELEASEYEAR' in lines
 ##  <!ENTITY VERSIONNUMBER "4.dev">
 ##  <!ENTITY VERSIONSUFFIX "4r5dev">
@@ -31,6 +34,12 @@ echo 's/"4.dev"/"4.'$FULLVERSION'"/g' > sedfile
 echo 's/"today"/"'$COREDATE'"/g' >> sedfile
 sed -f sedfile system.g > system.g.new
 mv system.g.new system.g
+rm -f sedfile
+
+cd ../src/
+echo 's/"4.dev"/"4.'$FULLVERSION'"/g' > sedfile
+sed -f sedfile system.c > system.c.new
+mv system.c.new system.c
 rm -f sedfile
 
 cd ../doc/

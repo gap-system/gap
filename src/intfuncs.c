@@ -273,7 +273,7 @@ integrate with GAP  SL*/
 // Platform-specific functions and macros
 
 
-#define FORCE_INLINE __attribute__((always_inline))
+#define FORCE_INLINE inline
 
 static inline uint32_t rotl32 ( uint32_t x, int8_t r )
 {
@@ -651,7 +651,7 @@ Obj             FuncHASHKEY_BAG (
 
 Obj FuncJenkinsHash(Obj self, Obj op, Obj size)
 {
-  return FuncHASHKEY_BAG(self, op, 0L, 0L, size);
+  return FuncHASHKEY_BAG(self, op, INTOBJ_INT(0L), INTOBJ_INT(0L), size);
 }
 
 

@@ -1926,7 +1926,7 @@ local cr, irf, i, opt, r,cp;
   i:=PositionProperty(irf,i->i[1]=cr);
   if i<>fail then
     # if we know the factors,return
-    return irf[i][2];
+    return ShallowCopy(irf[i][2]);
   fi;
 
   opt:=ValueOption("factoroptions");

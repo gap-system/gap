@@ -78,7 +78,10 @@ InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
   if out = "*Print*" then
     if IsBoundGlobal( "PrintFormattedString" ) then
       fun := function(s)
-        if IsString(s) then
+        if IsString(s) and 
+          #XXX this is a temporary hack, we would need a 
+          # IsInstalledGlobal instead of IsBoundGlobal here
+                 NARG_FUNC(ValueGlobal("PrintFormattedString")) <> -1 then
           ValueGlobal( "PrintFormattedString" )(s); 
         else
           Print(s);

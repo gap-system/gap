@@ -9,8 +9,8 @@
 
 export PREFIX="/mnt/raid/hudson-slave/workspace/GAP-pkg-update/pkgadmin"
 
-# how to call GAP, e.g. "/gap/bin/gapL" or "gap45"
-export GAP="gap45"
+# how to call GAP, e.g. "/gap/bin/gapL", "gap" or "gap45"
+export GAP="gap"
 
 # path to directory for caching PackageInfo.g, archive and unpacked
 # package documentation

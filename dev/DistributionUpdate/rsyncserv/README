@@ -30,8 +30,9 @@
 
 (6) Adjust index.html, rsyncserv.css, CHANGES and motd (in CVS and $RSDIR). 
 
-(7) Copy index.html, rsyncserv.css, CHANGES to website. Start rsync server with 
-    'startrsyncserver' in $RSDIR. 
+(7) Copy index.html, rsyncserv.css, CHANGES to website. 
+ cp index.html rsyncserv.css CHANGES ~/MyWWWHome/web/~Frank.Luebeck/gap/rsync/
+    Start rsync server with 'startrsyncserver' in $RSDIR. 
     [An entry '@reboot $RSDIR/startrsyncserver' is sensible.]
 
 (8) That's it.

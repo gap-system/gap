@@ -2027,7 +2027,7 @@ local opt,irrfacs, coeffring, i, factors, ind, coeffs, val,
   i:= PositionProperty( irrfacs, pair -> pair[1] = coeffring );
   if i <> fail then
     PopOptions();
-    return irrfacs[i][2];
+    return ShallowCopy(irrfacs[i][2]);
   fi;
 
   # Handle (at most) linear polynomials.

@@ -158,7 +158,7 @@ InstallGlobalFunction( SetPackageInfo, function( record )
 ##  In earlier versions, this function had an argument; now we ignore it.
 ##
 InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
-    local dirs, pkgdirs, pkgdir, names, noauto, name, pkgpath,
+    local dirs, pkgdirs, pkgdir, ignore, names, noauto, name, pkgpath,
           file, files, subdir, str, record, r, pkgname, version;
 
     if IsBound( GAPInfo.PackagesInfoInitialized ) and
@@ -182,16 +182,30 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       return;
     fi;
 
+    if IsBound( GAPInfo.ExcludeFromAutoload ) then
+      # The function was called from `AutoloadPackages'.
+      # Collect the `NOAUTO' information in a global list,
+      # which will be used in `AutoloadPackages' for both packages to be
+      # loaded according to the user preference "PackagesToLoad"
+      # and suggested packages of needed packages.
+      # The component `GAPInfo.ExcludeFromAutoload' will be unbound after the
+      # call of `AutoloadPackages'.
+      GAPInfo.ExcludeFromAutoload:= Set( List(
+          UserPreference( "ExcludeFromAutoload" ), LowercaseString ) );
+    fi;
+
+    # Do not store information about packages in "PackagesToIgnore".
+    ignore:= List( UserPreference( "PackagesToIgnore" ), LowercaseString );
+
     # Loop over the package directories,
     # remove the packages listed in `NOAUTO' files from GAP's suggested
     # packages, and unite the information for the directories.
     for pkgdir in pkgdirs do
 
-      noauto:= RECORDS_FILE( Filename( pkgdir, "NOAUTO" ) );
-      if not IsEmpty( noauto ) then
-        GAPInfo.Dependencies.SuggestedOtherPackages:= Filtered(
-            GAPInfo.Dependencies.SuggestedOtherPackages,
-            x -> not x in noauto );
+      if IsBound( GAPInfo.ExcludeFromAutoload ) then
+        UniteSet( GAPInfo.ExcludeFromAutoload,
+                  List( RECORDS_FILE( Filename( pkgdir, "NOAUTO" ) ),
+                        LowercaseString ) );
       fi;
 
       # Loop over subdirectories of this package directory.
@@ -246,6 +260,10 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
                    and GAPInfo.PackagesRestrictions.( pkgname ).OnInitialization(
                            record ) = false then
                   Add( GAPInfo.PackagesInfoRefuseLoad, record );
+                elif LowercaseString( pkgname ) in ignore then
+                  LogPackageLoadingMessage( PACKAGE_DEBUG,
+                      Concatenation( "ignore package ", record.PackageName,
+                      " (user preference PackagesToIgnore)" ), "GAP" );
                 else
                   record.InstallationPath:= Filename( [ pkgdir ], file[2] );
                   if not IsBound( record.PackageDoc ) then
@@ -621,7 +639,17 @@ InstallGlobalFunction( PackageAvailabilityInfo,
                                     version, equal );
     fi;
 
-    # 2. Initialize the dependency info.
+    # 2. If the function was called from `AutoloadPackages'
+    #    and if the package is listed among the packages to be excluded
+    #    from autoload then exit.
+    if IsBound( GAPInfo.ExcludeFromAutoload )
+       and name in GAPInfo.ExcludeFromAutoload then
+      LogPackageLoadingMessage( PACKAGE_DEBUG,
+          "package to be excluded from autoload, return 'false'", Name );
+      return false;
+    fi;
+
+    # 3. Initialize the dependency info.
     for comp in [ "AlreadyHandled", "Dependencies", "StrongDependencies",
                   "InstallationPaths", "Weights" ] do
       if not IsBound( record.( comp ) ) then
@@ -629,7 +657,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
       fi;
     od;
 
-    # 3. Deal with the case that `name' is among the packages
+    # 4. Deal with the case that `name' is among the packages
     #    from whose tests the current check for `name' arose.
     for pair in record.AlreadyHandled do
       if name = pair[1] then
@@ -643,12 +671,12 @@ InstallGlobalFunction( PackageAvailabilityInfo,
       fi;
     od;
 
-    # 4. In recursive calls, regard the current package as handled,
+    # 5. In recursive calls, regard the current package as handled,
     #    of course in the version in question.
     currversion:= [ name ];
     Add( record.AlreadyHandled, currversion );
 
-    # 5. Get the info records for the package `name',
+    # 6. Get the info records for the package `name',
     #    and take the first record that satisfies the conditions.
     #    (Note that they are ordered w.r.t. descending version numbers.)
     for inforec in PackageInfo( name ) do
@@ -1249,7 +1277,7 @@ InstallGlobalFunction( LoadPackageDocumentation, function( arg )
 
 #############################################################################
 ##
-#F  LoadPackage( <name>[, <version>][, <banner>] )
+#F  LoadPackage_ReadImplementationParts( <secondrun>, <banner> )
 ##
 BindGlobal( "LoadPackage_ReadImplementationParts",
     function( secondrun, banner )
@@ -1361,6 +1389,10 @@ BindGlobal( "GetPackageNameForPrefix", function( prefix )
     end );
 
 
+#############################################################################
+##
+#F  LoadPackage( <name>[, <version>][, <banner>] )
+##
 InstallGlobalFunction( LoadPackage, function( arg )
     local name, Name, version, banner, loadsuggested, msg, depinfo, path,
           pair, i, order, paths, cycle, secondrun, pkgname, pos, info,
@@ -1389,7 +1421,6 @@ InstallGlobalFunction( LoadPackage, function( arg )
 
     # The package is available, fetch the name for messages.
     Name:= GAPInfo.PackagesInfo.( name )[1].PackageName;
-
     version:= "";
     banner:= not GAPInfo.CommandLineOptions.q and
              not GAPInfo.CommandLineOptions.b;
@@ -1442,9 +1473,13 @@ InstallGlobalFunction( LoadPackage, function( arg )
       fi;
       # The result is either `true' (the package is already loaded)
       # or `fail' (the package cannot be loaded).
-      LogPackageLoadingMessage( PACKAGE_DEBUG,
-          Concatenation( "return from LoadPackage, ",
-              "PackageAvailabilityInfo returned ", String( path ) ), Name );
+      if path = true then
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            "return from LoadPackage, package was already loaded", Name );
+      else
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            "return from LoadPackage, package is not available", Name );
+      fi;
       GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
       return path;
     fi;
@@ -1697,8 +1732,9 @@ DeclareUserPreference( rec(
 For backwards compatibility, the default lists most of packages \
 that were autoloaded in GAP 4.4 (add or remove packages as you like)."
     ],
-  default:= [ "autpgrp", "alnuth", "crisp", "factint", "fga", "irredsol",
-              "laguna", "polenta", "polycyclic", "resclasses", "sophus" ],
+  default:= [ "autpgrp", "alnuth", "crisp", "ctbllib", "factint", "fga", 
+              "irredsol", "laguna", "polenta", "polycyclic", "resclasses", 
+              "sophus", "tomlib" ],
   values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
   multi:= true,
   ) );
@@ -1707,16 +1743,29 @@ that were autoloaded in GAP 4.4 (add or remove packages as you like)."
 DeclareUserPreference( rec(
   name:= "ExcludeFromAutoload",
   description:= [
-    "These packages are not loaded at GAP startup. This(doesn't work for \
+    "These packages are not loaded at GAP startup. This doesn't work for \
 packages which are needed by the GAP library, or which are already loaded \
-in a workspace)."
+in a workspace."
     ],
   default:= [],
   values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
   multi:= true,
   ) );
 
-# 
+# And a preference for ignoring some packages completely during the session.
+DeclareUserPreference( rec(
+  name:= "PackagesToIgnore",
+  description:= [
+    "These packages are not regarded as available. This doesn't work for \
+packages which are needed by the GAP library, or which are already loaded \
+in a workspace."
+    ],
+  default:= [],
+  values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
+  multi:= true,
+  ) );
+
+# And a preference for setting the info level of package loading.
 DeclareUserPreference( rec(
   name:= "InfoPackageLoadingLevel",
   description:= [
@@ -1745,9 +1794,15 @@ BindGlobal( "BANNER", false );
       msg:= Concatenation( "entering AutoloadPackages (workspace ",
                            GAPInfo.CommandLineOptions.L, ")" ) ;
     fi;
-    LogPackageLoadingMessage( PACKAGE_DEBUG,
-        msg,
-        "GAP" );
+    LogPackageLoadingMessage( PACKAGE_DEBUG, msg, "GAP" );
+
+    SetInfoLevel( InfoPackageLoading,
+        UserPreference( "InfoPackageLoadingLevel" ) );
+
+    GAPInfo.ExcludeFromAutoload:= [];
+    GAPInfo.PackagesInfoInitialized:= false;
+    InitializePackagesInfoRecords();
+
     GAPInfo.delayedImplementationParts:= [];
 
     # Load the needed other packages (suppressing banners)
@@ -1777,45 +1832,70 @@ BindGlobal( "BANNER", false );
       fi;
     fi;
 
+    # If necessary then load the implementation part of the GAP library,
+    # and the implementation parts of the packages loaded up to now.
+    if not IsBound( GAPInfo.LibraryLoaded ) then
+      LogPackageLoadingMessage( PACKAGE_DEBUG,
+          [ "read the impl. part of the GAP library" ], "GAP" );
+      ReadGapRoot( "lib/read.g" );
+      GAPInfo.LibraryLoaded:= true;
+      GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel + 1;
+      LoadPackage_ReadImplementationParts(
+          GAPInfo.delayedImplementationParts, false );
+      GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
+    fi;
+    Unbind( GAPInfo.delayedImplementationParts );
+#T remove this as soon as `BANNER' is not used anymore in packages
+MakeReadWriteGlobal( "BANNER" );
+UnbindGlobal( "BANNER" );
+if IsBound( banner ) then
+  BindGlobal( "BANNER", banner );
+fi;
+
+    # Load suggested packages of GAP (suppressing banners).
     if   GAPInfo.CommandLineOptions.A then
       LogPackageLoadingMessage( PACKAGE_DEBUG,
-          "omitting suggested packages (-A option)", "GAP" );
+          "omitting packages suggested via \"PackagesToLoad\" (-A option)",
+          "GAP" );
     elif ValueOption( "OnlyNeeded" ) = true then
       LogPackageLoadingMessage( PACKAGE_DEBUG,
-          "omitting suggested packages ('OnlyNeeded' option)", "GAP" );
-    else
-      excludedpackages:= List( UserPreference("ExcludeFromAutoload"),
+          [ "omitting packages suggested via \"PackagesToLoad\"",
+            " ('OnlyNeeded' option)" ],
+          "GAP" );
+    elif ForAny( List( UserPreference( "PackagesToLoad" ), LowercaseString ),
+                 p -> not IsBound( GAPInfo.PackagesLoaded.( p ) ) ) then
+
+      # Try to load the suggested other packages (suppressing banners),
+      # issue a warning for each such package where this is not possible.
+      excludedpackages:= List( UserPreference( "ExcludeFromAutoload" ),
                                LowercaseString );
-      if ForAny( GAPInfo.Dependencies.SuggestedOtherPackages,
-                 p -> not IsBound( GAPInfo.PackagesLoaded.( p[1] ) ) ) then
-        # Try to load the suggested other packages (suppressing banners),
-        # issue a warning for each such package where this is not possible.
-        LogPackageLoadingMessage( PACKAGE_DEBUG,
-            Concatenation( [ "trying to load suggested packages" ],
-                List( GAPInfo.Dependencies.SuggestedOtherPackages,
-                    pair -> Concatenation( pair[1], " (", pair[2], ")" ) ) ),
-            "GAP" );
-        for pair in GAPInfo.Dependencies.SuggestedOtherPackages do
-          if LowercaseString( pair[1] ) in excludedpackages then
+      LogPackageLoadingMessage( PACKAGE_DEBUG,
+          Concatenation( [ "trying to load suggested packages" ],
+              UserPreference( "PackagesToLoad" ) ),
+          "GAP" );
+      for name in UserPreference( "PackagesToLoad" ) do
+#T admit pair [ name, version ] in user preferences!
+        if LowercaseString( name ) in excludedpackages then
+          LogPackageLoadingMessage( PACKAGE_DEBUG,
+              Concatenation( "excluded from autoloading: ", name ),
+              "GAP" );
+        elif not IsBound( GAPInfo.PackagesLoaded.( LowercaseString( name ) ) ) then
+          LogPackageLoadingMessage( PACKAGE_DEBUG,
+              Concatenation( "considering for autoloading: ", name ),
+              "GAP" );
+          if LoadPackage( name, false ) <> true then
             LogPackageLoadingMessage( PACKAGE_DEBUG,
-                Concatenation( "excluded from autoloading: ", pair[1] ),
-                "GAP" );
+                 Concatenation( "suggested package ", name,
+                     " cannot be loaded" ), "GAP" );
           else
             LogPackageLoadingMessage( PACKAGE_DEBUG,
-                Concatenation( "considering for autoloading: ", pair[1] ),
-                "GAP" );
-            if LoadPackage( pair[1], pair[2], false ) <> true then
-              LogPackageLoadingMessage( PACKAGE_DEBUG,
-                   Concatenation( "suggested package ", pair[1],
-                       " (version ", pair[2], ") cannot be loaded" ), "GAP" );
-            fi;
-            LogPackageLoadingMessage( PACKAGE_DEBUG,
-                Concatenation( pair[1], " loaded" ), "GAP" );
+                Concatenation( name, " loaded" ), "GAP" );
+#T possible to get the right case of the name?
           fi;
-        od;
-        LogPackageLoadingMessage( PACKAGE_DEBUG,
-            "suggested packages loaded", "GAP" );
-      fi;
+        fi;
+      od;
+      LogPackageLoadingMessage( PACKAGE_DEBUG,
+          "suggested packages loaded", "GAP" );
     fi;
 
     # Load the documentation for not yet loaded packages.
@@ -1836,29 +1916,11 @@ BindGlobal( "BANNER", false );
         "LoadPackageDocumentation for not loaded packages done",
         "GAP" );
 
-    # If necessary then load the implementation part of the GAP library,
-    # and the implementation parts of the packages loaded up to now.
-    if not IsBound( GAPInfo.LibraryLoaded ) then
-      LogPackageLoadingMessage( PACKAGE_DEBUG,
-          [ "read the impl. part of the GAP library" ], "GAP" );
-      ReadGapRoot( "lib/read.g" );
-      GAPInfo.LibraryLoaded:= true;
-      GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel + 1;
-      LoadPackage_ReadImplementationParts(
-          GAPInfo.delayedImplementationParts, false );
-      GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
-    fi;
-    Unbind( GAPInfo.delayedImplementationParts );
+    Unbind( GAPInfo.ExcludeFromAutoload );
+
     LogPackageLoadingMessage( PACKAGE_DEBUG,
         "return from AutoloadPackages",
         "GAP" );
-
-#T remove this as soon as `BANNER' is not used anymore in packages
-MakeReadWriteGlobal( "BANNER" );
-UnbindGlobal( "BANNER" );
-if IsBound( banner ) then
-  BindGlobal( "BANNER", banner );
-fi;
     end );
 
 
@@ -2661,7 +2723,7 @@ NamesUserGVars   := "dummy";
 
 InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
     local test, cache, cache2, PkgName, realname, new, new_up_to_case,
-          redeclared, newmethod, key_dependent_operation, rules,
+          redeclared, newmethod, pos, key_dependent_operation, rules,
           localBindGlobal, rule, loaded, pkg, args, docmark, done, result,
           subrule, added, prev, subresult, entry, isrelevant, guesssource,
           protected;
@@ -2764,8 +2826,9 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
       end;
 
     newmethod:= function( entry )
-      local setter, getter, name;
+      local name, setter, getter;
 
+      name:= NameFunction( entry[1][1] );
       if IsString( entry[1][2] ) then
         if entry[1][2] in [ "system setter", "system mutable setter",
                             "default method, does nothing" ] then
@@ -2784,9 +2847,8 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
         elif entry[1][2] in [ "default method" ] then
           # Ignore the default methods (for attribute and operation)
           # that are installed in calls to `KeyDependentOperation'.
-          # (We compare filename and line number in the file with these values
-          # for the call of `KeyDependentOperation'.)
-          name:= NameFunction( entry[1][1] );
+          # (We compare filename and line number in the file
+          # with these values for the call of `KeyDependentOperation'.)
           if 9 < Length( name  ) and name{ [ 1 .. 8 ] } = "Computed"
              and name[ Length( name ) ] = 's'
              and IsBoundGlobal( name{ [ 9 .. Length( name ) - 1 ] } )
@@ -2804,8 +2866,34 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
           fi;
         fi;
       fi;
-      return [ NameFunction( entry[1][1] ), entry[1][ Length( entry[1] ) ],
-               entry[2], entry[3] ];
+
+      # Omit methods for `FlushCaches'.
+      if name = "FlushCaches" then
+        return fail;
+      fi;
+
+      # Extract a comment if possible.
+      if IsString( entry[1][2] ) then
+        # Store also the comment for this method installation.
+        return [ name, entry[1][ Length( entry[1] ) ],
+                 entry[2], entry[3], entry[1][2] ];
+      else
+        pos:= PositionProperty( entry[1],
+                                x -> IsList( x ) and not IsEmpty( x )
+                                     and ForAll( x, IsString ) );
+        if pos <> fail then
+          # Create a comment from the list of strings that describe filters.
+          return [ NameFunction( entry[1][1] ),
+                   entry[1][ Length( entry[1] ) ],
+                   entry[2], entry[3], Concatenation( "for ", 
+                   JoinStringsWithSeparator( entry[1][ pos ], ", " ) ) ];
+        else
+          # We know no comment.
+          return [ NameFunction( entry[1][1] ),
+                   entry[1][ Length( entry[1] ) ],
+                   entry[2], entry[3] ];
+        fi;
+      fi;
       end;
 
     key_dependent_operation:= function( entry )
@@ -2866,6 +2954,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
     # Save the relevant global variables, and replace them.
     GAPInfo.data:= rec( userGVars:= NamesUserGVars(),
                         varsThisPackage:= [],
+                        revision_components:= [],
                         pkgpath:= test,
                         pkgname:= pkgname );
 
@@ -2886,7 +2975,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
           "if Length( path ) <= Length( infile ) and ",
           "   infile{ [ 1 .. Length( path ) ] } = path then ",
           "  Add( GAPInfo.data.( \"", rule[1], "\" )[2], ",
-          "       [ arg, infile, INPUT_LINENUMBER() ] ); ",
+          "       [ StructuralCopy( arg ), infile, INPUT_LINENUMBER() ] ); ",
           "fi; ",
           "CallFuncList( GAPInfo.data.( \"", rule[1], "\" )[1], arg ); ",
           "end" ) ) );
@@ -2898,23 +2987,31 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
     UnbindGlobal( "ReadPackage" );
     localBindGlobal( "ReadPackage", EvalString( Concatenation(
         "function( arg ) ",
-        "local pos, pkgname, before, res, after; ",
+        "local pos, pkgname, before, cbefore, res, after, cafter; ",
         "if Length( arg ) = 1 then ",
         "  pos:= Position( arg[1], '/' ); ",
         "  pkgname:= LowercaseString( arg[1]{[ 1 .. pos - 1 ]} ); ",
         "elif Length( arg ) = 2 then ",
-        "  pkgname:= arg[1]; ",
+        "  pkgname:= LowercaseString( arg[1] ); ",
         "else ",
         "  pkgname:= fail; ",
         "fi; ",
         "if pkgname = GAPInfo.data.pkgname then ",
         "  before:= NamesUserGVars(); ",
+        "  if IsBoundGlobal( \"Revision\" ) then ",
+        "    cbefore:= RecNames( ValueGlobal( \"Revision\" ) ); ",
+        "  fi; ",
         "fi; ",
         "res:= CallFuncList( GAPInfo.data.ReadPackage, arg ); ",
         "if pkgname = GAPInfo.data.pkgname then ",
         "  after:= NamesUserGVars(); ",
         "  UniteSet( GAPInfo.data.varsThisPackage, ",
         "    Filtered( Difference( after, before ), IsBoundGlobal ) ); ",
+        "  if IsBoundGlobal( \"Revision\" ) then ",
+        "    cafter:= RecNames( ValueGlobal( \"Revision\" ) ); ",
+        "    UniteSet( GAPInfo.data.revision_components, ",
+        "      Difference( cafter, cbefore ) ); ",
+        "  fi; ",
         "fi; ",
         "return res; ",
         "end" ) ) );
@@ -2971,11 +3068,20 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
     rules:= Filtered( rules, x -> x[1] <> "KeyDependentOperation" );
     for rule in rules do
       for subrule in rule{ [ 2 .. Length( rule ) ] } do
-        added:= Filtered( List( GAPInfo.data.( rule[1] )[2],
-                                x -> subrule[2]( x ) ),
-                          x -> x <> fail );
-        added:= List( added,
-            x -> [ [ x[1], args( x[2] ), docmark( x[1] ) ], [ x[3], x[4] ] ] );
+        added:= [];
+        for entry in Filtered( List( GAPInfo.data.( rule[1] )[2],
+                                     x -> subrule[2]( x ) ),
+                               x -> x <> fail ) do
+          if Length( entry ) = 5 then
+            Add( added, [ [ entry[1], args( entry[2] ),
+                            docmark( entry[1] ), entry[5] ],
+                          [ entry[3], entry[4] ] ] );
+          else
+            Add( added, [ [ entry[1], args( entry[2] ),
+                            docmark( entry[1] ) ],
+                          [ entry[3], entry[4] ] ] );
+          fi;
+        od;
         if not IsEmpty( added ) then
           prev:= First( result, x -> x[1] = subrule[1] );
           if prev = fail then
@@ -3064,6 +3170,13 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
                                     guesssource( nam ) ] ) ] );
     fi;
 
+    # Have new components been added to `Revision'?
+    if not IsEmpty( GAPInfo.data.revision_components ) then
+      Add( result, [ "new components of the outdated 'Revision' record",
+                     List( GAPInfo.data.revision_components,
+                           x -> [ [ x, "", "" ], [ fail, fail ] ] ) ] );
+    fi;
+
     # Delete the auxiliary component from `GAPInfo'.
     Unbind( GAPInfo.data );
 
@@ -3087,7 +3200,7 @@ Unbind( NamesUserGVars );
 ##
 InstallGlobalFunction( ShowPackageVariables, function( arg )
     local version, arec, pkgname, info, show, documented, undocumented,
-          private, result, entry, first, subentry, str;
+          private, result, len, format, entry, first, subentry, str;
 
     # Get and check the arguments.
     version:= "";
@@ -3128,6 +3241,12 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
 
     # Render the relevant data.
     result:= "";
+    len:= SizeScreen()[1] - 2;
+    if IsBoundGlobal( "FormatParagraph" ) then
+      format:= ValueGlobal( "FormatParagraph" );
+    else
+      format:= function( arg ) return Concatenation( arg[1], "\n" ); end;
+    fi;
     for entry in info do
       if entry[1] in show then
         first:= true;
@@ -3141,10 +3260,14 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
               first:= false;
             fi;
             Append( result, "  " );
-            for str in subentry[1] do
+            for str in subentry[1]{ [ 1 .. 3 ] } do
               Append( result, str );
             od;
             Append( result, "\n" );
+            if Length( subentry[1] ) = 4 and not IsEmpty( subentry[1][4] ) then
+              Append( result,
+                      format( subentry[1][4], len, "left", [ "    ", "" ] ) );
+            fi;
           fi;
         od;
         if not first then

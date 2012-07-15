@@ -246,7 +246,7 @@ typedef UInt            TypSymbolSet;
 **  filled.
 **
 **  We only fill Value up to SAFE_VALUE_SIZE normally. The last few
-**  bytes are used in the floating point parsing code to ensure that we don't 
+**  bytes are used in the floating point parsing code to ensure that we don't
 **  stop the scan just before a non-digit (., E, +,-, etc.) which would make
 **  it hard for the scanner to carry on correctly.
 */
@@ -1193,7 +1193,7 @@ UInt OpenOutput (
     Int                 file;
 
     /* do nothing for stdout and errout if catched */
-    if ( Output != NULL && IgnoreStdoutErrout == Output && 
+    if ( Output != NULL && IgnoreStdoutErrout == Output &&
           ( strcmp( filename, "*errout*" ) == 0
            || strcmp( filename, "*stdout*" ) == 0 ) ) {
         return 1;
@@ -1519,7 +1519,7 @@ Char GetLine ( void )
                      Call0ArgsInNewReader( PrintPromptHook );
                 else
                      Pr( "%s%c", (Int)Prompt, (Int)'\03' );
-            } else             
+            } else
                 Pr( "%c", (Int)'\03', 0L );
         }
         else if ( Input->file == 2 ) {
@@ -1618,7 +1618,7 @@ Char GetLine ( void )
             else if ( In[0] != '\n' && In[0] != '#' && In[0] != '\377' ) {
                 /* Commented out by AK
                 char obuf[8];
-                sprintf(obuf,"-%5i:\n- ", (int)TestInput->number++);
+                snprintf(obuf, sizeof(obuf), "-%5i:\n- ", (int)TestInput->number++);
                 PutLine2( TestOutput, obuf, 7 );
                 */
                 PutLine2( TestOutput, "- ", 2 );
@@ -1654,7 +1654,7 @@ static Char *RealIn;
 static inline void GET_CHAR( void ) {
   if (In == &Pushback) {
       In = RealIn;
-  } else 
+  } else
     In++;
   if (!*In)
     GetLine();
@@ -1842,7 +1842,7 @@ void GetIdent ( void )
 
     /* if it is quoted it is an identifier                                 */
     if ( isQuoted )  Symbol = S_IDENT;
-    
+
 
 }
 
@@ -1861,28 +1861,28 @@ void GetIdent ( void )
 **
 **  As we read, we keep track of whether we have seen a . or exponent notation
 **  and so whether we will return S_[PARTIAL]INT or S_[PARTIAL]FLOAT.
-** 
+**
 **  When Value is  completely filled we have to check  if the reading of
 **  the number  is complete  or not to  decide whether to return a PARTIAL type.
-** 
+**
 **  The argument reflects how far we are through reading a possibly very long number
 **  literal. 0 indicates that nothing has been read. 1 that at least one digit has been
-**  read, but no decimal point. 2 that a decimal point has been read with no digits before 
+**  read, but no decimal point. 2 that a decimal point has been read with no digits before
 **  or after it. 3 a decimal point and at least one digit, but no exponential indicator
-**  4 an exponential indicator  but no exponent digits and 5 an exponential indicator and 
+**  4 an exponential indicator  but no exponent digits and 5 an exponential indicator and
 **  at least one exponent digit.
-**  
+**
 */
 static Char GetCleanedChar( UInt *wasEscaped ) {
   GET_CHAR();
   *wasEscaped = 0;
   if (*In == '\\') {
     GET_CHAR();
-    if      ( *In == '\n') 
+    if      ( *In == '\n')
       return GetCleanedChar(wasEscaped);
     else if ( *In == '\r' )  {
       GET_CHAR();
-      if  ( *In == '\n' ) 
+      if  ( *In == '\n' )
         return GetCleanedChar(wasEscaped);
       else {
         UNGET_CHAR(*In);
@@ -1913,7 +1913,7 @@ void GetNumber ( UInt StartingStatus )
   UInt wasEscaped = 0;
   UInt seenADigit = (StartingStatus != 0 && StartingStatus != 2);
   UInt seenExpDigit = (StartingStatus ==5);
-    
+
   c = *In;
   if (StartingStatus  <  2) {
     /* read initial sequence of digits into 'Value'             */
@@ -1922,8 +1922,8 @@ void GetNumber ( UInt StartingStatus )
       seenADigit = 1;
       c = GetCleanedChar(&wasEscaped);
     }
-    
-    /* So why did we run off the end of that loop */      
+
+    /* So why did we run off the end of that loop */
     /* maybe we saw an identifier character and realised that this is an identifier we are reading */
     if (wasEscaped || IsIdent(c)) {
       /* Now we know we have an identifier read the rest of it */
@@ -1940,16 +1940,16 @@ void GetNumber ( UInt StartingStatus )
         Value[SAFE_VALUE_SIZE-1] = '\0';
       Symbol = S_IDENT;
       return;
-    } 
-    
+    }
+
     /* Or maybe we just ran out of space */
-    if (IsDigit(c)) { 
+    if (IsDigit(c)) {
       assert(i >= SAFE_VALUE_SIZE-1);
       Symbol = S_PARTIALINT;
       Value[SAFE_VALUE_SIZE-1] = '\0';
       return;
     }
-    
+
     /* Or maybe we saw a . which could indicate one of two things:
        a float literal or .. */
     if (c == '.'){
@@ -1961,33 +1961,33 @@ void GetNumber ( UInt StartingStatus )
         Symbol = S_INT;
         Value[i] = '\0';
         return;
-      } 
-      
-      
+      }
+
+
       /* Not .. Put back the character we peeked at */
       UNGET_CHAR(*In);
-      /* Now the . must be part of our number 
+      /* Now the . must be part of our number
          store it and move on */
       Value[i++] = c;
       c = GetCleanedChar(&wasEscaped);
     }
-    
+
     else {
-      /* Anything else we see tells us that the token is done */        
+      /* Anything else we see tells us that the token is done */
       Value[i]  = '\0';
       Symbol = S_INT;
       return;
     }
   }
-  
-  
-      
+
+
+
   /* The only case in which we fall through to here is when
-     we have read zero or more digits, followed by . which is not part of a .. token 
-     or we were called with StartingStatus >= 2 so we read at least that much in 
+     we have read zero or more digits, followed by . which is not part of a .. token
+     or we were called with StartingStatus >= 2 so we read at least that much in
      a previous token */
 
-    
+
   if (StartingStatus< 4) {
     /* When we get here we have read (either in this token or a previous S_PARTIALFLOAT*)
        possibly some digits, a . and possibly some more digits, but not an e,E,d,D,q or Q */
@@ -1998,11 +1998,11 @@ void GetNumber ( UInt StartingStatus )
       seenADigit = 1;
       c = GetCleanedChar(&wasEscaped);
     }
-    /* If we found an identifier type character in this context could be an error 
+    /* If we found an identifier type character in this context could be an error
       or the start of one of the allowed trailing marker sequences */
     if (wasEscaped || (IsIdent(c)  && c != 'e' && c != 'E' && c != 'D' && c != 'q' &&
                        c != 'd' && c != 'Q')) {
-      
+
       /* We allow one letter on the end of the numbers -- could be an i,
        C99 style */
       if (!wasEscaped) {
@@ -2017,10 +2017,10 @@ void GetNumber ( UInt StartingStatus )
           /* After which there may be one character signifying the conversion style */
           if (IsAlpha(c)) {
             Value[i++] = c;
-            c = GetCleanedChar(&wasEscaped);      
+            c = GetCleanedChar(&wasEscaped);
           }
         }
-        /* Now if the next character is alphanumerical, or an identifier type symbol then we 
+        /* Now if the next character is alphanumerical, or an identifier type symbol then we
            really do have an error, otherwise we return a result */
         if (!IsIdent(c) && !IsDigit(c)) {
           Value[i] = '\0';
@@ -2033,8 +2033,7 @@ void GetNumber ( UInt StartingStatus )
     /* If the next thing is the start of the exponential notation,
        read it now -- we have left enough space at the end of the buffer even if we
        left the previous loop because of overflow */
-    if (IsAlpha(c))
-      {
+    if (IsAlpha(c)) {
         if (!seenADigit)
           SyntaxError("Badly formed number, need a digit before or after the decimal point");
         seenExp = 1;
@@ -2046,7 +2045,7 @@ void GetNumber ( UInt StartingStatus )
             c = GetCleanedChar(&wasEscaped);
           }
       }
-      
+
     /* Now deal with full buffer case */
     if (i >= SAFE_VALUE_SIZE -1) {
       Symbol = seenExp ? S_PARTIALFLOAT3 : S_PARTIALFLOAT2;
@@ -2072,9 +2071,9 @@ void GetNumber ( UInt StartingStatus )
           /* After which there may be one character signifying the conversion style */
           if (IsAlpha(c))
             Value[i++] = c;
-          c = GetCleanedChar(&wasEscaped);        
+          c = GetCleanedChar(&wasEscaped);
         }
-        /* Now if the next character is alphanumerical, or an identifier type symbol then we 
+        /* Now if the next character is alphanumerical, or an identifier type symbol then we
            really do have an error, otherwise we return a result */
         if (!IsIdent(c) && !IsDigit(c)) {
           Value[i] = '\0';
@@ -2084,7 +2083,7 @@ void GetNumber ( UInt StartingStatus )
       }
       SyntaxError("Badly Formed Number");
     }
-    
+
   }
 
   /* Here we are into the unsigned exponent of a number
@@ -2094,12 +2093,11 @@ void GetNumber ( UInt StartingStatus )
     seenExpDigit = 1;
     c = GetCleanedChar(&wasEscaped);
   }
-    
-  /* Look out for a single alphabetic character on the end 
+
+  /* Look out for a single alphabetic character on the end
      which could be a conversion marker */
   if (seenExpDigit) {
-  	if (IsAlpha(c))	
-    {	
+    if (IsAlpha(c)) {
       Value[i] = c;
       c = GetCleanedChar(&wasEscaped);
       Value[i+1] = '\0';
@@ -2107,21 +2105,18 @@ void GetNumber ( UInt StartingStatus )
       return;
     }
     if (c == '_') {
-          Value[i++] = c;
-          c = GetCleanedChar(&wasEscaped);
-          /* After which there may be one character signifying the conversion style */
-          if (IsAlpha(c))
-          {
-            Value[i++] = c;
-            c = GetCleanedChar(&wasEscaped);
-          }
-          Value[i] = '\0';
-          Symbol = S_FLOAT;
-		  return;
-        }
-
-      
-   }	
+      Value[i++] = c;
+      c = GetCleanedChar(&wasEscaped);
+      /* After which there may be one character signifying the conversion style */
+      if (IsAlpha(c)) {
+        Value[i++] = c;
+        c = GetCleanedChar(&wasEscaped);
+      }
+      Value[i] = '\0';
+      Symbol = S_FLOAT;
+      return;
+    }
+  }
 
   /* If we ran off the end */
   if (i >= SAFE_VALUE_SIZE -1) {
@@ -2129,7 +2124,7 @@ void GetNumber ( UInt StartingStatus )
     Value[i] = '\0';
     return;
   }
-    
+
   /* Otherwise this is the end of the token */
   if (!seenExpDigit)
     SyntaxError("Badly Formed Number, need at least one digit in the exponent");
@@ -2440,7 +2435,7 @@ void GetSymbol ( void )
     Symbol = S_IDENT;                       GET_CHAR();  break;
 
   case '0': case '1': case '2': case '3': case '4':
-  case '5': case '6': case '7': case '8': case '9':   
+  case '5': case '6': case '7': case '8': case '9':
     GetNumber(0);    break;
 
   case '\377': Symbol = S_EOF;                        *In = '\0';  break;
@@ -2549,7 +2544,7 @@ void PutLineTo ( KOutputStream stream, UInt len )
     /* Note that TestLine is ended by a \n, but stream->line need not! */
 
     lt = strlen(TestLine);   /* this counts including the newline! */
-    p = TestLine + (lt-2);    
+    p = TestLine + (lt-2);
     /* this now points to the last char before \n in the line! */
     while ( TestLine <= p && ( *p == ' ' || *p == '\t' ) ) {
       p[1] = '\0';  p[0] = '\n';  p--; lt--;
@@ -2566,15 +2561,15 @@ void PutLineTo ( KOutputStream stream, UInt len )
     }
     /* ls is still the correct string length including a possible \n */
     if ( ! strncmp( TestLine, stream->line, ls ) ) {
-      if (ls < lt) 
+      if (ls < lt)
         memmove(TestLine,TestLine + ls,lt-ls+1);
       else
         TestLine[0] = '\0';
     }
     else {
       char obuf[80];
-      /* sprintf(obuf,"+ 5%i bad example:\n+ ", (int)TestInput->number); */
-      sprintf(obuf,"Line %i : \n+ ", (int)TestInput->number);
+      /* snprintf(obuf, sizeof(obuf), "+ 5%i bad example:\n+ ", (int)TestInput->number); */
+      snprintf(obuf, sizeof(obuf), "Line %i : \n+ ", (int)TestInput->number);
       PutLine2( stream, obuf, strlen(obuf) );
       PutLine2( stream, Output->line, strlen(Output->line) );
     }
@@ -2623,10 +2618,10 @@ void addLineBreakHint( KOutputStream stream, Int pos, Int val, Int indentdiff )
   }
   /* if pos is same as before only relevant if new entry has higher
      priority */
-  if ( nr > 0 && stream->hints[3*(nr-1)] == pos ) 
+  if ( nr > 0 && stream->hints[3*(nr-1)] == pos )
     nr--;
 
-  if ( stream->indent < pos && 
+  if ( stream->indent < pos &&
        (stream->hints[3*nr] == -1 || val < stream->hints[3*(nr)+1]) ) {
     stream->hints[3*nr] = pos;
     stream->hints[3*nr+1] = val;
@@ -2642,9 +2637,9 @@ Int nrLineBreak( KOutputStream stream )
   Int nr=-1, min, i;
   for (i = 0, min = INT_MAX; stream->hints[3*i] != -1; i++)
   {
-    if (stream->hints[3*i] > 0 && 
+    if (stream->hints[3*i] > 0 &&
         stream->hints[3*i+1] - stream->hints[3*i] <= min)
-    {      
+    {
       nr = i;
       min = stream->hints[3*i+1] - stream->hints[3*i];
     }
@@ -2655,7 +2650,7 @@ Int nrLineBreak( KOutputStream stream )
     return -1;
 }
 
-    
+
 
 void PutChrTo (
          KOutputStream stream,
@@ -2916,7 +2911,7 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
       prec = 10 * prec + *p - '0';
       p++;
     }
-    
+
     /* handle the case of a missing argument                     */
     if (arg1 == 0 && (*p == 's' || *p == 'S' || *p == 'C' || *p == 'I')) {
       put_a_char('<');
@@ -3210,7 +3205,7 @@ Obj FuncALL_KEYWORDS(Obj self) {
 
   Obj s;
   UInt i;
-  l = NEW_PLIST(T_PLIST_EMPTY, 0);  
+  l = NEW_PLIST(T_PLIST_EMPTY, 0);
   SET_LEN_PLIST(l,0);
   for (i = 0; i < sizeof(AllKeywords)/sizeof(AllKeywords[0]); i++) {
     C_NEW_STRING(s,strlen(AllKeywords[i].name),AllKeywords[i].name);
@@ -3260,7 +3255,7 @@ static StructGVarFunc GVarFuncs [] = {
     FuncALL_KEYWORDS, "src/scanner.c:ALL_KEYWORDS"},
 
   { "SET_PRINT_FORMATTING_STDOUT", 1 , "format",
-    FuncSET_PRINT_FORMATTING_STDOUT, 
+    FuncSET_PRINT_FORMATTING_STDOUT,
     "src/scanner.c:SET_PRINT_FORMATTING_STDOUT"},
 
   { 0 }
@@ -3298,13 +3293,13 @@ static Int InitKernel (
     Input--;
     (void)OpenInput(  "*stdin*"  );
     Input->echo = 1; /* echo stdin */
-    Output = 0L;  
+    Output = 0L;
     (void)OpenOutput( "*stdout*" );
 
     InputLog  = 0;  OutputLog  = 0;
     TestInput = 0;  TestOutput = 0;
 
-    /* initialize cookies for streams                                      */ 
+    /* initialize cookies for streams                                      */
     /* also initialize the cookies for the GAP strings which hold the
        latest lines read from the streams  and the name of the current input file*/
     for ( i = 0;  i < sizeof(InputFiles)/sizeof(InputFiles[0]);  i++ ) {

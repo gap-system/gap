@@ -20,24 +20,16 @@
 
 BIND_GLOBAL( "GAPInfo", rec(
 
-# do not edit the following two lines. They get replaced by string matching
-# in the distribution wrapper scripts. (Occurrences of `4.dev' and `today'
-# get replaced.)    
+# do not edit the following three lines. Occurences of `4.dev' and `today' 
+# will be replaced by string matching by distribution wrapping scripts.
     Version := "4.dev",
     Date := "today",
-        
-    # The kernel version numbers are expected in the format `<v>.<r>.<p>'.
-    NeedKernelVersion := "4.5",
+    NeedKernelVersion := "4.dev",
 
-    # Without the needed packages, GAP does not start.
-    # The suggested packages are loaded if available when GAP is started.
+# Without the needed packages, GAP does not start.
     Dependencies := rec(
       NeededOtherPackages := [
         [ "gapdoc", ">= 1.2" ],
-      ],
-      SuggestedOtherPackages := [
-        [ "ctbllib", ">= 1.0" ],
-        [ "tomlib", ">= 1.0" ],
       ],
     ),
 
@@ -126,8 +118,6 @@ od;
 BIND_GLOBAL( "DOUBLE_OBJLEN", 2*GAPInfo.BytesPerVariable );
 
 
-
-
 #############################################################################
 ##
 #F  CallAndInstallPostRestore( <func> )
@@ -141,16 +131,36 @@ BIND_GLOBAL( "DOUBLE_OBJLEN", 2*GAPInfo.BytesPerVariable );
 BIND_GLOBAL( "CallAndInstallPostRestore", function( func )
     if not IS_FUNCTION( func )  then
       Error( "<func> must be a function" );
-    fi;
-    if CHECK_INSTALL_METHOD  then
-      if not NARG_FUNC( func ) in [ -1, 0 ]  then
-        Error( "<func> must accept zero arguments" );
-      fi;
+    elif CHECK_INSTALL_METHOD and not NARG_FUNC( func ) in [ -1, 0 ] then
+      Error( "<func> must accept zero arguments" );
     fi;
 
     func();
 
     ADD_LIST( GAPInfo.PostRestoreFuncs, func );
+end );
+
+
+#############################################################################
+##
+#F  InstallAndCallPostRestore( <func> )
+##
+##  The argument <func> must be a function with no argument.
+##  This function is added to the global list `GAPInfo.PostRestoreFuncs',
+##  and afterwards it is called.
+##  The effect of the former is that the function will be called
+##  when GAP is started with a workspace (option `-L').
+##
+BIND_GLOBAL( "InstallAndCallPostRestore", function( func )
+    if not IS_FUNCTION( func )  then
+      Error( "<func> must be a function" );
+    elif CHECK_INSTALL_METHOD and not NARG_FUNC( func ) in [ -1, 0 ] then
+      Error( "<func> must accept zero arguments" );
+    fi;
+
+    ADD_LIST( GAPInfo.PostRestoreFuncs, func );
+
+    func();
 end );
 
 

@@ -2,7 +2,8 @@
 <Heading>Changes between &GAP; 4.4 and &GAP; 4.5</Heading>
 
 This chapter lists most important changes between &GAP; 4.4.12 and the
-first public release of &GAP; 4.5.
+first public release of &GAP; 4.5. It also contains information about
+subsequent update releases for &GAP; 4.5.
 It is not meant to serve as a complete account on all improvements; 
 instead, it should be viewed as an introduction to &GAP; 4.5,
 accompanying its release announcement.
@@ -132,10 +133,6 @@ New and improved library functionality:
 Extensions of data libraries: 
 <List>
 <Item>
-<Package>CTblLib</Package> package (the &GAP; Character Table Library)
-by T. Breuer has been extended by many new character tables.
-</Item>
-<Item>
 Functions and iterators are now available to create and enumerate 
 simple groups by their order up to isomorphism: 
 <Ref Func="SimpleGroup" BookName="ref"/>,
@@ -144,14 +141,9 @@ simple groups by their order up to isomorphism:
 <Ref Func="AllSmallNonabelianSimpleGroups" BookName="ref"/>.
 </Item>
 <Item>
-<Package>IRREDSOL</Package> package by B. Höfling now covers all irreducible 
-soluble subgroups of <M>GL(n,q)</M> for <M>q^n &lt; 1000000</M> and primitive 
-soluble permutation groups of degree <M>&lt; 1000000</M> (previously, the 
-bound was <M>65536</M>). 
-</Item>
-<Item>
-The new package <Package>Smallsemi</Package> by A. Distler and J. Mitchell
-contains the library of all semigroups of order at most 8.
+See also packages <Package>CTblLib</Package>, 
+<Package>IRREDSOL</Package> and <Package>Smallsemi</Package> listed 
+in Section <Ref Sect="New and updated packages since GAP 4.4.12"/>.
 </Item>
 </List>
 </Item>
@@ -241,7 +233,7 @@ Many problems in &GAP; have have been fixed, among them the following:
 
 <List>
 <Item>
-Polynomial factorisation over rationals can miss factors of degree 
+Polynomial factorisation over rationals could miss factors of degree 
 greater than <M>deg(f)/2</M> if they have very small coefficients, while 
 the cofactor has large coefficients.
 </Item>
@@ -252,7 +244,7 @@ a normal subgroup did not properly calculate maximal inclusion relationships.
 <Item>
 <Ref Attr="CentreOfCharacter" BookName="ref"/> and 
 <Ref Attr="ClassPositionsOfCentre" BookName="ref" Label="for a character"/>
-called for a group character may return a perhaps too large result.
+called for a group character could return a perhaps too large result.
 </Item>
 <Item>
 <Ref Attr="Trace" BookName="ref"/> called for an element of a finite field 
@@ -265,7 +257,7 @@ a list with one character as a second argument.
 </Item>
 <Item>
 Composing a homomorphism from a permutation group to a finitely presented
-group with another homomorphism can give wrong results.
+group with another homomorphism could give wrong results.
 </Item>
 <Item>
 For certain arguments, the function <Ref Func="EU" BookName="ref"/> 
@@ -286,7 +278,7 @@ was not the first in the list of irreducibles.
 </Item>
 <Item>
 <C>IsPSL</C>, and in turn <Ref Func="StructureDescription" BookName="ref"/>,
-erroneously recognised  non-PSL groups of the right order as PSL.
+erroneously recognised non-PSL groups of the right order as PSL.
 </Item>
 <Item>
 The semidirect product method for pcgs computable groups sometimes tried to use 
@@ -298,16 +290,16 @@ The membership test for a group of finite field elements ran into an error
 if the zero element of the field was given as the first argument.
 </Item>
 <Item>
-Constant polynomials are now recognised as univariate in any variable.
+Constant polynomials were not recognised as univariate in any variable.
 </Item>
 <Item>
-Fixed problem with resetting the kernels recursion depth counter when running 
-into many break loops.
+The kernel recursion depth counter was not reset properly when
+running into many break loops.
 </Item>
 <Item>
-&GAP; behaves now much better when the printing of a (large) object is
-interrupted with <C>Ctrl-C</C>. The object is no longer corrupted and the
-indentation level is reset.
+&GAP; did not behave well when printing of a (large) object was 
+interrupted with <C>Ctrl-C</C>. Now the object is no longer corrupted 
+and the indentation level is reset.
 </Item>
 </List>
 
@@ -322,6 +314,17 @@ see <Ref Attr="DegreeOfLaurentPolynomial" BookName="ref"/>.
 Multiple unary <C>+</C> or <C>-</C> signs are no longer allowed 
 (to avoid confusion with increment/decrement operators from other 
 programming languages).
+</Item>
+<Item>
+Due to changes to improve the performance of records with large number of 
+components, the ordering of record components in <C>View</C>'ed records 
+has changed.
+</Item>
+<Item>
+Due to improvements for vectors over finite fields, certain objects have 
+more limitations on changing their base field. For example, one can not
+create a compressed matrix over <M>GF(2)</M> and then assign an element 
+of <M>GF(4)</M> to one of its entries.
 </Item>
 </List>
 
@@ -419,13 +422,13 @@ now available. These include:
 <Item>
 The binary <F>rsync</F> distribution for &GAP; on Linux PCs with i686 
 or x86_64 compatible processors provided by Frank Lübeck, see
-<URL>http://rsync.gap-system.org</URL>.
+<URL>http://www.math.rwth-aachen.de/~Frank.Luebeck/gap/rsync</URL>.
 </Item>
 
 <Item>
 <Package>BOB</Package>, a tool for Linux and Mac OS X to download and build 
 &GAP; and its packages from source provided by M. Neunhöffer:
-<URL>www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob.html</URL>.
+<URL>http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob.html</URL>.
 </Item>
 
 <Item>
@@ -534,12 +537,10 @@ The &GAP; banner has been made more compact and informative.
 the Google Chrome browser.
 </Item>
 <Item>
-The <Package>CTblLib</Package> package, which is loaded by 
-default, now needs the <Package>Browse</Package> package. 
-As a result, if the <Package>Browse</Package> kernel module 
-is compiled, then a function from the <Package>Browse</Package> 
-package will be used to display multiple matches in the &GAP; 
-online help. To switch off this feature, use the command
+Multiple matches in the &GAP; online help are displayed via a function
+from the <Package>Browse</Package> package, which is loaded in the 
+default configuration. This feature can be replaced by the known pager 
+using the command
 <Verb>
 SetUserPreference( "browse", "SelectHelpMatches", false );
 </Verb>
@@ -610,12 +611,25 @@ see Section <Ref Sect="Changes in the core GAP45 system"/>.
 <Heading>Interface between the core system and packages</Heading>
 <Index>Namespaces</Index>
 
-The package loading mechanism has been improved. In particular, there is
+The package loading mechanism has been improved. 
+The most important new feature is that all dependencies are evaluated in 
+advance and then used to determine the order in which package files are read.
+This allows &GAP; to handle cyclic dependencies as well as situations where
+package A requires package B to be loaded completely before any file of 
+package A is read. To avoid distortions of the order in which packages will
+be loaded, package authors are strongly discouraged from calling 
+<Ref Func="LoadPackage"  BookName="ref"/> and 
+<Ref Func="TestPackageAvailability" BookName="ref"/> in a package code in 
+order to determine whether some other package will be loaded before or 
+together with the current package - instead, one should use 
+<Ref Func="IsPackageMarkedForLoading" BookName="ref"/>.
+In addition, there is now
 a better error management if package loading fails for packages that use
-the new mechanism (see <Ref Func="DisplayPackageLoadingLog" BookName="ref"/> 
+the new functionality to log package loading messages 
+(see <Ref Func="DisplayPackageLoadingLog" BookName="ref"/> 
 and the rest of the Chapter <Ref Chap="GAP Packages" BookName="ref"/> 
-which documents how to <E>use</E> &GAP; packages). The old mechanisms are
-still supported for now, but are not recommended. 
+which documents how to <E>use</E> &GAP; packages), and package authors 
+are very much encouraged to use these logging facilities.
 <P/>
 
 In &GAP; 4.4 certain packages were marked as <E>autoloaded</E> and 
@@ -1052,6 +1066,138 @@ the <Package>Citrus</Package> package by the same author.
 </List>
 
 </Subsection>
+
+</Section>
+
+
+<Section Label="fix455"> 
+
+<Heading>&GAP; 4.5.5 (July 2012)</Heading>
+
+
+Fixed bugs which could lead to crashes:
+<List>              
+<Item>
+For small primes (compact fields) <C>ZmodnZObj(r,p)</C> now 
+returns the corresponding FFE to avoid crashes when compacting 
+matrices. 
+[Reported by Ignat Soroko]
+</Item>
+</List>
+
+Other fixed bugs:
+
+<List>
+<Item>
+Fixed a bug in <Ref Attr="CommutatorSubgroup" BookName="ref"/> for fp groups 
+causing infinite recursion, which could, for example, be triggered 
+by computing automorphism groups.
+</Item>
+<Item>
+Previously, the list of factors of a polynomial was mutable, and hence could
+be accidentally corrupted by callers. Now the list of irreducible factors 
+is stored immutable. To deal with implicit reliance on old code, always a
+shallow copy is returned. 
+[reported by Jakob Kroeker]
+</Item>
+<Item>
+Computing high powers of matrices ran into an error for matrices in the
+format of the <Package>cvec</Package> package. Now the library function 
+also works with these matrices.
+[reported by Klaus Lux]
+</Item>
+<Item>
+The pseudo tty code which is responsible for spawning subprocesses has been 
+partially rewritten to allow more than 128 subprocesses on certain systems.
+This mechanism is for example used by <Package>ANUPQ</Package> and 
+<Package>nq</Package> packages to compute group quotients via an external 
+program. Previously, on Mac OS X this could be done precisely 128 times, 
+and then an error would occur. That is, one could e.g. compute 128 nilpotent 
+quotients, and then had to restart &GAP; to compute more. This also affected 
+other systems, such as OpenBSD, where it now also works correctly.
+</Item>
+<Item>
+On Mac OS X, using &GAP; compiled against GNU readline 6.2, pasting text
+into the terminal session would result in this text appearing very slowly,
+with a 0.1 sec delay between each <Q>keystroke</Q>. This is not the case with
+versions 6.1 and older, and has been reported to the GNU readline team. In
+the meantime, we work around this issue in most situations by setting
+<C>rl_event_hook</C> only if <C>OnCharReadHookActive</C> is set.
+</Item>
+<Item>
+<Ref Func="ShowUserPreferences" BookName="ref"/> ran into a break loop in 
+case of several undeclared user preferences. [Reported by James Mitchell]
+</Item>
+<Item>
+&GAP; did not start correctly if the user preference 
+<C>"InfoPackageLoadingLevel"</C> was set to a number <M> >= 3</M>. 
+The reason is that <C>PrintFormattedString</C> was called before 
+it was installed. The current fix is a temporary solution. 
+</Item>
+<Item>
+The <C>"hints"</C> member of <C>TypOutputFile</C> used to contain 3*100 entries, 
+yet <C>addLineBreakHint</C> would write entries with index up to and including 
+3*99+3=300, leading to a buffer overflow. This would end up overwriting 
+the <C>"stream"</C> member with -1. Fixed by incrementing the size of 
+<C>"hints"</C> to 301. 
+[Reported by Jakob Kroeker]
+</Item>
+<Item>
+The function <C>IsDocumentedWord</C> tested the given word against 
+strings obtained by splitting help matches at non-letter characters.
+This way, variable names containing underscores or digits were erroneously
+not regarded as documented, and certain substrings of these names were 
+erroneously regarded as documented.
+</Item>
+<Item>
+On Windows, an error occurred if one tried to use the default Windows 
+browser as a help viewer (see <Ref Func="SetHelpViewer" BookName="ref"/>). 
+Now the browser opens the top of the correspoding manual chapter. The 
+current fix is a temporary solution since the problem remains with the 
+positioning at the required manual section.
+</Item>
+</List>
+
+
+Improved functionality:
+<List>              
+<Item>
+<Ref Func="WriteGapIniFile" BookName="ref"/> on Windows now produces the
+<File>gap.ini</File> file with Windows style line breaks. Also, an info 
+message is now printed if an existing <File>gap.ini</File> file was moved 
+to a backup file <File>gap.ini.bak</File>.
+</Item>
+<Item>
+The <Package>CTblLib</Package> and <Package>TomLib</Package> packages are 
+removed from the list of suggested packages of the core part of &GAP;. 
+Instead they are added to the default list of the user preference 
+<C>"PackagesToLoad"</C>. This way it is possible to configure &GAP; to not 
+load these packages via changing the default value of <C>"PackagesToLoad"</C>.
+</Item>
+<Item>
+The conjugacy test in <M>S_n</M> for intransitive subgroups was improved.
+This deals with inefficiency issue in the case reported by Stefan Kohl.
+</Item>
+<Item>
+Added <C>InstallAndCallPostRestore</C> to <File>lib/system.g</File> and call
+it in <File>lib/init.g</File> instead of <C>CallAndInstallPostRestore</C> for 
+the function that reads the files listed in &GAP; command line. This fixes 
+the problem reported by Yevgen Muntyan when 
+<Ref Func="SaveWorkspace" BookName="ref"/> was used in a file listed in &GAP; 
+command line (before, according to the documentation, 
+<Ref Func="SaveWorkspace" BookName="ref"/> was only 
+allowed at the main &GAP; prompt).
+</Item>
+<Item>
+There is now a new user preference <C>PackagesToIgnore</C>,
+see <Ref Func="SetUserPreference" BookName="ref"/>. It contains
+a list of names of packages that shall be regarded as not available
+at all in the current session, both for autoloading and for later calls
+of <Ref Func="LoadPackage" BookName="ref"/>. This preference is useful 
+for testing purposes if one wants to run some code without loading 
+certain packages.
+</Item>
+</List>
 
 </Section>
 

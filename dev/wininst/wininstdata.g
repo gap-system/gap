@@ -18,7 +18,7 @@ pkgs:=SortedList(ShallowCopy(RecNames(pkgs)));
 recommended:=[ "atlasrep", "design", "grape", "guava", "example" ];
 
 # Hints for (some) packages that do not work under Windows 
-nowindows:=[ "ace", "anupq", "carat", "cohomolo", "fplsa", "gauss",
+nowindows:=["ace", "anupq", "carat", "cohomolo", "fplsa", "gauss",
 "kbmag", "linboxing", "nq", "pargap", "xgap" ];
 
 Print("=============================================================\n");
@@ -56,7 +56,7 @@ Print("=============================================================\n");
 # As on Feb 18th 2012 in GAP.dev the list is
 # [ "autpgrp", "alnuth", "crisp", "factint", "fga", "irredsol", 
 # "laguna", "polenta", "polycyclic", "resclasses", "sophus" ]
-default:=SortedList(ShallowCopy( GAPInfo.UserPreferences.PackagesToLoad ));
+default:=SortedList(ShallowCopy( GAPInfo.UserPreferences.gap.PackagesToLoad ));
 
 # First those packages which are suggested for GAP are added to default.
 # As on Feb 18th 2012 in GAP.dev, this is ctbllib and tomlib
@@ -80,6 +80,8 @@ repeat
   suggested:=Filtered( suggested, x -> not x in nowindows and not x in default and not x in needed );
   
   new := Union ( required, suggested );
+  # tweaking to exclude GAP 3.4.4 package "chevie"
+  new := Filtered(new, x -> x <> "chevie" );
   Print("Adding ", new, "\n"); 
   default:=Union(default,new);
 until Length(default)=n;  

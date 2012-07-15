@@ -1083,7 +1083,79 @@ InstallMethod( NormalizerOp, "subgp of natural alternating group",
 # conjugate subgroups of symmetric group.
 # false indicates the method does not work
 BindGlobal("SubgpConjSymmgp",function(s,g,h)
-local dom,n,a,c,b,b2,w,p1,p2,perm,t,ac,ac2,no,no2,i;
+local og,oh,cb,cc,cac,perm1,perm2,
+  dom,n,a,c,b,b2,w,p1,p2,perm,t,ac,ac2,no,no2,i,j;
+
+
+  p1:=Set(MovedPoints(g));
+  p2:=Set(MovedPoints(h));
+  dom:=Set(MovedPoints(s));
+
+  og:=Orbits(g,p1);
+  oh:=Orbits(h,p2);
+  if Length(og)>1 or p1<>p2 or p1<>dom then
+    # intransitive
+    if not (IsSubset(dom,p1) and IsSubset(dom,p2)) then
+      return false;
+    fi;
+    if Collected(List(og,Length))<>Collected(List(oh,Length)) then
+      return fail;
+    fi;
+    og:=Set(List(og,Set));
+    oh:=Set(List(oh,Set));
+    ac:=[];
+    a:=1;
+    perm:=();
+    perm1:=[];
+    perm2:=[];
+    if p1<>p2 then
+      Add(perm1,Difference(dom,p1));
+      Add(perm2,Difference(dom,p2));
+    fi;
+    for i in (Set(List(og,Length))) do
+      c:=Filtered(og,x->Length(x)=i);
+      #Append(p1,c);
+      ac2:=Filtered(oh,x->Length(x)=i);
+      #Append(p2,ac2);
+      w:=WreathProduct(SymmetricGroup(i),SymmetricGroup(Length(ac2)));
+      b:=Blocks(w,MovedPoints(w),[1..i]);
+      cc:=Concatenation(c);
+      cb:=Concatenation(b);
+      cac:=Concatenation(ac2);
+      Add(perm1,cc);
+      Add(perm2,cac);
+      c:=MappingPermListList(cc,cb);
+      b:=MappingPermListList(cb,cac);
+
+      # make projections the same
+      p1:=List(GeneratorsOfGroup(g),x->RestrictedPerm(x,cc)^c);
+      p1:=SubgroupNC(w,p1);
+      p2:=List(GeneratorsOfGroup(h),x->b*RestrictedPerm(x,cac)/b);
+      p2:=SubgroupNC(w,p2);
+      no:=Normalizer(w,p2);
+#Print(i," ",Length(ac2)," ",Size(w)," ",Index(w,no),"\n");
+      t:=RepresentativeAction(w,p1,p2);
+      if t=fail then return fail;fi; # can't map projection OK
+
+#Print(List(Filtered(og,x->Length(x)=i),x->Position(oh,OnSets(x,c*b))),"\n");
+
+      Append(ac,List(GeneratorsOfGroup(no),x->x^b));
+      perm:=perm*t^b;
+      a:=a*Size(no);
+    od;
+    perm1:=MappingPermListList(Concatenation(perm1),Concatenation(perm2));
+    perm:=perm1*perm;
+    ac:=SubgroupNC(s,ac);
+    SetSize(ac,a);
+    a:=RepresentativeAction(ac,g^perm,h);
+    if a=fail then 
+      return fail;
+    else
+      return perm*a;
+    fi;
+
+  fi;
+
   n:=NrMovedPoints(s);
   a:=AllBlocks(g);
   c:=Collected(List(a,Length));
@@ -1198,7 +1270,7 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
       Sort(ce,sortfun);
       return MappingPermListList(Concatenation(cd),Concatenation(ce));
     elif IsPermGroup(d) and IsPermGroup(e) 
-      and IsTransitive(d,dom) and IsTransitive(e,dom) 
+      #and IsTransitive(d,dom) and IsTransitive(e,dom) 
       and IsSubset(G,d) and IsSubset(G,e) then
 
       if dom<>[1..n] then

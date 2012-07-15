@@ -72,7 +72,7 @@ local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root,r;
 
   # Make a boolean list of length <p> ^ <dim>.
   blt:=BlistList( [1..p ^ dim], [] );
-  Info(InfoComplement,2,"COAffineBlocks: ", p^dim, " elements in H^1" );
+  Info(InfoComplement,3,"COAffineBlocks: ", p^dim, " elements in H^1" );
   i:=1; # was: Position( blt, false );
   B:=[];
 
@@ -98,13 +98,13 @@ local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root,r;
         od;
         blt[n]:=true;
     od;
-    Info(InfoComplement,2,"COAffineBlocks: |block| = ", Length(O.orbit));
+    Info(InfoComplement,3,"COAffineBlocks: |block| = ", Length(O.orbit));
     r:=rec( vector:=w, stabilizer:=O.stabilizer );
     if orbs=true then r.orbit:=O.orbit;fi;
     Add( B, r);
     i:=Position( blt, false );
   od;
-  Info(InfoComplement,2,"COAffineBlocks: ", Length( B ), " blocks found" );
+  Info(InfoComplement,3,"COAffineBlocks: ", Length( B ), " blocks found" );
   return B;
 
 end );
@@ -120,7 +120,7 @@ InstallGlobalFunction( CONextCentralizer, function( ocr, Spcgs, H )
 local   gens,  pnt,  i;
 
   # Get the generators of <S> and correct them.
-  Info(InfoComplement,2,"CONextCentralizer: correcting blockstabilizer" );
+  Info(InfoComplement,3,"CONextCentralizer: correcting blockstabilizer" );
   gens:=ShallowCopy( Spcgs );
   pnt :=ocr.complementToCocycle( H );
   for i  in [1..Length( gens )]  do
@@ -129,7 +129,7 @@ local   gens,  pnt,  i;
                        ocr.complementToCocycle( H ^ gens[i] ),
                  pnt );
   od;
-  Info(InfoComplement,2,"CONextCentralizer: blockstabilizer corrected" );
+  Info(InfoComplement,3,"CONextCentralizer: blockstabilizer corrected" );
   return ClosureGroup( ocr.centralizer, gens );
 
 end );
@@ -243,15 +243,15 @@ InstallGlobalFunction( CONextCocycles, function( cor, ocr, S )
 local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
 
   # Try to split <K> over <M>, if it does not split return.
-  Info(InfoComplement,2,"CONextCocycles: computing cocycles" );
+  Info(InfoComplement,3,"CONextCocycles: computing cocycles" );
   K:=ocr.group;
   N:=ocr.module;
   Z:=OCOneCocycles( ocr, true );
   if IsBool( Z )  then
       if IsBound( ocr.normalIn )  then
-        Info(InfoComplement,2,"CONextCocycles: no normal complements" );
+        Info(InfoComplement,3,"CONextCocycles: no normal complements" );
       else
-        Info(InfoComplement,2,"CONextCocycles: no split extension" );
+        Info(InfoComplement,3,"CONextCocycles: no split extension" );
     fi;
     return [];
   fi;
@@ -261,7 +261,7 @@ local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
 
   # If there is only one complement this is normal.
   if Dimension( Z ) = 0  then
-      Info(InfoComplement,2,"CONextCocycles: group of cocycles is trivial" );
+      Info(InfoComplement,3,"CONextCocycles: group of cocycles is trivial" );
       K:=ocr.complement;
       if IsBound(cor.condition) and not cor.condition(cor, K)  then
         return [];
@@ -275,7 +275,7 @@ local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
   # normal complements, this case cannot happen, as cobounds are trivial.
   SN:=SubgroupNC( S, Filtered(GeneratorsOfGroup(S),i-> not i in N));
   if Dimension(ocr.oneCoboundaries)=Dimension(ocr.oneCocycles)  then
-      Info(InfoComplement,2,"CONextCocycles: H^1 is trivial" );
+      Info(InfoComplement,3,"CONextCocycles: H^1 is trivial" );
       K:=ocr.complement;
       if IsBound(cor.condition) and not cor.condition(cor, K)  then
         return [];
@@ -294,9 +294,9 @@ local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
 			 BasisVectors(Basis(ocr.oneCoboundaries)));
   if Size(SN) = 1 or IsBound(ocr.normalIn)  then
     L:=VectorSpace(ocr.field,B.factorspace, B.factorzero);
-    Info(InfoComplement,2,"CONextCocycles: ",Size(L)," complements found");
+    Info(InfoComplement,3,"CONextCocycles: ",Size(L)," complements found");
     if IsBound(ocr.normalIn)  then
-      Info(InfoComplement,2,"CONextCocycles: normal complements, using H^1");
+      Info(InfoComplement,3,"CONextCocycles: normal complements, using H^1");
       LL:=[];
       if IsBound(cor.condition)  then
 	for i  in L  do
@@ -313,7 +313,7 @@ local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
       fi;
       return LL;
     else
-      Info(InfoComplement,2,"CONextCocycles: S meets N, using H^1");
+      Info(InfoComplement,3,"CONextCocycles: S meets N, using H^1");
       LL:=[];
       if IsBound(cor.condition)  then
 	for i  in L  do
@@ -347,7 +347,7 @@ local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
   mats:=COAffineCohomologyAction(ocr,ocr.generators,SNpcgs,B);
 
   L :=COAffineBlocks( SN, SNpcgs,mats,false );
-  Info(InfoComplement,2,"CONextCocycles:", Length( L ), " complements found" );
+  Info(InfoComplement,3,"CONextCocycles:", Length( L ), " complements found" );
 
   # choose a representative from each block and correct the blockstab
   LL:=[];
@@ -388,9 +388,9 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
   zett:=OCOneCocycles( ocr, true );
   if IsBool( zett )  then
       if IsBound( ocr.normalIn )  then
-        Info(InfoComplement,2,"CONextCentral: no normal complements" );
+        Info(InfoComplement,3,"CONextCentral: no normal complements" );
       else
-        Info(InfoComplement,2,"CONextCentral: no split extension" );
+        Info(InfoComplement,3,"CONextCentral: no split extension" );
     fi;
     return [];
   fi;
@@ -400,7 +400,7 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
 
   # if there is only one complement it must be normal
   if Dimension(zett) = 0  then
-      Info(InfoComplement,2,"CONextCentral: Z^1 is trivial");
+      Info(InfoComplement,3,"CONextCentral: Z^1 is trivial");
       K:=ocr.complement;
       if IsBound(cor.condition) and not cor.condition(cor, K)  then
         return [];
@@ -414,7 +414,7 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
   # normal complements, this cannot happen, as the cobounds are trivial.
   SN:=SubgroupNC( S, Filtered(GeneratorsOfGroup(S),i-> not i in N));
   if Dimension(ocr.oneCoboundaries)=Dimension(ocr.oneCocycles)  then
-      Info(InfoComplement,2,"CONextCocycles: H^1 is trivial" );
+      Info(InfoComplement,3,"CONextCocycles: H^1 is trivial" );
       K:=ocr.complement;
       if IsBound(cor.condition) and not cor.condition(cor, K)  then
         return [];
@@ -433,9 +433,9 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
 			 BasisVectors(Basis(ocr.oneCoboundaries)));
   if Size(SN)=1 or IsBound( ocr.normalIn )  then
       if IsBound( ocr.normalIn )  then
-        Info(InfoComplement,2,"CONextCocycles: normal complements, using H^1");
+        Info(InfoComplement,3,"CONextCocycles: normal complements, using H^1");
       else
-        Info(InfoComplement,2,"CONextCocycles: S meets N, using H^1" );
+        Info(InfoComplement,3,"CONextCocycles: S meets N, using H^1" );
         S:=ocr.centralizer;
     fi;
       L:=VectorSpace(ocr.field,B.factorspace, B.factorzero);
@@ -446,7 +446,7 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
             Add(T, rec(complement:=K,  centralizer:=S));
       fi;
       od;
-      Info(InfoComplement,2,"CONextCocycles: ",Length(T)," complements found" );
+      Info(InfoComplement,3,"CONextCocycles: ",Length(T)," complements found" );
       return T;
   fi;
 
@@ -534,7 +534,7 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
         Add(L, rec(complement:=K, centralizer:=S));
       fi;
   od;
-  Info(InfoComplement,2,"CONextCentral: ", Length(L), " complements found");
+  Info(InfoComplement,3,"CONextCentral: ", Length(L), " complements found");
   return L;
 
 end );
@@ -559,7 +559,7 @@ local   p, ocr;
   elif IsEmpty(Intersection( Factors(Size(M)), Factors(Index(K,M))))  then
 
     # If <K> and <M> are coprime, <K> splits.
-    Info(InfoComplement,2,"CONextComplements: coprime case, <K> splits" );
+    Info(InfoComplement,3,"CONextComplements: coprime case, <K> splits" );
     ocr:=rec( group:=K, module:=M,
 	modulePcgs:=InducedPcgs(cor.pcgs,M), 
                 pcgs:=cor.pcgs, inPcComplement:=true);
@@ -664,7 +664,7 @@ InstallGlobalFunction( COComplements, function( cor, G, E, all )
 local r,a,a0,FG,nextStep,C,found,i,time,hpcgs,ipcgs;
 
   # give some information and start timing
-  Info(InfoComplement,2,"Complements: initialize factorgroups" );
+  Info(InfoComplement,3,"Complements: initialize factorgroups" );
   time:=Runtime();
 
   # we only need the series beginning from position <n>
@@ -746,12 +746,12 @@ local r,a,a0,FG,nextStep,C,found,i,time,hpcgs,ipcgs;
   local   M,  NC,  X;
 
     # give information about the level reached
-    Info(InfoComplement,1,"Complements: reached level ", nr, " of ", r);
+    Info(InfoComplement,2,"Complements: reached level ", nr, " of ", r);
 
     # if this is the last level we have a complement, add it to <C>
     if nr = r  then
       Add( C, rec( complement:=K, centralizer:=S ) );
-        Info(InfoComplement,2,"Complements: next class found, ",
+        Info(InfoComplement,3,"Complements: next class found, ",
              "total ", Length(C), " complement(s), ",
                  "time=", Runtime() - time);
       found:=true;
@@ -796,17 +796,17 @@ Assert(1,cor.pcgs=cor.hpcgs[nr+1]);
   C:=[];
 
   # ok, start 'nextStep'  with trivial module
-  Info(InfoComplement,1,"  starting search, time=",Runtime()-time);
+  Info(InfoComplement,2,"  starting search, time=",Runtime()-time);
   found:=false;
   nextStep( TrivialSubgroup( FG[1] ),
             SubgroupNC( FG[1], cor.generators ), 1 );
 
   # some timings
-  Info(InfoComplement,1,"Complements: ",Length(C)," complement(s) found, ",
+  Info(InfoComplement,2,"Complements: ",Length(C)," complement(s) found, ",
            "time=", Runtime()-time );
 
   # add the normalizer
-  Info(InfoComplement,2,"Complements: adding normalizers" );
+  Info(InfoComplement,3,"Complements: adding normalizers" );
   for i  in [1..Length(C)]  do
     C[i].normalizer:=ClosureGroup( C[i].centralizer,
 			C[i].complement );
@@ -840,7 +840,7 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
                                     InducedPcgs(home,i)[1])..Length(home)]}))
      then
 
-    Info(InfoComplement,2,"Computing better pcgs" );
+    Info(InfoComplement,3,"Computing better pcgs" );
     # create a better pcgs
 
     pcgs:=InducedPcgs(home,G) mod InducedPcgs(home,N);
@@ -867,7 +867,7 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
 	pcgs:=home;
 	fun2:=fun;
       fi;
-      Info(InfoComplement,2,"transfer back" );
+      Info(InfoComplement,3,"transfer back" );
       return List( COComplementsMain( H, Image(a,N), all, fun2 ), x -> rec(
 	    complement :=PreImage( a, x.complement ),
 	      centralizer:=PreImage( a, x.centralizer ) ) );
@@ -882,7 +882,7 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
 
   # if <G> and <N> are coprime <G> splits over <N>
   if false and Intersection( Factors(Size(N)), Factors(Index(G,N))) = []  then
-      Info(InfoComplement,2,"Complements: coprime case, <G> splits" );
+      Info(InfoComplement,3,"Complements: coprime case, <G> splits" );
       cor:=rec();
 
   # otherwise we compute a hall system for <G>/<N>
@@ -916,12 +916,21 @@ end);
 # Solvable factor group case
 # find complements to (N\cap H)M/M in H/M where H=N_G(M), assuming factor is
 # solvable
-InstallGlobalFunction(COSolvableFactor,function(G,N,M)
-local H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,pos,i,pcgs,
-      z,qk,j,ocr,bas,mark,k,orb,shom,shomgens,subbas,elm,acterlist,
-      free,nz,gp,actfun,mat,cond,pos2;
+InstallGlobalFunction(COSolvableFactor,function(arg)
+local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
+      pos,i,pcgs,z,qk,j,ocr,bas,mark,k,orb,shom,shomgens,subbas,elm,
+      acterlist,free,nz,gp,actfun,mat,cond,pos2;
+
+  G:=arg[1];
+  N:=arg[2];
+  M:=arg[3];
+  if Length(arg)>3 then
+    keep:=arg[4];
+  else
+    keep:=false;;
+  fi;
   H:=Normalizer(G,M);
-  Info(InfoComplement,1,"Call COSolvableFactor ",Index(G,N)," ",
+  Info(InfoComplement,2,"Call COSolvableFactor ",Index(G,N)," ",
        Size(N)," ",Size(M)," ",Size(H));
   if Size(ClosureGroup(N,H))<Size(G) then
     #Print("discard\n");
@@ -1004,7 +1013,8 @@ local H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,pos,i,pcgs,
 	                         BasisVectors(subbas));
         lnc:=[];
 	lncn:=[];
-	Info(InfoComplement,2,p^Length(bas.factorspace)," Complements");
+	Info(InfoComplement,2,"Step ",i,",",j,": ",
+	  p^Length(bas.factorspace)," Complements");
 	elm:=VectorSpace(GF(p),bas.factorspace,Zero(ocr.oneCocycles));
 	if Length(bas.factorspace)=0 then
 	  elm:=Elements(elm);
@@ -1121,11 +1131,24 @@ local H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,pos,i,pcgs,
   od;
 
   c:=List(c,x->PreImage(hom,x));
-  c:=SubgroupsOrbitsAndNormalizers(K,c,false);
-  c:=List(c,x->x.representative);
-  Info(InfoComplement,1,"Overall ",Length(c)," Complements ",
+  #c:=SubgroupsOrbitsAndNormalizers(K,c,false);
+  #c:=List(c,x->x.representative);
+  nc:=PermPreConjtestGroups(K,c);
+  Info(InfoComplement,2,Length(c)," Preimages in ",Length(nc)," clusters ");
+  c:=[];
+  for i in nc do
+    cn:=SubgroupsOrbitsAndNormalizers(i[1],i[2],false);
+    Add(c,List(cn,x->x.representative));
+  od;
+
+  Info(InfoComplement,1,"Overall ",Sum(c,Length)," Complements ",
     Size(qs)/Size(qk));
 
+  if keep then
+    return c;
+  else
+    c:=Concatenation(c);
+  fi;
   if Size(A)<Size(H) then
     # recursively do the next step up
     cn:=List(c,x->COSolvableFactor(G,N,x));

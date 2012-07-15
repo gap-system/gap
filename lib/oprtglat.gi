@@ -126,7 +126,7 @@ InstallMethod(SubgroupsOrbitsAndNormalizers,"perm group on list",true,
 function(G,dom,all)
   local savemem, n, l, o, pts, pbas, ptbas, un, domo, p, b, allo, ll, gp, t,
   sel, r, i, gens, rorbs, tl, selz, fcnt, rem, sely, j, torbs, torb, iinv,
-  ti, cl,lsd,domoj;
+  ti, cl,lsd,domoj,startn;
 
   if Length(dom)=0 then
     return dom;
@@ -173,6 +173,7 @@ function(G,dom,all)
   while n>0 do
     p:=Position(b,true);
     b[p]:=false;
+    startn:=n;
     n:=n-1;
     gp:=dom[p];
     t:=Length(GeneratorsOfGroup(gp));
@@ -281,6 +282,7 @@ function(G,dom,all)
 	cl:=Enumerator(cl);
 	r.elements:=cl;
       fi;
+Info(InfoLattice,5,startn-n," conjugates");
     fi;
     if not all and savemem<>fail then
       p:=Size(r.representative);
@@ -430,6 +432,139 @@ function( G, sub, U, V, op )
     fi;
     return Normalizer(G,sub);
 end );
+
+InstallGlobalFunction(PermPreConjtestGroups,function(G,l)
+local pats,spats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,allco,panu,
+      gpcl,i,j,k,Gm,a,corbs;
+  if not IsPermGroup(G) then
+    return [[G,l]];
+  fi;
+  dom:=MovedPoints(G);
+  pats:=List(l,x->Collected(List(Orbits(x,MovedPoints(x)),Length)));
+  spats:=Set(pats);
+  Info(InfoLattice,2,Length(spats)," patterns");
+  result:=[];
+  for pa in [1..Length(spats)] do
+    lp:=Filtered([1..Length(pats)],x->pats[x]=spats[pa]);
+    lp:=l{lp};
+    Info(InfoLattice,3,"Pattern ",pa,": ",Length(lp)," groups");
+    lens:=List(spats[pa],x->x[1]);
+
+    # now try to move the orbits always to the same
+    allorbs:=[];
+    allco:=[];
+    panu:=0;
+    gpcl:=[];
+
+    for h in lp do
+      orbs:=Orbits(h,MovedPoints(h));
+      orbs:=List(lens,x->Union(Filtered(orbs,y->Length(y)=x)));
+      p:=Position(allorbs,orbs);
+      if p<>fail then
+	rep:=allco[p][1];
+	cln:=allco[p][2];
+      else
+	Add(allorbs,orbs);
+	# try to map to a known one
+	j:=1;
+	while j<>fail and j<Length(allorbs) do
+	  if orbs=allorbs[j] then
+	    rep:=One(G);
+	  else
+	    Gm:=G;
+	    rep:=One(G);
+	    corbs:=List(orbs,ShallowCopy);
+	    for k in [1..Length(orbs)] do
+	      if rep<>fail then
+		a:=RepresentativeAction(Gm,corbs[k],allorbs[j][k],OnSets);
+		if a<>fail then
+		  rep:=rep*a;
+		  corbs:=List(corbs,x->OnSets(x,a));
+		  Gm:=Stabilizer(Gm,allorbs[j][k],OnSets);
+		else
+		  rep:=fail;
+		fi;
+	      fi;
+	    od;
+	  fi;
+	  if rep<>fail then
+	    # found a conjugator -- join to class
+	    cln:=allco[j][2];
+	    Add(allco,[rep,cln]);
+	    j:=fail;
+	  else
+	    j:=j+1;
+	  fi;
+
+	od;
+	if j<>fail then
+	  # none found -- new class
+	  panu:=panu+1;
+	  Add(allco,[One(G),panu]);
+	  Gm:=G;
+	  for k in orbs do
+	    Gm:=Stabilizer(Gm,k,OnSets);
+	  od;
+	  Add(gpcl,[Gm,[]]);
+	  cln:=panu;
+	  rep:=One(G);
+	fi;
+      fi;
+      #if rep<>() then Error("hee"); fi;
+      #if not IsOne(rep) and Set(List(orbs,x->OnSets(x,rep)))<>allorbs[cln] then
+
+      h:=h^rep;
+      Add(gpcl[cln][2],h);
+      #a:=Set(List(Orbits(h,MovedPoints(h)),Set));
+      #p:=Position(allorbs,List(Set(List(a,Length)),x->Union(Filtered(a,y->Length(y)=x))));
+      #if allco[p][2]<>cln then
+#	Error("GGG");
+#      fi;
+
+    od;
+    Info(InfoLattice,3,Length(gpcl)," orbit classes ",
+      List(gpcl,x->Length(x[2])));
+
+    # now split by cycle structures
+    panu:=[];
+    for j in gpcl do
+      if Size(j[2][1])<=10000 then
+	if Size(j[2][1])<=100 or IsAbelian(j[2][1]) then
+	  allorbs:=List(j[2],x->Collected(List(Enumerator(x),CycleStructurePerm)));
+	else
+	  allorbs:=List(j[2],x->Collected(List(ConjugacyClasses(x),
+	    y->Concatenation([Size(y)],
+	           CycleStructurePerm(Representative(y))))));
+        fi;
+
+	allco:=Set(allorbs);
+	for k in allco do
+	  a:=Filtered([1..Length(allorbs)],x->allorbs[x]=k);
+	  orbs:=[];
+	  for i in j[2]{a} do
+	    if not ForAny(orbs,x->ForAll(GeneratorsOfGroup(i),y->y in x)) then
+	      Add(orbs,i);
+	    #else Print("duplicate\n");
+	    fi;
+	  od;
+	  Add(result,[j[1],orbs]);
+	  Add(panu,Length(orbs));
+	od;
+
+      else
+	Add(result,j);
+	Add(panu,1);
+      fi;
+
+    od;
+    Info(InfoLattice,3," to ",Length(panu)," cyclestruct classes ",panu);
+
+    #Append(result,gpcl);
+
+  od;
+  return result;
+
+end);
 
 #############################################################################
 ##

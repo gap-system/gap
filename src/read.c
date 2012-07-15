@@ -169,7 +169,7 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 **  'r':        reference to a variable
 **  's':        assignment via ':='
 **  'u':        unbind a variable
-**  'x':        either 'r' or 'x' depending on <Symbol>
+**  'x':        either 'r' or 's' depending on <Symbol>
 **
 **  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
 **
@@ -259,7 +259,7 @@ void ReadCallVarAss (
     volatile UInt       level = 0;      /* number of '{}' selectors        */
     volatile UInt       rnam  = 0;      /* record component name           */
     volatile UInt       narg  = 0;      /* number of arguments             */
-    
+
 
     /* all variables must begin with an identifier                         */
     if ( Symbol != S_IDENT ) {
@@ -312,7 +312,7 @@ void ReadCallVarAss (
 	    for ( ; 1 <= indx; indx-- ) {
 	      if ( strcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
 		type = 'd';
-		
+
 		/* Ultrix 4.2 cc get's confused if the UInt is missing     */
 		var = ((UInt)nest << 16) + indx;
 		break;
@@ -366,12 +366,12 @@ void ReadCallVarAss (
 
     if ( type == 'g'
       && CountNams != 0
-      && var != CurrLHSGVar 
+      && var != CurrLHSGVar
       && var != Tilde
-      && VAL_GVAR(var) == 0 
+      && VAL_GVAR(var) == 0
       && ELM_PLIST(ExprGVars,var) == 0
       && ! IntrIgnoring
-      && ! GlobalComesFromEnclosingForLoop(var)      
+      && ! GlobalComesFromEnclosingForLoop(var)
       && (GAPInfo == 0 || !IS_REC(GAPInfo) || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) ||
              ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
       && ! SyCompilePlease )
@@ -545,20 +545,20 @@ void ReadCallVarAss (
             ReadExpr( follow, 'r' );
         }
         if ( READ_ERROR() ) {}
-        else if ( type == 'l' ) { IntrAssLVar( var );           }
-        else if ( type == 'h' ) { IntrAssHVar( var );           }
-        else if ( type == 'd' ) { IntrAssDVar( var, nest0 - 1 );           }
-        else if ( type == 'g' ) { IntrAssGVar( var );           }
-        else if ( type == '[' ) { IntrAssList();                }
-        else if ( type == ']' ) { IntrAssListLevel( level );    }
-        else if ( type == '{' ) { IntrAsssList();               }
-        else if ( type == '}' ) { IntrAsssListLevel( level );   }
+        else if ( type == 'l' ) { IntrAssLVar( var );             }
+        else if ( type == 'h' ) { IntrAssHVar( var );             }
+        else if ( type == 'd' ) { IntrAssDVar( var, nest0 - 1 );  }
+        else if ( type == 'g' ) { IntrAssGVar( var );             }
+        else if ( type == '[' ) { IntrAssList();                  }
+        else if ( type == ']' ) { IntrAssListLevel( level );      }
+        else if ( type == '{' ) { IntrAsssList();                 }
+        else if ( type == '}' ) { IntrAsssListLevel( level );     }
         else if ( type == '<' ) { IntrAssPosObj();                }
         else if ( type == '>' ) { IntrAssPosObjLevel( level );    }
         else if ( type == '(' ) { IntrAsssPosObj();               }
         else if ( type == ')' ) { IntrAsssPosObjLevel( level );   }
-        else if ( type == '.' ) { IntrAssRecName( rnam );       }
-        else if ( type == ':' ) { IntrAssRecExpr();             }
+        else if ( type == '.' ) { IntrAssRecName( rnam );         }
+        else if ( type == ':' ) { IntrAssRecExpr();               }
         else if ( type == '!' ) { IntrAssComObjName( rnam );      }
         else if ( type == '|' ) { IntrAssComObjExpr();            }
         else if ( type == 'c' || type == 'C' )
@@ -568,34 +568,34 @@ void ReadCallVarAss (
     /*  if we need an unbind                                               */
     else if ( mode == 'u' ) {
         if ( READ_ERROR() ) {}
-        else if ( type == 'l' ) { IntrUnbLVar( var );           }
-        else if ( type == 'h' ) { IntrUnbHVar( var );           }
-        else if ( type == 'd' ) { IntrUnbDVar( var, nest0 - 1 );           }
-        else if ( type == 'g' ) { IntrUnbGVar( var );           }
-        else if ( type == '[' ) { IntrUnbList();                }
+        else if ( type == 'l' ) { IntrUnbLVar( var );             }
+        else if ( type == 'h' ) { IntrUnbHVar( var );             }
+        else if ( type == 'd' ) { IntrUnbDVar( var, nest0 - 1 );  }
+        else if ( type == 'g' ) { IntrUnbGVar( var );             }
+        else if ( type == '[' ) { IntrUnbList();                  }
         else if ( type == '<' ) { IntrUnbPosObj();                }
-        else if ( type == '.' ) { IntrUnbRecName( rnam );       }
-        else if ( type == ':' ) { IntrUnbRecExpr();             }
+        else if ( type == '.' ) { IntrUnbRecName( rnam );         }
+        else if ( type == ':' ) { IntrUnbRecExpr();               }
         else if ( type == '!' ) { IntrUnbComObjName( rnam );      }
         else if ( type == '|' ) { IntrUnbComObjExpr();            }
-        else { SyntaxError("illegal operand for 'Unbind'");     }
+        else { SyntaxError("illegal operand for 'Unbind'");       }
     }
 
-    
+
     /* if we need an isbound                                               */
     else /* if ( mode == 'i' ) */ {
         if ( READ_ERROR() ) {}
-        else if ( type == 'l' ) { IntrIsbLVar( var );           }
-        else if ( type == 'h' ) { IntrIsbHVar( var );           }
-        else if ( type == 'd' ) { IntrIsbDVar( var, nest0 - 1 );           }
-        else if ( type == 'g' ) { IntrIsbGVar( var );           }
-        else if ( type == '[' ) { IntrIsbList();                }
+        else if ( type == 'l' ) { IntrIsbLVar( var );             }
+        else if ( type == 'h' ) { IntrIsbHVar( var );             }
+        else if ( type == 'd' ) { IntrIsbDVar( var, nest0 - 1 );  }
+        else if ( type == 'g' ) { IntrIsbGVar( var );             }
+        else if ( type == '[' ) { IntrIsbList();                  }
         else if ( type == '<' ) { IntrIsbPosObj();                }
-        else if ( type == '.' ) { IntrIsbRecName( rnam );       }
-        else if ( type == ':' ) { IntrIsbRecExpr();             }
+        else if ( type == '.' ) { IntrIsbRecName( rnam );         }
+        else if ( type == ':' ) { IntrIsbRecExpr();               }
         else if ( type == '!' ) { IntrIsbComObjName( rnam );      }
         else if ( type == '|' ) { IntrIsbComObjExpr();            }
-        else { SyntaxError("illegal operand for 'IsBound'");    }
+        else { SyntaxError("illegal operand for 'IsBound'");      }
     }
 
 }
@@ -673,7 +673,7 @@ void ReadPerm (
 /****************************************************************************
 **
 *F  ReadLongNumber( <follow> )  . . . . . . . . . . . . . . . read a long integer
-** 
+**
 **  A `long integer' here means one whose digits don't fit into `Value',
 **  see scanner.c.  This function copies repeatedly  digits from `Value'
 **  into a GAP string until the full integer is read.
@@ -689,10 +689,10 @@ static UInt appendToString(Obj string, UInt len)
        return len + len1;
 }
 
-void ReadLongNumber( 
+void ReadLongNumber(
       TypSymbolSet        follow )
 {
-     Obj  string;   
+     Obj  string;
      UInt len;
      UInt status;
      UInt done;
@@ -723,7 +723,7 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /*	   Match(S_PARTIALINT, "integer", follow);*/
 	   break;
-	   
+
 	 case S_PARTIALFLOAT1:
 	   assert(0);
 	   Pr("Parsing error, this should never happen", 0L, 0L);
@@ -736,17 +736,17 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /* Match(Symbol, "float", follow); */
 	   break;
-	   
+
 	 case S_FLOAT:
 	   len = appendToString(string, len);
 	   Match(S_FLOAT, "float", follow);
 	   IntrLongFloatExpr(string);
 	   done = 1;
 	   break;
-	   
+
 	 case S_IDENT:
 	   SyntaxError("Identifier over 1024 characters");
-	   
+
 	 default:
 	   len = appendToString(string, len);
 	   IntrLongIntExpr(string);
@@ -771,14 +771,14 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /* Match(Symbol, "float", follow); */
 	   break;
-	   
+
 	 case S_FLOAT:
 	   len = appendToString(string, len);
 	   Match(S_FLOAT, "float", follow);
 	   IntrLongFloatExpr(string);
 	   done = 1;
 	   break;
-	   
+
 	 default:
 	   SyntaxError("Badly Formed Number");
 	 }
@@ -801,18 +801,18 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /* Match(Symbol, "float", follow); */
 	   break;
-	   
+
 	 case S_FLOAT:
 	   len = appendToString(string, len);
 	   Match(S_FLOAT, "float", follow);
 	   IntrLongFloatExpr(string);
 	   done = 1;
 	   break;
-	   
+
 
 	 case S_IDENT:
 	   SyntaxError("Badly Formed Number");
-	   
+
 	 default:
 	   len = appendToString(string, len);
 	   IntrLongFloatExpr(string);
@@ -837,18 +837,18 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /* Match(Symbol, "float", follow); */
 	   break;
-	   
+
 	 case S_FLOAT:
 	   len = appendToString(string, len);
 	   Match(S_FLOAT, "float", follow);
 	   IntrLongFloatExpr(string);
 	   done = 1;
 	   break;
-	   
+
 
 	 default:
 	   SyntaxError("Badly Formed Number");
-	   
+
 	 }
 	 break;
        case S_PARTIALFLOAT4:
@@ -868,22 +868,22 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /* Match(Symbol, "float", follow); */
 	   break;
-	   
+
 	 case S_FLOAT:
 	   len = appendToString(string, len);
 	   Match(S_FLOAT, "float", follow);
 	   IntrLongFloatExpr(string);
 	   done = 1;
 	   break;
-	   
+
 	 case S_IDENT:
 	   SyntaxError("Badly Formed Number");
-	   
+
 	 default:
 	   len = appendToString(string, len);
 	   IntrLongFloatExpr(string);
 	   done = 1;
-	   
+
 	 }
 	 break;
        default:
@@ -897,16 +897,16 @@ void ReadLongNumber(
 /****************************************************************************
 **
 *F  ReadString( <follow> )  . . . . . . . . . . . . . . read a (long) string
-** 
+**
 **  A string is  read by copying parts of `Value'  (see scanner.c) given
 **  by `ValueLen' into  a string GAP object. This is  repeated until the
 **  end of the string is reached.
 **
 */
-void ReadString( 
+void ReadString(
       TypSymbolSet        follow )
 {
-     Obj  string;   
+     Obj  string;
      UInt len;
 
      string = NEW_STRING(ValueLen);
@@ -1057,7 +1057,7 @@ void ReadRecExpr (
         if ( ! READ_ERROR() ) { IntrRecExprEndElm(); }
         nr++;
       }
-      
+
     }
   while ( Symbol == S_COMMA );
 
@@ -1194,6 +1194,7 @@ void ReadFuncExpr (
     }
 
     /* pop the new local variables list                                    */
+    assert(CountNams > 0);
     CountNams--;
 
     /* 'end'                                                               */
@@ -1256,6 +1257,7 @@ void ReadFuncExpr1 (
     }
 
     /* pop the new local variables list                                    */
+    assert(CountNams > 0);
     CountNams--;
 }
 
@@ -1297,13 +1299,13 @@ void ReadLiteral (
         if ( ! READ_ERROR() ) { IntrFloatExpr( Value ); }
         Match( S_FLOAT, "float", follow );
     }
-      
+
 
     /* partial Int */
     else if ( Symbol == S_PARTIALINT || Symbol == S_PARTIALFLOAT1 ||
 	      Symbol == S_PARTIALFLOAT2 ) {
          ReadLongNumber( follow );
-    } 
+    }
 
     /* 'true'                                                              */
     else if ( Symbol == S_TRUE ) {
@@ -1344,7 +1346,7 @@ void ReadLiteral (
     }
 
     else if (Symbol == S_DOT ) {
-      /* Hack The only way a dot could turn up here is in 
+      /* Hack The only way a dot could turn up here is in
        a floating point literal that starts with .. So, change the token
       to  a partial float of the right kind to end with a . and an
       associated value and dive into the long float literal handler in the parser*/
@@ -1826,8 +1828,8 @@ void ReadFor (
     Match( S_FOR, "for", follow );
 
     /* <Var>                                                               */
-    ReadCallVarAss( follow, 'r' );    
-    
+    ReadCallVarAss( follow, 'r' );
+
     /* 'in' <Expr>                                                         */
     Match( S_IN, "in", S_DO|S_OD|follow );
     if ( ! READ_ERROR() ) { IntrForIn(); }
@@ -1856,7 +1858,7 @@ void ReadFor (
       PtrLVars  = PTR_BAG( CurrLVars );
       PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
       if (CountNams > 0)
-	CountNams--;      
+	CountNams--;
     }
 }
 
@@ -2132,21 +2134,21 @@ UInt ReadStats (
         /* read a statement                                                */
         if      ( Symbol == S_IDENT  ) ReadCallVarAss(follow,'s');
         else if ( Symbol == S_UNBIND ) ReadUnbind(    follow    );
-        else if ( Symbol == S_INFO   ) ReadInfo(      follow    ); 
+        else if ( Symbol == S_INFO   ) ReadInfo(      follow    );
         else if ( Symbol == S_ASSERT ) ReadAssert(    follow    );
         else if ( Symbol == S_IF     ) ReadIf(        follow    );
         else if ( Symbol == S_FOR    ) ReadFor(       follow    );
-        else if ( Symbol == S_WHILE  ) ReadWhile(     follow    ); 
+        else if ( Symbol == S_WHILE  ) ReadWhile(     follow    );
         else if ( Symbol == S_REPEAT ) ReadRepeat(    follow    );
         else if ( Symbol == S_BREAK  ) ReadBreak(     follow    );
-        else if ( Symbol == S_CONTINUE  ) ReadContinue(     follow    );
+        else if ( Symbol == S_CONTINUE) ReadContinue(     follow    );
         else if ( Symbol == S_RETURN ) ReadReturn(    follow    );
         else if ( Symbol == S_TRYNEXT) ReadTryNext(   follow    );
 	else if ( Symbol == S_QUIT   ) ReadQuit(      follow    );
 	else                           ReadEmpty(     follow    );
 	nr++;
         Match( S_SEMICOLON, ";", follow );
-    
+
     }
 
     /* return the number of statements                                     */
@@ -2516,8 +2518,8 @@ Obj Call0ArgsInNewReader(Obj f)
     result = (Obj) 0L;
     IntrEnd( 1UL );
     ClearError();
-  } 
-  
+  }
+
   /* switch back to the old reader context                               */
   memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
   UserHasQuit = userHasQuit;
@@ -2588,8 +2590,8 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
     result = (Obj) 0L;
     IntrEnd( 1UL );
     ClearError();
-  } 
-  
+  }
+
   /* switch back to the old reader context                               */
   memcpy( ReadJmpError, readJmpError, sizeof(syJmp_buf) );
   IntrCoding = intrCoding;

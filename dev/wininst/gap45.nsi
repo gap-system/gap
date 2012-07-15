@@ -56,12 +56,12 @@ var StartMenuFolder
 # User variables and other general settings: adjust them here as needed
 # 
 Section
-StrCpy $GAP_VER "4.5.3"
+StrCpy $GAP_VER "4.5.4"
 SectionEnd
 
 #Name and file
-Name "GAP 4.5.3"
-OutFile "gap4r5p3_2012_03_11-17_03.exe"
+Name "GAP 4.5.4"
+OutFile "gap4r5p4_2012_06_04-23_02.exe"
 
 #Default installation folder
 InstallDir "C:\gap4r5"
@@ -526,8 +526,8 @@ SectionEnd
 Section "GUAVA" SecGAPpkg_guava 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.guava
-SetOutPath $INSTDIR\pkg\guava3.11
-File /r gap4r5\pkg\guava3.11\*.* 
+SetOutPath $INSTDIR\pkg\guava-3.12
+File /r gap4r5\pkg\guava-3.12\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -574,8 +574,8 @@ SectionEnd
 Section "Polenta" SecGAPpkg_polenta 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.polenta
-SetOutPath $INSTDIR\pkg\polenta-1.3
-File /r gap4r5\pkg\polenta-1.3\*.* 
+SetOutPath $INSTDIR\pkg\polenta-1.3.1
+File /r gap4r5\pkg\polenta-1.3.1\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -586,8 +586,8 @@ SectionEnd
 Section "Polycyclic" SecGAPpkg_polycyclic 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.polycyclic
-SetOutPath $INSTDIR\pkg\polycyclic-2.9
-File /r gap4r5\pkg\polycyclic-2.9\*.* 
+SetOutPath $INSTDIR\pkg\polycyclic-2.10.1
+File /r gap4r5\pkg\polycyclic-2.10.1\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -703,8 +703,8 @@ SectionEnd
 Section "Citrus" SecGAPpkg_citrus 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.citrus
-SetOutPath $INSTDIR\pkg\citrus-0.6
-File /r gap4r5\pkg\citrus-0.6\*.* 
+SetOutPath $INSTDIR\pkg\citrus-0.9
+File /r gap4r5\pkg\citrus-0.9\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -835,8 +835,8 @@ SectionEnd
 Section "gpd" SecGAPpkg_gpd 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.gpd
-SetOutPath $INSTDIR\pkg\gpd-1.13
-File /r gap4r5\pkg\gpd-1.13\*.* 
+SetOutPath $INSTDIR\pkg\gpd-1.14
+File /r gap4r5\pkg\gpd-1.14\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -895,8 +895,8 @@ SectionEnd
 Section "HAP" SecGAPpkg_hap 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.hap
-SetOutPath $INSTDIR\pkg\Hap1.9
-File /r gap4r5\pkg\Hap1.9\*.* 
+SetOutPath $INSTDIR\pkg\Hap1.10
+File /r gap4r5\pkg\Hap1.10\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -967,8 +967,8 @@ SectionEnd
 Section "idrel" SecGAPpkg_idrel 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.idrel
-SetOutPath $INSTDIR\pkg\idrel
-File /r gap4r5\pkg\idrel\*.* 
+SetOutPath $INSTDIR\pkg\idrel-2.12
+File /r gap4r5\pkg\idrel-2.12\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -991,8 +991,8 @@ SectionEnd
 Section "kan" SecGAPpkg_kan 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.kan
-SetOutPath $INSTDIR\pkg\kan
-File /r gap4r5\pkg\kan\*.* 
+SetOutPath $INSTDIR\pkg\kan-1.05
+File /r gap4r5\pkg\kan-1.05\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1080,17 +1080,6 @@ File /r gap4r5\pkg\nilmat\*.*
 SetOutPath $INSTDIR 
 SectionEnd 
 
-#######################################################################
-#
-# NQL
-#
-Section "NQL" SecGAPpkg_nql 
-SetOutPath $INSTDIR\pkg 
-File gap4r5\pkg\README.nql
-SetOutPath $INSTDIR\pkg\nql
-File /r gap4r5\pkg\nql\*.* 
-SetOutPath $INSTDIR 
-SectionEnd 
 
 #######################################################################
 #
@@ -1303,8 +1292,8 @@ SectionEnd
 Section "Smallsemi" SecGAPpkg_smallsemi 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.smallsemi
-SetOutPath $INSTDIR\pkg\smallsemi
-File /r gap4r5\pkg\smallsemi\*.* 
+SetOutPath $INSTDIR\pkg\smallsemi-0.6.5
+File /r gap4r5\pkg\smallsemi-0.6.5\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1327,8 +1316,8 @@ SectionEnd
 Section "toric" SecGAPpkg_toric 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.toric
-SetOutPath $INSTDIR\pkg\toric1.7
-File /r gap4r5\pkg\toric1.7\*.* 
+SetOutPath $INSTDIR\pkg\toric1.8
+File /r gap4r5\pkg\toric1.8\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1375,8 +1364,8 @@ SectionEnd
 Section "XMod" SecGAPpkg_xmod 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.xmod
-SetOutPath $INSTDIR\pkg\xmod
-File /r gap4r5\pkg\xmod\*.* 
+SetOutPath $INSTDIR\pkg\xmod-2.18
+File /r gap4r5\pkg\xmod-2.18\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1580,10 +1569,10 @@ LangString DESC_SecGAPpkg_atlasrep ${LANG_ENGLISH} "A GAP Interface to the Atlas
 LangString DESC_SecGAPpkg_automata ${LANG_ENGLISH} "A package on automata"
 LangString DESC_SecGAPpkg_automgrp ${LANG_ENGLISH} "Automata groups"
 LangString DESC_SecGAPpkg_autpgrp ${LANG_ENGLISH} "Computing the Automorphism Group of a p-Group"
-LangString DESC_SecGAPpkg_browse ${LANG_ENGLISH} "ncurses interface and browsing applications"
+LangString DESC_SecGAPpkg_browse ${LANG_ENGLISH} "browsing applications and ncurses interface"
 LangString DESC_SecGAPpkg_carat ${LANG_ENGLISH} "Interface to CARAT, a crystallographic groups package"
 LangString DESC_SecGAPpkg_circle ${LANG_ENGLISH} "Adjoint groups of finite rings"
-LangString DESC_SecGAPpkg_citrus ${LANG_ENGLISH} "ComputIng with Transformation semigRoUps and monoidS"
+LangString DESC_SecGAPpkg_citrus ${LANG_ENGLISH} "ComputIng wiTh semigRoUps and monoidS"
 LangString DESC_SecGAPpkg_cohomolo ${LANG_ENGLISH} "Cohomology groups of finite groups on finite modules"
 LangString DESC_SecGAPpkg_crime ${LANG_ENGLISH} "A GAP Package to Calculate Group Cohomology and Massey Products"
 LangString DESC_SecGAPpkg_crisp ${LANG_ENGLISH} "Computing with Radicals, Injectors, Schunck classes and Projectors"
@@ -1613,7 +1602,7 @@ LangString DESC_SecGAPpkg_gradedmodules ${LANG_ENGLISH} "A homalg based package 
 LangString DESC_SecGAPpkg_gradedringforhomalg ${LANG_ENGLISH} "Endow Commutative Rings with an Abelian Grading"
 LangString DESC_SecGAPpkg_grape ${LANG_ENGLISH} "GRaph Algorithms using PErmutation groups"
 LangString DESC_SecGAPpkg_grpconst ${LANG_ENGLISH} "Constructing the Groups of a Given Order"
-LangString DESC_SecGAPpkg_guarana ${LANG_ENGLISH} "Applications of Lie methods for computations with infinite polycyclic groups"
+LangString DESC_SecGAPpkg_guarana ${LANG_ENGLISH} "Applications of Lie methods for computations with infinite polycyclic  groups"
 LangString DESC_SecGAPpkg_guava ${LANG_ENGLISH} "a GAP package for computing with error-correcting codes"
 LangString DESC_SecGAPpkg_hap ${LANG_ENGLISH} "Homological Algebra Programming"
 LangString DESC_SecGAPpkg_hapcryst ${LANG_ENGLISH} "A HAP extension for crytallographic groups"
@@ -1624,7 +1613,7 @@ LangString DESC_SecGAPpkg_homalgtocas ${LANG_ENGLISH} "A window to the outer wor
 LangString DESC_SecGAPpkg_idrel ${LANG_ENGLISH} "Identities among relations"
 LangString DESC_SecGAPpkg_io ${LANG_ENGLISH} "Bindings for low level C library IO"
 LangString DESC_SecGAPpkg_io_forhomalg ${LANG_ENGLISH} "IO Capabilities for the homalg Project"
-LangString DESC_SecGAPpkg_irredsol ${LANG_ENGLISH} "A Library of irreducible solvable linear groups over finite fields and of finite primivite soluble groups"
+LangString DESC_SecGAPpkg_irredsol ${LANG_ENGLISH} "A Library of irreducible solvable linear groups over finite fields           and of finite primivite soluble groups"
 LangString DESC_SecGAPpkg_itc ${LANG_ENGLISH} "Interactive Todd-Coxeter"
 LangString DESC_SecGAPpkg_kan ${LANG_ENGLISH} "including double coset rewriting systems"
 LangString DESC_SecGAPpkg_kbmag ${LANG_ENGLISH} "Knuth-Bendix on Monoids and Automatic Groups"
@@ -1638,7 +1627,6 @@ LangString DESC_SecGAPpkg_matricesforhomalg ${LANG_ENGLISH} "Matrices for the ho
 LangString DESC_SecGAPpkg_modules ${LANG_ENGLISH} "A homalg based Package for the Abelian Category of Finitely Presented Modules over Computable Rings"
 LangString DESC_SecGAPpkg_nilmat ${LANG_ENGLISH} "Computing with nilpotent matrix groups"
 LangString DESC_SecGAPpkg_nq ${LANG_ENGLISH} "Nilpotent Quotients of Finitely Presented Groups"
-LangString DESC_SecGAPpkg_nql ${LANG_ENGLISH} "Nilpotent Quotients of L-Presented Groups"
 LangString DESC_SecGAPpkg_numericalsgps ${LANG_ENGLISH} "A package for numerical semigroups"
 LangString DESC_SecGAPpkg_openmath ${LANG_ENGLISH} "OpenMath functionality in GAP"
 LangString DESC_SecGAPpkg_orb ${LANG_ENGLISH} "orb - Methods to enumerate Orbits"
@@ -1748,7 +1736,6 @@ LangString DESC_SecGAPpkg_xmod ${LANG_ENGLISH} "Crossed Modules and Cat1-Groups"
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_modules} $(DESC_SecGAPpkg_modules)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_nilmat} $(DESC_SecGAPpkg_nilmat)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_nq} $(DESC_SecGAPpkg_nq)
-!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_nql} $(DESC_SecGAPpkg_nql)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_numericalsgps} $(DESC_SecGAPpkg_numericalsgps)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_openmath} $(DESC_SecGAPpkg_openmath)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_orb} $(DESC_SecGAPpkg_orb)

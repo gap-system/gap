@@ -90,10 +90,14 @@ InstallOtherMethod( ZmodnZObj,
     end );
 
 InstallMethod( ZmodnZObj,
-    "for a positive integer, and an integer",
+    "for a positive integer, and an integer -- check small primes",
     [ IsInt, IsPosInt ],
     function( residue, n )
-    return ZmodnZObj( ElementsFamily( FamilyObj( ZmodnZ( n ) ) ), residue );
+    if n in PRIMES_COMPACT_FIELDS then
+      return residue*Z(n)^0;
+    else
+      return ZmodnZObj( ElementsFamily( FamilyObj( ZmodnZ( n ) ) ), residue );
+    fi;
     end );
 
 

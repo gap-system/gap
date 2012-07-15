@@ -4802,6 +4802,7 @@ Obj NewAttributeC (
     CHANGED_BAG(tester);
 
     getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoAttribute) );
+
     FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
     FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
     NEW_FLAGS( flags, flag2 );
@@ -5079,7 +5080,6 @@ Obj NewProperty (
     CHANGED_BAG(tester);
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoProperty) ); 
-    
 
     FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
@@ -5152,6 +5152,7 @@ Obj NewPropertyC (
     CHANGED_BAG(tester);
 
     getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoProperty) );
+
     FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
     NEW_FLAGS( flags, flag2 );

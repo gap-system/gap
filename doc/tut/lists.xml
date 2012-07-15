@@ -968,7 +968,7 @@ all bound components of this record as a list of strings.
 <P/>
 <Example><![CDATA[
 gap> RecNames(date);
-[ "year", "time", "month", "day" ]
+[ "time", "year", "month", "day" ]
 ]]></Example>
 <P/>
 Now return to Sections <Ref Sect="Identical Lists"/>  and <Ref Sect="Immutability"/> and find out

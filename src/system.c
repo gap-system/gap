@@ -67,9 +67,11 @@
 
 /****************************************************************************
 **
-*V  SyKernelVersion  . . . . . . . . . . . . . . . .  name of the architecture
+*V  SyKernelVersion  . . . . . . . . . . . . . . . . name of the architecture
+** do not edit the following line. Occurences of `4.dev' and `today'
+** will be replaced by string matching by distribution wrapping scripts.
 */
-const Char * SyKernelVersion = "4.5";
+const Char * SyKernelVersion = "4.dev";
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows

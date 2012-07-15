@@ -86,6 +86,9 @@
 /* Define to 1 if you have the `getrusage' function. */
 #undef HAVE_GETRUSAGE
 
+/* Define to 1 if you have the `grantpt' function. */
+#undef HAVE_GRANTPT
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -94,6 +97,9 @@
 
 /* Define to 1 if you have the `readline' library (-lreadline). */
 #undef HAVE_LIBREADLINE
+
+/* Define to 1 if you have the <libutil.h> header file. */
+#undef HAVE_LIBUTIL_H
 
 /* Define to 1 if you have the `link' function. */
 #undef HAVE_LINK
@@ -143,11 +149,23 @@
 /* Define to 1 if you have the `opendir' function. */
 #undef HAVE_OPENDIR
 
+/* define as 1 if you have `openpty' */
+#undef HAVE_OPENPTY
+
 /* Define to 1 if you have the `popen' function. */
 #undef HAVE_POPEN
 
+/* Define to 1 if you have the `posix_openpt' function. */
+#undef HAVE_POSIX_OPENPT
+
+/* Define to 1 if you have the `ptsname' function. */
+#undef HAVE_PTSNAME
+
 /* Define to 1 if you have the `ptsname_r' function. */
 #undef HAVE_PTSNAME_R
+
+/* Define to 1 if you have the <pty.h> header file. */
+#undef HAVE_PTY_H
 
 /* Define to 1 if you have the `readdir' function. */
 #undef HAVE_READDIR
@@ -279,6 +297,12 @@
 
 /* Define to 1 if you have the `unlink' function. */
 #undef HAVE_UNLINK
+
+/* Define to 1 if you have the `unlockpt' function. */
+#undef HAVE_UNLOCKPT
+
+/* Define to 1 if you have the <util.h> header file. */
+#undef HAVE_UTIL_H
 
 /* Define to 1 if you have the `vfork' function. */
 #undef HAVE_VFORK

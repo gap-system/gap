@@ -141,7 +141,7 @@ GAPInfo.UseReadline := true;
 ##  <Description>
 ##  The first  command saves the  lines in the  command line history  to the
 ##  file given by  the string <A>fname</A>. The default  for <A>fname</A> is
-##  <F>history</F> in the users &GAP; root path  <C>GAPInfo.UserGapRoot</C>
+##  <F>history</F> in the user's &GAP; root path <C>GAPInfo.UserGapRoot</C>
 ##  or  <F>"~/.gap_hist"</F>  if this directory does not exist.
 ##  If   the  optional  argument  <A>app</A>  is
 ##  <K>true</K> then the lines are appended  to that file otherwise the file

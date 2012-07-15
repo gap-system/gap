@@ -14,7 +14,7 @@ Print("\n");
 
 newdocs := UpdatePackageDoc("${PkgReposDir}", "${PkgWebFtpDir}/Packages/pkg");;
 if Length(newdocs) > 0 then
-  Print("\nPackages with updated online manual books:\n", newdocs, "\n");
+  Print("\nThe following manual books were retrieved:\n", newdocs, "\n");
 else
   Print("\nAll online manual books are up to date!\n");
 fi;

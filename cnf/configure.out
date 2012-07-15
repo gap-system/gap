@@ -4416,7 +4416,7 @@ else
     *-gcc* | *-egcs )
         gp_cv_ldflags="-g ${ABI_CFLAGS}";;
     *-apple-darwin*-clang* )
-        gp_cv_ldflags="-g ${ABI_CFLAGS}";;
+        gp_cv_ldflags="-g -Wl,-no_pie ${ABI_CFLAGS}";;
     *-clang* )
         gp_cv_ldflags="-g -rdynamic ${ABI_CFLAGS}";;
     *-icc* )
@@ -4670,9 +4670,6 @@ $as_echo "#define STDC_HEADERS 1" >>confdefs.h
 fi
 
 
-# TODO: The following headers are all from the standard C library, so
-# strictly speaking, we should not have to check for their presence. So
-# we either should remove these checks, or document why we need them.
 for ac_header in assert.h errno.h math.h stdio.h stdlib.h string.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -4814,7 +4811,8 @@ _ACEOF
 
 
 
-for ac_func in getpseudotty _getpty getpt ptsname_r
+# Check for POSIX 98 pty APIs
+for ac_func in ptsname grantpt unlockpt posix_openpt
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -4825,6 +4823,107 @@ _ACEOF
 
 fi
 done
+
+# Check for glibc specific pty APIs
+for ac_func in getpt ptsname_r
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+# Check for some legacy APIs
+for ac_func in getpseudotty _getpty
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+
+# openpty() is available on various BSD variants, but also in glibc.
+# On BSD systems, one usually needs to add -lutil to LIBS in order
+# to use it.
+for ac_header in util.h pty.h libutil.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing openpty" >&5
+$as_echo_n "checking for library containing openpty... " >&6; }
+if ${ac_cv_search_openpty+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char openpty ();
+int
+main ()
+{
+return openpty ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' util; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_openpty=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_openpty+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_openpty+:} false; then :
+
+else
+  ac_cv_search_openpty=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_openpty" >&5
+$as_echo "$ac_cv_search_openpty" >&6; }
+ac_res=$ac_cv_search_openpty
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+$as_echo "#define HAVE_OPENPTY 1" >>confdefs.h
+
+fi
 
 
 

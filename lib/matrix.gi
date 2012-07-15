@@ -4168,7 +4168,7 @@ BindGlobal("POW_MAT_INT", function(mat, n)
         until r <> true;
       fi;
     od;
-    ConvertToMatrixRep(t);
+    t := Matrix(t, m);
     return t;
   end;
   # compared to standard method, we avoid some zero or identity matrices

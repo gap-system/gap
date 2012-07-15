@@ -77,7 +77,6 @@ A:hover {
 
 SPAN.pkg {
   font-family:sans-serif;
-  font-weight:bold;
   background-color:transparent;
 }
 
@@ -86,4 +85,7 @@ HR {
   text-align:center;
 }
 
+CODE {
+  color:#550000;
+}
 

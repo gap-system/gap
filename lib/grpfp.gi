@@ -5066,7 +5066,7 @@ local W,iso;
     # swap
     W:=U;U:=V;V:=W;
   fi;
-  if not IsSubgroup(U,V) then
+  if not IsSubgroup(U,V) or not IsNormal(U,V) then
     TryNextMethod();
   fi;
   if Index(U,V)=1 then

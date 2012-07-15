@@ -248,13 +248,15 @@ Obj             FuncAPPEND_LIST_INTR (
                 (Int)TNAM_OBJ(list1), 0L,
                 "you can replace <list1> via 'return <list1>;'" );
         }
-        PLAIN_LIST( list1 );
+        if ( ! IS_PLIST( list1 ) ) {
+            PLAIN_LIST( list1 );
+        }
         RetypeBag( list1, T_PLIST );
     }
     len1 = LEN_PLIST( list1 );
 
     /* check the type of the second argument                               */
-    if ( TNUM_OBJ( list2 ) != T_PLIST ) {
+    if ( ! IS_PLIST( list2 ) ) {
         while ( ! IS_SMALL_LIST( list2 ) ) {
             list2 = ErrorReturnObj(
                 "AppendList: <list2> must be a small list (not a %s)",
@@ -274,7 +276,7 @@ Obj             FuncAPPEND_LIST_INTR (
     }
 
     /* add the elements                                                    */
-    if ( TNUM_OBJ(list2) == T_PLIST ) {
+    if ( IS_PLIST(list2) ) {
         ptr1 = ADDR_OBJ(list1) + len1;
         ptr2 = ADDR_OBJ(list2);
         for ( i = 1; i <= len2; i++ ) {

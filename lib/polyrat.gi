@@ -1868,7 +1868,7 @@ local r,cr,opt,irf,i;
   if i<>fail then
     # if we know the factors,return
     PopOptions();
-    return irf[i][2];
+    return ShallowCopy(irf[i][2]);
   fi;
 
   # handle trivial case

@@ -736,9 +736,10 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  available as other parts of the &GAP; library are.
 ##  <P/>
 ##  When &GAP; is started then some packages are loaded automatically.
-##  These are the packages listed in the <C>NeededOtherPackages</C> and
-##  (if this is not disabled, see below) <C>SuggestedOtherPackages</C>
-##  components of the record <C>GAPInfo.Dependencies</C>.
+##  These are the packages listed in
+##  <C>GAPInfo.Dependencies.NeededOtherPackages</C> and
+##  (if this is not disabled, see below)
+##  <C>UserPreference( "PackagesToLoad" )</C>.
 ##  <P/>
 ##  A &GAP; package may also install only its documentation automatically
 ##  but still need loading by <Ref Func="LoadPackage"/>.
@@ -757,13 +758,13 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  <P/>
 ##  Furthermore, <E>individual users</E> can disable the autoloading of
 ##  specific packages by putting the names of these packages into the list
-##  that is assigned to the <C>ExcludeFromAutoload</C> component of the
-##  record in the user's <F>gap.ini</F> file
+##  that is assigned to the user preference <Q>ExcludeFromAutoload</Q>,
+##  for example in the user's <F>gap.ini</F> file
 ##  (see&nbsp;<Ref Subsect="subsect:gap.ini file"/>).
 ##  <P/>
 ##  Using the <C>-A</C> command line option when starting up &GAP;
 ##  (see&nbsp;<Ref Sect="Command Line Options"/>),
-##  automatic loading of all suggested packages of &GAP; is switched off
+##  automatic loading of packages is switched off
 ##  <E>for this &GAP; session</E>.
 ##  <P/>
 ##  In any of the above three cases, the packages listed in
@@ -916,9 +917,9 @@ DeclareGlobalFunction( "InstalledPackageVersion" );
 ##  First the packages in <C>GAPInfo.Dependencies.NeededOtherPackages</C> are
 ##  loaded, using <Ref Func="LoadPackage"/>.
 ##  If some needed packages are not loadable then an error is signalled.
-##  Then those packages in <C>GAPInfo.Dependencies.SuggestedOtherPackages</C>
+##  Then those packages in the list <C>UserPreference( "PackagesToLoad" )</C>
 ##  are loaded (if they are available) that do not occur in the list
-##  <C>UserPreference("ExcludeFromAutoload");</C>.
+##  <C>UserPreference( "ExcludeFromAutoload" )</C>.
 ##  </Description>
 ##  </ManSection>
 ##

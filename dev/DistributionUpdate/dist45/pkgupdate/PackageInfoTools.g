@@ -1403,6 +1403,65 @@ od;
 end;
 
 
+# The 2nd argument is the name of the archive with the timestamp without 
+# extension, e.g. gap4r5p4_2012_06_04-23_02. For each package, tags its 
+# stable version with the given tag. You must ensure that it matches 
+# current stable versions.
+markAllStableWithTimestamp := function( pkgreposdir, timestamp )
+local pkgs, res, pkgdir, info, getInfo, ver, i, j, m, x;
+
+getInfo:=function( pkgdir )
+local nam;
+ClearPACKAGE_INFOS();
+READPackageInfo(Concatenation(pkgdir, "/", "PackageInfo.g"));
+nam := NamesOfComponents(PACKAGE_INFOS);
+if Length(nam) = 0 then
+  return fail;
+else
+  nam := nam[1];
+  return PACKAGE_INFOS.(nam);
+fi;
+end;
+
+pkgs := Difference(FilesDir(pkgreposdir, "d", 1), [pkgreposdir]);
+res:=[ [ "Package name", "Latest", "Date", "Stable", "Date" ]];
+Print("Marking stable revisions with ", timestamp,"\n");
+for pkgdir in pkgs do
+  Print("Marking ", pkgdir, "\n");
+  Exec( Concatenation( "cd ", pkgdir, " ; hg update -r tip" ));
+  info := getInfo( pkgdir );
+  ver := [ info.PackageName, info.Version, info.Date ];
+  Exec( Concatenation( "cd ", pkgdir, " ; hg update -r stable" ));
+  info := getInfo( pkgdir );
+  if info.Version <> ver[2] then
+    Append( ver, [ info.Version, info.Date ] );
+  else
+    Append( ver, [ "*", " " ] );
+  fi;
+  Exec( Concatenation( "cd ", pkgdir, " ; hg bookmark -i ", timestamp, " -r Version-", info.Version ));
+  Exec( Concatenation( "cd ", pkgdir, " ; hg update -r tip" ));
+  Add( res, ShallowCopy( ver ) );  
+od;
+
+# post-processing for pretty-printing the report
+for j in [1..5] do
+  m := Maximum( List( res, x -> Length(x[j]) ) );
+  for x in res do
+    Append( x[j], ListWithIdenticalEntries( m-Length(x[j]), ' ' ) );
+  od;
+od;  
+Print("=======================================================================\n");
+for i in [1..Length(res)] do
+  for j in [1..Length(res[i])] do
+    Print( res[i][j], " | ");
+  od;
+  Print("\n");
+od;
+Print("=======================================================================\n");
+end;
+
+
+
 ReportPackageVersions:=function( pkgreposdir )
 local pkgs, pkgdir, info, getInfo, res, ver, i, j, m, x;
 
@@ -1486,7 +1545,13 @@ UpdatePackageDoc := function(pkgdir, pkgdocdir)
     nam := nam[1];
     info := PACKAGE_INFOS.(nam);
     Print(info.PackageName, ":\n");
+    
     pkgtmp := Concatenation(pkg, "/pkg");
+    dname := NormalizedWhitespace(
+               StringSystem("sh", "-c", Concatenation("cd ", pkgtmp, "; ls")));
+    Exec( Concatenation( "mkdir -p ", pkgdocdir, "/", dname )); 
+    Exec(Concatenation("cp ", pkg, "/README.* ", pkgdocdir, "/", dname, "/" ));
+                               
     if not IsBound(info.PackageDoc) then
       Print("# Warning (", info.PackageName, "): no PackageDoc component!\n");
       continue;
@@ -1497,15 +1562,12 @@ UpdatePackageDoc := function(pkgdir, pkgdocdir)
     else
       books := [info.PackageDoc];
     fi;
-
+    
     for b in books do
       # Should the documentation be taken from the package release, 
       # or is there a separate archive with the package documentation?
       if IsBound(b.ArchiveURLSubset) then
         # Get all manuals from the package release stored in the repository
-        dname := NormalizedWhitespace(StringSystem("sh", "-c", 
-                     Concatenation("cd ", pkgtmp, "; ls")));
-        Exec( Concatenation( "mkdir -p ", pkgdocdir, "/", dname ));                    
         for a in b.ArchiveURLSubset do
           if IsExistingFile( Concatenation( pkgtmp, "/", dname, "/", a ) ) then
             # whether a is a directory name or (rarely) a filename, e.g. doc/manual.pdf?
@@ -1814,7 +1876,7 @@ AddHTMLPackageInfo := function(arg)
   bnam := Basename(info.ArchiveURL);
   arch := Concatenation(nam, "/", bnam);
   Append(res, Concatenation("[<a href='{{GAPManualLink}}pkg/", 
-          nam, "/README.", nam, 
+          dname, "/README.", nam, 
           "'>README</a>]&nbsp;&nbsp;&nbsp;&nbsp;",bnam));
   for ext in [ ".tar.gz", ".tar.bz2", "-win.zip", ".zip" ] do # retired ".zoo",
     fn := Concatenation(webdir, "/ftpdir/", ext{[2..Length(ext)]}, 
@@ -1898,18 +1960,23 @@ end;
 # <pkgconffile>.
 # It also creates the short info pages for each package, like ace.mixer, ...
 # these files are written in <webdir>/Packages.
+# It also produces Mixer code to be edited and pasted into the Mixer page 
+# containing the description of the particular archive.
 # The current archive files must be in <webdir>/ftpdir/<fmt>   with <fmt> in
 # tar.gz, tar.bz2, win.zip and zip.
-WritePackageWebPageInfos := function(webdir, pkgconffile)
+WritePackageWebPageInfos := function(webdir, pkgconffile, pkgstaticfile)
   local mergedarchivelinks, templ, treelines, pi, fl, fn, manualslinks, 
-    suggestupgradeslines, nam, lnam, pkgmix, mixfile, linkentry, ss, s, 
-    tree, mantempl, names, str, lines, strs, updtempl, a, pers, l, 
+    suggestupgradeslines, nam, lnam, pkgmix, mixfile, linkentry, staticentry,
+    ss, s, tree, mantempl, names, str, lines, strs, updtempl, a, pers, l, 
     webftp, n, esc, uc;
   Print("Updating info for web pages ...\n");
   # empty result file
   pkgconffile := OutputTextFile(pkgconffile, false);
+  pkgstaticfile := OutputTextFile(pkgstaticfile, false);
   SetPrintFormattingStatus(pkgconffile, false);
+  SetPrintFormattingStatus(pkgstaticfile, false);
   PrintTo(pkgconffile, "# -*- coding: ISO-8859-1 -*-\n");
+  PrintTo(pkgstaticfile, "<table class=\"par\">\n");
   # a function to escape "'''" in python readable strings
   esc := function(s)
     local pos, off, res;
@@ -1966,7 +2033,7 @@ WritePackageWebPageInfos := function(webdir, pkgconffile)
   manualslinks := rec();
   suggestupgradeslines := rec();
   pi := EnsureLatin1Strings(pi);
-  for a in NamesOfComponents(pi) do
+  for a in SortedList( NamesOfComponents(pi) ) do
     Print( a, "\n" );
     nam := pi.(a).PackageName;
     lnam := LowercaseString(pi.(a).PackageName);
@@ -1989,6 +2056,15 @@ WritePackageWebPageInfos := function(webdir, pkgconffile)
                  mixfile, ".html\">",
                  nam, "</a>&nbsp;&nbsp;", 
                  pi.(a).Version, " (", pi.(a).Date, ") by ");
+    staticentry  := Concatenation("<tr><td><a href=\"{{pkgmixerpath}}", 
+                 mixfile, ".html\">", nam, "</a>&nbsp;</td><td>", 
+                 pi.(a).Version, "&nbsp;</td><td>&nbsp;", 
+                 pi.(a).Date, "&nbsp;&nbsp;</td><td>" );                 
+    if IsBound(pi.(a).Subtitle) then
+      Append(staticentry, Concatenation( pi.(a).Subtitle, "</td></tr>" ) );
+    else  
+      Append(staticentry, "</td></tr>" );
+    fi;                 
     # list entry in overview
     ss := [];
     if not IsBound(pi.(a).Persons) then
@@ -2006,10 +2082,11 @@ WritePackageWebPageInfos := function(webdir, pkgconffile)
     Append(linkentry, "\n");
     AppendTo(pkgconffile, "PKG_OverviewLink_", esc(lnam), " = r'''",
              esc(linkentry), "'''\n\n");
-
+    AppendTo(pkgstaticfile, esc(staticentry), "\n\n");
     manualslinks.(lnam) := pi.(a).HTMLManLinks;
     suggestupgradeslines.(lnam) := pi.(a).SuggestUpgradesEntry;
   od;
+  AppendTo(pkgstaticfile, "</table>\n");
   
   Print("Updating the package tree ...\n");
   # for tree file, all packages sorted alphabetically by name

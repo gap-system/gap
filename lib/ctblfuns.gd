@@ -595,8 +595,8 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##
 ##  <ManSection>
 ##  <Func Name="ComplexConjugate" Arg='chi' Label="for a class function"/>
-##  <Func Name="GaloisCyc" Arg='chi' Label="for a class function"/>
-##  <Func Name="Permuted" Arg='chi' Label="for a class function"/>
+##  <Func Name="GaloisCyc" Arg='chi, k' Label="for a class function"/>
+##  <Func Name="Permuted" Arg='chi, pi' Label="for a class function"/>
 ##
 ##  <Description>
 ##  The operations
