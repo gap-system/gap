@@ -67,7 +67,7 @@ Tasks.Worker := function(channels)
         fi;
       fi;
       
-      p := LOCK(TaskData, true);
+      p := LOCK(TaskData);
       if IsIdenticalObj (p,fail) then
          Error("Failed to obtain lock for TaskData inside Worker function\n");
       fi;
@@ -193,7 +193,7 @@ Tasks.CreateTask := function(arglist)
       if not adopted then
         args[i] := SHARE(CLONE_REACHABLE(args[i]));
         ds := RegionOf(args[i]);
-        p := LOCK(args[i],true);
+        p := LOCK(args[i]);
         adopted := true;
       else
         args[i] := MIGRATE(CLONE_REACHABLE(args[i]), ds);
@@ -319,7 +319,7 @@ WaitTask := function(arg)
     od;
   od;
   for task in arg do
-    p := LOCK(task,false);
+    p := LOCK(false, task);
     if IsIdenticalObj (p, fail) then
       Error("Could not obtain lock in WaitTask\n");
     fi;
@@ -333,7 +333,7 @@ WaitTask := function(arg)
         while true do 
           UNLOCK(p);
           for i in [1..1000] do od;
-          LOCK(task,false);
+          LOCK(false, task);
           if task.complete then 
             break;
           fi;
