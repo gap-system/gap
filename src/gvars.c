@@ -472,7 +472,7 @@ UInt GVarName (
          && SyStrncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
         i = (i % SizeGVars) + 1;
     }
-    if (!PreThreadCreation) {
+    if (gvar == 0 && !PreThreadCreation) {
         /* upgrade to write lock and repeat search */
 	UnlockGVars();
 	LockGVars(1);
@@ -484,11 +484,11 @@ UInt GVarName (
 	    i = (i % SizeGVars) + 1;
 	}
     }
-    pos = i;
 
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
     if ( gvar == 0 ) {
+	pos = i;
         UInt gvar_bucket, gvar_index;
         CountGVars++;
 	gvar_bucket = GVAR_BUCKET(CountGVars);
@@ -518,28 +518,28 @@ UInt GVarName (
 	SET_ELM_PLIST(ExprGVars[gvar_bucket], gvar_index, 0);
 	SET_ELM_PLIST(CopiesGVars[gvar_bucket], gvar_index, 0);
 	SET_ELM_PLIST(FopiesGVars[gvar_bucket], gvar_index, 0);
-    }
 
-    /* if the table is too crowed, make a larger one, rehash the names     */
-    if ( SizeGVars < 3 * CountGVars / 2 ) {
-        table = TableGVars;
-        SizeGVars = 2 * SizeGVars + 1;
-        TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
-	MakeBagPublic(TableGVars);
-        SET_LEN_PLIST( TableGVars, SizeGVars );
-        for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
-            gvar2 = ELM_PLIST( table, i );
-            if ( gvar2 == 0 )  continue;
-            pos = 0;
-            for ( p = NameGVar( INT_INTOBJ(gvar2) ); *p != '\0'; p++ ) {
-                pos = 65599 * pos + *p;
-            }
-            pos = (pos % SizeGVars) + 1;
-            while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
-                pos = (pos % SizeGVars) + 1;
-            }
-            SET_ELM_PLIST( TableGVars, pos, gvar2 );
-        }
+	/* if the table is too crowed, make a larger one, rehash the names     */
+	if ( SizeGVars < 3 * CountGVars / 2 ) {
+	    table = TableGVars;
+	    SizeGVars = 2 * SizeGVars + 1;
+	    TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
+	    MakeBagPublic(TableGVars);
+	    SET_LEN_PLIST( TableGVars, SizeGVars );
+	    for ( i = 1; i <= (SizeGVars-1)/2; i++ ) {
+		gvar2 = ELM_PLIST( table, i );
+		if ( gvar2 == 0 )  continue;
+		pos = 0;
+		for ( p = NameGVar( INT_INTOBJ(gvar2) ); *p != '\0'; p++ ) {
+		    pos = 65599 * pos + *p;
+		}
+		pos = (pos % SizeGVars) + 1;
+		while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
+		    pos = (pos % SizeGVars) + 1;
+		}
+		SET_ELM_PLIST( TableGVars, pos, gvar2 );
+	    }
+	}
     }
 
     UnlockGVars();
