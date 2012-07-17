@@ -128,6 +128,10 @@ UInt            RNamName (
          && SyStrncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
         pos = (pos % SizeRNam) + 1;
     }
+    if (rnam != 0) {
+      UnlockNames();
+      return INT_INTOBJ(rnam);
+    }
     if (!PreThreadCreation) {
       UnlockNames(); /* switch to a write lock */
       LockNames(1);
@@ -137,22 +141,24 @@ UInt            RNamName (
 	  pos = (pos % SizeRNam) + 1;
       }
     }
+    if (rnam != 0) {
+      UnlockNames();
+      return INT_INTOBJ(rnam);
+    }
 
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
-    if ( rnam == 0 ) {
-        CountRNam++;
-        rnam = INTOBJ_INT(CountRNam);
-        SET_ELM_PLIST( HashRNam, pos, rnam );
-        namx[0] = '\0';
-        SyStrncat( namx, name, 1023 );
-        string = NEW_STRING( SyStrlen(namx) );
-        SyStrncat( CSTR_STRING(string), namx, SyStrlen(namx) );
-        GROW_PLIST(    NamesRNam,   CountRNam );
-        SET_LEN_PLIST( NamesRNam,   CountRNam );
-        SET_ELM_PLIST( NamesRNam,   CountRNam, string );
-        CHANGED_BAG(   NamesRNam );
-    }
+    CountRNam++;
+    rnam = INTOBJ_INT(CountRNam);
+    SET_ELM_PLIST( HashRNam, pos, rnam );
+    namx[0] = '\0';
+    SyStrncat( namx, name, 1023 );
+    string = NEW_STRING( SyStrlen(namx) );
+    SyStrncat( CSTR_STRING(string), namx, SyStrlen(namx) );
+    GROW_PLIST(    NamesRNam,   CountRNam );
+    SET_LEN_PLIST( NamesRNam,   CountRNam );
+    SET_ELM_PLIST( NamesRNam,   CountRNam, string );
+    CHANGED_BAG(   NamesRNam );
 
     /* if the table is too crowed, make a larger one, rehash the names     */
     if ( SizeRNam < 3 * CountRNam / 2 ) {
