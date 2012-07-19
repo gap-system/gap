@@ -874,7 +874,8 @@ InstallGlobalFunction( IsPackageMarkedForLoading, function( name, version )
 ##
 InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
     local len, sep, i, str, authors, role, fill, person;
-
+    
+    Print ("Munevera\n");
     # Start with a row of `-' signs.
     len:= SizeScreen()[1] - 3;
     if GAPInfo.TermEncoding = "UTF-8" then
@@ -1152,7 +1153,7 @@ InstallGlobalFunction( LoadPackageDocumentation, function( arg )
 BindGlobal( "LoadPackage_ReadImplementationParts",
     function( secondrun, banner )
     local pair, info, bannerstring, fun, u, pkgname, namespace;
-
+    
     for pair in secondrun do
       if pair[2] <> fail then
         GAPInfo.PackageCurrent:= pair[1];
@@ -1494,7 +1495,8 @@ InstallGlobalFunction( InstalledPackageVersion, function( name )
 ##
 InstallGlobalFunction( AutoloadPackages, function()
     local banner, pair, excludedpackages, name, record;
-
+    
+    
 #T remove this as soon as `BANNER' is not used anymore in packages
 if IsBoundGlobal( "BANNER" ) then
   banner:= ValueGlobal( "BANNER" );
@@ -1528,7 +1530,7 @@ BindGlobal( "BANNER", false );
         PopOptions();
       fi;
     fi;
-
+    
     if GAPInfo.CommandLineOptions.A or ValueOption( "OnlyNeeded" ) = true then
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           "omitting suggested packages", "GAP" );
@@ -1552,7 +1554,7 @@ BindGlobal( "BANNER", false );
           else
             LogPackageLoadingMessage( PACKAGE_DEBUG,
                 Concatenation( "considering for autoloading: ", pair[1] ),
-                "GAP" );
+                    "GAP" );
             if LoadPackage( pair[1], pair[2], false ) <> true then
               LogPackageLoadingMessage( PACKAGE_DEBUG,
                    Concatenation( "suggested package ", pair[1],

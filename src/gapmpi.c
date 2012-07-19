@@ -476,18 +476,33 @@ Obj MPIabort( Obj self, Obj errorcode )
 }
 
 Obj MPIsend( Obj self, Obj args )
-{ Obj buf, dest, tag;
+{ Obj buf, dest, tag, gulag=0;
   MPIARGCHK(2, 3, MPI_Send( <string buf>, <int dest>[, <opt int tag = 0> ] ));
   buf = ELM_LIST( args, 1 );
   dest = ELM_LIST( args, 2 );
   tag = ( LEN_LIST(args) > 2 ? ELM_LIST( args, 3 ) : 0 );
   ConvString( buf );
   MPI_Send( ((char*)CSTR_STRING(buf)),
-			SyStrlen((const Char*)CSTR_STRING(buf)), /* don't incl. \0 */
-			MPIdatatype_infer(buf), INT_INTOBJ(dest), INT_INTOBJ(tag),
-			MPI_COMM_WORLD);
+            SyStrlen((const Char*)CSTR_STRING(buf)), /* don't incl. \0 */
+            MPIdatatype_infer(buf), INT_INTOBJ(dest), INT_INTOBJ(tag),
+            MPI_COMM_WORLD);
   return 0;
 }
+
+Obj MPIbcast( Obj self, Obj args)
+{
+  volatile Obj buf, dest, tag;
+  MPIARGCHK(1,1, MPI_Bcast( <string buf> ));
+  buf = ELM_LIST (args, 1);
+  ConvString(buf);
+  MPI_Bcast( (char *)CSTR_STRING(buf),
+             SyStrlen((const Char*)CSTR_STRING(buf)),
+             MPIdatatype_infer(buf), INT_INTOBJ(MPIcomm_rank(0)),
+             MPI_COMM_WORLD);
+  return 0;
+  
+}
+
 
 Obj MPIrecv( Obj self, Obj args )
 { volatile Obj buf, source, tag; /* volatile to satisfy gcc compiler */
@@ -532,29 +547,30 @@ Obj MPIprobe( Obj self, Obj args )
 }
 
 Obj MPIiprobe( Obj self, Obj args )
-{ int flag;
+{ int flag=0, budj;
   volatile Obj source, tag; /* volatile to satisfy gcc compiler */
-  MPIARGCHK( 0, 2, MPI_Iprobe( <opt int source = MPI_ANY_SOURCE>[, <opt int tag = MPI_ANY_TAG> ] ) );
-  source = ( LEN_LIST(args) > 0 ? ELM_LIST( args, 1 ) :
-	     INTOBJ_INT(MPI_ANY_SOURCE) );
-  tag = ( LEN_LIST(args) > 1 ? ELM_LIST( args, 2 ) :
-	  INTOBJ_INT(MPI_ANY_TAG) );
-  if ( ! MPI_READ_ERROR() )
-    MPI_Iprobe(INT_INTOBJ(source), INT_INTOBJ(tag),
-		 MPI_COMM_WORLD, &flag, &last_status);
-  MPI_READ_DONE();
+  //MPIARGCHK( 0, 2, MPI_Iprobe( <opt int source = MPI_ANY_SOURCE>[, <opt int tag = MPI_ANY_TAG> ] ) );
+  //source = ( LEN_LIST(args) > 0 ? ELM_LIST( args, 1 ) :
+	//     INTOBJ_INT(MPI_ANY_SOURCE) );
+  //tag = ( LEN_LIST(args) > 1 ? ELM_LIST( args, 2 ) :
+	//  INTOBJ_INT(MPI_ANY_TAG) );
+  //if ( ! MPI_READ_ERROR() )
+  //MPI_Iprobe(INT_INTOBJ(source), INT_INTOBJ(tag),
+  // MPI_COMM_WORLD, &flag, &last_status);
+  //MPI_READ_DONE();
+  MPI_Iprobe (MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &flag, &last_status);
   return (flag ? True : False);
 }
 
 /*====================================================================
- * Initialization of ParGAP/MPI
+ * Initialization of ParGAPPI
  * There are two entry points for initialization.
  * InitPargapmpi() is called early in gap.c:main() and modifies
  *   argc, argv, BreakOnError, SyBanner, SyQuiet, etc.
  *   Most of the modifications are executed only on the slaves.
  * InitInfoPargapmpi() is the traditional GAP-4 module interface, and is
  *   invoked later in gap.c via InitFuncsBuiltinModules[].
- *   It invokes InitLibrary(), which invokes Init_MPIvars(), defined below.
+ *   It invokes InitLibrary(), which invokes Init_Mvars(), defined below.
  *   It modifies GAP only if MPI_Initialized() is true.
  * Note that ParGAP/MPI shutdown is handled via GAP's InstallAtExit()
  *   from within slavelist.g
@@ -674,6 +690,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "MPI_Attr_get" , 1, "keyval", MPIattr_get, "src/gapmpi.c:MPI_Attr_get" },
     { "MPI_Abort" , 1, "errorcode", MPIabort, "src/gapmpi.c:MPI_Abort" },
     { "MPI_Send" , -1, "args", MPIsend, "src/gapmpi.c:MPI_Send" },
+    { "MPI_Bcast" , -1, "args", MPIbcast, "src/gapmpi.c:MPI_Bcast" },
     { "MPI_Recv" , -1, "args", MPIrecv, "src/gapmpi.c:MPI_Recv" },
     { "MPI_Probe" , -1, "args", MPIprobe, "src/gapmpi.c:MPI_Probe" },
     { "MPI_Iprobe" , -1, "args", MPIiprobe, "src/gapmpi.c:MPI_Iprobe" },

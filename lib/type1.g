@@ -713,32 +713,32 @@ BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags",
         FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
         
 BIND_GLOBAL( "Objectify", function(type, obj)
-    local flags;
-    if not IsType( type )  then
-        Error("<type> must be a type");
-    fi;
-    flags := FlagsType(type);
-    if IS_LIST( obj )  then
-        if IS_SUBSET_FLAGS(flags, IsAtomicPositionalObjectRepFlags) then
-            FORCE_SWITCH_OBJ( obj, FixedAtomicList(obj) );
-        fi;
-        SET_TYPE_POSOBJ( obj, type );
-    elif IS_REC( obj )  then
-        if IS_ATOMIC_RECORD(obj) then
-            if IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
-                FORCE_SWITCH_OBJ( obj, FromAtomicRecord(obj) );
-            fi;
-        elif not IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
-            FORCE_SWITCH_OBJ( obj, AtomicRecord(obj) );
-        fi;
-
-        SET_TYPE_COMOBJ( obj, type );
+  local flags;
+  if not IsType( type )  then
+    Error("<type> must be a type");
   fi;
-    if not IsNoImmediateMethodsObject(obj) then
-      RunImmediateMethods( obj, type![2] );
+  flags := FlagsType(type);
+  if IS_LIST( obj )  then
+    if IS_SUBSET_FLAGS(flags, IsAtomicPositionalObjectRepFlags) then
+      FORCE_SWITCH_OBJ( obj, FixedAtomicList(obj) );
     fi;
+    SET_TYPE_POSOBJ( obj, type );
+  elif IS_REC( obj )  then
+    if IS_ATOMIC_RECORD(obj) then
+      if IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
+        FORCE_SWITCH_OBJ( obj, FromAtomicRecord(obj) );
+      fi;
+    elif not IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
+      FORCE_SWITCH_OBJ( obj, AtomicRecord(obj) );
+    fi;
+    
+    SET_TYPE_COMOBJ( obj, type );
+  fi;
+  if not IsNoImmediateMethodsObject(obj) then
+    RunImmediateMethods( obj, type![2] );
+  fi;
   if IsReadOnlyPositionalObjectRep(obj) then
-      MakeReadOnlyObj(obj);
+    MakeReadOnlyObj(obj);
   fi;
   return obj;
 end );

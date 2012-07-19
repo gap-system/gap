@@ -113,8 +113,6 @@
 #include        <string.h>
 #include        "system.h"              /* Ints, UInts                     */
 
-
-
 #define INCLUDE_DECLARATION_PART
 #include        "gasman.h"              /* garbage collector               */
 #undef  INCLUDE_DECLARATION_PART
@@ -140,8 +138,6 @@
 #include        "calls.h"               /* calls                           */
 #include        "vars.h"                /* variables                       */
 #endif
-
-
 
 /****************************************************************************
 **

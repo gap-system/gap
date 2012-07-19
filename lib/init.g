@@ -1209,9 +1209,14 @@ HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
 ##  ParGAP loading and switching into the slave mode hook
 ##
 if IsBoundGlobal("MPI_Initialized") then
-    LoadPackage("mpigap");
+  MakeReadWriteGVar("MessageManager");
+  MessageManager := fail;
 fi;
-if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
+ReadLib("tasks.g");
+if IsBoundGlobal("MPI_Initialized") then
+  LoadPackage("mpigap", false);
+fi;
+#if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
 
 
 #############################################################################
@@ -1237,6 +1242,24 @@ CallAndInstallPostRestore( function()
     od;
 end );
 
+<<<<<<< local
+
+TaskManager := CreateThread(Tasks.TaskManagerFunc);
+MakeReadOnlyGVar("TaskManager");
+
+if IsBoundGlobal("MPI_Initialized") then
+  MessageManager := CreateThread(MessageManagerFunc);
+  MakeReadOnlyGVar("MessageManager");
+  if MPI_Comm_rank() <> 0 then
+    WaitThread(TaskManager);
+    WaitThread(MessageManager);
+    MPI_Finalize();
+  fi;
+fi;
+
+
+=======
+>>>>>>> other
 if THREAD_UI() then
   ReadLib("textui.g");
   MULTI_SESSION();
