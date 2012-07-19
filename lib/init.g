@@ -1242,8 +1242,6 @@ CallAndInstallPostRestore( function()
     od;
 end );
 
-<<<<<<< local
-
 TaskManager := CreateThread(Tasks.TaskManagerFunc);
 MakeReadOnlyGVar("TaskManager");
 
@@ -1258,8 +1256,6 @@ if IsBoundGlobal("MPI_Initialized") then
 fi;
 
 
-=======
->>>>>>> other
 if THREAD_UI() then
   ReadLib("textui.g");
   MULTI_SESSION();
