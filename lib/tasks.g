@@ -511,7 +511,7 @@ PrintTaskManStats := function()
     Print ("**Tasks created : ", TaskStats.tasksCreated, "\n");
     Print ("**Tasks executed : ", TaskStats.tasksExecuted, "\n");
     Print ("**Tasks offloaded : ", TaskStats.tasksOffloaded, "\n");
-    Print ("**Tasks stolen : ", TaskStats.tasksStolen, "\n");
+    Print ("**Tasks imported : ", TaskStats.tasksStolen, "\n");
   od;
 end;
 
