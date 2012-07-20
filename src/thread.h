@@ -71,7 +71,7 @@ typedef void (*TraversalFunction)(Obj);
 extern TraversalFunction TraversalFunc[];
 
 Obj ReachableObjectsFrom(Obj obj);
-Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList);
+Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm);
 Obj CopyTraversed(Obj traversed);
 
 void HashLock(void *obj);

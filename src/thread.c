@@ -58,8 +58,9 @@ typedef struct TraversalState {
   UInt hashSize;
   UInt hashCapacity;
   UInt hashBits;
-  Region *dataSpace;
+  Region *region;
   int delimitedCopy;
+  int (*traversalCheck)(Bag bag);
 } TraversalState;
 
 Region *LimboRegion, *ReadOnlyRegion, *ProtectedRegion;
@@ -1071,7 +1072,7 @@ static inline Obj ReplaceByCopy(Obj obj)
   if (found)
     return ELM_PLIST(traversal->copyMap, found);
   else if (traversal->delimitedCopy) {
-    if (!IS_BAG_REF(obj) || !DS_BAG(obj) || DS_BAG(obj) == traversal->dataSpace)
+    if (!IS_BAG_REF(obj) || !DS_BAG(obj) || DS_BAG(obj) == traversal->region)
       return obj;
     else
       return GetRegionOf(obj)->obj;
@@ -1242,8 +1243,12 @@ void QueueForTraversal(Obj obj)
   if (!IS_BAG_REF(obj))
     return; /* skip ojects that aren't bags */
   traversal = currentTraversal();
-  if (DS_BAG(obj) != traversal->dataSpace)
+  if (!traversal->traversalCheck(obj))
+    return;
+#if 0
+  if (DS_BAG(obj) != traversal->region)
     return; /* stop traversal at the border of a region */
+#endif
   if (!SeenDuringTraversal(obj))
     return; /* don't revisit objects that we've already seen */
   if (traversal->listSize == traversal->listCapacity)
@@ -1260,13 +1265,18 @@ void QueueForTraversal(Obj obj)
   ADDR_OBJ(traversal->list)[++traversal->listSize] = obj;
 }
 
-void TraverseRegionFrom(TraversalState *traversal, Obj obj)
+void TraverseRegionFrom(
+    TraversalState *traversal,
+    Obj obj,
+    int (*traversalCheck)(Obj)
+)
 {
-  if (!IS_BAG_REF(obj) || !CheckReadAccess(obj)) {
+  if (!IS_BAG_REF(obj) || !DS_BAG(obj) || !CheckReadAccess(obj)) {
     traversal->list = NewList(0);
     return;
   }
-  traversal->dataSpace = DS_BAG(obj);
+  traversal->traversalCheck = traversalCheck;
+  traversal->region = DS_BAG(obj);
   QueueForTraversal(obj);
   while (traversal->listCurrent < traversal->listSize)
   {
@@ -1293,13 +1303,26 @@ void TraverseRegionFrom(TraversalState *traversal, Obj obj)
   SET_LEN_PLIST(traversal->list, traversal->listSize);
 }
 
+static int IsReadable(Obj obj) {
+  return CheckReadAccess(obj);
+}
+
+static int IsSameRegion(Obj obj) {
+  return DS_BAG(obj) == currentTraversal()->region;
+}
+
+static int IsMutable(Obj obj) {
+  return CheckReadAccess(obj) && IS_MUTABLE_OBJ(obj);
+}
+
 Obj ReachableObjectsFrom(Obj obj)
 {
   TraversalState traversal;
   if (!IS_BAG_REF(obj) || DS_BAG(obj) == NULL)
     return NewList(0);
   BeginTraversal(&traversal);
-  TraverseRegionFrom(&traversal, obj);
+  traversal.traversalCheck = IsSameRegion;
+  TraverseRegionFrom(&traversal, obj, IsSameRegion);
   EndTraversal();
   return traversal.list;
 }
@@ -1329,7 +1352,7 @@ static Obj CopyBag(Obj copy, Obj original)
   return copy;
 }
 
-Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList)
+Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
 {
   Obj *traversed, *copies, copyList;
   TraversalState traversal;
@@ -1344,7 +1367,13 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList)
       return obj;
   }
   BeginTraversal(&traversal);
-  TraverseRegionFrom(&traversal, obj);
+  if (imm) {
+    if (!IS_MUTABLE_OBJ(obj))
+      return obj;
+    TraverseRegionFrom(&traversal, obj, IsMutable);
+  }
+  else
+    TraverseRegionFrom(&traversal, obj, IsSameRegion);
   traversed = ADDR_OBJ(traversal.list);
   len = LEN_PLIST(traversal.list);
   copyList = NewList(len);
@@ -1371,6 +1400,12 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList)
     if (copies[i])
       CopyBag(copies[i], traversed[i]);
   EndTraversal();
+  if (imm) {
+    for (i=1; i<=len; i++) {
+      if (copies[i])
+        MakeImmutable(copies[i]);
+    }
+  }
   if (asList)
     return copyList;
   else

@@ -2517,12 +2517,12 @@ Obj FuncREACHABLE(Obj self, Obj obj)
 
 Obj FuncCLONE_REACHABLE(Obj self, Obj obj)
 {
-  return CopyReachableObjectsFrom(obj, 0, 0);
+  return CopyReachableObjectsFrom(obj, 0, 0, 0);
 }
 
 Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
 {
-  return CopyReachableObjectsFrom(obj, 1, 0);
+  return CopyReachableObjectsFrom(obj, 1, 0, 0);
 }
 
 Obj FuncNewRegion(Obj self, Obj arg)

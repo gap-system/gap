@@ -1184,7 +1184,7 @@ static Obj CreateTLDefaults(Obj defrec) {
   memcpy(ADDR_OBJ(result), ADDR_OBJ(defrec), SIZE_BAG(defrec));
   for (i = 1; i <= LEN_PREC(defrec); i++) {
     SET_ELM_PREC(result, i,
-      CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1));
+      CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1, 0));
   }
   TLS->currentRegion = savedDS;
   return NewAtomicRecordFrom(result);
@@ -1206,7 +1206,7 @@ static Obj NewTLRecord(Obj defaults, Obj constructors) {
 void SetTLDefault(Obj record, UInt rnam, Obj value) {
   Obj inner = GetTLInner(record);
   SetARecordField(ADDR_OBJ(inner)[TLR_DEFAULTS],
-    rnam, CopyReachableObjectsFrom(value, 0, 1));
+    rnam, CopyReachableObjectsFrom(value, 0, 1, 0));
 }
 
 void SetTLConstructor(Obj record, UInt rnam, Obj func) {
