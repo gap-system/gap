@@ -702,6 +702,10 @@ BindGlobal( "ShowKernelInformation", function()
       if GAPInfo.CommandLineOptions.L <> "" then
         Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
       fi;
+      Print("\n",
+            "#W <<< This is an alpha release.      >>>\n",
+            "#W <<< Do not use for important work. >>>\n",
+	    "\n");
     fi;
 end );
 
