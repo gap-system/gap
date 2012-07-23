@@ -237,7 +237,7 @@ ExecuteTask:= atomic function(readwrite task)
   local channels, t, taskdata, worker;
   
   task.started := true;
-  task.completed := false;
+  task.complete := false;
 
   atomic TaskData do
     TaskData.TaskPoolLen := TaskData.TaskPoolLen+1;
