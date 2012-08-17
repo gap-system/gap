@@ -4317,12 +4317,17 @@ void            IntrUnbComObjName (
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    /* unbind the element of the record             			   */
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
+	break;
+      default:
         UNB_REC( record, rnam );
+	break;
     }
 
     /* push void                                                           */
@@ -4346,12 +4351,17 @@ void            IntrUnbComObjExpr ( void )
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    /* unbind the element of the record             			   */
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
+	break;
+      default:
         UNB_REC( record, rnam );
+	break;
     }
 
     /* push void                                                           */

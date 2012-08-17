@@ -2432,11 +2432,16 @@ UInt            ExecUnbComObjName (
     rnam = (UInt)(ADDR_STAT(stat)[1]);
 
     /* unbind the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
+	break;
+      default:
         UNB_REC( record, rnam );
+	break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -2465,11 +2470,16 @@ UInt            ExecUnbComObjExpr (
     rnam = RNamObj( EVAL_EXPR( ADDR_STAT(stat)[1] ) );
 
     /* unbind the element of the record                                    */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
+	break;
+      default:
         UNB_REC( record, rnam );
+	break;
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
