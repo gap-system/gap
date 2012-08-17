@@ -319,7 +319,7 @@ Obj             FuncAPPEND_LIST_INTR (
 	  if (IS_MUTABLE_PLIST(list2))
 	    RetypeBag(list1, TNUM_OBJ(list2));
 	  else
-	    RetypeBag(list2, TNUM_OBJ(list2) - IMMUTABLE);
+	    RetypeBag(list1, TNUM_OBJ(list2) - IMMUTABLE);
 	  break;
 	case T_PLIST_HOM_NSORT:
 	case T_PLIST_HOM_SSORT:
