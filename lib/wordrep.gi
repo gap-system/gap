@@ -898,7 +898,8 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     BindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 8Bits_ObjByVector);
     BindOnce(K, AWP_FUN_ASSOC_WORD   , 8Bits_AssocWord);
     F!.types[1]:= K;
-
+    
+    K:= NewType( F, Is16BitsAssocWord and req );
     BindOnce(K, AWP_PURE_TYPE        , K);
     BindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[2]);
     BindOnce(K, AWP_NR_GENS          , rank);
