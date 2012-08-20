@@ -1,9 +1,0 @@
-$Id: Changelog.r13,v 1.1 2000/11/24 15:24:26 gap Exp $
-
-This file describes the changes from xgap4r12 to xgap4r13:
-
- * XGAP now reports "4.13" as version number instead of "4.02".
-
- * XGAP compiles on X11R6.4, which is included for example in
-   Suse Linux 7.0 and RedHat Linux 7.0.
-

@@ -1,9 +1,0 @@
-#############################################################################
-##
-##  This heuristic script tries to correct the output produced by `tth' when
-##  processing the file `ctbldiff.tex'.
-##  (We want top alignment of all table cells,
-##  and apparently `tth' opens too many tables which are not closed.)
-##
-sed -e 's/<table border="0"><tr><td><\/td><td valign="top"><table border="0">/<td valign="top"><table border="0">/;s/<td>/<td valign="top">/g;s/<td a/<td valign="top" a/g' < $1 > $2
-

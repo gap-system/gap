@@ -1,5 +1,0 @@
-parsemiechelonmat.g :  Implements ParSemiEchelonMat(mat), a parallel version
-		  of lib/matrix.gi: SemiEchelonMat(mat);
-ParList( list, fnc ) : A parallelization of List( list, fnc )
-		  (see lib/slavelist.g for source code)
-parmultmat.g :    Implements ParMultMat( m1, m2 ) for multiplying matrices

@@ -1,5 +1,0 @@
-@msfiles = ("transemi");
-@gdfiles  = ("../pkg/transemi/gap/transemi");
-$LIB = "../../../lib";
-
-

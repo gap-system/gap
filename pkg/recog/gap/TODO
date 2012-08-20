@@ -1,7 +1,0 @@
-> Get rid of fixed points (by looking at SHALLOW_SIZE)
-SLPforElement methods without evaluation --> like in SiftAsWord
-Giant-Code: Push forward
-Switch order of generators in SLPforSn and SLPforAn
-IsMember for (ri,x) recursively
-Size for (ri)
-Make things into functions

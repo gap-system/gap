@@ -1,1 +1,0 @@
-setstab -image $*

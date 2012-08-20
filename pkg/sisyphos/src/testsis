@@ -1,9 +1,0 @@
-#!/bin/sh
-SISLIB=../
-export SISLIB
-./sis -m 200000 -t 1200000 -b -q <<LABEL >testsis.res
-batch ( "testsis.in" );
-quit;
-LABEL
-unset SISLIB
-diff testsis.out testsis.res

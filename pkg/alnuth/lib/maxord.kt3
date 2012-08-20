@@ -1,6 +1,0 @@
-# KASH3 code used by MaximalOrderDescriptionKant
-# INPUT: polynomial f with integer coefficients
-# compute basis of maximal order
-o := MaximalOrder( f ); # was 'OrderMaximal'
-b := BasisMatrix( o );  # was 'List( Basis( o ), EltToList )'
-# OUTPUT: b
