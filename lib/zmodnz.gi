@@ -988,6 +988,8 @@ InstallGlobalFunction( ZmodpZNC, function( p )
         Add( Z_MOD_NZ[2], F );
         SortParallel( Z_MOD_NZ[1], Z_MOD_NZ[2] );
         return F;
+      else
+        return Z_MOD_NZ[2][ pos ];        
       fi;  
     od;
 end );
