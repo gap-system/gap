@@ -412,10 +412,10 @@ LockAndMigrateObj(HELP_BOOKS_INFO,HELP_REGION);
 InstallGlobalFunction(HELP_BOOK_INFO, function( book )
 local pos, bnam, nnam, path, dirs, six, stream, line, handler;
 
-# if this is already a record return it
-if IsRecord(book)  then
-  return book;
-fi;
+  # if this is already a record return it
+  if IsRecord(book)  then
+    return book;
+  fi;
 
 atomic readwrite HELP_REGION do
   

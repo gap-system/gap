@@ -137,35 +137,35 @@ end);
 ##  <#/GAPDoc>
 ##  
 InstallValue(TextAttr, rec());
-TextAttr.CSI := "\033[";
-TextAttr.reset := Concatenation(TextAttr.CSI, "0m");
-TextAttr.normal := Concatenation(TextAttr.CSI, "22m");
-TextAttr.bold := Concatenation(TextAttr.CSI, "1m");
-TextAttr.underscore := Concatenation(TextAttr.CSI, "4m");
-TextAttr.blink := Concatenation(TextAttr.CSI, "5m");
-TextAttr.reverse := Concatenation(TextAttr.CSI, "7m");
+TextAttr.CSI := `"\033[";
+TextAttr.reset := `Concatenation(TextAttr.CSI, "0m");
+TextAttr.normal := `Concatenation(TextAttr.CSI, "22m");
+TextAttr.bold := `Concatenation(TextAttr.CSI, "1m");
+TextAttr.underscore := `Concatenation(TextAttr.CSI, "4m");
+TextAttr.blink := `Concatenation(TextAttr.CSI, "5m");
+TextAttr.reverse := `Concatenation(TextAttr.CSI, "7m");
 # foreground colors 0..7 (default: black, red, green, brown, blue, magenta,
 # cyan, white
-TextAttr.0 := Concatenation(TextAttr.CSI, "30m");
-TextAttr.1 := Concatenation(TextAttr.CSI, "31m");
-TextAttr.2 := Concatenation(TextAttr.CSI, "32m");
-TextAttr.3 := Concatenation(TextAttr.CSI, "33m");
-TextAttr.4 := Concatenation(TextAttr.CSI, "34m");
-TextAttr.5 := Concatenation(TextAttr.CSI, "35m");
-TextAttr.6 := Concatenation(TextAttr.CSI, "36m");
-TextAttr.7 := Concatenation(TextAttr.CSI, "37m");
+TextAttr.0 := `Concatenation(TextAttr.CSI, "30m");
+TextAttr.1 := `Concatenation(TextAttr.CSI, "31m");
+TextAttr.2 := `Concatenation(TextAttr.CSI, "32m");
+TextAttr.3 := `Concatenation(TextAttr.CSI, "33m");
+TextAttr.4 := `Concatenation(TextAttr.CSI, "34m");
+TextAttr.5 := `Concatenation(TextAttr.CSI, "35m");
+TextAttr.6 := `Concatenation(TextAttr.CSI, "36m");
+TextAttr.7 := `Concatenation(TextAttr.CSI, "37m");
 # background colors 0..7
-TextAttr.b0 := Concatenation(TextAttr.CSI, "40m");
-TextAttr.b1 := Concatenation(TextAttr.CSI, "41m");
-TextAttr.b2 := Concatenation(TextAttr.CSI, "42m");
-TextAttr.b3 := Concatenation(TextAttr.CSI, "43m");
-TextAttr.b4 := Concatenation(TextAttr.CSI, "44m");
-TextAttr.b5 := Concatenation(TextAttr.CSI, "45m");
-TextAttr.b6 := Concatenation(TextAttr.CSI, "46m");
-TextAttr.b7 := Concatenation(TextAttr.CSI, "47m");
+TextAttr.b0 := `Concatenation(TextAttr.CSI, "40m");
+TextAttr.b1 := `Concatenation(TextAttr.CSI, "41m");
+TextAttr.b2 := `Concatenation(TextAttr.CSI, "42m");
+TextAttr.b3 := `Concatenation(TextAttr.CSI, "43m");
+TextAttr.b4 := `Concatenation(TextAttr.CSI, "44m");
+TextAttr.b5 := `Concatenation(TextAttr.CSI, "45m");
+TextAttr.b6 := `Concatenation(TextAttr.CSI, "46m");
+TextAttr.b7 := `Concatenation(TextAttr.CSI, "47m");
 
-TextAttr.delline := Concatenation(TextAttr.CSI, "2K");
-TextAttr.home := Concatenation(TextAttr.CSI, "1G");
+TextAttr.delline := `Concatenation(TextAttr.CSI, "2K");
+TextAttr.home := `Concatenation(TextAttr.CSI, "1G");
 
 MakeImmutable(WHITESPACE);
 MakeImmutable(CAPITALLETTERS);

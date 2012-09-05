@@ -1615,7 +1615,11 @@ InstallGlobalFunction( GAPDocManualLabFromSixFile,
     local stream, entries, SecNumber, esctex, file;
 
     stream:= InputTextFile( sixfilepath );
-    entries:= HELP_BOOK_HANDLER.GapDocGAP.ReadSix( stream ).entries;
+    
+    atomic readonly HELP_REGION do
+      entries:= HELP_BOOK_HANDLER.GapDocGAP.ReadSix( stream ).entries;
+    od;
+    
     SecNumber:= function( list )
       if IsEmpty( list ) or list[1] = 0 then
         return "";

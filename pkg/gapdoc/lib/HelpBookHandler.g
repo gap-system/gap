@@ -85,13 +85,15 @@ end;
 HELP_BOOK_HANDLER.GapDocGAP.setTextTheme();
 
 # helper function for showing matches in current text theme
-HELP_BOOK_HANDLER.GapDocGAP.apptheme := atomic function( readwrite res, readonly theme)
+HELP_BOOK_HANDLER.GapDocGAP.apptheme := function(res, theme)
   local a;
   if not IsBound(res.theme) or res.theme <> theme then
-    for a in res.entries do
-      a[1] := SubstituteEscapeSequences(a[8], theme);
-    od;
-    res.theme := ShallowCopy(theme);
+    atomic readwrite res do
+      for a in res.entries do
+        a[1] := SubstituteEscapeSequences(a[8], theme);
+      od;
+      res.theme := ShallowCopy(theme);
+    od;  
   fi;
 end;
 

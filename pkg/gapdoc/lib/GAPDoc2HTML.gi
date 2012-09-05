@@ -1628,16 +1628,20 @@ end;
 GAPDoc2HTMLProcs.ResolveExternalRef := function(bookname,  label, nr)
   local info, match, res;
   info := HELP_BOOK_INFO(bookname);
+  atomic readonly HELP_REGION do
   if info = fail then
     return fail;
   fi;
+  od;
   match := Concatenation(HELP_GET_MATCHES(info, SIMPLE_STRING(label), true));
   if Length(match) < nr then
     return fail;
   fi;
+  atomic readwrite HELP_REGION do
   res := HELP_BOOK_HANDLER.(info.handler).HelpData(info, match[nr][2], "ref");
   res[1] := SubstitutionSublist(res[1], " (not loaded): ", ": ", "one");
   return res;
+  od;
 end;
 
 ##  helper for external URLs, remove GAPDocStyle part and maybe add "_mj"
