@@ -741,7 +741,7 @@ Obj FuncHaveWriteAccess(Obj self, Obj obj)
 Obj FuncHaveReadAccess(Obj self, Obj obj)
 {
   Region* ds = GetRegionOf(obj);
-  if (ds != NULL && (ds->owner == TLS || ds->readers[TLS->threadID+1] || ds->alt_owner == TLS))
+  if (ds != NULL && CheckReadAccess(obj))
     return True;
   else
     return False;
