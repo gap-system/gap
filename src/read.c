@@ -1467,10 +1467,12 @@ void ReadLiteral (
     /* `Literal								   */
     else if ( TLS->symbol == S_BACKQUOTE ) {
         Match( S_BACKQUOTE, "`", follow );
-	IntrRefGVar(GVarName("MakeLiteral"));
-	IntrFuncCallBegin();
-	ReadAtom( follow, 'r' );
-	IntrFuncCallEnd(1, 0, 1);
+	if (!READ_ERROR()) {
+	  IntrRefGVar(GVarName("MakeLiteral"));
+	  IntrFuncCallBegin();
+	  ReadAtom( follow, 'r' );
+	  IntrFuncCallEnd(1, 0, 1);
+	}
     }
 
 
@@ -2543,6 +2545,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     /* end the interpreter                                                 */
     if ( ! READ_ERROR() ) {
         type = IntrEnd( 0UL );
+        PopRegionAutoLocks(lockSP);
     }
     else {
         IntrEnd( 1UL );

@@ -616,6 +616,39 @@ Obj FuncRegionOf(Obj self, Obj obj) {
 
 /****************************************************************************
 **
+*F FuncSetAutoLockRegion ... change the autolock status of a region
+*F FuncIsAutoLockRegion ... query the autolock status of a region
+**
+*/
+
+Obj FuncSetAutoLockRegion(Obj self, Obj obj, Obj flag) {
+  Region *region = GetRegionOf(obj);
+  if (!region || region->fixed_owner) {
+    ArgumentError("SetAutoLockRegion: cannot change autolock status of this region");
+  }
+  if (flag == True) {
+    region->autolock = 1;
+    return (Obj) 0;
+  } else if (flag == False || flag == Fail) {
+    region->autolock = 0;
+    return (Obj) 0;
+  } else {
+    ArgumentError("SetAutoLockRegion: Second argument must be boolean");
+    return (Obj) 0; /* flow control hint */
+  }
+}
+
+Obj FuncIsAutoLockRegion(Obj self, Obj obj) {
+  Region *region = GetRegionOf(obj);
+  if (!region)
+    return False;
+  return region->autolock ? True : False;
+}
+
+
+
+/****************************************************************************
+**
 *F FuncSetRegionName ... set the name of an object's region
 *F FuncClearRegionName ... clear the name of an object's region
 *F FuncRegionName ... get the name of an object's region
@@ -935,6 +968,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "RegionOf", 1, "object",
       FuncRegionOf, "src/threadapi.c:RegionOf" },
+
+    { "SetAutoLockRegion", 2, "object, boolean",
+      FuncSetAutoLockRegion, "src/threadapi.c:SetAutoLockRegion" },
+
+    { "IsAutoLockRegion", 1, "object",
+      FuncIsAutoLockRegion, "src/threadapi.c:IsAutoLockRegion" },
 
     { "SetRegionName", 2, "obj, name",
       FuncSetRegionName, "src/threadapi.c:SetRegionName" },

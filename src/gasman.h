@@ -1113,6 +1113,7 @@ typedef struct
   Bag obj; /* references a unique T_REGION object per region */
   Bag name; /* name of the region, or a null pointer */
   int fixed_owner;
+  int autolock;
   void *owner; /* opaque thread descriptor */
   void *alt_owner; /* for paused threads */
   unsigned char readers[0];

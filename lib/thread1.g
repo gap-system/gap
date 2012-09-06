@@ -24,6 +24,28 @@ AdoptSingleObj := ADOPT_NORECURSE;
 CopyRegion := CLONE_REACHABLE;
 RegionSubObjects := REACHABLE;
 
+ShareAutoReadObj := function(obj)
+  SHARE(obj);
+  SetAutoLockRegion(obj, true);
+  return obj;
+end;
+
+AutoReadLock := function(obj)
+  SetAutoLockRegion(obj, true);
+  return obj;
+end;
+
+NewAutoReadRegion := function(arg)
+  local region;
+  if LEN_LIST(arg) = 0 then
+    region := NewRegion();
+  else
+    region := NewRegion(arg[1]);
+  fi;
+  SetAutoLockRegion(region, true);
+  return region;
+end;
+
 LockAndMigrateObj := function(obj, target)
   local lock;
   if IsShared(target) and not HaveWriteAccess(target) then
