@@ -8,28 +8,30 @@ end;
 
 ResetCache();
 
-DoTask := function(func, arg)
-  if RunningTasks() > 4 then
-    return ImmediateTask(func, arg);
+DivideAndConquer := function(func, arg, split)
+  if split = 0 then
+    return ImmediateTask(func, arg, split);
   else
-    return RunTask(func, arg);
+    return RunTask(func, arg, split-1);
   fi;
 end;
 
-fib := function(n)
+fib_tasks := function(n, split)
   local task1, task2, result;
   if n <= 2 then
     return 1;
   elif FibCache[n] > 0 then
     return FibCache[n];
   else
-    task1 := DoTask(fib, n-2);
-    task2 := DoTask(fib, n-1);
+    task1 := DivideAndConquer(fib_tasks, n-2, split);
+    task2 := DivideAndConquer(fib_tasks, n-1, split);
     result := TaskResult(task1) + TaskResult(task2);
     FibCache[n] := result;
     return result;
   fi;
 end;
+
+fib := n -> fib_tasks(n, 4);
 
 TestEqual(fib(100), Fibonacci(100), "Concurrent Fibonacci(100) Calculation");
 ResetCache();
