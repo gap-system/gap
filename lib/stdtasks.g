@@ -439,6 +439,7 @@ WAIT_TASK := function(conditions, is_conjunction)
     ShareObj(trigger);
     TASKS.ActivateTrigger(trigger);
     while true do
+      TASKS.WakeWorker();
       WaitSemaphore(semaphore);
       atomic readonly trigger do
         if trigger.done then
