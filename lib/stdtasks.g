@@ -314,7 +314,7 @@ ContributeToMilestone := function(milestone, contribution)
     if milestone.complete then
       return;
     fi;
-    AddSet(milestone.achieved, contribution);
+    AddSet(milestone.achieved, Immutable(contribution));
     if Length(milestone.achieved) < Length(milestone.targets) then
       return;
     fi;
@@ -363,6 +363,28 @@ RunAsyncTask := function(arg)
   return task;
 end;
 
+DelayTask := function(arg)
+  local task;
+  task := TASKS.NewTask(arg[1], arg{[2..Length(arg)]});
+  ShareObj(task);
+  return task;
+end;
+
+ExecuteTask := atomic function(readwrite task)
+  if not task.started and Length(task.conditions) = 0 then
+    task.started := true;
+    TASKS.QueueTask(task);
+  fi;
+end;
+
+MakeAsyncTask := atomic function(readwrite task)
+  if not task.started then
+    task.async := true;
+  else
+    Error("Cannot make a task asynchronous after it has been started");
+  fi;
+end;
+
 ScheduleTask := function(arg)
   local cond, task, trigger;
   cond := arg[1];
@@ -372,6 +394,22 @@ ScheduleTask := function(arg)
     fi;
   od;
   task := TASKS.NewTask(arg[2], arg{[3..Length(arg)]});
+  task.conditions := MakeReadOnlyObj(cond);
+  ShareObj(task);
+  TASKS.QueueTask(task);
+  return task;
+end;
+
+ScheduleAsyncTask := function(arg)
+  local cond, task, trigger;
+  cond := arg[1];
+  atomic readonly cond do
+    if not IS_LIST(cond) then
+      cond := [ cond ];
+    fi;
+  od;
+  task := TASKS.NewTask(arg[2], arg{[3..Length(arg)]});
+  task.async := true;
   task.conditions := MakeReadOnlyObj(cond);
   ShareObj(task);
   TASKS.QueueTask(task);
@@ -464,7 +502,6 @@ ImmediateTask := function(arg)
   return task;
 end;
 
-
 TaskIsAsync := atomic function(readonly task)
   return task.async;
 end;
@@ -491,4 +528,7 @@ RunningTasks := function()
   atomic TASK_QUEUE do
     return TASK_QUEUE.active_count;
   od;
+end;
+
+CullIdleTasks := function()
 end;
