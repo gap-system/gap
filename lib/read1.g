@@ -79,13 +79,17 @@ ReadLib( "cmdledit.g"  );
 ReadLib( "thread.g" );
 ReadLib( "smallrgn.g"  );
 
-#ReadLib( "tasks.g" );
+if IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
+  ReadLib( "stdtasks.g" );
+fi;
 
 ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 ReadLib( "altview.g" );
 
-ReadLib( "tasks.g" );
+if not IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
+  ReadLib( "tasks.g" );
+fi;
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
