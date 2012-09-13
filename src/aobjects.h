@@ -2,6 +2,7 @@
 #define GAP_AOBJECTS_H
 
 StructInitInfo *InitInfoAObjects(void);
+Obj NewAtomicRecord(UInt capacity);
 Obj SetARecordField(Obj record, UInt field, Obj obj);
 Obj GetARecordField(Obj record, UInt field);
 Obj ElmARecord(Obj record, UInt rnam);

@@ -849,7 +849,7 @@ static Obj FuncFromAtomicRecord(Obj self, Obj record)
   return FromAtomicRecord(record);
 }
 
-static Obj NewAtomicRecord(UInt capacity)
+Obj NewAtomicRecord(UInt capacity)
 {
   Obj arec, result;
   AtomicObj *table;
