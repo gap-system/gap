@@ -879,9 +879,15 @@ InstallOtherMethod(ConjugatorOfConjugatorIsomorphism,
   "default -- try RepresentativeAction",true,
   [IsGroupHomomorphism and IsConjugatorIsomorphism],0,
 function(hom)
-local gi,x;
+local gi,x,p;
   gi:=MappingGeneratorsImages(hom);
-  x:=RepresentativeAction(Parent(Source(hom)),gi[1],gi[2],OnTuples);
+  p:=Parent(Source(hom));
+  # in the case of permutation group there is the natural parent S_n which
+  # is used by `IsConjugatorIsomorphism'.
+  if IsPermGroup(p) then
+    p:=SymmetricGroup(MovedPoints(p));
+  fi;
+  x:=RepresentativeAction(p,gi[1],gi[2],OnTuples);
   if x=fail then TryNextMethod();fi;
   return x;
 end);

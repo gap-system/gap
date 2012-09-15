@@ -1478,8 +1478,9 @@ end);
 InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
   local s, c, acts, ttypes, ttypnam, k, act, t, j, iso, w, wemb, a, au,
   auph, aup, n, wl, genimgs, thom, ahom, emb, lemb, d, ge, stbs, orb, base,
-  newbas, obas, p, r, orpo, imgperm, invmap, hom, i, gen,gens,tty;
+  newbas, obas, p, r, orpo, imgperm, invmap, hom, i, gen,gens,tty,count;
   #write g in a nice form
+  count:=ValueOption("count");if count=fail then count:=0;fi;
   s:=Socle(g);
   if IsSimpleGroup(s) then
     return AutomorphismGroupMorpheus(g);
@@ -1560,7 +1561,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
 
       ahom:=GroupHomomorphismByImagesNC(a,aup,GeneratorsOfGroup(a),genimgs);
 
-      emb:=acts[i[j][1]][2]*EmbeddingWreathInWreath(wl,acts[i[2][1]][1],ahom,n);
+      emb:=acts[i[j][1]][2]*EmbeddingWreathInWreath(wl,acts[i[j][1]][1],ahom,n);
       n:=n+acts[i[j][1]][5];
       Add(lemb,emb);
 
@@ -1621,7 +1622,11 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
     # get a set of elements that uniquely describes the point p
     s:=SmallGeneratingSet(Stabilizer(ge,p));
     if ForAny(Difference(i,[p]),j->ForAll(s,x->j^x=j)) then
-      Error("further fixpoint -- ambiguity");
+      # try once more -- there is some randomeness involved
+      if count<10 then
+	return AutomorphismGroupFittingFree(g:count:=count+1);
+      fi;
+      Error("repeated further fixpoint -- ambiguity");
     fi;
     stbs[p]:=s;
     for j in [2..Length(obas)] do

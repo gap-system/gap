@@ -19,6 +19,7 @@ AClib       http://www.icm.tu-bs.de/~beick/soft/aclib/PackageInfo.g
 Alnuth      http://www.icm.tu-bs.de/ag_algebra/software/Alnuth/PackageInfo.g
 ANUPQ       http://www.math.rwth-aachen.de/~Greg.Gamble/ANUPQ/PackageInfo.g
 AtlasRep    http://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep/PackageInfo.g
+AutoDoc     http://wwwb.math.rwth-aachen.de/~gutsche/gap_packages/AutoDoc/PackageInfo.g
 Automata    http://www.fc.up.pt/cmup/mdelgado/automata/PackageInfo.g
 AutomGrp    http://finautom.sourceforge.net/automgrp/PackageInfo.g
 AutPGrp     http://www.icm.tu-bs.de/~beick/soft/autpgrp/PackageInfo.g
@@ -27,6 +28,7 @@ Carat       http://www.math.uni-bielefeld.de/~gaehler/gap45/Carat/PackageInfo.g
 Circle      http://www.cs.st-andrews.ac.uk/~alexk/circle/PackageInfo.g
 Citrus      http://www-groups.mcs.st-and.ac.uk/~jamesm/citrus/PackageInfo.g
 cohomolo    http://www.warwick.ac.uk/staff/D.F.Holt/cohomolo/PackageInfo.g
+Convex      http://wwwb.math.rwth-aachen.de/~gutsche/gap_packages/Convex/PackageInfo.g
 Crime       http://math.uic.edu/~marcus/Crime/PackageInfo.g
 CRISP       http://www.icm.tu-bs.de/~bhoeflin/crisp/PackageInfo.g
 Cryst       http://www.math.uni-bielefeld.de/~gaehler/gap45/Cryst/PackageInfo.g
@@ -86,6 +88,7 @@ orb         http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/o
 ParGAP      http://www.gap-system.org/HostedGapPackages/pargap/PackageInfo.g
 Polenta     http://www.icm.tu-bs.de/ag_algebra/software/Polenta/PackageInfo.g
 Polycyclic  http://www.icm.tu-bs.de/ag_algebra/software/polycyclic/PackageInfo.g
+PolymakeInterface http://wwwb.math.rwth-aachen.de/~gutsche/gap_packages/PolymakeInterface/PackageInfo.g
 polymaking  http://csserver.evansville.edu/~mroeder/polymaking/PackageInfo.g
 qaos        http://www.math.tu-berlin.de/~kant/download/gap/qaos.PackageInfo.g
 QuaGroup    http://www.science.unitn.it/~degraaf/PackageInfo.g
@@ -107,6 +110,7 @@ SONATA      http://www.algebra.uni-linz.ac.at/Sonata/PackageInfo.g
 Sophus      http://www.sztaki.hu/~schneider/Research/Sophus/PackageInfo.g
 SymbCompCC  http://www.icm.tu-bs.de/ag_algebra/software/feichten/SymbCompCC/PackageInfo.g
 TomLib      http://schmidt.nuigalway.ie/tomlib/PackageInfo.g
+ToolsForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/ToolsForHomalg/PackageInfo.g
 toric       http://www.opensourcemath.org/toric/PackageInfo.g
 unipot      http://www.sergei-haller.de/unipot/PackageInfo.g
 UnitLib     http://www.cs.st-andrews.ac.uk/~alexk/unitlib/PackageInfo.g

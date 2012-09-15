@@ -6,24 +6,109 @@
 %Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 %%
 %%  This file is intended to list the changes that will be published with
-%%  the next update of GAP.
-%%  The information is used for producing the announcement of the update,
-%%  the additions to `tst/bugfix.tst', and an HTML page that lists the
-%%  known bugs and intended new features.
+%%  the next GAP release.
 %%
-%%  For adding a change, just copy one of the templates below to the end of the
-%%  file, and enter the relevant information.
+%%  The information is used for producing:
+%%  - the update announcement
+%%  - additions to `tst/bugfix.tst'
+%%  - an HTML page that lists known bugs and intended new features
+%%  - an entry in the `Changes' manual describing the new release.
+%%
+%%  This file contains two sections: 
+%%  - changes in the stable branch (e.g. to make GAP 4.5.7 after GAP 4.5.6)
+%%  - changes in the default branch (e.g. to make GAP 4.6 after GAP 4.5.17)
+%% 
+%%  How to make sure that the change goes into right place:
+%%
+%%  - for adding a change in the stable branch, call 'hg update stable-4.5',
+%%    then just copy one of the templates below to the end of the stable
+%%    branch section and enter the relevant information.
+%%
+%%  - for adding a change in the default branch, call 'hg update default',
+%%    then just copy one of the templates below to the end of the default
+%%    branch section and enter the relevant information.
+%%
+%%  DO NOT enter descriptions of any changes in the default branch into
+%%  the version of this file from the stable branch !!!
 %%
 %%  Formal rules for this file, to allow simple parsing by a script:
 %%          - lines starting with `%' are comments and are ignored
 %%          - lines starting with `!' describe the type of information
-%%            in the following lines until the next `!'-line
+%%            in the following lines until the next `!'-line (therefore, 
+%%            information must be entered *after* and not *in* `!'-lines)
 %%          - each entry must be finished with an `! End' line, otherwise
 %%            the order of entries is irrelevant
 %%          - the text behind the `!' is case and whitespace insensitive
 %%
+%%  To describe the change, you need to fill in least the following fields
+%%  in one of the templates below: "Date", "Changed by", "Type of Change",
+%%  "Description" and "Changeset". Also, fill in "Reported by", if
+%%  applicable, and, if relevant, provide some code in test file format 
+%%  in "Test Code".
+%%
 
-%%%%%%%%%%%%  short template without comments, below is a longer one  %%%%%%%%
+%%%%%%% Template with explanatory comments (the shorter one is below) %%%%%%%
+% [Required] When the change was checked in, format 'yyyy/mm/dd':
+! Date
+
+% [Required] Initials should suffice here:
+! Changed by
+
+% [Optional] Only if applicable:
+! Reported by
+
+% [Required] Choose one or more entries and/or add new ones; 
+% but always use either the 'Fix:' or the 'New:' prefix
+! Type of Change
+Fix: wrong result
+Fix: inappropriate error message
+Fix: infinite loop
+Fix: efficiency issue
+Fix: crash
+New: extended functionality
+New: new functionality
+New: improved documentation
+
+% [Required] For the description use plain text
+! Description
+
+% [Optional, but highly desirable] If possible, provide some code 
+% in test file format which allows to check if a change was applied 
+% to an installation. Provide input and output, including prompts, 
+% exactly as in a GAP session.
+! Test Code
+
+% [Optional] If possible, provide some information about a temporary fix, 
+% workaround etc., maybe with a link to some longer description or a file 
+% with some code. Use plain text here.
+! Prefetch
+
+% [Required] Describe here how to find out where the changes were made. 
+% - for immediate changes in the stable branch, specify changed file(s).
+%   Adding the entry describing the change should be a part of the same 
+%   commit as the change itself, so that adding/merging/backing out the 
+%   change fix will keep dev/Update in sync. If you will need to revisit 
+%   this change before the next GAP release, please update also its entry 
+%   in dev/Update file, specifying the full hexadecimal changeset id 
+%   (160-bit identifier) of the previous change(s).
+% - for changes made in feature branches, the change to dev/Update should
+%   be made in the same feature branch, so it will be merged into default
+%   or stable branch together with actual changes and reverting the merge
+%   will also revert the dev/Update file. Specify here the name of the 
+%   feature branch and possibly the full hexadecimal changeset id (160-bit 
+%   identifier) of the latest revision of the code in this branch before 
+%   the merge. 
+% Since by default, Mercurial displays only the first 12 characters of
+% the full hexadecimal changeset id, to see the full version, use --debug 
+% option, e.g. 'hg --debug log'. Do not use the short revision number 
+% since it makes sense only within your clone.
+! Changeset
+
+% [Required] Finish your entry with this:
+! End
+
+
+%%%%%%%  short template without comments %%%%%%%
 ! Date
 
 ! Changed by
@@ -47,308 +132,452 @@ New: improved documentation
 
 ! Prefetch
 
-! Changed Files
+! Changeset
 
 ! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
-%%%%%%%%%%%%  Template with explanatory comments    %%%%%%%%%%%%%%%%%%%%%%%%%%
-% When the change was checked in, format 'yyyy/mm/dd':
-! Date
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% CHANGES IN THE STABLE BRANCH 
+% (SCROLL DOWN FOR CHANGES IN THE DEFAULT BRANCH WHICH ARE NOT IN STABLE)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Initials should suffice here:
+% add entries here using one of the templates above
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date  
+2012/09/03
 ! Changed by
-
-% Only if applicable:
+SL
 ! Reported by
-
-% Choose one or more entries and/or add new ones; but always use either
-% the 'Fix:' or the 'New:' prefix
+Volker Braun
+! Type of Change
+Fix: inappropriate error message
+! Description
+Old variable still remained in assert causing errors in a 
+debugging compilation.
+! Changeset
+1b55d1e9a11827c708a051e2da1ab1bb2edcabed
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date 
+2012/08/31
+! Changed by 
+SL
+! Reported by 
+Volker Braun
+! Type of Change
+Fix: crash
+! Description
+Crash in garbage collection following call to AClosVec for a GF(2) code
+! Test Code
+gap> x:=[[Z(2)^0,0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,Z(2)^0,0*Z(2),0*Z(2),0*Z(2),Z(2)^0],[0*Z(2),Z(2)^0,0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,Z(2)^0,Z(2)^0,Z(2)^0,0*Z(2),0*Z(2),Z(2)^0,0*Z(2),0*Z(2),Z(2)^0],[0*Z(2),0*Z(2),Z(2)^0,0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),Z(2)^0,0*Z(2),0*Z(2),Z(2)^0,0*Z(2),Z(2)^0,0*Z(2),Z(2)^0],[0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0],[0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),0*Z(2)],[0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,0*Z(2)],[0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0],[0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,Z(2)^0,Z(2)^0,0*Z(2),0*Z(2)],[0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,Z(2)^0,Z(2)^0,0*Z(2)],[0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,Z(2)^0,Z(2)^0],[0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,Z(2)^0,0*Z(2),0*Z(2),0*Z(2),Z(2)^0,Z(2)^0,0*Z(2)],[0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),0*Z(2),Z(2)^0,0*Z(2),Z(2)^0,0*Z(2),Z(2)^0,Z(2)^0,Z(2)^0,0*Z(2),0*Z(2),0*Z(2),Z(2)^0,Z(2)^0]]*Z(2)^0;;
+gap> P:=AClosestVectorDriver(x, GF(2),Z(2)*[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],11,0, true);; 
+gap> GASMAN("collect");;
+! Changeset
+a152a3005c78c985438ca39ce54ec3ae81ffa3da
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date  
+2012/08/12
+! Changed by 
+SL
+! Reported by 
+Stefan Kohl
 ! Type of Change
 Fix: wrong result
-Fix: inappropriate error message
-Fix: infinite loop
-Fix: efficiency issue
-Fix: crash
+! Description
+Very large (more than 1024 digit) integers were not being coded correctly
+in function bodies unless the integer limb size was 16 bits. 
+! Test Code
+gap> f := function() return
+> 100000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 00000000; end;
+function(  ) ... end
+gap> f();
+100000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+00000000
+gap> 
+! Changeset
+856c728998c47646a77075bed81d4a11ce3b0f0c
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/08/13
+! Changed by
+AK
+! Reported by 
+Attila Egri-Nagy.
+! Type of Change
 New: extended functionality
-New: new functionality
-New: improved documentation
-
-% For the description use (X)HTML (preferred) or plain text:
-% For HTML use in particular the following markup:
-%     for package names: <span class="pkgname">...</span>
-%     for GAP names: <span class="code">...</span>
 ! Description
-
-% If possible, provide some code in test file format which allows to check
-% if a change was applied to an installation. Provide input and output,
-% including prompts, exactly as in a GAP session.
+Added the method for Iterator for PositiveIntegers by Attila Egri-Nagy.
 ! Test Code
-
-% If possible, provide some information about a temporary fix, workaround,
-% ..., maybe with a link to some longer description or a file with some
-% code. Use (X)HTML here.
-! Prefetch
-
-% White space separated list of paths relative to the GAP root directory.
-% (This is implicitly contained in the data of the CVS repository, but in
-% case of problems after changes it may be convenient to have this
-% information here.)
-! Changed Files
-
-% Finish your entry with this:
-! End
-
-###########################################################################
-! Date
-2012/06/05
-! Changed by
-MH
-! Type of Change
-Fix: infinite recursion
-! Description
-Fixed an old bug in CommutatorSubgroup for fp groups. It was causing
-infinite recursions, and could for example also be triggered by computing
-automorphism groups.
-! Test Code
-gap> F:=FreeGroup(3);;
-gap> G:=F/[F.1^2,F.2^2,F.3^2,(F.1*F.2)^3, (F.2*F.3)^3, (F.1*F.3)^2];;
-gap> U:=Subgroup(G, [G.3*G.1*G.3*G.2*G.1*G.3*G.2*G.3*G.1*G.3*G.1*G.3]);;
-gap> StructureDescription(CommutatorSubgroup(G, U));
-"C2 x C2"
-gap> StructureDescription(AutomorphismGroup(G));
-"S4"
-! Changed Files
-lib/grpfp.gi
-tst/bugfix.tst
-! End
-###########################################################################
-! Date
-2012/06/15
-! Changed by
-AH
-! Reported by
-Ignat Soroko
-! Type of Change
-Fix: crash
-! Description
-For small primes (compact fields) ZmodnZObj(r,p) now returns the
-corresponding FFE to avoid crashes when compacting matrices.
-! Test Code
-gap> gens:=[[[1,1],[0,1]], [[1,0],[1,1]]] * ZmodnZObj(1,7);
-[ [ [ Z(7)^0, Z(7)^0 ], [ 0*Z(7), Z(7)^0 ] ], [ [ Z(7)^0, 0*Z(7) ], [ Z(7)^0, Z(7)^0 ] ] ]
-gap> gens:=List(Immutable(gens),i->ImmutableMatrix(GF(7),i));;
-! Changed Files
-lib/vec8bit.gd
-lib/zmodnz.gi
-! End
-###########################################################################
-! Date
-2012/06/15
-! Changed by
-AH
-! Reported by
-Jakob Kroeker
-! Type of Change
-Fix: internal data corruption
-! Description
-Previously, the list of factors of a polynomial was mutable, and hence could
-be accidentally corrupted by callers. Now the list of irreducible factors 
-is stored immutable. To deal with implicit reliance on old code, always a
-shallow copy is returned.
-! Test Code
-gap> rng := PolynomialRing(Rationals, ["x","y"]);
-Rationals[x,y]
-gap> ind := IndeterminatesOfPolynomialRing(rng);
-[ x, y ]
-gap> x := ind[1];
-x
-gap> y := ind[2];
-y
-gap> pol:=5*(x+1)^2 ;
-5*x^2+10*x+5
-gap> factors := Factors(pol);
-[ 5*x+5, x+1 ]
-gap> factors[2] := y;
-y
-gap> factors[1] := [];
-[  ]
-gap> Factors( pol ); #bug
-[ 5*x+5, x+1 ]
-! Changed Files
-lib/algfld.gi
-lib/cyclotom.gi
-lib/polyfinf.gi
-lib/polyrat.gi
-lib/ratfun.gi
-lib/upoly.gi
-! End
-###########################################################################
-! Date
-2012/06/18
-! Changed by
-FL
-! Type of Change
-Fix: improved functionality
-! Description
-<span class="code">WriteGapIniFile</span>: On Windows the written
-<span class="code">gap.ini</span> file now has Windows style line breaks.
-
-An info message is now printed if an existing <span
-class="code">gap.ini</span> file was moved to a backup file
-<span class="code">gap.ini.bak</span>.
-! Changed Files
-lib/userpref.g
-! End
-###########################################################################
-! Date
-2012/06/18
-! Changed by
-FL
-! Reported by
-Klaus Lux
-! Type of Change
-Fix: library function to work with package objects
-! Description
-Computing high powers of matrices ran into an error for matrices in the
-format of the <span class="package">cvec</span> package. Now the library
-function also works with these matrices.
-! Test Code
-gap> mat := [[Z(2)]];;
-gap> ConvertToMatrixRep(mat,2);
+gap> First(PositiveIntegers,IsPrime);
 2
-gap> cmat := CMat(mat);
-<cmat 1x1 over GF(2,1)>
-gap> cmat^1000;
-<cmat 1x1 over GF(2,1)>
-! Changed Files
-lib/matrix.gi
+! Changeset
+0337a6335cc8789643c6e823c0575e9c89c0d855
 ! End
-###########################################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ! Date
-2012/06/18
+2012/08/20
 ! Changed by
-MH
+SK
 ! Type of Change
-Fix: allow more than 128 subprocesses on certain systems
+New: improved documentation
 ! Description
-Partially rewrote the pseudo tty code which is responsible for spawning
-subprocesses. This mechanism is for example used by anupq and nq to
-compute group quotients via an external program. Previously, on Mac OS X
-this could be done precisely 128 times, and then an error would occur.
-That is, you could e.g. compute 128 nilpotent quotients, and then you had
-to restart gap to compute more.
-This also affected other systems, such as OpenBSD, where it now also works
-correctly.
+Removed outdated statements from the documentation of StructureDescription,
+which now non-ambiguolsy states that StructureDescription is not an 
+isomorphism invariant: non-isomorphic groups can have the same string 
+value, and two isomorphic groups in different representations can produce 
+different strings.
+! Changeset
+83b8bd7b051ad9fa39def34abf42faf8b056fd59
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/08/30
+! Changed by
+FL
+! Type of Change
+New: extended functionality
+! Description
+The argument of SaveWorkspace can now start with "~/" which is expanded to
+the users home directory (which should be case for all commands that get
+a filename as argument).
 ! Test Code
-gap> LoadPackage("anupq");
+gap> SaveWorkspace("~/blablaWSpace");
 true
-gap> for i in [1..192] do Q := Pq( FreeGroup(2) : Prime := 3, ClassBound := 1 ); od;
-! Changed Files
-cnf/config.hin
-cnf/configure.in
-cnf/configure.out
-src/iostream.c
+gap> Exec("rm -f ~/blablaWSpace");
+! Changeset
+9bd8469bc7a0651733ba702638ef08aa7e616b16
 ! End
-###########################################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ! Date
-2012/06/25
+2012/09/01
+! Changed by
+FL
+! Reported by
+Benjamin Lorenz
+! Type of Change
+Fix: missing case
+! Description
+The environment variable PAGER is now correctly interpreted when it
+contains the full path to the pager program.
+Furthermore, if the external pager 'less' is found from the environment
+it is made sure that the option '-r' is used. Same for 'more -f'.
+! Changeset
+9bd13818d61b7a606a12a44af38e3288d74bc805
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/09/01
+! Changed by
+AH
+! Reported by
+Aiichi Yamasaki
+! Type of Change
+Fix: wrong result
+! Description
+Fixed a bug in PermliftSeries
+! Test Code
+! Changeset
+b715d8a52e1c23385703f377049bbd43fea4bab2
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/09/01
+! Changed by
+AH
+! Reported by
+Leonard Soicher
+! Type of Change
+Fix: wrong result
+! Description
+Fixed discarder function in lattice computation to distinguish 
+general and zuppo discarder
+! Test Code
+! Changeset
+d10d37ef94ac72266ec206822f2f2f71dc96295f
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/09/06
 ! Changed by
 MH
+! Reported by
+Multiple people
 ! Type of Change
-Fix: avoid a bug in GNU readline 6.2
+Fix: crash
 ! Description
-On Mac OS X, using a gap compiled against GNU readline 6.2, pasting text
-into the terminal session would result in this text appearing very slowly,
-with a 0.1 sec delay between each "keystroke". This is not the case with
-versions 6.1 and older, and has been reported to the GNU readline team. In
-the meantime, we work around this issue in most situations by setting
-rl_event_hook only if OnCharReadHookActive is set.
-! Changed Files
-src/sysfiles.c
+GAP would crash when parsing certain syntactically invalid code. This crash
+was introduced by commit a5b5807c964d, which this fix simply reverts.
+Note that the the bad commit was meant to "Get rid of one break loop related bug."
+However, it is unclear what that bug might have been. So it seems better
+to fix the known crash; and then fix the original bug, if it reappears.
+! Test Code
+gap> str := Concatenation("function()\n",
+> "local e, v;\n",
+> "for e in [] do\n",
+> "    v := rec(a := [];);\n",
+> "od;\n"
+> );
+"function()\nlocal e, v;\nfor e in [] do\n    v := rec(a := [];);\nod;\n"
+gap> s:=InputTextString(str);
+InputTextString(0,66)
+gap> Read(s);
+Syntax error: ) expected in stream line 4
+    v := rec(a := [];);
+                    ^
+Syntax error: end expected in stream line 5
+od;
+ ^
+! Changeset
+src/read.c
 ! End
-###########################################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date  
+2012/06/24
+! Changed by 
+JS
+! Type of Change
+Fix: inappropriate error message
+! Description
+The GL and SL constructors did not correctly handle GL(filter,dim,ring).
+! Test Code
+gap> GL(IsMatrixGroup,3,GF(2));;
+gap> SL(IsMatrixGroup,3,GF(2));;
+gap> 
+! Changeset
+fefb2b193323b84c0126c227edeca4090e1a6496
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date  
+2012/08/12
+! Changed by 
+JS
+! Type of Change
+Fix: wrong result
+! Description
+The names of two primitive groups of degree 64 were incorrect.
+! Test Code
+gap> PrimitiveGroup(64,53);
+2^6:(S3 x GL(3, 2))
+gap> PrimitiveGroup(64,64);
+2^6:PGL(2, 7)
+gap> 
+! Changeset
+0e9c002683eeee9e1a2408c20a5f92282ebb3d1d
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ! Date
-2012/07/05
+2012/09/07
+! Changed by
+MH
+! Reported by
+Max Horn
+! Type of Change
+Fix: inappropriate error message
+! Description
+This \in method for groups handled by a nice monomorphism sometimes could
+produce an error in situations where it should return false. This only
+happened when using SeedFaithfulAction to influence how NiceMonomorphism
+builds the nice monomorphims for a matrix groups.
+! Test Code
+gap> m1:=PermutationMat( (1,2), 5, GF(5) );;
+gap> m2:=PermutationMat( (3,4), 5, GF(5) );;
+gap> n:=PermutationMat( (1,4,5), 5, GF(5) );;
+gap> G:=Group(m1, m2);;
+gap> SetSeedFaithfulAction(G,rec(points:=[m1[1],m1[3]], ops:=[OnPoints,OnPoints]));
+gap> n in G;
+false
+! Changeset
+lib/oprt.gi
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/09/11
+! Changed by
+FL
+! Reported by
+Sebastian Gutsche
+! Type of Change
+Fix: inappropriate error message
+! Description
+We now allow overloading of a loaded help book by another one. Only a
+warning is printed and no error is raised. This makes sense if a book
+of a not loaded package is loaded in a workspace and GAP is started with 
+a root path that contains a newer version. 
+! Test Code
+gap> old := ShallowCopy(HELP_KNOWN_BOOKS[2][1]);;
+gap> HELP_KNOWN_BOOKS[2][1][3] := 
+> Concatenation(HELP_KNOWN_BOOKS[2][1][3], "blabla");;
+gap> CallFuncList(HELP_ADD_BOOK, old);
+#I  Overwriting already installed help book 'tutorial'.
+! Prefetch
+! Changeset
+83bedd12f9fac9a3471f16ca1fa1b4e1fac7f15d
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/09/11
+! Changed by
+FL
+! Reported by
+! Type of Change
+New: new functionality
+! Description
+Changed kernel tables such that list access functionality for
+T_SINGULAR objects can be installed by methods on GAP level.
+! Test Code
+! Prefetch
+! Changeset
+05bb1bcfa830a49364c1eb14362cdf5f3821d6f5
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+2012/09/12
 ! Changed by
 FL
 ! Reported by
 James Mitchell
 ! Type of Change
-Fix: break loop
+Fix: crash
 ! Description
-ShowUserPreferences ran into a break loop in case of several undeclared 
-user preferences.
-! Changed Files
-lib/userpref.g
+Fixed and improved command line editing without readline support.
+
+A combination of UP and DOWN arrows could lead to a segfault, this is fixed.
+In case of saved history, UP after starting GAP yields last stored line.
+Now using user preference "HistoryMaxLines" when storing and saving history.
+! Test Code
+! Prefetch
+! Changeset
+2b501bcbd938aa3d2f7f4b98c22e8923b2037dc2
 ! End
-###########################################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ! Date
-2012/07/06
+2012/09/12
 ! Changed by
-FL
+LB (via AK)
+! Reported by
+Volker Braun
 ! Type of Change
-Fix: configuration
+Fix: crash
 ! Description
-The CTblLib and TomLib packages are removed from the list of suggested
-packages of the core part of GAP. Instead they are added to the default list
-of the user preference "PackagesToLoad". This way it is possible to
-configure GAP to not load these packages via changing the default value
-of "PackagesToLoad".
-! Changed Files
-lib/system.g
-lib/packages.gi
+Fixed a bug in floats code resulting in crash on sparc-sun-solaris 
+(a bag had a pointer not divisible by 8, while on SPARC one can only
+store doubles at memory locations divisible by 8).
+! Test Code
+! Prefetch
+! Changeset
+macfloat.h in revision 5fef892e243879b047dc48638a0af38e44514235
 ! End
-###########################################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ! Date
-2012/07/06
+2012/09/13
 ! Changed by
-FL
-! Type of Change
-Fix: failed GAP start
-! Description
-GAP did not start correctly if the user preference "InfoPackageLoadingLevel"
-was set to a number >= 3. The reason is that PrintFormattedString
-was called before it was installed. The current fix is a temporary solution. 
-! Changed Files
-lib/info.gi
-! End
-###########################################################################
-! Date
-2012/07/13
-! Changed by
-TB
+TB (via AK)
+! Reported by
+Kevin Watkins
 ! Type of Change
 Fix: wrong result
 ! Description
-The function <span class="code">IsDocumentedWord</span> tested the given word
-against strings obtained by splitting help matches at non-letter characters.
-This way, variable names containing underscores or digits were erroneously
-not regarded as documented,
-and certain substrings of these names were erroneously regarded as documented.
+Fixed a method for coefficients which, after Gaussian elimination, did not
+check that the coefficients actually lie in the left-acting-domain of the
+vector space. This could lead to a wrong answer in a vector space
+membership test.
 ! Test Code
-gap> IsDocumentedWord( "d" );
+gap> Sqrt(5)*IdentityMat(2) in VectorSpace(Rationals,[IdentityMat(2)]);
 false
-gap> # "d_N" is documented
-gap> IsDocumentedWord( "last2" );
-true
-gap> # in the earlier version, the match 'last2' had been replaced by 'last'
-gap> # before the comparison
-! Changed Files
-lib/helpbase.gi
+! Prefetch
+! Changeset
+vspcmat.gi
 ! End
-###########################################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ! Date
-2012/07/13
+2012/08/20
 ! Changed by
-AK
+MN
+! Reported by
+Thomas Breuer
 ! Type of Change
-Fix: break loop
+Fix: wrong result
 ! Description
-On Windows, it was not possible to use the default Windows browser as a help
-viewer.
-! Changed Files
-lib/helpview.gi
+Remove wrong PrintObj method to fix delegations. This implements the
+documented behaviour of method delegations for PrintObj/ViewObj/Display.
+! Test Code
+gap> fam := NewFamily("XYZsFamily");;
+gap> DeclareCategory("IsXYZ",IsObject);
+gap> type := NewType(fam,IsXYZ and IsPositionalObjectRep);;
+gap> o := Objectify(type,[]);;
+gap> InstallMethod(String,[IsXYZ],function(o) return "XYZ"; end);
+gap> o;
+XYZ
+gap> Print(o,"\n");
+XYZ
+gap> String(o);
+"XYZ"
+! Prefetch
+! Changeset
+89d3f6e6bb2f
 ! End
-###########################################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+14/09/2012
+! Changed by
+FL
+! Reported by
+! Type of Change
+New: improved documentation
+! Description
+Better description of the use of user preferences, in particular
+WriteGapIniFile.
+! Test Code
+! Prefetch
+! Changeset
+! End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% CHANGES IN THE DEFAULT BRANCH WHICH ARE NOT IN STABLE
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% add entries here using one of the templates above
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%END

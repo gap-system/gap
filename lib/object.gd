@@ -440,7 +440,7 @@ end);
 ##
 ##  <#GAPDoc Label="PrintString">
 ##  <ManSection>
-##  <Oper Name="PrintString" Arg='obj'/>
+##  <Oper Name="PrintString" Arg='obj[, length]'/>
 ##
 ##  <Description>
 ##  <Ref Oper="PrintString"/> returns a representation of <A>obj</A>,

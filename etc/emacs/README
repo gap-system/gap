@@ -6,7 +6,7 @@ This directory contains files for GAP editing mode for emacs:
 
 * gap-process.el: version provided in 2005 by Gary Zablackis
 
-The are also newer versions of GAP emacs modes available elsewhere:
+There are also newer versions of GAP emacs modes available elsewhere:
 
 * Patch to add syntax highlighting to the emacs gap-mode 
   by Volker Braun: http://www.stp.dias.ie/~vbraun/gap/

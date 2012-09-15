@@ -1812,6 +1812,148 @@ gap> StructureDescription(CommutatorSubgroup(G, U));
 gap> StructureDescription(AutomorphismGroup(G));
 "S4"
 
+# The GL and SL constructors did not correctly handle GL(filter,dim,ring).
+# Reported and fixed by JS on 2012-06-24
+gap> GL(IsMatrixGroup,3,GF(2));;
+gap> SL(IsMatrixGroup,3,GF(2));;
+
+# The names of two primitive groups of degree 64 were incorrect.
+# Reported and fixed by JS on 2012-08-12
+gap> PrimitiveGroup(64,53);
+2^6:(S3 x GL(3, 2))
+gap> PrimitiveGroup(64,64);
+2^6:PGL(2, 7)
+gap> 
+
+# Fix of very large (more than 1024 digit) integers not being coded 
+# correctly in function bodies unless the integer limb size was 16 bits. 
+# Reported by Stefan Kohl, fixed by SL on 2012-08-12
+gap> f := function() return
+> 100000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 00000000; end;
+function(  ) ... end
+gap> f();
+100000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+00000000
+
+# Fix of Crash in garbage collection following call to AClosVec for a GF(2) code
+# Reported by Volker Brown, fixed by SL on 2012-08-31
+gap> x:=
+> [ [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ], 
+>   [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0 ], 
+>   [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0 ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2) ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2) ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0 ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2) ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 
+>     0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2) ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 
+>     0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 
+>     Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2) ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 
+>     0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0 ] ];;
+gap> P:=AClosestVectorDriver(x, GF(2), Z(2)*[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],11,0, true);; 
+gap> GASMAN("collect");;
+
+# Crash when reading certain pieces of syntactically invalid code
+# Fix and test case added by MH on 2012-09-06.
+gap> str := Concatenation("function()\n",
+> "local e, v;\n",
+> "for e in [] do\n",
+> "    v := rec(a := [];);\n",
+> "od;\n"
+> );
+"function()\nlocal e, v;\nfor e in [] do\n    v := rec(a := [];);\nod;\n"
+gap> s:=InputTextString(str);
+InputTextString(0,66)
+gap> Read(s);
+Syntax error: ) expected in stream line 4
+    v := rec(a := [];);
+                    ^
+Syntax error: end expected in stream line 5
+od;
+ ^
+
+# Check that \in method works for groups handled by a nice monomorphism
+# created with a custom SeedFaithfulAction.
+# Fix and test case added by MH on 2012-09-07.
+gap> m1:=PermutationMat( (1,2), 5, GF(5) );;
+gap> m2:=PermutationMat( (3,4), 5, GF(5) );;
+gap> n:=PermutationMat( (1,4,5), 5, GF(5) );;
+gap> G:=Group(m1, m2);;
+gap> SetSeedFaithfulAction(G,rec(points:=[m1[1],m1[3]], ops:=[OnPoints,OnPoints]));
+gap> n in G;
+false
+
+# Check that overloading of a loaded help book by another one works. This 
+# makes sense if a book of a not loaded package is loaded in a workspace 
+# and GAP is started with a root path that contains a newer version. 
+# Reported by Sebastian Gutsche, fixed by FL on 2012-09-11
+gap> old := ShallowCopy(HELP_KNOWN_BOOKS[2][1]);;
+gap> HELP_KNOWN_BOOKS[2][1][3] := 
+> Concatenation(HELP_KNOWN_BOOKS[2][1][3], "blabla");;
+gap> CallFuncList(HELP_ADD_BOOK, old);
+#I  Overwriting already installed help book 'tutorial'.
+
+# Check of the membership test after fixing a method for coefficients 
+# to check after Gaussian elimination that the coefficients actually 
+# lie in the left-acting-domain of the vector space. 
+# Reported by Kevin Watkins, fixed by TB (via AK) on 2012-09-13
+gap> Sqrt(5)*IdentityMat(2) in VectorSpace(Rationals,[IdentityMat(2)]);
+false
+
+# Check that removing wrong PrintObj method fixes delegations accordingly
+# to documented behaviour for PrintObj/ViewObj/Display.
+# Reported by TB, fixed by MN on 2012-08-20.
+gap> fam := NewFamily("XYZsFamily");;
+gap> DeclareCategory("IsXYZ",IsObject);
+gap> type := NewType(fam,IsXYZ and IsPositionalObjectRep);;
+gap> o := Objectify(type,[]);;
+gap> InstallMethod(String,[IsXYZ],function(o) return "XYZ"; end);
+gap> o;
+XYZ
+gap> Print(o,"\n");
+XYZ
+gap> String(o);
+"XYZ"
+
 #############################################################################
 #
 # Tests requiring loading some packages

@@ -1324,10 +1324,10 @@ void MultVec8BitFFEInner( Obj prod,
   info = GetFieldInfo8Bit(FIELD_VEC8BIT(prod));
   elts = ELS_BYTE_FIELDINFO_8BIT(info);
   
-  assert(q == FIELD_VEC8BIT(vec));
+  assert(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vec));
   assert(LEN_VEC8BIT(prod) >= stop);
   assert(LEN_VEC8BIT(vec) >= stop);
-  assert(q == SIZE_FF(FLD_FFE(scal)));
+  assert(Q_FIELDINFO_8BIT(info) == SIZE_FF(FLD_FFE(scal)));
 
 
   /* convert to 0 based addressing */

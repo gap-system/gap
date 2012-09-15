@@ -1585,6 +1585,24 @@ InstallMethod( Iterator,
 
         counter := 0 ) ) );
 
+        
+#############################################################################
+##
+#M  Iterator( PositiveIntegers )
+##
+InstallMethod( Iterator,
+    "for `PositiveIntegers'",
+    [ IsPositiveIntegers ],
+    IsPositiveIntegers -> IteratorByFunctions( rec(
+        NextIterator := function( iter )
+            iter!.counter:= iter!.counter + 1;
+              return iter!.counter;
+            end,
+        IsDoneIterator := ReturnFalse,
+        ShallowCopy := iter -> rec( counter:= iter!.counter ),
+
+        counter := 0 ) ) ); # 0, since we first increment then return
+        
 
 #############################################################################
 ##

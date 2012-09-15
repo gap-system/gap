@@ -248,7 +248,7 @@ following table:
     <HorLine/>
     <Row> <Item><Ref Oper="ViewString"/></Item> </Row>
     <HorLine/>
-    <Row> <Item><Ref Oper="DisplayString"/></Item> </Row>
+    <Row> <Item><Ref Oper="PrintString"/></Item> </Row>
     <HorLine/>
     <Row> <Item><Ref Oper="String"/></Item> </Row>
     <HorLine/>

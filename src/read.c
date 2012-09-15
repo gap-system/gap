@@ -1857,9 +1857,7 @@ void ReadFor (
       CurrLVars = currLVars;
       PtrLVars  = PTR_BAG( CurrLVars );
       PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
-      if (CountNams > 0)
-	CountNams--;
-    }
+     }
 }
 
 

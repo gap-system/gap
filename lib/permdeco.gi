@@ -475,7 +475,10 @@ local limit, r, pcgs, ser, ind, m, p, l, l2, good, i, j,nser,hom;
     # we have to get a better series
 
     # do we want to reduce the degree?
-    m:=ReducedPermdegree(r);
+    m:=fail;
+    if IsPermGroup(r) then
+      m:=ReducedPermdegree(r);
+    fi;
     if m<>fail then
       p:=Image(m);
       ser:=InvariantElementaryAbelianSeries(p, List( GeneratorsOfGroup( G ),

@@ -779,17 +779,18 @@ InstallGlobalFunction(MultiActionsHomomorphism,function(G,pnts,ops)
   ran:=Group(imgs,());
   hom:=GroupHomomorphismByFunction(G,ran,
 	function(elm)
-	local i,p;
+	local i,p,q;
 	  p:=();
 	  for i in [1..Length(homs)] do
-	    p:=p*(ImagesRepresentative(homs[i],elm)^trans[i]);
+	    q:=ImagesRepresentative(homs[i],elm);
+	    if q = fail and ValueOption("actioncanfail")=true then
+	      return fail;
+	    fi;
+	    p:=p*(q^trans[i]);
 	  od;
 	  return p;
 	end);
-  hom!.trans:=trans;
-  hom!.homs:=homs;
 
-  SetRange(hom,ran);
   SetImagesSource(hom,ran);
   SetMappingGeneratorsImages(hom,[gens,imgs]);
   SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImagesNC

@@ -234,7 +234,9 @@ end );
 ##  computes the lattice of <G> using the cyclic extension algorithm. If the
 ##  function <func> is given, the algorithm will discard all subgroups not
 ##  fulfilling <func> (and will also not extend them), returning a partial
-##  lattice. This can be useful to compute only subgroups with certain
+##  lattice. If <func> is a list of length 2, the first entry is such a
+##  function, the second a function for selecting zuppos.
+##  This can be useful to compute only subgroups with certain
 ##  properties. Note however that this will *not* necessarily yield all
 ##  subgroups that fulfill <func>, but the subgroups whose subgroups used
 ##  for the construction also fulfill <func> as well.
@@ -247,6 +249,7 @@ SOLVABILITY_IMPLYING_FUNCTIONS:=
 InstallGlobalFunction( LatticeByCyclicExtension, function(arg)
 local   G,		   # group
 	func,		   # test function
+	zuppofunc,         # test fct for zuppos
 	noperf,		   # discard perfect groups
         lattice,           # lattice (result)
 	factors,           # factorization of <G>'s size
@@ -286,9 +289,14 @@ local   G,		   # group
 
     G:=arg[1];
     noperf:=false;
+    zuppofunc:=false;
     if Length(arg)>1 and IsFunction(arg[2]) then
       func:=arg[2];
       Info(InfoLattice,1,"lattice discarding function active!");
+      if IsList(func) then
+	zuppofunc:=func[2];
+	func:=func[1];
+      fi;
       if Length(arg)>2 and IsBool(arg[3]) then
 	noperf:=arg[3];
       fi;
@@ -322,8 +330,8 @@ local   G,		   # group
     factors:=Factors(Size(G));
 
     # compute a system of generators for the cyclic sgr. of prime power size
-    if func<>false then
-      zuppos:=Zuppos(G,func);
+    if zuppofunc<>false then
+      zuppos:=Zuppos(G,zuppofunc);
     else
       zuppos:=Zuppos(G);
     fi;
@@ -855,7 +863,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
     u:=[[G],[G],[hom]];
   elif Size(ser[1])=1 then
     if H<>fail then
-      return LatticeByCyclicExtension(G,u->IsSubset(H,u));
+      return LatticeByCyclicExtension(G,[u->IsSubset(H,u),u->IsSubset(H,u)]);
     elif select<>fail then
       return LatticeByCyclicExtension(G,select);
     else
@@ -867,7 +875,8 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
     fselect:=fail;
     if H<>fail then
       HN:=Image(hom,H);
-      c:=LatticeByCyclicExtension(f,u->IsSubset(HN,u))!.conjugacyClassesSubgroups;
+      c:=LatticeByCyclicExtension(f,
+	  [u->IsSubset(HN,u),u->IsSubset(HN,u)])!.conjugacyClassesSubgroups;
     elif select<>fail and (select=IsPerfectGroup  or select=IsSimpleGroup) then
       c:=ConjugacyClassesPerfectSubgroups(f);
       c:=Filtered(c,x->Size(Representative(x))>1);

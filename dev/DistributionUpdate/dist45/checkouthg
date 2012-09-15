@@ -1,0 +1,66 @@
+#!/bin/sh
+#############################################################################
+##
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+export RELEASEBRANCH=${DISTROOT}/releasebranch
+
+# create and go to build directory
+if ! mkdir -p ${RELEASEBRANCH}; then
+  echo 'Cannot create temporary directory '${RELEASEBRANCH}
+  exit 1
+fi
+
+# copying ./setvar to the build directory for the meta-information archive
+
+cp ./setvar ${RELEASEBRANCH}
+
+echo 'Changing the directory to '${RELEASEBRANCH}
+  
+echo 'cd '${RELEASEBRANCH}
+cd ${RELEASEBRANCH}
+rm -rf ${DISTNAME}
+
+# Clone the repository.
+echo "$0: cloning the repository for version 4.$FULLVERSION of $DATE"
+line='hg clone -q -u '${GAPHGVERSION}' '${HGROOT}' '${DISTNAME}
+echo $line
+$line
+
+if [ \! -d ${DISTNAME} ];  then
+    echo "PANIC: Mercurial did not create a distribution directory"
+    exit 1
+fi
+
+# What is *this moment*? If the subsequent wrapping and tests will be
+# successful, recorded time of the checkout will be used to tag 
+# corresponding revisions as included in the particular release.
+export COREDATE=`date +"%d-%b-%Y"`
+export CORETIME=`date -u +"%Y_%m_%d-%H_%M"`
+export COREYEAR=`date +"%Y"`
+echo "export CORETIME=\"$CORETIME\"" > core_checkout_time.txt
+echo "export COREDATE=\"$COREDATE\"" >> core_checkout_time.txt
+echo "export COREYEAR=\"$COREYEAR\"" >> core_checkout_time.txt
+
+# logging the parent revision to a file
+cd ${DISTNAME}
+echo 'The working directory is set to the following revision:'
+hg --debug parent > ../hgparent.log
+cd ..
+cat hgparent.log
+echo 'This revision is logged to '${RELEASEBRANCH}'/hgparent.log'
+
+# We do not use Mercurial later so we may erase .hg* files and .hg directory
+echo 'Removing .hg* files and .hg directory'
+rm -rf ${DISTNAME}/.hg*
+
+echo 'Copying file classification tools to etc'
+cp ${DISTNAME}/dev/DistributionUpdate/dist45/classifyfiles.py ${DISTNAME}/etc/classifyfiles.py
+cp ${DISTNAME}/dev/DistributionUpdate/dist45/patternscolorpkg.txt ${DISTNAME}/etc/patternscolor.txt 
+cp ${DISTNAME}/dev/DistributionUpdate/dist45/patternstextbinary.txt ${DISTNAME}/etc/patternstextbinary.txt 
+
+exit 0

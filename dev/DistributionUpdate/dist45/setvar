@@ -6,26 +6,28 @@
 # "/mnt/raid/hudson-slave/..." is used by Jenkins continuous build system.
 export DISTROOT=/mnt/raid/hudson-slave/workspace/GAP-next-release/wrap/gap45
 
-# the cvs repository (login once, before using these scripts) 
-export CVSROOT=":pserver:visitor@cvs.gap-system.org:/gap/CVS"
-
+# the Mercurial repository (access must be configured in advance)
+export HGROOT="ssh://hg@hg.gap-system.org/gap"
 
 # the version to wrap dependently on our needs:
-# - to get the current snapshot, use "-D now"
-# - to get the state used for the previous release (e.g. to merge with the
-#   new packages archive, use e.g. "-r GAP4R5P1" 
-export GAPCVSVERSION="-D now"
-# export GAPCVSVERSION="-r GAP4R5P2"
+# - to get the current snapshot of the named branch, use the name of 
+#   the branch you need, e.g. "stable-4.5", "default" or "integration"
+# - to get the state used for the previous release (e.g. to merge with 
+#   the new packages archive, use corresponding tag, e.g. "-r v4.5.5" 
+export GAPHGVERSION="stable-4.5"
+# export GAPHGVERSION="-r v4.5.5"
 
 # version to wrap
+# major release number (i.e. the last number in GAP 4.4, 4.5, 4.6)
 export VERSION="5"
-export FULLVERSION="$VERSION.5"
+# minor release number (i.e. the last number in GAP 4.4.12, 4.5.5, 4.5.17)
+export FULLVERSION="$VERSION.6"
 
 # directory name
 export DISTNAME="gap4r$VERSION"
 
 # archive name
-export RBVERSION="4r5p5"
+export RBVERSION="4r5p6"
 export ARCHNAME="gap$RBVERSION"
 
 # location of the merged packages archive (assumed to be on the same machine)

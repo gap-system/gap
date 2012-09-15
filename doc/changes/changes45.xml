@@ -490,7 +490,7 @@ Furthermore, there are functions to deal with user preferences, for example,
 to specify how &GAP;'s online help is shown or whether the coloured prompt
 should be used. Calls to set user preferences may appear in the user's 
 <F>gap.ini</F> file, as explained in 
-<Ref Sect="User preferences" BookName="ref"/>.
+<Ref Sect="Configuring User preferences" BookName="ref"/>.
 <P/> 
 
 In the Windows version, we include a new shell which uses the 
@@ -1196,6 +1196,170 @@ at all in the current session, both for autoloading and for later calls
 of <Ref Func="LoadPackage" BookName="ref"/>. This preference is useful 
 for testing purposes if one wants to run some code without loading 
 certain packages.
+</Item>
+</List>
+
+</Section>
+
+
+
+<Section Label="fix456"> 
+
+<Heading>&GAP; 4.5.6 (September 2012)</Heading>
+
+Improved functionality:
+<List>              
+<Item>
+The argument of <Ref Func="SaveWorkspace" BookName="ref"/> can now start 
+with <C>~/</C> which is expanded to the users home directory.
+</Item>
+<Item>
+Added the method for <Ref Oper="Iterator" BookName="ref"/> for 
+<Ref Var="PositiveIntegers" BookName="ref"/>.
+[Suggested by Attila Egri-Nagy].
+</Item>
+<Item>
+Changed kernel tables such that list access functionality for
+<C>T_SINGULAR</C> objects can be installed by methods at the &GAP; level.
+</Item>
+<Item>
+In case of saved history, <Q>UP</Q> arrow after starting &GAP; yields 
+last stored line. The user preference <C>HistoryMaxLines</C> is now used
+when storing and saving history (see 
+<Ref Func="SetUserPreference" BookName="ref"/>).
+</Item>
+</List>
+
+Fixed bugs which could lead to crashes:
+<List>              
+<Item>
+A crash occuring during garbage collection following a call to 
+<C>AClosVec</C> for a <C>GF(2)</C> code.
+[Reported by Volker Braun]
+</Item>
+<Item>
+A crash when parsing certain syntactically invalid code.
+[Reported by multiple users]
+</Item>
+<Item>
+Fixed and improved command line editing without readline support.
+Fixed a segfault which could be triggered by a combination of 
+<Q>UP</Q> and <Q>DOWN</Q> arrows.
+[Reported by James Mitchell]
+</Item>
+<Item>
+Fixed a bug in the kernel code for floats that caused a crash 
+on SPARC Solaris in 32-bit mode.
+[Reported by Volker Braun]
+</Item>
+</List>
+
+Other fixed bugs:
+
+<List>
+<Item>
+Very large (more than 1024 digit) integers were not being coded correctly
+in function bodies unless the integer limb size was 16 bits. 
+[Reported by Stefan Kohl]
+</Item>
+<Item>
+An old variable was used in assertion, causing errors in a debugging 
+compilation.
+[Reported by Volker Braun]
+</Item>
+<Item>
+The environment variable <C>PAGER</C> is now correctly interpreted when it
+contains the full path to the pager program. Furthermore, if the external 
+pager <C>less</C> is found from the environment it is made sure that the 
+option <C>-r</C> is used (same for <C>more -f</C>).
+[Reported by Benjamin Lorenz]
+</Item>
+<Item>
+Fixed a bug in <C>PermliftSeries</C>.
+[Reported by Aiichi Yamasaki]
+</Item>
+<Item>
+Fixed discarder function in lattice computation to distinguish 
+general and zuppo discarder.
+[Reported by Leonard Soicher]
+</Item>
+<Item>
+The <Ref Func="GL" Label="for dimension and a ring" BookName="ref"/> and 
+<Ref Func="SL" Label="for dimension and a ring" BookName="ref"/> 
+constructors did not correctly handle <C>GL(filter,dim,ring)</C>.
+</Item>
+<Item>
+The names of two primitive groups of degree 64 were incorrect.
+</Item>
+<Item>
+The <Ref Oper="\in" Label="operation for testing membershi" BookName="ref"/> 
+method for groups handled by a nice monomorphism sometimes could produce 
+an error in situations where it should return false. This only happened 
+when using <C>SeedFaithfulAction</C> to influence how 
+<Ref Oper="NiceMonomorphism" BookName="ref"/>
+builds the nice monomorphims for a matrix groups.
+</Item>
+<Item>
+Wrong <Ref Oper="PrintObj" BookName="ref"/> method was removed to
+fix delegations accordingly to <Ref Sect="View and Print" BookName="ref"/>.
+</Item>
+<Item>
+Fixed a method for <Ref Oper="Coefficients" BookName="ref"/> which,
+after Gaussian elimination, did not check that the coefficients
+actually lie in the left-acting-domain of the vector space. This
+could lead to a wrong answer in a vector space membership test.
+[Reported by Kevin Watkins]
+</Item>
+</List>
+
+Improved documentation:
+
+<List>
+<Item>
+Removed outdated statements from the documentation of 
+<Ref Func="StructureDescription" BookName="ref"/>
+which now non-ambiguolsy states that <C>StructureDescription</C> is not an 
+isomorphism invariant: non-isomorphic groups can have the same string 
+value, and two isomorphic groups in different representations can produce 
+different strings.
+</Item>
+<Item>
+&GAP; now allows overloading of a loaded help book by another one. In this
+case, only a warning is printed and no error is raised. This makes sense 
+if a book of a not loaded package is loaded in a workspace and then &GAP; 
+is started with a root path that contains a newer version. 
+[Reported by Sebastian Gutsche]
+</Item>
+<Item>
+Provided a better description of user preferences mechanism
+(<Ref Sect="Configuring User preferences" BookName="ref"/>) and a hint to
+familiarise with them using <Ref Func="WriteGapIniFile" BookName="ref"/>
+function to create a file which contains descriptions of all known user
+preferences and also sets those user preferences which currently do not
+have their default value. One can then edit that file to customize
+(further) the user preferences for future &GAP; sessions.
+</Item>
+</List>
+
+New packages added for the redistribution with &GAP;:
+<List>
+<Item>
+<Package>AutoDoc</Package> package by S. Gutsche,
+providing tools for automated generation of <Package>GAPDoc</Package> manuals.
+</Item>
+<Item>
+<Package>Convex</Package> package by S. Gutsche,
+which provides structures and algorithms for convex geometry. 
+</Item>
+<Item>
+<Package>PolymakeInterface</Package> package by T. Baechler and S. Gutsche, 
+providing a link to the callable library of the <Package>polymake</Package> 
+system (<URL>http://www.polymake.org</URL>).
+</Item>
+<Item>
+<Package>ToolsForHomalg</Package> package by M. Barakat, S. Gutsche and
+M. Lange-Hegermann, which provides some auxiliary functionality for the
+<Package>homalg</Package> project (<URL>http://homalg.math.rwth-aachen.de/</URL>).
 </Item>
 </List>
 

@@ -1771,7 +1771,6 @@ InstallMethod(Remove, "two arguments, general", [IsList and IsMutable, IsPosInt]
         function(l,p)
     local ret,x,len;
     len := Length(l);
-    len := Length(l);
     ret := IsBound(l[p]);
     if ret then
         x := l[p];

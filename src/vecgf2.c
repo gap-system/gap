@@ -3573,7 +3573,7 @@ UInt AClosVec(
 	bd=di;
 	bv = BLOCKS_GF2VEC(obv);
 	end = bv+((len+BIPEB-1)/BIPEB);
-	while (bv<=end) 
+	while (bv<end) 
 	  *bv++=*sum++;
 	sum = BLOCKS_GF2VEC(osum);
 	if (coords != (Obj) 0)
