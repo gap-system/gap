@@ -783,6 +783,7 @@ ReadOrComplete( "lib/read4.g" );
 #  around function definitions!
 ReadLib( "helpview.gi"  );
 
+
 #T  1996/09/01 M.Schönert this helps performance
 ORIGINAL_IMPS := IMPLICATIONS;
 atomic ORIGINAL_IMPS do
@@ -1206,6 +1207,10 @@ end);
 ##
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
+
+if not IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
+  ReadLib( "tasks.g" );
+fi;
 
 
 #############################################################################

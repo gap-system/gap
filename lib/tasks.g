@@ -8,8 +8,10 @@ SUSPEND_ME := 5;
 FINISH := 6;
 CULL_IDLE_WORKERS := 7;
 FINISH_WORKER := 8;
+START_WORKERS := 9;
 
 Tasks := AtomicRecord( rec ( Initial := 4 ,    # initial number of worker threads
+                 FirstTask := true,
                  ReportErrors := true,
                  WorkerPool := CreateChannel(),                # pool of idle workers                 
                  TaskManagerRequests := CreateChannel(),       # task manager requests
@@ -26,10 +28,13 @@ TaskData := ShareObj( rec(
 DeclareGlobalVariable ("TaskManager");
 MakeReadWriteGVar("TaskManager");
 
-
 GetWorkerInputChannel := function (worker)
-  atomic readonly TaskData do
-    return TaskData.inputChannels[worker];
+  while true do
+    atomic readonly TaskData do
+      if IsBound(TaskData.inputChannels[worker]) then
+        return TaskData.inputChannels[worker];
+      fi;
+    od;
   od;
 end;
 
@@ -50,17 +55,29 @@ Tasks.Worker := function(channels)
   local taskdata, result, toUnblock, resume,
         suspend, unSuspend, p, task, i;
   
+  if (Tracing.trace) then
+    InitWorkerLog();
+  fi;
+  
   while true do
     
     Unbind (task);
-    
+
     while not IsBound(task) do
       suspend := TryReceiveChannel (Tasks.WorkerSuspensionRequests, fail);
       if not IsIdenticalObj (suspend, fail) then
+        if (Tracing.Trace) then
+          IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_SUSPENDED\n");
+        fi;
         SendChannel (Tasks.TaskManagerRequests, rec ( worker:= ThreadID(CurrentThread()),
                                                                type := SUSPEND_ME));
+        
         unSuspend := ReceiveChannel (channels.toworker);
         if unSuspend=FINISH then
+          if (Tracing.Trace) then
+            IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread()), " WORKER_FINISHED\n");
+            IO_Close(Tracing.Files[ThreadID(CurrentThread())]);
+          fi;
           SendChannel (Tasks.TaskManagerRequests, rec ( worker := CurrentThread(),
                                                                   type := FINISH_WORKER));
           return;
@@ -76,12 +93,22 @@ Tasks.Worker := function(channels)
         Unbind (TaskData.TaskPool[TaskData.TaskPoolLen]);
         TaskData.TaskPoolLen := TaskData.TaskPoolLen-1;
         TaskData.Running := TaskData.Running+1;
+        if (Tracing.Trace) then
+          IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_GOT_TASK\n");
+        fi;
         UNLOCK(p);
       else
         UNLOCK(p);
+        if (Tracing.Trace) then
+          IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_IDLE\n");
+        fi;
         SendChannel (Tasks.WorkerPool, channels);
         resume := ReceiveChannel (channels.toworker);
         if resume=FINISH then
+          if (Tracing.Trace) then
+            IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_FINISHED\n");
+            IO_Close(Tracing.Files[ThreadID(CurrentThread())]);
+          fi;
           SendChannel (channels.fromworker, CurrentThread());
           return;
         fi;
@@ -105,7 +132,13 @@ Tasks.Worker := function(channels)
     if taskdata.async then
       CALL_WITH_CATCH(taskdata.func, taskdata.args);
     else
+      if (Tracing.Trace) then
+        IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_TASK_STARTED\n");
+      fi;
       result := CALL_WITH_CATCH(taskdata.func, taskdata.args);
+      if (Tracing.Trace) then
+        IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_TASK_FINISHED\n");
+      fi;
       if Length(result) = 1 or not result[1] then
         if Length(result) > 1 and Tasks.ReportErrors then
           Print("Task Error: ", result[2], "\n");
@@ -117,13 +150,13 @@ Tasks.Worker := function(channels)
       
       atomic task do
         task.complete := true;
-	if IsThreadLocal(result) then
-	  task.result := MigrateObj (result, task);
-	  task.adopt_result := true;
-	else
-	  task.result := result;
-	  task.adopt_result := false;
-	fi;
+        if IsThreadLocal(result) then
+          task.result := MigrateObj (result, task);
+          task.adopt_result := true;
+        else
+          task.result := result;
+          task.adopt_result := false;
+        fi;
         while true do
           toUnblock := TryReceiveChannel (task.blockedWorkers, fail);
           if IsIdenticalObj (toUnblock, fail) then
@@ -146,12 +179,19 @@ end;
 # Function called when worker blocks on the result of a task.
 Tasks.BlockWorkerThread := function()
   local resume;
+  
+  if (Tracing.Trace) then
+    IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_BLOCKED\n");
+  fi;
 
   if ThreadID(CurrentThread())<>0 then
     SendChannel (Tasks.TaskManagerRequests, rec (worker := ThreadID(CurrentThread()), type := BLOCK_ME));
     resume := ReceiveChannel (GetWorkerInputChannel(ThreadID(CurrentThread())));
     if resume<>RESUME_BLOCKED_WORKER then
       Error("Error while worker is waiting to resume\n");
+    fi;
+    if (Tracing.Trace) then
+      IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_RESUMED\n");
     fi;
   else
     Error("Cannot block main thread\n");
@@ -167,6 +207,7 @@ Tasks.StartNewWorkerThread := function()
   MakeReadOnly(channels);
   worker := CreateThread(Tasks.Worker, channels);
   atomic TaskData do 
+    Print ("New worker ", ThreadID(worker), " created\n");
     TaskData.inputChannels[ThreadID(worker)] := channels.toworker;
   od;
   return worker;
@@ -217,6 +258,7 @@ Tasks.CreateTask := function(arglist)
                    blockedWorkers := CreateChannel(),
                    ));
   
+  
   return task;
 end;
 
@@ -243,6 +285,13 @@ ExecuteTask:= atomic function(readwrite task)
     TaskData.TaskPoolLen := TaskData.TaskPoolLen+1;
     TaskData.TaskPool[Tasks.TaskPoolLength()] := task;
   od;
+  
+  if (Tasks.FirstTask) then
+    Tasks.FirstTask := false;
+    SendChannel (Tasks.TaskManagerRequests, rec (type := START_WORKERS, 
+                                                 noWorkers := Tasks.Initial,
+                                                 worker := ThreadID(CurrentThread())));
+  fi;
   
   worker := TryReceiveChannel (Tasks.WorkerPool, fail);
   if IsNotIdenticalObj (worker, fail) then
@@ -435,17 +484,21 @@ Tasks.TaskManagerFunc := function()
   suspendedWorkers := 0;
   suspendedWorkersList := [];
   
-  for i in [1..Tasks.Initial] do 
-    worker := Tasks.StartNewWorkerThread();
-    activeWorkers := activeWorkers+1;
-  od;
+  #for i in [1..Tasks.Initial] do 
+    #worker := Tasks.StartNewWorkerThread();
+    #activeWorkers := activeWorkers+1;
+  #od;
   
   while true do
     request := ReceiveChannel (Tasks.TaskManagerRequests);
     worker := request.worker;
     requestType := request.type;
-    
-    if requestType = BLOCK_ME then # request to block a worker
+    if requestType = START_WORKERS then
+      for i in [1..request.noWorkers] do
+        worker := Tasks.StartNewWorkerThread();
+        activeWorkers := activeWorkers+1;
+      od;
+    elif requestType = BLOCK_ME then # request to block a worker
       activeWorkers := activeWorkers-1;
       blockedWorkers := blockedWorkers+1;
       if activeWorkers<Tasks.Initial then
@@ -468,7 +521,7 @@ Tasks.TaskManagerFunc := function()
     elif requestType = SUSPEND_ME then
       activeWorkers := activeWorkers-1;
       if suspendedWorkers>Tasks.Initial then
-        KillThread(worker);
+        SendChannel (GetWorkerInputChannel(worker), FINISH);
       else
         suspendedWorkers := suspendedWorkers+1;
         Add (suspendedWorkersList, worker);
@@ -480,7 +533,6 @@ Tasks.TaskManagerFunc := function()
         SendChannel (GetWorkerInputChannel(worker), FINISH);
       od;
     elif requestType = FINISH_WORKER then
-      Print ("FINISH_WORKER");
       WaitThread(worker);
     fi;
   od;

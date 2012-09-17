@@ -1,0 +1,42 @@
+#!/usr/bin/perl
+
+my $h;
+my @lastTime;
+
+open ($h, "<", "demetrio");
+
+$x = <$h>;
+@data = split (" ", $x);
+$startTime = $data[2];
+print "start time is $startTime\n";
+while (<$h>) {
+  $in = $_;
+  @data = split (" ", $in);
+  $thread = $data[0];
+  $what = $data[2];
+  $time = $data[1]-$startTime;
+  if (!$lastTime[$thread]) {
+    $lastTime[$thread] = 0;
+  }
+  if ($thread) {
+    if ($what eq "BLOCKED" || $what eq "TASK_FINISHED") {
+      #print "$lastTime[$thread] $time BUSY $thread\n";
+      for ($i=$lastTime[$thread];$i<=$time;$i++) {
+        $busyness[$i]++;
+      }
+    }
+  }
+  $lastTime[$thread] = $time;
+
+}
+       
+$totTime=$data[2]-$startTime;
+print ("tottime is $totTime\n");  
+for ($i=0;$i<$totTime;$i++) {
+  if (!$busyness[$i]) {
+    $busyness[$i]=0;
+  }
+  if ($busyness[$i]<=2 && $busyness[$i]!=$busyness[$i-1]) {
+    print "$i $busyness[$i]\n";
+  }
+}

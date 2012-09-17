@@ -22,65 +22,65 @@ TASKS := AtomicRecord( rec (
       WaitSemaphore(context.semaphore);
       atomic context.task_container do
         task := context.task_container.task;
-	context.task_container.task := fail;
+        context.task_container.task := fail;
       od;
       if not IsIdenticalObj(task, fail) then
-	CURRENT_TASK := task;
-	TASKS.ExecuteTask(task, context);
-	CURRENT_TASK := fail;
-	atomic TASK_QUEUE do
-	  Add(TASK_QUEUE.workers, context);
-	  TASK_QUEUE.active_count := TASK_QUEUE.active_count - 1;
-	od;
-	TASKS.WakeWorker();
+        CURRENT_TASK := task;
+        TASKS.ExecuteTask(task, context);
+        CURRENT_TASK := fail;
+        atomic TASK_QUEUE do
+          Add(TASK_QUEUE.workers, context);
+          TASK_QUEUE.active_count := TASK_QUEUE.active_count - 1;
+        od;
+        TASKS.WakeWorker();
       fi;
     od;
   end,
-
+    
   WakeWorker := function()
     local task;
     atomic TASK_QUEUE do
       while TASK_QUEUE.active_count < TASK_QUEUE.max_active and
             Length(TASK_QUEUE.ready_tasks) > 0 do
-	task := TASK_QUEUE.ready_tasks[1];
-	# Workaround because dynamic retyping of list breaks the
-	# following statement:
-	# Remove(TASK_QUEUE.ready_tasks, 1);
-	TASK_QUEUE.ready_tasks :=
-	  TASK_QUEUE.ready_tasks{[2..Length(TASK_QUEUE.ready_tasks)]};
-	MigrateSingleObj(TASK_QUEUE.ready_tasks, TASK_QUEUE);
-	atomic task do
-	  if IsIdenticalObj(task.worker, fail) then
-	    if Length(TASK_QUEUE.workers) > 0 then
-	      task.worker := TASK_QUEUE.workers[1];
-	      Remove(TASK_QUEUE.workers, 1);
-	    else
-	      task.worker := TASKS.NewWorker();
-	    fi;
-	    atomic task.worker.task_container do
-	      task.worker.task_container.task := task;
-	    od;
-	  fi;
-	  if not IsIdenticalObj(task.body, fail) then
-	    TASK_QUEUE.active_count := TASK_QUEUE.active_count + 1;
-	  fi;
-	  SignalSemaphore(task.worker.semaphore);
-	od;
+        task := TASK_QUEUE.ready_tasks[1];
+	      # Workaround because dynamic retyping of list breaks the
+	      # following statement:
+        # Remove(TASK_QUEUE.ready_tasks, 1);
+        TASK_QUEUE.ready_tasks :=
+          TASK_QUEUE.ready_tasks{[2..Length(TASK_QUEUE.ready_tasks)]};
+        MigrateSingleObj(TASK_QUEUE.ready_tasks, TASK_QUEUE);
+        atomic task do
+          if IsIdenticalObj(task.worker, fail) then
+            if Length(TASK_QUEUE.workers) > 0 then
+              task.worker := TASK_QUEUE.workers[1];
+              Remove(TASK_QUEUE.workers, 1);
+            else
+              task.worker := TASKS.NewWorker();
+            fi;
+            atomic task.worker.task_container do
+              task.worker.task_container.task := task;
+            od;
+          fi;
+          if not IsIdenticalObj(task.body, fail) then
+            TASK_QUEUE.active_count := TASK_QUEUE.active_count + 1;
+          fi;
+          SignalSemaphore(task.worker.semaphore);
+        od;
       od;
     od;
   end,
-
+    
   ExecuteTask := function(task, context)
     local error, result, async, notify, trigger, i, body, args;
     atomic task do
       task.started := true;
       async := task.async;
       atomic task.region do
-	for i in [1..Length(task.adopt)] do
-	  if task.adopt[i] then
-	    AdoptObj(task.args[i]);
-	  fi;
-	od;
+        for i in [1..Length(task.adopt)] do
+          if task.adopt[i] then
+            AdoptObj(task.args[i]);
+          fi;
+        od;
       od;
       body := task.body;
       args := ShallowCopy(task.args);
@@ -98,15 +98,15 @@ TASKS := AtomicRecord( rec (
     atomic task do
       task.complete := true;
       if not async then
-	if IsThreadLocal(result) then
-	  atomic task.region do
-	    task.result := MigrateObj(result, task.region);
-	  od;
-	  task.adopt_result := true;
-	else
-	  task.result := result;
-	  task.adopt_result := false;
-	fi;
+        if IsThreadLocal(result) then
+          atomic task.region do
+            task.result := MigrateObj(result, task.region);
+          od;
+          task.adopt_result := true;
+        else
+          task.result := result;
+          task.adopt_result := false;
+        fi;
       fi;
       notify := AdoptSingleObj(task.notify);
       task.notify := MigrateSingleObj([], task);
@@ -115,19 +115,19 @@ TASKS := AtomicRecord( rec (
       TASKS.FireTrigger(trigger);
     od;
   end,
-
+    
   NewWorker := function()
     local context, thread;
     context := MakeWriteOnceAtomic(rec(
-      semaphore := CreateSemaphore(),
-      task_container := ShareSingleObj(rec(task := fail)),
-    ));
+                       semaphore := CreateSemaphore(),
+                       task_container := ShareSingleObj(rec(task := fail)),
+                       ));
     thread := CreateThread(TASKS.WorkerThread, context);
     context.thread := thread;
     SignalSemaphore(context.semaphore);
     return context;
   end,
-
+    
   NewTask := function(func, args)
     local task, arg;
     task := rec(
@@ -147,10 +147,10 @@ TASKS := AtomicRecord( rec (
     for arg in args do
       if IsThreadLocal(arg) then
         Add(task.args, LockAndMigrateObj(CopyRegion(arg), task.region));
-	Add(task.adopt, true);
+        Add(task.adopt, true);
       else
         Add(task.args, arg);
-	Add(task.adopt, false);
+        Add(task.adopt, false);
       fi;
     od;
     return task;
@@ -197,11 +197,11 @@ TASKS := AtomicRecord( rec (
 
   BuildTrigger := function(task, is_conjunction)
     return rec(
-      task := task,
-      conditions := task.conditions,
-      done := false,
-      is_conjunction := is_conjunction,
-    );
+               task := task,
+               conditions := task.conditions,
+               done := false,
+               is_conjunction := is_conjunction,
+               );
   end,
 
   FireTrigger := function(trigger)
@@ -212,57 +212,57 @@ TASKS := AtomicRecord( rec (
         return;
       fi;
       if trigger.is_conjunction then
-	done := true;
-	for cond in trigger.conditions do
-	  atomic readonly cond do
-	    if not cond.complete then
-	      done := false;
-	      break;
-	    fi;
-	  od;
-	od;
+        done := true;
+        for cond in trigger.conditions do
+          atomic readonly cond do
+            if not cond.complete then
+              done := false;
+              break;
+            fi;
+          od;
+        od;
       else
-	done := false;
-	for cond in trigger.conditions do
-	  atomic readonly cond do
-	    if cond.complete then
-	      done := true;
-	      break;
-	    fi;
-	  od;
-	od;
+        done := false;
+        for cond in trigger.conditions do
+          atomic readonly cond do
+            if cond.complete then
+              done := true;
+              break;
+            fi;
+          od;
+        od;
       fi;
       trigger.done := done;
       if not done then
-	return;
+        return;
       fi;
       task := trigger.task;
     od;
     atomic task, TASK_QUEUE do
       if IsIdenticalObj(task.worker, fail) then
-	Add(TASK_QUEUE.ready_tasks, task);
-	TASKS.WakeWorker();
+        Add(TASK_QUEUE.ready_tasks, task);
+        TASKS.WakeWorker();
       else
-	# Workaround because dynamic retyping of list breaks the
-	# following statement:
-        # Add(TASK_QUEUE.ready_tasks, task, 1);
-	tasks := [ task ];
-	Append(tasks, TASK_QUEUE.ready_tasks);
-	TASK_QUEUE.ready_tasks := MigrateSingleObj(tasks, TASK_QUEUE);
-	TASKS.WakeWorker();
+	    # Workaround because dynamic retyping of list breaks the
+	    # following statement:
+            # Add(TASK_QUEUE.ready_tasks, task, 1);
+        tasks := [ task ];
+        Append(tasks, TASK_QUEUE.ready_tasks);
+        TASK_QUEUE.ready_tasks := MigrateSingleObj(tasks, TASK_QUEUE);
+        TASKS.WakeWorker();
       fi;
     od;
   end,
-
+    
   ActivateTrigger := function(trigger)
     local cond;
     atomic trigger do
       for cond in trigger.conditions do
         atomic cond do
-	  if not cond.complete then
-	    Add(cond.notify, trigger);
-	  fi;
-	od;
+          if not cond.complete then
+            Add(cond.notify, trigger);
+          fi;
+        od;
       od;
     od;
     # Recheck conditions, because they may have fired
@@ -275,15 +275,15 @@ TASKS := AtomicRecord( rec (
     atomic task, TASK_QUEUE do
       if Length(task.conditions) = 0 then
         Add(TASK_QUEUE.ready_tasks, task);
-	TASKS.WakeWorker();
-	return;
+        TASKS.WakeWorker();
+        return;
       else
         trigger := TASKS.BuildTrigger(task, true);
-	if trigger.done then
-	  Add(TASK_QUEUE.ready_tasks, task);
-	  TASKS.WakeWorker();
-	  return;
-	fi;
+        if trigger.done then
+          Add(TASK_QUEUE.ready_tasks, task);
+          TASKS.WakeWorker();
+          return;
+        fi;
       fi;
     od;
     # We get here if we have a triggered task with

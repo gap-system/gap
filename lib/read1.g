@@ -87,9 +87,9 @@ ReadLib( "float.gd"    );
 ReadLib( "macfloat.g"  );
 ReadLib( "altview.g" );
 
-if not IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
-  ReadLib( "tasks.g" );
-fi;
+#if not IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
+#  ReadLib( "tasks.g" );
+#fi;
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );
