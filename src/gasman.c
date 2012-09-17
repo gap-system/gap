@@ -1480,6 +1480,12 @@ void            RetypeBag (
     }
 }
 
+void RetypeBagIfWritable( Obj obj, UInt new_type )
+{
+  if (CheckWriteAccess(obj))
+    RetypeBag(obj, new_type);
+}
+
 
 /****************************************************************************
 **
