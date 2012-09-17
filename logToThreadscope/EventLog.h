@@ -14,8 +14,8 @@
  */
 extern char *EventDesc[];
 
-void initEventLogging(unsigned int n_caps);
-void endEventLogging(void);
+void initEventLogging(StgWord64 time,unsigned int n_caps);
+void endEventLogging(StgWord64 time);
 void freeEventLogging(void);
 void abortEventLogging(void); // #4512 - after fork child needs to abort
 void flushEventLog(void);     // event log inherited from parent
@@ -33,34 +33,37 @@ Event *createEvent(StgWord64 time, EventTypeNum tag, unsigned int cap,
  * Post a scheduler event to the capability's event buffer (an event
  * that has an associated thread).
  */
-void postSchedEvent(EventTypeNum tag, 
+void postSchedEvent(StgWord64 time,EventTypeNum tag, 
                     StgThreadID id, StgWord info1, StgWord info2, StgWord64 info3);
 
 /*
  * Post a nullary event.
  */
-void postEvent(unsigned int cap, EventTypeNum tag);
+void postEvent(StgWord64 time, EventTypeNum tag);
 
-void postEventStartup(EventCapNo n_caps);
+void postEventStartup(StgWord64 time, EventCapNo n_caps);
 
 /*
  * Post a capability set modification event
  */
-void postCapsetModifyEvent (EventTypeNum tag,
+void postCapsetModifyEvent (StgWord64 time,
+			    EventTypeNum tag,
                             EventCapsetID capset,
                             StgWord32 other);
 
 /*
  * Post a capability set event with a string payload
  */
-void postCapsetStrEvent (EventTypeNum tag,
+void postCapsetStrEvent (StgWord64 time,
+			 EventTypeNum tag,
                          EventCapsetID capset,
                          char *msg);
 
 /*
  * Post a capability set event with several strings payload
  */
-void postCapsetVecEvent (EventTypeNum tag,
+void postCapsetVecEvent (StgWord64 time,
+			 EventTypeNum tag,
                          EventCapsetID capset,
                          int argc,
                          char *msg[]);

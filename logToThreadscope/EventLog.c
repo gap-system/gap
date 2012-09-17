@@ -2,6 +2,7 @@
 #include "EventLog.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 static char *event_log_filename = NULL;
 
@@ -77,14 +78,14 @@ static StgBool initEventType(StgWord8 t);
 
 static void initEventsBuf(EventsBuf* eb, StgWord64 size, EventCapNo capno);
 static void resetEventsBuf(EventsBuf* eb);
-static void printAndClearEventBuf (EventsBuf *eventsBuf);
+static void printAndClearEventBuf (StgWord64 time, EventsBuf *eventsBuf);
 
 static void postEventType(EventsBuf *eb, EventType *et);
 
-static void postLogMsg(EventsBuf *eb, EventTypeNum type, char *msg, va_list ap);
+static void postLogMsg(StgWord64 time, EventTypeNum type, char *msg, va_list ap);
 
-static void postBlockMarker(EventsBuf *eb);
-static void closeBlockMarker(EventsBuf *ebuf);
+static void postBlockMarker(StgWord64 time, EventsBuf *eb);
+static void closeBlockMarker(StgWord64 time, EventsBuf *ebuf);
 
 static StgBool hasRoomForEvent(EventsBuf *eb, EventTypeNum eNum);
 static StgBool hasRoomForVariableEvent(EventsBuf *eb, unsigned long long payload_bytes);
@@ -113,11 +114,11 @@ static inline void postWord16(EventsBuf *eb, StgWord16 i)
 
 static inline int getWord16(StgWord16 *i)
 {
-	int readCnt;
-	readCnt = getWord8 ((StgWord8 *)i);
-	*i = *i << 8;
-	readCnt += getWord8 ((StgWord8 *)i);
-	return readCnt;
+  int readCnt;
+  readCnt = getWord8 ((StgWord8 *)i);
+  *i = *i << 8;
+  readCnt += getWord8 ((StgWord8 *)i);
+  return readCnt;
 }
 
 static inline void postWord32(EventsBuf *eb, StgWord32 i)
@@ -185,7 +186,7 @@ static inline void postCapsetType(EventsBuf *eb, EventCapsetType type)
 static inline void postPayloadSize(EventsBuf *eb, EventPayloadSize size)
 { postWord16(eb,size); }
 
-static inline void postEventHeader(EventsBuf *eb, EventTypeNum type, StgWord64 time)
+static inline void postEventHeader(StgWord64 time, EventsBuf *eb, EventTypeNum type)
 {
   postEventTypeNum(eb, type);
   postTimestamp(eb, time);
@@ -361,14 +362,15 @@ createEvent(StgWord64 time, EventTypeNum tag, unsigned int cap,
     /* Ignored events */
     break;
   default:
-    barf ("Unknown event with tag %d\n", tag);
+    fprintf (stderr, "Unknown event with tag %d\n", tag);
+    exit(1);
   }
   
   return ev;
 }
 
 void
-initEventLogging(unsigned int n_caps)
+initEventLogging(StgWord64 time, unsigned int n_caps)
 {
   StgWord8 t, c;
 
@@ -405,22 +407,22 @@ initEventLogging(unsigned int n_caps)
    * Flush header and data begin marker to the file, thus preparing the
    * file to have events written to it.
    */
-  printAndClearEventBuf(&eventBuf);
+  printAndClearEventBuf(time, &eventBuf);
 }
 
 void
-endEventLogging(void)
+endEventLogging(StgWord64 time)
 {
   StgWord64 c;
   // Flush all events remaining in the buffers.
-  printAndClearEventBuf(&eventBuf);
+  printAndClearEventBuf(time,&eventBuf);
   resetEventsBuf(&eventBuf); // we don't want the block marker
 
   // Mark end of events (data).
   postEventTypeNum(&eventBuf, EVENT_DATA_END);
 
   // Flush the end of data marker.
-  printAndClearEventBuf(&eventBuf);
+  printAndClearEventBuf(time,&eventBuf);
   
   if (event_log_file != NULL) {
     fclose(event_log_file);
@@ -476,10 +478,10 @@ postSchedEvent (StgWord64 time,
   
   if (!hasRoomForEvent(eb, tag)) {
     // Flush event buffer to make room for new event.
-    printAndClearEventBuf(eb);
+    printAndClearEventBuf(time,eb);
   }
     
-  postEventHeader(eb, tag, time);
+  postEventHeader(time, eb, tag);
 
   switch (tag) {
   case EVENT_CREATE_THREAD:   // (cap, thread)
@@ -544,10 +546,10 @@ void postCapsetModifyEvent (StgWord64 time,
 
   if (!hasRoomForEvent(&eventBuf, tag)) {
     // Flush event buffer to make room for new event.
-    printAndClearEventBuf(&eventBuf);
+    printAndClearEventBuf(time,&eventBuf);
   }
   
-  postEventHeader(&eventBuf, tag, time);
+  postEventHeader(time, &eventBuf, tag);
   postCapsetID(&eventBuf, capset);
   
   switch (tag) {
@@ -590,7 +592,7 @@ void postCapsetStrEvent (StgWord64 time,
   int size = strsize + sizeof(EventCapsetID);
   
   if (!hasRoomForVariableEvent(&eventBuf, size)){
-    printAndClearEventBuf(&eventBuf);
+    printAndClearEventBuf(time,&eventBuf);
     
     if (!hasRoomForVariableEvent(&eventBuf, size)){
       // Event size exceeds buffer size, bail out:
@@ -598,7 +600,7 @@ void postCapsetStrEvent (StgWord64 time,
     }
   }
 
-  postEventHeader(&eventBuf, tag, time);
+  postEventHeader(time, &eventBuf, tag);
   postPayloadSize(&eventBuf, size);
   postCapsetID(&eventBuf, capset);
 
@@ -606,20 +608,21 @@ void postCapsetStrEvent (StgWord64 time,
 
 }
 
-void postCapsetVecEvent (EventTypeNum tag,
+void postCapsetVecEvent (StgWord64 time,
+			 EventTypeNum tag,
                          EventCapsetID capset,
                          int argc,
                          char *argv[])
 {
   int i, size = sizeof(EventCapsetID);
-  
+
   for (i = 0; i < argc; i++) {
     // 1 + strlen to account for the trailing \0, used as separator
     size += 1 + strlen(argv[i]);
   }
 
   if (!hasRoomForVariableEvent(&eventBuf, size)){
-    printAndClearEventBuf(&eventBuf);
+    printAndClearEventBuf(time,&eventBuf);
     
     if(!hasRoomForVariableEvent(&eventBuf, size)){
       // Event size exceeds buffer size, bail out:
@@ -627,7 +630,7 @@ void postCapsetVecEvent (EventTypeNum tag,
     }
   }
 
-  postEventHeader(&eventBuf, tag);
+  postEventHeader(time, &eventBuf, tag);
   postPayloadSize(&eventBuf, size);
   postCapsetID(&eventBuf, capset);
   
@@ -639,7 +642,7 @@ void postCapsetVecEvent (EventTypeNum tag,
 }
 
 void
-postEvent (Capability *cap, EventTypeNum tag)
+postEvent (StgWord64 time, EventTypeNum tag)
 {
   EventsBuf *eb;
   
@@ -647,63 +650,63 @@ postEvent (Capability *cap, EventTypeNum tag)
 
   if (!hasRoomForEvent(eb, tag)) {
     // Flush event buffer to make room for new event.
-    printAndClearEventBuf(eb);
+    printAndClearEventBuf(time,eb);
   }
 
-  postEventHeader(eb, tag);
+  postEventHeader(time, eb, tag);
 }
 
 #define BUF 512
 
-void postLogMsg(EventsBuf *eb, EventTypeNum type, char *msg, va_list ap)
+void postLogMsg(StgWord64 time, EventTypeNum type, char *msg, va_list ap)
 {
   char buf[BUF];
-  nat size;
-  
+  unsigned long long size;
+
   size = vsnprintf(buf,BUF,msg,ap);
   if (size > BUF) {
     buf[BUF-1] = '\0';
     size = BUF;
   }
   
-  if (!hasRoomForVariableEvent(eb, size)) {
+  if (!hasRoomForVariableEvent(&eventBuf, size)) {
     // Flush event buffer to make room for new event.
-    printAndClearEventBuf(eb);
+    printAndClearEventBuf(time,&eventBuf);
   }
   
-  postEventHeader(eb, type);
-  postPayloadSize(eb, size);
-  postBuf(eb,(StgWord8*)buf,size);
+  postEventHeader(time, &eventBuf, type);
+  postPayloadSize(&eventBuf, size);
+  postBuf(&eventBuf,(StgWord8*)buf,size);
 }
 
-void postMsg(char *msg, va_list ap)
+void postMsg(StgWord64 time, char *msg, va_list ap)
 {
-  postLogMsg(&eventBuf, EVENT_LOG_MSG, msg, ap);
+  postLogMsg(time, EVENT_LOG_MSG, msg, ap);
 }
 
-void postCapMsg(Capability *cap, char *msg, va_list ap)
+void postCapMsg(StgWord64 time, char *msg, va_list ap)
 {
-  postLogMsg(&capEventBuf[cap->no], EVENT_LOG_MSG, msg, ap);
+  postLogMsg(time, EVENT_LOG_MSG, msg, ap);
 }
 
-void postUserMsg(Capability *cap, char *msg, va_list ap)
+void postUserMsg(StgWord64 time, char *msg, va_list ap)
 {
-  postLogMsg(&capEventBuf[cap->no], EVENT_USER_MSG, msg, ap);
+  postLogMsg(time, EVENT_USER_MSG, msg, ap);
 }    
 
-void postEventStartup(EventCapNo n_caps)
+void postEventStartup(StgWord64 time, EventCapNo n_caps)
 {
   if (!hasRoomForEvent(&eventBuf, EVENT_STARTUP)) {
     // Flush event buffer to make room for new event.
-    printAndClearEventBuf(&eventBuf);
+    printAndClearEventBuf(time,&eventBuf);
   }
   
   // Post a STARTUP event with the number of capabilities
-  postEventHeader(&eventBuf, EVENT_STARTUP);
+  postEventHeader(time, &eventBuf, EVENT_STARTUP);
   postCapNo(&eventBuf, n_caps);
 }
 
-void closeBlockMarker (EventsBuf *ebuf, unsigned long long time)
+void closeBlockMarker (StgWord64 time, EventsBuf *ebuf)
 {
   StgInt8* save_pos;
   if (ebuf->marker) {
@@ -719,40 +722,40 @@ void closeBlockMarker (EventsBuf *ebuf, unsigned long long time)
 }
 
 
-void postBlockMarker (EventsBuf *eb)
+void postBlockMarker (StgWord64 time, EventsBuf *eb)
 {
   if (!hasRoomForEvent(eb, EVENT_BLOCK_MARKER)) {
-    printAndClearEventBuf(eb);
+    printAndClearEventBuf(time,eb);
   }
-  closeBlockMarker(eb);
+  closeBlockMarker(time, eb);
   eb->marker = eb->pos;
-  postEventHeader(eb, EVENT_BLOCK_MARKER);
+  postEventHeader(time, eb, EVENT_BLOCK_MARKER);
   postWord32(eb,0); // these get filled in later by closeBlockMarker();
   postWord64(eb,0);
   postCapNo(eb, eb->capno);
 }
 
-void printAndClearEventBuf (EventsBuf *ebuf)
+void printAndClearEventBuf (StgWord64 time, EventsBuf *ebuf)
 {
   StgWord64 numBytes = 0, written = 0;
-  closeBlockMarker(ebuf);
+  closeBlockMarker(time, ebuf);
   if (ebuf->begin != NULL && ebuf->pos != ebuf->begin) {
     numBytes = ebuf->pos - ebuf->begin;
     written = fwrite(ebuf->begin, 1, numBytes, event_log_file);
     if (written != numBytes) {
-      fprintf (stderr, "fwrite() failed, written=%d doesn't match numBytes=%d\n",
+      fprintf (stderr, "fwrite() failed, written=%lu doesn't match numBytes=%lu\n",
                written, numBytes);
       return;
     }
     resetEventsBuf(ebuf);
     flushCount++;
-    postBlockMarker(ebuf);
+    postBlockMarker(time, ebuf);
   }
 }
 
 void initEventsBuf(EventsBuf* eb, StgWord64 size, EventCapNo capno)
 {
-  eb->begin = eb->pos = stgMallocBytes(size, "initEventsBuf");
+  eb->begin = eb->pos = (StgInt8 *) malloc(size);
   eb->size = size;
   eb->marker = NULL;
   eb->capno = capno;
@@ -766,7 +769,7 @@ void resetEventsBuf(EventsBuf* eb)
 
 StgBool hasRoomForEvent(EventsBuf *eb, EventTypeNum eNum)
 {
-  nat size;
+  StgWord64 size;
 
   size = sizeof(EventTypeNum) + sizeof(EventTimestamp) + eventTypes[eNum].size;
 
@@ -779,7 +782,7 @@ StgBool hasRoomForEvent(EventsBuf *eb, EventTypeNum eNum)
 
 StgBool hasRoomForVariableEvent(EventsBuf *eb, unsigned long long payload_bytes)
 {
-  nat size;
+  StgWord size;
 
   size = sizeof(EventTypeNum) + sizeof(EventTimestamp) +
     sizeof(EventPayloadSize) + payload_bytes;
@@ -794,7 +797,7 @@ StgBool hasRoomForVariableEvent(EventsBuf *eb, unsigned long long payload_bytes)
 void postEventType(EventsBuf *eb, EventType *et)
 {
   StgWord8 d;
-  nat desclen;
+  StgWord64 desclen;
   
   postInt32(eb, EVENT_ET_BEGIN);
   postEventTypeNum(eb, et->etNum);
@@ -809,5 +812,15 @@ void postEventType(EventsBuf *eb, EventType *et)
 }
 
 int main (int *argc, char **argv) {
+  event_log_file = fopen ("demo.eventlog", "w");
+  eventBuf.capno = -1;
+  initEventLogging (1,2);
+  postEventStartup (1,2);
+  eventBuf.capno = 0; 
+  postSchedEvent (1,EVENT_CREATE_THREAD,1,0,0,0);
+  postSchedEvent (2,EVENT_RUN_THREAD,1,0,0,0);
+  postSchedEvent (1000000, EVENT_STOP_THREAD,1,5,0,0);
+  eventBuf.capno = -1;
+  endEventLogging (1000000);
   return 0;
 }
