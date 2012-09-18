@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static char *event_log_filename = NULL;
+char *event_log_filename = NULL;
 
 // File for logging events
 FILE *event_log_file = NULL;
@@ -14,14 +14,6 @@ FILE *event_log_file = NULL;
 static int flushCount;
 
 // Struct for record keeping of buffer to store event types and events.
-typedef struct _EventsBuf {
-  StgInt8 *begin;
-  StgInt8 *pos;
-  StgInt8 *marker;
-  StgWord64 size;
-  EventCapNo capno; // which capability this buffer belongs to, or -1
-} EventsBuf;
-
 EventsBuf *capEventBuf; // one EventsBuf for each Capability
 
 EventsBuf eventBuf; // an EventsBuf not associated with any Capability
@@ -78,7 +70,7 @@ static StgBool initEventType(StgWord8 t);
 
 static void initEventsBuf(EventsBuf* eb, StgWord64 size, EventCapNo capno);
 static void resetEventsBuf(EventsBuf* eb);
-static void printAndClearEventBuf (StgWord64 time, EventsBuf *eventsBuf);
+void printAndClearEventBuf (StgWord64 time, EventsBuf *eventsBuf);
 
 static void postEventType(EventsBuf *eb, EventType *et);
 
@@ -811,16 +803,24 @@ void postEventType(EventsBuf *eb, EventType *et)
   postInt32(eb, EVENT_ET_END);
 }
 
-int main (int *argc, char **argv) {
-  event_log_file = fopen ("demo.eventlog", "w");
-  eventBuf.capno = -1;
-  initEventLogging (1,2);
-  postEventStartup (1,2);
-  eventBuf.capno = 0; 
-  postSchedEvent (1,EVENT_CREATE_THREAD,1,0,0,0);
-  postSchedEvent (2,EVENT_RUN_THREAD,1,0,0,0);
-  postSchedEvent (1000000, EVENT_STOP_THREAD,1,5,0,0);
-  eventBuf.capno = -1;
-  endEventLogging (1000000);
-  return 0;
-}
+//int main (int *argc, char **argv) {
+//  event_log_file = fopen ("demo.eventlog", "w");
+//eventBuf.capno = -1;
+//initEventLogging (1,2);
+//postEventStartup (1,2);
+//eventBuf.capno = 0; 
+//printAndClearEventBuf (100000, &eventBuf);
+//postSchedEvent (1,EVENT_CREATE_THREAD,1,0,0,0);
+//postSchedEvent (2,EVENT_RUN_THREAD,1,0,0,0);
+//postSchedEvent (1000000, EVENT_STOP_THREAD,1,5,0,0);
+//eventBuf.capno = 1;
+//printAndClearEventBuf (1000000, &eventBuf);
+//postSchedEvent (1000,EVENT_CREATE_THREAD,1,0,0,0);
+//postSchedEvent (1002,EVENT_RUN_THREAD,1,0,0,0);
+//postSchedEvent (100000, EVENT_STOP_THREAD,1,5,0,0);
+//eventBuf.capno = -1;
+//printAndClearEventBuf (1000000, &eventBuf);
+//postSchedEvent (1000001, EVENT_SHUTDOWN,0,0,0,0);
+//endEventLogging (1000001);
+//return 0;
+//}

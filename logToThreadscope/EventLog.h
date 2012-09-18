@@ -69,4 +69,12 @@ void postCapsetVecEvent (StgWord64 time,
                          char *msg[]);
 
 
+typedef struct _EventsBuf {
+  StgInt8 *begin;
+  StgInt8 *pos;
+  StgInt8 *marker;
+  StgWord64 size;
+  EventCapNo capno; // which capability this buffer belongs to, or -1
+} EventsBuf;
+
 #endif
