@@ -71,8 +71,11 @@ int getNextGAPEvent (GAPEvent *ev) {
     ev->type = TASK_BLOCKED;
   } else if (!strcmp (stringEvent, "WORKER_TASK_FINISHED")) {
     ev->type = TASK_FINISHED;
+  } else if (!strcmp (stringEvent, "WORKER_GOT_TASK")) {
+    ev->type = TASK_CREATED;
   }
 
+  //fprintf (stderr, "%lu %d %d\n", ev->time, ev->workerId, ev->type);
   return 1;
 
 }
@@ -110,45 +113,34 @@ int main (int argc, char **argv) {
       baseTime = nextEvent.time;
     time = nextEvent.time-baseTime+1;
     switch (nextEvent.type) {
+    case TASK_CREATED:
+      postSchedEvent (time, EVENT_CREATE_THREAD, nextTaskid++, 0, 0, 0);
+      break;
     case TASK_STARTED:
       assignCapToWorker (time, nextEvent.workerId);
+      fprintf (stderr, "%lu RUN_THREAD %lu\n", time, nextEvent.workerId);
       postSchedEvent (time, EVENT_RUN_THREAD, nextEvent.workerId, 0, 0, 0);
       break;
     case TASK_BLOCKED:
+      fprintf (stderr, "%lu STOP_THREAD %lu\n", time, nextEvent.workerId);
       removeCapFromWorker (time, nextEvent.workerId);
       postSchedEvent (time, EVENT_STOP_THREAD, nextEvent.workerId, 4, 0, 0);
       break;
     case TASK_FINISHED:
+      fprintf (stderr, "%lu FINISH_THREAD %lu\n", time, nextEvent.workerId);
       removeCapFromWorker (time, nextEvent.workerId);
       postSchedEvent (time, EVENT_STOP_THREAD, nextEvent.workerId, 5, 0, 0);
       break;
     default:
       break;
     }
+    nextEvent.type = -1;
   }
 
   eventBuf.capno = -1;
   printAndClearEventBuf (time, &eventBuf);
-  postSchedEvent (time, 0, 0, 0, 0);
-  endEventLogging (time);
+  postSchedEvent (time+1, EVENT_SHUTDOWN, 0, 0, 0, 0);
+  endEventLogging (time+1);
   
-
-  //eventBuf.capno = -1;
-  //initEventLogging (1,2);
-  //postEventStartup (1,2);
-  //eventBuf.capno = 0; 
-  //printAndClearEventBuf (100000, &eventBuf);
-  //postSchedEvent (1,EVENT_CREATE_THREAD,1,0,0,0);
-  //postSchedEvent (2,EVENT_RUN_THREAD,1,0,0,0);
-  //postSchedEvent (1000000, EVENT_STOP_THREAD,1,5,0,0);
-  //eventBuf.capno = 1;
-  //printAndClearEventBuf (1000000, &eventBuf);
-  //postSchedEvent (1000,EVENT_CREATE_THREAD,1,0,0,0);
-  //postSchedEvent (1002,EVENT_RUN_THREAD,1,0,0,0);
-  //postSchedEvent (100000, EVENT_STOP_THREAD,1,5,0,0);
-  //eventBuf.capno = -1;
-  //printAndClearEventBuf (1000000, &eventBuf);
-  //postSchedEvent (1000001, EVENT_SHUTDOWN,0,0,0,0);
-  //endEventLogging (1000001);
   return 0;
 }

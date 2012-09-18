@@ -4,6 +4,7 @@
 #define TASK_STARTED 1
 #define TASK_BLOCKED 2
 #define TASK_FINISHED 3
+#define TASK_CREATED 4
 
 typedef int GAPEventType;
 
