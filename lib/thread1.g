@@ -70,6 +70,16 @@ LockAndAdoptObj := function(obj)
   return obj;
 end;
 
+CopyFromRegion := CopyRegion;
+
+CopyToRegion := atomic function(readonly obj, target)
+  if IsPublic(obj) then
+    return obj;
+  else
+    return MigrateObj(CopyRegion(obj), target);
+  fi;
+end;
+
 MakeThreadLocal("~");
 
 HaveMultiThreadedUI := false;
