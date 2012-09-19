@@ -13,9 +13,9 @@ for i in [1..Length(exsref)] do
     Exec( Concatenation( 
       "echo 'Read(\"exsref.g\"); RunExamples(exsref{[",
       String(i), 
-      "]}, rec(compareFunction := \"uptowhitespace\") );' | ../../bin/gap.sh -b -r -A -q > ", resfile ) );
+      "]}, rec(compareFunction := \"uptowhitespace\") );' | ../../bin/gap.sh -b -S -r -A -q > ", resfile ) );
 #    Exec( Concatenation( "echo 'Test(\"ref", String(i), ".tst",
-#      "\", rec(compareFunction := \"uptowhitespace\") );' | ../../bin/gap.sh -b -r -A -q > ", resfile ) );
+#      "\", rec(compareFunction := \"uptowhitespace\") );' | ../../bin/gap.sh -b -S -r -A -q > ", resfile ) );
 
     str := StringFile(resfile);
     if Length(str)=0 then
