@@ -1,0 +1,9 @@
+Error before error-handling is initialized: [ "LoadPackage: function is not yet defined" ] *********   HPC-GAP, Version 4.dev of today (free software, GPL)
+ *  GAP  *   http://www.gap-system.org
+ *********   Architecture: i686-apple-darwin10.8.0-gcc
+ Libs used:  gmp
+
+#W <<< This is an alpha release.      >>>
+#W <<< Do not use for important work. >>>
+
+ Loading the library 

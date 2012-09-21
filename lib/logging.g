@@ -14,9 +14,21 @@ MSTime := function()
 end;
 
 PostProcessLogging := function()
-  local fp;
-  fp := IO_File("tmp/eventlog","w");
-  IO_Write(fp,
+  local files,i, outFile, lastIndex;
+  outFile := IO_File("tmp/gap.gaplog","w");
+  i := 0;
+  while true do
+    files[i] := IO_File(Concatenation("tmp/w",String(i)),"r");
+    if IsIdenticalObj(files[i],fail) then
+      lastIndex := i;
+      break;
+    else
+      line[i] := IO_ReadLine(files[i]);
+      i := i+1;
+    fi;
+  od;
+  
+end;
 
 StopLogging := function()
   Tracing.trace := false;
