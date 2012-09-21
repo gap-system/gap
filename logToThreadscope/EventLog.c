@@ -735,7 +735,7 @@ void printAndClearEventBuf (StgWord64 time, EventsBuf *ebuf)
     numBytes = ebuf->pos - ebuf->begin;
     written = fwrite(ebuf->begin, 1, numBytes, event_log_file);
     if (written != numBytes) {
-      fprintf (stderr, "fwrite() failed, written=%lu doesn't match numBytes=%lu\n",
+      fprintf (stderr, "fwrite() failed, written=%llu doesn't match numBytes=%llu\n",
                written, numBytes);
       return;
     }

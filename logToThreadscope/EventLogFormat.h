@@ -207,24 +207,24 @@ typedef signed   short           StgInt16;
 typedef unsigned short           StgWord16;
 
 //#if SIZEOF_LONG == 4
-//typedef signed   long            StgInt32;
-//typedef unsigned long            StgWord32;
+typedef signed   long            StgInt32;
+typedef unsigned long            StgWord32;
 //#elif SIZEOF_INT == 4
-typedef signed   int             StgInt32;
-typedef unsigned int             StgWord32;
+//typedef signed   int             StgInt32;
+//typedef unsigned int             StgWord32;
 //#else
 //#error Untested on this architecture: sizeof(int) != 4
 //#endif
 
 //#if SIZEOF_LONG == 8
-typedef signed   long          StgInt64;
-typedef unsigned long          StgWord64;
+//typedef signed   long          StgInt64;
+//typedef unsigned long          StgWord64;
 //#elif defined(__MSVC__)
 //typedef __int64                StgInt64;
 //typedef unsigned __int64       StgWord64;
 //#elif SIZEOF_LONG_LONG == 8
-//typedef signed long long int   StgInt64;
-//typedef unsigned long long int StgWord64;
+typedef signed long long int   StgInt64;
+typedef unsigned long long int StgWord64;
 //#else
 //#error cannot find a way to define StgInt64
 //#endif
