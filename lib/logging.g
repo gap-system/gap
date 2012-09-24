@@ -51,6 +51,7 @@ PostProcessLogging := function ()
       if IsEmptyString(toRead) then
         Unbind(data[minInd]);
         IO_Close(files[minInd]);
+        Exec(Concatenation("rm -rf tmp/w",String(minInd)));
       else
         data[minInd] := SplitString(toRead," ");
       fi;

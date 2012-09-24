@@ -10,7 +10,7 @@ CULL_IDLE_WORKERS := 7;
 FINISH_WORKER := 8;
 START_WORKERS := 9;
 
-Tasks := AtomicRecord( rec ( Initial := 2 ,    # initial number of worker threads
+Tasks := AtomicRecord( rec ( Initial := 4 ,    # initial number of worker threads
                  FirstTask := true,
                  ReportErrors := true,
                  WorkerPool := CreateChannel(),                # pool of idle workers                 
@@ -209,7 +209,6 @@ Tasks.StartNewWorkerThread := function()
   MakeReadOnly(channels);
   worker := CreateThread(Tasks.Worker, channels);
   atomic TaskData do 
-    Print ("New worker ", ThreadID(worker), " created\n");
     TaskData.inputChannels[ThreadID(worker)] := channels.toworker;
   od;
   return worker;

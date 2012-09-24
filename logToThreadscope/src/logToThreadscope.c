@@ -42,9 +42,10 @@ int assignCapToWorker (StgWord64 time, StgThreadID workerId) {
   for (i=0; i<MAX_PES; i++) 
     if (!capToWorker[i]) {
       capToWorker[i] = workerId;
+      return i;
     }
-
-  return i;
+  
+  return -1;
 
 }
 
