@@ -264,7 +264,7 @@
 
 /* Define to 1 if `lstat' dereferences a symlink specified with a trailing
    slash. */
-/* #undef LSTAT_FOLLOWS_SLASHED_SYMLINK */
+#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -304,7 +304,7 @@
 #define SELECT_TYPE_ARG5 (struct timeval *)
 
 /* The size of `void **', as computed by sizeof. */
-#define SIZEOF_VOID_PP 8
+#define SIZEOF_VOID_PP 4
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -313,7 +313,7 @@
 #define SYS_IS_CYGWIN32 0
 
 /* are we on DARWIN? */
-#define SYS_IS_DARWIN 1
+#define SYS_IS_DARWIN 0
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1

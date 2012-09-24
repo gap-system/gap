@@ -1,1 +1,1 @@
-GAParch=i686-apple-darwin10.8.0-gcc
+GAParch=i686-pc-linux-gnu-gcc

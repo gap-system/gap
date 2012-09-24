@@ -42,14 +42,10 @@ int assignCapToWorker (StgWord64 time, StgThreadID workerId) {
   for (i=0; i<MAX_PES; i++) 
     if (!capToWorker[i]) {
       capToWorker[i] = workerId;
-      if (i>3) {
-	fprintf (stderr, "WARNING! cap>3 at relative time %llu (workerId is %lu)\n",
-		 time, workerId);
-	exit(1);
-      }
-      return i;
     }
-  return -1;
+
+  return i;
+
 }
 
 int removeCapFromWorker (StgWord64 time, StgThreadID workerId) {
@@ -125,7 +121,6 @@ int main (int argc, char **argv) {
   while (hasNextEvent = getNextGAPEvent(&nextEvent)) {
     if (!baseTime) {
       baseTime = nextEvent.time;
-      fprintf (stderr, "base time is %llu\n", baseTime);
     }
     time = (nextEvent.time-baseTime+1)*1000;
     switch (nextEvent.type) {
@@ -135,8 +130,8 @@ int main (int argc, char **argv) {
     case TASK_CREATED:
       cap = getWorkerCap (nextEvent.workerId);
       if (cap == -1) {
-	cap = assignCapToWorker (time, nextEvent.workerId);
-	workerToCap[nextEvent.workerId] = cap;
+        cap = assignCapToWorker (time, nextEvent.workerId);
+        workerToCap[nextEvent.workerId] = cap;
       }
       flushEventBuffer(time, cap);
       workerToTask[nextEvent.workerId] = nextTaskId;
@@ -145,8 +140,8 @@ int main (int argc, char **argv) {
     case TASK_STARTED:
       cap = getWorkerCap (nextEvent.workerId);
       if (cap == -1) {
-	fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
-	exit(1);
+        fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
+        exit(1);
       }
       flushEventBuffer(time, cap);
       //fprintf (stderr, "%llu RUN_THREAD %lu\n", time, workerToTask[nextEvent.workerId]);
@@ -155,8 +150,8 @@ int main (int argc, char **argv) {
     case TASK_BLOCKED:
       cap = getWorkerCap (nextEvent.workerId);
       if (cap == -1) {
-	fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
-	exit(1);
+        fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
+        exit(1);
       }
       flushEventBuffer(time, cap);
       //fprintf (stderr, "%llu STOP_THREAD %lu\n", time, workerToTask[nextEvent.workerId]);
@@ -166,8 +161,8 @@ int main (int argc, char **argv) {
     case TASK_FINISHED:
       cap = getWorkerCap (nextEvent.workerId);
       if (cap == -1) {
-	fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
-	exit(1);
+        fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
+        exit(1);
       }
       flushEventBuffer(time, cap);
       //fprintf (stderr, "%llu FINISH_THREAD %lu\n", time, workerToTask[nextEvent.workerId]);
@@ -188,25 +183,3 @@ int main (int argc, char **argv) {
   
   return 0;
 }
-
-/* int main (int *argc, char **argv) { */
-/*   event_log_file = fopen ("demo.eventlog", "w"); */
-/*   eventBuf.capno = -1; */
-/*   initEventLogging (1,2); */
-/*   postEventStartup (1,2); */
-/*   eventBuf.capno = 0;  */
-/*   printAndClearEventBuf (100000, &eventBuf); */
-/*   postSchedEvent (1,EVENT_CREATE_THREAD,1,0,0,0); */
-/*   postSchedEvent (2,EVENT_RUN_THREAD,1,0,0,0); */
-/*   postSchedEvent (1000000, EVENT_STOP_THREAD,1,5,0,0); */
-/*   eventBuf.capno = 1; */
-/*   printAndClearEventBuf (1000000, &eventBuf); */
-/*   postSchedEvent (1000,EVENT_CREATE_THREAD,1,0,0,0); */
-/*   postSchedEvent (1002,EVENT_RUN_THREAD,1,0,0,0); */
-/*   postSchedEvent (100000, EVENT_STOP_THREAD,1,5,0,0); */
-/*   eventBuf.capno = -1; */
-/*   printAndClearEventBuf (1000000, &eventBuf); */
-/*   postSchedEvent (1000001, EVENT_SHUTDOWN,0,0,0,0); */
-/*   endEventLogging (1000001); */
-/*   return 0; */
-/* } */

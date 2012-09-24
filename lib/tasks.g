@@ -10,7 +10,7 @@ CULL_IDLE_WORKERS := 7;
 FINISH_WORKER := 8;
 START_WORKERS := 9;
 
-Tasks := AtomicRecord( rec ( Initial := 4 ,    # initial number of worker threads
+Tasks := AtomicRecord( rec ( Initial := 2 ,    # initial number of worker threads
                  FirstTask := true,
                  ReportErrors := true,
                  WorkerPool := CreateChannel(),                # pool of idle workers                 
@@ -22,6 +22,8 @@ TaskData := ShareObj( rec(
                     inputChannels := [],              
                     TaskPoolLen := 0,         # length of a task pool     
                     Running := 0));
+
+ReadLib ("logging.g");
 
 # Task manager is a special thread that manages the workers
 # (starts, blocks, suspends and resumes workers).
@@ -55,7 +57,7 @@ Tasks.Worker := function(channels)
   local taskdata, result, toUnblock, resume,
         suspend, unSuspend, p, task, i;
   
-  if (Tracing.trace) then
+  if (Tracing.Trace) then
     InitWorkerLog();
   fi;
   

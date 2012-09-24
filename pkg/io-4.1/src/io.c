@@ -1769,28 +1769,6 @@ Obj FuncIO_gethostname(Obj self)
 }
 #endif
 
-Obj FuncIO_write(Obj self,Obj fd,Obj st,Obj offset,Obj count)
-{
-  Int bytes;
-
-  if (!IS_INTOBJ(fd) || !IS_STRING(st) || !IS_STRING_REP(st) ||
-      !IS_INTOBJ(offset) || !IS_INTOBJ(count)) {
-      SyClearErrorNo();
-      return Fail;
-  }
-  if (GET_LEN_STRING(st) < INT_INTOBJ(offset)+INT_INTOBJ(count)) {
-      SyClearErrorNo();
-      return Fail;
-  }
-  bytes = (Int) write(INT_INTOBJ(fd),CHARS_STRING(st)+INT_INTOBJ(offset),
-                      INT_INTOBJ(count));
-  if (bytes < 0) {
-      SySetErrorNo();
-      return Fail;
-  } else
-      return INTOBJ_INT(bytes);
-}
-
 /*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * */
 
 /******************************************************************************
