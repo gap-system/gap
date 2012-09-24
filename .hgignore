@@ -29,8 +29,7 @@ syntax: regexp
 ^extern/lib/
 ^extern/32bit/
 ^extern/64bit/
-^bin/scons-local-1.2.0/.*\.pyc$
-^\.scon
+^bin/.*\.pyc$
 ^\.scon
 ^gen/
 ^bin/current$
