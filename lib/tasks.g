@@ -55,7 +55,7 @@ end;
 # Function executed by each worker thread
 Tasks.Worker := function(channels)
   local taskdata, result, toUnblock, resume,
-        suspend, unSuspend, p, task, i;
+        suspend, unSuspend, p, task, i, threadId;
   
   if (Tracing.Trace) then
     InitWorkerLog();
@@ -69,7 +69,8 @@ Tasks.Worker := function(channels)
       suspend := TryReceiveChannel (Tasks.WorkerSuspensionRequests, fail);
       if not IsIdenticalObj (suspend, fail) then
         if (Tracing.Trace) then
-          IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_SUSPENDED\n");
+          threadId := ThreadID(CurrentThread());
+          IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_SUSPENDED\n");
         fi;
         SendChannel (Tasks.TaskManagerRequests, rec ( worker:= ThreadID(CurrentThread()),
                                                                type := SUSPEND_ME));
@@ -77,8 +78,9 @@ Tasks.Worker := function(channels)
         unSuspend := ReceiveChannel (channels.toworker);
         if unSuspend=FINISH then
           if (Tracing.Trace) then
-            IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread()), " WORKER_FINISHED\n");
-            IO_Close(Tracing.Files[ThreadID(CurrentThread())]);
+            threadId := ThreadID(CurrentThread());
+            IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId, " WORKER_FINISHED\n");
+            IO_Close(Tracing.Files[threadId+1]);
           fi;
           SendChannel (Tasks.TaskManagerRequests, rec ( worker := CurrentThread(),
                                                                   type := FINISH_WORKER));
@@ -96,20 +98,23 @@ Tasks.Worker := function(channels)
         TaskData.TaskPoolLen := TaskData.TaskPoolLen-1;
         TaskData.Running := TaskData.Running+1;
         if (Tracing.Trace) then
-          IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_GOT_TASK\n");
+          threadId := ThreadID(CurrentThread());
+          IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_GOT_TASK\n");
         fi;
         UNLOCK(p);
       else
         UNLOCK(p);
         if (Tracing.Trace) then
-          IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_IDLE\n");
+          threadId := ThreadID(CurrentThread());
+          IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_IDLE\n");
         fi;
         SendChannel (Tasks.WorkerPool, channels);
         resume := ReceiveChannel (channels.toworker);
         if resume=FINISH then
           if (Tracing.Trace) then
-            IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_FINISHED\n");
-            IO_Close(Tracing.Files[ThreadID(CurrentThread())]);
+            threadId := ThreadID(CurrentThread());
+            IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_FINISHED\n");
+            IO_Close(Tracing.Files[threadId+1]);
           fi;
           SendChannel (channels.fromworker, CurrentThread());
           return;
@@ -135,11 +140,13 @@ Tasks.Worker := function(channels)
       CALL_WITH_CATCH(taskdata.func, taskdata.args);
     else
       if (Tracing.Trace) then
-        IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_TASK_STARTED\n");
+        threadId := ThreadID(CurrentThread());
+        IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_TASK_STARTED\n");
       fi;
       result := CALL_WITH_CATCH(taskdata.func, taskdata.args);
       if (Tracing.Trace) then
-        IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_TASK_FINISHED\n");
+        threadId := ThreadID(CurrentThread());
+        IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_TASK_FINISHED\n");
       fi;
       if Length(result) = 1 or not result[1] then
         if Length(result) > 1 and Tasks.ReportErrors then
@@ -180,10 +187,11 @@ end;
 
 # Function called when worker blocks on the result of a task.
 Tasks.BlockWorkerThread := function()
-  local resume;
+  local resume, threadId;
   
   if (Tracing.Trace) then
-    IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_BLOCKED\n");
+    threadId := ThreadID(CurrentThread());
+    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_BLOCKED\n");
   fi;
 
   if ThreadID(CurrentThread())<>0 then
@@ -193,7 +201,8 @@ Tasks.BlockWorkerThread := function()
       Error("Error while worker is waiting to resume\n");
     fi;
     if (Tracing.Trace) then
-      IO_Write(Tracing.Files[ThreadID(CurrentThread())], MSTime(), " ", ThreadID(CurrentThread())," WORKER_RESUMED\n");
+      threadId := ThreadID(CurrentThread());
+      IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_RESUMED\n");
     fi;
   else
     Error("Cannot block main thread\n");
@@ -277,7 +286,7 @@ CullIdleTasks := function()
 end;
 
 ExecuteTask:= atomic function(readwrite task)
-  local channels, t, taskdata, worker;
+  local channels, t, taskdata, worker, threadId, tracingFile;
   
   task.started := true;
   task.complete := false;
@@ -286,6 +295,11 @@ ExecuteTask:= atomic function(readwrite task)
     TaskData.TaskPoolLen := TaskData.TaskPoolLen+1;
     TaskData.TaskPool[Tasks.TaskPoolLength()] := task;
   od;
+  
+  if (Tracing.Trace) then
+    threadId := ThreadID(CurrentThread());
+    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId, " WORKER_TASK_CREATED\n");
+  fi;
   
   if (Tasks.FirstTask) then
     Tasks.FirstTask := false;

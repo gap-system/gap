@@ -16,7 +16,7 @@ FILE *gap_event_log_file;
 StgWord64 currentLine=1;
 StgThreadID capToWorker[MAX_PES];
 int workerToCap[MAX_WORKERS];
-StgThreadID nextTaskId=0;
+StgThreadID nextTaskId=1;
 StgThreadID workerToTask[MAX_WORKERS];
 
 typedef struct {
@@ -24,6 +24,16 @@ typedef struct {
   StgWord64 time;
   StgThreadID workerId;
 } GAPEvent;
+
+static inline int initialiseCaps () {
+  int i;
+  for (i=0;i<MAX_PES;i++) {
+    capToWorker[i] = -1;
+  }
+  capToWorker[0] = 0;
+  workerToCap[0] = 0;
+  workerToTask[0] = 0;
+}
 
 static inline int getWorkerCap (StgThreadID workerId) {
   return workerToCap[workerId];
@@ -40,7 +50,7 @@ void flushEventBuffer (StgWord64 time, int cap) {
 int assignCapToWorker (StgWord64 time, StgThreadID workerId) {
   int i;
   for (i=0; i<MAX_PES; i++) 
-    if (!capToWorker[i]) {
+    if (capToWorker[i]==-1) {
       capToWorker[i] = workerId;
       return i;
     }
@@ -53,7 +63,7 @@ int removeCapFromWorker (StgWord64 time, StgThreadID workerId) {
   int i;
   for (i=0; i<MAX_PES; i++) 
     if (capToWorker[i]==workerId) {
-      capToWorker[i] = 0;
+      capToWorker[i] = -1;
       return i;
     }
   return -1;
@@ -81,6 +91,8 @@ int getNextGAPEvent (GAPEvent *ev) {
   } else if (!strcmp (stringEvent, "WORKER_TASK_FINISHED")) {
     ev->type = TASK_FINISHED;
   } else if (!strcmp (stringEvent, "WORKER_GOT_TASK")) {
+    ev->type = TASK_OBTAINED;
+  } else if (!strcmp (stringEvent, "WORKER_TASK_CREATED")) {
     ev->type = TASK_CREATED;
   } else if (!strcmp (stringEvent, "WORKER_CREATED")) {
     ev->type = WORKER_CREATED;
@@ -96,7 +108,7 @@ int main (int argc, char **argv) {
   
   char gap_log_name[255], ts_log_name[255];
   GAPEvent nextEvent;
-  StgWord64 baseTime=0, time;
+  StgWord64 time;
   int hasNextEvent, cap=-1;
   
   if (argc<2) {
@@ -119,16 +131,15 @@ int main (int argc, char **argv) {
   initEventLogging (0,MAX_PES);
   postEventStartup (0,MAX_PES);
 
+  initialiseCaps();
+
   while (hasNextEvent = getNextGAPEvent(&nextEvent)) {
-    if (!baseTime) {
-      baseTime = nextEvent.time;
-    }
-    time = (nextEvent.time-baseTime+1)*1000;
+    time = nextEvent.time*1000;
     switch (nextEvent.type) {
     case WORKER_CREATED:
       workerToCap[nextEvent.workerId] = -1;
       break;
-    case TASK_CREATED:
+    case TASK_OBTAINED:
       cap = getWorkerCap (nextEvent.workerId);
       if (cap == -1) {
         cap = assignCapToWorker (time, nextEvent.workerId);
@@ -138,11 +149,27 @@ int main (int argc, char **argv) {
       workerToTask[nextEvent.workerId] = nextTaskId;
       postSchedEvent (time, EVENT_CREATE_THREAD, nextTaskId++, 0, 0, 0);
       break;
+      //case TASK_CREATED:
+      //cap = getWorkerCap (nextEvent.workerId);
+      //if (cap == -1 && nextEvent.workerId != 0) {
+      //  fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
+      //  exit(1);
+      //} else if (nextEvent.workerId == 0) {
+      //  cap = assignCapToWorker (time, nextEvent.workerId);
+      //  workerToCap[nextEvent.workerId] = cap;
+      //}
+      //flushEventBuffer(time, cap);
+      //workerToTask[nextEvent.workerId] = nextTaskId;
+      //postSchedEvent (time, EVENT_CREATE_SPARK_THREAD, 1, 0, 0, 0);
+      //break;
     case TASK_STARTED:
       cap = getWorkerCap (nextEvent.workerId);
-      if (cap == -1) {
+      if (cap == -1 && nextEvent.workerId != 0) {
         fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
         exit(1);
+      } else if (nextEvent.workerId == 0) {
+        cap = assignCapToWorker (time, nextEvent.workerId);
+        workerToCap[nextEvent.workerId] = cap;
       }
       flushEventBuffer(time, cap);
       //fprintf (stderr, "%llu RUN_THREAD %lu\n", time, workerToTask[nextEvent.workerId]);

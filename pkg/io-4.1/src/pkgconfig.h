@@ -304,7 +304,7 @@
 #define SELECT_TYPE_ARG5 (struct timeval *)
 
 /* The size of `void **', as computed by sizeof. */
-#define SIZEOF_VOID_PP 4
+#define SIZEOF_VOID_PP 8
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1

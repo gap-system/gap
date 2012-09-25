@@ -449,7 +449,7 @@ Copyright (C) 2010 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/vladimirjanjic/st-andrews/hpcgap/logToThreadscope'
+ac_pwd='/home/vladimir/st-andrews/research/hpcgap-stuff/hpcgap/logToThreadscope'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
@@ -661,12 +661,12 @@ S["mkdir_p"]="/bin/mkdir -p"
 S["MKDIR_P"]="/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]=""
-S["install_sh"]="${SHELL} /home/vladimirjanjic/st-andrews/hpcgap/logToThreadscope/install-sh"
-S["MAKEINFO"]="${SHELL} /home/vladimirjanjic/st-andrews/hpcgap/logToThreadscope/missing --run makeinfo"
-S["AUTOHEADER"]="${SHELL} /home/vladimirjanjic/st-andrews/hpcgap/logToThreadscope/missing --run autoheader"
-S["AUTOMAKE"]="${SHELL} /home/vladimirjanjic/st-andrews/hpcgap/logToThreadscope/missing --run automake-1.11"
-S["AUTOCONF"]="${SHELL} /home/vladimirjanjic/st-andrews/hpcgap/logToThreadscope/missing --run autoconf"
-S["ACLOCAL"]="${SHELL} /home/vladimirjanjic/st-andrews/hpcgap/logToThreadscope/missing --run aclocal-1.11"
+S["install_sh"]="${SHELL} /home/vladimir/st-andrews/research/hpcgap-stuff/hpcgap/logToThreadscope/install-sh"
+S["MAKEINFO"]="${SHELL} /home/vladimir/st-andrews/research/hpcgap-stuff/hpcgap/logToThreadscope/missing --run makeinfo"
+S["AUTOHEADER"]="${SHELL} /home/vladimir/st-andrews/research/hpcgap-stuff/hpcgap/logToThreadscope/missing --run autoheader"
+S["AUTOMAKE"]="${SHELL} /home/vladimir/st-andrews/research/hpcgap-stuff/hpcgap/logToThreadscope/missing --run automake-1.11"
+S["AUTOCONF"]="${SHELL} /home/vladimir/st-andrews/research/hpcgap-stuff/hpcgap/logToThreadscope/missing --run autoconf"
+S["ACLOCAL"]="${SHELL} /home/vladimir/st-andrews/research/hpcgap-stuff/hpcgap/logToThreadscope/missing --run aclocal-1.11"
 S["VERSION"]="0.1"
 S["PACKAGE"]="logToThreadscope"
 S["CYGPATH_W"]="echo"
@@ -771,8 +771,8 @@ D["HAVE_STRINGS_H"]=" 1"
 D["HAVE_INTTYPES_H"]=" 1"
 D["HAVE_STDINT_H"]=" 1"
 D["HAVE_UNISTD_H"]=" 1"
-D["SIZEOF_VOIDP"]=" 4"
-D["SIZEOF_LONG"]=" 4"
+D["SIZEOF_VOIDP"]=" 8"
+D["SIZEOF_LONG"]=" 8"
 D["SIZEOF_LONG_LONG"]=" 8"
 D["HAVE_STDLIB_H"]=" 1"
 D["HAVE_STRING_H"]=" 1"

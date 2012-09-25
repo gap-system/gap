@@ -1,6 +1,6 @@
 Tracing := AtomicRecord ( rec ( Trace := false,
                    StartTime := 0,
-                   FileNameNo := ShareObj([1]),
+                   FileNameNo := ShareObj([2]),
                    Files := AtomicList ([])));
 
 MicroSeconds := function()
@@ -31,8 +31,6 @@ PostProcessLogging := function ()
       i := i+1;
     fi;
   od;
-  
-  
   
   repeat
     minTime := -1;
@@ -65,6 +63,9 @@ end;
 
 StopLogging := function()
   Tracing.trace := false;
+  IO_Write (Tracing.Files[1], MSTime(), " 0 WORKER_TASK_FINISHED\n");
+  IO_Write (Tracing.Files[1], MSTime(), " 0 WORKER_FINISHED\n");
+  IO_Close (Tracing.Files[1]);
   PostProcessLogging();
 end;
 
@@ -77,16 +78,20 @@ StartLogging := function()
     StopLogging();
   else
     Tracing.StartTime := MicroSeconds();
+    Tracing.Files[1] := IO_File("tmp/w1","w");
+    IO_Write (Tracing.Files[1], MSTime(), " 0 WORKER_CREATED\n");
+    IO_Write (Tracing.Files[1], MSTime(), " 0 WORKER_TASK_STARTED\n");
   fi;
 end;
 
 InitWorkerLog := function()
-  local fname;
+  local fname, threadId;
   atomic Tracing.FileNameNo do
     fname := Concatenation ("tmp/w", String(Tracing.FileNameNo[1]));
     Tracing.FileNameNo[1] := Tracing.FileNameNo[1]+1;
   od;
-  Tracing.Files[ThreadID(CurrentThread())] := IO_File(fname,"w");
-  IO_Write(Tracing.Files[ThreadID(CurrentThread())], 
-          MSTime(), " ", ThreadID(CurrentThread()), " WORKER_CREATED\n");
+  threadId := ThreadID(CurrentThread());
+  Tracing.Files[threadId+1] := IO_File(fname,"w");
+  IO_Write(Tracing.Files[threadId+1], 
+          MSTime(), " ", threadId, " WORKER_CREATED\n");
 end;
