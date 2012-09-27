@@ -534,7 +534,7 @@ local fam,indn,val,q,fc,gc;
   if g[2]>0 then
     gc:=ShiftedCoeffs(g[1],g[2]);
   else
-    gc:=g[1];
+    gc:=ShallowCopy(g[1]);
   fi;
 
   q:=QUOTREM_LAURPOLS_LISTS(fc,gc);
