@@ -395,27 +395,31 @@ function( sc )
     fam!.rewritingSystem := Immutable(sc);
 
     # create the default type for the elements
-
     fam!.defaultType := NewType( fam, IsPackedElementDefaultRep );
 
-    # create the special 8 bits type
-    fam!.8BitsType := NewType( fam, Is8BitsPcWordRep );
+    ConstructExtendedType(function()
 
-    # copy the assoc word type
-    for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
-	BindOnce(fam!.8BitsType, i, sc![SCP_DEFAULT_TYPE]![i]);
-    od;
+      # create the special 8 bits type
+      fam!.8BitsType := NewType( fam, Is8BitsPcWordRep );
 
-    # default type to use
-    BindOnce(fam!.8BitsType, AWP_PURE_TYPE, fam!.8BitsType);
+      # copy the assoc word type
+      for i  in [ AWP_FIRST_ENTRY .. AWP_FIRST_FREE-1 ]  do
+	    fam!.8BitsType![i] := sc![SCP_DEFAULT_TYPE]![i];
+      od;
 
-    # store the names
-    BindOnce(fam!.8BitsType, PCWP_NAMES, FamilyObj(ReducedOne(sc))!.names);
+      # default type to use
+      fam!.8BitsType![AWP_PURE_TYPE]:=fam!.8BitsType;
 
-    # force the single collector to return elements of that type
-    sc := ShallowCopy(sc);
-    sc![SCP_DEFAULT_TYPE] := fam!.8BitsType;
-    BindOnce(fam!.8BitsType, PCWP_COLLECTOR, sc);
+      # store the names
+      fam!.8BitsType![PCWP_NAMES] := FamilyObj(ReducedOne(sc))!.names;
+
+      # force the single collector to return elements of that type
+      sc := ShallowCopy(sc);
+      sc![SCP_DEFAULT_TYPE] := fam!.8BitsType;
+      fam!.8BitsType![PCWP_COLLECTOR] := sc;
+
+      return fam!.8BitsType;
+    end);
 
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
