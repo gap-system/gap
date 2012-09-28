@@ -849,6 +849,13 @@ static Obj FuncFromAtomicRecord(Obj self, Obj record)
   return FromAtomicRecord(record);
 }
 
+static Obj FuncFromAtomicComObj(Obj self, Obj comobj)
+{
+  if (TNUM_OBJ(comobj) != T_ACOMOBJ)
+    ArgumentError("FromAtomicComObj: First argument must be an atomic record");
+  return FromAtomicRecord(comobj);
+}
+
 Obj NewAtomicRecord(UInt capacity)
 {
   Obj arec, result;
@@ -1748,6 +1755,9 @@ static StructGVarFunc GVarFuncs [] = {
       FuncATOMIC_RECORD_REPLACEMENT, "src/aobjects.c:ATOMIC_RECORD_REPLACEMENT" },
     { "FromAtomicRecord", 1, "record",
       FuncFromAtomicRecord, "src/aobjects.c:FromAtomicRecord" },
+
+    { "FromAtomicComObj", 1, "record",
+      FuncFromAtomicComObj, "src/aobjects.c:FromAtomicComObj" },
 
     { "ThreadLocal", -1, "record [, record]",
       FuncThreadLocal, "src/aobjects.c:ThreadLocal" },
