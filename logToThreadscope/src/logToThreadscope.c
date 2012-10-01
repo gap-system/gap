@@ -107,14 +107,15 @@ int getNextGAPEvent (GAPEvent *ev) {
   int succ;
 
 #if SIZEOF_LONG == 8 
-  succ = fscanf (gap_event_log_file, "%lu %ui %s", &time, &workerId, stringEvent);
+  succ = fscanf (gap_event_log_file, "%lu %u %s", &time, &workerId, stringEvent);
 #elif SIZEOF_LONG_LONG == 8
   succ = fscanf (gap_event_log_file, "%llu %lu %s", &time, &workerId, stringEvent);
 #endif
 
-  if (succ<3) 
+  if (succ<3) {
     return 0;
-  
+  }
+
   ev->time = time;
   ev->workerId = workerId;
   
@@ -134,7 +135,6 @@ int getNextGAPEvent (GAPEvent *ev) {
     ev->type = WORKER_CREATED;
   }
 
-  //fprintf (stderr, "%lu %d %d\n", ev->time, ev->workerId, ev->type);
   return 1;
 
 }
@@ -189,13 +189,6 @@ int main (int argc, char **argv) {
       break;
     case TASK_CREATED:
       cap = getWorkerCap (nextEvent.workerId);
-      //if (cap == -1 && nextEvent.workerId != 0) {
-      //fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
-      // exit(1);
-      //} //else if (nextEvent.workerId == 0) {
-        //cap = assignCapToWorker (time, nextEvent.workerId);
-        //workerToCap[nextEvent.workerId] = cap;
-      //}
       if (cap == -1) {
         cap = assignCapToWorker (time, nextEvent.workerId);
         workerToCap[nextEvent.workerId] = cap;
@@ -208,7 +201,7 @@ int main (int argc, char **argv) {
     case TASK_STARTED:
       cap = getWorkerCap (nextEvent.workerId);
       if (cap == -1) {
-        fprintf (stderr, "ERROR! No capability assigned to active worker %ui (time %lu)\n", nextEvent.workerId, time);
+        fprintf (stderr, "ERROR! No capability assigned to active worker %u (time %lu)\n", nextEvent.workerId, time);
         exit(1);
       }
       flushEventBuffer(time, cap);
@@ -227,7 +220,7 @@ int main (int argc, char **argv) {
       cap = getWorkerCap (nextEvent.workerId);
       if (cap == -1) {
 #if SIZEOF_LONG == 8
-        fprintf (stderr, "ERROR! No capability assigned to active worker %ui (time %lu)\n", nextEvent.workerId, time);
+        fprintf (stderr, "ERROR! No capability assigned to active worker %u (time %lu)\n", nextEvent.workerId, time);
 #elif SIZEOF_LONG_LONG == 8
         fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
 #endif
@@ -241,14 +234,13 @@ int main (int argc, char **argv) {
       cap = getWorkerCap (nextEvent.workerId);
       if (cap == -1) {
 #if SIZEOF_LONG == 8
-        fprintf (stderr, "ERROR! No capability assigned to active worker %ui (time %lu)\n", nextEvent.workerId, time);
+        fprintf (stderr, "ERROR! No capability assigned to active worker %u (time %lu)\n", nextEvent.workerId, time);
 #elif SIZEOF_LONG_LONG == 8
         fprintf (stderr, "ERROR! No capability assigned to active worker %lu (time %llu)\n", nextEvent.workerId, time);
 #endif
         exit(1);
       }
       flushEventBuffer(time, cap);
-      //fprintf (stderr, "%llu FINISH_THREAD %lu\n", time, workerToTask[nextEvent.workerId]);
       removeCapFromWorker (time, nextEvent.workerId);
       postSchedEvent (time, EVENT_STOP_THREAD, workerToTask[nextEvent.workerId] , 5, 0, 0);
       workerToTask[nextEvent.workerId] = -1;
