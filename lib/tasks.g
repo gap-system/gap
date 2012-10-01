@@ -286,7 +286,7 @@ CullIdleTasks := function()
 end;
 
 ExecuteTask:= atomic function(readwrite task)
-  local channels, t, taskdata, worker, threadId, tracingFile;
+  local channels, t, taskdata, worker, threadId, tracingFile, tracingTime;
   
   task.started := true;
   task.complete := false;
@@ -298,7 +298,10 @@ ExecuteTask:= atomic function(readwrite task)
   
   if (Tracing.Trace) then
     threadId := ThreadID(CurrentThread());
-    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId, " WORKER_TASK_CREATED\n");
+    tracingTime := MSTime();
+    IO_Write(Tracing.Files[threadId+1], tracingTime, " ", threadId, " WORKER_BLOCKED\n");
+    IO_Write(Tracing.Files[threadId+1], tracingTime, " ", threadId, " WORKER_TASK_CREATED\n");
+    IO_Write(Tracing.Files[threadId+1], tracingTime, " ", threadId, " WORKER_RESUMED\n");
   fi;
   
   if (Tasks.FirstTask) then

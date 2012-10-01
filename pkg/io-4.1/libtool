@@ -2,7 +2,7 @@
 
 # libtool - Provide generalized library-building support services.
 # Generated automatically by config.status (iopkg) 4.0
-# Libtool was configured on host vladimir-SD36V10:
+# Libtool was configured on host vladimirj-Compaq-Presario-CQ50-Notebook-PC:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #
 #   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004, 2005,
@@ -278,7 +278,7 @@ hardcode_into_libs=yes
 sys_lib_search_path_spec="/usr/lib/gcc/x86_64-linux-gnu/4.6 /usr/lib/x86_64-linux-gnu /usr/lib /lib/x86_64-linux-gnu /lib "
 
 # Run-time system search path for libraries.
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/lib/i386-linux-gnu/mesa /lib/i386-linux-gnu /usr/lib/i386-linux-gnu /lib/i686-linux-gnu /usr/lib/i686-linux-gnu /usr/local/lib /lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/mesa /lib32 /usr/lib32 "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i386-linux-gnu /usr/lib/i386-linux-gnu /lib/i686-linux-gnu /usr/lib/i686-linux-gnu /usr/local/lib /usr/lib/nvidia-settings /lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu /usr/lib/nvidia-173 /usr/lib32/nvidia-173 "
 
 # Whether dlopen is supported.
 dlopen_support=yes

@@ -7,6 +7,7 @@
 #define TASK_CREATED 4
 #define WORKER_CREATED 5
 #define TASK_OBTAINED 6
+#define TASK_RESUMED 7
 
 typedef int GAPEventType;
 
