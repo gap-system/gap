@@ -15,7 +15,7 @@ char *gap_event_log_filename;
 FILE *gap_event_log_file;
 StgWord64 currentLine=1;
 StgThreadID capToWorker[MAX_PES];
-int workerToCap[MAX_WORKERS], lastWorkerCap[MAX_WORKERS];
+int workerToCap[MAX_WORKERS];
 StgThreadID nextTaskId=1;
 StgThreadID workerToTask[MAX_WORKERS];
 
@@ -54,7 +54,6 @@ static inline int initialiseCaps () {
   capToWorker[0] = 0;
   workerToCap[0] = 0;
   workerToTask[0] = 0;
-  lastWorkerCap[0] = 0;
 }
 
 static inline int getWorkerCap (StgThreadID workerId) {
@@ -72,18 +71,11 @@ void flushEventBuffer (StgWord64 time, int cap) {
 int assignCapToWorker (StgWord64 time, StgThreadID workerId) {
   int i, lastCap;
   
-  lastCap = lastWorkerCap[workerId];
-  if (capToWorker[lastCap] == -1) {
-    capToWorker[lastCap] = workerId;
-    return lastCap;
-  } else {
-    for (i=0; i<MAX_PES; i++) 
-      if (capToWorker[i]==-1) {
-	capToWorker[i] = workerId;
-	lastWorkerCap[workerId] = i;
-	return i;
-      }
-  }
+  for (i=0; i<MAX_PES; i++) 
+    if (capToWorker[i]==-1) {
+      capToWorker[i] = workerId;
+      return i;
+    }
   
   return -1;
 
@@ -94,6 +86,7 @@ int removeCapFromWorker (StgWord64 time, StgThreadID workerId) {
   for (i=0; i<MAX_PES; i++) 
     if (capToWorker[i]==workerId) {
       capToWorker[i] = -1;
+      workerToCap[workerId] = -1;
       return i;
     }
   return -1;
@@ -145,7 +138,7 @@ int main (int argc, char **argv) {
   char gap_log_name[255], ts_log_name[255];
   GAPEvent nextEvent;
   StgWord64 time, taskId;
-  int hasNextEvent, cap=-1;
+  int hasNextEvent, cap=-1, x;
   
   if (argc<2) {
     fprintf (stderr, "Usage:\n");
@@ -173,8 +166,9 @@ int main (int argc, char **argv) {
     time = nextEvent.time*1000;
     switch (nextEvent.type) {
     case WORKER_CREATED:
-      if (nextEvent.workerId != 0)
+      if (nextEvent.workerId != 0) {
 	workerToCap[nextEvent.workerId] = -1;
+      }
       break;
     case TASK_OBTAINED:
       cap = getWorkerCap (nextEvent.workerId);
@@ -194,7 +188,6 @@ int main (int argc, char **argv) {
         workerToCap[nextEvent.workerId] = cap;
       }
       flushEventBuffer(time, cap);
-      //workerToTask[nextEvent.workerId] = nextTaskId;
       pushToRunQueue (nextTaskId);
       postSchedEvent (time, EVENT_CREATE_THREAD, nextTaskId++, 0, 0, 0);
       break;
@@ -241,7 +234,7 @@ int main (int argc, char **argv) {
         exit(1);
       }
       flushEventBuffer(time, cap);
-      removeCapFromWorker (time, nextEvent.workerId);
+      x = removeCapFromWorker (time, nextEvent.workerId);
       postSchedEvent (time, EVENT_STOP_THREAD, workerToTask[nextEvent.workerId] , 5, 0, 0);
       workerToTask[nextEvent.workerId] = -1;
       break;
