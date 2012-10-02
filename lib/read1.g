@@ -77,6 +77,7 @@ ReadLib( "string.gd"   );
 ReadLib( "cmdledit.g"  );
 
 ReadLib( "thread.g" );
+ReadLib( "objset.g" );
 ReadLib( "smallrgn.g"  );
 
 if IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then

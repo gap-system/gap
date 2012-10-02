@@ -109,6 +109,7 @@
 #include        "tls.h"
 #include        "threadapi.h"
 #include        "aobjects.h"
+#include        "objset.h"
 
 #include        "vars.h"                /* variables                       */
 
@@ -3332,6 +3333,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     /* threads                                                             */
     InitInfoThreadAPI,
     InitInfoAObjects,
+    InitInfoObjSets,
 
 #ifdef GAPMPI
     /* ParGAP/MPI module                                                   */
