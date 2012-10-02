@@ -1677,6 +1677,15 @@ Obj FuncBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   return result ? result : new;
 }
 
+Obj FuncStrictBindOnce(Obj self, Obj obj, Obj index, Obj new) {
+  Obj result;
+  TLS->CurrFuncName = "StrictBindOnce";
+  result = BindOnce(obj, index, &new, 0);
+  if (result)
+    ErrorQuit("StrictBindOnce: Element already initialized", 0L, 0L);
+  return result;
+}
+
 Obj FuncTestBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
   TLS->CurrFuncName = "TestBindOnce";
@@ -1779,6 +1788,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "BindOnce", 3, "obj, index, value",
       FuncBindOnce, "src/aobjects.c:BindOnce" },
+
+    { "StrictBindOnce", 3, "obj, index, value",
+      FuncStrictBindOnce, "src/aobjects.c:StrictBindOnce" },
 
     { "TestBindOnce", 3, "obj, index, value",
       FuncTestBindOnce, "src/aobjects.c:TestBindOnce" },
