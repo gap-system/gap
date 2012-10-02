@@ -83,7 +83,7 @@ InstallOtherMethod( ZmodnZObj,
       Fam!.typeOfZmodnZObj:= NewType( Fam,
 				 IsZmodpZObjSmall and IsModulusRep );
       SetDataType( Fam!.typeOfZmodnZObj, p );
-      BindOnce(Fam!.typeOfZmodnZObj, ZNZ_PURE_TYPE, Fam!.typeOfZmodnZObj);
+      StrictBindOnce(Fam!.typeOfZmodnZObj, ZNZ_PURE_TYPE, Fam!.typeOfZmodnZObj);
       MakeReadOnlyObj(Fam!.typeOfZmodnZObj);
 
     fi;
@@ -1033,7 +1033,7 @@ InstallGlobalFunction( ZmodnZ, function( n )
     # Store the objects type.
     F!.typeOfZmodnZObj:= NewType( F, IsZmodnZObjNonprime and IsModulusRep );
     SetDataType( F!.typeOfZmodnZObj, n );
-    BindOnce(F!.typeOfZmodnZObj, ZNZ_PURE_TYPE, F!.typeOfZmodnZObj);
+    StrictBindOnce(F!.typeOfZmodnZObj, ZNZ_PURE_TYPE, F!.typeOfZmodnZObj);
 
     # as n is no prime, the family is no UFD
     SetIsUFDFamily(F,false);

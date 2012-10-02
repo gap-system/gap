@@ -198,7 +198,7 @@ InstallGlobalFunction( FFEFamily, function( p )
         # via residues.
 	F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
 					     and IsModulusRep and IsZDFRE,p);
-	BindOnce(F!.typeOfZmodnZObj, ZNZ_PURE_TYPE, F!.typeOfZmodnZObj);
+	StrictBindOnce(F!.typeOfZmodnZObj, ZNZ_PURE_TYPE, F!.typeOfZmodnZObj);
         F!.modulus:= p;
 
         SetOne(  F, ZmodnZObj( F, 1 ) );
