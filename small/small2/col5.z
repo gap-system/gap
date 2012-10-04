@@ -6,6 +6,8 @@
 Revision.col5_z :=
     "@(#)$Id: col5.z,v 1.2 1998/07/25 13:54:46 gap Exp $";
 
+atomic SMALL_GROUP_LIB, PROPERTIES_SMALL_GROUPS do
+
 SMALL_GROUP_LIB[ 225 ] :=
 [ 30147447, 132191, 146073203039, 131453, 649211999, 95 ]; 
 
@@ -203,3 +205,6 @@ lgLength := rec( lgLength := [ 2, 3, 4, 5 ], pos := [ [ 53, -54 ], [ 11, -14,
 frattFacs := rec( frattFacs := [ 5, 9, 14, 18, 22, 51, 55, 59, 63 ], pos := [
 1, 2, 3, 19, 27, 28, 35, 45, 49 ] ) );
 
+MIGRATE_SMALL_GROUP_DATA( [225,228,232,234,243,248,250,252,260,264,270,272] );
+
+od;

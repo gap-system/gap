@@ -8,10 +8,9 @@ Revision.col1_z :=
 
 atomic SMALL_GROUP_LIB, PROPERTIES_SMALL_GROUPS do
 
-SMALL_GROUP_LIB[ 16 ] := MigrateObj(
+SMALL_GROUP_LIB[ 16 ] := 
 [ 149511, 9219, 16905, 279051, 9221, 140301, 2245212, 35922525, 574759519,
-513, 520, 139787, 8716, 0 ],
-SMALL_GROUP_LIB); 
+513, 520, 139787, 8716, 0 ];
 
 PROPERTIES_SMALL_GROUPS[ 16 ] := rec(
 isAbelian := [ 1, -2, 5, 10, 14 ], 
@@ -120,7 +119,7 @@ lgLength := rec( lgLength := [ 2, 3, 4 ], pos := [ [ 11, -13 ], [ 3, -10 ], [
 frattFacs := rec( frattFacs := [ 4, 7, 11, 14 ], pos := [ 1, 2, 7, 10 ] ) );
 
 SMALL_GROUP_LIB[ 60 ] :=
-[ 8266033, 24256787, 1456877831, 131356, [ (1,2,3,4,5), (1,2,3) ], 1424171283
+[ 8266033, 24256787, 1456877831, 131356, `[ (1,2,3,4,5), (1,2,3) ], 1424171283
 , 85919707399, 39739399, 16134256, 401415, 139277, 24260615, 7 ]; 
 
 PROPERTIES_SMALL_GROUPS[ 60 ] := rec(
@@ -178,5 +177,7 @@ lgLength := rec( lgLength := [ 2, 3, 4, 5 ], pos := [ [ 49, 51, -52 ], [ 11,
 [ 1, -3 ] ] ),
 frattFacs := rec( frattFacs := [ 5, 9, 14, 18, 22, 51, 55, 59 ], pos := [ 1,
 2, 3, 19, 27, 34, 44, 48 ] ) );
+
+MIGRATE_SMALL_GROUP_DATA( [16,24,32,36,40,48,54,56,60,72,80] );
 
 od;

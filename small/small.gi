@@ -463,8 +463,8 @@ end );
 ##  
 #F  FinalizeSmallGroupData()
 ##
-## This function should be called when all levels of the small group library 
-## have been loaded. It makes various records immutable for thread-safety 
+##  This function should be called when all levels of the small group library 
+##  have been loaded. It makes various records immutable for thread-safety.
 ##
 InstallGlobalFunction( FinalizeSmallGroupData,
         function()
@@ -476,5 +476,22 @@ InstallGlobalFunction( FinalizeSmallGroupData,
     MakeImmutable(READ_SMALL_FUNCS);
     MakeImmutable(READ_IDLIB_FUNCS);
 end);
-    
+
+#############################################################################
+##  
+#F  MIGRATE_SMALL_GROUP_DATA((<list of group orders>)
+##
+##  This function should be called in each data file adding to the small 
+##  group library data describing groups of certain ordes. It was added 
+##  to facilitate making the small groups library thread-safe, minimising
+##  the number of lines of the code that should be changed.
+##
+InstallGlobalFunction( MIGRATE_SMALL_GROUP_DATA,
+    function( orders )
+    local i;
+    for i in orders do
+      MigrateObj( SMALL_GROUP_LIB[i], SMALL_GROUP_LIB);
+      MigrateObj( PROPERTIES_SMALL_GROUPS[i], PROPERTIES_SMALL_GROUPS);
+    od;
+end);
     
