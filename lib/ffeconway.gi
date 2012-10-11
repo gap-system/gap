@@ -117,7 +117,7 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
 
     atomic readwrite fam!.ConwayPolCoeffs do    
       if not IsBound(fam!.ConwayPolCoeffs[d]) then
-        fam!.ConwayPolCoeffs[d] := cp;
+        fam!.ConwayPolCoeffs[d] := MakeReadOnly(cp);
         fam!.ConwayFldEltReducers[d] := reducer;
       fi;  
     od;
@@ -957,7 +957,7 @@ InstallMethod(InverseOp,
     else
         y := Inverse(x![3]);
     fi;
-    return Objectify(fam!.ConwayFldEltDefaultType,[r,d,y]);
+    return MakeReadOnly( Objectify(fam!.ConwayFldEltDefaultType,[r,d,y]) );
 end);
 
 InstallMethod(QUO_FFE_LARGE,
