@@ -882,6 +882,8 @@ Obj FuncWaitBarrier(Obj self, Obj barrier);
 Obj FuncCreateSyncVar(Obj self);
 Obj FuncSyncWrite(Obj self, Obj var, Obj value);
 Obj FuncSyncRead(Obj self, Obj var);
+Obj FuncWriteLock(Obj self, Obj args);
+Obj FuncReadLock(Obj self, Obj args);
 Obj FuncIS_LOCKED(Obj self, Obj obj);
 Obj FuncLOCK(Obj self, Obj args);
 Obj FuncWRITE_LOCK(Obj self, Obj args);
@@ -1079,6 +1081,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "IS_LOCKED", 1, "obj",
       FuncIS_LOCKED, "src/threadapi.c:IS_LOCKED" },
+
+    { "WriteLock", -1, "obj, ...",
+      FuncWriteLock, "src/threadapi.c:WriteLock" },
+
+    { "ReadLock", -1, "obj, ...",
+      FuncReadLock, "src/threadapi.c:ReadLock" },
 
     { "LOCK", -1, "obj, ...",
       FuncLOCK, "src/threadapi.c:LOCK" },
@@ -2358,6 +2366,42 @@ Obj FuncIS_LOCKED(Obj self, Obj obj)
   if (!ds)
     return INTOBJ_INT(0);
   return INTOBJ_INT(IsLocked(ds));
+}
+
+void DoLockFunc(Obj args, int mode)
+{
+  Int numargs = LEN_PLIST(args);
+  int *modes;
+  Int i;
+  if (numargs > 1024) {
+    ErrorQuit("%s: Too many arguments",
+      mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
+  }
+  if (TLS->lockStackPointer == 0) {
+    ErrorQuit("%s: Not inside an atomic region or function",
+      mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
+  }
+  modes = alloca(sizeof(int) * numargs);
+  for (i=0; i<numargs; i++) {
+    modes[i] = mode;
+  }
+  if (LockObjects((int) numargs, ADDR_OBJ(args)+1, modes) < 0) {
+    ErrorQuit("%s: Could not lock objects",
+      mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
+  }
+}
+
+
+Obj FuncWriteLock(Obj self, Obj args)
+{
+  DoLockFunc(args, 1);
+  return (Obj) 0;
+}
+
+Obj FuncReadLock(Obj self, Obj args)
+{
+  DoLockFunc(args, 0);
+  return (Obj) 0;
 }
 
 Obj FuncLOCK(Obj self, Obj args)

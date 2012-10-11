@@ -638,14 +638,17 @@ void PushRegionLock(Region *region) {
     GROW_PLIST(TLS->lockStack, newlen);
   }
   TLS->lockStackPointer++;
-  SET_ELM_PLIST(TLS->lockStack, TLS->lockStackPointer, region->obj);
+  SET_ELM_PLIST(TLS->lockStack, TLS->lockStackPointer,
+    region ? region->obj : (Obj) 0);
 }
 
 void PopRegionLocks(int newSP) {
   while (newSP < TLS->lockStackPointer)
   {
     int p = TLS->lockStackPointer--;
-    RegionUnlock(*(Region **)(ADDR_OBJ(ELM_PLIST(TLS->lockStack, p))));
+    Obj region_obj = ELM_PLIST(TLS->lockStack, p);
+    if (!region_obj) continue;
+    RegionUnlock(*(Region **)(ADDR_OBJ(region_obj)));
     SET_ELM_PLIST(TLS->lockStack, p, (Obj) 0);
   }
 }
@@ -654,7 +657,11 @@ void PopRegionAutoLocks(int newSP) {
   while (newSP < TLS->lockStackPointer)
   {
     int p = TLS->lockStackPointer;
-    Region *region = *(Region **)(ADDR_OBJ(ELM_PLIST(TLS->lockStack, p)));
+    Obj region_obj = ELM_PLIST(TLS->lockStack, p);
+    Region *region;
+    if (!region_obj)
+      return;
+    region = *(Region **)(ADDR_OBJ(region_obj));
     if (!region->autolock)
       return;
     RegionUnlock(region);
@@ -917,8 +924,8 @@ int LockObject(Obj obj, int mode) {
   Region *region = GetRegionOf(obj);
   int locked;
   int result = TLS->lockStackPointer;
-  if (!region || region->fixed_owner)
-    return -1;
+  if (!region)
+    return result;
   locked = IsLocked(region);
   if (locked == 2 && mode)
     return -1;
@@ -960,10 +967,8 @@ int LockObjects(int count, Obj *objects, int *mode)
      */
     if (i > 0 && ds == order[i-1].region)
       continue; /* skip duplicates */
-    if (!ds || ds->fixed_owner) { /* public or thread-local region */
-      PopRegionLocks(result);
-      return -1;
-    }
+    if (!ds)
+      continue;
     locked = IsLocked(ds);
     if (locked == 2 && order[i].mode) {
       /* trying to upgrade read lock to write lock */
