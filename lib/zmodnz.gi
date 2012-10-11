@@ -66,8 +66,8 @@ InstallMethod( ZmodnZObj,
     "for family of elements in Z/nZ (nonprime), and integer",
     [ IsZmodnZObjNonprimeFamily, IsInt ],
     function( Fam, residue )
-    return Objectify( Fam!.typeOfZmodnZObj,
-                   [ residue mod Fam!.modulus ] );
+    return MakeReadOnly(Objectify( Fam!.typeOfZmodnZObj,
+                   [ residue mod Fam!.modulus ] ));
     end );
 
 InstallOtherMethod( ZmodnZObj,
@@ -87,14 +87,14 @@ InstallOtherMethod( ZmodnZObj,
       MakeReadOnlyObj(Fam!.typeOfZmodnZObj);
 
     fi;
-    return Objectify( Fam!.typeOfZmodnZObj, [ residue mod p ] );
+    return MakeReadOnly(Objectify( Fam!.typeOfZmodnZObj, [ residue mod p ] ));
     end );
 
 InstallMethod( ZmodnZObj,
     "for a positive integer, and an integer",
     [ IsInt, IsPosInt ],
     function( residue, n )
-    return ZmodnZObj( ElementsFamily( FamilyObj( ZmodnZ( n ) ) ), residue );
+    return MakeReadOnly(ZmodnZObj( ElementsFamily( FamilyObj( ZmodnZ( n ) ) ), residue ));
     end );
 
 
@@ -524,8 +524,8 @@ InstallMethod( \^,
     "for element in Z/nZ (ModulusRep), and integer",
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, n )
-    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                  [ PowerModInt( x![1], n, DataType( TypeObj( x ) ) ) ] );
+    return MakeReadOnly(Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                  [ PowerModInt( x![1], n, DataType( TypeObj( x ) ) ) ] ));
     end );
 
 
