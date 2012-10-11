@@ -129,14 +129,12 @@ FFECONWAY.ZNC := function(p,d)
     fam := FFEFamily(p);
     
     if not IsBound(fam!.ZCache) then
-        fam!.ZCache := ShareObj([]);
+        fam!.ZCache := MakeWriteOnceAtomic([]);
     fi;
     
-    atomic readonly fam!.ZCache do
-      if IsBound(fam!.ZCache[d]) then
+    if IsBound(fam!.ZCache[d]) then
         return fam!.ZCache[d];
-      fi;
-    od;
+    fi;
     
     # because MakeWriteOnceAtomic was applied to fam when it was created, 
     # it should be safe to assign fam!.ConwayFldEltDefaultType as below
@@ -148,14 +146,12 @@ FFECONWAY.ZNC := function(p,d)
     v[2] := Z(p)^0;
     ConvertToVectorRep(v,p);
     # put 'false' in the third component because we know it is irreducible
-    zpd := Objectify(fam!.ConwayFldEltDefaultType, [v,d,false]);
+    zpd := Objectify(fam!.ConwayFldEltDefaultType, MakeImmutable([v,d,false]));
     
-    atomic readwrite fam!.ZCache do      
-      if not IsBound(fam!.ZCache[d]) then
-        fam!.ZCache[d] := zpd;
-      fi;
-      return fam!.ZCache[d];
-    od;
+    if not IsBound(fam!.ZCache[d]) then
+        fam!.ZCache[d] := MakeReadOnly(zpd);
+    fi;
+    return fam!.ZCache[d];
     
 end;
 
