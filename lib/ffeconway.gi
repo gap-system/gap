@@ -146,7 +146,7 @@ FFECONWAY.ZNC := function(p,d)
     v[2] := Z(p)^0;
     ConvertToVectorRep(v,p);
     # put 'false' in the third component because we know it is irreducible
-    zpd := Objectify(fam!.ConwayFldEltDefaultType, MakeImmutable([v,d,false]));
+    zpd := Objectify(fam!.ConwayFldEltDefaultType, [v,d,false] );
     
     if not IsBound(fam!.ZCache[d]) then
         fam!.ZCache[d] := MakeReadOnly(zpd);
