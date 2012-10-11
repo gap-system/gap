@@ -987,7 +987,7 @@ elif ret = true and N < 10^13 then
     if PrimalityProof_VerifyStructure(N,ret) <> [] then
         atomic readwrite Primes2, readwrite PrimesProofs do
         AddSet(Primes2,N);
-        AddSet(PrimesProofs,[N,ret]);
+        AddSet(PrimesProofs,MigrateObj([N,ret],PrimesProofs));
     od;
     else
           Info(InfoPrimeInt, 1,
