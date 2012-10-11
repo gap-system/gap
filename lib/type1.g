@@ -115,7 +115,7 @@ BIND_GLOBAL( "NEW_FAMILY",
     family!.HASH_SIZE       := 32;
     # for chaching types of homogeneous lists (see TYPE_LIST_HOM in list.g), 
     # assigned in kernel when needed 
-    family!.TYPES_LIST_FAM  := AtomicList(27);
+    family!.TYPES_LIST_FAM  := MakeWriteOnceAtomic(AtomicList(27));
     return family;
 end );
 

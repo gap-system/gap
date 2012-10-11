@@ -412,7 +412,7 @@ FamilyOfFamilies!.nTYPES          := 0;
 FamilyOfFamilies!.HASH_SIZE       := 100;
 
 # for chaching types of homogeneous lists, assigned in kernel when needed 
-FamilyOfFamilies!.TYPES_LIST_FAM  := [];
+FamilyOfFamilies!.TYPES_LIST_FAM  := MakeWriteOnceAtomic(AtomicList(27));
 # for efficiency
 FamilyOfFamilies!.TYPES_LIST_FAM[27] := 0;
 
@@ -443,7 +443,7 @@ FamilyOfTypes!.nTYPES          := 0;
 FamilyOfTypes!.HASH_SIZE       := 100;
 
 # for chaching types of homogeneous lists, assigned in kernel when needed 
-FamilyOfTypes!.TYPES_LIST_FAM  := [];
+FamilyOfTypes!.TYPES_LIST_FAM  := MakeWriteOnceAtomic(AtomicList(27));
 # for efficiency
 FamilyOfTypes!.TYPES_LIST_FAM[27] := 0;
 
