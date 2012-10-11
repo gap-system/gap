@@ -415,26 +415,6 @@ BindGlobal( "ExcludeFromAutoload", function( arg )
 
 #############################################################################
 ##
-#V  EDITOR
-#V  HELP_VIEWER
-#V  PAGER
-#V  PAGER_OPTIONS
-#V  XDVI_OPTIONS
-#V  XPDF_OPTIONS
-##
-##  were supported until GAP 4.4, obsolescent in GAP 4.5.
-##
-EDITOR:= GAPInfo.UserPreferences.Editor;
-HELP_VIEWER:= GAPInfo.UserPreferences.HelpViewers;
-PAGER:= GAPInfo.UserPreferences.Pager;
-PAGER_OPTIONS:= GAPInfo.UserPreferences.PagerOptions;
-XDVI_OPTIONS:= GAPInfo.UserPreferences.XdviOptions;
-XPDF_OPTIONS:= GAPInfo.UserPreferences.XpdfOptions;
-POST_RESTORE_FUNCS:= GAPInfo.PostRestoreFuncs;
-
-
-#############################################################################
-##
 #F  ProductPol( <coeffs_f>, <coeffs_g> )  . . . .  product of two polynomials
 ##
 ##  <ManSection>
