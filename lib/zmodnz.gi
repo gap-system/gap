@@ -571,7 +571,10 @@ InstallMethod( InverseOp,
     inv:= QuotientMod( Integers, 1, elm![1], ModulusOfZmodnZObj( elm ) );
     if inv <> fail then
       inv:= ZmodnZObj( FamilyObj( elm ), inv );
-    fi;
+  fi;
+  return inv;
+end );
+
 #############################################################################
 ##
 #M  Order( <obj> )  . . . . . . . . . . . . . . . . . . . . for `IsZmodpZObj'
@@ -586,8 +589,6 @@ InstallMethod( Order,
         Error( "<obj> is not invertible" );
     fi;
     return ord;
-    end );
-    return inv;
     end );
 
 
