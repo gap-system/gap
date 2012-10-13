@@ -12,8 +12,8 @@
 ##  SmallGroup(n,i).
 ##
 
-NAMES_OF_SMALL_GROUPS :=
-[ [ "1" ], [ "C2" ], [ "C3" ], [ "C4", "C2 x C2" ], [ "C5" ], [ "S3", "C6" ],
+NAMES_OF_SMALL_GROUPS := 
+`[ [ "1" ], [ "C2" ], [ "C3" ], [ "C4", "C2 x C2" ], [ "C5" ], [ "S3", "C6" ],
   [ "C7" ], [ "C8", "C4 x C2", "D8", "Q8", "C2 x C2 x C2" ],
   [ "C9", "C3 x C3" ], [ "D10", "C10" ], [ "C11" ],
   [ "C3 : C4", "C12", "A4", "D12", "C6 x C2" ], [ "C13" ], [ "D14", "C14" ],
@@ -142,7 +142,6 @@ NAMES_OF_SMALL_GROUPS :=
       "(C5 x C5) : C4", "C20 x C5", "C5 x (C5 : C4)", "(C5 x C5) : C4",
       "(C5 x C5) : C4", "(C5 x C5) : C4", "D10 x D10", "C10 x D10",
       "C2 x ((C5 x C5) : C2)", "C10 x C10" ] ];
-MakeReadOnlyGlobal( "NAMES_OF_SMALL_GROUPS" );
 
 #############################################################################
 ##
