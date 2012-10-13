@@ -1266,10 +1266,6 @@ InstallGlobalFunction( LoadPackage, function( arg )
     # inside the package code causes the files to be read more than once.
     for pair in depinfo.InstallationPaths do
       GAPInfo.PackagesLoaded.( pair[1] ):= MakeImmutable( pair[2] );
-#T Remove the following as soon as the obsolete variable has been removed!
-if IsBoundGlobal( "PACKAGES_VERSIONS" ) then
-  ValueGlobal( "PACKAGES_VERSIONS" ).( pair[1] ):= pair[2][2];
-fi;
     od;
 
     # Compute the order in which the packages are loaded.
@@ -1454,12 +1450,6 @@ InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
           rootpaths ) );
       # Clear the cache.
       GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
-      # Deal with an obsolete variable.
-      if IsBoundGlobal( "GAP_ROOT_PATHS" ) then
-        MakeReadWriteGlobal( "GAP_ROOT_PATHS" );
-        UnbindGlobal( "GAP_ROOT_PATHS" );
-        BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
-      fi;
       # Reread the package information.
       if IsBound( GAPInfo.PackagesInfoInitialized ) and
          GAPInfo.PackagesInfoInitialized = true then
@@ -1494,14 +1484,6 @@ InstallGlobalFunction( InstalledPackageVersion, function( name )
 ##
 InstallGlobalFunction( AutoloadPackages, function()
     local banner, pair, excludedpackages, name, record;
-
-#T remove this as soon as `BANNER' is not used anymore in packages
-if IsBoundGlobal( "BANNER" ) then
-  banner:= ValueGlobal( "BANNER" );
-  MakeReadWriteGlobal( "BANNER" );
-  UnbindGlobal( "BANNER" );
-fi;
-BindGlobal( "BANNER", false );
 
     GAPInfo.delayedImplementationParts:= [];
 
@@ -1593,12 +1575,6 @@ BindGlobal( "BANNER", false );
     fi;
     GAPInfo.delayedImplementationParts  := fail;
 
-#T remove this as soon as `BANNER' is not used anymore in packages
-MakeReadWriteGlobal( "BANNER" );
-UnbindGlobal( "BANNER" );
-if IsBound( banner ) then
-  BindGlobal( "BANNER", banner );
-fi;
     end );
 
 

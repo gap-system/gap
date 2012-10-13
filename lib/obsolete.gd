@@ -151,48 +151,6 @@ BindGlobal( "RequirePackage", LoadPackage );
 
 #############################################################################
 ##
-#V  KERNEL_VERSION
-#V  VERSION
-#V  GAP_ARCHITECTURE
-#V  GAP_ROOT_PATHS
-#V  USER_HOME
-#V  GAP_RC_FILE
-#V  DO_AUTOLOAD_PACKAGES
-#V  DEBUG_LOADING
-#V  CHECK_FOR_COMP_FILES
-#V  BANNER
-#V  QUIET
-#V  AUTOLOAD_PACKAGES
-#V  LOADED_PACKAGES
-#V  PACKAGES_VERSIONS
-##
-##  Up to GAP 4.3,
-##  these global variables were used instead of the record `GAPInfo'.
-##
-BindGlobal( "KERNEL_VERSION", GAPInfo.KernelVersion );
-BindGlobal( "VERSION", GAPInfo.Version );
-BindGlobal( "GAP_ARCHITECTURE", GAPInfo.Architecture );
-BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
-BindGlobal( "USER_HOME", GAPInfo.UserHome );
-# BindGlobal( "GAP_RC_FILE", GAPInfo.gaprc ); # not nec. bound
-BindGlobal( "DO_AUTOLOAD_PACKAGES", not GAPInfo.CommandLineOptions.A );
-BindGlobal( "DEBUG_LOADING", GAPInfo.CommandLineOptions.D );
-BindGlobal( "CHECK_FOR_COMP_FILES", not GAPInfo.CommandLineOptions.N );
-BindGlobal( "BANNER", not GAPInfo.CommandLineOptions.b );
-BindGlobal( "QUIET", GAPInfo.CommandLineOptions.q );
-BindGlobal( "LOADED_PACKAGES", GAPInfo.PackagesLoaded );
-BindGlobal( "PACKAGES_VERSIONS", rec() );
-
-
-#############################################################################
-##
-##
-##  
-##
-
-
-#############################################################################
-##
 #F  ListSorted( <coll> )
 #F  AsListSorted(<coll>)
 ##
