@@ -810,6 +810,7 @@ void MakeImmutablePosObj( Obj obj)
 void MakeImmutableDatObj( Obj obj)
 {
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
+  MakeBagReadOnly(obj);
 }
 
 Obj FuncMakeImmutable( Obj self, Obj obj)
