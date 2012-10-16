@@ -834,13 +834,13 @@ Obj FuncCREATOR_OF(Obj self, Obj obj) {
     return result;
   }
   if (obj[2])
-    SET_ELM_PLIST(result, 2, (Obj)(obj[2]));
-  else
-    SET_ELM_PLIST(result, 2, MakeImmString(""));
-  if (obj[3])
-    SET_ELM_PLIST(result, 1, (Obj)(obj[3]));
+    SET_ELM_PLIST(result, 1, (Obj)(obj[2]));
   else
     SET_ELM_PLIST(result, 1, Fail);
+  if (obj[3])
+    SET_ELM_PLIST(result, 2, (Obj)(obj[3]));
+  else
+    SET_ELM_PLIST(result, 2, Fail);
   return result;
 #else
   return Fail;

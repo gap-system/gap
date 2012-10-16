@@ -1301,7 +1301,10 @@ Bag NewBag (
     bag = GC_malloc(4*sizeof(Bag *));
     if (TLS->ptrLVars) {
       bag[2] = (void *)(CURR_FUNC);
-      bag[3] = (void *)(NAME_FUNC(CURR_FUNC));
+      if (TLS->currLVars != TLS->bottomLVars) {
+        Obj plvars = ADDR_OBJ(TLS->currLVars)[2];
+	bag[3] = (void *) (ADDR_OBJ(plvars)[0]);
+      }
     }
 #endif
     /* If the size of an object is zero (such as an empty permutation),
