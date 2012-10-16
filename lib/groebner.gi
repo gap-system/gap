@@ -966,7 +966,7 @@ local li, lj, lcm, a, b, k;
   return false;
 end);
 
-BindGlobal("GAPGBASIS",rec(
+BindGlobal("GAPGBASIS",`rec(
   name:="naive GAP version of Buchberger's algorithm",
   GroebnerBasis:=function(elms,order)
   local orderext, bas, baslte, fam, t, B, i, j, s;
