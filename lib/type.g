@@ -424,6 +424,7 @@ BIND_GLOBAL( "TypeOfFamilyOfFamilies", [
                                     ) ),
     false,
     NEW_TYPE_NEXT_ID ] );
+MakeReadOnly(TypeOfFamilyOfFamilies);
 
 BIND_GLOBAL( "FamilyOfTypes", AtomicRecord( rec() ) );
 
@@ -453,6 +454,7 @@ BIND_GLOBAL( "TypeOfFamilyOfTypes",  [
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamilyOfTypes and IsTypeDefaultRep ) ),
     false,
     NEW_TYPE_NEXT_ID ] );
+MakeReadOnly(TypeOfFamilyOfTypes);
 
 SET_TYPE_COMOBJ( FamilyOfFamilies, TypeOfFamilyOfFamilies );
 SET_TYPE_POSOBJ( TypeOfFamilies,   TypeOfTypes            );
