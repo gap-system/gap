@@ -1493,7 +1493,9 @@ local   fam, tmp;
 
   # construct the product and check the valuation in case zero divisors
   tmp := CoefficientsOfUnivariateRationalFunction(univ);
-  return UnivariateRationalFunctionByExtRepNC(fam,coef*tmp[1], tmp[2],tmp[3],
+  # Here we use ShallowCopy to avoid access errors later when CLONE_OBJ 
+  # will be called from coef*tmp[1] and will try to modify tmp
+  return UnivariateRationalFunctionByExtRepNC(fam,coef*ShallowCopy(tmp[1]), tmp[2],tmp[3],
            IndeterminateNumberOfUnivariateRationalFunction(univ));
 end );
 
