@@ -11,7 +11,11 @@ Obj GetTLRecordField(Obj record, UInt field);
 Obj FromAtomicRecord(Obj record);
 void SetTLDefault(Obj record, UInt rnam, Obj value);
 void SetTLConstructor(Obj record, UInt rnam, Obj func);
+Obj NewAtomicList(UInt length);
 UInt AddAList(Obj list, Obj obj);
+void AssAList(Obj list, Int pos, Obj obj);
+Obj ElmList(Obj list, Int pos);
+Obj Elm0List(Obj list, Int pos);
 
 /*****************************************************************************
 **

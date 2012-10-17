@@ -163,7 +163,7 @@ static Obj NewFixedAtomicList(UInt length)
   return result;
 }
 
-static Obj NewAtomicList(UInt length)
+Obj NewAtomicList(UInt length)
 {
   Obj result = NewBag(T_ALIST, sizeof(AtomicObj) * (length + 2));
   MEMBAR_WRITE();
