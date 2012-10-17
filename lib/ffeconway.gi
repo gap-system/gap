@@ -1452,7 +1452,7 @@ InstallMethod( LargeGaloisField,
     fi;
     fam := FFEFamily(p);
     if not IsBound(fam!.ConwayFieldCache) then
-        fam!.ConwayFieldCache := [];
+        fam!.ConwayFieldCache := MakeWriteOnceAtomic([]);
     fi;
     if not IsBound(fam!.ConwayFieldCache[d]) then
         fam!.ConwayFieldCache[d] := FieldByGenerators(GF(p,1),[FFECONWAY.ZNC(p,d)]);
