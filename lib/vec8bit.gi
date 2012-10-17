@@ -14,7 +14,7 @@
 ##
 #V  `TYPES_VEC8BIT . . . . . . . . prepared types for compressed GF(q) vectors
 ##
-##  A length 2 list of length 257 lists. TYPES_VEC8BIT[1][q] will be the type
+##  A length 4 list of length 257 lists. TYPES_VEC8BIT[1][q] will be the type
 ##  of mutable vectors over GF(q), TYPES_VEC8BIT[2][q] is the type of 
 ##  immutable vectors and TYPES_VEC8BIT[3][q] the type of locked vectors
 ##  The 257th position is bound to 1 to stop the lists
@@ -24,18 +24,18 @@
 ##  without changing the kernel.
 ##
 
-InstallValue(TYPES_VEC8BIT , [ ] );
-ShareObj( TYPES_VEC8BIT );
-atomic readwrite TYPES_VEC8BIT do
-  TYPES_VEC8BIT[1] := MigrateObj( [ ], TYPES_VEC8BIT );
-  TYPES_VEC8BIT[2] := MigrateObj( [ ], TYPES_VEC8BIT );
-  TYPES_VEC8BIT[3] := MigrateObj( [ ], TYPES_VEC8BIT );
-  TYPES_VEC8BIT[4] := MigrateObj( [ ], TYPES_VEC8BIT );
-  TYPES_VEC8BIT[1][257] := 1;
-  TYPES_VEC8BIT[2][257] := 1;
-  TYPES_VEC8BIT[3][257] := 1;
-  TYPES_VEC8BIT[4][257] := 1;
-od;
+InstallValue(TYPES_VEC8BIT, 
+  [ MakeWriteOnceAtomic([]), 
+    MakeWriteOnceAtomic([]), 
+    MakeWriteOnceAtomic([]), 
+    MakeWriteOnceAtomic([]) 
+  ]);
+TYPES_VEC8BIT[1][257] := 1;
+TYPES_VEC8BIT[2][257] := 1;
+TYPES_VEC8BIT[3][257] := 1;
+TYPES_VEC8BIT[4][257] := 1;
+
+MakeReadOnly(TYPES_VEC8BIT);
 
 
 #############################################################################
@@ -50,34 +50,28 @@ InstallGlobalFunction(TYPE_VEC8BIT,
   function( q, mut)
     local col,filts, type;
     if mut then col := 1; else col := 2; fi;
-    atomic readonly TYPES_VEC8BIT do
-      if IsBound(TYPES_VEC8BIT[col][q]) then
-        return TYPES_VEC8BIT[col][q];
-      fi;
-    od;  
+    if IsBound(TYPES_VEC8BIT[col][q]) then
+      return TYPES_VEC8BIT[col][q];
+    fi;
     filts := IsHomogeneousList and IsListDefault and IsCopyable and
              Is8BitVectorRep and IsSmallList and
              IsNoImmediateMethodsObject and
              IsRingElementList and HasLength;
     if mut then filts := filts and IsMutable; fi;
     type := NewType(FamilyObj(GF(q)),filts);
-    atomic readwrite TYPES_VEC8BIT do
-      if not IsBound(TYPES_VEC8BIT[col][q]) then
-        TYPES_VEC8BIT[col][q] := type;
-      fi;
-      return TYPES_VEC8BIT[col][q];
-    od;  
+    if not IsBound(TYPES_VEC8BIT[col][q]) then
+      TYPES_VEC8BIT[col][q] := type;
+    fi;
+    return TYPES_VEC8BIT[col][q];
 end);
 
 InstallGlobalFunction(TYPE_VEC8BIT_LOCKED,
   function( q, mut)
     local col,filts, type;
     if mut then col := 3; else col := 4; fi;
-    atomic readonly TYPES_VEC8BIT do
-      if IsBound(TYPES_VEC8BIT[col][q]) then
-        return TYPES_VEC8BIT[col][q];
-      fi;
-    od;    
+    if IsBound(TYPES_VEC8BIT[col][q]) then
+      return TYPES_VEC8BIT[col][q];
+    fi;
     filts := IsHomogeneousList and IsListDefault and IsCopyable and
              Is8BitVectorRep and IsSmallList and
              IsNoImmediateMethodsObject and
@@ -85,12 +79,10 @@ InstallGlobalFunction(TYPE_VEC8BIT_LOCKED,
              IsRingElementList and HasLength;
     if mut then filts := filts and IsMutable; fi;
     type := NewType(FamilyObj(GF(q)),filts);
-    atomic readwrite TYPES_VEC8BIT do
-      if not IsBound(TYPES_VEC8BIT[col][q]) then
-        TYPES_VEC8BIT[col][q] := type;
-      fi;
-      return TYPES_VEC8BIT[col][q];
-    od;
+    if not IsBound(TYPES_VEC8BIT[col][q]) then
+      TYPES_VEC8BIT[col][q] := type;
+    fi;
+    return TYPES_VEC8BIT[col][q];
 end);
 
 #############################################################################
