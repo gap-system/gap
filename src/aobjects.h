@@ -16,6 +16,7 @@ UInt AddAList(Obj list, Obj obj);
 void AssAList(Obj list, Int pos, Obj obj);
 Obj ElmList(Obj list, Int pos);
 Obj Elm0List(Obj list, Int pos);
+OBj LengthAList(Obj list);
 
 /*****************************************************************************
 **

@@ -1307,7 +1307,7 @@ static Int LenListAList(Obj list)
   return (Int)(ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom));
 }
 
-static Obj LengthAList(Obj list)
+Obj LengthAList(Obj list)
 {
   MEMBAR_READ();
   return INTOBJ_INT(ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom));
