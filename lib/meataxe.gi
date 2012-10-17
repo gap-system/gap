@@ -3761,4 +3761,6 @@ SMTX_OrthogonalSign:=function(gm)
     fi;
 end;
         
-SMTX.OrthogonalSign:=SMTX_OrthogonalSign;        
+SMTX.OrthogonalSign:=SMTX_OrthogonalSign;     
+
+MakeReadOnly(SMTX);
