@@ -6,11 +6,12 @@ Obj NewAtomicRecord(UInt capacity);
 Obj SetARecordField(Obj record, UInt field, Obj obj);
 Obj GetARecordField(Obj record, UInt field);
 Obj ElmARecord(Obj record, UInt rnam);
-Obj AssTLRecord(Obj record, UInt field, Obj obj);
+void AssTLRecord(Obj record, UInt field, Obj obj);
 Obj GetTLRecordField(Obj record, UInt field);
 Obj FromAtomicRecord(Obj record);
 void SetTLDefault(Obj record, UInt rnam, Obj value);
 void SetTLConstructor(Obj record, UInt rnam, Obj func);
+UInt AddAList(Obj list, Obj obj);
 
 /*****************************************************************************
 **

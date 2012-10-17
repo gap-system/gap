@@ -54,6 +54,8 @@
 #include        "tls.h"
 #include        "vars.h"                /* variables                       */
 
+#include        "aobjects.h"
+
 
 #include        "intrprtr.h"            /* interpreter                     */
 
@@ -417,6 +419,16 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
   return anew.obj;
 }
 
+
+static Obj FuncAddAtomicList(Obj self, Obj list, Obj obj)
+{
+  Obj result;
+  AtomicObj *data;
+  UInt i, len;
+  if (TNUM_OBJ(list) != T_ALIST)
+    ArgumentError("AddAtomicList: First argument must be an atomic list");
+  return INTOBJ_INT(AddAList(list, obj));
+}
 
 static Obj FuncFromAtomicList(Obj self, Obj list)
 {
@@ -1405,6 +1417,13 @@ void AssAList(Obj list, Int pos, Obj obj)
     len = ALIST_LEN(pol);
   }
   if (pos > len) {
+    if (TNUM_OBJ(list) != T_ALIST) {
+      HashUnlock(list);
+      ErrorQuit("Atomic List Assignment: extending fixed size atomic list",
+	0L, 0L);
+      return; /* flow control hint */
+    }
+    addr = ADDR_ATOM(list);
     if (pos > SIZE_BAG(list)/sizeof(AtomicObj) - 2) {
       Obj newlist;
       newlen = len;
@@ -1441,6 +1460,55 @@ void AssAList(Obj list, Int pos, Obj obj)
   }
   MEMBAR_WRITE();
   HashUnlock(list);
+}
+
+UInt AddAList(Obj list, Obj obj)
+{
+  AtomicObj *addr;
+  UInt len, newlen, pol;
+  HashLock(list);
+  if (TNUM_OBJ(list) != T_ALIST) {
+    HashUnlock(list);
+    ErrorQuit("Atomic List Assignment: extending fixed size atomic list",
+      0L, 0L);
+    return 0; /* flow control hint */
+  }
+  addr = ADDR_ATOM(list);
+  pol = (UInt)addr[0].atom;
+  len = ALIST_LEN(pol);
+  if (len + 1 > SIZE_BAG(list)/sizeof(AtomicObj) - 2) {
+    Obj newlist;
+    newlen = len * 3 / 2 + 1;
+    newlist = NewBag(T_ALIST, sizeof(AtomicObj) * ( 2 + newlen));
+    memcpy(PTR_BAG(newlist), PTR_BAG(list), sizeof(AtomicObj)*(2+len));
+    addr = ADDR_ATOM(newlist);
+    addr[0].atom = CHANGE_ALIST_LEN(pol, len + 1);
+    MEMBAR_WRITE();
+    PTR_BAG(list) = PTR_BAG(newlist);
+    MEMBAR_WRITE();
+  } else {
+    addr[0].atom = CHANGE_ALIST_LEN(pol, len + 1);
+    MEMBAR_WRITE();
+  }
+  switch (ALIST_POL(pol)) {
+    case ALIST_RW:
+      ADDR_ATOM(list)[2+len].obj = obj;
+      break;
+    case ALIST_W1:
+      COMPARE_AND_SWAP(&ADDR_ATOM(list)[2+len].atom,
+        (AtomicUInt) 0, (AtomicUInt) obj);
+      break;
+    case ALIST_WX:
+      if (!COMPARE_AND_SWAP(&ADDR_ATOM(list)[2+len].atom,
+        (AtomicUInt) 0, (AtomicUInt) obj)) {
+	HashUnlock(list);
+	ErrorQuit("Atomic List Assignment: <list>[%d] already has an assigned value", len+1, (Int) 0);
+      }
+      break;
+  }
+  MEMBAR_WRITE();
+  HashUnlock(list);
+  return len+1;
 }
 
 void UnbAList(Obj list, Int pos)
@@ -1726,6 +1794,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "FromAtomicList", 1, "list",
       FuncFromAtomicList, "src/aobjects.c:FromAtomicList" },
+
+    { "AddAtomicList", 2, "list, obj",
+      FuncAddAtomicList, "src/aobjects.c:AddAtomicList" },
 
     { "GET_ATOMIC_LIST", 2, "list, index",
       FuncGET_ATOMIC_LIST, "src/aobjects.c:GET_ATOMIC_LIST" },
