@@ -14,8 +14,8 @@ void SetTLConstructor(Obj record, UInt rnam, Obj func);
 Obj NewAtomicList(UInt length);
 UInt AddAList(Obj list, Obj obj);
 void AssAList(Obj list, Int pos, Obj obj);
-Obj ElmList(Obj list, Int pos);
-Obj Elm0List(Obj list, Int pos);
+Obj ElmAList(Obj list, Int pos);
+Obj Elm0AList(Obj list, Int pos);
 Obj LengthAList(Obj list);
 
 /*****************************************************************************

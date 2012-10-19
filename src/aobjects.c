@@ -1313,7 +1313,7 @@ Obj LengthAList(Obj list)
   return INTOBJ_INT(ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom));
 }
 
-static Obj Elm0AList(Obj list, Int pos)
+Obj Elm0AList(Obj list, Int pos)
 {
   AtomicObj *addr = ADDR_ATOM(list);
   UInt len;
