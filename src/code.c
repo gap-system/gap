@@ -48,6 +48,7 @@
 #include        "read.h"                /* to access stack of for loop globals */
 #include        "gvars.h"
 #include        "tls.h"                 /* thread-local storage            */
+#include	"aobjects.h"		/* atomic objects		   */
 
 #include        "vars.h"                /* variables                       */
 
@@ -1786,17 +1787,20 @@ void CodeStringExpr (
 static UInt GVAR_SAVED_FLOAT_INDEX;
 static UInt NextFloatExprNumber = 3;
 
-static UInt NextEagerFloatLiteralNumber = 1;
-
 static Obj EAGER_FLOAT_LITERAL_CACHE = 0;
 static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
 
 static UInt getNextFloatExprNumber() {
+  UInt next;
+  HashLock(&NextFloatExprNumber);
   if (NextFloatExprNumber > MAX_FLOAT_INDEX)
-    return 0;
-  else
-    return NextFloatExprNumber++;
+    next = 0;
+  else {
+    next = NextFloatExprNumber++;
+  }
+  HashUnlock(&NextFloatExprNumber);
+  return next;
 }
 
 static UInt CheckForCommonFloat(Char *str) {
@@ -1866,20 +1870,17 @@ static void CodeLazyFloatExpr( Char *str, UInt len) {
 
 static void CodeEagerFloatExpr( Obj str, Char mark ) {
   /* Eager case, do the conversion now */
+  UInt next;
   UInt l = GET_LEN_STRING(str);
   Expr fl = NewExpr( T_FLOAT_EXPR_EAGER, sizeof(UInt)* 3 + l + 1);
   Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
   assert(EAGER_FLOAT_LITERAL_CACHE);
-  assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
-  GROW_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
-  SET_ELM_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber, v);
-  CHANGED_BAG(EAGER_FLOAT_LITERAL_CACHE);
-  SET_LEN_PLIST(EAGER_FLOAT_LITERAL_CACHE, NextEagerFloatLiteralNumber);
-  ADDR_EXPR(fl)[0] = NextEagerFloatLiteralNumber;
+  assert(TNUM_OBJ(EAGER_FLOAT_LITERAL_CACHE) == T_ALIST);
+  next = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
+  ADDR_EXPR(fl)[0] = next;
   ADDR_EXPR(fl)[1] = l;
   ADDR_EXPR(fl)[2] = (UInt)mark;
   memcpy((void*)(ADDR_EXPR(fl)+3), (void *)CHARS_STRING(str), l+1);
-  NextEagerFloatLiteralNumber++;
   PushExpr(fl);
 }
 
@@ -3293,6 +3294,10 @@ static Int InitKernel (
     InitGlobalBag( &TLS->stackStat, "TLS->stackStat" );
     InitGlobalBag( &TLS->stackExpr, "TLS->stackExpr" );
 
+    /* some functions and globals needed for float conversion */
+    InitCopyGVar( "EAGER_FLOAT_LITERAL_CACHE", &EAGER_FLOAT_LITERAL_CACHE);
+    InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
+
     /* return success                                                      */
     return 0;
 }
@@ -3307,8 +3312,7 @@ static Int InitLibrary (
     GVAR_SAVED_FLOAT_INDEX = GVarName("SavedFloatIndex");
     
     gv = GVarName("EAGER_FLOAT_LITERAL_CACHE");
-    cache = NEW_PLIST(T_PLIST+IMMUTABLE, 1000L);
-    SET_LEN_PLIST(cache,0);
+    cache = NewAtomicList(1);
     AssGVar(gv, cache);
 
     /* return success                                                      */
