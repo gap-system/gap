@@ -1,512 +1,401 @@
-io_la-io.lo: src/io.c /home/vjanjc/st-andrews/hpcgap/src/compiled.h \
- /home/vjanjc/st-andrews/hpcgap/src/system.h /usr/include/setjmp.h \
- /usr/include/features.h /usr/include/x86_64-linux-gnu/bits/predefs.h \
- /usr/include/x86_64-linux-gnu/sys/cdefs.h \
- /usr/include/x86_64-linux-gnu/bits/wordsize.h \
- /usr/include/x86_64-linux-gnu/gnu/stubs.h \
- /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /usr/include/x86_64-linux-gnu/bits/sigset.h \
- /usr/include/x86_64-linux-gnu/bits/setjmp2.h \
- /home/vjanjc/st-andrews/hpcgap/bin/x86_64-unknown-linux-gnu-gcc/config.h \
- /usr/include/x86_64-linux-gnu/sys/sysmacros.h /usr/include/ctype.h \
- /usr/include/x86_64-linux-gnu/bits/types.h \
- /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/endian.h \
- /usr/include/x86_64-linux-gnu/bits/endian.h \
- /usr/include/x86_64-linux-gnu/bits/byteswap.h /usr/include/xlocale.h \
- /home/vjanjc/st-andrews/hpcgap/src/gasman.h \
- /home/vjanjc/st-andrews/hpcgap/src/objects.h \
- /home/vjanjc/st-andrews/hpcgap/src/scanner.h /usr/include/pthread.h \
- /usr/include/sched.h /usr/lib/gcc/x86_64-linux-gnu/4.6/include/stddef.h \
- /usr/include/time.h /usr/include/x86_64-linux-gnu/bits/sched.h \
- /usr/include/x86_64-linux-gnu/bits/time.h \
- /usr/include/x86_64-linux-gnu/bits/timex.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
- /home/vjanjc/st-andrews/hpcgap/src/gap.h \
- /home/vjanjc/st-andrews/hpcgap/src/read.h \
- /home/vjanjc/st-andrews/hpcgap/src/gvars.h \
- /home/vjanjc/st-andrews/hpcgap/src/systhread.h \
- /home/vjanjc/st-andrews/hpcgap/src/atomic.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/ao_version.h \
- /usr/include/assert.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/x86_64.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../all_aligned_atomic_load_store.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../aligned_atomic_load_store.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../char_atomic_load_store.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../short_aligned_atomic_load_store.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../int_aligned_atomic_load_store.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../ordered_except_wr.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../read_ordered.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../test_and_set_t_is_char.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../standard_ao_double_t.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.6/include/xmmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.6/include/mmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.6/include/mm_malloc.h \
- /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
- /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
- /usr/include/x86_64-linux-gnu/sys/types.h \
- /usr/include/x86_64-linux-gnu/sys/select.h \
- /usr/include/x86_64-linux-gnu/bits/select.h \
- /usr/include/x86_64-linux-gnu/bits/select2.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.6/include/emmintrin.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/generalize.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/generalize-small.h \
- /home/vjanjc/st-andrews/hpcgap/src/calls.h \
- /home/vjanjc/st-andrews/hpcgap/src/opers.h \
- /home/vjanjc/st-andrews/hpcgap/src/ariths.h \
- /home/vjanjc/st-andrews/hpcgap/src/integer.h \
- /home/vjanjc/st-andrews/hpcgap/src/gmpints.h \
- /home/vjanjc/st-andrews/hpcgap/extern/64bit/include/gmp.h \
- /home/vjanjc/st-andrews/hpcgap/src/rational.h \
- /home/vjanjc/st-andrews/hpcgap/src/cyclotom.h \
- /home/vjanjc/st-andrews/hpcgap/src/finfield.h \
- /home/vjanjc/st-andrews/hpcgap/src/ffdata.h \
- /home/vjanjc/st-andrews/hpcgap/src/macfloat.h \
- /home/vjanjc/st-andrews/hpcgap/src/bool.h \
- /home/vjanjc/st-andrews/hpcgap/src/permutat.h \
- /home/vjanjc/st-andrews/hpcgap/src/records.h \
- /home/vjanjc/st-andrews/hpcgap/src/precord.h \
- /home/vjanjc/st-andrews/hpcgap/src/lists.h \
- /home/vjanjc/st-andrews/hpcgap/src/listoper.h \
- /home/vjanjc/st-andrews/hpcgap/src/listfunc.h \
- /home/vjanjc/st-andrews/hpcgap/src/plist.h \
- /home/vjanjc/st-andrews/hpcgap/src/set.h \
- /home/vjanjc/st-andrews/hpcgap/src/vector.h \
- /home/vjanjc/st-andrews/hpcgap/src/blister.h \
- /home/vjanjc/st-andrews/hpcgap/src/range.h \
- /home/vjanjc/st-andrews/hpcgap/src/string.h /usr/include/string.h \
- /usr/include/x86_64-linux-gnu/bits/string.h \
- /usr/include/x86_64-linux-gnu/bits/string2.h \
- /usr/include/x86_64-linux-gnu/bits/string3.h \
- /home/vjanjc/st-andrews/hpcgap/src/objfgelm.h \
- /home/vjanjc/st-andrews/hpcgap/src/objpcgel.h \
- /home/vjanjc/st-andrews/hpcgap/src/objscoll.h \
- /home/vjanjc/st-andrews/hpcgap/src/objcftl.h \
- /home/vjanjc/st-andrews/hpcgap/src/dt.h \
- /home/vjanjc/st-andrews/hpcgap/src/dteval.h \
- /home/vjanjc/st-andrews/hpcgap/src/sctable.h \
- /home/vjanjc/st-andrews/hpcgap/src/costab.h \
- /home/vjanjc/st-andrews/hpcgap/src/tietze.h \
- /home/vjanjc/st-andrews/hpcgap/src/code.h \
- /home/vjanjc/st-andrews/hpcgap/src/exprs.h \
- /home/vjanjc/st-andrews/hpcgap/src/stats.h \
- /home/vjanjc/st-andrews/hpcgap/src/funcs.h \
- /home/vjanjc/st-andrews/hpcgap/src/intrprtr.h \
- /home/vjanjc/st-andrews/hpcgap/src/compiler.h \
- /home/vjanjc/st-andrews/hpcgap/src/compstat.h \
- /home/vjanjc/st-andrews/hpcgap/src/saveload.h \
- /home/vjanjc/st-andrews/hpcgap/src/streams.h \
- /home/vjanjc/st-andrews/hpcgap/src/sysfiles.h /usr/include/stdio.h \
- /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.6/include/stdarg.h \
- /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
- /usr/include/x86_64-linux-gnu/bits/stdio.h \
- /usr/include/x86_64-linux-gnu/bits/stdio2.h \
- /home/vjanjc/st-andrews/hpcgap/src/weakptr.h \
- /home/vjanjc/st-andrews/hpcgap/src/tls.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.6/include/stdint.h /usr/include/stdint.h \
- /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /home/vjanjc/st-andrews/hpcgap/src/tlsconfig.h \
- /home/vjanjc/st-andrews/hpcgap/src/vars.h src/pkgconfig.h \
- /home/vjanjc/st-andrews/hpcgap/src/aobjects.h \
- /usr/include/x86_64-linux-gnu/sys/socket.h \
- /usr/include/x86_64-linux-gnu/sys/uio.h \
- /usr/include/x86_64-linux-gnu/bits/uio.h \
- /usr/include/x86_64-linux-gnu/bits/socket.h \
- /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
- /usr/include/x86_64-linux-gnu/asm/socket.h \
- /usr/include/asm-generic/socket.h \
- /usr/include/x86_64-linux-gnu/asm/sockios.h \
- /usr/include/asm-generic/sockios.h \
- /usr/include/x86_64-linux-gnu/bits/socket2.h \
- /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/errno.h \
- /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
- /usr/include/x86_64-linux-gnu/asm/errno.h \
- /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/x86_64-linux-gnu/sys/stat.h \
- /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/fcntl.h \
- /usr/include/x86_64-linux-gnu/bits/fcntl.h \
- /usr/include/x86_64-linux-gnu/bits/fcntl2.h /usr/include/unistd.h \
- /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
- /usr/include/x86_64-linux-gnu/bits/environments.h \
- /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
- /usr/include/x86_64-linux-gnu/bits/unistd.h /usr/include/dirent.h \
- /usr/include/x86_64-linux-gnu/bits/dirent.h \
- /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
- /usr/include/x86_64-linux-gnu/bits/local_lim.h \
- /usr/include/linux/limits.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/bits/in.h \
- /usr/include/rpc/netdb.h /usr/include/x86_64-linux-gnu/bits/siginfo.h \
- /usr/include/x86_64-linux-gnu/bits/netdb.h \
- /usr/include/x86_64-linux-gnu/sys/wait.h /usr/include/signal.h \
- /usr/include/x86_64-linux-gnu/bits/signum.h \
- /usr/include/x86_64-linux-gnu/bits/sigaction.h \
- /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigstack.h \
- /usr/include/x86_64-linux-gnu/sys/ucontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigthread.h \
- /usr/include/x86_64-linux-gnu/sys/resource.h \
- /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/netinet/tcp.h
+io_la-io.lo .libs/io_la-io.o: src/io.c \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/compiled.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/system.h \
+  /usr/include/setjmp.h /usr/include/machine/setjmp.h \
+  /usr/include/i386/setjmp.h /usr/include/sys/cdefs.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/bin/i686-apple-darwin10.8.0-gcc/config.h \
+  /usr/include/ctype.h /usr/include/runetype.h /usr/include/_types.h \
+  /usr/include/sys/_types.h /usr/include/machine/_types.h \
+  /usr/include/i386/_types.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/gasman.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/objects.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/scanner.h \
+  /usr/include/pthread.h /usr/include/pthread_impl.h /usr/include/sched.h \
+  /usr/include/time.h /usr/include/_structs.h /usr/include/sys/_structs.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/gap.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/read.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/gvars.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/systhread.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/atomic.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/ao_version.h \
+  /usr/include/assert.h \
+  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/stddef.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/x86_64.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../all_aligned_atomic_load_store.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../aligned_atomic_load_store.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../char_atomic_load_store.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../short_aligned_atomic_load_store.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../int_aligned_atomic_load_store.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../ordered_except_wr.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../read_ordered.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../test_and_set_t_is_char.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../standard_ao_double_t.h \
+  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/xmmintrin.h \
+  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/mmintrin.h \
+  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/mm_malloc.h \
+  /usr/include/stdlib.h /usr/include/Availability.h \
+  /usr/include/AvailabilityInternal.h /usr/include/sys/wait.h \
+  /usr/include/sys/signal.h /usr/include/sys/appleapiopts.h \
+  /usr/include/machine/signal.h /usr/include/i386/signal.h \
+  /usr/include/i386/_structs.h /usr/include/machine/_structs.h \
+  /usr/include/mach/i386/_structs.h /usr/include/sys/resource.h \
+  /usr/include/machine/endian.h /usr/include/i386/endian.h \
+  /usr/include/sys/_endian.h /usr/include/libkern/_OSByteOrder.h \
+  /usr/include/libkern/i386/_OSByteOrder.h /usr/include/alloca.h \
+  /usr/include/machine/types.h /usr/include/i386/types.h \
+  /usr/include/i386/_types.h /usr/include/errno.h \
+  /usr/include/sys/errno.h \
+  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/emmintrin.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/generalize.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/generalize-small.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/calls.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/opers.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/ariths.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/integer.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/gmpints.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/gmp.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/rational.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/cyclotom.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/finfield.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/ffdata.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/macfloat.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/bool.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/permutat.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/records.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/precord.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/lists.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/listoper.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/listfunc.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/plist.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/set.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/vector.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/blister.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/range.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/string.h \
+  /usr/include/string.h /usr/include/secure/_string.h \
+  /usr/include/secure/_common.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/objfgelm.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/objpcgel.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/objscoll.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/objcftl.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/dt.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/dteval.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/sctable.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/costab.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/tietze.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/code.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/exprs.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/stats.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/funcs.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/intrprtr.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/compiler.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/compstat.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/saveload.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/streams.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/sysfiles.h \
+  /usr/include/stdio.h /usr/include/secure/_stdio.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/weakptr.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/tls.h \
+  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/stdint.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/tlsconfig.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/vars.h \
+  src/pkgconfig.h \
+  /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/aobjects.h \
+  /usr/include/sys/types.h /usr/include/sys/socket.h \
+  /usr/include/machine/_param.h /usr/include/i386/_param.h \
+  /usr/include/sys/time.h /usr/include/sys/_select.h \
+  /usr/include/sys/stat.h /usr/include/fcntl.h /usr/include/sys/fcntl.h \
+  /usr/include/unistd.h /usr/include/sys/unistd.h \
+  /usr/include/sys/select.h /usr/include/dirent.h \
+  /usr/include/sys/dirent.h /usr/include/netdb.h \
+  /usr/include/netinet/in.h /usr/include/netinet6/in6.h \
+  /usr/include/signal.h /usr/include/netinet/tcp.h
 
-/home/vjanjc/st-andrews/hpcgap/src/compiled.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/compiled.h:
 
-/home/vjanjc/st-andrews/hpcgap/src/system.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/system.h:
 
 /usr/include/setjmp.h:
 
-/usr/include/features.h:
+/usr/include/machine/setjmp.h:
 
-/usr/include/x86_64-linux-gnu/bits/predefs.h:
+/usr/include/i386/setjmp.h:
 
-/usr/include/x86_64-linux-gnu/sys/cdefs.h:
+/usr/include/sys/cdefs.h:
 
-/usr/include/x86_64-linux-gnu/bits/wordsize.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
-
-/usr/include/x86_64-linux-gnu/bits/setjmp.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigset.h:
-
-/usr/include/x86_64-linux-gnu/bits/setjmp2.h:
-
-/home/vjanjc/st-andrews/hpcgap/bin/x86_64-unknown-linux-gnu-gcc/config.h:
-
-/usr/include/x86_64-linux-gnu/sys/sysmacros.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/bin/i686-apple-darwin10.8.0-gcc/config.h:
 
 /usr/include/ctype.h:
 
-/usr/include/x86_64-linux-gnu/bits/types.h:
+/usr/include/runetype.h:
 
-/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+/usr/include/_types.h:
 
-/usr/include/endian.h:
+/usr/include/sys/_types.h:
 
-/usr/include/x86_64-linux-gnu/bits/endian.h:
+/usr/include/machine/_types.h:
 
-/usr/include/x86_64-linux-gnu/bits/byteswap.h:
+/usr/include/i386/_types.h:
 
-/usr/include/xlocale.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/gasman.h:
 
-/home/vjanjc/st-andrews/hpcgap/src/gasman.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/objects.h:
 
-/home/vjanjc/st-andrews/hpcgap/src/objects.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/scanner.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/scanner.h:
 
 /usr/include/pthread.h:
 
-/usr/include/sched.h:
+/usr/include/pthread_impl.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.6/include/stddef.h:
+/usr/include/sched.h:
 
 /usr/include/time.h:
 
-/usr/include/x86_64-linux-gnu/bits/sched.h:
+/usr/include/_structs.h:
 
-/usr/include/x86_64-linux-gnu/bits/time.h:
+/usr/include/sys/_structs.h:
 
-/usr/include/x86_64-linux-gnu/bits/timex.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/gap.h:
 
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/read.h:
 
-/home/vjanjc/st-andrews/hpcgap/src/gap.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/gvars.h:
 
-/home/vjanjc/st-andrews/hpcgap/src/read.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/systhread.h:
 
-/home/vjanjc/st-andrews/hpcgap/src/gvars.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/atomic.h:
 
-/home/vjanjc/st-andrews/hpcgap/src/systhread.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops.h:
 
-/home/vjanjc/st-andrews/hpcgap/src/atomic.h:
-
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops.h:
-
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/ao_version.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/ao_version.h:
 
 /usr/include/assert.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/x86_64.h:
+/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/stddef.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../all_aligned_atomic_load_store.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/x86_64.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../aligned_atomic_load_store.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../all_aligned_atomic_load_store.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../char_atomic_load_store.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../aligned_atomic_load_store.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../short_aligned_atomic_load_store.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../char_atomic_load_store.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../int_aligned_atomic_load_store.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../short_aligned_atomic_load_store.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../ordered_except_wr.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../int_aligned_atomic_load_store.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../read_ordered.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../ordered_except_wr.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../test_and_set_t_is_char.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../read_ordered.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../standard_ao_double_t.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../test_and_set_t_is_char.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.6/include/xmmintrin.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/sysdeps/gcc/../standard_ao_double_t.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.6/include/mmintrin.h:
+/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/xmmintrin.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.6/include/mm_malloc.h:
+/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/mmintrin.h:
+
+/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/mm_malloc.h:
 
 /usr/include/stdlib.h:
 
-/usr/include/x86_64-linux-gnu/bits/waitflags.h:
+/usr/include/Availability.h:
 
-/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+/usr/include/AvailabilityInternal.h:
 
-/usr/include/x86_64-linux-gnu/sys/types.h:
+/usr/include/sys/wait.h:
 
-/usr/include/x86_64-linux-gnu/sys/select.h:
+/usr/include/sys/signal.h:
 
-/usr/include/x86_64-linux-gnu/bits/select.h:
+/usr/include/sys/appleapiopts.h:
 
-/usr/include/x86_64-linux-gnu/bits/select2.h:
+/usr/include/machine/signal.h:
+
+/usr/include/i386/signal.h:
+
+/usr/include/i386/_structs.h:
+
+/usr/include/machine/_structs.h:
+
+/usr/include/mach/i386/_structs.h:
+
+/usr/include/sys/resource.h:
+
+/usr/include/machine/endian.h:
+
+/usr/include/i386/endian.h:
+
+/usr/include/sys/_endian.h:
+
+/usr/include/libkern/_OSByteOrder.h:
+
+/usr/include/libkern/i386/_OSByteOrder.h:
 
 /usr/include/alloca.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdlib.h:
+/usr/include/machine/types.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.6/include/emmintrin.h:
+/usr/include/i386/types.h:
 
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/generalize.h:
-
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/atomic_ops/generalize-small.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/calls.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/opers.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/ariths.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/integer.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/gmpints.h:
-
-/home/vjanjc/st-andrews/hpcgap/extern/64bit/include/gmp.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/rational.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/cyclotom.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/finfield.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/ffdata.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/macfloat.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/bool.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/permutat.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/records.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/precord.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/lists.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/listoper.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/listfunc.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/plist.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/set.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/vector.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/blister.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/range.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/string.h:
-
-/usr/include/string.h:
-
-/usr/include/x86_64-linux-gnu/bits/string.h:
-
-/usr/include/x86_64-linux-gnu/bits/string2.h:
-
-/usr/include/x86_64-linux-gnu/bits/string3.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/objfgelm.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/objpcgel.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/objscoll.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/objcftl.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/dt.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/dteval.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/sctable.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/costab.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/tietze.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/code.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/exprs.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/stats.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/funcs.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/intrprtr.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/compiler.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/compstat.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/saveload.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/streams.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/sysfiles.h:
-
-/usr/include/stdio.h:
-
-/usr/include/libio.h:
-
-/usr/include/_G_config.h:
-
-/usr/include/wchar.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.6/include/stdarg.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/sys_errlist.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio2.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/weakptr.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/tls.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.6/include/stdint.h:
-
-/usr/include/stdint.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/tlsconfig.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/vars.h:
-
-src/pkgconfig.h:
-
-/home/vjanjc/st-andrews/hpcgap/src/aobjects.h:
-
-/usr/include/x86_64-linux-gnu/sys/socket.h:
-
-/usr/include/x86_64-linux-gnu/sys/uio.h:
-
-/usr/include/x86_64-linux-gnu/bits/uio.h:
-
-/usr/include/x86_64-linux-gnu/bits/socket.h:
-
-/usr/include/x86_64-linux-gnu/bits/sockaddr.h:
-
-/usr/include/x86_64-linux-gnu/asm/socket.h:
-
-/usr/include/asm-generic/socket.h:
-
-/usr/include/x86_64-linux-gnu/asm/sockios.h:
-
-/usr/include/asm-generic/sockios.h:
-
-/usr/include/x86_64-linux-gnu/bits/socket2.h:
-
-/usr/include/x86_64-linux-gnu/sys/time.h:
+/usr/include/i386/_types.h:
 
 /usr/include/errno.h:
 
-/usr/include/x86_64-linux-gnu/bits/errno.h:
+/usr/include/sys/errno.h:
 
-/usr/include/linux/errno.h:
+/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/emmintrin.h:
 
-/usr/include/x86_64-linux-gnu/asm/errno.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/generalize.h:
 
-/usr/include/asm-generic/errno.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/atomic_ops/generalize-small.h:
 
-/usr/include/asm-generic/errno-base.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/calls.h:
 
-/usr/include/x86_64-linux-gnu/sys/stat.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/opers.h:
 
-/usr/include/x86_64-linux-gnu/bits/stat.h:
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/ariths.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/integer.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/gmpints.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/extern/64bit/include/gmp.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/rational.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/cyclotom.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/finfield.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/ffdata.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/macfloat.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/bool.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/permutat.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/records.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/precord.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/lists.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/listoper.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/listfunc.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/plist.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/set.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/vector.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/blister.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/range.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/string.h:
+
+/usr/include/string.h:
+
+/usr/include/secure/_string.h:
+
+/usr/include/secure/_common.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/objfgelm.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/objpcgel.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/objscoll.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/objcftl.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/dt.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/dteval.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/sctable.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/costab.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/tietze.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/code.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/exprs.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/stats.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/funcs.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/intrprtr.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/compiler.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/compstat.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/saveload.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/streams.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/sysfiles.h:
+
+/usr/include/stdio.h:
+
+/usr/include/secure/_stdio.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/weakptr.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/tls.h:
+
+/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/stdint.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/tlsconfig.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/vars.h:
+
+src/pkgconfig.h:
+
+/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/src/aobjects.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/sys/socket.h:
+
+/usr/include/machine/_param.h:
+
+/usr/include/i386/_param.h:
+
+/usr/include/sys/time.h:
+
+/usr/include/sys/_select.h:
+
+/usr/include/sys/stat.h:
 
 /usr/include/fcntl.h:
 
-/usr/include/x86_64-linux-gnu/bits/fcntl.h:
-
-/usr/include/x86_64-linux-gnu/bits/fcntl2.h:
+/usr/include/sys/fcntl.h:
 
 /usr/include/unistd.h:
 
-/usr/include/x86_64-linux-gnu/bits/posix_opt.h:
+/usr/include/sys/unistd.h:
 
-/usr/include/x86_64-linux-gnu/bits/environments.h:
-
-/usr/include/x86_64-linux-gnu/bits/confname.h:
-
-/usr/include/getopt.h:
-
-/usr/include/x86_64-linux-gnu/bits/unistd.h:
+/usr/include/sys/select.h:
 
 /usr/include/dirent.h:
 
-/usr/include/x86_64-linux-gnu/bits/dirent.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/local_lim.h:
-
-/usr/include/linux/limits.h:
+/usr/include/sys/dirent.h:
 
 /usr/include/netdb.h:
 
 /usr/include/netinet/in.h:
 
-/usr/include/x86_64-linux-gnu/bits/in.h:
-
-/usr/include/rpc/netdb.h:
-
-/usr/include/x86_64-linux-gnu/bits/siginfo.h:
-
-/usr/include/x86_64-linux-gnu/bits/netdb.h:
-
-/usr/include/x86_64-linux-gnu/sys/wait.h:
+/usr/include/netinet6/in6.h:
 
 /usr/include/signal.h:
-
-/usr/include/x86_64-linux-gnu/bits/signum.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigaction.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigcontext.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigstack.h:
-
-/usr/include/x86_64-linux-gnu/sys/ucontext.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigthread.h:
-
-/usr/include/x86_64-linux-gnu/sys/resource.h:
-
-/usr/include/x86_64-linux-gnu/bits/resource.h:
 
 /usr/include/netinet/tcp.h:

@@ -8,13 +8,13 @@
 dlname='io.so'
 
 # Names of this library.
-library_names='io.so io.so io.so'
+library_names='io.so io.so'
 
 # The name of the static archive.
 old_library=''
 
 # Linker flags that can not go in dependency_libs.
-inherited_linker_flags=''
+inherited_linker_flags=' '
 
 # Libraries that this one depends upon.
 dependency_libs=''
@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/home/vjanjc/st-andrews/hpcgap/pkg/io/lib'
+libdir='/Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcgap/pkg/io/lib'

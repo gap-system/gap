@@ -84,14 +84,75 @@ StartLogging := function()
   fi;
 end;
 
-InitWorkerLog := function()
+Tracing.InitWorkerLog := function()
   local fname, threadId;
-  atomic Tracing.FileNameNo do
-    fname := Concatenation ("tmp/w", String(Tracing.FileNameNo[1]));
-    Tracing.FileNameNo[1] := Tracing.FileNameNo[1]+1;
-  od;
-  threadId := ThreadID(CurrentThread());
-  Tracing.Files[threadId+1] := IO_File(fname,"w");
-  IO_Write(Tracing.Files[threadId+1], 
-          MSTime(), " ", threadId, " WORKER_CREATED\n");
+  if (Tracing.Trace) then
+    atomic Tracing.FileNameNo do
+      fname := Concatenation ("tmp/w", String(Tracing.FileNameNo[1]));
+      Tracing.FileNameNo[1] := Tracing.FileNameNo[1]+1;
+    od;
+    threadId := ThreadID(CurrentThread());
+    Tracing.Files[threadId+1] := IO_File(fname,"w");
+    IO_Write(Tracing.Files[threadId+1], 
+            MSTime(), " ", threadId, " WORKER_CREATED\n");
+  fi;
+end;
+
+Tracing.TraceWorkerSuspended := function ()
+  if (Tracing.Trace) then
+    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_SUSPENDED\n");
+  fi;
+end;
+
+Tracing.Close := function ()
+  if (Tracing.Trace) then
+    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId, " WORKER_FINISHED\n");
+    IO_Close(Tracing.Files[threadId+1]);
+  fi;
+end;
+
+Tracing.TraceWorkerGotTask := function ()        
+  if (Tracing.Trace) then
+    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_GOT_TASK\n");
+  fi;
+end;
+
+Tracing.TraceWorkerIdle := function ()
+  if (Tracing.Trace) then
+    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_IDLE\n");
+  fi;
+end;
+
+Tracing.TraceTaskStarted := function ()
+  if (Tracing.Trace) then
+    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_TASK_STARTED\n");
+  fi;
+end;
+
+Tracing.TraceTaskFinished := function ()
+  if (Tracing.Trace) then
+    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_TASK_FINISHED\n");
+  fi;
+end;
+
+Tracing.TraceWorkerBlocked := function ()
+  if (Tracing.Trace) then
+    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_BLOCKED\n");
+  fi;
+end;
+
+Tracing.TraceWorkerResumed := function ()
+  if (Tracing.Trace) then
+    IO_Write(Tracing.Files[threadId+1], MSTime(), " ", threadId," WORKER_RESUMED\n");
+  fi;
+end;
+
+Tracing.TraceTaskCreated := function ()
+  local tracingTime;
+  if (Tracing.Trace) then
+    tracingTime := MSTime();
+    IO_Write(Tracing.Files[threadId+1], tracingTime, " ", threadId, " WORKER_BLOCKED\n");
+    IO_Write(Tracing.Files[threadId+1], tracingTime, " ", threadId, " WORKER_TASK_CREATED\n");
+    IO_Write(Tracing.Files[threadId+1], tracingTime, " ", threadId, " WORKER_RESUMED\n");
+  fi;
 end;

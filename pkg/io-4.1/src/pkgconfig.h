@@ -264,7 +264,7 @@
 
 /* Define to 1 if `lstat' dereferences a symlink specified with a trailing
    slash. */
-#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
+/* #undef LSTAT_FOLLOWS_SLASHED_SYMLINK */
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -313,7 +313,7 @@
 #define SYS_IS_CYGWIN32 0
 
 /* are we on DARWIN? */
-#define SYS_IS_DARWIN 0
+#define SYS_IS_DARWIN 1
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
