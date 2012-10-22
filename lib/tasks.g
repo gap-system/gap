@@ -227,6 +227,7 @@ Tasks.CreateTask := function(arglist)
                    started := false,
                    async := false,
                    blockedWorkers := CreateChannel(),
+                   waitingOnMe := ShareObj([]),
                    ));
   
   
@@ -434,24 +435,28 @@ TaskIsAsync := function(task)
   return task.async;
 end;
 
-ScheduleTask := function (arglist)
+ScheduleTask := function (arg)
   local task, waitTask;
-  if IsFunction(arglist[1]) then
-    task := RunTask(arglist);
+  if IsFunction(arg[1]) then
+    task := RunTask(arg);
   else
-    task := Tasks.CreateTask(arglist[2..Length(arglist)]);
+    task := Tasks.CreateTask(arg{[2..Length(arg)]});
     atomic readwrite task do
       task.started := true;
-    od;
-    for waitTask in arglist[1] do
-      atomic readwrite waitTask do
-        if waitTask.complete = false then
-          Add(waitTask.waitingOnMe, task);
-          atomic readwrite task do
-            task.condCount := task.condCount+1;
+      task.condCount := 0;
+      for waitTask in arg[1] do
+        atomic readonly waitTask do 
+          atomic readwrite waitTask.waitingOnMe do
+            if waitTask.complete = false then
+              Add(waitTask.waitingOnMe, task);
+              task.condCount := task.condCount+1;
+            fi;
           od;
-        fi;
+        od;
       od;
+      if task.condCount = 0 then
+        ExecuteTask(task);
+      fi;
     od;
   fi;
   return task;
@@ -463,7 +468,7 @@ Tasks.TaskManagerFunc := function()
   local i, worker, activeWorkers, request, requestType,
         suspendedWorkers, taskToFinish, toUnblock,
         totalTasks, blockedWorkersChannel, taskMap, blockedWorkers,
-        suspendedWorkersList, toResume;
+        suspendedWorkersList, toResume, t;
   
   activeWorkers := 0;
   blockedWorkers := 0;
@@ -505,15 +510,17 @@ Tasks.TaskManagerFunc := function()
       fi;
       SendChannel (GetWorkerInputChannel(worker), RESUME_BLOCKED_WORKER);
     elif requestType = TRY_UNBLOCK_TASK then
-      for t in request.tasks do
-        atomic readwrite t do
-          t.condCount := t.condCount-1;
-          if t.condCount = 0 then
-            atomic readwrite TaskPoolData do
-              TaskPoolData.TaskPool[TaskPoolData.TaskPoolLen] := t;
-              TaskPoolData.TaskPoolLen := TaskPoolData.TaskPoolLen+1;
-            od;
-          fi;
+      atomic readonly request.tasks do
+        for t in request.tasks do
+          atomic readwrite t do
+            t.condCount := t.condCount-1;
+            if t.condCount = 0 then
+              atomic readwrite TaskPoolData do
+                TaskPoolData.TaskPoolLen := TaskPoolData.TaskPoolLen+1;
+                TaskPoolData.TaskPool[TaskPoolData.TaskPoolLen] := t;
+              od;
+            fi;
+          od;
         od;
       od;
     elif requestType = SUSPEND_ME then
