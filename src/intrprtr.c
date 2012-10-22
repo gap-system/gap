@@ -1120,6 +1120,10 @@ void            IntrAtomicEnd ( void )
 	}
       }
     lockSP = LockObjects(j, tolock, locktypes);
+    /* Push at least one empty region on the stack so we can tell
+     * that we are inside an atomic section. */
+    if (j == 0)
+      PushRegionLock((Region *) 0);
     if (lockSP >= 0) {
       CALL_0ARGS( body );
       PopRegionLocks(lockSP);

@@ -405,7 +405,7 @@ DeclareOperation("PermLeftQuoTransformation",
 DeclareGlobalFunction("TransformationFamily");
 DeclareGlobalFunction("TransformationType");
 DeclareGlobalFunction("TransformationData");
-_TransformationFamiliesDatabase := [];
+_TransformationFamiliesDatabase := MakeWriteOnceAtomic([]);
 
 
 #############################################################################

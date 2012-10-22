@@ -9,6 +9,7 @@ FINISH := 6;
 CULL_IDLE_WORKERS := 7;
 FINISH_WORKER := 8;
 START_WORKERS := 9;
+TRY_UNBLOCK_TASK := 10;
 
 Tasks := AtomicRecord( rec ( Initial := 4 ,    # initial number of worker threads
                  FirstTask := true,
@@ -127,6 +128,12 @@ Tasks.Worker := function(channels)
         else
           task.result := result;
           task.adopt_result := false;
+        fi;
+        if IsBound(task.waitingOnMe) then
+          SendChannel (Tasks.TaskManagerRequests, rec ( 
+                  type := TRY_UNBLOCK_TASK,
+                                  worker := threadId,
+                                  tasks := task.waitingOnMe));
         fi;
         while true do
           toUnblock := TryReceiveChannel (task.blockedWorkers, fail);
@@ -427,6 +434,30 @@ TaskIsAsync := function(task)
   return task.async;
 end;
 
+ScheduleTask := function (arglist)
+  local task, waitTask;
+  if IsFunction(arglist[1]) then
+    task := RunTask(arglist);
+  else
+    task := Tasks.CreateTask(arglist[2..Length(arglist)]);
+    atomic readwrite task do
+      task.started := true;
+    od;
+    for waitTask in arglist[1] do
+      atomic readwrite waitTask do
+        if waitTask.complete = false then
+          Add(waitTask.waitingOnMe, task);
+          atomic readwrite task do
+            task.condCount := task.condCount+1;
+          od;
+        fi;
+      od;
+    od;
+  fi;
+  return task;
+end;
+
+
 # Function executed by a task manager
 Tasks.TaskManagerFunc := function()
   local i, worker, activeWorkers, request, requestType,
@@ -473,6 +504,18 @@ Tasks.TaskManagerFunc := function()
         SendChannel (Tasks.WorkerSuspensionRequests, true);
       fi;
       SendChannel (GetWorkerInputChannel(worker), RESUME_BLOCKED_WORKER);
+    elif requestType = TRY_UNBLOCK_TASK then
+      for t in request.tasks do
+        atomic readwrite t do
+          t.condCount := t.condCount-1;
+          if t.condCount = 0 then
+            atomic readwrite TaskPoolData do
+              TaskPoolData.TaskPool[TaskPoolData.TaskPoolLen] := t;
+              TaskPoolData.TaskPoolLen := TaskPoolData.TaskPoolLen+1;
+            od;
+          fi;
+        od;
+      od;
     elif requestType = SUSPEND_ME then
       activeWorkers := activeWorkers-1;
       if suspendedWorkers>Tasks.Initial then

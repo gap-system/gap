@@ -729,7 +729,9 @@ Obj ImmutableCopyObjHandler (
     Obj                 self,
     Obj                 obj )
 {
+#ifdef SINGLE_THREADED_COPY_OBJ
     WriteGuard(obj);
+#endif
     return CopyObj( obj, 0 );
 }
 
@@ -742,7 +744,9 @@ Obj MutableCopyObjHandler (
     Obj                 self,
     Obj                 obj )
 {
+#ifdef SINGLE_THREADED_COPY_OBJ
     WriteGuard(obj);
+#endif
     return CopyObj( obj, 1 );
 }
 

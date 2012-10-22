@@ -115,7 +115,7 @@ BIND_GLOBAL( "NEW_FAMILY",
     family!.HASH_SIZE       := 32;
     # for chaching types of homogeneous lists (see TYPE_LIST_HOM in list.g), 
     # assigned in kernel when needed 
-    family!.TYPES_LIST_FAM  := AtomicList(27);
+    family!.TYPES_LIST_FAM  := MakeWriteOnceAtomic(AtomicList(27));
     return family;
 end );
 
@@ -533,7 +533,7 @@ BIND_GLOBAL( "FlagsType", K -> K![2] );
 BIND_GLOBAL( "DataType", K -> K![ POS_DATA_TYPE ] );
 
 BIND_GLOBAL( "SetDataType", function ( K, data )
-    BindOnce(K, POS_DATA_TYPE, data);
+    StrictBindOnce(K, POS_DATA_TYPE, data);
 end );
 
 

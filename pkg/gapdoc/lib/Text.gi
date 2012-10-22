@@ -55,7 +55,7 @@ InstallValue(LETTERS, Concatenation(CAPITALLETTERS, SMALLLETTERS));
 IsSet(LETTERS);
 InstallValue(DIGITS, "0123456789");
 InstallValue(HEXDIGITS, "0123456789ABCDEFabcdef");
-InstallValue(BOXCHARS, "─│┌┬┐├┼┤└┴┘━┃┏┳┓┣╋┫┗┻┛═║╔╦╗╠╬╣╚╩╝");
+InstallValue(BOXCHARS, `"─│┌┬┐├┼┤└┴┘━┃┏┳┓┣╋┫┗┻┛═║╔╦╗╠╬╣╚╩╝");
 
 # utilities to find lines
 InstallGlobalFunction(PositionLinenumber, function(str, nr)

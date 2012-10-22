@@ -1998,14 +1998,14 @@ BindGlobal("CompareCyclotomicCollectionHelper_Filters", MakeReadOnly([
 	IsWholeFamily, IsObject
 ]) );
 
-BindGlobal("CompareCyclotomicCollectionHelper_Proxies", [
+BindGlobal("CompareCyclotomicCollectionHelper_Proxies", MakeImmutable([
 	[ 1 ], [ 0, 1 ],
 	[ -1, 0, 1 ], [ -1, 0, 1, E(4) ],
 	[ -1, 0, 1/2, 1 ], [ -1, 0, 1, 1/2, E(4) ],
 	[ -1, 0, 1, 1/2, E(4), E(9) ], fail
-] );
+] ) );
 #TODO: MakeImmutable() for efficiency once we are sure that it's safe.
-MakeThreadLocal("CompareCyclotomicCollectionHelper_Proxies");
+# MakeThreadLocal("CompareCyclotomicCollectionHelper_Proxies");
 
 
 BindGlobal("CompareCyclotomicCollectionHelper", function (A, B)

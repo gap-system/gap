@@ -70,6 +70,40 @@ LockAndAdoptObj := function(obj)
   return obj;
 end;
 
+IncorporateObj := function(target, index, value)
+  atomic value do
+    if IS_PLIST_REP(target) then
+      target[index] := MigrateObj(value, target);
+    elif IS_REC(target) then
+      target.(index) := MigrateObj(value, target);
+    else
+      Error("IncorporateObj: target must be plain list or record");
+    fi;
+  od;
+end;
+
+AtomicIncorporateObj := function(target, index, value)
+  atomic target, value do
+    if IS_PLIST_REP(target) then
+      target[index] := MigrateObj(value, target);
+    elif IS_REC(target) then
+      target.(index) := MigrateObj(value, target);
+    else
+      Error("IncorporateObj: target must be plain list or record");
+    fi;
+  od;
+end;
+
+CopyFromRegion := CopyRegion;
+
+CopyToRegion := atomic function(readonly obj, target)
+  if IsPublic(obj) then
+    return obj;
+  else
+    return MigrateObj(CopyRegion(obj), target);
+  fi;
+end;
+
 MakeThreadLocal("~");
 
 HaveMultiThreadedUI := false;

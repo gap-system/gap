@@ -1207,8 +1207,52 @@ void            LockFuncArgs (
 	  break;
       }
     }
-    if (LockObjects(count, objects, mode) < 0)
+    if (count && LockObjects(count, objects, mode) < 0)
       ErrorMayQuit("Cannot lock arguments of atomic function", 0L, 0L );
+    /* Push at least one region so that we can tell that we are inside
+     * an atomic function. */
+    if (!count)
+      PushRegionLock((Region *) 0);
+}
+
+Obj             DoExecFunc0argsL (
+    Obj                 func )
+{
+    Bag                 oldLvars;       /* old values bag                  */
+    OLD_BRK_CURR_STAT                   /* old executing statement         */
+    int			lockSP = TLS->lockStackPointer;
+    Obj                 args[1];
+    LockFuncArgs(func, args);
+
+
+    CHECK_RECURSION_BEFORE
+
+    /* switch to a new values bag                                          */
+    SWITCH_TO_NEW_LVARS( func, 1, NLOC_FUNC(func), oldLvars );
+
+    /* execute the statement sequence                                      */
+    REM_BRK_CURR_STAT();
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
+    RES_BRK_CURR_STAT();
+
+   /* remove the link to the calling function, in case this values bag
+       stays alive due to higher variable reference */
+    SET_BRK_CALL_FROM( ((Obj) 0));
+
+    /* switch back to the old values bag                                   */
+    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
+
+    PopRegionLocks(lockSP);
+
+    CHECK_RECURSION_AFTER
+
+    /* return the result                                                   */
+      {
+        Obj                 returnObjStat;
+        returnObjStat = TLS->returnObjStat;
+        TLS->returnObjStat = (Obj)0;
+        return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc1argsL (
@@ -1596,7 +1640,7 @@ Obj             MakeFunction (
     locks = LCKS_FUNC(fexp);
     /* select the right handler                                            */
     if (locks) {
-	if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0args;
+	if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0argsL;
 	else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1argsL;
 	else if ( NARG_FUNC(fexp) ==  2 )  hdlr = DoExecFunc2argsL;
 	else if ( NARG_FUNC(fexp) ==  3 )  hdlr = DoExecFunc3argsL;

@@ -360,6 +360,10 @@ extern  void            RetypeBag (
             Bag                 bag,
             UInt                new_type );
 
+extern  void            RetypeBagIfWritable (
+            Bag                 bag,
+            UInt                new_type );
+
 
 /****************************************************************************
 **

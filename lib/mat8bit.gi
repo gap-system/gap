@@ -26,10 +26,14 @@
 ##  without changing the kernel.
 ##
 
-InstallValue(TYPES_MAT8BIT , [[],[]]);
+InstallValue(TYPES_MAT8BIT, 
+  [ MakeWriteOnceAtomic([]), 
+    MakeWriteOnceAtomic([]) 
+  ]);
 TYPES_MAT8BIT[1][257] := 1;
 TYPES_MAT8BIT[2][257] := 1;
 
+MakeReadOnly(TYPES_MAT8BIT);
 
 #############################################################################
 ##

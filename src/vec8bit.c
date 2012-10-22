@@ -219,7 +219,7 @@ Obj TypeVec8Bit( UInt q, UInt mut)
 {
   UInt col = mut ? 1 : 2;
   Obj type;
-  type = ELM_PLIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
+  type = ELM0_LIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
   if (type == 0)
     return CALL_2ARGS(TYPE_VEC8BIT, INTOBJ_INT(q), mut ? True: False);
   else
@@ -230,7 +230,7 @@ Obj TypeVec8BitLocked( UInt q, UInt mut)
 {
   UInt col = mut ? 3 : 4;
   Obj type;
-  type = ELM_PLIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
+  type = ELM0_LIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
   if (type == 0)
     return CALL_2ARGS(TYPE_VEC8BIT_LOCKED, INTOBJ_INT(q), mut ? True : False);
   else
@@ -249,7 +249,7 @@ Obj TypeMat8Bit( UInt q, UInt mut)
 {
   UInt col = mut ? 1 : 2;
   Obj type;
-  type = ELM_PLIST(ELM_PLIST(TYPES_MAT8BIT, col),q);
+  type = ELM0_LIST(ELM0_LIST(TYPES_MAT8BIT, col),q);
   if (type == 0)
     return CALL_2ARGS(TYPE_MAT8BIT, INTOBJ_INT(q), mut ? True: False);
   else

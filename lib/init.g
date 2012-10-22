@@ -933,10 +933,6 @@ PAR_GAP_SLAVE_START := fail;
 ##
 ##  Load additional packages, such that their names appear in the banner.
 ##
-#T hack:
-#T POST_RESTORE_FUNCS is obsolete but is currently needed in GAPDoc's init.g
-POST_RESTORE_FUNCS:= GAPInfo.PostRestoreFuncs;
-
 
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
     Print ("and packages ...\n");

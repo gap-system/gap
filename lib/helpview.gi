@@ -413,7 +413,7 @@ show := function(file)
 end
 );
 
-LockAndMigrateObj(HELP_VIEWER_INFO,HELP_REGION);
+MakeReadOnly(HELP_VIEWER_INFO);
 
 #############################################################################
 ##

@@ -412,7 +412,7 @@ FamilyOfFamilies!.nTYPES          := 0;
 FamilyOfFamilies!.HASH_SIZE       := 100;
 
 # for chaching types of homogeneous lists, assigned in kernel when needed 
-FamilyOfFamilies!.TYPES_LIST_FAM  := [];
+FamilyOfFamilies!.TYPES_LIST_FAM  := MakeWriteOnceAtomic(AtomicList(27));
 # for efficiency
 FamilyOfFamilies!.TYPES_LIST_FAM[27] := 0;
 
@@ -424,6 +424,7 @@ BIND_GLOBAL( "TypeOfFamilyOfFamilies", [
                                     ) ),
     false,
     NEW_TYPE_NEXT_ID ] );
+MakeReadOnly(TypeOfFamilyOfFamilies);
 
 BIND_GLOBAL( "FamilyOfTypes", AtomicRecord( rec() ) );
 
@@ -443,7 +444,7 @@ FamilyOfTypes!.nTYPES          := 0;
 FamilyOfTypes!.HASH_SIZE       := 100;
 
 # for chaching types of homogeneous lists, assigned in kernel when needed 
-FamilyOfTypes!.TYPES_LIST_FAM  := [];
+FamilyOfTypes!.TYPES_LIST_FAM  := MakeWriteOnceAtomic(AtomicList(27));
 # for efficiency
 FamilyOfTypes!.TYPES_LIST_FAM[27] := 0;
 
@@ -453,6 +454,7 @@ BIND_GLOBAL( "TypeOfFamilyOfTypes",  [
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamilyOfTypes and IsTypeDefaultRep ) ),
     false,
     NEW_TYPE_NEXT_ID ] );
+MakeReadOnly(TypeOfFamilyOfTypes);
 
 SET_TYPE_COMOBJ( FamilyOfFamilies, TypeOfFamilyOfFamilies );
 SET_TYPE_POSOBJ( TypeOfFamilies,   TypeOfTypes            );

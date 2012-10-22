@@ -718,6 +718,7 @@ Obj TypePlistHom (
         kind = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(ktype-T_PLIST_HOM+1) );
         ASS_LIST( kinds, ktype-T_PLIST_HOM+1, kind );
+	return ELM0_LIST( kinds, ktype-T_PLIST_HOM+1 );
     }
 
     /* return the kind                                                     */
@@ -747,6 +748,7 @@ Obj TypePlistCyc (
         kind = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(ktype-T_PLIST_CYC+1) );
         ASS_LIST( kinds, ktype-T_PLIST_CYC+1, kind );
+	return ELM0_LIST( kinds, ktype-T_PLIST_CYC+1 );
     }
 
     /* return the kind                                                     */
@@ -774,6 +776,7 @@ Obj TypePlistFfe (
         kind = CALL_2ARGS( TYPE_LIST_HOM,
             family, INTOBJ_INT(ktype-T_PLIST_FFE+1) );
         ASS_LIST( kinds, ktype-T_PLIST_FFE+1, kind );
+	return ELM0_LIST( kinds, ktype-T_PLIST_FFE+1 );
     }
 
     /* return the kind                                                     */

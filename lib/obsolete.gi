@@ -714,14 +714,6 @@ local names,len,i,g,h,e,a,s;
   return s;
 end);
 
-#############################################################################
-##
-#V  PROFILETHRESHOLD
-##
-##  This is now stored in GAPInfo.ProfileThreshold
-##
-PROFILETHRESHOLD := GAPInfo.ProfileThreshold;
-
 
 #############################################################################
 ##

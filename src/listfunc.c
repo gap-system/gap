@@ -122,7 +122,7 @@ Obj FuncADD_LIST (
     else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
         AddList( list, obj );
     } else if ( TNUM_OBJ(list) == T_ALIST ) {
-        AddList( list, obj );
+        AddAList( list, obj );
     }
     else {
         DoOperation2Args( self, list, obj );

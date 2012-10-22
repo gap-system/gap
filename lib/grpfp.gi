@@ -1271,6 +1271,7 @@ end);
 
 GAPTCENUM.CosetTableFromGensAndRels := GTC_CosetTableFromGensAndRels;
 
+MakeReadOnly( GAPTCENUM );
 
 #############################################################################
 ##

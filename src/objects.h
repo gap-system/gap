@@ -324,8 +324,14 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define LAST_LIST_TNUM          (T_STRING_SSORT+IMMUTABLE)
 #define LAST_IMM_MUT_TNUM       LAST_LIST_TNUM
 
+/* Object sets and maps */
+#define FIRST_OBJSET_TNUM	(LAST_LIST_TNUM+1)
+#define T_OBJSET		(FIRST_OBJSET_TNUM+0)
+#define T_OBJMAP		(FIRST_OBJSET_TNUM+2)
+#define LAST_OBJSET_TNUM	(T_OBJMAP+IMMUTABLE)
+
 /* IMMUTABLE is not used for external types but keep the parity */
-#define FIRST_EXTERNAL_TNUM     (LAST_LIST_TNUM+1)
+#define FIRST_EXTERNAL_TNUM     (LAST_OBJSET_TNUM+1)
 #define T_COMOBJ                (FIRST_EXTERNAL_TNUM+ 0)
 #define T_POSOBJ                (FIRST_EXTERNAL_TNUM+ 1)
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
