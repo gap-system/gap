@@ -462,6 +462,39 @@ ScheduleTask := function (arg)
   return task;
 end;
 
+NewMilestone := function(contributions)
+  local c;
+  c := Set(contributions);
+  return ShareObj(rec(
+             achieved := Set([]),
+             targets := Immutable(c),
+             complete := Length(c) = 0,
+             waitingOnMe := ShareObj([]),
+             ));
+end;
+  
+ContributeToMilestone := function(milestone, contribution)
+  local trigger, notify, t;
+  atomic milestone do
+    if not contribution in milestone.targets then
+      Error("ContributeToMilestone: Milestone does not have such a contribution");
+    fi;
+    if milestone.complete then
+      return;
+    fi;
+    AddSet(milestone.achieved, Immutable(contribution));
+    if Length(milestone.achieved) < Length(milestone.targets) then
+      return;
+    fi;
+    milestone.complete := true;
+    atomic readonly milestone.waitingOnMe do
+      SendChannel (Tasks.TaskManagerRequests, rec (
+              type := TRY_UNBLOCK_TASK,
+              worker := threadId,
+              tasks := milestone.waitingOnMe ));
+    od;
+  od;
+end;
 
 # Function executed by a task manager
 Tasks.TaskManagerFunc := function()
