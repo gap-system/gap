@@ -1,9 +1,0 @@
-#!/bin/sh
-rm -f manual.aux manual.dvi manual.idx manual.ilg manual.ind manual.lab manual.log manual.six manual.toc
-tex manual
-../../../doc/manualindex manual
-tex manual
-../../../etc/convert.pl -c -i -u -n CARAT . ../htm
-dvips -o manual.ps manual
-ps2pdf manual.ps manual.pdf
-

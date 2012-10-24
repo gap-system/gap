@@ -24,6 +24,28 @@ AdoptSingleObj := ADOPT_NORECURSE;
 CopyRegion := CLONE_REACHABLE;
 RegionSubObjects := REACHABLE;
 
+ShareAutoReadObj := function(obj)
+  SHARE(obj);
+  SetAutoLockRegion(obj, true);
+  return obj;
+end;
+
+AutoReadLock := function(obj)
+  SetAutoLockRegion(obj, true);
+  return obj;
+end;
+
+NewAutoReadRegion := function(arg)
+  local region;
+  if LEN_LIST(arg) = 0 then
+    region := NewRegion();
+  else
+    region := NewRegion(arg[1]);
+  fi;
+  SetAutoLockRegion(region, true);
+  return region;
+end;
+
 LockAndMigrateObj := function(obj, target)
   local lock;
   if IsShared(target) and not HaveWriteAccess(target) then
@@ -46,6 +68,40 @@ LockAndAdoptObj := function(obj)
     ADOPT(obj);
   fi;
   return obj;
+end;
+
+IncorporateObj := function(target, index, value)
+  atomic value do
+    if IS_PLIST_REP(target) then
+      target[index] := MigrateObj(value, target);
+    elif IS_REC(target) then
+      target.(index) := MigrateObj(value, target);
+    else
+      Error("IncorporateObj: target must be plain list or record");
+    fi;
+  od;
+end;
+
+AtomicIncorporateObj := function(target, index, value)
+  atomic target, value do
+    if IS_PLIST_REP(target) then
+      target[index] := MigrateObj(value, target);
+    elif IS_REC(target) then
+      target.(index) := MigrateObj(value, target);
+    else
+      Error("IncorporateObj: target must be plain list or record");
+    fi;
+  od;
+end;
+
+CopyFromRegion := CopyRegion;
+
+CopyToRegion := atomic function(readonly obj, target)
+  if IsPublic(obj) then
+    return obj;
+  else
+    return MigrateObj(CopyRegion(obj), target);
+  fi;
 end;
 
 MakeThreadLocal("~");

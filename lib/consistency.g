@@ -37,7 +37,7 @@ local t,i,f;
   t:=rec(version:= GAPInfo.Version,
          kernel:= GAPInfo.KernelVersion,
 	 crc:=t);
-  f:=Concatenation(GAP_ROOT_PATHS[1],"lib/crctable.g");
+  f:=Concatenation(GAPInfo.RootPaths[1],"lib/crctable.g");
   PrintTo(f,"CRCTABLE:=\n",t,";\n");
 end;
 

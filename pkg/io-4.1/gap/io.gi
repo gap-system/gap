@@ -121,43 +121,43 @@ InstallGlobalFunction(IO_File, function( arg )
   elif Length(arg) = 2 then
       filename := arg[1];
       if IsString(arg[2]) then
-          mode := arg[2];
-          bufsize := IO.DefaultBufSize;
+        mode := arg[2];
+        bufsize := IO.DefaultBufSize;
       else
-          mode := "r";
-          bufsize := arg[2];
+        mode := "r";
+        bufsize := arg[2];
       fi;
-  elif Length(arg) = 3 then
+    elif Length(arg) = 3 then
       filename := arg[1];
       mode := arg[2];
       bufsize := arg[3];
-  else
+    else
       Error("IO: Usage: IO_File( filename [,mode][,bufsize] )\n",
             "with IsString(filename)");
-  fi;
-  if not(IsString(filename)) and not(IsString(mode)) then
+    fi;
+    if not(IsString(filename)) and not(IsString(mode)) then
       Error("IO: Usage: IO_File( filename [,mode][,bufsize] )\n",
             "with IsString(filename)");
-  fi;
-  if mode = "r" then
+    fi;
+    if mode = "r" then
       fd := IO_open(filename,IO.O_RDONLY,0);
       if fd = fail then return fail; fi;
       return IO_WrapFD(fd,bufsize,false);
-  elif mode = "w" then
+    elif mode = "w" then
       fd := IO_open(filename,IO.O_CREAT+IO.O_WRONLY+IO.O_TRUNC,
                     IO.S_IRUSR+IO.S_IWUSR+IO.S_IRGRP+IO.S_IWGRP+
                     IO.S_IROTH+IO.S_IWOTH);
       if fd = fail then return fail; fi;
       return IO_WrapFD(fd,false,bufsize);
-  elif mode = "a" then
+    elif mode = "a" then
       fd := IO_open(filename,IO.O_APPEND+IO.O_WRONLY,0);
       if fd = fail then return fail; fi;
       return IO_WrapFD(fd,false,bufsize);
-  else
+    else
       Error("IO: Mode not supported!");
-  fi;
-end );
-
+    fi;
+  end );
+  
 # A nice View method:
 InstallMethod( ViewObj, "for IsFile objects", [IsFile],
   function(f)

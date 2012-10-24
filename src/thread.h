@@ -64,14 +64,16 @@ int LockObjects(int count, Obj *objects, int *mode);
 int TryLockObjects(int count, Obj *objects, int *mode);
 void PushRegionLock(Region *region);
 void PopRegionLocks(int newSP);
+void PopRegionAutoLocks(int newSP);
 int RegionLockSP();
+int AutoLockObj(Obj obj);
 
 typedef void (*TraversalFunction)(Obj);
 
 extern TraversalFunction TraversalFunc[];
 
 Obj ReachableObjectsFrom(Obj obj);
-Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList);
+Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm);
 Obj CopyTraversed(Obj traversed);
 
 void HashLock(void *obj);

@@ -722,7 +722,7 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
                       t -> t[1] = a and t[2] = b and
                            IsIdenticalObj( t[3], FamilyObj( F ) ) );
       if stored <> fail then
-        A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
+        A := AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
         SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
         # A quaternion algebra with negative parameters over a real field
         # is a division ring.
@@ -771,7 +771,8 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
                            IsIdenticalObj( t[3], FamilyObj( F ) ) );
       if stored = fail then
         # Store the data for the next call.
-        Add( QuaternionAlgebraData, [ a, b, FamilyObj( F ), A ] );
+        Add( QuaternionAlgebraData,
+               MigrateSingleObj([ a, b, FamilyObj( F ), A ], QuaternionAlgebraData ) );
       else
         A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
         SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );

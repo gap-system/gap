@@ -616,6 +616,39 @@ Obj FuncRegionOf(Obj self, Obj obj) {
 
 /****************************************************************************
 **
+*F FuncSetAutoLockRegion ... change the autolock status of a region
+*F FuncIsAutoLockRegion ... query the autolock status of a region
+**
+*/
+
+Obj FuncSetAutoLockRegion(Obj self, Obj obj, Obj flag) {
+  Region *region = GetRegionOf(obj);
+  if (!region || region->fixed_owner) {
+    ArgumentError("SetAutoLockRegion: cannot change autolock status of this region");
+  }
+  if (flag == True) {
+    region->autolock = 1;
+    return (Obj) 0;
+  } else if (flag == False || flag == Fail) {
+    region->autolock = 0;
+    return (Obj) 0;
+  } else {
+    ArgumentError("SetAutoLockRegion: Second argument must be boolean");
+    return (Obj) 0; /* flow control hint */
+  }
+}
+
+Obj FuncIsAutoLockRegion(Obj self, Obj obj) {
+  Region *region = GetRegionOf(obj);
+  if (!region)
+    return False;
+  return region->autolock ? True : False;
+}
+
+
+
+/****************************************************************************
+**
 *F FuncSetRegionName ... set the name of an object's region
 *F FuncClearRegionName ... clear the name of an object's region
 *F FuncRegionName ... get the name of an object's region
@@ -708,7 +741,7 @@ Obj FuncHaveWriteAccess(Obj self, Obj obj)
 Obj FuncHaveReadAccess(Obj self, Obj obj)
 {
   Region* ds = GetRegionOf(obj);
-  if (ds != NULL && (ds->owner == TLS || ds->readers[TLS->threadID+1] || ds->alt_owner == TLS))
+  if (ds != NULL && CheckReadAccess(obj))
     return True;
   else
     return False;
@@ -801,13 +834,13 @@ Obj FuncCREATOR_OF(Obj self, Obj obj) {
     return result;
   }
   if (obj[2])
-    SET_ELM_PLIST(result, 2, (Obj)(obj[2]));
-  else
-    SET_ELM_PLIST(result, 2, MakeImmString(""));
-  if (obj[3])
-    SET_ELM_PLIST(result, 1, (Obj)(obj[3]));
+    SET_ELM_PLIST(result, 1, (Obj)(obj[2]));
   else
     SET_ELM_PLIST(result, 1, Fail);
+  if (obj[3])
+    SET_ELM_PLIST(result, 2, (Obj)(obj[3]));
+  else
+    SET_ELM_PLIST(result, 2, Fail);
   return result;
 #else
   return Fail;
@@ -849,6 +882,8 @@ Obj FuncWaitBarrier(Obj self, Obj barrier);
 Obj FuncCreateSyncVar(Obj self);
 Obj FuncSyncWrite(Obj self, Obj var, Obj value);
 Obj FuncSyncRead(Obj self, Obj var);
+Obj FuncWriteLock(Obj self, Obj args);
+Obj FuncReadLock(Obj self, Obj args);
 Obj FuncIS_LOCKED(Obj self, Obj obj);
 Obj FuncLOCK(Obj self, Obj args);
 Obj FuncWRITE_LOCK(Obj self, Obj args);
@@ -935,6 +970,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "RegionOf", 1, "object",
       FuncRegionOf, "src/threadapi.c:RegionOf" },
+
+    { "SetAutoLockRegion", 2, "object, boolean",
+      FuncSetAutoLockRegion, "src/threadapi.c:SetAutoLockRegion" },
+
+    { "IsAutoLockRegion", 1, "object",
+      FuncIsAutoLockRegion, "src/threadapi.c:IsAutoLockRegion" },
 
     { "SetRegionName", 2, "obj, name",
       FuncSetRegionName, "src/threadapi.c:SetRegionName" },
@@ -1040,6 +1081,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "IS_LOCKED", 1, "obj",
       FuncIS_LOCKED, "src/threadapi.c:IS_LOCKED" },
+
+    { "WriteLock", -1, "obj, ...",
+      FuncWriteLock, "src/threadapi.c:WriteLock" },
+
+    { "ReadLock", -1, "obj, ...",
+      FuncReadLock, "src/threadapi.c:ReadLock" },
 
     { "LOCK", -1, "obj, ...",
       FuncLOCK, "src/threadapi.c:LOCK" },
@@ -2321,6 +2368,42 @@ Obj FuncIS_LOCKED(Obj self, Obj obj)
   return INTOBJ_INT(IsLocked(ds));
 }
 
+void DoLockFunc(Obj args, int mode)
+{
+  Int numargs = LEN_PLIST(args);
+  int *modes;
+  Int i;
+  if (numargs > 1024) {
+    ErrorQuit("%s: Too many arguments",
+      mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
+  }
+  if (TLS->lockStackPointer == 0) {
+    ErrorQuit("%s: Not inside an atomic region or function",
+      mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
+  }
+  modes = alloca(sizeof(int) * numargs);
+  for (i=0; i<numargs; i++) {
+    modes[i] = mode;
+  }
+  if (LockObjects((int) numargs, ADDR_OBJ(args)+1, modes) < 0) {
+    ErrorQuit("%s: Could not lock objects",
+      mode ? (UInt) "WriteLock" : (UInt) "ReadLock", 0L);
+  }
+}
+
+
+Obj FuncWriteLock(Obj self, Obj args)
+{
+  DoLockFunc(args, 1);
+  return (Obj) 0;
+}
+
+Obj FuncReadLock(Obj self, Obj args)
+{
+  DoLockFunc(args, 0);
+  return (Obj) 0;
+}
+
 Obj FuncLOCK(Obj self, Obj args)
 {
   int numargs = LEN_PLIST(args);
@@ -2517,12 +2600,12 @@ Obj FuncREACHABLE(Obj self, Obj obj)
 
 Obj FuncCLONE_REACHABLE(Obj self, Obj obj)
 {
-  return CopyReachableObjectsFrom(obj, 0, 0);
+  return CopyReachableObjectsFrom(obj, 0, 0, 0);
 }
 
 Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
 {
-  return CopyReachableObjectsFrom(obj, 1, 0);
+  return CopyReachableObjectsFrom(obj, 1, 0, 0);
 }
 
 Obj FuncNewRegion(Obj self, Obj arg)

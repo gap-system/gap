@@ -1,9 +1,0 @@
-$Id: Changelog.r18,v 1.1 2003/05/20 13:14:16 gap Exp $
-
-This file describes the changes from xgap4r17 to xgap4r18:
-
- * XGAP now reports "4.18" as version number instead of "4.17".
-
- * Fix display of help pages (bug reported by Walter Neumann).
-   Note that this probably will make this version incompatible with
-   GAP 4.2 and earlier versions (not tested).

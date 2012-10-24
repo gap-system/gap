@@ -702,6 +702,10 @@ BindGlobal( "ShowKernelInformation", function()
       if GAPInfo.CommandLineOptions.L <> "" then
         Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
       fi;
+      Print("\n",
+            "#W <<< This is an alpha release.      >>>\n",
+            "#W <<< Do not use for important work. >>>\n",
+	    "\n");
     fi;
 end );
 
@@ -778,6 +782,7 @@ ReadOrComplete( "lib/read4.g" );
 #  moved here from read4.g, because completion doesn't work with if-statements
 #  around function definitions!
 ReadLib( "helpview.gi"  );
+
 
 #T  1996/09/01 M.Schönert this helps performance
 ORIGINAL_IMPS := IMPLICATIONS;
@@ -928,10 +933,6 @@ PAR_GAP_SLAVE_START := fail;
 ##
 ##  Load additional packages, such that their names appear in the banner.
 ##
-#T hack:
-#T POST_RESTORE_FUNCS is obsolete but is currently needed in GAPDoc's init.g
-POST_RESTORE_FUNCS:= GAPInfo.PostRestoreFuncs;
-
 
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
     Print ("and packages ...\n");
@@ -1202,6 +1203,10 @@ end);
 ##
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
+
+if not IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
+  ReadLib( "tasks.g" );
+fi;
 
 
 #############################################################################

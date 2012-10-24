@@ -855,7 +855,7 @@ extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
     UInt     new; \
     new = SetFiltListTNums[TNUM_OBJ(list)][fn]; \
     if ( new != (UInt)-1 ) \
-      RetypeBag( list, new ); \
+      RetypeBagIfWritable( list, new ); \
      else { \
       Pr( "#E  SET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
       Pr( "%s line %d\n", (Int)__FILE__, (Int)__LINE__); \

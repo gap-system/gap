@@ -1,3 +1,30 @@
+# switch to glob syntax.
+syntax: glob
+
+doc/manualbib.xml.bib
+doc/*/*.html
+doc/*/*.txt
+doc/*/*.css
+doc/*/*.js
+doc/*/main.aux
+doc/*/main.bbl
+doc/*/main.blg
+doc/*/main.brf
+doc/*/main.idx
+doc/*/main.ilg
+doc/*/main.ind
+doc/*/main.log
+doc/*/main.out
+doc/*/main.pnr
+doc/*/main.tex
+doc/*/main.toc
+doc/*/make_manuals.out
+doc/*/manual*.pdf
+doc/*/manual.lab
+doc/*/manual.pdf
+doc/*/manual.six
+
+# switch to regexp syntax.
 syntax: regexp
 
 ~$
@@ -29,9 +56,9 @@ syntax: regexp
 ^extern/lib/
 ^extern/32bit/
 ^extern/64bit/
-^bin/scons-local-1.2.0/.*\.pyc$
-^\.scon
+^bin/scons-local-2.0.1/.*\.pyc$
 ^\.scon
 ^gen/
 ^bin/current$
 ^tags$
+

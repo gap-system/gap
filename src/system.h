@@ -762,6 +762,7 @@ extern UInt SyInitializing;
 
 extern Char **SyOriginalArgv;
 extern UInt SyOriginalArgc;
+extern Char **SyEnvironment;
 
 /****************************************************************************
 **

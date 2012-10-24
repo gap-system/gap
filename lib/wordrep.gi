@@ -891,40 +891,41 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
 
     # Store the internal types.
     K:= NewType( F, Is8BitsAssocWord and req );
-    BindOnce(K, AWP_PURE_TYPE        , K);
-    BindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[1]);
-    BindOnce(K, AWP_NR_GENS          , rank);
-    BindOnce(K, AWP_NR_BITS_PAIR     , 8);
-    BindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 8Bits_ObjByVector);
-    BindOnce(K, AWP_FUN_ASSOC_WORD   , 8Bits_AssocWord);
+    StrictBindOnce(K, AWP_PURE_TYPE        , K);
+    StrictBindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[1]);
+    StrictBindOnce(K, AWP_NR_GENS          , rank);
+    StrictBindOnce(K, AWP_NR_BITS_PAIR     , 8);
+    StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 8Bits_ObjByVector);
+    StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 8Bits_AssocWord);
     F!.types[1]:= K;
-
-    BindOnce(K, AWP_PURE_TYPE        , K);
-    BindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[2]);
-    BindOnce(K, AWP_NR_GENS          , rank);
-    BindOnce(K, AWP_NR_BITS_PAIR     , 16);
-    BindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 16Bits_ObjByVector);
-    BindOnce(K, AWP_FUN_ASSOC_WORD   , 16Bits_AssocWord);
+    
+    K:= NewType( F, Is16BitsAssocWord and req );
+    StrictBindOnce(K, AWP_PURE_TYPE        , K);
+    StrictBindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[2]);
+    StrictBindOnce(K, AWP_NR_GENS          , rank);
+    StrictBindOnce(K, AWP_NR_BITS_PAIR     , 16);
+    StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 16Bits_ObjByVector);
+    StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 16Bits_AssocWord);
     F!.types[2]:= K;
 
     K:= NewType( F, Is32BitsAssocWord and req );
-    BindOnce(K, AWP_PURE_TYPE        , K);
-    BindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[3]);
-    BindOnce(K, AWP_NR_GENS          , rank);
-    BindOnce(K, AWP_NR_BITS_PAIR     , 32);
-    BindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 32Bits_ObjByVector);
-    BindOnce(K, AWP_FUN_ASSOC_WORD   , 32Bits_AssocWord);
+    StrictBindOnce(K, AWP_PURE_TYPE        , K);
+    StrictBindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[3]);
+    StrictBindOnce(K, AWP_NR_GENS          , rank);
+    StrictBindOnce(K, AWP_NR_BITS_PAIR     , 32);
+    StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 32Bits_ObjByVector);
+    StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 32Bits_AssocWord);
     F!.types[3]:= K;
 
   fi;
 
   K:= NewType( F, IsInfBitsAssocWord and req );
-  BindOnce(K, AWP_PURE_TYPE         , K);
-  BindOnce(K, AWP_NR_BITS_EXP       , infinity);
-  BindOnce(K, AWP_NR_GENS           , Length( names ));
-  BindOnce(K, AWP_NR_BITS_PAIR      , infinity);
-  BindOnce(K, AWP_FUN_OBJ_BY_VECTOR , InfBits_ObjByVector);
-  BindOnce(K, AWP_FUN_ASSOC_WORD    , InfBits_AssocWord);
+  StrictBindOnce(K, AWP_PURE_TYPE         , K);
+  StrictBindOnce(K, AWP_NR_BITS_EXP       , infinity);
+  StrictBindOnce(K, AWP_NR_GENS           , Length( names ));
+  StrictBindOnce(K, AWP_NR_BITS_PAIR      , infinity);
+  StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR , InfBits_ObjByVector);
+  StrictBindOnce(K, AWP_FUN_ASSOC_WORD    , InfBits_AssocWord);
   F!.types[4]:= K;
 
   if IsBLetterWordsFamily(F) then

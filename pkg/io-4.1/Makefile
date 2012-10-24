@@ -171,7 +171,7 @@ AUTOMAKE = ${SHELL} /Users/vladimirjanjic/st-andrews/research/hpcgap-stuff/hpcga
 AWK = awk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
+CFLAGS = -g -O2 `cat ../../bin/cflags`
 CONFIGNAME = 
 CPP = gcc -E
 CPPFLAGS = 

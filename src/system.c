@@ -1654,6 +1654,7 @@ struct optInfo options[] = {
 
 Char ** SyOriginalArgv;
 UInt SyOriginalArgc;
+Char **SyEnvironment;
 
  
 

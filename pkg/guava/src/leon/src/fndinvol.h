@@ -1,3 +1,0 @@
-#ifndef FNDINVOL
-#define FNDINVOL
-

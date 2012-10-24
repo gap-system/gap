@@ -1,9 +1,0 @@
-$Id: Changelog.r15,v 1.1 2002/04/19 09:55:22 gap Exp $
-
-This file describes the changes from xgap4r14 to xgap4r15:
-
- * XGAP now reports "4.15" as version number instead of "4.14".
-
- * Fixed a small bug reported by Herbert Pahlings concerning output
-   to encapsulated postscript. This did not work for text objects
-   that contained opening brackets.

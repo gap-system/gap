@@ -60,17 +60,17 @@ end );
 ##  also used to remember which data files were read
 ##  
 BindGlobal("CONWAYPOLYNOMIALSINFO",  AtomicRecord(rec(
- RP := "original list by Richard Parker (from 1980's)\n",
- GAP := "computed with the GAP function by Thomas Breuer, just checks\n\
+ RP := `"original list by Richard Parker (from 1980's)\n",
+ GAP := `"computed with the GAP function by Thomas Breuer, just checks\n\
 conditions starting from 'smallest' polynomial\n",
- FL := "computed by a parallelized program by Frank Lübeck, computes\n\
+ FL := `"computed by a parallelized program by Frank Lübeck, computes\n\
 minimal polynomial of all compatible elements (~2001)\n",
- KM := "computed by Kate Minola, a parallelized program for p=2, considering\n\
+ KM := `"computed by Kate Minola, a parallelized program for p=2, considering\n\
 minimal polynomials of all compatible elements (~2004-2005)\n",
- RPn := "computed by Richard Parker (2004)\n",
- 3\,21 := "for p=3, n=21 there appeared a polynomial in some lists/systems\n\
+ RPn := `"computed by Richard Parker (2004)\n",
+ 3\,21 := `"for p=3, n=21 there appeared a polynomial in some lists/systems\n\
 which was not the Conway polynomial; the current one in GAP is correct\n",
- JB := "computed by John Bray using minimal polynomials of consistent \
+ JB := `"computed by John Bray using minimal polynomials of consistent \
 elements, respectively a similar algorithm as in GAP (~2005)\n",
  conwdat1 := false,
  conwdat2 := false,

@@ -1120,6 +1120,10 @@ void            IntrAtomicEnd ( void )
 	}
       }
     lockSP = LockObjects(j, tolock, locktypes);
+    /* Push at least one empty region on the stack so we can tell
+     * that we are inside an atomic section. */
+    if (j == 0)
+      PushRegionLock((Region *) 0);
     if (lockSP >= 0) {
       CALL_0ARGS( body );
       PopRegionLocks(lockSP);
@@ -4317,12 +4321,17 @@ void            IntrUnbComObjName (
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    /* unbind the element of the record             			   */
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
+	break;
+      default:
         UNB_REC( record, rnam );
+	break;
     }
 
     /* push void                                                           */
@@ -4346,12 +4355,17 @@ void            IntrUnbComObjExpr ( void )
     /* get the record (checking is done by 'UNB_REC')                      */
     record = PopObj();
 
-    /* assign the right hand side to the element of the record             */
-    if ( TNUM_OBJ(record) == T_COMOBJ ) {
+    /* unbind the element of the record             			   */
+    switch (TNUM_OBJ(record)) {
+      case T_COMOBJ:
         UnbPRec( record, rnam );
-    }
-    else {
+	break;
+      case T_ACOMOBJ:
+        UnbRecFuncs[T_AREC]( record, rnam);
+	break;
+      default:
         UNB_REC( record, rnam );
+	break;
     }
 
     /* push void                                                           */

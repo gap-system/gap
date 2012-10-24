@@ -874,8 +874,8 @@ InstallGlobalFunction( IsPackageMarkedForLoading, function( name, version )
 ##
 InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
     local len, sep, i, str, authors, role, fill, person;
-    
-    Print ("Munevera\n");
+
+        
     # Start with a row of `-' signs.
     len:= SizeScreen()[1] - 3;
     if GAPInfo.TermEncoding = "UTF-8" then
@@ -1267,10 +1267,6 @@ InstallGlobalFunction( LoadPackage, function( arg )
     # inside the package code causes the files to be read more than once.
     for pair in depinfo.InstallationPaths do
       GAPInfo.PackagesLoaded.( pair[1] ):= MakeImmutable( pair[2] );
-#T Remove the following as soon as the obsolete variable has been removed!
-if IsBoundGlobal( "PACKAGES_VERSIONS" ) then
-  ValueGlobal( "PACKAGES_VERSIONS" ).( pair[1] ):= pair[2][2];
-fi;
     od;
 
     # Compute the order in which the packages are loaded.
@@ -1455,12 +1451,6 @@ InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
           rootpaths ) );
       # Clear the cache.
       GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
-      # Deal with an obsolete variable.
-      if IsBoundGlobal( "GAP_ROOT_PATHS" ) then
-        MakeReadWriteGlobal( "GAP_ROOT_PATHS" );
-        UnbindGlobal( "GAP_ROOT_PATHS" );
-        BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
-      fi;
       # Reread the package information.
       if IsBound( GAPInfo.PackagesInfoInitialized ) and
          GAPInfo.PackagesInfoInitialized = true then
@@ -1497,14 +1487,6 @@ InstallGlobalFunction( AutoloadPackages, function()
     local banner, pair, excludedpackages, name, record;
     
     
-#T remove this as soon as `BANNER' is not used anymore in packages
-if IsBoundGlobal( "BANNER" ) then
-  banner:= ValueGlobal( "BANNER" );
-  MakeReadWriteGlobal( "BANNER" );
-  UnbindGlobal( "BANNER" );
-fi;
-BindGlobal( "BANNER", false );
-
     GAPInfo.delayedImplementationParts:= [];
 
     # Load the needed other packages (suppressing banners)
@@ -1595,12 +1577,6 @@ BindGlobal( "BANNER", false );
     fi;
     GAPInfo.delayedImplementationParts  := fail;
 
-#T remove this as soon as `BANNER' is not used anymore in packages
-MakeReadWriteGlobal( "BANNER" );
-UnbindGlobal( "BANNER" );
-if IsBound( banner ) then
-  BindGlobal( "BANNER", banner );
-fi;
     end );
 
 
@@ -1617,7 +1593,11 @@ InstallGlobalFunction( GAPDocManualLabFromSixFile,
     local stream, entries, SecNumber, esctex, file;
 
     stream:= InputTextFile( sixfilepath );
-    entries:= HELP_BOOK_HANDLER.GapDocGAP.ReadSix( stream ).entries;
+    
+    atomic readonly HELP_REGION do
+      entries:= HELP_BOOK_HANDLER.GapDocGAP.ReadSix( stream ).entries;
+    od;
+    
     SecNumber:= function( list )
       if IsEmpty( list ) or list[1] = 0 then
         return "";

@@ -109,6 +109,7 @@
 #include        "tls.h"
 #include        "threadapi.h"
 #include        "aobjects.h"
+#include        "objset.h"
 
 #include        "vars.h"                /* variables                       */
 
@@ -3179,6 +3180,27 @@ static Int PostRestore (
     return 0;
 }
 
+static void InitOSEnvironment() {
+  char **env = SyEnvironment;
+  Obj rec = NEW_PREC(0);
+  while (env && env[0]) {
+    Obj tmp = MakeString(env[0]);
+    UInt rnam;
+    Obj val;
+    char *p = CSTR_STRING(tmp);
+    while (*p && *p != '=')
+      p++;
+    if (*p)
+      *p++ = '\0';
+    rnam = RNamName(CSTR_STRING(tmp));
+    val = MakeImmString(p);
+    AssPRec(rec, rnam, val);
+    env ++;
+  }
+  MakeImmutable(rec);
+  AssGVar(GVarName("OS_ENV"), rec);
+}
+
 
 /****************************************************************************
 **
@@ -3192,6 +3214,8 @@ static Int InitLibrary (
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
+
+    InitOSEnvironment();
 
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
@@ -3309,6 +3333,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     /* threads                                                             */
     InitInfoThreadAPI,
     InitInfoAObjects,
+    InitInfoObjSets,
 
 #ifdef GAPMPI
     /* ParGAP/MPI module                                                   */

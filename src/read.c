@@ -1126,6 +1126,7 @@ void ReadFuncExpr (
 	if (TLS->symbol == S_ATOMIC) {
 	    Match(S_ATOMIC, "atomic", follow);
 	    is_atomic = 1;
+	    locks = NEW_STRING(4);
 	}
 	Match( S_FUNCTION, "function", follow );
 	Match( S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow );
@@ -1149,8 +1150,8 @@ void ReadFuncExpr (
 	        if (!is_atomic)
 		  SyntaxError("'readonly' argument of non-atomic function");
 	        lockmode++;
-		locks = NEW_STRING(4);
 		CHARS_STRING(locks)[0] = lockmode;
+		SET_LEN_STRING(locks, 1);
 	        GetSymbol();
 	    }
 	    name = NEW_STRING( SyStrlen(TLS->value) );
@@ -1172,12 +1173,8 @@ void ReadFuncExpr (
 	        if (!is_atomic)
 		  SyntaxError("'readonly' argument of non-atomic function");
 	        lockmode++;
-		if (!locks)
-		  locks = NEW_STRING(narg+1);
-		else {
-		  GrowString(locks, narg+1);
-		  SET_LEN_STRING(locks, narg+1);
-		}
+		GrowString(locks, narg+1);
+		SET_LEN_STRING(locks, narg+1);
 		CHARS_STRING(locks)[narg] = lockmode;
 	        GetSymbol();
 	    }
@@ -1467,10 +1464,12 @@ void ReadLiteral (
     /* `Literal								   */
     else if ( TLS->symbol == S_BACKQUOTE ) {
         Match( S_BACKQUOTE, "`", follow );
-	IntrRefGVar(GVarName("MakeLiteral"));
-	IntrFuncCallBegin();
-	ReadAtom( follow, 'r' );
-	IntrFuncCallEnd(1, 0, 1);
+	if (!READ_ERROR()) {
+	  IntrRefGVar(GVarName("MakeLiteral"));
+	  IntrFuncCallBegin();
+	  ReadAtom( follow, 'r' );
+	  IntrFuncCallEnd(1, 0, 1);
+	}
     }
 
 
@@ -2543,6 +2542,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     /* end the interpreter                                                 */
     if ( ! READ_ERROR() ) {
         type = IntrEnd( 0UL );
+        PopRegionAutoLocks(lockSP);
     }
     else {
         IntrEnd( 1UL );

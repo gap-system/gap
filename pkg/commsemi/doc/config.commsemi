@@ -1,5 +1,0 @@
-@msfiles = ("commsemi");
-@gdfiles  = ("../pkg/commsemi/gap/fpcomsmg,../pkg/commsemi/gap/commrel,../pkg/commsemi/gap/commrws,../pkg/commsemi/gap/ideal");
-$LIB = "../../../lib";
-
-

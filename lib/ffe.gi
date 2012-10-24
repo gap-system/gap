@@ -198,7 +198,7 @@ InstallGlobalFunction( FFEFamily, function( p )
         # via residues.
 	F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
 					     and IsModulusRep and IsZDFRE,p);
-	BindOnce(F!.typeOfZmodnZObj, ZNZ_PURE_TYPE, F!.typeOfZmodnZObj);
+	StrictBindOnce(F!.typeOfZmodnZObj, ZNZ_PURE_TYPE, F!.typeOfZmodnZObj);
         F!.modulus:= p;
 
         SetOne(  F, ZmodnZObj( F, 1 ) );
@@ -215,6 +215,7 @@ InstallGlobalFunction( FFEFamily, function( p )
             Add( FAMS_FFE_LARGE[1], p );
             Add( FAMS_FFE_LARGE[2], F );
             SortParallel( FAMS_FFE_LARGE[1], FAMS_FFE_LARGE[2] );
+            MakeWriteOnceAtomic(F);
             return F;
         od;
 
@@ -233,6 +234,7 @@ InstallGlobalFunction( FFEFamily, function( p )
       fi;
 
     fi;
+    MakeWriteOnceAtomic(F);
     return F;
 end );
 

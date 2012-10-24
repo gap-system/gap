@@ -329,6 +329,7 @@ local flags,f,i,j,l,m,n;
       Print("\n");
     od;
   fi;
+end);
 #############################################################################
 ##
 #F  PageSource( func ) . . . . . . . . . . . . . . . show source code in pager
@@ -376,7 +377,6 @@ BIND_GLOBAL("PageSource", function ( fun )
         # Exec( Concatenation( "view +", String( l ), " ", f ) );
         Pager(rec(lines := StringFile(f), formatted := true, start := l));
     fi;
-end);
 end);
 
 

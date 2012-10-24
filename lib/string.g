@@ -218,6 +218,7 @@ BIND_GLOBAL( "TYPES_STRING",
           # T_STRING_SSORT +IMMUTABLE
           ]);
 
+MakeReadOnlyObj( TYPES_STRING );
 
 #############################################################################
 ##

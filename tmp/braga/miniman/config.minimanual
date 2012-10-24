@@ -1,7 +1,0 @@
-@msfiles = ("basic","prog","transf,"semigrp","mapping","fpsmg");
-@gdfiles  = ("fpsemi","trans","mapping","ghom","mapphomo","kbsemi","semigrp",
-"monoid","grpfree","coll","list","set","domain","permutat.g",
-"methwhy.g","methsel2.g","profile.g","oper.g","object",
-"object.gi","type.g","files","relation","mgmhom","semirel","magma", "grptbl",
-"smgideal","semicong","semiquo","reesmat","proto","../pkg/transemi/gap/transemi");
-$LIB = "../../../lib";

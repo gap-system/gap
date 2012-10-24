@@ -326,6 +326,7 @@ Obj CopyObj (
     Obj                 obj,
     Int                 mut )
 {
+#ifdef SINGLE_THREADED_COPY_OBJ
     Obj                 new;            /* copy of <obj>                   */
 
     TLS->copiedObjs = NULL;
@@ -338,6 +339,9 @@ Obj CopyObj (
 
     /* return the copy                                                     */
     return new;
+#else
+    return CopyReachableObjectsFrom(obj, 0, 0, !mut);
+#endif
 }
 
 
@@ -725,7 +729,9 @@ Obj ImmutableCopyObjHandler (
     Obj                 self,
     Obj                 obj )
 {
+#ifdef SINGLE_THREADED_COPY_OBJ
     WriteGuard(obj);
+#endif
     return CopyObj( obj, 0 );
 }
 
@@ -738,7 +744,9 @@ Obj MutableCopyObjHandler (
     Obj                 self,
     Obj                 obj )
 {
+#ifdef SINGLE_THREADED_COPY_OBJ
     WriteGuard(obj);
+#endif
     return CopyObj( obj, 1 );
 }
 

@@ -18,6 +18,12 @@ static Obj TypeZmqSocket() {
 #define zmq_recvmsg zmq_recv
 #endif
 
+#if ZMQ_VERSION_MAJOR == 2
+  typedef int64_t int_opt_t;
+#else
+  typedef int int_opt_t;
+#endif
+
 static void *ZmqContext;
 
 #define ZMQ_DAT_SOCKET_OFF 1
@@ -283,8 +289,6 @@ static Obj FuncZmqReceive(Obj self, Obj socketobj) {
   void *socket;
   int flags;
   zmq_msg_t msg;
-  int64_t more;
-  size_t more_size;
   Obj result;
   Int len;
 
@@ -305,7 +309,7 @@ static Obj FuncZmqReceiveAll(Obj self, Obj socketobj) {
   void *socket;
   int flags;
   zmq_msg_t msg;
-  int64_t more;
+  int_opt_t more;
   size_t more_size;
   Obj result, elem;
 
@@ -355,7 +359,7 @@ static void CheckSocketArg(char *fname, Obj socket) {
 }
 
 static Obj FuncZmqHasMore(Obj self, Obj socket) {
-  int64_t more;
+  int_opt_t more;
   size_t more_size;
   CheckSocketArg("ZmqHasMore", socket);
   more_size = sizeof(more);
@@ -373,12 +377,6 @@ static Obj FuncZmqSetIdentity(Obj self, Obj socket, Obj str) {
     ZmqError("ZmqSetIdentity");
   return (Obj) 0;
 }
-
-#if ZMQ_VERSION_MAJOR == 2
-  typedef int64_t int_opt_t;
-#else
-  typedef int int_opt_t;
-#endif
 
 static void ZmqSetIntSockOpt(char *fname, Obj socket, int opt, Obj num) {
   int_opt_t value;

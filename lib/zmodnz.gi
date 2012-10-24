@@ -66,8 +66,8 @@ InstallMethod( ZmodnZObj,
     "for family of elements in Z/nZ (nonprime), and integer",
     [ IsZmodnZObjNonprimeFamily, IsInt ],
     function( Fam, residue )
-    return Objectify( Fam!.typeOfZmodnZObj,
-                   [ residue mod Fam!.modulus ] );
+    return MakeReadOnly(Objectify( Fam!.typeOfZmodnZObj,
+                   [ residue mod Fam!.modulus ] ));
     end );
 
 InstallOtherMethod( ZmodnZObj,
@@ -83,18 +83,18 @@ InstallOtherMethod( ZmodnZObj,
       Fam!.typeOfZmodnZObj:= NewType( Fam,
 				 IsZmodpZObjSmall and IsModulusRep );
       SetDataType( Fam!.typeOfZmodnZObj, p );
-      BindOnce(Fam!.typeOfZmodnZObj, ZNZ_PURE_TYPE, Fam!.typeOfZmodnZObj);
+      StrictBindOnce(Fam!.typeOfZmodnZObj, ZNZ_PURE_TYPE, Fam!.typeOfZmodnZObj);
       MakeReadOnlyObj(Fam!.typeOfZmodnZObj);
 
     fi;
-    return Objectify( Fam!.typeOfZmodnZObj, [ residue mod p ] );
+    return MakeReadOnly(Objectify( Fam!.typeOfZmodnZObj, [ residue mod p ] ));
     end );
 
 InstallMethod( ZmodnZObj,
     "for a positive integer, and an integer",
     [ IsInt, IsPosInt ],
     function( residue, n )
-    return ZmodnZObj( ElementsFamily( FamilyObj( ZmodnZ( n ) ) ), residue );
+    return MakeReadOnly(ZmodnZObj( ElementsFamily( FamilyObj( ZmodnZ( n ) ) ), residue ));
     end );
 
 
@@ -524,8 +524,8 @@ InstallMethod( \^,
     "for element in Z/nZ (ModulusRep), and integer",
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, n )
-    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-                  [ PowerModInt( x![1], n, DataType( TypeObj( x ) ) ) ] );
+    return MakeReadOnly(Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                  [ PowerModInt( x![1], n, DataType( TypeObj( x ) ) ) ] ));
     end );
 
 
@@ -571,7 +571,10 @@ InstallMethod( InverseOp,
     inv:= QuotientMod( Integers, 1, elm![1], ModulusOfZmodnZObj( elm ) );
     if inv <> fail then
       inv:= ZmodnZObj( FamilyObj( elm ), inv );
-    fi;
+  fi;
+  return inv;
+end );
+
 #############################################################################
 ##
 #M  Order( <obj> )  . . . . . . . . . . . . . . . . . . . . for `IsZmodpZObj'
@@ -586,8 +589,6 @@ InstallMethod( Order,
         Error( "<obj> is not invertible" );
     fi;
     return ord;
-    end );
-    return inv;
     end );
 
 
@@ -988,6 +989,8 @@ InstallGlobalFunction( ZmodpZNC, function( p )
         Add( Z_MOD_NZ[2], F );
         SortParallel( Z_MOD_NZ[1], Z_MOD_NZ[2] );
         return F;
+      else
+        return Z_MOD_NZ[2][ pos ];        
       fi;  
     od;
 end );
@@ -1031,7 +1034,7 @@ InstallGlobalFunction( ZmodnZ, function( n )
     # Store the objects type.
     F!.typeOfZmodnZObj:= NewType( F, IsZmodnZObjNonprime and IsModulusRep );
     SetDataType( F!.typeOfZmodnZObj, n );
-    BindOnce(F!.typeOfZmodnZObj, ZNZ_PURE_TYPE, F!.typeOfZmodnZObj);
+    StrictBindOnce(F!.typeOfZmodnZObj, ZNZ_PURE_TYPE, F!.typeOfZmodnZObj);
 
     # as n is no prime, the family is no UFD
     SetIsUFDFamily(F,false);

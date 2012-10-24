@@ -1,3 +1,0 @@
-#ifndef FACTORIA
-#define FACTORIA
-

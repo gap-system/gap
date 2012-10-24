@@ -534,7 +534,7 @@ local fam,indn,val,q,fc,gc;
   if g[2]>0 then
     gc:=ShiftedCoeffs(g[1],g[2]);
   else
-    gc:=g[1];
+    gc:=ShallowCopy(g[1]);
   fi;
 
   q:=QUOTREM_LAURPOLS_LISTS(fc,gc);
@@ -1493,7 +1493,9 @@ local   fam, tmp;
 
   # construct the product and check the valuation in case zero divisors
   tmp := CoefficientsOfUnivariateRationalFunction(univ);
-  return UnivariateRationalFunctionByExtRepNC(fam,coef*tmp[1], tmp[2],tmp[3],
+  # Here we use ShallowCopy to avoid access errors later when CLONE_OBJ 
+  # will be called from coef*tmp[1] and will try to modify tmp
+  return UnivariateRationalFunctionByExtRepNC(fam,coef*ShallowCopy(tmp[1]), tmp[2],tmp[3],
            IndeterminateNumberOfUnivariateRationalFunction(univ));
 end );
 

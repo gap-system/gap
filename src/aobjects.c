@@ -54,6 +54,8 @@
 #include        "tls.h"
 #include        "vars.h"                /* variables                       */
 
+#include        "aobjects.h"
+
 
 #include        "intrprtr.h"            /* interpreter                     */
 
@@ -161,7 +163,7 @@ static Obj NewFixedAtomicList(UInt length)
   return result;
 }
 
-static Obj NewAtomicList(UInt length)
+Obj NewAtomicList(UInt length)
 {
   Obj result = NewBag(T_ALIST, sizeof(AtomicObj) * (length + 2));
   MEMBAR_WRITE();
@@ -417,6 +419,16 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
   return anew.obj;
 }
 
+
+static Obj FuncAddAtomicList(Obj self, Obj list, Obj obj)
+{
+  Obj result;
+  AtomicObj *data;
+  UInt i, len;
+  if (TNUM_OBJ(list) != T_ALIST)
+    ArgumentError("AddAtomicList: First argument must be an atomic list");
+  return INTOBJ_INT(AddAList(list, obj));
+}
 
 static Obj FuncFromAtomicList(Obj self, Obj list)
 {
@@ -849,7 +861,14 @@ static Obj FuncFromAtomicRecord(Obj self, Obj record)
   return FromAtomicRecord(record);
 }
 
-static Obj NewAtomicRecord(UInt capacity)
+static Obj FuncFromAtomicComObj(Obj self, Obj comobj)
+{
+  if (TNUM_OBJ(comobj) != T_ACOMOBJ)
+    ArgumentError("FromAtomicComObj: First argument must be an atomic record");
+  return FromAtomicRecord(comobj);
+}
+
+Obj NewAtomicRecord(UInt capacity)
 {
   Obj arec, result;
   AtomicObj *table;
@@ -1184,7 +1203,7 @@ static Obj CreateTLDefaults(Obj defrec) {
   memcpy(ADDR_OBJ(result), ADDR_OBJ(defrec), SIZE_BAG(defrec));
   for (i = 1; i <= LEN_PREC(defrec); i++) {
     SET_ELM_PREC(result, i,
-      CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1));
+      CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1, 0));
   }
   TLS->currentRegion = savedDS;
   return NewAtomicRecordFrom(result);
@@ -1206,7 +1225,7 @@ static Obj NewTLRecord(Obj defaults, Obj constructors) {
 void SetTLDefault(Obj record, UInt rnam, Obj value) {
   Obj inner = GetTLInner(record);
   SetARecordField(ADDR_OBJ(inner)[TLR_DEFAULTS],
-    rnam, CopyReachableObjectsFrom(value, 0, 1));
+    rnam, CopyReachableObjectsFrom(value, 0, 1, 0));
 }
 
 void SetTLConstructor(Obj record, UInt rnam, Obj func) {
@@ -1288,13 +1307,13 @@ static Int LenListAList(Obj list)
   return (Int)(ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom));
 }
 
-static Obj LengthAList(Obj list)
+Obj LengthAList(Obj list)
 {
   MEMBAR_READ();
   return INTOBJ_INT(ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom));
 }
 
-static Obj Elm0AList(Obj list, Int pos)
+Obj Elm0AList(Obj list, Int pos)
 {
   AtomicObj *addr = ADDR_ATOM(list);
   UInt len;
@@ -1398,6 +1417,13 @@ void AssAList(Obj list, Int pos, Obj obj)
     len = ALIST_LEN(pol);
   }
   if (pos > len) {
+    if (TNUM_OBJ(list) != T_ALIST) {
+      HashUnlock(list);
+      ErrorQuit("Atomic List Assignment: extending fixed size atomic list",
+	0L, 0L);
+      return; /* flow control hint */
+    }
+    addr = ADDR_ATOM(list);
     if (pos > SIZE_BAG(list)/sizeof(AtomicObj) - 2) {
       Obj newlist;
       newlen = len;
@@ -1434,6 +1460,55 @@ void AssAList(Obj list, Int pos, Obj obj)
   }
   MEMBAR_WRITE();
   HashUnlock(list);
+}
+
+UInt AddAList(Obj list, Obj obj)
+{
+  AtomicObj *addr;
+  UInt len, newlen, pol;
+  HashLock(list);
+  if (TNUM_OBJ(list) != T_ALIST) {
+    HashUnlock(list);
+    ErrorQuit("Atomic List Assignment: extending fixed size atomic list",
+      0L, 0L);
+    return 0; /* flow control hint */
+  }
+  addr = ADDR_ATOM(list);
+  pol = (UInt)addr[0].atom;
+  len = ALIST_LEN(pol);
+  if (len + 1 > SIZE_BAG(list)/sizeof(AtomicObj) - 2) {
+    Obj newlist;
+    newlen = len * 3 / 2 + 1;
+    newlist = NewBag(T_ALIST, sizeof(AtomicObj) * ( 2 + newlen));
+    memcpy(PTR_BAG(newlist), PTR_BAG(list), sizeof(AtomicObj)*(2+len));
+    addr = ADDR_ATOM(newlist);
+    addr[0].atom = CHANGE_ALIST_LEN(pol, len + 1);
+    MEMBAR_WRITE();
+    PTR_BAG(list) = PTR_BAG(newlist);
+    MEMBAR_WRITE();
+  } else {
+    addr[0].atom = CHANGE_ALIST_LEN(pol, len + 1);
+    MEMBAR_WRITE();
+  }
+  switch (ALIST_POL(pol)) {
+    case ALIST_RW:
+      ADDR_ATOM(list)[2+len].obj = obj;
+      break;
+    case ALIST_W1:
+      COMPARE_AND_SWAP(&ADDR_ATOM(list)[2+len].atom,
+        (AtomicUInt) 0, (AtomicUInt) obj);
+      break;
+    case ALIST_WX:
+      if (!COMPARE_AND_SWAP(&ADDR_ATOM(list)[2+len].atom,
+        (AtomicUInt) 0, (AtomicUInt) obj)) {
+	HashUnlock(list);
+	ErrorQuit("Atomic List Assignment: <list>[%d] already has an assigned value", len+1, (Int) 0);
+      }
+      break;
+  }
+  MEMBAR_WRITE();
+  HashUnlock(list);
+  return len+1;
 }
 
 void UnbAList(Obj list, Int pos)
@@ -1670,6 +1745,15 @@ Obj FuncBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   return result ? result : new;
 }
 
+Obj FuncStrictBindOnce(Obj self, Obj obj, Obj index, Obj new) {
+  Obj result;
+  TLS->CurrFuncName = "StrictBindOnce";
+  result = BindOnce(obj, index, &new, 0);
+  if (result)
+    ErrorQuit("StrictBindOnce: Element already initialized", 0L, 0L);
+  return result;
+}
+
 Obj FuncTestBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
   TLS->CurrFuncName = "TestBindOnce";
@@ -1711,6 +1795,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "FromAtomicList", 1, "list",
       FuncFromAtomicList, "src/aobjects.c:FromAtomicList" },
 
+    { "AddAtomicList", 2, "list, obj",
+      FuncAddAtomicList, "src/aobjects.c:AddAtomicList" },
+
     { "GET_ATOMIC_LIST", 2, "list, index",
       FuncGET_ATOMIC_LIST, "src/aobjects.c:GET_ATOMIC_LIST" },
 
@@ -1749,6 +1836,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "FromAtomicRecord", 1, "record",
       FuncFromAtomicRecord, "src/aobjects.c:FromAtomicRecord" },
 
+    { "FromAtomicComObj", 1, "record",
+      FuncFromAtomicComObj, "src/aobjects.c:FromAtomicComObj" },
+
     { "ThreadLocal", -1, "record [, record]",
       FuncThreadLocal, "src/aobjects.c:ThreadLocal" },
 
@@ -1769,6 +1859,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "BindOnce", 3, "obj, index, value",
       FuncBindOnce, "src/aobjects.c:BindOnce" },
+
+    { "StrictBindOnce", 3, "obj, index, value",
+      FuncStrictBindOnce, "src/aobjects.c:StrictBindOnce" },
 
     { "TestBindOnce", 3, "obj, index, value",
       FuncTestBindOnce, "src/aobjects.c:TestBindOnce" },

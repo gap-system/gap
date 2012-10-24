@@ -1,5 +1,0 @@
-wget http://www.mpfr.org/mpfr-current/mpfr-3.1.0.tar.bz2
-wget https://gforge.inria.fr/frs/download.php/27345/mpfi-1.5.tar.bz2
-wget http://www.multiprecision.org/mpc/download/mpc-0.9.tar.gz
-wget http://www2.math.uni-wuppertal.de/~xsc/xsc/cxsc/cxsc-2-5-1.tar.gz
-wget http://perso.ens-lyon.fr/xavier.pujol/fplll/libfplll-3.1.3.tar.gz

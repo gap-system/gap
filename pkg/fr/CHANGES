@@ -1,9 +1,0 @@
-0.1 First version, coded groups as analogs of fp groups
-
-0.2 Rewrote from scratch. Implements semigroups and monoids. Has Mealy and FR elements as basic objects, groups are simply collections of these.
-
-0.714285 Ready to show around, quite a few algorithms implemented.
-
-0.857142 Submitted to GAP
-
-0.99 added solid IMG code

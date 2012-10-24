@@ -638,7 +638,7 @@ static Int InitKernel (
     InfoBags[ T_WPOBJ          ].name = "object (weakptr)";
     InfoBags[ T_WPOBJ +COPYING ].name = "object (weakptr, copied)";
 
-#ifndef BOEHM_GC
+#if 1
     InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ,          SweepWeakPointerObj  );
     InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
@@ -716,13 +716,17 @@ StructInitInfo * InitInfoWeakPtr ( void )
 
 #ifdef BOEHM_GC
 void RegisterWeakReference(Bag *bag) {
+#if 0
   if (*bag && IS_BAG_REF(*bag))
     GC_general_register_disappearing_link(bag, *bag);
+#endif
 }
 
 void UnregisterWeakReference(Bag *bag) {
+#if 0
   if (*bag && IS_BAG_REF(*bag))
     GC_unregister_disappearing_link(bag);
+#endif
 }
 #endif
 

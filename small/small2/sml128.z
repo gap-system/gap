@@ -5,6 +5,8 @@
 ##
 Revision.sml128_z :=
     "@(#)$Id: sml128.z,v 1.2 1998/07/25 13:54:50 gap Exp $";
+    
+atomic SMALL_GROUP_LIB, PROPERTIES_SMALL_GROUPS do
 
 SMALL_GROUP_LIB[ 128 ] :=
 [ 4684887383731077183, 3551146855211248660685, 454546797466972181246159,
@@ -914,3 +916,7 @@ lgLength := rec( lgLength := [ 1, 2, 3, 4, 5, 6, 7 ], pos := [ [ 2328 ], [
 -996 ], [ 159, -163 ], [ 1 ] ] ),
 frattFacs := rec( frattFacs := [ 8, 16, 38, 102, 362, 1875 ], pos := [ 1, 163
 , 996, 2149, 2318, 2327 ] ) );
+
+MIGRATE_SMALL_GROUP_DATA( [128] );
+
+od;

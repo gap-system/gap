@@ -1,7 +1,0 @@
-This is makeindex, version 2.13 [07-Mar-1997] (using kpathsea).
-Scanning style file ./manual.mst................done (16 attributes redefined, 0 ignored).
-Scanning input file manual.idx....done (27 entries accepted, 0 rejected).
-Sorting entries....done (140 comparisons).
-Generating output file manual.ind....done (34 lines written, 0 warnings).
-Output written in manual.ind.
-Transcript written in manual.ilg.

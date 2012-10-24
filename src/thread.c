@@ -58,8 +58,9 @@ typedef struct TraversalState {
   UInt hashSize;
   UInt hashCapacity;
   UInt hashBits;
-  Region *dataSpace;
+  Region *region;
   int delimitedCopy;
+  int (*traversalCheck)(Bag bag);
 } TraversalState;
 
 Region *LimboRegion, *ReadOnlyRegion, *ProtectedRegion;
@@ -247,6 +248,7 @@ static void RunThreadedMain2(
   int i;
   static pthread_mutex_t main_thread_mutex;
   static pthread_cond_t main_thread_cond;
+  SyEnvironment = environ;
   SetupTLS();
   for (i=1; i<MAX_THREADS-1; i++)
     thread_data[i].next = thread_data+i+1;
@@ -636,15 +638,35 @@ void PushRegionLock(Region *region) {
     GROW_PLIST(TLS->lockStack, newlen);
   }
   TLS->lockStackPointer++;
-  SET_ELM_PLIST(TLS->lockStack, TLS->lockStackPointer, region->obj);
+  SET_ELM_PLIST(TLS->lockStack, TLS->lockStackPointer,
+    region ? region->obj : (Obj) 0);
 }
 
 void PopRegionLocks(int newSP) {
   while (newSP < TLS->lockStackPointer)
   {
     int p = TLS->lockStackPointer--;
-    RegionUnlock(*(Region **)(ADDR_OBJ(ELM_PLIST(TLS->lockStack, p))));
+    Obj region_obj = ELM_PLIST(TLS->lockStack, p);
+    if (!region_obj) continue;
+    RegionUnlock(*(Region **)(ADDR_OBJ(region_obj)));
     SET_ELM_PLIST(TLS->lockStack, p, (Obj) 0);
+  }
+}
+
+void PopRegionAutoLocks(int newSP) {
+  while (newSP < TLS->lockStackPointer)
+  {
+    int p = TLS->lockStackPointer;
+    Obj region_obj = ELM_PLIST(TLS->lockStack, p);
+    Region *region;
+    if (!region_obj)
+      return;
+    region = *(Region **)(ADDR_OBJ(region_obj));
+    if (!region->autolock)
+      return;
+    RegionUnlock(region);
+    SET_ELM_PLIST(TLS->lockStack, p, (Obj) 0);
+    TLS->lockStackPointer--;
   }
 }
 
@@ -902,8 +924,8 @@ int LockObject(Obj obj, int mode) {
   Region *region = GetRegionOf(obj);
   int locked;
   int result = TLS->lockStackPointer;
-  if (!region || region->fixed_owner)
-    return -1;
+  if (!region)
+    return result;
   locked = IsLocked(region);
   if (locked == 2 && mode)
     return -1;
@@ -945,10 +967,8 @@ int LockObjects(int count, Obj *objects, int *mode)
      */
     if (i > 0 && ds == order[i-1].region)
       continue; /* skip duplicates */
-    if (!ds || ds->fixed_owner) { /* public or thread-local region */
-      PopRegionLocks(result);
-      return -1;
-    }
+    if (!ds)
+      continue;
     locked = IsLocked(ds);
     if (locked == 2 && order[i].mode) {
       /* trying to upgrade read lock to write lock */
@@ -1071,7 +1091,7 @@ static inline Obj ReplaceByCopy(Obj obj)
   if (found)
     return ELM_PLIST(traversal->copyMap, found);
   else if (traversal->delimitedCopy) {
-    if (!IS_BAG_REF(obj) || !DS_BAG(obj) || DS_BAG(obj) == traversal->dataSpace)
+    if (!IS_BAG_REF(obj) || !DS_BAG(obj) || DS_BAG(obj) == traversal->region)
       return obj;
     else
       return GetRegionOf(obj)->obj;
@@ -1242,8 +1262,12 @@ void QueueForTraversal(Obj obj)
   if (!IS_BAG_REF(obj))
     return; /* skip ojects that aren't bags */
   traversal = currentTraversal();
-  if (DS_BAG(obj) != traversal->dataSpace)
+  if (!traversal->traversalCheck(obj))
+    return;
+#if 0
+  if (DS_BAG(obj) != traversal->region)
     return; /* stop traversal at the border of a region */
+#endif
   if (!SeenDuringTraversal(obj))
     return; /* don't revisit objects that we've already seen */
   if (traversal->listSize == traversal->listCapacity)
@@ -1260,13 +1284,18 @@ void QueueForTraversal(Obj obj)
   ADDR_OBJ(traversal->list)[++traversal->listSize] = obj;
 }
 
-void TraverseRegionFrom(TraversalState *traversal, Obj obj)
+void TraverseRegionFrom(
+    TraversalState *traversal,
+    Obj obj,
+    int (*traversalCheck)(Obj)
+)
 {
-  if (!IS_BAG_REF(obj) || !CheckReadAccess(obj)) {
+  if (!IS_BAG_REF(obj) || !DS_BAG(obj) || !CheckReadAccess(obj)) {
     traversal->list = NewList(0);
     return;
   }
-  traversal->dataSpace = DS_BAG(obj);
+  traversal->traversalCheck = traversalCheck;
+  traversal->region = DS_BAG(obj);
   QueueForTraversal(obj);
   while (traversal->listCurrent < traversal->listSize)
   {
@@ -1293,13 +1322,26 @@ void TraverseRegionFrom(TraversalState *traversal, Obj obj)
   SET_LEN_PLIST(traversal->list, traversal->listSize);
 }
 
+static int IsReadable(Obj obj) {
+  return CheckReadAccess(obj);
+}
+
+static int IsSameRegion(Obj obj) {
+  return DS_BAG(obj) == currentTraversal()->region;
+}
+
+static int IsMutable(Obj obj) {
+  return CheckReadAccess(obj) && IS_MUTABLE_OBJ(obj);
+}
+
 Obj ReachableObjectsFrom(Obj obj)
 {
   TraversalState traversal;
   if (!IS_BAG_REF(obj) || DS_BAG(obj) == NULL)
     return NewList(0);
   BeginTraversal(&traversal);
-  TraverseRegionFrom(&traversal, obj);
+  traversal.traversalCheck = IsSameRegion;
+  TraverseRegionFrom(&traversal, obj, IsSameRegion);
   EndTraversal();
   return traversal.list;
 }
@@ -1329,7 +1371,7 @@ static Obj CopyBag(Obj copy, Obj original)
   return copy;
 }
 
-Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList)
+Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
 {
   Obj *traversed, *copies, copyList;
   TraversalState traversal;
@@ -1344,7 +1386,13 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList)
       return obj;
   }
   BeginTraversal(&traversal);
-  TraverseRegionFrom(&traversal, obj);
+  if (imm) {
+    if (!IS_MUTABLE_OBJ(obj))
+      return obj;
+    TraverseRegionFrom(&traversal, obj, IsMutable);
+  }
+  else
+    TraverseRegionFrom(&traversal, obj, IsSameRegion);
   traversed = ADDR_OBJ(traversal.list);
   len = LEN_PLIST(traversal.list);
   copyList = NewList(len);
@@ -1371,6 +1419,12 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList)
     if (copies[i])
       CopyBag(copies[i], traversed[i]);
   EndTraversal();
+  if (imm) {
+    for (i=1; i<=len; i++) {
+      if (copies[i])
+        MakeImmutable(copies[i]);
+    }
+  }
   if (asList)
     return copyList;
   else
@@ -1438,6 +1492,10 @@ void ReadGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
   char * buffer =
     alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
   ImpliedReadGuard(o);
+  if (DS_BAG(o)->autolock) {
+    if (AutoLockObj(o))
+      return;
+  }
   if (GVarValue(&DisableGuardsGVar) == True)
     return;
   SetGVar(&LastInaccessibleGVar, o);
@@ -1458,11 +1516,20 @@ void WriteGuardError(Obj o)
 void ReadGuardError(Obj o)
 {
   ImpliedReadGuard(o);
+  if (DS_BAG(o)->autolock) {
+    if (AutoLockObj(o))
+      return;
+  }
   if (GVarValue(&DisableGuardsGVar) == True)
     return;
   SetGVar(&LastInaccessibleGVar, o);
   ErrorMayQuit("Attempt to read object %i of type %s without having read access", (Int)o, (Int)TNAM_OBJ(o));
 }
 #endif
+
+int AutoLockObj(Obj obj) {
+  LockObject(obj, 0);
+  return 1;
+}
 
 #endif

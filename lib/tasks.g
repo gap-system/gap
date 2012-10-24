@@ -1,22 +1,21 @@
 Revision.tasks_g := "2011-05-12 16:37:00 +0000";
 
-BLOCK_TYPES := AtomicRecord ( rec ( 
-                     BLOCKED_WORKER := 1,
-                     BLOCKED_FETCH := 2) );
+BindGlobal ("TASK_MANAGER_REQUESTS", MakeReadOnly (rec ( 
+        BLOCK_ME := 1,
+        RESUME_IDLE_WORKER := 2,
+        RESUME_BLOCKED_WORKER := 3,
+        RESUME_SUSPENDED_WORKER := 4,
+        SUSPEND_ME := 5,
+        FINISH := 6,
+        CULL_IDLE_WORKERS := 7,
+        FINISH_WORKER := 8,
+        START_WORKERS := 9,
+        TRY_UNBLOCK_TASK := 10,
+        STEAL := 11,
+        NO_WORK := 12,
+        UNSUCC_STEAL := 13,
+        GOT_TASK := 14 )));
 
-TASK_MANAGER_REQUESTS := AtomicRecord ( rec (
-                              BLOCK_ME := 1,
-                              RESUME_IDLE_WORKER := 2,
-                              RESUME_BLOCKED_WORKER := 3,
-                              RESUME_SUSPENDED_WORKER := 4,
-                              SUSPEND_ME := 5,
-                              FINISH := 6,
-                              CULL_IDLE_WORKERS := 7,
-                              FINISH_WORKER := 8,
-                              STEAL := 9,
-                              NO_WORK := 10,
-                              UNSUCC_STEAL := 11,
-                              GOT_TASK := 12) );
 
 FetchTaskResult := function()
 end;
@@ -38,42 +37,36 @@ Tasks := AtomicRecord( rec ( Initial := 1 ,    # initial number of worker thread
                  WorkerPool := CreateChannel(),                # pool of idle workers                 
                  TaskManagerRequests := CreateChannel(),       # task manager requests
                  WorkerSuspensionRequests := CreateChannel(),  # suspend requests from task manager
-                 doStealing := false));                        # do work stealing
+                 InputChannels := AtomicList ([]),
+                 doStealing := false));           # list of worker input channels
 
 
 
-TaskData := ShareObj( rec(
-                    TaskPool := [],                               # task pool (list)
-                    inputChannels := [],              
-                    TaskPoolLen := 0,         # length of a task pool     
-                    Running := 0));
+TaskPoolData := ShareObj( rec(
+                        TaskPool := [],                               # task pool (list)
+                        TaskPoolLen := 0 ));         # length of a task pool     
 
-TaskStats := ShareObj ( rec ( tasksCreated := 0,
-                     tasksStolen := 0,
-                     tasksExecuted := 0,
-                     tasksOffloaded := 0 ) );
+MakeThreadLocal("threadId");
 
+ReadLib ("logging.g");
 
-# Task manager is a special thread that manages the workers
+TaskStats := ShareObj ( rec (tasksCreated := 0,
+	tasksStolen := 0,
+	tasksExecuted := 0,
+	tasksOffloaded := 0));
+
+# Task manager is a special thread that supervises the workers
 # (starts, blocks, suspends and resumes workers).
 DeclareGlobalVariable ("TaskManager");
 MakeReadWriteGVar("TaskManager");
+DeclareGlobalVariable ("mainThreadChannels");
+MakeReadWriteGVar("mainThreadChannels");
 
 GetWorkerInputChannel := function (worker)
-  atomic readonly TaskData do
-    return TaskData.inputChannels[worker];
-  od;
-end;
-
-RunningTasks := function()
-  atomic readonly TaskData do
-    return TaskData.Running;
-  od;
-end;
-
-Tasks.TaskPoolLength := function()
-  atomic readonly TaskData do
-    return TaskData.TaskPoolLen;
+  while true do
+    if IsBound(Tasks.InputChannels[worker+1]) then
+      return Tasks.InputChannels[worker+1];
+    fi;
   od;
 end;
 
@@ -82,46 +75,51 @@ Tasks.Worker := function(channels)
   local taskdata, result, toUnblock, resume,
         suspend, unSuspend, p, task, i;
   
+  Tracing.InitWorkerLog();
+  
+  threadId := ThreadID(CurrentThread());
+
   while true do
     Unbind (task);
     while not IsBound(task) do
       suspend := TryReceiveChannel (Tasks.WorkerSuspensionRequests, fail);
       if not IsIdenticalObj (suspend, fail) then
-        SendChannel (Tasks.TaskManagerRequests, rec ( worker:= ThreadID(CurrentThread()),
+        Tracing.TraceWorkerSuspended();
+        SendChannel (Tasks.TaskManagerRequests, rec ( worker:= threadId,
                                                                type := TASK_MANAGER_REQUESTS.SUSPEND_ME));
+        
         unSuspend := ReceiveChannel (channels.toworker);
         if unSuspend=TASK_MANAGER_REQUESTS.FINISH then
+          Tracing.Close();
           SendChannel (Tasks.TaskManagerRequests, rec ( worker := CurrentThread(),
                                                                   type := TASK_MANAGER_REQUESTS.FINISH_WORKER));
           return;
         fi;
       fi;
-      resume := TryReceiveChannel (channels.toworker, fail);
-      if not IsIdenticalObj (resume, fail) then
-        SendChannel (Tasks.TaskManagerRequests, rec ( type := TASK_MANAGER_REQUESTS.FINISH_WORKER, worker := CurrentThread()));
-        return;
-      fi;
       
-      p := LOCK(TaskData);
+      
+      p := LOCK(TaskPoolData);
       if IsIdenticalObj (p,fail) then
-         Error("Failed to obtain lock for TaskData inside Worker function\n");
+         Error("Failed to obtain lock for TaskPoolData inside Worker function\n");
       fi;
-      if TaskData.TaskPoolLen>0 then
-        task := TaskData.TaskPool[TaskData.TaskPoolLen];
-        Unbind (TaskData.TaskPool[TaskData.TaskPoolLen]);
-        TaskData.TaskPoolLen := TaskData.TaskPoolLen-1;
-        TaskData.Running := TaskData.Running+1;
+      if TaskPoolData.TaskPoolLen>0 then
+        task := TaskPoolData.TaskPool[TaskPoolData.TaskPoolLen];
+        Unbind (TaskPoolData.TaskPool[TaskPoolData.TaskPoolLen]);
+        TaskPoolData.TaskPoolLen := TaskPoolData.TaskPoolLen-1;
+        Tracing.TraceWorkerGotTask();
         UNLOCK(p);
       else
         UNLOCK(p);
         SendChannel (Tasks.WorkerPool, channels);
         if Tasks.doStealing then
-          SendChannel (Tasks.TaskManagerRequests, rec ( worker := ThreadID(CurrentThread()),
+          SendChannel (Tasks.TaskManagerRequests, rec ( worker := threadId),
                                                                   type := TASK_MANAGER_REQUESTS.NO_WORK));
         fi;
         resume := ReceiveChannel (channels.toworker);
         if resume=TASK_MANAGER_REQUESTS.FINISH then
-          SendChannel (Tasks.TaskManagerRequests, rec ( type := TASK_MANAGER_REQUESTS.FINISH_WORKER, worker := CurrentThread()));
+          Tracing.Close();
+          SendChannel (Tasks.TaskManagerRequests (rec ( type = TASK_MANAGER_REQUESTS.FINISH_WORKER,
+          	worker := threadId)));
           return;
         fi;
       fi;
@@ -137,7 +135,7 @@ Tasks.Worker := function(channels)
         fi;
       od;
       taskdata := rec (func := ADOPT(task.func), 
-                       args := CLONE_REACHABLE(task.args),
+                       args := ADOPT(task.args),
                        async := ADOPT(task.async));                       
     od;
     
@@ -150,6 +148,7 @@ Tasks.Worker := function(channels)
     else
       
       result := CALL_WITH_CATCH(taskdata.func, taskdata.args);
+      Tracing.TraceTaskFinished();
       if Length(result) = 1 or not result[1] then
         if Length(result) > 1 and Tasks.ReportErrors then
           Print("Task Error: ", result[2], "\n");
@@ -161,8 +160,20 @@ Tasks.Worker := function(channels)
       
       atomic task do
         task.complete := true;
-        task.result := MigrateObj (result, task);
-        SetImportedTaskResult(task,result);
+        if IsThreadLocal(result) then
+          task.result := MigrateObj (result, task);
+          task.adopt_result := true;
+        else
+          task.result := result;
+          task.adopt_result := false;
+          SetImportedTaskResult(task,result);
+        fi;
+        if IsBound(task.waitingOnMe) then
+          SendChannel (Tasks.TaskManagerRequests, rec ( 
+                  type := TASK_MANAGER_REQUESTS.TRY_UNBLOCK_TASK,
+                                  worker := threadId,
+                                  tasks := task.waitingOnMe));
+        fi;
         while true do
           toUnblock := TryReceiveChannel (task.blockedWorkers, fail);
           if IsIdenticalObj (toUnblock, fail) then
@@ -179,28 +190,24 @@ Tasks.Worker := function(channels)
       od;
     fi;
     
-    atomic TaskData do
-      TaskData.Running := TaskData.Running-1;
-    od;
-    
   od;
 end;
 
 # Function called when worker blocks on the result of a task.
 Tasks.BlockWorkerThread := function()
   local resume;
-
-  if ThreadID(CurrentThread())<>0 then
-    SendChannel (Tasks.TaskManagerRequests, rec (worker := ThreadID(CurrentThread()), type := TASK_MANAGER_REQUESTS.BLOCK_ME));
-    resume := ReceiveChannel (GetWorkerInputChannel(ThreadID(CurrentThread())));
-    if resume<>TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER then
-      Error("Error while worker is waiting to resume\n");
-    fi;
-  else
-    Error("Cannot block main thread\n");
-    # ToDo : Not really...if we are not the main PE, that it is perfectly ok to block
-    # the main thread
+  
+  Tracing.TraceWorkerBlocked();
+  
+  SendChannel (Tasks.TaskManagerRequests, rec (worker := threadId, type := TASK_MANAGER_REQUESTS.BLOCK_ME));
+  resume := ReceiveChannel (GetWorkerInputChannel(threadId));
+  if resume<>TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER then
+    Error("Error while worker is waiting to resume\n");
   fi;
+  
+  Tracing.TraceWorkerResumed();
+    
+
 end;
 
 # Starts a new worker (called by task manager).
@@ -211,18 +218,19 @@ Tasks.StartNewWorkerThread := function()
   channels := rec(toworker := toworker, fromworker := fromworker);
   MakeReadOnly(channels);
   worker := CreateThread(Tasks.Worker, channels);
-  atomic TaskData do 
-    TaskData.inputChannels[ThreadID(worker)] := channels.toworker;
-  od;
+  Tasks.InputChannels[ThreadID(worker)+1] := channels.toworker;
   return worker;
 end;
 
 # Tasks.Initialize just fires off the task manager.
 Tasks.Initialize := function()
-  local i;
+  local i, toworker, fromworker, channels;
   #TaskManager := CreateThread(Tasks.TaskManagerFunc);
   TaskManager := fail;
   #MakeReadOnlyGVar ("TaskManager");
+  MakeReadOnlyGVar("mainThreadChannels");
+  Tasks.InputChannels[1] := mainThreadChannels.toworker;
+  threadId := 0;
 end;
 
 # Creates a task without binding it to a worker
@@ -262,6 +270,7 @@ Tasks.CreateTask := function(arglist)
                    async := false,
                    offloaded := false,
                    blockedWorkers := CreateChannel(),
+                   waitingOnMe := ShareObj([]),
                    ));
   
   atomic TaskStats do
@@ -281,25 +290,34 @@ CullIdleTasks := function()
   od;
 
   SendChannel (Tasks.TaskManagerRequests, rec ( type := TASK_MANAGER_REQUESTS.CULL_IDLE_WORKERS, 
-                                                        worker := ThreadID(CurrentThread())));
+                                                        worker := threadId));
 end;
 
 ExecuteTask:= atomic function(readwrite task)
-  local channels, t, taskdata, worker;
+  local channels, t, taskdata, worker, tracingTime;
   
   task.started := true;
-  task.completed := false;
-
-  atomic TaskData do
-    TaskData.TaskPoolLen := TaskData.TaskPoolLen+1;
-    TaskData.TaskPool[Tasks.TaskPoolLength()] := task;
+  task.complete := false;
+  
+  atomic TaskPoolData do
+    TaskPoolData.TaskPoolLen := TaskPoolData.TaskPoolLen+1;
+    TaskPoolData.TaskPool[TaskPoolData.TaskPoolLen] := task;
   od;
+  
+  Tracing.TraceTaskCreated();
+  
+  if (Tasks.FirstTask) then
+    Tasks.FirstTask := false;
+    SendChannel (Tasks.TaskManagerRequests, rec (type := TASK_MANAGER_REQUESTS.START_WORKERS, 
+                                                 noWorkers := Tasks.Initial,
+                                                 worker := threadId));
+  fi;
   
   worker := TryReceiveChannel (Tasks.WorkerPool, fail);
   if IsNotIdenticalObj (worker, fail) then
     SendChannel (worker.toworker, TASK_MANAGER_REQUESTS.RESUME_IDLE_WORKER);
   fi;
-
+  
   return task;
 end;
 
@@ -381,12 +399,13 @@ WaitTask := function(arg)
         FetchTaskResult(task); # blocking will happen inside of this function
         return;
       fi;
-      if ThreadID(CurrentThread())<>0 then
-        SendChannel (task.blockedWorkers, rec (type := BLOCK_TYPES.BLOCKED_WORKER, worker := ThreadID(CurrentThread())));
+
+        SendChannel (task.blockedWorkers, rec (type := BLOCK_TYPES.BLOCKED_WORKER, worker := threadId));
+      UNLOCK(p);
+      Tasks.BlockWorkerThread();
+    else
+    	# TO DELETE
         UNLOCK(p);
-        Tasks.BlockWorkerThread();
-      else
-        #Print ("Waiting for ", HANDLE_OBJ(task), "\n");
         while true do 
           UNLOCK(p);
           for i in [1..1000] do od;
@@ -397,8 +416,7 @@ WaitTask := function(arg)
           fi;
         od;
         UNLOCK(p);
-      fi;
-    else
+        # END OF TO DELETE
       UNLOCK(p);
     fi;
   od;
@@ -425,6 +443,7 @@ WaitAnyTask := function(arg)
       Error("Cannot wait for a async task");
     fi;
     if not task.started then
+    # DELETE : if not task.started then
       UNLOCK(task);
       ExecuteTask(task);
     fi;
@@ -468,12 +487,11 @@ TaskResult := function(task)
   fi;
   
   atomic readonly task do
-    if RegionOf(task.result)<>RegionOf(task) then
-      atomic readonly task.result do
-        taskresult :=  CLONE_REACHABLE(task.result);
-      od;
-    else
+
+    if task.adopt_result then
       taskresult :=  CLONE_REACHABLE(task.result);
+    else
+      taskresult := task.result;
     fi;
   od;
   
@@ -493,25 +511,64 @@ TaskIsAsync := function(task)
   return task.async;
 end;
 
-MicroSeconds := function()
-  local t;
-  t := CurrentTime();
-  return t.tv_sec * 1000000 + t.tv_usec;
+ScheduleTask := function (arg)
+  local task, waitTask;
+  if IsFunction(arg[1]) then
+    task := RunTask(arg);
+  else
+    task := Tasks.CreateTask(arg{[2..Length(arg)]});
+    atomic readwrite task do
+      task.started := true;
+      task.condCount := 0;
+      for waitTask in arg[1] do
+        atomic readonly waitTask do 
+          atomic readwrite waitTask.waitingOnMe do
+            if waitTask.complete = false then
+              Add(waitTask.waitingOnMe, task);
+              task.condCount := task.condCount+1;
+            fi;
+          od;
+        od;
+      od;
+      if task.condCount = 0 then
+        ExecuteTask(task);
+      fi;
+    od;
+  fi;
+  return task;
 end;
 
-PrintTaskManStats := function()
-  if IsBoundGlobal("MPI_Initialized") then
-    if MPI_Comm_size()>1 then
-      Print ("--- Task Manager ", MPI_Comm_rank(), " ---\n");
+NewMilestone := function(contributions)
+  local c;
+  c := Set(contributions);
+  return ShareObj(rec(
+             achieved := Set([]),
+             targets := Immutable(c),
+             complete := Length(c) = 0,
+             waitingOnMe := ShareObj([]),
+             ));
+end;
+  
+ContributeToMilestone := function(milestone, contribution)
+  local trigger, notify, t;
+  atomic milestone do
+    if not contribution in milestone.targets then
+      Error("ContributeToMilestone: Milestone does not have such a contribution");
     fi;
-  else
-    Print("--- Task Manager ---\n");
-  fi;
-  atomic readonly TaskStats do
-    Print ("**Tasks created : ", TaskStats.tasksCreated, "\n");
-    Print ("**Tasks executed : ", TaskStats.tasksExecuted, "\n");
-    Print ("**Tasks offloaded : ", TaskStats.tasksOffloaded, "\n");
-    Print ("**Tasks imported : ", TaskStats.tasksStolen, "\n");
+    if milestone.complete then
+      return;
+    fi;
+    AddSet(milestone.achieved, Immutable(contribution));
+    if Length(milestone.achieved) < Length(milestone.targets) then
+      return;
+    fi;
+    milestone.complete := true;
+    atomic readonly milestone.waitingOnMe do
+      SendChannel (Tasks.TaskManagerRequests, rec (
+              type := TASK_MANAGER_REQUESTS.TRY_UNBLOCK_TASK,
+              worker := threadId,
+              tasks := milestone.waitingOnMe ));
+    od;
   od;
 end;
 
@@ -532,11 +589,10 @@ Tasks.TaskManagerFunc := function()
                   stealRequests:=0,
                   nextStealingTime:=MicroSeconds());
   
-  for i in [1..Tasks.Initial] do 
-    worker := Tasks.StartNewWorkerThread();
-    Add (taskman.allWorkers, ThreadID(worker));
-    taskman.activeWorkers := taskman.activeWorkers+1;
-  od;
+  #for i in [1..Tasks.Initial] do 
+    #worker := Tasks.StartNewWorkerThread();
+    #activeWorkers := activeWorkers+1;
+  #od;
   
   while true do
     
@@ -566,14 +622,18 @@ Tasks.TaskManagerFunc := function()
     
     worker := request.worker;
     requestType := request.type;
-    
-    if requestType = TASK_MANAGER_REQUESTS.BLOCK_ME then # request to block a worker
-      taskman.activeWorkers := taskman.activeWorkers-1;
-      taskman.blockedWorkers := taskman.blockedWorkers+1;
-      if taskman.activeWorkers<Tasks.Initial then
-        if taskman.suspendedWorkers>0 then
-          toResume := Remove (taskman.suspendedWorkersList);
-          taskman.suspendedWorkers := taskman.suspendedWorkers-1;
+    if requestType = TASK_MANAGER_REQUESTS.START_WORKERS then
+      for i in [1..request.noWorkers] do
+        worker := Tasks.StartNewWorkerThread();
+        activeWorkers := activeWorkers+1;
+      od;
+    elif requestType = TASK_MANAGER_REQUESTS.BLOCK_ME then # request to block a worker
+      activeWorkers := activeWorkers-1;
+      blockedWorkers := blockedWorkers+1;
+      if activeWorkers<Tasks.Initial then
+        if suspendedWorkers>0 then
+          toResume := Remove (suspendedWorkersList);
+          suspendedWorkers := suspendedWorkers-1;
           SendChannel (GetWorkerInputChannel(toResume), TASK_MANAGER_REQUESTS.RESUME_SUSPENDED_WORKER);
         else
           worker := Tasks.StartNewWorkerThread();
@@ -581,18 +641,29 @@ Tasks.TaskManagerFunc := function()
         fi;
         taskman.activeWorkers := taskman.activeWorkers+1;
       fi;
-    elif requestType = TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER then # request to unblock a worker (or a fetch)
-      taskman.activeWorkers := taskman.activeWorkers+1;
+    elif requestType = TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER then # request to unblock a worker
+      if worker<>0 then 
       taskman.blockedWorkers := taskman.blockedWorkers-1;
       if taskman.activeWorkers>Tasks.Initial then
-        SendChannel (Tasks.WorkerSuspensionRequests, true);
+          SendChannel (Tasks.WorkerSuspensionRequests, true);
+        fi;
       fi;
       SendChannel (GetWorkerInputChannel(worker), TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER);
+    elif requestType = TASK_MANAGER_REQUESTS.TRY_UNBLOCK_TASK then
+      atomic readonly request.tasks do
+        for t in request.tasks do
+          atomic readwrite t do
+            t.condCount := t.condCount-1;
+            if t.condCount = 0 then
+              ExecuteTask(t);
+            fi;
+          od;
+        od;
+      od;
     elif requestType = TASK_MANAGER_REQUESTS.SUSPEND_ME then
-      taskman.activeWorkers := taskman.activeWorkers-1;
-      if taskman.suspendedWorkers>Tasks.Initial then
-        SendChannel(GetWorkerInputChannel(worker), TASK_MANAGER_REQUESTS.FINISH);
-        Remove (taskman.allWorkers, worker);
+      activeWorkers := activeWorkers-1;
+      if suspendedWorkers>Tasks.Initial then
+        SendChannel (GetWorkerInputChannel(worker), TASK_MANAGER_REQUESTS.FINISH);
       else
         taskman.suspendedWorkers := taskman.suspendedWorkers+1;
         Add (taskman.suspendedWorkersList, worker);

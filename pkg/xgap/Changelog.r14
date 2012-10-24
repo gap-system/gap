@@ -1,9 +1,0 @@
-$Id: Changelog.r14,v 1.1 2002/04/14 18:56:29 gap Exp $
-
-This file describes the changes from xgap4r12 to xgap4r13:
-
- * XGAP now reports "4.14" as version number instead of "4.13".
-
- * XGAP compiles on newer X11R6.4, which is included for example in
-   Debian/GNU Linux 3.0
-

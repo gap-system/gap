@@ -1,1 +1,0 @@
-desauto -iso -matrix $*
