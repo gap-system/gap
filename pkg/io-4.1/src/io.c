@@ -32,6 +32,7 @@ const char * Revision_io_c =
 #error GAPs word size is different from ours, 64bit/32bit mismatch
 #endif
 
+#include "src/aobjects.h"
 #include <stdlib.h>
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -1768,8 +1769,6 @@ Obj FuncIO_gethostname(Obj self)
 }
 #endif
 
-
-        
 /*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * */
 
 /******************************************************************************
@@ -2178,850 +2177,852 @@ static Int InitLibrary ( StructInitInfo *module )
       MakeReadOnlyGVar(gvar);
     }
     
-    tmp = NEW_PREC(0);
+    tmp = NewAtomicRecord(0);
+    //tmp = NEW_PREC(0);
     /* Constants for the flags: */
-    AssPRec(tmp, RNamName("O_RDONLY"), INTOBJ_INT((Int) O_RDONLY));
-    AssPRec(tmp, RNamName("O_WRONLY"), INTOBJ_INT((Int) O_WRONLY));
-    AssPRec(tmp, RNamName("O_RDWR"), INTOBJ_INT((Int) O_RDWR));
+    //AssPRec(tmp, RNamName("O_RDONLY"), INTOBJ_INT((Int) O_RDONLY));
+    SetARecordField(tmp, RNamName("O_RDONLY"), INTOBJ_INT((Int) O_RDONLY));
+    SetARecordField(tmp, RNamName("O_WRONLY"), INTOBJ_INT((Int) O_WRONLY));
+    SetARecordField(tmp, RNamName("O_RDWR"), INTOBJ_INT((Int) O_RDWR));
 #ifdef O_CREAT
-    AssPRec(tmp, RNamName("O_CREAT"), INTOBJ_INT((Int) O_CREAT));
+    SetARecordField(tmp, RNamName("O_CREAT"), INTOBJ_INT((Int) O_CREAT));
 #endif
 #ifdef O_APPEND
-    AssPRec(tmp, RNamName("O_APPEND"), INTOBJ_INT((Int) O_APPEND));
+    SetARecordField(tmp, RNamName("O_APPEND"), INTOBJ_INT((Int) O_APPEND));
 #endif
 #ifdef O_ASYNC
-    AssPRec(tmp, RNamName("O_ASYNC"), INTOBJ_INT((Int) O_ASYNC));
+    SetARecordField(tmp, RNamName("O_ASYNC"), INTOBJ_INT((Int) O_ASYNC));
 #endif
 #ifdef O_DIRECT
-    AssPRec(tmp, RNamName("O_DIRECT"), INTOBJ_INT((Int) O_DIRECT));
+    SetARecordField(tmp, RNamName("O_DIRECT"), INTOBJ_INT((Int) O_DIRECT));
 #endif
 #ifdef O_DIRECTORY
-    AssPRec(tmp, RNamName("O_DIRECTORY"), INTOBJ_INT((Int) O_DIRECTORY));
+    SetARecordField(tmp, RNamName("O_DIRECTORY"), INTOBJ_INT((Int) O_DIRECTORY));
 #endif
 #ifdef O_EXCL
-    AssPRec(tmp, RNamName("O_EXCL"), INTOBJ_INT((Int) O_EXCL));
+    SetARecordField(tmp, RNamName("O_EXCL"), INTOBJ_INT((Int) O_EXCL));
 #endif
 #ifdef O_LARGEFILE
-    AssPRec(tmp, RNamName("O_LARGEFILE"), INTOBJ_INT((Int) O_LARGEFILE));
+    SetARecordField(tmp, RNamName("O_LARGEFILE"), INTOBJ_INT((Int) O_LARGEFILE));
 #endif
 #ifdef O_NOATIME
-    AssPRec(tmp, RNamName("O_NOATIME"), INTOBJ_INT((Int) O_NOATIME));
+    SetARecordField(tmp, RNamName("O_NOATIME"), INTOBJ_INT((Int) O_NOATIME));
 #endif
 #ifdef O_NOCTTY
-    AssPRec(tmp, RNamName("O_NOCTTY"), INTOBJ_INT((Int) O_NOCTTY));
+    SetARecordField(tmp, RNamName("O_NOCTTY"), INTOBJ_INT((Int) O_NOCTTY));
 #endif
 #ifdef O_NOFOLLOW
-    AssPRec(tmp, RNamName("O_NOFOLLOW"), INTOBJ_INT((Int) O_NOFOLLOW));
+    SetARecordField(tmp, RNamName("O_NOFOLLOW"), INTOBJ_INT((Int) O_NOFOLLOW));
 #endif
 #ifdef O_NONBLOCK
-    AssPRec(tmp, RNamName("O_NONBLOCK"), INTOBJ_INT((Int) O_NONBLOCK));
+    SetARecordField(tmp, RNamName("O_NONBLOCK"), INTOBJ_INT((Int) O_NONBLOCK));
 #endif
 #ifdef O_NDELAY
-    AssPRec(tmp, RNamName("O_NDELAY"), INTOBJ_INT((Int) O_NDELAY));
+    SetARecordField(tmp, RNamName("O_NDELAY"), INTOBJ_INT((Int) O_NDELAY));
 #endif
 #ifdef O_SYNC
-    AssPRec(tmp, RNamName("O_SYNC"), INTOBJ_INT((Int) O_SYNC));
+    SetARecordField(tmp, RNamName("O_SYNC"), INTOBJ_INT((Int) O_SYNC));
 #endif
 #ifdef O_TRUNC
-    AssPRec(tmp, RNamName("O_TRUNC"), INTOBJ_INT((Int) O_TRUNC));
+    SetARecordField(tmp, RNamName("O_TRUNC"), INTOBJ_INT((Int) O_TRUNC));
 #endif
 #ifdef SEEK_SET
-    AssPRec(tmp, RNamName("SEEK_SET"), INTOBJ_INT((Int) SEEK_SET));
+    SetARecordField(tmp, RNamName("SEEK_SET"), INTOBJ_INT((Int) SEEK_SET));
 #endif
 #ifdef SEEK_CUR
-    AssPRec(tmp, RNamName("SEEK_CUR"), INTOBJ_INT((Int) SEEK_CUR));
+    SetARecordField(tmp, RNamName("SEEK_CUR"), INTOBJ_INT((Int) SEEK_CUR));
 #endif
 #ifdef SEEK_END
-    AssPRec(tmp, RNamName("SEEK_END"), INTOBJ_INT((Int) SEEK_END));
+    SetARecordField(tmp, RNamName("SEEK_END"), INTOBJ_INT((Int) SEEK_END));
 #endif
 
     /* Constants for the mode: */
 #ifdef S_IRWXU
-    AssPRec(tmp, RNamName("S_IRWXU"), INTOBJ_INT((Int) S_IRWXU));
+    SetARecordField(tmp, RNamName("S_IRWXU"), INTOBJ_INT((Int) S_IRWXU));
 #endif
 #ifdef S_IRUSR
-    AssPRec(tmp, RNamName("S_IRUSR"), INTOBJ_INT((Int) S_IRUSR));
+    SetARecordField(tmp, RNamName("S_IRUSR"), INTOBJ_INT((Int) S_IRUSR));
 #endif
 #ifdef S_IWUSR
-    AssPRec(tmp, RNamName("S_IWUSR"), INTOBJ_INT((Int) S_IWUSR));
+    SetARecordField(tmp, RNamName("S_IWUSR"), INTOBJ_INT((Int) S_IWUSR));
 #endif
 #ifdef S_IXUSR
-    AssPRec(tmp, RNamName("S_IXUSR"), INTOBJ_INT((Int) S_IXUSR));
+    SetARecordField(tmp, RNamName("S_IXUSR"), INTOBJ_INT((Int) S_IXUSR));
 #endif
 #ifdef S_IRWXG
-    AssPRec(tmp, RNamName("S_IRWXG"), INTOBJ_INT((Int) S_IRWXG));
+    SetARecordField(tmp, RNamName("S_IRWXG"), INTOBJ_INT((Int) S_IRWXG));
 #endif
 #ifdef S_IRGRP
-    AssPRec(tmp, RNamName("S_IRGRP"), INTOBJ_INT((Int) S_IRGRP));
+    SetARecordField(tmp, RNamName("S_IRGRP"), INTOBJ_INT((Int) S_IRGRP));
 #endif
 #ifdef S_IWGRP
-    AssPRec(tmp, RNamName("S_IWGRP"), INTOBJ_INT((Int) S_IWGRP));
+    SetARecordField(tmp, RNamName("S_IWGRP"), INTOBJ_INT((Int) S_IWGRP));
 #endif
 #ifdef S_IXGRP
-    AssPRec(tmp, RNamName("S_IXGRP"), INTOBJ_INT((Int) S_IXGRP));
+    SetARecordField(tmp, RNamName("S_IXGRP"), INTOBJ_INT((Int) S_IXGRP));
 #endif
 #ifdef S_IRWXO
-    AssPRec(tmp, RNamName("S_IRWXO"), INTOBJ_INT((Int) S_IRWXO));
+    SetARecordField(tmp, RNamName("S_IRWXO"), INTOBJ_INT((Int) S_IRWXO));
 #endif
 #ifdef S_IROTH
-    AssPRec(tmp, RNamName("S_IROTH"), INTOBJ_INT((Int) S_IROTH));
+    SetARecordField(tmp, RNamName("S_IROTH"), INTOBJ_INT((Int) S_IROTH));
 #endif
 #ifdef S_IWOTH
-    AssPRec(tmp, RNamName("S_IWOTH"), INTOBJ_INT((Int) S_IWOTH));
+    SetARecordField(tmp, RNamName("S_IWOTH"), INTOBJ_INT((Int) S_IWOTH));
 #endif
 #ifdef S_IXOTH
-    AssPRec(tmp, RNamName("S_IXOTH"), INTOBJ_INT((Int) S_IXOTH));
+    SetARecordField(tmp, RNamName("S_IXOTH"), INTOBJ_INT((Int) S_IXOTH));
 #endif
 #ifdef S_IFMT
-    AssPRec(tmp, RNamName("S_IFMT"), INTOBJ_INT((Int) S_IFMT));
+    SetARecordField(tmp, RNamName("S_IFMT"), INTOBJ_INT((Int) S_IFMT));
 #endif
 #ifdef S_IFSOCK
-    AssPRec(tmp, RNamName("S_IFSOCK"), INTOBJ_INT((Int) S_IFSOCK));
+    SetARecordField(tmp, RNamName("S_IFSOCK"), INTOBJ_INT((Int) S_IFSOCK));
 #endif
 #ifdef S_IFLNK
-    AssPRec(tmp, RNamName("S_IFLNK"), INTOBJ_INT((Int) S_IFLNK));
+    SetARecordField(tmp, RNamName("S_IFLNK"), INTOBJ_INT((Int) S_IFLNK));
 #endif
 #ifdef S_IFREG
-    AssPRec(tmp, RNamName("S_IFREG"), INTOBJ_INT((Int) S_IFREG));
+    SetARecordField(tmp, RNamName("S_IFREG"), INTOBJ_INT((Int) S_IFREG));
 #endif
 #ifdef S_IFBLK
-    AssPRec(tmp, RNamName("S_IFBLK"), INTOBJ_INT((Int) S_IFBLK));
+    SetARecordField(tmp, RNamName("S_IFBLK"), INTOBJ_INT((Int) S_IFBLK));
 #endif
 #ifdef S_IFDIR
-    AssPRec(tmp, RNamName("S_IFDIR"), INTOBJ_INT((Int) S_IFDIR));
+    SetARecordField(tmp, RNamName("S_IFDIR"), INTOBJ_INT((Int) S_IFDIR));
 #endif
 #ifdef S_IFCHR
-    AssPRec(tmp, RNamName("S_IFCHR"), INTOBJ_INT((Int) S_IFCHR));
+    SetARecordField(tmp, RNamName("S_IFCHR"), INTOBJ_INT((Int) S_IFCHR));
 #endif
 #ifdef S_IFIFO
-    AssPRec(tmp, RNamName("S_IFIFO"), INTOBJ_INT((Int) S_IFIFO));
+    SetARecordField(tmp, RNamName("S_IFIFO"), INTOBJ_INT((Int) S_IFIFO));
 #endif
 #ifdef S_ISUID
-    AssPRec(tmp, RNamName("S_ISUID"), INTOBJ_INT((Int) S_ISUID));
+    SetARecordField(tmp, RNamName("S_ISUID"), INTOBJ_INT((Int) S_ISUID));
 #endif
 #ifdef S_ISGID
-    AssPRec(tmp, RNamName("S_ISGID"), INTOBJ_INT((Int) S_ISGID));
+    SetARecordField(tmp, RNamName("S_ISGID"), INTOBJ_INT((Int) S_ISGID));
 #endif
 #ifdef S_ISVTX
-    AssPRec(tmp, RNamName("S_ISVTX"), INTOBJ_INT((Int) S_ISVTX));
+    SetARecordField(tmp, RNamName("S_ISVTX"), INTOBJ_INT((Int) S_ISVTX));
 #endif
 
     /* Constants for the errors: */
 #ifdef EACCES
-    AssPRec(tmp, RNamName("EACCES"), INTOBJ_INT((Int) EACCES));
+    SetARecordField(tmp, RNamName("EACCES"), INTOBJ_INT((Int) EACCES));
 #endif
 #ifdef EEXIST
-    AssPRec(tmp, RNamName("EEXIST"), INTOBJ_INT((Int) EEXIST));
+    SetARecordField(tmp, RNamName("EEXIST"), INTOBJ_INT((Int) EEXIST));
 #endif
 #ifdef EFAULT
-    AssPRec(tmp, RNamName("EFAULT"), INTOBJ_INT((Int) EFAULT));
+    SetARecordField(tmp, RNamName("EFAULT"), INTOBJ_INT((Int) EFAULT));
 #endif
 #ifdef EISDIR
-    AssPRec(tmp, RNamName("EISDIR"), INTOBJ_INT((Int) EISDIR));
+    SetARecordField(tmp, RNamName("EISDIR"), INTOBJ_INT((Int) EISDIR));
 #endif
 #ifdef ELOOP
-    AssPRec(tmp, RNamName("ELOOP"), INTOBJ_INT((Int) ELOOP));
+    SetARecordField(tmp, RNamName("ELOOP"), INTOBJ_INT((Int) ELOOP));
 #endif
 #ifdef EMFILE
-    AssPRec(tmp, RNamName("EMFILE"), INTOBJ_INT((Int) EMFILE));
+    SetARecordField(tmp, RNamName("EMFILE"), INTOBJ_INT((Int) EMFILE));
 #endif
 #ifdef ENAMETOOLONG
-    AssPRec(tmp, RNamName("ENAMETOOLONG"), INTOBJ_INT((Int) ENAMETOOLONG));
+    SetARecordField(tmp, RNamName("ENAMETOOLONG"), INTOBJ_INT((Int) ENAMETOOLONG));
 #endif
 #ifdef ENFILE
-    AssPRec(tmp, RNamName("ENFILE"), INTOBJ_INT((Int) ENFILE));
+    SetARecordField(tmp, RNamName("ENFILE"), INTOBJ_INT((Int) ENFILE));
 #endif
 #ifdef ENODEV
-    AssPRec(tmp, RNamName("ENODEV"), INTOBJ_INT((Int) ENODEV));
+    SetARecordField(tmp, RNamName("ENODEV"), INTOBJ_INT((Int) ENODEV));
 #endif
 #ifdef ENOENT
-    AssPRec(tmp, RNamName("ENOENT"), INTOBJ_INT((Int) ENOENT));
+    SetARecordField(tmp, RNamName("ENOENT"), INTOBJ_INT((Int) ENOENT));
 #endif
 #ifdef ENOMEM
-    AssPRec(tmp, RNamName("ENOMEM"), INTOBJ_INT((Int) ENOMEM));
+    SetARecordField(tmp, RNamName("ENOMEM"), INTOBJ_INT((Int) ENOMEM));
 #endif
 #ifdef ENOSPC
-    AssPRec(tmp, RNamName("ENOSPC"), INTOBJ_INT((Int) ENOSPC));
+    SetARecordField(tmp, RNamName("ENOSPC"), INTOBJ_INT((Int) ENOSPC));
 #endif
 #ifdef ENOTDIR
-    AssPRec(tmp, RNamName("ENOTDIR"), INTOBJ_INT((Int) ENOTDIR));
+    SetARecordField(tmp, RNamName("ENOTDIR"), INTOBJ_INT((Int) ENOTDIR));
 #endif
 #ifdef ENXIO
-    AssPRec(tmp, RNamName("ENXIO"), INTOBJ_INT((Int) ENXIO));
+    SetARecordField(tmp, RNamName("ENXIO"), INTOBJ_INT((Int) ENXIO));
 #endif
 #ifdef EOVERFLOW
-    AssPRec(tmp, RNamName("EOVERFLOW"), INTOBJ_INT((Int) EOVERFLOW));
+    SetARecordField(tmp, RNamName("EOVERFLOW"), INTOBJ_INT((Int) EOVERFLOW));
 #endif
 #ifdef EPERM
-    AssPRec(tmp, RNamName("EPERM"), INTOBJ_INT((Int) EPERM));
+    SetARecordField(tmp, RNamName("EPERM"), INTOBJ_INT((Int) EPERM));
 #endif
 #ifdef EROFS
-    AssPRec(tmp, RNamName("EROFS"), INTOBJ_INT((Int) EROFS));
+    SetARecordField(tmp, RNamName("EROFS"), INTOBJ_INT((Int) EROFS));
 #endif
 #ifdef ETXTBSY
-    AssPRec(tmp, RNamName("ETXTBSY"), INTOBJ_INT((Int) ETXTBSY));
+    SetARecordField(tmp, RNamName("ETXTBSY"), INTOBJ_INT((Int) ETXTBSY));
 #endif
 #ifdef EAGAIN
-    AssPRec(tmp, RNamName("EAGAIN"), INTOBJ_INT((Int) EAGAIN));
+    SetARecordField(tmp, RNamName("EAGAIN"), INTOBJ_INT((Int) EAGAIN));
 #endif
 #ifdef EBADF
-    AssPRec(tmp, RNamName("EBADF"), INTOBJ_INT((Int) EBADF));
+    SetARecordField(tmp, RNamName("EBADF"), INTOBJ_INT((Int) EBADF));
 #endif
 #ifdef EINTR
-    AssPRec(tmp, RNamName("EINTR"), INTOBJ_INT((Int) EINTR));
+    SetARecordField(tmp, RNamName("EINTR"), INTOBJ_INT((Int) EINTR));
 #endif
 #ifdef EINVAL
-    AssPRec(tmp, RNamName("EINVAL"), INTOBJ_INT((Int) EINVAL));
+    SetARecordField(tmp, RNamName("EINVAL"), INTOBJ_INT((Int) EINVAL));
 #endif
 #ifdef EIO
-    AssPRec(tmp, RNamName("EIO"), INTOBJ_INT((Int) EIO));
+    SetARecordField(tmp, RNamName("EIO"), INTOBJ_INT((Int) EIO));
 #endif
 #ifdef EFBIG
-    AssPRec(tmp, RNamName("EFBIG"), INTOBJ_INT((Int) EFBIG));
+    SetARecordField(tmp, RNamName("EFBIG"), INTOBJ_INT((Int) EFBIG));
 #endif
 #ifdef ENOSPC
-    AssPRec(tmp, RNamName("ENOSPC"), INTOBJ_INT((Int) ENOSPC));
+    SetARecordField(tmp, RNamName("ENOSPC"), INTOBJ_INT((Int) ENOSPC));
 #endif
 #ifdef EPIPE
-    AssPRec(tmp, RNamName("EPIPE"), INTOBJ_INT((Int) EPIPE));
+    SetARecordField(tmp, RNamName("EPIPE"), INTOBJ_INT((Int) EPIPE));
 #endif
 #ifdef EBUSY
-    AssPRec(tmp, RNamName("EBUSY"), INTOBJ_INT((Int) EBUSY));
+    SetARecordField(tmp, RNamName("EBUSY"), INTOBJ_INT((Int) EBUSY));
 #endif
 #ifdef ESPIPE
-    AssPRec(tmp, RNamName("ESPIPE"), INTOBJ_INT((Int) ESPIPE));
+    SetARecordField(tmp, RNamName("ESPIPE"), INTOBJ_INT((Int) ESPIPE));
 #endif
 #ifdef EMLINK
-    AssPRec(tmp, RNamName("EMLINK"), INTOBJ_INT((Int) EMLINK));
+    SetARecordField(tmp, RNamName("EMLINK"), INTOBJ_INT((Int) EMLINK));
 #endif
 #ifdef EXDEV
-    AssPRec(tmp, RNamName("EXDEV"), INTOBJ_INT((Int) EXDEV));
+    SetARecordField(tmp, RNamName("EXDEV"), INTOBJ_INT((Int) EXDEV));
 #endif
 #ifdef ENOTEMPTY
-    AssPRec(tmp, RNamName("ENOTEMPTY"), INTOBJ_INT((Int) ENOTEMPTY));
+    SetARecordField(tmp, RNamName("ENOTEMPTY"), INTOBJ_INT((Int) ENOTEMPTY));
 #endif
 #ifdef EAFNOSUPPORT 
-    AssPRec(tmp, RNamName("EAFNOSUPPORT"), INTOBJ_INT((Int) EAFNOSUPPORT));
+    SetARecordField(tmp, RNamName("EAFNOSUPPORT"), INTOBJ_INT((Int) EAFNOSUPPORT));
 #endif
 #ifdef ENOBUGS 
-    AssPRec(tmp, RNamName("ENOBUGS"), INTOBJ_INT((Int) ENOBUGS));
+    SetARecordField(tmp, RNamName("ENOBUGS"), INTOBJ_INT((Int) ENOBUGS));
 #endif
 #ifdef EPROTONOSUPPORT 
-    AssPRec(tmp, RNamName("EPROTONOSUPPORT"),INTOBJ_INT((Int) EPROTONOSUPPORT));
+    SetARecordField(tmp, RNamName("EPROTONOSUPPORT"),INTOBJ_INT((Int) EPROTONOSUPPORT));
 #endif
 #ifdef ENOTSOCK 
-    AssPRec(tmp, RNamName("ENOTSOCK"),INTOBJ_INT((Int) ENOTSOCK));
+    SetARecordField(tmp, RNamName("ENOTSOCK"),INTOBJ_INT((Int) ENOTSOCK));
 #endif
 #ifdef EADDRINUSE
-    AssPRec(tmp, RNamName("EADDRINUSE"), INTOBJ_INT((Int) EADDRINUSE));
+    SetARecordField(tmp, RNamName("EADDRINUSE"), INTOBJ_INT((Int) EADDRINUSE));
 #endif
 #ifdef EALREADY
-    AssPRec(tmp, RNamName("EALREADY"), INTOBJ_INT((Int) EALREADY));
+    SetARecordField(tmp, RNamName("EALREADY"), INTOBJ_INT((Int) EALREADY));
 #endif
 #ifdef ECONNREFUSED
-    AssPRec(tmp, RNamName("ECONNREFUSED"), INTOBJ_INT((Int) ECONNREFUSED));
+    SetARecordField(tmp, RNamName("ECONNREFUSED"), INTOBJ_INT((Int) ECONNREFUSED));
 #endif
 #ifdef EINPROGRESS
-    AssPRec(tmp, RNamName("EINPROGRESS"), INTOBJ_INT((Int) EINPROGRESS));
+    SetARecordField(tmp, RNamName("EINPROGRESS"), INTOBJ_INT((Int) EINPROGRESS));
 #endif
 #ifdef EISCONN
-    AssPRec(tmp, RNamName("EISCONN"), INTOBJ_INT((Int) EISCONN));
+    SetARecordField(tmp, RNamName("EISCONN"), INTOBJ_INT((Int) EISCONN));
 #endif
 #ifdef ETIMEDOUT
-    AssPRec(tmp, RNamName("ETIMEDOUT"), INTOBJ_INT((Int) ETIMEDOUT));
+    SetARecordField(tmp, RNamName("ETIMEDOUT"), INTOBJ_INT((Int) ETIMEDOUT));
 #endif
 #ifdef EOPNOTSUPP
-    AssPRec(tmp, RNamName("EOPNOTSUPP"), INTOBJ_INT((Int) EOPNOTSUPP));
+    SetARecordField(tmp, RNamName("EOPNOTSUPP"), INTOBJ_INT((Int) EOPNOTSUPP));
 #endif
 #ifdef EPROTO 
-    AssPRec(tmp, RNamName("EPROTO"), INTOBJ_INT((Int) EPROTO));
+    SetARecordField(tmp, RNamName("EPROTO"), INTOBJ_INT((Int) EPROTO));
 #endif
 #ifdef ECONNABORTED 
-    AssPRec(tmp, RNamName("ECONNABORTED"), INTOBJ_INT((Int) ECONNABORTED));
+    SetARecordField(tmp, RNamName("ECONNABORTED"), INTOBJ_INT((Int) ECONNABORTED));
 #endif
 #ifdef ECHILD 
-    AssPRec(tmp, RNamName("ECHILD"), INTOBJ_INT((Int) ECHILD));
+    SetARecordField(tmp, RNamName("ECHILD"), INTOBJ_INT((Int) ECHILD));
 #endif
 #ifdef EWOULDBLOCK 
-    AssPRec(tmp, RNamName("EWOULDBLOCK"), INTOBJ_INT((Int) EWOULDBLOCK));
+    SetARecordField(tmp, RNamName("EWOULDBLOCK"), INTOBJ_INT((Int) EWOULDBLOCK));
 #endif
 #ifdef HOST_NOT_FOUND
-    AssPRec(tmp, RNamName("HOST_NOT_FOUND"), INTOBJ_INT((Int) HOST_NOT_FOUND));
+    SetARecordField(tmp, RNamName("HOST_NOT_FOUND"), INTOBJ_INT((Int) HOST_NOT_FOUND));
 #endif
 #ifdef NO_ADDRESS
-    AssPRec(tmp, RNamName("NO_ADDRESS"), INTOBJ_INT((Int) NO_ADDRESS));
+    SetARecordField(tmp, RNamName("NO_ADDRESS"), INTOBJ_INT((Int) NO_ADDRESS));
 #endif
 #ifdef NO_DATA
-    AssPRec(tmp, RNamName("NO_DATA"), INTOBJ_INT((Int) NO_DATA));
+    SetARecordField(tmp, RNamName("NO_DATA"), INTOBJ_INT((Int) NO_DATA));
 #endif
 #ifdef NO_RECOVERY
-    AssPRec(tmp, RNamName("NO_RECOVERY"), INTOBJ_INT((Int) NO_RECOVERY));
+    SetARecordField(tmp, RNamName("NO_RECOVERY"), INTOBJ_INT((Int) NO_RECOVERY));
 #endif
 #ifdef TRY_AGAIN
-    AssPRec(tmp, RNamName("TRY_AGAIN"), INTOBJ_INT((Int) TRY_AGAIN));
+    SetARecordField(tmp, RNamName("TRY_AGAIN"), INTOBJ_INT((Int) TRY_AGAIN));
 #endif
 
     /* Constants for networking: */
 #ifdef AF_APPLETALK 
-    AssPRec(tmp, RNamName("AF_APPLETALK"), INTOBJ_INT((Int) AF_APPLETALK));
+    SetARecordField(tmp, RNamName("AF_APPLETALK"), INTOBJ_INT((Int) AF_APPLETALK));
 #endif
 #ifdef AF_ASH 
-    AssPRec(tmp, RNamName("AF_ASH"), INTOBJ_INT((Int) AF_ASH));
+    SetARecordField(tmp, RNamName("AF_ASH"), INTOBJ_INT((Int) AF_ASH));
 #endif
 #ifdef AF_ATMPVC 
-    AssPRec(tmp, RNamName("AF_ATMPVC"), INTOBJ_INT((Int) AF_ATMPVC));
+    SetARecordField(tmp, RNamName("AF_ATMPVC"), INTOBJ_INT((Int) AF_ATMPVC));
 #endif
 #ifdef AF_ATMSVC 
-    AssPRec(tmp, RNamName("AF_ATMSVC"), INTOBJ_INT((Int) AF_ATMSVC));
+    SetARecordField(tmp, RNamName("AF_ATMSVC"), INTOBJ_INT((Int) AF_ATMSVC));
 #endif
 #ifdef AF_AX25 
-    AssPRec(tmp, RNamName("AF_AX25"), INTOBJ_INT((Int) AF_AX25));
+    SetARecordField(tmp, RNamName("AF_AX25"), INTOBJ_INT((Int) AF_AX25));
 #endif
 #ifdef AF_BLUETOOTH 
-    AssPRec(tmp, RNamName("AF_BLUETOOTH"), INTOBJ_INT((Int) AF_BLUETOOTH));
+    SetARecordField(tmp, RNamName("AF_BLUETOOTH"), INTOBJ_INT((Int) AF_BLUETOOTH));
 #endif
 #ifdef AF_BRIDGE 
-    AssPRec(tmp, RNamName("AF_BRIDGE"), INTOBJ_INT((Int) AF_BRIDGE));
+    SetARecordField(tmp, RNamName("AF_BRIDGE"), INTOBJ_INT((Int) AF_BRIDGE));
 #endif
 #ifdef AF_DECnet 
-    AssPRec(tmp, RNamName("AF_DECnet"), INTOBJ_INT((Int) AF_DECnet));
+    SetARecordField(tmp, RNamName("AF_DECnet"), INTOBJ_INT((Int) AF_DECnet));
 #endif
 #ifdef AF_ECONET 
-    AssPRec(tmp, RNamName("AF_ECONET"), INTOBJ_INT((Int) AF_ECONET));
+    SetARecordField(tmp, RNamName("AF_ECONET"), INTOBJ_INT((Int) AF_ECONET));
 #endif
 #ifdef AF_FILE 
-    AssPRec(tmp, RNamName("AF_FILE"), INTOBJ_INT((Int) AF_FILE));
+    SetARecordField(tmp, RNamName("AF_FILE"), INTOBJ_INT((Int) AF_FILE));
 #endif
 #ifdef AF_INET 
-    AssPRec(tmp, RNamName("AF_INET"), INTOBJ_INT((Int) AF_INET));
+    SetARecordField(tmp, RNamName("AF_INET"), INTOBJ_INT((Int) AF_INET));
 #endif
 #ifdef AF_INET6 
-    AssPRec(tmp, RNamName("AF_INET6"), INTOBJ_INT((Int) AF_INET6));
+    SetARecordField(tmp, RNamName("AF_INET6"), INTOBJ_INT((Int) AF_INET6));
 #endif
 #ifdef AF_IPX 
-    AssPRec(tmp, RNamName("AF_IPX"), INTOBJ_INT((Int) AF_IPX));
+    SetARecordField(tmp, RNamName("AF_IPX"), INTOBJ_INT((Int) AF_IPX));
 #endif
 #ifdef AF_IRDA 
-    AssPRec(tmp, RNamName("AF_IRDA"), INTOBJ_INT((Int) AF_IRDA));
+    SetARecordField(tmp, RNamName("AF_IRDA"), INTOBJ_INT((Int) AF_IRDA));
 #endif
 #ifdef AF_KEY 
-    AssPRec(tmp, RNamName("AF_KEY"), INTOBJ_INT((Int) AF_KEY));
+    SetARecordField(tmp, RNamName("AF_KEY"), INTOBJ_INT((Int) AF_KEY));
 #endif
 #ifdef AF_LOCAL 
-    AssPRec(tmp, RNamName("AF_LOCAL"), INTOBJ_INT((Int) AF_LOCAL));
+    SetARecordField(tmp, RNamName("AF_LOCAL"), INTOBJ_INT((Int) AF_LOCAL));
 #endif
 #ifdef AF_MAX 
-    AssPRec(tmp, RNamName("AF_MAX"), INTOBJ_INT((Int) AF_MAX));
+    SetARecordField(tmp, RNamName("AF_MAX"), INTOBJ_INT((Int) AF_MAX));
 #endif
 #ifdef AF_NETBEUI 
-    AssPRec(tmp, RNamName("AF_NETBEUI"), INTOBJ_INT((Int) AF_NETBEUI));
+    SetARecordField(tmp, RNamName("AF_NETBEUI"), INTOBJ_INT((Int) AF_NETBEUI));
 #endif
 #ifdef AF_NETLINK 
-    AssPRec(tmp, RNamName("AF_NETLINK"), INTOBJ_INT((Int) AF_NETLINK));
+    SetARecordField(tmp, RNamName("AF_NETLINK"), INTOBJ_INT((Int) AF_NETLINK));
 #endif
 #ifdef AF_NETROM 
-    AssPRec(tmp, RNamName("AF_NETROM"), INTOBJ_INT((Int) AF_NETROM));
+    SetARecordField(tmp, RNamName("AF_NETROM"), INTOBJ_INT((Int) AF_NETROM));
 #endif
 #ifdef AF_PACKET 
-    AssPRec(tmp, RNamName("AF_PACKET"), INTOBJ_INT((Int) AF_PACKET));
+    SetARecordField(tmp, RNamName("AF_PACKET"), INTOBJ_INT((Int) AF_PACKET));
 #endif
 #ifdef AF_PPPOX 
-    AssPRec(tmp, RNamName("AF_PPPOX"), INTOBJ_INT((Int) AF_PPPOX));
+    SetARecordField(tmp, RNamName("AF_PPPOX"), INTOBJ_INT((Int) AF_PPPOX));
 #endif
 #ifdef AF_ROSE 
-    AssPRec(tmp, RNamName("AF_ROSE"), INTOBJ_INT((Int) AF_ROSE));
+    SetARecordField(tmp, RNamName("AF_ROSE"), INTOBJ_INT((Int) AF_ROSE));
 #endif
 #ifdef AF_ROUTE 
-    AssPRec(tmp, RNamName("AF_ROUTE"), INTOBJ_INT((Int) AF_ROUTE));
+    SetARecordField(tmp, RNamName("AF_ROUTE"), INTOBJ_INT((Int) AF_ROUTE));
 #endif
 #ifdef AF_SECURITY 
-    AssPRec(tmp, RNamName("AF_SECURITY"), INTOBJ_INT((Int) AF_SECURITY));
+    SetARecordField(tmp, RNamName("AF_SECURITY"), INTOBJ_INT((Int) AF_SECURITY));
 #endif
 #ifdef AF_SNA 
-    AssPRec(tmp, RNamName("AF_SNA"), INTOBJ_INT((Int) AF_SNA));
+    SetARecordField(tmp, RNamName("AF_SNA"), INTOBJ_INT((Int) AF_SNA));
 #endif
 #ifdef AF_UNIX 
-    AssPRec(tmp, RNamName("AF_UNIX"), INTOBJ_INT((Int) AF_UNIX));
+    SetARecordField(tmp, RNamName("AF_UNIX"), INTOBJ_INT((Int) AF_UNIX));
 #endif
 #ifdef AF_UNSPEC 
-    AssPRec(tmp, RNamName("AF_UNSPEC"), INTOBJ_INT((Int) AF_UNSPEC));
+    SetARecordField(tmp, RNamName("AF_UNSPEC"), INTOBJ_INT((Int) AF_UNSPEC));
 #endif
 #ifdef AF_WANPIPE 
-    AssPRec(tmp, RNamName("AF_WANPIPE"), INTOBJ_INT((Int) AF_WANPIPE));
+    SetARecordField(tmp, RNamName("AF_WANPIPE"), INTOBJ_INT((Int) AF_WANPIPE));
 #endif
 #ifdef AF_X25 
-    AssPRec(tmp, RNamName("AF_X25"), INTOBJ_INT((Int) AF_X25));
+    SetARecordField(tmp, RNamName("AF_X25"), INTOBJ_INT((Int) AF_X25));
 #endif
 #ifdef PF_APPLETALK 
-    AssPRec(tmp, RNamName("PF_APPLETALK"), INTOBJ_INT((Int) PF_APPLETALK));
+    SetARecordField(tmp, RNamName("PF_APPLETALK"), INTOBJ_INT((Int) PF_APPLETALK));
 #endif
 #ifdef PF_ASH 
-    AssPRec(tmp, RNamName("PF_ASH"), INTOBJ_INT((Int) PF_ASH));
+    SetARecordField(tmp, RNamName("PF_ASH"), INTOBJ_INT((Int) PF_ASH));
 #endif
 #ifdef PF_ATMPVC 
-    AssPRec(tmp, RNamName("PF_ATMPVC"), INTOBJ_INT((Int) PF_ATMPVC));
+    SetARecordField(tmp, RNamName("PF_ATMPVC"), INTOBJ_INT((Int) PF_ATMPVC));
 #endif
 #ifdef PF_ATMSVC 
-    AssPRec(tmp, RNamName("PF_ATMSVC"), INTOBJ_INT((Int) PF_ATMSVC));
+    SetARecordField(tmp, RNamName("PF_ATMSVC"), INTOBJ_INT((Int) PF_ATMSVC));
 #endif
 #ifdef PF_AX25 
-    AssPRec(tmp, RNamName("PF_AX25"), INTOBJ_INT((Int) PF_AX25));
+    SetARecordField(tmp, RNamName("PF_AX25"), INTOBJ_INT((Int) PF_AX25));
 #endif
 #ifdef PF_BLUETOOTH 
-    AssPRec(tmp, RNamName("PF_BLUETOOTH"), INTOBJ_INT((Int) PF_BLUETOOTH));
+    SetARecordField(tmp, RNamName("PF_BLUETOOTH"), INTOBJ_INT((Int) PF_BLUETOOTH));
 #endif
 #ifdef PF_BRIDGE 
-    AssPRec(tmp, RNamName("PF_BRIDGE"), INTOBJ_INT((Int) PF_BRIDGE));
+    SetARecordField(tmp, RNamName("PF_BRIDGE"), INTOBJ_INT((Int) PF_BRIDGE));
 #endif
 #ifdef PF_DECnet 
-    AssPRec(tmp, RNamName("PF_DECnet"), INTOBJ_INT((Int) PF_DECnet));
+    SetARecordField(tmp, RNamName("PF_DECnet"), INTOBJ_INT((Int) PF_DECnet));
 #endif
 #ifdef PF_ECONET 
-    AssPRec(tmp, RNamName("PF_ECONET"), INTOBJ_INT((Int) PF_ECONET));
+    SetARecordField(tmp, RNamName("PF_ECONET"), INTOBJ_INT((Int) PF_ECONET));
 #endif
 #ifdef PF_FILE 
-    AssPRec(tmp, RNamName("PF_FILE"), INTOBJ_INT((Int) PF_FILE));
+    SetARecordField(tmp, RNamName("PF_FILE"), INTOBJ_INT((Int) PF_FILE));
 #endif
 #ifdef PF_INET 
-    AssPRec(tmp, RNamName("PF_INET"), INTOBJ_INT((Int) PF_INET));
+    SetARecordField(tmp, RNamName("PF_INET"), INTOBJ_INT((Int) PF_INET));
 #endif
 #ifdef PF_INET6 
-    AssPRec(tmp, RNamName("PF_INET6"), INTOBJ_INT((Int) PF_INET6));
+    SetARecordField(tmp, RNamName("PF_INET6"), INTOBJ_INT((Int) PF_INET6));
 #endif
 #ifdef PF_IPX 
-    AssPRec(tmp, RNamName("PF_IPX"), INTOBJ_INT((Int) PF_IPX));
+    SetARecordField(tmp, RNamName("PF_IPX"), INTOBJ_INT((Int) PF_IPX));
 #endif
 #ifdef PF_IRDA 
-    AssPRec(tmp, RNamName("PF_IRDA"), INTOBJ_INT((Int) PF_IRDA));
+    SetARecordField(tmp, RNamName("PF_IRDA"), INTOBJ_INT((Int) PF_IRDA));
 #endif
 #ifdef PF_KEY 
-    AssPRec(tmp, RNamName("PF_KEY"), INTOBJ_INT((Int) PF_KEY));
+    SetARecordField(tmp, RNamName("PF_KEY"), INTOBJ_INT((Int) PF_KEY));
 #endif
 #ifdef PF_LOCAL 
-    AssPRec(tmp, RNamName("PF_LOCAL"), INTOBJ_INT((Int) PF_LOCAL));
+    SetARecordField(tmp, RNamName("PF_LOCAL"), INTOBJ_INT((Int) PF_LOCAL));
 #endif
 #ifdef PF_MAX 
-    AssPRec(tmp, RNamName("PF_MAX"), INTOBJ_INT((Int) PF_MAX));
+    SetARecordField(tmp, RNamName("PF_MAX"), INTOBJ_INT((Int) PF_MAX));
 #endif
 #ifdef PF_NETBEUI 
-    AssPRec(tmp, RNamName("PF_NETBEUI"), INTOBJ_INT((Int) PF_NETBEUI));
+    SetARecordField(tmp, RNamName("PF_NETBEUI"), INTOBJ_INT((Int) PF_NETBEUI));
 #endif
 #ifdef PF_NETLINK 
-    AssPRec(tmp, RNamName("PF_NETLINK"), INTOBJ_INT((Int) PF_NETLINK));
+    SetARecordField(tmp, RNamName("PF_NETLINK"), INTOBJ_INT((Int) PF_NETLINK));
 #endif
 #ifdef PF_NETROM 
-    AssPRec(tmp, RNamName("PF_NETROM"), INTOBJ_INT((Int) PF_NETROM));
+    SetARecordField(tmp, RNamName("PF_NETROM"), INTOBJ_INT((Int) PF_NETROM));
 #endif
 #ifdef PF_PACKET 
-    AssPRec(tmp, RNamName("PF_PACKET"), INTOBJ_INT((Int) PF_PACKET));
+    SetARecordField(tmp, RNamName("PF_PACKET"), INTOBJ_INT((Int) PF_PACKET));
 #endif
 #ifdef PF_PPPOX 
-    AssPRec(tmp, RNamName("PF_PPPOX"), INTOBJ_INT((Int) PF_PPPOX));
+    SetARecordField(tmp, RNamName("PF_PPPOX"), INTOBJ_INT((Int) PF_PPPOX));
 #endif
 #ifdef PF_ROSE 
-    AssPRec(tmp, RNamName("PF_ROSE"), INTOBJ_INT((Int) PF_ROSE));
+    SetARecordField(tmp, RNamName("PF_ROSE"), INTOBJ_INT((Int) PF_ROSE));
 #endif
 #ifdef PF_ROUTE 
-    AssPRec(tmp, RNamName("PF_ROUTE"), INTOBJ_INT((Int) PF_ROUTE));
+    SetARecordField(tmp, RNamName("PF_ROUTE"), INTOBJ_INT((Int) PF_ROUTE));
 #endif
 #ifdef PF_SECURITY 
-    AssPRec(tmp, RNamName("PF_SECURITY"), INTOBJ_INT((Int) PF_SECURITY));
+    SetARecordField(tmp, RNamName("PF_SECURITY"), INTOBJ_INT((Int) PF_SECURITY));
 #endif
 #ifdef PF_SNA 
-    AssPRec(tmp, RNamName("PF_SNA"), INTOBJ_INT((Int) PF_SNA));
+    SetARecordField(tmp, RNamName("PF_SNA"), INTOBJ_INT((Int) PF_SNA));
 #endif
 #ifdef PF_UNIX 
-    AssPRec(tmp, RNamName("PF_UNIX"), INTOBJ_INT((Int) PF_UNIX));
+    SetARecordField(tmp, RNamName("PF_UNIX"), INTOBJ_INT((Int) PF_UNIX));
 #endif
 #ifdef PF_WANPIPE 
-    AssPRec(tmp, RNamName("PF_WANPIPE"), INTOBJ_INT((Int) PF_WANPIPE));
+    SetARecordField(tmp, RNamName("PF_WANPIPE"), INTOBJ_INT((Int) PF_WANPIPE));
 #endif
 #ifdef PF_X25 
-    AssPRec(tmp, RNamName("PF_X25"), INTOBJ_INT((Int) PF_X25));
+    SetARecordField(tmp, RNamName("PF_X25"), INTOBJ_INT((Int) PF_X25));
 #endif
 #ifdef SOCK_DGRAM 
-    AssPRec(tmp, RNamName("SOCK_DGRAM"), INTOBJ_INT((Int) SOCK_DGRAM));
+    SetARecordField(tmp, RNamName("SOCK_DGRAM"), INTOBJ_INT((Int) SOCK_DGRAM));
 #endif
 #ifdef SOCK_PACKET 
-    AssPRec(tmp, RNamName("SOCK_PACKET"), INTOBJ_INT((Int) SOCK_PACKET));
+    SetARecordField(tmp, RNamName("SOCK_PACKET"), INTOBJ_INT((Int) SOCK_PACKET));
 #endif
 #ifdef SOCK_RAW 
-    AssPRec(tmp, RNamName("SOCK_RAW"), INTOBJ_INT((Int) SOCK_RAW));
+    SetARecordField(tmp, RNamName("SOCK_RAW"), INTOBJ_INT((Int) SOCK_RAW));
 #endif
 #ifdef SOCK_RDM 
-    AssPRec(tmp, RNamName("SOCK_RDM"), INTOBJ_INT((Int) SOCK_RDM));
+    SetARecordField(tmp, RNamName("SOCK_RDM"), INTOBJ_INT((Int) SOCK_RDM));
 #endif
 #ifdef SOCK_SEQPACKET 
-    AssPRec(tmp, RNamName("SOCK_SEQPACKET"), INTOBJ_INT((Int) SOCK_SEQPACKET));
+    SetARecordField(tmp, RNamName("SOCK_SEQPACKET"), INTOBJ_INT((Int) SOCK_SEQPACKET));
 #endif
 #ifdef SOCK_STREAM 
-    AssPRec(tmp, RNamName("SOCK_STREAM"), INTOBJ_INT((Int) SOCK_STREAM));
+    SetARecordField(tmp, RNamName("SOCK_STREAM"), INTOBJ_INT((Int) SOCK_STREAM));
 #endif
 #ifdef SOL_SOCKET 
-    AssPRec(tmp, RNamName("SOL_SOCKET"), INTOBJ_INT((Int) SOL_SOCKET));
+    SetARecordField(tmp, RNamName("SOL_SOCKET"), INTOBJ_INT((Int) SOL_SOCKET));
 #endif
 #ifdef IP_OPTIONS 
-    AssPRec(tmp, RNamName("IP_OPTIONS"), INTOBJ_INT((Int) IP_OPTIONS));
+    SetARecordField(tmp, RNamName("IP_OPTIONS"), INTOBJ_INT((Int) IP_OPTIONS));
 #endif
 #ifdef IP_PKTINFO 
-    AssPRec(tmp, RNamName("IP_PKTINFO"), INTOBJ_INT((Int) IP_PKTINFO));
+    SetARecordField(tmp, RNamName("IP_PKTINFO"), INTOBJ_INT((Int) IP_PKTINFO));
 #endif
 #ifdef IP_RECVTOS 
-    AssPRec(tmp, RNamName("IP_RECVTOS"), INTOBJ_INT((Int) IP_RECVTOS));
+    SetARecordField(tmp, RNamName("IP_RECVTOS"), INTOBJ_INT((Int) IP_RECVTOS));
 #endif
 #ifdef IP_RECVTTL 
-    AssPRec(tmp, RNamName("IP_RECVTTL"), INTOBJ_INT((Int) IP_RECVTTL));
+    SetARecordField(tmp, RNamName("IP_RECVTTL"), INTOBJ_INT((Int) IP_RECVTTL));
 #endif
 #ifdef IP_RECVOPTS 
-    AssPRec(tmp, RNamName("IP_RECVOPTS"), INTOBJ_INT((Int) IP_RECVOPTS));
+    SetARecordField(tmp, RNamName("IP_RECVOPTS"), INTOBJ_INT((Int) IP_RECVOPTS));
 #endif
 #ifdef IP_RETOPTS 
-    AssPRec(tmp, RNamName("IP_RETOPTS"), INTOBJ_INT((Int) IP_RETOPTS));
+    SetARecordField(tmp, RNamName("IP_RETOPTS"), INTOBJ_INT((Int) IP_RETOPTS));
 #endif
 #ifdef IP_TOS 
-    AssPRec(tmp, RNamName("IP_TOS"), INTOBJ_INT((Int) IP_TOS));
+    SetARecordField(tmp, RNamName("IP_TOS"), INTOBJ_INT((Int) IP_TOS));
 #endif
 #ifdef IP_TTL 
-    AssPRec(tmp, RNamName("IP_TTL"), INTOBJ_INT((Int) IP_TTL));
+    SetARecordField(tmp, RNamName("IP_TTL"), INTOBJ_INT((Int) IP_TTL));
 #endif
 #ifdef IP_HDRINCL 
-    AssPRec(tmp, RNamName("IP_HDRINCL"), INTOBJ_INT((Int) IP_HDRINCL));
+    SetARecordField(tmp, RNamName("IP_HDRINCL"), INTOBJ_INT((Int) IP_HDRINCL));
 #endif
 #ifdef IP_RECVERR 
-    AssPRec(tmp, RNamName("IP_RECVERR"), INTOBJ_INT((Int) IP_RECVERR));
+    SetARecordField(tmp, RNamName("IP_RECVERR"), INTOBJ_INT((Int) IP_RECVERR));
 #endif
 #ifdef IP_MTU_DISCOVER 
-    AssPRec(tmp, RNamName("IP_MTU_DISCOVER"), 
+    SetARecordField(tmp, RNamName("IP_MTU_DISCOVER"), 
                  INTOBJ_INT((Int) IP_MTU_DISCOVER));
 #endif
 #ifdef IP_MTU 
-    AssPRec(tmp, RNamName("IP_MTU"), INTOBJ_INT((Int) IP_MTU));
+    SetARecordField(tmp, RNamName("IP_MTU"), INTOBJ_INT((Int) IP_MTU));
 #endif
 #ifdef IP_ROUTER_ALERT 
-    AssPRec(tmp, RNamName("IP_ROUTER_ALERT"), 
+    SetARecordField(tmp, RNamName("IP_ROUTER_ALERT"), 
                  INTOBJ_INT((Int) IP_ROUTER_ALERT));
 #endif
 #ifdef IP_MULTICAST_TTL 
-    AssPRec(tmp, RNamName("IP_MULTICAST_TTL"), 
+    SetARecordField(tmp, RNamName("IP_MULTICAST_TTL"), 
                  INTOBJ_INT((Int) IP_MULTICAST_TTL));
 #endif
 #ifdef IP_MULTICAST_LOOP 
-    AssPRec(tmp, RNamName("IP_MULTICAST_LOOP"), 
+    SetARecordField(tmp, RNamName("IP_MULTICAST_LOOP"), 
                  INTOBJ_INT((Int) IP_MULTICAST_LOOP));
 #endif
 #ifdef IP_ADD_MEMBERSHIP 
-    AssPRec(tmp, RNamName("IP_ADD_MEMBERSHIP"), 
+    SetARecordField(tmp, RNamName("IP_ADD_MEMBERSHIP"), 
                  INTOBJ_INT((Int) IP_ADD_MEMBERSHIP));
 #endif
 #ifdef IP_DROP_MEMBERSHIP 
-    AssPRec(tmp, RNamName("IP_DROP_MEMBERSHIP"),
+    SetARecordField(tmp, RNamName("IP_DROP_MEMBERSHIP"),
                  INTOBJ_INT((Int)IP_DROP_MEMBERSHIP));
 #endif
 #ifdef IP_MULTICAST_IF 
-    AssPRec(tmp, RNamName("IP_MULTICAST_IF"),INTOBJ_INT((Int) IP_MULTICAST_IF));
+    SetARecordField(tmp, RNamName("IP_MULTICAST_IF"),INTOBJ_INT((Int) IP_MULTICAST_IF));
 #endif
 #ifdef SO_RCVBUF 
-    AssPRec(tmp, RNamName("SO_RCVBUF"), INTOBJ_INT((Int) SO_RCVBUF));
+    SetARecordField(tmp, RNamName("SO_RCVBUF"), INTOBJ_INT((Int) SO_RCVBUF));
 #endif
 #ifdef SO_SNDBUF 
-    AssPRec(tmp, RNamName("SO_SNDBUF"), INTOBJ_INT((Int) SO_SNDBUF));
+    SetARecordField(tmp, RNamName("SO_SNDBUF"), INTOBJ_INT((Int) SO_SNDBUF));
 #endif
 #ifdef SO_SNDLOWAT 
-    AssPRec(tmp, RNamName("SO_SNDLOWAT"), INTOBJ_INT((Int) SO_SNDLOWAT));
+    SetARecordField(tmp, RNamName("SO_SNDLOWAT"), INTOBJ_INT((Int) SO_SNDLOWAT));
 #endif
 #ifdef SO_RCVLOWAT 
-    AssPRec(tmp, RNamName("SO_RCVLOWAT"), INTOBJ_INT((Int) SO_RCVLOWAT));
+    SetARecordField(tmp, RNamName("SO_RCVLOWAT"), INTOBJ_INT((Int) SO_RCVLOWAT));
 #endif
 #ifdef SO_SNDTIMEO 
-    AssPRec(tmp, RNamName("SO_SNDTIMEO"), INTOBJ_INT((Int) SO_SNDTIMEO));
+    SetARecordField(tmp, RNamName("SO_SNDTIMEO"), INTOBJ_INT((Int) SO_SNDTIMEO));
 #endif
 #ifdef SO_RCVTIMEO 
-    AssPRec(tmp, RNamName("SO_RCVTIMEO"), INTOBJ_INT((Int) SO_RCVTIMEO));
+    SetARecordField(tmp, RNamName("SO_RCVTIMEO"), INTOBJ_INT((Int) SO_RCVTIMEO));
 #endif
 #ifdef SO_REUSEADDR 
-    AssPRec(tmp, RNamName("SO_REUSEADDR"), INTOBJ_INT((Int) SO_REUSEADDR));
+    SetARecordField(tmp, RNamName("SO_REUSEADDR"), INTOBJ_INT((Int) SO_REUSEADDR));
 #endif
 #ifdef SO_KEEPALIVE 
-    AssPRec(tmp, RNamName("SO_KEEPALIVE"), INTOBJ_INT((Int) SO_KEEPALIVE));
+    SetARecordField(tmp, RNamName("SO_KEEPALIVE"), INTOBJ_INT((Int) SO_KEEPALIVE));
 #endif
 #ifdef SO_OOBINLINE 
-    AssPRec(tmp, RNamName("SO_OOBINLINE"), INTOBJ_INT((Int) SO_OOBINLINE));
+    SetARecordField(tmp, RNamName("SO_OOBINLINE"), INTOBJ_INT((Int) SO_OOBINLINE));
 #endif
 #ifdef SO_BSDCOMPAT 
-    AssPRec(tmp, RNamName("SO_BSDCOMPAT"), INTOBJ_INT((Int) SO_BSDCOMPAT));
+    SetARecordField(tmp, RNamName("SO_BSDCOMPAT"), INTOBJ_INT((Int) SO_BSDCOMPAT));
 #endif
 #ifdef SO_PASSCRED 
-    AssPRec(tmp, RNamName("SO_PASSCRED"), INTOBJ_INT((Int) SO_PASSCRED));
+    SetARecordField(tmp, RNamName("SO_PASSCRED"), INTOBJ_INT((Int) SO_PASSCRED));
 #endif
 #ifdef SO_PEERCRED 
-    AssPRec(tmp, RNamName("SO_PEERCRED"), INTOBJ_INT((Int) SO_PEERCRED));
+    SetARecordField(tmp, RNamName("SO_PEERCRED"), INTOBJ_INT((Int) SO_PEERCRED));
 #endif
 #ifdef SO_BINDTODEVICE 
-    AssPRec(tmp, RNamName("SO_BINDTODEVICE"),INTOBJ_INT((Int) SO_BINDTODEVICE));
+    SetARecordField(tmp, RNamName("SO_BINDTODEVICE"),INTOBJ_INT((Int) SO_BINDTODEVICE));
 #endif
 #ifdef SO_DEBUG 
-    AssPRec(tmp, RNamName("SO_DEBUG"), INTOBJ_INT((Int) SO_DEBUG));
+    SetARecordField(tmp, RNamName("SO_DEBUG"), INTOBJ_INT((Int) SO_DEBUG));
 #endif
 #ifdef SO_TYPE 
-    AssPRec(tmp, RNamName("SO_TYPE"), INTOBJ_INT((Int) SO_TYPE));
+    SetARecordField(tmp, RNamName("SO_TYPE"), INTOBJ_INT((Int) SO_TYPE));
 #endif
 #ifdef SO_ACCEPTCONN 
-    AssPRec(tmp, RNamName("SO_ACCEPTCONN"), INTOBJ_INT((Int) SO_ACCEPTCONN));
+    SetARecordField(tmp, RNamName("SO_ACCEPTCONN"), INTOBJ_INT((Int) SO_ACCEPTCONN));
 #endif
 #ifdef SO_DONTROUTE 
-    AssPRec(tmp, RNamName("SO_DONTROUTE"), INTOBJ_INT((Int) SO_DONTROUTE));
+    SetARecordField(tmp, RNamName("SO_DONTROUTE"), INTOBJ_INT((Int) SO_DONTROUTE));
 #endif
 #ifdef SO_BROADCAST 
-    AssPRec(tmp, RNamName("SO_BROADCAST"), INTOBJ_INT((Int) SO_BROADCAST));
+    SetARecordField(tmp, RNamName("SO_BROADCAST"), INTOBJ_INT((Int) SO_BROADCAST));
 #endif
 #ifdef SO_LINGER 
-    AssPRec(tmp, RNamName("SO_LINGER"), INTOBJ_INT((Int) SO_LINGER));
+    SetARecordField(tmp, RNamName("SO_LINGER"), INTOBJ_INT((Int) SO_LINGER));
 #endif
 #ifdef SO_PRIORITY 
-    AssPRec(tmp, RNamName("SO_PRIORITY"), INTOBJ_INT((Int) SO_PRIORITY));
+    SetARecordField(tmp, RNamName("SO_PRIORITY"), INTOBJ_INT((Int) SO_PRIORITY));
 #endif
 #ifdef SO_ERROR 
-    AssPRec(tmp, RNamName("SO_ERROR"), INTOBJ_INT((Int) SO_ERROR));
+    SetARecordField(tmp, RNamName("SO_ERROR"), INTOBJ_INT((Int) SO_ERROR));
 #endif
 
 #ifdef TCP_CORK 
-    AssPRec(tmp, RNamName("TCP_CORK"), INTOBJ_INT((Int) TCP_CORK));
+    SetARecordField(tmp, RNamName("TCP_CORK"), INTOBJ_INT((Int) TCP_CORK));
 #endif
 #ifdef TCP_DEFER_ACCEPT 
-    AssPRec(tmp,RNamName("TCP_DEFER_ACCEPT"),INTOBJ_INT((Int)TCP_DEFER_ACCEPT));
+    SetARecordField(tmp,RNamName("TCP_DEFER_ACCEPT"),INTOBJ_INT((Int)TCP_DEFER_ACCEPT));
 #endif
 #ifdef TCP_INFO 
-    AssPRec(tmp, RNamName("TCP_INFO"), INTOBJ_INT((Int) TCP_INFO));
+    SetARecordField(tmp, RNamName("TCP_INFO"), INTOBJ_INT((Int) TCP_INFO));
 #endif
 #ifdef TCP_KEEPCNT 
-    AssPRec(tmp, RNamName("TCP_KEEPCNT"), INTOBJ_INT((Int) TCP_KEEPCNT));
+    SetARecordField(tmp, RNamName("TCP_KEEPCNT"), INTOBJ_INT((Int) TCP_KEEPCNT));
 #endif
 #ifdef TCP_KEEPIDLE 
-    AssPRec(tmp, RNamName("TCP_KEEPIDLE"), INTOBJ_INT((Int) TCP_KEEPIDLE));
+    SetARecordField(tmp, RNamName("TCP_KEEPIDLE"), INTOBJ_INT((Int) TCP_KEEPIDLE));
 #endif
 #ifdef TCP_KEEPINTVL 
-    AssPRec(tmp, RNamName("TCP_KEEPINTVL"), INTOBJ_INT((Int) TCP_KEEPINTVL));
+    SetARecordField(tmp, RNamName("TCP_KEEPINTVL"), INTOBJ_INT((Int) TCP_KEEPINTVL));
 #endif
 #ifdef TCP_LINGER2 
-    AssPRec(tmp, RNamName("TCP_LINGER2"), INTOBJ_INT((Int) TCP_LINGER2));
+    SetARecordField(tmp, RNamName("TCP_LINGER2"), INTOBJ_INT((Int) TCP_LINGER2));
 #endif
 #ifdef TCP_MAXSEG 
-    AssPRec(tmp, RNamName("TCP_MAXSEG"), INTOBJ_INT((Int) TCP_MAXSEG));
+    SetARecordField(tmp, RNamName("TCP_MAXSEG"), INTOBJ_INT((Int) TCP_MAXSEG));
 #endif
 #ifdef TCP_NODELAY 
-    AssPRec(tmp, RNamName("TCP_NODELAY"), INTOBJ_INT((Int) TCP_NODELAY));
+    SetARecordField(tmp, RNamName("TCP_NODELAY"), INTOBJ_INT((Int) TCP_NODELAY));
 #endif
 #ifdef TCP_QUICKACK 
-    AssPRec(tmp, RNamName("TCP_QUICKACK"), INTOBJ_INT((Int) TCP_QUICKACK));
+    SetARecordField(tmp, RNamName("TCP_QUICKACK"), INTOBJ_INT((Int) TCP_QUICKACK));
 #endif
 #ifdef TCP_SYNCNT 
-    AssPRec(tmp, RNamName("TCP_SYNCNT"), INTOBJ_INT((Int) TCP_SYNCNT));
+    SetARecordField(tmp, RNamName("TCP_SYNCNT"), INTOBJ_INT((Int) TCP_SYNCNT));
 #endif
 #ifdef TCP_WINDOW_CLAMP 
-    AssPRec(tmp,RNamName("TCP_WINDOW_CLAMP"),INTOBJ_INT((Int)TCP_WINDOW_CLAMP));
+    SetARecordField(tmp,RNamName("TCP_WINDOW_CLAMP"),INTOBJ_INT((Int)TCP_WINDOW_CLAMP));
 #endif
 #ifdef ICMP_FILTER 
-    AssPRec(tmp, RNamName("ICMP_FILTER"), INTOBJ_INT((Int) ICMP_FILTER));
+    SetARecordField(tmp, RNamName("ICMP_FILTER"), INTOBJ_INT((Int) ICMP_FILTER));
 #endif
     
     /* Constants for messages for recv and send: */
 #ifdef MSG_OOB 
-    AssPRec(tmp, RNamName("MSG_OOB"), INTOBJ_INT((Int) MSG_OOB));
+    SetARecordField(tmp, RNamName("MSG_OOB"), INTOBJ_INT((Int) MSG_OOB));
 #endif
 #ifdef MSG_PEEK 
-    AssPRec(tmp, RNamName("MSG_PEEK"), INTOBJ_INT((Int) MSG_PEEK));
+    SetARecordField(tmp, RNamName("MSG_PEEK"), INTOBJ_INT((Int) MSG_PEEK));
 #endif
 #ifdef MSG_WAITALL 
-    AssPRec(tmp, RNamName("MSG_WAITALL"), INTOBJ_INT((Int) MSG_WAITALL));
+    SetARecordField(tmp, RNamName("MSG_WAITALL"), INTOBJ_INT((Int) MSG_WAITALL));
 #endif
 #ifdef MSG_TRUNC 
-    AssPRec(tmp, RNamName("MSG_TRUNC"), INTOBJ_INT((Int) MSG_TRUNC));
+    SetARecordField(tmp, RNamName("MSG_TRUNC"), INTOBJ_INT((Int) MSG_TRUNC));
 #endif
 #ifdef MSG_ERRQUEUE 
-    AssPRec(tmp, RNamName("MSG_ERRQUEUE"), INTOBJ_INT((Int) MSG_ERRQUEUE));
+    SetARecordField(tmp, RNamName("MSG_ERRQUEUE"), INTOBJ_INT((Int) MSG_ERRQUEUE));
 #endif
 #ifdef MSG_EOR 
-    AssPRec(tmp, RNamName("MSG_EOR"), INTOBJ_INT((Int) MSG_EOR));
+    SetARecordField(tmp, RNamName("MSG_EOR"), INTOBJ_INT((Int) MSG_EOR));
 #endif
 #ifdef MSG_CTRUNC 
-    AssPRec(tmp, RNamName("MSG_CTRUNC"), INTOBJ_INT((Int) MSG_CTRUNC));
+    SetARecordField(tmp, RNamName("MSG_CTRUNC"), INTOBJ_INT((Int) MSG_CTRUNC));
 #endif
 #ifdef MSG_OOB 
-    AssPRec(tmp, RNamName("MSG_OOB"), INTOBJ_INT((Int) MSG_OOB));
+    SetARecordField(tmp, RNamName("MSG_OOB"), INTOBJ_INT((Int) MSG_OOB));
 #endif
 #ifdef MSG_ERRQUEUE 
-    AssPRec(tmp, RNamName("MSG_ERRQUEUE"), INTOBJ_INT((Int) MSG_ERRQUEUE));
+    SetARecordField(tmp, RNamName("MSG_ERRQUEUE"), INTOBJ_INT((Int) MSG_ERRQUEUE));
 #endif
 #ifdef MSG_DONTWAIT 
-    AssPRec(tmp, RNamName("MSG_DONTWAIT"), INTOBJ_INT((Int) MSG_DONTWAIT));
+    SetARecordField(tmp, RNamName("MSG_DONTWAIT"), INTOBJ_INT((Int) MSG_DONTWAIT));
 #endif
 #ifdef PIPE_BUF
-    AssPRec(tmp, RNamName("PIPE_BUF"), INTOBJ_INT((Int) PIPE_BUF));
+    SetARecordField(tmp, RNamName("PIPE_BUF"), INTOBJ_INT((Int) PIPE_BUF));
 #endif
 #ifdef F_DUPFD
-    AssPRec(tmp, RNamName("F_DUPFD"), INTOBJ_INT((Int) F_DUPFD));
+    SetARecordField(tmp, RNamName("F_DUPFD"), INTOBJ_INT((Int) F_DUPFD));
 #endif
 #ifdef F_GETFD
-    AssPRec(tmp, RNamName("F_GETFD"), INTOBJ_INT((Int) F_GETFD));
+    SetARecordField(tmp, RNamName("F_GETFD"), INTOBJ_INT((Int) F_GETFD));
 #endif
 #ifdef F_SETFD
-    AssPRec(tmp, RNamName("F_SETFD"), INTOBJ_INT((Int) F_SETFD));
+    SetARecordField(tmp, RNamName("F_SETFD"), INTOBJ_INT((Int) F_SETFD));
 #endif
 #ifdef FD_CLOEXEC
-    AssPRec(tmp, RNamName("FD_CLOEXEC"), INTOBJ_INT((Int) FD_CLOEXEC));
+    SetARecordField(tmp, RNamName("FD_CLOEXEC"), INTOBJ_INT((Int) FD_CLOEXEC));
 #endif
 #ifdef F_GETFL
-    AssPRec(tmp, RNamName("F_GETFL"), INTOBJ_INT((Int) F_GETFL));
+    SetARecordField(tmp, RNamName("F_GETFL"), INTOBJ_INT((Int) F_GETFL));
 #endif
 #ifdef F_SETFL
-    AssPRec(tmp, RNamName("F_SETFL"), INTOBJ_INT((Int) F_SETFL));
+    SetARecordField(tmp, RNamName("F_SETFL"), INTOBJ_INT((Int) F_SETFL));
 #endif
 #ifdef F_GETOWN
-    AssPRec(tmp, RNamName("F_GETOWN"), INTOBJ_INT((Int) F_GETOWN));
+    SetARecordField(tmp, RNamName("F_GETOWN"), INTOBJ_INT((Int) F_GETOWN));
 #endif
 #ifdef F_SETOWN
-    AssPRec(tmp, RNamName("F_SETOWN"), INTOBJ_INT((Int) F_SETOWN));
+    SetARecordField(tmp, RNamName("F_SETOWN"), INTOBJ_INT((Int) F_SETOWN));
 #endif
 #ifdef F_GETSIG
-    AssPRec(tmp, RNamName("F_GETSIG"), INTOBJ_INT((Int) F_GETSIG));
+    SetARecordField(tmp, RNamName("F_GETSIG"), INTOBJ_INT((Int) F_GETSIG));
 #endif
 #ifdef F_SETSIG
-    AssPRec(tmp, RNamName("F_SETSIG"), INTOBJ_INT((Int) F_SETSIG));
+    SetARecordField(tmp, RNamName("F_SETSIG"), INTOBJ_INT((Int) F_SETSIG));
 #endif
 #ifdef F_GETLEASE
-    AssPRec(tmp, RNamName("F_GETLEASE"), INTOBJ_INT((Int) F_GETLEASE));
+    SetARecordField(tmp, RNamName("F_GETLEASE"), INTOBJ_INT((Int) F_GETLEASE));
 #endif
 #ifdef F_SETLEASE
-    AssPRec(tmp, RNamName("F_SETLEASE"), INTOBJ_INT((Int) F_SETLEASE));
+    SetARecordField(tmp, RNamName("F_SETLEASE"), INTOBJ_INT((Int) F_SETLEASE));
 #endif
 #ifdef F_RDLCK
-    AssPRec(tmp, RNamName("F_RDLCK"), INTOBJ_INT((Int) F_RDLCK));
+    SetARecordField(tmp, RNamName("F_RDLCK"), INTOBJ_INT((Int) F_RDLCK));
 #endif
 #ifdef F_WRLCK
-    AssPRec(tmp, RNamName("F_WRLCK"), INTOBJ_INT((Int) F_WRLCK));
+    SetARecordField(tmp, RNamName("F_WRLCK"), INTOBJ_INT((Int) F_WRLCK));
 #endif
 #ifdef F_UNLCK
-    AssPRec(tmp, RNamName("F_UNLCK"), INTOBJ_INT((Int) F_UNLCK));
+    SetARecordField(tmp, RNamName("F_UNLCK"), INTOBJ_INT((Int) F_UNLCK));
 #endif
 #ifdef __GNUC__
-    AssPRec(tmp, RNamName("__GNUC__"), INTOBJ_INT((Int) __GNUC__));
+    SetARecordField(tmp, RNamName("__GNUC__"), INTOBJ_INT((Int) __GNUC__));
 #endif
 #ifdef __GNUC_MINOR__
-    AssPRec(tmp, RNamName("__GNUC_MINOR__"), INTOBJ_INT((Int) __GNUC_MINOR__));
+    SetARecordField(tmp, RNamName("__GNUC_MINOR__"), INTOBJ_INT((Int) __GNUC_MINOR__));
 #endif
 #ifdef SIGHUP
-    AssPRec(tmp, RNamName("SIGHUP"), INTOBJ_INT((Int) SIGHUP));
+    SetARecordField(tmp, RNamName("SIGHUP"), INTOBJ_INT((Int) SIGHUP));
 #endif
 #ifdef SIGINT
-    AssPRec(tmp, RNamName("SIGINT"), INTOBJ_INT((Int) SIGINT));
+    SetARecordField(tmp, RNamName("SIGINT"), INTOBJ_INT((Int) SIGINT));
 #endif
 #ifdef SIGQUIT
-    AssPRec(tmp, RNamName("SIGQUIT"), INTOBJ_INT((Int) SIGQUIT));
+    SetARecordField(tmp, RNamName("SIGQUIT"), INTOBJ_INT((Int) SIGQUIT));
 #endif
 #ifdef SIGILL
-    AssPRec(tmp, RNamName("SIGILL"), INTOBJ_INT((Int) SIGILL));
+    SetARecordField(tmp, RNamName("SIGILL"), INTOBJ_INT((Int) SIGILL));
 #endif
 #ifdef SIGABRT
-    AssPRec(tmp, RNamName("SIGABRT"), INTOBJ_INT((Int) SIGABRT));
+    SetARecordField(tmp, RNamName("SIGABRT"), INTOBJ_INT((Int) SIGABRT));
 #endif
 #ifdef SIGFPE
-    AssPRec(tmp, RNamName("SIGFPE"), INTOBJ_INT((Int) SIGFPE));
+    SetARecordField(tmp, RNamName("SIGFPE"), INTOBJ_INT((Int) SIGFPE));
 #endif
 #ifdef SIGKILL
-    AssPRec(tmp, RNamName("SIGKILL"), INTOBJ_INT((Int) SIGKILL));
+    SetARecordField(tmp, RNamName("SIGKILL"), INTOBJ_INT((Int) SIGKILL));
 #endif
 #ifdef SIGSEGV
-    AssPRec(tmp, RNamName("SIGSEGV"), INTOBJ_INT((Int) SIGSEGV));
+    SetARecordField(tmp, RNamName("SIGSEGV"), INTOBJ_INT((Int) SIGSEGV));
 #endif
 #ifdef SIGPIPE
-    AssPRec(tmp, RNamName("SIGPIPE"), INTOBJ_INT((Int) SIGPIPE));
+    SetARecordField(tmp, RNamName("SIGPIPE"), INTOBJ_INT((Int) SIGPIPE));
 #endif
 #ifdef SIGALRM
-    AssPRec(tmp, RNamName("SIGALRM"), INTOBJ_INT((Int) SIGALRM));
+    SetARecordField(tmp, RNamName("SIGALRM"), INTOBJ_INT((Int) SIGALRM));
 #endif
 #ifdef SIGTERM
-    AssPRec(tmp, RNamName("SIGTERM"), INTOBJ_INT((Int) SIGTERM));
+    SetARecordField(tmp, RNamName("SIGTERM"), INTOBJ_INT((Int) SIGTERM));
 #endif
 #ifdef SIGUSR1
-    AssPRec(tmp, RNamName("SIGUSR1"), INTOBJ_INT((Int) SIGUSR1));
+    SetARecordField(tmp, RNamName("SIGUSR1"), INTOBJ_INT((Int) SIGUSR1));
 #endif
 #ifdef SIGUSR2
-    AssPRec(tmp, RNamName("SIGUSR2"), INTOBJ_INT((Int) SIGUSR2));
+    SetARecordField(tmp, RNamName("SIGUSR2"), INTOBJ_INT((Int) SIGUSR2));
 #endif
 #ifdef SIGCHLD
-    AssPRec(tmp, RNamName("SIGCHLD"), INTOBJ_INT((Int) SIGCHLD));
+    SetARecordField(tmp, RNamName("SIGCHLD"), INTOBJ_INT((Int) SIGCHLD));
 #endif
 #ifdef SIGCONT
-    AssPRec(tmp, RNamName("SIGCONT"), INTOBJ_INT((Int) SIGCONT));
+    SetARecordField(tmp, RNamName("SIGCONT"), INTOBJ_INT((Int) SIGCONT));
 #endif
 #ifdef SIGSTOP
-    AssPRec(tmp, RNamName("SIGSTOP"), INTOBJ_INT((Int) SIGSTOP));
+    SetARecordField(tmp, RNamName("SIGSTOP"), INTOBJ_INT((Int) SIGSTOP));
 #endif
 #ifdef SIGTSTP
-    AssPRec(tmp, RNamName("SIGTSTP"), INTOBJ_INT((Int) SIGTSTP));
+    SetARecordField(tmp, RNamName("SIGTSTP"), INTOBJ_INT((Int) SIGTSTP));
 #endif
 #ifdef SIGTTIN
-    AssPRec(tmp, RNamName("SIGTTIN"), INTOBJ_INT((Int) SIGTTIN));
+    SetARecordField(tmp, RNamName("SIGTTIN"), INTOBJ_INT((Int) SIGTTIN));
 #endif
 #ifdef SIGTTOU
-    AssPRec(tmp, RNamName("SIGTTOU"), INTOBJ_INT((Int) SIGTTOU));
+    SetARecordField(tmp, RNamName("SIGTTOU"), INTOBJ_INT((Int) SIGTTOU));
 #endif
 #ifdef SIGBUS
-    AssPRec(tmp, RNamName("SIGBUS"), INTOBJ_INT((Int) SIGBUS));
+    SetARecordField(tmp, RNamName("SIGBUS"), INTOBJ_INT((Int) SIGBUS));
 #endif
 #ifdef SIGPOLL
-    AssPRec(tmp, RNamName("SIGPOLL"), INTOBJ_INT((Int) SIGPOLL));
+    SetARecordField(tmp, RNamName("SIGPOLL"), INTOBJ_INT((Int) SIGPOLL));
 #endif
 #ifdef SIGPROF
-    AssPRec(tmp, RNamName("SIGPROF"), INTOBJ_INT((Int) SIGPROF));
+    SetARecordField(tmp, RNamName("SIGPROF"), INTOBJ_INT((Int) SIGPROF));
 #endif
 #ifdef SIGSYS
-    AssPRec(tmp, RNamName("SIGSYS"), INTOBJ_INT((Int) SIGSYS));
+    SetARecordField(tmp, RNamName("SIGSYS"), INTOBJ_INT((Int) SIGSYS));
 #endif
 #ifdef SIGTRAP
-    AssPRec(tmp, RNamName("SIGTRAP"), INTOBJ_INT((Int) SIGTRAP));
+    SetARecordField(tmp, RNamName("SIGTRAP"), INTOBJ_INT((Int) SIGTRAP));
 #endif
 #ifdef SIGURG
-    AssPRec(tmp, RNamName("SIGURG"), INTOBJ_INT((Int) SIGURG));
+    SetARecordField(tmp, RNamName("SIGURG"), INTOBJ_INT((Int) SIGURG));
 #endif
 #ifdef SIGVTALRM
-    AssPRec(tmp, RNamName("SIGVTALRM"), INTOBJ_INT((Int) SIGVTALRM));
+    SetARecordField(tmp, RNamName("SIGVTALRM"), INTOBJ_INT((Int) SIGVTALRM));
 #endif
 #ifdef SIGXCPU
-    AssPRec(tmp, RNamName("SIGXCPU"), INTOBJ_INT((Int) SIGXCPU));
+    SetARecordField(tmp, RNamName("SIGXCPU"), INTOBJ_INT((Int) SIGXCPU));
 #endif
 #ifdef SIGXFSZ
-    AssPRec(tmp, RNamName("SIGXFSZ"), INTOBJ_INT((Int) SIGXFSZ));
+    SetARecordField(tmp, RNamName("SIGXFSZ"), INTOBJ_INT((Int) SIGXFSZ));
 #endif
 #ifdef SIGIOT
-    AssPRec(tmp, RNamName("SIGIOT"), INTOBJ_INT((Int) SIGIOT));
+    SetARecordField(tmp, RNamName("SIGIOT"), INTOBJ_INT((Int) SIGIOT));
 #endif
 #ifdef SIGEMT
-    AssPRec(tmp, RNamName("SIGEMT"), INTOBJ_INT((Int) SIGEMT));
+    SetARecordField(tmp, RNamName("SIGEMT"), INTOBJ_INT((Int) SIGEMT));
 #endif
 #ifdef SIGSTKFLT
-    AssPRec(tmp, RNamName("SIGSTKFLT"), INTOBJ_INT((Int) SIGSTKFLT));
+    SetARecordField(tmp, RNamName("SIGSTKFLT"), INTOBJ_INT((Int) SIGSTKFLT));
 #endif
 #ifdef SIGIO
-    AssPRec(tmp, RNamName("SIGIO"), INTOBJ_INT((Int) SIGIO));
+    SetARecordField(tmp, RNamName("SIGIO"), INTOBJ_INT((Int) SIGIO));
 #endif
 #ifdef SIGCLD
-    AssPRec(tmp, RNamName("SIGCLD"), INTOBJ_INT((Int) SIGCLD));
+    SetARecordField(tmp, RNamName("SIGCLD"), INTOBJ_INT((Int) SIGCLD));
 #endif
 #ifdef SIGPWR
-    AssPRec(tmp, RNamName("SIGPWR"), INTOBJ_INT((Int) SIGPWR));
+    SetARecordField(tmp, RNamName("SIGPWR"), INTOBJ_INT((Int) SIGPWR));
 #endif
 #ifdef SIGINFO
-    AssPRec(tmp, RNamName("SIGINFO"), INTOBJ_INT((Int) SIGINFO));
+    SetARecordField(tmp, RNamName("SIGINFO"), INTOBJ_INT((Int) SIGINFO));
 #endif
 #ifdef SIGLOST
-    AssPRec(tmp, RNamName("SIGLOST"), INTOBJ_INT((Int) SIGLOST));
+    SetARecordField(tmp, RNamName("SIGLOST"), INTOBJ_INT((Int) SIGLOST));
 #endif
 #ifdef SIGWINCH
-    AssPRec(tmp, RNamName("SIGWINCH"), INTOBJ_INT((Int) SIGWINCH));
+    SetARecordField(tmp, RNamName("SIGWINCH"), INTOBJ_INT((Int) SIGWINCH));
 #endif
 #ifdef SIGUNUSED
-    AssPRec(tmp, RNamName("SIGUNUSED"), INTOBJ_INT((Int) SIGUNUSED));
+    SetARecordField(tmp, RNamName("SIGUNUSED"), INTOBJ_INT((Int) SIGUNUSED));
 #endif
 
     gvar = GVarName("IO");
