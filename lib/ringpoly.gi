@@ -128,7 +128,7 @@ function( r, n )
 
     # cache univariate rings - they might be created often
     if not IsBound(r!.univariateRings) then
-      r!.univariateRings:=[];
+      r!.univariateRings:=MakeWriteOnceAtomic([]);
     fi;
 
     if Length(n)=1 
