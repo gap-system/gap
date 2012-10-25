@@ -1463,7 +1463,7 @@ Obj CopyTraversed(Obj traversedList)
   return copies[1];
 }
 
-extern GVarDescriptor LastInaccessibleGVar, DisableGuardsGVar;
+extern GVarDescriptor LastInaccessibleGVar;
 
 #ifdef VERBOSE_GUARDS
 
@@ -1480,7 +1480,7 @@ void WriteGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
   char * buffer =
     alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
   ImpliedReadGuard(o);
-  if (GVarValue(&DisableGuardsGVar) == True)
+  if (TLS->DisableGuards)
     return;
   SetGVar(&LastInaccessibleGVar, o);
   PrintGuardError(buffer, "write", o, file, line, func, expr);
@@ -1496,7 +1496,7 @@ void ReadGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
     if (AutoLockObj(o))
       return;
   }
-  if (GVarValue(&DisableGuardsGVar) == True)
+  if (TLS->DisableGuards)
     return;
   SetGVar(&LastInaccessibleGVar, o);
   PrintGuardError(buffer, "read", o, file, line, func, expr);
@@ -1507,7 +1507,7 @@ void ReadGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
 void WriteGuardError(Obj o)
 {
   ImpliedReadGuard(o);
-  if (GVarValue(&DisableGuardsGVar) == True)
+  if (TLS->DisableGuards)
     return;
   SetGVar(&LastInaccessibleGVar, o);
   ErrorMayQuit("Attempt to write object %i of type %s without having write access", (Int)o, (Int)TNAM_OBJ(o));
@@ -1520,7 +1520,7 @@ void ReadGuardError(Obj o)
     if (AutoLockObj(o))
       return;
   }
-  if (GVarValue(&DisableGuardsGVar) == True)
+  if (TLS->DisableGuards)
     return;
   SetGVar(&LastInaccessibleGVar, o);
   ErrorMayQuit("Attempt to read object %i of type %s without having read access", (Int)o, (Int)TNAM_OBJ(o));

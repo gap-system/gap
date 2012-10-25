@@ -847,6 +847,18 @@ Obj FuncCREATOR_OF(Obj self, Obj obj) {
 #endif
 }
 
+Obj FuncDISABLE_GUARDS(Obj self, Obj flag) {
+  if (flag == False)
+    TLS->DisableGuards = 0;
+  else if (flag == True)
+    TLS->DisableGuards = 1;
+  else if (IS_INTOBJ(flag))
+    TLS->DisableGuards = (int) (INT_INTOBJ(flag));
+  else
+    ErrorQuit("DISABLE_GUARDS: Argument must be boolean or integer", 0L, 0L);
+  return (Obj) 0;
+}
+
 
 Obj FuncCreateChannel(Obj self, Obj args);
 Obj FuncDestroyChannel(Obj self, Obj channel);
@@ -916,6 +928,7 @@ Obj FuncEND_SINGLE_THREADED(Obj self);
 Obj FuncORDERED_WRITE(Obj self, Obj obj);
 Obj FuncORDERED_READ(Obj self, Obj obj);
 Obj FuncCREATOR_OF(Obj self, Obj obj);
+Obj FuncDISABLE_GUARDS(Obj self, Obj flag);
 
 /****************************************************************************
 **
@@ -1181,6 +1194,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "CREATOR_OF", 1, "obj",
       FuncCREATOR_OF, "src/threadapi.c:CREATOR_OF" },
 
+    { "DISABLE_GUARDS", 1, "flag",
+      FuncDISABLE_GUARDS, "src/threadapi.c:DISABLE_GUARDS" },
+
     { 0 }
 
 };
@@ -1245,7 +1261,6 @@ static void PrintSyncVar(Obj);
 static void PrintRegion(Obj);
 
 GVarDescriptor LastInaccessibleGVar;
-GVarDescriptor DisableGuardsGVar;
 GVarDescriptor MAX_INTERRUPTGVar;
 
 /****************************************************************************
@@ -1279,7 +1294,6 @@ static Int InitKernel (
     InitCopyGVar("TYPE_SYNCVAR", &TYPE_SYNCVAR);
     InitCopyGVar("TYPE_REGION", &TYPE_REGION);
     DeclareGVar(&LastInaccessibleGVar,"LastInaccessible");
-    DeclareGVar(&DisableGuardsGVar,"DISABLE_GUARDS");
     DeclareGVar(&MAX_INTERRUPTGVar,"MAX_INTERRUPT");
     /* install mark functions */
     InitMarkFuncBags(T_THREAD, MarkNoSubBags);

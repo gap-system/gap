@@ -16,9 +16,9 @@ end);
 
 BindGlobal("UNSAFE_VIEW_OBJ", function(obj)
   local copy;
-  DISABLE_GUARDS := true;
+  DISABLE_GUARDS(2);
   copy := DEEP_COPY_OBJ(obj);
-  DISABLE_GUARDS := false;
+  DISABLE_GUARDS(0);
   ORIGINAL_VIEW_OBJ(copy);
 end);
 
