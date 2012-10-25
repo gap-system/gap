@@ -79,7 +79,7 @@ InstallMethod( IsFullSCAlgebra,
 ##  which is stored at position 1 in the object.
 ##
 DeclareRepresentation( "IsDenseCoeffVectorRep",
-    IsPositionalObjectRep, [ 1 ] );
+    IsPositionalObjectRep and IsAtomicPositionalObjectRep, [ 1 ] );
 
 
 #############################################################################
@@ -601,7 +601,7 @@ BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
 
     # Construct the default type of the family.
     Fam!.defaultTypeDenseCoeffVectorRep :=
-        NewType( Fam, IsSCAlgebraObj and IsDenseCoeffVectorRep );
+        NewType( Fam, IsSCAlgebraObj and IsDenseCoeffVectorRep);
 
     SetCharacteristic( Fam, Characteristic( R ) );
     SetCoefficientsFamily( Fam, ElementsFamily( FamilyObj( R ) ) );
@@ -771,8 +771,7 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
                            IsIdenticalObj( t[3], FamilyObj( F ) ) );
       if stored = fail then
         # Store the data for the next call.
-        Add( QuaternionAlgebraData,
-               MigrateSingleObj([ a, b, FamilyObj( F ), A ], QuaternionAlgebraData ) );
+        Add( QuaternionAlgebraData, MakeImmutable([ a, b, FamilyObj( F ), A ]) );
       else
         A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
         SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
