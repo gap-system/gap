@@ -58,6 +58,17 @@ gap> CallAsTask(SmallGroup,256,1);
 <pc group of size 256 with 8 generators>
 gap> CallAsTask(QuaternionAlgebra,Rationals);
 <algebra-with-one of dimension 4 over Rationals>
+gap> A := CallAsTask( FreeAlgebraWithOne, Rationals, 2);
+<algebra-with-one over Rationals, with 2 generators>
+gap> GeneratorsOfAlgebra(A);
+[ (1)*<identity ...>, (1)*x.1, (1)*x.2 ]
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [1,1] );;
+gap> SetEntrySCTable( T, 2, 2, [1,2] );;
+gap> A:= AlgebraByStructureConstants( Rationals, T );;
+gap> A:= AsAlgebraWithOne( Rationals, A );;
+gap> CallAsTask( IsomorphismFpAlgebra,A );
+[ v.1, v.2, v.1+v.2 ] -> [ [(1)*x.1], [(1)*x.2], [(1)*<identity ...>] ]
 gap> CallAsTask( JordanDecomposition, [[1,2,3],[4,5,6],[7,8,9]] );
 [ [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ], 
   [ [ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ] ]

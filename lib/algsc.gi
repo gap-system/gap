@@ -78,8 +78,7 @@ InstallMethod( IsFullSCAlgebra,
 ##  The external representation is the coefficients vector,
 ##  which is stored at position 1 in the object.
 ##
-DeclareRepresentation( "IsDenseCoeffVectorRep",
-    IsPositionalObjectRep and IsAtomicPositionalObjectRep, [ 1 ] );
+DeclareRepresentation( "IsDenseCoeffVectorRep", IsAtomicPositionalObjectRep, [ 1 ] );
 
 
 #############################################################################
