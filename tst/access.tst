@@ -59,12 +59,12 @@ gap> CallAsTask(SmallGroup,256,1);
 gap> CallAsTask(QuaternionAlgebra,Rationals);
 <algebra-with-one of dimension 4 over Rationals>
 gap> CallAsTask( JordanDecomposition, [[1,2,3],[4,5,6],[7,8,9]] );
-[ [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ],
+[ [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ], 
   [ [ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ] ]
 gap> CallAsTask(LLLReducedBasis,[]);
 rec( B := [  ], basis := [  ], mue := [  ] )
 gap> CallAsTask(LLLReducedBasis,[ [ 0, 0 ], [ 0, 0 ] ], "linearcomb" );
-rec( B := [  ], basis := [  ], mue := [  ],
+rec( B := [  ], basis := [  ], mue := [  ], 
   relations := [ [ 1, 0 ], [ 0, 1 ] ], transformation := [  ] )
 gap> STOP_TEST( "tasks.tst", 1 );
 #############################################################################
