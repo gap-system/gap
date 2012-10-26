@@ -1664,6 +1664,78 @@ void ConvGF2Vec (
 
 /****************************************************************************
 **
+*F  GF2VecVersion( <list> )  . . .  make a GF2 vector version of  a list
+*/
+Obj GF2VecVersion (
+    Obj                 list )
+{
+    Int                 len;            /* logical length of the vector    */
+    Int                 nbl;            /* number of blocks */
+    Int                 i;              /* loop variable                   */
+    UInt                block;          /* one block of the boolean list   */
+    UInt                bit;            /* one bit of a block              */
+    Obj                 vec;
+    Obj                 x;
+        
+    /* already in the correct representation                               */   
+    if ( IS_GF2VEC_REP(list) ) {
+      return ShallowCopyVecGF2(list);
+    }
+
+    len = LEN_LIST(list);
+
+    NEW_GF2VEC(vec, TYPE_LIST_GF2VEC, len);
+
+    block = 0;
+    bit = 1;
+    /* note that the ELM0_LIST and EQ calls in this 
+       loop MAY cause garbage collection */
+
+    for (i = 0; i < len; i++)
+      {
+	x = ELM0_LIST(list,i+1);
+	if (!x) {
+	  return Fail;
+	}
+	if (x == GF2One)
+	  block |= bit;
+	else if (x != GF2Zero) {
+	  if (EQ(x, GF2One))
+	    block |= bit;
+	  else if (!EQ(x, GF2Zero))
+	    return Fail;
+	}
+	if (i % BIPEB == BIPEB-1 || i == len-1) {
+	  BLOCKS_GF2VEC(vec)[i/BIPEB] = block;
+	  block = 0;
+	  bit = 1;
+	} else
+	  bit <<= 1;
+      }
+    SET_LEN_GF2VEC(vec,len);
+    return vec;
+}
+
+
+/****************************************************************************
+**
+*F  FuncGF2VEC_VERSION( <self>, <list> ) . . . make a copy of a list in
+**                                             GF2 compressed version.
+*/
+Obj FuncGF2VEC_VERSION (
+    Obj                 self,
+    Obj                 list )
+{
+    /* check whether <list> is a GF2 vector                               */
+    return GF2VecVersion(list);
+
+}
+
+
+
+
+/****************************************************************************
+**
 *F  FuncCONV_GF2VEC( <self>, <list> ) . . . . . convert into a GF2 vector rep
 */
 Obj FuncCONV_GF2VEC (
@@ -4851,10 +4923,12 @@ static StructGVarFunc GVarFuncs [] = {
     { "KRONECKERPRODUCT_GF2MAT_GF2MAT", 2, "mat, mat",
       FuncKRONECKERPRODUCT_GF2MAT_GF2MAT, "src/vecgf2.c:KRONECKERPRODUCT_GF2MAT_GF2MAT" },
 
-
     { "COPY_SECTION_GF2VECS", 5, "src, dest, from, to, howmany",
       FuncCOPY_SECTION_GF2VECS, "src/vecgf2.c:COPY_SECTION_GF2VECS"},
     
+    { "GF2VEC_VERSION", 1, "list",
+      FuncGF2VEC_VERSION, "src/vecgf2.c:GF2VEC_VERSION"},
+
     { 0 }
 
 };
