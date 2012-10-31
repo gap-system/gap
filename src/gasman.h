@@ -99,6 +99,12 @@ typedef UInt * *        Bag;
 */
 
 
+#ifdef USE_NEWSHAPE
+#define BAG_TNUM_OFFSET (-2)
+#else
+#define BAG_TNUM_OFFSET (-3)
+#endif
+
 /****************************************************************************
 **
 *F  TNUM_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . type of a bag
@@ -121,11 +127,45 @@ typedef UInt * *        Bag;
 **  have sideeffects.
 */
 
-#ifdef USE_NEWSHAPE
-#define TNUM_BAG(bag)  (*(*(bag)-2) & 0xFFFFL)
-#else
-#define TNUM_BAG(bag)   (*(*(bag)-3))
-#endif
+
+/****************************************************************************
+**
+*F  TEST_OBJ_FLAG(<bag>, <flag>) . . . . . . . . . . . . . . test object flag
+*F  SET_OBJ_FLAG(<bag>, <flag>)  . . . . . . . . . . . . . . .set object flag
+*F  CLEAR_OBJ_FLAG(<bag>, <flag>)  . . . . . . . . . . . .  clear object flag
+**
+**  These three macros test, set, and clear object flags, respectively.
+**  Object flags are stored in the object header. Multiple flags can be ored
+**  together using '|' to set or clear multiple flags at once.
+**
+**  TEST_OBJ_FLAG() will return the ored version of all tested flags. To
+**  test that one of them is set, check if the result is not equal to zero.
+**  To test that all of them are set, compare the result to the original
+**  flags, e.g.
+**
+** 	if (TEST_OBJ_FLAG(obj, FLAG1 | FLAG2 ) == (FLAG1 | FLAG2)) ...
+**
+**  Similary, if you wish to test that FLAG1 is set and FLAG2 is not set,
+**  use:
+**
+** 	if (TEST_OBJ_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
+**
+**  Each flag must be a an integer with exactly one bit set, e.g. a value
+**  of the form (1 << i). Currently, 'i' must be in the range from 8 to
+**  15 (inclusive).
+*/
+
+#define TNUM_BAG(bag)  (*(*(bag) + BAG_TNUM_OFFSET) & 0xFFL)
+
+#define TEST_OBJ_FLAG(bag, flag) \
+	(*(*(bag) + BAG_TNUM_OFFSET) & (flag))
+
+#define SET_OBJ_FLAG(bag, flag) \
+	(*(*(bag) + BAG_TNUM_OFFSET) |= (flag))
+
+#define CLEAR_OBJ_FLAG(bag, flag) \
+	(*(*(bag) + BAG_TNUM_OFFSET) &= ~(flag))
+
 
 /****************************************************************************
 **
