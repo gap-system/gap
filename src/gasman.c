@@ -1440,7 +1440,7 @@ void            RetypeBag (
 
     /* change the size-type word                                           */
 #ifdef USE_NEWSHAPE
-    *(*bag-HEADER_SIZE) &= 0xFFFFFFFFFFFF0000L;
+    *(*bag-HEADER_SIZE) &= 0xFFFFFFFFFFFFFF00L;
     *(*bag-HEADER_SIZE) |= new_type;
 #else
     *(*bag-HEADER_SIZE) = new_type;
