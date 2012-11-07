@@ -143,7 +143,7 @@ linkflags = ""
 if not GAP["debug"]:
   cflags = "-O2"
 if compiler == "gcc":
-  cflags += " -g3"
+  cflags += " -g"
 else:
   cflags += " -g"
 if GAP["mpi"]:
@@ -316,6 +316,13 @@ WriteFlags((make_cc_options("-I", map(os.path.abspath, include_path)) +
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
+
+if "src/dbgmacro.c" in source:
+  source.remove("src/dbgmacro.c")
+source.append("src/dbgmacro.c")
+GAP.Command("src/dbgmacro.c", "etc/dbgmacro.py",
+  "python $SOURCE > $TARGET")
+
 if not GAP["mpi"]:
   source.remove("src/gapmpi.c")
 if preprocess:
