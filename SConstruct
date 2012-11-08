@@ -319,24 +319,22 @@ source.remove("src/gapw95.c")
 
 if "src/dbgmacro.c" in source:
   source.remove("src/dbgmacro.c")
-source.append("src/dbgmacro.c")
-GAP.Command("src/dbgmacro.c", "etc/dbgmacro.py",
-  "python $SOURCE > $TARGET")
 
 if not GAP["mpi"]:
   source.remove("src/gapmpi.c")
+try: os.mkdir("gen")
+except: pass
 if preprocess:
   import os, stat
-  try: os.mkdir("gen")
-  except: pass
   pregen = source + glob.glob("src/*.h")
   gen = map(lambda s: "gen/"+s[4:], pregen)
   for i in range(len(pregen)):
     GAP.Command(gen[i], pregen[i],
         preprocess + " $SOURCE >$TARGET")
   source = map(lambda s: "gen/"+s[4:], source)
-
-source.append("extern/jenkins/jhash.o")
+source.append("gen/dbgmacro.c")
+GAP.Command("gen/dbgmacro.c", "etc/dbgmacro.py",
+  "python $SOURCE > $TARGET")
 
 GAP.Command("extern/include/jhash.h", "extern/jenkins/jhash.h",
             "cp -f $SOURCE $TARGET")
