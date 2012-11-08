@@ -317,9 +317,6 @@ WriteFlags((make_cc_options("-I", map(os.path.abspath, include_path)) +
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
 
-if "src/dbgmacro.c" in source:
-  source.remove("src/dbgmacro.c")
-
 if not GAP["mpi"]:
   source.remove("src/gapmpi.c")
 try: os.mkdir("gen")
@@ -332,6 +329,7 @@ if preprocess:
     GAP.Command(gen[i], pregen[i],
         preprocess + " $SOURCE >$TARGET")
   source = map(lambda s: "gen/"+s[4:], source)
+
 source.append("gen/dbgmacro.c")
 GAP.Command("gen/dbgmacro.c", "etc/dbgmacro.py",
   "python $SOURCE > $TARGET")
