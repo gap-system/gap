@@ -214,7 +214,7 @@ void RemoveObjSet(Obj set, Obj obj) {
 
 void ClearObjSet(Obj set) {
   Obj *old = PTR_BAG(set);
-  Obj new = NewObjSet(set);
+  Obj new = NewObjSet();
   PTR_BAG(set) = PTR_BAG(new);
   PTR_BAG(new) = old;
   CHANGED_BAG(new);
@@ -334,7 +334,7 @@ void RemoveObjMap(Obj map, Obj key) {
 
 void ClearObjMap(Obj map) {
   Obj *old = PTR_BAG(map);
-  Obj new = NewObjMap(map);
+  Obj new = NewObjMap();
   PTR_BAG(map) = PTR_BAG(new);
   PTR_BAG(new) = old;
   CHANGED_BAG(new);

@@ -903,6 +903,7 @@ Obj FuncREAD_LOCK(Obj self, Obj args);
 Obj FuncTRYLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
 Obj FuncCURRENT_LOCKS(Obj self);
+Obj FuncREFINE_TYPE(Obj self, Obj obj);
 Obj FuncSHARE_NORECURSE(Obj self, Obj obj);
 Obj FuncNewRegion(Obj self, Obj args);
 Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj);
@@ -910,19 +911,23 @@ Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj);
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj);
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target);
 Obj FuncSHARE(Obj self, Obj obj);
+Obj FuncSHARE_RAW(Obj self, Obj obj);
 Obj FuncMAKE_PUBLIC(Obj self, Obj obj);
 Obj FuncADOPT(Obj self, Obj obj);
 Obj FuncMIGRATE(Obj self, Obj obj, Obj target);
+Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target);
 Obj FuncREACHABLE(Obj self, Obj obj);
 Obj FuncCLONE_REACHABLE(Obj self, Obj obj);
 Obj FuncCLONE_DELIMITED(Obj self, Obj obj);
 Obj FuncMakeThreadLocal(Obj self, Obj var);
 Obj FuncMakeReadOnly(Obj self, Obj obj);
+Obj FuncMakeReadOnlyRaw(Obj self, Obj obj);
 Obj FuncMakeReadOnlyObj(Obj self, Obj obj);
 Obj FuncMakeProtected(Obj self, Obj obj);
 Obj FuncMakeProtectedObj(Obj self, Obj obj);
 Obj FuncIsReadOnly(Obj self, Obj obj);
 Obj FuncIsProtected(Obj self, Obj obj);
+Obj FuncENABLE_AUTO_RETYPING(Obj self);
 Obj FuncBEGIN_SINGLE_THREADED(Obj self);
 Obj FuncEND_SINGLE_THREADED(Obj self);
 Obj FuncORDERED_WRITE(Obj self, Obj obj);
@@ -1119,6 +1124,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "CURRENT_LOCKS", 0, "",
       FuncCURRENT_LOCKS, "src/threadapi.c:FuncCURRENT_LOCKS" },
 
+    { "REFINE_TYPE", 1, "obj",
+      FuncREFINE_TYPE, "src/threadapi.c:REFINE_TYPE" },
+
     { "SHARE_NORECURSE", -1, "obj[, string]",
       FuncSHARE_NORECURSE, "src/threadapi.c:SHARE_NORECURSE" },
 
@@ -1134,11 +1142,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "SHARE", -1, "obj[, string]",
       FuncSHARE, "src/threadapi.c:SHARE" },
 
+    { "SHARE_RAW", -1, "obj[, string]",
+      FuncSHARE_RAW, "src/threadapi.c:SHARE_RAW" },
+
     { "ADOPT", 1, "obj",
       FuncADOPT, "src/threadapi.c:ADOPT" },
 
     { "MIGRATE", 2, "obj, target",
       FuncMIGRATE, "src/threadapi.c:MIGRATE" },
+
+    { "MIGRATE_RAW", 2, "obj, target",
+      FuncMIGRATE_RAW, "src/threadapi.c:MIGRATE_RAW" },
 
     { "MAKE_PUBLIC_NORECURSE", 1, "obj",
       FuncMAKE_PUBLIC_NORECURSE, "src/threadapi.c:MAKE_PUBLIC_NORECURSE" },
@@ -1164,6 +1178,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "MakeReadOnly", 1, "obj",
       FuncMakeReadOnly, "src/threadapi.c:MakeReadOnly" },
 
+    { "MakeReadOnlyRaw", 1, "obj",
+      FuncMakeReadOnlyRaw, "src/threadapi.c:MakeReadOnlyRaw" },
+
     { "MakeReadOnlyObj", 1, "obj",
       FuncMakeReadOnlyObj, "src/threadapi.c:MakeReadOnlyObj" },
 
@@ -1178,6 +1195,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "IsProtected", 1, "obj",
       FuncIsProtected, "src/threadapi.c:IsProtected" },
+
+    { "ENABLE_AUTO_RETYPING", 0, "",
+      FuncENABLE_AUTO_RETYPING, "src/threadapi.c:ENABLE_AUTO_RETYPING" },
 
     { "BEGIN_SINGLE_THREADED", 0, "",
       FuncBEGIN_SINGLE_THREADED, "src/threadapi.c:BEGIN_SINGLE_THREADED" },
@@ -2528,9 +2548,25 @@ Obj FuncCURRENT_LOCKS(Obj self)
   return result;
 }
 
-static int MigrateObjects(int count, Obj *objects, Region *target)
+static int AutoRetyping = 0;
+
+static int MigrateObjects(int count, Obj *objects, Region *target, int retype)
 {
   int i;
+  if (retype && IS_BAG_REF(objects[0]) && DS_BAG(objects[0])->owner == TLS
+      && AutoRetyping) {
+    for (i=0; i<count; i++)
+      if (DS_BAG(objects[i])->owner == TLS)
+	CLEAR_OBJ_FLAG(objects[i], TESTED);
+    for (i=0; i<count; i++) {
+      if (DS_BAG(objects[i])->owner == TLS && IS_PLIST(objects[i])) {
+        if (!TEST_OBJ_FLAG(objects[i], TESTED))
+	  TypePlist(objects[i]);
+	if (retype >= 2)
+	  IsSet(objects[i]);
+      }
+    }
+  }
   for (i=0; i<count; i++) {
     Region *ds;
     if (IS_BAG_REF(objects[i])) {
@@ -2544,9 +2580,17 @@ static int MigrateObjects(int count, Obj *objects, Region *target)
   return 1;
 }
 
+Obj FuncREFINE_TYPE(Obj self, Obj obj) {
+  if (IS_BAG_REF(obj) && CheckExclusiveWriteAccess(obj)) {
+    TypePlist(obj);
+    IsSet(obj);
+  }
+  return obj;
+}
+
 Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
 {
-  if (!MigrateObjects(1, &obj, NULL))
+  if (!MigrateObjects(1, &obj, NULL, 0))
     ArgumentError("MAKE_PUBLIC_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2578,7 +2622,7 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj arg)
     default:
       ArgumentError("SHARE_NORECURSE: Requires one or two arguments");
   }
-  if (!MigrateObjects(1, &obj, region))
+  if (!MigrateObjects(1, &obj, region, 0))
     ArgumentError("SHARE_NORECURSE: Thread does not have exclusive access to objects");
   SetRegionName(region, name);
   return obj;
@@ -2589,14 +2633,14 @@ Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
   Region *targetDS = GetRegionOf(target);
   if (!targetDS || IsLocked(targetDS) != 1)
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to target region");
-  if (!MigrateObjects(1, &obj, targetDS))
+  if (!MigrateObjects(1, &obj, targetDS, 0))
     ArgumentError("MIGRATE_NORECURSE: Thread does not have exclusive access to object");
   return obj;
 }
 
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
 {
-  if (!MigrateObjects(1, &obj, TLS->currentRegion))
+  if (!MigrateObjects(1, &obj, TLS->currentRegion, 0))
     ArgumentError("ADOPT_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2661,7 +2705,33 @@ Obj FuncSHARE(Obj self, Obj arg)
   }
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, region))
+       ADDR_OBJ(reachable)+1, region, 1))
+    ArgumentError("SHARE: Thread does not have exclusive access to objects");
+  SetRegionName(region, name);
+  return obj;
+}
+
+Obj FuncSHARE_RAW(Obj self, Obj arg)
+{
+  Region *region = NewRegion();
+  Obj obj, name, reachable;
+  switch (LEN_PLIST(arg)) {
+    case 1:
+      obj = ELM_PLIST(arg, 1);
+      name = (Obj) 0;
+      break;
+    case 2:
+      obj = ELM_PLIST(arg, 1);
+      name = ELM_PLIST(arg, 2);
+      if (!IsStringConv(name))
+        ArgumentError("SHARE: Second argument must be a string");
+      break;
+    default:
+      ArgumentError("SHARE: Requires one or two arguments");
+  }
+  reachable = ReachableObjectsFrom(obj);
+  if (!MigrateObjects(LEN_PLIST(reachable),
+       ADDR_OBJ(reachable)+1, region, 0))
     ArgumentError("SHARE: Thread does not have exclusive access to objects");
   SetRegionName(region, name);
   return obj;
@@ -2671,7 +2741,7 @@ Obj FuncADOPT(Obj self, Obj obj)
 {
   Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, TLS->currentRegion))
+       ADDR_OBJ(reachable)+1, TLS->currentRegion, 0))
     ArgumentError("ADOPT: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2680,7 +2750,7 @@ Obj FuncMAKE_PUBLIC(Obj self, Obj obj)
 {
   Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, 0))
+       ADDR_OBJ(reachable)+1, NULL, 0))
     ArgumentError("MAKE_PUBLIC: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2693,7 +2763,20 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
     ArgumentError("MIGRATE: Thread does not have exclusive access to target region");
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, targetDS))
+       ADDR_OBJ(reachable)+1, targetDS, 1))
+    ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
+  return obj;
+}
+
+Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target)
+{
+  Region *targetDS = GetRegionOf(target);
+  Obj reachable;
+  if (!targetDS || IsLocked(targetDS) != 1)
+    ArgumentError("MIGRATE: Thread does not have exclusive access to target region");
+  reachable = ReachableObjectsFrom(obj);
+  if (!MigrateObjects(LEN_PLIST(reachable),
+       ADDR_OBJ(reachable)+1, targetDS, 0))
     ArgumentError("MIGRATE: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2719,7 +2802,20 @@ Obj FuncMakeReadOnly(Obj self, Obj obj)
     return obj;
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, ReadOnlyRegion))
+       ADDR_OBJ(reachable)+1, ReadOnlyRegion, 1))
+    ArgumentError("MakeReadOnly: Thread does not have exclusive access to objects");
+  return obj;
+}
+
+Obj FuncMakeReadOnlyRaw(Obj self, Obj obj)
+{
+  Region *ds = GetRegionOf(obj);
+  Obj reachable;
+  if (!ds || ds == ReadOnlyRegion)
+    return obj;
+  reachable = ReachableObjectsFrom(obj);
+  if (!MigrateObjects(LEN_PLIST(reachable),
+       ADDR_OBJ(reachable)+1, ReadOnlyRegion, 0))
     ArgumentError("MakeReadOnly: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2730,7 +2826,7 @@ Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
   Obj reachable;
   if (!ds || ds == ReadOnlyRegion)
     return obj;
-  if (!MigrateObjects(1, &obj, ReadOnlyRegion))
+  if (!MigrateObjects(1, &obj, ReadOnlyRegion, 0))
     ArgumentError("MakeReadOnlyObj: Thread does not have exclusive access to object");
   return obj;
 }
@@ -2743,7 +2839,7 @@ Obj FuncMakeProtected(Obj self, Obj obj)
     return obj;
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, ProtectedRegion))
+       ADDR_OBJ(reachable)+1, ProtectedRegion, 1))
     ArgumentError("MakeProtected: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2753,7 +2849,7 @@ Obj FuncMakeProtectedObj(Obj self, Obj obj)
   Region *ds = GetRegionOf(obj);
   if (ds == ProtectedRegion)
     return obj;
-  if (!MigrateObjects(1, &obj, ProtectedRegion))
+  if (!MigrateObjects(1, &obj, ProtectedRegion, 0))
     ArgumentError("MakeProtectedObj: Thread does not have exclusive access to object");
   return obj;
 }
@@ -2768,6 +2864,12 @@ Obj FuncIsProtected(Obj self, Obj obj)
 {
   Region *ds = GetRegionOf(obj);
   return (ds == ProtectedRegion) ? True : False;
+}
+
+Obj FuncENABLE_AUTO_RETYPING(Obj self)
+{
+  AutoRetyping = 1;
+  return (Obj) 0;
 }
 
 Obj FuncBEGIN_SINGLE_THREADED(Obj self)

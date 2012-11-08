@@ -217,8 +217,7 @@ Obj TYPE_LIST_EMPTY_IMMUTABLE;
 Obj TYPE_LIST_HOM;
 
 #define IS_TESTING_PLIST(list) \
-    (FIRST_TESTING_TNUM <= TNUM_OBJ(list) \
-  && TNUM_OBJ(list) <= LAST_TESTING_TNUM)
+    (IS_BAG_REF(list) && TEST_OBJ_FLAG(list, TESTING))
 
 
 extern Obj TypePlistWithKTnum( Obj list,
@@ -251,22 +250,18 @@ Int KTNumPlist (
       return TNUM_OBJ(list);
     }
     /* if list has `TESTING' keep that                                     */
-    testing = IS_TESTING_PLIST(list) ? TESTING : 0;
+    testing = TEST_OBJ_FLAG(list, TESTING);
 
-    UNMARK_LIST(list, testing);
     knownDense = HAS_FILT_LIST( list, FN_IS_DENSE );
     knownNDense = HAS_FILT_LIST( list, FN_IS_NDENSE );
-    MARK_LIST(list, testing);
 
     /* get the length of the list                                          */
     lenList = LEN_PLIST(list);
 
     /* special case for empty list                                         */
     if ( lenList == 0 ) {
-        UNMARK_LIST( list, testing );
         SET_FILT_LIST( list, FN_IS_EMPTY );
         res = TNUM_OBJ(list);
-        MARK_LIST( list, testing );
 	if (famfirst != (Obj *) 0)
 	  *famfirst = (Obj) 0;
         return res;
@@ -277,13 +272,18 @@ Int KTNumPlist (
     if ( elm == 0 ) {
         isDense = 0;
     }
+    else if ( !CheckReadAccess(elm) ) {
+      isHom = 0;
+      areMut = 1;
+      isTable = 0;
+    }
     else if ( IS_TESTING_PLIST(elm) ) {
         isHom   = 0;
         areMut  = IS_MUTABLE_PLIST(elm);
         isTable = 0;
     }
     else {
-	if (!testing) MARK_LIST(list, TESTING);
+	if (!testing) SET_OBJ_FLAG(list, TESTING|TESTED);
 
 	if (IS_PLIST(elm))
 	  family = FAMILY_TYPE( TypePlistWithKTnum(elm, &ktnumFirst));
@@ -308,7 +308,7 @@ Int KTNumPlist (
 	    }
 	  
         }
-	if (!testing) UNMARK_LIST(list, TESTING);
+	if (!testing) CLEAR_OBJ_FLAG(list, TESTING);
     }
 
     /* loop over the list                                                  */
@@ -317,6 +317,12 @@ Int KTNumPlist (
         if ( elm == 0 ) {
             isDense = 0;
         }
+	else if ( !CheckReadAccess(elm) ) {
+	    isHom = 0;
+	    areMut = 1;
+	    isTable = 0;
+	    isRect = 0;
+	}
         else if ( IS_TESTING_PLIST(elm) ) {
             isHom   = 0;
             areMut  = (areMut || IS_MUTABLE_PLIST(elm));
@@ -343,7 +349,6 @@ Int KTNumPlist (
       }
 
     /* set the appropriate flags (not the hom. flag if elms are mutable)   */
-    UNMARK_LIST( list, testing );
     if      ( ! isDense ) {
         SET_FILT_LIST( list, FN_IS_NDENSE );
         res = T_PLIST_NDENSE;
@@ -407,7 +412,6 @@ Int KTNumPlist (
 	  *famfirst = (Obj) family;
       }
     res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
-    MARK_LIST( list, testing );
     return res;
 }
 
@@ -430,7 +434,7 @@ Int KTNumHomPlist (
       return TNUM_OBJ(list);
     }
     /* if list has `TESTING' keep that                                     */
-    testing = IS_TESTING_PLIST(list) ? TESTING : 0;
+    testing = TEST_OBJ_FLAG(list, TESTING);
 
     /* get the length of the list                                          */
     lenList = LEN_PLIST(list);
@@ -538,7 +542,6 @@ Int KTNumHomPlist (
     
  finish:
     res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
-    MARK_LIST( list, testing );
     return res;
 }
 
@@ -559,11 +562,12 @@ Obj TypePlistWithKTnum (
 
     if (CheckWriteAccess(list)) {
       /* recursion is possible for this type of list                         */
-      MARK_LIST( list, TESTING );
+      SET_OBJ_FLAG( list, TESTING|TESTED );
       ktype = KTNumPlist( list, &family);
-      UNMARK_LIST( list, TESTING );
+      CLEAR_OBJ_FLAG( list, TESTING );
     } else {
       ktype = TNUM_OBJ(list);
+      family = 0;
     }
     if (ktnum != (UInt *) 0)
       *ktnum = ktype;
@@ -595,7 +599,7 @@ Obj TypePlistWithKTnum (
     }
 
     /* handle homogeneous list                                             */
-    if ( HasFiltListTNums[ktype][FN_IS_HOMOG] ) {
+    if ( family && HasFiltListTNums[ktype][FN_IS_HOMOG] ) {
 
         /* get the list kinds of the elements family */
         kinds  = TYPES_LIST_FAM( family );
@@ -1856,6 +1860,9 @@ void AssPlistHomog (
 		SET_FILT_LIST( list, FN_IS_SSORT );
 	      }
 	  }
+	else if (!CheckReadAccess(val)) {
+	  SET_FILT_LIST(list, FN_IS_NHOMOG);
+	}
 	else if (!SyInitializing && !IS_MUTABLE_OBJ(val))
 	  {
 	    /* find the family of an original list element */
@@ -2217,6 +2224,8 @@ Int             IsSSortPlist (
     elm1    = ELM_PLIST( list, 1 );
     if (elm1 == 0)
       goto notDense;
+    if (!CheckReadAccess(elm1))
+      return 0L;
     areMut   = IS_MUTABLE_OBJ( elm1 );
     if (!SyInitializing)
       {
@@ -2231,6 +2240,8 @@ Int             IsSSortPlist (
       elm2 = ELM_PLIST( list, i );
       if (elm2 == 0)
 	goto notDense;
+      if (!CheckReadAccess(elm2))
+	return 0L;
       if ( ! LT( elm1, elm2 ) )
 	break;
       areMut = (areMut || IS_MUTABLE_OBJ( elm2 ));
@@ -2294,6 +2305,8 @@ Int             IsSSortPlistDense (
 
     /* get the first element                                               */
     elm1    = ELM_PLIST( list, 1 );
+    if (!CheckReadAccess(elm1))
+      return 0L;
     areMut   = IS_MUTABLE_OBJ( elm1 );
     if (!SyInitializing)
       {
@@ -2306,6 +2319,8 @@ Int             IsSSortPlistDense (
     /* loop over the other elements                                        */
     for ( i = 2; i <= lenList; i++ ) {
       elm2 = ELM_PLIST( list, i );
+      if (!CheckReadAccess(elm2))
+        return 0L;
       if ( ! LT( elm1, elm2 ) )
 	break;
       areMut = (areMut || IS_MUTABLE_OBJ( elm2 ));
@@ -2354,10 +2369,14 @@ Int             IsSSortPlistHom (
 
     /* get the first element                                               */
     elm1    = ELM_PLIST( list, 1 );
+    if (!CheckReadAccess(elm1))
+      return 0L;
     
     /* loop over the other elements                                        */
     for ( i = 2; i <= lenList; i++ ) {
       elm2 = ELM_PLIST( list, i );
+      if (!CheckReadAccess(elm2))
+	return 0L;
       if ( ! LT( elm1, elm2 ) )
 	break;
       elm1 = elm2;
@@ -2417,7 +2436,7 @@ Int             IsPossPlist (
     /* loop over the entries of the list                                   */
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELM_PLIST( list, i );
-        if ( elm == 0)
+        if ( elm == 0 || !CheckReadAccess(elm) )
 	  return 0L;
 	if( IS_INTOBJ(elm))
 	  {

@@ -128,11 +128,12 @@ void SET_ELM_PLIST(Obj, UInt, Obj);
 UInt LEN_PLIST(Obj);
 
 Obj ELM_LIST(Obj, Int);
+Obj ELM0_LIST(Obj, Int);
 void SET_ELM_LIST(Obj, UInt, Obj);
 UInt LEN_LIST(Obj);
 
-
 Obj NAME_FUNC(Obj);
+Obj BODY_FUNC(Obj);
 Int NARG_FUNC(Obj);
 Obj NAMS_FUNC(Obj);
 Obj ENVI_FUNC(Obj);

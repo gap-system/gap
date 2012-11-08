@@ -88,19 +88,19 @@ DS_TYPE_CACHE := SHARE([]);
 
 BIND_GLOBAL( "NEW_FAMILY",
     function ( typeOfFamilies, name, req_filter, imp_filter )
-    local   type, pair, family;
+    local   lock, type, pair, family;
 
     # Look whether the category of the desired family can be improved
     # using the categories defined by 'CategoryFamily'.
     imp_filter := WITH_IMPS_FLAGS( AND_FLAGS( imp_filter, req_filter ) );
     type := Subtype( typeOfFamilies, IsAttributeStoringRep );
-    READ_LOCK(CATEGORIES_FAMILY);
+    lock := READ_LOCK(CATEGORIES_FAMILY);
     for pair in CATEGORIES_FAMILY do
         if IS_SUBSET_FLAGS( imp_filter, pair[1] ) then
             type:= Subtype( type, pair[2] );
         fi;
     od;
-    UNLOCK(LOCK()-1);
+    UNLOCK(lock);
 
     # cannot use 'Objectify', because 'IsList' may not be defined yet
     family := AtomicRecord();
@@ -108,9 +108,9 @@ BIND_GLOBAL( "NEW_FAMILY",
     family!.NAME            := MakeImmutable(name);
     family!.REQ_FLAGS       := req_filter;
     family!.IMP_FLAGS       := imp_filter;
-    LOCK(DS_TYPE_CACHE);
-    family!.TYPES           := MIGRATE([], DS_TYPE_CACHE);
-    UNLOCK(LOCK()-1);
+    lock := LOCK(DS_TYPE_CACHE);
+    family!.TYPES           := MIGRATE_RAW([], DS_TYPE_CACHE);
+    UNLOCK(lock);
     family!.nTYPES          := 0;
     family!.HASH_SIZE       := 32;
     # for chaching types of homogeneous lists (see TYPE_LIST_HOM in list.g), 
@@ -216,10 +216,10 @@ BIND_GLOBAL("ConstructExtendedType", function(body)
 end);
 
 BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
-    local   hash,  cache,  cached,  type, ncache, ncl, t;
+    local   lock, hash,  cache,  cached,  type, ncache, ncl, t;
 
     # maybe it is in the type cache
-    LOCK(DS_TYPE_CACHE);
+    lock := LOCK(DS_TYPE_CACHE);
     cache := family!.TYPES;
     hash  := HASH_FLAGS(flags) mod family!.HASH_SIZE + 1;
     if IsBound( cache[hash] ) and NEW_TYPE_READONLY then
@@ -229,7 +229,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
               and IS_IDENTICAL_OBJ(  typeOfTypes, TYPE_OBJ(cached) )
             then
                 NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1;
-                UNLOCK(LOCK()-1);
+                UNLOCK(lock);
                 return cached;
             else
                 flags := cached![2];
@@ -257,7 +257,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     
     # check the size of the cache before storing this type
     if 3*family!.nTYPES > family!.HASH_SIZE then
-        ncache := MIGRATE([], DS_TYPE_CACHE);
+        ncache := MIGRATE_RAW([], DS_TYPE_CACHE);
         ncl := 3*family!.HASH_SIZE+1;
         for t in cache do
             ncache[ HASH_FLAGS(t![2]) mod ncl + 1] := t;
@@ -272,7 +272,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     if NEW_TYPE_READONLY then
         MakeReadOnlyObj(type);
     fi;
-    UNLOCK(LOCK()-1);
+    UNLOCK(lock);
 
     # return the type
     return type;
