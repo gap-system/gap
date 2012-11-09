@@ -2583,7 +2583,6 @@ static int MigrateObjects(int count, Obj *objects, Region *target, int retype)
 Obj FuncREFINE_TYPE(Obj self, Obj obj) {
   if (IS_BAG_REF(obj) && CheckExclusiveWriteAccess(obj)) {
     TypePlist(obj);
-    IsSet(obj);
   }
   return obj;
 }
