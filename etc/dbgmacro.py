@@ -73,6 +73,9 @@ def macros(lines):
 # Define actual include files and macros
 #
 
+emit("#ifndef WARD_ENABLED")
+emit("")
+
 sysinclude("assert.h")
 include("system.h")
 include("gasman.h")
@@ -142,3 +145,6 @@ Obj CURR_FUNC();
 Char *CSTR_STRING(Obj);
 ThreadLocalStorage *TLS();
 """)
+
+emit("")
+emit("#endif")
