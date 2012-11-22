@@ -51,6 +51,7 @@
 #include	"string.h"
 
 #include        "thread.h"
+#include        "traverse.h"
 #include        "tls.h"
 #include        "vars.h"                /* variables                       */
 

@@ -50,6 +50,7 @@
 #include        "funcs.h"               /* functions                       */
 
 #include        "thread.h"
+#include        "traverse.h"
 #include        "tls.h"
 #include        "threadapi.h"
 

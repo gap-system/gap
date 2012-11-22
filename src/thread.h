@@ -68,14 +68,6 @@ void PopRegionAutoLocks(int newSP);
 int RegionLockSP();
 int AutoLockObj(Obj obj);
 
-typedef void (*TraversalFunction)(Obj);
-
-extern TraversalFunction TraversalFunc[];
-
-Obj ReachableObjectsFrom(Obj obj);
-Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm);
-Obj CopyTraversed(Obj traversed);
-
 void HashLock(void *obj);
 void HashLockShared(void *obj);
 void HashUnlock(void *obj);

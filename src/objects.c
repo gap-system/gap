@@ -43,6 +43,7 @@
 #include        "aobjects.h"            /* atomic objects                  */
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */
+#include	"traverse.h"		/* object traversal		   */
 #include	"tls.h"			/* thread-local storage		   */
 
 
