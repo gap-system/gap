@@ -773,6 +773,13 @@ void MakeImmutable( Obj obj )
     }
 }
 
+void CheckedMakeImmutable( Obj obj )
+{
+  if (!PreMakeImmutableCheck(obj))
+    ErrorQuit("MakeImmutable: Argument has inaccessible subobjects", 0L, 0L);
+  MakeImmutable(obj);
+}
+
 void MakeImmutableError( Obj obj)
 {
   ErrorQuit("No make immutable function installed for a %s",
@@ -815,7 +822,7 @@ void MakeImmutableDatObj( Obj obj)
 
 Obj FuncMakeImmutable( Obj self, Obj obj)
 {
-  MakeImmutable(obj);
+  CheckedMakeImmutable(obj);
   return obj;
 }
 

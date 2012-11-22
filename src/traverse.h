@@ -12,5 +12,6 @@ extern TraversalFunction TraversalFunc[];
 Obj ReachableObjectsFrom(Obj obj);
 Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm);
 Obj CopyTraversed(Obj traversed);
+int PreMakeImmutableCheck(Obj obj);
 
 #endif // GAP_THREAD_H

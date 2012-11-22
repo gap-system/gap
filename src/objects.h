@@ -571,6 +571,15 @@ extern void MakeImmutable( Obj obj );
 
 /****************************************************************************
 **
+*F  CheckedMakeImmutable( <obj> )  . . . . . . . . . make an object immutable
+**
+**  Same effect as MakeImmutable( <obj> ), but checks first that all
+**  subobjects lie in a writable region.
+*/
+extern void CheckedMakeImmutable( Obj obj );
+
+/****************************************************************************
+**
 *F  IS_MUTABLE_OBJ( <obj> ) . . . . . . . . . . . . . .  is an object mutable
 **
 **  'IS_MUTABLE_OBJ' returns   1 if the object  <obj> is mutable   (i.e., can

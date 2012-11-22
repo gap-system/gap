@@ -329,6 +329,15 @@ static int IsMutable(Obj obj) {
   return CheckReadAccess(obj) && IS_MUTABLE_OBJ(obj);
 }
 
+static int IsWritableOrImmutable(Obj obj) {
+  int writable = CheckExclusiveWriteAccess(obj);
+  if (!writable && IS_MUTABLE_OBJ(obj)) {
+    currentTraversal()->border = 1;
+    return 0;
+  }
+  return 1;
+}
+
 Obj ReachableObjectsFrom(Obj obj)
 {
   TraversalState traversal;
@@ -364,6 +373,26 @@ static Obj CopyBag(Obj copy, Obj original)
     TraversalCopyFunc[type](copy, original);
   }
   return copy;
+}
+
+int PreMakeImmutableCheck(Obj obj)
+{
+  TraversalState traversal;
+  if (!IS_BAG_REF(obj))
+    return 1;
+  if (!IS_MUTABLE_OBJ(obj))
+    return 1;
+  if (!CheckExclusiveWriteAccess(obj))
+    return 0;
+  switch (TNUM_OBJ(obj)) {
+    case T_STRING:
+      return 1;
+  }
+  BeginTraversal(&traversal);
+  traversal.border = 0;
+  TraverseRegionFrom(&traversal, obj, IsWritableOrImmutable);
+  EndTraversal(&traversal);
+  return !traversal.border;
 }
 
 Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
