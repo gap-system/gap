@@ -35,7 +35,7 @@ fi
 ##  want to set this value close to the  amount of memory your  computer has.
 ##
 if [ "x$GAP_MEM" = "x" ];  then
-GAP_MEM=24m
+GAP_MEM=250m
 fi
 
 
