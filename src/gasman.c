@@ -1243,6 +1243,11 @@ void            InitBags (
 #else
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
+    initial_size *= 1024;
+    if (GC_get_heap_size() < initial_size)
+      GC_expand_hp(initial_size - GC_get_heap_size());
+    if (SyStorKill)
+      GC_set_max_heap_size(SyStorKill * 1024);
 #endif
     AddGCRoots();
     CreateMainRegion();
