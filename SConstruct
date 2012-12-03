@@ -226,7 +226,7 @@ if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
   os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
-  build_external("bdwgc-2012-03-02", confargs="--disable-shared")
+  build_external("gc-7.2d", confargs="--disable-shared")
   del os.environ["CC"]
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
