@@ -1236,10 +1236,6 @@ void            InitBags (
 #ifndef DISABLE_GC
     GC_set_all_interior_pointers(0);
     GC_init();
-#if SIZEOF_VOID_P == 4
-    GC_register_displacement(0);
-    GC_register_displacement(HEADER_SIZE*sizeof(Bag));
-#else
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
     initial_size *= 1024;
@@ -1247,7 +1243,6 @@ void            InitBags (
       GC_expand_hp(initial_size - GC_get_heap_size());
     if (SyStorKill)
       GC_set_max_heap_size(SyStorKill * 1024);
-#endif
     AddGCRoots();
     CreateMainRegion();
     BuildGCDescriptor(GCDesc+1, 1);
@@ -1649,7 +1644,20 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
 #else
 #ifndef DISABLE_GC
     alloc_size = GC_size(PTR_BAG(bag)-HEADER_SIZE);
-    if ( HEADER_SIZE*sizeof(Bag) + new_size <= alloc_size
+    /* An alternative implementation would be to compare
+     * new_size <= alloc_size in the following test in order
+     * to avoid reallocations for alternating contractions
+     * and expansions. However, typed allocation in the Boehm
+     * GC stores layout information in the last word of a memory
+     * block and we may accidentally overwrite this information,
+     * because GC_size() includes that extraneous word when
+     * returning the size of a memory block.
+     *
+     * This is technically a bug in GC_size(), but until and
+     * unless there is an upstream fix, we'll do it the safe
+     * way.
+     */
+    if ( new_size <= old_size
          && HEADER_SIZE*sizeof(Bag) + new_size >= alloc_size * 3/4) {
 #else
     if (new_size <= old_size) {
