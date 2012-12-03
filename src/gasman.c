@@ -1222,7 +1222,6 @@ void            InitBags (
     /* install the marking functions                                       */
     for ( i = 0; i < 255; i++ ) {
         TabMarkFuncBags[i] = MarkAllSubBagsDefault;
-	TabMarkTypebags[i] = -1;
     }
 
     /* Set ChangedBags to a proper initial value */
