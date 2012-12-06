@@ -46,42 +46,6 @@
 
 /****************************************************************************
 **
-
-*F  GROW_WPOBJ(<wp>,<plen>) . make sure a weak pointer object is large enough
-**
-**  'GROW_WPOBJ' grows the weak pointer   object <wp> if necessary  to
-**  ensure that it has room for at least <plen> elements.
-**
-**  Note that 'GROW_WPOBJ' is a macro, so do not call it with arguments that
-**  have sideeffects.  */
-
-#define GROW_WPOBJ(wp,plen)   ((plen) < SIZE_OBJ(wp)/sizeof(Obj) ? \
-                                 0L : GrowWPObj(wp,plen) )
-
-Int GrowWPObj (
-               Obj                 wp,
-               UInt                need )
-{
-  UInt                plen;           /* new physical length             */
-  UInt                good;           /* good new physical length        */
-
-    /* find out how large the object should become                     */
-    good = 5 * (SIZE_OBJ(wp)/sizeof(Obj)-1) / 4 + 4;
-
-    /* but maybe we need more                                              */
-    if ( need < good ) { plen = good; }
-    else               { plen = need; }
-
-    /* resize the plain list                                               */
-    ResizeBag( wp, ((plen)+1)*sizeof(Obj) );
-
-    /* return something (to please some C compilers)                       */
-    return 0L;
-}
-
-
-/****************************************************************************
-**
 *F  STORE_LEN_WPOBJ(<wp>,<len>) . . . . . . .  set the length of a WP object
 **
 **  'STORE_LEN_WPOBJ' sets the length of  the WP object  <wp> to <len>.
@@ -131,6 +95,58 @@ Int GrowWPObj (
 
 #define ELM_WPOBJ(list,pos)             (ADDR_OBJ(list)[pos])
 
+/****************************************************************************
+**
+
+*F  GROW_WPOBJ(<wp>,<plen>) . make sure a weak pointer object is large enough
+**
+**  'GROW_WPOBJ' grows the weak pointer   object <wp> if necessary  to
+**  ensure that it has room for at least <plen> elements.
+**
+**  Note that 'GROW_WPOBJ' is a macro, so do not call it with arguments that
+**  have sideeffects.  */
+
+#define GROW_WPOBJ(wp,plen)   ((plen) < SIZE_OBJ(wp)/sizeof(Obj) ? \
+                                 0L : GrowWPObj(wp,plen) )
+
+Int GrowWPObj (
+               Obj                 wp,
+               UInt                need )
+{
+  UInt                plen;           /* new physical length             */
+  UInt                good;           /* good new physical length        */
+  UInt                i;
+
+    /* find out how large the object should become                     */
+    good = 5 * (SIZE_OBJ(wp)/sizeof(Obj)-1) / 4 + 4;
+
+    /* but maybe we need more                                              */
+    if ( need < good ) { plen = good; }
+    else               { plen = need; }
+
+#ifndef BOEHM_GC
+    /* resize the plain list                                               */
+    ResizeBag( wp, ((plen)+1)*sizeof(Obj) );
+#else
+    Obj copy = NewBag(T_WPOBJ, (plen+1) * sizeof(Obj));
+    STORE_LEN_WPOBJ(copy, STORED_LEN_WPOBJ(wp));
+    for (i = 1; i <= STORED_LEN_WPOBJ(wp); i++) {
+      volatile Obj tmp = ELM_WPOBJ(wp, i);
+      MEMBAR_READ();
+      if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, i)) {
+	FORGET_WP(&ELM_WPOBJ(wp, i));
+	REGISTER_WP(&ELM_WPOBJ(copy, i), tmp);
+	ELM_WPOBJ(wp, i) = 0;
+	ELM_WPOBJ(copy, i) = tmp;
+      }
+    }
+    PTR_BAG(wp) = PTR_BAG(copy);
+#endif
+
+    /* return something (to please some C compilers)                       */
+    return 0L;
+}
+
 
 
 /****************************************************************************
@@ -145,14 +161,26 @@ Obj FuncWeakPointerObj( Obj self, Obj list ) {
   Obj wp; 
   Int i;
   Int len; 
+#ifdef BOEHM_GC
+  /* We need to make sure that the list stays live until
+   * after REGISTER_WP(); on architectures that pass
+   * arguments in registers (x86_64, SPARC, etc), the
+   * argument register may be reused. In conjunction with
+   * loop unrolling, the reference to 'list' may then be
+   * destroyed before REGISTER_WP() is called.
+   */
+  volatile list2 = list;
+#endif
   len = LEN_LIST(list);
   wp = (Obj) NewBag(T_WPOBJ, (len+1)*sizeof(Obj));
   STORE_LEN_WPOBJ(wp,len); 
   for (i = 1; i <= len ; i++) 
     { 
-      ELM_WPOBJ(wp,i) = ELM0_LIST(list,i); 
+      Obj tmp = ELM0_LIST(list, i);
+      ELM_WPOBJ(wp,i) = tmp;
 #ifdef BOEHM_GC
-      RegisterWeakReference(&ELM_WPOBJ(wp, i));
+      if (IS_BAG_REF(tmp))
+	REGISTER_WP(&ELM_WPOBJ(wp, i), tmp);
 #endif
       CHANGED_BAG(wp);          /* this must be here in case list is 
                                  in fact an object and causes a GC in the 
@@ -227,14 +255,28 @@ Obj FuncLengthWPObj(Obj self, Obj wp)
 Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 {
   UInt ipos = INT_INTOBJ(pos);
+#ifdef BOEHM_GC
+  /* Ensure reference remains visible to GC in case val is
+   * stored in a register and the register is reused before
+   * REGISTER_WP() is called.
+   */
+  volatile Obj val2 = val;
+#endif
   if (LengthWPObj(wp)  < ipos)
     {
       GROW_WPOBJ(wp, ipos);
       STORE_LEN_WPOBJ(wp,ipos);
     }
+#ifdef BOEHM_GC
+  volatile Obj tmp = ELM_WPOBJ(wp, ipos);
+  MEMBAR_READ();
+  if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, ipos))
+    FORGET_WP(&ELM_WPOBJ(wp, ipos));
+#endif
   ELM_WPOBJ(wp,ipos) = val;
 #ifdef BOEHM_GC
-  RegisterWeakReference(&ELM_WPOBJ(wp, ipos));
+  if (IS_BAG_REF(val))
+    REGISTER_WP(&ELM_WPOBJ(wp, ipos), val);
 #endif
   CHANGED_BAG(wp);
   return 0;
@@ -253,20 +295,29 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 Int IsBoundElmWPObj( Obj wp, Obj pos)
 {
   UInt ipos = INT_INTOBJ(pos);
+#ifdef BOEHM_GC
+  volatile
+#endif
   Obj elm;
   if ( LengthWPObj(wp) < ipos ) 
     {
       return 0;
     }
   elm = ELM_WPOBJ(wp,ipos);
-#ifndef BOEHM_GC
+#ifdef BOEHM_GC
+  MEMBAR_READ();
+#else
   if (IS_WEAK_DEAD_BAG(elm))
     {
       ELM_WPOBJ(wp,ipos) = 0;
       return 0;
     }
 #endif
+#ifdef BOEHM_GC
+  if (elm == 0 || ELM_WPOBJ(wp, ipos) == 0)
+#else
   if (elm == 0)
+#endif
     {
       return 0;
     }
@@ -299,7 +350,21 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 {
   Int len = LengthWPObj(wp);
   if ( INT_INTOBJ(pos) <= len ) {
-    ELM_WPOBJ( wp, INT_INTOBJ(pos)) =  0;
+    Int p = INT_INTOBJ(pos);
+#ifndef BOEHM_GC
+    ELM_WPOBJ( wp, p) =  0;
+#else
+    /* Ensure the result is visible on the stack in case a garbage
+     * collection happens after the read.
+     */
+    volatile Obj tmp = ELM_WPOBJ(wp, p);
+    MEMBAR_READ();
+    if (ELM_WPOBJ(wp, p)) {
+      if (IS_BAG_REF(tmp))
+	FORGET_WP( &ELM_WPOBJ(wp, p));
+      ELM_WPOBJ( wp, p) =  0;
+    }
+#endif
   }
   return 0;
 }
@@ -320,25 +385,32 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 
 Obj FuncElmWPObj( Obj self, Obj wp, Obj pos)
 {
-  Obj elm;
   UInt ipos = INT_INTOBJ(pos);
-  if ( STORED_LEN_WPOBJ(wp) < ipos ) 
+#ifdef BOEHM_GC
+  volatile
+#endif
+  Obj elm;
+  if ( LengthWPObj(wp) < ipos ) 
     {
       return Fail;
     }
   elm = ELM_WPOBJ(wp,ipos);
-#ifndef BOEHM_GC
+#ifdef BOEHM_GC
+  MEMBAR_READ();
+#else
   if (IS_WEAK_DEAD_BAG(elm))
     {
       ELM_WPOBJ(wp,ipos) = 0;
       return Fail;
     }
 #endif
-  if (elm == 0)
-    {
-      return Fail;
-    }
+#ifdef BOEHM_GC
+  if (elm == 0 || ELM_WPOBJ(wp, ipos) == 0)
+    return Fail;
   return elm;
+#else
+  return elm;
+#endif
 }
 
 
@@ -447,10 +519,6 @@ Obj CopyObjWPObj (
         if ( elm != 0  && !IS_WEAK_DEAD_BAG(elm)) {
             tmp = COPY_OBJ( elm, mut );
             ADDR_OBJ(copy)[i] = tmp;
-#ifndef BOEHM_GC
-	    if (mut)
-	      RegisterWeakReference(ADDR_OBJ(copy)+i);
-#endif
             CHANGED_BAG( copy );
         }
     }
@@ -470,6 +538,7 @@ void MakeImmutableWPObj( Obj obj )
   UInt i;
   Obj elm;
   
+#ifndef BOEHM_GC
   /* remove any weak dead bags */
   for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++)
     {
@@ -479,6 +548,19 @@ void MakeImmutableWPObj( Obj obj )
     }
   /* Change the type */
   RetypeBag( obj, T_PLIST+IMMUTABLE);
+#else
+  Obj copy = NewBag(T_PLIST+IMMUTABLE, SIZE_BAG(obj));
+  for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++) {
+    volatile Obj tmp = ELM_WPOBJ(obj, i);
+    MEMBAR_READ();
+    if (IS_BAG_REF(tmp) && ELM_WPOBJ(obj, i)) {
+      FORGET_WP(&ELM_WPOBJ(obj, i));
+      ELM_WPOBJ(obj, i) = 0;
+    }
+    SET_ELM_PLIST(copy, i, tmp);
+  }
+  PTR_BAG(obj) = PTR_BAG(copy);
+#endif
 }
 
 /****************************************************************************
@@ -528,6 +610,26 @@ void CleanObjWPObjCopy (
     }
 
 }
+
+/****************************************************************************
+**
+*F  FinalizeWeapPointerObj( <wpobj> )
+*/
+
+#ifdef BOEHM_GC
+void FinalizeWeakPointerObj( Obj wpobj )
+{
+    volatile Obj keep = wpobj;
+    UInt i, len;
+    len = STORED_LEN_WPOBJ(wpobj);
+    for (i = 1; i <= len; i++) {
+      volatile Obj tmp = ELM_WPOBJ(wpobj, i);
+      MEMBAR_READ();
+      if (IS_BAG_REF(tmp) && ELM_WPOBJ(wpobj, i))
+        FORGET_WP(&ELM_WPOBJ(wpobj, i));
+    }
+}
+#endif
 
 /****************************************************************************
 **
@@ -638,11 +740,13 @@ static Int InitKernel (
     InfoBags[ T_WPOBJ          ].name = "object (weakptr)";
     InfoBags[ T_WPOBJ +COPYING ].name = "object (weakptr, copied)";
 
-#if 1
+#ifndef BOEHM_GC
     InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ,          SweepWeakPointerObj  );
     InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ +COPYING, SweepWeakPointerObj  );
+    InitFinalizerFuncBags( T_WPOBJ, FinalizeWeakPointerObj );
+    InitFinalizerFuncBags( T_WPOBJ+COPYING, FinalizeWeakPointerObj );
 #else
     /* force atomic allocation of these pointers */
     InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );
@@ -713,22 +817,6 @@ StructInitInfo * InitInfoWeakPtr ( void )
     FillInVersion( &module );
     return &module;
 }
-
-#ifdef BOEHM_GC
-void RegisterWeakReference(Bag *bag) {
-#if 0
-  if (*bag && IS_BAG_REF(*bag))
-    GC_general_register_disappearing_link(bag, *bag);
-#endif
-}
-
-void UnregisterWeakReference(Bag *bag) {
-#if 0
-  if (*bag && IS_BAG_REF(*bag))
-    GC_unregister_disappearing_link(bag);
-#endif
-}
-#endif
 
 
 

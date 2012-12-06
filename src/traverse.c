@@ -80,6 +80,25 @@ void TraversePList(Obj obj)
   }
 }
 
+void TraverseWPObj(Obj obj)
+{
+  /* This is a hack, we rely on weak pointer objects
+   * having the same layout as plain lists, so we don't
+   * have to replicate the macro here.
+   */
+  UInt len = LEN_PLIST(obj);
+  Obj *ptr = ADDR_OBJ(obj)+1;
+  while (len)
+  {
+    volatile Obj tmp = *ptr;
+    MEMBAR_READ();
+    if (tmp && *ptr)
+      QueueForTraversal(*ptr);
+    ptr++;
+    len--;
+  }
+}
+
 static UInt FindTraversedObj(Obj);
 
 static inline Obj ReplaceByCopy(Obj obj)
@@ -108,6 +127,26 @@ void CopyPList(Obj copy, Obj original)
   {
     *copyptr++ = ReplaceByCopy(*ptr++);
     len--;
+  }
+}
+
+void CopyWPObj(Obj copy, Obj original)
+{
+  /* This is a hack, we rely on weak pointer objects
+   * having the same layout as plain lists, so we don't
+   * have to replicate the macro here.
+   */
+  UInt len = LEN_PLIST(original);
+  Obj *ptr = ADDR_OBJ(original)+1;
+  Obj *copyptr = ADDR_OBJ(copy)+1;
+  while (len) {
+    volatile Obj tmp = *ptr;
+    MEMBAR_READ();
+    if (tmp && *ptr)
+      *copyptr = ReplaceByCopy(tmp);
+    REGISTER_WP(copyptr, tmp);
+    ptr++;
+    copyptr++;
   }
 }
 
@@ -156,6 +195,8 @@ void InitTraversalModule()
   TraversalMask[T_COMOBJ] = TRAVERSE_BY_FUNCTION;
   TraversalFunc[T_COMOBJ] = TraversePRecord;
   TraversalCopyFunc[T_COMOBJ] = CopyPRecord;
+  TraversalFunc[T_WPOBJ] = TraverseWPObj;
+  TraversalCopyFunc[T_WPOBJ] = CopyWPObj;
   TraversalMask[T_DATOBJ] = TRAVERSE_NONE;
   for (i=FIRST_SHARED_TNUM; i<=LAST_SHARED_TNUM; i++)
     TraversalMask[i] = TRAVERSE_NONE;
