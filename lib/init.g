@@ -1204,9 +1204,9 @@ end);
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
 
-if not IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
-  ReadLib( "tasks.g" );
-fi;
+#if not IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
+#  ReadLib( "tasks.g" );
+#fi;
 
 
 #############################################################################
@@ -1257,15 +1257,21 @@ if IsBoundGlobal("MPI_Initialized") then
     WaitThread(TaskManager);
     WaitThread(MessageManager);
     MPI_Finalize();
+  else
+    if THREAD_UI() then
+      ReadLib("textui.g");
+      MULTI_SESSION();
+    else
+      SESSION();
+    fi; 
   fi;
-fi;
-
-
-if THREAD_UI() then
-  ReadLib("textui.g");
-  MULTI_SESSION();
 else
-  SESSION();
+  if THREAD_UI() then
+    ReadLib("textui.g");
+    MULTI_SESSION();
+  else
+    SESSION();
+  fi;
 fi;
 
 PROGRAM_CLEAN_UP();
