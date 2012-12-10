@@ -906,7 +906,15 @@ static Int InitKernel (
 {
     /* install the marking function                                        */
     InfoBags[         T_RAT ].name = "rational";
+    /* MarkTwoSubBags() is faster for Gasman, but MarkAllSubBags() is
+     * more space-efficient for the Boehm GC and does not incur a
+     * speed penalty.
+     */
+#ifndef BOEHM_GC
     InitMarkFuncBags( T_RAT, MarkTwoSubBags );
+#else
+    InitMarkFuncBags( T_RAT, MarkAllSubBags );
+#endif
 
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_RAT_POS", &TYPE_RAT_POS );

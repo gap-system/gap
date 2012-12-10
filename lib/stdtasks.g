@@ -43,11 +43,11 @@ TASKS := AtomicRecord( rec (
       while TASK_QUEUE.active_count < TASK_QUEUE.max_active and
             Length(TASK_QUEUE.ready_tasks) > 0 do
         task := TASK_QUEUE.ready_tasks[1];
-	      # Workaround because dynamic retyping of list breaks the
-	      # following statement:
-        # Remove(TASK_QUEUE.ready_tasks, 1);
-        TASK_QUEUE.ready_tasks :=
-          TASK_QUEUE.ready_tasks{[2..Length(TASK_QUEUE.ready_tasks)]};
+	# Workaround because dynamic retyping of list breaks the
+	# following statement:
+	# Remove(TASK_QUEUE.ready_tasks, 1);
+	TASK_QUEUE.ready_tasks :=
+	  TASK_QUEUE.ready_tasks{[2..Length(TASK_QUEUE.ready_tasks)]};
         MigrateSingleObj(TASK_QUEUE.ready_tasks, TASK_QUEUE);
         atomic task do
           if IsIdenticalObj(task.worker, fail) then
@@ -243,12 +243,12 @@ TASKS := AtomicRecord( rec (
         Add(TASK_QUEUE.ready_tasks, task);
         TASKS.WakeWorker();
       else
-	    # Workaround because dynamic retyping of list breaks the
-	    # following statement:
-            # Add(TASK_QUEUE.ready_tasks, task, 1);
+	# Workaround because dynamic retyping of list breaks the
+	# following statement:
+        # Add(TASK_QUEUE.ready_tasks, task, 1);
         tasks := [ task ];
-        Append(tasks, TASK_QUEUE.ready_tasks);
-        TASK_QUEUE.ready_tasks := MigrateSingleObj(tasks, TASK_QUEUE);
+	Append(tasks, TASK_QUEUE.ready_tasks);
+	TASK_QUEUE.ready_tasks := MigrateSingleObj(tasks, TASK_QUEUE);
         TASKS.WakeWorker();
       fi;
     od;

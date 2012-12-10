@@ -1406,7 +1406,9 @@ Int IsStringList (
     lenList = LEN_LIST( list );
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || TNUM_OBJ( elm ) != T_CHAR )
+	if ( elm == 0 || !CheckReadAccess(elm) )
+	    break;
+        if ( TNUM_OBJ( elm ) != T_CHAR )
             break;
     }
 

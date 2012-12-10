@@ -143,7 +143,7 @@ linkflags = ""
 if not GAP["debug"]:
   cflags = "-O2"
 if compiler == "gcc":
-  cflags += " -g3"
+  cflags += " -g"
 else:
   cflags += " -g"
 if GAP["mpi"]:
@@ -226,7 +226,7 @@ if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
   os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
-  build_external("bdwgc-2012-03-02", confargs="--disable-shared")
+  build_external("gc-7.2d", confargs="--disable-shared")
   del os.environ["CC"]
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
@@ -316,6 +316,12 @@ WriteFlags((make_cc_options("-I", map(os.path.abspath, include_path)) +
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
+
+if "src/dbgmacro.c" not in source:
+  source.append("src/dbgmacro.c")
+GAP.Command("src/dbgmacro.c", "etc/dbgmacro.py",
+  "python $SOURCE > $TARGET")
+
 if not GAP["mpi"]:
   source.remove("src/gapmpi.c")
 if preprocess:
@@ -328,8 +334,6 @@ if preprocess:
     GAP.Command(gen[i], pregen[i],
         preprocess + " $SOURCE >$TARGET")
   source = map(lambda s: "gen/"+s[4:], source)
-
-source.append("extern/jenkins/jhash.o")
 
 GAP.Command("extern/include/jhash.h", "extern/jenkins/jhash.h",
             "cp -f $SOURCE $TARGET")

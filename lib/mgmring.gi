@@ -60,7 +60,7 @@
 ##  It is assumed that the arithmetic operations of $M$ produce only
 ##  normalized elements.
 ##
-DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsPositionalObjectRep,
+DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsAtomicPositionalObjectRep, 
     [ 1, 2 ] );
 
 
@@ -76,7 +76,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
     "for a family of elements in a *free* magma ring, and a list",
     [ IsElementOfFreeMagmaRingFamily, IsList ],
     function( Fam, descr )
-    return descr;
+    return MakeImmutable(descr);
     end );
 
 
@@ -627,7 +627,7 @@ InstallMethod( OneOp,
       return fail;
     fi;
     z:= ZeroCoefficient( elm );
-    return Objectify( F!.defaultType, [ z, [ F!.oneMagma, One( z ) ] ] );
+    return Objectify( F!.defaultType, `[ z, [ F!.oneMagma, One( z ) ] ] );
     end );
 
 
@@ -1568,11 +1568,11 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
       if descr[2][i] = zeromagma then
         descr:= [ descr[1], Concatenation( descr[2]{ [ 1 .. i-1 ] },
                                            descr[2]{ [ i+2 .. len ] } ) ];
-        MakeImmutable( descr );
         break;
       fi;
     od;
-
+    
+    MakeImmutable( descr );
     return descr;
     end );
 

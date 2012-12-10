@@ -172,9 +172,6 @@ local r,e,f,x,nf,lf,c,store;
     fi;
   # until 3 times no improvement
   until c>2;
-  if e<=10 and IsInt(r) and 0<=r and r<=100 then
-    
-  fi;
   if store then
       atomic readwrite APPROXROOTS do
           if not IsBound(APPROXROOTS[e]) then

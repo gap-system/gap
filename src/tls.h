@@ -23,6 +23,7 @@ typedef struct ThreadLocalStorage
   Obj interruptHandlers;
   void *CurrentHashLock;
   char *CurrFuncName;
+  int DisableGuards;
   /* From intrprtr.c */
   Obj intrResult;
   UInt intrIgnoring;
@@ -262,7 +263,8 @@ static inline int CheckWriteAccess(Bag bag)
   if (!IS_BAG_REF(bag))
     return 1;
   region = DS_BAG(bag);
-  return !(region && region->owner != TLS && region->alt_owner != TLS);
+  return !(region && region->owner != TLS && region->alt_owner != TLS)
+    || TLS->DisableGuards >= 2;
 }
 
 static inline int CheckExclusiveWriteAccess(Bag bag)
@@ -273,7 +275,8 @@ static inline int CheckExclusiveWriteAccess(Bag bag)
   region = DS_BAG(bag);
   if (!region)
     return 0;
-  return region->owner == TLS || region->alt_owner == TLS;
+  return region->owner == TLS || region->alt_owner == TLS
+    || TLS->DisableGuards >= 2;
 }
 
 #ifdef VERBOSE_GUARDS
@@ -336,7 +339,8 @@ static ALWAYS_INLINE int CheckReadAccess(Bag bag)
     return 1;
   region = DS_BAG(bag);
   return !(region && region->owner != TLS &&
-    !region->readers[TLS->threadID] && region->alt_owner != TLS);
+    !region->readers[TLS->threadID] && region->alt_owner != TLS)
+    || TLS->DisableGuards >= 2;
 }
 
 static inline int IsMainThread()

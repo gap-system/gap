@@ -47,32 +47,12 @@ typedef struct ThreadData {
   struct ThreadData *next;
 } ThreadData;
 
-typedef struct TraversalState {
-  struct TraversalState *previousTraversal;
-  Obj list;
-  UInt listSize;
-  UInt listCurrent;
-  UInt listCapacity;
-  Obj hashTable;
-  Obj copyMap;
-  UInt hashSize;
-  UInt hashCapacity;
-  UInt hashBits;
-  Region *region;
-  int delimitedCopy;
-  int (*traversalCheck)(Bag bag);
-} TraversalState;
-
 Region *LimboRegion, *ReadOnlyRegion, *ProtectedRegion;
 Obj PublicRegion;
 Obj PublicRegionName;
 
 static int GlobalPauseInProgress;
 static AtomicUInt ThreadCounter = 1;
-
-static inline TraversalState *currentTraversal() {
-  return TLS->traversalState;
-}
 
 static inline void IncThreadCounter() {
   ATOMIC_INC(&ThreadCounter);
@@ -197,8 +177,6 @@ static void SetupTLS()
   TLS->threadID = 0;
 }
 
-static void InitTraversal();
-
 Obj NewThreadObject(UInt id) {
   Obj result = NewBag(T_THREAD, 3*sizeof(UInt));
   ADDR_OBJ(result)[0] = (Bag) 0;
@@ -245,6 +223,7 @@ static void RunThreadedMain2(
   char **argv,
   char **environ )
 {
+  void InitTraversal();
   int i;
   static pthread_mutex_t main_thread_mutex;
   static pthread_cond_t main_thread_cond;
@@ -271,9 +250,11 @@ static void RunThreadedMain2(
   thread_data[0].cond = TLS->threadSignal;
   thread_data[0].state = TSTATE_RUNNING;
   thread_data[0].tls = TLS;
-  InitTraversal();
   if (sySetjmp(TLS->threadExit))
     exit(0);
+  /* Traversal functionality may be needed during the initialization
+   * of some modules, so we set it up now. */
+  InitTraversalModule();
   exit((*mainFunction)(argc, argv, environ));
 }
 
@@ -1057,413 +1038,7 @@ Region *CurrentRegion()
   return TLS->currentRegion;
 }
 
-void QueueForTraversal(Obj obj);
-
-#define TRAVERSE_NONE (1)
-#define TRAVERSE_ALL (-1)
-#define TRAVERSE_ALL_BUT(n) (1 | ((-1) << (1+(n))))
-#define TRAVERSE_BY_FUNCTION (0)
-
-typedef void (*TraversalCopyFunction)(Obj copy, Obj original);
-
-TraversalFunction TraversalFunc[LAST_REAL_TNUM+1];
-TraversalCopyFunction TraversalCopyFunc[LAST_REAL_TNUM+1];
-int TraversalMask[LAST_REAL_TNUM+1];
-
-void TraversePList(Obj obj)
-{
-  UInt len = LEN_PLIST(obj);
-  Obj *ptr = ADDR_OBJ(obj)+1;
-  while (len)
-  {
-    QueueForTraversal(*ptr++);
-    len--;
-  }
-}
-
-static UInt FindTraversedObj(Obj);
-
-static inline Obj ReplaceByCopy(Obj obj)
-{
-  Obj result;
-  TraversalState *traversal = currentTraversal();
-  UInt found = FindTraversedObj(obj);
-  if (found)
-    return ELM_PLIST(traversal->copyMap, found);
-  else if (traversal->delimitedCopy) {
-    if (!IS_BAG_REF(obj) || !DS_BAG(obj) || DS_BAG(obj) == traversal->region)
-      return obj;
-    else
-      return GetRegionOf(obj)->obj;
-  }
-  else
-    return obj;
-}
-
-void CopyPList(Obj copy, Obj original)
-{
-  UInt len = LEN_PLIST(original);
-  Obj *ptr = ADDR_OBJ(original)+1;
-  Obj *copyptr = ADDR_OBJ(copy)+1;
-  while (len)
-  {
-    *copyptr++ = ReplaceByCopy(*ptr++);
-    len--;
-  }
-}
-
-void TraversePRecord(Obj obj)
-{
-  UInt i, len = LEN_PREC(obj);
-  for (i=1; i<=len; i++)
-    QueueForTraversal((Obj)GET_ELM_PREC(obj, i));
-}
-
-void CopyPRecord(Obj copy, Obj original)
-{
-  UInt i,len = LEN_PREC(original);
-  for (i=1; i<=len; i++)
-    SET_ELM_PREC(copy, i, ReplaceByCopy(GET_ELM_PREC(original, i)));
-}
-
-static void InitTraversal()
-{
-  int i;
-  for (i=FIRST_CONSTANT_TNUM; i<=LAST_CONSTANT_TNUM; i++)
-    TraversalMask[i] = TRAVERSE_NONE;
-  TraversalMask[T_LVARS] = TRAVERSE_NONE;
-  TraversalMask[T_HVARS] = TRAVERSE_NONE;
-  TraversalMask[T_PREC] = TRAVERSE_BY_FUNCTION;
-  TraversalMask[T_PREC+IMMUTABLE] = TRAVERSE_BY_FUNCTION;
-  TraversalFunc[T_PREC] = TraversePRecord;
-  TraversalCopyFunc[T_PREC] = CopyPRecord;
-  TraversalFunc[T_PREC+IMMUTABLE] = TraversePRecord;
-  TraversalCopyFunc[T_PREC+IMMUTABLE] = CopyPRecord;
-  for (i=FIRST_PLIST_TNUM; i<=LAST_PLIST_TNUM; i++)
-  {
-    TraversalMask[i] = TRAVERSE_BY_FUNCTION;
-    TraversalFunc[i] = TraversePList;
-    TraversalCopyFunc[i] = CopyPList;
-  }
-  TraversalMask[T_PLIST_CYC] = TRAVERSE_NONE;
-  TraversalMask[T_PLIST_CYC_NSORT] = TRAVERSE_NONE;
-  TraversalMask[T_PLIST_CYC_SSORT] = TRAVERSE_NONE;
-  TraversalMask[T_PLIST_FFE] = TRAVERSE_NONE;
-  for (i=LAST_PLIST_TNUM+1; i<=LAST_LIST_TNUM; i++)
-    TraversalMask[i] = TRAVERSE_NONE;
-  for (i=FIRST_EXTERNAL_TNUM; i<=LAST_EXTERNAL_TNUM; i++)
-    TraversalMask[i] = TRAVERSE_NONE;
-  TraversalMask[T_POSOBJ] = TRAVERSE_ALL_BUT(1);
-  TraversalMask[T_COMOBJ] = TRAVERSE_BY_FUNCTION;
-  TraversalFunc[T_COMOBJ] = TraversePRecord;
-  TraversalCopyFunc[T_COMOBJ] = CopyPRecord;
-  TraversalMask[T_DATOBJ] = TRAVERSE_NONE;
-  for (i=FIRST_SHARED_TNUM; i<=LAST_SHARED_TNUM; i++)
-    TraversalMask[i] = TRAVERSE_NONE;
-}
-
-static void BeginTraversal(TraversalState *traversal)
-{
-  traversal->hashTable = NewList(16);
-  traversal->hashSize = 0;
-  traversal->hashCapacity = 16;
-  traversal->hashBits = 4;
-  traversal->list = NewList(10);
-  traversal->listSize = 0;
-  traversal->listCapacity = 10;
-  traversal->listCurrent = 0;
-  traversal->previousTraversal = currentTraversal();
-  TLS->traversalState = traversal;
-}
-
-static void EndTraversal()
-{
-  TLS->traversalState = currentTraversal()->previousTraversal;
-}
-
-#if SIZEOF_VOID_P == 4
-#define TRAV_HASH_MULT 0x9e3779b9UL
-#else
-#define TRAV_HASH_MULT 0x9e3779b97f4a7c13UL
-#endif
-#define TRAV_HASH_BITS (SIZEOF_VOID_P * 8)
-
-static void TraversalRehash();
-
-static int SeenDuringTraversal(Obj obj)
-{
-  Int type;
-  TraversalState *traversal = currentTraversal();
-  Obj *hashTable;
-  unsigned long hash;
-  if (!IS_BAG_REF(obj))
-    return 0;
-  if (traversal->hashSize * 3 / 2 >= traversal->hashCapacity)
-    TraversalRehash(traversal);
-  hash = ((unsigned long) obj) * TRAV_HASH_MULT;
-  hash >>= TRAV_HASH_BITS - traversal->hashBits;
-  hashTable = ADDR_OBJ(traversal->hashTable)+1;
-  for (;;)
-  {
-    if (hashTable[hash] == NULL)
-    {
-      hashTable[hash] = obj;
-      traversal->hashSize++;
-      return 1;
-    }
-    if (hashTable[hash] == obj)
-      return 0;
-    hash = (hash + 1) & (traversal->hashCapacity-1);
-  }
-}
-
-static UInt FindTraversedObj(Obj obj)
-{
-  Int type;
-  TraversalState *traversal = currentTraversal();
-  Obj *hashTable = ADDR_OBJ(traversal->hashTable)+1;
-  UInt hash;
-  if (!IS_BAG_REF(obj))
-    return 0;
-  hash = ((UInt) obj) * TRAV_HASH_MULT;
-  hash >>= TRAV_HASH_BITS - traversal->hashBits;
-  for (;;)
-  {
-    if (hashTable[hash] == obj)
-      return (int) hash+1;
-    if (hashTable[hash] == NULL)
-      return 0;
-    hash = (hash + 1) & (traversal->hashCapacity-1);
-  }
-}
-
-static void TraversalRehash(TraversalState *traversal)
-{
-  Obj list = NewList(traversal->hashCapacity * 2);
-  int oldsize = traversal->hashCapacity;
-  int i;
-  Obj oldlist = traversal->hashTable;
-  traversal->hashCapacity *= 2;
-  traversal->hashTable = list;
-  traversal->hashSize = 0;
-  traversal->hashBits++;
-  for (i = 1; i <= oldsize; i++)
-  {
-    Obj obj = ADDR_OBJ(oldlist)[i];
-    if (obj != NULL)
-      SeenDuringTraversal(obj);
-  }
-}
-
-void QueueForTraversal(Obj obj)
-{
-  int i;
-  TraversalState *traversal;
-  if (!IS_BAG_REF(obj))
-    return; /* skip ojects that aren't bags */
-  traversal = currentTraversal();
-  if (!traversal->traversalCheck(obj))
-    return;
-#if 0
-  if (DS_BAG(obj) != traversal->region)
-    return; /* stop traversal at the border of a region */
-#endif
-  if (!SeenDuringTraversal(obj))
-    return; /* don't revisit objects that we've already seen */
-  if (traversal->listSize == traversal->listCapacity)
-  {
-    unsigned oldcapacity = traversal->listCapacity;
-    unsigned newcapacity = oldcapacity * 25/16; /* 25/16 < golden ratio */
-    Obj oldlist = traversal->list;
-    Obj list = NewList(newcapacity);
-    for (i=1; i<=oldcapacity; i++)
-      ADDR_OBJ(list)[i] = ADDR_OBJ(oldlist)[i];
-    traversal->list = list;
-    traversal->listCapacity = newcapacity;
-  }
-  ADDR_OBJ(traversal->list)[++traversal->listSize] = obj;
-}
-
-void TraverseRegionFrom(
-    TraversalState *traversal,
-    Obj obj,
-    int (*traversalCheck)(Obj)
-)
-{
-  if (!IS_BAG_REF(obj) || !DS_BAG(obj) || !CheckReadAccess(obj)) {
-    traversal->list = NewList(0);
-    return;
-  }
-  traversal->traversalCheck = traversalCheck;
-  traversal->region = DS_BAG(obj);
-  QueueForTraversal(obj);
-  while (traversal->listCurrent < traversal->listSize)
-  {
-    Obj current = ADDR_OBJ(traversal->list)[++traversal->listCurrent];
-    int tnum = TNUM_BAG(current);
-    int mask = TraversalMask[TNUM_BAG(current)];
-    if (!mask)
-      TraversalFunc[tnum](current);
-    else
-    {
-      int size = SIZE_BAG(current)/sizeof(Obj);
-      Obj *ptr = PTR_BAG(current);
-      mask >>= 1;
-      while (mask && size)
-      {
-        if (mask & 1)
-	  QueueForTraversal(*ptr);
-	ptr++;
-	size--;
-	mask >>= 1;
-      }
-    }
-  }
-  SET_LEN_PLIST(traversal->list, traversal->listSize);
-}
-
-static int IsReadable(Obj obj) {
-  return CheckReadAccess(obj);
-}
-
-static int IsSameRegion(Obj obj) {
-  return DS_BAG(obj) == currentTraversal()->region;
-}
-
-static int IsMutable(Obj obj) {
-  return CheckReadAccess(obj) && IS_MUTABLE_OBJ(obj);
-}
-
-Obj ReachableObjectsFrom(Obj obj)
-{
-  TraversalState traversal;
-  if (!IS_BAG_REF(obj) || DS_BAG(obj) == NULL)
-    return NewList(0);
-  BeginTraversal(&traversal);
-  traversal.traversalCheck = IsSameRegion;
-  TraverseRegionFrom(&traversal, obj, IsSameRegion);
-  EndTraversal();
-  return traversal.list;
-}
-
-static Obj CopyBag(Obj copy, Obj original)
-{
-  UInt size = SIZE_BAG(original);
-  UInt type = TNUM_BAG(original);
-  int mask = TraversalMask[type];
-  memcpy(ADDR_OBJ(copy), ADDR_OBJ(original), size);
-  if (mask)
-  {
-    Obj *ptr = ADDR_OBJ(copy);
-    size = size / sizeof(Obj);
-    mask >>= 1;
-    while (size && mask)
-    {
-      if (mask & 1)
-        *ptr = ReplaceByCopy(*ptr);
-      ptr++;
-      size -= 1;
-      mask >>= 1;
-    }
-  } else {
-    TraversalCopyFunc[type](copy, original);
-  }
-  return copy;
-}
-
-Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
-{
-  Obj *traversed, *copies, copyList;
-  TraversalState traversal;
-  UInt len, i;
-  if (!IS_BAG_REF(obj) || DS_BAG(obj) == NULL)
-  {
-    if (asList) {
-      copyList = NewList(1);
-      SET_ELM_PLIST(copyList, 1, obj);
-      return copyList;
-    } else
-      return obj;
-  }
-  BeginTraversal(&traversal);
-  if (imm) {
-    if (!IS_MUTABLE_OBJ(obj))
-      return obj;
-    TraverseRegionFrom(&traversal, obj, IsMutable);
-  }
-  else
-    TraverseRegionFrom(&traversal, obj, IsSameRegion);
-  traversed = ADDR_OBJ(traversal.list);
-  len = LEN_PLIST(traversal.list);
-  copyList = NewList(len);
-  copies = ADDR_OBJ(copyList);
-  traversal.delimitedCopy = delimited;
-  if (len == 0) {
-    EndTraversal();
-    if (delimited)
-      return GetRegionOf(obj)->obj;
-    ErrorQuit("Object not in a readable region", 0L, 0L);
-  }
-  traversal.copyMap = NewList(LEN_PLIST(traversal.hashTable));
-  for (i = 1; i<=len; i++) {
-    UInt loc = FindTraversedObj(traversed[i]);
-    if (loc) {
-      Obj original = traversed[i];
-      Obj copy;
-      copy = NewBag(TNUM_BAG(original), SIZE_BAG(original));
-      SET_ELM_PLIST(traversal.copyMap, loc, copy);
-      copies[i] = copy;
-    }
-  }
-  for (i=1; i<=len; i++)
-    if (copies[i])
-      CopyBag(copies[i], traversed[i]);
-  EndTraversal();
-  if (imm) {
-    for (i=1; i<=len; i++) {
-      if (copies[i])
-        MakeImmutable(copies[i]);
-    }
-  }
-  if (asList)
-    return copyList;
-  else
-    return copies[1];
-}
-
-Obj CopyTraversed(Obj traversedList)
-{
-  Obj copyList, *copies, *traversed;
-  TraversalState traversal;
-  UInt len, i;
-  traversed = ADDR_OBJ(traversedList);
-  BeginTraversal(&traversal);
-  len = LEN_PLIST(traversedList);
-  if (len == 1) {
-    Obj obj = traversed[1];
-    if (!IS_BAG_REF(obj) || DS_BAG(obj) == NULL)
-      return obj;
-  }
-  for (i=1; i<=len; i++)
-    SeenDuringTraversal(traversed[i]);
-  copyList = NewList(len);
-  copies = ADDR_OBJ(copyList);
-  traversal.copyMap = NewList(LEN_PLIST(traversal.hashTable));
-  for (i=1; i<=len; i++) {
-    Obj original = traversed[i];
-    UInt loc = FindTraversedObj(original);
-    Obj copy;
-    copy = NewBag(TNUM_BAG(original), SIZE_BAG(original));
-    SET_ELM_PLIST(traversal.copyMap, loc, copy);
-    copies[i] = copy;
-  }
-  for (i=1; i<=len; i++)
-    CopyBag(copies[i], traversed[i]);
-  EndTraversal();
-  return copies[1];
-}
-
-extern GVarDescriptor LastInaccessibleGVar, DisableGuardsGVar;
+extern GVarDescriptor LastInaccessibleGVar;
 
 #ifdef VERBOSE_GUARDS
 
@@ -1480,7 +1055,7 @@ void WriteGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
   char * buffer =
     alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
   ImpliedReadGuard(o);
-  if (GVarValue(&DisableGuardsGVar) == True)
+  if (TLS->DisableGuards)
     return;
   SetGVar(&LastInaccessibleGVar, o);
   PrintGuardError(buffer, "write", o, file, line, func, expr);
@@ -1496,7 +1071,7 @@ void ReadGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
     if (AutoLockObj(o))
       return;
   }
-  if (GVarValue(&DisableGuardsGVar) == True)
+  if (TLS->DisableGuards)
     return;
   SetGVar(&LastInaccessibleGVar, o);
   PrintGuardError(buffer, "read", o, file, line, func, expr);
@@ -1507,7 +1082,7 @@ void ReadGuardError(Obj o, char *file, unsigned line, char *func, char *expr)
 void WriteGuardError(Obj o)
 {
   ImpliedReadGuard(o);
-  if (GVarValue(&DisableGuardsGVar) == True)
+  if (TLS->DisableGuards)
     return;
   SetGVar(&LastInaccessibleGVar, o);
   ErrorMayQuit("Attempt to write object %i of type %s without having write access", (Int)o, (Int)TNAM_OBJ(o));
@@ -1520,7 +1095,7 @@ void ReadGuardError(Obj o)
     if (AutoLockObj(o))
       return;
   }
-  if (GVarValue(&DisableGuardsGVar) == True)
+  if (TLS->DisableGuards)
     return;
   SetGVar(&LastInaccessibleGVar, o);
   ErrorMayQuit("Attempt to read object %i of type %s without having read access", (Int)o, (Int)TNAM_OBJ(o));

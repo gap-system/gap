@@ -120,6 +120,8 @@
 #ifdef BOEHM_GC
 #ifndef DISABLE_GC
 #include <gc/gc.h>
+#include <gc/gc_typed.h>
+#include <gc/gc_mark.h>
 #else
 #include <stdlib.h>
 #endif
@@ -606,12 +608,18 @@ static void ItaniumSpecialMarkingInit() {
 **  by GASMAN as default.  This will allow to catch type clashes.
 */
 TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
+#ifdef BOEHM_GC
+int TabMarkTypeBags [ NTYPES ];
+#endif
 
 
 void InitMarkFuncBags (
     UInt                type,
     TNumMarkFuncBags    mark_func )
 {
+#ifdef BOEHM_GC
+    int mark_type;
+#endif
 #ifdef CHECK_FOR_CLASH_IN_INIT_MARK_FUNC
     char                str[256];
 
@@ -627,6 +635,23 @@ void InitMarkFuncBags (
     }
 #endif
     TabMarkFuncBags[type] = mark_func;
+#ifdef BOEHM_GC
+    if (mark_func == MarkNoSubBags)
+      mark_type = 0;
+    else if (mark_func == MarkAllSubBags)
+      mark_type = -1;
+    else if (mark_func == MarkOneSubBags)
+      mark_type = 1;
+    else if (mark_func == MarkTwoSubBags)
+      mark_type = 2;
+    else if (mark_func == MarkThreeSubBags)
+      mark_type = 3;
+    else if (mark_func == MarkFourSubBags)
+      mark_type = 4;
+    else
+      mark_type = -1;
+    TabMarkTypeBags[type] = mark_type;
+#endif
 }
 
 
@@ -729,12 +754,9 @@ void MarkBagWeakly(
 
 
 #ifdef BOEHM_GC
-static inline int IsAtomicBagType(
-    UInt tnum )
-{
-  return TabMarkFuncBags[tnum] == MarkNoSubBags ||
-    TabFinalizerFuncBags[tnum] != NULL;
-}
+#define MAX_GC_PREFIX_DESC 4
+static GC_descr GCDesc[MAX_GC_PREFIX_DESC+1];
+static unsigned GCKind[MAX_GC_PREFIX_DESC+1];
 #endif
 
 
@@ -1122,6 +1144,40 @@ UInt                    DirtyBags;
 
 TNumAbortFuncBags       AbortFuncBags;
 
+#ifdef BOEHM_GC
+
+/*
+ * Build memory layout information for Boehm GC.
+ *
+ * Bitmapped type descriptors have a bit set if the word at the
+ * corresponding offset may contain a reference. This is done
+ * by first creating a bitmap and then using GC_make_descriptor()
+ * to build a descriptor from the bitmap. Memory for a specific
+ * type layout can be allocated with GC_malloc_explicitly_typed()
+ * and GC_malloc_explicitly_typed_ignore_off_page().
+ *
+ * We also create a new 'kind' for each collector. Kinds have their
+ * own associated free lists and do not require to have type information
+ * stored in each bag, thus potentially saving some memory. Allocating
+ * memory of a specific kind is done with GC_generic_malloc(). There
+ * is no public _ignore_off_page() version for this call, so we use
+ * GC_malloc_explicitly_typed_ignore_off_page() instead, given that
+ * the overhead is negligible for large objects.
+ */
+
+void BuildPrefixGCDescriptor(unsigned prefix_len) {
+  
+  GC_word bits[1] = {0};
+  unsigned i;
+  for (i=0; i<prefix_len; i++)
+    GC_set_bit(bits, (i + HEADER_SIZE));
+  GCDesc[prefix_len] = GC_make_descriptor(bits, prefix_len + HEADER_SIZE);
+  GCKind[prefix_len] = GC_new_kind(GC_new_free_list(), GCDesc[prefix_len],
+    1, 1);
+}
+
+#endif
+
 void            InitBags (
     TNumAllocFuncBags   alloc_func,
     UInt                initial_size,
@@ -1132,9 +1188,9 @@ void            InitBags (
     UInt                dirty,
     TNumAbortFuncBags   abort_func )
 {
+    UInt                i;              /* loop variable                   */
 #ifndef BOEHM_GC
     Bag *               p;              /* loop variable                   */
-    UInt                i;              /* loop variable                   */
 
     ClearGlobalBags();
     WarnInitGlobalBag = 0;
@@ -1188,28 +1244,78 @@ void            InitBags (
     DirtyBags = dirty;
 
     /* install the marking functions                                       */
-    for ( i = 0; i < 255; i++ )
+    for ( i = 0; i < 255; i++ ) {
         TabMarkFuncBags[i] = MarkAllSubBagsDefault;
+    }
 
     /* Set ChangedBags to a proper initial value */
     ChangedBags = 0;
 #else /* BOEHM_GC */
+    /* install the marking functions                                       */
+    for ( i = 0; i < 255; i++ ) {
+        TabMarkFuncBags[i] = MarkAllSubBagsDefault;
+	TabMarkTypeBags[i] = -1;
+    }
 #define LARGE_GC_SIZE (SIZEOF_VOID_P * 8192)
 #ifndef DISABLE_GC
     GC_set_all_interior_pointers(0);
     GC_init();
-#if SIZEOF_VOID_P == 4
     GC_register_displacement(0);
     GC_register_displacement(HEADER_SIZE*sizeof(Bag));
-#else
-    GC_register_displacement(0);
-    GC_register_displacement(HEADER_SIZE*sizeof(Bag));
-#endif
+    initial_size *= 1024;
+    if (GC_get_heap_size() < initial_size)
+      GC_expand_hp(initial_size - GC_get_heap_size());
+    if (SyStorKill)
+      GC_set_max_heap_size(SyStorKill * 1024);
     AddGCRoots();
     CreateMainRegion();
+    for (i=1; i<=MAX_GC_PREFIX_DESC; i++)
+      BuildPrefixGCDescriptor(i);
 #endif /* DISABLE_GC */
 #endif /* BOEHM_GC */
 }
+
+#ifdef BOEHM_GC
+
+/****************************************************************************
+**
+*F  AllocateBagMemory( <gc_type>, <type>, <size> )
+**
+**  Allocate memory for a new bag.
+**
+**  'AllocateBagMemory' is an auxiliary routine for the Boehm GC that
+**  allocates memory from the appropriate pool. 'gc_type' is -1 if all words
+**  in the bag can refer to other bags, 0 if the bag will not contain any
+**  references to other bags, and > 0 to indicate a specific memory layout
+**  descriptor.
+**/
+void *AllocateBagMemory(int gc_type, int type, UInt size)
+{
+    void *result;
+    if (!gc_type) {
+      if (size >= LARGE_GC_SIZE)
+        result = GC_malloc_atomic_ignore_off_page(size);
+      else
+	result = GC_malloc_atomic(size);
+      memset(result, 0, size);
+    } else if (gc_type > 0) {
+      if (size >= LARGE_GC_SIZE)
+        result = GC_malloc_explicitly_typed_ignore_off_page(size,
+	  GCDesc[gc_type]);
+      else
+        result = GC_generic_malloc(size, GCKind[gc_type]);
+    } else {
+      if (size >= LARGE_GC_SIZE)
+	result = GC_malloc_ignore_off_page(size);
+      else
+	result = GC_malloc(size);
+    }
+    if (TabFinalizerFuncBags[type])
+      GC_register_finalizer_no_order(result, StandardFinalizer,
+	NULL, NULL, NULL);
+    return result;
+}
+#endif
 
 
 /****************************************************************************
@@ -1335,20 +1441,7 @@ Bag NewBag (
      * them somewhat slower. Hence, we only use them for sufficiently
      * large objects.
      */
-    if (IsAtomicBagType(type)) {
-      if (alloc_size >= LARGE_GC_SIZE)
-        dst = GC_malloc_atomic_ignore_off_page(alloc_size);
-      else
-	dst = GC_malloc_atomic(alloc_size);
-      memset(dst, 0, alloc_size);
-      if (TabFinalizerFuncBags[type])
-	GC_register_finalizer_no_order(dst, StandardFinalizer, NULL, NULL, NULL);
-    } else {
-      if (alloc_size >= LARGE_GC_SIZE)
-	dst = GC_malloc_ignore_off_page(alloc_size);
-      else
-	dst = GC_malloc(alloc_size);
-    }
+    dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
 #else
     bag = malloc(2*sizeof(Bag *));
     dst = malloc(alloc_size);
@@ -1436,32 +1529,21 @@ void            RetypeBag (
 
     /* change the size-type word                                           */
 #ifdef USE_NEWSHAPE
-    *(*bag-HEADER_SIZE) &= 0xFFFFFFFFFFFF0000L;
+    *(*bag-HEADER_SIZE) &= 0xFFFFFFFFFFFFFF00L;
     *(*bag-HEADER_SIZE) |= new_type;
 #else
     *(*bag-HEADER_SIZE) = new_type;
 #endif
 #ifdef BOEHM_GC
     {
-      int old_atomic, new_atomic;
+      int old_gctype, new_gctype;
       UInt size;
       void *new_mem, *old_mem;
-      old_atomic = IsAtomicBagType(old_type);
-      new_atomic = IsAtomicBagType(new_type);
-      if (old_atomic != new_atomic) {
+      old_gctype = TabMarkTypeBags[old_type];
+      new_gctype = TabMarkTypeBags[new_type];
+      if (old_gctype != new_gctype) {
         size = SIZE_BAG(bag) + HEADER_SIZE * sizeof(Bag);
-	if (new_atomic) {
-	  if (size >= LARGE_GC_SIZE)
-	    new_mem = GC_malloc_atomic_ignore_off_page(size);
-	  else
-	    new_mem = GC_malloc_atomic(size);
-	  memset(new_mem, 0, size);
-	} else {
-	  if (size >= LARGE_GC_SIZE)
-	    new_mem = GC_malloc_ignore_off_page(size);
-	  else
-	    new_mem = GC_malloc(size);
-	}
+	new_mem = AllocateBagMemory(new_gctype, new_type, size);
 	old_mem = PTR_BAG(bag);
 	old_mem = ((char *) old_mem) - HEADER_SIZE * sizeof(Bag);
 	memcpy(new_mem, old_mem, size);
@@ -1597,7 +1679,20 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
 #else
 #ifndef DISABLE_GC
     alloc_size = GC_size(PTR_BAG(bag)-HEADER_SIZE);
-    if ( HEADER_SIZE*sizeof(Bag) + new_size <= alloc_size
+    /* An alternative implementation would be to compare
+     * new_size <= alloc_size in the following test in order
+     * to avoid reallocations for alternating contractions
+     * and expansions. However, typed allocation in the Boehm
+     * GC stores layout information in the last word of a memory
+     * block and we may accidentally overwrite this information,
+     * because GC_size() includes that extraneous word when
+     * returning the size of a memory block.
+     *
+     * This is technically a bug in GC_size(), but until and
+     * unless there is an upstream fix, we'll do it the safe
+     * way.
+     */
+    if ( new_size <= old_size
          && HEADER_SIZE*sizeof(Bag) + new_size >= alloc_size * 3/4) {
 #else
     if (new_size <= old_size) {
@@ -1683,18 +1778,7 @@ void RetypeBagIfWritable( Obj obj, UInt new_type )
 	if (new_size == 0)
 	    alloc_size++;
 #ifndef DISABLE_GC
-	if (TabMarkFuncBags[type] == MarkNoSubBags) {
-	    if (alloc_size >= LARGE_GC_SIZE)
-	      dst = GC_malloc_atomic_ignore_off_page(alloc_size);
-	    else
-	      dst = GC_malloc_atomic(alloc_size);
-	    memset(dst, 0, alloc_size);
-	} else {
-	    if (alloc_size >= LARGE_GC_SIZE)
-	      dst = GC_malloc_ignore_off_page(alloc_size);
-	    else
-	      dst = GC_malloc(alloc_size);
-	}
+	dst = AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
 #else
         dst       = malloc( alloc_size );
 	memset(dst, 0, alloc_size);

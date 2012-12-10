@@ -114,7 +114,7 @@ BIND_GLOBAL( "InstallHiddenTrueMethod", function ( filter, filters )
 	imp := [];
 	imp[1] := FLAGS_FILTER( filter );
 	imp[2] := FLAGS_FILTER( filters );
-	MigrateObj(imp, HIDDEN_IMPS);
+	MIGRATE_RAW(imp, HIDDEN_IMPS);
 	ADD_LIST( HIDDEN_IMPS, imp );
     od;
 end );
@@ -146,7 +146,7 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
 	imp := [];
 	imp[1] := FLAGS_FILTER( tofilt );
 	imp[2] := FLAGS_FILTER( from );
-	MigrateObj(imp, IMPLICATIONS);
+	MIGRATE_RAW(imp, IMPLICATIONS);
 	ADD_LIST( IMPLICATIONS, imp );
     od;
     InstallHiddenTrueMethod( tofilt, from );

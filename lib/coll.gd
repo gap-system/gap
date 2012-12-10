@@ -1042,13 +1042,13 @@ BIND_GLOBAL( "InstallFactorMaintenance",
     tester:= Tester( opr );
 
     atomic FACTOR_MAINTAINED_INFO do
-	ADD_LIST( FACTOR_MAINTAINED_INFO,
+	ADD_LIST( FACTOR_MAINTAINED_INFO, MakeImmutable(
 	    [ IsCollection and Tester( numer_req ) and numer_req and tester,
 	      Tester( denom_req ) and denom_req,
 	      IsCollection and Tester( factor_req ) and factor_req,
 	      opr,
 	      tester,
-	      Setter( opr ) ] );
+	      Setter( opr ) ] ) );
     od;
 
 #T not yet available in the new implementation

@@ -48,3 +48,7 @@ $(WARD)/bin/ward:
 	@cd $(WARD); sh build.sh >/dev/null 2>/dev/null
 	@echo "Ward build completed."
 
+.PHONY: all opt gapdebug debug
+.PHONY: opt32 32 gapdebug32 debug32
+.PHONY: opt64 64 gapdebug64 debug64
+.PHONY: clean distclean

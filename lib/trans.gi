@@ -224,8 +224,8 @@ InstallGlobalFunction(TransformationData,
         # say [a] it picks up the Category from the Family object and makes 
         # sure that [a] has CollectionsCategory(IsTransformation)
 
-        _TransformationFamiliesDatabase[n] := 
-        [Fam, NewType(Fam,IsTransformation and IsTransformationRep, n)];
+        _TransformationFamiliesDatabase[n] := MakeImmutable(
+          [Fam, NewType(Fam,IsTransformation and IsTransformationRep, n)] );
 
         return _TransformationFamiliesDatabase[n];
     end);

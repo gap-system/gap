@@ -533,7 +533,7 @@ BIND_GLOBAL( "CategoryFamily", function ( elms_filter )
         # Construct the family category.
         fam_filter:= NewCategory( name, super );
         ADD_LIST( CATEGORIES_FAMILY, 
-                MigrateObj([ elms_filter, fam_filter ], CATEGORIES_FAMILY) );
+                MIGRATE_RAW([ elms_filter, fam_filter ], CATEGORIES_FAMILY) );
         return fam_filter;
     od;
 end );

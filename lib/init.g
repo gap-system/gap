@@ -560,6 +560,7 @@ end);
 # inner functions, needed in the kernel
 ReadGapRoot( "lib/read1.g" );
 ExportToKernelFinished();
+ENABLE_AUTO_RETYPING();
 
 
 # try to find terminal encoding

@@ -110,5 +110,3 @@ InstallMethod( RecNames,
 if IsBound(ZmqSocket) then
   ReadLib("zmq.g");
 fi;
-
-DISABLE_GUARDS := false;

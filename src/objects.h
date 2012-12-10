@@ -371,12 +371,14 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)
 #define LAST_COPYING_TNUM       (LAST_REAL_TNUM + COPYING)
 
-/* share the same numbers between `COPYING' and `TESTING' */
-#define FIRST_TESTING_TNUM      FIRST_COPYING_TNUM
-#define TESTING                 COPYING
-#define LAST_TESTING_TNUM       LAST_COPYING_TNUM
+/****************************************************************************
+**
+** Object flags for use with SET_OBJ_FLAG() etc.
+**
+*/
 
-
+#define TESTING (1 << 8)
+#define TESTED (1 << 9)
 
 /****************************************************************************
 **
@@ -384,6 +386,7 @@ static inline Obj prod_intobjs(Int l, Int r)
 *F  F_MUTABLE . . . . . . . . . . . . . . . . . . . . . . .  IsMutableObjFilt
 */
 #define F_MUTABLE       1
+
 
 
 /****************************************************************************
@@ -565,6 +568,15 @@ extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
 *F  MakeImmutable( <obj> ) . . . . . . . . . . . . . make an object immutable
 */
 extern void MakeImmutable( Obj obj );
+
+/****************************************************************************
+**
+*F  CheckedMakeImmutable( <obj> )  . . . . . . . . . make an object immutable
+**
+**  Same effect as MakeImmutable( <obj> ), but checks first that all
+**  subobjects lie in a writable region.
+*/
+extern void CheckedMakeImmutable( Obj obj );
 
 /****************************************************************************
 **
