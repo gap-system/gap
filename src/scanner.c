@@ -1052,6 +1052,10 @@ UInt CloseInputLog ( void )
     if ( InputLog == 0 )
         return 0;
 
+    /* refuse to close a log opened with LogTo */
+    if (InputLog == OutputLog)
+      return 0;
+    
     /* close the logfile                                                   */
     if ( ! InputLog->isstream ) {
         SyFclose( InputLog->file );
@@ -1146,6 +1150,10 @@ UInt CloseOutputLog ( void )
     /* refuse to close a non existent logfile                              */
     if ( OutputLog == 0 )
         return 0;
+
+    /* refuse to close a log opened with LogTo */
+    if (OutputLog == InputLog)
+      return 0;
 
     /* close the logfile                                                   */
     if ( ! OutputLog->isstream ) {

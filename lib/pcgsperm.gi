@@ -488,8 +488,9 @@ local ppcgs,series,G,i;
         Unbind( series[ i ].base           );
         series[ i ] := GroupStabChain( G, series[ i ], true );
 	if (not HasHomePcgs(series[i]) ) or
+	  (IsBound(HomePcgs(series[i])!.permpcgsNormalSteps) and
 	  HomePcgs(series[i])!.permpcgsNormalSteps=
-	  ppcgs!.permpcgsNormalSteps then
+	  ppcgs!.permpcgsNormalSteps) then
 	  SetHomePcgs ( series[ i ], ppcgs );
 	  SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
 	  series[ i ]!.noInSeries := i;

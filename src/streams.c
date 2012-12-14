@@ -2560,8 +2560,10 @@ static StructGVarFunc GVarFuncs [] = {
     { "FD_OF_FILE", 1L, "fid",
       FuncFD_OF_FILE, "src/streams.c:FD_OF_FILE" },
 
+#ifdef HAVE_SELECT
     { "UNIXSelect", 5L, "inlist, outlist, exclist, timeoutsec, timeoutusec",
       FuncUNIXSelect, "src/streams.c:UNIXSelect" },
+#endif
 
     { "ExecuteProcess", 5L, "dir, prg, in, out, args",
       FuncExecuteProcess, "src/streams.c:ExecuteProcess" },

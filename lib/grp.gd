@@ -1882,7 +1882,7 @@ DeclareAttribute( "ComputedAgemos", IsGroup, "mutable" );
 ##  is the radical of <A>G</A>, i.e., the largest solvable normal subgroup of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> RadicalGroup(SL(2,5));
-##  <group of 2x2 matrices of size 2 in characteristic 5>
+##  <group of 2x2 matrices of size 2 over GF(5)>
 ##  gap> Size(last);
 ##  2
 ##  ]]></Example>

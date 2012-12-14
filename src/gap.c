@@ -503,6 +503,7 @@ Obj FuncSHELL (Obj self, Obj args)
   UserHasQuit = 0;
   return res;
 }
+#ifdef HAVE_REALPATH
 
 static void StrAppend(char **st, const char *st2)
 {
@@ -523,7 +524,6 @@ static void StrAppend(char **st, const char *st2)
     SyStrncat(*st,st2,len2);
 }
 
-#ifdef HAVE_REALPATH
 static void DoFindMyself(char *myself, char **mypath, char **gappath)
 {
     char *tmppath;

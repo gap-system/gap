@@ -958,9 +958,9 @@ end);
 SparseIntKeyVecListAndMatrix:=function(d,m)
 local f,n,pow,fct;
   if IsList(d) and Length(d)>0 and IsMatrix(d[1]) then
-    f:=FieldOfMatrixList(d);
+    f:=DefaultScalarDomainOfMatrixList(d);
   else
-    f:=FieldOfMatrixList([m]);
+    f:=DefaultScalarDomainOfMatrixList([m]);
   fi;
 
   fct:=SparseIntKey(f^Length(m[1]),m[1]);

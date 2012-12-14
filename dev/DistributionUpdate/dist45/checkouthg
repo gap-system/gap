@@ -42,7 +42,9 @@ fi
 export COREDATE=`date +"%d-%b-%Y"`
 export CORETIME=`date -u +"%Y_%m_%d-%H_%M"`
 export COREYEAR=`date +"%Y"`
-echo "export CORETIME=\"$CORETIME\"" > core_checkout_time.txt
+echo "export DISTNAME=\"$DISTNAME\"" > core_checkout_time.txt
+echo "export ARCHNAME=\"$ARCHNAME\"" >> core_checkout_time.txt
+echo "export CORETIME=\"$CORETIME\"" >> core_checkout_time.txt
 echo "export COREDATE=\"$COREDATE\"" >> core_checkout_time.txt
 echo "export COREYEAR=\"$COREYEAR\"" >> core_checkout_time.txt
 

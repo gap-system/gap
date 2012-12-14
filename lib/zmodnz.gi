@@ -455,32 +455,50 @@ InstallMethod( \/,
     "for two elements in Z/nZ (ModulusRep)",
     IsIdenticalObj,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
-    function( x, y )
-    # Avoid to touch the rational arithmetics.
-    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-               [ QuotientMod( Integers, x![1], y![1],
-                              DataType( TypeObj( x ) ) ) ] );
+        function( x, y )
+    local q;
+    q := QuotientMod( Integers, x![1], y![1],
+                 DataType( TypeObj( x ) ) );
+    if q = fail then
+        return fail;
+    else
+        # Avoid to touch the rational arithmetics.
+        return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                       [ q ] );
+    fi;
     end );
 
 InstallMethod( \/,
     "for element in Z/nZ (ModulusRep) and integer",
     [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
-    # Avoid to touch the rational arithmetics.
-    return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
-               [ QuotientMod( Integers, x![1], y,
-                              DataType( TypeObj( x ) ) ) ] );
-    end );
+    local q;
+    q := QuotientMod( Integers, x![1], y,
+                 DataType( TypeObj( x ) ) );
+    if q = fail then
+        return fail;
+    else
+        # Avoid to touch the rational arithmetics.
+        return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                       [ q ] );
+    fi;
+end );
 
 InstallMethod( \/,
     "for integer and element in Z/nZ (ModulusRep)",
     [ IsInt, IsZmodnZObj and IsModulusRep ],
-    function( x, y )
-    # Avoid to touch the rational arithmetics.
-    return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
-               [ QuotientMod( x, y![1],
-                              DataType( TypeObj( y ) ) ) ] );
-    end );
+        function( x, y )
+    local q;
+    q := QuotientMod( Integers, x, y![1],
+                 DataType( TypeObj( y ) ) );
+    if q = fail then
+        return fail;
+    else
+        # Avoid to touch the rational arithmetics.
+        return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
+                       [ q ] );
+    fi;
+end );
 
 InstallMethod( \/,
     "for element in Z/nZ (ModulusRep) and rational",

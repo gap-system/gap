@@ -58,10 +58,7 @@ Print("=============================================================\n");
 # "laguna", "polenta", "polycyclic", "resclasses", "sophus" ]
 default:=SortedList(ShallowCopy( GAPInfo.UserPreferences.gap.PackagesToLoad ));
 
-# First those packages which are suggested for GAP are added to default.
-# As on Feb 18th 2012 in GAP.dev, this is ctbllib and tomlib
-default := Union( default, recommended, 
-             List( GAPInfo.Dependencies.SuggestedOtherPackages, pkg -> pkg[1] ) );
+default := Union( default, recommended ); 
      
 Print("Starting with the following list of default packages :\n", default, "\n"); 
 

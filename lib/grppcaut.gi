@@ -54,7 +54,6 @@ end;
 VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
   local PrunedBasis, f, lim, mo, dim, bas, newbas, dims, q, bp, ind, affine, acts, nv, stb, idx, idxh, incstb, incperm, notinc, free, freegens, stabp, stabm, dict, orb, tp, tm, p, img, sch, incpermstop, sz, sel, nbas, offset, i;
 
-  #AAA:=[group,gens,mats,shadows,vec];
   PrunedBasis:=function(p)
   local b,q,i;
     # prune too small factors
@@ -69,7 +68,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
     return b;
   end;
 
-  f:=FieldOfMatrixList(mats);
+  f:=DefaultScalarDomainOfMatrixList(mats);
   lim:=LogInt(1000,Size(f));
   lim:=2;
   mo:=GModuleByMats(mats,f);

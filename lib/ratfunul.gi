@@ -1420,20 +1420,20 @@ function( obj )
 local   cofs,  indn;
 
   indn := IndeterminateNumberOfUnivariateRationalFunction(obj);
-
-  # if the numerator is a power of x, we can return a laurent polynomial
   cofs := CoefficientsOfUnivariateRationalFunction(obj);
-  if Length(cofs[1])=1 then
-    if IsZero(cofs[1][1]) then
-      Error("division by zero");
-    fi;
+  
+  if Length(cofs[1])=0 then
+    return fail;
+  elif Length(cofs[1])=1 then
+    # if the numerator is a power of x, we can return a laurent polynomial
     return LaurentPolynomialByExtRepNC(FamilyObj(obj),
-	cofs[2]*Inverse(cofs[1][1]), -cofs[3], indn );
-  fi;
-
-  # swap numerator and denominator and invert the valuation
-  return UnivariateRationalFunctionByExtRepNC(FamilyObj(obj),
-     cofs[2],cofs[1],-cofs[3],indn );
+	  cofs[2]*Inverse(cofs[1][1]), -cofs[3], indn );
+  else
+    # swap numerator and denominator and invert the valuation
+    return UnivariateRationalFunctionByExtRepNC(FamilyObj(obj),
+      cofs[2],cofs[1],-cofs[3],indn );
+  fi;   
+  
 end );
 
 #############################################################################

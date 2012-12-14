@@ -839,8 +839,8 @@ functionality.)
 % Finished: ???
 % Comments:
   This is a completely new chapter.
--4MN needs to be completed from stuff in lib/matobj1.gd and lib/matobj2.gd
--2MN has 5 empty subsections and contains:  `FIXME: Collect all rules here.'
+T-4MN needs to be completed from stuff in lib/matobj1.gd and lib/matobj2.gd
+T-2MN has 5 empty subsections and contains:  `FIXME: Collect all rules here.'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 27: Strings and Characters
 % File: ./string.xml (line 12)
@@ -1456,17 +1456,17 @@ the last release.)
 % Started: December 01, 2008
 % Finished: January 10, 2009
 % Comments:
--3JM `FreeSemigroup': examples involve also `FreeGroup' (move them away?)
--4JM empty definition for `IsFullTransformationSemigroup'
--3JM What are semigroup ideals?
--3JM strange definition of `ReesCongruenceOfSemigroupIdeal'
+T-3JM `FreeSemigroup': examples involve also `FreeGroup' (move them away?)
+T-4JM empty definition for `IsFullTransformationSemigroup'
+T-3JM What are semigroup ideals?
+T-3JM strange definition of `ReesCongruenceOfSemigroupIdeal'
   (in particular, does an ideal know the semigroup in which it is an ideal?
   Note that there is only one argument.)
--3JM `HomomorphismQuotientSemigroup': one or two arguments?
+T-3JM `HomomorphismQuotientSemigroup': one or two arguments?
   (The whole chapter looks dubious w.r.t. the relation of the given arguments
   and the text.)
--3JM `Rees Matrix Semigroups': (s, i, \lambda) or (i, s, \lambda)?
--4JM almost no examples in the whole chapter!
+T-3JM `Rees Matrix Semigroups': (s, i, \lambda) or (i, s, \lambda)?
+T-4JM almost no examples in the whole chapter!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 52: Monoids
 % File: ./monoid.xml (line 11)
@@ -1474,7 +1474,7 @@ the last release.)
 % Started: December 01, 2008
 % Finished: January 10, 2009
 % Comments:
--4JM no examples in the whole chapter!
+T-4JM no examples in the whole chapter!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 53: Finitely Presented Semigroups and Monoids
 % File: ./fpsemi.xml (line 11)
@@ -1482,9 +1482,9 @@ the last release.)
 % Started: December 01, 2008
 % Finished: January 10, 2009
 % Comments:
--3JM What is the difference between `FactorFreeSemigroupByRelations' and the
+T-3JM What is the difference between `FactorFreeSemigroupByRelations' and the
   infix `/'?
--3JM Is there no `FactorFreeMonoidByRelations'?
+T-3JM Is there no `FactorFreeMonoidByRelations'?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 54: Transformations
 % File: ./trans.xml (line 11)
@@ -1492,10 +1492,10 @@ the last release.)
 % Started: December 01, 2008
 % Finished: January 11, 2009
 % Comments:
--3JM Is it a good idea to define the relevant notation in the beginning of the
+T-3JM Is it a good idea to define the relevant notation in the beginning of the
   chapter, and to use this notation in the later sections, in particular
   without cross-references to the definitions
--4JM `RestrictedTransformation': should be defined; give an example
+T-4JM `RestrictedTransformation': should be defined; give an example
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 55: Additive Magmas 
 % File: ./addmagma.xml (line 11)
@@ -1505,12 +1505,12 @@ the last release.)
 % Comments:
 (removed ``preliminary'' from the chapter title, this chapter does not
 look worse than others)
--5 better discuss the various categories together in one section?
+T-5 better discuss the various categories together in one section?
   (this would reduce the text, and make clearer what the differences are)
--5 no examples: either add them or explain why they are unnecessary
+T-5 no examples: either add them or explain why they are unnecessary
   (for example because interesting additive magmas in GAP have more
   structure and are explained in other chapters)
--4 `AsAdditiveMagma', `AsSubadditiveMagma':
+T-4 `AsAdditiveMagma', `AsSubadditiveMagma':
   commented out, so not yet supported officially
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 56: Rings
@@ -1528,16 +1528,16 @@ look worse than others)
   DONE: yes, said that.
 +4AK only example and no definition for `DefaultRingByGenerators'
   (AK: put a definition).
--4 `AsRing': commented out, so not yet supported officially
--3 what about sums and products of ideals?
--4 cross-reference to undocumented `RightActingDomain'
--4 empty description of `LeftActingRingOfIdeal', `RightActingRingOfIdeal'
--4 only few examples
--5 ideals:
+T-4 `AsRing': commented out, so not yet supported officially
+T-3 what about sums and products of ideals?
+T-4 cross-reference to undocumented `RightActingDomain'
+T-4 empty description of `LeftActingRingOfIdeal', `RightActingRingOfIdeal'
+T-4 only few examples
+T-5 ideals:
   Currently we seem to have no support for the closure under the action of
   two different rings from the left and from the right.
   Is there need for such a generalization?
--3 Should fields lie in the filters `IsUniqueFactorizationRing',
+T-3 Should fields lie in the filters `IsUniqueFactorizationRing',
   `IsEuclideanRing'?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 57: Modules
@@ -1552,9 +1552,9 @@ look worse than others)
   to ignore this, so `doc/ref/module.tex' contains the documentation;
   I have now added it also to the 4.dev documentation.
   AK: No methods installed in the library and packages. Removed.
--4AK Several statements talk about ``scalars''.
+T-4AK Several statements talk about ``scalars''.
   It should be made precise what this means for a given module.
--5 The whole chapter is suitable at most for the case of (left) vector spaces,
+T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
   and all examples deal with that context.
   In fact there is few support for more general situations,
   even for Z-modules.

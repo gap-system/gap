@@ -99,7 +99,7 @@ The additional structure of <M>D</M> is constituted by the facts that
 multiplication, and that these operations have additional properties.
 For example, if <M>D</M> is a group then it is closed under multiplication
 (<M>D \times D \rightarrow D</M>, <M>(g,h) \mapsto g * h</M>),
-under taking inverses (<M>D \rightarrow D</M>, <M>g \mapsto g^-1</M>)
+under taking inverses (<M>D \rightarrow D</M>, <M>g \mapsto g^{-1}</M>)
 and under taking the identity <M>g</M><C>^0</C> of each element <M>g</M>
 in <M>D</M>;
 additionally, the multiplication in <M>D</M> is associative.

@@ -23,10 +23,20 @@ InstallMethod( KnowsHowToDecompose, "matrix groups",
 ##
 #M  DefaultFieldOfMatrixGroup( <mat-grp> )
 ##
-InstallMethod( DefaultFieldOfMatrixGroup,
-    "using 'FieldOfMatrixGroup'",
-    [ IsMatrixGroup ],
-    FieldOfMatrixGroup );
+InstallMethod(DefaultFieldOfMatrixGroup,"for a matrix group",[IsMatrixGroup],
+function( grp )
+local gens,R;
+  gens:= GeneratorsOfGroup( grp );
+  if IsEmpty( gens ) then
+    return Field( One( grp )[1][1] );
+  else
+    R:=DefaultScalarDomainOfMatrixList(gens);
+    if not IsField(R) then
+      R:=FieldOfMatrixList(gens);
+    fi;
+  fi;
+  return R;
+end );
 
 InstallMethod( DefaultFieldOfMatrixGroup,
     "for matrix group over the cyclotomics",
@@ -53,7 +63,7 @@ InstallMethod( DefaultFieldOfMatrixGroup,
 #M  FieldOfMatrixGroup( <mat-grp> )
 ##
 InstallMethod( FieldOfMatrixGroup,
-    "for a matrix group",
+  "for a matrix group",
     [ IsMatrixGroup ],
     function( grp )
     local gens;
@@ -154,6 +164,7 @@ local F, gens, evals, espaces, is, ise, gen, i, j,module,list,ind,vecs,mins;
   # `Cyclotomics', the default field for rational matrix groups causes
   # problems with a subsequent factorization
   if IsIdenticalObj(F,Cyclotomics) then
+    # cyclotomics really is too large here
     F:=FieldOfMatrixGroup(G);
   fi;
 
@@ -473,17 +484,17 @@ local   nice,img,module,b;
     SetIsSurjective( nice, true );
 
     img:=Image(nice);
-    if not IsFinite(FieldOfMatrixGroup(grp)) or
+    if not IsFinite(DefaultFieldOfMatrixGroup(grp)) or
     Length(GeneratorsOfGroup(grp))=0 then
       module:=fail;
     else
-      module:=GModuleByMats(GeneratorsOfGroup(grp),FieldOfMatrixGroup(grp));
+      module:=GModuleByMats(GeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp));
     fi;
     #improve,
     # try hard, unless absirr and orbit lengths at least 1/q^2 of domain --
     #then we expect improvements to be of little help
     if module<>fail and not (NrMovedPoints(img)>=
-      Size(FieldOfMatrixGroup(grp))^(Length(One(grp))-2)
+      Size(DefaultFieldOfMatrixGroup(grp))^(Length(One(grp))-2)
       and MTX.IsAbsolutelyIrreducible(module)) then
 	nice:=nice*SmallerDegreePermutationRepresentation(img);
     else
@@ -683,6 +694,8 @@ local d;
   fi;
   if HasFieldOfMatrixGroup(G) then
     Print(" over ",FieldOfMatrixGroup(G),">");
+  elif HasDefaultFieldOfMatrixGroup(G) then
+    Print(" over ",DefaultFieldOfMatrixGroup(G),">");
   else
     Print(" in characteristic ",Characteristic(One(G)),">");
   fi;
@@ -805,11 +818,13 @@ InstallMethod( GroupWithGenerators,
     else
       TryNextMethod();
     fi;
-    f:=FieldOfMatrixList(gens);
+    f:=DefaultScalarDomainOfMatrixList(gens);
     gens:=List(Immutable(gens),i->ImmutableMatrix(f,i));
 
     G:=rec();
     ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens));
+
+    if IsField(f) then SetDefaultFieldOfMatrixGroup(G,f);fi;
 
     return G;
     end );
@@ -832,13 +847,15 @@ local G,fam,typ,f;
     else
       TryNextMethod();
     fi;
-    f:=FieldOfMatrixList(gens);
+    f:=DefaultScalarDomainOfMatrixList(gens);
     gens:=List(Immutable(gens),i->ImmutableMatrix(f,i));
     id:=ImmutableMatrix(f,id);
 
     G:=rec();
     ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
                             One,id);
+
+    if IsField(f) then SetDefaultFieldOfMatrixGroup(G,f);fi;
 
     return G;
 end );
@@ -874,8 +891,8 @@ InstallMethod( IsConjugatorIsomorphism,
     if dim <> DimensionOfMatrixGroup( r ) then
       return false;
     fi;
-    Fs:= FieldOfMatrixGroup( s );
-    Fr:= FieldOfMatrixGroup( r );
+    Fs:= DefaultFieldOfMatrixGroup( s );
+    Fr:= DefaultFieldOfMatrixGroup( r );
     if FamilyObj( Fs ) <> FamilyObj( Fr ) then
       return false;
     fi;
@@ -911,7 +928,7 @@ InstallGlobalFunction( AffineActionByMatrixGroup, function(M)
 local   gens,V,  G, A;
 
   # build the vector space
-  V := FieldOfMatrixGroup( M ) ^ DimensionOfMatrixGroup( M );
+  V := DefaultFieldOfMatrixGroup( M ) ^ DimensionOfMatrixGroup( M );
 
   # the linear part
   G := Action( M, V );
@@ -924,7 +941,7 @@ local   gens,V,  G, A;
   SetSize( A, Size( M ) * Size( V ) );
 
   if HasName( M )  then
-      SetName( A, Concatenation( String( Size( FieldOfMatrixGroup( M ) ) ),
+      SetName( A, Concatenation( String( Size( DefaultFieldOfMatrixGroup( M ) ) ),
 	      "^", String( DimensionOfMatrixGroup( M ) ), ":",
 	      Name( M ) ) );
   fi;

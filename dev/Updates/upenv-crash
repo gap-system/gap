@@ -1,0 +1,26 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+13/11/12
+! Changed by
+SL
+! Reported by
+LB
+! Type of Change
+Fix: crash
+
+! Description
+
+Some patterns of use of UpEnv and DownEnv lead to a segfault
+
+The bug dated back many years to an ommission when refactoring the break loop 
+handling. The variable ErrorLVars0 was not being set before entering a break
+loop (or indeed, at all).
+
+No test code, because it needs to be tested in a break loop.
+! Test Code
+
+! Prefetch
+
+! Changeset
+
+! End

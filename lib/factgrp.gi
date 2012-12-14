@@ -1233,7 +1233,9 @@ local h;
   # check, whether we already know a factormap
   DoCheapActionImages(G);
   h:=GetNaturalHomomorphismsPool(G,N);
-  if h=fail and HasIsSolvableGroup(N) and HasIsSolvableGroup(G) and IsSolvableGroup(N) and not IsSolvableGroup(G) and N=RadicalGroup(G)
+  if h=fail and HasIsSolvableGroup(N) and HasIsSolvableGroup(G) and
+    IsSolvableGroup(N) and not IsSolvableGroup(G) and HasRadicalGroup(G) 
+    and N=RadicalGroup(G)
     then
     # did we just compute it?
     h:=GetNaturalHomomorphismsPool(G,N);

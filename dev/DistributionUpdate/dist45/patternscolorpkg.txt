@@ -16,6 +16,7 @@
 -*CVS/*
 -*.cvsignore*
 -*.git/*
+-*.gitignore
 -*.hg/*
 -*.hgtags
 -*.hgignore

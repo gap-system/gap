@@ -1934,9 +1934,14 @@ InstallMethod(ViewString, "for integer", [IsInt], function(n)
   mb := UserPreference("MaxBitsIntView");
   if not IsSmallIntRep(n) and mb <> fail and 
       mb > 64 and Log2Int(n) > mb then
-    l := LogInt(n, 10);
+    if n < 0 then
+      l := LogInt(-n, 10);
+      trail := String(-n mod 1000);
+    else
+      l := LogInt(n, 10);
+      trail := String(n mod 1000);
+    fi;
     start := String(QuoInt(n, 10^(l-2)));
-    trail := String(n mod 1000);
     while Length(trail) < 3 do
       trail := Concatenation("0", trail);
     od;

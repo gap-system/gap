@@ -1616,7 +1616,7 @@ sizeMultiplier memoryUnits[]= {
 
 static UInt ParseMemory( Char * s)
 {
-  UInt size  = atoi(s);
+  UInt size  = atol(s);
   Char symbol =  s[strlen(s)-1];
   UInt i;
   UInt maxmem;

@@ -172,8 +172,8 @@ InstallGlobalFunction(AutomorphismRepresentingGroup,function(G,autos)
 local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   sub,d;
 
-  tryrep:=function(rep)
-  local Gi,repi,maps,v,w;
+  tryrep:=function(rep,bound)
+  local Gi,repi,maps,v,w,cen,hom;
      Gi:=Image(rep,G);
      Info(InfoGroup,2,"Trying degree ",NrMovedPoints(Gi));
      repi:=InverseGeneralMapping(rep);
@@ -186,15 +186,26 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
 	v:=List( maps, ConjugatorOfConjugatorIsomorphism );
 	w:=ClosureGroup(Gi,v);
 	Info(InfoGroup,1,"all conjugator degree ",NrMovedPoints(w));
-	if Size(Centralizer(w,Gi))=1 then
-	  maps:=[];
-	  maps{sel}:=v;
-	  maps{selin}:=List(selin,x->
-	    Image(rep,
-	      ConjugatorOfConjugatorIsomorphism(autos[x])));
+
+	maps:=[];
+	maps{sel}:=v;
+	maps{selin}:=List(selin,x->
+	  Image(rep,
+	    ConjugatorOfConjugatorIsomorphism(autos[x])));
+
+	cen:=Centralizer(w,Gi);
+	if Size(cen)=1 then
 	  return [w,rep,maps];
 	else
 	  Info(InfoGroup,2,"but centre");
+	  hom:=NaturalHomomorphismByNormalSubgroupNC(w,cen);
+	  if IsPermGroup(Image(hom)) and
+	    NrMovedPoints(Image(hom))<=bound then
+
+	    #Print("QQQ\n");
+	    return [Image(hom,w),rep*hom,List(maps,x->Image(hom,x))];
+	  fi;
+
 	fi;
      else
        Info(InfoGroup,2,"Does not work");
@@ -207,9 +218,13 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
 
   # first try given rep
   if not IsSubset(MovedPoints(G),[1..LargestMovedPoint(G)]) then
-    a:=tryrep(ActionHomomorphism(G,MovedPoints(G),"surjective"));
+    a:=tryrep(ActionHomomorphism(G,MovedPoints(G),"surjective"),
+	        4*NrMovedPoints(G));
   else
-    a:=tryrep(IdentityMapping(G));
+    a:=tryrep(IdentityMapping(G),4*NrMovedPoints(G));
+    if a=fail and ForAll(autos,IsConjugatorAutomorphism) then
+      a:=tryrep(SmallerDegreePermutationRepresentation(G),4*NrMovedPoints(G));
+    fi;
   fi;
   if a<>fail then return a;fi;
 
@@ -231,7 +246,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
 
   if iso<>fail then
     # try the new rep
-    a:=tryrep(iso);
+    a:=tryrep(iso,4*NrMovedPoints(G));
     if a<>fail then return a;fi;
 
     # otherwise go to new small deg rep
@@ -268,7 +283,14 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
     i:=i+1;
   od;
   Info(InfoGroup,1,"Build ",Length(outs)," copies");
-  if Length(stabs)=1 then Error("why only one -- should have found before");fi;
+  if Length(stabs)=1 then 
+    # the group is given in a representation in which there is a centralizer
+    # in Sn
+    a:=tryrep(IdentityMapping(G),infinity);
+    return a;
+
+    Error("why only one -- should have been found before");
+  fi;
 
   d:=DirectProduct(List(stabs,x->G));
   p:=[];
@@ -284,7 +306,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   SetSize(a,Size(G));
   p:=GroupHomomorphismByImagesNC(G,a,GeneratorsOfGroup(G),p);
 
-  a:=tryrep(p);
+  a:=tryrep(p,4*NrMovedPoints(G));
   if a<>fail then 
     if iso<>fail then
       a[2]:=iso*a[2];

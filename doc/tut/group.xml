@@ -129,8 +129,8 @@ could assign the   same  name to several  groups).  When  talking  to the
 computer, you must always use identifiers.
 <P/>
 <Example><![CDATA[
-gap> SetName( elab, "2^3" ); elab;
-2^3
+gap> SetName( elab, "<group of type 2^3>" ); elab;
+<group of type 2^3>
 gap> norm := Normalizer( a8, elab );; Size( norm );
 1344
 ]]></Example>
@@ -144,13 +144,10 @@ whose image is the factor group.
 <P/>
 <Example><![CDATA[
 gap> hom := NaturalHomomorphismByNormalSubgroup( norm, elab );
-[ (2,3)(6,7), (3,4)(7,8), (3,5)(4,6), (5,7)(6,8), (5,6)(7,8), 
-  (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,6)(2,5)(3,8)(4,7) 
- ] -> [ (1,2)(5,6), (2,3)(6,7), (2,4)(3,5), (4,6)(5,7), (4,5)(6,7), 
-  (), (), () ]
+<action epimorphism>
 gap> f := Image( hom );
-Group([ (1,2)(5,6), (2,3)(6,7), (2,4)(3,5), (4,6)(5,7), (4,5)(6,7), 
-  (), (), () ])
+Group([ (), (), (), (4,5)(6,7), (4,6)(5,7), (2,3)(6,7), (2,4)(3,5), 
+ (1,2)(5,6) ])
 gap> Size( f );
 168
 ]]></Example>
@@ -170,14 +167,11 @@ none at all.
 <P/>
 <Example><![CDATA[
 gap> ker:= Kernel( hom );
-Group([ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), 
-  (1,5)(2,6)(3,7)(4,8) ])
+<group of type 2^3>
 gap> x := (1,8,3,5,7,6,2);; Image( hom, x );
 (1,7,5,6,2,3,4)
 gap> coset := PreImages( hom, last );
-RightCoset(Group( [ ( 1, 2)( 3, 4)( 5, 6)( 7, 8), 
-  ( 1, 3)( 2, 4)( 5, 7)( 6, 8), ( 1, 5)( 2, 6)( 3, 7)( 4, 8) ] ),
-(2,8,6,7,3,4,5))
+RightCoset(<group of type 2^3>,(2,8,6,7,3,4,5))
 ]]></Example>
 <P/>
 Note that &GAP; is free to choose any representative for the coset
@@ -839,9 +833,9 @@ usual way we now look for the subgroups above <C>u105</C>.
 gap> blocks := Blocks( a8, orb );; Length( blocks );
 15
 gap> blocks[1];
-[ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,4)(2,3)(5,8)(6,7), 
-  (1,5)(2,6)(3,7)(4,8), (1,6)(2,5)(3,8)(4,7), (1,7)(2,8)(3,5)(4,6), 
-  (1,8)(2,7)(3,6)(4,5) ]
+[ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,8)(6,7), (1,4)(2,3)(5,7)(6,8), 
+  (1,5)(2,6)(3,8)(4,7), (1,6)(2,5)(3,7)(4,8), (1,7)(2,8)(3,6)(4,5), 
+  (1,8)(2,7)(3,5)(4,6) ]
 ]]></Example>
 <P/>
 To find the subgroup of index 15 we  again use closure. Now  we must be a
@@ -1182,7 +1176,7 @@ gap> niceaut := NiceObject( aut );
 Group([ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ])
 gap> IsomorphismGroups( niceaut, SymmetricGroup( 4 ) );
 [ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ] -> 
-[ (1,2,3,4), (1,2,3), (1,3)(2,4), (1,4)(2,3) ]
+[ (1,3,4,2), (1,4,2), (1,4)(2,3), (1,2)(3,4) ]
 ]]></Example>
 <P/>
 The range of  a nice monomorphism is  in most cases a permutation  group,

@@ -25,7 +25,7 @@ In the case of a <E>ring-with-one</E>, additional multiplicative structure is
 present, see&nbsp;<Ref Func="IsRingWithOne"/>. There is a little support in &GAP;
 for rings that have no additional structure: it is possible to perform some
 computations for small finite rings; infinite rings are handled by &GAP; in 
-an acceptable way at most if they are at least algebras. 
+an acceptable way in the case that they are algebras. 
 <P/>
 Also, the <Package>SONATA</Package> package provides support for near-rings,
 and a related functionality for multiplicative semigroups of near-rings is

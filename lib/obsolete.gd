@@ -201,13 +201,13 @@ BindGlobal( "PACKAGES_VERSIONS", rec() );
 ##  should *never* be used. Use `SSortedList' and `AsSSortedList' instead!
 ##
 ListSorted := function(coll)
-  Info(InfoWarning,1,"The command `ListSorted' will *not* be supported in",
+  Info(InfoWarning,1,"The command `ListSorted' will *not* be supported in ",
         "further versions!");
   return SSortedList(coll);
 end;
 
 AsListSorted := function(coll)
-  Info(InfoWarning,1,"The command `AsListSorted' will *not* be supported in",
+  Info(InfoWarning,1,"The command `AsListSorted' will *not* be supported in ",
         "further versions!");
   return AsSSortedList(coll);
 end;

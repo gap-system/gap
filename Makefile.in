@@ -362,41 +362,18 @@ testmanuals:
 	  else echo "NO DIFFERENCES IN REFERENCE MANUAL EXAMPLES (ALL PACKAGES)"; fi ) \
 	  > `date -u +dev/log/testmanuals2_%Y-%m-%d-%H-%M` 2>&1 )
 	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
-			
-	
-testmanualsold:
-	mkdir -p dev/log
-	mkdir -p doc/test/tut
-	mkdir -p doc/test/ref
-	( echo 'LoadPackage( "gapdoc" ); Read( "tst/testutil.g" ); \
-	  ExtractManualExamples( "tut" ); ExtractManualExamples( "ref" );' | $(TESTGAP) )
-	( echo 'SetAssertionLevel( 2 ); LoadPackage( "gapdoc" ); \
-	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAP) )
-	( cd doc/test/tut; ../mktestx.sh )
-	( cd doc/test/ref; ../mktestx.sh )
-	(  cd doc/test; \
-	  cat tut/diffs ref/diffs \
-	  > `date -u +../../dev/log/testmanuals1_%Y-%m-%d-%H-%M` )
-	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
-	( echo 'SetAssertionLevel( 2 );  \
-	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAPauto) )
-	( cd doc/test/tut; ../mktestx.sh )
-	( cd doc/test/ref; ../mktestx.sh )
-	(  cd doc/test; \
-	  cat tut/diffs ref/diffs \
-	  > `date -u +../../dev/log/testmanualsA_%Y-%m-%d-%H-%M` )
-	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
-	( echo 'SetAssertionLevel( 2 ); LoadAllPackages(); \
-	  SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAP) )
-	( cd doc/test/tut; ../mktestx.sh )
-	( cd doc/test/ref; ../mktestx.sh )
-	(  cd doc/test; \
-	  cat tut/diffs ref/diffs \
-	  > `date -u +../../dev/log/testmanuals2_%Y-%m-%d-%H-%M` )
-	( rm doc/test/tut/diffs; rm doc/test/ref/diffs )
-	( rm doc/test/tut/*.tst; rm doc/test/ref/*.tst )  
-	( rm doc/test/wsp.g )
 
+testupdates:
+	mkdir -p dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+            ReadGapRoot( "tst/testutil.g" ); \
+            SetAssertionLevel( 2 ); RunDevUpdateTests();' | $(TESTGAP) > \
+            `date -u +dev/log/testupdates1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+            ReadGapRoot( "tst/testutil.g" ); LoadAllPackages(); \
+            SetAssertionLevel( 2 ); RunDevUpdateTests();' | $(TESTGAP) > \
+            `date -u +dev/log/testupdates2_%Y-%m-%d-%H-%M` )
+            
 cygwin:	extern
 	( cd bin/$(GAPARCH) ; $(MAKE) gapdll ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' CONFIGNAME='$(CONFIGNAME)' )
 	chmod +x bin/gap-$(CONFIGNAME).sh

@@ -548,7 +548,92 @@ BindGlobal( "CreatePackageVarsTestsInput",
     PrintTo( scriptfile, result );
     end );
     
-    
+
+#############################################################################
+##
+#F  CreateDevUpdateTestInput( )
+#F  RunDevUpdateTests( )
+##
+##  RunDevUpdateTests() extracts test from dev/Update files and runs them
+##  in the current GAP session. CreateDevUpdateTestInput() is an auxiliary
+##  function which returns the string with the tests. It may be used to
+##  view the tests or print them to a file.
+##
+BindGlobal( "CreateDevUpdateTestInput",
+    function()
+    local dirname, file, f, filename, content, alltests, output, nr, line, teststart, testlines;
+    dirname:= DirectoriesLibrary( "dev/Updates" );
+    if dirname = fail then
+      Error("Can not find the 'dev/Updates' directory. Note that it is a part of the\n",
+            "development version of GAP and is not included in the GAP distribution\n");
+    fi;
+
+    alltests := [ ];
+   
+    # Exclude hidden files and directories. Sort to ensure the order is not system-dependent
+    for file in SortedList( Filtered( DirectoryContents(dirname[1]), f -> f[1] <> '.' ) ) do
+    filename := Filename( dirname, file );
+    content := SplitString( StringFile( filename ), "\r\n");
+    output := [ ];
+    nr:=0;
+    repeat
+        nr := nr+1;
+        if nr > Length(content) then
+            break;
+        fi;
+        line := content[nr];
+        if Length(line) > 0 then
+            if line[1]='!' then
+                if LowercaseString( ReplacedString( line, " ","")) = "!testcode" then
+                    teststart := nr;
+                    testlines := [];
+                    repeat
+                        nr := nr+1;
+                        line := content[nr];
+                        if Length(line) > 0 then
+                            if line[1]='!' then
+                                break;
+                            elif not line[1]='%' then
+                                Add( testlines, Concatenation(line,"\n") );
+                            fi;
+                        fi;
+                    until false;
+                    if Length( testlines ) > 0 then
+                        Add(output, Concatenation( "# ", filename, ", line ", String(teststart), "\n") );
+                        Append(output, testlines );
+                        Add( output, "\n" );
+                    fi;
+                fi;
+            fi;
+        fi;
+    until false;
+    if Length(output) > 0 then 
+      Add( output, "#######################\n#END\n");
+      Add( alltests, [ filename, Concatenation( output ) ] );
+    fi;  
+    od;
+    return alltests;
+end);
+
+
+BindGlobal( "RunDevUpdateTests",
+    function()
+    local tests, t, resfile, str;
+    tests := CreateDevUpdateTestInput();
+    SaveWorkspace("testdevupdate.wsp");    
+    for t in tests do
+        Print("Checking " , t[1],"\n");
+        resfile := "TESTDEVUPDATEOUTPUT";
+        FileString( "TESTDEVUPDATE", t[2] );
+        Exec( Concatenation(
+        "echo 'Test(\"TESTDEVUPDATE\");' | bin/gap.sh -b -r -A -q -L testdevupdate.wsp > ", resfile ));
+        str := StringFile(resfile);
+        Print(str);
+    od;
+    RemoveFile("testdevupdate.wsp");
+    RemoveFile("TESTDEVUPDATE");
+    RemoveFile(resfile);
+end);
 
 #############################################################################
 ##

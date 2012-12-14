@@ -537,7 +537,7 @@ void            PrintInt (
 */
 Obj FuncLog2Int( Obj self, Obj integer)
 {
-  Int res;
+  Int res, d;
   Int a, len;
   Int mask;
   TypDigit dmask;
@@ -556,12 +556,17 @@ Obj FuncLog2Int( Obj self, Obj integer)
   /* case of long ints */
   if (TNUM_OBJ(integer) == T_INTNEG || TNUM_OBJ(integer) == T_INTPOS) {
     for (len = SIZE_INT(integer); ADDR_INT(integer)[len-1] == 0; len--);
-    res = len * NR_DIGIT_BITS - 1;
+    /* Instead of computing 
+          res = len * NR_DIGIT_BITS - d;
+       we keep len and d separate, because on 32 bit systems res may
+       not fit into an Int (and not into an immediate integer).            */
+    d = 1;
     a = (TypDigit)(ADDR_INT(integer)[len-1]);
     for(dmask = (TypDigit)1 << (NR_DIGIT_BITS - 1);
         (dmask & a) == 0 && dmask != (TypDigit)0;
-        dmask = dmask >> 1, res--);
-    return INTOBJ_INT(res);
+        dmask = dmask >> 1, d++);
+    return DiffInt(ProdInt(INTOBJ_INT(len), INTOBJ_INT(NR_DIGIT_BITS)), 
+                   INTOBJ_INT(d));
   }
   else {
     ErrorReturnObj("Log2Int: argument must be integer, (not a %s)",

@@ -2221,6 +2221,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     UInt                readTilde;
     UInt                currLHSGVar;
     Obj                 errorLVars;
+    Obj                 errorLVars0;
     syJmp_buf           readJmpError;
 
     /* get the first symbol from the input                                 */
@@ -2251,7 +2252,9 @@ ExecStatus ReadEvalCommand ( Obj context )
     CurrLHSGVar = 0;
     RecreateStackNams(context);
     errorLVars = ErrorLVars;
+    errorLVars0 = ErrorLVars0;
     ErrorLVars = context;
+    ErrorLVars0 = ErrorLVars;
 
     IntrBegin( context );
 
@@ -2309,6 +2312,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     ReadTilde   = readTilde;
     CurrLHSGVar = currLHSGVar;
     ErrorLVars = errorLVars;
+    ErrorLVars0 = errorLVars0;
 
     /* copy the result (if any)                                            */
     ReadEvalResult = IntrResult;

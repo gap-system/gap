@@ -44,9 +44,9 @@ rm -f sedfile
 
 cd ../doc/
 echo 's/"4.dev"/"4.'$FULLVERSION'"/g' > sedfile
-echo 's/"4r5dev"/"'$RBVERSION'"/g' >> sedfile
 echo 's/"today"/"'$COREDATE'"/g' >> sedfile
 echo 's/"this year"/"'$COREYEAR'"/g' >> sedfile
+echo 's/"gap4dev"/"'$DISTNAME'"/g' >> sedfile
 sed -f sedfile versiondata > versiondata.new
 mv versiondata.new versiondata
 rm -f sedfile

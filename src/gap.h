@@ -191,6 +191,10 @@ extern void ErrorReturnVoid (
             Int                 arg2,
             const Char *        msg2 );
 
+extern Obj ErrorLVars;
+extern Obj ErrorLVars0;
+
+
 /****************************************************************************
 **
 *T  ExecStatus . . . .  type of status values returned by read, eval and exec

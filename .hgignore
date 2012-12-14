@@ -38,4 +38,5 @@ pkg/
 extern/gmp*/
 
 # switch to regexp syntax.
+dev/log
 syntax: regexp

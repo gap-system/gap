@@ -1318,7 +1318,7 @@ Improved documentation:
 <Item>
 Removed outdated statements from the documentation of 
 <Ref Func="StructureDescription" BookName="ref"/>
-which now non-ambiguolsy states that <C>StructureDescription</C> is not an 
+which now non-ambiguosly states that <C>StructureDescription</C> is not an 
 isomorphism invariant: non-isomorphic groups can have the same string 
 value, and two isomorphic groups in different representations can produce 
 different strings.
@@ -1364,6 +1364,88 @@ M. Lange-Hegermann, which provides some auxiliary functionality for the
 </List>
 
 </Section>
+
+
+<Section Label="fix457"> 
+
+<Heading>&GAP; 4.5.7 (December 2012)</Heading>
+
+Fixed bugs which could lead to crashes:
+<List>              
+<Item>Closing with <C>LogInputTo</C> (or <C>LogOutputTo</C>)
+a logfile opened with <Ref Func="LogTo" BookName="ref"/> 
+left the data structures corrupted, resulting in a crash.
+</Item>
+<Item>
+On 32-bit systems we can have long integers <C>n</C> such that 
+<C>Log2Int(n)</C> is not an immediate integer. In such cases 
+<C>Log2Int</C> gave wrong or corrupted
+results which in turn could crash &GAP;, e.g., in <C>ViewObj(n)</C>.
+</Item>
+<Item>
+Some patterns of use of <Ref Func="UpEnv" BookName="ref"/> and 
+<Ref Func="DownEnv" BookName="ref"/> were leading to a segfault.
+</Item>
+</List>
+
+Other fixed bugs:
+
+<List>
+<Item>
+Viewing of long negative integers was broken, because it went into a break loop.
+</Item>
+<Item>
+Division by zero in <Ref Func="ZmodnZ" BookName="ref"/> (<M>n</M> not prime) 
+produced invalid objects. [Reported by Mark Dickinson]
+</Item>
+<Item>
+Fixed a bug in determining multiplicative inverse for a zero polynomial.
+</Item>
+<Item>
+Fixed a bug causing infinite recursion in <Ref Oper="NaturalHomomorphismByNormalSubgroup" BookName="ref"/>.
+</Item>
+<Item>
+A workaround was added to deal with a package method creating pcgs for permutation 
+groups for which the entry <C>permpcgsNormalSteps</C> is missing.
+</Item>
+<Item>
+For a semigroup of associative words that is not the full semigroup of
+all associative words, the methods for <Ref Oper="Size" BookName="ref"/> 
+and <Ref Oper="IsTrivial" BookName="ref"/> called one another causing 
+infinite recursion. 
+</Item>
+<Item>
+The 64-bit version of the <F>gac</F> script produced wrong (>= 2^31) CRC 
+values because of an integer conversion problem.
+</Item>
+<Item>
+It was not possible to compile &GAP; on some systems where <C>HAVE_SELECT</C> detects as false.
+</Item>
+<Item>
+Numbers in memory options on the command line exceeding 2^32 could not be
+parsed correctly, even on 64-bit systems. [Reported by Volker Braun]
+</Item>
+</List>
+
+New packages added for the redistribution with &GAP;:
+<List>
+<Item>
+<Package>Float</Package> package by L. Bartholdi, which extends &GAP;
+floating-point capabilities by providing new floating-point handlers for 
+high-precision real, interval and complex arithmetic using MPFR, MPFI, 
+MPC or CXSC external libraries. It also contains a very high-performance 
+implementation of the LLL (Lenstra-Lenstra-Lovász) lattice reduction 
+algorithm via the external library FPLLL. 
+</Item>
+<Item>
+<Package>ToricVarieties</Package> package by S. Gutsche,
+which provides data structures to handle toric varieties by their 
+commutative algebra structure and by their combinatorics. 
+</Item>
+</List>
+
+</Section>
+
 
 </Chapter>
 
