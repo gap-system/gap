@@ -20,6 +20,10 @@ BindGlobal ("TASK_MANAGER_REQUESTS", MakeReadOnly (rec (
         UNSUCC_STEAL := 13,
         GOT_TASK := 14 )));
 
+DeclareCategory ("IsGlobalObjectHandle", IsObject );
+
+ProcessHandleBlockedQueue := function()
+end;
 
 FetchTaskResult := function()
 end;
@@ -33,11 +37,9 @@ end;
 FinishProcesses := function()
 end;
 
-SetImportedTaskResult := function()
-end;
-
 Tasks := AtomicRecord( rec ( Initial := 1 ,    # initial number of worker threads
                  ReportErrors := true,
+                 FirstTask := true,
                  WorkerPool := CreateChannel(),                # pool of idle workers                 
                  TaskManagerRequests := CreateChannel(),       # task manager requests
                  WorkerSuspensionRequests := CreateChannel(),  # suspend requests from task manager
@@ -112,6 +114,12 @@ Tasks.Worker := function(channels)
         TaskPoolData.TaskPoolLen := TaskPoolData.TaskPoolLen-1;
         Tracing.TraceWorkerGotTask();
         UNLOCK(p);
+        atomic readonly task do
+          if HaveReadAccess(task.args[2]) then
+            Print ("taks.args[2] is ", task.args[2], "\n");
+            Print ("Region is ", RegionOf(task.args[2]),"\n");
+          fi;
+        od;
       else
         UNLOCK(p);
         SendChannel (Tasks.WorkerPool, channels);
@@ -140,8 +148,14 @@ Tasks.Worker := function(channels)
       od;
       taskdata := rec (func := ADOPT(task.func), 
                        args := ADOPT(task.args),
-                       async := ADOPT(task.async));                       
+                       async := ADOPT(task.async));
+      Print ("Process ", MPI_Comm_rank(), " Region of task.args is ", RegionOf(task.args), "\n");
+      atomic readonly task.args[2] do
+        Print ("Region of task.args[2] is ", RegionOf(task.args[2]), "\n");
+      od;
+      Print ("region of taskdata.args[2] is ", RegionOf(taskdata.args[2]), "\n");
     od;
+    
     
     atomic TaskStats do
       TaskStats.tasksExecuted := TaskStats.tasksExecuted+1;
@@ -150,7 +164,6 @@ Tasks.Worker := function(channels)
     if taskdata.async then
       CALL_WITH_CATCH(taskdata.func, taskdata.args);
     else
-      
       result := CALL_WITH_CATCH(taskdata.func, taskdata.args);
       Tracing.TraceTaskFinished();
       if Length(result) = 1 or not result[1] then
@@ -164,13 +177,23 @@ Tasks.Worker := function(channels)
       
       atomic task do
         task.complete := true;
-        if IsThreadLocal(result) then
-          task.result := MigrateObj (result, task);
-          task.adopt_result := true;
+        if IsBound(task.result) and not IsThreadLocal(task.result) then
+          p := LOCK(task.result);
+        fi;
+        if IsBound(task.result) and IsGlobalObjectHandle(task.result) then
+          task.result!.obj := result;
+          task.result!.haveObject := true;
+          ProcessHandleBlockedQueue(task.result, result);
+          UNLOCK(p);
         else
-          task.result := result;
-          task.adopt_result := false;
-          SetImportedTaskResult(task,result);
+          if IsThreadLocal(result) then
+            task.result := MigrateObj (result, task);
+            task.adopt_result := true;
+          else
+            task.result := result;
+            task.adopt_result := false;
+            #SetImportedTaskResult(task,result);
+          fi;
         fi;
         if IsBound(task.waitingOnMe) then
           SendChannel (Tasks.TaskManagerRequests, rec ( 
@@ -316,7 +339,7 @@ ExecuteTask:= atomic function(readwrite task)
     Tasks.FirstTask := false;
     SendChannel (Tasks.TaskManagerRequests, rec (type := TASK_MANAGER_REQUESTS.START_WORKERS, 
                                                  noWorkers := Tasks.Initial,
-                                                 worker := threadId));
+                                                 worker := 0)); # worker id is irrelevant in this case
   fi;
   
   worker := TryReceiveChannel (Tasks.WorkerPool, fail);

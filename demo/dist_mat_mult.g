@@ -2,46 +2,75 @@ Read("demo/bench.g");
 
 DeclareGlobalFunction("MatrixMultiplyRow");
 ParInstallGlobalFunction("MatrixMultiplyRow", function(row, m2)
-  local result, j, k, n, s;
+  local result, j, k, n, s, mat;
   result := [];
-  #Print(MPI_Comm_rank(), " I am ", ThreadID(CurrentThread()), " and regions are: row=", RegionOf(row), ", m2=", RegionOf(m2), "\n");
-  n := Length(row);
-  atomic readonly m2 do
+  Print ("Shish Kebab is ", HaveReadAccess(m2), "\n");
+  
+  atomic readwrite m2 do
+    if IsGlobalObjectHandle(m2) then
+      Open(m2);
+      Print ("fetching object\n");
+      mat := GetHandleObj(m2);
+    else
+      mat :=m2;
+    fi;
+  od;
+  
+  Print ("Kamasutra\n");
+  
+  atomic readonly mat do
+    n := Length(mat);
     for j in [1..n] do
       s := 0;
       for k in [1..n] do
-        s := s + row[k] * m2[k][j];
+        s := s + row[k] * mat[k][j];
       od;
       result[j] := s;
     od;
   od;
+  Print ("About to return result ", result, "\n");
   return result;
 end);
 
 
 DistMatrixMultiply := function(m1, m2)
-  local i, j, n, nodeId, tasks, result, chunkSize, handles, r;  
+  local i, j, n, nodeId, tasks, result, chunkSize, matHandle, resHandle;  
   
-  handles := []; tasks := []; result := [];
+  resHandle := []; tasks := []; result := [];
   n := NoProcs();
   chunkSize := Int(Length(m1)/n);
   
+  # create a handle for matrix m2 that will be shipped to 
+  # all nodes
+  matHandle := CreateHandleFromObj(m2, ACCESS_TYPES.READ_ONLY);
+  Open(matHandle);
+  
   for i in [1..n] do 
-    nodeId := i-1; # processes in MPI are enumerated from 0..n-1
+    nodeId := i-1;          # processes in MPI are enumerated from 0..n-1
     if nodeId<>MyId() then
-      handles[i] := RemoteCopyObj (m2, nodeId);
+      RemoteCopyObj (matHandle, nodeId);
     fi;
     for j in [(i-1)*chunkSize+1..i*chunkSize] do
       if nodeId<>MyId() then
-        tasks[i] := Tasks.CreateTask([MatrixMultiplyRow, m1[j], handles[i]]);
-        SendTask (tasks[i], i-1);
+        tasks[j] := Tasks.CreateTask([MatrixMultiplyRow, m1[j], matHandle]);
+        resHandle[j] := SendTask (tasks[j], nodeId);
       else
-        tasks[i] := RunTask(MatrixMultiplyRow, m1[j], m2);
+        tasks[j] := RunTask(MatrixMultiplyRow, m1[j], m2);
       fi;
     od;
   od;
-  for i in [1..n] do
-    result[i] := TaskResult(tasks[i]);
+  
+  
+  for nodeId in [0..n-1] do
+    for j in [nodeId*chunkSize+1..(nodeId+1)*chunkSize] do
+      if nodeId<>processId then
+        Open(resHandle[j]);
+        result[j] := GetHandleObj(resHandle[j]);
+        Close(resHandle[j]);
+      else
+        result[j] := TaskResult(tasks[j]);
+      fi;
+    od;
   od;
   return result;
 end;
@@ -75,11 +104,11 @@ m := DistMatrixMultiply(m1, m2);
 Display(m);
 m := SeqMatrixMultiply(m1, m2);
 Display(m);
-m1 := ConstantMatrix(N, 1);
-m2 := ConstantMatrix(N, 1);
-m := fail;
-t := Bench(do m := DistMatrixMultiply(m1, m2); od);
-Display(t);
-t := Bench(do m := SeqMatrixMultiply(m1, m2); od);
-Display(t);
+#m1 := ConstantMatrix(N, 1);
+#m2 := ConstantMatrix(N, 1);
+#m := fail;
+#t := Bench(do m := DistMatrixMultiply(m1, m2); od);
+#Display(t);
+#t := Bench(do m := SeqMatrixMultiply(m1, m2); od);
+#Display(t);
 ParFinish();
