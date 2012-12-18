@@ -2951,6 +2951,7 @@ Region *NewRegion(void)
 #endif
   pthread_rwlock_init(lock, NULL);
   region_obj = NewBag(T_REGION, sizeof(Region *));
+  MakeBagPublic(region_obj);
   *(Region **)(ADDR_OBJ(region_obj)) = result;
   result->obj = region_obj;
   result->lock = lock;
