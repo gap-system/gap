@@ -166,6 +166,7 @@ ReadLib( "clas.gi"     );
 ReadLib( "claspcgs.gi" );
 ReadLib( "clasperm.gi" );
 ReadLib( "clashom.gi"  );
+ReadLib( "fitfree.gi"  );
 ReadLib( "permdeco.gi"  );
 ReadLib( "csetgrp.gi"  );
 ReadLib( "csetperm.gi" );

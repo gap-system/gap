@@ -171,6 +171,9 @@ function( r, n )
     if HasIsField(r) and IsField(r) then
         if IsFinite(r) then
             type := type and IsFiniteFieldPolynomialRing;
+	  if IsAlgebraicExtension(r) then
+	    type:= type and IsAlgebraicExtensionPolynomialRing;
+	  fi;
         elif IsRationals(r) then
             type := type and IsRationalsPolynomialRing;
         elif # catch algebraic extensions

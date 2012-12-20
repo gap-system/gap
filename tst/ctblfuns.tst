@@ -20,8 +20,8 @@ gap> irr:= Irr( V4 );
     [ 1, -1, 1, -1 ] ), Character( CharacterTable( Group(
     [ (1,2)(3,4), (1,3)(2,4) ]) ), [ 1, 1, -1, -1 ] ) ]
 gap> List( irr, x -> InertiaSubgroup( S4, x ) );
-[ Sym( [ 1 .. 4 ] ), Group([ (1,2,4,3), (1,3)(2,4) ]), 
-  Group([ (1,4,3,2), (1,4)(2,3) ]), Group([ (1,2), (1,4)(2,3) ]) ]
+[ Sym( [ 1 .. 4 ] ), Group([ (1,4), (1,4)(2,3), (1,3)(2,4) ]), 
+  Group([ (1,4,3,2), (1,4)(2,3) ]), Group([ (3,4), (1,4)(2,3) ]) ]
 gap> List( last, Size );
 [ 24, 8, 8, 8 ]
 gap> STOP_TEST( "ctblfuns.tst", 3900000 );

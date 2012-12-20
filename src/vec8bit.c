@@ -1324,10 +1324,10 @@ void MultVec8BitFFEInner( Obj prod,
   info = GetFieldInfo8Bit(FIELD_VEC8BIT(prod));
   elts = ELS_BYTE_FIELDINFO_8BIT(info);
   
-  assert(q == FIELD_VEC8BIT(vec));
+  assert(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vec));
   assert(LEN_VEC8BIT(prod) >= stop);
   assert(LEN_VEC8BIT(vec) >= stop);
-  assert(q == SIZE_FF(FLD_FFE(scal)));
+  assert(Q_FIELDINFO_8BIT(info) == SIZE_FF(FLD_FFE(scal)));
 
 
   /* convert to 0 based addressing */
@@ -3058,112 +3058,120 @@ Obj FuncELMS_VEC8BIT_RANGE (
 **  It is the responsibility of the caller  to ensure that <pos> is positive,
 **  and that <elm> is not 0.
 */
+
+static Obj AsInternalFFE;
+
 Obj FuncASS_VEC8BIT (
-    Obj                 self,
-    Obj                 list,
-    Obj                 pos,
-    Obj                 elm )
+		     Obj                 self,
+		     Obj                 list,
+		     Obj                 pos,
+		     Obj                 elm )
 {
-    UInt                p;
-    Obj                 info;
-    UInt                elts;
-    UInt                chr;
-    UInt                d;
-    UInt                q;
-    FF                  f;
-    UInt v;
+  UInt                p;
+  Obj                 info;
+  UInt                elts;
+  UInt                chr;
+  UInt                d;
+  UInt                q;
+  FF                  f;
+  UInt v;
+  Obj newelm;
 
-    /* check that <list> is mutable                                        */
-    if ( ! IS_MUTABLE_OBJ(list) ) {
-        ErrorReturnVoid(
-            "Lists Assignment: <list> must be a mutable list",
-            0L, 0L,
-            "you can 'return;' and ignore the assignment" );
-        return 0;
-    }
-
-    /* get the position                                                    */
-    if (!IS_INTOBJ(pos))
-      ErrorQuit("ASS_VEC8BIT: position should be a small integer, not a %s",
-    (Int)TNAM_OBJ(pos), 0L);
-    p = INT_INTOBJ(pos);
-    if (p <= 0)
-      ErrorQuit("ASS_VEC9BIT: position must be positive", 0L, 0L);
-    info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
-    elts = ELS_BYTE_FIELDINFO_8BIT(info);
-    chr = P_FIELDINFO_8BIT(info);
-    d = D_FIELDINFO_8BIT(info);
-    q = Q_FIELDINFO_8BIT(info);
-
-
-    if ( p <= LEN_VEC8BIT(list)+1 ) {
-      if ( LEN_VEC8BIT(list)+1 == p ) {
-      if (True == DoFilter(IsLockedRepresentationVector, list))
-  {
-    ErrorReturnVoid("List assignment would increase length of locked compressed vector",0,0,
-        "You can `return;' to ignore the assignment");
+  /* check that <list> is mutable                                        */
+  if ( ! IS_MUTABLE_OBJ(list) ) {
+    ErrorReturnVoid(
+		    "Lists Assignment: <list> must be a mutable list",
+		    0L, 0L,
+		    "you can 'return;' and ignore the assignment" );
     return 0;
   }
-  ResizeBag( list, SIZE_VEC8BIT(p,elts));
-  SET_LEN_VEC8BIT( list, p);
-  /*  Pr("Extending 8 bit vector by 1",0,0); */
-      }
-      if (IS_FFE(elm) &&
-    chr == CharFFE(elm))
-  {
 
-    /* We may need to rewrite the vector over a larger field */
-    if (d % DegreeFFE(elm) !=  0)
+  /* get the position                                                    */
+  if (!IS_INTOBJ(pos))
+    ErrorQuit("ASS_VEC8BIT: position should be a small integer, not a %s",
+	      (Int)TNAM_OBJ(pos), 0L);
+  p = INT_INTOBJ(pos);
+  if (p <= 0)
+    ErrorQuit("ASS_VEC8BIT: position must be positive", 0L, 0L);
+  info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
+  elts = ELS_BYTE_FIELDINFO_8BIT(info);
+  chr = P_FIELDINFO_8BIT(info);
+  d = D_FIELDINFO_8BIT(info);
+  q = Q_FIELDINFO_8BIT(info);
+
+
+  if ( p <= LEN_VEC8BIT(list)+1 ) {
+    if ( LEN_VEC8BIT(list)+1 == p ) {
+      if (True == DoFilter(IsLockedRepresentationVector, list))
+	{
+	  ErrorReturnVoid("List assignment would increase length of locked compressed vector",0,0,
+			  "You can `return;' to ignore the assignment");
+	  return 0;
+	}
+      ResizeBag( list, SIZE_VEC8BIT(p,elts));
+      SET_LEN_VEC8BIT( list, p);
+      /*  Pr("Extending 8 bit vector by 1",0,0); */
+    }
+    if (!IS_FFE(elm)) {
+      newelm = DoAttribute(AsInternalFFE, elm);
+      if (newelm != Fail)
+	elm = newelm;
+    }
+    if (IS_FFE(elm) && chr == CharFFE(elm))
       {
-        /*        Pr("Rewriting over larger field",0,0);*/
-        f = CommonFF(FiniteField(chr,d),d,
-         FLD_FFE(elm),DegreeFFE(elm));
-        if (f && SIZE_FF(f) <= 256)
-    {
-      RewriteVec8Bit(list, SIZE_FF(f));
-      info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
-      elts = ELS_BYTE_FIELDINFO_8BIT(info);
-      chr = P_FIELDINFO_8BIT(info);
-      d = D_FIELDINFO_8BIT(info);
-      q = Q_FIELDINFO_8BIT(info);
-    }
-        else
-    {
-      PlainVec8Bit(list);
-      AssPlistFfe( list, p, elm );
-      return 0;
-    }
-      }
+
+	/* We may need to rewrite the vector over a larger field */
+	if (d % DegreeFFE(elm) !=  0)
+	  {
+	    /*        Pr("Rewriting over larger field",0,0);*/
+	    f = CommonFF(FiniteField(chr,d),d,
+			 FLD_FFE(elm),DegreeFFE(elm));
+	    if (f && SIZE_FF(f) <= 256)
+	      {
+		RewriteVec8Bit(list, SIZE_FF(f));
+		info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
+		elts = ELS_BYTE_FIELDINFO_8BIT(info);
+		chr = P_FIELDINFO_8BIT(info);
+		d = D_FIELDINFO_8BIT(info);
+		q = Q_FIELDINFO_8BIT(info);
+	      }
+	    else
+	      {
+		PlainVec8Bit(list);
+		AssPlistFfe( list, p, elm );
+		return 0;
+	      }
+	  }
 
    
-    v = VAL_FFE(elm);
+	v = VAL_FFE(elm);
 
-    /* may need to promote the element to a bigger field
-       or restrict it to a smaller one */
-    if (v != 0 && q != SIZE_FF(FLD_FFE(elm)))
-      {
-        assert (((v-1)*(q-1)) % (SIZE_FF(FLD_FFE(elm))-1) == 0);
-        v = 1+(v-1)*(q-1)/(SIZE_FF(FLD_FFE(elm))-1);
+	/* may need to promote the element to a bigger field
+	   or restrict it to a smaller one */
+	if (v != 0 && q != SIZE_FF(FLD_FFE(elm)))
+	  {
+	    assert (((v-1)*(q-1)) % (SIZE_FF(FLD_FFE(elm))-1) == 0);
+	    v = 1+(v-1)*(q-1)/(SIZE_FF(FLD_FFE(elm))-1);
+	  }
+
+	/* finally do the assignment */
+	BYTES_VEC8BIT(list)[(p-1) / elts] =
+	  SETELT_FIELDINFO_8BIT(info)
+	  [256*(elts*FELT_FFE_FIELDINFO_8BIT(info)[v]+(p-1)%elts) +
+	   BYTES_VEC8BIT(list)[(p-1)/elts]];
+	return 0;
       }
-
-    /* finally do the assignment */
-    BYTES_VEC8BIT(list)[(p-1) / elts] =
-      SETELT_FIELDINFO_8BIT(info)
-      [256*(elts*FELT_FFE_FIELDINFO_8BIT(info)[v]+(p-1)%elts) +
-      BYTES_VEC8BIT(list)[(p-1)/elts]];
-    return 0;
   }
-    }
 
-    /* We fall through here if the assignment position is so large
-       as to leave a hole, or if the object to be assigned is
-       not of the right characteristic, or would create too large a field */
+  /* We fall through here if the assignment position is so large
+     as to leave a hole, or if the object to be assigned is
+     not of the right characteristic, or would create too large a field */
 
-    /*     Pr("Random assignment (8 bit)",0,0);*/
+  /*     Pr("Random assignment (8 bit)",0,0);*/
 
-    PlainVec8Bit(list);
-    AssPlistFfe( list, p, elm );
-    return 0;
+  PlainVec8Bit(list);
+  AssPlistFfe( list, p, elm );
+  return 0;
 }
 
 
@@ -6206,6 +6214,7 @@ static Int InitKernel (
   InitFopyGVar("ConvertToVectorRep", &ConvertToVectorRep);
   InitFopyGVar("AddRowVector", &AddRowVector);
   InitFopyGVar("IsLockedRepresentationVector", &IsLockedRepresentationVector);
+  InitFopyGVar("AsInternalFFE", &AsInternalFFE);
 
   
   /* return success                                                      */

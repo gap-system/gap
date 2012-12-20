@@ -76,7 +76,11 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
                     RUN_IMMEDIATE_METHODS_CHECKS :=
                         RUN_IMMEDIATE_METHODS_CHECKS+1;
                     if TRACE_IMMEDIATE_METHODS  then
-                        Print( "#I  immediate: ", imm[i+7], "\n" );
+                        if imm[i+7] = false then
+                            Print( "#I  immediate: ", NAME_FUNC( imm[i+1] ), "\n");
+                        else
+                            Print( "#I  immediate: ", NAME_FUNC( imm[i+1] ), ": ", imm[i+7], "\n" );
+                        fi;
                     fi;
 
                     if res <> TRY_NEXT_METHOD  then

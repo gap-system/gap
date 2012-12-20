@@ -197,7 +197,7 @@ Int CompPass;
 
 *V  compilerMagic1  . . . . . . . . . . . . . . . . . . . . .  current magic1
 */
-static UInt4 compilerMagic1;
+static Int compilerMagic1;
 
 
 /****************************************************************************
@@ -5598,7 +5598,7 @@ Int CompileFunc (
     Char *              output,
     Obj                 func,
     Char *              name,
-    UInt4               magic1,
+    Int                 magic1,
     Char *              magic2 )
 {
     Int                 i;              /* loop variable                   */

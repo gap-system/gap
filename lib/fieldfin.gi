@@ -130,6 +130,33 @@ InstallMethod( Subfields,
     return List( DivisorsInt( d ), n -> GF( p, n ) );
     end );
 
+#############################################################################
+##
+#M  Subfields( <F> )  . . . . . . . . . . . . . . subfields of a finite field
+##
+InstallMethod( Subfields, "for finite fields that are not FFEs",
+    [ IsField and IsFinite ],
+function( F )
+local d, p,l,i,mp,fac,S;
+  d:= DegreeOverPrimeField( F );
+  p:= Characteristic( F );
+  l:=[];
+  for i in Filtered(DivisorsInt(d),x->x<d) do
+    mp:=MinimalPolynomial(GF(p),PrimitiveRoot(GF(p^i)));
+    mp:=Value(mp,X(F),One(F));
+    fac:=Factors(mp);
+    fac:=RootsOfUPol(fac[1])[1]; # one root
+    S:=FieldByGenerators([fac]);
+    SetDegreeOverPrimeField(S,i);
+    SetSize(S,p^i);
+    # hack, as there is no good print routine for subfields
+    SetName(S,Concatenation("Field([",String(fac),"])"));
+    Add(l,S);
+  od;
+  Add(l,F); # field itself -- save on expensive factorization
+  return l;
+end );
+
 
 #############################################################################
 ##

@@ -327,7 +327,7 @@ local oper,n,R,o,nrit,
 	    # extend presentation
 	    bas:=Basis(sub,bas);
 	    RUN_IN_GGMBI:=true;
-	    hom:=GroupGeneralMappingByImages(g,fp,gens,GeneratorsOfGroup(fp));
+	    hom:=GroupGeneralMappingByImagesNC(g,fp,gens,GeneratorsOfGroup(fp));
 	    hom:=LiftFactorFpHom(hom,g,"M",SubgroupNC(g,basm),rec(
 		  pcgs:=basm,
 		  prime:=p,

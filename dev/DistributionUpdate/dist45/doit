@@ -4,7 +4,7 @@
 
 # STAGE 1 - checkout and archive the release branch
 ./setvar
-./checkoutcvs
+./checkouthg
 ./classifyfiles
 ./zipreleasebranch
 ./zipmetainfo

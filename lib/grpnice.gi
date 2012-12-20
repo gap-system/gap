@@ -838,9 +838,9 @@ end );
 
 #############################################################################
 ##
-#M  GroupGeneralMappingByImages( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
+#M  GroupGeneralMappingByImagesNC( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
 ##
-InstallMethod( GroupGeneralMappingByImages,
+InstallMethod( GroupGeneralMappingByImagesNC,
    "from a group handled by a niceomorphism",true,
     [ IsGroup and IsHandledByNiceMonomorphism, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
@@ -855,10 +855,17 @@ local nice,geni,map2,tmp;
     nice:=RestrictedNiceMonomorphism(nice,G);
   fi;
   geni:=List(gens,i->ImageElm(nice,i));
-  map2:=GroupGeneralMappingByImages(NiceObject(G),H,geni,imgs);
+  map2:=GroupGeneralMappingByImagesNC(NiceObject(G),H,geni,imgs);
   RUN_IN_GGMBI:=tmp;
   return CompositionMapping(map2,nice);
 end );
+
+InstallMethod( GroupGeneralMappingByImagesNC,
+   "from a group handled by a niceomorphism",true,
+    [ IsGroup and IsHandledByNiceMonomorphism, IsList, IsList ], 0,
+function( G, gens, imgs )
+  return GroupGeneralMappingByImagesNC(G,Group(imgs),gens,imgs);
+end);
 
 #############################################################################
 ##

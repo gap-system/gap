@@ -196,7 +196,7 @@ DeclareOperation("ShrinkableSingleValuedHashTable",
 ##  `HashKeyBag' to ensure identical key values for equal objects.)
 ##
 ##  The values returned by `HashKeyBag' are not guaranteed to be portable
-##  between different runs of {\GAP} and no reference to their absolure
+##  between different runs of {\GAP} and no reference to their absolute
 ##  values ought to be made.
 ##
 BindGlobal("HashKeyBag",HASHKEY_BAG);

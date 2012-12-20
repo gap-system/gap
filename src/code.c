@@ -1381,7 +1381,6 @@ void CodeIntExpr (
     }
 
     /* otherwise stuff the value into the values list                      */
-    /* Need to fix this up for GMP integers */
     else {
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
         ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
@@ -1458,11 +1457,9 @@ void CodeLongIntExpr (
     /* otherwise stuff the value into the values list                      */
     /* Need to fix this up for GMP integers */
     else {
-        expr = NewExpr( T_INT_EXPR, sizeof(UInt2) + SIZE_OBJ(val) );
-        ((UInt2*)ADDR_EXPR(expr))[0] = (Expr)sign;
-        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
-            ((UInt2*)ADDR_EXPR(expr))[i] = ((UInt2*)ADDR_OBJ(val))[i-1];
-        }
+        expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
+        ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
+        memcpy((void *)((UInt *)ADDR_EXPR(expr)+1), (void *)ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
     }
 
     /* push the expression                                                 */

@@ -48,7 +48,7 @@ cd bin/i686*
 # store away until pargap is built
 
 ## otherwise find paths and adjust the following:
-gcc -g  -export-dynamic  -o gap ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  extern/gmp/lib/libgmp.a  -ldl 
+gcc -g  -export-dynamic  -o gap ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a /usr/lib/libutil.a  extern/gmp/lib/libgmp.a  -ldl 
 strip gap
 cp gap gapnompi
 cp gap.o gap.o.nompi
@@ -290,7 +290,7 @@ cd bin/i686*
 rm -f pargapmpi
 ## see above for the two versions
 #gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/i686*/libmpi.a -l:libreadline.a -l:libncurses.a  -l:libm.a  extern/gmp/lib/libgmp.a  -ldl 
-gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/i686*/libmpi.a /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  extern/gmp/lib/libgmp.a  -ldl 
+gcc -g  -export-dynamic  -o pargapmpi ariths.o blister.o bool.o c_meths1.o c_type1.o c_oper1.o c_filt1.o c_random.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gmpints.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o objccoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vec8bit.o vector.o vecffe.o weakptr.o iostream.o macfloat.o intfuncs.o gapmpi.o -lpthread ../../pkg/pargap/bin/i686*/libmpi.a /usr/lib/libreadline.a /usr/lib/libncurses.a  /usr/lib/libm.a  /usr/lib/libutil.a extern/gmp/lib/libgmp.a  -ldl 
 mv gapnompi gap
 mv gap.o.nompi gap.o
 
@@ -313,9 +313,8 @@ find . -name \*.o -exec file {} \; | grep ": ELF " | cut -f1 -d: | xargs rm -f
 # copy the gapsync directory
 mkdir gapsync
 cd gapsync
-cp -a ~/gap4/dev/DistributionUpdate/rsyncserv/gapsync/CVS .
-cvs update
-rm -rf CVS
+cp -a ~/gap4/dev/DistributionUpdate/rsyncserv/gapsync/*  .
+rm -f *~ *.bak
 cd ..
 
 # make various targets in Makefile-default32 work

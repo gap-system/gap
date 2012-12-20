@@ -16,8 +16,8 @@
     startrsyncserver to RSDIR, and adjust the paths in 'rsyncd.conf' 
     (search 'home2').
 
-(2) Fetch newest archives from ftp://ftp.gap-system.org/pub/{gappre or gap/gap}:
-    gap4r4*.tar.gz, tools4r4*.tar.gz, xtom*.tar.gz, packages*.tar.gz
+(2) Fetch newest archive from ftp://ftp.gap-system.org/pub/{gappre or gap/gap}:
+    gap4r5p*.tar.gz
 
 (3) Copy archives to native i686 machine and call in that directory on that
     machine  'gapsync/InstForRsync32'.

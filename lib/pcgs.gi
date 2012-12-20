@@ -1626,8 +1626,9 @@ end);
 ##
 #M  PcgsElementaryAbelianSeries( <G> )
 ##
-InstallMethod( PcgsElementaryAbelianSeries, "generic group", true,
-  [ IsGroup ], 0, DoPcgsElementaryAbelianSeries);
+InstallMethod( PcgsElementaryAbelianSeries, "generic group", true, [ IsGroup ], 
+  1, # rank higher than package method to make behavior more predictable
+  DoPcgsElementaryAbelianSeries);
 
 InstallOtherMethod( PcgsElementaryAbelianSeries, "group list", true,
   [ IsList ], 0, DoPcgsElementaryAbelianSeries);

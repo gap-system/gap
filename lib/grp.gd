@@ -1092,9 +1092,8 @@ DeclareAttribute( "ConjugacyClasses", IsGroup );
 ##  <Ref Func="MaximalSubgroupClassReps"/>.
 ##  <Example><![CDATA[
 ##  gap> ConjugacyClassesMaximalSubgroups(g);
-##  [ Group( [ (2,4,3), (1,4)(2,3), (1,3)(2,4) ] )^G, 
-##    Group( [ (3,4), (1,4)(2,3), (1,3)(2,4) ] )^G, 
-##    Group( [ (3,4), (2,4,3) ] )^G ]
+##  [ AlternatingGroup( [ 1 .. 4 ] )^G, Group( [ (1,2,3), (1,2) ] )^G, 
+##    Group( [ (1,2), (3,4), (1,3)(2,4) ] )^G ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1140,9 +1139,8 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##  of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> MaximalSubgroupClassReps(g);
-##  [ Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
-##    Group([ (3,4), (1,4)(2,3), (1,3)(2,4) ]), Group([ (3,4), (2,4,3) ]) 
-##   ]
+##  [ Alt( [ 1 .. 4 ] ), Group([ (1,2,3), (1,2) ]), 
+##    Group([ (1,2), (3,4), (1,3)(2,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1163,7 +1161,7 @@ DeclareAttribute("MaximalSubgroupClassReps",IsGroup);
 ##  is the smallest normal subgroup of <A>G</A> that has a solvable factor group.
 ##  <Example><![CDATA[
 ##  gap> PerfectResiduum(Group((1,2,3,4,5),(1,2)));
-##  Group([ (1,3,2), (2,4,3), (2,3)(4,5) ])
+##  Group([ (1,3,2), (2,4,3), (1,3)(4,5) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1193,10 +1191,10 @@ DeclareAttribute( "PerfectResiduum", IsGroup );
 ##  gap> m11:=TransitiveGroup(11,6);
 ##  M(11)
 ##  gap> r:=RepresentativesPerfectSubgroups(m11);
-##  [ Group([ (3,4,10)(5,11,6)(7,9,8), (2,5)(3,8)(4,6)(9,11) ]), 
-##    Group([ (1,2,3)(4,6,11)(7,9,10), (2,5)(3,8)(4,6)(9,11) ]), 
-##    Group([ (3,4,9,7)(5,8,6,10), (2,5)(3,8)(4,6)(9,11) ]), 
-##    Group([ (1,2,4)(3,6,11)(7,10,8), (2,5)(3,8)(4,6)(9,11) ]), M(11), 
+##  [ Group([ (2,3,4)(5,6,8)(7,11,9), (3,11)(4,5)(6,10)(7,8) ]), 
+##    Group([ (1,2,3)(5,9,6)(7,8,11), (3,11)(4,5)(6,10)(7,8) ]), 
+##    Group([ (2,3,4,11,6)(5,7,10,8,9), (3,11)(4,5)(6,10)(7,8) ]), 
+##    Group([ (1,2,3)(4,6,11)(7,9,10), (3,11)(4,5)(6,10)(7,8) ]), M(11), 
 ##    Group(()) ]
 ##  gap> List(r,Size);
 ##  [ 60, 60, 360, 660, 7920, 1 ]
@@ -1222,14 +1220,14 @@ DeclareAttribute( "RepresentativesSimpleSubgroups", IsGroup );
 ##  (see <Ref Func="RepresentativesPerfectSubgroups"/>.)
 ##  <Example><![CDATA[
 ##  gap> ConjugacyClassesPerfectSubgroups(m11);
-##  [ Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8), 
-##        ( 2, 5)( 3, 8)( 4, 6)( 9,11) ] )^G, 
+##  [ Group( [ ( 2, 3, 4)( 5, 6, 8)( 7,11, 9), 
+##        ( 3,11)( 4, 5)( 6,10)( 7, 8) ] )^G, 
+##    Group( [ ( 1, 2, 3)( 5, 9, 6)( 7, 8,11), 
+##        ( 3,11)( 4, 5)( 6,10)( 7, 8) ] )^G, 
+##    Group( [ ( 2, 3, 4,11, 6)( 5, 7,10, 8, 9), 
+##        ( 3,11)( 4, 5)( 6,10)( 7, 8) ] )^G, 
 ##    Group( [ ( 1, 2, 3)( 4, 6,11)( 7, 9,10), 
-##        ( 2, 5)( 3, 8)( 4, 6)( 9,11) ] )^G, 
-##    Group( [ ( 3, 4, 9, 7)( 5, 8, 6,10), ( 2, 5)( 3, 8)( 4, 6)( 9,11) 
-##       ] )^G, 
-##    Group( [ ( 1, 2, 4)( 3, 6,11)( 7,10, 8), 
-##        ( 2, 5)( 3, 8)( 4, 6)( 9,11) ] )^G, M(11)^G, Group( () )^G ]
+##        ( 3,11)( 4, 5)( 6,10)( 7, 8) ] )^G, M(11)^G, Group( () )^G ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1382,7 +1380,7 @@ DeclareAttribute( "DerivedSeriesOfGroup", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> DerivedSubgroup(g);
-##  Group([ (1,3,2), (2,4,3) ])
+##  Group([ (1,3,2), (1,4,3) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1882,7 +1880,7 @@ DeclareAttribute( "ComputedAgemos", IsGroup, "mutable" );
 ##  is the radical of <A>G</A>, i.e., the largest solvable normal subgroup of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> RadicalGroup(SL(2,5));
-##  <group of 2x2 matrices of size 2 in characteristic 5>
+##  <group of 2x2 matrices of size 2 over GF(5)>
 ##  gap> Size(last);
 ##  2
 ##  ]]></Example>
@@ -2040,7 +2038,7 @@ DeclareAttribute( "SmallGeneratingSet", IsGroup );
 ##  <M><A>G</A> / N</M> is supersolvable.
 ##  <Example><![CDATA[
 ##  gap> SupersolvableResiduum(g);
-##  Group([ (1,2)(3,4), (1,3)(2,4) ])
+##  Group([ (1,3)(2,4), (1,4)(2,3) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2198,7 +2196,7 @@ DeclareSynonymAttr( "TrivialSubgroup", TrivialSubmagmaWithOne );
 ##  all minimal normal subgroups.
 ##  <Example><![CDATA[
 ##  gap> Socle(g);
-##  Group([ (1,4)(2,3), (1,3)(2,4) ])
+##  Group([ (1,4)(2,3), (1,2)(3,4) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2903,10 +2901,9 @@ KeyDependentOperation( "IsPNilpotent", IsGroup, IsPosInt, "prime" );
 ##  <Func Name="IsPSolvable" Arg='G, p'/>
 ##
 ##  <Description>
-##  A group is <M>p</M>-solvable if every chief factor is either not divisible
-##  by <M>p</M> or solvable.
+##  A finite group is <M>p</M>-solvable if every chief factor is either not 
+##  divisible by <M>p</M> or solvable.
 ##  <P/>
-##  <E>@Currently no method is installed!@</E>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2987,7 +2984,7 @@ DeclareOperation( "IsSubnormal", [ IsGroup, IsGroup ] );
 ##  which contains <A>U</A>.
 ##  <Example><![CDATA[
 ##  gap> NormalClosure(g,Subgroup(g,[(1,2,3)]));
-##  Group([ (1,2,3), (2,3,4) ])
+##  Group([ (1,2,3), (1,3,4) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3228,18 +3225,33 @@ KeyDependentOperation( "SylowComplement", IsGroup, IsPosInt, "prime" );
 ##  <Description>
 ##  computes a <A>P</A>-Hall subgroup for a set <A>P</A> of primes.
 ##  This is a subgroup the order of which is only divisible by primes in
-##  <A>P</A> and whose index is coprime to all primes in <A>P</A>.
+##  <A>P</A> and whose index is coprime to all primes in <A>P</A>. Such a
+##  subgroup is unique up to conjugacy if <A>G</A> is solvable.
 ##  The function computes Hall subgroups via the operation
 ##  <C>HallSubgroupOp</C>.
 ##  <P/>
-##  At the moment methods exist only if <A>G</A> is solvable and &GAP; will
-##  issue an error if <A>G</A> is not solvable.
+##  If <A>G</A> is solvable this function always returns a subgroup. If
+##  <A>G</A> is not solvable this function might return a subgroup (if it is
+##  unique up to conjugacy), a list of subgroups (which are representatives of
+##  the conjugacy classes in case there are several such classes) or <K>fail</K>
+##  if no such subgroup exists.
 ##  <Example><![CDATA[
 ##  gap> h:=SmallGroup(60,10);;
 ##  gap> u:=HallSubgroup(h,[2,3]);
 ##  Group([ f1, f2, f3 ])
 ##  gap> Size(u);
 ##  12
+##  gap> h:=PSL(3,5);;
+##  gap> HallSubgroup(h,[2,3]);  
+##  [ <permutation group of size 96 with 6 generators>, 
+##    <permutation group of size 96 with 6 generators> ]
+##  gap> HallSubgroup(h,[3,31]);
+##  Group(
+##  [ (2,18,11)(3,20,7)(4,19,9)(5,21,8)(6,17,10)(12,29,22)(13,27,26)(14,
+##      31,23)(15,30,24)(16,28,25), (1,6,18,3,16,10,9,28,8,21,2,30,26,20,
+##      5,7,12,23,22,11,25,13,14,31,15,17,4,24,29,27,19) ])
+##  gap> HallSubgroup(h,[5,31]);
+##  fail
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3291,7 +3303,7 @@ DeclareOperation( "NrConjugacyClassesInSupergroup", [ IsGroup, IsGroup ] );
 ##  gap> H:= Subgroup(G, [ r, s ] );
 ##  Group([ (3,4), (1,2,3,4,5,6) ])
 ##  gap> Factorization( H, (1,2,3) );
-##  x2*x1*x2*x1*x2^-2
+##  (x2*x1)^2*x2^-2
 ##  gap> s*r*s*r*s^-2;
 ##  (1,2,3)
 ##  gap> MappingGeneratorsImages(EpimorphismFromFreeGroup(H));
@@ -3926,7 +3938,7 @@ DeclareAttribute("IsomorphismPermGroup",IsGroup);
 ##  <fp group on the generators [ F1, F2, F3 ]>
 ##  gap> RelatorsOfFpGroup( fp );
 ##  [ F1^2, F1^-1*F2*F1*F2^-1*F3*F2^-2, F1^-1*F3*F1*F2*F3^-1*F2*F3*F2^-1, 
-##    F2^5*F3^-5, F2^5*F3^-1*F2^-1*F3^-1*F2^-1, F2^-2*F3^2*F2^-2*F3^2 ]
+##    F2^5*F3^-5, F2^5*(F3^-1*F2^-1)^2, (F2^-2*F3^2)^2 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3963,9 +3975,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  gap> fp := Image( iso );
 ##  <fp group of size 120 on the generators [ F1, F2 ]>
 ##  gap> RelatorsOfFpGroup( fp );
-##  [ F1^2, F2^5, F2^-1*F1*F2^-1*F1*F2^-1*F1*F2^-1*F1, 
-##    F2^-1*F1*F2*F1*F2^-1*F1*F2*F1*F2^-1*F1*F2*F1, 
-##    F2^2*F1*F2^-2*F1*F2^2*F1*F2^-2*F1 ]
+##  [ F1^2, F2^5, (F2^-1*F1)^4, (F2^-1*F1*F2*F1)^3, (F2^2*F1*F2^-2*F1)^2 ]
 ##  ]]></Example>
 ##  <P/>
 ##  The main task of the function

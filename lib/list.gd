@@ -1476,6 +1476,7 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 #############################################################################
 ##
 #O  Sort( <list>[, <func>] )  . . . . . . . . . . . . . . . . . . sort a list
+#O  SortBy( <list>, <func> )  . . . . . . . . . . . . . . . . . . sort a list
 ##
 ##  <#GAPDoc Label="Sort">
 ##  <ManSection>
@@ -1493,6 +1494,9 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  <A>func</A> must be a function taking two arguments that returns
 ##  <K>true</K> if the first is regarded as strictly smaller than the second,
 ##  and <K>false</K> otherwise.
+##  <P/>
+##  Note that, in cases where it is applicable, <Ref Oper="SortBy"/> is likely to be more
+##  efficient.
 ##  <P/>
 ##  <Ref Oper="Sort"/> does not return anything,
 ##  it just changes the argument <A>list</A>.
@@ -1519,11 +1523,19 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
 ##  ]]></Example>
 ##  </Description>
+##  <Oper Name="SortBy" Arg='list, func'/>
+##  <Description> sorts the list <A>list</A> into an order such that
+##  <C>func(list[i]) &lt;= func(list[i+1])</C> for all relevant
+##  <A>i</A>. <A>func</A> must thus be a function on one argument which returns
+##  values that can be compared.  Each <C>func(list[i])</C> is computed just
+##  once and stored, making this more efficient than using the two-argument
+##  version of <Ref Oper="Sort"/> in many cases.  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "Sort", [ IsList and IsMutable ] );
 DeclareOperation( "Sort", [ IsList and IsMutable, IsFunction ] );
+DeclareOperation( "SortBy", [IsList and IsMutable, IsFunction ] );
 
 
 #############################################################################

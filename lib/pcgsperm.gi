@@ -424,6 +424,7 @@ step:="W";
     if whole  then
         SetIsSolvableGroup( grp, true );
         SetPcgs( grp, pcgs );
+        SetHomePcgs( grp, pcgs );
         SetGroupOfPcgs (pcgs, grp);
         if cent  then
             SetIsNilpotentGroup( grp, true );
@@ -479,17 +480,16 @@ function(filter,G,series,oldlen,iselab)
 end );
 
 BindGlobal("NorSerPermPcgs",function(pcgs)
-local ppcgs,series,G,i;
+local ppcgs,series,stbc,G,i;
   ppcgs := ParentPcgs (pcgs);
   G:=GroupOfPcgs(pcgs);
-  series:=pcgs!.generatingSeries;
-  for i  in [ 1 .. Length( series ) ]  do
-        Unbind( series[ i ].relativeOrders );
-        Unbind( series[ i ].base           );
-        series[ i ] := GroupStabChain( G, series[ i ], true );
-	if (not HasHomePcgs(series[i]) ) or
-	  HomePcgs(series[i])!.permpcgsNormalSteps=
-	  ppcgs!.permpcgsNormalSteps then
+  series:=EmptyPlist( Length(pcgs!.generatingSeries) );
+  for i  in [ 1 .. Length( pcgs!.generatingSeries ) ]  do
+    stbc := ShallowCopy (pcgs!.generatingSeries[i]);
+    Unbind( stbc.relativeOrders );
+    Unbind( stbc.base           );
+    series[ i ] := GroupStabChain( G, stbc, true );
+	if (not HasHomePcgs(series[i]) ) or HomePcgs(series[i]) = ppcgs then
 	  SetHomePcgs ( series[ i ], ppcgs );
 	  SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
 	  series[ i ]!.noInSeries := i;
@@ -755,6 +755,47 @@ end );
 InstallMethod( Pcgs, "tail of perm pcgs", true,
         [ IsMemberPcSeriesPermGroup ], 100,
         PcgsMemberPcSeriesPermGroup );
+
+
+#############################################################################
+##
+#M  HomePcgs( <G> ) . . . . . . . . . . . . . . . . home pcgs for perm groups
+##
+InstallMethod( HomePcgs, "use a perm pcgs if possible", true,
+    [ IsPermGroup and HasPcgs ],
+    function( G )
+    local   pcgs;
+    
+    pcgs := Pcgs( G );
+    if IsPcgsPermGroupRep( pcgs ) then
+        if HasParentPcgs( pcgs ) then
+            return ParentPcgs( pcgs );
+        else
+            return pcgs;
+        fi;
+    else
+        TryNextMethod();
+    fi;
+end);
+
+
+InstallMethod( HomePcgs, "try to compute a perm pcgs", true,
+    [ IsPermGroup ],
+    function( G )
+    local   pcgs;
+    
+    pcgs := TryPcgsPermGroup( G, false, false, true );
+
+    if not IsPcgs( pcgs )  then
+        TryNextMethod();
+    else
+      if not HasPcgsElementaryAbelianSeries(G) then
+        SetPcgsElementaryAbelianSeries(G,pcgs);
+      fi;
+      return pcgs;
+    fi;
+end );
+
 
 #############################################################################
 ##

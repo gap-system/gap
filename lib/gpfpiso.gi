@@ -708,7 +708,7 @@ InstallMethod( IsomorphismFpGroupByGeneratorsNC, "via cokernel", IsFamFamX,
 function( G, gens, str )
     local F, hom, rels, H, gensH, iso;
     F   := FreeGroup( Length(gens), str );
-    hom := GroupGeneralMappingByImages( G, F, gens, GeneratorsOfGroup(F) );
+    hom := GroupGeneralMappingByImagesNC( G, F, gens, GeneratorsOfGroup(F) );
     rels := GeneratorsOfGroup( CoKernelOfMultiplicativeGeneralMapping( hom ) );
     H := F /rels;
     gensH := GeneratorsOfGroup( H );

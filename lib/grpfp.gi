@@ -578,7 +578,7 @@ local A,B,U,V,W,E,F,map;
   #  the relators of A evaluated in the generators of B. This is the
   #  coKernel of a mapping A->B
   if not IsTrivial(V) then
-    map:=GroupGeneralMappingByImages(A,B,GeneratorsOfGroup(A),
+    map:=GroupGeneralMappingByImagesNC(A,B,GeneratorsOfGroup(A),
 					GeneratorsOfGroup(B));
     F:=CoKernelOfMultiplicativeGeneralMapping(map);
     W:=ClosureGroup(F,
@@ -588,7 +588,7 @@ local A,B,U,V,W,E,F,map;
     fi;
   fi;
 
-  map:=GroupGeneralMappingByImages(B,A,GeneratorsOfGroup(B),
+  map:=GroupGeneralMappingByImagesNC(B,A,GeneratorsOfGroup(B),
                                        GeneratorsOfGroup(A));
   E:=CoKernelOfMultiplicativeGeneralMapping(map);
   return IsSubset(U,E);

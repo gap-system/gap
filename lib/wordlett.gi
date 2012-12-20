@@ -285,37 +285,7 @@ end);
 InstallMethod(PrintObj,"assoc word in letter rep",true,
   [IsAssocWord and IsLetterAssocWordRep],0,
 function(elm)
-local names,len,i,g,h,e;
-
-  names:= FamilyObj( elm )!.names;
-  elm:=LetterRepAssocWord(elm);
-  len:= Length( elm );
-  i:= 2;
-  if len = 0 then
-    Print( "<identity ...>" );
-  else
-    g:=AbsInt(elm[1]);
-    e:=SignInt(elm[1]);
-    while i <= len do
-      h:=AbsInt(elm[i]);
-      if h=g then
-        e:=e+SignInt(elm[i]);
-      else
-	Print( names[g] );
-	if e<>1 then
-	  Print( "^", e );
-	fi;
-	Print("*");
-        g:=h;
-	e:=SignInt(elm[i]);
-      fi;
-      i:=i+1;
-    od;
-    Print( names[g] );
-    if e<>1 then
-      Print( "^",e);
-    fi;
-  fi;
+  Print(NiceStringAssocWord(elm));
 end);
 
 

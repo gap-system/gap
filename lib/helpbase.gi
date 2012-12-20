@@ -295,7 +295,9 @@ InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
   # check if we reinstall a known book (with possibly other names)
   pos := First([1..Length(hnb[2])], i-> dir = hnb[2][i][3]);
   if not (Position(hnb[1], str) in [fail, pos]) then
-    Error("Help book with normalized name ", str, " already installed!\n");
+    Info(InfoWarning, 1, "Overwriting already installed help book '",str,"'.");
+    Unbind(HELP_BOOKS_INFO.(str));
+    pos := Position(hnb[1], str);
   fi;
   if pos = fail then
     # Perhaps we want to replace a "(not loaded)" book by another one.

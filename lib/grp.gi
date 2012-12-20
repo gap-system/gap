@@ -2227,15 +2227,11 @@ end );
 ##  except <p>, and check whether it is normal in <G>.
 ##
 InstallMethod( IsPNilpotentOp,
-    "generic method for a (finite) group and a prime integer",
-    [ IsGroup, IsPosInt ],
+    "for a group with special pcgs: test for normal Hall subgroup",
+    [ IsGroup and HasSpecialPcgs, IsPosInt ],
     function( G, p )
 
     local primes, S;
-
-    if not IsFinite( G ) then
-      TryNextMethod();
-    fi;
 
     primes:= Set( Factors( Size( G ) ) );
     RemoveSet( primes, p );
@@ -2244,11 +2240,50 @@ InstallMethod( IsPNilpotentOp,
     return S <> fail and IsNormal( G, S );
     end );
 
+InstallMethod( IsPNilpotentOp,
+    "check if p divides order of hypocentre",
+    [ IsGroup and IsFinite, IsPosInt ],
+    function( G, p )
+
+    local ser;
+
+    ser := LowerCentralSeriesOfGroup( G );
+    return Size ( ser[ Length( ser ) ] ) mod p <> 0;
+    end );
+
+RedispatchOnCondition (IsPNilpotentOp, ReturnTrue, [IsGroup, IsPosInt], [IsFinite], 0);
+
 
 #############################################################################
 ##
 #M  IsPSolvable( <G>, <p> )
 ##
+InstallMethod( IsPSolvableOp, 
+    "generic method: build descending series with abelian or p'-factors",
+    [ IsGroup and IsFinite, IsPosInt ],
+    function( G, p )
+
+    local N;
+    
+    while Size( G ) mod p = 0 do
+        N := PerfectResiduum( G );
+        N := NormalClosure (N, SylowSubgroup (N, p));
+        if IndexNC( G, N ) = 1 then
+            return false;
+        fi;
+        G := N;
+    od;
+    return true;
+    end);
+
+InstallMethod( IsPSolvableOp,
+    "for solvable groups: return true",
+    [ IsGroup and IsSolvableGroup and IsFinite, IsPosInt ],
+    SUM_FLAGS,
+    ReturnTrue);
+ 
+RedispatchOnCondition (IsPSolvableOp, ReturnTrue, [IsGroup, IsPosInt], [IsFinite], 0);
+
 
 #############################################################################
 ##

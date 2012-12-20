@@ -567,6 +567,9 @@ void ReadCallVarAss (
 
     /*  if we need an unbind                                               */
     else if ( mode == 'u' ) {
+      if (Symbol != S_RPAREN) {
+	SyntaxError("'Unbind': argument should be followed by ')'");
+      }
         if ( READ_ERROR() ) {}
         else if ( type == 'l' ) { IntrUnbLVar( var );             }
         else if ( type == 'h' ) { IntrUnbHVar( var );             }
@@ -1857,9 +1860,7 @@ void ReadFor (
       CurrLVars = currLVars;
       PtrLVars  = PTR_BAG( CurrLVars );
       PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
-      if (CountNams > 0)
-	CountNams--;
-    }
+     }
 }
 
 
@@ -2223,6 +2224,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     UInt                readTilde;
     UInt                currLHSGVar;
     Obj                 errorLVars;
+    Obj                 errorLVars0;
     syJmp_buf           readJmpError;
 
     /* get the first symbol from the input                                 */
@@ -2253,7 +2255,9 @@ ExecStatus ReadEvalCommand ( Obj context )
     CurrLHSGVar = 0;
     RecreateStackNams(context);
     errorLVars = ErrorLVars;
+    errorLVars0 = ErrorLVars0;
     ErrorLVars = context;
+    ErrorLVars0 = ErrorLVars;
 
     IntrBegin( context );
 
@@ -2311,6 +2315,7 @@ ExecStatus ReadEvalCommand ( Obj context )
     ReadTilde   = readTilde;
     CurrLHSGVar = currLHSGVar;
     ErrorLVars = errorLVars;
+    ErrorLVars0 = errorLVars0;
 
     /* copy the result (if any)                                            */
     ReadEvalResult = IntrResult;

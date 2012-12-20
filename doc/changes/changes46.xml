@@ -1,0 +1,126 @@
+<Chapter Label="ChangesGAP45toGAP46"> 
+<Heading>Changes between &GAP; 4.5 and &GAP; 4.6 (BETA FOR PACKAGE AUTHORS)</Heading>
+
+This chapter lists most important changes between &GAP; 4.5.7 and the
+first public release of &GAP; 4.6. Later it will also contain information 
+about subsequent update releases for &GAP; 4.5.
+
+<Section Label="fix460"> 
+
+<Heading>&GAP; 4.6.0 (Winter 2012/2013)</Heading>
+
+Improved and extended functionality:
+<List>  
+<Item>
+It is now possible to declare a name as an operation with 
+two or more arguments (possibly several times) and <E>THEN</E> declare
+it as an attribute. Previously this was only possible in 
+the other order. This should make the system more independent of 
+the order in which packages are loaded.
+</Item>
+<Item>
+Words in fp groups are now printed in factorised form if possible and not
+too time-consuming.
+</Item>       
+<Item>
+Added methods to calculate Hall subgroups in nonsolvable groups.
+</Item>
+<Item>
+Added a generic method for <Ref Prop="IsPSolvable" BookName="ref"/> and 
+better generic method for <Ref Prop="IsPNilpotent" BookName="ref"/> for 
+groups. 
+</Item>
+<Item>
+Improvements to action homomorphisms: image of an element can use existing 
+stabiliser chain of the image group (to reduce the number of images to 
+compute), preimages under linear/projective action homomorphisms use 
+linear algebra to avoid factorisation.
+</Item>
+<Item>
+To improve efficiency, additional code was added to make sure that the 
+<C>HomePcgs</C> of a permutation group is in <C>IsPcgsPermGroupRep</C> 
+representation in more cases.
+</Item>
+<Item>
+Added an operation <Ref Oper="SortBy" BookName="ref"/> with argument being
+a function <A>f</A> of one argument and a list <A>l</A> to be sorted so 
+that <C><A>l</A>(<A>f</A>[i]) &lt;= <A>l</A>(<A>f</A>[i+1])</C>.
+</Item>
+<Item>
+Added a kernel function <C>MEET_BLIST</C> which returns <K>true</K> if the 
+two boolean lists have <K>true</K> in any common position and <K>false</K> 
+otherwise. This is useful for representing subsets of a fixed set by boolean
+lists.
+</Item>
+<Item>
+When assigning to a position in a compressed FFE vector &GAP; now checks to 
+see if the value being assigned can be converted into an internal FFE 
+element if it isn't one already. Uses new attribute 
+<Ref Oper="AsInternalFFE" BookName="ref"/>, for which 
+methods are installed for internal FFEs, Conway FFEs and ZmodpZ objects.
+</Item>
+<Item>
+Replaced <Ref Oper="ViewObj" BookName="ref"/> method for fields by 
+<Ref Oper="ViewString" BookName="ref"/> method to improve the way
+how polynomial rings over algebraic extenstions of fields are displayed.
+</Item>
+<Item>
+Made the info string (optional 2nd argument to 
+<Ref Func="InstallImmediateMethod" BookName="ref"/>) 
+behave similarly to the info string in 
+<Ref Func="InstallMethod" BookName="ref"/>.
+In particular, <Ref Func="TraceImmediateMethods" BookName="ref"/>
+now always prints the name of the operation.
+</Item>
+<Item>
+Syntax errors such as <C>Unbind(x,1)</C> had the unhelpful
+property that <C>x</C> got unbound before the syntax error
+was reported. A specific check was added to catch this and
+similar cases a little earlier.
+</Item>
+<Item>
+Allow a <C>GAPARGS</C> parameter to the top-level &GAP; <F>Makefile</F> to pass
+extra arguments to the &GAP; used for manual building.
+</Item>
+</List>
+
+Fixed bugs which could lead to crashes:
+<List>              
+<Item>
+The extremely old <C>DEBUG_DEADSONS_BAGS</C> compile-time
+option has not worked correctly for many years and indeed crashes &GAP;.
+The type of bug it is there to detect has not arisen in many years and we 
+have certainly not used this option, so it has been removed.
+[Reported by Volker Braun]
+</Item>
+</List>
+
+Other fixed bugs:
+
+<List>
+<Item>
+Scanning of floating point literals collided with iterated use of integers 
+as record field elements in expressions like <C>r.1.2</C>.
+</Item>
+<Item>
+Fixed two potential problems in <C>NorSerPermPcgs</C>, one corrupting
+some internal data and one possibly mixing up different pcgs. 
+</Item>
+</List>
+
+New packages added for the redistribution with &GAP;:
+
+<List>
+<Item>
+. . . To be documented . . .
+</Item>
+</List>
+
+</Section>
+
+</Chapter>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% --> 
+<!-- %% --> 
+<!-- %E -->

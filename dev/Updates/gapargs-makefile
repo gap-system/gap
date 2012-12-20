@@ -1,0 +1,15 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+! Date
+30/10/12
+! Changed by
+SL
+! Type of Change
+New: extended functionality
+! Description
+Allow a GAPARGS parameter to the top-level GAP Makefile to pass
+extra arguments to the gap used for manual building. 
+! Test Code
+! Prefetch
+! Changeset
+2c922a70ebb2df07532992894e2820cefbd295c1
+! End

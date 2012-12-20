@@ -18,8 +18,8 @@ pkgs:=SortedList(ShallowCopy(RecNames(pkgs)));
 recommended:=[ "atlasrep", "design", "grape", "guava", "example" ];
 
 # Hints for (some) packages that do not work under Windows 
-nowindows:=["ace", "anupq", "carat", "cohomolo", "fplsa", "gauss",
-"kbmag", "linboxing", "nq", "pargap", "xgap" ];
+nowindows:=["ace", "anupq", "carat", "cohomolo", "float", "fplsa", "gauss",
+"kbmag", "linboxing", "nq", "pargap", "polymakeinterface", "xgap" ];
 
 Print("=============================================================\n");
 # Packages needed by GAP
@@ -58,10 +58,7 @@ Print("=============================================================\n");
 # "laguna", "polenta", "polycyclic", "resclasses", "sophus" ]
 default:=SortedList(ShallowCopy( GAPInfo.UserPreferences.gap.PackagesToLoad ));
 
-# First those packages which are suggested for GAP are added to default.
-# As on Feb 18th 2012 in GAP.dev, this is ctbllib and tomlib
-default := Union( default, recommended, 
-             List( GAPInfo.Dependencies.SuggestedOtherPackages, pkg -> pkg[1] ) );
+default := Union( default, recommended ); 
      
 Print("Starting with the following list of default packages :\n", default, "\n"); 
 

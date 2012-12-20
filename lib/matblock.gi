@@ -95,11 +95,19 @@ InstallGlobalFunction( BlockMatrix, function( arg )
       fi;
     od;
     Sort( newblocks, IsLexicographicallyLess );
-    for i in [ 1 .. Length( newblocks ) - 1 ] do
+    i:=1;
+    while i+1<=Length(newblocks) do
       if newblocks[i][1] = newblocks[ i+1 ][1] and
          newblocks[i][2] = newblocks[ i+1 ][2] then
-        Error( "two blocks for position [", newblocks[i][1], "][",
-               newblocks[i][2], "]" );
+
+        #Error( "two blocks for position [", newblocks[i][1], "][",
+        #       newblocks[i][2], "]" );
+	newblocks:=Concatenation(newblocks{[1..i-1]},
+	     [[newblocks[i][1],newblocks[i][2],
+	       newblocks[i][3]+newblocks[i+1][3]]],
+	     newblocks{[i+2..Length(newblocks)]});
+      else
+	i:=i+1;
       fi;
     od;
 
@@ -596,10 +604,16 @@ InstallOtherMethod( OneOp,
 InstallOtherMethod( InverseOp,
     "for an ordinary block matrix",
     [ IsOrdinaryMatrix and IsBlockMatrixRep ],
-    function( bm )
-    return InverseOp( MatrixByBlockMatrix( bm ) );
-    end );
+function( bm )
+  return AsBlockMatrix(InverseOp(MatrixByBlockMatrix(bm)),bm!.nrb,bm!.ncb);
+end );
 
+#############################################################################
+##
+#M  \^
+##
+InstallMethod( \^,"for block matrix and integer",
+    [ IsOrdinaryMatrix and IsBlockMatrixRep,IsInt ],POW_OBJ_INT);
 
 #############################################################################
 ##

@@ -628,14 +628,17 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
     elif IsExternalSetByActorsRep( xset )  then
         filter := filter and IsActionHomomorphismByActors;
     elif     IsMatrixGroup( G )
-         and IsScalarList( D[ 1 ] )
-         and act in [ OnPoints, OnRight ]  then
-      # we act linearly. This might be used to compute preimages by linear
-      # algebra
-      # note that we do not test whether the domain actually contains a
-      # vector space base. This will be done the first time,
-      # `LinearActionBasis' is called (i.e. in the preimages routine).
-      filter := filter and IsLinearActionHomomorphism;
+         and IsScalarList( D[ 1 ] ) then
+      if  act in [ OnPoints, OnRight ]  then
+	# we act linearly. This might be used to compute preimages by linear
+	# algebra
+	# note that we do not test whether the domain actually contains a
+	# vector space base. This will be done the first time,
+	# `LinearActionBasis' is called (i.e. in the preimages routine).
+	filter := filter and IsLinearActionHomomorphism;
+      elif act=OnLines then
+	filter := filter and IsProjectiveActionHomomorphism;
+      fi;
 
 #        if     not IsExternalSubset( xset )
 #           and IsDomainEnumerator( D )
@@ -779,17 +782,18 @@ InstallGlobalFunction(MultiActionsHomomorphism,function(G,pnts,ops)
   ran:=Group(imgs,());
   hom:=GroupHomomorphismByFunction(G,ran,
 	function(elm)
-	local i,p;
+	local i,p,q;
 	  p:=();
 	  for i in [1..Length(homs)] do
-	    p:=p*(ImagesRepresentative(homs[i],elm)^trans[i]);
+	    q:=ImagesRepresentative(homs[i],elm);
+	    if q = fail and ValueOption("actioncanfail")=true then
+	      return fail;
+	    fi;
+	    p:=p*(q^trans[i]);
 	  od;
 	  return p;
 	end);
-  hom!.trans:=trans;
-  hom!.homs:=homs;
 
-  SetRange(hom,ran);
   SetImagesSource(hom,ran);
   SetMappingGeneratorsImages(hom,[gens,imgs]);
   SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImagesNC
@@ -2964,11 +2968,28 @@ InstallMethod( StabilizerOfExternalSet,"stabilizer of the represenattive",
 #M  ImageElmActionHomomorphism( <hom>, <elm> )
 ##
 InstallGlobalFunction(ImageElmActionHomomorphism,function( hom, elm )
-local   xset,p;
+local   xset,he,gp,p,canfail,bas,fun;
+  canfail:=ValueOption("actioncanfail")=true;
   xset := UnderlyingExternalSet( hom );
-  p:=Permutation(elm,HomeEnumerator(xset),FunctionAction(xset));
+  he:=HomeEnumerator(xset);
+  fun:=FunctionAction(xset);
+  # can we compute the image cheaper using stabilizer chain methods?
+  if not canfail and HasImagesSource(hom) then
+    gp:=ImagesSource(hom);
+    if HasStabChainMutable(gp) or HasStabChainImmutable(gp) then
+      bas:=BaseStabChain(StabChain(gp));
+      if Length(bas)*50<Length(he) then
+	p:=RepresentativeActionOp(gp,bas,
+	    List(bas,x->PositionCanonical(he,fun(he[x],elm))),
+	    OnTuples);
+        return p;
+      fi;
+    fi;
+  fi;
+
+  p:=Permutation(elm,he,fun);
   if p=fail then
-    if ValueOption("actioncanfail")=true then
+    if canfail then
       return fail;
     fi;
     Error("Action not well-defined. See the manual section\n",
@@ -3104,25 +3125,72 @@ function( hom, elm )
     TryNextMethod();
   fi;
 
-  if not elm in Image( hom )  then
-      return fail;
-  fi;
+  # PreImagesRepresentative does not test membership
+  #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);
+  f:=DefaultFieldOfMatrixGroup(Source(hom));
+
   if not IsBound(hom!.linActBasisPositions) then
     hom!.linActBasisPositions:=List(lab,i->PositionCanonical(V,i));
   fi;
-  elm:=OnTuples(hom!.linActBasisPositions,elm); # image points
-  elm:=V{elm}; # the corresponding vectors
-  f:=DefaultFieldOfMatrixGroup(Source(hom));
-  elm:=ImmutableMatrix(f,elm);
   if not IsBound(hom!.linActInverse) then
     lab:=ImmutableMatrix(f,lab);
     hom!.linActInverse:=Inverse(lab);
   fi;
 
+  elm:=OnTuples(hom!.linActBasisPositions,elm); # image points
+  elm:=V{elm}; # the corresponding vectors
+  f:=DefaultFieldOfMatrixGroup(Source(hom));
+  elm:=ImmutableMatrix(f,elm);
+
   return hom!.linActInverse*elm;
 end );
+
+#############################################################################
+##
+#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
+##
+InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
+  FamRangeEqFamElm, [ IsProjectiveActionHomomorphism, IsPerm ], 0,
+function( hom, elm )
+  local   V,  base,  mat,  b,xset,lab,f,dim,start,time,sol,i;
+  
+  # is this method applicable? Test whether the domain contains a vector
+  # space basis (respectively just get this basis).
+  lab:=LinearActionBasis(hom);
+  if lab=fail then
+    TryNextMethod();
+  fi;
+
+  # PreImagesRepresentative does not test membership
+  #if not elm in Image( hom )  then return fail; fi;
+  xset:=UnderlyingExternalSet(hom);
+  V := HomeEnumerator(xset);
+  f:=DefaultFieldOfMatrixGroup(Source(hom));
+  dim:=DimensionOfMatrixGroup(Source(hom));
+
+  elm:=OnTuples(hom!.projActBasisPositions,elm); # image points
+  elm:=V{elm}; # the corresponding vectors
+
+  mat:=elm{[1..dim]};
+  sol:=SolutionMat(mat,elm[dim+1]);
+  for i in [1..dim] do
+    mat[i]:=sol[i]*mat[i];
+  od;
+  mat:=hom!.projActInverse*ImmutableMatrix(f,mat);
+
+  # correct scalar using determinant if needed
+  if hom!.correctionFactors[1]<>fail then
+    V:=DeterminantMat(mat);
+    if not IsOne(V) then
+      mat:=mat*hom!.correctionFactors[2][
+	      PositionSorted(hom!.correctionFactors[1],V)];
+    fi;
+  fi;
+
+  return mat;
+end);
 
 #############################################################################
 ##
@@ -3131,11 +3199,12 @@ end );
 InstallMethod(LinearActionBasis,"find basis in domain",true,
   [IsLinearActionHomomorphism],0,
 function(hom)
-local xset,dom,D,b,t,i,r;
+local xset,dom,D,b,t,i,r,pos;
   xset:=UnderlyingExternalSet(hom);
   if Size(xset)=0 then
     return fail;
   fi;
+  pos:=[];
   # if there is a base, check whether it's full rank, if yes, take it
   if HasBaseOfGroup(xset) 
      and RankMat(BaseOfGroup(xset))=Length(BaseOfGroup(xset)[1]) then
@@ -3153,6 +3222,7 @@ local xset,dom,D,b,t,i,r;
     if RankMat(Concatenation(t,[D[i]]))>Length(t) then
       # new indep. vector
       Add(b,D[i]);
+      Add(pos,i);
       Add(t,ShallowCopy(D[i]));
       TriangulizeMat(t); # for faster rank tests
     fi;
@@ -3160,11 +3230,106 @@ local xset,dom,D,b,t,i,r;
   od;
   if Length(b)=r then
     # this implies injectivity
+    hom!.linActBasisPositions:=pos;
     SetIsInjective(hom,true);
     return b;
   else
     return fail; # does not span
   fi;
+end);
+
+#############################################################################
+##
+#A  LinearActionBasis(<hom>)
+##
+InstallOtherMethod(LinearActionBasis,"projective with extra vector",true,
+  [IsProjectiveActionHomomorphism],0,
+function(hom)
+local xset,dom,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
+  xset:=UnderlyingExternalSet(hom);
+  if Size(xset)=0 then
+    return fail;
+  fi;
+
+  # will the determinants suffice to get suitable scalars?
+  dim:=DimensionOfMatrixGroup(Source(hom));
+  f:=DefaultFieldOfMatrixGroup(Source(hom));
+
+  roots:=Set(RootsOfUPol(f,X(f)^dim-1));
+
+  D:=List(GeneratorsOfGroup(Source(hom)),DeterminantMat);
+  D:=Elements(Group(D));
+
+  if Length(roots)<=1 then
+    # 1 will always be root
+    kero:=[One(f)];
+  elif IsNaturalGL(Source(hom)) then
+    # the full GL clearly will contain the kernel
+    kero:=roots; # to skip test
+  elif not IsSubset(D,roots) then
+    # even the kernel determinants are not reached, so clearly kernel not in
+    return fail;
+  else
+    kero:=List(Elements(KernelOfMultiplicativeGeneralMapping(hom)),x->x[1][1]^dim);
+  fi;
+  
+  if not IsSubset(kero,roots) then
+    # we cannot fix the scalar with the determinant
+    return fail;
+  fi;
+
+  dets:=[];
+  roots:=[];
+  for i in Filtered(Elements(f),x->not IsZero(x)) do
+    b:=i^dim;
+    if not b in dets then
+      Add(dets,b);
+      Add(roots,i^-1); # the factor by which we must correct
+    fi;
+  od;
+  SortParallel(dets,roots);
+
+  if IsSubset(D,dets) then
+    dets:=fail; # not that we do not need to correct with determinant as all
+                # values are fine
+  fi;
+
+  # find a basis from the domain.
+  D:=HomeEnumerator(xset);
+  b:=[];
+  t:=[];
+  r:=Length(D[1]);
+  i:=1;
+  pos:=[];
+  while Length(b)<r and i<=Length(D) do
+    if RankMat(Concatenation(t,[D[i]]))>Length(t) then
+      # new indep. vector
+      Add(b,D[i]);
+      Add(pos,i);
+      Add(t,ShallowCopy(D[i]));
+      TriangulizeMat(t); # for faster rank tests
+    fi;
+    i:=i+1;
+  od;
+  if Length(b)<r then
+    return fail;
+  fi;
+
+  # try to find a vector that has nonzero coefficients for all b
+  binv:=Inverse(ImmutableMatrix(f,b));
+  while i<=Length(D) do
+    if ForAll(D[i]*binv,x->not IsZero(x)) then
+      Add(b,D[i]);
+      Add(pos,i);
+      hom!.projActBasisPositions:=pos;
+      hom!.projActInverse:=ImmutableMatrix(f,binv*Inverse(DiagonalMat(D[i]*binv)));
+      hom!.correctionFactors:=[dets,roots];
+      return ImmutableMatrix(f,b);
+    fi;
+    i:=i+1;
+  od;
+
+  return fail; # no extra vector found
 end);
 
 #############################################################################

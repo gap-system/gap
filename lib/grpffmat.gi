@@ -41,15 +41,41 @@ InstallMethod(FieldOfMatrixList,"finite field matrices",true,
   [IsListOrCollection and IsFFECollCollColl],0,
 function(l)
 local   deg,  i,  j,  char;
+  if Length(l)=0 then Error("list must be nonempty");fi;
   deg  := 1;
   for i  in l  do
     for j  in i  do
       deg := LcmInt( deg, DegreeFFE(j) );
     od;
   od;
-  if 0 < Length(l)  then
-    char := Characteristic(l[1][1]);
-  fi;
+  char := Characteristic(l[1][1]);
+  return GF(char^deg);
+end);
+
+#############################################################################
+##
+#M  DefaultScalarDomainOfMatrixList
+##
+InstallMethod(DefaultScalarDomainOfMatrixList,"finite field matrices",true,
+  [IsListOrCollection and IsFFECollCollColl],0,
+function(l)
+local   deg,  i,  j,  char,m;
+if Length(l)=0 then Error("list must be nonempty");fi;
+  deg  := 1;
+  for i in l  do
+    # treat compact matrices quickly
+    if IsGF2MatrixRep(i) then
+      deg:=deg; # always in
+    elif Is8BitMatrixRep(i) then
+      j:=Q_VEC8BIT(l[1]![2]);
+      deg:=LcmInt( deg, Length(Factors(j)));
+    else
+      for j  in i  do
+	deg := LcmInt( deg, DegreeFFE(j) );
+      od;
+    fi;
+  od;
+  char := Characteristic(l[1][1]);
   return GF(char^deg);
 end);
 

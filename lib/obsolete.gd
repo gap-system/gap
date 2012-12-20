@@ -76,15 +76,6 @@
 
 #############################################################################
 ##
-#F  SmithNormalFormSQ( mat )
-##
-##  returns D = diagonalised form, D = P * M * Q, I = Q^-1
-##
-DeclareGlobalFunction( "SmithNormalFormSQ" );
-
-
-#############################################################################
-##
 #F  DiagonalizeIntMatNormDriven(<mat>)  . . . . diagonalize an integer matrix
 ##
 ##  'DiagonalizeIntMatNormDriven'  diagonalizes  the  integer  matrix  <mat>.
@@ -109,6 +100,9 @@ DeclareGlobalFunction( "SmithNormalFormSQ" );
 ##  It is  based  upon  ideas by  George Havas  and code by  Bohdan Majewski.
 ##  G. Havas and B. Majewski, Integer Matrix Diagonalization, JSC, to appear
 ##
+##  Moved to obsoletes in May 2003.
+##  Not used in any of the redistributed packages (12/2012)
+##
 DeclareGlobalFunction( "DiagonalizeIntMatNormDriven" );
 
 
@@ -119,9 +113,6 @@ DeclareGlobalFunction( "DiagonalizeIntMatNormDriven" );
 #F  DeclarePackageDocumentation( <name>, <doc>[, <short>[, <long> ] ] )
 #F  DeclarePackageAutoDocumentation( <name>, <doc>[, <short>[, <long> ] ] )
 #F  ReadPkg( ... )
-#F  RereadPkg( ... )
-#F  DoReadPkg( ... )
-#F  DoRereadPkg( ... )
 #F  RequirePackage( ... )
 ##
 ##  Up to GAP 4.3, these functions were needed inside the `init.g' files
@@ -133,38 +124,34 @@ DeclareGlobalFunction( "DiagonalizeIntMatNormDriven" );
 ##  They can be removed as soon as none of the available packages calls them.
 ##
 BindGlobal( "DeclarePackage", Ignore );
+# 12/2012: still used in cohomolo, fplsa, itc, kbmag, qaos
 BindGlobal( "DeclareAutoPackage", Ignore );
+# 12/2012: still used in automgrp, liealgdb, quagroup, sophus
 BindGlobal( "DeclarePackageAutoDocumentation", Ignore );
+# 12/2012: still used in cohomolo, fplsa, itc
 BindGlobal( "DeclarePackageDocumentation", Ignore );
+# 12/2012: still used in kbmag, qaos, quagroup
 BindGlobal( "ReadPkg", ReadPackage );
-BindGlobal( "RereadPkg", RereadPackage );
-BindGlobal( "DoReadPkg", function( arg )
-    ReadPackage( arg[1] );
-    return true;
-    end );
-BindGlobal( "DoRereadPkg", function( arg )
-    RereadPackage( arg[1] );
-    return true;
-    end );
+# 12/2012: still used in automgrp, cohomolo, ctbllib, fplsa, fwtree, 
+# grpconst, guava, itc, kbmag, nq, pargap, qaos, quagroup, singular, xgap
 BindGlobal( "RequirePackage", LoadPackage );
+# 12/2012: still used (sometimes in examples or documentation) in ace, 
+# anupq, autpgrp, crisp, cryst, ctbllib, edim, fwtree, genss, hecke, itc, 
+# kbmag, nq, polycyclic, qaos, recogbase, repsn, singular, tomlib, toric, 
+# unipot, xgap
 
 
 #############################################################################
 ##
 #V  KERNEL_VERSION
 #V  VERSION
-#V  GAP_ARCHITECTURE
-#V  GAP_ROOT_PATHS
-#V  USER_HOME
-#V  GAP_RC_FILE
-#V  DO_AUTOLOAD_PACKAGES
+#V  GAP_ARCHITECTURE - still used by gbnp, rcwa, resclasses, singular (12/2012)
+#V  GAP_ROOT_PATHS - still used by forms, aclib (README), xgap (12/2012)
 #V  DEBUG_LOADING
-#V  CHECK_FOR_COMP_FILES
-#V  BANNER
-#V  QUIET
-#V  AUTOLOAD_PACKAGES
-#V  LOADED_PACKAGES
-#V  PACKAGES_VERSIONS
+#V  BANNER - still used by cubefree, loops, quagroup (12/2012)
+#V  QUIET - still used by cubefree, loops, quagroup (12/2012)
+#V  LOADED_PACKAGES - still used by anupq and GUAVA (12/2012)
+#V  PACKAGES_VERSIONS - still used by anupq package (12/2012)
 ##
 ##  Up to GAP 4.3,
 ##  these global variables were used instead of the record `GAPInfo'.
@@ -173,11 +160,7 @@ BindGlobal( "KERNEL_VERSION", GAPInfo.KernelVersion );
 BindGlobal( "VERSION", GAPInfo.Version );
 BindGlobal( "GAP_ARCHITECTURE", GAPInfo.Architecture );
 BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
-BindGlobal( "USER_HOME", GAPInfo.UserHome );
-# BindGlobal( "GAP_RC_FILE", GAPInfo.gaprc ); # not nec. bound
-BindGlobal( "DO_AUTOLOAD_PACKAGES", not GAPInfo.CommandLineOptions.A );
 BindGlobal( "DEBUG_LOADING", GAPInfo.CommandLineOptions.D );
-BindGlobal( "CHECK_FOR_COMP_FILES", not GAPInfo.CommandLineOptions.N );
 BindGlobal( "BANNER", not GAPInfo.CommandLineOptions.b );
 BindGlobal( "QUIET", GAPInfo.CommandLineOptions.q );
 BindGlobal( "LOADED_PACKAGES", GAPInfo.PackagesLoaded );
@@ -186,36 +169,10 @@ BindGlobal( "PACKAGES_VERSIONS", rec() );
 
 #############################################################################
 ##
-##
-##  
-##
-
-
-#############################################################################
-##
-#F  ListSorted( <coll> )
-#F  AsListSorted(<coll>)
-##
-##  These operations are obsolete and will vanish in future versions. They
-##  are included solely for temporary compatibility with beta releases but
-##  should *never* be used. Use `SSortedList' and `AsSSortedList' instead!
-##
-ListSorted := function(coll)
-  Info(InfoWarning,1,"The command `ListSorted' will *not* be supported in",
-        "further versions!");
-  return SSortedList(coll);
-end;
-
-AsListSorted := function(coll)
-  Info(InfoWarning,1,"The command `AsListSorted' will *not* be supported in",
-        "further versions!");
-  return AsSSortedList(coll);
-end;
-
-
-#############################################################################
-##
 #A  NormedVectors( <V> )
+##
+##  Moved to obsoletes in May 2003. 
+##  Still used in autpgrp, ctbllib, polycyclic, sophus.
 ##
 DeclareSynonymAttr( "NormedVectors", NormedRowVectors );
 
@@ -223,6 +180,8 @@ DeclareSynonymAttr( "NormedVectors", NormedRowVectors );
 #############################################################################
 ##
 #F  SameBlock( <tbl>, <p>, <omega1>, <omega2>, <relevant>, <exponents> )
+##
+##  (the next three paragraphs were added in July 2003)
 ##
 ##  Let <tbl> be an ordinary character table, <p> a prime integer, <omega1>
 ##  and <omega2> two central characters (or their values lists) of <tbl>.
@@ -244,73 +203,35 @@ DeclareSynonymAttr( "NormedVectors", NormedRowVectors );
 
 #############################################################################
 ##
-#F  TryConwayPolynomialForFrobeniusCharacterValue( <p>, <n> )
-##
-##  This name is needed just for backwards compatibility with GAP 4.4.
-##  It should be still available and regarded as obsolescent in GAP 4.5,
-##  and should be removed in GAP 4.6.
-##  Now one should better use `IsCheapConwayPolynomial' directly.
-##
-DeclareSynonym( "TryConwayPolynomialForFrobeniusCharacterValue",
-    IsCheapConwayPolynomial );
-
-
-#############################################################################
-##
 #O  FormattedString( <obj>, <nr> )  . . formatted string repres. of an object
 ##
 ##  This variable name was never documented and is obsolete.
 ##  (It had been introduced at a time when only unary methods were allowed
 ##  for attributes.)
+## 
+##  Moved to obsolete in Dec 2007, but as on Dec 2012 still used in ctbllib, 
+##  gbnp, GradedModules, nilmat, rcwa and resclasses packages.
 ##
 BIND_GLOBAL( "FormattedString", String );
 
 
 #############################################################################
 ##
-#F  SubspacesAll
-#F  SubspacesDim
-##
-##  for compatibility with GAP 4.1 only ...
-##
-DeclareSynonymAttr( "SubspacesAll", Subspaces);
-DeclareSynonym( "SubspacesDim", Subspaces);
-
-
-#############################################################################
-##
-##  In 2009, `IsTuple' was renamed to `IsDirectProductElement'.
+##  In June 2009, `IsTuple' was renamed to `IsDirectProductElement'.
 ##  The following names should be still available and regarded as obsolescent
 ##  in GAP 4.5, and should be removed in GAP 4.6.
 ##
-#F  ComponentsOfTuplesFamily( ... )
-#F  IsTuple( ... )
-#F  IsTupleFamily( ... )
-#F  IsTupleCollection( ... )
-#F  Tuple( ... )
-#F  TupleNC( ... )
-#F  TuplesFamily( ... )
-#I  InfoTuples
-#R  IsDefaultTupleRep( ... )
-#V  EmptyTuplesFamily( ... )
-#V  TUPLES_FAMILIES
+#F  IsTuple( ... ) - still used by genss package (12/2012)
+#F  Tuple( ... ) - still used by anupq, cubefree, fr, gpd, grpconst, openmath, 
+##                 sonata (12/2012), as well as test files in 'tst'
 ##
-DeclareSynonym( "ComponentsOfTuplesFamily",
-    ComponentsOfDirectProductElementsFamily );
 DeclareSynonym( "IsTuple", IsDirectProductElement );
-DeclareSynonym( "IsTupleFamily", IsDirectProductElementFamily );
-DeclareSynonym( "IsTupleCollection", IsDirectProductElementCollection );
 DeclareSynonym( "Tuple", DirectProductElement );
-DeclareSynonym( "TupleNC", DirectProductElementNC );
-DeclareSynonym( "TuplesFamily", DirectProductElementsFamily );
-DeclareSynonym( "InfoTuples", InfoDirectProductElements );
-DeclareSynonym( "IsDefaultTupleRep", IsDefaultDirectProductElementRep );
-DeclareSynonym( "EmptyTuplesFamily", EmptyDirectProductElementsFamily );
-DeclareSynonym( "TUPLES_FAMILIES", DIRECT_PRODUCT_ELEMENT_FAMILIES );
 
 ##  from GAPs "classical" random number generator:
 
 # Outdated, but kept since they were documented for a long time.
+# Moved to obsoletes in May 2010.
 #############################################################################
 ##
 #F  StateRandom()
@@ -370,20 +291,19 @@ end);
 DeclareSynonym("StatusRandom",StateRandom);
 
 # synonym formerly declared in factgrp.gd
+# Moved to obsoletes in October 2011, still used by xgap (12/2012)
 DeclareSynonym( "FactorCosetOperation",FactorCosetAction);
 
-# synonyms formerly declared in grppc.gd
-DeclareSynonym( "AffineOperation", AffineAction );
-DeclareSynonym( "AffineOperationLayer",AffineActionLayer );
-
-# synonyms for ComplementClasses retained for backwards compatibility with GAP 4.4
+# synonym retained for backwards compatibility with GAP 4.4.
+# Moved to obsoletes in April 2012. Still used by grpconst, irredsol (12/2012)
 DeclareSynonym( "Complementclasses", ComplementClassesRepresentatives );
-DeclareSynonym( "ComplementclassesEA", ComplementClassesRepresentativesEA );
 
 
 #############################################################################
 ##
 #O  ShrinkCoeffs( <list> )
+##
+##  Moved to obsoletes in June 2010
 ##
 ##  <ManSection>
 ##  <Oper Name="ShrinkCoeffs" Arg='list'/>
@@ -419,48 +339,12 @@ BindGlobal( "ExcludeFromAutoload", function( arg )
 
 #############################################################################
 ##
-#V  EDITOR
-#V  HELP_VIEWER
-#V  PAGER
-#V  PAGER_OPTIONS
-#V  XDVI_OPTIONS
-#V  XPDF_OPTIONS
+#V  PAGER - still checked by Browse if it is bound (12/2012)
+#V  POST_RESTORE_FUNCS - still used by grape (12/2012)
 ##
 ##  were supported until GAP 4.4, obsolescent in GAP 4.5.
 ##
-EDITOR:= UserPreference("Editor");
-HELP_VIEWER:= UserPreference("HelpViewers");
-PAGER:= UserPreference("Pager");
-PAGER_OPTIONS:= UserPreference("PagerOptions");
-XDVI_OPTIONS:= UserPreference("XdviOptions");
-XPDF_OPTIONS:= UserPreference("XpdfOptions");
 POST_RESTORE_FUNCS:= GAPInfo.PostRestoreFuncs;
-
-
-#############################################################################
-##
-#F  ProductPol( <coeffs_f>, <coeffs_g> )  . . . .  product of two polynomials
-##
-##  <ManSection>
-##  <Func Name="ProductPol" Arg='coeffs_f, coeffs_g'/>
-##
-##  <Description>
-##  Was supported until GAP 4.4, obsolescent in GAP 4.5.
-##  <P/> 
-##  Let <A>coeffs_f</A> and <A>coeffs_g</A> be coefficients lists of two univariate
-##  polynomials <M>f</M> and <M>g</M>, respectively.
-##  <C>ProductPol</C> returns the coefficients list of the product <M>f g</M>.
-##  <P/>
-##  The coefficient of <M>x^i</M> is assumed to be stored at position <M>i+1</M> in
-##  the coefficients lists.
-##  </Description>
-##  <Example><![CDATA[
-##  gap> ProductPol([1,2,3],[4,5,6]); -->
-##  [ 4, 13, 28, 27, 18 ] -->
-##  ]]></Example>
-##  </ManSection>
-##
-DeclareGlobalFunction( "ProductPol" );
 
 
 #############################################################################
@@ -494,106 +378,6 @@ DeclareOperation( "TeXObj", [ IS_OBJECT ] );
 ##  </ManSection>
 ##
 DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
-
-
-#############################################################################
-##
-#F  DisplayRevision() . . . . . . . . . . . . . . .  display revision entries
-##
-##  <ManSection>
-##  <Func Name="DisplayRevision" Arg=''/>
-##
-##  <Description>
-##  Displays the revision numbers of all loaded files from the library.
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL("DisplayRevision",function()
-    local   names,  source,  library,  unknown,  name,  p,  s,  type,
-            i,  j;
-
-    names   := RecNames( Revision );
-    source  := [];
-    library := [];
-    unknown := [];
-
-    for name  in names  do
-        p := Position( name, '_' );
-        if p = fail  then
-            Add( unknown, name );
-        else
-            s := name{[p+1..Length(name)]};
-            if s = "c" or s = "h"  then
-                Add( source, name );
-            elif s = "g" or s = "gi" or s = "gd"  then
-                Add( library, name );
-            else
-                Add( unknown, name );
-            fi;
-        fi;
-    od;
-    Sort( source );
-    Sort( library );
-    Sort( unknown );
-
-    for type  in [ source, library, unknown ]  do
-        if 0 < Length(type)  then
-            if IsIdenticalObj(type,source)  then
-                Print( "Source Files\n" );
-            elif IsIdenticalObj(type,library)  then
-                Print( "Library Files\n" );
-            else
-                Print( "Unknown Files\n" );
-            fi;
-            j := 1;
-            for name  in type  do
-                s := Revision.(name);
-                p := Position( s, ',' )+3;
-                i := p;
-                while s[i] <> ' '  do i := i + 1;  od;
-                s := Concatenation( String( Concatenation(
-                         name, ":" ), -15 ), String( s{[p..i]},
-                         -5 ) );
-                if j = 3  then
-                    Print( s, "\n" );
-                    j := 1;
-                else
-                    Print( s, "    " );
-                    j := j + 1;
-                fi;
-            od;
-            if j <> 1  then Print( "\n" );  fi;
-            Print( "\n" );
-        fi;
-    od;
-end);
-
-
-#############################################################################
-##
-#F  ARCH_IS_MAC()
-##
-##  <#GAPDoc Label="ARCH_IS_MAC">
-##  <ManSection>
-##  <Func Name="ARCH_IS_MAC" Arg=''/>
-##
-##  <Description>
-##  tests whether &GAP; is running on a Macintosh under Mac OS 8, 9 or
-##  under Mac OS X in the Classic Environment.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-BIND_GLOBAL("MACINTOSH_68K_ARCHITECTURE",
-  IMMUTABLE_COPY_OBJ("MC68020-motorola-macos-mwerksc"));
-
-BIND_GLOBAL("MACINTOSH_PPC_ARCHITECTURE",
-  IMMUTABLE_COPY_OBJ("PPC-motorola-macos-mwerksc"));
-
-BIND_GLOBAL("ARCH_IS_MAC",function()
-  return GAPInfo.Architecture = MACINTOSH_68K_ARCHITECTURE
-      or GAPInfo.Architecture = MACINTOSH_PPC_ARCHITECTURE;
-end);
 
 
 #############################################################################

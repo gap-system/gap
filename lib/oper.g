@@ -217,7 +217,7 @@ IGNORE_IMMEDIATE_METHODS := false;
 ##  </ManSection>
 ##
 BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
-    function( oper, name, filter, rank, method )
+    function( oper, desc, filter, rank, method )
 
     local   flags,
             relev,
@@ -325,7 +325,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
           k := i;
           while k < LEN_LIST(IMMEDIATES[j]) and 
             rank = IMMEDIATES[j][k+5] do
-              if name = IMMEDIATES[j][k+7] and 
+              if desc = IMMEDIATES[j][k+7] and
                  oper = IMMEDIATES[j][k+1] and
                  FLAGS_FILTER( filter ) = IMMEDIATES[j][k+4] then
                   replace := true;
@@ -349,7 +349,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       IMMEDIATES[j][i+4] := FLAGS_FILTER( filter );
       IMMEDIATES[j][i+5] := rank;
       IMMEDIATES[j][i+6] := LEN_LIST( IMMEDIATE_METHODS );
-      IMMEDIATES[j][i+7] := IMMUTABLE_COPY_OBJ(name);
+      IMMEDIATES[j][i+7] := IMMUTABLE_COPY_OBJ(desc);
 
     od;
 
@@ -358,22 +358,42 @@ end );
 
 #############################################################################
 ##
-#F  InstallImmediateMethod( <opr>[, <name>], <filter>, <rank>, <method> )
+#F  InstallImmediateMethod( <opr>[, <info>], <filter>, <rank>, <method> )
 ##
 ##  <#GAPDoc Label="InstallImmediateMethod">
 ##  <ManSection>
 ##  <Func Name="InstallImmediateMethod"
-##   Arg='opr[, name], filter, rank, method'/>
+##   Arg='opr[, info], filter, rank, method'/>
 ##
 ##  <Description>
-##  Usually a method is called only if its operation has been called
-##  and if this method has been selected.
+##  <Ref Func="InstallImmediateMethod"/> installs <A>method</A> as an
+##  immediate method for <A>opr</A>, which must be an attribute or a
+##  property, with requirement <A>filter</A> and rank <A>rank</A>.
+##  The rank must be an integer value that measures the priority of
+##  <A>method</A> among the immediate methods for <A>opr</A>.
+##  If supplied, <A>info</A> should be a short but informative string
+##  that describes the situation in which the method is called.
 ##  <P/>
-##  For attributes and properties,
-##  one can install also <E>immediate methods</E>.
-##  An immediate method is called automatically as soon as it is applicable
-##  to an object, provided that the value is not yet known.
-##  Afterwards the attribute setter is called in order to store the value.
+##  An immediate method is called automatically as soon as the object lies 
+##  in <A>filter</A>, provided that the value is not yet known.
+##  Afterwards the attribute setter is called in order to store the value, 
+##  unless the method exits via <Ref Func="TryNextMethod"/>.
+##  <P/>
+##  Note the difference to <Ref Func="InstallMethod"/>
+##  that no family predicate occurs
+##  because <A>opr</A> expects only one argument,
+##  and that <A>filter</A> is not a list of requirements but the argument
+##  requirement itself.
+##  <P/>
+##  Immediate methods are thought of as a possibility for objects to gain
+##  useful knowledge.
+##  They must not be used to force the storing of <Q>defining information</Q>
+##  in an object.
+##  In other words, &GAP; should work even if all immediate methods are
+##  completely disabled.
+##  Therefore, the call to <Ref Func="InstallImmediateMethod"/> installs
+##  <A>method</A> also as an ordinary method for <A>opr</A>
+##  with requirement <A>filter</A>.
 ##  <P/>
 ##  Note that in such a case &GAP; executes a computation for which
 ##  it was not explicitly asked by the user.
@@ -401,42 +421,18 @@ end );
 ##  But this requires factoring of an integer,
 ##  which cannot be guaranteed to be very cheap,
 ##  so one should not install this method as an immediate method.
-##  <P/>
-##  <Ref Func="InstallImmediateMethod"/> installs <A>method</A> as an
-##  immediate method for <A>opr</A>, which must be an operation of one
-##  argument, with requirement <A>filter</A> and rank <A>rank</A>.
-##  The rank must be an integer value that measures the priority of
-##  <A>method</A> among the immediate methods for <A>opr</A>.
-##  <P/>
-##  Note the difference to <Ref Func="InstallMethod"/>
-##  that no family predicate occurs
-##  because <A>opr</A> expects only one argument,
-##  and that <A>filter</A> is not a list of requirements but the argument
-##  requirement itself.
-##  <P/>
-##  Immediate methods are thought of as a possibility for objects to gain
-##  useful knowledge.
-##  They must not be used to force the storing of <Q>defining information</Q>
-##  in an object.
-##  In other words, &GAP; should work even if all immediate methods are
-##  completely disabled.
-##  Therefore, the call to <Ref Func="InstallImmediateMethod"/> installs
-##  <A>method</A> also as an ordinary method for <A>opr</A>,
-##  with requirement <A>filter</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "InstallImmediateMethod", function( arg )
-    local name;
 
     if     LEN_LIST( arg ) = 4
        and IS_OPERATION( arg[1] )
        and IsFilter( arg[2] )
        and IS_RAT( arg[3] )
        and IS_FUNCTION( arg[4] ) then
-        name := NAME_FUNC(arg[1]);
-        INSTALL_IMMEDIATE_METHOD( arg[1], name, arg[2], arg[3], arg[4] );
+        INSTALL_IMMEDIATE_METHOD( arg[1], false, arg[2], arg[3], arg[4] );
         INSTALL_METHOD( [ arg[1], [ arg[2] ], arg[4] ], false );
     elif   LEN_LIST( arg ) = 5
        and IS_OPERATION( arg[1] )
@@ -445,7 +441,7 @@ BIND_GLOBAL( "InstallImmediateMethod", function( arg )
        and IS_RAT( arg[4] )
        and IS_FUNCTION( arg[5] ) then
         INSTALL_IMMEDIATE_METHOD( arg[1], arg[2], arg[3], arg[4], arg[5] );
-        INSTALL_METHOD( [ arg[1], [ arg[3] ], arg[5] ], false );
+        INSTALL_METHOD( [ arg[1], arg[2], [ arg[3] ], arg[5] ], false );
     else
       Error("usage: InstallImmediateMethod(<opr>,<filter>,<rank>,<method>)");
     fi;
@@ -662,7 +658,7 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
       od;
-
+      
       pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
       if filt in OPERATIONS[ pos+1 ] then
         if not REREADING then
@@ -963,8 +959,42 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, rank, name)
+    local   setter,  tester,   nname;
+              # store the information about the filter
+          INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
+
+          # add  setter and tester to the list of operations
+          setter := SETTER_FILTER( getter );
+          tester := TESTER_FILTER( getter );
+
+          ADD_LIST( OPERATIONS, setter );
+          ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ] );
+          ADD_LIST( OPERATIONS, tester );
+          ADD_LIST( OPERATIONS, [ [ flags ] ] );
+
+          # install the default functions
+          FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+          IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
+
+          # the <tester> is newly made, therefore  the cache cannot contain a  flag
+          # list involving <tester>
+          InstallHiddenTrueMethod( filter, tester );
+          # CLEAR_HIDDEN_IMP_CACHE();
+
+          # run the attribute functions
+          RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
+
+          # store the rank
+          RANK_FILTERS[ FLAG2_FILTER( tester ) ] := rank;
+          
+          
+          return;
+      end);
+
+
 BIND_GLOBAL( "NewAttribute", function ( arg )
-    local   name, filter, flags, mutflag, getter, setter, tester;
+    local   name, filter, flags, mutflag, getter, setter, tester, rank;
 
     # construct getter, setter and tester
     name   := arg[1];
@@ -984,41 +1014,16 @@ BIND_GLOBAL( "NewAttribute", function ( arg )
     else
         getter := NEW_ATTRIBUTE( name );
     fi;
-
-    # store the information about the filter
-    INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
-
-    # add getter, setter and tester to the list of operations
-    setter := SETTER_FILTER( getter );
-    tester := TESTER_FILTER( getter );
-
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ [ flags ] ] );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ [ flags, FLAGS_FILTER( IS_OBJECT ) ] ] );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ [ flags ] ] );
-
-    # install the default functions
-    FILTERS[ FLAG2_FILTER( tester ) ] := tester;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
-
-    # the <tester> is newly made, therefore  the cache cannot contain a  flag
-    # list involving <tester>
-    InstallHiddenTrueMethod( filter, tester );
-    # CLEAR_HIDDEN_IMP_CACHE();
-
-    # run the attribute functions
-    RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
-
-    # store the rank
-    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-        RANK_FILTERS[ FLAG2_FILTER( tester ) ] := arg[3];
+    if LEN_LIST(arg) = 3 and IS_INT(arg[3]) then
+        rank := arg[3];
     else
-        RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+        rank := 1;
     fi;
-
-    # and return the getter
+    ADD_LIST(OPERATIONS,getter);
+    ADD_LIST(OPERATIONS, [ [ flags ] ]);
+    OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
+    # store the information about the filtera
+    # And return the getter
     return getter;
 end );
 
@@ -1042,8 +1047,10 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+
 BIND_GLOBAL( "DeclareAttribute", function ( arg )
-    local name, gvar, filter, pos, attr, nname;
+    local   name,  gvar,  pos,  reqs,  filter,  setter,  tester,  
+              attr,  nname, mutflag, flags, rank;
 
     name:= arg[1];
 
@@ -1059,17 +1066,58 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
 
       # The attribute has already been declared.
       # If it was not created as an attribute
-      # then ask for re-declaration as an ordinary operation.
-      # (Note that the values computed for objects matching the new
-      # requirements cannot be stored.)
+      # then we may be able to convert it
       if FLAG2_FILTER( gvar ) = 0 or gvar in FILTERS then
 
-        # `gvar' is not an attribute (tester) and not a property (tester),
-        # or `gvar' is a filter;
-        # in any case, `gvar' is not an attribute.
-        Error( "operation `", name, "' was not created as an attribute,",
-               " use`DeclareOperation'" );
-
+          # `gvar' is not an attribute (tester) and not a property (tester),
+          # or `gvar' is a filter;
+          # in any case, `gvar' is not an attribute.
+          
+          # if `gvar' has no one argument declarations we can turn it into 
+          # an attribute
+          pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
+          for reqs in OPERATIONS[pos+1] do
+              if LENGTH(reqs)  = 1 then
+                  Error( "operation `", name, "' has been declared as a one ",
+                         "argument Operation and cannot also be an Attribute");
+              fi;
+          od;
+          mutflag := LEN_LIST(arg) = 3 and arg[3] = "mutable";
+          
+          # add the new set of requirements 
+          filter:= arg[2];
+          if not IS_OPERATION( filter ) then
+              Error( "<filter> must be an operation" );
+          fi;
+          
+          flags := FLAGS_FILTER(filter);
+          pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
+          ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
+          
+          # kernel magic for the conversion
+          if mutflag then
+              OPER_TO_MUTABLE_ATTRIBUTE(gvar);
+          else
+              OPER_TO_ATTRIBUTE(gvar);
+          fi;
+          
+          # now we have to adjust the data structures
+          
+          if LEN_LIST(arg) = 3 and IS_INT(arg[3]) then
+              rank := arg[3];
+          else
+              rank := 1;
+          fi;
+          OPER_SetupAttribute(gvar, flags, mutflag, filter, rank, name);         
+          # and make the remaining assignments
+          nname:= "Set"; APPEND_LIST_INTR( nname, name );
+          BIND_GLOBAL( nname, SETTER_FILTER(gvar) );
+          nname:= "Has"; APPEND_LIST_INTR( nname, name );
+          BIND_GLOBAL( nname, TESTER_FILTER(gvar) );
+          
+          return;      
+    
+              
       fi;
 
       # Add the new requirements.
@@ -1077,7 +1125,6 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
       if not IS_OPERATION( filter ) then
         Error( "<filter> must be an operation" );
       fi;
-
       pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
       ADD_LIST( OPERATIONS[ pos+1 ], [ FLAGS_FILTER( filter ) ] );
 
@@ -1091,8 +1138,10 @@ BIND_GLOBAL( "DeclareAttribute", function ( arg )
       # The attribute is new.
       attr:= CALL_FUNC_LIST( NewAttribute, arg );
       BIND_GLOBAL( name, attr );
+      
+      # and make the remaining assignments
       nname:= "Set"; APPEND_LIST_INTR( nname, name );
-      BIND_GLOBAL( nname, SETTER_FILTER( attr ) );
+      BIND_GLOBAL( nname, SETTER_FILTER(attr) );
       nname:= "Has"; APPEND_LIST_INTR( nname, name );
       BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
 

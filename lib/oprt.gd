@@ -237,8 +237,23 @@ DeclareRepresentation( "IsBlocksHomomorphism",
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsLinearActionHomomorphism",
-      IsActionHomomorphism,
-      [  ] );
+      IsActionHomomorphism, [  ] );
+
+#############################################################################
+##
+#R  IsProjectiveActionHomomorphism(<hom>)
+##
+##  <ManSection>
+##  <Filt Name="IsProjectiveActionHomomorphism" Arg='hom' Type='Representation'/>
+##
+##  <Description>
+##  This   representation is chosen  for  action homomorphisms from matrix
+##  groups acting projectively on a set of normed vectors.
+##  </Description>
+##  </ManSection>
+##
+DeclareRepresentation( "IsProjectiveActionHomomorphism",
+      IsActionHomomorphism, [  ] );
 
 #############################################################################
 ##
@@ -249,7 +264,9 @@ DeclareRepresentation( "IsLinearActionHomomorphism",
 ##
 ##  <Description>
 ##  for action homomorphisms in the representation
-##  <C>IsLinearActionHomomorphism</C>, this attribute contains a vector space
+##  <C>IsLinearActionHomomorphism</C> or
+##  <C>IsProjectiveActionHomomorphism</C>,
+##  this attribute contains a vector space
 ##  basis as subset of the domain or <K>fail</K> if the domain does not span the
 ##  vector space that the group acts on.
 ##  groups acting naturally on a set of vectors.

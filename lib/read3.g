@@ -132,6 +132,7 @@ ReadLib( "partitio.gd" );
 ReadLib( "stbc.gd"     );
 ReadLib( "clas.gd"     );
 ReadLib( "clashom.gd"  );
+ReadLib( "fitfree.gd"  );
 ReadLib( "permdeco.gd"  );
 ReadLib( "csetgrp.gd"  );
 ReadLib( "factgrp.gd"  );

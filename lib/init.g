@@ -598,6 +598,7 @@ CallAndInstallPostRestore( function()
 end );
 
 
+
 BindGlobal( "ShowKernelInformation", function()
   local sysdate, fun, linelen, indent, btop, vert, bbot, print_info,
         libs;
@@ -679,13 +680,16 @@ end );
 
 # delay printing the banner, if -L option was passed (LB)
 
+
+
 CallAndInstallPostRestore( function()
      if not ( GAPInfo.CommandLineOptions.q or
               GAPInfo.CommandLineOptions.b or GAPInfo.CommandLineOptions.L<>"" ) then
        ShowKernelInformation();
      fi;
      end );
-
+        
+     
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
     #Print (" Loading the library ... (see '?Saving and Loading' to start GAP faster)\n");
     Print (" Loading the library \c");
@@ -693,6 +697,12 @@ fi;
 
 ReadOrComplete( "lib/read2.g" );
 ReadOrComplete( "lib/read3.g" );
+
+#  Force population of GAPInfo.DirectoryCurrent
+#  Do it now so that Directory works, but it is available
+#  to package code.
+#
+CallAndInstallPostRestore(DirectoryCurrent);
 
 #############################################################################
 ##

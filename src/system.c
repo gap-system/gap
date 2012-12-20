@@ -1157,7 +1157,7 @@ void SyInitialAllocPool( void )
            break;
        }
        SyAllocPool = SyAllocPool / 2;
-       fputs("gap: halfing pool size.\n", stderr);
+       fputs("gap: halving pool size.\n", stderr);
        if (SyAllocPool < 16*1024*1024) {
          fputs("gap: cannot allocate initial memory, bye.\n", stderr);
          SyExit( 2 );
@@ -1616,7 +1616,7 @@ sizeMultiplier memoryUnits[]= {
 
 static UInt ParseMemory( Char * s)
 {
-  UInt size  = atoi(s);
+  UInt size  = atol(s);
   Char symbol =  s[strlen(s)-1];
   UInt i;
   UInt maxmem;

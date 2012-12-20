@@ -1063,12 +1063,13 @@ end);
 BindGlobal("AlgExtFactSQFree",
 function( R, U, opt )
 local coeffring, basring, theta, xind, yind, x, y, coeffs, G, c, val, k, T,
-      N, factors, i, j,xe,Re;
+      N, factors, i, j,xe,Re,one,kone;
 
     # Let $K = \Q(\theta)$ be a number field,
     # $T \in \Q[X]$ the minimal monic polynomial of $\theta$.
     # Let $U(X) be a monic squarefree polynomial in $K[x]$.
     coeffring:= CoefficientsRing( R );
+    one:=One(coeffring);
     basring:=LeftActingDomain(coeffring);
     theta:= PrimitiveElement( coeffring );
 
@@ -1122,7 +1123,10 @@ local coeffring, basring, theta, xind, yind, x, y, coeffs, G, c, val, k, T,
     # The desired factorization of $U(X)$ is $\prod_{i=1}^g A_i$.
     factors:= Factors( PolynomialRing( basring, [ xind ] ), N );
     factors:= List( factors,f -> AlgExtEmbeddedPol(coeffring,f));
-    factors:= List( factors,f -> Value( f, xe + k*theta ) );
+
+    # over finite field alg ext we cannot multiply with Integers
+    kone:=Zero(one); for j in [1..k] do kone:=kone+one; od;
+    factors:= List( factors,f -> Value( f, xe + kone*theta ),one );
     factors:= List( factors,f -> Gcd( Re, U, f ) );
     factors:=Filtered( factors,
                      x -> DegreeOfUnivariateLaurentPolynomial( x ) <> 0 );
@@ -1994,9 +1998,10 @@ InstallMethod( FactorsSquarefree, "polynomial/alg. ext.",IsCollsElmsX,
     [ IsAlgebraicExtensionPolynomialRing, IsUnivariatePolynomial, IsRecord ],
 function(r,pol,opt)
 
-  if Characteristic(r)=0 and DegreeOverPrimeField(CoefficientsRing(r))<=4
+  if (Characteristic(r)=0 and DegreeOverPrimeField(CoefficientsRing(r))<=4
     and DegreeOfLaurentPolynomial(pol)
-          *DegreeOverPrimeField(CoefficientsRing(r))<=20 then
+          *DegreeOverPrimeField(CoefficientsRing(r))<=20) 
+     or Characteristic(r)>0 then
      return AlgExtFactSQFree(r,pol,opt);
   else
     return AlgExtSquareHensel(r,pol,opt);

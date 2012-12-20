@@ -1812,11 +1812,257 @@ gap> StructureDescription(CommutatorSubgroup(G, U));
 gap> StructureDescription(AutomorphismGroup(G));
 "S4"
 
+# The GL and SL constructors did not correctly handle GL(filter,dim,ring).
+# Reported and fixed by JS on 2012-06-24
+gap> GL(IsMatrixGroup,3,GF(2));;
+gap> SL(IsMatrixGroup,3,GF(2));;
+
+# The names of two primitive groups of degree 64 were incorrect.
+# Reported and fixed by JS on 2012-08-12
+gap> PrimitiveGroup(64,53);
+2^6:(S3 x GL(3, 2))
+gap> PrimitiveGroup(64,64);
+2^6:PGL(2, 7)
+gap> 
+
+# Fix of very large (more than 1024 digit) integers not being coded 
+# correctly in function bodies unless the integer limb size was 16 bits. 
+# Reported by Stefan Kohl, fixed by SL on 2012-08-12
+gap> f := function() return
+> 100000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 000000000000000000000000000000000000000000000000000000000000000000000000000000\
+> 00000000; end;
+function(  ) ... end
+gap> f();
+100000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+000000000000000000000000000000000000000000000000000000000000000000000000000000\
+00000000
+
+# Fix of Crash in garbage collection following call to AClosVec for a GF(2) code
+# Reported by Volker Brown, fixed by SL on 2012-08-31
+gap> x:=
+> [ [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ], 
+>   [ 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0 ], 
+>   [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0 ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2) ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2) ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0 ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 
+>     Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2) ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 
+>     0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2) ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 
+>     0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0 ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 
+>     Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0, 0*Z(2) ], 
+>   [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, 
+>     0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0, Z(2)^0 ] ];;
+gap> P:=AClosestVectorDriver(x, GF(2), Z(2)*[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],11,0, true);; 
+gap> GASMAN("collect");;
+
+# Crash when reading certain pieces of syntactically invalid code
+# Fix and test case added by MH on 2012-09-06.
+gap> str := Concatenation("function()\n",
+> "local e, v;\n",
+> "for e in [] do\n",
+> "    v := rec(a := [];);\n",
+> "od;\n"
+> );
+"function()\nlocal e, v;\nfor e in [] do\n    v := rec(a := [];);\nod;\n"
+gap> s:=InputTextString(str);
+InputTextString(0,66)
+gap> Read(s);
+Syntax error: ) expected in stream line 4
+    v := rec(a := [];);
+                    ^
+Syntax error: end expected in stream line 5
+od;
+ ^
+
+# Check that \in method works for groups handled by a nice monomorphism
+# created with a custom SeedFaithfulAction.
+# Fix and test case added by MH on 2012-09-07.
+gap> m1:=PermutationMat( (1,2), 5, GF(5) );;
+gap> m2:=PermutationMat( (3,4), 5, GF(5) );;
+gap> n:=PermutationMat( (1,4,5), 5, GF(5) );;
+gap> G:=Group(m1, m2);;
+gap> SetSeedFaithfulAction(G,rec(points:=[m1[1],m1[3]], ops:=[OnPoints,OnPoints]));
+gap> n in G;
+false
+
+# Check that overloading of a loaded help book by another one works. This 
+# makes sense if a book of a not loaded package is loaded in a workspace 
+# and GAP is started with a root path that contains a newer version. 
+# Reported by Sebastian Gutsche, fixed by FL on 2012-09-11
+gap> old := ShallowCopy(HELP_KNOWN_BOOKS[2][1]);;
+gap> HELP_KNOWN_BOOKS[2][1][3] := 
+> Concatenation(HELP_KNOWN_BOOKS[2][1][3], "blabla");;
+gap> CallFuncList(HELP_ADD_BOOK, old);
+#I  Overwriting already installed help book 'tutorial'.
+
+# Check of the membership test after fixing a method for coefficients 
+# to check after Gaussian elimination that the coefficients actually 
+# lie in the left-acting-domain of the vector space. 
+# Reported by Kevin Watkins, fixed by TB (via AK) on 2012-09-13
+gap> Sqrt(5)*IdentityMat(2) in VectorSpace(Rationals,[IdentityMat(2)]);
+false
+
+# Check that removing wrong PrintObj method fixes delegations accordingly
+# to documented behaviour for PrintObj/ViewObj/Display.
+# Reported by TB, fixed by MN on 2012-08-20.
+gap> if IsBound(IsXYZ) then MakeReadWriteGlobal("IsXYZ"); Unbind(IsXYZ); fi;
+gap> fam := NewFamily("XYZsFamily");;
+gap> DeclareCategory("IsXYZ",IsObject);
+gap> type := NewType(fam,IsXYZ and IsPositionalObjectRep);;
+gap> o := Objectify(type,[]);;
+gap> InstallMethod(String,[IsXYZ],function(o) return "XYZ"; end);
+gap> o;
+XYZ
+gap> Print(o,"\n");
+XYZ
+gap> String(o);
+"XYZ"
+
+# 2012/04/13 (MN)
+gap> Characteristic(Z(2));
+2
+gap> Characteristic(0*Z(2));
+2
+gap> Characteristic(0*Z(5));
+5
+gap> Characteristic(Z(5));
+5
+gap> Characteristic(Z(257));
+257
+gap> Characteristic(Z(2^60));
+2
+gap> Characteristic(Z(3^20));
+3
+gap> Characteristic(0);
+0
+gap> Characteristic(12);
+0
+gap> Characteristic(12123123123);
+0
+gap> Characteristic(E(4));
+0
+gap> Characteristic([Z(2),Z(4)]);
+2
+gap> v := [Z(2),Z(4)];
+[ Z(2)^0, Z(2^2) ]
+gap> ConvertToVectorRep(v,4);
+4
+gap> Characteristic(v);
+2
+gap> Characteristic([Z(257),Z(257)^47]);
+257
+gap> Characteristic([[Z(257),Z(257)^47]]);
+257
+gap> Characteristic(ZmodnZObj(2,6));
+6
+gap> Characteristic(ZmodnZObj(2,5));
+5
+gap> Characteristic(ZmodnZObj(2,5123123123));
+5123123123
+gap> Characteristic(ZmodnZObj(0,5123123123));
+5123123123
+gap> Characteristic(GF(2,3));
+2
+gap> Characteristic(GF(2));
+2
+gap> Characteristic(GF(3,7));
+3
+gap> Characteristic(GF(1031));
+1031
+gap> Characteristic(Cyclotomics);
+0
+gap> Characteristic(Integers);
+0
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] );
+gap> a := AlgebraByStructureConstants(Rationals,T);
+<algebra of dimension 2 over Rationals>
+gap> Characteristic(a);
+0
+gap> a := AlgebraByStructureConstants(Cyclotomics,T);
+<algebra of dimension 2 over Cyclotomics>
+gap> Characteristic(a);
+0
+gap> a := AlgebraByStructureConstants(GF(7),T);
+<algebra of dimension 2 over GF(7)>
+gap> Characteristic(a);
+7
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1, 1, 2, 2 ] );
+gap> r := RingByStructureConstants([7,7],T);
+<ring with 2 generators>
+gap> Characteristic(r);
+7
+gap> r := RingByStructureConstants([7,5],T);
+<ring with 2 generators>
+gap> Characteristic(r);
+35
+
+# 26/10/12 (SL) 
+# Fix a crash when a logfile opened with LogTo() is closed with LogInputTo()  
+gap> LogTo( Filename( DirectoryTemporary(), "foo" ) );
+gap> LogInputTo();
+Error, InputLogTo: can not close the logfile
+gap> LogTo();
+
+# 2012/11/02 (FL)
+# Fix a crash on 32-bit systems when Log2Int(n) is not an immediate integer. 
+gap> a:=(2^(2^15))^(2^14);;
+gap> Log2Int(a);
+536870912
+
+# 2012/11/25 (AK)
+# Fix of a bug that was reproducible in GAP 4.5.6 with FGA 1.1.1
+gap> f := FreeGroup(2);
+<free group on the generators [ f1, f2 ]>
+gap> iso:=GroupHomomorphismByImagesNC(f,f,[f.1*f.2,f.1*f.2^2],[f.2^2*f.1,f.2*f.1]); 
+[ f1*f2, f1*f2^2 ] -> [ f2^2*f1, f2*f1 ]
+gap> SetIsSurjective(iso,true);
+gap> Image(iso,PreImagesRepresentative(iso,f.1));
+f1
+
 #############################################################################
 #
-# Tests requiring loading some packages
+# Tests requiring loading some packages.
+# Do not put tests that do not need any packages below this line.
 #
-
 #############################################################################
 #
 # Tests requiring TomLib
@@ -1944,86 +2190,6 @@ gap> if LoadPackage("crisp", "1.2.1", false) <> fail then
 >      Print( "problem with crisp (7)\n" );
 >     fi;
 >    fi;
-
-# 2012/04/13 (MN)
-gap> Characteristic(Z(2));
-2
-gap> Characteristic(0*Z(2));
-2
-gap> Characteristic(0*Z(5));
-5
-gap> Characteristic(Z(5));
-5
-gap> Characteristic(Z(257));
-257
-gap> Characteristic(Z(2^60));
-2
-gap> Characteristic(Z(3^20));
-3
-gap> Characteristic(0);
-0
-gap> Characteristic(12);
-0
-gap> Characteristic(12123123123);
-0
-gap> Characteristic(E(4));
-0
-gap> Characteristic([Z(2),Z(4)]);
-2
-gap> v := [Z(2),Z(4)];
-[ Z(2)^0, Z(2^2) ]
-gap> ConvertToVectorRep(v,4);
-4
-gap> Characteristic(v);
-2
-gap> Characteristic([Z(257),Z(257)^47]);
-257
-gap> Characteristic([[Z(257),Z(257)^47]]);
-257
-gap> Characteristic(ZmodnZObj(2,6));
-6
-gap> Characteristic(ZmodnZObj(2,5));
-5
-gap> Characteristic(ZmodnZObj(2,5123123123));
-5123123123
-gap> Characteristic(ZmodnZObj(0,5123123123));
-5123123123
-gap> Characteristic(GF(2,3));
-2
-gap> Characteristic(GF(2));
-2
-gap> Characteristic(GF(3,7));
-3
-gap> Characteristic(GF(1031));
-1031
-gap> Characteristic(Cyclotomics);
-0
-gap> Characteristic(Integers);
-0
-gap> T:= EmptySCTable( 2, 0 );;
-gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] );
-gap> a := AlgebraByStructureConstants(Rationals,T);
-<algebra of dimension 2 over Rationals>
-gap> Characteristic(a);
-0
-gap> a := AlgebraByStructureConstants(Cyclotomics,T);
-<algebra of dimension 2 over Cyclotomics>
-gap> Characteristic(a);
-0
-gap> a := AlgebraByStructureConstants(GF(7),T);
-<algebra of dimension 2 over GF(7)>
-gap> Characteristic(a);
-7
-gap> T:= EmptySCTable( 2, 0 );;
-gap> SetEntrySCTable( T, 1, 1, [ 1, 1, 2, 2 ] );
-gap> r := RingByStructureConstants([7,7],T);
-<ring with 2 generators>
-gap> Characteristic(r);
-7
-gap> r := RingByStructureConstants([7,5],T);
-<ring with 2 generators>
-gap> Characteristic(r);
-35
 
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 15319000000*10 );

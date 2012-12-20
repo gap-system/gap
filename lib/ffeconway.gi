@@ -1670,5 +1670,20 @@ FFECONWAY.WriteOverSmallestCommonField := function(v)
     return p^d;
 end;
         
+#############################################################################
+##
+#M  AsInternalFFE( <conway ffe> )
+##
+InstallMethod( AsInternalFFE, [IsFFE and IsCoeffsModConwayPolRep],
+        function (x)
+    local y;
+    y := FFECONWAY.WriteOverSmallestField(x);
+    if IsInternalRep(y) then
+        return y;
+    else
+        return fail;
+    fi;
+end);
+
 
 SetNamesForFunctionsInRecord("FFECONWAY");

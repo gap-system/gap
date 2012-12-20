@@ -1301,7 +1301,7 @@ DeclareAttribute("FPFaithHom",IsFamily);
 ##  #I  Assigned the global variables [ x, y, z ]
 ##  gap> r:=ParseRelators([x,y,z],
 ##  > "x^2 = y^5 = z^3 = (xyxyxy^4)^2 = (xz)^2 = (y^2z)^2 = 1");
-##  [ x^2, y^5, z^3, x*z*x*z, y^2*z*y^2*z, x*y*x*y*x*y^4*x*y*x*y*x*y^4 ]
+##  [ x^2, y^5, z^3, (x*z)^2, (y^2*z)^2, ((x*y)^3*y^3)^2 ]
 ##  gap> g:=f/r;
 ##  <fp group on the generators [ x, y, z ]>
 ##  ]]></Example>

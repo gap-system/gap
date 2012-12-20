@@ -23,7 +23,7 @@ extern Int CompileFunc (
             Char *              output,
             Obj                 func,
             Char *              name,
-            UInt4               magic1,
+            Int                 magic1,
             Char *              magic2 );
 
 /****************************************************************************

@@ -3834,13 +3834,12 @@ function( bvec, obj )
   TriangulizeMat(mat);
   return Concatenation(mat);
 end);
-  
+
 #############################################################################
 ##
 #M  FieldOfMatrixList
 ##
-InstallMethod(FieldOfMatrixList,
-    "generic: form field",
+InstallMethod(FieldOfMatrixList,"generic: form field",
   [IsListOrCollection],
 function(l)
 local i,j,k,fg,f;
@@ -3856,6 +3855,37 @@ local i,j,k,fg,f;
         if not k in f then
           Add(fg,k);
           f:=Field(fg);
+        fi;
+      od;
+    od;
+  od;
+  return f;
+end);
+
+#############################################################################
+##
+#M  DefaultScalarDomainOfMatrixList
+##
+InstallMethod(DefaultScalarDomainOfMatrixList, "generic: form ring",
+  [IsListOrCollection],
+function(l)
+local i,j,k,fg,f;
+  # try to find out the field
+  if Length(l)=0 or ForAny(l,i->not IsMatrix(i)) then
+    Error("<l> must be a list of matrices");
+  fi;
+  fg:=[l[1][1][1]];
+  if Characteristic(fg)=0 then
+    f:=DefaultField(fg);
+  else
+    f:=DefaultRing(fg);
+  fi;
+  for i in l do
+    for j in i do
+      for k in j do
+        if not k in f then
+          Add(fg,k);
+          f:=DefaultRing(fg);
         fi;
       od;
     od;

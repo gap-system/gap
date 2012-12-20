@@ -328,7 +328,7 @@ BIND_GLOBAL( "IsFilter",
 ##
 ##  Is an ``infinity'' value for method installations. It is more than can
 ##  be reached by any filter arrangement.
-BIND_GLOBAL( "SUM_FLAGS", 2000 );
+BIND_GLOBAL( "SUM_FLAGS", 10000 );
 
 
 #############################################################################

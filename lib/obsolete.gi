@@ -13,19 +13,6 @@
 
 #############################################################################
 ##
-#F  SmithNormalFormSQ( mat )
-##
-InstallGlobalFunction( SmithNormalFormSQ, function( M )
-local r;
-  Info(InfoWarning,1,"Obsolete function  `SmithNormalFormSQ',\n",
-  "use `NormalFormIntMat' instead");
-  r:=NormalFormIntMat(M,15);
-  return rec(P:=r.rowtrans,Q:=r.coltrans,D:=r.normal,I:=r.coltrans^-1);
-end );
-
-
-#############################################################################
-##
 #F  DiagonalizeIntMatNormDriven(<mat>)  . . . . diagonalize an integer matrix
 ##
 #T  Should this test for mutability? SL
@@ -46,7 +33,7 @@ InstallGlobalFunction( DiagonalizeIntMatNormDriven, function ( mat )
             h,          # gap width in shell sort
             k, l,       # loop variables
             max, omax;  # maximal entry and overall maximal entry
-
+            
     # give some information
     Info( InfoMatrix, 1, "DiagonalizeMat called" );
     omax := 0;
@@ -367,6 +354,9 @@ end );
 InstallMethod( ShrinkCoeffs,"call `ShrinkRowVector'",
     [ IsList and IsMutable ],
 function( l1 )
+    Info( InfoWarning, 1,
+        "the operation `ShrinkCoeffs' is not supported anymore,\n",
+        "#I  use `ShrinkRowVector' instead" );
     ShrinkRowVector(l1);
     return Length(l1);
 end );
@@ -383,6 +373,9 @@ InstallMethod( ShrinkCoeffs, "8 bit vector",
         [IsMutable and IsRowVector and Is8BitVectorRep ],
         function(vec)
     local r;
+    Info( InfoWarning, 1,
+        "the operation `ShrinkCoeffs' is not supported anymore,\n",
+        "#I  use `ShrinkRowVector' instead" );
     r := RIGHTMOST_NONZERO_VEC8BIT(vec);
     RESIZE_VEC8BIT(vec, r);
     return r;
@@ -395,28 +388,12 @@ end);
 InstallMethod( ShrinkCoeffs,
     "for GF2 vector",
     [ IsMutable and IsRowVector and IsGF2VectorRep ],
-    SHRINKCOEFFS_GF2VEC );
-
-
-#############################################################################
-##
-#F  ProductPol( <coeffs_f>, <coeffs_g> )  . . . .  product of two polynomials
-##
-InstallGlobalFunction( ProductPol, function( f, g )
-    local  prod,  q,  m,  n,  i,  k;
-    m := Length(f);  while 1 < m  and f[m] = 0  do m := m-1;  od;
-    n := Length(g);  while 1 < n  and g[n] = 0  do n := n-1;  od;
-#T other zero elements are not allowed?
-    prod := [];
-    for i  in [ 2 .. m+n ]  do
-        q := 0;
-        for k  in [ Maximum(1,i-n) .. Minimum(m,i-1) ]  do
-            q := q + f[k] * g[i-k];
-        od;
-        prod[i-1] := q;
-    od;
-    return prod;
-end );
+function( l1 )
+    Info( InfoWarning, 1,
+        "the operation `ShrinkCoeffs' is not supported anymore,\n",
+        "#I  use `ShrinkRowVector' instead" );
+    return SHRINKCOEFFS_GF2VEC(l1);
+end ); 
 
 
 #############################################################################
@@ -714,14 +691,6 @@ local names,len,i,g,h,e,a,s;
   return s;
 end);
 
-#############################################################################
-##
-#V  PROFILETHRESHOLD
-##
-##  This is now stored in GAPInfo.ProfileThreshold
-##
-PROFILETHRESHOLD := GAPInfo.ProfileThreshold;
-
 
 #############################################################################
 ##
@@ -731,6 +700,9 @@ PROFILETHRESHOLD := GAPInfo.ProfileThreshold;
 ##
 BindGlobal( "CharacterTableDisplayPrintLegendDefault",
     function( data )
+    Info( InfoWarning, 1,
+        "the function `CharacterTableDisplayPrintLegendDefault' is no longer\n",
+        "#I  supported and may be removed from future versions of GAP" );
     Print( CharacterTableDisplayLegendDefault( data ) );
     end );
 
@@ -742,6 +714,10 @@ BindGlobal( "CharacterTableDisplayPrintLegendDefault",
 ##
 InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
     local G, tbl, arec, ccl, compat;
+    
+    Info( InfoWarning, 1,
+        "the function `ConnectGroupAndCharacterTable' is not supported anymore,\n",
+        "#I  use `CharacterTableWithStoredGroup' instead" );
 
     # Get and check the arguments.
     if   Length( arg ) = 2 and IsGroup( arg[1] )

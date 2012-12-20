@@ -239,9 +239,9 @@ end );
 InstallGlobalFunction(SubdirProdPcGroups,function(G,gi,H,hi)
 local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
       e,w,pow,b2,b3,comm,id;
-  mg:=GroupGeneralMappingByImages(G,H,gi,hi);
+  mg:=GroupGeneralMappingByImagesNC(G,H,gi,hi);
   kh:=CoKernelOfMultiplicativeGeneralMapping(mg);
-  mh:=GroupGeneralMappingByImages(H,G,hi,gi);
+  mh:=GroupGeneralMappingByImagesNC(H,G,hi,gi);
   kg:=CoKernelOfMultiplicativeGeneralMapping(mh);
 
   #trivial cases?

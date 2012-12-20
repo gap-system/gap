@@ -56,12 +56,12 @@ var StartMenuFolder
 # User variables and other general settings: adjust them here as needed
 # 
 Section
-StrCpy $GAP_VER "4.5.4"
+StrCpy $GAP_VER "4.5.7"
 SectionEnd
 
 #Name and file
-Name "GAP 4.5.4"
-OutFile "gap4r5p4_2012_06_04-23_02.exe"
+Name "GAP 4.5.7"
+OutFile "gap4r5p7_2012_12_14-17_45.exe"
 
 #Default installation folder
 InstallDir "C:\gap4r5"
@@ -662,6 +662,18 @@ SectionGroup "Specialised  packages" SecGAPpkgsSpecial
 
 #######################################################################
 #
+# AutoDoc
+#
+Section "AutoDoc" SecGAPpkg_autodoc 
+SetOutPath $INSTDIR\pkg 
+File gap4r5\pkg\README.autodoc
+SetOutPath $INSTDIR\pkg\AutoDoc
+File /r gap4r5\pkg\AutoDoc\*.* 
+SetOutPath $INSTDIR 
+SectionEnd 
+
+#######################################################################
+#
 # Automata
 #
 Section "Automata" SecGAPpkg_automata 
@@ -703,8 +715,20 @@ SectionEnd
 Section "Citrus" SecGAPpkg_citrus 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.citrus
-SetOutPath $INSTDIR\pkg\citrus-0.9
-File /r gap4r5\pkg\citrus-0.9\*.* 
+SetOutPath $INSTDIR\pkg\citrus-0.9999
+File /r gap4r5\pkg\citrus-0.9999\*.* 
+SetOutPath $INSTDIR 
+SectionEnd 
+
+#######################################################################
+#
+# Convex
+#
+Section "Convex" SecGAPpkg_convex 
+SetOutPath $INSTDIR\pkg 
+File gap4r5\pkg\README.convex
+SetOutPath $INSTDIR\pkg\Convex
+File /r gap4r5\pkg\Convex\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -835,8 +859,8 @@ SectionEnd
 Section "gpd" SecGAPpkg_gpd 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.gpd
-SetOutPath $INSTDIR\pkg\gpd-1.14
-File /r gap4r5\pkg\gpd-1.14\*.* 
+SetOutPath $INSTDIR\pkg\gpd-1.15
+File /r gap4r5\pkg\gpd-1.15\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1080,7 +1104,6 @@ File /r gap4r5\pkg\nilmat\*.*
 SetOutPath $INSTDIR 
 SectionEnd 
 
-
 #######################################################################
 #
 # NumericalSgps
@@ -1311,6 +1334,18 @@ SectionEnd
 
 #######################################################################
 #
+# ToolsForHomalg
+#
+Section "ToolsForHomalg" SecGAPpkg_toolsforhomalg 
+SetOutPath $INSTDIR\pkg 
+File gap4r5\pkg\README.toolsforhomalg
+SetOutPath $INSTDIR\pkg\ToolsForHomalg
+File /r gap4r5\pkg\ToolsForHomalg\*.* 
+SetOutPath $INSTDIR 
+SectionEnd 
+
+#######################################################################
+#
 # toric
 #
 Section "toric" SecGAPpkg_toric 
@@ -1318,6 +1353,18 @@ SetOutPath $INSTDIR\pkg
 File gap4r5\pkg\README.toric
 SetOutPath $INSTDIR\pkg\toric1.8
 File /r gap4r5\pkg\toric1.8\*.* 
+SetOutPath $INSTDIR 
+SectionEnd 
+
+#######################################################################
+#
+# ToricVarieties
+#
+Section "ToricVarieties" SecGAPpkg_toricvarieties 
+SetOutPath $INSTDIR\pkg 
+File gap4r5\pkg\README.toricvarieties
+SetOutPath $INSTDIR\pkg\ToricVarieties
+File /r gap4r5\pkg\ToricVarieties\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1364,8 +1411,8 @@ SectionEnd
 Section "XMod" SecGAPpkg_xmod 
 SetOutPath $INSTDIR\pkg 
 File gap4r5\pkg\README.xmod
-SetOutPath $INSTDIR\pkg\xmod-2.18
-File /r gap4r5\pkg\xmod-2.18\*.* 
+SetOutPath $INSTDIR\pkg\xmod-2.19
+File /r gap4r5\pkg\xmod-2.19\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1423,6 +1470,18 @@ SetOutPath $INSTDIR\pkg
 File gap4r5\pkg\README.cohomolo
 SetOutPath $INSTDIR\pkg\cohomolo
 File /r gap4r5\pkg\cohomolo\*.* 
+SetOutPath $INSTDIR 
+SectionEnd 
+
+#######################################################################
+#
+# Float
+#
+Section "Float" SecGAPpkg_float 
+SetOutPath $INSTDIR\pkg 
+File gap4r5\pkg\README.float
+SetOutPath $INSTDIR\pkg\float-0.5.5
+File /r gap4r5\pkg\float-0.5.5\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1536,6 +1595,18 @@ SectionEnd
 
 #######################################################################
 #
+# PolymakeInterface
+#
+Section "PolymakeInterface" SecGAPpkg_polymakeinterface 
+SetOutPath $INSTDIR\pkg 
+File gap4r5\pkg\README.polymakeinterface
+SetOutPath $INSTDIR\pkg\PolymakeInterface
+File /r gap4r5\pkg\PolymakeInterface\*.* 
+SetOutPath $INSTDIR 
+SectionEnd 
+
+#######################################################################
+#
 # XGAP
 #
 Section "XGAP" SecGAPpkg_xgap 
@@ -1548,7 +1619,6 @@ SectionEnd
 
 SectionGroupEnd 
 # Packages that do not work under Windows end here
-
 
 #######################################################################
 # Descriptions
@@ -1566,14 +1636,16 @@ LangString DESC_SecGAPpkg_aclib ${LANG_ENGLISH} "Almost Crystallographic Groups 
 LangString DESC_SecGAPpkg_alnuth ${LANG_ENGLISH} "Algebraic number theory and an interface to PARI/GP"
 LangString DESC_SecGAPpkg_anupq ${LANG_ENGLISH} "ANU p-Quotient"
 LangString DESC_SecGAPpkg_atlasrep ${LANG_ENGLISH} "A GAP Interface to the Atlas of Group Representations"
+LangString DESC_SecGAPpkg_autodoc ${LANG_ENGLISH} "Tools for generating automatic GAPDoc documentations"
 LangString DESC_SecGAPpkg_automata ${LANG_ENGLISH} "A package on automata"
 LangString DESC_SecGAPpkg_automgrp ${LANG_ENGLISH} "Automata groups"
 LangString DESC_SecGAPpkg_autpgrp ${LANG_ENGLISH} "Computing the Automorphism Group of a p-Group"
 LangString DESC_SecGAPpkg_browse ${LANG_ENGLISH} "browsing applications and ncurses interface"
 LangString DESC_SecGAPpkg_carat ${LANG_ENGLISH} "Interface to CARAT, a crystallographic groups package"
 LangString DESC_SecGAPpkg_circle ${LANG_ENGLISH} "Adjoint groups of finite rings"
-LangString DESC_SecGAPpkg_citrus ${LANG_ENGLISH} "ComputIng wiTh semigRoUps and monoidS"
+LangString DESC_SecGAPpkg_citrus ${LANG_ENGLISH} "Computing with Semigroups of Transformations and Partial Permutations"
 LangString DESC_SecGAPpkg_cohomolo ${LANG_ENGLISH} "Cohomology groups of finite groups on finite modules"
+LangString DESC_SecGAPpkg_convex ${LANG_ENGLISH} "A package for fan combinatorics"
 LangString DESC_SecGAPpkg_crime ${LANG_ENGLISH} "A GAP Package to Calculate Group Cohomology and Massey Products"
 LangString DESC_SecGAPpkg_crisp ${LANG_ENGLISH} "Computing with Radicals, Injectors, Schunck classes and Projectors"
 LangString DESC_SecGAPpkg_cryst ${LANG_ENGLISH} "Computing with crystallographic groups"
@@ -1587,6 +1659,7 @@ LangString DESC_SecGAPpkg_example ${LANG_ENGLISH} "Example/Template of a GAP Pac
 LangString DESC_SecGAPpkg_examplesforhomalg ${LANG_ENGLISH} "Examples for the GAP Package homalg"
 LangString DESC_SecGAPpkg_factint ${LANG_ENGLISH} "Advanced Methods for Factoring Integers"
 LangString DESC_SecGAPpkg_fga ${LANG_ENGLISH} "Free Group Algorithms"
+LangString DESC_SecGAPpkg_float ${LANG_ENGLISH} "Integration of mpfr, mpfi, mpc, fplll and cxsc in GAP"
 LangString DESC_SecGAPpkg_format ${LANG_ENGLISH} "Computing with formations of finite solvable groups."
 LangString DESC_SecGAPpkg_forms ${LANG_ENGLISH} "Sesquilinear and Quadratic"
 LangString DESC_SecGAPpkg_fplsa ${LANG_ENGLISH} "Finitely Presented Lie Algebras"
@@ -1595,14 +1668,14 @@ LangString DESC_SecGAPpkg_fwtree ${LANG_ENGLISH} "Computing trees related to som
 LangString DESC_SecGAPpkg_gapdoc ${LANG_ENGLISH} "A Meta Package for GAP Documentation"
 LangString DESC_SecGAPpkg_gauss ${LANG_ENGLISH} "Gauss - Extended Gauss Functionality for GAP"
 LangString DESC_SecGAPpkg_gaussforhomalg ${LANG_ENGLISH} "GaussForHomalg - Gauss Functionality for homalg"
-LangString DESC_SecGAPpkg_gbnp ${LANG_ENGLISH} "computing GrÃ¶bner bases of noncommutative polynomials"
+LangString DESC_SecGAPpkg_gbnp ${LANG_ENGLISH} "computing Gröbner bases of noncommutative polynomials"
 LangString DESC_SecGAPpkg_genss ${LANG_ENGLISH} "genss - generic Schreier-Sims"
 LangString DESC_SecGAPpkg_gpd ${LANG_ENGLISH} "Groupoids, graphs of groups, and graphs of groupoids"
 LangString DESC_SecGAPpkg_gradedmodules ${LANG_ENGLISH} "A homalg based package for the Abelian category of finitely presented graded modules over a computable graded ring"
 LangString DESC_SecGAPpkg_gradedringforhomalg ${LANG_ENGLISH} "Endow Commutative Rings with an Abelian Grading"
 LangString DESC_SecGAPpkg_grape ${LANG_ENGLISH} "GRaph Algorithms using PErmutation groups"
 LangString DESC_SecGAPpkg_grpconst ${LANG_ENGLISH} "Constructing the Groups of a Given Order"
-LangString DESC_SecGAPpkg_guarana ${LANG_ENGLISH} "Applications of Lie methods for computations with infinite polycyclic  groups"
+LangString DESC_SecGAPpkg_guarana ${LANG_ENGLISH} "Applications of Lie methods for computations with infinite polycyclic groups"
 LangString DESC_SecGAPpkg_guava ${LANG_ENGLISH} "a GAP package for computing with error-correcting codes"
 LangString DESC_SecGAPpkg_hap ${LANG_ENGLISH} "Homological Algebra Programming"
 LangString DESC_SecGAPpkg_hapcryst ${LANG_ENGLISH} "A HAP extension for crytallographic groups"
@@ -1613,7 +1686,7 @@ LangString DESC_SecGAPpkg_homalgtocas ${LANG_ENGLISH} "A window to the outer wor
 LangString DESC_SecGAPpkg_idrel ${LANG_ENGLISH} "Identities among relations"
 LangString DESC_SecGAPpkg_io ${LANG_ENGLISH} "Bindings for low level C library IO"
 LangString DESC_SecGAPpkg_io_forhomalg ${LANG_ENGLISH} "IO Capabilities for the homalg Project"
-LangString DESC_SecGAPpkg_irredsol ${LANG_ENGLISH} "A Library of irreducible solvable linear groups over finite fields           and of finite primivite soluble groups"
+LangString DESC_SecGAPpkg_irredsol ${LANG_ENGLISH} "A Library of irreducible solvable linear groups over finite fields and of finite primivite soluble groups"
 LangString DESC_SecGAPpkg_itc ${LANG_ENGLISH} "Interactive Todd-Coxeter"
 LangString DESC_SecGAPpkg_kan ${LANG_ENGLISH} "including double coset rewriting systems"
 LangString DESC_SecGAPpkg_kbmag ${LANG_ENGLISH} "Knuth-Bendix on Monoids and Automatic Groups"
@@ -1633,6 +1706,7 @@ LangString DESC_SecGAPpkg_orb ${LANG_ENGLISH} "orb - Methods to enumerate Orbits
 LangString DESC_SecGAPpkg_pargap ${LANG_ENGLISH} "Parallel GAP"
 LangString DESC_SecGAPpkg_polenta ${LANG_ENGLISH} "Polycyclic presentations for matrix groups"
 LangString DESC_SecGAPpkg_polycyclic ${LANG_ENGLISH} "Computation with polycyclic groups"
+LangString DESC_SecGAPpkg_polymakeinterface ${LANG_ENGLISH} "A package to provide algorithms for fans and cones of polymake to other packages"
 LangString DESC_SecGAPpkg_polymaking ${LANG_ENGLISH} "Interfacing the geometry software polymake"
 LangString DESC_SecGAPpkg_qaos ${LANG_ENGLISH} "Interfacing the QaoS database from GAP"
 LangString DESC_SecGAPpkg_quagroup ${LANG_ENGLISH} "a package for doing computations with quantum groups"
@@ -1654,7 +1728,9 @@ LangString DESC_SecGAPpkg_sonata ${LANG_ENGLISH} "System of nearrings and their 
 LangString DESC_SecGAPpkg_sophus ${LANG_ENGLISH} "Computing in nilpotent Lie algebras"
 LangString DESC_SecGAPpkg_symbcompcc ${LANG_ENGLISH} "Computing with parametrised presentations for p-groups of fixed coclass"
 LangString DESC_SecGAPpkg_tomlib ${LANG_ENGLISH} "The GAP Library of Tables of Marks"
+LangString DESC_SecGAPpkg_toolsforhomalg ${LANG_ENGLISH} "GAP extensions for the homalg project"
 LangString DESC_SecGAPpkg_toric ${LANG_ENGLISH} "toric varieties and some combinatorial geometry computations"
+LangString DESC_SecGAPpkg_toricvarieties ${LANG_ENGLISH} "A package to handle toric varieties"
 LangString DESC_SecGAPpkg_unipot ${LANG_ENGLISH} "Computing with elements of unipotent subgroups of Chevalley groups"
 LangString DESC_SecGAPpkg_unitlib ${LANG_ENGLISH} "Library of normalized unit groups of modular group algebras"
 LangString DESC_SecGAPpkg_wedderga ${LANG_ENGLISH} "Wedderburn Decomposition of Group Algebras"
@@ -1675,6 +1751,7 @@ LangString DESC_SecGAPpkg_xmod ${LANG_ENGLISH} "Crossed Modules and Cat1-Groups"
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_alnuth} $(DESC_SecGAPpkg_alnuth)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_anupq} $(DESC_SecGAPpkg_anupq)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_atlasrep} $(DESC_SecGAPpkg_atlasrep)
+!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_autodoc} $(DESC_SecGAPpkg_autodoc)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_automata} $(DESC_SecGAPpkg_automata)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_automgrp} $(DESC_SecGAPpkg_automgrp)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_autpgrp} $(DESC_SecGAPpkg_autpgrp)
@@ -1683,6 +1760,7 @@ LangString DESC_SecGAPpkg_xmod ${LANG_ENGLISH} "Crossed Modules and Cat1-Groups"
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_circle} $(DESC_SecGAPpkg_circle)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_citrus} $(DESC_SecGAPpkg_citrus)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_cohomolo} $(DESC_SecGAPpkg_cohomolo)
+!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_convex} $(DESC_SecGAPpkg_convex)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_crime} $(DESC_SecGAPpkg_crime)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_crisp} $(DESC_SecGAPpkg_crisp)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_cryst} $(DESC_SecGAPpkg_cryst)
@@ -1696,6 +1774,7 @@ LangString DESC_SecGAPpkg_xmod ${LANG_ENGLISH} "Crossed Modules and Cat1-Groups"
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_examplesforhomalg} $(DESC_SecGAPpkg_examplesforhomalg)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_factint} $(DESC_SecGAPpkg_factint)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_fga} $(DESC_SecGAPpkg_fga)
+!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_float} $(DESC_SecGAPpkg_float)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_format} $(DESC_SecGAPpkg_format)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_forms} $(DESC_SecGAPpkg_forms)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_fplsa} $(DESC_SecGAPpkg_fplsa)
@@ -1742,6 +1821,7 @@ LangString DESC_SecGAPpkg_xmod ${LANG_ENGLISH} "Crossed Modules and Cat1-Groups"
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_pargap} $(DESC_SecGAPpkg_pargap)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_polenta} $(DESC_SecGAPpkg_polenta)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_polycyclic} $(DESC_SecGAPpkg_polycyclic)
+!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_polymakeinterface} $(DESC_SecGAPpkg_polymakeinterface)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_polymaking} $(DESC_SecGAPpkg_polymaking)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_qaos} $(DESC_SecGAPpkg_qaos)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_quagroup} $(DESC_SecGAPpkg_quagroup)
@@ -1763,7 +1843,9 @@ LangString DESC_SecGAPpkg_xmod ${LANG_ENGLISH} "Crossed Modules and Cat1-Groups"
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_sophus} $(DESC_SecGAPpkg_sophus)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_symbcompcc} $(DESC_SecGAPpkg_symbcompcc)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_tomlib} $(DESC_SecGAPpkg_tomlib)
+!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_toolsforhomalg} $(DESC_SecGAPpkg_toolsforhomalg)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_toric} $(DESC_SecGAPpkg_toric)
+!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_toricvarieties} $(DESC_SecGAPpkg_toricvarieties)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_unipot} $(DESC_SecGAPpkg_unipot)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_unitlib} $(DESC_SecGAPpkg_unitlib)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_wedderga} $(DESC_SecGAPpkg_wedderga)

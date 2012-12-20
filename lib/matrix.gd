@@ -2007,6 +2007,26 @@ DeclareOperation("MinimalPolynomialMatrixNC",
 ##
 DeclareOperation("FieldOfMatrixList",[IsListOrCollection]);
 
+#############################################################################
+##
+#O  DefaultRingOfMatrixList( <matlist> )
+##
+##  <ManSection>
+##  <Oper Name="DefaultScalarDomainOfMatrixList" Arg='matlist'/>
+##
+##  <Description>
+##  For a list of matrices <A>matlist</A> this operation returns a ring
+##  <M>R</M> such that all entries of the matrices lie in <M>R</M>. If
+##  <M>R</M> has a quotient field that can be represented, this quotient
+##  field is returned instead.
+##  In general <M>R</R> is not chosen to be as small as possible, but to
+##  be determined quickly without being unneccesarily large
+##  (see <Ref Attr="DefaultFieldOfMatrix"/>).
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation("DefaultScalarDomainOfMatrixList",[IsListOrCollection]);
+
 
 #############################################################################
 ##

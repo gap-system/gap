@@ -67,8 +67,6 @@
 /* define to create functions PTR_BAG, etc instead of macros               */
 /* #undef DEBUG_FUNCTIONS_BAGS */
 
-/* define to debug the generational aspect of gasman                       */
-/* #undef DEBUG_DEADSONS_BAGS */
 
 /* define to debug masterpointers errors                                   */
 /* #undef DEBUG_MASTERPOINTERS */

@@ -4692,7 +4692,74 @@ Obj DoVerboseMutableAttribute (
 /****************************************************************************
 **
 *F  NewAttribute( <name>, <narg>, <nams>, <hdlr> )
+**
+** MakeSetter, MakeTester and SetupAttribute are support functions
 */
+
+static Obj MakeSetter( Obj name, Int flag)
+{
+  Obj fname;
+  Obj setter;
+  fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
+  SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
+  SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
+  SyStrncat( CSTR_STRING(fname), ")", 1 );
+  RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
+  setter = NewOperation( fname, 2L, 0L, DoSetAttribute );
+  FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
+  FLAG2_FILT(setter)  = INTOBJ_INT( flag );
+  CHANGED_BAG(setter);
+  return setter;
+}
+
+static Obj MakeTester( Obj name, Int flag)
+{
+  Obj fname;
+  Obj tester;
+  Obj flags;
+    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
+    SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
+    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
+    SyStrncat( CSTR_STRING(fname), ")", 1 );
+    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
+                           DoTestAttribute );    
+    FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
+    FLAG2_FILT(tester)  = INTOBJ_INT( flag );
+    NEW_FLAGS( flags, flag );
+    SET_LEN_FLAGS( flags, flag );
+    SET_ELM_FLAGS( flags, flag, True );
+    FLAGS_FILT(tester)  = flags;
+    SETTR_FILT(tester)  = 0;
+    TESTR_FILT(tester)  = ReturnTrueFilter;
+    CHANGED_BAG(tester);
+    return tester;
+}
+
+
+static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
+{
+  Obj flags;
+
+    /* Install additional data */
+  FLAG1_FILT(attr)  = INTOBJ_INT( 0 );
+  FLAG2_FILT(attr)  = INTOBJ_INT( flag2 );
+  NEW_FLAGS( flags, flag2 );
+  SET_LEN_FLAGS( flags, flag2 );
+  SET_ELM_FLAGS( flags, flag2, True );
+  
+  /*    FLAGS_FILT(tester)  = flags; */
+  FLAGS_FILT(attr) = FLAGS_FILT(tester);
+  
+  SETTR_FILT(attr)  = setter;
+  TESTR_FILT(attr)  = tester;
+  SET_ENABLED_ATTR(attr,1);
+  CHANGED_BAG(attr);
+  return;
+}
+
+  
+
 Obj NewAttribute (
     Obj                 name,
     Int                 narg,
@@ -4703,57 +4770,52 @@ Obj NewAttribute (
     Obj                 setter;
     Obj                 tester;
     Int                 flag2;
-    Obj                 flags;
-    Obj                 fname;
     
     flag2 = ++CountFlags;
-
-    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    setter = NewOperation( fname, 2L, 0L, DoSetAttribute );
-    FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
-    CHANGED_BAG(setter);
-
-    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
-    SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
-                           DoTestAttribute );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    FLAGS_FILT(tester)  = flags;
-    SETTR_FILT(tester)  = 0;
-    TESTR_FILT(tester)  = ReturnTrueFilter;
-    CHANGED_BAG(tester);
+    setter = MakeSetter(name, flag2);
+    tester = MakeTester(name, flag2);
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoAttribute) ); 
     
-    FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
+    SetupAttribute(getter, setter, tester, flag2);
 
-    /*    FLAGS_FILT(tester)  = flags; */
-    FLAGS_FILT(getter) = FLAGS_FILT(tester);
-
-    SETTR_FILT(getter)  = setter;
-    TESTR_FILT(getter)  = tester;
-    SET_ENABLED_ATTR(getter,1);
-    CHANGED_BAG(getter);
-    
     return getter;    
 }
 
+/****************************************************************************
+**
+*F  ConvertOperationIntoAttribute( <oper> )  transform an operation (which 
+**  should not have any one-argument declarations) into an attribute
+*/
+
+void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr ) 
+{
+    Obj                 setter;
+    Obj                 tester;
+    Int                 flag2;
+    Obj                  name;
+    Int i;
+
+    /* Need to get the name from oper */
+    name = NAME_FUNC(oper);
+
+    flag2 = ++CountFlags;
+
+    /* Make the setter */
+    setter = MakeSetter(name, flag2);
+
+    /* and the tester */
+    tester = MakeTester(name, flag2);
+
+    /* Change the handlers */
+    for (i = 0; i <= 7; i++) 
+      HDLR_FUNC(oper, i) = hdlr ? hdlr : DoAttribute;
+
+    SetupAttribute( oper, setter, tester, flag2);
+
+    return;
+}
+    
 
 /****************************************************************************
 **
@@ -4769,53 +4831,18 @@ Obj NewAttributeC (
     Obj                 setter;
     Obj                 tester;
     Int                 flag2;
-    Obj                 flags;
     Obj                 fname;
     
     flag2 = ++CountFlags;
 
-    fname = NEW_STRING( strlen(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
-    SyStrncat( CSTR_STRING(fname), name, strlen(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    setter = NewOperation( fname, 2L, 0L, DoSetAttribute );
-    FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
-    CHANGED_BAG(setter);
 
-    fname = NEW_STRING( strlen(name) + 8 );
-    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
-    SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
-    SyStrncat( CSTR_STRING(fname), name, strlen(name) );
-    SyStrncat( CSTR_STRING(fname), ")", 1 );
-    tester = NewFunctionT( T_FUNCTION, SIZE_OPER, fname, 1L, 0L,
-                           DoTestAttribute );    
-    FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    FLAGS_FILT(tester)  = flags;
-    SETTR_FILT(tester)  = 0;
-    TESTR_FILT(tester)  = ReturnTrueFilter;
-    CHANGED_BAG(tester);
-
+    C_NEW_STRING(fname, strlen(name), name);
+    setter = MakeSetter(fname, flag2);
+    tester = MakeTester(fname, flag2);
+    
     getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoAttribute) );
 
-    FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
-    FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-
-    /*    FLAGS_FILT(tester)  = flags; */
-    FLAGS_FILT(getter) = FLAGS_FILT(tester);
-
-    SETTR_FILT(getter)  = setter;
-    TESTR_FILT(getter)  = tester;
-    SET_ENABLED_ATTR(getter,1);
-    CHANGED_BAG(getter);
+    SetupAttribute(getter, setter, tester, flag2);
     
     return getter;    
 }
@@ -5388,6 +5415,43 @@ Obj FuncNEW_ATTRIBUTE (
 
     /* make the new operation                                              */
     return NewAttribute( name, -1L, (Obj)0, DoAttribute );
+}
+/****************************************************************************
+**
+*F  FuncOPER_TO_ATTRIBUTE( <self>, oper ) make existing operation into attribute
+*/
+Obj FuncOPER_TO_ATTRIBUTE (
+    Obj                 self,
+    Obj                 oper )
+{
+    /* check the argument                                                  */
+  if ( ! IS_OPERATION(oper) ) {
+        ErrorQuit("usage: OPER_TO_ATTRIBUTE( <oper> )",0L,0L);
+        return 0;
+    }
+
+    /* make the new operation                                              */
+  ConvertOperationIntoAttribute( oper, (ObjFunc) 0L );
+    return (Obj) 0L;
+}
+
+/****************************************************************************
+**
+*F  FuncOPER_TO_MUTABLE_ATTRIBUTE( <self>, oper ) make existing operation into attribute
+*/
+Obj FuncOPER_TO_MUTABLE_ATTRIBUTE (
+    Obj                 self,
+    Obj                 oper )
+{
+    /* check the argument                                                  */
+  if ( ! IS_OPERATION(oper) ) {
+        ErrorQuit("usage: OPER_TO_MUTABLE_ATTRIBUTE( <oper> )",0L,0L);
+        return 0;
+    }
+
+    /* make the new operation                                              */
+  ConvertOperationIntoAttribute( oper, DoMutableAttribute );
+  return (Obj) 0L;
 }
 
 
@@ -6073,6 +6137,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "COMPACT_TYPE_IDS", 0, "",
       FuncCompactTypeIDs, "src/opers.c:COMPACT_TYPE_IDS" },
+
+    { "OPER_TO_ATTRIBUTE", 1, "oper",
+      FuncOPER_TO_ATTRIBUTE, "src/opers.c:OPER_TO_ATTRIBUTE" },
+
+    { "OPER_TO_MUTABLE_ATTRIBUTE", 1, "oper",
+      FuncOPER_TO_MUTABLE_ATTRIBUTE, "src/opers.c:OPER_TO_MUTABLE_ATTRIBUTE" },
 
     { 0 }
 

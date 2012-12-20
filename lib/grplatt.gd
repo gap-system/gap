@@ -177,6 +177,8 @@ DeclareAttribute("Zuppos",IsGroup);
 ##  extension algorithm. Therefore the trivial subgroup will always be
 ##  included.) Also note, that for such a partial lattice
 ##  maximality/minimality inclusion relations cannot be computed.
+##  (If <A>func</A> is a list of length 2, its first entry is such a
+##  discarding function, the second a function for discarding zuppos.)
 ##  <P/>
 ##  The cyclic extension algorithm requires the perfect subgroups of <A>G</A>.
 ##  However &GAP; cannot analyze the function <A>func</A> for its implication
@@ -199,8 +201,7 @@ DeclareAttribute("Zuppos",IsGroup);
 ##  gap> LatticeSubgroups(g);
 ##  <subgroup lattice of <permutation group of size 5184 with 
 ##  9 generators>, 566 classes, 27134 subgroups>
-##  ]]></Example>
-##  </Description>
+##  ]]></Example> ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##

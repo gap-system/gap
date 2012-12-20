@@ -597,7 +597,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
 */
 Obj FuncLog2Int( Obj self, Obj integer)
 {
-  Int res;
+  Int res, d;
   Int a, len;
   Int mask;
   TypLimb dmask;
@@ -616,12 +616,17 @@ Obj FuncLog2Int( Obj self, Obj integer)
   /* case of long ints                                                     */
   if ( IS_LARGEINT(integer) ) {
     for (len = SIZE_INT(integer); ADDR_INT(integer)[len-1] == 0; len--);
-    res = len * GMP_LIMB_BITS - 1;
+    /* Instead of computing 
+          res = len * GMP_LIMB_BITS - d;
+       we keep len and d separate, because on 32 bit systems res may
+       not fit into an Int (and not into an immediate integer).            */
+    d = 1;
     a = (TypLimb)(ADDR_INT(integer)[len-1]); 
     for(dmask = (TypLimb)1 << (GMP_LIMB_BITS - 1);
         (dmask & a) == 0 && dmask != (TypLimb)0;
-        dmask = dmask >> 1, res--);
-    return INTOBJ_INT(res);
+        dmask = dmask >> 1, d++);
+    return DiffInt(ProdInt(INTOBJ_INT(len), INTOBJ_INT(GMP_LIMB_BITS)), 
+                   INTOBJ_INT(d));
   }
   else {
     ErrorReturnObj("Log2Int: argument must be a int, (not a %s)",

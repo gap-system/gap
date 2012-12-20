@@ -440,7 +440,7 @@ end);
 ##
 ##  <#GAPDoc Label="PrintString">
 ##  <ManSection>
-##  <Oper Name="PrintString" Arg='obj'/>
+##  <Oper Name="PrintString" Arg='obj[, length]'/>
 ##
 ##  <Description>
 ##  <Ref Oper="PrintString"/> returns a representation of <A>obj</A>,
@@ -656,7 +656,8 @@ DeclareOperation( "ObjByExtRep", [ IsFamily, IsObject ] );
 ##  gap> KnownAttributesOfObject(g);
 ##  [ "Size", "OneImmutable", "NrMovedPoints", "MovedPoints", 
 ##    "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
-##    "Pcgs", "GeneralizedPcgs", "StabChainMutable", "StabChainOptions" ]
+##    "HomePcgs", "Pcgs", "GeneralizedPcgs", "StabChainMutable", 
+##    "StabChainOptions" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

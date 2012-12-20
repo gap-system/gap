@@ -1,7 +1,61 @@
 
 
-    CHANGES of "GAP 4.5 on Linux via rsync"         (Frank LÃ¼beck)
+    CHANGES of "GAP 4.5 on Linux via rsync"         (Frank Lübeck)
     ==============================================================
+
+---  Wed, 07 Nov 2012 14:45:16 +0100
+Upgraded to archive gap4r5p6_2012_11_04-18_46.tar.gz
+which means the following package upgrades:
+  AutoDoc 2012.09.09 (-> 2012.10.26)
+  Convex 2012.09.15 (-> 2012.10.30)
+  ExamplesForHomalg 2012.05.31 (-> 2012.10.23)
+  Gauss 2012.04.23 (-> 2012.10.22)
+  GaussForHomalg 2011.08.10 (-> 2012.10.22)
+  GradedModules 2012.06.24 (-> 2012.10.25)
+  GradedRingForHomalg 2012.06.27 (-> 2012.10.25)
+  homalg 2012.06.07 (-> 2012.10.28)
+  HomalgToCAS 2012.06.27 (-> 2012.10.22)
+  IO_ForHomalg 2012.05.24 (-> 2012.10.22)
+  LocalizeRingForHomalg 2012.05.27 (-> 2012.10.26)
+  MatricesForHomalg 2012.06.30 (-> 2012.10.25)
+  Modules 2012.06.15 (-> 2012.10.27)
+  PolymakeInterface 2012.09.15 (-> 2012.10.30)
+  RCWA 3.3.1 (-> 3.4.0)
+  ResClasses 3.1.1 (-> 3.2.0)
+  RingsForHomalg 2012.06.28 (-> 2012.10.22)
+  SCO 2011.08.10 (-> 2011.08.11)
+  ToolsForHomalg 2012.08.26 (-> 2012.10.27)
+
+---  Fri, 21 Sep 2012 17:57:44 +0200
+The exexutable for pargap was missing. Should work now.
+
+---  Wed, 19 Sep 2012 23:32:53 +0200
+Upgraded to archive gap4r5p6_2012_09_16-01_02.tar.gz
+which means the following upgrades:
+  GAP core 4.5.5 (-> 4.5.6)
+  GradedModules 2012.05.18 (-> 2012.06.24)
+  MatricesForHomalg 2012.06.08 (-> 2012.06.30)
+  cvec 2.3 (-> 2.4)
+and the following new packages:
+  AutoDoc 2012.09.09
+  Convex 2012.09.15
+  ToolsForHomalg 2012.08.26
+  PolymakeInterface 2012.09.15
+For the moment the PolymakeInterface package is only unpacked 
+but not installed (I have currently no setup to test this).
+
+---  Thu, 19 Jul 2012 17:09:57 +0200
+Upgraded to archive gap4r5p5_2012_07_16-17_17.tar.gz
+  Browse 1.8.1 (-> 1.8.2)
+  Citrus 0.99 (-> 0.999)
+  Cubefree 1.10 (-> 1.11)
+  FR 1.2.6.5 (-> 1.2.6.7)
+  GradedRingForHomalg 2012.05.25 (-> 2012.06.27)
+  HAP 1.10.6 (-> 1.10.8)
+  HomalgToCAS 2012.06.08 (-> 2012.06.27)
+  RingsForHomalg 2012.06.08 (-> 2012.06.28)
+  cvec 2.2 (-> 2.3)
+  loops 2.1.3 (-> 2.2.0)
 
 ---  Mon, 25 Jun 2012 19:44:04 +0200
 Now the kernel module of package fr is compiled.

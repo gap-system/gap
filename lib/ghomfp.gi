@@ -663,7 +663,7 @@ local map,tab,tab2,i;
     TryNextMethod();
   fi;
   map:=MappingGeneratorsImages(hom2);
-  map:=GroupGeneralMappingByImages( Source( hom2 ), Range( hom1 ),
+  map:=GroupGeneralMappingByImagesNC( Source( hom2 ), Range( hom1 ),
          map[1], List( map[2], img ->
 	    ImagesRepresentative( hom1, img ) ) );
   SetIsMapping(map,true);

@@ -91,7 +91,7 @@ priori. See <Ref Sect="Coset Tables and Coset Enumeration"/> and
 <P/>
 <Example><![CDATA[
 gap> (b^2*a*b)^2;
-b^2*a*b^3*a*b
+(b^2*a*b)^2
 gap> a^0;
 <identity ...>
 ]]></Example>
@@ -472,8 +472,7 @@ behave like ordinary words and no extra treatment should be necessary.
 gap> r:=Range(hom).1^10;
 F1^10
 gap> p:=PreImagesRepresentative(hom,r);
-<[ [ 1, 10 ] ]|f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^
--1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1>
+<[ [ 1, 10 ] ]|(f2^-1*f1^-1)^10>
 ]]></Example>
 
 If desired, it also is possible to convert these underlying words using
@@ -481,11 +480,9 @@ If desired, it also is possible to convert these underlying words using
 
 <Example><![CDATA[
 gap> r:=EvalStraightLineProgElm(UnderlyingElement(p));
-f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^
--1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1
+(f2^-1*f1^-1)^10
 gap> p:=ElementOfFpGroup(FamilyObj(p),r);
-f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^
--1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1
+(f2^-1*f1^-1)^10
 ]]></Example>
 <P/>
 (If you are only interested in a finitely presented group isomorphic to

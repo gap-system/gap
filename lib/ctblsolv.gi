@@ -872,7 +872,7 @@ InstallValue( BaumClausenInfoDebug, rec(
         local images, hom;
         images:= List( rep,
                        record -> BaumClausenInfoDebug.makemat( record, e ) );
-        hom:= GroupGeneralMappingByImages( Group( pcgs ), Group( images ),
+        hom:= GroupGeneralMappingByImagesNC( Group( pcgs ), Group( images ),
                                            pcgs, images );
         return IsGroupHomomorphism( hom );
     end,

@@ -708,6 +708,24 @@ z30+2z31+2z32+2z34+2z35+2z36+z38+z39+z40+2z42+z45+2z46+2z49+2z51+z52+z53+2z54+\
 gap> ForAll(fieldsizes, pd -> ForAll(DivisorsInt(pd[2]), d2 -> 
 >     Z(pd[1],pd[2])^((pd[1]^pd[2]-1)/(pd[1]^d2-1)) = Z(pd[1],d2) ));
 true
+gap> AsInternalFFE(0*Z(2,10));
+0*Z(2)
+gap> AsInternalFFE(Z(2,10)^0);
+Z(2)^0
+gap> AsInternalFFE(Z(2,10));
+Z(2^10)
+gap> AsInternalFFE(0*Z(7,6));
+0*Z(7)
+gap> AsInternalFFE(Z(7,6)^0);
+Z(7)^0
+gap> AsInternalFFE(Z(7,6));
+fail
+gap> AsInternalFFE(0*Z(65537,2));
+fail
+gap> AsInternalFFE(Z(65537,2)^0);
+fail
+gap> AsInternalFFE(Z(65537,2));
+fail
 gap> SetInfoLevel(InfoPrimeInt,iPI);
 gap> SetInfoLevel(InfoFactor,iF);
 gap> if IsBound(InfoFactInt) then SetInfoLevel(InfoFactInt,iFI); fi;

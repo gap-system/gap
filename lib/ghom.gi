@@ -23,22 +23,28 @@
 ##
 InstallGlobalFunction( GroupHomomorphismByImages,
 
-  function( arg )
+function( arg )
 
-    local  hom, G, H, Ggens, Hgens;
+    local  hom, G, H, Ggens, Hgens,arrgh;
 
-    if   not Length(arg) in [2..4]
-      or not IsGroup(arg[1]) or not IsGroup(arg[2])
+    arrgh:=arg;
+    if   not Length(arrgh) in [2..4]
+      or not IsGroup(arrgh[1]) #or not IsGroup(arrgh[2])
     then Error("for usage, see ?GroupHomomorphismByImages"); fi;
+    
+    if not IsGroup(arrgh[2]) then
+      arrgh:=Concatenation([arrgh[1],Group(arrgh[Length(arrgh)])],
+	                   arrgh{[2..Length(arrgh)]});
+    fi;
 
-    G := arg[1]; H := arg[2];
+    G := arrgh[1]; H := arrgh[2];
 
-    if   Length(arg) = 2
+    if   Length(arrgh) = 2
     then Ggens := GeneratorsOfGroup(G); Hgens := GeneratorsOfGroup(H);
-    elif Length(arg) = 3
-    then Ggens := GeneratorsOfGroup(G); Hgens := arg[3];
-    elif Length(arg) = 4
-    then Ggens := arg[3]; Hgens := arg[4];
+    elif Length(arrgh) = 3
+    then Ggens := GeneratorsOfGroup(G); Hgens := arrgh[3];
+    elif Length(arrgh) = 4
+    then Ggens := arrgh[3]; Hgens := arrgh[4];
     fi;
 
     if Length(Ggens)>0 then
@@ -58,7 +64,9 @@ InstallGlobalFunction( GroupHomomorphismByImages,
     hom:= GroupGeneralMappingByImages( G, H, Ggens, Hgens );
 
     if IsMapping( hom ) then
-      return GroupHomomorphismByImagesNC( G, H, Ggens, Hgens );
+      return hom;
+      # was GroupHomomorphismByImagesNC( G, H, Ggens, Hgens ), but why
+      # should we create a new object again?;
     else
       return fail;
     fi;
@@ -211,7 +219,7 @@ local mapi;
     TryNextMethod();
   fi;
   mapi:=MappingGeneratorsImages(hom2);
-  return GroupGeneralMappingByImages( Source( hom2 ), Range( hom1 ),
+  return GroupGeneralMappingByImagesNC( Source( hom2 ), Range( hom1 ),
             mapi[1], List( mapi[2], img ->
             ImagesRepresentative( hom1, img ) ) );
 end);
@@ -286,9 +294,7 @@ InstallAttributeMethodByGroupGeneralMappingByImages( IsSurjective, IsBool );
 ##
 #M  GroupGeneralMappingByImages( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
 ##
-InstallMethod( GroupGeneralMappingByImages, "for group, group, list, list",
-    true, [ IsGroup, IsGroup, IsList, IsList ], 0,
-function( G, H, gens, imgs )
+BindGlobal("DoGGMBINC",function( G, H, gens, imgs )
 local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
   
   hom := rec();
@@ -301,6 +307,8 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
   mapi:=[Immutable(gens),Immutable(imgs)];
   filter := IsGroupGeneralMappingByImages and HasSource and HasRange 
             and HasMappingGeneratorsImages;
+
+  if H=fail then H:=GroupWithGenerators(imgs);fi;
 
   if IsPermGroup( G )  then
       filter := filter and IsPermGroupGeneralMappingByImages;
@@ -392,11 +400,49 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
   return hom;
 end );
 
+InstallMethod( GroupGeneralMappingByImagesNC, "for group, group, list, list",
+    true, [ IsGroup, IsGroup, IsList, IsList ], 0, DoGGMBINC);
+
+InstallMethod( GroupGeneralMappingByImagesNC, "make onto",
+    true, [ IsGroup, IsList, IsList ], 0, 
+function( G, gens, imgs )
+    return DoGGMBINC(G,fail,gens,imgs);
+end);
+
+InstallMethod( GroupGeneralMappingByImages, "for group, group, list, list",
+    true, [ IsGroup, IsGroup, IsList, IsList ], 0,
+function( G, H, gens, imgs )
+    if not ForAll(gens,x->x in G) then
+      Error("generators must lie in source group");
+    elif not ForAll(imgs,x->x in H) then
+      Error("images must lie in range group");
+    fi;
+    return GroupGeneralMappingByImagesNC(G,H,gens,imgs);
+end);
+
+InstallMethod( GroupGeneralMappingByImages, "make onto",
+    true, [ IsGroup, IsList, IsList ], 0, 
+function( G, gens, imgs )
+    if not ForAll(gens,x->x in G) then
+      Error("generators must lie in source group");
+    fi;
+    return GroupGeneralMappingByImagesNC(G,gens,imgs);
+end);
+
 InstallMethod( GroupHomomorphismByImagesNC, "for group, group, list, list",
     true, [ IsGroup, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
 local   hom;
-  hom := GroupGeneralMappingByImages( G, H, gens, imgs );
+  hom := GroupGeneralMappingByImagesNC( G, H, gens, imgs );
+  SetIsMapping( hom, true );
+  return hom;
+end );
+
+InstallMethod( GroupHomomorphismByImagesNC, "for group, list, list",
+    true, [ IsGroup, IsList, IsList ], 0,
+function( G, gens, imgs )
+local   hom;
+  hom := GroupGeneralMappingByImagesNC( G, gens, imgs );
   SetIsMapping( hom, true );
   return hom;
 end );
@@ -408,7 +454,7 @@ InstallOtherMethod( GroupHomomorphismByImagesNC, "for group, group, list",
 
     local  hom;
 
-    hom := GroupGeneralMappingByImages( G, H, GeneratorsOfGroup(G), imgs );
+    hom := GroupGeneralMappingByImagesNC( G, H, GeneratorsOfGroup(G), imgs );
     SetIsMapping( hom, true );
     return hom;
   end );
@@ -420,7 +466,7 @@ InstallOtherMethod( GroupHomomorphismByImagesNC, "for group, group",
 
     local  hom;
 
-    hom := GroupGeneralMappingByImages( G, H, GeneratorsOfGroup(G),
+    hom := GroupGeneralMappingByImagesNC( G, H, GeneratorsOfGroup(G),
                                               GeneratorsOfGroup(H) );
     SetIsMapping( hom, true );
     return hom;
@@ -469,7 +515,7 @@ function( map )
 local mapi, cok,hom;
   mapi:=MappingGeneratorsImages(map);
   cok := GeneratorsOfGroup( CoKernelOfMultiplicativeGeneralMapping( map ) );
-  hom:=GroupGeneralMappingByImages( Source( map ), Range( map ),
+  hom:=GroupGeneralMappingByImagesNC( Source( map ), Range( map ),
     Concatenation( mapi[1],List(cok,g->One(Source(map)))),
     Concatenation( mapi[2],cok ) );
   CopyMappingAttributes(map,hom);
@@ -613,7 +659,7 @@ InstallMethod( InverseGeneralMapping, "via generators/images", true,
 function( hom )
 local mapi;
   mapi:=MappingGeneratorsImages(hom);
-  mapi:=GroupGeneralMappingByImages( Range( hom ),   Source( hom ),
+  mapi:=GroupGeneralMappingByImagesNC( Range( hom ),   Source( hom ),
                                       mapi[2], mapi[1] );
   if HasIsSurjective(hom) then
     SetIsTotal(mapi,IsSurjective(hom));
@@ -879,9 +925,15 @@ InstallOtherMethod(ConjugatorOfConjugatorIsomorphism,
   "default -- try RepresentativeAction",true,
   [IsGroupHomomorphism and IsConjugatorIsomorphism],0,
 function(hom)
-local gi,x;
+local gi,x,p;
   gi:=MappingGeneratorsImages(hom);
-  x:=RepresentativeAction(Parent(Source(hom)),gi[1],gi[2],OnTuples);
+  p:=Parent(Source(hom));
+  # in the case of permutation group there is the natural parent S_n which
+  # is used by `IsConjugatorIsomorphism'.
+  if IsPermGroup(p) then
+    p:=SymmetricGroup(MovedPoints(p));
+  fi;
+  x:=RepresentativeAction(p,gi[1],gi[2],OnTuples);
   if x=fail then TryNextMethod();fi;
   return x;
 end);
