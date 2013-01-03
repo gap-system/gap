@@ -459,11 +459,22 @@ end;
 WaitTasks := WaitTask;
 
 WaitAnyTask := function(arg)
+  local which, task, tasks;
   if Length(arg) = 1 and IsThreadLocal(arg[1]) and IS_LIST(arg[1]) then
-    WAIT_TASK(arg[1], false);
+    tasks := arg[1];
   else
-    WAIT_TASK(arg, false);
+    tasks := arg;
   fi;
+  WAIT_TASK(tasks, false);
+  which := 1;
+  for task in tasks do
+    atomic readonly task do
+      if task.complete then
+        return which;
+      fi;
+    od;
+    which := which + 1;
+  od;
 end;
 
 TaskResult := function(task)
@@ -535,7 +546,7 @@ CancelTask := atomic function(readwrite task)
   fi;
 end;
 
-TestCancelTask := function(arg)
+OnTaskCancellation := function(exit)
   local task, cancel, result;
   task := TASKS.CurrentTask();
   atomic task do
@@ -547,16 +558,18 @@ TestCancelTask := function(arg)
     fi;
   od;
   if cancel then
-    if IsBound(arg[1]) then
-      result := CALL_WITH_CATCH(arg[1], arg{[2..Length(arg)]});
-      if result[1] and IsBound(result[2]) then
-	atomic task do
-	  task.result := result[2];
-	od;
-      fi;
+    result := CALL_WITH_CATCH(exit, []);
+    if result[1] and IsBound(result[2]) then
+      atomic task do
+	task.result := result[2];
+      od;
     fi;
     JUMP_TO_CATCH(0);
   fi;
+end;
+
+OnTaskCancellationReturn := function(value)
+  OnTaskCancellation(->value);
 end;
 
 
