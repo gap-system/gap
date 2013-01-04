@@ -935,6 +935,7 @@ Obj FuncORDERED_WRITE(Obj self, Obj obj);
 Obj FuncORDERED_READ(Obj self, Obj obj);
 Obj FuncCREATOR_OF(Obj self, Obj obj);
 Obj FuncDISABLE_GUARDS(Obj self, Obj flag);
+Obj FuncTICKER(Obj self, Obj count, Obj func);
 
 /****************************************************************************
 **
@@ -1217,6 +1218,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "DISABLE_GUARDS", 1, "flag",
       FuncDISABLE_GUARDS, "src/threadapi.c:DISABLE_GUARDS" },
+
+    { "TICKER", 2, "count, function",
+      FuncTICKER, "src/threadapi.c:TICKER" },
 
     { 0 }
 
@@ -2898,4 +2902,17 @@ Obj FuncORDERED_WRITE(Obj self, Obj obj)
 {
   MEMBAR_WRITE();
   return obj;
+}
+
+Obj FuncTICKER(Obj self, Obj count, Obj func)
+{
+  if (!IS_INTOBJ(count))
+    ArgumentError("TICKER: First argument must be a small integer");
+  if (TNUM_OBJ(func) != T_FUNCTION)
+    ArgumentError("TICKER: Second argument must be a function");
+  if (++TLS->TickerCount >= INT_INTOBJ(count)) {
+    TLS->TickerCount = 0;
+    CALL_0ARGS(func);
+  }
+  return (Obj) 0;
 }

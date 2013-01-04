@@ -32,6 +32,7 @@ typedef struct ThreadLocalStorage
   Obj intrState;
   Obj stackObj;
   Int countObj;
+  UInt TickerCount;
   /* From gvar.c */
   Obj currNamespace;
   /* From vars.c */
