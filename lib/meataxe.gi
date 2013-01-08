@@ -262,33 +262,33 @@ SMTX.HasIsAbsolutelyIrreducible:=function(module)
   return IsBound(module.IsAbsolutelyIrreducible);
 end;
 
-SMTX.SetSmashRecord:=SMTX.Setter("dummy");
-SMTX.Subbasis:=SMTX.Getter("subbasis");
-SMTX.SetSubbasis:=SMTX.Setter("subbasis");
-SMTX.AlgEl:=SMTX.Getter("algebraElement");
-SMTX.SetAlgEl:=SMTX.Setter("algebraElement");
-SMTX.AlgElMat:=SMTX.Getter("algebraElementMatrix");
-SMTX.SetAlgElMat:=SMTX.Setter("algebraElementMatrix");
-SMTX.AlgElCharPol:=SMTX.Getter("characteristicPolynomial");
-SMTX.SetAlgElCharPol:=SMTX.Setter("characteristicPolynomial");
-SMTX.AlgElCharPolFac:=SMTX.Getter("charpolFactors");
-SMTX.SetAlgElCharPolFac:=SMTX.Setter("charpolFactors");
-SMTX.AlgElNullspaceVec:=SMTX.Getter("nullspaceVector");
-SMTX.SetAlgElNullspaceVec:=SMTX.Setter("nullspaceVector");
-SMTX.AlgElNullspaceDimension:=SMTX.Getter("ndimFlag");
-SMTX.SetAlgElNullspaceDimension:=SMTX.Setter("ndimFlag");
+SMTX.SetSmashRecord:=SMTX.Setter(`"dummy");
+SMTX.Subbasis:=SMTX.Getter(`"subbasis");
+SMTX.SetSubbasis:=SMTX.Setter(`"subbasis");
+SMTX.AlgEl:=SMTX.Getter(`"algebraElement");
+SMTX.SetAlgEl:=SMTX.Setter(`"algebraElement");
+SMTX.AlgElMat:=SMTX.Getter(`"algebraElementMatrix");
+SMTX.SetAlgElMat:=SMTX.Setter(`"algebraElementMatrix");
+SMTX.AlgElCharPol:=SMTX.Getter(`"characteristicPolynomial");
+SMTX.SetAlgElCharPol:=SMTX.Setter(`"characteristicPolynomial");
+SMTX.AlgElCharPolFac:=SMTX.Getter(`"charpolFactors");
+SMTX.SetAlgElCharPolFac:=SMTX.Setter(`"charpolFactors");
+SMTX.AlgElNullspaceVec:=SMTX.Getter(`"nullspaceVector");
+SMTX.SetAlgElNullspaceVec:=SMTX.Setter(`"nullspaceVector");
+SMTX.AlgElNullspaceDimension:=SMTX.Getter(`"ndimFlag");
+SMTX.SetAlgElNullspaceDimension:=SMTX.Setter(`"ndimFlag");
 
-SMTX.CentMat:=SMTX.Getter("centMat");
-SMTX.SetCentMat:=SMTX.Setter("centMat");
-SMTX.CentMatMinPoly:=SMTX.Getter("centMatMinPoly");
-SMTX.SetCentMatMinPoly:=SMTX.Setter("centMatMinPoly");
+SMTX.CentMat:=SMTX.Getter(`"centMat");
+SMTX.SetCentMat:=SMTX.Setter(`"centMat");
+SMTX.CentMatMinPoly:=SMTX.Getter(`"centMatMinPoly");
+SMTX.SetCentMatMinPoly:=SMTX.Setter(`"centMatMinPoly");
 
-SMTX.FGCentMat:=SMTX.Getter("fieldGenCentMat");
-SMTX.SetFGCentMat:=SMTX.Setter("fieldGenCentMat");
-SMTX.FGCentMatMinPoly:=SMTX.Getter("fieldGenCentMatMinPoly");
-SMTX.SetFGCentMatMinPoly:=SMTX.Setter("fieldGenCentMatMinPoly");
+SMTX.FGCentMat:=SMTX.Getter(`"fieldGenCentMat");
+SMTX.SetFGCentMat:=SMTX.Setter(`"fieldGenCentMat");
+SMTX.FGCentMatMinPoly:=SMTX.Getter(`"fieldGenCentMatMinPoly");
+SMTX.SetFGCentMatMinPoly:=SMTX.Setter(`"fieldGenCentMatMinPoly");
 
-SMTX.SetDegreeFieldExt:=SMTX.Setter("degreeFieldExt");
+SMTX.SetDegreeFieldExt:=SMTX.Setter(`"degreeFieldExt");
 
 LinearCombinationVecs:=function(v,c)
 local i,s;
