@@ -30,7 +30,7 @@ SieveFactor := function(n)
       fi;
       k := Int(Sqrt(n*1.0));
       while j <= k do
-	TICKER(10000, StopFunc);
+	PERIODIC_CHECK(1, StopFunc);
         sieve[k] := false;
 	j := j + i;
       od;
@@ -68,7 +68,7 @@ FermatFactor2 := function(n)
   b := a * a - n;
   i := 0;
   while true do
-    TICKER(1000, StopFunc);
+    PERIODIC_CHECK(1, StopFunc);
     i := i + 1;
     sqrt := SqrtNat(b);
     if IsInt(sqrt) then
