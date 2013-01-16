@@ -25,6 +25,7 @@
 #include	"stats.h"
 #include        "tls.h"
 #include        "thread.h"
+#include        "threadapi.h"
 #include	"fibhash.h"
 
 #define LOG2_NUM_LOCKS 11
@@ -250,6 +251,7 @@ static void RunThreadedMain2(
   thread_data[0].cond = TLS->threadSignal;
   thread_data[0].state = TSTATE_RUNNING;
   thread_data[0].tls = TLS;
+  InitSignals();
   if (sySetjmp(TLS->threadExit))
     exit(0);
   /* Traversal functionality may be needed during the initialization

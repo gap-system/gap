@@ -27,4 +27,6 @@ void SortMonitors(unsigned count, Monitor **monitors);
 void LockMonitors(unsigned count, Monitor **monitors);
 void UnlockMonitors(unsigned count, Monitor **monitors);
 
+void InitSignals();
+
 #endif // GAP_THREADAPI_H

@@ -110,3 +110,16 @@ InstallMethod( RecNames,
 if IsBound(ZmqSocket) then
   ReadLib("zmq.g");
 fi;
+
+CreateThread(function()
+  local handlers;
+  handlers := rec(
+    SIGINT := DEFAULT_SIGINT_HANDLER,
+    SIGCHLD := DEFAULT_SIGCHLD_HANDLER,
+    SIGVTALRM := DEFAULT_SIGVTALRM_HANDLER,
+    SIGWINCH := DEFAULT_SIGWINCH_HANDLER
+  );
+  while true do
+    SIGWAIT(handlers);
+  od;
+end);

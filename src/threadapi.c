@@ -13,6 +13,8 @@
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 #include        <string.h>              /* memcpy */
 #include        <stdlib.h>
+#include        <signal.h>
+#include        <sys/time.h>
 
 #include        "systhread.h"           /* system thread primitives        */
 
@@ -935,7 +937,12 @@ Obj FuncORDERED_WRITE(Obj self, Obj obj);
 Obj FuncORDERED_READ(Obj self, Obj obj);
 Obj FuncCREATOR_OF(Obj self, Obj obj);
 Obj FuncDISABLE_GUARDS(Obj self, Obj flag);
-Obj FuncTICKER(Obj self, Obj count, Obj func);
+Obj FuncSIGWAIT(Obj self, Obj handlers);
+Obj FuncDEFAULT_SIGINT_HANDLER(Obj self);
+Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self);
+Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self);
+Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self);
+Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func);
 
 /****************************************************************************
 **
@@ -1219,8 +1226,23 @@ static StructGVarFunc GVarFuncs [] = {
     { "DISABLE_GUARDS", 1, "flag",
       FuncDISABLE_GUARDS, "src/threadapi.c:DISABLE_GUARDS" },
 
-    { "TICKER", 2, "count, function",
-      FuncTICKER, "src/threadapi.c:TICKER" },
+    { "DEFAULT_SIGINT_HANDLER", 0, "",
+      FuncDEFAULT_SIGINT_HANDLER, "src/threadapi.c:DEFAULT_SIGINT_HANDLER" },
+
+    { "DEFAULT_SIGCHLD_HANDLER", 0, "",
+      FuncDEFAULT_SIGCHLD_HANDLER, "src/threadapi.c:DEFAULT_SIGCHLD_HANDLER" },
+
+    { "DEFAULT_SIGVTALRM_HANDLER", 0, "",
+      FuncDEFAULT_SIGVTALRM_HANDLER, "src/threadapi.c:DEFAULT_SIGVTALRM_HANDLER" },
+
+    { "DEFAULT_SIGWINCH_HANDLER", 0, "",
+      FuncDEFAULT_SIGWINCH_HANDLER, "src/threadapi.c:DEFAULT_SIGWINCH_HANDLER" },
+
+    { "SIGWAIT", 1, "record",
+      FuncSIGWAIT, "src/threadapi.c:SIGWAIT" },
+
+    { "PERIODIC_CHECK", 2, "count, function",
+      FuncPERIODIC_CHECK, "src/threadapi.c:PERIODIC_CHECK" },
 
     { 0 }
 
@@ -1287,6 +1309,14 @@ static void PrintRegion(Obj);
 
 GVarDescriptor LastInaccessibleGVar;
 GVarDescriptor MAX_INTERRUPTGVar;
+
+static UInt RNAM_SIGINT;
+static UInt RNAM_SIGCHLD;
+static UInt RNAM_SIGVTALRM;
+#ifdef SIGWINCH
+static UInt RNAM_SIGWINCH;
+#endif
+
 
 /****************************************************************************
 **
@@ -1380,6 +1410,13 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
     SetGVar(&MAX_INTERRUPTGVar, INTOBJ_INT(MAX_INTERRUPT));
     MakeReadOnlyGVar(GVarName("MAX_INTERRUPT"));
+    /* define signal handler values */
+    RNAM_SIGINT = RNamName("SIGINT");
+    RNAM_SIGCHLD = RNamName("SIGCHLD");
+    RNAM_SIGVTALRM = RNamName("SIGVTALRM");
+#ifdef SIGWINCH
+    RNAM_SIGWINCH = RNamName("SIGWINCH");
+#endif
 
     /* synchronization */
     pthread_mutex_init(&KeepAliveLock, NULL);
@@ -2904,14 +2941,102 @@ Obj FuncORDERED_WRITE(Obj self, Obj obj)
   return obj;
 }
 
-Obj FuncTICKER(Obj self, Obj count, Obj func)
+Obj FuncDEFAULT_SIGINT_HANDLER(Obj self) {
+  /* do nothing */
+  return (Obj) 0;
+}
+
+UInt SigVTALRMCounter = 0;
+
+Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self) {
+  SigVTALRMCounter++;
+  return (Obj) 0;
+}
+
+Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self) {
+  extern RETSIGTYPE ChildStatusChanged(int signr);
+  ChildStatusChanged(SIGCHLD);
+  return (Obj) 0;
+}
+
+Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self) {
+#ifdef SIGWINCH
+  extern RETSIGTYPE syWindowChangeIntr(int signr);
+  syWindowChangeIntr(SIGWINCH);
+#endif
+  return (Obj) 0;
+}
+
+static void HandleSignal(Obj handlers, UInt rnam)
 {
-  if (!IS_INTOBJ(count))
-    ArgumentError("TICKER: First argument must be a small integer");
+  Obj func = ELM_REC(handlers, rnam);
+  if (!func || TNUM_OBJ(func) != T_FUNCTION || NARG_FUNC(func) > 0)
+    return;
+  CALL_0ARGS(func);
+}
+
+static sigset_t GAPSignals;
+
+Obj FuncSIGWAIT(Obj self, Obj handlers)
+{
+  int sig;
+  if (!IS_REC(handlers))
+    ArgumentError("SIGWAIT: Argument must be a record");
+  if (sigwait(&GAPSignals, &sig) >= 0) {
+    switch (sig) {
+      case SIGINT:
+        HandleSignal(handlers, RNAM_SIGINT);
+	break;
+      case SIGCHLD:
+        HandleSignal(handlers, RNAM_SIGCHLD);
+	break;
+      case SIGVTALRM:
+        HandleSignal(handlers, RNAM_SIGVTALRM);
+	break;
+#ifdef SIGWINCH
+      case SIGWINCH:
+        HandleSignal(handlers, RNAM_SIGWINCH);
+	break;
+#endif
+    }
+  }
+  return (Obj) 0;
+}
+
+void InitSignals() {
+  struct itimerval timer;
+  sigemptyset(&GAPSignals);
+  sigaddset(&GAPSignals, SIGINT);
+  sigaddset(&GAPSignals, SIGCHLD);
+  sigaddset(&GAPSignals, SIGVTALRM);
+#ifdef SIGWINCH
+  sigaddset(&GAPSignals, SIGWINCH);
+#endif
+  pthread_sigmask(SIG_BLOCK, &GAPSignals, NULL);
+  /* Run a timer signal every 10 ms, i.e. 100 times per second */
+  timer.it_interval.tv_sec = 0;
+  timer.it_interval.tv_usec = 10000;
+  timer.it_value.tv_sec = 0;
+  timer.it_value.tv_usec = 10000;
+  if (setitimer(ITIMER_VIRTUAL, &timer, NULL) < 0)
+    perror("setitimer");
+}
+
+Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
+{
+  UInt n;
+  if (!IS_INTOBJ(count) || INT_INTOBJ(count) < 0)
+    ArgumentError("PERIODIC_CHECK: First argument must be a non-negative small integer");
   if (TNUM_OBJ(func) != T_FUNCTION)
-    ArgumentError("TICKER: Second argument must be a function");
-  if (++TLS->TickerCount >= INT_INTOBJ(count)) {
-    TLS->TickerCount = 0;
+    ArgumentError("PERIODIC_CHECK: Second argument must be a function");
+  /*
+   * The following read of SigVTALRMCounter is a dirty read. We don't
+   * need to synchronize access to it because it's a monotonically
+   * increasing value and we only need it to succeed eventually.
+   */
+  n = INT_INTOBJ(count)/10;
+  if (TLS->PeriodicCheckCount + n < SigVTALRMCounter) {
+    TLS->PeriodicCheckCount = SigVTALRMCounter;
     CALL_0ARGS(func);
   }
   return (Obj) 0;
