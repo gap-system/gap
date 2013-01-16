@@ -3018,8 +3018,7 @@ void InitSignals() {
   timer.it_interval.tv_usec = 10000;
   timer.it_value.tv_sec = 0;
   timer.it_value.tv_usec = 10000;
-  if (setitimer(ITIMER_VIRTUAL, &timer, NULL) < 0)
-    perror("setitimer");
+  setitimer(ITIMER_VIRTUAL, &timer, NULL);
 }
 
 Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
