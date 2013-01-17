@@ -228,7 +228,6 @@ static void RunThreadedMain2(
   int i;
   static pthread_mutex_t main_thread_mutex;
   static pthread_cond_t main_thread_cond;
-  SyEnvironment = environ;
   SetupTLS();
   for (i=1; i<MAX_THREADS-1; i++)
     thread_data[i].next = thread_data+i+1;
