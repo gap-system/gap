@@ -821,17 +821,21 @@ Obj FuncREC_NAMES (
     Obj                 rec )
 {
     /* check the argument                                                  */
-    while ( ! IS_PREC_REP(rec) && TNUM_OBJ(rec) != T_AREC ) {
-        rec = ErrorReturnObj(
-            "RecNames: <rec> must be a record (not a %s)",
-            (Int)TNAM_OBJ(rec), 0L,
-            "you can replace <rec> via 'return <rec>;'" );
+    UInt tnum;
+    for (;;) {
+      tnum = TNUM_OBJ(rec);
+      switch (tnum) {
+        case T_PREC:
+	case T_PREC+IMMUTABLE:
+	  return InnerRecNames(rec);
+	case T_AREC:
+	  return InnerRecNames(FromAtomicRecord(rec));
+      }
+      rec = ErrorReturnObj(
+	  "RecNames: <rec> must be a record (not a %s)",
+	  (Int)TNAM_OBJ(rec), 0L,
+	  "you can replace <rec> via 'return <rec>;'" );
     }
-    
-    if (TNUM_OBJ(rec) == T_AREC)
-      rec = FromAtomicRecord(rec);
-
-    return InnerRecNames( rec );
 }
 
 
@@ -845,13 +849,20 @@ Obj FuncREC_NAMES_COMOBJ (
     Obj                 rec )
 {
     /* check the argument                                                  */
-    while ( TNUM_OBJ(rec) != T_COMOBJ ) {
-        rec = ErrorReturnObj(
-            "RecNames: <rec> must be a component object (not a %s)",
-            (Int)TNAM_OBJ(rec), 0L,
-            "you can replace <rec> via 'return <rec>;'" );
+    UInt tnum;
+    for (;;) {
+      tnum = TNUM_OBJ(rec);
+      if (tnum == T_COMOBJ)
+        return InnerRecNames(rec);
+      if (tnum == T_ACOMOBJ) {
+        rec = FromAtomicRecord(rec);
+	return InnerRecNames(rec);
+      }
+      rec = ErrorReturnObj(
+	  "RecNames: <rec> must be a component object (not a %s)",
+	  (Int)TNAM_OBJ(rec), 0L,
+	  "you can replace <rec> via 'return <rec>;'" );
     }
-    return InnerRecNames( rec );
 }
 
 
