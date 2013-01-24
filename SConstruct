@@ -1,4 +1,4 @@
-import commands, os, glob, sys, string
+import commands, os, glob, sys, string, subprocess
 
 # parse options and set up environment
 
@@ -21,6 +21,7 @@ vars.Add(EnumVariable("gc", "Use GC: yes, no, or system", "yes",
   allowed_values=("yes", "no", "system")))
 vars.Add('preprocess', 'Use source preprocessor', "")
 vars.Add('ward', 'Specify Ward directory', "")
+vars.Add('cpus', "Number of logical CPUs", "auto")
 
 GAP = DefaultEnvironment(variables=vars)
 if GAP["compiler"] != "":
@@ -32,6 +33,30 @@ compiler = GAP["CC"]
 cpp_compiler = GAP["CXX"]
 platform = commands.getoutput("cnf/config.guess")
 build_dir = "bin/" + platform + "-" + compiler
+
+default_ncpus = 4
+
+if GAP["cpus"] == "auto":
+  if GAP["PLATFORM"] == "darwin":
+    try:
+      ncpus = int(subprocess.check_output(["sysctl", "-n",
+        "machdep.cpu.thread_count"]))
+    except:
+      ncpus = default_ncpus
+  elif GAP["PLATFORM"] == "linux":
+    try:
+      ncpus = int(subprocess.check_output(["nproc"]))
+    except:
+      ncpus = default_ncpus
+  else:
+    ncpus = default_ncpus
+else:
+  try:
+    ncpus = int(GAP["cpus"])
+  except:
+    ncpus = default_ncpus
+if ncpus <= 0:
+  ncpus = default_ncpus
 
 try: os.makedirs(build_dir)
 except: pass
@@ -175,6 +200,8 @@ if have_stdint_h:
 
 if GAP["debugguards"]:
   defines.append("VERBOSE_GUARDS")
+
+defines.append("NUM_CPUS="+str(ncpus))
 
 if GAP["cflags"]:
   cflags += " " + string.replace(GAP["cflags"], "%", " ")

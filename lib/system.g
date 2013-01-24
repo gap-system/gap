@@ -66,6 +66,7 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       [ "f", false, "force line editing" ],
       [ "n", false, "prevent line editing" ],
       [ "S", false, "disable/enable multi-threaded interface" ],
+      [ "P", "0","<num>", "set number of logical processors" ],
       [ "x", "", "<num>", "set line width" ],
       [ "y", "", "<num>", "set number of lines" ],
       ,

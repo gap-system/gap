@@ -253,6 +253,18 @@ UInt SyLineEdit;
 */
 UInt ThreadUI = 1;
 
+/****************************************************************************
+**
+*V  SyNumProcessors  . . . . . . . . . . . . . . . . . number of logical CPUs
+**
+*/
+#ifdef NUM_CPUS
+UInt SyNumProcessors = NUM_CPUS;
+#else
+UInt SyNumProcessors = 4;
+#endif
+
+
 
 /****************************************************************************
 **
@@ -1564,6 +1576,22 @@ static Int toggle( Char ** argv, void *Variable )
   return 0;
 }
 
+static Int storePosInteger( Char **argv, void *Where )
+{
+  UInt *where = (UInt *)Where;
+  UInt n;
+  Char *p = argv[0];
+  n = 0;
+  while (isdigit(*p)) {
+    n = n * 10 + (*p-'0');
+    p++;
+  }
+  if (p == argv[0] || *p || n == 0)
+    FPUTS_TO_STDERR("Argument not a positive integer");
+  *where = n;
+  return 1;
+}
+
 static Int storeString( Char **argv, void *Where )
 {
   Char **where = (Char **)Where;
@@ -1646,6 +1674,7 @@ struct optInfo options[] = {
   { 'p',  toggle, &SyWindow, 0 }, /* ?? */
   { 'q',  toggle, &SyQuiet, 0 }, /* ?? */
   { 'S',  toggle, &ThreadUI, 0 }, /* Thread UI */
+  { 'P',  storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
 #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 
   { 'z',  storeInteger, &syIsIntrFreq, 0},
 #endif

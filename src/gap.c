@@ -2801,6 +2801,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   Char *p;
   Obj tmp,list,str;
   UInt i,j;
+  extern UInt SyNumProcessors;
 
   /* GAP_ARCHITECTURE                                                    */
   tmp = NEW_STRING(SyStrlen(SyArchitecture));
@@ -2873,6 +2874,9 @@ Obj FuncKERNEL_INFO(Obj self) {
     r = RNamName("CONFIGNAME");
     AssPRec(res, r, str);
 #endif
+
+    r = RNamName("NUM_CPUS");
+    AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
    
     return res;
   
