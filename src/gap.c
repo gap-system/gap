@@ -2877,6 +2877,8 @@ Obj FuncKERNEL_INFO(Obj self) {
 
     r = RNamName("NUM_CPUS");
     AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
+
+    MakeImmutable(res);
    
     return res;
   
