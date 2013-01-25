@@ -688,7 +688,9 @@ BindGlobal( "ShowKernelInformation", function()
       Print( " ",btop,"   HPC-GAP, Version ", GAPInfo.Version, " of ",
              sysdate, " (free software, GPL)\n",
              " ",vert,"  GAP  ",vert,"   http://www.gap-system.org\n",
-             " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
+             " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n",
+	     "             Maximum concurrent threads: ",
+	     GAPInfo.KernelInfo.NUM_CPUS, "\n");
       # For each library, print the name.
       libs:= [];
       if "gmpints" in LoadedModules() then
