@@ -9,7 +9,7 @@ FINISH := 6;
 CULL_IDLE_WORKERS := 7;
 FINISH_WORKER := 8;
 
-Tasks := AtomicRecord( rec ( Initial := 4 ,    # initial number of worker threads
+Tasks := AtomicRecord( rec ( Initial := GAPInfo.KernelInfo.NUM_CPUS ,    # initial number of worker threads
                  ReportErrors := true,
                  WorkerPool := CreateChannel(),                # pool of idle workers                 
                  TaskManagerRequests := CreateChannel(),       # task manager requests

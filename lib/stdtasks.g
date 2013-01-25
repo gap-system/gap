@@ -7,7 +7,7 @@ TASK_QUEUE := ShareObj( rec (
   ready_tasks := [],
   workers := [],
   active_count := 0,
-  max_active := 4,
+  max_active := GAPInfo.KernelInfo.NUM_CPUS,
 ) );
 
 CURRENT_TASK := fail;
