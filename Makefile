@@ -37,6 +37,15 @@ gapdebug64: $(WARD)/bin/ward
 debug64: $(WARD)/bin/ward
 	$(BUILD) debug=1 abi=64 $(DEBUG) 
 
+config:
+	$(BUILD) config
+
+config32:
+	$(BUILD) abi=32 config
+
+config64:
+	$(BUILD) abi=64 config
+
 clean:
 	$(SCONS) -c preprocess=dummy
 
