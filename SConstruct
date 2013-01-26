@@ -1,4 +1,4 @@
-import commands, os, glob, sys, string, subprocess, platform
+import commands, os, glob, sys, string, commands, platform
 
 # parse options and set up environment
 
@@ -40,13 +40,20 @@ if GAP["cpus"] == "auto":
   os_name = platform.system()
   if os_name == "Darwin":
     try:
-      ncpus = int(subprocess.check_output(["sysctl", "-n",
-        "machdep.cpu.thread_count"]))
+      st, ncpus = commands.getstatusoutput("sysctl -n machdep.cpu.thread_count")
+      if st == 0:
+        ncpus = int(ncpus)
+      else:
+        ncpus = default_ncpus
     except:
       ncpus = default_ncpus
   elif os_name == "Linux":
     try:
-      ncpus = int(subprocess.check_output(["nproc"]))
+      st, ncpus = commands.getstatusoutput("ncore")
+      if st == 0:
+        ncpus = int(ncpus)
+      else:
+        ncpus = default_ncpus
     except:
       ncpus = default_ncpus
   else:
