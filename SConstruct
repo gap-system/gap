@@ -72,7 +72,7 @@ except: pass
 try: os.unlink("bin/current")
 except: pass
 
-try: os.symlink(platform+"-"+compiler, "bin/current")
+try: os.symlink(platform_name+"-"+compiler, "bin/current")
 except: pass
  
 
