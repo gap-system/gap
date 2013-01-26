@@ -1,4 +1,4 @@
-import commands, os, glob, sys, string, subprocess
+import commands, os, glob, sys, string, subprocess, platform
 
 # parse options and set up environment
 
@@ -31,19 +31,20 @@ if GAP["cpp_compiler"] != "":
 
 compiler = GAP["CC"]
 cpp_compiler = GAP["CXX"]
-platform = commands.getoutput("cnf/config.guess")
-build_dir = "bin/" + platform + "-" + compiler
+platform_name = commands.getoutput("cnf/config.guess")
+build_dir = "bin/" + platform_name + "-" + compiler
 
 default_ncpus = 4
 
 if GAP["cpus"] == "auto":
-  if GAP["PLATFORM"] == "darwin":
+  os_name = platform.system()
+  if os_name == "Darwin":
     try:
       ncpus = int(subprocess.check_output(["sysctl", "-n",
         "machdep.cpu.thread_count"]))
     except:
       ncpus = default_ncpus
-  elif GAP["PLATFORM"] == "linux":
+  elif os_name == "Linux":
     try:
       ncpus = int(subprocess.check_output(["nproc"]))
     except:
