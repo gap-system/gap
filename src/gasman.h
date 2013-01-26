@@ -596,7 +596,7 @@ extern  TNumInfoBags            InfoBags [ 256 ];
 void MakeBagTypePublic(int type);
 void MakeBagTypeProtected(int type);
 Bag MakeBagPublic(Bag bag);
-Bag MakeBagReadonly(Bag bag);
+Bag MakeBagReadOnly(Bag bag);
 
 
 /****************************************************************************

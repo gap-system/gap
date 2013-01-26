@@ -127,7 +127,7 @@ Obj C8Bits_WordVectorAndClear ( Obj kind, Obj vv, Int num )
     }
 
     /* correct the size of <obj>                                           */
-    RESIZE_WORD( obj, 8L, j );
+    (void) RESIZE_WORD( obj, 8L, j );
     return obj;
 }
 

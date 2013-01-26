@@ -671,7 +671,7 @@ UInt OpenInput (
     /* Handle *defin*; redirect *errin* to *defin* if the default
      * channel is already open. */
     if (! SyStrcmp(filename, "*defin*") ||
-        ! SyStrcmp(filename, "*errin*") && TLS->defaultInput )
+        (! SyStrcmp(filename, "*errin*") && TLS->defaultInput) )
         return OpenDefaultInput();
     /* try to open the input file                                          */
     file = SyFopen( filename, "r" );
@@ -1307,7 +1307,7 @@ UInt OpenOutput (
     /* Handle *defout* specially; also, redirect *errout* if we already
      * have a default channel open. */
     if ( ! SyStrcmp( filename, "*defout*" ) ||
-         ! SyStrcmp( filename, "*errout*" ) && TLS->threadID != 0)
+         (! SyStrcmp( filename, "*errout*" ) && TLS->threadID != 0) )
         return OpenDefaultOutput();
 
     /* try to open the file                                                */
@@ -1408,7 +1408,8 @@ UInt CloseOutput ( void )
         return 1;
 
     /* refuse to close the initial output file '*stdout*'                  */
-    if ( TLS->outputFilesSP <= 1  && TLS->defaultOutput == TLS->output)
+    if ( TLS->outputFilesSP <= 1 && TLS->output->isstream
+         && TLS->defaultOutput == TLS->output->stream)
       return 1;
 
 

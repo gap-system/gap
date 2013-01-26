@@ -2043,11 +2043,11 @@ Obj FuncFIND_ALL_IN_STRING(Obj self, Obj string, Obj chars)
     ErrorQuit("FIND_ALL_IN_STRING: Requires two string arguments", 0L, 0L);
   memset(table, 0, sizeof(table));
   len = GET_LEN_STRING(chars);
-  s = CSTR_STRING(chars);
+  s = (unsigned char *) CSTR_STRING(chars);
   for (i=0; i<len; i++)
     table[s[i]] = 1;
   len = GET_LEN_STRING(string);
-  s = CSTR_STRING(string);
+  s = (unsigned char *) CSTR_STRING(string);
   matches = 0;
   for (i = 0; i < len; i++)
     if (table[s[i]])

@@ -916,7 +916,7 @@ void InitPrintObjStack() {
     TLS->PrintObjThissObj = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));
     TLS->PrintObjThiss = ADDR_OBJ(TLS->PrintObjThissObj)+1;
     TLS->PrintObjIndicesObj = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Int)+sizeof(Obj));
-    TLS->PrintObjIndices = ADDR_OBJ(TLS->PrintObjIndicesObj)+1;
+    TLS->PrintObjIndices = (Int *)(ADDR_OBJ(TLS->PrintObjIndicesObj)+1);
   }
 }
     

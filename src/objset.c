@@ -386,6 +386,7 @@ static Obj FuncOBJ_SET(Obj self, Obj arg) {
       return result;
     default:
       ErrorQuit("OBJ_SET: Too many arguments", 0L, 0L);
+      return (Obj) 0; /* flow control hint */
   }
 }
 
@@ -450,6 +451,7 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg) {
       return result;
     default:
       ErrorQuit("OBJ_MAP: Too many arguments", 0L, 0L);
+      return (Obj) 0; /* flow control hint */
   }
 }
 

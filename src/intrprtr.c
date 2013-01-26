@@ -985,7 +985,7 @@ void            IntrAtomicBegin ( void )
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { return; }
-    if ( TLS->intrCoding    > 0 ) { TLS->intrCoding; CodeAtomicBegin(); return; }
+    if ( TLS->intrCoding    > 0 ) { CodeAtomicBegin(); return; }
     /* nothing to do here */
     return;
   

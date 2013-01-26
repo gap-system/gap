@@ -47,6 +47,7 @@
 #include        "saveload.h"            /* saving and loading              */
 #include        "read.h"                /* to access stack of for loop globals */
 #include        "gvars.h"
+#include        "thread.h"              /* threads                         */
 #include        "tls.h"                 /* thread-local storage            */
 #include	"aobjects.h"		/* atomic objects		   */
 

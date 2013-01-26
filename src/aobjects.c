@@ -192,7 +192,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
   Obj init;
   Obj result;
   AtomicObj *data;
-  UInt i, len;
+  Int i, len;
   switch (LEN_PLIST(args)) {
     case 1:
       init = ELM_PLIST(args, 1);

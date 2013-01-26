@@ -51,6 +51,7 @@
 
 #include        "opers.h"               /* generic operations              */
 #include        "gvars.h"
+#include        "thread.h"              /* threads                         */
 #include        "tls.h"                 /* thread-local storage            */
 
 #include        "vars.h"                /* variables                       */
@@ -1186,7 +1187,7 @@ void            LockFuncArgs (
     Int i;
     int count = 0;
     int *mode = alloca(nargs * sizeof(int));
-    char *locks = CHARS_STRING(LCKS_FUNC(func));
+    UChar *locks = CHARS_STRING(LCKS_FUNC(func));
     Obj *objects = alloca(nargs * sizeof(Obj));
     for (i=0; i<nargs; i++) {
       Obj obj = args[i];
