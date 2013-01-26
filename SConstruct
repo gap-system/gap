@@ -49,7 +49,7 @@ if GAP["cpus"] == "auto":
       ncpus = default_ncpus
   elif os_name == "Linux":
     try:
-      st, ncpus = commands.getstatusoutput("ncore")
+      st, ncpus = commands.getstatusoutput("nproc")
       if st == 0:
         ncpus = int(ncpus)
       else:
