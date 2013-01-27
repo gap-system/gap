@@ -724,6 +724,48 @@ InstallMethod( Order,
     [ IsPerm ],
     ORDER_PERM );
 
+#############################################################################
+##
+#O  DistancePerms( <perm1>, <perm2> ) . returns NrMovedPoints( <perm1>/<perm2> )
+##        but possibly faster
+##
+##  <#GAPDoc Label="DistancePerms">
+##  <ManSection>
+##  <Oper Name="DistancePerms" Arg="perm1, perm2"/>
+##
+##  <Description>
+##  returns the number of points for which <A>perm1</A> and <A>perm2</A> 
+##  have different images. This should always produce the same result as
+##  <C>NrMovePoints(<A>perm1</A>/<A>perm2</A>)</C> but some methods may be
+##  much faster than this form, since no new permutation needs to be created.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+
+DeclareOperation( "DistancePerms", [IsPerm, IsPerm] );
+
+
+#############################################################################
+##
+#M  DistancePerms( <perm1>, <perm2> ) . returns NrMovedPoints( <perm1>/<perm2> )
+##    for kernel permutations
+##
+InstallMethod( DistancePerms, "for kernel permutations",
+        [ IsPerm and IsInternalRep, IsPerm and IsInternalRep ],
+        DISTANCE_PERMS);
+
+#############################################################################
+##
+#M  DistancePerms( <perm1>, <perm2> ) . returns NrMovedPoints( <perm1>/<perm2> )
+##    generic
+##
+
+InstallMethod( DistancePerms, "for general permutations",
+        [ IsPerm, IsPerm ],
+        function(x,y)
+    return NrMovedPoints(x/y); end);
+
+
 
 #############################################################################
 ##

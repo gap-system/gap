@@ -93,22 +93,32 @@ DeclareAttribute( "EpimorphismSchurCover", IsGroup );
 ##  <Index>Schur multiplier</Index>
 ##  returns a list of the abelian invariants of the Schur multiplier of
 ##  <A>G</A>.
-##  <Log><![CDATA[
-##  gap> AbelianInvariantsMultiplier(g);
-##  [ 2 ]
-##  gap> AbelianInvariantsMultiplier(MathieuGroup(22));
-##  [ 4, 3 ]
-##  ]]></Log>
-##  <P/>
-##  Note that the following example will take some time.
-##  <P/>
-##  <Log><![CDATA[
-##  gap> AbelianInvariantsMultiplier(PSU(6,2));
-##  [ 2, 2, 3 ]
-##  ]]></Log>
 ##  <P/>
 ##  At the moment, this operation will not give any information about how to
 ##  extend the multiplier to a Schur Cover.
+##  <Example><![CDATA[
+##  gap> AbelianInvariantsMultiplier(g);
+##  [ 2 ]
+##  gap> AbelianInvariantsMultiplier(AlternatingGroup(6));
+##  [ 2, 3 ]
+##  gap> AbelianInvariantsMultiplier(SL(2,3));
+##  [  ]
+##  gap> AbelianInvariantsMultiplier(SL(3,2));
+##  [ 2 ]
+##  gap> AbelianInvariantsMultiplier(PSU(4,2));
+##  [ 2 ]
+##  ]]></Example>
+##  (Note that the last command from the example will take some time.)
+##  <P/>
+##  The &GAP;&nbsp;4.4.12 manual contained examples for larger groups e.g.
+##  <M>M_{22}</M>. However, some issues that may very rarely (and not 
+##  easily reproducibly) lead to wrong results were discovered in the code
+##  capable of handling larger groups, and in &GAP;&nbsp;4.5 it was replaced 
+##  by a more reliable basic method. To deal with larger groups, one can use 
+##  the function <Ref BookName="cohomolo" Func="SchurMultiplier"/> from the
+##  <Package>cohomolo</Package> package. Also, additional methods for 
+##  <Ref Attr="AbelianInvariantsMultiplier"/> are installed in the 
+##  <Package>Polycyclic</Package> package for pcp-groups.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

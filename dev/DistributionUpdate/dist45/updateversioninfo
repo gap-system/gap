@@ -55,6 +55,11 @@ cd ../cnf/
 sed -i -e "s/4.dev/4.$FULLVERSION/g" configure.in
 sed -i -e "s/4.dev/4.$FULLVERSION/g" configure.out
 
+cd ../bin/
+sed -i -e "s/gap4dev/$DISTNAME/g" gap.bat
+sed -i -e "s/gap4dev/$DISTNAME/g" gapcmd.bat
+sed -i -e "s/gap4dev/$DISTNAME/g" gaprxvt.bat
+
 cd ..
 
 exit 0

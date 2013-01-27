@@ -206,8 +206,8 @@ see <Ref Func="SymplecticGroup" BookName="ref"/>.
 Basic version of the simplex algorithm for matrices.
 </Item>
 <Item>
-New functions and operations: 
-<Ref Func="PrimeDivisors" BookName="ref"/>, 
+New functions, operations and attributes: 
+<Ref Attr="PrimeDivisors" BookName="ref"/>, 
 <Ref Oper="Shuffle" BookName="ref"/> for lists, 
 <Ref Func="IteratorOfPartitions" BookName="ref"/>,
 <Ref Func="IteratorOfCombinations" BookName="ref"/>,
@@ -663,7 +663,6 @@ for upgrading a &GAP; package to &GAP;&nbsp;4.5, see
 <Subsection Label="New and updated packages since GAP 4.4.12"> 
 <Heading>New and updated packages since &GAP; 4.4.12</Heading>
 
-<Index>Packages, new</Index>
 At the time of the release of &GAP; 4.4.12 there were 75 packages
 redistributed with &GAP; (including the <Package>TomLib</Package>
 which was distributed in the core &GAP; archive). The first public release
@@ -767,7 +766,6 @@ of fixed coclass.
 </Item>
 </List>
 
-<Index>Packages, upgraded</Index>
 Furthermore, some packages have been upgraded substantially 
 since the &GAP;&nbsp;4.4.12 release:
 
@@ -776,7 +774,7 @@ since the &GAP;&nbsp;4.4.12 release:
 <Package>Alnuth</Package> package by B. Assmann, A. Distler and B. Eick
 uses an interface to PARI/GP system instead of the interface to KANT
 (thanks to B. Allombert for the GP code for the new interface and help 
-with the transition).
+with the transition) and now also works under Windows.
 </Item>
 <Item>
 <Package>CTblLib</Package> package (the &GAP; Character Table Library)

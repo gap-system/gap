@@ -911,7 +911,9 @@ end );
 ##############################################################################
 ##
 #M  SemidirectProduct                                   for permutation groups
+
 ##
+##  Use regular action
 ##  Original version by Derek Holt, 6/9/96, in first GAP3 version of xmod
 ##
 InstallMethod( SemidirectProduct, "generic method for permutation groups",
@@ -955,6 +957,35 @@ function( R, map, S )
     SetSemidirectProductInfo( P, info );
     return P;
 end );
+
+InstallMethod( SemidirectProduct, "Induced permutation automorphisms",
+    [ IsPermGroup, IsGroupHomomorphism, IsPermGroup ],
+function( R, map, S )
+local Rgens,imgs,conj,cg,auc,cghom,d,embn,embs,l,u,P,info;
+  Rgens:=GeneratorsOfGroup(R);
+  imgs:=List(Rgens,x->Image(map,x));
+  if ForAll(imgs,IsConjugatorIsomorphism) then
+    conj:=List(imgs,ConjugatorOfConjugatorIsomorphism);
+    cg:=Group(conj,());
+    auc:=ClosureGroup(S,conj);
+    cghom:=GroupHomomorphismByImagesNC(R,cg,Rgens,conj);
+    d:=DirectProduct(auc,R);
+    embn:=Embedding(d,1);
+    embs:=Embedding(d,2);
+    l:=List([1..Length(imgs)],x->Image(embn,conj[x])*Image(embs,Rgens[x]));
+    u:=SubgroupNC(d,l);
+    if Size(u)=Size(R) then # so the conjugating elements don't generate
+                            # something extra
+      P:=ClosureGroup(Image(embn,S),l);
+      info := rec( groups := [ R, S ],
+		  embeddings := [embs,RestrictedMapping(embn,S) ],
+		  projections := RestrictedMapping(Projection(d,2),P));
+      SetSemidirectProductInfo( P, info );
+      return P;
+    fi;
+  fi;
+  TryNextMethod();
+end);
 
 ##############################################################################
 ##

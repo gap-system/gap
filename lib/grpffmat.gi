@@ -67,7 +67,7 @@ if Length(l)=0 then Error("list must be nonempty");fi;
     if IsGF2MatrixRep(i) then
       deg:=deg; # always in
     elif Is8BitMatrixRep(i) then
-      j:=Q_VEC8BIT(l[1]![2]);
+      j:=Q_VEC8BIT(i![2]);
       deg:=LcmInt( deg, Length(Factors(j)));
     else
       for j  in i  do

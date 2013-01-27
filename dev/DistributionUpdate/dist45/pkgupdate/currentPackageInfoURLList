@@ -28,6 +28,7 @@ Carat       http://www.math.uni-bielefeld.de/~gaehler/gap45/Carat/PackageInfo.g
 Circle      http://www.cs.st-andrews.ac.uk/~alexk/circle/PackageInfo.g
 Citrus      http://www-groups.mcs.st-and.ac.uk/~jamesm/citrus/PackageInfo.g
 cohomolo    http://www.warwick.ac.uk/staff/D.F.Holt/cohomolo/PackageInfo.g
+Congruence  http://www.cs.st-andrews.ac.uk/~alexk/congruence/PackageInfo.g
 Convex      http://wwwb.math.rwth-aachen.de/~gutsche/gap_packages/Convex/PackageInfo.g
 Crime       http://math.uic.edu/~marcus/Crime/PackageInfo.g
 CRISP       http://www.icm.tu-bs.de/~bhoeflin/crisp/PackageInfo.g
@@ -53,7 +54,7 @@ Gauss       http://wwwb.math.rwth-aachen.de/goertzen/Gauss/PackageInfo.g
 GaussForHomalg http://wwwb.math.rwth-aachen.de/goertzen/GaussForHomalg/PackageInfo.g
 GBNP        http://mathdox.org/products/gbnp/PackageInfo.g
 genss       http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/genssfor4.5/PackageInfo.g
-gpd         http://www.maths.bangor.ac.uk/chda/gap4r5/gpd/PackageInfo.g
+gpd         http://www.maths.bangor.ac.uk/chda/gap4/gpd/PackageInfo.g
 GradedModules http://homalg.math.rwth-aachen.de/~markus/GradedModules/PackageInfo.g
 GradedRingForHomalg http://homalg.math.rwth-aachen.de/~markus/GradedRingForHomalg/PackageInfo.g
 GRAPE       http://www.maths.qmul.ac.uk/~leonard/grape/grape4r6/PackageInfo.g
@@ -66,12 +67,12 @@ HAPprime    http://www.cs.st-andrews.ac.uk/~pas/HAPprime/PackageInfo.g
 hecke       http://home.in.tum.de/~traytel/hecke/PackageInfo.g
 homalg      http://homalg.math.rwth-aachen.de/~barakat/homalg-project/homalg/PackageInfo.g
 HomalgToCAS http://homalg.math.rwth-aachen.de/~barakat/homalg-project/HomalgToCAS/PackageInfo.g
-idrel       http://www.maths.bangor.ac.uk/chda/gap4r5/idrel/PackageInfo.g
+idrel       http://www.maths.bangor.ac.uk/chda/gap4/idrel/PackageInfo.g
 IO          http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/iofor4.5/PackageInfo.g
 IO_ForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/IO_ForHomalg/PackageInfo.g
 IRREDSOL    http://www.icm.tu-bs.de/~bhoeflin/irredsol/PackageInfo.g
 ITC         http://www.math.rwth-aachen.de/~Volkmar.Felsch/itc/PackageInfo.g
-kan         http://www.maths.bangor.ac.uk/chda/gap4r5/kan/PackageInfo.g
+kan         http://www.maths.bangor.ac.uk/chda/gap4/kan/PackageInfo.g
 kbmag       http://www.warwick.ac.uk/~mareg/kbmag/PackageInfo.g
 LAGUNA      http://www.cs.st-andrews.ac.uk/~alexk/laguna/PackageInfo.g
 liealgdb    http://www.sztaki.hu/~schneider/Research/LieAlgDB/PackageInfo.g
@@ -118,4 +119,4 @@ unipot      http://www.sergei-haller.de/unipot/PackageInfo.g
 UnitLib     http://www.cs.st-andrews.ac.uk/~alexk/unitlib/PackageInfo.g
 Wedderga    http://www.cs.st-andrews.ac.uk/~alexk/wedderga/PackageInfo.g
 XGAP        http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/xgap4/PackageInfo.g
-XMod        http://www.math.bangor.ac.uk/chda/gap4r5/xmod/PackageInfo.g
+XMod        http://www.math.bangor.ac.uk/chda/gap4/xmod/PackageInfo.g

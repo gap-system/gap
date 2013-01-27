@@ -1204,7 +1204,7 @@ end);
 ##  mod p
 ##
 BindGlobal("ChaNuPol",function(f,alm,alz,coeffun,fam,inum)
-local b,p,r,nu,w,i,z;
+local b,p,r,nu,w,i,z,fnew;
   p:=Characteristic(alm);
   z:=Z(p);
   r:=PrimitiveRootMod(p);
@@ -1216,6 +1216,7 @@ local b,p,r,nu,w,i,z;
   else
     f:=[f];
   fi;
+  fnew:=[]; # f could be compressed vector, so we cannot assign to it.
   for i in [1..Length(f)] do
     w:=f[i];
     if w=nu then
@@ -1227,9 +1228,10 @@ local b,p,r,nu,w,i,z;
         w:=ValuePol(List(coeffun(w),IntFFE),alz);
       fi;
     fi;
-    f[i]:=w;
+    #f[i]:=w;
+    fnew[i]:=w;
   od;
-  return UnivariatePolynomialByCoefficients(fam,f,inum);
+  return UnivariatePolynomialByCoefficients(fam,fnew,inum);
 end);
 
 

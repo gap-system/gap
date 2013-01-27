@@ -196,6 +196,39 @@ DeclareAttribute( "LieObject", IsRingElement );
 
 #############################################################################
 ##
+#A  UnderlyingRingElement( <obj> )
+##
+##  <#GAPDoc Label="UnderlyingRingElement">
+##  <ManSection>
+##  <Attr Name="UnderlyingRingElement" Arg='obj'/>
+##
+##  <Description>
+##  Let <A>obj</A> be a Lie object constructed from a ring element
+##  <C>r</C> by calling <C>LieObject( r )</C>.
+##  Then <C>UnderlyingRingElement( <A>obj</A> )</C> returns
+##  the ring element <C>r</C> used to construct <A>obj</A>.
+##  If <C>r</C> lies in the family <C>F</C>, then <A>obj</A>
+##  lies in the family <C>LieFamily( F )</C>
+##  (see&nbsp;<Ref Func="LieFamily"/>).
+##  <Example><![CDATA[
+##  gap> lo:= LieObject( [ [ 1, 0 ], [ 0, 1 ] ] );
+##  LieObject( [ [ 1, 0 ], [ 0, 1 ] ] )
+##  gap> m:=UnderlyingRingElement(lo);
+##  [ [ 1, 0 ], [ 0, 1 ] ]
+##  gap> lo*lo;
+##  LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
+##  gap> m*m;
+##  [ [ 1, 0 ], [ 0, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "UnderlyingRingElement", IsLieObject );
+
+
+#############################################################################
+##
 #F  IsLieObjectsModule( <V> )
 ##
 ##  <ManSection>

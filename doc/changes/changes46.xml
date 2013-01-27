@@ -1,13 +1,18 @@
 <Chapter Label="ChangesGAP45toGAP46"> 
-<Heading>Changes between &GAP; 4.5 and &GAP; 4.6 (BETA FOR PACKAGE AUTHORS)</Heading>
+<Heading>Changes between &GAP; 4.5 and &GAP; 4.6</Heading>
 
-This chapter lists most important changes between &GAP; 4.5.7 and the
-first public release of &GAP; 4.6. Later it will also contain information 
-about subsequent update releases for &GAP; 4.5.
+This chapter lists most important changes between 
+&GAP; 4.5.7 and &GAP; 4.6.1 
+(i.e. between the last release of &GAP; 4.5 
+and the first public release of &GAP; 4.6).
+Later it will also contain information 
+about subsequent update releases for &GAP; 4.6.
 
-<Section Label="fix460"> 
+<Section Label="fix461"> 
+<Heading>&GAP; 4.6.1 (January 2013)</Heading>
 
-<Heading>&GAP; 4.6.0 (Winter 2012/2013)</Heading>
+<Subsection Label="Changes in the core GAP46 system"> 
+<Heading>Changes in the core &GAP; system</Heading>
 
 Improved and extended functionality:
 <List>  
@@ -20,14 +25,14 @@ the order in which packages are loaded.
 </Item>
 <Item>
 Words in fp groups are now printed in factorised form if possible and not
-too time-consuming.
+too time-consuming, i.e. <C>a*b*a*b*a*b</C> will be printed as <C>(a*b)^3</C>.
 </Item>       
 <Item>
 Added methods to calculate Hall subgroups in nonsolvable groups.
 </Item>
 <Item>
 Added a generic method for <Ref Prop="IsPSolvable" BookName="ref"/> and 
-better generic method for <Ref Prop="IsPNilpotent" BookName="ref"/> for 
+a better generic method for <Ref Prop="IsPNilpotent" BookName="ref"/> for 
 groups. 
 </Item>
 <Item>
@@ -42,9 +47,9 @@ To improve efficiency, additional code was added to make sure that the
 representation in more cases.
 </Item>
 <Item>
-Added an operation <Ref Oper="SortBy" BookName="ref"/> with argument being
-a function <A>f</A> of one argument and a list <A>l</A> to be sorted so 
-that <C><A>l</A>(<A>f</A>[i]) &lt;= <A>l</A>(<A>f</A>[i+1])</C>.
+Added an operation <Ref Oper="SortBy" BookName="ref"/> with arguments being
+a function <A>f</A> of one argument and a list <A>l</A> to be sorted in
+such a way that <C><A>l</A>(<A>f</A>[i]) &lt;= <A>l</A>(<A>f</A>[i+1])</C>.
 </Item>
 <Item>
 Added a kernel function <C>MEET_BLIST</C> which returns <K>true</K> if the 
@@ -55,7 +60,7 @@ lists.
 <Item>
 When assigning to a position in a compressed FFE vector &GAP; now checks to 
 see if the value being assigned can be converted into an internal FFE 
-element if it isn't one already. Uses new attribute 
+element if it isn't one already. This uses new attribute 
 <Ref Oper="AsInternalFFE" BookName="ref"/>, for which 
 methods are installed for internal FFEs, Conway FFEs and ZmodpZ objects.
 </Item>
@@ -82,6 +87,21 @@ similar cases a little earlier.
 Allow a <C>GAPARGS</C> parameter to the top-level &GAP; <F>Makefile</F> to pass
 extra arguments to the &GAP; used for manual building.
 </Item>
+<Item>
+Added an attribute <Ref Attr="UnderlyingRingElement" BookName="ref"/> for Lie objects.
+</Item>
+<Item>
+The function <Ref Attr="PrimeDivisors" BookName="ref"/> now became an attribute.
+[suggested by Mohamed Barakat]
+</Item>
+<Item>
+Added an operation <Ref Oper="DistancePerms" BookName="ref"/> with a kernel method for 
+internal permutations and a generic method.
+</Item>
+<Item>
+Added a method for <Ref Oper="Subfields" BookName="ref"/> to support large finite fields. 
+[reported by Inneke van Gelder]
+</Item>
 </List>
 
 Fixed bugs which could lead to crashes:
@@ -106,15 +126,97 @@ as record field elements in expressions like <C>r.1.2</C>.
 Fixed two potential problems in <C>NorSerPermPcgs</C>, one corrupting
 some internal data and one possibly mixing up different pcgs. 
 </Item>
+<Item>
+Fixed a performance problem with <Ref Oper="NiceMonomorphism" BookName="ref"/>.
+[reported by John Bamberg]
+</Item>
+<Item>
+Fixed a bug in <Ref Func="ReadCSV" BookName="ref"/> that caused some 
+<F>.csv</F> files being parsed incorrectly.
+</Item>
 </List>
 
-New packages added for the redistribution with &GAP;:
+No longer supported:
+<List>  
+<Item>
+The file <File>lib/consistency.g</File>, which contained three undocumented
+auxiliary functions, has been removed from the library. In addition, the 
+global record <C>Revision</C> is now deprecated, so there is no need to
+bind its components in &GAP; packages.
+</Item>
+</List>
+
+</Subsection>
+
+<Subsection Label="New and updated packages since GAP 4.5.4"> 
+<Heading>New and updated packages since &GAP; 4.5.4</Heading>
+
+<Index>Packages, new</Index>
+At the time of the release of &GAP; 4.5 there were 99 packages redistributed with &GAP;. 
+The first public release of &GAP;&nbsp;4.6 contains 106 packages. 
+<P/>
+
+The new packages that have been added to the redistribution 
+since the release of &GAP; 4.5.4 are: 
 
 <List>
 <Item>
-. . . To be documented . . .
+<Package>AutoDoc</Package> package by S. Gutsche,
+providing tools for automated generation of <Package>GAPDoc</Package> manuals.
+</Item>
+<Item>
+<Package>Congruence</Package> package by A. Konovalov,
+which provides functions to construct various canonical 
+congruence subgroups in <M>SL_2(&ZZ;)</M>, and also 
+intersections of a finite number of such subgroups, 
+implements the algorithm for generating Farey symbols for
+congruence subgroups and uses it to produce a system of 
+independent generators for these subgroups. 
+</Item>
+<Item>
+<Package>Convex</Package> package by S. Gutsche,
+which provides structures and algorithms for convex geometry. 
+</Item>
+<Item>
+<Package>Float</Package> package by L. Bartholdi, which extends &GAP;
+floating-point capabilities by providing new floating-point handlers for 
+high-precision real, interval and complex arithmetic using MPFR, MPFI, 
+MPC or CXSC external libraries. It also contains a very high-performance 
+implementation of the LLL (Lenstra-Lenstra-Lovász) lattice reduction 
+algorithm via the external library FPLLL. 
+</Item>
+<Item>
+<Package>PolymakeInterface</Package> package by T. Baechler and S. Gutsche, 
+providing a link to the callable library of the <Package>polymake</Package> 
+system (<URL>http://www.polymake.org</URL>).
+</Item>
+<Item>
+<Package>ToolsForHomalg</Package> package by M. Barakat, S. Gutsche and
+M. Lange-Hegermann, which provides some auxiliary functionality for the
+<Package>homalg</Package> project (<URL>http://homalg.math.rwth-aachen.de/</URL>).
+</Item>
+<Item>
+<Package>ToricVarieties</Package> package by S. Gutsche,
+which provides data structures to handle toric varieties by their 
+commutative algebra structure and by their combinatorics. 
 </Item>
 </List>
+
+<Index>Packages, upgraded</Index>
+Furthermore, some packages have been upgraded substantially 
+since the &GAP;&nbsp;4.5.4 release:
+<List>
+<Item>
+Starting from 2.x.x, the functionality for iterated monodromy 
+groups has been moved from the <Package>FR</Package> package 
+by L. Bartholdi to a separate package IMG (currently undeposited, 
+available from <URL>https://github.com/laurentbartholdi/img</URL>).
+This completely removes the dependency of <Package>FR</Package> 
+on external library modules, and should make its installation much easier.
+</Item>
+</List>
+
+</Subsection>
 
 </Section>
 

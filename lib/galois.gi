@@ -750,6 +750,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
         orbs[nr]:=MinimizedBombieriNorm(orbs[nr])[1];
       fi;
     fi;
+    Info(InfoGalois,5,"Resolvent is =",orbs[nr],"\n");
     return orbs[nr];
   end;
 

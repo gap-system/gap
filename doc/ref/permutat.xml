@@ -89,6 +89,7 @@ false
 </Description>
 </ManSection>
 
+<#Include Label="DistancePerms">
 <#Include Label="SmallestGeneratorPerm">
 
 </Section>

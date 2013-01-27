@@ -3762,6 +3762,10 @@ local   fgens,      # generators of the free group
   # handle nontrivial fp group by computing the index of its trivial
   # subgroup
   else
+    # the abelian invariants are comparatively cheap
+    if 0 in AbelianInvariants(G) then
+      return infinity;
+    fi;
     # the group could be quite big -- try to find a cyclic subgroup of
     # finite index.
     gen:=FinIndexCyclicSubgroupGenerator(G,infinity);
@@ -3828,6 +3832,12 @@ function(arg)
   G:=arg[1];
   if HasIsomorphismPermGroup(G) then
     return IsomorphismPermGroup(G);
+  fi;
+
+  # abelian invariants is comparatively cheap
+  if 0 in AbelianInvariants(G) then
+    SetSize(G,infinity);
+    return fail;
   fi;
 
   if Length(arg)>1 then

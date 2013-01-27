@@ -728,13 +728,14 @@ InstallGlobalFunction(FactorsInt,function ( n )
     return factors;
 end);
 
+
 #############################################################################
 ##
 #F  PrimeDivisors( <n> ) . . . . . . . . . . . . . . list of prime divisors
 ##  
 ##  delegating to FactorsInt
 ##  
-InstallGlobalFunction(PrimeDivisors, function(n)
+InstallMethod( PrimeDivisors, "for integer", [ IsInt ], function(n)
   if n = 0 then
     Error("PrimeDivisors: 0 has an infinite number of prime divisors.");
     return;
@@ -747,6 +748,7 @@ InstallGlobalFunction(PrimeDivisors, function(n)
   fi;
   return Set(FactorsInt(n));
 end);
+
 
 #############################################################################
 ##

@@ -164,7 +164,7 @@ Print("# Packages that do not work under Windows end here\n\n");
 
 Print("=============================================================\n\n");
 for pkg in pkgs do
-  Print("LangString DESC_SecGAPpkg_", pkg, " ${LANG_ENGLISH} \"", GAPInfo.PackagesInfo.(pkg)[1].Subtitle, "\"\n");
+  Print("LangString DESC_SecGAPpkg_", pkg, " ${LANG_ENGLISH} \"", NormalizedWhitespace(GAPInfo.PackagesInfo.(pkg)[1].Subtitle), "\"\n");
 od;
 Print("=============================================================\n\n");
 for pkg in pkgs do

@@ -1128,6 +1128,19 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
 InstallMethod( AsInternalFFE, [IsFFE and IsInternalRep],
         x->x);
 
+#############################################################################
+##
+#M  AsInternalFFE( <non-ffe> )
+##
+InstallOtherMethod( AsInternalFFE, [IsObject], 
+        function(x)
+    if not IsFFE(x) then
+        return fail;
+    else
+        TryNextMethod();
+    fi;
+end);
+
 
 
 #############################################################################

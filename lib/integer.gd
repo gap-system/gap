@@ -398,7 +398,7 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  entries will all be positive except for the first one in case of
 ##  a negative <A>n</A>.
 ##  <P/>
-##  See <Ref Func="PrimeDivisors"/> for a function that returns a set of
+##  See <Ref Attr="PrimeDivisors"/> for a function that returns a set of
 ##  (probable) primes dividing <A>n</A>.
 ##  <P/>
 ##  Note that <Ref Func="FactorsInt"/> uses a probable-primality test
@@ -462,12 +462,12 @@ DeclareGlobalFunction( "FactorsInt" );
 ##  
 ##  <#GAPDoc Label="PrimeDivisors">
 ##  <ManSection>
-##  <Func Name="PrimeDivisors" Arg='n'/>
+##  <Attr Name="PrimeDivisors" Arg='n'/>
 ##  <Description>
-##  This function returns for a non-zero integer <A>n</A> a set of its positive
-##  (probable) primes divisors. In rare cases the result could contain a
-##  composite number which passed certain primality tests, see <Ref
-##  Func="IsProbablyPrimeInt"/> and <Ref Func="FactorsInt"/> for more details.
+##  <Ref Attr="PrimeDivisors"/> returns for a non-zero integer <A>n</A> a set 
+##  of its positive (probable) primes divisors. In rare cases the result could 
+##  contain a composite number which passed certain primality tests, see 
+##  <Ref Func="IsProbablyPrimeInt"/> and <Ref Func="FactorsInt"/> for more details.
 ##  <Example>
 ##  gap> PrimeDivisors(-12);
 ##  [ 2, 3 ]
@@ -478,7 +478,7 @@ DeclareGlobalFunction( "FactorsInt" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##  
-DeclareGlobalFunction("PrimeDivisors");
+DeclareAttribute("PrimeDivisors", IsInt);
 
 #############################################################################
 ##

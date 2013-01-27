@@ -50,7 +50,8 @@ libraries takes about 1.2 GB of disk space and (except on Windows) will
 require a C compiler (gcc is recommended) to be installed on your system.
 To get maximum benefit from GAP and from various packages it may be useful
 to install a number of other free software libraries (and their associated
-development tools) although they are not required for basic operation.
+development tools) although they are not required for basic operation. See
+http://www.gap-system.org/Download/tools.html for more details.
 
 The installation consists of 5 easy steps:
 * Get the archive suitable for your system

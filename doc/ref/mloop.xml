@@ -445,7 +445,7 @@ can be convenient to hide the structure behind a printing name. For many
 objects, such as groups, this can be done using <Ref Func="SetName"/>. If the
 objects however is represented internally, for example permutations
 representing group elements, this function is not applicable. Instead the
-function <Ref Func="SetNameObject"/> acn be used to interface with the
+function <Ref Func="SetNameObject"/> can be used to interface with the
 display routines on a lower level.
 
 <#Include Label="SetNameObject">

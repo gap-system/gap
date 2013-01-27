@@ -764,8 +764,7 @@ local l, i, start,nodob,str;
     elif s[i]='"' then
       # find next ", treating "" special
       str:="";
-      i:=i+1;
-      start:=i;
+      start:=i+1;
       repeat
 	while (i+1<=Length(s) and s[i+1]<>'"') or
 	      (i+2=Length(s) and s[i+2]<>sep) do
@@ -834,6 +833,7 @@ local nohead,file,sep,f, line, fields, l, r, i,s,add;
     sep:=',';
   fi;
   f:=InputTextFile(file);
+  if f=fail then return f;fi; # wrong file
   if nohead<>true then
     line:=RCSVReadLine(f);
     line:=Chomp(line);

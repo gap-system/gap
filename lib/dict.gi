@@ -742,6 +742,7 @@ local index,intkey,i;
   intkey := SparseIntKey( false,key )(key);
   for i in HASH_RANGE do
     index:=HashClashFct(intkey,i,hash!.LengthArray);
+
     if hash!.KeyArray[index] = fail then
       hash!.KeyArray[ index ] := key;
       hash!.ValueArray[ index ] := value;
@@ -925,10 +926,12 @@ local f,n,bytelen,data,qq,i;
     else
       # long 8 bit
       data:=[3*GAPInfo.BytesPerVariable,bytelen];
-      return x->HASHKEY_BAG(x,101,data[1],data[2]);
+      # must check type
+      #return x->HASHKEY_BAG(x,101,data[1],data[2]); 
       return function(x)
-             if not Is8BitVectorRep(x) then
-                 Info(InfoWarning,1,"uncompressed vector");
+             if not Is8BitVectorRep(x) or
+	       Q_VEC8BIT(x)<>n then
+                 Info(InfoWarning,1,"un- or miscompressed vector");
                  x:=ShallowCopy(x);
                  ConvertToVectorRep(x,n);
                fi;
