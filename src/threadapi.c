@@ -43,6 +43,7 @@
 #include        "listoper.h"            /* operations for generic lists    */
 #include        "listfunc.h"            /* functions for generic lists     */
 #include        "plist.h"               /* plain lists                     */
+#include        "set.h"                 /* set                             */
 #include        "string.h"              /* strings                         */
 
 #include        "code.h"                /* coder                           */
@@ -2603,7 +2604,7 @@ static int MigrateObjects(int count, Obj *objects, Region *target, int retype)
     for (i=0; i<count; i++) {
       if (DS_BAG(objects[i])->owner == TLS && IS_PLIST(objects[i])) {
         if (!TEST_OBJ_FLAG(objects[i], TESTED))
-	  TypePlist(objects[i]);
+	  TYPE_OBJ(objects[i]);
 	if (retype >= 2)
 	  IsSet(objects[i]);
       }
@@ -2624,7 +2625,7 @@ static int MigrateObjects(int count, Obj *objects, Region *target, int retype)
 
 Obj FuncREFINE_TYPE(Obj self, Obj obj) {
   if (IS_BAG_REF(obj) && CheckExclusiveWriteAccess(obj)) {
-    TypePlist(obj);
+    TYPE_OBJ(obj);
   }
   return obj;
 }

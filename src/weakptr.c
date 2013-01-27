@@ -15,6 +15,8 @@
 **  are NOT kept alive through a garbage collection (unless they are contained
 **  in some other kind of object). 
 */
+#include	<gc/gc.h>
+
 #include        "system.h"              /* system dependent part           */
 
 
@@ -169,7 +171,7 @@ Obj FuncWeakPointerObj( Obj self, Obj list ) {
    * loop unrolling, the reference to 'list' may then be
    * destroyed before REGISTER_WP() is called.
    */
-  volatile list2 = list;
+  volatile Obj list2 = list;
 #endif
   len = LEN_LIST(list);
   wp = (Obj) NewBag(T_WPOBJ, (len+1)*sizeof(Obj));

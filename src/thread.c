@@ -23,6 +23,7 @@
 #include	"string.h"
 #include	"precord.h"
 #include	"stats.h"
+#include        "gap.h"
 #include        "tls.h"
 #include        "thread.h"
 #include        "threadapi.h"
@@ -228,6 +229,7 @@ static void RunThreadedMain2(
   int i;
   static pthread_mutex_t main_thread_mutex;
   static pthread_cond_t main_thread_cond;
+  void InitTraversalModule();
   SetupTLS();
   for (i=1; i<MAX_THREADS-1; i++)
     thread_data[i].next = thread_data+i+1;
@@ -665,7 +667,7 @@ int UpdateThreadState(int threadID, int oldState, int newState) {
     (AtomicUInt) oldState, (AtomicUInt) newState);
 }
 
-static int SetInterrupt(int threadID) {
+static void SetInterrupt(int threadID) {
   ThreadLocalStorage *tls = thread_data[threadID].tls;
   MEMBAR_FULL();
   tls->CurrExecStatFuncs = IntrExecStatFuncs;
@@ -746,6 +748,7 @@ static void PauseCurrentThread(int locked) {
 static void InterruptCurrentThread(int locked, Stat stat) {
   ThreadData *thread = thread_data + TLS->threadID;
   int state;
+  Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args);
   Obj handler = (Obj) 0;
   if (stat == T_NO_STAT)
     return;

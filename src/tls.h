@@ -145,7 +145,7 @@ typedef struct ThreadLocalStorage
 
 extern ThreadLocalStorage *MainThreadTLS;
 
-typedef struct
+typedef struct TLSHandler
 {
   struct TLSHandler *nextHandler;
   void (*constructor)();

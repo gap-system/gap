@@ -237,7 +237,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
   Obj init;
   Obj result;
   AtomicObj *data;
-  UInt i, len;
+  Int i, len;
   switch (LEN_PLIST(args)) {
     case 1:
       init = ELM_PLIST(args, 1);
@@ -1716,11 +1716,13 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
 
 Obj BindOnceComObj(Obj obj, Obj index, Obj *new, int eval) {
   FuncError("not yet implemented");
+  return (Obj) 0;
 }
 
 
 Obj BindOnceAComObj(Obj obj, Obj index, Obj *new, int eval) {
   FuncError("not yet implemented");
+  return (Obj) 0;
 }
 
 
@@ -1736,6 +1738,7 @@ Obj BindOnce(Obj obj, Obj index, Obj *new, int eval) {
       return BindOnceAComObj(obj, index, new, eval);
     default:
       FuncError("first argument must be a positional or component object");
+      return (Obj) 0; /* flow control hint */
   }
 }
 

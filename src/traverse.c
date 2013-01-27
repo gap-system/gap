@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <gc/gc.h>
 
 #include        "system.h"
 #include        "gasman.h"
@@ -17,6 +18,7 @@
 #include	"string.h"
 #include	"precord.h"
 #include	"stats.h"
+#include	"gap.h"
 #include        "tls.h"
 #include        "thread.h"
 #include        "traverse.h"
@@ -432,7 +434,7 @@ int PreMakeImmutableCheck(Obj obj)
   BeginTraversal(&traversal);
   traversal.border = 0;
   TraverseRegionFrom(&traversal, obj, IsWritableOrImmutable);
-  EndTraversal(&traversal);
+  EndTraversal();
   return !traversal.border;
 }
 

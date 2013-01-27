@@ -293,7 +293,7 @@ def add_library_path(path):
 add_library_path(abi_path + "/lib")
 include_path.append(abi_path + "/include")
 options["CPPPATH"] = ":".join(include_path)
-options["OBJPREFIX"] = "../" + build_dir + "/"
+options["OBJPREFIX"] = "../obj/"
 
 # uname file generator
 
