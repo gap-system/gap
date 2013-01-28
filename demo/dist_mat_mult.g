@@ -1,22 +1,30 @@
 Read("demo/bench.g");
 
+SeqMatrixMultiplyRow := function(row, m2)
+  local result, j, k, n, s;
+  result := [];
+  
+  n := Length(m2);
+  for j in [1..n] do
+    s := 0;
+    for k in [1..n] do
+      s := s + row[k] * m2[k][j];
+    od;
+    result[j] := s;
+  od;
+
+  return result;
+end;
+
 DeclareGlobalFunction("MatrixMultiplyRow");
 ParInstallGlobalFunction("MatrixMultiplyRow", function(row, m2)
   local result, j, k, n, s, mat;
   result := [];
-  Print ("Shish Kebab is ", HaveReadAccess(m2), "\n");
   
   atomic readwrite m2 do
-    if IsGlobalObjectHandle(m2) then
-      Open(m2);
-      Print ("fetching object\n");
-      mat := GetHandleObj(m2);
-    else
-      mat :=m2;
-    fi;
+    Open(m2);
+    mat := GetHandleObj(m2);
   od;
-  
-  Print ("Kamasutra\n");
   
   atomic readonly mat do
     n := Length(mat);
@@ -28,7 +36,7 @@ ParInstallGlobalFunction("MatrixMultiplyRow", function(row, m2)
       result[j] := s;
     od;
   od;
-  Print ("About to return result ", result, "\n");
+
   return result;
 end);
 
@@ -55,7 +63,7 @@ DistMatrixMultiply := function(m1, m2)
         tasks[j] := Tasks.CreateTask([MatrixMultiplyRow, m1[j], matHandle]);
         resHandle[j] := SendTask (tasks[j], nodeId);
       else
-        tasks[j] := RunTask(MatrixMultiplyRow, m1[j], m2);
+        tasks[j] := RunTask(MatrixMultiplyRow, m1[j], matHandle);
       fi;
     od;
   od;
@@ -66,6 +74,9 @@ DistMatrixMultiply := function(m1, m2)
       if nodeId<>processId then
         Open(resHandle[j]);
         result[j] := GetHandleObj(resHandle[j]);
+        atomic readwrite result[j] do
+          AdoptObj(result[j]);
+        od;
         Close(resHandle[j]);
       else
         result[j] := TaskResult(tasks[j]);
@@ -78,7 +89,7 @@ end;
 SeqMatrixMultiply := function(m1, m2)
   local result;
   result :=
-    List([1..Length(m1)], i -> MatrixMultiplyRow(m1[i], m2));
+    List([1..Length(m1)], i -> SeqMatrixMultiplyRow(m1[i], m2));
   return result;
 end;
 
@@ -98,17 +109,18 @@ ConstantMatrix := function(n, c)
 end;
 
 # First, see if it works
-m1 := [ [ 0, 1 ], [ 1, 0 ] ];
-m2 := [ [ 1, 2 ], [ 3, 4 ] ];
-m := DistMatrixMultiply(m1, m2);
-Display(m);
-m := SeqMatrixMultiply(m1, m2);
-Display(m);
-#m1 := ConstantMatrix(N, 1);
-#m2 := ConstantMatrix(N, 1);
+m := 1;
+#m1 := [ [ 0, 0, 0, 1 ], [ 0, 0, 1, 0 ], [ 0, 1, 0, 0 ], [ 1, 0, 0, 0] ];
+#m2 := [ [ 1, 2 ], [ 3, 4 ] ];
+#m := DistMatrixMultiply(m1, m2);
+#Display(m);
+#m := SeqMatrixMultiply(m1, m2);
+#Display(m);
+m1 := ConstantMatrix(300, 1);
+m2 := ConstantMatrix(300, 1);
 #m := fail;
-#t := Bench(do m := DistMatrixMultiply(m1, m2); od);
-#Display(t);
 #t := Bench(do m := SeqMatrixMultiply(m1, m2); od);
 #Display(t);
-ParFinish();
+t := Bench(do m := DistMatrixMultiply(m1, m2); od);
+Display(t);
+#ParFinish();

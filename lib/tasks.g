@@ -114,12 +114,6 @@ Tasks.Worker := function(channels)
         TaskPoolData.TaskPoolLen := TaskPoolData.TaskPoolLen-1;
         Tracing.TraceWorkerGotTask();
         UNLOCK(p);
-        atomic readonly task do
-          if HaveReadAccess(task.args[2]) then
-            Print ("taks.args[2] is ", task.args[2], "\n");
-            Print ("Region is ", RegionOf(task.args[2]),"\n");
-          fi;
-        od;
       else
         UNLOCK(p);
         SendChannel (Tasks.WorkerPool, channels);
@@ -149,11 +143,6 @@ Tasks.Worker := function(channels)
       taskdata := rec (func := ADOPT(task.func), 
                        args := ADOPT(task.args),
                        async := ADOPT(task.async));
-      Print ("Process ", MPI_Comm_rank(), " Region of task.args is ", RegionOf(task.args), "\n");
-      atomic readonly task.args[2] do
-        Print ("Region of task.args[2] is ", RegionOf(task.args[2]), "\n");
-      od;
-      Print ("region of taskdata.args[2] is ", RegionOf(taskdata.args[2]), "\n");
     od;
     
     
@@ -181,8 +170,9 @@ Tasks.Worker := function(channels)
           p := LOCK(task.result);
         fi;
         if IsBound(task.result) and IsGlobalObjectHandle(task.result) then
+          ShareObj(result);
           task.result!.obj := result;
-          task.result!.haveObject := true;
+          task.result!.control.haveObject := true;
           ProcessHandleBlockedQueue(task.result, result);
           UNLOCK(p);
         else

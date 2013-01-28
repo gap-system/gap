@@ -1345,7 +1345,6 @@ static Int InitKernel (
     MakeBagTypePublic(T_REGION);
     MakeBagTypePublic(T_SYNCVAR);
     MakeBagTypePublic(T_BARRIER);
-    MakeBagTypePublic(T_REGION);
     PublicRegion = NewBag(T_REGION, sizeof(Region *));
     /* return success                                                      */
     return 0;
