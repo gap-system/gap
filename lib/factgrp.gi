@@ -696,7 +696,12 @@ end;
 InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
 local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
   i,cheap,first;
-  cheap:=ValueOption("cheap")=true;
+  cheap:=ValueOption("cheap");
+  if cheap="skip" then
+    return IdentityMapping(G);
+  fi;
+
+  cheap:=cheap=true;
 
   # deal with large abelian cases first (which could be direct)
   hom:=MaximalAbelianQuotient(G);

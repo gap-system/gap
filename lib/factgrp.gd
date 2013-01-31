@@ -215,6 +215,11 @@ DeclareSynonym( "ImproveOperationDegreeByBlocks",
 ##  not guaranteed to be the same for different calls of
 ##  <Ref Func="SmallerDegreePermutationRepresentation"/>.
 ##  <P/>
+##  If the option cheap is given less work is spent on trying to get a small
+##  degree representation, if the value of this option is set to the string 
+##  "skip" the identity mapping is returned. (This is useful if a function
+##  called internally might try a degree reduction.)
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> image:= Image( iso );;  NrMovedPoints( image );
 ##  24

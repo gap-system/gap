@@ -4794,7 +4794,6 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     Obj                 tester;
     Int                 flag2;
     Obj                  name;
-    Int i;
 
     /* Need to get the name from oper */
     name = NAME_FUNC(oper);
@@ -4808,8 +4807,7 @@ void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr )
     tester = MakeTester(name, flag2);
 
     /* Change the handlers */
-    for (i = 0; i <= 7; i++) 
-      HDLR_FUNC(oper, i) = hdlr ? hdlr : DoAttribute;
+    HDLR_FUNC(oper, 1) = hdlr ? hdlr : DoAttribute;
 
     SetupAttribute( oper, setter, tester, flag2);
 

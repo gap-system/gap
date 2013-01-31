@@ -366,7 +366,7 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
     local file, PKGTSTHDR, str;
 
     if LoadPackage( pkgname, Concatenation( "=", version ) ) = fail then
-      Print( "#E  RunPackageTests: package `",
+      Print( "#I  RunPackageTests: package `",
              pkgname, "' (version ", version, ") not loadable\n" );
       return;
     fi;
@@ -380,19 +380,22 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
     file:= Filename( DirectoriesPackageLibrary( pkgname, "" ), testfile );
     str:= StringFile( file );
     if not IsString( str ) then
-      Print( "#E  RunPackageTests: file `", testfile, "' for package `",
+      Print( "#I  RunPackageTests: file `", testfile, "' for package `",
              pkgname, "' (version ", version, ") not readable\n" );
       return;
     fi;
     if PositionSublist( str, "gap> START_TEST(" ) = fail then
       if not READ( file ) then
-        Print( "#E  RunPackageTests: file `", testfile, "' for package `",
+        Print( "#I  RunPackageTests: file `", testfile, "' for package `",
                pkgname, "' (version ", version, ") not readable\n" );
       fi;
     else
       if not Test( file, rec(compareFunction := "uptowhitespace") ) then
-        Print( "#E  RunPackageTests reports errors for package ", pkgname, " ", version, "\n",
-              "in the test file `", testfile, "'\n");
+        Print( "#I  Errors detected while testing package ", pkgname, " ", version, "\n",
+               "#I  using the test file `", testfile, "'\n");
+      else
+        Print( "#I  No errors detected while testing package ", pkgname, " ", version, "\n",
+               "#I  using the test file `", testfile, "'\n");
       fi;
     fi;
 

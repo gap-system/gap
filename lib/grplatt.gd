@@ -349,6 +349,56 @@ DeclareAttribute("MinimalSupergroupsLattice",IsLatticeSubgroupsRep);
 ##
 DeclareGlobalFunction("DotFileLatticeSubgroups");
 
+#############################################################################
+##
+#F  ExtendSubgroupsOfNormal( <G>, <N>,<Nsubs> )
+##
+##  <#GAPDoc Label="ExtendSubgroupsOfNormal">
+##  <ManSection>
+##  <Func Name="ExtendSubgroupsOfNormal" Arg='G,N,Nsubs'/>
+##
+##  <Description>
+##  If $N$ is normal in $G$ and $Nsubs$ is a list of subgroups of $N$ up to
+##  conjugacy, this function extends this list to taht of all subgroups of $G$.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("ExtendSubgroupsOfNormal");
+
+#############################################################################
+##
+#F  SubdirectSubgroups( <D> )
+##
+##  <#GAPDoc Label="SubdirectSubgroups">
+##  <ManSection>
+##  <Func Name="SubdirectSubgroups" Arg='D'/>
+##
+##  <Description>
+##  If $D$ is created as a direct product, this function determines all
+##  subgroups of $D$ up to conjugacy, using subdirect products.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("SubdirectSubgroups");
+
+#############################################################################
+##
+#F  SubgroupsTrivialFitting( <G> )
+##
+##  <#GAPDoc Label="SubgroupsTrivialFitting">
+##  <ManSection>
+##  <Func Name="SubgroupsTrivialFitting" Arg='G'/>
+##
+##  <Description>
+##  Determines representatives of the conjugacy classes of subgroups of a
+##  trivial-fitting group $G$.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("SubgroupsTrivialFitting");
 
 #############################################################################
 ##

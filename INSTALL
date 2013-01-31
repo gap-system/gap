@@ -544,8 +544,7 @@ can type POW(a,b) for a^b.)
 
 You might want to try different shells, starting each of the three .bat 
 files in the 'bin' directory: gap.bat. gaprxvt.bat and gapcmd.bat. Also,
-http://www.gap-system.org/Faq/Hardware-OS/hardware-os.html might give a 
-remedy.
+http://www.gap-system.org/Faq/faq.html#4 might give a remedy.
 
 * GAP does not work in the remote desktop
 

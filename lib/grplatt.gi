@@ -2240,8 +2240,290 @@ local cls, len, sz, max, rep, z, t, i, j, k;
   AppendTo(file,"}\n");
 end);
 
-#############################################################################
-##
-#E  grplatt.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+InstallGlobalFunction("ExtendSubgroupsOfNormal",function(G,N,Bs)
+local l,mark,i,b,M,no,cnt,j,q,As,a,hom,c,p,ap,prea,prestab,new,sz,k,h;
+  l:=[]; # list of subgroups
+  mark:=BlistList([1..Length(Bs)],[]); # mark off conjugates
+  for i in [1..Length(Bs)] do
+    if not mark[i] then
+      Info(InfoLattice,1,"extending ",i);
+      mark[i]:=true;
+      b:=Bs[i];
+      Add(l,b);
+      M:=Normalizer(G,b);
+      no:=Intersection(M,N); # normalizer in N
+      if Index(G,M)>Index(N,no) then
+        # there are further conjugates
+	cnt:=Index(G,M)/Index(N,no)-1;
+	for j in RightTransversal(G,ClosureGroup(N,M)) do
+	  if cnt>0 and not IsOne(j) then
+	    a:=b^j;
+	    p:=First([i..Length(Bs)],x->
+	      RepresentativeAction(N,a,Bs[x])<>fail);
+    #if Size(b)=2 then Error("WWW");fi;
+	    if p<>fail and not mark[p] then
+	      # mark conjugate subgroup off as used
+	      mark[p]:=true;
+	      cnt:=cnt-1;
+	    fi;
+	  fi;
+	od;
+	if cnt<>0 then Info(InfoLattice,3,"cnt=",cnt);fi;
+      fi;
 
+      q:=NaturalHomomorphismByNormalSubgroup(M,no);
+      As:=ConjugacyClassesSubgroups(Image(q));
+      for ap in [1..Length(As)] do
+	Info(InfoLattice,2,"extending ",ap," of ",Length(As));
+	a:=As[ap];
+	if Size(Representative(a))>1 then # no complement of trivial
+	  # complement to no/b in a/b
+
+	  prea:=PreImage(q,Representative(a));
+	  prestab:=PreImage(q,Stabilizer(a));
+	  hom:=NaturalHomomorphismByNormalSubgroup(prea,b);
+
+	  #AAA:=[Image(hom),Image(hom,no)];
+	  c:=Complementclasses(Image(hom),Image(hom,no));
+	  c:=List(c,x->PreImage(hom,x));
+	  #oc:=c;
+	  c:=PermPreConjtestGroups(prestab,c);
+	  #c:=[[prestab,c]];
+	  for j in c do
+	    new:=List(SubgroupsOrbitsAndNormalizers(j[1],j[2],false),
+	                   x->x.representative);
+            for k in new do
+	      sz:=Size(k);
+	      h:=Group(SmallGeneratingSet(k));
+	      SetSize(h,sz);
+	      Add(l,h);
+	    od;
+	    Info(InfoLattice,1,"now found ",Length(l)," subgroups");
+	  od;
+	  #if
+	  #  Length(new)<>Length(SubgroupsOrbitsAndNormalizers(prestab,oc,false))
+	  #  then
+          #  Error("hier");
+	  #fi;
+
+	  #fi;
+	fi;
+      od;
+
+    fi;
+  od;
+
+  # finally subgroups of G/N
+  #q:=NaturalHomomorphismByNormalSubgroup(G,N);
+  #for a in ConjugacyClassesSubgroups(Image(q)) do
+  #  if Size(Representative(a))>1 then # no complement of trivial
+  #    Add(l,PreImage(q,Representative(a)));
+  #  fi;
+  #od;
+  return l;
+
+end);
+
+
+InstallGlobalFunction("SubdirectSubgroups",function(D)
+local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,proj,emb,u,pos,
+      subs,s,t,i,j,k,myid,myfgi,iso,dc,f,no,ind,g,hom;
+
+  fgi:=function(gp,nor)
+  local idx,hom,l,f;
+    idx:=Index(gp,nor);
+    hom:=NaturalHomomorphismByNormalSubgroup(gp,nor);
+    if idx>1000 or idx=512 then
+      l:=[idx,fail];
+    else
+      l:=ShallowCopy(IdGroup(gp/nor));
+    fi;
+    f:=Image(hom,gp);
+    Add(l,hom);
+    Add(l,f);
+    Add(l,AutomorphismGroup(f));
+    return l;
+  end;
+
+  inducedfactorautos:=function(n,f,hom)
+  local gens,auts,aut,i;
+    gens:=GeneratorsOfGroup(f);
+    auts:=[];
+    for i in GeneratorsOfGroup(n) do
+      aut:=GroupHomomorphismByImages(f,f,gens,List(gens,x->
+	    Image(hom,PreImagesRepresentative(hom,x)^i)));
+      SetIsBijective(aut,true);
+      Add(auts,aut);
+    od;
+    return auts;
+  end;
+
+  projs:=[];
+  psubs:=[];
+  info:=DirectProductInfo(D);
+  n:=Length(info.groups);
+  # previous embedding is all trivial
+  l:=[[TrivialSubgroup(D),D]];
+  for i in [1..n] do
+    proj:=Projection(D,i);
+    emb:=Embedding(D,i);
+
+    u:=info.groups[i];
+    pos:=Position(projs,u);
+    if pos=fail then
+      subs:=[];
+      for j in ConjugacyClassesSubgroups(u) do
+	s:=[Representative(j),Stabilizer(j)];
+	no:=SubgroupsOrbitsAndNormalizers(s[2],NormalSubgroups(s[1]),false);
+	nl:=[];
+	for k in no do
+	  myfgi:=fgi(s[1],k.representative);
+	  Add(myfgi,Subgroup(myfgi[5],
+	     inducedfactorautos(k.normalizer,myfgi[4],myfgi[3])));
+	     Add(nl,Concatenation([k.representative,k.normalizer],myfgi));
+	od;
+        Add(s,nl);
+        Add(subs,s);
+      od;
+      Add(projs,u);
+      Add(psubs,subs);
+      pos:=Length(projs);
+    else
+      subs:=psubs[pos];
+    fi;
+
+    if i=1 then
+      l:=[];
+      for j in subs do
+	g:=Image(emb,j[1]);
+	Add(l,[g,Normalizer(D,g)]);
+      od;
+    else # i>1. Proper subdirect products
+      nl:=[];
+      for j in l do
+	no:=NormalSubgroups(j[1]);
+	no:=SubgroupsOrbitsAndNormalizers(j[2],no,false);
+  #Print("Try",j," ",Length(no),"\n");
+	for k in no do
+	  hom:=NaturalHomomorphismByNormalSubgroup(j[1],k.representative);
+	  f:=Image(hom);
+	  if Size(f)<1000 and Size(f)<>512 then
+	    myid:=ShallowCopy(IdGroup(f));
+	  else
+	    myid:=[Size(f),fail];
+	  fi;
+	  for s in subs do
+	    for t in s[3] do # look over normals of subgroup
+      #Print(t,"\n");
+	      if t{[3,4]}=myid then
+		if false and myid=[1,1] then
+		  #Print("direct\n");
+		  g:=Subgroup(D,Concatenation(GeneratorsOfGroup(j[1]),List(GeneratorsOfGroup(s[1]),x->Image(emb,x))));
+		  Add(nl,[g,Normalizer(D,g)]);
+		else
+		  iso:=IsomorphismGroups(f,t[6]);
+		  if iso<>fail then
+		    #Found isomorphic factor groups
+		    iso:=hom*iso;
+		    ind:=Subgroup(t[7],inducedfactorautos(k.normalizer,t[6],iso));
+		    for dc in DoubleCosetRepsAndSizes(t[7],ind,t[8]) do
+		      # form the subdirect product
+		      g:=List(GeneratorsOfGroup(j[1]),
+			    x->x*Image(emb,PreImagesRepresentative(t[5],
+			      Image(dc[1],Image(iso,x))) ));
+		      Append(g,List(GeneratorsOfGroup(t[1]),x->Image(emb,x)));
+		      g:=Subgroup(D,g);
+if Size(g)<>Size(j[1])*Size(s[1])/Size(f) then Error("sudi\n");fi;
+		      Add(nl,[g,Normalizer(D,g)]);
+		    od;
+		  fi;
+
+		fi;
+	      fi;
+	    od;
+	  od;
+	od;
+      od;
+
+      l:=nl;
+    fi;
+
+
+
+    Info(InfoLattice,1,"subdirect level ",i," got ",Length(l));
+  od;
+  return l;
+
+end);
+
+InstallGlobalFunction("SubgroupsTrivialFitting",function(G)
+  local s,a,n,fac,iso,types,t,p,i,map,go,gold,nf;
+  # find socle by derived
+  s:=G;
+  repeat
+    a:=s;
+    s:=DerivedSubgroup(s);
+  until Size(s)=Size(a);
+
+  # now try s as socle -- find minimal normals
+  n:=Filtered(NormalSubgroups(s),x->Size(x)>1);
+  n:=Filtered(n,x->not ForAny(n,y->Size(y)<Size(x) and IsSubset(x,y)));
+
+  a:=TrivialSubgroup(G);
+  fac:=[];
+  nf:=[];
+  types:=[];
+  gold:=[];
+  iso:=[];
+  for i in n do
+    if not IsSubgroup(a,i) then
+      a:=ClosureGroup(a,i);
+      if not IsSimpleGroup(i) then
+	TryNextMethod();
+      fi;
+      t:=ClassicalIsomorphismTypeFiniteSimpleGroup(i);
+      p:=Position(types,t);
+      if p=fail then
+	Add(types,t);
+	go:=SimpleGroup(t);
+	Add(gold,go);
+	p:=Length(types);
+      fi;
+      Add(iso,IsomorphismGroups(i,gold[p]));
+      Add(fac,gold[p]);
+      Add(nf,i);
+    fi;
+  od;
+
+  if a<>s then
+    TryNextMethod();
+  fi;
+
+  Info(InfoLattice,1,"socle index ",Index(G,s)," has ",
+       Length(fac)," factors from ",Length(types)," types");
+
+  if Length(fac)=1 then
+    map:=iso[1];
+    a:=ConjugacyClassesSubgroups(gold[1]);
+    a:=List(a,x->PreImage(map,Representative(x)));
+  else
+    n:=DirectProduct(fac);
+
+    # map to direct product
+    a:=[];
+    map:=[];
+    for i in [1..Length(fac)] do
+      Append(a,GeneratorsOfGroup(nf[i]));
+      Append(map,List(GeneratorsOfGroup(nf[i]),
+	x->Image(Embedding(n,i),Image(iso[i],x))));
+    od;
+    map:=GroupHomomorphismByImages(s,n,a,map);
+
+    a:=SubdirectSubgroups(n);
+    a:=List(a,x->PreImage(map,x[1]));
+  fi;
+  Info(InfoLattice,1,"socle has ",Length(a)," classes of subgroups");
+  s:=ExtendSubgroupsOfNormal(G,s,a);
+  Info(InfoLattice,1,"Overall ",Length(s)," subgroups");
+  return s;
+end);
