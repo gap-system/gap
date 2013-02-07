@@ -608,9 +608,11 @@ static int LessThanLockRequest(const void *a, const void *b)
 {
   Region *ds_a = ((LockRequest *)a)->region;
   Region *ds_b = ((LockRequest *)b)->region;
+  Int prec_diff;
   if (ds_a == ds_b) /* prioritize writes */
     return ((LockRequest *)a)->mode>((LockRequest *)b)->mode;
-  return (char *)ds_a < (char *)ds_b;
+  prec_diff = ds_a->prec - ds_b->prec;
+  return prec_diff > 0 || (prec_diff == 0 && (char *)ds_a < (char *)ds_b);
 }
 
 void PushRegionLock(Region *region) {
@@ -905,6 +907,23 @@ void ResumeAllThreads() {
   }
 }
 
+extern UInt DeadlockCheck;
+
+static Int CurrentRegionPrec() {
+  Int sp;
+  if (!DeadlockCheck || !TLS->lockStack)
+    return -1;
+  sp = TLS->lockStackPointer;
+  while (sp > 0) {
+    Obj region_obj = ELM_PLIST(TLS->lockStack, sp);
+    if (region_obj) {
+      return ((Region *)(*ADDR_OBJ(region_obj)))->prec;
+    }
+    sp--;
+  }
+  return -1;
+}
+
 int LockObject(Obj obj, int mode) {
   Region *region = GetRegionOf(obj);
   int locked;
@@ -915,6 +934,9 @@ int LockObject(Obj obj, int mode) {
   if (locked == 2 && mode)
     return -1;
   if (!locked) {
+    Int prec = CurrentRegionPrec();
+    if (prec >= 0 && region->prec >= prec)
+      return -1;
     if (mode)
       RegionWriteLock(region);
     else
@@ -929,6 +951,7 @@ int LockObjects(int count, Obj *objects, int *mode)
   int result;
   int i;
   int locked;
+  Int curr_prec;
   LockRequest *order;
   if (count == 1) /* fast path */
     return LockObject(objects[0], mode[0]);
@@ -943,6 +966,7 @@ int LockObjects(int count, Obj *objects, int *mode)
   }
   MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
   result = TLS->lockStackPointer;
+  curr_prec = CurrentRegionPrec();
   for (i=0; i<count; i++)
   {
     Region *ds = order[i].region;
@@ -961,6 +985,10 @@ int LockObjects(int count, Obj *objects, int *mode)
       return -1;
     }
     if (!locked) {
+      if (curr_prec >= 0 && ds->prec >= curr_prec) {
+	PopRegionLocks(result);
+	return -1;
+      }
       if (order[i].mode)
 	RegionWriteLock(ds);
       else

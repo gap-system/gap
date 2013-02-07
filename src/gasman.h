@@ -1160,6 +1160,7 @@ typedef struct
   void *lock; /* void * so that we don't have to include pthread.h always */
   Bag obj; /* references a unique T_REGION object per region */
   Bag name; /* name of the region, or a null pointer */
+  Int prec; /* locking precedence */
   int fixed_owner;
   int autolock;
   void *owner; /* opaque thread descriptor */

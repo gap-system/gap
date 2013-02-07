@@ -14,9 +14,75 @@
 # Convenience aliases
 
 IsLockable := IsShared;
+BIND_GLOBAL("ApplicationRegion", 30000);
+BIND_GLOBAL("LibraryRegion", 20000);
+BIND_GLOBAL("KernelRegion", 10000);
+BIND_GLOBAL("InternalRegion", 0);
 
-ShareObj := SHARE;
-ShareSingleObj := SHARE_NORECURSE;
+ShareObj := function(arg)
+  if IsBound(arg[2]) then
+    return SHARE(arg[1], arg[2], ApplicationRegion);
+  else
+    return SHARE(arg[1], fail, ApplicationRegion);
+  fi;
+end;
+
+ShareLibraryObj := function(arg)
+  if IsBound(arg[2]) then
+    return SHARE(arg[1], arg[2], LibraryRegion);
+  else
+    return SHARE(arg[1], fail, LibraryRegion);
+  fi;
+end;
+
+ShareKernelObj := function(arg)
+  if IsBound(arg[2]) then
+    return SHARE(arg[1], arg[2], KernelRegion);
+  else
+    return SHARE(arg[1], fail, KernelRegion);
+  fi;
+end;
+
+ShareInternalObj := function(arg)
+  if IsBound(arg[2]) then
+    return SHARE(arg[1], arg[2], InternalRegion);
+  else
+    return SHARE(arg[1], fail, InternalRegion);
+  fi;
+end;
+
+ShareSingleObj := function(arg)
+  if IsBound(arg[2]) then
+    return SHARE_NORECURSE(arg[1], arg[2], ApplicationRegion);
+  else
+    return SHARE_NORECURSE(arg[1], fail, ApplicationRegion);
+  fi;
+end;
+
+ShareSingleLibraryObj := function(arg)
+  if IsBound(arg[2]) then
+    return SHARE_NORECURSE(arg[1], arg[2], LibraryRegion);
+  else
+    return SHARE_NORECURSE(arg[1], fail, LibraryRegion);
+  fi;
+end;
+
+ShareSingleKernelObj := function(arg)
+  if IsBound(arg[2]) then
+    return SHARE_NORECURSE(arg[1], arg[2], KernelRegion);
+  else
+    return SHARE_NORECURSE(arg[1], fail, KernelRegion);
+  fi;
+end;
+
+ShareSingleInternalObj := function(arg)
+  if IsBound(arg[2]) then
+    return SHARE_NORECURSE(arg[1], arg[2], InternalRegion);
+  else
+    return SHARE_NORECURSE(arg[1], fail, InternalRegion);
+  fi;
+end;
+
 MigrateObj := MIGRATE;
 MigrateSingleObj := MIGRATE_NORECURSE;
 AdoptObj := ADOPT;
@@ -24,8 +90,40 @@ AdoptSingleObj := ADOPT_NORECURSE;
 CopyRegion := CLONE_REACHABLE;
 RegionSubObjects := REACHABLE;
 
+NewRegion := function(arg)
+  if IsBound(arg[1]) then
+    return NEW_REGION(arg[1], ApplicationRegion);
+  else
+    return NEW_REGION(fail, ApplicationRegion);
+  fi;
+end;
+
+NewLibraryRegion := function(arg)
+  if IsBound(arg[1]) then
+    return NEW_REGION(arg[1], LibraryRegion);
+  else
+    return NEW_REGION(fail, LibraryRegion);
+  fi;
+end;
+
+NewKernelRegion := function(arg)
+  if IsBound(arg[1]) then
+    return NEW_REGION(arg[1], KernelRegion);
+  else
+    return NEW_REGION(fail, KernelRegion);
+  fi;
+end;
+
+NewInternalRegion := function(arg)
+  if IsBound(arg[1]) then
+    return NEW_REGION(arg[1], InternalRegion);
+  else
+    return NEW_REGION(fail, InternalRegion);
+  fi;
+end;
+
 ShareAutoReadObj := function(obj)
-  SHARE(obj);
+  SHARE(obj, fail, InternalRegion);
   SetAutoLockRegion(obj, true);
   return obj;
 end;

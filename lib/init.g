@@ -206,7 +206,7 @@ ReadGapRoot( "lib/system.g" );
 ## commented out - was needed by the completion mechanism
 ## READED_FILES := [];
 
-FILTER_REGION	 	 := NewRegion("filter region");
+FILTER_REGION	 	 := NEW_REGION("filter region", 0);
 atomic FILTER_REGION do
   RANK_FILTER_LIST         := MIGRATE([], FILTER_REGION);
 od;

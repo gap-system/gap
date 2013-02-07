@@ -191,7 +191,7 @@ Tasks.CreateTask := function(arglist)
     if IsThreadLocal(args[i]) then
       adopt[i] := true;
       if not adopted then
-        args[i] := SHARE(CLONE_REACHABLE(args[i]));
+        args[i] := ShareObj(CLONE_REACHABLE(args[i]));
         ds := RegionOf(args[i]);
         p := LOCK(args[i]);
         adopted := true;

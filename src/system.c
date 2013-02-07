@@ -255,6 +255,13 @@ UInt ThreadUI = 1;
 
 /****************************************************************************
 **
+*V  DeadlockCheck  . . . . . . . . . . . . . . . . . .  check for deadlocks
+**
+*/
+UInt DeadlockCheck = 0;
+
+/****************************************************************************
+**
 *V  SyNumProcessors  . . . . . . . . . . . . . . . . . number of logical CPUs
 **
 */
@@ -1674,6 +1681,7 @@ struct optInfo options[] = {
   { 'p',  toggle, &SyWindow, 0 }, /* ?? */
   { 'q',  toggle, &SyQuiet, 0 }, /* ?? */
   { 'S',  toggle, &ThreadUI, 0 }, /* Thread UI */
+  { 'Z',  toggle, &DeadlockCheck, 0 }, /* Thread UI */
   { 'P',  storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
 #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 
   { 'z',  storeInteger, &syIsIntrFreq, 0},

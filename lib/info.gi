@@ -57,7 +57,7 @@ if not IsBound(InfoData) then
     InfoData.ClassNames := [];
     InfoData.Handler := [];
     InfoData.Output := [];
-    SHARE(InfoData);
+    ShareInternalObj(InfoData);
 fi;
 InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
   if IsBound(DefaultInfoOutput) then

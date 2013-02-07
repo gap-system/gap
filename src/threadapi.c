@@ -902,20 +902,21 @@ Obj FuncWriteLock(Obj self, Obj args);
 Obj FuncReadLock(Obj self, Obj args);
 Obj FuncIS_LOCKED(Obj self, Obj obj);
 Obj FuncLOCK(Obj self, Obj args);
+Obj FuncDO_LOCK(Obj self, Obj args);
 Obj FuncWRITE_LOCK(Obj self, Obj args);
 Obj FuncREAD_LOCK(Obj self, Obj args);
 Obj FuncTRYLOCK(Obj self, Obj args);
 Obj FuncUNLOCK(Obj self, Obj args);
 Obj FuncCURRENT_LOCKS(Obj self);
 Obj FuncREFINE_TYPE(Obj self, Obj obj);
-Obj FuncSHARE_NORECURSE(Obj self, Obj obj);
-Obj FuncNewRegion(Obj self, Obj args);
+Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec);
+Obj FuncNEW_REGION(Obj self, Obj name, Obj prec);
 Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj);
 Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj);
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj);
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target);
-Obj FuncSHARE(Obj self, Obj obj);
-Obj FuncSHARE_RAW(Obj self, Obj obj);
+Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec);
+Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec);
 Obj FuncMAKE_PUBLIC(Obj self, Obj obj);
 Obj FuncADOPT(Obj self, Obj obj);
 Obj FuncMIGRATE(Obj self, Obj obj, Obj target);
@@ -1119,6 +1120,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "LOCK", -1, "obj, ...",
       FuncLOCK, "src/threadapi.c:LOCK" },
 
+    { "DO_LOCK", -1, "obj, ...",
+      FuncDO_LOCK, "src/threadapi.c:DO_LOCK" },
+
     { "WRITE_LOCK", 1, "obj",
       FuncWRITE_LOCK, "src/threadapi.c:WRITE_LOCK" },
 
@@ -1137,7 +1141,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "REFINE_TYPE", 1, "obj",
       FuncREFINE_TYPE, "src/threadapi.c:REFINE_TYPE" },
 
-    { "SHARE_NORECURSE", -1, "obj[, string]",
+    { "SHARE_NORECURSE", 3, "obj, string, integer",
       FuncSHARE_NORECURSE, "src/threadapi.c:SHARE_NORECURSE" },
 
     { "ADOPT_NORECURSE", 1, "obj",
@@ -1146,13 +1150,13 @@ static StructGVarFunc GVarFuncs [] = {
     { "MIGRATE_NORECURSE", 2, "obj, target",
       FuncMIGRATE_NORECURSE, "src/threadapi.c:MIGRATE_NORECURSE" },
 
-    { "NewRegion", -1, "[string]",
-      FuncNewRegion, "src/threadapi.c:NewRegion" },
+    { "NEW_REGION", 2, "string, integer",
+      FuncNEW_REGION, "src/threadapi.c:NEW_REGION" },
 
-    { "SHARE", -1, "obj[, string]",
+    { "SHARE", 3, "obj, string, integer",
       FuncSHARE, "src/threadapi.c:SHARE" },
 
-    { "SHARE_RAW", -1, "obj[, string]",
+    { "SHARE_RAW", 3, "obj, string, integer",
       FuncSHARE_RAW, "src/threadapi.c:SHARE_RAW" },
 
     { "ADOPT", 1, "obj",
@@ -2517,6 +2521,14 @@ Obj FuncLOCK(Obj self, Obj args)
   return Fail;
 }
 
+Obj FuncDO_LOCK(Obj self, Obj args)
+{
+  Obj result = FuncLOCK(self, args);
+  if (result == Fail)
+    ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+  return result;
+}
+
 Obj FuncWRITE_LOCK(Obj self, Obj obj)
 {
   int result;
@@ -2646,27 +2658,19 @@ Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
 }
 
 
-Obj FuncSHARE_NORECURSE(Obj self, Obj arg)
+Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
 {
   Region *region = NewRegion();
-  Obj obj, name;
-  switch (LEN_PLIST(arg)) {
-    case 1:
-      obj = ELM_PLIST(arg, 1);
-      name = (Obj) 0;
-      break;
-    case 2:
-      obj = ELM_PLIST(arg, 1);
-      name = ELM_PLIST(arg, 2);
-      if (!IsStringConv(name))
-        ArgumentError("SHARE_NORECURSE: Second argument must be a string");
-      break;
-    default:
-      ArgumentError("SHARE_NORECURSE: Requires one or two arguments");
-  }
+  Obj reachable;
+  if (name != Fail && !IsStringConv(name))
+    ArgumentError("SHARE_RAW: Second argument must be a string or fail");
+  if (!IS_INTOBJ(prec) || INT_INTOBJ(prec) < 0)
+    ArgumentError("SHARE_RAW: Third argument must be a non-negative integer");
+  region->prec = INT_INTOBJ(prec);
   if (!MigrateObjects(1, &obj, region, 0))
     ArgumentError("SHARE_NORECURSE: Thread does not have exclusive access to objects");
-  SetRegionName(region, name);
+  if (name != Fail)
+    SetRegionName(region, name);
   return obj;
 }
 
@@ -2708,74 +2712,52 @@ Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
   return CopyReachableObjectsFrom(obj, 1, 0, 0);
 }
 
-Obj FuncNewRegion(Obj self, Obj arg)
+Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
 {
   Region *region = NewRegion();
-  Obj name;
-  switch (LEN_PLIST(arg)) {
-    case 0:
-      break;
-    case 1:
-      name = ELM_PLIST(arg, 1);
-      if (!IsStringConv(name))
-        ArgumentError("NewRegion: Optional argument must be a string");
-      SetRegionName(region, name);
-      break;
-    default:
-      ArgumentError("NewRegion: Takes at most one argument");
-  }
+  if (name != Fail && !IsStringConv(name))
+    ArgumentError("NEW_REGION: Second argument must be a string or fail");
+  if (!IS_INTOBJ(prec) || INT_INTOBJ(prec) < 0)
+    ArgumentError("NEW_REGION: Third argument must be a non-negative integer");
+  region->prec = INT_INTOBJ(prec);
+  if (name != Fail)
+    SetRegionName(region, name);
   return region->obj;
 }
 
-Obj FuncSHARE(Obj self, Obj arg)
+Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
 {
   Region *region = NewRegion();
-  Obj obj, name, reachable;
-  switch (LEN_PLIST(arg)) {
-    case 1:
-      obj = ELM_PLIST(arg, 1);
-      name = (Obj) 0;
-      break;
-    case 2:
-      obj = ELM_PLIST(arg, 1);
-      name = ELM_PLIST(arg, 2);
-      if (!IsStringConv(name))
-        ArgumentError("SHARE: Second argument must be a string");
-      break;
-    default:
-      ArgumentError("SHARE: Requires one or two arguments");
-  }
+  Obj reachable;
+  if (name != Fail && !IsStringConv(name))
+    ArgumentError("SHARE: Second argument must be a string or fail");
+  if (!IS_INTOBJ(prec) || INT_INTOBJ(prec) < 0)
+    ArgumentError("SHARE: Third argument must be a non-negative integer");
+  region->prec = INT_INTOBJ(prec);
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, region, 1))
     ArgumentError("SHARE: Thread does not have exclusive access to objects");
-  SetRegionName(region, name);
+  if (name != Fail)
+    SetRegionName(region, name);
   return obj;
 }
 
-Obj FuncSHARE_RAW(Obj self, Obj arg)
+Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
 {
   Region *region = NewRegion();
-  Obj obj, name, reachable;
-  switch (LEN_PLIST(arg)) {
-    case 1:
-      obj = ELM_PLIST(arg, 1);
-      name = (Obj) 0;
-      break;
-    case 2:
-      obj = ELM_PLIST(arg, 1);
-      name = ELM_PLIST(arg, 2);
-      if (!IsStringConv(name))
-        ArgumentError("SHARE: Second argument must be a string");
-      break;
-    default:
-      ArgumentError("SHARE: Requires one or two arguments");
-  }
+  Obj reachable;
+  if (name != Fail && !IsStringConv(name))
+    ArgumentError("SHARE_RAW: Second argument must be a string or fail");
+  if (!IS_INTOBJ(prec) || INT_INTOBJ(prec) < 0)
+    ArgumentError("SHARE_RAW: Third argument must be a non-negative integer");
+  region->prec = INT_INTOBJ(prec);
   reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
        ADDR_OBJ(reachable)+1, region, 0))
-    ArgumentError("SHARE: Thread does not have exclusive access to objects");
-  SetRegionName(region, name);
+    ArgumentError("SHARE_RAW: Thread does not have exclusive access to objects");
+  if (name != Fail)
+    SetRegionName(region, name);
   return obj;
 }
 
