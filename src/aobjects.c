@@ -1123,8 +1123,10 @@ static Obj FuncAtomicRecord(Obj self, Obj args)
           ArgumentError("AtomicRecord: capacity must be a positive integer");
         return NewAtomicRecord(INT_INTOBJ(arg));
       }
-      if (TNUM_OBJ(arg) == T_PREC) {
-        return NewAtomicRecordFrom(arg);
+      switch (TNUM_OBJ(arg)) {
+        case T_PREC:
+	case T_PREC+IMMUTABLE:
+	  return NewAtomicRecordFrom(arg);
       }
       ArgumentError("AtomicRecord: argument must be an integer or record");
     default:
