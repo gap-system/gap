@@ -106,10 +106,8 @@ CODE_SMALL_GROUP_FUNCS[ 10 ] := function( size, i, inforec )
         Error( "there are just ", inforec.number, " groups of size ", size );
     fi;
 
-    atomic readwrite SMALL_GROUP_LIB do
-    
     if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-        SMALL_GROUP_LIB[ size ] := MigrateObj( [ ], SMALL_GROUP_LIB);
+        SMALL_GROUP_LIB[ size ] := AtomicList([ ]);
     fi;
 
     file := QuoInt( i + 2499, 2500 );
@@ -119,9 +117,7 @@ CODE_SMALL_GROUP_FUNCS[ 10 ] := function( size, i, inforec )
     fi;
 
     return SMALL_GROUP_LIB[ size ][ file ][ pos ];
-    
-    od;
-    
+        
 end;
 
 #############################################################################
