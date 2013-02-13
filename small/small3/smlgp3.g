@@ -3,7 +3,7 @@
 #W  smlgp3.g                 GAP group library             Hans Ulrich Besche
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
-##  This file contains the reading and constrution functions for the groups
+##  This file contains the reading and construction functions for the groups
 ##  of size 2^n * p for 3 <= n <= 8 and p an odd prime. 2^n * p has to be
 ##  greater then 1000.
 ##
