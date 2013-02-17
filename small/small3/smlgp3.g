@@ -74,10 +74,10 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
         if size = 768 then
             # the 4912 none-p-nil groups of size 768 are stored in 4 files
             if not IsBound( SMALL_GROUP_LIB[ 768 ] ) then
-                SMALL_GROUP_LIB[ 768 ] := rec();
+                SMALL_GROUP_LIB[ 768 ] := AtomicRecord( rec() );
             fi;
             if not IsBound( SMALL_GROUP_LIB[ 768 ].npnil ) then
-                SMALL_GROUP_LIB[ 768 ].npnil := [];
+                SMALL_GROUP_LIB[ 768 ].npnil := AtomicList([]);
             fi;
             file := QuoInt( iint + 1249, 1250 );
             pos  := iint - ( file - 1 ) * 1250;
@@ -88,7 +88,7 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
         fi;
 
         if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-            SMALL_GROUP_LIB[ size ] := rec();
+            SMALL_GROUP_LIB[ size ] := AtomicRecord( rec() );
             ReadSmallLib( "sml", inforec.lib, size, [ ] );
         fi;
 
@@ -100,7 +100,7 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
 
     elif typ = "p-autos" then
         if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-            SMALL_GROUP_LIB[ size ] := rec();
+            SMALL_GROUP_LIB[ size ] := AtomicRecord( rec() );
         fi;
         if not IsBound( SMALL_GROUP_LIB[ size ].pnil ) then
             ReadSmallLib( "sml", 3, size, [ ] );
@@ -114,7 +114,7 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
             fi;
         else 
             if not IsBound( SMALL_GROUP_LIB[ 8 ] ) then
-                SMALL_GROUP_LIB[ 8 ] := [ ];
+                SMALL_GROUP_LIB[ 8 ] := AtomicList( [ ] );
             fi;
             if not IsBound( SMALL_GROUP_LIB[ 8 ][ typ ] ) then
                 c := [ 1, 2, 3, 3, 3, 3, 3, 3 ];
@@ -141,6 +141,8 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
         else
             c := [ 0 ];
         fi;
+        
+        atomic readwrite SMALL_GROUP_LIB[n][typ] do
 
         if IsRecord( SMALL_GROUP_LIB[ n ][ typ ] ) then
             # lists with many empty entries are compressed
@@ -159,15 +161,15 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
                     od;
                 fi;
             od;
-            SMALL_GROUP_LIB[ n ][ typ ] := tmp;
+            SMALL_GROUP_LIB[ n ][ typ ] := MigrateObj( tmp, SMALL_GROUP_LIB[n][typ] );
         fi;
 
         sid := PositionSorted( c, iint ) - 2;
         iint := iint - c[ sid + 1 ];
         sid := sid * 1000 + 1;
         while ( not IsBound( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) )
-           or ( IsInt( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) )
-           or ( Length( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) < iint ) do
+                 or ( IsInt( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) )
+                 or ( Length( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) < iint ) do
             if not IsBound( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ) then
                 # for typ = 1 an empty entry shows that it is the same like
                 # the precedessor
@@ -184,15 +186,17 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
                                  -SMALL_GROUP_LIB[ n ][ typ ][ sid ] ] ) then
                         SMALL_GROUP_LIB[ n ][ typ ][
                                  -SMALL_GROUP_LIB[ n ][ typ ][ sid ] ] :=
-                            listInt( SMALL_GROUP_LIB[ n ][ typ ][
-                                 -SMALL_GROUP_LIB[ n ][ typ ][ sid ] ]);
+                      MigrateObj( listInt( SMALL_GROUP_LIB[ n ][ typ ][
+                                 -SMALL_GROUP_LIB[ n ][ typ ][ sid ] ]), 
+                                  SMALL_GROUP_LIB[ n ][ typ ] );
                     fi;
                     SMALL_GROUP_LIB[ n ][ typ ][ sid ] := SMALL_GROUP_LIB[ n]
                               [ typ ][ -SMALL_GROUP_LIB[ n ][ typ ][ sid ] ];
                 else
                     # special way of decompession
-                    SMALL_GROUP_LIB[ n ][ typ ][ sid ] := listInt( 
-                                        SMALL_GROUP_LIB[ n ][ typ ][ sid ] );
+                    SMALL_GROUP_LIB[ n ][ typ ][ sid ] := 
+                        MigrateObj( listInt( SMALL_GROUP_LIB[ n ][ typ ][ sid ] ), 
+                                             SMALL_GROUP_LIB[ n ][ typ ] );
                 fi;
             else
                 # simple case, just count group ids
@@ -200,6 +204,8 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
                 sid := sid + 1;
             fi;
         od;
+        
+        od; # atomic SMALL_GROUP_LIB[n][typ]
     fi;
 
     if n = 3 then 
@@ -246,6 +252,8 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
                [ 1, 541, 6731, 26972, 55625, 56081, 56091, 56092 ] ];
         rank := PositionSorted( c[ n ], sid );
 
+        atomic readonly SMALL_GROUP_LIB[n][typ] do
+        
         if typ = 1 then
             aut := CoefficientsMultiadic( List( [1..rank], x->2 ),
                                 SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] );
@@ -283,6 +291,8 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
                 fi;
             od;
         fi;
+        
+        od; # atomic readonly SMALL_GROUP_LIB[n][typ]
     fi;
 
     return PcGroupFpGroup( F / rels );
@@ -376,7 +386,8 @@ SELECT_SMALL_GROUPS_FUNCS[ 11 ] := function( size, funcs, vals, inforec, all,
         range := idList;
     fi;
     for i in range do                         
-        g := SMALL_GROUP_FUNCS[ inforec.func ]( size, i, inforec );                     SetIdGroup( g, [ size, i ] );
+        g := SMALL_GROUP_FUNCS[ inforec.func ]( size, i, inforec );                     
+        SetIdGroup( g, [ size, i ] );
         ok := true;
         for j in [ 1 .. Length( funcs ) ] do
             ok := ok and funcs[ j ]( g ) in vals[ j ];
