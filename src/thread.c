@@ -949,7 +949,7 @@ int LockObject(Obj obj, int mode) {
 int LockObjects(int count, Obj *objects, int *mode)
 {
   int result;
-  int i;
+  int i, p;
   int locked;
   Int curr_prec;
   LockRequest *order;
@@ -958,13 +958,19 @@ int LockObjects(int count, Obj *objects, int *mode)
   if (count > MAX_LOCKS)
     return -1;
   order = alloca(sizeof(LockRequest)*count);
-  for (i=0; i<count; i++)
+  for (i=0, p=0; i<count; i++)
   {
-    order[i].obj = objects[i];
-    order[i].region = GetRegionOf(objects[i]);
-    order[i].mode = mode[i];
+    Region *r = GetRegionOf(objects[i]);
+    if (r) {
+      order[p].obj = objects[i];
+      order[p].region = GetRegionOf(objects[i]);
+      order[p].mode = mode[i];
+      p++;
+    }
   }
-  MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
+  count = p;
+  if (p > 1)
+    MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
   result = TLS->lockStackPointer;
   curr_prec = CurrentRegionPrec();
   for (i=0; i<count; i++)
