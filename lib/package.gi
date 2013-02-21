@@ -147,7 +147,12 @@ InstallGlobalFunction( RECORDS_FILE, function( name )
 #F  SetPackageInfo( <record> )
 ##
 InstallGlobalFunction( SetPackageInfo, function( record )
-    GAPInfo.PackageInfoCurrent:= record;
+    local rnam, info;
+    info := AtomicRecord();
+    for rnam in REC_NAMES(record) do
+      info.(rnam) := Immutable(record.(rnam));
+    od;
+    GAPInfo.PackageInfoCurrent:= info;
     end );
 
 
