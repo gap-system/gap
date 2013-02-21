@@ -167,13 +167,14 @@ ParallelOrbit := function(gens,pt,op,opt)
 end;
 
 Measure := function(gens,pt,op,n)
-  local computebandwidth,g,ht,j,k,l,lookupbandwidth,ti,ti2,
-        timeperlookup,timeperop,x;
+  local Ping,Pong,c1,c2,computebandwidth,g,ht,i,j,k,l,ll,
+        lookupbandwidth,t,t1,ti,ti2,timeperlookup,timeperop,times,x;
   if IsGroup(gens) then gens := GeneratorsOfGroup(gens); fi;
   if IsMutable(gens) then MakeImmutable(gens); fi;
   if IsMutable(pt) then pt := MakeImmutable(StructuralCopy(pt)); fi;
 
   # First measure computation bandwidth to get some idea and some data:
+  Print("Measuring computation bandwidth... \c");
   k := Length(gens);
   l := EmptyPlist(n*k);
   l[1] := pt;
@@ -187,8 +188,10 @@ Measure := function(gens,pt,op,n)
   ti2 := IO_gettimeofday();
   timeperop := TimeDiff(ti,ti2)/(k*n);  # time for one op
   computebandwidth := 1.0/timeperop;
+  Print(computebandwidth,"\n");
 
   # Now hash lookup bandwith:
+  Print("Measuring lookup bandwidth... \c");
   ht := HTCreate(pt,rec( hashlen := NextPrimeInt(2*k*n) ));
   # Store things in the hash:
   for j in [1..n*k] do
@@ -201,12 +204,48 @@ Measure := function(gens,pt,op,n)
   od;
   ti2 := IO_gettimeofday();
   timeperlookup := TimeDiff(ti,ti2)/(k*n);  # time for one op
-  lookupbandwidth := 1.0/timeperop;
+  lookupbandwidth := 1.0/timeperlookup;
+  Print(lookupbandwidth,"\n");
 
+  # Now transfer data between two threads:
+  Ping := function(c,cc,n)
+    local i,o,oo;
+    o := ReceiveChannel(cc);
+    for i in [1..n] do
+        SendChannel(c,o);
+        oo := ReceiveChannel(cc);
+    od;
+    SendChannel(c,o);
+  end;
+  Pong := function(c,cc,n)
+    local i,oo;
+    for i in [1..n] do
+        oo := ReceiveChannel(c);
+        SendChannel(cc,oo);
+    od;
+  end;
+  times := [];
+  c1 := CreateChannel();
+  c2 := CreateChannel();
+  Print("Measuring ping pong speed...\n");
+  for i in [0..30] do
+      if 2^i > Length(l) then break; fi;
+      ll := l{[1..2^i]};
+      Print(2^i,"... ");
+      ti := IO_gettimeofday();
+      t1 := CreateThread(Ping,c1,c2,10000000);
+      ti2 := IO_gettimeofday();
+      t := TimeDiff(ti,ti2)/10000000.0;
+      Add(times,t);
+      Print(t," ==> ",1.0/t," ping pongs/s.\n");
+  od;
+  
   return rec( timeperop := timeperop, 
               computebandwidth := computebandwidth,
               timeperlookup := timeperlookup, 
-              lookupbandwidth := lookupbandwidth );
+              lookupbandwidth := lookupbandwidth,
+              pingpongtimes := times,
+              pingpongbandwidth := List(times,x->1.0/x) );
 end;
 
 m := MathieuGroup(24);
