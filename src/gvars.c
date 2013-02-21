@@ -97,12 +97,21 @@ static Obj TLVars;
 */
 
 pthread_rwlock_t GVarLock;
+void *GVarLockOwner;
+UInt GVarLockDepth;
 
 void LockGVars(int write) {
   if (PreThreadCreation)
     return;
-  if (write)
+  if (GVarLockOwner == TLS) {
+    GVarLockDepth++;
+    return;
+  }
+  if (write) {
     pthread_rwlock_wrlock(&GVarLock);
+    GVarLockOwner = TLS;
+    GVarLockDepth = 1;
+  }
   else
     pthread_rwlock_rdlock(&GVarLock);
 }
@@ -110,6 +119,11 @@ void LockGVars(int write) {
 void UnlockGVars() {
   if (PreThreadCreation)
     return;
+  if (GVarLockOwner == TLS) {
+    GVarLockDepth--;
+    if (GVarLockDepth != 0)
+      return;
+  }
   pthread_rwlock_unlock(&GVarLock);
 }
 
