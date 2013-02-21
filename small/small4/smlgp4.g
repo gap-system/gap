@@ -81,7 +81,7 @@ SMALL_GROUP_FUNCS[ 17 ] := function( size, i, inforec )
 
     if typ = "none-p-nil" then
         if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-            SMALL_GROUP_LIB[ size ] := rec( );
+            SMALL_GROUP_LIB[ size ] := AtomicRecord( rec( ) );
             ReadSmallLib( "sml", inforec.lib, size, [ ] );
         fi;
 
@@ -93,7 +93,7 @@ SMALL_GROUP_FUNCS[ 17 ] := function( size, i, inforec )
 
     elif typ = "p-autos" then
         if not IsBound( SMALL_GROUP_LIB[ size ] ) then
-            SMALL_GROUP_LIB[ size ] := rec();
+            SMALL_GROUP_LIB[ size ] := AtomicRecord( rec() );
             ReadSmallLib( "sml", inforec.lib, size, [ ] );
         fi;
         sid := SMALL_GROUP_LIB[ size ].pnil.syl[ iint ];
@@ -103,7 +103,9 @@ SMALL_GROUP_FUNCS[ 17 ] := function( size, i, inforec )
         if not IsBound( SMALL_GROUP_LIB[ nn ] ) then
             ReadSmallLib( "nor", inforec.lib, inforec.q, [ n ] );
         fi;
-
+        
+        atomic readwrite SMALL_GROUP_LIB[nn][typ] do
+        
         if IsRecord( SMALL_GROUP_LIB[ nn ][ typ ] ) then
             # lists with many empty entries are compressed
             tmp := [ ];
@@ -121,7 +123,7 @@ SMALL_GROUP_FUNCS[ 17 ] := function( size, i, inforec )
                     od;
                 fi;
             od;
-            SMALL_GROUP_LIB[ nn ][ typ ] := tmp;
+            SMALL_GROUP_LIB[ nn ][ typ ] := MigrateObj( tmp, SMALL_GROUP_LIB[nn][typ] );
         fi;
 
         sid := 1;
@@ -140,6 +142,8 @@ SMALL_GROUP_FUNCS[ 17 ] := function( size, i, inforec )
                 sid := sid + 1;
             fi;
         od;
+
+        od; # atomic SMALL_GROUP_LIB[nn][typ]
     fi;
 
     if n = 3 then 
@@ -190,9 +194,12 @@ SMALL_GROUP_FUNCS[ 17 ] := function( size, i, inforec )
                    [ 1, 38, 70, 76, 77 ] ];
         fi;
         rank := PositionSorted( c[ n ], sid );
-
+        
         root := PrimitiveRootMod( inforec.p ) ^
                         ( (inforec.p - 1 ) / inforec.q ^ typ ) mod inforec.p;
+
+        atomic readwrite SMALL_GROUP_LIB[nn][typ] do
+
         if SMALL_GROUP_LIB[ nn ][ typ ][ sid ][ iint ] < 0 then
             root := root ^ ( -SMALL_GROUP_LIB[ nn ][ typ ][ sid ][ iint ] )
                                                                mod inforec.p;
@@ -204,10 +211,15 @@ SMALL_GROUP_FUNCS[ 17 ] := function( size, i, inforec )
         gS := GeneratorsOfGroup( S );
         aut := CoefficientsMultiadic( List( [1..rank], x->inforec.q ^ typ ),
                             SMALL_GROUP_LIB[ nn ][ typ ][ sid ][ iint ] );
+        
+        od; # atomic SMALL_GROUP_LIB[nn][typ]
+        
         for i in [ 1 .. rank ] do
             Add( rels, gens[ n + 1 ] ^ gens[ i ] /
                        gens[ n + 1 ] ^ ( root ^ aut[ i ] mod inforec.p ) );
         od;
+        
+       
         for i in [ rank + 1 .. n ] do
             if not gS[ i ] in DerivedSubgroup( S ) then
                 j := 1;
