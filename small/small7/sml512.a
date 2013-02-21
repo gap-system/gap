@@ -6,7 +6,7 @@
 Revision.sml512_a :=
     "@(#)$Id: sml512.a,v 1.1 1999/12/08 18:56:56 gap Exp $";
 
-SMALL_GROUP_LIB[ 512 ][ 1 ] := [
+SMALL_GROUP_LIB[ 512 ][ 1 ] := `[
 Concatenation(
 "}d:jv,}8hjCj,:,}}}.,:C}}}tA,,: E)%/%/%%/%%%&%%%%%)A )D/+.%L8%%%&%%%%%&%T: )\
 D/*&8G%c%DD8%%%%/%%I6.Qd )D/*&%G%%%%&%%%%%&%A )DE%3%%&&,%/%%%%%%/%I )DE%3%%&\

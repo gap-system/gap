@@ -6,7 +6,7 @@
 Revision.sml512_bz :=
     "@(#)$Id: sml512.bz,v 1.1 1999/12/08 18:56:58 gap Exp $";
 
-SMALL_GROUP_LIB[ 512 ][ 78 ] := [
+SMALL_GROUP_LIB[ 512 ][ 78 ] := `[
 "%%%%%%%%(D8,,:eF%<,%8b%0%)))%%!zn%.c!}u%0k!}t/.M!}u/)e!}x/)e!}tM.M!}uM)e!}x\
 M)e!}t)0k!}w)0k!}u)0k!}x)0k!}tG0k!}wG0k!}uG0k!}xG0k }t&%6Y.Ad*:2E(8[,=b&J7Z)\
 L1T!}u&0k!}t0.M!}u0)e!}x0)e!}tN.M }cN%6Y.Ad*M:(K8[,O=",
