@@ -252,11 +252,11 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
                [ 1, 541, 6731, 26972, 55625, 56081, 56091, 56092 ] ];
         rank := PositionSorted( c[ n ], sid );
 
-        atomic readonly SMALL_GROUP_LIB[n][typ] do
-        
         if typ = 1 then
-            aut := CoefficientsMultiadic( List( [1..rank], x->2 ),
-                                SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] );
+            atomic readonly SMALL_GROUP_LIB[n][typ] do
+                aut := CoefficientsMultiadic( List( [1..rank], x->2 ),
+                                    SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] );
+            od;                        
             for i in [ 1 .. rank ] do
                 if aut[ i ] = 1 then 
                      Add( rels, gens[ n+1] ^ gens[i] * gens[ n+1] );
@@ -264,6 +264,9 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
             od;
         else
             root := PrimitiveRootMod( p ) ^ ((p-1)/2^typ) mod p;
+
+            atomic readonly SMALL_GROUP_LIB[n][typ] do
+
             if SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] < 0 then
                 root := root ^ ( -SMALL_GROUP_LIB[n][typ][sid][iint] ) mod p;
                 while SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] < 0 do
@@ -274,6 +277,9 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
             gS := GeneratorsOfGroup( S );
             aut := CoefficientsMultiadic( List( [1..rank], x->2^typ ),
                                 SMALL_GROUP_LIB[ n ][ typ ][ sid ][ iint ] );
+                                
+            od; # atomic readonly SMALL_GROUP_LIB[n][typ]
+            
             for i in [ 1 .. rank ] do
                 Add( rels, gens[ n + 1 ] ^ gens[ i ] /
                            gens[ n + 1 ] ^ ( root ^ aut[ i ] mod p ) );
@@ -291,8 +297,6 @@ SMALL_GROUP_FUNCS[ 11 ] := function( size, i, inforec )
                 fi;
             od;
         fi;
-        
-        od; # atomic readonly SMALL_GROUP_LIB[n][typ]
     fi;
 
     return PcGroupFpGroup( F / rels );
