@@ -9,6 +9,8 @@
 **
 **  This file contains the functions of the objects package.
 */
+#include	<stdlib.h>
+
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
 
 
@@ -837,11 +839,16 @@ void MakeImmutablePosObj( Obj obj)
   
 }
 
+static int ReadOnlyDatObjs = 0;
+
 void MakeImmutableDatObj( Obj obj)
 {
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
   if (!IsInternallyMutableObj(obj)) {
-    MakeBagReadOnly(obj);
+    if (ReadOnlyDatObjs)
+      MakeBagReadOnly(obj);
+    else
+      MakeBagPublic(obj);
   }
 }
 
@@ -2007,6 +2014,7 @@ static Int InitKernel (
       MakeImmutableObjFuncs[t] = MakeImmutableError;
     
     /* install the makeimmutableing functions */
+    ReadOnlyDatObjs = (getenv("GAP_READONLY_DATOBJS") != 0);
     MakeImmutableObjFuncs[ T_COMOBJ ] = MakeImmutableComObj;
     MakeImmutableObjFuncs[ T_POSOBJ ] = MakeImmutablePosObj;
     MakeImmutableObjFuncs[ T_DATOBJ ] = MakeImmutableDatObj;
