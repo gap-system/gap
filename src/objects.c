@@ -149,6 +149,7 @@ Obj SetTypeObjHandler (
 Int (*IsMutableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
 
 Obj IsMutableObjFilt;
+Obj IsInternallyMutableObjFilt;
 
 Int IsMutableObjError (
     Obj                 obj )
@@ -183,6 +184,27 @@ Obj IsMutableObjHandler (
 {
     return (IS_MUTABLE_OBJ( obj ) ? True : False);
 }
+
+/****************************************************************************
+**
+*F  IsInternallyMutableObjHandler(<self>, <obj>)  -- 'IS_INTERNALLY_MUTABLE_OBJ'
+*/
+
+Obj IsInternallyMutableObjHandler (
+    Obj                 self,
+    Obj                 obj )
+{
+    return (TNUM_OBJ(obj) == T_DATOBJ &&
+      RegionBag(obj) != ReadOnlyRegion &&
+      DoFilter( IsInternallyMutableObjFilt, obj) == True) ? True : False;
+}
+
+Int IsInternallyMutableObj(Obj obj) {
+    return TNUM_OBJ(obj) == T_DATOBJ &&
+      RegionBag(obj) != ReadOnlyRegion &&
+      DoFilter( IsInternallyMutableObjFilt, obj) == True;
+}
+
 
 
 /****************************************************************************
@@ -818,6 +840,9 @@ void MakeImmutablePosObj( Obj obj)
 void MakeImmutableDatObj( Obj obj)
 {
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
+  if (!IsInternallyMutableObj(obj)) {
+    MakeBagReadOnly(obj);
+  }
 }
 
 Obj FuncMakeImmutable( Obj self, Obj obj)
@@ -1760,6 +1785,9 @@ static StructGVarFilt GVarFilts [] = {
 
     { "IS_COPYABLE_OBJ", "obj", &IsCopyableObjFilt,
       IsCopyableObjHandler, "src/objects.c:IS_COPYABLE_OBJ" },
+
+    { "IS_INTERNALLY_MUTABLE_OBJ", "obj", &IsInternallyMutableObjFilt,
+      IsInternallyMutableObjHandler, "src/objects.c:IS_INTERNALLY_MUTABLE_OBJ" },
 
     { 0 }
 

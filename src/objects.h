@@ -592,6 +592,18 @@ extern Int (*IsMutableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
 
 /****************************************************************************
 **
+*F  IsInternallyMutableObj( <obj> ) . . . does an object have a mutable state
+**
+**  This function returns   1 if the object  <obj> has a mutable state, i.e.
+**  if its internal representation can change even though its outwardly
+**  visible properties do not, e.g. through code that transparently
+**  reorganizes its structure.
+*/
+
+extern Int IsInternallyMutableObj(Obj obj);
+
+/****************************************************************************
+**
 *V  SaveObjFuncs (<type>) . . . . . . . . . . . . . functions to save objects
 **
 ** 'SaveObjFuncs' is the dispatch table that  contains, for every type
