@@ -13,7 +13,7 @@ Read("HNdata.g");  # actually reads HNdata.g.gz
 # 221 MB main memory:
 
 start := Runtime();
-o := Orb(gens,v,OnRight,rec(treehashsize := 3000000,report := 100000));
+o := Orb(gens,v,op,rec(treehashsize := 3000000,report := 100000));
 Enumerate(o);
 t := Runtime()-start;
 Print("Runtime [ms]:",t,"\n");

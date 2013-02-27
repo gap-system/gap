@@ -70,6 +70,7 @@ end;
 
 Worker := function(gens,op,hashins,hashouts,f)
   local g,i,j,lens,n,readies,res,t,x;
+  Print("Hello there\n");
   atomic readonly hashins,hashouts,gens do
       n := Length(hashins);
       i := Random([1..n]);
@@ -246,6 +247,20 @@ Measure := function(gens,pt,op,n)
               lookupbandwidth := lookupbandwidth,
               pingpongtimes := times,
               pingpongbandwidth := List(times,x->1.0/x) );
+end;
+
+OnRightRO := function(x,g)
+  local y;
+  y := x*g;
+  MakeReadOnlyObj(y);
+  return y;
+end;
+
+OnSubspacesByCanonicalBasisRO := function(x,g)
+  local y;
+  y := OnSubspacesByCanonicalBasis(x,g);
+  MakeReadOnlyObj(y);
+  return y;
 end;
 
 m := MathieuGroup(24);
