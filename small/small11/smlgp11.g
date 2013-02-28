@@ -72,6 +72,7 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
         sml.arraytails[ pn ].inc :=
                       CoefficientsMultiadic( [ 1 .. d ] * 0 + p, l );
         sml.arraytails[ pn ].n := Product( sml.arraytails[ pn ].width );
+        sml.arraytails[ pn ] := AtomicRecord( `sml.arraytails[ pn ] );
     end;
 
     if not IsBound( inforec.number ) then
@@ -217,7 +218,7 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
             # unpack sml.arraytails if required
             UnpackArraytail( -sml.pntr[ lb ] );
         fi;
-        tail :=sml.arraytails[ -sml.pntr[ lb ] ];
+        tail := sml.arraytails[ -sml.pntr[ lb ] ];
         SortParallel( ShallowCopy( tail.perm ), var_exps );
         m := CoefficientsMultiadic( tail.width, i - 1 ) + tail.inc;
         for i in [ 1 .. Length( var_exps) ] do
@@ -225,6 +226,7 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
         od;
     fi;
 
+    ShareObj(sml.index);
     od; # atomic readwrite sml.index, sml.arraytails, sml.regtails
 
     # now fix_exps is reconstructed and we may create the group
