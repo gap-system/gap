@@ -220,9 +220,9 @@ DeclareCategoryKernel( "IsMutable", IsObject, IS_MUTABLE_OBJ );
 ##
 #C  IsInternallyMutable( <obj> )  . . . .  test if an object has mutable state
 ##
-##  <#GAPDoc Label="IsMutable">
+##  <#GAPDoc Label="IsInternallyMutable">
 ##  <ManSection>
-##  <Filt Name="IsMutable" Arg='obj' Type='Category'/>
+##  <Filt Name="IsInternallyMutable" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
 ##  tests whether <A>obj</A> has mutable internal state.

@@ -937,6 +937,8 @@ int LockObject(Obj obj, int mode) {
     Int prec = CurrentRegionPrec();
     if (prec >= 0 && region->prec >= prec)
       return -1;
+    if (region->fixed_owner)
+      return -1;
     if (mode)
       RegionWriteLock(region);
     else
@@ -992,6 +994,10 @@ int LockObjects(int count, Obj *objects, int *mode)
     }
     if (!locked) {
       if (curr_prec >= 0 && ds->prec >= curr_prec) {
+	PopRegionLocks(result);
+	return -1;
+      }
+      if (ds->fixed_owner) {
 	PopRegionLocks(result);
 	return -1;
       }
