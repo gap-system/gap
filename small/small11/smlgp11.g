@@ -6,6 +6,14 @@
 ##  This file contains the function to extract the data of the stored groups
 ##  of order p^7 for p in { 3, 5, 7, 11 } created by Eamonn O'Brien and 
 ##  Mike Vaughan-Lee.
+##  
+##  The data for these groups are stored 'small/small11/sml<n>.z' defining
+##  entries of SMALL_GROUP_LIB[ n ] for n in {41,47,59,73}. Each such entry
+##  is a record with the following components: 'heads', 'arraytails', 
+##  'regtails', 'regsegms', 'pntr' and 'index'. Components 'arraytails', 
+##  'regtails' and 'index' are compressed and may be modified in the future
+##  if they need unpacking. Components 'heads', 'regsegms' and 'pntr' are 
+##  remaining unchanged.
 ##
 Revision.smlgp11_g :=
     "@(#)$Id: smlgp11.g,v 1.2 2008/06/01 16:02:04 gap Exp $";
@@ -52,8 +60,6 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
         # replaces sml.arraytails[ pn ] by the record (with components 
         # named d, perm, width, inc, n), which will not be changed any more.
         l := sml.arraytails[ pn ];
-        # TODO: what if between the check for IsInt(sml.arraytails[ pn ])
-        # and executing UnpackArraytail other thread already unpacked it?
         d := l mod 6;
         sml.arraytails[ pn ] := rec( d := d );
         l := Int( l / 6 );
@@ -89,6 +95,8 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
     sml := SMALL_GROUP_LIB[ sml ];
     ub := Length( sml.heads );
 
+    atomic readwrite sml.index, sml.arraytails, sml.regtails do 
+
     # unpack index if required
     if Length( sml.index ) <> Length( sml.heads ) then
         l := sml.index;
@@ -99,7 +107,7 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
              sml.index[ Int( j / Length( l ) * ub ) ] := l[ j ];
         od;
     fi;
-
+    
     # search segment by divide et impera
     lb := 0;
     m := Int( ub / 2 );
@@ -163,8 +171,8 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
         fi;
     until i <= sml.index[ lb ];
 
-    # unpack head
-    # this modifies sml.heads[ lb ]
+    # unpack head (or rather *decode* head, since this does not 
+    # modify sml.heads[lb], which is an integer)
     h := sml.heads[ lb ];
     if h < 0 then
         h := sml.heads[ -h ];
@@ -216,6 +224,8 @@ SMALL_GROUP_FUNCS[ 26 ] := function( size, i, inforec )
             fix_exps[ var_exps[ i ] ] := m[ i ];
         od;
     fi;
+
+    od; # atomic readwrite sml.index, sml.arraytails, sml.regtails
 
     # now fix_exps is reconstructed and we may create the group
     
