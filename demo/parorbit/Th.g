@@ -7,13 +7,24 @@ LoadPackage("orb");
 
 Read("Thdata.g");   # actually reads Thdata.g.gz
 
+if IsBound(MakeReadOnlyObj) then
+    OnSubspacesByCanonicalBasisRO := function(x,g)
+      local y;
+      y := OnSubspacesByCanonicalBasis(x,g);
+      MakeReadOnlyObj(y);
+      return y;
+    end;
+else
+    OnSubspacesByCanonicalBasisRO := OnSubspacesByCanonicalBasis;
+fi;
+
 # Now enumerate the orbit of v under the action of the group generated
 # by gens with "OnSubspacesByCanonicalBasis" as action function.
 # The following should work on a big machine with 64GB of main memory
 # and use about 1.5 hours and 35GB main memory:
 
 start := Runtime();
-o := Orb(gens,v,OnSubspacesByCanonicalBasis,
+o := Orb(gens,v,OnSubspacesByCanonicalBasisRO,
          rec(treehashsize := 200000000,report := 100000));
 Enumerate(o);
 t := Runtime()-start;

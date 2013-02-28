@@ -7,13 +7,24 @@ LoadPackage("orb");
 
 Read("HNdata.g");  # actually reads HNdata.g.gz
 
+if IsBound(MakeReadOnlyObj) then
+    OnRightRO := function(x,g)
+      local y;
+      y := x*g;
+      MakeReadOnlyObj(y);
+      return y;
+    end;
+else
+    OnRightRO := OnRight;
+fi;
+
 # Now enumerate the orbit of v under the action of the group generated
 # by gens with "OnRight" as action function.
 # The following works on my machine and uses about 41 seconds and
 # 221 MB main memory:
 
 start := Runtime();
-o := Orb(gens,v,op,rec(treehashsize := 3000000,report := 100000));
+o := Orb(gens,v,OnRightRO,rec(treehashsize := 3000000,report := 100000));
 Enumerate(o);
 t := Runtime()-start;
 Print("Runtime [ms]:",t,"\n");

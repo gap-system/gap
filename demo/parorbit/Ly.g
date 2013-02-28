@@ -12,9 +12,20 @@ Read("Lydata.g");   # actually reads Lydata.g.gz
 # The following works on my machine and uses about 1730 seconds and
 # 4 GB main memory:
 
+if IsBound(MakeReadOnlyObj) then
+    OnSubspacesByCanonicalBasisRO := function(x,g)
+      local y;
+      y := OnSubspacesByCanonicalBasis(x,g);
+      MakeReadOnlyObj(y);
+      return y;
+    end;
+else
+    OnSubspacesByCanonicalBasisRO := OnSubspacesByCanonicalBasis;
+fi;
+
 start := Runtime();
-o := Orb(gens,v,OnSubspacesByCanonicalBasis,rec(treehashsize := 20000000, 
-                                                report := 100000));
+o := Orb(gens,v,OnSubspacesByCanonicalBasisRO,rec(treehashsize := 20000000, 
+                                                  report := 100000));
 Enumerate(o);
 t := Runtime()-start;
 Print("Runtime [ms]:",t,"\n");
