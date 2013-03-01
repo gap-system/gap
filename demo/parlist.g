@@ -29,7 +29,7 @@ ParList1 := function(l, f, n)
     count := 0;
     res := [];
     for i in [1..Length(l)] do
-        SHARE(l[i]);
+        ShareObj(l[i]);
         atomic readonly l[i] do
             SendChannel(inch, [i,l[i]]);
         od;
