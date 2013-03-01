@@ -284,6 +284,15 @@ OnSubspacesByCanonicalBasisRO := function(x,g)
   return y;
 end;
 
+MakeDistributionHF := function(x,n) 
+  local hf,data;
+  hf := ChooseHashFunction(x,n);
+  data := hf.data;
+  MakeReadOnlyObj(data);
+  hf := hf.func;
+  return y->hf(y,data);
+end;
+
 m := MathieuGroup(24);
 # r := ParallelOrbit(m,1,OnPoints,rec());;
 # r := ParallelOrbit(m,[1,2,3,4],OnTuples,
