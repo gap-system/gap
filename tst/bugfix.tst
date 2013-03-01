@@ -726,7 +726,7 @@ gap> NrPerfectLibraryGroups(1);
 0
 
 # 2005/07/18 (FL)
-gap> TypeObj(IMPLICATIONS);;
+gap> atomic readonly IMPLICATIONS do TypeObj(IMPLICATIONS); od;
 
 # 2005/07/20 (TB)
 gap> T:= EmptySCTable( 2, 0 );;
