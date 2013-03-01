@@ -4,12 +4,13 @@
 LoadPackage("orb");
 
 HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
-  local Poll,ht,i,p,pts,r,running,sent,todo,tosend,val;
+  local Poll,ht,i,p,pts,r,running,sent,sizes,todo,tosend,val;
   ht := HTCreate(pt,rec( hashlen := hashsize ));
   pts := EmptyPlist(hashsize);
   sent := 0;
   running := 0;
   todo := [];
+  sizes := EmptyPlist(1000);
   Poll := function(wait)
       local r;
       if wait then
@@ -22,6 +23,7 @@ HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
           if r = "exit" then 
               SendChannel(outch,ht);
               SendChannel(outch,pts);
+              SendChannel(outch,sizes);
               return true;
           elif r = "done" then
               running := running - 1;
@@ -51,44 +53,38 @@ HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
                       for i in [sent+1..sent+chunksize] do
                           Add(tosend,pts[i]);
                       od;
-                      if running = 0 then 
-                          SendChannel(status,false); 
-                          #Print("HS ",id," sent busy.\n");
-                      fi;
                       running := running + 1;
                       SendChannel(outch,tosend);
                       sent := sent + chunksize;
+                      Add(sizes,chunksize);
                       #Print("HS ",id," scheduled ",chunksize,"\n");
                   fi;
               fi;
               #count := count + 1;
               #if count mod 1000 = 0 then Poll(false); fi;
           od;
-          if Length(pts) > sent then
+          if Length(pts) > sent and running < 10 then
               tosend := EmptyPlist(Length(pts)-sent+1);
               Add(tosend,id);
               for i in [sent+1..Length(pts)] do
                   Add(tosend,pts[i]);
               od;
-              if running = 0 then 
-                  SendChannel(status,false); 
-                  #Print("HS ",id," sent busy.\n");
-              fi;
               running := running + 1;
               SendChannel(outch,tosend);
+              Add(sizes,Length(pts)-sent);
               #Print("HS ",id," scheduled ",Length(pts)-sent,"\n");
               sent := Length(pts);
           fi;
           if Poll(false) then return; fi;
           if running = 0 and Length(todo) = 0 then
-              SendChannel(status,true);
+              SendChannel(status,id);
               #Print("HS ",id," sent ready.\n");
           fi;
       od;
   od;
 end;
 
-Worker := function(gens,op,hashins,hashout,f)
+Worker := function(gens,op,hashins,hashout,status,f)
   local g,j,n,res,t,x;
   atomic readonly hashins do
       n := Length(hashins);
@@ -105,6 +101,7 @@ Worker := function(gens,op,hashins,hashout,f)
           od;
           for j in [1..n] do
               if Length(res[j]) > 0 then
+                  SendChannel(status,-j);   # hashserver not ready
                   SendChannel(hashins[j],res[j]);
                   #Print("Worker sent result to HS ",j,"\n");
               fi;
@@ -123,7 +120,7 @@ TimeDiff := function(t,t2)
 end;
 
 ParallelOrbit := function(gens,pt,op,opt)
-    local allhashes,allpts,h,i,k,o,pos,ptcopy,ready,s,started,ti,ti2,w,x;
+    local allhashes,allpts,allstats,h,i,k,o,pos,ptcopy,ready,s,started,ti,ti2,w,x;
     if not IsBound(opt.nrhash) then opt.nrhash := 1; fi;
     if not IsBound(opt.nrwork) then opt.nrwork := 1; fi;
     if not IsBound(opt.disthf) then opt.disthf := x->1; fi;
@@ -151,16 +148,18 @@ ParallelOrbit := function(gens,pt,op,opt)
     w := List([1..opt.nrwork],
               x->CreateThread(Worker,gens,op,i,o,opt.disthf));
     #Print("Workers started...\n");
-    ready := opt.nrhash;
-    started := false;
-    while ready < opt.nrhash or not(started) do
-        x := ReceiveChannel(s);
-        if x then 
-            ready := ready + 1; 
-        else 
-            started := true;
-            ready := ready - 1; 
-        fi;
+    ready := BlistList([1..opt.nrhash],[1..opt.nrhash]);
+    ready[pos] := false;
+    while ForAny([1..opt.nrhash],i->ready[i]=false) do
+        while true do
+            x := TryReceiveChannel(s,fail);
+            if x = fail then break; 
+            elif x < 0 then 
+                ready[-x] := false;
+            else 
+                ready[x] := true;
+            fi;
+        od;
         #Print("Central: ready is ",ready,"\n");
     od;
     # Now terminate all workers:
@@ -175,17 +174,19 @@ ParallelOrbit := function(gens,pt,op,opt)
     # Now terminate all hashservers:
     allhashes := EmptyPlist(k);
     allpts := EmptyPlist(k);
+    allstats := EmptyPlist(k);
     atomic readonly i do
         for k in [1..opt.nrhash] do
             SendChannel(i[k],"exit");
             Add(allhashes,ReceiveChannel(o));
             Add(allpts,ReceiveChannel(o));
+            Add(allstats,ReceiveChannel(o));
         od;
     od;
     #Print("All hashservers done.\n");
     ti2 := IO_gettimeofday();
     return rec( allhashes := allhashes, allpts := allpts,
-                time := TimeDiff(ti,ti2) );
+                time := TimeDiff(ti,ti2), allstats := allstats );
 end;
 
 Measure := function(gens,pt,op,n)
@@ -286,12 +287,34 @@ end;
 
 MakeDistributionHF := function(x,n) 
   local hf,data;
+  if n = 1 then return x->1; fi;
   hf := ChooseHashFunction(x,n);
   data := hf.data;
   MakeReadOnlyObj(data);
   hf := hf.func;
   return y->hf(y,data);
 end;
+
+DoStatistics := function(gens,v,op,hash,work,opt)
+  local stats,s,h,w,r;
+  stats := [];
+  for h in hash do
+    s := [];
+    for w in work do
+      opt.nrhash := h;
+      opt.nrwork := w;
+      opt.disthf := MakeDistributionHF(v,h);
+      Print("Doing ",h," hashservers and ",w," workers... \c");
+      GASMAN("collect");
+      r := ParallelOrbit(gens,v,op,opt);
+      Add(s,r.time);
+      Print(r.time,"\n");
+    od;
+    Add(stats,s);
+  od;
+  return stats;
+end;
+
 
 m := MathieuGroup(24);
 # r := ParallelOrbit(m,1,OnPoints,rec());;
