@@ -8,9 +8,9 @@
 ##  These can substitute the READ_TEST functionality in the GAP kernel.
 ##
 
-FirstDiff := function(a, b)
-  return First([1..Length(a)],  i-> not IsBound(b[i]) or b[i] <> a[i]);
-end;
+##  FirstDiff := function(a, b)
+##    return First([1..Length(a)],  i-> not IsBound(b[i]) or b[i] <> a[i]);
+##  end;
 
 InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
   local lines, inp, pos, outp, ign, i;
@@ -88,17 +88,18 @@ InstallGlobalFunction(ParseTestFile, function(arg)
 end);
 
 InstallGlobalFunction(RunTests, function(arg)
-  local tests, boe, breakOnError, inp, outp, pos, cmp, 
-        times, ttime, s, res, fres, t, i;
+  local tests, opts, breakOnError, inp, outp, pos, cmp, times, ttime, 
+        s, res, fres, t, f, i;
   # don't enter break loop in case of error during test
   tests := arg[1];
-  if Length(arg) > 1 then
-    boe := arg[2];
-  else
-    boe := false;
+  opts := rec( breakOnError := false, showProgress := false );
+  if Length(arg) > 1 and IsRecord(arg[2]) then
+    for f in RecFields(arg[2]) do
+      opts.(f) := arg[2].(f);
+    od;
   fi;
   breakOnError := BreakOnError;
-  BreakOnError := boe;
+  BreakOnError := opts.breakOnError;
 
   # we collect outputs and add them as 4th entry to 'tests'
   # also collect timings and add them as 5th entry to 'tests'
@@ -109,6 +110,9 @@ InstallGlobalFunction(RunTests, function(arg)
   times := [];
   ttime := Runtime();
   for i in [1..Length(inp)] do
+    if opts.showProgress = true then
+      Print("# line ", pos[i], ", input:\n",inp[i]);
+    fi;
     s := InputTextString(inp[i]);
     res := "";
     fres := OutputTextString(res, false);
@@ -129,7 +133,7 @@ InstallGlobalFunction(RunTests, function(arg)
   BreakOnError := breakOnError;
 end);
 
-BindGlobal("TEST", AtomicRecord(rec(Timings := rec())));
+BindGlobal("TEST", AtomicRecord( rec(Timings := rec())));
 TEST.compareFunctions := AtomicRecord(rec());
 TEST.compareFunctions.uptonl := function(a, b)
   a := ShallowCopy(a);
@@ -171,8 +175,8 @@ end;
 ##  continued over several lines. <Br/>
 ##  To allow for comments in <Arg>fname</Arg> the following lines are ignored
 ##  by default: lines at the beginning of <Arg>fname</Arg> that start with
-##  <C>"#"</C>, and empty lines together with one or more lines starting with 
-##  <C>"#"</C>.<Br/>
+##  <C>"#"</C>, and one empty line together with one or more lines starting 
+##  with <C>"#"</C>.<Br/>
 ##  All other lines are considered as &GAP; output from the
 ##  preceding &GAP; input.
 ##  <P/>
@@ -236,9 +240,19 @@ end;
 ##  <Mark><C>ignoreSTOP_TEST</C></Mark>
 ##  <Item>By default set to <K>true</K>, in that case the output of &GAP;
 ##  input starting with <C>"STOP_TEST"</C> is not checked.</Item>
+##  <!--  don't document now, needs some work to become useful
 ##  <Mark><C>breakOnError</C></Mark>
 ##  <Item>If this is <K>true</K> then &GAP; enters a break loop in case of 
 ##  an error (default is <K>false</K>).</Item>
+##  -->
+##  <Mark><C>showProgress</C></Mark>
+##  <Item>If this is <K>true</K> then &GAP; prints position information
+##  and the input line before it is processed
+##  (default is <K>false</K>).</Item>
+##  <Mark><C>subsWindowsLineBreaks</C></Mark>
+##  <Item>If this is <K>true</K> then &GAP; substitutes DOS/Windows style
+##  line breaks "\r\n" by UNIX style line breaks "\n" after reading the test
+##  file. (default is <K>true</K>).</Item>
 ##  </List>
 ## 
 ##  <Example>
@@ -307,6 +321,7 @@ InstallGlobalFunction("Test", function(arg)
            width := 80,
            ignoreSTOP_TEST := true,
            compareFunction := EQ,
+           showProgress := false,
            writeTimings := false,
            compareTimings := false,
            reportTimeDiff := function(inp, fnam, line, oldt, newt)
@@ -334,6 +349,7 @@ InstallGlobalFunction("Test", function(arg)
              Print("# But found:\n", found);
              Print("########\n");
            end,
+           subsWindowsLineBreaks := true,
          );
   for c in RecFields(nopts) do
     opts.(c) := nopts.(c);
@@ -354,15 +370,24 @@ InstallGlobalFunction("Test", function(arg)
   # remember the full input 
   if not opts.isStream then
     full := StringFile(fnam);
+    if full = fail then
+      Error("Cannot read file ",fnam,"\n");
+      return;
+    fi;
   else
     full := ReadAll(fnam);
+  fi;
+  # change Windows to UNIX line breaks
+  if opts.subsWindowsLineBreaks = true then
+    full := ReplacedString(full, "\r\n", "\n");
   fi;
   
   # split input into GAP input, GAP output and comments
   pf := ParseTestInput(full, opts.ignoreComments);
   
   # run the GAP inputs and collect the outputs and the timings
-  RunTests(pf, opts.breakOnError);
+  RunTests(pf, rec(breakOnError := opts.breakOnError, 
+                   showProgress := opts.showProgress));
 
   # reset screen width
   SizeScreen(size);
