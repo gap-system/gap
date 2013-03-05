@@ -124,7 +124,7 @@ end );
 ##
 ##  returns the  number of groups of the order <size>.
 InstallGlobalFunction( NumberSmallGroups, function( size )
-    local inforec;
+    local inforec, r;
 
     if not IsPosInt( size ) then 
         Error( "usage: NumberSmallGroups( order )" ); 
@@ -141,7 +141,13 @@ InstallGlobalFunction( NumberSmallGroups, function( size )
     if IsBound( inforec.number ) then 
         return inforec.number;
     fi;
-    return NUMBER_SMALL_GROUPS_FUNCS[ inforec.func ]( size, inforec ).number;
+    
+    r := NUMBER_SMALL_GROUPS_FUNCS[ inforec.func ]( size, inforec );
+    
+    atomic readonly r do
+        return r.number;
+    od;    
+    
 end );
 
 #############################################################################

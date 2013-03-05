@@ -1422,9 +1422,10 @@ gap> BlistList([1..10],[4234623462462464234242]);
 
 # 2007/07/02 (SK)
 gap> GeneratorsOfRing(Rationals);
-"TRY_NEXT_METHOD"
+Error, cannot compute elements list of infinite domain <V>
 gap> GeneratorsOfRingWithOne(Rationals);
-"TRY_NEXT_METHOD"
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 2nd choice method found for `GeneratorsOfRingWithOne' on 1 arguments
 
 # 2007/07/06 (JS)
 gap> PrimitiveGroup(50,4);
