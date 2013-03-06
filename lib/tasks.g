@@ -262,7 +262,9 @@ end;
 RunAsyncTask := function(arg)
   local task;
   task := Tasks.CreateTask(arg);
-  task.async := true;
+  atomic task do
+    task.async := true;
+  od;
   ExecuteTask(task);
   return task;
 end;
