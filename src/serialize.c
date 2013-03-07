@@ -63,7 +63,20 @@ void RestoreSerializationState(SerializationState *state) {
 
 /* Native string serialization */
 
-static void WriteBytesNativeString(UInt count, void *addr) {
+static void ReserveBytesNativeString(UInt count) {
+  Obj target = TLS->SerializationObj;
+  UInt size = GET_LEN_STRING(target);
+  GROW_STRING(target, size + count + 1);
+}
+
+static void WriteBytesNativeStringDirect(void *addr, UInt count) {
+  Obj target = TLS->SerializationObj;
+  UInt size = GET_LEN_STRING(target);
+  memcpy(CSTR_STRING(target)+size, addr, count);
+  SET_LEN_STRING(target, size+count);
+}
+
+static void WriteBytesNativeString(void *addr, UInt count) {
   Obj target = TLS->SerializationObj;
   UInt size = GET_LEN_STRING(target);
   GROW_STRING(target, size + count + 1);
@@ -74,25 +87,25 @@ static void WriteBytesNativeString(UInt count, void *addr) {
 static void WriteTNumNativeString(UInt tnum) {
   UChar buf[1];
   buf[0] = (UChar) tnum;
-  WriteBytesNativeString(1, buf);
+  WriteBytesNativeString(buf, 1);
 }
 
 static void WriteByteNativeString(UChar byte) {
   UChar buf[1];
   buf[0] = (UChar) byte;
-  WriteBytesNativeString(1, buf);
+  WriteBytesNativeString(buf, 1);
 }
 
+#define ADDR_BYTE(obj) ((UChar *)ADDR_OBJ(obj))
 
-static void WriteByteBlockNativeString(UInt size, void *addr) {
-  UInt buf[1];
-  buf[0] = size;
-  WriteBytesNativeString(sizeof(UInt), buf);
-  WriteBytesNativeString(size, addr);
+static void WriteByteBlockNativeString(Obj obj, UInt offset, UInt len) {
+  WriteBytesNativeString(&len, sizeof(len));
+  ReserveBytesNativeString(len);
+  WriteBytesNativeStringDirect(ADDR_BYTE(obj) + offset, len);
 }
 
 static void WriteImmediateObjNativeString(Obj obj) {
-  WriteBytesNativeString(sizeof(Obj), &obj);
+  WriteBytesNativeString(&obj, sizeof(obj));
 }
 
 static SerializerInterface NativeStringSerializer = {
@@ -112,7 +125,7 @@ static void InitNativeStringSerializer(Obj string) {
 
 /* Native string deserialization */
 
-static void ReadBytesNativeString(UInt size, void *addr) {
+static void ReadBytesNativeString(void *addr, UInt size) {
   Obj str = TLS->SerializationObj;
   UInt max = GET_LEN_STRING(str);
   UInt off = TLS->SerializationIndex;
@@ -124,19 +137,19 @@ static void ReadBytesNativeString(UInt size, void *addr) {
 
 static UInt ReadTNumNativeString() {
   UChar buf[1];
-  ReadBytesNativeString(1, buf);
+  ReadBytesNativeString(buf, 1);
   return buf[0];
 }
 
 static UChar ReadByteNativeString() {
   UChar buf[1];
-  ReadBytesNativeString(1, buf);
+  ReadBytesNativeString(buf, 1);
   return buf[0];
 }
 
 static UInt ReadByteBlockLengthNativeString() {
   UInt len;
-  ReadBytesNativeString(sizeof(UInt), &len);
+  ReadBytesNativeString(&len, sizeof(len));
   /* The following is to prevent out-of-memory errors on malformed input,
    * where incorrect values can result in huge length values: */
   if (len + TLS->SerializationIndex > GET_LEN_STRING(TLS->SerializationObj))
@@ -144,13 +157,13 @@ static UInt ReadByteBlockLengthNativeString() {
   return len;
 }
 
-static void ReadByteBlockDataNativeString(UInt size, void *addr) {
-  ReadBytesNativeString(size, addr);
+static void ReadByteBlockDataNativeString(Obj obj, UInt offset, UInt len) {
+  ReadBytesNativeString(ADDR_BYTE(obj)+offset, len);
 }
 
 static Obj ReadImmediateObjNativeString() {
   Obj obj;
-  ReadBytesNativeString(sizeof(Obj), &obj);
+  ReadBytesNativeString(&obj, sizeof(obj));
   return obj;
 }
 
@@ -179,8 +192,8 @@ static inline void WriteByte(UChar byte) {
   SERIALIZER->WriteByte(byte);
 }
 
-static inline void WriteByteBlock(UInt size, void *addr) {
-  SERIALIZER->WriteByteBlock(size, addr);
+static inline void WriteByteBlock(Obj obj, UInt offset, UInt len) {
+  SERIALIZER->WriteByteBlock(obj, offset, len);
 }
 
 static inline void WriteImmediateObj(Obj obj) {
@@ -199,8 +212,8 @@ static inline UInt ReadByteBlockLength(void) {
   return DESERIALIZER->ReadByteBlockLength();
 }
 
-static inline UInt ReadByteBlockData(UInt size, void *addr) {
-  DESERIALIZER->ReadByteBlockData(size, addr);
+static inline UInt ReadByteBlockData(Obj obj, UInt offset, UInt len) {
+  DESERIALIZER->ReadByteBlockData(obj, offset, len);
 }
 
 static inline Obj ReadImmediateObj(void) {
@@ -211,13 +224,13 @@ static inline Obj ReadImmediateObj(void) {
 
 static void SerializeBinary(Obj obj) {
   WriteTNum(TNUM_OBJ(obj));
-  WriteByteBlock(SIZE_OBJ(obj), ADDR_OBJ(obj));
+  WriteByteBlock(obj, 0, SIZE_OBJ(obj));
 }
 
 static Obj DeserializeBinary(UInt tnum) {
   UInt len = ReadByteBlockLength();
   Obj result = NewBag(tnum, len);
-  ReadByteBlockData(len, ADDR_OBJ(result));
+  ReadByteBlockData(result, 0, len);
   return result;
 }
 
@@ -475,12 +488,8 @@ void SerializeRecord(Obj obj) {
   WriteImmediateObj(INTOBJ_INT(len));
   for (i=1; i<=len; i++) {
     UInt rnam = GET_RNAM_PREC(obj, i);
-    UChar *rnams = NAME_RNAM(rnam);
-    /* TODO: WriteByteBlock() can cause a garbage collection.
-     * If the garbage collector is of the compacting kind,
-     * that may mean that rnams is no longer a valid reference.
-     */
-    WriteByteBlock(strlen(rnams), rnams);
+    Obj rnams = ELM_PLIST(NamesRNam, rnam);
+    WriteByteBlock(rnams, sizeof(UInt), GET_LEN_STRING(rnams));
   }
   for (i=1; i<=len; i++) {
     Obj el = GET_ELM_PREC(obj, i);
@@ -505,7 +514,7 @@ Obj DeserializeRecord(UInt tnum) {
   for (i=1; i<=len; i++) {
     UInt rnam, rnamlen = ReadByteBlockLength();
     GROW_STRING(rnams, rnamlen+1);
-    ReadByteBlockData(rnamlen, CSTR_STRING(rnams));
+    ReadByteBlockData(rnams, sizeof(Obj), rnamlen);
     CSTR_STRING(rnams)[rnamlen] = '\0';
     rnam = RNamName(CSTR_STRING(rnams));
     SET_RNAM_PREC(result, i, rnam);
@@ -524,14 +533,14 @@ void SerializeString(Obj obj) {
   if (SerializedAlready(obj))
     return;
   WriteTNum(TNUM_OBJ(obj));
-  WriteByteBlock((UInt)(ADDR_OBJ(obj)[0]), CSTR_STRING(obj));
+  WriteByteBlock(obj, sizeof(UInt), GET_LEN_STRING(obj));
 }
 
 Obj DeserializeString(UInt tnum) {
   UInt len = ReadByteBlockLength();
   Obj result = NewBag(tnum, SIZEBAG_STRINGLEN(len));
   SET_LEN_STRING(result, len);
-  ReadByteBlockData(len, CSTR_STRING(result));
+  ReadByteBlockData(result, sizeof(UInt), len);
   CSTR_STRING(result)[len] = '\0';
   PushObj(result);
   return result;
@@ -541,13 +550,13 @@ void SerializeBlist(Obj obj) {
   if (SerializedAlready(obj))
     return;
   WriteTNum(TNUM_OBJ(obj));
-  WriteByteBlock(SIZE_OBJ(obj), ADDR_OBJ(obj));
+  WriteByteBlock(obj, 0, SIZE_OBJ(obj));
 }
 
 Obj DeserializeBlist(UInt tnum) {
   UInt len = ReadByteBlockLength();
   Obj result = NewBag(tnum, len);
-  ReadByteBlockData(len, ADDR_OBJ(result));
+  ReadByteBlockData(result, 0, len);
   PushObj(result);
   return result;
 }
@@ -595,7 +604,7 @@ Obj DeserializeTypedObj(UInt tnum) {
   UInt rnam;
   namelen = ReadByteBlockLength();
   name = NEW_STRING(namelen);
-  ReadByteBlockData(namelen, CSTR_STRING(name));
+  ReadByteBlockData(name, sizeof(UInt), namelen);
   rnam = RNamName(CSTR_STRING(name));
   len = INT_INTOBJ(ReadImmediateObj());
   args = NEW_PLIST(T_PLIST, len);
@@ -608,7 +617,7 @@ Obj DeserializeTypedObj(UInt tnum) {
 	case T_DATOBJ:
 	  blen = ReadByteBlockLength();
 	  obj = NewBag(T_DATOBJ, blen + sizeof(Obj));
-	  ReadByteBlockData(blen, ADDR_OBJ(obj)+1);
+	  ReadByteBlockData(obj, sizeof(Obj), blen);
 	  SET_TYPE_OBJ(obj, GVarObj(&TYPE_UNKNOWN_GVar));
 	  break;
 	default:
@@ -700,7 +709,7 @@ void SerializeTypedObj(Obj obj) {
     if (!name || !IS_STRING(name))
       SerRepError();
   }
-  WriteByteBlock(GET_LEN_STRING(name), CSTR_STRING(name));
+  WriteByteBlock(name, sizeof(UInt), GET_LEN_STRING(name));
   WriteImmediateObj(INTOBJ_INT(len - start + 1));
   while (start <= len && skip > 0) {
     Obj el = ELM_PLIST(rep, start);
@@ -709,7 +718,7 @@ void SerializeTypedObj(Obj obj) {
       case T_DATOBJ:
 	WriteByte(1);
 	WriteTNum(T_DATOBJ);
-	WriteByteBlock(SIZE_OBJ(el)-sizeof(Obj), ADDR_OBJ(el)+1);
+	WriteByteBlock(el, sizeof(Obj), SIZE_OBJ(el) - sizeof(Obj));
 	break;
       case T_POSOBJ:
 	WriteByte(0);

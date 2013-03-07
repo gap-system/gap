@@ -7,7 +7,7 @@ typedef Obj (*DeserializationFunction)(UInt tnum);
 typedef struct SerializerInterface {
   void (*WriteTNum)(UInt tnum);
   void (*WriteByte)(UChar tnum);
-  void (*WriteByteBlock)(UInt size, void *addr);
+  void (*WriteByteBlock)(Obj obj, UInt offset, UInt len);
   void (*WriteImmediateObj)(Obj obj);
 } SerializerInterface;
 
@@ -15,7 +15,7 @@ typedef struct DeserializerInterface {
   UInt (*ReadTNum)(void);
   UChar (*ReadByte)(void);
   UInt (*ReadByteBlockLength)(void);
-  void (*ReadByteBlockData)(UInt size, void *addr);
+  void (*ReadByteBlockData)(Obj obj, UInt offset, UInt len);
   Obj (*ReadImmediateObj)(void);
 } DeserializerInterface;
 
