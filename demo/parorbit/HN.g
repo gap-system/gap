@@ -6,6 +6,7 @@
 LoadPackage("orb");
 
 Read("HNdata.g");  # actually reads HNdata.g.gz
+Read("../bench.g");
 
 if IsBound(MakeReadOnlyObj) then
     OnRightRO := function(x,g)
@@ -23,8 +24,10 @@ fi;
 # The following works on my machine and uses about 41 seconds and
 # 221 MB main memory:
 
-start := Runtime();
-o := Orb(gens,v,OnRightRO,rec(treehashsize := 3000000,report := 100000));
-Enumerate(o);
-t := Runtime()-start;
-Print("Runtime [ms]:",t,"\n");
+#start := Runtime();
+o := 0;
+t := Bench( do o := Orb(gens,v,OnRightRO,rec(treehashsize := 3000000,report := 100000));; Enumerate(o);; od);
+#Enumerate(o);
+#t := Runtime()-start;
+Print ("Sequential runtime is ", t, "\n");
+#Print("Runtime [ms]:",t,"\n");

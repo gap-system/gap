@@ -3,9 +3,10 @@
 LoadPackage("orb");
 Read ("../bench.g");
 
-TaskPool := ShareObj (rec (nrTasks := 0,
-                    chunkSize := 0,
-                    tasks := [],
+TaskPool := ShareObj (rec (nrChunks := 0,
+                    chunks := [],
+                    currentChunk := [],
+                    currentChunkSize := 0,
                     outstandingWork := 0));
 
 DeclareGlobalVariable("hasWork");
@@ -29,7 +30,7 @@ end;
 Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
   local lock, haveTaskPoolLock, work, i, hashLock, 
         nrProducedElems, nrTasksToGrab, results, accResults,
-        j, res, val, t, tasksToAdd;
+        j, res, val, t, tasksToAdd, prevNrChunks, bound;
   tasksToAdd := 0;
   haveTaskPoolLock := false;
   results := EmptyPlist(nrWorkers);
@@ -47,10 +48,10 @@ Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
       haveTaskPoolLock := true;
     fi;
     
-    # 1.2 if there are not enough tasks in the task pool, and one of the workers is
+    # 1.2 if there are 0 chunks of work in the task pool, and one of the workers is
     #     still processing tasks, we release the lock on the task pool and wait for
     #     task pool semaphore to signal when enough tasks are available
-    if TaskPool.nrTasks < TaskPool.chunkSize and TaskPool.outstandingWork > 0 then
+    if TaskPool.nrChunks = 0 and TaskPool.outstandingWork > 0 then
       UNLOCK(lock);
       haveTaskPoolLock := false;
       WaitSemaphore(taskPoolSemaphore);
@@ -59,30 +60,34 @@ Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
     fi;
     
     # 1.3 if we are here, it means that either 
-    #     i)  there are enough (>chunksize) tasks in the task pool or
-    #     ii) there are not enough tasks in the task pool, but we are the only
+    #     i)  there are > 0 chunks of work in the task pool or
+    #     ii) there are 0 chunks of work in the task pool, but we are the only
     #         worker doing work
-    if TaskPool.nrTasks > TaskPool.chunkSize then
-      nrTasksToGrab := TaskPool.chunkSize;
-    elif TaskPool.nrTasks > 0 then
-      nrTasksToGrab := TaskPool.nrTasks;
+    #     if i) holds, then grab a chunk of work
+    #     if ii) holds, grab an incomplete chunk of work
+    if TaskPool.nrChunks = 0 then
+      if TaskPool.currentChunkSize > 0 then
+        work := AdoptObj(TaskPool.currentChunk);
+        TaskPool.currentChunk := MigrateObj(EmptyPlist(chunkSize),TaskPool);
+        TaskPool.currentChunkSize := 0;
+      else
+        return;
+      fi;
     else
-      return;
+      work := AdoptObj(Remove(TaskPool.chunks));
+      TaskPool.nrChunks := TaskPool.nrChunks - 1;
     fi;
-    
-    # 1.4 grab the nrTasksToGrab from the task pool
-    for i in [1..nrTasksToGrab] do
-      work[i] := Remove(TaskPool.tasks);
-    od;
-    TaskPool.nrTasks := TaskPool.nrTasks - nrTasksToGrab;
+
     TaskPool.outstandingWork := TaskPool.outstandingWork + 1;
     
-    # 1.5 if there remains enough tasks in the task pool for other workers,
+    # 1.5 if there remains > 0 chunks of work in the task pool,
     #     then signal the taskPoolSemaphore and release the lock on the task pool. 
     #     also, if some workers are currently processing tasks, release the task pool
     #     lock, so they can add their results to the task pool.
-    if TaskPool.nrTasks > TaskPool.chunkSize or TaskPool.outstandingWork > 1 then
-      if TaskPool.nrTasks > TaskPool.chunkSize then
+
+    
+    if TaskPool.nrChunks > 0 or TaskPool.outstandingWork > 1 then
+      if TaskPool.nrChunks > 0 then
         SignalSemaphore(taskPoolSemaphore);
       fi;
       UNLOCK(lock);
@@ -90,7 +95,7 @@ Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
     fi;
     
     # 2. do work (this stores results in results list of lists)
-    DoWork(work, nrTasksToGrab, op, gens, distHashFun, results);
+    DoWork(work, Length(work), op, gens, distHashFun, results);
     
     # 3. add results to the hash table and task pool
     
@@ -121,17 +126,31 @@ Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
     tasksToAdd := Length(accResults);
     
     # 3.3 add the tasks from accResults to the task pool
-    if tasksToAdd > 0 then
-      while not IsEmpty(accResults) do
-        Add (TaskPool.tasks, Remove(accResults));
-      od;
-      TaskPool.nrTasks := TaskPool.nrTasks + tasksToAdd;
-    fi;
     
+    if tasksToAdd > 0 then
+      prevNrChunks := TaskPool.nrChunks;
+      while not IsEmpty(accResults) do
+        if Length(accResults) < chunkSize - TaskPool.currentChunkSize then
+          bound := Length(accResults);
+        else
+          bound := chunkSize - TaskPool.currentChunkSize;
+        fi;
+        for i in [1..bound] do
+          Add (TaskPool.currentChunk, Remove(accResults));
+        od;
+        TaskPool.currentChunkSize := TaskPool.currentChunkSize + bound;
+        if TaskPool.currentChunkSize = chunkSize then
+          Add (TaskPool.chunks, TaskPool.currentChunk);
+          TaskPool.nrChunks := TaskPool.nrChunks + 1;
+          TaskPool.currentChunk := MigrateObj(EmptyPlist(chunkSize), TaskPool);
+          TaskPool.currentChunkSize := 0;
+        fi;
+      od;
+    fi;
+
     # 3.4 if there are now enough tasks (>chunksize) in the
     #     task pool, signal the task pool semaphore
-    if TaskPool.nrTasks > TaskPool.chunkSize and 
-       TaskPool.nrTasks - tasksToAdd <= TaskPool.chunkSize then
+    if TaskPool.nrChunks > 0 and prevNrChunks = 0 then
       SignalSemaphore(taskPoolSemaphore);
     fi;
     
@@ -163,9 +182,10 @@ ParallelOrbit := function (gens, pt, op, opt)
     HashTables[i] := ShareObj(HTCreate(pt, rec (hashlen := opt.hashlen)));
   od;
   atomic TaskPool do
-    TaskPool.nrTasks := 1;
-    Add(TaskPool.tasks, MakeReadOnlyObj(pt));
-    TaskPool.chunkSize := opt.chunksize;
+    TaskPool.nrChunks := 0;
+    TaskPool.currentChunk := MigrateObj(EmptyPlist(opt.chunksize), TaskPool);
+    Add(TaskPool.currentChunk, MakeReadOnlyObj(pt));
+    TaskPool.currentChunkSize := 1;
   od;
   SendChannel (hasWork, 1);
   workers := List ([1..opt.nrwork], \x -> CreateThread(Worker,opt.nrwork,op,gens,opt.chunksize,opt.disthf));
@@ -200,9 +220,18 @@ MakeDistributionHF := function(x,n)
   return y->hf(y,data);
 end;
 
-m := MathieuGroup(24);
-# r := ParallelOrbit(m,1,OnPoints,rec());;
-r := Bench( do ParallelOrbit(m,[1,2,3,4],OnTuples,
-        rec(nrwork := 2, disthf := MakeDistributionHF([1,2,3,4],2)));; od);
-Print ("Runtime is ", r, "\n");
+if IsBound(MakeReadOnlyObj) then
+    OnRightRO := function(x,g)
+      local y;
+      y := x*g;
+      MakeReadOnlyObj(y);
+      return y;
+    end;
+else
+    OnRightRO := OnRight;
+fi;
+
+#Read ("HNdata.g");
+#r := Bench( do ParallelOrbit(gens,v,OnRightRO,
+#        rec(nrwork := 16, disthf := MakeDistributionHF(v,16)));; od);
         
