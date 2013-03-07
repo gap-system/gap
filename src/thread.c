@@ -677,11 +677,9 @@ static void SetInterrupt(int threadID) {
 
 static int LockAndUpdateThreadState(int threadID, int oldState, int newState) {
   if (pthread_mutex_trylock(thread_data[threadID].lock) < 0) {
-    printf("locked\n");
     return 0;
   }
   if (!UpdateThreadState(threadID, oldState, newState)) {
-    printf("update failed\n");
     pthread_mutex_unlock(thread_data[threadID].lock);
     return 0;
   }
