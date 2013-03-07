@@ -325,24 +325,34 @@ Obj DeserializeInt() {
 }
 
 void SerializeFFE(Obj obj) {
+  UInt ffe = (UInt) obj;
   WriteTNum(T_FFE);
-  WriteImmediateObj(obj);
+  WriteByte((ffe >> 24) & 0xff);
+  WriteByte((ffe >> 16) & 0xff);
+  WriteByte((ffe >> 8) & 0xff);
+  WriteByte(ffe & 0xff);
 }
 
 Obj DeserializeFFE() {
-  return ReadImmediateObj();
+  UInt ffe = 0;
+  ffe = ReadByte();
+  ffe <<= 8;
+  ffe |= ReadByte();
+  ffe <<= 8;
+  ffe |= ReadByte();
+  ffe <<= 8;
+  ffe |= ReadByte();
+  return (Obj) ffe;
 }
 
 void SerializeChar(Obj obj) {
   UChar ch = *(char *)ADDR_OBJ(obj);
   WriteTNum(T_CHAR);
-  WriteImmediateObj(INTOBJ_INT(ch));
+  WriteByte(ch);
 }
 
 Obj DeserializeChar(UInt tnum) {
-  UInt ch = INT_INTOBJ(ReadImmediateObj());
-  if (ch > 255)
-    DeserializationError();
+  UChar ch = ReadByte();
   return ObjsChar[ch];
 }
 
@@ -372,24 +382,28 @@ Obj DeserializeRat(UInt tnum) {
 
 void SerializeCyc(Obj obj) {
   UInt len, i;
-  Obj *coefs;
-  UInt4 *expos;
   WriteTNum(T_CYC);
   len = SIZE_CYC(obj);
-  coefs = COEFS_CYC(obj);
+  WriteImmediateObj(INTOBJ_INT(len));
   for (i=0; i<len; i++) {
-    SerializeObj(*coefs);
-    coefs++;
+    SerializeObj(COEFS_CYC(obj)[i]);
   }
-  expos = EXPOS_CYC(obj, len);
   for (i=1; i<len; i++) {
-    WriteImmediateObj(INTOBJ_INT(*expos));
-    expos++;
+    WriteImmediateObj(INTOBJ_INT(EXPOS_CYC(obj,len)[i]));
   }
 }
 
 Obj DeserializeCyc(UInt tnum) {
-  DeserializationError();
+  Obj result;
+  Obj *coefs;
+  UInt i, len;
+  len = INT_INTOBJ(ReadImmediateObj());
+  result = NewBag( T_CYC, len * (sizeof(Obj) + sizeof(UInt4)));
+  for (i=0; i<len; i++)
+    COEFS_CYC(result)[i] = DeserializeObj();
+  for (i=1; i<len; i++)
+    EXPOS_CYC(result, len)[i] = INT_INTOBJ(ReadImmediateObj());
+  return result;
 }
 
 void SerializeBool(Obj obj) {
@@ -840,6 +854,7 @@ static Int InitKernel (
   RegisterSerializerFunctions(T_FFE, SerializeFFE, DeserializeFFE);
   RegisterSerializerFunctions(T_BOOL, SerializeBool, DeserializeBool);
   RegisterSerializerFunctions(T_CHAR, SerializeChar, DeserializeChar);
+  RegisterSerializerFunctions(T_CYC, SerializeCyc, DeserializeCyc);
   for (i=FIRST_PLIST_TNUM; i<=LAST_PLIST_TNUM; i++) {
     RegisterSerializerFunctions(i, SerializeList, DeserializeList);
   }

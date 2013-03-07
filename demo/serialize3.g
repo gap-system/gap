@@ -31,8 +31,18 @@ od;
 CheckSerialization([]);
 CheckSerialization(`[]);
 CheckSerialization(["abc", `"abc"]);
+CheckSerialization([-2..2]);
+CheckSerialization([0,3..30]);
+
+for i in [0..255] do
+  CheckSerialization(CHAR_INT(i));
+od;
+
 CheckSerialization(1/2);
 CheckSerialization(3.14);
+CheckSerialization(E(3));
+CheckSerialization(E(3)+E(2));
+
 CheckSerialization(rec(x := 1, y := "abc"));
 CheckSerialization([1,2,,3,,,4,"x","y"]);
 CheckSerialization2([~], x->IsIdenticalObj(x, x[1]));
