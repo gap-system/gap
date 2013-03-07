@@ -34,6 +34,9 @@ CheckSerialization(["abc", `"abc"]);
 CheckSerialization([-2..2]);
 CheckSerialization([0,3..30]);
 
+CheckSerialization((1,2));
+CheckSerialization((1,65537));
+
 for i in [0..255] do
   CheckSerialization(CHAR_INT(i));
 od;
