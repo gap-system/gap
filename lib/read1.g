@@ -76,6 +76,7 @@ ReadLib( "string.gd"   );
 
 ReadLib( "cmdledit.g"  );
 
+ReadLib( "serialize.g" );
 ReadLib( "thread.g" );
 ReadLib( "objset.g" );
 ReadLib( "smallrgn.g"  );

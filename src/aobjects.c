@@ -431,13 +431,11 @@ static Obj FuncAddAtomicList(Obj self, Obj list, Obj obj)
   return INTOBJ_INT(AddAList(list, obj));
 }
 
-static Obj FuncFromAtomicList(Obj self, Obj list)
+Obj FromAtomicList(Obj list)
 {
   Obj result;
   AtomicObj *data;
   UInt i, len;
-  if (TNUM_OBJ(list) != T_FIXALIST && TNUM_OBJ(list) != T_ALIST)
-    ArgumentError("FromAtomicList: First argument must be an atomic list");
   data = ADDR_ATOM(list);
   len = ALIST_LEN((UInt) (data++->atom));
   result = NEW_PLIST(T_PLIST, len);
@@ -446,6 +444,13 @@ static Obj FuncFromAtomicList(Obj self, Obj list)
   for (i=1; i<=len; i++)
     SET_ELM_PLIST(result, i, data[i].obj);
   return result;
+}
+
+static Obj FuncFromAtomicList(Obj self, Obj list)
+{
+  if (TNUM_OBJ(list) != T_FIXALIST && TNUM_OBJ(list) != T_ALIST)
+    ArgumentError("FromAtomicList: First argument must be an atomic list");
+  return FromAtomicList(list);
 }
 
 static void MarkAtomicList(Bag bag)

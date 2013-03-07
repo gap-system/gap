@@ -141,6 +141,14 @@ typedef struct ThreadLocalStorage
   Obj PrintObjIndicesObj;
   Int *PrintObjIndices;
 
+  /* For serializer.c */
+
+  Obj SerializationObj;
+  UInt SerializationIndex;
+  void *SerializationDispatcher;
+  Obj SerializationRegistry;
+  Obj SerializationStack;
+
 } ThreadLocalStorage;
 
 extern ThreadLocalStorage *MainThreadTLS;

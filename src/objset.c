@@ -281,6 +281,13 @@ Int FindObjMap(Obj map, Obj obj) {
   }
 }
 
+Obj LookupObjMap(Obj map, Obj obj) {
+  Int index = FindObjMap(map, obj);
+  if (index < 0)
+    return (Obj) 0;
+  return ADDR_OBJ(map)[OBJSET_HDRSIZE+index*2+1];
+}
+
 static void AddObjMapNew(Obj map, Obj key, Obj value) {
   UInt size = ADDR_WORD(map)[OBJSET_SIZE];
   UInt hash = ObjHash(map, key);

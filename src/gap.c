@@ -97,6 +97,8 @@
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
 
+#include	"serialize.h"		/* object serialization		   */
+
 #ifdef GAPMPI
 #include        "gapmpi.h"              /* ParGAP/MPI                      */
 #endif
@@ -3317,6 +3319,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoThreadAPI,
     InitInfoAObjects,
     InitInfoObjSets,
+    InitInfoSerialize,
 
 #ifdef GAPMPI
     /* ParGAP/MPI module                                                   */
