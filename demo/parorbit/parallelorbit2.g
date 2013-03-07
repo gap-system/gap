@@ -5,6 +5,7 @@ LoadPackage("orb");
 
 HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
   local Poll,ht,i,p,pts,r,running,sent,sizes,todo,tosend,val;
+  #Print("I am hash #", ThreadID(CurrentThread()), " ", id, "\n");
   ht := HTCreate(pt,rec( hashlen := hashsize ));
   pts := EmptyPlist(hashsize);
   sent := 0;
@@ -27,6 +28,9 @@ HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
               return true;
           elif r = "done" then
               running := running - 1;
+              if running = 0 and Length(todo) = 0 then
+                  SendChannel(status,id);
+              fi;
               return false;
           fi;
       else
@@ -86,6 +90,7 @@ end;
 
 Worker := function(gens,op,hashins,hashout,status,f)
   local g,j,n,res,t,x;
+  #Print("I am work\n");
   atomic readonly hashins do
       n := Length(hashins);
       while true do
@@ -120,7 +125,7 @@ TimeDiff := function(t,t2)
 end;
 
 ParallelOrbit := function(gens,pt,op,opt)
-    local allhashes,allpts,allstats,h,i,k,o,pos,ptcopy,ready,s,started,ti,ti2,w,x;
+    local allhashes,allpts,allstats,change,h,i,k,o,pos,ptcopy,ready,s,started,ti,ti2,w,x;
     if not IsBound(opt.nrhash) then opt.nrhash := 1; fi;
     if not IsBound(opt.nrwork) then opt.nrwork := 1; fi;
     if not IsBound(opt.disthf) then opt.disthf := x->1; fi;
@@ -146,21 +151,31 @@ ParallelOrbit := function(gens,pt,op,opt)
     #Print("Seed sent.\n");
     ShareSingleObj(i);
     w := List([1..opt.nrwork],
-              x->CreateThread(Worker,gens,op,i,o,opt.disthf));
+              x->CreateThread(Worker,gens,op,i,o,s,opt.disthf));
     #Print("Workers started...\n");
     ready := BlistList([1..opt.nrhash],[1..opt.nrhash]);
     ready[pos] := false;
     while ForAny([1..opt.nrhash],i->ready[i]=false) do
+        change := false;
+        x := ReceiveChannel(s);
         while true do
-            x := TryReceiveChannel(s,fail);
             if x = fail then break; 
             elif x < 0 then 
+                if ready[-x] = true then 
+                    change := true; 
+                    # Print("Hash server #",-x," got some work.\n");
+                fi;
                 ready[-x] := false;
             else 
+                if ready[x] = false then 
+                    change := true; 
+                    # Print("Hash server #",-x," became idle.\n");
+                fi;
                 ready[x] := true;
             fi;
+            x := TryReceiveChannel(s,fail);
         od;
-        #Print("Central: ready is ",ready,"\n");
+        # if change then Print("\nCentral: ready is ",ready,"\r"); fi;
     od;
     # Now terminate all workers:
     for k in [1..opt.nrwork] do
