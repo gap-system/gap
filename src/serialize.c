@@ -137,8 +137,10 @@ static UChar ReadByteNativeString() {
 static UInt ReadByteBlockLengthNativeString() {
   UInt len;
   ReadBytesNativeString(sizeof(UInt), &len);
-  /* TODO: raise an error if len > remaining bytes */
-  /* This is to prevent out-of-memory errors on malformed input */
+  /* The following is to prevent out-of-memory errors on malformed input,
+   * where incorrect values can result in huge length values: */
+  if (len + TLS->SerializationIndex > GET_LEN_STRING(TLS->SerializationObj))
+    DeserializationError();
   return len;
 }
 
