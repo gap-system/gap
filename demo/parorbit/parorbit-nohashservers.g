@@ -1,6 +1,7 @@
 # This is a second try of a parallel orbit for hpcgap running in threads:
 # This time we use a central channel for work distribution.
 LoadPackage("orb");
+LoadPackage("io");
 Read ("../bench.g");
 
 TaskPool := ShareObj (rec (nrChunks := 0,
