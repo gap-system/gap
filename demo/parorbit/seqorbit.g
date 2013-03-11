@@ -45,3 +45,30 @@ SequentialOrbit := function(gens,pt,op,opt)
   return orbitSize;
       
 end;
+
+SequentialOrbit2 := function(gens,pt,op,opt)
+  local g,ht,i,o,v,x;
+  if not IsBound(opt.hashlen) then opt.hashlen := 100001; fi;
+  if IsGroup(gens) then gens := GeneratorsOfGroup(gens); fi;
+  if IsMutable(gens) then MakeImmutable(gens); fi;
+  if IsMutable(pt) then pt := MakeImmutable(StructuralCopy(pt)); fi;
+  ht := HTCreate(pt,rec( hashlen := opt.hashlen ));
+  o := EmptyPlist(opt.hashlen);
+  Add(o,pt);
+  HTAdd(ht,pt,true);
+  i := 1;
+  while i <= Length(o) do
+    for g in gens do
+      x := op(o[i],g);
+      v := HTValue(ht,x);
+      if v = fail then
+        Add(o,x);
+        HTAdd(ht,x,true);
+      fi;
+    od;
+    i := i + 1;
+  od;
+  return rec( orb := o, ht := ht );
+end;
+
+
