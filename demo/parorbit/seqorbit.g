@@ -71,4 +71,25 @@ SequentialOrbit2 := function(gens,pt,op,opt)
   return rec( orb := o, ht := ht );
 end;
 
+LoadPackage("io");
 
+TimeDiff := function(t,t2)
+  local a,b;
+  a := 1.0 * t.tv_sec + 1.E-6 * t.tv_usec;
+  b := 1.0 * t2.tv_sec + 1.E-6 * t2.tv_usec;
+  return b - a;
+end;
+
+DoManySeqOrbit := function(gens,pt,op,opt,n)
+  local ti,ti2,t,i;
+  ti := IO_gettimeofday();
+  t :=  List([1..n],x->CreateThread(SequentialOrbit2,gens,pt,op,opt));
+  for i in [1..n] do
+    WaitThread(t[i]);
+  od;
+  ti2 := IO_gettimeofday();
+  return TimeDiff(ti,ti2);
+end;
+
+# Note, to use the last you want to give an AtomicRecord as in:
+#  DoManySeqOrbit(gens,v,OnRightRO,AtomicRecord(rec(hashlen := 2000001)),4);
