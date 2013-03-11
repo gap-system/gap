@@ -2013,8 +2013,8 @@ usage:
  SyExit( 1 );
 }
 
-static void Merge(char *to, char *from1, unsigned size1, char *from2,
-  unsigned size2, unsigned width, int (*lessThan)(const void *a, const void *b))
+static void Merge(char *to, char *from1, UInt size1, char *from2,
+  UInt size2, UInt width, int (*lessThan)(const void *a, const void *b))
 {
   while (size1 && size2) {
     if (lessThan(from1, from2)) {
@@ -2034,10 +2034,10 @@ static void Merge(char *to, char *from1, unsigned size1, char *from2,
     memcpy(to, from2, size2*width);
 }
 
-static void MergeSortRecurse(char *data, char *aux, unsigned count, unsigned width,
+static void MergeSortRecurse(char *data, char *aux, UInt count, UInt width,
   int (*lessThan)(const void *a, const void *))
 {
-  unsigned nleft, nright;
+  UInt nleft, nright;
   /* assert(count > 1); */
   if (count == 2) {
     if (!lessThan(data, data+width))
@@ -2068,7 +2068,7 @@ static void MergeSortRecurse(char *data, char *aux, unsigned count, unsigned wid
 **  than the second argument, zero otherwise.
 */
 
-void MergeSort(void *data, unsigned count, unsigned width,
+void MergeSort(void *data, UInt count, UInt width,
   int (*lessThan)(const void *a, const void *))
 {
   char *aux = alloca(count * width);

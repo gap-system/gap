@@ -1240,7 +1240,7 @@ extern Char *getOptionArg(Char key, UInt which);
 **  than the second argument, zero otherwise.
 */
 
-extern void MergeSort(void *data, unsigned count, unsigned width,
+extern void MergeSort(void *data, UInt count, UInt width,
   int (*lessThan)(const void *a, const void *));
 
 /****************************************************************************

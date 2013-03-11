@@ -21,11 +21,11 @@ void LockMonitor(Monitor *monitor);
 int TryLockMonitor(Monitor *monitor);
 void UnlockMonitor(Monitor *monitor);
 void WaitForMonitor(Monitor *monitor);
-int WaitForAnyMonitor(unsigned count, Monitor **monitors);
+UInt WaitForAnyMonitor(UInt count, Monitor **monitors);
 void SignalMonitor(Monitor *monitor);
-void SortMonitors(unsigned count, Monitor **monitors);
-void LockMonitors(unsigned count, Monitor **monitors);
-void UnlockMonitors(unsigned count, Monitor **monitors);
+void SortMonitors(UInt count, Monitor **monitors);
+void LockMonitors(UInt count, Monitor **monitors);
+void UnlockMonitors(UInt count, Monitor **monitors);
 
 void InitSignals();
 

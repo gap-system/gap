@@ -74,23 +74,23 @@ typedef struct Channel
   Obj monitor;
   Obj queue;
   int waiting;
-  int head, tail;
-  int size, capacity;
   int dynamic;
+  UInt head, tail;
+  UInt size, capacity;
 } Channel;
 
 typedef struct Semaphore
 {
   Obj monitor;
-  Int count;
+  UInt count;
   int waiting;
 } Semaphore;
 
 typedef struct Barrier
 {
   Obj monitor;
-  int count;
-  unsigned phase;
+  UInt count;
+  UInt phase;
   int waiting;
 } Barrier;
 
@@ -226,7 +226,7 @@ static int MonitorOrder(const void *r1, const void *r2)
   return p1 < p2;
 }
 
-void SortMonitors(unsigned count, Monitor **monitors)
+void SortMonitors(UInt count, Monitor **monitors)
 {
   MergeSort(monitors, count, sizeof(Monitor *), MonitorOrder);
 }
@@ -238,31 +238,31 @@ static int ChannelOrder(const void *c1, const void *c2)
   return p1 < p2;
 }
 
-static void SortChannels(unsigned count, Channel **channels)
+static void SortChannels(UInt count, Channel **channels)
 {
   MergeSort(channels, count, sizeof(Channel *), ChannelOrder);
 }
 
-static int MonitorsAreSorted(unsigned count, Monitor **monitors)
+static int MonitorsAreSorted(UInt count, Monitor **monitors)
 {
-  unsigned i;
+  UInt i;
   for (i=1; i<count; i++)
     if ((char *)(monitors[i-1]) > (char *)(monitors[i]))
       return 0;
   return 1;
 }
 
-void LockMonitors(unsigned count, Monitor **monitors)
+void LockMonitors(UInt count, Monitor **monitors)
 {
-  unsigned i;
+  UInt i;
   assert(MonitorsAreSorted(count, monitors));
   for (i=0; i<count; i++)
     LockMonitor(monitors[i]);
 }
 
-void UnlockMonitors(unsigned count, Monitor **monitors)
+void UnlockMonitors(UInt count, Monitor **monitors)
 {
-  unsigned i;
+  UInt i;
   for (i=0; i<count; i++)
     UnlockMonitor(monitors[i]);
 }
@@ -285,12 +285,12 @@ void UnlockMonitors(unsigned count, Monitor **monitors)
  ** unlocked.
  */
 
-int WaitForAnyMonitor(unsigned count, Monitor **monitors)
+UInt WaitForAnyMonitor(UInt count, Monitor **monitors)
 {
   struct WaitList *nodes;
   Monitor *monitor;
-  unsigned i;
-  int result;
+  UInt i;
+  Int result;
   assert(MonitorsAreSorted(count, monitors));
   nodes = alloca(sizeof(struct WaitList) * count);
   for (i=0; i<count; i++)
@@ -1526,9 +1526,9 @@ static void WaitChannel(Channel *channel)
 static void ExpandChannel(Channel *channel)
 {
   /* Growth ratio should be less than the golden ratio */
-  unsigned oldCapacity = channel->capacity;
-  unsigned newCapacity = ((oldCapacity * 25 / 16) | 1) + 1;
-  unsigned i, tail;
+  UInt oldCapacity = channel->capacity;
+  UInt newCapacity = ((oldCapacity * 25 / 16) | 1) + 1;
+  UInt i, tail;
   Obj newqueue;
   if (newCapacity == oldCapacity)
     newCapacity+=2;
@@ -1541,7 +1541,7 @@ static void ExpandChannel(Channel *channel)
     ADDR_OBJ(newqueue)[i+1] = ADDR_OBJ(channel->queue)[i+1];
   for (i = 0; i < channel->tail; i++)
   {
-    unsigned d = oldCapacity+i;
+    UInt d = oldCapacity+i;
     if (d >= newCapacity)
       d -= newCapacity;
     ADDR_OBJ(newqueue)[d+1] = ADDR_OBJ(channel->queue)[i+1];
@@ -1754,8 +1754,8 @@ static Obj ReceiveChannel(Channel *channel)
 
 static Obj ReceiveAnyChannel(Obj channelList, int with_index)
 {
-  unsigned count = LEN_PLIST(channelList);
-  unsigned i, p;
+  UInt count = LEN_PLIST(channelList);
+  UInt i, p;
   Monitor **monitors = alloca(count * sizeof(Monitor *));
   Channel **channels = alloca(count * sizeof(Channel *));
   Obj result;
@@ -1819,11 +1819,11 @@ static Obj ReceiveAnyChannel(Obj channelList, int with_index)
     return result;
 }
 
-static Obj MultiReceiveChannel(Channel *channel, unsigned max)
+static Obj MultiReceiveChannel(Channel *channel, UInt max)
 {
   Obj result;
-  unsigned count;
-  unsigned i;
+  UInt count;
+  UInt i;
   LockChannel(channel);
   if (max > channel->size/2)
     count = channel->size/2;
@@ -2206,7 +2206,7 @@ Obj CreateBarrier()
   return barrierBag;
 }
 
-void StartBarrier(Barrier *barrier, unsigned count)
+void StartBarrier(Barrier *barrier, UInt count)
 {
   LockBarrier(barrier);
   barrier->count = count;
@@ -2216,7 +2216,7 @@ void StartBarrier(Barrier *barrier, unsigned count)
 
 void WaitBarrier(Barrier *barrier)
 {
-  unsigned phaseDelta;
+  UInt phaseDelta;
   LockBarrier(barrier);
   phaseDelta = barrier->phase;
   if (--barrier->count > 0)
