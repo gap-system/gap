@@ -1,5 +1,4 @@
 LoadPackage("orb");
-Read ("../bench.g");
 
 if IsBound(MakeReadOnlyObj) then
     OnRightRO := function(x,g)
@@ -64,6 +63,9 @@ SequentialOrbit2 := function(gens,pt,op,opt)
       if v = fail then
         Add(o,x);
         HTAdd(ht,x,true);
+        if Length(o) mod 1000000 = 0 then 
+            Print("Have ",Length(o)," points.\n");
+        fi;
       fi;
     od;
     i := i + 1;
