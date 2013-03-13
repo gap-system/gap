@@ -67,3 +67,24 @@ Hashes:         1               2               3               4
 8 workers      6.3             4.7             4.7             4.7
 
 
+J4 on lovelace on empty machine:
+
+Hashes:         1               2               3               4
+1 worker       627              X               X               X
+2 workers      657             341             287              X
+3 workers      641             334             222             218
+4 workers       X              324             197             180
+5 workers       X               X              201             176
+6 workers       X               X              207             170
+7 workers       X               X               X              180
+8 workers       X               X               X              180
+
+5 hash 5 workers: 148
+6 hash 6 workers: 129
+7 hash 7 workers: 120
+8 hash 8 workers: 112
+
+sequential: 1127
+
+111222333334444445678
+123234234563456785678
