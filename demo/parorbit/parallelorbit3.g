@@ -14,7 +14,7 @@ HashServer := function(id,pt,inch,outchs,status,hashsize,chunksize,queuesize)
   # outchs is a list work queues, one for each worker
   # chunksize is the size of a chunk of work
   # queuesize is the target for each work queue
-  local Poll,Send,ht,p,pts,queued,r,sent,sizes,sumq,target,todo,val,w,work;
+  local Poll,Send,ht,p,pts,queued,r,sent,sumq,target,todo,val,w,work;
   #Print("I am hash #", ThreadID(CurrentThread()), " ", id, "\n");
   ht := HTCreate(pt,rec( hashlen := hashsize ));
   pts := EmptyPlist(hashsize);
@@ -22,36 +22,40 @@ HashServer := function(id,pt,inch,outchs,status,hashsize,chunksize,queuesize)
   target := queuesize * w;
   sent := 0;
   todo := EmptyPlist(1000);
-  sizes := EmptyPlist(1000);
+  #sizes := EmptyPlist(1000);
   work := CreateChannel();  # a FIFO queue from us to ourselves
   queued := 0*[1..w];
   sumq := 0;
   Poll := function(wait)
-      local r;
+      local r,x;
       if wait then
           r := ReceiveChannel(inch);
       else
           r := TryReceiveChannel(inch,fail);
           if r = fail then return false; fi;
       fi;
-      if IsStringRep(r) then
-          if r = "exit" then 
-              MakeReadOnlyObj(ht!.els);
-              MakeReadOnlyObj(ht!.vals);
-              SendChannel(status,ht);
-              MakeReadOnlyObj(pts);
-              SendChannel(status,pts);
-              SendChannel(status,sizes);
-              return true;
-          elif IsInt(r) then
+      if IsStringRep(r) and r = "exit" then
+          MakeReadOnlyObj(ht!.els);
+          MakeReadOnlyObj(ht!.vals);
+          SendChannel(status,ht);
+          MakeReadOnlyObj(pts);
+          SendChannel(status,pts);
+          #SendChannel(status,sizes);
+          return true;
+      elif IsInt(r) then
+          x := TryReceiveChannel(work,fail);
+          if x = fail then
               queued[r] := queued[r] - 1;
+              sumq := sumq - 1;
               if queued[r] = 0 then
-                  if Sum(queued) = 0 and Length(todo) = 0 then
+                  if sumq = 0 and Length(todo) = 0 then
                       SendChannel(status,id);   # we are idle
                   fi;
               fi;
-              return false;
+          else
+              SendChannel(outchs[r],x);
           fi;
+          return false;
       else
           #Print("HS ",id," got data ",Length(r),"\n");
           Add(todo,r);
@@ -67,7 +71,7 @@ HashServer := function(id,pt,inch,outchs,status,hashsize,chunksize,queuesize)
       od;
       MakeReadOnlyObj(tosend);
       SendChannel(work,tosend);
-      Add(sizes,e-sent);
+      #Add(sizes,e-sent);
       sent := e;
       if sumq = target then return; fi;
       i := Random(1,w);
@@ -99,7 +103,7 @@ HashServer := function(id,pt,inch,outchs,status,hashsize,chunksize,queuesize)
                   fi;
               fi;
           od;
-          if Length(pts) > sent and sumq < 10 then
+          if Length(pts) > sent and sumq < target then
               Send(Length(pts));
           fi;
           if Poll(false) then return; fi;
@@ -119,31 +123,29 @@ Worker := function(id,gens,op,hashins,myqueue,status,f)
   # status is the global status channel
   # f is a distribution hash function
   local g,j,n,res,t,x;
-  #Print("I am work\n");
-  atomic readonly hashins do
-      n := Length(hashins);
-      while true do
-          t := ReceiveChannel(myqueue);
-          if IsStringRep(t) and t = "exit" then return; fi;
-          #Print("Worker got work ",Length(t),"\n");
-          res := List([1..n],x->EmptyPlist(QuoInt(Length(t)*Length(gens)*2,n)));
-          for j in [2..Length(t)] do
-              for g in gens do
-                  x := op(t[j],g);
-                  Add(res[f(x)],x);
-              od;
+  #Print("I am worker #",id,"\n");
+  n := Length(hashins);
+  while true do
+      t := ReceiveChannel(myqueue);
+      if IsStringRep(t) and t = "exit" then return; fi;
+      #Print("Worker got work ",Length(t),"\n");
+      res := List([1..n],x->EmptyPlist(QuoInt(Length(t)*Length(gens)*2,n)));
+      for j in [2..Length(t)] do
+          for g in gens do
+              x := op(t[j],g);
+              Add(res[f(x)],x);
           od;
-          for j in [1..n] do
-              if Length(res[j]) > 0 then
-                  SendChannel(status,-j);   # hashserver not ready
-                  MakeReadOnlyObj(res[j]);
-                  SendChannel(hashins[j],res[j]);
-                  #Print("Worker sent result to HS ",j,"\n");
-              fi;
-          od;
-          SendChannel(hashins[t[1]],"done");
-          #Print("Worker sent done to HS ",t[1],"\n");
       od;
+      for j in [1..n] do
+          if Length(res[j]) > 0 then
+              SendChannel(status,-j);   # hashserver not ready
+              MakeReadOnlyObj(res[j]);
+              SendChannel(hashins[j],res[j]);
+              #Print("Worker sent result to HS ",j,"\n");
+          fi;
+      od;
+      SendChannel(hashins[t[1]],id);
+      #Print("Worker sent done to HS ",t[1],"\n");
   od;
 end;
 
@@ -155,8 +157,7 @@ TimeDiff := function(t,t2)
 end;
 
 ParallelOrbit := function(gens,pt,op,opt)
-    local allhashes,allpts,allstats,change,gens,h,i,k,pos,pt,ptcopy,q,
-          ready,s,ti,ti2,w,x;
+    local allhashes,allpts,change,h,i,k,pos,ptcopy,q,ready,s,ti,ti2,w,x;
     if not IsBound(opt.nrhash) then opt.nrhash := 1; fi;
     if not IsBound(opt.nrwork) then opt.nrwork := 1; fi;
     if not IsBound(opt.disthf) then opt.disthf := x->1; fi;
@@ -172,21 +173,20 @@ ParallelOrbit := function(gens,pt,op,opt)
     ti := IO_gettimeofday();
     ptcopy := StructuralCopy(pt);
     ShareObj(ptcopy);
-    i := List([1..opt.nrhash],x->CreateChannel());
+    i := List([1..opt.nrhash],k->CreateChannel());
     MakeReadOnlyObj(i);
-    q := List([1..opt.nrwork],x->CreateChannel());
+    q := List([1..opt.nrwork],k->CreateChannel());
     MakeReadOnlyObj(q);
     s := CreateChannel();
-    h := List([1..opt.nrhash],x->RunTask(HashServer,x,ptcopy,i[x],q,s,
+    h := List([1..opt.nrhash],k->RunTask(HashServer,k,ptcopy,i[k],q,s,
                   opt.hashlen,opt.chunksize,opt.queuesize));
-    #Print("Hash servers started.\n");
+    Print("Hash servers started.\n");
     pos := opt.disthf(pt);
     SendChannel(i[pos],[pt]);
-    #Print("Seed sent.\n");
-    ShareSingleObj(i);
+    Print("Seed sent.\n");
     w := List([1..opt.nrwork],
-              x->RunTask(Worker,x,gens,op,i,o[x],s,opt.disthf));
-    #Print("Workers started...\n");
+              k->RunTask(Worker,k,gens,op,i,q[k],s,opt.disthf));
+    Print("Workers started...\n");
     ready := BlistList([1..opt.nrhash],[1..opt.nrhash]);
     ready[pos] := false;
     while ForAny([1..opt.nrhash],i->ready[i]=false) do
@@ -197,23 +197,23 @@ ParallelOrbit := function(gens,pt,op,opt)
             elif x < 0 then 
                 if ready[-x] = true then 
                     change := true; 
-                    # Print("Hash server #",-x," got some work.\n");
+                    #Print("Hash server #",-x," got some work.\n");
                 fi;
                 ready[-x] := false;
             else 
                 if ready[x] = false then 
                     change := true; 
-                    # Print("Hash server #",-x," became idle.\n");
+                    #Print("Hash server #",-x," became idle.\n");
                 fi;
                 ready[x] := true;
             fi;
             x := TryReceiveChannel(s,fail);
         od;
-        # if change then Print("\nCentral: ready is ",ready,"\r"); fi;
+        #if change then Print("\nCentral: ready is ",ready,"\r"); fi;
     od;
     # Now terminate all workers:
     for k in [1..opt.nrwork] do
-        SendChannel(o[k],"exit");
+        SendChannel(q[k],"exit");
     od;
     Print("Sent exit.\n");
     for k in [1..opt.nrwork] do
@@ -223,19 +223,20 @@ ParallelOrbit := function(gens,pt,op,opt)
     # Now terminate all hashservers:
     allhashes := EmptyPlist(k);
     allpts := EmptyPlist(k);
-    allstats := EmptyPlist(k);
+    #allstats := EmptyPlist(k);
     for k in [1..opt.nrhash] do
         SendChannel(i[k],"exit");
         Add(allhashes,ReceiveChannel(s));
         Add(allpts,ReceiveChannel(s));
-        Add(allstats,ReceiveChannel(s));
+        #Add(allstats,ReceiveChannel(s));
         WaitTask(h[k]);
     od;
     Print("All hashservers done.\n");
     ti2 := IO_gettimeofday();
     return rec( allhashes := allhashes, allpts := allpts,
                 time := TimeDiff(ti,ti2),
-                allstats := allstats, nrhash := opt.nrhash, 
+                #allstats := allstats, 
+                nrhash := opt.nrhash, 
                 nrwork := opt.nrwork );
 end;
 
