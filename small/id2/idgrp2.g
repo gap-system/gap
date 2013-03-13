@@ -37,7 +37,7 @@ end;
 ##  fpcache is a list of 'fp's which will be used first to preselect a branch
 ##  of the ID_GROUP_TREE
 ##  if lookup is set, just the information if the specifed branch exists is
-##  returned (used to investigate if some situaations are unique in small3)
+##  returned (used to investigate if some situations are unique in small3)
 ##
 ID_GROUP_FUNCS[ 8 ] := function( arg )
     local level, branch, indices, fp, l, L, i, j, size,
