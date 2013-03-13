@@ -468,7 +468,7 @@ end );
 #F  FinalizeSmallGroupData()
 ##
 ##  This function should be called when all levels of the small group library 
-##  have been loaded. It makes various records immutable for thread-safety.
+##  have been loaded. It makes various structures immutable for thread-safety.
 ##
 InstallGlobalFunction( FinalizeSmallGroupData,
         function()
@@ -479,5 +479,7 @@ InstallGlobalFunction( FinalizeSmallGroupData,
     MakeImmutable(SMALL_AVAILABLE_FUNCS);
     MakeImmutable(READ_SMALL_FUNCS);
     MakeImmutable(READ_IDLIB_FUNCS);
+    MakeImmutable(ID_AVAILABLE_FUNCS);
+    MakeImmutable(ID_GROUP_FUNCS);
 end);
 
