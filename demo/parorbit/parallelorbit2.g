@@ -22,7 +22,10 @@ HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
       fi;
       if IsStringRep(r) then
           if r = "exit" then 
+              MakeReadOnlyObj(ht!.els);
+              MakeReadOnlyObj(ht!.vals);
               SendChannel(outch,ht);
+              MakeReadOnlyObj(pts);
               SendChannel(outch,pts);
               SendChannel(outch,sizes);
               return true;
@@ -57,6 +60,7 @@ HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
                       for i in [sent+1..sent+chunksize] do
                           Add(tosend,pts[i]);
                       od;
+                      MakeReadOnlyObj(tosend);
                       running := running + 1;
                       SendChannel(outch,tosend);
                       sent := sent + chunksize;
@@ -74,6 +78,7 @@ HashServer := function(id,pt,hashsize,inch,outch,status,chunksize)
                   Add(tosend,pts[i]);
               od;
               running := running + 1;
+              MakeReadOnlyObj(tosend);
               SendChannel(outch,tosend);
               Add(sizes,Length(pts)-sent);
               #Print("HS ",id," scheduled ",Length(pts)-sent,"\n");
@@ -107,6 +112,7 @@ Worker := function(gens,op,hashins,hashout,status,f)
           for j in [1..n] do
               if Length(res[j]) > 0 then
                   SendChannel(status,-j);   # hashserver not ready
+                  MakeReadOnlyObj(res[j]);
                   SendChannel(hashins[j],res[j]);
                   #Print("Worker sent result to HS ",j,"\n");
               fi;
@@ -125,7 +131,8 @@ TimeDiff := function(t,t2)
 end;
 
 ParallelOrbit := function(gens,pt,op,opt)
-    local allhashes,allpts,allstats,change,h,i,k,o,pos,ptcopy,ready,s,started,ti,ti2,w,x;
+    local allhashes,allpts,allstats,change,h,i,k,o,pos,ptcopy,ready,s,
+          started,ti,ti2,ti3,w,x;
     if not IsBound(opt.nrhash) then opt.nrhash := 1; fi;
     if not IsBound(opt.nrwork) then opt.nrwork := 1; fi;
     if not IsBound(opt.disthf) then opt.disthf := x->1; fi;
@@ -177,6 +184,7 @@ ParallelOrbit := function(gens,pt,op,opt)
         od;
         # if change then Print("\nCentral: ready is ",ready,"\r"); fi;
     od;
+    ti3 := IO_gettimeofday();
     # Now terminate all workers:
     for k in [1..opt.nrwork] do
         SendChannel(o,"exit");
@@ -201,7 +209,8 @@ ParallelOrbit := function(gens,pt,op,opt)
     #Print("All hashservers done.\n");
     ti2 := IO_gettimeofday();
     return rec( allhashes := allhashes, allpts := allpts,
-                time := TimeDiff(ti,ti2), allstats := allstats );
+                time := TimeDiff(ti,ti2), timeready := TimeDiff(ti,ti3),
+                allstats := allstats );
 end;
 
 Measure := function(gens,pt,op,n)
@@ -319,8 +328,9 @@ DoStatistics := function(gens,v,op,hash,work,opt)
       opt.nrhash := h;
       opt.nrwork := w;
       opt.disthf := MakeDistributionHF(v,h);
-      Print("Doing ",h," hashservers and ",w," workers... \c");
+      Print("Doing garbage collection...\c");
       GASMAN("collect");
+      Print("\nDoing ",h," hashservers and ",w," workers... \c");
       r := ParallelOrbit(gens,v,op,opt);
       Add(s,r.time);
       Print(r.time,"\n");
