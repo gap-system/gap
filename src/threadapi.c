@@ -863,6 +863,24 @@ Obj FuncDISABLE_GUARDS(Obj self, Obj flag) {
   return (Obj) 0;
 }
 
+Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
+  Region *oldRegion = TLS->currentRegion;
+  Region *region = GetRegionOf(obj);
+  syJmp_buf readJmpError;
+  if (TNUM_OBJ(func) != T_FUNCTION)
+    ArgumentError("WITH_TARGET_REGION: Second argument must be a function");
+  if (!region || !CheckExclusiveWriteAccess(obj))
+    ArgumentError("WITH_TARGET_REGION: Requires write access to target region");
+  if (sySetjmp(TLS->readJmpError)) {
+    memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));
+    TLS->currentRegion = oldRegion;
+    syLongjmp(TLS->readJmpError, 1);
+  }
+  TLS->currentRegion = region;
+  CALL_0ARGS(func);
+  TLS->currentRegion = oldRegion;
+}
+
 
 Obj FuncCreateChannel(Obj self, Obj args);
 Obj FuncDestroyChannel(Obj self, Obj channel);
@@ -1014,6 +1032,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "RegionName", 1, "obj",
       FuncRegionName, "src/threadapi.c:RegionName" },
+
+    { "WITH_TARGET_REGION", 2, "region, function",
+      FuncWITH_TARGET_REGION, "src/threadapi.c:WITH_TARGET_REGION" },
 
     { "IsShared", 1, "object",
       FuncIsShared, "src/threadapi.c:IsShared" },
