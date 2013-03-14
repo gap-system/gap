@@ -3,6 +3,7 @@
 LoadPackage("orb");
 LoadPackage("io");
 Read ("../bench.g");
+Read ("logging.g");
 
 TaskPool := ShareObj (rec (nrChunks := 0,
                     chunks := [],
@@ -28,10 +29,13 @@ DoWork := function (work, nrTasks, op, gens, distHashFun, results)
   od;
 end;
 
-Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
+Worker := function(nrWorkers, op, gens, chunkSize, distHashFun, tracing)
   local lock, haveTaskPoolLock, work, i, hashLock, 
         nrProducedElems, nrTasksToGrab, results, accResults,
         j, res, val, t, tasksToAdd, prevNrChunks, bound;
+  if tracing then
+    Tracing.InitWorkerLog();
+  fi;
   tasksToAdd := 0;
   haveTaskPoolLock := false;
   results := EmptyPlist(nrWorkers);
@@ -72,13 +76,19 @@ Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
         TaskPool.currentChunk := MigrateObj(EmptyPlist(chunkSize),TaskPool);
         TaskPool.currentChunkSize := 0;
       else
+        if tracing then
+          Tracing.Close();
+        fi;
         return;
       fi;
     else
       work := AdoptObj(Remove(TaskPool.chunks));
       TaskPool.nrChunks := TaskPool.nrChunks - 1;
     fi;
-
+    
+    if tracing then
+      Tracing.TraceWorkerGotTask();
+    fi;
     TaskPool.outstandingWork := TaskPool.outstandingWork + 1;
     
     # 1.5 if there remains > 0 chunks of work in the task pool,
@@ -95,6 +105,10 @@ Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
       haveTaskPoolLock := false;
     fi;
     
+    if tracing then
+      Tracing.TraceTaskStarted();
+    fi;
+    
     # 2. do work (this stores results in results list of lists)
     DoWork(work, Length(work), op, gens, distHashFun, results);
     
@@ -104,7 +118,13 @@ Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
     #     accResults list
     for i in [1..nrWorkers] do
       if Length(results[i]) > 0 then
+        if tracing then
+          Tracing.TraceWorkerBlocked();
+        fi;
         hashLock := LOCK(HashTables[i]);
+        if tracing then
+          Tracing.TraceWorkerResumed();
+        fi;
         for j in [1..Length(results[i])] do
           res := Remove(results[i]);
           val := HTValue(HashTables[i], res);
@@ -117,9 +137,16 @@ Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
       fi;
     od;
     
+    
     # 3.2 if we are not already holding task pool lock, obtain it
     if not haveTaskPoolLock then
+      if tracing then
+        Tracing.TraceWorkerBlocked();
+      fi;
       lock := LOCK(TaskPool);
+      if tracing then
+        Tracing.TraceWorkerResumed();
+      fi;
       haveTaskPoolLock := true;
     fi;
     
@@ -139,6 +166,9 @@ Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
         for i in [1..bound] do
           Add (TaskPool.currentChunk, Remove(accResults));
         od;
+        if tracing and TaskPool.currentChunkSize = 0 then
+          Tracing.TraceTaskCreated();
+        fi;
         TaskPool.currentChunkSize := TaskPool.currentChunkSize + bound;
         if TaskPool.currentChunkSize = chunkSize then
           Add (TaskPool.chunks, TaskPool.currentChunk);
@@ -148,7 +178,12 @@ Worker := function(nrWorkers, op, gens, chunkSize, distHashFun)
         fi;
       od;
     fi;
-
+    
+    if tracing then
+      Tracing.TraceTaskFinished();
+      Tracing.TraceWorkerIdle();  
+    fi;
+    
     # 3.4 if there are now enough tasks (>chunksize) in the
     #     task pool, signal the task pool semaphore
     if TaskPool.nrChunks > 0 and prevNrChunks = 0 then
@@ -177,6 +212,12 @@ ParallelOrbit := function (gens, pt, op, opt)
   if IsMutable(pt) then pt := MakeImmutable(StructuralCopy(pt)); fi;
   if not(IsReadOnly(pt)) then MakeReadOnlyObj(pt); fi;
   
+  if not IsBound(opt.tracing) then opt.tracing := false; fi;
+  
+  if opt.tracing then
+    StartLogging();
+  fi;
+  
   hasWork := CreateChannel();
   HashTables := AtomicList ([]);
   for i in [1..opt.nrwork] do
@@ -186,13 +227,20 @@ ParallelOrbit := function (gens, pt, op, opt)
     TaskPool.nrChunks := 0;
     TaskPool.currentChunk := MigrateObj(EmptyPlist(opt.chunksize), TaskPool);
     Add(TaskPool.currentChunk, MakeReadOnlyObj(pt));
+    if opt.tracing then
+      Tracing.TraceTaskCreated();
+    fi;
     TaskPool.currentChunkSize := 1;
   od;
   SendChannel (hasWork, 1);
-  workers := List ([1..opt.nrwork], \x -> CreateThread(Worker,opt.nrwork,op,gens,opt.chunksize,opt.disthf));
+  workers := List ([1..opt.nrwork], \x -> CreateThread(Worker,opt.nrwork,op,gens,opt.chunksize,opt.disthf,opt.tracing));
   for i in [1..opt.nrwork] do
     WaitThread(workers[i]);
   od;
+  
+  if opt.tracing then
+    StopLogging();
+  fi;
   
   return true;
     
