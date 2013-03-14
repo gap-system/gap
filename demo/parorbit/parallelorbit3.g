@@ -122,11 +122,20 @@ Worker := function(id,gens,op,hashins,myqueue,status,f)
   # myqueue is one channel for us to receive work
   # status is the global status channel
   # f is a distribution hash function
-  local g,j,n,res,t,x;
+  local c,g,j,n,res,t,x;
   #Print("I am worker #",id,"\n");
   n := Length(hashins);
   while true do
-      t := ReceiveChannel(myqueue);
+      c := 0;
+      while true do
+          t := TryReceiveChannel(myqueue,fail);
+          if t = fail then
+              c := c + 1;
+          else
+              break;
+          fi;
+      od;
+      Print("Had to TryReceiveChannel ",c," times.\n");
       if IsStringRep(t) and t = "exit" then return; fi;
       #Print("Worker got work ",Length(t),"\n");
       res := List([1..n],x->EmptyPlist(QuoInt(Length(t)*Length(gens)*2,n)));
