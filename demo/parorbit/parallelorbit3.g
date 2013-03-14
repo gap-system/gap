@@ -135,7 +135,7 @@ Worker := function(id,gens,op,hashins,myqueue,status,f)
               break;
           fi;
       od;
-      Print("Had to TryReceiveChannel ",c," times.\n");
+      if c > 0 then Print("Had to TryReceiveChannel ",c," times.\n"); fi;
       if IsStringRep(t) and t = "exit" then return; fi;
       #Print("Worker got work ",Length(t),"\n");
       res := List([1..n],x->EmptyPlist(QuoInt(Length(t)*Length(gens)*2,n)));
