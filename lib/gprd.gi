@@ -1208,14 +1208,14 @@ local pm,F,d,b,s,t,pos,i,j,img,m,P,info,Go,bnt,N,pcgs,auts,mapi,ag,phi,imgs;
   m:=[];
   # build affine matrices from group generators
   for i in GeneratorsOfGroup(G) do
-    b:=MutableIdentityMat(d+1,F);
+    b:=IdentityMat(d+1,F);
     b{[1..d]}{[1..d]}:=i;
     Add(m,ImmutableMatrix(F,b));
   od;
   # and from basis vectors
   bnt:=[];
   for i in t do
-    b:=MutableIdentityMat(d+1,F);
+    b:=IdentityMat(d+1,F);
     b[d+1]{[1..d]}:=i;
     b:=ImmutableMatrix(F,b);
     Add(m,b);
@@ -1274,14 +1274,14 @@ function( S, i )
       od;
 
       for j in w do
-	m:=MutableIdentityMat(d+1,info.field);
+	m:=IdentityMat(d+1,info.field);
 	m[d+1]{[1..d]}:=j;
 	Add(n,ImmutableMatrix(info.field,m));
       od;
       n:=SubgroupNC(S,n);
       hom:=MappingByFunction(info.vectorspace,n,function(v)
         local m;
-	m:=MutableIdentityMat(d+1,info.field);
+	m:=IdentityMat(d+1,info.field);
 	m[d+1]{[1..d]}:=v;
         return ImmutableMatrix(info.field,m);
       end,

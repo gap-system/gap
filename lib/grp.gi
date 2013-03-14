@@ -792,6 +792,12 @@ InstallMethod( DerivedSubgroup,
     SUM_FLAGS, # this is better than everything else
     IdFunc );
 
+InstallMethod( DerivedSubgroup,
+    "for a group that knows it is abelian",
+    [ IsGroup and IsAbelian ],
+    SUM_FLAGS, # this is better than everything else
+    TrivialSubgroup );
+
 
 ##########################################################################
 ##

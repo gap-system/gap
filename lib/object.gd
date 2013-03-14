@@ -253,20 +253,14 @@ BIND_GLOBAL( "Immutable", IMMUTABLE_COPY_OBJ );
 ##  <Oper Name="ShallowCopy" Arg='obj'/>
 ##
 ##  <Description>
-##  If &GAP; supports a mutable form of the object <A>obj</A>
-##  (see&nbsp;<Ref Sect="Mutability and Copyability"/>) then this is obtained
-##  by <Ref Func="ShallowCopy"/>.
-##  Otherwise <Ref Func="ShallowCopy"/> returns <A>obj</A> itself.
-##  <P/>
+##  <Ref Func="ShallowCopy"/> returns a <E>new mutable</E> object <E>equal</E> 
+##  to its argument, if this is possible.
 ##  The subobjects of <C>ShallowCopy( <A>obj</A> )</C> are <E>identical</E>
 ##  to the subobjects of <A>obj</A>.
-##  Note that if the object returned by <Ref Func="ShallowCopy"/> is mutable
-##  then it is always a <E>new</E> object.
-##  In particular, if the return value is mutable, then it is not
-##  <E>identical</E> with the argument <A>obj</A>,
-##  no matter whether <A>obj</A> is mutable or immutable.
-##  But of course the object returned by <Ref Func="ShallowCopy"/> is
-##  <E>equal</E> to <A>obj</A> w.r.t.&nbsp;the equality operator <C>=</C>.
+##  <P/>
+##  If &GAP; does not support a mutable form of the immutable object <A>obj</A>
+##  (see&nbsp;<Ref Sect="Mutability and Copyability"/>) then 
+##  <Ref Func="ShallowCopy"/> returns <A>obj</A> itself.
 ##  <P/>
 ##  Since <Ref Func="ShallowCopy"/> is an operation, the concrete meaning of
 ##  <Q>subobject</Q> depends on the type of <A>obj</A>.

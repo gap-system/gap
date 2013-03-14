@@ -2,14 +2,14 @@
 <Heading>Changes between &GAP; 4.5 and &GAP; 4.6</Heading>
 
 This chapter lists most important changes between 
-&GAP; 4.5.7 and &GAP; 4.6.1 
+&GAP; 4.5.7 and &GAP; 4.6.2 
 (i.e. between the last release of &GAP; 4.5 
 and the first public release of &GAP; 4.6).
-Later it will also contain information 
+It also contains information 
 about subsequent update releases for &GAP; 4.6.
 
-<Section Label="fix461"> 
-<Heading>&GAP; 4.6.1 (January 2013)</Heading>
+<Section Label="fix462"> 
+<Heading>&GAP; 4.6.2 (February 2013)</Heading>
 
 <Subsection Label="Changes in the core GAP46 system"> 
 <Heading>Changes in the core &GAP; system</Heading>
@@ -219,6 +219,149 @@ on external library modules, and should make its installation much easier.
 </Subsection>
 
 </Section>
+
+<Section Label="fix463"> 
+<Heading>&GAP; 4.6.3 (March 2013)</Heading>
+
+Improved functionality:
+<List>
+
+<Item>
+Several changes were made to <Ref Func="IdentityMat" BookName="ref"/> 
+and <Ref Func="NullMat" BookName="ref"/>. First off, the
+documentation was changed to properly state that these functions support
+arbitrary rings, and not just fields. Also, more usage examples were
+added to the manual.
+<P/>
+For <C>NullMat</C>, it is now also always possible to specify a ring element
+instead of a ring, and this is documented. This matches existing
+<C>IdentityMat</C> behavior, and partially worked before (undocumented),
+but in some cases could run into error or infinite recursion.
+<P/>
+In the other direction, if a finite field element, <C>IdentityMat</C> now
+really creates a matrix over the smallest field containing that element.
+Previously, a matrix over the prime field was created instead, contrary
+to the documentation.
+<P/>
+Furthermore, <C>IdentityMat</C> over small finite fields is now substantially
+faster when creating matrices of large dimension (say a thousand or so).
+<P/>
+Finally, <Ref Func="MutableIdentityMat" BookName="ref"/> and 
+<Ref Func="MutableNullMat" BookName="ref"/> were explicitly declared
+obsolete (and may be removed in &GAP; 4.7). They actually were deprecated
+since &GAP; 4.1, and their use discouraged by the manual. Code using
+them should switch to <Ref Func="IdentityMat" BookName="ref"/> 
+respectively <Ref Func="NullMat" BookName="ref"/>.
+</Item>
+
+<Item>
+Two new <Ref Attr="PerfectResiduum" BookName="ref"/> methods were added for 
+solvable and perfect groups, handling these cases optimally. Moreover, the 
+existing generic method was improved by changing it to use 
+<Ref Attr="DerivedSeriesOfGroup" BookName="ref"/>. Previously, it would 
+always compute the derived series from scratch and then throw away the result.
+</Item>
+
+<Item>
+A new <Ref Attr="MinimalGeneratingSet" BookName="ref"/> method for groups 
+handled by a nice monomorphisms was added, similar to the existing 
+<Ref Attr="SmallGeneratingSet" BookName="ref"/> method. This is useful
+if the nice monomorphism is already mapping into a pc or pcp group.
+</Item>
+
+<Item>
+Added a special method for <Ref Oper="DerivedSubgroup" BookName="ref"/>
+if the group is known to be abelian.
+</Item>
+
+</List>
+
+Fixed bugs:
+
+<List>
+<Item>
+Fixed a bug in <Ref Func="PowerModInt" BookName="ref"/> computing 
+<M>r^e</M> mod <M>m</M> in a special case when <M>e=0</M> and <M>m=0</M>. 
+[Reported by Ignat Soroko]
+</Item>
+
+<Item>
+<Ref Oper="CoefficientsQadic" BookName="ref"/> now better checks 
+its arguments to avoid an infinite loop when being asked for a 
+<A>q</A>-adic representation for <M>q=1</M>.
+[Reported by Ignat Soroko]
+</Item>
+
+<Item>
+Methods for <C>SylowSubgroupOp</C> 
+(see <Ref Oper="SylowSubgroup" BookName="ref"/>) for symmetric and 
+alternating group did not always set <Ref Prop="IsPGroup" BookName="ref"/>
+and <Ref Attr="PrimePGroup" BookName="ref"/> for the returned Sylow subgroup.
+</Item>
+
+<Item>
+Display of matrices consisting of Conway field elements
+(which are displayed as polynomials) did not print constant 1 terms.
+</Item>
+
+<Item>
+Added an extra check and a better error message in the method to
+access <E>natural</E> generators of domains using the <C>.</C> 
+operator (see <Ref Attr="GeneratorsOfDomain" BookName="ref"/>).
+</Item>
+
+<Item>
+Trying to solve the word problem in an fp group where one or more generators 
+has a name of more than one alphabetic character led to a break loop. 
+</Item>
+
+<Item>
+Provided the default method for 
+<Ref Oper="AbsoluteIrreducibleModules" BookName="ref"/> as a temporary
+workaround for the problem which may cause returning wrong results or 
+producing an error when being called for a non-prime field.
+</Item>
+
+<Item>
+A bug in the &GAP; kernel caused <C>RNamObj</C> to error out when called 
+with a string that had the <Ref Prop="IsSSortedList" BookName="ref"/>
+property set (regardless of whether it was set to <K>true</K> or <K>false</K>). 
+This in turn would lead to strange (and inappropriate) errors when using 
+such a string to access entries of a record.
+</Item>
+
+<Item>
+&GAP; can store vectors over small finite fields (size at most 256) in a
+special internal data representation where each entry of the vector uses
+exactly one byte. Due to an off-by-one bug, the case of a field with
+exactly 256 elements was not handled properly. As a result, &GAP; failed
+to convert a vector to the special data representation, which in some
+situations could lead to a crash. The off-by-one error was fixed and now
+vectors over <M>GF(256)</M> work as expected.
+</Item>
+
+<Item>
+A bug in the code for accessing sublist via the <C>list{poss}</C> syntax could
+lead to &GAP; crashing. Specifically, if the list was a compressed vector
+over a finite field, and the sublist syntax was nested, as in
+<C>vec{poss1}{poss2}</C>. This now correctly triggers an error instead of
+crashing.
+</Item>
+
+</List>
+
+New packages added for the redistribution with &GAP;:
+
+<List>
+<Item>
+<Package>SpinSym</Package> package by L. Maas, which
+contains Brauer tables of Schur covers of symmetric and 
+alternating groups and provides some related functionalities.
+</Item>
+</List>
+
+</Section>
+
 
 </Chapter>
 

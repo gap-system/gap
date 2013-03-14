@@ -1056,6 +1056,11 @@ MergePackages := function(pkgdir, pkgreposdir, tmpdir, archdir, webdir, paramete
     if allformats then 
     # wrap indvidual package arhives in all redistributed formats
       fname  := Basename( info.ArchiveURL );
+      # if the package provides archives named 'version.format',
+      # we rename them to 'packagename-version.format'
+      if fname[1] in "0123456789" then
+        fname:=Concatenation( info.PackageName, "-", fname );
+      fi;
       Exec(Concatenation("cd ", mergedir, " ; ",
             "cat ", nam, ".txtfiles ", nam, ".binfiles > ", nam, ".allfiles"));
       Print("  creating ",fname,".zip\n");
@@ -1684,8 +1689,13 @@ AddHTMLPackageInfo := function(arg)
     books := info.PackageDoc;
   fi;
   # directory name of unpacked archive
-  arch := Concatenation(webdir, "/ftpdir/tar.gz/packages/",
-                        Basename(info.ArchiveURL),".tar.gz");
+  bnam := Basename(info.ArchiveURL);
+  # if the package provides archives named 'version.format',
+  # we rename them to 'packagename-version.format'
+  if bnam[1] in "0123456789" then
+      bnam:=Concatenation( info.PackageName, "-", bnam );
+  fi;  
+  arch := Concatenation(webdir, "/ftpdir/tar.gz/packages/", bnam,".tar.gz");
   dname := StringSystem("sh", "-c", Concatenation("tar tzf ", arch,
            "| head -2| tail -1"));
   if '/' in dname then
@@ -1733,7 +1743,6 @@ AddHTMLPackageInfo := function(arg)
   if not IsBound(info.ArchiveURL) then
     info.ArchiveURL := "n.a.";
   fi;
-  bnam := Basename(info.ArchiveURL);
   arch := Concatenation(nam, "/", bnam);
   Append(res, Concatenation("[<a href='{{GAPManualLink}}pkg/", 
           dname, "/README.", nam, 

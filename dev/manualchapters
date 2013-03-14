@@ -69,7 +69,7 @@ classification of items:
 +2AK In the same paragraphs, the importance of packages should be emphasized
   more than it is now.
   (Perhaps simply add ``see below''?) and recommmend their usage 
--6AK Should the references to the Reference Manuals and to the web site
+-6 Should the references to the Reference Manuals and to the web site
   (for example section ``Release history and Prefaces'') be turned
   into hyperlinks in the HTML version?
 +2AK put a note about the temporary preface for beta release which will be
@@ -839,8 +839,8 @@ functionality.)
 % Finished: ???
 % Comments:
   This is a completely new chapter.
-T-4MN needs to be completed from stuff in lib/matobj1.gd and lib/matobj2.gd
-T-2MN has 5 empty subsections and contains:  `FIXME: Collect all rules here.'
+-4MN needs to be completed from stuff in lib/matobj1.gd and lib/matobj2.gd
+-2MN has 5 empty subsections and contains:  `FIXME: Collect all rules here.'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 27: Strings and Characters
 % File: ./string.xml (line 12)
@@ -1042,9 +1042,7 @@ the last release.)
 % Finished: November 16, 2008
 % Comments:
 -4AK cross-ref to the undocumented functions `IsomorphismFpMonoid',
-  `IsAttributeStoringRep', `UnderlyingElement',
   `CreateKnuthBendixRewritingSystem'
-  TODO: the 1st two are already documented.
 +2AK: empty decsriptions for GeneratorsOfRws and AddGenerators
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 39: Groups
@@ -1062,7 +1060,7 @@ the last release.)
   possible'' (i.e., of minimal length)?
 -3 `Factorization': ``computes all elements of the group to ensure a short
   word is found'' --doesn't this approach in fact guarantee *minimal* length?
--4 and cross-ref. to undocumented function `MappingGeneratorsImages')
++4AK and cross-ref. to undocumented function `MappingGeneratorsImages')
 -3 `Centralizer' for a conjugacy class states that this ``is a slight abuse 
    of notation''. So should the definition of `Centralizer' for this case 
    (as an attribute) be made explicit?
@@ -1130,10 +1128,8 @@ the last release.)
   operation only in the case that ist argument is a group.
   Yes - in the reference manual only for groups, and packages should document
   it for other domains. Mentioned relevant packages.
--4AK cross-ref. to undocumented function `MappingGeneratorsImages'
-  (well, in fact there was a typo, a reference to `MappingGeneratorImages)
-  TODO: at least fix a typo
--5 cross-ref. to ``Stabilizer Chains for Automorphisms Acting on Enumerators''
++4AK cross-ref. to undocumented function `MappingGeneratorsImages'.
++5 cross-ref. to ``Stabilizer Chains for Automorphisms Acting on Enumerators''
   (in former `ext' manual, mentioned as ``not yet available in GAP''
   --is this a good idea?) AK: seems not bad to me -- the referenced section 
   is non-trivial.
@@ -1383,11 +1379,10 @@ the last release.)
 +4AK `IsFpGroup':
   Added example: the return value for a free group is `true',
   the return value for a pc group is `false'.
--4AK `StringFactorizationWord':
-  Add an explicit example instead of giving an example in the text.
--4 references to undocumented variables `TCENUM', `GAPTCENUM',
-  `UnderlyingElement', `SetRelativeOrder', `MappingGeneratorsImages',
-  `InducedPcgsOp'.
++4AK `StringFactorizationWord':
+  Added an explicit example instead of giving an example in the text.
++4AK references to undocumented variables `TCENUM', `GAPTCENUM' 
+  AK: added index entries for TCENUM and GAPTCENUM
 +2AK Where is the notation `F.1' etc. introduced, which is used in several
   examples? (only for free groups, or for arbitrary groups, or for free
   structures?)
@@ -1456,17 +1451,17 @@ the last release.)
 % Started: December 01, 2008
 % Finished: January 10, 2009
 % Comments:
-T-3JM `FreeSemigroup': examples involve also `FreeGroup' (move them away?)
-T-4JM empty definition for `IsFullTransformationSemigroup'
-T-3JM What are semigroup ideals?
-T-3JM strange definition of `ReesCongruenceOfSemigroupIdeal'
+-3JM `FreeSemigroup': examples involve also `FreeGroup' (move them away?)
+-4JM empty definition for `IsFullTransformationSemigroup'
+-3JM What are semigroup ideals?
+-3JM strange definition of `ReesCongruenceOfSemigroupIdeal'
   (in particular, does an ideal know the semigroup in which it is an ideal?
   Note that there is only one argument.)
-T-3JM `HomomorphismQuotientSemigroup': one or two arguments?
+-3JM `HomomorphismQuotientSemigroup': one or two arguments?
   (The whole chapter looks dubious w.r.t. the relation of the given arguments
   and the text.)
-T-3JM `Rees Matrix Semigroups': (s, i, \lambda) or (i, s, \lambda)?
-T-4JM almost no examples in the whole chapter!
+-3JM `Rees Matrix Semigroups': (s, i, \lambda) or (i, s, \lambda)?
+-4JM almost no examples in the whole chapter!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 52: Monoids
 % File: ./monoid.xml (line 11)
@@ -1474,7 +1469,7 @@ T-4JM almost no examples in the whole chapter!
 % Started: December 01, 2008
 % Finished: January 10, 2009
 % Comments:
-T-4JM no examples in the whole chapter!
+-4JM no examples in the whole chapter!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 53: Finitely Presented Semigroups and Monoids
 % File: ./fpsemi.xml (line 11)
@@ -1482,9 +1477,9 @@ T-4JM no examples in the whole chapter!
 % Started: December 01, 2008
 % Finished: January 10, 2009
 % Comments:
-T-3JM What is the difference between `FactorFreeSemigroupByRelations' and the
+-3JM What is the difference between `FactorFreeSemigroupByRelations' and the
   infix `/'?
-T-3JM Is there no `FactorFreeMonoidByRelations'?
+-3JM Is there no `FactorFreeMonoidByRelations'?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 54: Transformations
 % File: ./trans.xml (line 11)
@@ -1492,10 +1487,10 @@ T-3JM Is there no `FactorFreeMonoidByRelations'?
 % Started: December 01, 2008
 % Finished: January 11, 2009
 % Comments:
-T-3JM Is it a good idea to define the relevant notation in the beginning of the
+-3JM Is it a good idea to define the relevant notation in the beginning of the
   chapter, and to use this notation in the later sections, in particular
   without cross-references to the definitions
-T-4JM `RestrictedTransformation': should be defined; give an example
+-4JM `RestrictedTransformation': should be defined; give an example
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 55: Additive Magmas 
 % File: ./addmagma.xml (line 11)
@@ -1505,12 +1500,12 @@ T-4JM `RestrictedTransformation': should be defined; give an example
 % Comments:
 (removed ``preliminary'' from the chapter title, this chapter does not
 look worse than others)
-T-5 better discuss the various categories together in one section?
+-5 better discuss the various categories together in one section?
   (this would reduce the text, and make clearer what the differences are)
-T-5 no examples: either add them or explain why they are unnecessary
+-5 no examples: either add them or explain why they are unnecessary
   (for example because interesting additive magmas in GAP have more
   structure and are explained in other chapters)
-T-4 `AsAdditiveMagma', `AsSubadditiveMagma':
+-4 `AsAdditiveMagma', `AsSubadditiveMagma':
   commented out, so not yet supported officially
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 56: Rings
@@ -1528,16 +1523,16 @@ T-4 `AsAdditiveMagma', `AsSubadditiveMagma':
   DONE: yes, said that.
 +4AK only example and no definition for `DefaultRingByGenerators'
   (AK: put a definition).
-T-4 `AsRing': commented out, so not yet supported officially
-T-3 what about sums and products of ideals?
-T-4 cross-reference to undocumented `RightActingDomain'
-T-4 empty description of `LeftActingRingOfIdeal', `RightActingRingOfIdeal'
-T-4 only few examples
-T-5 ideals:
+-4 `AsRing': commented out, so not yet supported officially
+-3 what about sums and products of ideals?
+-4 cross-reference to undocumented `RightActingDomain'
+-4 empty description of `LeftActingRingOfIdeal', `RightActingRingOfIdeal'
+-4 only few examples
+-5 ideals:
   Currently we seem to have no support for the closure under the action of
   two different rings from the left and from the right.
   Is there need for such a generalization?
-T-3 Should fields lie in the filters `IsUniqueFactorizationRing',
+-3 Should fields lie in the filters `IsUniqueFactorizationRing',
   `IsEuclideanRing'?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 57: Modules
@@ -1552,9 +1547,11 @@ T-3 Should fields lie in the filters `IsUniqueFactorizationRing',
   to ignore this, so `doc/ref/module.tex' contains the documentation;
   I have now added it also to the 4.dev documentation.
   AK: No methods installed in the library and packages. Removed.
-T-4AK Several statements talk about ``scalars''.
++4AK Several statements talk about ``scalars''.
   It should be made precise what this means for a given module.
-T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
+  AK: added a note: here and below by scalars we mean elements of a domain 
+  acting on <A>D</A> from left or right as appropriate.
+-5 The whole chapter is suitable at most for the case of (left) vector spaces,
   and all examples deal with that context.
   In fact there is few support for more general situations,
   even for Z-modules.
@@ -1571,9 +1568,12 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
 % Started: January 24, 2008
 % Finished: September 20, 2008
 % Comments:
--6AK In the PDF version, there is too small space between the text and
++6AK In the PDF version, there is too small space between the text and
   ``Example'' boxes.
--5AK Explicit <Heading> elements would be good in some <ManSection> elements.
+  AK: This is regulated by GAPDoc. In the current version I can't see any 
+  such examples. Maybe GAPDoc already addressed this problem.
++5AK Explicit <Heading> elements would be good in some <ManSection> elements.
+  AK: I did this in one mansection (Traces) where this is needed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 59: Finite Fields
 % File: ./fieldfin.xml (line 11)
@@ -1607,7 +1607,7 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
 % Started: January 24, 2008
 % Finished: September 20, 2008
 % Comments:
--5AK missing: rings of integers in abelian number fields
+-5 missing: rings of integers in abelian number fields
   (something for GAP 4.6)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 61: Vector Spaces
@@ -1677,14 +1677,14 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
   but now this means that there are empty subsections!
   AK: I've done this systematically, identifying 57 empty mansections
   and putting a comment <!-- TODO: fill description -->.
--5* (not only in this chapter) some cross-references point to both a subsection
+-6* (not only in this chapter) some cross-references point to both a subsection
   and the corresponding section or chapter (which is unnecessary)
--3AK Polynomial rings are listed as examples of free magma rings.
+  AK: I did not find any of these in this chapter.
++3AK Polynomial rings are listed as examples of free magma rings.
   This is correct in theory, but formally, GAP's polynomial rings are not
-  free magma rings.
-  TODO: clafify example.
--4AK cross-ref. to undocumented variable `IsMagmaRingObjDefaultRep'
-  TODO: documentation is in gd file, convert it to a proper mansection.
+  free magma rings. Done: added a remark about this.
++4AK cross-ref. to undocumented variable `IsMagmaRingObjDefaultRep'
+  Done: documentation was in .gi file, converted it to a proper mansection.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 66: Polynomials and Rational Functions
 % File: ./ratfun.xml (line 12)
@@ -1692,7 +1692,8 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
 % Started: February 06, 2009
 % Finished: February 07, 2009
 % Comments:
--3AK Why is `Discriminant' not an attribute? TODO: make it an attribute
++3AK Why is `Discriminant' not an attribute? Done: it is now an attribute
+  and the 2-arg version is an operation.
 +2AH: rewritten
   The introductory text in section "Indeterminates" is not understandable.
 -5AK In the sections "Operations for Rational Functions",
@@ -1717,13 +1718,12 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
 -5 Cryptic abbreviations, unnecessary or inappropriate notation,
   lots of parentheses especially in this chapter
   make it hard to understand
--4AK `QuotRemLaurpols':
-  Say what the relevant values of the argument <mode> are!
++4AK `QuotRemLaurpols': Say what the relevant values of the argument <mode> are!
 +4AK `GcdCoeffs':
   There is the remark ``This should eventually become an operation and
   dispatch specially for rationals.'' It was removed.
--4 `UnivariatenessTestRationalFunction':
-  The description is completely useless.
++4AK `UnivariatenessTestRationalFunction': The description is completely useless.
+  AK: I rewrote it and added examples.
 +3AK `CoefficientsOfUnivariatePolynomial':
   ``It returns the empty string if pol is 0.'' --Why a string?
   (And isn't the empty list an obvious result,
@@ -1795,7 +1795,7 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
   This should be documented either in the manual of the Character Table
   Library or in the ``Interface ...'' section of the current chapter,
   and then a proper link can be installed.
--4AK cross-references to the undocumented function AllLibTomNames,
++4AK cross-references to the undocumented function AllLibTomNames,
   which belongs to the Library of Tables of Marks;
   so this function should be documented in this package,
   and then a proper link can be installed
@@ -1819,12 +1819,17 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
 % Started: January 24, 2008
 % Finished: August 20, 2008
 % Comments:
--6AK For `OrthogonalEmbeddingsSpecialDimension' and `RepresentativesFusions',
++6AK For `OrthogonalEmbeddingsSpecialDimension' and `RepresentativesFusions',
   the declarations are too long for a line in the PDF version.
   Can this be improved?
--5 There are still two <Display> elements (see `Norm', `Symmetrizations') 
+  AK: suggest to leave it as is. Shorter argument names would reduce 
+  readability, while now argument names follow the naming conventions 
+  used in other mansections.
++5AK There are still two <Display> elements (see `Norm', `Symmetrizations') 
   containing formulae that are nice in LaTeX but ugly otherwise. Shall we 
   use <Alt>? AK: MathJax handles them nicer, we may use <Alt> for text later.
+  AK (later): In the text version, they are also displayed nicely in a 
+  Unicode terminal, so I suggest to leave it as is too.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 73: Maps Concerning Character Tables
 % File: ./ctblmaps.xml (line 11)
@@ -1900,13 +1905,14 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
 % Started: January 24, 2008
 % Finished: September 20, 2008
 % Comments:
--4AK has to be merged with the chapter gappkg.xml of the former `ext' manual,
++4AK has to be merged with the chapter gappkg.xml of the former `ext' manual,
   see the comments there
   Idea: Cross-ref to package loading log. Rename to "Using GAP packages".
   One chapter is for users, one for developers.
--4AK Should LoadAllPackages become documented (AK)? 
++4AK Should LoadAllPackages become documented (AK)? 
    It has no practical use except for the testing purposes, but it is good
    to advise to package authors to try their packages with it.
+   AK: yes, it is now documented in the Example package.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 77: Replaced and Removed Command Names
 % File: ./obsolete.xml (line 10)
@@ -1997,9 +2003,9 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
   TODO: What's namely is wrong there? AK asked Thomas 
 -4AK Again there are cross-references to undocumented functions
   (NormalizerOp, GroupByGenerators).
-  Check, I guess the latter is obsolete.
--5AK overfull box because of a long list label in the ManSection for
++5AK overfull box because of a long list label in the ManSection for
   `ArithmeticElementCreator' --how to deal with this?
+  AK: the problem vanished by itself
 +6AK Finally, the two sections ``Adding new Concepts'' and ``Creating 
   Own Arithmetic Objects'' both start with ``finally''. AK: fixed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2102,8 +2108,8 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
 % Comments:
 +3a Why is the function HELP_ADD_BOOK written with capitals only?
     (let it be called as it is, it's undocumented)
--4AK the undocumented function HELP_VIEWER_INFO could be documented here
-  TODO: documentation is there, link it to the manual.
++4AK the undocumented function HELP_VIEWER_INFO could be documented here
+  AK: documentation was there, I've organised it into a proper ManSection.
 +2AK add a cross-reference to the document ``The gapmacro.tex Manual Format''
   (see above) in the web, as soon as its URL is fixed.
   AK: instead of URL, this document is a part of the tools archive.
@@ -2148,16 +2154,23 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
 % Started: August 10, 2008
 % Finished: August 10, 2008
 % Comments:
--3 The chapter is marked as ``preliminary'', but why?
--3 untypical text, including several pseudo code listings
++3 The chapter is marked as ``preliminary'', but why?
+  AK: The chapter is no longer marked as preliminary.
++3 untypical text, including several pseudo code listings
   (what is the recommended way to write this down?)
   and a lot of unnecessarily complicated math. formulae
   (which I have replaced)
+  AK: I've removed line numbers from listings. They do not
+  help readability, while the <Listing> element is properly
+  used, and the text mentions that this is a pseudocode.
 -4 lots of references to undocumented functions,
   even examples involving the undocumented function `Partition'
--3AK Section ``Stabilizer Chains for Automorphisms Acting on Enumerators''
+-5 Section ``Stabilizer Chains for Automorphisms Acting on Enumerators''
   mentions that the code ``is not yet included in the GAP library''.
   What is the status of this code?
+  AK: Alexander H. told me: "This is not in the library (as it always was 
+  experimental and had a lot of rough ends). The proper framework now would 
+  be to use the genss package and it should be limited not only to p groups"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Appendix A: Changes from Earlier Versions - REMOVED
 % File: ./changes.xml
@@ -2300,16 +2313,17 @@ T-5 The whole chapter is suitable at most for the case of (left) vector spaces,
 % Started: January 24, 2008
 % Finished: August 10, 2008
 % Comments:
--3TB Please confirm the status of the following:
++3AK Please confirm the status of the following:
   It does not make sense to have a GAPDoc version of this chapter;
   note that it is self-referential.
   I propose to turn the chapter into a self-contained document
   that is available in the GAP website, in PDF and HTML format.
   (A preliminary version is `doc/gapmacrodoc.tex';
   shorten the copyright notice?)
--3TB The text refers to the ``manual checker tools'', to the ``manual builder'',
+  AK: this document is now supplied with GAP in the tools archive.
++3AK The text refers to the ``manual checker tools'', to the ``manual builder'',
   and to the ``HTML converter''. The relevant code and its documentation 
   should be kept in the same place as this chapter. Or should we just throw 
   this away? (Which packages do still need this stuff?)
-  AK: Some packages may need it - keep it at least until the beta release.
+  AK: Some packages may need it, keep it at least for now in the tools archive.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

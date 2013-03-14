@@ -47,7 +47,7 @@ Some options require an argument, this must follow the option
 and  must be separated by whitespace, e.g.,  <C>gap -m 256m</C>,
 it is not correct to say <C>gap -m256m</C> instead.
 Certain Boolean options (<C>-b</C>, <C>-q</C>, <C>-e</C>, <C>-r</C>,
-<C>-A</C>, <C>-D</C>, <C>-M</C>, <C>-N</C>, <C>-T</C>, <C>-X</C>, <C>-Y</C>)
+<C>-A</C>, <C>-D</C>, <C>-M</C>, <C>-T</C>, <C>-X</C>, <C>-Y</C>)
 toggle the current value so that <C>gap -b -b</C> is equivalent to <C>gap</C>
 and to <C>gap -b -q -b -q</C> etc.
 <P/>
@@ -568,9 +568,8 @@ to save a <Q>snapshot</Q> image of the current &GAP; workspace in a file.
 The recommended way to start &GAP; is to load an existing workspace file,
 because this reduces the startup time of &GAP; drastically.
 So if you have installed &GAP; yourself then you should think about creating
-a workspace file immediately after you have started &GAP; with the command
-line option <C>-N</C>, and then using this workspace file later on,
-whenever you start &GAP;.
+a workspace file immediately after you have started &GAP;,
+and then using this workspace file later on, whenever you start &GAP;.
 If your &GAP; installation is shared between several users,
 the system administrator should think about providing such a workspace file.
 

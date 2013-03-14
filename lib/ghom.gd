@@ -176,7 +176,7 @@ DeclareOperation( "GroupHomomorphismByImagesNC",
 ##  Representation for mappings from one group to another that are defined
 ##  by extending a mapping of group generators homomorphically.
 ##  Instead of record components,
-##  the attribute <C>MappingGeneratorsImages</C> is
+##  the attribute <Ref Attr="MappingGeneratorsImages"/> is
 ##  used to store generators and their images.
 ##  </Description>
 ##  </ManSection>

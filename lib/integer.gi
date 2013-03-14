@@ -419,9 +419,18 @@ end);
 ##
 #F  CoefficientsQadic( <i>, <q> ) . . . . . .  <q>-adic representation of <i>
 ##
-InstallGlobalFunction(CoefficientsQadic,function( i, q )
+InstallMethod( CoefficientsQadic, "for two integers", 
+    true, [ IsInt, IsInt ], 0,
+function( i, q )
     local   v;
-
+    if q <= 1 then
+        Error("2nd argument of CoefficientsQadic should be greater than 1\n");
+    fi;
+    if i < 0 then
+        # if FR package is loaded and supplies an implementation 
+        # to return a periodic list for negative i
+        TryNextMethod();
+    fi;
     # represent the integer <i> as <q>-adic number
     v := [];
     while i > 0  do
@@ -1156,10 +1165,10 @@ InstallGlobalFunction(PowerModInt,function ( r, e, m )
     local   pow, f;
 
     # handle special cases
-    if e = 0  then
-        return 1;
-    elif m = 1 then
+    if m = 1  then
         return 0;
+    elif e = 0 then
+        return 1;
     fi;
 
     # reduce `r' initially

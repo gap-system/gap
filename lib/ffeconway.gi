@@ -1613,13 +1613,17 @@ InstallMethod( Display,
                         if Length(s) <> 0 then
                             Append(s,"+");
                         fi;
-                        if a <> 1 then
-                            Append(s,String(a));
-                        fi;
-                        if j <> 0 then
-                            Append(s,"z");
-                            if j <> 1 then
-                                Append(s,String(j));
+                        if a = 1 and j = 0 then
+                            Append(s,"1");
+                        else
+                            if a <> 1 then
+                                Append(s,String(a));
+                            fi;
+                            if j <> 0 then
+                                Append(s,"z");
+                                if j <> 1 then
+                                    Append(s,String(j));
+                                fi;
                             fi;
                         fi;
                     fi;

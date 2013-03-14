@@ -9,11 +9,13 @@
 
 #############################################################################
 ##
+#O  AbsoluteIrrlyeducibleModules( <G>, <F>, <dim> )
 #O  AbsoluteIrreducibleModules( <G>, <F>, <dim> )
 #O  AbsolutIrreducibleModules( <G>, <F>, <dim> )
 ##
 ##  <#GAPDoc Label="AbsoluteIrreducibleModules">
 ##  <ManSection>
+##  <Oper Name="AbsolutelyIrreducibleModules" Arg='G, F, dim'/>
 ##  <Oper Name="AbsoluteIrreducibleModules" Arg='G, F, dim'/>
 ##  <Oper Name="AbsolutIrreducibleModules" Arg='G, F, dim'/>
 ##
@@ -22,12 +24,14 @@
 ##  <A>G</A>. The second entry is a list of all absolute irreducible modules of
 ##  <A>G</A> over the field <A>F</A> in dimension <A>dim</A>, given as MeatAxe modules
 ##  (see&nbsp;<Ref Func="GModuleByMats" Label="for generators and a field"/>).
+##  The other two names are just synonyms.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "AbsolutIrreducibleModules", [ IsGroup, IsField, IsInt ] );
-DeclareSynonym("AbsoluteIrreducibleModules",AbsolutIrreducibleModules);
+DeclareOperation( "AbsolutIrreducibleModules",   [ IsGroup, IsField, IsInt ] );
+DeclareSynonym(   "AbsoluteIrreducibleModules",   AbsolutIrreducibleModules  );
+DeclareSynonym(   "AbsolutelyIrreducibleModules", AbsolutIrreducibleModules  );
 
 #############################################################################
 ##

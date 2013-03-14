@@ -457,6 +457,7 @@ The information in this section is mainly relevant for implementing new
 methods and not for using homomorphisms.
 
 <#Include Label="IsGroupGeneralMappingByImages">
+<#Include Label="MappingGeneratorsImages">
 <#Include Label="IsGroupGeneralMappingByAsGroupGeneralMappingByImages">
 <#Include Label="IsPreimagesByAsGroupGeneralMappingByImages">
 <#Include Label="IsPermGroupGeneralMapping">

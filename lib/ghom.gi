@@ -308,8 +308,6 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
   filter := IsGroupGeneralMappingByImages and HasSource and HasRange 
             and HasMappingGeneratorsImages;
 
-  if H=fail then H:=GroupWithGenerators(imgs);fi;
-
   if IsPermGroup( G )  then
       filter := filter and IsPermGroupGeneralMappingByImages;
   fi;
@@ -406,7 +404,7 @@ InstallMethod( GroupGeneralMappingByImagesNC, "for group, group, list, list",
 InstallMethod( GroupGeneralMappingByImagesNC, "make onto",
     true, [ IsGroup, IsList, IsList ], 0, 
 function( G, gens, imgs )
-    return DoGGMBINC(G,fail,gens,imgs);
+    return GroupGeneralMappingByImagesNC(G,GroupWithGenerators(imgs),gens,imgs);
 end);
 
 # temporarily disabled until we separate GroupGeneralMappingByImages from

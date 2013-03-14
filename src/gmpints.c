@@ -1127,7 +1127,7 @@ be called directly */
       
       /* mpn_lshift is faster still than mpn_add_n for adding a TypLimb
          number to itself                                                  */
-      if ( EqInt( gmpL, gmpR ) ) {
+      if ( gmpL == gmpR ) {
         carry = mpn_lshift( ADDR_INT(res),
                             ADDR_INT(gmpL), SIZE_INT(gmpL),
                             1 );

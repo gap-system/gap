@@ -248,7 +248,7 @@ function ( G, p )
     # add the stabilizer chain
     #MakeStabChainStrongGenerators( S, Reversed([1..G.degree]), sgs );
 
-    if GcdInt( deg, p ) > 1 then
+    if Size( S ) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
     fi;
@@ -1337,7 +1337,7 @@ local   S,          # <p>-Sylow subgroup of <G>, result
     # make the Sylow subgroup
     S := Subgroup(  G , sgs );
 
-    if GcdInt( deg, p ) > 1 then
+    if Size( S ) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
     fi;

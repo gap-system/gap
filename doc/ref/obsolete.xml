@@ -150,6 +150,8 @@ Here are some further name changes.
 <P/>
 <Index Key="MonomialTotalDegreeLess"><C>MonomialTotalDegreeLess</C></Index>
 <Index Key="NormedVectors"><C>NormedVectors</C></Index>
+<Index Key="MutableIdentityMat"><C>MutableIdentityMat</C></Index>
+<Index Key="MutableNullMat"><C>MutableNullMat</C></Index>
 <Table Align="l|l">
 <Row>
   <Item><E>OLD</E></Item>
@@ -163,6 +165,14 @@ Here are some further name changes.
 <Row>
   <Item><C>NormedVectors</C></Item>
   <Item><Ref Func="NormedRowVectors"/></Item>
+</Row>
+<Row>
+  <Item><C>MutableIdentityMat</C></Item>
+  <Item><Ref Func="IdentityMat"/></Item>
+</Row>
+<Row>
+  <Item><C>MutableNullMat</C></Item>
+  <Item><Ref Func="NullMat"/></Item>
 </Row>
 </Table>
 

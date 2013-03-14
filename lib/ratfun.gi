@@ -1493,7 +1493,7 @@ end);
 ##
 #M  Discriminant(<pol>,<ind>)
 ##
-InstallOtherMethod(Discriminant,"poly,inum",true,
+InstallMethod(Discriminant,"poly,inum",true,
   [IsPolynomialFunction and IsPolynomial,IsPosInt],0,
 function(f,ind)
 local d,l;

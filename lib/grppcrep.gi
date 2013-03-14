@@ -586,7 +586,7 @@ end );
 InstallMethod( AbsolutIrreducibleModules,
     "generic method for groups with pcgs",
     true, 
-    [ IsGroup and CanEasilyComputePcgs, IsField and IsFinite, IsInt ],
+    [ IsGroup and CanEasilyComputePcgs, IsField and IsFinite and IsPrimeField, IsInt ],
     0,
 
 function( G, F, dim )
@@ -604,7 +604,7 @@ end );
 InstallMethod( IrreducibleModules,
     "generic method for groups with pcgs",
     true, 
-    [ IsGroup and CanEasilyComputePcgs, IsField and IsFinite, IsInt ],
+    [ IsGroup and CanEasilyComputePcgs, IsField and IsFinite and IsPrimeField, IsInt ],
     0,
 
 function( G, F, dim )

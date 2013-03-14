@@ -1225,10 +1225,22 @@ end);
 InstallMethod(PerfectResiduum,"for groups",true,
   [IsGroup],0,
 function(G)
-  while not IsPerfectGroup(G) do
-    G:=DerivedSubgroup(G);
-  od;
+  G := DerivedSeriesOfGroup(G);
+  G := G[Length(G)];
+  SetIsPerfectGroup(G, true);
   return G;
+end);
+
+InstallMethod(PerfectResiduum,"for perfect groups",true,
+  [IsPerfectGroup],0,
+function(G)
+  return G;
+end);
+
+InstallMethod(PerfectResiduum,"for solvable groups",true,
+  [IsSolvableGroup],0,
+function(G)
+  return TrivialSubgroup(G);
 end);
 
 #############################################################################
@@ -2284,7 +2296,7 @@ local l,mark,i,b,M,no,cnt,j,q,As,a,hom,c,p,ap,prea,prestab,new,sz,k,h;
 	  hom:=NaturalHomomorphismByNormalSubgroup(prea,b);
 
 	  #AAA:=[Image(hom),Image(hom,no)];
-	  c:=Complementclasses(Image(hom),Image(hom,no));
+	  c:=ComplementClassesRepresentatives(Image(hom),Image(hom,no));
 	  c:=List(c,x->PreImage(hom,x));
 	  #oc:=c;
 	  c:=PermPreConjtestGroups(prestab,c);

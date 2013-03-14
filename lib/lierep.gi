@@ -698,7 +698,7 @@ InstallMethod( WeylGroup,
           refl:= [ ];
           rank:= Length( C);
           for i in [1..rank] do
-              m:= MutableIdentityMat( rank, rank );
+              m:= IdentityMat( rank, rank );
               m[i]:=m[i]-C[i];
               Add( refl, m );
           od;
@@ -4033,7 +4033,7 @@ end;
       aa:= List( [1..Dimension(I)], i ->
                 Coefficients(Basis(I),newelts[1]*BasisVectors(Basis(I))[i])
               );
-      eqs:= MutableNullMat(Dimension(I)^2+Dimension(I),Dimension(I),F);
+      eqs:= NullMat(Dimension(I)^2+Dimension(I),Dimension(I),F);
       rhs:= List([1..Dimension(I)^2+Dimension(I)],i->Zero(F));
 
       for j in [1..Dimension(I)] do
@@ -4345,7 +4345,7 @@ InstallMethod( FaithfulModule,
     ww:= BasisVectors( Basis( ll[1] ) );
 
     mats:=List( [1..Length(bb)], x ->
-                MutableNullMat(Length(bb)+1,Length(bb)+1,F));
+                NullMat(Length(bb)+1,Length(bb)+1,F));
     for i in [1..Length(mats)] do
       mats[i][1][i+1]:= One( F );
     od;
@@ -4381,7 +4381,7 @@ InstallMethod( FaithfulModule,
         d:= Length( mats[1] );
         dirsm:= [ ];
         for i in [1..Dimension(L1)] do
-          Q:= MutableNullMat( d+Dimension(L1), d+Dimension(L1), F );
+          Q:= NullMat( d+Dimension(L1), d+Dimension(L1), F );
           for k in [1..d] do
             for l in [1..d] do
               Q[k][l]:= mats[i][k][l];

@@ -161,12 +161,12 @@ DeclareGlobalFunction( "Extract" );
 #############################################################################
 ##
 #F  OrthogonalEmbeddingsSpecialDimension( <tbl>, <reducibles>, <grammat>,
-#F                                                   ["positive", ] <dim> )
+#F                                                   ["positive",] <dim> )
 ##
 ##  <#GAPDoc Label="OrthogonalEmbeddingsSpecialDimension">
 ##  <ManSection>
 ##  <Func Name="OrthogonalEmbeddingsSpecialDimension"
-##  Arg='tbl, reducibles, grammat,[ "positive",] dim'/>
+##  Arg='tbl, reducibles, grammat[, "positive"], dim'/>
 ##
 ##  <Description>
 ##  <Ref Func="OrthogonalEmbeddingsSpecialDimension"/> is a variant of

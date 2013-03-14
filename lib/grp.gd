@@ -463,8 +463,12 @@ InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 ##  (see&nbsp;<Ref Func="IsPGroup"/>), <Ref Func="PrimePGroup"/> returns
 ##  the prime integer <M>p</M>;
 ##  if <A>G</A> is trivial then <Ref Func="PrimePGroup"/> returns
-##  <K>fail</K>.
+##  <K>fail</K>. 
 ##  Otherwise an error is issued.
+##  <P/>
+##  (One should avoid a common error of writing 
+##  <C>if IsPGroup(g) then ... PrimePGroup(g) ...</C> where the code 
+##  represented by dots assumes that <C>PrimePGroup(g)</C> is an integer.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2901,8 +2905,8 @@ KeyDependentOperation( "IsPNilpotent", IsGroup, IsPosInt, "prime" );
 ##  <Func Name="IsPSolvable" Arg='G, p'/>
 ##
 ##  <Description>
-##  A finite group is <M>p</M>-solvable if every chief factor is either not 
-##  divisible by <M>p</M> or solvable.
+##  A finite group is <M>p</M>-solvable if every chief factor either has
+##  order not divisible by <M>p</M>, or is solvable.
 ##  <P/>
 ##  </Description>
 ##  </ManSection>
@@ -3290,7 +3294,7 @@ DeclareOperation( "NrConjugacyClassesInSupergroup", [ IsGroup, IsGroup ] );
 ##  The attribute <Ref Func="EpimorphismFromFreeGroup"/> of <A>G</A>
 ##  will contain a map from the group <A>G</A> to the free group
 ##  in which the word is expressed.
-##  The attribute <C>MappingGeneratorsImages</C> of this map gives a
+##  The attribute <Ref Attr="MappingGeneratorsImages"/> of this map gives a
 ##  list of generators and corresponding letters.
 ##  <P/>
 ##  The algorithm used computes all elements of the group to ensure a short

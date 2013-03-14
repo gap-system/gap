@@ -76,6 +76,21 @@ end );
 
 #############################################################################
 ##
+#M  MinimalGeneratingSet( <group> )  .  get generators from nice obj
+##
+InstallMethod( MinimalGeneratingSet, true,
+    [ IsGroup and IsHandledByNiceMonomorphism ], 0,
+
+function( grp )
+    local   nice;
+    nice := NiceMonomorphism(grp);
+    return List( MinimalGeneratingSet(NiceObject(grp)),
+                 x -> PreImagesRepresentative(nice,x) );
+end );
+
+
+#############################################################################
+##
 #M  GroupByNiceMonomorphism( <nice>, <group> )  construct group with nice obj
 ##
 InstallMethod( GroupByNiceMonomorphism,
@@ -611,11 +626,13 @@ GroupSeriesMethodByNiceMonomorphism( JenningsSeries,
 GroupSeriesMethodByNiceMonomorphism( LowerCentralSeriesOfGroup,
     [ IsGroup ] );
 
+
 #############################################################################
 ##
 #M  MaximalSubgroupClassReps( <G> )
 ##
 SubgroupsMethodByNiceMonomorphism( MaximalSubgroupClassReps, [ IsGroup ] );
+
 
 #############################################################################
 ##

@@ -1064,12 +1064,12 @@ void SyMAdviseFree() {
 #if SYS_IS_DARWIN
     if (mmap(from, size, PROT_NONE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
-        fputs("gap: OS/X trick to free pages did not work, bye!\n", stderr);
+        fputs("gap: OS X trick to free pages did not work, bye!\n", stderr);
         SyExit( 2 );
     }
     if (mmap(from, size, PROT_READ|PROT_WRITE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
-        fputs("gap: OS/X trick to free pages did not work, bye!\n", stderr);
+        fputs("gap: OS X trick to free pages did not work, bye!\n", stderr);
         SyExit( 2 );
     }
 #endif

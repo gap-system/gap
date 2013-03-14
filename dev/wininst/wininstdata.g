@@ -121,9 +121,9 @@ if mandatory then
   Print("SectionIn RO \n");
 fi;  
 Print("SetOutPath $INSTDIR\\pkg \n");
-Print("File gap4r5\\pkg\\README.", pkg, "\n");
+Print("File gap4r6\\pkg\\README.", pkg, "\n");
 Print("SetOutPath $INSTDIR\\pkg\\", dirname, "\n");
-Print("File /r gap4r5\\pkg\\", dirname, "\\*.* \n");
+Print("File /r gap4r6\\pkg\\", dirname, "\\*.* \n");
 Print("SetOutPath $INSTDIR \n");
 Print("SectionEnd \n\n");
 end;

@@ -1307,6 +1307,7 @@ void syAnswerIntr ( int signr )
 
     /* reinstall 'syAnswerIntr' as signal handler                          */
     signal( SIGINT, syAnswerIntr );
+    siginterrupt( SIGINT, 0 );
 
     /* remember time of this interrupt                                     */
     syLastIntr = nowIntr;
@@ -1321,7 +1322,10 @@ void syAnswerIntr ( int signr )
 void SyInstallAnswerIntr ( void )
 {
     if ( signal( SIGINT, SIG_IGN ) != SIG_IGN )
+    {
         signal( SIGINT, syAnswerIntr );
+        siginterrupt( SIGINT, 0 );
+    }
 }
 
 

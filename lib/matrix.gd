@@ -1406,16 +1406,25 @@ DeclareOperation( "DiagonalizeMat", [IsRing,IsMatrix and IsMutable] );
 
 #############################################################################
 ##
-#F  IdentityMat( <m> [, <F>] )  . . . . . . . identity matrix of a given size
+#F  IdentityMat( <m> [, <R>] )  . . . . . . . identity matrix of a given size
 ##
 ##  <#GAPDoc Label="IdentityMat">
 ##  <ManSection>
-##  <Func Name="IdentityMat" Arg='m [, F]'/>
+##  <Func Name="IdentityMat" Arg='m [, R]'/>
 ##
 ##  <Description>
-##  returns a (mutable) <A>m</A><M>\times</M><A>m</A> identity matrix over the field given
-##  by <A>F</A> (i.e. the smallest field containing the element <A>F</A> or <A>F</A> itself
-##  if it is a field).
+##  returns a (mutable) <A>m</A><M>\times</M><A>m</A> identity matrix over the ring given
+##  by <A>R</A>. Here, <A>R</A> can be either a ring, or an element of a ring. By default,
+##  an integer matrix is created.
+##  <Example><![CDATA[
+##  gap> IdentityMat(3);
+##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
+##  gap> IdentityMat(2,Integers mod 15);
+##  [ [ ZmodnZObj( 1, 15 ), ZmodnZObj( 0, 15 ) ], 
+##    [ ZmodnZObj( 0, 15 ), ZmodnZObj( 1, 15 ) ] ]
+##  gap> IdentityMat(2,Z(3));
+##  [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1443,39 +1452,22 @@ DeclareOperation( "MutableCopyMat", [IsList] );
 
 #############################################################################
 ##
-#F  MutableIdentityMat( <m> [, <F>] ) mutable identity matrix of a given size
-##
-##  <#GAPDoc Label="MutableIdentityMat">
-##  <ManSection>
-##  <Func Name="MutableIdentityMat" Arg='m [, F]'/>
-##
-##  <Description>
-##  returns a (mutable) <A>m</A><M>\times</M><A>m</A> identity matrix over the field given
-##  by <A>F</A>.
-##  This is identical to <Ref Func="IdentityMat"/> and is present in &GAP;&nbsp;4.1
-##  only for the sake of compatibility with beta-releases.
-##  It should <E>not</E> be used in new code.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareSynonym( "MutableIdentityMat", IdentityMat );
-
-
-#############################################################################
-##
-#F  NullMat( <m>, <n> [, <F>] ) . . . . . . . . . null matrix of a given size
+#F  NullMat( <m>, <n> [, <R>] ) . . . . . . . . . null matrix of a given size
 ##
 ##  <#GAPDoc Label="NullMat">
 ##  <ManSection>
-##  <Func Name="NullMat" Arg='m, n [, F]'/>
+##  <Func Name="NullMat" Arg='m, n [, R]'/>
 ##
 ##  <Description>
-##  returns a (mutable) <A>m</A><M>\times</M><A>n</A> null matrix over the field given by
-##  <A>F</A>.
+##  returns a (mutable) <A>m</A><M>\times</M><A>n</A> null matrix over the ring given by
+##  by <A>R</A>. Here, <A>R</A> can be either a ring, or an element of a ring. By default,
+##  an integer matrix is created.
 ##  <Example><![CDATA[
-##  gap> IdentityMat(3,1);
-##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
+##  gap> NullMat(3,2);
+##  [ [ 0, 0 ], [ 0, 0 ], [ 0, 0 ] ]
+##  gap> NullMat(2,2,Integers mod 15);
+##  [ [ ZmodnZObj( 0, 15 ), ZmodnZObj( 0, 15 ) ], 
+##    [ ZmodnZObj( 0, 15 ), ZmodnZObj( 0, 15 ) ] ]
 ##  gap> NullMat(3,2,Z(3));
 ##  [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ]
 ##  ]]></Example>
@@ -1484,27 +1476,6 @@ DeclareSynonym( "MutableIdentityMat", IdentityMat );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "NullMat" );
-
-
-#############################################################################
-##
-#F  MutableNullMat( <m>, <n>  [, <F>] ) mutable null matrix of a given size
-##
-##  <#GAPDoc Label="MutableNullMat">
-##  <ManSection>
-##  <Func Name="MutableNullMat" Arg='m, n [, F]'/>
-##
-##  <Description>
-##  returns a (mutable) <A>m</A><M>\times</M><A>n</A> null matrix over the field given
-##  by <A>F</A>.
-##  This is identical to <Ref Func="NullMat"/> and is present in &GAP;&nbsp;4.1
-##  only for the sake of compatibility with beta-releases.
-##  It should <E>not</E> be used in new code.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareSynonym( "MutableNullMat", NullMat );
 
 
 #############################################################################

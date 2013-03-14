@@ -7,10 +7,10 @@
 # integration : to test with the tip of the integration branch
 
 pkg-update:
-	./mergePackages tip fr=stable gpd=stable idrel=stable kan=stable rcwa=stable xmod=stable
+	./mergePackages tip 
 
 pkg-minor:
-	./mergePackages tip fr=stable gpd=stable idrel=stable kan=stable rcwa=stable xmod=stable
+	./mergePackages tip
 
 pkg-major:
 	./mergePackages tip

@@ -1,0 +1,29 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Format 'yyyy/mm/dd'
+!! Date
+2013/03/01
+
+!! Changed by
+MH
+
+! Reported by
+Alexander Konovalov
+
+!! Type of Change
+Fix: wrong result
+
+!! Description
+An AsList method was installed for prime fields which did not work
+correctly for the field of rational numbers. As a consequence,
+AsList(Rationals) would return the string "TRY_NEXT_METHOD". This
+incorrect behavior has been around for a long time. With this change, it
+now produces an error as it should.
+
+! Test Code
+gap> AsList(Rationals);
+Error, cannot compute elements list of infinite domain <V>
+
+!! Changeset
+lib/field.gi
+
+!! End

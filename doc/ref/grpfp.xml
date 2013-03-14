@@ -461,7 +461,7 @@ When working with such homomorphisms, some subgroup elements are expressed
 as extremely long words in the group generators. Therefore the underlying
 words of subgroup
 generators stored in the isomorphism (as obtained by
-<C>MappingGeneratorsImages</C> and displayed when
+<Ref Attr="MappingGeneratorsImages"/> and displayed when
 <Ref Func="View"/>ing the homomorphism)
 as well as preimages under the homomorphism are stored in the form of
 straight line program elements

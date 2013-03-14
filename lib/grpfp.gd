@@ -457,6 +457,8 @@ TCENUM:=GAPTCENUM;
 ##  <Func Name="CosetTableFromGensAndRels" Arg='fgens, grels, fsgens'/>
 ##
 ##  <Description>
+##  <Index Key="TCENUM"><C>TCENUM</C></Index>
+##  <Index Key="GAPTCENUM"><C>GAPTCENUM</C></Index>
 ##  is an internal function which is called by the functions
 ##  <Ref Func="CosetTable"/>, <Ref Func="CosetTableInWholeGroup"/>
 ##  and others.
@@ -1323,8 +1325,10 @@ DeclareGlobalFunction("ParseRelators");
 ##  returns a string that expresses a given word <A>w</A> in compact form
 ##  written as a string. Inverses are expressed by changing the upper/lower
 ##  case of the generators, recurring expressions are written as products.
-##  For example the word <M>xyyyxxyyyxy^{-1}x</M> would be written as
-##  <M>(xy3x)2Yx</M>.
+##  <Example><![CDATA[
+##  gap> StringFactorizationWord(z^-1*x*y*y*y*x*x*y*y*y*x*y^-1*x);
+##  "Z(xy3x)2Yx"
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

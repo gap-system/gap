@@ -1310,7 +1310,8 @@ gap> s := "";; for i in [0..255] do Add(s, CHAR_INT(i)); od;
 gap> fnam := Filename(DirectoryTemporary(), "guck");;
 gap> FileString(fnam, s);;
 gap> f := InputTextFile(fnam);;
-gap> List([0..255], i-> ReadByte(f)) = [0..255];
+gap> a := [0..255];; if ARCH_IS_WINDOWS() then a[14]:=10; fi;
+gap> List([0..255], i-> ReadByte(f)) = a;
 true
 gap> RemoveFile(fnam);
 true
@@ -1418,9 +1419,10 @@ gap> BlistList([1..10],[4234623462462464234242]);
 
 # 2007/07/02 (SK)
 gap> GeneratorsOfRing(Rationals);
-"TRY_NEXT_METHOD"
+Error, cannot compute elements list of infinite domain <V>
 gap> GeneratorsOfRingWithOne(Rationals);
-"TRY_NEXT_METHOD"
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 2nd choice method found for `GeneratorsOfRingWithOne' on 1 arguments
 
 # 2007/07/06 (JS)
 gap> PrimitiveGroup(50,4);
@@ -1699,6 +1701,70 @@ true
 gap> Tester( att )( g );  # Here we got `false' before the fix.
 true
 
+#############################################################################
+##
+## Changes 4.4.12 -> 4.5.4
+
+# 2008/12/15 (TB)
+gap> 0*Z(5) in Group( Z(5) );
+false
+
+# 2009/02/04 (FL)
+gap> Intersection([1..3],[4..5],[6,7]);
+[  ]
+
+# 2009/02/23 (AH)
+gap> chi:=Irr(CyclicGroup(3))[2];;
+gap> IrreducibleRepresentationsDixon(UnderlyingGroup(chi),[chi]);;
+
+# 2009/02/25 (TB)
+gap> IndexNC( GL(30,17), SL(30,17) );
+16
+
+# 2009/03/13 (FL)
+gap> b:=BlistList([1..4],[1,2]);
+[ true, true, false, false ]
+gap> b{[1,2]} := [false,false];
+[ false, false ]
+gap> IsBlistRep(b);
+true
+
+# 2009/05/28 (BH)
+gap> G:=AlternatingGroup(4);;
+gap> N:=Subgroup(G,[(1,2)(3,4),(1,3)(2,4)]);;
+gap> H:=DirectProduct(CyclicGroup(2),CyclicGroup(2));;
+gap> A:=AutomorphismGroup(H);;
+gap> P:=SylowSubgroup(A,3);;
+gap> epi:=NaturalHomomorphismByNormalSubgroup(G,N);;
+gap> iso:=IsomorphismGroups(FactorGroup(G,N),P);;
+gap> f:=CompositionMapping(IsomorphismGroups(FactorGroup(G,N),P),epi);;
+gap> SemidirectProduct(G,f,H);
+<pc group of size 48 with 5 generators>
+
+# 2009/09/23 (AH)
+gap> g:=DirectProduct(DihedralGroup(14),SmallGroup(1440,120));;
+gap> PositionSublist(StructureDescription(g),"PSL");
+fail
+
+# 2009/09/25 (TB)
+gap> lin:= LinearCharacters( CyclicGroup( 3 ) );;
+gap> lin[2] ^ One( GaloisGroup( CF(3) ) );;
+
+# 2009/09/30 (TB)
+gap> v:= GF(2)^1;;
+gap> Subspace( v, [] ) < Subspace( v, [] );
+false
+gap> v:= GF(2)^[1,1];;
+gap> Subspace( v, [] ) < Subspace( v, [] );
+false
+
+# 2010/09/06 (TB)
+gap> G:= SL( 2, 3 );;
+gap> x:= [ [ Z(9), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ];;
+gap> y:= [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(9) ] ];;
+gap> IsConjugate( G, x, y );
+true
+
 # Reported by Sohail Iqbal on 2008/10/15, added by AK on 2010/10/03
 gap> f:=FreeGroup("s","t");; s:=f.1;; t:=f.2;;
 gap> g:=f/[s^4,t^4,(s*t)^2,(s*t^3)^2];;
@@ -1707,12 +1773,28 @@ CharacterTable( <fp group of size 16 on the generators [ s, t ]> )
 gap> Length(Irr(g));
 10
 
+# 2010/10/06 (TB)
+gap> EU(7,2);
+-1
+
 # Reported by Laurent Bartholdi on 2008/11/14, added by AK on 2010/10/15
 gap> f := FreeGroup(0);; g := FreeGroup(1);;
 gap> phi := GroupHomomorphismByImages(f,g,[],[]);;
 gap> One(f)^phi = One(g);
 true
 gap> One(f)^phi=One(f);
+false
+
+# 2010/10/20 (TB)
+gap> NormalizersTom( TableOfMarks( CyclicGroup( 3 ) ) );
+[ 2, 2 ]
+
+# 2010/10/27 (TB)
+gap> PermChars( CharacterTable( SymmetricGroup( 3 ) ), 3 );
+[ Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 3, 1, 0 ] ) ]
+
+# 2010/11/11 (AH)
+gap> x:=X(Rationals);;IsIrreducible(x^3-7381125*x^2-5*x+36905625);
 false
 
 # Reported by FL on 2010/05/05, added by AK on 2011/01/16
@@ -1743,6 +1825,18 @@ gap> 2*10^201*10;
 000000000000000000000000000000000000000000000000000000000000000000000000000000\
 00000000000000000000000000000000000000000000000
 
+# 2011/04/29 (TB)
+gap> t:= CharacterTable( SmallGroup( 72, 26 ) );;
+gap> Set( List( Irr( t ), x -> Size( CentreOfCharacter( x ) ) ) );
+[ 6, 12, 18, 72 ]
+
+# 2011/06/01 (TB)
+gap> F2:= GF( 2 );;
+gap> x:= Indeterminate( F2 );;
+gap> F:= AlgebraicExtension( F2, x^2+x+1 );;
+gap> Trace( RootOfDefiningPolynomial( F ) );
+Z(2)^0
+
 # Reported by Radoslav Kirov on 2011/06/11, added by MH on 2011/09/29
 gap> H := [
 > [ Z(5)^3, Z(5)^0, Z(5)^0, 0*Z(5), 0*Z(5), 0*Z(5) ],
@@ -1756,6 +1850,10 @@ true
 gap> [4,0,1,1,4,0]*Z(5)^0 in cl;
 false
 
+# 2011/09/29 (FL)
+gap> List([1,,3],x->x^2);
+[ 1,, 9 ]
+
 # Reported by Izumi Miyamoto on 2011/12/17, added by MH on 2011/12/18
 # Computing normalizers inside the trivial group could error out.
 gap> Normalizer(Group(()),Group((1,2,3)));
@@ -1768,6 +1866,10 @@ gap> G := CyclicGroup(IsFpGroup,3);
 <fp group of size 3 on the generators [ a ]>
 gap> Elements(G);
 [ <identity ...>, a, a^2 ]
+
+# 2011/12/20 (FL)
+gap> 2^1000000;
+<integer 990...376 (301030 digits)>
 
 # Reported by Burkhard Hoefling on 2012/3/14, added by SL on 2012/3/16
 # SHIFT_LEFT_VEC8BIT can fail to clean space to its right, which can then
@@ -1801,6 +1903,90 @@ gap> ConvertToVectorRep(v,9);
 gap> ElementaryDivisorsMat(GaussianIntegers, [ [ 20, -25, 5 ] ]);
 [ 5, 0, 0 ]
 
+# 2012/04/13 (MN)
+gap> Characteristic(Z(2));
+2
+gap> Characteristic(0*Z(2));
+2
+gap> Characteristic(0*Z(5));
+5
+gap> Characteristic(Z(5));
+5
+gap> Characteristic(Z(257));
+257
+gap> Characteristic(Z(2^60));
+2
+gap> Characteristic(Z(3^20));
+3
+gap> Characteristic(0);
+0
+gap> Characteristic(12);
+0
+gap> Characteristic(12123123123);
+0
+gap> Characteristic(E(4));
+0
+gap> Characteristic([Z(2),Z(4)]);
+2
+gap> v := [Z(2),Z(4)];
+[ Z(2)^0, Z(2^2) ]
+gap> ConvertToVectorRep(v,4);
+4
+gap> Characteristic(v);
+2
+gap> Characteristic([Z(257),Z(257)^47]);
+257
+gap> Characteristic([[Z(257),Z(257)^47]]);
+257
+gap> Characteristic(ZmodnZObj(2,6));
+6
+gap> Characteristic(ZmodnZObj(2,5));
+5
+gap> Characteristic(ZmodnZObj(2,5123123123));
+5123123123
+gap> Characteristic(ZmodnZObj(0,5123123123));
+5123123123
+gap> Characteristic(GF(2,3));
+2
+gap> Characteristic(GF(2));
+2
+gap> Characteristic(GF(3,7));
+3
+gap> Characteristic(GF(1031));
+1031
+gap> Characteristic(Cyclotomics);
+0
+gap> Characteristic(Integers);
+0
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] );
+gap> a := AlgebraByStructureConstants(Rationals,T);
+<algebra of dimension 2 over Rationals>
+gap> Characteristic(a);
+0
+gap> a := AlgebraByStructureConstants(Cyclotomics,T);
+<algebra of dimension 2 over Cyclotomics>
+gap> Characteristic(a);
+0
+gap> a := AlgebraByStructureConstants(GF(7),T);
+<algebra of dimension 2 over GF(7)>
+gap> Characteristic(a);
+7
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1, 1, 2, 2 ] );
+gap> r := RingByStructureConstants([7,7],T);
+<ring with 2 generators>
+gap> Characteristic(r);
+7
+gap> r := RingByStructureConstants([7,5],T);
+<ring with 2 generators>
+gap> Characteristic(r);
+35
+
+#############################################################################
+##
+## Changes 4.5.4 -> 4.5.5
+
 # Bug with commutator subgroups of fp groups, was causing infinite recursion,
 # also when computing automorphism groups
 # Fix and test case added by MH on 2012-06-05.
@@ -1811,6 +1997,45 @@ gap> StructureDescription(CommutatorSubgroup(G, U));
 "C2 x C2"
 gap> StructureDescription(AutomorphismGroup(G));
 "S4"
+
+# 2012/06/15 (AH)
+gap> gens:=[[[1,1],[0,1]], [[1,0],[1,1]]] * ZmodnZObj(1,7);
+[ [ [ Z(7)^0, Z(7)^0 ], [ 0*Z(7), Z(7)^0 ] ], 
+  [ [ Z(7)^0, 0*Z(7) ], [ Z(7)^0, Z(7)^0 ] ] ]
+gap> gens:=List(Immutable(gens),i->ImmutableMatrix(GF(7),i));;
+
+# 2012/06/15 (AH)
+gap> rng := PolynomialRing(Rationals,2);
+Rationals[x_1,x_2]
+gap> ind := IndeterminatesOfPolynomialRing(rng);
+[ x_1, x_2 ]
+gap> x := ind[1];
+x_1
+gap> y := ind[2];
+x_2
+gap> pol:=5*(x_1+1)^2;
+5*x_1^2+10*x_1+5
+gap> factors := Factors(pol);
+[ 5*x_1+5, x_1+1 ]
+gap> factors[2] := x_2;
+x_2
+gap> factors[1] := [];
+[  ]
+gap> Factors( pol );
+[ 5*x_1+5, x_1+1 ]
+
+# 2012/07/13 (TB)
+gap> IsDocumentedWord( "d" );
+false
+gap> # "d_N" is documented
+gap> IsDocumentedWord( "last2" );
+true
+
+#############################################################################
+##
+## Changes 4.5.5 -> 4.5.6
+
+## For bugfixes
 
 # The GL and SL constructors did not correctly handle GL(filter,dim,ring).
 # Reported and fixed by JS on 2012-06-24
@@ -1955,98 +2180,84 @@ XYZ
 gap> String(o);
 "XYZ"
 
-# 2012/04/13 (MN)
-gap> Characteristic(Z(2));
-2
-gap> Characteristic(0*Z(2));
-2
-gap> Characteristic(0*Z(5));
-5
-gap> Characteristic(Z(5));
-5
-gap> Characteristic(Z(257));
-257
-gap> Characteristic(Z(2^60));
-2
-gap> Characteristic(Z(3^20));
-3
-gap> Characteristic(0);
-0
-gap> Characteristic(12);
-0
-gap> Characteristic(12123123123);
-0
-gap> Characteristic(E(4));
-0
-gap> Characteristic([Z(2),Z(4)]);
-2
-gap> v := [Z(2),Z(4)];
-[ Z(2)^0, Z(2^2) ]
-gap> ConvertToVectorRep(v,4);
-4
-gap> Characteristic(v);
-2
-gap> Characteristic([Z(257),Z(257)^47]);
-257
-gap> Characteristic([[Z(257),Z(257)^47]]);
-257
-gap> Characteristic(ZmodnZObj(2,6));
-6
-gap> Characteristic(ZmodnZObj(2,5));
-5
-gap> Characteristic(ZmodnZObj(2,5123123123));
-5123123123
-gap> Characteristic(ZmodnZObj(0,5123123123));
-5123123123
-gap> Characteristic(GF(2,3));
-2
-gap> Characteristic(GF(2));
-2
-gap> Characteristic(GF(3,7));
-3
-gap> Characteristic(GF(1031));
-1031
-gap> Characteristic(Cyclotomics);
-0
-gap> Characteristic(Integers);
-0
-gap> T:= EmptySCTable( 2, 0 );;
-gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] );
-gap> a := AlgebraByStructureConstants(Rationals,T);
-<algebra of dimension 2 over Rationals>
-gap> Characteristic(a);
-0
-gap> a := AlgebraByStructureConstants(Cyclotomics,T);
-<algebra of dimension 2 over Cyclotomics>
-gap> Characteristic(a);
-0
-gap> a := AlgebraByStructureConstants(GF(7),T);
-<algebra of dimension 2 over GF(7)>
-gap> Characteristic(a);
-7
-gap> T:= EmptySCTable( 2, 0 );;
-gap> SetEntrySCTable( T, 1, 1, [ 1, 1, 2, 2 ] );
-gap> r := RingByStructureConstants([7,7],T);
-<ring with 2 generators>
-gap> Characteristic(r);
-7
-gap> r := RingByStructureConstants([7,5],T);
-<ring with 2 generators>
-gap> Characteristic(r);
-35
+## For new features
 
-# 26/10/12 (SL) 
-# Fix a crash when a logfile opened with LogTo() is closed with LogInputTo()  
-gap> LogTo( Filename( DirectoryTemporary(), "foo" ) );
-gap> LogInputTo();
-Error, InputLogTo: can not close the logfile
-gap> LogTo();
+# 2012/08/13 (AK)
+gap> First(PositiveIntegers,IsPrime);
+2
+
+#############################################################################
+##
+## Changes 4.5.6 -> 4.5.7
+
+## For bugfixes
 
 # 2012/11/02 (FL)
 # Fix a crash on 32-bit systems when Log2Int(n) is not an immediate integer. 
 gap> a:=(2^(2^15))^(2^14);;
 gap> Log2Int(a);
 536870912
+
+# 2012/09/26 (AH)
+gap> p:=7;;
+gap> F:=FreeGroup("a","b","c","d","e","f");;
+gap> G:=F/[ F.1^p, F.2^p, F.3^p, F.4^p, F.5^p, F.6^p,
+> Comm(F.2,F.1)*F.3^-1, Comm(F.3,F.1)*F.4^-1,
+> Comm(F.4,F.1)*F.5^-1, Comm(F.4,F.2)*F.6^-1,
+> Comm(F.5,F.2)*F.6^-1, Comm(F.4,F.3)*F.6,
+> Comm(F.1,F.5), Comm(F.1,F.6), Comm(F.2,F.3),
+> Comm(F.2,F.6), Comm(F.3,F.5), Comm(F.3,F.6),
+> Comm(F.4,F.5), Comm(F.4,F.6), Comm(F.5,F.6)];;
+gap> G:=Image(IsomorphismPermGroup(G));;
+gap> DerivedSubgroup(G)=FrattiniSubgroup(G);
+true
+gap> sd1:=StructureDescription(DerivedSubgroup(G));;
+gap> sd2:=StructureDescription(FrattiniSubgroup(G));;
+gap> sd1=sd2;
+true
+
+# 2012/10/05 (AH)
+gap> G:=DirectProduct(CyclicGroup(2),PSL(3,4));; 
+gap> NaturalHomomorphismByNormalSubgroup(G,TrivialSubgroup(G));;
+
+# 2012/10/26 (SL) 
+# Fix a crash when a logfile opened with LogTo() is closed with LogInputTo()  
+gap> LogTo( Filename( DirectoryTemporary(), "foo" ) );
+gap> LogInputTo();
+Error, InputLogTo: can not close the logfile
+gap> LogTo();
+
+# 2012/11/15 (SL)
+gap> x := ZmodnZObj(2,10);
+ZmodnZObj( 2, 10 )
+gap> y := ZmodnZObj(0,10);
+ZmodnZObj( 0, 10 )
+gap> x/y;
+fail
+gap> y/x;
+ZmodnZObj( 0, 10 )
+gap> x/0;
+fail
+gap> 3/y;
+fail
+
+# 2012/11/21 (SL)
+gap> s := FreeSemigroup("a","b");
+<free semigroup on the generators [ a, b ]>
+gap> t := Subsemigroup(s,[s.1]);
+<semigroup with 1 generator>
+gap> t := Subsemigroup(s,[s.1]);
+<semigroup with 1 generator>
+gap> HasSize(t);
+true
+gap> Size(t);
+infinity
+gap> t := Subsemigroup(s,[]);
+<semigroup with 0 generators>
+gap> HasSize(t);
+true
+gap> Size(t);
+0
 
 # 2012/11/25 (AK)
 # Fix of a bug that was reproducible in GAP 4.5.6 with FGA 1.1.1
@@ -2058,9 +2269,226 @@ gap> SetIsSurjective(iso,true);
 gap> Image(iso,PreImagesRepresentative(iso,f.1));
 f1
 
+# 2012/11/26 (MN)
+gap> 10^20000+12345;
+<integer 100...345 (20001 digits)>
+gap> -(10^20000+12345);
+<integer -100...345 (20001 digits)>
+
+# 2012/12/06 (AK)
+gap> x := Indeterminate(Rationals);
+x_1
+gap> InverseSM(Zero(x));
+fail
+gap> Inverse(Zero(x));
+fail
+gap> InverseOp(Zero(x));
+fail
+
+#############################################################################
+##
+## Changes 4.5.7 -> 4.6.2
+
+## For bugfixes
+
+# 2012/10/26 (SL)
+gap> r := rec(1 := rec(x := true));;
+gap> r.1.x;
+true
+
+# 2012/11/01 (SL)
+gap> m := IdentityMat(10,GF(7));;
+gap> m[3][3] := 0*Z(7,6);;
+gap> Display(m);
+ 1 . . . . . . . . .
+ . 1 . . . . . . . .
+ . . . . . . . . . .
+ . . . 1 . . . . . .
+ . . . . 1 . . . . .
+ . . . . . 1 . . . .
+ . . . . . . 1 . . .
+ . . . . . . . 1 . .
+ . . . . . . . . 1 .
+ . . . . . . . . . 1
+
+# 2012/12/17 (SL)
+gap> l := [1,2,3];;
+gap> Unbind(l,1);
+Syntax error: 'Unbind': argument should be followed by ')' in stream line 1
+Unbind(l,1);
+        ^
+gap> l;
+[ 1, 2, 3 ]
+
+# 2013/01/07 (MH)
+gap> m:=IdentityMat(8,GF(3));;
+gap> m2:=m + List([1..8],i->List([1..8], j->Zero(GF(3))));;
+gap> DefaultScalarDomainOfMatrixList([m,m2]);
+GF(3)
+gap> DefaultScalarDomainOfMatrixList([m2,m]);
+GF(3)
+
+## For new features
+
+# 2012/08/14 (AK)
+gap> R:=PolynomialRing(GF(5),"mu");;
+gap> mu:=Indeterminate(GF(5));;
+gap> T:=AlgebraicExtension(GF(5),mu^5-mu+1);;
+gap> A:=PolynomialRing(T,"x");
+<field of size 3125>[x]
+
+# 2012/09/14 (SL)
+gap> a := BlistList([1,2,3],[1]);;
+gap> b := BlistList([1,2,3],[2]);;
+gap> c := BlistList([1,2,3],[2,3]);;
+gap> MEET_BLIST(a,b);
+false
+gap> MEET_BLIST(a,c); 
+false
+gap> MEET_BLIST(b,c);
+true
+gap> MEET_BLIST(a,a);
+true
+
+# 2012/11/10 (SL)
+gap> l :=  [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6, 11 ];;
+gap> SortBy(l,AINV);
+gap> l;
+[ 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
+
+# 2012/11/20 (BH)
+gap> G := WreathProduct (CyclicGroup (IsPermGroup, 7), SymmetricGroup (5));
+<permutation group of size 2016840 with 7 generators>
+gap> IsPSolvable (G, 2);
+false
+gap> IsPSolvable (G, 3);
+false
+gap> IsPSolvable (G, 5);
+false
+gap> IsPSolvable (G, 7);
+true
+gap> IsPNilpotent(GL(3,2),2);
+false
+
+# 2012/12/17 (SL)
+gap> DeclareOperation("MyOp",[IsObject, IsObject]);
+gap> DeclareAttribute("MyOp",IsObject);
+
+# 2013/01/17 (AK)
+gap> lo:= LieObject( [ [ 1, 0 ], [ 0, 1 ] ] );
+LieObject( [ [ 1, 0 ], [ 0, 1 ] ] )
+gap> m:=UnderlyingRingElement(lo);
+[ [ 1, 0 ], [ 0, 1 ] ]
+gap> lo*lo;
+LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
+gap> m*m;
+[ [ 1, 0 ], [ 0, 1 ] ]
+
+# 2013/01/20 (SL)
+gap> DistancePerms((1,2,3,4,5,6),(1,2,3));
+4
+
+#############################################################################
+##
+## Changes 4.6.2 -> 4.6.3
+
+## For bugfixes
+
+# 2013/02/07 (AK)
+gap> PowerModInt(3,0,1);
+0
+
+# 2013/02/27 (SL)
+gap>  m:= [[Z(3^16),0],[1,Z(3)]] * One( Z(3) );
+[ [ z, 0*Z(3) ], [ Z(3)^0, Z(3) ] ]
+gap> Display(m);
+z = Z( 3, 16); z2 = z^2, etc.
+z . 
+1 2 
+gap> m[1][1]:= m[1][1] + 1;
+1+z
+gap> Display( m );
+z = Z( 3, 16); z2 = z^2, etc.
+1+z .   
+1   2   
+
+# 2013/02/27 (AK)
+gap> G:=SymmetricGroup(8);
+Sym( [ 1 .. 8 ] )
+gap> H:=SylowSubgroup(G,3);;
+gap> HasIsPGroup(H);
+true
+gap> HasPrimePGroup(H);
+true
+
+# 2013/02/28 (BH). More tests added by AK
+gap> Length( AbsolutIrreducibleModules( AlternatingGroup(5), GF(4), 120) );
+2
+gap> Length( IrreducibleRepresentations( DihedralGroup(10), GF(2^2) ) );
+3
+gap> Length( AbsoluteIrreducibleModules( CyclicGroup(3), GF(4), 1) );
+2
+gap> G:=DihedralGroup(20);; b:=G.1*G.2;; Order(b);
+2
+gap> ForAll( IrreducibleRepresentations(G,GF(8)), phi -> IsOne(Image(phi,b)^2));
+true
+
+# 2013/03/06 (MH)
+gap> PermutationMat((1,2),2,GF(3^6));
+[ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ] ]
+
+# 2013/03/07 (MH)
+gap> s:="cba";
+"cba"
+gap> IsSSortedList(s);
+false
+gap> IsInt(RNamObj(s));
+true
+gap> r:=rec(cba := 1);;
+gap> IsBound(r.(s));
+true
+
+# 2013/03/08 (MH)
+gap> v:=[ Z(2^4)^3, Z(2^4)^6, Z(2)^0 ];
+[ Z(2^4)^3, Z(2^4)^6, Z(2)^0 ]
+gap> ConvertToVectorRepNC(v,256);
+256
+gap> RepresentationsOfObject(v);
+[ "IsDataObjectRep", "Is8BitVectorRep" ]
+gap> R:=PolynomialRing( GF(2^8) );
+GF(2^8)[x_1]
+gap> x := Indeterminate(GF(2^8));
+x_1
+gap> f := x^2+Z(2^4)^6*x+Z(2^4)^3;
+x_1^2+Z(2^4)^6*x_1+Z(2^4)^3
+gap> Length( FactorsSquarefree( R, f, rec() ) );
+2
+
+# 2013/03/12 (MH)
+gap> v:=IdentityMat(28,GF(2))[1];
+<a GF2 vector of length 28>
+gap> v{[1..Length(v)]}{[1..5]};
+Error, List Elements: <lists> must be a list (not a object (data))
+
+## For new features
+
+# 2013/02/27 (AK)
+gap> F := FreeGroup("a","b");;
+gap> G := F/[F.1*F.2*F.1*F.2*F.1];;
+gap> IsAbelian(G);
+true
+gap> DerivedSubgroup(G);
+Group([  ])
+
+# 2013/02/28 (MH)
+gap> NullMat(2,1,ZmodnZObj(1,15));
+[ [ ZmodnZObj( 0, 15 ) ], [ ZmodnZObj( 0, 15 ) ] ]
+gap> IdentityMat(10,Z(4));
+< mutable compressed matrix 10x10 over GF(4) >
+
 #############################################################################
 #
-# Tests requiring loading some packages.
+# Tests requiring loading some packages must be performed at the end.
 # Do not put tests that do not need any packages below this line.
 #
 #############################################################################
@@ -2190,6 +2618,22 @@ gap> if LoadPackage("crisp", "1.2.1", false) <> fail then
 >      Print( "problem with crisp (7)\n" );
 >     fi;
 >    fi;
+
+# 2012/06/18 (FL)
+gap> LoadPackage("cvec",false);
+true
+gap> mat := [[Z(2)]];;
+gap> ConvertToMatrixRep(mat,2);
+2
+gap> cmat := CMat(mat);
+<cmat 1x1 over GF(2,1)>
+gap> cmat^1000;
+<cmat 1x1 over GF(2,1)>
+
+# 2012/06/18 (MH)
+gap> LoadPackage("anupq",false);
+true
+gap> for i in [1..192] do Q:=Pq( FreeGroup(2) : Prime:=3, ClassBound:=1 ); od;
 
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 15319000000*10 );

@@ -310,17 +310,22 @@ DeclareGlobalFunction( "ChineseRem" );
 ##
 ##  <#GAPDoc Label="CoefficientsQadic">
 ##  <ManSection>
-##  <Func Name="CoefficientsQadic" Arg='i, q'/>
+##  <Oper Name="CoefficientsQadic" Arg='i, q'/>
 ##
 ##  <Description>
 ##  returns the <A>q</A>-adic representation of the integer <A>i</A>
 ##  as a list <M>l</M> of coefficients satisfying the equality
-##  <M><A>i</A> = \sum_{{j = 0}} <A>q</A>^j \cdot l[j+1]</M>.
+##  <M><A>i</A> = \sum_{{j = 0}} <A>q</A>^j \cdot l[j+1]</M>
+##  for an integer <M><A>q</A> > 1</M>.
+##  <Example><![CDATA[
+##  gap> l:=CoefficientsQadic(462,3);
+##  [ 0, 1, 0, 2, 2, 1 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "CoefficientsQadic" );
+DeclareOperation( "CoefficientsQadic", [ IsInt, IsInt ] );
 
 
 #############################################################################

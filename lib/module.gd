@@ -25,7 +25,9 @@
 ##  if it is an additive group that is closed under scalar multiplication
 ##  from the left, and such that
 ##  <M>\lambda * ( x + y ) = \lambda * x + \lambda * y</M>
-##  for all scalars <M>\lambda</M> and elements <M>x, y \in D</M>.
+##  for all scalars <M>\lambda</M> and elements <M>x, y \in D</M>
+##  (here and below by scalars we mean elements of a domain acting
+##  on <A>D</A> from left or right as appropriate).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

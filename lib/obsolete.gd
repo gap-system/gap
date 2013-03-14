@@ -407,5 +407,47 @@ DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
 
 #############################################################################
 ##
+#F  MutableIdentityMat( <m> [, <F>] ) mutable identity matrix of a given size
+##
+##  <#GAPDoc Label="MutableIdentityMat">
+##  <ManSection>
+##  <Func Name="MutableIdentityMat" Arg='m [, F]'/>
+##
+##  <Description>
+##  returns a (mutable) <A>m</A><M>\times</M><A>m</A> identity matrix over the field given
+##  by <A>F</A>.
+##  This is identical to <Ref Func="IdentityMat"/> and is present in &GAP;&nbsp;4.1
+##  only for the sake of compatibility with beta-releases.
+##  It should <E>not</E> be used in new code.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareSynonym( "MutableIdentityMat", IdentityMat );
+
+
+#############################################################################
+##
+#F  MutableNullMat( <m>, <n>  [, <F>] ) mutable null matrix of a given size
+##
+##  <#GAPDoc Label="MutableNullMat">
+##  <ManSection>
+##  <Func Name="MutableNullMat" Arg='m, n [, F]'/>
+##
+##  <Description>
+##  returns a (mutable) <A>m</A><M>\times</M><A>n</A> null matrix over the field given
+##  by <A>F</A>.
+##  This is identical to <Ref Func="NullMat"/> and is present in &GAP;&nbsp;4.1
+##  only for the sake of compatibility with beta-releases.
+##  It should <E>not</E> be used in new code.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareSynonym( "MutableNullMat", NullMat );
+
+
+#############################################################################
+##
 #E
 
