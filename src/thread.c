@@ -265,6 +265,7 @@ void CreateMainRegion()
 {
   int i;
   TLS->currentRegion = NewRegion();
+  TLS->threadRegion = TLS->currentRegion;
   ((Region *)TLS->currentRegion)->fixed_owner = 1;
   RegionWriteLock(TLS->currentRegion);
   ((Region *)TLS->currentRegion)->name = MakeImmString("thread region #0");

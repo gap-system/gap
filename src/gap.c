@@ -1503,6 +1503,8 @@ Obj CallErrorInner (
   Obj r = NEW_PREC(0);
   Obj l;
   Obj result;
+  Region *savedRegion = TLS->currentRegion;
+  TLS->currentRegion = TLS->threadRegion;
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
   AssPRec(r, RNamName("context"), TLS->currLVars);
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
@@ -1515,6 +1517,7 @@ Obj CallErrorInner (
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(TLS->currStat);
   result = CALL_2ARGS(ErrorInner,r,l);  
+  TLS->currentRegion = savedRegion;
   return result;
 }
 

@@ -871,6 +871,7 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
     ArgumentError("WITH_TARGET_REGION: Second argument must be a function");
   if (!region || !CheckExclusiveWriteAccess(obj))
     ArgumentError("WITH_TARGET_REGION: Requires write access to target region");
+  memcpy(readJmpError, TLS->readJmpError, sizeof(syJmp_buf));
   if (sySetjmp(TLS->readJmpError)) {
     memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));
     TLS->currentRegion = oldRegion;
@@ -878,6 +879,7 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
   }
   TLS->currentRegion = region;
   CALL_0ARGS(func);
+  memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));
   TLS->currentRegion = oldRegion;
 }
 
