@@ -202,6 +202,39 @@ CopyToRegion := atomic function(readonly obj, target)
   fi;
 end;
 
+AT_THREAD_EXIT_LIST := 0;
+MakeThreadLocal("AT_THREAD_EXIT_LIST");
+
+BIND_GLOBAL("THREAD_EXIT", function()
+  local func;
+  if AT_THREAD_EXIT_LIST <> 0 then
+    for func in AT_THREAD_EXIT_LIST do
+      func();
+    od;
+  fi;
+end);
+
+BIND_GLOBAL("AtThreadExit", function(func)
+  if AT_THREAD_EXIT_LIST = 0 then
+    AT_THREAD_EXIT_LIST := [ func ];
+  else
+    ADD_LIST(AT_THREAD_EXIT_LIST, func);
+  fi;
+end);
+
+AT_THREAD_INIT_LIST := MakeWriteOnceAtomic([]);
+
+BIND_GLOBAL("AtThreadInit", function(func)
+  ADD_LIST(AT_THREAD_INIT_LIST, func);
+end);
+
+BIND_GLOBAL("THREAD_INIT", function()
+  local func;
+  for func in AT_THREAD_INIT_LIST do
+    func();
+  od;
+end);
+
 MakeThreadLocal("~");
 
 HaveMultiThreadedUI := false;
