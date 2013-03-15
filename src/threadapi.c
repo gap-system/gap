@@ -2709,7 +2709,7 @@ Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 
 Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
 {
-  if (!MigrateObjects(1, &obj, TLS->currentRegion, 0))
+  if (!MigrateObjects(1, &obj, TLS->threadRegion, 0))
     ArgumentError("ADOPT_NORECURSE: Thread does not have exclusive access to objects");
   return obj;
 }
@@ -2788,7 +2788,7 @@ Obj FuncADOPT(Obj self, Obj obj)
 {
   Obj reachable = ReachableObjectsFrom(obj);
   if (!MigrateObjects(LEN_PLIST(reachable),
-       ADDR_OBJ(reachable)+1, TLS->currentRegion, 0))
+       ADDR_OBJ(reachable)+1, TLS->threadRegion, 0))
     ArgumentError("ADOPT: Thread does not have exclusive access to objects");
   return obj;
 }
