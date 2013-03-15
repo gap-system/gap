@@ -1049,13 +1049,20 @@ Obj GetTLRecordField(Obj record, UInt rnam)
       Obj func;
       Obj constructors = table[TLR_CONSTRUCTORS];
       func = GetARecordField(constructors, rnam);
+      if (!tlrecord) {
+	tlrecord = NEW_PREC(0);
+	UpdateThreadRecord(record, tlrecord);
+      }
       if (func) {
-	result = CALL_0ARGS(func);
-	if (!result)
-	  return 0;
-	if (!tlrecord) {
-	  tlrecord = NEW_PREC(0);
-	  UpdateThreadRecord(record, tlrecord);
+        if (NARG_FUNC(func) == 0)
+	  result = CALL_0ARGS(func);
+	else
+	  result = CALL_1ARGS(func, record);
+	if (!result) {
+	  if (!FindPRec(tlrecord, rnam, &pos, 1)) {
+	    ErrorQuit("Thread-local constructor failed to assign field %s and did not return a value", (Int) NAME_RNAM(rnam), 0L);
+	  }
+	  return GET_ELM_PREC(tlrecord, pos);
 	}
 	AssPRec(tlrecord, rnam, result);
 	return result;
