@@ -92,7 +92,7 @@ HashServer := function(id,pt,inch,outchs,status,hashsize,chunksize,queuesize)
   while true do
       if Poll(true) then return; fi;
       while Length(todo) > 0 do
-          r := Remove(todo,1);
+          r := Remove(todo);
           for p in r do
               val := HTValue(ht,p);
               if val = fail then
@@ -126,16 +126,17 @@ Worker := function(id,gens,op,hashins,myqueue,status,f)
   #Print("I am worker #",id,"\n");
   n := Length(hashins);
   while true do
-      c := 0;
-      while true do
-          t := TryReceiveChannel(myqueue,fail);
-          if t = fail then
-              c := c + 1;
-          else
-              break;
-          fi;
-      od;
-      if c > 0 then Print("Had to TryReceiveChannel ",c," times.\n"); fi;
+      #c := 0;
+      #while true do
+      #    t := TryReceiveChannel(myqueue,fail);
+      #    if t = fail then
+      #        c := c + 1;
+      #    else
+      #        break;
+      #    fi;
+      #od;
+      #if c > 0 then Print("Had to TryReceiveChannel ",c," times.\n"); fi;
+      t := ReceiveChannel(myqueue);
       if IsStringRep(t) and t = "exit" then return; fi;
       #Print("Worker got work ",Length(t),"\n");
       res := List([1..n],x->EmptyPlist(QuoInt(Length(t)*Length(gens)*2,n)));

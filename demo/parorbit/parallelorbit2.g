@@ -210,7 +210,8 @@ ParallelOrbit := function(gens,pt,op,opt)
     ti2 := IO_gettimeofday();
     return rec( allhashes := allhashes, allpts := allpts,
                 time := TimeDiff(ti,ti2), timeready := TimeDiff(ti,ti3),
-                allstats := allstats );
+                allstats := allstats, nrhash := opt.nrhash,
+                nrwork := opt.nrwork );
 end;
 
 Measure := function(gens,pt,op,n)
