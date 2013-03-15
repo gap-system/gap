@@ -47,10 +47,8 @@ HashServer := function(id,pt,inch,outchs,status,hashsize,chunksize,queuesize)
           if x = fail then
               queued[r] := queued[r] - 1;
               sumq := sumq - 1;
-              if queued[r] = 0 then
-                  if sumq = 0 and Length(todo) = 0 then
-                      SendChannel(status,id);   # we are idle
-                  fi;
+              if queued[r] = 0 and sumq = 0 and Length(todo) = 0 then
+                  SendChannel(status,id);   # we are idle
               fi;
           else
               SendChannel(outchs[r],x);
@@ -92,7 +90,7 @@ HashServer := function(id,pt,inch,outchs,status,hashsize,chunksize,queuesize)
   while true do
       if Poll(true) then return; fi;
       while Length(todo) > 0 do
-          r := Remove(todo);
+          r := Remove(todo,1);
           for p in r do
               val := HTValue(ht,p);
               if val = fail then
