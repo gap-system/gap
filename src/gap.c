@@ -1378,6 +1378,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     Obj result;
     Stat currStat;
     int lockSP;
+    Region *savedRegion;
     if (!IS_FUNC(func))
       ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
@@ -1394,6 +1395,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     currStat = TLS->currStat;
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     lockSP = RegionLockSP();
+    savedRegion = TLS->currentRegion;
     if (sySetjmp(TLS->readJmpError)) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
@@ -1405,6 +1407,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       TLS->currStat = currStat;
       PopRegionLocks(lockSP);
+      TLS->currentRegion = savedRegion;
       if (TLS->CurrentHashLock)
         HashUnlock(TLS->CurrentHashLock);
     } else {
@@ -1436,6 +1439,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       }
       /* There should be no locks to pop off the stack, but better safe than sorry. */
       PopRegionLocks(lockSP);
+      TLS->currentRegion = savedRegion;
       SET_ELM_PLIST(res,1,True);
       if (result)
         {

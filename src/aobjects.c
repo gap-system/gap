@@ -1029,6 +1029,8 @@ Obj GetTLRecordField(Obj record, UInt rnam)
   Obj contents, *table;
   Obj tlrecord;
   UInt pos;
+  Region *savedRegion = TLS->currentRegion;
+  TLS->currentRegion = TLS->threadRegion;
   ExpandTLRecord(record);
   contents = GetTLInner(record);
   table = ADDR_OBJ(contents);
@@ -1044,6 +1046,7 @@ Obj GetTLRecordField(Obj record, UInt rnam)
 	UpdateThreadRecord(record, tlrecord);
       }
       AssPRec(tlrecord, rnam, result);
+      TLS->currentRegion = savedRegion;
       return result;
     } else {
       Obj func;
@@ -1058,18 +1061,20 @@ Obj GetTLRecordField(Obj record, UInt rnam)
 	  result = CALL_0ARGS(func);
 	else
 	  result = CALL_1ARGS(func, record);
+	TLS->currentRegion = savedRegion;
 	if (!result) {
-	  if (!FindPRec(tlrecord, rnam, &pos, 1)) {
-	    ErrorQuit("Thread-local constructor failed to assign field %s and did not return a value", (Int) NAME_RNAM(rnam), 0L);
-	  }
+	  if (!FindPRec(tlrecord, rnam, &pos, 1))
+	    return 0;
 	  return GET_ELM_PREC(tlrecord, pos);
 	}
 	AssPRec(tlrecord, rnam, result);
 	return result;
       }
+      TLS->currentRegion = savedRegion;
       return 0;
     }
   }
+  TLS->currentRegion = savedRegion;
   return GET_ELM_PREC(tlrecord, pos);
 }
 
