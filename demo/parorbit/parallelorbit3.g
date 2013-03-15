@@ -205,19 +205,19 @@ ParallelOrbit := function(gens,pt,op,opt)
             elif x < 0 then 
                 if ready[-x] = true then 
                     change := true; 
-                    #Print("Hash server #",-x," got some work.\n");
+                    #Print("Hash server #",x," got some work.\n");
                 fi;
                 ready[-x] := false;
             else 
                 if ready[x] = false then 
                     change := true; 
-                    #Print("Hash server #",-x," became idle.\n");
+                    #Print("Hash server #",x," became idle.\n");
                 fi;
                 ready[x] := true;
             fi;
             x := TryReceiveChannel(s,fail);
         od;
-        #if change then Print("\nCentral: ready is ",ready,"\r"); fi;
+        # if change then Print("\nCentral: ready is ",ready,"\r"); fi;
     od;
     # Now terminate all workers:
     for k in [1..opt.nrwork] do
