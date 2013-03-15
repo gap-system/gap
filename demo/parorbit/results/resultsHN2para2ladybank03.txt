@@ -35,3 +35,39 @@ sequential, 16 simultaneously: 211.394572019577
 sequential, 32 simultaneously: 1016.805605888367
 sequential, 4 simultaneously: 128.2335798740387
 sequential, 1 simultaneously: 117.2198390960693
+nrhash=3 nrwork=9 time=15.93813300132751
+nrhash=3 nrwork=10 time=15.23244500160217
+nrhash=3 nrwork=11 time=14.7110390663147
+nrhash=3 nrwork=12 time=13.88727712631226
+nrhash=4 nrwork=9 time=15.85355997085571
+nrhash=4 nrwork=10 time=15.35508394241333
+nrhash=4 nrwork=11 time=14.49937295913696
+nrhash=4 nrwork=12 time=13.87474799156189
+nrhash=4 nrwork=13 time=13.6562831401825
+nrhash=4 nrwork=14 time=13.40677309036255
+nrhash=4 nrwork=15 time=13.29895305633545
+nrhash=4 nrwork=16 time=13.42827105522156
+nrhash=1 nrwork=9 time=17.9652259349823
+nrhash=1 nrwork=10 time=19.68115901947021
+nrhash=1 nrwork=11 time=20.69227504730225
+nrhash=1 nrwork=12 time=21.05824279785156
+nrhash=1 nrwork=13 time=20.65742588043213
+nrhash=1 nrwork=14 time=21.18523812294006
+nrhash=1 nrwork=15 time=21.30090999603271
+nrhash=1 nrwork=16 time=21.20494103431702
+nrhash=2 nrwork=9 time=16.35606718063354
+nrhash=2 nrwork=10 time=15.5234100818634
+nrhash=2 nrwork=11 time=15.12615180015564
+nrhash=2 nrwork=12 time=14.40261292457581
+nrhash=2 nrwork=13 time=13.58209705352783
+nrhash=2 nrwork=14 time=13.01554203033447
+nrhash=2 nrwork=15 time=13.12917804718018
+nrhash=2 nrwork=16 time=13.34297490119934
+nrhash=3 nrwork=13 time=13.60726094245911
+nrhash=3 nrwork=14 time=13.57331299781799
+nrhash=3 nrwork=15 time=13.54173398017883
+nrhash=3 nrwork=16 time=13.47503781318665
+nrhash=1 nrwork=4 time=28.35563611984253
+nrhash=2 nrwork=8 time=17.20964217185974
+nrhash=3 nrwork=12 time=14.1958601474762
+nrhash=4 nrwork=16 time=13.38259410858154
