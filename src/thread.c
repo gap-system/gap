@@ -297,6 +297,7 @@ void *DispatchThread(void *arg)
 #endif
   InitTLS();
   TLS->currentRegion = region = NewRegion();
+  TLS->threadRegion = TLS->currentRegion;
   TLS->threadLock = this_thread->lock;
   TLS->threadSignal = this_thread->cond;
   region->fixed_owner = 1;
