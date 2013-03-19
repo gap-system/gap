@@ -123,6 +123,7 @@ void UnlockGVars() {
     GVarLockDepth--;
     if (GVarLockDepth != 0)
       return;
+    GVarLockOwner = NULL;
   }
   pthread_rwlock_unlock(&GVarLock);
 }
