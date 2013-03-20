@@ -13,11 +13,11 @@ Tasks := AtomicRecord( rec ( Initial := GAPInfo.KernelInfo.NUM_CPUS ,    # initi
                  ReportErrors := true,
                  WorkerPool := CreateChannel(),                # pool of idle workers                 
                  TaskManagerRequests := CreateChannel(),       # task manager requests
-                 WorkerSuspensionRequests := CreateChannel()));  # suspend requests from task manager
+                 WorkerSuspensionRequests := CreateChannel(),
+                 InputChannels := AtomicList([])));  # suspend requests from task manager
 
 TaskData := ShareObj( rec(
                     TaskPool := [],                               # task pool (list)
-                    inputChannels := [],              
                     TaskPoolLen := 0,         # length of a task pool     
                     Running := 0));
 
@@ -25,11 +25,15 @@ TaskData := ShareObj( rec(
 # (starts, blocks, suspends and resumes workers).
 DeclareGlobalVariable ("TaskManager");
 MakeReadWriteGVar("TaskManager");
+DeclareGlobalVariable ("mainThreadChannels");
+MakeReadWriteGVar("mainThreadChannels");
 
 
 GetWorkerInputChannel := function (worker)
-  atomic readonly TaskData do
-    return TaskData.inputChannels[worker];
+  while true do
+    if IsBound(Tasks.InputChannels[worker+1]) then
+      return Tasks.InputChannels[worker+1];
+    fi;
   od;
 end;
 
@@ -147,14 +151,10 @@ end;
 Tasks.BlockWorkerThread := function()
   local resume;
 
-  if ThreadID(CurrentThread())<>0 then
-    SendChannel (Tasks.TaskManagerRequests, rec (worker := ThreadID(CurrentThread()), type := BLOCK_ME));
-    resume := ReceiveChannel (GetWorkerInputChannel(ThreadID(CurrentThread())));
-    if resume<>RESUME_BLOCKED_WORKER then
-      Error("Error while worker is waiting to resume\n");
-    fi;
-  else
-    Error("Cannot block main thread\n");
+  SendChannel (Tasks.TaskManagerRequests, rec (worker := ThreadID(CurrentThread()), type := BLOCK_ME));
+  resume := ReceiveChannel (GetWorkerInputChannel(ThreadID(CurrentThread())));
+  if resume<>RESUME_BLOCKED_WORKER then
+    Error("Error while worker is waiting to resume\n");
   fi;
 end;
 
@@ -177,6 +177,10 @@ Tasks.Initialize := function()
   local i;
   TaskManager := CreateThread(Tasks.TaskManagerFunc);
   MakeReadOnlyGVar ("TaskManager");
+  mainThreadChannels := rec ( toworker := CreateChannel(1),
+                              fromworker := CreateChannel(1));
+  MakeReadOnlyGVar("mainThreadChannels");
+  Tasks.InputChannels[1] := mainThreadChannels.toworker;
 end;
 
 # Creates a task without binding it to a worker
@@ -327,20 +331,9 @@ WaitTask := function(arg)
     fi;
     
     if not task.complete then
-      if ThreadID(CurrentThread())<>0 then
-        SendChannel (task.blockedWorkers, ThreadID(CurrentThread()));
-        UNLOCK(p);
-        Tasks.BlockWorkerThread();
-      else
-        while true do 
-          UNLOCK(p);
-          for i in [1..1000] do od;
-          LOCK(false, task);
-          if task.complete then 
-            break;
-          fi;
-        od;
-      fi;
+      SendChannel (task.blockedWorkers, ThreadID(CurrentThread()));
+      UNLOCK(p);
+      Tasks.BlockWorkerThread();
     else
       UNLOCK(p);
     fi;
