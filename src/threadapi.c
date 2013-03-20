@@ -917,7 +917,9 @@ Obj FuncStartBarrier(Obj self, Obj barrier, Obj count);
 Obj FuncWaitBarrier(Obj self, Obj barrier);
 Obj FuncCreateSyncVar(Obj self);
 Obj FuncSyncWrite(Obj self, Obj var, Obj value);
+Obj FuncSyncTryWrite(Obj self, Obj var, Obj value);
 Obj FuncSyncRead(Obj self, Obj var);
+Obj FuncSyncIsBound(Obj self, Obj var);
 Obj FuncWriteLock(Obj self, Obj args);
 Obj FuncReadLock(Obj self, Obj args);
 Obj FuncIS_LOCKED(Obj self, Obj obj);
@@ -1128,8 +1130,14 @@ static StructGVarFunc GVarFuncs [] = {
     { "SyncWrite", 2, "syncvar, obj",
       FuncSyncWrite, "src/threadapi.c:SyncWrite" },
 
+    { "SyncTryWrite", 2, "syncvar, obj",
+      FuncSyncTryWrite, "src/threadapi.c:SyncTryWrite" },
+
     { "SyncRead", 1, "syncvar",
       FuncSyncRead, "src/threadapi.c:SyncRead" },
+
+    { "SyncIsBound", 1, "syncvar",
+      FuncSyncIsBound, "src/threadapi.c:SyncIsBound" },
 
     { "IS_LOCKED", 1, "obj",
       FuncIS_LOCKED, "src/threadapi.c:IS_LOCKED" },
@@ -2300,6 +2308,22 @@ void SyncWrite(SyncVar *var, Obj value)
   UnlockMonitor(monitor);
 }
 
+int SyncTryWrite(SyncVar *var, Obj value)
+{
+  Monitor *monitor = ObjPtr(var->monitor);
+  LockMonitor(monitor);
+  if (var->written)
+  {
+    UnlockMonitor(monitor);
+    return 0;
+  }
+  var->written = 1;
+  var->value = value;
+  SignalMonitor(monitor);
+  UnlockMonitor(monitor);
+  return 1;
+}
+
 Obj CreateSyncVar()
 {
   Bag syncvarBag;
@@ -2325,6 +2349,11 @@ Obj SyncRead(SyncVar *var)
   return var->value;
 }
 
+Obj SyncIsBound(SyncVar *var)
+{
+  return var->value ? True : False;
+}
+
 int IsSyncVar(Obj var)
 {
   return var && TNUM_OBJ(var) == T_SYNCVAR;
@@ -2343,12 +2372,27 @@ Obj FuncSyncWrite(Obj self, Obj var, Obj value)
   return (Obj) 0;
 }
 
+Obj FuncSyncTryWrite(Obj self, Obj var, Obj value)
+{
+  if (!IsSyncVar(var))
+    ArgumentError("SyncTryWrite: First argument must be a synchronization variable");
+  return SyncTryWrite(ObjPtr(var), value) ? True : False;
+}
+
 Obj FuncSyncRead(Obj self, Obj var)
 {
   if (!IsSyncVar(var))
     ArgumentError("SyncRead: Argument must be a synchronization variable");
   return SyncRead(ObjPtr(var));
 }
+
+Obj FuncSyncIsBound(Obj self, Obj var)
+{
+  if (!IsSyncVar(var))
+    ArgumentError("SyncRead: Argument must be a synchronization variable");
+  return SyncIsBound(ObjPtr(var));
+}
+
 
 static void PrintThread(Obj obj)
 {
