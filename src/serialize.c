@@ -10,6 +10,7 @@
 #include "records.h"
 #include "scanner.h"
 #include "string.h"
+#include "gap.h"
 #include "aobjects.h"
 #include "tls.h"
 #include "serialize.h"
@@ -212,7 +213,7 @@ static inline UInt ReadByteBlockLength(void) {
   return DESERIALIZER->ReadByteBlockLength();
 }
 
-static inline UInt ReadByteBlockData(Obj obj, UInt offset, UInt len) {
+static inline void ReadByteBlockData(Obj obj, UInt offset, UInt len) {
   DESERIALIZER->ReadByteBlockData(obj, offset, len);
 }
 
@@ -410,7 +411,6 @@ void SerializeCyc(Obj obj) {
 
 Obj DeserializeCyc(UInt tnum) {
   Obj result;
-  Obj *coefs;
   UInt i, len;
   len = INT_INTOBJ(ReadImmediateObj());
   result = NewBag( T_CYC, len * (sizeof(Obj) + sizeof(UInt4)));
@@ -585,7 +585,7 @@ static GVarDescriptor TYPE_UNKNOWN_GVar;
 static GVarDescriptor DESERIALIZER_GVar;
 
 static void SerRepError() {
-  ErrorQuit("SerializableRepresentation must return a list prefixed by a string or integer and string");
+  ErrorQuit("SerializableRepresentation must return a list prefixed by a string or integer and string", 0L, 0L);
 }
 
 static Obj PosObjToList(Obj obj) {
@@ -598,7 +598,7 @@ static Obj PosObjToList(Obj obj) {
 }
 
 Obj DeserializeTypedObj(UInt tnum) {
-  UInt namelen, head, tail, len, i;
+  UInt namelen, len, i;
   Obj name, args, deserialization_rec, func;
   Obj result;
   UInt rnam;
@@ -806,6 +806,7 @@ Obj FuncSERIALIZE_NATIVE_STRING(Obj self, Obj obj) {
 Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string) {
   Obj result;
   SerializationState state;
+  SaveSerializationState(&state);
   syJmp_buf readJmpError;
   if (!IS_STRING(string))
     ErrorQuit("DESERIALIZE_NATIVE_STRING: argument must be a string", 0L, 0L);
@@ -815,7 +816,6 @@ Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string) {
     RestoreSerializationState(&state);
     syLongjmp(TLS->readJmpError, 1);
   }
-  SaveSerializationState(&state);
   InitNativeStringDeserializer(string);
   result = DeserializeObj();
   memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));

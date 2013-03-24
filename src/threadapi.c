@@ -881,6 +881,7 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func) {
   CALL_0ARGS(func);
   memcpy(TLS->readJmpError, readJmpError, sizeof(syJmp_buf));
   TLS->currentRegion = oldRegion;
+  return (Obj) 0;
 }
 
 

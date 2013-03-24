@@ -68,7 +68,7 @@ Obj TYPE_TLREC;
 
 #define ALIST_LEN(x) ((x) >> 2)
 #define ALIST_POL(x) ((x) & 3)
-#define CHANGE_ALIST_LEN(x, y) (((x) & 3) | (y << 2))
+#define CHANGE_ALIST_LEN(x, y) (((x) & 3) | ((y) << 2))
 #define CHANGE_ALIST_POL(x, y) (((x) & ~3) | y)
 
 #define ALIST_RW 0
@@ -1654,8 +1654,10 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
   Int n;
   Bag *contents;
   Bag result;
-  if (!IS_INTOBJ(index) || ((n = INT_INTOBJ(index)) <= 0))
+  if (!IS_INTOBJ(index) || ((n = INT_INTOBJ(index)) <= 0)) {
     FuncError("index for positional object must be a positive integer");
+    return (Obj) 0; /* flow control hint */
+  }
   ReadGuard(obj);
 #ifndef WARD_ENABLED
   contents = PTR_BAG(obj);
