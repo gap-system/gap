@@ -47,10 +47,11 @@ config64:
 	$(BUILD) abi=64 config
 
 clean:
-	$(SCONS) -c preprocess=dummy
+	$(SCONS) -c preprocess=dummy compiler=$(COMPILER)
 
 distclean:
-	$(SCONS) -c preprocess=dummy; rm -rf extern/lib/* extern/include/* extern/32bit extern/64bit bin/current/*
+	-rm -f bin/current/*
+	$(SCONS) -c preprocess=dummy compiler=$(COMPILER); rm -rf extern/lib/* extern/include/* extern/32bit extern/64bit bin/current/*
 
 $(WARD)/bin/ward:
 	@echo "Building Ward."
