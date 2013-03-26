@@ -146,7 +146,11 @@ void AddGCRoots()
 void RemoveGCRoots()
 {
   void *p = TLS;
+#if defined(__CYGWIN__) || defined(__CYGWIN32__)
+  memset(p, '\0', sizeof(ThreadLocalStorage));
+#else
   GC_remove_roots(p, (char *)p + sizeof(ThreadLocalStorage));
+#endif
 }
 #endif /* DISABLE_GC */
 
