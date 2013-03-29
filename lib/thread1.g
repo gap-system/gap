@@ -10,6 +10,10 @@
 ##  early in GAP's initialization process. The rest can be found in thread.g.
 ##
 
+# Global variable to show that we're using HPCGAP.
+
+BIND_GLOBAL("HPCGAP", true);
+
 
 # Convenience aliases
 

@@ -179,7 +179,7 @@ if GAP["mpi"]:
 
 # Construct command line options
 
-defines = []
+defines = ["HPCGAP"]
 cflags = ""
 linkflags = ""
 if not GAP["debug"]:
