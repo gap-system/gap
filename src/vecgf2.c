@@ -1594,7 +1594,7 @@ void PlainGF2Mat (
 
 /****************************************************************************
 **
-*F  ConvGF2Vec( <list> )  . . . . .  convert a list into a GF2 vector objects
+*F  ConvGF2Vec( <list> )  . . . . . . convert a list into a GF2 vector object
 */
 void ConvGF2Vec (
     Obj                 list )
@@ -1611,7 +1611,7 @@ void ConvGF2Vec (
     }
 
     /* Otherwise make it a plain list so that we will know where it keeps
-       its data -- could do much better in the case of GF(2^n) ectors that actually
+       its data -- could do much better in the case of GF(2^n) vectors that actually
        lie over GF(2) */
 
     if (IS_VEC8BIT_REP(list))
@@ -1675,6 +1675,101 @@ Obj FuncCONV_GF2VEC (
 
     /* return nothing                                                      */
     return 0;
+}
+
+
+/****************************************************************************
+**
+*F  NewGF2Vec( <list> )  . . non-destructively convert a list into a GF2 vector object
+*/
+Obj NewGF2Vec (
+    Obj                 list )
+{
+    Int                 len;            /* logical length of the vector    */
+    Int                 i;              /* loop variable                   */
+    UInt                block;          /* one block of the boolean list   */
+    UInt                bit;            /* one bit of a block              */
+    Obj                 x;
+    Obj                 res;            /* resulting GF2 vector object     */
+    
+    /* already in the correct representation                               */
+    if ( IS_GF2VEC_REP(list) ) {
+        return ShallowCopyVecGF2(list);
+    }
+    
+    len = LEN_PLIST(list);
+    NEW_GF2VEC( res, TYPE_LIST_GF2VEC, len );
+    SET_LEN_GF2VEC( res, len );
+    
+    /* Otherwise make it a plain list so that we will know where it keeps
+       its data -- could do much better in the case of GF(2^n) vectors that actually
+       lie over GF(2)
+       AK: for now, comment this out - these will destroy the argument. 
+       We will just test it on plain lists first 
+    if (IS_VEC8BIT_REP(list))
+      PlainVec8Bit(list);
+    else
+      PLAIN_LIST( list );
+    */
+    
+    /* We may have to resize the bag now because a length 1
+       plain list is shorter than a length 1 VECGF2
+       AK: not needed since new list will be created   
+    if (SIZE_PLEN_GF2VEC(len) > SIZE_OBJ(list))
+      ResizeBag( list, SIZE_PLEN_GF2VEC(len) );
+    */
+    
+    /* now do the work */
+    block = 0;
+    bit   = 1;
+    for ( i = 1;  i <= len;  i++ ) {
+      x = ELM_PLIST(list, i);
+      if (x == GF2One)
+	    block |= bit;
+      else if (x != GF2Zero)
+	    {
+	      /* might be GF(2) elt written over bigger field */
+	      if (EQ(x, GF2One))
+	        block |= bit;
+	      else
+	        assert(EQ(x, GF2Zero));
+	    }
+      
+      bit = bit << 1;
+      if ( bit == 0 || i == len ) {
+	    BLOCK_ELM_GF2VEC(res,i) = block; /* only changed list to res */
+	    block = 0;
+	    bit   = 1;
+      }
+    }
+
+    /* retype and resize bag */
+    ResizeBag( res, SIZE_PLEN_GF2VEC(len) );
+    SET_LEN_GF2VEC( res, len );
+    RetypeBag( res, T_DATOBJ );
+    /* mutability should be inherited from the argument */
+    if ( HAS_FILT_LIST( list, FN_IS_MUTABLE ) )
+        SetTypeDatObj( res , TYPE_LIST_GF2VEC);
+    else
+        SetTypeDatObj( res , TYPE_LIST_GF2VEC_IMM);
+    
+    return res;
+}
+
+
+/****************************************************************************
+**
+*F  FuncGF2VEC_VEC( <self>, <list> ) . . non-destructive conversion into a GF2 vector rep
+*/
+Obj FuncGF2VEC_VEC (
+    Obj                 self,
+    Obj                 list )
+{
+    /* check whether <list> is a GF2 vector                               */
+    list = NewGF2Vec(list);
+
+    /* return nothing                                                      */
+    return list;
 }
 
 /****************************************************************************
@@ -4674,6 +4769,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "CONV_GF2VEC", 1, "list",
       FuncCONV_GF2VEC, "src/vecgf2.c:CONV_GF2VEC" },
 
+    { "GF2VEC_VEC", 1, "list",
+      FuncGF2VEC_VEC, "src/vecgf2.c:GF2VEC_VEC" },
+      
     { "PLAIN_GF2VEC", 1, "gf2vec",
       FuncPLAIN_GF2VEC, "src/vecgf2.c:PLAIN_GF2VEC" },
 
