@@ -1382,6 +1382,12 @@ Obj             TypeDatObj (
 void SetTypeDatObj( Obj obj, Obj kind)
 {
     TYPE_DATOBJ(obj) = kind;
+    if (!IsMutableObjObject(obj) && !IsInternallyMutableObj(obj)) {
+      if (ReadOnlyDatObjs)
+	MakeBagReadOnly(obj);
+      else
+        MakeBagPublic(obj);
+    }
     CHANGED_BAG(obj);
 }
 
