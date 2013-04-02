@@ -358,6 +358,7 @@ WriteFlags((make_cc_options("-I", map(os.path.abspath, include_path)) +
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
+source = filter(lambda s: not s.startswith("src/c_"), source)
 
 if "src/dbgmacro.c" not in source:
   source.append("src/dbgmacro.c")
