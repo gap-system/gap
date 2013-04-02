@@ -1,8 +1,6 @@
 #ifndef GAP_TLSCONFIG_H
 #define GAP_TLSCONFIG_H
 
-#undef HAVE_NATIVE_TLS
-
 #ifndef HAVE_NATIVE_TLS
 
 #if SIZEOF_VOID_P == 8
