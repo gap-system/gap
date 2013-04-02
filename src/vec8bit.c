@@ -5048,8 +5048,8 @@ Obj MakeShiftedVecs( Obj v, UInt len)
 	}
     }
   for (i=1; i <= elts; i++)
-    Migrate(ELM_PLIST(shifts, i), ReadOnlyRegion);
-  Migrate(shifts, ReadOnlyRegion);
+    MakeBagReadOnly(ELM_PLIST(shifts, i));
+  MakeBagReadOnly(shifts);
   return shifts;
 }
 
