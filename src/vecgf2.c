@@ -758,7 +758,7 @@ Obj ProdGF2MatGF2MatSimple( Obj ml, Obj mr )
 
       /* Since I'm going to put this vector into a matrix, I must lock its
 	 representation, so that it doesn't get rewritten over GF(2^k) */
-      TYPE_DATOBJ(row) = rtype;
+      SetTypeDatObj(row, rtype);
       SET_ELM_GF2MAT(prod,i,row);
       CHANGED_BAG(prod);
       TakeInterrupt();
@@ -1654,11 +1654,11 @@ void ConvGF2Vec (
     /* retype and resize bag                                               */
     ResizeBag( list, SIZE_PLEN_GF2VEC(len) );
     SET_LEN_GF2VEC( list, len );
-    if ( HAS_FILT_LIST( list, FN_IS_MUTABLE ) )
-        TYPE_DATOBJ( list ) = TYPE_LIST_GF2VEC;
-    else
-        TYPE_DATOBJ( list ) = TYPE_LIST_GF2VEC_IMM;
     RetypeBag( list, T_DATOBJ );
+    if ( HAS_FILT_LIST( list, FN_IS_MUTABLE ) )
+        SetTypeDatObj( list , TYPE_LIST_GF2VEC);
+    else
+        SetTypeDatObj( list , TYPE_LIST_GF2VEC_IMM);
 }
 
 
@@ -1708,7 +1708,7 @@ Obj FuncCONV_GF2MAT( Obj self, Obj list)
 	    }
 	  ErrorMayQuit("CONV_GF2MAT: argument must be a list of compressed GF2 vectors", 0L, 0L);
 	}
-      TYPE_DATOBJ(tmp) = IS_MUTABLE_OBJ(tmp) ? TYPE_LIST_GF2VEC_LOCKED: TYPE_LIST_GF2VEC_IMM_LOCKED;
+      SetTypeDatObj(tmp, IS_MUTABLE_OBJ(tmp) ? TYPE_LIST_GF2VEC_LOCKED: TYPE_LIST_GF2VEC_IMM_LOCKED);
       SET_ELM_PLIST(list, i+1, tmp);
     }
   SET_ELM_PLIST(list,1,INTOBJ_INT(len));
@@ -2187,7 +2187,7 @@ Obj FuncASS_GF2MAT (
     }
     else if ( p == 1 && 1 >= LEN_GF2MAT(list) ) {
         ResizeBag( list, SIZE_PLEN_GF2MAT(p) );
-	TYPE_DATOBJ(elm) = IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED;
+	SetTypeDatObj(elm, IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
         SET_ELM_GF2MAT( list, p, elm );
 	CHANGED_BAG(list);
     }
@@ -2200,7 +2200,7 @@ Obj FuncASS_GF2MAT (
             ResizeBag( list, SIZE_PLEN_GF2MAT(p) );
             SET_LEN_GF2MAT( list, p );
         }
-	TYPE_DATOBJ(elm) = IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED;
+	SetTypeDatObj(elm, IS_MUTABLE_OBJ(elm) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED);
         SET_ELM_GF2MAT( list, p, elm );
         CHANGED_BAG(list);
     }
@@ -2999,7 +2999,7 @@ Obj FuncSUM_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
 	  AddGF2VecToGF2Vec(BLOCKS_GF2VEC(sv), BLOCKS_GF2VEC(vl), wm);
 	}
       
-      TYPE_DATOBJ(sv) = rtype;
+      SetTypeDatObj(sv, rtype);
       SET_ELM_GF2MAT( sum, i, sv);
       CHANGED_BAG(sum);
     }
@@ -3013,7 +3013,7 @@ Obj FuncSUM_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
       if (rtype == TYPE_LIST_GF2VEC_LOCKED)
 	sv = ShallowCopyVecGF2( sv );
       
-      TYPE_DATOBJ(sv) = rtype;
+      SetTypeDatObj(sv, rtype);
       SET_ELM_GF2MAT( sum, i, sv);
       CHANGED_BAG(sum);      
     }
