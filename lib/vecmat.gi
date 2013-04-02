@@ -477,7 +477,7 @@ InstallOtherMethod( AddCoeffs,
     0,
 
 function( a, b, c )
-    CONV_GF2VEC(a);
+    a:=GF2VEC_VEC(a);
     return ADDCOEFFS_GF2VEC_GF2VEC_MULT( a, b, c );
 end );
 
@@ -495,7 +495,7 @@ InstallOtherMethod( AddCoeffs,
     0,
 
 function( a, b )
-    CONV_GF2VEC(a);
+    a:=GF2VEC_VEC(a);
     return ADDCOEFFS_GF2VEC_GF2VEC(a,b);
 end );
 
