@@ -370,10 +370,10 @@ FFECONWAY.FiniteFieldEmbeddingRecord := function(p, d1,d2)
     local   fam,  c,  n,  zz,  x,  z1,  m,  z,  i,  r,  res;
     fam := FFEFamily(p);
     if not IsBound(fam!.embeddingRecords) then
-        fam!.embeddingRecords := [];
+        fam!.embeddingRecords := AtomicList([]);
     fi;
     if not IsBound(fam!.embeddingRecords[d2]) then
-        fam!.embeddingRecords[d2] := [];
+        fam!.embeddingRecords[d2] := MakeWriteOnceAtomic([]);
     fi;
     if not IsBound(fam!.embeddingRecords[d2][d1]) then
         c := FFECONWAY.GetConwayPolCoeffs(fam,d2);
@@ -403,7 +403,7 @@ FFECONWAY.FiniteFieldEmbeddingRecord := function(p, d1,d2)
             fi;
         od;
         Assert(2,d1 = 1 or res.relations = []);
-        fam!.embeddingRecords[d2][d1] := r;
+        fam!.embeddingRecords[d2][d1] := `r;
     fi;
     return fam!.embeddingRecords[d2][d1];
 end;
