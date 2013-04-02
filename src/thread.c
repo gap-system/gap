@@ -216,8 +216,8 @@ void RunThreadedMain(
 #ifdef STACK_GROWS_UP
 #error Upward growing stack not yet supported
 #else
-  int dummy[0];
-  alloca(((uintptr_t) dummy) &~TLS_MASK);
+  volatile int dummy[1];
+  volatile void *p = alloca(((uintptr_t) dummy) &~TLS_MASK);
 #endif
 #endif
   RunThreadedMain2(mainFunction, argc, argv, environ);
