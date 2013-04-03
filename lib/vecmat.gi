@@ -477,7 +477,7 @@ InstallOtherMethod( AddCoeffs,
     0,
 
 function( a, b, c )
-    a:=GF2VEC_VEC(a);
+    a:=COPY_GF2VEC(a);
     return ADDCOEFFS_GF2VEC_GF2VEC_MULT( a, b, c );
 end );
 
@@ -495,7 +495,7 @@ InstallOtherMethod( AddCoeffs,
     0,
 
 function( a, b )
-    a:=GF2VEC_VEC(a);
+    a:=COPY_GF2VEC(a);
     return ADDCOEFFS_GF2VEC_GF2VEC(a,b);
 end );
 
@@ -1334,10 +1334,10 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     fi;
 end);
 
-InstallGlobalFunction(CastToVectorRepNC,function( arg )
+InstallGlobalFunction(CopyToVectorRepNC,function( arg )
     local   v,  q,  vc,  common,  field;
     if Length(arg) < 1 then
-        Error("CastToVectorRepNC: one or two arguments required");
+        Error("CopyToVectorRepNC: one or two arguments required");
     fi;
     v := arg[1];
 #
@@ -1440,7 +1440,7 @@ InstallGlobalFunction(CastToVectorRepNC,function( arg )
             common := SMALLEST_FIELD_VECFFE(v);
         fi;
         if common = 2 then
-            return GF2VEC_VEC(v);
+            return COPY_GF2VEC(v);
         elif common <= 256 then
             CONV_VEC8BIT(v,common);
             return common;
@@ -1455,7 +1455,7 @@ InstallGlobalFunction(CastToVectorRepNC,function( arg )
         if common <> 2 then
             Error("ConvertToVectorRepNC: Vector cannot be written over GF(2)");
         fi;
-        return GF2VEC_VEC(v);
+        return COPY_GF2VEC(v);
     elif q <= 256 then
         if common <> q then 
             Assert(2, ForAll(v, elm -> elm in GF(q)));
@@ -2417,7 +2417,7 @@ InstallMethod( BaseField, "for a compressed gf2 vector",
 InstallMethod( NewRowVector, "for IsGF2VectorRep, GF(2), and a list",
   [ IsGF2VectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
-    return CastToVectorRepNC(l,2);
+    return CopyToVectorRepNC(l,2);
   end );
 
 InstallMethod( ZeroMatrix, "for a compressed gf2 matrix",

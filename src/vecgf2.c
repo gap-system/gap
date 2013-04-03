@@ -1680,9 +1680,11 @@ Obj FuncCONV_GF2VEC (
 
 /****************************************************************************
 **
-*F  NewGF2Vec( <list> )  . . non-destructively convert a list into a GF2 vector object
+*F  CopyGF2Vec( <list> )  . . . . . . convert a list into a GF2 vector object
+** 
+**  This is a non-destructive counterpart of ConvGF2Vec
 */
-Obj NewGF2Vec (
+Obj CopyGF2Vec (
     Obj                 list )
 {
     Int                 len;            /* logical length of the vector    */
@@ -1712,13 +1714,6 @@ Obj NewGF2Vec (
       PLAIN_LIST( list );
     */
     
-    /* We may have to resize the bag now because a length 1
-       plain list is shorter than a length 1 VECGF2
-       AK: not needed since new list will be created   
-    if (SIZE_PLEN_GF2VEC(len) > SIZE_OBJ(list))
-      ResizeBag( list, SIZE_PLEN_GF2VEC(len) );
-    */
-    
     /* now do the work */
     block = 0;
     bit   = 1;
@@ -1743,10 +1738,6 @@ Obj NewGF2Vec (
       }
     }
 
-    /* retype and resize bag */
-    ResizeBag( res, SIZE_PLEN_GF2VEC(len) );
-    SET_LEN_GF2VEC( res, len );
-    RetypeBag( res, T_DATOBJ );
     /* mutability should be inherited from the argument */
     if ( HAS_FILT_LIST( list, FN_IS_MUTABLE ) )
         SetTypeDatObj( res , TYPE_LIST_GF2VEC);
@@ -1759,14 +1750,16 @@ Obj NewGF2Vec (
 
 /****************************************************************************
 **
-*F  FuncGF2VEC_VEC( <self>, <list> ) . . non-destructive conversion into a GF2 vector rep
+*F  FuncCOPY_GF2VEC( <self>, <list> ) . . . . . convert into a GF2 vector rep
+**
+**  This is a non-destructive counterpart of FuncCONV_GF2VEC
 */
-Obj FuncGF2VEC_VEC (
+Obj FuncCOPY_GF2VEC (
     Obj                 self,
     Obj                 list )
 {
     /* check whether <list> is a GF2 vector                               */
-    list = NewGF2Vec(list);
+    list = CopyGF2Vec(list);
 
     /* return nothing                                                      */
     return list;
@@ -4769,8 +4762,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "CONV_GF2VEC", 1, "list",
       FuncCONV_GF2VEC, "src/vecgf2.c:CONV_GF2VEC" },
 
-    { "GF2VEC_VEC", 1, "list",
-      FuncGF2VEC_VEC, "src/vecgf2.c:GF2VEC_VEC" },
+    { "COPY_GF2VEC", 1, "list",
+      FuncCOPY_GF2VEC, "src/vecgf2.c:COPY_GF2VEC" },
       
     { "PLAIN_GF2VEC", 1, "gf2vec",
       FuncPLAIN_GF2VEC, "src/vecgf2.c:PLAIN_GF2VEC" },

@@ -205,7 +205,7 @@ DeclareSynonym( "ConvertToGF2VectorRep", CONV_GF2VEC );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ConvertToVectorRepNC");
-DeclareGlobalFunction( "CastToVectorRepNC");
+DeclareGlobalFunction( "CopyToVectorRepNC");
 DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 
 
@@ -285,7 +285,7 @@ BIND_GLOBAL( "ImmutableGF2VectorRep", function( vector )
     if ForAny( vector, x -> x <> GF2Zero and x <> GF2One )  then
         return fail;
     fi;
-    vector := GF2VEC_VEC(vector);
+    vector := COPY_GF2VEC(vector);
     SET_TYPE_DATOBJ( vector, TYPE_LIST_GF2VEC_IMM );
     return vector;
 end );
