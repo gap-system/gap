@@ -195,7 +195,7 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
 #ifdef __GNUC__
   stack = __builtin_frame_address(0);
 #else
-  int dummy[0];
+  int dummy[1];
   stack = dummy;
 #endif
   return (ThreadLocalStorage *) (((uintptr_t) stack) & TLS_MASK);

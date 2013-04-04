@@ -3,7 +3,7 @@ GMP=yes
 WARD=../ward
 SCONS=bin/scons
 CFLAGS=
-DEBUG=debugguards=1 cflags=-DTRACK_CREATOR
+DEBUG=debugguards=1 cflags=-"DTRACK_CREATOR $(CFLAGS)"
 ZMQ=no
 COMPILER=
 CPP_COMPILER=
