@@ -500,7 +500,7 @@ void SerializeRecord(Obj obj) {
     }
   }
   for (j=len; j>=i; j--) {
-    Obj el = ELM_PLIST(obj, j);
+    Obj el = GET_ELM_PREC(obj, j);
     PushObj(el);
   }
 }
@@ -888,6 +888,14 @@ static Int InitKernel (
 
   RegisterSerializerFunctions(T_BACKREF, SerializeError, DeserializeBackRef);
 
+  /* gvars */
+  DeclareGVar(&SerializableRepresentationGVar,
+      "SerializableRepresentation");
+  DeclareGVar(&TYPE_UNKNOWN_GVar, "TYPE_UNKNOWN");
+  DeclareGVar(&DESERIALIZER_GVar, "DESERIALIZER");
+
+
+
   /* return success                                                      */
   return 0;
 }
@@ -914,12 +922,6 @@ static Int InitLibrary (
 {
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
-
-    /* gvars */
-    DeclareGVar(&SerializableRepresentationGVar,
-        "SerializableRepresentation");
-    DeclareGVar(&TYPE_UNKNOWN_GVar, "TYPE_UNKNOWN");
-    DeclareGVar(&DESERIALIZER_GVar, "DESERIALIZER");
 
     /* return success                                                      */
     return 0;
