@@ -1442,8 +1442,7 @@ InstallGlobalFunction(CopyToVectorRepNC,function( arg )
         if common = 2 then
             return COPY_GF2VEC(v);
         elif common <= 256 then
-            CONV_VEC8BIT(v,common);
-            return common;
+            return COPY_VEC8BIT(v,common);
         else
             return true; # TODO: WHY IS THAT ??? NOT DOCUMENTED WHEN true IS RETURNED
         fi;
@@ -1466,8 +1465,7 @@ InstallGlobalFunction(CopyToVectorRepNC,function( arg )
                 Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
             fi;
         fi;
-        CONV_VEC8BIT(v,q);
-        return q;
+        return COPY_VEC8BIT(v,q);
     else    
         return true; # TODO: WHY IS THAT ??? NOT DOCUMENTED WHEN true IS RETURNED
     fi;

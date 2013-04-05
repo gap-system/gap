@@ -988,10 +988,10 @@ Obj NewVec8Bit (
     if ( IS_VEC8BIT_REP(list) )
       {
 	if( FIELD_VEC8BIT(list) == q )
-      return;
+      return CopyVec8Bit(list,1);
 	else if ( FIELD_VEC8BIT(list) < q )
 	  {
-	    RewriteVec8Bit(list,q);
+        RewriteVec8Bit(list,q); /* TODO: this converts in-place */
 	    return;
 	  }
 	/* remaining case is list is written over too large a field
@@ -1000,8 +1000,8 @@ Obj NewVec8Bit (
     }
     else if ( IS_GF2VEC_REP(list) )
       {
-	RewriteGF2Vec(list, q);
-	return;
+        RewriteGF2Vec(list, q); /* TODO: this converts in-place */
+	    return;
       }
     
     /* OK, so now we know which field we want, set up data */
