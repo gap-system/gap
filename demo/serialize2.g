@@ -1,16 +1,26 @@
+ReadGapRoot("demo/serialize4.g");
+
 l := List([1..6], x -> One(GF(7)) * x);
-CONV_VEC8BIT(l, 7);
+ConvertToVectorRep(l, 7);
 
-InstallSerializer("8-bit vectors", [ Is8BitVectorRep ], function(obj)
-  return [1, "Vec8Bit", obj, Q_VEC8BIT(obj)];
-end);
+l2 := List([1..6], x -> One(GF(2)) * x);
+ConvertToVectorRep(l2, 2);
 
-InstallDeserializer("Vec8Bit", function(obj, q)
-  SET_TYPE_OBJ(obj, TYPE_VEC8BIT(q, true));
-  return obj;
-end);
+x := One(GF(5));
+y := x * 2;
 
-s := SerializeToNativeString(l);
-d := DeserializeNativeString(s);
-Print("Input:  ", l, "\n");
-Print("Output: ", d, "\n");
+m := [ [ x, y ], [ y, x ] ];
+ConvertToMatrixRep(m, 5);
+
+x := One(GF(2));
+y := 0 * x;
+
+m2 := [ [ x, y ], [ y, x] ];
+ConvertToMatrixRep(m, 2);
+
+for val in [ l, l2, m, m2] do
+  s := SerializeToNativeString(val);
+  d := DeserializeNativeString(s);
+  Print("Input:  ", val, "\n");
+  Print("Output: ", d, "\n");
+od;
