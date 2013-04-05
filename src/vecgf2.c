@@ -1763,7 +1763,6 @@ Obj FuncCOPY_GF2VEC (
     /* check whether <list> is a GF2 vector                               */
     list = CopyGF2Vec(list);
 
-    /* return nothing                                                      */
     return list;
 }
 

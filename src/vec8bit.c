@@ -59,15 +59,15 @@
 **  bytes, called IsVec8BitRep, which inherits from IsDataObjectRep
 **  The 1st 4 bytes  stores the actual vector length (in field elements)
 **  as a C integer. The 2nd component stores the field size as a C integer
-**  The data bytes begin at the 3rd component
+**  The data bytes begin at the 3rd component.
 **  
 **  In addition, this file defines format and access for the fieldinfo
-**  objects which contain the meat-axe tables for the arithmetics
+**  objects which contain the meat-axe tables for the arithmetics.
 **
 **  There is a special representation for matrices, all of whose rows
 **  are immutable packed GFQ vectors over the same q, which is a positional
-**  representation Is8BitMatrixRep. Some special methods for such matrices are
-**  included here
+**  representation Is8BitMatrixRep. Some special methods for such matrices 
+**  are included here.
 ** 
 */
 
@@ -901,8 +901,6 @@ void ConvVec8Bit (
     RetypeBag( list, T_DATOBJ );
 }
 
-
-
 /****************************************************************************
 **
 *F  LcmDegree( <d>, <d1> )
@@ -949,6 +947,144 @@ Obj FuncCONV_VEC8BIT (
   return 0;
 }
 
+/****************************************************************************
+**
+*F  NewVec8Bit( <list>, <q> )  . . .  convert a list into 8bit vector object
+**
+**  This is a non-destructive counterpart of ConvVec8Bit
+*/
+
+Obj NewVec8Bit (
+    Obj                 list,
+    UInt                q)
+{
+    Int                 len;            /* logical length of the vector    */
+    Int                 i;              /* loop variable                   */
+    UInt                p;	/* char */
+    UInt                d;	/* degree */
+    FF                  f;	/* field */
+ /* Obj                 x;	/ an element */
+    Obj                 info;	/* field info object */
+    UInt                elts;	/* elements per byte */
+    UInt1 *             settab;	/* element setting table */
+    UInt1 *             convtab; /* FFE -> FELT conversion table */
+    UInt                e;	/* loop varibale */
+    UInt1               byte;	/* byte under construction */
+    UInt1*              ptr;	/* place to put byte */
+    Obj                 elt;
+    UInt                val;
+    UInt                nsize;
+    Obj                 type;
+    Obj                 res;            /* resulting 8bit vector object     */
+
+        
+    if (q > 256)
+      ErrorQuit("Field size %d is too much for 8 bits\n", q, 0L);
+    if (q == 2)
+      ErrorQuit("GF2 has its own representation\n", 0L, 0L);
+
+    /* already in the correct representation                               */
+    /* TODO: leave this for later. See CopyVec8Bit/SHALLOWCOPY_VEC8BIT */
+    if ( IS_VEC8BIT_REP(list) )
+      {
+	if( FIELD_VEC8BIT(list) == q )
+      return;
+	else if ( FIELD_VEC8BIT(list) < q )
+	  {
+	    RewriteVec8Bit(list,q);
+	    return;
+	  }
+	/* remaining case is list is written over too large a field
+	   pass through to the generic code */
+
+    }
+    else if ( IS_GF2VEC_REP(list) )
+      {
+	RewriteGF2Vec(list, q);
+	return;
+      }
+    
+    /* OK, so now we know which field we want, set up data */
+    info = GetFieldInfo8Bit(q);
+    p = P_FIELDINFO_8BIT(info);
+    d = D_FIELDINFO_8BIT(info);
+    f = FiniteField(p,d);
+
+    /* determine the size and create a new bag */    
+    len = LEN_LIST(list);
+    elts = ELS_BYTE_FIELDINFO_8BIT(info);
+    nsize = SIZE_VEC8BIT(len,elts);
+    res = NewBag( T_DATOBJ, nsize );
+    
+    /* main loop -- e is the element within byte */
+    e = 0;
+    byte = 0;
+    ptr = BYTES_VEC8BIT(res);
+    for ( i = 1;  i <= len;  i++ ) {
+      elt = ELM_LIST(list,i);
+      assert(CHAR_FF(FLD_FFE(elt)) == p);
+      assert( d % DegreeFFE(elt) == 0);
+      val = VAL_FFE(elt);
+      if (val != 0 && FLD_FFE(elt) != f)
+	{
+	  val = 1+(val-1)*(q-1)/(SIZE_FF(FLD_FFE(elt))-1);
+	}
+      /* Must get these afresh after every list access, just in case this is
+       a virtual list whose accesses might cause a garbage collection */
+      settab = SETELT_FIELDINFO_8BIT(info);
+      convtab = FELT_FFE_FIELDINFO_8BIT(info);
+      byte = settab[(e + elts*convtab[val])*256 + byte];
+      if (++e == elts || i == len)
+	{
+	  *ptr++ = byte;
+	  byte = 0;
+	  e = 0;
+	}
+    }
+
+    /* it can happen that the few bytes after the end of the data are
+       not zero, because they had data in them in the old version of the list
+       In most cases this doesn't matter, but in characteristic 2, we must
+       clear up to the end of the word, so that AddCoeffs behaves correctly.
+    SL -- lets do this in all characteristics, it can never hurt */
+    /* not needed
+    while ((ptr - BYTES_VEC8BIT(list)) % sizeof(UInt))
+      *ptr++ = 0;
+    */
+    
+    /* retype and resize bag */
+    if (nsize != SIZE_OBJ(res))
+      ResizeBag( res, nsize );
+    SET_LEN_VEC8BIT( res, len );
+    SET_FIELD_VEC8BIT( res, q );
+    type = TypeVec8Bit( q, HAS_FILT_LIST( list, FN_IS_MUTABLE) );
+    SetTypeDatObj( res, type );
+    RetypeBag( res, T_DATOBJ );
+    
+    return res;
+}
+
+/****************************************************************************
+**
+*F  FuncCOPY_VEC8BIT( <self>, <list> ) . . . . . convert into 8bit vector rep
+**
+**  This is a non-destructive counterpart of FuncCOPY_GF2VEC
+*/
+Obj FuncCOPY_VEC8BIT (
+    Obj                 self,
+    Obj                 list,
+    Obj                 q)
+{
+  if (!IS_INTOBJ(q))
+    {
+      ErrorMayQuit("CONV_VEC8BIT: q must be a small integer (3--256) not a %s",
+		   (Int)TNAM_OBJ(q), 0);
+    }
+    
+  list = NewVec8Bit(list, INT_INTOBJ(q));
+  
+  return list;
+}
 
 /****************************************************************************
 **
@@ -3447,7 +3583,7 @@ Obj FuncPROD_VEC8BIT_MATRIX( Obj self, Obj vec, Obj mat)
 
 /****************************************************************************
 **
-*F  * * * * * * *  special rep for matrices over thses fields * * * * * * *
+*F  * * * * * * *  special rep for matrices over these fields * * * * * * *
 */
 
 #define LEN_MAT8BIT(mat)                   INT_INTOBJ(ADDR_OBJ(mat)[1])
@@ -3726,7 +3862,7 @@ Obj FuncPROD_MAT8BIT_VEC8BIT( Obj self, Obj mat, Obj vec)
 **
 *F  ProdMat8BitMat8Bit( <matl>, <matr> )
 **
-**  Caller must check matriox sizes and field
+**  Caller must check matrix sizes and field
 */
 
 Obj ProdMat8BitMat8Bit( Obj matl, Obj matr)
@@ -5947,6 +6083,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "CONV_VEC8BIT", 2, "list,q",
       FuncCONV_VEC8BIT, "src/vec8bit.c:CONV_VEC8BIT" },
 
+    { "COPY_VEC8BIT", 2, "list,q",
+      FuncCOPY_VEC8BIT, "src/vec8bit.c:COPY_VEC8BIT" },
+      
     { "PLAIN_VEC8BIT", 1, "gfqvec",
       FuncPLAIN_VEC8BIT, "src/vec8bit.c:PLAIN_VEC8BIT" },
 
