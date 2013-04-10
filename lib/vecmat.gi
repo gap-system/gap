@@ -1334,64 +1334,31 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     fi;
 end);
 
-InstallGlobalFunction(CopyToVectorRepNC,function( arg )
-    local   v,  q,  vc,  common,  field;
-    if Length(arg) < 1 then
-        Error("CopyToVectorRepNC: one or two arguments required");
-    fi;
-    v := arg[1];
+InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
+    local   vc,  common,  field;
 #
 # Handle fast, certain cases where there is no work. Microseconds count here
 #
     
-### TODO: return ShallowCopy(v) taking care of mutability    
+### TODO: return ShallowCopy(v) taking care of mutability   
+###       if immutable, same object may be returned (?)
 
-    if IsGF2VectorRep(v) and (Length(arg) = 1 or arg[2] = 2 or arg[2] = LOCAL_COPY_GF2) then
+    if IsGF2VectorRep(v) and q=2 then
         return v;
     fi;
     
     if Is8BitVectorRep(v) then
-        q := Q_VEC8BIT(v);
-        if (Length(arg) = 1 or arg[2] = q or (IsField(arg[2]) and Size(arg[2]) = q)) then
+        if q = Q_VEC8BIT(v) then;
             return v;
         fi;
     fi;
     
-	
-    if (Length(v) = 0 and Length(arg) = 1) or 
-      (Length(v) > 0 and not IsRowVector(v))  then
-        return fail;
-    fi;
-    
-    # if the representation of v is already locked, then
-    # we ignore a second arguments and just report on the vector
-    
-    if IsLockedRepresentationVector(v) then
-        if IsGF2VectorRep(v) then
-            q := 2;
-        elif Is8BitVectorRep(v) then
-            q := Q_VEC8BIT(v);
-        else
-            Error("vector is locked in an unknown representation");
-        fi;
-        if not IsInt(arg[2]) then
-            arg[2] := Size(arg[2]);
-        fi;
-        if Length(arg) = 2 and q <> arg[2] then
-          Info(InfoWarning, 1, 
-          "ConvertToVectorRep: locked vector not converted to different field");
-        fi;
-        return v;    
-    fi;
-    
-    
-    #
     # Ask the kernel to check the list for us.
     # We have to do this, even in an NC version because the list might contain
     # elements of large finite fields
-    #
         
     if not IS_VECFFE(v) then
+        # TODO: no need of the next 'if' block in the NC-version
         if IsFFECollection(v) then
             # now we might have some elements in a large field representation
             # or possibly a totally bad list
@@ -1404,7 +1371,6 @@ InstallGlobalFunction(CopyToVectorRepNC,function( arg )
                 #
                 return true; # TODO: WHY IS THAT ??? NOT DOCUMENTED WHEN true IS RETURNED
             fi;
-            CLONE_OBJ(v,vc); # horrible hack.
         else
             return true; # TODO: WHY IS THAT ??? NOT DOCUMENTED WHEN true IS RETURNED
         fi;
@@ -1412,41 +1378,7 @@ InstallGlobalFunction(CopyToVectorRepNC,function( arg )
         common := COMMON_FIELD_VECFFE(v);   
     fi;
     
-    #
-    # see if the user gave us q
-    #
-    if Length(arg) > 1 then
-        field := arg[2];
-        if IsInt(field) then
-            q := field;
-            Assert(2,IsPrimePowerInt(q));
-        elif IsField(field) then
-            q := Size(field); 
-        else
-            Error("q not a field or integer");
-        fi;
-    else
-        q := fail;
-    fi;
-    
-    #
-    # if there is a field, we go to work
-    #
-    if q = fail then
-        if common = fail then
-            return true; # TODO: WHY IS THAT ??? NOT DOCUMENTED WHEN true IS RETURNED
-        fi;
-        if not IsPrimeInt(common) then
-            common := SMALLEST_FIELD_VECFFE(v);
-        fi;
-        if common = 2 then
-            return COPY_GF2VEC(v);
-        elif common <= 256 then
-            return COPY_VEC8BIT(v,common);
-        else
-            return true; # TODO: WHY IS THAT ??? NOT DOCUMENTED WHEN true IS RETURNED
-        fi;
-    elif q = 2 then
+    if q = 2 then
         Assert(2, ForAll(v, elm -> elm in GF(2)));
         if common > 2 and common mod 2 = 0 then
             common := SMALLEST_FIELD_VECFFE(v);
