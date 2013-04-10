@@ -1682,11 +1682,11 @@ Obj FuncCONV_GF2VEC (
 
 /****************************************************************************
 **
-*F  CopyGF2Vec( <list> )  . . . . . . convert a list into a GF2 vector object
+*F  NewGF2Vec( <list> )  . . . . . . convert a list into a GF2 vector object
 ** 
 **  This is a non-destructive counterpart of ConvGF2Vec
 */
-Obj CopyGF2Vec (
+Obj NewGF2Vec (
     Obj                 list )
 {
     Int                 len;            /* logical length of the vector    */
@@ -1761,7 +1761,7 @@ Obj FuncCOPY_GF2VEC (
     Obj                 list )
 {
     /* check whether <list> is a GF2 vector                               */
-    list = CopyGF2Vec(list);
+    list = NewGF2Vec(list);
 
     return list;
 }
