@@ -988,11 +988,14 @@ Obj NewVec8Bit (
     if ( IS_VEC8BIT_REP(list) )
       {
 	if( FIELD_VEC8BIT(list) == q )
-      return CopyVec8Bit(list,1);
+      return CopyVec8Bit(list,1); 
 	else if ( FIELD_VEC8BIT(list) < q )
 	  {
-        RewriteVec8Bit(list,q); /* TODO: this converts in-place */
-	    return;
+	    /* rewriting to a larger field */   
+        res = CopyVec8Bit(list,1);
+        RewriteVec8Bit(res,q);
+        /* TODO: rework RewriteVec8Bit and avoid calling CopyVec8Bit */
+	    return res;
 	  }
 	/* remaining case is list is written over too large a field
 	   pass through to the generic code */
@@ -1000,8 +1003,10 @@ Obj NewVec8Bit (
     }
     else if ( IS_GF2VEC_REP(list) )
       {
-        RewriteGF2Vec(list, q); /* TODO: this converts in-place */
-	    return;
+        res = ShallowCopyVecGF2(list);  
+        RewriteGF2Vec(res, q);
+        /* TODO: rework RewriteGF2Vec and avoid calling ShallowCopyVecGF2 */
+	    return res;
       }
     
     /* OK, so now we know which field we want, set up data */
@@ -1041,25 +1046,12 @@ Obj NewVec8Bit (
 	  e = 0;
 	}
     }
-
-    /* it can happen that the few bytes after the end of the data are
-       not zero, because they had data in them in the old version of the list
-       In most cases this doesn't matter, but in characteristic 2, we must
-       clear up to the end of the word, so that AddCoeffs behaves correctly.
-    SL -- lets do this in all characteristics, it can never hurt */
-    /* not needed
-    while ((ptr - BYTES_VEC8BIT(list)) % sizeof(UInt))
-      *ptr++ = 0;
-    */
     
-    /* retype and resize bag */
-    if (nsize != SIZE_OBJ(res))
-      ResizeBag( res, nsize );
+    /* retype bag */
     SET_LEN_VEC8BIT( res, len );
     SET_FIELD_VEC8BIT( res, q );
     type = TypeVec8Bit( q, HAS_FILT_LIST( list, FN_IS_MUTABLE) );
     SetTypeDatObj( res, type );
-    RetypeBag( res, T_DATOBJ );
     
     return res;
 }

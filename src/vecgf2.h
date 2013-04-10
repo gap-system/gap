@@ -232,6 +232,8 @@ extern Obj TYPE_LIST_GF2MAT_IMM;
 
 extern Obj IsGF2VectorRep;
 
+extern Obj ShallowCopyVecGF2( Obj vec );
+
 /****************************************************************************
 **
 
