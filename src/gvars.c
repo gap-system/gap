@@ -352,6 +352,7 @@ Obj             ValAutoGVar (
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
+	val = ValGVar(gvar);
         while ( val  == 0 ) {
             ErrorReturnVoid(
        "Variable: automatic variable '%s' must get a value by function call",
