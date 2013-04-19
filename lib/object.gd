@@ -216,6 +216,32 @@ DeclareCategoryKernel( "IsCopyable", IsObject, IS_COPYABLE_OBJ );
 ##
 DeclareCategoryKernel( "IsMutable", IsObject, IS_MUTABLE_OBJ );
 
+#############################################################################
+##
+#C  IsInternallyMutable( <obj> )  . . . .  test if an object has mutable state
+##
+##  <#GAPDoc Label="IsInternallyMutable">
+##  <ManSection>
+##  <Filt Name="IsInternallyMutable" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  tests whether <A>obj</A> has mutable internal state.
+##  <P/>
+##  Unlike <Ref Func="IsMutable">, <Ref Func="IsInternallyMutable"> is
+##  true if and only if the object's internal representation chan change
+##  even though its outwardly visible behavior does not. For example, if
+##  a set of integers were represented internally as a T_DATOBJ containing
+##  an array of integers, the implementation may choose to sort the array
+##  to make membership tests faster. Such an object would be internally
+##  mutable even if elements could not be added and thus it were immutable
+##  per <Ref Func="IsMutable">.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareCategoryKernel( "IsInternallyMutable",
+    IsObject, IS_INTERNALLY_MUTABLE_OBJ );
+
 InstallTrueMethod( IsCopyable, IsMutable);
 
 

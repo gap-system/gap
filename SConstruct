@@ -1,4 +1,4 @@
-import commands, os, glob, sys, string
+import commands, os, glob, sys, string, commands, platform
 
 # parse options and set up environment
 
@@ -21,8 +21,9 @@ vars.Add(EnumVariable("gc", "Use GC: yes, no, or system", "yes",
   allowed_values=("yes", "no", "system")))
 vars.Add('preprocess', 'Use source preprocessor', "")
 vars.Add('ward', 'Specify Ward directory', "")
+vars.Add('cpus', "Number of logical CPUs", "auto")
 
-GAP = DefaultEnvironment(variables=vars)
+GAP = DefaultEnvironment(variables=vars, PATH=os.environ["PATH"])
 if GAP["compiler"] != "":
   GAP["CC"] = GAP["compiler"]
 if GAP["cpp_compiler"] != "":
@@ -30,8 +31,40 @@ if GAP["cpp_compiler"] != "":
 
 compiler = GAP["CC"]
 cpp_compiler = GAP["CXX"]
-platform = commands.getoutput("cnf/config.guess")
-build_dir = "bin/" + platform + "-" + compiler
+platform_name = commands.getoutput("cnf/config.guess")
+build_dir = "bin/" + platform_name + "-" + compiler
+
+default_ncpus = 4
+
+if GAP["cpus"] == "auto":
+  os_name = platform.system()
+  if os_name == "Darwin":
+    try:
+      st, ncpus = commands.getstatusoutput("sysctl -n machdep.cpu.thread_count")
+      if st == 0:
+        ncpus = int(ncpus)
+      else:
+        ncpus = default_ncpus
+    except:
+      ncpus = default_ncpus
+  elif os_name == "Linux":
+    try:
+      st, ncpus = commands.getstatusoutput("nproc")
+      if st == 0:
+        ncpus = int(ncpus)
+      else:
+        ncpus = default_ncpus
+    except:
+      ncpus = default_ncpus
+  else:
+    ncpus = default_ncpus
+else:
+  try:
+    ncpus = int(GAP["cpus"])
+  except:
+    ncpus = default_ncpus
+if ncpus <= 0:
+  ncpus = default_ncpus
 
 try: os.makedirs(build_dir)
 except: pass
@@ -39,7 +72,7 @@ except: pass
 try: os.unlink("bin/current")
 except: pass
 
-try: os.symlink(platform+"-"+compiler, "bin/current")
+try: os.symlink(platform_name+"-"+compiler, "bin/current")
 except: pass
  
 
@@ -68,18 +101,16 @@ if changed_abi:
 
 if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
   if not GetOption("clean"):
-    os.environ["CC"] = compiler 
     if GAP["abi"] != "auto":
       os.environ["CFLAGS"] = " -m" + GAP["abi"]
-    os.system("./configure")
+    os.system("./configure CC=\""+GAP["CC"]+"\"")
     os.system("cd "+build_dir+"; sh ../../cnf/configure.out")
     os.system("test -w bin/gap.sh && chmod ugo+x bin/gap.sh")
-    del os.environ["CC"]
     if GAP["abi"] != "auto":
       del os.environ["CFLAGS"]
 
 default_abi, has_config = abi_from_config(config_header_file)
-if not has_config:
+if not has_config and not GetOption("clean"):
   print "=== Configuration file wasn't created ==="
   Exit(1)
 GAP["abi"] = default_abi
@@ -88,69 +119,79 @@ GAP.Command("config", [], "") # Empty builder for the config target
 
 # Which external libraries do we need?
 
-conf = Configure(GAP)
 libs = ["gmp", "gc", "atomic_ops"]
-if conf.CheckLib("pthread"):
-  libs.append("pthread")
-if conf.CheckLib("rt"):
-  libs.append("rt")
-if conf.CheckLib("m"):
-  libs.append("m")
-if conf.CheckLib("dl"):
-  libs.append("dl")
-if GAP["gc"] == "system":
-  if conf.CheckLib("gc"):
-    compile_gc = False
-  else:
-    print "=== No system gc library found, using internal one. ==="
+conf = Configure(GAP)
+if not GetOption("clean"):
+  if conf.CheckLib("pthread"):
+    libs.append("pthread")
+  if conf.CheckLib("rt"):
+    libs.append("rt")
+  if conf.CheckLib("m"):
+    libs.append("m")
+  if conf.CheckLib("dl"):
+    libs.append("dl")
+  if GAP["gc"] == "system":
+    if conf.CheckLib("gc"):
+      compile_gc = False
+    else:
+      print "=== No system gc library found, using internal one. ==="
+      compile_gc = True
+  elif GAP["gc"] == "yes":
     compile_gc = True
-elif GAP["gc"] == "yes":
-  compile_gc = True
-else:
-  compile_gc = False
-  libs.remove("gc")
-if GAP["gmp"] == "system":
-  if conf.CheckLib("gmp"):
-    compile_gmp = False
   else:
-    print "=== No system gmp library found, using internal one. ==="
+    compile_gc = False
+    libs.remove("gc")
+  if GAP["gmp"] == "system":
+    if conf.CheckLib("gmp"):
+      compile_gmp = False
+    else:
+      print "=== No system gmp library found, using internal one. ==="
+      compile_gmp = True
+  elif GAP["gmp"] == "yes":
     compile_gmp = True
-elif GAP["gmp"] == "yes":
-  compile_gmp = True
-else:
+  else:
+    compile_gmp = False
+    libs.remove("gmp")
+  if GAP["profile"]:
+    libs.append("profiler")
+else: # cleaning
+  compile_gc = False
   compile_gmp = False
-  libs.remove("gmp")
-if GAP["profile"]:
-  libs.append("profiler")
 
 have__setjmp = 0
 have_sigsetjmp = 0
 have_stdint_h = 0
 
-if conf.CheckFunc("sigsetjmp"):
-  have_sigsetjmp = 1
-elif conf.CheckFunc("_setjmp"):
-  have__setjmp = 1
-if conf.CheckCHeader("stdint.h"):
-  have_stdint_h = 1
+if not GetOption("clean"):
+  if conf.CheckFunc("sigsetjmp"):
+    have_sigsetjmp = 1
+  elif conf.CheckFunc("_setjmp"):
+    have__setjmp = 1
+  if conf.CheckCHeader("stdint.h"):
+    have_stdint_h = 1
 conf.Finish()
 
-# Construct command line options
-
-defines = []
-cflags = ""
-linkflags = ""
-if not GAP["debug"]:
-  cflags = "-O2"
-if compiler == "gcc":
-  cflags += " -g"
-else:
-  cflags += " -g"
 if GAP["mpi"]:
   if GAP["mpi"] == "system":
     GAP["CC"] = "mpicc"
   else:
     GAP["CC"] = GAP["mpi"] + "/bin/mpicc"
+
+# Construct command line options
+
+defines = ["HPCGAP"]
+cflags = ""
+linkflags = ""
+if not GAP["debug"]:
+  cflags = "-O2"
+elif not os.system("\"" + GAP["CC"] +
+    "\" -Og -E - </dev/null 2>/dev/null >/dev/null"):
+  cflags = "-Og"
+if compiler == "gcc":
+  cflags += " -g3"
+else:
+  cflags += " -g"
+if GAP["mpi"]:
   cflags += " -DGAPMPI"
 cflags += " -m"+GAP["abi"]
 if GAP["zmq"] != "no":
@@ -176,6 +217,8 @@ if have_stdint_h:
 if GAP["debugguards"]:
   defines.append("VERBOSE_GUARDS")
 
+defines.append("NUM_CPUS="+str(ncpus))
+
 if GAP["cflags"]:
   cflags += " " + string.replace(GAP["cflags"], "%", " ")
 for define in defines:
@@ -191,7 +234,7 @@ GAP.Append(CCFLAGS=cflags, LINKFLAGS=cflags+linkflags)
 abi_path = "extern/"+GAP["abi"]+"bit"
 GAP.Append(RPATH=os.path.join(os.getcwd(), abi_path, "lib"))
 
-def build_external(libname, confargs="", makeargs=""):
+def build_external(libname, confargs="", makeargs="", cc=""):
   global abi_path
   if GetOption("help") or GetOption("clean"):
     return
@@ -204,6 +247,11 @@ def build_external(libname, confargs="", makeargs=""):
     confargs = " " + confargs
   if makeargs:
     makeargs = " " + makeargs
+  if cc:
+    ccprefix = "CC=\"%s\"" % cc
+  else:
+    ccprefix = "CC=\"%(CC)s -m%(abi)s\"" % GAP
+  confargs = " " + ccprefix + confargs
   print "=== Building " + libname + " ==="
   if os.system("cd " + abi_path + ";"
           + "tar xzf ../" + libname + ".tar.gz;"
@@ -216,24 +264,18 @@ def build_external(libname, confargs="", makeargs=""):
 
 if compile_gmp and glob.glob(abi_path + "/lib/libgmp.*") == []:
   os.environ["ABI"] = GAP["abi"]
-  build_external("gmp-5.0.4", "--disable-shared")
+  build_external("gmp-5.0.4", confargs="--disable-shared", cc=GAP["CC"])
   del os.environ["ABI"]
 
 if glob.glob(abi_path + "/lib/libatomic_ops.*") == []:
-  os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
   build_external("libatomic_ops-2012-03-02")
-  del os.environ["CC"]
 
 if compile_gc and glob.glob(abi_path + "/lib/libgc.*") == []:
-  os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
   build_external("gc-7.2d", confargs="--disable-shared")
-  del os.environ["CC"]
 
 if GAP["zmq"] == "yes" and glob.glob(abi_path + "/lib/libzmq.*") == []:
-  os.environ["CC"] = GAP["CC"]+" -m"+GAP["abi"]
   os.environ["CXX"] = GAP["CXX"]+" -m"+GAP["abi"]
   build_external("zeromq-3.2.0", makeargs="'SUBDIRS=src doc'")
-  del os.environ["CC"]
   del os.environ["CXX"]
 
 
@@ -258,7 +300,7 @@ def add_library_path(path):
 add_library_path(abi_path + "/lib")
 include_path.append(abi_path + "/include")
 options["CPPPATH"] = ":".join(include_path)
-options["OBJPREFIX"] = "../" + build_dir + "/"
+options["OBJPREFIX"] = "../obj/"
 
 # uname file generator
 
@@ -316,6 +358,7 @@ WriteFlags((make_cc_options("-I", map(os.path.abspath, include_path)) +
 
 source = glob.glob("src/*.c")
 source.remove("src/gapw95.c")
+source = filter(lambda s: not s.startswith("src/c_"), source)
 
 if "src/dbgmacro.c" not in source:
   source.append("src/dbgmacro.c")

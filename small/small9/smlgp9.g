@@ -61,6 +61,10 @@ end;
 #F SMALL_GROUP_FUNCS[ 19 ]( size, i, inforec )
 ##
 ## order p^4 , p >= 11
+## 
+## The groups of order p^4 (p >= 11) are given by pc presentations which are 
+## produced at run-time by a function SMALL_GROUPS_FUNCS[ 19 ] provided by 
+## Newman.
 ##
 SMALL_GROUP_FUNCS[ 19 ] := function( size, i, inforec )
     local g, f, p, c, w;
@@ -134,6 +138,10 @@ end;
 #F SMALL_GROUP_FUNCS[ 20 ]( size, i, inforec )
 ##
 ## order p^5 , p >= 7
+##
+## The groups of order p^5 (p >= 7) are given by pc presentations which are 
+## produced at run-time by a function SMALL_GROUPS_FUNCS[ 20 ] provided by 
+## Girnat (2004) [10].
 ##
 SMALL_GROUP_FUNCS[ 20 ] := function( size, i, inforec )
     local g, typ, k, f, c, w, p, a, b;
@@ -512,15 +520,31 @@ end;
 ##
 ## order p^6 , p >= 5
 ##
+## The groups of order p^6 (p >= 5) are given by pc presentations which are 
+## produced at run-time by a function SMALL_GROUPS_FUNCS[ 21 ] provided by 
+## Newman, O'Brien and Vaughan-Lee (2003) [13].
+##
+## The groups of order p^6 are given as a list of partially repetitive structures.
+## These are compressed into the file 'sml1.z'. At run-time, this compressed 
+## structure will be expanded, but restricted to those parts of the structure 
+## relevant for the given p when needed. It is cached into SMALL_GROUP_LIB[1]. 
+## As parts of this structure contain long ( O(p^2) ) lists of groups which are 
+## classified by additional parameters and these lists are not dense, it might 
+## be neccessary to set up the complete list of indices to find the presentation 
+## of a single group.
+## 
 SMALL_GROUP_FUNCS[ 21 ] := function( size, i, inforec )
     local n, p, phi, part,
           j, ind, ri, g, j1, j2, k, l, m, c1, c2,
           r, mem, rel,
           F, famRels, grpRels;
-
+    
     if not IsBound( inforec.F ) then
         inforec := NUMBER_SMALL_GROUPS_FUNCS[ 21 ]( size, inforec );
     fi;
+
+    atomic inforec do
+
     n := inforec.number;
     if i > n then
         Error( "there are just ", n, " groups of size ", size );
@@ -547,11 +571,19 @@ SMALL_GROUP_FUNCS[ 21 ] := function( size, i, inforec )
     until i <= 0;
     i := i + inforec.num[ phi ];
 
+    od; # atomic inforec
+    
     if not IsBound( SMALL_GROUP_LIB[ 1 ] ) then
         ReadSmallLib( "sml", 9, 1, [ ] );
-        SMALL_GROUP_LIB[ 1 ][ 1 ] := inforec;
+        atomic readwrite SMALL_GROUP_LIB[ 1 ] do
+            SMALL_GROUP_LIB[ 1 ][ 1 ] := MigrateObj( inforec, SMALL_GROUP_LIB[ 1 ] );
+            # now inforec is in the same region with SMALL_GROUP_LIB[ 1 ] and
+            # we will hold the lock on this region until the group is returned
+        od;    
     fi;
 
+    atomic readwrite SMALL_GROUP_LIB[ 1 ] do
+    
     if not IsBound( inforec.groups[ phi ] ) then
         inforec.groups[ phi ] := [];
         for j in [ 1 .. Length( SMALL_GROUP_LIB[ 1 ][ phi ] ) ] do
@@ -643,6 +675,8 @@ SMALL_GROUP_FUNCS[ 21 ] := function( size, i, inforec )
     i!.eqs := j;
     return i;
 
+    od; # atomic readwrite SMALL_GROUP_LIB[ 1 ]
+        
 end;
 
 #############################################################################
@@ -1089,11 +1123,15 @@ SELECT_SMALL_GROUPS_FUNCS[ 21 ] := SELECT_SMALL_GROUPS_FUNCS[ 11 ];
 NUMBER_SMALL_GROUPS_FUNCS[ 21 ] := function( size, inforec )
     local p, p2, pp2, a, b, c, i, j;
 
-    if IsBound( SMALL_GROUP_LIB[ 1 ] ) and 
-       IsBound( SMALL_GROUP_LIB[ 1 ][ 1 ] ) and
-       SMALL_GROUP_LIB[ 1 ][ 1 ].p = inforec.p then
-        return SMALL_GROUP_LIB[ 1 ][ 1 ];
-    fi;
+    if IsBound( SMALL_GROUP_LIB[ 1 ] ) then
+        atomic readonly SMALL_GROUP_LIB[ 1 ] do
+            if IsBound( SMALL_GROUP_LIB[ 1 ][ 1 ] ) and
+                        SMALL_GROUP_LIB[ 1 ][ 1 ].p = inforec.p then
+                return SMALL_GROUP_LIB[ 1 ][ 1 ];
+            fi;
+        od;
+    fi;    
+    
     p := inforec.p;
     p2 := (p-1) / 2;
     pp2 := p*p2;
@@ -1132,7 +1170,10 @@ NUMBER_SMALL_GROUPS_FUNCS[ 21 ] := function( size, inforec )
     inforec.nqrm :=  1 / inforec.nqr mod p;
 
     if IsBound( SMALL_GROUP_LIB[ 1 ] ) then
-        SMALL_GROUP_LIB[ 1 ][ 1 ] := inforec;
+        atomic readwrite SMALL_GROUP_LIB[ 1 ] do
+           SMALL_GROUP_LIB[ 1 ][ 1 ] := MigrateObj( inforec, SMALL_GROUP_LIB[ 1 ] );
+        od;
     fi;
     return inforec;
+    
 end;

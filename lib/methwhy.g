@@ -298,16 +298,16 @@ local flags,f,i,j,l,m,n;
   flags:=FLAGS_FILTER(fil);
   atomic readonly IMPLICATIONS do
       f:=Filtered(IMPLICATIONS,x->IS_SUBSET_FLAGS(x[2],flags));
-  od;
   l:=[];
   m:=[];
-  for i in f do
-    n:=SUB_FLAGS(i[2],flags); # the additional requirements
-    if SIZE_FLAGS(n)=0 then
-      Add(l,i[1]);
-    else
-      Add(m,[n,i[1]]);
-    fi;
+    for i in f do
+      n:=SUB_FLAGS(i[2],flags); # the additional requirements
+      if SIZE_FLAGS(n)=0 then
+        Add(l,i[1]);
+      else
+        Add(m,[n,i[1]]);
+      fi;
+    od;
   od;
   if Length(l)>0 then
     Print("Implies:\n");

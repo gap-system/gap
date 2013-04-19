@@ -36,26 +36,6 @@ BindGlobal("TYPE_ALIST", NewType(AtomicFamily, IsAtomicList));
 BindGlobal("TYPE_AREC", NewType(AtomicFamily, IsAtomicRecord));
 BindGlobal("TYPE_TLREC", NewType(AtomicFamily, IsThreadLocalRecord));
 
-AT_THREAD_EXIT_LIST := 0;
-MakeThreadLocal("AT_THREAD_EXIT_LIST");
-
-BindGlobal("THREAD_EXIT", function()
-  local func;
-  if AT_THREAD_EXIT_LIST <> 0 then
-    for func in AT_THREAD_EXIT_LIST do
-      func();
-    od;
-  fi;
-end);
-
-BindGlobal("AtThreadExit", function(func)
-  if AT_THREAD_EXIT_LIST = 0 then
-    AT_THREAD_EXIT_LIST := [ func ];
-  else
-    Add(AT_THREAD_EXIT_LIST, func);
-  fi;
-end);
-
 BindGlobal("StartHandShake", CreateSyncVar);
 
 BindGlobal("AcknowledgeHandShake", function(syncvar, obj)
@@ -110,3 +90,16 @@ InstallMethod( RecNames,
 if IsBound(ZmqSocket) then
   ReadLib("zmq.g");
 fi;
+
+CreateThread(function()
+  local handlers;
+  handlers := rec(
+    SIGINT := DEFAULT_SIGINT_HANDLER,
+    SIGCHLD := DEFAULT_SIGCHLD_HANDLER,
+    SIGVTALRM := DEFAULT_SIGVTALRM_HANDLER,
+    SIGWINCH := DEFAULT_SIGWINCH_HANDLER
+  );
+  while true do
+    SIGWAIT(handlers);
+  od;
+end);

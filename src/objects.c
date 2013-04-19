@@ -9,6 +9,8 @@
 **
 **  This file contains the functions of the objects package.
 */
+#include	<stdlib.h>
+
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
 
 
@@ -149,6 +151,7 @@ Obj SetTypeObjHandler (
 Int (*IsMutableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
 
 Obj IsMutableObjFilt;
+Obj IsInternallyMutableObjFilt;
 
 Int IsMutableObjError (
     Obj                 obj )
@@ -183,6 +186,27 @@ Obj IsMutableObjHandler (
 {
     return (IS_MUTABLE_OBJ( obj ) ? True : False);
 }
+
+/****************************************************************************
+**
+*F  IsInternallyMutableObjHandler(<self>, <obj>)  -- 'IS_INTERNALLY_MUTABLE_OBJ'
+*/
+
+Obj IsInternallyMutableObjHandler (
+    Obj                 self,
+    Obj                 obj )
+{
+    return (TNUM_OBJ(obj) == T_DATOBJ &&
+      RegionBag(obj) != ReadOnlyRegion &&
+      DoFilter( IsInternallyMutableObjFilt, obj) == True) ? True : False;
+}
+
+Int IsInternallyMutableObj(Obj obj) {
+    return TNUM_OBJ(obj) == T_DATOBJ &&
+      RegionBag(obj) != ReadOnlyRegion &&
+      DoFilter( IsInternallyMutableObjFilt, obj) == True;
+}
+
 
 
 /****************************************************************************
@@ -815,9 +839,17 @@ void MakeImmutablePosObj( Obj obj)
   
 }
 
+static int ReadOnlyDatObjs = 0;
+
 void MakeImmutableDatObj( Obj obj)
 {
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
+  if (!IsInternallyMutableObj(obj)) {
+    if (ReadOnlyDatObjs)
+      MakeBagReadOnly(obj);
+    else
+      MakeBagPublic(obj);
+  }
 }
 
 Obj FuncMakeImmutable( Obj self, Obj obj)
@@ -916,7 +948,7 @@ void InitPrintObjStack() {
     TLS->PrintObjThissObj = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));
     TLS->PrintObjThiss = ADDR_OBJ(TLS->PrintObjThissObj)+1;
     TLS->PrintObjIndicesObj = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Int)+sizeof(Obj));
-    TLS->PrintObjIndices = ADDR_OBJ(TLS->PrintObjIndicesObj)+1;
+    TLS->PrintObjIndices = (Int *)(ADDR_OBJ(TLS->PrintObjIndicesObj)+1);
   }
 }
     
@@ -1350,6 +1382,13 @@ Obj             TypeDatObj (
 void SetTypeDatObj( Obj obj, Obj kind)
 {
     TYPE_DATOBJ(obj) = kind;
+    if (TNUM_OBJ(obj) == T_DATOBJ &&
+        !IsMutableObjObject(obj) && !IsInternallyMutableObj(obj)) {
+      if (ReadOnlyDatObjs)
+	MakeBagReadOnly(obj);
+      else
+        MakeBagPublic(obj);
+    }
     CHANGED_BAG(obj);
 }
 
@@ -1761,6 +1800,9 @@ static StructGVarFilt GVarFilts [] = {
     { "IS_COPYABLE_OBJ", "obj", &IsCopyableObjFilt,
       IsCopyableObjHandler, "src/objects.c:IS_COPYABLE_OBJ" },
 
+    { "IS_INTERNALLY_MUTABLE_OBJ", "obj", &IsInternallyMutableObjFilt,
+      IsInternallyMutableObjHandler, "src/objects.c:IS_INTERNALLY_MUTABLE_OBJ" },
+
     { 0 }
 
 };
@@ -1979,6 +2021,7 @@ static Int InitKernel (
       MakeImmutableObjFuncs[t] = MakeImmutableError;
     
     /* install the makeimmutableing functions */
+    ReadOnlyDatObjs = (getenv("GAP_READONLY_DATOBJS") != 0);
     MakeImmutableObjFuncs[ T_COMOBJ ] = MakeImmutableComObj;
     MakeImmutableObjFuncs[ T_POSOBJ ] = MakeImmutablePosObj;
     MakeImmutableObjFuncs[ T_DATOBJ ] = MakeImmutableDatObj;

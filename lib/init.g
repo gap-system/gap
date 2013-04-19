@@ -206,7 +206,7 @@ ReadGapRoot( "lib/system.g" );
 ## commented out - was needed by the completion mechanism
 ## READED_FILES := [];
 
-FILTER_REGION	 	 := NewRegion("filter region");
+FILTER_REGION	 	 := NEW_REGION("filter region", 0);
 atomic FILTER_REGION do
   RANK_FILTER_LIST         := MIGRATE([], FILTER_REGION);
 od;
@@ -688,7 +688,9 @@ BindGlobal( "ShowKernelInformation", function()
       Print( " ",btop,"   HPC-GAP, Version ", GAPInfo.Version, " of ",
              sysdate, " (free software, GPL)\n",
              " ",vert,"  GAP  ",vert,"   http://www.gap-system.org\n",
-             " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
+             " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n",
+	     "             Maximum concurrent threads: ",
+	     GAPInfo.KernelInfo.NUM_CPUS, "\n");
       # For each library, print the name.
       libs:= [];
       if "gmpints" in LoadedModules() then
@@ -1248,8 +1250,9 @@ CallAndInstallPostRestore( function()
     od;
 end );
 
-TaskManager := CreateThread(Tasks.TaskManagerFunc);
-MakeReadOnlyGVar("TaskManager");
+
+#TaskManager := CreateThread(Tasks.TaskManagerFunc);
+#MakeReadOnlyGVar("TaskManager");
 
 if IsBoundGlobal("MPI_Initialized") then
   MessageManager := CreateThread(MessageManagerFunc);

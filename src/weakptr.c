@@ -15,6 +15,8 @@
 **  are NOT kept alive through a garbage collection (unless they are contained
 **  in some other kind of object). 
 */
+#include	<gc/gc.h>
+
 #include        "system.h"              /* system dependent part           */
 
 
@@ -136,9 +138,9 @@ Int GrowWPObj (
       if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, i)) {
 	FORGET_WP(&ELM_WPOBJ(wp, i));
 	REGISTER_WP(&ELM_WPOBJ(copy, i), tmp);
-	ELM_WPOBJ(wp, i) = 0;
-	ELM_WPOBJ(copy, i) = tmp;
       }
+      ELM_WPOBJ(wp, i) = 0;
+      ELM_WPOBJ(copy, i) = tmp;
     }
     PTR_BAG(wp) = PTR_BAG(copy);
 #endif
@@ -169,7 +171,7 @@ Obj FuncWeakPointerObj( Obj self, Obj list ) {
    * loop unrolling, the reference to 'list' may then be
    * destroyed before REGISTER_WP() is called.
    */
-  volatile list2 = list;
+  volatile Obj list2 = list;
 #endif
   len = LEN_LIST(list);
   wp = (Obj) NewBag(T_WPOBJ, (len+1)*sizeof(Obj));
@@ -219,12 +221,16 @@ Int LengthWPObj(Obj wp)
       if (elm)
         ELM_WPOBJ(wp,len) = 0;
     }
+#else
+  len = STORED_LEN_WPOBJ(wp);
+  while (len > 0 && !ELM_WPOBJ(wp, len)) {
+    changed = 1;
+    len--;
+  }
+#endif
   if (changed)
     STORE_LEN_WPOBJ(wp,len);
   return len;
-#else
-  return STORED_LEN_WPOBJ(wp);
-#endif
 }
 
 /****************************************************************************
@@ -549,16 +555,22 @@ void MakeImmutableWPObj( Obj obj )
   /* Change the type */
   RetypeBag( obj, T_PLIST+IMMUTABLE);
 #else
+  UInt len = 0;
   Obj copy = NewBag(T_PLIST+IMMUTABLE, SIZE_BAG(obj));
   for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++) {
     volatile Obj tmp = ELM_WPOBJ(obj, i);
     MEMBAR_READ();
-    if (IS_BAG_REF(tmp) && ELM_WPOBJ(obj, i)) {
-      FORGET_WP(&ELM_WPOBJ(obj, i));
-      ELM_WPOBJ(obj, i) = 0;
+    if (IS_BAG_REF(tmp)) {
+      if (ELM_WPOBJ(obj, i)) {
+	FORGET_WP(&ELM_WPOBJ(obj, i));
+	len = i;
+      }
+    } else {
+      len = i;
     }
     SET_ELM_PLIST(copy, i, tmp);
   }
+  SET_LEN_PLIST(copy, len);
   PTR_BAG(obj) = PTR_BAG(copy);
 #endif
 }

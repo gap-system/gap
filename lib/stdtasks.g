@@ -7,7 +7,7 @@ TASK_QUEUE := ShareObj( rec (
   ready_tasks := [],
   workers := [],
   active_count := 0,
-  max_active := 4,
+  max_active := GAPInfo.KernelInfo.NUM_CPUS,
 ) );
 
 CURRENT_TASK := fail;
@@ -87,16 +87,16 @@ TASKS := AtomicRecord( rec (
     od;
     result := CALL_WITH_CATCH(body, args);
     error := not result[1];
-    if error or Length(result) = 1 then
-      result := fail;
-    else
+    if not error and IsBound(result[2]) then
       result := result[2];
-    fi;
-    if error then
-      Print("Task Error: ", result, "\n");
+    else
+      result := fail;
     fi;
     atomic task do
       task.complete := true;
+      if result = fail and task.result <> fail then
+        result := task.result;
+      fi;
       if not async then
         if IsThreadLocal(result) then
           atomic task.region do
@@ -139,6 +139,8 @@ TASKS := AtomicRecord( rec (
       complete := false,
       started := false,
       async := false,
+      cancel := false,
+      cancelled := false,
       body := func,
       worker := fail,
       conditions := [],
@@ -161,6 +163,14 @@ TASKS := AtomicRecord( rec (
     task := TASKS.NewTask(fail, []);
     task.worker := TASKS.PseudoWorker();
     CURRENT_TASK := task;
+  end,
+
+
+  CurrentTask := function()
+    if IsIdenticalObj(CURRENT_TASK, fail) then
+      TASKS.MakePseudoTask();
+    fi;
+    return CURRENT_TASK;
   end,
 
   PseudoWorker := function()
@@ -418,12 +428,7 @@ end;
 
 WAIT_TASK := function(conditions, is_conjunction)
   local task, trigger, suspend, semaphore;
-  task := CURRENT_TASK;
-  if IsIdenticalObj(task, fail) then
-    # We are actually calling this from the main thread
-    TASKS.MakePseudoTask();
-    task := CURRENT_TASK;
-  fi;
+  task := TASKS.CurrentTask();
   atomic task do
     suspend := not IsIdenticalObj(task.body, fail);
     task.conditions := MakeReadOnlyObj(conditions);
@@ -461,11 +466,22 @@ end;
 WaitTasks := WaitTask;
 
 WaitAnyTask := function(arg)
+  local which, task, tasks;
   if Length(arg) = 1 and IsThreadLocal(arg[1]) and IS_LIST(arg[1]) then
-    WAIT_TASK(arg[1], false);
+    tasks := arg[1];
   else
-    WAIT_TASK(arg, false);
+    tasks := arg;
   fi;
+  WAIT_TASK(tasks, false);
+  which := 1;
+  for task in tasks do
+    atomic readonly task do
+      if task.complete then
+        return which;
+      fi;
+    od;
+    which := which + 1;
+  od;
 end;
 
 TaskResult := function(task)
@@ -484,6 +500,14 @@ TaskResult := function(task)
     else
       return task.result;
     fi;
+  od;
+end;
+
+SetTaskResult := function(result)
+  local task;
+  task := TASKS.CurrentTask();
+  atomic task do
+    task.result := result;
   od;
 end;
 
@@ -514,6 +538,47 @@ end;
 TaskFinished := atomic function(readonly task)
   return task.complete;
 end;
+
+TaskCancelled := atomic function(readonly task)
+  return task.cancel;
+end;
+
+TaskCancellationComplete := atomic function(readonly task)
+  return task.cancelled;
+end;
+
+CancelTask := atomic function(readwrite task)
+  if not task.complete then
+    task.cancel := true;
+  fi;
+end;
+
+OnTaskCancellation := function(exit)
+  local task, cancel, result;
+  task := TASKS.CurrentTask();
+  atomic task do
+    if task.cancel and not task.cancelled then
+      cancel := true;
+      task.cancelled := true;
+    else
+      cancel := false;
+    fi;
+  od;
+  if cancel then
+    result := CALL_WITH_CATCH(exit, []);
+    if result[1] and IsBound(result[2]) then
+      atomic task do
+	task.result := result[2];
+      od;
+    fi;
+    JUMP_TO_CATCH(0);
+  fi;
+end;
+
+OnTaskCancellationReturn := function(value)
+  OnTaskCancellation(->value);
+end;
+
 
 TaskInfo := atomic function(readonly task)
   return CopyRegion(task);

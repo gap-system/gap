@@ -281,6 +281,13 @@ Int FindObjMap(Obj map, Obj obj) {
   }
 }
 
+Obj LookupObjMap(Obj map, Obj obj) {
+  Int index = FindObjMap(map, obj);
+  if (index < 0)
+    return (Obj) 0;
+  return ADDR_OBJ(map)[OBJSET_HDRSIZE+index*2+1];
+}
+
 static void AddObjMapNew(Obj map, Obj key, Obj value) {
   UInt size = ADDR_WORD(map)[OBJSET_SIZE];
   UInt hash = ObjHash(map, key);
@@ -386,6 +393,7 @@ static Obj FuncOBJ_SET(Obj self, Obj arg) {
       return result;
     default:
       ErrorQuit("OBJ_SET: Too many arguments", 0L, 0L);
+      return (Obj) 0; /* flow control hint */
   }
 }
 
@@ -450,6 +458,7 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg) {
       return result;
     default:
       ErrorQuit("OBJ_MAP: Too many arguments", 0L, 0L);
+      return (Obj) 0; /* flow control hint */
   }
 }
 

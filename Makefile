@@ -3,7 +3,7 @@ GMP=yes
 WARD=../ward
 SCONS=bin/scons
 CFLAGS=
-DEBUG=debugguards=1 cflags=-DTRACK_CREATOR
+DEBUG=debugguards=1 cflags=-"DTRACK_CREATOR $(CFLAGS)"
 ZMQ=no
 COMPILER=
 CPP_COMPILER=
@@ -37,16 +37,26 @@ gapdebug64: $(WARD)/bin/ward
 debug64: $(WARD)/bin/ward
 	$(BUILD) debug=1 abi=64 $(DEBUG) 
 
+config:
+	$(BUILD) config
+
+config32:
+	$(BUILD) abi=32 config
+
+config64:
+	$(BUILD) abi=64 config
+
 clean:
-	$(SCONS) -c preprocess=dummy
+	$(SCONS) -c preprocess=dummy compiler=$(COMPILER)
 
 distclean:
-	$(SCONS) -c preprocess=dummy; rm -rf extern/lib/* extern/include/* extern/32bit extern/64bit bin/current/*
+	-rm -rf bin/current/*
+	$(SCONS) -c preprocess=dummy compiler=$(COMPILER); rm -rf extern/lib/* extern/include/* extern/32bit extern/64bit bin/current/*
 
 $(WARD)/bin/ward:
-	@echo "Building Ward."
-	@cd $(WARD); sh build.sh >/dev/null 2>/dev/null
-	@echo "Ward build completed."
+	@test -z "$(WARD)" || echo "Building Ward."
+	@test -z "$(WARD)" || (cd $(WARD); sh build.sh >/dev/null 2>/dev/null)
+	@test -z "$(WARD)" || echo "Ward build completed."
 
 .PHONY: all opt gapdebug debug
 .PHONY: opt32 32 gapdebug32 debug32

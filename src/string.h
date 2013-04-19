@@ -275,6 +275,15 @@ extern Int IsStringConv (
     memcpy( CHARS_STRING(string), (cstr), (len) ); \
   } while ( 0 );
 
+/****************************************************************************
+**
+*F  MakeImmutableString(  <str> ) make a string immutable in place
+**
+*/
+
+void MakeImmutableString(Obj str);
+
+
 Obj MakeString(Char *cstr);
 Obj MakeString2(Char *cstr1, Char *cstr2);
 Obj MakeString3(Char *cstr1, Char *cstr2, Char *cstr3);

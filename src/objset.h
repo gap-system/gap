@@ -11,6 +11,7 @@ void ClearObjSet(Obj set);
 
 Obj NewObjMap();
 Int FindObjMap(Obj map, Obj key);
+Obj LookupObjMap(Obj map, Obj key);
 void AddObjMap(Obj map, Obj key, Obj value);
 void RemoveObjMap(Obj map, Obj obj);
 void ClearObjMap(Obj map);

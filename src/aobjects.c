@@ -68,7 +68,7 @@ Obj TYPE_TLREC;
 
 #define ALIST_LEN(x) ((x) >> 2)
 #define ALIST_POL(x) ((x) & 3)
-#define CHANGE_ALIST_LEN(x, y) (((x) & 3) | (y << 2))
+#define CHANGE_ALIST_LEN(x, y) (((x) & 3) | ((y) << 2))
 #define CHANGE_ALIST_POL(x, y) (((x) & ~3) | y)
 
 #define ALIST_RW 0
@@ -192,7 +192,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
   Obj init;
   Obj result;
   AtomicObj *data;
-  UInt i, len;
+  Int i, len;
   switch (LEN_PLIST(args)) {
     case 1:
       init = ELM_PLIST(args, 1);
@@ -237,7 +237,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
   Obj init;
   Obj result;
   AtomicObj *data;
-  UInt i, len;
+  Int i, len;
   switch (LEN_PLIST(args)) {
     case 1:
       init = ELM_PLIST(args, 1);
@@ -431,13 +431,11 @@ static Obj FuncAddAtomicList(Obj self, Obj list, Obj obj)
   return INTOBJ_INT(AddAList(list, obj));
 }
 
-static Obj FuncFromAtomicList(Obj self, Obj list)
+Obj FromAtomicList(Obj list)
 {
   Obj result;
   AtomicObj *data;
   UInt i, len;
-  if (TNUM_OBJ(list) != T_FIXALIST && TNUM_OBJ(list) != T_ALIST)
-    ArgumentError("FromAtomicList: First argument must be an atomic list");
   data = ADDR_ATOM(list);
   len = ALIST_LEN((UInt) (data++->atom));
   result = NEW_PLIST(T_PLIST, len);
@@ -446,6 +444,13 @@ static Obj FuncFromAtomicList(Obj self, Obj list)
   for (i=1; i<=len; i++)
     SET_ELM_PLIST(result, i, data[i].obj);
   return result;
+}
+
+static Obj FuncFromAtomicList(Obj self, Obj list)
+{
+  if (TNUM_OBJ(list) != T_FIXALIST && TNUM_OBJ(list) != T_ALIST)
+    ArgumentError("FromAtomicList: First argument must be an atomic list");
+  return FromAtomicList(list);
 }
 
 static void MarkAtomicList(Bag bag)
@@ -1024,6 +1029,8 @@ Obj GetTLRecordField(Obj record, UInt rnam)
   Obj contents, *table;
   Obj tlrecord;
   UInt pos;
+  Region *savedRegion = TLS->currentRegion;
+  TLS->currentRegion = TLS->threadRegion;
   ExpandTLRecord(record);
   contents = GetTLInner(record);
   table = ADDR_OBJ(contents);
@@ -1039,25 +1046,35 @@ Obj GetTLRecordField(Obj record, UInt rnam)
 	UpdateThreadRecord(record, tlrecord);
       }
       AssPRec(tlrecord, rnam, result);
+      TLS->currentRegion = savedRegion;
       return result;
     } else {
       Obj func;
       Obj constructors = table[TLR_CONSTRUCTORS];
       func = GetARecordField(constructors, rnam);
+      if (!tlrecord) {
+	tlrecord = NEW_PREC(0);
+	UpdateThreadRecord(record, tlrecord);
+      }
       if (func) {
-	result = CALL_0ARGS(func);
-	if (!result)
-	  return 0;
-	if (!tlrecord) {
-	  tlrecord = NEW_PREC(0);
-	  UpdateThreadRecord(record, tlrecord);
+        if (NARG_FUNC(func) == 0)
+	  result = CALL_0ARGS(func);
+	else
+	  result = CALL_1ARGS(func, record);
+	TLS->currentRegion = savedRegion;
+	if (!result) {
+	  if (!FindPRec(tlrecord, rnam, &pos, 1))
+	    return 0;
+	  return GET_ELM_PREC(tlrecord, pos);
 	}
 	AssPRec(tlrecord, rnam, result);
 	return result;
       }
+      TLS->currentRegion = savedRegion;
       return 0;
     }
   }
+  TLS->currentRegion = savedRegion;
   return GET_ELM_PREC(tlrecord, pos);
 }
 
@@ -1123,8 +1140,10 @@ static Obj FuncAtomicRecord(Obj self, Obj args)
           ArgumentError("AtomicRecord: capacity must be a positive integer");
         return NewAtomicRecord(INT_INTOBJ(arg));
       }
-      if (TNUM_OBJ(arg) == T_PREC) {
-        return NewAtomicRecordFrom(arg);
+      switch (TNUM_OBJ(arg)) {
+        case T_PREC:
+	case T_PREC+IMMUTABLE:
+	  return NewAtomicRecordFrom(arg);
       }
       ArgumentError("AtomicRecord: argument must be an integer or record");
     default:
@@ -1635,8 +1654,10 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval) {
   Int n;
   Bag *contents;
   Bag result;
-  if (!IS_INTOBJ(index) || ((n = INT_INTOBJ(index)) <= 0))
+  if (!IS_INTOBJ(index) || ((n = INT_INTOBJ(index)) <= 0)) {
     FuncError("index for positional object must be a positive integer");
+    return (Obj) 0; /* flow control hint */
+  }
   ReadGuard(obj);
 #ifndef WARD_ENABLED
   contents = PTR_BAG(obj);
@@ -1716,11 +1737,13 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval) {
 
 Obj BindOnceComObj(Obj obj, Obj index, Obj *new, int eval) {
   FuncError("not yet implemented");
+  return (Obj) 0;
 }
 
 
 Obj BindOnceAComObj(Obj obj, Obj index, Obj *new, int eval) {
   FuncError("not yet implemented");
+  return (Obj) 0;
 }
 
 
@@ -1736,6 +1759,7 @@ Obj BindOnce(Obj obj, Obj index, Obj *new, int eval) {
       return BindOnceAComObj(obj, index, new, eval);
     default:
       FuncError("first argument must be a positional or component object");
+      return (Obj) 0; /* flow control hint */
   }
 }
 

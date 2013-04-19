@@ -6,9 +6,9 @@
 Revision.sml1053_z :=
     "@(#)$Id: sml1053.z,v 1.1 1999/12/08 18:52:48 gap Exp $";
 
-SMALL_GROUP_LIB[ 1053 ].pnil := rec( syl :=
+SMALL_GROUP_LIB[ 1053 ].pnil := AtomicRecord( `rec( syl :=
 [ 15 ], oper :=
-[ 15770482 ] ); 
+[ 15770482 ] ) ); 
 
 SMALL_GROUP_LIB[ 1053 ].npnil :=
-[ 100286712487397165939678173 ] ;
+`[ 100286712487397165939678173 ] ;

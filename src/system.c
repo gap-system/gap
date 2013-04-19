@@ -253,6 +253,25 @@ UInt SyLineEdit;
 */
 UInt ThreadUI = 1;
 
+/****************************************************************************
+**
+*V  DeadlockCheck  . . . . . . . . . . . . . . . . . .  check for deadlocks
+**
+*/
+UInt DeadlockCheck = 0;
+
+/****************************************************************************
+**
+*V  SyNumProcessors  . . . . . . . . . . . . . . . . . number of logical CPUs
+**
+*/
+#ifdef NUM_CPUS
+UInt SyNumProcessors = NUM_CPUS;
+#else
+UInt SyNumProcessors = 4;
+#endif
+
+
 
 /****************************************************************************
 **
@@ -1564,6 +1583,22 @@ static Int toggle( Char ** argv, void *Variable )
   return 0;
 }
 
+static Int storePosInteger( Char **argv, void *Where )
+{
+  UInt *where = (UInt *)Where;
+  UInt n;
+  Char *p = argv[0];
+  n = 0;
+  while (isdigit(*p)) {
+    n = n * 10 + (*p-'0');
+    p++;
+  }
+  if (p == argv[0] || *p || n == 0)
+    FPUTS_TO_STDERR("Argument not a positive integer");
+  *where = n;
+  return 1;
+}
+
 static Int storeString( Char **argv, void *Where )
 {
   Char **where = (Char **)Where;
@@ -1646,6 +1681,8 @@ struct optInfo options[] = {
   { 'p',  toggle, &SyWindow, 0 }, /* ?? */
   { 'q',  toggle, &SyQuiet, 0 }, /* ?? */
   { 'S',  toggle, &ThreadUI, 0 }, /* Thread UI */
+  { 'Z',  toggle, &DeadlockCheck, 0 }, /* Thread UI */
+  { 'P',  storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
 #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 
   { 'z',  storeInteger, &syIsIntrFreq, 0},
 #endif
@@ -1654,7 +1691,6 @@ struct optInfo options[] = {
 
 Char ** SyOriginalArgv;
 UInt SyOriginalArgc;
-Char **SyEnvironment;
 
  
 
@@ -1977,8 +2013,8 @@ usage:
  SyExit( 1 );
 }
 
-static void Merge(char *to, char *from1, unsigned size1, char *from2,
-  unsigned size2, unsigned width, int (*lessThan)(const void *a, const void *b))
+static void Merge(char *to, char *from1, UInt size1, char *from2,
+  UInt size2, UInt width, int (*lessThan)(const void *a, const void *b))
 {
   while (size1 && size2) {
     if (lessThan(from1, from2)) {
@@ -1998,10 +2034,10 @@ static void Merge(char *to, char *from1, unsigned size1, char *from2,
     memcpy(to, from2, size2*width);
 }
 
-static void MergeSortRecurse(char *data, char *aux, unsigned count, unsigned width,
+static void MergeSortRecurse(char *data, char *aux, UInt count, UInt width,
   int (*lessThan)(const void *a, const void *))
 {
-  unsigned nleft, nright;
+  UInt nleft, nright;
   /* assert(count > 1); */
   if (count == 2) {
     if (!lessThan(data, data+width))
@@ -2032,7 +2068,7 @@ static void MergeSortRecurse(char *data, char *aux, unsigned count, unsigned wid
 **  than the second argument, zero otherwise.
 */
 
-void MergeSort(void *data, unsigned count, unsigned width,
+void MergeSort(void *data, UInt count, UInt width,
   int (*lessThan)(const void *a, const void *))
 {
   char *aux = alloca(count * width);

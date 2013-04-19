@@ -23,8 +23,10 @@
 #include	"string.h"
 #include	"precord.h"
 #include	"stats.h"
+#include        "gap.h"
 #include        "tls.h"
 #include        "thread.h"
+#include        "threadapi.h"
 #include	"fibhash.h"
 
 #define LOG2_NUM_LOCKS 11
@@ -144,7 +146,11 @@ void AddGCRoots()
 void RemoveGCRoots()
 {
   void *p = TLS;
+#if defined(__CYGWIN__) || defined(__CYGWIN32__)
+  memset(p, '\0', sizeof(ThreadLocalStorage));
+#else
   GC_remove_roots(p, (char *)p + sizeof(ThreadLocalStorage));
+#endif
 }
 #endif /* DISABLE_GC */
 
@@ -210,8 +216,8 @@ void RunThreadedMain(
 #ifdef STACK_GROWS_UP
 #error Upward growing stack not yet supported
 #else
-  int dummy[0];
-  alloca(((uintptr_t) dummy) &~TLS_MASK);
+  volatile int dummy[1];
+  volatile void *p = alloca(((uintptr_t) dummy) &~TLS_MASK);
 #endif
 #endif
   RunThreadedMain2(mainFunction, argc, argv, environ);
@@ -227,7 +233,7 @@ static void RunThreadedMain2(
   int i;
   static pthread_mutex_t main_thread_mutex;
   static pthread_cond_t main_thread_cond;
-  SyEnvironment = environ;
+  void InitTraversalModule();
   SetupTLS();
   for (i=1; i<MAX_THREADS-1; i++)
     thread_data[i].next = thread_data+i+1;
@@ -250,6 +256,7 @@ static void RunThreadedMain2(
   thread_data[0].cond = TLS->threadSignal;
   thread_data[0].state = TSTATE_RUNNING;
   thread_data[0].tls = TLS;
+  InitSignals();
   if (sySetjmp(TLS->threadExit))
     exit(0);
   /* Traversal functionality may be needed during the initialization
@@ -262,6 +269,7 @@ void CreateMainRegion()
 {
   int i;
   TLS->currentRegion = NewRegion();
+  TLS->threadRegion = TLS->currentRegion;
   ((Region *)TLS->currentRegion)->fixed_owner = 1;
   RegionWriteLock(TLS->currentRegion);
   ((Region *)TLS->currentRegion)->name = MakeImmString("thread region #0");
@@ -293,6 +301,7 @@ void *DispatchThread(void *arg)
 #endif
   InitTLS();
   TLS->currentRegion = region = NewRegion();
+  TLS->threadRegion = TLS->currentRegion;
   TLS->threadLock = this_thread->lock;
   TLS->threadSignal = this_thread->cond;
   region->fixed_owner = 1;
@@ -605,9 +614,11 @@ static int LessThanLockRequest(const void *a, const void *b)
 {
   Region *ds_a = ((LockRequest *)a)->region;
   Region *ds_b = ((LockRequest *)b)->region;
+  Int prec_diff;
   if (ds_a == ds_b) /* prioritize writes */
     return ((LockRequest *)a)->mode>((LockRequest *)b)->mode;
-  return (char *)ds_a < (char *)ds_b;
+  prec_diff = ds_a->prec - ds_b->prec;
+  return prec_diff > 0 || (prec_diff == 0 && (char *)ds_a < (char *)ds_b);
 }
 
 void PushRegionLock(Region *region) {
@@ -664,7 +675,7 @@ int UpdateThreadState(int threadID, int oldState, int newState) {
     (AtomicUInt) oldState, (AtomicUInt) newState);
 }
 
-static int SetInterrupt(int threadID) {
+static void SetInterrupt(int threadID) {
   ThreadLocalStorage *tls = thread_data[threadID].tls;
   MEMBAR_FULL();
   tls->CurrExecStatFuncs = IntrExecStatFuncs;
@@ -672,11 +683,9 @@ static int SetInterrupt(int threadID) {
 
 static int LockAndUpdateThreadState(int threadID, int oldState, int newState) {
   if (pthread_mutex_trylock(thread_data[threadID].lock) < 0) {
-    printf("locked\n");
     return 0;
   }
   if (!UpdateThreadState(threadID, oldState, newState)) {
-    printf("update failed\n");
     pthread_mutex_unlock(thread_data[threadID].lock);
     return 0;
   }
@@ -745,6 +754,7 @@ static void PauseCurrentThread(int locked) {
 static void InterruptCurrentThread(int locked, Stat stat) {
   ThreadData *thread = thread_data + TLS->threadID;
   int state;
+  Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args);
   Obj handler = (Obj) 0;
   if (stat == T_NO_STAT)
     return;
@@ -901,6 +911,23 @@ void ResumeAllThreads() {
   }
 }
 
+extern UInt DeadlockCheck;
+
+static Int CurrentRegionPrec() {
+  Int sp;
+  if (!DeadlockCheck || !TLS->lockStack)
+    return -1;
+  sp = TLS->lockStackPointer;
+  while (sp > 0) {
+    Obj region_obj = ELM_PLIST(TLS->lockStack, sp);
+    if (region_obj) {
+      return ((Region *)(*ADDR_OBJ(region_obj)))->prec;
+    }
+    sp--;
+  }
+  return -1;
+}
+
 int LockObject(Obj obj, int mode) {
   Region *region = GetRegionOf(obj);
   int locked;
@@ -911,6 +938,11 @@ int LockObject(Obj obj, int mode) {
   if (locked == 2 && mode)
     return -1;
   if (!locked) {
+    Int prec = CurrentRegionPrec();
+    if (prec >= 0 && region->prec >= prec)
+      return -1;
+    if (region->fixed_owner)
+      return -1;
     if (mode)
       RegionWriteLock(region);
     else
@@ -923,22 +955,30 @@ int LockObject(Obj obj, int mode) {
 int LockObjects(int count, Obj *objects, int *mode)
 {
   int result;
-  int i;
+  int i, p;
   int locked;
+  Int curr_prec;
   LockRequest *order;
   if (count == 1) /* fast path */
     return LockObject(objects[0], mode[0]);
   if (count > MAX_LOCKS)
     return -1;
   order = alloca(sizeof(LockRequest)*count);
-  for (i=0; i<count; i++)
+  for (i=0, p=0; i<count; i++)
   {
-    order[i].obj = objects[i];
-    order[i].region = GetRegionOf(objects[i]);
-    order[i].mode = mode[i];
+    Region *r = GetRegionOf(objects[i]);
+    if (r) {
+      order[p].obj = objects[i];
+      order[p].region = GetRegionOf(objects[i]);
+      order[p].mode = mode[i];
+      p++;
+    }
   }
-  MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
+  count = p;
+  if (p > 1)
+    MergeSort(order, count, sizeof(LockRequest), LessThanLockRequest);
   result = TLS->lockStackPointer;
+  curr_prec = CurrentRegionPrec();
   for (i=0; i<count; i++)
   {
     Region *ds = order[i].region;
@@ -957,6 +997,14 @@ int LockObjects(int count, Obj *objects, int *mode)
       return -1;
     }
     if (!locked) {
+      if (curr_prec >= 0 && ds->prec >= curr_prec) {
+	PopRegionLocks(result);
+	return -1;
+      }
+      if (ds->fixed_owner) {
+	PopRegionLocks(result);
+	return -1;
+      }
       if (order[i].mode)
 	RegionWriteLock(ds);
       else

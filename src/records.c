@@ -165,6 +165,10 @@ UInt            RNamName (
         table = HashRNam;
         SizeRNam = 2 * SizeRNam + 1;
         HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
+	/* The list is briefly non-public, but this is safe, because
+	 * the mutex protects it from being accessed by other threads.
+	 */
+	MakeBagPublic(HashRNam);
         SET_LEN_PLIST( HashRNam, SizeRNam );
         for ( i = 1; i <= (SizeRNam-1)/2; i++ ) {
             rnam2 = ELM_PLIST( table, i );
@@ -774,11 +778,13 @@ static Int InitLibrary (
     /* make the list of names of record names                              */
     CountRNam = 0;
     NamesRNam = NEW_PLIST( T_PLIST, 0 );
+    MakeBagPublic(NamesRNam);
     SET_LEN_PLIST( NamesRNam, 0 );
 
     /* make the hash list of record names                                  */
     SizeRNam = 997;
     HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
+    MakeBagPublic(HashRNam);
     SET_LEN_PLIST( HashRNam, SizeRNam );
 
     /* init filters and functions                                          */

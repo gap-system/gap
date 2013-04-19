@@ -25,7 +25,7 @@ Perform( threads, WaitThread );
 counter:=0;
 nrthreads:=10;
 l:=[];
-SHARE(l);;
+ShareObj(l);;
 w:=AtomicList(nrthreads);
 hello:=function(n)
 local t;

@@ -423,17 +423,6 @@ DeclareAttribute( "FrattinifactorId", IsGroup );
 DeclareGlobalFunction( "FinalizeSmallGroupData");
 
 #############################################################################
-##  
-#F  MIGRATE_SMALL_GROUP_DATA((<list of group orders>)
-##
-##  This function should be called in each data file adding to the small 
-##  group library data describing groups of certain ordes. It was added 
-##  to facilitate making the small groups library thread-safe, minimising
-##  the number of lines of the code that should be changed.
-##
-DeclareGlobalFunction( "MIGRATE_SMALL_GROUP_DATA");
-
-#############################################################################
 ##
 #E
 

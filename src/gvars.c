@@ -97,12 +97,21 @@ static Obj TLVars;
 */
 
 pthread_rwlock_t GVarLock;
+void *GVarLockOwner;
+UInt GVarLockDepth;
 
 void LockGVars(int write) {
   if (PreThreadCreation)
     return;
-  if (write)
+  if (GVarLockOwner == TLS) {
+    GVarLockDepth++;
+    return;
+  }
+  if (write) {
     pthread_rwlock_wrlock(&GVarLock);
+    GVarLockOwner = TLS;
+    GVarLockDepth = 1;
+  }
   else
     pthread_rwlock_rdlock(&GVarLock);
 }
@@ -110,6 +119,12 @@ void LockGVars(int write) {
 void UnlockGVars() {
   if (PreThreadCreation)
     return;
+  if (GVarLockOwner == TLS) {
+    GVarLockDepth--;
+    if (GVarLockDepth != 0)
+      return;
+    GVarLockOwner = NULL;
+  }
   pthread_rwlock_unlock(&GVarLock);
 }
 
@@ -337,6 +352,7 @@ Obj             ValAutoGVar (
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
+	val = ValGVar(gvar);
         while ( val  == 0 ) {
             ErrorReturnVoid(
        "Variable: automatic variable '%s' must get a value by function call",

@@ -76,6 +76,7 @@ ReadLib( "string.gd"   );
 
 ReadLib( "cmdledit.g"  );
 
+ReadLib( "serialize.g" );
 ReadLib( "thread.g" );
 ReadLib( "objset.g" );
 ReadLib( "smallrgn.g"  );
@@ -91,6 +92,8 @@ ReadLib( "altview.g" );
 #if not IsBound(GAPInfo.SystemEnvironment.GAP_STDTASKS) then
 #  ReadLib( "tasks.g" );
 #fi;
+
+ReadLib( "actor.g" );
 
 ReadLib( "error.g"   );
 ReadLib( "session.g" );

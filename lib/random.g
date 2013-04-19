@@ -16,10 +16,9 @@
 ##
 MakeThreadLocal("R_N");
 MakeThreadLocal("R_X");
-BindThreadLocal("R_N", 1);
-BindThreadLocal("R_X", [ ]);
 
 BIND_GLOBAL("RANDOM_SEED_COUNTER", FixedAtomicList(1, 0));
+
 BIND_GLOBAL("GET_RANDOM_SEED_COUNTER", function()
   local r;
   r := ATOMIC_ADDITION(RANDOM_SEED_COUNTER, 1, 1);
@@ -51,7 +50,13 @@ RANDOM_SEED := function ( n )
     od;
 end;
 
-if ThreadVar.R_X = []  then RANDOM_SEED( GET_RANDOM_SEED_COUNTER() );  fi;
+BIND_GLOBAL("RANDOM_SEED_CONSTRUCTOR", function()
+R_N := 1;
+RANDOM_SEED( GET_RANDOM_SEED_COUNTER() );
+end);
+
+BindThreadLocalConstructor("R_N", RANDOM_SEED_CONSTRUCTOR);
+BindThreadLocalConstructor("R_X", RANDOM_SEED_CONSTRUCTOR);
 
 #############################################################################
 ##

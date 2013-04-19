@@ -49,7 +49,7 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "CATS_AND_REPS", [] );
-SHARE(CATS_AND_REPS);
+ShareKernelObj(CATS_AND_REPS);
 
 
 #############################################################################
@@ -64,7 +64,7 @@ SHARE(CATS_AND_REPS);
 ##  </ManSection>
 ##
 BIND_GLOBAL( "CONSTRUCTORS", [] );
-SHARE(CONSTRUCTORS);
+ShareKernelObj(CONSTRUCTORS);
 
 BIND_GLOBAL( "IS_CONSTRUCTOR", function(op) 
     atomic readonly CONSTRUCTORS do

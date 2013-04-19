@@ -1,13 +1,13 @@
-ADOPT_NORECURSE([1,2,3]);
+AdoptSingleObj([1,2,3]);
 
 f := function()
  local ds, r, l;
- ds := SHARE_NORECURSE([]);
+ ds := ShareSingleObj([]);
  l:=LOCK(ds);
- ds[1] := MIGRATE_NORECURSE([1,2], ds);
+ ds[1] := MigrateSingleObj([1,2], ds);
  UNLOCK(l);
  l:=LOCK(ds);
- r := ADOPT_NORECURSE(ds[1]);
+ r := AdoptSingleObj(ds[1]);
  UNLOCK(l);
  return r;
 end;

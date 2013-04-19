@@ -1298,12 +1298,16 @@ void *AllocateBagMemory(int gc_type, int type, UInt size)
       else
 	result = GC_malloc_atomic(size);
       memset(result, 0, size);
-    } else if (gc_type > 0) {
+    } else if (gc_type > 0 && size >= 32 * sizeof(UInt)) {
+      /* Explicitly typed allocations are not thread-local,
+       * so we only use them for reasonably large bags where
+       * we also expect to have significant scanning overhead.
+       */
       if (size >= LARGE_GC_SIZE)
         result = GC_malloc_explicitly_typed_ignore_off_page(size,
 	  GCDesc[gc_type]);
       else
-        result = GC_generic_malloc(size, GCKind[gc_type]);
+        result = GC_malloc_explicitly_typed(size, GCDesc[gc_type]);
     } else {
       if (size >= LARGE_GC_SIZE)
 	result = GC_malloc_ignore_off_page(size);

@@ -14,6 +14,7 @@ typedef struct ThreadLocalStorage
   void *acquiredMonitor;
   unsigned multiplexRandomSeed;
   void *currentRegion;
+  void *threadRegion;
   void *traversalState;
   Obj threadObject;
   Obj tlRecords;
@@ -32,6 +33,7 @@ typedef struct ThreadLocalStorage
   Obj intrState;
   Obj stackObj;
   Int countObj;
+  UInt PeriodicCheckCount;
   /* From gvar.c */
   Obj currNamespace;
   /* From vars.c */
@@ -140,11 +142,19 @@ typedef struct ThreadLocalStorage
   Obj PrintObjIndicesObj;
   Int *PrintObjIndices;
 
+  /* For serializer.c */
+
+  Obj SerializationObj;
+  UInt SerializationIndex;
+  void *SerializationDispatcher;
+  Obj SerializationRegistry;
+  Obj SerializationStack;
+
 } ThreadLocalStorage;
 
 extern ThreadLocalStorage *MainThreadTLS;
 
-typedef struct
+typedef struct TLSHandler
 {
   struct TLSHandler *nextHandler;
   void (*constructor)();
@@ -185,7 +195,7 @@ static ALWAYS_INLINE ThreadLocalStorage *GetTLS()
 #ifdef __GNUC__
   stack = __builtin_frame_address(0);
 #else
-  int dummy[0];
+  int dummy[1];
   stack = dummy;
 #endif
   return (ThreadLocalStorage *) (((uintptr_t) stack) & TLS_MASK);

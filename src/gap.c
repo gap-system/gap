@@ -21,6 +21,8 @@
 #include        <sys/stat.h>
 #endif
 
+#include	<sys/time.h>
+
 /* TL: extern char * In; */
 
 #include        "gasman.h"              /* garbage collector               */
@@ -96,6 +98,8 @@
 #include        "streams.h"             /* streams package                 */
 #include        "sysfiles.h"            /* file input/output               */
 #include        "weakptr.h"             /* weak pointers                   */
+
+#include	"serialize.h"		/* object serialization		   */
 
 #ifdef GAPMPI
 #include        "gapmpi.h"              /* ParGAP/MPI                      */
@@ -925,7 +929,6 @@ Obj FuncRuntime (
 }
 
 
-
 Obj FuncRUNTIMES( Obj     self)
 {
   Obj    res;
@@ -941,6 +944,25 @@ Obj FuncRUNTIMES( Obj     self)
 #endif
   return res;
    
+}
+
+/****************************************************************************
+**
+*F  FuncSystemClock( <self> . . . . . . . . . internal function 'SystemClock'
+**
+**  'FuncSystemClock' implements the internal function 'SystemClock'.
+**
+**  'SystemClock()'
+**
+**  'SystemClock' returns the current value of the system clock, as reported
+**  by gettimeofday(), as a floating point number valued in seconds.
+*/
+
+Obj FuncSystemClock(Obj self)
+{
+  struct timeval t;
+  gettimeofday(&t, NULL);
+  return NEW_MACFLOAT( (double) t.tv_sec + ((double) t.tv_usec) / 1000000.0);
 }
 
 
@@ -1356,6 +1378,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     Obj result;
     Stat currStat;
     int lockSP;
+    Region *savedRegion;
     if (!IS_FUNC(func))
       ErrorMayQuit("CALL_WITH_CATCH(<func>,<args>): <func> must be a function",0,0);
     if (!IS_LIST(args))
@@ -1372,6 +1395,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
     currStat = TLS->currStat;
     res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
     lockSP = RegionLockSP();
+    savedRegion = TLS->currentRegion;
     if (sySetjmp(TLS->readJmpError)) {
       SET_LEN_PLIST(res,2);
       SET_ELM_PLIST(res,1,False);
@@ -1383,6 +1407,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       TLS->ptrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
       TLS->currStat = currStat;
       PopRegionLocks(lockSP);
+      TLS->currentRegion = savedRegion;
       if (TLS->CurrentHashLock)
         HashUnlock(TLS->CurrentHashLock);
     } else {
@@ -1414,6 +1439,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, Obj args )
       }
       /* There should be no locks to pop off the stack, but better safe than sorry. */
       PopRegionLocks(lockSP);
+      TLS->currentRegion = savedRegion;
       SET_ELM_PLIST(res,1,True);
       if (result)
         {
@@ -1481,6 +1507,8 @@ Obj CallErrorInner (
   Obj r = NEW_PREC(0);
   Obj l;
   Obj result;
+  Region *savedRegion = TLS->currentRegion;
+  TLS->currentRegion = TLS->threadRegion;
   EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
   AssPRec(r, RNamName("context"), TLS->currLVars);
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
@@ -1493,6 +1521,7 @@ Obj CallErrorInner (
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(TLS->currStat);
   result = CALL_2ARGS(ErrorInner,r,l);  
+  TLS->currentRegion = savedRegion;
   return result;
 }
 
@@ -2801,6 +2830,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   Char *p;
   Obj tmp,list,str;
   UInt i,j;
+  extern UInt SyNumProcessors;
 
   /* GAP_ARCHITECTURE                                                    */
   tmp = NEW_STRING(SyStrlen(SyArchitecture));
@@ -2873,6 +2903,11 @@ Obj FuncKERNEL_INFO(Obj self) {
     r = RNamName("CONFIGNAME");
     AssPRec(res, r, str);
 #endif
+
+    r = RNamName("NUM_CPUS");
+    AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
+
+    MakeImmutable(res);
    
     return res;
   
@@ -2971,6 +3006,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "Runtime", 0, "",
       FuncRuntime, "src/gap.c:Runtime" },
+
+    { "SystemClock", 0, "",
+      FuncSystemClock, "src/gap.c:SystemClock" },
 
     { "RUNTIMES", 0, "",
       FuncRUNTIMES, "src/gap.c:RUNTIMES" },
@@ -3180,27 +3218,6 @@ static Int PostRestore (
     return 0;
 }
 
-static void InitOSEnvironment() {
-  char **env = SyEnvironment;
-  Obj rec = NEW_PREC(0);
-  while (env && env[0]) {
-    Obj tmp = MakeString(env[0]);
-    UInt rnam;
-    Obj val;
-    char *p = CSTR_STRING(tmp);
-    while (*p && *p != '=')
-      p++;
-    if (*p)
-      *p++ = '\0';
-    rnam = RNamName(CSTR_STRING(tmp));
-    val = MakeImmString(p);
-    AssPRec(rec, rnam, val);
-    env ++;
-  }
-  MakeImmutable(rec);
-  AssGVar(GVarName("OS_ENV"), rec);
-}
-
 
 /****************************************************************************
 **
@@ -3214,8 +3231,6 @@ static Int InitLibrary (
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
-
-    InitOSEnvironment();
 
     /* create windows command buffer                                       */
     WindowCmdString = NEW_STRING( 1000 );
@@ -3334,6 +3349,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoThreadAPI,
     InitInfoAObjects,
     InitInfoObjSets,
+    InitInfoSerialize,
 
 #ifdef GAPMPI
     /* ParGAP/MPI module                                                   */

@@ -6,7 +6,7 @@
 Revision.nor3_c :=
     "@(#)$Id: nor3.c,v 1.1 1999/12/08 18:52:48 gap Exp $";
 
-SMALL_GROUP_LIB[ 45 ] := [
+SMALL_GROUP_LIB[ 45 ] := AtomicList( List( [
 [ [ 1 ], [ 1, 3 ], -1, [ 1, -2, 3 ], -1 ], 
 [ [ 1 ], [ 9 ] ], 
-[ [ 1 ] ] ];
+[ [ 1 ] ] ], ShareObj) );

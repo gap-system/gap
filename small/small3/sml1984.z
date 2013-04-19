@@ -6,6 +6,6 @@
 Revision.sml1984_z :=
     "@(#)$Id: sml1984.z,v 1.1 1998/07/18 15:27:16 gap Exp $";
 
-SMALL_GROUP_LIB[ 1984 ].pnil := rec( 2syl :=
+SMALL_GROUP_LIB[ 1984 ].pnil := AtomicRecord( `rec( 2syl :=
 [ 267 ], oper :=
-[ 73447047637 ] );
+[ 73447047637 ] ) );

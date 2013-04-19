@@ -18,7 +18,7 @@
 ##
 DeclareRepresentation(
     "IsDirectoryRep",
-    IsPositionalObjectRep,
+    IsReadOnlyPositionalObjectRep,
     [] );
 
 
