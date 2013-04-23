@@ -957,8 +957,7 @@ local f,n,bytelen,data,qq,i;
       return function(x)
              if not IsGF2VectorRep(x) then
                  Info(InfoWarning,1,"uncompressed vector");
-                 x:=ShallowCopy(x);
-                 ConvertToGF2VectorRep(x);
+                 x:=COPY_GF2VEC(x);
                fi;
                return HASHKEY_BAG(x,101,data[1],data[2]);
              end;
