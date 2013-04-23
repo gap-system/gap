@@ -205,9 +205,11 @@ DeclareSynonym( "ConvertToGF2VectorRep", CONV_GF2VEC );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ConvertToVectorRepNC");
-DeclareGlobalFunction( "CopyToVectorRepNC");
 DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 
+DeclareGlobalFunction( "CopyToVectorRep");
+# DeclareGlobalFunction( "CopyToVectorRepNC");
+DeclareSynonym( "CopyToVectorRepNC",CopyToVectorRep);
 
 #############################################################################
 ##

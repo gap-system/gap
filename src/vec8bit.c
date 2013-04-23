@@ -984,7 +984,6 @@ Obj NewVec8Bit (
       ErrorQuit("GF2 has its own representation\n", 0L, 0L);
 
     /* already in the correct representation                               */
-    /* TODO: leave this for later. See CopyVec8Bit/SHALLOWCOPY_VEC8BIT */
     if ( IS_VEC8BIT_REP(list) )
       {
 	if( FIELD_VEC8BIT(list) == q )
