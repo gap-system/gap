@@ -2434,7 +2434,7 @@ InstallMethod( BaseField, "for a compressed gf2 vector",
 InstallMethod( NewRowVector, "for IsGF2VectorRep, GF(2), and a list",
   [ IsGF2VectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
-    return CopyToVectorRepNC(l,2);
+    return CopyToVectorRep(l,2);
   end );
 
 InstallMethod( ZeroMatrix, "for a compressed gf2 matrix",

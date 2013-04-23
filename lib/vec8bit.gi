@@ -1161,7 +1161,7 @@ InstallMethod( BaseField, "for a compressed 8bit vector",
 InstallMethod( NewRowVector, "for Is8BitVectorRep, GF(q), and a list",
   [ Is8BitVectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
-    return CopyToVectorRepNC(l,Size(f));
+    return CopyToVectorRep(l,Size(f));
   end );
 
 InstallMethod( NewZeroVector, "for Is8BitVectorRep, GF(q), and an int",
