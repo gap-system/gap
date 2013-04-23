@@ -932,7 +932,7 @@ InstallMethod( NormedRowVectors,
         toadd:= base[j+1] + i * base[j];
         for k in [ 1 .. len ] do
           v:= elms2[k] + toadd;
-          v:=CopyToVectorRepNC( v, q );
+          v:=CopyToVectorRep( v, q );
           new[ pos + k ]:= v;
         od;
         pos:= pos + len;

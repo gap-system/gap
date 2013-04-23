@@ -236,7 +236,7 @@ gap> Intersection( v, c );
 <vector space over GF(3^2), with 0 generators>
 gap> Intersection( v, f ) = v;
 true
-gap> nv:= NormedVectors( v );;
+gap> nv:= NormedRowVectors( v );;
 gap> Print( nv{ [ 1 .. 5 ] }, "\n" );
 [ [ 0*Z(3), 0*Z(3), Z(3)^0 ], [ Z(3)^0, Z(3)^0, 0*Z(3) ], 
   [ Z(3)^0, Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0, Z(3) ], 
