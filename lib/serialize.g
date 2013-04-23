@@ -9,7 +9,7 @@ end);
 # A placeholder type for partly deserialized objects.
 
 BindGlobal("UnknownFamily", NewFamily("UnknownFamily", IsObject));
-DeclareFilter("IsUnknownObj", IsObject and IsInternalRep);
+DeclareFilter("IsUnknownObj", IsObject and IsInternalRep and IsInternallyMutable);
 BindGlobal("TYPE_UNKNOWN", NewType(UnknownFamily, IsUnknownObj));
 
 # Deserializers

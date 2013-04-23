@@ -67,11 +67,11 @@ BIND_GLOBAL( "RANK_FILTERS", LockAndMigrateObj([], FILTER_REGION) );
 ##
 BIND_GLOBAL( "INFO_FILTERS", LockAndMigrateObj([], FILTER_REGION) );
 
-BIND_GLOBAL( "FNUM_CATS", [ 1,  2 ] );
-BIND_GLOBAL( "FNUM_REPS", [ 3,  4 ] );
-BIND_GLOBAL( "FNUM_ATTS", [ 5,  6 ] );
-BIND_GLOBAL( "FNUM_PROS", [ 7,  9 ] );
-BIND_GLOBAL( "FNUM_TPRS", [ 8, 10 ] );
+BIND_GLOBAL( "FNUM_CATS", `[ 1,  2 ] );
+BIND_GLOBAL( "FNUM_REPS", `[ 3,  4 ] );
+BIND_GLOBAL( "FNUM_ATTS", `[ 5,  6 ] );
+BIND_GLOBAL( "FNUM_PROS", `[ 7,  9 ] );
+BIND_GLOBAL( "FNUM_TPRS", `[ 8, 10 ] );
 
 
 #############################################################################
