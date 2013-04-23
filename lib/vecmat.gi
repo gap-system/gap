@@ -1343,7 +1343,6 @@ end);
 ##
 #F  CopyToVectorRep( <v>, <q> )
 ##
-
 InstallGlobalFunction(CopyToVectorRep,function( v, q )
     local vc, common, field;
 
@@ -1407,7 +1406,7 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
             common := SMALLEST_FIELD_VECFFE(vc);
         fi;
         if common <> 2 then
-            Error("ConvertToVectorRepNC: Vector cannot be written over GF(2)");
+            Error("CopyToVectorRep: Vector cannot be written over GF(2)");
         fi;
         return COPY_GF2VEC(vc);
     elif q <= 256 then
@@ -1417,7 +1416,7 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
                 common := SMALLEST_FIELD_VECFFE(vc);
             fi;
             if common ^ LogInt(q, common) <> q then
-                Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
+                Error("CopyToVectorRep: Vector cannot be written over GF(",q,")");
             fi;
         fi;
         return COPY_VEC8BIT(vc,q);
@@ -1427,8 +1426,69 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
 end);
 
 
-# TODO: NC version here
-# InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
+#############################################################################
+##
+#F  CopyToVectorRepNC( <v>, <q> )
+##
+##  This is the NC-version of CopyToVectorRep. It is forbidden to call it
+##  unless v is a plain list or a row vector, q<=256 is a valid size of a 
+##  finite field, and all elements of v lie in this field. 
+##
+InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
+    local common, field;
+
+    # Handle fast, certain cases where there is no work. Microseconds count here
+    
+    if IsGF2VectorRep(v) and q=2 then
+        if IsMutable(v) then
+          return(ShallowCopy(v));
+        else
+          return v;
+        fi;  
+    fi;
+    
+    if Is8BitVectorRep(v) then
+        if q = Q_VEC8BIT(v) then
+            if IsMutable(v) then
+                return(ShallowCopy(v));
+            else
+                return v;
+            fi; 
+        fi;
+    fi;
+    
+    # Calling COMMON_FIELD_VECFFE may force a full inspection of the list.
+    common := COMMON_FIELD_VECFFE(v);
+    if common = fail then
+        Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,").\n",
+              "You may try to use ConvertToVectorRep instead\n");
+    fi;
+    
+    if q = 2 then
+        Assert(2, ForAll(v, elm -> elm in GF(2)));
+        if common > 2 and common mod 2 = 0 then
+            common := SMALLEST_FIELD_VECFFE(v);
+        fi;
+        if common <> 2 then
+            Error("ConvertToVectorRepNC: Vector cannot be written over GF(2)");
+        fi;
+        return COPY_GF2VEC(v);
+    elif q <= 256 then
+        if common <> q then 
+            Assert(2, ForAll(v, elm -> elm in GF(q)));
+            if IsPlistRep(v) and  GcdInt(common,q) > 1  then
+                common := SMALLEST_FIELD_VECFFE(v);
+            fi;
+            if common ^ LogInt(q, common) <> q then
+                Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
+            fi;
+        fi;
+        return COPY_VEC8BIT(v,q);
+    else    
+        Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
+    fi;
+end);
+
 
 #############################################################################
 ##

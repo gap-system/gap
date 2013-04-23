@@ -208,8 +208,7 @@ DeclareGlobalFunction( "ConvertToVectorRepNC");
 DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 
 DeclareGlobalFunction( "CopyToVectorRep");
-# DeclareGlobalFunction( "CopyToVectorRepNC");
-DeclareSynonym( "CopyToVectorRepNC",CopyToVectorRep);
+DeclareGlobalFunction( "CopyToVectorRepNC");
 
 #############################################################################
 ##
