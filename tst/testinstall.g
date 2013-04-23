@@ -46,6 +46,7 @@ RunStandardTests( [
   [ "algmat.tst", 287300000 ],
   [ "algsc.tst", 76600000 ],
   [ "combinat.tst", 7000000 ],
+  [ "comprvec.tst", 853200000 ],
   [ "ctblfuns.tst", 3300000 ],
   [ "ctblmoli.tst", 98500000 ],
   [ "ctblmono.tst", 31000000 ],
