@@ -267,8 +267,8 @@ DeclareGlobalFunction( "CopyToVectorRepNC");
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "ConvertToMatrixRepNC");
-DeclareGlobalFunction("ConvertToMatrixRep",ConvertToMatrixRepNC);
+DeclareGlobalFunction( "ConvertToMatrixRepNC" );
+DeclareGlobalFunction( "ConvertToMatrixRep" );
 
 
 #############################################################################
