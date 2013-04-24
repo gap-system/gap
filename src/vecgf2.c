@@ -1698,7 +1698,10 @@ Obj NewGF2Vec (
     
     /* already in the correct representation                               */
     if ( IS_GF2VEC_REP(list) ) {
-        return ShallowCopyVecGF2(list);
+        res = ShallowCopyVecGF2(list);
+        if (!IS_MUTABLE_OBJ(list))
+          SetTypeDatObj(res, TYPE_LIST_GF2VEC_IMM);
+        return res;
     }
     
     len = LEN_PLIST(list);

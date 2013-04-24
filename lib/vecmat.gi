@@ -1344,7 +1344,7 @@ end);
 #F  CopyToVectorRep( <v>, <q> )
 ##
 InstallGlobalFunction(CopyToVectorRep,function( v, q )
-    local vc, common, field;
+    local vc, common, field, res;
 
     # Handle fast, certain cases where there is no work. Microseconds count here
     
@@ -1408,7 +1408,9 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
         if common <> 2 then
             Error("CopyToVectorRep: Vector cannot be written over GF(2)");
         fi;
-        return COPY_GF2VEC(vc);
+        res := COPY_GF2VEC(vc);
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
     elif q <= 256 then
         if common <> q then 
             Assert(2, ForAll(vc, elm -> elm in GF(q)));
@@ -1419,7 +1421,9 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
                 Error("CopyToVectorRep: Vector cannot be written over GF(",q,")");
             fi;
         fi;
-        return COPY_VEC8BIT(vc,q);
+        res := COPY_VEC8BIT(vc,q);
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
     else    
         return fail; # vector can not be written over GF(q)
     fi;
@@ -1435,7 +1439,7 @@ end);
 ##  finite field, and all elements of v lie in this field. 
 ##
 InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
-    local common, field;
+    local common, field, res;
 
     # Handle fast, certain cases where there is no work. Microseconds count here
     
@@ -1472,7 +1476,9 @@ InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
         if common <> 2 then
             Error("ConvertToVectorRepNC: Vector cannot be written over GF(2)");
         fi;
-        return COPY_GF2VEC(v);
+        res := COPY_GF2VEC(v);
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
     elif q <= 256 then
         if common <> q then 
             Assert(2, ForAll(v, elm -> elm in GF(q)));
@@ -1483,7 +1489,9 @@ InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
                 Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
             fi;
         fi;
-        return COPY_VEC8BIT(v,q);
+        res :=COPY_VEC8BIT(v,q);
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
     else    
         Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
     fi;

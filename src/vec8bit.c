@@ -986,14 +986,22 @@ Obj NewVec8Bit (
     /* already in the correct representation                               */
     if ( IS_VEC8BIT_REP(list) )
       {
-	if( FIELD_VEC8BIT(list) == q )
-      return CopyVec8Bit(list,1); 
+	if( FIELD_VEC8BIT(list) == q ) 
+	  {
+	    res = CopyVec8Bit(list,1); 
+        if (!IS_MUTABLE_OBJ(list))
+          /* index 0 is for immutable vectors */   
+          SetTypeDatObj( res, TypeVec8Bit( q, 0 ) );
+        return res;
+      }
 	else if ( FIELD_VEC8BIT(list) < q )
 	  {
 	    /* rewriting to a larger field */   
         res = CopyVec8Bit(list,1);
         RewriteVec8Bit(res,q);
         /* TODO: rework RewriteVec8Bit and avoid calling CopyVec8Bit */
+        if (!IS_MUTABLE_OBJ(list))
+          SetTypeDatObj( res, TypeVec8Bit( q, 0 ) );
 	    return res;
 	  }
 	/* remaining case is list is written over too large a field
@@ -1005,6 +1013,8 @@ Obj NewVec8Bit (
         res = ShallowCopyVecGF2(list);  
         RewriteGF2Vec(res, q);
         /* TODO: rework RewriteGF2Vec and avoid calling ShallowCopyVecGF2 */
+        if (!IS_MUTABLE_OBJ(list))
+          SetTypeDatObj( res, TypeVec8Bit( q, 0 ) );
 	    return res;
       }
     
