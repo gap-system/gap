@@ -101,8 +101,8 @@ local fam,i,cof,red,rchar,impattr,deg;
   fam!.deg:=deg;
   i:=List([1..DegreeOfLaurentPolynomial(p)],i->fam!.zeroCoefficient);
   i[2]:=fam!.oneCoefficient;
-  if rchar>0 then
-    ConvertToVectorRep(i,rchar);
+  if rchar>0 then # rchar is <= 256
+    i := CopyToVectorRepNC(i,rchar);
   fi;
   fam!.primitiveElm:=ObjByExtRep(fam,i);
   fam!.indeterminateName:="a";

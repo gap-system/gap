@@ -981,8 +981,7 @@ local f,n,bytelen,data,qq,i;
       return function(x)
              if not Is8BitVectorRep(x) then
                  Info(InfoWarning,1,"uncompressed vector");
-                 x:=ShallowCopy(x);
-                 ConvertToVectorRep(x,n);
+                 x:=CopyToVectorRepNC(x,n);
                fi;
                return HASHKEY_BAG(x,101,data[1],data[2]);
              end;
