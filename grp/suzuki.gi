@@ -79,13 +79,17 @@ function ( filter, q )
   f := GF(q);
   r := RootInt(2 * q);
   v:=[1,0,0,0] * One(f);
-  ConvertToVectorRep(v,q);
+  if q <= 256 then
+    ConvertToVectorRepNC(v,q);
+  fi;  
   MakeImmutable(v);
   Ovoid := [v];
   for a in f do
     for b in f do
       v:=[a^(r+2) + a*b + b^r,b,a,One(f)];
-      ConvertToVectorRep(v,q);
+      if q <= 256 then
+        v := CopyToVectorRepNC(v,q);
+      fi;  
       MakeImmutable(v);
       Add(Ovoid,NormedRowVector(v));
     od;
