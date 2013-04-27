@@ -75,8 +75,10 @@ const Char * SyKernelVersion = "4.dev";
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
+** do not edit the following line. Occurences of `gap4dev'
+** will be replaced by string matching by distribution wrapping scripts.
 */
-const Char * SyWindowsPath = "/cygdrive/c/gap4r5";
+const Char * SyWindowsPath = "/cygdrive/c/gap4dev";
 
 /****************************************************************************
 **

@@ -689,7 +689,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
       orbs,GetResolvent,norb,act,repro,minpol,ext,ncand,pos,step,lens,gudeg,
       typ,pkt,fun,factors,stabs,stanr,nostanr,degs,GetProperty,
       GrabCodedLengths,UnParOrbits,cnt,polring,basring,indet,indnum,
-      extring;
+      extring,lpos;
 
   GetProperty := function(l,prop)
   local i;
@@ -1164,7 +1164,11 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
                     # mark occurence as found
                     for k in dco[j] do
                       # we may not unbind, since sublist will fail otherwise
-                      k[Position(dco[j],pat)]:="weg";
+                      lpos:=Position(dco[j],pat);
+		      if lpos=fail then
+			lpos:=Position(dco[j],[pat]);
+		      fi;
+                      k[lpos]:="weg";
                     od;
                   fi;
                 od;

@@ -1254,6 +1254,15 @@ function(R,I)
   ord:=MonomialGrlexOrdering();
   b:=GroebnerBasis(I,ord);
 
+  # special case: unit in ideal -- quotient is trivial
+  if ForAny(b,IsUnit) then
+    a:=Subring(R,[Zero(R)]);
+    hom:=MappingByFunction(R,a,x->Zero(a));
+    SetImagesSource(hom,a);
+    return hom;
+  fi;
+
+
   # determine all monomials bounded
   ind:=IndeterminatesOfPolynomialRing(R);
   n:=Length(ind);
@@ -1279,7 +1288,7 @@ function(R,I)
   fi;
 
   #run through bounded simplex
-  a:=[0,0];
+  a:=List(ind,x->0);
   mon:=[a];
   i:=Length(a);
   repeat
@@ -1357,7 +1366,7 @@ function(R,I)
     fi;
   od;
 
-  hom:=AlgebraWithOneHomomorphismByImages(R,a,k,l);
+  hom:=AlgebraWithOneHomomorphismByImagesNC(R,a,k,l);
   SetIsSurjective(hom,true);
   SetKernelOfAdditiveGeneralMapping(hom,I);
 

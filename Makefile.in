@@ -375,6 +375,27 @@ testupdates:
             SetAssertionLevel( 2 ); RunDevUpdateTests();' | $(TESTGAP) > \
             `date -u +dev/log/testupdates2_%Y-%m-%d-%H-%M` )
             
+testobsoletes:
+	mkdir -p dev/log
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
+	( echo 'CreatePackageLoadTestsInput( "testobsoletes1.in", \
+            "dev/log/testobsoletes1", \
+            "$(TESTGAP) -O -L wsp.g", false, false );'\
+            | $(TESTGAP) -O -L wsp.g > /dev/null )
+	( chmod 777 testobsoletes1.in; ./testobsoletes1.in > \
+            `date -u +dev/log/testobsoletes1_%Y-%m-%d-%H-%M`; rm testobsoletes1.in )
+	( rm wsp.g )
+	( echo 'ReadGapRoot( "tst/testutil.g" ); \
+            SaveWorkspace( "wsp.g" );' | $(TESTGAP) -O )
+	( echo 'CreatePackageLoadTestsInput( "testobsoletesN1.in", \
+            "dev/log/testobsoletesN1", \
+            "$(TESTGAP) -O -L wsp.g", false, true );'\
+            | $(TESTGAP) -O -L wsp.g > /dev/null )
+	( chmod 777 testobsoletesN1.in; ./testobsoletesN1.in > \
+            `date -u +dev/log/testobsoletesN1_%Y-%m-%d-%H-%M`; rm testobsoletesN1.in )
+	( rm wsp.g )
+
 cygwin:	extern
 	( cd bin/$(GAPARCH) ; $(MAKE) gapdll ABI='$(ABI)' CC='$(CC)' GMP_VER='$(GMP_VER)' GMP_CFLAGS='$(GMP_CFLAGS)' GMP_LIBS='$(GMP_LIBS)' CONFIGNAME='$(CONFIGNAME)' )
 	chmod +x bin/gap-$(CONFIGNAME).sh

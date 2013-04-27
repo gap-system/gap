@@ -5245,6 +5245,7 @@ local GO,q,d,e,b,r,val,agemo,ngens;
     fi;
 
     q[2]:=ClosureSubgroup(q[2],agemo);
+    q[3]:=ClosureSubgroup(q[3],agemo);
     e:=LogInt(Index(q[2],q[3]),p);
     Info(InfoFpGroup,1,b," generators, ",r," relators, p=",p,", d=",d," e=",e);
     q:=r-b+d;

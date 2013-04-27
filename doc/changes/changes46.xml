@@ -363,6 +363,107 @@ alternating groups and provides some related functionalities.
 </Section>
 
 
+<Section Label="fix464"> 
+<Heading>&GAP; 4.6.4 (April 2013)</Heading>
+
+New functionality:
+<List>
+<Item>
+<!-- #368 -->
+New command line option <C>-O</C> was introduced to disable loading obsolete
+variables. This option may be used, for example, to check that they are
+not used in a &GAP; package or one's own &GAP; code. For further details 
+see <Ref Label="Options" BookName="ref"/> and
+<Ref Label="Replaced and Removed Command Names" BookName="ref"/>.
+</Item>
+</List>
+
+Fixed bugs which could lead to incorrect results:
+
+<List>
+<Item>
+<!-- #378 -->
+Fixed the bug in <Ref Func="NewmanInfinityCriterion" BookName="ref"/> which
+may cause returning <K>true</K> instead of <K>false</K>. 
+[Reported by Lev Glebsky]
+</Item>
+</List>
+
+Fixed bugs which could lead to crashes:
+
+<List>
+<Item>
+<!-- #362 -->
+Fixed the kernel method for <Ref Oper="Remove" BookName="ref"/> which did 
+not raise an error in case of empty lists, but corrupted the object.
+The error message in a library method is also improved.
+[Reported by Roberto Ràdina]
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+
+<List>
+
+<Item>
+<!-- #356 -->
+Fixed requirements in a method to multiply a list and an algebraic element.
+[Reported by Sebastian Gutsche]
+</Item>
+
+<Item>
+<!-- #357 -->
+Fixed a bug in <Ref Attr="NaturalCharacter" BookName="ref"/> entering a 
+break loop when being called on a homomorphism whose image is not a 
+permutation group.
+[Reported by Sebastian Gutsche]
+</Item>
+
+<Item>
+<!-- #363 -->
+Fixed a bug in <Ref Oper="ExponentsConjugateLayer" BookName="ref"/> which
+occured, for example, in some calls of 
+<Ref Func="SubgroupsSolvableGroup" BookName="ref"/> 
+[Reported by Ramon Esteban-Romero]
+</Item>
+
+<Item>
+<!-- #364 -->
+Fixed a problem with displaying function fields, 
+e.g. <C>Field(Indeterminate(Rationals,"x"))</C>.
+[Reported by Jan Willem Knopper]
+</Item>
+
+<Item>
+<!-- #365 -->
+Fixed two bugs in the code for 
+<Ref Oper="NaturalHomomorphismByIdeal" BookName="ref"/> for polynomial rings.
+[Reported by Martin Leuner]
+</Item>
+
+<Item>
+<!-- #370 -->
+Added missing method for <Ref Oper="String" BookName="ref"/> for <C>-infinity</C>.
+</Item>
+
+<Item>
+<!-- #380 -->
+Fixed the bug with <Ref Attr="ONanScottType" BookName="ref"/> not 
+recognising product action properly in some cases.
+</Item>
+
+<Item>
+<!-- #385 -->
+The method for <Ref Attr="SlotUsagePattern" BookName="ref"/> for straight 
+line programs had a bug which triggered an error, if the straight line
+program contained unnecessary steps. 
+</Item>
+
+</List>
+
+</Section>
+
+
 </Chapter>
 
 

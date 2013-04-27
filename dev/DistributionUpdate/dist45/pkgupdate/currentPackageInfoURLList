@@ -113,7 +113,7 @@ Sophus      http://www.sztaki.hu/~schneider/Research/Sophus/PackageInfo.g
 SpinSym     http://www.uni-due.de/~s400304/spinsym/PackageInfo.g
 SymbCompCC  http://www.icm.tu-bs.de/ag_algebra/software/feichten/SymbCompCC/PackageInfo.g
 TomLib      http://schmidt.nuigalway.ie/tomlib/PackageInfo.g
-ToolsForHomalg http://homalg.math.rwth-aachen.de/~barakat/homalg-project/ToolsForHomalg/PackageInfo.g
+ToolsForHomalg http://wwwb.math.rwth-aachen.de/~gutsche/gap_packages/ToolsForHomalg/PackageInfo.g
 toric       http://www.opensourcemath.org/toric/PackageInfo.g
 ToricVarieties http://wwwb.math.rwth-aachen.de/~gutsche/gap_packages/ToricVarieties/PackageInfo.g
 unipot      http://www.sergei-haller.de/unipot/PackageInfo.g

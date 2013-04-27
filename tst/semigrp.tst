@@ -23,8 +23,8 @@ gap> g := Group(a);;
 gap> 
 gap> u := TransformationRepresentation(
 > GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^1]), 
-> Tuple([a^3, a^3]), Tuple([a^4, a^4])]));;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^1]), 
+>  DirectProductElement([a^3, a^3]), DirectProductElement([a^4, a^4])]));;
 gap> 
 gap> u*u;;
 gap> ()^u;;
@@ -35,33 +35,33 @@ gap> a := (1,2,3,4);;
 gap> g := Group(a);;
 gap> 
 gap> s1 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^1]), 
-> Tuple([a^3, a^3]), Tuple([a^4, a^4])]);;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^1]), 
+> DirectProductElement([a^3, a^3]), DirectProductElement([a^4, a^4])]);;
 gap> s1 := TransformationRepresentation(s1);;
 gap> 
 gap> t1 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^2]), Tuple([a^2, a^2]), 
-> Tuple([a^3, a^3]), Tuple([a^4, a^4])]);;
+> [DirectProductElement([a^1, a^2]), DirectProductElement([a^2, a^2]), 
+> DirectProductElement([a^3, a^3]), DirectProductElement([a^4, a^4])]);;
 gap> t1 := TransformationRepresentation(t1);;
 gap> 
 gap> s2 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^2]), 
-> Tuple([a^3, a^2]), Tuple([a^4, a^4])]);;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^2]), 
+> DirectProductElement([a^3, a^2]), DirectProductElement([a^4, a^4])]);;
 gap> s2 := TransformationRepresentation(s2);;
 gap> 
 gap> t2 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^3]), 
-> Tuple([a^3, a^3]), Tuple([a^4, a^4])]);;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^3]), 
+> DirectProductElement([a^3, a^3]), DirectProductElement([a^4, a^4])]);;
 gap> t2 := TransformationRepresentation(t2);;
 gap> 
 gap> s3 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^2]), 
-> Tuple([a^3, a^3]), Tuple([a^4, a^3])]);;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^2]), 
+> DirectProductElement([a^3, a^3]), DirectProductElement([a^4, a^3])]);;
 gap> s3 := TransformationRepresentation(s3);;
 gap> 
 gap> t3 := GeneralMappingByElements(g, g,
-> [Tuple([a^1, a^1]), Tuple([a^2, a^2]),
-> Tuple([a^3, a^4]), Tuple([a^4, a^4])]);;
+> [DirectProductElement([a^1, a^1]), DirectProductElement([a^2, a^2]),
+> DirectProductElement([a^3, a^4]), DirectProductElement([a^4, a^4])]);;
 gap> t3 := TransformationRepresentation(t3);;
 gap> 
 gap> o4 := Semigroup([s1,s2,s3,t1,t2,t3]);;

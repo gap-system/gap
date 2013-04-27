@@ -2001,7 +2001,7 @@ look worse than others)
 +2MN The description of categories vs. properties in ``Adding new Concepts''
   is not correct.
   TODO: What's namely is wrong there? AK asked Thomas 
--4AK Again there are cross-references to undocumented functions
++4AK Again there are cross-references to undocumented functions
   (NormalizerOp, GroupByGenerators).
 +5AK overfull box because of a long list label in the ManSection for
   `ArithmeticElementCreator' --how to deal with this?

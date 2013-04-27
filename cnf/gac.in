@@ -176,6 +176,8 @@ process_o_file () {
 process_c_file () {
     name=$1
     c_file=$2
+    extra_cflags=$3
+
     if [ $comp_howfar != "object" ]; then
        o_file=${gactmp}/$$_${name}.o
         temps_o="${temps_o} ${o_file}"
@@ -189,7 +191,7 @@ process_c_file () {
     else
        c_compile_opts=$c_dyn_options
     fi
-    c_compile $o_file $c_file "$c_compile_opts"
+    c_compile $o_file $c_file "$c_compile_opts $extra_cflags"
     if [ $comp_howfar = "link" ]; then
       process_o_file $name $o_file
     fi 
@@ -322,7 +324,7 @@ while [ $# -gt 0 ]; do
 
     -L|--addlibs)         shift; c_addlibs="${c_addlibs} $1";;
 
-    *.g|*.gap|*.gd|*.gi|*.c|*.o)
+    *.g|*.gap|*.gd|*.gi|*.c|*.cc|*.cpp|*.o)
                           inputs="${inputs} $1";;
 
     *)                    echo "$0: cannot handle this argument '$1'"
@@ -417,6 +419,14 @@ for input in ${inputs}; do
         *.c) # compile '.c' source files
             name=`basename ${input} .c`
             process_c_file $name $input;;
+
+        *.cc) # compile '.cc' source files (C++)
+            name=`basename ${input} .cc`
+            process_c_file $name $input "-x c++";;
+
+        *.cpp) # compile '.cpp' source files (also C++)
+            name=`basename ${input} .cpp`
+            process_c_file $name $input "-x c++";;
 
         *.o) # look over '.o' source files
             name=`basename ${input} .o`

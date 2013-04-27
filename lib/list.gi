@@ -1745,6 +1745,9 @@ InstallMethod(Remove, "one argument", [IsList and IsMutable],
         function(l)
     local x,len;
     len := Length(l);
+    if len = 0 then
+      Error("Remove: list <l> must not be empty.\n");
+    fi;
     x := l[len];
     Unbind(l[len]);
     return x;

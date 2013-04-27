@@ -138,6 +138,13 @@ Obj            RemList (
     Int                 pos; 
     Obj result;
     pos = LEN_LIST( list ) ;
+    if ( pos == 0L ) {
+        list = ErrorReturnObj(
+                "Remove: <list> must not be empty",
+                0L, 0L,
+                "you may replace <list> via 'return <list>;'" );
+        return RemList(list);
+    }
     result = ELM_LIST(list, pos);
     UNB_LIST(list, pos);
     return result;
@@ -155,12 +162,19 @@ Obj            RemPlist (
 
     if ( ! IS_MUTABLE_PLIST(list) ) {
         list = ErrorReturnObj(
-                "Lists Assignment: <list> must be a mutable list",
+                "Remove: <list> must be a mutable list",
                 0L, 0L,
                 "you may replace <list> via 'return <list>;'" );
         return FuncREM_LIST( 0, list);
     }
     pos = LEN_PLIST( list );
+    if ( pos == 0L ) {
+        list = ErrorReturnObj(
+                "Remove: <list> must not be empty",
+                0L, 0L,
+                "you may replace <list> via 'return <list>;'" );
+        return FuncREM_LIST( 0, list);
+    }
     removed = ELM_PLIST(list, pos);
     SET_ELM_PLIST(list, pos, (Obj)0L);
     SET_LEN_PLIST(list, pos-1);

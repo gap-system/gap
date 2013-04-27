@@ -2036,12 +2036,14 @@ InstallMethod( PrintObj,
 ##
 ##  print left acting domain, if known also dimension or no. of generators
 ##
-InstallMethod( ViewObj,
-    "for an algebra-with-one",
-    [ IsAlgebraWithOne ],
-    function( A )
+InstallMethod( ViewObj, "for an algebra-with-one", [ IsAlgebraWithOne ],
+function( A )
+  if IsIdenticalObj(A,LeftActingDomain(A)) then
+    Print( "<algebra-with-one over itself>" );
+  else
     Print( "<algebra-with-one over ", LeftActingDomain( A ), ">" );
-    end );
+  fi;
+end );
 
 InstallMethod( ViewObj,
     "for an algebra-with-one with known dimension",

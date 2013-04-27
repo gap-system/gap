@@ -1507,7 +1507,7 @@ local   orbs, orb,sort,plist,pos,use,o,nc,ld,ld1;
   if not plist then
     use:=BlistList([1..Length(D)],[]);
   fi;
-  nc:=false;
+  nc:=true;
   ld1:=Length(D);
   orbs := [  ];
   pos:=1;
@@ -1523,7 +1523,7 @@ local   orbs, orb,sort,plist,pos,use,o,nc,ld,ld1;
 	D:=Filtered(D,i-> not i in orb);
       fi;
       if Length(D)+Length(orb)>ld then
-	nc:=true; # there are elements in `orb' not in D
+	nc:=false; # there are elements in `orb' not in D
       fi;
     else
       for o in orb do

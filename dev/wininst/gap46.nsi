@@ -56,12 +56,12 @@ var StartMenuFolder
 # User variables and other general settings: adjust them here as needed
 # 
 Section
-StrCpy $GAP_VER "4.6.2"
+StrCpy $GAP_VER "4.6.3"
 SectionEnd
 
 #Name and file
-Name "GAP 4.6.2"
-OutFile "gap4r6p2_2013_02_02-01_00.exe"
+Name "GAP 4.6.3"
+OutFile "gap4r6p3_2013_03_18-17_40.exe"
 
 #Default installation folder
 InstallDir "C:\gap4r6"
@@ -586,8 +586,8 @@ SectionEnd
 Section "Polycyclic" SecGAPpkg_polycyclic 
 SetOutPath $INSTDIR\pkg 
 File gap4r6\pkg\README.polycyclic
-SetOutPath $INSTDIR\pkg\polycyclic-2.10.1
-File /r gap4r6\pkg\polycyclic-2.10.1\*.* 
+SetOutPath $INSTDIR\pkg\polycyclic-2.11
+File /r gap4r6\pkg\polycyclic-2.11\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -636,6 +636,18 @@ SetOutPath $INSTDIR\pkg
 File gap4r6\pkg\README.sophus
 SetOutPath $INSTDIR\pkg\sophus
 File /r gap4r6\pkg\sophus\*.* 
+SetOutPath $INSTDIR 
+SectionEnd 
+
+#######################################################################
+#
+# SpinSym
+#
+Section "SpinSym" SecGAPpkg_spinsym 
+SetOutPath $INSTDIR\pkg 
+File gap4r6\pkg\README.spinsym
+SetOutPath $INSTDIR\pkg\spinsym
+File /r gap4r6\pkg\spinsym\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -871,8 +883,8 @@ SectionEnd
 Section "gpd" SecGAPpkg_gpd 
 SetOutPath $INSTDIR\pkg 
 File gap4r6\pkg\README.gpd
-SetOutPath $INSTDIR\pkg\gpd-1.18
-File /r gap4r6\pkg\gpd-1.18\*.* 
+SetOutPath $INSTDIR\pkg\gpd-1.19
+File /r gap4r6\pkg\gpd-1.19\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1492,8 +1504,8 @@ SectionEnd
 Section "Float" SecGAPpkg_float 
 SetOutPath $INSTDIR\pkg 
 File gap4r6\pkg\README.float
-SetOutPath $INSTDIR\pkg\float-0.5.5
-File /r gap4r6\pkg\float-0.5.5\*.* 
+SetOutPath $INSTDIR\pkg\float-0.5.9
+File /r gap4r6\pkg\float-0.5.9\*.* 
 SetOutPath $INSTDIR 
 SectionEnd 
 
@@ -1681,7 +1693,7 @@ LangString DESC_SecGAPpkg_fwtree ${LANG_ENGLISH} "Computing trees related to som
 LangString DESC_SecGAPpkg_gapdoc ${LANG_ENGLISH} "A Meta Package for GAP Documentation"
 LangString DESC_SecGAPpkg_gauss ${LANG_ENGLISH} "Gauss - Extended Gauss Functionality for GAP"
 LangString DESC_SecGAPpkg_gaussforhomalg ${LANG_ENGLISH} "GaussForHomalg - Gauss Functionality for homalg"
-LangString DESC_SecGAPpkg_gbnp ${LANG_ENGLISH} "computing Gršbner bases of noncommutative polynomials"
+LangString DESC_SecGAPpkg_gbnp ${LANG_ENGLISH} "computing Groebner bases of noncommutative polynomials"
 LangString DESC_SecGAPpkg_genss ${LANG_ENGLISH} "genss - generic Schreier-Sims"
 LangString DESC_SecGAPpkg_gpd ${LANG_ENGLISH} "Groupoids, graphs of groups, and graphs of groupoids"
 LangString DESC_SecGAPpkg_gradedmodules ${LANG_ENGLISH} "A homalg based package for the Abelian category of finitely presented graded modules over a computable graded ring"
@@ -1710,7 +1722,7 @@ LangString DESC_SecGAPpkg_localizeringforhomalg ${LANG_ENGLISH} "A Package for L
 LangString DESC_SecGAPpkg_loops ${LANG_ENGLISH} "Computing with quasigroups and loops in GAP"
 LangString DESC_SecGAPpkg_mapclass ${LANG_ENGLISH} "A Package For Mapping Class Orbit Computation"
 LangString DESC_SecGAPpkg_matricesforhomalg ${LANG_ENGLISH} "Matrices for the homalg project"
-LangString DESC_SecGAPpkg_modules ${LANG_ENGLISH} "A homalg based Package for the Abelian Category of Finitely Presented Modules over Computable Rings"
+LangString DESC_SecGAPpkg_modules ${LANG_ENGLISH} "A homalg based package for the Abelian category of finitely presented modules over computable rings"
 LangString DESC_SecGAPpkg_nilmat ${LANG_ENGLISH} "Computing with nilpotent matrix groups"
 LangString DESC_SecGAPpkg_nq ${LANG_ENGLISH} "Nilpotent Quotients of Finitely Presented Groups"
 LangString DESC_SecGAPpkg_numericalsgps ${LANG_ENGLISH} "A package for numerical semigroups"
@@ -1730,7 +1742,7 @@ LangString DESC_SecGAPpkg_recog ${LANG_ENGLISH} "A collection of group recogniti
 LangString DESC_SecGAPpkg_recogbase ${LANG_ENGLISH} "A framework for group recognition"
 LangString DESC_SecGAPpkg_repsn ${LANG_ENGLISH} "A GAP4 Package for constructing representations of finite groups"
 LangString DESC_SecGAPpkg_resclasses ${LANG_ENGLISH} "Set-Theoretic Computations with Residue Classes"
-LangString DESC_SecGAPpkg_ringsforhomalg ${LANG_ENGLISH} "Dictionaries of External Rings"
+LangString DESC_SecGAPpkg_ringsforhomalg ${LANG_ENGLISH} "Dictionaries of external rings"
 LangString DESC_SecGAPpkg_sco ${LANG_ENGLISH} "SCO - Simplicial Cohomology of Orbifolds"
 LangString DESC_SecGAPpkg_scscp ${LANG_ENGLISH} "Symbolic Computation Software Composability Protocol in GAP"
 LangString DESC_SecGAPpkg_sgpviz ${LANG_ENGLISH} "A package for semigroup visualization"
@@ -1739,6 +1751,7 @@ LangString DESC_SecGAPpkg_singular ${LANG_ENGLISH} "The GAP interface to Singula
 LangString DESC_SecGAPpkg_smallsemi ${LANG_ENGLISH} "A library of small semigroups"
 LangString DESC_SecGAPpkg_sonata ${LANG_ENGLISH} "System of nearrings and their applications"
 LangString DESC_SecGAPpkg_sophus ${LANG_ENGLISH} "Computing in nilpotent Lie algebras"
+LangString DESC_SecGAPpkg_spinsym ${LANG_ENGLISH} "Brauer tables of spin-symmetric groups"
 LangString DESC_SecGAPpkg_symbcompcc ${LANG_ENGLISH} "Computing with parametrised presentations for p-groups of fixed coclass"
 LangString DESC_SecGAPpkg_tomlib ${LANG_ENGLISH} "The GAP Library of Tables of Marks"
 LangString DESC_SecGAPpkg_toolsforhomalg ${LANG_ENGLISH} "GAP extensions for the homalg project"
@@ -1855,6 +1868,7 @@ LangString DESC_SecGAPpkg_xmod ${LANG_ENGLISH} "Crossed Modules and Cat1-Groups"
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_smallsemi} $(DESC_SecGAPpkg_smallsemi)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_sonata} $(DESC_SecGAPpkg_sonata)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_sophus} $(DESC_SecGAPpkg_sophus)
+!insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_spinsym} $(DESC_SecGAPpkg_spinsym)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_symbcompcc} $(DESC_SecGAPpkg_symbcompcc)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_tomlib} $(DESC_SecGAPpkg_tomlib)
 !insertmacro MUI_DESCRIPTION_TEXT ${SecGAPpkg_toolsforhomalg} $(DESC_SecGAPpkg_toolsforhomalg)

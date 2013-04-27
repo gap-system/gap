@@ -1374,9 +1374,9 @@ InstallMethod( NaturalCharacter,
     local G, R, deg, tbl, chi;
     G:= Source( hom );
     R:= Range( hom );
+    tbl:= OrdinaryCharacterTable( G );
     if IsPermGroup( R ) then
       deg:= NrMovedPoints( R );
-      tbl:= OrdinaryCharacterTable( G );
       return Character( tbl,
                  List( ConjugacyClasses( tbl ),
                  C -> deg - NrMovedPoints( ImagesRepresentative( hom,

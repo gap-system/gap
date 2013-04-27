@@ -95,9 +95,9 @@ BindGlobal( "RunStandardTests", function( arg )
         else
           stone := 0;
         fi;
-        Print( FormattedString( testfiles[i][1], -20 ),
-               FormattedString( stone, 8 ),
-               FormattedString( time, 15 ) );
+        Print( String( testfiles[i][1], -20 ),
+               String( stone, 8 ),
+               String( time, 15 ) );
         if i < Length( testfiles ) and IsPosRat( testfiles[i+1][2] )
            and totalprev <> 0  then
           Print( "    (next ~ ",
@@ -144,8 +144,8 @@ BindGlobal( "RunStandardTests", function( arg )
       count:= 1;
     fi;
     Print( "total",
-           FormattedString( RootInt( prod, count ), 23 ),
-           FormattedString( totaltime, 15 ), "\n\n" );
+           String( RootInt( prod, count ), 23 ),
+           String( totaltime, 15 ), "\n\n" );
 
     # Reset the changed globals.
     InfoRead1 := infoRead1;

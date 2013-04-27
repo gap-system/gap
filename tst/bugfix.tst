@@ -2487,6 +2487,27 @@ gap> IdentityMat(10,Z(4));
 < mutable compressed matrix 10x10 over GF(4) >
 
 #############################################################################
+##
+## Changes 4.6.3 -> 4.6.4
+
+## For bugfixes
+
+# 2013/03/27 (AK)
+gap> im := [ [ [E(3)^2,0], [0,E(3)] ], [ [0,E(3)], [E(3)^2,0] ] ];;
+gap> hom := GroupHomomorphismByImages( SymmetricGroup(3), Group(im), im );;
+gap> NaturalCharacter(hom);
+Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 2, 0, -1 ] )
+
+# 2013/04/01 (MN)
+gap> slp := StraightLineProgram(
+> [ [ 1, -1 ], [ 2, -1 ], [ 3, -1 ], [ 4, -1 ], [ 5, -1 ], [ 4, 1, 10, 1 ], 
+> [ 11, -1 ], [ 1, 0 ], [ 1, 0 ], [ 1, 0 ], [ 1, 0 ], [ 1, 0 ], [ 1, 0 ], 
+> [ 1, 0 ], [ 1, 0 ], [ 1, 0 ], [ 8, 0, 10, 1, 8, 0, 5, 1 ], 
+> [ 22, 1, 1, 1, 7, 1, 6, 1, 22, -1 ], [ 1, 0 ], [ 1, 0 ], [ 1, 0 ], 
+> [ 23, 1 ], [ 27, 4 ], [ 28, 1, 13, 1 ], [ 27, 1 ] ],5);;
+gap> SlotUsagePattern(slp);;
+
+#############################################################################
 #
 # Tests requiring loading some packages must be performed at the end.
 # Do not put tests that do not need any packages below this line.
@@ -2620,20 +2641,12 @@ gap> if LoadPackage("crisp", "1.2.1", false) <> fail then
 >    fi;
 
 # 2012/06/18 (FL)
-gap> LoadPackage("cvec",false);
-true
-gap> mat := [[Z(2)]];;
-gap> ConvertToMatrixRep(mat,2);
-2
-gap> cmat := CMat(mat);
-<cmat 1x1 over GF(2,1)>
-gap> cmat^1000;
-<cmat 1x1 over GF(2,1)>
+gap> if LoadPackage("cvec",false) <> fail then mat := [[Z(2)]]; 
+> ConvertToMatrixRep(mat,2); cmat := CMat(mat); cmat := cmat^1000; fi;
 
 # 2012/06/18 (MH)
-gap> LoadPackage("anupq",false);
-true
-gap> for i in [1..192] do Q:=Pq( FreeGroup(2) : Prime:=3, ClassBound:=1 ); od;
+gap> if LoadPackage("anupq",false) <> fail then
+> for i in [1..192] do Q:=Pq( FreeGroup(2) : Prime:=3, ClassBound:=1 ); od; fi;
 
 #############################################################################
 gap> STOP_TEST( "bugfix.tst", 15319000000*10 );

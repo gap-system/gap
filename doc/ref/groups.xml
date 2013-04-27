@@ -75,6 +75,7 @@ For creating a free group on a set of symbols,
 see&nbsp;<Ref Func="FreeGroup" Label="for given rank"/>.
 
 <#Include Label="Group">
+<#Include Label="GroupByGenerators">
 <#Include Label="GroupWithGenerators">
 <#Include Label="GeneratorsOfGroup">
 <#Include Label="AsGroup">

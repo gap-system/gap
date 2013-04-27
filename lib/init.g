@@ -863,7 +863,7 @@ which may vanish in a future version of GAP"
 # HACKUSERPREF temporary hack for AtlasRep and CTblLib:
 GAPInfo.UserPreferences.ReadObsolete := UserPreference("ReadObsolete");
 CallAndInstallPostRestore( function()
-    if UserPreference( "ReadObsolete" ) <> false and
+    if not GAPInfo.CommandLineOptions.O and UserPreference( "ReadObsolete" ) <> false and
        not IsBound( GAPInfo.Read_obsolete_gd ) then
       ReadLib( "obsolete.gd" );
       GAPInfo.Read_obsolete_gd:= true;
@@ -958,7 +958,7 @@ ReadLib("transatl.g");
 ##  (this value can be set in the `gap.ini' file)
 ##
 CallAndInstallPostRestore( function()
-    if UserPreference( "ReadObsolete" ) <> false and
+    if not GAPInfo.CommandLineOptions.O and UserPreference( "ReadObsolete" ) <> false and
        not IsBound( GAPInfo.Read_obsolete_gi ) then
       ReadLib( "obsolete.gi" );
       GAPInfo.Read_obsolete_gi:= true;

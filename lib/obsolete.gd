@@ -61,8 +61,11 @@
 ##  It may be useful to omit reading these files,
 ##  for example in order to make sure that one's own &GAP; code does not rely
 ##  on the obsolete variables.
-##  For that, one can set the component <C>ReadObsolete</C> in the file
-##  <F>gap.ini</F> to <K>false</K> (see <Ref Sect="sect:gap.ini"/>).
+##  For that, one can use the <C>-O</C> command line option 
+##  (see <Ref Label="Command Line Options"/>) or set the component 
+##  <C>ReadObsolete</C> in the file <F>gap.ini</F> to <K>false</K> 
+##  (see <Ref Sect="sect:gap.ini"/>). Note that <C>-O</C> command 
+##  line option overrides <C>ReadObsolete</C>.
 ##  <P/>
 ##  (Note that the condition whether the library files with the obsolete
 ##  &GAP; code shall be read has changed.
@@ -223,7 +226,7 @@ BIND_GLOBAL( "FormattedString", String );
 ##
 #F  IsTuple( ... ) - still used by genss package (12/2012)
 #F  Tuple( ... ) - still used by anupq, cubefree, fr, gpd, grpconst, openmath, 
-##                 sonata (12/2012), as well as test files in 'tst'
+##                 sonata (12/2012)
 ##
 DeclareSynonym( "IsTuple", IsDirectProductElement );
 DeclareSynonym( "Tuple", DirectProductElement );

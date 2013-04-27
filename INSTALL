@@ -663,7 +663,7 @@ Alternatively, you may use one of the Windows GAP installers listed on the
 GAP website http://www.gap-system.org which will adjust all paths in batch 
 files during the installation.
 
-WheneverWhether you use a specialised Windows installer or install GAP from 
+Whenever you use a specialised Windows installer or install GAP from 
 the -win.zip archive, we recommend that you avoid paths with spaces, e.g.
 'C:\My Programs\gap4r6'. If you need to install GAP on another logical 
 disk, say E:, the easiest way would be just to use 'E:\gap4r6'.

@@ -54,8 +54,8 @@ and to <C>gap -b -q -b -q</C> etc.
 &GAP; for UNIX will distinguish between upper and lower case options.
 <P/>
 As described in the &GAP; installation instructions (see the 
-<F>INSTALL</F> file in the &GAP; root directory, or the &GAP; website),
-<!-- TODO: put URL -->
+<F>INSTALL</F> file in the &GAP; root directory, or at
+<URL>http://www.gap-system.org/Download/INSTALL</URL>),
 usually you will not execute &GAP; directly. Instead  you  will
 call a (shell) script, with the name <C>gap</C>, which in turn executes  &GAP;.
 This  script sets some options which are necessary  to  make  &GAP;
@@ -149,6 +149,16 @@ tells you that &GAP; has loaded the compiled version of the library file
 kernel at runtime from a corresponding <C>.so</C> file.
 <P/>
 Obviously, this is a debugging option and most users will not need it.
+</Item>
+<Mark><Index Key="-E"><C>-E</C></Index>
+<C>-E</C></Mark>
+<Item>
+If your &GAP; installation uses the <C>readline</C> library for command line 
+editing (see <Ref Sect="sec:readline"/>), this may be disabled by using 
+<C>-E</C> option. This option may be repeated to toggle this behavior on and 
+off. If your &GAP; installation does not use the <C>readline</C> library 
+(you can check by <C>IsBound(GAPInfo.UseReadline);</C> if this is the case),
+this option will have no effect at all.
 </Item>
 <Mark><Index Key="-e"><C>-e</C></Index>
 <C>-e</C></Mark>
@@ -306,6 +316,15 @@ another program that is used to run &GAP;.  For example if &GAP; is run
 from inside a GNU Emacs shell window, <C>-n</C> should be used since otherwise
 every input line will be echoed twice, once by Emacs and once by &GAP;.
 This option does not toggle; you must use <C>-f</C> to enable line editing.
+</Item>
+<Mark><Index Key="-O"><C>-O</C></Index>
+<C>-O</C></Mark>
+<Item>
+disables loading obsolete variables (see 
+Chapter <Ref Label="Replaced and Removed Command Names"/>). This 
+option is used mainly for testing purposes, for example in order to make 
+sure that a &GAP; package or one's own &GAP; code does not rely on the 
+obsolete variables.
 </Item>
 <Mark><Index Key="-o"><C>-o</C></Index>
 <C>-o </C><A>memory</A></Mark>

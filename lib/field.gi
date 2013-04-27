@@ -258,7 +258,8 @@ InstallMethod( PrintObj,
     "for a field with known generators",
     [ IsField and HasGeneratorsOfField ],
     function( F )
-    if IsPrimeField( LeftActingDomain( F ) ) then
+      if IsIdenticalObj(F,LeftActingDomain(F)) or
+	IsPrimeField( LeftActingDomain( F ) ) then
       Print( "Field( ", GeneratorsOfField( F ), " )" );
     elif F = LeftActingDomain( F ) then
       Print( "FieldOverItselfByGenerators( ",

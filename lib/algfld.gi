@@ -527,12 +527,12 @@ local fam;
   return AlgExtElm(fam,a);
 end);
 
-InstallMethod(\*,"Alg*List",true,[IsAlgebraicElement,IsVector],0,
+InstallOtherMethod(\*,"Alg*List",true,[IsAlgebraicElement,IsList],0,
 function(a,b)
   return List(b,i->a*i);
 end);
 
-InstallMethod(\*,"List*Alg",true,[IsVector,IsAlgebraicElement],0,
+InstallOtherMethod(\*,"List*Alg",true,[IsList,IsAlgebraicElement],0,
 function(a,b)
   return List(a,i->i*b);
 end);
