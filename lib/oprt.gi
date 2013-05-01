@@ -3200,8 +3200,10 @@ local p,n,f,o,v,ran,exp,H,phi,alpha;
 
   alpha:=GroupToAdditiveGroupHomomorphismByFunction(M,v,function(e)
     e:=ExponentsOfPcElement(p,e)*o;
+    if f<=256 then
+      e := CopyToVectorRepNC(e,f);
+    fi;  
     MakeImmutable(e);
-    ConvertToVectorRep(e,f);
     return e;
   end,
   function(r)

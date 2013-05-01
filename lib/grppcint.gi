@@ -78,8 +78,10 @@ GlasbyStabilizer := function( pcgs, A, B, pcgsL )
 
     pt := List( pcgsL, x -> Zero( f ) );
     Add( pt, One( f ) );
-    ConvertToVectorRep(pt,f);
-
+    if Size(f)<=256 then
+        pt := CopyToVectorRepNC(pt,Size(f));
+    fi;
+    
     # was: return Pcgs( Stabilizer( U, pt, A, matA, OnRight ) );
     # we cannot simply return this pcgs here, as we cannot guarantee that
     # the pcgs of this group will be compatible with the pcgs wrt. which we

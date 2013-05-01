@@ -746,7 +746,7 @@ end );
 #M  IsInfiniteAbelianizationGroup( <G> ) . . . . . . . . . . . for a fp group
 ##
 BindGlobal("HasFullColumnRankIntMatDestructive",function( mat )
-  local n, rb, next, primes, mp, row, r, pm, ns, nns, j, p, i;
+  local n, rb, next, primes, mp, r, pm, ns, nns, j, p, i;
   n:=Length(mat[1]);
   if Length(mat)<n then
     return false;
@@ -758,9 +758,7 @@ BindGlobal("HasFullColumnRankIntMatDestructive",function( mat )
   for p in primes do
     mp:=[];
     for i in mat do
-      row:=i*Z(p)^0;
-      ConvertToVectorRep(row,p);
-      Add(mp,row);
+      Add( mp, CopyToVectorRepNC(i*Z(p)^0,p) );
     od;
     r:=RankMat(mp);
     if rb>0 and r<>rb and next<250 then
