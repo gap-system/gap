@@ -417,10 +417,14 @@ local  classes,    # classes to be constructed, the result
         for ca  in cl.candidates  do
             n:=ExponentsOfPcElement( N, LeftQuotient( h, ca ) ) *
                  One( field );
-	    ConvertToVectorRep(n, field);
+            if Size(field) <= 256 then     
+	            n := CopyToVectorRepNC( n, Size(field) );
+	        fi;    
             k:=n * N!.subspace.projection;
             orb:=Concatenation( k, [ One( field ) ]);
-	    ConvertToVectorRep(orb, field);
+            if Size(field) <= 256 then
+	            orb := CopyToVectorRepNC( orb, Size(field) );
+	        fi;
             orb:=ExternalOrbit( xset, Immutable(orb) );
             rep:=PcElementByExponentsNC( N, N!.subspace.baseComplement,
                       Rep( orb ){ ran } );

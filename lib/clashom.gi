@@ -195,9 +195,11 @@ BindGlobal("GeneralStepCanEANSNonsolv",function( H, N,NT, C,h,reps,repo,nostab )
   # get vectors for reps
   repvec:=List(repo,i->Concatenation(
 	   ExponentsOfPcElement(N,LeftQuotient(h,reps[i][1]))*one,[one]));
-  for i in repvec do
-    ConvertToVectorRep(i,field);
-  od;
+  if Size(field) <= 256 then
+    for i in repvec do
+      i := CopyToVectorRep(i,field);
+    od;
+  fi;  
   repgps:=[];
   newreps:=[];
   aff:=field^(r+1);
@@ -348,7 +350,9 @@ local  classes,    	# classes to be constructed, the result
   o:=One(f);
   # commutator space basis
   comms:=List(GeneratorsOfGroup(C),c->o*ExponentsOfPcElement(N,Comm(h,c)));
-  List(comms,x->ConvertToVectorRep(x,f));
+  if Size(f) <= 256 then
+    comms := List( comms, x -> CopyToVectorRepNC(x,Size(f) ) );
+  fi;  
   space:=List(comms,ShallowCopy);
   TriangulizeMat(space);
   space:=Filtered(space,i->i<>Zero(i)); # remove spurious columns

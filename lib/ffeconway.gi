@@ -144,7 +144,9 @@ FFECONWAY.ZNC := function(p,d)
     FFECONWAY.SetUpConwayStuff(p,d);
     v := ListWithIdenticalEntries(d,0*Z(p));
     v[2] := Z(p)^0;
-    ConvertToVectorRep(v,p);
+    if p<=256 then
+        v := CopyToVectorRep(v,p);
+    fi;
     # put 'false' in the third component because we know it is irreducible
     zpd := Objectify(fam!.ConwayFldEltDefaultType, [v,d,false] );
     
@@ -380,7 +382,9 @@ FFECONWAY.FiniteFieldEmbeddingRecord := function(p, d1,d2)
         n := (p^d2-1)/(p^d1-1);
         zz := 0*Z(p);
         x := [zz,Z(p)^0];
-        ConvertToVectorRep(x,p);
+        if p <= 256 then
+            x := CopyToVectorRep(x,p);
+        fi;  
         z1 := PowerModCoeffs(x,n,c);
         fam!.ConwayFldEltReducers[d2](z1);
         m := [ZeroMutable(z1),z1];
@@ -926,7 +930,9 @@ InstallMethod(InverseOp,
     a := ShallowCopy(x![1]);
     b := ShallowCopy(c);
     r := [Z(p)^0];
-    ConvertToVectorRep(r,p);
+    if p <= 256 then
+        r :=  CopyToVectorRep(r,p);
+    fi;    
     s := ZeroMutable(r);
     ShrinkRowVector(a);
     if Length(a) = 0 then
@@ -1590,7 +1596,9 @@ InstallMethod(MinimalPolynomial,
     p := Characteristic(elm);
     o := ListWithIdenticalEntries(dd,Z(p)*0);
     o[1] := Z(p)^0;
-    ConvertToVectorRep(o,p);
+    if p <= 256 then
+        o := CopyToVectorRep(o,p);
+    fi;    
     m := [o,y];
     for i in [2..d] do
         y := ProductCoeffs(y,x);

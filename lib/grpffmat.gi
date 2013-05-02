@@ -140,7 +140,9 @@ local o,i,s;
   o:=NormedRowVectors(f^n);
   s:=Size(f);
   for i in o do
-    ConvertToVectorRep(i,s);
+    if s <= 256 then
+      i := CopyToVectorRep(i,s);
+    fi;  
     MakeImmutable(i);
   od;
   o:=Set(o);

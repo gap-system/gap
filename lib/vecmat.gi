@@ -477,7 +477,7 @@ InstallOtherMethod( AddCoeffs,
     0,
 
 function( a, b, c )
-    CONV_GF2VEC(a);
+    a:=COPY_GF2VEC(a);
     return ADDCOEFFS_GF2VEC_GF2VEC_MULT( a, b, c );
 end );
 
@@ -495,7 +495,7 @@ InstallOtherMethod( AddCoeffs,
     0,
 
 function( a, b )
-    CONV_GF2VEC(a);
+    a:=COPY_GF2VEC(a);
     return ADDCOEFFS_GF2VEC_GF2VEC(a,b);
 end );
 
@@ -1256,6 +1256,10 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             # or possibly a totally bad list
             vc := ShallowCopy(v);
             common := FFECONWAY.WriteOverSmallestCommonField(vc);
+            #
+            # FFECONWAY.WriteOverSmallestCommonField returns an integer or fail.
+            # When integer is returned, it also may modify entries of vc
+            #
             if common = fail or common  > 256 then
                 #
                 # vector needs a field > 256, so can't be compressed
@@ -1333,6 +1337,166 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
         return true;
     fi;
 end);
+
+
+#############################################################################
+##
+#F  CopyToVectorRep( <v>, <q> )
+##
+InstallGlobalFunction(CopyToVectorRep,function( v, q )
+    local vc, common, field, res;
+
+    # Handle fast, certain cases where there is no work. Microseconds count here
+    
+    if IsGF2VectorRep(v) and q=2 then
+        if IsMutable(v) then
+          return(ShallowCopy(v));
+        else
+          return v;
+        fi;  
+    fi;
+    
+    if Is8BitVectorRep(v) then
+        if q = Q_VEC8BIT(v) then
+            if IsMutable(v) then
+                return(ShallowCopy(v));
+            else
+                return v;
+            fi; 
+        fi;
+    fi;
+    
+    # Ask the kernel to check the list for us.
+    # We have to do this, even in an NC version because the list might contain
+    # elements of large finite fields.
+    # Calling IS_VECFFE may force a full inspection of the list.
+        
+    if not IS_VECFFE(v) then
+        # TODO: no need of the next 'if' block in the NC-version
+        if IsFFECollection(v) then
+            # Now we might have some elements in a large field representation
+            # or possibly a totally bad list. We will examine the shallow copy 
+            # of v to avoid side effects when CopyToVectorRep modifies v and 
+            # then returns fail 
+            vc := ShallowCopy(v);
+            common := FFECONWAY.WriteOverSmallestCommonField(vc);
+            #
+            # FFECONWAY.WriteOverSmallestCommonField returns an integer or fail.
+            # When it resturns an integer, it may modify individual entries of vc
+            #
+            if common = fail or common  > 256 then
+                #
+                # vector needs a field > 256, so can't be compressed
+                # or vector contains non-ffes or no common characteristic
+                #
+                return fail; # v can not be written over GF(q)
+            fi;
+            # CLONE_OBJ(v,vc); # commented out the hack used in in-place conversion
+        else
+            return fail; # v can not be written over GF(q)
+        fi;
+    else
+        common := COMMON_FIELD_VECFFE(v);
+        vc := v;
+    fi;
+    
+    if q = 2 then
+        Assert(2, ForAll(vc, elm -> elm in GF(2)));
+        if common > 2 and common mod 2 = 0 then
+            common := SMALLEST_FIELD_VECFFE(vc);
+        fi;
+        if common <> 2 then
+            Error("CopyToVectorRep: Vector cannot be written over GF(2)");
+        fi;
+        res := COPY_GF2VEC(vc);
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
+    elif q <= 256 then
+        if common <> q then 
+            Assert(2, ForAll(vc, elm -> elm in GF(q)));
+            if IsPlistRep(vc) and  GcdInt(common,q) > 1  then
+                common := SMALLEST_FIELD_VECFFE(vc);
+            fi;
+            if common ^ LogInt(q, common) <> q then
+                Error("CopyToVectorRep: Vector cannot be written over GF(",q,")");
+            fi;
+        fi;
+        res := COPY_VEC8BIT(vc,q);
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
+    else    
+        return fail; # vector can not be written over GF(q)
+    fi;
+end);
+
+
+#############################################################################
+##
+#F  CopyToVectorRepNC( <v>, <q> )
+##
+##  This is the NC-version of CopyToVectorRep. It is forbidden to call it
+##  unless v is a plain list or a row vector, q<=256 is a valid size of a 
+##  finite field, and all elements of v lie in this field. 
+##
+InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
+    local common, field, res;
+
+    # Handle fast, certain cases where there is no work. Microseconds count here
+    
+    if IsGF2VectorRep(v) and q=2 then
+        if IsMutable(v) then
+          return(ShallowCopy(v));
+        else
+          return v;
+        fi;  
+    fi;
+    
+    if Is8BitVectorRep(v) then
+        if q = Q_VEC8BIT(v) then
+            if IsMutable(v) then
+                return(ShallowCopy(v));
+            else
+                return v;
+            fi; 
+        fi;
+    fi;
+    
+    # Calling COMMON_FIELD_VECFFE may force a full inspection of the list.
+    common := COMMON_FIELD_VECFFE(v);
+    if common = fail then
+        Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,").\n",
+              "You may try to use ConvertToVectorRep instead\n");
+    fi;
+    
+    if q = 2 then
+        Assert(2, ForAll(v, elm -> elm in GF(2)));
+        if common > 2 and common mod 2 = 0 then
+            common := SMALLEST_FIELD_VECFFE(v);
+        fi;
+        if common <> 2 then
+            Error("ConvertToVectorRepNC: Vector cannot be written over GF(2)");
+        fi;
+        res := COPY_GF2VEC(v);
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
+    elif q <= 256 then
+        if common <> q then 
+            Assert(2, ForAll(v, elm -> elm in GF(q)));
+            if IsPlistRep(v) and  GcdInt(common,q) > 1  then
+                common := SMALLEST_FIELD_VECFFE(v);
+            fi;
+            if common ^ LogInt(q, common) <> q then
+                Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
+            fi;
+        fi;
+        res :=COPY_VEC8BIT(v,q);
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
+    else    
+        Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
+    fi;
+end);
+
 
 #############################################################################
 ##
@@ -2278,10 +2442,7 @@ InstallMethod( BaseField, "for a compressed gf2 vector",
 InstallMethod( NewRowVector, "for IsGF2VectorRep, GF(2), and a list",
   [ IsGF2VectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
-    local v;
-    v := ShallowCopy(l);
-    ConvertToVectorRepNC(v,2);
-    return v;
+    return CopyToVectorRep(l,2);
   end );
 
 InstallMethod( ZeroMatrix, "for a compressed gf2 matrix",

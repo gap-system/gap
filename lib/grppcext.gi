@@ -888,7 +888,7 @@ MatrixOperationOfCPGroup := function( cc, gens  )
                 # compute tails of relators in H
                 k := 0;
                 tails := [];
-		ConvertToVectorRepNC(tails,field);
+		        ConvertToVectorRepNC(tails,field);
                 for i in [1..Length(pcgs)] do
                     for j in [1..i] do
 
@@ -909,20 +909,20 @@ MatrixOperationOfCPGroup := function( cc, gens  )
                         fi;
                         tail := ExponentsOfPcElement(pcgsH,tail,[n+1..n+d]);
                         tail := tail * g[2];
-			ConvertToVectorRepNC(tail,field);
+			            ConvertToVectorRepNC(tail,field);
                         Append( tails, tail );
                     od;
                 od;
             else
-	      tails := List( [1..Length(fprels)], 
+	            tails := List( [1..Length(fprels)], 
 			      x -> base[h]{[(x-1)*d+1..x*d]}*g[2] );
-              for i in tails do
-		ConvertToVectorRepNC(i,field);
-		Append(tails,i);
-	      od;
+                for i in tails do
+		          ConvertToVectorRepNC(i,field);
+		          Append(tails,i);
+	            od;
             fi;
             tails := Image( cc.cohom, tails );
-	    ConvertToVectorRepNC(tails,field);
+	        ConvertToVectorRepNC(tails,field);
             Add( mats[l], tails );
         od;
     od;

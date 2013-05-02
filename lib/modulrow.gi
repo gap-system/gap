@@ -117,7 +117,9 @@ InstallMethod( Random,
     R:= LeftActingDomain( M );
     v := List( [ 1 .. DimensionOfVectors( M ) ], x -> Random( R ) );
     if IsField(R) then
-      ConvertToVectorRep(v,R);
+      if Size(R) <= 256 then
+        v := CopyToVectorRep(v,Size(R));
+      fi;  
     fi;
     return v;
     end );
@@ -310,7 +312,7 @@ BindGlobal( "NumberElement_FiniteFullRowModule", function( e, v )
 end );
 
 BindGlobal( "PosVecEnumFF", function( enum, v )
-    local i,l;
+    local i,l,r;
 
     if    not IsCollsElms( FamilyObj( enum ), FamilyObj( v ) )
        or not IsRowVector( v )
@@ -326,14 +328,19 @@ BindGlobal( "PosVecEnumFF", function( enum, v )
     for i in v do
       if not (IsFFE(i) and IsInt(l/DegreeFFE(i))) then
         # cannot convert, wrong type of object
-	return NumberElement_FiniteFullRowModule( enum, v );
+	    return NumberElement_FiniteFullRowModule( enum, v );
       fi;
     od;
 
-    if ConvertToVectorRep( v, enum!.q ) = fail then
+    r := CopyToVectorRep( v, enum!.q );
+    
+    if r = fail then
       # cannot convert, wrong type of object
       return NumberElement_FiniteFullRowModule( enum, v );
+    else
+      v := r;
     fi;
+    
   fi;
   # Problem with GF(4) vectors over GF(2)
   if ( IsGF2VectorRep(v) and enum!.q <> 2 )
