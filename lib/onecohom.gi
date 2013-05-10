@@ -261,7 +261,9 @@ local i,base;
     # 'moduleMap' is constructed using 'Exponents'.
     ocr.moduleMap:=function(x)
                        x:=ExponentsOfPcElement(ocr.modulePcgs,x)* ocr.one;
-		       ConvertToVectorRep(x,ocr.field);
+               if Size( ocr.field ) <= 256 then       
+		          x := CopyToVectorRep(x,Size(ocr.field));
+		       fi;   
 		       return x;
 		     end;
     ocr.matrices:=LinearOperationLayer(ocr.generators,ocr.modulePcgs);
@@ -338,7 +340,9 @@ local   base, dim, gens;
     	    	Append(c,ocr.moduleMap(n));
     	    od;
     	    #IsRowVector(c);
-	    ConvertToVectorRep(c,ocr.field);
+    	    if Size(ocr.field) <= 256 then
+	            c := CopyToVectorRep(c,Size(ocr.field));
+	        fi;  
     	    return c;
         end;
     fi;
@@ -1213,12 +1217,16 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
     # Initialize system.
     tmp:=ocr.moduleMap(ocr.identity);
     L0 :=Concatenation(List([1 .. len],x->tmp));
-    ConvertToVectorRep(L0,ocr.field);
+    if Size(ocr.field)<=256 then
+      L0 := CopyToVectorRep(L0,Size(ocr.field));
+    fi;
     S:=List([1 .. len*dim],x->L0);
     #R:=List([1 .. len*dim],x->Zero(ocr.field));
     R:=ListWithIdenticalEntries(len*dim,Zero(ocr.field));
-    ConvertToVectorRep(R,ocr.field);
-
+    if Size(ocr.field)<=256 then
+      R := CopyToVectorRep(R,Size(ocr.field));
+    fi;
+    
     # Get  the  linear  system  for one relation and append it to the already
     # triangulized system.
     Info(InfoCoh,2,"OCOneCocycles: constructing linear equations: ");
@@ -1369,7 +1377,9 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
                 fi;
             od;
     	    #IsRowVector(row);
-	    ConvertToVectorRep(row,ocr.field);
+    	    if Size(ocr.field)<=256 then
+	            row := CopyToVectorRep(row,Size(ocr.field));
+	        fi;    
             cocycles[j]:=row;
         od;
         Append(cocycles,cobounds);
