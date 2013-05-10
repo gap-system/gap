@@ -219,8 +219,7 @@ InstallMethod( \+, "For a GF2 vector and an 8 bit vector of char 2",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
-        return v+w;
+        return CopyToVectorRep(v,Q_VEC8BIT(w)) + w;
     fi;
 end);
 
@@ -231,8 +230,7 @@ InstallMethod( \+, "For an 8 bit vector of char 2 and a GF2 vector",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
-        return w+v;
+        return w + CopyToVectorRep(v,Q_VEC8BIT(w));
     fi;
 end);
 
@@ -352,8 +350,7 @@ function( a, b )
     if DegreeFFE(a) > 8 or IsLockedRepresentationVector(b) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(b,Field(a));
-        return a*b;
+        return a*CopyToVectorRep(b,Size(Field(a)));
     fi;
 end );
 
@@ -387,8 +384,7 @@ function( b, a )
     if DegreeFFE(b) > 8 or IsLockedRepresentationVector(a) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(a,Field(b));
-        return b*a;
+        return b*CopyToVectorRep(a,Size(Field(b)));
     fi;
 end );
 
@@ -410,8 +406,7 @@ InstallMethod( \-, "For a GF2 vector and an 8 bit vector of char 2",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
-        return v-w;
+        return CopyToVectorRep(v,Q_VEC8BIT(w))-w;
     fi;
 end);
 
@@ -422,8 +417,7 @@ InstallMethod( \-, "For an 8 bit vector of char 2 and a GF2 vector",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
-        return w-v;
+        return w-CopyToVectorRep(v,Q_VEC8BIT(w));
     fi;
 end);
 
@@ -531,8 +525,7 @@ InstallMethod( \*, "For a GF2 vector and an 8 bit vector of char 2",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
-        return v*w;
+        return CopyToVectorRep(v,Q_VEC8BIT(w))*w;
     fi;
 end);
 
@@ -543,8 +536,7 @@ InstallMethod( \*, "For an 8 bit vector of char 2 and a GF2 vector",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
-        return w*v;
+        return w*CopyToVectorRep(v,Q_VEC8BIT(w));
     fi;
 end);
 
@@ -698,8 +690,7 @@ InstallOtherMethod( AddCoeffs, "8 bit vector and GF2 vector", IsCollsCollsElms,
     if IsLockedRepresentationVector(w) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(w, Q_VEC8BIT(v));
-        return ADD_COEFFS_VEC8BIT_3(v,w,x);
+        return ADD_COEFFS_VEC8BIT_3(v,CopyToVectorRep(w, Q_VEC8BIT(v)),x);
     fi;
 end);
 
@@ -711,8 +702,7 @@ InstallOtherMethod( AddCoeffs, "GF2 vector and 8 bit vector", IsCollsCollsElms,
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(v, Q_VEC8BIT(w));
-        return ADD_COEFFS_VEC8BIT_3(v,w,x);
+        return ADD_COEFFS_VEC8BIT_3(CopyToVectorRep(v, Q_VEC8BIT(w)),w,x);
     fi;
 end);
 
@@ -732,8 +722,7 @@ InstallOtherMethod( AddCoeffs, "8 bit vector and GF2 vector", IsIdenticalObj,
     if IsLockedRepresentationVector(w) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(w, Q_VEC8BIT(v));
-        return ADD_COEFFS_VEC8BIT_2(v,w);
+        return ADD_COEFFS_VEC8BIT_2(v,CopyToVectorRep(w, Q_VEC8BIT(v)));
     fi;
 end);
 
@@ -744,8 +733,7 @@ InstallOtherMethod( AddCoeffs, "GF2 vector and 8 bit vector", IsIdenticalObj,
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRepNC(v, Q_VEC8BIT(w));
-        return ADD_COEFFS_VEC8BIT_2(v,w);
+        return ADD_COEFFS_VEC8BIT_2(CopyToVectorRep(v, Q_VEC8BIT(w)),w);
     fi;
 end);
 
@@ -1014,7 +1002,10 @@ InstallMethod( RowLength, "for an 8bit matrix",
 InstallMethod( Vector, "for a plist of finite field elements and an 8bitvector",
   [ IsList and IsFFECollection, Is8BitVectorRep ],
   function( l, v )
-    local r; r := ShallowCopy(l); ConvertToVectorRep(r,Q_VEC8BIT(v)); return r;
+    local r; 
+    r := ShallowCopy(l); 
+    ConvertToVectorRep(r,Q_VEC8BIT(v)); 
+    return r;
   end );
 InstallMethod( Randomize, "for a mutable 8bit vector",
   [ Is8BitVectorRep and IsMutable ],
