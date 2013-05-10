@@ -371,7 +371,9 @@ BindGlobal( "ElementNumber_FiniteFullRowModule", function( enum, n )
       i:= i-1;
     od;
     if IsFFE( enum!.coeffszero ) then
-      ConvertToVectorRep( v, enum!.q );
+      if enum!.q <= 256 then
+        v := CopyToVectorRep( v, enum!.q );
+      fi;  
     fi;
     MakeImmutable( v );
     return v;
