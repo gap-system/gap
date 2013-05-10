@@ -1348,6 +1348,10 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
 
     # Handle fast, certain cases where there is no work. Microseconds count here
     
+    if Length(v) = 0 then
+        return v;
+    fi;    
+    
     if IsGF2VectorRep(v) and q=2 then
         if IsMutable(v) then
           return(ShallowCopy(v));
@@ -1442,6 +1446,10 @@ InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
     local common, field, res;
 
     # Handle fast, certain cases where there is no work. Microseconds count here
+    
+    if Length(v) = 0 then
+        return v;
+    fi;
     
     if IsGF2VectorRep(v) and q=2 then
         if IsMutable(v) then
@@ -2255,7 +2263,10 @@ InstallMethod( RowLength, "for a gf2 matrix",
 InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
   [ IsList and IsFFECollection, IsGF2VectorRep ],
   function( l, v )
-    local r; r := ShallowCopy(l); ConvertToVectorRep(r,2); return r;
+    local r; 
+    r := ShallowCopy(l); 
+    ConvertToVectorRep(r,2); 
+    return r;
   end );
 InstallMethod( Randomize, "for a mutable gf2 vector",
   [ IsGF2VectorRep and IsMutable ],
