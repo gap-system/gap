@@ -1529,11 +1529,11 @@ There are nondestructive counterparts of the functions
 <Ref Func="UniteSet"/>, <Ref Func="IntersectSet"/>, and
 <Ref Func="SubtractSet"/> available for proper sets.
 These are <C>UnionSet</C>, <C>IntersectionSet</C>, and
-<Ref Func="Difference"/>.
+<Ref Oper="Difference"/>.
 The former two are methods for the more general operations
 <Ref Func="Union" Label="for a list"/>
 and <Ref Func="Intersection" Label="for a list"/>,
-the latter is itself an operation (see&nbsp;<Ref Func="Difference"/>).
+the latter is itself an operation (see&nbsp;<Ref Oper="Difference"/>).
 <P/>
 The result of <C>IntersectionSet</C> and <C>UnionSet</C> is always a new list,
 that is not identical to any other list.

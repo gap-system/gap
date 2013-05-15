@@ -151,6 +151,48 @@ BindGlobal( "RequirePackage", LoadPackage );
 
 #############################################################################
 ##
+#V  KERNEL_VERSION
+#V  VERSION
+#V  GAP_ARCHITECTURE
+#V  GAP_ROOT_PATHS
+#V  USER_HOME
+#V  GAP_RC_FILE
+#V  DO_AUTOLOAD_PACKAGES
+#V  DEBUG_LOADING
+#V  CHECK_FOR_COMP_FILES
+#V  BANNER
+#V  QUIET
+#V  AUTOLOAD_PACKAGES
+#V  LOADED_PACKAGES
+#V  PACKAGES_VERSIONS
+##
+##  Up to GAP 4.3,
+##  these global variables were used instead of the record `GAPInfo'.
+##
+BindGlobal( "KERNEL_VERSION", GAPInfo.KernelVersion );
+BindGlobal( "VERSION", GAPInfo.Version );
+BindGlobal( "GAP_ARCHITECTURE", GAPInfo.Architecture );
+BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
+BindGlobal( "USER_HOME", GAPInfo.UserHome );
+# BindGlobal( "GAP_RC_FILE", GAPInfo.gaprc ); # not nec. bound
+BindGlobal( "DO_AUTOLOAD_PACKAGES", not GAPInfo.CommandLineOptions.A );
+BindGlobal( "DEBUG_LOADING", GAPInfo.CommandLineOptions.D );
+BindGlobal( "CHECK_FOR_COMP_FILES", not GAPInfo.CommandLineOptions.N );
+BindGlobal( "BANNER", not GAPInfo.CommandLineOptions.b );
+BindGlobal( "QUIET", GAPInfo.CommandLineOptions.q );
+BindGlobal( "LOADED_PACKAGES", GAPInfo.PackagesLoaded );
+BindGlobal( "PACKAGES_VERSIONS", rec() );
+
+
+#############################################################################
+##
+##
+##  
+##
+
+
+#############################################################################
+##
 #F  ListSorted( <coll> )
 #F  AsListSorted(<coll>)
 ##
@@ -334,6 +376,10 @@ DeclareSynonym( "FactorCosetOperation",FactorCosetAction);
 DeclareSynonym( "AffineOperation", AffineAction );
 DeclareSynonym( "AffineOperationLayer",AffineActionLayer );
 
+# synonyms for ComplementClasses retained for backwards compatibility with GAP 4.4
+DeclareSynonym( "Complementclasses", ComplementClassesRepresentatives );
+DeclareSynonym( "ComplementclassesEA", ComplementClassesRepresentativesEA );
+
 
 #############################################################################
 ##
@@ -369,6 +415,26 @@ BindGlobal( "ExcludeFromAutoload", function( arg )
           "#I  use the component `ExcludeFromAutoload' in `gap.ini'\n",
           "#I  instead" );
     end );
+
+
+#############################################################################
+##
+#V  EDITOR
+#V  HELP_VIEWER
+#V  PAGER
+#V  PAGER_OPTIONS
+#V  XDVI_OPTIONS
+#V  XPDF_OPTIONS
+##
+##  were supported until GAP 4.4, obsolescent in GAP 4.5.
+##
+EDITOR:= UserPreference("Editor");
+HELP_VIEWER:= UserPreference("HelpViewers");
+PAGER:= UserPreference("Pager");
+PAGER_OPTIONS:= UserPreference("PagerOptions");
+XDVI_OPTIONS:= UserPreference("XdviOptions");
+XPDF_OPTIONS:= UserPreference("XpdfOptions");
+POST_RESTORE_FUNCS:= GAPInfo.PostRestoreFuncs;
 
 
 #############################################################################
@@ -528,6 +594,32 @@ BIND_GLOBAL("ARCH_IS_MAC",function()
   return GAPInfo.Architecture = MACINTOSH_68K_ARCHITECTURE
       or GAPInfo.Architecture = MACINTOSH_PPC_ARCHITECTURE;
 end);
+
+
+#############################################################################
+##
+#F  ConnectGroupAndCharacterTable( <G>, <tbl>[, <info>] )
+##
+##  This function was supported up to GAP 4.4.12.
+##  It is deprecated because it changes its arguments, which is a bad idea.
+##  Note that after a successful call of `ConnectGroupAndCharacterTable',
+##  one cannot use <tbl> in another call with another group <G>.
+##
+##  Moreover, if <tbl> is a character table from GAP's table library (which
+##  is probably the most usual application) then the following may happen.
+##  One fetches the table <tbl> with `CharacterTable',
+##  then stores the group information with `ConnectGroupAndCharacterTable',
+##  then performs some computations with this table and perhaps with other
+##  tables,
+##  and finally one fetches <tbl> again with `CharacterTable'; depending on
+##  the intermediate computations, this table can be the old instance, with
+##  the (unwanted) stored group information.
+##
+##  In GAP 4.5, one can use the function `CharacterTableWithStoredGroup'
+##  instead of `ConnectGroupAndCharacterTable'.
+##
+DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
+
 
 #############################################################################
 ##

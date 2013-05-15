@@ -31,9 +31,6 @@
 #ifndef GAP_SCANNER_H
 #define GAP_SCANNER_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **
@@ -884,7 +881,7 @@ typedef struct {
     Int         format;
     Int         indent;
     /* each hint is a tripel (position, value, indent) */
-    Int         hints[3*MAXHINTS];
+    Int         hints[3*MAXHINTS+1];
     Obj         stream;
 } TypOutputFile;
 

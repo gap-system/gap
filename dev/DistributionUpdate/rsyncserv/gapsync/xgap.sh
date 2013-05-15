@@ -2,11 +2,8 @@
 if [ "x$XGAP_DIR" = "x" ];  then
 XGAP_DIR=$GAP_DIR
 fi
-if [ "x$GAP_MEM" = "x" ];  then
-GAP_MEM=30m
-fi
 if [ "x$GAP_PRG" = "x" ];  then
-GAP_PRG=i686-pc-linux-gnu-gcc/gap
+GAP_PRG=i686*/gap
 fi
 if [ "x$XGAP_PRG" = "x" ];  then
 XGAP_PRG=i686-pc-linux-gnu-gcc/xgap
@@ -194,9 +191,9 @@ XGAP=$XGAP_DIR/pkg/xgap/bin/$XGAP_PRG
 GAP=$GAP_DIR/bin/$GAP_PRG
                                                                                 
 if [ $DAEMON = "YES" ];  then
-  $XGAP -G $GAP $XP -- -l $LIBARG -m $GAP_MEM $GP &
+  $XGAP -G $GAP $XP -- -l $LIBARG  $GP &
 else
-  $XGAP -G $GAP $XP -- -l $LIBARG -m $GAP_MEM $GP
+  $XGAP -G $GAP $XP -- -l $LIBARG  $GP
 fi
 
 exit 0

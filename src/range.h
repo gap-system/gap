@@ -25,9 +25,6 @@
 #ifndef GAP_RANGE_H
 #define GAP_RANGE_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

@@ -861,7 +861,7 @@ local clT,	# classes T
 	fi;
       until cnt<0;
       r:=r*brp;
-      Info(InfoHomClass,2,"acchieved centralizer size ",bcen);
+      Info(InfoHomClass,2,"achieved centralizer size ",bcen);
     fi;
     Info(InfoHomClass,2,"representative ",r);
     cr:=Centralizer(M,r);

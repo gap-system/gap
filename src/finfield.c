@@ -69,9 +69,7 @@
 
 #include        "integer.h"             /* integers                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "finfield.h"            /* finite fields and ff elements   */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */

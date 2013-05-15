@@ -126,12 +126,12 @@ DeclareGlobalFunction("PrimalityProof_FindStructure");
 ##  <P/>
 ##  <Ref Func="IsPrimeInt"/> will return <K>true</K> for every prime <A>n</A>.
 ##  <Ref Func="IsPrimeInt"/> will return <K>false</K> for all composite
-##  <A>n</A> <M>&lt; 10^{13}</M> and for all composite <A>n</A> that have
-##  a factor <M>p &lt; 1000</M>. So for integers <A>n</A> <M>&lt; 10^{13}</M>,
+##  <A>n</A> <M>&lt; 10^{18}</M> and for all composite <A>n</A> that have
+##  a factor <M>p &lt; 1000</M>. So for integers <A>n</A> <M>&lt; 10^{18}</M>,
 ##  <Ref Func="IsPrimeInt"/> is a proper primality test. It is conceivable that
 ##  <Ref Func="IsPrimeInt"/> may  return <K>true</K> for some  composite
-##  <A>n</A> <M>&gt; 10^{13}</M>, but no such <A>n</A> is currently known.
-##  So for integers <A>n</A> <M>&gt; 10^{13}</M>, <Ref Func="IsPrimeInt"/>
+##  <A>n</A> <M>&gt; 10^{18}</M>, but no such <A>n</A> is currently known.
+##  So for integers <A>n</A> <M>&gt; 10^{18}</M>, <Ref Func="IsPrimeInt"/>
 ##  is a  probable-primality test. <Ref Func="IsPrimeInt"/> will issue a
 ##  warning when its argument is probably prime but not a proven prime.
 ##  (The function <Ref Func="IsProbablyPrimeInt"/> will do a similar
@@ -186,7 +186,7 @@ DeclareGlobalFunction( "IsProbablyPrimeInt" );
 ##  <Func Name="PrimalityProof" Arg='n'/>
 ##
 ##  <Description>
-##  Construct a machine verifable proof of the primality of (the probable
+##  Construct a machine verifiable proof of the primality of (the probable
 ##  prime) <A>n</A>, following the ideas of <Cite Key="BLS1975"/>.
 ##
 ##  The proof consists of various Fermat and Lucas pseudoprimality tests,

@@ -32,9 +32,7 @@
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objscoll.h"            /* single collector                */
 
-#define INCLUDE_DECLARATION_PART
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
-#undef  INCLUDE_DECLARATION_PART
 
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */

@@ -11,7 +11,95 @@
 ##  contained in the GAPDoc package and GAP's help system.
 ## 
 
+##  We support some user preferences for the display of GAPDoc manuals from
+##  the GAP help system. They explain themselves.
+DeclareUserPreference( rec(
+  name:= "UseMathJax",
+  description:= [
+    "Change this to true, if you want to use MathJax for display of formulae \
+in HTML manuals pages. This will only work if your browser supports \
+javascript (e.g., help viewer \"firefox\") and if you are online (because \
+the MathJax code and math fonts are loaded from a central AMS server)."
+    ],
+  default:= false,
+  values:= [ true, false ],
+  multi:= false,
+  package:= "GAPDoc",
+  ) );
+ 
+DeclareUserPreference( rec( 
+  name:= "TextTheme", 
+  description:= [ 
+    "Influences the layout of the onscreen help (help viewers \"screen\", \
+\"less\", \"more\"), this is a list of arguments for 'SetGAPDocTextTheme'; \
+current choices are shown by 'SetGAPDocTextTheme(\"\");'." 
+    ], 
+  default:= [ "default" ], 
+  values:= function() return RecNames( GAPDoc2TextProcs.OtherThemes ); end, 
+  multi:= true, 
+  package:= "GAPDoc", 
+  ) );
+
+DeclareUserPreference( rec(
+  name:= "HTMLStyle",
+  description:= [
+    "Influences the layout of the HTML manuals when called from the GAP help \
+system. Only relevant if your configured browser supports javascript \
+e.g., help viewer \"firefox\"). To see the current choices click on \
+the [Style] link at the top of each HTML manual page. \
+This is a list of arguments for 'SetGAPDocHTMLStyle'."
+    ],
+  default:= [ "default" ],
+  ) );
+
+HELP_BOOK_HANDLER.GapDocGAP := rec();
+
+##  
+##  The  .entries info in the GapDocGAP  six-format has  entries of form 
+##  
+##      [ showstring,  
+##        sectionstring,  (allows searching of section numbers, like: "1.3-4")
+##        [chapnr, secnr, subsecnr], 
+##        linenr  (for "text" format), 
+##        pagenr (for .dvi, .pdf-formats),
+##        idstring (for a link L.<idstring> in PDF file,
+##        searchstring (simplified lowercased version of <showstring>)
+##      ]
+##  
+
 HELPBOOKINFOSIXTMP := 0;
+
+# helper to set the text theme
+HELP_BOOK_HANDLER.GapDocGAP.setTextTheme := function()
+  local theme;
+  theme := UserPreference("GAPDoc", "TextTheme");
+  if IsString(theme) then
+    theme := [theme];
+  fi;
+  if theme = ["default"] then
+    if UserPreference("UseColorsInTerminal") <> true then
+      SetGAPDocTextTheme("none");
+    else
+      SetGAPDocTextTheme(rec());
+    fi;
+  else
+    CallFuncList(SetGAPDocTextTheme, theme);
+  fi;
+end;
+HELP_BOOK_HANDLER.GapDocGAP.setTextTheme();
+
+# helper function for showing matches in current text theme
+HELP_BOOK_HANDLER.GapDocGAP.apptheme := function(res, theme)
+  local a;
+  if not IsBound(res.theme) or res.theme <> theme then
+    for a in res.entries do
+      a[1] := SubstituteEscapeSequences(a[8], theme);
+    od;
+    res.theme := ShallowCopy(theme);
+  fi;
+end;
+
+
 
 ##  <#GAPDoc Label="SetGAPDocHTMLStyle">
 ##  <ManSection >
@@ -42,68 +130,20 @@ HELPBOOKINFOSIXTMP := 0;
 ##  <#/GAPDoc>
 BindGlobal("SetGAPDocHTMLStyle", function(arg)
   if Length(arg) = 0 then
-    GAPInfo.UserPreferences.GAPDocHTMLStyle := "default";
+    SetUserPreference("GAPDoc", "GAPDocHTMLStyle", "default");
   else
-    GAPInfo.UserPreferences.GAPDocHTMLStyle := 
-                                      JoinStringsWithSeparator(arg, ",");
+    SetUserPreference("GAPDoc", "GAPDocHTMLStyle", 
+                                      JoinStringsWithSeparator(arg, ","));
   fi;
 end);
-
-atomic readwrite HELP_REGION do
-
-HELP_BOOK_HANDLER.GapDocGAP := MigrateObj(rec(),HELP_REGION);
-
-##  
-##  The  .entries info in the GapDocGAP  six-format has  entries of form 
-##  
-##      [ showstring,  
-##        sectionstring,  (allows searching of section numbers, like: "1.3-4")
-##        [chapnr, secnr, subsecnr], 
-##        linenr  (for "text" format), 
-##        pagenr (for .dvi, .pdf-formats),
-##        idstring (for a link L.<idstring> in PDF file,
-##        searchstring (simplified lowercased version of <showstring>)
-##      ]
-##  
-
-# helper to set the text theme
-HELP_BOOK_HANDLER.GapDocGAP.setTextTheme := function()
-  if IsString(GAPInfo.UserPreferences.TextTheme) then
-    GAPInfo.UserPreferences.TextTheme := [ GAPInfo.UserPreferences.TextTheme ];
-  fi;
-  if GAPInfo.UserPreferences.TextTheme = ["default"] then
-    if not IsBound(GAPInfo.UserPreferences.UseColorsInTerminal) or 
-         GAPInfo.UserPreferences.UseColorsInTerminal <> true then
-      SetGAPDocTextTheme("none");
-    else
-      SetGAPDocTextTheme(rec());
-    fi;
-  else
-    CallFuncList(SetGAPDocTextTheme, GAPInfo.UserPreferences.TextTheme);
-  fi;
-end;
-HELP_BOOK_HANDLER.GapDocGAP.setTextTheme();
-
-# helper function for showing matches in current text theme
-HELP_BOOK_HANDLER.GapDocGAP.apptheme := function(res, theme)
-  local a;
-  if not IsBound(res.theme) or res.theme <> theme then
-    atomic readwrite res do
-      for a in res.entries do
-        a[1] := SubstituteEscapeSequences(a[8], theme);
-      od;
-      res.theme := ShallowCopy(theme);
-    od;  
-  fi;
-end;
-
-
 # set HTML style from gap.ini file
 HELP_BOOK_HANDLER.GapDocGAP.f := function()
-  if IsString(GAPInfo.UserPreferences.HTMLStyle) then
-    GAPInfo.UserPreferences.HTMLStyle := [GAPInfo.UserPreferences.HTMLStyle];
+  local st;
+  st := UserPreference("GAPDoc", "HTMLStyle");
+  if IsString(st) then
+    st := [st];
   fi;
-  CallFuncList(SetGAPDocHTMLStyle, GAPInfo.UserPreferences.HTMLStyle);
+  CallFuncList(SetGAPDocHTMLStyle, st);
 end;
 HELP_BOOK_HANDLER.GapDocGAP.f();
 Unbind(HELP_BOOK_HANDLER.GapDocGAP.f);
@@ -223,7 +263,7 @@ if not IsBound(BROWSER_CAP) then
 fi;
 HELP_BOOK_HANDLER.GapDocGAP.HelpData := function(book, entrynr, type)
   local info, a, fname, str, formatted, enc, outenc, sline, pos, 
-        tmp, ext, label, res;
+        tmp, ext, label, res, st;
   
   info := HELP_BOOK_INFO(book);
   # we handle the special type "ref" for cross references first
@@ -304,9 +344,7 @@ HELP_BOOK_HANDLER.GapDocGAP.HelpData := function(book, entrynr, type)
 ##      else
 ##        return fail;
 ##      fi;
-    if IsBound(GAPInfo.UserPreferences) and 
-               IsBound(GAPInfo.UserPreferences.UseMathJax) and
-               GAPInfo.UserPreferences.UseMathJax = true and
+    if UserPreference("GAPDoc", "UseMathJax") = true and
                "url-mj" in info.types then
       ext := "_mj.html";
     elif "url-text" in info.types then
@@ -314,9 +352,9 @@ HELP_BOOK_HANDLER.GapDocGAP.HelpData := function(book, entrynr, type)
     else
       return fail;
     fi;
-    if GAPInfo.UserPreferences.GAPDocHTMLStyle <> "default" then
-      ext := Concatenation(ext, "?GAPDocStyle=", 
-                                 GAPInfo.UserPreferences.GAPDocHTMLStyle);
+    st := UserPreference("GAPDoc", "GAPDocHTMLStyle");
+    if st <> "default" then
+      ext := Concatenation(ext, "?GAPDocStyle=", st);
     fi;
     fname := Filename(info.directory, Concatenation("chap",
                        String(a[3][1]), ext));
@@ -432,6 +470,3 @@ HELP_BOOK_HANDLER.GapDocGAP.MatchNext := function(book, entrynr)
   od;
   return [info, nr];
 end;
-
-od;
-

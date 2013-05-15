@@ -41,7 +41,7 @@
 **  The macros 'INTOBJ_INT' and 'INT_INTOBJ' should be used to convert between
 **  a small integer value and its representation as immediate integer handle.
 **
-**  'T_INTPOS' and 'T_INTPOS' are the types of positive  respective  negative
+**  'T_INTPOS' and 'T_INTNEG' are the types of positive (respectively, negative)
 **  integer values  that  can  not  be  represented  by  immediate  integers.
 **
 **  This large integers values are represented in signed base 65536 notation.
@@ -100,9 +100,7 @@
 
 #include        "bool.h"                /* booleans                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "integer.h"             /* integers                        */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "gap.h"                 /* error handling, initialisation  */
 

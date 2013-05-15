@@ -13,9 +13,6 @@
 #ifndef GAP_IOSTREAM_H
 #define GAP_IOSTREAM_H
 
-#ifdef INCLUDE_DECLARATION_PART
-#endif
-
 
 
 /*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *

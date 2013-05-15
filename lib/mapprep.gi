@@ -456,11 +456,11 @@ InstallMethod( ViewObj,
     true,
     [ IsCompositionMappingRep ], 100,
     function( com )
-    Print( "CompositionMapping( " );
+    Print( "CompositionMapping( ", BHINT );
     View( com!.map2 );
-    Print( ", " );
+    Print( ",", BHINT, " " );
     View( com!.map1 );
-    Print( " )" );
+    Print( " )", BHINT );
     end );
 
 InstallMethod( PrintObj,

@@ -39,9 +39,7 @@
 #include        "dt.h"                  /* deep thought                    */
 #include        "objcftl.h"             /* from the left collect           */
 
-#define INCLUDE_DECLARATION_PART
 #include        "dteval.h"              /* deep though evaluation          */
-#undef  INCLUDE_DECLARATION_PART
 
 #define   CELM(list, pos)      (  INT_INTOBJ( ELM_PLIST(list, pos) ) )
 

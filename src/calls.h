@@ -45,9 +45,6 @@
 #ifndef GAP_CALLS_H
 #define GAP_CALLS_H
 
-#ifdef INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

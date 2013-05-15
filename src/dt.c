@@ -64,9 +64,7 @@
 #include        "gvars.h"               /* global variables                */
 #include        "integer.h"             /* integers                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "dt.h"                  /* deep thought                    */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */

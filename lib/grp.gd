@@ -92,9 +92,16 @@ InstallTrueMethod( IsFiniteOrderElementCollection, IsGroup and IsFinite );
 ##  <Description>
 ##  returns a list of generators of the group <A>G</A>.
 ##  If <A>G</A> has been created by the command
-##  <Ref Func="GroupWithGenerators"/>, with argument <A>gens</A>,
+##  <Ref Func="GroupWithGenerators"/> with argument <A>gens</A>,
 ##  then the list returned by <Ref Attr="GeneratorsOfGroup"/>
-##  will be equal to <A>gens</A>.
+##  will be equal to <A>gens</A>. For such a group, each generator 
+##  can also be accessed using the <C>.</C> operator 
+##  (see <Ref Attr="GeneratorsOfDomain"/>): for a positive integer
+##  <M>i</M>, <C><A>G</A>.i</C> returns the <M>i</M>-th element of
+##  the list returned by <Ref Attr="GeneratorsOfGroup"/>. Moreover,
+##  if <A>G</A> is a free group, and <C>name</C> is the name of a 
+##  generator of <A>G</A> then <C><A>G</A>.name</C> also returns 
+##  this generator. 
 ##  <Example><![CDATA[
 ##  gap> g:=GroupWithGenerators([(1,2,3,4),(1,2)]);
 ##  Group([ (1,2,3,4), (1,2) ])
@@ -2456,10 +2463,11 @@ DeclareOperation( "CommutatorSubgroup", [ IsGroup, IsGroup ] );
 ##  <Oper Name="ConjugateGroup" Arg='G, obj'/>
 ##
 ##  <Description>
-##  returns the conjugate group of <A>G</A>, obtained by applying the conjugating
-##  element <A>obj</A>.
-##  To form a conjugate (group) by any object acting via <C>^</C>, one can use
-##  the infix operator <C>^</C>.
+##  returns the conjugate group of <A>G</A>, obtained by applying the 
+##  conjugating element <A>obj</A>.
+##  <P/>
+##  To form a conjugate (group) by any object acting via <C>^</C>, 
+##  one can also use the infix operator <C>^</C>.
 ##  <Example><![CDATA[
 ##  gap> ConjugateGroup(g,(1,5));
 ##  Group([ (2,3,4,5), (2,5) ])
@@ -2480,6 +2488,16 @@ DeclareOperation( "ConjugateGroup", [ IsGroup, IsObject ] );
 ##  <Oper Name="ConjugateSubgroup" Arg='G, g'/>
 ##
 ##  <Description>
+##  For a group <A>G</A> which has a parent group <C>P</C>
+##  (see <Ref Func="Parent"/>), returns the subgroup of <C>P</C>,
+##  obtained by conjugating <A>G</A> using the conjugating
+##  element <A>g</A>.
+##  <P/>
+##  If <A>G</A> has no parent group, it just delegates to the
+##  call to <Ref Oper="ConjugateGroup"/> with the same arguments. 
+##  <P/>
+##  To form a conjugate (subgroup) by any object acting via <C>^</C>, 
+##  one can also use the infix operator <C>^</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

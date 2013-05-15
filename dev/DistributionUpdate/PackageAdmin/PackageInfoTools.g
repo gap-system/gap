@@ -1,8 +1,7 @@
 ###########################################################################
 ##  
-##  PackageInfoTools.g                                         (C) Frank Lübeck
+##  PackageInfoTools.g                                         (C) Frank LÃ¼beck
 ##  
-##      $Id: PackageInfoTools.g,v 1.12 2008/07/07 15:49:36 gap Exp $
 ##  
 ##  This file contains utilities for automatic updating of the information 
 ##  related to package which are available via the GAP website. 

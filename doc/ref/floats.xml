@@ -124,7 +124,7 @@ external representation is performed as usual using
 <Example><![CDATA[
 gap> ExtRepOfObj(3.14);
 [ 7070651414971679, 2 ]
-gap> ObjByExtRep(FloatsFamily,last);
+gap> ObjByExtRep(IEEE754FloatsFamily,last);
 3.14
 ]]></Example>
 <P/>

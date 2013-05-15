@@ -16,9 +16,6 @@
 #ifndef GAP_EXPRS_H
 #define GAP_EXPRS_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

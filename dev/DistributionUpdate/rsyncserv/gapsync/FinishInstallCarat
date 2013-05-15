@@ -21,6 +21,12 @@ cd carat-2.1b1
 ##  mv Makefile Makefile.orig
 ##  grep -v "Gmp\\\\" Makefile.orig > Makefile
 make TOPDIR=`pwd` CC=gcc CFLAGS="-O2 -static" 
+
+# bad hack
+cd bin
+ln -s *cc i686-pc-linux-gnu-gcc-default32
+ln -s *cc x86_64-unknown-linux-gnu-gcc-default64
+
 cd ../../../../pkg/carat
 rm -f bin
 ln -s ../../local/pkg/CaratStandalone/carat-2.1b1/bin bin

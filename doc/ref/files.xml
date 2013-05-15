@@ -195,6 +195,8 @@ or into <F>/home/myhome/gap</F>, respectively.
 <#Include Label="DirectoriesLibrary">
 <#Include Label="DirectoriesSystemPrograms">
 <#Include Label="DirectoryContents">
+<#Include Label="DirectoryDesktop">
+<#Include Label="DirectoryHome">
 
 </Section>
 

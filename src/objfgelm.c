@@ -95,9 +95,7 @@
 
 #include        "bool.h"                /* booleans                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "objfgelm.h"            /* objects of free groups          */
-#undef  INCLUDE_DECLARATION_PART
 
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */

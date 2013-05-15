@@ -34,9 +34,7 @@
 
 #include        "intrprtr.h"            /* interpreter                     */
 
-#define INCLUDE_DECLARATION_PART
 #include        "read.h"                /* reader                          */
-#undef  INCLUDE_DECLARATION_PART
 
 #include	"tls.h"
 #include	"thread.h"
@@ -181,7 +179,7 @@ UInt GlobalComesFromEnclosingForLoop (UInt var)
 **  'r':        reference to a variable
 **  's':        assignment via ':='
 **  'u':        unbind a variable
-**  'x':        either 'r' or 'x' depending on <Symbol>
+**  'x':        either 'r' or 's' depending on <Symbol>
 **
 **  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
 **
@@ -271,7 +269,7 @@ void ReadCallVarAss (
     volatile UInt       level = 0;      /* number of '{}' selectors        */
     volatile UInt       rnam  = 0;      /* record component name           */
     volatile UInt       narg  = 0;      /* number of arguments             */
-    
+
 
     /* all variables must begin with an identifier                         */
     if ( TLS->symbol != S_IDENT ) {
@@ -284,7 +282,7 @@ void ReadCallVarAss (
     while ( type == ' ' && nest < TLS->countNams ) {
         nams = ELM_LIST( TLS->stackNams, TLS->countNams-nest );
         for ( indx = LEN_LIST( nams ); 1 <= indx; indx-- ) {
-            if ( SyStrcmp( TLS->value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+            if ( strcmp( TLS->value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
                 if ( nest == 0 ) {
                     type = 'l';
                     var = indx;
@@ -322,9 +320,9 @@ void ReadCallVarAss (
 		indx = 1023;
 	      }
 	    for ( ; 1 <= indx; indx-- ) {
-	      if ( SyStrcmp( TLS->value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+	      if ( strcmp( TLS->value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
 		type = 'd';
-		
+
 		/* Ultrix 4.2 cc get's confused if the UInt is missing     */
 		var = ((UInt)nest << 16) + indx;
 		break;
@@ -378,12 +376,12 @@ void ReadCallVarAss (
 
     if ( type == 'g'
       && TLS->countNams != 0
-      && var != TLS->currLHSGVar 
+      && var != TLS->currLHSGVar
       && var != Tilde
-      && VAL_GVAR(var) == 0 
+      && VAL_GVAR(var) == 0
       && ELM_PLIST(ExprGVars[GVAR_BUCKET(var)], GVAR_INDEX(var)) == 0
       && ! TLS->intrIgnoring
-      && ! GlobalComesFromEnclosingForLoop(var)      
+      && ! GlobalComesFromEnclosingForLoop(var)
       && (GAPInfo == 0 || !IS_REC(GAPInfo) || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) ||
              ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
       && ! SyCompilePlease )
@@ -560,20 +558,20 @@ void ReadCallVarAss (
             ReadExpr( follow, 'r' );
         }
         if ( READ_ERROR() ) {}
-        else if ( type == 'l' ) { IntrAssLVar( var );           }
-        else if ( type == 'h' ) { IntrAssHVar( var );           }
-        else if ( type == 'd' ) { IntrAssDVar( var, nest0 - 1 );           }
-        else if ( type == 'g' ) { IntrAssGVar( var );           }
-        else if ( type == '[' ) { IntrAssList();                }
-        else if ( type == ']' ) { IntrAssListLevel( level );    }
-        else if ( type == '{' ) { IntrAsssList();               }
-        else if ( type == '}' ) { IntrAsssListLevel( level );   }
+        else if ( type == 'l' ) { IntrAssLVar( var );             }
+        else if ( type == 'h' ) { IntrAssHVar( var );             }
+        else if ( type == 'd' ) { IntrAssDVar( var, nest0 - 1 );  }
+        else if ( type == 'g' ) { IntrAssGVar( var );             }
+        else if ( type == '[' ) { IntrAssList();                  }
+        else if ( type == ']' ) { IntrAssListLevel( level );      }
+        else if ( type == '{' ) { IntrAsssList();                 }
+        else if ( type == '}' ) { IntrAsssListLevel( level );     }
         else if ( type == '<' ) { IntrAssPosObj();                }
         else if ( type == '>' ) { IntrAssPosObjLevel( level );    }
         else if ( type == '(' ) { IntrAsssPosObj();               }
         else if ( type == ')' ) { IntrAsssPosObjLevel( level );   }
-        else if ( type == '.' ) { IntrAssRecName( rnam );       }
-        else if ( type == ':' ) { IntrAssRecExpr();             }
+        else if ( type == '.' ) { IntrAssRecName( rnam );         }
+        else if ( type == ':' ) { IntrAssRecExpr();               }
         else if ( type == '!' ) { IntrAssComObjName( rnam );      }
         else if ( type == '|' ) { IntrAssComObjExpr();            }
         else if ( type == 'c' || type == 'C' )
@@ -583,34 +581,34 @@ void ReadCallVarAss (
     /*  if we need an unbind                                               */
     else if ( mode == 'u' ) {
         if ( READ_ERROR() ) {}
-        else if ( type == 'l' ) { IntrUnbLVar( var );           }
-        else if ( type == 'h' ) { IntrUnbHVar( var );           }
-        else if ( type == 'd' ) { IntrUnbDVar( var, nest0 - 1 );           }
-        else if ( type == 'g' ) { IntrUnbGVar( var );           }
-        else if ( type == '[' ) { IntrUnbList();                }
+        else if ( type == 'l' ) { IntrUnbLVar( var );             }
+        else if ( type == 'h' ) { IntrUnbHVar( var );             }
+        else if ( type == 'd' ) { IntrUnbDVar( var, nest0 - 1 );  }
+        else if ( type == 'g' ) { IntrUnbGVar( var );             }
+        else if ( type == '[' ) { IntrUnbList();                  }
         else if ( type == '<' ) { IntrUnbPosObj();                }
-        else if ( type == '.' ) { IntrUnbRecName( rnam );       }
-        else if ( type == ':' ) { IntrUnbRecExpr();             }
+        else if ( type == '.' ) { IntrUnbRecName( rnam );         }
+        else if ( type == ':' ) { IntrUnbRecExpr();               }
         else if ( type == '!' ) { IntrUnbComObjName( rnam );      }
         else if ( type == '|' ) { IntrUnbComObjExpr();            }
-        else { SyntaxError("illegal operand for 'Unbind'");     }
+        else { SyntaxError("illegal operand for 'Unbind'");       }
     }
 
-    
+
     /* if we need an isbound                                               */
     else /* if ( mode == 'i' ) */ {
         if ( READ_ERROR() ) {}
-        else if ( type == 'l' ) { IntrIsbLVar( var );           }
-        else if ( type == 'h' ) { IntrIsbHVar( var );           }
-        else if ( type == 'd' ) { IntrIsbDVar( var, nest0 - 1 );           }
-        else if ( type == 'g' ) { IntrIsbGVar( var );           }
-        else if ( type == '[' ) { IntrIsbList();                }
+        else if ( type == 'l' ) { IntrIsbLVar( var );             }
+        else if ( type == 'h' ) { IntrIsbHVar( var );             }
+        else if ( type == 'd' ) { IntrIsbDVar( var, nest0 - 1 );  }
+        else if ( type == 'g' ) { IntrIsbGVar( var );             }
+        else if ( type == '[' ) { IntrIsbList();                  }
         else if ( type == '<' ) { IntrIsbPosObj();                }
-        else if ( type == '.' ) { IntrIsbRecName( rnam );       }
-        else if ( type == ':' ) { IntrIsbRecExpr();             }
+        else if ( type == '.' ) { IntrIsbRecName( rnam );         }
+        else if ( type == ':' ) { IntrIsbRecExpr();               }
         else if ( type == '!' ) { IntrIsbComObjName( rnam );      }
         else if ( type == '|' ) { IntrIsbComObjExpr();            }
-        else { SyntaxError("illegal operand for 'IsBound'");    }
+        else { SyntaxError("illegal operand for 'IsBound'");      }
     }
 
 }
@@ -688,7 +686,7 @@ void ReadPerm (
 /****************************************************************************
 **
 *F  ReadLongNumber( <follow> )  . . . . . . . . . . . . . . . read a long integer
-** 
+**
 **  A `long integer' here means one whose digits don't fit into `TLS->value',
 **  see scanner.c.  This function copies repeatedly  digits from `TLS->value'
 **  into a GAP string until the full integer is read.
@@ -697,23 +695,23 @@ void ReadPerm (
 
 static UInt appendToString(Obj string, UInt len)
 {
-       UInt len1 = SyStrlen(TLS->value);
+       UInt len1 = strlen(TLS->value);
        GROW_STRING(string, len+len1+1);
        memcpy(CHARS_STRING(string) + len, (void *)TLS->value, len1+1);
        SET_LEN_STRING(string, len+len1);
        return len + len1;
 }
 
-void ReadLongNumber( 
+void ReadLongNumber(
       TypSymbolSet        follow )
 {
-     Obj  string;   
+     Obj  string;
      UInt len;
      UInt status;
      UInt done;
 
      /* string in which to accumulate number */
-     len = SyStrlen(TLS->value);
+     len = strlen(TLS->value);
      string = NEW_STRING(len);
      memcpy(CHARS_STRING(string), (void *)TLS->value, len+1);
      done = 0;
@@ -738,7 +736,7 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /*	   Match(S_PARTIALINT, "integer", follow);*/
 	   break;
-	   
+
 	 case S_PARTIALFLOAT1:
 	   assert(0);
 	   Pr("Parsing error, this should never happen", 0L, 0L);
@@ -751,17 +749,17 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /* Match(TLS->symbol, "float", follow); */
 	   break;
-	   
+
 	 case S_FLOAT:
 	   len = appendToString(string, len);
 	   Match(S_FLOAT, "float", follow);
 	   IntrLongFloatExpr(string);
 	   done = 1;
 	   break;
-	   
+
 	 case S_IDENT:
 	   SyntaxError("Identifier over 1024 characters");
-	   
+
 	 default:
 	   len = appendToString(string, len);
 	   IntrLongIntExpr(string);
@@ -786,14 +784,14 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /* Match(TLS->symbol, "float", follow); */
 	   break;
-	   
+
 	 case S_FLOAT:
 	   len = appendToString(string, len);
 	   Match(S_FLOAT, "float", follow);
 	   IntrLongFloatExpr(string);
 	   done = 1;
 	   break;
-	   
+
 	 default:
 	   SyntaxError("Badly Formed Number");
 	 }
@@ -816,18 +814,18 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /* Match(TLS->symbol, "float", follow); */
 	   break;
-	   
+
 	 case S_FLOAT:
 	   len = appendToString(string, len);
 	   Match(S_FLOAT, "float", follow);
 	   IntrLongFloatExpr(string);
 	   done = 1;
 	   break;
-	   
+
 
 	 case S_IDENT:
 	   SyntaxError("Badly Formed Number");
-	   
+
 	 default:
 	   len = appendToString(string, len);
 	   IntrLongFloatExpr(string);
@@ -852,18 +850,18 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /* Match(TLS->symbol, "float", follow); */
 	   break;
-	   
+
 	 case S_FLOAT:
 	   len = appendToString(string, len);
 	   Match(S_FLOAT, "float", follow);
 	   IntrLongFloatExpr(string);
 	   done = 1;
 	   break;
-	   
+
 
 	 default:
 	   SyntaxError("Badly Formed Number");
-	   
+
 	 }
 	 break;
        case S_PARTIALFLOAT4:
@@ -883,22 +881,22 @@ void ReadLongNumber(
 	   len = appendToString(string, len);
 	   /* Match(TLS->symbol, "float", follow); */
 	   break;
-	   
+
 	 case S_FLOAT:
 	   len = appendToString(string, len);
 	   Match(S_FLOAT, "float", follow);
 	   IntrLongFloatExpr(string);
 	   done = 1;
 	   break;
-	   
+
 	 case S_IDENT:
 	   SyntaxError("Badly Formed Number");
-	   
+
 	 default:
 	   len = appendToString(string, len);
 	   IntrLongFloatExpr(string);
 	   done = 1;
-	   
+
 	 }
 	 break;
        default:
@@ -912,16 +910,16 @@ void ReadLongNumber(
 /****************************************************************************
 **
 *F  ReadString( <follow> )  . . . . . . . . . . . . . . read a (long) string
-** 
+**
 **  A string is  read by copying parts of `TLS->value'  (see scanner.c) given
 **  by `TLS->valueLen' into  a string GAP object. This is  repeated until the
 **  end of the string is reached.
 **
 */
-void ReadString( 
+void ReadString(
       TypSymbolSet        follow )
 {
-     Obj  string;   
+     Obj  string;
      UInt len;
 
      string = NEW_STRING(TLS->valueLen);
@@ -1072,7 +1070,7 @@ void ReadRecExpr (
         if ( ! READ_ERROR() ) { IntrRecExprEndElm(); }
         nr++;
       }
-      
+
     }
   while ( TLS->symbol == S_COMMA );
 
@@ -1154,8 +1152,8 @@ void ReadFuncExpr (
 		SET_LEN_STRING(locks, 1);
 	        GetSymbol();
 	    }
-	    name = NEW_STRING( SyStrlen(TLS->value) );
-	    SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+	    name = NEW_STRING( strlen(TLS->value) );
+	    SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
 	    MakeImmutableString(name);
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
@@ -1179,12 +1177,12 @@ void ReadFuncExpr (
 	        GetSymbol();
 	    }
 	    for ( i = 1; i <= narg; i++ ) {
-		if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
+		if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
 		    SyntaxError("name used for two arguments");
 		}
 	    }
-	    name = NEW_STRING( SyStrlen(TLS->value) );
-	    SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+	    name = NEW_STRING( strlen(TLS->value) );
+	    SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
 	    MakeImmutableString(name);
 	    narg += 1;
 	    ASS_LIST( nams, narg+nloc, name );
@@ -1195,12 +1193,12 @@ void ReadFuncExpr (
     if ( TLS->symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
         for ( i = 1; i <= narg; i++ ) {
-            if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
+            if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
                 SyntaxError("name used for argument and local");
             }
         }
-        name = NEW_STRING( SyStrlen(TLS->value) );
-        SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+        name = NEW_STRING( strlen(TLS->value) );
+        SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
 	MakeImmutableString(name);
         nloc += 1;
         ASS_LIST( nams, narg+nloc, name );
@@ -1210,17 +1208,17 @@ void ReadFuncExpr (
             TLS->value[0] = '\0';
             Match( S_COMMA, ",", follow );
             for ( i = 1; i <= narg; i++ ) {
-                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
                     SyntaxError("name used for argument and local");
                 }
             }
             for ( i = narg+1; i <= narg+nloc; i++ ) {
-                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( SyStrlen(TLS->value) );
-            SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+            name = NEW_STRING( strlen(TLS->value) );
+            SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
 	    MakeImmutableString(name);
             nloc += 1;
             ASS_LIST( nams, narg+nloc, name );
@@ -1230,7 +1228,7 @@ void ReadFuncExpr (
     }
 
     /* 'function( arg )' takes a variable number of arguments              */
-    if ( narg == 1 && ! SyStrcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
+    if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_LIST(nams,1) ) ) )
         narg = -1;
 
     /* remember the current variables in case of an error                  */
@@ -1259,6 +1257,7 @@ void ReadFuncExpr (
     }
 
     /* pop the new local variables list                                    */
+    assert(TLS->countNams > 0);
     TLS->countNams--;
 
     /* 'end'                                                               */
@@ -1291,8 +1290,8 @@ void ReadFuncExpr1 (
     SET_LEN_PLIST( nams, 0 );
     TLS->countNams++;
     ASS_LIST( TLS->stackNams, TLS->countNams, nams );
-    name = NEW_STRING( SyStrlen(TLS->value) );
-    SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+    name = NEW_STRING( strlen(TLS->value) );
+    SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
     MakeImmutableString( name );
     ASS_LIST( nams, 1, name );
 
@@ -1325,6 +1324,7 @@ void ReadFuncExpr1 (
     }
 
     /* pop the new local variables list                                    */
+    assert(TLS->countNams > 0);
     TLS->countNams--;
 }
 
@@ -1420,13 +1420,13 @@ void ReadLiteral (
         if ( ! READ_ERROR() ) { IntrFloatExpr( TLS->value ); }
         Match( S_FLOAT, "float", follow );
     }
-      
+
 
     /* partial Int */
     else if ( TLS->symbol == S_PARTIALINT || TLS->symbol == S_PARTIALFLOAT1 ||
 	      TLS->symbol == S_PARTIALFLOAT2 ) {
          ReadLongNumber( follow );
-    } 
+    }
 
     /* 'true'                                                              */
     else if ( TLS->symbol == S_TRUE ) {
@@ -1480,7 +1480,7 @@ void ReadLiteral (
     }
 
     else if (TLS->symbol == S_DOT ) {
-      /* Hack The only way a dot could turn up here is in 
+      /* Hack The only way a dot could turn up here is in
        a floating point literal that starts with .. So, change the token
       to  a partial float of the right kind to end with a . and an
       associated value and dive into the long float literal handler in the parser*/
@@ -1999,8 +1999,8 @@ void ReadFor (
     Match( S_FOR, "for", follow );
 
     /* <Var>                                                               */
-    ReadCallVarAss( follow, 'r' );    
-    
+    ReadCallVarAss( follow, 'r' );
+
     /* 'in' <Expr>                                                         */
     Match( S_IN, "in", S_DO|S_OD|follow );
     if ( ! READ_ERROR() ) { IntrForIn(); }
@@ -2029,7 +2029,7 @@ void ReadFor (
       TLS->ptrLVars  = PTR_BAG( TLS->currLVars );
       TLS->ptrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
       if (TLS->countNams > 0)
-	TLS->countNams--;      
+	TLS->countNams--;
     }
 }
 
@@ -2375,14 +2375,14 @@ UInt ReadStats (
         /* read a statement                                                */
         if      ( TLS->symbol == S_IDENT  ) ReadCallVarAss(follow,'s');
         else if ( TLS->symbol == S_UNBIND ) ReadUnbind(    follow    );
-        else if ( TLS->symbol == S_INFO   ) ReadInfo(      follow    ); 
+        else if ( TLS->symbol == S_INFO   ) ReadInfo(      follow    );
         else if ( TLS->symbol == S_ASSERT ) ReadAssert(    follow    );
         else if ( TLS->symbol == S_IF     ) ReadIf(        follow    );
         else if ( TLS->symbol == S_FOR    ) ReadFor(       follow    );
-        else if ( TLS->symbol == S_WHILE  ) ReadWhile(     follow    ); 
+        else if ( TLS->symbol == S_WHILE  ) ReadWhile(     follow    );
         else if ( TLS->symbol == S_REPEAT ) ReadRepeat(    follow    );
         else if ( TLS->symbol == S_BREAK  ) ReadBreak(     follow    );
-        else if ( TLS->symbol == S_CONTINUE  ) ReadContinue(     follow    );
+        else if ( TLS->symbol == S_CONTINUE) ReadContinue(     follow    );
         else if ( TLS->symbol == S_RETURN ) ReadReturn(    follow    );
         else if ( TLS->symbol == S_TRYNEXT) ReadTryNext(   follow    );
 	else if ( TLS->symbol == S_QUIT   ) ReadQuit(      follow    );
@@ -2390,7 +2390,7 @@ UInt ReadStats (
 	else                           ReadEmpty(     follow    );
 	nr++;
         Match( S_SEMICOLON, ";", follow );
-    
+
     }
 
     /* return the number of statements                                     */
@@ -2631,8 +2631,8 @@ UInt ReadEvalFile ( void )
     ASS_LIST( TLS->stackNams, TLS->countNams, nams );
     if ( TLS->symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", 0L );
-        name = NEW_STRING( SyStrlen(TLS->value) );
-        SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+        name = NEW_STRING( strlen(TLS->value) );
+        SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
         nloc += 1;
         ASS_LIST( nams, nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2640,12 +2640,12 @@ UInt ReadEvalFile ( void )
             TLS->value[0] = '\0';
             Match( S_COMMA, ",", 0L );
             for ( i = 1; i <= nloc; i++ ) {
-                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
+                if ( strcmp(CSTR_STRING(ELM_LIST(nams,i)),TLS->value) == 0 ) {
                     SyntaxError("name used for two locals");
                 }
             }
-            name = NEW_STRING( SyStrlen(TLS->value) );
-            SyStrncat( CSTR_STRING(name), TLS->value, SyStrlen(TLS->value) );
+            name = NEW_STRING( strlen(TLS->value) );
+            SyStrncat( CSTR_STRING(name), TLS->value, strlen(TLS->value) );
             nloc += 1;
             ASS_LIST( nams, nloc, name );
             Match( S_IDENT, "identifier", STATBEGIN|S_END );
@@ -2772,8 +2772,8 @@ Obj Call0ArgsInNewReader(Obj f)
     result = (Obj) 0L;
     IntrEnd( 1UL );
     ClearError();
-  } 
-  
+  }
+
   /* switch back to the old reader context                               */
   memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
   TLS->UserHasQuit = userHasQuit;
@@ -2844,8 +2844,8 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
     result = (Obj) 0L;
     IntrEnd( 1UL );
     ClearError();
-  } 
-  
+  }
+
   /* switch back to the old reader context                               */
   memcpy( TLS->readJmpError, readJmpError, sizeof(syJmp_buf) );
   TLS->intrCoding = intrCoding;

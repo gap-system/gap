@@ -799,7 +799,7 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
         ##
         e := STRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Successors(r));
 
-        ## Eliminate singlatons
+        ## Eliminate singletons
         e := Filtered(e, i->Length(i)>1);
 
         ## Do a depth first search of rel
@@ -1135,7 +1135,7 @@ InstallMethod(Successors, "for a generic relation", true,
 ##  Arithmetic and boolean methods on binary relations on points
 ##
 ##  \=  True if successors lists are equal (by construction each image is
-##      a set of integers so there is a cannonical form to check)
+##      a set of integers so there is a canonical form to check)
 ##
 ##  \in determines whether a tuple [x,y] in rel  
 ##
@@ -1808,7 +1808,7 @@ InstallMethod(\=, "for eqivalence relations", IsIdenticalObj,
             return Successors(x)=Successors(y);
         fi;
 
-        ## Look at partitions -- they are not in any cannonical 
+        ## Look at partitions -- they are not in any canonical 
         ##     form. 
         ##
         if (HasEquivalenceRelationPartition(x) and 

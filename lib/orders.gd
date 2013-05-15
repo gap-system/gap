@@ -757,6 +757,8 @@ DeclareOperation("WreathProductOrdering",[IsFamily,IsList,IsList]);
 ##  <Prop Name="IsWreathProductOrdering" Arg='ord'/>
 ##
 ##  <Description>
+##  specifies whether an ordering is a wreath product ordering 
+##  (see <Ref Oper="WreathProductOrdering"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

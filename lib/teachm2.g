@@ -20,10 +20,8 @@ local s;
   fi;
   if TEACHMODE=true then
     s:="ON";
-    GAPInfo.UserPreferences.IndeterminateNameReuse:= 1;
   else
     s:="OFF";
-    GAPInfo.UserPreferences.IndeterminateNameReuse:= 0;
   fi;
   Info(InfoWarning,1,"Teaching mode is turned ",s);
 end);

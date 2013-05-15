@@ -7,5 +7,5 @@ gapmpi.o: @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
           @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
           @srcdir@/plist.h @srcdir@/sysfiles.h @srcdir@/code.h \
           @srcdir@/vars.h @srcdir@/stats.h @srcdir@/gapmpi.h 
-	$(CC) -I. -I$(MPIINCLUDEDIR) -DCONFIG_H $(CFLAGS) -o gapmpi.o -c @srcdir@/gapmpi.c
+	$(CC) -I. $(MPI_CFLAGS) -DCONFIG_H $(CFLAGS) -o gapmpi.o -c @srcdir@/gapmpi.c
 

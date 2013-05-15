@@ -616,6 +616,18 @@ InstallOtherMethod( Zero,
 
 #############################################################################
 ##
+#M  Characteristic(<obj>)
+##
+
+InstallMethod( Characteristic,
+    "delegate to family (magma)",
+    [ IsAdditiveMagmaWithZero ],
+    function( el )
+      return Characteristic( FamilyObj(el) );
+    end );
+
+#############################################################################
+##
 #M  Enumerator( <A> ) . . . .  enumerator of trivial additive magma with zero
 ##
 EnumeratorOfTrivialAdditiveMagmaWithZero := A -> Immutable( [ Zero( A ) ] );

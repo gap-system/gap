@@ -63,6 +63,7 @@ there is a concept of <Emph>modules</Emph> where  parts of the
 <#Include SYSTEM "todo.xml">
 <#Include SYSTEM "testing.xml">
 <#Include SYSTEM "cvshints.xml">
+<#Include SYSTEM "mercurial.xml">
 <#Include SYSTEM "pkgdist.xml">
 <#Include SYSTEM "website.xml">
 <#Include SYSTEM "newcode.xml">

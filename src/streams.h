@@ -15,9 +15,6 @@
 #ifndef GAP_STREAMS_H
 #define GAP_STREAMS_H
 
-#ifdef INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

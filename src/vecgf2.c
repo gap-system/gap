@@ -25,9 +25,7 @@
 #include        "blister.h"             /* boolean lists                   */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "vecgf2.h"              /* GF2 vectors                     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "saveload.h"            /* saving and loading              */
 

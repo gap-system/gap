@@ -19,7 +19,6 @@ DeclareCategory("IsComplexFloatInterval", IsComplexFloat and IsFloatInterval);
 DeclareCategoryFamily("IsFloat");
 DeclareCategoryCollections("IsFloat");
 DeclareCategoryCollections("IsFloatCollection");
-BindGlobal("FloatsFamily", NewFamily("FloatsFamily", IsFloat));
 DeclareConstructor("NewFloat",[IsFloat,IsObject]);
 DeclareOperation("MakeFloat",[IsFloat,IsObject]);
 #############################################################################
@@ -89,6 +88,7 @@ end);
 ##   <Oper Name="Erf" Arg="x"/>
 ##   <Oper Name="Zeta" Arg="x"/>
 ##   <Oper Name="Gamma" Arg="x"/>
+##   <Oper Name="ComplexI" Arg="x"/>
 ##   <Description>
 ##     Usual mathematical functions.
 ##   </Description>
@@ -219,6 +219,7 @@ DeclareAttribute("SinCos",IsFloat);
 DeclareAttribute("Erf",IsFloat);
 DeclareAttribute("Zeta",IsFloat);
 DeclareAttribute("Gamma",IsFloat);
+DeclareAttribute("ComplexI",IsFloat);
 
 DeclareAttribute("PrecisionFloat",IsFloat);
 DeclareAttribute("SignFloat",IsFloat);
@@ -241,6 +242,12 @@ DeclareProperty("IsNInfinity", IsFloat);
 DeclareProperty("IsXInfinity", IsFloat);
 DeclareProperty("IsFinite", IsFloat);
 DeclareProperty("IsNaN", IsFloat);
+#############################################################################
+
+#############################################################################
+# roots
+#############################################################################
+#! document (LB)
 #############################################################################
 
 #############################################################################
@@ -293,10 +300,13 @@ DeclareProperty("IsNaN", IsFloat);
 ## </ManSection>
 ##
 ## <ManSection>
-##   <Func Name="SetFloats" Arg="rec [bits]"/>
+##   <Func Name="SetFloats" Arg="rec [bits] [install]"/>
 ##   <Description>
 ##     Installs a new interface to floating-point numbers in &GAP;, optionally
-##     with a desired precision in binary digits.
+##     with a desired precision <A>bits</A> in binary digits. The last
+##     optional argument <A>install</A> is a boolean value; if false, it
+##     only installs the eager handler and the precision for the floateans,
+##     without making them the default.
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>

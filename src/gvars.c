@@ -41,9 +41,7 @@
 
 #include        "code.h"                /* coder                           */
 
-#define INCLUDE_DECLARATION_PART
 #include        "gvars.h"               /* global variables                */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "calls.h"               /* generic call mechanism          */
 
@@ -150,7 +148,7 @@ void UnlockGVars() {
 *V  NameGVars . . . . . . . . . . . . . . . . . . . names of global variables
 *V  WriteGVars  . . . . . . . . . . . . .  writable flags of global variables
 *V  ExprGVars . . . . . . . . . .  expressions for automatic global variables
-*V  BopiesGVars . . . . . . . . . . . . . internal copies of global variables
+*V  CopiesGVars . . . . . . . . . . . . . internal copies of global variables
 *V  FopiesGVars . . . . . . . .  internal function copies of global variables
 *V  CountGVars  . . . . . . . . . . . . . . . . .  number of global variables
 */
@@ -307,9 +305,9 @@ void            AssGVar (
     if (IS_BAG_REF(val) && DS_BAG(val) == 0) { /* public region? */
 	if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
 	    name = NameGVar(gvar);
-	    /*CCC        onam = NEW_STRING(SyStrlen(name));
-	      SyStrncat( CSTR_STRING(onam), name, SyStrlen(name) ); CCC*/
-	    len = SyStrlen(name);
+	    /*CCC        onam = NEW_STRING(strlen(name));
+	      SyStrncat( CSTR_STRING(onam), name, strlen(name) ); CCC*/
+	    len = strlen(name);
 	    C_NEW_STRING(onam, len, name);
 	    RESET_FILT_LIST( onam, FN_IS_MUTABLE );
 	    NAME_FUNC(val) = onam;
@@ -462,7 +460,7 @@ UInt GVarName (
     /* First see whether it could be namespace-local: */
     cns = TLS->currNamespace ? CSTR_STRING(TLS->currNamespace) : "";
     if (*cns) {   /* only if a namespace is set */
-        len = SyStrlen(name);
+        len = strlen(name);
         if (name[len-1] == NSCHAR) {
             gvarbuf[0] = 0;
             if (len > 512) len = 512;
@@ -485,7 +483,7 @@ UInt GVarName (
 
     /* look through the table until we find a free slot or the global      */
     while ( (gvar = ELM_PLIST( TableGVars, i )) != 0
-         && SyStrncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
+         && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
         i = (i % SizeGVars) + 1;
     }
     if (gvar == 0 && !PreThreadCreation) {
@@ -496,7 +494,7 @@ UInt GVarName (
 
 	/* look through the table until we find a free slot or the global  */
 	while ( (gvar = ELM_PLIST( TableGVars, i )) != 0
-	     && SyStrncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
+	     && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
 	    i = (i % SizeGVars) + 1;
 	}
     }
@@ -513,9 +511,9 @@ UInt GVarName (
         SET_ELM_PLIST( TableGVars, pos, gvar );
         /*CCC        namx[0] = '\0';
         SyStrncat( namx, name, 1023 );
-        string = NEW_STRING( SyStrlen(namx) );
-        SyStrncat( CSTR_STRING(string), namx, SyStrlen(namx) );CCC*/
-        len = SyStrlen(name);
+        string = NEW_STRING( strlen(namx) );
+        SyStrncat( CSTR_STRING(string), namx, strlen(namx) );CCC*/
+        len = strlen(name);
         memcpy(namx, name, len+1);
         C_NEW_STRING(string, len, namx);
         RESET_FILT_LIST( string, FN_IS_MUTABLE );

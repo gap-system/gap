@@ -257,7 +257,7 @@ end);
 
 #############################################################################
 ##
-#F  LcNormHnf( <array> [,< Bool/Rat >] )  . the HNF and the tranforming matrix
+#F  LcNormHnf( <array> [,< Bool/Rat >] )  . the HNF and the transforming matrix
 ##
 BindGlobal("LcNormHnf" , function( arg )
 
@@ -486,7 +486,7 @@ end);
 
 ##############################################################################
 ##
-#F  LcLLLHnf( <array> [, <rat>] ) .. the Hermite NF and the tranforming matrix
+#F  LcLLLHnf( <array> [, <rat>] ) .. the Hermite NF and the transforming matrix
 ##
 BindGlobal("LcLLLHnf", function(arg)
 

@@ -938,7 +938,7 @@ function( pcgs, elm, pos )
             dg := DepthOfPcElement( pfa, g );
 
 	    if codepths[dg]>dep then
-	      # once we have reached pfa-depth dg, we cannot acchieve `dep'
+	      # once we have reached pfa-depth dg, we cannot achieve `dep'
 	      # any longer. So we may stop the descent through pfa here
 	      g:=id;
             elif IsBound(pcs[dg])  then
@@ -1041,7 +1041,7 @@ function( pcgs, elm )
 	    # do this by stepping down in pag
             dg := DepthOfPcElement( pfa, g );
 	    if codepths[dg]>dep then
-	      # once we have reached pfa-depth dg, we cannot acchieve `dep'
+	      # once we have reached pfa-depth dg, we cannot achieve `dep'
 	      # any longer. So we may stop the descent through pfa here
 	      g:=id;
             elif IsBound(pcs[dg])  then
@@ -1119,7 +1119,7 @@ function( pcgs, elm,range )
             dg := DepthOfPcElement( pfa, g );
 
 	    if codepths[dg]>dep then
-	      # once we have reached pfa-depth dg, we cannot acchieve `dep'
+	      # once we have reached pfa-depth dg, we cannot achieve `dep'
 	      # any longer. So we may stop the descent through pfa here
 	      g:=id;
             elif IsBound(pcs[dg])  then
@@ -1241,7 +1241,7 @@ function( pcgs, elm )
         dg := DepthOfPcElement( pfa, elm );
 
 	if codepths[dg]>dep then
-	  # once we have reached pfa-depth dg, we cannot acchieve `dep'
+	  # once we have reached pfa-depth dg, we cannot achieve `dep'
 	  # any longer. So we may stop the descent through pfa here
 	  elm:=id;
 	elif IsBound(pcs[dg])  then

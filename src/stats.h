@@ -16,9 +16,6 @@
 #ifndef GAP_STATS_H
 #define GAP_STATS_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

@@ -317,17 +317,16 @@ InstallGlobalFunction( Exec, function( arg )
     od;
 
     # select the shell, bourne shell is the default: sh -c cmd
-    shell := Filename( DirectoriesSystemPrograms(), "sh" );
-    cs := "-c";
-
-    # on Windows, if bourne shell (possibly provided by Cygwin) is not
-    # found, then cmd.exe is used instead: cmd.exe /C cmd
-    if shell = fail and ARCH_IS_WINDOWS(  )  then
+    if ARCH_IS_WINDOWS() then
+        # on Windows, we use the native shell such that behaviour does
+        # not depend on whether cygwin is installed or not.
 	# cmd.exe is preferrable to old-style `command.com'
         shell := Filename( DirectoriesSystemPrograms(), "cmd.exe" );
         cs := "/C";
+    else
+        shell := Filename( DirectoriesSystemPrograms(), "sh" );
+        cs := "-c";
     fi;
-
 
     # execute in the current directory
     dir := DirectoryCurrent();

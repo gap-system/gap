@@ -211,7 +211,9 @@ InstallMethod( PrintObj,
 ## first used). Except for the sorting of components this does the same as 
 ## the former (now removed) kernel function FuncPRINT_PREC_DEFAULT.
     function( record )
-    local nam, com, i;
+    local okchars, com, i, snam, nam;
+    okchars :=
+          "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
     Print("\>\>rec(\n\>\>");
     com := false;
     i := 1;
@@ -223,7 +225,14 @@ InstallMethod( PrintObj,
         fi;
         SET_PRINT_OBJ_INDEX(i);
         i := i+1;
-        Print(nam, "\< := \>");
+        # easy if nam is integer or valid identifier:
+        if ForAll(nam, x-> x in okchars) then
+          Print(nam, "\< := \>");
+        else 
+          # otherwise we use (...) syntax:
+          snam := String(nam);
+          Print("("); View(snam); Print(")\< := \>");
+        fi;
         PrintObj(record.(nam));
     od;
     Print(" \<\<\<\<)");
@@ -274,7 +283,9 @@ InstallMethod( ViewObj,
     "record",
     [ IsRecord ],
     function( record )
-    local nam, com, i;
+    local nam, com, i, snam, okchars;
+    okchars :=
+          "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
     Print("\>\>rec( \>\>");
     com := false;
     i := 1;
@@ -286,7 +297,14 @@ InstallMethod( ViewObj,
         fi;
         SET_PRINT_OBJ_INDEX(i);
         i := i+1;
-        Print(nam, " := ");
+        # easy if nam is integer or valid identifier:
+        if ForAll(nam, x-> x in okchars) then
+          Print(nam, " := ");
+        else 
+          # otherwise we use (...) syntax:
+          snam := String(nam);
+          Print("("); View(snam); Print(") := ");
+        fi;
         ViewObj(record.(nam));
     od;
     Print(" \<\<\<\<)");

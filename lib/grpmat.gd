@@ -20,6 +20,7 @@
 ##  <Filt Name="IsMatrixGroup" Arg='grp' Type='Category'/>
 ##
 ##  <Description>
+##  The category of matrix groups.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -252,7 +253,7 @@ InstallTrueMethod(IsGeneralLinearGroup,IsNaturalGL);
 ##
 ##  <Description>
 ##  The Special Linear group is the group of all invertible matrices over a
-##  ring, whose determinant is equal to 1. This property tests, wether a
+##  ring, whose determinant is equal to 1. This property tests, whether a
 ##  group is isomorphic to a Special Linear group. (Note that currently 
 ##  only a few trivial methods are available for this operation. We hope 
 ##  to improve this in the future.)

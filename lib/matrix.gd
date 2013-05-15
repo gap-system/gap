@@ -362,16 +362,16 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##  <Func Name="ElementaryDivisorsMatDestructive" Arg='ring,mat'/>
 ##
 ##  <Description>
-##  <C>ElementaryDivisors</C> returns a list of the elementary divisors, i.e., the
-##  unique <A>d</A> with <C><A>d</A>[<A>i</A>]</C> divides  <C><A>d</A>[<A>i</A>+1]</C> and <A>mat</A> is  equivalent
-##  to a diagonal matrix with the elements <C><A>d</A>[<A>i</A>]</C> on the diagonal.
+##  returns a list of the elementary divisors, i.e., the
+##  unique <M>d</M> with <M>d[i]</M> divides  <M>d[i+1]</M> and <A>mat</A> is  equivalent
+##  to a diagonal matrix with the elements <M>d[i]</M> on the diagonal.
 ##  The operations are performed over the euclidean
 ##  ring <A>ring</A>, which must contain
 ##  all matrix entries. For compatibility reasons it can be omitted and
 ##  defaults to the <Ref Func="DefaultRing" Label="for ring elements"/> of the matrix entries.
 ##  <P/>
 ##  The function <Ref Func="ElementaryDivisorsMatDestructive"/> produces the same result
-##  but in the process destroys the contents of <A>mat</A>.
+##  but in the process may destroy the contents of <A>mat</A>.
 ##  <Example><![CDATA[
 ##  gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
 ##  gap> ElementaryDivisorsMat(mat);
@@ -410,7 +410,7 @@ DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
 ##
 ##  <Description>
 ##  <C>ElementaryDivisorsTransformations</C>, in addition to the tasks done
-##  by <C>ElementaryDivisors</C>, also calculates transforming matrices.
+##  by <C>ElementaryDivisorsMat</C>, also calculates transforming matrices.
 ##  It returns a record with components <C>normal</C> (a matrix <M>S</M>),
 ##  <C>rowtrans</C> (a matrix <M>P</M>),
 ##  and <C>coltrans</C> (a matrix <M>Q</M>) such that <M>P A Q = S</M>.
@@ -719,7 +719,7 @@ DeclareAttribute( "RankMat", IsMatrix );
 ##  <Oper Name="RankMatDestructive" Arg='mat'/>
 ##
 ##  <Description>
-##  <C>RankMatDestructive</C> returns the same result as <Ref Func="RankMat"/> but may
+##  returns the same result as <Ref Func="RankMat"/> but may
 ##  modify its argument in the process, if this saves time or memory
 ##  </Description>
 ##  </ManSection>

@@ -11,17 +11,20 @@
 **  This file contains the  various read-eval-print loops and streams related
 **  stuff.  The system depend part is in "sysfiles.c".
 */
+
+#include        "system.h"              /* system dependent part           */
+
+#include        <errno.h>
 #include        <stdio.h>
 #include        <string.h>              /* memcpy */
+
 #include        <unistd.h>              /* fstat, write, read              */
-# include        <sys/types.h>
-#include         <dirent.h>             /* for reading a directory         */
-# include        <sys/stat.h>
-#include        "system.h"              /* system dependent part           */
-#if HAVE_SELECT
+#include        <sys/types.h>
+#include        <dirent.h>              /* for reading a directory         */
+#include        <sys/stat.h>
+#if HAVE_SYS_TIME_H
 #include        <sys/time.h>
 #endif
-#include <errno.h>
 
 
 
@@ -50,9 +53,7 @@
 
 #include        "saveload.h"            /* saving and loading              */
 
-#define INCLUDE_DECLARATION_PART
 #include        "streams.h"             /* streams package                 */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "code.h"
 
@@ -289,7 +290,9 @@ Int READ_TEST ( void )
 
             /* print the result                                            */
             if ( ! TLS->dualSemicolon ) {
+                Bag currLVars = TLS->currLVars; /* in case view runs into error */
                 ViewObjHandler( TLS->readEvalResult );
+                SWITCH_TO_OLD_LVARS(currLVars);
             }
         }
 
@@ -351,9 +354,9 @@ Int READ_LOOP ( void )
 
             /* print the result                                            */
             if ( ! TLS->dualSemicolon ) {
-		Bag currLVars = TLS->currLVars;
+                Bag currLVars = TLS->currLVars; /* in case view runs into error */
                 ViewObjHandler( TLS->readEvalResult );
-		SWITCH_TO_OLD_LVARS(currLVars);
+                SWITCH_TO_OLD_LVARS(currLVars);
             }
         }
 
@@ -400,7 +403,7 @@ Int READ_GAP_ROOT ( Char * filename )
     StructInitInfo *    info;
 
     /* try to find the file                                                */
-    res = SyFindOrLinkGapRootFile( filename, 0L, &result, 256 );
+    res = SyFindOrLinkGapRootFile( filename, 0L, &result );
 
     /* not found                                                           */
     if ( res == 0 ) {
@@ -1304,7 +1307,7 @@ Obj FuncTmpName (
     tmp = SyTmpname();
     if ( tmp == 0 )
         return Fail;
-    C_NEW_STRING( name, SyStrlen(tmp), tmp );
+    C_NEW_STRING( name, strlen(tmp), tmp );
     return name;
 }
 
@@ -1319,10 +1322,10 @@ Obj FuncTmpDirectory (
     Char *              tmp;
     Obj                 name;
 
-    tmp = SyTmpdir("tmp");
+    tmp = SyTmpdir("tm");
     if ( tmp == 0 )
         return Fail;
-    C_NEW_STRING( name, SyStrlen(tmp), tmp );
+    C_NEW_STRING( name, strlen(tmp), tmp );
     return name;
 }
 
@@ -1346,6 +1349,67 @@ Obj FuncRemoveFile (
     /* call the system dependent function                                  */
     return SyRemoveFile( CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
+
+/****************************************************************************
+**
+*F  FuncCreateDir( <self>, <name> )  . . . . . . . . . . . . create directory
+*/
+Obj FuncCreateDir (
+    Obj             self,
+    Obj             filename )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( filename ) ) {
+        filename = ErrorReturnObj(
+            "<filename> must be a string (not a %s)",
+            (Int)TNAM_OBJ(filename), 0L,
+            "you can replace <filename> via 'return <filename>;'" );
+    }
+    
+    /* call the system dependent function                                  */
+    return SyMkdir( CSTR_STRING(filename) ) == -1 ? Fail : True;
+}
+
+/****************************************************************************
+**
+*F  FuncRemoveDir( <self>, <name> )  . . . . . . . . . . . . remove directory
+*/
+Obj FuncRemoveDir (
+    Obj             self,
+    Obj             filename )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( filename ) ) {
+        filename = ErrorReturnObj(
+            "<filename> must be a string (not a %s)",
+            (Int)TNAM_OBJ(filename), 0L,
+            "you can replace <filename> via 'return <filename>;'" );
+    }
+    
+    /* call the system dependent function                                  */
+    return SyRmdir( CSTR_STRING(filename) ) == -1 ? Fail : True;
+}
+
+/****************************************************************************
+**
+*F  FuncIsDir( <self>, <name> )  . . . . . check whether something is a dir
+*/
+Obj FuncIsDir (
+    Obj             self,
+    Obj             filename )
+{
+    while ( ! IsStringConv( filename ) ) {
+        filename = ErrorReturnObj(
+            "<filename> must be a string (not a %s)",
+            (Int)TNAM_OBJ(filename), 0L,
+            "you can replace <filename> via 'return <filename>;'" );
+    }
+
+    /* call the system dependent function                                  */
+    return SyIsDir( CSTR_STRING(filename) );
+}
+
+
 
 
 /****************************************************************************
@@ -1375,7 +1439,7 @@ Obj FuncLastSystemError (
     /* check if an errors has occured                                      */
     if ( SyLastErrorNo != 0 ) {
         ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(SyLastErrorNo) );
-        C_NEW_STRING(msg, SyStrlen(SyLastErrorMessage), SyLastErrorMessage);
+        C_NEW_STRING(msg, strlen(SyLastErrorMessage), SyLastErrorMessage);
         ASS_REC( err, ErrorMessageRNam, msg );
     }
 
@@ -1816,7 +1880,7 @@ Obj FuncREAD_LINE_FILE (
       GROW_STRING( str, len );
       if ( SyFgetsSemiBlock( buf, 256, ifid ) == 0 )
 	break;
-      buflen = SyStrlen(buf);
+      buflen = strlen(buf);
       lstr = GET_LEN_STRING(str);
       cstr = CSTR_STRING(str) + lstr;
       memcpy( cstr, buf, buflen+1 );
@@ -1914,7 +1978,7 @@ Obj FuncREAD_ALL_FILE (
 	      csize = ((ilim- len) > 20000) ? 20000 : ilim - len;
 	    
 	  if (SyFgetsSemiBlock(buf, csize, ifid))
-	    lstr = SyStrlen(buf);
+	    lstr = strlen(buf);
 	  else  
 	    lstr = 0;
 	}
@@ -2449,8 +2513,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "TmpDirectory", 0L, "",
       FuncTmpDirectory, "src/streams.c:TmpDirectory" },
 
-    { "RemoveFile", 1L, "file",
+    { "RemoveFile", 1L, "filename",
       FuncRemoveFile, "src/streams.c:RemoveFile" },
+
+    { "CreateDir", 1L, "filename",
+      FuncCreateDir, "src/streams.c:CreateDir" },
+
+    { "RemoveDir", 1L, "filename",
+      FuncRemoveDir, "src/streams.c:RemoveDir" },
+
+    { "IsDir", 1L, "filename",
+      FuncIsDir, "src/streams.c:IsDir" },
 
     { "LastSystemError", 0L, "", 
       FuncLastSystemError, "src/streams.c:LastSystemError" },

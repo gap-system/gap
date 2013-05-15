@@ -2,9 +2,8 @@
 %%
 %W  Update                      GAP Maintenance
 %%
-%H  $Id: Update4.4.11,v 1.1 2008/12/08 16:59:07 gapchron Exp $
 %%
-%Y  Copyright (C)  2005,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+%Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 %%
 %%  This file is intended to list the changes that will be published with
 %%  the next update of GAP.

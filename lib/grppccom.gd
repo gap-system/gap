@@ -155,6 +155,10 @@ DeclareGlobalFunction("COComplementsMain");
 DeclareOperation("ComplementClassesRepresentativesSolvableNC",
   [IsGroup,IsGroup]);
 
+
+# Basic routine for complements with solvable factor group.
+DeclareGlobalFunction("COSolvableFactor");
+
 #############################################################################
 ##
 #O  ComplementClassesRepresentatives( <G>, <N> ) . . . . . . . . . . . . find all complement

@@ -17,9 +17,6 @@
 
 #ifdef USE_GMP
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 #include <gmp.h>
 
 /****************************************************************************
@@ -55,11 +52,10 @@ typedef UInt2           TypDigit;
 #error Aborting compile: GAP does not support non-zero GMP nail size
 #endif
 #ifndef __GNU_MP_RELEASE
-  #if __GMP_MP_RELEASE < 50002
-  #error Aborting compile: GAP requires GMP 5.0.2 or newer
-  #endif
+ #if __GMP_MP_RELEASE < 50002
+ #error Aborting compile: GAP requires GMP 5.0.2 or newer
+ #endif
 #endif
-
 
 #define NR_DIGIT_BITS      (8 * sizeof(TypDigit))
 #define INTBASE            (1L << NR_DIGIT_BITS)

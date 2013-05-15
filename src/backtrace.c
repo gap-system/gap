@@ -6,7 +6,7 @@
 
 #include "system.h"
 
-RETSIGTYPE BacktraceHandler(int sig) {
+void BacktraceHandler(int sig) {
   void *trace[32];
   size_t size;
   char *sigtext = "Unknown signal";

@@ -2977,7 +2977,7 @@ SMTX.SortHomGModule:=SMTX_SortHomGModule;
 ##  the i-th row of mat gives the image in module2 of the i-th basis
 ##  vector of module1.
 ##  It is checked whether mat really does define a homomorphism.
-##  If, so then the correcponding vector space homomorphism from the underlying
+##  If, so then the corresponding vector space homomorphism from the underlying
 ##  row space of module1 to that of module2 is returned. This can be used
 ##  for computing images, kernel, preimages, etc.
 

@@ -25,7 +25,7 @@ InstallGlobalFunction(StoreFactorsPol,function(R,f,fact)
 local irf;
   irf:=IrrFacsPol(f);
   if not ForAny(irf,i->i[1]=R) then
-    Add(irf,[R,fact]);
+    Add(irf,[R,Immutable(fact)]);
   fi;
 end);
 

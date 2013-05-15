@@ -2,7 +2,6 @@
 ##
 #W  ctblmaps.gi                 GAP library                     Thomas Breuer
 ##
-##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -17,6 +16,8 @@
 ##  5. Subroutines for the Construction of Power Maps
 ##  6. Subroutines for the Construction of Class Fusions
 ##
+
+#T UpdateMap: assertions for returned `true' in the library occurrences
 
 
 #############################################################################
@@ -125,10 +126,9 @@ InstallMethod( PowerMapOp,
 
         # Compute the missing power map.
         pmap:= PossiblePowerMaps( tbl, i, rec( quick := true ) );
-        if pmap = fail or 1 < Length( pmap ) then
+        if Length( pmap ) <> 1 then
           return fail;
-        fi;
-        if IsSmallIntRep( i ) then
+        elif IsSmallIntRep( i ) then
           powermap[i]:= pmap[1];
         fi;
         nth_powermap:= nth_powermap{ pmap[1] };
@@ -145,7 +145,7 @@ InstallMethod( PowerMapOp,
 #M  PowerMapOp( <ordtbl>, <n>, <class> )
 ##
 InstallOtherMethod( PowerMapOp,
-    "for ordinary table, and two positive integers",
+    "for ordinary table, integer, positive integer",
     [ IsOrdinaryTable, IsInt, IsPosInt ],
     function( tbl, n, class )
     local i, powermap, image, range, pmap;
@@ -168,7 +168,7 @@ InstallOtherMethod( PowerMapOp,
 
     image:= class;
     for i in FactorsInt( n ) do
-      # Here we assume that `n' is a small integer ...
+      # Here we use that `n' is a small integer.
       if not IsBound( powermap[i] ) then
 
         # Compute the missing power map.
@@ -229,11 +229,14 @@ InstallMethod( PowerMapOp,
 #M  PowerMapOp( <modtbl>, <n>, <class> )
 ##
 InstallOtherMethod( PowerMapOp,
-    "for Brauer table and two integers",
+    "for Brauer table, integer, positive integer",
     [ IsBrauerTable, IsInt, IsPosInt ],
     function( tbl, n, class )
     local fus, ordtbl;
 
+    if 0 < n and IsBound( ComputedPowerMaps( tbl )[n] ) then
+      return ComputedPowerMaps( tbl )[n][ class ];
+    fi;
     ordtbl:= OrdinaryCharacterTable( tbl );
     fus:= GetFusionMap( tbl, ordtbl );
     return Position( fus, PowerMap( ordtbl, n, fus[ class ] ) );
@@ -1072,12 +1075,13 @@ end );
 InstallGlobalFunction( StoreFusion, function( source, fusion, destination )
     local fus;
 
-    # (compatibility with {\GAP}~3)
+    # (compatibility with GAP 3)
     if IsList( destination ) or IsRecord( destination ) then
       StoreFusion( source, destination, fusion );
       return;
     fi;
 
+    # Check the arguments.
     if IsList( fusion ) and ForAll( fusion, IsPosInt ) then
       fusion:= rec( name := Identifier( destination ),
                     map  := Immutable( fusion ) );
@@ -1168,14 +1172,19 @@ InstallMethod( PossibleClassFusions,
 
 #############################################################################
 ##
-#F  PossibleClassFusions( <subtbl>, <tbl>, <parameters )
+#F  PossibleClassFusions( <subtbl>, <tbl>, <parameters> )
+##
+#T improvement:
+#T use linear characters of subtbl for indirection, without decomposing
 ##
 InstallMethod( PossibleClassFusions,
     "for two ordinary character tables, and a parameters record",
     [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsRecord ],
     function( subtbl, tbl, parameters )
 #T support option `no branch' ??
-    local subchars,            # known characters of the subgroup
+    local maycomputeattributessub,
+#T document this parameter!
+          subchars,            # known characters of the subgroup
           chars,               # known characters of the supergroup
           decompose,           # decomposition into `chars' allowed?
           quick,               # stop in case of a unique solution
@@ -1197,11 +1206,19 @@ InstallMethod( PossibleClassFusions,
           subgroupfusions,
           subtaut;
 
+    # May `subtbl' be asked for nonstored attribute values?
+    # (Currently `Irr' and `AutomorphismsOfTable' are used.)
+    if IsBound( parameters.maycomputeattributessub ) then
+      maycomputeattributessub:= parameters.maycomputeattributessub;
+    else
+      maycomputeattributessub:= IsCharacterTable;
+    fi;
+
     # available characters of `subtbl'
     if IsBound( parameters.subchars ) then
       subchars:= parameters.subchars;
       decompose:= false;
-    elif HasIrr( subtbl ) or IsOrdinaryTable( subtbl ) then
+    elif HasIrr( subtbl ) or maycomputeattributessub( subtbl ) then
       subchars:= Irr( subtbl );
       decompose:= true;
 #T possibility to have subchars and incomplete tables ???
@@ -1335,8 +1352,8 @@ InstallMethod( PossibleClassFusions,
                                     ComputedPowerMaps( tbl ),
                                     imp ) then
           Info( InfoCharacterTable, 2,
-                "PossibleClassFusions: inconsistency of",
-                " powermaps and fusion map" );
+                "PossibleClassFusions: inconsistency of fusion ",
+                "and power maps" );
           return [];
         fi;
         Info( InfoCharacterTable, 2,
@@ -1391,7 +1408,7 @@ InstallMethod( PossibleClassFusions,
 
         poss:= Filtered( poss, x ->
                   TestConsistencyMaps( subtbl_powermap, x, tbl_powermap ) );
-#T dangerous?
+#T dangerous if power maps are not unique!
 
         # Use the permutation character for the third time.
         if not IsEmpty( permchar ) then
@@ -1428,10 +1445,21 @@ InstallMethod( PossibleClassFusions,
                                   quick:= quick ) ) );
     od;
 
+    # Check the consistency with power maps again.
+    subgroupfusions:= Filtered( subgroupfusions, x ->
+                  TestConsistencyMaps( subtbl_powermap, x, tbl_powermap ) );
+#T dangerous if power maps are not unique!
+    if Length( subgroupfusions ) = 0 then
+      return subgroupfusions;
+    elif quick and Length( subgroupfusions ) = 1
+               and ForAll( subgroupfusions[1], IsInt ) then
+      return subgroupfusions;
+    fi;
+
     subtaut:= GroupByGenerators( [], () );
     if 1 < Length( subgroupfusions ) then
       if    HasAutomorphismsOfTable( subtbl )
-         or IsCharacterTable( subtbl ) then
+         or maycomputeattributessub( subtbl ) then
         subtaut:= AutomorphismsOfTable( subtbl );
       fi;
       subgroupfusions:= RepresentativesFusions( subtaut, subgroupfusions,
@@ -1463,9 +1491,9 @@ InstallMethod( PossibleClassFusions,
       else
 
         # Use the permutation character for the fourth time.
-        grp:= SubgroupProperty(
-                   taut, x->ForAll([1..Length(permchar)],
-                                          y->permchar[y]=permchar[y^x]) );
+        grp:= SubgroupProperty( taut,
+                  x -> ForAll( [1 .. Length( permchar ) ],
+                               y -> permchar[y] = permchar[y^x] ) );
       fi;
       subgroupfusions:= Set( Concatenation( List( subgroupfusions,
           x -> OrbitFusions( subtaut, x, grp ) ) ) );
@@ -1533,7 +1561,6 @@ InstallMethod( PossibleClassFusions,
     "for two Brauer tables",
     [ IsBrauerTable, IsBrauerTable ],
     function( submodtbl, modtbl )
-
     local ordsub, ordtbl, fus, invGfus, Hfus;
 
     ordsub:= OrdinaryCharacterTable( submodtbl );
@@ -1586,6 +1613,8 @@ InstallGlobalFunction( OrbitFusions,
         fi;
       od;
     od;
+#T is slow if the orbit is long;
+#T better use `Orbit', but with which group?
     return orb;
 end );
 
@@ -1686,8 +1715,7 @@ end );
 
 #############################################################################
 ##
-#F  CompositionMaps( <paramap2>, <paramap1> )
-#F  CompositionMaps( <paramap2>, <paramap1>, <class> )
+#F  CompositionMaps( <paramap2>, <paramap1>[, <class>] )
 ##
 InstallGlobalFunction( CompositionMaps, function( arg )
     local i, j, map1, map2, class, result, newelement;
@@ -1728,8 +1756,7 @@ InstallGlobalFunction( CompositionMaps, function( arg )
       fi;
 
     else
-      Error(" usage: CompositionMaps( <map2>, <map1>, <class> ) resp.\n",
-            "        CompositionMaps( <map2>, <map1> )" );
+      Error(" usage: CompositionMaps( <map2>, <map1>[, <class>] )" );
     fi;
 
     return result;
@@ -1871,13 +1898,13 @@ end );
 #F  UpdateMap( <char>, <paramap>, <indirected> )
 ##
 InstallGlobalFunction( UpdateMap, function( char, paramap, indirected )
-
     local i, j, value, fus;
 
     for i in [ 1 .. Length( paramap ) ] do
       if IsInt( paramap[i] ) then
         if indirected[i] <> char[ paramap[i] ] then
-          Print( "#E UpdateMap: inconsistency at class ", i, "\n" );
+          Info( InfoCharacterTable, 2,
+                "UpdateMap: inconsistency at class ", i );
           return false;
         fi;
       else
@@ -1888,7 +1915,8 @@ InstallGlobalFunction( UpdateMap, function( char, paramap, indirected )
           if char[j] in value then Add( fus, j ); fi;
         od;
         if fus = [] then
-          Print( "#E UpdateMap: inconsistency at class ", i, "\n" );
+          Info( InfoCharacterTable, 2,
+                "UpdateMap: inconsistency at class ", i );
           return false;
         else
           if Length( fus ) = 1 then fus:= fus[1]; fi;
@@ -2146,8 +2174,7 @@ end );
 
 #############################################################################
 ##
-#F  TransferDiagram( <inside1>, <between>, <inside2> )
-#F  TransferDiagram( <inside1>, <between>, <inside2>, <improvements> )
+#F  TransferDiagram( <inside1>, <between>, <inside2>[, <improvements>] )
 ##
 ##     i   -----> between[i]
 ##     |            |
@@ -2161,6 +2188,11 @@ InstallGlobalFunction( TransferDiagram, function( arg )
           globalimpb, globalimp2, newimp1, newimpb, newimp2, bet_ins1,
           ins2_bet, composition, imp, check;
 
+    if fail in arg then
+      Info( InfoCharacterTable, 2,
+            "TransferDiagram: `fail' among the arguments" );
+      return fail;
+    fi;
     if not ( Length(arg) in [ 3, 4 ] and IsList(arg[1]) and IsList(arg[2])
              and IsList( arg[3] ) )
        or ( Length( arg ) = 4 and not IsRecord( arg[4] ) ) then
@@ -2290,7 +2322,8 @@ InstallGlobalFunction( TestConsistencyMaps, function( arg )
 
       if tr = fail then
         Info( InfoCharacterTable, 2,
-              "TestConsistencyMaps: inconsistency in powermap ", pos[i] );
+              "TestConsistencyMaps: inconsistency in ", Ordinal( pos[i] ),
+              " power map" );
         return false;
       fi;
       for j in [ 1 .. Length( fus_improvements ) ] do
@@ -2939,7 +2972,6 @@ InstallGlobalFunction( InitPowerMap, function( arg )
 
             # maps to a class with representative order that is smaller
             # by a factor `prime'
-
             for j in sameord[ orders[i] / prime ] do
               if centralizers[j] mod centralizers[i] = 0 then
                 AddSet( powermap[i], j );
@@ -2954,7 +2986,6 @@ InstallGlobalFunction( InitPowerMap, function( arg )
           else
 
             # maps to a class of same order
-
             for j in sameord[ orders[i] ] do
               if centralizers[j] = centralizers[i] then
                 AddSet( powermap[i], j );
@@ -2966,14 +2997,12 @@ InstallGlobalFunction( InitPowerMap, function( arg )
         else
 
           # representative order is not uniquely determined
-
           for j in orders[i] do
 
             if j mod prime = 0 then
 
               # maps to a class with representative order that is smaller
               # by a factor `prime'
-
               if IsBound( sameord[ j / prime ] ) then
                 for k in sameord[ j / prime ] do
                   if centralizers[k] mod centralizers[i] = 0 then
@@ -3011,7 +3040,6 @@ InstallGlobalFunction( InitPowerMap, function( arg )
     else
 
       # Just centralizer orders are known.
-
       for i in [ 1 .. nccl ] do
         powermap[i]:= [];
         for j in [ 1 .. nccl ] do
@@ -3025,14 +3053,12 @@ InstallGlobalFunction( InitPowerMap, function( arg )
 
     # Check whether a map is possible, and replace image lists of length 1
     # by their entry.
-
     for i in [ 1 .. nccl ] do
       if   Length( powermap[i] ) = 0 then
         Info( InfoCharacterTable, 2,
               "InitPowerMap: no image possible for classes\n",
-              "#E ", Filtered( [ 1..nccl ], x -> powermap[x]=[] ) );
+              "#I  ", Filtered( [ 1 .. nccl ], x -> powermap[x] = [] ) );
         return fail;
-#T check earlier!
       elif Length( powermap[i] ) = 1 then
         powermap[i]:= powermap[i][1];
       fi;
@@ -3041,10 +3067,10 @@ InstallGlobalFunction( InitPowerMap, function( arg )
     # If the representative orders are not uniquely determined,
     # and the centre is not trivial, the image of class 1 is not uniquely
     # determined by the check of centralizer orders.
-
     if ( IsInt( powermap[1] ) and powermap[1] <> 1 ) or
        ( IsList( powermap[1] ) and not 1 in powermap[1] ) then
-      Print( "#E InitPowerMap: class 1 cannot contain the identity\n" );
+      Info( InfoCharacterTable, 2,
+            "InitPowerMap: class 1 cannot contain the identity" );
       return fail;
     fi;
     powermap[1]:= 1;
@@ -4175,6 +4201,7 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
     else
       powermaps:= ComputedPowerMaps( tbl );
     fi;
+#T document new parameters `testdec', `subpowermaps', `powermaps'
 
     # May we return immediately?
     if quick and Indeterminateness( fus ) < minamb then
@@ -4277,7 +4304,7 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
               # improvement found
               Info( InfoCharacterTable + InfoTom, 2,
                     "FusionsAllowedByRestrictions: improvement found ",
-                    "at character ", i, "\n" );
+                    "at character ", i );
               UpdateMap( chars[i], fus, param );
               lastimproved:= i;
 #T call of TestConsistencyMaps ? ( with respect to improved classes )

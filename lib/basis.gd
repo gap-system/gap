@@ -408,9 +408,6 @@ DeclareAttribute( "EnumeratorByBasis", IsBasis );
 ##     = \sum_k \left( a M_k b^{tr} \right) v_k.
 ##  </Display>
 ##  <P/>
-##  In the following example we temporarily increase the line length limit
-##  from its default value 80 to 83 in order to get a nicer output format.
-##  <P/>
 ##  <Example><![CDATA[
 ##  gap> A:= QuaternionAlgebra( Rationals );;
 ##  gap> StructureConstantsTable( Basis( A ) );
@@ -908,49 +905,56 @@ end );
 ##  <Func Name="IsGenericFiniteSpace" Arg='V'/>
 ##
 ##  <Description>
-##  If an <M>F</M>-vector space <A>V</A> is in the filter <C>IsGenericFiniteSpace</C> then
-##  this expresses that <A>V</A> consists of elements in a <E>finite</E> vector space,
-##  and that <A>V</A> is handled via the mechanism of nice bases (see&nbsp;<Ref ???="..."/>) in
-##  the following way.
+##  If an <M>F</M>-vector space <A>V</A> is in the filter
+##  <Ref Filt="IsGenericFiniteSpace"/> then this expresses that <A>V</A>
+##  consists of elements in a <E>finite</E> vector space,
+##  and that <A>V</A> is handled via the mechanism of nice bases
+##  (see&nbsp;<Ref ???="..."/>)
+##  in the following way.
 ##  (This is the generic treatment of finite vector spaces, better methods
 ##  are installed for various special kinds of finite vector spaces.)
-##  Let <M>F</M> be of order <M>q</M>, <M>e_F</M> a list of the elements of <M>F</M>,
-##  <M>B = [ b_0, b_1, \ldots, b_k ]</M> an <M>F</M>-basis of <M>V</M>,
-##  and let <M>e_V</M> a list of elements of <M>V</M> with the property that
-##  <M>e_V[ 1 + \sum_{i=0}^k c_i q^i ] = \sum_{i=0}^k e_F[ c_i + 1 ] b_i</M>;
-##  then the <C>NiceVector</C> value of <M>e_V[ 1 + \sum_{i=0}^k c_i q^i ]</M> is the
-##  row vector <M>[ r_0, r_1, \ldots, r_k ]</M> with <M>r_i = e_F[ c_i + 1 ]</M>,
-##  and the <C>UglyVector</C> value of <M>[ r_0, r_1, \ldots, r_k ]</M> is
-##  <M>\sum_{i=0}^k r_i b_i</M>.
+##  Let <M>F</M> be of order <M>q</M>, <M>e_F</M> a list of the elements of
+##  <M>F</M>,
+##  <M>B = [ b_0, b_1, \ldots, b_k ]</M> be an <M>F</M>-basis of <M>V</M>,
+##  and let <M>e_V</M> be a list of elements of <M>V</M> with the property
+##  that
+##  <M>e_V[ 1 + \sum_{i=0}^k c_i q^i ] = \sum_{i=0}^k e_F[ c_i + 1 ] b_i</M>
+##  holds;
+##  then the <Ref Func="NiceVector"/> value of
+##  <M>e_V[ 1 + \sum_{i=0}^k c_i q^i ]</M> is the row vector
+##  <M>[ r_0, r_1, \ldots, r_k ]</M> with <M>r_i = e_F[ c_i + 1 ]</M>,
+##  and the <Ref Func="UglyVector"/> value of
+##  <M>[ r_0, r_1, \ldots, r_k ]</M> is <M>\sum_{i=0}^k r_i b_i</M>.
 ##  <P/>
-##  The <C>NiceFreeLeftModuleInfo</C> value of <M>V</M> is a record with the following
-##  components.
+##  The <Ref Func="NiceFreeLeftModuleInfo"/> value of <M>V</M> is a record
+##  with the following components.
 ##  <List>
 ##  <Mark><C>elements</C>:</Mark>
 ##  <Item>
-##      a <E>strictly sorted</E> list <M>\tilde{e}_V</M> of elements of <M>V</M>,
+##     a <E>strictly sorted</E> list <M>\tilde{e}_V</M> of elements of
+##     <M>V</M>,
 ##  </Item>
 ##  <Mark><C>numbers</C>:</Mark>
 ##  <Item>
-##      a list <M>l</M> of the positive integers up to <M>q^{k+1}</M>, such that
-##      <M>e_V[ l[i] ] = \tilde{e}_V[i]</M> holds for <M>1 \leq i \leq q^{k+1}</M>.
+##     a list <M>l</M> of the positive integers up to <M>q^{k+1}</M>,
+##     such that <M>e_V[ l[i] ] = \tilde{e}_V[i]</M> holds for
+##     <M>1 \leq i \leq q^{k+1}</M>.
 ##  </Item>
 ##  <Mark><C>q</C>:</Mark>
 ##  <Item>
-##      the size of <M>F</M>,
+##     the size of <M>F</M>,
 ##  </Item>
 ##  <Mark><C>fieldelements</C>:</Mark>
 ##  <Item>
-##      the list <M>e_F</M>,
+##     the list <M>e_F</M>,
 ##  </Item>
 ##  <Mark><C>base</C>:</Mark>
 ##  <Item>
-##      the list <M>B</M>.
+##     the list <M>B</M>.
 ##  </Item>
 ##  </List>
 ##  <!-- use that the nice module is a full row space!-->
 ##  <!-- (special method for NiceFreeLeftModule?)-->
-##  <P/>
 ##  <!--  It is important that all other filters of this kind are installed <E>later</E>-->
 ##  <!--  because otherwise the generic treatment may be chosen in cases for which-->
 ##  <!--  a later filter indicates better methods.-->
@@ -1023,7 +1027,7 @@ DeclareHandlingByNiceBasis( "IsSpaceOfRationalFunctions",
 ##  <Description>
 ##  This filter indicates that the basis <A>B</A> delegates tasks such as the
 ##  computation of coefficients (see&nbsp;<Ref Func="Coefficients"/>) to a basis of an
-##  isomorphisc <Q>nicer</Q> free left module.
+##  isomorphic <Q>nicer</Q> free left module.
 ##  <!--  Any object in <C>IsBasisByNiceBasis</C> must be a <E>small</E> list in the sense of-->
 ##  <!--  <Ref Prop="IsSmallList"/>.-->
 ##  </Description>

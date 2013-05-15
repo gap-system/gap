@@ -466,8 +466,9 @@ end );
 ##  However, given a group <M>G</M> and a character table of a group
 ##  isomorphic to <M>G</M> (for example a character table from the
 ##  &GAP; table library),
-##  one can tell &GAP; to use the given table as the character table of
-##  <M>G</M> (see&nbsp;<Ref Func="ConnectGroupAndCharacterTable"/>).
+##  one can tell &GAP; to compute a new instance of the given table and to
+##  use it as the character table of <M>G</M>
+##  (see&nbsp;<Ref Func="CharacterTableWithStoredGroup"/>).
 ##  <P/>
 ##  Tasks may be delegated from a group to its character table or vice versa
 ##  only if these three attribute values are stored in the character table.
@@ -530,9 +531,9 @@ DeclareAttributeSuppCT( "UnderlyingGroup", IsOrdinaryTable, [] );
 ##  <P/>
 ##  If <A>tbl</A> was constructed from <M>G</M> then the conjugacy classes
 ##  have been stored at the same time when <M>G</M> was stored.
-##  If <M>G</M> and <A>tbl</A> were connected later than in the construction
-##  of <A>tbl</A>, the recommended way to do this is via
-##  <Ref Func="ConnectGroupAndCharacterTable"/>.
+##  If <M>G</M> and <A>tbl</A> have been connected later than in the
+##  construction of <A>tbl</A>, the recommended way to do this is via
+##  <Ref Func="CharacterTableWithStoredGroup"/>.
 ##  So there is no method for
 ##  <Ref Attr="ConjugacyClasses" Label="for character tables"/> that computes
 ##  the value for <A>tbl</A> if it is not yet stored.
@@ -590,19 +591,17 @@ DeclareAttributeSuppCT( "IdentificationOfConjugacyClasses", IsOrdinaryTable,
 
 #############################################################################
 ##
-#F  ConnectGroupAndCharacterTable( <G>, <tbl>[, <info>] )
+#F  CharacterTableWithStoredGroup( <G>, <tbl>[, <info>] )
 ##
-##  <#GAPDoc Label="ConnectGroupAndCharacterTable">
+##  <#GAPDoc Label="CharacterTableWithStoredGroup">
 ##  <ManSection>
-##  <Func Name="ConnectGroupAndCharacterTable" Arg='G, tbl[, info]'/>
+##  <Func Name="CharacterTableWithStoredGroup" Arg='G, tbl[, info]'/>
 ##
 ##  <Description>
 ##  Let <A>G</A> be a group and <A>tbl</A> a character table of (a group
 ##  isomorphic to) <A>G</A>, such that <A>G</A> does not store its
-##  <Ref Attr="OrdinaryCharacterTable" Label="for a group"/> value
-##  and <A>tbl</A> does not store its
-##  <Ref Attr="UnderlyingGroup" Label="for character tables"/> value.
-##  <Ref Func="ConnectGroupAndCharacterTable"/> calls
+##  <Ref Attr="OrdinaryCharacterTable" Label="for a group"/> value.
+##  <Ref Func="CharacterTableWithStoredGroup"/> calls
 ##  <Ref Func="CompatibleConjugacyClasses"/>,
 ##  trying to identify the classes of <A>G</A> with the columns of
 ##  <A>tbl</A>.
@@ -610,14 +609,14 @@ DeclareAttributeSuppCT( "IdentificationOfConjugacyClasses", IsOrdinaryTable,
 ##  If this identification is unique up to automorphisms of <A>tbl</A>
 ##  (see&nbsp;<Ref Func="AutomorphismsOfTable"/>) then <A>tbl</A> is stored
 ##  as <Ref Attr="CharacterTable" Label="for a group"/> value of <A>G</A>,
-##  in <A>tbl</A> the values of
+##  and a new character table is returned that is equivalent to <A>tbl</A>,
+##  is sorted in the same way as <A>tbl</A>, and has the values of
 ##  <Ref Attr="UnderlyingGroup" Label="for character tables"/>,
 ##  <Ref Attr="ConjugacyClasses" Label="for character tables"/>, and
-##  <Ref Attr="IdentificationOfConjugacyClasses"/> are set,
-##  and <K>true</K> is returned.
+##  <Ref Attr="IdentificationOfConjugacyClasses"/> set.
 ##  <P/>
 ##  Otherwise, i.e., if &GAP; cannot identify the classes of <A>G</A> up to
-##  automorphisms of <A>G</A>, <K>false</K> is returned.
+##  automorphisms of <A>tbl</A>, <K>fail</K> is returned.
 ##  <P/>
 ##  If a record is present as the third argument <A>info</A>,
 ##  its meaning is the same as the optional argument <A>arec</A> for
@@ -627,13 +626,13 @@ DeclareAttributeSuppCT( "IdentificationOfConjugacyClasses", IsOrdinaryTable,
 ##  it is used as value of <Ref Func="IdentificationOfConjugacyClasses"/>,
 ##  relative to the
 ##  <Ref Attr="ConjugacyClasses" Label="for character tables"/>
-##  value of <A>G</A>,
-##  without further checking, and <K>true</K> is returned.
+##  value of <A>G</A>, without further checking,
+##  and the corresponding character table is returned.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
+DeclareGlobalFunction( "CharacterTableWithStoredGroup" );
 
 
 #############################################################################
@@ -720,12 +719,14 @@ DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
 ##  false
 ##  gap> CompatibleConjugacyClasses( tbl );   # unique identification
 ##  [  ]
-##  gap> ConnectGroupAndCharacterTable( g, tbl );
+##  gap> new:= CharacterTableWithStoredGroup( g, tbl );
+##  CharacterTable( Alt( [ 1 .. 5 ] ) )
+##  gap> Irr( new ) = Irr( tbl );
 ##  true
-##  gap> HasConjugacyClasses( tbl );  HasUnderlyingGroup( tbl );
+##  gap> HasConjugacyClasses( new );  HasUnderlyingGroup( new );
 ##  true
 ##  true
-##  gap> IdentificationOfConjugacyClasses( tbl );
+##  gap> IdentificationOfConjugacyClasses( new );
 ##  [ 1, 2, 3, 4, 5 ]
 ##  gap> # Here is an example where the identification is not unique.
 ##  gap> CompatibleConjugacyClasses( CharacterTable( "J2" ) );
@@ -930,9 +931,6 @@ InstallIsomorphismMaintenance( CharacterDegrees,
 ##  <Ref Attr="Irr" Label="for a group"/> of a group
 ##  need <E>not</E> coincide with the ordering of its
 ##  <Ref Func="IrreducibleRepresentations"/> value.
-##  <P/>
-##  In the following example we temporarily increase the line length limit
-##  from its default value 80 to 85 in order to get a nicer output format.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Irr( SymmetricGroup( 4 ) );
@@ -1142,6 +1140,8 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  [ 3, 12, 30 ]
 ##  gap> List( tables, IsAbelian );
 ##  [ true, false, false ]
+##  gap> List( tables, IsAlmostSimple );
+##  [ false, false, true ]
 ##  gap> List( tables, IsCyclic );
 ##  [ true, false, false ]
 ##  gap> List( tables, IsFinite );
@@ -1212,8 +1212,10 @@ DeclareAttributeSuppCT( "Size", IsNearlyCharacterTable, [] );
 ##  <Prop Name="IsPerfectCharacterTable" Arg='tbl'/>
 ##  <Prop Name="IsSimpleCharacterTable" Arg='tbl'/>
 ##  <Prop Name="IsSolvableCharacterTable" Arg='tbl'/>
+##  <Prop Name="IsSolubleCharacterTable" Arg='tbl'/>
 ##  <Prop Name="IsSporadicSimpleCharacterTable" Arg='tbl'/>
 ##  <Prop Name="IsSupersolvableCharacterTable" Arg='tbl'/>
+##  <Prop Name="IsSupersolubleCharacterTable" Arg='tbl'/>
 ##
 ##  <Description>
 ##  These properties belong to the <Q>overloaded</Q> operations,
@@ -1234,6 +1236,9 @@ DeclarePropertySuppCT( "IsSporadicSimpleCharacterTable",
 DeclarePropertySuppCT( "IsSupersolvableCharacterTable",
     IsNearlyCharacterTable );
 
+DeclareSynonymAttr( "IsSolubleCharacterTable", IsSolvableCharacterTable );
+DeclareSynonymAttr( "IsSupersolubleCharacterTable",
+    IsSupersolvableCharacterTable );
 
 InstallTrueMethod( IsAbelian, IsOrdinaryTable and IsCyclic );
 InstallTrueMethod( IsAbelian, IsOrdinaryTable and IsElementaryAbelian );
@@ -1343,6 +1348,7 @@ DeclareAttributeSuppCT( "OrdersClassRepresentatives",
 ##  <#GAPDoc Label="SizesCentralizers">
 ##  <ManSection>
 ##  <Attr Name="SizesCentralizers" Arg='tbl'/>
+##  <Attr Name="SizesCentralisers" Arg='tbl'/>
 ##
 ##  <Description>
 ##  is a list that stores at position <M>i</M> the size of the centralizer of
@@ -1360,6 +1366,8 @@ DeclareAttributeSuppCT( "OrdersClassRepresentatives",
 ##
 DeclareAttributeSuppCT( "SizesCentralizers", IsNearlyCharacterTable,
     [ "class" ] );
+
+DeclareSynonymAttr( "SizesCentralisers", SizesCentralizers );
 
 
 #############################################################################
@@ -1878,6 +1886,8 @@ DeclareOperation( "ClassPositionsOfAgemo", [ IsOrdinaryTable, IsPosInt ] );
 ##  <ManSection>
 ##  <Attr Name="ClassPositionsOfCentre" Arg='ordtbl'
 ##  Label="for a character table"/>
+##  <Attr Name="ClassPositionsOfCenter" Arg='ordtbl'
+##  Label="for a character table"/>
 ##
 ##  <Description>
 ##  corresponds to <Ref Attr="Centre"/>
@@ -1893,6 +1903,8 @@ DeclareOperation( "ClassPositionsOfAgemo", [ IsOrdinaryTable, IsPosInt ] );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "ClassPositionsOfCentre", IsOrdinaryTable );
+
+DeclareSynonymAttr( "ClassPositionsOfCenter", ClassPositionsOfCentre );
 
 
 #############################################################################
@@ -2007,6 +2019,28 @@ DeclareAttribute( "ClassPositionsOfFittingSubgroup", IsOrdinaryTable );
 
 #############################################################################
 ##
+#A  ClassPositionsOfSolvableRadical( <ordtbl> )
+##
+##  <ManSection>
+##  <Attr Name="ClassPositionsOfSolvableRadical" Arg='ordtbl'/>
+##
+##  <Description>
+##  corresponds to <Ref Attr="RadicalGroup"/>
+##  for the group of the ordinary character table <A>ordtbl</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ClassPositionsOfSolvableRadical( CharacterTable( "2.A5" ) );
+##  [ 1, 2 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##
+DeclareAttribute( "ClassPositionsOfSolvableRadical",
+    IsOrdinaryTable );
+
+
+#############################################################################
+##
 #F  CharacterTable_UpperCentralSeriesFactor( <tbl>, <N> )
 ##
 ##  <ManSection>
@@ -2099,6 +2133,7 @@ DeclareAttribute( "ClassPositionsOfUpperCentralSeries", IsOrdinaryTable );
 ##
 ##  <ManSection>
 ##  <Attr Name="ClassPositionsOfSolvableResiduum" Arg='ordtbl'/>
+##  <Attr Name="ClassPositionsOfSolubleResiduum" Arg='ordtbl'/>
 ##
 ##  <Description>
 ##  corresponds to&nbsp;<Ref Attr="SolvableResiduum"/>
@@ -2107,6 +2142,9 @@ DeclareAttribute( "ClassPositionsOfUpperCentralSeries", IsOrdinaryTable );
 ##  </ManSection>
 ##
 DeclareAttribute( "ClassPositionsOfSolvableResiduum", IsOrdinaryTable );
+
+DeclareSynonymAttr( "ClassPositionsOfSolubleResiduum",
+    ClassPositionsOfSolvableResiduum );
 
 
 #############################################################################
@@ -2564,7 +2602,7 @@ DeclareGlobalFunction( "LaTeXStringDecompositionMatrix" );
 ##  of <A>tbl</A> and <A>subtbl</A>.
 ##  The containment of the underlying groups of <A>subtbl</A> and <A>tbl</A>
 ##  is <E>not</E> checked;
-##  so the disctinction between 
+##  so the distinction between 
 ##  <Ref Func="Index" Label="for a group and its subgroup"/> 
 ##  and <Ref Func="IndexNC" Label="for a group and its subgroup"/>
 ##  is not made for character tables.
@@ -2589,8 +2627,11 @@ DeclareOperation( "IndexNC",
 ##  <#GAPDoc Label="IsPSolvableCharacterTable">
 ##  <ManSection>
 ##  <Oper Name="IsPSolvableCharacterTable" Arg='tbl, p'/>
+##  <Oper Name="IsPSolubleCharacterTable" Arg='tbl, p'/>
 ##  <Oper Name="IsPSolvableCharacterTableOp" Arg='tbl, p'/>
+##  <Oper Name="IsPSolubleCharacterTableOp" Arg='tbl, p'/>
 ##  <Attr Name="ComputedIsPSolvableCharacterTables" Arg='tbl'/>
+##  <Attr Name="ComputedIsPSolubleCharacterTables" Arg='tbl'/>
 ##
 ##  <Description>
 ##  <Ref Oper="IsPSolvableCharacterTable"/> for the ordinary character table
@@ -2619,6 +2660,11 @@ DeclareOperation( "IsPSolvableCharacterTableOp",
     [ IsOrdinaryTable, IsInt ] );
 DeclareAttributeSuppCT( "ComputedIsPSolvableCharacterTables",
     IsOrdinaryTable, "mutable", [] );
+
+DeclareSynonym( "IsPSolubleCharacterTable", IsPSolvableCharacterTable );
+DeclareSynonym( "IsPSolubleCharacterTableOp", IsPSolvableCharacterTableOp );
+DeclareSynonym( "ComputedIsPSolubleCharacterTables",
+    ComputedIsPSolvableCharacterTables );
 
 
 #############################################################################
@@ -2730,6 +2776,8 @@ DeclareAttributeSuppCT( "ComputedIndicators", IsCharacterTable, "mutable",
 ##  <P/>
 ##  The classes <A>c1</A>, <A>c2</A> and <A>c3</A> in the parameter list must
 ##  be ordered according to the order of the elements in these classes.
+##  If elements in class <A>c1</A> and <A>c2</A> do not generate a
+##  polyhedral group then <K>fail</K> is returned.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> NrPolyhedralSubgroups( tbl, 2, 2, 4 );

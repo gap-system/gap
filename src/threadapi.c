@@ -3005,14 +3005,14 @@ Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self) {
 }
 
 Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self) {
-  extern RETSIGTYPE ChildStatusChanged(int signr);
+  extern void ChildStatusChanged(int signr);
   ChildStatusChanged(SIGCHLD);
   return (Obj) 0;
 }
 
 Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self) {
 #ifdef SIGWINCH
-  extern RETSIGTYPE syWindowChangeIntr(int signr);
+  extern void syWindowChangeIntr(int signr);
   syWindowChangeIntr(SIGWINCH);
 #endif
   return (Obj) 0;

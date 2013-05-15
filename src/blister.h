@@ -20,9 +20,6 @@
 #ifndef GAP_BLISTER_H
 #define GAP_BLISTER_H
 
-#ifdef INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

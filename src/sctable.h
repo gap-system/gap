@@ -14,9 +14,6 @@
 #ifndef GAP_SCTABLE_H
 #define GAP_SCTABLE_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

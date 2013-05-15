@@ -22,7 +22,14 @@ and matrix rings.
 <!-- % residue class rings ? -->
 <P/>
 In the case of a <E>ring-with-one</E>, additional multiplicative structure is
-present, see&nbsp;<Ref Func="IsRingWithOne"/>.
+present, see&nbsp;<Ref Func="IsRingWithOne"/>. There is a little support in &GAP;
+for rings that have no additional structure: it is possible to perform some
+computations for small finite rings; infinite rings are handled by &GAP; in 
+an acceptable way at most if they are at least algebras. 
+<P/>
+Also, the <Package>SONATA</Package> package provides support for near-rings,
+and a related functionality for multiplicative semigroups of near-rings is
+available in the <Package>Smallsemi</Package> package.
 <P/>
 Several functions for ring elements,
 such as <Ref Func="IsPrime"/> and <Ref Func="Factors"/>,

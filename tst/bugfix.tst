@@ -613,10 +613,6 @@ gap> NormalBase( GF(3^6) );
 gap>  NormalBase( GF( GF(8), 2 ) );
 [ Z(2^6), Z(2^6)^8 ]
 
-# 2005/04/21 (FL)
-gap> IsBound(HELP_VIEWER_INFO.firefox);
-true
-
 # 2005/04/26 (SL, FL)
 gap> AClosestVectorCombinationsMatFFEVecFFECoords;
 <Operation "AClosestVectorCombinationsMatFFEVecFFECoords">
@@ -953,8 +949,8 @@ gap> # whole group appears in the last position.
 
 # 2005/10/05 (SL and MN)
 gap> p := PermList(Concatenation([2..10000],[1]));;
-gap> for i in [1..100000] do a := p^0; od; time1 := time;;
-gap> for i in [1..100000] do a := OneOp(p); od; time2 := time;;
+gap> for i in [1..1000000] do a := p^0; od; time1 := time;;
+gap> for i in [1..1000000] do a := OneOp(p); od; time2 := time;;
 gap> if time1 <= 3 * time2 then Print("Fix worked\n"); fi;
 Fix worked
 
@@ -1774,6 +1770,49 @@ gap> G := CyclicGroup(IsFpGroup,3);
 gap> Elements(G);
 [ <identity ...>, a, a^2 ]
 
+# Reported by Burkhard Hoefling on 2012/3/14, added by SL on 2012/3/16
+# SHIFT_LEFT_VEC8BIT can fail to clean space to its right, which can then
+# be picked up by a subsequent add to a longer vector
+gap> v := [0*Z(4), 0*Z(4), 0*Z(4), 0*Z(4), Z(4)];
+[ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2^2) ]
+gap> ConvertToVectorRep (v, 4);
+4
+gap> SHIFT_VEC8BIT_LEFT(v,1);
+gap> w := [0*Z(4), 0*Z(4), 0*Z(4), 0*Z(4),0*Z(4), 0*Z(4), Z(4)];
+[ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2), Z(2^2) ]
+gap> ConvertToVectorRep (w, 4);
+4
+gap> v+w; 
+[ 0*Z(2), 0*Z(2), 0*Z(2), Z(2^2), 0*Z(2), 0*Z(2), Z(2^2) ]
+
+# Reported by Burkhard Hoefling on 2012/3/17, added by SL on 2012/3/17
+# Converting a compressed vector of length 0 to a bigger field failed.
+gap> v := [0*Z(3)];
+[ 0*Z(3) ]
+gap> ConvertToVectorRep(v);
+3
+gap> Unbind(v[1]);
+gap> ConvertToVectorRep(v,9);
+9
+
+# Bug with non-square matrices in ElementaryDivisorsMat, added by MH on 2012/4/3.
+# Since ElementaryDivisorsMat just calls SmithNormalFormIntegerMat when
+# the base ring R equals Integers, we use GaussianIntegers instead to
+# ensure the generic ElementaryDivisorsMat method is tested.
+gap> ElementaryDivisorsMat(GaussianIntegers, [ [ 20, -25, 5 ] ]);
+[ 5, 0, 0 ]
+
+# Bug with commutator subgroups of fp groups, was causing infinite recursion,
+# also when computing automorphism groups
+# Fix and test case added by MH on 2012-06-05.
+gap> F:=FreeGroup(3);;
+gap> G:=F/[F.1^2,F.2^2,F.3^2,(F.1*F.2)^3, (F.2*F.3)^3, (F.1*F.3)^2];;
+gap> U:=Subgroup(G, [G.3*G.1*G.3*G.2*G.1*G.3*G.2*G.3*G.1*G.3*G.1*G.3]);;
+gap> StructureDescription(CommutatorSubgroup(G, U));
+"C2 x C2"
+gap> StructureDescription(AutomorphismGroup(G));
+"S4"
+
 #############################################################################
 #
 # Tests requiring loading some packages
@@ -1907,8 +1946,88 @@ gap> if LoadPackage("crisp", "1.2.1", false) <> fail then
 >     fi;
 >    fi;
 
+# 2012/04/13 (MN)
+gap> Characteristic(Z(2));
+2
+gap> Characteristic(0*Z(2));
+2
+gap> Characteristic(0*Z(5));
+5
+gap> Characteristic(Z(5));
+5
+gap> Characteristic(Z(257));
+257
+gap> Characteristic(Z(2^60));
+2
+gap> Characteristic(Z(3^20));
+3
+gap> Characteristic(0);
+0
+gap> Characteristic(12);
+0
+gap> Characteristic(12123123123);
+0
+gap> Characteristic(E(4));
+0
+gap> Characteristic([Z(2),Z(4)]);
+2
+gap> v := [Z(2),Z(4)];
+[ Z(2)^0, Z(2^2) ]
+gap> ConvertToVectorRep(v,4);
+4
+gap> Characteristic(v);
+2
+gap> Characteristic([Z(257),Z(257)^47]);
+257
+gap> Characteristic([[Z(257),Z(257)^47]]);
+257
+gap> Characteristic(ZmodnZObj(2,6));
+6
+gap> Characteristic(ZmodnZObj(2,5));
+5
+gap> Characteristic(ZmodnZObj(2,5123123123));
+5123123123
+gap> Characteristic(ZmodnZObj(0,5123123123));
+5123123123
+gap> Characteristic(GF(2,3));
+2
+gap> Characteristic(GF(2));
+2
+gap> Characteristic(GF(3,7));
+3
+gap> Characteristic(GF(1031));
+1031
+gap> Characteristic(Cyclotomics);
+0
+gap> Characteristic(Integers);
+0
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] );
+gap> a := AlgebraByStructureConstants(Rationals,T);
+<algebra of dimension 2 over Rationals>
+gap> Characteristic(a);
+0
+gap> a := AlgebraByStructureConstants(Cyclotomics,T);
+<algebra of dimension 2 over Cyclotomics>
+gap> Characteristic(a);
+0
+gap> a := AlgebraByStructureConstants(GF(7),T);
+<algebra of dimension 2 over GF(7)>
+gap> Characteristic(a);
+7
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1, 1, 2, 2 ] );
+gap> r := RingByStructureConstants([7,7],T);
+<ring with 2 generators>
+gap> Characteristic(r);
+7
+gap> r := RingByStructureConstants([7,5],T);
+<ring with 2 generators>
+gap> Characteristic(r);
+35
+
 #############################################################################
-gap> STOP_TEST( "bugfix.tst", 14914100000*10 );
+gap> STOP_TEST( "bugfix.tst", 15319000000*10 );
 
 #############################################################################
 ##

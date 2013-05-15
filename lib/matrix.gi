@@ -1661,18 +1661,12 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
   fi;
 
   start:=1;
-  while start<Length(M) and start<n do
+  while start<=Length(M) and start<=n do
 
     # find element of lowest degree and move it into pivot
     # hope is this will reduce the total number of iterations by making
     # it small in the first place
-    if IsZero(M[start][start]) then
-      d:=infinity;
-    else
-      d:=EuclideanDegree(R,M[start][start]);
-    fi;
-    posi:=start;
-    posj:=start;
+    d:=infinity;
 
     for i in [start..l] do
       for j in [start..n] do
@@ -1722,12 +1716,6 @@ local swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
     fi;
     start:=start+1;
   od;
-
-  # normalize last entry
-  if not IsZero(M[start][start]) then
-    qr:=StandardAssociateUnit(R,M[start][start]);
-    multcol(start,qr);
-  fi;
 
   if transform then
    return rec(rowtrans:=left,coltrans:=right,normal:=M);
@@ -2996,7 +2984,9 @@ local z,l,b,i,j,k,stop,v,dim,h,zv;
       if v<>fail then
         # clean j-th component from bas with v
         for k in [1..Length(bas)] do
-          bas[k]:=bas[k]-bas[k][j]/v[j]*v;
+	  if not IsZero(bas[k][j]) then
+	    bas[k]:=bas[k]-bas[k][j]/v[j]*v;
+	  fi;
         od;
         v:=Zero(v);
         bas:=Filtered(bas,k->k<>v);
@@ -4180,7 +4170,7 @@ BindGlobal("POW_MAT_INT", function(mat, n)
         until r <> true;
       fi;
     od;
-    ConvertToMatrixRep(t);
+    t := Matrix(t, m);
     return t;
   end;
   # compared to standard method, we avoid some zero or identity matrices

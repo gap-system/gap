@@ -1163,6 +1163,9 @@ GAPDoc2LaTeXProcs.ResolveExternalRef := function(bookname,  label, nr)
   od;
   
   match := Concatenation(HELP_GET_MATCHES(info, SIMPLE_STRING(label), true));
+  #   maybe change, and check if there are matches to several subsections?
+  #ssecs := List(match, i-> HELP_BOOK_HANDLER.(info.handler).HelpData(info,
+  #         match[i][2], "ref")[7]);
   if Length(match) < nr then
     return fail;
   fi;

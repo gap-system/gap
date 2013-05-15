@@ -1,15 +1,4 @@
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- %% -->
-<!-- %W  changes.xml               GAP documentation         Joachim Neubueser -->
-<!-- %% -->
-<!-- %H  @(#)<M>Id: preface.tex,v 4.44 2006/06/27 21:37:08 gap Exp </M> -->
-<!-- %% -->
-<!-- %Y  Copyright (C) 1997, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
-<!-- %% -->
-<!-- %%  This file contains the preface of the GAP reference manual. -->
-<!-- %% -->
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Appendix Label="Changes from Earlier Versions">
+<Chapter Label="Changes from Earlier Versions">
 <Heading>Changes from Earlier Versions</Heading>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -31,17 +20,17 @@ The main changes between &GAP; 4.3 and &GAP; 4.4 are:
   (see <Ref BookName="Example" Label="PackageInfo.g"/>).
 </Item>
 <Item>
-  <Ref Oper="IsSimpleGroup"/> returns false now for the trivial group.
+  <Ref Oper="IsSimpleGroup" BookName="ref"/> returns false now for the trivial group.
 </Item>
 <Item>
-  <Ref Oper="PrimeBlocks"/>: The output format has changed.
+  <Ref Oper="PrimeBlocks" BookName="ref"/>: The output format has changed.
 </Item>
 <Item>
-  Division rings (see <Ref Filt="IsDivisionRing"/>) are now implemented as 
-  <Ref Filt="IsRingWithOne"/>.
+  Division rings (see <Ref Filt="IsDivisionRing" BookName="ref"/>) 
+  are now implemented as <Ref Filt="IsRingWithOne" BookName="ref"/>.
 </Item>
 <Item>
-  <Ref Oper="DirectSumOfAlgebras" Label="for two algebras"/>: 
+  <Ref Oper="DirectSumOfAlgebras" Label="for two algebras" BookName="ref"/>: 
   <M>p</M>-th power maps are compatible with the input now.
 </Item>
 <Item>
@@ -103,8 +92,9 @@ our policy of maintaining upward compatibility whenever sensibly possible.
     available again.  (A. Hulpke)
 </Item>
 <Item>
-    The algorithm for <Ref Attr="BrauerCharacterValue"/> has been extended 
-    to the case where the splitting field is not supported in &GAP;. (T. Breuer)
+    The algorithm for <Ref Attr="BrauerCharacterValue" BookName="ref"/> 
+    has been extended to the case where the splitting field is not 
+    supported in &GAP;. (T. Breuer)
 </Item>
 <Item>
     Brauer tables of direct products can now be constructed from the
@@ -202,18 +192,19 @@ The following new Packages have been accepted.
     the Dixon-Schneider algorithm have been speeded up.
 </Item>
 <Item>
-    The algorithm for <Ref Oper="PossibleClassFusions"/> has been changed: 
-    the efficiency is improved and a new criterion is used. The algorithm 
-    for <Ref Oper="PossibleFusionsCharTableTom"/> has been speeded up. The 
-    method for <Ref Oper="PrimeBlocks"/> has been improved following a 
-    suggestion of H. Pahlings.
+    The algorithm for <Ref Oper="PossibleClassFusions" BookName="ref"/> 
+    has been changed: the efficiency is improved and a new criterion is used. 
+    The algorithm for <Ref Oper="PossibleFusionsCharTableTom" BookName="ref"/> 
+    has been speeded up. The method for <Ref Oper="PrimeBlocks" BookName="ref"/> 
+    has been improved following a suggestion of H. Pahlings.
 </Item>
 <Item>
     New improved methods for normalizer and subgroup conjugation in <M>S_n</M> 
     have been installed and new improved methods for 
-    <Ref Filt="IsNaturalSymmetricGroup"/> and 
-    <Ref Filt="IsNaturalAlternatingGroup"/> have been implemented. These 
-    improve the available methods when groups of large degrees are given.
+    <Ref Filt="IsNaturalSymmetricGroup" BookName="ref"/> and 
+    <Ref Filt="IsNaturalAlternatingGroup" BookName="ref"/> have been 
+    implemented. These improve the available methods when groups of large 
+    degrees are given.
 </Item>
 <Item>
     The partition split method used in the permutation backtrack is now
@@ -222,35 +213,36 @@ The following new Packages have been accepted.
     now give substantially shorter words for preimages.
 </Item>
 <Item>
-    The membership test in <Ref Func="SP" Label="for dimension and field size"/> 
-    and <Ref Func="SU"/> groups has been improved using the invariant forms 
-    underlying these groups.
+    The membership test in 
+    <Ref Func="SP" Label="for dimension and field size" BookName="ref"/> 
+    and <Ref Func="SU" BookName="ref"/> groups has been improved using 
+    the invariant forms underlying these groups.
 </Item>
 <Item>
     An improvement for the cyclic extension method for the computation of
     subgroup lattices has been implemented.
 </Item>
 <Item>
-    A better method for <Ref Oper="MinimalPolynomial"/> for finite field 
-    matrices has been implemented.
+    A better method for <Ref Oper="MinimalPolynomial" BookName="ref"/> for 
+    finite field matrices has been implemented.
 </Item>
 <Item>
     The display has changed and the arithmetic of multivariate polynomials
     has been improved.
 </Item>
 <Item>
-    The <Ref Func="LogMod"/> function now uses Pollard's rho method 
+    The <Ref Func="LogMod" BookName="ref"/> function now uses Pollard's rho method 
     combined with the Pohlig/Hellmann approach.
 </Item>
 <Item>
     Various functions for sets and lists have been improved following
-    suggestions of L. Teirlinck. These include: <Ref Oper="Sort"/>, 
-    <Ref Oper="Sortex"/>, <Ref Oper="SortParallel"/>,
-    <Ref Attr="SortingPerm"/>, <Ref Func="NrArrangements"/>.
+    suggestions of L. Teirlinck. These include: <Ref Oper="Sort" BookName="ref"/>, 
+    <Ref Oper="Sortex" BookName="ref"/>, <Ref Oper="SortParallel" BookName="ref"/>,
+    <Ref Attr="SortingPerm" BookName="ref"/>, <Ref Func="NrArrangements" BookName="ref"/>.
 </Item>
 <Item>
-    The methods for <Ref Attr="StructureConstantsTable"/> and 
-    <Ref Func="GapInputSCTable"/> have been improved in the case of a
+    The methods for <Ref Attr="StructureConstantsTable" BookName="ref"/> and 
+    <Ref Func="GapInputSCTable" BookName="ref"/> have been improved in the case of a
     known (anti-) symmetry following a suggestion of M. Costantini.
 </Item>
 </List>
@@ -324,7 +316,7 @@ The most important changes between &GAP; 4.1 and &GAP; 4.2 were:
 <List>
 <Item>
 A much extended and improved library of small groups as well as
-associated <Ref Attr="IdGroup"/> routines.
+associated <Ref Attr="IdGroup" BookName="ref"/> routines.
 </Item>
 <Item>
 The primitive groups library has been made more independent of the
@@ -377,9 +369,9 @@ has included the new method selection system, which underpins the
 library, and a new, much more flexible, &GAP; package interface.
 <P/>
 Details of these changes can be found in the document
-<Q>Migrating to GAP 4</Q> that can be found at
-<URL>http://www.gap-system.org/...</URL>.
-<!-- TODO: put complete URL here -->
+<Q>Migrating to GAP 4</Q> available at the &GAP; website, 
+see <URL>http://www.gap-system.org/Gap3/migratedoc.pdf</URL>.
+<P/>
 It is perhaps worth mentioning a few points here. 
 <P/>
 Firstly, much remains unchanged, from the perspective of the mathematical 
@@ -451,8 +443,7 @@ Very few features of &GAP;&nbsp;3 are not yet available in  &GAP;&nbsp;4.
 <List>
 <Item>
      Not all of the &GAP;&nbsp;3 packages have yet been converted
-     for use with  &GAP;&nbsp;4 (although several new packages are available
-     only in  &GAP;&nbsp;4). 
+     for use with  &GAP;&nbsp;4.
 </Item>
 <Item>
    The library of crystallographic groups which was present in
@@ -469,7 +460,7 @@ Very few features of &GAP;&nbsp;3 are not yet available in  &GAP;&nbsp;4.
 
 </Section>
 
-</Appendix>
+</Chapter>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->

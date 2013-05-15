@@ -2008,6 +2008,7 @@ static Int InitKernel (
   IsbRecFuncs[ T_AREC ] = IsbARecord;
   AssRecFuncs[ T_AREC ] = AssARecord;
   CopyObjFuncs[ T_AREC ] = CopyARecord;
+  ShallowCopyObjFuncs[ T_AREC ] = ShallowCopyARecord;
   CleanObjFuncs[ T_AREC ] = CleanARecord;
   IsRecFuncs[ T_AREC ] = IsRecYes;
   UnbRecFuncs[ T_AREC ] = UnbARecord;

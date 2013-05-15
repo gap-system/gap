@@ -1,7 +1,6 @@
 
                   Wishlist for GAP 4.5
 
-      $Id: wishlist4r5.txt,v 1.26 2006/03/04 11:48:18 gap Exp $
 ---------------------------------------------------------------------------
 The initials at the end of an entry show who has added this entry, they do
 *not* automatically mean that the same person will work on it. Please add
@@ -13,7 +12,7 @@ Use '*' to mark each topic, and '-' for the subtopics.
 * Enhance the commands like 'SymplecticGroup' by introducing an optional
   argument that specifies a symplectic/orthogonal form. Add utilities for
   transforming the groups with respect to different form into each other.
-  (Proposed by Christoph Köhler, will try to urge him to implement this.)
+  (Proposed by Christoph KÃ¶hler, will try to urge him to implement this.)
       (FL)
 
 * - Improve the performance of the integer arithmetic, e.g. by using GMP.

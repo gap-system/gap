@@ -250,6 +250,9 @@ DeclareAttribute( "GeneratorsOfLeftOperatorRingWithOne",
 ##
 ##  <Description>
 ##  returns a list of elements that generate <A>A</A> as an algebra.
+##  <P/>
+##  For a free algebra, each generator can also be accessed using 
+##  the <C>.</C> operator (see <Ref Attr="GeneratorsOfDomain"/>).
 ##  <Example><![CDATA[
 ##  gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3 ], [ 0, 0, 0 ] ];;
 ##  gap> A:= AlgebraWithOne( Rationals, [ m ] );
@@ -277,6 +280,9 @@ DeclareSynonymAttr( "GeneratorsOfFLMLOR", GeneratorsOfLeftOperatorRing );
 ##  <Description>
 ##  returns a list of elements of <A>A</A>
 ##  that generate <A>A</A> as an algebra with one. 
+##  <P/>
+##  For a free algebra with one, each generator can also be accessed using 
+##  the <C>.</C> operator (see <Ref Attr="GeneratorsOfDomain"/>).
 ##  <Example><![CDATA[
 ##  gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3 ], [ 0, 0, 0 ] ];;
 ##  gap> A:= AlgebraWithOne( Rationals, [ m ] );
@@ -335,7 +341,7 @@ DeclareAttribute( "PowerSubalgebraSeries", IsAlgebra );
 ##  <A>B</A><M> = (x_1, x_2, \ldots, x_n)</M> of <M>A</M>,
 ##  <M>ad(x)</M> can be represented by a matrix over <M>F</M>.
 ##  Let <M>V</M> denote the <M>F</M>-vector space of the matrices
-##  correcponding to <M>ad(x)</M>, for <M>x \in A</M>.
+##  corresponding to <M>ad(x)</M>, for <M>x \in A</M>.
 ##  Then <Ref Attr="AdjointBasis"/> returns the basis of <M>V</M> that
 ##  consists of the matrices for <M>ad(x_1), \ldots, ad(x_n)</M>.
 ##  <P/>

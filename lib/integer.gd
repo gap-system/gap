@@ -613,7 +613,8 @@ DeclareOperation( "PartialFactorization",
 ##  rec( coeff1 := 1, coeff2 := 0, coeff3 := 0, coeff4 := 1, gcd := 0 )
 ##  ]]></Example>
 ##  <P/>
-##  <Ref Func="GcdRepresentation"/> provides similar functionality over arbitrary Euclidean rings.
+##  <Ref Func="GcdRepresentation" Label="for (a ring and) several elements"/> 
+##  provides similar functionality over arbitrary Euclidean rings.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

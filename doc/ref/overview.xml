@@ -45,8 +45,8 @@ and Prefaces</Q>.
 <P/>
 For those readers who have used an earlier version of &GAP;, an
 overview of the changes from &GAP;&nbsp;4.4 and a brief 
-summary of changes from earlier versions is given in
-<Ref Appendix="Changes from Earlier Versions" BookName="ref"/>.
+summary of changes from earlier versions is given in a separate
+manual <Ref Chap="Changes between GAP 4.4 and GAP 4.5" BookName="changes"/>.
 <P/>
 The system that you are getting now consists of a <Q>core system</Q> and
 a number of packages. The core system consists of four main parts.
@@ -104,7 +104,7 @@ A <E>library of group theoretical data</E> which contains
 </Item>
 <Item>
     The <E>documentation</E>.  This is available as on-line help, as
-    printable files in various formats and as HTML for viewing
+    printable files in PDF format and as HTML for viewing
     with a Web browser.
 </Item>
 </Enum>

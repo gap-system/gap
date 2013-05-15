@@ -72,9 +72,7 @@
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
-#define INCLUDE_DECLARATION_PART
 #include        "range.h"               /* ranges                          */
-#undef  INCLUDE_DECLARATION_PART
 #include        "string.h"              /* strings                         */
 
 #include        "saveload.h"            /* saving and loading              */

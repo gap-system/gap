@@ -65,7 +65,7 @@ DeclareGlobalFunction("ListOfDigits");
 ##  to the ring specified by the coefficients of <A>p</A> via
 ##  <Ref Func="DefaultRing" Label="for ring elements"/>).
 ##  <Example><![CDATA[
-##  gap> x:=X(Rationals,"x":old);;p:=x^4-1;    
+##  gap> x:=X(Rationals,"x");;p:=x^4-1;    
 ##  x^4-1
 ##  gap> RootsOfPolynomial(p);
 ##  [ 1, -1 ]
@@ -275,7 +275,7 @@ BindGlobal("AllSubgroups",
 ##  of taking the standard product of the vector of digits with the fixed vector
 ##  <A>f</A> modulo <A>m</A>; the result needs to be 0.
 ##  
-##  The function returns a function thatthen can be used for testing or
+##  The function returns a function that then can be used for testing or
 ##  determining check digits.
 ##  <Example><![CDATA[
 ##  gap> isbntest:=CheckDigitTestFunction(10,11,[1,2,3,4,5,6,7,8,9,-1]); 
@@ -283,7 +283,7 @@ BindGlobal("AllSubgroups",
 ##  gap> isbntest("038794680");
 ##  Check Digit is 2
 ##  2
-## ]]></Example>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -303,7 +303,7 @@ DeclareGlobalFunction("CheckDigitTestFunction");
 ##
 ##  <Description>
 ##  These functions can be used to compute, or check, check digits for some
-##  everyday items. In each case what is tubmitted as input is either the number
+##  everyday items. In each case what is submitted as input is either the number
 ##  with check digit (in which case the function returns <C>true</C> or
 ##  <C>false</C>), or the number without check digit (in which case the function
 ##  returns the missing check digit). The number can be specified as integer, as

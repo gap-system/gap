@@ -513,12 +513,7 @@ Note that within this function only the elements in <A>pcgs</A> and the
 relative orders of <A>pcgs</A> are needed. Hence this function works effectively
 even if the elementary operations for <A>pcgs</A> are slow.
 
-<ManSection>
-<Func Name="StabilizerPcgs" Arg='pcgs, pt'/>
-
-<Description>
-</Description>
-</ManSection>
+<#Include Label="StabilizerPcgs">
 
 <#Include Label="Pcgs_OrbitStabilizer:pcgs">
 

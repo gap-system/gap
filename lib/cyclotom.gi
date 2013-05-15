@@ -1860,7 +1860,7 @@ InstallMethod( Factors,
     coeffring:= CoefficientsRing( R );
     i:= PositionProperty( irrfacs, pair -> pair[1] = coeffring );
     if i <> fail then
-      return irrfacs[i][2];
+      return ShallowCopy(irrfacs[i][2]);
     fi;
 
     # Handle (at most) linear polynomials.

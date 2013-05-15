@@ -11,9 +11,6 @@
 #ifndef GAP_OBJSCOLL_H
 #define GAP_OBJSCOLL_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

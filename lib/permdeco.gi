@@ -59,6 +59,10 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
   if ForAll(MappingGeneratorsImages(rest)[2],IsOne) then
     ker:=U;
     k:=InducedPcgsByGeneratorsNC(ffs.pcgs,GeneratorsOfGroup(U));
+  elif Length(ffs.pcgs)=0 then
+    # no radical
+    ker:=TrivialSubgroup(G);
+    k:=ffs.pcgs;
   else
 
     it:=CoKernelGensIterator(InverseGeneralMapping(rest));
@@ -79,7 +83,11 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
 
   SetPcgs(ker,k);
   SetKernelOfMultiplicativeGeneralMapping(rest,ker);
-  r:=Concatenation(k!.depthsInParent,[Length(ffs.pcgs)+1]);
+  if Length(ffs.pcgs)=0 then
+    r:=[1];
+  else
+    r:=Concatenation(k!.depthsInParent,[Length(ffs.pcgs)+1]);
+  fi;
 
   r:=rec(parentffs:=ffs,
             rest:=rest,
@@ -118,12 +126,18 @@ local ffs,hom,U,rest,ker,r;
 
   ker:=SubgroupNC(G,ipcgs);
   SetPcgs(ker,ipcgs);
-  SetSize(ker,Product(RelativeOrders(ipcgs)));
+  if Length(ipcgs)=0 then
+    SetSize(ker,1);
+  else
+    SetSize(ker,Product(RelativeOrders(ipcgs)));
+  fi;
   SetKernelOfMultiplicativeGeneralMapping(rest,ker);
 
   SetSize(U,Size(Group(imgs,One(Image(ffs.factorhom))))*Size(ker));
 
-  if IsBound(ipcgs!.depthsInParent) then
+  if Length(ipcgs)=0 then
+    r:=[Length(ffs.pcgs)+1];
+  elif IsBound(ipcgs!.depthsInParent) then
     r:=Concatenation(ipcgs!.depthsInParent,[Length(ffs.pcgs)+1]);
   else
     r:=Concatenation(List(ipcgs,x->DepthOfPcElement(ffs.pcgs,x)),
@@ -141,107 +155,146 @@ local ffs,hom,U,rest,ker,r;
 
 end);
 
+
+#testfunction for AutomorphismRepresentingGroup
+#test:=function(start)
+#local it,g,a,r;
+#  it:=SimpleGroupsIterator(start:NOPSL2);
+#  repeat
+#    g:=NextIterator(it);
+#    Print("@ Trying ",g," ",Size(g),"\n");
+#    a:=AutomorphismGroup(g);
+#    r:=AutomorphismRepresentingGroup(g,GeneratorsOfGroup(a));
+#    Print("@ Got ",NrMovedPoints(r[1])," from ",NrMovedPoints(g),"\n");
+#  until false;
+#end;
 InstallGlobalFunction(AutomorphismRepresentingGroup,function(G,autos)
-local G0,a0,cnt,iso,Gi,ai,dom,s,u,a,red,degs,degs2,v,w;
-  G0:=G;
-  a0:=autos;
-# assumes G simple!
-  cnt:=2;
+local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
+  sub,d;
+
+  tryrep:=function(rep)
+  local Gi,repi,maps,v,w;
+     Gi:=Image(rep,G);
+     Info(InfoGroup,2,"Trying degree ",NrMovedPoints(Gi));
+     repi:=InverseGeneralMapping(rep);
+     maps:=List(sel,x->repi*autos[x]*rep);
+     for v in maps do
+       SetIsBijective(v,true);
+     od;
+     if ForAll(maps,IsConjugatorAutomorphism) then
+	# the representation extends
+	v:=List( maps, ConjugatorOfConjugatorIsomorphism );
+	w:=ClosureGroup(Gi,v);
+	Info(InfoGroup,1,"all conjugator degree ",NrMovedPoints(w));
+	if Size(Centralizer(w,Gi))=1 then
+	  maps:=[];
+	  maps{sel}:=v;
+	  maps{selin}:=List(selin,x->
+	    Image(rep,
+	      ConjugatorOfConjugatorIsomorphism(autos[x])));
+	  return [w,rep,maps];
+	else
+	  Info(InfoGroup,2,"but centre");
+	fi;
+     else
+       Info(InfoGroup,2,"Does not work");
+     fi;
+     return fail;
+  end;
+
+  selin:=Filtered([1..Length(autos)],x->IsInnerAutomorphism(autos[x]));
+  sel:=Difference([1..Length(autos)],selin);
+
+  # first try given rep
+  if not IsSubset(MovedPoints(G),[1..LargestMovedPoint(G)]) then
+    a:=tryrep(ActionHomomorphism(G,MovedPoints(G),"surjective"));
+  else
+    a:=tryrep(IdentityMapping(G));
+  fi;
+  if a<>fail then return a;fi;
+
+  # then (assuming G simple) try transitive action of small degree
   dom:=Set(Orbit(G,LargestMovedPoint(G)));
   s:=Blocks(G,dom);
   if Length(s)=1 then
-    Info(InfoHomClass,2,"point action");
-    iso:=ActionHomomorphism(G,dom,"surjective");
+    if Set(dom)=[1..Length(dom)] then
+      Info(InfoGroup,2,"reduction is equal to G");
+      iso:=fail;
+    else
+      Info(InfoHomClass,2,"point action");
+      iso:=ActionHomomorphism(G,dom,"surjective");
+    fi;
   else
     Info(InfoHomClass,2,"block refinement");
     iso:=ActionHomomorphism(G,s,OnSets,"surjective");
   fi;
-  red:=true;
-  degs:=[];
-  degs2:=[];
-  repeat
-    Gi:=ImagesSet(iso,G);
-    AddSet(degs,NrMovedPoints(Gi));
 
-    # if the degree is optimal don't try to reduce
-    if red and IsPermGroup(Gi) and IsSimpleGroup(G0) and not IsAbelian(G0) then
-      ai:=ClassicalIsomorphismTypeFiniteSimpleGroup(G0);
-      ai:=SimpleGroup(ai);
-      if IsPermGroup(ai) and NrMovedPoints(ai)>=NrMovedPoints(Gi) then
-	red:=false;
-      fi;
-    fi;
+  if iso<>fail then
+    # try the new rep
+    a:=tryrep(iso);
+    if a<>fail then return a;fi;
 
-    if red then
-      # reduce degree
-      Info(InfoHomClass,3,"reduce degree");
-      ai:=SmallerDegreePermutationRepresentation(Gi);
-      Gi:=ImagesSet(ai,Gi);
-      iso:=iso*ai;
-    fi;
-    ai:=List(autos,i->GroupHomomorphismByImagesNC(Gi,Gi,GeneratorsOfGroup(Gi),
-             List(GeneratorsOfGroup(Gi),
-	          j->Image(iso,Image(i,PreImagesRepresentative(iso,j))))));
-    for a in ai do
-      SetIsBijective(a,true);
-    od;
-    dom:=MovedPoints(Gi);
-    Info(InfoHomClass,2,"trying degree ",Length(dom));
-    s:=Stabilizer(Gi,dom[1]);
+    # otherwise go to new small deg rep
+    G:=Image(iso,G);
+    autos:=List(autos,x->InverseGeneralMapping(iso)*x*iso);
+  fi;
 
-    if ForAll(ai,IsConjugatorAutomorphism) then
-      # the representation extends
-      v:= List( ai, ConjugatorOfConjugatorIsomorphism );
-      w:=ClosureGroup(Gi,v);
-      Info(InfoHomClass,1,"all conjugator");
-      if Size(Centralizer(w,Gi))=1 then
-	return [w,iso,v];
-      else
-	Info(InfoHomClass,2,"but centre");
-	u:=G;
-      fi;
-    fi;
-    Info(InfoHomClass,2,"failed, try other degree");
-    # otherwise we try to find another perm rep, hopefully not to bad. 
-    # we should invoke the classification here to see how bad it might be
-    cnt:=cnt+1; # increase in case the best rep is awfully bigger
-    # try intersection
-    if not NrMovedPoints(Gi) in degs2 then
-      AddSet(degs2,NrMovedPoints(Gi));
-      u:=Stabilizer(Gi,1);
-      for a in ai do
-	if not IsConjugatorAutomorphism(a) then
-	  v:=Image(a,u);
-	  red:=false; # no reduction!
-	  if RepresentativeAction(Gi,u,v)=fail then
-	    u:=Intersection(u,v);
-	    Info(InfoHomClass,3,"Intersecting, index ",Index(v,u));
-	  fi;
-	fi;
+  # test the automorphisms that are not conjugator
+  seln:=Filtered(sel,x->not IsConjugatorAutomorphism(autos[x]));
+
+  # autos{seln} generates the non-perm automorphism group. Enumerate
+  # use that automorphism is conjugator is stabilizer is conjugate
+  stabs:=[Stabilizer(G,1)];
+  outs:=[IdentityMapping(G)];
+  i:=1;
+  while i<=Length(stabs) do
+    for j in seln do
+      map:=outs[i]*autos[j];
+      sub:=Image(autos[j],stabs[i]);
+      p:=0;
+      found:=fail;
+      while found=fail and p<Length(stabs) do
+	p:=p+1;
+	found:=RepresentativeAction(G,sub,stabs[p]);
       od;
-      if Index(Gi,u)>cnt*10*Length(dom) then
-	# Index too big
-	RemoveSet(degs2,NrMovedPoints(Gi));
-	u:=TrivialSubgroup(G);
-      else
-	u:=PreImage(iso,u);
-      fi;
-    fi;
 
-    # arbitrary values.
-    while (Index(G,u)=1 or Index(G,u)>cnt*10*Length(dom)) do;
-      red:=true;
-      # assume each suitable subgroup is 2-generators
-      u:=Subgroup(G,[Random(G),Random(G)]);
-      if Index(G,u)>1 and Random([1..3])=1 then
-	u:=Intersection(u,Image(Random(autos),u));
-	Info(InfoHomClass,3,"intersection degree ",Index(G,u));
+      if found=fail then
+	# new copy
+	Add(stabs,sub);
+	Add(outs,map);
       fi;
+
     od;
-    # next attempt at iso
-    iso:=ActionHomomorphism(G,RightTransversal(G,u),OnRight,"surjective");
-    red:=red and not (Index(G,u) in degs);
-  until false;
+    i:=i+1;
+  od;
+  Info(InfoGroup,1,"Build ",Length(outs)," copies");
+  if Length(stabs)=1 then Error("why only one -- should have found before");fi;
+
+  d:=DirectProduct(List(stabs,x->G));
+  p:=[];
+  for i in GeneratorsOfGroup(G) do
+    a:=One(d);
+    for j in [1..Length(stabs)] do
+      a:=a*Image(Embedding(d,j),Image(outs[j],i));
+    od;
+    Add(p,a);
+  od;
+
+  a:=Subgroup(d,p);
+  SetSize(a,Size(G));
+  p:=GroupHomomorphismByImagesNC(G,a,GeneratorsOfGroup(G),p);
+
+  a:=tryrep(p);
+  if a<>fail then 
+    if iso<>fail then
+      a[2]:=iso*a[2];
+    fi;
+    return a;
+  fi;
+
+  Info(InfoGroup,1,"Wreath embedding failed");
+  Error("This should never happen");
+
 end);
 
 InstallGlobalFunction(EmbedAutomorphisms,function(arg)

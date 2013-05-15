@@ -21,7 +21,7 @@
   <Author> Max Neunhöffer 
           <Email>neunhoef at mcs.st-and.ac.uk</Email>
   </Author>
-  <Date>September 2011</Date>
+  <Date>February 2012</Date>
   <Address>
   Lehrstuhl D für Mathematik<Br/> Templergraben 
   64<Br/> 52062 Aachen<Br/> (Germany)
@@ -33,7 +33,7 @@
             source text. This should enable new users to learn &GAPDoc;
             quickly.
   </Abstract>
-  <Copyright>&copyright; 2000-2011 by Frank Lübeck and Max Neunhöffer
+  <Copyright>&copyright; 2000-2012 by Frank Lübeck and Max Neunhöffer
   </Copyright>
   <Acknowledgements>We thank Lehrstuhl D für Mathematik.
   </Acknowledgements>
@@ -406,6 +406,22 @@ or with marks:
  <Mark>enumerations:</Mark><Item> numbered</Item>
  <Mark>tables:</Mark><Item> two-dimensional</Item>
 </List>
+
+Lists can also be nested:
+<Enum>
+ <Item>
+   <Enum>
+     <Item>first item of inner enumeration </Item>
+     <Item>second item of inner enumeration </Item>
+   </Enum>
+ </Item>
+ <Item>
+   <List>
+     <Item>first item of inner list </Item>
+     <Item>second item of inner list </Item>
+   </List>
+  </Item>
+</Enum>
 
 Here is a <E>table</E>:
 
@@ -938,6 +954,22 @@ or with marks:
  <Mark>enumerations:</Mark><Item> numbered</Item>
  <Mark>tables:</Mark><Item> two-dimensional</Item>
 </List>
+
+Lists can also be nested:
+<Enum>
+ <Item>
+   <Enum>
+     <Item>first item of inner enumeration </Item>
+     <Item>second item of inner enumeration </Item>
+   </Enum>
+ </Item>
+ <Item>
+   <List>
+     <Item>first item of inner list </Item>
+     <Item>second item of inner list </Item>
+   </List>
+  </Item>
+</Enum>
 
 Here is a <E>table</E>:
 

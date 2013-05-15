@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: writePackageWebInfos,v 1.2 2004/10/18 15:44:01 gapchron Exp $    (C) Frank Lübeck
+# (C) Frank LÃ¼beck
 
 
 mypath=`dirname  $0`/

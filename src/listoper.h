@@ -14,9 +14,6 @@
 #ifndef GAP_LISTOPER_H
 #define GAP_LISTOPER_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 /* These functions are exported because specialised methods may want to
    fall back on them from other files (eg vec8bit) */
 

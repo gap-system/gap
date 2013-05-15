@@ -9,9 +9,6 @@
 #ifndef GAP_VEC8BIT_H
 #define GAP_VEC8BIT_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

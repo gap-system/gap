@@ -162,8 +162,6 @@
 
 </Body>
 
-<#Include SYSTEM "changes.xml">
-
 <Bibliography Databases="../manualbib.xml"/>
 
 <TheIndex/>

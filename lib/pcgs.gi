@@ -595,42 +595,46 @@ InstallGlobalFunction(LeftQuotientPowerPcgsElement,function( pcgs, i,exp,elm )
 #  fi;
 end );
 
+DoPcElementByExponentsGeneric:=function(pcgs,basis,list)
+local elm,i,a;
+
+  elm := fail;
+
+  for i  in [ 1 .. Length(list) ]  do
+    a:=list[i];
+    if IsFFE(a) then a:=Int(a);fi;
+    if a=1  then
+      if elm=fail then elm := basis[i];
+      else elm := elm * basis[i];fi;
+    elif a<> 0  then
+      if elm=fail then elm := basis[i] ^ a;
+      else elm := elm * basis[i] ^ a;fi;
+    fi;
+  od;
+
+  if elm=fail then 
+    if IsPcgs(pcgs) then
+      return OneOfPcgs(pcgs);
+    else
+      return One(pcgs[1]);
+    fi;
+  else
+    return elm;
+  fi;
+
+end;
+
 #############################################################################
 ##
 #M  LinearCombinationPcgs( <pcgs>, <list> )
 ##
 InstallGlobalFunction(LinearCombinationPcgs,function(arg)
-local pcgs,list,elm,  i;
-
-    pcgs:=arg[1];
-    list:=arg[2];
-    if Length(pcgs)=0 then
-      if Length(arg)>2 then
-	return arg[3];
-      else
-	return OneOfPcgs(pcgs);
-      fi;
-    fi;
-    elm := fail;
-
-    for i  in [ 1 .. Length(list) ]  do
-        if list[i] <> 0  then
-	  if elm=fail then elm := pcgs[i] ^ Int(list[i]);
-	  else elm := elm * pcgs[i] ^ Int(list[i]);fi;
-        fi;
-    od;
-    if elm=fail then
-      if Length(arg)>2 then
-	return arg[3];
-      else
-	return One(pcgs[1]);
-      fi;
-    fi;
-
-    return elm;
-
-end );
-
+  if Length(arg)=2 or Length(arg[1])>0 then
+    return DoPcElementByExponentsGeneric(arg[1],arg[1],arg[2]);
+  elif Length(arg[1])=0 then
+    return arg[3];
+  fi;
+end);
 
 #############################################################################
 ##
@@ -639,9 +643,10 @@ end );
 InstallOtherMethod( PcElementByExponentsNC,
     "generic method: call LinearCombinationPcgs",
     true,
-    [ IsList,
-      IsRowVector and IsCyclotomicCollection ],
-    0, LinearCombinationPcgs);
+    [ IsList, IsRowVector and IsCyclotomicCollection ], 0, 
+function(pcgs,list)
+  return DoPcElementByExponentsGeneric(pcgs,pcgs,list);
+end);
 
 #############################################################################
 ##
@@ -650,42 +655,15 @@ InstallOtherMethod( PcElementByExponentsNC,
 InstallOtherMethod( PcElementByExponentsNC, "generic method", true,
     [ IsList, IsRowVector and IsFFECollection ], 0,
 function( pcgs, list )
-local   elm,  i,z;
-
-    if Length(pcgs)=0 then
-      return OneOfPcgs(pcgs);
-    fi;
-    elm := fail;
-
-    for i  in [ 1 .. Length(list) ]  do
-      z :=IntFFE(list[i]);
-      if z=1 then
-	if elm=fail then elm := pcgs[i] ;
-	else elm := elm * pcgs[i] ; fi;
-      elif z>1 then
-	if elm=fail then elm := pcgs[i] ^ z;
-	else elm := elm * pcgs[i] ^ z;fi;
-      fi;
-    od;
-    if elm=fail then elm := One(pcgs[1]);fi;
-
-    return elm;
-
-end );
-
+  return DoPcElementByExponentsGeneric(pcgs,pcgs,list);
+end);
 
 #############################################################################
 ##
 #M  PcElementByExponentsNC( <pcgs>, <basis>, <empty-list> )
 ##
-InstallOtherMethod( PcElementByExponentsNC,
-    "generic method for empty lists",
-    true,
-    [ IsPcgs,
-      IsList and IsEmpty,
-      IsList and IsEmpty ],
-    0,
-
+InstallOtherMethod( PcElementByExponentsNC, "generic method for empty lists",
+    true, [ IsPcgs, IsList and IsEmpty, IsList and IsEmpty ], 0,
 function( pcgs, basis, list )
     return OneOfPcgs(pcgs);
 end );
@@ -697,21 +675,7 @@ end );
 ##
 InstallOtherMethod( PcElementByExponentsNC,"multiply basis elements",
     IsFamFamX, [ IsPcgs, IsList, IsRowVector and IsCyclotomicCollection ], 0,
-function( pcgs, basis, list )
-local   elm,  i;
-
-    elm := OneOfPcgs(pcgs);
-
-    for i  in [ 1 .. Length(list) ]  do
-        if list[i] <> 0  then
-            elm := elm * basis[i] ^ list[i];
-        fi;
-    od;
-
-    return elm;
-
-end );
-
+  DoPcElementByExponentsGeneric);
 
 #############################################################################
 ##
@@ -719,21 +683,7 @@ end );
 ##
 InstallOtherMethod( PcElementByExponentsNC,"multiply base elts., FFE",
     IsFamFamX, [ IsPcgs, IsList, IsRowVector and IsFFECollection ], 0,
-function( pcgs, basis, list )
-    local   elm,  i,  z;
-
-    elm := OneOfPcgs(pcgs);
-
-    for i  in [ 1 .. Length(list) ]  do
-        z := IntFFE(list[i]);
-        if z <> 0  then
-            elm := elm * basis[i] ^ z;
-        fi;
-    od;
-
-    return elm;
-
-end );
+  DoPcElementByExponentsGeneric);
 
 #############################################################################
 ##
@@ -743,30 +693,15 @@ InstallOtherMethod( PcElementByExponentsNC,"index: defer to basis", true,
   [ IsModuloPcgs, IsRowVector and IsCyclotomicCollection, 
     IsRowVector and IsFFECollection ], 0,
 function( pcgs, ind, list )
-local   elm,  i,z;
-  elm := OneOfPcgs(pcgs);
-  for i  in [ 1 .. Length(list) ]  do
-    z := IntFFE(list[i]);
-    if z<> 0  then
-      elm := elm * pcgs[ind[i]] ^ z;
-    fi;
-  od;
-  return elm;
-end );
+  return DoPcElementByExponentsGeneric(pcgs,pcgs{ind},list);
+end);
 
 InstallOtherMethod( PcElementByExponentsNC,"index: defer to basis,FFE",true,
   [ IsModuloPcgs, IsRowVector and IsCyclotomicCollection, 
     IsRowVector and IsCyclotomicCollection ], 0,
 function( pcgs, ind, list )
-local   elm,  i;
-  elm := OneOfPcgs(pcgs);
-  for i  in [ 1 .. Length(list) ]  do
-    if list[i] <> 0  then
-      elm := elm * pcgs[ind[i]] ^ list[i];
-    fi;
-  od;
-  return elm;
-end );
+  return DoPcElementByExponentsGeneric(pcgs,pcgs{ind},list);
+end);
 
 
 #############################################################################

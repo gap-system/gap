@@ -1507,17 +1507,17 @@ InstallGlobalFunction( MagmaRingModuloSpanOfZero, function( R, M, z )
 #T no!
     F!.zeroOfMagma := z;
 
-    # Set the characteristic.
-    if HasCharacteristic( R ) or HasCharacteristic( FamilyObj( R ) ) then
-      SetCharacteristic( F, Characteristic( R ) );
-    fi;
-
+    # Do not set the characteristic since we do not know whether we are
+    # 0-dimensional and the characteristic would then be 0.
 
     # Make the magma ring object.
     RM:= Objectify( NewType( CollectionsFamily( F ),
                                  IsMagmaRingModuloSpanOfZero
                              and IsAttributeStoringRep ),
                     rec() );
+
+    # Store it in its elements family:
+    F!.magmaring := RM;
 
     # Set the necessary attributes.
     SetLeftActingDomain( RM, R );
@@ -1539,6 +1539,29 @@ InstallGlobalFunction( MagmaRingModuloSpanOfZero, function( R, M, z )
     # Return the ring.
     return RM;
 end );
+
+
+#############################################################################
+##
+#M  Characteristic( <A> )
+#M  Characteristic( <algelm> )
+#M  Characteristic( <algelmfam> )
+##
+##  (via delegations)
+##
+InstallMethod( Characteristic, 
+  "for an elements family of a magma ring quotient",
+  [ IsElementOfMagmaRingModuloSpanOfZeroFamily ],
+  function( fam )
+    local A,n,one,x;
+    A := fam!.magmaring;
+    one := One(A);
+    if Zero(A) = one then 
+        return 1;
+    else
+        return Characteristic(LeftActingDomain(A));
+    fi;
+  end );
 
 
 #############################################################################

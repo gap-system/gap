@@ -29,9 +29,6 @@
 #ifndef GAP_GVARS_H
 #define GAP_GVARS_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 #include "systhread.h"
 
 #define GVAR_BUCKETS 1024

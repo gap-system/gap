@@ -21,9 +21,6 @@
 #ifndef GAP_RATIONAL_H
 #define GAP_RATIONAL_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

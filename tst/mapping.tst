@@ -54,8 +54,9 @@ true
 gap> IsTotal( inv );
 false
 gap> comp:= CompositionMapping( inv, map );
-CompositionMapping( InverseGeneralMapping( <general mapping: GF(3) -> GF(
-3) > ), <general mapping: GF(3) -> GF(3) > )
+CompositionMapping( 
+InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ),
+ <general mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( comp ) ),"\n");
 [ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
     Z(3)^0 ] ), DirectProductElement( [ 0*Z(3), Z(3) ] ), 
@@ -73,8 +74,8 @@ true
 gap> IsTotal( comp );
 true
 gap> anticomp:= CompositionMapping( map, inv );
-CompositionMapping( <general mapping: GF(3) -> GF(
-3) >, InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
+CompositionMapping( <general mapping: GF(3) -> GF(3) >,
+ InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
 gap> Print(AsList( UnderlyingRelation( anticomp ) ),"\n");
 [ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), DirectProductElement( [ 0*Z(3), 
     Z(3)^0 ] ), DirectProductElement( [ Z(3)^0, 0*Z(3) ] ), 
@@ -133,8 +134,9 @@ false
 gap> IsTotal( inv );
 false
 gap> comp:= CompositionMapping( inv, map );
-CompositionMapping( InverseGeneralMapping( <general mapping: GF(3) -> GF(
-3) > ), <general mapping: GF(3) -> GF(3) > )
+CompositionMapping( 
+InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ),
+ <general mapping: GF(3) -> GF(3) > )
 gap> IsInjective( comp );
 false
 gap> IsSingleValued( comp );
@@ -164,9 +166,10 @@ true
 gap> inv < map;
 false
 gap> conj:= map ^ inv;
-CompositionMapping( InverseGeneralMapping( <general mapping: GF(3) -> GF(
-3) > ), CompositionMapping( <general mapping: GF(3) -> GF(
-3) >, <general mapping: GF(3) -> GF(3) > ) )
+CompositionMapping( 
+InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ),
+ CompositionMapping( <general mapping: GF(3) -> GF(3) >,
+ <general mapping: GF(3) -> GF(3) > ) )
 gap> IsSubset( UnderlyingRelation( conj ), UnderlyingRelation( map ) );
 true
 gap> IsSubset( UnderlyingRelation( map ), UnderlyingRelation( conj ) );
@@ -284,7 +287,7 @@ gap> IsGroupHomomorphism(res);
 true
 gap> IsInjective(res);        
 true
-gap> STOP_TEST( "mapping.tst", 33000000 );
+gap> STOP_TEST( "mapping.tst", 37300000 );
 
 #############################################################################
 ##

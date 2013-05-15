@@ -1273,7 +1273,7 @@ end);
 ##  gens[i]<gens[j] if and only if orderofgens[i]<orderofgens[j]
 ##
 ##  <levels> is a list of length equal to the number of generators,
-##  specififying the levels of the generators IN THEIR NEW ORDERING,
+##  specifying the levels of the generators IN THEIR NEW ORDERING,
 ##  That is, levels[i] is the level of the generator that comes i-th
 ##  in the new ordering.
 ##

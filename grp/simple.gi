@@ -271,7 +271,7 @@ local brg,str,p,a,param,g,s,small;
       else
         Error("Illegal Parameter for Suzuki groups");
       fi;
-    elif str="R" or str="REE" then
+    elif str="R" or str="REE" or str="2G" then
       if Length(param)=1 and param[1]>26 and
         Set(Factors(param[1]))=[3] and IsOddInt(LogInt(param[1],3)) then
 	g:=ReeGroup(IsMatrixGroup,param[1]);
@@ -559,7 +559,12 @@ local t,r;
     r.parameter:=t.parameter;
   elif t.series="Spor" then
     r.series:=t.series;
-    r.parameter:=[t.name];
+    # stupid naming of J2
+    if Length(t.name)>5 and t.name{[1..5]}="HJ = " then
+      r.parameter:=["J2"];
+    else
+      r.parameter:=[t.name];
+    fi;
   elif t.series="B" then
     r.series:="O";
     r.parameter:=[t.parameter[1]*2+1,t.parameter[2]];

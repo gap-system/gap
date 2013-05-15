@@ -552,7 +552,7 @@ InstallOtherMethod( IsAssociated,
 InstallMethod( IsSubset,
     "for two rings",
     IsIdenticalObj,
-    [ IsRing, IsRing and HasGeneratorsOfRing ], 0,
+    [ IsRing, IsRing and HasGeneratorsOfRing ],
     function( R, S )
     return IsSubset( R, GeneratorsOfRing( S ) );
     end );
@@ -565,9 +565,14 @@ InstallMethod( IsSubset,
 InstallMethod( IsSubset,
     "for two rings-with-one",
     IsIdenticalObj,
-    [ IsRingWithOne, IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
+    [ IsRing, IsRingWithOne and HasGeneratorsOfRingWithOne ],
     function( R, S )
-    return IsSubset( R, GeneratorsOfRingWithOne( S ) );
+    local gens;
+
+    gens:= GeneratorsOfRingWithOne( S );
+    return IsSubset( R, gens ) and
+           ( ( IsRingWithOne( R ) and not IsEmpty( gens ) ) 
+             or One( S ) in R );
     end );
 
 
@@ -633,16 +638,22 @@ InstallMethod( Enumerator,
     [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
     EnumeratorOfRing );
 
-InstallMethod( Size, "characteristic zero ring is infinite",
-    true, [ IsRing and HasGeneratorsOfRing], 0,
-function(R)
-  if HasCharacteristic(R) 
-    and Characteristic(R)=0 and ForAny(GeneratorsOfRing(R),i->not IsZero(i))
-    then
+
+#############################################################################
+##
+#M  Size( <R> ) . . . . . . . . . . . .  characteristic zero ring is infinite
+##
+InstallMethod( Size,
+    "characteristic zero ring is infinite",
+    [ IsRing and HasGeneratorsOfRing and HasCharacteristic ],
+    function( R )
+    if Characteristic( R ) <> 0 then
+      TryNextMethod();
+    elif ForAll( GeneratorsOfRing( R ), IsZero ) then
+      return 1;
+    fi;
     return infinity;
-  fi;
-  TryNextMethod();
-end);
+    end );
 
 
 #############################################################################

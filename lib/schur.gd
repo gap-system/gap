@@ -139,9 +139,9 @@ DeclareAttribute( "AbelianInvariantsMultiplier", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute("Epicentre", IsGroup );
-DeclareSynonym("Epicenter", Epicentre);
-DeclareSynonym("ExteriorCentre", Epicentre);
-DeclareSynonym("ExteriorCenter", Epicentre);
+DeclareSynonymAttr("Epicenter", Epicentre);
+DeclareSynonymAttr("ExteriorCentre", Epicentre);
+DeclareSynonymAttr("ExteriorCenter", Epicentre);
 
 ##############################################################################
 ##
@@ -190,7 +190,7 @@ DeclareOperation("EpimorphismNonabelianExteriorSquare", [IsGroup]);
 ##
 ##  <Description>
 ##  This function determines if there exists a group <M>H</M> such that
-##  <A>G</A> is isomormorphic to the quotient <M>H/Z(H)</M>.
+##  <A>G</A> is isomorphic to the quotient <M>H/Z(H)</M>.
 ##  A group with this property is called in literature <E>capable</E>.
 ##  A group being capable is 
 ##  equivalent to the epicentre of <A>G</A> being trivial,

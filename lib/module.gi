@@ -186,16 +186,7 @@ InstallMethod( SetGeneratorsOfLeftModule,
 ##
 #M  Characteristic( <M> ) . . . . . . . . . . characteristic of a left module
 ##
-InstallMethod( Characteristic,
-    "for a left module with known left acting domain",
-    [ IsLeftModule and HasLeftActingDomain ],
-    function( M )
-    if IsIdenticalObj( M, LeftActingDomain( M ) ) then
-      TryNextMethod();
-    else
-      return Characteristic( LeftActingDomain( M ) );
-    fi;
-    end );
+##  Do we have and/or need a replacement method?
 
 
 #############################################################################

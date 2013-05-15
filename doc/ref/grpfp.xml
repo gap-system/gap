@@ -562,6 +562,7 @@ gap> Size(Image(hom));
 <#Include Label="EpimorphismNilpotentQuotient">
 <#Include Label="SolvableQuotient">
 <#Include Label="EpimorphismSolvableQuotient">
+<#Include Label="LargerQuotientBySubgroupAbelianization">
 
 </Section>
 

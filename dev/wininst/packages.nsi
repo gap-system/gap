@@ -2,7 +2,6 @@
 # 
 # packages.nsi
 #
-# $Id: packages.nsi,v 1.48 2009/09/12 20:36:22 alexk Exp $
 # 
 # To make the GAP packages installer for Windows:
 # - create the subdirectory 'pkg' in the directory with packages.nsi 
@@ -34,7 +33,7 @@ FunctionEnd
 # The name of the installer
 Name "GAP 4.4 packages"
 # The file to write
-OutFile "packages-2009_09_10-09_28_UTC.exe"
+OutFile "packages-2011_08_11-12_32_UTC.exe"
 # Set compressing method (for test compiling may be commented out)
 SetCompressor /SOLID lzma
 # In Linux, SOLID lzma may not work - just comment it out
@@ -470,8 +469,8 @@ Section "Crisp - Computing with Radicals, Injectors, Schunck classes and Project
   File pkg\crisp\*.*
   SetOutPath $INSTDIR\crisp\doc
   File pkg\crisp\doc\*.*
-  SetOutPath $INSTDIR\crisp\htm
-  File pkg\crisp\htm\*.*
+  SetOutPath $INSTDIR\crisp\html
+  File pkg\crisp\html\*.*
   SetOutPath $INSTDIR\crisp\lib
   File pkg\crisp\lib\*.*
   SetOutPath $INSTDIR\crisp\tst
@@ -685,6 +684,32 @@ Section "Example - A Demo for Package Authors"
 
 #######################################################################
 #
+# ExamplesForHomalg 
+#
+Section "ExamplesForHomalg - Examples for the GAP package homalg"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.examplesforhomalg
+
+  SetOutPath $INSTDIR\ExamplesForHomalg 
+  File pkg\ExamplesForHomalg\*.*
+  SetOutPath $INSTDIR\ExamplesForHomalg\doc
+  File pkg\ExamplesForHomalg\doc\*.*
+  SetOutPath $INSTDIR\ExamplesForHomalg\examples
+  File pkg\ExamplesForHomalg\examples\*.*
+  SetOutPath $INSTDIR\ExamplesForHomalg\gap
+  File pkg\ExamplesForHomalg\gap\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
 # FactInt 
 #
 Section "FactInt - Advanced Methods for Factoring Integers"
@@ -848,6 +873,8 @@ Section "FR - Computations with functionally recursive groups"
 
   SetOutPath $INSTDIR\fr
   File pkg\fr\*.*
+  SetOutPath $INSTDIR\fr\cnf
+  File pkg\fr\cnf\*.*
   SetOutPath $INSTDIR\fr\doc
   File pkg\fr\doc\*.*
   SetOutPath $INSTDIR\fr\gap
@@ -904,18 +931,112 @@ Section "GAPDoc - A Meta Package for GAP Documentation"
   # Put file there
   File pkg\README.gapdoc
 
-  SetOutPath $INSTDIR\GAPDoc-1.2
-  File pkg\GAPDoc-1.2\*.*
-  SetOutPath $INSTDIR\GAPDoc-1.2\3k+1
-  File pkg\GAPDoc-1.2\3k+1\*.*
-  SetOutPath $INSTDIR\GAPDoc-1.2\doc
-  File pkg\GAPDoc-1.2\doc\*.*
-  SetOutPath $INSTDIR\GAPDoc-1.2\example
-  File pkg\GAPDoc-1.2\example\*.*
-  SetOutPath $INSTDIR\GAPDoc-1.2\lib
-  File pkg\GAPDoc-1.2\lib\*.*
-  SetOutPath $INSTDIR\GAPDoc-1.2\mathml
-  File pkg\GAPDoc-1.2\mathml\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3
+  File pkg\GAPDoc-1.3\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3\3k+1
+  File pkg\GAPDoc-1.3\3k+1\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3\doc
+  File pkg\GAPDoc-1.3\doc\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3\example
+  File pkg\GAPDoc-1.3\example\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3\lib
+  File pkg\GAPDoc-1.3\lib\*.*
+  SetOutPath $INSTDIR\GAPDoc-1.3\mathml
+  File pkg\GAPDoc-1.3\mathml\*.*
+ 
+  # Restore output path
+  SetOutPath $INSTDIR
+
+SectionEnd 
+
+
+#######################################################################
+#
+# Gauss
+#
+Section "Gauss - Extended Gauss Functionality for GAP"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put file there
+  File pkg\README.gauss
+
+  SetOutPath $INSTDIR\Gauss
+  File pkg\Gauss\*.*
+  SetOutPath $INSTDIR\Gauss\doc
+  File pkg\Gauss\doc\*.*
+  SetOutPath $INSTDIR\Gauss\gap
+  File pkg\Gauss\gap\*.*
+  SetOutPath $INSTDIR\Gauss\src
+  File pkg\Gauss\src\*.*
+ 
+  # Restore output path
+  SetOutPath $INSTDIR
+
+SectionEnd 
+
+
+#######################################################################
+#
+# GaussForHomalg
+#
+Section "GaussForHomalg - Gauss Functionality for homalg"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put file there
+  File pkg\README.gaussforhomalg
+
+  SetOutPath $INSTDIR\GaussForHomalg
+  File pkg\GaussForHomalg\*.*
+  SetOutPath $INSTDIR\GaussForHomalg\doc
+  File pkg\GaussForHomalg\doc\*.*
+  SetOutPath $INSTDIR\GaussForHomalg\examples
+  File pkg\GaussForHomalg\examples\*.*
+  SetOutPath $INSTDIR\GaussForHomalg\gap
+  File pkg\GaussForHomalg\gap\*.*
+ 
+  # Restore output path
+  SetOutPath $INSTDIR
+
+SectionEnd 
+
+
+#######################################################################
+#
+# GBNP
+#
+Section "GBNP - computing Groebner bases of noncommutative polynomials"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put file there
+  File pkg\README.gbnp
+
+  SetOutPath $INSTDIR\gbnp
+  File pkg\gbnp\*.*
+  SetOutPath $INSTDIR\gbnp\doc
+  File pkg\gbnp\doc\*.*
+  SetOutPath $INSTDIR\gbnp\doc\articles
+  File pkg\gbnp\doc\articles\*.*
+  SetOutPath $INSTDIR\gbnp\doc\examples
+  File pkg\gbnp\doc\examples\*.*
+  SetOutPath $INSTDIR\gbnp\doc\examples\nmo
+  File pkg\gbnp\doc\examples\nmo\*.*
+  SetOutPath $INSTDIR\gbnp\doc\nmo
+  File pkg\gbnp\doc\nmo\*.*
+  SetOutPath $INSTDIR\gbnp\examples
+  File pkg\gbnp\examples\*.*
+  SetOutPath $INSTDIR\gbnp\lib
+  File pkg\gbnp\lib\*.*
+  SetOutPath $INSTDIR\gbnp\lib\nmo
+  File pkg\gbnp\lib\nmo\*.*
+  SetOutPath $INSTDIR\gbnp\scripts
+  File pkg\gbnp\scripts\*.*
+  SetOutPath $INSTDIR\gbnp\test
+  File pkg\gbnp\test\*.*
+  SetOutPath $INSTDIR\gbnp\version
+  File pkg\gbnp\version\*.*
  
   # Restore output path
   SetOutPath $INSTDIR
@@ -981,6 +1102,60 @@ Section "genss - generic Schreier-Sims"
 
 #######################################################################
 #
+# GradedModules 
+#
+Section "GradedModules - A homalg based Package for Graded Modules"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.gradedmodules
+
+  SetOutPath $INSTDIR\GradedModules
+  File pkg\GradedModules\*.*
+  SetOutPath $INSTDIR\GradedModules\doc
+  File pkg\GradedModules\doc\*.*
+  SetOutPath $INSTDIR\GradedModules\examples
+  File pkg\GradedModules\examples\*.*
+  SetOutPath $INSTDIR\GradedModules\examples\doc
+  File pkg\GradedModules\examples\doc\*.*
+  SetOutPath $INSTDIR\GradedModules\gap
+  File pkg\GradedModules\gap\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
+# GradedRingForHomalg 
+#
+Section "GradedRingForHomalg - Endow Commutative Rings with an Abelian Grading"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.gradedringforhomalg
+
+  SetOutPath $INSTDIR\GradedRingForHomalg
+  File pkg\GradedRingForHomalg\*.*
+  SetOutPath $INSTDIR\GradedRingForHomalg\doc
+  File pkg\GradedRingForHomalg\doc\*.*
+  SetOutPath $INSTDIR\GradedRingForHomalg\examples
+  File pkg\GradedRingForHomalg\examples\*.*
+  SetOutPath $INSTDIR\GradedRingForHomalg\gap
+  File pkg\GradedRingForHomalg\gap\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
 # GRAPE 
 #
 Section "GRAPE - Computing with graphs and groups"
@@ -1031,7 +1206,7 @@ Section "GrpConst - Constructing the Groups of a Given Order"
   SetOutPath $INSTDIR\grpconst\gap
   File pkg\grpconst\gap\*.*
   SetOutPath $INSTDIR\grpconst\htm
-  File pkg\grpconst\htm\*.*
+  # File pkg\grpconst\htm\*.*
 
   # Restore output path
   SetOutPath $INSTDIR
@@ -1133,80 +1308,92 @@ Section "HAP - Homological Algebra Programming"
   # Put readme file there
   File pkg\README.HAP
 
-  SetOutPath $INSTDIR\Hap1.8
-  File pkg\Hap1.8\*.*
-  SetOutPath $INSTDIR\Hap1.8\doc
-  File pkg\Hap1.8\doc\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib
-  File pkg\Hap1.8\lib\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\ArtinCoxeter
-  File pkg\Hap1.8\lib\ArtinCoxeter\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\CategoryTheory
-  File pkg\Hap1.8\lib\CategoryTheory\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\CatGroups
-  File pkg\Hap1.8\lib\CatGroups\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\CompiledGAP
-  File pkg\Hap1.8\lib\CompiledGAP\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\FpGmodules
-  File pkg\Hap1.8\lib\FpGmodules\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\FreeGmodules
-  File pkg\Hap1.8\lib\FreeGmodules\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\Functors
-  File pkg\Hap1.8\lib\Functors\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\GraphsOfGroups
-  File pkg\Hap1.8\lib\GraphsOfGroups\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\GOuterGroups
-  File pkg\Hap1.8\lib\GOuterGroups\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\Homology
-  File pkg\Hap1.8\lib\Homology\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\LieAlgebras
-  File pkg\Hap1.8\lib\LieAlgebras\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\ModPRings
-  File pkg\Hap1.8\lib\ModPRings\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\NonabelianTensor
-  File pkg\Hap1.8\lib\NonabelianTensor\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\Objectifications
-  File pkg\Hap1.8\lib\Objectifications\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\Perturbations
-  File pkg\Hap1.8\lib\Perturbations\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\Polycyclic
-  File pkg\Hap1.8\lib\Polycyclic\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\Polymake
-  File pkg\Hap1.8\lib\Polymake\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\Resolutions
-  File pkg\Hap1.8\lib\Resolutions\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\ResolutionsModP
-  File pkg\Hap1.8\lib\ResolutionsModP\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\Rings
-  File pkg\Hap1.8\lib\Rings\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\Streams
-  File pkg\Hap1.8\lib\Streams\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\TDA
-  File pkg\Hap1.8\lib\TDA\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\TitlePage
-  File pkg\Hap1.8\lib\TitlePage\*.*
-  SetOutPath $INSTDIR\Hap1.8\lib\TopologicalSpaces
-  File pkg\Hap1.8\lib\TopologicalSpaces\*.*
-  SetOutPath $INSTDIR\Hap1.8\test
-  File pkg\Hap1.8\test\*.*
-  SetOutPath $INSTDIR\Hap1.8\www
-  File pkg\Hap1.8\www\*.*
-  SetOutPath $INSTDIR\Hap1.8\www\contact
-  File pkg\Hap1.8\www\contact\*.*
-  SetOutPath $INSTDIR\Hap1.8\www\download
-  File pkg\Hap1.8\www\download\*.*
-  SetOutPath $INSTDIR\Hap1.8\www\copyright
-  File pkg\Hap1.8\www\copyright\*.*
-  SetOutPath $INSTDIR\Hap1.8\www\home
-  File pkg\Hap1.8\www\home\*.*
-  SetOutPath $INSTDIR\Hap1.8\www\Sidelinks
-  File pkg\Hap1.8\www\Sidelinks\*.*
-  SetOutPath $INSTDIR\Hap1.8\www\Sidelinks\About
-  File pkg\Hap1.8\www\Sidelinks\About\*.*
-  SetOutPath $INSTDIR\Hap1.8\www\Sidelinks\About\table
-  File pkg\Hap1.8\www\Sidelinks\About\table\*.*
-  SetOutPath $INSTDIR\Hap1.8\www\thanks
-  File pkg\Hap1.8\www\thanks\*.*
+  SetOutPath $INSTDIR\Hap1.9
+  File pkg\Hap1.9\*.*
+  SetOutPath $INSTDIR\Hap1.9\doc
+  File pkg\Hap1.9\doc\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib
+  File pkg\Hap1.9\lib\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\ArtinCoxeter
+  File pkg\Hap1.9\lib\ArtinCoxeter\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\CategoryTheory
+  File pkg\Hap1.9\lib\CategoryTheory\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\CatGroups
+  File pkg\Hap1.9\lib\CatGroups\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\CompiledGAP
+  File pkg\Hap1.9\lib\CompiledGAP\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\FpGmodules
+  File pkg\Hap1.9\lib\FpGmodules\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\FreeGmodules
+  File pkg\Hap1.9\lib\FreeGmodules\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Functors
+  File pkg\Hap1.9\lib\Functors\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\GraphsOfGroups
+  File pkg\Hap1.9\lib\GraphsOfGroups\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\GOuterGroups
+  File pkg\Hap1.9\lib\GOuterGroups\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\HapPrime
+  File pkg\Hap1.9\lib\HapPrime\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Homology
+  File pkg\Hap1.9\lib\Homology\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Homology\BarCodes
+  File pkg\Hap1.9\lib\Homology\BarCodes\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\LieAlgebras
+  File pkg\Hap1.9\lib\LieAlgebras\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\ModPRings
+  File pkg\Hap1.9\lib\ModPRings\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\NonabelianTensor
+  File pkg\Hap1.9\lib\NonabelianTensor\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Objectifications
+  File pkg\Hap1.9\lib\Objectifications\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Perturbations
+  File pkg\Hap1.9\lib\Perturbations\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Perturbations\Gcomplexes
+  File pkg\Hap1.9\lib\Perturbations\Gcomplexes\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\PolyComplexes
+  File pkg\Hap1.9\lib\PolyComplexes\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Polycyclic
+  File pkg\Hap1.9\lib\Polycyclic\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Polymake
+  File pkg\Hap1.9\lib\Polymake\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Resolutions
+  File pkg\Hap1.9\lib\Resolutions\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\ResolutionsModP
+  File pkg\Hap1.9\lib\ResolutionsModP\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Rings
+  File pkg\Hap1.9\lib\Rings\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\SimplicialGroups
+  File pkg\Hap1.9\lib\SimplicialGroups\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\SimplicialGroups\old
+  File pkg\Hap1.9\lib\SimplicialGroups\old\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\Streams
+  File pkg\Hap1.9\lib\Streams\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\TDA
+  File pkg\Hap1.9\lib\TDA\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\TitlePage
+  File pkg\Hap1.9\lib\TitlePage\*.*
+  SetOutPath $INSTDIR\Hap1.9\lib\TopologicalSpaces
+  File pkg\Hap1.9\lib\TopologicalSpaces\*.*
+  SetOutPath $INSTDIR\Hap1.9\test
+  File pkg\Hap1.9\test\*.*
+  SetOutPath $INSTDIR\Hap1.9\www
+  File pkg\Hap1.9\www\*.*
+  SetOutPath $INSTDIR\Hap1.9\www\contact
+  File pkg\Hap1.9\www\contact\*.*
+  SetOutPath $INSTDIR\Hap1.9\www\download
+  File pkg\Hap1.9\www\download\*.*
+  SetOutPath $INSTDIR\Hap1.9\www\copyright
+  File pkg\Hap1.9\www\copyright\*.*
+  SetOutPath $INSTDIR\Hap1.9\www\home
+  File pkg\Hap1.9\www\home\*.*
+  SetOutPath $INSTDIR\Hap1.9\www\Sidelinks
+  File pkg\Hap1.9\www\Sidelinks\*.*
+  SetOutPath $INSTDIR\Hap1.9\www\Sidelinks\About
+  File pkg\Hap1.9\www\Sidelinks\About\*.*
+  SetOutPath $INSTDIR\Hap1.9\www\Sidelinks\About\table
+  File pkg\Hap1.9\www\Sidelinks\About\table\*.*
+  SetOutPath $INSTDIR\Hap1.9\www\thanks
+  File pkg\Hap1.9\www\thanks\*.*
 
   # Restore output path
   SetOutPath $INSTDIR
@@ -1257,18 +1444,103 @@ Section "HAPprime - a HAP extension for small prime power groups"
   # Put readme file there
   File pkg\README.happrime
 
-  SetOutPath $INSTDIR\happrime-0.3.2
-  File pkg\happrime-0.3.2\*.*
-  SetOutPath $INSTDIR\happrime-0.3.2\doc
-  File pkg\happrime-0.3.2\doc\*.*
-  SetOutPath $INSTDIR\happrime-0.3.2\doc\datatypes
-  File pkg\happrime-0.3.2\doc\datatypes\*.*
-  SetOutPath $INSTDIR\happrime-0.3.2\doc\userguide
-  File pkg\happrime-0.3.2\doc\userguide\*.*
-  SetOutPath $INSTDIR\happrime-0.3.2\lib
-  File pkg\happrime-0.3.2\lib\*.*
-  SetOutPath $INSTDIR\happrime-0.3.2\tst
-  File pkg\happrime-0.3.2\tst\*.*
+  SetOutPath $INSTDIR\happrime-0.5
+  File pkg\happrime-0.5\*.*
+  SetOutPath $INSTDIR\happrime-0.5\doc
+  File pkg\happrime-0.5\doc\*.*
+  SetOutPath $INSTDIR\happrime-0.5\doc\datatypes
+  File pkg\happrime-0.5\doc\datatypes\*.*
+  SetOutPath $INSTDIR\happrime-0.5\doc\userguide
+  File pkg\happrime-0.5\doc\userguide\*.*
+  SetOutPath $INSTDIR\happrime-0.5\lib
+  File pkg\happrime-0.5\lib\*.*
+  SetOutPath $INSTDIR\happrime-0.5\tst
+  File pkg\happrime-0.5\tst\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
+# hecke
+#
+Section "Hecke - Specht 2.4 ported to GAP 4"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.hecke
+
+  SetOutPath $INSTDIR\hecke
+  File pkg\hecke\*.*
+  SetOutPath $INSTDIR\hecke\doc
+  File pkg\hecke\doc\*.*
+  SetOutPath $INSTDIR\hecke\gap
+  File pkg\hecke\gap\*.*
+  SetOutPath $INSTDIR\hecke\lib
+  SetOutPath $INSTDIR\hecke\lib\e2
+  File pkg\hecke\lib\e2\*.*
+  SetOutPath $INSTDIR\hecke\lib\e3
+  File pkg\hecke\lib\e3\*.*
+  SetOutPath $INSTDIR\hecke\lib\e4
+  File pkg\hecke\lib\e4\*.*
+  SetOutPath $INSTDIR\hecke\lib\e5
+  File pkg\hecke\lib\e5\*.*
+  SetOutPath $INSTDIR\hecke\lib\e7
+  File pkg\hecke\lib\e7\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
+# homalg
+#
+Section "homalg -  - a meta package for homological algebra"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.homalg
+
+  SetOutPath $INSTDIR\homalg
+  File pkg\homalg\*.*
+  SetOutPath $INSTDIR\homalg\doc
+  File pkg\homalg\doc\*.*
+  SetOutPath $INSTDIR\homalg\examples
+  File pkg\homalg\examples\*.*
+  SetOutPath $INSTDIR\homalg\gap
+  File pkg\homalg\gap\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
+# HomalgToCAS
+#
+Section "HomalgToCAS - A window to the outer world"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.homalgtocas
+
+  SetOutPath $INSTDIR\HomalgToCAS
+  File pkg\HomalgToCAS\*.*
+  SetOutPath $INSTDIR\HomalgToCAS\doc
+  File pkg\HomalgToCAS\doc\*.*
+  SetOutPath $INSTDIR\HomalgToCAS\gap
+  File pkg\HomalgToCAS\gap\*.*
 
   # Restore output path
   SetOutPath $INSTDIR
@@ -1368,6 +1640,29 @@ Section "IO - Bindings for low level C library IO"
   SectionEnd
 
 
+#######################################################################
+#
+# IO_ForHomalg
+#
+Section "IO_ForHomalg - IO Capabilities for the homalg Project"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.io_forhomalg
+
+  SetOutPath $INSTDIR\IO_ForHomalg
+  File pkg\IO_ForHomalg\*.*
+  SetOutPath $INSTDIR\IO_ForHomalg\doc
+  File pkg\IO_ForHomalg\doc\*.*
+  SetOutPath $INSTDIR\IO_ForHomalg\gap
+  File pkg\IO_ForHomalg\gap\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
 
 #######################################################################
 #
@@ -1388,8 +1683,8 @@ Section "IRREDSOL - A Library of irreducible solvable linear groups over finite 
   File pkg\irredsol\doc\*.*
   SetOutPath $INSTDIR\irredsol\fp
   File pkg\irredsol\fp\*.*
-  SetOutPath $INSTDIR\irredsol\htm
-  File pkg\irredsol\htm\*.*
+  SetOutPath $INSTDIR\irredsol\html
+  File pkg\irredsol\html\*.*
   SetOutPath $INSTDIR\irredsol\lib
   File pkg\irredsol\lib\*.*
   SetOutPath $INSTDIR\irredsol\tst
@@ -1584,6 +1879,32 @@ SectionEnd
 
 #######################################################################
 #
+# LocalizeRingForHomalg
+#
+Section "LocalizeRingForHomalg - A homalg based Package for Localization of Polynomial Rings"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.localizeringforhomalg
+
+  SetOutPath $INSTDIR\LocalizeRingForHomalg
+  File pkg\LocalizeRingForHomalg\*.*
+  SetOutPath $INSTDIR\LocalizeRingForHomalg\doc
+  File pkg\LocalizeRingForHomalg\doc\*.*
+  SetOutPath $INSTDIR\LocalizeRingForHomalg\examples
+  File pkg\LocalizeRingForHomalg\examples\*.*
+  SetOutPath $INSTDIR\LocalizeRingForHomalg\gap
+  File pkg\LocalizeRingForHomalg\gap\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
 # loops 
 #
 Section "loops - Computing with quasigroups and loops in GAP"
@@ -1607,6 +1928,59 @@ Section "loops - Computing with quasigroups and loops in GAP"
   File pkg\loops\htm\*.*
   SetOutPath $INSTDIR\loops\tst
   File pkg\loops\tst\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+
+#######################################################################
+#
+# MatricesForHomalg
+#
+Section "MatricesForHomalg - Matrices for the homalg Project"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.matricesforhomalg
+
+  SetOutPath $INSTDIR\MatricesForHomalg
+  File pkg\MatricesForHomalg\*.*
+  SetOutPath $INSTDIR\MatricesForHomalg\doc
+  File pkg\MatricesForHomalg\doc\*.*
+  SetOutPath $INSTDIR\MatricesForHomalg\examples
+  File pkg\MatricesForHomalg\examples\*.*
+  SetOutPath $INSTDIR\MatricesForHomalg\gap
+  File pkg\MatricesForHomalg\gap\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
+# Modules 
+#
+Section "Modules - A homalg based Package for the Abelian Category of Finitely Presented Modules over Computable Rings"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.modules
+
+  SetOutPath $INSTDIR\Modules
+  File pkg\Modules\*.*
+  SetOutPath $INSTDIR\Modules\doc
+  File pkg\Modules\doc\*.*
+  SetOutPath $INSTDIR\Modules\examples
+  File pkg\Modules\examples\*.*
+  SetOutPath $INSTDIR\Modules\gap
+  File pkg\Modules\gap\*.*
 
   # Restore output path
   SetOutPath $INSTDIR
@@ -1931,12 +2305,8 @@ Section "Polycyclic - Computation with polycyclic groups"
   File pkg\polycyclic\gap\cover\const\*.*
   SetOutPath $INSTDIR\polycyclic\gap\cover\trees
   File pkg\polycyclic\gap\cover\trees\*.*
-  SetOutPath $INSTDIR\polycyclic\etc
-  File pkg\polycyclic\etc\*.*
   SetOutPath $INSTDIR\polycyclic\gap\exam
   File pkg\polycyclic\gap\exam\*.*
-  SetOutPath $INSTDIR\polycyclic\gap\matgrp
-  File pkg\polycyclic\gap\matgrp\*.*
   SetOutPath $INSTDIR\polycyclic\gap\matrep
   File pkg\polycyclic\gap\matrep\*.*
   SetOutPath $INSTDIR\polycyclic\gap\matrix
@@ -2081,14 +2451,12 @@ Section "RCWA - Residue Class-Wise Affine Groups"
   File pkg\rcwa\*.*
   SetOutPath $INSTDIR\rcwa\doc
   File pkg\rcwa\doc\*.*
-  SetOutPath $INSTDIR\rcwa\doc\test
-  File pkg\rcwa\doc\test\*.*
   SetOutPath $INSTDIR\rcwa\examples
   File pkg\rcwa\examples\*.*
   SetOutPath $INSTDIR\rcwa\gap
   File pkg\rcwa\gap\*.*
-  SetOutPath $INSTDIR\rcwa\thesis
-  File pkg\rcwa\thesis\*.*
+  SetOutPath $INSTDIR\rcwa\paper
+  File pkg\rcwa\paper\*.*
   SetOutPath $INSTDIR\rcwa\tst
   File pkg\rcwa\tst\*.*
 
@@ -2117,6 +2485,58 @@ Section "RDS - A package for searching relative difference sets"
   File pkg\rds\htm\*.*
   SetOutPath $INSTDIR\rds\lib
   File pkg\rds\lib\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
+# recog 
+#
+Section "recog - A collection of group recognition methods"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.recog
+
+  SetOutPath $INSTDIR\recog
+  File pkg\recog\*.*
+  SetOutPath $INSTDIR\recog\doc
+  File pkg\recog\doc\*.*
+  SetOutPath $INSTDIR\recog\examples
+  File pkg\recog\examples\*.*
+  SetOutPath $INSTDIR\recog\gap
+  File pkg\recog\gap\*.*
+  SetOutPath $INSTDIR\recog\tst
+  File pkg\recog\tst\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
+# recogbase
+#
+Section "recogbase - A framework for group recognition"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.recogbase
+
+  SetOutPath $INSTDIR\recogbase
+  File pkg\recogbase\*.*
+  SetOutPath $INSTDIR\recogbase\doc
+  File pkg\recogbase\doc\*.*
+  SetOutPath $INSTDIR\recogbase\gap
+  File pkg\recogbase\gap\*.*
 
   # Restore output path
   SetOutPath $INSTDIR
@@ -2169,6 +2589,62 @@ Section "ResClasses - Set-Theoretic Computations with Residue Classes"
   File pkg\resclasses\gap\*.*
   SetOutPath $INSTDIR\resclasses\tst
   File pkg\resclasses\tst\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
+# RingsForHomalg 
+#
+Section "RingsForHomalg - Internal and External Rings for the GAP Package"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.ringsforhomalg
+
+  SetOutPath $INSTDIR\RingsForHomalg
+  File pkg\RingsForHomalg\*.*
+  SetOutPath $INSTDIR\RingsForHomalg\doc
+  File pkg\RingsForHomalg\doc\*.*
+  SetOutPath $INSTDIR\RingsForHomalg\examples
+  File pkg\RingsForHomalg\examples\*.*
+  SetOutPath $INSTDIR\RingsForHomalg\gap
+  File pkg\RingsForHomalg\gap\*.*
+  SetOutPath $INSTDIR\RingsForHomalg\maple
+  File pkg\RingsForHomalg\maple\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
+# SCO
+#
+Section "SCO - Simplicial Cohomology of Orbifolds"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.sco
+
+  SetOutPath $INSTDIR\SCO
+  File pkg\SCO\*.*
+  SetOutPath $INSTDIR\SCO\doc
+  File pkg\SCO\doc\*.*
+  SetOutPath $INSTDIR\SCO\examples
+  File pkg\SCO\examples\*.*
+  SetOutPath $INSTDIR\SCO\examples\orbifolds
+  File pkg\SCO\examples\orbifolds\*.*
+  SetOutPath $INSTDIR\SCO\gap
+  File pkg\SCO\gap\*.*
 
   # Restore output path
   SetOutPath $INSTDIR
@@ -2242,6 +2718,60 @@ Section "Sgpviz - A package for semigroup visualization"
 
 #######################################################################
 #
+# simpcomp 
+#
+Section "simpcomp - A GAP toolbox for simplicial complexes"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.simpcomp
+
+  SetOutPath $INSTDIR\simpcomp
+  File pkg\simpcomp\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes
+  File pkg\simpcomp\complexes\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\manifolds\2Manifolds
+  File pkg\simpcomp\complexes\manifolds\2Manifolds\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\manifolds\3Manifolds
+  File pkg\simpcomp\complexes\manifolds\3Manifolds\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\manifolds\4Manifolds
+  File pkg\simpcomp\complexes\manifolds\4Manifolds\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\manifolds\5Manifolds
+  File pkg\simpcomp\complexes\manifolds\5Manifolds\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\manifolds\6Manifolds
+  File pkg\simpcomp\complexes\manifolds\6Manifolds\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\manifolds\7Manifolds
+  File pkg\simpcomp\complexes\manifolds\7Manifolds\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\manifolds\8Manifolds
+  File pkg\simpcomp\complexes\manifolds\8Manifolds\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\pseudomanifolds\2dim
+  File pkg\simpcomp\complexes\pseudomanifolds\2dim\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\pseudomanifolds\3dim
+  File pkg\simpcomp\complexes\pseudomanifolds\3dim\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\pseudomanifolds\4dim
+  File pkg\simpcomp\complexes\pseudomanifolds\4dim\*.*
+  SetOutPath $INSTDIR\simpcomp\complexes\transitive
+  File pkg\simpcomp\complexes\transitive\*.*
+  SetOutPath $INSTDIR\simpcomp\doc
+  File pkg\simpcomp\doc\*.*
+  SetOutPath $INSTDIR\simpcomp\doc\gapdoc
+  File pkg\simpcomp\doc\gapdoc\*.*
+  SetOutPath $INSTDIR\simpcomp\doc\figures
+  File pkg\simpcomp\doc\figures\*.*
+  SetOutPath $INSTDIR\simpcomp\lib
+  File pkg\simpcomp\lib\*.*
+  SetOutPath $INSTDIR\simpcomp\tst
+  File pkg\simpcomp\tst\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
 # singular 
 #
 Section "singular - The GAP interface to Singular"
@@ -2263,6 +2793,40 @@ Section "singular - The GAP interface to Singular"
   File pkg\singular\lib\*.*
   SetOutPath $INSTDIR\singular\tst
   File pkg\singular\tst\*.*
+
+  # Restore output path
+  SetOutPath $INSTDIR
+
+  SectionEnd
+
+
+#######################################################################
+#
+# Smallsemi
+#
+Section "Smallsemi - A library of small semigroups"
+
+  # Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  # Put readme file there
+  File pkg\README.smallsemi
+
+  SetOutPath $INSTDIR\smallsemi
+  File pkg\smallsemi\*.*
+  SetOutPath $INSTDIR\smallsemi\data
+  File pkg\smallsemi\data\*.*
+  SetOutPath $INSTDIR\smallsemi\data\data2to7
+  File pkg\smallsemi\data\data2to7\*.*
+  SetOutPath $INSTDIR\smallsemi\data\data8
+  File pkg\smallsemi\data\data8\*.*
+  SetOutPath $INSTDIR\smallsemi\data\data8-3nil
+  File pkg\smallsemi\data\data8-3nil\*.*
+  SetOutPath $INSTDIR\smallsemi\doc
+  File pkg\smallsemi\doc\*.*
+  SetOutPath $INSTDIR\smallsemi\gap
+  File pkg\smallsemi\gap\*.*
+  SetOutPath $INSTDIR\smallsemi\tst
+  File pkg\smallsemi\tst\*.*
 
   # Restore output path
   SetOutPath $INSTDIR
@@ -2343,14 +2907,14 @@ Section "toric - toric varieties and some combinatorial geometry computations"
   # Put file there
   File pkg\README.toric
 
-  SetOutPath $INSTDIR\toric1.4
-  File pkg\toric1.4\*.*
-  SetOutPath $INSTDIR\toric1.4\doc
-  File pkg\toric1.4\doc\*.*
-  SetOutPath $INSTDIR\toric1.4\html
-  File pkg\toric1.4\html\*.*
-  SetOutPath $INSTDIR\toric1.4\lib
-  File pkg\toric1.4\lib\*.*
+  SetOutPath $INSTDIR\toric1.6
+  File pkg\toric1.6\*.*
+  SetOutPath $INSTDIR\toric1.6\doc
+  File pkg\toric1.6\doc\*.*
+  SetOutPath $INSTDIR\toric1.6\html
+  File pkg\toric1.6\html\*.*
+  SetOutPath $INSTDIR\toric1.6\lib
+  File pkg\toric1.6\lib\*.*
   
   # Restore output path
   SetOutPath $INSTDIR

@@ -32,7 +32,7 @@
 ##  These two functions should be the only piece of representation
 ##  specific code.
 ##
-##  IdentityTransformation returns the identity tranformation on n points
+##  IdentityTransformation returns the identity transformation on n points
 ## 
 
 InstallGlobalFunction(Transformation,

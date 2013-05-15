@@ -15,9 +15,6 @@
 #ifndef GAP_DT_H
 #define GAP_DT_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 extern void  UnmarkTree(
                   Obj   z );
 

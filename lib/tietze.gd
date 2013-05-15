@@ -946,7 +946,7 @@ DeclareGlobalFunction("TzEliminateGens");
 ##  a power <M>a^n</M>, and a product of the form <M>a^s b^t</M>
 ##  with <M>s</M> prime to <M>n</M>.
 ##  For each such pair, <Ref Func="TzFindCyclicJoins"/> uses the
-##  Euclidian algorithm to express <M>a</M> as a power of <M>b</M>,
+##  Euclidean algorithm to express <M>a</M> as a power of <M>b</M>,
 ##  and then it eliminates <M>a</M>.
 ##  </Description>
 ##  </ManSection>

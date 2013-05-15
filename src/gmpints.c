@@ -61,9 +61,7 @@
 
 #include <gmp.h>
 
-#define INCLUDE_DECLARATION_PART
 #include        "gmpints.h"             /* GMP integers                    */
-#undef  INCLUDE_DECLARATION_PART
 
 
 /* macros to save typing later :)                                          */

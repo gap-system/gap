@@ -928,7 +928,8 @@ DeclareAttribute("CoefficientsOfUnivariatePolynomial",IsUnivariatePolynomial);
 ##
 ##  <Description>
 ##  The degree of a univariate (Laurent) polynomial <A>pol</A> is the largest
-##  exponent <M>n</M> of a monomial <M>x^n</M> of <A>pol</A>.
+##  exponent <M>n</M> of a monomial <M>x^n</M> of <A>pol</A>. The degree of
+##  a zero polynomial is defined to be <C>-infinity</C>.
 ##  <Example><![CDATA[
 ##  gap> p:=UnivariatePolynomial(Rationals,[1,2,3,4],1);
 ##  4*x^3+3*x^2+2*x+1
@@ -938,6 +939,8 @@ DeclareAttribute("CoefficientsOfUnivariatePolynomial",IsUnivariatePolynomial);
 ##  [ 1, 2, 3, 4 ]
 ##  gap> DegreeOfLaurentPolynomial(p);
 ##  3
+##  gap> DegreeOfLaurentPolynomial(Zero(p));
+##  -infinity
 ##  gap> IndeterminateNumberOfLaurentPolynomial(p);
 ##  1
 ##  gap> IndeterminateOfLaurentPolynomial(p);
@@ -1496,7 +1499,7 @@ DeclareGlobalFunction("QuotientPolynomialsExtRep");
 ##  <Func Name="QuotRemLaurpols" Arg='left,right,mode'/>
 ##
 ##  <Description>
-##  This internal function for euclidean divison of polynomials
+##  This internal function for euclidean division of polynomials
 ##  takes two polynomials <A>left</A> and <A>right</A>
 ##  and computes their quotient. No test is performed whether the arguments
 ##  indeed  are polynomials.

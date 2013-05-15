@@ -18,9 +18,7 @@
 
 #include        "gasman.h"              /* garbage collector               */
 
-#define INCLUDE_DECLARATION_PART
 #include        "objects.h"             /* objects                         */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "scanner.h"             /* scanner                         */
 

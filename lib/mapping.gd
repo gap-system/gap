@@ -271,6 +271,7 @@ DeclareCategoryCollections( "IsGeneralMapping" );
 ##  <Filt Name="IsGeneralMappingFamily" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
+##  The family category of the category of general mappings.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -534,6 +535,7 @@ DeclareSynonymAttr( "IsBijective",
 ##  <Attr Name="Range" Arg='map' Label="of a general mapping"/>
 ##
 ##  <Description>
+##  The range of a general mapping.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -550,6 +552,7 @@ DeclareAttribute( "Range", IsGeneralMapping );
 ##  <Attr Name="Source" Arg='map'/>
 ##
 ##  <Description>
+##  The source of a general mapping.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -786,6 +789,7 @@ DeclareOperation( "ImagesRepresentative", [ IsGeneralMapping, IsObject ] );
 ##  <A>map</A> then <Ref Func="ImagesSet"/> returns the set of all images of
 ##  <A>elms</A> under <A>map</A>.
 ##  <P/>
+##  The result will be either a proper set or a domain.
 ##  Anything may happen if <A>elms</A> is not a subset of the source of
 ##  <A>map</A>.
 ##  </Description>

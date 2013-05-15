@@ -347,6 +347,13 @@ end);
 ##  current output. See <Ref BookName="Reference" Func="Test"/> for more
 ##  details.
 ##  </Item>
+##  <Mark><C>checkWidth</C></Mark>
+##  <Item>
+##  If this option is a positive integer <C>n</C> the function prints warnings
+##  if an example contains any line with more than <C>n</C> characters (input
+##  and output lines are considered). By default this option is set to
+##  <K>false</K>.
+##  </Item>
 ##  </List>
 ##  
 ##  </Description>
@@ -354,14 +361,15 @@ end);
 ##  <#/GAPDoc>
 
 InstallGlobalFunction(RunExamples, function(arg)
-  local exlists, opts, oldscr, l, s, test, pex, new, inp, ch, fnams, 
-        str, fch, pos, pre, a, j, ex, i, f;
+  local exlists, opts, oldscr, l, sp, bad, s, test, pex, new, inp, ch, 
+        fnams, str, fch, pos, pre, a, j, ex, i, attedStrin, f;
   exlists := arg[1];
   opts := rec(
           showDiffs := true,
           changeSources := false,
           width := 72,
           compareFunction := EQ,
+          checkWidth := false,
   );                 
   if Length(arg) > 1 and IsRecord(arg[2]) then
     for a in RecFields(arg[2]) do
@@ -382,6 +390,14 @@ InstallGlobalFunction(RunExamples, function(arg)
     Print("# Running list ",j," . . .\n");
     START_TEST("");
     for ex in l do
+      if IsInt(opts.checkWidth) then
+        sp := SplitString(ex[1], "\n", "");
+        bad := Filtered([1..Length(sp)], i-> Length(sp[i]) > opts.checkWidth);
+        if Length(bad) > 0 then
+          Print("# WARNING: Overlong lines ", bad, 
+                " in ", ex[2]{[1..3]}, "\n");
+        fi;
+      fi;
       s := InputTextString(ex[1]);
       test := Test(s, rec(ignoreComments := false,
                    width := opts.width,

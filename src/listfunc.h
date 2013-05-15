@@ -13,9 +13,6 @@
 #ifndef GAP_LISTFUNC_H
 #define GAP_LISTFUNC_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

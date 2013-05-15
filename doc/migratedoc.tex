@@ -16,21 +16,39 @@
 \TitlePage{
   \centerline{\titlefont GAP}\bigskip
   \centerline{\secfont Release 4.5}\medskip
-  \centerline{\secfont DD MM 2008}\bigskip\bigskip
+  \centerline{\secfont May 2012}\bigskip\bigskip
   \centerline{\titlefont Migrating to GAP 4}\vfill
   \centerline{\secfont The GAP Group}\bigskip
   \centerline{\secfont http://www.gap-system.org}
 }
 \TableOfContents
 \FrontMatter
-\input ref/copyrigh
+Copyright {\copyright} (1987-2012) for the core 
+part of the {\GAP} system by the {\GAP} Group. 
+
+Most parts of the {\GAP} distribution, including 
+the core part of the {\GAP} system, are distributed 
+under the terms of the GNU General Public License
+(see {\tt{http://www.gnu.org/licenses/gpl.html}} 
+or the file {\tt GPL} in the {\tt etc} directory 
+of the {\GAP} installation). 
+
+More detailed information about copyright and 
+licenses of parts of this distribution can be 
+found in the {\GAP}~4 Reference manual 
+(see {\bf Reference: Copyright and License}). 
+
+{\GAP} is developed over a long time and has 
+many authors and contributors. More detailed 
+information can be found in the {\GAP}~4 
+Reference manual (see {\bf Reference: Authors and Maintainers}).  
+
 \Chapters
 
 \Chapter{Migrating to GAP 4}
 
 This chapter is intended to give users who have experience with {\GAP}~3
 some information about what has changed in {\GAP}~4.
-
 In particular, it informs about changed command line options
 (see~"Changed Command Line Options"),
 the new global variable `fail' (see~"Fail"),
@@ -61,13 +79,14 @@ how information about progress of computations can be obtained
 and how one gets information in a `break' loop
 (see~"Debugging").
 
-While a ``{\GAP}~3 compatibility mode'' is provided
-(see "Compatibility Mode"),
-its use will disable some of the new features of {\GAP}~4.
-Also it certainly can only try to provide partial compatibility.
+%Commented out: no longer provided with GAP 4.5
+%While a ``{\GAP}~3 compatibility mode'' is provided
+%(see "Compatibility Mode"),
+%its use will disable some of the new features of {\GAP}~4.
+%Also it certainly can only try to provide partial compatibility.
 
-For a detailed explanation of the new features and concepts of {\GAP}~4,
-see the manual ``Programming in GAP''.
+%For a detailed explanation of the new features and concepts of {\GAP}~4,
+%see the manual ``Programming in GAP''.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,8 +145,8 @@ resulting orbit. This was wrong already there in a few cases, therefore
 \>Order( <g> )
 
 only takes the element <g> and computes its multiplicative order.
-Calling `Order' with two arguments is permitted only in the
-{\GAP}~3 compatibility mode, see~"Compatibility Mode".
+%Calling `Order' with two arguments is permitted only in the
+%{\GAP}~3 compatibility mode, see~"Compatibility Mode".
 (Note that it does not make sense anymore to specify a group as
 first argument w.r.t. which the order of the second argument shall
 be computed, see~"Elements of Finitely Presented Groups".)
@@ -184,6 +203,7 @@ In {\GAP}~4, this feature has disappeared.
 One can use streams (see Chapter ``Streams'' in the {\GAP}~4 Reference Manual)
 instead in order to write files efficiently.
 
+\break
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Changed Variable Names}
@@ -206,12 +226,13 @@ instead in order to write files efficiently.
 \indextt{RandomInvertableMat}
 \indextt{RecFields}
 \indextt{X}
+
 Some functions have changed their name without changing the
 functionality.
 A -- probably incomplete -- list follows
 \begintt
     GAP 3                   GAP 4
-
+    
     AgGroup                 PcGroup            # (also composita)
     ApplyFunc               CallFuncList
     Backtrace               Where
@@ -237,8 +258,8 @@ A -- probably incomplete -- list follows
     X                       Indeterminate
 \endtt
 
-See Section~"Compatibility Mode" for a way to make the old names
-available again.
+%See Section~"Compatibility Mode" for a way to make the old names
+%available again.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -305,9 +326,9 @@ for example there is one operation `Zero' instead of two operations
 changed, attempting to do so issues an error.  Typically attribute
 values are immutable, and also the results of those binary arithmetic
 operations where both arguments are immutable.
-For example, `[ 1 .. 100 ] + [ 1 .. 100 ]' is a
-mutable list and `2 \* Immutable( [ 1 .. 100 ] )' is an immutable
-list, both are equal to the (mutable) list `[ 2, 4 .. 200 ]'.
+For example, `[1..100]+[1..100]' is a
+mutable list and `2 \* Immutable([1..100])' is an immutable
+list, both are equal to the (mutable) list `[2,4..200]'.
 
 There is no way to *make* an immutable object mutable, one can only
 get a mutable copy by `ShallowCopy'.  The other way round,
@@ -401,9 +422,8 @@ Besides the flexibility in the internal representation of objects,
 storing information only via function calls has also the advantage
 that {\GAP}~4 is able to draw conclusions automatically.  For example,
 as soon as it is stored that a group is nilpotent, it is also stored
-that it is solvable, see Chapters ``Types of Objects'' in the
-{\GAP}~4 Reference Manual and ``Method Selection'' in ``Programming in GAP''
-for the details.
+that it is solvable, see Chapters ``Types of Objects'' and 
+``Method Selection'' in the {\GAP}~4 Reference Manual for the details.
 
 As a consequence, you cannot put your favourite information into a
 domain <D> by assigning it to a new component like
@@ -470,11 +490,12 @@ operand was called, this method had to handle all possible right
 operands.
 
 So operations records turned out to be not flexible enough.  In
-{\GAP}~4, operations records are not supported (see~"Compatibility
-Mode" for a possibility to use your {\GAP}~3 code that utilizes
-operations records, at least to some extent).  A detailed description
+{\GAP}~4, operations records are not supported 
+%(see~"Compatibility Mode" for a possibility to use your {\GAP}~3 
+%code that utilizes operations records, at least to some extent).  
+A detailed description
 of the new mechanism to select methods can be found in
-Chapter ``Method Selection'' in ``Programming in GAP''.
+Chapter ``Method Selection'' in the {\GAP}~4 Reference Manual.
 
 An important point is that the new mechanism allows {\GAP} to take the
 relation between arguments into account.  So it is possible (and
@@ -493,7 +514,7 @@ Records") after they had checked their arguments.  Such functions were
 called *dispatchers* in {\GAP}~3.  In {\GAP}~4, many dispatchers have
 been replaced by *operations*, due to the fact that methods are no
 longer stored in operations records (see ``Method Selection'' in
-``Programming in GAP'' for the details).
+in the {\GAP}~4 Reference Manual for the details).
 
 Most dispatchers taking only one argument were treated in a special
 way in {\GAP}~3, they had the additional task of storing computed
@@ -518,9 +539,9 @@ often for efficiency reasons, but the method selection mechanism of
 
 If you had written your own dispatchers and put your own methods into
 existing operations records then this code will not work in {\GAP}~4.
-See ``Creating New Objects'' and ``Method Selection'' in
-``Programming in GAP'' for a description of how to define operations
-and to install methods.
+See ``Creating New Objects'' and ``Method Selection'' in the {\GAP}~4
+Reference Manual for a description of how to define operations and 
+to install methods.
 
 Finally, some functions in {\GAP}~3 were hidden in
 operations records, e.g., `PermGroupOps.MovedPoints'.
@@ -834,287 +855,287 @@ For component objects, {\GAP}~4 permits the same by
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Compatibility Mode}
-
-For users who want to use {\GAP}~3 code with as little changes as
-possible, a compatibility mode is provided by {\GAP}~4.
-This mode must be turned on explicitly by the user.
-
-It should be noted that this compatibility mode has not been tested
-thoroughly.
-
-The compatibility mode can be turned on by loading some of the following
-files with `ReadLib'.
-The different files address different aspects of compatibility.
-
-\beginitems
-`compat3a.g' &
-    makes some {\GAP}~3 function names available that were changed
-    in {\GAP}~4,
-    and provides code for some {\GAP}~3 features that were
-    deliberately left out from the {\GAP}~4 library.
-    For example,
-    almost all variable names concerning character theory that are
-    mentioned in the {\GAP}~3 manual,
-    such as `CharTable' and `SubgroupFusions',
-    are available after `compat3a.g' has been read;
-    the only exceptions are names of operations records.
-
-`compat3b.g' &
-    implements the availability of ``components'' of domains;
-    besides components that have no meaning for the rest of the {\GAP}~4
-    library, such as `<D>.myInfo', there are components associated to
-    attributes; for example `<D>.size' is redirected to the call of the
-    attribute `Size', `IsBound( <D>.size )' to the call of its tester,
-    and `<D>.size:= <val>' to the call of its setter.
-    (An important special case is the component `operations', see below.)
-
-`compat3c.g' &
-    permits you to implement your own elements represented as records,
-    and using operations records to provide a `Print' method and
-    the basic arithmetic operations.
-    When using operations records, it is probably a good idea to
-    use *immutable* operations records; for example, if the results
-    of arithmetic operations are records with operations records then
-    this avoids to create shallow copies of the operations records 
-    in the call to `Immutable' for the results.
-\enditems
-
-The following features are accessible only via starting {\GAP} with
-the command line option `-O' and may damage some features of {\GAP}~4
-permanently for the current session. 
-
- With this option, also the files listed above are read automatically.
-
-\beginitems
-`compat3d.g' &
-    provides some {\GAP}~3 functions like `Domain', simulates the
-    {\GAP}~3 behaviour of `IsString' (to convert a list to string
-    representation if possible), and replaces `fail' by `false';
-    these changes destroy parts of the functionality of {\GAP}~4.
-\enditems
-
-Some words concerning the simulation of operations records may be
-necessary.
-
-The operations records of the {\GAP}~3 library, such as `DomainOps'
-and `GroupOps', are available *only* for access to their components,
-whose values are {\GAP}~4 operations; for example, the value of both
-`DomainOps.Size' and `GroupOps.Size' is the operation `Size'.  So it
-is *not* safely possible to delegate from a `Size' method in another
-operations record to `DomainOps.Size'.  Also it is not possible to
-change these predefined operations records.
-
-If one wants to install individual methods for a given object <obj>
-via the mechanism of operations records then one can construct a new
-operations record with `OperationsRecord', assign the desired methods
-to components of this record, and then assign the operations record to
-`<obj>.operations'.  Whenever an operation that is associated with a
-component <nam> of the operations record is called with <obj> as first
-argument, the value of <nam> is chosen as the method.
-
-In the case of the binary operations `=', `\<', `+', `-', `*', `/',
-`Comm', and `LeftQuotient',
-this also happens if <obj> is the right-hand argument.
-As in {\GAP}~3, if both arguments of one of the above binary operations
-have operations records containing a function for this operation,
-then the function in the operations record of the right-hand argument
-is chosen.
-
-We give a small example how the compatibility mode works.
-
-Suppose we want to deal with new objects that are derived from known
-field elements by distorting their multiplication.  Namely, let $a'$
-and $b'$ be the new objects corresponding to the field elements $a$,
-$b$, and define $a' \* b' = a b - a - b + 2$.
-
-In {\GAP}~3, this problem was solved by representing each new object
-by a record that stored the corresponding ``old'' object and an
-operations record, where the latter was a record containing the
-functions applicable to the new object.  After the library file
-`compat3c.g' has been read, we can use this construction of the
-operations record and of the new objects.  Note that operations
-records must be created with the function `OperationsRecord' (this was
-also the norm in {\GAP}~3), starting with an empty record would not work.
-For our intended application, we thus start with the following two
-lines of code.
-
-\begintt
-gap> ReadLib( "compat3c.g" );
-gap> MyOps:= OperationsRecord( "MyOps" );; 
-HasMyOps := NewFilter( "HasMyOps" );
-\endtt
-
-In order to make the translation from {\GAP}~3 code to {\GAP}~4
-easier, {\GAP} prints the definition of filters associated with
-operations records and the method installations for operations
-corresponding to components of the operations records.  The output
-line printed by {\GAP} after the call of `OperationsRecord' is one
-such case.
-
-Now we add our multiplication function to the operations record,
-and again {\GAP}~4 prints a translation to {\GAP}~4 code.
-
-\begintt
-gap> MyOps.\* := function( a, b )
->        return rec( x:= a.x * b.x - a.x - b.x + 2,
->                    operations := MyOps );
->    end;;
-# If the following method installation matches the requirements
-# of the operation `PROD' then `InstallMethod' should be used.
-# It might be useful to replace the rank `SUM_FLAGS' by `0'.
-InstallOtherMethod( PROD,
-    "for object with `MyOps' as first argument",
-    true,
-    [ HasMyOps, IsObject ], SUM_FLAGS,
-    MyOps.\* );
-
-# For binary infix operators, a second method is installed
-# for the case that the object with `MyOps' is the right operand;
-# since this case has higher priority in GAP 3, the method is
-# installed with higher rank `SUM_FLAGS + 1'.
-InstallOtherMethod( PROD,
-    "for object with `MyOps' as second argument",
-    true,
-    [ IsObject, HasMyOps ], SUM_FLAGS + 1,
-    MyOps.\* );
-\endtt
-
-Let us look how this installation works.
-
-\begintt
-gap> a:= rec( x:= 3, operations:= MyOps );
-rec( x := 3, operations := MyOps )
-gap> b:= rec( x:= 5, operations:= MyOps );
-rec( x := 5, operations := MyOps )
-gap> a * b;
-rec( x := 9, operations := MyOps )
-\endtt
-
-(In more complicated cases, we might run into problems, but this was
-already the case in {\GAP}~3.  For example, suppose we want to support
-the multiplication of two operands having different operations
-records; then it is not clear which of the two multiplication
-functions is to be chosen, and in {\GAP}~3, the only way out was to
-change the multiplication functions, in order to make them aware of
-such situations.)
-
-If we are now interested to translate the code to {\GAP}~4 in the
-sense that no compatibility mode is needed, we can use what {\GAP}~4
-has printed above.  (The same example is dealt with in Chapter ``An
-Example -- Designing Arithmetic Operations'' of ``Programming in
-GAP''.)
-
-The objects will no longer be records with `operations' component.
-Instead of records we may use so-called component objects
-with record-like access to components, 
-and instead of the `operations' component, we give the objects a
-type that has the filter `HasMyOps' set.
-\begintt
-HasMyOps := NewFilter( "HasMyOps" );
-MyType := NewType( NewFamily( "MyFamily" ),
-                   HasMyOps and IsComponentObjectRep );
-\endtt
-(More about families and representations in this context can be found
-in the chapter of ``Programming in GAP'' mentioned above.)
-
-The next step is to write a function that creates a new object.
-It may look as follows.
-\begintt
-MyObject := function( val )
-    return Objectify( MyType, rec( x:= val ) );
-end;
-\endtt
-
-The multiplication function shall return an object with the
-filter `HasMyOp', so we change it as follows.
-\begintt
-gap> MyMult := function( a, b )                          
->        return MyObject( x:= a!.x * b!.x - a!.x - b!.x + 2 );
->    end;; 
-\endtt
-Note that the component access for these objects
-works via `!.' instead of `.';
-further note that no operations record needs to appear here,
-the filter takes its role.
-
-Finally, we install the multiplication for at least one argument
-with the new filter, as had been printed by {\GAP}~4 in the
-session shown above.
-\begintt
-InstallOtherMethod( PROD,
-    "for object with `MyOps' as first argument",
-    true,
-    [ HasMyOps, IsObject ], 0,
-    MyMult );
-
-InstallOtherMethod( PROD,
-    "for object with `MyOps' as second argument",
-    true,
-    [ IsObject, HasMyOps ], 1,
-    MyMult );
-\endtt
-And now the example works (again).
-\begintt
-gap> a:= MyObject( 3 );
-<object>
-gap> b:= MyObject( 5 );
-<object>
-gap> a * b;
-<object>
-gap> last!.x
-9
-\endtt
-
-We may install a method to print our objects in a nice way;
-we could have done this for the operations record `MyOps'
-in the compatibility mode,
-the printed output would look similar to the following.
-\begintt
-InstallOtherMethod( PRINT_OBJ,
-    "for object with `MyOps' as first argument",
-    true,
-    [ HasMyOps ], 0,
-    function( obj ) Print( "MyObject( ", obj!.x, " )" ); end );
-\endtt
-
-Now the example behaves as follows.
-\begintt
-gap> a;  b;  a * b;
-MyObject( 3 )
-MyObject( 5 )
-MyObject( 9 )
-\endtt
-
-Maybe now we want to improve the installation.
-The multiplication function we want to use is apparently
-thought only for the case that *both* operands have
-the filter `HasMyOps' (and a component `x').
-So it is reasonable to replace the two methods for
-the multiplication by one method for which both arguments
-are required to have the filter.
-\begintt
-InstallOtherMethod( PROD,
-    "for two objects with `MyOps'",
-    true,
-    [ HasMyOps, HasMyOps ], 0,
-    MyMult );
-\endtt
-
-At first sight, the {\GAP}~4 approach seems to be much more
-complicated.
-But the last example shows that in {\GAP}~4,
-each method can be installed more specifically for the appropriate
-situation.
-Moreover, it is for example possible to install a method
-for the multiplication of an integer and a `HasMyOps' object;
-note that --contrary to the situation in {\GAP}~3--
-such a method is independent from already existing methods
-in the sense that these need not be changed when
-new functionality is added.
-
-Another example that uses this part of the compatibility mode can be
-found in the file `tst/compat3.tst' of the {\GAP}~4 distribution.
+%	\Section{Compatibility Mode}
+%	
+%	For users who want to use {\GAP}~3 code with as little changes as
+%	possible, a compatibility mode is provided by {\GAP}~4.
+%	This mode must be turned on explicitly by the user.
+%	
+%	It should be noted that this compatibility mode has not been tested
+%	thoroughly.
+%	
+%	The compatibility mode can be turned on by loading some of the following
+%	files with `ReadLib'.
+%	The different files address different aspects of compatibility.
+%	
+%	\beginitems
+%	`compat3a.g' &
+%	    makes some {\GAP}~3 function names available that were changed
+%	    in {\GAP}~4,
+%	    and provides code for some {\GAP}~3 features that were
+%	    deliberately left out from the {\GAP}~4 library.
+%	    For example,
+%	    almost all variable names concerning character theory that are
+%	    mentioned in the {\GAP}~3 manual,
+%	    such as `CharTable' and `SubgroupFusions',
+%	    are available after `compat3a.g' has been read;
+%	    the only exceptions are names of operations records.
+%	
+%	`compat3b.g' &
+%	    implements the availability of ``components'' of domains;
+%	    besides components that have no meaning for the rest of the {\GAP}~4
+%	    library, such as `<D>.myInfo', there are components associated to
+%	    attributes; for example `<D>.size' is redirected to the call of the
+%	    attribute `Size', `IsBound( <D>.size )' to the call of its tester,
+%	    and `<D>.size:= <val>' to the call of its setter.
+%	    (An important special case is the component `operations', see below.)
+%	
+%	`compat3c.g' &
+%	    permits you to implement your own elements represented as records,
+%	    and using operations records to provide a `Print' method and
+%	    the basic arithmetic operations.
+%	    When using operations records, it is probably a good idea to
+%	    use *immutable* operations records; for example, if the results
+%	    of arithmetic operations are records with operations records then
+%	    this avoids to create shallow copies of the operations records 
+%	    in the call to `Immutable' for the results.
+%	\enditems
+%	
+%	The following features are accessible only via starting {\GAP} with
+%	the command line option `-O' and may damage some features of {\GAP}~4
+%	permanently for the current session. 
+%	
+%	 With this option, also the files listed above are read automatically.
+%	
+%	\beginitems
+%	`compat3d.g' &
+%	    provides some {\GAP}~3 functions like `Domain', simulates the
+%	    {\GAP}~3 behaviour of `IsString' (to convert a list to string
+%	    representation if possible), and replaces `fail' by `false';
+%	    these changes destroy parts of the functionality of {\GAP}~4.
+%	\enditems
+%	
+%	Some words concerning the simulation of operations records may be
+%	necessary.
+%	
+%	The operations records of the {\GAP}~3 library, such as `DomainOps'
+%	and `GroupOps', are available *only* for access to their components,
+%	whose values are {\GAP}~4 operations; for example, the value of both
+%	`DomainOps.Size' and `GroupOps.Size' is the operation `Size'.  So it
+%	is *not* safely possible to delegate from a `Size' method in another
+%	operations record to `DomainOps.Size'.  Also it is not possible to
+%	change these predefined operations records.
+%	
+%	If one wants to install individual methods for a given object <obj>
+%	via the mechanism of operations records then one can construct a new
+%	operations record with `OperationsRecord', assign the desired methods
+%	to components of this record, and then assign the operations record to
+%	`<obj>.operations'.  Whenever an operation that is associated with a
+%	component <nam> of the operations record is called with <obj> as first
+%	argument, the value of <nam> is chosen as the method.
+%	
+%	In the case of the binary operations `=', `\<', `+', `-', `*', `/',
+%	`Comm', and `LeftQuotient',
+%	this also happens if <obj> is the right-hand argument.
+%	As in {\GAP}~3, if both arguments of one of the above binary operations
+%	have operations records containing a function for this operation,
+%	then the function in the operations record of the right-hand argument
+%	is chosen.
+%	
+%	We give a small example how the compatibility mode works.
+%	
+%	Suppose we want to deal with new objects that are derived from known
+%	field elements by distorting their multiplication.  Namely, let $a'$
+%	and $b'$ be the new objects corresponding to the field elements $a$,
+%	$b$, and define $a' \* b' = a b - a - b + 2$.
+%	
+%	In {\GAP}~3, this problem was solved by representing each new object
+%	by a record that stored the corresponding ``old'' object and an
+%	operations record, where the latter was a record containing the
+%	functions applicable to the new object.  After the library file
+%	`compat3c.g' has been read, we can use this construction of the
+%	operations record and of the new objects.  Note that operations
+%	records must be created with the function `OperationsRecord' (this was
+%	also the norm in {\GAP}~3), starting with an empty record would not work.
+%	For our intended application, we thus start with the following two
+%	lines of code.
+%	
+%	\begintt
+%	gap> ReadLib( "compat3c.g" );
+%	gap> MyOps:= OperationsRecord( "MyOps" );; 
+%	HasMyOps := NewFilter( "HasMyOps" );
+%	\endtt
+%	
+%	In order to make the translation from {\GAP}~3 code to {\GAP}~4
+%	easier, {\GAP} prints the definition of filters associated with
+%	operations records and the method installations for operations
+%	corresponding to components of the operations records.  The output
+%	line printed by {\GAP} after the call of `OperationsRecord' is one
+%	such case.
+%	
+%	Now we add our multiplication function to the operations record,
+%	and again {\GAP}~4 prints a translation to {\GAP}~4 code.
+%	
+%	\begintt
+%	gap> MyOps.\* := function( a, b )
+%	>        return rec( x:= a.x * b.x - a.x - b.x + 2,
+%	>                    operations := MyOps );
+%	>    end;;
+%	# If the following method installation matches the requirements
+%	# of the operation `PROD' then `InstallMethod' should be used.
+%	# It might be useful to replace the rank `SUM_FLAGS' by `0'.
+%	InstallOtherMethod( PROD,
+%	    "for object with `MyOps' as first argument",
+%	    true,
+%	    [ HasMyOps, IsObject ], SUM_FLAGS,
+%	    MyOps.\* );
+%	
+%	# For binary infix operators, a second method is installed
+%	# for the case that the object with `MyOps' is the right operand;
+%	# since this case has higher priority in GAP 3, the method is
+%	# installed with higher rank `SUM_FLAGS + 1'.
+%	InstallOtherMethod( PROD,
+%	    "for object with `MyOps' as second argument",
+%	    true,
+%	    [ IsObject, HasMyOps ], SUM_FLAGS + 1,
+%	    MyOps.\* );
+%	\endtt
+%	
+%	Let us look how this installation works.
+%	
+%	\begintt
+%	gap> a:= rec( x:= 3, operations:= MyOps );
+%	rec( x := 3, operations := MyOps )
+%	gap> b:= rec( x:= 5, operations:= MyOps );
+%	rec( x := 5, operations := MyOps )
+%	gap> a * b;
+%	rec( x := 9, operations := MyOps )
+%	\endtt
+%	
+%	(In more complicated cases, we might run into problems, but this was
+%	already the case in {\GAP}~3.  For example, suppose we want to support
+%	the multiplication of two operands having different operations
+%	records; then it is not clear which of the two multiplication
+%	functions is to be chosen, and in {\GAP}~3, the only way out was to
+%	change the multiplication functions, in order to make them aware of
+%	such situations.)
+%	
+%	If we are now interested to translate the code to {\GAP}~4 in the
+%	sense that no compatibility mode is needed, we can use what {\GAP}~4
+%	has printed above.  (The same example is dealt with in Section ``An
+%	Example -- Designing Arithmetic Operations'' in the {\GAP}~4 Reference 
+%	Manual.)
+%	
+%	The objects will no longer be records with `operations' component.
+%	Instead of records we may use so-called component objects
+%	with record-like access to components, 
+%	and instead of the `operations' component, we give the objects a
+%	type that has the filter `HasMyOps' set.
+%	\begintt
+%	HasMyOps := NewFilter( "HasMyOps" );
+%	MyType := NewType( NewFamily( "MyFamily" ),
+%	                   HasMyOps and IsComponentObjectRep );
+%	\endtt
+%	(More about families and representations in this context can be found
+%	in the same chapter of the {\GAP}~4 Reference Manual mentioned above.)
+%	
+%	The next step is to write a function that creates a new object.
+%	It may look as follows.
+%	\begintt
+%	MyObject := function( val )
+%	    return Objectify( MyType, rec( x:= val ) );
+%	end;
+%	\endtt
+%	
+%	The multiplication function shall return an object with the
+%	filter `HasMyOp', so we change it as follows.
+%	\begintt
+%	gap> MyMult := function( a, b )                          
+%	>        return MyObject( x:= a!.x * b!.x - a!.x - b!.x + 2 );
+%	>    end;; 
+%	\endtt
+%	Note that the component access for these objects
+%	works via `!.' instead of `.';
+%	further note that no operations record needs to appear here,
+%	the filter takes its role.
+%	
+%	Finally, we install the multiplication for at least one argument
+%	with the new filter, as had been printed by {\GAP}~4 in the
+%	session shown above.
+%	\begintt
+%	InstallOtherMethod( PROD,
+%	    "for object with `MyOps' as first argument",
+%	    true,
+%	    [ HasMyOps, IsObject ], 0,
+%	    MyMult );
+%	
+%	InstallOtherMethod( PROD,
+%	    "for object with `MyOps' as second argument",
+%	    true,
+%	    [ IsObject, HasMyOps ], 1,
+%	    MyMult );
+%	\endtt
+%	And now the example works (again).
+%	\begintt
+%	gap> a:= MyObject( 3 );
+%	<object>
+%	gap> b:= MyObject( 5 );
+%	<object>
+%	gap> a * b;
+%	<object>
+%	gap> last!.x
+%	9
+%	\endtt
+%	
+%	We may install a method to print our objects in a nice way;
+%	we could have done this for the operations record `MyOps'
+%	in the compatibility mode,
+%	the printed output would look similar to the following.
+%	\begintt
+%	InstallOtherMethod( PRINT_OBJ,
+%	    "for object with `MyOps' as first argument",
+%	    true,
+%	    [ HasMyOps ], 0,
+%	    function( obj ) Print( "MyObject( ", obj!.x, " )" ); end );
+%	\endtt
+%	
+%	Now the example behaves as follows.
+%	\begintt
+%	gap> a;  b;  a * b;
+%	MyObject( 3 )
+%	MyObject( 5 )
+%	MyObject( 9 )
+%	\endtt
+%	
+%	Maybe now we want to improve the installation.
+%	The multiplication function we want to use is apparently
+%	thought only for the case that *both* operands have
+%	the filter `HasMyOps' (and a component `x').
+%	So it is reasonable to replace the two methods for
+%	the multiplication by one method for which both arguments
+%	are required to have the filter.
+%	\begintt
+%	InstallOtherMethod( PROD,
+%	    "for two objects with `MyOps'",
+%	    true,
+%	    [ HasMyOps, HasMyOps ], 0,
+%	    MyMult );
+%	\endtt
+%	
+%	At first sight, the {\GAP}~4 approach seems to be much more
+%	complicated.
+%	But the last example shows that in {\GAP}~4,
+%	each method can be installed more specifically for the appropriate
+%	situation.
+%	Moreover, it is for example possible to install a method
+%	for the multiplication of an integer and a `HasMyOps' object;
+%	note that --contrary to the situation in {\GAP}~3--
+%	such a method is independent from already existing methods
+%	in the sense that these need not be changed when
+%	new functionality is added.
+%	
+%	Another example that uses this part of the compatibility mode can be
+%	found in the file `tst/compat3.tst' of the {\GAP}~4 distribution.
 
 \EndOfBook
 

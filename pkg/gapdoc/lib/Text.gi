@@ -128,9 +128,8 @@ end);
 ##  
 ##  <Index>UseColorsInTerminal</Index> 
 ##  Whenever  you  use  this  in   some  printing  routines  you  should
-##  make  it optional.  Use  these attributes  only,  when the  entry
-##  <C>GAPInfo.UserPreferences.UseColorsInTerminal</C> is bound and 
-##  has the value <K>true</K>.
+##  make  it optional.  Use  these attributes  only  when 
+##  <C>UserPreference("UseColorsInTerminal");</C> returns <K>true</K>.
 ##  </Description>
 ##  </ManSection>
 ##  
@@ -576,13 +575,14 @@ end);
 ##  
 ##  <List >
 ##  <Mark><A>len</A></Mark>
-##  <Item>the length of  the lines of the resulting  text (default is
-##  <C>78</C>)</Item>
+##  <Item>the length of  the lines of the formatted  text, default is
+##  <C>78</C> (counted without a visible length of the strings
+##  specified in the <A>attr</A> argument)</Item>
 ##  <Mark><A>flush</A></Mark>
 ##  <Item>can  be <C>"left"</C>,  <C>"right"</C>, <C>"center"</C>  or
 ##  <C>"both"</C>, telling that lines should be flushed left, flushed
-##  right, centered or left-right justified, respectively (default is
-##  <C>"both"</C>)</Item>
+##  right, centered or left-right justified, respectively, default is
+##  <C>"both"</C></Item>
 ##  <Mark><A>attr</A></Mark>
 ##  <Item>is a  list of two strings;  the first is prepended  and the
 ##  second  appended to  each line  of  the result  (can for  example

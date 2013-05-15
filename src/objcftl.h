@@ -10,9 +10,6 @@
 #ifndef GAP_OBJCFTL_H
 #define GAP_OBJCFTL_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 #define PC_NUMBER_OF_GENERATORS      1
 #define PC_GENERATORS                2

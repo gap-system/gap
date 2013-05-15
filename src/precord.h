@@ -13,9 +13,6 @@
 #ifndef GAP_PRECORD_H
 #define GAP_PRECORD_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

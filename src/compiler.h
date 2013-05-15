@@ -14,9 +14,6 @@
 #ifndef GAP_COMPILER_H
 #define GAP_COMPILER_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

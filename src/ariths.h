@@ -14,10 +14,6 @@
 #ifndef GAP_ARITHS_H
 #define GAP_ARITHS_H
 
-#ifdef INCLUDE_DECLARATION_PART
-#endif
-
-
 /****************************************************************************
 **
 

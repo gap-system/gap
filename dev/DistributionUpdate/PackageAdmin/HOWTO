@@ -1,8 +1,7 @@
 
 Mini-HOWTO of current maintenance of GAPs package redistribution
-                                                             Frank Lübeck
+                                                             Frank LÃ¼beck
 
-$Id: HOWTO,v 1.5 2006/10/19 13:34:29 gap Exp $
 
 Please, refer to the README for details of what needs to be done.
 Here is short overview how the maintenance currently looks like in practice.

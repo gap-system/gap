@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id: zooandtag,v 1.12 2006/11/30 10:37:47 gap Exp $
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'
@@ -36,7 +35,7 @@ find \
              
 
 find \
-   $pre/{gap.shi,Makefile.in,sysinfo.in,configure,cnf} \
+   $pre/{gap.shi,Makefile.in,sysinfo.in,configure*,gap.ini,cnf} \
    $pre/doc/{ref,tut,ext,prg,new}/*.{dvi,pdf} \
    $pre/doc/fullindex.{dvi,pdf} \
    $pre/bin/*.{exe,dll,bmp,pif} \

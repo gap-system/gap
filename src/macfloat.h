@@ -13,9 +13,6 @@
 #ifndef GAP_MACFLOAT_H
 #define GAP_MACFLOAT_H
 
-#ifdef INCLUDE_DECLARATION_PART
-#endif
-
 
 #ifdef VERY_LONG_DOUBLES
 typedef long double /* __float128 */ Double;

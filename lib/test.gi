@@ -253,6 +253,15 @@ end;
 ##  <Item>If this is <K>true</K> then &GAP; substitutes DOS/Windows style
 ##  line breaks "\r\n" by UNIX style line breaks "\n" after reading the test
 ##  file. (default is <K>true</K>).</Item>
+##  -->
+##  <Mark><C>showProgress</C></Mark>
+##  <Item>If this is <K>true</K> then &GAP; prints position information
+##  and the input line before it is processed
+##  (default is <K>false</K>).</Item>
+##  <Mark><C>subsWindowsLineBreaks</C></Mark>
+##  <Item>If this is <K>true</K> then &GAP; substitutes DOS/Windows style
+##  line breaks "\r\n" by UNIX style line breaks "\n" after reading the test
+##  file. (default is <K>true</K>).</Item>
 ##  </List>
 ## 
 ##  <Example>

@@ -21,10 +21,12 @@ function ( infoclass, level, list )
       for s in list do
         Print(s);
       od;
+      Print("\c");
     else
       for s  in list  do
           AppendTo( out, s );
       od;
+      AppendTo( out, "\c" );
     fi;
 end);
 

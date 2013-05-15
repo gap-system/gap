@@ -20,9 +20,6 @@
 #ifndef GAP_VARS_H
 #define GAP_VARS_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

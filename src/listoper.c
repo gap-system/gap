@@ -35,9 +35,7 @@
 #include        "precord.h"             /* plain records                   */
 
 #include        "lists.h"               /* generic lists                   */
-#define INCLUDE_DECLARATION_PART
 #include        "listoper.h"            /* operations for generic lists    */
-#undef  INCLUDE_DECLARATION_PART
 #include        "listfunc.h"            /* functions for generic lists    */
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */

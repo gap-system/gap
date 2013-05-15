@@ -108,9 +108,7 @@
 
 #include        "integer.h"             /* integers                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "cyclotom.h"            /* cyclotomics                     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -707,7 +705,7 @@ Obj             Cyclotomic (
                     cof = res[(i+n/p)%n];
                     res[i] = INTOBJ_INT( - INT_INTOBJ(cof) );
                     if ( ! IS_INTOBJ(cof)
-                      || (cof == INTOBJ_INT(-(1L<<28))) ) {
+                      || (cof == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS))) ) {
                         CHANGED_BAG( TLS->ResultCyc );
                         cof = DIFF( INTOBJ_INT(0), cof );
                         res = &(ELM_PLIST( TLS->ResultCyc, 1 ));
@@ -797,7 +795,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   n8 = (UInt8)nl * ((UInt8)*ml);  
   /* Check if it is too large for a small int */
   if (n8 > ((UInt8)(1) << NR_SMALL_INT_BITS))
-    ErrorMayQuit("This computation would require a cyclotomic field larger too large to be handled",0L, 0L);
+    ErrorMayQuit("This computation would require a cyclotomic field too large to be handled",0L, 0L);
 
   /* Switch to UInt now we know we can*/
   n = (UInt)n8;
@@ -810,7 +808,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   /* Finish up */
   *mr = n/nr;
 
-  /* make sure that the result back is large enough                      */
+  /* make sure that the result bag is large enough                      */
   if ( LEN_PLIST(TLS->ResultCyc) < n ) {
     GROW_PLIST( TLS->ResultCyc, n );
     SET_LEN_PLIST( TLS->ResultCyc, n );
@@ -989,7 +987,8 @@ Obj             AInvCyc (
     exp = EXPOS_CYC(res,len);
     for ( i = 1; i < len; i++ ) {
         prd = INTOBJ_INT( - INT_INTOBJ(cfs[i]) );
-        if ( ! IS_INTOBJ( cfs[i] ) || cfs[i] == INTOBJ_INT(-(1L<<28)) ) {
+        if ( ! IS_INTOBJ( cfs[i] ) || 
+               cfs[i] == INTOBJ_INT(-(1L<<NR_SMALL_INT_BITS)) ) {
             CHANGED_BAG( res );
             prd = AINV( cfs[i] );
             cfs = COEFS_CYC(op);
@@ -1900,7 +1899,7 @@ Obj FuncGALOIS_CYC (
         exs = EXPOS_CYC(cyc,len);
         res = &(ELM_PLIST( TLS->ResultCyc, 1 ));
         for ( i = 1; i < len; i++ ) {
-            res[exs[i]*o%n] = cfs[i];
+            res[(UInt8)exs[i]*(UInt8)o%(UInt8)n] = cfs[i];
         }
         CHANGED_BAG( TLS->ResultCyc );
 
@@ -1924,10 +1923,10 @@ Obj FuncGALOIS_CYC (
         exs = EXPOS_CYC(cyc,len);
         res = &(ELM_PLIST( TLS->ResultCyc, 1 ));
         for ( i = 1; i < len; i++ ) {
-            if ( ! ARE_INTOBJS( res[exs[i]*o%n], cfs[i] )
-              || ! SUM_INTOBJS( sum, res[exs[i]*o%n], cfs[i] ) ) {
+            if ( ! ARE_INTOBJS( res[(UInt8)exs[i]*(UInt8)o%(UInt8)n], cfs[i] )
+              || ! SUM_INTOBJS( sum, res[(UInt8)exs[i]*(UInt8)o%(UInt8)n], cfs[i] ) ) {
                 CHANGED_BAG( TLS->ResultCyc );
-                sum = SUM( res[exs[i]*o%n], cfs[i] );
+                sum = SUM( res[(UInt8)exs[i]*(UInt8)o%(UInt8)n], cfs[i] );
                 cfs = COEFS_CYC(cyc);
                 exs = EXPOS_CYC(cyc,len);
                 res = &(ELM_PLIST( TLS->ResultCyc, 1 ));
@@ -1980,9 +1979,7 @@ Obj FuncCycList (
     }
 
     /* get and check the argument                                          */
-    if ( ! ( T_PLIST <= TNUM_OBJ( list )
-             && TNUM_OBJ( list ) <= LAST_PLIST_TNUM )
-         || ! IS_DENSE_LIST( list ) ) {
+    if ( ! IS_PLIST( list ) || ! IS_DENSE_LIST( list ) ) {
         ErrorQuit( "CycList: <list> must be a dense plain list (not a %s)",
                    (Int)TNAM_OBJ( list ), 0L );
     }

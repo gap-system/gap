@@ -1631,7 +1631,11 @@ GAPDoc2TextProcs.ManSection := function(r, par)
 end;
 
 GAPDoc2TextProcs.Mark := function(r, str)
-  GAPDoc2TextProcs.WrapAttr(r, str, "Mark");
+  local s;
+  s := "";
+  GAPDoc2TextProcs.WrapAttr(r, s, "Mark");
+  Append(str, r.root.indent);
+  Append(str, s);
   Append(str, "\n");
 end;
 
@@ -1648,7 +1652,7 @@ end;
 
 # must do the complete formatting 
 GAPDoc2TextProcs.List := function(r, par)
-  local s, ss, pos, a, i;
+  local s, ss, pos, a, i, start;
   if "Mark" in List(r.content, a-> a.name) then
     for a in r.content do
       if a.name = "Mark" then
@@ -1663,26 +1667,33 @@ GAPDoc2TextProcs.List := function(r, par)
     for a in Filtered(r.content, a-> a.name = "Item") do
       ss := "";
       GAPDoc2TextProcs.Item(a, ss);
+      # insert bullet
+      start := ss[2]{[1..Length(r.root.indent)]};
+      ss[2] := ss[2]{[Length(r.root.indent)+1..Length(ss[2])]};
       for i in [1..2] do
         Remove(ss[2], Position(ss[2],' '));
       od;
-      ss[2] := Concatenation(GAPDoc2TextProcs.TextAttr.ListBullet[1], ss[2]);
+      ss[2] := Concatenation(start,
+                             GAPDoc2TextProcs.TextAttr.ListBullet[1], ss[2]);
       Append(par, ss);
     od;
   fi;
 end;
 
 GAPDoc2TextProcs.Enum := function(r, par)
-  local i, ss, num, a, j;
+  local i, ss, num, a, j, start;
   i := 1;
   for a in Filtered(r.content, a-> a.name = "Item") do
     ss := "";
     GAPDoc2TextProcs.Item(a, ss);
+    # merge in the counter
+    start := ss[2]{[1..Length(r.root.indent)]};
+    ss[2] := ss[2]{[Length(r.root.indent)+1..Length(ss[2])]};
     for j in [1..Length(String(i))+2] do
       Remove(ss[2], Position(ss[2],' '));
     od;
     num := WrapTextAttribute(String(i), GAPDoc2TextProcs.TextAttr.EnumMarks);
-    ss[2] := Concatenation(num, ss[2]);
+    ss[2] := Concatenation(start, num, ss[2]);
     Append(par, ss);
     i := i+1;
   od;
@@ -1750,7 +1761,9 @@ GAPDoc2TextProcs.Table := function(r, str)
   fi;
   
   # add spaces as separators of colums if no "|" is given
-  a := r.attributes.Align;
+  # first, add a dummy character at the end of the input to 
+  # simplify handling of the last position
+  a := Concatenation(r.attributes.Align, " ");
   align := "";
   for i in [1..Length(a)-1] do
     if a[i] in "crl" then
@@ -1762,7 +1775,6 @@ GAPDoc2TextProcs.Table := function(r, str)
       Add(align, '|');
     fi;
   od;
-  Add(align, a[Length(a)]);
   # make all odd positions separator descriptions
   if not align[1] in " |" then
     align := Concatenation(" ", align);
@@ -1843,6 +1855,7 @@ GAPDoc2TextProcs.Table := function(r, str)
   t := List(t, Concatenation);
   hline := function(t,l,m,r)
     local z, i, j;
+    # Process first column
     z := "    ";
     if align[1] = '|' then
       Append(z, l);
@@ -1850,6 +1863,7 @@ GAPDoc2TextProcs.Table := function(r, str)
     else
       Append(z, "  ");
     fi;
+    # Process all columns excluding the first and last one
     for i in [2..Length(align)-1] do
       if i mod 2 = 0 then
         for j in [1..lens[i]] do
@@ -1863,6 +1877,7 @@ GAPDoc2TextProcs.Table := function(r, str)
         Append(z, "   ");
       fi;
     od;
+    # Process last column
     if align[Length(align)] = '|' then
       Append(z, t);
       Append(z, r);

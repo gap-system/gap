@@ -20,10 +20,6 @@
 #ifndef GAP_WEAKPTR_H
 #define GAP_WEAKPTR_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
-
 /****************************************************************************
 **
 

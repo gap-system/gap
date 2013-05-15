@@ -92,9 +92,7 @@
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
 #include        "set.h"                 /* plain sets                      */
-#define INCLUDE_DECLARATION_PART
 #include        "blister.h"             /* boolean lists                   */
-#undef  INCLUDE_DECLARATION_PART
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
 
@@ -1400,8 +1398,7 @@ Obj FuncBLIST_LIST (
 
     /* for a list as subset of a range, we need basically no search        */
     else if ( IS_RANGE(list) && GET_INC_RANGE( list) == 1
-          && (T_PLIST <= TNUM_OBJ(sub)
-           && TNUM_OBJ(sub) <= T_PLIST_CYC_SSORT) ) {
+          && IS_PLIST(sub) ) {
 
         /* allocate the boolean list and get pointer                       */
         lenList  = GET_LEN_RANGE( list );
@@ -1971,8 +1968,7 @@ Obj FuncUNITE_BLIST_LIST (
 
     /* for a list as subset of a range, we need basically no search        */
     else if ( IS_RANGE(list) && GET_INC_RANGE( list) == 1
-          && (T_PLIST <= TNUM_OBJ(sub)
-           && TNUM_OBJ(sub) <= T_PLIST_CYC_SSORT) ) {
+          && IS_PLIST(sub) ) {
 
         /* allocate the boolean list and get pointer                       */
         lenList  = GET_LEN_RANGE( list );

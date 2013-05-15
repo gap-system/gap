@@ -196,7 +196,8 @@ The following few conventions should be noted.
   For a stored class fusion, the image table is denoted by its
   <Ref Attr="Identifier" Label="for character tables"/> value;
   each library table has a unique identifier by which it can be accessed
-  (see&nbsp;<Ref Sect="Access to Library Character Tables" BookName="ctbllib"/> in the manual for the
+  (see&nbsp;<Ref Sect="Accessing a Character Table from the Library"
+  BookName="ctbllib"/> in the manual for the
   &GAP; Character Table Library),
   tables constructed from groups get an identifier that is unique in the
   current &GAP; session.
@@ -214,7 +215,7 @@ The following few conventions should be noted.
 <#Include Label="UnderlyingGroup:ctbl">
 <#Include Label="ConjugacyClasses:ctbl">
 <#Include Label="IdentificationOfConjugacyClasses">
-<#Include Label="ConnectGroupAndCharacterTable">
+<#Include Label="CharacterTableWithStoredGroup">
 <#Include Label="CompatibleConjugacyClasses">
 
 </Section>

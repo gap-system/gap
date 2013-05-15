@@ -4462,7 +4462,7 @@ local ReductionModuloTable,   #
      #
      # In this function a polynomial `rel' is left normed.
      # The Jacobi identity is applied successively to achieve this.
-     # This means that en expression of the form
+     # This means that an expression of the form
      #
      #    [a,b,c,[d,e],f] (where a,b,c are generators (this part is already
      #     `done') and [d,e] is any bracketed expression having d and e as

@@ -53,36 +53,38 @@ end);
 # avoid warning for vars from GAPDoc package
 if not IsBound(StripEscapeSequences) then
   StripEscapeSequences := 0;
-  WordsString := 0;
 fi;
-BindGlobal("IsDocumentedWord",  function(arg) 
-  local word, case, books, simple, cword, matches, i;
+
+BindGlobal( "IsDocumentedWord", function( arg ) 
+  local inid, word, case, simple, cword, book, matches, a, match;
+
+  inid:= Union( CHARS_DIGITS, CHARS_UALPHA, "_", CHARS_LALPHA );
   word := arg[1];
-  if Length(arg) > 1 and arg[2] = false then
-    case := LowercaseString;
+  if Length( arg ) > 1 and arg[2] = false then
+    case:= LowercaseString;
   else
-    case := IdFunc;
+    case:= IdFunc;
   fi;
-  books := [];
-  simple := SIMPLE_STRING( word );
-  cword := case(word);
+  simple:= SIMPLE_STRING( word );
+  cword:= case( word );
   atomic readonly HELP_REGION do
-    for i in [1..Length(HELP_KNOWN_BOOKS[1])] do
-      matches := HELP_GET_MATCHES( [HELP_KNOWN_BOOKS[1][i]], simple, true);
-      if ForAny(Concatenation(matches), a-> cword in 
-             WordsString(case(StripEscapeSequences(a[1].entries[a[2]][1])))) then
-        Add(books, HELP_KNOWN_BOOKS[2][i][1]);
-      fi;
+    for book in HELP_KNOWN_BOOKS[1] do
+      matches:= HELP_GET_MATCHES( [ book ], simple, true );
+      for a in Concatenation( matches ) do
+	match:= case( StripEscapeSequences( a[1].entries[ a[2] ][1] ) );
+	if cword in SplitString( match, "", Difference( match, inid ) ) then
+	  return true;
+	fi;
+      od;
     od;
   od;
-  # we could return more precise information:
-  # return List(books, s-> ReplacedString(s, " (not loaded)", ""));
-  return Length(books) > 0;
+  return false;
 end);
+
 if StripEscapeSequences = 0 then
   Unbind(StripEscapeSequences);
-  Unbind(WordsString);
 fi;
+
 
 #############################################################################
 ##  
@@ -277,7 +279,7 @@ local sortfun, str, hnb, pos;
 atomic readwrite HELP_REGION do
   sortfun := function(a, b)
     local main, pa, pb;
-    main := ["tutorial", "reference"];
+    main := ["tutorial", "reference", "changes"];
     pa := Position(main, a);
     pb := Position(main, b);
     if pa <> fail then
@@ -365,7 +367,7 @@ end);
 ##  The `default' handler functions will be assigned helpdef.g, see there for
 ##  more details on the interfaces of each of these functions.
 ##  
-InstallValue(HELP_BOOK_HANDLER, rec(default:=rec()));
+InstallValue(HELP_BOOK_HANDLER, AtomicRecord(rec(default:=rec())));
 LockAndMigrateObj(HELP_BOOK_HANDLER,HELP_REGION);
 
 #############################################################################
@@ -582,7 +584,7 @@ local book, entrynr, viewer, hv, pos, type, data;
 atomic readonly HELP_REGION do
   book := HELP_BOOK_INFO(match[1]);
   entrynr := match[2];
-  viewer:= GAPInfo.UserPreferences.HelpViewers;
+  viewer:= UserPreference("HelpViewers");
   if HELP_LAST.NEXT_VIEWER = false then
     hv := viewer;
   else

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: CopyToFtpServer,v 1.1 2004/07/15 10:14:59 gapchron Exp $    (C) Frank Lübeckk 
+# (C) Frank Lübeckk 
 
 mypath=`dirname  $0`/
 

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  tom.gi                   GAP library                       Götz Pfeiffer
+#W  tom.gi                   GAP library                        Götz Pfeiffer
 #W                                                          & Thomas Merkwitz
 ##
 ##
@@ -2851,6 +2851,8 @@ InstallMethod( FactorGroupTom,
 ##
 #M  MaximalSubgroupsTom( <tom> )
 #M  MaximalSubgroupsTom( <tom>, <sub>)
+##
+##  Note that we assume that the table of marks has lower triangular shape.
 ##
 InstallMethod( MaximalSubgroupsTom,
     "for a table of marks",

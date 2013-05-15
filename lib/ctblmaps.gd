@@ -286,8 +286,8 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##    a Boolean;
 ##    if <K>true</K> then the subroutines are called with value <K>true</K>
 ##    for the argument <A>quick</A>;
-##    especially, as soon as only one possibility remains
-##    this possibility is returned immediately;
+##    especially, as soon as only one candidate remains
+##    this candidate is returned immediately;
 ##    the default value is <K>false</K>,
 ##  </Item>
 ##  <Mark><C>parameters</C>:</Mark>
@@ -802,11 +802,12 @@ DeclareGlobalFunction( "GetFusionMap" );
 ##  error.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> ComputedClassFusions( CharacterTable( d8 ) );
+##  gap> tbld8:= CharacterTable( d8 );;
+##  gap> ComputedClassFusions( tbld8 );
 ##  [ rec( map := [ 1, 2, 3, 3, 5 ], name := "CT1" ) ]
 ##  gap> Identifier( tbls4 );
 ##  "CT1"
-##  gap> GetFusionMap( CharacterTable( d8 ), tbls4 );
+##  gap> GetFusionMap( tbld8, tbls4 );
 ##  [ 1, 2, 3, 3, 5 ]
 ##  gap> GetFusionMap( tbls4, tbls5 );
 ##  fail
@@ -840,16 +841,10 @@ DeclareGlobalFunction( "StoreFusion" );
 ##  to <A>tbl</A> is stored using <Ref Func="StoreFusion"/>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> NamesOfFusionSources( tbls5 );
-##  [ "2.A5.2", "Isoclinic(2.A5.2)", "A5", "S3x2", "(A5x3):2", 
-##    "(A8xA5):2", "3xIsoclinic(2.A5.2)", "(A6xA5):2", "(A5xA12):2", 
-##    "(A5xU3(8):3):2", "(A7xA5):2", "2^4:s5", "2.M22M5", "4.M22M5", 
-##    "M22.2M4", "2.M12M8", "(a6xa5).2", "2.2.2^4+6:S5", "2.2^4+6:S5", 
-##    "4.2^4.S5", "2^(1+6)_+:S5", "2.HSM10", "(A6:2_2xA5).2", 
-##    "(3.A6xA5):2", "(3.A6.2_2xA5):2", "(A5xJ2):2", "3^1+4:2^1+4.s5", 
-##    "(A5xA9):2", "2^(1+4).S5", "(2^2xA5):2", "(A4xA5):2", "(A5xD10).2", 
-##    "2^10:(2^5:s5)", "3^4:S5", "M24C2B", "gl25", "mo62", "s2wrs5", 
-##    "s4", "twd5a", "w(d5)", "5:4", "CT1" ]
+##  gap> NamesOfFusionSources( tbls4 );
+##  [ "CT2" ]
+##  gap> Identifier( CharacterTable( d8 ) );
+##  "CT2"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -931,7 +926,7 @@ DeclareAttributeSuppCT( "NamesOfFusionSources",
 ##  <Mark><C>subchars</C></Mark>
 ##  <Item>
 ##    a list of characters of <A>subtbl</A> which are constituents of the
-##    retrictions of <C>chars</C>,
+##    restrictions of <C>chars</C>,
 ##    the default is <C>Irr( <A>subtbl</A> )</C>,
 ##  </Item>
 ##  <Mark><C>fusionmap</C></Mark>
@@ -969,7 +964,7 @@ DeclareAttributeSuppCT( "NamesOfFusionSources",
 ##    only if more than one orbit of possible class fusions exists,
 ##    under the action of the groups of table automorphisms;
 ##    the default value is <K>false</K> (because the computation of the
-##    structure constants is usually very time comsuming, compared with
+##    structure constants is usually very time consuming, compared with
 ##    checking the other criteria),
 ##  </Item>
 ##  <Mark><C>parameters</C></Mark>

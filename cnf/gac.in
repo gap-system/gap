@@ -3,7 +3,6 @@
 ##
 #W  gac.sh                      GAP compiler                 Martin Schoenert
 ##
-#H  @(#)$Id: gac.in,v 4.27 2009/07/07 13:23:26 caj Exp $
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -51,6 +50,11 @@
 ##  The option '-P <option>' tells 'gac' to pass the option  <option> to  the
 ##  C linker.
 ##
+##  The option '-L <option>' tells 'gac' to pass the option  <option>
+##  to the C linker when linking dynamic modules. Contrary to -P the
+##  option is appended at the end of the link command after the .o
+##  files to link.
+##
 gap_bin=@gapbin@
 
 if [ "X${gap_bin}" = "X$0" ];  then
@@ -68,40 +72,35 @@ stat_identifier="USER";
 
 # These three should be filled in by the standard autoconf procedures 
 c_compiler="@CC@"
-c_options="@CFLAGS@" 
+c_options="@CFLAGS@ @GMP_CFLAGS@"
 c_linker="@CC@"
-c_link_options=""
-c_libs="@LIBS@"
+c_link_options="@LDFLAGS@"
+c_libs="@LIBS@ @GMP_LIBS@"
 
 # These three will need special care 
-c_dyn_options="@CDYNOPTIONS@"
+c_dyn_options="@CDYNOPTIONS@ @GMP_CFLAGS@"
 c_dyn_linker="@CDYNLINKER@"
 c_dyn_linking="@CDYNLINKING@"
 c_dynlibs="@C_DYNLIBS@"
+c_addlibs=""
 
 # hardwire this for now. There is probably a nicer way 
-
-if [ -r "${gap_bin}/buildflags.sh" ]; then
-  source "${gap_bin}/buildflags.sh"
-  c_compiler="${c_compiler}${extra_cflags}"
-  c_linker="${c_linker}${extra_ldflags}"
-fi
 
 OBJECTS="\
     c_meths1.o  c_type1.o   c_oper1.o   c_filt1.o    c_random.o  \
     ariths.o    blister.o   bool.o      calls.o      code.o      \
     compiler.o  costab.o    cyclotom.o  dt.o         dteval.o    \
     exprs.o     finfield.o  funcs.o     gap.o        gasman.o    \
-    gvars.o     integer.o   intrprtr.o  listfunc.o   listoper.o  \
-    lists.o     objcftl.o   objects.o   objfgelm.o   objpcgel.o  \
-    objscoll.o  objccoll.o  opers.o     permutat.o   plist.o     \
-    precord.o   range.o     rational.o  read.o       records.o   \
-    saveload.o  scanner.o   sctable.o   set.o        stats.o     \
-    streams.o   string.o    sysfiles.o  system.o     tietze.o    \
-    vars.o      vecgf2.o    vecffe.o    vec8bit.o    vector.o    \
-    weakptr.o   iostream.o  macfloat.o "
+    gmpints.o   gvars.o     integer.o   intrprtr.o   listfunc.o  \
+    listoper.o  lists.o     objcftl.o   objects.o    objfgelm.o  \
+    objpcgel.o  objscoll.o  objccoll.o  opers.o      permutat.o  \
+    plist.o     precord.o   range.o     rational.o   read.o      \
+    records.o   saveload.o  scanner.o   sctable.o    set.o       \
+    stats.o     streams.o   string.o    sysfiles.o   system.o    \
+    tietze.o    vars.o      vecgf2.o    vecffe.o     vec8bit.o   \
+    vector.o    weakptr.o   iostream.o  macfloat.o "
 
-EXTOBJS=extern/jenkins/jhash.o
+EXTOBJS=
 
 
 #############################################################################
@@ -122,7 +121,7 @@ c_compile () {
     echo ${c_compiler}  $3 -o $1 -I${gap_dir} \
          -I${gap_bin} -DCONFIG_H -c $2
     ${c_compiler} $3 -o $1 -I${gap_dir} \
-         -I${gap_bin} -DCONFIG_H -c $2
+         -I${gap_bin} -DCONFIG_H -c $2 || exit 1
 }
 
 
@@ -131,8 +130,8 @@ c_compile () {
 #F  c_link_dyn <output> <input>
 ##
 c_link_dyn () {
-    echo ${c_dyn_linker} ${c_dyn_linking} -o $1 $2
-    ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_link_options}
+    echo ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_addlibs}
+    ${c_dyn_linker} ${c_dyn_linking} -o $1 $2 ${c_addlibs} || exit 1
 }
 
 
@@ -141,8 +140,9 @@ c_link_dyn () {
 #F  c_link <output> <inputs_o>
 ##
 c_link () {
-    echo ${c_linker} $c_dynlibs  -o $1 $2 -lm ${c_libs}
-    ${c_linker} $c_dynlibs -o $1 $2 ${c_link_options} -lm ${c_libs}
+    echo ${c_linker} ${c_dynlibs}  -o $1 $2 ${c_link_options} -lm ${c_libs}
+    ${c_linker} ${c_dynlibs} -o $1 $2 ${c_link_options} \
+        -lm ${c_libs} || exit 1
 }
 
 #############################################################################
@@ -318,7 +318,9 @@ while [ $# -gt 0 ]; do
 
     -p)                   shift; c_options="${c_options} $1" c_dyn_options="${c_dyn_options} $1";;
 
-    -P)                   shift; c_link_options="${c_link_options} $1";;
+    -P)                   shift; c_link_options="${c_link_options} $1" c_dyn_linking="${c_dyn_linking} $1";;
+
+    -L|--addlibs)         shift; c_addlibs="${c_addlibs} $1";;
 
     *.g|*.gap|*.gd|*.gi|*.c|*.o)
                           inputs="${inputs} $1";;
@@ -377,7 +379,7 @@ make_compstat () {
     echo "    0"                                         >> ${gactmp}/$$compstat.c
     echo "};"                                            >> ${gactmp}/$$compstat.c
     temps_o="${gactmp}/$$compstat.o ${temps_o}"
-    c_compile ${gactmp}/$$compstat.o ${gactmp}/$$compstat.c
+    c_compile ${gactmp}/$$compstat.o ${gactmp}/$$compstat.c "${c_options}"
     echo rm -f ${gactmp}/$$compstat.c
     rm -f ${gactmp}/$$compstat.c
     objects="${gactmp}/$$compstat.o ${objects}"

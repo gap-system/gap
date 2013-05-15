@@ -226,7 +226,10 @@ rec( galoisfams := [ [ [ 1, 5 ], [ 1, 10321 ] ], [ [ 2, 6 ], [ 1, 9031 ] ],
 gap> Print(RationalizedMat( gm.mat ),"\n");
 [ [ 2666, -1, -2, 0, 0 ], [ 519550080, 0, 0, 0, 0 ], 
   [ 1770515712, 0, -2, 0, 0 ], [ 4337827830, 0, 0, 0, -1 ] ]
-gap> STOP_TEST( "cyclotom.tst", 1000000 );
+gap> a := -E(4)*2^(8*GAPInfo.BytesPerVariable-4);;
+gap> TNUM_OBJ(COEFFS_CYC(-a)[2]) <> [ 0, "integer" ];
+true
+gap> STOP_TEST( "cyclotom.tst", 900000 );
 
 #############################################################################
 ##

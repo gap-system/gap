@@ -48,12 +48,11 @@
 
 #############################################################################
 ##
-#F  ConnectGroupAndCharacterTable( <G>, <tbl>[, <arec>] )
-#F  ConnectGroupAndCharacterTable( <G>, <tbl>, <bijection> )
+#F  CharacterTableWithStoredGroup( <G>, <tbl>[, <arec>] )
+#F  CharacterTableWithStoredGroup( <G>, <tbl>, <bijection> )
 ##
-InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
-
-    local G, tbl, arec, ccl, compat;
+InstallGlobalFunction( CharacterTableWithStoredGroup, function( arg )
+    local G, tbl, arec, ccl, compat, new, i;
 
     # Get and check the arguments.
     if   Length( arg ) = 2 and IsGroup( arg[1] )
@@ -64,15 +63,13 @@ InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
                            and ( IsRecord( arg[3] ) or IsList(arg[3]) ) then
       arec:= arg[3];
     else
-      Error( "usage: ConnectGroupAndCharacterTable(<G>,<tbl>[,<arec>])" );
+      Error( "usage: CharacterTableWithStoredGroup(<G>,<tbl>[,<arec>])" );
     fi;
 
     G   := arg[1];
     tbl := arg[2];
 
-    if HasUnderlyingGroup( tbl ) then
-      Error( "<tbl> has already underlying group" );
-    elif HasOrdinaryCharacterTable( G ) then
+    if HasOrdinaryCharacterTable( G ) then
       Error( "<G> has already a character table" );
     fi;
 
@@ -86,25 +83,39 @@ InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
       compat:= CompatibleConjugacyClasses( G, ccl, tbl, arec );
     fi;
 
-    if IsList( compat ) then
-
-      # Permute the classes if necessary.
-      if compat <> [ 1 .. Length( compat ) ] then
-        ccl:= ccl{ compat };
-      fi;
-
-      # The identification is unique, store attribute values.
-      SetUnderlyingGroup( tbl, G );
-      SetOrdinaryCharacterTable( G, tbl );
-      SetConjugacyClasses( tbl, ccl );
-      SetIdentificationOfConjugacyClasses( tbl, compat );
-
-      return true;
-
-    else
-      return false;
+    if not IsList( compat ) then
+      return fail;
     fi;
 
+    # Permute the classes if necessary.
+    if compat <> [ 1 .. Length( compat ) ] then
+      ccl:= ccl{ compat };
+    fi;
+
+    # Create a copy of the table.
+    new:= ConvertToLibraryCharacterTableNC(
+              rec( UnderlyingCharacteristic := 0 ) );
+
+    # Set the supported attribute values.
+    for i in [ 3, 6 .. Length( SupportedCharacterTableInfo ) ] do
+      if Tester( SupportedCharacterTableInfo[ i-2 ] )( tbl )
+         and SupportedCharacterTableInfo[ i-1 ] <> "Irr" then
+        Setter( SupportedCharacterTableInfo[ i-2 ] )( new,
+            SupportedCharacterTableInfo[ i-2 ]( tbl ) );
+      fi;
+    od;
+
+    # Set the irreducibles.
+    SetIrr( new, List( Irr( tbl ),
+        chi -> Character( new, ValuesOfClassFunction( chi ) ) ) );
+
+    # The identification is unique, store attribute values.
+    SetUnderlyingGroup( new, G );
+    SetConjugacyClasses( new, ccl );
+    SetIdentificationOfConjugacyClasses( new, compat );
+    SetOrdinaryCharacterTable( G, new );
+
+    return new;
     end );
 
 
@@ -1519,21 +1530,30 @@ InstallMethod( NrConjugacyClasses,
 #M  Size( <tbl> ) . . . . . . . . . . . . . . . . . . . for a character table
 #M  Size( <G> )
 ##
-##  We delegate from <tbl> to the underlying group in the general case.
-##  If we know the centralizer orders, however, we use them.
+##  We delegate from <tbl> to the underlying group if this is stored.
+##  If we know the centralizer orders or class lengths, we may use them.
 ##
-##  If the argument is a group, we can use the known size of the
-##  known ordinary character table.
+##  If the argument is a group <G>, we can use the known size of the
+##  known ordinary character table of <G>.
 ##
 InstallMethod( Size,
-    "for a character table with underlying group",
-    [ IsCharacterTable and HasUnderlyingGroup ],
-    tbl -> Size( UnderlyingGroup( tbl ) ) );
-
-InstallMethod( Size,
-    "for a character table with known centralizer orders",
-    [ IsNearlyCharacterTable and HasSizesCentralizers ],
-    tbl -> SizesCentralizers( tbl )[1] );
+    "for a character table",
+    [ IsNearlyCharacterTable ],
+    function( tbl )
+    if HasSizesCentralizers( tbl ) then
+      return SizesCentralizers( tbl )[1];
+    elif HasUnderlyingGroup( tbl ) and HasSize( UnderlyingGroup( tbl ) ) then
+      return Size( UnderlyingGroup( tbl ) );
+    elif HasSizesConjugacyClasses( tbl ) then
+      return Sum( SizesConjugacyClasses( tbl ) );
+    elif HasIrr( tbl ) then
+      return SizesCentralizers( tbl )[1];
+    elif HasUnderlyingGroup( tbl ) then
+      return Size( UnderlyingGroup( tbl ) );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 InstallMethod( Size,
     "for a group with known ordinary character table",
@@ -2157,6 +2177,31 @@ InstallMethod( ClassPositionsOfFittingSubgroup,
 
     # Return the normal closure.
     return ClassPositionsOfNormalClosure( tbl, ppord );
+    end );
+
+
+#############################################################################
+##
+#A  ClassPositionsOfSolvableRadical( <ordtbl> )
+##
+InstallMethod( ClassPositionsOfSolvableRadical,
+    "for an ordinary table",
+    [ IsOrdinaryTable ],
+    function( tbl )
+    local nsg, classes, N, sizeN, nextN;
+
+    nsg:= ClassPositionsOfNormalSubgroups( tbl );
+    classes:= SizesConjugacyClasses( tbl );
+    nextN:= [ 1 ];
+    repeat
+      N:= nextN;
+      sizeN:= Sum( classes{ N } );
+      nsg:= Filtered( nsg, x -> IsSubset( x, N ) );
+      nextN:= First( nsg,
+                     x -> IsPrimePowerInt( Sum( classes{ x } ) / sizeN ) );
+    until nextN = fail;
+
+    return N;
     end );
 
 
@@ -3963,6 +4008,7 @@ InstallGlobalFunction( NrPolyhedralSubgroups, function(tbl, c1, c2, c3)
           fi;
        fi;
     fi;
+    return fail;
 end );
 
 

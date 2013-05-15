@@ -18,9 +18,6 @@
 #ifndef GAP_LISTS_H
 #define GAP_LISTS_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 
 extern  Obj             TYPE_LIST_EMPTY_MUTABLE;

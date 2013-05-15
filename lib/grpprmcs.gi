@@ -925,7 +925,7 @@ end );
 ##
 InstallGlobalFunction( NormalizerStabCSPG, function(G)
     local   n,          # degree of G
-            chainG,     # stablizer chain of `G'
+            chainG,     # stabilizer chain of `G'
             chainstab,  # stabilizer chain of a point stabilizer in `G'
             orbits,     # orbits of stabgroup
             len,        # minimal length of stabgroup orbits

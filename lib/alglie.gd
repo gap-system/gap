@@ -464,10 +464,6 @@ DeclareOperation( "AdjointAssociativeAlgebra",
 ##  This function calculates the (Lie) nil radical of the Lie algebra
 ##  <A>L</A>.
 ##  <P/>
-##  In the following two examples we temporarily increase the line length
-##  limit from its default value 80 to 81 in order to make the long output
-##  expressions fit each into one line.
-##  <P/>
 ##  <Example><![CDATA[
 ##  gap> mats:= [ [[1,0],[0,0]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
 ##  gap> L:= LieAlgebra( Rationals, mats );;

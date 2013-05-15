@@ -28,9 +28,7 @@
 
 #include        "dt.h"                  /* deep thought                    */
 
-#define INCLUDE_DECLARATION_PART
 #include        "objcftl.h"             /* from the left collect           */
-#undef  INCLUDE_DECLARATION_PART
 
 #include	"code.h"
 #include	"thread.h"

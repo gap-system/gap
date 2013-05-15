@@ -40,9 +40,7 @@
 
 #include        "funcs.h"               /* functions                       */
 
-#define INCLUDE_DECLARATION_PART
 #include        "code.h"                /* coder                           */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "saveload.h"            /* saving and loading              */
 #include        "read.h"                /* to access stack of for loop globals */
@@ -76,12 +74,12 @@
 Stat OffsBodyStack[1024];
 UInt OffsBodyCount = 0;
 
-static inline void PushOffsBody() {
+static inline void PushOffsBody( void ) {
   assert(OffsBodyCount <= 1023);
   OffsBodyStack[OffsBodyCount++] = TLS->offsBody;
 }
 
-static inline void PopOffsBody() {
+static inline void PopOffsBody( void ) {
   assert(OffsBodyCount);
   TLS->offsBody = OffsBodyStack[--OffsBodyCount];
 }
@@ -644,7 +642,7 @@ void CodeFuncExprBegin (
 
     /* record where we are reading from */
     if (!TLS->input->gapname) {
-      len = SyStrlen(TLS->input->name);
+      len = strlen(TLS->input->name);
       TLS->input->gapname = NEW_STRING(len);
       SyStrncat(CSTR_STRING(TLS->input->gapname),TLS->input->name, len);
     }
@@ -1397,7 +1395,7 @@ void CodeAInv ( void )
     Int                 i;
 
     expr = PopExpr();
-    if ( IS_INTEXPR(expr) && INT_INTEXPR(expr) != -(1L<<28) ) {
+    if ( IS_INTEXPR(expr) && INT_INTEXPR(expr) != -(1L<<NR_SMALL_INT_BITS) ) {
         i = INT_INTEXPR(expr);
         PushExpr( INTEXPR_INT( -i ) );
     }
@@ -1792,7 +1790,7 @@ static Obj EAGER_FLOAT_LITERAL_CACHE = 0;
 static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
 
-static UInt getNextFloatExprNumber() {
+static UInt getNextFloatExprNumber( void ) {
   UInt next;
   HashLock(&NextFloatExprNumber);
   if (NextFloatExprNumber > MAX_FLOAT_INDEX)
@@ -1889,9 +1887,9 @@ void CodeFloatExpr (
     Char *              str )
 {
   
-  UInt l = SyStrlen(str);
+  UInt l = strlen(str);
   UInt l1 = l;
-  Char mark;
+  Char mark = '\0'; /* initialize to please compilers */
   if (str[l-1] == '_' )
     {
       l1 = l-1;
@@ -1920,7 +1918,7 @@ void CodeFloatExpr (
 void CodeLongFloatExpr (
     Obj              str )
 {
-  Char mark;
+  Char mark = '\0'; /* initialize to please compilers */
 
     /* allocate the float expression                                      */
     UInt l = GET_LEN_STRING(str);

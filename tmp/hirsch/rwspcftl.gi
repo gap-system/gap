@@ -280,7 +280,7 @@ InstallMethod( SetRelativeOrder,
         function( pcp, g, order )
     
     if g < 1 or g > pcp![ PC_NUMBER_OF_GENERATORS ] then
-        Error( "Generator out of reange" );
+        Error( "Generator out of range" );
     fi;
     
     SetRelativeOrderNC( pcp, g, order );

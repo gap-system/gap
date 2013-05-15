@@ -155,8 +155,8 @@ DeclareAttribute("OccuringVariableIndices",IsMonomialOrdering);
 ##  returns the leading monomial (with respect to the ordering <A>ord</A>)
 ##  of the polynomial <A>pol</A>.
 ##  <Example><![CDATA[
-##  gap> x:=Indeterminate(Rationals,"x":old);;
-##  gap> y:=Indeterminate(Rationals,"y":old);;
+##  gap> x:=Indeterminate(Rationals,"x");;
+##  gap> y:=Indeterminate(Rationals,"y");;
 ##  gap> z:=Indeterminate(Rationals,"z");;
 ##  gap> lexord:=MonomialLexOrdering();grlexord:=MonomialGrlexOrdering();
 ##  MonomialLexOrdering()
@@ -427,7 +427,7 @@ DeclareGlobalFunction("PolynomialReduction");
 ##  <Description>
 ##  this operation does the same way as
 ##  <Ref Func="PolynomialReduction"/> but does not keep track of the actual quotients
-##  and returns only the remainder (it is therfore slightly faster).
+##  and returns only the remainder (it is therefore slightly faster).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

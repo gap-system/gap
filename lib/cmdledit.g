@@ -14,7 +14,7 @@
 ##
 
 
-if IsBound(BINDKEYSTOGAPHANDLER) then
+if GAPInfo.CommandLineOptions.E then
 ############################################################################
 ##       readline interface functions
 GAPInfo.UseReadline := true;
@@ -48,7 +48,7 @@ GAPInfo.UseReadline := true;
 ##  showing matching parentheses, 
 ##  <C>vi</C>-style key bindings, deleting and yanking text, ...</Item>
 ##  <Item>Lines which are longer than a physical terminal row can be edited 
-##  more convieniently.</Item>
+##  more conveniently.</Item>
 ##  <Item>Arbitrary unicode characters can be typed into string literals.
 ##  </Item>
 ##  <Item>The   key   bindings   can   be  configured,   either   via   your
@@ -110,7 +110,8 @@ GAPInfo.UseReadline := true;
 ##  restart terminal  output. Furthermore,  sometimes <B>Ctrl-\</B>  quits a
 ##  program. To disable this behaviour (and maybe use these keys for command
 ##  line editing)  you can use  <C>Exec("stty stop undef; stty  start undef;
-##  stty quit undef");</C> in your &GAP; session or your <F>.gaprc</F> file.
+##  stty quit undef");</C> in your &GAP; session or your <F>gaprc</F> file
+##  (see <Ref Sect="sect:gap.ini"/>).
 ##  <P/>
 ##  </Subsection>
 ##  
@@ -140,8 +141,9 @@ GAPInfo.UseReadline := true;
 ##  <Description>
 ##  The first  command saves the  lines in the  command line history  to the
 ##  file given by  the string <A>fname</A>. The default  for <A>fname</A> is
-##  <F>"~/.gap/history"</F>  or  <F>"~/.gap_hist"</F>  if you  do  not  have
-##  a  <F>.gap</F>  directory.  If   the  optional  argument  <A>app</A>  is
+##  <F>history</F> in the user's &GAP; root path <C>GAPInfo.UserGapRoot</C>
+##  or  <F>"~/.gap_hist"</F>  if this directory does not exist.
+##  If   the  optional  argument  <A>app</A>  is
 ##  <K>true</K> then the lines are appended  to that file otherwise the file
 ##  is overwritten.
 ##  <P/>
@@ -153,8 +155,14 @@ GAPInfo.UseReadline := true;
 ##  command  line  history.  For  very   long  &GAP;  sessions  or  if  <Ref
 ##  Func="SaveCommandLineHistory"/> and <Ref Func="ReadCommandLineHistory"/>
 ##  are used repeatedly  it can be sensible to restrict  the number of saved
-##  lines by  assigning a non-negative number to  
-##  <C>GAPInfo.History.Maxlines</C> (the default is <K>infinity</K>).
+##  lines via <C>SetUserPreference("HistoryMaxLines", num);</C>
+##  to a non negative number <C>num</C> (the default is <K>infinity</K>).
+##  An automatic storing and restoring  of the command line history can
+##  be configured via 
+##  <C>SetUserPreference("SaveAndRestoreHistory", true);</C>.
+##  <P/>
+##  Note that these functions are only available if your &GAP; is configured
+##  to use the <C>readline</C> library.
 ##  </Description>
 ##  </ManSection>
 ##  
@@ -222,7 +230,7 @@ GAPInfo.UseReadline := true;
 ##  As an example we define a function which puts double quotes around the
 ##  word under or before the cursor position. The space character, the 
 ##  characters in <C>"(,)"</C>, and the beginning and end of the line
-##  are considered as word bounderies. The function is then installed as a 
+##  are considered as word boundaries. The function is then installed as a 
 ##  macro and bound to the key sequence <B>Esc</B> <B>Q</B>. 
 ##  <P/>
 ##  <Example>
@@ -414,18 +422,39 @@ BindKeysToGAPHandler("\007");
 
 
 # The history is stored within the GAPInfo record. Several GAP level
-# command line edit functions below deal with the history.
+# command line edit functions below deal with the history. The maximal
+# number of lines in the history is configurable via a user preference.
 # TODO: should it be made thread-local?
 if not IsBound(GAPInfo.History) then
-  GAPInfo.History := rec(MaxLines := infinity, 
-                         Lines := [], Pos := 0, Last := 0);
+  GAPInfo.History := rec(Lines := [], Pos := 0, Last := 0);
 fi;
+DeclareUserPreference( rec(
+  name:= ["HistoryMaxLines", "SaveAndRestoreHistory"],
+  description:= [
+    "HistoryMaxLines is the maximal amount of input lines held in GAPs \
+command line history.",
+    "If SaveAndRestoreHistory is true then GAP saves its command line history \
+before terminating a GAP session, and prepends the stored history when GAP is \
+started. If this is enabled it is suggested to set HistoryMaxLines to some \
+finite value.",
+    "These preferences are ignored if GAP was not compiled with \
+readline support.",
+    ],
+  default:= [infinity, false],
+  check:= function(max, save) 
+    return ((IsInt( max ) and 0 <= max) or max = infinity) 
+           and save in [true, false];
+  end
+  ) 
+);
+
 
 ## We use key 0 (not bound) to add line to history.
 GAPInfo.CommandLineEditFunctions.Functions.AddHistory := function(l)
-  local i, hist;
+  local i, max, hist;
+  max := UserPreference("HistoryMaxLines");
   # no history
-  if GAPInfo.History.MaxLines <= 0 then
+  if max <= 0 then
     return [];
   fi;
   # no trailing white space
@@ -438,7 +467,7 @@ GAPInfo.CommandLineEditFunctions.Functions.AddHistory := function(l)
     return [false, 1, i+1, 1];
   fi;
   hist := GAPInfo.History.Lines;
-  while Length(hist) >= GAPInfo.History.MaxLines do
+  while Length(hist) >= max do
     # overrun, throw oldest line away
     Remove(hist, 1);
     GAPInfo.History.Last := GAPInfo.History.Last - 1;
@@ -457,7 +486,7 @@ GAPInfo.CommandLineEditFunctions.Functions.0 :=
 ##  C-p: previous line starting like current before point
 GAPInfo.CommandLineEditFunctions.Functions.BackwardHistory := function(l)
   local hist, n, start;
-  if GAPInfo.History.MaxLines <= 0 then
+  if UserPreference("HistoryMaxLines") <= 0 then
     return [];
   fi;
   hist := GAPInfo.History.Lines;
@@ -494,7 +523,7 @@ ReadlineInitLine("\"\\e[A\": \"\\C-p\"");
 ##  C-n: next line starting like current before point
 GAPInfo.CommandLineEditFunctions.Functions.ForwardHistory := function(l)
   local hist, n, start;
-  if GAPInfo.History.MaxLines <= 0 then
+  if UserPreference("HistoryMaxLines") <= 0 then
     return [];
   fi;
   hist := GAPInfo.History.Lines;
@@ -540,7 +569,8 @@ ReadlineInitLine("\"\\e[B\": \"\\C-n\"");
 
 ##  ESC <:  beginning of history
 GAPInfo.CommandLineEditFunctions.Functions.BeginHistory := function(l)
-  if GAPInfo.History.MaxLines <= 0 or Length(GAPInfo.History.Lines) = 0 then
+  if UserPreference("HistoryMaxLines") <= 0 or 
+                                  Length(GAPInfo.History.Lines) = 0 then
     return [];
   fi;
   GAPInfo.History.Pos := 1;
@@ -553,7 +583,8 @@ BindKeysToGAPHandler("\\e<");
 
 ##  ESC >:  end of history
 GAPInfo.CommandLineEditFunctions.Functions.EndHistory := function(l)
-  if GAPInfo.History.MaxLines <= 0 or Length(GAPInfo.History.Lines) = 0 then
+  if UserPreference("HistoryMaxLines") <= 0 or 
+                                  Length(GAPInfo.History.Lines) = 0 then
     return [];
   fi;
   GAPInfo.History.Pos := Length(GAPInfo.History.Lines);
@@ -571,7 +602,8 @@ GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('O') mod 32) := function(l)
   cf := GAPInfo.CommandLineEditFunctions;
   if IsBound(cf.ctrlo) then
     n := GAPInfo.History.Last + 1;
-    if GAPInfo.History.MaxLines <= 0 or Length(GAPInfo.History.Lines) < n then
+    if UserPreference("HistoryMaxLines") <= 0 or 
+                                  Length(GAPInfo.History.Lines) < n then
       return [];
     fi;
     GAPInfo.History.Last := n;
@@ -588,7 +620,7 @@ BindKeysToGAPHandler("\017");
 ##  the smaller, excluding the larger) 
 GAPInfo.CommandLineEditFunctions.Functions.HistorySubstring := function(l)
   local hist, n, txt, pos;
-  if GAPInfo.History.MaxLines <= 0 then
+  if UserPreference("HistoryMaxLines") <= 0 then
     return [];
   fi;
   hist := GAPInfo.History.Lines;
@@ -627,20 +659,21 @@ BindKeysToGAPHandler("\022");
 #F  ReadCommandLineHistory( [<fname>] )
 ##  
 ##  Use the first command to write the currently saved command lines in the 
-##  history to file <fname>. If not given the default file name '~/.gap/history'##  or '~/.gap_hist' is used. 
+##  history to file <fname>. If not given the default file name 'history'
+##  in GAPInfo.UserGapRoot or '~/.gap_hist' is used. 
 ##  The second command prepends the lines from <fname> to the current
-##  command line history (as much as possible when GAPInfo.History.MaxLines
-##  is less than infinity).
+##  command line history (as much as possible when the user preference
+##  HistoryMaxLines is less than infinity).
 ##  
 BindGlobal("SaveCommandLineHistory", function(arg)
   local fnam, append, hist, out, i;
   if Length(arg) > 0 then
     fnam := arg[1];
   else
-    if IsExistingFile(USER_HOME_EXPAND("~/.gap")) then
-      fnam := Concatenation(USER_HOME_EXPAND("~/.gap"), "/history");
+    if IsExistingFile(GAPInfo.UserGapRoot) then
+      fnam := Concatenation(GAPInfo.UserGapRoot, "/history");
     else
-      fnam := "~/.gap_hist";
+      fnam := USER_HOME_EXPAND("~/.gap_hist");
     fi;
   fi;
   if true in arg then
@@ -662,18 +695,19 @@ BindGlobal("SaveCommandLineHistory", function(arg)
 end);
 
 BindGlobal("ReadCommandLineHistory", function(arg)
-  local hist, fnam, s;
+  local hist, max, fnam, s;
   hist := GAPInfo.History.Lines;
-  if Length(hist) >= GAPInfo.History.MaxLines then
+  max := UserPreference("HistoryMaxLines");
+  if Length(hist) >= max then
     return 0;
   fi;
   if Length(arg) > 0 and IsString(arg[1]) then
     fnam := arg[1];
   else
-    if IsExistingFile(USER_HOME_EXPAND("~/.gap")) then
-      fnam := Concatenation(USER_HOME_EXPAND("~/.gap"), "/history");
+    if IsExistingFile(GAPInfo.UserGapRoot) then
+      fnam := Concatenation(GAPInfo.UserGapRoot, "/history");
     else
-      fnam := "~/.gap_hist";
+      fnam := USER_HOME_EXPAND("~/.gap_hist");
     fi;
   fi;
   s := StringFile(fnam);
@@ -682,8 +716,8 @@ BindGlobal("ReadCommandLineHistory", function(arg)
   fi;
   GAPInfo.History.Last := 0;
   s := SplitString(s, "", "\n");
-  if Length(s) + Length(hist)  > GAPInfo.History.MaxLines then
-    s := s{[Length(s)-GAPInfo.History.MaxLines+Length(hist)+1..Length(s)]};
+  if Length(s) + Length(hist)  > max then
+    s := s{[Length(s)-max+Length(hist)+1..Length(s)]};
   fi;
   hist{[Length(s)+1..Length(s)+Length(hist)]} := hist;
   hist{[1..Length(s)]} := s;
@@ -884,6 +918,11 @@ end;
 ##  "\0331\030\007\t"
 ##  gap> BindKeySequence("^[OR",last);  # first arg with C-v<F3>
 
+  # for compatibility with the non-readline kernel code
+  LineEditKeyHandlers := [];
+  LineEditKeyHandler := function(l)
+    return [l[1], l[3], l[5]];
+  end;
 else
   # some experimental code, use readline instead
   ReadLib("cmdleditx.g");

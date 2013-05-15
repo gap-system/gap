@@ -15,9 +15,6 @@
 #ifndef GAP_SAVELOAD_H
 #define GAP_SAVELOAD_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 /***************************************************************************
 **
 

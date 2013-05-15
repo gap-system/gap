@@ -588,7 +588,7 @@ NormalizingReducedGL := function( spec, s, n, M )
     od;
     Sort( part, function( x, y ) return Length(x) < Length(y); end );
 
-    # compute partition stablizer
+    # compute partition stabilizer
     if Length(part) > 1 then
         for par in part do 
             if Length( part ) = 1 then

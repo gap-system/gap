@@ -1,5 +1,4 @@
 
-##  $Id: gapL,v 1.3 2008/07/19 15:02:53 gap Exp $   Frank Lübeck
-if test -e ${HOME}/.gaprc; then G="${HOME}/.gaprc"; else G=""; fi
-${BINPATH}/gap -L ${GAP_DIR}/bin/wsgap4   "$@" $G
+##  (C) Frank LÃ¼beck
+${BINPATH}/gap -L ${GAP_DIR}/bin/wsgap4 "$@" 
 

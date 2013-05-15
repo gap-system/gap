@@ -2229,6 +2229,10 @@ InstallMethod( DeterminantOfCharacter,
     [ IsClassFunction ],
     function( chi )
     local det;
+
+    if chi[1] = 1 then
+      return chi;
+    fi;
     det:= DeterminantOfCharacter( UnderlyingCharacterTable( chi ),
                                   ValuesOfClassFunction( chi ) );
     if HasIsVirtualCharacter( chi ) and IsVirtualCharacter( chi ) then
@@ -2247,7 +2251,7 @@ InstallMethod( DeterminantOfCharacter,
           i;        # loop over classes
 
     if chi[1] = 1 then
-      return ShallowCopy( chi );
+      return ClassFunction( tbl, chi );
     fi;
 
     det:= [];

@@ -10,11 +10,11 @@ SetPackageInfo( rec(
 
 PackageName := "GAPDoc",
 Subtitle := "A Meta Package for GAP Documentation",
-Version := "1.4",
+Version := "1.5.1",
 ##  DD/MM/YYYY format:
-Date := "14/09/2011",
+Date := "23/02/2012",
 ArchiveURL := 
-          "http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/GAPDoc-1.4",
+          "http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/GAPDoc-1.5.1",
 ArchiveFormats := ".tar.bz2",
 Persons := [
   rec(
@@ -68,7 +68,7 @@ PackageDoc := [rec(
   Autoload := false
   )],
 Dependencies := rec(
-  GAP := "4.5",
+  GAP := "4.5.3",
   NeededOtherPackages := [],
   SuggestedOtherPackages := [["IO", ">= 2.3"]],
   ExternalConditions := 
@@ -76,22 +76,6 @@ Dependencies := rec(
               "http://www.latex-project.org"]]
 ),
 AvailabilityTest := ReturnTrue,
-Autoload := true,
-SPACES := "                   ",
-BannerString := Concatenation( 
-"    ######################################################################\n",
-"    ##                                                                  ##\n",
-"    ##        GAPDoc ", 
-~.Version, 
-" (a GAP documentation meta-package)",
-~.SPACES{[1..16-Length(~.Version)]},
-"##\n",
-"    ##                                                                  ##\n",
-"    ##   Questions and remarks to: Frank.Luebeck@Math.RWTH-Aachen.De    ##\n",
-"    ##                             Max.Neunhoeffer@Math.RWTH-Aachen.De  ##\n",
-"    ##                                                                  ##\n",
-"    ######################################################################\n\n"
-),
 Keywords := ["GAP documentation", "help system", "XML", "pdf", "hyperlink",
             "unicode", "BibTeX", "BibXMLext"]
 ));

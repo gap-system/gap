@@ -1,6 +1,6 @@
 #!/bin/bash
 ##
-##  $Id: remove,v 1.5 2007/10/04 11:38:54 gap Exp $    Frank Lübeck
+##  (C) Frank LÃ¼beck
 ##
 ##  Throw away the whole installation.
 ##

@@ -190,7 +190,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  gap> List( irrS4, x -> ScalarProduct( x, ind ) );
 ##  [ 0, 1, 0, 0, 0 ]
 ##  gap> det:= Determinant( ind );
-##  Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] )
+##  Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] )
 ##  gap> cent:= CentralCharacter( ind );
 ##  ClassFunction( CharacterTable( S4 ), [ 1, -2, -1, 0, 2 ] )
 ##  gap> rest:= Restricted( cent, D8 );
@@ -212,7 +212,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  gap> List( Irr( tS4 ), x -> ScalarProduct( tS4, x, ind ) );
 ##  [ 0, 1, 0, 0, 0 ]
 ##  gap> det:= DeterminantOfCharacter( tS4, ind );
-##  ClassFunction( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] )
+##  ClassFunction( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] )
 ##  gap> cent:= CentralCharacter( tS4, ind );
 ##  ClassFunction( CharacterTable( S4 ), [ 1, -2, -1, 0, 2 ] )
 ##  gap> rest:= Restricted( tS4, cent, tD8 );
@@ -595,8 +595,8 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##
 ##  <ManSection>
 ##  <Func Name="ComplexConjugate" Arg='chi' Label="for a class function"/>
-##  <Func Name="GaloisCyc" Arg='chi' Label="for a class function"/>
-##  <Func Name="Permuted" Arg='chi' Label="for a class function"/>
+##  <Func Name="GaloisCyc" Arg='chi, k' Label="for a class function"/>
+##  <Func Name="Permuted" Arg='chi, pi' Label="for a class function"/>
 ##
 ##  <Description>
 ##  The operations

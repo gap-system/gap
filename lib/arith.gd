@@ -781,6 +781,9 @@ InstallTrueMethod(
 ##  <Filt Name="IsNearRingElementWithInverse" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
+##  <Ref Func="IsNearRingElementWithInverse"/> is just a synonym for the meet of
+##  <Ref Func="IsNearAdditiveElementWithInverse"/> and
+##  <Ref Func="IsMultiplicativeElementWithInverse"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1952,23 +1955,29 @@ DeclareOperation( "Log",
 ##
 ##  <Description>
 ##  <Ref Attr="Characteristic"/> returns the <E>characteristic</E> of
-##  <A>obj</A>, where <A>obj</A> must either be an additive element,
-##  a domain or a family.
+##  <A>obj</A>.
 ##  <P/>
-##  For a domain <M>D</M>, the characteristic is defined if <M>D</M> is
-##  closed under addition and has a zero element
-##  <M>z</M> <C>= Zero</C><M>( D )</M> (see&nbsp;<Ref Func="Zero"/>);
-##  in this case, <Ref Attr="Characteristic"/> returns the smallest positive
-##  integer <M>p</M> such that <M>p</M> <C>*</C> <M>x = z</M>
-##  for all elements <M>x</M> in <M>D</M>,
-##  if such an integer exists, and the integer zero <C>0</C> otherwise.
+##  If <A>obj</A> is a family, all of whose elements lie in
+##  <Ref Filt="IsAdditiveElementWithZero"/> then its characteristic
+##  is the least positive integer <M>n</M>, if any, such that
+##  <C>IsZero(n*x)</C> is <K>true</K> for all <C>x</C> in the
+##  family <A>obj</A>, otherwise it is <M>0</M>.
 ##  <P/>
-##  If a family has a characteristic then this means
-##  that all domains of elements in this family have this characteristic.
-##  In this case, also each element in the family has this characteristic.
-##  (Note that also the zero element <M>z</M> of a finite field in
-##  characteristic <M>p</M> has characteristic <M>p</M>,
-##  although <M>n</M> <C>*</C> <M>z = z</M> for any integer <M>n</M>.)
+##  If <A>obj</A> is a collections family of a family <M>g</M> which
+##  has a characteristic, then the characteristic of <A>obj</A> is
+##  the same as the characteristic of <M>g</M>.
+##  <P/>
+##  For other families <A>obj</A> the characteristic is not defined
+##  and <K>fail</K> will be returned.
+##  <P/>
+##  For any object <A>obj</A> which is in the filter
+##  <Ref Filt="IsAdditiveElementWithZero"/> or in the filter
+##  <Ref Filt="IsAdditiveMagmaWithZero"/> the characteristic of
+##  <A>obj</A> is the same as the characteristic of its family
+##  if that is defined and undefined otherwise.
+##  <P/>
+##  For all other objects <A>obj</A> the characteristic is undefined
+##  and may return <K>fail</K> or a <Q>no method found</Q> error.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

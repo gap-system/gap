@@ -35,9 +35,7 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "vecffe.h"              /* functions for fin field vectors */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "range.h"               /* ranges                          */
 

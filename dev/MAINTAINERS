@@ -2,7 +2,6 @@ This file lists all library files (in lib/) together with the names of
 the corresponding modules and their maintainers, as given in dev/MODULES
 (The files read*.* have been omitted).
 
-@(#)$Id: MAINTAINERS,v 1.5 2005/06/27 08:30:13 stefan Exp $
 
  addcoset.gd
  addcoset.gi
@@ -139,8 +138,8 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  ghom.gi
  ghompcgs.gd
  ghompcgs.gi
- ghomperm.gd  Permutation group homomorphisms (except of function `RelatorsPermGroupHom') 'Akos Seress, Alexander Hulpke
- ghomperm.gi  Permutation group homomorphisms (except of function `RelatorsPermGroupHom') 'Akos Seress, Alexander Hulpke
+ ghomperm.gd  Permutation group homomorphisms (except of function `RelatorsPermGroupHom') Ákos Seress, Alexander Hulpke
+ ghomperm.gi  Permutation group homomorphisms (except of function `RelatorsPermGroupHom') Ákos Seress, Alexander Hulpke
  global.g
  global.gd
  global.gi
@@ -158,8 +157,8 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  grpchain.gd
  grpchain.gi
  grpcompl.gi  1-Cohomology and Complements  Alexander Hulpke
- grpffmat.gd  Classical Groups  Thomas Breuer, Stefan Kohl, Frank L"ubeck
- grpffmat.gi  Classical Groups  Thomas Breuer, Stefan Kohl, Frank L"ubeck
+ grpffmat.gd  Classical Groups  Thomas Breuer, Stefan Kohl, Frank Lübeck
+ grpffmat.gi  Classical Groups  Thomas Breuer, Stefan Kohl, Frank Lübeck
  grpfp.gd     Finitely presented groups  Volkmar Felsch, Alexander Hulpke
  grpfp.gi     Finitely presented groups  Volkmar Felsch, Alexander Hulpke
  grpfree.gd
@@ -206,14 +205,14 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  grptbl.gi
  hash.gd
  hash.gi
- helpbase.gd  The Help System  Frank L"ubeck
- helpbase.gi  The Help System  Frank L"ubeck
- helpdef.gd   The Help System  Frank L"ubeck
- helpdef.gi   The Help System  Frank L"ubeck
+ helpbase.gd  The Help System  Frank Lübeck
+ helpbase.gi  The Help System  Frank Lübeck
+ helpdef.gd   The Help System  Frank Lübeck
+ helpdef.gi   The Help System  Frank Lübeck
  helpt2t.gd   Documentation Utilities  Greg Gamble
  helpt2t.gi   Documentation Utilities  Greg Gamble
- helpview.gd  The Help System  Frank L"ubeck
- helpview.gi  The Help System  Frank L"ubeck
+ helpview.gd  The Help System  Frank Lübeck
+ helpview.gi  The Help System  Frank Lübeck
  idealalg.gi
  ideal.gd
  ideal.gi
@@ -305,8 +304,8 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  package.g
  padics.gd
  padics.gi
- pager.gd     The Help System  Frank L"ubeck
- pager.gi     The Help System  Frank L"ubeck
+ pager.gd     The Help System  Frank Lübeck
+ pager.gi     The Help System  Frank Lübeck
  partitio.gd
  partitio.gi
  pcgscomp.gi
@@ -409,16 +408,16 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  sparsevectorsorted.gi
  stbcbckt.gd  Partition Backtrack algorithm  Alexander Hulpke
  stbcbckt.gi  Partition Backtrack algorithm  Alexander Hulpke
- stbc.gd      Stabilizer Chains  'Akos Seress, Alexander Hulpke
- stbc.gi      Stabilizer Chains  'Akos Seress, Alexander Hulpke
- stbcrand.gi  Random Schreier-Sims / Permutation group composition series  'Akos Seress
+ stbc.gd      Stabilizer Chains  Ákos Seress, Alexander Hulpke
+ stbc.gi      Stabilizer Chains  Ákos Seress, Alexander Hulpke
+ stbcrand.gi  Random Schreier-Sims / Permutation group composition series  Ákos Seress
  straight.gd
  straight.gi
  streams.gd
  streams.gi
- string.g     Strings and Characters  Frank L"ubeck
- string.gd    Strings and Characters  Frank L"ubeck
- string.gi    Strings and Characters  Frank L"ubeck
+ string.g     Strings and Characters  Frank Lübeck
+ string.gd    Strings and Characters  Frank Lübeck
+ string.gi    Strings and Characters  Frank Lübeck
  system.g
  tcsemi.gd    Finitely presented monoids and semigroups  James Mitchell
  tcsemi.gi    Finitely presented monoids and semigroups  James Mitchell
@@ -438,7 +437,7 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  unknown.gi
  upoly.gd     Rational Functions  Alexander Hulpke
  upoly.gi     Rational Functions  Alexander Hulpke
- upolyirr.gi  Classical Groups  Thomas Breuer, Stefan Kohl, Frank L"ubeck
+ upolyirr.gi  Classical Groups  Thomas Breuer, Stefan Kohl, Frank Lübeck
  utils.gd
  utils.gi
  variable.g

@@ -289,7 +289,7 @@ true
 # missing: natural modules, abstract expressions, field multiplicity
 
 #############################################################################
-gap> STOP_TEST( "algmat.tst", 287300000 );
+gap> STOP_TEST( "algmat.tst", 180800000 );
 
 #############################################################################
 ##

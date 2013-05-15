@@ -45,9 +45,7 @@
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
-#define INCLUDE_DECLARATION_PART
 #include        "compiler.h"            /* compiler                        */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "tls.h"                 /* thread-local storage            */
 
@@ -135,9 +133,9 @@ void SetCompileOpts( Char *opts )
         s++;
       for (i = 0; i < N_CompOpts; i++)
         {
-          if (0 == SyStrncmp(CompOptNames[i].extname,
+          if (0 == strncmp(CompOptNames[i].extname,
                              s,
-                             SyStrlen(CompOptNames[i].extname)))
+                             strlen(CompOptNames[i].extname)))
             {
               *(CompOptNames[i].variable) = CompOptNames[i].val;
               break;
@@ -2427,7 +2425,7 @@ CVar CompIntExpr (
 #endif
         }
 	if (siz <= 8)
-	  Emit("%c = C_NORMALIZE_INT(%c);\n", val,val);
+	  Emit("%c = C_NORMALIZE_64BIT(%c);\n", val,val);
         return val;
     }
 }
@@ -5732,12 +5730,12 @@ Int CompileFunc (
     }
     Emit( "\n/* information for the functions */\n" );
     Emit( "C_NEW_STRING( DefaultName, 14, \"local function\" )\n" );
-    Emit( "C_NEW_STRING( FileName, %d, \"%s\" )\n", SyStrlen(magic2), magic2 );
+    Emit( "C_NEW_STRING( FileName, %d, \"%s\" )\n", strlen(magic2), magic2 );
     for ( i = 1; i <= CompFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
             Emit( "C_NEW_STRING( NameFunc[%d], %d, \"%S\" )\n",
-                  i, SyStrlen(CSTR_STRING(n)), CSTR_STRING(n) );
+                  i, strlen(CSTR_STRING(n)), CSTR_STRING(n) );
         }
         else {
             Emit( "NameFunc[%d] = DefaultName;\n", i );
@@ -5791,7 +5789,7 @@ Int CompileFunc (
     /* emit the initialization code                                        */
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructInitInfo module = {\n" );
-    if ( ! SyStrcmp( "Init_Dynamic", name ) ) {
+    if ( ! strcmp( "Init_Dynamic", name ) ) {
         Emit( "/* type        = */ %d,\n",     MODULE_DYNAMIC ); 
     }
     else {

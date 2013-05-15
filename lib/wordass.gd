@@ -812,7 +812,7 @@ DeclareOperation( "SubSyllables", [ IsAssocWord, IsInt, IsInt ] );
 ##  generator order given in the list <A>gens</A>.
 ##  <P/>
 ##  (For words stored in syllable form the letter representation has to be
-##  comnputed.)
+##  computed.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

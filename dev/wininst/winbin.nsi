@@ -2,7 +2,6 @@
 #
 # winbin.nsi
 #
-# $Id: winbin.nsi,v 1.2 2008/12/18 14:26:45 alexk Exp $
 #
 # To make the winbin patch for Windows:
 # - unpack the winbin....zip archive in the directory with gap.nsi 

@@ -10,9 +10,6 @@
 #ifndef GAP_OBJCCOLL_H
 #define GAP_OBJCCOLL_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 /****************************************************************************
 **
 

@@ -136,7 +136,7 @@
 ##
 ##  <Description>
 ##  Let <A>tbl</A> be the ordinary character table of the group <M>G</M>,
-##  and <C>permchars</C> either the permutation character <M>(1_U)^G</M>,
+##  and <A>permchars</A> either the permutation character <M>(1_U)^G</M>,
 ##  for a subgroup <M>U</M> of <M>G</M>, or a list of such permutation
 ##  characters.
 ##  <Ref Func="PermCharInfo"/> returns a record with the following components.
@@ -145,7 +145,7 @@
 ##  <Item>
 ##    a list containing, for each character <M>\psi = (1_U)^G</M> in
 ##    <A>permchars</A>, a list containing at position <M>i</M> the number
-##    <M>\psi[i] |U| / </M><C>SizesCentralizers( </C><A>tbl</A><C> )</C><M>[i]</M>,
+##    <M>\psi[i] |U| /</M> <C>SizesCentralizers( </C><A>tbl</A><C> )</C><M>[i]</M>,
 ##    which equals the number of those elements of <M>U</M>
 ##    that are contained in class <M>i</M> of <A>tbl</A>,
 ##  </Item>
@@ -154,13 +154,13 @@
 ##    a list containing,
 ##    for each character <M>\psi = (1_U)^G</M> in <A>permchars</A>,
 ##    a list containing at position <M>i</M> the number
-##    <M>|U| / \gcd( |U|, </M><C>SizesCentralizers( <A>tbl</A> )</C><M>[i] )</M>,
+##    <M>|U| / \gcd( |U|,</M> <C>SizesCentralizers( <A>tbl</A> )</C><M>[i] )</M>,
 ##    which divides the class length in <M>U</M> of an element in class <M>i</M>
 ##    of <A>tbl</A>,
 ##  </Item>
 ##  <Mark><C>display</C>:</Mark>
 ##  <Item>
-##    a record that can be used as second argument of <C>Display</C>
+##    a record that can be used as second argument of <Ref Oper="Display"/>
 ##    to display each permutation character in <A>permchars</A> and the
 ##    corresponding components <C>contained</C> and <C>bound</C>,
 ##    for those classes where at least one character of <A>permchars</A> is
@@ -169,14 +169,14 @@
 ##  <Mark><C>ATLAS</C>:</Mark>
 ##  <Item>
 ##    a list of strings describing the decomposition of the permutation
-##    characters in <A>permchars</A> into the irreducible characters of <A>tbl</A>,
-##    given in an &ATLAS;-like notation.
+##    characters in <A>permchars</A> into the irreducible characters of
+##    <A>tbl</A>, given in an &ATLAS;-like notation.
 ##    This means that the irreducible constituents are indicated by their
 ##    degrees followed by lower case letters <C>a</C>, <C>b</C>, <C>c</C>,
 ##    <M>\ldots</M>,
 ##    which indicate the successive irreducible characters of <A>tbl</A>
 ##    of that degree,
-##    in the order in which they appear in <C>Irr( <A>tbl</A> )</C>.
+##    in the order in which they appear in <C>Irr( </C><A>tbl</A><C> )</C>.
 ##    A sequence of small letters (not necessarily distinct) after a single
 ##    number indicates a sum of irreducible constituents all of the same
 ##    degree, an exponent <A>n</A> for the letter <A>lett</A> means that

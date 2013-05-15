@@ -13,9 +13,6 @@
 #ifndef GAP_READ_H
 #define GAP_READ_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

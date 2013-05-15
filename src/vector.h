@@ -31,9 +31,6 @@
 #ifndef GAP_VECTOR_H
 #define GAP_VECTOR_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

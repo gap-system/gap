@@ -57,9 +57,7 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "sctable.h"             /* structure constant table        */
-#undef  INCLUDE_DECLARATION_PART
 
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */

@@ -398,14 +398,14 @@ InstallGlobalFunction( ConwayPol, function( p, n )
           #     prime divisor $l$ of $p^n - 1$.
           found := ForAll(linfac, a-> a * cpol <> zero); 
           if found then
-            pow:= PowerModCoeffs( x, pp, cpol );
+            pow:= PowerModCoeffs( x, 2, pp, cpol, n+1 );
             ShrinkRowVector( pow );
             found:= ( pow = onelist );
           fi; 
 
           i:= 1;
           while found and ( i <= Length( ppmin ) ) do
-            pow:= PowerModCoeffs( x, ppmin[i], cpol );
+            pow:= PowerModCoeffs( x, 2, ppmin[i], cpol, n+1 );
             ShrinkRowVector( pow );
             found:= pow <> onelist;
             i:= i+1;

@@ -32,7 +32,7 @@
 ##  the garbage collection; <C>livekb</C> contains the total number of
 ##  kilobytes occupied by those bags; <C>deadbags</C> contains the total
 ##  number of bags which were reclaimed by that garbage collection and
-##  all the partial garbage collections preceeding it, since the
+##  all the partial garbage collections preceding it, since the
 ##  previous full garbage collection; <C>deadkb</C> contains the total
 ##  number of kilobytes occupied by those bags; <C>freekb</C> reports the
 ##  total number of kilobytes available in the &GAP; workspace for new

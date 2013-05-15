@@ -161,8 +161,7 @@ CHECK_INSTALL_METHOD := true;
 #F  ReadGapRoot( <name> ) . . . . . . . . . .  read file from GAP's root area
 ##
 ##  <Ref Func="READ_GAP_ROOT"/> runs through &GAP;'s root directories
-##  (which are given by the command line option <C>-l</C>, with the user's
-##  <F>~/.gap</F> directory prepended),
+##  (see <Ref Sect="GAP Root Directories"/>), 
 ##  reads the first readable file with name <A>name</A> relative to the root
 ##  directory, and then returns <K>true</K> if a file was read or
 ##  <K>false</K> if no readable file <A>name</A> was found in any root
@@ -557,11 +556,11 @@ end);
 #X  read in the files
 ##
 
+
 # inner functions, needed in the kernel
 ReadGapRoot( "lib/read1.g" );
 ExportToKernelFinished();
 ENABLE_AUTO_RETYPING();
-
 
 # try to find terminal encoding
 CallAndInstallPostRestore( function()
@@ -587,7 +586,7 @@ CallAndInstallPostRestore( function()
   ##  return fail;
   ##end;
         
-  # we leave the GAPInfo.TermEncodingOverwrite for .gaprc
+  # we leave the GAPInfo.TermEncodingOverwrite for gaprc
   # for a moment, but don't document it - doesn't work with 
   # loaded workspaces
   if not IsBound(GAPInfo.TermEncodingOverwrite) then
@@ -669,10 +668,10 @@ BindGlobal( "ShowKernelInformation", function()
         Print("This is GAP ", GAPInfo.Version, " of ",
               sysdate, " (", GAPInfo.Architecture);
         if "gmpints" in LoadedModules() then
-            Print(" + gmp");
+            Print("+gmp");
         fi;
         if IsBound( GAPInfo.UseReadline ) then
-            Print(" + readline");
+            Print("+readline");
         fi;
         Print(")\n");
         if GAPInfo.CommandLineOptions.L <> "" then
@@ -810,89 +809,70 @@ UNBIND_GLOBAL("ORIGINAL_IMPS");
 ##
 ##  Set the defaults of `GAPInfo.UserPreferences'.
 ##
-##  If the command line option `-r' is not given then
-##  locate the first file `gap.ini' in GAP root directories,
-##  read it if available.
+##  We locate the first file `gap.ini' in GAP root directories,
+##  and read it if available.
 ##  This must be done before `GAPInfo.UserPreferences' is used.
 ##  Some of the preferences require an initialization,
 ##  but this cannot be called before the complete library has been loaded.
 ##
-GAPInfo.READENVPAGEREDITOR := function()
-  local str, sp;
-  if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.EDITOR) then
-    str := GAPInfo.KernelInfo.ENVIRONMENT.EDITOR;
-    sp := SplitString(str, "", " \n\t\r");
-    if Length(sp) > 0 then
-      GAPInfo.UserPreferences.Editor := sp[1];
-      GAPInfo.UserPreferences.EditorOptions := sp{[2..Length(sp)]};
-    fi;
-  fi;
-  if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.PAGER) then
-    str := GAPInfo.KernelInfo.ENVIRONMENT.PAGER;
-    sp := SplitString(str, "", " \n\t\r");
-    if Length(sp) > 0 then
-      GAPInfo.UserPreferences.Pager := sp[1];
-      GAPInfo.UserPreferences.PagerOptions := sp{[2..Length(sp)]};
-      # 'less' could have options in variable 'LESS'
-      if sp[1] = "less" and IsBound(GAPInfo.KernelInfo.ENVIRONMENT.LESS) then
-        str := GAPInfo.KernelInfo.ENVIRONMENT.LESS;
-        sp := SplitString(str, "", " \n\t\r");
-        Append(GAPInfo.UserPreferences.PagerOptions, sp);
-      elif sp[1] = "more" and IsBound(GAPInfo.KernelInfo.ENVIRONMENT.MORE) then
-        # similarly for 'more'
-        str := GAPInfo.KernelInfo.ENVIRONMENT.MORE;
-        sp := SplitString(str, "", " \n\t\r");
-        Append(GAPInfo.UserPreferences.PagerOptions, sp);
-      fi;
-    fi;
-  fi;
-end;
 
+# The following function is not recommended anymore.
+# Give a warning but do what the function was expected to do.
 BindGlobal( "SetUserPreferences", function( arg )
     local name, record;
-
-    # Set the record and defaults.
-    if not IsBound( GAPInfo.UserPreferences ) then
-      GAPInfo.UserPreferences := AtomicRecord( rec(
-          Editor := "vi",
-          ExcludeFromAutoload := [],
-          HTMLStyle := ["default"],
-          HelpViewers := MakeImmutable([ "screen" ]),
-          IndeterminateNameReuse := 0,
-          InfoPackageLoadingLevel := PACKAGE_ERROR,
-          PackagesToLoad := [],
-          Pager := MakeImmutable("builtin"),
-          PagerOptions := [],
-          ReadObsolete := true,
-          TextTheme := ["default"],
-          UseColorPrompt := false,
-          UseColorsInTerminal := true,
-          UseMathJax := false,
-          ViewLength := 3,
-          XdviOptions := "",
-          XpdfOptions := "",
-          MaxBitsIntView := 8000,
-        ) );
-    fi;
-    # check environment variables for editor and pager settings
-    # (is overwritten below by explicit values in gap.ini)
-    GAPInfo.READENVPAGEREDITOR();
-
+    
+    Info( InfoWarning, 1, "");
+    Info( InfoWarning, 1, Concatenation( [
+          "The call to 'SetUserPreferences' (probably in a 'gap.ini' file)\n",
+          "#I  should be replaced by individual 'SetUserPreference' calls,\n",
+          "#I  which are package specific.\n",
+          "#I  Try 'WriteGapIniFile()'." ] ) );
+ 
     # Set the new values.
     if Length( arg ) = 1 then
       record:= arg[1];
+      if not IsBound(GAPInfo.UserPreferences.gapdoc) then
+        GAPInfo.UserPreferences.gapdoc := rec();
+      fi;
+      if not IsBound(GAPInfo.UserPreferences.gap) then
+        GAPInfo.UserPreferences.gap := rec();
+      fi;
       for name in RecNames( record ) do
-        GAPInfo.UserPreferences.( name ):= record.( name );
+        if name in [ "HTMLStyle", "TextTheme", "UseMathJax" ] then
+          GAPInfo.UserPreferences.gapdoc.( name ):= record.( name );
+        else
+          GAPInfo.UserPreferences.gap.( name ):= record.( name );
+        fi;
       od;
     fi;
     end );
 
-SetUserPreferences();
+# SetUserPreferences();
+
+# Here are a few general user preferences which may be useful for 
+# various purposes. They are self-explaining.
+DeclareUserPreference( AtomicRecord( rec(
+  name:= "UseColorsInTerminal",
+  description:= [
+    "Almost all current terminal emulations support color display, \
+setting this to 'true' implies a default display of most manuals with \
+color markup. It may influence the display of other things in the future."
+    ],
+  default:= true,
+  values:= [ true, false ],
+  multi:= false,
+  ) ) );
+DeclareUserPreference( rec(
+  name:= "ViewLength",
+  description:= [
+    "A bound for the number of lines printed when 'View'ing some large objects."
+    ],
+  default:= 3,
+  check:= val -> IsInt( val ) and 0 <= val,
+  ) );
 
 CallAndInstallPostRestore( function()
-    if not GAPInfo.CommandLineOptions.r then
-      READ_GAP_ROOT( "gap.ini" );
-    fi;
+    READ_GAP_ROOT( "gap.ini" );
 end );
 
 
@@ -904,8 +884,21 @@ end );
 ##  `false'
 ##  (this value can be set in the `gap.ini' file)
 ##
+# reading can be configured via a user preference
+DeclareUserPreference( rec(
+  name:= "ReadObsolete",
+  description:= [
+    "May be useful to say 'false' here to check if you are using commands \
+which may vanish in a future version of GAP"
+    ],
+  default:= true,
+  values:= [ true, false ],
+  multi:= false,
+  ) );
+# HACKUSERPREF temporary hack for AtlasRep and CTblLib:
+GAPInfo.UserPreferences.ReadObsolete := UserPreference("ReadObsolete");
 CallAndInstallPostRestore( function()
-    if GAPInfo.UserPreferences.ReadObsolete <> false and
+    if UserPreference( "ReadObsolete" ) <> false and
        not IsBound( GAPInfo.Read_obsolete_gd ) then
       ReadLib( "obsolete.gd" );
       GAPInfo.Read_obsolete_gd:= true;
@@ -929,30 +922,20 @@ PAR_GAP_SLAVE_START := fail;
 ##  Autoload packages (suppressing banners).
 ##  (If GAP was started with a workspace then the user may have given
 ##  additional directories, so more suggested packages may become available.
-##  So we have to call `AutoloadPackages' also then.)
+##  So we have to call `AutoloadPackages' also then.
+##  Note that we have to use `CallAndInstallPostRestore' not
+##  `InstallAndCallPostRestore' because some packages may install their own
+##  post-restore functions, and when a workspaces gets restored then these
+##  functions must be called *before* loading new packages.)
 ##
 ##  Load the implementation part of the GAP library.
 ##
 ##  Load additional packages, such that their names appear in the banner.
 ##
-
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
     Print ("and packages ...\n");
 fi;
-CallAndInstallPostRestore( function()
-    local pkgname;
-    SetInfoLevel( InfoPackageLoading,
-        GAPInfo.UserPreferences.InfoPackageLoadingLevel );
-
-    GAPInfo.PackagesInfoInitialized:= false;
-    InitializePackagesInfoRecords();
-    AutoloadPackages();
-
-    if not GAPInfo.CommandLineOptions.A then
-      Perform( GAPInfo.UserPreferences.PackagesToLoad, 
-               pkgname -> LoadPackage( pkgname, false ) );
-    fi;
-end );
+CallAndInstallPostRestore( AutoloadPackages );
 
 
 ############################################################################
@@ -987,10 +970,10 @@ CallAndInstallPostRestore( function()
 
     # maximal number of lines that are reasonably printed
     # in `ViewObj' methods
-    GAPInfo.ViewLength:= GAPInfo.UserPreferences.ViewLength;
+    GAPInfo.ViewLength:= UserPreference( "ViewLength" );
 
     # user preference `UseColorPrompt'
-    ColorPrompt( GAPInfo.UserPreferences.UseColorPrompt );
+    ColorPrompt( UserPreference( "UseColorPrompt" ) );
 end );
 
 
@@ -1005,12 +988,12 @@ ReadLib("transatl.g");
 ##
 #X  files installing compatibility with deprecated, obsolescent or
 ##  obsolete GAP4 behaviour;
-##  *not* to be read if `GAPInfo.UserPreferences.ReadObsolete' has the value
+##  *not* to be read if `UserPreference( "ReadObsolete" )' has the value
 ##  `false'
 ##  (this value can be set in the `gap.ini' file)
 ##
 CallAndInstallPostRestore( function()
-    if GAPInfo.UserPreferences.ReadObsolete <> false and
+    if UserPreference( "ReadObsolete" ) <> false and
        not IsBound( GAPInfo.Read_obsolete_gi ) then
       ReadLib( "obsolete.gi" );
       GAPInfo.Read_obsolete_gi:= true;
@@ -1020,19 +1003,32 @@ end );
 
 #############################################################################
 ##
+##  Install SaveCommandLineHistory as exit function and read history from 
+##  file, depending on user preference.
+##  
+CallAndInstallPostRestore( function()
+  if UserPreference("SaveAndRestoreHistory") = true then
+    InstallAtExit(SaveCommandLineHistory);
+    ReadCommandLineHistory();
+  fi;
+end );
+
+#############################################################################
+##
 ##  If the command line option `-r' is not given
 ##  and if no `gaprc' file has been read yet (if applicable then including
 ##  the times before the current workspace had been created)
 ##  then read the first `gaprc' file from the GAP root directories.
 ##
 CallAndInstallPostRestore( function()
-    if not ( GAPInfo.CommandLineOptions.r or GAPInfo.HasReadGAPRC ) then
-      if READ_GAP_ROOT( "gaprc" ) then
-        GAPInfo.HasReadGAPRC:= true;
-      else
-        # For compatibility with GAP 4.4:
-        # If no readable `gaprc' file exists in the GAP root directories then
-        # try to read `~/.gaprc' (on UNIX systems) or `gap.rc' (otherwise).
+    if READ_GAP_ROOT( "gaprc" ) then
+      GAPInfo.HasReadGAPRC:= true;
+    elif not IsExistingFile(GAPInfo.UserGapRoot) then
+      # For compatibility with GAP 4.4:
+      # If no readable `gaprc' file exists in the GAP root directories and
+      # the user root directory does not (yet) exist then
+      # try to read `~/.gaprc' (on UNIX systems) or `gap.rc' (otherwise).
+      if not ( GAPInfo.CommandLineOptions.r or GAPInfo.HasReadGAPRC ) then
         if ARCH_IS_UNIX() then
           GAPInfo.gaprc:= SHALLOW_COPY_OBJ( GAPInfo.UserHome );
           APPEND_LIST_INTR( GAPInfo.gaprc, "/.gaprc" );
@@ -1040,6 +1036,10 @@ CallAndInstallPostRestore( function()
           GAPInfo.gaprc:= "gap.rc";
         fi;
         if READ( GAPInfo.gaprc ) then
+          Info(InfoWarning, 1, 
+            "You are using an old ",GAPInfo.gaprc, " file. ");
+          Info(InfoWarning, 1, 
+            "See '?Ref: The former .gaprc file' for hints to upgrade.");
           GAPInfo.HasReadGAPRC:= true;
         fi;
       fi;
@@ -1205,6 +1205,7 @@ end);
 ##
 HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
 HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
+HELP_ADD_BOOK("Changes", "Changes from Earlier Versions", "doc/changes");
 
 
 #############################################################################
@@ -1221,7 +1222,7 @@ if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
 ##
 ##  Read init files, run a shell, and do exit-time processing.
 ##
-CallAndInstallPostRestore( function()
+InstallAndCallPostRestore( function()
     local i, status;
     for i in [1..Length(GAPInfo.InitFiles)] do
         status := READ_NORECOVERY(GAPInfo.InitFiles[i]);
@@ -1253,4 +1254,3 @@ PROGRAM_CLEAN_UP();
 #############################################################################
 ##
 #E
-

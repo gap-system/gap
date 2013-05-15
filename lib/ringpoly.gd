@@ -134,7 +134,7 @@ DeclareCategory( "IsAlgebraicExtensionPolynomialRing", IsPolynomialRing );
 ##  is the category of polynomial rings over the rationals
 ##  (see Chapter&nbsp;<Ref Chap="Rational Numbers"/>).
 ##  <Example><![CDATA[
-##  gap> r := PolynomialRing(Rationals, ["a", "b"]:old );;
+##  gap> r := PolynomialRing(Rationals, ["a", "b"] );;
 ##  gap> IsPolynomialRing(r);
 ##  true
 ##  gap> IsFiniteFieldPolynomialRing(r);
@@ -193,7 +193,7 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  while an <Q>x</Q> over <C>GF(3)</C> is different.
 ##  <P/>
 ##  Within one family, every indeterminate has a number <A>nr</A> and as
-##  long as  no other names have been assigned, this indeterminte will be
+##  long as  no other names have been assigned, this indeterminate will be
 ##  displayed as
 ##  <Q><C>x_<A>nr</A></C></Q>. Indeterminate numbers can be arbitrary
 ##  nonnegative integers.
@@ -222,69 +222,33 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  <C>IndeterminateNumberOfLaurentPolynomial(<A>indet</A>)</C> will return
 ##  the number of the indeterminate <A>indet</A>.
 ##  <P/>
+##  When asked to create an indeterminate with a name that exists already for
+##  the family, &GAP; will by default return this existing indeterminate. If
+##  you explicitly want a <E>new</E> indeterminate, distinct from the already
+##  existing one with the <E>same</E> name, you can add the <C>new</C> option
+##  to the function call. (This is in most cases not a good idea.)
+##  <P/>
 ##  <Log><![CDATA[
 ##  gap> R:=PolynomialRing(GF(3),["x","y","z"]);
-##  Error, Indeterminate ``x'' is already used.
-##  Use the `old' option; e.g. Indeterminate(Rationals,"x":old);
-##    to re-use the variable already defined with this name and the
-##  `new' option; e.g. Indeterminate(Rationals,"x":new);
-##    to create a new variable with the duplicate name.
-##   called from GiveNumbersNIndeterminates(  [...]
-##  brk> quit;
-##  gap> R:=PolynomialRing(GF(3),["x","y","z"]:old);
 ##  GF(3)[x,y,z]
 ##  gap> List(IndeterminatesOfPolynomialRing(R),
 ##  >   IndeterminateNumberOfLaurentPolynomial);
 ##  [ 1, 2, 3 ]
+##  gap> R:=PolynomialRing(GF(3),["z"]);
+##  GF(3)[z]
+##  gap> List(IndeterminatesOfPolynomialRing(R),
+##  >   IndeterminateNumberOfLaurentPolynomial);
+##  [ 3 ]
 ##  gap> R:=PolynomialRing(GF(3),["x","y","z"]:new);
 ##  GF(3)[x,y,z]
 ##  gap> List(IndeterminatesOfPolynomialRing(R),
 ##  >   IndeterminateNumberOfLaurentPolynomial);
 ##  [ 4, 5, 6 ]
-##  ]]></Log>
-##
-##  When trying to create an indeterminate with a name that exists already
-##  for the family, &GAP; will stop with an error message. You can specify
-##  to create the same indeterminate that already has been given this name by
-##  adding the <C>old</C> option to the function call.
-##  Similarly it is possible to create a <E>new</E> indeterminate 
-##  with the <E>same</E> name
-##  by using the <C>new</C> option. (This is in most cases not a good idea.)
-##  <P/>
-##  <Index Key="GAPInfo.UserPreferences.IndeterminateNameReuse">
-##  <C>GAPInfo.UserPreferences.IndeterminateNameReuse</C></Index>
-##  Users who prefer that the creation of different indeterminates with the same
-##  name without using the <C>old</C> or <C>new</C> options should not 
-##  trigger an error (for example for compatibility with old code) 
-##  can do so using the global variable
-##  <C>GAPInfo.UserPreferences.IndeterminateNameReuse</C>.
-##  This can be done for example in the user's <F>gap.ini</F> file
-##  (see Section <Ref Sect="sect:gap.ini"/>).
-##  When <C>GAPInfo.UserPreferences.IndeterminateNameReuse</C>
-##  is set to <C>0</C> (the value as it is when &GAP; starts),
-##  the system will behave as described above. When the variable
-##  is set to 
-##  <C>1</C> all calls to operations creating indeterminates (unless they
-##  explicitly specify the option <C>new</C>) behave as if
-##  the <C>old</C> option is given. Similarly setting 
-##  <C>GAPInfo.UserPreferences.IndeterminateNameReuse</C> to
-##  <C>2</C> does the same for the <C>new</C>
-##  option. (Incidentally, this had been the default behavior in prior
-##  releases of &GAP;.)
-##  <P/>
-##  <Log><![CDATA[
-##  gap> x:=Indeterminate(GF(3),"x");
-##  Error, Indeterminate ``x'' is already used. [...]
-##  gap> GAPInfo.UserPreferences.IndeterminateNameReuse:= 2;;
-##  gap> x:=Indeterminate(GF(3),"x");
-##  x
-##  IndeterminateNumberOfLaurentPolynomial(x);
-##  7
-##  gap> GAPInfo.UserPreferences.IndeterminateNameReuse:= 1;;
-##  gap> x:=Indeterminate(GF(3),"x");
-##  x
-##  IndeterminateNumberOfLaurentPolynomial(x);
-##  1
+##  gap> R:=PolynomialRing(GF(3),["z"]);
+##  GF(3)[z]
+##  gap> List(IndeterminatesOfPolynomialRing(R),
+##  >   IndeterminateNumberOfLaurentPolynomial);
+##  [ 3 ]
 ##  ]]></Log>
 ##  <#/GAPDoc>
 ##

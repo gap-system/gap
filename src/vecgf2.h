@@ -11,10 +11,6 @@
 #ifndef GAP_VECGF2_H
 #define GAP_VECGF2_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
-
 /****************************************************************************
 **
 

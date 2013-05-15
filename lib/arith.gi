@@ -608,7 +608,7 @@ InstallMethod( SetElementsFamily,
 #M  Characteristic(<obj>)
 ##
 InstallMethod( Characteristic,
-    "method that asks the family",
+    "ask the family",
     [ IsObject ],
     function ( obj )
     local   F;
@@ -618,6 +618,27 @@ InstallMethod( Characteristic,
     fi;
     return Characteristic( F );
 end );
+
+InstallMethod( Characteristic,
+    "delegate to family (element)",
+    [ IsAdditiveElementWithZero ],
+    function( el )
+      return Characteristic( FamilyObj(el) );
+    end );
+
+InstallMethod( Characteristic,
+    "for family delegate to elements family",
+    [ IsFamily and HasElementsFamily],
+    function( el )
+      return Characteristic( ElementsFamily(el) );
+    end );
+
+InstallMethod( Characteristic,
+    "return fail",
+    [ IsObject ], -SUM_FLAGS,
+    function( el )
+      return fail;
+    end );
 
 
 #############################################################################

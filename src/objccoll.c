@@ -41,9 +41,7 @@
 
 #include        "objscoll.h"            /* single collector                */
 
-#define INCLUDE_DECLARATION_PART
 #include        "objccoll.h"            /* combinatorial collector         */
-#undef  INCLUDE_DECLARATION_PART
 
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */

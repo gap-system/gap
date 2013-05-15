@@ -1,5 +1,5 @@
 
-/* CSS 2.0 style sheet for GAP package information pages,  Frank Lübeck */
+/* CSS 2.0 style sheet for GAP package information pages,  Frank LÃ¼beck */
 
 BODY {
   background-color:#FFFFFF;
@@ -77,7 +77,6 @@ A:hover {
 
 SPAN.pkg {
   font-family:sans-serif;
-  font-weight:bold;
   background-color:transparent;
 }
 
@@ -86,4 +85,7 @@ HR {
   text-align:center;
 }
 
+CODE {
+  color:#550000;
+}
 

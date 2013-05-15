@@ -34,9 +34,7 @@ DeclareGlobalFunction("NormalizedArgList");
 # Info class with default level 1
 BindGlobal("InfoGAPDoc", NewInfoClass("InfoGAPDoc"));
 SetInfoLevel(InfoGAPDoc, 1);
-if CompareVersionNumbers(GAPInfo.Version, "4.dev") then
-  SetInfoHandler(InfoGAPDoc, PlainInfoHandler);
-fi;
+SetInfoHandler(InfoGAPDoc, PlainInfoHandler);
 
 DeclareGlobalVariable("GAPDocTexts");
 DeclareGlobalFunction("SetGapDocLanguage");

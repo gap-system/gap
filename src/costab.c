@@ -35,9 +35,7 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "costab.h"              /* coset table                     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include	"code.h"		/* coder                           */
 #include	"thread.h"		/* threads			   */
@@ -85,7 +83,7 @@ static Int      wordList [1024];        /* coset rep word buffer           */
 static Int      wordSize = 1023;        /* maximal no. of coset rep words  */
 
 /* clean out global Obj-type variables  to avoid hogging memory*/
-static void CleanOut()
+static void CleanOut( void )
 {
   objRel = (Obj) 0;
   objNums = (Obj) 0;
@@ -198,7 +196,7 @@ Obj FuncApplyRel (
 **  'dedgen',  'dedcos',  'dedfst',  'dedlst',  'dedSize' and 'objTable'  are
 **  assumed to be known as static variables.
 */
-static void CompressDeductionList ()
+static void CompressDeductionList ( void )
 {
     Obj               * ptTable;          /* pointer to the coset table    */
     Int                 i;

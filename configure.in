@@ -1,47 +1,47 @@
 AC_INIT(configure)
 
-if test "x$CFLAGS" = "x" ;  then
-  CFLAGS=${COPTS}
+#if test "x$CFLAGS" = "x" ;  then
+#  CFLAGS=${COPTS}
+#fi
+AC_SUBST(COPTS)
+
+AC_CHECK_SIZEOF(void *, 4)
+
+AC_ARG_VAR(ABI, [Set this equal to 32 or 64 to build GAP (and GMP provided you
+ 		 do not deselect it) in 32- or 64-bit mode. The default value
+		 for this option is determined by testing the behaviour of your
+		 compiler, so should be 32 on a 32-bit system and 64 on one
+		 which is 64-bit. On ARM processors, leave this unset (the
+		 build system will set it to "standard" for GMP).])
+
+AC_MSG_CHECKING([ABI bit size])
+if test "x$ABI" = "x" ;  then
+  if test $ac_cv_sizeof_void_p = 8; then
+    ABI="64"
+  else
+    ABI="32"
+  fi
+  ABI_CFLAGS=""
+elif test "$ABI" = "64"; then
+  if test $ac_cv_sizeof_void_p = 4; then
+    AC_MSG_ERROR([ ABI=64 cannot be used on a 32-bit system.
+                   Please replace this value with 32 and retry configure.
+                   If you think this error is wrong, email
+                   support@gap-system.org with full details.])
+  else
+    ABI_CFLAGS="-m64"
+  fi
+elif test "$ABI" = "32"; then
+  ABI_CFLAGS="-m32"
+else
+  AC_MSG_ERROR([ $ABI is not a supported value for ABI. Please use ABI=64
+                 or 32, or leave it unset.])
 fi
 
-AC_ARG_WITH(gmp,
- [  --with-gmp= <path>|yes
-    Use GMP library.
-    If argument is yes or <empty> that means the library is reachable with the standard
-    search path "/usr" or "/usr/local".
-    Otherwise you give the <path> to the directory which contains the library. 
-    If argument is no, use original GAP large integers.
- ],
- [if test "$withval" = yes ; then
-   GMP_HOME="`pwd`/extern"
-   GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
-   GMP_LIBS="-Wl,-R${GMP_HOME}/lib -L${GMP_HOME}/lib -lgmp"
-   MAKE_GMP="all_gmp"
-  elif test "$withval" = system ; then
-   GMP_CFLAGS="-DUSE_GMP"
-   GMP_LIBS="-lgmp"
-   MAKE_GMP="all"
-  elif test "$withval" != no ; then
-   GMP_HOME="$withval"
-   GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
-   GMP_LIBS="-Wl,-R${GMP_HOME}/lib -L${GMP_HOME}/lib -lgmp"
-   MAKE_GMP="all_gmp"
-  else
-   GMP_CFLAGS=""
-   GMP_LIBS=""
-   MAKE_GMP="all"
-  fi
- ],
- [GMP_HOME="`pwd`/extern"
-  GMP_CFLAGS="-DUSE_GMP -I${GMP_HOME}/include"
-  GMP_LIBS="-Wl,-R${GMP_HOME}/lib -L${GMP_HOME}/lib -lgmp"
-  MAKE_GMP="all_gmp"
- ]
-)
+AC_MSG_RESULT([$ABI])
 
-AC_SUBST(GMP_CFLAGS)
-AC_SUBST(GMP_LIBS)
-AC_SUBST(MAKE_GMP)
+AC_SUBST(ABI)
+AC_SUBST(ABI_CFLAGS)
 
 gp_configure_options=$ac_configure_args
 AC_SUBST(gp_configure_options)
@@ -53,6 +53,111 @@ AC_SUBST(BASECC)
 AC_PROG_MAKE_SET
 AC_SUBST(gapdir)
 gapdir=`pwd`
-mkdir -p bin
-AC_OUTPUT(sysinfo.gap:sysinfo.in bin/gap.sh:gap.shi)
 
+AC_ARG_VAR(CONFIGNAME,[Supply a (meaningful) name for the configuration you are building.
+    This name will be appended to the architecture-dependent named 
+    sub-directory of bin/. Allows for multiple configurations side by
+    side. Default value is "defaultXX" where "XX" is 32 or 64.])
+
+AC_MSG_CHECKING([GAP config name])
+if test "x$CONFIGNAME" = "x"; then
+  CONFIGNAME="default${ABI}"
+fi
+AC_MSG_RESULT([$CONFIGNAME])
+AC_SUBST(CONFIGNAME)
+
+GAPARCH=$target-$BASECC-${CONFIGNAME}
+AC_SUBST(GAPARCH)
+
+AC_ARG_WITH(gmp,
+  AC_HELP_STRING( [--with-gmp],
+    [ Use GMP library.
+      If the argument you supply is "yes" or <empty>, then the version of GMP bundled with this GAP will be used (default).
+      If the argument is "system" that means the library is reachable with the standard
+      search path "/usr" or "/usr/local".
+      Otherwise you give the <path> to the directory which contains the library. 
+      If the argument is no, use original GAP large integers instead of GMP.
+      [[default=yes]]
+    ]),
+  [ ],
+  [ with_gmp=yes ]
+)
+
+USE_GMP=yes
+case "$with_gmp" in
+  no)
+    GMP_CFLAGS=""
+    GMP_LIBS=""
+    MAKE_GMP=""
+    USE_GMP=no
+    ;;
+  yes | 5.0.5 | 5.0.4)
+    if test "$with_gmp" = "yes" ; then
+      with_gmp="5.0.5"
+    fi;
+    GMP_HOME="`pwd`/bin/$GAPARCH/extern/gmp"
+    GMP_CFLAGS="-I${GMP_HOME}/include"
+    GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
+    MAKE_GMP="gmp"
+    GMP_VER="$with_gmp"
+    ;;
+  system)
+    GMP_CFLAGS="-m${ABI}"
+    GMP_LIBS="-lgmp"
+    MAKE_GMP=""
+    ;;
+  *)
+    # user specified directory
+    GMP_HOME="$with_gmp"
+	if test -d ${GMP_HOME}/include && test -f ${GMP_HOME}/lib/libgmp.a ; then
+      GMP_CFLAGS="-I${GMP_HOME}/include"
+      GMP_LIBS="${GMP_HOME}/lib/libgmp.a"
+    else
+      AC_MSG_ERROR([Could not locate GMP in the specified location])
+    fi;
+    MAKE_GMP=""
+    ;;
+esac
+
+if test "$MAKE_GMP" = "gmp" ; then
+  if ! test $ac_cv_sizeof_void_p = 4; then
+    if test "$ac_cv_prog_ac_ct_CC" = gcc ; then
+      if test `gcc -dumpversion` = "4.3.2" ; then
+        AC_MSG_ERROR([The version of gcc found on your system is known to
+                       miscompile GMP on 64-bit machines. Please use another
+                       compiler or build GAP without GMP.])
+      fi
+    fi
+  fi
+  AC_CHECK_PROG(m4_PRESENT,m4,yes,no)
+  if test "$m4_PRESENT" = "no"; then
+    AC_MSG_ERROR([You have requested that GAP be built with GMP but this
+                   requires m4, which has not been detected on your system.
+                   Please install m4 or build without GMP.])
+  fi
+  case "$target" in
+    arm*)
+      ABI="standard"
+      ABI_CFLAGS=""
+      ;;
+  esac
+fi
+
+# Enabling/disabling readline is handled by the "inner" configure
+# script in cnf/, so we do nothing here (the command line flag
+# is automatically passed on to the "inner" configure script anyway.
+AC_ARG_WITH(readline,[ --with-readline=yes|no|<path>
+   Use readline library for command line editing.
+ ],[],[])
+
+AC_SUBST(GMP_CFLAGS)
+AC_SUBST(GMP_LIBS)
+AC_SUBST(MAKE_GMP)
+AC_SUBST(USE_GMP)
+AC_SUBST(GMP_VER)
+
+mkdir -p bin
+AC_OUTPUT(Makefile-${CONFIGNAME}:Makefile.in sysinfo.gap-${CONFIGNAME}:sysinfo.in bin/gap-${CONFIGNAME}.sh:gap.shi)
+ln -sf gap-${CONFIGNAME}.sh bin/gap.sh
+ln -sf Makefile-${CONFIGNAME} Makefile
+ln -sf sysinfo.gap-${CONFIGNAME} sysinfo.gap

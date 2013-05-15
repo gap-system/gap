@@ -40,9 +40,7 @@
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "scanner.h"             /* scanner                         */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "code.h"                /* coder                           */
 
@@ -257,7 +255,7 @@ typedef UInt            TypSymbolSet;
 **  filled.
 **
 **  We only fill Value up to SAFE_VALUE_SIZE normally. The last few
-**  bytes are used in the floating point parsing code to ensure that we don't 
+**  bytes are used in the floating point parsing code to ensure that we don't
 **  stop the scan just before a non-digit (., E, +,-, etc.) which would make
 **  it hard for the scanner to carry on correctly.
 */
@@ -461,7 +459,7 @@ void            SyntaxError (
       {
         /* print the message and the filename, unless it is '*stdin*'          */
         Pr( "Syntax error: %s", (Int)msg, 0L );
-        if ( SyStrcmp( "*stdin*", TLS->input->name ) != 0 )
+        if ( strcmp( "*stdin*", TLS->input->name ) != 0 )
           Pr( " in %s line %d", (Int)TLS->input->name, (Int)TLS->input->number );
         Pr( "\n", 0L, 0L );
 
@@ -539,10 +537,8 @@ void Match (
 
     /* else generate an error message and skip to a symbol in <skipto>     */
     else {
-        errmsg[0] ='\0';
-        SyStrncat( errmsg, msg, sizeof(errmsg)-1 );
-        SyStrncat( errmsg, " expected",
-                  (Int)(sizeof(errmsg)-1-SyStrlen(errmsg)) );
+        strlcpy( errmsg, msg, sizeof(errmsg) );
+        strlcat( errmsg, " expected", sizeof(errmsg) );
         SyntaxError( errmsg );
         while ( ! IS_IN( TLS->symbol, skipto ) )
             GetSymbol();
@@ -665,7 +661,7 @@ UInt OpenInput (
         return 0;
 
     /* in test mode keep reading from test input file for break loop input */
-    if ( TLS->testInput != 0 && ! SyStrcmp( filename, "*errin*" ) )
+    if ( TLS->testInput != 0 && ! strcmp( filename, "*errin*" ) )
         return 1;
 
     /* Handle *defin*; redirect *errin* to *defin* if the default
@@ -694,11 +690,11 @@ UInt OpenInput (
     TLS->input->isstream = 0;
     TLS->input->file = file;
     TLS->input->name[0] = '\0';
-    if (SyStrcmp("*errin*", filename) && SyStrcmp("*stdin*", filename))
+    if (strcmp("*errin*", filename) && strcmp("*stdin*", filename))
       TLS->input->echo = 0;
     else
       TLS->input->echo = 1;
-    SyStrncat( TLS->input->name, filename, sizeof(TLS->input->name) );
+    strlcpy( TLS->input->name, filename, sizeof(TLS->input->name) );
     TLS->input->gapname = (Obj) 0;
 
     /* start with an empty line and no symbol                              */
@@ -754,7 +750,7 @@ UInt OpenInputStream (
     TLS->input->name[0] = '\0';
     TLS->input->file = -1;
     TLS->input->echo = 0;
-    SyStrncat( TLS->input->name, "stream", 6 );
+    strlcpy( TLS->input->name, "stream", sizeof(TLS->input->name) );
 
     /* start with an empty line and no symbol                              */
     TLS->in = TLS->input->line;
@@ -1290,9 +1286,9 @@ UInt OpenOutput (
     int sp;
 
     /* do nothing for stdout and errout if catched */
-    if ( TLS->output != NULL && TLS->IgnoreStdoutErrout == TLS->output && 
-          ( SyStrcmp( filename, "*errout*" ) == 0
-           || SyStrcmp( filename, "*stdout*" ) == 0 ) ) {
+    if ( TLS->output != NULL && TLS->IgnoreStdoutErrout == TLS->output &&
+          ( strcmp( filename, "*errout*" ) == 0
+           || strcmp( filename, "*stdout*" ) == 0 ) ) {
         return 1;
     }
 
@@ -1451,7 +1447,7 @@ UInt OpenAppend (
         return 0;
 
     /* in test mode keep printing to test output file for breakloop output */
-    if ( TLS->testInput != 0 && ! SyStrcmp( filename, "*errout*" ) )
+    if ( TLS->testInput != 0 && ! strcmp( filename, "*errout*" ) )
         return 1;
     
     if ( ! SyStrcmp( filename, "*defout*") )
@@ -1628,7 +1624,7 @@ static Int GetLine2 (
 */
 extern void PutLine2(
     TypOutputFile *         output,
-    Char *                  line,
+    const Char *            line,
     UInt                    len   );
 
 /* TL: Int HELPSubsOn = 1; */
@@ -1651,7 +1647,7 @@ Char GetLine ( void )
                      Call0ArgsInNewReader( PrintPromptHook );
                 else
                      Pr( "%s%c", (Int)TLS->prompt, (Int)'\03' );
-            } else             
+            } else
                 Pr( "%c", (Int)'\03', 0L );
         }
         else if ( TLS->input->file == 2 ) {
@@ -1687,10 +1683,8 @@ Char GetLine ( void )
            or chunk from GetLine starting with '?')                        */
 
         if ( TLS->in[0] == '?' && TLS->helpSubsOn == 1) {
-            buf[0] = '\0';
-            SyStrncat( buf, TLS->in+1, 199 );
-            TLS->in[0] = '\0';
-            SyStrncat( TLS->in, "HELP(\"", 6 );
+            strlcpy( buf, TLS->in+1, sizeof(buf) );
+            strcpy( TLS->in, "HELP(\"" );
             for ( p = TLS->in+6,  q = buf;  *q;  q++ ) {
                 if ( *q != '"' && *q != '\n' ) {
                     *p++ = *q;
@@ -1701,13 +1695,14 @@ Char GetLine ( void )
                 }
             }
             *p = '\0';
-            SyStrncat( TLS->in, "\");\n", 4 );
+            /* FIXME: We should do bounds checking, but don't know what 'In' points to */
+            strcat( TLS->in, "\");\n" );
         }
 
         /* if necessary echo the line to the logfile                      */
         if( TLS->inputLog != 0 && TLS->input->echo == 1)
             if ( !(TLS->in[0] == '\377' && TLS->in[1] == '\0') )
-            PutLine2( TLS->inputLog, TLS->in, SyStrlen(TLS->in) );
+            PutLine2( TLS->inputLog, TLS->in, strlen(TLS->in) );
 
                 /*      if ( ! TLS->input->isstream ) {
           if ( TLS->inputLog != 0 && ! TLS->input->isstream ) {
@@ -1735,7 +1730,7 @@ Char GetLine ( void )
             else {
                 if ( ! GetLine2(TLS->input, TLS->input->line, sizeof(TLS->input->line)) ) {
                     TLS->in[0] = '\377';  TLS->in[1] = '\0';
-        }
+                }
             }
 
             /* if the line starts with a prompt its an input line          */
@@ -1749,14 +1744,13 @@ Char GetLine ( void )
 
             /* if the line is not empty or a comment, print it             */
             else if ( TLS->in[0] != '\n' && TLS->in[0] != '#' && TLS->in[0] != '\377' ) {
-              char obuf[8];
-              /* Commented out by AK
-              sprintf(obuf,"-%5i:\n- ", (int)TLS->testInput->number++);
-              PutLine2( TLS->testOutput, obuf, 7 );
-              */
-              sprintf(obuf,"- ");
-              PutLine2( TLS->testOutput, obuf, 2 );
-                PutLine2( TLS->testOutput, TLS->in, SyStrlen(TLS->in) );
+                /* Commented out by AK
+                char obuf[8];
+                snprintf(obuf, sizeof(obuf), "-%5i:\n- ", (int)TLS->testInput->number++);
+                PutLine2( TLS->testOutput, obuf, 7 );
+                */
+                PutLine2( TLS->testOutput, "- ", 2 );
+                PutLine2( TLS->testOutput, TLS->in, strlen(TLS->in) );
                 TLS->in[0] = '\0';
             }
 
@@ -1785,18 +1779,16 @@ Char GetLine ( void )
 static Char Pushback = '\0';
 static Char *RealIn;
 
-static inline void GET_CHAR() {
-  if (TLS->in == &Pushback)
-    {
+static inline void GET_CHAR( void ) {
+  if (TLS->in == &Pushback) {
       TLS->in = RealIn;
-    }
-  else 
+  } else
     TLS->in++;
   if (!*TLS->in)
     GetLine();
 }
 
-static inline void UNGET_CHAR( Char c) {
+static inline void UNGET_CHAR( Char c ) {
   assert(TLS->in != &Pushback);
   Pushback = c;
   RealIn = TLS->in;
@@ -1839,7 +1831,7 @@ extern void GetSymbol ( void );
 
 typedef struct {const Char *name; UInt sym;} s_keyword;
 
-s_keyword AllKeywords[] = {
+static const s_keyword AllKeywords[] = {
   {"and",       S_AND},
   {"break",     S_BREAK},
   {"continue",  S_CONTINUE},
@@ -1874,6 +1866,10 @@ s_keyword AllKeywords[] = {
   {"Assert",    S_ASSERT}};
 
 
+static int IsIdent(char c) {
+    return IsAlpha(c) || c == '_' || c == '$' || c == '@';
+}
+
 void GetIdent ( void )
 {
     Int                 i, fetch;
@@ -1883,7 +1879,7 @@ void GetIdent ( void )
     isQuoted = 0;
 
     /* read all characters into 'TLS->value'                                    */
-    for ( i=0; IsAlpha(*TLS->in) || IsDigit(*TLS->in) || *TLS->in=='_' || *TLS->in=='$' || *TLS->in=='@' || *TLS->in=='\\'; i++ ) {
+    for ( i=0; IsIdent(*TLS->in) || IsDigit(*TLS->in) || *TLS->in=='\\'; i++ ) {
 
         fetch = 1;
         /* handle escape sequences                                         */
@@ -1935,49 +1931,49 @@ void GetIdent ( void )
     /* now check if 'TLS->value' holds a keyword                                */
     switch ( 256*TLS->value[0]+TLS->value[i-1] ) {
     case 256*'a'+'c': if(!SyStrcmp(TLS->value,"atomic"))  TLS->symbol=S_ATOMIC;  break;
-    case 256*'a'+'d': if(!SyStrcmp(TLS->value,"and"))     TLS->symbol=S_AND;     break;
-    case 256*'b'+'k': if(!SyStrcmp(TLS->value,"break"))   TLS->symbol=S_BREAK;   break;
-    case 256*'c'+'e': if(!SyStrcmp(TLS->value,"continue"))   TLS->symbol=S_CONTINUE;   break;
-    case 256*'d'+'o': if(!SyStrcmp(TLS->value,"do"))      TLS->symbol=S_DO;      break;
-    case 256*'e'+'f': if(!SyStrcmp(TLS->value,"elif"))    TLS->symbol=S_ELIF;    break;
-    case 256*'e'+'e': if(!SyStrcmp(TLS->value,"else"))    TLS->symbol=S_ELSE;    break;
-    case 256*'e'+'d': if(!SyStrcmp(TLS->value,"end"))     TLS->symbol=S_END;     break;
-    case 256*'f'+'e': if(!SyStrcmp(TLS->value,"false"))   TLS->symbol=S_FALSE;   break;
-    case 256*'f'+'i': if(!SyStrcmp(TLS->value,"fi"))      TLS->symbol=S_FI;      break;
-    case 256*'f'+'r': if(!SyStrcmp(TLS->value,"for"))     TLS->symbol=S_FOR;     break;
-    case 256*'f'+'n': if(!SyStrcmp(TLS->value,"function"))TLS->symbol=S_FUNCTION;break;
-    case 256*'i'+'f': if(!SyStrcmp(TLS->value,"if"))      TLS->symbol=S_IF;      break;
-    case 256*'i'+'n': if(!SyStrcmp(TLS->value,"in"))      TLS->symbol=S_IN;      break;
-    case 256*'l'+'l': if(!SyStrcmp(TLS->value,"local"))   TLS->symbol=S_LOCAL;   break;
-    case 256*'m'+'d': if(!SyStrcmp(TLS->value,"mod"))     TLS->symbol=S_MOD;     break;
-    case 256*'n'+'t': if(!SyStrcmp(TLS->value,"not"))     TLS->symbol=S_NOT;     break;
-    case 256*'o'+'d': if(!SyStrcmp(TLS->value,"od"))      TLS->symbol=S_OD;      break;
-    case 256*'o'+'r': if(!SyStrcmp(TLS->value,"or"))      TLS->symbol=S_OR;      break;
+    case 256*'a'+'d': if(!strcmp(TLS->value,"and"))     TLS->symbol=S_AND;     break;
+    case 256*'b'+'k': if(!strcmp(TLS->value,"break"))   TLS->symbol=S_BREAK;   break;
+    case 256*'c'+'e': if(!strcmp(TLS->value,"continue"))   TLS->symbol=S_CONTINUE;   break;
+    case 256*'d'+'o': if(!strcmp(TLS->value,"do"))      TLS->symbol=S_DO;      break;
+    case 256*'e'+'f': if(!strcmp(TLS->value,"elif"))    TLS->symbol=S_ELIF;    break;
+    case 256*'e'+'e': if(!strcmp(TLS->value,"else"))    TLS->symbol=S_ELSE;    break;
+    case 256*'e'+'d': if(!strcmp(TLS->value,"end"))     TLS->symbol=S_END;     break;
+    case 256*'f'+'e': if(!strcmp(TLS->value,"false"))   TLS->symbol=S_FALSE;   break;
+    case 256*'f'+'i': if(!strcmp(TLS->value,"fi"))      TLS->symbol=S_FI;      break;
+    case 256*'f'+'r': if(!strcmp(TLS->value,"for"))     TLS->symbol=S_FOR;     break;
+    case 256*'f'+'n': if(!strcmp(TLS->value,"function"))TLS->symbol=S_FUNCTION;break;
+    case 256*'i'+'f': if(!strcmp(TLS->value,"if"))      TLS->symbol=S_IF;      break;
+    case 256*'i'+'n': if(!strcmp(TLS->value,"in"))      TLS->symbol=S_IN;      break;
+    case 256*'l'+'l': if(!strcmp(TLS->value,"local"))   TLS->symbol=S_LOCAL;   break;
+    case 256*'m'+'d': if(!strcmp(TLS->value,"mod"))     TLS->symbol=S_MOD;     break;
+    case 256*'n'+'t': if(!strcmp(TLS->value,"not"))     TLS->symbol=S_NOT;     break;
+    case 256*'o'+'d': if(!strcmp(TLS->value,"od"))      TLS->symbol=S_OD;      break;
+    case 256*'o'+'r': if(!strcmp(TLS->value,"or"))      TLS->symbol=S_OR;      break;
     case 256*'r'+'e': if(!SyStrcmp(TLS->value,"readwrite")) TLS->symbol=S_READWRITE;     break;
     case 256*'r'+'y': if(!SyStrcmp(TLS->value,"readonly"))  TLS->symbol=S_READONLY;     break;
-    case 256*'r'+'c': if(!SyStrcmp(TLS->value,"rec"))     TLS->symbol=S_REC;     break;
-    case 256*'r'+'t': if(!SyStrcmp(TLS->value,"repeat"))  TLS->symbol=S_REPEAT;  break;
-    case 256*'r'+'n': if(!SyStrcmp(TLS->value,"return"))  TLS->symbol=S_RETURN;  break;
-    case 256*'t'+'n': if(!SyStrcmp(TLS->value,"then"))    TLS->symbol=S_THEN;    break;
-    case 256*'t'+'e': if(!SyStrcmp(TLS->value,"true"))    TLS->symbol=S_TRUE;    break;
-    case 256*'u'+'l': if(!SyStrcmp(TLS->value,"until"))   TLS->symbol=S_UNTIL;   break;
-    case 256*'w'+'e': if(!SyStrcmp(TLS->value,"while"))   TLS->symbol=S_WHILE;   break;
-    case 256*'q'+'t': if(!SyStrcmp(TLS->value,"quit"))    TLS->symbol=S_QUIT;    break;
-    case 256*'Q'+'T': if(!SyStrcmp(TLS->value,"QUIT"))    TLS->symbol=S_QQUIT;   break;
+    case 256*'r'+'c': if(!strcmp(TLS->value,"rec"))     TLS->symbol=S_REC;     break;
+    case 256*'r'+'t': if(!strcmp(TLS->value,"repeat"))  TLS->symbol=S_REPEAT;  break;
+    case 256*'r'+'n': if(!strcmp(TLS->value,"return"))  TLS->symbol=S_RETURN;  break;
+    case 256*'t'+'n': if(!strcmp(TLS->value,"then"))    TLS->symbol=S_THEN;    break;
+    case 256*'t'+'e': if(!strcmp(TLS->value,"true"))    TLS->symbol=S_TRUE;    break;
+    case 256*'u'+'l': if(!strcmp(TLS->value,"until"))   TLS->symbol=S_UNTIL;   break;
+    case 256*'w'+'e': if(!strcmp(TLS->value,"while"))   TLS->symbol=S_WHILE;   break;
+    case 256*'q'+'t': if(!strcmp(TLS->value,"quit"))    TLS->symbol=S_QUIT;    break;
+    case 256*'Q'+'T': if(!strcmp(TLS->value,"QUIT"))    TLS->symbol=S_QQUIT;   break;
 
-    case 256*'I'+'d': if(!SyStrcmp(TLS->value,"IsBound")) TLS->symbol=S_ISBOUND; break;
-    case 256*'U'+'d': if(!SyStrcmp(TLS->value,"Unbind"))  TLS->symbol=S_UNBIND;  break;
-    case 256*'T'+'d': if(!SyStrcmp(TLS->value,"TryNextMethod"))
+    case 256*'I'+'d': if(!strcmp(TLS->value,"IsBound")) TLS->symbol=S_ISBOUND; break;
+    case 256*'U'+'d': if(!strcmp(TLS->value,"Unbind"))  TLS->symbol=S_UNBIND;  break;
+    case 256*'T'+'d': if(!strcmp(TLS->value,"TryNextMethod"))
                                                      TLS->symbol=S_TRYNEXT; break;
-    case 256*'I'+'o': if(!SyStrcmp(TLS->value,"Info"))    TLS->symbol=S_INFO;    break;
-    case 256*'A'+'t': if(!SyStrcmp(TLS->value,"Assert"))  TLS->symbol=S_ASSERT;  break;
+    case 256*'I'+'o': if(!strcmp(TLS->value,"Info"))    TLS->symbol=S_INFO;    break;
+    case 256*'A'+'t': if(!strcmp(TLS->value,"Assert"))  TLS->symbol=S_ASSERT;  break;
 
     default: ;
     }
 
     /* if it is quoted it is an identifier                                 */
     if ( isQuoted )  TLS->symbol = S_IDENT;
-    
+
 
 }
 
@@ -1996,28 +1992,28 @@ void GetIdent ( void )
 **
 **  As we read, we keep track of whether we have seen a . or exponent notation
 **  and so whether we will return S_[PARTIAL]INT or S_[PARTIAL]FLOAT.
-** 
+**
 **  When TLS->value is  completely filled we have to check  if the reading of
 **  the number  is complete  or not to  decide whether to return a PARTIAL type.
-** 
+**
 **  The argument reflects how far we are through reading a possibly very long number
 **  literal. 0 indicates that nothing has been read. 1 that at least one digit has been
-**  read, but no decimal point. 2 that a decimal point has been read with no digits before 
+**  read, but no decimal point. 2 that a decimal point has been read with no digits before
 **  or after it. 3 a decimal point and at least one digit, but no exponential indicator
-**  4 an exponential indicator  but no exponent digits and 5 an exponential indicator and 
+**  4 an exponential indicator  but no exponent digits and 5 an exponential indicator and
 **  at least one exponent digit.
-**  
+**
 */
 static Char GetCleanedChar( UInt *wasEscaped ) {
   GET_CHAR();
   *wasEscaped = 0;
   if (*TLS->in == '\\') {
     GET_CHAR();
-    if      ( *TLS->in == '\n') 
+    if      ( *TLS->in == '\n')
       return GetCleanedChar(wasEscaped);
     else if ( *TLS->in == '\r' )  {
       GET_CHAR();
-      if  ( *TLS->in == '\n' ) 
+      if  ( *TLS->in == '\n' )
         return GetCleanedChar(wasEscaped);
       else {
         UNGET_CHAR(*TLS->in);
@@ -2048,7 +2044,7 @@ void GetNumber ( UInt StartingStatus )
   UInt wasEscaped = 0;
   UInt seenADigit = (StartingStatus != 0 && StartingStatus != 2);
   UInt seenExpDigit = (StartingStatus ==5);
-    
+
   c = *TLS->in;
   if (StartingStatus  <  2) {
     /* read initial sequence of digits into 'Value'             */
@@ -2057,14 +2053,14 @@ void GetNumber ( UInt StartingStatus )
       seenADigit = 1;
       c = GetCleanedChar(&wasEscaped);
     }
-    
-    /* So why did we run off the end of that loop */      
+
+    /* So why did we run off the end of that loop */
     /* maybe we saw an identifier character and realised that this is an identifier we are reading */
-    if (wasEscaped || IsAlpha(c) || c == '_' || c == '@' || c == '$') {
+    if (wasEscaped || IsIdent(c)) {
       /* Now we know we have an identifier read the rest of it */
       TLS->value[i++] = c;
       c = GetCleanedChar(&wasEscaped);
-      for (; wasEscaped || IsAlpha(c) || IsDigit(c) || c == '$' || c == '@' || c =='_'; i++) {
+      for (; wasEscaped || IsIdent(c) || IsDigit(c); i++) {
         if (i < SAFE_VALUE_SIZE -1)
           TLS->value[i] = c;
         c = GetCleanedChar(&wasEscaped);
@@ -2075,16 +2071,16 @@ void GetNumber ( UInt StartingStatus )
         TLS->value[SAFE_VALUE_SIZE-1] = '\0';
       TLS->symbol = S_IDENT;
       return;
-    } 
-    
+    }
+
     /* Or maybe we just ran out of space */
-    if (IsDigit(c)) { 
+    if (IsDigit(c)) {
       assert(i >= SAFE_VALUE_SIZE-1);
       TLS->symbol = S_PARTIALINT;
       TLS->value[SAFE_VALUE_SIZE-1] = '\0';
       return;
     }
-    
+
     /* Or maybe we saw a . which could indicate one of two things:
        a float literal or .. */
     if (c == '.'){
@@ -2096,33 +2092,33 @@ void GetNumber ( UInt StartingStatus )
         TLS->symbol = S_INT;
         TLS->value[i] = '\0';
         return;
-      } 
-      
-      
+      }
+
+
       /* Not .. Put back the character we peeked at */
       UNGET_CHAR(*TLS->in);
-      /* Now the . must be part of our number 
+      /* Now the . must be part of our number
          store it and move on */
       TLS->value[i++] = c;
       c = GetCleanedChar(&wasEscaped);
     }
-    
+
     else {
-      /* Anything else we see tells us that the token is done */        
+      /* Anything else we see tells us that the token is done */
       TLS->value[i]  = '\0';
       TLS->symbol = S_INT;
       return;
     }
   }
-  
-  
-      
+
+
+
   /* The only case in which we fall through to here is when
-     we have read zero or more digits, followed by . which is not part of a .. token 
-     or we were called with StartingStatus >= 2 so we read at least that much in 
+     we have read zero or more digits, followed by . which is not part of a .. token
+     or we were called with StartingStatus >= 2 so we read at least that much in
      a previous token */
 
-    
+
   if (StartingStatus< 4) {
     /* When we get here we have read (either in this token or a previous S_PARTIALFLOAT*)
        possibly some digits, a . and possibly some more digits, but not an e,E,d,D,q or Q */
@@ -2133,11 +2129,11 @@ void GetNumber ( UInt StartingStatus )
       seenADigit = 1;
       c = GetCleanedChar(&wasEscaped);
     }
-    /* If we found an identifier type character in this context could be an error 
+    /* If we found an identifier type character in this context could be an error
       or the start of one of the allowed trailing marker sequences */
-    if (wasEscaped || (IsAlpha(c)  && c != 'e' && c != 'E' && c != 'D' && c != 'q' &&
-                       c != 'd' && c != 'Q') || c == '$' || c == '@' || c == '_') {
-      
+    if (wasEscaped || (IsIdent(c)  && c != 'e' && c != 'E' && c != 'D' && c != 'q' &&
+                       c != 'd' && c != 'Q')) {
+
       /* We allow one letter on the end of the numbers -- could be an i,
        C99 style */
       if (!wasEscaped) {
@@ -2152,12 +2148,12 @@ void GetNumber ( UInt StartingStatus )
           /* After which there may be one character signifying the conversion style */
           if (IsAlpha(c)) {
             TLS->value[i++] = c;
-            c = GetCleanedChar(&wasEscaped);      
+            c = GetCleanedChar(&wasEscaped);
           }
         }
-        /* Now if the next character is alphanumerical, or an identifier type symbol then we 
+        /* Now if the next character is alphanumerical, or an identifier type symbol then we
            really do have an error, otherwise we return a result */
-        if (!IsAlpha(c) && !IsDigit(c) && c != '$' && c != '@' && c != '_') {
+        if (!IsIdent(c) && !IsDigit(c)) {
           TLS->value[i] = '\0';
           TLS->symbol = S_FLOAT;
           return;
@@ -2168,8 +2164,7 @@ void GetNumber ( UInt StartingStatus )
     /* If the next thing is the start of the exponential notation,
        read it now -- we have left enough space at the end of the buffer even if we
        left the previous loop because of overflow */
-    if (IsAlpha(c))
-      {
+    if (IsAlpha(c)) {
         if (!seenADigit)
           SyntaxError("Badly formed number, need a digit before or after the decimal point");
         seenExp = 1;
@@ -2181,7 +2176,7 @@ void GetNumber ( UInt StartingStatus )
             c = GetCleanedChar(&wasEscaped);
           }
       }
-      
+
     /* Now deal with full buffer case */
     if (i >= SAFE_VALUE_SIZE -1) {
       TLS->symbol = seenExp ? S_PARTIALFLOAT3 : S_PARTIALFLOAT2;
@@ -2207,11 +2202,11 @@ void GetNumber ( UInt StartingStatus )
           /* After which there may be one character signifying the conversion style */
           if (IsAlpha(c))
             TLS->value[i++] = c;
-          c = GetCleanedChar(&wasEscaped);        
+          c = GetCleanedChar(&wasEscaped);
         }
-        /* Now if the next character is alphanumerical, or an identifier type symbol then we 
+        /* Now if the next character is alphanumerical, or an identifier type symbol then we
            really do have an error, otherwise we return a result */
-        if (!IsAlpha(c) && !IsDigit(c) && c != '$' && c != '@' && c != '_') {
+        if (!IsIdent(c) && !IsDigit(c)) {
           TLS->value[i] = '\0';
           TLS->symbol = S_FLOAT;
           return;
@@ -2219,7 +2214,7 @@ void GetNumber ( UInt StartingStatus )
       }
       SyntaxError("Badly Formed Number");
     }
-    
+
   }
 
   /* Here we are into the unsigned exponent of a number
@@ -2229,18 +2224,30 @@ void GetNumber ( UInt StartingStatus )
     seenExpDigit = 1;
     c = GetCleanedChar(&wasEscaped);
   }
-    
-  /* Look out for a single alphabetic character on the end 
+
+  /* Look out for a single alphabetic character on the end
      which could be a conversion marker */
-  if (seenExpDigit && IsAlpha(c))
-    {
+  if (seenExpDigit) {
+    if (IsAlpha(c)) {
       TLS->value[i] = c;
       c = GetCleanedChar(&wasEscaped);
       TLS->value[i+1] = '\0';
       TLS->symbol = S_FLOAT;
       return;
     }
-
+    if (c == '_') {
+      TLS->value[i++] = c;
+      c = GetCleanedChar(&wasEscaped);
+      /* After which there may be one character signifying the conversion style */
+      if (IsAlpha(c)) {
+        TLS->value[i++] = c;
+        c = GetCleanedChar(&wasEscaped);
+      }
+      TLS->value[i] = '\0';
+      TLS->symbol = S_FLOAT;
+      return;
+    }
+  }
 
   /* If we ran off the end */
   if (i >= SAFE_VALUE_SIZE -1) {
@@ -2248,7 +2255,7 @@ void GetNumber ( UInt StartingStatus )
     TLS->value[i] = '\0';
     return;
   }
-    
+
   /* Otherwise this is the end of the token */
   if (!seenExpDigit)
     SyntaxError("Badly Formed Number, need at least one digit in the exponent");
@@ -2563,7 +2570,7 @@ void GetSymbol ( void )
     TLS->symbol = S_IDENT;                       GET_CHAR();  break;
 
   case '0': case '1': case '2': case '3': case '4':
-  case '5': case '6': case '7': case '8': case '9':   
+  case '5': case '6': case '7': case '8': case '9':
     GetNumber(0);    break;
 
   case '\377': TLS->symbol = S_EOF;                        *TLS->in = '\0';  break;
@@ -2595,13 +2602,13 @@ Obj WriteAllFunc;
  **
  **  Introduced  <len> argument. Actually in all cases where this is called one
  **  knows the length of <line>, so it is not necessary to compute it again
- **  with the inefficient C- SyStrlen.  (FL)
+ **  with the inefficient C- strlen.  (FL)
  */
 
 
 void PutLine2(
         TypOutputFile *         output,
-        Char *                  line,
+        const Char *            line,
         UInt                    len )
 {
   Obj                     str;
@@ -2612,12 +2619,13 @@ void PutLine2(
       str = ADDR_OBJ(output->stream)[1];
       lstr = GET_LEN_STRING(str);
       GROW_STRING(str, lstr+len);
-      memcpy((void *) (CHARS_STRING(str) + lstr), (void *)line, len);
+      memcpy((void *) (CHARS_STRING(str) + lstr), line, len);
       SET_LEN_STRING(str, lstr + len);
       *(CHARS_STRING(str) + lstr + len) = '\0';
       CHANGED_BAG(str);
       return;
     }
+
     /* Space for the null is allowed for in GAP strings */
     str = NEW_STRING( len );
 
@@ -2670,14 +2678,14 @@ void PutLineTo ( KOutputStream stream, UInt len )
 
     /* Note that TLS->testLine is ended by a \n, but stream->line need not! */
 
-    lt = SyStrlen(TLS->testLine);   /* this counts including the newline! */
-    p = TLS->testLine + (lt-2);    
+    lt = strlen(TLS->testLine);   /* this counts including the newline! */
+    p = TLS->testLine + (lt-2);
     /* this now points to the last char before \n in the line! */
     while ( TLS->testLine <= p && ( *p == ' ' || *p == '\t' ) ) {
       p[1] = '\0';  p[0] = '\n';  p--; lt--;
     }
     /* lt is still the correct string length including \n */
-    ls = SyStrlen(stream->line);
+    ls = strlen(stream->line);
     p = stream->line + (ls-1);
     /* this now points to the last char of the string, could be a \n */
     if (*p == '\n') {
@@ -2687,18 +2695,18 @@ void PutLineTo ( KOutputStream stream, UInt len )
       }
     }
     /* ls is still the correct string length including a possible \n */
-    if ( ! SyStrncmp( TLS->testLine, stream->line, ls ) ) {
-      if (ls < lt) 
+    if ( ! strncmp( TLS->testLine, stream->line, ls ) ) {
+      if (ls < lt)
         memmove(TLS->testLine,TLS->testLine + ls,lt-ls+1);
       else
         TLS->testLine[0] = '\0';
     }
     else {
       char obuf[80];
-      /* sprintf(obuf,"+ 5%i bad example:\n+ ", (int)TLS->testInput->number); */
-      sprintf(obuf,"Line %i : \n+ ", (int)TLS->testInput->number);
-      PutLine2( stream, obuf, SyStrlen(obuf) );
-      PutLine2( stream, TLS->output->line, SyStrlen(TLS->output->line) );
+      /* snprintf(obuf, sizeof(obuf), "+ 5%i bad example:\n+ ", (int)TLS->testInput->number); */
+      snprintf(obuf, sizeof(obuf), "Line %i : \n+ ", (int)TLS->testInput->number);
+      PutLine2( stream, obuf, strlen(obuf) );
+      PutLine2( stream, TLS->output->line, strlen(TLS->output->line) );
     }
   }
 
@@ -2745,10 +2753,10 @@ void addLineBreakHint( KOutputStream stream, Int pos, Int val, Int indentdiff )
   }
   /* if pos is same as before only relevant if new entry has higher
      priority */
-  if ( nr > 0 && stream->hints[3*(nr-1)] == pos ) 
+  if ( nr > 0 && stream->hints[3*(nr-1)] == pos )
     nr--;
 
-  if ( stream->indent < pos && 
+  if ( stream->indent < pos &&
        (stream->hints[3*nr] == -1 || val < stream->hints[3*(nr)+1]) ) {
     stream->hints[3*nr] = pos;
     stream->hints[3*nr+1] = val;
@@ -2764,9 +2772,9 @@ Int nrLineBreak( KOutputStream stream )
   Int nr=-1, min, i;
   for (i = 0, min = INT_MAX; stream->hints[3*i] != -1; i++)
   {
-    if (stream->hints[3*i] > 0 && 
+    if (stream->hints[3*i] > 0 &&
         stream->hints[3*i+1] - stream->hints[3*i] <= min)
-    {      
+    {
       nr = i;
       min = stream->hints[3*i+1] - stream->hints[3*i];
     }
@@ -2777,7 +2785,7 @@ Int nrLineBreak( KOutputStream stream )
     return -1;
 }
 
-    
+
 
 void PutChrTo (
          KOutputStream stream,
@@ -2953,8 +2961,7 @@ Obj FuncToggleEcho( Obj self)
 Obj FuncCPROMPT( Obj self)
 {
   Obj p;
-  p = NEW_STRING(SyStrlen( TLS->prompt ));
-  SyStrncat( CSTR_STRING(p), TLS->prompt, SyStrlen( TLS->prompt ) );
+  C_NEW_STRING( p, strlen( TLS->prompt ), TLS->prompt );
   return p;
 }
 
@@ -2974,8 +2981,7 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
   if (IS_STRING_REP(prompt)) {
     /* by assigning to Prompt we also tell readline (if used) what the
        current prompt is  */
-    promptBuf[0] = '\0';
-    SyStrncat(promptBuf, CSTR_STRING(prompt), 80);
+    strlcpy(promptBuf, CSTR_STRING(prompt), sizeof(promptBuf));
     TLS->prompt = promptBuf;
   }
   Pr("%s%c", (Int)TLS->prompt, (Int)'\03' );
@@ -3019,7 +3025,7 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
  */
 
 void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int arg2 ) {
-  const Char *    p;
+  const Char *        p;
   Char *              q;
   Int                 prec,  n;
   Char                fill;
@@ -3027,67 +3033,76 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
   /* loop over the characters of the <format> string                     */
   for ( p = format; *p != '\0'; p++ ) {
 
+    /* not a '%' character, simply print it                            */
+    if ( *p != '%' ) {
+      put_a_char( *p );
+      continue;
+    }
+
     /* if the character is '%' do something special                    */
-    if ( *p == '%' ) {
 
-      /* first look for a precision field                            */
+    /* first look for a precision field                            */
+    p++;
+    prec = 0;
+    fill = (*p == '0' ? '0' : ' ');
+    while ( IsDigit(*p) ) {
+      prec = 10 * prec + *p - '0';
       p++;
-      prec = 0;
-      fill = (*p == '0' ? '0' : ' ');
-      while ( IsDigit(*p) ) {
-        prec = 10 * prec + *p - '0';
-        p++;
+    }
+
+    /* handle the case of a missing argument                     */
+    if (arg1 == 0 && (*p == 's' || *p == 'S' || *p == 'C' || *p == 'I')) {
+      put_a_char('<');
+      put_a_char('n');
+      put_a_char('u');
+      put_a_char('l');
+      put_a_char('l');
+      put_a_char('>');
+
+      /* on to the next argument                                 */
+      arg1 = arg2;
+    }
+
+    /* '%d' print an integer                                       */
+    else if ( *p == 'd'|| *p == 'i' ) {
+      int is_neg = (arg1 < 0);
+      if ( is_neg ) {
+        arg1 = -arg1;
+        prec--; /* we loose one digit of output precision for the minus sign */
       }
 
-      /* '%d' print an integer                                       */
-      if ( *p == 'd'|| *p == 'i' ) {
-        if ( arg1 < 0 ) {
-          prec--;
-          for ( n=1; n <= -(arg1/10); n*=10 )
-            prec--;
-          while ( --prec > 0 )  put_a_char(fill);
-          put_a_char('-');
-          for ( ; n > 0; n /= 10 )
-            put_a_char((Char)(-((arg1/n)%10) + '0') );
-          arg1 = arg2;
-        }
-        else {
-          for ( n=1; n<=arg1/10; n*=10 )
-            prec--;
-          while ( --prec > 0 )  put_a_char(  fill);
-          for ( ; n > 0; n /= 10 )
-            put_a_char( (Char)(((arg1/n)%10) + '0') );
-          arg1 = arg2;
-        }
+      /* compute how many characters this number requires    */
+      for ( n = 1; n <= arg1/10; n*=10 ) {
+        prec--;
+      }
+      while ( --prec > 0 )  put_a_char(fill);
+
+      if ( is_neg ) {
+        put_a_char('-');
       }
 
-      /* '%s' print a string                                         */
-      else if ( *p == 's' ) {
+      for ( ; n > 0; n /= 10 )
+        put_a_char( (Char)(((arg1/n)%10) + '0') );
 
-        /* handle the case of a missing argument                     */
-        if (arg1 == 0)
-          {
-            put_a_char('<');
-            put_a_char('n');
-            put_a_char('u');
-            put_a_char('l');
-            put_a_char('l');
-            put_a_char('>');
-          }
-        else
-          {
-            /* compute how many characters this identifier requires    */
-            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-              prec--;
-            }
+      /* on to the next argument                                 */
+      arg1 = arg2;
+    }
 
-            /* if wanted push an appropriate number of <space>-s       */
-            while ( prec-- > 0 )  put_a_char(' ');
+    /* '%s' print a string                                         */
+    else if ( *p == 's' ) {
 
-            /* print the string                                        */
-            /* must be careful that line breaks don't go inside
+      /* compute how many characters this identifier requires    */
+      for ( q = (Char*)arg1; *q != '\0' && prec > 0; q++ ) {
+        prec--;
+      }
+
+      /* if wanted push an appropriate number of <space>-s       */
+      while ( prec-- > 0 )  put_a_char(' ');
+
+      /* print the string                                        */
+      /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
-            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
         if (*q == '\\' && TLS->noSplitLine == 0) {
           if (*(q+1) < '8' && *(q+1) >= '0')
             TLS->noSplitLine = 3;
@@ -3097,223 +3112,167 @@ void FormatOutput(void (*put_a_char)(Char c), const Char *format, Int arg1, Int 
         else if (TLS->noSplitLine > 0)
           TLS->noSplitLine--;
         put_a_char( *q );
-            }
-          }
-        /* on to the next argument                                 */
-        arg1 = arg2;
       }
 
-      /* '%S' print a string with the necessary escapes              */
-      else if ( *p == 'S' ) {
-
-        /* handle the case of a missing argument                     */
-        if (arg1 == 0)
-          {
-            put_a_char( '<');
-            put_a_char( 'n');
-            put_a_char( 'u');
-            put_a_char( 'l');
-            put_a_char( 'l');
-            put_a_char( '>');
-          }
-        else
-          {
-            /* compute how many characters this identifier requires    */
-            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-              if      ( *q == '\n'  ) { prec -= 2; }
-              else if ( *q == '\t'  ) { prec -= 2; }
-              else if ( *q == '\r'  ) { prec -= 2; }
-              else if ( *q == '\b'  ) { prec -= 2; }
-              else if ( *q == '\01' ) { prec -= 2; }
-              else if ( *q == '\02' ) { prec -= 2; }
-              else if ( *q == '\03' ) { prec -= 2; }
-              else if ( *q == '"'   ) { prec -= 2; }
-              else if ( *q == '\\'  ) { prec -= 2; }
-              else                    { prec -= 1; }
-            }
-
-            /* if wanted push an appropriate number of <space>-s       */
-            while ( prec-- > 0 )  put_a_char(' ');
-
-            /* print the string                                        */
-            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-              if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
-              else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
-              else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
-              else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
-              else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('>');  }
-              else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('<');  }
-              else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('c');  }
-              else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
-              else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
-              else                    { put_a_char( *q );               }
-            }
-          }
-
-        /* on to the next argument                                 */
-        arg1 = arg2;
-      }
-
-      /* '%C' print a string with the necessary C escapes            */
-      else if ( *p == 'C' ) {
-
-        /* handle the case of a missing argument                     */
-        if (arg1 == 0)
-          {
-            put_a_char('<');
-            put_a_char('n');
-            put_a_char('u');
-            put_a_char('l');
-            put_a_char('l');
-            put_a_char('>');
-          }
-        else
-          {
-            /* compute how many characters this identifier requires    */
-            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-              if      ( *q == '\n'  ) { prec -= 2; }
-              else if ( *q == '\t'  ) { prec -= 2; }
-              else if ( *q == '\r'  ) { prec -= 2; }
-              else if ( *q == '\b'  ) { prec -= 2; }
-              else if ( *q == '\01' ) { prec -= 3; }
-              else if ( *q == '\02' ) { prec -= 3; }
-              else if ( *q == '\03' ) { prec -= 3; }
-              else if ( *q == '"'   ) { prec -= 2; }
-              else if ( *q == '\\'  ) { prec -= 2; }
-              else                    { prec -= 1; }
-            }
-
-            /* if wanted push an appropriate number of <space>-s       */
-            while ( prec-- > 0 )  put_a_char(' ');
-
-            /* print the string                                        */
-            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-              if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
-              else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
-              else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
-              else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
-              else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('0');
-                put_a_char('1');                }
-              else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('0');
-                put_a_char('2');                }
-              else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('0');
-                put_a_char('3');                }
-              else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
-              else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
-              else                    { put_a_char( *q );               }
-            }
-          }
-        /* on to the next argument                                 */
-        arg1 = arg2;
-      }
-
-      /* '%I' print an identifier                                    */
-      else if ( *p == 'I' ) {
-
-        /* handle the case of a missing argument                     */
-        if (arg1 == 0)
-          {
-            put_a_char('<');
-            put_a_char('n');
-            put_a_char('u');
-            put_a_char('l');
-            put_a_char('l');
-            put_a_char('>');
-          }
-        else
-          {
-            /* compute how many characters this identifier requires    */
-            q = (Char*)arg1;
-            if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
-                 || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
-                 || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
-                 || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
-                 || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
-                 || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
-                 || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
-                 || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
-                 || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
-                 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
-                 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
-                 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
-              prec--;
-            }
-            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-              if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_'  && *q != '$' && *q != '@') {
-                prec--;
-              }
-              prec--;
-            }
-
-            /* if wanted push an appropriate number of <space>-s       */
-            while ( prec-- > 0 ) { put_a_char(' '); }
-
-            /* print the identifier                                    */
-            q = (Char*)arg1;
-            if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
-                 || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
-                 || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
-                 || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
-                 || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
-                 || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
-                 || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
-                 || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
-                 || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
-                 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
-                 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
-                 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
-              put_a_char( '\\' );
-            }
-            for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-              if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' && *q != '$' && *q != '@') {
-                put_a_char( '\\' );
-              }
-              put_a_char( *q );
-            }
-          }
-        /* on to the next argument                                 */
-        arg1 = arg2;
-      }
-
-      /* '%c' print a character                                      */
-      else if ( *p == 'c' ) {
-        put_a_char( (Char)arg1 );
-        arg1 = arg2;
-      }
-
-      /* '%%' print a '%' character                                  */
-      else if ( *p == '%' ) {
-        put_a_char( '%' );
-      }
-
-      /* '%>' increment the indentation level                        */
-      else if ( *p == '>' ) {
-        put_a_char( '\01' );
-        while ( --prec > 0 )
-          put_a_char( '\01' );
-      }
-
-      /* '%<' decrement the indentation level                        */
-      else if ( *p == '<' ) {
-        put_a_char( '\02' );
-        while ( --prec > 0 )
-          put_a_char( '\02' );
-      }
-
-      /* else raise an error                                         */
-      else {
-        for ( p = "%format error"; *p != '\0'; p++ )
-          put_a_char( *p );
-      }
-
+      /* on to the next argument                                 */
+      arg1 = arg2;
     }
 
-    /* not a '%' character, simply print it                            */
+    /* '%S' print a string with the necessary escapes              */
+    else if ( *p == 'S' ) {
+
+      /* compute how many characters this identifier requires    */
+      for ( q = (Char*)arg1; *q != '\0' && prec > 0; q++ ) {
+        if      ( *q == '\n'  ) { prec -= 2; }
+        else if ( *q == '\t'  ) { prec -= 2; }
+        else if ( *q == '\r'  ) { prec -= 2; }
+        else if ( *q == '\b'  ) { prec -= 2; }
+        else if ( *q == '\01' ) { prec -= 2; }
+        else if ( *q == '\02' ) { prec -= 2; }
+        else if ( *q == '\03' ) { prec -= 2; }
+        else if ( *q == '"'   ) { prec -= 2; }
+        else if ( *q == '\\'  ) { prec -= 2; }
+        else                    { prec -= 1; }
+      }
+
+      /* if wanted push an appropriate number of <space>-s       */
+      while ( prec-- > 0 )  put_a_char(' ');
+
+      /* print the string                                        */
+      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+        if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
+        else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
+        else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
+        else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
+        else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('>');  }
+        else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('<');  }
+        else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('c');  }
+        else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
+        else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
+        else                    { put_a_char( *q );               }
+      }
+
+      /* on to the next argument                                 */
+      arg1 = arg2;
+    }
+
+    /* '%C' print a string with the necessary C escapes            */
+    else if ( *p == 'C' ) {
+
+      /* compute how many characters this identifier requires    */
+      for ( q = (Char*)arg1; *q != '\0' && prec > 0; q++ ) {
+        if      ( *q == '\n'  ) { prec -= 2; }
+        else if ( *q == '\t'  ) { prec -= 2; }
+        else if ( *q == '\r'  ) { prec -= 2; }
+        else if ( *q == '\b'  ) { prec -= 2; }
+        else if ( *q == '\01' ) { prec -= 3; }
+        else if ( *q == '\02' ) { prec -= 3; }
+        else if ( *q == '\03' ) { prec -= 3; }
+        else if ( *q == '"'   ) { prec -= 2; }
+        else if ( *q == '\\'  ) { prec -= 2; }
+        else                    { prec -= 1; }
+      }
+
+      /* if wanted push an appropriate number of <space>-s       */
+      while ( prec-- > 0 )  put_a_char(' ');
+
+      /* print the string                                        */
+      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+        if      ( *q == '\n'  ) { put_a_char('\\'); put_a_char('n');  }
+        else if ( *q == '\t'  ) { put_a_char('\\'); put_a_char('t');  }
+        else if ( *q == '\r'  ) { put_a_char('\\'); put_a_char('r');  }
+        else if ( *q == '\b'  ) { put_a_char('\\'); put_a_char('b');  }
+        else if ( *q == '\01' ) { put_a_char('\\'); put_a_char('0');
+          put_a_char('1');                }
+        else if ( *q == '\02' ) { put_a_char('\\'); put_a_char('0');
+          put_a_char('2');                }
+        else if ( *q == '\03' ) { put_a_char('\\'); put_a_char('0');
+          put_a_char('3');                }
+        else if ( *q == '"'   ) { put_a_char('\\'); put_a_char('"');  }
+        else if ( *q == '\\'  ) { put_a_char('\\'); put_a_char('\\'); }
+        else                    { put_a_char( *q );               }
+      }
+
+      /* on to the next argument                                 */
+      arg1 = arg2;
+    }
+
+    /* '%I' print an identifier                                    */
+    else if ( *p == 'I' ) {
+      int found_keyword = 0;
+      int i;
+
+      /* check if q matches a keyword    */
+      q = (Char*)arg1;
+      for ( i = 0; i < sizeof(AllKeywords)/sizeof(AllKeywords[0]); i++ ) {
+        if ( strcmp(q, AllKeywords[i].name) == 0 ) {
+          found_keyword = 1;
+          break;
+        }
+      }
+
+      /* compute how many characters this identifier requires    */
+      if (found_keyword) {
+        prec--;
+      }
+      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+        if ( !IsIdent(*q) && !IsDigit(*q) ) {
+          prec--;
+        }
+        prec--;
+      }
+
+      /* if wanted push an appropriate number of <space>-s       */
+      while ( prec-- > 0 ) { put_a_char(' '); }
+
+      /* print the identifier                                    */
+      if ( found_keyword ) {
+        put_a_char( '\\' );
+      }
+      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+        if ( !IsIdent(*q) && !IsDigit(*q) ) {
+          put_a_char( '\\' );
+        }
+        put_a_char( *q );
+      }
+
+      /* on to the next argument                                 */
+      arg1 = arg2;
+    }
+
+    /* '%c' print a character                                      */
+    else if ( *p == 'c' ) {
+      put_a_char( (Char)arg1 );
+      arg1 = arg2;
+    }
+
+    /* '%%' print a '%' character                                  */
+    else if ( *p == '%' ) {
+      put_a_char( '%' );
+    }
+
+    /* '%>' increment the indentation level                        */
+    else if ( *p == '>' ) {
+      put_a_char( '\01' );
+      while ( --prec > 0 )
+        put_a_char( '\01' );
+    }
+
+    /* '%<' decrement the indentation level                        */
+    else if ( *p == '<' ) {
+      put_a_char( '\02' );
+      while ( --prec > 0 )
+        put_a_char( '\02' );
+    }
+
+    /* else raise an error                                         */
     else {
-      put_a_char( *p );
+      for ( p = "%format error"; *p != '\0'; p++ )
+        put_a_char( *p );
     }
 
   }
+
 }
 
 
@@ -3370,19 +3329,9 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 
 
 Obj FuncINPUT_FILENAME( Obj self) {
-  UInt len;
   Obj s;
-  if (TLS->input && TLS->input->name) {
-    len = SyStrlen(TLS->input->name);
-    s = NEW_STRING(len);
-    SyStrncat(CSTR_STRING(s),TLS->input->name, len);
-    return s;
-  } else {
-    char *s2 = "*defin*";
-    s = NEW_STRING(SyStrlen(s2));
-    SyStrncat(CSTR_STRING(s), s2, SyStrlen(s2));
-    return s;
-  }
+  C_NEW_STRING( s, strlen(TLS->input->name), TLS->input->name );
+  return s;
 }
 
 Obj FuncINPUT_LINENUMBER( Obj self) {
@@ -3394,13 +3343,12 @@ Obj FuncALL_KEYWORDS(Obj self) {
 
   Obj s;
   UInt i;
-  l = NEW_PLIST(T_PLIST_EMPTY, 0);  
+  l = NEW_PLIST(T_PLIST_EMPTY, 0);
   SET_LEN_PLIST(l,0);
-  for (i = 0; i < sizeof(AllKeywords)/sizeof(AllKeywords[0]); i++)
-    {
-      C_NEW_STRING(s,SyStrlen(AllKeywords[i].name),AllKeywords[i].name);
-      ASS_LIST(l, i+1, s);
-    }
+  for (i = 0; i < sizeof(AllKeywords)/sizeof(AllKeywords[0]); i++) {
+    C_NEW_STRING(s,strlen(AllKeywords[i].name),AllKeywords[i].name);
+    ASS_LIST(l, i+1, s);
+  }
   MakeImmutable(l);
   return l;
 }
@@ -3445,7 +3393,7 @@ static StructGVarFunc GVarFuncs [] = {
     FuncALL_KEYWORDS, "src/scanner.c:ALL_KEYWORDS"},
 
   { "SET_PRINT_FORMATTING_STDOUT", 1 , "format",
-    FuncSET_PRINT_FORMATTING_STDOUT, 
+    FuncSET_PRINT_FORMATTING_STDOUT,
     "src/scanner.c:SET_PRINT_FORMATTING_STDOUT"},
 
   { 0 }
@@ -3491,7 +3439,7 @@ static Int InitKernel (
     DeclareGVar(&DEFAULT_INPUT_STREAM, "DEFAULT_INPUT_STREAM");
     DeclareGVar(&DEFAULT_OUTPUT_STREAM, "DEFAULT_OUTPUT_STREAM");
 
-    /* initialize cookies for streams                                      */ 
+    /* initialize cookies for streams                                      */
     /* also initialize the cookies for the GAP strings which hold the
        latest lines read from the streams  and the name of the current input file*/
     /* We don't need the cookies anymore, since the data got moved to thread-local

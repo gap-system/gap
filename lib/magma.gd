@@ -222,6 +222,7 @@ DeclareGlobalFunction( "MagmaWithInverses" );
 ##  <Oper Name="MagmaByGenerators" Arg='[Fam, ]gens'/>
 ##
 ##  <Description>
+##  An underlying operation for <Ref Func="Magma"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -231,13 +232,14 @@ DeclareOperation( "MagmaByGenerators", [ IsCollection ] );
 
 #############################################################################
 ##
-#O  MagmaWithOneByGenerators( [<Fam>, ]<generators> )
+#O  MagmaWithOneByGenerators( [<Fam>, ]<gens> )
 ##
 ##  <#GAPDoc Label="MagmaWithOneByGenerators">
 ##  <ManSection>
-##  <Oper Name="MagmaWithOneByGenerators" Arg='[Fam, ]generators'/>
+##  <Oper Name="MagmaWithOneByGenerators" Arg='[Fam, ]gens'/>
 ##
 ##  <Description>
+##  An underlying operation for <Ref Func="MagmaWithOne"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -247,13 +249,14 @@ DeclareOperation( "MagmaWithOneByGenerators", [ IsCollection ] );
 
 #############################################################################
 ##
-#O  MagmaWithInversesByGenerators( [<Fam>, ]<generators> )
+#O  MagmaWithInversesByGenerators( [<Fam>, ]<gens> )
 ##
 ##  <#GAPDoc Label="MagmaWithInversesByGenerators">
 ##  <ManSection>
-##  <Oper Name="MagmaWithInversesByGenerators" Arg='[Fam, ]generators'/>
+##  <Oper Name="MagmaWithInversesByGenerators" Arg='[Fam, ]gens'/>
 ##
 ##  <Description>
+##  An underlying operation for <Ref Func="MagmaWithInverses"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -387,6 +390,9 @@ DeclareOperation( "AsSubmagma", [ IsDomain, IsCollection ] );
 ##  <A>M</A> as a magma, that is,
 ##  the closure of <A>gens</A> under multiplication <Ref Func="\*"/>
 ##  is <A>M</A>.
+##  <P/>
+##  For a free magma, each generator can also be accessed using 
+##  the <C>.</C> operator (see <Ref Attr="GeneratorsOfDomain"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -407,6 +413,9 @@ DeclareAttribute( "GeneratorsOfMagma", IsMagma );
 ##  generates <A>M</A> as a magma-with-one,
 ##  that is, the closure of <A>gens</A> under multiplication <Ref Func="\*"/>
 ##  and <Ref Func="One"/> is <A>M</A>.
+##  <P/>
+##  For a free magma with one, each generator can also be accessed using 
+##  the <C>.</C> operator (see <Ref Attr="GeneratorsOfDomain"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

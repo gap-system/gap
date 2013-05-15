@@ -22,7 +22,7 @@
 ##
 ##  <Description>
 ##  A domain <A>D</A> lies in <C>IsLeftOperatorAdditiveGroup</C>
-##  if it is an additive group that is closed under scalar multplication
+##  if it is an additive group that is closed under scalar multiplication
 ##  from the left, and such that
 ##  <M>\lambda * ( x + y ) = \lambda * x + \lambda * y</M>
 ##  for all scalars <M>\lambda</M> and elements <M>x, y \in D</M>.
@@ -81,7 +81,7 @@ DeclareSynonym( "IsLeftModule",
 ##
 ##  <Description>
 ##  A domain <A>D</A> lies in <C>IsRightOperatorAdditiveGroup</C>
-##  if it is an additive group that is closed under scalar multplication
+##  if it is an additive group that is closed under scalar multiplication
 ##  from the right,
 ##  and such that <M>( x + y ) * \lambda = x * \lambda + y * \lambda</M>
 ##  for all scalars <M>\lambda</M> and elements <M>x, y \in D</M>.
@@ -402,25 +402,6 @@ DeclareSynonymAttr( "TrivialSubmodule", TrivialSubadditiveMagmaWithZero );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "AsLeftModule", [ IsRing, IsCollection ] );
-
-
-#############################################################################
-##
-#O  AsFreeLeftModule( <F>, <D> )  . . . . .  view <D> as free left <F>-module
-##
-##  <#GAPDoc Label="AsFreeLeftModule">
-##  <ManSection>
-##  <Oper Name="AsFreeLeftModule" Arg='F, D'/>
-##
-##  <Description>
-##  if the domain <A>D</A> is a free left module over <A>F</A>, then
-##  <C>AsFreeLeftModule( <A>F</A>, <A>D</A> )</C> returns the domain <A>D</A>
-##  viewed as free left module over <A>F</A>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "AsFreeLeftModule", [ IsRing, IsCollection ] );
 
 
 #############################################################################

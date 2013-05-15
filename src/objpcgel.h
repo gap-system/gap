@@ -11,9 +11,6 @@
 #ifndef GAP_OBJPCGEL_H
 #define GAP_OBJPCGEL_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

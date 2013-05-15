@@ -1762,8 +1762,8 @@ DeclareGlobalFunction( "Minimum" );
 ##  <#GAPDoc Label="MaximumList">
 ##  <ManSection>
 ##  <Heading>MaximumList and MinimumList</Heading>
-##  <Oper Name="MaximumList" Arg='list'/>
-##  <Oper Name="MinimumList" Arg='list'/>
+##  <Oper Name="MaximumList" Arg='list [seed]'/>
+##  <Oper Name="MinimumList" Arg='list [seed]'/>
 ##
 ##  <Description>
 ##  return the maximum resp.&nbsp;the minimum of the elements in the list
@@ -1774,13 +1774,19 @@ DeclareGlobalFunction( "Minimum" );
 ##  Methods can be installed for special kinds of lists.
 ##  For example, there are special methods to compute the maximum
 ##  resp.&nbsp;the minimum of a range (see&nbsp;<Ref Sect="Ranges"/>).
+##  <P/>
+##  If a second argument <A>seed</A> is supplied, then the result is the
+##  maximum resp.&nbsp;minimum of the union of <A>list</A> and <A>seed</A>.
+##  In this manner, the operations may be applied to empty lists.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "MaximumList", [ IsList ] );
+DeclareOperation( "MaximumList", [ IsList, IsObject ] );
 
 DeclareOperation( "MinimumList", [ IsList ] );
+DeclareOperation( "MinimumList", [ IsList, IsObject ] );
 
 
 #############################################################################

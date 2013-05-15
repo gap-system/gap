@@ -2,7 +2,7 @@
 
 #############################################################################
 ##
-##  $Id: findstrangepermissions,v 1.1 2004/03/10 21:58:05 gap Exp $ Frank Lübeck
+##  (C) Frank LÃ¼beck
 ##  
 ##  Small utility for discovering potentially problematic file permissions.
 ##  Needs (GNU?)  'find'.

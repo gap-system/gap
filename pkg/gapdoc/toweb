@@ -27,7 +27,7 @@ cd ..
 rm -f tttttmppre
 echo 'SetGapDocLaTeXOptions("nocolor");relpath:="http://www.gap-system.org/Manuals";' >  tttttmppre
 grep -v SetGapDocLaTeXOptions makedocrel.g >> tttttmppre
-gap -l ~/gapmore\; < tttttmppre > /dev/null
+../../bin/gap.sh -r < tttttmppre > /dev/null
 rm -f tttttmppre
 pdftops doc/manual.pdf doc/manual.ps
 pdftops example/manual.pdf example/manual.ps
@@ -37,7 +37,7 @@ echo making text versions of manual and example for web page . . .
 rm -f gapdoc.txt example.txt example-nc.txt gapdoc-nc.txt
 cat doc/chap{0,1,2,3,4,5,6,7,A,B,C,Bib,Ind}.txt > gapdoc.txt
 cat example/chap{0,1,2,A,B,Bib,Ind}.txt > example.txt
-gap -l ~/gapmore\;  >/dev/null <<EOF
+../../bin/gap.sh -r  >/dev/null <<EOF
 SetGAPDocTextTheme();
 s:=StringFile("gapdoc.txt");
 FileString("gapdoc-nc.txt", StripEscapeSequences(s));

@@ -69,9 +69,6 @@ DeclareSynonym( "IsLeftOperatorRingWithOne",
 ##  The division ring <M>F</M> can be accessed as value of the attribute
 ##  <Ref Func="LeftActingDomain"/>.
 ##  <P/>
-##  The characteristic (see&nbsp;<Ref Func="Characteristic"/>) of a vector
-##  space is equal to the characteristic of its left acting domain.
-##  <P/>
 ##  Vector spaces in &GAP; are always <E>left</E> vector spaces,
 ##  <Ref Filt="IsLeftVectorSpace"/> and <Ref Filt="IsVectorSpace"/> are
 ##  synonyms.

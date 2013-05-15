@@ -105,8 +105,9 @@ gap> Z(3) * map3 = - map3;
 true
 gap> comp1:= CompositionMapping( map3, map2 );
 CompositionMapping( [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
-  [ 0*Z(3), Z(3)^0 ] ] -> CanonicalBasis( GF(3^3) ), CanonicalBasis( GF(3^
-3) ) -> [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0 ] ] )
+  [ 0*Z(3), Z(3)^0 ] ] -> CanonicalBasis( GF(3^3) ),
+ CanonicalBasis( GF(3^3) ) -> [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
+  [ 0*Z(3), Z(3)^0 ] ] )
 gap> IsInjective( comp1 );
 false
 gap> IsSingleValued( comp1 );
@@ -498,7 +499,7 @@ gap> endoendo:= End( f, endo );
 End( GF(3), End( GF(3), GF(3^3) ) )
 gap> Dimension( endoendo );
 81
-gap> STOP_TEST( "vspchom.tst", 9500000 );
+gap> STOP_TEST( "vspchom.tst", 10500000 );
 
 #############################################################################
 ##

@@ -1,20 +1,19 @@
 
                   Wishlist for GAP 4.4
 
-      $Id: wishlist4r4.txt,v 1.5 2002/12/19 08:53:05 gap Exp $
 ---------------------------------------------------------------------------
 
 - Clean up the documentation and install methods for Smith normal forms 
   of integer matrices and related topics (Install methods which essentially
   call 'NormalFormIntMat' with appropriate arguments.) See mail by Franz
-  Gaehler to gap-dev from Tue, 25 Jun 2002 11:29:37 +0200 (CEST)
+  Gähler to gap-dev from Tue, 25 Jun 2002 11:29:37 +0200 (CEST)
   (Who will do this, wasn't there someone in St.Andrews responsible for this
   code?)  (FL)
   
 - Enhance the commands like 'SymplecticGroup' by introducing an optional
   argument that specifies a symplectic/orthogonal form. Add utilities for 
   transforming the groups with respect to different form into each other.
-  (Proposed by Christoph K�hler, will try to urge him to implement this.)
+  (Proposed by Christoph Köhler, will try to urge him to implement this.)
       (FL)
 
 - Improve the performance of the integer arithmetic, e.g. by using GMP.

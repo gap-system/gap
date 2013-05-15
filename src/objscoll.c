@@ -47,9 +47,7 @@
 
 #include        "objfgelm.h"            /* objects of free groups          */
 
-#define INCLUDE_DECLARATION_PART
 #include        "objscoll.h"            /* single collector                */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "objccoll.h"            /* combinatorial collector         */
 #include        "thread.h"

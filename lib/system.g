@@ -20,24 +20,16 @@
 
 BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
 
-# do not edit the following two lines. They get replaced by string matching
-# in the distribution wrapper scripts. (Occurrences of `4.dev' and `today'
-# get replaced.)    
+# do not edit the following three lines. Occurences of `4.dev' and `today' 
+# will be replaced by string matching by distribution wrapping scripts.
     Version := "4.dev",
     Date := "today",
-        
-    # The kernel version numbers are expected in the format `<v>.<r>.<p>'.
-    NeedKernelVersion := "4.5",
+    NeedKernelVersion := "4.dev",
 
-    # Without the needed packages, GAP does not start.
-    # The suggested packages are loaded if available when GAP is started.
+# Without the needed packages, GAP does not start.
     Dependencies := rec(
       NeededOtherPackages := [
         [ "gapdoc", ">= 1.2" ],
-      ],
-      SuggestedOtherPackages := [
-        [ "ctbllib", ">= 1.0" ],
-        [ "tomlib", ">= 1.0" ],
       ],
     ),
 
@@ -68,19 +60,20 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       [ "S", false, "disable/enable multi-threaded interface" ],
       [ "P", "0","<num>", "set number of logical processors" ],
       [ "Z", false, "enforce ordering of region locks" ],
+      [ "E", true, "disable/enable use of readline library (if possible)" ],
       [ "x", "", "<num>", "set line width" ],
       [ "y", "", "<num>", "set number of lines" ],
       ,
       [ "g", 0, "show GASMAN messages (full/all/no garbage collections)" ],
-      [ "m", "70m", "<mem>", "set the initial workspace size" ],
-      [ "o", "512m", "<mem>", "set hint for maximal workspace size (GAP may allocate more)" ],
+      [ "m", "128m", "<mem>", "set the initial workspace size" ],
+      [ "o", "2g", "<mem>", "set hint for maximal workspace size (GAP may allocate more)" ],
       [ "K", "0", "<mem>", "set maximal workspace size (GAP never allocates more)" ],
       [ "c", "0", "<mem>", "set the cache size value" ],
       [ "a", "0", "<mem>", "set amount to pre-malloc-ate",
              "postfix 'k' = *1024, 'm' = *1024*1024, 'g' = *1024*1024*1024" ],
       ,
       [ "l", [], "<paths>", "set the GAP root paths" ],
-      [ "r", false, "disable/enable root dir. '~/.gap' and reading 'gap.ini', 'gaprc'" ],
+      [ "r", false, "disable/enable user GAP root dir GAPInfo.UserGapRoot" ],
       [ "A", false, "disable/enable autoloading of suggested GAP packages" ],
       [ "B", "", "<name>", "current architecture" ],
       [ "D", false, "enable/disable debugging the loading of files" ],
@@ -96,10 +89,36 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
       [ "p", false, "enable/disable package output mode" ],
       [ "E", false ],
       [ "U", "" ],     # -C -U undocumented options to the compiler
-      [ "s", "0k" ],
+      [ "s", "4g" ],
       [ "z", "20" ],
           ],
     ) ));
+  
+
+#############################################################################
+##
+#V  GAPInfo.BytesPerVariable
+#V  DOUBLE_OBJLEN
+##
+##  <ManSection>
+##  <Var Name="GAPInfo.BytesPerVariable"/>
+##  <Var Name="DOUBLE_OBJLEN"/>
+##
+##  <Description>
+##  <Ref Var="GAPInfo.BytesPerVariable"/> is the number of bytes used for one
+##  <C>Obj</C> variable.
+##  </Description>
+##  </ManSection>
+##
+##  These variables need not be recomputed when a workspace is loaded.
+##
+GAPInfo.BytesPerVariable := 4;
+# are we a 64 (or more) bit system?
+while TNUM_OBJ( 2^((GAPInfo.BytesPerVariable-1)*8) )
+    = TNUM_OBJ( 2^((GAPInfo.BytesPerVariable+1)*8) ) do
+  GAPInfo.BytesPerVariable:= GAPInfo.BytesPerVariable + 4;
+od;
+BIND_GLOBAL( "DOUBLE_OBJLEN", 2*GAPInfo.BytesPerVariable );
 
 
 #############################################################################
@@ -115,16 +134,36 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
 BIND_GLOBAL( "CallAndInstallPostRestore", function( func )
     if not IS_FUNCTION( func )  then
       Error( "<func> must be a function" );
-    fi;
-    if CHECK_INSTALL_METHOD  then
-      if not NARG_FUNC( func ) in [ -1, 0 ]  then
-        Error( "<func> must accept zero arguments" );
-      fi;
+    elif CHECK_INSTALL_METHOD and not NARG_FUNC( func ) in [ -1, 0 ] then
+      Error( "<func> must accept zero arguments" );
     fi;
 
     func();
 
     ADD_LIST( GAPInfo.PostRestoreFuncs, func );
+end );
+
+
+#############################################################################
+##
+#F  InstallAndCallPostRestore( <func> )
+##
+##  The argument <func> must be a function with no argument.
+##  This function is added to the global list `GAPInfo.PostRestoreFuncs',
+##  and afterwards it is called.
+##  The effect of the former is that the function will be called
+##  when GAP is started with a workspace (option `-L').
+##
+BIND_GLOBAL( "InstallAndCallPostRestore", function( func )
+    if not IS_FUNCTION( func )  then
+      Error( "<func> must be a function" );
+    elif CHECK_INSTALL_METHOD and not NARG_FUNC( func ) in [ -1, 0 ] then
+      Error( "<func> must accept zero arguments" );
+    fi;
+
+    ADD_LIST( GAPInfo.PostRestoreFuncs, func );
+
+    func();
 end );
 
 
@@ -149,6 +188,21 @@ CallAndInstallPostRestore( function()
         break;
       fi;
     od;
+    # On 32-bit we have to adjust some values:
+    if GAPInfo.BytesPerVariable = 4 then
+      i := 1;
+      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+            GAPInfo.CommandLineOptionData[i][1] <> "m" do i := i + 1; od;
+      GAPInfo.CommandLineOptionData[i][2] := "64m";
+      i := 1;
+      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+            GAPInfo.CommandLineOptionData[i][1] <> "o" do i := i + 1; od;
+      GAPInfo.CommandLineOptionData[i][2] := "1g";
+      i := 1;
+      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+            GAPInfo.CommandLineOptionData[i][1] <> "s" do i := i + 1; od;
+      GAPInfo.CommandLineOptionData[i][2] := "1500m";
+    fi;
 
     # The exact command line which called GAP as list of strings;
     # first entry is the executable followed by the options.
@@ -160,6 +214,11 @@ CallAndInstallPostRestore( function()
     # paths
     GAPInfo.RootPaths:= GAPInfo.KernelInfo.GAP_ROOT_PATHS;
     GAPInfo.UserHome:= GAPInfo.SystemEnvironment.HOME;
+    if IsBound(GAPInfo.KernelInfo.DOT_GAP_PATH) then
+      GAPInfo.UserGapRoot := GAPInfo.KernelInfo.DOT_GAP_PATH;
+    else
+      GAPInfo.UserGapRoot := fail;
+    fi;
 
     # directory caches
     GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
@@ -226,6 +285,8 @@ CallAndInstallPostRestore( function()
       fi;
     od;
     CommandLineOptions.g:= CommandLineOptions.g mod 3;
+    # use the same as the kernel
+    CommandLineOptions.E:= GAPInfo.KernelInfo.HAVE_LIBREADLINE;
     MakeImmutable( CommandLineOptions );
     MakeImmutable( InitFiles );
 
@@ -278,9 +339,9 @@ CallAndInstallPostRestore( function()
       od;
 
       PRINT_TO("*errout*",
-        "  Boolean options (b,q,e,r,A,D,M,N,T,X,Y) toggle the current value\n",
-        "  each time they are called. Default actions are indicated first.\n",
-        "\n" );
+       "  Boolean options (b,q,e,r,A,D,E,M,N,T,X,Y) toggle the current value\n",
+       "  each time they are called. Default actions are indicated first.\n",
+       "\n" );
       QUIT_GAP();
     fi;
 end );
@@ -361,32 +422,6 @@ end);
 BIND_GLOBAL("ARCH_IS_UNIX",function()
   return not ARCH_IS_WINDOWS();
 end);
-
-
-#############################################################################
-##
-#V  GAPInfo.BytesPerVariable
-#V  DOUBLE_OBJLEN
-##
-##  <ManSection>
-##  <Var Name="GAPInfo.BytesPerVariable"/>
-##  <Var Name="DOUBLE_OBJLEN"/>
-##
-##  <Description>
-##  <Ref Var="GAPInfo.BytesPerVariable"/> is the number of bytes used for one
-##  <C>Obj</C> variable.
-##  </Description>
-##  </ManSection>
-##
-##  These variables need not be recomputed when a workspace is loaded.
-##
-GAPInfo.BytesPerVariable := 4;
-# are we a 64 (or more) bit system?
-while TNUM_OBJ( 2^((GAPInfo.BytesPerVariable-1)*8) )
-    = TNUM_OBJ( 2^((GAPInfo.BytesPerVariable+1)*8) ) do
-  GAPInfo.BytesPerVariable:= GAPInfo.BytesPerVariable + 4;
-od;
-BIND_GLOBAL( "DOUBLE_OBJLEN", 2*GAPInfo.BytesPerVariable );
 
 
 #############################################################################

@@ -211,9 +211,6 @@ DeclareOperation( "IrreducibleRepresentations",
 ##  (see&nbsp;<Cite Key="BC94"/>).
 ##  An error is signalled if <A>G</A> is not solvable.
 ##  <P/>
-##  In the following example we temporarily increase the line length limit
-##  from its default value 80 to 87 in order to get a nicer output format.
-##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:= SL(2,3);;
 ##  gap> irr1:= IrrDixonSchneider( g );

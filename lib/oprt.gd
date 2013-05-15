@@ -337,7 +337,7 @@ DeclareAttribute( "CanonicalRepresentativeOfExternalSet", IsExternalSet );
 ##  point.
 ##  This function returns a list of length 1 or 3,
 ##  the first entry being the canonical representative and the other entries
-##  (if bound) being the stabilizer of the cannonical representative and a
+##  (if bound) being the stabilizer of the canonical representative and a
 ##  conjugating element, respectively.
 ##  An external set is only guaranteed to be able to compute a canonical
 ##  representative if it has a
@@ -1230,7 +1230,7 @@ OrbitishFO( "ExternalOrbit", OrbitishReq, IsCollsElms, true, false );
 ##  <Description>
 ##  The orbit of the point <A>pnt</A> is the list of all images of <A>pnt</A>
 ##  under the action of the group <A>G</A> w.r.t. the action function
-##  <A>act</A>.
+##  <A>act</A> or <Ref Func="OnPoints"/> if no action function is given.
 ##  <P/>
 ##  (Note that the arrangement of points in this list is not defined by the
 ##  operation.)
@@ -1268,7 +1268,8 @@ OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false, false );
 ##
 ##  <Description>
 ##  returns a duplicate-free list of the orbits of the elements in
-##  <A>seeds</A> under the action <A>act</A> of <A>G</A>.
+##  <A>seeds</A> under the action <A>act</A> of <A>G</A> or under
+##  <Ref Func="OnPoints"/> if no action function is given.
 ##  <P/>
 ##  (Note that the arrangement of orbits or of points within one orbit is
 ##  not defined by the operation.)
@@ -1294,7 +1295,8 @@ OrbitsishOperation( "Orbits", OrbitsishReq, false, NewAttribute );
 ##
 ##  <Description>
 ##  returns a list of the orbits of <A>G</A> on the domain <A>Omega</A>
-##  (given as lists) under the action <A>act</A>.
+##  (given as lists) under the action <A>act</A> or under 
+##  <Ref Func="OnPoints"/> if no action function is given.
 ##  <P/>
 ##  This operation is often faster than
 ##  <Ref Func="Orbits" Label="operation"/>.
@@ -1333,14 +1335,16 @@ OrbitsishOperation( "OrbitsDomain", OrbitsishReq, false, NewAttribute );
 
 #############################################################################
 ##
-#O  OrbitLength( <G>, <Omega>, <pnt>, [<gens>,<acts>,] <act> )
+#O  OrbitLength( <G>, <Omega>, <pnt> [, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="OrbitLength">
 ##  <ManSection>
-##  <Oper Name="OrbitLength" Arg='G, Omega, pnt[, gens, acts], act'/>
+##  <Oper Name="OrbitLength" Arg='G, Omega, pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
-##  computes the length of the orbit of <A>pnt</A>.
+##  computes the length of the orbit of <A>pnt</A> under 
+##  the action function <A>act</A> or <Ref Func="OnPoints"/> 
+##  if no action function is given.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2139,6 +2143,7 @@ BindGlobal( "StabilizerOp", StabilizerFuncOp );
 ##
 #F  StabilizerPcgs( <pcgs>, <pnt> [,<acts>] [,<act>] )
 ##
+##  <#GAPDoc Label="StabilizerPcgs">
 ##  <ManSection>
 ##  <Func Name="StabilizerPcgs" Arg='pcgs, pnt[, acts][, act]'/>
 ##
@@ -2152,6 +2157,7 @@ BindGlobal( "StabilizerOp", StabilizerFuncOp );
 ##  with <A>pcgs</A>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "StabilizerPcgs" );
 

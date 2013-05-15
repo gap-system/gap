@@ -761,7 +761,7 @@ The following getter routines access internal flags. For each routine, the
 appropriate setter's name is prefixed with <C>Set</C>.
 
 <ManSection>
-<Func Name="SMTX.Subbasis" Arg=''/>
+<Func Name="SMTX.Subbasis" Arg='module'/>
 
 <Description>
 Basis of a submodule.
@@ -770,7 +770,7 @@ Basis of a submodule.
 
 
 <ManSection>
-<Func Name="SMTX.AlgEl" Arg=''/>
+<Func Name="SMTX.AlgEl" Arg='module'/>
 
 <Description>
 list <C>[newgens,coefflist]</C> giving an algebra element used for chopping.
@@ -779,7 +779,7 @@ list <C>[newgens,coefflist]</C> giving an algebra element used for chopping.
 
 
 <ManSection>
-<Func Name="SMTX.AlgElMat" Arg=''/>
+<Func Name="SMTX.AlgElMat" Arg='module'/>
 
 <Description>
 matrix of <Ref Func="SMTX.AlgEl"/>.
@@ -788,7 +788,7 @@ matrix of <Ref Func="SMTX.AlgEl"/>.
 
 
 <ManSection>
-<Func Name="SMTX.AlgElCharPol" Arg=''/>
+<Func Name="SMTX.AlgElCharPol" Arg='module'/>
 
 <Description>
 minimal polynomial of <Ref Func="SMTX.AlgEl"/>.
@@ -797,7 +797,7 @@ minimal polynomial of <Ref Func="SMTX.AlgEl"/>.
 
 
 <ManSection>
-<Func Name="SMTX.AlgElCharPolFac" Arg=''/>
+<Func Name="SMTX.AlgElCharPolFac" Arg='module'/>
 
 <Description>
 uses factor of <Ref Func="SMTX.AlgEl"/>.
@@ -806,7 +806,7 @@ uses factor of <Ref Func="SMTX.AlgEl"/>.
 
 
 <ManSection>
-<Func Name="SMTX.AlgElNullspaceVec" Arg=''/>
+<Func Name="SMTX.AlgElNullspaceVec" Arg='module'/>
 
 <Description>
 nullspace of the matrix evaluated under this factor.
@@ -815,7 +815,7 @@ nullspace of the matrix evaluated under this factor.
 
 
 <ManSection>
-<Func Name="SMTX.AlgElNullspaceDimension" Arg=''/>
+<Func Name="SMTX.AlgElNullspaceDimension" Arg='module'/>
 
 <Description>
 dimension of the nullspace.
@@ -824,17 +824,20 @@ dimension of the nullspace.
 
 
 <ManSection>
-<Func Name="SMTX.CentMat" Arg=''/>
+<Func Name="SMTX.CentMat" Arg='module'/>
 
 <Description>
+matrix centralising all generators which is computed as
+a byproduct of <Ref Func="SMTX.AbsoluteIrreducibilityTest"/>.
 </Description>
 </ManSection>
 
 
 <ManSection>
-<Func Name="SMTX.CentMatMinPoly" Arg=''/>
+<Func Name="SMTX.CentMatMinPoly" Arg='module'/>
 
 <Description>
+minimal polynomial of <Ref Func="SMTX.CentMat"/>.
 </Description>
 </ManSection>
 

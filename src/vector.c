@@ -40,9 +40,7 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "vector.h"              /* functions for plain vectors     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "range.h"               /* ranges                          */
 

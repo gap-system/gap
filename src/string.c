@@ -75,9 +75,7 @@
 #include        "plist.h"               /* plain lists                     */
 #include        "range.h"               /* ranges                          */
 
-#define INCLUDE_DECLARATION_PART
 #include        "string.h"              /* strings                         */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "saveload.h"            /* saving and loading              */
 #include        "tls.h"                 /* thread-local storage            */

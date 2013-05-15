@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: currentPackageInfoURLs,v 1.1 2004/07/14 13:17:04 gap Exp $    (C) Frank Lübeck
+# (C) Frank LÃ¼beck
 
 
 mypath=`dirname  $0`/

@@ -14,9 +14,6 @@
 #ifndef GAP_OPERS_H
 #define GAP_OPERS_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

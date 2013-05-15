@@ -3,7 +3,7 @@
 # You need 'gzip', GNU 'tar', a C compiler, sed, pdftex to run this.
 # And the files gap4r3.tar.gz, accpkg4r3.tar.gz, deppkg4r3.tar.gz.
 
-# Frank Lübeck, Frank.Luebeck@Math.RWTH-Aachen.De for questions and complaints.
+# Frank LÃ¼beck, Frank.Luebeck@Math.RWTH-Aachen.De for questions and complaints.
 
 # Note, that this isn't and is not intended to be a sophisticated script.
 # Even if it doesn't work completely automatically for you, you may get 

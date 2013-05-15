@@ -1,5 +1,14 @@
                        CHANGES of the GAPDoc package
 
+1.5.1 -> 1.6
+
+- Corrected HorLine in tables without trailing | column (report and fix by
+  Max Horn).
+
+1.5 -> 1.5.1
+
+- Adjustments to GAP's new DeclareUserPreference setup.
+
 1.4 -> 1.5
 
 - Substituted the TestManual functions by new ones based on the new
@@ -8,6 +17,12 @@
 
 - Added a copy of GPL text.
 
+- Corrected/improved handling of certain external references, and some other
+  small errors (reported by James Mitchell).
+
+- Improved detection of UTF-8 input.
+
+- Improved/adjusted manual examples.
 
 1.3 -> 1.4
 
@@ -23,7 +38,8 @@
 
 - Several text themes are available in the distribution (more by others
   are welcome). The preferred theme can be configured by the user via
-  GAPInfo.UserPreferences.TextTheme in gap.ini.
+  SetGAPDocTextTheme and  at startup via a user preference
+  SetUserPreference("GAPDoc", "TextTheme", ...).
 
 - Improved markup of <Arg> elements in function definitions in Text and
   HTML conversion.
@@ -43,8 +59,8 @@
   that this is ok, but was often requested). 
 
 - Preferred style for viewing the HTML manuals can be configured by the user
-  via GAPInfo.UserPreferences.HTMLStyle and
-  GAPInfo.UserPreferences.UseMathJax.
+  via user preferences: SetUserPreference("GAPDoc", "HTMLStyle", ...) and
+  SetUserPreference("GAPDoc", "UseMathJax", true/false)
 
 - The HTML manuals support style switching (via URL and cookie) with
   javascript and cookie enabled browsers. Several styles (and combinations)
@@ -141,7 +157,7 @@
 
 - Corrected bug in normalization of argument lists (if "," was used as
   separator). Also the layout was changed in case of leading optional
-  arguments. [Reported by Laurent Bartholdi]
+  arguments (reported by Laurent Bartholdi).
 
 1.0 -> 1.1
 

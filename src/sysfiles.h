@@ -16,9 +16,6 @@
 #ifndef GAP_SYSFILES_H
 #define GAP_SYSFILES_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 #ifndef SYS_STDIO_H                     /* standard input/output functions */
 # include <stdio.h>
@@ -36,13 +33,20 @@
 
 /****************************************************************************
 **
-
-*F  SyFindOrLinkGapRootFile( <filename>, <res>, <len> ) . . . .  load or link
+*F  SyFindOrLinkGapRootFile( <filename>, <crc>, <res> ) . . . .  load or link
 **
 **  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
 **  check  if   there is a corresponding    statically  or dynamically linked
 **  module.  If the CRC matches this module  is loaded otherwise the filename
 **  is returned.
+**
+**  The function returns:
+**
+**  0: no file or module was found
+**  1: if a dynamically linked module was found
+**  2: if a statically linked module was found
+**  3: a GAP file was found
+**  4: a GAP file was found and the CRC value didn't match
 */
 
 typedef union {
@@ -53,8 +57,7 @@ typedef union {
 extern Int SyFindOrLinkGapRootFile (
             const Char *    filename,
             Int4            crc_gap,
-            TypGRF_Data *          result,
-            Int             len );
+            TypGRF_Data *   result );
 
 
 /****************************************************************************
@@ -85,7 +88,6 @@ extern InitInfoFunc SyLoadModule(
 
 /****************************************************************************
 **
-
 *F  syWinPut( <fid>, <cmd>, <str> ) . . . . send a line to the window handler
 **
 **  'syWinPut'  send the command   <cmd> and the  string  <str> to the window
@@ -124,7 +126,6 @@ extern Char * SyWinCmd (
 
 /****************************************************************************
 **
-
 *V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
 **
 **  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
@@ -172,7 +173,6 @@ extern UInt SySetBuffering( UInt fid );
 
 /****************************************************************************
 **
-
 *F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
 **
 **  The function 'SyFopen'  is called to open the file with the name  <name>.
@@ -469,25 +469,7 @@ extern void SySetErrorNo ( void );
 
 *F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
-#if 0
 
-/****************************************************************************
-**
-
-*F  SyExec( <cmd> ) . . . . . . . . . . . execute command in operating system
-**
-**  'SyExec' executes the command <cmd> (a string) in the operating system.
-**
-**  'SyExec'  should call a command  interpreter  to execute the command,  so
-**  that file name expansion and other common  actions take place.  If the OS
-**  does not support this 'SyExec' should print a message and return.
-**
-**  For UNIX we can use 'system', which does exactly what we want.
-*/
-extern int SyExec (
-    Char *              cmd );
-
-#endif
 /****************************************************************************
 **
 *F  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . . . new process
@@ -507,7 +489,6 @@ extern UInt SyExecuteProcess (
 
 /****************************************************************************
 **
-
 *F  SyIsExistingFile( <name> )  . . . . . . . . . . . does file <name> exists
 **
 **  'SyIsExistingFile' returns 1 if the  file <name> exists and 0  otherwise.
@@ -569,6 +550,30 @@ extern Int SyIsDirectoryPath (
 extern Int SyRemoveFile (
             const Char * name );
 
+/****************************************************************************
+**
+*F  SyMkDir( <name> )  . . . . . . . . . . . . . . .  remove file <name>
+*/
+extern Int SyMkdir (
+            const Char * name );
+
+/****************************************************************************
+**
+*F  SyRmdir( <name> )  . . . . . . . . . . . . . . .  remove directory <name>
+*/
+extern Int SyRmdir (
+            const Char * name );
+
+/****************************************************************************
+**
+*F  SyIsDir( <name> )  . . . . . . . . . . . . .  test if something is a dir
+**
+**  Returns 'F' for a regular file, 'L' for a symbolic link and 'D'
+**  for a real directory, 'C' for a character device, 'B' for a block
+**  device 'P' for a FIFO (named pipe) and 'S' for a socket.
+*/
+extern Obj SyIsDir (
+            const Char * name );
 
 /****************************************************************************
 **
@@ -587,7 +592,6 @@ extern Char * SyFindGapRootFile (
 
 /****************************************************************************
 **
-
 *F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
 **
 **  'SyTmpname' creates and returns a new temporary name.

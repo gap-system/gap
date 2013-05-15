@@ -2,7 +2,6 @@
 ##  
 ##  Update.g                                                (C) Frank Lübeck
 ##  
-##      $Id: Update.g,v 1.2 2005/09/23 15:10:02 gap Exp $
 ##  
 ##  This file contains some utilities for extracting information from the
 ##  dev/Update file. 

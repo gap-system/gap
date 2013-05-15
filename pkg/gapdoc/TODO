@@ -1,10 +1,14 @@
 
            Some reminders for the authors
+- Look into hyphenation of URL texts in all output versions.
 
-- Can TestManualExamples be changed such that only call of
-  TestExamplesString is necessary. Current version doesn't work when
-  the examples depend on each other, variables may be different on
-  second call of TestExamplesString.
+- Sometimes definition lines can become longer than 80 characters, e.g.,
+    ?ConstructWreathSymmetric
+  Try to deal with this case better in all output formats.
+  Similarly for very long section headers. 
+  - extra type of paragraph for reformatting in text version?
+  - is there a trick for LaTeX version similar to "end of proof"?
+  - HTML version seems to behave reasonably, maybe use &nbsp; in "( function )"
 
 - allow the distribution of different output documents (html, text, pdf,...)
   into different directories (needs to change the handler for GAPDoc books).

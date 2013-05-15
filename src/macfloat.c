@@ -24,9 +24,7 @@
 #include        "ariths.h"              /* basic arithmetic                */
 #include        "integer.h"             /* basic arithmetic                */
 
-#define INCLUDE_DECLARATION_PART
 #include        "macfloat.h"                /* macfloateans                        */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "bool.h"
 #include        "scanner.h"
@@ -81,7 +79,7 @@ void PrintMacfloat (
     Obj                 x )
 {
   Char buf[32];
-  sprintf(buf, "%.16" PRINTFFORMAT, (TOPRINTFFORMAT) VAL_MACFLOAT(x));
+  snprintf(buf, sizeof(buf), "%.16" PRINTFFORMAT, (TOPRINTFFORMAT) VAL_MACFLOAT(x));
   Pr("%s",(Int)buf, 0);
 }
 
@@ -439,13 +437,16 @@ Obj FuncINTFLOOR_MACFLOAT( Obj self, Obj obj )
   return FuncIntHexString(self,str);
 }
 
-Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj prec, Obj f)
+Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
 {
-  Char buf[32];
+  Char buf[50];
   Obj str;
   UInt len;
-  sprintf(buf, "%.*" PRINTFFORMAT, (int)INT_INTOBJ(prec), (TOPRINTFFORMAT)VAL_MACFLOAT(f));
-  len = SyStrlen(buf);
+  int prec = INT_INTOBJ(gapprec);
+  if (prec > 40) /* too much anyways, and would risk buffer overrun */
+    prec = 40;
+  snprintf(buf, sizeof(buf), "%.*" PRINTFFORMAT, prec, (TOPRINTFFORMAT)VAL_MACFLOAT(f));
+  len = strlen(buf);
   str = NEW_STRING(len);
   SyStrncat(CSTR_STRING(str),buf,len);
   return str;

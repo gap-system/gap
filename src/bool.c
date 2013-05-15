@@ -28,9 +28,7 @@
 
 #include        "ariths.h"              /* basic arithmetic                */
 
-#define INCLUDE_DECLARATION_PART
 #include        "bool.h"                /* booleans                        */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */

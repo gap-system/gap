@@ -29,9 +29,7 @@
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
-#define INCLUDE_DECLARATION_PART
 #include        "gap.h"                 /* error handling, initialisation  */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "read.h"                /* reader                          */
 
@@ -526,8 +524,8 @@ static void StrAppend(char **st, const char *st2)
     if (*st == NULL)
         len = 0;
     else
-        len = SyStrlen(*st);
-    len2 = SyStrlen(st2);
+        len = strlen(*st);
+    len2 = strlen(st2);
     *st = realloc(*st,len+len2+1);
     if (*st == NULL) {
         printf("Extremely unexpected out of memory error. Giving up.\n");
@@ -553,7 +551,7 @@ static void DoFindMyself(char *myself, char **mypath, char **gappath)
     }
     tmppath = NULL;
     StrAppend(&tmppath,*mypath);
-    p = tmppath+SyStrlen(tmppath);
+    p = tmppath+strlen(tmppath);
     while (*p != '/') p--;
     *p = 0;
     StrAppend(&tmppath,"/../..");
@@ -603,7 +601,7 @@ int DoCreateStartupScript(int argc, char *argv[], int withws)
     if (withws) {
         tmppath[0] = 0;
         StrAppend(&tmppath,mypath);
-        p = tmppath+SyStrlen(tmppath);
+        p = tmppath+strlen(tmppath);
         while (*p != '/') p--;
         p[1] = 0;
         StrAppend(&tmppath,"workspace.gap");
@@ -648,7 +646,7 @@ int DoCreateWorkspace(char *myself)
 
     tmppath = NULL;
     StrAppend(&tmppath,mypath);
-    p = tmppath+SyStrlen(tmppath);
+    p = tmppath+strlen(tmppath);
     while (*p != '/') p--;
     p[1] = 0;
     StrAppend(&tmppath,"workspace.gap");
@@ -689,7 +687,7 @@ int DoFixGac(char *myself)
     DoFindMyself(myself,&mypath,&gappath);
     gacpath = NULL;
     StrAppend(&gacpath,mypath);
-    p = gacpath + SyStrlen(gacpath);
+    p = gacpath + strlen(gacpath);
     while (*p != '/') p--;
     *p = 0;
     gapbin = NULL;
@@ -704,7 +702,7 @@ int DoFixGac(char *myself)
         return -7;
     }
     buf = malloc(65536);
-    buf2 = malloc(65536+SyStrlen(gapbin)+10);
+    buf2 = malloc(65536+strlen(gapbin)+10);
     if (buf == NULL || buf2 == NULL) {
         printf("Could not allocate 128kB of memory. Giving up.\n");
         return -8;
@@ -718,7 +716,7 @@ int DoFixGac(char *myself)
     p[len+1] = 0;
     q = buf2;
     while (*p) {
-        if (!SyStrncmp(p,"gap_bin=",8)) {
+        if (!strncmp(p,"gap_bin=",8)) {
             while (*p != '\n' && *p != 0) p++;
             *q++ = 'g'; *q++ = 'a'; *q++ = 'p'; *q++ = '_';
             *q++ = 'b'; *q++ = 'i'; *q++ = 'n'; *q++ = '=';
@@ -794,16 +792,16 @@ int main (
   Int4                crc;                    /* crc of file to compile  */
 
 #ifdef HAVE_REALPATH
-  if (argc >= 3 && !SyStrcmp(argv[1],"--createstartupscript")) {
+  if (argc >= 3 && !strcmp(argv[1],"--createstartupscript")) {
       return DoCreateStartupScript(argc,argv,0);
   }
-  if (argc >= 3 && !SyStrcmp(argv[1],"--createstartupscriptwithws")) {
+  if (argc >= 3 && !strcmp(argv[1],"--createstartupscriptwithws")) {
       return DoCreateStartupScript(argc,argv,1);
   }
-  if (argc >= 2 && !SyStrcmp(argv[1],"--createworkspace")) {
+  if (argc >= 2 && !strcmp(argv[1],"--createworkspace")) {
       return DoCreateWorkspace(argv[0]);
   }
-  if (argc >= 2 && !SyStrcmp(argv[1],"--fixgac")) {
+  if (argc >= 2 && !strcmp(argv[1],"--fixgac")) {
       return DoFixGac(argv[0]);
   }
 #endif
@@ -840,7 +838,7 @@ int main (
       }
       func = READ_AS_FUNC();
       crc  = SyGAPCRC(SyCompileInput);
-      if (SyStrlen(SyCompileOptions) != 0)
+      if (strlen(SyCompileOptions) != 0)
         SetCompileOpts(SyCompileOptions);
       type = CompileFunc(
                          SyCompileOutput,
@@ -932,16 +930,12 @@ Obj FuncRuntime (
 Obj FuncRUNTIMES( Obj     self)
 {
   Obj    res;
-#if HAVE_GETRUSAGE
   res = NEW_PLIST(T_PLIST, 4);
   SET_LEN_PLIST(res, 4);
   SET_ELM_PLIST(res, 1, INTOBJ_INT( SyTime() ));
   SET_ELM_PLIST(res, 2, INTOBJ_INT( SyTimeSys() ));
   SET_ELM_PLIST(res, 3, INTOBJ_INT( SyTimeChildren() ));
   SET_ELM_PLIST(res, 4, INTOBJ_INT( SyTimeChildrenSys() ));
-#else
-  res = INTOBJ_INT( SyTime() );
-#endif
   return res;
    
 }
@@ -1174,8 +1168,8 @@ Obj FuncWindowCmd (
 
   /* now call the window front end with the argument string              */
   qtr = CSTR_STRING(WindowCmdString);
-  ptr = SyWinCmd( qtr, SyStrlen(qtr) );
-  len = SyStrlen(ptr);
+  ptr = SyWinCmd( qtr, strlen(qtr) );
+  len = strlen(ptr);
 
   /* now convert result back into a list                                 */
   list = NEW_PLIST( T_PLIST, 11 );
@@ -1489,7 +1483,7 @@ static Obj ErrorMessageToGAPString(
   Obj Message;
   SPrTo(message, sizeof(message), msg, arg1, arg2);
   message[sizeof(message)-1] = '\0';
-  C_NEW_STRING(Message, SyStrlen(message), message); 
+  C_NEW_STRING(Message, strlen(message), message); 
   return Message;
 }
 
@@ -1662,7 +1656,7 @@ Obj ErrorReturnObj (
     const Char *        msg2 )
 {
   Obj LateMsg;
-  C_NEW_STRING(LateMsg, SyStrlen(msg2), msg2);
+  C_NEW_STRING(LateMsg, strlen(msg2), msg2);
   return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg, 1);
 }
 
@@ -1678,7 +1672,7 @@ void ErrorReturnVoid (
     const Char *        msg2 )
 {
   Obj LateMsg;
-  C_NEW_STRING(LateMsg, SyStrlen(msg2), msg2);
+  C_NEW_STRING(LateMsg, strlen(msg2), msg2);
   CallErrorInner( msg, arg1, arg2, 0,1,0,LateMsg, 1);
   /*    ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' ); */
 }
@@ -1856,7 +1850,7 @@ Obj FuncLOAD_STAT (
         if ( info == 0 ) {
             continue;
         }
-        if ( ! SyStrcmp( CSTR_STRING(filename), info->name ) ) {
+        if ( ! strcmp( CSTR_STRING(filename), info->name ) ) {
             break;
         }
     }
@@ -1933,9 +1927,9 @@ Obj FuncSHOW_STAT (
         if ( info == 0 ) {
             continue;
         }
-        /*CCC name = NEW_STRING( SyStrlen(info->name) );
-          SyStrncat( CSTR_STRING(name), info->name, SyStrlen(info->name) );CCC*/
-        len = SyStrlen(info->name);
+        /*CCC name = NEW_STRING( strlen(info->name) );
+          SyStrncat( CSTR_STRING(name), info->name, strlen(info->name) );CCC*/
+        len = strlen(info->name);
         C_NEW_STRING(name, len, info->name);
 
         SET_ELM_PLIST( modules, im, name );
@@ -1969,26 +1963,26 @@ Obj FuncLoadedModules (
         if ( m->type == MODULE_BUILTIN ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'b'] );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, SyStrlen(m->name), m->name );
+            C_NEW_STRING( str, strlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             SET_ELM_PLIST( list, 3*i+3, INTOBJ_INT(m->version) );
         }
         else if ( m->type == MODULE_DYNAMIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, SyStrlen(m->name), m->name );
+            C_NEW_STRING( str, strlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, SyStrlen(m->filename), m->filename );
+            C_NEW_STRING( str, strlen(m->filename), m->filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
         else if ( m->type == MODULE_STATIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, SyStrlen(m->name), m->name );
+            C_NEW_STRING( str, strlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
             CHANGED_BAG(list);
-            C_NEW_STRING( str, SyStrlen(m->filename), m->filename );
+            C_NEW_STRING( str, strlen(m->filename), m->filename );
             SET_ELM_PLIST( list, 3*i+3, str );
         }
     }
@@ -2042,7 +2036,7 @@ again:
        }
 
         /* if request display the statistics                               */
-        if ( SyStrcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
+        if ( strcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
@@ -2060,7 +2054,7 @@ again:
         }
 
         /* if request give a short display of the statistics                */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "displayshort" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "displayshort" ) == 0 ) {
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
@@ -2082,7 +2076,7 @@ again:
         }
 
         /* if request display the statistics                               */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
             for ( k = 0; k < 256; k++ ) {
 #ifdef GASMAN_CLEAR_TO_LIVE
                 InfoBags[k].nrAll    = InfoBags[k].nrLive;
@@ -2095,17 +2089,17 @@ again:
         }
 
         /* or collect the garbage                                          */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
             CollectBags(0,1);
         }
 
         /* or collect the garbage                                          */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "partial" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "partial" ) == 0 ) {
             CollectBags(0,0);
         }
 
         /* or display information about global bags                        */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "global" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "global" ) == 0 ) {
             for ( i = 0;  i < GlobalBags.nr;  i++ ) {
                 if ( *(GlobalBags.addr[i]) != 0 ) {
                     Pr( "%50s: %12d bytes\n", (Int)GlobalBags.cookie[i], 
@@ -2115,7 +2109,7 @@ again:
         }
 
         /* or finally toggle Gasman messages                               */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "message" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "message" ) == 0 ) {
             SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
         }
 
@@ -2218,9 +2212,9 @@ Obj FuncTNUM_OBJ (
     /* set the type                                                        */
     SET_ELM_PLIST( res, 1, INTOBJ_INT( TNUM_OBJ(obj) ) );
     cst = TNAM_OBJ(obj);
-    /*CCC    str = NEW_STRING( SyStrlen(cst) );
-      SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );CCC*/
-    len = SyStrlen(cst);
+    /*CCC    str = NEW_STRING( strlen(cst) );
+      SyStrncat( CSTR_STRING(str), cst, strlen(cst) );CCC*/
+    len = strlen(cst);
     C_NEW_STRING(str, len, cst);
     SET_ELM_PLIST( res, 2, str );
 
@@ -2826,22 +2820,22 @@ Obj FuncFORCE_QUIT_GAP( Obj self )
 
 Obj FuncKERNEL_INFO(Obj self) {
   Obj res = NEW_PREC(0);
-  UInt r,len,lenvec,lenstr;
+  UInt r,len,lenvec,lenstr,lenstr2;
   Char *p;
   Obj tmp,list,str;
   UInt i,j;
   extern UInt SyNumProcessors;
 
   /* GAP_ARCHITECTURE                                                    */
-  tmp = NEW_STRING(SyStrlen(SyArchitecture));
+  tmp = NEW_STRING(strlen(SyArchitecture));
   RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-  SyStrncat( CSTR_STRING(tmp), SyArchitecture, SyStrlen(SyArchitecture) );
+  SyStrncat( CSTR_STRING(tmp), SyArchitecture, strlen(SyArchitecture) );
   r = RNamName("GAP_ARCHITECTURE");
   AssPRec(res,r,tmp);
   /* KERNEL_VERSION */
-  tmp = NEW_STRING(SyStrlen(SyKernelVersion));
+  tmp = NEW_STRING(strlen(SyKernelVersion));
   RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-  SyStrncat( CSTR_STRING(tmp), SyKernelVersion, SyStrlen(SyKernelVersion) );
+  SyStrncat( CSTR_STRING(tmp), SyKernelVersion, strlen(SyKernelVersion) );
   r = RNamName("KERNEL_VERSION");
   AssPRec(res,r,tmp);
   /* GAP_ROOT_PATH                                                       */
@@ -2850,7 +2844,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   list = NEW_PLIST( T_PLIST+IMMUTABLE, MAX_GAP_DIRS );
   for ( i = 0, j = 1;  i < MAX_GAP_DIRS;  i++ ) {
     if ( SyGapRootPaths[i][0] ) {
-      len = SyStrlen(SyGapRootPaths[i]);
+      len = strlen(SyGapRootPaths[i]);
       tmp = NEW_STRING(len);
       RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
       SyStrncat( CSTR_STRING(tmp), SyGapRootPaths[i], len );
@@ -2861,55 +2855,74 @@ Obj FuncKERNEL_INFO(Obj self) {
   SET_LEN_PLIST( list, j-1 );
   r = RNamName("GAP_ROOT_PATHS");
   AssPRec(res,r,list);
-      
-    
-    /* make command line and environment available to GAP level       */
-    for (lenvec=0; SyOriginalArgv[lenvec]; lenvec++);
-    tmp = NEW_PLIST( T_PLIST+IMMUTABLE, lenvec );
-    SET_LEN_PLIST( tmp, lenvec );
-    for (i = 0; i<lenvec; i++) {
-      lenstr = SyStrlen(SyOriginalArgv[i]);
-      str = NEW_STRING(lenstr);
-      SyStrncat(CSTR_STRING(str), SyOriginalArgv[i], lenstr);
-      SET_LEN_STRING(str, lenstr);
-      SET_ELM_PLIST(tmp, i+1, str);
-      CHANGED_BAG(tmp);
-    }
-    r = RNamName("COMMAND_LINE");
-    AssPRec(res,r, tmp);
-
-    tmp = NEW_PREC(0);
-    for (i = 0; sysenviron[i]; i++) {
-      for (p = sysenviron[i]; *p != '='; p++)
-        ;
-      *p++ = '\0';
-      lenstr = SyStrlen(p);
-      str = NEW_STRING(lenstr);
-      SyStrncat(CSTR_STRING(str),p, lenstr);
-      SET_LEN_STRING(str, lenstr);
-      AssPRec(tmp,RNamName(sysenviron[i]), str);
-      *--p = '='; /* change back to allow a convenient rerun */
-    }
-    r = RNamName("ENVIRONMENT");
-    AssPRec(res,r, tmp);
-
-#ifdef CONFIGNAME
-    /* and also the CONFIGNAME of the running  GAP kernel  */
-    p = CONFIGNAME;
-    lenstr = SyStrlen(p);
-    str = NEW_STRING(lenstr);
-    SyStrncat(CSTR_STRING(str), p, lenstr);
-    SET_LEN_STRING(str, lenstr);
-    r = RNamName("CONFIGNAME");
-    AssPRec(res, r, str);
+  /* And also the DotGapPath if available */
+#if HAVE_DOTGAPRC
+  len = strlen(DotGapPath);
+  tmp = NEW_STRING(len);
+  RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+  SyStrncat( CSTR_STRING(tmp), DotGapPath, len );
+  r = RNamName("DOT_GAP_PATH");
+  AssPRec(res,r,tmp);
 #endif
+    
+  /* make command line and environment available to GAP level       */
+  for (lenvec=0; SyOriginalArgv[lenvec]; lenvec++);
+  tmp = NEW_PLIST( T_PLIST+IMMUTABLE, lenvec );
+  SET_LEN_PLIST( tmp, lenvec );
+  for (i = 0; i<lenvec; i++) {
+    lenstr = strlen(SyOriginalArgv[i]);
+    str = NEW_STRING(lenstr);
+    SyStrncat(CSTR_STRING(str), SyOriginalArgv[i], lenstr);
+    SET_LEN_STRING(str, lenstr);
+    SET_ELM_PLIST(tmp, i+1, str);
+    CHANGED_BAG(tmp);
+  }
+  r = RNamName("COMMAND_LINE");
+  AssPRec(res,r, tmp);
 
-    r = RNamName("NUM_CPUS");
-    AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
+  tmp = NEW_PREC(0);
+  for (i = 0; sysenviron[i]; i++) {
+    for (p = sysenviron[i]; *p != '='; p++)
+      ;
+    lenstr2 = (UInt) (p-sysenviron[i]);
+    p++;   /* Move pointer behind = character */
+    lenstr = strlen(p);
+    if (lenstr2 > lenstr)
+        str = NEW_STRING(lenstr2);
+    else
+        str = NEW_STRING(lenstr);
+    SyStrncat(CSTR_STRING(str),sysenviron[i],lenstr2);
+    r = RNamName(CSTR_STRING(str));
+    *(CSTR_STRING(str)) = 0;
+    SyStrncat(CSTR_STRING(str),p, lenstr);
+    SET_LEN_STRING(str, lenstr);
+    SHRINK_STRING(str);
+    AssPRec(tmp,r , str);
+  }
+  r = RNamName("ENVIRONMENT");
+  AssPRec(res,r, tmp);
 
-    MakeImmutable(res);
-   
-    return res;
+  /* and also the CONFIGNAME of the running  GAP kernel  */
+  p = CONFIGNAME;
+  lenstr = strlen(p);
+  str = NEW_STRING(lenstr);
+  SyStrncat(CSTR_STRING(str), p, lenstr);
+  SET_LEN_STRING(str, lenstr);
+  r = RNamName("CONFIGNAME");
+  AssPRec(res, r, str);
+  r = RNamName("NUM_CPUS");
+  AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
+
+  /* export if we want to use readline  */
+  r = RNamName("HAVE_LIBREADLINE");
+  if (SyUseReadline)
+    AssPRec(res, r, True);
+  else
+    AssPRec(res, r, False);
+
+  MakeImmutable(res);
+  
+  return res;
   
 }
 
@@ -3400,7 +3413,7 @@ void RecordLoadedModule (
     if ( NrModules == MAX_MODULES ) {
         Pr( "panic: no room to record module\n", 0L, 0L );
     }
-    len = SyStrlen(filename);
+    len = strlen(filename);
     if (NextLoadedModuleFilename + len + 1
         > LoadedModuleFilenames+MAX_MODULE_FILENAMES) {
       Pr( "panic: no room for module filename\n", 0L, 0L );

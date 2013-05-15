@@ -13,9 +13,6 @@
 #ifndef GAP_TIETZE_H
 #define GAP_TIETZE_H
 
-#ifdef INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

@@ -1433,6 +1433,33 @@ InstallMethod( DefaultRingByGenerators,
       fi;
     end );
 
+    
+#############################################################################
+##
+#M  DefaultRingByGenerators( <mats> ) .  for a list of n x n integer matrices
+##
+InstallMethod( DefaultRingByGenerators,
+               "for lists of n x n integer matrices", true,
+               [ IsCyclotomicCollCollColl and IsFinite ],
+
+  function ( mats )
+    local d;
+    if IsEmpty(mats) or not ForAll(mats,IsRectangularTable and IsMatrix) then
+       TryNextMethod(); 
+    fi;
+    d := Length( mats[1] );
+    if d=0 then
+       TryNextMethod(); 
+    fi;
+    if not ForAll( mats, m -> Length(m)=d and Length(m[1])=d ) then
+       TryNextMethod(); 
+    fi;    
+    if not ForAll( mats, m -> ForAll( m, r -> ForAll(r,IsInt))) then
+       TryNextMethod(); 
+    fi;
+    return FullMatrixAlgebra(Integers,d);
+  end );
+  
 
 #############################################################################
 ##
@@ -1897,12 +1924,24 @@ local d,i,r;
   return d;
 end);
 
+##  The behaviour of View(String) for large integers can be configured via a
+##  user preference.
+DeclareUserPreference( rec(
+  name:= "MaxBitsIntView",
+  description:= [
+    "Maximal bit length of integers to 'view' unabbreviated.  \
+Default is about 30 lines of a 80 character wide terminal.  \
+Set this to '0' to avoid abbreviated ints."
+    ],
+  default:= 8000,
+  check:= val -> IsInt( val ) and 0 <= val,
+  ) );
 ##  give only a short info if |n| is larger than 2^GAPInfo.MaxBitsIntView
 InstallMethod(ViewString, "for integer", [IsInt], function(n)
-  local up, l, start, trail;
-  up := GAPInfo.UserPreferences;
-  if not IsSmallIntRep(n) and IsBound(up.MaxBitsIntView) and 
-      up.MaxBitsIntView > 64 and Log2Int(n) > up.MaxBitsIntView then
+  local mb, l, start, trail;
+  mb := UserPreference("MaxBitsIntView");
+  if not IsSmallIntRep(n) and mb <> fail and 
+      mb > 64 and Log2Int(n) > mb then
     l := LogInt(n, 10);
     start := String(QuoInt(n, 10^(l-2)));
     trail := String(n mod 1000);

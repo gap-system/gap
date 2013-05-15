@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id: setvar,v 1.13 2008/11/28 15:49:52 gapchron Exp $
 
 # where to put the temporary export tree and archives
 export DISTROOT=/scratch/gap4dist/4411/wrap

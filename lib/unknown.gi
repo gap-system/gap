@@ -48,8 +48,7 @@ BindGlobal( "UnknownsType", NewType( CyclotomicsFamily,
 ##
 InstallMethod( Unknown,
     "for positive integer",
-    true,
-    [ IsPosInt ], 0,
+    [ IsPosInt ],
     function( n )
     if LargestUnknown < n then
       LargestUnknown:= n;
@@ -64,8 +63,7 @@ InstallMethod( Unknown,
 ##
 InstallMethod( Unknown,
     "for empty argument",
-    true,
-    [], 0,
+    [],
     function()
     LargestUnknown:= LargestUnknown + 1;
     return Objectify( UnknownsType, [ LargestUnknown ] );
@@ -80,8 +78,7 @@ InstallMethod( Unknown,
 ##
 InstallMethod( PrintObj,
     "for unknown in default representation",
-    true,
-    [ IsUnknown and IsUnknownDefaultRep ],   0,
+    [ IsUnknown and IsUnknownDefaultRep ],
     function( obj )
     Print( "Unknown(", obj![1], ")" );
     end );
@@ -99,21 +96,18 @@ InstallMethod( PrintObj,
 ##
 InstallMethod( \=,
     "for unknown and cyclotomic",
-    true,
-    [ IsUnknown, IsCyc ], 0,
+    [ IsUnknown, IsCyc ],
     ReturnFalse );
 
 InstallMethod( \=,
     "for cyclotomic and unknown",
-    true,
-    [ IsCyc, IsUnknown ], 0,
+    [ IsCyc, IsUnknown ],
     ReturnFalse );
 
 InstallMethod( \=,
     "for two unknowns in default representation",
-    true,
     [ IsUnknown and IsUnknownDefaultRep,
-      IsUnknown and IsUnknownDefaultRep ], 0,
+      IsUnknown and IsUnknownDefaultRep ],
     function( x, y ) return x![1] = y![1]; end );
 
 
@@ -125,25 +119,22 @@ InstallMethod( \=,
 ##  and `false' otherwise.
 ##
 ##  Note that two unknowns with different <n> are assumed to be different.
-##  I dont like this at all.
+##  I don't like this at all.
 ##
 InstallMethod( \<,
     "for unknown and cyclotomic",
-    true,
-    [ IsUnknown, IsCyc ], 0,
+    [ IsUnknown, IsCyc ],
     ReturnFalse );
 
 InstallMethod( \<,
     "for cyclotomic and unknown",
-    true,
-    [ IsCyc, IsUnknown ], 0,
+    [ IsCyc, IsUnknown ],
     ReturnTrue );
 
 InstallMethod( \<,
     "for two unknowns in default representation",
-    true,
     [ IsUnknown and IsUnknownDefaultRep,
-      IsUnknown and IsUnknownDefaultRep ], 0,
+      IsUnknown and IsUnknownDefaultRep ],
     function( x, y ) return x![1] < y![1]; end );
 
 
@@ -156,8 +147,7 @@ InstallMethod( \<,
 ##
 InstallMethod( \+,
     "for unknown and cyclotomic",
-    true,
-    [ IsUnknown, IsCyc ], 0,
+    [ IsUnknown, IsCyc ],
     function( x, y )
     if y = 0 then
       return x;
@@ -168,8 +158,7 @@ InstallMethod( \+,
 
 InstallMethod( \+,
     "for cyclotomic and unknown",
-    true,
-    [ IsCyc, IsUnknown ], 0,
+    [ IsCyc, IsUnknown ],
     function( x, y )
     if x = 0 then
       return y;
@@ -180,13 +169,13 @@ InstallMethod( \+,
 
 InstallMethod( \+,
     "for two unknowns",
-    true,
-    [ IsUnknown, IsUnknown ], 0,
+    [ IsUnknown, IsUnknown ],
     function( x, y ) return Unknown(); end );
 
 
 #############################################################################
 ##
+#M  `- <x>' . . . . . . . . . . . . . . . . .  additive inverse of an unknown
 #M  `<x> - <y>' . . . . . . . . . . . . . . . . .  difference of two unknowns
 ##
 ##  is the difference of the two unknowns <x> and <y>.
@@ -194,8 +183,7 @@ InstallMethod( \+,
 ##
 InstallMethod( \-,
     "for unknown and cyclotomic",
-    true,
-    [ IsUnknown, IsCyc ], 0,
+    [ IsUnknown, IsCyc ],
     function( x, y )
     if y = 0 then
       return x;
@@ -206,17 +194,15 @@ InstallMethod( \-,
 
 InstallMethod( \-,
     "for cyclotomic and unknown",
-    true,
-    [ IsCyc, IsUnknown ], 0,
+    [ IsCyc, IsUnknown ],
     function( x, y )
     return Unknown();
     end );
 
 InstallMethod( \-,
     "for two unknowns in default representation",
-    true,
     [ IsUnknown and IsUnknownDefaultRep,
-      IsUnknown and IsUnknownDefaultRep ], 0,
+      IsUnknown and IsUnknownDefaultRep ],
     function( x, y )
     if x![1] = y![1] then
       return 0;
@@ -224,6 +210,11 @@ InstallMethod( \-,
       return Unknown();
     fi;
     end );
+
+InstallMethod( AINV_MUT,
+    "for an unknown",
+    [ IsUnknown ],
+    x -> Unknown() );
 
 
 #############################################################################
@@ -235,8 +226,7 @@ InstallMethod( \-,
 ##
 InstallMethod( \*,
     "for unknown and cyclotomic",
-    true,
-    [ IsUnknown, IsCyc ], 0,
+    [ IsUnknown, IsCyc ],
     function( x, y )
     if y = 0 then
       return 0;
@@ -249,8 +239,7 @@ InstallMethod( \*,
 
 InstallMethod( \*,
     "for cyclotomic and unknown",
-    true,
-    [ IsCyc, IsUnknown ], 0,
+    [ IsCyc, IsUnknown ],
     function( x, y )
     if x = 0 then
       return 0;
@@ -263,8 +252,7 @@ InstallMethod( \*,
 
 InstallMethod( \*,
     "for two unknowns",
-    true,
-    [ IsUnknown, IsUnknown ], 0,
+    [ IsUnknown, IsUnknown ],
     function( x, y )
     return Unknown();
     end );
@@ -280,8 +268,7 @@ InstallMethod( \*,
 ##
 InstallMethod( \/,
     "for unknown and cyclotomic",
-    true,
-    [ IsUnknown, IsCyc ], 0,
+    [ IsUnknown, IsCyc ],
     function( x, y )
     if y = 0 then
       Error( "divisor must be nonzero" );
@@ -303,14 +290,20 @@ InstallMethod( \/,
 ##
 InstallMethod( \^,
     "for unknown and positive integer",
-    true,
-    [ IsUnknown, IsPosInt ], 0,
+    [ IsUnknown, IsPosInt ],
     function( x, y )
-    if 1 < y then
-      return Unknown();
-    elif y = 1 then
+    if y = 1 then
       return x;
+    else
+      return Unknown();
     fi;
+    end );
+
+InstallMethod( \^,
+    "for unknown and zero",
+    [ IsUnknown, IsZeroCyc ],
+    function( x, zero )
+    return 1;
     end );
 
 
@@ -320,8 +313,7 @@ InstallMethod( \^,
 ##
 InstallMethod( String,
     "for an unknown in default representation",
-    true,
-    [ IsUnknown and IsUnknownDefaultRep ], 0,
+    [ IsUnknown and IsUnknownDefaultRep ],
     unknown -> Concatenation( "Unknown(", String( unknown![1] ), ")" ) );
 
 

@@ -78,7 +78,7 @@ DeclareOperation( "Directory", [ IsString ] );
 ##
 ##  <#GAPDoc Label="DirectoryHome">
 ##  <ManSection>
-##  <Oper Name="DirectoryHome" />
+##  <Oper Name="DirectoryHome" Arg=''/>
 ##
 ##  <Description>
 ##  returns a directory object for the users home directory, defined as a
@@ -88,8 +88,8 @@ DeclareOperation( "Directory", [ IsString ] );
 ##  directory that is easily accessible by the user.
 ##
 ##  Under Unix systems (including Mac OS X) this will be the
-##  usual user home directory. Under Windows it will the the users <C>My
-##  Documents</C> folder (or the appropriate name under different
+##  usual user home directory. Under Windows it will the the users 
+##  <C>My Documents</C> folder (or the appropriate name under different
 ##  languages).
 ##  </Description>
 ##  </ManSection>
@@ -103,7 +103,7 @@ DeclareGlobalFunction( "DirectoryHome" );
 ##
 ##  <#GAPDoc Label="DirectoryDesktop">
 ##  <ManSection>
-##  <Oper Name="DirectoryDesktop" />
+##  <Oper Name="DirectoryDesktop" Arg=''/>
 ##
 ##  <Description>
 ##  returns a directory object for the users desktop directory as defined on
@@ -113,7 +113,7 @@ DeclareGlobalFunction( "DirectoryHome" );
 ##
 ##  Under Unix systems (including Mac OS X) this will be the
 ##  <C>Desktop</C> directory in the users home directory if it exists, and
-##  the users home directry otherwise. 
+##  the users home directory otherwise. 
 ##  Under Windows it will the the users <C>Desktop</C> folder
 ##  (or the appropriate name under different
 ##  languages).
@@ -189,8 +189,11 @@ DeclareGlobalFunction( "DirectoryDesktop" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+DeclareOperation( "Filename", [ IsDirectory, IsString ] );
 DeclareOperation( "Filename", [ IsList, IsString ] );
 
+DeclareOperation( "ExternalFilename", [ IsDirectory, IsString ] );
+DeclareOperation( "ExternalFilename", [ IsList, IsString ] );
 
 #############################################################################
 ##
@@ -368,8 +371,8 @@ DeclareGlobalFunction("DirectoryContents");
 ##  <!-- why the hell was this defined that way?-->
 ##  <!-- returning an empty list would be equally good!-->
 ##  <P/>
-##  As the files in the &GAP; root directory
-##  (see&nbsp;<Ref Sect="GAP Root Directory"/>) can be distributed into
+##  As the files in the &GAP; root directories
+##  (see&nbsp;<Ref Sect="GAP Root Directories"/>) can be distributed into
 ##  different directories in the filespace a list of directories is returned.
 ##  In order to find an existing file in a &GAP; root directory you should
 ##  pass that list to
@@ -465,10 +468,8 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-SplitString:="2b defined";
-Exec:="2b defined";
 BIND_GLOBAL( "DirectoryTemporary", function( arg )
-    local   dir,a;
+    local   dir,drive,a;
 
     # check arguments
     if 1 < Length(arg)  then
@@ -478,73 +479,32 @@ BIND_GLOBAL( "DirectoryTemporary", function( arg )
   # create temporary directory
 
   dir := TmpDirectory();
-  if ARCH_IS_WINDOWS() then
-    # just in case the new kernel code still fails under Windows, default
-    if not ':' in dir then # non-windows path -- so we're still wrong
-      a:=SplitString(dir,"/");
-      a:=a[Length(a)]; # is "tmp.uq8dsf", get rid of tmp. bit
-      a:=SplitString(a,".");
-      a:=Concatenation("t",a[2]); # now its tuq8dsf, which should be fine.
-      dir:=Concatenation("C:/WINDOWS/Temp/",a);
-
-      # dirty, dirty hack: Create temp folder in C:\WINDOWS\Temp
-      Exec(Concatenation("mkdir ",ReplacedString(dir,"/","\\")));
-
-      Add(dir,'/');
-    fi;
-  fi;
-
   if dir = fail  then
     return fail;
   fi;
+  if ARCH_IS_WINDOWS() then
+    # We want to deliver a Windows path
+    if dir{[1..10]} = "/cygdrive/" then
+        drive := dir[11];
+        dir := Concatenation("C:",dir{[12..Length(dir)]});
+        dir[1] := drive;
+    fi;
+  fi;
+
   # remember directory name
   Add( GAPInfo.DirectoriesTemporary, dir );
 
-    return Directory(dir);
+  return Directory(dir);
 end );
-UNBIND_GLOBAL("SplitString");
 
-#T THIS IS A HACK UNTIL `RemoveDirectory' IS AVAILABLE
-InputTextNone := "2b defined";
-OutputTextNone := "2b defined";
-Process := "2b defined";
+DeclareGlobalFunction( "RemoveDirectoryRecursively" );
 
-if ARCH_IS_UNIX() then
-  # as we use `rm' this will only run under UNIX.
-  InstallAtExit( function()
-      local    i,  input,  output,  tmp,  rm,  proc;
-
-      input  := InputTextNone();
-      output := OutputTextNone();
-      tmp    := Directory("/tmp");
-      rm     := Filename( DirectoriesSystemPrograms(), "rm" );
-      if rm = fail  then
-	  Print("#W  cannot execute `rm' to remove temporary directories\n");
-	  return;
-      fi;
-
-      for i  in GAPInfo.DirectoriesTemporary  do
-	  proc := Process( tmp, rm, input, output, [ "-rf", i ] );
-      od;
-
+InstallAtExit( function()
+  local path;
+  for path in GAPInfo.DirectoriesTemporary do
+      RemoveDirectoryRecursively(path);
+  od;
   end );
-fi;
-
-if ARCH_IS_WINDOWS() then
-  # as we use `rmdir' this will only run under Windows.
-  InstallAtExit( function()
-  local i;
-
-    for i  in GAPInfo.DirectoriesTemporary  do
-      # delete all files in there with force
-      Exec(Concatenation("del /F /S /Q ",ReplacedString(i,"/","\\")));
-      # then delete folders
-      Exec(Concatenation("rmdir /S /Q ",ReplacedString(i,"/","\\")));
-    od;
-
-  end );
-fi;
-UNBIND_GLOBAL("Exec");
 
 
 #############################################################################
@@ -682,17 +642,18 @@ end );
 ##  by the string <A>filename</A>, and reads the file back into &GAP;
 ##  when you exit the editor again.
 ##  <P/>
-##  You should set the &GAP; variable <C>GAPInfo.UserPreferences.Editor</C>
-##  to the name of the editor that you usually use,
+##  &GAP; will call your preferred editor if you call
+##  <C>SetUserPreference("Editor", <A>path</A>);</C>
+##  where <A>path</A> is the  path to your editor, 
 ##  e.g., <F>/usr/bin/vim</F>.
 ##  On Windows you can use <C>edit.com</C>. 
-##  ##  <P/>
+##  <P/>
 ##  Under Mac OS X, you should use
-##  <C>GAPInfo.UserPreferences.Editor := "open"</C>; this will open 
-##  the file in the default editor. If you set 
-##  <C>GAPInfo.UserPreferences.EditorOptions := ["-t"]</C>, the file
-##  will open in TextEdit, and 
-##  <C>GAPInfo.UserPreferences.EditorOptions := ["-a", "&lt;appl&gt;"]</C>
+##  <C>SetUserPreference("Editor", "open");</C>, this will open 
+##  the file in the default editor. If you call 
+##  <C>SetUserPreference("EditorOptions", ["-t"]);</C>, the file
+##  will open in <F>TextEdit</F>, and 
+##  <C>SetUserPreference("EditorOptions", ["-a", "&lt;appl&gt;"]);</C>
 ##  will open the file using the application <C>&lt;appl&gt;</C>.
 ##  <P/>
 ##  This can for example be done in your <F>gap.ini</F> file,
@@ -708,6 +669,7 @@ DeclareGlobalFunction( "Edit" );
 ##
 #F  CreateCompletionFiles( [<path>] ) . . . . . . create "lib/readX.co" files
 ##
+##  NO LONGER SUPPORTED IN GAP >= 4.5 
 ##  <#GAPDoc Label="CreateCompletionFiles">
 ##  <ManSection>
 ##  <Func Name="CreateCompletionFiles" Arg='[path]'/>

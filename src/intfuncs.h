@@ -15,9 +15,6 @@
 #ifndef GAP_INTFUNCS_H
 #define GAP_INTFUNCS_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 /* link between Mersenne Twister randim numbers and
    representation specific large integer codes */
 

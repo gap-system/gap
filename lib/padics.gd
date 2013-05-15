@@ -55,6 +55,7 @@ DeclareCategoryFamily( "IsPadicNumber" );
 ##  <Filt Name="IsPurePadicNumber" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
+##  The category of pure <M>p</M>-adic numbers.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -71,6 +72,7 @@ DeclareCategory( "IsPurePadicNumber", IsPadicNumber );
 ##  <Filt Name="IsPurePadicNumberFamily" Arg='fam' Type='Category'/>
 ##
 ##  <Description>
+##  The family of pure <M>p</M>-adic numbers.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -87,6 +89,12 @@ DeclareCategoryFamily( "IsPurePadicNumber" );
 ##  <Filt Name="IsPadicExtensionNumber" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
+##  The category of elements of the extended <M>p</M>-adic field.
+##  <Example><![CDATA[
+##  gap>  efam:=PadicExtensionNumberFamily(3, 5, [1,1,1], [1,1]);;
+##  gap> IsPadicExtensionNumber(PadicNumber(efam,7/9));
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -103,6 +111,12 @@ DeclareCategory( "IsPadicExtensionNumber", IsPadicNumber );
 ##  <Filt Name="IsPadicExtensionNumberFamily" Arg='fam' Type='Category'/>
 ##
 ##  <Description>
+##  Family of elements of the extended <M>p</M>-adic field.
+##  <Example><![CDATA[
+##  gap> efam:=PadicExtensionNumberFamily(3, 5, [1,1,1], [1,1]);;
+##  gap> IsPadicExtensionNumberFamily(efam);
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

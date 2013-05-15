@@ -957,20 +957,23 @@ InstallMethod( NiceBasis,
 #M  NiceBasisNC( <B> )
 ##
 InstallMethod( NiceBasisNC,
+    "for basis by nice basis with precomputed basis",
+    [ IsBasisByNiceBasis and HasNiceBasis ],
+    NiceBasis );
+
+InstallMethod( NiceBasisNC,
     "for basis by nice basis",
     [ IsBasisByNiceBasis ],
     function( B )
-    local A;
-    A:= UnderlyingLeftModule( B );
+    local A, V;
+    V:= UnderlyingLeftModule( B );
     if HasBasisVectors( B ) then
-      A:= BasisNC( NiceFreeLeftModule( A ),
-                   List( BasisVectors( B ), v -> NiceVector( A, v ) ) );
+      A:= BasisNC( NiceFreeLeftModule( V ),
+                   List( BasisVectors( B ), v -> NiceVector( V, v ) ) );
     else
-      A:= Basis( NiceFreeLeftModule( A ) );
+      A:= Basis( NiceFreeLeftModule( V ) );
     fi;
-    if not HasNiceBasis( B ) then
-      SetNiceBasis( B, A );
-    fi;
+    SetNiceBasis( B, A );
     return A;
     end );
 #T is this operation meaningful at all??

@@ -2,7 +2,6 @@
     Installation of the mixed style GAP web site from 4.4 release
     =============================================================
 
-  $Id: README.InstallWebsite,v 1.1 2004/04/06 22:30:48 gap Exp $
 
 - checkout 'old style' part
     cvs -d :pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS co WWW

@@ -26,9 +26,6 @@
 #ifndef GAP_STRING_H
 #define GAP_STRING_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 #include <string.h>  /* for memcpy */
 
 /****************************************************************************
@@ -271,8 +268,9 @@ extern Int IsStringConv (
 ???  */
 #define C_NEW_STRING(string,len,cstr) \
   do { \
-    string = NEW_STRING( len ); \
-    memcpy( CHARS_STRING(string), (cstr), (len) ); \
+    size_t tmp_len = (len); \
+    string = NEW_STRING( tmp_len ); \
+    memcpy( CHARS_STRING(string), (cstr), tmp_len ); \
   } while ( 0 );
 
 /****************************************************************************

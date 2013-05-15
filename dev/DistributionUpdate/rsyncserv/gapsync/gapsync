@@ -1,7 +1,7 @@
 #!/bin/bash
 
-##  init and syncronization script for GAP 4.4 under Linux
-##  $Id: gapsync,v 1.15 2008/04/17 08:46:44 gap Exp $     Frank Lübeck
+##  init and syncronization script for GAP 4.5 under Linux
+##  (C) Frank LÃ¼beck
 arch=`uname -m`
 if [ ! -f gapsync.issyncdir ]; then
   echo Welcome to the GAP installation by syncronizing a reference installation.
@@ -36,19 +36,21 @@ if [ ! -f gapsync.issyncdir ]; then
     exit 1
   fi
 
-  echo "          a directory with at least 750 MB of free space"
+  echo "          a directory with at least 1.4 GB of free space"
   echo
   echo
 
   echo "Please, tell me an absolute path for the installation of GAP "
   echo "(default is /usr/local/lib).  Everything will be stored in a "
-  echo "subdirectory 'gap4r4', except for the start scripts."
+  echo "subdirectory 'gap4r5', except for the start scripts."
   read -p '---> ' -e gappath
   if [ $gappath'X' == 'X' ]; then
-    gappath="/usr/local/lib/gap4r4"
+    gappath="/usr/local/lib/gap4r5"
   else
-    gappath=$gappath'/gap4r4'
+    gappath=$gappath'/gap4r5'
   fi
+  # avoid multiple //
+  gappath=${gappath//\/\//\/}
 
   echo "Also, tell me an absolute path for the scripts to start GAP "
   echo "(default is /usr/local/bin)"
@@ -123,7 +125,7 @@ else
   cd $gappath
 fi
 
-line=''$rsync' -avz --delete --port 8731 --exclude=local/ beteigeuze.math.rwth-aachen.de::gap4r4/ .'
+line=''$rsync' -avz --delete --port 8731 --exclude=local/ rsync.gap-system.org::gap4r5/ .'
 echo 'Calling: '$line 
 
 if ! $line; then
@@ -231,8 +233,8 @@ if [ $arch'X' = x86_64X ]; then
   if [ ! -f $binpath/pargap64 ]; then
     rm -f local/bin/pargap64
     echo "Creating start script "$binpath"/pargap64," 
-    echo "      (you can customize this by editing local/bin/pargap)."
-    echo "#!/bin/sh" > local/bin/pargap
+    echo "      (you can customize this by editing local/bin/pargap64)."
+    echo "#!/bin/sh" > local/bin/pargap64
     echo "GAP_DIR="$gappath >> local/bin/pargap64
     cat gapsync/pargap64.sh >> local/bin/pargap64
     chmod 755 local/bin/pargap64

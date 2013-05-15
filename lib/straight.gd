@@ -844,7 +844,7 @@ DeclareGlobalFunction( "IntermediateResultOfSLPWithoutOverwrite" );
 ##
 ##  <Description>
 ##  <A>s1</A> and <A>s2</A> must be two slps that return a single element with the same
-##  number of inputs. This function contructs an slp that returns the product
+##  number of inputs. This function constructs an slp that returns the product
 ##  of the two results the slps <A>s1</A> and <A>s2</A> would produce with the same
 ##  input.
 ##  </Description>

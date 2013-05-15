@@ -36,9 +36,6 @@
 #ifndef GAP_GASMAN_H
 #define GAP_GASMAN_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 #define BOEHM_GC 1
 
 /* This definition switches to the bigger bag header, supporting bags up to
@@ -48,18 +45,20 @@
 
 /****************************************************************************
 **
-
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#ifdef CONFIG_H
-
 #include "config.h"
 
-#endif
+
 /* on 64 bit systems use only two words for bag header */
 
 #if SIZEOF_VOID_P == 8
-#define USE_NEWSHAPE 
+#define USE_NEWSHAPE
+#elif !defined(SIZEOF_VOID_P) && !defined(USE_PRECOMPILED)
+/* If SIZEOF_VOID_P has not been defined, and we are not currently
+   re-making the dependency list (via cnf/Makefile), then trigger
+   an error. */
+#error Something is wrong with this GAP installation: SIZEOF_VOID_P not defined
 #endif
 
 

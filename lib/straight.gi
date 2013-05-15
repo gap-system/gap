@@ -176,7 +176,7 @@ InstallGlobalFunction( StringToStraightLineProgram,
           else
 
             # The bracket may be powered or be multiplied.
-            if i < len and string[ i+1 ] = '^' then
+            if i+1 < len and string[ i+1 ] = '^' then
 
               exp:= 0;
               j:= i+2;
@@ -2560,7 +2560,7 @@ InstallGlobalFunction( IntermediateResultOfSLPWithoutOverwrite,
 #F  ProductOfStraightLinePrograms( <s1>, <s2> )
 ##
 ##  <s1> and <s2> must be two slps that return a single element with the same
-##  number of inputs. This function contructs an slp that returns the result
+##  number of inputs. This function constructs an slp that returns the result
 ##  <s1>(g_1,...,g_n) * <s2>(g_1,...,g_n) for all possible inputs g_1,...,g_n.
 ##
 InstallGlobalFunction( ProductOfStraightLinePrograms,

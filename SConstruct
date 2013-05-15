@@ -32,7 +32,7 @@ if GAP["cpp_compiler"] != "":
 compiler = GAP["CC"]
 cpp_compiler = GAP["CXX"]
 platform_name = commands.getoutput("cnf/config.guess")
-build_dir = "bin/" + platform_name + "-" + compiler
+build_dir = "bin/" + platform_name + "-" + compiler + "-hpc"
 
 default_ncpus = 4
 
@@ -72,7 +72,7 @@ except: pass
 try: os.unlink("bin/current")
 except: pass
 
-try: os.symlink(platform_name+"-"+compiler, "bin/current")
+try: os.symlink(build_dir[4:], "bin/current")
 except: pass
  
 
@@ -103,11 +103,13 @@ if not has_config or "config" in COMMAND_LINE_TARGETS or changed_abi:
   if not GetOption("clean"):
     if GAP["abi"] != "auto":
       os.environ["CFLAGS"] = " -m" + GAP["abi"]
-    os.system("./configure CC=\""+GAP["CC"]+"\"")
+    os.environ["CONFIGNAME"] = "hpc"
+    os.system("./hpc/configure CC=\""+GAP["CC"]+"\"")
     os.system("cd "+build_dir+"; sh ../../cnf/configure.out")
     os.system("test -w bin/gap.sh && chmod ugo+x bin/gap.sh")
     if GAP["abi"] != "auto":
       del os.environ["CFLAGS"]
+    del os.environ["CONFIGNAME"]
 
 default_abi, has_config = abi_from_config(config_header_file)
 if not has_config and not GetOption("clean"):
@@ -378,8 +380,5 @@ if preprocess:
         preprocess + " $SOURCE >$TARGET")
   source = map(lambda s: "gen/"+s[4:], source)
 
-GAP.Command("extern/include/jhash.h", "extern/jenkins/jhash.h",
-            "cp -f $SOURCE $TARGET")
 GAP.Command("extern/include/sysinfo.h", [], SysInfoBuilder)
-GAP.Object("extern/jenkins/jhash.o", "extern/jenkins/jhash.c")
 GAP.Program(build_dir + "/gap", source, LIBS=libs, **options)

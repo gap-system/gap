@@ -506,7 +506,7 @@ InstallTrueMethod(IsEquivalenceRelation,
 ##  <Description>
 ##  is the smallest binary relation containing the binary relation <A>R</A>
 ##  which is reflexive.
-##  This closure inherents the properties symmetric and transitive from
+##  This closure inherits the properties symmetric and transitive from
 ##  <A>R</A>.
 ##  E.g., if <A>R</A> is symmetric then its reflexive closure
 ##  is also.
@@ -527,7 +527,7 @@ DeclareOperation("ReflexiveClosureBinaryRelation", [IsBinaryRelation]);
 ##  <Description>
 ##  is the smallest binary relation containing the binary relation <A>R</A>
 ##  which is symmetric.
-##  This closure inherents the properties reflexive and transitive from
+##  This closure inherits the properties reflexive and transitive from
 ##  <A>R</A>.
 ##  E.g., if <A>R</A> is reflexive then its symmetric closure is also.
 ##  </Description>
@@ -547,7 +547,7 @@ DeclareOperation("SymmetricClosureBinaryRelation", [IsBinaryRelation]);
 ##  <Description>
 ##  is the smallest binary relation containing the binary relation <A>R</A>
 ##  which is transitive.
-##  This closure inherents the properties reflexive and symmetric from
+##  This closure inherits the properties reflexive and symmetric from
 ##  <A>R</A>.
 ##  E.g., if <A>R</A> is symmetric then its transitive closure is also.
 ##  <P/>

@@ -12,11 +12,10 @@
 ##
 
 gap> START_TEST("helpsys.tst");
-gap> NoSelectHelpMatches := true;; # needed only for compatibility with the Browse package
+gap> SetUserPreference("Browse", "SelectHelpMatches", false); # needed only for compatibility with the Browse package
 gap> SetHelpViewer("screen");;
-gap> savepagerprefs:=GAPInfo.UserPreferences.Pager;;
-gap> GAPInfo.UserPreferences.Pager:= 0;
-0
+gap> savepagerprefs:=UserPreference("Pager");;
+gap> SetUserPreference("Pager",0);
 gap> savepager:=PAGER_EXTERNAL;;
 gap> MakeReadWriteGlobal("PAGER_EXTERNAL");
 gap> PAGER_EXTERNAL:=function(lines)end;
@@ -25,8 +24,8 @@ gap> HELP(":?");
 gap> for i in [1..Length(HELP_LAST.TOPICS)] do HELP(String(i)); od;
 gap> PAGER_EXTERNAL:=savepager;;
 gap> MakeReadOnlyGlobal("PAGER_EXTERNAL");
-gap> GAPInfo.UserPreferences.Pager:=savepagerprefs;;
-gap> STOP_TEST( "helpsys.tst", 47567800000 );
+gap> SetUserPreference("Pager",savepagerprefs);
+gap> STOP_TEST( "helpsys.tst", 58077900000 );
 
 
 #############################################################################

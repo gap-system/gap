@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: ISO-8859-1 -*-
-##  repack.py                                            Frank Lübeck
+# -*- coding: UTF-8 -*-
+##  repack.py                                            Frank LÃ¼beck
 ##  
 ##  Utility for creating several archive formats from one of them.
 ##  
-##  $Id: repack.py,v 1.9 2008/06/23 14:27:37 gap Exp $
 
 
 import sys, os, string, tempfile
@@ -50,6 +49,13 @@ This program assumes that the following programs are available:
 - rm, mv, cd 
 - python  (since this is a python program)
 """
+
+# utility for shell commands
+import subprocess
+def call(str):
+  p = subprocess.Popen(str, shell=True, 
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+  return (p.stdin, p.stdout)
 
 ext = ''
 
@@ -104,7 +110,7 @@ if txtfilesfromstdin:
     print 'Got list of textfiles from input.'
 elif ext == '.zoo':
   # get it from the zoo comments
-  (inf,outf) = os.popen2('unzoo -v '+arch+'.zoo')
+  (inf,outf) = call('unzoo -v '+arch+'.zoo')
   inf.close()
   res = outf.read()
   outf.close()
@@ -125,7 +131,7 @@ elif ext == '.zoo':
   if not quiet:
     print 'Got list of text files from zoo archive.'
 elif ext == '.tar.gz':
-  (inf,outf) = os.popen2('tar tzf '+arch+'.tar.gz')
+  (inf,outf) = call('tar tzf '+arch+'.tar.gz')
   inf.close()
   res = outf.read()
   outf.close()
@@ -134,7 +140,7 @@ elif ext == '.tar.gz':
 
   textfiles = selext(res.split('\n'), textexts)
 elif ext == '.tar.bz2':
-  (inf,outf) = os.popen2('tar tjf '+arch+'.tar.bz2')
+  (inf,outf) = call('tar tjf '+arch+'.tar.bz2')
   inf.close()
   res = outf.read()
   outf.close()
@@ -142,7 +148,7 @@ elif ext == '.tar.bz2':
   if not quiet:
     print 'Got list of text files from tar.bz2 archive by file extensions.'
 elif ext == '-win.zip':
-  (inf,outf) = os.popen2('unzip -qql '+arch+'-win.zip')
+  (inf,outf) = call('unzip -qql '+arch+'-win.zip')
   inf.close()
   res = outf.read()
   outf.close()
@@ -197,7 +203,7 @@ if '-all' in sys.argv:
 
 # collect names of non-text files 
 try:
-  (inf,outf) = os.popen2('cd '+tmpdir+'; find * -print0')
+  (inf,outf) = call('cd '+tmpdir+'; find * -print0')
   inf.close()
   res = outf.read()
   outf.close()

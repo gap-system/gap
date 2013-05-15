@@ -115,9 +115,7 @@
 
 
 
-#define INCLUDE_DECLARATION_PART
 #include        "gasman.h"              /* garbage collector               */
-#undef  INCLUDE_DECLARATION_PART
 
 #ifdef BOEHM_GC
 #ifndef DISABLE_GC
@@ -837,7 +835,7 @@ void InitGlobalBag (
       UInt i;
       if (cookie != (Char *)0)
         for (i = 0; i < GlobalBags.nr; i++)
-          if ( 0 == SyStrcmp(GlobalBags.cookie[i], cookie) )
+          if ( 0 == strcmp(GlobalBags.cookie[i], cookie) )
             if (GlobalBags.addr[i] == addr)
               Pr("Duplicate global bag entry %s\n", (Int)cookie, 0L);
             else
@@ -872,7 +870,7 @@ static Int IsLessGlobal (
     return -1;
   if (cookie2 == 0L)
     return 1;
-  return SyStrcmp(cookie1, cookie2) < 0;
+  return strcmp(cookie1, cookie2) < 0;
 }
 #endif
 
@@ -934,7 +932,7 @@ Bag * GlobalByCookie(
     {
       for (i = 0; i < GlobalBags.nr; i++)
         {
-          if (SyStrcmp(cookie, GlobalBags.cookie[i]) == 0)
+          if (strcmp(cookie, GlobalBags.cookie[i]) == 0)
             return GlobalBags.addr[i];
         }
       return (Bag *)0L;
@@ -945,7 +943,7 @@ Bag * GlobalByCookie(
       bottom = 0;
       while (top >= bottom) {
         middle = (top + bottom)/2;
-        res = SyStrcmp(cookie,GlobalBags.cookie[middle]);
+        res = strcmp(cookie,GlobalBags.cookie[middle]);
         if (res < 0)
           top = middle-1;
         else if (res > 0)
@@ -2097,7 +2095,7 @@ void SparcStackFuncBags( void )
 #endif
 
 
-void GenStackFuncBags ()
+void GenStackFuncBags ( void )
 {
     Bag *               top;            /* top of stack                    */
     Bag *               p;              /* loop variable                   */
@@ -2777,6 +2775,9 @@ again:
     CheckMasterPointers();
 #endif
     
+    /* Possibly advise the operating system about unused pages:            */
+    SyMAdviseFree();
+
     /* return success                                                      */
     return 1;
 #else

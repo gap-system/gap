@@ -2,7 +2,6 @@
 #
 # fix.nsi
 #
-# $Id: fix.nsi,v 1.9 2008/12/18 14:27:08 alexk Exp $
 #
 # TO-DO: 
 # - check GAP version, if 4.3 then exit

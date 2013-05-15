@@ -16,9 +16,6 @@
 #ifndef GAP_CODE_H
 #define GAP_CODE_H
 
-#ifdef INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **
@@ -164,7 +161,7 @@
 
 #define T_EMPTY                 (FIRST_STAT_TNUM+78)
 
-#define T_PROCCALL_OPTS        (FIRST_STAT_TNUM+ 79)
+#define T_PROCCALL_OPTS         (FIRST_STAT_TNUM+ 79)
 
 #define T_ATOMIC               (FIRST_STAT_TNUM+80)
 
@@ -363,8 +360,8 @@
 #define T_ISB_COMOBJ_EXPR       (FIRST_EXPR_TNUM+80)
 
 #define T_FUNCCALL_OPTS         (FIRST_EXPR_TNUM+81)
-#define T_FLOAT_EXPR_EAGER         (FIRST_EXPR_TNUM+82)
-#define T_FLOAT_EXPR_LAZY         (FIRST_EXPR_TNUM+83)
+#define T_FLOAT_EXPR_EAGER      (FIRST_EXPR_TNUM+82)
+#define T_FLOAT_EXPR_LAZY       (FIRST_EXPR_TNUM+83)
 
 #define LAST_EXPR_TNUM          T_FLOAT_EXPR_LAZY
 

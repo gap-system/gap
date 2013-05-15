@@ -17,18 +17,18 @@ fi
 
 dirnam=GAPDoc-`cat ./version`
 rm -rf ttttmp
-echo "Checking out current version into ttttmp/"$dirnam" . . ."
-mkdir -p ttttmp/$dirnam
-cd ttttmp/$dirnam
-cp -a ../../CVS .
+echo "Checking out current version into ttttmp/pkg/"$dirnam" . . ."
+mkdir -p ttttmp/pkg/$dirnam
+cd ttttmp/pkg/$dirnam
+cp -a ../../../CVS .
 cvs update -d > /dev/null 2>&1
 echo building documentation
-../../../../bin/gap.sh < makedocrel.g > /dev/null
+../../../../../bin/gap.sh -r -l "../..;" < makedocrel.g > /dev/null
 
 echo "removing unwanted files . . ."
 rm -r pack TODO clean index.html pkgreadme.css
 rm -rf `find . -regex ".*/CVS"`
-rm -rf */*.{log,aux,blg,brf,bbl,idx,ilg,ind,pnr} */*.xml.bib
+rm -rf */*.{log,aux,blg,brf,bbl,idx,ilg,ind,pnr} */*.xml.bib */.cvsignore
 rm -f ./makedoc.g ./maketxt ./doku toweb
 
 echo "creating archive . . ."
@@ -36,8 +36,8 @@ cd ..
 tar cf $dirnam.tar $dirnam
 bzip2 -9 $dirnam.tar
 echo Cleaning up
-mv  $dirnam.tar.bz2 ..
-cd ..
+mv  $dirnam.tar.bz2 ../..
+cd ../..
 rm -rf ttttmp
 
 echo New archive in ./$dirnam.tar.bz2

@@ -629,48 +629,6 @@ end);
 
 #############################################################################
 ##
-#M  ListOp( <list> )
-#M  ListOp( <list>, <func> )
-##
-InstallMethod( ListOp,
-    "for a list",
-    [ IsList ],
-    ShallowCopy );
-
-InstallMethod( ListOp,
-    "for a dense list",
-    [ IsList and IsDenseList ],
-    list -> list{ [ 1 .. Length( list ) ] } );
-
-InstallMethod( ListOp,
-    "for a dense list, and a function",
-    [ IsDenseList, IsFunction ],
-    function ( list, func )
-    local   res, i;
-    res := [];
-    for i  in [ 1 .. Length( list ) ] do
-        res[i] := func( list[i] );
-    od;
-    return res;
-    end );
-
-InstallMethod( ListOp,
-    "for any list, and a function",
-    [ IsList, IsFunction ],
-    function ( list, func )
-    local   res, i;
-    res := [];
-    for i  in [ 1 .. Length( list ) ] do
-        if IsBound(list[i]) then
-            Add(res,func( list[i] ));
-        fi;
-    od;
-    return res;
-end );
-
-
-#############################################################################
-##
 #M  SSortedList( <list> )  . . . . . . . . . . . set of the elements of a list
 ##
 InstallOtherMethod( SSortedList, "for a plist",
@@ -2406,7 +2364,20 @@ InstallMethod( MaximumList,
     od;
     return max;
     end );
-
+    
+InstallMethod( MaximumList,
+    "for a list and a seed",
+    [ IsList, IsObject ],
+    function ( list, max )
+    local elm;
+    for elm in list do
+        if max < elm  then
+            max := elm;
+        fi;
+    od;
+    return max;
+    end );
+    
 InstallMethod( MaximumList,
     "for a range",
     [ IsRange ],
@@ -2423,14 +2394,42 @@ InstallMethod( MaximumList,
     end );
 
 InstallMethod( MaximumList,
+    "for a range and a seed",
+    [ IsRange, IsObject ],
+    function ( range, max )
+    local len;
+    len := Length(range);
+    if max < range[1] then
+        max := range[1];
+    fi;
+    if len > 0 and max < range[len] then
+        max := range[len];
+    fi;
+    return max;
+    end );
+
+InstallMethod( MaximumList,
     "for a sorted list",
     [ IsSSortedList ],
-    function ( l )
-    local min;
-    if Length( l ) = 0 then
+    function ( list )
+    local len;
+    len := Length(list);
+    if len = 0 then
       Error( "MaximumList: <list> must contain at least one element" );
     fi;
-    return l[Length(l)];
+    return list[len];
+    end );
+
+InstallMethod( MaximumList,
+    "for a sorted list and a seed",
+    [ IsSSortedList, IsObject ],
+    function ( list, max )
+    local len;
+    len := Length(list);
+    if len > 0 and list[len] > max then
+        return list[len];
+    fi;
+    return max;
     end );
 
 
@@ -2477,14 +2476,28 @@ InstallMethod( MinimumList,
     end );
 
 InstallMethod( MinimumList,
+    "for a list",
+    [ IsList, IsObject ],
+    function ( list, min )
+    local elm;
+    for elm  in list  do
+        if elm < min then
+            min := elm;
+        fi;
+    od;
+    return min;
+    end );
+
+InstallMethod( MinimumList,
     "for a range",
     [ IsRange ],
     function ( range )
-    local min;
-    if Length( range ) = 0 then
+    local min, len;
+    len := Length(range);
+    if len = 0 then
         Error( "MinimumList: <range> must contain at least one element" );
     fi;
-    min := range[ Length( range ) ];
+    min := range[ len ];
     if range[1] < min then
         return range[1];
     fi;
@@ -2492,16 +2505,39 @@ InstallMethod( MinimumList,
     end );
 
 InstallMethod( MinimumList,
+    "for a range and a seed",
+    [ IsRange, IsObject ],
+    function ( range, min )
+    local len;
+    len := Length(range);
+    if min > range[1] then
+        min := range[1];
+    fi;
+    if len > 0 and min > range[len] then
+        min := range[len];
+    fi;
+    return min;
+    end );
+    
+InstallMethod( MinimumList,
     "for a sorted list",
     [ IsSSortedList ],
-    function ( l )
-    local min;
-    if Length( l ) = 0 then
+    function ( list )
+    if Length(list) = 0 then
       Error( "MinimumList: <list> must contain at least one element" );
     fi;
-    return l[1];
+    return list[1];
     end );
 
+InstallMethod( MinimumList,
+    "for a sorted list and a seed",
+    [ IsSSortedList, IsObject ],
+    function ( list, min )
+    if Length(list) > 0 and list[1] < min then
+        return list[1];
+    fi;
+    return min;
+    end );
 
 #############################################################################
 ##

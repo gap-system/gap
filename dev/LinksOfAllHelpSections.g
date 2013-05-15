@@ -1,5 +1,5 @@
 ##  
-##  LinksOfAllHelpSections.g                            Frank Lübeck
+##  LinksOfAllHelpSections.g                            Frank LÃ¼beck
 ##
 ##  A utility for dumping links to all available manual sections 
 ##  (for use with named manual references on web pages or in search
@@ -8,7 +8,6 @@
 ##  First load all the documentation you want to cover. Then read this
 ##  file. The result is written to a file "AllLinksOfAllHelpSections.data".
 ##
-##  $Id: LinksOfAllHelpSections.g,v 1.1 2003/11/12 16:45:22 gap Exp $
 ##  
 
 NOTPKG := ["gpisotyp", "genus", "aclib","xgap"];

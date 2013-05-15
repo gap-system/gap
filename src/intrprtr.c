@@ -50,9 +50,7 @@
 #include        "funcs.h"               /* functions                       */
 #include        "read.h"
 
-#define INCLUDE_DECLARATION_PART
 #include        "intrprtr.h"            /* interpreter                     */
-#undef  INCLUDE_DECLARATION_PART
 
 #include	"tls.h"
 #include	"thread.h"
@@ -96,7 +94,7 @@
 **  'or' and 'and'  constructs where the  left operand already determines the
 **  outcome.
 **
-**  This mode is also used in Info and Assert, when arguments are not printed. 
+**  This mode is also used in Info and Assert, when arguments are not printed.
 */
 /* TL: UInt IntrIgnoring; */
 
@@ -279,14 +277,14 @@ ExecStatus IntrEnd (
         /* remember whether the interpreter interpreted a return-statement */
         intrReturning = TLS->intrReturning;
         TLS->intrReturning = 0;
-        
+
         /* must be back in immediate (non-ignoring, non-coding) mode       */
         assert( TLS->intrIgnoring == 0 );
         assert( TLS->intrCoding   == 0 );
 
         /* and the stack must contain the result value (which may be void) */
-	assert( TLS->countObj == 1 );
-	TLS->intrResult = PopVoidObj();
+        assert( TLS->countObj == 1 );
+        TLS->intrResult = PopVoidObj();
 
         /* switch back to the old state                                    */
         TLS->countObj  = INT_INTOBJ( ADDR_OBJ(TLS->intrState)[3] );
@@ -381,12 +379,11 @@ void            IntrFuncCallEnd (
       return; }
 
 
-    if (options)
-      {
-      	opts = PopObj();
-	CALL_1ARGS(PushOptions, opts);
-      }
-      
+    if (options) {
+        opts = PopObj();
+        CALL_1ARGS(PushOptions, opts);
+    }
+
     /* get the arguments from the stack                                    */
     a1 = a2 = a3 = a4 = a5 = a6 = args = 0;
     if ( nr <= 6 ) {
@@ -396,8 +393,7 @@ void            IntrFuncCallEnd (
         if ( 3 <= nr ) { a3 = PopObj(); }
         if ( 2 <= nr ) { a2 = PopObj(); }
         if ( 1 <= nr ) { a1 = PopObj(); }
-    }
-    else {
+    } else {
         args = NEW_PLIST( T_PLIST, nr );
         SET_LEN_PLIST( args, nr );
         for ( i = nr; 1 <= i; i-- ) {
@@ -430,12 +426,12 @@ void            IntrFuncCallEnd (
       else if ( 5 == nr ) { val = CALL_5ARGS( func, a1, a2, a3, a4, a5 ); }
       else if ( 6 == nr ) { val = CALL_6ARGS( func, a1, a2, a3, a4, a5, a6 ); }
       else                { val = CALL_XARGS( func, args ); }
-      
+
       if (TLS->UserHasQuit || TLS->UserHasQUIT)
                                          /* the procedure must have called
-					 READ() and the user quit from a break
-					 loop inside it */
-	ReadEvalError();
+                                         READ() and the user quit from a break
+                                         loop inside it */
+        ReadEvalError();
     }
 
     /* check the return value                                              */
@@ -447,7 +443,7 @@ void            IntrFuncCallEnd (
 
     if (options)
       CALL_0ARGS(PopOptions);
-    
+
     /* push the value onto the stack                                       */
     if ( val == 0 )
         PushVoidObj();
@@ -707,18 +703,18 @@ void IntrForBegin ( void )
     /* code a function expression (with no arguments and locals)           */
     nams = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( nams, 0 );
+
     /* If we are in the break loop, then a local variable context may well exist,
        and we have to create an empty local variable names list to match the
        function expression that we are creating.
 
        If we are not in a break loop, then this would be a waste of time and effort */
-       
-    if (TLS->countNams > 0)
-      {
-	GROW_PLIST(TLS->stackNams, ++TLS->countNams);
-	SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
-	SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
-      }
+
+    if (TLS->countNams > 0) {
+        GROW_PLIST(TLS->stackNams, ++TLS->countNams);
+        SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
+        SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
+    }
 
     CodeFuncExprBegin( 0, 0, nams, 0 );
 
@@ -733,8 +729,6 @@ void IntrForIn ( void )
     if ( TLS->intrIgnoring  > 0 ) { return; }
 
 
-    
-    
     /* otherwise must be coding                                            */
     assert( TLS->intrCoding > 0 );
     CodeForIn();
@@ -840,23 +834,21 @@ void            IntrWhileBegin ( void )
     TLS->intrCoding = 1;
 
     /* code a function expression (with no arguments and locals)           */
-
     nams = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( nams, 0 );
-    
+
     /* If we are in the break loop, then a local variable context may well exist,
        and we have to create an empty local variable names list to match the
        function expression that we are creating.
 
        If we are not in a break loop, then this would be a waste of time and effort */
-       
-    if (TLS->countNams > 0)
-      {
-	GROW_PLIST(TLS->stackNams, ++TLS->countNams);
-	SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
-	SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
-      }
-    
+
+    if (TLS->countNams > 0) {
+        GROW_PLIST(TLS->stackNams, ++TLS->countNams);
+        SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
+        SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
+    }
+
     CodeFuncExprBegin( 0, 0, nams, 0 );
 
     /* code a while loop                                                   */
@@ -903,7 +895,7 @@ void            IntrWhileEnd ( void )
 
     /* code a function expression (with one statement in the body)         */
     CodeFuncExprEnd( 1UL, 0UL );
-    
+
 
     /* switch back to immediate mode, get the function                     */
     TLS->intrCoding = 0;
@@ -913,10 +905,10 @@ void            IntrWhileEnd ( void )
        variable names list to get the counts right. Remove it */
     if (TLS->countNams > 0)
       TLS->countNams--;
-    
+
     func = TLS->codeResult;
 
-    
+
     /* call the function                                                   */
     CALL_0ARGS( func );
 
@@ -1178,18 +1170,18 @@ void            IntrRepeatBegin ( void )
     /* code a function expression (with no arguments and locals)           */
     nams = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( nams, 0 );
+
     /* If we are in the break loop, then a local variable context may well exist,
        and we have to create an empty local variable names list to match the
        function expression that we are creating.
 
        If we are not in a break loop, then this would be a waste of time and effort */
-       
-    if (TLS->countNams > 0)
-      {
-	GROW_PLIST(TLS->stackNams, ++TLS->countNams);
-	SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
-	SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
-      }
+
+    if (TLS->countNams > 0) {
+        GROW_PLIST(TLS->stackNams, ++TLS->countNams);
+        SET_ELM_PLIST(TLS->stackNams, TLS->countNams, nams);
+        SET_LEN_PLIST(TLS->stackNams, TLS->countNams);
+    }
 
     CodeFuncExprBegin( 0, 0, nams, TLS->input->number );
 
@@ -1383,7 +1375,7 @@ void            IntrQuit ( void )
     TLS->countObj = 0;
     PushVoidObj();
 
-    
+
     /* indicate that a quit-statement was interpreted                      */
     TLS->intrReturning = STATUS_QUIT;
 }
@@ -1409,7 +1401,7 @@ void            IntrQUIT ( void )
     TLS->countObj = 0;
     PushVoidObj();
 
-    
+
     /* indicate that a quit-statement was interpreted                      */
     TLS->intrReturning = STATUS_QQUIT;
 }
@@ -1479,7 +1471,7 @@ void            IntrOr ( void )
                        (Int)TNAM_OBJ(opR), 0L );
         }
     }
-    
+
     /* signal an error                                                     */
     else {
         ErrorQuit( "<expr> must be 'true' or 'false' (not a %s)",
@@ -1570,7 +1562,7 @@ void            IntrAnd ( void )
                 (Int)TNAM_OBJ(opL), 0L );
         }
     }
-    
+
     /* signal an error                                                     */
     else {
         ErrorQuit(
@@ -2006,9 +1998,9 @@ void            IntrIntExpr (
         low = 10 * low + str[i] - '0';
         pow = 10 * pow;
         if ( pow == 100000000L ) {
-	  upp = PROD(upp,INTOBJ_INT(pow) );
-	  upp = SUM(upp  , INTOBJ_INT(sign*low) );
-	  pow = 1;
+            upp = PROD(upp,INTOBJ_INT(pow) );
+            upp = SUM(upp  , INTOBJ_INT(sign*low) );
+            pow = 1;
             low = 0;
         }
         i++;
@@ -2072,7 +2064,7 @@ void            IntrLongIntExpr (
         low = 10 * low + str[i] - '0';
         pow = 10 * pow;
         if ( pow == 100000000L ) {
-	  upp = PROD(upp,INTOBJ_INT(pow) );
+            upp = PROD(upp,INTOBJ_INT(pow) );
             upp = SUM(upp  , INTOBJ_INT(sign*low) );
             str = CHARS_STRING(string);
             pow = 1;
@@ -2126,7 +2118,7 @@ static Obj ConvertFloatLiteralEager(Obj str) {
 void            IntrFloatExpr (
     Char *              str )
 {
-    Obj                 val;            
+    Obj                 val;
     UInt len;
 
     /* ignore or code                                                      */
@@ -2134,7 +2126,7 @@ void            IntrFloatExpr (
     if ( TLS->intrIgnoring  > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) {  CodeFloatExpr( str );   return; }
 
-    len = SyStrlen(str)+1;
+    len = strlen(str)+1;
     val = NEW_STRING(len-1);
     memcpy(CHARS_STRING(val), (void *) str, len);
     PushObj(ConvertFloatLiteralEager(val));
@@ -2293,12 +2285,11 @@ void            IntrPermCycle (
     }
 
     /* enter first (last popped) entry at last (first popped) location     */
-    if (ptr4[l-1] != l-1)
-      {
-	ErrorQuit("Permutation: cycles must be disjoint and duplicate-free", 0L, 0L );
-      }
+    if (ptr4[l-1] != l-1) {
+        ErrorQuit("Permutation: cycles must be disjoint and duplicate-free", 0L, 0L );
+    }
     ptr4[l-1] = p-1;
-        
+
     /* push the permutation (if necessary, drop permutation first)         */
     if ( nrc != 1 ) { PopObj(); PopObj(); }
     PushObj( perm );
@@ -2529,7 +2520,7 @@ void            IntrListExprEnd (
                 ErrorQuit("Range: the length of a range must be less than 2^%d",
                            NR_SMALL_INT_BITS, 0L);
             }
-            
+
             if ( 0 < inc )
                 list = NEW_RANGE_SSORT();
             else
@@ -2827,12 +2818,11 @@ void            IntrAssLVar (
       CodeAssLVar( lvar );
 
     /* Or in the break loop */
-    else
-      {
-	val = PopObj();
-	ASS_LVAR(lvar, val);
-	PushObj(val);
-      }
+    else {
+        val = PopObj();
+        ASS_LVAR(lvar, val);
+        PushObj(val);
+    }
 }
 
 void            IntrUnbLVar (
@@ -2847,11 +2837,10 @@ void            IntrUnbLVar (
       CodeUnbLVar( lvar );
 
     /* or in the break loop */
-    else
-      {
-	ASS_LVAR(lvar,0);
-	PushVoidObj();
-      }
+    else {
+        ASS_LVAR(lvar,0);
+        PushVoidObj();
+    }
 }
 
 
@@ -2873,19 +2862,16 @@ void            IntrRefLVar (
 
     /* or in the break loop */
 
-    else
-      {
-	while ((val = OBJ_LVAR(lvar))==0)
-	  {
-	    ErrorReturnVoid(
-			    "Variable: '%s' must have an assigned value",
-			    (Int)NAME_LVAR( (UInt)( lvar )), 0L,
-			    "you can 'return;' after assigning a value" );
-	    
-	  }
-	PushObj(val);
-      }
-    return;
+    else {
+        while ((val = OBJ_LVAR(lvar))==0) {
+            ErrorReturnVoid(
+                            "Variable: '%s' must have an assigned value",
+                            (Int)NAME_LVAR( (UInt)( lvar )), 0L,
+                            "you can 'return;' after assigning a value" );
+
+        }
+        PushObj(val);
+    }
 }
 
 void            IntrIsbLVar (
@@ -2900,10 +2886,9 @@ void            IntrIsbLVar (
       CodeIsbLVar( lvar );
 
     /* or debugging */
-    else
-      {
-	PushObj(OBJ_LVAR(lvar) != (Obj)0 ? True : False);
-      }
+    else {
+        PushObj(OBJ_LVAR(lvar) != (Obj)0 ? True : False);
+    }
 }
 
 
@@ -2923,12 +2908,11 @@ void            IntrAssHVar (
     if( TLS->intrCoding > 0 )
       CodeAssHVar( hvar );
     /* Or in the break loop */
-    else
-      {
-	val = PopObj();
-	ASS_HVAR(hvar, val);
-	PushObj(val);
-      }
+    else {
+        val = PopObj();
+        ASS_HVAR(hvar, val);
+        PushObj(val);
+    }
 }
 
 void            IntrUnbHVar (
@@ -2939,14 +2923,13 @@ void            IntrUnbHVar (
     if ( TLS->intrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( TLS->intrCoding > 0 ) 
+    if ( TLS->intrCoding > 0 )
       CodeUnbHVar( hvar );
     /* or debugging */
-    else
-      {
-	ASS_HVAR(hvar, 0);
-	PushVoidObj();
-      }
+    else {
+        ASS_HVAR(hvar, 0);
+        PushVoidObj();
+    }
 }
 
 
@@ -2966,18 +2949,16 @@ void            IntrRefHVar (
     if( TLS->intrCoding > 0 )
       CodeRefHVar( hvar );
     /* or debugging */
-    else
-      {
-	while ((val = OBJ_HVAR(hvar))==0)
-	  {
-	    ErrorReturnVoid(
-			    "Variable: '%s' must have an assigned value",
-			    (Int)NAME_HVAR( (UInt)( hvar )), 0L,
-			    "you can 'return;' after assigning a value" );
+    else {
+        while ((val = OBJ_HVAR(hvar))==0) {
+            ErrorReturnVoid(
+                            "Variable: '%s' must have an assigned value",
+                            (Int)NAME_HVAR( (UInt)( hvar )), 0L,
+                            "you can 'return;' after assigning a value" );
 
-	  }
-	PushObj(val);
-      }
+        }
+        PushObj(val);
+    }
 }
 
 void            IntrIsbHVar (
@@ -3020,7 +3001,7 @@ void            IntrAssDVar (
                    dvar >> 10, dvar & 0x3FF );
     }
 
-    
+
     /* get the right hand side                                             */
     rhs = PopObj();
 
@@ -3249,20 +3230,17 @@ void            IntrAssList ( void )
          "List Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-    
+
     /* get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')         */
     list = PopObj();
-    
-    if (IS_INTOBJ(pos))
-      {
-	p = INT_INTOBJ(pos);
-	
 
-	/* assign to the element of the list                                   */
-	ASS_LIST( list, p, rhs );
-      }
-    else
-      ASSB_LIST(list, pos, rhs);
+    if (IS_INTOBJ(pos)) {
+        p = INT_INTOBJ(pos);
+
+        /* assign to the element of the list                                   */
+        ASS_LIST( list, p, rhs );
+    } else
+        ASSB_LIST(list, pos, rhs);
 
     /* push the right hand side again                                      */
     PushObj( rhs );
@@ -3400,19 +3378,17 @@ void            IntrUnbList ( void )
          "List Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-    
+
     /* get the list (checking is done by 'UNB_LIST')                       */
     list = PopObj();
 
-    if (IS_INTOBJ(pos))
-      {
-	p = INT_INTOBJ(pos);
+    if (IS_INTOBJ(pos)) {
+        p = INT_INTOBJ(pos);
 
-	/* unbind the element                                                  */
-	UNB_LIST( list, p );
-      }
-    else
-      UNBB_LIST(list, pos);
+        /* unbind the element                                                  */
+        UNB_LIST( list, p );
+    } else
+        UNBB_LIST(list, pos);
 
     /* push void                                                           */
     PushVoidObj();
@@ -3439,23 +3415,20 @@ void            IntrElmList ( void )
     if ( TLS->intrCoding    > 0 ) { CodeElmList(); return; }
 
 
-    
+
     /* get  the position                                                   */
     pos = PopObj();
     /* get the list (checking is done by 'ELM_LIST')                       */
     list = PopObj();
 
-    
-    if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0)
-      {
-	/* This mostly dispatches to the library */
-	elm = ELMB_LIST( list, pos);
-      }
-    else
-      {
-	/* get the element of the list                                         */
-	elm = ELM_LIST( list, p );
-      }
+
+    if ( ! IS_INTOBJ(pos)  || (p = INT_INTOBJ(pos)) <= 0) {
+        /* This mostly dispatches to the library */
+        elm = ELMB_LIST( list, pos);
+    } else {
+        /* get the element of the list                                         */
+        elm = ELM_LIST( list, p );
+    }
 
     /* push the element                                                    */
     PushObj( elm );
@@ -3573,19 +3546,17 @@ void            IntrIsbList ( void )
             "List Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
-    
+
     /* get the list (checking is done by 'ISB_LIST')                       */
     list = PopObj();
 
-    if (IS_INTOBJ(pos))
-      {
-	p = INT_INTOBJ( pos );
+    if (IS_INTOBJ(pos)) {
+        p = INT_INTOBJ( pos );
 
-	/* get the result                                                      */
-	isb = (ISB_LIST( list, p ) ? True : False);
-      }
-    else
-      isb = (ISBB_LIST( list, pos) ? True : False);
+        /* get the result                                                      */
+        isb = (ISB_LIST( list, p ) ? True : False);
+    } else
+        isb = (ISBB_LIST( list, pos) ? True : False);
 
     /* push the result                                                     */
     PushObj( isb );
@@ -4530,7 +4501,7 @@ void             IntrEmpty ( void )
     /* interpret */
     PushVoidObj();
     return;
-  
+
 }
 
 
@@ -4573,13 +4544,13 @@ void            IntrInfoMiddle( void )
     Obj level;       /* second argument of Info */
     Obj selected;    /* GAP Boolean answer to whether this message
                         gets printed or not */
-  
+
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
     if ( TLS->intrCoding    > 0 ) { CodeInfoMiddle(); return; }
 
-    
+
     level = PopObj();
     selectors = PopObj();
     selected = CALL_2ARGS( InfoDecision, selectors, level);
@@ -4594,12 +4565,12 @@ void            IntrInfoEnd( UInt narg )
 {
 
      Obj args;    /* gathers up the arguments to be printed */
-       
+
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeInfoEnd( narg ); return; }
 
-    
+
     /* print if necessary                                                  */
     if ( TLS->intrIgnoring  > 0 )
       TLS->intrIgnoring--;
@@ -4607,10 +4578,10 @@ void            IntrInfoEnd( UInt narg )
       {
         args = NEW_PLIST( T_PLIST, narg);
         SET_LEN_PLIST(args, narg);
-        
+
         while (narg > 0)
           SET_ELM_PLIST(args, narg--, PopObj());
-        
+
         CALL_1ARGS(InfoDoPrint, args);
       }
 
@@ -4620,7 +4591,7 @@ void            IntrInfoEnd( UInt narg )
       PushVoidObj();
     return;
 }
-  
+
 
 /****************************************************************************
 **
@@ -4661,7 +4632,7 @@ void              IntrAssertBegin ( void )
 void             IntrAssertAfterLevel ( void )
 {
   Obj level;
-  
+
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
@@ -4672,12 +4643,12 @@ void             IntrAssertAfterLevel ( void )
 
     if (LT( CurrentAssertionLevel, level))
            TLS->intrIgnoring = 1;
-}   
+}
 
 void             IntrAssertAfterCondition ( void )
 {
   Obj condition;
-  
+
     /* ignore or code                                                      */
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrIgnoring  > 0 ) { TLS->intrIgnoring++; return; }
@@ -4692,7 +4663,7 @@ void             IntrAssertAfterCondition ( void )
         ErrorQuit(
             "<condition> in Assert must yield 'true' or 'false' (not a %s)",
             (Int)TNAM_OBJ(condition), 0L );
-}   
+}
 
 void             IntrAssertEnd2Args ( void )
 {
@@ -4700,18 +4671,18 @@ void             IntrAssertEnd2Args ( void )
     if ( TLS->intrReturning > 0 ) { return; }
     if ( TLS->intrCoding    > 0 ) { CodeAssertEnd2Args(); return; }
 
-    
+
     if ( TLS->intrIgnoring  == 0 )
       ErrorQuit("Assertion Failure", 0, 0);
     else
       TLS->intrIgnoring -= 2;
-    
+
     if (TLS->intrIgnoring == 0)
       PushVoidObj();
     return;
 }
 
-    
+
 void             IntrAssertEnd3Args ( void )
 {
   Obj message;
@@ -4719,21 +4690,18 @@ void             IntrAssertEnd3Args ( void )
   if ( TLS->intrReturning > 0 ) { return; }
   if ( TLS->intrCoding    > 0 ) { CodeAssertEnd3Args(); return; }
 
-  
-  if ( TLS->intrIgnoring  == 0 )
-    {
+
+  if ( TLS->intrIgnoring  == 0 ) {
       message = PopVoidObj();
-      if (message != (Obj) 0 )
-	{
-	  if (IS_STRING_REP( message ))
-	    PrintString1(message);
-	  else
-	    PrintObj(message);
-	}
-    }
-  else
-    TLS->intrIgnoring -= 2;
-  
+      if (message != (Obj) 0 ) {
+          if (IS_STRING_REP( message ))
+            PrintString1(message);
+          else
+            PrintObj(message);
+      }
+  } else
+      TLS->intrIgnoring -= 2;
+
   if (TLS->intrIgnoring == 0)
       PushVoidObj();
   return;
@@ -4768,7 +4736,7 @@ static Int InitKernel (
     /* The work of handling Options is also delegated*/
     ImportFuncFromLibrary( "PushOptions", &PushOptions );
     ImportFuncFromLibrary( "PopOptions",  &PopOptions  );
- 
+
     /* return success                                                      */
     return 0;
 }

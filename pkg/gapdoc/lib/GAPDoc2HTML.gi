@@ -429,11 +429,16 @@ end;
 ##  The result  of this converter  can be  written to files  with the
 ##  command <Ref Func="GAPDoc2HTMLPrintHTMLFiles" />.<P/>
 ##  
-##  Readers  of the  HTML manuals  can choose  their preferred  style by
-##  setting the  variable <C>GAPInfo.UserPreferences.GAPDocHTMLStyle</C>
-##  (e.g.,    in     their    <F>gap.ini</F>    file).     By    setting
-##  <C>GAPInfo.UserPreferences.UseMathJax</C>   to    <K>true</K>,   the
-##  <Package>MathJax</Package> version is preferred.
+##  There are two user preferences for reading the HTML manuals produced by
+##  &GAPDoc;. A user can choose among several style files which determine the
+##  appearance of the manual pages with 
+##  <C>SetUserPreference("GAPDoc", "HTMLStyle", [...]);</C> where the list in 
+##  the third argument are arguments for <Ref Func="SetGAPDocHTMLStyle"/>.
+##  The second preference is set by 
+##  <C>SetUserPreference("GAPDoc", "UseMathJax", ...);</C> where the third
+##  argument is <K>true</K> or <K>false</K> (default). If this is set to
+##  <K>true</K>, the &GAP; help system displays the <Package>MathJax</Package>
+##  version of the HTML manuals.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

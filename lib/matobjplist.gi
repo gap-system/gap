@@ -691,11 +691,6 @@ InstallMethod( IsZero, "for a plist vector", [ IsPlistVectorRep ],
     return IsZero( v![ELSPOS] );
   end );
 
-InstallMethod( Characteristic, "for a plist vector", [ IsPlistVectorRep ],
-  function( v )
-    return Characteristic( v![BDPOS] );
-  end );
-
 InstallMethod( Randomize, "for a mutable plist vector", 
   [ IsPlistVectorRep and IsMutable ],
   function( v )
@@ -1508,12 +1503,6 @@ InstallMethod( IsOne, "for a plist matrix",
         od;
     od;
     return true;
-  end );
-
-InstallMethod( Characteristic, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    return Characteristic(m![BDPOS]);
   end );
 
 InstallMethod( OneSameMutability, "for a plist matrix",

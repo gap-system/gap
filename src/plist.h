@@ -26,9 +26,6 @@
 #ifndef GAP_PLIST_H
 #define GAP_PLIST_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **
@@ -139,6 +136,19 @@ extern  Int             GrowPlist (
 */
 #define IS_PLIST( list ) \
   (FIRST_PLIST_TNUM <= TNUM_OBJ(list) && TNUM_OBJ(list) <= LAST_PLIST_TNUM)
+
+
+/****************************************************************************
+**
+*F  IS_DENSE_PLIST( <list> )  . . . . . check if <list> is a dense plain list
+**
+** Note that this only checks for plists that are known to be dense.  This is  
+** very fast.  If you want  to also handle plists  for which it  is now known      
+** whether they  are dense or not  (i.e. of type T_PLIST),  use IS_DENSE_LIST 
+** instead.                                                                   
+*/
+#define IS_DENSE_PLIST( list ) \
+  (T_PLIST_DENSE <= TNUM_OBJ(list) && TNUM_OBJ(list) <= LAST_PLIST_TNUM)
 
 
 /****************************************************************************

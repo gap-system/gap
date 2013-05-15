@@ -229,7 +229,8 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
 
 end;
 
-InstallMethod(ComplementClassesRepresentativesSolvableNC,"using cohomology",IsIdenticalObj,
+InstallMethod(ComplementClassesRepresentativesSolvableNC,"using cohomology",
+  IsIdenticalObj,
   [IsGroup,IsGroup],1,
   ComplementClassesRepresentativesSolvableWBG);
 

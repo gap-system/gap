@@ -131,14 +131,12 @@ DeclareCategory(
 ##
 #P  IsBuiltFromAdditiveMagmaWithInverses( <obj> )
 ##
-##  <#GAPDoc Label="IsBuiltFromAdditiveMagmaWithInverses">
 ##  <ManSection>
 ##  <Prop Name="IsBuiltFromAdditiveMagmaWithInverses" Arg='obj'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareProperty( 
     "IsBuiltFromAdditiveMagmaWithInverses",
@@ -149,14 +147,12 @@ DeclareProperty(
 ##
 #P  IsBuiltFromMagma( <obj> )
 ##
-##  <#GAPDoc Label="IsBuiltFromMagma">
 ##  <ManSection>
 ##  <Prop Name="IsBuiltFromMagma" Arg='obj'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareProperty(
     "IsBuiltFromMagma",
@@ -167,14 +163,12 @@ DeclareProperty(
 ##
 #P  IsBuiltFromMagmaWithOne( <obj> )
 ##
-##  <#GAPDoc Label="IsBuiltFromMagmaWithOne">
 ##  <ManSection>
 ##  <Prop Name="IsBuiltFromMagmaWithOne" Arg='obj'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareProperty(
     "IsBuiltFromMagmaWithOne",
@@ -185,14 +179,12 @@ DeclareProperty(
 ##
 #P  IsBuiltFromMagmaWithInverses( <obj> )
 ##
-##  <#GAPDoc Label="IsBuiltFromMagmaWithInverses">
 ##  <ManSection>
 ##  <Prop Name="IsBuiltFromMagmaWithInverses" Arg='obj'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareProperty( 
     "IsBuiltFromMagmaWithInverses",
@@ -203,14 +195,12 @@ DeclareProperty(
 ##
 #P  IsBuiltFromGroup( <obj> )
 ##
-##  <#GAPDoc Label="IsBuiltFromGroup">
 ##  <ManSection>
 ##  <Prop Name="IsBuiltFromGroup" Arg='obj'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareProperty(
     "IsBuiltFromGroup",
@@ -234,14 +224,12 @@ InstallTrueMethod( IsBuiltFromMagmaWithOne, IsBuiltFromMagmaWithInverses );
 ##
 #P  IsBuiltFromSemigroup( <obj> )
 ##
-##  <#GAPDoc Label="IsBuiltFromSemigroup">
 ##  <ManSection>
 ##  <Prop Name="IsBuiltFromSemigroup" Arg='obj'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareProperty( "IsBuiltFromSemigroup", IsObject );
 
@@ -346,6 +334,7 @@ DeclareAttribute(
 ##  <Attr Name="GeneratorsOfRws" Arg='rws'/>
 ##
 ##  <Description>
+##  Returns the list of generators of the rewriting system <A>rws</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -539,14 +528,12 @@ DeclareOperation(
 ##
 #O  AddGenerators( <rws>, <gens> )
 ##
-##  <#GAPDoc Label="AddGenerators">
 ##  <ManSection>
 ##  <Oper Name="AddGenerators" Arg='rws, gens'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "AddGenerators",
@@ -595,14 +582,12 @@ DeclareOperation(
 ##
 #O  ReducedAdditiveInverse( <rws>, <obj> )
 ##
-##  <#GAPDoc Label="ReducedAdditiveInverse">
 ##  <ManSection>
 ##  <Oper Name="ReducedAdditiveInverse" Arg='rws, obj'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedAdditiveInverse",
@@ -614,14 +599,12 @@ DeclareOperation(
 ##
 #O  ReducedComm( <rws>, <left>, <right> )
 ##
-##  <#GAPDoc Label="ReducedComm">
 ##  <ManSection>
 ##  <Oper Name="ReducedComm" Arg='rws, left, right'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedComm",
@@ -634,14 +617,12 @@ DeclareOperation(
 ##
 #O  ReducedConjugate( <rws>, <left>, <right> )
 ##
-##  <#GAPDoc Label="ReducedConjugate">
 ##  <ManSection>
 ##  <Oper Name="ReducedConjugate" Arg='rws, left, right'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedConjugate", 
@@ -654,14 +635,12 @@ DeclareOperation(
 ##
 #O  ReducedDifference( <rws>, <left>, <right> )
 ##
-##  <#GAPDoc Label="ReducedDifference">
 ##  <ManSection>
 ##  <Oper Name="ReducedDifference" Arg='rws, left, right'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedDifference", 
@@ -718,14 +697,12 @@ DeclareOperation(
 ##
 #O  ReducedInverse( <rws>, <obj> )
 ##
-##  <#GAPDoc Label="ReducedInverse">
 ##  <ManSection>
 ##  <Oper Name="ReducedInverse" Arg='rws, obj'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedInverse", 
@@ -737,14 +714,12 @@ DeclareOperation(
 ##
 #O  ReducedLeftQuotient( <rws>, <left>, <right> )
 ##
-##  <#GAPDoc Label="ReducedLeftQuotient">
 ##  <ManSection>
 ##  <Oper Name="ReducedLeftQuotient" Arg='rws, left, right'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedLeftQuotient",
@@ -757,14 +732,12 @@ DeclareOperation(
 ##
 #O  ReducedOne( <rws> )
 ##
-##  <#GAPDoc Label="ReducedOne">
 ##  <ManSection>
 ##  <Oper Name="ReducedOne" Arg='rws'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedOne", 
@@ -775,14 +748,12 @@ DeclareOperation(
 ##
 #O  ReducedPower( <rws>, <obj>, <pow> )
 ##
-##  <#GAPDoc Label="ReducedPower">
 ##  <ManSection>
 ##  <Oper Name="ReducedPower" Arg='rws, obj, pow'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedPower",
@@ -795,7 +766,6 @@ DeclareOperation(
 ##
 #O  ReducedProduct( <rws>, <u>, <v> )
 ##
-##  <#GAPDoc Label="ReducedProduct">
 ##  <ManSection>
 ##  <Oper Name="ReducedProduct" Arg='rws, u, v'/>
 ##
@@ -807,7 +777,6 @@ DeclareOperation(
 ##  are defined (as determined by the signature of the term algebra).
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedProduct", 
@@ -820,14 +789,12 @@ DeclareOperation(
 ##
 #O  ReducedQuotient( <rws>, <left>, <right> )
 ##
-##  <#GAPDoc Label="ReducedQuotient">
 ##  <ManSection>
 ##  <Oper Name="ReducedQuotient" Arg='rws, left, right'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedQuotient", 
@@ -840,14 +807,12 @@ DeclareOperation(
 ##
 #O  ReducedScalarProduct( <rws>, <left>, <right> )
 ##
-##  <#GAPDoc Label="ReducedScalarProduct">
 ##  <ManSection>
 ##  <Oper Name="ReducedScalarProduct" Arg='rws, left, right'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedScalarProduct", 
@@ -860,14 +825,12 @@ DeclareOperation(
 ##
 #O  ReducedSum( <rws>, <left>, <right> )
 ##
-##  <#GAPDoc Label="ReducedSum">
 ##  <ManSection>
 ##  <Oper Name="ReducedSum" Arg='rws, left, right'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedSum",
@@ -880,14 +843,12 @@ DeclareOperation(
 ##
 #O  ReducedZero( <rws> )
 ##
-##  <#GAPDoc Label="ReducedZero">
 ##  <ManSection>
 ##  <Oper Name="ReducedZero" Arg='rws'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareOperation(
     "ReducedZero", 

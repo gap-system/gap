@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id: zooandtagdata,v 1.1 2003/12/01 17:42:51 gap Exp $
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'

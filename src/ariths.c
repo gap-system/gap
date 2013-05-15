@@ -23,9 +23,7 @@
 #include        "calls.h"               /* generic call mechanism          */
 #include        "opers.h"               /* generic operations              */
 
-#define INCLUDE_DECLARATION_PART
 #include        "ariths.h"              /* basic arithmetic                */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "bool.h"                /* booleans                        */
 

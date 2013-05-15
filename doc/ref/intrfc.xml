@@ -503,12 +503,18 @@ below would be groups for which a <Q>length</Q> of elements (as a word in
 certain generators) is defined, groups that can be decomposed as a
 semidirect product and M-groups.
 <P/>
-In each case we have two possibilities for the declaration. We can either declare it
-as a property or as a category. Both are eventually filter and in this way
-indistinguishable for the method selection. The distinction is rather
-conceptual and mainly reflects whether we want existing objects to be part
-of our new concept or not.
-<!-- %T no, there are more differences! -->
+In each case we have two possibilities for the declaration. We can
+either declare it
+as a property or as a category. Both are eventually filter(s) and in this way
+indistinguishable for the method selection. However, the value of
+a property for a particular object can be unknown at first and later
+in the session be computed (to be <K>true</K> or <K>false</K>).
+This is implemented by reserving two filters for each property, one
+indicating whether the property value is known, and one, provided
+the value is known, to indicate the actual boolean value.
+Contrary to this, the decision whether or not an object lies in a
+category is taken at creation time and this is implemented using
+a single filter.
 <P/>
 <List>
 <Mark>Property:</Mark>

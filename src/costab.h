@@ -15,9 +15,6 @@
 #ifndef GAP_COSTAB_H
 #define GAP_COSTAB_H
 
-#ifdef INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

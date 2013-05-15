@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: setup,v 1.4 2008/09/26 13:59:39 gapchron Exp $    (C) Frank Lübeck
+# (C) Frank LÃ¼beck
 
 export PREFIX="/gap/PackageAdmin/"
 

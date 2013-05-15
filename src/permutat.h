@@ -14,9 +14,6 @@
 #ifndef GAP_PERMUTAT_H
 #define GAP_PERMUTAT_H
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

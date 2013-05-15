@@ -143,7 +143,7 @@ MakeThreadLocal("CosetTableDefaultMaxLimit");
 ##  <Var Name="CosetTableStandard"/>
 ##
 ##  <Description>
-##  specifies the definiton of a <E>standard coset table</E>. It is used
+##  specifies the definition of a <E>standard coset table</E>. It is used
 ##  whenever coset tables or augmented coset tables are created. Its value
 ##  may be <C>"lenlex"</C> or <C>"semilenlex"</C>.
 ##  If it is <C>"lenlex"</C> coset tables will be standardized using
@@ -834,7 +834,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  ]]></Example>
 ##  <P/>
 ##  By default, the algorithm computes no generating sets for the subgroups.
-##  This can be enforcd with <Ref Func="GeneratorsOfGroup"/>:
+##  This can be enforced with <Ref Func="GeneratorsOfGroup"/>:
 ##  <Example><![CDATA[
 ##  gap> GeneratorsOfGroup(li[2]);
 ##  [ a, b*a*b^-1 ]
@@ -1260,7 +1260,7 @@ DeclareGlobalFunction("NewmanInfinityCriterion");
 ##  relators <M>x_i\cdot\cdots\cdot x_{r+i-1}/x_{r+i}</M> (with indices reduced
 ##  modulo <A>n</A>).
 ##  <P/>
-##  If <A>r</A> is ommitted, it defaults to 2.
+##  If <A>r</A> is omitted, it defaults to 2.
 ##  </Description>
 ##  </ManSection>
 ##

@@ -2347,15 +2347,16 @@ DeclareSynonym( "AsSet", AsSSortedList );
 ##  <Attr Name="AsSSortedListNonstored" Arg='C'/>
 ##
 ##  <Description>
-##  returns the <C>AsSSortedList(<A>C</A>)</C> but ensures that this list
+##  returns the <Ref Func="AsSSortedList"/> value of the list or collection
+##  <A>C</A> but ensures that this list
 ##  (nor a permutation or substantial subset) will not be
 ##  stored in attributes of <A>C</A> unless such a list is already stored.
 ##  This permits to obtain an element list once
 ##  without danger of clogging up memory in the long run.
 ##  <P/>
 ##  Because of this guarantee of nonstorage, methods for
-##  <C>AsSSortedListNonstored</C> may not default to <C>AsSSortedList</C>,
-##  but only vice versa.
+##  <Ref Func="AsSSortedListNonstored"/> may not default to
+##  <Ref Func="AsSSortedList"/>, but only vice versa.
 ##  </Description>
 ##  </ManSection>
 ##

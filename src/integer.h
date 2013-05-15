@@ -19,9 +19,6 @@
  #include "gmpints.h"
 #else /* read the rest of this file */
 
-#ifdef  INCLUDE_DECLARATION_PART
-#endif
-
 
 /****************************************************************************
 **

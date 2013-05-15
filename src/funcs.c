@@ -35,9 +35,7 @@
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
-#define INCLUDE_DECLARATION_PART
 #include        "funcs.h"               /* functions                       */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "read.h"                /* read expressions                */
 #include        "records.h"             /* generic records                 */

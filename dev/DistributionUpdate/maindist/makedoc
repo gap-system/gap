@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id: makedoc,v 1.6 2005/08/26 10:20:31 gap Exp $
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'

@@ -29,9 +29,7 @@
 
 #include        "bool.h"                /* booleans                        */
 
-#define INCLUDE_DECLARATION_PART
 #include        "weakptr.h"             /* weak pointers                   */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */

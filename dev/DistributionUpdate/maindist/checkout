@@ -1,7 +1,6 @@
 #!/bin/sh
 #############################################################################
 ##
-##  $Id: checkout,v 1.7 2005/06/10 09:28:30 gap Exp $
 
 if [ ${DISTROOT}X==X ]; then
   echo 'Loading environment settings'

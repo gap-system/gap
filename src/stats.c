@@ -43,9 +43,7 @@
 
 #include        "ariths.h"              /* basic arithmetic                */
 
-#define INCLUDE_DECLARATION_PART
 #include        "stats.h"               /* statements                      */
-#undef  INCLUDE_DECLARATION_PART
 
 #include        <assert.h>
 
@@ -476,8 +474,8 @@ UInt            ExecFor (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
 
@@ -509,8 +507,8 @@ UInt            ExecFor (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
 
@@ -585,13 +583,13 @@ UInt            ExecFor2 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
 
@@ -623,13 +621,13 @@ UInt            ExecFor2 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
 
@@ -706,18 +704,18 @@ UInt            ExecFor3 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
 
@@ -750,18 +748,18 @@ UInt            ExecFor3 (
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+                if (leave == 8) 
+                    continue;
                 return (leave & 3);
             }
 
@@ -850,9 +848,9 @@ UInt            ExecForRange (
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
-	  if (leave == 8) 
-	    continue;
-	  return (leave & 3);
+          if (leave == 8) 
+            continue;
+          return (leave & 3);
         }
 
     }
@@ -915,13 +913,13 @@ UInt            ExecForRange2 (
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
 
@@ -987,18 +985,18 @@ UInt            ExecForRange3 (
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
 
@@ -1115,8 +1113,8 @@ UInt ExecWhile (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1153,13 +1151,13 @@ UInt ExecWhile2 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1198,18 +1196,18 @@ UInt ExecWhile3 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1264,8 +1262,8 @@ UInt ExecRepeat (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1302,13 +1300,13 @@ UInt ExecRepeat2 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1347,18 +1345,18 @@ UInt ExecRepeat3 (
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-	        if (leave == 8) 
-		  continue;
+            if (leave == 8) 
+                continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1532,20 +1530,19 @@ UInt ExecAssert3Args (
     if ( ! LT(CurrentAssertionLevel, level) ) {
         decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
         while ( decision != True && decision != False ) {
-         decision = ErrorReturnObj(
-         "Assertion condition must evaluate to 'true' or 'false', not a %s",
-         (Int)TNAM_OBJ(decision), 0L,
-         "you may 'return true;' or 'return false;'");
+            decision = ErrorReturnObj(
+            "Assertion condition must evaluate to 'true' or 'false', not a %s",
+            (Int)TNAM_OBJ(decision), 0L,
+            "you may 'return true;' or 'return false;'");
         }
         if ( decision == False ) {
             message = EVAL_EXPR(ADDR_STAT( stat )[2]);
-            if ( message != (Obj) 0 )
-	      {
-		if (IS_STRING_REP( message ))
-		  PrintString1( message );
-		else
-		  PrintObj(message);
-	      }
+            if ( message != (Obj) 0 ) {
+                if (IS_STRING_REP( message ))
+                    PrintString1( message );
+                else
+                    PrintObj(message);
+            }
         }
         return 0;
     }
@@ -1633,13 +1630,13 @@ UInt (* IntrExecStatFuncs[256]) ( Stat stat );
 ** including possible garbage collection. In this case 1 is returned.
 */
 
-UInt TakeInterrupt() {
+UInt TakeInterrupt( void ) {
   UInt i;
   if (SyIsIntr()) {
-    assert(TLS->CurrExecStatFuncs != ExecStatFuncs);
-        TLS->CurrExecStatFuncs = ExecStatFuncs;
-	ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-	return 1;
+      assert(TLS->CurrExecStatFuncs != ExecStatFuncs);
+      TLS->CurrExecStatFuncs = ExecStatFuncs;
+      ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+      return 1;
   }
   return 0;
 }

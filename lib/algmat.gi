@@ -922,7 +922,7 @@ InstallMethod( RadicalOfAlgebra,
       # If `p' is greater than 0, then the situation is more difficult.
       # We implement the algorithm presented in
       # "Cohen, Arjeh M, G\'{a}bor Ivanyos, and David B. Wales,
-      # 'Finding the radical of an algebra of linear tranformations,'
+      # 'Finding the radical of an algebra of linear transformations,'
       # Journal of Pure and Applied Algebra 117 & 118 (1997), 177-193".
 
       q := Size( F );
