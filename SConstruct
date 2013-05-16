@@ -160,17 +160,6 @@ else: # cleaning
   compile_gc = False
   compile_gmp = False
 
-have__setjmp = 0
-have_sigsetjmp = 0
-have_stdint_h = 0
-
-if not GetOption("clean"):
-  if conf.CheckFunc("sigsetjmp"):
-    have_sigsetjmp = 1
-  elif conf.CheckFunc("_setjmp"):
-    have__setjmp = 1
-  if conf.CheckCHeader("stdint.h"):
-    have_stdint_h = 1
 conf.Finish()
 
 if GAP["mpi"]:
@@ -209,12 +198,6 @@ else:
   defines.append("DISABLE_GC")
 if "gmp" in libs:
   defines.append("USE_GMP")
-if have_sigsetjmp:
-  defines.append("HAVE_SIGSETJMP=1")
-if have__setjmp:
-  defines.append("HAVE__SETJMP=1")
-if have_stdint_h:
-  defines.append("HAVE_STDINT_H=1")
 
 if GAP["debugguards"]:
   defines.append("VERBOSE_GUARDS")
