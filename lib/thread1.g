@@ -23,68 +23,64 @@ BIND_GLOBAL("LibraryRegion", 20000);
 BIND_GLOBAL("KernelRegion", 10000);
 BIND_GLOBAL("InternalRegion", 0);
 
-ShareObj := function(arg)
+ShareObjWithPriority := function(arg, priority)
+  local name;
   if IsBound(arg[2]) then
-    return SHARE(arg[1], arg[2], ApplicationRegion);
+    name := arg[2];
+    if not HaveReadAccess(name) then
+      Error("Cannot access region name");
+    fi;
+    name := IMMUTABLE_COPY_OBJ(name);
+    return SHARE(arg[1], name, priority);
   else
-    return SHARE(arg[1], fail, ApplicationRegion);
+    return SHARE(arg[1], fail, priority);
   fi;
+end;
+
+ShareObj := function(arg)
+  return ShareObjWithPriority(arg, ApplicationRegion);
 end;
 
 ShareLibraryObj := function(arg)
-  if IsBound(arg[2]) then
-    return SHARE(arg[1], arg[2], LibraryRegion);
-  else
-    return SHARE(arg[1], fail, LibraryRegion);
-  fi;
+  return ShareObjWithPriority(arg, LibraryRegion);
 end;
 
 ShareKernelObj := function(arg)
-  if IsBound(arg[2]) then
-    return SHARE(arg[1], arg[2], KernelRegion);
-  else
-    return SHARE(arg[1], fail, KernelRegion);
-  fi;
+  return ShareObjWithPriority(arg, KernelRegion);
 end;
 
 ShareInternalObj := function(arg)
+  ShareObjWithPriority(arg, InternalRegion);
+end;
+
+ShareSingleObjWithPriority := function(arg, priority)
+  local name;
   if IsBound(arg[2]) then
-    return SHARE(arg[1], arg[2], InternalRegion);
+    name := arg[2];
+    if not HaveReadAccess(name) then
+      Error("Cannot access region name");
+    fi;
+    name := IMMUTABLE_COPY_OBJ(name);
+    return SHARE_NORECURSE(arg[1], name, priority);
   else
-    return SHARE(arg[1], fail, InternalRegion);
+    return SHARE_NORECURSE(arg[1], fail, priority);
   fi;
 end;
 
 ShareSingleObj := function(arg)
-  if IsBound(arg[2]) then
-    return SHARE_NORECURSE(arg[1], arg[2], ApplicationRegion);
-  else
-    return SHARE_NORECURSE(arg[1], fail, ApplicationRegion);
-  fi;
+  return ShareSingleObjWithPriority(arg, ApplicationRegion);
 end;
 
 ShareSingleLibraryObj := function(arg)
-  if IsBound(arg[2]) then
-    return SHARE_NORECURSE(arg[1], arg[2], LibraryRegion);
-  else
-    return SHARE_NORECURSE(arg[1], fail, LibraryRegion);
-  fi;
+  return ShareSingleObjWithPriority(arg, LibraryRegion);
 end;
 
 ShareSingleKernelObj := function(arg)
-  if IsBound(arg[2]) then
-    return SHARE_NORECURSE(arg[1], arg[2], KernelRegion);
-  else
-    return SHARE_NORECURSE(arg[1], fail, KernelRegion);
-  fi;
+  return ShareSingleObjWithPriority(arg, KernelRegion);
 end;
 
 ShareSingleInternalObj := function(arg)
-  if IsBound(arg[2]) then
-    return SHARE_NORECURSE(arg[1], arg[2], InternalRegion);
-  else
-    return SHARE_NORECURSE(arg[1], fail, InternalRegion);
-  fi;
+  return ShareSingleObjWithPriority(arg, InternalRegion);
 end;
 
 MigrateObj := MIGRATE;
